@@ -23,12 +23,12 @@ extern char lf_rpc_client[];
 extern char lf_rpc_buffer[];
 extern char lf_iop_version[];
 
-/* _lf_bind (libkernl.a eeloadfile.o): unless already bound (D_0012FDB0
- * >= 0), bind the IOP loadfile RPC server (func_0011B2F8, 0x80000006),
+/* _lf_bind (libkernl.a eeloadfile.o): unless already bound (lf_bind_state
+ * >= 0), bind the IOP loadfile RPC server (sceSifBindRpc, 0x80000006),
  * busy-waiting 0x100000 counts between tries until its server pointer
  * (+0x24) is set; a failed bind returns -1. Then mark it bound, call
- * function 0xFF (func_0011B4C8) for the 4-byte reply at D_00158300
- * (-0x10001 if the call fails) and copy it to D_00158528.
+ * function 0xFF (sif_call_rpc) for the 4-byte reply at lf_rpc_buffer
+ * (-0x10001 if the call fails) and copy it to lf_iop_version.
  *
  * The success path has its own `return 0`: its $v0 = 0 is scheduled
  * ahead of the inlined memcpy, which moves the copy's registers up by
@@ -63,7 +63,7 @@ done:
 
 extern int lf_expected_version;
 
-/* Twin of func_0011BEB8 on a different slot/handle pair. */
+/* Twin of fs_version_mismatch on a different slot/handle pair. */
 int lf_version_mismatch(void) {
     char *buf = sif_lib_version_string;
     char *slot = lf_iop_version;

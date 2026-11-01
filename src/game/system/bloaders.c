@@ -98,13 +98,13 @@ extern int depth_buffer_address_m __asm__("D_0015EF88") MACRO_ADDR;
 extern long debug_font_pif_header_m __asm__("D_0015EFC8") MACRO_ADDR;
 
 /*
- * LoadDebugFont: forwards the D_00137C80[2]/[3] stream position to
- * func_002176C8, then loads a PSMT8H texture (D_001AAF40) into VRAM via
- * func_001E94E8, caching the returned descriptor's first field into
- * D_0015EFC8. Retail reaches both globals with assembler macros (MACRO_ADDR
- * aliases). func_002176C8 returns int (its result unused), which puts the
- * D_0015EF88 load in $v1 as retail has it; the level copy is the same C
- * (func_L00_001EB380).
+ * LoadDebugFont: forwards the disc_table[2]/[3] stream position to
+ * Load, then loads a PSMT8H texture (debug_font_buffer) into VRAM via
+ * LoadPifAsPSMT8H, caching the returned descriptor's first field into
+ * debug_font_pif_header. Retail reaches both globals with assembler macros (MACRO_ADDR
+ * aliases). Load returns int (its result unused), which puts the
+ * depth_buffer_address load in $v1 as retail has it; the level copy is the same C
+ * (LoadCachedTexture).
  */
 void LoadDebugFont(void) {
     long localbuf[3];

@@ -18,11 +18,11 @@ extern int snd_InitVAGStreamingEx(int, int, int, int);
 extern int snd_FlushSoundCommands(void);
 extern void register_audio_stream_callback(void);
 
-/* Music init: resets the music state at D_001517D0 (+0x30 = 0x20, the
+/* Music init: resets the music state at cd_read_state (+0x30 = 0x20, the
    other bytes and the three playing records' state and +0x0A flag
    cleared, +0x1C/+0x22 set to -1), starts VAG streaming through
-   func_0012EC60 (snd_InitVAGStreamingEx), waits until func_0012DDC0
-   (snd_FlushSoundCommands) has nothing left, and calls func_00216270.
+   snd_InitVAGStreamingEx, waits until snd_FlushSoundCommands
+   (snd_FlushSoundCommands) has nothing left, and calls register_audio_stream_callback.
    The two -1 stores are one chained assignment written last: that
    shares one register between the word and the byte store, and leaves
    the other stores in source order, as retail has them. */
@@ -54,16 +54,16 @@ void register_audio_stream_callback(void) {
     snd_StreamSafeCdCallback(finish_audio_stream_read);
 }
 
-/* The sound tables in the WAD table of contents at D_00137C80, as far as
+/* The sound tables in the WAD table of contents at disc_table, as far as
    the play functions show them: 8-byte records per sound id whose first
    word is the stream handle, except the 50000 range, which has six
-   handles per id (D_0015EE88 picks one). The [1] bounds are placeholders,
+   handles per id (g_game_language picks one). The [1] bounds are placeholders,
    not known counts. Reaching a table as a member of this struct, rather
    than by pointer arithmetic, is what gives retail's addu operand order.
 
-   D_001517D0 holds three playing records (music_Playing, 0x1C bytes)
+   cd_read_state holds three playing records (music_Playing, 0x1C bytes)
    at 0x34, 0x50 and 0x6C: +0x00 state (-1 while starting), +0x04 the
-   id, +0x06 the value also passed as func_0012ED48's fifth argument,
+   id, +0x06 the value also passed as snd_PlayVAGStreamByLocEx_CB's fifth argument,
    +0x08 another argument, +0x0A and +0x10 flags, +0x14 10, +0x18 48000
    (the sample rate). The stores are written in the order retail emits
    them. The first one must not need a constant in a register: if it
@@ -112,7 +112,7 @@ typedef struct {
 
 typedef struct {
     u8 pad_00[0x50];
-    SndSecondaryChannel secondary;  /* 0x50: the secondary record in D_001517D0 */
+    SndSecondaryChannel secondary;  /* 0x50: the secondary record in cd_read_state */
 } SndStreamBlock;
 
 /* Start music track 60000+ on the secondary stream channel if that channel is free. */
@@ -216,8 +216,8 @@ extern int gHelpDeskVoice_w __asm__("D_0015EF1C") MACRO_ADDR;
 extern char dialogue_track_table_by_lang[];
 extern char music_player_dialogue[];
 
-/* The same through a per-language table at D_0011C278; volume only
-   when the D_0015EF1C flag is set. */
+/* The same through a per-language table at dialogue_track_table_by_lang; volume only
+   when the gHelpDeskVoice flag is set. */
 void music_start_track_30000(int arg0, int arg1, int arg2) {
     int *p = (int *)(dialogue_track_table_by_lang + (arg0 * 4 + g_game_language * 0x258));
     char *s;
@@ -287,7 +287,7 @@ void music_start_track_20000(int track, int track_flags, int volume) {
                                 (long)(unsigned int)&state->secondary);
 }
 
-/* The PAL music stream state at D_001517D0: only the secondary channel record
+/* The PAL music stream state at cd_read_state: only the secondary channel record
    (at 0x50, 0x1C bytes) that music_start_track_10000 writes. */
 typedef struct {
     s32 handle;            /* 0x00: stream handle; -1 while starting */
@@ -340,7 +340,7 @@ extern char scene_sounds[];
 /* music_Play dispatcher: routes to the range-specific play function
    (siblings above, one per id range) for arg0 >= 10000; below that it's
    the same music_Playing setup those siblings do, inline, with the sound
-   handle read from D_0013A764[arg0][D_0015EE88] (stride 0x250) instead of
+   handle read from scene_sounds[arg0][g_game_language] (stride 0x250) instead of
    a SndToc table. */
 typedef struct {
     u8 pad_00[0x50];
@@ -512,11 +512,11 @@ extern void music_primary_replace_callback(int, long);
 
 /* music_StartTrackBody(int, int, int): when the music record at +0x34 is
    already playing (its word neither 0 nor -1) and not in state 9, starts
-   track arg0 + 1 of the table at D_00137C80 + 0x2AA8 on it: state 9, the
+   track arg0 + 1 of the table at disc_table + 0x2AA8 on it: state 9, the
    track, arg1 and arg2 recorded, 10 and 48000 stored, then
-   func_0012ED48 with the current word passed on as its eighth argument
+   snd_PlayVAGStreamByLocEx_CB with the current word passed on as its eighth argument
    and 0x24 or 0x20 by arg1's bit 0. The handle is read twice as in
-   func_00216A90 (CSE merges the loads, and the address stays in a
+   music_StartTrack (CSE merges the loads, and the address stays in a
    register as in retail), and the 0x24/0x20 choice comes before the
    stores, which keeps arg1 in $a1. */
 void music_StartTrackBody(int arg0, int arg1, int arg2) {
@@ -644,10 +644,10 @@ void Music_QueueTrack(int arg0, int arg1) {
 extern void snd_StopAllStreams(void);
 extern void snd_StreamSafeCheckCDIdle(int);
 
-/* music_Stop: waits (func_0012DDC0, snd_FlushSoundCommands) while each
+/* music_Stop: waits (snd_FlushSoundCommands, snd_FlushSoundCommands) while each
    of the three playing records at +0x34, +0x6C and +0x50 is still
-   starting (state 0xFFFFFFFF), stops the streams (func_0012ED10), flushes
-   until nothing is left, calls func_0012EE70(1), then clears the records
+   starting (state 0xFFFFFFFF), stops the streams (snd_StopAllStreams), flushes
+   until nothing is left, calls snd_StreamSafeCheckCDIdle(1), then clears the records
    and the current id (+0x22 kept in +0x38 when set). Each wait loop has
    its own pointer assigned in the loop condition: jump.c's copy of the
    exit test in front of the loop then gets its own pseudo, and the loop
@@ -755,11 +755,11 @@ extern void music_channel_ready_callback(int, long);
 /* music_UpdateStream(music_Playing &): with a live handle and state other
    than 9, state 5 stops the stream (state 6) and state 6 without a
    handle resets; a fading record (+0xC bit 15) pauses the handle once
-   (+0xA bit 15) and polls func_001F9938 until it reports 2 (+0xC = 4),
+   (+0xA bit 15) and polls FastDecTimer until it reports 2 (+0xC = 4),
    otherwise a paused one is resumed. Unpaused, states 1/8/9 are left
-   alone, 2 hands the handle to func_0012EE40 unless it is 0xFFFFFFFF,
-   and anything but 2/3 releases the handle through func_0012EE10 and
-   func_0012E588. With no live handle (or state 9) the state is cleared
+   alone, 2 hands the handle to snd_IsVAGStreamBuffered_CB unless it is 0xFFFFFFFF,
+   and anything but 2/3 releases the handle through snd_GetVAGStreamTimeRemaining_CB and
+   snd_SoundIsStillPlaying_CB. With no live handle (or state 9) the state is cleared
    when it is 7 or the handle is 0. The handle is unsigned (retail builds
    0xFFFFFFFF with lui/ori), the special case is the else arm (retail
    places it last), and the dispatch reads p->state directly so the 2/3

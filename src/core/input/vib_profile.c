@@ -20,7 +20,7 @@ typedef struct {
 
 extern int sceDbcReceiveData(int, Mode125218, int *, int);
 
-/* Builds a mode word from bitfields and runs the func_00124A70 round
+/* Builds a mode word from bitfields and runs the sceDbcReceiveData round
    trip. The fields are 64-bit, so each insert is a doubleword and/or,
    and the struct is passed by value. `if (r >= 0) return out;` keeps
    retail's two returns; an `r = out` spelling becomes slt/movz. */

@@ -21,7 +21,7 @@ int remove_help_message_for_selector(int a) {
     return 0;
 }
 
-/* NON_MATCHING func_L00_002657B8 -- src/overlays/shared/mobyutil_00265558.c
+/* NON_MATCHING link_and_update_all_mobys -- src/overlays/shared/mobyutil_00265558.c
  * Best so far: SIZE ours 264 / retail 260, checked 2026-10-09.
  * Not built into anything: the retail assembly stays in the source file
  * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
@@ -30,7 +30,7 @@ int remove_help_message_for_selector(int a) {
  *   is a branch-likely/delay-slot-fill choice, not a saved-register or
  *   `lui` count difference. Not attempted.
  *   Everything else in the function -- the list-build loop, the sentinel
- *   checks, the `func_L00_002514B8` call and its own duplicated pointer
+ *   checks, the `MobyAnimAdvance` call and its own duplicated pointer
  *   load, the final list walk and both epilogue paths -- matches retail
  *   exactly.
  *   Stopping here per the three-tie rule with 5 of 10 runs used.
@@ -97,7 +97,8 @@ void link_and_update_all_mobys(void) {
                 if (!(cur->flags & 0x40)) {
                     MobyAnimAdvance(cur);
                 }
-                /* inline asm: hook call (beq/move/jal with empty slots). The original used inline asm here too: GCC 2.95 reorg leaves both slots empty only next to asm (see reorg.c stop_search_p). */
+                /* inline asm: hook call (beq/move/jal with empty slots). The original used inline asm here too: GCC
+                   2.95 reorg leaves both slots empty only next to asm (see reorg.c stop_search_p). */
                 {
                     int r;
                     __asm__ volatile("beq %1,$0,1f\n\tmove $4,%2\n\tjal $31,%1\n1:"

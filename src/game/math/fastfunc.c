@@ -21,7 +21,7 @@ ASM_FUNC("asm/handwritten/text", func_001F9840);
 ASM_FUNC("asm/handwritten/text", func_001F9850);
 
 /*
- * Hand-written: return *(float *)&D_0015EE64 * x;  (gp 0x0015EE64)
+ * Hand-written: return *(float *)&g_frame_scale_sq * x;  (gp 0x0015EE64)
  * as `lwc1 $f0,off($28) / nop / jr $31 / mul.s`. Nothing in the
  * toolchain writes that nop. Probed: neither GNU ee-as nor either
  * ps2eeas version puts a nop after lwc1, and gcc's own load-delay
@@ -37,7 +37,7 @@ ASM_FUNC("asm/handwritten/text", func_001F9878);
 ASM_FUNC("asm/handwritten/text", func_001F9888);
 
 /*
- * Hand-written: return *(float *)&D_0015EE68 * x;  (gp 0x0015EE68)
+ * Hand-written: return *(float *)&inv_frame_scale * x;  (gp 0x0015EE68)
  * as `lwc1 $f0,off($28) / nop / jr $31 / mul.s`. Nothing in the
  * toolchain writes that nop. Probed: neither GNU ee-as nor either
  * ps2eeas version puts a nop after lwc1, and gcc's own load-delay
@@ -78,7 +78,7 @@ ASM_FUNC("asm/handwritten/text", func_001F9AC0);
 
 /*
  * Not a decompile target: hand-written assembly, same idioms as the
- * func_0020C210/func_0020C230 DMAC block. It keeps the 0x1000D000 base
+ * DmaToSpr/DmaToSprSync DMAC block. It keeps the 0x1000D000 base
  * live in $1/$at across all four stores (assembler-reserved, never
  * allocated by GCC), materializes 0x100 with `ori $2,$0,0x100` rather
  * than `addiu`, has a bare `nop` between two stores, and leaves its
@@ -197,7 +197,7 @@ ASM_FUNC("asm/handwritten/text", func_001FA460);
 /*
  * Reverted (size mismatch: 28 vs retail's 32). Semantics certain: a
  * plain 3-quadword (48-byte) copy --
- *   void func_001FA480(void *arg0, void *arg1) {
+ *   void matrix_copy_rows(void *arg0, void *arg1) {
  *       *(unsigned long long *)((char *)arg0 + 0x00) = *(unsigned long long *)((char *)arg1 + 0x00);
  *       *(unsigned long long *)((char *)arg0 + 0x10) = *(unsigned long long *)((char *)arg1 + 0x10);
  *       *(unsigned long long *)((char *)arg0 + 0x20) = *(unsigned long long *)((char *)arg1 + 0x20);
@@ -208,7 +208,7 @@ ASM_FUNC("asm/handwritten/text", func_001FA460);
  * all 3 first, but hoists the LAST store into the `jr`'s delay slot.
  * Update 2026-09-23: hand-written, not a compiler schedule. Retail's
  * first quadword goes through $1 ($at), which gcc's MIPS port never
- * allocates, and its twin func_001FA460 has the same body with a
+ * allocates, and its twin copy_matrix_rotation has the same body with a
  * `sqc2 $vf0` in the slot. fastfunc.o is hand-written noreorder code.
  */
 ASM_FUNC("asm/handwritten/text", func_001FA480);
@@ -241,7 +241,7 @@ ASM_FUNC("asm/handwritten/text", func_001FA6C0);
  */
 ASM_FUNC("asm/handwritten/text", func_001FA748);
 
-/* Same register-allocation-choice issue as func_001FA748 above (its
+/* Same register-allocation-choice issue as FastAddRots above (its
    arg0-arg1 sibling); logic confirmed identical shape via objdump. */
 ASM_FUNC("asm/handwritten/text", func_001FA790);
 

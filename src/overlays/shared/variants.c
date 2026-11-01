@@ -1,4 +1,5 @@
-/* Functions of common level code added after the first split; stubs added by tools/overlay_variants.py, replaced by C as functions are matched. */
+/* Functions of common level code added after the first split; stubs added by tools/overlay_variants.py, replaced by C
+   as functions are matched. */
 #include "common.h"
 #include "include_asm.h"
 #include "structs/hero.h"
@@ -13,7 +14,7 @@ extern unsigned char hero_globals_base[];
 
 extern Rec4C quartu_item_defs[];
 
-/* Returns 0 or 0x54 in the early-out cases below, otherwise the v field of D_L15_0017A140[func_L00_0020DB30(0)]. */
+/* Returns 0 or 0x54 in the early-out cases below, otherwise the v field of quartu_item_defs[hero_slot_item_id(0)]. */
 int HelpL15_GetRecordValue(int a) {
     struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
     switch (g->vehicle_mode) {

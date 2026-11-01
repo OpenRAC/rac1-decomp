@@ -21,10 +21,10 @@ extern int level_resource_buffers[];
 extern int current_vu_chain MACRO_ADDR;
 
 /* Start of a `size`-byte block at the end of each of the two VU1 chain
-   buffers (D_001941C0[1]/[2], D_0016100C bytes long, as VU1_initChain
+   buffers (level_resource_buffers[1]/[2], current_vu_chain bytes long, as VU1_initChain
    uses them). Both outputs are 0 and the result -1 when size is over
    0x20000. */
-/* Returns int; the size is unsigned and D_0016100C MACRO_ADDR. */
+/* Returns int; the size is unsigned and current_vu_chain MACRO_ADDR. */
 int calculate_ring_buffer_bounds(unsigned int size, int *out1, int *out2) {
     if (size > 0x20000) {
         *out1 = 0;
@@ -36,7 +36,7 @@ int calculate_ring_buffer_bounds(unsigned int size, int *out1, int *out2) {
     return 0;
 }
 
-/* functional: medium. The NTSC decomp's pending C for the same instructions (a draft it has not matched
+/* The NTSC decomp's pending C for the same instructions (a draft it has not matched
    yet), carried to PAL's names by OpenRAC's tools/port.py. Never compared with retail's bytes here. */
 typedef struct {
     s32 x;
@@ -206,7 +206,7 @@ void draw_level_selection_map(s32 left, s32 right, s32 top, s32 bottom) {
     DoGifPaging();
 }
 
-/* Advances the help screen's state (D_001997D0). Every access goes
+/* Advances the help screen's state (g_help_state). Every access goes
    through the global, and cases 6 and 7 are spelled out: the jump table
    has eight entries. */
 void dismiss_help(void) {
@@ -247,7 +247,7 @@ typedef struct {
 } HelpEntry;
 extern HelpEntry *help_msgs MACRO_ADDR;
 
-/* Help_FindIndex: the index of the first D_0015F780 entry with this id,
+/* Help_FindIndex: the index of the first help_msgs entry with this id,
    or -1. `r = -1` and a `break` give retail's peeled first compare and
    rotated loop; the count goes through the struct so its +0x2C stays a
    displacement. */
@@ -290,7 +290,7 @@ extern int frame_size;
 /* Opens the help window: state 1 (opening), the open sound unless both
    fade flags are clear, then the current entry's text is measured in a
    scratch FontSetWindow buffer and the box geometry goes into HelpState's
-   pad[] for func_001FE6C0 to draw. The box's y is clamped so its bottom
+   pad[] for Help_Update to draw. The box's y is clamped so its bottom
    stays 12 above the screen's; written as `screenY - 0xC - hHalf5`, CSE
    folds it to retail's screenY - (h/2 + 0x11). The fade flags are bytes
    read through MACRO_ADDR int aliases, which keeps retail's lui+lbu. */
@@ -571,11 +571,11 @@ extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long)
 extern long GetEffectTex_l(int) __asm__("func_001F4868");
 
 /* Help_DrawPrompt: sets the prompt box's +0x18/+0x1C sizes to 0x20,
-   draws its frame (func_001F62C8, a 0x40 box around +0x14/+0x10, 0x60
+   draws its frame (DrawUIFrame, a 0x40 box around +0x14/+0x10, 0x60
    as the fifth argument), then the prompt icon (effect texture 4) as a
    0x40 quad in grey whose alpha is 0x7E, or x04 * 21 while opening or
    closing (states 1 and 7), capped at 0x80. Every access goes through
-   D_001997D0, as in the rest of this file. The texture handle is the
+   g_help_state, as in the rest of this file. The texture handle is the
    draw call's 64-bit last argument, taken as `long` so retail's sd
    stores $v0 directly, ahead of the colour. */
 void Help_DrawPrompt(void) {
@@ -601,7 +601,7 @@ __asm__(".section .text\n\tnop\n");
 
 /* draw_help: nothing unless a state is active, the help window is shown
    (+0x30) and one of the fade flags is set. Then, by state, and only while
-   D_0015EF1D is set: the growing frame (1), the prompt (2), the frame
+   gHelpDeskText is set: the growing frame (1), the prompt (2), the frame
    shrinking into the prompt icon with its fading quad (3), the full
    frame and the entry text, fading in (4) or out (6) through the text
    colour's alpha (4, 5, 6), or the closing frame (7). The fade flag is
@@ -692,7 +692,7 @@ void draw_help(void) {
 
 extern short message_id_code_table[];
 
-/* Looks `key` up in field `which` (0 or 1) of D_00199810's 150
+/* Looks `key` up in field `which` (0 or 1) of message_id_code_table's 150
    {short a, short b} pairs. On a match it stores the OTHER field into
    *out (when out is not NULL) and returns the pair's index, else -1.
    `off` walks the b field's byte offset and becomes the a field's
@@ -729,12 +729,12 @@ extern int find_help_entry(short, int, short *);
 
 extern int active_message_record_count MACRO_ADDR;
 
-/* Moves the entry func_001FF4F8 finds for `id` (field a of its table)
-   to the end of the byte list D_00141F08, whose length is D_0015EF30:
+/* Moves the entry find_help_entry finds for `id` (field a of its table)
+   to the end of the byte list active_message_records, whose length is active_message_record_count:
    an earlier occurrence is removed by shifting the rest down, then the
    value is appended. Unknown ids (-1) change nothing. The search loop
    tests the byte before the bound, as retail does: it reads
-   D_00141F08[0] before it first reads the count. */
+   active_message_records[0] before it first reads the count. */
 void push_help_history(short id) {
     int val = find_help_entry(id, 0, 0);
     int i;

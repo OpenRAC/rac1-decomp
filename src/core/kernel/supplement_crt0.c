@@ -37,8 +37,8 @@ void supplement_crt0(void) {
 
 /*
  * initsys.o's kCopy: a word-at-a-time copy of n bytes (rounded down to
- * words); returns 0. The same function is func_0011D370 (alarm.o), and
- * func_0011DC08/func_0011DDF0 in the other kernel modules.
+ * words); returns 0. The same function is tlbfunc_kcopy (alarm.o), and
+ * osd_kCopy/alarm_kCopy in the other kernel modules.
  *
  * Exact under 2.9-ee: the empty delay slot of the loop branch is
  * 2.9-ee's own short-loop padding (it pads the loop and leaves the bnez
@@ -75,13 +75,13 @@ extern int initsys_kernel_scan_address;
 
 /* InitSystemCallTableAddress (libkernl.a:initsys.o): patches two kernel
    entry points found by scanning for known function bodies
-   (FindAddress = func_0011DA80, matching kCopy = func_0011DA08 and a
-   second reference routine, func_0011DA40) into the two descriptors of
-   D_00130410 (kFindAddress/func_0011DB98, called once per descriptor),
+   (FindAddress = find_address, matching kCopy = kCopy and a
+   second reference routine, kFindAddress) into the two descriptors of
+   initsys_syscall_patch_table (kFindAddress/initsys_set_syscall, called once per descriptor),
    then records where the two scans converge (they start from the same
    base and offset by different constants, and are each advanced by 4
    bytes -- whichever trails -- until they land on the same address) in
-   D_00130408. `a`/`b` have to be unsigned: retail's convergence test is
+   initsys_kernel_scan_address. `a`/`b` have to be unsigned: retail's convergence test is
    `sltu`. */
 void InitSystemCallTableAddress(void) {
     unsigned int a, b;
@@ -117,7 +117,7 @@ extern void InitTLBFunctions(void);
 
 /* _InitSys (libkernl.a:initsys.o): the kernel's one-shot startup sequence,
    run once from the crt0 supplement. Chains six sub-system initialisers;
-   the last (InitTLBFunctions, func_0011D3C8) is a tail call since this is
+   the last (InitTLBFunctions, InitTLBFunctions) is a tail call since this is
    void and it is the final statement. */
 void _InitSys(void) {
     supplement_crt0();

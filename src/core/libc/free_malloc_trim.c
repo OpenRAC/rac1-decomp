@@ -20,7 +20,7 @@
 
 /* Source: newlib / dlmalloc. */
 
-/* func_00113B70 f1: newlib mallocr.c free with the game's arena/globals. */
+/* _free_r f1: newlib mallocr.c free with the game's arena/globals. */
 
 struct _reent;
 

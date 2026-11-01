@@ -21,7 +21,7 @@ extern void flush_cache(int);
 extern char camera_position[];
 
 /*
- * Retail aligns func_00234380 to 16 bytes, and func_00234350's .s file
+ * Retail aligns SetTfragDists to 16 bytes, and stash_get_reserved_qwords's .s file
  * carried two trailing nops after its endlabel to supply that padding.
  * Those nops sit OUTSIDE the declared function size (0x28), so they were
  * silently lost when this function became C, shifting all 179 later
@@ -74,10 +74,10 @@ extern char str_tfrag_texture_overflow[];
 extern void ComputeTfragTextureUsage(void);
 extern int build_tfrag_texture_dma(int);
 
-/* DmaTfragTextures: the tfrag twin of DmaShrubTextures (func_00229C08),
+/* DmaTfragTextures: the tfrag twin of DmaShrubTextures,
    which also warns "tfrag texture overflow" past 0x400000 bytes and keeps
-   the largest size seen in D_00160FC4. */
-/* A copy of its twin func_00229C08. */
+   the largest size seen in max_tfrag_texture_dma_size. */
+/* A copy of its twin DmaShrubTextures. */
 void DmaTfragTextures(void) {
     int *p = (int *)g_render_packet_cursor;
     int size;
@@ -122,7 +122,7 @@ typedef struct {
 extern TexChunk tfrag_gif_chunk_list[];
 extern TexRemap tfrag_tex_remap_table[];
 
-/* Walk the null-terminated chunk list at D_001E1200; for every 0x50-byte
+/* Walk the null-terminated chunk list at tfrag_gif_chunk_list; for every 0x50-byte
    record in each chunk, look up the remap entry indexed by the byte at
    +0x23 and patch its two nonzero halves into the low 14 bits of the
    words at +0x00 and +0x30. */

@@ -10,7 +10,7 @@
  */
 
 /*
- * REVERTED (2/8). Right size and right shape -- `func_00218930()` as a
+ * REVERTED (2/8). Right size and right shape -- `alloc_part_slot()` as a
  * tail call, with the rewriter producing the bare `j` correctly -- but
  * the .s carries spimdisasm's "Handwritten function" marker, and its
  * delay slot is the trapping `addi $5,$0,0` where GCC emits the

@@ -46,7 +46,7 @@ extern PadSlots level_map_selection_slots __asm__("D_001A01F0");
 extern int level_map_selection[];
 
 /* MACRO_ADDR: lui/lw where retail has them, $gp-relative in a delay slot
-   (func_0021F7D0, func_002229B0). */
+   (Menu_BackInput, handle_menu_action_buttons). */
 extern int g_current_level_index MACRO_ADDR;
 
 extern char memory_card_state[];
@@ -111,14 +111,14 @@ extern void update_skill_point_and_gold_weapon_menu_entries(void);
 extern char menu_system[] NOT_SDA;
 extern int g_game_mode MACRO_ADDR;
 
-/* PauseAllSounds: pause entry. Unless D_0018C42C is set (then only
-   D_0015F754 = 1), it computes the pause object's flags (0x134, 0x138,
-   0xD8 "loaded", 0xDC "arg0 is 0x23"), points the D_001CE938/D_001CEAC8
+/* PauseAllSounds: pause entry. Unless camera_position_publication_suppressed is set (then only
+   pause_blocked_by_camera = 1), it computes the pause object's flags (0x134, 0x138,
+   0xD8 "loaded", 0xDC "arg0 is 0x23"), points the pause_menu_screen_a/pause_menu_screen_b
    records' +0x38/+0x3C at the loaded or unloaded variants, resets the
-   object for arg0 (func_00219E60's body) and D_001A0414, then calls
-   func_0020C7A0 and func_00228160. Each group reads D_001D5F70 through
-   its own `char *` local (retail's saved %hi); func_0012DDC0 and
-   func_0020C7A0 return values, which moves the next temporary to $v1. */
+   object for arg0 (initialize_transfer_command's body) and selected_level_index, then calls
+   update_mission_list and update_skill_point_and_gold_weapon_menu_entries. Each group reads menu_system through
+   its own `char *` local (retail's saved %hi); snd_FlushSoundCommands and
+   update_mission_list return values, which moves the next temporary to $v1. */
 void PauseAllSounds(int arg0) {
     snd_PauseAllSoundsInGroup(0x1D);
     music_Pause(0);
@@ -289,7 +289,7 @@ extern int delete_moby(int);
 extern int panel_slots[];
 
 /* Pause teardown: calls each object's +0xC handler, then refreshes the
-   14 D_001D6120 handles. Retail's register copies come from gcse, so the
+   14 panel_slots handles. Retail's register copies come from gcse, so the
    base is re-read inside each block (and inside the loop body). */
 
 /* Closes the menu once it has run 10 updates: calls every screen's leave hook,
@@ -733,7 +733,7 @@ void render_level_effects_and_screen_sprites(void) {
  * Pad handler for the pause page arg0 (g->x4->x40): 1 on the 0xD00
  * buttons while g->x124 is 0; on 0x10, switch to the page's +0x38
  * target, or return -1 when it has none and g->x124 is 0. Written in
- * its family's shape (func_0021F7D0, func_00222DB0): early returns and
+ * its family's shape (Menu_BackInput, handle_cyclic_menu_selection_input): early returns and
  * one `char *` local per block that reads a global.
  */
 int Pause_PageInput(int arg0) {
@@ -770,9 +770,9 @@ int Pause_PageInput(int arg0) {
 extern int menu_system_close_locked;
 extern void Moby_PlaySound(int, int, int);
 
-/* Pause list handler (func_0021ACD8's family: one `char *` pad local per
+/* Pause list handler (Pause_PageInput's family: one `char *` pad local per
    block). The cursor at arg0+0x3C moves on 0x1000/0x4000 within
-   arg0+0x40, with a func_0022ED80 notify on change; then the scroll
+   arg0+0x40, with a Moby_PlaySound notify on change; then the scroll
    (arg0+0x60) is clamped around the cursor and the bar position at
    arg0+0x5C derived from it, or pinned to 0x52. The re-reads of 0x3C and
    0x60 are how retail's reloads come out; the page size q - 2 is formed
@@ -890,7 +890,7 @@ extern char pause_action_list_short[];
 
 extern int pause_action_list_mode_m __asm__("D_0015EF90") MACRO_ADDR;
 
-/* D_0015EF90 is read through a MACRO_ADDR alias: retail's one-register
+/* pause_action_list_mode is read through a MACRO_ADDR alias: retail's one-register
    load. */
 int set_pause_action_list(MenuScreen *arg0) {
     *(char **)&arg0->data.list.items =
@@ -921,9 +921,9 @@ typedef struct {
 } Entry14;
 extern Entry14 cheat_toggle_menu_items[];
 
-/* Builds the D_001D3E90 list: for each id in {1, 3, 0, 7, 4, 6, 2} (up
-   to the -1) whose D_0015EEC0 flag is set, an entry with its text id
-   (0x501A...), &D_0015EEB0[id] and the constants 0x4F5A/0x4F5B; a zero
+/* Builds the cheat_toggle_menu_items list: for each id in {1, 3, 0, 7, 4, 6, 2} (up
+   to the -1) whose selector_available flag is set, an entry with its text id
+   (0x501A...), &gCheats[id] and the constants 0x4F5A/0x4F5B; a zero
    val ends the list. A plain indexed for loop: strength reduction gives
    retail's pointer walk, its end test against ids + 12, and the id read
    twice per iteration (exit test and body). */
@@ -992,7 +992,7 @@ typedef struct {
     short s[12];
 } Win;
 
-/* Moves a text window by the menu origin (D_001602BC x, D_001602B8 y). */
+/* Moves a text window by the menu origin (text_shadow_y x, text_shadow_x y). */
 static inline void win_shift(Win *p) {
     int x = (unsigned short)text_shadow_y;
     int y = (unsigned short)text_shadow_x;
@@ -1610,9 +1610,9 @@ extern int FastTweenColor(int, int, float);
 
 /* Fade colour for the pause menus: -1 picks the default colours
    0x80FFA888 / 0x8020FFFF and a negative start becomes 0. While the
-   D_001602B4 timer (func_001F98C0) is still below start the blend factor
+   menu_fade_duration timer (scale_game_frame_count) is still below start the blend factor
    is 1; after that it is 1 - (elapsed - start) / total, and the two
-   colours are blended by func_001FA8A8. The parameters are updated in
+   colours are blended by FastTweenColor. The parameters are updated in
    place; the timer is read again for each value. */
 int fade_menu_color(int start, int col1, int col2) {
     float t;
@@ -1637,9 +1637,9 @@ int fade_menu_color(int start, int col1, int col2) {
 
 /* Pause page link walk: with arg1 clear, follow arg0's +0x4C chain for
    as long as the current page is skippable (bit 8 of its +0x30 flags
-   while D_001D5F70+0x134 is set, or bit 4 while +0x138 is set), and if
+   while menu_system+0x134 is set, or bit 4 while +0x138 is set), and if
    it moved at all, make the page it stopped on the current one's +0x80.
-   Each block reads D_001D5F70 through its own `char *` local: the loop's
+   Each block reads menu_system through its own `char *` local: the loop's
    own copy is why GCSE leaves its +0x138 load in the loop (only +0x134,
    read first in the body, is hoisted by loop.c), and the last block's
    copy is retail's kept %hi. */
@@ -1866,33 +1866,33 @@ int menu_update_noop(void) {
     return 0;
 }
 
-/* D_001D5F70 + 0xCB. Retail addresses this one byte BOTH ways -- through
-   its own %hi/%lo here and as 0xCB($16) off the D_001D5F70 base a few
+/* menu_system + 0xCB. Retail addresses this one byte BOTH ways -- through
+   its own %hi/%lo here and as 0xCB($16) off the menu_system base a few
    instructions later -- so it really is two names on one address in the
    original source, and splat has the second as its own linker symbol. */
 extern char animation_asset_read_active[];
 extern short cd_read_state[];
 
 /*
- * Pause/menu teardown. When the D_001517D0+8 state word is clear, drop
+ * Pause/menu teardown. When the cd_read_state+8 state word is clear, drop
  * the active slot: clear the 0xCB flag byte, toggle 0x1000 in that
  * slot's flag word and mark no slot active. When it is SET instead and
- * the 0xCB byte is still set, run func_00217588 first, then clear the
+ * the 0xCB byte is still set, run request_audio_stream_break first, then clear the
  * byte and invalidate the slot outright (flags = -1, not a toggle).
  *
- * The two tests read D_001517D0[4] twice rather than being one if/else,
+ * The two tests read cd_read_state[4] twice rather than being one if/else,
  * and that IS the source: the indirect store into the slot table between
  * them kills gcc 2.95's memory, so retail reloads the halfword and
  * re-materialises the base. Written as if/else it collapses to a single
  * test.
  *
- * D_001A01F0 is the struct from func_00205790 above; `sel` at +0x2A0
+ * level_map_selection is the struct from promote_first_available_map_entry above; `sel` at +0x2A0
  * sits between the flag array and the size array, which is why flags is
  * 5 entries and not 6.
  *
- * `char *g = D_001D5F70;` is load-bearing: writing the two accesses as
- * D_001D5F70[0xCB] lets gcc fold 0xCB into the symbol addend, giving
- * %hi/%lo(D_001D5F70+203) and a base register already at +0xCB. Retail
+ * `char *g = menu_system;` is load-bearing: writing the two accesses as
+ * menu_system[0xCB] lets gcc fold 0xCB into the symbol addend, giving
+ * %hi/%lo(menu_system+203) and a base register already at +0xCB. Retail
  * keeps the UNOFFSET base in $16 and puts 0xCB in both displacements.
  * Same instruction count, but it also changes what the branch delay
  * slot gets filled with, so it is a byte difference, not just cosmetic.
@@ -2203,7 +2203,7 @@ extern void update_mission_list(void *);
 extern int collect_mission_ids(void *, void *, void *, int);
 
 /* Enter hook for the mission list: rebuilds the list, collects the mission ids into
-   scratchpad and loads the selected level's entry into D_001CFBF4 / D_001CFAD8. */
+   scratchpad and loads the selected level's entry into selected_mission_id / selected_mission_index. */
 int enter_menu_mission_list(void *arg0) {
     int *p;
 
@@ -2242,7 +2242,7 @@ extern LevelG level_map_selection_lv __asm__("D_001A01F0");
 extern unsigned char level_available[];
 
 /* Pause slot-select tick. Adapted from Lombyte's project (GPL-3.0) for PAL: src/ui/menus/fun_0021c4c0.c, FUN_0021c4c0. */
-/* Map selection at D_001A01F0 (fields used here only). */
+/* Map selection at level_map_selection (fields used here only). */
 struct MapSelection_21D4C0 {
     u8 pad_0[0x224];
     s32 level; /* 0x224: selected level 0..19 */
@@ -2345,9 +2345,9 @@ typedef struct {
 } SelList_0021D7A0;
 
 /* Quick-select slot handler: 8 and 4 on the pad step the slot index at
-   +0x50 forward and back (mod 8), with a func_0022ED80 notify when it
+   +0x50 forward and back (mod 8), with a Moby_PlaySound notify when it
    moved. With 0x40, if the highlighted item (the current page's entry
-   id) is owned, it is recorded: the use count at D_00141948+0xA8 (to
+   id) is owned, it is recorded: the use count at usage_stats+0xA8 (to
    0xFFFF), the best time +0xAA and the level mask +0xAC; then the item
    leaves any slot it held and is put in the current slot, and the index
    advances. The three conditions are one `&&` (one shared exit) and the
@@ -2398,8 +2398,8 @@ typedef struct {
     int idx; /* 0x50 */
 } SelList_0021D9C8;
 
-/* Reload the 8-entry list at +0x30 from D_00141FA0 (the reverse of
-   func_0021DA60 below), then leave idx at +0x50 on the first empty entry,
+/* Reload the 8-entry list at +0x30 from pause_iop_sprite_lists (the reverse of
+   pause_stage_sprite_lists below), then leave idx at +0x50 on the first empty entry,
    wrapped to 0..7. Indexing arg0->list directly in both loops (no local
    list pointer) is what gives retail's hoisted base; the scan is a do-while
    guarded by list[0] (a plain while/for rotated differently). */
@@ -2455,7 +2455,7 @@ int reset_menu_graphics_buffers(void) {
 extern int sound_volume MACRO_ADDR;
 extern int pause_sound_volume;
 
-/* Sets the pause sound volume to 80% of D_0015EEF0. */
+/* Sets the pause sound volume to 80% of sound_volume. */
 int set_pause_sound_volume(void) {
     pause_sound_volume = (sound_volume * 8) / 10;
     return 0;
@@ -2644,7 +2644,7 @@ extern Rec0C active_message_menu_items[];
 
 extern Half4 message_id_code_table_b[];
 
-/* Fills D_001CFFC0 with the active message records in reverse order, each
+/* Fills active_message_menu_items with the active message records in reverse order, each
    flagged 1, and ends the list with a 0 entry. */
 int build_reversed_active_message_list(void) {
     int i;
@@ -2670,7 +2670,7 @@ typedef struct {
     int flags;
 } PadBind;
 
-/* Aliased rather than renamed: func_00227018 further down still walks
+/* Aliased rather than renamed: get_menu_stream_buffer_size further down still walks
    the same table as a flat int array. */
 extern PadBind menu_stream_buffers_t[] __asm__("D_001D6448");
 
@@ -2707,7 +2707,7 @@ int enter_menu_help_text(MenuScreen *arg0) {
     return 0;
 }
 
-/* D_0015F780 is SDA elsewhere; pause.cpp stores it through $at. */
+/* help_msgs is SDA elsewhere; pause.cpp stores it through $at. */
 extern int help_msgs_m __asm__("D_0015F780") MACRO_ADDR;
 extern int help_msg_count;
 
@@ -2733,18 +2733,18 @@ extern int g_game_language MACRO_ADDR;
 
 extern void copy_memory_aligned(void *, void *, int);
 
-/* The slot count at D_001997D0+0x2C, read through its own base pointer:
-   retail's loop keeps a separate copy of the D_001997D0 address. */
+/* The slot count at g_help_state+0x2C, read through its own base pointer:
+   retail's loop keeps a separate copy of the g_help_state address. */
 static inline int pauseSlotCount(void) {
     HelpState *b = (HelpState *)g_help_state;
     return b->count;
 }
 
-/* Pause sub-state machine at arg0+0x50 (func_00221688's family). State 0
-   runs func_00217628 and moves to 1 or 3; state 1, once D_001517D0[4]
+/* Pause sub-state machine at arg0+0x50 (advance_audio_stream_state's family). State 0
+   runs start_audio_stream_read and moves to 1 or 3; state 1, once cd_read_state[4]
    clears, pulls the controller's record out of the table at
-   D_001D5F70+0x108 (func_001F9A00 moves it to the table start), swaps it
-   in as D_0015F780 and the D_001997D0+0x2C count (old values kept in
+   menu_system+0x108 (copy_memory_aligned moves it to the table start), swaps it
+   in as help_msgs and the g_help_state+0x2C count (old values kept in
    arg0+0x54/+0x38), rebases the entries' first words and moves to 2.
    Cases 2 and 3 are empty; they make gcc's case tree test 1 first, as
    retail does. The reloaded table gets its own variable so that the
@@ -3161,7 +3161,7 @@ extern void *create_menu_preview_moby_a(int) __asm__("func_00226720");
 extern void rotate_item_preview_moby(struct Moby *);
 
 /* Keeps the item preview moby in step with the highlighted entry: drop it
-   when the entry's class (D_001864D0 record +0x3A) is -1, spawn it in
+   when the entry's class (item_info_table record +0x3A) is -1, spawn it in
    front of the camera focus when there is none yet, or respawn it with
    the old one's position and orientation when the class changed. */
 typedef struct ItemPreviewScreen {
@@ -3245,7 +3245,7 @@ extern void *msg_string_id(int) __asm__("func_001FE540");
 extern void pack_image_descriptor(void *, char *);
 extern void font_print_window_regular(void *, long, void *, int);
 
-/* Draw/teardown callback (func_0021F610's family). The entry address is
+/* Draw/teardown callback (draw_available_item_preview_mobys's family). The entry address is
    written inline in the index; a `char *e` local leaves an addu swap. */
 int draw_item_preview_screen(MenuScreen *arg0) {
     short buf[10];
@@ -3474,7 +3474,7 @@ extern char *current_menu_page NOT_SDA;
 extern void DrawMobyList(int, int);
 
 /* The entry address is written inline in the index, as in
-   func_0021F118; a `char *e` local swapped the addu. */
+   draw_item_preview_screen; a `char *e` local swapped the addu. */
 /* Item preview screen (draw_available_item_preview_mobys): the two moby words, as the original int temporaries. */
 typedef struct PreviewScreenWords_21F610 {
     u8 pad_00[0x44];
@@ -3529,7 +3529,8 @@ extern struct ItemPreviewPlacement preview_placements[];
 extern f32 FastCos(f32);
 extern f32 FastSin(f32);
 
-/* Position the selected item relative to the preview camera. Owner flag bit 0 selects alternate_x; otherwise use normal_x. Rotate the side and forward offsets in the X/Y plane after adding the unrotated placement position.
+/* Position the selected item relative to the preview camera. Owner flag bit 0 selects alternate_x; otherwise use
+   normal_x. Rotate the side and forward offsets in the X/Y plane after adding the unrotated placement position.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/update_item_preview_transform.c, update_item_preview_transform. */
 void update_item_preview_transform(struct Moby *moby) {
     struct ItemPreviewBinding *preview = ((struct ItemPreviewVars *)moby->pvars)->owner;
@@ -3565,7 +3566,7 @@ extern int space_load_level MACRO_ADDR;
 extern int space_load_in_progress_m __asm__("D_0015F6FC") MACRO_ADDR;
 extern int space_load_pending MACRO_ADDR;
 
-/* Pad handler (func_0021ACD8's family). A separate `char *` local for
+/* Pad handler (Pause_PageInput's family). A separate `char *` local for
    each block that reads the pad word gives retail's pattern: the %hi
    kept in a register and the %lo rebuilt before each use. */
 int Menu_BackInput(MenuScreen *arg0) {
@@ -3614,7 +3615,7 @@ extern void func_001F68E8_c(int, int, long, void *, int) __asm__("func_001F68E8"
 /* DrawQuitGameMenu: a text box (zeroed, then sized from arg0+0x20/0x24)
    with text 0x4F6D, text 0x4F3F centred 0x40 above the bottom, and the
    two answers 0x5250/0x5254 at 0x28 and 0x14 above it, left-aligned so
-   that the wider of the two (func_001F6600) is centred. The three y
+   that the wider of the two (measure_text_width_regular) is centred. The three y
    positions are computed before the calls (retail keeps them in saved
    registers); the box's y halfword is stored last, after the other
    fields in order, which gives retail's store schedule. */
@@ -3661,7 +3662,7 @@ extern void rotate_preview_moby_x(Moby *);
 extern void *create_menu_preview_moby_a(int) __asm__("func_00226720");
 
 /* Attach marker object 0x46E to arg0, parked just above the camera
-   focus in D_00187040's 0x140 block, and point it back at its owner
+   focus in gCamera's 0x140 block, and point it back at its owner
    through the node at +0x78. Always returns 0. */
 struct RotatingPreviewCamera {
     u8 pad_000[0x140];
@@ -3857,11 +3858,11 @@ extern int sprintf(char *, const char *, ...);
 extern void font_print_right_c(int, int, long, char *, int) __asm__("func_001F6CF8");
 
 /* DrawGBsShipMenu (maybe): parks the marker object at arg0+0x44 by the
-   camera focus in D_00187040, draws it, then prints "%s %d %s %d" (texts
-   0x4F4F and 0x4F53, the number of D_0014BFC0 flags set for the current
-   map, and the map's D_001E0B88 total) twice, as shadow and text. The
+   camera focus in gCamera, draws it, then prints "%s %d %s %d" (texts
+   0x4F4F and 0x4F53, the number of gold_bolts_collected flags set for the current
+   map, and the map's map_gold_bolt_totals total) twice, as shadow and text. The
    flag count reads the map index inside its loop: PRE then computes
-   D_001A01F0's %hi once, straight into the register that is kept for the
+   level_map_selection's %hi once, straight into the register that is kept for the
    second read, as retail has it (a pointer set before the loop leaves a
    copy). */
 int DrawGBsShipMenu__maybe(char *arg0) {
@@ -3907,7 +3908,7 @@ void rotate_preview_moby_x(Moby *arg0) {
     arg0->rot.x = FastAddRots(arg0->rot.x, 0.02f);
 }
 
-/* func_00234C98's second parameter is 64-bit (as in draw.c and
+/* VU1_addGSregister's second parameter is 64-bit (as in draw.c and
    mobyfunc.c); the (int, int) declaration below this point is kept for
    the functions matched against it. */
 extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
@@ -3919,8 +3920,8 @@ extern char fmt_ammo_have[]; /* "%d/" */
 extern char fmt_ammo_have_thousands[]; /* "%d,%03d/" */
 extern char fmt_number_thousands[]; /* "%d,%03d" */
 
-/* Draws the current item's count banner, gated like func_0021F118: the
-   item's text id 0x4F52 when its D_001E02B0 record has no counter,
+/* Draws the current item's count banner, gated like draw_item_preview_screen: the
+   item's text id 0x4F52 when its vendor_item_prices record has no counter,
    otherwise "have/total" with thousands separators. The second sprintf
    appends at text + the first one's length; forming that pointer in each
    arm (`q = text + sprintf(...)`) lets gcc merge the two into one addu at
@@ -3979,8 +3980,8 @@ int draw_map_screen_overlay(void) {
 extern void FontPrintSmall_c(int, int, long, void *, int) __asm__("func_001F6968");
 
 /* DrawMissionsMenu: the menu's text lines (0x4EEE, 0x4EEF only when
-   D_0015EE84 is set, then 0x4EFA, 0x4EFB, 0x4EFC, 0x4EE0) in one column,
-   left-aligned so the widest (func_001F6620) is centred in arg0+0x20 but
+   g_current_level_index is set, then 0x4EFA, 0x4EFB, 0x4EFC, 0x4EE0) in one column,
+   left-aligned so the widest (measure_text_width_small) is centred in arg0+0x20 but
    at least 2 in, and spaced arg0+0x24 / (6 or 7 lines) apart starting a
    line minus 6 down. */
 int DrawMissionsMenu(char *arg0) {
@@ -4044,14 +4045,14 @@ __asm__(".section .text\n\tnop\n");
 
 extern void SetupGifPaging(int);
 extern void DoGifPaging(void);
-/* func_001F68E8 is defined above with pointer parameters; this site
-   passes a packed 64-bit colour in $a2, and func_001FE540 above is
+/* FontPrintLarge is defined above with pointer parameters; this site
+   passes a packed 64-bit colour in $a2, and msg_string above is
    declared (void) while retail's caller here passes an id in $a0 --
    reach both through aliases rather than redeclaring them. */
 extern void func_001F68E8_c(int, int, long, void *, int) __asm__("func_001F68E8");
 extern void *msg_string_id(int) __asm__("func_001FE540");
 
-/* Sibling of func_00220338 above: the same two func_00234C98 setup
+/* Sibling of draw_map_screen_overlay above: the same two VU1_addGSregister setup
    calls, then two banner draws. 0x80FFA888 is spelled `long` (64-bit)
    so it builds via ori/dsll/ori rather than a sign-extending lui. */
 int draw_mission_menu_labels(void) {
@@ -4064,7 +4065,8 @@ int draw_mission_menu_labels(void) {
     return 2;
 }
 
-/* A pause-style list screen: title, the menu's rows (box size at +0x20/+0x24, rows at +0x30) with the selection highlighted, an optional footer; returns 2. */
+/* A pause-style list screen: title, the menu's rows (box size at +0x20/+0x24, rows at +0x30) with the selection
+   highlighted, an optional footer; returns 2. */
 extern void libc_memset(void *, int, int);
 extern void draw_menu_selection_marker(int, int, int);
 
@@ -4347,7 +4349,7 @@ int draw_transition_overlay(MenuScreen *arg0) {
     return 0x10;
 }
 
-/* Sibling of func_00220DA0 below: the same slot set (0x44/0x48/0x4C/
+/* Sibling of leave_menu_stream_image below: the same slot set (0x44/0x48/0x4C/
    0x50/0x54/0x5C) on the same object, seeded here instead of torn down.
    The tail stores go 5C, 50, 54. */
 typedef struct MenuStreamData_220D08 {
@@ -4820,16 +4822,16 @@ done:
     return 2;
 }
 
-/* The per-controller request slots in D_00137C80 (declared above as a
+/* The per-controller request slots in disc_table (declared above as a
    flat int array). */
 
 extern DiscTable disc_table_t __asm__("D_00137C80");
 extern int g_game_language MACRO_ADDR;
 
 /* Pause sub-state machine at arg0+0x44. States 0 and 2 wait for their
-   request (arg0+0x48 / +0x4C) and for D_001517D0[4] to clear, then run
-   func_00217628 with the controller's slot and advance (or go to -1 on
-   failure); states 1 and 3 advance once D_001517D0[4] clears. Always
+   request (arg0+0x48 / +0x4C) and for cd_read_state[4] to clear, then run
+   start_audio_stream_read with the controller's slot and advance (or go to -1 on
+   failure); states 1 and 3 advance once cd_read_state[4] clears. Always
    returns 0. A switch with its cases in source order 0-3 gives retail's
    case tree and block order; reading the slot's two words as fields of a
    struct gives two address adds (one becomes retail's copy). */
@@ -4874,8 +4876,8 @@ int advance_audio_stream_state(MenuScreen *arg0) {
    stack slot with `sd`, without sign-extending it. */
 extern long load_texture_file(int);
 
-/* Sibling of func_00220C90 above: same 0x44 guard and the same
-   func_001F5800 draw, twice, with the colour held in one local because
+/* Sibling of draw_transition_overlay above: same 0x44 guard and the same
+   DrawTexturedQuad draw, twice, with the colour held in one local because
    retail keeps it in a callee-saved register across both calls. */
 int draw_two_texture_panels(MenuScreen *arg0) {
     long c;
@@ -4897,13 +4899,13 @@ extern int game_frame_counter MACRO_ADDR;
 extern int map_screen_layer_insets[];
 extern void append_power_of_two_textured_screen_sprite(long, int, int, int, int, int, int, int, int, int);
 
-/* Draws the three overlay layers (textures at D_001A01F0 +0x258/0x260/
-   0x268) over the whole screen (D_00151880's +0x160/+0x162 extent).
-   States 6, 13 and 17 blink the upper two layers on D_0015F538; the
-   others inset them by D_001DE2E8[state] and scroll the bottom one.
+/* Draws the three overlay layers (textures at level_map_selection +0x258/0x260/
+   0x268) over the whole screen (fs_aa_buffer's +0x160/+0x162 extent).
+   States 6, 13 and 17 blink the upper two layers on game_frame_counter; the
+   others inset them by map_screen_layer_insets[state] and scroll the bottom one.
    Each branch reaches the two globals through its own block-scoped
    pointers, which gives retail's registers. */
-/* The map-selection block at D_001A01F0: only the fields this function reads. */
+/* The map-selection block at level_map_selection: only the fields this function reads. */
 typedef struct LevelMapSelection {
     u8 pad000[0x228];
     s32 loaded; /* 0x228: index of the loaded map, -1 none */
@@ -4913,7 +4915,7 @@ typedef struct LevelMapSelection {
     long tex2; /* 0x268: TEX0 of the image at hdr +0x18 */
 } LevelMapSelection;
 
-/* The full-screen AA buffer at D_00151880: only the render target size is read here. */
+/* The full-screen AA buffer at fs_aa_buffer: only the render target size is read here. */
 typedef struct FsAaBuffer {
     u8 pad000[0x160];
     s16 target_width; /* 0x160 */
@@ -4989,8 +4991,8 @@ extern short panel_clear_color; /* SDA, gp -0x6A50 */
    arg0 is the pause-state object: unk20/unk24 give the viewport
    width/height (used for the ring's center and radius), unk50 the
    selected slot (drawn with a pulsing highlight box), and slots[i]
-   indexes an icon-info table (D_001864D0, 0x4C bytes/entry) and a byte
-   flags table (D_0013E620) when nonzero. */
+   indexes an icon-info table (item_info_table, 0x4C bytes/entry) and a byte
+   flags table (gold_weapon_purchased) when nonzero. */
 /* The pause page state (arg0 of draw_pause_ring): viewport size, the ring's
    icon slots and the selected ring position. */
 struct PauseState {
@@ -5002,7 +5004,7 @@ struct PauseState {
     s32 sel; /* 0x50 selected ring position */
 };
 
-/* One 0x4C-byte icon-info record (the D_001864D0 table). */
+/* One 0x4C-byte icon-info record (the item_info_table table). */
 struct MenuItemInfo {
     u8 pad_00[0x38];
     union {
@@ -5090,12 +5092,12 @@ typedef struct {
     int flags; /* 0x10 */
 } Row14;
 
-/* Pad handler for a row list of toggles (func_002222F8's sibling, one
+/* Pad handler for a row list of toggles (update_menu_choice_list's sibling, one
    `char *` pad local per block). While the timer at arg0+0x3C runs it
-   counts down and sets D_0015F53C to min(t, 4) / 4. Otherwise, for the
+   counts down and sets gFade to min(t, 4) / 4. Otherwise, for the
    active item: 0xD00/0x10 leave, 0x1000/0x4000 move the cursor with a
    notify on change, and 0x40 flips the current row's byte, or for a row
-   with flag 1 starts the timer and flips D_0016044C (func_001FBC80 once
+   with flag 1 starts the timer and flips requested_video_mode (mode_freeze_init once
    it is set). The row is indexed directly at each use (index-first addu)
    and the cursor compare is written new != old, as retail's beq has it. */
 int update_menu_option_list(struct MenuScreen *arg0) {
@@ -5265,9 +5267,9 @@ typedef struct {
     int e[4]; /* 0x08 */
 } Row18;
 
-/* Pad handler for a row list (func_0021ACD8's gate, one `char *` pad
+/* Pad handler for a row list (Pause_PageInput's gate, one `char *` pad
    local per block): the cursor at arg0+0x38 moves down on 0x1000 and up
-   on 0x4000 while the next row is used, with a func_0022ED80 notify on
+   on 0x4000 while the next row is used, with a Moby_PlaySound notify on
    change; the current row's used entries (up to 4) are counted, and 0x40
    cycles the row's byte selector through them. The row is indexed with a
    fresh read of the cursor after the notify (reorg skips that load on the
@@ -5406,8 +5408,8 @@ extern int pause_weapon_menu_item_field40[];
 extern char item_info_table[];
 extern char pause_weapon_menu_grid[];
 
-/* Builds the pause-menu item list from the 15 entries of D_001CF4A0
-   that D_0013D5C8 enables. The flag needs its own `f = b != 0`:
+/* Builds the pause-menu item list from the 15 entries of pause_weapon_menu_slots
+   that item_available enables. The flag needs its own `f = b != 0`:
    `(b != 0) << 2` folds into a branch. */
 int build_pause_item_list(void) {
     int i;
@@ -5445,7 +5447,7 @@ extern int gadget_menu_item_field44[];
 extern char item_info_table[];
 extern char gadget_menu_grid[];
 
-/* func_00222640's sibling over four source tables. */
+/* build_pause_item_list's sibling over four source tables. */
 int build_filtered_menu_item_list(void) {
     int filtered_item_count;
     int i;
@@ -5511,9 +5513,9 @@ typedef struct {
     int sel; /* +0x40 */
 } MenuObj40;
 
-/* Menu builder: the item list from D_0013D618, then the selection. The
-   scalar MACRO_ADDR view of D_001602E0 lets sched2 hoist its load, and
-   the dead reference to the 2-byte view keeps `.extern D_001602E0, 2`
+/* Menu builder: the item list from gGalaxyList, then the selection. The
+   scalar MACRO_ADDR view of menu_level_indices lets sched2 hoist its load, and
+   the dead reference to the 2-byte view keeps `.extern menu_level_indices, 2`
    last, so the assembler still uses $gp. A later 4-byte reference in
    this file would undo that. */
 int BuildGalaxyMenu(MenuObj40 *arg0) {
@@ -5538,7 +5540,7 @@ int BuildGalaxyMenu(MenuObj40 *arg0) {
     /* FAKEMATCH: a dead if (0) block changes the code around it. */
     if (0) {
         /* no code: registers the 2-byte view last, so the file ends with
-           `.extern D_001602E0, 2` and the assembler uses $gp */
+           `.extern menu_level_indices, 2` and the assembler uses $gp */
         (void)menu_level_indices_s;
     }
     return 0;
@@ -5566,7 +5568,7 @@ int draw_level_selection_map_screen(void *arg0) {
 
 extern void Moby_PlaySound(int, int, int);
 
-/* Pause sub-menu input on the pad word D_0013CC04. One if/else-if chain
+/* Pause sub-menu input on the pad word pad0_pressed_unmasked. One if/else-if chain
    falling to a single `return 0`; early returns in the 0x10 arm give a
    movn instead. */
 int handle_menu_action_buttons(MenuScreen *arg0) {
@@ -5616,19 +5618,19 @@ int leave_menu_prompt(struct MenuScreen *arg0) {
 
 /*
  * Near-miss, same size (4 words differ, allocator only): in the default
- * arm retail keeps the D_001D5F70 base in $v1 (the register that held
- * D_0015EFB0) with the loaded pointer in $a0 and the value in $a1; we
+ * arm retail keeps the menu_system base in $v1 (the register that held
+ * mode_freeze_state) with the loaded pointer in $a0 and the value in $a1; we
  * get base $a1, pointer $a0, value $v1. Spellings tried (asm-differ
  * score, lower is better; all 0x94 bytes):
  *   this one (if/!=, base local per arm)                       25
  *   base, pointer and value as separate locals in the arm      45
  *   la-macro alias (MACRO_ADDR) for the base in the arm        235
  *   switch with default first and break                        2430
- * D_0013CBE4 is NOT a macro access: retail splits its lui into the
+ * pad0_pressed is NOT a macro access: retail splits its lui into the
  * second beq's delay slot and branches past it, which only the split
  * form can do (MACRO_ADDR there trips check_macro_slots).
  */
-/* D_0015EFB0 is SDA elsewhere; pause.cpp reaches it through the
+/* mode_freeze_state is SDA elsewhere; pause.cpp reaches it through the
    assembler macro. */
 extern int mode_freeze_state_m __asm__("D_0015EFB0") MACRO_ADDR;
 extern int pad0_pressed;
@@ -5673,8 +5675,8 @@ extern void SetupGifPaging(int);
 extern void DoGifPaging(void);
 extern void *msg_string_id(int) __asm__("func_001FE540");
 
-/* Draws the two-line prompt box (text 0x4FB3 for D_001D6044 in 0..2,
-   0x4FB5 for 3, else D_001603E8) sized from arg0's +0x20/+0x24. The box
+/* Draws the two-line prompt box (text 0x4FB3 for menu_system_save_prompt_kind in 0..2,
+   0x4FB5 for 3, else str_error_text) sized from arg0's +0x20/+0x24. The box
    is an aggregate initializer: this compiler clears it with a memset
    libcall, fills a temporary and copies that into the local with
    ldl/ldr/sdl/sdr pairs, exactly retail's sequence. */
@@ -5718,7 +5720,7 @@ int draw_prompt_box(struct MenuScreen *arg0) {
 
 extern int pause_level_sprite_lists[];
 
-/* `D_001D48A8[(unsigned)D_0015EE84 % 19]`; the older near-miss
+/* `pause_level_sprite_lists[(unsigned)g_current_level_index % 19]`; the older near-miss
    predated MACRO_ADDR. */
 int assign_pause_level_sprite_list(MenuScreen *screen) {
     *(int *)((char *)screen + 0x34) = pause_level_sprite_lists[(unsigned int)g_current_level_index % 19];
@@ -5728,7 +5730,7 @@ int assign_pause_level_sprite_list(MenuScreen *screen) {
 extern void Moby_PlaySound(int, int, int);
 
 /* Pause sub-menu with a 30-entry wrapping cursor at arg0+0x40, in
-   func_0021F7D0's shape. */
+   Menu_BackInput's shape. */
 int handle_cyclic_menu_selection_input(struct MenuScreen *arg0) {
     PadState *pad = (PadState *)g_controller_state;
     int w, old;
@@ -5770,7 +5772,7 @@ int handle_cyclic_menu_selection_input(struct MenuScreen *arg0) {
 
 extern void Moby_PlaySound(int, int, int);
 
-/* func_00222DB0's twin with a 12-entry cursor at arg0+0x54. */
+/* handle_cyclic_menu_selection_input's twin with a 12-entry cursor at arg0+0x54. */
 int update_menu_cycle_selection(struct MenuScreen *arg0) {
     PadState *pad = (PadState *)g_controller_state;
     int w;
@@ -5816,7 +5818,7 @@ extern char menu_side_indicator_right_glyph[];
 extern int GetFrameTex(int);
 /* x, y first: arguments are evaluated in order, so the y conversion runs
    before the nested texture calls and is kept in $f20 across them, as in
-   retail (and in func_00205E70, the other caller). */
+   retail (and in draw_map_overlay, the other caller). */
 extern void func_00200E38_f(float, float, int, int, int, float, float, float) __asm__("func_00200E38");
 
 /* Draws the glyph "\x10" (arg0->0x38 set) or "\x11" and a gauge sprite
@@ -5841,7 +5843,7 @@ int draw_menu_side_indicator(MenuScreen *arg0) {
     return 2;
 }
 
-/* D_001DE0C0 is declared above as Src0C (halfword view); these rows are
+/* planet_icon_rows is declared above as Src0C (halfword view); these rows are
    read here as two word-sized icon ids. */
 typedef struct {
     int a;
@@ -5852,11 +5854,11 @@ extern IconRow planet_icon_rows_i[] __asm__("D_001DE0C0");
 extern void FontPrintCenter(int, int, long, void *, int);
 
 /* Draws the current page's icons: the page record (stride 0xC) gives a
-   row of D_001DE0C0, or -1 for the single icon 0x5019 centred in the
+   row of planet_icon_rows, or -1 for the single icon 0x5019 centred in the
    box; otherwise the row's two icons at 1/3 and 2/3 of the height. The
-   row is read before func_001F4630, and each call is written with its
+   row is read before SetupGifPaging, and each call is written with its
    arguments inline: gcc evaluates them in order, so x and y are computed
-   before the nested func_001FE540 call. */
+   before the nested msg_string call. */
 int draw_selected_menu_item_text(MenuScreen *arg0) {
     MenuScreen *p = ((MenuPage *)current_menu_page)->focus;
     int row = p->data.list.items[p->data.list.selected].param.value;
@@ -5887,14 +5889,14 @@ extern void memcard_Save(int, int);
 extern int scale_game_frame_count(int);
 extern unsigned char g_hero[];
 
-/* Pad handler for the restart option (pad word D_0013CBE4): 0x20 opens
-   the confirm popup; 0x40 restarts: the level reload (func_00209CE8)
-   runs with the D_0013D510+0x1D byte, the 4 bytes at D_0014C008 and the
-   D_0015EEB0/D_0015EEC0 tables saved and restored around it, then the
+/* Pad handler for the restart option (pad word pad0_pressed): 0x20 opens
+   the confirm popup; 0x40 restarts: the level reload (memcard_RestoreGame)
+   runs with the gSkillPoints+0x1D byte, the 4 bytes at gold_bolts_collected_18 and the
+   gCheats/selector_available tables saved and restored around it, then the
    pause state is reset. The flags are MACRO_ADDR (retail's one-register
    loads, $at stores and $gp-relative stores in delay slots); globals
    used as bases get a `char *` local per block, so retail keeps only the
-   D_0013D510 %hi across the calls. */
+   gSkillPoints %hi across the calls. */
 int process_global_state_flags(void) {
     int v = pad0_pressed;
 
@@ -5959,10 +5961,10 @@ extern char timed_sequence_page4[];
 extern char timed_sequence_page5[];
 
 /* A timed text sequence (credits-style): arg0+0x50 is the step, +0x40
-   a countdown (func_001F98C0-scaled), +0x3C a scroll that advances 10 a
+   a countdown (scale_game_frame_count-scaled), +0x3C a scroll that advances 10 a
    frame (20 while all four shoulder buttons are held, which also halves
    the countdown), +0x34 the current text (a D_001D5xxx page or a text
-   id) with D_001D2E74 its title id. Case bodies are in retail's layout
+   id) with timed_sequence_title_id its title id. Case bodies are in retail's layout
    order (4 before 3), and the shared "wait, then next step" tail is
    written out in each case: cross-jumping merges it, leaving each
    case's own argument load in its branch's delay slot. */
@@ -6130,7 +6132,7 @@ int update_timed_menu_sequence(char *arg0) {
     return 0;
 }
 
-/* A text box on the menu's own geometry (func_00227A30's box, then
+/* A text box on the menu's own geometry (pack_image_descriptor's box, then
    arg0+0x18..0x24: top y + 4, bottom y + h - 4, x, x + w, centre).
    Per state (arg0+0x50): the list states draw each text id of the -1
    terminated list at arg0+0x34 down from a start that the line count
@@ -6213,7 +6215,7 @@ typedef struct {
    in a box sized from arg0+0x20/0x24. The box is built zeroed in a
    temporary and copied (a struct assignment: retail's ldl/ldr copy). y is
    one variable, 4 and then the bottom of the first text (buf.fE, written
-   by func_001F7560) plus 0x10, with each icon at y + 8; it and x stay in
+   by font_print_window_regular) plus 0x10, with each icon at y + 8; it and x stay in
    callee-saved registers across the calls, as in retail. */
 int ObtainAllGoldWeaponsMenu(MenuScreen *arg0) {
     Box18 buf;
@@ -6321,10 +6323,10 @@ s32 DrawEndScreenMenuMaybe(struct ThreeOptionMenu_23B40 *menu) {
     return 2;
 }
 
-/* func_00223140's sibling for the D_0013D390 pages: if the page passes
+/* draw_selected_menu_item_text's sibling for the memory_card_state pages: if the page passes
    four gates, draws icon 0x521C centred (row -1) or the row's two
-   D_001DE0C0 icons at y 4 and 0x14. The row is read before
-   func_001F4630; the record is reached as a struct member off the page
+   planet_icon_rows icons at y 4 and 0x14. The row is read before
+   SetupGifPaging; the record is reached as a struct member off the page
    base (retail's base-first add). */
 int draw_menu_selection_text(MenuScreen *arg0) {
     char *g = menu_system;
@@ -6364,7 +6366,7 @@ extern int gBolts MACRO_ADDR;
 extern int D_0015EF20 MACRO_ADDR;
 extern int game_clock_ticks MACRO_ADDR;
 extern int g_current_level_index_mm __asm__("D_0015EE84") MACRO_ADDR;
-/* The 8-byte D_0015EF98 pair saved into a slot. As a char block in small
+/* The 8-byte save_clock_time pair saved into a slot. As a char block in small
    data, its copy is la + ldl/ldr, as in retail. */
 typedef struct {
     char b[8];
@@ -6374,12 +6376,12 @@ extern char save_overwrite_confirm_page[];
 extern int save_confirm_slot;
 extern void prepare_save_game(int, int);
 
-/* Save-slot menu handler (func_002243E8's sibling): on entry it may arm
+/* Save-slot menu handler (loading_data_menu's sibling): on entry it may arm
    a save (0x4FB5 prompt), then while the prompt is up it either aborts
-   (flag 0x80 in D_0015EFB4) or writes the current game into slot
-   d+0x14 of D_0013D390's 0x1C-byte records; otherwise the usual pad
+   (flag 0x80 in mode_freeze_flags) or writes the current game into slot
+   d+0x14 of memory_card_state's 0x1C-byte records; otherwise the usual pad
    handling, with slot selection on 0x1000/0x4000 and 0x40 either
-   loading the slot (via D_001D28F8) or re-arming. Each branch reaches
+   loading the slot (via save_overwrite_confirm_page) or re-arming. Each branch reaches
    the globals through its own block-scoped pointers. */
 int saving_data_menu(struct MenuScreen *arg0) {
     struct MenuSystem *g = (struct MenuSystem *)menu_system;
@@ -6533,7 +6535,8 @@ int saving_data_menu(struct MenuScreen *arg0) {
 
 extern short screen_globals_base_r[] __asm__("D_0013E15A");
 
-/* Load-slot menu handler (func_00224040's sibling): with a load armed it either aborts or starts the sound fade and loads; otherwise pad handling with slot selection. */
+/* Load-slot menu handler (saving_data_menu's sibling): with a load armed it either aborts or starts the sound fade and
+   loads; otherwise pad handling with slot selection. */
 int loading_data_menu(struct MenuScreen *arg0) {
     char *g = menu_system;
     int old = arg0->data.save.slot;
@@ -7037,11 +7040,11 @@ extern void noop_callback_e(void *);
 extern void gadget_moby_update_noop(void);
 extern void update_menu_preview_animation_pose(void *);
 
-/* Menu setup: resets the pad bindings, marks D_001D5F70's selections
-   unset, fetches three entries with func_00226EA8, clears the 24 flag
+/* Menu setup: resets the pad bindings, marks menu_system's selections
+   unset, fetches three entries with acquire_menu_stream_buffer, clears the 24 flag
    bytes at arg0+0xA4, then spawns moby 0 in front of the camera (update
-   func_00225DF0, owner arg0) and moby 0x259 (update func_00226250). One
-   `g` local per block reading D_001D5F70 gives retail's %hi kept in a
+   gadget_moby_update_noop, owner arg0) and moby 0x259 (update update_menu_preview_animation_pose). One
+   `g` local per block reading menu_system gives retail's %hi kept in a
    saved register with %lo rebuilt; the -1 stores are written in the
    order that gives retail's schedule. */
 struct MenuPreviewScreen_225358 {
@@ -7137,7 +7140,7 @@ extern void clear_preview_resource_bindings(void);
 
 typedef struct MenuPreviewObjects_225548 {
     u8 pad_00[0x44];
-    s32 objects[24]; /* 0x44: preview object handles, freed by func_002267C0 */
+    s32 objects[24]; /* 0x44: preview object handles, freed by delete_moby */
 } MenuPreviewObjects_225548;
 
 /* Leave hook for the preview screen: deletes the 24 preview objects, frees the
@@ -7513,7 +7516,7 @@ typedef struct {
     float mtx[16]; /* 0xC0 */
 } PauseMoby;
 
-/* D_001864D0's 0x4C-byte per-class records. */
+/* item_info_table's 0x4C-byte per-class records. */
 typedef struct {
     char pad00[0xC];
     int bone; /* 0x0C */
@@ -7527,10 +7530,10 @@ extern PauseClassRec item_info_table_r_r[] __asm__("D_001864D0");
 extern void DetachManipulator(int, void *);
 extern void AttachManipulator(int, int, void *);
 
-/* Moby update with a per-class record: find the class in D_001864D0 (0x4C
+/* Moby update with a per-class record: find the class in item_info_table (0x4C
    bytes each, 0x25 of them), refresh the matrix from the record's bone,
    and either register the moby (+0x18 set) or restart its idle sound;
-   also re-sync the D_001D6160 animation group while its +1 flag is up.
+   also re-sync the class_pose_manipulator animation group while its +1 flag is up.
    The two store groups are in the order that schedules as retail's. */
 void update_menu_preview_class_pose(void *arg0) {
     PauseMoby *m = arg0;
@@ -7583,7 +7586,7 @@ void update_menu_preview_class_pose(void *arg0) {
 
 /* Moby update: refresh its matrix from bone 4 of its class (+0x44),
    copying the translation row to the position, re-register it, start
-   its idle sound (6 for Sonic Summoner, else 0) on the D_001864D0 table
+   its idle sound (6 for Sonic Summoner, else 0) on the item_info_table table
    and reset the sound fields. */
 void update_menu_preview_animation_transform(PauseMoby *m) {
     float mtx[16];
@@ -7683,7 +7686,7 @@ void update_menu_preview_pose_and_attachments(void *preview) {
 /* Moby 0x259 update: while flag 0x02 is set, keep its animation on 1 (or,
    for Helipack in state 6, run the 6 animation until its timer +0x20
    runs out and then blend back to 1), then refresh its matrix from bone 5
-   as func_00225FB8 does. */
+   as update_menu_preview_animation_transform does. */
 void update_menu_preview_animation_pose(void *arg0) {
     PauseMoby *m = arg0;
     unsigned char *b = (unsigned char *)m;
@@ -7714,7 +7717,9 @@ void update_menu_preview_animation_pose(void *arg0) {
     moby_anim_sphere_lerp(m);
 }
 
-/* func_00225FB8's sibling: refresh the matrix from bone 0x1E (class 0x197) or 0x1D, copy its translation row to the position and re-register. func_0020E3D0 takes the moby, and the bone test is written == 0x197 so the movn picks 0x1D as retail does. */
+/* update_menu_preview_animation_transform's sibling: refresh the matrix from bone 0x1E (class 0x197) or 0x1D, copy its
+   translation row to the position and re-register. advance_moby_animation takes the moby, and the bone test is written
+   == 0x197 so the movn picks 0x1D as retail does. */
 void update_menu_preview_class_transform(PauseMoby *m) {
     float mtx[16];
     int id = *(int *)(*m->cls + 0x44);
@@ -7822,7 +7827,7 @@ void update_ammo_preview_transform(struct AmmoPreviewMoby *moby) {
     moby_anim_sphere_lerp(moby);
 }
 
-/* Hoisted from the func_00227A70 block below so this earlier caller can
+/* Hoisted from the clear_preview_resource_bindings block below so this earlier caller can
    see it -- a second NOT_SDA extern for the same symbol is a hard
    error. */
 extern unsigned char resident_class_slot_by_id[] NOT_SDA;
@@ -7830,7 +7835,7 @@ extern unsigned char resident_class_slot_by_id[] NOT_SDA;
 extern void *CreateMoby_c(int) __asm__("func_0020D348");
 
 /* Spawns the pickup/marker object for slot arg0, unless the slot is
-   disabled (0xFF in D_001B3E40). A fresh object gets 0xFF/0xFF/1 in the
+   disabled (0xFF in resident_class_slot_by_id). A fresh object gets 0xFF/0xFF/1 in the
    0x30 block, is registered, tinted mid-grey, and flagged 0x18 at +0x73
    when its descriptor says so. The +0x30 store is through `unsigned
    char` and comes before the halfword store, so the 0xFF stays in one
@@ -7860,7 +7865,7 @@ void *create_menu_preview_moby(int arg0) {
 extern int world_update_time MACRO_ADDR;
 extern void DeleteMoby(void *); /* DeleteMoby */
 
-/* Deletes moby arg0 (if any) and stamps its +0x38 with D_0015F6F0. Always
+/* Deletes moby arg0 (if any) and stamps its +0x38 with world_update_time. Always
    returns 0 so callers can clear their handle with it. */
 int delete_moby(int arg0) {
     struct Moby *moby = (struct Moby *)arg0;
@@ -7877,9 +7882,9 @@ LINKER_REMNANT("asm/remnants/text", func_00226808);
 void helper_moby_update_noop(void);
 
 /* Sets up the pause-menu helper moby h: spawns class 0x7A5
-   (func_00226720), places it at D_00187040's +0x140 position plus
-   (2.2, 0.0, -1.6), sets its update hook to func_00226D48 and +0x48 to pi,
-   and points its vars block back at h. Then asks func_00226EA8(1) for a
+   (create_menu_preview_moby), places it at gCamera's +0x140 position plus
+   (2.2, 0.0, -1.6), sets its update hook to helper_moby_update_noop and +0x48 to pi,
+   and points its vars block back at h. Then asks acquire_menu_stream_buffer(1) for a
    buffer; h+0x34 becomes 3 when either the spawn or the buffer fails.
    The hook store before the pi store and the vars stores in field order
    give retail's schedule. */
@@ -7931,7 +7936,7 @@ typedef struct MusicStreamState {
 /*
  * Exact once the short-loop padding retail's assembler adds is reproduced
  * (tools/fix_short_loops.py); it was the whole residual. Taking the
- * D_001517D0 base into a local declared after the calls keeps its
+ * cd_read_state base into a local declared after the calls keeps its
  * %hi/%lo out of a callee-saved register, as retail has it.
  */
 int leave_streamed_moby_screen(void *arg0) {
@@ -7952,7 +7957,7 @@ int leave_streamed_moby_screen(void *arg0) {
     return 0;
 }
 
-/* functional: medium. The NTSC decomp's pending C for the same instructions (a draft it has not matched
+/* The NTSC decomp's pending C for the same instructions (a draft it has not matched
    yet), carried to PAL's names by OpenRAC's tools/port.py. Never compared with retail's bytes here. */
 
 typedef struct {
@@ -8215,7 +8220,7 @@ int acquire_menu_stream_buffer(int invert) {
 
 /* Release the binding whose key matches. Bit 1 means "bound"; bit 2 on
    top of that means it also owns the shared 0xCB latch, which has to be
-   handed back through func_00217588 first. Always returns 0 so callers
+   handed back through request_audio_stream_break first. Always returns 0 so callers
    can assign it straight over their handle. The flags are read from the
    table at every use, not kept in a local. */
 int release_menu_stream_buffer(int key) {
@@ -8274,7 +8279,7 @@ int mark_menu_stream_buffer_read_active(int arg0) {
     return 1;
 }
 
-/* Twin of func_00227068 above, clearing bit 2 instead of setting it.
+/* Twin of mark_menu_stream_buffer_read_active above, clearing bit 2 instead of setting it.
    Written in exactly that function's shape -- the separate `base` local
    is what stops %lo+4 folding into one addiu, which is what an earlier
    round's revert was missing. */
@@ -8327,7 +8332,8 @@ extern void attachment_update_callback(void);
 
 int func_00227100_r(char *moby, char *m1, char *m2, char **o0, char **o1, char **o2) __asm__("func_00227100");
 
-/* Runs the item-preview animation stream queue: finishes a pending buffer, starts the next read, and on a ready entry swaps in the preview mobys. */
+/* Runs the item-preview animation stream queue: finishes a pending buffer, starts the next read, and on a ready entry
+   swaps in the preview mobys. */
 int func_00227100_r(char *moby, char *m1, char *m2, char **o0, char **o1, char **o2) {
     int flagA = 0;
     int flagB = 0;
@@ -8514,8 +8520,8 @@ int queue_preview_animation(int a0, int a1, int a2, int a3, int a4, int a5, int 
     return 0;
 }
 
-/* Pops the head of the 8-entry queue at D_001D6250. Copying through
-   `d = &D_001D6250[i - 1]; *d = d[1];` makes the store the loop's
+/* Pops the head of the 8-entry queue at preview_animation_requests. Copying through
+   `d = &preview_animation_requests[i - 1]; *d = d[1];` makes the store the loop's
    master giv; the plain form reverses the loop. */
 int advance_preview_animation_queue(void) {
     int i;
@@ -8700,10 +8706,10 @@ void prepare_save_game(int arg0, int arg1) {
     }
 }
 
-/* func_00227C78's sibling: runs func_00209DC0, the D_0015EF98 pair and
-   func_0020BA00(arg0), then records arg0/arg1 in D_0013D390 (+0xF4,
+/* prepare_save_game's sibling: runs load_and_initialize_level_chunk, the save_clock_time pair and
+   memcard_MakeWholeSave(arg0), then records arg0/arg1 in memory_card_state (+0xF4,
    +0x14), clears +0xC8 and page arg1's first word, and seeds the result
-   (+0xE4 = 0x13) when none is pending. func_00209DC0 is called without
+   (+0xE4 = 0x13) when none is pending. load_and_initialize_level_chunk is called without
    arguments: passing arg0 gives it one more reference and so the first
    callee-saved register, the reverse of retail's. */
 void start_memory_card_save(int arg0, int arg1) {
@@ -8749,11 +8755,11 @@ extern void memcard_MakeWholeSave_r(s32) __asm__("func_0020BA00");
 extern s32 sce_cd_read_clock_r(u8 *clock) __asm__("func_00121A80");
 extern void sce_scf_get_local_time_from_rtc_r(u8 *clock) __asm__("func_0012D818");
 
-/* Resets the game state (func_00209DC0) while keeping what carries over: copies the kept
-   blocks to the scratchpad, resets, copies them back (of D_0013D5C8 only the bytes listed in
-   D_001D5F20; a quick-select entry is cleared when its item is gone), restores two flags and
+/* Resets the game state (load_and_initialize_level_chunk) while keeping what carries over: copies the kept
+   blocks to the scratchpad, resets, copies them back (of item_available only the bytes listed in
+   preserved_item_available_indices; a quick-select entry is cleared when its item is gone), restores two flags and
    the counter + 1, re-reads the clock, and for slot >= 0 records the slot in the card state.
-   PAL keeps two more 12-byte blocks (D_0015EEB0, D_0015EEC0).
+   PAL keeps two more 12-byte blocks (gCheats, selector_available).
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/textbin/fun_00226b08.c, FUN_00226b08. */
 void load_level_zero_preserving_progress(s32 slot) {
     s32 saved;
@@ -8824,8 +8830,8 @@ void load_level_zero_preserving_progress(s32 slot) {
 extern int counter_advance_disabled MACRO_ADDR;
 extern int pal_mode MACRO_ADDR;
 
-/* Advances the D_0015EF24 frame counter unless D_0015F6D0 is set; with
-   D_0015EE80 set it jumps 10 extra every 50th tick. */
+/* Advances the game_clock_ticks frame counter unless counter_advance_disabled is set; with
+   pal_mode set it jumps 10 extra every 50th tick. */
 void tick_space_transition(void) {
     int t;
     if (counter_advance_disabled != 0) {
@@ -8844,10 +8850,10 @@ extern char reward_menu_items[];
 extern char reward_menu_page[];
 
 /* Unlock states for the pause menu's reward rows: with at least 15 / 30
-   of the D_0013D510 flags (func_00216198) and 10 of the D_0013E620 ones
-   (func_00216150), rows 5-8 of the 12-byte item table D_001D2B80 get
-   state 3 (10 for row 7) instead of 2, and the menu at D_001D2BF8 its
-   text ids; row 8's first half is cleared while D_0015EF90 is set. The
+   of the gSkillPoints flags (count_nonzero_entries_up_to_30) and 10 of the gold_weapon_purchased ones
+   (count_nonzero_entries_up_to_10), rows 5-8 of the 12-byte item table reward_menu_items get
+   state 3 (10 for row 7) instead of 2, and the menu at reward_menu_page its
+   text ids; row 8's first half is cleared while pause_action_list_mode is set. The
    three tests are kept as 0/1 values. Each item store reads the table
    through its own `char *` (retail's kept %hi); the short selects stay
    branches (HImode has no conditional move), the int ones become
@@ -8906,8 +8912,8 @@ extern float direction_perpendicular[] MACRO_ADDR;
 
 extern void FastVecCross(void *, void *, void *);
 
-/* Build a basis from dir: D_00160470 = dir normalised,
-   D_00160490 = that scaled, and D_00160480 = the cross product with a
+/* Build a basis from dir: direction_unit = dir normalised,
+   direction_scaled = that scaled, and direction_perpendicular = the cross product with a
    vector built from dir's components reordered (the smallest moved), so
    the result is perpendicular, then normalised. */
 typedef u32 u128_282D0 __attribute__((mode(TI), aligned(16)));
@@ -8990,8 +8996,8 @@ extern char graphics_setup_dma_packets[];
 extern short setup_strip_pass_words; /* SDA, gp -0x68A0 */
 extern void emit_setup_strips_of_kind(int, int);
 
-/* Emits a DMA tag pair for packet n of D_001D8120, then sends graphics entry idx
-   of D_00160460 through func_002298B0. */
+/* Emits a DMA tag pair for packet n of graphics_setup_dma_packets, then sends graphics entry idx
+   of setup_strip_pass_words through emit_setup_strips_of_kind. */
 void emit_selected_graphics_dma_packets(int arg0, int idx, int n) {
     g_render_packet_cursor[0] = 0x30000003;
     g_render_packet_cursor[1] = (int)(graphics_setup_dma_packets + n * 0x30);

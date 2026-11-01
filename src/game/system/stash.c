@@ -71,14 +71,14 @@ __asm__(".section .text\n\tnop\n");
 
 extern StashBlock stash_entries[];
 
-/* The stash: a buffer on the IOP side (base, size, from func_00234018's
-   RPC), the SIF RPC client at D_001DD538, and a bump allocator over the
-   buffer that hands out up to 0x40 slots in D_001DD568. */
+/* The stash: a buffer on the IOP side (base, size, from init_stash's
+   RPC), the SIF RPC client at stash_rpc_client_address, and a bump allocator over the
+   buffer that hands out up to 0x40 slots in stash_entries. */
 extern StashInfo stash_state;
 extern int sce_sif_set_dma(void *, int);
 
 /* Stash_SendData: DMA arg1 quadwords from arg0 to the stash's next free
-   address (func_00118E20 takes a {src, dst, size, mode} record), reserve
+   address (sce_sif_set_dma takes a {src, dst, size, mode} record), reserve
    arg2 quadwords there, and return the slot. `h->block++` read into the
    slot index is what keeps retail's copy of the old count. */
 int Stash_SendData(int arg0, int arg1, int arg2, int arg3) {
@@ -110,7 +110,7 @@ extern int sif_call_rpc(void *, int, int, void *, int, void *, int, void *, void
 extern char stash_rpc_client_address[];
 
 /* stash_receive_data(dest, slot, offset, size, mode): size -1 means the
-   slot's whole length (func_00234350). -3 for a bad or empty slot, -1
+   slot's whole length (stash_get_reserved_qwords). -3 for a bad or empty slot, -1
    if offset + size runs past the slot. Otherwise the data is fetched
    from the stash (slot base + offset quadwords) to dest by the stash
    client's RPC 1 (IOP_STASH_FETCH), at most 0xFFFF quadwords per call; returns 0. The RPC

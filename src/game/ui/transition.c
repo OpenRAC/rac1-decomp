@@ -19,12 +19,12 @@
  * retail STILL spills it as `sq` here -- unlike every other function
  * seen so far, where retail consistently uses `sd` for a lone $ra save.
  * This compiler always uses `sd` for $ra regardless. Logic/instructions
- * otherwise identical (return func_0022C7E0(); ... 5 calls in a row,
+ * otherwise identical (return SetupSkyGifPaging(); ... 5 calls in a row,
  * body confirmed correct via objdump before reverting this to
  * INCLUDE_ASM):
- *   func_0022C7E0(); func_0022C188(); func_0022C870();
- *   func_00234C98(0x47, 0x5360B);
- *   func_00234C98(0x4E, 0x1000000 | (D_0015EF88 >> 13));
+ *   SetupSkyGifPaging(); SkyLevelGeneric___maybe(); DoSkyGifPaging();
+ *   VU1_addGSregister(0x47, 0x5360B);
+ *   VU1_addGSregister(0x4E, 0x1000000 | (depth_buffer_address >> 13));
  * Means the sq/lq choice isn't purely "s-regs vs ra", it's something
  * more granular retail decides per-function (maybe per translation
  * unit, or some other property not yet isolated). See "Open toolchain
@@ -36,7 +36,7 @@ extern void SkyLevelGeneric___maybe(void);
 extern void VU1_addGSregister(int, long);
 extern int depth_buffer_address MACRO_ADDR;
 
-/* func_00234C98 is (int, long) and D_0015EF88 MACRO_ADDR; the older
+/* VU1_addGSregister is (int, long) and depth_buffer_address MACRO_ADDR; the older
    sq/sd note is obsolete. */
 void Transition_DrawSky(void) {
     SetupSkyGifPaging();
@@ -899,9 +899,9 @@ extern int help_msg_count;
    (cursor into the table walked below). */
 extern short help_msgs;
 
-/* Points the D_0015F780 cursor at entry arg0 of the table D_0015F064
-   indexes into D_0015F060, past its 8-byte header, and keeps the
-   header's first word in D_001997FC. Both table pointers are MACRO_ADDR
+/* Points the help_msgs cursor at entry arg0 of the table help_offset_table
+   indexes into help_msg_data, past its 8-byte header, and keeps the
+   header's first word in help_msg_count. Both table pointers are MACRO_ADDR
    (one register each), and the index goes first in the addition. */
 void queue_dma_transfer(int arg0) {
     int *entry = (int *)(arg0 * 4 + help_offset_table);
@@ -1233,7 +1233,7 @@ extern char voice_pool[];
 
 extern int bank_sound_count_m __asm__("D_0015F694") MACRO_ADDR;
 
-/* The older register residual was the split load of D_0015F694; read
+/* The older register residual was the split load of bank_sound_count; read
    through a MACRO_ADDR alias it is retail's one-register load. */
 int is_active_state_entry(int arg0, int arg1) {
     if (arg0 >= 0) {

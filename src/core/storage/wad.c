@@ -15,7 +15,7 @@ extern int sce_cd_read(int, int, void *, void *);
 extern void sce_gs_sync_v(int);
 
 /* wad_GetSectors_FiiPv(lba, sectors, buf): sceCdRead with the usual
- * request/poll/retry shape (see func_0012F3F8/func_0012F4A8 below),
+ * request/poll/retry shape (see load_disc_sectors_into_global_buffer/read_file_entry_with_retry below),
  * returning the byte count read (sectors << 11 = sectors * 0x800). */
 int wad_GetSectors_FiiPv(int lba, int sectors, void *buf) {
     char hdr[4];
@@ -40,9 +40,9 @@ typedef struct {
 } StreamHdr;
 extern int disc_table[];
 
-/* Same request/poll/retry shape as func_0012F348 above, reading 6 fixed
+/* Same request/poll/retry shape as wad_GetSectors_FiiPv above, reading 6 fixed
    sectors into a stack buffer and copying 0x2960 bytes of it into
-   D_00137C80. The nop after `jal func_00120F30` in the poll loop is
+   disc_table. The nop after `jal sce_cd_sync_s` in the poll loop is
    ps2eeas's short-loop padding (tools/ps2eeas_nops.py). */
 int load_disc_sectors_into_global_buffer(void) {
     char buf[0x3000];
@@ -70,9 +70,9 @@ int load_disc_sectors_into_global_buffer(void) {
 extern int disc_table_level_entries[];
 extern int pad_globals_base[];
 
-/* As func_0012F3F8 but the sector number comes from an 8-byte-stride
+/* As load_disc_sectors_into_global_buffer but the sector number comes from an 8-byte-stride
    table indexed by arg0 and re-read on every retry, and 0x2434 bytes are
-   copied into D_0013A5E0. The entry address is formed after the header
+   copied into pad_globals_base. The entry address is formed after the header
    stores, which orders the two constant-address computations as retail
    does. */
 int read_file_entry_with_retry(int arg0) {

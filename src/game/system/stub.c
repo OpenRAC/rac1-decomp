@@ -46,7 +46,7 @@ void noop_callback_j(void) {
 void noop_callback_k(void) {
 }
 
-/* Takes an argument (callers pass one, e.g. func_001EC210) and ignores
+/* Takes an argument (callers pass one, e.g. Camera_handleCollWithHero) and ignores
    it -- the unused parameter costs no codegen, still 0/8. */
 int noop_callback_l(void *arg0) {
     return 0;

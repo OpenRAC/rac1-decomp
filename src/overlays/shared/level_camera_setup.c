@@ -1,5 +1,5 @@
 /* Starts at 0x001ED6D8 (was camera_001ED6D8.c). */
-/* Shared level code: func_L00_001ED6D8 in a file of its own, built with -fno-force-mem
+/* Shared level code: setup_level_cameras in a file of its own, built with -fno-force-mem
  * (config/file_cflags.txt). GCC 2.95 takes options per translation unit,
  * and the functions of the file it came from do not build with this one
  * (docs/reference/BUILD_FIDELITY.md, "Flags"). */

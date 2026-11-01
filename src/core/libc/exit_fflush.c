@@ -36,7 +36,7 @@ extern int _fwalk_i(struct _reent_nl *, int (*)(FILE_nl *)) __asm__("func_001144
 extern void __sinit_r(struct _reent_nl *) __asm__("func_00113AE0");
 
 /* fflush, newlib's text: a NULL fp flushes every FILE through _fwalk
-   (func_00114438); CHECK_INIT keeps its `do { } while (0)`. */
+   (_fwalk); CHECK_INIT keeps its `do { } while (0)`. */
 int libc_fflush(FILE_nl *fp) {
     register unsigned char *p;
     register int n, t;

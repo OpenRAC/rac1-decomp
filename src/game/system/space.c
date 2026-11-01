@@ -83,10 +83,10 @@ extern float view_tan_half_fov;
 extern unsigned char draw_map51_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
 extern void FastVecCross(void *, void *, void *);
 
-/* Movie-camera keyframe step (as func_001EB338): the keyframe's +0x1C
-   sets D_0018CEB0, its position and X/Y/Z angles set the camera position
-   and matrix rows, and with the D_0015EEB4 flag set the row at +0x220 is
-   rebuilt from the other two by func_001F9CA0. Returns the flag byte.
+/* Movie-camera keyframe step (as Transition_UpdateMovieCamera): the keyframe's +0x1C
+   sets view_tan_half_fov, its position and X/Y/Z angles set the camera position
+   and matrix rows, and with the draw_map51 flag set the row at +0x220 is
+   rebuilt from the other two by FastVecCross. Returns the flag byte.
    The flag is read through a 4-byte MACRO_ADDR alias: over -G2, so the
    macro expands to lui/lbu through the destination register. */
 unsigned char build_object_rotation_matrix(void) {
@@ -146,10 +146,10 @@ extern FlareCfg level_render_state;
 extern float light_flare_corners[][4][4];
 
 /* Draws a light flare quad at arg0's position (+0x00; the matrix is at
-   +0xC0) when func_001FA9E8 finds it on screen, with the alpha it
-   returns. In D_0015F6E8 mode 6 with flare set 3, the flare fades as
-   D_0013E130's level passes func_001F98C0(150), and its depth comes from
-   func_00214358. The corners are D_001D9B60[set]. */
+   +0xC0) when bsphere_check_alpha finds it on screen, with the alpha it
+   returns. In g_game_mode mode 6 with flare set 3, the flare fades as
+   level_render_state's level passes scale_game_frame_count(150), and its depth comes from
+   ProbeGroundHeight. The corners are light_flare_corners[set]. */
 void draw_light_flare(char *arg0) {
     float a[4];
     Quad_FBE0 q;
@@ -191,8 +191,8 @@ void draw_light_flare(char *arg0) {
     draw_world_quad_packet(&q, 0, 0);
 }
 
-/* The five nops of padding after func_0022F258 (they sat after
-   `endlabel` in its .s, so the stub carried them); see func_001F6668's
+/* The five nops of padding after draw_light_flare (they sat after
+   `endlabel` in its .s, so the stub carried them); see FontPrint's
    note in draw.c. */
 __asm__(".section .text\n\tnop\n\tnop\n\tnop\n\tnop\n\tnop\n");
 
@@ -249,7 +249,7 @@ void func_001F7EF8_2F4C8(void *, int, int) __asm__("func_001F7EF8");
 
 /* Resident effect quads: picks the row table by level_render_state's
    content_variant, builds a textured GS quad, and for each row of
-   D_001605C0[variant] scales the four corners by the object's brightness
+   resident_effect_quad_counts[variant] scales the four corners by the object's brightness
    and the row size, offsets them by the row, the player's matrix and the
    object position, and draws the quad.
    Adapted from Lombyte's project (GPL-3.0): src/gameplay/fun_0022e1b0.c, FUN_0022e1b0. */
@@ -466,7 +466,7 @@ void draw_resident_textured_quad(void) {
     VU1_addGSregister_l(0x47, 0x5360B);
 }
 
-/* The 64-bit argument form of func_00234C98 is needed here (one call
+/* The 64-bit argument form of VU1_addGSregister is needed here (one call
    passes 0x8000000044). Retail's ori 0x8000 / dsll 24 / ori 0x44 for
    that constant is ps2eeas's expansion of the same `dli`, which
    tools/ps2eeas_dli.py reproduces; GNU as builds it differently. */
@@ -1790,7 +1790,7 @@ extern int ship_substate;
 extern void prepare_debug_profiler_render(void);
 extern void render_level_frame(void);
 
-/* A switch on D_0013E150, whose jump table is linked into the data
+/* A switch on ship_substate, whose jump table is linked into the data
    segment at retail's jtbl_001E8C90 (see rac1.ld.sh). */
 void dispatch_game_state_update(void) {
     if (space_load_in_progress_m == 0) {
@@ -2169,7 +2169,7 @@ extern void sceGsSyncVCallback(void *);
 extern void FadeToBlack(int);
 
 /* Plays movie id, taking its {sector, size} from the WAD table of
-   contents (from the second table when D_0015EE80 is set). */
+   contents (from the second table when pal_mode is set). */
 void play_level_transition_movie(int id) {
     int sector;
     int size;

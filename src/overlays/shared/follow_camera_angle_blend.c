@@ -1,5 +1,6 @@
 /* Starts at 0x002E9D78 (was vendor_002E9D78.c). */
-/* Shared level code: func_L00_002E9D78 in a file of its own, built with -fno-schedule-insns
+/* Shared level code: update_follow_camera_angle_blend_from_position in a file of its own, built with
+   -fno-schedule-insns
  * (config/file_cflags.txt). GCC 2.95 takes options per translation unit,
  * and the functions of the file it came from do not build with this one
  * (docs/reference/BUILD_FIDELITY.md, "Flags"). */

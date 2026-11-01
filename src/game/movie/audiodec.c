@@ -49,7 +49,7 @@ typedef struct AudioDec {
 
 extern int snd_close_movie_sound(void);
 
-/* audioDecDelete(_AudioDec *) -- calls func_0012F220 and returns 1. */
+/* audioDecDelete(_AudioDec *) -- calls snd_close_movie_sound and returns 1. */
 int audioDecDelete(AudioDec *dec) {
     snd_close_movie_sound();
     return 1;
@@ -156,7 +156,7 @@ extern int sce_sif_dma_stat(int);
 extern int snd_UpdateMovieADPCM(int, int);
 
 /* sendToSPU(_AudioDec *, unsigned char *, int, int) -- queues one transfer of len bytes to the
- * address in the decoder at 0x48, waits for it to finish, then calls func_0012F288(len, flag). */
+ * address in the decoder at 0x48, waits for it to finish, then calls snd_UpdateMovieADPCM(len, flag). */
 void sendToSPU(AudioDec *dec, unsigned char *src, int len, int flag) {
     SpuDma dma;
     unsigned int id;

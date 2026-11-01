@@ -16,7 +16,7 @@ extern void *_impure_ptr NOT_SDA;
 LINKER_REMNANT("asm/remnants/core_text", func_00116070);
 
 /* printf, from the C library (newlib): points _stdout's _data back at
-   the reentrancy struct (_impure_ptr, D_0012F86C) and hands the va_list
+   the reentrancy struct (_impure_ptr, _impure_ptr) and hands the va_list
    to vfprintf. _REENT is read once into a local: retail keeps it in a
    register across the store. Built with 2.9-ee, which saves only the
    integer argument registers (Makefile.sn, EE29_CORE). */
@@ -37,8 +37,8 @@ void srand(int arg0) {
 }
 
 /* newlib's rand(), as newlib writes it: one expression that reads
-   _REENT (D_0012F86C) twice. +0x58 is _REENT->_next, which srand
-   (func_001160C8 above) sets. */
+   _REENT (_impure_ptr) twice. +0x58 is _REENT->_next, which srand
+   (srand above) sets. */
 int func_001160D8(void) {
     return (*(unsigned int *)((char *)_impure_ptr + 0x58) =
                 *(unsigned int *)((char *)_impure_ptr + 0x58) * 1103515245 + 12345) &

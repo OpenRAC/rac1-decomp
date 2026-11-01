@@ -1,10 +1,12 @@
 /* Starts at 0x00309730 (was vendor_00309730.c). */
-/* Level 12 code: func_L12_00309730 in a file of its own, built with no extra flag.
+/* Level 12 code: draw_hoven_jittered_quad_layers in a file of its own, built with no extra flag.
  * vendor_002EDAA0.c needs -fno-sched-interblock (config/file_cflags.txt), and
  * this function only matches without it (docs/reference/BUILD_FIDELITY.md, rule 2). */
 #include "common.h"
 #include "game/moby/mobyutil.h"
-/* functional: medium. Draw callback: builds a view matrix from the moby (+0xC0), sets up two quad packets (only the first is drawn) and draws it 5 x 6 times as a strip of jittering sparks (corner z grows by 1.0 per outer pass, y gets +-0.2 random jitter, u gets +-0.5 jitter per pass). Packet field meanings guessed from the layout. */
+/* Draw callback: builds a view matrix from the moby (+0xC0), sets up two quad packets (only the first is drawn) and
+   draws it 5 x 6 times as a strip of jittering sparks (corner z grows by 1.0 per outer pass, y gets +-0.2 random
+   jitter, u gets +-0.5 jitter per pass). Packet field meanings guessed from the layout. */
 typedef struct Pkt {
     float corner[4][4];
     unsigned int color[4];

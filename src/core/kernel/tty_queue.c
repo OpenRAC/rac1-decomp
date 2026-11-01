@@ -15,7 +15,7 @@
 
 /*
  * Close but not exact, same open-question category as func_001160D8/
- * func_00115578 (scratch-register/scheduling choice) but manifesting as
+ * _Bfree (scratch-register/scheduling choice) but manifesting as
  * store reordering instead: retail schedules `self->field8 = ...;
  * self->field4 = 0;` before the branch and puts `self->fieldC = ...` in
  * the delay slot; this compiler schedules fieldC and field8 before the
@@ -23,15 +23,15 @@
  * source-order independent -- tried every permutation of the 3
  * assignments, all four produced the identical instruction sequence, so
  * this is the scheduler's own choice, not something this source
- * controls. Logic (D_00154A40's first field = arg0, then fields at
+ * controls. Logic (InitBlockData's first field = arg0, then fields at
  * 0x4/0x8/0xC of the pointed-to struct get 0/self+0x10/self+0x10, return
  * self) is fully understood and correct either way.
  *
- * extern void *D_00154A40;
+ * extern void *InitBlockData;
  *
- * void *func_00119868(void *arg0) {
- *     char *self = (char *)&D_00154A40;
- *     D_00154A40 = arg0;
+ * void *tty_queue_init(void *arg0) {
+ *     char *self = (char *)&InitBlockData;
+ *     InitBlockData = arg0;
  *     *(void **)(self + 0x8) = self + 0x10;
  *     *(int *)(self + 0x4) = 0;
  *     *(void **)(self + 0xC) = self + 0x10;
@@ -87,7 +87,7 @@ typedef struct {
     volatile int busy;
     char *wbuf;
     char *rbuf;
-    struct TtyRing *queue;  /* func_00119868's input ring */
+    struct TtyRing *queue;  /* tty_queue_init's input ring */
 } TtyHandlerState;
 
 extern void kprintf(const char *, ...);
@@ -230,7 +230,7 @@ s32 sceTtyWrite(s8 *text, s32 text_len) {
     return -1;
 }
 
-/* The input ring func_00119868 sets up: size, count, read/write heads. */
+/* The input ring tty_queue_init sets up: size, count, read/write heads. */
 typedef struct {
     int size;
     int count;

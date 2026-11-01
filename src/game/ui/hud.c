@@ -16,8 +16,8 @@ typedef struct {
 } HudIconRec;
 extern HudIconRec *hud_icon_table;
 
-/* Finds arg0 in the table D_0019A504 points to (ended by id 0xFFFF).
-   The older decode read D_0019A504 as the table itself. */
+/* Finds arg0 in the table hud_icon_table points to (ended by id 0xFFFF).
+   The older decode read hud_icon_table as the table itself. */
 int Hud_GetIconIndex(int arg0) {
     HudIconRec *tab = hud_icon_table;
     int i = 0;
@@ -50,12 +50,12 @@ typedef struct {
 } HudBank;
 extern HudBank hud_chan_slots_b[] __asm__("D_00199C60") NOT_SDA;
 
-/* HUD bank init: clears the first two words of the D_0019A4E8 arena,
-   resets the 13 0x90-byte bank records at D_00199C60 (+0x64 = -1, the
-   pending +0x20 selector = 0x10000, func_001FFB38(i, 0xFFFF, 0, 0, 0, 0,
+/* HUD bank init: clears the first two words of the hud_state arena,
+   resets the 13 0x90-byte bank records at hud_chan_slots (+0x64 = -1, the
+   pending +0x20 selector = 0x10000, queue_animation_update(i, 0xFFFF, 0, 0, 0, 0,
    1), then +0x7C = 0, +0x6C = -6, +0x04 = +0x24 = 0), allocates the two
    HUD buffers once through the debug allocator (size, 0, "hud.cpp",
-   line 277/278), sets D_0015FAC0/D_0015FABC from the first, clears
+   line 277/278), sets hud_bank_end/hud_bank_cursor from the first, clears
    0x2800 bytes of it and sets its byte +0x20 to 0xFF. The records are
    indexed through a struct array: each field access is its own giv,
    and loop.c's pick (the +0x24 one) is retail's loop pointer. */
@@ -222,7 +222,8 @@ extern struct HudState hud_state_r __asm__("D_0019A4E8");
 extern void LinkHudBank(s32 bank, s32 base);
 extern void Hud_sendTexture_r(u32 data, s32 dbp, s32 psm, s32 wlog, s32 hlog, s32 immediate) __asm__("func_00201348");
 
-/* Uploads the image pages of one HUD bank to GS memory, from the depth buffer address up, and records each page's block offset. Bank 0's pages are linked first when the bank file is not linked yet.
+/* Uploads the image pages of one HUD bank to GS memory, from the depth buffer address up, and records each page's
+   block offset. Bank 0's pages are linked first when the bank file is not linked yet.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/ui/hud/hud_send_resident_bank.c, hud_send_resident_bank. */
 void Hud_SendResidentBank(s32 bank, s32 base, s32 immediate) {
     struct HudTexCounts *counts;
@@ -269,7 +270,7 @@ void Hud_HeapReset(void) {
     p[4] = v;
 }
 
-/* Bump allocator out of the D_0019A4E8 arena: p[4] is the cursor,
+/* Bump allocator out of the hud_state arena: p[4] is the cursor,
    p[5] the limit. Rounds the request up to 16 bytes. */
 /* Hud_HeapAlloc(unsigned int, char *, char *, int) */
 int Hud_HeapAlloc(int size) {
@@ -289,11 +290,11 @@ int Hud_HeapAlloc(int size) {
 }
 
 /*
- * 12 bytes of nop padding follow func_001FFAB8 in retail, after
- * `endlabel` in asm/nonmatchings/text/func_001FFAB8.s -- the same trap
- * documented above func_001F6668. Dropping it shifted the rest of the
+ * 12 bytes of nop padding follow Hud_HeapAlloc in retail, after
+ * `endlabel` in asm/nonmatchings/text/Hud_HeapAlloc.s -- the same trap
+ * documented above FontPrint. Dropping it shifted the rest of the
  * segment by -8 (the next .align 3 only recovered 4 of the 12) and broke
- * func_00202790 and func_002208F8, both of which were exact and are
+ * RefreshPointLight and draw_menu_selection_marker, both of which were exact and are
  * instruction-for-instruction identical apart from their jal targets.
  */
 __asm__(".section .text\n"
@@ -307,10 +308,10 @@ extern int g_game_mode MACRO_ADDR;
 extern void apply_pending_animation(void *arg0);
 
 /* Finds or creates the residency record for arg0's slot (idx = arg0 & 0xF)
-   in D_00199C60 (0x90-byte records), matching arg1..arg6 against the
+   in hud_chan_slots (0x90-byte records), matching arg1..arg6 against the
    record's cached selectors; returns the record's +0x64 bank id, calling
-   func_001FFC48 to reload the bank when a bit of (arg0's high nibbles &
-   the record's +0x04 flags) is set. Sibling of func_001FFCB0/func_001FFD30
+   apply_pending_animation to reload the bank when a bit of (arg0's high nibbles &
+   the record's +0x04 flags) is set. Sibling of remove_hud_item/load_animation_definition
    in this file, which use the same record layout. */
 int queue_animation_update(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6) {
     int idx = arg0 & 0xF;
@@ -351,7 +352,7 @@ int queue_animation_update(int arg0, int arg1, int arg2, int arg3, int arg4, int
 extern void load_animation_definition(void *, int);
 
 /* Copies the six pending words at +0x24..+0x38 into +0x04..+0x18 after
-   func_001FFD30 has seen +0x20, calls the handler now at +0x10 if there
+   load_animation_definition has seen +0x20, calls the handler now at +0x10 if there
    is one, and clears +0x68. The copies are in retail's store order, and
    the +0x10 copy is unconditional (retail stores it in the beqz's delay
    slot), which also makes the scheduler load +0x30 first. */
@@ -392,7 +393,7 @@ void apply_pending_animation(void *arg0) {
     anim->pending = 0;
 }
 
-/* The 13 0x90-byte records at D_00199C60, looked up by their +0x64. */
+/* The 13 0x90-byte records at hud_chan_slots, looked up by their +0x64. */
 typedef struct {
     int unk00, unk04;
     char pad08[0x1C];
@@ -402,11 +403,11 @@ typedef struct {
     char pad6C[0x24];
 } HudRec90;
 extern HudRec90 hud_chan_slots[] NOT_SDA;
-/* func_001FFB38 returns the bank id; this caller ignores it, and its
+/* queue_animation_update returns the bank id; this caller ignores it, and its
    match was made against a void view. */
 extern void queue_animation_update_v(int, int, int, int, int, int, int) __asm__("func_001FFB38");
 
-/* Calls func_001FFB38(i, 0xFFFF, 0, 0, 0, 0, 0) on the record whose
+/* Calls queue_animation_update(i, 0xFFFF, 0, 0, 0, 0, 0) on the record whose
    +0x64 is arg0 and returns 1, or returns 0 when none is. The nop in
    the search loop is ps2eeas's short-loop padding. */
 int remove_hud_item(int arg0) {
@@ -501,7 +502,7 @@ void update_resource_counter(void) {
     }
 }
 
-/* D_00199C60's 0x90-byte bank records, seen through their +0x18 update
+/* hud_chan_slots's 0x90-byte bank records, seen through their +0x18 update
    callback. */
 typedef struct HudBankCb {
     char pad00[0x18];
@@ -521,10 +522,10 @@ extern int scale_game_frame_count(int);
 extern void draw_framed_text(int, int, int, int);
 
 /* Per-frame HUD update: unless the arena's +0x30 skip flag (cleared
-   here) or D_0015F544 is set, reset the arena's +0xC colour, run each
-   bank's +0x18 callback, then fade the D_0015F764 alpha (0..128) in
-   while the D_0015F760 timer runs, or out once it stops, and draw
-   the overlay text D_001994D8 (plus D_00199528 above 1000) with it. */
+   here) or letterbox_enabled is set, reset the arena's +0xC colour, run each
+   bank's +0x18 callback, then fade the hud_msg_alpha alpha (0..128) in
+   while the hud_msg_count timer runs, or out once it stops, and draw
+   the overlay text hud_msg_text1 (plus hud_msg_text2 above 1000) with it. */
 void update_hud(void) {
     char *arena = hud_state_raw;
     int i;
@@ -574,7 +575,7 @@ void update_hud(void) {
 LINKER_REMNANT("asm/remnants/text", func_00200190);
 
 /* GetIconFrame(iconId, sub): finds the icon's {id, count, base} row
-   (func_001FF668 gives its index) in the arena's +0x1C table; frame =
+   (Hud_GetIconIndex gives its index) in the arena's +0x1C table; frame =
    base + sub. Returns frame when the id is known, sub < count, and
    neither the +0x28 entry (for the frame's first index) nor the +0x24
    entry (for its second) has the top bit set; else 0. Row and pair
@@ -749,8 +750,8 @@ extern int g_screen_extent[];
 extern long GetFrameTex(int);
 
 /* Draw HUD texture tex as a sprite at (x, y), w x h, with alpha: a
-   1-tag + 5-quadword PACKED GIF packet as func_00200CA0's, with the
-   texture's TEX0 from func_00200248 and its full size (1 << the
+   1-tag + 5-quadword PACKED GIF packet as append_power_of_two_textured_screen_sprite's, with the
+   texture's TEX0 from GetFrameTex and its full size (1 << the
    entry's +6/+7 log2 sizes) as the far UV. The entry is found through
    the arena's +0x20 index table into its +0x24 texture table. */
 void HudSprite(int tex, int x, int y, int w, int h, int alpha) {
@@ -787,7 +788,7 @@ void HudSprite(int tex, int x, int y, int w, int h, int alpha) {
     g_render_packet_cursor = (int *)((char *)g_render_packet_cursor + 0x50);
 }
 
-/* func_00200468 drawn as a four-vertex strip (PRIM 0x154) instead of a
+/* HudSprite drawn as a four-vertex strip (PRIM 0x154) instead of a
    sprite, the texture turned a quarter: corners (x, y+h), (x, y),
    (x+w, y+h), (x+w, y) take UVs (tw, 0), (tw, th), (0, 0), (0, th). */
 void draw_hud_sprite_flipped(int tex, int x, int y, int w, int h, int alpha) {
@@ -832,7 +833,7 @@ void draw_hud_sprite_flipped(int tex, int x, int y, int w, int h, int alpha) {
 
 LINKER_REMNANT("asm/remnants/text", func_002008B0);
 
-/* func_00200468 with the position and size already in 16ths of a pixel. */
+/* HudSprite with the position and size already in 16ths of a pixel. */
 void draw_hud_sprite_subpixel(int tex, int x, int y, int w, int h, int alpha) {
     char *arena = hud_state_raw;
     unsigned char *e =
@@ -867,7 +868,7 @@ void draw_hud_sprite_subpixel(int tex, int x, int y, int w, int h, int alpha) {
     g_render_packet_cursor = (int *)((char *)g_render_packet_cursor + 0x50);
 }
 
-/* func_002008B8 with an explicit texture window: UVs run from (u, v) to
+/* draw_hud_sprite_subpixel with an explicit texture window: UVs run from (u, v) to
    (u, v) plus the texture's size in 16ths. */
 void draw_hud_sprite_uv(int tex, int x, int y, int w, int h, int u, int v, int alpha) {
     struct HudState *hud = &hud_state_r;
@@ -903,14 +904,14 @@ void draw_hud_sprite_uv(int tex, int x, int y, int w, int h, int u, int v, int a
 
 extern int *g_render_packet_cursor MACRO_ADDR;
 
-/* Appends a 1-tag + 5-quadword PACKED GIF packet to D_00161000: a GIFtag
+/* Appends a 1-tag + 5-quadword PACKED GIF packet to g_render_packet_cursor: a GIFtag
    (0x10000005 / 0 / 0 / 0x50000005), fixed GS register data, arg0
    verbatim, a colour of 0x7F7F7F with alpha arg9, then a UV/XYZ pair
    per corner: UV (arg7, arg8) and (arg7 + (1 << (arg3 + 4)),
    arg8 + (1 << (arg4 + 4))); XY (arg1, arg2) and (arg1 + arg5,
-   arg2 + arg6), offset by D_0013E600[4]/[5] - 8, with Z from the HUD
+   arg2 + arg6), offset by g_screen_extent[4]/[5] - 8, with Z from the HUD
    arena's +0xC word. The payload is written through the advanced
-   D_00161000 (retail stores relative to it), and the arena is reached
+   g_render_packet_cursor (retail stores relative to it), and the arena is reached
    through a local pointer so its address is built in a register. */
 struct SpritePacket {
     u32 dma_word0;
@@ -968,11 +969,11 @@ extern float FastSin(float);
 extern void FastVecAdd(float *, float *, float *);
 extern void FastVecSub(float *, float *, float *);
 
-/* func_00200CA0's rotated sibling: a 1-tag + 6-quadword PACKED GIF
+/* append_power_of_two_textured_screen_sprite's rotated sibling: a 1-tag + 6-quadword PACKED GIF
    packet for a w x h sprite at (x, y) turned by rot. The four corners
    are pos +- a +- b with a = h * (sin, cos) and b = w * (-cos, sin)
-   (func_001F9BD8 adds, func_001F9BF0 subtracts vectors), each packed as
-   XYZ2 with D_0013E600[4]/[5] - 8 and the HUD arena's +0xC depth; UVs
+   (FastVecAdd adds, FastVecSub subtracts vectors), each packed as
+   XYZ2 with g_screen_extent[4]/[5] - 8 and the HUD arena's +0xC depth; UVs
    run from (0, 0) to (u * 16, v << 20). */
 void draw_rotated_sprite(int u, int v, long tex, float x, float y, float w, float h, float rot) {
     float a[4];
@@ -1068,11 +1069,11 @@ extern void sceGsExecLoadImage(void *, void *);
 /* Hud_sendTexture(char *tex, int x, int y, int levelShift, int sizeShift,
    int useStackBuf): builds a mip level count (clamped to >=1) and a
    packed GIF NLOOP for the closing tag, then either (useStackBuf==0)
-   opens a GS packet in D_00161000 and writes straight into it, or
-   builds into a stack buffer; either way calls func_00122630 to fill it
+   opens a GS packet in g_render_packet_cursor and writes straight into it, or
+   builds into a stack buffer; either way calls sceGsSetDefLoadImage to fill it
    with (x, levels, y, 1<<levelShift, 1<<sizeShift), then either closes
    the GS packet in place or flushes the cache and hands the stack
-   buffer to func_00122958.
+   buffer to sceGsExecLoadImage.
 
    p7 is set before the branch, as retail does in its delay slot, but
    truncated to short after it, with the other short arguments. */
@@ -1127,10 +1128,10 @@ void Hud_sendTexture(char *arg0, int arg1, int arg2, int arg3, int arg4, int arg
 
 extern int *g_render_packet_cursor MACRO_ADDR;
 
-/* func_002017C8's sibling: same 1-tag + 3-quadword PACKED GIF packet, but
+/* draw_hud_rect_depth's sibling: same 1-tag + 3-quadword PACKED GIF packet, but
    register-id constant 0x41 (not 0x46) at +0x20, and a FIXED mask
    0x00FFFFF000000000 in the vertices' upper 32 bits instead of a Z
-   parameter -- one fewer int argument than func_002017C8. */
+   parameter -- one fewer int argument than draw_hud_rect_depth. */
 struct Screen {
     s32 pad_00[4];
     s32 left; /* 0x10 */
@@ -1170,8 +1171,8 @@ void draw_hud_rect(int x0, int y0, int x1, int y1, long prim, int pixels) {
 
 extern int *g_render_packet_cursor MACRO_ADDR;
 
-/* func_002014B8's sibling (register-id constant 0x46, like
-   func_002017C8's, instead of 0x41): same 1-tag + 3-quadword PACKED GIF
+/* draw_hud_rect's sibling (register-id constant 0x46, like
+   draw_hud_rect_depth's, instead of 0x41): same 1-tag + 3-quadword PACKED GIF
    packet with a FIXED mask 0x00FFFFF000000000 in the vertices' upper 32
    bits instead of a Z parameter. */
 void draw_hud_rect_blended(int arg0, int arg1, int arg2, int arg3, long arg4, int arg5) {
@@ -1204,13 +1205,13 @@ void draw_hud_rect_blended(int arg0, int arg1, int arg2, int arg3, long arg4, in
 
 extern int *g_render_packet_cursor MACRO_ADDR;
 
-/* Appends a 1-tag + 3-quadword PACKED GIF packet to D_00161000: a GIFtag
+/* Appends a 1-tag + 3-quadword PACKED GIF packet to g_render_packet_cursor: a GIFtag
    (0x10000003 / 0 / 0 / 0x50000003), then TEX-ish GS register data at
    +0x10/+0x18/+0x20, arg4 verbatim at +0x28, then two packed XYZ2-style
-   vertices at +0x30/+0x38: X = argX(+D_0013E600[4])-8, Y =
-   argY(+D_0013E600[5])-8, Z = arg5<<32, when arg6 != 0 (raw coordinates);
+   vertices at +0x30/+0x38: X = argX(+g_screen_extent[4])-8, Y =
+   argY(+g_screen_extent[5])-8, Z = arg5<<32, when arg6 != 0 (raw coordinates);
    or the same with argX/argY scaled by 16 and offset -0x10 when arg6==0
-   (tile coordinates). D_00161000 is re-read at every use (never cached
+   (tile coordinates). g_render_packet_cursor is re-read at every use (never cached
    across a store to it), matching this file's other packet builders. */
 void draw_hud_rect_depth(int arg0, int arg1, int arg2, int arg3, long arg4, int arg5, int arg6) {
     int *base;
@@ -1247,7 +1248,7 @@ extern void HudSprite(int, int, int, int, int, int);
 extern void draw_hud_sprite_flipped(int, int, int, int, int, int);
 
 /* Draw a 3-part stretchable bar: left cap, stretched middle, right cap
- * (mirrored via func_00200650), all using the same GetIconFrame glyph
+ * (mirrored via draw_hud_sprite_flipped), all using the same GetIconFrame glyph
  * in its two variants. */
 void draw_stretchable_ui_frame(int a0, int a1, int a2, int a3, int a4) {
     int v0 = GetIconFrame(0x7580, 0);

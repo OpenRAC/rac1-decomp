@@ -41,14 +41,14 @@ extern char str_mc_old_mcserv[];
 extern char str_mc_old_mcman[];
 
 /* sceMcInit (libmc): one-shot init. Creates the module semaphore
-   D_00132EAC if not already valid, resets any pending command
-   (func_00123F30, sceMcSync), takes the semaphore, brings up the SIF RPC
+   mc_semaphore if not already valid, resets any pending command
+   (sce_mc_sync, sceMcSync), takes the semaphore, brings up the SIF RPC
    layer (sceSifInitRpc) and loops binding the IOP memory-card RPC server
-   (0x80000400) until D_00159B00's SifRpcClientData.serve is set,
+   (0x80000400) until mc_rpc_client's SifRpcClientData.serve is set,
    busy-waiting between binds; a bind failure prints and hangs forever.
    Once bound, issues RPC 0xFE (a handshake/version query) and validates
    the two version words in the reply, printing and clearing serve on any
-   failure. Each ->serve access is a fresh cast of D_00159B00, matching
+   failure. Each ->serve access is a fresh cast of mc_rpc_client, matching
    the local SifRpcClientData idiom already used in
    src/core/cdvd/callbacks.c, rather than a cached pointer local. */
 int sce_mc_init(void) {
@@ -106,7 +106,7 @@ extern void *libc_strncpy(void *, const void *, int);
 extern int mc_current_command;
 
 /* sceMcOpen(port, slot, fname, mode) (libmc): same RPC-wrapper shape as
-   sceMcDelete (func_00124410) but with the flags/mode argument stored to
+   sceMcDelete (sce_mc_delete) but with the flags/mode argument stored to
    the descriptor's +0x8 word instead of a hardcoded 0, and RPC command 2. */
 int sce_mc_open(int port, int slot, int fname_, int mode) {
     char *cd = mc_rpc_client;
@@ -152,7 +152,7 @@ int sce_mc_mkdir(int arg0, int arg1, int arg2) {
 extern char mc_rpc_client[];
 extern int mc_rpc_request;
 
-/* RPC 3 on the client D_00159B00, in func_001239D8's shape: -100 with
+/* RPC 3 on the client mc_rpc_client, in sce_mc_mkdir's shape: -100 with
    no server bound, -200 when the semaphore wait fails. */
 int sce_mc_close(int arg0) {
     char *cd = mc_rpc_client;
@@ -346,8 +346,8 @@ extern int sleep_thread(void);
 extern void mc_hear_alarm(int, unsigned short, void *);
 
 /* mcDelayThread (libmc): sleep this thread until an alarm of `time`
-   h-lines wakes it: SetAlarm (func_00118B20) with mcHearAlarm
-   (func_00123EC0) on GetThreadId(), then SleepThread(). */
+   h-lines wakes it: SetAlarm (set_alarm) with mcHearAlarm
+   (mc_hear_alarm) on GetThreadId(), then SleepThread(). */
 void mc_delay_thread(int time) {
     set_alarm((unsigned short)time, mc_hear_alarm, get_thread_id());
     sleep_thread();
@@ -404,7 +404,7 @@ extern int mc_rpc_request_a[] __asm__("D_00159B80");
 
 /* sceMcGetInfo-style RPC 1 (libmc): asks for the card type, free space
    and format state (each only when its result pointer is given); the
-   reply lands in D_0015A000 and func_00124010 copies it out. */
+   reply lands in mc_rpc_end_data and mc_get_info_end copies it out. */
 int sce_mc_get_info(int port, int slot, int *type, int *free, int *format) {
     int r;
 
@@ -451,8 +451,8 @@ int sce_mc_get_info(int port, int slot, int *type, int *free, int *format) {
 LINKER_REMNANT("asm/remnants/core_text", func_001241E8);
 
 /* sceMcGetDir-style RPC 0xD (libmc): name (non-empty), mode, the table
-   size and the table, whose cache is written back first (func_0011AD70)
-   when count >= 0. Shape as sceMcOpen (func_001238B0). */
+   size and the table, whose cache is written back first (sceSifWriteBackDCache)
+   when count >= 0. Shape as sceMcOpen (sce_mc_open). */
 int sce_mc_get_dir(int port, int slot, char *name, int mode, int count, void *table) {
     char *cd = mc_rpc_client;
     char *fp;
@@ -490,7 +490,7 @@ int sce_mc_get_dir(int port, int slot, char *name, int mode, int count, void *ta
 
 LINKER_REMNANT("asm/remnants/core_text", func_00124338);
 
-/* RPC 0x10 with two request words, as func_00124528 below. */
+/* RPC 0x10 with two request words, as sce_mc_unformat below. */
 int sce_mc_format(int arg0, int arg1) {
     char *cd = mc_rpc_client;
     int *buf;
@@ -518,11 +518,11 @@ extern char mc_rpc_client[];
 
 /* sceMcDelete(port, slot, fname): rejects a null/empty fname (SignalSema,
    return -210), else strncpy's it into the shared sifParamFname
-   descriptor's name field (D_00159BB0+0x14), fills in port/slot/flags
+   descriptor's name field (mc_rpc_path_request+0x14), fills in port/slot/flags
    and force-terminates at the max length, then runs RPC 0xF (delete)
    through cd_base. Nonzero (queued) result SignalSemas and returns the
    handle; 0 records the command and returns 0 -- the same idiom as
-   func_00123C30/sceMcRead. */
+   sce_mc_read/sceMcRead. */
 int sce_mc_delete(int port, int slot, char *fname) {
     char *cd = mc_rpc_client;
     char *fp;
@@ -601,8 +601,8 @@ extern int sceDbcSetWorkAddr(int);
 
 /* Bind the two IOP servers 0x80000900 and 0x8000091B (retrying with a
    busy wait; exit(-1) if binding fails), check the server version
-   (func_001245F8: major 2), clear the 16-word table D_0015B600 and read
-   the configuration into D_0015B580. Returns 1, or 0 on a version
+   (sce_dbc_get_mod_version: major 2), clear the 16-word table dbc_port_link_states and read
+   the configuration into dbc_work_area. Returns 1, or 0 on a version
    mismatch. */
 int sce_dbc_init(void) {
     int i;
@@ -649,12 +649,12 @@ int sce_dbc_init(void) {
 
 extern char str_dbc_set_work_addr_error[];
 
-/* Same RPC shape as func_001245F8 above (9 args: $4-$11 plus one stack
+/* Same RPC shape as sce_dbc_get_mod_version above (9 args: $4-$11 plus one stack
    slot), but with a different command id and an error path.
 
    The request word goes into the buffer at +4. It has to be written
-   through a local pointer, not as (&D_0015B180)[1]: the latter folds to
-   the symbol D_0015B180+4, so the compiler builds THAT address and then
+   through a local pointer, not as (&RpcReceiveData)[1]: the latter folds to
+   the symbol RpcReceiveData+4, so the compiler builds THAT address and then
    subtracts 4 to pass the buffer. With `buf`, one lui/addiu serves both
    the store and the two pointer arguments, as retail does.
 
@@ -676,7 +676,7 @@ int sceDbcSetWorkAddr(int arg0) {
 extern char str_dbc_create_socket_error[];
 
 /* sceDbcCreateSocket (libdbc): copy the caller's socket record (five
-   header words, then a 16-byte name) into the RPC buffer D_0015B180, set
+   header words, then a 16-byte name) into the RPC buffer RpcReceiveData, set
    its port (arg1, word 10) and mode (arg2, word 11), then run the
    create-socket RPC (0x80000901) through cd_base. Prints and returns 0
    on failure, else the reply's word 9.
@@ -686,7 +686,7 @@ extern char str_dbc_create_socket_error[];
    those stores; the scheduler then places `i = 0` ahead of them, and the
    loop registers come out in $t0-$t2 as in retail. namesrc/namedst are
    precomputed so each byte address is one base+index add, and the call
-   re-takes &D_0015B180 for its buffer arguments. */
+   re-takes &RpcReceiveData for its buffer arguments. */
 int sceDbcCreateSocket(void *arg0, int arg1, int arg2) {
     int *buf = &RpcReceiveData;
     char *namesrc = (char *)arg0 + 0x14;
@@ -720,13 +720,13 @@ extern char str_dbc_get_dep_number_error[];
 
 /*
  * sceDbcGetDepNumber(port) (libdbc): write back the 0x80-byte DMA buffer
- * D_0015B580 (func_00119288), then with interrupts off (DIntr/EIntr)
- * copy its first 0x40 bytes into the link-state table D_0015B600. A port
+ * dbc_work_area (sync_dcache_range), then with interrupts off (DIntr/EIntr)
+ * copy its first 0x40 bytes into the link-state table dbc_port_link_states. A port
  * whose state is not 1 (linked) returns -12. Otherwise RPC 0x80000903
  * with the port as the request word; returns the reply's second word, or
- * reports the failure (func_00124B60) and returns 0.
+ * reports the failure (debug_print_stub) and returns 0.
  *
- * The RPC buffer is re-taken as &D_0015B180 for the call's arguments and
+ * The RPC buffer is re-taken as &RpcReceiveData for the call's arguments and
  * `buf` is only assigned where it is used, so the table base and the
  * buffer share retail's saved register.
  */
@@ -753,7 +753,7 @@ LINKER_REMNANT("asm/remnants/core_text", func_00124A68);
 
 extern char str_dbc_receive_data_error[];
 
-/* RPC 0x8000091A round trip on D_0015B180 (the buffer is both request
+/* RPC 0x8000091A round trip on RpcReceiveData (the buffer is both request
    and reply), copying the reply's bytes to arg3. `r` is assigned in both
    arms of the copy guard with one return; two returns would be
    cross-jumped into one. */
@@ -798,13 +798,13 @@ void debug_print_stub(void *fmt, ...) {
 /*
  * Reverted: size mismatch (ours=72, retail=60 -- 12 bytes over).
  *
- *   extern int D_00132ED0;
- *   extern char pad2_sockets_b[] __asm__("D_0015B640");
+ *   extern int pad2_initialized;
+ *   extern char pad2_sockets_b[] __asm__("pad2_sockets");
  *
- *   int func_00124B88(void) {
+ *   int sce_pad2_init(void) {
  *       int p = (int)pad2_sockets_b;
  *       int end = p + 0x3300;
- *       D_00132ED0 = 1;
+ *       pad2_initialized = 1;
  *       do {
  *           *(int *)(p + 0) = 0;
  *           *(int *)(p + 4) = 0;
@@ -815,7 +815,7 @@ void debug_print_stub(void *fmt, ...) {
  *   }
  *
  * Zeroes the +0x00/+0x04/+0x08 fields of all 16 entries in the
- * 0x330-stride table D_0015B640, then marks it initialized. Semantics
+ * 0x330-stride table pad2_sockets, then marks it initialized. Semantics
  * certain; retail's loop is a plain ascending `bnez` with the
  * comparison as `slt` (signed) and no duplicated body. Because
  * end-start (0x3300) is an exact multiple of the stride (0x330) --
@@ -827,7 +827,7 @@ void debug_print_stub(void *fmt, ...) {
  * recovers retail's `slt`, but the reversal itself doesn't go away).
  * A different case from the established "unsigned loop counter blocks
  * reversal" lever ([[rac1-64bit-field-type]]'s sibling precedent,
- * e.g. func_0011DCB8) -- that lever stops reversal driven by a small
+ * e.g. InitExecPS2) -- that lever stops reversal driven by a small
  * loop-counter comparison, not one driven by a statically-divisible
  * address range.
  */
@@ -928,8 +928,8 @@ extern int sce_pad2_set_button_order(unsigned char *, int *);
 extern void *libc_memcpy(void *, void *, int);
 
 /* Read entry id's current record into dst: open the entry if it is not
-   (func_00125020), fetch the record (func_00125078), copy its p[2]-byte
-   payload from +0x1C and hand the bytes after it to func_00125160 with
+   (sce_pad2_link_driver), fetch the record (sce_pad2_get_side), copy its p[2]-byte
+   payload from +0x1C and hand the bytes after it to sce_pad2_set_button_order with
    the entry's slot array. Returns the length, or -1. */
 int scePad2Read(int id, void *dst) {
     unsigned char *p;
@@ -961,8 +961,8 @@ int scePad2Read(int id, void *dst) {
    `char[]` + byte offset: the two are not codegen-equivalent. Indexing a
    typed array emits `addu base,index`; the char-pointer form emits
    `addu index,base`, and reordering the C addition cannot change it
-   because GCC canonicalises the PLUS first. See func_00125078 and the
-   same lever on D_001E8F80 in text.c. */
+   because GCC canonicalises the PLUS first. See sce_pad2_get_side and the
+   same lever on camera_types in text.c. */
 
 /* The command word, built as bitfields of an `unsigned long` union: the
    union stays in a register, each insert is a 64-bit and/or, and the
@@ -977,10 +977,10 @@ typedef union {
     int i;
 } McCmd;
 
-/* Opens entry `port` of the table if it is not (func_00125020), sends
-   command {2, 3, 2, 1} through func_00124A70, expands the 40-bit mask it
-   returns into the entry's slots (func_00125160) and returns the result
-   word func_00124A70 filled in. */
+/* Opens entry `port` of the table if it is not (sce_pad2_link_driver), sends
+   command {2, 3, 2, 1} through sceDbcReceiveData, expands the 40-bit mask it
+   returns into the entry's slots (sce_pad2_set_button_order) and returns the result
+   word sceDbcReceiveData filled in. */
 int sce_pad2_get_button_profile(int port, void *arg1) {
     McCmd cmd;
     int result;
@@ -1009,22 +1009,22 @@ extern int sce_pad2_check_dma(int);
    byte 0 is the state code every path eventually returns (retail's two
    "side" sub-paths converge on one `sb`/`lbu` round trip through it,
    and the RPC path stages its return through the same byte), and the
-   word at +4 is the uninitialised in/out count func_00124A70 wants. */
+   word at +4 is the uninitialised in/out count sceDbcReceiveData wants. */
 typedef struct {
     unsigned char state;
     char pad[3];
     int result;
 } Pad2Buf;
 
-/* scePad2GetState(port): link the pad if needed (func_00125020), then
-   ask func_001250E0 (scePad2CheckDma) whether new data has arrived.
-   If so, fetch the active "side" struct (func_00125078) and take its
+/* scePad2GetState(port): link the pad if needed (sce_pad2_link_driver), then
+   ask sce_pad2_check_dma (scePad2CheckDma) whether new data has arrived.
+   If so, fetch the active "side" struct (sce_pad2_get_side) and take its
    state byte directly if it looks initialised (+0x4 != 0); otherwise
    try one more relink and use it anyway on success, else forget this
    port's link and return 0. If CheckDma says nothing changed, build
    the RPC command word (the same McCmd bitfield union as
-   func_00124DF0's {2,3,2,1}, here {0xC,2,1,1}) and round-trip it
-   through func_00124A70; return its state byte on success, 0 on
+   sce_pad2_get_button_profile's {2,3,2,1}, here {0xC,2,1,1}) and round-trip it
+   through sceDbcReceiveData; return its state byte on success, 0 on
    failure. */
 int sce_pad2_get_state(int port) {
     Pad2Buf buf;
@@ -1078,9 +1078,9 @@ extern void sync_dcache_range(void *a, void *b);
 
 /*
  * Close, not exact (3/100), same size. Logic confirmed: take entry
- * arg0 of the 0x330-stride table D_0015B640, follow its +0xC pointer,
+ * arg0 of the 0x330-stride table pad2_sockets, follow its +0xC pointer,
  * record that pointer and pointer+0x80 in a two-slot stack array, call
- * func_00119288(p, p+0x100), then return whichever slot has the smaller
+ * sync_dcache_range(p, p+0x100), then return whichever slot has the smaller
  * +0x7C field -- retail indexes the array with the `slt` result
  * directly, which plain C reproduces.
  *
@@ -1106,9 +1106,9 @@ extern int pad2_last_dma_counters[];
 
 /* Has entry arg0's current pair changed? Follow entry arg0 of the
    0x330-stride table to its buffer p; the pair is p+0x7C and p+0x80+0x7C.
-   If the first is zero, or both equal the cached pair D_00132ED8[0..1],
+   If the first is zero, or both equal the cached pair pad2_last_dma_counters[0..1],
    report 0; otherwise cache them and report 1. The two-slot stack array
-   is retail's (the same idiom as func_00125078). Exact under this file's
+   is retail's (the same idiom as sce_pad2_get_side). Exact under this file's
    2.9-ee; under 2.95.3 it was a word long. */
 /* The old note's decode, exact since 001236F0.c builds with 2.9-ee. */
 int sce_pad2_check_dma(int arg0) {

@@ -39,7 +39,7 @@ extern void truncate_float_to_s32(float);
 
 extern void transform_scaled_vertex_batch(char *arg0, int arg1, void *arg2, char *arg3);
 
-/* functional: medium. The NTSC decomp's pending C for the same instructions (a draft it has not matched
+/* The NTSC decomp's pending C for the same instructions (a draft it has not matched
    yet), carried to PAL's names by OpenRAC's tools/port.py. Never compared with retail's bytes here. */
 extern s32 capture_glyph_coordinates[64];
 extern s32 capture_glyph_advances[64];
@@ -141,7 +141,7 @@ extern void render_capture_scrolling_text(char *, int, int, float);
 
 /* Two base locals, one before the join and one after, make gcse share
    only the %hi and rebuild the %lo base after the join; the first must
-   be assigned after the first call. func_00116810 is strlen. */
+   be assigned after the first call. libc_strlen is strlen. */
 void update_scrolling_status_message(void) {
     char *v;
     char *w;
@@ -485,11 +485,11 @@ typedef struct {
 
 /* Vendor ammo prompt: draws the panel, then shows text 0x4EE0 when
    nothing is selected, or when the selected slot is an ammo slot
-   (kind 1) that is not full (D_0013D530[type] < max) and the player's
-   D_0015EE98 covers its price (priceAlt when +0x40 is set).
+   (kind 1) that is not full (weapon_ammo_counts[type] < max) and the player's
+   gBolts covers its price (priceAlt when +0x40 is set).
    The kind test is two separate ifs: the first one's failure jumps to
    the second, so CSE sees a label there and keeps the re-test retail
-   has. The D_001E02B0 records are reached as char arithmetic cast to a
+   has. The vendor_item_prices records are reached as char arithmetic cast to a
    struct, which gives retail's index-first addu with the field offset
    left as the load displacement. */
 void VendorDrawAmmoPrompt(void) {
@@ -609,11 +609,11 @@ void render_vendor_capture_texture_overlays_pass(s32 pass_index, f32 capture_wid
 extern void configure_graphics_projection(int, int, float, float, float, float, float);
 extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
 
-/* Sets up a (1 << a) x (1 << b) area: func_001FB608 gets the sizes and a
+/* Sets up a (1 << a) x (1 << b) area: setup_render_target gets the sizes and a
    base below 0x3FF000 by 4 << min(a + b, 16) bytes, rounded down to 8 KB
-   (the GS page), func_001F3760 the sizes and the float setup (f, 0,
+   (the GS page), configure_graphics_projection the sizes and the float setup (f, 0,
    524288, 255, 0); then GS registers 0x47 and 0x42 are written through
-   func_00234C98, whose value argument is 64-bit (hence the long alias,
+   VU1_addGSregister, whose value argument is 64-bit (hence the long alias,
    which builds 0x8000000044 as one dli). */
 void configure_capture_target(int a, int b, float f) {
     int t = a + b;
@@ -655,7 +655,8 @@ extern void render_vendor_buy_label_pass(char *, int, int);
 extern void VendorDrawAmmoPrompt_r(char *) __asm__("func_0023A478");
 extern void render_vendor_item_icon_strip_pass_r(char *) __asm__("func_00239A00");
 
-/* Renders the six vendor monitor screens: projects each screen's joint box, renders its view off-screen and draws it back. */
+/* Renders the six vendor monitor screens: projects each screen's joint box, renders its view off-screen and draws it
+   back. */
 void render_vendor_capture_pass_sequence(char *m) {
     float len;
     float f;
@@ -773,7 +774,7 @@ extern int truncate_float_to_s32_i(float) __asm__("func_001FA898");
 
 /* Index of the zone whose box (in 1/1024 units, 0x800 deep) holds the
    point and whose 4x4 cell mask at +0x1E has the point's cell set, or
-   -1. Cells are sized and offset by the grid in D_001E69E0. */
+   -1. Cells are sized and offset by the grid in surface_height_grid. */
 int FindZoneAtPoint(float x, float y, float z) {
     int ix = truncate_float_to_s32_i(x * 1024.0f);
     int iy = truncate_float_to_s32_i(y * 1024.0f);
@@ -804,7 +805,7 @@ int FindZoneAtPoint(float x, float y, float z) {
     return -1;
 }
 
-/* 12 bytes of post-endlabel nop padding in retail -- see func_001F6668. */
+/* 12 bytes of post-endlabel nop padding in retail -- see FontPrint. */
 __asm__(".section .text\n\tnop\n\tnop\n\tnop\n");
 
 LINKER_REMNANT("asm/remnants/text", func_0023B1E8);
@@ -921,7 +922,7 @@ __asm__(".section .text\n\tnop\n\tnop\n\tnop\n");
 LINKER_REMNANT("asm/remnants/text", func_0023B510);
 
 /* If flag 0x2 at +0x70 is set, sets +0x54 to 1.0 (0.0 once +0x58 is
-   positive) and clears +0x58; then calls func_0023B5D0. The 0x68 bytes of
+   positive) and clears +0x58; then calls update_instance_attachment_points_and_lengths. The 0x68 bytes of
    linker remnant in front of it were split off. */
 extern void update_instance_attachment_points_and_lengths(char *arg0);
 
@@ -948,10 +949,10 @@ extern float FastVecLength(void *);
 extern void FastVecSub_b(void *, void *, void *) __asm__("func_001F9BF0");
 
 /* Run the four-vertex transform over the block hanging off arg0+0x78
-   with a fresh copy of the D_00160FD0 parameters (a plain struct
+   with a fresh copy of the attachment_vertex_indices parameters (a plain struct
    assignment: at alignment 1 this compiler expands the 16 bytes as
    unaligned ldl/ldr + sdl/sdr pairs, which is retail's shape -- same
-   idiom as func_001FFE88), then record the two resulting lengths at
+   idiom as copy_text_to_shared_buffer), then record the two resulting lengths at
    +0x40 and +0x44. */
 void update_instance_attachment_points_and_lengths(char *arg0) {
     float a[4];

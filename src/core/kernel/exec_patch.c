@@ -13,8 +13,8 @@ ASM_FUNC("asm/handwritten/core_text", func_0011DBE8);
 ASM_FUNC("asm/handwritten/core_text", func_0011DBF8);
 
 /* kCopy: libosd.o's own copy of the word-at-a-time copy helper (nbytes
- * rounded down to words); returns 0. Same body as func_0011DA08
- * (initsys.o), func_0011D370 (alarm.o) and func_0011DDF0 (alarm.o's other
+ * rounded down to words); returns 0. Same body as kCopy
+ * (initsys.o), tlbfunc_kcopy (alarm.o) and alarm_kCopy (alarm.o's other
  * copy) -- each kernel module linked its own instance of this helper. */
 int osd_kCopy(int *dst, int *src, unsigned int nbytes) {
     unsigned int i;
@@ -26,7 +26,7 @@ int osd_kCopy(int *dst, int *src, unsigned int nbytes) {
 
 ASM_FUNC("asm/handwritten/core_text", func_0011DC40);
 
-/* Reads a word through func_00118CF0, rewrites its 13..15 bit field to 1,
+/* Reads a word through get_osd_config_param, rewrites its 13..15 bit field to 1,
    pushes it back, re-reads it and restores the original. Returns whether
    the field read back as 0. `srl` (not `sra`) at the end is the tell that
    the scratch word is unsigned. */
@@ -51,9 +51,9 @@ typedef struct {
     int fn;
 } SysEnt;
 
-/* When func_0011DC50 says so, installs the kernel entries of the
-   {num, fn} table at D_00130BD0 (the third through func_0011DC40) and
-   copies 0x7A8 bytes of D_00130428 to 0x80074000. Indexing the table in
+/* When PatchIsNeeded says so, installs the kernel entries of the
+   {num, fn} table at osd_syscall_patch_table (the third through osd_get_syscall_entry) and
+   copies 0x7A8 bytes of osd_kernel_patch_code to 0x80074000. Indexing the table in
    the loop keeps its base live, so the argument loads keep source
    order. */
 void InitExecPS2(void) {

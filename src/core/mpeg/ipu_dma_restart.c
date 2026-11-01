@@ -17,12 +17,12 @@ void mpeg_stop_ipu_dma(void *arg0) {
     sce_ipu_stop_dma((char *)*(void **)((char *)arg0 + 0x40) + 0x4C);
 }
 
-/* func_0012CE48 itself ends in a tail call (to func_0012CCF8): it returns
+/* sce_ipu_restart_dma itself ends in a tail call (to set_d4_chcr): it returns
    nothing. */
 extern void sce_ipu_restart_dma(void *);
 
 /* Tail call with argument setup: retail is
-   `lw $4,0x40($4)` / `j func_0012CE48` / `addiu $4,$4,0x4C`. Void, so
+   `lw $4,0x40($4)` / `j sce_ipu_restart_dma` / `addiu $4,$4,0x4C`. Void, so
    2.9-ee emits the tail jump (a `return` of the callee's value would
    keep a frame: 32 bytes against 12). */
 void mpeg_restart_ipu_dma(char *a) {

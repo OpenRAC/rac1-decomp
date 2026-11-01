@@ -213,7 +213,7 @@ void PutDispBuffer(void) {
 extern int *g_render_packet_cursor MACRO_ADDR;
 extern void sceGsPutDrawEnv(void *);
 
-/* PutDrawBufferLarge: queue the draw environment at D_0015EFB8+0x30 as a
+/* PutDrawBufferLarge: queue the draw environment at active_fs_aa_buffer+0x30 as a
    DMA ref tag when a packet buffer is open, else send it directly. */
 void PutDrawBufferLarge(void) {
     if (g_render_packet_cursor != 0) {
@@ -227,8 +227,8 @@ void PutDrawBufferLarge(void) {
     }
 }
 
-/* Appends a DMA tag pair (0x30000015 / &D_00152140 / 0 / 0x50000015) to
-   the packet buffer D_00161000 points at, if there is one. */
+/* Appends a DMA tag pair (0x30000015 / &fs_aa_clear_packet / 0 / 0x50000015) to
+   the packet buffer g_render_packet_cursor points at, if there is one. */
 void append_gif_transfer_packet(void) {
     if (g_render_packet_cursor != 0) {
         g_render_packet_cursor[0] = 0x30000015;
@@ -272,9 +272,9 @@ typedef struct {
 } GsFrame; /* sceGsFrame */
 
 /* Sets up a (1 << a) x (1 << b) render target at GS address c (see
-   func_0023A948): records TEX0 for it in D_0015EFD0 (buffer width
+   configure_capture_target): records TEX0 for it in capture_texture_tex0 (buffer width
    1 << max(a - 6, 1) pages, PSMCT32, TCC), its size and FBP (c >> 13) in
-   D_00151880, then appends a packet to D_00161000: a default draw
+   fs_aa_buffer, then appends a packet to g_render_packet_cursor: a default draw
    environment (sceGsSetDefDrawEnv with ztest 3) patched with the FBP and
    the configured Z buffer, followed by TEST_1 0x30003 and a black sprite
    over the whole target. FBP is set through the sceGsFrame bitfield, the
@@ -346,7 +346,7 @@ void append_palette_transfer_packet(void) {
 
 extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
 
-/* Clears the screen through a GIF packet appended to D_00161000: a fixed header then n = w / 32 pairs of sprite corner registers stepping 0x200 per column across a w x h area centred on 0x8000. Adapted from Lombyte's project (GPL-3.0) for PAL: src/rendering/fun_001fb740.c, FUN_001fb740. */
+/* Clears the screen through a GIF packet appended to g_render_packet_cursor: a fixed header then n = w / 32 pairs of sprite corner registers stepping 0x200 per column across a w x h area centred on 0x8000. Adapted from Lombyte's project (GPL-3.0) for PAL: src/rendering/fun_001fb740.c, FUN_001fb740. */
 void draw_centered_capture_background(int w, int h) {
     int *tag;
     long *q;
@@ -403,9 +403,9 @@ extern void vu1_add_vif_code(int);
 extern void VU1_addGSregister(int, long);
 
 /* Draws an alpha-blended sprite through a GIF packet appended to
-   D_00161000 (a DMA/VIF header, TEST_1 0x33003, then PRIM 0x106 with
+   g_render_packet_cursor (a DMA/VIF header, TEST_1 0x33003, then PRIM 0x106 with
    RGBAQ rgba and two XYZ2 corners), with ALPHA_1 (GS register 0x42) set
-   to 0x64 around it by func_00234C98 and a VIF flush (func_00234C50,
+   to 0x64 around it by VU1_addGSregister and a VIF flush (vu1_add_vif_code,
    0x13000000) on each side. The corners are (x << 4) + 0x8000 minus
    half the w/h extent, in 12.4 fixed point. The int sums are kept in their own locals
    (fold would otherwise share the 0x8000 with the extent), and the four

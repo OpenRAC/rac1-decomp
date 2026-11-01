@@ -39,16 +39,16 @@ extern Rec0C moby_class_data_table[];
 extern char *moby_class_resources[];
 extern int resident_moby_class_count MACRO_ADDR;
 
-/* Looks arg0 up in the {key, a, b} table D_001E8F00 (ended by key -1).
-   D_00160000 is read at every use, not cached in a local: CSE then
+/* Looks arg0 up in the {key, a, b} table moby_class_data_table (ended by key -1).
+   resident_moby_class_count is read at every use, not cached in a local: CSE then
    reproduces retail's load order and its surviving register copy. */
 struct Obj {
     u8 pad_00[0x2C];
     s32 extra;                       /* 0x2C */
 };
 
-/* Looks id up in the {key, a, b} table D_001E8F00 (ended by key -1).
-   D_00160000 is read at every use, not cached in a local: CSE then
+/* Looks id up in the {key, a, b} table moby_class_data_table (ended by key -1).
+   resident_moby_class_count is read at every use, not cached in a local: CSE then
    reproduces retail's load order and its surviving register copy. */
 
 void assign_moby_class_data(int id) {
@@ -85,7 +85,8 @@ void update_visible_resident_objects(void) {
                 if (!(((Moby *)m)->flags & 0x40)) {
                     advance_moby_animation(m);
                 }
-                /* inline asm: hook call (beq/move/jal with empty slots). The original used inline asm here too: GCC 2.95 reorg leaves both slots empty only next to asm (see reorg.c stop_search_p). */
+                /* inline asm: hook call (beq/move/jal with empty slots). The original used inline asm here too: GCC
+                   2.95 reorg leaves both slots empty only next to asm (see reorg.c stop_search_p). */
                 {
                     int r;
                     __asm__ volatile("beq %1,$0,1f\n\tmove $4,%2\n\tjal $31,%1\n1:"
@@ -113,7 +114,7 @@ extern void update_moby_animation_state_a(void *) __asm__("func_0020D6D0");
 /* Sets moby m's animation to sequence seq at frame (clamped to the
    sequence's last frame), the next frame to frame + 1 (clamped the same
    way, 0 if still out of range), refreshes the frame pointers
-   (func_0020D6D0) and copies the first float of the new frame to +0x5C.
+   (update_moby_animation_state) and copies the first float of the new frame to +0x5C.
    The frame count is re-read through the class at each test, as retail
    reloads it after the byte stores. */
 void MobySetAnimation(MobyAnim *m, int seq, int frame) {
@@ -141,9 +142,9 @@ extern float IntToFloat(int arg0);
 extern void capture_moby_blend_pose(void *, int);
 extern char moby_blend_slot_poses[];
 
-/* As func_00213F28 below, for a plain sequence change: clamp the frame
+/* As blend_moby_animation_ex below, for a plain sequence change: clamp the frame
    to the sequence's last one; if the moby hasn't settled, park the
-   current pose in a D_001B2F80 blend slot (seq 0xFF, frame = slot). Then
+   current pose in a moby_blend_slot_poses blend slot (seq 0xFF, frame = slot). Then
    set the new sequence and frame and arm the blend timer from arg3. */
 void MobyBlendAnimation(MobyAnim *arg0, int arg1, int arg2, int arg3) {
     int n = arg0->pClass->seqs[arg1]->nframes;
@@ -179,15 +180,15 @@ void MobyBlendAnimation(MobyAnim *arg0, int arg1, int arg2, int arg3) {
     *(unsigned char *)((char *)arg0 + 0x7C) = *((unsigned char *)arg0->pClass->seqs[arg1] + 0x11);
 }
 
-/* Re-registers this MobyAnim in the shared slot table (D_001B2F40, via
-   func_0020DA68) when it hasn't settled yet (unk54 > 0.025, or unk60/unk64
+/* Re-registers this MobyAnim in the shared slot table (moby_render_slots, via
+   find_or_allocate_id_slot) when it hasn't settled yet (unk54 > 0.025, or unk60/unk64
    nonzero) or the caller forces it (arg4 & 4): builds a flags byte from
-   arg4 bits 0/1 (0x100/0x200), hands it to func_0020FC38, snapshots this
-   moby's unkF0 vector into the matching D_001B2F80 slot, remembers the
+   arg4 bits 0/1 (0x100/0x200), hands it to capture_moby_blend_pose, snapshots this
+   moby's unkF0 vector into the matching moby_blend_slot_poses slot, remembers the
    old seq in unkA5 (unless it was already 0xFF), then marks seq 0xFF and
    frame = slot. Either way it then sets nextFrame/prevSeq from arg2/arg1,
-   refreshes frame pointers (func_0020D6D0), arms the timer (unk58 = 1),
-   resets unk54, clears unk70 bit 1, stores 1/func_001FA888(arg3) into
+   refreshes frame pointers (update_moby_animation_state), arms the timer (unk58 = 1),
+   resets unk54, clears unk70 bit 1, stores 1/IntToFloat(arg3) into
    unk5C, and copies a not-yet-named byte (offset 0x11) out of
    pClass->seqs[arg1] into unk7C. */
 void blend_moby_animation_ex(MobyAnim *arg0, int arg1, int arg2, int arg3, int arg4) {
@@ -233,7 +234,7 @@ int random_integer_below(int arg0) {
 
 LINKER_REMNANT("asm/remnants/text", func_002140F0);
 
-/* As func_00214158: the old note's C, with the mtc1 nop added by the
+/* As random_angle_radians: the old note's C, with the mtc1 nop added by the
    pipeline. */
 float random_float_between(float a, float b) {
     int v = func_001160D8();
@@ -278,8 +279,8 @@ extern int coll_line_fix_a(void *, void *, int, int, int) __asm__("func_001EFE10
 
 /* Builds two 16-byte copies of *arg0: one with byte offset 8 (a float)
    forced to 0.01f, the other with its offset-8 float bumped by arg2.
-   Passes both to func_001EFE10 (a collision/line test elsewhere in the
-   file's neighbours); returns D_00194220's float at +8 on success, else
+   Passes both to coll_line_fix (a collision/line test elsewhere in the
+   file's neighbours); returns coll_hit_pos's float at +8 on success, else
    0.0f. */
 f32 ProbeGroundHeight(void *arg0, s32 arg1, f32 arg2) {
     char sp0[16];
@@ -304,13 +305,13 @@ extern int sample_surface_height_map(float *, void *, float, float, float);
 extern float vec_distance_xy(void *, void *);
 extern void set_vector_unit_z(void *);
 
-/* Ground height under pos: func_0023B210's answer when D_00161298 is on
+/* Ground height under pos: sample_surface_height_map's answer when occl_cell_count is on
    and it finds one (it writes the height through its first argument and
-   gets `out` as well); else, when D_0016129C is on and pos lies within
-   0.5 of the height of the disc D_001612A0 (x, y, height, radius) and
-   inside its radius (func_001F9D48 is an XY distance), the disc's
-   height; else pos's own z. Whenever the answer is not func_0023B210's,
-   a non-null `out` is reset by func_001F9BC8. The disc is one MACRO_ADDR
+   gets `out` as well); else, when local_surface_region_enabled is on and pos lies within
+   0.5 of the height of the disc local_surface_region_center_x (x, y, height, radius) and
+   inside its radius (vec_distance_xy is an XY distance), the disc's
+   height; else pos's own z. Whenever the answer is not sample_surface_height_map's,
+   a non-null `out` is reset by set_vector_unit_z. The disc is one MACRO_ADDR
    array: its fields are symbol+offset accesses, which the compiler
    counts as two instructions and so keeps out of delay slots, as retail
    has them. */
@@ -344,7 +345,7 @@ extern void fast_vec_normalize(void *, void *, float);
 extern float min_float(float, float);
 
 /* Shadow range probe: cast a ray down (8 units) from the moby position
-   shifted against the light direction D_001CAE00 by its size, then a
+   shifted against the light direction shadow_light_dir by its size, then a
    second one along the light from just above; +0x84/+0x88 get the lower
    and upper hit height (at most 4 apart), or 0 when nothing is below. */
 void update_moby_shadow_range(char *m) {
@@ -658,12 +659,12 @@ LINKER_REMNANT("asm/remnants/text", func_00214D80);
 
 /* Moves *p1 toward `a` with velocity *p2: when *p2 heads away from the
    target (or it is reached), the velocity eases to 0 by c
-   (func_00214D28) and is added. Otherwise, inside the braking distance
+   (ApproachValue) and is added. Otherwise, inside the braking distance
    (*p2^2 / c / 2) it eases to 0 by c, or by 1.1c once |diff| + |*p2| no
    longer exceeds that distance; outside it, it eases by b toward
-   +-min(func_001F9B50(2c * diff), d) (func_001F9B50 is a square root).
+   +-min(vec_length(2c * diff), d) (vec_length is a square root).
    Then, if |*p2| < |diff| the velocity is added and returned, else *p1
-   snaps to `a` and diff is returned. func_001F9B88 is fabsf; the fabs
+   snaps to `a` and diff is returned. FastAbsF is fabsf; the fabs
    calls are made in retail's order through temporaries. */
 float ApproachWithVelocity(float *p1, float *p2, float a, float b, float c, float d) {
     float diff = a - *p1;
@@ -777,7 +778,7 @@ int suck_get_aim_height(char *arg0) {
     return *((int *)((Moby *)arg0)->pvars);
 }
 
-/* func_00215048 for the +0x10 field. */
+/* suck_get_aim_height for the +0x10 field. */
 int read_state_field(char *arg0) {
     if (arg0 == 0) {
     ret0:
@@ -851,7 +852,7 @@ void MatrixToQuaternion(void *arg0, void *arg1) {
 extern void MatrixToQuaternion(void *, void *);
 extern void matrix_copy_rows(void *, void *);
 
-/* func_001FA460 takes two arguments: arg1 is passed on to it untouched,
+/* copy_matrix_rotation takes two arguments: arg1 is passed on to it untouched,
    which gives arg1 three references and retail's $s0. */
 void extract_matrix_rotation_quaternion(void *arg0, void *arg1) {
     char buf[0x40];
@@ -866,7 +867,7 @@ extern float FastSin(float); /* sin of a half-angle */
 extern float FastCos(float); /* cos of a half-angle */
 
 /* Axis-angle -> quaternion: the xyz part is axis scaled by sin(angle/2)
-   (done by func_001F9C30, which writes through arg0), and w at +0xC is
+   (done by FastVecScale, which writes through arg0), and w at +0xC is
    cos(angle/2). Both trig calls take the same half-angle, which is why
    it lives in $f20 across all three calls. */
 void build_quaternion_from_axis_angle(void *arg0, void *axis, float angle) {
@@ -884,8 +885,8 @@ extern void euler_to_matrix(float *, float *);
 extern void euler_to_matrix_ee(float *, float *);
 
 /* Matrix to Euler angles: on a copy of src with the translation cleared,
-   read the Z angle from row 0, undo it (func_001FA218 builds the Z
-   rotation, func_001FA540 multiplies), read and undo Y the same way,
+   read the Z angle from row 0, undo it (euler_to_matrix builds the Z
+   rotation, sce_vu0_mul_matrix multiplies), read and undo Y the same way,
    then read X from row 1; out = (x, y, z). The last undo vector is
    filled but never used. The 16-byte aligned struct copy is retail's
    four interleaved lq/sq. */
@@ -921,7 +922,7 @@ void matrix_to_euler(Mtx44 *src, float *out) {
     out[0] = x;
 }
 
-/* 12 bytes of post-endlabel nop padding in retail -- see func_001F6668. */
+/* 12 bytes of post-endlabel nop padding in retail -- see FontPrint. */
 __asm__(".section .text\n\tnop\n\tnop\n\tnop\n");
 
 LINKER_REMNANT("asm/remnants/text", func_00215518);
@@ -934,7 +935,7 @@ typedef struct {
 extern ViewBox *clip_volume_table MACRO_ADDR;
 extern void FastVecSub(void *, void *, void *);
 
-/* Is point arg0 inside box arg1 of the table at D_00160134? The offset
+/* Is point arg0 inside box arg1 of the table at clip_volume_table? The offset
    from the box's position, taken through its matrix, must lie in
    [-1, 1] on every axis. 0 for arg1 == -1. */
 int is_point_inside_clip_volume(void *arg0, int arg1) {
@@ -958,7 +959,7 @@ int is_point_inside_clip_volume(void *arg0, int arg1) {
 LINKER_REMNANT("asm/remnants/text", func_00215648);
 
 /* Conjugate-style sandwich: arg0 = arg2 * (arg1 with w = 0) * a, where
-   a is arg2 negated with its w kept (func_001FA588 is the quaternion
+   a is arg2 negated with its w kept (multiply_quaternions is the quaternion
    multiply). The 16-byte copy of arg1 is qcopy's lq/sq. */
 void rotate_vector_by_quaternion(void *arg0, void *arg1, void *arg2) {
     float a[4];
@@ -1035,9 +1036,9 @@ LINKER_REMNANT("asm/remnants/text", func_002158E0);
 extern int FastVectorToPackedChars(float *);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
-/* Packs vector v into one RGBA word at *out (func_001F9F30 converts a
+/* Packs vector v into one RGBA word at *out (FastVectorToPackedChars converts a
    float4 to bytes): its largest absolute component sets a scale n,
-   rounded (func_001FA898) from max * 10000 / 63 and clamped to 1..255,
+   rounded (truncate_float_to_s32) from max * 10000 / 63 and clamped to 1..255,
    which goes in w; x, y, z become v / (n / 10000) + 127. */
 void pack_vector_xyz_with_shared_scale(float *v, int *out) {
     float buf[4];
@@ -1125,7 +1126,7 @@ int IsFrameWithinWindow(char *arg0, float arg1) {
 LINKER_REMNANT("asm/remnants/text", func_00215BA8);
 
 /* Spherical-to-cartesian: x is the radius, y and z the two angles.
-   func_001F9F90 is cos, func_001F9FA8 sin (named in the comments at
+   FastCos is cos, FastSin sin (named in the comments at
    func_00212xxx). Each product is spelled trig * r * trig so the two
    calls are issued before the multiplies, the way retail does. */
 void BuildSphericalOffset(void *arg0, float r, float y, float z) {
@@ -1223,7 +1224,7 @@ extern int help_message_keepalive MACRO_ADDR;
 extern int help_message_owner MACRO_ADDR;
 extern int help_message_id MACRO_ADDR;
 
-/* Shows help message arg1 (func_001FFE88 of its string) for requester
+/* Shows help message arg1 (copy_text_to_shared_buffer of its string) for requester
    arg0: 2 if arg0 already holds the slot, 1 if the slot was free and
    arg0 takes it, 0 if someone else holds it. The failure return goes
    last, which lets the scheduler put `li $2,1` before the last store. */

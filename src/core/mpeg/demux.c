@@ -9,10 +9,10 @@
  * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
  *
  * Sony's MPEG library (libmpeg): sceMpegInit/Create/Delete-style setup,
- * the callback table (sceMpegAddCallback, func_0012BC50) and its
+ * the callback table (sceMpegAddCallback, sce_mpeg_add_callback) and its
  * dispatcher, the work-area allocator, the picture/field steps and the
  * error reporter ("[MPEG ERROR]%s"). Built with Sony's 2.9-ee like the
- * rest of libmpeg (0012A2F0.c): see func_0012BC50, whose match needs
+ * rest of libmpeg (0012A2F0.c): see sce_mpeg_add_callback, whose match needs
  * 2.9-ee's type-based alias analysis.
  */
 
@@ -33,7 +33,7 @@ struct TypeEntry_12AC80 {
 extern struct TypeEntry_12AC80 mpeg_stream_type_keys_r[] __asm__("D_00132FD8");
 
 /* _type2id (libmpeg): for a type below 10, the 64-bit stream key
-   D_00132FD8[type].id with value shifted into the field its mask selects
+   mpeg_stream_type_keys[type].id with value shifted into the field its mask selects
    (0, 24 or 32 bits up); 0 for any other type.
    Adapted from Lombyte's project (GPL-3.0): src/sdk/library/type2id.c, _type2id. */
 long mpeg_type2id(int id, int value) {
@@ -208,7 +208,7 @@ typedef struct {
 extern Tbl16 mpeg_stream_type_keys[];
 
 /*
- * sceMpegAddStrCallback (libmpeg.a:pack.o): key = func_0012AC80(arg1,
+ * sceMpegAddStrCallback (libmpeg.a:pack.o): key = mpeg_type2id(arg1,
  * arg2) (a 64-bit stream/type key); linear-search the object's callback
  * table (handlers[7] reused as {table pointer, count} -- raw offsets,
  * not the Handler struct, per this file's warning about that array
@@ -216,7 +216,7 @@ extern Tbl16 mpeg_stream_type_keys[];
  * none found). Whether found or not (index lands on the match, or one
  * past the end), if there's room (< 0x40 entries), overwrite the slot
  * with the new key/data/callback and the type's extra 8 bytes from
- * D_00132FD8[arg1], and bump the stored count unconditionally. Returns
+ * mpeg_stream_type_keys[arg1], and bump the stored count unconditionally. Returns
  * the previous callback.
  */
 int sce_mpeg_add_str_callback(void *arg0, int arg1, int arg2, int arg3, int arg4) {
@@ -248,17 +248,17 @@ extern int mpeg_system_header();
 
 /*
  * _pack_header (libmpeg.a:pack.o): ISO/IEC 11172-1 2.4.3.3 pack_header().
- * func_0012AB60 is nextBit ("get n bits"), func_0012ABB0 a marker-bit
- * skip, func_0012AAA8 a 32-bit peek (nextStartCode-style). Reads the pack
+ * sysbit_get is nextBit ("get n bits"), sysbit_marker a marker-bit
+ * skip, sysbit_show a 32-bit peek (nextStartCode-style). Reads the pack
  * start code's fixed fields (34 then 3, marker, 15, marker, 15, marker,
  * 9, marker), discarding the SCR/mux_rate pieces except for three: the
  * low bit of the first 3-bit group goes to +0x8, and the three groups
  * combine into +0x4 as (first<<30)|(second<<15)|third. The last field
  * read (3 bits) is pack_stuffing_length: that many stuffing bytes are
  * then skipped. Peeks the next 32 bits; a system_header_start_code
- * (0x1BB) sets +0xC and hands off into func_0012B250 (system_header
+ * (0x1BB) sets +0xC and hands off into mpeg_system_header (system_header
  * parsing -- called prototype-less here since retail's call site passes
- * it a second, unused argument, the same K&R situation as func_00129F40
+ * it a second, unused argument, the same K&R situation as _dispRefImageField
  * elsewhere in this file), otherwise clears +0xC. Always returns 1.
  */
 int mpeg_pack_header(void *arg0, void *arg1) {
@@ -471,12 +471,12 @@ extern void sce_ipu_init(void);
 
 /*
  * sceMpegInit (libmpeg.a:mpeg.o): one-time IOP/EE SIF hardware bring-up.
- * func_0011D960 presumably queries the DMA/SIF state, gating whether
- * func_0011D9A8 (a kick) runs; the SIF flag register at 0x1000F590 is set
+ * disable_interrupts presumably queries the DMA/SIF state, gating whether
+ * enable_interrupts (a kick) runs; the SIF flag register at 0x1000F590 is set
  * then cleared (bit 0x10000, re-reading 0x1000F520 fresh each time), two
  * DMA channel control registers (0x1000B000/0x1000B400) have bit 0x100
  * masked off, and two more (0x1000B020/0x1000B420) are zeroed before the
- * tail call into func_0012D068.
+ * tail call into sce_ipu_init.
  */
 void sce_mpeg_init(void) {
     int r = disable_interrupts();
@@ -511,15 +511,15 @@ extern void mpeg_restart_ipu_dma(void);
 /*
  * sceMpegCreate (libmpeg.a:mpeg.o): clear the caller's work area
  * (memset), align it up to 4 and carve the decoder object out of it. Less
- * than 0x10C0 usable bytes is reported through func_0012C468 and returns
+ * than 0x10C0 usable bytes is reported through _Error and returns
  * 0. Otherwise: wrapper->0x40 = the object; a heap descriptor at +0x108
- * (func_0012BD28) covers the space past 0x10C0; the fields are reset
+ * (mpeg_work_area_init) covers the space past 0x10C0; the fields are reset
  * (-1 "unset" sentinels or 0); 0x600 bytes are allocated from that heap
- * (func_0012BD60) into +0x44; handler slots +0x1C/+0x24 get the two
- * callback trampolines (func_0012CC70/func_0012CC80); func_0012C2F8,
- * sceMpegReset (func_0012BBA8) and func_0012BBF8 run; the three 0x10-byte
+ * (reserve_aligned_buffer_space) into +0x44; handler slots +0x1C/+0x24 get the two
+ * callback trampolines (mpeg_stop_ipu_dma/mpeg_restart_ipu_dma); mpeg_clear_once,
+ * sceMpegReset (sce_mpeg_reset) and sce_mpeg_clear_ref_buff run; the three 0x10-byte
  * entries at +0x1B8 get pointers into nine 0x68-byte regions; and
- * func_0012BD40 closes the heap. Success falls off the end (retail
+ * mpeg_work_area_set_mark closes the heap. Success falls off the end (retail
  * leaves 0x70003600 in $v0).
  *
  * The trampoline store at +0x24 is written before the allocation so it
@@ -659,9 +659,9 @@ extern void mpeg_set_mpeg1_mode(void *arg0);
 /*
  * sceMpegReset (libmpeg.a:mpeg.o): clear the object's decode state
  * (unk000/004/008/0AC, the handler-table slot at +0x80, and +0x118), and
- * the wrapper's own +0x08, then call _clearEach (func_0012C358) and hand
- * the object to func_0012C268 (zero +0x848, kick the IPU chain via
- * func_00127378).
+ * the wrapper's own +0x08, then call _clearEach (mpeg_clear_each) and hand
+ * the object to mpeg_set_mpeg1_mode (zero +0x848, kick the IPU chain via
+ * ipu_set_mpeg1).
  */
 void sce_mpeg_reset(void *arg0) {
     char *w = (char *)arg0;
@@ -791,7 +791,7 @@ extern char mpeg_work_area_size_too_small_msg[];
 
 /* Bump allocator out of a region {base, size, used}: round `used` up to
    `align`, reserve `size` bytes, and hand back the aligned offset. On
-   overflow it reports through func_0012C468 and returns 0 WITHOUT
+   overflow it reports through _Error and returns 0 WITHOUT
    touching `used`.
 
    The fitting case is written first (`>=`): 2.9-ee then branches to the
@@ -816,7 +816,7 @@ unsigned int reserve_aligned_buffer_space(void *arg0, char *r, unsigned int size
 extern int mpeg_next_header(void *);
 extern int mpeg_flush_last_frame(void *);
 extern int mpeg_decode_or_skip(void *, int, int);
-/* _errMessage (func_0012C430) sprintf's its format and passes the
+/* _errMessage sprintf's its format and passes the
    format's arguments on untouched in $a1-$a3, so it is called here
    without a prototype, with the value the "%08x" reports. */
 extern void _errMessage();
@@ -826,14 +826,14 @@ extern char mpeg_image_buffer_unaligned_msg[];
  * _getpic (libmpeg.a:mpeg.o): fetch and start decoding one picture.
  * The image buffer (inner +0xD8) must be 64-byte aligned; if not, it is
  * reported through _errMessage with the address and the call fails with
- * -1. Otherwise loop: fetch headers (func_00128C90) until one yields no
+ * -1. Otherwise loop: fetch headers (mpeg_next_header) until one yields no
  * picture (0), the picture counter reaches its target (+0x174 == +0xD4)
  * or the fault flag (+0x848) clears, skipping the fetch when the last
- * decode returned -1. picture_coding_type 1/2/3 call func_0012C058 with
+ * decode returned -1. picture_coding_type 1/2/3 call mpeg_decode_or_skip with
  * that type's running index (+0xA0/+0xA4/+0xA8, I resetting all three)
  * and slot (+0x94/+0x98/+0x9C) and bump the index; type 4 shares the B
  * arm (retail's jump table maps 3 and 4 to one handler); 0 ends the
- * stream through func_0012C200 and sets inner->0; anything above 4 does
+ * stream through mpeg_flush_last_frame and sets inner->0; anything above 4 does
  * nothing. Returns 1 once +0x820 or inner->0 is set.
  *
  * pictureType's initializer and lastResult declared first put both in
@@ -900,7 +900,7 @@ extern int mpeg_update_ref_image(void *, int);
 extern int mpeg_dec_picture(void *);
 extern void mpeg_output_frame(void *, int, int);
 
-/* _decodeOrSkipFrame (libmpeg): sibling of func_0012C0A0
+/* _decodeOrSkipFrame (libmpeg): sibling of mpeg_decode_or_skip_field
    (_decodeOrSkipField), for the frame-picture path. Adapted from
    Lombyte's project (GPL-3.0) for PAL. */
 int mpeg_decode_or_skip_frame(void *arg0, int arg1, int arg2) {
@@ -942,8 +942,8 @@ int mpeg_decode_or_skip_frame(void *arg0, int arg1, int arg2) {
 extern int mpeg_decode_or_skip_field(void *, int, int);
 extern int mpeg_decode_or_skip_frame(void *, int, int);
 
-/* Hands the call on by the inner object's +0x174 mode: func_0012BF40 for
-   mode 3, func_0012C0A0 otherwise, with the caller's arguments.
+/* Hands the call on by the inner object's +0x174 mode: mpeg_decode_or_skip_frame for
+   mode 3, mpeg_decode_or_skip_field otherwise, with the caller's arguments.
 
    Returns its callees' values: retail keeps the frame and calls both, and
    2.9-ee tail-calls each arm (bare `j`, SIZE 40/68) when it is void. */
@@ -1063,7 +1063,7 @@ int mpeg_flush_last_frame(void *arg0) {
 }
 
 /* Tail call: the constant argument setup lands in the jump's delay slot,
-   so the field store precedes it. func_00127378 is defined above. */
+   so the field store precedes it. ipu_set_mpeg1 is defined above. */
 void mpeg_set_mpeg1_mode(void *arg0) {
     *(int *)((char *)arg0 + 0x848) = 0;
     ipu_set_mpeg1(1);
@@ -1149,9 +1149,9 @@ extern void sce_ipu_sync(int, int);
  * clear its slice-address latch (+0x1B0), then the same SIF-flag toggle
  * (0x1000F590 set/cleared around bit 0x10000, re-reading 0x1000F520 fresh
  * each time) and three DMA channel registers zeroed (0x1000B000/B400/D400),
- * gated IOP kick via func_0011D960/func_0011D9A8, three more registers
+ * gated IOP kick via disable_interrupts/enable_interrupts, three more registers
  * zeroed (0x1000B020/B420/D420), IPU_CTRL (0x10002010) set to 0x40000000,
- * and a tail call into func_0012CF98(0, 0).
+ * and a tail call into sce_ipu_sync(0, 0).
  */
 void mpeg_clear_each(void *arg0) {
     char *s = (char *)arg0;
@@ -1179,7 +1179,7 @@ void mpeg_clear_each(void *arg0) {
 }
 
 extern char mpeg_error_format[];
-/* Unprototyped: func_0011A6C8 is a varargs definition (blocked as such),
+/* Unprototyped: scePrintf is a varargs definition (blocked as such),
    but calling one is fine -- only defining one needs stdarg.h. */
 extern void scePrintf();
 
@@ -1236,17 +1236,17 @@ extern void mpeg_init_seq(void *);
  * _sequenceHeader (libmpeg.a:init.o): ISO/IEC 13818-2 6.2.2.1
  * sequence_header(), hardware-VLC variant matching mpeg2decode's
  * gethdr.c almost line for line but reading combined bitfields in one
- * Get_Bits (func_00128A58) call each: a 32-bit fetch for
+ * Get_Bits (_nextBit) call each: a 32-bit fetch for
  * horizontal_size/vertical_size/aspect_ratio_information/frame_rate_code
  * (only the two sizes are kept, at +0x124/+0x128; a vertical_size
- * reading >= 0xAF1 is reported through func_0012C468) and a 30-bit fetch
+ * reading >= 0xAF1 is reported through _Error) and a 30-bit fetch
  * for bit_rate_value/marker_bit/vbv_buffer_size/constrained_parameters_
  * flag (bit_rate_value kept at +0x134, vbv_buffer_size at +0x138).
  * load_intra/non_intra_quantizer_matrix (+0x840/+0x844) gate the IPU
- * matrix load (func_00128590/func_00128560) or, when clear, _setDefaultQM
- * (func_0012C990) with the reference decoder's default table. Ends with
- * extensionAndUserData (func_00128E68) and a tail call into _initSeq
- * (func_0012C608) with the object read back from +0x858.
+ * matrix load (wait_ipu_idle/send_ipu_command) or, when clear, _setDefaultQM
+ * (mpeg_set_default_qm) with the reference decoder's default table. Ends with
+ * extensionAndUserData (_extensionAndUserData) and a tail call into _initSeq
+ * (mpeg_init_seq) with the object read back from +0x858.
  */
 void _sequenceHeader(void *arg0) {
     char *s = (char *)arg0;
@@ -1420,7 +1420,7 @@ extern char mpeg_unsupported_profile_level_msg[];
 /*
  * _sequenceExtension (libmpeg.a:init.o): ISO/IEC 13818-2 6.2.2.3
  * sequence_extension(), matching mpeg2decode's gethdr.c almost line for
- * line but reading two combined bitfields with func_00128A58: a 28-bit
+ * line but reading two combined bitfields with _nextBit: a 28-bit
  * fetch covers profile_and_level_indication(8) + progressive_sequence(1)
  * + chroma_format(2) + horizontal_size_extension(2) +
  * vertical_size_extension(2) + bit_rate_extension(12) + marker_bit(1); a
@@ -1428,7 +1428,7 @@ extern char mpeg_unsupported_profile_level_msg[];
  * frame_rate_extension_n(2) + frame_rate_extension_d(5) (the last three
  * read and dropped). chroma_format must be 1 (4:2:0) and
  * profile_and_level_indication one of three literal bytes (0x48/0x58/
- * 0x44); either failing reports through func_0012C468. Ends by folding
+ * 0x44); either failing reports through _Error. Ends by folding
  * the extension bits into sequenceHeader's fields exactly as the
  * reference decoder's
  * `horizontal_size = (horizontal_size_extension<<12) | (horizontal_size&0xfff)`
@@ -1501,7 +1501,7 @@ extern char mpeg_sequence_scalable_ext_msg[];
 extern char mpeg_unknown_extension_msg[];
 extern char mpeg_picture_spatial_scalable_ext_msg[];
 
-/* Three more of the func_0012C468 family, same shape as func_0012CC60. */
+/* Three more of the _Error family, same shape as _pictureTemporalScalableExtension. */
 void _sequenceScalableExtension(void *arg0) {
     _Error(arg0, mpeg_sequence_scalable_ext_msg);
 }
@@ -1516,7 +1516,7 @@ void _pictureSpatialScalableExtension(void *arg0) {
 
 extern char mpeg_picture_temporal_scalable_ext_msg[];
 
-/* Tail call: arg0 passes straight through, arg1 is &D_00153CC8 whose
+/* Tail call: arg0 passes straight through, arg1 is &mpeg_picture_temporal_scalable_ext_msg whose
    %lo half retail schedules into the jump's delay slot. */
 void _pictureTemporalScalableExtension(void *arg0) {
     _Error(arg0, mpeg_picture_temporal_scalable_ext_msg);

@@ -228,7 +228,7 @@ extern LoadPoint effect_texture_definitions_p[] __asm__("D_0018D540");
 extern short log2dim_s(int) __asm__("func_001F9968");
 
 /* Unpack count point records (x, y, u, v words, 12.4 fixed point for
-   x/y) into D_0018D540. Adapted from Lombyte's project (GPL-3.0) for PAL. */
+   x/y) into effect_texture_definitions. Adapted from Lombyte's project (GPL-3.0) for PAL. */
 void unpack_point_records(int *src, int count) {
     int x;
     int y;
@@ -281,11 +281,11 @@ typedef struct {
 extern SkyDefL *level_sky_effect_data_s __asm__("D_0016055C") MACRO_ADDR;
 
 /* Relocates the sky definition s just loaded (its pointers are offsets
-   from s) and makes it the current one (D_0016055C): the page table and
+   from s) and makes it the current one (level_sky_effect_data): the page table and
    the +0x14/+0x18/+0x1C blocks (+0x1C only when present), then each GIF
    page, whose four words are rewritten in place as two 1/16 values, two
-   func_001F9968 results and a cleared tag, then each shell and the items
-   in it. The pages are reached through D_0016055C at every use, as
+   log2dim results and a cleared tag, then each shell and the items
+   in it. The pages are reached through level_sky_effect_data at every use, as
    retail reloads it after each call. The item pointer is a separate
    `sh + k` local: loop.c then reduces it to one register starting at sh
    and reaches the item at +0x20 from it, as retail does. */
@@ -470,10 +470,10 @@ void LoadHudBanks(void) {
 
 /*
  * The heap cursor. Retail reaches it with the one-register macro form
- * (both the load and the $at store), so it is MACRO_ADDR; D_0019A500
+ * (both the load and the $at store), so it is MACRO_ADDR; hud_bank_table_ptr
  * next to it is the ordinary split lui/%lo, so it stays plain.
  *
- * func_00203548 is 3/100: two addu operand orders are reversed
+ * LoadCompressedHudBank is 3/100: two addu operand orders are reversed
  * (`addu $2,$4,$2` and the $3/$4 pair in the tail). Every spelling of
  * both address expressions -- base-first, index-first, array indexing
  * on a cast pointer, the base hoisted into a local -- compiles to the
@@ -596,9 +596,9 @@ extern long alternate_special_material_template[];
 
 /* Fills four A+D qwords (low dwords only) at out: a TEX1-style word
    (MXL bits from the second word of row arg5 of the 3-dword table
-   D_0019E640, MMAG 1, MMIN arg2, K arg1), then arg3 | arg4 << 2 |
+   resident_material_templates, MMAG 1, MMIN arg2, K arg1), then arg3 | arg4 << 2 |
    arg5 << 24, then the row's first and third words. A negative arg5 has
-   no row: -2 and -3 take the rows D_0019E7C0 and D_0019E7D8 (and 5 for
+   no row: -2 and -3 take the rows special_material_template and alternate_special_material_template (and 5 for
    the second word), -1 a fixed constant and 0. The row is read before
    the sign test, as in retail. The OR operands are named locals so fold
    does not move the 0x20 to the end of the chain. */
@@ -651,7 +651,7 @@ extern int g_gs_texture_allocation_base MACRO_ADDR;
 extern int g_gs_texture_allocation_start MACRO_ADDR;
 extern int g_gs_texture_allocation_cursor MACRO_ADDR;
 /* libgraph: sceGsSetDefLoadImage, sceGsExecLoadImage, sceGsSyncPath;
-   func_00118D80 is the kernel's FlushCache. */
+   flush_cache is the kernel's FlushCache. */
 extern int sceGsSetDefLoadImage(void *, short, short, short, short, short, short, short);
 extern int sceGsExecLoadImage(void *, void *);
 extern int wait_for_graphics_pipeline_idle(int, unsigned short);
@@ -668,8 +668,8 @@ typedef struct {
 } GsLoadImage __attribute__((aligned(16)));
 
 /* Uploads `count` images described by `list` into GS memory, starting at
-   the VRAM cursor D_0015EF74 (reset from D_0015EF8C) and advancing it by
-   each image's size, then records the end in D_0015EF78. An 8-bit image
+   the VRAM cursor g_gs_texture_allocation_cursor (reset from g_gs_texture_allocation_base) and advancing it by
+   each image's size, then records the end in g_gs_texture_allocation_start. An 8-bit image
    is w*h bytes (at least 0x100) with a buffer width of w/64 (at least 1);
    the other two formats are fixed 16x16 uploads. The prototypes are the
    SDK's (short arguments), the clamps are written `< 1` / `< 0x100` so the
@@ -922,11 +922,11 @@ extern void assign_moby_class_data(int);
 extern void prepare_resident_class_render_data(void *, int, int, int);
 
 /* Registers class arg3's data arg0 in the next moby-class slot
-   (D_00160000): class -> slot in D_001B3E40, slot -> class in
-   D_001B3C80, slot -> data in D_001B3580; then func_00213BB8(arg3) and
+   (resident_moby_class_count): class -> slot in resident_class_slot_by_id, slot -> class in
+   resident_class_id_by_slot, slot -> data in moby_class_resources; then assign_moby_class_data(arg3) and
    the slot count is bumped. A non-null arg0 also has its +0x2C field
-   kept in D_001B6500 and is set up by func_00203B70 once the count is
-   bumped. The slot byte is D_00160000 read again as a byte. */
+   kept in resident_class_original_field_2c and is set up by prepare_resident_class_render_data once the count is
+   bumped. The slot byte is resident_moby_class_count read again as a byte. */
 void register_moby_class(void *arg0, int arg1, int arg2, int arg3) {
     int idx = resident_moby_class_count;
 
@@ -947,12 +947,12 @@ __asm__(".section .text\n\tnop\n");
 
 /*
  * tie_ad_gif_convert (written from the assembly). Records the tie ad self in
- * the table D_001E1A00 at the count D_0016104C, stores the count and the ad's
- * index, scales the float at +0x48 by 1024 for func_001FA898, and relocates the
+ * the table object_render_classes at the count registered_object_render_class_count, stores the count and the ad's
+ * index, scales the float at +0x48 by 1024 for truncate_float_to_s32, and relocates the
  * three pointers at +0 .. +8 and the pair at +0xC and +0x2C. Then, for each of
  * the self's entries (count at +0x23, 0x50 bytes each, from the pointer at +0x2C),
- * writes four 64-bit GIF words from the record at a1 (index idx in D_001E3900)
- * or, when a1 is 0, from D_0019E640.
+ * writes four 64-bit GIF words from the record at a1 (index idx in object_render_class_material_maps)
+ * or, when a1 is 0, from resident_material_templates.
  */
 extern int registered_object_render_class_count MACRO_ADDR;
 extern char object_render_class_ids[] NOT_SDA;
@@ -1522,11 +1522,11 @@ extern s32 pal_mode_r __asm__("D_0015EE80") MACRO_ADDR;
 /* The load's state is one small-data object: the stage at its start is reached in one
    instruction (through $gp in a delay slot), the members behind it never are. */
 struct LevelArchiveLoad_04C60 {
-    u16 stage; /* D_0015EF48 */
-    s16 busy; /* D_0015EF4A */
-    struct LevelArchiveHeader_04C60 *shared; /* D_0015EF4C */
-    u8 *sound; /* D_0015EF50 */
-    u8 *level; /* D_0015EF54 */
+    u16 stage; /* level_archive_load_state */
+    s16 busy; /* level_archive_load_busy */
+    struct LevelArchiveHeader_04C60 *shared; /* level_root */
+    u8 *sound; /* sound_archive_base */
+    u8 *level; /* level_archive_base */
 };
 extern struct LevelArchiveLoad_04C60 level_archive_load_state_r __asm__("D_0015EF48") MACRO_ADDR;
 extern s32 cd_read_wait_frames_r __asm__("D_0015EFBC") MACRO_ADDR;
@@ -1739,8 +1739,8 @@ extern int fast_decompress_2(int, int) __asm__("func_0020C468");
 extern struct Moby *CreateMoby_m(int) __asm__("func_0020D348");
 
 /* update_world_object_animation: relocate the model record loaded for the
-   current chunk (D_0018CC20+0x58) and hook each of its parts to a moby,
-   spawning (func_0020D348) and initialising the moby the first time; each
+   current chunk (render_sequence+0x58) and hook each of its parts to a moby,
+   spawning (CreateMoby) and initialising the moby the first time; each
    part's pointer table is made absolute. Adapted from Lombyte's project (GPL-3.0) for
    PAL. */
 void update_world_object_animation(void *arg0) {
@@ -1823,7 +1823,7 @@ extern int vu1_chain_buffer_2 NOT_SDA;
 
 extern int current_vu_chain_m __asm__("D_0016100C") MACRO_ADDR;
 
-/* parse_space_scene_chunk(int): run func_00204FC0 on chunk index's slot,
+/* parse_space_scene_chunk(int): run update_world_object_animation on chunk index's slot,
    with the chunk's value as the current one meanwhile. The slot address is
    written base - (-(index * 4)), which keeps retail's base-first addu
    (adapted from Lombyte's project (GPL-3.0) for PAL). */

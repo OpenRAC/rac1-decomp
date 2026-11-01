@@ -34,9 +34,9 @@ extern int memory_card_request;
 extern char mode_freeze_info[];
 
 /* Enters the freeze screen for reason arg0: pauses the music unless the
-   game mode (D_0015F6E8) is already 3, saves arg1/arg2 and the old mode in
-   the freeze record D_00193400, sets mode 4, then per reason fetches the
-   message strings (func_001FE540) or starts the timers (func_001F98C0);
+   game mode (g_game_mode) is already 3, saves arg1/arg2 and the old mode in
+   the freeze record mode_freeze_info, sets mode 4, then per reason fetches the
+   message strings (msg_string) or starts the timers (scale_game_frame_count);
    an unknown reason gets a plain 0x78 countdown. Each case reads the
    record through its own `char *` local (retail keeps only the %hi and
    rebuilds the %lo per case); the case bodies are in retail's layout
@@ -661,12 +661,12 @@ void draw_freeze_message_box(void) {
     DoGifPaging();
 }
 
-/* The freeze screen's update (game mode 4: the dialogs over a frozen frame). D_00193400 is the
+/* The freeze screen's update (game mode 4: the dialogs over a frozen frame). mode_freeze_info is the
    dialog: +0 its kind (0-8), +4 and +0x2C countdowns, +0x14 the mode to return to, +0x18 a menu
-   to show, +0x1C a step, +0x20 a frame counter, +0x24 a delay before input is taken. D_0013CBE4
-   holds the buttons pressed this frame (0x40 cross, 0x10 triangle, 0x20 circle); D_0015F6E8 is the
-   game's mode, which leaving the dialog sets; D_0015EFB4 the save menu's flags. Kind 3 is the
-   memory card dialog, whose step comes from D_0015EFB0. Written from the instructions. */
+   to show, +0x1C a step, +0x20 a frame counter, +0x24 a delay before input is taken. pad0_pressed
+   holds the buttons pressed this frame (0x40 cross, 0x10 triangle, 0x20 circle); g_game_mode is the
+   game's mode, which leaving the dialog sets; mode_freeze_flags the save menu's flags. Kind 3 is the
+   memory card dialog, whose step comes from mode_freeze_state. Written from the instructions. */
 
 typedef struct {
     int kind;

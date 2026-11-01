@@ -6,8 +6,8 @@
  * ends at 0x1207B8 once its dead-stripped functions are accounted for (see
  * tools/strip_dead.py); the end is retail's linker fill (0xCDCDCDCD).
  *
- * Both functions program hardware registers: func_001207B8 writes the
- * 0x10003Cxx block (VIF1) and func_00120858 the 0x10009000 block (DMA
+ * Both functions program hardware registers: reset_vif1_gif writes the
+ * 0x10003Cxx block (VIF1) and wait_for_graphics_pipeline_idle the 0x10009000 block (DMA
  * channel 1), which suggests one of Sony's EE libraries. Not identified yet.
  */
 

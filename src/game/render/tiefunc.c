@@ -24,7 +24,7 @@ extern int g_gs_texture_allocation_cursor MACRO_ADDR;
 extern char str_tie_texture_overflow[];
 extern int BuildTieTextureDma(int);
 
-/* DmaTieTextures: the same splice for ties, largest size in D_00161074. */
+/* DmaTieTextures: the same splice for ties, largest size in max_tie_texture_dma_size. */
 void DmaTieTextures(void) {
     int *p = (int *)g_render_packet_cursor;
     int size;
@@ -59,8 +59,8 @@ extern ObjectRenderClass *object_render_classes[];
 extern char tie_gif_patch_list[];
 extern char tie_tex_remap_table[];
 
-/* PatchTieGifs: patch_shrub_gifs' shape (func_00229D48). For each tie index
-   in the -1-terminated list at D_001E3300, walk the tie's 0x50-byte
+/* PatchTieGifs: patch_shrub_gifs' shape (patch_shrub_gifs). For each tie index
+   in the -1-terminated list at tie_gif_patch_list, walk the tie's 0x50-byte
    records and patch the nonzero halves of the remap entry picked by byte
    0x33 into the low 14 bits of the words at +0x00 and +0x20. */
 void PatchTieGifs(void) {
@@ -134,7 +134,7 @@ void DrawTies_1(void) {
 
 extern int registered_object_render_class_count MACRO_ADDR;
 
-/* D_0018A3B0 read as a struct: a member access is MEM_IN_STRUCT_P, so
+/* draw_config read as a struct: a member access is MEM_IN_STRUCT_P, so
    sched2 knows it cannot alias the fixed-address scalar stores before it
    (a plain `int *` index is not, and the load then waits for them). */
 typedef struct {

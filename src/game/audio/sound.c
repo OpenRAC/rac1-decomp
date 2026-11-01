@@ -28,8 +28,8 @@ extern void FastVecSub_a(void *, void *, void *) __asm__("func_001F9BF0");
 extern int coll_line_fix_a(void *, void *, int, int, int) __asm__("func_001EFE10");
 
 /* Jitter the vector at arg0 between 0.5 and 6.0, fold in the reference
-   frame at D_00187180, and if the emitter accepts it, re-derive it from
-   D_00194220, damp to 3/4 and fold the frame in again. */
+   frame at camera_position, and if the emitter accepts it, re-derive it from
+   coll_hit_pos, damp to 3/4 and fold the frame in again. */
 void clamp_voice_position_to_collision(void *arg0) {
     random_spherical_offset(arg0, 0.5f, 6.0f);
     FastVecAdd_a(arg0, arg0, camera_position_a);
@@ -44,9 +44,9 @@ extern char camera_position[];
 extern void FastVecSub(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 
-/* Aim the vector from the frame at D_00187180 toward arg0+0x20, scaled to
+/* Aim the vector from the frame at camera_position toward arg0+0x20, scaled to
    3/4 and 64, and return the line test from arg1 to its end. The int
-   return keeps retail's argument order for func_001F9BD8. */
+   return keeps retail's argument order for FastVecAdd. */
 int test_voice_occlusion(void *arg0, void *arg1) {
     float v[4];
 
@@ -102,7 +102,7 @@ int calculate_voice_distance_volume(void *arg0, float x, float lo, float hi) {
 
 extern char camera_position[];
 extern float FastVecDist(int, void *);
-/* This caller's view of func_0022DA10 above: it ignores the result, and
+/* This caller's view of calculate_voice_distance_volume above: it ignores the result, and
    declaring it int would move its next temporary to $v1. */
 extern void calculate_voice_distance_volume_v(void *, float, float, float) __asm__("func_0022DA10");
 
@@ -119,7 +119,7 @@ extern float vec_length_xy(void *);
 extern float fast_arc_tan_a(float, float) __asm__("func_001FA058");
 extern void truncate_float_to_s32(float);
 
-/* Build the vector at arg1 in the D_00187180 frame, project it against
+/* Build the vector at arg1 in the camera_position frame, project it against
    arg2, and steer by its heading: atan2 of the xy part, negated and
    converted from radians to degrees (180 * 1/pi), scaled by how far the
    projection runs past 1.0, clamped to 0..1. arg0 is unused. */
@@ -662,8 +662,8 @@ extern void snd_StreamSafeCdSync(int);
 extern void snd_ResolveBankXREFS(void);
 
 /* Reentrancy-guarded: base+0x44 is held at 1 for the duration. The
-   return value is func_0012E060's, captured in the delay slot of the
-   *next* call. That callee, func_0012EE70 (snd_StreamSafeCheckCDIdle),
+   return value is snd_BankLoadByLoc's, captured in the delay slot of the
+   *next* call. That callee, snd_StreamSafeCheckCDIdle,
    returns int: a value call resets $v0's readers, which lets the
    capture sink into its slot. */
 int load_audio_bank_by_location(void *arg0) {
@@ -682,7 +682,7 @@ int load_audio_bank_by_location(void *arg0) {
     return r;
 }
 
-/* 12 bytes of post-endlabel nop padding in retail -- see func_001F6668. */
+/* 12 bytes of post-endlabel nop padding in retail -- see FontPrint. */
 __asm__(".section .text\n\tnop\n\tnop\n\tnop\n");
 
 /* Stop a voice slot: free a queued one at once, else mark it for stopping (idx < 0: no-op). */
@@ -880,7 +880,7 @@ return_result:
 }
 
 /* Starts entry idx of the sound bank arg2 points at; the same shape as
-   its siblings func_0022EE28 and func_0022EEB8. */
+   its siblings PlayBankSound and allocate_voice_for_group_entry. */
 int Moby_PlaySound(int idx, int arg1, int arg2) {
     char *p;
     char *tbl;
@@ -978,7 +978,7 @@ typedef struct VoiceRequestTable {
  * Calls each entry's +4 callback in the sound system's 0x90-byte entry
  * table (count at +0xD90, table at +0xD94), re-reading both every
  * iteration so a callback may grow the table. The inline accessor gives
- * each read of D_0013E650 its own pseudo: the duplicated exit test
+ * each read of voice_pool its own pseudo: the duplicated exit test
  * keeps a temporary and the loop a callee-saved copy, as in retail.
  * `i * 0x90 + (int)table` (not an offset variable) gives the
  * offset-first addu.
@@ -995,7 +995,7 @@ void enqueue_voice_request(void) {
     }
 }
 
-/* 8 bytes of post-endlabel nop padding in retail -- see func_001F6668. */
+/* 8 bytes of post-endlabel nop padding in retail -- see FontPrint. */
 __asm__(".section .text\n\tnop\n\tnop\n");
 
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));

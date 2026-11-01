@@ -35,8 +35,8 @@ extern void __smakebuf_r(FILE_nl *) __asm__("func_00114578");
 
 /*
  * __swsetup, newlib's text (stdio/wsetup.c), called before the first
- * write to a FILE; FREEUB and HASUB expanded, _free_r = func_00113B70,
- * __smakebuf = func_00114578.
+ * write to a FILE; FREEUB and HASUB expanded, _free_r = _free_r,
+ * __smakebuf = __smakebuf.
  *
  * Exact under 2.9-ee with newlib's FILE layout. Its -fstrict-aliasing is
  * what keeps _flags in a register across the int/pointer stores to _r

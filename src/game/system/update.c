@@ -165,7 +165,7 @@ extern void MobyBlendAnimation(Moby *, s32, s32, s32);
 extern s32 IsFrameWithinWindow(Moby *, f32);
 extern s32 Music_ContinueStreamIfReady(void);
 
-/* Per-frame state machine of one boss-like moby: keeps a manipulator node attached while D_0015EEB0 is set,
+/* Per-frame state machine of one boss-like moby: keeps a manipulator node attached while gCheats is set,
    then steps the state byte at +0x20 through its animation and timer states.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/gameplay/vendor/fun_00237ed0.c, FUN_00237ed0. */
 void update_resident_dialogue_animation_state(Moby *m) {

@@ -60,7 +60,7 @@ struct __suio_16FA0 {
 };
 
 /* __sprint, newlib's text: flush the uio through __sfvwrite
-   (func_00114060) if it holds anything. */
+   (__sfvwrite) if it holds anything. */
 int vfprintf_sprint(FILE_16FA0 *fp, struct __suio_16FA0 *uio) {
     register int err;
 
@@ -112,7 +112,7 @@ extern int func_00117118_i(struct _reent_16FA0 *, FILE_16FA0 *, const char *, vo
 
 /*
  * vfprintf, newlib's text: CHECK_INIT (fault in the reent from
- * _impure_ptr, D_0012F86C, and run __sinit, func_00113AE0, if it has not
+ * _impure_ptr, _impure_ptr, and run __sinit, __sinit, if it has not
  * been), then return _vfprintf_r's result.
  *
  * CHECK_INIT has to stay the macro's `do { ... } while (0)`: its loop

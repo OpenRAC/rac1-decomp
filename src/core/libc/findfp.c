@@ -39,8 +39,8 @@ void _cleanup_r(void *arg0) {
 LINKER_REMNANT("asm/remnants/core_text", func_00113AD8);
 
 /* newlib's __sinit (findfp.c): the reent's three built-in FILEs become
-   stdin, stdout and stderr through std() (func_00113A70), then the glue
-   list points at them; the cleanup hook is _cleanup_r (func_00113AC8). */
+   stdin, stdout and stderr through std() (findfp_std), then the glue
+   list points at them; the cleanup hook is _cleanup_r. */
 void __sinit(void *arg0) {
     char *p = (char *)arg0;
     char *n0 = p + 0x1E4;

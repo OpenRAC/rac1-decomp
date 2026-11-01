@@ -12,8 +12,8 @@
  * ("Invalid macroblock_type code", "slice_start_code out of range", ...)
  * over the IPU (0x10002000 IPU_CMD, 0x10002010 IPU_CTRL). Built with
  * Sony's 2.9-ee like the rest of libmpeg (0012A2F0.c, 0012AC80.c): the IPU
- * wait loops that 2.95.3 hoisted into saved registers (func_00128968,
- * func_00128860) are 2.9-ee's rematerialised constants.
+ * wait loops that 2.95.3 hoisted into saved registers (_flushBuf,
+ * _peepBit) are 2.9-ee's rematerialised constants.
  */
 
 extern int disable_interrupts(void);
@@ -71,7 +71,7 @@ struct MpegMbBuffer {
     u8 *luma_ref[4]; /* reference picture luma source per fetch */
     u8 *chroma_ref[4]; /* reference picture chroma source per fetch */
     MpegMcFunc luma_func[4]; /* D_00132E30[] copy routine per fetch */
-    MpegMcFunc chroma_func[4]; /* D_00132E50[] copy routine per fetch */
+    MpegMcFunc chroma_func[4]; /* gs_store_image_vif1_restore_qword[] copy routine per fetch */
     struct MpegMcFetch luma[4];
     struct MpegMcFetch chroma[4];
     s32 unk128; /* read by _doMC */
@@ -588,7 +588,7 @@ int _waitBdecOut(void *arg0) {
     return ret;
 }
 
-/* func_001286E8 returns a short: its epilogue sign-extends $v0. */
+/* ipu_vdec returns a short: its epilogue sign-extends $v0. */
 extern short ipu_vdec(int, int);
 
 /* Returns its callee's value: retail keeps the frame and calls, and
@@ -723,11 +723,11 @@ extern char str_mpeg_slice_a0_error[];
 
 /* sliceA0 (libmpeg.a:mpc.o): ISO/IEC 13818-2 6.2.4 slice_header(), the
  * hardware-VLC variant. nextStartCode, then peek 32 bits: if it isn't a
- * slice_start_code (0x101..0x1AF), report it (func_0012C430) and return 2.
+ * slice_start_code (0x101..0x1AF), report it (_errMessage) and return 2.
  * Otherwise consume the 32 bits, run sliceB (IPU setup) and
  * mbAddressIncrement, stash the raw increment at *arg3 (in case of a
  * fault), and if the fault flag (+0x11C, cleared at entry) got set, report
- * it (func_0012C468) and return 1. On full success, compute the starting
+ * it (_Error) and return 1. On full success, compute the starting
  * macroblock address from the slice's row (low byte of the start code)
  * and the picture's mb width (+0x12C), overwrite *arg3 with 1, latch
  * +0x1B0, and zero eight fields of the *arg4 output struct.
@@ -782,18 +782,18 @@ extern int _decMB0(void *, int *, int *, int *, void *, void *, void *);
 extern int _motionComp0(void *, int, int, int, int, void *, void *, void *);
 
 /* slice0 (libmpeg.a:mpc.o): the per-picture macroblock loop -- sliceA0
- * (func_00127960) parses the first slice header and starting mb address
+ * (_sliceA0) parses the first slice header and starting mb address
  * (local "mbAddr"/"mbInc" pair, plus the zeroed 8-word block-info struct
- * at local0); then while mbAddr < mbCount: waitBdecOut (func_001273A0)
+ * at local0); then while mbAddr < mbCount: waitBdecOut (_waitBdecOut)
  * must succeed; if this macroblock doesn't already have a pending
  * mbAddressIncrement (mbInc==0, i.e. a fresh slice), peek 23 bits looking
  * for the next slice_start_code prefix, and if found read the next
- * mbAddressIncrement (func_00127748) -- both faulting through +0x11C;
- * decode (decMB0, func_00127D40) when mbInc==1, else skip (skipMB0,
- * func_00127C80) the run of skipped macroblocks; run motion compensation
- * (motionComp0, func_00125630) on the result; for every macroblock after
+ * mbAddressIncrement (mb_address_increment) -- both faulting through +0x11C;
+ * decode (decMB0, _decMB0) when mbInc==1, else skip (skipMB0,
+ * _skipMB0) the run of skipped macroblocks; run motion compensation
+ * (motionComp0, _motionComp0) on the result; for every macroblock after
  * the first, run the previous macroblock's IPU motion-comp dispatch
- * (doMC, func_001263A8) using the alternating +0x810 buffer index before
+ * (doMC, _doMC) using the alternating +0x810 buffer index before
  * flipping it; advance mbAddr and consume one mbInc, looping until the
  * picture's macroblocks are exhausted (return 0) or a fault (1/2/3)
  * happens along the way.
@@ -888,9 +888,9 @@ extern char str_mpeg_skipped_mb_in_i_picture[];
 /* arg0 is a moby/entity-ish struct: a table index at +0x810 selects a
  * +0x140-strided sub-entry whose +0x6CC field gets set, and several
  * other struct-pointer outputs get filled from +0x150/+0x174 flags.
- * Ends by clearing bit 0 of *a4, reporting through func_0012C468 (an
- * already-matched "log to D_00153968" family member) first when
- * +0x150 == 1. The func_0012C468 call takes arg0 -- the moby struct,
+ * Ends by clearing bit 0 of *a4, reporting through _Error (an
+ * already-matched "log to str_mpeg_skipped_mb_in_i_picture" family member) first when
+ * +0x150 == 1. The _Error call takes arg0 -- the moby struct,
  * still live in $4 -- not a4/s0, which is a common trap here. */
 int _skipMB0(void *a0, int *a1, int *a2, int *a3, int *a4) {
     struct MpegDecoder *s = (struct MpegDecoder *)a0;
@@ -1065,7 +1065,7 @@ int _decMB0(void *arg0, int *arg1, int *arg2, int *arg3, void *arg4, void *arg5,
 /* decode_motion_vector (libmpeg.a:mpc.o): ISO/IEC 13818-2 motion_vector()
  * component reconstruction, matching mpeg2decode reference source
  * (motion.c) decode_motion_vector() line for line. full_pel_vector is
- * MPEG-1 (ISO/IEC 11172-1) support; called from func_00128410
+ * MPEG-1 (ISO/IEC 11172-1) support; called from motion_vector
  * (motionVector, already matched in this file).
  */
 void decode_motion_vector(int *pred, int r_size, int motion_code, int motion_residual, int full_pel_vector) {
@@ -1090,8 +1090,8 @@ void decode_motion_vector(int *pred, int r_size, int motion_code, int motion_res
  * motion_vectors(), matching mpeg2decode reference source (motion.c)
  * almost line for line, with the bitstream-state pointer threaded through
  * explicitly as the new first argument (this file's convention) instead
- * of read from a global. func_00128410 is motionVector (already matched
- * in this file); func_00128A58 is Get_Bits.
+ * of read from a global. motion_vector is motionVector (already matched
+ * in this file); _nextBit is Get_Bits.
  */
 void motion_vectors(void *arg0, int PMV[][2][2], int *dmvector, int mvfs[][2], int s_idx, int motion_vector_count,
                     int mv_format, int h_r_size, int v_r_size, int dmv, int mvscale) {
@@ -1113,9 +1113,9 @@ void motion_vectors(void *arg0, int PMV[][2][2], int *dmvector, int mvfs[][2], i
 extern void decode_motion_vector(int *, int, int, int, int);
 
 /* motionVector (libmpeg.a:mpc.o): ISO/IEC 13818-2 7.6.3.1 motion_vector(),
- * hardware-VLC variant of mpeg2decode's motion.c. func_001286E8(s, 2) is
- * Get_motion_code (IPU VLC table 2); func_001275A0 is Get_dmvector (table
- * 3, already matched in this file). func_001281E8 is decode_motion_vector.
+ * hardware-VLC variant of mpeg2decode's motion.c. ipu_vdec(s, 2) is
+ * Get_motion_code (IPU VLC table 2); mpeg_get_dmvector is Get_dmvector (table
+ * 3, already matched in this file). decode_motion_vector is decode_motion_vector.
  */
 void motion_vector(void *arg0, int *PMV, int *dmvector, int h_r_size, int v_r_size, int dmv, int mvscale,
                    int full_pel_vector) {
@@ -1153,8 +1153,8 @@ void send_ipu_command(char *arg0, unsigned int arg1) {
 }
 
 /* Spins until the VIF1 DMA channel (D_CHCR 0x10002010) reports idle,
-   nudging the IOP via func_0012BCC8 every 5001 spins so a stalled
-   stream cannot deadlock. Same wait loop documented on func_00128860. */
+   nudging the IOP via dispatch_mpeg_cb_nodata every 5001 spins so a stalled
+   stream cannot deadlock. Same wait loop documented on _peepBit. */
 void wait_ipu_idle(void *arg0) {
     struct MpegDecoder *d = (struct MpegDecoder *)arg0;
     int counter = 0;
@@ -1168,10 +1168,10 @@ void wait_ipu_idle(void *arg0) {
 }
 
 /*
- * IPU wait: the same spin as func_00128590, while IPU_CMD (0x10002000,
+ * IPU wait: the same spin as wait_ipu_idle, while IPU_CMD (0x10002000,
  * read as a 64-bit word) is negative (busy) and IPU_CTRL (0x10002010)
- * bit 0x4000 is clear, kicking func_0012BCC8 every 5001 spins. Returns
- * the raw 64-bit IPU_CMD word; func_00128860 and func_00128968 narrow it
+ * bit 0x4000 is clear, kicking dispatch_mpeg_cb_nodata every 5001 spins. Returns
+ * the raw 64-bit IPU_CMD word; _peepBit and _flushBuf narrow it
  * with dsll32/dsra32, so the return type is `long`.
  *
  * Exact under both compilers once BOTH MMIO reads are spelled inline in
@@ -1249,17 +1249,17 @@ short ipu_vdec(int arg0, int tbl) {
  * than n bits, wait for the DMA channel to go idle, refill from the
  * table, then return the top n bits.
  *
- *   extern long func_00128638_wide(void *, int *) __asm__("func_00128638");
+ *   extern long func_00128638_wide(void *, int *) __asm__("wait_ipu_cmd_result");
  *
- *   int func_00128860(void *arg0, int n) {
+ *   int _peepBit(void *arg0, int n) {
  *       char *s = (char *)arg0;
  *       int bits;
  *       if (*(int *)(s + 0x818) != 0 || *(int *)(s + 0x83C) < n) {
- *           int *tbl = D_00132F70;
+ *           int *tbl = IpuCommandTable;
  *           int counter = 0;
  *           while ((*(volatile int *)0x10002010 & 0x80004000) == 0x80000000) {
  *               if (counter++ >= 0x1389) {
- *                   func_0012BCC8(*(int *)(s + 0x858));
+ *                   dispatch_mpeg_cb_nodata(*(int *)(s + 0x858));
  *                   counter = 0;
  *               }
  *           }
@@ -1279,12 +1279,12 @@ short ipu_vdec(int arg0, int tbl) {
  * after the jal is the 64-bit-return narrowing, handled by the _wide alias.
  *
  * Why it failed under 2.95.3: retail keeps only $16/$17/$18 across the
- * call (object, D_00132F70 base, n) in a 0x40 frame and REMATERIALISES
+ * call (object, IpuCommandTable base, n) in a 0x40 frame and REMATERIALISES
  * the hardware constants 0x10002010 / 0x80004000 / 0x80000000 with
  * the hardware constants 0x10002010 / 0x80004000 / 0x80000000 with
  * lui/ori at each use, where 2.95.3 hoists all three into callee-saved
  * registers (a 0x70 frame, 0x114 against 0x108). 2.9-ee, this object's
- * compiler, rematerialises them like retail (see func_00128968), and the
+ * compiler, rematerialises them like retail (see _flushBuf), and the
  * C above then comes out 268 against 264: the frame and the wait loop
  * are right, but n is parked in $a3 and negated early where retail
  * keeps it in $s2 and negates it at the end. Still open.
@@ -1318,14 +1318,14 @@ done:
 }
 
 /*
- * IPU command send: func_00128590's wait (IPU_CTRL & 0x80004000 ==
- * 0x80000000, a func_0012BCC8 kick every 5001 spins) inlined, then
- * cmd = arg1 | 0x40000000 to IPU_CMD, s+0x818 = D_00132F70[cmd >> 28]
- * (func_00128560 inlined), s+0x838 = the narrowed func_00128638 result,
+ * IPU command send: wait_ipu_idle's wait (IPU_CTRL & 0x80004000 ==
+ * 0x80000000, a dispatch_mpeg_cb_nodata kick every 5001 spins) inlined, then
+ * cmd = arg1 | 0x40000000 to IPU_CMD, s+0x818 = IpuCommandTable[cmd >> 28]
+ * (send_ipu_command inlined), s+0x838 = the narrowed wait_ipu_cmd_result result,
  * s+0x83C = 0x20.
  *
  * Written plainly it is exact under 2.9-ee, which rematerialises the
- * MMIO constants inside the loop and keeps only %hi(D_00132F70) in $18,
+ * MMIO constants inside the loop and keeps only %hi(IpuCommandTable) in $18,
  * like retail; 2.95.3 hoists them into saved registers (SIZE 252/240).
  * The stores go in source order 0x838 then 0x83C.
  */
@@ -1349,7 +1349,7 @@ void _flushBuf(void *arg0, int arg1) {
 
 /* _nextBit (libmpeg.a:mpc.o), Get_Bits: waits for the IPU, refills the
  * bit cache when it is empty or short, returns the top n bits and tells
- * the IPU to consume them. The D_00132F70 index needs its own local,
+ * the IPU to consume them. The IpuCommandTable index needs its own local,
  * computed before the command store, or the allocator swaps $v1 and $a0.
  */
 int _nextBit(void *arg0, int n) {
@@ -1420,9 +1420,9 @@ typedef struct {
 
 /* nextHeader (libmpeg.a:mpc.o): ISO/IEC 13818-2 6.2.2.1 Get_Hdr() loop --
  * nextStartCode, Get_Bits32, dispatch on the start code: sequence_header
- * (0x1B3, func_0012C4E0), group_start (0x1B8, func_00129240 groupOf...),
- * picture_start (0x100, func_00128DA0 pictureHeader then a PTS/DTS-style
- * query through func_0012BC78, whose two 64-bit outputs land at +0x828/
+ * (0x1B3, _sequenceHeader), group_start (0x1B8, _groupOfPicturesHeader groupOf...),
+ * picture_start (0x100, picture_header pictureHeader then a PTS/DTS-style
+ * query through dispatch_mpeg_callback, whose two 64-bit outputs land at +0x828/
  * +0x830), sequence_end (0x1B7, returns 0), anything else loops again.
  * On picture_start it returns picture_coding_type (+0x150).
  */
@@ -1460,7 +1460,7 @@ extern void update_temp_track_data(void *, int);
 
 /* pictureHeader (libmpeg.a:mpc.o): ISO/IEC 13818-2 6.2.3 picture_header().
  * temporal_reference (+bits 10) is kept live across the whole function to
- * feed func_001291C8 (updateTempTackData) at the end. picture_coding_type
+ * feed update_temp_track_data (updateTempTackData) at the end. picture_coding_type
  * (+0x150) is re-read from the struct at each use rather than kept in a
  * local -- it must survive calls that could (as far as the compiler
  * knows) touch the struct. P_TYPE/B_TYPE (2/3) is the classic
@@ -1656,7 +1656,7 @@ extern char str_mpeg_load_chroma_non_intra_qm[];
  * (waitIpuIdle, sendIpuCommand(0x50000000 / 0x58000000), waitIpuIdle) when
  * load_intra/non_intra_quantizer_matrix is set, storing the flag at
  * +0x840/+0x844 either way. The chroma variants aren't hardware-supported:
- * setting either just logs a warning through func_0012C468.
+ * setting either just logs a warning through _Error.
  */
 void _quantMatrixExtension(void *arg0) {
     struct MpegDecoder *s = (struct MpegDecoder *)arg0;
@@ -1715,7 +1715,7 @@ void picture_display_extension(void *arg0) {
 }
 
 /* copyrightExtension (libmpeg.a:mpc.o) -- ISO/IEC 13818-2 6.2.3.6: skip the
- * copyright_extension() fields with func_00128A58 (nextBit, "get n bits").
+ * copyright_extension() fields with _nextBit (nextBit, "get n bits").
  * Reference decoder (mpeg2decode gethdr.c copyright_extension()) assigns
  * each field to a local only used by its VERBOSE printf, which this port
  * drops entirely, so every nextBit's result is a dead store the compiler
@@ -1741,11 +1741,11 @@ extern char str_mpeg_unknown_picture_structure[];
 
 /*
  * Decoder state step: if the picture state (s+0x174) is 3 and s+0x120 is
- * set, report D_00153A40 through func_0012C468, clear s+0x120 and re-read
+ * set, report str_mpeg_odd_field_pictures through _Error, clear s+0x120 and re-read
  * the state; pick the target pointer by state (3 -> +0x1C0, 1 -> +0x1D0,
- * 2 -> +0x1E0, anything else -> +0x1C0 plus a D_00153A60 report; the
+ * 2 -> +0x1E0, anything else -> +0x1C0 plus a str_mpeg_unknown_picture_structure report; the
  * field is a POINTER, the target of the final +0x28 write); then
- * r = func_00127858(s), and if r, target->+0x28 = 1. Exact under both
+ * r = _pictureData0(s), and if r, target->+0x28 = 1. Exact under both
  * compilers.
  *
  * It is a `switch`, with the case bodies in the order 3, 1, 2, default.
@@ -1941,7 +1941,7 @@ extern void _Error_a(void *, void *) __asm__("func_0012C468");
    request (+0xE0 non-zero) has to fit both the byte budget at +0xDC and
    the entry budget at +0xE0; an unsized one has to fit width * height
    against +0xE4. On a refusal, format the two figures into the message
-   at D_00153A80 and report it. Returns whether it fits. */
+   at str_mpeg_buffer_too_small_fmt and report it. Returns whether it fits. */
 int _isOutSizeOK(void *arg0, void *arg1) {
     char buf[0x100];
     struct MpegDecoder *h = (struct MpegDecoder *)arg0;
@@ -2143,11 +2143,11 @@ void _dispRefImage(char *s_arg, char *t_arg) {
 extern long _getPtsDtsFlags(void *s, void *t, void *o1, void *o3, void *o4);
 extern void _csc_storeRefImage(void *arg0, void *arg1);
 
-/* Transcribed from the assembly. Two calls to func_00129CA0 (one for each record,
+/* Transcribed from the assembly. Two calls to _getPtsDtsFlags (one for each record,
    with the flag at +0x88 set to 1 for the second), a third that copies fields of
-   both records into the object and calls func_00129948, then either a halving of
-   p1+0x10 with a tail call to func_00129C78, or an early return. Retail's $2 return
-   value is not read by the caller (func_00129600 declares this function void), so
+   both records into the object and calls _isOutSizeOK, then either a halving of
+   p1+0x10 with a tail call to mpeg_mark_picture_output, or an early return. Retail's $2 return
+   value is not read by the caller (mpeg_output_frame declares this function void), so
    the early returns just return. */
 void _dispRefImageField(char *s, char *a1, char *a2) {
     char *p1;
@@ -2223,7 +2223,8 @@ void _dispRefImageField(char *s, char *a1, char *a2) {
 
 extern char mpeg_ref_image_chain[];
 
-/* Builds a DMA tag chain (two 64-bit tags per entry) at the uncached alias of D_0015E940, then starts DMA channel 0x1000D400 on it. */
+/* Builds a DMA tag chain (two 64-bit tags per entry) at the uncached alias of mpeg_ref_image_chain, then starts DMA
+   channel 0x1000D400 on it. */
 void dma_ref_image(void *arg0) {
     struct MpegDecoder *s = (struct MpegDecoder *)arg0;
     int m;
@@ -2262,8 +2263,8 @@ void dma_ref_image(void *arg0) {
 }
 
 /* receiveDataFromIPU (libmpeg.a:mpc.o): kicks off an IPU->main-memory DMA
- * receive. func_0011D960 presumably starts/queries the DMA channel; its
- * result gates whether func_0011D9A8 (presumably a completion/kick) runs.
+ * receive. disable_interrupts presumably starts/queries the DMA channel; its
+ * result gates whether enable_interrupts (presumably a completion/kick) runs.
  * The three MMIO stores (0x1000B000/10/20 -- D2_CHCR/D2_MADR/D2_QWC, the
  * IPU_to_RAM DMA channel) queue the transfer: MADR = (arg0 physical addr)
  * | 0x80000000 (spr flag), QWC = arg1 >> 4 (bytes -> qwords), CHCR = 0x100

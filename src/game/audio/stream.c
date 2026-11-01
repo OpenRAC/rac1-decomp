@@ -28,7 +28,7 @@ extern short cd_read_state[];
 
 extern int snd_StreamSafeCdBreak_i(void) __asm__("func_0012EFE8");
 
-/* func_0012EFE8 returns int (989snd.c): with the result in $v0, the
+/* snd_StreamSafeCdBreak returns int (989snd.c): with the result in $v0, the
    constant goes to the register retail uses. */
 void request_audio_stream_break(void) {
     short *p = cd_read_state;
@@ -64,8 +64,8 @@ extern char load_file_start_failed_string[];
 extern int snd_StreamSafeCdRead(int, int, int, void *);
 
 /* Start a stream: refuse if one is already running (+0x8) or the length
-   is zero, otherwise hand the request to func_0012EE98 with the header
-   block at D_001517D0+0x30 and record it. Returns the length in the
+   is zero, otherwise hand the request to snd_StreamSafeCdRead with the header
+   block at cd_read_state+0x30 and record it. Returns the length in the
    units the caller wants, arg2 << 11; on a rejected request it reports
    the failure and returns 0. */
 int start_audio_stream_read(int arg0, int arg1, int arg2) {
@@ -96,12 +96,12 @@ extern void snd_FlushSoundCommands(void);
 
 /*
  * Close, not exact (15/124), same size so inert. Semantics confirmed:
- * call func_00217628, and while it succeeded and the flag at
- * D_001517D0+0x8 stays set, pump the five service calls; return the
+ * call start_audio_stream_read, and while it succeeded and the flag at
+ * cd_read_state+0x8 stays set, pump the five service calls; return the
  * original result either way.
  *
  * Residual is purely which callee-saved register holds what: retail puts
- * the result in $s0 and the D_001517D0 base in $s1, this compiler the
+ * the result in $s0 and the cd_read_state base in $s1, this compiler the
  * other way round, and the prologue save order follows from that.
  * Tried and did not move it: swapping the two local declarations (the
  * documented declaration-order lever -- it does not apply when a local
@@ -110,10 +110,10 @@ extern void snd_FlushSoundCommands(void);
  * so the base local is assigned late exactly as retail does. Allocator
  * destination-choice question, not source shape.
  */
-/* Load: call func_00217628 and, if it succeeded, keep pumping the five
-   service calls while the D_001517D0+0x8 state word stays nonzero;
-   return func_00217628's result either way.
-   As in func_00217748 below, the base pointer is assigned in the loop
+/* Load: call start_audio_stream_read and, if it succeeded, keep pumping the five
+   service calls while the cd_read_state+0x8 state word stays nonzero;
+   return start_audio_stream_read's result either way.
+   As in update_audio_stream_until_idle below, the base pointer is assigned in the loop
    condition: the exit test jump.c duplicates in front of the loop gets
    its own temporary, and the loop's copy goes to $s1 with the result in
    $s0, as in retail. */
@@ -133,13 +133,13 @@ int Load(int arg0, int arg1, int arg2) {
     return r;
 }
 
-/* Same pump loop as func_002176C8 above, gated on the argument instead
+/* Same pump loop as Load above, gated on the argument instead
    of on a call's result: with arg0 set, keep servicing while the
-   D_001517D0+8 state word stays nonzero; with it clear, run the four
+   cd_read_state+8 state word stays nonzero; with it clear, run the four
    service calls exactly once. Either way return the state word. */
 /* With arg0 set, keep pumping the five service calls while the
-   D_001517D0+8 state word stays nonzero; with it clear, run the four that
-   are not func_00122598 once. Either way return the state word.
+   cd_read_state+8 state word stays nonzero; with it clear, run the four that
+   are not sce_gs_sync_v once. Either way return the state word.
    The base pointer is assigned IN the loop condition: the exit test that
    jump.c duplicates in front of the loop then gets its own pseudo (retail's
    $a0 for the guard), loop.c hoists the loop's copy into $s0 and CSE turns
