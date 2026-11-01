@@ -21,6 +21,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "tools"))
+import names_header  # noqa: E402
 WORD = re.compile(r"[A-Za-z_]\w*")
 COMMENT_OR_STRING = re.compile(r'/\*.*?\*/|//[^\n]*|"(?:\\.|[^"\\\n])*"|\'(?:\\.|[^\'\\\n])*\'', re.S)
 EXTERN = re.compile(r"\bextern\b")
@@ -102,7 +104,7 @@ def find_externs(text):
 def load_aliases():
     """{name: other names}, from include/names.h: readable <-> address."""
     aliases = {}
-    for line in (ROOT / "include/names.h").read_text(errors="replace").splitlines():
+    for line in names_header.read(ROOT / "include/names.h").splitlines():
         m = re.match(r"#define\s+(\w+)\s+(\w+)\s*$", line)
         if m:
             aliases.setdefault(m.group(1), set()).add(m.group(2))
@@ -114,7 +116,7 @@ def header_macro_words():
     """Words in macro bodies in include/, except the generated name table."""
     words = set()
     for path in (ROOT / "include").rglob("*.h"):
-        if path.name == "names.h":
+        if path.name == "names.h" or path.parent.name == names_header.PARTS:
             continue
         for m in DIRECTIVE.finditer(COMMENT_OR_STRING.sub(blank, path.read_text(errors="replace"))):
             if re.match(r"\s*#\s*define\b", m.group(0)):
