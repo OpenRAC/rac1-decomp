@@ -36,6 +36,7 @@ python3 tools/check_docs.py
 python3 tools/check_no_retail.py
 python3 tools/check_syntax.py
 python3 tools/ratchets.py --check
+python3 tools/format.py --check
 python3 -m unittest discover -s tools/tests -p 'test_*.py'
 ```
 

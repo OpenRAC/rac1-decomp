@@ -8,6 +8,9 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+# Set FORMAT_PATHS in the calling script while a tree is only part formatted.
+read -r -a FORMAT_PATHS <<< "${FORMAT_PATHS:-}"
+
 run() { bash tools/docker/run.sh "$@"; }
 
 run bash tools/build_sn.sh | tail -6
@@ -24,6 +27,7 @@ python3 tools/check_docs.py
 python3 tools/check_no_retail.py
 python3 tools/check_syntax.py
 python3 tools/ratchets.py --check
+python3 tools/format.py --check "${FORMAT_PATHS[@]}"
 
 python3 - <<'EOF'
 import json, subprocess, sys
