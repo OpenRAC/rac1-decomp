@@ -3,13 +3,14 @@
 #include "records.h"
 #include "structs.h"
 #include "pad.h"
+#include "core/989snd.h"
+#include "game/mobyutil.h"
 
 /*
  * stream.cpp in the original source; text 0x217588-0x217F68.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
-
 
 typedef struct {
     char b[0x13];
@@ -89,9 +90,8 @@ int start_audio_stream_read(int arg0, int arg1, int arg2) {
 
 extern void sce_gs_sync_v(int);
 extern void music_Update(void);
-extern void snd_reset_state_and_flush_commands(void);
+
 extern void snd_FlushSoundCommands(void);
-extern void snd_reenable_command_flush(void);
 
 /*
  * Close, not exact (15/124), same size so inert. Semantics confirmed:
@@ -389,7 +389,6 @@ extern void *msg_string(s32);
 extern char *find_substring(char *, char *);
 extern s32 sprintf(char *, const char *, ...);
 extern void copy_text_to_shared_buffer(void *);
-extern s32 compute_clamped_count_difference(void);
 
 void process_menu_entry(void *arg0, Menu *menu, s32 arg2);
 

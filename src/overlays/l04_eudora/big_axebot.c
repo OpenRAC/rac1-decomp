@@ -6,6 +6,11 @@
 #include "vector.h"
 #include "hero.h"
 #include "moby.h"
+#include "game/mobyutil.h"
+#include "overlays/l04_eudora/walker_rig_gait.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/nanotech_ball_and_suck_cannon.h"
+#include "overlays/shared/smoke_puff_projectiles.h"
 /* Blarg trooper: walks an Eudora path, swings its weapon at the hero. */
 struct BlargTrooperVars {
     u8 pad_00[0x20];
@@ -80,7 +85,6 @@ struct BigAxebotVars {
     u8 pad_00[0x424];
     char *axe; /* 0x424 */
 };
-
 
 struct Manip_9FCF0;
 struct GifEntry_9FCF0;
@@ -540,7 +544,7 @@ extern float FastCos(float);
 extern float FastSin(float);
 extern void FastVecAdd(void *, void *, void *);
 extern int MoveKeepingOverGround(void *, void *, void *, int, float, float, float, float);
-extern void reset_leg_rig_from_animation(void *, void *);
+
 extern void leg_walker_update(void *, void *, float, float, float);
 extern int IsPointInPolygon(void *, void *, int);
 extern float FastAbsF(float);
@@ -556,11 +560,11 @@ extern float ProbeGroundHeight(void *, int, float);
 extern float FastSubRots(float, float);
 extern float FastAddRots(float, float);
 extern void MobyTransformScaledVertex(char *, int, char *);
-extern void matrix_to_euler(void *, void *);
+
 extern void MobyAnimAdvance(void *);
 extern void moby_build_matrix(void *);
 extern void matrix_copy_rows(void *, void *);
-extern void normalize_vector_triplet(void *);
+
 extern void *spawn_class_23a_moby(void *, void *);
 
 extern unsigned char hero_globals_base[];
@@ -1553,7 +1557,7 @@ extern void vec_scale_to_length(void *, void *, float);
 extern int coll_sphere_mobys(void *, int, void *, void *, float);
 extern void DeleteMoby(void *);
 extern void MoveCtl_Init(char *p);
-extern void update_object_wander_movement(char *moby, char *d, float a, float b);
+
 extern float compute_circular_saw_flock_steering(void *, void *, float);
 extern float FastDiffRots(float, float);
 extern void MobySpringTurn_b(char *moby, float target, float *vel, float k, float d,
@@ -2131,8 +2135,7 @@ void circular_saw_enemy_update(M_35F0 *moby) {
     }
     StepColorFade(moby, data->fB0);
 }
-extern char *get_moby_suck_cannon_record(char *);
-extern int launch_suck_cannon_projectile(char *, int, int, float);
+
 extern int Moby_PlaySound(int, int, char *);
 /* Run the suck cannon hit check; set state 9 while caught, back to 1 when released. */
 int process_moby_hit_state_and_voice(char *m, int a, int b, float f) {
@@ -2242,7 +2245,6 @@ void spawn_smoke_puff_trail_with_endpoint_bursts(void *owner, void *from, void *
     PartType21Spawn(to, &vel, 0x4F007FFF, 0x1FFFFFFF, rand_range(scale_ticks(10), scale_ticks(20)), 1, 20000.0f);
 }
 extern void DeleteMoby(void *);
-extern void spawn_moby_table_puff_pattern(void *);
 
 /* Destroy a Blarg trooper: delete its linked moby, spawn a puff, then delete it. */
 void destroy_blarg_trooper(char *arg) {
@@ -2273,7 +2275,7 @@ struct Shot5BD0 {
     float f1C;
     int pad[4];
 };
-extern void manipulator_set_scale(void *, float);
+
 extern int truncate_float_to_s32(float);
 extern int STUB_printf();
 extern char *MobyGetHitMessage(void *, int, int);
@@ -2288,7 +2290,7 @@ extern void spawn_class_b8_projectile(void *, void *, void *, int);
 extern void vec_set_length_xy(void *, void *, float);
 extern void record_moby_hit(void *, void *);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
-extern void *spawn_moby_attachment(void *, void *);
+
 extern float eudora_camera_pos[];
 extern char *eudora_mobys MACRO_ADDR;
 extern char eudora_blarg_trooper_no_link_msg[];

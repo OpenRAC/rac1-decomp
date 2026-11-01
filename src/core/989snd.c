@@ -1,13 +1,13 @@
 #include "common.h"
 #include "callees.h"
 #include "structs.h"
+#include "core/00121750.h"
 
 /*
  * 989snd.c (0x12DB68-0x12F308): 989 Studios' sound library. The
  * "/usr/local/989snd/ee/989snd.c" path string is used from 0x12DBE0 on.
  * Name and extent from the NTSC split, shifted +0x140.
  */
-
 
 extern void flush_cache(int);
 extern int sce_cd_sync_s(int);
@@ -816,8 +816,6 @@ int snd_StreamSafeCdBreak(void) {
     snd_SendIOPCommandNoWait(0x37, 0, 0, 0, 0);
     return 1;
 }
-
-extern int sce_cd_get_error(void);
 
 /* snd_StreamSafeCdGetError: returns the last CD error while VAG streaming
  * owns the drive (the cached value at D_00137C00.error), otherwise defers

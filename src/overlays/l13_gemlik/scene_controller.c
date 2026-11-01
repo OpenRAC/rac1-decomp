@@ -4,6 +4,7 @@
 #include "include_asm.h"
 #include "moby.h"
 #include "hero.h"
+#include "overlays/shared/rocket_and_path_camera.h"
 
 /* Hit proxy (moby 0x660): forwards the hits it takes to the moby that owns it. */
 struct HitProxyVars {
@@ -37,7 +38,6 @@ typedef struct MobyData_30CAE0 {
     char pad24[0x58];
     float f7C;
 } MobyData_30CAE0;
-
 
 typedef struct Anim_30CAE0 {
     char pad0[0x30];
@@ -503,7 +503,6 @@ extern void FastVecAdd(void *, void *, void *);
 extern float IntToFloat(int);
 extern int FastDecTimer(void *);
 extern int coll_line(void *, void *, int, int, int);
-extern void spawn_type_52_particle_near_moby(char *moby);
 
 typedef struct SparkData_30D880 {
     f32 dir_x; /* 0x00 */

@@ -1,6 +1,10 @@
 #include "common.h"
 #include "pad.h"
 #include "structs.h"
+#include "core/permcb.h"
+#include "game/memcard.h"
+#include "game/music.h"
+#include "game/sound.h"
 
 /*
  * bmain.cpp in the original source; text 0x1E9808-0x1E9E70.
@@ -26,17 +30,16 @@ extern char voice_pool[];
 extern char memory_card_state[];
 extern char level_resource_buffers[];
 extern void flush_cache(int);
-extern void sound_StopAllSounds(void);
-extern void music_Stop(void);
+
 extern int scale_game_frame_count(int);
 extern void FadeToBlack(int);
 extern void snd_StreamSafeCdSync(int);
-extern void memcard_update_state(void);
+
 extern void Movie_Play(int, int, int, int, int);
 extern void sce_cd_sync_s(int);
 extern void sce_gs_sync_v(int);
 extern void wait_for_graphics_pipeline_idle(int, int);
-extern void vsync_callback(void);
+
 extern void sceGsSyncVCallback(void (*)(void));
 extern void Hud_sendTexture(int, int, int, int, int, int);
 

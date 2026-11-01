@@ -6,6 +6,10 @@
 #include "vector.h"
 #include "hero.h"
 #include "moby.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
+#include "overlays/shared/level_runtime_and_menus.h"
 
 extern unsigned char hero_globals_base[];
 extern unsigned char gCheats[] MACRO_ADDR;
@@ -17,23 +21,17 @@ extern void advance_hero_animation(void);
 extern void hero_update(void);
 extern void Hero_UpdateAimFlags(void);
 extern void HeroL15_UpdateStateTransitions(void);
-extern void update_hero_delayed_voice_requests(void);
-extern void update_hero_easing_records(void);
-extern void update_hero_vehicle_moby(void);
-extern void update_hero_scalar_pulse(void);
-extern void apply_hero_and_item_scale_sequence(void);
-extern void reveal_map_around_position(void *);
-extern void update_hero_glow_and_extra_manipulators(void);
+
 extern void update_hero_bone_attachment(void);
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void enqueue_hero_glow_draw_callback_once(void);
+
 extern int scale_ticks(int);
 extern float IntToFloat(int);
 extern float FastSin(float);
 extern int truncate_float_to_s32(float);
 extern unsigned int FastTweenColor(float, unsigned int, unsigned int);
 extern void allocate_hero_voice_for_entry(int, int);
-extern void update_hero_moby_probed_height_bounds(void);
+
 extern void apply_env_zone_lighting(void *);
 
 /* Per-frame hero update: animation, state, voices, vehicle, scale, glow pulse and attachments. */
@@ -149,7 +147,6 @@ void update_hero_and_vehicle_mode_effects(void) {
 }
 extern unsigned char hero_globals_base[];
 extern unsigned char screen_globals_base[];
-extern void update_item_tint_from_hero(int, int);
 
 /* Show the indexed help prompt when its flag and message are active. */
 void update_enabled_item_tint_from_hero(void) {
@@ -197,7 +194,7 @@ void update_hero_bobbing_and_target_position(void) {
 }
 extern int quartu_game_mode MACRO_ADDR;
 extern void Hud_SetBarValueById(int arg0, int arg1);
-extern void reset_hero_easing_records(void);
+
 extern void DeleteMoby(void *);
 extern void release_and_clear_hero_voice_slots(void);
 extern void clear_hero_queued_animation(void);
@@ -702,7 +699,7 @@ extern struct PadState g_controller_state;
 extern Entry70_215e58 quartu_idle_fidgets_field_60[];
 extern short quartu_game_mode_r __asm__("D_L15_0015F6A8");
 extern u8 gHaveBoltGrabber NOT_SDA;
-extern void update_hero_tilt(void);
+
 extern s32 fast_dec_timer(s32 *);
 extern s16 FastDecTimer(s16 *);
 extern void restore_saved_hero_moby_and_clear_vehicle_mode(void);
@@ -716,7 +713,7 @@ extern void clear_u64_value(void *);
 extern void FastVecSub(void *, void *, void *);
 extern void FastVecScale(void *, void *, f32);
 extern f32 FastVecLength(void *);
-extern void update_hero_planar_distance_spring_motion(void);
+
 extern void transform_hero_local_offset_to_world(void *, f32, f32, f32);
 extern void Hero_OnKilled(void);
 

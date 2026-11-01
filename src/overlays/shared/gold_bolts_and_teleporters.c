@@ -6,6 +6,14 @@
 #include "records.h"
 #include "hero.h"
 #include "moby.h"
+#include "overlays/shared/camera_switch_and_update.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/gold_bolts_and_teleporters.h"
+#include "overlays/shared/hero_update_ground_material.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/point_lights_and_glows.h"
+#include "overlays/shared/water_pool_and_sand_mouse.h"
 
 /* Cutscene trigger: plays a camera sequence when the hero enters its volume. */
 struct CutsceneTriggerVars {
@@ -266,7 +274,7 @@ extern float random_float_between(float, float);
 extern void vec_scale_to_length(void *, void *, float);
 extern int rand_range(int, int);
 extern int scale_ticks(int);
-extern void PartType04Spawn(void *, void *, int, int, int, int, int, int);
+
 extern void DeleteMoby(void *);
 extern float FastVecDist(void *, void *);
 extern void FastVecScale(void *, void *, float);
@@ -692,7 +700,6 @@ extern void Hero_ResetToPosition(void *, void *, int, int);
 extern void CameraScript(void *, void *, int, int, int);
 extern int fast_dec_timer_c(void *) __asm__("func_001F9908");
 extern void CameraScript2(int);
-extern void request_hero_idle_state_for_vehicle_mode(void);
 
 /* Cutscene trigger: unless already seen, starts its camera sequence when the hero enters the volume (or it is
  * triggered), then ends it after its timer and re-arms. */
@@ -780,7 +787,6 @@ void update_cutscene_trigger(Moby *m) {
     }
 }
 extern char pool_tiles[];
-extern void render_water_grids(char *, int);
 
 /* Register this level's vendor data set. */
 void Moby751Draw(void) {
@@ -811,7 +817,7 @@ extern void attach_cutscene_big_head_manipulator(char *);
 extern void set_ground_height_band(void *);
 extern int DialogRequest_Init(void *, void *);
 extern int Npc_TryStartDialog(void *, void *);
-extern void PlaceMarkerAheadOfMoby(float, void *);
+
 extern void jet_clear_persistent(int);
 extern void jet_reset_camera(void *, void *);
 extern void unlock_planet(int);
@@ -1697,7 +1703,7 @@ extern void show_teleporter_and_children(char *);
 extern char *CreateMoby(int);
 extern void hide_teleporter_and_children(struct L01Moby *);
 extern void try_set_teleporter_help_message(char *);
-extern void update_teleporter_child_transforms(char *);
+
 extern void draw_moby_radius_ring(char *);
 extern int Moby_PlaySound(int, int, int);
 extern void request_hero_target_pose(float *pos, int arg, float t);
@@ -2083,7 +2089,7 @@ void show_teleporter_and_children(char *a) {
 typedef int OvlQuad_c9 __attribute__((mode(TI)));
 extern void LerpVec4(void *, void *, void *, float);
 extern int allocate_colored_effect_slot(void *, float, float, float, float, float);
-extern void release_point_light_slot(int);
+
 extern char novalis_point_light_slots[];
 
 /* Point light that blends between keyed colors and positions over time. */
@@ -2711,7 +2717,6 @@ void emit_sandmouse_particles(char *m) {
         spawn_type_74_particle(m, buf, v, &sandmouse_trail_particle_cfg_c, 1);
     }
 }
-extern void draw_offset_textured_effect_quad(void *, int, float, float);
 
 /* Initialize both consecutive effect entries. */
 void draw_sandmouse_billboard_quads(char *moby) {
@@ -3427,7 +3432,7 @@ extern float Cam_InterpValues(float a, float b, float *p, float c, float d, floa
 extern float FastVecLength(void *a);
 extern float FastVecDot(void *a, void *b);
 extern float FastArcSin(float x);
-extern float Camera_SmoothAngle(void *, float, float, float, float, float);
+
 extern void FastVecCross(void *, void *, void *);
 extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
 

@@ -3,6 +3,9 @@
 #include "callees.h"
 #include "include_asm.h"
 #include "hero.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/weapon_hud_and_counters.h"
 
 typedef struct {
     char p0[0x10];
@@ -27,10 +30,9 @@ extern void snd_PauseAllSoundsInGroup(int);
 extern void music_Pause(int);
 extern void snd_FlushSoundCommands(void);
 extern void FastMemSet();
-extern void reset_hud_and_suspend_weapon_updates(void);
-extern void clear_active_help_record(void);
+
 extern void Hero_SetMoveState(int, int);
-extern void HeroSetObjectFlags(void);
+
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern float ProbeGroundHeight(void *, int, float);
@@ -42,7 +44,7 @@ extern void select_world_object_resource_tables(int, int);
 extern void load_scene_chunks_with_fade(int);
 extern void parse_space_scene_chunk(int);
 extern int sce_gs_sync_v(int);
-extern void update_item_tint_from_hero(int, int);
+
 extern int Music_ContinueStreamIfReady(void);
 
 /* Opens the vendor screen for moby m in level lvl: sets up its camera, resets the screen state and runs it until it closes. */

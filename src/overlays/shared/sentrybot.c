@@ -5,6 +5,11 @@
 #include "vector.h"
 #include "moby.h"
 #include "hero.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/mine_bomb_and_debris.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/point_lights_and_glows.h"
 
 /* Sentrybot: patrols a path, turns toward what it notices, raises its
    linked alarm and shoots when it sees the hero. */
@@ -134,7 +139,7 @@ typedef struct {
 } Sentry98BB8;
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern void update_sentrybot_hit_response_and_target_visibility(void *, int);
-extern void manipulator_set_scale(void *, float);
+
 extern float FastVecDist(void *, void *);
 extern void set_ground_height_band(void *);
 extern int FastDecTimer(void *);
@@ -1521,7 +1526,6 @@ void update_sentrybot_hit_response_and_target_visibility(void *object, int flag)
 #undef truncate_float_to_s32_r
 #undef func_L00_001EFFF0_r
 #undef quartu_moby_array_m
-extern void draw_offset_textured_effect_quad(void *, int, float, float);
 
 /* Applies the same effect to three consecutive 16-byte slots of a moby's data, tagged with its colour word. */
 void draw_sentrybot_effect_quads(char *m) {
@@ -1726,7 +1730,7 @@ extern int rand_range(int, int);
 extern void *spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(void *, void *, int, int, float, int,
                                                                                int, int, int);
 extern void clamp_vec_length(void *, void *, float);
-extern char *SpawnFallingSpark(char *, char *, int, int, int);
+
 extern void PartType11Spawn(void *, void *, int, int, float, int, int, float, int, int);
 extern void spawn_particle_alt_9768(void *pos, void *vel, int color, int tag, int life, float size);
 extern void mine_camera_blast(void *, void *, int, int);
@@ -2144,15 +2148,15 @@ extern void spawn_owner_target_particle(int a0, void *a1, char *a2);
 extern void PartType05Spawn_r(void *, unsigned char, unsigned char, unsigned char, float, float,
                               int) __asm__("func_L00_0026AA10");
 extern int allocate_packed_color_point_light_slot(float *pos, float radius, float intensity, int color);
-extern void release_point_light_slot(int);
+
 extern int coll_sphere_mobys_r(void *, float, int, void *, void *) __asm__("func_L00_001F2BE8");
 extern void SendRadialMessageToMobys(void *, void *, void *, int, int, int, int, int, float, float, float);
 extern char *spawn_source_attached_fading_effect_particle_r(float, char *, int, int, int) __asm__("func_L00_0026E940");
-extern void random_spherical_offset(void *, float, float);
+
 extern void *spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns_r(void *, void *, int, int, float, int,
                                                                                  int, int,
                                                                                  int) __asm__("func_L00_0026CA10");
-extern char *spawn_mode_controlled_rotating_alpha_fade_particle(void *, void *, int, void *);
+
 typedef struct {
     int on;
     union {
@@ -2918,7 +2922,7 @@ typedef struct {
     int pad24[3];
 } Ray_2A8090;
 extern void matrix_copy_rows(void *, void *);
-extern void normalize_vector_triplet(void *);
+
 extern float FastNormalizeAngle(float);
 extern int func_001160D8(void);
 extern u8 quartu_coll_hit_point[];

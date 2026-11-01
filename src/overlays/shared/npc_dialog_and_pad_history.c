@@ -2,6 +2,8 @@
 #include "common.h"
 #include "include_asm.h"
 #include "hero.h"
+#include "game/stream.h"
+#include "overlays/shared/weapon_hud_and_counters.h"
 
 typedef struct {
     int value;
@@ -85,19 +87,16 @@ extern short bolt_hud_item;
 extern s32 DialogRequest_Init(void *p, u8 *out_p);
 extern float fast_atan2(float, float);
 extern float FastDiffRots(float, float);
-extern void process_menu_entry(void *, void *, int);
+
 extern void PlayMovieEntryIfIdle(int);
 extern int remove_hud_item(int);
 extern void StartCutscene(int);
 extern int hud_keep_visible(int, int);
 extern int queue_animation_update(int, int, void *, void *, void *, void *, int);
 extern int scale_ticks(int);
-extern void initialize_numeric_hud_element(void);
+
 extern void DefaultVtbl_DeleteMoby(void);
-extern void draw_hud_text_panel(void);
-extern void initialize_bolt_counter_hud(void);
-extern void update_bolt_counter_hud_animation_and_visibility(void);
-extern void draw_bolt_counter_hud_panel(void);
+
 extern char race_gates_base[];
 extern s32 level_frame_counter MACRO_ADDR;
 /* Start an NPC's dialog when the hero is close and facing it; returns nonzero if it started. */

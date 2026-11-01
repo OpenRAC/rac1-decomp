@@ -3,13 +3,13 @@
 #include "records.h"
 #include "structs.h"
 #include "music.h"
+#include "core/989snd.h"
 
 /*
  * music.cpp in the original source; text 0x2161E0-0x217588.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
-
 
 typedef struct {
     char b[0x13];
@@ -49,7 +49,6 @@ void reset_music(void) {
     register_audio_stream_callback();
 }
 
-extern void snd_StreamSafeCdCallback(void *);
 extern void finish_audio_stream_read(int);
 
 /* Register the CD read callback used by the music stream. */

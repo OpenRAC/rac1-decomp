@@ -4,6 +4,15 @@
 #include "vector.h"
 #include "hero.h"
 #include "moby.h"
+#include "game/draw.h"
+#include "overlays/l12_hoven/hero_idle_animation.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/homing_missile_and_water_sheet.h"
+#include "overlays/shared/linked_moby_transforms.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/scoutbot_and_paratrooper.h"
 
 /* Planetbuster Maximus: sways along its path while its parts, guns and camera cut-in run. */
 struct PlanetbusterVars {
@@ -313,7 +322,7 @@ extern char *MobyGetHitMessage(void *, int, int);
 extern void DeleteMoby(void *);
 extern void add_vectors(void *, void *, void *);
 extern int rand_range(int, int);
-extern void PartType04Spawn(void *, void *, int, int, int, int, int, int);
+
 extern int coll_line(void *, void *, int, struct Moby *, int);
 extern int coll_sphere(void *, int, struct Moby *, float);
 extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
@@ -902,7 +911,6 @@ typedef struct {
     short fAE;
 } Data_304920;
 
-
 typedef struct {
     char pad0[0x140];
     float f140[4];
@@ -962,12 +970,12 @@ extern float FastSubRots(float, float);
 extern void Moby_PlaySound(int, int, int);
 extern void CameraScript(void *, void *, int, int, int);
 extern void MobySetAnimation(void *, int, int);
-extern int HeroL12_SetMoveState(int, int);
+
 extern void AddDrawCallback(void *, void *);
 extern void update_hoven_turret_target_alignment_timer(void *);
 extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
 extern char *MobyGetHitMessage(void *, int, int);
-extern void Hero_OnKilled(void);
+
 extern void DetachManipulator(void *, void *);
 extern void jet_clear_persistent(int);
 extern void PlayMovieEntryIfIdle(int);
@@ -985,7 +993,7 @@ extern void vec_scale_to_length(void *, void *, float);
 extern int rand_range(int, int);
 extern char *PartType27Spawn(void *, void *, int, int, float);
 extern float randf_sym(float, float);
-extern void fast_add_rotations_cf(void *, void *, float, float, float);
+
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
 extern void StartCutscene(int);
@@ -1638,7 +1646,7 @@ extern float SpringAngle(void *, float, void *, int, float, float, float);
 extern float FastDiffRots(float, float);
 extern int fast_subtract_rotations_cf(void *);
 extern void *spawn_class_b8_projectile(void *, void *, void *, int);
-extern void PartType04Spawn(void *, void *, int, int, int, int, int, int);
+
 extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 void initialize_planetbuster_maximus_detached_part_motion(struct Moby *moby, int slot);
@@ -1672,7 +1680,6 @@ void update_planetbuster_maximus_guns(char *moby) {
     float v3[4];
     float *pv1;
     float *hp;
-
 
     for (i = 0; i < 5; i++) {
         int idx;
@@ -2128,7 +2135,7 @@ extern int hoven_cutscene_active MACRO_ADDR;
 extern short planetbuster_maximus_rotation_oscillation_common_factor_phase_rate_degrees;
 extern short planetbuster_maximus_rotation_oscillation_component_mix_phase_rate_degrees;
 extern short planetbuster_sway_amplitude;
-extern void capture_linked_moby_relative_transforms(char *, void *, int);
+
 extern void apply_linked_moby_relative_transforms(char *, char *, int);
 extern void update_moby_vertical_oscillation(float, float, char *, float *, float *);
 extern void update_moby_rotation_oscillation(void *, char *, char *, float, float, float);
@@ -2664,8 +2671,7 @@ void emit_phase_selected_moby_effects(Moby *moby) {
 }
 extern void Moby_PlaySound(int, int, int);
 extern void spawn_proximity_gated_bolts(void *);
-extern void spawn_moby_break_fragments(void *, int, int, int, int, int, int);
-extern void spawn_moby_from_placement(void *, int);
+
 /* Moby update for a breakable. */
 void BreakableUpdate(char *m) {
     int hit = 0;
@@ -2689,12 +2695,12 @@ void BreakableUpdate(char *m) {
             break;
     }
 }
-extern void font_queue_vu_state(void);
+
 extern int GetEffectTex(int);
 extern int is_point_inside_clip_volume(void *, int);
 extern void add_uv_scroll_offset(void *, int, int, void *);
 extern void draw_env_overlay_mesh(int, int, int, void *, int);
-extern void queue_oil_tanker_front_texture_2b_batches(int);
+
 extern char hoven_camera_pos[];
 extern char hoven_overlay_uv_buffer[];
 extern char hoven_overlay_uv_scroll[] MACRO_ADDR;
@@ -2740,7 +2746,7 @@ extern float hoven_overlay_uv_scroll_speed_v0D3D0[] __asm__("D_L12_00162158") MA
 extern float frame_delta_time MACRO_ADDR;
 extern int *hoven_front_piece_colors[];
 extern int hoven_front_piece_vertex_counts[];
-extern void scale_rgba_tables(void *, int, void *, float, float, float, float, int);
+
 typedef struct {
     char p[0x20];
     unsigned char state;

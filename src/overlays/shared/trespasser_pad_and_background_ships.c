@@ -5,6 +5,9 @@
 #include "pad.h"
 #include "hero.h"
 #include "moby.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/move_control_and_clear_path.h"
 
 /* Trespasser puzzle: three rings of 12 slots, marker ring and the rotation state. */
 struct TrespasserPuzzleVars {
@@ -1623,7 +1626,7 @@ extern float vec_distance_xy(void *, void *);
 extern void StartCutscene(int);
 extern void grant_inventory_item(int, int);
 extern void ShowBanner(int, int);
-extern void clear_active_help_record(void);
+
 extern int Help_Request(int, int);
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern int memcard_Save(int, int);
@@ -1856,7 +1859,6 @@ void update_collectible_sprite_effect(char *m) {
 }
 extern int get_first_moby_in_group(int *, int, int, int);
 extern int get_next_moby_in_group(int *, int, int, int);
-extern void draw_offset_textured_effect_quad(void *, int, float, float);
 
 /* Walks the moby list matching this moby's id and pulses each match's data slots while it is bright. */
 void draw_background_ship_1_joint_billboards(char *self) {
@@ -2467,8 +2469,6 @@ void spawn_background_ship_2_level_10_joint_sparks(char *moby, void *arg) {
 }
 extern void Moby_PlaySound(int, int, int);
 extern void spawn_proximity_gated_bolts(void *);
-extern void spawn_moby_break_fragments(void *, int, int, int, int, int, int);
-extern void spawn_moby_from_placement(void *, int);
 
 /* Update for a moby that waits for a float flag on a nearby object then runs a delete sequence. */
 void white_flower_update(char *m) {

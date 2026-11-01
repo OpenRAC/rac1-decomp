@@ -3,6 +3,7 @@
 #include "include_asm.h"
 #include "vector.h"
 #include "hero.h"
+#include "overlays/shared/hero_idle_and_animation.h"
 
 extern char g_hero[];
 extern int select_hero_slot3_animation_pair(int, int *, int *);
@@ -138,7 +139,7 @@ void blend_hero_slot3_mapped_animation_pair(int id, int arg, float t) {
         MobyBlendAnimation(b, 1, 0, seq);
     }
 }
-extern int return_hero_animation_id_unchanged(int);
+
 extern int rand_range(int, int);
 
 /* Picks at random (func_L00_00258BC8) one of the entries whose seq is ID
@@ -1555,7 +1556,7 @@ void animate_hero_slot4_and_slot5_visuals(void) {
     }
 }
 extern char cutscene_state[];
-extern void update_hero_world_matrices(int);
+
 extern void update_hero_item_mobys(void);
 extern void animate_hero_slot4_and_slot5_visuals(void);
 

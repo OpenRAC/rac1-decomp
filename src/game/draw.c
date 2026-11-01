@@ -5,13 +5,18 @@
 #include "callees.h"
 #include "records.h"
 #include "structs.h"
+#include "core/001207B8.h"
+#include "core/00121750.h"
+#include "core/00123168.h"
+#include "game/framebuf.h"
+#include "game/tfragfunc.h"
+#include "game/vuchain.h"
 
 /*
  * draw.cpp in the original source; text 0x1F0F30-0x1F7C60.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
-
 
 extern void FastMemCopy(void *, void *, int);
 
@@ -711,14 +716,10 @@ extern int pal_mode MACRO_ADDR;
 extern int g_gs_texture_allocation_start MACRO_ADDR;
 extern int *g_render_packet_cursor MACRO_ADDR;
 
-extern void DMAC_VIF1_Disable(void);
-extern int sceDmaReset(int);
 extern void InitDma(void);
-extern void sceGsResetGraph(int, int, int, int);
-extern void reset_vif1_gif(void);
-extern void VU1_initChain(void);
+
 extern void SetPalMode(void);
-extern void DMAC_VIF1_Enable(void);
+
 extern volatile int vif_chain_flags_v __asm__("D_00160FE0") MACRO_ADDR;
 
 /* Render setup: raises D_0015F6FC, clears D_00160FE0, runs the setup calls,
@@ -1156,7 +1157,7 @@ extern f32 fast_arc_tan(f32, f32);
 extern f32 FastCos(f32);
 #define fast_cos func_001F9F90
 extern void copy_memory_aligned(void *, void *, s32);
-extern void SetTfragDists(void);
+
 #define set_tfrag_dists func_00234380
 
 /* Rebuilds the view state from the field of view, screen size and fog
@@ -1446,7 +1447,7 @@ extern int g_gs_texture_allocation_base MACRO_ADDR;
 extern void flush_cache(int);
 extern int wait_for_graphics_pipeline_idle(int, int);
 extern void SetupFS_AA_buffer(int, int, int, int, int, int);
-extern void PutDrawBufferLarge(void);
+
 extern void append_gif_transfer_packet(void);
 extern void PutDispBuffer(void);
 extern int sceGsSetDefLoadImage(GsLoadImage *, s16, s16, s16, s16, s16, s16, s16);
@@ -1657,7 +1658,7 @@ extern void draw_fogged_fullscreen_sprite(char *);
 extern void draw_debug_font(void);
 extern void dispatch_callback_list_3(void);
 extern void DrawMobys(void);
-extern void VU1_addDataRef(void *, int);
+
 extern void dispatch_callback_list_1(void);
 extern void draw_lens_flare(void);
 extern void draw_light_quads(void);
@@ -1975,7 +1976,6 @@ extern int *g_render_packet_cursor MACRO_ADDR;
 extern int *gif_paging_tail_tag MACRO_ADDR;
 extern int gif_paging_texture_flush_enabled;
 extern void flush_pending_texture_uploads(void);
-extern void VU1_texFlush(void);
 
 /* DoGifPaging: pushes two 4-word GIF tags (0x20000000 in the first word)
    onto the D_00161000 packet, D_0015F554 marking where it started and
@@ -2239,10 +2239,7 @@ void draw_light_quads(void) {
 }
 
 extern int sce_gs_sync_v_i(int) __asm__("func_00122598");
-extern void VU1_swapChain(void);
-extern void VU1_sendChain(void);
-extern void PutDrawBufferLarge(void);
-extern void PutDrawBufferSmall(void);
+
 extern int *g_render_packet_cursor MACRO_ADDR;
 extern int game_frame_counter MACRO_ADDR;
 extern char second_clear_packet[];
@@ -3498,7 +3495,6 @@ void font_queue_vu_state(void) {
     vu1_gs_regs_font();
 }
 
-extern void setup_render_target(int, int, int);
 extern short render_target_base_page NOT_SDA;
 
 /* Sets up a (1 << a) x (1 << b) area, as vendor.c's func_0023A948 does:

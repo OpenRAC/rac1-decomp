@@ -6,6 +6,11 @@
 #include "hero.h"
 #include "moby.h"
 #include "camera.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/point_lights_and_glows.h"
+#include "overlays/shared/vendor_menu.h"
+#include "overlays/shared/weapon_hud_and_counters.h"
 
 /* Gadget vendor: a ring moby that glows and spins while the hero is near. */
 struct VendorVars {
@@ -482,7 +487,6 @@ extern void FastVecAdd(void *, void *, void *);
 extern void draw_world_quad(void *, void *, int);
 extern float FastCos(float);
 extern float FastSin(float);
-extern void draw_offset_textured_effect_quad(void *, int, float, float);
 
 typedef struct {
     float x, y, z, w;
@@ -645,7 +649,7 @@ extern void AddDrawCallback(void (*)(void), void *);
 extern void axis_rotation_2d48(void *, int, float);
 extern float fast_atan2(float, float);
 extern int try_set_help_message(int, int);
-extern void open_vendor_menu(void *);
+
 extern void draw_vendor_effects();
 extern int level_frame_counter MACRO_ADDR;
 extern short vendor_glow_pulse_phase;
@@ -1203,9 +1207,7 @@ extern BoltSourceStats_A7E10 bolt_source_stats[][64];
 extern s32 level_bolts[];
 extern s32 current_moby_mission_complete MACRO_ADDR;
 extern short level_mobys_end;
-extern void initialize_bolt_counter_hud(void);
-extern void update_bolt_counter_hud_animation_and_visibility(void);
-extern void draw_bolt_counter_hud_panel(void);
+
 extern void queue_animation_update(s32, s32, void *, void *, void *, void *, s32);
 extern void rand_vec(void *, f32, f32);
 extern void FastVecScale(void *, void *, f32);
@@ -1827,7 +1829,7 @@ extern char *suck_moby_list MACRO_ADDR;
 extern float FastVecDist(void *, void *);
 extern float random_float_between(float, float);
 extern int begin_bolt_attraction(void *, int, float, float);
-extern int is_moby_class_e2_cc_de_3ee_d6_e1_d5_or_df(void *);
+
 extern int try_collect_ammo_pickup(void *);
 
 /* Walk the moby list and trigger the first nearby one that accepts it. */
@@ -2007,7 +2009,7 @@ extern void vec_set_length_xy(void *, void *, float);
 extern int sweep_hit_segment(void *, void *, void *, void *, void *, void *, int);
 extern int sphere48(void *, float, int, void *, void *) __asm__("func_L00_001F2BE8");
 extern int HeroEnterMoveState(int, int);
-extern void update_moby_transform_history(void *, int);
+
 extern void compose_target_euler_rotation(char *, float, float, float);
 extern int fast_dec_timer(int *);
 extern float ProbeGroundHeight(void *, int, float);
@@ -2553,7 +2555,7 @@ void set_tracked_class_5f3_moby_position(int a, char *pos) {
         }
     }
 }
-extern void release_point_light_slot(int);
+
 extern void DeleteMoby(void *);
 
 // Tears down the tracked moby if it is class 0x5F3 and dead, freeing its slot and clearing the pointer.

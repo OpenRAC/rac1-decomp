@@ -5,6 +5,10 @@
 #include "include_asm.h"
 #include "hero.h"
 #include "moby.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/radial_particle_burst.h"
+#include "overlays/shared/rocket_and_path_camera.h"
 
 /* Configurable spark emitter: one burst source at the moby, or one per point of a path. */
 struct ParticleEmitterVars {
@@ -159,7 +163,7 @@ extern void MobySpringTurn_b(char *moby, float target, float k, float d, float m
                              float *vel) __asm__("func_L00_002592B0");
 extern void RerollEffectCounter(void *m, short *p);
 extern void SetDeathBits(void *, int, int);
-extern void spawn_type_52_particle_near_moby(char *moby);
+
 extern void spawn_color_swapped_explosion_burst(void *, void *, int, float, float);
 extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
 extern float randf_sym(float lo, float hi);
@@ -1292,7 +1296,7 @@ extern float SpringTurn(float *vel, float cur, float target, float k, float d, f
 extern float FastVecLength(void *a);
 extern int IsFrameWithinWindow(char *, float);
 extern void BuildSphericalOffset(void *, float, float, float);
-extern void emit_radial_particle_burst(void *, void *, int);
+
 extern char *create_rocket(void *vel, void *pos, int a, int b, int c, float scale);
 extern void ClampVectorLength(void *, float);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
@@ -2151,7 +2155,7 @@ extern int level_moby_killed[][64];
 extern unsigned char hero_vehicle_mode[];
 extern unsigned char hoven_available[];
 extern int is_point_inside_clip_volume(void *, int);
-extern void activate_descriptor(int);
+
 extern int truncate_float_to_s32(float);
 extern int fast_dec_timer_r2(int *) __asm__("func_001F9908");
 
@@ -2636,7 +2640,6 @@ void update_level_mode_dispatcher(char *m) {
 extern char *MobyGetHitMessage(void *, int, int);
 extern int Moby_PlaySound(int, int, int);
 extern void spawn_proximity_gated_bolts(void *);
-extern void spawn_moby_break_fragments(void *, int, int, int, int, int, int);
 
 /* Update for moby class 1855: waits, arms, then fires an effect and deletes itself. */
 void Moby1855Update(char *m) {
@@ -2660,7 +2663,6 @@ void Moby1855Update(char *m) {
             break;
     }
 }
-extern void spawn_moby_from_placement(void *, int);
 
 /* per-frame update: wait for a condition, then run, then clean up */
 void update_hit_triggered_moby_spawner(char *moby) {

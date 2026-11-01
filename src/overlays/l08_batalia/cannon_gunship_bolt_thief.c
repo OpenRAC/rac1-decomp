@@ -3,6 +3,7 @@
 #include "include_asm.h"
 #include "hero.h"
 #include "moby.h"
+#include "game/mobyutil.h"
 
 /* Bolt thief: scans a fixed list of mobys for its targets. */
 struct BoltThiefVars {
@@ -1932,7 +1933,7 @@ extern void multiply_matrix3x3(void *, void *, void *);
 extern int coll_sphere(float, void *, int, void *);
 extern void vec_reflect(void *, void *, void *);
 extern float IntToFloat(int);
-extern void matrix_to_euler(void *, void *);
+
 extern void euler_to_matrix(float *, float *);
 extern void FastVecCross(void *, void *, void *);
 extern void FastVecScale(void *, void *, float);
@@ -2411,7 +2412,7 @@ void update_batalia_bolt_pickup(Moby *m) {
 }
 extern void FastVecCross(void *, void *, void *);
 extern void clear_u64_value(void *);
-extern void matrix_to_euler(void *, void *);
+
 extern void euler_to_matrix(float *, float *);
 
 /* builds a basis from a direction vector and writes the orientation into the moby */

@@ -6,6 +6,9 @@
 #include "camera.h"
 #include "hero.h"
 #include "moby.h"
+#include "game/camera.h"
+#include "game/effects.h"
+#include "game/mobyutil.h"
 
 /*
  * camera.cpp in the original source; text 0x1EC038-0x1EDFF8.
@@ -130,7 +133,7 @@ void Camera_runSetupToNewCam(Camera *cam) {
 extern CameraDef *gCameraDefs MACRO_ADDR;
 extern s32 g_current_level_index MACRO_ADDR;
 extern u8 gCamPrevState[];
-extern void BackupCurrentCam(void);
+
 extern void FastMemCopy(void *dst, void *src, s32 size);
 extern s32 truncate_float_to_s32(f32 transition_duration);
 
@@ -466,8 +469,6 @@ void Camera_Pos2Polar3d(float *out, void *p0, void *p1, void *dir0, void *dir1, 
     out[2] = FastVecLength(diff);
 }
 
-extern void Camera_Pos2Polar3d(float *out, void *p0, void *p1, void *dir0, void *dir1, void *axis);
-
 /* capture_camera_orientation: the hero moby's axes go into blend.orbit.fwd
    and blend.orbit.up, its yaw/pitch/distance to the hero into blend.orbit
    (yaw, pitch, dist), and blend.orbit.rot is copied from saved_rot. The
@@ -524,7 +525,7 @@ void restore_camera_vectors(void) {
    D_001872B0 itself, gcse keeps the entry's %hi alive in a saved register
    across the calls, where retail rebuilds it. */
 extern short cam_trans_state_h __asm__("D_001872B0") NOT_SDA;
-extern void extract_matrix_rotation_quaternion(void *, void *);
+
 extern int scale_game_frame_count(int);
 extern float IntToFloat(int);
 
@@ -598,7 +599,7 @@ void start_camera_blend(Camera *from) {
 
 extern char camera_rows[];
 extern float frame_scale MACRO_ADDR;
-extern float CosineInterpolate(float, float, float);
+
 extern void quaternion_to_matrix(void *, void *);
 extern void matrix_copy_rows(void *, void *);
 
@@ -648,7 +649,7 @@ int step_camera_blend(Camera *to, CamBlendLerp *lerp) {
 }
 
 extern void FastVecCross(void *, void *, void *);
-extern void Camera_Pos2Polar3d(float *out, void *p0, void *p1, void *dir0, void *dir1, void *axis);
+
 extern void fast_vec_normalize(void *dst, void *src, float len);
 extern float FastSubRots(float, float);
 extern float FastAddRots(float, float);
@@ -659,7 +660,7 @@ extern float FastVecDot(void *a, void *b);
 extern float FastVecLength(void *a);
 extern float FastArcSin(float x);
 extern void build_quaternion_from_axis_angle(void *arg0, void *axis, float angle);
-extern void rotate_vector_by_quaternion(void *arg0, void *arg1, void *arg2);
+
 extern void fast_dec_timer(int *arg0);
 extern char hero_gravity_dir[];
 
@@ -1059,13 +1060,11 @@ void advance_timed_camera_control(void) {
 
 extern int text_screen_active;
 extern unsigned char draw_map51_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
-extern void advance_timed_camera_control(void);
+
 extern void refresh_camera_control_flags(void);
-extern void update_camera_tracking_state(void);
+
 extern void start_camera_blend(Camera *);
 extern void copy_matrix_rotation(void *, void *);
-extern void matrix_to_euler(void *, void *);
-extern void update_camera_environment_from_regions(void *);
 
 /* Camera update, once per frame: count the frame, run the camera
    steps, then (unless the debug free camera is active) take the view

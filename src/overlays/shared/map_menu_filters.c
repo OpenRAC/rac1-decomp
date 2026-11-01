@@ -2,6 +2,7 @@
 #include "common.h"
 #include "include_asm.h"
 #include "hero.h"
+#include "game/map.h"
 
 extern int hero_control_mode;
 extern unsigned char menu_item_enabled_2[];
@@ -184,7 +185,7 @@ typedef struct {
     int pad1;
     CacheEnt e[8];
 } Cache;
-extern void decode_map_rle_row(unsigned char *dst, int row, unsigned char *src, short *offs);
+
 extern Cache map_menu_state;
 extern int rendered_frame_count MACRO_ADDR;
 /* Finds or loads the map menu cache entry for key, evicting the oldest on a miss. */

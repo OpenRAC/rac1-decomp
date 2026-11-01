@@ -4,6 +4,9 @@
 #include "camera.h"
 #include "vector.h"
 #include "hero.h"
+#include "game/camera.h"
+#include "game/effects.h"
+#include "game/mobyutil.h"
 
 /* The level copies of the camera tables (include/camera.h). */
 extern Camera gCameraSlotsLvl[];
@@ -85,7 +88,7 @@ void initialize_camera_record_handoff_defaults(void) {
 }
 /* Plain declarations SwitchCamera needs before it (the level names are macros in include/names.h). */
 extern u8 gCamPrevStateLvl[];
-extern void BackupCurrentCam(void);
+
 extern void Camera_runSetupToNewCam(void *);
 extern void FastMemCopy(void *, void *, s32);
 extern s32 truncate_float_to_s32(f32);
@@ -235,7 +238,6 @@ int UpdateAllCamerasLvl(void) {
 }
 extern char hero_globals_base[];
 extern void vec_scale_to_length(void *, void *, float);
-extern void Camera_Pos2Polar3d(float *out, void *p0, void *p1, void *dir0, void *dir1, void *axis);
 
 // Samples the hero moby's three axes into blend.orbit.fwd and blend.orbit.up, derives the orbit yaw, pitch and distance to the hero, and copies rot to saved_rot.
 /* Joined to the fragment that follows it (config/overlays/joined.tsv): the catalogue splits the delay slot of the final jr off. */
@@ -258,7 +260,7 @@ void Camera_CaptureHeroRelativeView(void) {
    through D_L00_00166FF0 itself, gcse keeps the entry's %hi alive in a saved
    register across the calls, where retail rebuilds it. */
 extern short camera_blend_phase_h __asm__("D_L00_00166FF0") NOT_SDA;
-extern void extract_matrix_rotation_quaternion(void *, void *);
+
 extern void Camera_CaptureHeroRelativeView(void);
 extern void save_camera_vectors(void);
 extern void restore_camera_vectors(void);
@@ -401,17 +403,16 @@ INCLUDE_ASM("asm/overlays", func_L00_001ED3D4);
 extern int cinematic_mode MACRO_ADDR;
 extern int vendor_menu_field_40;
 extern unsigned char draw_map51_r[4] __asm__("D_0015EEB4") MACRO_ADDR;
-extern void advance_timed_camera_control(void);
+
 extern void Camera_PickCollisionMasksLvl(void);
-extern void update_camera_tracking_state(void);
+
 extern int UpdateAllCamerasLvl(void);
 extern void Camera_CaptureTransform(Camera *);
 extern void update_camera_blend(char *arg0);
 extern void apply_camera_shake(char *arg0, int arg1);
 extern void update_camera_underwater_flag(void);
 extern void copy_matrix_rotation(void *, void *);
-extern void matrix_to_euler(void *, void *);
-extern void update_camera_environment_from_regions(void *);
+
 extern void FastVecCross(void *, void *, void *);
 
 /* Camera update, once per frame: count the frame, run the camera steps, take the view from the target camera (mode 3 blends it) unless frozen, refresh the angles and the derived vectors. Level copy of func_001EDE50. Joined with func_L00_001ED460 and func_L00_001ED464 (config/overlays/joined.tsv). */
@@ -483,7 +484,7 @@ int find_camera_table_index_by_id(int key) {
 }
 extern Camera *find_camera_record_by_id(int);
 extern void Camera_runSetupToNewCam(void *);
-extern void BackupCurrentCam(void);
+
 extern char gCamCurStateLvl[];
 
 /* Camera id 0 becomes the current camera with a hard cut: its state buffer is gCamCurStateLvl,

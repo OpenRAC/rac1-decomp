@@ -4,6 +4,9 @@
 #include "include_asm.h"
 #include "hero.h"
 #include "moby.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/trespasser_pad_and_background_ships.h"
+#include "overlays/shared/trigger_switches_and_hoverboard.h"
 
 /* Electric gate: its trigger and the sound voice slot it claims. */
 struct ElectricGateWatchVars {
@@ -1735,7 +1738,7 @@ extern int get_dialogue_entry();
 extern int DialogRequest_Init(void *, void *);
 extern void initialize_moby_grounding(char *);
 extern int Npc_TryStartDialog(void *, void *);
-extern void PlaceMarkerAheadOfMoby(float, void *);
+
 extern void Hero_ResetToPosition();
 extern void MusicRequestTrack();
 extern void ShowBanner(int, int);
@@ -2042,7 +2045,7 @@ extern void attach_big_head_cheat_manipulator(char *);
 extern int DialogRequest_Init(void *, void *);
 extern void initialize_moby_grounding(char *);
 extern int Npc_TryStartDialog(void *, void *);
-extern void PlaceMarkerAheadOfMoby(float, void *);
+
 extern void unlock_planet(int);
 extern int memcard_Save(int, int);
 extern void DeleteMoby(void *);
@@ -2210,7 +2213,7 @@ void qwarks_bouncer_update(char *m) {
     EaseManipulatorOffsets(m, &bouncer_data->body, 0, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
     EaseManipulatorOffsets(m, &bouncer_data->head, 1, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
 }
-extern void attach_big_head_cheat_manipulator_to_matching_moby(void *);
+
 extern void set_ground_height_band(void *);
 extern float ProbeGroundHeight(void *, int, float);
 extern void grant_inventory_item(int, int);
@@ -2434,16 +2437,13 @@ extern void set_moby_dialogue_record_value(void *, int);
 extern void PickNearestTargetSlot(char *);
 extern void select_taxi_route(char *);
 extern void request_moby_variant_help_message(char *);
-extern char *FindMobyByDataId(void *, int);
+
 extern float ApproachWithVelocity(float, float, float, float, float *, float *);
 extern void SamplePathAt(int *, int, void *, float *, int, float);
 extern void SamplePathAt_r(float, int *, int, void *, float *, int) __asm__("func_00215CA8");
 extern void lerp_vector(void *, void *, void *, float);
 extern float FastSubRots(float, float);
-extern int AdvanceMobyPath(char *);
-extern void reset_selected_moby_to_current_placement(char *);
-extern void apply_moby_position_and_rotation_wobble(char *);
-extern void transform_moby_vector_table_to_world_space(char *);
+
 extern int Moby_PlaySound_i(int, int, void *) __asm__("func_0022ED80");
 extern void Sound_StopSlot(int);
 extern void FastVecSub(void *, void *, void *);

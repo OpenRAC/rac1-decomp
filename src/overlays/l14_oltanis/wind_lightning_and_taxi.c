@@ -6,6 +6,13 @@
 #include "hero.h"
 #include "moby.h"
 #include "pad.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/projectile_expiry_particles.h"
+#include "overlays/shared/ship_mode_and_level_entry.h"
+#include "overlays/shared/ship_pickup_and_rocket.h"
+#include "overlays/shared/trespasser_pad_and_background_ships.h"
+#include "overlays/shared/trigger_switches_and_hoverboard.h"
 
 /* Ribbon effect: two ribbon paths (0x00 and 0xA0) and the texture scroll. */
 struct RibbonVars {
@@ -1045,7 +1052,7 @@ extern int rand_range(int, int);
 extern s32 scale_ticks(s32);
 extern int coll_line(void *, void *, int, void *, void *);
 extern void InitDirectionalHitQuery(void *, struct Moby *, s32, void *, f32);
-extern void spawn_projectile_expiry_particle(void *, void *);
+
 extern void vec_reflect(void *, void *, void *);
 extern char *PartType27Spawn(char *, char *, int c, int d, float f);
 extern struct {
@@ -1151,7 +1158,7 @@ extern int lightning_arc_remaining_frames MACRO_ADDR;
 extern float lightning_arc_start_pos[] MACRO_ADDR;
 extern float lightning_arc_end_pos[] MACRO_ADDR;
 extern void StartCutscene(int);
-extern void deactivate_recorded_moby(void);
+
 extern void show_tracked_moby(void);
 extern int fast_dec_timer(void *);
 extern int FastBSphereCheck(void *, float);
@@ -1966,7 +1973,7 @@ void initialize_elevator_path_state(struct Moby *m) {
 extern char *oltanis_paths[];
 extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
 extern int Spline_AdvanceByDistance_r2(void *, void *, void *, void *, int, float) __asm__("func_L00_0025E860");
-extern float interpolate_angle(float, float, float);
+
 extern float g_frame_time MACRO_ADDR;
 extern short elevator_path_speed;
 
@@ -2209,10 +2216,7 @@ extern void SamplePathAt_r(int *, int, void *, float *, int, float) __asm__("fun
 extern void SamplePathAt_r2(float, int *, int, void *, float *, int) __asm__("func_00215CA8");
 extern void lerp_vector(void *, void *, void *, float);
 extern float FastSubRots(float, float);
-extern int AdvanceMobyPath(char *);
-extern void reset_selected_moby_to_current_placement(char *);
-extern void apply_moby_position_and_rotation_wobble(char *);
-extern void transform_moby_vector_table_to_world_space(char *);
+
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 extern void Sound_StopSlot(int);
@@ -2625,13 +2629,13 @@ void request_taxi_stop_prompt(char *moby) {
             break;
     }
 }
-extern void attach_big_head_cheat_manipulator_to_matching_moby(void *);
+
 extern void set_ground_height_band(void *);
 extern int DialogRequest_Init(void *, void *);
 extern void jet_clear_persistent(int);
 extern void jet_reset_camera(void *, void *);
 extern int Npc_TryStartDialog(void *, void *);
-extern void PlaceMarkerAheadOfMoby(float, void *);
+
 extern void ShowBanner(int arg0, int arg1);
 extern void grant_inventory_item(int, int);
 extern void enable_elevator_alternate_route_r(void *) __asm__("func_L14_002F0A00");
@@ -3492,7 +3496,7 @@ extern short fighter921_spring_stiffness;
 extern short fighter921_spring_damping;
 extern short fighter921_max_bank;
 extern short fighter921_bank_yaw_range;
-extern void flag_vendor_item(int);
+
 extern void Sound_StopSlot(int);
 extern void DeleteMoby(void *);
 extern void FastVecSub(void *, void *, void *);

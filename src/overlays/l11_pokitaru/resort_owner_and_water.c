@@ -6,6 +6,10 @@
 #include "vector.h"
 #include "hero.h"
 #include "moby.h"
+#include "overlays/shared/gold_bolts_and_teleporters.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/trespasser_pad_and_background_ships.h"
+#include "overlays/shared/water_pool_and_sand_mouse.h"
 
 /* Resort owner (boss): path pointers, rail table, walk target and speeds. */
 struct ResortOwnerVars {
@@ -195,7 +199,7 @@ void trigger_pokitaru_paired_rotation(char *moby) {
 extern void attach_big_head_cheat_manipulator_r(char *) __asm__("func_L05_003188A8");
 extern int DialogRequest_Init(void *, void *);
 extern int Npc_TryStartDialog(void *, void *);
-extern void PlaceMarkerAheadOfMoby(float, void *);
+
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern void grant_inventory_item(int, int);
 extern void jet_reset_camera_r(void *, void *) __asm__("func_L00_00286128");
@@ -347,7 +351,7 @@ void bob_update(char *m) {
         EaseManipulatorOffsets_r(m, moby_vars->head, 1, rate * g_frame_scale_sq_r, head_rate * g_frame_scale_sq_r);
     }
 }
-extern void attach_big_head_cheat_manipulator_to_matching_moby(void *);
+
 extern float FastVecDist(void *, void *);
 extern float camera_pos_b358[];
 extern void set_ground_height_band(void *);
@@ -1322,7 +1326,7 @@ extern short pokitaru_teleporter_max_speed;
 extern void restore_teleporter_visibility_and_collision(char *);
 extern void request_teleporter_help_message(char *);
 extern void draw_teleporter_ring(char *);
-extern void update_teleporter_child_transforms(char *);
+
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 extern void request_hero_target_pose(float *, int, float);
 extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
@@ -2916,7 +2920,7 @@ void update_water_tile(struct Moby *m) {
         }
     }
 }
-extern void render_water_grids(char *, int);
+
 extern char pokitaru_pool_tiles[];
 /* Draws the 20 Pokitaru pool water grids. */
 void render_level_11_water_grids(void) {
@@ -3533,7 +3537,6 @@ typedef struct PsyData_311648 {
     char pad164[0x7C];
     char f1E0[4];
 } PsyData_311648;
-
 
 typedef struct Path_311648 {
     int count;

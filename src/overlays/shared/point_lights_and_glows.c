@@ -3,6 +3,7 @@
 #include "vector.h"
 #include "callees.h"
 #include "include_asm.h"
+#include "game/lights.h"
 
 extern long GetEffectTex64(int) __asm__("func_001F4868");
 extern void MobyTransformScaledVertex(char *arg0, int arg1, char *arg2);
@@ -274,7 +275,7 @@ int allocate_colored_effect_slot(u128_pt *v, float a, float b_0023e738, float c,
     t->buf = level_point_light_link_buffers_r + i * 1024;
     return i;
 }
-extern void DetachPointLight(int);
+
 extern unsigned char level_point_lights[];
 extern unsigned char level_point_light_data[];
 

@@ -3,8 +3,10 @@
 #include "moby.h"
 #include "callees.h"
 #include "include_asm.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/ship_mode_and_level_entry.h"
 
-extern void deactivate_recorded_moby(void);
 extern short ship_level_entry_active;
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern char level_render_state_a[] __asm__("D_0013E130") NOT_SDA;
@@ -99,7 +101,7 @@ extern unsigned char help_stats_base[] NOT_SDA;
 extern void FastMemSet(void *, int, int);
 extern void calculate_dma_transfer_address(void);
 extern int HeroEnterMoveState(int, int);
-extern void HeroSetObjectFlags(void);
+
 extern int scale_ticks(int);
 extern void load_chunks_with_optional_fade(int, int);
 extern void parse_space_scene_chunk(int);
@@ -182,7 +184,7 @@ extern char g_hero[] NOT_SDA;
 extern short skip_frame;
 extern unsigned char screen_globals_base[] NOT_SDA;
 extern void music_Pause(int);
-extern void clear_active_help_record(void);
+
 extern void initialize_level_transition_with_audio(int);
 /* Pauses music, clears the help message and starts the level transition. */
 void prepare_level_transition_with_help_cleanup(void) {

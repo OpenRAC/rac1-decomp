@@ -3,13 +3,18 @@
 #include "callees.h"
 #include "records.h"
 #include "structs.h"
+#include "core/989snd.h"
+#include "game/help.h"
+#include "game/hud.h"
+#include "game/memcard.h"
+#include "game/music.h"
+#include "game/pause.h"
 
 /*
  * freeze.cpp in the original source; text 0x1FBC80-0x1FDF10.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
-
 
 extern int space_load_in_progress MACRO_ADDR;
 
@@ -20,7 +25,7 @@ extern int GetEffectTex(int);
 extern void snd_PauseAllSoundsInGroup(int);
 extern void music_Pause(int);
 extern int msg_string(int);
-extern void push_help_history(int);
+
 extern int scale_game_frame_count(int);
 extern int g_game_mode MACRO_ADDR;
 extern int memory_card_request;
@@ -702,13 +707,11 @@ extern void Profile_Mark(void);
 extern void noop_callback_k(void *, void *, int, int);
 extern void FadeToBlack(int);
 extern void Hud_SetBarValueById(int, int);
-extern void update_resource_counter(void);
+
 extern void Music_QueueTrack(int, int);
-extern void load_and_initialize_level_chunk(void);
+
 extern void initialize_global_state_entry(int);
-extern void load_level_zero_preserving_progress(int);
-extern void snd_ContinueAllSoundsInGroup(int);
-extern void music_Unpause(void);
+
 extern int snd_FlushSoundCommands(void);
 
 #define R (*(Freeze_FD3E8 *)D_00193400)

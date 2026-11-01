@@ -3,6 +3,8 @@
 #include "include_asm.h"
 #include "hero.h"
 #include "vector.h"
+#include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/hero_idle_and_animation.h"
 
 extern char hero_globals_base[];
 extern char hoven_item_defs[];
@@ -40,7 +42,6 @@ int hero_get_gadget_anim_id(int a) {
 }
 typedef int u128 __attribute__((mode(TI)));
 
-
 extern Hero g_hero_s __asm__("D_0013F450");
 extern float g_frame_scale_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
@@ -54,17 +55,17 @@ extern float FastSubRots(float, float);
 extern float vec_length_xy(void *);
 extern float ApproachValue(float *, float, float);
 extern void build_scaled_hero_move_impulse(float, float);
-extern void speed_step(float, float);
+
 extern void turn_to(int, float, float, float);
 extern void stick_target(int, float);
 extern float SpringAngle(void *, float, void *, int, float, float, float);
-extern void rotate_hero_about_fixed_local_pivot(float, float, float);
+
 extern void set_gravity_relative_vector_length_xy(float *, float *, float);
 extern void add_hero_forward_offset(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern void vec_set_length_xy(void *, void *, float);
-extern void steer_hero_planar_velocity(float);
+
 extern void allocate_hero_voice_for_entry(int, int);
 extern int g_current_level_index MACRO_ADDR;
 

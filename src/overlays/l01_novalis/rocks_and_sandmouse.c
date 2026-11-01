@@ -4,6 +4,11 @@
 #include "hero.h"
 #include "moby.h"
 #include "vector.h"
+#include "game/draw.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/move_control_and_clear_path.h"
 
 /* Colored half-scale moby: owner and fading-particle color. */
 struct HalfScaleMobyVars {
@@ -165,7 +170,7 @@ typedef struct {
 } SwayMoby;
 
 extern float g_frame_time MACRO_ADDR;
-extern void copy_hero_moby_field_38(void *);
+
 extern float random_float_between(float, float);
 extern int func_001160D8(void);
 extern void clear_u64_value(void *);
@@ -1244,7 +1249,7 @@ extern float FastCos(float);
 extern float FastSin(float);
 extern void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float *v10, float *v11,
                                 float scale, float *v12);
-extern void spawn_moby_from_placement(void *, int);
+
 extern float novalis_zero_vec[] MACRO_ADDR;
 
 typedef struct SparkHit {
@@ -1592,7 +1597,6 @@ extern float novalis_coll_hit_point_z_s __asm__("D_L01_00174368") NOT_SDA;
 extern int CollType(void);
 extern void RippleDisturb(int, int, int, float, float, float, float);
 extern char *spawn_burst_moby(void *, float);
-extern void PartType35Spawn(void *, void *, int, int);
 
 /* Falling chunk: drops and spins; on its first landing it splashes (sound, splash and 16 drops) and
  * bounces up smaller, then fades out when its timer ends. Deleted if it lands out of bounds. */
@@ -2163,7 +2167,7 @@ extern char *spawn_splash(float, float, void *, void *, void *);
 extern FxSpark_D568 *PartType23Spawn(void *, float, float, float, int, void *, float, int);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
                             int, int, int, int);
-extern void draw_trail(void *, void *, void *, float, float);
+
 extern void render_environment_mapped_object(void);
 #define fx_cutscene_D568 (*(CutsceneFx_D568 *)&D_L01_0016CD60)
 
@@ -2398,7 +2402,7 @@ void generate_level01_environment_map_uvs(int vertex_count, char *normals, char 
 }
 extern int GetEffectTex(int);
 extern void VU1_addGSregister(int, long);
-extern void font_queue_vu_state(void);
+
 extern void generate_level01_environment_map_uvs(int n, char *pts, char *nrm, int unused, float *out);
 extern void draw_env_overlay_mesh(int, int, int, void *, int);
 extern int novalis_env_mesh_vertex_counts[];

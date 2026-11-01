@@ -4,6 +4,9 @@
 #include "include_asm.h"
 #include "camera.h"
 #include "hero.h"
+#include "game/lights.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/follow_camera.h"
 
 extern int vendor_stock[] MACRO_ADDR;
 extern short follow_cam_setting_values;
@@ -571,7 +574,7 @@ extern void interpolate_vector_xyz_cosine_eased(void *, void *, void *, float);
 extern void interpolate_wrapped_rotations_cosine_eased(float *, float *, float *, float);
 extern void compute_spherical_offset_from_positions(void *, void *, void *);
 extern float FastSubRots(float, float);
-extern float CosineInterpolate(float, float, float);
+
 extern float interpolate_wrapped_angle_cosine_eased(float, float, float);
 extern float CubicInterpolate(float, float, float, float, float);
 extern void compute_position_from_spherical_offset(void *, void *, void *);
@@ -1203,7 +1206,6 @@ LINKER_REMNANT("asm/overlays", func_L00_002EDB58);
 extern char player_camera_c[] __asm__("D_L00_00166D80");
 extern void initialize_target_tracking_camera(void *);
 extern int scale_ticks(int);
-extern void RefreshPointLight(int);
 
 typedef struct CameraTargetState_2EDB70 {
     u8 pad_00[0x8];
@@ -1236,7 +1238,6 @@ typedef struct CameraSystemView_2EDB70 {
         } orbit; /* 0x2E0 */
     } blend; /* 0x270 */
 } CameraSystemView_2EDB70;
-
 
 /* camera update: copies the moby's matrix when the camera mode changes */
 extern Hero hero __asm__("D_0013F450");
@@ -1484,15 +1485,15 @@ extern f32 IntToFloat(int);
 extern f32 FastCos(f32);
 extern f32 FastSin(f32);
 extern void set_follow_camera_angle_blend_from_direction(void *, f32, f32);
-extern void set_follow_camera_blend_output_flags(void);
+
 extern void set_follow_camera_flag_226(void);
-extern void follow_camera_start_slide(void);
+
 extern void Cam_SetDistanceGoal(s32, f32, f32);
 extern void set_follow_camera_float_22c(f32);
 extern void follow_camera_set_height(f32, f32);
 extern void Cam_SetEyeOffset(s32, f32, f32);
 extern void set_follow_camera_angle_1cc(f32);
-extern void set_follow_camera_orbit_clamp_mode(int);
+
 extern void follow_camera_set_lateral_spring(f32, f32);
 
 /* Camera-swing script update. */
@@ -1722,7 +1723,6 @@ typedef struct UpdateCamSwing_2EE6E0 {
     u8 pad_00[0x84];
     s16 descriptor_index; /* 0x84 */
 } UpdateCamSwing_2EE6E0;
-
 
 // Per-frame check of a linked object's state; runs the handler or clears its flag.
 int volume_camera_swing_check(char *m) {

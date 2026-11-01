@@ -6,6 +6,10 @@
 #include "vector.h"
 #include "hero.h"
 #include "moby.h"
+#include "game/draw.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
+#include "overlays/shared/level_runtime_and_menus.h"
 
 extern unsigned char hero_globals_base[];
 extern char novalis_item_defs[];
@@ -61,12 +65,12 @@ extern void advance_hero_animation(void);
 extern void hero_update(void);
 extern void update_hero_ground_material_effects(void);
 extern void HeroL01_UpdateStateTransitions(void);
-extern void update_hero_delayed_voice_requests(void);
+
 extern void update_hero_easing_records(void);
 extern void update_hero_vehicle_moby(void);
 extern void update_hero_scalar_pulse(void);
 extern void apply_hero_and_item_scale_sequence(void);
-extern void reveal_map_around_position(void *);
+
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void enqueue_hero_glow_draw_callback_once(void);
 extern void allocate_hero_voice_for_entry(int, int);
@@ -197,7 +201,7 @@ extern void hero_update(void);
 extern void update_hero_ground_material_effects(void);
 extern void update_hero_ledge_probe(void);
 extern void HeroL01_UpdateStateTransitions(void);
-extern void update_hero_delayed_voice_requests(void);
+
 extern void update_hero_easing_targets_and_point_effects(void);
 extern void update_hero_collision_ease_target(void);
 extern void update_hero_pitch_and_yaw_easing_targets(void);
@@ -205,12 +209,12 @@ extern void update_hero_target_tracking(void);
 extern void update_hero_idle_random_rotation_targets(void);
 extern void update_hero_rotation_targets_and_random_manipulators(void);
 extern void update_hero_glow_and_extra_manipulators(void);
-extern void update_hero_transformed_negative_z_angle_parameters(void);
+
 extern void update_hero_easing_records(void);
 extern void update_hero_moby(void);
 extern void update_hero_world_matrices(int);
 extern void update_hero_equipped_items(void);
-extern void begin_draw_frame(void);
+
 extern void update_hero_scalar_pulse(void);
 extern void apply_hero_and_item_scale_sequence(void);
 extern void check_hero_item_reward_conditions(void);
@@ -218,7 +222,7 @@ extern void update_hero_bolt_exclamation_hud(void);
 extern void dispatch_hero_animation_timed_events(void);
 extern void scan_hero_input_sequences(void);
 extern void Profile_Mark(void *);
-extern void reveal_map_around_position(void *);
+
 extern void apply_env_zone_lighting(void *);
 extern void update_hero_blink_and_gold_weapon_tint(void);
 extern void update_hero_moby_probed_height_bounds(void);
@@ -1680,7 +1684,7 @@ extern struct PadState g_controller_state;
 extern Entry70_23c710 novalis_idle_fidgets_field_60[];
 extern short novalis_game_mode_r __asm__("D_L01_0015F6A8");
 extern u8 item_available[];
-extern void update_hero_tilt(void);
+
 extern s32 fast_dec_timer(s32 *);
 extern s16 FastDecTimer(s16 *);
 extern void exit_hero_vehicle_mode_and_restore_moby(void);
@@ -1693,7 +1697,7 @@ extern f32 gravity_z(void *);
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 extern void FastVecScale(void *, void *, f32);
 extern f32 FastVecLength(void *);
-extern void update_hero_planar_distance_spring_motion(void);
+
 extern void transform_hero_local_offset_to_world(void *, f32, f32, f32);
 extern void Hero_OnKilled(void);
 

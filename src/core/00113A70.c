@@ -1,14 +1,12 @@
 #include "common.h"
 #include "structs.h"
+#include "core/001162B8.h"
 
 /*
  * core_text object 0x113A70-0x113B70. Boundaries are retail's linker fill
  * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
  */
 
-
-extern int __sread(void *arg0, void *arg1, void *arg2);
-extern int __swrite(void *arg0, void *arg1, void *arg2);
 extern long __sseek(void *arg0, void *arg1, void *arg2);
 extern void __sclose(void *arg0);
 

@@ -5,6 +5,7 @@
 #include "vector.h"
 #include "moby.h"
 #include "hero.h"
+#include "overlays/shared/follow_camera.h"
 /* Plasmabot: follows its path, tracks the hero, fires a sweeping plasma beam. */
 struct PlasmabotVars {
     u8 pad_00[0x20];
@@ -84,7 +85,6 @@ struct PlasmabotVars {
     s32 aim_yaw_vel; /* 0x284 */
     s32 unk_288; /* 0x288 */
 };
-
 
 extern char hero_globals_base[];
 extern int *oltanis_paths[];
@@ -2452,9 +2452,6 @@ void apply_vendor_beam_damage(char *self) {
 }
 extern int oltanis_beam_slot_owners[] MACRO_ADDR;
 extern int oltanis_beam_slot_states[] MACRO_ADDR;
-extern void release_beam_slot(int);
-extern void update_slot_panes_and_effects(int, int);
-extern void draw_active_beam_slots(void);
 
 /* Slot update of moby class 1331: state 0 clears the two slot arrays, state 1 services the pending slots and frees a slot whose moby has died. Level 14 relative of func_L00_002E32A0. */
 void update_beam_slots(Moby *m) {

@@ -6,6 +6,8 @@
 #include "vector.h"
 #include "hero.h"
 #include "moby.h"
+#include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/moby_ground_collision.h"
 /* Trespasser: set once the pickup was collected. */
 struct TrespasserVars {
     u8 pad_00[0x4];
@@ -787,9 +789,9 @@ extern void MobyTransformScaledVertex(void *, int, void *);
 extern void transform_vector(void *, void *, void *);
 extern int HeroEnterMoveState(int, int);
 extern int fast_dec_timer(int *);
-extern int get_ammo(int);
+
 extern int allocate_hero_voice_for_entry(int, int);
-extern int use_ammo(int, int);
+
 extern void matrix_mul_vec3(void *, void *, void *);
 extern float FastAddRots(float, float);
 extern float FastSubRots(float, float);
@@ -1097,8 +1099,7 @@ extern f32 FastSubRots(f32, f32);
 extern void BuildSphericalOffset(void *, f32, f32, f32);
 extern int HeroEnterMoveState(int, int);
 extern int allocate_hero_voice_for_entry(int, int);
-extern int use_ammo(int, int);
-extern int get_ammo(int);
+
 extern void Moby_GetJointWorldPos(void *, int, void *);
 
 /* Updates the grip, chooses a throw target, and handles the held moby states.
@@ -1432,7 +1433,7 @@ extern s32 moby_array_start MACRO_ADDR;
 extern s16 decoy_list_r[] __asm__("D_L00_001B0BB0");
 extern f32 random_float_between(f32, f32);
 extern void moby_index_list_remove(void *, void *);
-extern void copy_hero_moby_field_38(void *);
+
 extern void append_unique_moby_index(void *, void *, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002bffa8.c, FUN_L00_002c35c0. */
@@ -2216,7 +2217,7 @@ extern int coll_line(void *, void *, int, int, int);
 extern void clear_u64_value(void *);
 extern float ApproachValue(void *, float, float);
 extern int truncate_float_to_s32(float);
-extern int add_ammo(int, int);
+
 extern void queue_formatted_dialogue_message(int, int, int);
 extern int subtract_integer_with_clamp(int);
 extern int Sound_PlayClassSound(int, int, int, int);
@@ -2440,7 +2441,7 @@ void devestator_ammo_update(Moby *m) {
     }
 }
 LINKER_REMNANT("asm/overlays", func_L00_002C6F40);
-extern int add_ammo(int, int);
+
 extern void queue_formatted_dialogue_message(int a, int b, int c);
 extern void clear_u64_value(void *);
 extern int subtract_integer_with_clamp(int);

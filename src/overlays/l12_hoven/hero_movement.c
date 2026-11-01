@@ -6,11 +6,18 @@
 #include "vector.h"
 #include "hero.h"
 #include "moby.h"
+#include "overlays/l12_hoven/hero_idle_animation.h"
+#include "overlays/shared/hero_high_jump_input.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "overlays/shared/hero_move_impulse.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/hero_update_ground_material.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 
 extern char hero_globals_base[];
 extern float FastAbsF(float);
-extern void exit_hero_vehicle_mode_if_mode_three(void);
-extern int HeroL12_SetMoveState(int, int);
 
 /* Level 12 pickup/ability state update. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l12/ui_help_0022de30.c, FUN_L12_0022de30. */
 void update_hero_ground_material_flags(void) {
@@ -473,23 +480,23 @@ extern Rec2C hoven_attack_records[];
 extern S17BEB8 D_L12_X_f;
 extern float hoven_hero_swim_frame_speeds[];
 extern float hoven_hero_ledge_shimmy_frame_speeds[];
-extern void emit_hero_periodic_surface_effect(int, int);
+
 extern void build_scaled_hero_move_impulse(float, float);
-extern void stop_hero_motion_without_forward_support(float, float);
+
 extern void stick_target(float, int);
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void turn_to(int, float, float, float);
 extern int fast_dec_timer(int *);
 extern int scale_ticks(int);
-extern int try_start_hero_item_idle_animation(void);
+
 extern void turn_hero_toward_move_direction_for_item(void);
 extern void set_hero_animation(int, int, float);
 extern int hero_get_gadget_anim_id(int);
 extern float adjust_hero_animation_speed_for_target_frame(float, float, float, float);
 extern void speed_step(float, float);
-extern void reduce_and_apply_hero_planar_velocity_addend(float);
+
 extern void HeroMoveDownAlongNormal(float *, float *, float);
-extern void clip_hero_horizontal_velocity(int);
+
 extern void correct_hero_airborne_wall_velocity(void);
 extern unsigned char *CreateMoby(int);
 extern void moby_build_matrix(void *);
@@ -497,12 +504,10 @@ extern int Moby_PlaySound(int, int, int);
 extern int truncate_float_to_s32(float);
 extern float vec_length_xy(void *);
 extern int clamp_vec_length_xy(float, void *, void *);
-extern void update_hero_water_height_and_bobbing(void);
-extern void release_voice_slot_cf(int, int, int);
+
 extern void Sound_StopSlot(int);
 extern int FastDecTimer(void *);
-extern void emit_hero_randomized_motion_effects(int, int);
-extern void emit_hero_surface_effect_burst(int, int, int);
+
 extern void RippleDisturb(void *, int, int, float, float, float, float);
 extern float SpringAngle(void *, float, void *, int, float, float, float);
 extern float FastSubRots(float, float);
@@ -512,16 +517,15 @@ extern int PartType34Spawn(void *, void *, float, float);
 extern int random_integer_below(int);
 extern int rand_range(int, int);
 extern float random_float_between(float, float);
-extern void fast_add_rotations_cf(void *, void *, float, float, float);
+
 extern float FastAddRots(float, float);
 extern void BuildSphericalOffset(void *, float, float, float);
-extern float vector_length_xyz_cf(float *, int);
+
 extern float FastVecLength(void *);
 extern float ApproachValue(float *, float, float);
 extern float FastCos(float);
 extern void Hero_SetTiltSpringParams(float, float);
-extern void emit_hero_periodic_surface_particles(int, int);
-extern void fast_sin_cf(int, int);
+
 extern float FastSin(float);
 extern void ClampVectorLength(void *, float);
 extern int solve_quadratic_equation(float *, float *, float, float, float);
@@ -541,16 +545,15 @@ extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern void update_hero_target_heading(float, float, float);
 extern void offset_hero_position_against_gravity(float *, float *, float);
 extern int test_hero_animation_frame_window(float);
-extern float compute_directed_angle_delta(int, float, float);
+
 extern void set_planar_vel(float);
 extern void initialize_moby_transform_history(int, void *);
 extern void create_moby_transform_history_entry(void *, int, int);
-extern void update_moby_transform_history(void *, int);
-extern void emit_filtered_entry_sparkles(int, int);
+
 extern void turn_hero_toward_move_direction_with_stick_scale(void);
-extern void update_hero_ledge_probe(void);
+
 extern void vec_set_length_xy(void *, void *, float);
-extern void rotate_hero_about_fixed_local_pivot(float, float, float);
+
 extern void gravity_flatten(float *, float *);
 extern int hero_slot_item_id(int);
 extern void allocate_hero_voice_for_entry(int, int);
@@ -558,16 +561,11 @@ extern void add_hero_forward_offset(void *, void *, float);
 extern void HeroOffsetAlongViewZ(float *, float *, float);
 extern void transform_hero_local_offset_to_world(float *, float, float, float);
 extern void PostHitMessage(void *, int, int, void *, void *, float);
-extern void probe_hero_airborne_wall_contact(void);
-extern void launch_hero_wrench(void);
+
 extern void update_hero_target_speed_from_stick(void);
-extern void adjust_hero_pose_targets_from_motion(void);
-extern void update_hero_lean_and_sway_parameters(void);
+
 extern void hero_integrate_velocity(void);
 extern void steer_hero_planar_velocity(float);
-extern void hero_update_hop_movement(void);
-
-extern void update_hero_planar_movement_velocity(void);
 
 /* Hero state machine: per-frame movement and physics for the current hero state (level 12 build). */
 void Hero_UpdateStatePhysicsL12(void) {

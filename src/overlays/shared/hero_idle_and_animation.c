@@ -5,6 +5,15 @@
 #include "vector.h"
 #include "hero.h"
 #include "moby.h"
+#include "game/draw.h"
+#include "game/help.h"
+#include "game/mobyfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/level_runtime_and_menus.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 
 extern char help_popup_state[] NOT_SDA;
 typedef struct {
@@ -46,7 +55,7 @@ INCLUDE_ASM("asm/overlays", func_L00_00203ED8);
 INCLUDE_ASM("asm/overlays", func_L00_00203F08);
 extern char help_popup_state[] NOT_SDA;
 extern unsigned char help_stats_base[] NOT_SDA;
-extern void push_help_history(int);
+
 /* Help_Request(msg, slot): queues help message msg; returns 1 on success, 0 if it cannot be queued. */
 int Help_Request(int a, int b) {
     int c;
@@ -783,7 +792,7 @@ void dispatch_hero_animation_timed_events(void) {
 }
 extern void MobyTransformScaledVertex(void *, int, void *);
 extern void matrix_copy_rows(void *, void *);
-extern void matrix_to_euler(void *, void *);
+
 extern void MobyBlendAnimation(void *, int, int, int);
 extern void MobyAnimAdvance(void *);
 extern void moby_build_matrix(void *);
@@ -813,9 +822,9 @@ extern void advance_hero_animation(void);
 extern void hero_update(void);
 extern void apply_hero_selected_flags_and_state_transitions(void);
 extern void check_ledge_grab(void);
-extern void update_hero_motion_response_parameters(void);
+
 extern void hero_update_transitions(void);
-extern void update_hero_delayed_voice_requests(void);
+
 extern void update_hero_easing_records(void);
 extern void update_hero_vehicle_moby(void);
 extern void update_hero_scalar_pulse(void);
@@ -833,7 +842,7 @@ void func_001F9BC0_c(void *) __asm__("func_001F9BC0");
 void euler_to_matrix(void *, void *);
 extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
 extern int Moby_PlaySound_r(void *, int, void *) __asm__("func_0022ED80");
-extern void reveal_map_around_position(void *);
+
 extern float IntToFloat(int);
 extern int truncate_float_to_s32(float);
 extern void allocate_hero_voice_for_entry(int, int);
@@ -1327,7 +1336,7 @@ extern void check_ledge_grab(void);
 extern void find_grind_rail(void);
 extern void update_hero_offset_rail_candidate(void);
 extern void hero_update_transitions(void);
-extern void update_hero_delayed_voice_requests(void);
+
 extern void update_hero_easing_targets_and_point_effects(void);
 extern void update_hero_collision_ease_target(void);
 extern void update_hero_pitch_and_yaw_easing_targets(void);
@@ -1335,11 +1344,11 @@ extern void update_hero_target_tracking(void);
 extern void update_hero_idle_random_rotation_targets(void);
 extern void update_hero_rotation_targets_and_random_manipulators(void);
 extern void update_hero_glow_and_extra_manipulators(void);
-extern void update_hero_transformed_negative_z_angle_parameters(void);
+
 extern void update_hero_easing_records(void);
 extern void update_hero_world_matrices(int);
 extern void update_hero_equipped_items(void);
-extern void begin_draw_frame(void);
+
 extern void update_hero_scalar_pulse(void);
 extern void apply_hero_and_item_scale_sequence(void);
 extern void check_hero_item_reward_conditions(void);
@@ -1347,7 +1356,7 @@ extern void update_hero_bolt_exclamation_hud(void);
 extern void dispatch_hero_animation_timed_events(void);
 extern void scan_hero_input_sequences(void);
 extern void Profile_Mark(void *);
-extern void reveal_map_around_position(void *);
+
 extern void apply_env_zone_lighting(void *);
 extern void update_hero_color_and_item_tint(void);
 extern void update_hero_moby_probed_height_bounds(void);
@@ -1430,7 +1439,7 @@ typedef struct {
     float x, y, z, w;
 } Vx __attribute__((aligned(16)));
 extern char level_moby_lights_field_310[] NOT_SDA;
-extern void pack_render_command_fields(void *, int, int, int, int);
+
 extern void func_L00_00251388(void *, void *);
 extern void get_moby_light_color(void *, void *);
 
@@ -1712,7 +1721,6 @@ void enqueue_hero_glow_draw_callback_once(void) {
 }
 extern int cinematic_mode MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
-extern void draw_offset_textured_effect_quad(void *, int, float, float);
 
 // Draws the queued effect particles and the per-state glow for the current game state.
 void draw_hero_glow_quads(void) {
@@ -2467,7 +2475,6 @@ void fast_sin_cf(int seed, int limit) {
 }
 extern float random_angle_radians(void);
 extern int rand_range(int, int);
-extern void PartType35Spawn(void *, void *, int, int);
 
 /* Every lim calls of the counter, sprays a dust particle at the player's position with a random velocity and resets the counter. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_00203b18.c, FUN_L00_00209848. */
 void emit_hero_periodic_surface_particles(int n, int lim) {
@@ -2612,7 +2619,7 @@ extern int FastDecTimer(void *);
 extern float randf_sym(float lo, float hi);
 extern void spawn_color_decaying_effect_particle(char *pos, char *vel, int flag);
 extern void BuildSphericalOffset(void *, float, float, float);
-extern void PartType04Spawn(void *, void *, int, int, int, int, int, int);
+
 extern float g_frame_time_sq MACRO_ADDR;
 
 /* Per-frame spark effect: emits a burst of particles around a saved position while a global timer runs down. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_00203b18.c, FUN_L00_00209ec8. */
@@ -2769,7 +2776,7 @@ void clear_hero_idle_rotation_targets(void) {
 }
 extern int fast_dec_timer(int *);
 extern float randf_sym(float, float);
-extern float interpolate_scalar_linear(float, float, float);
+
 extern float sound_volume_f[] __asm__("D_0015EEF0") MACRO_ADDR;
 extern float sound_volume_p[] __asm__("D_0015EEF0") MACRO_ADDR;
 extern short g_frame_scale_sq_g __asm__("D_0015EE64");

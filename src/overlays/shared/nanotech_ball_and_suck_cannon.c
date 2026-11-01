@@ -6,6 +6,10 @@
 #include "vector.h"
 #include "hero.h"
 #include "moby.h"
+#include "overlays/shared/camera_switch_and_update.h"
+#include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/mine_bomb_and_debris.h"
+#include "overlays/shared/moby_ground_collision.h"
 /* Class 0x326 moby: the moby it is linked to. */
 struct LinkedMobyVars {
     u8 pad_00[0xC];
@@ -37,7 +41,6 @@ struct ColoredFragmentVars {
     s16 life_start; /* 0x1C */
     s16 tag; /* 0x1E */
 };
-
 
 typedef struct {
     char p0[0x10];
@@ -1368,9 +1371,9 @@ extern void refresh_suck_cannon_slots(void);
 extern s32 scale_ticks(s32);
 extern void MobyBlendAnimation(void *, int, int, int);
 extern void reset_suck40(M40 *) __asm__("func_L00_002DF150");
-extern void cancel_hero_item_animation(void);
+
 extern int is_suck_cannon_suction_blocked_by_hero_state(void);
-extern void start_equipped_item_animation(void);
+
 extern int Moby_PlaySound(int, int, int);
 extern void Sound_StopSlot(int);
 extern void stop_suck_cannon_suction_effect(int);
@@ -2008,7 +2011,7 @@ extern int *coll_sphere_moby_hits[];
 extern float FastVecDot(void *, void *);
 extern float FastVecLength(void *);
 extern int rand_range(int, int);
-extern char *SpawnFallingSpark(char *, char *, int, int, int);
+
 extern void clamp_vec_length(void *, void *, float);
 extern unsigned swap_packed_color_channels(unsigned, int);
 extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
@@ -2021,7 +2024,7 @@ typedef struct {
     int i168;
 } Cam_DD3D8;
 extern Cam_DD3D8 player_camera_r __asm__("D_L00_00166D80");
-extern void swap_color_channel_words(int *, int *, int *, int);
+
 extern char *mine_camera_blast(char *, char *, int, char *);
 extern int coll_sphere_mobys_r(float, void *, int, void *, void *) __asm__("func_L00_001F2BE8");
 extern void SendRadialMessageToMobys(void *, void *, void *, int, int, int, int, int, float, float, float);
@@ -2855,7 +2858,7 @@ typedef struct {
 extern V41 suck_beam_ring_unit_offsets[];
 extern float suck_beam_segment_turn_angles[];
 extern char collision_hit_point[];
-extern float Camera_SmoothAngle(void *, float, float, float, float, float);
+
 extern float FastAddRots(float, float);
 extern float FastSin(float);
 extern float FastSubRots(float, float);
@@ -3186,7 +3189,7 @@ void stop_suck_cannon_suction_effect(int arg0) {
     }
     suck_beam_queue_draw(arg0);
 }
-extern int is_moby_class_e2_cc_de_3ee_d6_e1_d5_or_df(void *);
+
 extern float FastVecDist(void *, void *);
 extern void begin_bolt_attraction(void *, int, float, float);
 extern void try_collect_ammo_pickup(void *);

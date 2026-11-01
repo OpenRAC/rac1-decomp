@@ -5,6 +5,9 @@
 #include "include_asm.h"
 #include "hero.h"
 #include "moby.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/shot_tracking.h"
+#include "overlays/shared/trespasser_pad_and_background_ships.h"
 
 /* Elevator with a rotating ring: volume, speed and lift offset. */
 struct ElevatorRingVars {
@@ -232,7 +235,7 @@ extern float FastVecLength(void *);
 extern int mine_fall(void *, void *);
 extern int CarriedMobyUpdate(void *, void *);
 extern void rand_vec(void *, float, float);
-extern void PartType04Spawn(void *, void *, int, int, int, int, int, int);
+
 extern float FastSubRots(float, float);
 extern void SetDeathBits(void *, int, int);
 extern void spawn_color_swapped_explosion_burst(void *, void *, int, float, float);
@@ -1352,7 +1355,7 @@ extern void Moby_GetJointWorldPos(void *, int, void *);
 extern int rand_range(int, int);
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
-extern void effect_slots_fire(void *, void *, void *, float);
+
 extern void InitDirectionalHitQuery(char *arg, int a, int b, void *src, float scale);
 extern void collect_mobies_around_tracked_objects(char **slots, int a, int b);
 extern int mine_fall(void *, void *);
@@ -2541,7 +2544,6 @@ extern void PartType41Spawn(void *, void *, int, int, int, int, int, float);
 extern void HeroL02_SetMoveState(int, int);
 extern void enter_hero_idle_or_stop(void);
 extern void set_vendor_camera_mode(int, int);
-extern void set_selected_object_float_triplets(float, float, float, float, float, float);
 
 #define G(i) ((char *)D_L02_00160058 + ((i) << 8))
 #define HP ((float *)(D_0013E633 + 0xE9D))
@@ -3341,7 +3343,7 @@ void tresspasser_door2_update(char *moby) {
     }
 }
 extern int rand_range(int, int);
-extern void PartType04Spawn(void *, void *, int, int, int, int, int, int);
+
 extern short sandshark_egg_dust_start_color;
 extern short sandshark_egg_dust_end_color;
 

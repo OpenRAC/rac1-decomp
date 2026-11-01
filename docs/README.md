@@ -8,6 +8,7 @@
 | [WORKFLOW.md](WORKFLOW.md) | Match a function, from start to finish |
 | [STYLE.md](STYLE.md) | How the C should look |
 | [REVIEWING.md](REVIEWING.md) | What to check in a PR |
+| [INCLUDES.md](INCLUDES.md) | Include order and function headers |
 | [NAMES.md](NAMES.md) | How symbols get readable names |
 | [OVERLAYS.md](OVERLAYS.md) | Level code |
 | [VERSIONS.md](VERSIONS.md) | US, PAL and JP |

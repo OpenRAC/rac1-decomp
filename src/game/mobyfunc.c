@@ -3,6 +3,8 @@
 #include "callees.h"
 #include "records.h"
 #include "structs.h"
+#include "game/draw.h"
+#include "game/vuchain.h"
 
 /*
  * mobyfunc.cpp in the original source; text 0x20D348-0x20E6B8.
@@ -467,7 +469,6 @@ extern int moby_texture_tag_slot MACRO_ADDR;
 extern int g_render_packet_cursor MACRO_ADDR;
 extern int g_gs_texture_allocation_cursor MACRO_ADDR;
 extern void upload_used_moby_textures(int);
-extern void VU1_texFlush(void);
 
 /* DmaMobyTextures: splices the texture uploads into the DMA chain with
    "next" tags (0x20000000). D_00161000 is the packet write pointer and
@@ -587,7 +588,6 @@ extern char graphics_setup_profile_label[];
 extern char graphics_setup_command_stream[];
 extern void build_shadow_command_stream(void);
 extern void submit_graphics_setup_command_stream(void *);
-extern void ProfileMarker_End(void *, int);
 
 /* The same splice as DmaMobyTextures, around func_00228A58/func_00228860,
    at the tag slot D_00160040; with D_0016003C clear the slot becomes a
@@ -659,10 +659,9 @@ void RestoreMobyClassDists(void) {
     FastMemCopy((void *)0x70003A00, moby_backup_buffer, 0x380);
 }
 
-extern void VU1_addDataRef(void *, int);
 extern void VU0_loadMicroProgram(void *);
 extern void VU1_addGSregister(int, long);
-extern void ProfileMarker_Begin(void *, int);
+
 extern unsigned short moby_vu1_data_qwc NOT_SDA;
 extern char moby_vu1_data[];
 extern int font_state MACRO_ADDR;

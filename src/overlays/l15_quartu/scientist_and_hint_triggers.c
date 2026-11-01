@@ -4,8 +4,10 @@
 #include "include_asm.h"
 #include "hero.h"
 #include "moby.h"
+#include "game/draw.h"
+#include "overlays/shared/blarg_commander.h"
+#include "overlays/shared/hero_update_bone_attachment.h"
 
-extern void apply_npc_big_head_cheat(char *);
 extern void initialize_moby_grounding(char *);
 extern int DialogRequest_Init(void *, void *);
 extern void DeleteMoby(void *);
@@ -16,7 +18,7 @@ extern void jet_reset_camera(void *, void *);
 extern int count_active_moby_group_members(int, int);
 extern int scale_ticks(int);
 extern int fast_dec_timer(void *);
-extern void restore_saved_hero_moby_and_clear_vehicle_mode(void);
+
 extern void MobySetAnimation(void *, int, int);
 extern void unlock_planet(int);
 extern void MusicRequestTrack(int, int);
@@ -662,7 +664,7 @@ extern float FastSin(float);
 extern void get_moby_color(void *, void *, void *, void *);
 extern float fast_fmod(float, float);
 extern float FastNormalizeAngle(float x);
-extern void font_queue_vu_state(void);
+
 extern void draw_env_overlay_mesh(int, int, int, void *, int);
 extern float g_frame_time MACRO_ADDR;
 extern int quartu_frame_count MACRO_ADDR;

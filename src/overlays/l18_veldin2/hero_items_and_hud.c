@@ -3,6 +3,20 @@
 #include "include_asm.h"
 #include "pad.h"
 #include "hero.h"
+#include "game/skyfunc.h"
+#include "overlays/shared/bolts_and_wrench.h"
+#include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/hero_high_jump_input.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/hero_update_bone_attachment.h"
+#include "overlays/shared/hero_update_ground_material.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
+#include "overlays/shared/hero_wrench_and_grapple.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/sky_particles.h"
+#include "overlays/shared/weapon_hud_and_counters.h"
 
 typedef struct {
     char p0[0x44];
@@ -82,82 +96,65 @@ extern Rec70 veldin2_idle_fidgets[];
 extern Rec4C veldin2_item_defs[];
 extern Rec2C veldin2_attack_records[];
 extern S17C838 veldin2_hero_speed_bands;
-extern void initialize_eight_slot_hud_selector(void);
-extern void update_hud_item_selector_selection_and_visibility(void);
-extern void draw_hud_item_selector_panel(void);
-extern void initialize_bolt_counter_hud(void);
-extern void update_bolt_counter_hud_animation_and_visibility(void);
-extern void draw_bolt_counter_hud_panel(void);
+
 extern int HeroL18_TryTakeHit(int);
-extern int process_hero_item_action_input(void);
-extern int try_enter_hero_water_state(void);
-extern int try_transition_hero_water_state(void);
-extern int try_start_hero_weapon_fire_state(void);
+
 extern int scale_ticks(int);
 extern int queue_animation_update(int, int, int, int, int, int, int);
 extern int show_health_hud_r(void) __asm__("func_L00_00235790");
 extern void hud_keep_visible(int, int);
 extern int FastDecTimer(void *);
-extern void clear_hero_queued_animation(void);
+
 extern int hero_slot_item_id(int);
 extern int HelpL15_GetRecordValue(int a);
 extern void set_hero_animation(int, int, float);
 extern void MobyBlendAnimation(void *, int, int, int);
-extern int return_hero_animation_id_unchanged(int);
-extern int pick_idle_fidget(int *);
+
 extern float multiply_global_factor(float);
 extern int HeroL18_SetMoveState(int, int);
 
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
 extern int rand_range(int, int);
-extern void blend_hero_slot3_animation_pair(void);
-extern void cancel_hero_item_animation(void);
+
 extern void stick_target(int, float);
-extern int try_start_hero_jump(int, int);
+
 extern int pad_pressed_within(int, int, int *);
 extern float FastDiffRots(float, float);
-extern void request_hero_voice_if_enabled(int a0, int a1, int a2);
-extern void update_hero_target_speed_from_stick(void);
-extern void remove_hero_cached_moby_and_clear_slot_three_moby_flags(void);
+
 extern int is_wrench_moby(void *);
-extern void set_hero_state_for_vehicle_mode(void);
+
 extern float predict_hero_trajectory_intercept_time(float a, float b, float c);
 extern int truncate_float_to_s32(float);
 extern float adjust_hero_animation_speed_for_target_frame(float a, float b, float c, float d);
-extern int hero_handle_jump_press(void);
+
 extern void hero_set_attack_ticks(int id);
-extern int check_hero_forward_collision_height(void);
-extern float read_pad_float_history(int);
-extern int try_start_hero_item_idle_animation(void);
+
 extern float vec_length_xy(void *);
 extern float vec_distance_xy(void *, void *);
-extern void update_hero_animation_for_movement_speed(void);
+
 extern void Sound_StopSlot(int);
 extern void allocate_hero_voice_for_entry(int, int);
-extern int test_hero_ledge_ahead(float *, float *);
+
 extern float FastAddRots(float, float);
 extern float FastCos(float);
 extern float FastSin(float);
-extern void Hero_OnKilled(void);
+
 extern void gravity_set_z(float *dst, float *src, float z);
 extern void ClampVectorLength(void *a, float x);
 extern int check_pad_press_separation(int, int, int, int);
-extern void configure_hero_point_effect_emission(float a, float b, short c, unsigned char d, unsigned char e,
-                                                 unsigned char f);
-extern int get_hero_high_jump_input_window_frames(void);
+
 extern float FastVecLength(void *a);
-extern float predict_hero_trajectory_z(float *pos, float *vel, int *steps, float step);
-extern void emit_hero_surface_effect_burst(int, int, int);
+
 extern float ApproachValue(float *p, float target, float maxstep);
 extern void FastVecScale(void *, void *, float);
-extern void select_hero_locomotion_state(void);
+
 extern float gravity_z(float *v);
 extern float FastAbsF(float);
 extern float random_float_between(float a, float b);
 extern void hero_switch_item(int i);
 extern void release_and_clear_hero_voice_slots(void);
 extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
-extern void *spawn_class_593_moby(int unused, void *pos, int c, float scale, float a, float b);
+
 extern void clear_u64_value(void *);
 extern void FastVecAdd(void *, void *, void *);
 extern float FastVecDist(void *, void *);
@@ -165,7 +162,7 @@ extern int coll_line(void *, void *, int, int, int);
 extern float fast_atan2(float, float);
 extern float randf_sym(float lo, float hi);
 extern float jump_speed_4318(float *a, float *b, float *out, float speed, float g);
-extern float calculate_triangular_corrected_scalar(float *a, float *b, int *out, float f);
+
 extern int find_nearest_path_point(void *, void *, void *, int *, float *, int, float, float, float);
 extern int Spline_AdvanceByDistance(int *tab, float *out, int *a, float *b, int c, float d);
 extern int nearest_rail_point(void *, void *, void *, void *, void *, void *, int, int);
@@ -2643,10 +2640,7 @@ void HeroStateTransitions(void) {
         g_hero.anim_seq_frames = 0;
     }
 }
-extern void SetupSkyGifPaging(void);
-extern void draw_seven_sky_shells_with_modulo_40000_and_60000_rotation(void);
-extern void update_sky_shells_static(void);
-extern void DoSkyGifPaging(void);
+
 extern void VU1_addGSregister(int, long);
 extern int depth_buffer_address MACRO_ADDR;
 /* Draw the Veldin sky shells (rotating in level 18, static elsewhere) and restore GS test and Z. */

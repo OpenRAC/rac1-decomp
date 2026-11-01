@@ -4,13 +4,18 @@
 #include "include_asm.h"
 #include "hero.h"
 #include "moby.h"
+#include "overlays/shared/cutscene_and_movie_playback.h"
+#include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/hero_update_bone_attachment.h"
+#include "overlays/shared/linked_moby_transforms.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/weapon_hud_and_counters.h"
 
 /* Class 0x565 trigger: index of the transform whose xy bounds mark block entries. */
 struct Class565Vars {
     u8 pad_00[0xC];
     s32 bounds_index; /* 0x0C: -1 none */
 };
-
 
 typedef struct {
     int idx;
@@ -64,7 +69,7 @@ extern float veldin2_camera_yaw;
 extern float veldin2_zero_vec[] MACRO_ADDR;
 
 extern int scale_ticks(int);
-extern void capture_linked_moby_relative_transforms(char *, void *, int);
+
 extern void apply_linked_moby_relative_transforms_v(char *, void *, int) __asm__("func_L12_0027C368");
 extern float ApproachWithVelocity(float, float, float, float, float *, float *);
 extern int fast_dec_timer(int *);
@@ -231,7 +236,6 @@ typedef struct {
     char pad33C[8];
     int field344;
 } Level18VendorData;
-
 
 extern void apply_linked_moby_relative_transforms(Moby *, void *, int);
 
@@ -887,7 +891,7 @@ extern void spawn_drek_boss_firing_effects(char *moby, void *p);
 extern void set_drek_boss_relative_aim_yaw();
 extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
 extern void set_ground_height_band(void *);
-extern void Hero_OnKilled(void);
+
 extern void StartCutscene(int);
 extern void jet_reset_camera(void *, void *);
 extern void Hero_ResetToPosition(void *, void *, int, int);
@@ -896,13 +900,13 @@ extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern void vec_set_length_xy(void *, void *, float);
 extern void CameraScript(void *, void *, int, int, int);
-extern void start_slideshow(void);
+
 extern void queue_movie_with_game_language(int i);
-extern void draw_trail(void *, void *, void *, float, float);
+
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern void spawn_explosion_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                 float, int, int, int, int) __asm__("func_L00_0025F4A8");
-extern void restore_saved_hero_moby_and_clear_vehicle_mode(void);
+
 extern void PauseAllSounds(int arg0);
 extern void MobyBlendAnimation(void *, int, int, int);
 extern void clear_u64_value(void *);
@@ -2610,7 +2614,7 @@ extern void Cam_SetDistanceGoal(float x, float y, int flag);
 extern void follow_camera_set_height(float x, float y);
 extern int queue_animation_update(int, int, int, int, int, int, int);
 extern float ApproachWithVelocity_p(float *, float, float *, float, float, float) __asm__("func_00214D88");
-extern void reset_numeric_hud_element();
+
 extern void Hud_UpdateCounter();
 extern void draw_segmented_hud_meter_base();
 extern char *veldin2_camera_descriptors MACRO_ADDR;
@@ -2819,7 +2823,7 @@ void spawn_drek_boss_firing_effects(char *moby, void *p) {
     }
 }
 extern float FastSin(float);
-extern void draw_offset_textured_effect_quad(void *, int, float, float);
+
 extern int veldin2_frame_count MACRO_ADDR;
 extern short drek_boss_rider_glow_period;
 extern short drek_boss_rider_glow_color_a;

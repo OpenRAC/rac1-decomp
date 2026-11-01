@@ -4,6 +4,8 @@
 #include "camera.h"
 #include "pad.h"
 #include "hero.h"
+#include "game/draw.h"
+#include "game/vuchain.h"
 
 typedef struct {
     s32 a, b, c, d;
@@ -1382,7 +1384,7 @@ extern int skip_frame MACRO_ADDR;
 extern int cinematic_mode MACRO_ADDR;
 extern int debug_profiler_color MACRO_ADDR;
 extern unsigned char g_hero_field_20a5[] NOT_SDA;
-extern void DrawDebugProfiler(void);
+
 /* Gameplay-screen render hook: while nothing is loading (D_L00_0015F6BC) and byte 0xC of D_001414F5 is clear,
    picks the profiler colour word D_L00_0015F4F4 (0x7F in display mode 3, else 0x100FF) and draws the debug profiler. */
 void draw_debug_profiler_if_enabled(void) {
@@ -1463,7 +1465,7 @@ extern int rendered_frame_count MACRO_ADDR;
 extern int draw_buffer_address MACRO_ADDR;
 extern void VU1_syncChain(int);
 extern int sce_gs_sync_v(int);
-extern void VU1_initChain(void);
+
 extern void transfer_draw_buffer_chunks(void *, int, int);
 /* Grabs the current frame buffer into A: syncs VU1, counts the grab in D_L00_0015F4F8 and downloads frame buffer
    D_0015EF84 (its height from D_0013E15A + 0x4AA, in 2 KB rows). */
@@ -1487,9 +1489,8 @@ void print_text_with_texture_3(void *a, void *b, void *c, void *d, void *e) {
 extern int measure_text_width_regular(unsigned char *, int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern void draw_stretchable_ui_frame(int, int, int, int, int);
-extern void Font_DisableColorCodes(void);
+
 extern void FontPrintLarge_c(int, int, long, void *, int) __asm__("func_001F68E8");
-extern void Font_EnableColorCodes(void);
 
 /* draw a two-layer shadowed text label at x,y with alignment mode */
 void draw_timed_text_line(int x, int y, int mode, unsigned char *p, float scale, float alpha) {

@@ -3,6 +3,7 @@
 #include "vector.h"
 #include "include_asm.h"
 #include "hero.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 
 // Fills a jump pattern record with its default constants.
 void MoveCtl_Init(char *p) {
@@ -275,7 +276,7 @@ void PlaceMarkerAheadOfMoby(float scale, char *moby) {
     fx_cutscene.a = FastAddRots(*(float *)(moby + 0x48), 3.14159274101257324f);
 }
 extern float vec_distance_xy(void *, void *);
-extern void spawn_randomized_bolt_drop(void *, int, int, int, int);
+
 extern char hero_globals_base[];
 
 // Breaks an object into fragments, with a flag when it is near the origin.

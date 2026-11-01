@@ -40,9 +40,10 @@ def unee(s):
 
 def prep_includes():
     INC_T.mkdir(exist_ok=True)
-    for p in (ROOT / 'include').iterdir():
-        if p.suffix == '.h':
-            (INC_T / p.name).write_text(ee(p.read_text(errors='replace')))
+    for p in (ROOT / 'include').rglob('*.h'):
+        out = INC_T / p.relative_to(ROOT / 'include')
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(ee(p.read_text(errors='replace')))
 
 
 def clang_json(text, name='x.c'):

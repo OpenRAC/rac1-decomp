@@ -5,6 +5,16 @@
 #include "vector.h"
 #include "hero.h"
 #include "moby.h"
+#include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/hero_high_jump_input.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/hero_update_ground_material.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
+#include "overlays/shared/hero_wrench_and_grapple.h"
+#include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/weapon_hud_and_counters.h"
 
 typedef struct {
     int a;
@@ -13,12 +23,10 @@ typedef struct {
     char pad[0x20];
 } T2C_22BE40;
 extern void clear_moby_transform_history(char *o);
-extern void exit_hero_vehicle_mode_if_mode_three(void);
-extern void create_missing_hero_item_slot_animations(int a, int b);
+
 extern int scale_ticks(int);
 extern int rand_range(int, int);
-extern void clear_hero_idle_rotation_targets(void);
-extern void request_hero_idle_state_for_vehicle_mode(void);
+
 extern int get_hero_idle_animation_index(int a);
 extern void clear_u64_value(void *);
 extern void set_hero_animation(int, int, float);
@@ -27,29 +35,23 @@ extern void ClampVectorLength(void *a, float x);
 extern float vec_length_xy(void *);
 extern void stick_target(float, int);
 extern float FastDiffRots(float, float);
-extern void cancel_hero_item_animation(void);
-extern int try_start_hero_item_idle_animation(void);
-extern float gravity_length_xy(float *v);
-extern int return_hero_animation_id_unchanged(int);
+
 extern int allocate_hero_voice_for_entry(int, int);
-extern void hero_queue_sequence(int bank, int seq);
+
 extern float fast_atan2(float, float);
 extern float FastVecDist(void *, void *);
 extern float randf_sym(float lo, float hi);
-extern void scale_hero_motion(float);
-extern void emit_hero_surface_effect_burst(int, int, int);
+
 extern void initialize_moby_transform_history(int a, char *b);
 extern void create_moby_transform_history_entry(char *o, int a, int b);
-extern float get_hero_yaw_history(int back);
-extern int stick_direction_vs_facing(void);
+
 extern int truncate_float_to_s32(float);
 extern void update_hero_target_heading(float a, float b, float c);
-extern char *hero_slot_moby(int);
+
 extern int is_wrench_moby(char *);
 extern float FastAddRots(float, float);
 extern void *MobyGetHitMessage(void *, int, int);
-extern void hero_change_health(int n);
-extern void spawn_hero_radial_particle_burst(void);
+
 extern int hero_is_in_special_state(void);
 extern void release_and_clear_hero_voice_slots(void);
 extern int aridia_cinematic_mode MACRO_ADDR;
@@ -1588,54 +1590,41 @@ extern Rec70 aridia_idle_fidgets[];
 extern Rec4C aridia_item_defs[];
 extern Rec2C aridia_attack_records_rec[] __asm__("D_L02_0017C2A8");
 extern S17C438 aridia_hero_speed_bands;
-extern void initialize_eight_slot_hud_selector(void);
-extern void update_hud_item_selector_selection_and_visibility(void);
-extern void draw_hud_item_selector_panel(void);
-extern void initialize_bolt_counter_hud(void);
-extern void update_bolt_counter_hud_animation_and_visibility(void);
-extern void draw_bolt_counter_hud_panel(void);
+
 extern int HeroL02_TryKnockback(int);
-extern int process_hero_item_action_input(void);
-extern int try_start_hero_weapon_fire_state(void);
+
 extern int queue_animation_update(int, int, int, int, int, int, int);
 extern int show_health_hud_r(void) __asm__("func_L00_00235790");
 extern void hud_keep_visible(int, int);
 extern int FastDecTimer(void *);
-extern void clear_hero_queued_animation(void);
+
 extern int hero_slot_item_id(int);
-extern int pick_idle_fidget(int *);
+
 extern float multiply_global_factor(float);
 extern int HeroL02_SetMoveState(int a, int b);
 
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
-extern void blend_hero_slot3_animation_pair(void);
-extern int try_start_hero_jump(int, int);
+
 extern int pad_pressed_within(int, int, int *);
-extern void request_hero_voice_if_enabled(int a0, int a1, int a2);
-extern void update_hero_stick_target_magnitude(void);
-extern void remove_hero_cached_moby_and_clear_slot_three_moby_flags(void);
+
 extern float resolve_hero_trajectory_parameter(float a, float b, float c);
 extern float adjust_hero_animation_speed_for_target_frame(float a, float b, float c, float d);
-extern int hero_handle_jump_press(void);
+
 extern void hero_set_attack_ticks(int id);
-extern int check_hero_forward_collision_height(void);
-extern float read_pad_float_history(int);
+
 extern float vec_distance_xy(void *, void *);
-extern void update_hero_animation_for_movement_speed(void);
-extern int test_hero_ledge_ahead(float *, float *);
+
 extern float FastCos(float);
 extern float FastSin(float);
-extern void Hero_OnKilled(void);
+
 extern void gravity_set_z(float *dst, float *src, float z);
 extern int check_pad_press_separation(int, int, int, int);
-extern void configure_hero_point_effect_emission(float a, float b, short c, unsigned char d, unsigned char e,
-                                                 unsigned char f);
-extern int get_hero_high_jump_input_window_frames(void);
+
 extern float FastVecLength(void *a);
-extern float predict_hero_trajectory_z(float *pos, float *vel, int *steps, float step);
+
 extern float ApproachValue(float *p, float target, float maxstep);
 extern void FastVecScale(void *, void *, float);
-extern void select_hero_locomotion_state(void);
+
 extern float gravity_z(float *v);
 extern float FastAbsF(float);
 extern float random_float_between(float a, float b);
@@ -3380,7 +3369,7 @@ extern void FastVecAdd(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, f32);
 extern void clip_negative_segment_endpoint_xyz(Vec4 *, void *);
 extern s32 coll_line(void *, void *, s32, s32, s32);
-extern f32 compute_gravity_relative_vector_inclination(void *);
+
 extern f32 gravity_z_r(void *) __asm__("func_L00_002342F8");
 extern s32 solve_quadratic_equation(f32 *, f32 *, f32, f32, f32);
 

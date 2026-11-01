@@ -5,6 +5,7 @@
 #include "moby.h"
 #include "vector.h"
 #include "hero.h"
+#include "game/draw.h"
 
 /* Class 0x3F1 shot: flies along vel for ticks, owned by the firing moby. */
 struct ShotVars {
@@ -517,7 +518,7 @@ typedef struct {
 
 extern void VU1_addGSregister(int, long);
 extern int GetEffectTex(int);
-extern void font_queue_vu_state(void);
+
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void FastVecSub(void *, void *, void *);
 extern float IntToFloat(int);
@@ -919,7 +920,6 @@ extern int Help_Request_r(int a, int b) __asm__("func_L00_00203F20");
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 
-
 // Thruster pack lock update: a state machine (0 idle, 1 armed, 2 attacking) that aims the pack and counts the cooldown timers.
 void thruster_pack_lock_update(Lock_3102C8 *moby) {
     char *d = moby->vars;
@@ -1202,7 +1202,7 @@ void draw_quarter_turn_textured_quads(unsigned char a, unsigned char b, unsigned
     ang = FastAddRots(ang, 1.5707964f);
     append_rotated_textured_screen_quad(x, y, w, w, ang, 0x3F, 0x3F, h, 0xFFFFF3, a, b, c, d);
 }
-extern void project_to_screen(float *, void *);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern unsigned char screen_globals_base[];
 

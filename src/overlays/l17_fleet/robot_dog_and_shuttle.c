@@ -5,6 +5,16 @@
 #include "moby.h"
 #include "records.h"
 #include "hero.h"
+#include "game/draw.h"
+#include "overlays/shared/follow_camera.h"
+#include "overlays/shared/help_message_removal.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "overlays/shared/hero_update_ledge_grab.h"
+#include "overlays/shared/homing_missile_and_water_sheet.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/ship_pickup_and_rocket.h"
+#include "overlays/shared/trespasser_pad_and_background_ships.h"
 
 /* Robot dog: speed and turn state, plus the three glow points (also AimData_1BB0 below). */
 struct RobotDogVars {
@@ -397,7 +407,7 @@ void update_robot_dog_glow_effects(unsigned char *moby) {
         AddDrawCallback(draw_three_moby_effect_quads, moby);
     }
 }
-extern void draw_offset_textured_effect_quad(void *, int, float, float);
+
 /* Draws three glow quads in the moby's glow color at the points stored in its pvars. */
 void draw_three_moby_effect_quads(char *m) {
     int v = (((Moby *)m)->glow_color & 0xFFFFFF) | 0x30000000;
@@ -414,7 +424,7 @@ extern float FastAddRots(float, float);
 extern void get_moby_color(void *, void *, void *, void *);
 extern float fast_fmod(float, float);
 extern float FastNormalizeAngle(float x);
-extern void font_queue_vu_state(void);
+
 extern void draw_env_overlay_mesh(int, int, int, void *, int);
 extern short fleet_ripple_pair_vertex_counts;
 extern short fleet_ripple_pair_vertex_bufs;
@@ -651,11 +661,11 @@ void DrawLightRing(char *moby) {
     }
 }
 extern int Moby_PlaySound(int, int, int);
-extern int remove_help_message_for_selector(int);
+
 extern void FadeToBlack(int);
 extern void clear_u64_value(void *);
 extern void CameraScript(void *, void *, int, int, int);
-extern void set_selected_object_float_triplets(float, float, float, float, float, float);
+
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
 extern void Hero_ResetToPosition(void *, void *, int, int);
@@ -990,12 +1000,12 @@ extern void ShowBanner(int arg0, int arg1);
 extern void STUB_printf();
 extern int Help_Request(int a, int b);
 extern int hero_is_in_special_state(void);
-extern void clear_active_help_record(void);
+
 extern void HeroL17_SetMoveState(int, int);
-extern void set_follow_camera_blend_output_flags(void);
+
 extern void set_follow_camera_angle_blend_from_position(int a, float x, float y);
 extern int fast_dec_timer_i(int *) __asm__("func_001F9908");
-extern void enter_hero_idle_state_for_current_vehicle_mode(void);
+
 extern char *fleet_mobys MACRO_ADDR;
 extern char *fleet_mobys_end MACRO_ADDR;
 extern char fleet_camera_box_missing_ids_msg[];
@@ -1466,13 +1476,13 @@ extern void update_moby_trail_points(void *);
 extern void update_moby_path_transform(void *);
 extern void SpawnExplosionFx(void *, void *, int, float, float);
 extern int random_integer_below(int);
-extern unsigned char *spawn_ship_pickup(char *position, int moby_class);
+
 extern int FastBSphereCheck(char *, float);
 extern float FastVecLength(void *);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void ClampVectorLength(void *a, float x);
 extern void matrix_mul_vec3(void *, void *, void *);
-extern char *spawn_class_3f9_moby(int owner, float *dir, float *pos, float size, float len, float z);
+
 extern char fleet_camera_rot[];
 extern char fleet_blarg_ship_gun_offset_alt[];
 extern char fleet_blarg_ship_gun_offset[];
@@ -1738,8 +1748,7 @@ char *try_activate_blarg_ship_from_list(int list) {
 }
 extern void SetDeathBits(void *, int, int);
 extern void spawn_proximity_gated_bolts(void *);
-extern void spawn_moby_break_fragments(void *, int, int, int, int, int, int);
-extern void spawn_moby_from_placement(void *, int);
+
 extern void DeleteMoby(void *);
 
 /* UpdateMoby 1873: wait for a target, then play two effects and delete itself. */

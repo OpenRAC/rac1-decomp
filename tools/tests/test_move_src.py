@@ -53,6 +53,15 @@ class MoveSrcTest(unittest.TestCase):
         move_src.move(self.root, "src/core/00116FA0.c", "src/core/00116FA0/stdio.c")
         self.assertTrue((self.root / "src/versions/us/core/00116FA0/stdio/func_1.c").exists())
 
+    def test_a_header_moves_with_its_source(self):
+        (self.root / "include/core").mkdir(parents=True)
+        (self.root / "include/core/00116FA0.h").write_text("#ifndef CORE_00116FA0_H\n/* src/core/00116FA0.c */\n")
+        (self.root / "src/game/hud.c").write_text('#include "core/00116FA0.h"\n')
+        subprocess.run(["git", "add", "-A"], cwd=self.root, check=True)
+        move_src.move(self.root, "src/core/00116FA0.c", "src/core/libc/stdio.c")
+        self.assertEqual(self.read("include/core/libc/stdio.h"), "#ifndef CORE_LIBC_STDIO_H\n/* src/core/libc/stdio.c */\n")
+        self.assertEqual(self.read("src/game/hud.c"), '#include "core/libc/stdio.h"\n')
+
     def test_second_move_keeps_the_first_report_name(self):
         move_src.move(self.root, "src/core/00116FA0.c", "src/core/a.c")
         move_src.move(self.root, "src/core/a.c", "src/core/b.c")

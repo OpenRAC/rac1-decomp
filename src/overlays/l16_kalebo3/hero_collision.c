@@ -4,6 +4,7 @@
 #include "include_asm.h"
 #include "hero.h"
 #include "vector.h"
+#include "overlays/shared/hero_idle_and_animation.h"
 
 extern char hero_globals_base[];
 extern int g_current_level_index MACRO_ADDR;
@@ -11,7 +12,6 @@ extern int coll_sphere(float, void *, int, void *);
 extern int CollType(void);
 extern void Hero_TryMoveState(int, int);
 extern float FastAbsF(float);
-extern void exit_hero_vehicle_mode_if_mode_three(void);
 
 /* Per-frame update of the pickup/hit state flags from the state code. */
 void HeroL16_UpdateStateFlags(void) {

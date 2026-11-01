@@ -5,6 +5,9 @@
 #include "include_asm.h"
 #include "hero.h"
 #include "moby.h"
+#include "game/draw.h"
+#include "overlays/shared/electric_water.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 
 /* Seeker bolt (class 0x29): flies along vel, optionally turning to the hero, bursts on a hit or when the timer ends. */
 struct SeekerBoltVars {
@@ -1362,7 +1365,7 @@ extern short timer_frame_color;
 extern void DrawUIFrame(int, int, int, int, int);
 extern int random_integer_below(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern int FontPrintCenterLarge(int a, int b, int c, int d, int e);
+
 #define W(x) (*(int *)&(x))
 
 /* Draws the level timer as "H:MM:SS.t" text with a pulsing colour. */
@@ -2605,7 +2608,7 @@ extern void set_moby_list_state(char *arg, int val);
 void set_moby_group_state_two(char *arg) {
     set_moby_list_state(arg, 0x2);
 }
-extern void draw_electric_water_bolt_effect(char *);
+
 extern short target_effect_first_rotation_rate_degrees_gp;
 extern short target_effect_second_rotation_rate_degrees_gp;
 extern short homing_spark_bolt_jitter;
@@ -3618,7 +3621,7 @@ void draw_drek_fight_missile_group_trails(struct Moby *moby) {
 }
 extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
-extern void draw_offset_textured_effect_quad(void *, int, float, float);
+
 extern float g_frame_time MACRO_ADDR;
 extern short drek_missile_effects_disabled;
 extern short drek_missile_glow_pulse_speed;

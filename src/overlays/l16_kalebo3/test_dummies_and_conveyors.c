@@ -4,6 +4,12 @@
 #include "hero.h"
 #include "moby.h"
 #include "vector.h"
+#include "overlays/shared/blarg_commander.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/plasmabot.h"
+#include "overlays/shared/shot_tracking.h"
+#include "overlays/shared/trigger_switches_and_hoverboard.h"
 
 /* Homing spark: chases a target moby, easing its speed and aim. */
 struct HomingSparkVars {
@@ -1043,7 +1049,7 @@ extern void ClampVectorLength(void *, float);
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 extern int FindNearestEligibleMoby(void *, void *, float, int, int, void *, int);
 extern float FastCos(float);
-extern void effect_slots_fire(void *, void *, void *, float);
+
 extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
 extern void collect_mobies_around_tracked_objects(char **, int, int);
 extern void SpawnExplosionFx(void *, void *, int, float, float);
@@ -1912,7 +1918,6 @@ typedef struct {
     short node; /* 0x2F4: the node being steered for */
 } L16PatrolData;
 
-
 /* Choose the path node to steer for: step on while the current one is behind the moby or reached. */
 void advance_hoverboard_dummy_path_node(char *m) {
     Moby *moby = (Moby *)m;
@@ -2151,14 +2156,13 @@ void update_hoverboard_dummy_jump_animation_and_pitch(Moby *m) {
         }
     }
 }
-extern void manipulator_set_scale(void *, float);
-extern void spawn_moby_break_fragments(void *, int, int, int, int, int, int);
+
 extern void advance_hoverboard_dummy_path_node(char *);
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern int is_moby_in_class_range_500_to_540(int);
 extern void PostHitMessage(void *, int, int, void *, void *, float);
 extern void EaseManipulatorOffsets(float, float, void *, void *, int);
-extern void PartType04Spawn(void *, void *, int, int, int, int, int, int);
+
 extern unsigned char gHaveHologuise NOT_SDA;
 typedef struct {
     char pad0[0x140];
@@ -2805,7 +2809,7 @@ int get_target_reposition_status(Moby *m) {
     return 0;
 }
 INCLUDE_ASM("asm/overlays", func_L16_002E22DC);
-extern void apply_npc_big_head_cheat(char *);
+
 extern int DialogRequest_Init(void *, void *);
 extern int Npc_TryStartDialog(void *, void *);
 extern void Hero_ResetToPosition(void *, void *, int, int);
@@ -3074,13 +3078,10 @@ extern char crate_platform_no_path_msg[], crate_platform_empty_path_msg[], crate
 extern short kalebo3_path_spring_stiffness, kalebo3_path_spring_damping;
 extern void MobySetAnimation(void *, int, int);
 extern int STUB_printf();
-extern void initialize_moby_path_state(void *);
+
 extern void InitKnockback(void *, void *, int, int, int, float);
 extern void MobySpringTurn_path54(char *, float, float *, float, float, float) __asm__("func_L00_002592B0");
-extern char *spawn_floating_mine(void *, void *);
-extern void update_linked_moby_position(void *);
-extern void moby_set_state_one(void *);
-extern void emit_moby_offset_particles(void *);
+
 extern int advance_bolt_thief_path(char *moby);
 extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
 extern int mine_fall(void *, void *);
@@ -3292,7 +3293,7 @@ extern void set_moby_dialogue_record_value(void *, int);
 extern void SelectNearestTargetSlot(void *);
 extern void prepare_taxi_departure_path(char *);
 extern void request_moby_help_message(char *);
-extern char *FindMobyByDataId(void *, int);
+
 extern void SamplePathAt_r(float, int *, int, void *, float *, int) __asm__("func_00215CA8");
 extern int Path_AdvanceProgress(char *);
 extern void transfer_moby_placement_to_linked_moby(void *);

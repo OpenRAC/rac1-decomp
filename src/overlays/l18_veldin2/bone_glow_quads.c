@@ -5,6 +5,7 @@
  * (docs/reference/BUILD_FIDELITY.md, "Flags"). */
 #include "common.h"
 #include "include_asm.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 
 extern int scale_ticks(int);
 extern float IntToFloat(int);
@@ -13,7 +14,7 @@ extern int FastTweenColor(int, int, float);
 extern void MobyTransformScaledVertex(void *, int, void *);
 extern void FastVecScale(void *, void *, float);
 extern void FastVecSub(void *, void *, void *);
-extern void draw_offset_textured_effect_quad(void *, int, float, float);
+
 extern int veldin2_frame_count;
 extern int drek_boss_rider_glow_period;
 extern int drek_boss_rider_glow_color_a;

@@ -4,6 +4,7 @@
 #include "moby.h"
 #include "include_asm.h"
 #include "hero.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 
 /* functional: high. The NTSC decomp's matched C for the same instructions (FUN_L07_0031a9e8), carried to PAL's
    names by OpenRAC's tools/port.py. Not a PAL match: exact alone, but its file's other functions stop matching with it in place. */
@@ -611,7 +612,7 @@ void seashell_update(unsigned char *m) {
 
 extern void FastVecSub(void *dst, void *a, void *b);
 extern void vec_scale_to_length(void *, void *, float);
-extern void draw_trail(void *, void *, void *, float, float);
+
 extern char umbris_cutscene_state[];
 extern short umbris_scene_trail_speed;
 extern short umbris_scene_trail_core_size;

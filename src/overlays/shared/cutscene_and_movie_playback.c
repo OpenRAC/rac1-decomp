@@ -5,6 +5,19 @@
 #include "moby.h"
 #include "hero.h"
 #include "vector.h"
+#include "core/00122818.h"
+#include "core/00122AD8.h"
+#include "core/permcb.h"
+#include "game/freeze.h"
+#include "game/memcard.h"
+#include "game/music.h"
+#include "game/sound.h"
+#include "game/stream.h"
+#include "overlays/shared/camera_switch_and_update.h"
+#include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/weapon_hud_and_counters.h"
 
 extern int level_reset_counter_524 MACRO_ADDR;
 extern int radial_select_auto_close_flag[];
@@ -117,15 +130,13 @@ extern char level_profile_mark_after_hero[];
 extern char level_profile_mark_after_parts[];
 extern char level_profile_mark_after_camera[];
 extern char level_profile_mark_after_sound[];
-extern void mode_freeze_init(int, void *, int);
+
 extern void PauseAllSounds(int);
 extern void update_timed_hud_visibility(void);
 extern int show_health_hud_r(void) __asm__("func_L00_00235790");
 extern void hud_keep_visible(int, int);
 extern int queue_animation_update(int, int, int, int, int, int, int);
-extern void initialize_bolt_counter_hud(void);
-extern void update_bolt_counter_hud_animation_and_visibility(void);
-extern void draw_bolt_counter_hud_panel(void);
+
 extern void prepare_level_transition_with_help_cleanup(void);
 extern void count_expired_mobys(void);
 extern void update_visible_resident_objects(void);
@@ -136,7 +147,7 @@ extern void Profile_Mark_b(void) __asm__("func_001E9768");
 extern void coordinate_hero_frame_update(void);
 extern void UpdateParts(void);
 extern void update_glints(void);
-extern void Camera_UpdateFrame(void);
+
 extern void update_debug_camera(void);
 extern void update_hero_from_debug_camera(void);
 extern void UpdateAllPointLights(void);
@@ -330,11 +341,10 @@ extern int lvl_resource_buffers[];
 extern unsigned char player_camera[];
 extern char *active_scene_trigger_target;
 extern char *level_menu_system_target;
-extern void Hero_OnKilled(void);
+
 extern void music_Pause(int);
 extern void FastMemSet(void *, int, int);
-extern void clear_active_help_record(void);
-extern void HeroSetObjectFlags(void);
+
 extern void start_cutscene_chunk_read(int);
 extern int scale_ticks(int);
 extern void FadeToBlack(int);
@@ -434,9 +444,9 @@ extern void DeleteMoby(void *);
 extern int HeroEnterMoveState(int, int);
 extern float ProbeGroundHeight(void *, int, float);
 extern float FastAbsF(float);
-extern void HeroClearObjectFlags(void);
+
 extern void Hero_ResetToPosition(void *, void *, int, int);
-extern void process_menu_entry(void *, void *, int);
+
 extern int scale_ticks(int);
 extern void music_set_active_track_value(int v);
 
@@ -896,7 +906,7 @@ typedef struct {
     LevelLoad alt[19];
 } Globals137C80;
 extern Globals137C80 disc_table_g __asm__("D_00137C80");
-extern void Hero_OnKilled(void);
+
 extern void prepare_movie_playback(int, int, int);
 
 /* Dialog stream update: pick the entry's pair and start it unless one is already playing. */
@@ -971,9 +981,7 @@ void queue_movie_with_game_language(int i) {
 }
 extern char voice_pool[];
 extern void flush_cache(int);
-extern void sound_StopAllSounds(void);
-extern void music_Stop(void);
-extern void clear_active_help_record(void);
+
 extern int sceGsSetDefLoadImage(void *, short, short, short, short, short, short, short);
 extern int sceGsExecLoadImage(void *, void *);
 extern int wait_for_graphics_pipeline_idle(int, unsigned short);
@@ -1041,9 +1049,7 @@ void prepare_movie_playback(int sector, int size, int arg2) {
 }
 extern int movie_request_decoder_state MACRO_ADDR;
 extern void sceGsSyncVCallback(void *);
-extern void vsync_callback(void);
-extern void sceGsSetDefStoreImage(void *, int, int, int, int, int, int, int);
-extern void sceGsExecStoreImage(void *, int);
+
 extern void music_StartTrack(int, int, int);
 
 /* Leaves movie playback: restores the GS and draw buffers and returns to the game. */
@@ -1104,10 +1110,9 @@ void movie_exit_to_gameplay(void) {
 }
 extern char memory_card_state[];
 extern void flush_cache(int);
-extern void sound_StopAllSounds(void);
-extern void music_Stop(void);
+
 extern int snd_StreamSafeCdSync(int);
-extern void memcard_update_state(void);
+
 extern void Movie_Play(int, int, int, int, int);
 extern int sce_cd_sync_s(int);
 extern void movie_exit_to_gameplay(void);
@@ -1182,7 +1187,7 @@ void start_slideshow(void) {
     }
 }
 extern void VU1_syncChain(int);
-extern void request_audio_stream_break(void);
+
 extern int gFadeLvl MACRO_ADDR;
 /* Ends the slideshow: syncs VU1, fades to black, stops the audio stream and leaves cinematic mode. */
 void end_slideshow(void) {

@@ -4,6 +4,13 @@
 #include "moby.h"
 #include "pad.h"
 #include "hero.h"
+#include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
+#include "overlays/shared/morphoray_chicken_and_drones.h"
+#include "overlays/shared/vendor_menu.h"
 
 extern float ApproachValue(float *p, float target, float maxstep);
 extern unsigned char hero_globals_base[] NOT_SDA;
@@ -64,16 +71,15 @@ INCLUDE_ASM("asm/overlays", func_L05_0023BAA0);
 extern char pad_globals_base[];
 extern unsigned char gHaveHeliPack[] NOT_SDA;
 extern int hero_is_in_special_state();
-extern void replenish_hero_drones(void);
-extern int Hero_CanUseGadget(void);
+
 extern int allocate_hero_voice_for_entry(int, int);
 extern int FastDecTimer(void *);
-extern void clear_hero_idle_rotation_targets(void);
+
 extern int scale_ticks(int);
 extern int rand_range(int, int);
 extern void set_hero_item_switch_timer_for_item(int id);
 extern void set_hero_condition_animation_timer_for_item(int id);
-extern void cancel_hero_item_animation(void);
+
 extern void MobyBlendAnimation(void *, int, int, int);
 extern unsigned char gHaveMorphORay NOT_SDA;
 extern char help_stats_base[] NOT_SDA;
@@ -650,13 +656,9 @@ extern Rec2C_2523C8 rilgar_attack_records_r[] __asm__("D_L05_0017C188");
 extern int gadget_double_tap_timer SDATA(D_L05_0015F754);
 extern int pad_pressed_within(int, int, int *);
 extern int is_wrench_moby(void *);
-extern void launch_hero_wrench(void);
+
 extern int truncate_float_to_s32(float);
-extern void select_hero_grapple_swing_target(void);
-extern int select_hero_grapple_target(void);
-extern void open_vendor_menu(void *);
-extern int get_ammo(int);
-extern void start_equipped_item_animation(void);
+
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound(int, int, int);
 extern int Hero_TryMoveStateL05_r(int, int) __asm__("func_L05_0024D680");
@@ -1089,7 +1091,7 @@ typedef struct {
 extern SndPair_254030 hoverboard_trick_sounds[];
 extern float predict_hero_trajectory_intercept_time(float a, float b, float c);
 extern void set_hero_animation(int, int, float);
-extern void hero_queue_sequence(int bank, int seq);
+
 extern int select_hero_hoverboard_animation_variant(void);
 
 /* Hero idle: picks the idle animation from the stick direction, and occasionally plays a fidget or the
@@ -1811,7 +1813,6 @@ typedef struct {
     char pad0[7];
     unsigned char f7;
 } Flags_9F0;
-
 
 /* Help picker: tests the hero's state, surroundings and path, then sets a help mode or shows a hint. */
 int hero_pick_help_mode(void) {

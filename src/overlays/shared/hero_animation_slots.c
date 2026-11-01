@@ -4,6 +4,9 @@
 #include "include_asm.h"
 #include "vector.h"
 #include "hero.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "overlays/shared/morphoray_chicken_and_drones.h"
 
 struct Moby;
 extern struct Hero g_hero_r __asm__("D_0013F450");
@@ -692,7 +695,6 @@ extern unsigned char g_class_slot[];
 extern char *moby_class_headers[];
 extern struct HeroEase D_L00_0017A780[];
 extern char hero_item_blend_pose_buffers[];
-extern int return_hero_animation_id_unchanged(int);
 
 #define GB (D_0013E633 + 0xE1D)
 #define SLOT(i) (((char **)(D_0013E633 + 0x1B1D))[i])
@@ -1399,12 +1401,11 @@ float sum_basis_absolute_differences(float *a, float *b) {
 }
 extern short hero_item_history_delay_target;
 extern void matrix_copy_rows(void *, void *);
-extern void normalize_vector_triplet(void *);
+
 extern void clear_u64_value(void *);
 extern float sum_basis_absolute_differences(float *a, float *b);
 extern void FastVecAdd(void *, void *, void *);
 extern void FastVecScale(void *, void *, float);
-extern void matrix_to_euler(void *, void *);
 
 typedef struct {
     float x, y, z, w;
@@ -1551,7 +1552,7 @@ extern void moby_anim_sphere_lerp(void *);
 extern void pack_pose(void *, void *, s32, s32, s32);
 extern void FastVecCross(void *, void *, void *);
 extern void MobyTransformScaledVertex(void *, s32, void *);
-extern void enqueue_hero_glow_draw_callback_once(void);
+
 extern s32 truncate_float_to_s32(f32);
 
 void update_hero_item_mobys(void) {
@@ -1824,10 +1825,10 @@ int Hero_CanUseGadget(void) {
     return 0;
 }
 extern int hero_is_in_special_state();
-extern void replenish_hero_drones(void);
+
 extern int allocate_hero_voice_for_entry(int, int);
 extern int FastDecTimer(void *);
-extern void clear_hero_idle_rotation_targets(void);
+
 extern int rand_range(int, int);
 extern void MobyBlendAnimation(void *, int, int, int);
 extern unsigned char gHaveMorphORay NOT_SDA;
@@ -2262,11 +2263,11 @@ extern void cancel_hero_item_animation(void);
 extern void clear_moby_transform_history(char *o);
 extern void HeroSetObjectFlags(void);
 extern void release_and_clear_hero_voice_slots();
-extern void reset_hero_easing_records(void);
+
 extern void update_hero_collision_capsule_dimensions();
 extern void clear_hero_queued_animation(void);
 extern void apply_env_zone_lighting(void *);
-extern void apply_hero_and_item_scale_sequence(void);
+
 extern void HeroEnterMoveState(int, int);
 
 /* sets up the player/object state for a new mode (a0 = mode, a1 = id, a2 = object) */
@@ -2924,7 +2925,7 @@ void update_hero_target_speed_from_stick(void) {
 }
 extern char hero_globals_base[] NOT_SDA;
 extern void euler_to_matrix(void *, void *);
-extern void matrix_to_euler(void *, void *);
+
 typedef float W[4] __attribute__((aligned(16)));
 /* Rotates the matrix at D_0013E633 + 0xEAD by the Euler angles (x, y, z). */
 void apply_hero_rotation_offset(float x, float y, float z) {

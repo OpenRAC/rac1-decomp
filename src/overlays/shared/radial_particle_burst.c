@@ -2,6 +2,7 @@
 #include "common.h"
 #include "callees.h"
 #include "include_asm.h"
+#include "game/mobyutil.h"
 
 LINKER_REMNANT("asm/overlays", func_L03_00249488);
 extern void FastVecCross(void *, void *, void *);
@@ -12,7 +13,6 @@ extern float FastArcSin(float);
 extern float FastSin(float);
 extern void FastVecScale(void *, void *, float);
 extern float FastCos(float);
-extern void rotate_vector_by_quaternion(void *arg0, void *arg1, void *arg2);
 
 // Rotates a vector toward another by a fraction of the angle between them using a quaternion.
 void rotate_vector_by_scaled_angle_between_vectors(float t, float *dst, float *a, float *b, int flag) {

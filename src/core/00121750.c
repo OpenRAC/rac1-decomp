@@ -1,6 +1,7 @@
 #include "common.h"
 #include "callees.h"
 #include "structs.h"
+#include "core/001208E8.h"
 
 /*
  * core_text object 0x121750-0x121D18. Boundaries are retail's linker fill
@@ -14,13 +15,12 @@
  * 2.9-ee (Makefile.sn, EE29_CORE), like the prebuilt archives they match.
  */
 
-
 extern int cd_ncmd_sema;
 extern int cd_scmd_sema;
 extern int cd_ncmd_busy;
 
 extern int sif_call_rpc();
-extern int cd_ncmd_prechk(int);
+
 extern void signal_semaphore(int);
 extern char cd_ncmd_rpc_client[];
 
@@ -109,7 +109,6 @@ int sce_cd_read(int lba, int sectors, void *buf, unsigned char *mode) {
     return 1;
 }
 
-extern int cd_scmd_prechk(int);
 extern int cd_scmd_recv_buffer;
 
 /* sceCdGetError, func_00120E98's sibling: S-command 3, RPC 4, and -1

@@ -5,6 +5,16 @@
 #include "include_asm.h"
 #include "hero.h"
 #include "moby.h"
+#include "overlays/l13_gemlik/qwark_starfighter_and_forcefield.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/nanotech_ball_and_suck_cannon.h"
+#include "overlays/shared/point_lights_and_glows.h"
+#include "overlays/shared/projectile_expiry_particles.h"
+#include "overlays/shared/rocket_and_path_camera.h"
+#include "overlays/shared/ship_pickup_and_rocket.h"
+#include "overlays/shared/water_pool_and_sand_mouse.h"
+#include "overlays/shared/weapon_hud_and_counters.h"
 
 /* Part attached to a joint of a source moby (spawn_moby_joint_attachment). */
 struct JointAttachVars {
@@ -510,13 +520,13 @@ typedef struct {
 } Path388;
 
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
-extern char *spawn_moby_joint_attachment(char *, int, int);
+
 extern float FastCos(float);
 extern float FastSin(float);
 extern void Hud_SetBarValueById(int, int);
 extern int STUB_printf();
 extern int queue_animation_update(int, int, int, int, int, int, int);
-extern void reset_numeric_hud_element();
+
 extern void Hud_UpdateCounter();
 extern void draw_segmented_hud_meter_base();
 extern int advance_moby_along_selected_path(void *, void *, int, int);
@@ -551,8 +561,7 @@ extern void SpawnExplosionFx(void *, void *, int, float, float);
 extern void emit_randomized_moby_joint_effects_2(void *, void *) __asm__("func_L13_002E9F90");
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
-extern void release_point_light_slot(int);
-extern void flag_vendor_item(int);
+
 extern void DeleteMoby(void *);
 extern char *spawn_owner_linked_class_160_moby(void *);
 extern void update_moby_joint_attachments(void *, void *);
@@ -1423,7 +1432,7 @@ void spawn_forcefield_contact_effects(void *moby, void *data) {
 extern void set_moby_color(void *, int, int, int);
 extern void spawn_forcefield_contact_effects(void *, void *);
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
-extern void offset_moby_class_point_pairs(unsigned char *, int, int);
+
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern char forcefield_missing_link_fmt[];
 extern float frame_scale MACRO_ADDR;
@@ -1827,7 +1836,7 @@ extern void InitDirectionalHitQuery(void *, struct Moby *, int, float, void *);
 #define mat_p func_L00_001FF610
 extern void PartType27Spawn(void *, void *, int, int, float);
 #define spark_p func_L00_0026EBC0
-extern void spawn_projectile_expiry_particle(void *, void *);
+
 #define puff_p func_L07_0029B070
 #define remove_p func_0020D678
 #define D_0015EE6C_p D_0015EE6C
@@ -2189,8 +2198,7 @@ extern float FastVecDot(void *a, void *b);
 extern char *spawn_poison_vessel_effect_moby(void *a, void *b, int c, int d);
 extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
 extern void clamp_vec_length(void *, void *, float);
-extern char *spawn_randomly_rotated_colored_moby(void *, void *, void *, float, int, unsigned char, unsigned char,
-                                                 unsigned char, int);
+
 typedef struct {
     float f[4];
 } __attribute__((aligned(16))) V4A;
@@ -2349,9 +2357,9 @@ extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, 
 extern void SetDeathBits(void *, int, int);
 extern void RerollEffectCounter(void *m, short *p);
 extern void spawn_poison_vessel_destruction_effects(void *, void *);
-extern void spawn_type_52_particle_near_moby(char *moby);
+
 extern float IntToFloat(int);
-extern float interpolate_scalar_linear(float, float, float);
+
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern void SendRadialMessageToMobys(void *, void *, void *, int, int, int, int, int, float, float, float);
 extern float multiply_global_factor(float);
@@ -3325,7 +3333,6 @@ extern int check_scaled_vector_bsphere(float, void *);
 extern void render_level13_water_grids(void);
 extern void initialize_gemlik_pool_tile_neighbors(int);
 
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l13/gameplay/vendor/003058a8.c, FUN_L13_00309e88. */
 void update_gemlik_bobbing_pool_tile(struct Moby *moby) {
     enum { BOBBING_PLATFORM_INITIALIZE = 0, BOBBING_PLATFORM_UPDATE = 1 };
@@ -3442,7 +3449,7 @@ void update_gemlik_bobbing_pool_tile(struct Moby *moby) {
         }
     }
 }
-extern void render_water_grids(char *, int);
+
 extern char Tiles_9e88[];
 /* Draws the 22 Gemlik pool water grids. */
 void render_level13_water_grids(void) {
@@ -3747,7 +3754,6 @@ void compute_lift_mount_transform(char *mobyp, float *mount_position, float *mou
                                    base->motion.body_center.f[1] - mount_position[1]);
 }
 extern short *gemlik_moby_groups[];
-extern char *get_moby_suck_cannon_record(char *);
 
 // Counts the mobys of a list that are alive and idle, optionally ignoring those in a given state.
 int count_eligible_mobies_in_list(int idx, int arg) {

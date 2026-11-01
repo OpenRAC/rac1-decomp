@@ -1,6 +1,7 @@
 #include "common.h"
 #include "callees.h"
 #include "structs.h"
+#include "core/00118A40.h"
 
 /*
  * core_text object 0x118A40-0x119328. Boundaries are retail's linker fill
@@ -12,11 +13,6 @@
  * and cache.o (SyncDCache, InvalidDCache). Built with Sony's 2.9-ee
  * (Makefile.sn, EE29_CORE), like the prebuilt libkernl.a.
  */
-
-
-extern int libc_glue_read();
-
-extern int libc_glue_write();
 
 ASM_FUNC("asm/handwritten/core_text", func_00118A40);
 

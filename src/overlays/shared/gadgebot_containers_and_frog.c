@@ -6,6 +6,10 @@
 #include "vector.h"
 #include "hero.h"
 #include "moby.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 
 /* Blarg frog: hops along its path, chases the hero or a gadgebot and respawns after it is destroyed. */
 struct FrogVars {
@@ -906,7 +910,7 @@ void update_frog_health_respawn_and_target(struct Moby *moby) {
 extern void vec_scale_to_length(void *, void *, float);
 extern float FastVecDot(void *, void *);
 extern void FastVecCross(void *, void *, void *);
-extern void extract_matrix_rotation_quaternion(void *, void *);
+
 extern short blarg_frog_turn_blend;
 
 /* Build an orthogonal frame from two vectors and apply it to the matrix at moby+0xC0. */
@@ -1124,7 +1128,7 @@ extern void BuildSphericalOffset(void *, float, float, float);
 extern void rand_vec(float *, float, float);
 extern int rand_range(int, int);
 extern int scale_ticks(int);
-extern void PartType04Spawn(void *, void *, int, int, int, int, int, int);
+
 extern float g_frame_time MACRO_ADDR;
 
 /* burst of 20 sparks around a point with random velocity and colour */
@@ -1364,7 +1368,7 @@ extern float ProbeGroundHeight(void *, int, float);
 extern void build_symmetric_adjacency_masks(int *list, int n, int idx);
 extern int compute_clear_path_point_mask(float, int *, int, int, void *);
 extern void update_gadgebot_glow_effects(char *);
-extern void update_object_wander_movement(char *moby, char *d, float a, float b);
+
 extern int IsPointInPolygon(void *, void *, int);
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern float randf_sym(float lo, float hi);
@@ -2695,7 +2699,6 @@ void func_L06_002F4A70_r(unsigned char *moby) {
     }
     ((Moby *)moby)->hit_slot = 0xFF;
 }
-extern void draw_offset_textured_effect_quad(void *, int, float, float);
 
 /* for each moby in a search list with the owner's id, start three effects on its data */
 void draw_gadgebot_group_glow_effects(char *owner) {
@@ -3082,7 +3085,7 @@ void update_energy_sphere_holder_beam_effects(char *m) {
 }
 extern int is_point_inside_clip_volume(void *, int);
 extern void FadeToBlack(int);
-extern void Hero_OnKilled(void);
+
 extern void HeroL06_TrySetMoveState(int, int);
 
 /* Watches the moby's two 32-entry trigger lists against the hero and fires the matching events. */

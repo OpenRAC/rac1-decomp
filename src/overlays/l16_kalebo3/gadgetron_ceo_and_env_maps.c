@@ -4,6 +4,11 @@
 #include "include_asm.h"
 #include "hero.h"
 #include "moby.h"
+#include "game/draw.h"
+#include "overlays/shared/moby_group_flags.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/trespasser_pad_and_background_ships.h"
 
 /* Gadgetron CEO challenge room: handles of the jet groups it switches on and off. */
 struct CeoEnvVars {
@@ -40,10 +45,10 @@ struct RepositionCycleVars {
 extern int DialogRequest_Init(void *, void *);
 extern int Npc_TryStartDialog(void *, void *);
 extern void set_ground_height_band(void *);
-extern void attach_big_head_cheat_manipulator_to_matching_moby(void *);
+
 extern void restore_gadgetron_ceo_non_challenge_environment(char *);
 extern void activate_gadgetron_ceo_challenge_environment(char *);
-extern void PlaceMarkerAheadOfMoby(float, void *);
+
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern int Help_Request(int, int);
 extern void grant_inventory_item(int, int);
@@ -331,7 +336,7 @@ void gadgetron_ceo_update(Moby *m) {
     EaseManipulatorOffsets(rate * g_frame_scale_sq, head_rate * g_frame_scale_sq, m, d->body, 0);
     EaseManipulatorOffsets(rate * g_frame_scale_sq, head_rate * g_frame_scale_sq, m, d->head, 1);
 }
-extern void jet_group_state(int, int, int, int);
+
 extern void challenge_set_layout_param(float f);
 extern void MusicRequestTrack(int, int);
 extern float kalebo3_hero_fall_state_height MACRO_ADDR;
@@ -642,7 +647,7 @@ void initialize_path_walker_group(unsigned char *m) {
 extern int kalebo3_game_mode;
 extern char kalebo3_cutscene_state[];
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void draw_trail(void *, void *, void *, float, float);
+
 typedef float W[4] __attribute__((aligned(16)));
 
 /* Waits one tick, then pushes two pairs of the player's points apart along their difference. */
@@ -1078,7 +1083,7 @@ extern char envmap_a_bounding_spheres[][16];
 extern char envmap_a_uvs[];
 extern int GetEffectTex(int);
 extern void VU1_addGSregister(int, long);
-extern void font_queue_vu_state(void);
+
 extern void draw_env_overlay_mesh(int, int, int, char *, int);
 
 /* Sets up the draw state, then draws the three entries of the level's table. */

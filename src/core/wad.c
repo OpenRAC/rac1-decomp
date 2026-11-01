@@ -1,12 +1,12 @@
 #include "common.h"
 #include "callees.h"
 #include "structs.h"
+#include "core/00121750.h"
 
 /*
  * wad.cpp (0x12F348-0x12F580), the last object in core_text. Name from
  * the NTSC split.
  */
-
 
 extern int sce_cd_sync_s(int);
 
@@ -21,7 +21,6 @@ typedef struct {
 extern unsigned char cd_read_spindle_speed[4] MACRO_ADDR;
 extern int sce_cd_read(int, int, void *, void *);
 extern void sce_gs_sync_v(int);
-extern int sce_cd_get_error(void);
 
 /* wad_GetSectors_FiiPv(lba, sectors, buf): sceCdRead with the usual
  * request/poll/retry shape (see func_0012F3F8/func_0012F4A8 below),

@@ -5,6 +5,13 @@
 #include "pad.h"
 #include "vector.h"
 #include "hero.h"
+#include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/hero_update_ground_material.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
+#include "overlays/shared/vendor_menu.h"
 
 LINKER_REMNANT("asm/overlays", func_L02_0021A2E0);
 extern char hero_globals_base[];
@@ -34,23 +41,21 @@ void update_hero_stick_target_magnitude(void) {
 }
 typedef int Q_222D18 __attribute__((mode(TI)));
 
-extern void update_hero_attachment(int, void *, void *);
-extern float gravity_length_xy(float *v);
 extern void vec_scale_to_length(void *, void *, float);
 extern float gravity_z(float *);
 extern void gravity_set_z(float *, float *, float);
 extern float FastVecLength(void *);
 extern void FastVecAdd(void *, void *, void *);
 extern void clear_u64_value(void *);
-extern void resolve_hero_collisions_with_history(void);
+
 extern void Hero_UpdateGroundContact(void);
 extern void FastVecSub(void *, void *, void *);
-extern void correct_hero_ground_penetration(void);
+
 extern float FastVecDot(void *, void *);
 extern void gravity_flatten(float *, float *);
 extern void set_gravity_relative_vector_length_xy(float *, float *, float);
 extern float vec_length_xy(void *);
-extern float forward_component(void *);
+
 extern void FastVecScale(void *, void *, float);
 
 /* Integrate player motion, resolve contacts, and measure the resulting movement. */
@@ -208,13 +213,13 @@ extern float FastDiffRots(float, float);
 extern float FastSubRots(float, float);
 extern float ApproachValue(float *, float, float);
 extern void build_scaled_hero_move_impulse(float, float);
-extern void speed_step(float, float);
+
 extern void turn_to(int, float, float, float);
 extern float SpringAngle(void *, float, void *, int, float, float, float);
-extern void rotate_hero_about_fixed_local_pivot(float, float, float);
+
 extern void add_hero_forward_offset(void *, void *, float);
 extern void vec_set_length_xy(void *, void *, float);
-extern void air_accel(float);
+
 extern int hero_slot_item_id(int);
 extern int allocate_hero_voice_for_entry(int, int);
 
@@ -354,14 +359,9 @@ extern Rec2C_22F568 aridia_attack_records_r[] __asm__("D_L02_0017C2A8");
 extern int D_L02_0015F754 SDATA(D_L02_0015F754);
 extern int pad_pressed_within(int, int, int *);
 extern int is_wrench_moby(void *);
-extern void launch_hero_wrench(void);
+
 extern int truncate_float_to_s32(float);
-extern void select_hero_grapple_swing_target(void);
-extern int select_hero_grapple_target(void);
-extern int Hero_CanUseGadget(void);
-extern void open_vendor_menu(void *);
-extern int get_ammo(int);
-extern void start_equipped_item_animation(void);
+
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound(int, int, int);
 extern int HeroL02_SetMoveState(int, int);

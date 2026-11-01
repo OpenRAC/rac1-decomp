@@ -6,6 +6,10 @@
 #include "records.h"
 #include "hero.h"
 #include "moby.h"
+#include "game/vuchain.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/point_lights_and_glows.h"
 
 /* Airship part: placed at its source's position. */
 struct AirshipPartVars {
@@ -64,7 +68,7 @@ extern void UpdateViewContext(void);
 extern void BuildViewMatrices(void);
 extern void set_scale_matrix(float, void *);
 extern void FastVecScale_r(float, void *, void *) __asm__("func_001F9C30");
-extern void VU1_addDataRef(void *, int);
+
 extern void sce_vu0_mul_matrix(void *, void *, void *);
 extern void draw_env_overlay_mesh(int, int, int, void *, int);
 extern void restore_view_after_textured_grid(void *);
@@ -1200,7 +1204,7 @@ void AsteroidBeltUpdate(Moby *m) {
 extern char *CreateMoby(int);
 extern int scale_ticks(int);
 extern void moby_build_matrix(void *);
-extern void copy_hero_moby_field_38(void *);
+
 extern int func_001160D8(void);
 
 /* spawns a moby of the given class at a source moby's position */
@@ -1714,7 +1718,6 @@ typedef struct {
     float f9C; /* 0x9C */
 } PlatVars_2F9A50;
 
-
 extern void FastVecScale_r3(void *, void *, float) __asm__("func_001F9C30");
 extern int scale_ticks_r2(int) __asm__("func_001F9850");
 extern int fast_dec_timer_r3(int *) __asm__("func_001F9908");
@@ -1878,7 +1881,7 @@ extern LevelState gaspar_collected_flags_base;
 extern int gaspar_moby_killed[];
 extern int g_current_level_index MACRO_ADDR;
 extern int is_point_inside_clip_volume(void *, int);
-extern int is_hero_on_moby(void *);
+
 extern void HeroEnterMoveState(int, int);
 extern int Moby_PlaySound(int, int, int);
 extern float vec_distance_xy(void *, void *);
@@ -2591,7 +2594,7 @@ extern void MobyBlendAnimation(void *, int, int, int);
 extern void CameraScript(void *, void *, int, int, int);
 extern void AttachManipulator(struct Moby *, int, void *);
 extern int allocate_colored_effect_slot(void *, float, float, float, float, float);
-extern void release_point_light_slot(int);
+
 extern float vec_length_xy(void *);
 extern void divide_vector_xyz(void *, void *, float);
 extern void axis_rotation_2d48(void *, int, float);
@@ -2925,7 +2928,6 @@ typedef struct BarrierData_309688 {
     int idx;
 } BarrierData_309688;
 
-
 typedef struct Hit_309688 {
     char pad0[0x10];
     float pos[4];
@@ -3080,7 +3082,6 @@ typedef struct {
     char pad0[0x18];
     float z;
 } Mpos_30A560;
-
 
 /* Level 9 moby update: 0 sets up and either rises from below or reports a missing target, 1 waits for the target
  * moby to die, 2 rides with the hero (wobbles data+0x60/0x64 towards the hero's offset) or settles back.

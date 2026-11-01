@@ -6,6 +6,12 @@
 #include "vector.h"
 #include "hero.h"
 #include "moby.h"
+#include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
+#include "overlays/shared/level_runtime_and_menus.h"
 
 typedef struct {
     char pad[0x24];
@@ -48,22 +54,15 @@ int get_hero_help_value(int a) {
         return blarg_item_defs[i].v;
     }
 }
-extern void advance_hero_animation(void);
-extern void hero_update(void);
+
 extern void apply_hero_ground_material_response(void);
-extern void check_ledge_grab(void);
-extern void update_hero_motion_response_parameters(void);
+
 extern void HeroL06_UpdateStateTransitions(void);
-extern void update_hero_delayed_voice_requests(void);
-extern void update_hero_easing_records(void);
-extern void update_hero_vehicle_moby(void);
-extern void update_hero_scalar_pulse(void);
-extern void apply_hero_and_item_scale_sequence(void);
-extern void update_hero_glow_and_extra_manipulators(void);
+
 extern struct Moby *CreateMoby(s32);
 extern void moby_build_matrix(struct Moby *);
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void enqueue_hero_glow_draw_callback_once(void);
+
 extern void MobyTransformScaledVertex(void *, int, void *);
 extern void matrix_copy_rows(void *, void *);
 extern void matrix_mul_vec3(void *, void *, void *);
@@ -77,11 +76,11 @@ extern void euler_to_matrix(void *, void *);
 extern s32 scale_ticks(s32);
 extern void MobyBlendAnimation(void *, int, int, int);
 extern int Moby_PlaySound(void *, int, void *);
-extern void reveal_map_around_position(void *);
+
 extern float IntToFloat(int);
 extern int truncate_float_to_s32(float);
 extern void allocate_hero_voice_for_entry(int, int);
-extern void update_hero_moby_probed_height_bounds(void);
+
 extern void apply_env_zone_lighting(void *);
 extern unsigned char hero_globals_base[];
 extern unsigned char gHaveMorphORay[];
@@ -348,9 +347,9 @@ void update_hero_vehicle_attachments_and_effects(void) {
 extern unsigned char g_hero[];
 extern s32 level_game_mode_q MACRO_ADDR;
 extern void DeleteMoby(void *);
-extern void reset_hero_easing_records(void);
+
 extern void release_and_clear_hero_voice_slots(void);
-extern void clear_hero_queued_animation(void);
+
 extern void HeroL06_TrySetMoveState(int, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_0021d0a0.c, FUN_L06_00227cf8. */
@@ -400,7 +399,7 @@ extern unsigned char hero_globals_base[];
 extern float g_frame_time MACRO_ADDR;
 extern int blarg_coll_hit_type;
 extern char blarg_coll_hit[];
-extern float gravity_length_xy(float *v);
+
 extern float vec_length_xy(void *);
 extern float FastCos(float);
 extern float FastSin(float);
@@ -632,7 +631,7 @@ extern Entry70_2348d0 blarg_idle_fidgets_field_60[];
 extern short level_game_mode_q_r __asm__("D_L06_0015F6A8");
 extern u8 gHaveBoltGrabber NOT_SDA;
 extern f32 g_frame_time MACRO_ADDR;
-extern void update_hero_tilt(void);
+
 extern s32 fast_dec_timer(s32 *);
 extern s16 FastDecTimer(s16 *);
 extern void restore_hero_from_vehicle_mode(void);
@@ -643,9 +642,8 @@ extern void moby_build_matrix(struct Moby *);
 extern void enter_hero_vehicle_mode_and_set_moby(s32, s32, struct Moby *);
 extern f32 gravity_z(void *);
 extern void FastVecScale(void *, void *, f32);
-extern void update_hero_planar_distance_spring_motion(void);
+
 extern void transform_hero_local_offset_to_world(void *, f32, f32, f32);
-extern void Hero_OnKilled(void);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/0021d0a0.c, FUN_L06_002348d0. */
 void update_hero_timers_and_spatial_state(void) {
@@ -812,7 +810,7 @@ extern f32 blarg_collision_hit_point;
 extern void FastVecScale(void *, void *, f32);
 extern void clip_negative_segment_endpoint_xyz(Vec4 *, void *);
 extern s32 coll_line(void *, void *, s32, s32, s32);
-extern f32 compute_gravity_relative_vector_inclination(void *);
+
 extern s32 solve_quadratic_equation(f32 *, f32 *, f32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00242950.c, FUN_L06_00242950. */

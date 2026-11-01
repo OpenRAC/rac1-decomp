@@ -4,6 +4,9 @@
 #include "callees.h"
 #include "include_asm.h"
 #include "hero.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/particle_spawns_and_path_splines.h"
 /* Rocket: velocity, owner, life and start distance. */
 struct RocketVars {
     f32 vel_x; /* 0x00 */
@@ -20,7 +23,6 @@ struct RocketVars {
     s32 unk_34; /* 0x34 */
     f32 start_dist; /* 0x38 */
 };
-
 
 typedef struct {
     float pad0[4];
@@ -142,7 +144,7 @@ extern void clear_u64_value(void *);
 extern float SpringTurn(float, float, float, float, float, float *);
 extern void BuildSphericalOffset(float, float, float, void *);
 extern int rand_range(int, int);
-extern void PartType04Spawn(void *, void *, int, int, int, int, int, int);
+
 extern int Moby_PlaySound(int, int, void *);
 extern int coll_line(void *, void *, int, int, int);
 extern void PostHitMessage(float, int, void *, int, void *, void *);
@@ -257,7 +259,7 @@ extern float random_float_between(float, float);
 extern float FastCos(float);
 extern float FastSin(float);
 extern void FastVecAdd(float *, float *, float *);
-extern void spawn_type_52_particle(float *, float, float, int, int, int);
+
 extern short orxon_type52_particle_spawn_radius;
 extern short orxon_type52_particle_start_size_max;
 extern short orxon_type52_particle_end_size_max;
@@ -677,9 +679,8 @@ extern void UpdateViewContext(void);
 extern void HeroEnterMoveState(int, int);
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
 extern int FastDecTimer(void *);
-extern float CosineInterpolate(float, float, float);
-extern void Profile_Mark(void *, void *);
 
+extern void Profile_Mark(void *, void *);
 
 /* Camera 19 update: advances the blend state and aims the camera each frame. */
 void Camera19_Update(char *moby) {

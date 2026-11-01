@@ -1,13 +1,13 @@
 #include "common.h"
 #include "records.h"
 #include "structs.h"
+#include "game/draw.h"
 
 /*
  * effects.cpp in the original source; text 0x1EDFF8-0x1EE9F8.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
-
 
 typedef struct {
     u8 pad_0[0x10];
@@ -118,8 +118,6 @@ extern int GetEffectTex(int);
 extern float FastCos(float);
 extern float FastSin(float);
 extern float FastAddRots(float, float);
-extern void append_rotated_sprite_quad(float, float, float, float, float, int, int, int, int, int, int, int, float,
-                                       float);
 
 /*
  * Spawns a burst of particle effects around (arg1, arg2) using the source
@@ -212,7 +210,7 @@ extern GlowQueue rotated_sprite_queue;
 extern int hero_current_state;
 extern int g_screen_extent[];
 extern float IntToFloat(int);
-extern void project_to_screen(float *, void *);
+
 extern void spawn_particle_burst(void *, float, float);
 
 /* Draws every queued glow whose moby is live (not in state 0xFE/0xFD):

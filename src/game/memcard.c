@@ -2,13 +2,16 @@
 #include "callees.h"
 #include "records.h"
 #include "structs.h"
+#include "core/00121750.h"
+#include "core/001236F0.h"
+#include "core/0012CC90.h"
+#include "game/menu.h"
 
 /*
  * memcard.cpp in the original source; text 0x209A60-0x20C210.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
-
 
 typedef struct {
     char b[0x13];
@@ -55,7 +58,7 @@ void memcard_get_name(void *arg0) {
 }
 
 extern int sce_mc_get_info(int, int, int *, int *, int *);
-extern int sce_mc_sync(int, int *, int *);
+
 extern void sce_gs_sync_v(int);
 extern int sce_mc_get_dir(int, int, char *, int, int, void *);
 extern char memcard_save_dir_name[];
@@ -1642,10 +1645,6 @@ int memcard_RestoreData(void *src, int slot, int *table) {
     return errors;
 }
 
-extern void sce_cd_read_clock(void *);
-extern void sce_scf_get_local_time_from_rtc(void *);
-extern void copy_level_object_positions(void);
-extern void save_map_coverage(void *);
 extern char save_clock_time[] MACRO_ADDR;
 extern char level_map_coverage[];
 extern unsigned char level_visit_state[];

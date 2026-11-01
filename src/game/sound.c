@@ -4,6 +4,7 @@
 #include "records.h"
 #include "hero.h"
 #include "structs.h"
+#include "game/mobyutil.h"
 
 /*
  * sound.cpp in the original source; text 0x22D8C0-0x22F128.
@@ -29,7 +30,7 @@ typedef struct {
 extern char camera_position_a[] __asm__("D_00187180");
 extern char coll_hit_pos[];
 extern int sound_probe_ignore;
-extern void random_spherical_offset(void *, float, float);
+
 extern void FastVecAdd_a(void *, void *, void *) __asm__("func_001F9BD8");
 extern void FastVecScale_a(void *, void *, float) __asm__("func_001F9C30");
 extern void FastVecSub_a(void *, void *, void *) __asm__("func_001F9BF0");

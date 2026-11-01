@@ -6,6 +6,8 @@
 #include "hero.h"
 #include "moby.h"
 #include "camera.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/point_lights_and_glows.h"
 
 /* Hydrodisplacer effect emitter: only a spawn countdown. */
 struct HydroEffectVars {
@@ -92,7 +94,6 @@ extern float random_float_between(float, float);
 extern int rand_range(int, int);
 extern int scale_ticks(int);
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
-extern void PartType35Spawn(void *, void *, int, int);
 
 /* while the countdown value is ready, scatter a spawn by the camera's offset and reroll the delay */
 void emit_hydrodisplacer_effect(Moby *m) {
@@ -377,7 +378,7 @@ s32_2e1f28 register_beam_slot(s32_2e1f28 id, s32_2e1f28 a, s32_2e1f28 b) {
     }
     return 0;
 }
-extern void release_point_light_slot(int);
+
 extern int beam_slot_states[];
 extern int beam_tip_light_slots[];
 extern int beam_origin_light_slots[];

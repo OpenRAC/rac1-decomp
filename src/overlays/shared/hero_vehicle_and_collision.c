@@ -4,6 +4,10 @@
 #include "pad.h"
 #include "hero.h"
 #include "moby.h"
+#include "overlays/shared/hero_high_jump_input.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/vendor_menu.h"
 
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 extern struct Hero g_hero_r __asm__("D_0013F450");
@@ -547,10 +551,10 @@ typedef struct {
     char pad[0x20];
 } T2C_222B80;
 extern void clear_moby_transform_history(char *o);
-extern void exit_hero_vehicle_mode_if_mode_three(void);
+
 extern void create_missing_hero_item_slot_animations(int a, int b);
 extern int rand_range(int, int);
-extern void clear_hero_idle_rotation_targets(void);
+
 extern void set_hero_idle_state_for_vehicle_mode(void);
 extern int hero_idle_sequence(int a);
 extern void clear_u64_value(void *);
@@ -559,14 +563,12 @@ extern void MobyBlendAnimation(void *, int, int, int);
 extern void ClampVectorLength(void *a, float x);
 extern float vec_length_xy(void *);
 extern void cancel_hero_item_animation(void);
-extern int try_start_hero_item_idle_animation(void);
-extern float gravity_length_xy(float *v);
-extern int return_hero_animation_id_unchanged(int);
+
 extern int allocate_hero_voice_for_entry(int, int);
-extern void hero_queue_sequence(int bank, int seq);
+
 extern float randf_sym(float lo, float hi);
 extern void scale_hero_motion(float);
-extern void emit_hero_surface_effect_burst(int, int, int);
+
 extern void initialize_moby_transform_history(int a, char *b);
 extern void create_moby_transform_history_entry(char *o, int a, int b);
 extern float get_hero_yaw_history(int back);
@@ -576,7 +578,7 @@ extern char *hero_slot_moby(int);
 extern int is_wrench_moby(char *);
 extern float FastAddRots(float, float);
 extern void *MobyGetHitMessage(void *, int, int);
-extern void hero_change_health(int n);
+
 extern int hero_is_in_special_state(void);
 extern void release_and_clear_hero_voice_slots(void);
 extern void Spline_AdvanceByDistance(int a, char *pos, char *b, char *c, int d, float f);
@@ -3187,8 +3189,7 @@ extern int hero_repeat_press_window_frames SDATA(D_L00_0015F754);
 extern int pad_pressed_within_r2(int, int, int *) __asm__("func_L00_00267BA8");
 extern void launch_hero_wrench(void);
 extern int Hero_CanUseGadget(void);
-extern void open_vendor_menu(void *);
-extern int get_ammo(int);
+
 extern void start_equipped_item_animation(void);
 extern int Sound_IsPlaying(void *, int);
 extern int hero_slot_item_id(int);

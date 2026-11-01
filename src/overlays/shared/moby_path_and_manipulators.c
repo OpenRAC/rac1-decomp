@@ -5,6 +5,9 @@
 #include "vector.h"
 #include "hero.h"
 #include "moby.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/weapon_hud_and_counters.h"
 /* Break fragment: velocity, spin, life and gravity. */
 struct BreakFragmentVars {
     u8 pad_00[0x10];
@@ -14,7 +17,6 @@ struct BreakFragmentVars {
     s32 kind; /* 0x34 */
     f32 gravity; /* 0x38 */
 };
-
 
 typedef int OvlQuad __attribute__((mode(TI)));
 typedef struct {
@@ -318,7 +320,6 @@ extern float ProbeGroundHeight(void *, int, float);
 extern float vec_distance_xy(void *, void *);
 extern float fast_atan2(float, float);
 extern int scale_ticks(int);
-extern float interpolate_angle(float, float, float);
 
 /* Wander state (the idle_pos block in a moby's pvars). */
 struct WanderState {
@@ -687,7 +688,7 @@ void path_sample_at_distance(PointPath *path, s32 *seg_out, f32 *along, Vec4 *ou
     out->q = tmp.q;
 }
 extern void euler_to_matrix(void *, void *);
-extern void matrix_to_euler(void *, void *);
+
 /* Rotates the matrix at a+0x40 by the Euler angles (x, y, z). */
 void compose_target_euler_rotation(char *a, float x, float y, float z) {
     float in[3];
@@ -1423,7 +1424,7 @@ extern short timed_hud_visibility_gate_g __asm__("D_L00_00161F08");
 extern int queue_animation_update(int, int, void *, void *, void *, int, int);
 extern void draw_uniform_size_hud_stars(void);
 extern void DefaultVtbl_DeleteMoby(void);
-extern void draw_hud_text_panel(void);
+
 extern void hud_keep_visible(int, int);
 /* Per-frame update for the countdown D_L00_0015F670. */
 void update_timed_hud_visibility(void) {

@@ -5,6 +5,12 @@
 #include "include_asm.h"
 #include "vector.h"
 #include "moby.h"
+#include "game/draw.h"
+#include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/scoutbot_and_paratrooper.h"
+#include "overlays/shared/trespasser_pad_and_background_ships.h"
 
 /* Lift/gate moby that follows a driver moby's progress between a base and a top height. */
 struct HeightFollowerVars {
@@ -418,11 +424,10 @@ void update_swing_gate_from_driver(struct Moby *moby) {
     }
 }
 extern void VU1_addGSregister(int, long);
-extern void font_queue_vu_state(void);
+
 extern int GetEffectTex(int);
 extern void draw_scrolled_mesh_batch(int);
-extern void Moby600_DrawQuads11(int);
-extern void emit_pair_offset_render_batch(int);
+
 extern short scrolled_mesh_unscaled_fixed_alpha;
 extern short offset_mesh_first_pass_fixed_alpha;
 extern short pair_offset_mesh_fixed_alpha;
@@ -467,14 +472,13 @@ typedef struct {
 typedef struct {
     int a, b;
 } Pair8;
-extern void scale_rgba_tables(void *, int, void *, float, float, float, float, int);
+
 extern int FastBSphereCheck(char *, float);
 extern void FastVecSub(void *, void *, void *);
 extern float FastVecLength(void *);
-extern void advance_scroll_offsets(int);
-extern void advance_wrapped_sine_pair(void *, float, float, float, void *);
+
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
-extern void advance_scroll_entry(int);
+
 extern void AddDrawCallback(void (*)(void), void *);
 extern void draw_layered_mesh_effect(void);
 extern int batalia_mesh13_colors[];
@@ -1205,14 +1209,14 @@ void update_flickering_mesh_effect(struct Moby *m) {
     }
     d->flags |= 2;
 }
-extern void attach_big_head_cheat_manipulator_to_matching_moby(void *);
+
 extern float FastVecDist(void *, void *);
 extern void set_ground_height_band(void *);
 extern void MobyBlendAnimation(void *, int, int, int);
 extern int DialogRequest_Init(void *, void *);
 extern int Npc_TryStartDialog(void *, void *);
 extern int random_integer_below(int);
-extern void PlaceMarkerAheadOfMoby(float, void *);
+
 extern void unlock_planet(int);
 extern void queue_planet_unlock_message(int);
 extern void jet_clear_persistent(int);
@@ -1653,7 +1657,7 @@ void attach_batalia_plumber_class_manipulator(char *moby) {
 extern void attach_batalia_plumber_class_manipulator(char *moby);
 extern void request_batalia_cannon_mount(char *arg);
 extern void PlayMovieEntryIfIdle(int);
-extern void Hero_OnKilled(void);
+
 extern void grant_inventory_item(int, int);
 extern void DeleteMoby(void *);
 extern float fast_atan2(float, float);
@@ -2211,8 +2215,7 @@ void update_batalia_textured_effect(unsigned char *moby) {
 extern char *MobyGetHitMessage(void *, int, int);
 extern int Moby_PlaySound(int, int, int);
 extern void spawn_proximity_gated_bolts(void *);
-extern void spawn_moby_break_fragments(void *, int, int, int, int, int, int);
-extern void spawn_moby_from_placement(void *, int);
+
 extern void DeleteMoby(void *);
 
 // Moby state machine: wait, check hit on first probe, then clean up and delete.

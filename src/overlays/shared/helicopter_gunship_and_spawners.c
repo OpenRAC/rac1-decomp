@@ -4,6 +4,9 @@
 #include "hero.h"
 #include "moby.h"
 #include "camera.h"
+#include "overlays/shared/camera_switch_and_update.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/nanotech_ball_and_suck_cannon.h"
 
 /* Effect that follows its parent moby, fades between two colours and drifts along the parent's axis. */
 struct ParentFollowEffectVars {
@@ -143,8 +146,7 @@ extern int kerwan_frame_count_p __asm__("D_L03_0015F6B0") MACRO_ADDR;
 extern char spawner_revive_failed_fmt[];
 extern int STUB_printf();
 extern void MobySetAnimation(void *, int, int);
-extern char *get_moby_suck_cannon_record(char *);
-extern void copy_hero_moby_field_38(void *);
+
 extern void moby_build_matrix(void *);
 extern float *GetFlaggedPvarWord_p(void *) __asm__("func_L00_0025D390");
 
@@ -2206,7 +2208,7 @@ extern void FastVecSub(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern float FastVecDot(void *, void *);
 extern float FastArcSin(float);
-extern float Camera_SmoothAngle(void *, float, float, float, float, float);
+
 extern void rotate_vector_by_scaled_angle_between_vectors(float, float *, float *, float *, int);
 extern void FastVecCross(void *, void *, void *);
 /* smooths a direction and rebuilds its orthogonal matrix axes */

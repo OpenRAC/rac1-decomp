@@ -4,6 +4,7 @@
 #include "include_asm.h"
 #include "vector.h"
 #include "moby.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 
 /* Moby that drags a child moby along with it. */
 struct ChildCarrierVars {
@@ -106,7 +107,7 @@ extern int scale_ticks(int);
 extern float IntToFloat(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void draw_trail(void *, void *, void *, float, float);
+
 extern void clear_u64_value(void *);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
                             int, int, int, int);
@@ -540,7 +541,7 @@ extern int FastTweenColor(int, int, float);
 
 extern void FastVecScale(void *, void *, float);
 extern void FastVecSub(void *, void *, void *);
-extern void draw_offset_textured_effect_quad(void *, int, float, float);
+
 extern int veldin2_frame_count MACRO_ADDR;
 
 typedef unsigned int u128_9c20 __attribute__((mode(TI)));
@@ -896,7 +897,7 @@ void mark_class_0630_moby_and_child_for_removal(Level18VendorMoby *moby) {
 }
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void vec_scale_to_length(void *, void *, float);
-extern void draw_trail(void *, void *, void *, float, float);
+
 extern short veldin2_joint_trail_offset;
 extern short veldin2_joint_trail_size_a;
 extern short veldin2_joint_trail_size_b;

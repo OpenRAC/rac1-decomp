@@ -4,6 +4,8 @@
 #include "vector.h"
 #include "hero.h"
 #include "moby.h"
+#include "game/stash.h"
+#include "overlays/shared/moby_ground_collision.h"
 
 extern unsigned char *create_part(int);
 extern int truncate_float_to_s32(float);
@@ -557,7 +559,7 @@ typedef struct {
 } Q54;
 extern void path_sample_at_distance(int, float *, float *, void *, float, float);
 extern int scale_ticks(int);
-extern int PackColorRGBA(float, float, float, float);
+
 extern int coll_sphere_mobys(float, void *, int, void *, int);
 extern void SendRadialMessageToMobys(void *, void *, void *, int, int, int, int, int, float, float, float);
 extern int *coll_sphere_moby_hits[];
@@ -2096,7 +2098,6 @@ extern Out level_menu_system;
 extern int misc_animations_stash_comment;
 extern int lvl_load_scratch_buffer;
 extern int Load(int, int, int);
-extern int Stash_SendData(int arg0, int arg1, int arg2, int arg3);
 
 // loads the 20 table entries from the resident table into the level's slots
 // Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/rendering_002712b8.c, FUN_L00_00276078.

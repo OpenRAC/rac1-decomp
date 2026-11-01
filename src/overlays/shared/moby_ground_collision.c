@@ -6,6 +6,8 @@
 #include "include_asm.h"
 #include "camera.h"
 #include "vector.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/effect_particle_updates.h"
 
 extern int func_001160D8(void);
 /* Returns a random integer in the inclusive range lo..hi. */
@@ -1882,7 +1884,7 @@ INCLUDE_ASM("asm/overlays", func_L00_0025D3A0);
 extern int generate_random_points_from_shape_entries(void *, int, void *, void *, float);
 extern void BuildSphericalOffset(void *, float, float, float);
 extern int rand_range(int, int);
-extern void PartType04Spawn(void *, void *, int, int, int, int, int, int);
+
 extern float g_frame_time MACRO_ADDR;
 extern unsigned char screen_globals_base[];
 
@@ -1922,7 +1924,6 @@ void spawn_particles_at_shape_points(void *a0, void *a1, void *a2) {
 }
 extern int scale_ticks(int);
 extern int GetFlaggedPvarWord(char *);
-extern void blend_moby_animation_ex(void *, int, int, int, int);
 
 /* Initialises an effect record S for moby O from angle ANG. */
 void InitKnockback(float ang, char *o, float *s, int a, int b, int c) {
@@ -3361,7 +3362,6 @@ int moby_get_ride_transform(char *m) {
     return *(int *)(*(char **)(m + 0x78) + 8);
 }
 extern void euler_to_matrix(void *, void *);
-extern void matrix_to_euler(void *, void *);
 
 /* transforms a point into the local space of a moby's matrix and back */
 int RotateWithMoby(int unused, char *m, char *a, void *b, char *c, void *d) {

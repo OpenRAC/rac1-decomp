@@ -2,19 +2,18 @@
 #include "common.h"
 #include "callees.h"
 #include "structs.h"
+#include "core/00116FA0.h"
+#include "core/00118A40.h"
 
 /*
  * core_text object 0x116070-0x116248. Boundaries are retail's linker fill
  * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
  */
 
-
 extern int SbrkErrno;
 extern void *_impure_ptr NOT_SDA;
 
 LINKER_REMNANT("asm/remnants/core_text", func_00116070);
-
-extern int vfprintf(void *, const char *, va_list); /* vfprintf */
 
 /* printf, from the C library (newlib): points _stdout's _data back at
    the reentrancy struct (_impure_ptr, D_0012F86C) and hands the va_list
@@ -45,8 +44,6 @@ int func_001160D8(void) {
                 *(unsigned int *)((char *)_impure_ptr + 0x58) * 1103515245 + 12345) &
            0x7FFFFFFF;
 }
-
-extern int libc_glue_read();
 
 int reentrant_read(int *errOut, void *a, void *b, void *c) {
     int r;

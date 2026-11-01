@@ -3,13 +3,13 @@
 #include "callees.h"
 #include "records.h"
 #include "structs.h"
+#include "game/fastfunc.h"
 
 /*
  * mobyutil.cpp in the original source; text 0x213A78-0x2161E0.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
-
 
 typedef struct {
     char b[0x13];
@@ -364,7 +364,6 @@ extern char coll_output[];
 extern void vec_scale_xy_to_length(float *, float *, float);
 extern void fast_vec_normalize(void *, void *, float);
 extern float min_float(float, float);
-extern float max_float(float, float);
 
 /* Shadow range probe: cast a ray down (8 units) from the moby position
    shifted against the light direction D_001CAE00 by its size, then a

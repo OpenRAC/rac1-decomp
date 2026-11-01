@@ -1,6 +1,7 @@
 #include "common.h"
 #include "callees.h"
 #include "structs.h"
+#include "core/001162B8.h"
 
 /*
  * core_text object 0x1162B8-0x116CC0: the C library's stdio internals
@@ -9,9 +10,6 @@
  * note there.
  */
 
-
-extern int __sread(void *arg0, void *arg1, void *arg2);
-extern int __swrite(void *arg0, void *arg1, void *arg2);
 extern long __sseek(void *arg0, void *arg1, void *arg2);
 extern int __sclose(void *arg0);
 

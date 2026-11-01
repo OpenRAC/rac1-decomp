@@ -6,6 +6,7 @@
 #include "moby.h"
 #include "hero.h"
 #include "camera.h"
+#include "overlays/shared/moby_ground_collision.h"
 
 extern void load_display_text_resource_entry(float *arg0, int *arg1);
 extern void FastVecAdd(void *, void *, void *);
@@ -1748,7 +1749,7 @@ void update_source_bound_effect_particle(char *m) {
              (IntToFloat(particle->body.e->b7) * (particle_data->f10 * 0.00390625f) + particle_data->fC) * 256.0f)
          << 24);
 }
-extern int PackColorRGBA(float, float, float, float);
+
 extern float random_float_between(float, float);
 extern unsigned char *part_type25_textures;
 

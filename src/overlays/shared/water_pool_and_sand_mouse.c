@@ -6,6 +6,11 @@
 #include "records.h"
 #include "hero.h"
 #include "moby.h"
+#include "game/vuchain.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/nanotech_ball_and_suck_cannon.h"
+#include "overlays/shared/particle_spawns_and_path_splines.h"
 /* Novalis elevator: rides its path while the hero stands on it. */
 struct NovalisElevatorVars {
     u8 pad_00[0x20];
@@ -369,7 +374,7 @@ extern union PacketCursor l01_packet MACRO_ADDR;
 typedef int u128_2BA150 __attribute__((mode(TI)));
 extern void set_scale_matrix(float *, float);
 extern void FastVecScale(void *, void *, float);
-extern void VU1_addDataRef(void *, int);
+
 extern void sce_vu0_mul_matrix(void *, void *, void *);
 extern void AA_BlurPass(void);
 extern char camera_pos[];
@@ -616,7 +621,7 @@ extern float g_frame_time MACRO_ADDR;
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern int FastDecTimer(void *);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern int is_hero_on_moby(void *);
+
 extern float FastVecDist(void *, void *);
 extern float multiply_global_factor(float);
 extern float vec_distance_xy(void *, void *);
@@ -2059,7 +2064,7 @@ void sand_mouse_update(Moby *moby) {
 }
 extern float g_frame_time_sq MACRO_ADDR;
 extern void clear_u64_value(void *);
-extern void PartType04Spawn(void *, void *, int, int, int, int, int, int);
+
 extern float ProbeGroundHeight(void *, int, float);
 extern int coll_line(void *, void *, int, int, int);
 extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
@@ -2834,7 +2839,6 @@ extern short amoeboid_second_movement_particle_secondary_sample_max_gp, amoeboid
     amoeboid_second_movement_particle_data_value_gp;
 extern int random_integer_below(int);
 extern float random_angle_radians(void);
-extern void spawn_type_52_particle(float *, float, float, int, int, int);
 
 /* Spawns up to two particle effects on the moby, each aimed by a random direction and speed. */
 void spawn_amoeboid_movement_particles(unsigned char *moby) {
@@ -3045,8 +3049,7 @@ int moby_hold_state_if_grabbed(char *a, void *pos, void *target, float h) {
     }
     return r;
 }
-extern char *get_moby_suck_cannon_record(char *);
-extern int launch_suck_cannon_projectile(char *, int, int, float);
+
 extern void Moby_PlaySound(int, int, char *);
 
 /* runs the moby update and sets its state byte */
