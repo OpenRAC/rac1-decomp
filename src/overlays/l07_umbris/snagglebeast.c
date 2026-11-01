@@ -2067,6 +2067,7 @@ typedef struct {
     float f10;
     char *moby;
 } RopePart_319230;
+extern RopePart_319230 rope_particles[];
 typedef struct {
     char pad0[4];
     int mode;
@@ -2124,7 +2125,6 @@ float update_snagglebeast_rope(void *moby, void *anchor) {
     RopeVec_319080 v120;
     RopeVec_319080 v130;
     RopeVec_319080 v140;
-    extern RopePart_319230 rope_particles[];
     float best;
 
     best = 1000.0f;
@@ -2391,16 +2391,6 @@ extern void FastVecAdd(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern void suck_beam_queue_draw(int arg0);
 
-typedef struct {
-    short idx;
-    short pad;
-    float f;
-    int pad2[3];
-    char *moby;
-} L07Ent;
-
-/* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
-extern L07Ent rope_particles[];
 
 extern char rope_previous_points[];
 extern char snagglebeast_rope_centers_v[] __asm__("D_L07_0020DDC0");
@@ -2413,7 +2403,7 @@ void detach_snagglebeast_rope_particles(int arg0) {
     float a[4];
     float b[4];
     float c[4];
-    L07Ent *e;
+    RopePart_319230 *e;
     char *m;
     float len;
     int off;
@@ -2432,7 +2422,7 @@ void detach_snagglebeast_rope_particles(int arg0) {
             FastVecSub(a, rope_previous_points + rope_particles[i].idx * 16,
                        snagglebeast_rope_centers_v + rope_particles[i].idx * 16);
             len = FastVecLength(a);
-            FastVecScale(a, a, rope_particles[i].f / len);
+            FastVecScale(a, a, rope_particles[i].f4 / len);
             FastVecAdd(b, snagglebeast_rope_centers_v + rope_particles[i].idx * 16, a);
             FastVecSub(c, m + 0x10, b);
             vec_scale_to_length(c, c, 0.03f);

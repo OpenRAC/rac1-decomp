@@ -640,7 +640,7 @@ void update_render_debug_menu(void) {
             }
             if (occl_cam_state.cursor == 3 &&
                 (g_controller_state.pressed & (PAD_TRIANGLE | PAD_CIRCLE | PAD_CROSS | PAD_SQUARE))) {
-                /* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
+                /* KEPT: char and char[] are addressed differently at -G2. */
                 extern char camera_sample_path_format[];
                 char path[64];
                 char line[64];

@@ -342,6 +342,8 @@ void run_level_main_loop(void) {
     }
     DoSpaceTransition_r();
 }
+extern struct DiscTable disc_table;
+
 int Stash_SendData(int arg0, int arg1, int arg2, int arg3);
 extern void FastMemCopy(void *, void *, int);
 extern void load_map_chunk(void *arg0, unsigned char *arg1, int arg2);
@@ -372,7 +374,6 @@ void initialize_level_map_archive(void) {
     float lim;
     unsigned char *pp;
     extern int map_menu_state[];
-    extern char disc_table[];
 
     map_menu_state[4] = 1;
     {
@@ -404,10 +405,10 @@ void initialize_level_map_archive(void) {
     pp = (unsigned char *)menu_item_enabled_115 + 0xB9;
     if (pp[0x21] != 0) {
         map_menu_state[0x8C] = 1;
-        e = (int *)(disc_table + 0x8B8) + map_menu_state[0x89] * 2;
+        e = (int *)disc_table.render_archives + map_menu_state[0x89] * 2;
     } else {
         map_menu_state[0x8C] = 0;
-        e = (int *)(disc_table + 0x820) + map_menu_state[0x89] * 2;
+        e = (int *)((char *)&disc_table + 0x820) + map_menu_state[0x89] * 2;
     }
     if (e[1] != 0) {
         gl = map_menu_state;
@@ -506,8 +507,6 @@ struct GameState {
 extern struct GameState level_menu_system;
 extern s32 g_current_level_index MACRO_ADDR;
 
-/* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
-extern struct DiscTable disc_table;
 typedef struct {
     u8 pad0[0x24];
     s32 active;

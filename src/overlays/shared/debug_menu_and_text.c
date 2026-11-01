@@ -939,7 +939,7 @@ void update_debug_menu(void) {
                 }
             }
             if (((DebugMenu_1F4918 *)g_debug_menu)->item == 3 && (g_controller_state.keys.word.pressed & 0xF0)) {
-                /* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
+                /* KEPT: char and char[] are addressed differently at -G2. */
                 extern char level_file_path_format[];
                 s32 fd;
                 sprintf(buf.saved.path, level_file_path_format, level_directory, g_current_level_index,

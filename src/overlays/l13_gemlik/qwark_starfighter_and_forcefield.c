@@ -2387,7 +2387,7 @@ extern void spawn_poison_vessel_destruction_effects(void *, void *);
 
 extern float IntToFloat(int);
 
-/* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
+/* KEPT: the calls disagree on where the float goes: the argument order changes the moves. */
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern void SendRadialMessageToMobys(void *, void *, void *, int, int, int, int, int, float, float, float);
 extern float multiply_global_factor(float);
