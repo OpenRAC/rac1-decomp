@@ -2,6 +2,7 @@
 #include "common.h"
 #include "callees.h"
 #include "include_asm.h"
+#include "structs/collision.h"
 #include "structs/vector.h"
 #include "structs/hero.h"
 #include "structs/moby.h"
@@ -841,14 +842,6 @@ typedef struct Vars_A7078 {
     short h6E; /* 0x6E */
 } Vars_A7078;
 typedef struct {
-    char pad0[0x18];
-    Moby *moby; /* 0x18 */
-    char pad1C[4];
-    float pos[4]; /* 0x20 */
-    char pad30[0x10];
-    float n[4]; /* 0x40 */
-} Coll_A7078;
-typedef struct {
     float pos[4];
     char pad10[4];
     short h14; /* 0x14 */
@@ -861,7 +854,7 @@ typedef struct {
 
 extern int cinematic_mode_r __asm__("D_L00_0015F6A8") MACRO_ADDR;
 extern char hero_globals_base_r[] __asm__("D_0013E633");
-extern Coll_A7078 coll_hit_result_r __asm__("D_L00_00173F40");
+extern CollisionHit coll_hit_result_r __asm__("D_L00_00173F40");
 extern Trail_A7078 glints_r[] __asm__("D_L00_0016EB40");
 extern float bolt_glint_offsets_r[][4] __asm__("D_L00_001D76D0");
 extern Moby *moby_array_start_r __asm__("D_L00_00160098") MACRO_ADDR;
@@ -956,14 +949,14 @@ void bolt_update(Moby *m) {
             FastVecAdd_r(u.s.b, u.s.b, ((float *)&m->pos));
             r = coll_line_r(u.s.a, u.s.b, 0x22, 0, 0);
             if (d->f54 == 0 && r != 0) {
-                Coll_A7078 *c;
-                qcopy(d->pos, coll_hit_result_r.pos);
+                CollisionHit *c;
+                qcopy(d->pos, coll_hit_result_r.point.f);
                 c = &coll_hit_result_r;
                 clear_u64_value_r(d->ang);
-                d->ang[2] = fast_atan2_r(c->n[0], c->n[1]);
-                d->ang[1] = fast_atan2_r(c->n[2], vec_length_xy_r(c->n));
-                if (c->moby != 0 && GetFlaggedPvarWord_r(c->moby) != 0) {
-                    d->held = c->moby;
+                d->ang[2] = fast_atan2_r(c->normal.f[0], c->normal.f[1]);
+                d->ang[1] = fast_atan2_r(c->normal.f[2], vec_length_xy_r(c->normal.f));
+                if (((Moby *)c->moby) != 0 && GetFlaggedPvarWord_r((Moby *)c->moby) != 0) {
+                    d->held = (Moby *)c->moby;
                     convert_pose_to_reference_local_r(m, d->held, d, d->ang, d, d->ang);
                 }
             } else {
@@ -1023,14 +1016,14 @@ void bolt_update(Moby *m) {
                 break;
             }
             {
-                Coll_A7078 *c;
-                qcopy(d->pos, coll_hit_result_r.pos);
+                CollisionHit *c;
+                qcopy(d->pos, coll_hit_result_r.point.f);
                 c = &coll_hit_result_r;
                 clear_u64_value_r(d->ang);
-                d->ang[2] = fast_atan2_r(c->n[0], c->n[1]);
-                d->ang[1] = fast_atan2_r(c->n[2], vec_length_xy_r(c->n));
+                d->ang[2] = fast_atan2_r(c->normal.f[0], c->normal.f[1]);
+                d->ang[1] = fast_atan2_r(c->normal.f[2], vec_length_xy_r(c->normal.f));
             }
-            FastVecSub_r(u.s.a, ((float *)&m->pos), coll_hit_result_r.pos);
+            FastVecSub_r(u.s.a, ((float *)&m->pos), coll_hit_result_r.point.f);
             vec_reflect_r(d->vel, d->vel, u.s.a);
             dist = vec_distance_xy_r(((float *)&m->pos),
                                      &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos);
@@ -1045,13 +1038,13 @@ void bolt_update(Moby *m) {
                 }
             }
             if (fast_atan2_r(u.s.a[2], vec_length_xy_r(u.s.a)) < 0.7853982f) {
-                Coll_A7078 *c = &coll_hit_result_r;
-                if (fast_atan2_r(c->n[2], vec_length_xy_r(c->n)) < 0.7853982f) {
+                CollisionHit *c = &coll_hit_result_r;
+                if (fast_atan2_r(c->normal.f[2], vec_length_xy_r(c->normal.f)) < 0.7853982f) {
                     m->state = 2;
                     d->f56 = d->f57 =
                         truncate_float_to_s32_r2(multiply_global_factor_r(random_float_between_r(30.0f, 40.0f)));
-                    if (c->moby != 0 && GetFlaggedPvarWord_r(c->moby) != 0) {
-                        d->held = c->moby;
+                    if (((Moby *)c->moby) != 0 && GetFlaggedPvarWord_r((Moby *)c->moby) != 0) {
+                        d->held = (Moby *)c->moby;
                         convert_pose_to_reference_local_r(m, d->held, d, d->ang, d, d->ang);
                     }
                     matrix_to_euler_r(((float *)&m->rot_row0), u.s.b);

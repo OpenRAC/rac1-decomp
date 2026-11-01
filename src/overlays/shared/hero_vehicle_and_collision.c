@@ -11,23 +11,12 @@
 #include "asm_functions/shared_levels.h"
 #include "game/fastfunc.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "structs/collision.h"
 
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 extern struct Hero g_hero_r __asm__("D_0013F450");
 typedef int OvlQuad __attribute__((mode(TI)));
-typedef struct {
-    u8 pad0[0x18];
-    s32 moby; /* 0x18: passed to FUN_002141f8 (reads moby+0x34, moby+0x78); 0 when no moby was hit */
-    s32 unk1C; /* 0x1C: > 0 gates copying point and the normal into the hero (shared/ui/help/00226f10.c) */
-    union {
-        OvlQuad q;
-        f32 f[4];
-    } point; /* 0x20: f[2] is read as the ground height */
-    u8 pad30[0x10]; /* 0x30: position after push-out (copied into hero.motion.pos) */
-    f32 normal_x; /* 0x40: start of the surface normal; its angle is tested against 50 degrees (0.87266463) */
-    f32 normal_y; /* 0x44: FUN_001f9e90 (atan2) of normal_x, normal_y is stored in the hero */
-    f32 normal_z; /* 0x48: ledge probes compare atan2(normal_z, xy length) with 20 degrees */
-} CollisionHit;
+
 extern s32 level_frame_counter MACRO_ADDR;
 extern CollisionHit coll_hit_result;
 extern void apply_hero_motion_and_resolve_collisions(void);
@@ -58,7 +47,8 @@ void update_hero_motion_and_collision_probes(void) {
         g_hero_r.wall_probe_moby_in_class_range = 0;
         g_hero_r.wall_probe_hit_moby = 0;
         if (probe_hero_forward_collision(&g_hero_r.wall_probe_distance, 0.7f, 4.0f)) {
-            g_hero_r.wall_normal_pitch = fast_atan2(coll_hit_result.normal_z, vec_length_xy(&coll_hit_result.normal_x));
+            g_hero_r.wall_normal_pitch =
+                fast_atan2(coll_hit_result.normal.f[2], vec_length_xy(&coll_hit_result.normal.f[0]));
             if (coll_hit_result.moby != 0) {
                 g_hero_r.wall_probe_hit_moby = 1;
                 if (is_moby_in_class_range_500_to_540(coll_hit_result.moby)) {

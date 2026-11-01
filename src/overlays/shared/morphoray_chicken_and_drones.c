@@ -2,6 +2,7 @@
 #include "common.h"
 #include "callees.h"
 #include "include_asm.h"
+#include "structs/collision.h"
 #include "structs/pad.h"
 #include "structs/vector.h"
 #include "structs/hero.h"
@@ -2614,26 +2615,13 @@ typedef struct {
 } BombHit_2CF808;
 
 typedef int OvlQuad_2CF808 __attribute__((mode(TI)));
-typedef struct {
-    u8 pad0[0x18];
-    s32 moby; /* 0x18: 0 when no moby was hit */
-    s32 unk1C;
-    union {
-        OvlQuad_2CF808 q;
-        f32 f[4];
-    } point; /* 0x20 */
-    u8 pad30[0x10]; /* 0x30: position after push-out */
-    f32 normal_x; /* 0x40 */
-    f32 normal_y;
-    f32 normal_z;
-} CollisionHit_2CF808;
 
 extern struct Hero hero_2CF808 __asm__("D_0013F450");
 extern s32 level_mode_2CF808 __asm__("D_L00_0015F6A8") MACRO_ADDR;
 extern f32 frame_scale_2CF808 __asm__("D_0015EE60") MACRO_ADDR;
 extern f32 frame_time_2CF808 __asm__("D_0015EE6C") MACRO_ADDR;
 extern f32 frame_time_sq_2CF808 __asm__("D_0015EE70") MACRO_ADDR;
-extern CollisionHit_2CF808 coll_hit_2CF808 __asm__("D_L00_00173F40") NOT_SDA;
+extern CollisionHit coll_hit_2CF808 __asm__("D_L00_00173F40") NOT_SDA;
 extern Vec4 coll_pos_2CF808 __asm__("D_L00_00173F70") NOT_SDA;
 extern Vec4 g_debug_camera_r4 __asm__("D_L00_00166EC0") NOT_SDA;
 extern f32 FastAddRots_2CF808(f32, f32) __asm__("func_001FA748");

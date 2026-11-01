@@ -4,6 +4,7 @@
 #include "structs/hero.h"
 #include "callees.h"
 #include "include_asm.h"
+#include "structs/collision.h"
 #include "structs/camera.h"
 #include "structs/vector.h"
 #include "game/mobyutil.h"
@@ -370,14 +371,7 @@ typedef struct {
     u8 pad20[0x48 - 0x20];
     f32 f48;
 } Obj;
-typedef struct {
-    u8 pad00[0x28];
-    f32 f28;
-    u8 pad2C[0x40 - 0x2C];
-    Vec4 v40;
-    f32 f48;
-} Glob;
-extern Glob coll_hit_result_r __asm__("D_L00_00173F40");
+extern CollisionHit coll_hit_result_r __asm__("D_L00_00173F40");
 extern short g_frame_time_sq;
 extern int frame_scale MACRO_ADDR;
 extern f32 vec_length_xy(void *);
@@ -396,7 +390,7 @@ s32 move_w(Obj *m, Ctl *c, void *v, Vec4 *out, f32 f) {
     Vec4 d;
     Vec4 p;
     Vec4 q;
-    Glob *g;
+    CollisionHit *g;
     s32 mask = 0;
     s32 r;
     f32 len;
@@ -442,16 +436,16 @@ s32 move_w(Obj *m, Ctl *c, void *v, Vec4 *out, f32 f) {
     p.f[2] = m->pos.f[2] - c->f30;
     if (probe_vertical_ground_collision_r(&p, m, c->i38 & 0x20, c->f08, c->f0C)) {
         g = &coll_hit_result_r;
-        a = fast_atan2(g->v40.f[2], vec_length_xy(&g->v40));
-        h1 = g->f28;
+        a = fast_atan2(g->normal.f[2], vec_length_xy(&g->normal));
+        h1 = g->point.f[2];
         if (0.5f < a && 0.1f < vec_length_xy(&d)) {
             {
                 vec_scale_to_length(&q, &d, 0.57f);
                 FastVecAdd(&q, &q, &m->pos);
                 q.f[2] = m->pos.f[2] - c->f30;
                 if (probe_vertical_ground_collision_r(&q, m, c->i38 & 0x20, c->f08, c->f0C)) {
-                    h2 = g->f28;
-                    if (!(0.5f <= fast_atan2(g->v40.f[2], vec_length_xy(&g->v40))))
+                    h2 = g->point.f[2];
+                    if (!(0.5f <= fast_atan2(g->normal.f[2], vec_length_xy(&g->normal))))
                         goto done;
                     mask = 0x22;
                     if (!(c->i38 & 8))

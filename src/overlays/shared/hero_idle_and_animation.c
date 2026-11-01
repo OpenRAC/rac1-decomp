@@ -17,6 +17,7 @@
 #include "asm_functions/shared_levels.h"
 #include "data/executable.h"
 #include "data/shared_levels.h"
+#include "structs/collision.h"
 
 extern char help_popup_state[] NOT_SDA;
 typedef struct {
@@ -2085,16 +2086,7 @@ void update_hero_vehicle_moby(void) {
                                    ((struct Hero *)g)->capsule_top - f);
     }
 }
-typedef struct {
-    u8 pad0[0x18];
-    s32 moby;
-    s32 unk1C;
-    Vec4 point;
-    u8 pad30[0x10];
-    f32 normal_x;
-    f32 normal_y;
-    f32 normal_z;
-} CollisionHit;
+
 
 extern char hero_globals_base_probe_091D8[] __asm__("D_0013E633");
 extern struct Hero D_0013F450_091D8 __asm__("D_0013F450");
@@ -3224,7 +3216,7 @@ void probe_hero_airborne_wall_contact(void) {
         CollisionHit *q2;
         *(u128_20b5b8 *)&k2->unk460 = *(u128_20b5b8 *)pz;
         q2 = (CollisionHit *)(pz - 0x40);
-        f = fast_atan2_r2(q2->normal_x, q2->normal_y);
+        f = fast_atan2_r2(q2->normal.f[0], q2->normal.f[1]);
     }
     k2->unk460.f[3] = f;
     if (k2->state.control_mode != 4 && k2->state.prev_control_mode != 4 && k2->state.prev2_control_mode != 4) {

@@ -21,6 +21,7 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/sound_playback.h"
+#include "structs/collision.h"
 
 /* Cutscene trigger: plays a camera sequence when the hero enters its volume. */
 struct CutsceneTriggerVars {
@@ -556,19 +557,7 @@ typedef struct {
     s32 unk28; /* 0x28 */
 } DebrisVars_2f8530;
 typedef int OvlQuad __attribute__((mode(TI)));
-typedef struct {
-    u8 pad0[0x18];
-    s32 moby; /* 0x18: passed to FUN_002141f8 (reads moby+0x34, moby+0x78); 0 when no moby was hit */
-    s32 unk1C; /* 0x1C: > 0 gates copying point and the normal into the hero (shared/ui/help/00226f10.c) */
-    union {
-        OvlQuad q;
-        f32 f[4];
-    } point; /* 0x20: f[2] is read as the ground height */
-    u8 pad30[0x10]; /* 0x30: position after push-out (copied into hero.motion.pos) */
-    f32 normal_x; /* 0x40: start of the surface normal; its angle is tested against 50 degrees (0.87266463) */
-    f32 normal_y; /* 0x44: FUN_001f9e90 (atan2) of normal_x, normal_y is stored in the hero */
-    f32 normal_z; /* 0x48: ledge probes compare atan2(normal_z, xy length) with 20 degrees */
-} CollisionHit;
+
 extern CollisionHit novalis_coll_hit;
 extern float FastCos(float);
 extern float FastSin(float);
@@ -612,11 +601,11 @@ void rock_update(struct Moby *m) {
             m->rot.x = random_float_between(-3.1415927f, 3.1415927f);
             m->rot.y = random_float_between(-3.1415927f, 3.1415927f);
             m->rot.z = random_float_between(-3.1415927f, 3.1415927f);
-            vec_reflect(&d->vel, &d->vel, &novalis_coll_hit.normal_x);
+            vec_reflect(&d->vel, &d->vel, &novalis_coll_hit.normal.f[0]);
             FastVecScale(&d->vel, &d->vel, random_float_between(0.07f, 0.13f));
             FastVecAdd(&d->vel, &d->vel, &v);
-            vec_scale_to_length(&novalis_coll_hit.normal_x, &novalis_coll_hit.normal_x, 0.1f);
-            FastVecAdd(&m->pos, &novalis_coll_hit.normal_x, &novalis_coll_hit.point);
+            vec_scale_to_length(&novalis_coll_hit.normal.f[0], &novalis_coll_hit.normal.f[0], 0.1f);
+            FastVecAdd(&m->pos, &novalis_coll_hit.normal.f[0], &novalis_coll_hit.point);
             spin = random_float_between(g_frame_time * 1.5707964f, g_frame_time * 6.2831855f);
             if (0.0f < d->spin) {
                 spin = -spin;

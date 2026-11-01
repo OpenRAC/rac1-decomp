@@ -10,6 +10,7 @@
 #include "game/fastfunc.h"
 #include "game/mobyutil.h"
 #include "overlays/shared/sound_playback.h"
+#include "structs/collision.h"
 
 /* Bomb (class 0xF8): thrown or dropped, bounces, fuse timer, explodes. */
 struct BombVars {
@@ -2349,19 +2350,7 @@ extern void mine_debris(void *, void *, int, int, float, int, int);
 extern void BuildSphericalOffset(void *, float, float, float);
 extern void Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 extern float g_frame_time_r3 __asm__("D_0015EE6C") MACRO_ADDR;
-typedef struct {
-    u8 pad0[0x18];
-    s32 moby; /* 0x18: passed to FUN_002141f8 (reads moby+0x34, moby+0x78); 0 when no moby was hit */
-    s32 unk1C; /* 0x1C: > 0 gates copying point and the normal into the hero (shared/ui/help/00226f10.c) */
-    union {
-        OvlQuad q;
-        f32 f[4];
-    } point; /* 0x20: f[2] is read as the ground height */
-    u8 pad30[0x10]; /* 0x30: position after push-out (copied into hero.motion.pos) */
-    f32 normal_x; /* 0x40: start of the surface normal; its angle is tested against 50 degrees (0.87266463) */
-    f32 normal_y; /* 0x44: FUN_001f9e90 (atan2) of normal_x, normal_y is stored in the hero */
-    f32 normal_z; /* 0x48: ledge probes compare atan2(normal_z, xy length) with 20 degrees */
-} CollisionHit;
+
 extern int batalia_coll_hit_moby;
 typedef struct __attribute__((packed)) EffectVectorCopy_2DC9A8 {
     unsigned long values[2];
@@ -2411,7 +2400,7 @@ void update_ballistic_projectile(struct Moby *moby) {
                 if (*(int *)&data->owner != 0 && batalia_coll_hit.moby != *(int *)&data->owner) {
                     m[0x20] = 99;
                     qcopy(position, batalia_coll_hit.point.f);
-                    vec_reflect(&data->velocity, &data->velocity, &batalia_coll_hit.normal_x);
+                    vec_reflect(&data->velocity, &data->velocity, &batalia_coll_hit.normal.f[0]);
                     vec_scale_to_length_r3(g_frame_time_r3 + g_frame_time_r3, &data->velocity, &data->velocity);
                 }
             } else {
