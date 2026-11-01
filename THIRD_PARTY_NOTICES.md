@@ -33,49 +33,49 @@ The following functions adapt source from
 - `src/overlays/shared/mobyfunc_0024FD50.c`: `func_L00_00250478` (animation frame packet builder; `overlays/shared/gameplay/state/0024eec0.c`, `FUN_L00_0024f440`)
 - `src/overlays/shared/vendor_002E1660.c`: `func_L00_002E72E8` (follow camera approach; `overlays/shared/gameplay/vendor/002e5e38.c`, `follow_camera_approach` / `FUN_L00_002e5e38`)
 - `src/overlays/shared/vendor_002E1660.c`: `func_L00_002E99A0` (follow camera offset and scale; `src/overlays/shared/gameplay/vendor/002df730.c`, `follow_camera_set_offset_scale` / `FUN_L00_002e84f0`)
-- `src/core/00119328.c`: `func_001194C8` (`topThread`)
+- `src/core/kernel/threads_deci2.c`: `func_001194C8` (`topThread`)
 - `src/game/stream.c`: `func_00217AE8` (menu entry transitions and message formatting; `src/ui/menus/fun_00216c48.c`)
-- `src/core/00119D88.c`: `func_0011C208` (`sceClose`)
-- `src/core/00119868.c`: `func_00119CC8` (`sceTtyInit`)
+- `src/core/kernel/kprintf.c`: `func_0011C208` (`sceClose`)
+- `src/core/kernel/tty_queue.c`: `func_00119CC8` (`sceTtyInit`)
 - `src/game/hud.c`: `func_00201190` (HUD sprite with explicit UV corners)
 - `src/game/vendor.c`: `func_00239A00` (vendor item carousel)
 - `src/game/lights.c`: `func_002027C0` (detach point light)
-- `src/core/0011D0D0.c`: `func_0011D248` (`sceSifRebootIop`)
+- `src/core/sif/reset_iop.c`: `func_0011D248` (`sceSifRebootIop`)
 - `src/game/menu.c`: `func_00208338` (read sector, track size)
 - `src/game/loaders.c`: `func_00203038` (unpack point records)
-- `src/core/00112380.c`: `func_001123A8` (`_calloc_r`)
-- `src/core/00119D88.c`: `func_0011B2F8` (`sceSifBindRpc`)
-- `src/core/00119D88.c`: `func_0011AE20` (`sceSifInitRpc`)
-- `src/core/00121750.c`: `func_00121B78` (`sceGsResetGraph`)
-- `src/core/00123168.c`: `func_001233E8` (`sceDmaPutEnv`)
-- `src/core/00125630.c`: `func_001273A0` (`_waitBdecOut`)
-- `src/core/00125630.c`: `func_001286E8` (`_ipuVdec`)
-- `src/core/00125630.c`: `func_001299E8` (`_cpr8`)
-- `src/core/0012AC80.c`: `func_0012C0A0` (`_decodeOrSkipField`)
-- `src/core/00113B70.c`: `func_00113B70` (`_free_r`)
+- `src/core/libc/atoi_calloc.c`: `func_001123A8` (`_calloc_r`)
+- `src/core/kernel/kprintf.c`: `func_0011B2F8` (`sceSifBindRpc`)
+- `src/core/kernel/kprintf.c`: `func_0011AE20` (`sceSifInitRpc`)
+- `src/core/cdvd/read.c`: `func_00121B78` (`sceGsResetGraph`)
+- `src/core/gs/dma_and_sync_v.c`: `func_001233E8` (`sceDmaPutEnv`)
+- `src/core/mpeg/motion_comp.c`: `func_001273A0` (`_waitBdecOut`)
+- `src/core/mpeg/motion_comp.c`: `func_001286E8` (`_ipuVdec`)
+- `src/core/mpeg/motion_comp.c`: `func_001299E8` (`_cpr8`)
+- `src/core/mpeg/demux.c`: `func_0012C0A0` (`_decodeOrSkipField`)
+- `src/core/libc/free_malloc_trim.c`: `func_00113B70` (`_free_r`)
 - `src/game/memcard.c`: `func_0020BBC8` (memcard_PrepData)
 - `src/game/memcard.c`: `func_00209E68` (memory-card state update; `src/storage/memory_card/memcard_update_state.c`, with PAL directory validation and request handling reconstructed from retail assembly)
 - `src/game/map.c`: `func_00205E70` (map overlay renderer; `src/assembly/textbin/ui/map/draw_map_overlay.c`, with PAL control flow, addressing and mixed argument ordering reconstructed from retail assembly)
-- `src/core/0011CCE0.c`: `func_0011CE70` (`_sceSifLoadModuleBuffer`)
+- `src/core/sif/load_module.c`: `func_0011CE70` (`_sceSifLoadModuleBuffer`)
 - `src/game/loaders.c`: `func_00205220` (ParseSpaceSceneChunk)
 - `src/game/draw.c`: `func_001F5368` (screen stripe fill)
-- `src/core/00114060.c`: `func_00114060` (`__sfvwrite`)
+- `src/core/libc/fvwrite_fwalk.c`: `func_00114060` (`__sfvwrite`)
 - `src/game/memcard.c`: `func_0020BD70` (memcard_RestoreData)
-- `src/core/0012AC80.c`: `func_0012C990` (`_setDefaultQM`)
-- `src/core/00125630.c`: `func_00128F90` (`_pictureCodingExtension`)
-- `src/core/989snd.c`: `func_0012DDC0` (snd_FlushSoundCommands)
+- `src/core/mpeg/demux.c`: `func_0012C990` (`_setDefaultQM`)
+- `src/core/mpeg/motion_comp.c`: `func_00128F90` (`_pictureCodingExtension`)
+- `src/core/sound/989snd.c`: `func_0012DDC0` (snd_FlushSoundCommands)
 - `src/game/loaders.c`: `func_00204FC0` (update_world_object_animation)
-- `src/core/989snd.c`: `func_0012E688` (snd_SendIOPCommandAndWait)
-- `src/core/00125630.c`: `func_00128860` (`_peepBit`)
-- `src/core/0011D0D0.c`: `func_0011D0D0` (`sceSifResetIop`)
-- `src/core/0012AC80.c`: `func_0012BF40` (`_decodeOrSkipFrame`)
-- `src/core/001236F0.c`: `func_00123D48` (sceMcWrite)
-- `src/core/boot.c`: `func_0012DA38` (parse_bin)
+- `src/core/sound/989snd.c`: `func_0012E688` (snd_SendIOPCommandAndWait)
+- `src/core/mpeg/motion_comp.c`: `func_00128860` (`_peepBit`)
+- `src/core/sif/reset_iop.c`: `func_0011D0D0` (`sceSifResetIop`)
+- `src/core/mpeg/demux.c`: `func_0012BF40` (`_decodeOrSkipFrame`)
+- `src/core/mc/memory_card.c`: `func_00123D48` (sceMcWrite)
+- `src/core/startup/boot.c`: `func_0012DA38` (parse_bin)
 - `src/game/pause.c`: `func_002224A8` (draws an options menu: each item's label at left, its current value's name at right, selected one highlighted)
 - `src/game/framebuf.c`: `func_001FB908` (clears the screen through a GIF packet appended to D_00161000: a fixed header then n = w / 32 pairs of sprite corner registers stepping 0x200 per column across a w x h area centred on 0x8000)
 - `src/game/space.c`: `func_002308C8` (spawns six particles around a moby: random velocity and a position taken from the flare corner table, transformed by the moby's matrices)
 - `src/game/space.c`: `func_00230A90` (resident gameplay and cinematic state update; `src/gameplay/update_resident_gameplay_state.c`)
-- `src/core/0012CC90.c`: `func_0012D068` (sceIpuInit)
+- `src/core/mpeg/ipu.c`: `func_0012D068` (sceIpuInit)
 - `src/game/loaders.c`: `func_002032D0` (load_hud_banks)
 - `src/game/pause.c`: `func_0021D4C0` (pause slot-select tick)
 - `src/game/draw.c`: `func_001F2608` (builds the view matrices in the camera block from the rotation set up in D_00187390 or the three rotation angles, then copies the result to D_0018D080)
@@ -83,9 +83,9 @@ The following functions adapt source from
 - `src/game/initonce.c`: `func_00201E88` (init_once)
 - `src/game/draw.c`: `func_001F2BC8` (build_occlusion_visibility)
 - `src/game/pause.c`: `func_0021E4B0` (draws a pause-menu list (rows of text with optional subtext, cursor highlight, scrolling))
-- `src/core/00125630.c`: `func_00127D40` (_decMB0)
+- `src/core/mpeg/motion_comp.c`: `func_00127D40` (_decMB0)
 - `src/game/vendor.c`: `func_00239CF8` (fun_002389e0)
-- `src/core/0012AC80.c`: `func_0012B2C0` (_PES_packet)
+- `src/core/mpeg/demux.c`: `func_0012B2C0` (_PES_packet)
 - `src/game/camera.c`: `func_001ED080` (camera update toward a target orientation: blends yaw/pitch/distance and rebuilds the camera basis)
 - `src/game/space.c`: `func_00233308` (do_space_transition)
 - `src/game/help.c`: `func_001FE6C0` (update_help_state)
@@ -303,21 +303,21 @@ to its PAL address, and each passed this project's own check. In parentheses, Lo
 - `src/overlays/shared/mobyutil_00258BC8.c`: `func_L00_0025F368` (`FUN_L00_0025e310`)
 - `src/overlays/shared/help_00214D60.c`: `func_L00_002178A0` (`FUN_L00_00217118`)
 - `src/overlays/shared/vendor_002D9548.c`: `func_L06_002F4CF8` (`FUN_L06_002f38c8`)
-- `src/core/00112468.c`: `func_001126D8` (`_dtoa_r`; David M. Gay's dtoa, see below)
-- `src/core/00116070.c`: `func_00116168` (`double_is_not_nan`; fdlibm, see below)
-- `src/core/00116070.c`: `func_001161B0` (`ClassifyDoubleNaN`; fdlibm, see below)
-- `src/core/00119D88.c`: `func_0011BF80` (`sceOpen`)
-- `src/core/00119D88.c`: `func_0011C388` (`sceLseek`)
-- `src/core/00119D88.c`: `func_0011C5C0` (`sceRead`)
-- `src/core/00119D88.c`: `func_0011C820` (`sceWrite`)
+- `src/core/libc/close_dtoa.c`: `func_001126D8` (`_dtoa_r`; David M. Gay's dtoa, see below)
+- `src/core/libc/printf_rand.c`: `func_00116168` (`double_is_not_nan`; fdlibm, see below)
+- `src/core/libc/printf_rand.c`: `func_001161B0` (`ClassifyDoubleNaN`; fdlibm, see below)
+- `src/core/kernel/kprintf.c`: `func_0011BF80` (`sceOpen`)
+- `src/core/kernel/kprintf.c`: `func_0011C388` (`sceLseek`)
+- `src/core/kernel/kprintf.c`: `func_0011C5C0` (`sceRead`)
+- `src/core/kernel/kprintf.c`: `func_0011C820` (`sceWrite`)
 - `src/overlays/shared/vendor_002C12B0.c`: `func_L00_002C4748` (`FUN_L00_002c3440`)
 - `src/overlays/shared/mobyutil_00258BC8.c`: `func_L00_00259B88` (`FUN_L00_00258b50`)
 - `src/overlays/shared/vendor_002D9438.c`: `func_L00_002E0958` (`FUN_L00_002df4a8`)
 - `src/overlays/shared/vendor_00299AF0.c`: `func_L10_002F6E38` (`FUN_L10_002f5a78`)
 - `src/overlays/shared/vendor_002A5218.c`: `func_L02_002A5238` (`FUN_L02_002a4058`)
-- `src/core/00114518.c`: `func_00114920` (`_malloc_r`; newlib's allocator, see below)
-- `src/core/00116FA0.c`: `func_00117118` (`_vfprintf_r`; adapted from the local newlib-derived US candidate, see below)
-- `src/core/00119D88.c`: `func_0011AA90` (`_sceSifSendCmd`; its two small structs' members are named by offset here)
+- `src/core/libc/lseek_malloc.c`: `func_00114920` (`_malloc_r`; newlib's allocator, see below)
+- `src/core/libc/vfprintf.c`: `func_00117118` (`_vfprintf_r`; adapted from the local newlib-derived US candidate, see below)
+- `src/core/kernel/kprintf.c`: `func_0011AA90` (`_sceSifSendCmd`; its two small structs' members are named by offset here)
 
 Four more began as machine ports that came out a few bytes off and were finished by hand by the GPT agent
 (2026-10-05):
@@ -393,8 +393,8 @@ Ten went in as the tool wrote them. `func_001EC2B8` needed its file to change ar
 declaration retyped to its parameter, and two typedefs it shares with `func_001ED818` kept once.
 `func_001EE858` was adapted: it writes the fog preset as the struct `src/game/draw.c` already reads.
 
-- `src/core/00119868.c`: `func_00119AA8` (`sceTtyWrite`)
-- `src/core/0012AC80.c`: `func_0012AD10` (`sceMpegDemuxPssRing`)
+- `src/core/kernel/tty_queue.c`: `func_00119AA8` (`sceTtyWrite`)
+- `src/core/mpeg/demux.c`: `func_0012AD10` (`sceMpegDemuxPssRing`)
 - `src/game/camera.c`: `func_001EC2B8` (`switch_active_camera_record`)
 - `src/game/camera.c`: `func_001ED818` (`FUN_001ed470`)
 - `src/game/drawquad.c`: `func_001F9478` (`append_billboard_batch`)
@@ -630,7 +630,7 @@ changed is declarations (private aliases for globals and callees, the function d
 its file declares it otherwise) and single statement forms. The twelve executable functions are proven by the
 full build. In parentheses, Lombyte's name.
 
-- `src/core/989snd.c`: `func_0012E820` (`snd_send_iop_command_no_wait`)
+- `src/core/sound/989snd.c`: `func_0012E820` (`snd_send_iop_command_no_wait`)
 - `src/game/draw.c`: `func_001F3D78` (`draw_debug_profiler`)
 - `src/game/draw.c`: `func_001F6668` (`font_print`)
 - `src/game/hud.c`: `func_00200248` (`get_frame_texture`)
@@ -903,7 +903,7 @@ SOFTWARE.
 The game's C library is newlib. Five functions here are its open sources,
 as Lombyte reconstructed them for the US build and adapted above:
 
-- `src/core/00112468.c`: `func_001126D8` (`_dtoa_r`), David M. Gay's dtoa:
+- `src/core/libc/close_dtoa.c`: `func_001126D8` (`_dtoa_r`), David M. Gay's dtoa:
 
 ```
 The author of this software is David M. Gay.
@@ -922,11 +922,11 @@ REPRESENTATION OR WARRANTY OF ANY KIND CONCERNING THE MERCHANTABILITY
 OF THIS SOFTWARE OR ITS FITNESS FOR ANY PARTICULAR PURPOSE.
 ```
 
-- `src/core/00114518.c`: `func_00114920` (`_malloc_r`), newlib's allocator, which
+- `src/core/libc/lseek_malloc.c`: `func_00114920` (`_malloc_r`), newlib's allocator, which
   is Doug Lea's malloc (dlmalloc 2.6.5), released by its author to the public
   domain.
 
-- `src/core/00116FA0.c`: `func_00117118` (`_vfprintf_r`), adapted from
+- `src/core/libc/vfprintf.c`: `func_00117118` (`_vfprintf_r`), adapted from
   Lombyte's newlib 1999 `vfprintf.c` reconstruction in
   `src/assembly/runtime/newlib/vfprintf_r.c`. Its macros are expanded into
   ordinary C; its symbols and stdio types use this checkout's PAL definitions.
@@ -960,7 +960,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 OF SUCH DAMAGE.
 ```
 
-- `src/core/00116070.c`: `func_00116168` and `func_001161B0`, fdlibm's finite
+- `src/core/libc/printf_rand.c`: `func_00116168` and `func_001161B0`, fdlibm's finite
   and NaN tests:
 
 ```
@@ -1110,7 +1110,7 @@ The following reconstructions build on the NTSC decomp (Lombyte), pinned at
 4e1f255e524d922af78aecc2af49df3deb57a709 (GPL-3.0). PAL addresses, compiler
 behaviour and emitted bytes are checked against the PAL v2 retail image:
 
-- src/core/989snd.c: func_0012DB68 (snd_StartSoundSystem), from
+- src/core/sound/989snd.c: func_0012DB68 (snd_StartSoundSystem), from
   src/textbin/audio/snd_start_sound_system.c, snd_start_sound_system.
 - src/overlays/shared/help_00232560.c: func_L00_00232EF0, from
   src/overlays/shared/ui/help/00232670.c, FUN_L00_00232670, continued from

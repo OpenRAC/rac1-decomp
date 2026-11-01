@@ -2,8 +2,8 @@
 #include "callees.h"
 #include "structs/records.h"
 #include "structs/misc.h"
-#include "core/00121D18.h"
-#include "core/00122200.h"
+#include "core/gs/def_disp_env.h"
+#include "core/gs/def_draw_env.h"
 #include "data/executable.h"
 #include "structs/gs.h"
 

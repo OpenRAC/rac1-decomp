@@ -5,7 +5,7 @@
 #include "game/draw.h"
 #include "game/skyfunc.h"
 #include "game/vuchain.h"
-#include "core/00116070.h"
+#include "core/libc/printf_rand.h"
 #include "data/executable.h"
 #include "game/fastfunc.h"
 #include "game/mobyutil.h"

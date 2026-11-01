@@ -45,7 +45,7 @@ python3 -m unittest discover -s tools/tests -p 'test_*.py'
 Never use `git mv` on a `.c` file. The object lists, version folders and tools all name its path.
 
 ```sh
-python3 tools/move_src.py src/core/00116FA0.c src/core/libc/stdio.c
+python3 tools/move_src.py src/core/libc/errno.c src/core/libc/error_number.c
 ```
 
 After a move, the ELF's SHA changes because file names are stored in it. Compare the loaded bytes, or run `check_all.sh`.

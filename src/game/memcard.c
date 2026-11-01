@@ -2,9 +2,9 @@
 #include "callees.h"
 #include "structs/records.h"
 #include "structs/misc.h"
-#include "core/00121750.h"
-#include "core/001236F0.h"
-#include "core/0012CC90.h"
+#include "core/cdvd/read.h"
+#include "core/mc/memory_card.h"
+#include "core/mpeg/ipu.h"
 #include "game/menu.h"
 #include "data/executable.h"
 

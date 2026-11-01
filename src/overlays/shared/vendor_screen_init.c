@@ -6,7 +6,7 @@
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
-#include "core/989snd.h"
+#include "core/sound/989snd.h"
 #include "game/loaders.h"
 #include "game/music.h"
 #include "overlays/shared/hero_animation_slots.h"

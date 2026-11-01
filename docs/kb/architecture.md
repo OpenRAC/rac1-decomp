@@ -12,7 +12,7 @@ code segments:
 
 | Segment | vram | What it holds | Sources |
 |---|---|---|---|
-| `core` | 0x100080 | VU microcode (`vutext`), then `core_text` from 0x112380: Sony SDK libraries, newlib, the 989snd sound library, libgcc, start-up and the main loop; plus `core_data`, `core_rdata`, `core_bss` | `src/core/` (53 files named by start address, e.g. `src/core/0012AC80.c`), `src/libgcc/` |
+| `core` | 0x100080 | VU microcode (`vutext`), then `core_text` from 0x112380: Sony SDK libraries, newlib, the 989snd sound library, libgcc, start-up and the main loop; plus `core_data`, `core_rdata`, `core_bss` | `src/core/` (53 files named by start address, e.g. `src/core/mpeg/demux.c`), `src/libgcc/` |
 | `main` | 0x15ED80 | the game program: `core_lit`, `lit` (0x15F000), `bss`, `data`, the three level vtables (`lvl_vtbl`, `lvl_camvtbl`, `lvl_sndvtbl`) and `text` from 0x1E9080 | `src/game/` |
 
 Object-to-address maps in retail link order (read by the Makefile, linker

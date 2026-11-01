@@ -6,7 +6,7 @@
 #include "structs/vector.h"
 #include "structs/menu.h"
 #include "structs/hero.h"
-#include "core/989snd.h"
+#include "core/sound/989snd.h"
 #include "game/draw.h"
 #include "game/freeze.h"
 #include "game/mobyfunc.h"

@@ -279,7 +279,7 @@ between an FP compare and its bc1, the nop after an mtc1 whose register
 is read next, and its own dli sequences. `tools/ps2eeas_nops.py` and
 `tools/ps2eeas_dli.py` now reproduce all four. Some near-misses had
 been the right size only because two errors cancelled [func_00208208,
-func_00215A98]. And `src/core/001236F0.c` is Sony's memory card library,
+func_00215A98]. And `src/core/mc/memory_card.c` is Sony's memory card library,
 built with the SDK's 2.9-ee like libgcc [sceMcSync].
 
 **Later the same day (batches G to J).**
@@ -1103,7 +1103,7 @@ their undefined symbols name the callees:
 
 What follows from it:
 
-- **One of our objects can be several of theirs.** `src/core/001236F0.c`
+- **One of our objects can be several of theirs.** `src/core/mc/memory_card.c`
   is libmc.o, libdbc.o and libpad2.o back to back; no linker fill marked
   the joins. The archive members' extents are the true object
   boundaries.
