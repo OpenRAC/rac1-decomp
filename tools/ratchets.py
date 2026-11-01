@@ -4,7 +4,6 @@ Counts of things the refactor removes. A count may go down, but never up.
 
   python3 tools/ratchets.py --check     # fail if a count went up
   python3 tools/ratchets.py --update    # save lower counts (config/ratchets.json)
-  python3 tools/ratchets.py --markdown  # a table for the PR comment
 
 The counts are regex searches of src/, not a parser: they measure a trend. Generated code (libgcc) and
 version fragments are left out.
@@ -75,10 +74,6 @@ def main():
             sys.exit(f"*** counts went up, not saving: {worse}")
         save(now)
         print(f"saved {len(now)} counts")
-    elif mode == "--markdown":
-        print("| Count | Saved | Now |\n|---|---:|---:|")
-        for name, value in sorted(now.items()):
-            print(f"| {name} | {was.get(name, '-')} | {value} |")
     elif mode == "--check":
         worse = {k: (was.get(k), v) for k, v in now.items() if k not in was or v > was[k]}
         for name, (before, value) in sorted(worse.items()):
