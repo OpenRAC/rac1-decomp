@@ -5,6 +5,7 @@
 #include "structs/music.h"
 #include "core/989snd.h"
 #include "asm_functions/executable.h"
+#include "structs/level_records.h"
 
 /*
  * music.cpp in the original source; text 0x2161E0-0x217588.
@@ -815,12 +816,6 @@ void music_UpdateStream(MusicPlaying *p) {
     }
 }
 
-struct MusicCdReadMode {
-    u8 trycount; /* 0x20 from reset_music */
-    u8 spindlctrl;
-    u8 datapattern;
-    u8 pad;
-};
 struct MusicStreamState {
     s32 unk0; /* 0x00: cleared by reset_music */
     u8 pad_4[0x4];

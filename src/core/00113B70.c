@@ -1,6 +1,7 @@
 #include "common.h"
 #include "structs/misc.h"
 #include "data/executable.h"
+#include "core/newlib_types.h"
 
 /*
  * core_text object 0x113B70-0x114000. Boundaries are retail's linker fill
@@ -216,13 +217,6 @@ void _free_r(struct _reent *ptr, void *mem) {
 #undef unlink
 #undef link_last_remainder
 #undef frontlink
-
-typedef struct MallocChunk {
-    unsigned int prev_size;
-    unsigned int size;
-    struct MallocChunk *fd;
-    struct MallocChunk *bk;
-} MallocChunk;
 
 typedef struct {
     char pad[8];

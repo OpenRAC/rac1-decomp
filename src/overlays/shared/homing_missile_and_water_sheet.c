@@ -13,6 +13,7 @@
 #include "game/mobyutil.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "structs/small_records.h"
 
 /* Class 0x3F1 shot: flies along vel for ticks, owned by the firing moby. */
 struct ShotVars {
@@ -1547,9 +1548,6 @@ void update_moby_path_transform(Moby *moby) {
     vec_scale_to_length_r(G, G, data->speed);
     FastVecAdd_r(&moby->pos, &moby->pos, G);
 }
-typedef struct {
-    int a, b;
-} Pair8;
 
 extern void draw_env_overlay_mesh(int, int, int, void *, int);
 
@@ -1557,7 +1555,7 @@ extern int oil_tanker_2b_mesh_uv_sources[];
 
 extern int oil_tanker_2b_mesh_positions[];
 
-extern Pair8 pokitaru_faded_2b_scroll[] MACRO_ADDR;
+extern IntPair pokitaru_faded_2b_scroll[] MACRO_ADDR;
 
 // Fills 5 rows of a three-column table and hands each row to two builders.
 void queue_oil_tanker_front_texture_2b_batches(int a) {

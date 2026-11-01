@@ -21,6 +21,7 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/sound_playback.h"
+#include "structs/small_records.h"
 
 /* Red button sequence controller: switches linked mobys on and off through the scripted cut scene. */
 struct SequenceVars {
@@ -2405,22 +2406,20 @@ s32 get_red_button_sequence_status(const u8 *moby) {
     }
     return 0;
 }
-typedef struct {
-    int v[6];
-} V6;
+
 extern void clear_u64_value(void *);
 
 extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
-extern V6 red_button_burst_colors_end;
-extern V6 red_button_burst_colors_start;
+extern IntVec6 red_button_burst_colors_end;
+extern IntVec6 red_button_burst_colors_start;
 extern short red_button_burst_count;
 extern short red_button_burst_scale;
 
 // Spawns a burst of particles around an object, count from a level global.
 void emit_red_button_particle_burst(int unused, void *obj) {
     float pos[4];
-    V6 a;
-    V6 b;
+    IntVec6 a;
+    IntVec6 b;
     int i = 0;
     clear_u64_value(pos);
     if (*(int *)&red_button_burst_count > 0) {

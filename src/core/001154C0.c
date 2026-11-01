@@ -1,6 +1,7 @@
 #include "common.h"
 #include "structs/misc.h"
 #include "core/001154C0.h"
+#include "core/newlib_types.h"
 
 /*
  * core_text object 0x1154C0-0x116070. Boundaries are retail's linker fill
@@ -32,12 +33,6 @@ void __malloc_unlock(void) {
  * ptr->_freelist after the calloc NULL test gives retail's order.
  */
 extern void *_calloc_r(void *, int, int);
-
-typedef struct Bigint_1154D0 {
-    struct Bigint_1154D0 *next;
-    int k, maxwds, sign, wds;
-    unsigned int x[1];
-} Bigint_1154D0;
 
 typedef struct {
     char pad[0x4C];

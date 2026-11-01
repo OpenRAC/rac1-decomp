@@ -15,6 +15,7 @@
 #include "game/fastfunc.h"
 #include "game/mobyutil.h"
 #include "overlays/shared/sound_playback.h"
+#include "structs/level_records.h"
 
 /* Glow particle (class 0x70): spinning shard that shrinks and fades out. */
 struct GlowParticleVars {
@@ -1022,12 +1023,6 @@ void update_glow_particle(M_d *m) {
         m->b23 = v->h1c * v->h1e / n;
     }
 }
-typedef struct {
-    float v[4][4];
-    int rgba[4];
-    float uv[4][2];
-    long gs[4];
-} QuadPkt;
 
 extern int cinematic_mode MACRO_ADDR;
 extern float fast_atan2(float, float);

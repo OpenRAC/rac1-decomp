@@ -1,5 +1,6 @@
 #include "common.h"
 #include "structs/misc.h"
+#include "core/newlib_types.h"
 
 /*
  * core_text object 0x1138B8-0x113A70. Boundaries are retail's linker fill
@@ -10,47 +11,7 @@
  * libc.a; both are newlib's own text.
  */
 
-
 /* newlib's stdio types (sys/reent.h, 1999-2000), under local names. */
-struct __sbuf_nl {
-    unsigned char *_base;
-    int _size;
-};
-struct _atexit_nl {
-    struct _atexit_nl *_next;
-    int _ind;
-    void (*_fns[32])(void);
-};
-struct _reent_nl {
-    char _pad0[0x38];
-    int __sdidinit;                             /* 0x38 */
-    void (*__cleanup)(struct _reent_nl *);      /* 0x3C */
-    char _pad40[0x148 - 0x40];
-    struct _atexit_nl *_atexit;                 /* 0x148 */
-};
-typedef struct {
-    unsigned char *_p;          /* 0x00 */
-    int _r;
-    int _w;
-    short _flags;               /* 0x0C */
-    short _file;
-    struct __sbuf_nl _bf;       /* 0x10 */
-    int _lbfsize;
-    void *_cookie;              /* 0x1C */
-    int (*_read)(void *, char *, int);
-    int (*_write)(void *, const char *, int);
-    long (*_seek)(void *, long, int);
-    int (*_close)(void *);
-    struct __sbuf_nl _ub;       /* 0x30 */
-    unsigned char *_up;
-    int _ur;
-    unsigned char _ubuf[3];
-    unsigned char _nbuf[1];
-    struct __sbuf_nl _lb;       /* 0x44 */
-    int _blksize;
-    int _offset;
-    struct _reent_nl *_data;    /* 0x54 */
-} FILE_nl;
 
 /* _impure_ptr, typed; the declaration in scope above is `void *`. */
 extern struct _reent_nl *_impure_ptr_r __asm__("D_0012F86C") NOT_SDA;

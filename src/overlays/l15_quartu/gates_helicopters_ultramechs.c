@@ -17,6 +17,7 @@
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/sound_playback.h"
+#include "structs/small_records.h"
 
 /* Quartu helicopter: hit response, knockback and recoil. */
 struct HelicopterVars {
@@ -3038,14 +3039,12 @@ extern float ring_wave_template_verts[];
 extern int ring_wave_colors[];
 extern float ring_wave_base_uvs[][2];
 extern float ring_wave_uvs[][2];
-typedef struct {
-    float f[4];
-} Quad4;
+
 typedef struct {
     float prev;
     float angle;
 } RingVars;
-extern Quad4 ring_wave_uv_scroll_factors;
+extern UvScrollFactors ring_wave_uv_scroll_factors;
 extern int ring_wave_vertex_counts[1] SDATA(D_L15_001621A0);
 extern int ring_wave_position_ptrs[1] SDATA(D_L15_001621C0);
 extern int ring_wave_uv_ptrs[1] SDATA(D_L15_001621C8);
@@ -3067,12 +3066,12 @@ void RingWave_DrawA(char *moby) {
     int j;
     int k;
     int color;
-    Quad4 uv_scroll_factors;
+    UvScrollFactors uv_scroll_factors;
     int r;
     int g;
     int b;
     float scale;
-    Quad4 *v_scroll_factors;
+    UvScrollFactors *v_scroll_factors;
     float *output_vertex;
     scale = IntToFloat(quartu_frame_count) * (ring_wave_uv_scroll_rate * g_frame_time);
     VU1_addGSregister(6, GetEffectTex(ring_wave_texture));
@@ -3084,7 +3083,7 @@ void RingWave_DrawA(char *moby) {
                                                0.017453292f * g_frame_time);
     get_moby_color(moby, &r, &g, &b);
     /* The second float of each pair in uv_scroll_factors: v_scroll_factors->f[0] is f[1], v_scroll_factors->f[2] is f[3]. */
-    v_scroll_factors = (Quad4 *)&uv_scroll_factors.f[1];
+    v_scroll_factors = (UvScrollFactors *)&uv_scroll_factors.f[1];
     color = (ring_wave_alpha << 24) | (b << 16) | (g << 8) | r;
     output_vertex = ring_wave_positions;
     do {

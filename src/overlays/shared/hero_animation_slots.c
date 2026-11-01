@@ -16,6 +16,7 @@
 #include "game/loaders.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "structs/collision.h"
+#include "structs/hero_views.h"
 
 struct Moby;
 extern struct Hero g_hero_r __asm__("D_0013F450");
@@ -1786,12 +1787,8 @@ extern unsigned char gHaveMorphORay NOT_SDA;
 extern char help_stats_base[] NOT_SDA;
 extern int g_game_language_m[] __asm__("D_0015EE88") MACRO_ADDR;
 extern int hero_slot0_item_8_selected MACRO_ADDR;
-typedef struct {
-    char pad[0x20];
-    int f20;
-    char pad2[0x28];
-} Rec20;
-extern Rec20 item_defs_r_r[] __asm__("D_L00_00179BC0") __attribute__((section(".data")));
+
+extern HeroItemDefView item_defs_r_r[] __asm__("D_L00_00179BC0") __attribute__((section(".data")));
 extern int hero_slot3_mode_3_selected MACRO_ADDR;
 
 typedef struct {

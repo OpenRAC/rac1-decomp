@@ -677,11 +677,7 @@ void grant_inventory_item(int, int);
 float ApproachValue(void *, float, float);
 void DeleteMoby(void *);
 
-typedef struct {
-    char pad0[0x28];
-    float f28;
-} Cam_C2A80;
-extern Cam_C2A80 coll_hit_result_r __asm__("D_L00_00173F40");
+extern CollisionHit coll_hit_result_r __asm__("D_L00_00173F40");
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002bffa8.c, FUN_L00_002c1778. */
 void update_trespasser_pickup(void *mv) {
     Moby *m = (Moby *)mv;
@@ -691,7 +687,7 @@ void update_trespasser_pickup(void *mv) {
             func_00214358_C2A80(&m->pos, 0, 0.5f);
             m->rot.x = 1.5707964f;
             m->rot.y = 3.1415927f;
-            m->pos.z = coll_hit_result_r.f28 + D_L00_001618F8_C2A80;
+            m->pos.z = coll_hit_result_r.point.f[2] + D_L00_001618F8_C2A80;
             m->state = 1;
             break;
         case 1: {

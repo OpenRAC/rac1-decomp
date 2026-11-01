@@ -3,6 +3,7 @@
 #include "structs/misc.h"
 #include "game/draw.h"
 #include "data/executable.h"
+#include "structs/level_records.h"
 
 /*
  * effects.cpp in the original source; text 0x1EDFF8-0x1EE9F8.
@@ -267,10 +268,7 @@ struct CameraEnvironmentRegion {
 };
 extern struct CameraEnvironmentRegion camera_environment_regions[];
 /* A fog preset: an RGB byte triple and four floats (as src/game/draw.c reads it). */
-typedef struct {
-    unsigned char r, g, b, pad;
-    float f[4];
-} FogPreset;
+
 extern FogPreset fog_color_red MACRO_ADDR;
 extern s32 find_camera_environment_region(void *, f32 *, s32 *);
 extern s32 truncate_float_to_s32(f32);

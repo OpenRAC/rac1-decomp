@@ -61,7 +61,8 @@ typedef struct {
 typedef struct {
     char p0[0x18];
     int f18;
-    char p1C[8];
+    char p1C[4];
+    int f20;
     int f24;
     char p28[0x24];
 } HeroItemDefView;

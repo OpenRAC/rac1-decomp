@@ -1,6 +1,7 @@
 #include "common.h"
 #include "structs/misc.h"
 #include "data/executable.h"
+#include "core/newlib_types.h"
 
 /*
  * core_text object 0x114518-0x1154C0. Boundaries are retail's linker fill
@@ -113,13 +114,6 @@ void __smakebuf(File_114578 *fp) {
             fp->_flags |= 0x1;
     }
 }
-
-typedef struct MallocChunk {
-    unsigned int prev_size;
-    unsigned int size;
-    struct MallocChunk *fd;
-    struct MallocChunk *bk;
-} MallocChunk;
 
 extern struct MallocChunk *__malloc_av_[3]; /* malloc_av_ bins; av_[2] is `top` */
 extern unsigned long __malloc_top_pad; /* malloc_top_pad (unsigned long) */

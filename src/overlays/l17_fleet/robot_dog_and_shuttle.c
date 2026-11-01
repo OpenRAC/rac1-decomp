@@ -20,6 +20,7 @@
 #include "game/mobyutil.h"
 #include "overlays/shared/camera_modes_and_scripts.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "structs/small_records.h"
 
 /* Robot dog: speed and turn state, plus the three glow points (also AimData_1BB0 below). */
 struct RobotDogVars {
@@ -584,14 +585,12 @@ extern float fleet_light_ring_template_verts[];
 extern int fleet_light_ring_colors[];
 extern float fleet_light_ring_template_uvs[][2];
 extern float fleet_light_ring_uvs[][2];
-typedef struct {
-    float f[4];
-} Quad4;
+
 typedef struct {
     float prev;
     float angle;
 } RingVars;
-extern Quad4 fleet_light_ring_uv_scroll_factors;
+extern UvScrollFactors fleet_light_ring_uv_scroll_factors;
 extern int fleet_light_ring_vertex_count[1] SDATA(D_L17_001623C0);
 extern int fleet_light_ring_vertex_buf[1] SDATA(D_L17_001623E0);
 extern int fleet_light_ring_uv_buf[1] SDATA(D_L17_001623E8);
@@ -613,12 +612,12 @@ void DrawLightRing(char *moby) {
     int j;
     int k;
     int color;
-    Quad4 uv_scroll_factors;
+    UvScrollFactors uv_scroll_factors;
     int r;
     int g;
     int b;
     float scale;
-    Quad4 *v_scroll_factors;
+    UvScrollFactors *v_scroll_factors;
     float *output_vertex;
     scale = IntToFloat(fleet_frame_count) * (fleet_light_ring_uv_scroll_speed * g_frame_time);
     VU1_addGSregister(6, GetEffectTex(fleet_light_ring_texture));
@@ -630,7 +629,7 @@ void DrawLightRing(char *moby) {
                                                0.017453292f * g_frame_time);
     get_moby_color(moby, &r, &g, &b);
     /* The second float of each pair in t: p->f[0] is t.f[1], p->f[2] is t.f[3]. */
-    v_scroll_factors = (Quad4 *)&uv_scroll_factors.f[1];
+    v_scroll_factors = (UvScrollFactors *)&uv_scroll_factors.f[1];
     color = (fleet_light_ring_alpha << 24) | (b << 16) | (g << 8) | r;
     output_vertex = fleet_light_ring_vertices;
     do {

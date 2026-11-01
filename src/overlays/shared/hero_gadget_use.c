@@ -14,6 +14,7 @@
 #include "asm_functions/shared_levels.h"
 #include "game/fastfunc.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "structs/hero_views.h"
 
 extern float ApproachValue(float *p, float target, float maxstep);
 extern unsigned char hero_globals_base[] NOT_SDA;
@@ -88,12 +89,8 @@ extern unsigned char gHaveMorphORay NOT_SDA;
 extern char help_stats_base[] NOT_SDA;
 extern int g_game_language_m[] __asm__("D_0015EE88") MACRO_ADDR;
 extern int hero_slot0_item_8_selected MACRO_ADDR;
-typedef struct {
-    char pad[0x20];
-    int f20;
-    char pad2[0x28];
-} Rec20;
-extern Rec20 rilgar_item_defs[];
+
+extern HeroItemDefView rilgar_item_defs[];
 extern int hero_slot3_mode_3_selected MACRO_ADDR;
 
 typedef struct {
