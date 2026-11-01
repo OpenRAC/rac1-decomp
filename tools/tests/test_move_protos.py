@@ -27,6 +27,13 @@ class PlanTest(unittest.TestCase):
         headers, _ = self.plan({"src/game/d.c": HOME, "src/game/a.c": USER, "src/game/b.c": USER, "src/game/c.c": other})
         self.assertEqual(headers, {})
 
+    def test_a_second_spelling_with_another_type_stays(self):
+        aliases = {"f": {"func_1"}, "func_1": {"f"}}
+        other = "extern int func_1(void);\n"
+        headers, _ = self.plan({"src/game/d.c": HOME, "src/game/a.c": USER, "src/game/b.c": USER, "src/game/c.c": other},
+                               aliases=aliases)
+        self.assertEqual(headers, {})
+
     def test_qualifiers_and_types_stay(self):
         self.assertFalse(mp.is_candidate("f", 'extern void f(void) __asm__("func_1");'))
         self.assertFalse(mp.is_candidate("f", "extern void f(struct Moby *m);"))
@@ -58,6 +65,11 @@ class ApplyTest(unittest.TestCase):
     def test_declaration_goes_and_include_comes_after_the_last_include(self):
         new = mp.apply_to_source(USER, {"game/d.h": {"f"}})
         self.assertEqual(new, '#include "common.h"\n#include "game/d.h"\n\nvoid u(void) { f(1); }\n')
+
+    def test_a_later_include_does_not_move_the_new_one_down(self):
+        text = '#include "common.h"\n\nextern void f(int a);\nvoid u(void) { f(1); }\n#include "late.h"\n'
+        new = mp.apply_to_source(text, {"game/d.h": {"f"}})
+        self.assertLess(new.index('"game/d.h"'), new.index("void u"))
 
     def test_a_provenance_note_keeps_the_declaration(self):
         text = '#include "common.h"\nextern void f(int a); /* Adapted from Lombyte\'s project */\n'

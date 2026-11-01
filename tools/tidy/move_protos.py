@@ -55,6 +55,10 @@ def plan(sources, fragments, aliases):
     sources: {file: text}, fragments: {file: version fragment text}, aliases: {name: {other names}}.
     Returns {header: {name: declaration}} and {file: {header: {name}}}: what to write and who takes what.
     """
+    # One symbol can be spelled two ways (readable and address name), so group by the symbol.
+    def symbol(name):
+        return min({name} | aliases.get(name, set()))
+
     declared = collections.defaultdict(lambda: collections.defaultdict(set))
     defined = collections.defaultdict(set)
     for rel, text in sources.items():
@@ -63,14 +67,14 @@ def plan(sources, fragments, aliases):
         for _, _, statement in pe.find_externs(text):
             names = pe.declared_names(statement)
             if names and len(names) == 1:
-                declared[names[0]][normal(statement)].add(rel)
+                declared[symbol(names[0])][(names[0], normal(statement))].add(rel)
 
     headers = collections.defaultdict(dict)
     users = {}
-    for name, texts in declared.items():
+    for texts in declared.values():
         if len(texts) != 1:
             continue
-        text, files = next(iter(texts.items()))
+        (name, text), files = next(iter(texts.items()))
         if len(files) < MIN_FILES or not is_candidate(name, text):
             continue
         homes = set(defined.get(name, ()))
@@ -135,8 +139,9 @@ def apply_to_source(text, header_names):
     parts.append(text[last:])
     new = re.sub(r"\n{3,}", "\n\n", re.sub(r"^[ \t]+$", "", "".join(parts), flags=re.M))
     includes = "".join(f'#include "{h}"\n' for h in sorted(header_names))
-    matches = list(re.finditer(r'^#include [^\n]*\n', new, re.M))
-    at = matches[-1].end() if matches else 0
+    # After the block of includes at the top. A file can have a later include below its first calls.
+    first = re.search(r"^#include [^\n]*\n(?:#include [^\n]*\n)*", new, re.M)
+    at = first.end() if first else 0
     return new[:at] + includes + new[at:]
 
 
