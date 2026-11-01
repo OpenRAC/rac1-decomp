@@ -32,6 +32,8 @@ Be deliberate about it:
   decompiled from the (locally generated) disassembly in `asm/` and cleaned up to compile back
   to matching (or `INCLUDE_ASM`-stubbed, not-yet-matching) object code.
 - Non-matching helper tooling under `tools/`.
+- Data files in `src/data/`, which give retail's data its type, name and owner but hold **no values**. The values are
+  generated into `build-sn/data_inc/` from the contributor's own baserom (`tools/data_in_c.py`) and never committed.
 
 ## What a contributor/user must supply themselves
 

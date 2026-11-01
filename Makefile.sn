@@ -69,7 +69,10 @@ TEXT_OBJS := $(shell grep -v -e "^\#" -e "^$$" config/text.objects | cut -d" " -
 GCC323_TEXT_OBJS := $(shell awk '!/^\#/ && $$3 == "gcc323" {print $$1}' config/text.objects)
 CC_GAME = $(CC_TEXT)
 
-OBJS := $(CORE_TEXT_OBJS) $(TEXT_OBJS)
+# Data files: the values are generated locally, never committed (tools/data_in_c.py).
+DATA_OBJS := $(shell python tools/data_in_c.py objects)
+
+OBJS := $(CORE_TEXT_OBJS) $(TEXT_OBJS) $(DATA_OBJS)
 
 .PHONY: all clean regnames
 all: regnames $(OBJS)
@@ -81,6 +84,10 @@ regnames:
 # core_text objects not built with 2.9-ee (src/core/<ADDR>.c): the game's
 # compiler, v1.14. The compiler's output is assembled as it is; the only
 # steps between are the assembler behaviours of docs/reference/BUILD_FIDELITY.md.
+$(DATA_OBJS): build-sn/data/%.o: src/data/%.c config/data_in_c.tsv
+	@mkdir -p $(dir $@)
+	$(CC_TEXT) $(CFLAGS) -Ibuild-sn -c -o $@ $<
+
 build-sn/core/%.o: src/core/%.c config/file_cflags.txt tools/file_cflags.py tools/fix_macro_load_delay.py tools/check_macro_slots.py tools/ps2eeas_nops.py
 	@mkdir -p $(dir $@)
 	$(CC_CORE) $(CFLAGS) $$(python tools/file_cflags.py $<) -S -o build-sn/core/$*.s $<

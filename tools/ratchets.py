@@ -6,7 +6,7 @@ Counts of things the refactor removes. A count may go down, but never up.
   python3 tools/ratchets.py --update    # save lower counts (config/ratchets.json)
 
 The counts are regex searches of src/, not a parser: they measure a trend. Generated code (libgcc) and
-version fragments are left out.
+version fragments and src/data/ are left out.
 """
 import json
 import re
@@ -41,8 +41,10 @@ METRICS = {
 
 
 def sources():
-    out = subprocess.run(["git", "ls-files", "src/*.c"], cwd=ROOT, capture_output=True, text=True, check=True).stdout
-    return [ROOT / f for f in out.split() if not f.startswith(("src/versions/", "src/libgcc/"))]
+    # Untracked files count too, so a check before `git add` agrees with CI. src/data/ has to name its address labels.
+    args = ["git", "ls-files", "-co", "--exclude-standard", "src/*.c"]
+    out = subprocess.run(args, cwd=ROOT, capture_output=True, text=True, check=True).stdout
+    return [ROOT / f for f in out.split() if not f.startswith(("src/versions/", "src/libgcc/", "src/data/"))]
 
 
 def measure():

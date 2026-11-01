@@ -23,7 +23,8 @@ bash tools/build_sn_data.sh >/dev/null || { echo "*** data objects failed"; exit
 # Always from scratch: a failed compile leaves the previous .o behind, whose
 # INCLUDE_ASM stubs still hold retail's bytes -- a fictional match.
 rm -rf build-sn/core build-sn/libgcc
-rm -rf build-sn/game
+rm -rf build-sn/game build-sn/data
+python tools/data_in_c.py generate >/dev/null
 make_sn >build-sn/make.log 2>&1
 rc=$?
 if [ $rc -ne 0 ]; then tail -20 build-sn/make.log; echo "*** make failed (exit $rc)"; exit 1; fi

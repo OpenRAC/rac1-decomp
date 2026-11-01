@@ -553,6 +553,7 @@ def compiled_data() -> list[tuple[str, str, int]]:
     (tools/jump_tables.py). The link puts each in the hole cut for it at its first label, whose
     name is its retail address."""
     import core_rodata
+    import data_in_c
     import jump_tables
     out = []
     for obj, section, labels in core_rodata.sections():
@@ -561,6 +562,8 @@ def compiled_data() -> list[tuple[str, str, int]]:
         m = EXE_LABEL.match(label)
         if m:                                      # level code's tables live in the levels
             out.append((obj, f".rodata.{label}", int(m.group(1), 16)))
+    for label, obj, section in data_in_c.provided():
+        out.append((obj, section, int(EXE_LABEL.match(label).group(1), 16)))
     return out
 
 

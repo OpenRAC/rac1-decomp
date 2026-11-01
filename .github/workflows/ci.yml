@@ -53,6 +53,8 @@ jobs:
         run: python tools/move_src.py --check
       - name: FAKEMATCH tags and table agree
         run: python tools/fakematch_scan.py --check
+      - name: Data files
+        run: python tools/data_in_c.py check
       - name: Doc links
         run: python tools/check_docs.py
       - name: Formatted
