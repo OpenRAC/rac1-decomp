@@ -63,19 +63,14 @@ struct malloc_chunk {
 #define inuse_bit_at_offset(p, s) (((struct malloc_chunk *)(((char *)(p)) + (s)))->size & PREV_INUSE)
 #define smallbin_index(sz) (((unsigned long)(sz)) >> 3)
 #define idx2binblock(ix) ((unsigned long)1 << ((ix) / BINBLOCKWIDTH))
-#define bin_index(sz)                                                         \
-    (((((unsigned long)(sz)) >> 9) == 0) ? (((unsigned long)(sz)) >> 3) :     \
-     ((((unsigned long)(sz)) >> 9) <= 4)                                     \
-         ? 56 + (((unsigned long)(sz)) >> 6) :                               \
-     ((((unsigned long)(sz)) >> 9) <= 20)                                    \
-         ? 91 + (((unsigned long)(sz)) >> 9) :                               \
-     ((((unsigned long)(sz)) >> 9) <= 84)                                    \
-         ? 110 + (((unsigned long)(sz)) >> 12) :                             \
-     ((((unsigned long)(sz)) >> 9) <= 340)                                   \
-         ? 119 + (((unsigned long)(sz)) >> 15) :                             \
-     ((((unsigned long)(sz)) >> 9) <= 1364)                                  \
-         ? 124 + (((unsigned long)(sz)) >> 18) :                             \
-         126)
+#define bin_index(sz)                                                               \
+    (((((unsigned long)(sz)) >> 9) == 0)      ? (((unsigned long)(sz)) >> 3)        \
+     : ((((unsigned long)(sz)) >> 9) <= 4)    ? 56 + (((unsigned long)(sz)) >> 6)   \
+     : ((((unsigned long)(sz)) >> 9) <= 20)   ? 91 + (((unsigned long)(sz)) >> 9)   \
+     : ((((unsigned long)(sz)) >> 9) <= 84)   ? 110 + (((unsigned long)(sz)) >> 12) \
+     : ((((unsigned long)(sz)) >> 9) <= 340)  ? 119 + (((unsigned long)(sz)) >> 15) \
+     : ((((unsigned long)(sz)) >> 9) <= 1364) ? 124 + (((unsigned long)(sz)) >> 18) \
+                                              : 126)
 
 #define av_ __malloc_av__u
 #define bin_at(i) ((struct malloc_chunk *)((unsigned char *)&(av_[2 * (i) + 2]) - 2 * SIZE_SZ))
@@ -87,51 +82,50 @@ struct malloc_chunk {
 #define trim_threshold (D_0012FC90[0])
 #define top_pad (D_0012FC98[0])
 
-#define unlink(P, BK, FD)                                                      \
-    {                                                                          \
-        BK = P->bk;                                                            \
-        FD = P->fd;                                                            \
-        FD->bk = BK;                                                           \
-        BK->fd = FD;                                                           \
+#define unlink(P, BK, FD) \
+    {                     \
+        BK = P->bk;       \
+        FD = P->fd;       \
+        FD->bk = BK;      \
+        BK->fd = FD;      \
     }
 
-#define link_last_remainder(P)                                                 \
-    {                                                                          \
-        last_remainder->fd = last_remainder->bk = P;                           \
-        P->fd = P->bk = last_remainder;                                        \
+#define link_last_remainder(P)                       \
+    {                                                \
+        last_remainder->fd = last_remainder->bk = P; \
+        P->fd = P->bk = last_remainder;              \
     }
 
-#define frontlink(P, S, IDX, BK, FD)                                           \
-    {                                                                          \
-        if (S < MAX_SMALLBIN_SIZE) {                                           \
-            IDX = smallbin_index(S);                                           \
-            mark_binblock(IDX);                                                \
-            BK = bin_at(IDX);                                                  \
-            FD = BK->fd;                                                       \
-            P->bk = BK;                                                        \
-            P->fd = FD;                                                        \
-            FD->bk = BK->fd = P;                                               \
-        } else {                                                               \
-            IDX = bin_index(S);                                                \
-            BK = bin_at(IDX);                                                  \
-            FD = BK->fd;                                                       \
-            if (FD == BK)                                                      \
-                mark_binblock(IDX);                                            \
-            else {                                                             \
-                while (FD != BK && S < chunksize(FD))                          \
-                    FD = FD->fd;                                               \
-                BK = FD->bk;                                                   \
-            }                                                                  \
-            P->bk = BK;                                                        \
-            P->fd = FD;                                                        \
-            FD->bk = BK->fd = P;                                               \
-        }                                                                      \
+#define frontlink(P, S, IDX, BK, FD)                  \
+    {                                                 \
+        if (S < MAX_SMALLBIN_SIZE) {                  \
+            IDX = smallbin_index(S);                  \
+            mark_binblock(IDX);                       \
+            BK = bin_at(IDX);                         \
+            FD = BK->fd;                              \
+            P->bk = BK;                               \
+            P->fd = FD;                               \
+            FD->bk = BK->fd = P;                      \
+        } else {                                      \
+            IDX = bin_index(S);                       \
+            BK = bin_at(IDX);                         \
+            FD = BK->fd;                              \
+            if (FD == BK)                             \
+                mark_binblock(IDX);                   \
+            else {                                    \
+                while (FD != BK && S < chunksize(FD)) \
+                    FD = FD->fd;                      \
+                BK = FD->bk;                          \
+            }                                         \
+            P->bk = BK;                               \
+            P->fd = FD;                               \
+            FD->bk = BK->fd = P;                      \
+        }                                             \
     }
 
 /* _free_r (newlib mallocr.c, dlmalloc 2.6.5). Adapted from Lombyte's project (GPL-3.0)
    for PAL. */
-void _free_r(struct _reent *ptr, void *mem)
-{
+void _free_r(struct _reent *ptr, void *mem) {
     struct malloc_chunk *p;
     unsigned int hd;
     unsigned int sz;
@@ -240,7 +234,10 @@ typedef struct MallocChunk {
     struct MallocChunk *bk;
 } MallocChunk;
 
-typedef struct { char pad[8]; MallocChunk *av2[1]; } MallocState; /* av_[2] = top */
+typedef struct {
+    char pad[8];
+    MallocChunk *av2[1];
+} MallocState; /* av_[2] = top */
 
 extern MallocState __malloc_av_;
 extern char *__malloc_sbrk_base; /* malloc_sbrk_base */

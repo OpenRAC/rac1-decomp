@@ -19,12 +19,9 @@ extern void libc_fflush(void);
 extern void _fwalk(void *, void *);
 extern char locale_lconv[];
 extern int libc_glue_read();
-extern long func_00116108_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_00116108");
-extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_001188C8");
-extern long func_00114518_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_00114518");
+extern long func_00116108_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00116108");
+extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c) __asm__("func_001188C8");
+extern long func_00114518_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00114518");
 extern int _close_r(int *errOut, int arg1);
 extern int __sfvwrite(int, void *);
 extern void __sinit(void *);
@@ -109,8 +106,8 @@ extern char str_dbc_set_work_addr_error[];
 extern int sceDbcGetDepNumber(int);
 typedef struct {
     char unk_00[4];
-    int  unk_04;
-    int  unk_08;
+    int unk_04;
+    int unk_08;
     char *unk_0C;
     char unk_10[0x320];
 } Ent330;
@@ -320,14 +317,14 @@ int sysbit_show(void *arg0, int n) {
 
 /* The bitstream reader's state (func_0012AA70 sets it up). */
 typedef struct {
-    unsigned long acc;     /* 0x00: the next bits, top-aligned */
+    unsigned long acc; /* 0x00: the next bits, top-aligned */
     unsigned char *start0; /* 0x08 */
-    unsigned char *cur;    /* 0x0C: next byte to load */
-    unsigned int bits;     /* 0x10: valid bits in acc */
-    long total;            /* 0x18: bits consumed so far */
-    unsigned char *start;  /* 0x20: the ring buffer */
-    unsigned char *end;    /* 0x24 */
-    int len;               /* 0x28 */
+    unsigned char *cur; /* 0x0C: next byte to load */
+    unsigned int bits; /* 0x10: valid bits in acc */
+    long total; /* 0x18: bits consumed so far */
+    unsigned char *start; /* 0x20: the ring buffer */
+    unsigned char *end; /* 0x24 */
+    int len; /* 0x28 */
 } BitStream;
 
 /* Consume n bits, then refill the accumulator a byte at a time from the
@@ -344,7 +341,8 @@ long sysbit_flush(void *arg0, int n) {
         do {
             unsigned int c = *p->cur++;
             p->acc |= (unsigned long)c << (56 - p->bits);
-            if (p->cur >= p->end) p->cur = p->start;
+            if (p->cur >= p->end)
+                p->cur = p->start;
             p->bits += 8;
         } while (p->bits <= 56);
     }
@@ -377,7 +375,8 @@ void sysbit_jump(void *arg0, int n) {
     p->bits = 0;
     p->total += n * 8;
     p->cur = p->start0 + (p->total >> 3);
-    if (p->cur >= p->end) p->cur -= p->len;
+    if (p->cur >= p->end)
+        p->cur -= p->len;
     sysbit_flush(p, 0);
 }
 

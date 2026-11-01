@@ -69,9 +69,9 @@ void libc_exit(int code) {
 
     for (p = _impure_ptr_r->_atexit; p; p = p->_next)
         for (n = p->_ind; --n >= 0;)
-            (*p->_fns[n]) ();
+            (*p->_fns[n])();
     if (_impure_ptr_r->__cleanup)
-        (*_impure_ptr_r->__cleanup) (_impure_ptr_r);
+        (*_impure_ptr_r->__cleanup)(_impure_ptr_r);
     func_0012DA28(code);
 }
 
@@ -107,11 +107,9 @@ int libc_fflush(FILE_nl *fp) {
     fp->_p = p;
     fp->_w = t & (0x0001 | 0x0002) ? 0 : fp->_bf._size;  /* __SLBF|__SNBF */
 
-    while (n > 0)
-    {
-        t = (*fp->_write) (fp->_cookie, (char *) p, n);
-        if (t <= 0)
-        {
+    while (n > 0) {
+        t = (*fp->_write)(fp->_cookie, (char *)p, n);
+        if (t <= 0) {
             fp->_flags |= 0x0040;   /* __SERR */
             return -1;              /* EOF */
         }

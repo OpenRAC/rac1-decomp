@@ -132,7 +132,7 @@ void *__multadd(void *ptr, void *arg1, int m, int a) {
         if (wds >= ((Bigint_1154D0 *)arg1)->maxwds) {
             b1 = _Balloc(ptr, ((Bigint_1154D0 *)arg1)->k + 1);
             libc_memcpy(&b1->sign, &((Bigint_1154D0 *)arg1)->sign,
-                          ((Bigint_1154D0 *)arg1)->wds * sizeof(unsigned int) + 2 * sizeof(int));
+                        ((Bigint_1154D0 *)arg1)->wds * sizeof(unsigned int) + 2 * sizeof(int));
             _Bfree(ptr, arg1);
             arg1 = b1;
         }
@@ -239,9 +239,7 @@ void *__i2b(void *ptr, int i) {
 extern void *_Balloc(void *ptr, int k); /* Balloc */
 
 #define STOREINC(xc, hi, lo) \
-    (((unsigned short *)(xc))[1] = (unsigned short)(hi), \
-     ((unsigned short *)(xc))[0] = (unsigned short)(lo), \
-     (xc)++)
+    (((unsigned short *)(xc))[1] = (unsigned short)(hi), ((unsigned short *)(xc))[0] = (unsigned short)(lo), (xc)++)
 
 Bigint_1154D0 *__multiply(void *ptr, Bigint_1154D0 *a, Bigint_1154D0 *b) {
     Bigint_1154D0 *c;
@@ -309,7 +307,10 @@ Bigint_1154D0 *__multiply(void *ptr, Bigint_1154D0 *a, Bigint_1154D0 *b) {
 extern void *__multadd(void *ptr, void *b, int m, int a); /* multadd */
 extern int pow5mult_p05[3];
 
-typedef struct { char pad[0x48]; Bigint_1154D0 *p5s; } Reent_115A70;
+typedef struct {
+    char pad[0x48];
+    Bigint_1154D0 *p5s;
+} Reent_115A70;
 
 void *__pow5mult(void *ptr, void *b, int k) {
     Reent_115A70 *r = ptr;
@@ -419,9 +420,7 @@ extern int __mcmp(Bigint_1154D0 *a, Bigint_1154D0 *b);  /* cmp */
 extern void *_Balloc(void *ptr, int k);        /* Balloc */
 
 #define STOREINC(xc, hi, lo) \
-    (((unsigned short *)(xc))[1] = (unsigned short)(hi), \
-     ((unsigned short *)(xc))[0] = (unsigned short)(lo), \
-     (xc)++)
+    (((unsigned short *)(xc))[1] = (unsigned short)(hi), ((unsigned short *)(xc))[0] = (unsigned short)(lo), (xc)++)
 
 void *__mdiff(void *ptr, Bigint_1154D0 *a, Bigint_1154D0 *b) {
     Bigint_1154D0 *c;

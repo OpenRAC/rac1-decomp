@@ -19,12 +19,9 @@ extern void libc_fflush(void);
 extern void _fwalk(void *, void *);
 extern char locale_lconv[];
 extern int libc_glue_read();
-extern long func_00116108_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_00116108");
-extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_001188C8");
-extern long func_00114518_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_00114518");
+extern long func_00116108_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00116108");
+extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c) __asm__("func_001188C8");
+extern long func_00114518_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00114518");
 extern int _close_r(int *errOut, int arg1);
 extern int __sfvwrite(int, void *);
 extern void __sinit(void *);
@@ -144,10 +141,13 @@ int sce_mc_init(void) {
     for (;;) {
         if (sceSifBindRpc(mc_rpc_client, 0x80000400, 0) < 0) {
             scePrintf(str_mc_bind_error);
-            for (;;) ;
+            for (;;)
+                ;
         }
-        if (((SifRpcClientData *)mc_rpc_client)->serve != 0) break;
-        for (i = 0x100000; i != 0; i--) ;
+        if (((SifRpcClientData *)mc_rpc_client)->serve != 0)
+            break;
+        for (i = 0x100000; i != 0; i--)
+            ;
     }
     r = sif_call_rpc(mc_rpc_client, 0xFE, 0, &mc_rpc_request, 0x30, mc_rpc_reply, 0xC, 0, 0);
     signal_semaphore(mc_semaphore);
@@ -464,9 +464,12 @@ extern int *mc_get_info_format_out;
 
 void mc_get_info_end(int arg0) {
     char *p = (char *)(arg0 | 0x20000000);
-    if (mc_get_info_type_out != 0) *mc_get_info_type_out = *(int *)(p + 0x0);
-    if (mc_get_info_free_out != 0) *mc_get_info_free_out = *(int *)(p + 0x4);
-    if (mc_get_info_format_out != 0) *mc_get_info_format_out = *(int *)(p + 0x90);
+    if (mc_get_info_type_out != 0)
+        *mc_get_info_type_out = *(int *)(p + 0x0);
+    if (mc_get_info_free_out != 0)
+        *mc_get_info_free_out = *(int *)(p + 0x4);
+    if (mc_get_info_format_out != 0)
+        *mc_get_info_format_out = *(int *)(p + 0x90);
 }
 
 extern int mc_rpc_request_a[] __asm__("D_00159B80");
@@ -653,8 +656,7 @@ extern char RpcQueueData[];
 extern int RpcReceiveData;
 
 int sce_dbc_get_mod_version(void) {
-    sif_call_rpc(RpcQueueData, 0x80000963, 0, &RpcReceiveData, 0x400,
-                  &RpcReceiveData, 0x400, 0, 0);
+    sif_call_rpc(RpcQueueData, 0x80000963, 0, &RpcReceiveData, 0x400, &RpcReceiveData, 0x400, 0, 0);
     return RpcReceiveData;
 }
 
@@ -735,8 +737,7 @@ int sceDbcSetWorkAddr(int arg0) {
     int *buf = &RpcReceiveData;
 
     buf[1] = arg0;
-    if (sif_call_rpc(RpcQueueData, 0x80000904, 0, buf, 0x400,
-                      buf, 0x400, 0, 0) >= 0) {
+    if (sif_call_rpc(RpcQueueData, 0x80000904, 0, buf, 0x400, buf, 0x400, 0, 0) >= 0) {
         return RpcReceiveData;
     } else {
         debug_print_stub(str_dbc_set_work_addr_error);
@@ -774,8 +775,7 @@ int sceDbcCreateSocket(void *arg0, int arg1, int arg2) {
     for (i = 0; i < 0x10; i++) {
         namedst[i] = namesrc[i];
     }
-    if (sif_call_rpc(RpcQueueData, 0x80000901, 0, &RpcReceiveData, 0x400,
-                       &RpcReceiveData, 0x400, 0, 0) < 0) {
+    if (sif_call_rpc(RpcQueueData, 0x80000901, 0, &RpcReceiveData, 0x400, &RpcReceiveData, 0x400, 0, 0) < 0) {
         debug_print_stub(str_dbc_create_socket_error);
         return 0;
     }
@@ -814,8 +814,7 @@ int sceDbcGetDepNumber(int port) {
     }
     buf = &RpcReceiveData;
     buf[0] = port;
-    if (sif_call_rpc(RpcQueueData, 0x80000903, 0, &RpcReceiveData, 0x400,
-                       &RpcReceiveData, 0x400, 0, 0) < 0) {
+    if (sif_call_rpc(RpcQueueData, 0x80000903, 0, &RpcReceiveData, 0x400, &RpcReceiveData, 0x400, 0, 0) < 0) {
         debug_print_stub(str_dbc_get_dep_number_error);
         return 0;
     }
@@ -908,8 +907,8 @@ extern int pad2_initialized;
 
 typedef struct {
     char unk_00[4];
-    int  unk_04;
-    int  unk_08;
+    int unk_04;
+    int unk_08;
     char *unk_0C;
     char unk_10[0x320];
 } Ent330;
@@ -1036,7 +1035,6 @@ int scePad2Read(int id, void *dst) {
    `addu index,base`, and reordering the C addition cannot change it
    because GCC canonicalises the PLUS first. See func_00125078 and the
    same lever on D_001E8F80 in text.c. */
-
 
 
 /* The command word, built as bitfields of an `unsigned long` union: the
@@ -1193,8 +1191,7 @@ int sce_pad2_check_dma(int arg0) {
     slot[0] = p;
     slot[1] = p + 0x80;
     if (*(int *)(p + 0x7C) == 0 ||
-        (pad2_last_dma_counters[0] == *(int *)(p + 0x7C) &&
-         pad2_last_dma_counters[1] == *(int *)(slot[1] + 0x7C))) {
+        (pad2_last_dma_counters[0] == *(int *)(p + 0x7C) && pad2_last_dma_counters[1] == *(int *)(slot[1] + 0x7C))) {
         return 0;
     }
     pad2_last_dma_counters[0] = *(int *)(slot[0] + 0x7C);

@@ -25,12 +25,9 @@ extern void libc_fflush(void);
 extern void _fwalk(void *, void *);
 extern char locale_lconv[];
 extern int libc_glue_read();
-extern long func_00116108_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_00116108");
-extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_001188C8");
-extern long func_00114518_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_00114518");
+extern long func_00116108_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00116108");
+extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c) __asm__("func_001188C8");
+extern long func_00114518_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00114518");
 extern int _close_r(int *errOut, int arg1);
 extern int __sfvwrite(int, void *);
 extern void __sinit(void *);
@@ -195,11 +192,13 @@ void cd_read_end_callback(int arg0) {
 
     if (p->n0 > 0) {
         char *d0 = p->dst0;
-        for (i = 0; i < p->n0; i++) d0[i] = p->buf0[i];
+        for (i = 0; i < p->n0; i++)
+            d0[i] = p->buf0[i];
     }
     if (p->n1 > 0) {
         char *d1 = p->dst1;
-        for (i = 0; i < p->n1; i++) d1[i] = p->buf1[i];
+        for (i = 0; i < p->n1; i++)
+            d1[i] = p->buf1[i];
     }
     cd_ncmd_callback((int *)&cd_callback_num);
 }
@@ -239,8 +238,7 @@ void cd_sema_init(void) {
     /* Both results use the same record; storing the first handle inside
        the second call's argument puts the store in that jal's delay slot,
        as retail has it (the open residual of the old near-miss). */
-    cd_scmd_sema_r[0] = create_semaphore_r(
-        (cd_ncmd_sema_r[0] = create_semaphore_r(&sema)) ? &sema : &sema);
+    cd_scmd_sema_r[0] = create_semaphore_r((cd_ncmd_sema_r[0] = create_semaphore_r(&sema)) ? &sema : &sema);
     sema.initCount = 0;
     cd_callback_sema_r[0] = create_semaphore_r(&sema);
     cd_ncmd_busy_r[0] = 0;
@@ -538,9 +536,14 @@ int sce_cd_init(int mode) {
     *(volatile int *)&cd_poweroff_installing = 1;
     *(volatile int *)&cd_thread_id = tid;
     {
-        int *p0 = &D_00131400, *p1 = &cd_ncmd_rpc_bound, *p2 = &cd_scmd_rpc_bound, *p3 = cd_disk_ready_rpc_bound, *p6 = &cd_init_rpc_bound, *p4 = &cd_poweroff_installed, *p5 = &cd_read_mode_flags;
+        int *p0 = &D_00131400, *p1 = &cd_ncmd_rpc_bound, *p2 = &cd_scmd_rpc_bound, *p3 = cd_disk_ready_rpc_bound,
+            *p6 = &cd_init_rpc_bound, *p4 = &cd_poweroff_installed, *p5 = &cd_read_mode_flags;
         int m = -1;
-        *p4 = m; *p0 = m; *p1 = m; *p2 = m; *p3 = m;
+        *p4 = m;
+        *p0 = m;
+        *p1 = m;
+        *p2 = m;
+        *p3 = m;
         *p5 = 0;
         cd_init_call_count++;
         *p6 = m;
@@ -582,21 +585,21 @@ int sce_cd_init(int mode) {
     }
     *(volatile int *)&cd_poweroff_installing = 0;
     switch (mode) {
-    case 5:
-        if (cd_debug_level > 0) {
-            scePrintf(cd_exit_message);
-        }
-        cdvd_exit();
-        *(volatile int *)&cd_ncmd_sema = -1;
-        *(volatile int *)&cd_scmd_sema = -1;
-        *(volatile int *)&cd_callback_sema = -1;
-        break;
-    case 0:
-    case 1:
-    default:
-        cd_sema_init();
-        cd_install_poweroff_handler();
-        break;
+        case 5:
+            if (cd_debug_level > 0) {
+                scePrintf(cd_exit_message);
+            }
+            cdvd_exit();
+            *(volatile int *)&cd_ncmd_sema = -1;
+            *(volatile int *)&cd_scmd_sema = -1;
+            *(volatile int *)&cd_callback_sema = -1;
+            break;
+        case 0:
+        case 1:
+        default:
+            cd_sema_init();
+            cd_install_poweroff_handler();
+            break;
     }
     return ret;
 }
@@ -675,7 +678,8 @@ s32 sce_cd_disk_ready(s32 mode) {
     }
     cd_disk_ready_send_buffer[0] = mode;
     sceSifWriteBackDCache(cd_disk_ready_send_buffer, 4);
-    if (sif_call_rpc(&cd_disk_ready_rpc_client, 0, 0, cd_disk_ready_send_buffer, 4, cd_scmd_recv_buffer_r, 4, 0, 0) < 0) {
+    if (sif_call_rpc(&cd_disk_ready_rpc_client, 0, 0, cd_disk_ready_send_buffer, 4, cd_scmd_recv_buffer_r, 4, 0, 0) <
+        0) {
         signal_semaphore(cd_scmd_sema_r2[0]);
         if (mode == 8) {
             return -1;

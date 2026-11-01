@@ -20,12 +20,9 @@ extern void libc_fflush(void);
 extern void _fwalk(void *, void *);
 extern char locale_lconv[];
 extern int libc_glue_read();
-extern long func_00116108_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_00116108");
-extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_001188C8");
-extern long func_00114518_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_00114518");
+extern long func_00116108_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00116108");
+extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c) __asm__("func_001188C8");
+extern long func_00114518_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00114518");
 extern int _close_r(int *errOut, int arg1);
 extern int __sfvwrite(int, void *);
 extern void __sinit(void *);
@@ -110,8 +107,8 @@ extern char str_dbc_set_work_addr_error[];
 extern int sceDbcGetDepNumber(int);
 typedef struct {
     char unk_00[4];
-    int  unk_04;
-    int  unk_08;
+    int unk_04;
+    int unk_08;
     char *unk_0C;
     char unk_10[0x320];
 } Ent330;
@@ -251,20 +248,20 @@ struct SndCommand {
     long arg;
 };
 /* All SDA ($gp); read through casts like the rest of this file. */
-extern short snd_current_buffer;   /* pending RPC record */
-extern short snd_cd_status_callback;   /* stop callback */
-extern short snd_cd_sync_pending;   /* stop requested */
+extern short snd_current_buffer; /* pending RPC record */
+extern short snd_cd_status_callback; /* stop callback */
+extern short snd_cd_sync_pending; /* stop requested */
 extern short snd_cd_stream_end_pending;
-extern short snd_return_callback_pending;   /* abort */
-extern short snd_batch_command_buffers;   /* int *count[2] */
-extern short snd_stream_buffers;   /* struct SndCommand *cmd[2] */
-extern short snd_batch_return_buffers;   /* int *reply[2] */
-extern short snd_batch_index;   /* current buffer */
+extern short snd_return_callback_pending; /* abort */
+extern short snd_batch_command_buffers; /* int *count[2] */
+extern short snd_stream_buffers; /* struct SndCommand *cmd[2] */
+extern short snd_batch_return_buffers; /* int *reply[2] */
+extern short snd_batch_index; /* current buffer */
 extern short GlobalTableStatus;
-extern short snd_cd_callback_pending;   /* CD read pending */
-extern short snd_cd_callback_fn;   /* CD read callback */
-extern short snd_return_callback;   /* abort callback */
-extern short snd_return_callback_data;   /* its argument (64-bit) */
+extern short snd_cd_callback_pending; /* CD read pending */
+extern short snd_cd_callback_fn; /* CD read callback */
+extern short snd_return_callback; /* abort callback */
+extern short snd_return_callback_data; /* its argument (64-bit) */
 /* volatile: retail's compiler keeps its 64-bit accesses out of delay
    slots, so they stay lui-based rather than going through $gp. */
 extern volatile long snd_cd_callback_data_l __asm__("D_0015EDD8") MACRO_ADDR;
@@ -375,8 +372,7 @@ int snd_GotReturns(void) {
         func_00116078(snd_no_return_error_string);
         return 0;
     }
-    if ((unsigned int)*(int *)((*(int *)&snd_current_buffer_index) * 4 + (char *)p + 4) !=
-        (unsigned int)p[0]) {
+    if ((unsigned int)*(int *)((*(int *)&snd_current_buffer_index) * 4 + (char *)p + 4) != (unsigned int)p[0]) {
         func_00116078(snd_no_return_error_string);
         return 0;
     }
@@ -527,8 +523,7 @@ void snd_SetGroupVoiceRange(int arg0, int arg1, int arg2) {
 LINKER_REMNANT("asm/remnants/core_text", func_0012E438);
 
 /* Command 0x11 with six ints; the last two arguments are passed through. */
-void snd_play_sound_vol_pan_pmpb(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5,
-                   int arg6, int arg7) {
+void snd_play_sound_vol_pan_pmpb(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7) {
     int local[6];
     local[0] = arg0;
     local[1] = arg1;
@@ -575,8 +570,7 @@ void snd_SoundIsStillPlaying_CB(int arg0, int arg1, int arg2) {
 LINKER_REMNANT("asm/remnants/core_text", func_0012E5B8);
 
 /* Command 0x21 with six ints; the last two arguments are passed through. */
-void snd_set_sound_params_cb(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5,
-                   int arg6, int arg7) {
+void snd_set_sound_params_cb(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7) {
     int local[6];
     local[0] = arg0;
     local[1] = arg1;
@@ -609,7 +603,7 @@ int snd_SendIOPCommandAndWait(int cmd, int size, void *arg) {
     do {
         snd_FlushSoundCommands();
         flush_cache(0);
-check:;
+    check:;
     } while (*(int *)&snd_current_buffer != 0);
     snd_PrepareReturnBuffer_s(snd_sync_buffer_w, 1);
     while (sce_sif_check_stat_rpc(&sound_command_client) != 0) {
@@ -683,7 +677,8 @@ void func_0012E820_r(int cmd, int size, unsigned char *data, int cb, long cb_dat
         }
         snd_FlushSoundCommands();
         if (tries == 1) {
-            func_00116078_p(snd_send_iop_command_buffer_full_string, *(int *)&snd_batch_index, *((int **)&snd_batch_command_buffers)[*(int *)&snd_batch_index]);
+            func_00116078_p(snd_send_iop_command_buffer_full_string, *(int *)&snd_batch_index,
+                            *((int **)&snd_batch_command_buffers)[*(int *)&snd_batch_index]);
         }
         tries++;
     }
@@ -733,7 +728,8 @@ extern void StoreObjectIndex_sb(void *, s32, s32 *) __asm__("func_0012E038");
 extern s32 SceSifCheckStatRpc_sb(void *) __asm__("func_0011B6B8");
 extern s32 printf_sb(const char *, ...) __asm__("func_00116078");
 extern void FlushCache_sb(s32) __asm__("func_00118D80");
-extern s32 sceSifCallRpc_sb(void *, u32, u32, void *, s32, void *, s32, void (*)(void *), void *) __asm__("func_0011B4C8");
+extern s32 sceSifCallRpc_sb(void *, u32, u32, void *, s32, void *, s32, void (*)(void *),
+                            void *) __asm__("func_0011B4C8");
 
 /* snd_SendCurrentBatch: store the reply size into the current batch,
    wait until the sound RPC client is idle (complaining and flushing the
@@ -743,13 +739,17 @@ extern s32 sceSifCallRpc_sb(void *, u32, u32, void *, s32, void *, s32, void (*)
 void snd_SendCurrentBatch(void) {
     s32 next;
 
-    StoreObjectIndex_sb(snd_batch_return_buffers_sb[snd_batch_index_sb], *snd_batch_command_buffers_sb[snd_batch_index_sb], snd_batch_command_buffers_sb[snd_batch_index_sb]);
+    StoreObjectIndex_sb(snd_batch_return_buffers_sb[snd_batch_index_sb],
+                        *snd_batch_command_buffers_sb[snd_batch_index_sb],
+                        snd_batch_command_buffers_sb[snd_batch_index_sb]);
     while (SceSifCheckStatRpc_sb(sound_command_client_sb) != 0) {
         printf_sb(snd_non_idle_error_string_sb);
         FlushCache_sb(0);
     }
-    sceSifCallRpc_sb(sound_command_client_sb, 0x4D, 1, snd_batch_command_buffers_sb[snd_batch_index_sb], 0x1000 - snd_batch_free_bytes_sb[snd_batch_index_sb],
-                  snd_batch_return_buffers_sb[snd_batch_index_sb], (*snd_batch_command_buffers_sb[snd_batch_index_sb] << 2) + 8, 0, 0);
+    sceSifCallRpc_sb(sound_command_client_sb, 0x4D, 1, snd_batch_command_buffers_sb[snd_batch_index_sb],
+                     0x1000 - snd_batch_free_bytes_sb[snd_batch_index_sb],
+                     snd_batch_return_buffers_sb[snd_batch_index_sb],
+                     (*snd_batch_command_buffers_sb[snd_batch_index_sb] << 2) + 8, 0, 0);
     next = snd_batch_index_sb != 1;
     snd_batch_index_sb = next;
     *snd_batch_command_buffers_sb[next] = 0;
@@ -782,8 +782,8 @@ void snd_reset_state_and_flush_commands(void) {
    (streaming-enabled flag, same as func_0012F030/func_0012F068's) and
    gp 0x166D00 - 0x7F38 = 0x15EDC8 (drain-commands-first flag). */
 extern short snd_cd_stream_active;
-extern short snd_batch_return_buffers_1;   /* the word at +0xC, SDA ($gp -0x7F38) */
-extern int snd_StreamSafeCdSync(int);              /* snd_StreamSafeCdSync */
+extern short snd_batch_return_buffers_1; /* the word at +0xC, SDA ($gp -0x7F38) */
+extern int snd_StreamSafeCdSync(int); /* snd_StreamSafeCdSync */
 extern int snd_SendIOPCommandAndWait(int, int, void *); /* snd_SendIOPCommandAndWait */
 
 /* snd_InitVAGStreamingEx: no-op (returns 0) if VAG streaming is already
@@ -823,8 +823,8 @@ extern int snd_SendIOPCommandNoWait_l(int, int, void *, int, long) __asm__("func
 
 /* Command 0x2C: seven words, the middle two each packing two 16-bit
    values; the last two arguments are passed through. */
-void snd_PlayVAGStreamByLocEx_CB(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5,
-                   int arg6, int arg7, int arg8, int arg9, long arg10) {
+void snd_PlayVAGStreamByLocEx_CB(int arg0, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7,
+                                 int arg8, int arg9, long arg10) {
     int local[7];
     local[0] = arg0;
     local[1] = arg1;

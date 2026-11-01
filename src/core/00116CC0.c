@@ -22,12 +22,9 @@ extern void libc_fflush(void);
 extern void _fwalk(void *, void *);
 extern char locale_lconv[];
 extern int libc_glue_read();
-extern long func_00116108_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_00116108");
-extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_001188C8");
-extern long func_00114518_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_00114518");
+extern long func_00116108_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00116108");
+extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c) __asm__("func_001188C8");
+extern long func_00114518_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00114518");
 extern int _close_r(int *errOut, int arg1);
 
 /*
@@ -36,27 +33,22 @@ extern int _close_r(int *errOut, int arg1);
  * `return 0` / `return searchee` tails instead of sharing them.)
  */
 char *find_substring(const char *searchee, const char *lookfor) {
-    if (*searchee == 0)
-    {
+    if (*searchee == 0) {
         if (*lookfor)
-            return (char *) 0;
-        return (char *) searchee;
+            return (char *)0;
+        return (char *)searchee;
     }
 
-    while (*searchee)
-    {
+    while (*searchee) {
         unsigned int i;
         i = 0;
 
-        while (1)
-        {
-            if (lookfor[i] == 0)
-            {
-                return (char *) searchee;
+        while (1) {
+            if (lookfor[i] == 0) {
+                return (char *)searchee;
             }
 
-            if (lookfor[i] != searchee[i])
-            {
+            if (lookfor[i] != searchee[i]) {
                 break;
             }
             i++;
@@ -64,7 +56,7 @@ char *find_substring(const char *searchee, const char *lookfor) {
         searchee++;
     }
 
-    return (char *) 0;
+    return (char *)0;
 }
 
 INCLUDE_ASM("asm/nonmatchings/core_text", func_00116D2C);

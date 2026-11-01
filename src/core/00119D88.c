@@ -29,12 +29,9 @@ extern void libc_fflush(void);
 extern void _fwalk(void *, void *);
 extern char locale_lconv[];
 extern int libc_glue_read();
-extern long func_00116108_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_00116108");
-extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_001188C8");
-extern long func_00114518_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_00114518");
+extern long func_00116108_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00116108");
+extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c) __asm__("func_001188C8");
+extern long func_00114518_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00114518");
 extern int _close_r(int *errOut, int arg1);
 extern int __sfvwrite(int, void *);
 extern void __sinit(void *);
@@ -113,15 +110,19 @@ void serialPutchar(int c) {
 int kprintf_ftoi(unsigned long bits) {
     long exponent = (long)((bits << 1) >> 53);
     exponent -= 1075;
-    if (exponent < -53) return 0;
-    if (exponent >= 13) return 9999;
+    if (exponent < -53)
+        return 0;
+    if (exponent >= 13)
+        return 9999;
     bits = (bits << 12) >> 12;
     bits |= 1UL << 52;
     if (exponent < 0) {
         exponent = -exponent;
         bits >>= (int)(exponent - 2);
-        if ((bits & 3) == 3) bits = (bits >> 2) + 1;
-        else bits >>= 2;
+        if ((bits & 3) == 3)
+            bits = (bits >> 2) + 1;
+        else
+            bits >>= 2;
     } else {
         bits <<= (int)exponent;
     }
@@ -207,176 +208,176 @@ int kprintf_format(const char *fmt, va_list ap) {
         again:
             fmt++;
             switch ((char)(*fmt - '0')) {
-            case 0:
-                n = fmt[1] - '0';
-                second = fmt[2];
-                if ((u8)n < 10) {
-                    if ((u32)(second - '0') < 10) {
-                        n = n * 10 + (second - '0');
-                        fmt += 2;
-                        if (n >= 32) {
-                            n = 31;
+                case 0:
+                    n = fmt[1] - '0';
+                    second = fmt[2];
+                    if ((u8)n < 10) {
+                        if ((u32)(second - '0') < 10) {
+                            n = n * 10 + (second - '0');
+                            fmt += 2;
+                            if (n >= 32) {
+                                n = 31;
+                            }
+                        } else {
+                            fmt += 1;
                         }
-                    } else {
-                        fmt += 1;
-                    }
-                    pad = &buf[31 - n];
-                    while (n > 0) {
-                        buf[31 - n] = '0';
-                        n--;
+                        pad = &buf[31 - n];
+                        while (n > 0) {
+                            buf[31 - n] = '0';
+                            n--;
+                        }
+                        goto again;
                     }
                     goto again;
-                }
-                goto again;
-            case 'l' - '0':
-                mod = 'l';
-                goto again;
-            case 'h' - '0':
-                mod = 'h';
-                goto again;
-            case 'o' - '0':
-                if (mod == 'l') {
-                    v = (ap += 8, *(s64 *)(ap - 8));
-                } else if (mod == 'h') {
-                    v = (ap += 8, *(u16 *)(ap - 8));
-                } else {
-                    v = (ap += 8, *(u32 *)(ap - 8));
-                }
-                p = &buf[31];
-                *p = 0;
-                if (v == 0) {
-                    *--p = '0';
-                } else {
-                    do {
-                        *--p = (v & 7) + '0';
-                        v = (u64)v >> 3;
-                    } while (v != 0);
-                }
-                if (pad != 0 && pad < p) {
-                    p = pad;
-                }
-                while (*p != 0) {
-                    kprintf_putchar_hook_r[0](*p++);
-                }
-                break;
-            case 'x' - '0':
-                if (mod == 'l') {
-                    v = (ap += 8, *(s64 *)(ap - 8));
-                } else if (mod == 'h') {
-                    v = (ap += 8, *(u16 *)(ap - 8));
-                } else {
-                    v = (ap += 8, *(u32 *)(ap - 8));
-                }
-                p = &buf[31];
-                *p = 0;
-                if (v == 0) {
-                    *--p = '0';
-                } else {
-                    do {
-                        d = v & 0xF;
-                        if (d < 10) {
-                            *--p = d + '0';
-                        } else {
-                            *--p = d + 'a' - 10;
-                        }
-                        v = (u64)v >> 4;
-                    } while (v != 0);
-                }
-                if (pad != 0 && pad < p) {
-                    p = pad;
-                }
-                while (*p != 0) {
-                    kprintf_putchar_hook_r[0](*p++);
-                }
-                break;
-            case 'd' - '0':
-                if (mod == 'l') {
-                    v = (ap += 8, *(s64 *)(ap - 8));
-                } else if (mod == 'h') {
-                    v = (ap += 8, *(s16 *)(ap - 8));
-                } else {
-                    v = (ap += 8, *(s32 *)(ap - 8));
-                }
-                p = &buf[31];
-                *p = 0;
-                if (v == 0) {
-                    *--p = '0';
-                } else {
-                    if (v < 0) {
-                        v = -v;
-                        kprintf_putchar_hook_r[0]('-');
+                case 'l' - '0':
+                    mod = 'l';
+                    goto again;
+                case 'h' - '0':
+                    mod = 'h';
+                    goto again;
+                case 'o' - '0':
+                    if (mod == 'l') {
+                        v = (ap += 8, *(s64 *)(ap - 8));
+                    } else if (mod == 'h') {
+                        v = (ap += 8, *(u16 *)(ap - 8));
+                    } else {
+                        v = (ap += 8, *(u32 *)(ap - 8));
                     }
-                    while (v != 0) {
-                        *--p = v % 10 + '0';
-                        v = v / 10;
-                    }
-                }
-                if (pad != 0 && pad < p) {
-                    p = pad;
-                }
-                while (*p != 0) {
-                    kprintf_putchar_hook_r[0](*p++);
-                }
-                break;
-            case 'u' - '0':
-                if (mod == 'l') {
-                    v = (ap += 8, *(s64 *)(ap - 8));
-                } else if (mod == 'h') {
-                    v = (ap += 8, *(u16 *)(ap - 8));
-                } else {
-                    v = (ap += 8, *(u32 *)(ap - 8));
-                }
-                p = &buf[31];
-                *p = 0;
-                if (v == 0) {
-                    *--p = '0';
-                } else {
-                    do {
-                        *--p = (u64)v % 10 + '0';
-                        v = (u64)v / 10;
-                    } while (v != 0);
-                }
-                if (pad != 0 && pad < p) {
-                    p = pad;
-                }
-                while (*p != 0) {
-                    kprintf_putchar_hook_r[0](*p++);
-                }
-                break;
-            case 'e' - '0':
-            case 'f' - '0': {
-                f32 f = (ap += 8, *(f32 *)(ap - 8));
-                if (f == 0.0f) {
-                    kprintf_putchar_hook_r[0]('0');
-                } else {
-                    printfloat_A0A0(f);
-                }
-            } break;
-            case 's' - '0': {
-                char *string = (ap += 8, *(char * *)(ap - 8));
-                if (*string == 0) {
-                    kprintf_putchar_hook_r[0]('(');
-                    kprintf_putchar_hook_r[0]('n');
-                    kprintf_putchar_hook_r[0]('u');
-                    kprintf_putchar_hook_r[0]('l');
-                    kprintf_putchar_hook_r[0]('l');
-                    kprintf_putchar_hook_r[0](')');
-                } else {
-                    p = string;
-                    if (*p != 0) {
+                    p = &buf[31];
+                    *p = 0;
+                    if (v == 0) {
+                        *--p = '0';
+                    } else {
                         do {
-                            kprintf_putchar_hook_r[0](*p++);
-                        } while (*p != 0);
+                            *--p = (v & 7) + '0';
+                            v = (u64)v >> 3;
+                        } while (v != 0);
                     }
+                    if (pad != 0 && pad < p) {
+                        p = pad;
+                    }
+                    while (*p != 0) {
+                        kprintf_putchar_hook_r[0](*p++);
+                    }
+                    break;
+                case 'x' - '0':
+                    if (mod == 'l') {
+                        v = (ap += 8, *(s64 *)(ap - 8));
+                    } else if (mod == 'h') {
+                        v = (ap += 8, *(u16 *)(ap - 8));
+                    } else {
+                        v = (ap += 8, *(u32 *)(ap - 8));
+                    }
+                    p = &buf[31];
+                    *p = 0;
+                    if (v == 0) {
+                        *--p = '0';
+                    } else {
+                        do {
+                            d = v & 0xF;
+                            if (d < 10) {
+                                *--p = d + '0';
+                            } else {
+                                *--p = d + 'a' - 10;
+                            }
+                            v = (u64)v >> 4;
+                        } while (v != 0);
+                    }
+                    if (pad != 0 && pad < p) {
+                        p = pad;
+                    }
+                    while (*p != 0) {
+                        kprintf_putchar_hook_r[0](*p++);
+                    }
+                    break;
+                case 'd' - '0':
+                    if (mod == 'l') {
+                        v = (ap += 8, *(s64 *)(ap - 8));
+                    } else if (mod == 'h') {
+                        v = (ap += 8, *(s16 *)(ap - 8));
+                    } else {
+                        v = (ap += 8, *(s32 *)(ap - 8));
+                    }
+                    p = &buf[31];
+                    *p = 0;
+                    if (v == 0) {
+                        *--p = '0';
+                    } else {
+                        if (v < 0) {
+                            v = -v;
+                            kprintf_putchar_hook_r[0]('-');
+                        }
+                        while (v != 0) {
+                            *--p = v % 10 + '0';
+                            v = v / 10;
+                        }
+                    }
+                    if (pad != 0 && pad < p) {
+                        p = pad;
+                    }
+                    while (*p != 0) {
+                        kprintf_putchar_hook_r[0](*p++);
+                    }
+                    break;
+                case 'u' - '0':
+                    if (mod == 'l') {
+                        v = (ap += 8, *(s64 *)(ap - 8));
+                    } else if (mod == 'h') {
+                        v = (ap += 8, *(u16 *)(ap - 8));
+                    } else {
+                        v = (ap += 8, *(u32 *)(ap - 8));
+                    }
+                    p = &buf[31];
+                    *p = 0;
+                    if (v == 0) {
+                        *--p = '0';
+                    } else {
+                        do {
+                            *--p = (u64)v % 10 + '0';
+                            v = (u64)v / 10;
+                        } while (v != 0);
+                    }
+                    if (pad != 0 && pad < p) {
+                        p = pad;
+                    }
+                    while (*p != 0) {
+                        kprintf_putchar_hook_r[0](*p++);
+                    }
+                    break;
+                case 'e' - '0':
+                case 'f' - '0': {
+                    f32 f = (ap += 8, *(f32 *)(ap - 8));
+                    if (f == 0.0f) {
+                        kprintf_putchar_hook_r[0]('0');
+                    } else {
+                        printfloat_A0A0(f);
+                    }
+                } break;
+                case 's' - '0': {
+                    char *string = (ap += 8, *(char **)(ap - 8));
+                    if (*string == 0) {
+                        kprintf_putchar_hook_r[0]('(');
+                        kprintf_putchar_hook_r[0]('n');
+                        kprintf_putchar_hook_r[0]('u');
+                        kprintf_putchar_hook_r[0]('l');
+                        kprintf_putchar_hook_r[0]('l');
+                        kprintf_putchar_hook_r[0](')');
+                    } else {
+                        p = string;
+                        if (*p != 0) {
+                            do {
+                                kprintf_putchar_hook_r[0](*p++);
+                            } while (*p != 0);
+                        }
+                    }
+                    break;
                 }
-                break;
-            }
-            case 'c' - '0':
-                v = (ap += 8, *(char *)(ap - 8));
-                kprintf_putchar_hook_r[0](v);
-                break;
-            default:
-                break;
+                case 'c' - '0':
+                    v = (ap += 8, *(char *)(ap - 8));
+                    kprintf_putchar_hook_r[0](v);
+                    break;
+                default:
+                    break;
             }
         } else {
             kprintf_putchar_hook_r[0](*fmt);
@@ -386,7 +387,6 @@ int kprintf_format(const char *fmt, va_list ap) {
         EnableInterrupts_A0A0();
     }
 }
-
 
 
 /* The print core: walks fmt with the va_list, writing through the hook
@@ -454,7 +454,10 @@ LINKER_REMNANT("asm/remnants/core_text", func_0011A770);
 
 extern int sif_cmd_init_done;
 extern int sif_cmd_dmac_handler_id;
-typedef struct { void (*f)(void *, void *); void *arg; } Hnd;
+typedef struct {
+    void (*f)(void *, void *);
+    void *arg;
+} Hnd;
 typedef struct {
     void *a0;
     void *a1;
@@ -465,7 +468,11 @@ typedef struct {
     int a6;
     int *a7;
 } CmdData;
-typedef struct { char pad[0xC]; int pad2; void *u10; } CmdPkt;
+typedef struct {
+    char pad[0xC];
+    int pad2;
+    void *u10;
+} CmdPkt;
 extern int disable_interrupts(void);
 extern void enable_interrupts(void);
 extern void flush_cache(int);
@@ -688,11 +695,11 @@ extern char sif_rpc_packet_table[];
 extern char sif_rpc_rdata_table[];
 extern char sif_rpc_client_table[];
 extern SifRpcData sif_rpc_data_d __asm__("D_00156900");
-extern int disable_interrupts(void);           /* DI */
-extern void enable_interrupts(void);          /* EI */
-extern void sceSifInitCmd(void);          /* sceSifInitCmd */
-extern int sce_sif_get_reg(int);            /* sceSifGetReg */
-extern int sce_sif_set_reg(int, int);       /* sceSifSetReg */
+extern int disable_interrupts(void); /* DI */
+extern void enable_interrupts(void); /* EI */
+extern void sceSifInitCmd(void); /* sceSifInitCmd */
+extern int sce_sif_get_reg(int); /* sceSifGetReg */
+extern int sce_sif_set_reg(int, int); /* sceSifSetReg */
 extern void sif_rpc_request_end(char *);
 extern void sif_rpc_request_bind(void *, void *);
 extern void sif_rpc_request_call(void *, void *);
@@ -871,23 +878,23 @@ void sif_rpc_request_end(char *p) {
     int h;
 
     switch (*(unsigned int *)(p + 0x20)) {
-    case 0x8000000A:
-        o = *(char **)(p + 0x1C);
-        if (*(int *)(o + 0x1C) != 0) {
-            (*(void (**)(int))(o + 0x1C))(*(int *)(o + 0x20));
+        case 0x8000000A:
             o = *(char **)(p + 0x1C);
-        }
-        break;
-    case 0x80000009:
-        o = *(char **)(p + 0x1C);
-        *(int *)(o + 0x24) = *(int *)(p + 0x24);
-        *(int *)(o + 0x14) = *(int *)(p + 0x28);
-        *(int *)(o + 0x18) = *(int *)(p + 0x2C);
-        break;
-    case 0x8000000C:
-    default:
-        o = *(char **)(p + 0x1C);
-        break;
+            if (*(int *)(o + 0x1C) != 0) {
+                (*(void (**)(int))(o + 0x1C))(*(int *)(o + 0x20));
+                o = *(char **)(p + 0x1C);
+            }
+            break;
+        case 0x80000009:
+            o = *(char **)(p + 0x1C);
+            *(int *)(o + 0x24) = *(int *)(p + 0x24);
+            *(int *)(o + 0x14) = *(int *)(p + 0x28);
+            *(int *)(o + 0x18) = *(int *)(p + 0x2C);
+            break;
+        case 0x8000000C:
+        default:
+            o = *(char **)(p + 0x1C);
+            break;
     }
     h = *(int *)(o + 0x8);
     if (h >= 0) {
@@ -994,9 +1001,9 @@ typedef struct {
 } BindPacket;
 
 extern char sif_rpc_data[];
-extern int create_semaphore(void *);   /* CreateSema */
-extern void delete_semaphore(int);     /* DeleteSema */
-extern int wait_semaphore(int);      /* WaitSema */
+extern int create_semaphore(void *); /* CreateSema */
+extern void delete_semaphore(int); /* DeleteSema */
+extern int wait_semaphore(int); /* WaitSema */
 
 /* sceSifBindRpc. Adapted from Lombyte's project (GPL-3.0) for PAL. */
 int sceSifBindRpc(void *client, int arg1, int arg2) {
@@ -1093,22 +1100,22 @@ void sif_rpc_request_call(void *request, void *data) {
     sd[12] = req[12];
     sd[13] = req[4];
 
-    if (base[0] < 0 || base[1] != 0) return;
+    if (base[0] < 0 || base[1] != 0)
+        return;
     iWakeupThread(base[0]);
 }
 
 typedef unsigned char u8_1B4C8;
 typedef signed int s32_1B4C8;
-struct SifRpcClient_1B4C8
-{
-  volatile s32_1B4C8 packet;
-  volatile s32_1B4C8 request_id;
+struct SifRpcClient_1B4C8 {
+    volatile s32_1B4C8 packet;
+    volatile s32_1B4C8 request_id;
     s32_1B4C8 semaphore_id;
     u8_1B4C8 pad_C[0x8];
     s32_1B4C8 server_buffer;
     u8_1B4C8 pad_18[0x4];
     s32_1B4C8 end_callback;
-  volatile s32_1B4C8 end_argument;
+    volatile s32_1B4C8 end_argument;
     s32_1B4C8 server;
 };
 struct SifRpcPacket_1B4C8 {
@@ -1133,10 +1140,12 @@ extern s32_1B4C8 sceSifSendCmd();
 extern s32_1B4C8 sceSifWriteBackDCache_r() __asm__("func_0011AD70");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/sdk/rpc/sce_sif_call_rpc.c, sceSifCallRpc. */
-s32_1B4C8 func_0011B4C8_r(struct SifRpcClient_1B4C8 *client, s32_1B4C8 rpc_number, s32_1B4C8 mode, s32_1B4C8 send_buf, s32_1B4C8 send_size,
-                          s32_1B4C8 recv_buf, s32_1B4C8 recv_size, s32_1B4C8 end_func, s32_1B4C8 end_data) __asm__("func_0011B4C8");
-s32_1B4C8 func_0011B4C8_r(struct SifRpcClient_1B4C8 *client, s32_1B4C8 rpc_number, s32_1B4C8 mode, s32_1B4C8 send_buf, s32_1B4C8 send_size,
-                          s32_1B4C8 recv_buf, s32_1B4C8 recv_size, s32_1B4C8 end_func, s32_1B4C8 end_data) {
+s32_1B4C8 func_0011B4C8_r(struct SifRpcClient_1B4C8 *client, s32_1B4C8 rpc_number, s32_1B4C8 mode, s32_1B4C8 send_buf,
+                          s32_1B4C8 send_size, s32_1B4C8 recv_buf, s32_1B4C8 recv_size, s32_1B4C8 end_func,
+                          s32_1B4C8 end_data) __asm__("func_0011B4C8");
+s32_1B4C8 func_0011B4C8_r(struct SifRpcClient_1B4C8 *client, s32_1B4C8 rpc_number, s32_1B4C8 mode, s32_1B4C8 send_buf,
+                          s32_1B4C8 send_size, s32_1B4C8 recv_buf, s32_1B4C8 recv_size, s32_1B4C8 end_func,
+                          s32_1B4C8 end_data) {
     s32_1B4C8 semaphore_parameters[6];
     struct SifRpcPacket_1B4C8 *packet;
     s32_1B4C8 semaphore_id;
@@ -1236,8 +1245,7 @@ int sce_sif_check_stat_rpc(void *arg0) {
     char *p = (char *)arg0;
     char *q = *(char **)p;
 
-    if (q == 0 || *(int *)(p + 4) != *(int *)(q + 0x18) ||
-        !(*(int *)(q + 0x10) & 1)) {
+    if (q == 0 || *(int *)(p + 4) != *(int *)(q + 0x18) || !(*(int *)(q + 0x10) & 1)) {
         return 0;
     }
     return 1;
@@ -1396,42 +1404,42 @@ void fs_receive_handler(s32 *arg) {
         libc_memcpy((void *)h.dest.v, pkt + 0x10, h.size.v);
     }
     switch (h.func.v) {
-    case 2:
-        r = (FsRcvRead *)(pkt + 0x14);
-        if (r->n1 > 0) {
-            d = r->d1;
-            for (i = 0; i < r->n1; i++) {
-                d[i] = r->buf1[i];
+        case 2:
+            r = (FsRcvRead *)(pkt + 0x14);
+            if (r->n1 > 0) {
+                d = r->d1;
+                for (i = 0; i < r->n1; i++) {
+                    d[i] = r->buf1[i];
+                }
             }
-        }
-        if (r->n2 > 0) {
-            d = r->d2;
-            for (i = 0; i < r->n2; i++) {
-                d[i] = r->buf2[i];
+            if (r->n2 > 0) {
+                d = r->d2;
+                for (i = 0; i < r->n2; i++) {
+                    d[i] = r->buf2[i];
+                }
             }
-        }
-        break;
-    case 11:
-        u.p = *(FsRcvPtr *)(pkt + 0x14);
-        *(FsDirent *)u.p.dest = *(FsDirent *)(pkt + 0x18);
-        break;
-    case 12:
-        u.p = *(FsRcvPtr *)(pkt + 0x14);
-        *(FsStat *)u.p.dest = *(FsStat *)(pkt + 0x18);
-        break;
-    case 23:
-    case 25:
-    case 26:
-        bs = (FsRcvBuf *)(pkt + 0x14);
-        u.b.dest = bs->dest;
-        u.b.size = bs->size;
-        n = u.b.size.v;
-        if (n > 0x400) {
-            u.b.size.v = 0x400;
-            n = 0x400;
-        }
-        libc_memcpy((void *)u.b.dest.v, pkt + 0x1C, n);
-        break;
+            break;
+        case 11:
+            u.p = *(FsRcvPtr *)(pkt + 0x14);
+            *(FsDirent *)u.p.dest = *(FsDirent *)(pkt + 0x18);
+            break;
+        case 12:
+            u.p = *(FsRcvPtr *)(pkt + 0x14);
+            *(FsStat *)u.p.dest = *(FsStat *)(pkt + 0x18);
+            break;
+        case 23:
+        case 25:
+        case 26:
+            bs = (FsRcvBuf *)(pkt + 0x14);
+            u.b.dest = bs->dest;
+            u.b.size = bs->size;
+            n = u.b.size.v;
+            if (n > 0x400) {
+                u.b.size.v = 0x400;
+                n = 0x400;
+            }
+            libc_memcpy((void *)u.b.dest.v, pkt + 0x1C, n);
+            break;
     }
     if (h.ret.v < 0) {
         u32 semaphore = 0u - (u32)h.ret.v;
@@ -1483,7 +1491,10 @@ ASM_FUNC("asm/handwritten/core_text", func_0011BC80);
  * D_00157E80, then send command 0xFF and copy back the reply word and the
  * flag that says whether the reply was 2. Returns 0 on success, -1 when the
  * bind failed, 0xFFFEFFFF when the RPC failed. */
-struct RpcCb { void (*cb)(void *); void *data; };
+struct RpcCb {
+    void (*cb)(void *);
+    void *data;
+};
 extern struct RpcCb fs_user_callback;
 extern char fs_receive_handler_data[];
 extern char fs_rpc_client[];
@@ -1494,7 +1505,9 @@ extern int FsResetState;
 extern void fs_receive_handler();
 extern void fs_user_callback_handler();
 
-struct W4 { char b[4]; };
+struct W4 {
+    char b[4];
+};
 s32 sceFsInit(void) {
     s32 r, i;
     char *p;
@@ -1559,8 +1572,7 @@ int fs_version_mismatch(void) {
     char *slot = FsResetBuffer;
     int r = 0;
 
-    if (libc_memcmp(slot, buf, 4) != 0 &&
-        libc_memcmp(slot, fs_expected_version, 4) != 0) {
+    if (libc_memcmp(slot, buf, 4) != 0 && libc_memcmp(slot, fs_expected_version, 4) != 0) {
         r = libc_memcmp(buf, fs_expected_version, 4) != 0;
     }
     return r;
@@ -1617,8 +1629,7 @@ extern s32 sceFsInit(void);
 extern s32 sif_call_rpc(void *, s32, s32, void *, s32, void *, s32, void *, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/sdk/library/sceopen.c, sceOpen. */
-s32 sceOpen(const u8 *path, s32 flags, ...)
-{
+s32 sceOpen(const u8 *path, s32 flags, ...) {
     struct SemaphoreParameters semaphore_parameters;
     va_list_1BF80 arguments;
     s32 result;
@@ -1657,7 +1668,7 @@ s32 sceOpen(const u8 *path, s32 flags, ...)
         request->path[0x3FF] = 0;
     }
     slot_index = file_slot - fs_iob_table_r;
-    request->flags = (s32) (flags & 0x6FFFFFFF);
+    request->flags = (s32)(flags & 0x6FFFFFFF);
     request->mode = mode;
     semaphore_parameters.max_count = 1;
     request->slot = slot_index;
@@ -1672,7 +1683,7 @@ s32 sceOpen(const u8 *path, s32 flags, ...)
         fs_call_sema_signal_r();
         return -0xB;
     }
-    return_value = *(u32 *)((u32) fs_rpc_receive_buffer_r | 0x20000000);
+    return_value = *(u32 *)((u32)fs_rpc_receive_buffer_r | 0x20000000);
     fs_call_sema_signal_r();
     if (return_value == 0) {
         delete_semaphore_r2(completion_semaphore);
@@ -1690,7 +1701,7 @@ s32 sceOpen(const u8 *path, s32 flags, ...)
     wait_semaphore(fs_iob_sema_r[0]);
     slot_mutex = fs_iob_sema_r[0];
     file_slot->fd = result;
-    file_slot->flags = (s32) (file_slot->flags | flags);
+    file_slot->flags = (s32)(file_slot->flags | flags);
     signal_semaphore(slot_mutex);
     return return_value;
 }
@@ -1752,8 +1763,7 @@ int sceClose(unsigned int fd) {
     state->sema = sid;
     state->result = (int)&result;
     state->size = 4;
-    rpcResult = sif_call_rpc(fs_rpc_client, 1, 0, state, 0x14,
-                                fs_rpc_receive_buffer, 4, 0, 0);
+    rpcResult = sif_call_rpc(fs_rpc_client, 1, 0, state, 0x14, fs_rpc_receive_buffer, 4, 0, 0);
     if (rpcResult < 0) {
         delete_semaphore(sid);
         fs_call_sema_signal();
@@ -1805,8 +1815,7 @@ extern s32 create_semaphore_r2(struct SemaphoreParameters2 *) __asm__("func_0011
 extern s32 delete_semaphore_r3(s32) __asm__("func_00118C80");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/sdk/library/sce_lseek.c, sceLseek. */
-s32 sceLseek(s32 fd, s32 offset, s32 origin)
-{
+s32 sceLseek(s32 fd, s32 offset, s32 origin) {
     struct FsSeekRequest *request;
     struct SifFileSlot *file_slot;
     struct SemaphoreParameters2 semaphore_parameters;
@@ -1892,8 +1901,7 @@ extern s32 delete_semaphore_r4(s32) __asm__("func_00118C80");
 extern void sceSifWriteBackDCache(void *, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/sdk/library/sceRead.c, sceRead. */
-s32 sceRead(s32 fd, void *buffer, s32 length)
-{
+s32 sceRead(s32 fd, void *buffer, s32 length) {
     struct FsReadRequest *request;
     struct SifFileSlot *file_slot;
     struct SemaphoreParameters2 semaphore_parameters;
@@ -1986,8 +1994,7 @@ extern void sceSifWriteBackDCache(void *, s32);
 extern s32 sif_call_rpc(void *, s32, s32, void *, s32, void *, s32, void *, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/sdk/library/scewrite.c, sceWrite. */
-s32 sceWrite(s32 fd, u8 *buffer, s32 length)
-{
+s32 sceWrite(s32 fd, u8 *buffer, s32 length) {
     struct FsWriteRequest *request;
     struct SifFileSlot *file_slot;
     struct SemaphoreParameters2 semaphore_parameters;
@@ -2114,8 +2121,7 @@ int sce_sif_alloc_iop_heap(int arg0) {
         return 0;
     }
     iop_heap_rpc_arg = arg0;
-    if (sif_call_rpc(iop_heap_rpc_client, 1, 0, &iop_heap_rpc_arg, 4,
-                      &iop_heap_rpc_reply, 4, 0, 0) >= 0) {
+    if (sif_call_rpc(iop_heap_rpc_client, 1, 0, &iop_heap_rpc_arg, 4, &iop_heap_rpc_reply, 4, 0, 0) >= 0) {
         return iop_heap_rpc_reply;
     } else {
         return 0;
@@ -2136,8 +2142,7 @@ int arg0;
         return 0;
     }
     iop_heap_rpc_arg = arg0;
-    if (sif_call_rpc(iop_heap_rpc_client, 2, 0, &iop_heap_rpc_arg, 4,
-                      &iop_heap_rpc_reply, 4, 0, 0) >= 0) {
+    if (sif_call_rpc(iop_heap_rpc_client, 2, 0, &iop_heap_rpc_arg, 4, &iop_heap_rpc_reply, 4, 0, 0) >= 0) {
         return iop_heap_rpc_reply;
     } else {
         return -1;

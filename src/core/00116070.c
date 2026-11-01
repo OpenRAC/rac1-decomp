@@ -50,7 +50,8 @@ void srand(int arg0) {
    (func_001160C8 above) sets. */
 int func_001160D8(void) {
     return (*(unsigned int *)((char *)_impure_ptr + 0x58) =
-            *(unsigned int *)((char *)_impure_ptr + 0x58) * 1103515245 + 12345) & 0x7FFFFFFF;
+                *(unsigned int *)((char *)_impure_ptr + 0x58) * 1103515245 + 12345) &
+           0x7FFFFFFF;
 }
 
 extern int libc_glue_read();

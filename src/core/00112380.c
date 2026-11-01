@@ -21,30 +21,30 @@ extern void *libc_memset_c(void *, int, unsigned int) __asm__("func_001153FC"); 
 
 /* newlib's MALLOC_ZERO (mallocr.c, dlmalloc 2.6.5, public domain),
    verbatim: its do/while(0) is the library's own macro wrapper. */
-#define MALLOC_ZERO(charp, nbytes)                                            \
-do {                                                                          \
-    unsigned int mzsz = (nbytes);                                             \
-    if (mzsz <= 9 * 4) {                                                      \
-        unsigned int *mz = (unsigned int *)(charp);                           \
-        if (mzsz >= 5 * 4) {                                                  \
-            *mz++ = 0;                                                        \
-            *mz++ = 0;                                                        \
-            if (mzsz >= 7 * 4) {                                              \
-                *mz++ = 0;                                                    \
-                *mz++ = 0;                                                    \
-                if (mzsz >= 9 * 4) {                                          \
-                    *mz++ = 0;                                                \
-                    *mz++ = 0;                                                \
-                }                                                             \
-            }                                                                 \
-        }                                                                     \
-        *mz++ = 0;                                                            \
-        *mz++ = 0;                                                            \
-        *mz = 0;                                                              \
-    } else {                                                                  \
-        libc_memset_c((charp), 0, mzsz);                                    \
-    }                                                                         \
-} while (0)
+#define MALLOC_ZERO(charp, nbytes)                      \
+    do {                                                \
+        unsigned int mzsz = (nbytes);                   \
+        if (mzsz <= 9 * 4) {                            \
+            unsigned int *mz = (unsigned int *)(charp); \
+            if (mzsz >= 5 * 4) {                        \
+                *mz++ = 0;                              \
+                *mz++ = 0;                              \
+                if (mzsz >= 7 * 4) {                    \
+                    *mz++ = 0;                          \
+                    *mz++ = 0;                          \
+                    if (mzsz >= 9 * 4) {                \
+                        *mz++ = 0;                      \
+                        *mz++ = 0;                      \
+                    }                                   \
+                }                                       \
+            }                                           \
+            *mz++ = 0;                                  \
+            *mz++ = 0;                                  \
+            *mz = 0;                                    \
+        } else {                                        \
+            libc_memset_c((charp), 0, mzsz);            \
+        }                                               \
+    } while (0)
 
 /* _calloc_r (newlib): allocate, then zero the chunk's usable size.
    Adapted from Lombyte's project (GPL-3.0) for PAL. */

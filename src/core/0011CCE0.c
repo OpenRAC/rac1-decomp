@@ -25,12 +25,9 @@ extern void libc_fflush(void);
 extern void _fwalk(void *, void *);
 extern char locale_lconv[];
 extern int libc_glue_read();
-extern long func_00116108_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_00116108");
-extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_001188C8");
-extern long func_00114518_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_00114518");
+extern long func_00116108_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00116108");
+extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c) __asm__("func_001188C8");
+extern long func_00114518_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00114518");
 extern int _close_r(int *errOut, int arg1);
 extern int __sfvwrite(int, void *);
 extern void __sinit(void *);
@@ -124,8 +121,7 @@ int lf_version_mismatch(void) {
     char *slot = lf_iop_version;
     int r = 0;
 
-    if (libc_memcmp(slot, buf, 4) != 0 &&
-        libc_memcmp(slot, lf_expected_version, 4) != 0) {
+    if (libc_memcmp(slot, buf, 4) != 0 && libc_memcmp(slot, lf_expected_version, 4) != 0) {
         r = libc_memcmp(buf, lf_expected_version, 4) != 0;
     }
     return r;
@@ -135,7 +131,7 @@ struct SifLoadCmd {
     int unk0;
     int unk4;
 };
-#define SIFCMD ((struct SifLoadCmd *) D_00158300)
+#define SIFCMD ((struct SifLoadCmd *)D_00158300)
 /* _sceSifLoadModuleBuffer. Adapted from Lombyte's project (GPL-3.0) for PAL. */
 int _sceSifLoadModuleBuffer(int arg0, int arg1, int arg2, void *out) {
     int *arg3 = out;
@@ -152,10 +148,10 @@ int _sceSifLoadModuleBuffer(int arg0, int arg1, int arg2, void *out) {
     SIFCMD->unk0 = arg0;
     if (arg2 != 0) {
         if (arg1 >= 0xFD) {
-            memcpy(lf_rpc_buffer + 0x104, (void *) arg2, 0xFC);
+            memcpy(lf_rpc_buffer + 0x104, (void *)arg2, 0xFC);
             SIFCMD->unk4 = 0xFC;
         } else {
-            memcpy(lf_rpc_buffer + 0x104, (void *) arg2, arg1);
+            memcpy(lf_rpc_buffer + 0x104, (void *)arg2, arg1);
             SIFCMD->unk4 = arg1;
         }
     } else {
