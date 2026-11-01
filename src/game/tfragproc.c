@@ -35,8 +35,7 @@ extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
 extern unsigned char normal_font_metrics[];
 extern unsigned char small_font_metrics[];
 extern unsigned char large_font_metrics[];
-extern void FontPrint(void *, void *, void *, void *, void *, int,
-                          unsigned char *);
+extern void FontPrint(void *, void *, void *, void *, void *, int, unsigned char *);
 extern int measure_text_width_regular(unsigned char *, int);
 extern int measure_text_width_small(unsigned char *, int);
 extern int GetEffectTex(int);
@@ -212,15 +211,13 @@ extern void VU1_addGSregister(int, int);
 extern void draw_map_overlay(void);
 extern void SetupGifPaging(int);
 extern void DoGifPaging(void);
-extern void func_001F68E8_c(int, int, long, void *, int)
-    __asm__("func_001F68E8");
+extern void func_001F68E8_c(int, int, long, void *, int) __asm__("func_001F68E8");
 extern void *msg_string_id(int) __asm__("func_001FE540");
 extern short panel_clear_color;
 extern void draw_hud_rect_blended(int, int, int, int, long, long);
 extern int GetIconFrame(int, int);
 extern void HudSprite(int, int, int, int, int, int);
-extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long,
-                          long);
+extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
 extern short fs_aa_buffer[];
 extern long transition_overlay_tex0;
 extern int acquire_menu_stream_buffer(int);

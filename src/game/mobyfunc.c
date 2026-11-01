@@ -36,8 +36,7 @@ extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
 extern unsigned char normal_font_metrics[];
 extern unsigned char small_font_metrics[];
 extern unsigned char large_font_metrics[];
-extern void FontPrint(void *, void *, void *, void *, void *, int,
-                          unsigned char *);
+extern void FontPrint(void *, void *, void *, void *, void *, int, unsigned char *);
 extern int measure_text_width_regular(unsigned char *, int);
 extern int measure_text_width_small(unsigned char *, int);
 extern int GetEffectTex(int);
@@ -523,8 +522,7 @@ void prune_moby_references(void) {
         char *e = *p;
         i--;
         if (e != 0) {
-            if ((*(unsigned char *)(e + 0x20) & 0x80) != 0 ||
-                *(unsigned char *)(e + 0x52) != sentinel) {
+            if ((*(unsigned char *)(e + 0x20) & 0x80) != 0 || *(unsigned char *)(e + 0x52) != sentinel) {
                 *p = 0;
             }
         }
@@ -874,8 +872,7 @@ LINKER_REMNANT("asm/remnants/text", func_0020E330);
 void pack_render_command_fields(u64 *command_words, u64 upper_field, u64 middle_field, u64 low_field, u64 tail_field);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/commands/pack_render_command_fields.c, PackRenderCommandFields. */
-void pack_render_command_fields(u64 *command_words, u64 upper_field,
-                             u64 middle_field, u64 low_field, u64 tail_field) {
+void pack_render_command_fields(u64 *command_words, u64 upper_field, u64 middle_field, u64 low_field, u64 tail_field) {
     int command_word_index;
     if (middle_field) {
         upper_field <<= 32;

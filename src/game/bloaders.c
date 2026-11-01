@@ -81,12 +81,10 @@ void LoadPifAsPSMT8H(void *arg0, void *arg1, int tbp, int cbp) {
     flush_cache(0);
     sceGsExecLoadImage(&li, d.image);
     wait_for_graphics_pipeline_idle(0, 0);
-    out[0] = (unsigned long)d.tbp | ((unsigned long)d.tbw << 14)
-           | ((unsigned long)0x1B << 20) | ((unsigned long)d.tw << 26)
-           | ((unsigned long)d.th << 30) | ((unsigned long)1 << 34)
-           | ((unsigned long)0 << 35) | ((unsigned long)c << 37)
-           | ((unsigned long)pif->psm << 51) | ((unsigned long)0 << 55)
-           | ((unsigned long)0 << 56) | ((unsigned long)4 << 61);
+    out[0] = (unsigned long)d.tbp | ((unsigned long)d.tbw << 14) | ((unsigned long)0x1B << 20) |
+             ((unsigned long)d.tw << 26) | ((unsigned long)d.th << 30) | ((unsigned long)1 << 34) |
+             ((unsigned long)0 << 35) | ((unsigned long)c << 37) | ((unsigned long)pif->psm << 51) |
+             ((unsigned long)0 << 55) | ((unsigned long)0 << 56) | ((unsigned long)4 << 61);
     out[1] = 1;
     out[2] = 0;
 }

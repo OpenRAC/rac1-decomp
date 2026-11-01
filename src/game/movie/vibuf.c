@@ -318,8 +318,8 @@ int viBufRestartDMA(ViBuf *vb) {
             int size = vb->count << 11;
             qwc = (vb->base + (a << 11) - madr) >> 4;
             tadr = ((a << 4) + (unsigned int)vb->tags) & 0x0FFFFFFF;
-            id = (vb->base + (s->d4_madr - vb->base) % size
-                  == vb->base + (((vb->fC + vb->f10) % vb->count) << 11)) ? 0 : 3;
+            id = (vb->base + (s->d4_madr - vb->base) % size == vb->base + (((vb->fC + vb->f10) % vb->count) << 11)) ? 0
+                                                                                                                    : 3;
             chcr = (s->d4_chcr & 0x0FFFFFFF) | (id << 28) | 0x100;
             if (!VB_IN_RANGE(b, vb->fC, vb->f10, vb->count)) {
                 vb->fC = b;
@@ -387,7 +387,9 @@ void viBufFlush(ViBuf *vb) {
     signal_semaphore(vb->sema);
 }
 /* a % b as a helper: once inlined, its zero-divisor check is tested against $0 */
-static inline int ring_mod(int a, int b) { return a % b; }
+static inline int ring_mod(int a, int b) {
+    return a % b;
+}
 
 /* viBufModifyPts(ViBuf *, TimeStamp *): walks the 0x18-byte entries of the table at
  * 0x50 from the oldest one (index (f5C - f58) mod ntbl) while they lie within ts's
@@ -400,28 +402,28 @@ int viBufModifyPts(ViBuf *vb, TimeStamp *ts) {
     TimeStamp *e;
 
     if (vb->f58 > 0) {
-    while (go && (e = &((TimeStamp *)vb->tbl)[i])->len != 0 && ts->len != 0) {
-        if (ring_mod(e->pos + size - ts->pos, size) < ts->len) {
-            int n = ts->pos + ts->len - e->pos;
-            if (e->len < n) {
-                n = e->len;
-            }
-            e->pos = (e->pos + n) % size;
-            e->len -= n;
-            if (e->len == 0) {
-                if (e->pts >= 0) {
-                    e->pts = -1;
-                    e->dts = -1;
-                    e->pos = 0;
-                    e->len = 0;
+        while (go && (e = &((TimeStamp *)vb->tbl)[i])->len != 0 && ts->len != 0) {
+            if (ring_mod(e->pos + size - ts->pos, size) < ts->len) {
+                int n = ts->pos + ts->len - e->pos;
+                if (e->len < n) {
+                    n = e->len;
                 }
-                vb->f58 = (vb->f58 - 1 < 0) ? 0 : vb->f58 - 1;
+                e->pos = (e->pos + n) % size;
+                e->len -= n;
+                if (e->len == 0) {
+                    if (e->pts >= 0) {
+                        e->pts = -1;
+                        e->dts = -1;
+                        e->pos = 0;
+                        e->len = 0;
+                    }
+                    vb->f58 = (vb->f58 - 1 < 0) ? 0 : vb->f58 - 1;
+                }
+            } else {
+                go = 0;
             }
-        } else {
-            go = 0;
+            i = (i + 1) % vb->ntbl;
         }
-        i = (i + 1) % vb->ntbl;
-    }
     }
     return 0;
 }

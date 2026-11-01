@@ -22,7 +22,8 @@ int audioDecCreate(char *dec, void *buffer, int size, char *staging) {
     movie_adpcm_staging_buf = staging;
     *(int *)(dec + 0x4C) = 0x400;
     *(int *)(dec + 0x48) = snd_init_movie_sound(0x400, 0x1000, 0x400, 0, 5, 3);
-    if (*(int *)(dec + 0x48) < 0) return 0;
+    if (*(int *)(dec + 0x48) < 0)
+        return 0;
     return 1;
 }
 /* AudioDec: only the fields these functions touch are known. */
@@ -118,7 +119,8 @@ void audioDecEndPut(AudioDec *dec, int count) {
                 used = header;
             }
             dec->fill += used;
-            if (dec->fill >= 0x28) dec->pending = 1;
+            if (dec->fill >= 0x28)
+                dec->pending = 1;
             count -= used;
         } else {
             dec->pending = 1;
@@ -141,7 +143,12 @@ void audioDecSend(AudioDec *dec) {
         sendADPCM(dec);
     }
 }
-typedef struct { int src; int dst; int size; int mode; } SpuDma;
+typedef struct {
+    int src;
+    int dst;
+    int size;
+    int mode;
+} SpuDma;
 
 extern void flush_cache(int);
 extern unsigned int sce_sif_set_dma(SpuDma *, int);
@@ -196,17 +203,17 @@ void sendADPCM(AudioDec *dec) {
 
     avail = 0;
     switch (d->mode) {
-    case 1:
-        if (d->cnt < 0x1000) {
+        case 1:
+            if (d->cnt < 0x1000) {
+                return;
+            }
+            avail = 0x1000 - d->bytes;
+            break;
+        case 2:
+            avail = (snd_GetMovieNAX() - d->pos) & 0xFFF;
+            break;
+        case 3:
             return;
-        }
-        avail = 0x1000 - d->bytes;
-        break;
-    case 2:
-        avail = (snd_GetMovieNAX() - d->pos) & 0xFFF;
-        break;
-    case 3:
-        return;
     }
     while (avail >= 0x400 && d->cnt >= (d->nch << 10)) {
         next = avail - 0x400;

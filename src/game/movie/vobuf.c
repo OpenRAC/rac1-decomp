@@ -61,7 +61,8 @@ int voBufIsEmpty(VoBuf *vb) {
 }
 /* Returns the current ring entry when the corresponding count test permits it. */
 char *voBufGetTag(VoBuf *vb) {
-    if (voBufIsEmpty(vb)) return 0;
+    if (voBufIsEmpty(vb))
+        return 0;
     return vb->data + ((vb->wr - vb->count + vb->cap) % vb->cap) * 0x138C0;
 }
 /* voBufDecCount(VoBuf *) */

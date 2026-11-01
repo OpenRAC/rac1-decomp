@@ -36,8 +36,7 @@ extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
 extern unsigned char normal_font_metrics[];
 extern unsigned char small_font_metrics[];
 extern unsigned char large_font_metrics[];
-extern void FontPrint(void *, void *, void *, void *, void *, int,
-                          unsigned char *);
+extern void FontPrint(void *, void *, void *, void *, void *, int, unsigned char *);
 extern int measure_text_width_regular(unsigned char *, int);
 extern int measure_text_width_small(unsigned char *, int);
 extern int GetEffectTex(int);
@@ -244,8 +243,7 @@ extern int disc_table[];
 extern short cd_read_state[];
 extern int g_game_language MACRO_ADDR;
 extern void music_secondary_start_callback(int, long);
-extern void snd_PlayVAGStreamByLocEx_CB(int, int, int, int, short, int, int, int,
-                          int, void (*)(int, long), long);
+extern void snd_PlayVAGStreamByLocEx_CB(int, int, int, int, short, int, int, int, int, void (*)(int, long), long);
 
 /* Plays sound arg0 in 60000..: the other play functions below differ
    only in their table. */
@@ -293,8 +291,8 @@ void music_start_track_60000(int arg0, int arg1, int arg2) {
     s->secondary.remaining_time = 0xBB80;
     s->secondary.volume = arg2;
     s->secondary.crossfade_enabled = 0;
-    snd_PlayVAGStreamByLocEx_CB(h, 0, 0, 0, arg2, 0, 2, 0, 0x21,
-                  music_secondary_start_callback, (long)(unsigned int)&s->secondary);
+    snd_PlayVAGStreamByLocEx_CB(h, 0, 0, 0, arg2, 0, 2, 0, 0x21, music_secondary_start_callback,
+                                (long)(unsigned int)&s->secondary);
 }
 
 typedef struct {
@@ -330,9 +328,8 @@ void music_start_track_50000(int track, int flags, int volume) {
     music_stream_state->secondary.remaining_time = 48000;
     music_stream_state->secondary.volume = volume;
     music_stream_state->secondary.crossfade_enabled = 0;
-    snd_PlayVAGStreamByLocEx_CB(handle, 0, 0, 0, (s16)volume, 0, 2, 0, 0x21,
-                  music_secondary_start_callback,
-                  (long)(unsigned int)&music_stream_state->secondary);
+    snd_PlayVAGStreamByLocEx_CB(handle, 0, 0, 0, (s16)volume, 0, 2, 0, 0x21, music_secondary_start_callback,
+                                (long)(unsigned int)&music_stream_state->secondary);
 }
 
 typedef struct {
@@ -363,8 +360,8 @@ void music_start_track_40000(int track, int track_flags, int volume) {
     s->secondary.remaining_time = 0xBB80;
     s->secondary.volume = volume;
     s->secondary.crossfade_enabled = 0;
-    snd_PlayVAGStreamByLocEx_CB(location, 0, 0, 0, volume, 0, 2, 0, 0x21,
-                  music_secondary_start_callback, (long)(unsigned int)&s->secondary);
+    snd_PlayVAGStreamByLocEx_CB(location, 0, 0, 0, volume, 0, 2, 0, 0x21, music_secondary_start_callback,
+                                (long)(unsigned int)&s->secondary);
 }
 
 /* A byte flag; declared int-sized so MACRO_ADDR keeps it off $gp (-G2). */
@@ -393,8 +390,8 @@ void music_start_track_30000(int arg0, int arg1, int arg2) {
     *(int *)(s + 0x68) = 0xBB80;
     *(short *)(s + 0x56) = arg2;
     *(short *)(s + 0x60) = 0;
-    snd_PlayVAGStreamByLocEx_CB(*p, 0, 0, 0, *(unsigned char *)&gHelpDeskVoice_w ? arg2 : 0,
-                  0, 2, 0, 0x21, music_secondary_start_callback, (long)(unsigned int)music_player_dialogue);
+    snd_PlayVAGStreamByLocEx_CB(*p, 0, 0, 0, *(unsigned char *)&gHelpDeskVoice_w ? arg2 : 0, 0, 2, 0, 0x21,
+                                music_secondary_start_callback, (long)(unsigned int)music_player_dialogue);
 }
 
 typedef struct {
@@ -439,8 +436,8 @@ void music_start_track_20000(int track, int track_flags, int volume) {
     state->secondary.remaining_time = 0xBB80;
     state->secondary.volume = volume;
     state->secondary.crossfade_enabled = 0;
-    snd_PlayVAGStreamByLocEx_CB(handle, 0, 0, 0, volume, 0, 2, 0, 0x21,
-                  music_secondary_start_callback, (long)(unsigned int)&state->secondary);
+    snd_PlayVAGStreamByLocEx_CB(handle, 0, 0, 0, volume, 0, 2, 0, 0x21, music_secondary_start_callback,
+                                (long)(unsigned int)&state->secondary);
 }
 
 /* The PAL music stream state at D_001517D0: only the secondary channel record
@@ -487,8 +484,8 @@ void music_start_track_10000(int track, int flags, int volume) {
     rec->secondary.remaining_time = 0xBB80;
     rec->secondary.volume = volume;
     rec->secondary.crossfade_enabled = 0;
-    snd_PlayVAGStreamByLocEx_CB(stream, 0, 0, 0, volume, 0, 2, 0, 0x21,
-                  music_secondary_start_callback, (long)(unsigned int)&rec->secondary);
+    snd_PlayVAGStreamByLocEx_CB(stream, 0, 0, 0, volume, 0, 2, 0, 0x21, music_secondary_start_callback,
+                                (long)(unsigned int)&rec->secondary);
 }
 
 extern char scene_sounds[];
@@ -548,8 +545,8 @@ void music_start_track_by_id(int track, int track_flags, int volume) {
     s->secondary.remaining_time = 0xBB80;
     s->secondary.volume = volume;
     s->secondary.crossfade_enabled = 0;
-    snd_PlayVAGStreamByLocEx_CB(handle, 0, 0, 0, volume, 0, 2, 0, 0x21,
-                  music_secondary_start_callback, (long)(unsigned int)&s->secondary);
+    snd_PlayVAGStreamByLocEx_CB(handle, 0, 0, 0, volume, 0, 2, 0, 0x21, music_secondary_start_callback,
+                                (long)(unsigned int)&s->secondary);
 }
 
 extern short cd_read_state[];
@@ -613,9 +610,8 @@ void music_PreseekTrack(int arg0, int arg1, int arg2) {
             music_stream_state->primary.volume = arg2;
             music_stream_state->primary.crossfade_enabled = 0;
             stream_location = *entry;
-            snd_PlayVAGStreamByLocEx_CB(stream_location, 0, 0, 0, arg2, 0, 1, 0, 0x21,
-                          music_primary_preseek_callback,
-                          (long)(unsigned int)&music_stream_state->primary.handle);
+            snd_PlayVAGStreamByLocEx_CB(stream_location, 0, 0, 0, arg2, 0, 1, 0, 0x21, music_primary_preseek_callback,
+                                        (long)(unsigned int)&music_stream_state->primary.handle);
         }
     }
 }
@@ -661,8 +657,8 @@ void music_StartTrack(int arg0, int arg1, int arg2) {
     s->flags = arg1;
     s->volume = arg2;
     s->crossfade_enabled = 0;
-    snd_PlayVAGStreamByLocEx_CB(h, 0, 0, 0, arg2, 0, 1, 0, 0x20,
-                  music_primary_start_callback, (long)(unsigned int)&s->handle);
+    snd_PlayVAGStreamByLocEx_CB(h, 0, 0, 0, arg2, 0, 1, 0, 0x20, music_primary_start_callback,
+                                (long)(unsigned int)&s->handle);
 }
 
 extern void music_primary_replace_callback(int, long);
@@ -707,8 +703,8 @@ void music_StartTrackBody(int arg0, int arg1, int arg2) {
     *(int *)(s + 0x4C) = 0xBB80;
     *(short *)(s + 0x3A) = arg2;
     *(short *)(s + 0x44) = 0;
-    snd_PlayVAGStreamByLocEx_CB(h, 0, 0, 0, arg2, 0, 1, cur, flags,
-                  music_primary_replace_callback, (long)(unsigned int)(s + 0x34));
+    snd_PlayVAGStreamByLocEx_CB(h, 0, 0, 0, arg2, 0, 1, cur, flags, music_primary_replace_callback,
+                                (long)(unsigned int)(s + 0x34));
 }
 
 /* Retail carries 4 bytes of inter-function padding after this endlabel. */
@@ -764,8 +760,8 @@ int music_Transition(int arg0, int arg1, int arg2, int arg3) {
             s->transition.state = 1;
             s->transition.crossfade_enabled = 1;
             s->transition.volume = arg3;
-            snd_PlayVAGStreamByLocEx_CB(h, 0, 0, 0, arg3, 0, 1, 0, 0x20,
-                          music_transition_start_callback, (long)(unsigned int)&s->transition.handle);
+            snd_PlayVAGStreamByLocEx_CB(h, 0, 0, 0, arg3, 0, 1, 0, 0x20, music_transition_start_callback,
+                                        (long)(unsigned int)&s->transition.handle);
         } else {
             return 0;
         }
@@ -1030,11 +1026,11 @@ void music_Update(void) {
         if (cd_read_state_r.primary.handle == 0 && (cd_read_state_r.primary.flags & 1) &&
             cd_read_state_r.requested_track == -1) {
             music_StartTrack(cd_read_state_r.primary.track, (s16)cd_read_state_r.primary.flags,
-                              cd_read_state_r.primary.volume);
+                             cd_read_state_r.primary.volume);
         } else if (cd_read_state_r.primary.state != 9 && cd_read_state_r.primary.handle != 0) {
             if (cd_read_state_r.primary.handle != 0xFFFFFFFF && cd_read_state_r.primary.state == 8) {
                 music_StartTrackBody(cd_read_state_r.primary.track, cd_read_state_r.primary.flags,
-                                       cd_read_state_r.primary.volume);
+                                     cd_read_state_r.primary.volume);
             }
         }
     }
@@ -1066,54 +1062,50 @@ void music_Update(void) {
         !(cd_read_state_r.primary.fade_flags & 0x8000) && !(cd_read_state_r.primary.state & 0x8000) &&
         !(cd_read_state_r.transition.fade_flags & 0x8000) && !(cd_read_state_r.transition.state & 0x8000)) {
         switch (cd_read_state_r.crossfade_state) {
-        case 2:
-            /* Fade the primary stream against the transition's remaining time. */
-            fade_volume =
-                cd_read_state_r.primary.volume *
-                (cd_read_state_r.crossfade_interval -
-                 (cd_read_state_r.crossfade_remaining_time - cd_read_state_r.transition.remaining_time)) /
-                cd_read_state_r.crossfade_interval;
-            if (fade_volume <= 0 ||
-                ((cd_read_state_r.transition.state != 4 ||
-                  cd_read_state_r.transition.crossfade_enabled == 0) &&
-                 cd_read_state_r.transition.handle == 0) ||
-                (handle = cd_read_state_r.primary.handle) == 0) {
-                cd_read_state_r.crossfade_state = 3;
-                cd_read_state_r.primary.state = 5;
-            } else if (cd_read_state_r.primary.state != 9) {
-                /* The callback receives the old handle; mark its slot pending before submission. */
-                *(u32 *)&cd_read_state_r.primary.handle = 0xFFFFFFFF;
-                snd_set_sound_params_cb(handle, 5, fade_volume, 0, 0, 0, set_sound_handle_id_r,
-                                        (s64)&cd_read_state_r.primary.handle);
-            }
-            break;
-        case 3:
-            if (cd_read_state_r.primary.state == 0 && (cd_read_state_r.transition.crossfade_enabled != 0 ||
-                                                   cd_read_state_r.transition.handle == 0)) {
-                music_PreseekTrack(cd_read_state_r.requested_track, cd_read_state_r.primary.flags,
-                                    cd_read_state_r.primary.volume);
-                cd_read_state_r.requested_track = -1;
-                cd_read_state_r.crossfade_state = 4;
-            }
-            break;
-        case 4:
-            if (cd_read_state_r.primary.state == 3) {
-                if (cd_read_state_r.transition.remaining_time < cd_read_state_r.crossfade_interval ||
-                    cd_read_state_r.transition.state != 4 ||
-                    (cd_read_state_r.transition.crossfade_enabled == 0 &&
-                     cd_read_state_r.transition.handle == 0)) {
-                    snd_ContinueVAGStream_r(cd_read_state_r.primary.handle);
-                    cd_read_state_r.primary.state = 8;
-                    cd_read_state_r.crossfade_state = 5;
+            case 2:
+                /* Fade the primary stream against the transition's remaining time. */
+                fade_volume = cd_read_state_r.primary.volume *
+                              (cd_read_state_r.crossfade_interval -
+                               (cd_read_state_r.crossfade_remaining_time - cd_read_state_r.transition.remaining_time)) /
+                              cd_read_state_r.crossfade_interval;
+                if (fade_volume <= 0 ||
+                    ((cd_read_state_r.transition.state != 4 || cd_read_state_r.transition.crossfade_enabled == 0) &&
+                     cd_read_state_r.transition.handle == 0) ||
+                    (handle = cd_read_state_r.primary.handle) == 0) {
+                    cd_read_state_r.crossfade_state = 3;
+                    cd_read_state_r.primary.state = 5;
+                } else if (cd_read_state_r.primary.state != 9) {
+                    /* The callback receives the old handle; mark its slot pending before submission. */
+                    *(u32 *)&cd_read_state_r.primary.handle = 0xFFFFFFFF;
+                    snd_set_sound_params_cb(handle, 5, fade_volume, 0, 0, 0, set_sound_handle_id_r,
+                                            (s64)&cd_read_state_r.primary.handle);
                 }
-            }
-            break;
-        case 5:
-            if (cd_read_state_r.transition.state != 4 ||
-                cd_read_state_r.transition.crossfade_enabled == 0) {
-                cd_read_state_r.crossfade_state = 0;
-            }
-            break;
+                break;
+            case 3:
+                if (cd_read_state_r.primary.state == 0 &&
+                    (cd_read_state_r.transition.crossfade_enabled != 0 || cd_read_state_r.transition.handle == 0)) {
+                    music_PreseekTrack(cd_read_state_r.requested_track, cd_read_state_r.primary.flags,
+                                       cd_read_state_r.primary.volume);
+                    cd_read_state_r.requested_track = -1;
+                    cd_read_state_r.crossfade_state = 4;
+                }
+                break;
+            case 4:
+                if (cd_read_state_r.primary.state == 3) {
+                    if (cd_read_state_r.transition.remaining_time < cd_read_state_r.crossfade_interval ||
+                        cd_read_state_r.transition.state != 4 ||
+                        (cd_read_state_r.transition.crossfade_enabled == 0 && cd_read_state_r.transition.handle == 0)) {
+                        snd_ContinueVAGStream_r(cd_read_state_r.primary.handle);
+                        cd_read_state_r.primary.state = 8;
+                        cd_read_state_r.crossfade_state = 5;
+                    }
+                }
+                break;
+            case 5:
+                if (cd_read_state_r.transition.state != 4 || cd_read_state_r.transition.crossfade_enabled == 0) {
+                    cd_read_state_r.crossfade_state = 0;
+                }
+                break;
         }
     }
     music_UpdateStream_r(&cd_read_state_r.primary.handle);

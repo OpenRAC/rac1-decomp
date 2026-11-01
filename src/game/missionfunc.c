@@ -36,8 +36,7 @@ extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
 extern unsigned char normal_font_metrics[];
 extern unsigned char small_font_metrics[];
 extern unsigned char large_font_metrics[];
-extern void FontPrint(void *, void *, void *, void *, void *, int,
-                          unsigned char *);
+extern void FontPrint(void *, void *, void *, void *, void *, int, unsigned char *);
 extern int measure_text_width_regular(unsigned char *, int);
 extern int measure_text_width_small(unsigned char *, int);
 extern int GetEffectTex(int);
@@ -185,7 +184,9 @@ int update_mission_list(void) {
 extern unsigned char level_available[];
 extern unsigned char item_available_b[] __asm__("D_0013D5C8");
 extern unsigned char items_acquired[];
-typedef struct { int a, b, c, d; } Rec16_C940;
+typedef struct {
+    int a, b, c, d;
+} Rec16_C940;
 extern Rec16_C940 race_gates_r[] __asm__("D_0013D6B8");
 extern unsigned char gSpecialItems[];
 extern unsigned char gold_bolts_collected[][4];
@@ -193,28 +194,30 @@ extern unsigned char gold_bolts_collected[][4];
 /* A 10-case switch; the explicit `case 9: break;` keeps retail's table. */
 int check_mission_condition(short type, int arg) {
     switch (type) {
-    case 0:
-        return 1;
-    case 1:
-        return level_available[arg] != 0;
-    case 2:
-        return item_available_b[arg] != 0;
-    case 3:
-        return items_acquired[arg] != 0;
-    case 4:
-        if (arg < 0x79) return race_gates_r[arg].d != 0;
-        break;
-    case 5:
-        if (arg < 0x79) return race_gates_r[arg].d >= 2;
-        break;
-    case 6:
-        return gSpecialItems[arg] != 0;
-    case 7:
-        return ((int (*)(void))arg)() != 0;
-    case 8:
-        return gold_bolts_collected[arg >> 16][arg & 0xFFFF] != 0;
-    case 9:
-        break;
+        case 0:
+            return 1;
+        case 1:
+            return level_available[arg] != 0;
+        case 2:
+            return item_available_b[arg] != 0;
+        case 3:
+            return items_acquired[arg] != 0;
+        case 4:
+            if (arg < 0x79)
+                return race_gates_r[arg].d != 0;
+            break;
+        case 5:
+            if (arg < 0x79)
+                return race_gates_r[arg].d >= 2;
+            break;
+        case 6:
+            return gSpecialItems[arg] != 0;
+        case 7:
+            return ((int (*)(void))arg)() != 0;
+        case 8:
+            return gold_bolts_collected[arg >> 16][arg & 0xFFFF] != 0;
+        case 9:
+            break;
     }
     return 0;
 }
@@ -287,7 +290,8 @@ extern unsigned char menu_item_enabled_12 NOT_SDA;
 
 /* Predicate: true when D_0013D844 and the flag byte D_0013D4A8 are both set. */
 int MissionCond_Obj18AndSpecial18(void) {
-    if (race_gates_24_status != 0 && menu_item_enabled_12 != 0) return 1;
+    if (race_gates_24_status != 0 && menu_item_enabled_12 != 0)
+        return 1;
     return 0;
 }
 
@@ -295,7 +299,8 @@ extern int race_gates_47_flag NOT_SDA;
 
 /* Predicate: true when D_0013D9B4 and special items 0x20 and 0x21 are all set. */
 int MissionCond_Obj2FAndSpecials(void) {
-    if (race_gates_47_flag != 0 && gSpecialItems[0x20] != 0 && gSpecialItems[0x21] != 0) return 1;
+    if (race_gates_47_flag != 0 && gSpecialItems[0x20] != 0 && gSpecialItems[0x21] != 0)
+        return 1;
     return 0;
 }
 
@@ -305,7 +310,8 @@ extern int race_gates NOT_SDA;
 /* Predicate: true when both mission words at D_0013D6B8 are non-zero. */
 int MissionCond_Obj3FAnd40(void) {
     char *base = (char *)&race_gates;
-    if (*(int *)(base + 0x40C) != 0 && *(int *)(base + 0x3FC) != 0) return 1;
+    if (*(int *)(base + 0x40C) != 0 && *(int *)(base + 0x3FC) != 0)
+        return 1;
     return 0;
 }
 
@@ -314,7 +320,8 @@ extern unsigned char menu_item_enabled_73 NOT_SDA;
 
 /* Predicate: true when D_0013DAE4 and the flag byte D_0013D4E5 are both set. */
 int MissionCond_Obj42AndSpecial55(void) {
-    if (race_gates_66_status != 0 && menu_item_enabled_73 != 0) return 1;
+    if (race_gates_66_status != 0 && menu_item_enabled_73 != 0)
+        return 1;
     return 0;
 }
 
@@ -323,7 +330,8 @@ extern unsigned char menu_item_enabled_85 NOT_SDA;
 
 /* Predicate: true when D_0013DB24 and the flag byte D_0013D4F1 are both set. */
 int MissionCond_Obj46AndSpecial61(void) {
-    if (race_gates_70_status != 0 && menu_item_enabled_85 != 0) return 1;
+    if (race_gates_70_status != 0 && menu_item_enabled_85 != 0)
+        return 1;
     return 0;
 }
 
@@ -332,7 +340,8 @@ extern unsigned char race_gates_base NOT_SDA;
 
 /* Predicate: true when D_0013DC34 and the flag byte D_0013D605 are both set. */
 int MissionCond_Obj57AndItem3D(void) {
-    if (race_gates_87_status != 0 && race_gates_base != 0) return 1;
+    if (race_gates_87_status != 0 && race_gates_base != 0)
+        return 1;
     return 0;
 }
 
@@ -341,7 +350,8 @@ extern int item_available NOT_SDA;
 /* Predicate: true when two entries of the D_0013D5C8 table are both set. */
 int MissionCond_Items1FAnd21(void) {
     unsigned char *base = (unsigned char *)&item_available;
-    if (base[0x21] != 0 && base[0x1F] != 0) return 1;
+    if (base[0x21] != 0 && base[0x1F] != 0)
+        return 1;
     return 0;
 }
 
@@ -377,7 +387,8 @@ extern unsigned char gemlik_available NOT_SDA;
 
 /* Predicate: true when both D_0013D4F1 and D_0013DE55 are set. */
 int MissionCond_Special61AndFlag0D(void) {
-    if (menu_item_enabled_85 != 0 && gemlik_available != 0) return 1;
+    if (menu_item_enabled_85 != 0 && gemlik_available != 0)
+        return 1;
     return 0;
 }
 
@@ -385,7 +396,8 @@ extern unsigned char gHaveMorphORay NOT_SDA;
 
 /* Returns 2 when the Morph-o-Ray is owned, else whether D_0013DC34 is set. */
 int get_morph_o_ray_status(void) {
-    if (gHaveMorphORay != 0) return 2;
+    if (gHaveMorphORay != 0)
+        return 2;
     return race_gates_87_status != 0;
 }
 
@@ -399,7 +411,8 @@ int has_hologuise(void) {
 /* Returns 2 or the state of another entry of the D_0013D5C8 table, depending on the first. */
 int Mission_GetHologuiseOrMapStatus(void) {
     unsigned char *base = (unsigned char *)&item_available;
-    if (base[0x1F] != 0) return 2;
+    if (base[0x1F] != 0)
+        return 2;
     return base[0x21] != 0;
 }
 
@@ -480,11 +493,9 @@ extern struct {
     MapIconLink_0CDE0 *links;
 } D_001A2F90_0CDE0 __asm__("D_001A2F90");
 
-extern void func_00208C38_0CDE0(f32 *outx, f32 *outy, s32 view, f32 x,
-                                f32 y) __asm__("func_00208C38");
+extern void func_00208C38_0CDE0(f32 *outx, f32 *outy, s32 view, f32 x, f32 y) __asm__("func_00208C38");
 extern void FormatMenuItemText_r(s32 idx, char *dst) __asm__("func_00208AB0");
-extern void func_001F75D0_0CDE0(struct TextRegion_0CDE0 *, long, char *,
-                                    int) __asm__("func_001F75D0");
+extern void func_001F75D0_0CDE0(struct TextRegion_0CDE0 *, long, char *, int) __asm__("func_001F75D0");
 
 /* Map screen icon refresh: picks the level's icon list, centres the map on the hero when
    it is the current level, places the fixed icons (-1..-9) and projects the others to map
@@ -586,8 +597,7 @@ void update_map_icons(s32 level, s32 flag) {
             level_map_selection_r.icons[icon_index].flags |= 0x10;
             FormatMenuItemText_r(icon_index, label_text);
             {
-                struct TextRegion_0CDE0 text_window = {
-                    0, icon->label_height, 0, icon->label_width, 4, 4, 0, 0, 0xF, 4};
+                struct TextRegion_0CDE0 text_window = {0, icon->label_height, 0, icon->label_width, 4, 4, 0, 0, 0xF, 4};
                 func_001F75D0_0CDE0(&text_window, 0x80FFA888L, label_text, -1);
                 icon->label_height = text_window.rendered_height + 8;
                 previous_label_height = text_window.rendered_height;

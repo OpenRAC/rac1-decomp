@@ -176,8 +176,7 @@ void switch_active_camera_record(Camera *next_camera) {
             transition_duration = next_camera->blend_time;
             gCamera.blend.next_kind = 2;
             if (transition_duration > 0.0f) {
-                gCamera.blend.orbit.frames =
-                    truncate_float_to_s32(transition_duration);
+                gCamera.blend.orbit.frames = truncate_float_to_s32(transition_duration);
             } else {
                 gCamera.blend.orbit.frames = 40;
             }
@@ -187,8 +186,7 @@ void switch_active_camera_record(Camera *next_camera) {
         } else {
             gCamera.blend.phase = 2;
         }
-    } else if (previous_transition_state == 3 || previous_transition_state == 5 ||
-               blend_kind == 3 || blend_kind == 6) {
+    } else if (previous_transition_state == 3 || previous_transition_state == 5 || blend_kind == 3 || blend_kind == 6) {
         qcopy(&next_camera->pos, &previous_camera->pos);
         qcopy(&next_camera->basis[0], &previous_camera->basis[0]);
         qcopy(&next_camera->basis[1], &previous_camera->basis[1]);
@@ -223,8 +221,7 @@ void switch_active_camera_record(Camera *next_camera) {
     previous_camera->handoff_state = 0;
     previous_camera->hard_cut = 0;
     gCamera.previous = previous_camera;
-    FastMemCopy(gCamPrevState, gCamPrevState - 0x280,
-                           0x280);
+    FastMemCopy(gCamPrevState, gCamPrevState - 0x280, 0x280);
     gCamera.previous->state_buf = gCamPrevState;
     gCamera.current = next_camera;
     next_camera->state_buf = gCamPrevState - 0x280;
@@ -273,66 +270,66 @@ int Camera_ActivationCheckPriority(Camera *cur, Camera *other) {
         int (*fn)(Camera *, Camera *) = camera_types[cur->type].check;
         if (fn != 0) {
             switch (fn(cur, other)) {
-            case -1:
-                return 0;
-            case 1:
-                return 1;
+                case -1:
+                    return 0;
+                case 1:
+                    return 1;
             }
         }
     }
     switch (*(int *)state) {
-    case 1:
-    case 2:
-        if (state[9] == 0) { /* handoff_state */
-            return 0;
-        }
-        /* fallthrough */
-    case 0:
-        if (other == 0) {
-            return 1;
-        }
-        if (other->transition_state != 0) {
-            return 1;
-        }
-        if (state[8] > other->priority) {
-            return 1;
-        }
-        break;
-    case 4: {
-        CameraInfo *info = gCameraDefs[cur->def_index].info;
-
-        if (other != 0 && other->transition_state == 0 && !(state[8] > other->priority)) {
-            return 0;
-        }
-        if (is_point_inside_clip_volume(gHeroPos, info->clip_volume)) {
-            return 1;
-        }
-        break;
-    }
-    case 7: {
-        char *base = g_hero;
-        short e = cur->id;
-
-        if (e != *(int *)(base + 0x2284)) {
-            return 0;
-        }
-        if (other->transition_state == 0 && !(state[8] > other->priority)) {
-            return 0;
-        }
-        if (e != 3) {
-            return 1;
-        }
-        {
-            CameraDef *rec = &gCameraDefs[cur->def_index];
-            int g = rec->info->rule7_index;
-
-            if (g < 0 || (*(int *)(base + 0x560) == cam_activation_rule7_table[g].unk10
-                          && *(int *)(base + 0x570) == 0)) {
+        case 1:
+        case 2:
+            if (state[9] == 0) { /* handoff_state */
+                return 0;
+            }
+            /* fallthrough */
+        case 0:
+            if (other == 0) {
                 return 1;
             }
+            if (other->transition_state != 0) {
+                return 1;
+            }
+            if (state[8] > other->priority) {
+                return 1;
+            }
+            break;
+        case 4: {
+            CameraInfo *info = gCameraDefs[cur->def_index].info;
+
+            if (other != 0 && other->transition_state == 0 && !(state[8] > other->priority)) {
+                return 0;
+            }
+            if (is_point_inside_clip_volume(gHeroPos, info->clip_volume)) {
+                return 1;
+            }
+            break;
         }
-        break;
-    }
+        case 7: {
+            char *base = g_hero;
+            short e = cur->id;
+
+            if (e != *(int *)(base + 0x2284)) {
+                return 0;
+            }
+            if (other->transition_state == 0 && !(state[8] > other->priority)) {
+                return 0;
+            }
+            if (e != 3) {
+                return 1;
+            }
+            {
+                CameraDef *rec = &gCameraDefs[cur->def_index];
+                int g = rec->info->rule7_index;
+
+                if (g < 0 ||
+                    (*(int *)(base + 0x560) == cam_activation_rule7_table[g].unk10 && *(int *)(base + 0x570) == 0)) {
+                    return 1;
+                }
+            }
+            break;
+        }
     }
     return 0;
 }
@@ -409,19 +406,19 @@ int UpdateAllCameras(void) {
     return -1;
 }
 
-extern void FastVecSub(void *dst, void *a, void *b);      /* dst = a - b (vector) */
-extern float FastVecDot(void *a, void *b);                 /* dot(a, b) */
-extern float FastVecLength(void *a);                           /* |a| */
-extern void fast_vec_normalize(void *dst, void *src, float len);    /* dst = normalize(src) * len */
-extern float FastArcSin(float x);                            /* approx acos(x) */
-extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle); /* dst = vec rotated `angle` around axis */
+extern void FastVecSub(void *dst, void *a, void *b); /* dst = a - b (vector) */
+extern float FastVecDot(void *a, void *b); /* dot(a, b) */
+extern float FastVecLength(void *a); /* |a| */
+extern void fast_vec_normalize(void *dst, void *src, float len); /* dst = normalize(src) * len */
+extern float FastArcSin(float x); /* approx acos(x) */
+extern void build_look_at_matrix(void *dst, void *vec, void *axis,
+                                 float angle); /* dst = vec rotated `angle` around axis */
 
 /* The camera's angles to a target: out[0] = signed yaw between dir0 and
    (p0 - p1) off the axis, out[1] = signed pitch after rotating dir0 by
    that yaw, out[2] = |p0 - p1|. A zero length becomes 0.0001 before the
    acos. The two sign fixups are shaped differently, as in retail. */
-void Camera_Pos2Polar3d(float *out, void *p0, void *p1, void *dir0, void *dir1,
-                    void *axis) {
+void Camera_Pos2Polar3d(float *out, void *p0, void *p1, void *dir0, void *dir1, void *axis) {
     char diff[16];
     char proj[16];
     char perp[16];
@@ -471,8 +468,7 @@ void Camera_Pos2Polar3d(float *out, void *p0, void *p1, void *dir0, void *dir1,
     out[2] = FastVecLength(diff);
 }
 
-extern void Camera_Pos2Polar3d(float *out, void *p0, void *p1, void *dir0, void *dir1,
-                           void *axis);
+extern void Camera_Pos2Polar3d(float *out, void *p0, void *p1, void *dir0, void *dir1, void *axis);
 
 /* capture_camera_orientation: the hero moby's axes go into blend.orbit.fwd
    and blend.orbit.up, its yaw/pitch/distance to the hero into blend.orbit
@@ -565,9 +561,8 @@ void start_camera_blend(Camera *from) {
             fast_vec_normalize(local1, *(char **)(g + 0x2080) + 0xD0, 1.0f);
             fast_vec_normalize(local2, *(char **)(g + 0x2080) + 0xE0, 1.0f);
             /* &gCamera.current->pos: the previous camera is the one the switch saved */
-            Camera_Pos2Polar3d((float *)&r->orbit.yaw, &from->pos,
-                          &(*(Camera **)((char *)r - 0xF0))->pos,
-                          local0, local1, local2);
+            Camera_Pos2Polar3d((float *)&r->orbit.yaw, &from->pos, &(*(Camera **)((char *)r - 0xF0))->pos, local0,
+                               local1, local2);
             extract_matrix_rotation_quaternion(&r->orbit.rot, from);
             qcopy(&r->orbit.saved_rot, &r->orbit.rot);
         }
@@ -746,8 +741,7 @@ int advance_alternate_camera_transition(Camera *cam, CamBlendOrbit *o) {
         sign = 1.0f;
     }
     yaw = yaw * sign;
-    if (FastAbsF(dyaw) > 1.5707964f
-        && ((dyaw >= 0.0f && sign < 0.0f) || (dyaw < 0.0f && sign >= 0.0f))) {
+    if (FastAbsF(dyaw) > 1.5707964f && ((dyaw >= 0.0f && sign < 0.0f) || (dyaw < 0.0f && sign >= 0.0f))) {
         if (yaw < 0.0f) {
             yaw += 6.2831855f;
         } else {
@@ -848,9 +842,7 @@ void apply_camera_shake(CameraShake *s, int along_row0) {
         }
         fast_dec_timer(&s->frames);
         ratio = IntToFloat(s->frames) / IntToFloat(s->frames_max);
-        shake = s->amplitude
-                * FastCos(FastNormalizeAngle(IntToFloat(s->frames) * 2.0f))
-                * ratio * ratio;
+        shake = s->amplitude * FastCos(FastNormalizeAngle(IntToFloat(s->frames) * 2.0f)) * ratio * ratio;
         s->offset = shake;
         if (along_row0 == 0) {
             fast_vec_normalize(buf, &gCamera.matrix[2], shake);
@@ -896,12 +888,9 @@ void update_camera_tracking_state(void) {
         dir.f[1] += 0.2f;
         dir.f[2] += 0.2f;
     }
-    f->up.f[0] =
-        Cam_InterpValues_r(&f->up_vel[0], f->up.f[0], dir.f[0], 0.015f, 0.2f, 0.0f);
-    f->up.f[1] =
-        Cam_InterpValues_r(&f->up_vel[1], f->up.f[1], dir.f[1], 0.015f, 0.2f, 0.0f);
-    f->up.f[2] =
-        Cam_InterpValues_r(&f->up_vel[2], f->up.f[2], dir.f[2], 0.015f, 0.2f, 0.0f);
+    f->up.f[0] = Cam_InterpValues_r(&f->up_vel[0], f->up.f[0], dir.f[0], 0.015f, 0.2f, 0.0f);
+    f->up.f[1] = Cam_InterpValues_r(&f->up_vel[1], f->up.f[1], dir.f[1], 0.015f, 0.2f, 0.0f);
+    f->up.f[2] = Cam_InterpValues_r(&f->up_vel[2], f->up.f[2], dir.f[2], 0.015f, 0.2f, 0.0f);
     fast_vec_normalize(&f->up, &f->up, 1.0f);
 
     FastVecSub(&f->hero_delta, &g_hero_r.motion.pos, &f->hero_prev);
@@ -918,8 +907,7 @@ void update_camera_tracking_state(void) {
     if (g_hero_r.unk2284 != 0x50 || g_hero_r.state.current == 0x11) {
         f->pos.f[0] = g_hero_r.motion.pos.f[0];
         f->pos.f[1] = g_hero_r.motion.pos.f[1];
-        f->pos.f[2] =
-            Cam_InterpValues_r(&f->z_vel, f->pos.f[2], g_hero_r.motion.pos.f[2], 0.0075f, 0.175f, 0.0f);
+        f->pos.f[2] = Cam_InterpValues_r(&f->z_vel, f->pos.f[2], g_hero_r.motion.pos.f[2], 0.0075f, 0.175f, 0.0f);
         f->pos.f[3] = g_hero_r.motion.pos.f[2];
     } else {
         f->pos.f[0] = g_hero_r.motion.pos.f[0];
@@ -1022,8 +1010,7 @@ void refresh_camera_control_flags(void) {
     }
     {
         Hero *g2 = &g_hero_HERO;
-        if (g2->state.control_mode != 0x11
-            && g2->water_surface_z < gCamera.pos.f[2]) {
+        if (g2->state.control_mode != 0x11 && g2->water_surface_z < gCamera.pos.f[2]) {
             cam_coll_flag = 0x14;
         }
     }
@@ -1140,7 +1127,7 @@ frozen:
     apply_camera_shake(&v[0], 0);
     apply_camera_shake(&v[1], 1);
     update_camera_underwater_flag();
-    update_camera_environment_from_regions((char *)v - 0x20);       /* &gCamera.pos */
+    update_camera_environment_from_regions((char *)v - 0x20); /* &gCamera.pos */
     if (draw_map51_m[0] != 0) {
         FastVecCross((char *)v + 0x200, (char *)v + 0x210, (char *)v + 0x1F0); /* matrix[1] = matrix[2] x matrix[0] */
     }

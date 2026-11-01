@@ -17,9 +17,29 @@ extern char gCamBackupState[];
 extern void *cur_cam NOT_SDA;
 extern DispatchRec camera_types[];
 
-typedef struct { u8 pad_0[0x10]; f32 pos[4]; u8 flags; } FlareMoby;
-typedef struct { FlareMoby *moby; s32 state; f32 intensity; s32 pad_c; s16 alpha[16]; s16 tex[16]; s32 color[16]; f32 dist[16]; f32 scale[16]; } LensFlare;
-typedef struct { u8 pad_0[0x8]; s32 cx; s32 cy; s32 ox; s32 oy; } ScreenInfo;
+typedef struct {
+    u8 pad_0[0x10];
+    f32 pos[4];
+    u8 flags;
+} FlareMoby;
+typedef struct {
+    FlareMoby *moby;
+    s32 state;
+    f32 intensity;
+    s32 pad_c;
+    s16 alpha[16];
+    s16 tex[16];
+    s32 color[16];
+    f32 dist[16];
+    f32 scale[16];
+} LensFlare;
+typedef struct {
+    u8 pad_0[0x8];
+    s32 cx;
+    s32 cy;
+    s32 ox;
+    s32 oy;
+} ScreenInfo;
 extern u8 D_00187080_1edff8[] __asm__("D_00187180");
 extern ScreenInfo g_screen_extent_r __asm__("D_0013E600");
 extern LensFlare D_00187300_1edff8 __asm__("D_00187400");
@@ -91,7 +111,8 @@ void draw_lens_flare(void) {
             fy = 0.0f;
         }
         fade = fade * (fx * fy);
-        rgba = (truncate_float_to_s32(fade * D_00187300_1edff8.alpha[i]) << 24) | (D_00187300_1edff8.color[i] & 0xFFFFFF);
+        rgba =
+            (truncate_float_to_s32(fade * D_00187300_1edff8.alpha[i]) << 24) | (D_00187300_1edff8.color[i] & 0xFFFFFF);
         w = truncate_float_to_s32(size * D_00187300_1edff8.scale[i]);
         half = w >> 1;
         x = truncate_float_to_s32(at[0] - half);
@@ -105,8 +126,8 @@ extern int GetEffectTex(int);
 extern float FastCos(float);
 extern float FastSin(float);
 extern float FastAddRots(float, float);
-extern void append_rotated_sprite_quad(float, float, float, float, float, int, int, int, int, int, int, int,
-                           float, float);
+extern void append_rotated_sprite_quad(float, float, float, float, float, int, int, int, int, int, int, int, float,
+                                       float);
 
 /*
  * Spawns a burst of particle effects around (arg1, arg2) using the source
@@ -125,8 +146,7 @@ extern void append_rotated_sprite_quad(float, float, float, float, float, int, i
  * array, not scalars: retail spills them to fixed stack slots (0x0, 0x4,
  * 0x10, 0x14 with an 8-byte gap) instead of extra saved float registers.
  */
-void spawn_particle_burst(void *arg0, float arg1, float arg2)
-{
+void spawn_particle_burst(void *arg0, float arg1, float arg2) {
     float forty = 40.0f;
     char *p = (char *)arg0;
     int handle = GetEffectTex(*(int *)(p + 0x18));
@@ -136,54 +156,47 @@ void spawn_particle_burst(void *arg0, float arg1, float arg2)
     int i;
 
     switch (mode) {
-    case 0:
-        for (i = 0; i < *(short *)(p + 0x26); i++) {
-            append_rotated_sprite_quad(arg1, arg2, forty * *(float *)(p + 0x10),
-                          forty * *(float *)(p + 0x10), angle,
-                          0x3F, 0x3F, handle, 0xFFFFF3, *(int *)(p + 0x14), 0, 0,
-                          0.0f, 0.0f);
-            angle = FastAddRots(angle, *(float *)(p + 0x28));
+        case 0:
+            for (i = 0; i < *(short *)(p + 0x26); i++) {
+                append_rotated_sprite_quad(arg1, arg2, forty * *(float *)(p + 0x10), forty * *(float *)(p + 0x10),
+                                           angle, 0x3F, 0x3F, handle, 0xFFFFF3, *(int *)(p + 0x14), 0, 0, 0.0f, 0.0f);
+                angle = FastAddRots(angle, *(float *)(p + 0x28));
+            }
+            break;
+        case 1: {
+            float tmp[6];
+
+            tmp[0] = FastSin(angle) * forty * *(float *)(p + 0x10);
+            tmp[1] = FastCos(angle) * forty * *(float *)(p + 0x10);
+            tmp[4] = FastCos(angle) * forty * *(float *)(p + 0x10);
+            tmp[5] = FastSin(angle) * -forty * *(float *)(p + 0x10);
+
+            k = *(float *)(p + 0x10) * forty;
+            append_rotated_sprite_quad(arg1, arg2, k, k, angle, 0x3F, 0x3F, handle, 0xFFFFF3, *(int *)(p + 0x14), 0, 0,
+                                       0.0f, 0.0f);
+
+            k = *(float *)(p + 0x10);
+            k *= forty;
+            append_rotated_sprite_quad(arg1 + tmp[4], arg2 + tmp[5], k, k, angle, 0x3F, 0x3F, handle, 0xFFFFF3,
+                                       *(int *)(p + 0x14), 1, 0, 0.0f, 0.0f);
+
+            k = *(float *)(p + 0x10);
+            k *= forty;
+            append_rotated_sprite_quad(arg1 - tmp[0], arg2 - tmp[1], k, k, angle, 0x3F, 0x3F, handle, 0xFFFFF3,
+                                       *(int *)(p + 0x14), 0, 1, 0.0f, 0.0f);
+
+            k = *(float *)(p + 0x10);
+            k *= forty;
+            append_rotated_sprite_quad(arg1 + tmp[4] - tmp[0], arg2 + tmp[5] - tmp[1], k, k, angle, 0x3F, 0x3F, handle,
+                                       0xFFFFF3, *(int *)(p + 0x14), 1, 1, 0.0f, 0.0f);
+            break;
         }
-        break;
-    case 1: {
-        float tmp[6];
-
-        tmp[0] = FastSin(angle) * forty * *(float *)(p + 0x10);
-        tmp[1] = FastCos(angle) * forty * *(float *)(p + 0x10);
-        tmp[4] = FastCos(angle) * forty * *(float *)(p + 0x10);
-        tmp[5] = FastSin(angle) * -forty * *(float *)(p + 0x10);
-
-        k = *(float *)(p + 0x10) * forty;
-        append_rotated_sprite_quad(arg1, arg2, k, k, angle,
-                      0x3F, 0x3F, handle, 0xFFFFF3, *(int *)(p + 0x14), 0, 0,
-                      0.0f, 0.0f);
-
-        k = *(float *)(p + 0x10);
-        k *= forty;
-        append_rotated_sprite_quad(arg1 + tmp[4], arg2 + tmp[5], k, k, angle,
-                      0x3F, 0x3F, handle, 0xFFFFF3, *(int *)(p + 0x14), 1, 0,
-                      0.0f, 0.0f);
-
-        k = *(float *)(p + 0x10);
-        k *= forty;
-        append_rotated_sprite_quad(arg1 - tmp[0], arg2 - tmp[1], k, k, angle,
-                      0x3F, 0x3F, handle, 0xFFFFF3, *(int *)(p + 0x14), 0, 1,
-                      0.0f, 0.0f);
-
-        k = *(float *)(p + 0x10);
-        k *= forty;
-        append_rotated_sprite_quad(arg1 + tmp[4] - tmp[0], arg2 + tmp[5] - tmp[1], k, k, angle,
-                      0x3F, 0x3F, handle, 0xFFFFF3, *(int *)(p + 0x14), 1, 1,
-                      0.0f, 0.0f);
-        break;
-    }
-    case 2:
-        k = *(float *)(p + 0x10);
-        k *= forty;
-        append_rotated_sprite_quad(arg1, arg2, k, k, angle,
-                      0x3F, 0x3F, handle, 0xFFFFF3, *(int *)(p + 0x14), 0, 0,
-                      0.5f, 0.5f);
-        break;
+        case 2:
+            k = *(float *)(p + 0x10);
+            k *= forty;
+            append_rotated_sprite_quad(arg1, arg2, k, k, angle, 0x3F, 0x3F, handle, 0xFFFFF3, *(int *)(p + 0x14), 0, 0,
+                                       0.5f, 0.5f);
+            break;
     }
 }
 
@@ -193,14 +206,14 @@ LINKER_REMNANT("asm/remnants/text", func_001EE6D0);
    at +0xC0. */
 typedef struct {
     char pad00[0x20];
-    unsigned char *moby;    /* 0x20 */
-    short onScreen;         /* 0x24 */
+    unsigned char *moby; /* 0x20 */
+    short onScreen; /* 0x24 */
     char pad26[0xA];
 } GlowSlot;
 
 typedef struct {
     GlowSlot slot[4];
-    int count;              /* 0xC0 */
+    int count; /* 0xC0 */
 } GlowQueue;
 
 extern GlowQueue rotated_sprite_queue;
@@ -315,16 +328,12 @@ void update_camera_environment_from_regions(void *position) {
     fog_color_red.r = red;
     fog_color_red.g = green;
     fog_color_red.f[0] =
-        (region->positive_depth_start * blend + region->negative_depth_start * inverse_blend) *
-        1024.0f;
-    fog_color_red.f[1] =
-        (region->positive_depth_end * blend + region->negative_depth_end * inverse_blend) * 1024.0f;
-    fog_color_red.f[2] = 255.0f - (region->positive_value_start * blend +
-                                   region->negative_value_start * inverse_blend) *
-                                      255.0f;
+        (region->positive_depth_start * blend + region->negative_depth_start * inverse_blend) * 1024.0f;
+    fog_color_red.f[1] = (region->positive_depth_end * blend + region->negative_depth_end * inverse_blend) * 1024.0f;
+    fog_color_red.f[2] =
+        255.0f - (region->positive_value_start * blend + region->negative_value_start * inverse_blend) * 255.0f;
     fog_color_red.f[3] =
-        255.0f -
-        (region->positive_value_end * blend + region->negative_value_end * inverse_blend) * 255.0f;
+        255.0f - (region->positive_value_end * blend + region->negative_value_end * inverse_blend) * 255.0f;
 }
 
 LINKER_REMNANT("asm/remnants/text", func_001EE9E8);

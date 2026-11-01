@@ -249,415 +249,417 @@ void update_render_debug_menu(void) {
     }
 
     switch (occl_cam_state.page) {
-    case 0:
-        if (g_controller_state.pressed & 0x40) {
-            int bit = 1 << occl_cam_state.cursor;
-            occl_cam_state.flags8 ^= bit;
-            if (bit == 0x10) {
-                if (occl_cam_state.flags8 & 0x10) {
-                    occl_cam_state.flags8 = bit;
-                } else {
-                    occl_cam_state.flags8 = 0xF;
-                }
-            }
-        }
-        break;
-    case 1:
-        switch (occl_cam_state.cursor) {
         case 0:
-            if (g_controller_state.pressed & 0x50) {
-                if (g_controller_state.pressed & 0x40) {
-                    if (++occl_cam_state.a14 >= 4) {
-                        occl_cam_state.a14 = 0;
+            if (g_controller_state.pressed & 0x40) {
+                int bit = 1 << occl_cam_state.cursor;
+                occl_cam_state.flags8 ^= bit;
+                if (bit == 0x10) {
+                    if (occl_cam_state.flags8 & 0x10) {
+                        occl_cam_state.flags8 = bit;
+                    } else {
+                        occl_cam_state.flags8 = 0xF;
                     }
-                }
-                if (g_controller_state.pressed & 0x10) {
-                    if (--occl_cam_state.a14 < 0) {
-                        occl_cam_state.a14 = 3;
-                    }
-                }
-                switch (occl_cam_state.a14) {
-                case 0:
-                    occl_cam_state.flags8 = 0xF;
-                    break;
-                case 1:
-                    occl_cam_state.flags8 = 0;
-                    break;
-                case 2: {
-                    float v[4];
-                    occl_cam_state.flags8 = 0;
-                    FastVecSub(v, g_hero.motion.pos.f, gCamera.pos);
-                    occl_cam_state.f8C = vec_length_xy(v);
-                    occl_cam_state.f88 = FastSubRots(fast_arc_tan(v[0], v[1]), gCamera.rot[2]);
-                    occl_cam_state.f90 = g_hero.motion.pos.f[2] - gCamera.pos[2];
-                    occl_cam_state.f84 = FastSubRots(g_hero.motion.rot.f[2], gCamera.rot[2]);
-                    break;
-                }
-                case 3:
-                    occl_cam_state.flags8 = 6;
-                    break;
                 }
             }
             break;
         case 1:
-            if (g_controller_state.pressed & 0x40) {
-                if (++occl_cam_state.a18 >= 8) {
-                    occl_cam_state.a18 = 0;
-                }
-            }
-            if (g_controller_state.pressed & 0x10) {
-                if (--occl_cam_state.a18 < 0) {
-                    occl_cam_state.a18 = 7;
-                }
+            switch (occl_cam_state.cursor) {
+                case 0:
+                    if (g_controller_state.pressed & 0x50) {
+                        if (g_controller_state.pressed & 0x40) {
+                            if (++occl_cam_state.a14 >= 4) {
+                                occl_cam_state.a14 = 0;
+                            }
+                        }
+                        if (g_controller_state.pressed & 0x10) {
+                            if (--occl_cam_state.a14 < 0) {
+                                occl_cam_state.a14 = 3;
+                            }
+                        }
+                        switch (occl_cam_state.a14) {
+                            case 0:
+                                occl_cam_state.flags8 = 0xF;
+                                break;
+                            case 1:
+                                occl_cam_state.flags8 = 0;
+                                break;
+                            case 2: {
+                                float v[4];
+                                occl_cam_state.flags8 = 0;
+                                FastVecSub(v, g_hero.motion.pos.f, gCamera.pos);
+                                occl_cam_state.f8C = vec_length_xy(v);
+                                occl_cam_state.f88 = FastSubRots(fast_arc_tan(v[0], v[1]), gCamera.rot[2]);
+                                occl_cam_state.f90 = g_hero.motion.pos.f[2] - gCamera.pos[2];
+                                occl_cam_state.f84 = FastSubRots(g_hero.motion.rot.f[2], gCamera.rot[2]);
+                                break;
+                            }
+                            case 3:
+                                occl_cam_state.flags8 = 6;
+                                break;
+                        }
+                    }
+                    break;
+                case 1:
+                    if (g_controller_state.pressed & 0x40) {
+                        if (++occl_cam_state.a18 >= 8) {
+                            occl_cam_state.a18 = 0;
+                        }
+                    }
+                    if (g_controller_state.pressed & 0x10) {
+                        if (--occl_cam_state.a18 < 0) {
+                            occl_cam_state.a18 = 7;
+                        }
+                    }
+                    break;
+                case 2:
+                    if (occl_grid_data == 0) {
+                        occl_cam_state.a1C = 0;
+                        break;
+                    }
+                    if (g_controller_state.pressed & 0x40) {
+                        if (++occl_cam_state.a1C >= 3) {
+                            occl_cam_state.a1C = 0;
+                        }
+                    }
+                    if (g_controller_state.pressed & 0x10) {
+                        if (--occl_cam_state.a1C < 0) {
+                            occl_cam_state.a1C = 2;
+                        }
+                    }
+                    break;
+                case 3:
+                    if (g_controller_state.pressed & 0x50) {
+                        occl_cam_state.a20 = !occl_cam_state.a20;
+                    }
+                    break;
+                case 4:
+                    if (g_controller_state.pressed & 0x50) {
+                        occl_cam_state.a24 = !occl_cam_state.a24;
+                    }
+                    break;
+                case 5:
+                    if (g_controller_state.pressed & 0x50) {
+                        if ((occl_cam_state.a28 = !occl_cam_state.a28) != 0) {
+                            tfrag_draw_distance = 65536.0f;
+                            tie_draw_distance = 64.0f;
+                            occl_fog_density_set = 40.0f;
+                            occl_fog_count = 0x40;
+                            part_clip_dist = 0x40000;
+                        } else {
+                            tfrag_draw_distance = 512000.0f;
+                            tie_draw_distance = 720.0f;
+                            occl_fog_density_set = 500.0f;
+                            occl_fog_count = 500;
+                            part_clip_dist = 0x1F4000;
+                        }
+                    }
+                    break;
+                case 6:
+                    if (g_controller_state.pressed & 0x40) {
+                        if (++occl_cam_state.a2C >= 3) {
+                            occl_cam_state.a2C = 0;
+                        }
+                    }
+                    if (g_controller_state.pressed & 0x10) {
+                        if (--occl_cam_state.a2C < 0) {
+                            occl_cam_state.a2C = 2;
+                        }
+                    }
+                    break;
+                case 7:
+                    if (g_controller_state.pressed & 0x50) {
+                        occl_cam_state.a30 = !occl_cam_state.a30;
+                    }
+                    break;
+                case 8:
+                    if (g_controller_state.pressed & 0x50) {
+                        if ((occl_cam_state.a34 = !occl_cam_state.a34) != 0) {
+                            float *ctx = (float *)view_context;
+                            ctx[0x80] = IntToFloat(fs_aa_buffer[0xA8]) * 0.125f;
+                            ctx[0x81] = IntToFloat(fs_aa_buffer[0xA9]) * 0.125f;
+                        } else {
+                            float *ctx = (float *)view_context;
+                            ctx[0x80] = IntToFloat(fs_aa_buffer[0xA8]) * 0.5f;
+                            ctx[0x81] = IntToFloat(fs_aa_buffer[0xA9]) * 0.5f;
+                        }
+                        {
+                            float *v = (float *)view_context;
+                            v[0x82] = v[0x80] * 4.0f;
+                            v[0x83] = v[0x81] * 4.0f;
+                        }
+                        UpdateViewContext();
+                    }
+                    break;
+                case 9:
+                    if (g_controller_state.pressed & 0x50) {
+                        if (g_controller_state.pressed & 0x40) {
+                            occl_cam_state.a38++;
+                            while (occl_cam_state.a38 == 0x24) {
+                                occl_cam_state.a38 = -1;
+                            }
+                        } else {
+                            occl_cam_state.a38--;
+                            while (occl_cam_state.a38 < -1) {
+                                occl_cam_state.a38 = 0x23;
+                            }
+                        }
+                    }
+                    if (occl_cam_state.a38 >= 0) {
+                        occl_cam_state.uA4 = 2;
+                    } else {
+                        occl_cam_state.uA4 = 0;
+                    }
+                    break;
+                case 10:
+                    if (g_controller_state.pressed & 0x50) {
+                        if (g_controller_state.pressed & 0x40) {
+                            occl_cam_state.a3C++;
+                            while (occl_cam_state.a3C == 0x10) {
+                                occl_cam_state.a3C = 0;
+                            }
+                        } else {
+                            occl_cam_state.a3C--;
+                            while (occl_cam_state.a3C < 0) {
+                                occl_cam_state.a3C = 0xF;
+                            }
+                        }
+                    } else if (g_controller_state.pressed & 0x20) {
+                        int i = occl_cam_state.a3C;
+                        unsigned char *e = &saved_mission_state[i + g_current_level_index * 16];
+                        *e = (*e == 0) ? 0xFF : 0;
+                        debug_mission_state_mirror[i] = *e;
+                    }
+                    break;
             }
             break;
         case 2:
-            if (occl_grid_data == 0) {
-                occl_cam_state.a1C = 0;
-                break;
-            }
             if (g_controller_state.pressed & 0x40) {
-                if (++occl_cam_state.a1C >= 3) {
-                    occl_cam_state.a1C = 0;
-                }
-            }
-            if (g_controller_state.pressed & 0x10) {
-                if (--occl_cam_state.a1C < 0) {
-                    occl_cam_state.a1C = 2;
-                }
+                occl_cam_state.flags4 ^= 1 << occl_cam_state.cursor;
             }
             break;
-        case 3:
-            if (g_controller_state.pressed & 0x50) {
-                occl_cam_state.a20 = !occl_cam_state.a20;
-            }
-            break;
-        case 4:
-            if (g_controller_state.pressed & 0x50) {
-                occl_cam_state.a24 = !occl_cam_state.a24;
-            }
-            break;
-        case 5:
-            if (g_controller_state.pressed & 0x50) {
-                if ((occl_cam_state.a28 = !occl_cam_state.a28) != 0) {
-                    tfrag_draw_distance = 65536.0f;
-                    tie_draw_distance = 64.0f;
-                    occl_fog_density_set = 40.0f;
-                    occl_fog_count = 0x40;
-                    part_clip_dist = 0x40000;
-                } else {
-                    tfrag_draw_distance = 512000.0f;
-                    tie_draw_distance = 720.0f;
-                    occl_fog_density_set = 500.0f;
-                    occl_fog_count = 500;
-                    part_clip_dist = 0x1F4000;
-                }
-            }
-            break;
-        case 6:
-            if (g_controller_state.pressed & 0x40) {
-                if (++occl_cam_state.a2C >= 3) {
-                    occl_cam_state.a2C = 0;
-                }
-            }
-            if (g_controller_state.pressed & 0x10) {
-                if (--occl_cam_state.a2C < 0) {
-                    occl_cam_state.a2C = 2;
-                }
-            }
-            break;
-        case 7:
-            if (g_controller_state.pressed & 0x50) {
-                occl_cam_state.a30 = !occl_cam_state.a30;
-            }
-            break;
-        case 8:
-            if (g_controller_state.pressed & 0x50) {
-                if ((occl_cam_state.a34 = !occl_cam_state.a34) != 0) {
-                    float *ctx = (float *)view_context;
-                    ctx[0x80] = IntToFloat(fs_aa_buffer[0xA8]) * 0.125f;
-                    ctx[0x81] = IntToFloat(fs_aa_buffer[0xA9]) * 0.125f;
-                } else {
-                    float *ctx = (float *)view_context;
-                    ctx[0x80] = IntToFloat(fs_aa_buffer[0xA8]) * 0.5f;
-                    ctx[0x81] = IntToFloat(fs_aa_buffer[0xA9]) * 0.5f;
-                }
-                {
-                    float *v = (float *)view_context;
-                    v[0x82] = v[0x80] * 4.0f;
-                    v[0x83] = v[0x81] * 4.0f;
-                }
-                UpdateViewContext();
-            }
-            break;
-        case 9:
-            if (g_controller_state.pressed & 0x50) {
-                if (g_controller_state.pressed & 0x40) {
-                    occl_cam_state.a38++;
-                    while (occl_cam_state.a38 == 0x24) {
-                        occl_cam_state.a38 = -1;
-                    }
-                } else {
-                    occl_cam_state.a38--;
-                    while (occl_cam_state.a38 < -1) {
-                        occl_cam_state.a38 = 0x23;
-                    }
-                }
-            }
-            if (occl_cam_state.a38 >= 0) {
-                occl_cam_state.uA4 = 2;
+        case 3: {
+            int max = 999999;
+            int *val;
+            if (occl_cam_state.cursor < 13) {
+                unsigned char k = ((unsigned char *)&debug_weapon_item_ids)[occl_cam_state.cursor];
+                max = vendor_item_prices[k].max_ammo;
+                val = &weapon_ammo_counts[k];
             } else {
-                occl_cam_state.uA4 = 0;
+                val = &gBolts;
             }
-            break;
-        case 10:
-            if (g_controller_state.pressed & 0x50) {
+            if (g_controller_state.held & 8) {
                 if (g_controller_state.pressed & 0x40) {
-                    occl_cam_state.a3C++;
-                    while (occl_cam_state.a3C == 0x10) {
-                        occl_cam_state.a3C = 0;
+                    *val += 60;
+                }
+                if (g_controller_state.pressed & 0x20) {
+                    if (*val > 60) {
+                        *val -= 60;
+                    } else {
+                        *val = 0;
                     }
-                } else {
-                    occl_cam_state.a3C--;
-                    while (occl_cam_state.a3C < 0) {
-                        occl_cam_state.a3C = 0xF;
+                }
+            } else if (g_controller_state.held & 2) {
+                if (g_controller_state.pressed & 0x40) {
+                    *val += 600;
+                }
+                if (g_controller_state.pressed & 0x20) {
+                    if (*val > 600) {
+                        *val -= 600;
+                    } else {
+                        *val = 0;
                     }
                 }
-            } else if (g_controller_state.pressed & 0x20) {
-                int i = occl_cam_state.a3C;
-                unsigned char *e = &saved_mission_state[i + g_current_level_index * 16];
-                *e = (*e == 0) ? 0xFF : 0;
-                debug_mission_state_mirror[i] = *e;
-            }
-            break;
-        }
-        break;
-    case 2:
-        if (g_controller_state.pressed & 0x40) {
-            occl_cam_state.flags4 ^= 1 << occl_cam_state.cursor;
-        }
-        break;
-    case 3: {
-        int max = 999999;
-        int *val;
-        if (occl_cam_state.cursor < 13) {
-            unsigned char k = ((unsigned char *)&debug_weapon_item_ids)[occl_cam_state.cursor];
-            max = vendor_item_prices[k].max_ammo;
-            val = &weapon_ammo_counts[k];
-        } else {
-            val = &gBolts;
-        }
-        if (g_controller_state.held & 8) {
-            if (g_controller_state.pressed & 0x40) {
-                *val += 60;
-            }
-            if (g_controller_state.pressed & 0x20) {
-                if (*val > 60) {
-                    *val -= 60;
-                } else {
-                    *val = 0;
+            } else {
+                if (g_controller_state.pressed & 0x40) {
+                    *val += 1;
+                }
+                if (g_controller_state.pressed & 0x20) {
+                    if (*val > 0) {
+                        *val -= 1;
+                    }
                 }
             }
-        } else if (g_controller_state.held & 2) {
-            if (g_controller_state.pressed & 0x40) {
-                *val += 600;
+            if (*val > max) {
+                *val = max;
             }
-            if (g_controller_state.pressed & 0x20) {
-                if (*val > 600) {
-                    *val -= 600;
-                } else {
-                    *val = 0;
-                }
+            if (g_controller_state.pressed & 0x10) {
+                gold_weapon_purchased[((unsigned char *)&debug_weapon_item_ids)[occl_cam_state.cursor]]++;
             }
-        } else {
-            if (g_controller_state.pressed & 0x40) {
-                *val += 1;
-            }
-            if (g_controller_state.pressed & 0x20) {
-                if (*val > 0) {
-                    *val -= 1;
-                }
-            }
-        }
-        if (*val > max) {
-            *val = max;
-        }
-        if (g_controller_state.pressed & 0x10) {
-            gold_weapon_purchased[((unsigned char *)&debug_weapon_item_ids)[occl_cam_state.cursor]]++;
-        }
-        if (g_controller_state.pressed & 0x80) {
-            gold_weapon_purchased[((unsigned char *)&debug_weapon_item_ids)[occl_cam_state.cursor]]--;
-        }
-        {
-            unsigned char k = ((unsigned char *)&debug_weapon_item_ids)[occl_cam_state.cursor];
-            unsigned char *c = &gold_weapon_purchased[k];
-            Gadget1088 *g = &item_info_table[k];
-            if (g->cap < *c) {
-                *c = g->cap;
-            }
-        }
-        return;
-    }
-    case 4:
-        if (occl_cam_state.cursor == 0) {
-            if ((g_controller_state.held & 0x40) || (g_controller_state.pressed & 8)) {
-                fog_near_distance += 1024.0f;
-            }
-            if ((g_controller_state.held & 0x10) || (g_controller_state.pressed & 4)) {
-                fog_near_distance -= 1024.0f;
-            }
-            if (fog_near_distance > fog_far_distance) {
-                fog_near_distance = fog_far_distance;
-            } else if (fog_near_distance < 0.0f) {
-                fog_near_distance = 0.0f;
-            }
-        }
-        if (occl_cam_state.cursor == 2) {
-            if ((g_controller_state.held & 0x40) || (g_controller_state.pressed & 8)) {
-                fog_far_distance += 1024.0f;
-            }
-            if ((g_controller_state.held & 0x10) || (g_controller_state.pressed & 4)) {
-                fog_far_distance -= 1024.0f;
-            }
-            if (524288.0f < fog_far_distance) {
-                fog_far_distance = 524288.0f;
-            } else if (fog_far_distance < fog_near_distance) {
-                fog_far_distance = fog_near_distance;
-            }
-        }
-        if (occl_cam_state.cursor == 1) {
-            if ((g_controller_state.held & 0x40) || (g_controller_state.pressed & 8)) {
-                fog_near_intensity -= 2.55f;
-            }
-            if ((g_controller_state.held & 0x10) || (g_controller_state.pressed & 4)) {
-                fog_near_intensity += 2.55f;
-            }
-            if (255.0f < fog_near_intensity) {
-                fog_near_intensity = 255.0f;
-            } else if (fog_near_intensity < 0.0f) {
-                fog_near_intensity = 0.0f;
-            }
-        }
-        if (occl_cam_state.cursor == 3) {
-            if ((g_controller_state.held & 0x40) || (g_controller_state.pressed & 8)) {
-                fog_far_intensity -= 2.55f;
-            }
-            if ((g_controller_state.held & 0x10) || (g_controller_state.pressed & 4)) {
-                fog_far_intensity += 2.55f;
-            }
-            if (255.0f < fog_far_intensity) {
-                fog_far_intensity = 255.0f;
-            } else if (fog_far_intensity < 0.0f) {
-                fog_far_intensity = 0.0f;
-            }
-        }
-        if (occl_cam_state.cursor == 4) {
-            if (fog_color_red.r < 0xFF && ((g_controller_state.held & 0x40) || (g_controller_state.pressed & 8))) {
-                fog_color_red.r++;
-            }
-            if (fog_color_red.r != 0 && ((g_controller_state.held & 0x10) || (g_controller_state.pressed & 4))) {
-                fog_color_red.r--;
-            }
-        }
-        if (occl_cam_state.cursor == 5) {
-            if (fog_color_green[0] < 0xFF && ((g_controller_state.held & 0x40) || (g_controller_state.pressed & 8))) {
-                fog_color_green[0]++;
-            }
-            if (fog_color_green[0] != 0 && ((g_controller_state.held & 0x10) || (g_controller_state.pressed & 4))) {
-                fog_color_green[0]--;
-            }
-        }
-        if (occl_cam_state.cursor == 6) {
-            if (fog_color_blue[0] < 0xFF && ((g_controller_state.held & 0x40) || (g_controller_state.pressed & 8))) {
-                fog_color_blue[0]++;
-            }
-            if (fog_color_blue[0] != 0 && ((g_controller_state.held & 0x10) || (g_controller_state.pressed & 4))) {
-                fog_color_blue[0]--;
-            }
-        }
-        ((void (*)(void))UpdateFog)();
-        return;
-    case 5:
-        if (occl_cam_state.cursor == 0 && (g_controller_state.pressed & 0x50)) {
-            occl_cam_state.aF0 = !occl_cam_state.aF0;
-        }
-        if (occl_cam_state.cursor == 1 && (g_controller_state.pressed & 0x50)) {
-            occl_cam_state.aF4 = !occl_cam_state.aF4;
-        }
-        if (occl_cam_state.cursor == 2 && (g_controller_state.pressed & 0xF0)) {
-            extern char camera_sample_path_format;
-            char *fmt = camera_sample_dir;
-            char *dev = &camera_sample_path_format;
-            int i, found;
-
-            found = 0;
-            for (i = 0; i < camera_sample_point_count; i++) {
-                float *p = camera_sample_points + i;
-                if (p[0] < gCamera.pos[0] + 0.5f && gCamera.pos[0] - 0.5f < p[0]
-                    && p[1] < gCamera.pos[1] + 0.5f && gCamera.pos[1] - 0.5f < p[1]
-                    && p[2] < gCamera.pos[2] + 0.5f && gCamera.pos[2] - 0.5f < p[2]) {
-                    found = 1;
-                    break;
-                }
-            }
-            if (found) {
-                return;
+            if (g_controller_state.pressed & 0x80) {
+                gold_weapon_purchased[((unsigned char *)&debug_weapon_item_ids)[occl_cam_state.cursor]]--;
             }
             {
-                char path[64];
-                char line[48];
-                float *samples;
-                int fd, size;
+                unsigned char k = ((unsigned char *)&debug_weapon_item_ids)[occl_cam_state.cursor];
+                unsigned char *c = &gold_weapon_purchased[k];
+                Gadget1088 *g = &item_info_table[k];
+                if (g->cap < *c) {
+                    *c = g->cap;
+                }
+            }
+            return;
+        }
+        case 4:
+            if (occl_cam_state.cursor == 0) {
+                if ((g_controller_state.held & 0x40) || (g_controller_state.pressed & 8)) {
+                    fog_near_distance += 1024.0f;
+                }
+                if ((g_controller_state.held & 0x10) || (g_controller_state.pressed & 4)) {
+                    fog_near_distance -= 1024.0f;
+                }
+                if (fog_near_distance > fog_far_distance) {
+                    fog_near_distance = fog_far_distance;
+                } else if (fog_near_distance < 0.0f) {
+                    fog_near_distance = 0.0f;
+                }
+            }
+            if (occl_cam_state.cursor == 2) {
+                if ((g_controller_state.held & 0x40) || (g_controller_state.pressed & 8)) {
+                    fog_far_distance += 1024.0f;
+                }
+                if ((g_controller_state.held & 0x10) || (g_controller_state.pressed & 4)) {
+                    fog_far_distance -= 1024.0f;
+                }
+                if (524288.0f < fog_far_distance) {
+                    fog_far_distance = 524288.0f;
+                } else if (fog_far_distance < fog_near_distance) {
+                    fog_far_distance = fog_near_distance;
+                }
+            }
+            if (occl_cam_state.cursor == 1) {
+                if ((g_controller_state.held & 0x40) || (g_controller_state.pressed & 8)) {
+                    fog_near_intensity -= 2.55f;
+                }
+                if ((g_controller_state.held & 0x10) || (g_controller_state.pressed & 4)) {
+                    fog_near_intensity += 2.55f;
+                }
+                if (255.0f < fog_near_intensity) {
+                    fog_near_intensity = 255.0f;
+                } else if (fog_near_intensity < 0.0f) {
+                    fog_near_intensity = 0.0f;
+                }
+            }
+            if (occl_cam_state.cursor == 3) {
+                if ((g_controller_state.held & 0x40) || (g_controller_state.pressed & 8)) {
+                    fog_far_intensity -= 2.55f;
+                }
+                if ((g_controller_state.held & 0x10) || (g_controller_state.pressed & 4)) {
+                    fog_far_intensity += 2.55f;
+                }
+                if (255.0f < fog_far_intensity) {
+                    fog_far_intensity = 255.0f;
+                } else if (fog_far_intensity < 0.0f) {
+                    fog_far_intensity = 0.0f;
+                }
+            }
+            if (occl_cam_state.cursor == 4) {
+                if (fog_color_red.r < 0xFF && ((g_controller_state.held & 0x40) || (g_controller_state.pressed & 8))) {
+                    fog_color_red.r++;
+                }
+                if (fog_color_red.r != 0 && ((g_controller_state.held & 0x10) || (g_controller_state.pressed & 4))) {
+                    fog_color_red.r--;
+                }
+            }
+            if (occl_cam_state.cursor == 5) {
+                if (fog_color_green[0] < 0xFF &&
+                    ((g_controller_state.held & 0x40) || (g_controller_state.pressed & 8))) {
+                    fog_color_green[0]++;
+                }
+                if (fog_color_green[0] != 0 && ((g_controller_state.held & 0x10) || (g_controller_state.pressed & 4))) {
+                    fog_color_green[0]--;
+                }
+            }
+            if (occl_cam_state.cursor == 6) {
+                if (fog_color_blue[0] < 0xFF &&
+                    ((g_controller_state.held & 0x40) || (g_controller_state.pressed & 8))) {
+                    fog_color_blue[0]++;
+                }
+                if (fog_color_blue[0] != 0 && ((g_controller_state.held & 0x10) || (g_controller_state.pressed & 4))) {
+                    fog_color_blue[0]--;
+                }
+            }
+            ((void (*)(void))UpdateFog)();
+            return;
+        case 5:
+            if (occl_cam_state.cursor == 0 && (g_controller_state.pressed & 0x50)) {
+                occl_cam_state.aF0 = !occl_cam_state.aF0;
+            }
+            if (occl_cam_state.cursor == 1 && (g_controller_state.pressed & 0x50)) {
+                occl_cam_state.aF4 = !occl_cam_state.aF4;
+            }
+            if (occl_cam_state.cursor == 2 && (g_controller_state.pressed & 0xF0)) {
+                extern char camera_sample_path_format;
+                char *fmt = camera_sample_dir;
+                char *dev = &camera_sample_path_format;
+                int i, found;
 
-                sprintf(path, dev, fmt, g_current_level_index, camera_sample_text_name, camera_sample_path_suffix);
-                sprintf(line, camera_sample_line_format, func_00120778(gCamera.pos[0]),
-                              func_00120778(gCamera.pos[1]), func_00120778(gCamera.pos[2]));
+                found = 0;
+                for (i = 0; i < camera_sample_point_count; i++) {
+                    float *p = camera_sample_points + i;
+                    if (p[0] < gCamera.pos[0] + 0.5f && gCamera.pos[0] - 0.5f < p[0] && p[1] < gCamera.pos[1] + 0.5f &&
+                        gCamera.pos[1] - 0.5f < p[1] && p[2] < gCamera.pos[2] + 0.5f && gCamera.pos[2] - 0.5f < p[2]) {
+                        found = 1;
+                        break;
+                    }
+                }
+                if (found) {
+                    return;
+                }
+                {
+                    char path[64];
+                    char line[48];
+                    float *samples;
+                    int fd, size;
+
+                    sprintf(path, dev, fmt, g_current_level_index, camera_sample_text_name, camera_sample_path_suffix);
+                    sprintf(line, camera_sample_line_format, func_00120778(gCamera.pos[0]),
+                            func_00120778(gCamera.pos[1]), func_00120778(gCamera.pos[2]));
+                    fd = sceOpen(path, 0x303);
+                    if (fd >= 0) {
+                        sceLseek(fd, 0, 2);
+                        sceWrite(fd, line, libc_strlen(line));
+                        sceClose(fd);
+                        occl_cam_state.bF9 = 0x79;
+                    }
+                    samples = camera_sample_points;
+                    sprintf(path, dev, fmt, g_current_level_index, camera_sample_bin_name, camera_sample_path_suffix);
+                    fd = sceOpen(path, 0x303);
+                    if (fd >= 0) {
+                        sceLseek(fd, 0, 2);
+                        sceWrite(fd, &gCamera.pos[0], 4);
+                        sceWrite(fd, &gCamera.pos[1], 4);
+                        sceWrite(fd, &gCamera.pos[2], 4);
+                        sceLseek(fd, 0, 0);
+                        size = sceLseek(fd, 0, 2);
+                        if (size <= 0x100000) {
+                            sceLseek(fd, 0, 0);
+                            sceRead(fd, samples, size);
+                            camera_sample_point_count = size / 12;
+                        } else {
+                            camera_sample_point_count = 0;
+                        }
+                        sceClose(fd);
+                    }
+                }
+            }
+            if (occl_cam_state.cursor == 3 && (g_controller_state.pressed & 0xF0)) {
+                extern char camera_sample_path_format[];
+                char path[64];
+                char line[64];
+                int fd;
+
+                sprintf(path, camera_sample_path_format, camera_sample_dir, g_current_level_index,
+                        camera_sample_text_name, camera_sample_path_suffix);
+                sprintf(line, camera_sample_alt_line_format, func_00120778(gCamera.pos[0]),
+                        func_00120778(gCamera.pos[1]), func_00120778(gCamera.pos[2]));
                 fd = sceOpen(path, 0x303);
                 if (fd >= 0) {
                     sceLseek(fd, 0, 2);
                     sceWrite(fd, line, libc_strlen(line));
                     sceClose(fd);
-                    occl_cam_state.bF9 = 0x79;
-                }
-                samples = camera_sample_points;
-                sprintf(path, dev, fmt, g_current_level_index, camera_sample_bin_name, camera_sample_path_suffix);
-                fd = sceOpen(path, 0x303);
-                if (fd >= 0) {
-                    sceLseek(fd, 0, 2);
-                    sceWrite(fd, &gCamera.pos[0], 4);
-                    sceWrite(fd, &gCamera.pos[1], 4);
-                    sceWrite(fd, &gCamera.pos[2], 4);
-                    sceLseek(fd, 0, 0);
-                    size = sceLseek(fd, 0, 2);
-                    if (size <= 0x100000) {
-                        sceLseek(fd, 0, 0);
-                        sceRead(fd, samples, size);
-                        camera_sample_point_count = size / 12;
-                    } else {
-                        camera_sample_point_count = 0;
-                    }
-                    sceClose(fd);
+                    occl_cam_state.bF8 = 0x79;
                 }
             }
-        }
-        if (occl_cam_state.cursor == 3 && (g_controller_state.pressed & 0xF0)) {
-            extern char camera_sample_path_format[];
-            char path[64];
-            char line[64];
-            int fd;
-
-            sprintf(path, camera_sample_path_format, camera_sample_dir, g_current_level_index, camera_sample_text_name, camera_sample_path_suffix);
-            sprintf(line, camera_sample_alt_line_format, func_00120778(gCamera.pos[0]),
-                          func_00120778(gCamera.pos[1]), func_00120778(gCamera.pos[2]));
-            fd = sceOpen(path, 0x303);
-            if (fd >= 0) {
-                sceLseek(fd, 0, 2);
-                sceWrite(fd, line, libc_strlen(line));
-                sceClose(fd);
-                occl_cam_state.bF8 = 0x79;
-            }
-        }
-        break;
+            break;
     }
 }
 
@@ -896,18 +898,26 @@ int ParseOcclGrid(int x, int y, int z) {
     int cz, cy, cx;
 
     cz = z - l[0];
-    if (cz < 0) return 0;
-    if (cz >= l[1]) return 0;
-    if (l[cz + 2] == 0) return 0;
+    if (cz < 0)
+        return 0;
+    if (cz >= l[1])
+        return 0;
+    if (l[cz + 2] == 0)
+        return 0;
     l = (unsigned short *)(grid + l[cz + 2] * 4);
     cy = y - l[0];
-    if (cy < 0) return 0;
-    if (cy >= l[1]) return 0;
-    if (l[cy + 2] == 0) return 0;
+    if (cy < 0)
+        return 0;
+    if (cy >= l[1])
+        return 0;
+    if (l[cy + 2] == 0)
+        return 0;
     l = (unsigned short *)(grid + l[cy + 2] * 4);
     cx = x - l[0];
-    if (cx < 0 || cx >= l[1]) return 0;
-    if (l[cx + 2] == 0xFFFF) return 0;
+    if (cx < 0 || cx >= l[1])
+        return 0;
+    if (l[cx + 2] == 0xFFFF)
+        return 0;
     return (int)(base + l[cx + 2] * 128);
 }
 
@@ -975,12 +985,9 @@ void BuildOcclVisibility(void) {
     } else {
         occl_invalid_grid = 1;
         if (occl_fallback_mode == 0) {
-            gx = (char *)GetOcclGridFromPair(x - 1, y, z, x + 1, y, z,
-                                       gCamera_cam.pos.f[0] * scale - IntToFloat(x));
-            gy = (char *)GetOcclGridFromPair(x, y - 1, z, x, y + 1, z,
-                                       gCamera_cam.pos.f[1] * scale - IntToFloat(y));
-            gz = (char *)GetOcclGridFromPair(x, y, z - 1, x, y, z + 1,
-                                       gCamera_cam.pos.f[2] * scale - IntToFloat(z));
+            gx = (char *)GetOcclGridFromPair(x - 1, y, z, x + 1, y, z, gCamera_cam.pos.f[0] * scale - IntToFloat(x));
+            gy = (char *)GetOcclGridFromPair(x, y - 1, z, x, y + 1, z, gCamera_cam.pos.f[1] * scale - IntToFloat(y));
+            gz = (char *)GetOcclGridFromPair(x, y, z - 1, x, y, z + 1, gCamera_cam.pos.f[2] * scale - IntToFloat(z));
             if (gx != 0 || gy != 0 || gz != 0) {
                 FastMemZero16(occl_visibility_merged, 0x80);
                 if (gx != 0) {
@@ -999,29 +1006,29 @@ void BuildOcclVisibility(void) {
         }
         if (vis == 0) {
             switch (occl_fallback_mode) {
-            case 0:
-                if (camera_position_publication_suppressed == 0 && occl_previous_grid != 0) {
-                    FastMemCopy(occl_visibility, occl_previous_grid, 0x80);
-                } else {
+                case 0:
+                    if (camera_position_publication_suppressed == 0 && occl_previous_grid != 0) {
+                        FastMemCopy(occl_visibility, occl_previous_grid, 0x80);
+                    } else {
+                        FastMemSet(occl_visibility, -1, 0x80);
+                    }
+                    break;
+                case 1:
                     FastMemSet(occl_visibility, -1, 0x80);
-                }
-                break;
-            case 1:
-                FastMemSet(occl_visibility, -1, 0x80);
-                break;
-            case 2:
-                p = occl_oct;
-                if (p != 0) {
-                    bx = 0.0f < gCamera_cam.pos.f[0] - p[0];
-                    by = 0.0f < gCamera_cam.pos.f[1] - p[1];
-                    bz = 0.0f < gCamera_cam.pos.f[2] - p[2];
-                    FastMemCopy(occl_visibility, (char *)p + ((bz + by * 2 + bx * 4) * 0x80 + 0x10), 0x80);
-                } else if (camera_position_publication_suppressed == 0 && occl_previous_grid != 0) {
-                    FastMemCopy(occl_visibility, occl_previous_grid, 0x80);
-                } else {
-                    FastMemSet(occl_visibility, -1, 0x80);
-                }
-                break;
+                    break;
+                case 2:
+                    p = occl_oct;
+                    if (p != 0) {
+                        bx = 0.0f < gCamera_cam.pos.f[0] - p[0];
+                        by = 0.0f < gCamera_cam.pos.f[1] - p[1];
+                        bz = 0.0f < gCamera_cam.pos.f[2] - p[2];
+                        FastMemCopy(occl_visibility, (char *)p + ((bz + by * 2 + bx * 4) * 0x80 + 0x10), 0x80);
+                    } else if (camera_position_publication_suppressed == 0 && occl_previous_grid != 0) {
+                        FastMemCopy(occl_visibility, occl_previous_grid, 0x80);
+                    } else {
+                        FastMemSet(occl_visibility, -1, 0x80);
+                    }
+                    break;
             }
         }
     }
@@ -1097,12 +1104,24 @@ __asm__(".section .text\n\tnop\n");
 
 typedef u32 VecQuadP __attribute__((mode(TI), aligned(16)));
 struct ViewP {
-    s32 fog_color; s32 unk4; s32 unk8; s32 unkC;
-    Vec4 regs[5]; Vec4 gif[4];
-    f32 near_clip; f32 far_clip; f32 aspect_x; f32 aspect_y;
-    Vec4 fov; f32 proj[16]; f32 proj2[16]; f32 proj3[16];
-    Vec4 inverse_screen_scale, screen_scale, screen_bias, inverse_projection_scale, viewport_aspect, aspect_scale, clip_scale, clip_distances;
-    f32 half_width, half_height, scr_x, scr_y, fog_mul, fog_add, fog_near_dist, fog_far_dist, fog_slope, fog_base, fog_near_int, fog_far_int;
+    s32 fog_color;
+    s32 unk4;
+    s32 unk8;
+    s32 unkC;
+    Vec4 regs[5];
+    Vec4 gif[4];
+    f32 near_clip;
+    f32 far_clip;
+    f32 aspect_x;
+    f32 aspect_y;
+    Vec4 fov;
+    f32 proj[16];
+    f32 proj2[16];
+    f32 proj3[16];
+    Vec4 inverse_screen_scale, screen_scale, screen_bias, inverse_projection_scale, viewport_aspect, aspect_scale,
+        clip_scale, clip_distances;
+    f32 half_width, half_height, scr_x, scr_y, fog_mul, fog_add, fog_near_dist, fog_far_dist, fog_slope, fog_base,
+        fog_near_int, fog_far_int;
     s32 fog_r, fog_g, fog_b;
 };
 #define view_context_p (*(struct ViewP *)&D_0018CE00)
@@ -1213,8 +1232,7 @@ void UpdateViewContext(void) {
     fog_multiplier = fog_intensity_range * near_clip / fog_distance_range;
     fog_distance_slope = fog_intensity_range / (fog_distance_range / 1024.0f);
     view->fog_add =
-        (view->fog_near_int * view->fog_far_dist - view->fog_far_int * view->fog_near_dist) /
-        fog_distance_range;
+        (view->fog_near_int * view->fog_far_dist - view->fog_far_int * view->fog_near_dist) / fog_distance_range;
     view->fog_slope = fog_distance_slope;
     view->fog_base = view->fog_near_int - view->fog_near_dist / 1024.0f * fog_distance_slope;
     view->fog_mul = fog_multiplier;
@@ -1256,8 +1274,8 @@ void UpdateViewContext(void) {
     view->proj[7] = 0;
     view->proj[8] = 0;
     view->proj[9] = 0;
-    view->proj[10] = (far_clip + projection_near_clip) /
-                     (projection_near_clip * (far_clip - projection_near_clip)) * depth_scale;
+    view->proj[10] =
+        (far_clip + projection_near_clip) / (projection_near_clip * (far_clip - projection_near_clip)) * depth_scale;
     view->proj[11] = 1.0f / projection_near_clip * projection_fog_multiplier;
     view->proj[12] = 0;
     view->proj[13] = 0;
@@ -1515,9 +1533,9 @@ void SetPalMode(void) {
  */
 extern int screen_tint_quad_enabled MACRO_ADDR;
 extern int screen_tint_quad_rgba MACRO_ADDR;
-extern short screen_overlay_enabled;              /* SDA, gp -0x78B4 */
-extern short draw_unused_reset_flag;              /* SDA, gp -0x78A0 */
-extern short occl_debug_overlay_enabled;              /* SDA, gp -0x7890 */
+extern short screen_overlay_enabled; /* SDA, gp -0x78B4 */
+extern short draw_unused_reset_flag; /* SDA, gp -0x78A0 */
+extern short occl_debug_overlay_enabled; /* SDA, gp -0x7890 */
 extern int letterbox_enabled MACRO_ADDR;
 extern int letterbox_bar_height MACRO_ADDR;
 extern int draw_callback_count MACRO_ADDR;
@@ -1568,8 +1586,8 @@ void ResetGsRegisters(void) {
     g_render_packet_cursor[2] = 0;
     g_render_packet_cursor[3] = 0x5000000B;
     g_render_packet_cursor += 4;
-    VU1_addGSregister(0x3D, (long)view_context[0x8C] | ((long)view_context[0x8D] << 8) |
-                        ((long)view_context[0x8E] << 16));
+    VU1_addGSregister(0x3D,
+                      (long)view_context[0x8C] | ((long)view_context[0x8D] << 8) | ((long)view_context[0x8E] << 16));
 }
 
 extern long gs_display_settings[3];
@@ -1589,7 +1607,7 @@ void ResetGsRegistersPr(void) {
     *(volatile long *)0x120000D0 = 0;
 }
 
-extern short screen_color_effect_now;             /* SDA, gp -0x78B0: Stripes * */
+extern short screen_color_effect_now; /* SDA, gp -0x78B0: Stripes * */
 extern char *level_sky_effect_data MACRO_ADDR;
 extern int draw_force_gif_transfer[];
 extern int draw_enable_mask_f __asm__("D_0015F534") MACRO_ADDR;
@@ -1680,8 +1698,8 @@ void DrawDebugProfiler(void) {
     float t;
     float div;
 
-    if (level_sky_effect_data == 0 || *(short *)(level_sky_effect_data + 4) != 0 || ((draw_enable_mask_f ^ 1) & 1) || draw_config[2] == 0 ||
-        draw_force_gif_transfer[0] != 0) {
+    if (level_sky_effect_data == 0 || *(short *)(level_sky_effect_data + 4) != 0 || ((draw_enable_mask_f ^ 1) & 1) ||
+        draw_config[2] == 0 || draw_force_gif_transfer[0] != 0) {
         append_gif_transfer_packet();
     }
     BuildViewMatrices();
@@ -1808,7 +1826,8 @@ void DrawDebugProfiler(void) {
         if (draw_config[0x44 / 4] != 0) {
             VU1_addGSregister(0x42, 0x8000000044L);
             if (use_alt_fog != 0) {
-                emit_rgba_draw_packet(underwater_screen_tint_r_r[0], underwater_screen_tint_g_r[0], underwater_screen_tint_b_r[0], underwater_screen_tint_a_r[0]);
+                emit_rgba_draw_packet(underwater_screen_tint_r_r[0], underwater_screen_tint_g_r[0],
+                                      underwater_screen_tint_b_r[0], underwater_screen_tint_a_r[0]);
             }
             if (gFade > 0.0f) {
                 if (gFade > 1.0f) {
@@ -1877,7 +1896,7 @@ void DrawDebugProfiler(void) {
 }
 
 extern int space_load_in_progress;
-extern short draw_enable_mask;              /* SDA, gp -0x77CC */
+extern short draw_enable_mask; /* SDA, gp -0x77CC */
 extern void DrawDebugProfiler(void);
 
 
@@ -1941,8 +1960,7 @@ void SetupGifPaging(int arg0) {
     }
     if (arg0 == 0) {
         for (i = 0; i < *(int *)(*(char **)(PagingArena() + 0x18) + 0x44); i++) {
-            unsigned short *el = (unsigned short *)(i * 8
-                + *(int *)(PagingArena() + 0x24) + 4);
+            unsigned short *el = (unsigned short *)(i * 8 + *(int *)(PagingArena() + 0x24) + 4);
 
             if (*el >= (g_gs_texture_allocation_base >> 8)) {
                 *el = 0;
@@ -2084,12 +2102,11 @@ u64 func_001F4868_r(s32 index) {
         texture->tex0 = tex0_word;
         if (pending_texture_upload_count_snapshot < 0x40) {
             upload = &pending_texture_uploads_et[pending_texture_upload_count_snapshot];
-            upload->clut_data =
-                level_texture_payload_address_et + texture->palette_offset_quadwords * 0x10;
+            upload->clut_data = level_texture_payload_address_et + texture->palette_offset_quadwords * 0x10;
             upload->cbp = palette_block_offset;
             upload->unk4 = 0;
-            *(s32 *)((u8 *)pending_texture_uploads_et + pending_texture_upload_count_snapshot * 0x10 +
-                     8) = level_texture_payload_address_et + texture->texel_offset_quadwords * 0x10;
+            *(s32 *)((u8 *)pending_texture_uploads_et + pending_texture_upload_count_snapshot * 0x10 + 8) =
+                level_texture_payload_address_et + texture->texel_offset_quadwords * 0x10;
             upload->tw = (u8)texture->width_log2;
             upload->th = (u8)texture->height_log2;
             upload->tbp = texel_block_offset;
@@ -2291,21 +2308,20 @@ void FadeToBlack(int frames) {
 }
 
 typedef struct {
-    short start;   /* 0x0 */
-    short end;     /* 0x2 */
+    short start; /* 0x0 */
+    short end; /* 0x2 */
     short text[6]; /* 0x4: string offsets, one per language */
 } Subtitle;
 typedef struct {
     char pad00[0x34];
-    int time;      /* 0x34 */
+    int time; /* 0x34 */
     char pad38[0x14];
-    char *subs;    /* 0x4C */
+    char *subs; /* 0x4C */
 } SubState;
 extern SubState render_sequence_s __asm__("D_0018CC20");
 extern int g_game_language MACRO_ADDR;
 extern int g_screen_extent[];
-extern void FontSetWindow(void *arg0, int a1, int a2, int a3, int a4, int a5,
-                          int a6, int a7, int a8);
+extern void FontSetWindow(void *arg0, int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8);
 extern void font_print_window_regular_l(void *, long, char *, int) __asm__("func_001F7560");
 extern void DrawUIFrame(int, int, int, int, int);
 
@@ -2438,7 +2454,7 @@ typedef struct {
     int color1;
     long enable1;
 } Stripes;
-extern short screen_color_effect_now;             /* SDA, gp -0x78B0: Stripes * */
+extern short screen_color_effect_now; /* SDA, gp -0x78B0: Stripes * */
 extern void DrawRectOverlay_FiiiiUl(int, int, int, int, unsigned long);
 
 #define STRIPES (*(Stripes **)&D_0015F450)
@@ -2478,7 +2494,7 @@ void draw_screen_effect(void) {
             v14 = STRIPES->color0;
             if (v14 & 0xFF000000) {
                 DrawRectOverlay_FiiiiUl(i, (i + STRIPES->step0 < w - 1) ? i + STRIPES->step0 : w - 1, 0,
-                              fs_aa_buffer[0xA8], (unsigned long)((long)v14 << 0x20) >> 0x20);
+                                        fs_aa_buffer[0xA8], (unsigned long)((long)v14 << 0x20) >> 0x20);
             }
             i = i + STRIPES->step0;
             e28 = STRIPES->enable1;
@@ -2488,7 +2504,7 @@ void draw_screen_effect(void) {
             v24 = STRIPES->color1;
             if (v24 & 0xFF000000) {
                 DrawRectOverlay_FiiiiUl(i, (i + STRIPES->step1 < w - 1) ? i + STRIPES->step1 : w - 1, 0,
-                              fs_aa_buffer[0xA8], (unsigned long)((long)v24 << 0x20) >> 0x20);
+                                        fs_aa_buffer[0xA8], (unsigned long)((long)v24 << 0x20) >> 0x20);
             }
             i = i + STRIPES->step1;
         } while (i < w);
@@ -2512,8 +2528,7 @@ void draw_fogged_fullscreen_sprite(char *arg0) {
     }
     if ((*(int *)(arg0 + 4) & 0xFF000000) != 0) {
         VU1_addGSregister(0x4E, (depth_buffer_address >> 13) | 0x1000000 | 0x100000000L);
-        DrawRectOverlay_FiiiiUl(0, fs_aa_buffer[0xA9], 0, fs_aa_buffer[0xA8],
-                      *(unsigned int *)(arg0 + 4));
+        DrawRectOverlay_FiiiiUl(0, fs_aa_buffer[0xA9], 0, fs_aa_buffer[0xA8], *(unsigned int *)(arg0 + 4));
         VU1_addGSregister(0x4E, 0x1000000 | (depth_buffer_address >> 13));
     }
     if (*(long *)(arg0 + 8) != 0) {
@@ -2575,18 +2590,14 @@ void DrawRectOverlay_FiiiiUl(int y0, int y1, int x0, int x1, unsigned long rgba)
         long *p;
         g_render_packet_cursor = base + 4;
         p = (long *)g_render_packet_cursor;
-        p[0] = (x0 * 16 + g_screen_extent[4] - 8)
-             | ((long)(y0 * 16 + g_screen_extent[5] - 8) << 16)
-             | ((long)0xFFFFF0 << 32);
-        p[1] = (x1 * 16 + g_screen_extent[4] - 8)
-             | ((long)(y0 * 16 + g_screen_extent[5] - 8) << 16)
-             | ((long)0xFFFFF0 << 32);
-        p[2] = (x0 * 16 + g_screen_extent[4] - 8)
-             | ((long)(y1 * 16 + g_screen_extent[5] - 8) << 16)
-             | ((long)0xFFFFF0 << 32);
-        p[3] = (x1 * 16 + g_screen_extent[4] - 8)
-             | ((long)(y1 * 16 + g_screen_extent[5] - 8) << 16)
-             | ((long)0xFFFFF0 << 32);
+        p[0] = (x0 * 16 + g_screen_extent[4] - 8) | ((long)(y0 * 16 + g_screen_extent[5] - 8) << 16) |
+               ((long)0xFFFFF0 << 32);
+        p[1] = (x1 * 16 + g_screen_extent[4] - 8) | ((long)(y0 * 16 + g_screen_extent[5] - 8) << 16) |
+               ((long)0xFFFFF0 << 32);
+        p[2] = (x0 * 16 + g_screen_extent[4] - 8) | ((long)(y1 * 16 + g_screen_extent[5] - 8) << 16) |
+               ((long)0xFFFFF0 << 32);
+        p[3] = (x1 * 16 + g_screen_extent[4] - 8) | ((long)(y1 * 16 + g_screen_extent[5] - 8) << 16) |
+               ((long)0xFFFFF0 << 32);
     }
     g_render_packet_cursor = (int *)((char *)g_render_packet_cursor + 0x20);
 }
@@ -2598,8 +2609,7 @@ extern char textured_quad_header[];
 /* Append a textured sprite as a four-vertex strip (PRIM 0x154): screen
    corners in 12.4 fixed point relative to the viewport origin, UVs from
    (u, v) to (u + uw, v + vh) in 16ths. */
-void DrawTexturedQuad(int x, int y, int w, int h, int u, int v, int uw, int vh,
-                   unsigned long rgba, unsigned long tex) {
+void DrawTexturedQuad(int x, int y, int w, int h, int u, int v, int uw, int vh, unsigned long rgba, unsigned long tex) {
     int x0 = x * 16 + g_screen_extent[4] - 8;
     int x1 = (x + w) * 16 + g_screen_extent[4] - 8;
     int y0 = y * 16 + g_screen_extent[5] - 8;
@@ -2639,7 +2649,7 @@ extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 /* func_001F5800 with a float screen rectangle: each corner is rounded
    (func_001FA898) from 16ths before the viewport offset. */
 void append_subpixel_textured_screen_quad(float x, float y, float w, float h, int u, int v, int uw, int vh,
-                   unsigned long rgba, unsigned long tex) {
+                                          unsigned long rgba, unsigned long tex) {
     int x0 = truncate_float_to_s32_r(x * 16.0f) + g_screen_extent[4] - 8;
     int x1 = truncate_float_to_s32_r((x + w) * 16.0f) + g_screen_extent[4] - 8;
     int y0 = truncate_float_to_s32_r(y * 16.0f) + g_screen_extent[5] - 8;
@@ -2679,8 +2689,8 @@ extern char textured_rect_gif_regs[];
 /* func_001F5988, skipped when the rectangle lies outside 0x7000..0x9000
    (12.4), with a CLAMP register (REGION_CLAMP to the texel rectangle)
    after the PRIM and a closing (5, 0) pair. */
-void emit_textured_rectangle(float x, float y, float w, float h, int u, int v, int uw, int vh,
-                   unsigned long rgba, unsigned long tex) {
+void emit_textured_rectangle(float x, float y, float w, float h, int u, int v, int uw, int vh, unsigned long rgba,
+                             unsigned long tex) {
     int x0 = truncate_float_to_s32_r(x * 16.0f) + g_screen_extent[4] - 8;
     int x1 = truncate_float_to_s32_r((x + w) * 16.0f) + g_screen_extent[4] - 8;
     int y0 = truncate_float_to_s32_r(y * 16.0f) + g_screen_extent[5] - 8;
@@ -2759,10 +2769,9 @@ extern f32 FastSin(f32);
 extern s32 truncate_float_to_s32(f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/append_rotated_sprite_quad.c, append_rotated_sprite_quad. */
-void append_rotated_sprite_quad(f32 center_x, f32 center_y, f32 quad_width, f32 quad_height,
-                                f32 angle, s32 texture_width, s32 texture_height,
-                                s64 texture_tex0, s64 z_and_fog, s32 color, u8 flip_u, u8 flip_v,
-                                f32 pivot_u, f32 pivot_v) {
+void append_rotated_sprite_quad(f32 center_x, f32 center_y, f32 quad_width, f32 quad_height, f32 angle,
+                                s32 texture_width, s32 texture_height, s64 texture_tex0, s64 z_and_fog, s32 color,
+                                u8 flip_u, u8 flip_v, f32 pivot_u, f32 pivot_v) {
     Vec4f vertical_edge;
     Vec4f horizontal_edge;
     Vec4f center;
@@ -2831,25 +2840,21 @@ void append_rotated_sprite_quad(f32 center_x, f32 center_y, f32 quad_width, f32 
     packet_words[3] = 0x154;
     packet_words[4] = color;
     packet_words[5] = texture_left | texture_top;
-    packet_words[6] =
-        (truncate_float_to_s32(top_left.x * 16.0f) + g_screen_extent_r.left - 8) |
-        ((u64)(truncate_float_to_s32(top_left.y * 16.0f) + g_screen_extent_r.top - 8) << 16) |
-        ((u64)z_and_fog << 32);
+    packet_words[6] = (truncate_float_to_s32(top_left.x * 16.0f) + g_screen_extent_r.left - 8) |
+                      ((u64)(truncate_float_to_s32(top_left.y * 16.0f) + g_screen_extent_r.top - 8) << 16) |
+                      ((u64)z_and_fog << 32);
     packet_words[7] = texture_right | texture_top;
-    packet_words[8] =
-        (truncate_float_to_s32(top_right.x * 16.0f) + g_screen_extent_r.left - 8) |
-        ((u64)(truncate_float_to_s32(top_right.y * 16.0f) + g_screen_extent_r.top - 8) << 16) |
-        ((u64)z_and_fog << 32);
+    packet_words[8] = (truncate_float_to_s32(top_right.x * 16.0f) + g_screen_extent_r.left - 8) |
+                      ((u64)(truncate_float_to_s32(top_right.y * 16.0f) + g_screen_extent_r.top - 8) << 16) |
+                      ((u64)z_and_fog << 32);
     packet_words[9] = texture_left | texture_bottom;
-    packet_words[10] =
-        (truncate_float_to_s32(bottom_left.x * 16.0f) + g_screen_extent_r.left - 8) |
-        ((u64)(truncate_float_to_s32(bottom_left.y * 16.0f) + g_screen_extent_r.top - 8) << 16) |
-        ((u64)z_and_fog << 32);
+    packet_words[10] = (truncate_float_to_s32(bottom_left.x * 16.0f) + g_screen_extent_r.left - 8) |
+                       ((u64)(truncate_float_to_s32(bottom_left.y * 16.0f) + g_screen_extent_r.top - 8) << 16) |
+                       ((u64)z_and_fog << 32);
     packet_words[11] = texture_right | texture_bottom;
-    packet_words[12] =
-        (truncate_float_to_s32(bottom_right.x * 16.0f) + g_screen_extent_r.left - 8) |
-        ((u64)(truncate_float_to_s32(bottom_right.y * 16.0f) + g_screen_extent_r.top - 8) << 16) |
-        ((u64)z_and_fog << 32);
+    packet_words[12] = (truncate_float_to_s32(bottom_right.x * 16.0f) + g_screen_extent_r.left - 8) |
+                       ((u64)(truncate_float_to_s32(bottom_right.y * 16.0f) + g_screen_extent_r.top - 8) << 16) |
+                       ((u64)z_and_fog << 32);
     packet_words[13] = 0;
     g_render_packet_cursor_r.tag = (struct DmaTag *)((u8 *)g_render_packet_cursor_r.tag + 0x70);
 }
@@ -3009,9 +3014,8 @@ extern void DrawTexturedQuad_r(s32, s32, s32, s32, s32, s32, s32, s32, s64, s64)
    bytes below 0x20 are 24-pixel grey button glyphs.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/ui/text/font_print.c, font_print. */
 void func_001F6668_r(s32 x, s32 y, u64 color, u8 *text, s32 character_limit, s64 texture,
-                      struct Glyph_F6668 *glyphs) __asm__("func_001F6668");
-void func_001F6668_r(s32 x, s32 y, u64 color, u8 *text, s32 character_limit, s64 texture,
-                      struct Glyph_F6668 *glyphs) {
+                     struct Glyph_F6668 *glyphs) __asm__("func_001F6668");
+void func_001F6668_r(s32 x, s32 y, u64 color, u8 *text, s32 character_limit, s64 texture, struct Glyph_F6668 *glyphs) {
     s32 character_count;
     u8 *cursor;
     u8 character;
@@ -3040,22 +3044,21 @@ void func_001F6668_r(s32 x, s32 y, u64 color, u8 *text, s32 character_limit, s64
                 /* Characters 0x80..0xa7 also draw the glyph 0x40 entries later. */
                 if ((u8)(character + 0x80) < 0x28) {
                     overlay_glyph = (struct Glyph_F6668 *)(((character + 0x40) << 2) + (s32)glyphs);
-                    DrawTexturedQuad_r(x + overlay_glyph->adv, y + overlay_glyph->top, 16, 16,
-                                       overlay_glyph->u, overlay_glyph->v, 16, 16, color, texture);
+                    DrawTexturedQuad_r(x + overlay_glyph->adv, y + overlay_glyph->top, 16, 16, overlay_glyph->u,
+                                       overlay_glyph->v, 16, 16, color, texture);
                 }
                 /* Control glyphs use 24-pixel grayscale sprites. */
                 if (*cursor < 0x20) {
-                    gray_value =
-                        (s32)((color & 0xFF) + ((color >> 8) & 0xFF) + ((color >> 16) & 0xFF)) / 3;
+                    gray_value = (s32)((color & 0xFF) + ((color >> 8) & 0xFF) + ((color >> 16) & 0xFF)) / 3;
                     gray_color = (s32)(color & 0xFF000000);
                     gray_color += gray_value << 16;
                     gray_color += gray_value << 8;
                     gray_value += gray_color;
-                    DrawTexturedQuad_r(x, y + glyphs[*cursor].top, 24, 16, glyphs[*cursor].u,
-                                       glyphs[*cursor].v, 24, 16, gray_value, texture);
+                    DrawTexturedQuad_r(x, y + glyphs[*cursor].top, 24, 16, glyphs[*cursor].u, glyphs[*cursor].v, 24, 16,
+                                       gray_value, texture);
                 } else if (*cursor > 0x20) {
-                    DrawTexturedQuad_r(x, y + glyphs[*cursor].top, 16, 16, glyphs[*cursor].u,
-                                       glyphs[*cursor].v, 16, 16, color, texture);
+                    DrawTexturedQuad_r(x, y + glyphs[*cursor].top, 16, 16, glyphs[*cursor].u, glyphs[*cursor].v, 16, 16,
+                                       color, texture);
                 }
                 x += glyphs[*cursor].adv;
             }
@@ -3068,8 +3071,7 @@ void func_001F6668_r(s32 x, s32 y, u64 color, u8 *text, s32 character_limit, s64
     } while (*cursor != 0);
 }
 
-extern void FontPrint(void *, void *, void *, void *, void *, long,
-                          unsigned char *);
+extern void FontPrint(void *, void *, void *, void *, void *, long, unsigned char *);
 
 /* Same shape as func_001F7560/func_001F75D0 below, one argument wider:
    mode 1 vs 2, D_001DF3D0 vs D_001DF770. Seven arguments, so EABI puts
@@ -3199,8 +3201,7 @@ int FontPrintCenter(int a, int b, int c, int d, int e) {
     int p = a - (measure_text_width_regular((unsigned char *)d, e) >> 1);
     long mode = GetEffectTex64(1);
 
-    FontPrint((void *)p, (void *)b, (void *)c, (void *)d, (void *)e,
-                  mode, normal_font_metrics);
+    FontPrint((void *)p, (void *)b, (void *)c, (void *)d, (void *)e, mode, normal_font_metrics);
     return p;
 }
 
@@ -3209,8 +3210,7 @@ int FontPrintCenterSmall(int a, int b, int c, int d, int e) {
     int p = a - (measure_text_width_small((unsigned char *)d, e) >> 1);
     long mode = GetEffectTex64(2);
 
-    FontPrint((void *)p, (void *)b, (void *)c, (void *)d, (void *)e,
-                  mode, small_font_metrics);
+    FontPrint((void *)p, (void *)b, (void *)c, (void *)d, (void *)e, mode, small_font_metrics);
     return p;
 }
 
@@ -3219,8 +3219,7 @@ int FontPrintCenterLarge(int a, int b, int c, int d, int e) {
     int p = a - (measure_text_width_large((unsigned char *)d, e) >> 1);
     long mode = GetEffectTex64(3);
 
-    FontPrint((void *)p, (void *)b, (void *)c, (void *)d, (void *)e,
-                  mode, large_font_metrics);
+    FontPrint((void *)p, (void *)b, (void *)c, (void *)d, (void *)e, mode, large_font_metrics);
     return p;
 }
 
@@ -3233,8 +3232,7 @@ struct FontWindow {
 };
 
 /* FontPrintWindow */
-void FontPrintWindow(void *win_p, long a1, void *text_p, int len, long a4, unsigned char *glyphs)
-{
+void FontPrintWindow(void *win_p, long a1, void *text_p, int len, long a4, unsigned char *glyphs) {
     struct FontWindow *win = (struct FontWindow *)win_p;
     unsigned char *text = (unsigned char *)text_p;
     short start[32];
@@ -3342,14 +3340,14 @@ void FontPrintWindow(void *win_p, long a1, void *text_p, int len, long a4, unsig
                     fx = (dw->x_anchor - (w >> 1)) + dw->x_sub * 0.0625f;
                 else
                     fx = dw->x_anchor + dw->x_sub * 0.0625f;
-                process_bgm_display_text_event(font_palette_colors[colr_arr[k]], text + start[k], fx, cnt, a4, (struct Glyph *)glyphs,
-                              y + dw->y_sub * 0.0625f, 1.0f);
+                process_bgm_display_text_event(font_palette_colors[colr_arr[k]], text + start[k], fx, cnt, a4,
+                                               (struct Glyph *)glyphs, y + dw->y_sub * 0.0625f, 1.0f);
             } else if (dw->flags & 1) {
                 FontPrint((void *)(dw->x_anchor - (w >> 1)), (void *)y, (void *)font_palette_colors[colr_arr[k]],
-                              text + start[k], (void *)cnt, a4, glyphs);
+                          text + start[k], (void *)cnt, a4, glyphs);
             } else {
                 FontPrint((void *)(int)dw->x_anchor, (void *)y, (void *)font_palette_colors[colr_arr[k]],
-                              text + start[k], (void *)cnt, a4, glyphs);
+                          text + start[k], (void *)cnt, a4, glyphs);
             }
         }
     }
@@ -3445,7 +3443,7 @@ void queue_framebuffer_upload(unsigned int source) {
     VU1_texFlush();
 }
 
-extern short font_depth_bias;              /* SDA, gp -0x78B8 */
+extern short font_depth_bias; /* SDA, gp -0x78B8 */
 extern unsigned short font_vu_program_tag NOT_SDA;
 extern char font_vu_program[];
 extern char camera_position[];
@@ -3560,7 +3558,7 @@ void begin_draw_frame(void) {
    (retail shifts it with dsll), func_001F7B70 passes plain ints
    (addiu, not daddiu). */
 extern int font_quad_count MACRO_ADDR;
-extern short font_depth_bias;              /* SDA, gp -0x78B8 */
+extern short font_depth_bias; /* SDA, gp -0x78B8 */
 extern void prepare_font_quads(void);
 extern void font_queue_vu_state(void);
 extern void draw_font_quad_packets(void);
@@ -3588,8 +3586,10 @@ void initialize_alpha_lookup_table(void) {
     int i;
     for (i = 0; i < 0x100; i++) {
         int v = i & 0xE7;
-        if (i & 0x8)  v |= 0x10;
-        if (i & 0x10) v |= 0x8;
+        if (i & 0x8)
+            v |= 0x10;
+        if (i & 0x10)
+            v |= 0x8;
         bit_swap_lut[v] = (i >> 1) << 24;
     }
 }

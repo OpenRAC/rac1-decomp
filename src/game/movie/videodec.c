@@ -12,7 +12,8 @@ extern int get_mpeg_timestamp(int, char *);
 extern void movie_reset(void *) __asm__("func_0023E000");
 extern int viBufCreate(void *, void *, void *, int, void *, int);
 /* videoDecCreate(VideoDec *, unsigned char *, int, unsigned long long *, unsigned long long *, int, TimeStamp *, int) */
-int videoDecCreate(char *dec, unsigned char *data, int size, void *input, void *tags, int count, void *stamps, int stampCount) {
+int videoDecCreate(char *dec, unsigned char *data, int size, void *input, void *tags, int count, void *stamps,
+                   int stampCount) {
     sce_mpeg_create(dec, data, size);
     sce_mpeg_add_callback(dec, 0, (int)mpegError, 0);
     sce_mpeg_add_callback(dec, 1, (int)mpegNodata, 0);
@@ -26,12 +27,12 @@ int videoDecCreate(char *dec, unsigned char *data, int size, void *input, void *
 LINKER_REMNANT("asm/remnants/text", func_0023DF98);
 /* VideoDec: only the fields these functions touch are known. */
 typedef struct VideoDec {
-    int width;          /* 0x0, dimensions passed to the frame-copy routine */
-    int height;         /* 0x4 */
-    int f08;            /* 0x8, controls the frame-copy path */
+    int width; /* 0x0, dimensions passed to the frame-copy routine */
+    int height; /* 0x4 */
+    int f08; /* 0x8, controls the frame-copy path */
     char pad0C[0x3C];
-    char viBuf[0x60];   /* ViBuf, the video input buffer */
-    int state;          /* 0xA8 */
+    char viBuf[0x60]; /* ViBuf, the video input buffer */
+    int state; /* 0xA8 */
 } VideoDec;
 
 extern int sce_mpeg_add_str_callback(void *, int, int, int, int);
@@ -106,8 +107,15 @@ int videoDecInputCount(VideoDec *dec) {
 }
 LINKER_REMNANT("asm/remnants/text", func_0023E0D0);
 /* Decoder control reconstructed from retail disassembly. */
-typedef struct MovieFourBytes { unsigned char bytes[4]; } MovieFourBytes;
-typedef struct MoviePutSpans { unsigned char *first; int firstSize; unsigned char *second; int secondSize; } MoviePutSpans;
+typedef struct MovieFourBytes {
+    unsigned char bytes[4];
+} MovieFourBytes;
+typedef struct MoviePutSpans {
+    unsigned char *first;
+    int firstSize;
+    unsigned char *second;
+    int secondSize;
+} MoviePutSpans;
 extern MovieFourBytes mpeg_sequence_end_code;
 extern int cpy2area(unsigned char *, int, unsigned char *, int, void *, int, void *, int);
 extern void movie_end_put(void *, int) __asm__("func_0023DFE0");
@@ -117,7 +125,8 @@ int videoDecFlush(VideoDec *dec) {
     MovieFourBytes marker = mpeg_sequence_end_code;
     MoviePutSpans spans;
     videoDecBeginPut(dec, &spans.first, &spans.firstSize, &spans.second, &spans.secondSize);
-    if (spans.firstSize + spans.secondSize < 4) return 0;
+    if (spans.firstSize + spans.secondSize < 4)
+        return 0;
     {
         unsigned char *first = (unsigned char *)(((unsigned int)spans.first & 0x0FFFFFFF) | 0x20000000);
         unsigned char *second = (unsigned char *)(((unsigned int)spans.second & 0x0FFFFFFF) | 0x20000000);
@@ -125,7 +134,8 @@ int videoDecFlush(VideoDec *dec) {
         movie_end_put(decoder_state + 0xD9048, copied);
     }
     viBufFlush(dec->viBuf);
-    if (dec->state == 0) dec->state = 2;
+    if (dec->state == 0)
+        dec->state = 2;
     return 1;
 }
 extern int videoDecInputCount(VideoDec *);
@@ -183,8 +193,10 @@ int sceMpegGetPicture(VideoDec *dec) {
             STUB_printf(str_decode_thread_aborted);
             break;
         }
-        while ((frame = voBufGetData(decoder_state + 0xD9168)) == 0) switchThread();
-        if (sce_mpeg_get_picture(dec, frame, 0x340) < 0) ErrMessage(str_mpeg_get_picture_error);
+        while ((frame = voBufGetData(decoder_state + 0xD9168)) == 0)
+            switchThread();
+        if (sce_mpeg_get_picture(dec, frame, 0x340) < 0)
+            ErrMessage(str_mpeg_get_picture_error);
         {
             char *ringState;
             if (dec->f08 == 0) {
@@ -194,7 +206,7 @@ int sceMpegGetPicture(VideoDec *dec) {
                 int index = 0;
                 for (index = 0; index < ((MovieFrameState *)(state + 0xD8000))->count; index++) {
                     setImageTag(((MovieFrameState *)(state + 0xD8000))->entries + index * 0x138C0 + 0x40,
-                                 ((MovieFrameState *)(state + 0xD8000))->frames + index * 0xD0000, width, height);
+                                ((MovieFrameState *)(state + 0xD8000))->frames + index * 0xD0000, width, height);
                     state = decoder_state;
                 }
                 ringState = decoder_state;
@@ -223,7 +235,7 @@ int mpegNodata(void *mpeg, void *cbdata, void *arg) {
     viBufAddDMA(decoder_state + 0xD9090);
     return 1;
 }
-extern int viBufStopDMA(char *);   /* viBufStopDMA */
+extern int viBufStopDMA(char *); /* viBufStopDMA */
 
 /* No recovered name. viBufStopDMA on the
  * ViBuf at offset 0xD9090 of the movie state. Returns 1. */
@@ -231,7 +243,7 @@ int mpeg_stop_dma(void) {
     viBufStopDMA(decoder_state + 0xD9090);
     return 1;
 }
-extern int viBufRestartDMA(char *);   /* viBufRestartDMA */
+extern int viBufRestartDMA(char *); /* viBufRestartDMA */
 
 /* No recovered name. viBufRestartDMA on the ViBuf at
  * offset 0xD9090 of the movie state. Returns 1. */
@@ -239,8 +251,11 @@ int mpeg_restart_video_dma(void) {
     viBufRestartDMA(decoder_state + 0xD9090);
     return 1;
 }
-typedef struct { long first, second; long pad[2]; } TimeStamp;   /* 0x20 bytes: retail reserves that much */
-extern void viBufGetTs(char *, TimeStamp *);   /* viBufGetTs */
+typedef struct {
+    long first, second;
+    long pad[2];
+} TimeStamp; /* 0x20 bytes: retail reserves that much */
+extern void viBufGetTs(char *, TimeStamp *); /* viBufGetTs */
 
 /* No recovered name. Reads the
  * timestamp of the ViBuf at offset 0xD9090 of the movie state with viBufGetTs and stores it

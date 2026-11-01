@@ -27,8 +27,7 @@ extern s32 truncate_float_to_s32(f32);
 extern f32 FastCos(f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/start_001eaa08.c, FUN_L00_001eaa08. */
-s32 actuator_CalcPower(s32 *p1)
-{
+s32 actuator_CalcPower(s32 *p1) {
     s32 aa[3][4];
     s32 *q2;
     s32 *q1;
@@ -68,56 +67,62 @@ s32 actuator_CalcPower(s32 *p1)
         actuator_wave[i].f08++;
         rem = e->f08 % (e->f0a + e->f0c);
         switch (e->f00) {
-        case 0:
-            break;
-        case 1:
-            if (rem < e->f0a) {
-                res = e->f0e + e->f0f;
-            } else {
-                res = e->f0f;
+            case 0:
+                break;
+            case 1:
+                if (rem < e->f0a) {
+                    res = e->f0e + e->f0f;
+                } else {
+                    res = e->f0f;
+                }
+                break;
+            case 2:
+                if (rem < e->f0a) {
+                    res = (e->f0e * rem) / e->f0a;
+                } else {
+                    res = (e->f0e * (e->f0c + e->f0a - rem)) / e->f0c;
+                }
+                res = res + e->f0f;
+                break;
+            case 3:
+                if (rem < e->f0a) {
+                    res = (e->f0e * rem) / e->f0a + e->f0f;
+                }
+                break;
+            case 4:
+                if (rem >= e->f0a) {
+                    res = (e->f0e * (e->f0c + e->f0a - rem)) / e->f0c + e->f0f;
+                }
+                break;
+            case 5: {
+                f32 f;
+                f32 g;
+                if (rem < e->f0c) {
+                    f = IntToFloat(rem) * 3.1415927f / IntToFloat(e->f0c);
+                } else {
+                    f = 3.1415927f - IntToFloat(rem - e->f0c) * 3.1415927f / IntToFloat(e->f0a);
+                }
+                f = FastCos(f);
+                g = IntToFloat(e->f0e);
+                res = truncate_float_to_s32((f * g + g) * 0.5f) + e->f0f;
+                if (res >= 256) {
+                    res = 255;
+                }
+                break;
             }
-            break;
-        case 2:
-            if (rem < e->f0a) {
-                res = (e->f0e * rem) / e->f0a;
-            } else {
-                res = (e->f0e * (e->f0c + e->f0a - rem)) / e->f0c;
-            }
-            res = res + e->f0f;
-            break;
-        case 3:
-            if (rem < e->f0a) {
-                res = (e->f0e * rem) / e->f0a + e->f0f;
-            }
-            break;
-        case 4:
-            if (rem >= e->f0a) {
-                res = (e->f0e * (e->f0c + e->f0a - rem)) / e->f0c + e->f0f;
-            }
-            break;
-        case 5: {
-            f32 f;
-            f32 g;
-            if (rem < e->f0c) {
-                f = IntToFloat(rem) * 3.1415927f / IntToFloat(e->f0c);
-            } else {
-                f = 3.1415927f - IntToFloat(rem - e->f0c) * 3.1415927f / IntToFloat(e->f0a);
-            }
-            f = FastCos(f);
-            g = IntToFloat(e->f0e);
-            res = truncate_float_to_s32((f * g + g) * 0.5f) + e->f0f;
-            if (res >= 256) {
-                res = 255;
-            }
-            break;
-        }
         }
         if (e->f03 != 0) {
             aa[0][e->f02] = aa[0][e->f02] + res;
-            { s32 *t = q1 + e->f02; *t = *t + 1; }
+            {
+                s32 *t = q1 + e->f02;
+                *t = *t + 1;
+            }
         } else {
             p1[e->f02] = p1[e->f02] + res;
-            { s32 *t = q2 + e->f02; *t = *t + 1; }
+            {
+                s32 *t = q2 + e->f02;
+                *t = *t + 1;
+            }
         }
     }
     for (i = 0; i < 2; i++) {

@@ -35,8 +35,7 @@ extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
 extern unsigned char normal_font_metrics[];
 extern unsigned char small_font_metrics[];
 extern unsigned char large_font_metrics[];
-extern void FontPrint(void *, void *, void *, void *, void *, int,
-                          unsigned char *);
+extern void FontPrint(void *, void *, void *, void *, void *, int, unsigned char *);
 extern int measure_text_width_regular(unsigned char *, int);
 extern int measure_text_width_small(unsigned char *, int);
 extern int GetEffectTex(int);
@@ -237,24 +236,24 @@ void InitOnce(void) {
 
     lang = sce_scf_get_language();
     switch (lang) {
-    case 2:
-        g_game_language = 2;
-        return;
-    case 4:
-        g_game_language = 3;
-        return;
-    case 3:
-        g_game_language = 4;
-        return;
-    case 5:
-        g_game_language = 5;
-        return;
-    default:
-        STUB_printf(unsupported_lang_message, lang);
+        case 2:
+            g_game_language = 2;
+            return;
+        case 4:
+            g_game_language = 3;
+            return;
+        case 3:
+            g_game_language = 4;
+            return;
+        case 5:
+            g_game_language = 5;
+            return;
+        default:
+            STUB_printf(unsupported_lang_message, lang);
         /* fallthrough */
-    case 1:
-        g_game_language = 0;
-        return;
+        case 1:
+            g_game_language = 0;
+            return;
     }
 }
 

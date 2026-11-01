@@ -36,8 +36,7 @@ extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
 extern unsigned char normal_font_metrics[];
 extern unsigned char small_font_metrics[];
 extern unsigned char large_font_metrics[];
-extern void FontPrint(void *, void *, void *, void *, void *, int,
-                          unsigned char *);
+extern void FontPrint(void *, void *, void *, void *, void *, int, unsigned char *);
 extern int measure_text_width_regular(unsigned char *, int);
 extern int measure_text_width_small(unsigned char *, int);
 extern int GetEffectTex(int);
@@ -217,7 +216,13 @@ void update_visible_resident_objects(void) {
                     advance_moby_animation(m);
                 }
                 /* inline asm: hook call (beq/move/jal with empty slots). The original used inline asm here too: GCC 2.95 reorg leaves both slots empty only next to asm (see reorg.c stop_search_p). */
-                { int r; __asm__ volatile("beq %1,$0,1f\n\tmove $4,%2\n\tjal $31,%1\n1:" : "=r"(r) : "r"(*(void (**)(void *))(m + 0x74)), "r"(m) : "$4", "$31", "memory"); }
+                {
+                    int r;
+                    __asm__ volatile("beq %1,$0,1f\n\tmove $4,%2\n\tjal $31,%1\n1:"
+                                     : "=r"(r)
+                                     : "r"(*(void (**)(void *))(m + 0x74)), "r"(m)
+                                     : "$4", "$31", "memory");
+                }
                 if (((Moby *)m)->flags & 0x4) {
                     m = *(char **)&((Moby *)m)->next;
                 } else {
@@ -225,7 +230,8 @@ void update_visible_resident_objects(void) {
                     m = *(char **)&((Moby *)m)->next;
                 }
             }
-            if (m == 0) break;
+            if (m == 0)
+                break;
         }
     }
 }
@@ -238,18 +244,18 @@ typedef struct {
 } AnimClass;
 typedef struct {
     char _pad00[0x24];
-    AnimClass *pClass;       /* 0x24 */
+    AnimClass *pClass; /* 0x24 */
     char _pad28[0x50 - 0x28];
-    unsigned char frame;     /* 0x50 */
+    unsigned char frame; /* 0x50 */
     unsigned char nextFrame; /* 0x51 */
-    unsigned char seq;       /* 0x52 */
-    unsigned char prevSeq;   /* 0x53 */
+    unsigned char seq; /* 0x52 */
+    unsigned char prevSeq; /* 0x53 */
     char _pad54[0x5C - 0x54];
-    float unk5C;             /* 0x5C */
+    float unk5C; /* 0x5C */
     char _pad60[0x68 - 0x60];
-    float *frameData;        /* 0x68 */
+    float *frameData; /* 0x68 */
     char _pad6C[4];
-    unsigned char unk70;     /* 0x70 */
+    unsigned char unk70; /* 0x70 */
 } MobyAnim;
 extern void update_moby_animation_state_a(void *) __asm__("func_0020D6D0");
 
@@ -297,8 +303,7 @@ void MobyBlendAnimation(MobyAnim *arg0, int arg1, int arg2, int arg3) {
     if (arg2 >= n) {
         arg2 = n - 1;
     }
-    if (*(float *)((char *)arg0 + 0x54) > 0.025f ||
-        *(int *)((char *)arg0 + 0x60) != 0 ||
+    if (*(float *)((char *)arg0 + 0x54) > 0.025f || *(int *)((char *)arg0 + 0x60) != 0 ||
         *(int *)((char *)arg0 + 0x64) != 0) {
         slot = find_or_allocate_id_slot((int)arg0);
         if (slot >= 0) {
@@ -320,8 +325,7 @@ void MobyBlendAnimation(MobyAnim *arg0, int arg1, int arg2, int arg3) {
     *(float *)((char *)arg0 + 0x54) = 0.0f;
     arg0->unk70 = (unsigned char)(arg0->unk70 & 0xFD);
     arg0->unk5C = scale;
-    *(unsigned char *)((char *)arg0 + 0x7C) =
-        *((unsigned char *)arg0->pClass->seqs[arg1] + 0x11);
+    *(unsigned char *)((char *)arg0 + 0x7C) = *((unsigned char *)arg0->pClass->seqs[arg1] + 0x11);
 }
 
 /* Re-registers this MobyAnim in the shared slot table (D_001B2F40, via
@@ -341,8 +345,7 @@ void blend_moby_animation_ex(MobyAnim *arg0, int arg1, int arg2, int arg3, int a
     unsigned char oldSeq;
     float scale;
 
-    if (*(float *)((char *)arg0 + 0x54) > 0.025f ||
-        *(int *)((char *)arg0 + 0x60) != 0 ||
+    if (*(float *)((char *)arg0 + 0x54) > 0.025f || *(int *)((char *)arg0 + 0x60) != 0 ||
         *(int *)((char *)arg0 + 0x64) != 0 || (arg4 & 4)) {
         slot = find_or_allocate_id_slot((int)arg0);
         if (slot >= 0) {
@@ -365,8 +368,7 @@ void blend_moby_animation_ex(MobyAnim *arg0, int arg1, int arg2, int arg3, int a
     *(float *)((char *)arg0 + 0x54) = 0.0f;
     arg0->unk70 = (unsigned char)(arg0->unk70 & 0xFD);
     arg0->unk5C = scale;
-    *(unsigned char *)((char *)arg0 + 0x7C) =
-        *((unsigned char *)arg0->pClass->seqs[arg1] + 0x11);
+    *(unsigned char *)((char *)arg0 + 0x7C) = *((unsigned char *)arg0->pClass->seqs[arg1] + 0x11);
 }
 
 LINKER_REMNANT("asm/remnants/text", func_00214080);
@@ -471,8 +473,8 @@ float resolve_camera_surface_height(float *pos, void *out) {
             return h;
         }
     }
-    if (local_surface_region_enabled != 0 && FastAbsF(pos[2] - local_surface_region_center_x[2]) < 0.5f
-        && vec_distance_xy(pos, local_surface_region_center_x) < local_surface_region_center_x[3]) {
+    if (local_surface_region_enabled != 0 && FastAbsF(pos[2] - local_surface_region_center_x[2]) < 0.5f &&
+        vec_distance_xy(pos, local_surface_region_center_x) < local_surface_region_center_x[3]) {
         if (out != 0) {
             set_vector_unit_z(out);
         }
@@ -552,7 +554,9 @@ extern int FastDecTimer(void *);
 extern int scale_game_frame_count(int);
 extern float FastVecLength(void *);
 
-typedef struct { float v[4]; } __attribute__((aligned(16))) Q_214778;
+typedef struct {
+    float v[4];
+} __attribute__((aligned(16))) Q_214778;
 
 /* Picks a moby's hit reaction from the damage record, scales the knockback; returns the reaction. */
 int select_damage_reaction(char *a, char *B, char *an, unsigned int btn, int *outA, float *outF, int *outI, int k) {
@@ -610,10 +614,10 @@ int select_damage_reaction(char *a, char *B, char *an, unsigned int btn, int *ou
         if (a22 == 0x47) {
             char *h = g_hero;
 
-            v[0] = FastCos(fast_arc_tan(*(float *)(a + 0x10) - *(float *)(h + 0x80),
-                                               *(float *)(a + 0x14) - *(float *)(h + 0x84)));
-            v[1] = FastSin(fast_arc_tan(*(float *)(a + 0x10) - *(float *)(h + 0x80),
-                                               *(float *)(a + 0x14) - *(float *)(h + 0x84)));
+            v[0] = FastCos(
+                fast_arc_tan(*(float *)(a + 0x10) - *(float *)(h + 0x80), *(float *)(a + 0x14) - *(float *)(h + 0x84)));
+            v[1] = FastSin(
+                fast_arc_tan(*(float *)(a + 0x10) - *(float *)(h + 0x80), *(float *)(a + 0x14) - *(float *)(h + 0x84)));
             v[2] = 1.0f;
             fast_vec_normalize(v, v, FastVecLength(B + 0x10) * 0.7f);
             FastVecScale(B + 0x10, B + 0x10, 0.3f);
@@ -632,77 +636,77 @@ int select_damage_reaction(char *a, char *B, char *an, unsigned int btn, int *ou
     }
 
     switch ((unsigned char)B[0x28]) {
-    case 0:
-        if ((unsigned int)(*(unsigned short *)(B + 0x2A) - 1) < 2) {
+        case 0:
+            if ((unsigned int)(*(unsigned short *)(B + 0x2A) - 1) < 2) {
+                *outA = 2;
+                s21 = 0;
+            } else {
+                *outA = 2;
+                s21 = 1;
+            }
+            break;
+        case 1:
+            if ((unsigned char)B[0x29] < 2) {
+                *outA = 2;
+                s21 = 0xB;
+            } else if ((unsigned char)B[0x29] == 2) {
+                *outA = 2;
+                s21 = 5;
+            } else {
+                *outA = 2;
+                s21 = 9;
+            }
+            break;
+        case 2:
+            if ((unsigned char)B[0x29] < 2) {
+                *outA = 2;
+                s21 = 8;
+            } else {
+                *outA = 2;
+                s21 = 0xD;
+            }
+            break;
+        case 3:
+            c = (unsigned char)B[0x29];
+            if (c < 2) {
+                *outA = 2;
+                s21 = 0xA;
+            } else if (c < 3) {
+                *outA = 2;
+                s21 = 0xF;
+            } else {
+                *outA = 2;
+                s21 = 0x10;
+                *(short *)(an + 0x14) = -1;
+                *(short *)(an + 0x1C) = 0;
+            }
+            break;
+        case 4:
             *outA = 2;
-            s21 = 0;
-        } else {
+            s21 = 0xE;
+            break;
+        case 5:
+            if ((unsigned char)B[0x29] < 2) {
+                *outA = 3;
+                s21 = 4;
+            } else {
+                *outA = 4;
+                s21 = 7;
+            }
+            break;
+        case 7:
+            if ((unsigned char)B[0x29] < 2) {
+                *outA = 2;
+                s21 = 0xC;
+            } else {
+                *outA = 2;
+                s21 = 0x11;
+            }
+            break;
+        default:
             *outA = 2;
             s21 = 1;
-        }
-        break;
-    case 1:
-        if ((unsigned char)B[0x29] < 2) {
-            *outA = 2;
-            s21 = 0xB;
-        } else if ((unsigned char)B[0x29] == 2) {
-            *outA = 2;
-            s21 = 5;
-        } else {
-            *outA = 2;
-            s21 = 9;
-        }
-        break;
-    case 2:
-        if ((unsigned char)B[0x29] < 2) {
-            *outA = 2;
-            s21 = 8;
-        } else {
-            *outA = 2;
-            s21 = 0xD;
-        }
-        break;
-    case 3:
-        c = (unsigned char)B[0x29];
-        if (c < 2) {
-            *outA = 2;
-            s21 = 0xA;
-        } else if (c < 3) {
-            *outA = 2;
-            s21 = 0xF;
-        } else {
-            *outA = 2;
-            s21 = 0x10;
-            *(short *)(an + 0x14) = -1;
-            *(short *)(an + 0x1C) = 0;
-        }
-        break;
-    case 4:
-        *outA = 2;
-        s21 = 0xE;
-        break;
-    case 5:
-        if ((unsigned char)B[0x29] < 2) {
-            *outA = 3;
-            s21 = 4;
-        } else {
-            *outA = 4;
-            s21 = 7;
-        }
-        break;
-    case 7:
-        if ((unsigned char)B[0x29] < 2) {
-            *outA = 2;
-            s21 = 0xC;
-        } else {
-            *outA = 2;
-            s21 = 0x11;
-        }
-        break;
-    default:
-        *outA = 2;
-        s21 = 1;
-        break;
+            break;
     }
 
     if (outI != 0)
@@ -714,59 +718,59 @@ int select_damage_reaction(char *a, char *B, char *an, unsigned int btn, int *ou
 
     if (FastDecTimer(an + 0x1C) != 0) {
         switch (s21) {
-        case 0:
-            *(short *)(an + 0x1C) = scale_game_frame_count(0x25);
-            break;
-        case 1:
-            *(short *)(an + 0x1C) = scale_game_frame_count(0xF);
-            break;
-        case 4:
-            *(short *)(an + 0x1C) = scale_game_frame_count(0x3C);
-            break;
-        case 7:
-            if (hero_globals_base[0] != 0)
-                *(short *)(an + 0x1C) = scale_game_frame_count(0x2D);
-            else
+            case 0:
+                *(short *)(an + 0x1C) = scale_game_frame_count(0x25);
+                break;
+            case 1:
+                *(short *)(an + 0x1C) = scale_game_frame_count(0xF);
+                break;
+            case 4:
                 *(short *)(an + 0x1C) = scale_game_frame_count(0x3C);
-            break;
-        case 11:
-            *(short *)(an + 0x1C) = scale_game_frame_count(0x3C);
-            break;
-        default:
-            *(short *)(an + 0x1C) = scale_game_frame_count(0x1E);
-            break;
+                break;
+            case 7:
+                if (hero_globals_base[0] != 0)
+                    *(short *)(an + 0x1C) = scale_game_frame_count(0x2D);
+                else
+                    *(short *)(an + 0x1C) = scale_game_frame_count(0x3C);
+                break;
+            case 11:
+                *(short *)(an + 0x1C) = scale_game_frame_count(0x3C);
+                break;
+            default:
+                *(short *)(an + 0x1C) = scale_game_frame_count(0x1E);
+                break;
         }
     } else {
         switch (s21) {
-        case 0:
-        case 1:
-            if ((btn & 0x10) == 0)
-                u17 = 0xB;
-            if ((btn & 0x20) == 0)
-                *outA = 1;
-            *(float *)(B + 0x2C) = 0.0f;
-            break;
-        case 4:
-            if ((btn & 1) == 0)
-                u17 = 0xB;
-            if ((btn & 2) == 0)
-                *outA = 1;
-            *(float *)(B + 0x2C) = 0.0f;
-            break;
-        case 7:
-            if ((btn & 4) == 0)
-                u17 = 0xB;
-            if ((btn & 8) == 0)
-                *outA = 1;
-            *(float *)(B + 0x2C) = 0.0f;
-            break;
-        case 11:
-            u17 = 0xC;
-            break;
-        default:
-            *(float *)(B + 0x2C) = 0.0f;
-            u17 = 0xD;
-            break;
+            case 0:
+            case 1:
+                if ((btn & 0x10) == 0)
+                    u17 = 0xB;
+                if ((btn & 0x20) == 0)
+                    *outA = 1;
+                *(float *)(B + 0x2C) = 0.0f;
+                break;
+            case 4:
+                if ((btn & 1) == 0)
+                    u17 = 0xB;
+                if ((btn & 2) == 0)
+                    *outA = 1;
+                *(float *)(B + 0x2C) = 0.0f;
+                break;
+            case 7:
+                if ((btn & 4) == 0)
+                    u17 = 0xB;
+                if ((btn & 8) == 0)
+                    *outA = 1;
+                *(float *)(B + 0x2C) = 0.0f;
+                break;
+            case 11:
+                u17 = 0xC;
+                break;
+            default:
+                *(float *)(B + 0x2C) = 0.0f;
+                u17 = 0xD;
+                break;
         }
     }
 
@@ -1011,8 +1015,8 @@ void extract_matrix_rotation_quaternion(void *arg0, void *arg1) {
 
 LINKER_REMNANT("asm/remnants/text", func_00215378);
 
-extern float FastSin(float);  /* sin of a half-angle */
-extern float FastCos(float);  /* cos of a half-angle */
+extern float FastSin(float); /* sin of a half-angle */
+extern float FastCos(float); /* cos of a half-angle */
 
 /* Axis-angle -> quaternion: the xyz part is axis scaled by sin(angle/2)
    (done by func_001F9C30, which writes through arg0), and w at +0xC is
@@ -1077,8 +1081,8 @@ LINKER_REMNANT("asm/remnants/text", func_00215518);
 
 typedef struct {
     char pad[0x30];
-    float pos[4];     /* 0x30 */
-    float mtx[4][4];  /* 0x40 */
+    float pos[4]; /* 0x30 */
+    float mtx[4][4]; /* 0x40 */
 } ViewBox;
 extern ViewBox *clip_volume_table MACRO_ADDR;
 extern void FastVecSub(void *, void *, void *);
@@ -1098,8 +1102,7 @@ int is_point_inside_clip_volume(void *arg0, int arg1) {
     FastVecSub(d, arg0, m->pos);
     d[3] = 0.0f;
     matrix_mul_vec3(v, d, m->mtx);
-    if (v[0] >= -1.0f && v[0] <= 1.0f && v[1] >= -1.0f && v[1] <= 1.0f
-        && v[2] >= -1.0f && v[2] <= 1.0f) {
+    if (v[0] >= -1.0f && v[0] <= 1.0f && v[1] >= -1.0f && v[1] <= 1.0f && v[2] >= -1.0f && v[2] <= 1.0f) {
         return 1;
     }
     return 0;
@@ -1225,7 +1228,7 @@ extern void FastVectorFromPackedChars(float *, int);
    initializer (one por/sq), then filled. */
 void load_display_text_resource_entry(float *arg0, int *arg1) {
     float v[4];
-    FVec4 mid = { 0 };
+    FVec4 mid = {0};
     float scale;
 
     mid[0] = 127.0f;
@@ -1296,7 +1299,7 @@ typedef struct {
 typedef struct {
     int count;
     char pad[0xC];
-    PathPt pts[1];        /* 0x10 */
+    PathPt pts[1]; /* 0x10 */
 } Path;
 extern void lerp_vector(void *, void *, void *, float);
 extern float vec_length_xy(void *);
@@ -1422,7 +1425,8 @@ int compute_clamped_count_difference(void) {
     int a = count_nonzero_entries_up_to_40();
     int b = count_nonzero_entries_up_to_10();
     int v = a - b * 4;
-    if (v < 0) v = 0;
+    if (v < 0)
+        v = 0;
     return (v < 0x29) ? v : 0x28;
 }
 
@@ -1436,11 +1440,13 @@ int count_nonzero_entries_up_to_40(void) {
         unsigned char *p = &gold_bolts_collected[row * 4];
         int k;
         for (k = 3; k >= 0; k--) {
-            if (*p != 0) count = count + 1;
+            if (*p != 0)
+                count = count + 1;
             p++;
         }
     }
-    if (count < 0) count = 0;
+    if (count < 0)
+        count = 0;
     return (count < 0x29) ? count : 0x28;
 }
 
@@ -1451,9 +1457,11 @@ int count_nonzero_entries_up_to_10(void) {
     int count = 0;
     int i;
     for (i = 0; i < 0x25; i++) {
-        if (gold_weapon_purchased[i] != 0) count = count + 1;
+        if (gold_weapon_purchased[i] != 0)
+            count = count + 1;
     }
-    if (count < 0) count = 0;
+    if (count < 0)
+        count = 0;
     return (count < 0xB) ? count : 0xA;
 }
 
@@ -1464,8 +1472,10 @@ int count_nonzero_entries_up_to_30(void) {
     int count = 0;
     int i;
     for (i = 0; i < 0x20; i++) {
-        if (gSkillPoints[i] != 0) count = count + 1;
+        if (gSkillPoints[i] != 0)
+            count = count + 1;
     }
-    if (count < 0) count = 0;
+    if (count < 0)
+        count = 0;
     return (count < 0x1F) ? count : 0x1E;
 }

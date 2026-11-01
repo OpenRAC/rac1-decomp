@@ -36,8 +36,7 @@ extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
 extern unsigned char normal_font_metrics[];
 extern unsigned char small_font_metrics[];
 extern unsigned char large_font_metrics[];
-extern void FontPrint(void *, void *, void *, void *, void *, int,
-                          unsigned char *);
+extern void FontPrint(void *, void *, void *, void *, void *, int, unsigned char *);
 extern int measure_text_width_regular(unsigned char *, int);
 extern int measure_text_width_small(unsigned char *, int);
 extern int GetEffectTex(int);
@@ -592,7 +591,7 @@ void process_menu_entry(void *arg0, Menu *menu, s32 arg2) {
     kind = e->unk8;
     if (kind == 6) {
         sfx = menu_time_suffixes;
-        libc_strcpy((Cfg13*)((char *)0x70000000), msg_string(e->unk0));
+        libc_strcpy((Cfg13 *)((char *)0x70000000), msg_string(e->unk0));
         p = find_substring(((char *)0x70000000), menu_entry_find_token);
         if (p != 0) {
             p[1] = 's';
@@ -614,30 +613,30 @@ void process_menu_entry(void *arg0, Menu *menu, s32 arg2) {
     }
     ok = 0;
     switch (e->unk8) {
-    case 1:
-        ok = !(gBolts < vendor_item_prices[e->unkA].unk0);
-        break;
-    case 2:
-        ok = stream_item_flags[e->unkA] != 0;
-        break;
-    case 3:
-        ok = 0;
-        if (stream_item_flags[e->unkA] != 0) {
-            ok = items_acquired[e->unkA] == 0;
-        }
-        break;
-    case 4:
-        ok = gSpecialItems[e->unkA] != 0;
-        break;
-    case 5:
-        ok = !(compute_clamped_count_difference() < e->unkA);
-        break;
-    case 6:
-        ok = gBolts >= vendor_item_prices[e->unkA].unk14 && compute_clamped_count_difference() >= 4;
-        break;
-    default:
-        ok = 0;
-        break;
+        case 1:
+            ok = !(gBolts < vendor_item_prices[e->unkA].unk0);
+            break;
+        case 2:
+            ok = stream_item_flags[e->unkA] != 0;
+            break;
+        case 3:
+            ok = 0;
+            if (stream_item_flags[e->unkA] != 0) {
+                ok = items_acquired[e->unkA] == 0;
+            }
+            break;
+        case 4:
+            ok = gSpecialItems[e->unkA] != 0;
+            break;
+        case 5:
+            ok = !(compute_clamped_count_difference() < e->unkA);
+            break;
+        case 6:
+            ok = gBolts >= vendor_item_prices[e->unkA].unk14 && compute_clamped_count_difference() >= 4;
+            break;
+        default:
+            ok = 0;
+            break;
     }
     if (ok) {
         next = e->unkC;

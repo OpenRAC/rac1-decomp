@@ -36,8 +36,7 @@ extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
 extern unsigned char normal_font_metrics[];
 extern unsigned char small_font_metrics[];
 extern unsigned char large_font_metrics[];
-extern void FontPrint(void *, void *, void *, void *, void *, int,
-                          unsigned char *);
+extern void FontPrint(void *, void *, void *, void *, void *, int, unsigned char *);
 extern int measure_text_width_regular(unsigned char *, int);
 extern int measure_text_width_small(unsigned char *, int);
 extern int GetEffectTex(int);
@@ -213,15 +212,13 @@ extern void VU1_addGSregister(int, int);
 extern void draw_map_overlay(void);
 extern void SetupGifPaging(int);
 extern void DoGifPaging(void);
-extern void func_001F68E8_c(int, int, long, void *, int)
-    __asm__("func_001F68E8");
+extern void func_001F68E8_c(int, int, long, void *, int) __asm__("func_001F68E8");
 extern void *msg_string_id(int) __asm__("func_001FE540");
 extern short panel_clear_color;
 extern void draw_hud_rect_blended(int, int, int, int, long, long);
 extern int GetIconFrame(int, int);
 extern void HudSprite(int, int, int, int, int, int);
-extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long,
-                          long);
+extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
 extern short fs_aa_buffer[];
 extern long transition_overlay_tex0;
 extern int acquire_menu_stream_buffer(int);
@@ -379,19 +376,15 @@ void render_capture_scrolling_text(char *text, s32 start_x, s32 start_y, f32 sca
 
                         if (cursor_x + 9 > 0) {
                             if (cursor_x < 0x100) {
-                                glyph_width =
-                                    TRUNC(IntToFloat(9) * scale);
-                                glyph_height =
-                                    TRUNC(IntToFloat(9) * scale);
-                                DrawTexturedQuad(cursor_x, cursor_y, glyph_width, glyph_height,
-                                                   texture_u, texture_v, 9, 9, (s64)0x80404040,
-                                                   texture);
+                                glyph_width = TRUNC(IntToFloat(9) * scale);
+                                glyph_height = TRUNC(IntToFloat(9) * scale);
+                                DrawTexturedQuad(cursor_x, cursor_y, glyph_width, glyph_height, texture_u, texture_v, 9,
+                                                 9, (s64)0x80404040, texture);
                             }
                         }
                     }
 
-                    cursor_x += TRUNC(
-                        IntToFloat(capture_glyph_advances[glyph_index]) * scale);
+                    cursor_x += TRUNC(IntToFloat(capture_glyph_advances[glyph_index]) * scale);
                 }
             }
         }
@@ -468,8 +461,7 @@ struct VendorItemResource {
 extern u8 item_info_table[];
 extern struct VendorMenuState vendor_state_ui __asm__("D_001E66C0");
 extern s32 subtract_integer_with_clamp();
-extern void func_001FBAB8_u(int, int, int, int, int, int, unsigned int)
-    __asm__("func_001FBAB8");
+extern void func_001FBAB8_u(int, int, int, int, int, int, unsigned int) __asm__("func_001FBAB8");
 
 /* Vendor item carousel and icon pulse. The solid black draw calls use the
    unsigned color signature, matching retail's argument setup order. */
@@ -493,13 +485,15 @@ void render_vendor_item_icon_strip_pass(void) {
         itemX = 0xC;
         itemIndex = 0;
         selectedOffset = vendor_state_ui.selectedIndex * 0x38;
-        pulseColor = ((subtract_integer_with_clamp(((vendor_state_ui.pulseTick * 4) & 0x3F) - 0x20) + 0x40) * 0x10202) | 0x80000000;
+        pulseColor = ((subtract_integer_with_clamp(((vendor_state_ui.pulseTick * 4) & 0x3F) - 0x20) + 0x40) * 0x10202) |
+                     0x80000000;
         draw_framebuffer_rect(selectedOffset + 8, 2, selectedOffset + 0x40, 0x3A, 0x200, 0x80, pulseColor);
         func_001FBAB8_u(selectedOffset + 0xA, 4, selectedOffset + 0x3E, 0x38, 0x200, 0x80, 0x80000000);
         if (vendor_state_ui.slotCount > 0) {
             do {
-                slotKind = (s32 *) (void *) ((u8 *)&vendor_state_ui + 0xD4 + itemIndex * 0x14);
-                itemIconId = ((struct VendorItemResource *) (void *) ((u8 *)item_info_table + slotKind[-1] * 0x4C))->iconId;
+                slotKind = (s32 *)(void *)((u8 *)&vendor_state_ui + 0xD4 + itemIndex * 0x14);
+                itemIconId =
+                    ((struct VendorItemResource *)(void *)((u8 *)item_info_table + slotKind[-1] * 0x4C))->iconId;
                 if (slotKind[0] == 1) {
                     itemIcon = GetIconFrame(itemIconId, 2);
                 } else {
@@ -512,19 +506,28 @@ void render_vendor_item_icon_strip_pass(void) {
         }
     } else {
         if (vendor_state_ui.scrollOffset < 0) {
-            vendor_state_ui.scrollOffset = (s32) (vendor_state_ui.scrollOffset + 4);
+            vendor_state_ui.scrollOffset = (s32)(vendor_state_ui.scrollOffset + 4);
         } else if (vendor_state_ui.scrollOffset > 0) {
-            vendor_state_ui.scrollOffset = (s32) (vendor_state_ui.scrollOffset - 4);
+            vendor_state_ui.scrollOffset = (s32)(vendor_state_ui.scrollOffset - 4);
         } else {
-            draw_framebuffer_rect(0xB0, 2, 0xE8, 0x3A, 0x200, 0x80, ((subtract_integer_with_clamp(((vendor_state_ui.pulseTick * 4) & 0x3F) - 0x20) + 0x40) * 0x10202) - (s32) 0x80000000);
+            draw_framebuffer_rect(
+                0xB0, 2, 0xE8, 0x3A, 0x200, 0x80,
+                ((subtract_integer_with_clamp(((vendor_state_ui.pulseTick * 4) & 0x3F) - 0x20) + 0x40) * 0x10202) -
+                    (s32)0x80000000);
             func_001FBAB8_u(0xB2, 4, 0xE6, 0x38, 0x200, 0x80, 0x80000000);
         }
         x = vendor_state_ui.scrollOffset - 0x64;
         i = -2;
         do {
             selectedMinusThree = vendor_state_ui.selectedIndex - 3;
-            slotOffset = ((s32) ((vendor_state_ui.slotCount * 2) + i + selectedMinusThree) % (s32) vendor_state_ui.slotCount) * 0x14;
-            displayIconId = ((struct VendorItemResource *) (void *) ((u8 *)item_info_table + *(s32 *)(void *)(slotOffset + ((u8 *)&vendor_state_ui + 0xD0)) * 0x4C))->iconId;
+            slotOffset =
+                ((s32)((vendor_state_ui.slotCount * 2) + i + selectedMinusThree) % (s32)vendor_state_ui.slotCount) *
+                0x14;
+            displayIconId =
+                ((struct VendorItemResource *)(void *)((u8 *)item_info_table +
+                                                       *(s32 *)(void *)(slotOffset + ((u8 *)&vendor_state_ui + 0xD0)) *
+                                                           0x4C))
+                    ->iconId;
             if (*(s32 *)(void *)(slotOffset + ((u8 *)&vendor_state_ui + 0xD4)) == 1) {
                 displayIcon = GetIconFrame(displayIconId, 2);
             } else {
@@ -545,10 +548,23 @@ struct VM239 {
     char pad44[0x14];
     int idx;
     char pad5C[0x74];
-    struct { int id; int kind; int pad[3]; } slots[1];
+    struct {
+        int id;
+        int kind;
+        int pad[3];
+    } slots[1];
 };
-struct T239 { int text; char pad[0x48]; };
-struct P239 { int a; int b; unsigned short c; unsigned short d; int pad[3]; };
+struct T239 {
+    int text;
+    char pad[0x48];
+};
+struct P239 {
+    int a;
+    int b;
+    unsigned short c;
+    unsigned short d;
+    int pad[3];
+};
 
 extern void FontPrintSmall_c(int, int, long, void *, int) __asm__("func_001F6968");
 extern void format_scaled_display_value(void *arg0, int arg1);
@@ -567,7 +583,8 @@ void render_vendor_item_details_pass(void) {
     DrawMobyList(vendor_state_m.f20 + 0x100, 1);
     DrawMobyList(vendor_state_m.f20, 1);
     if (vendor_state_m.slots[vendor_state_m.idx].kind == 1) {
-        FontPrintSmall_c(6, 8, 0x80F0F0F0L, msg_string_id(item_info_table_t[vendor_state_m.slots[vendor_state_m.idx].id].text), -1);
+        FontPrintSmall_c(6, 8, 0x80F0F0F0L,
+                         msg_string_id(item_info_table_t[vendor_state_m.slots[vendor_state_m.idx].id].text), -1);
         FontPrintSmall_c(0x18, 0x18, 0x80F0F0F0L, msg_string_id(0x4F5D), -1);
         format_scaled_display_value(buf, vendor_item_prices_p[vendor_state_m.slots[vendor_state_m.idx].id].c);
         font_print_right_small_c(0x76, 0x65, 0x80F0F0F0L, buf, -1);
@@ -580,12 +597,14 @@ void render_vendor_item_details_pass(void) {
             draw_hud_rect_blended(0x79 - w, 0x6D, 0x77, 0x70, 0x60959544L, 0);
             draw_hud_rect_blended(0x7A - w, 0x6D, 0x76, 0x70, 0x70959544L, 0);
             draw_hud_rect_blended(0x7B - w, 0x6D, 0x75, 0x70, 0x80959544L, 0);
-            format_scaled_display_value(buf, vendor_state_m.f40 ? vendor_item_prices_p[vendor_state_m.slots[vendor_state_m.idx].id].d
+            format_scaled_display_value(buf, vendor_state_m.f40
+                                                 ? vendor_item_prices_p[vendor_state_m.slots[vendor_state_m.idx].id].d
                                                  : vendor_item_prices_p[vendor_state_m.slots[vendor_state_m.idx].id].c);
             font_print_right_small_c(0x76, 0x55, 0x80F0F0F0L, buf, -1);
         }
     } else {
-        FontPrintSmall_c(6, 8, 0x80F0F0F0L, msg_string_id(item_info_table_t[vendor_state_m.slots[vendor_state_m.idx].id].text), -1);
+        FontPrintSmall_c(6, 8, 0x80F0F0F0L,
+                         msg_string_id(item_info_table_t[vendor_state_m.slots[vendor_state_m.idx].id].text), -1);
         format_scaled_display_value(buf, vendor_item_prices_p[vendor_state_m.slots[vendor_state_m.idx].id].a);
         font_print_right_small_c(0x76, 0x65, item_available_b[0x23] ? 0x80808080L : 0x80F0F0F0L, buf, -1);
         if (item_available_b[0x23] != 0) {
@@ -597,14 +616,19 @@ void render_vendor_item_details_pass(void) {
             draw_hud_rect_blended(0x79 - w, 0x6D, 0x77, 0x70, 0x60959544L, 0);
             draw_hud_rect_blended(0x7A - w, 0x6D, 0x76, 0x70, 0x70959544L, 0);
             draw_hud_rect_blended(0x7B - w, 0x6D, 0x75, 0x70, 0x80959544L, 0);
-            format_scaled_display_value(buf, item_available_b[0x23] ? vendor_item_prices_p[vendor_state_m.slots[vendor_state_m.idx].id].b
+            format_scaled_display_value(buf, item_available_b[0x23]
+                                                 ? vendor_item_prices_p[vendor_state_m.slots[vendor_state_m.idx].id].b
                                                  : vendor_item_prices_p[vendor_state_m.slots[vendor_state_m.idx].id].a);
             font_print_right_small_c(0x76, 0x55, 0x80F0F0F0L, buf, -1);
         }
     }
 }
 
-typedef struct { int type; int kind; int pad[3]; } VSlotA;
+typedef struct {
+    int type;
+    int kind;
+    int pad[3];
+} VSlotA;
 typedef struct {
     char pad0[0x40];
     int alt;
@@ -650,7 +674,9 @@ void render_vendor_buy_label_pass(char *unused, int x, int y) {
     if (((VendorA *)vendor_state)->sel != 0) {
         if (((VendorA *)vendor_state)->slots[((VendorA *)vendor_state)->idx].kind == 1 &&
             weapon_ammo_counts[((VendorA *)vendor_state)->slots[((VendorA *)vendor_state)->idx].type] >=
-                ((WeaponInfoA *)(vendor_item_prices + ((VendorA *)vendor_state)->slots[((VendorA *)vendor_state)->idx].type * sz))->max) {
+                ((WeaponInfoA *)(vendor_item_prices +
+                                 ((VendorA *)vendor_state)->slots[((VendorA *)vendor_state)->idx].type * sz))
+                    ->max) {
             m = 0x5238;
         } else {
             v = (VendorA *)vendor_state;
@@ -698,10 +724,10 @@ typedef struct {
 
 typedef struct {
     char pad0[0x40];
-    int alt;             /* +0x40 */
+    int alt; /* +0x40 */
     char pad1[0x14];
-    int idx;             /* +0x58 */
-    int sel;             /* +0x5C */
+    int idx; /* +0x58 */
+    int sel; /* +0x5C */
     char pad2[0x70];
     VendorSlot slots[1]; /* +0xD0 */
 } Vendor;
@@ -709,10 +735,10 @@ extern Vendor vendor_state_v __asm__("D_001E66C0");
 
 typedef struct {
     char pad0[8];
-    unsigned short price;    /* +0x8 */
+    unsigned short price; /* +0x8 */
     unsigned short priceAlt; /* +0xA */
     char pad1[2];
-    unsigned short max;      /* +0xE */
+    unsigned short max; /* +0xE */
     char pad2[8];
 } WeaponInfo; /* 0x18 */
 
@@ -734,9 +760,8 @@ void VendorDrawAmmoPrompt(void) {
     v = &vendor_state_v;
     if (v->sel != 0) {
         idx = v->idx;
-        if (v->slots[idx].kind == 1 &&
-            weapon_ammo_counts[v->slots[idx].type] >=
-                ((WeaponInfo *)(vendor_item_prices + v->slots[idx].type * 0x18))->max) {
+        if (v->slots[idx].kind == 1 && weapon_ammo_counts[v->slots[idx].type] >=
+                                           ((WeaponInfo *)(vendor_item_prices + v->slots[idx].type * 0x18))->max) {
             return;
         }
         if (v->slots[idx].kind == 1) {
@@ -769,8 +794,7 @@ extern f32 IntToFloat(s32);
 extern void append_subpixel_textured_screen_quad(f32, f32, f32, f32, s32, s32, s32, s32, u64, s64);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/render_vendor_capture_texture_overlays_pass.c, render_vendor_capture_texture_overlays_pass. */
-void render_vendor_capture_texture_overlays_pass(s32 pass_index, f32 capture_width,
-                                                 f32 capture_height) {
+void render_vendor_capture_texture_overlays_pass(s32 pass_index, f32 capture_width, f32 capture_height) {
     s32 flash_timer;
     s32 scroll_opacity;
     s32 flash_opacity;
@@ -802,10 +826,9 @@ void render_vendor_capture_texture_overlays_pass(s32 pass_index, f32 capture_wid
         if (flash_opacity > 0x80)
             flash_opacity = 0x80;
         VU1_addGSregister_r(0x42, ((u64)flash_opacity << 32) | 0x68);
-        append_subpixel_textured_screen_quad(0.0f, 0.0f, capture_width, capture_height,
-                                             random_u + zero_offset, random_v + zero_offset,
-                                             capture_width + random_u, capture_height + random_v,
-                                             0x808080, GetEffectTex_r(0x1A));
+        append_subpixel_textured_screen_quad(0.0f, 0.0f, capture_width, capture_height, random_u + zero_offset,
+                                             random_v + zero_offset, capture_width + random_u,
+                                             capture_height + random_v, 0x808080, GetEffectTex_r(0x1A));
         if (vendor_flash_timers[pass_index] >= 0x100) {
             vendor_flash_timers[pass_index] = 0;
         }
@@ -819,18 +842,15 @@ void render_vendor_capture_texture_overlays_pass(s32 pass_index, f32 capture_wid
         if (vendor_scroll_timers[pass_index] != 0) {
             vendor_scroll_timers[pass_index] += 2;
             overlay_width = capture_width;
-            scroll_opacity =
-                0x100 - subtract_integer_with_clamp(vendor_scroll_timers[pass_index] - 0x100);
+            scroll_opacity = 0x100 - subtract_integer_with_clamp(vendor_scroll_timers[pass_index] - 0x100);
             if (scroll_opacity > 0x50) {
                 scroll_opacity = 0x50;
             }
-            scroll_offset =
-                -(IntToFloat(0x200 - vendor_scroll_timers[pass_index]) * 0.03125f);
+            scroll_offset = -(IntToFloat(0x200 - vendor_scroll_timers[pass_index]) * 0.03125f);
             overlay_height = capture_height + 16.0f;
-            append_subpixel_textured_screen_quad(0.0f, scroll_offset, capture_width, overlay_height,
-                                                 0, 0, overlay_width, (s32)(overlay_height * 1.5f),
-                                                 (scroll_opacity << 24) | 0x505050,
-                                                 GetEffectTex_r(0x1C));
+            append_subpixel_textured_screen_quad(0.0f, scroll_offset, capture_width, overlay_height, 0, 0,
+                                                 overlay_width, (s32)(overlay_height * 1.5f),
+                                                 (scroll_opacity << 24) | 0x505050, GetEffectTex_r(0x1C));
             if (vendor_scroll_timers[pass_index] >= 0x200) {
                 vendor_scroll_timers[pass_index] = 0;
             }
@@ -840,8 +860,8 @@ void render_vendor_capture_texture_overlays_pass(s32 pass_index, f32 capture_wid
     }
     if (pass_index == 6) {
         /* The known capture coordinator supplies only passes zero through five. */
-        append_subpixel_textured_screen_quad(0.0f, 0.0f, capture_width, capture_height, 0, 0, 0x40,
-                                             0x40, 0x80808080, GetEffectTex_r(0x19));
+        append_subpixel_textured_screen_quad(0.0f, 0.0f, capture_width, capture_height, 0, 0, 0x40, 0x40, 0x80808080,
+                                             GetEffectTex_r(0x19));
     }
 }
 
@@ -911,7 +931,7 @@ void render_vendor_capture_pass_sequence(char *m) {
         u128_3AA38 d2[1];
         u128_3AA38 base[1];
         u128_3AA38 out[3];
-        int ids[3] = { i * 4, i * 4 + 1, i * 4 + 2 };
+        int ids[3] = {i * 4, i * 4 + 1, i * 4 + 2};
         u128_3AA38 tmp[1];
         u128_3AA38 c[4];
         u128_3AA38 pad[5];
@@ -963,24 +983,24 @@ void render_vendor_capture_pass_sequence(char *m) {
         draw_centered_capture_background(0x200, 0x200);
         VU1_addGSregister_l(0x42, 0x8000000064L);
         switch (i) {
-        case 0:
-            update_scrolling_status_message_r(m);
-            break;
-        case 1:
-            render_vendor_item_details_pass_r(m);
-            break;
-        case 2:
-            render_capture_effect_pass_r(m);
-            break;
-        case 3:
-            render_vendor_buy_label_pass(m, (int)x, (int)y);
-            break;
-        case 4:
-            VendorDrawAmmoPrompt_r(m);
-            break;
-        case 5:
-            render_vendor_item_icon_strip_pass_r(m);
-            break;
+            case 0:
+                update_scrolling_status_message_r(m);
+                break;
+            case 1:
+                render_vendor_item_details_pass_r(m);
+                break;
+            case 2:
+                render_capture_effect_pass_r(m);
+                break;
+            case 3:
+                render_vendor_buy_label_pass(m, (int)x, (int)y);
+                break;
+            case 4:
+                VendorDrawAmmoPrompt_r(m);
+                break;
+            case 5:
+                render_vendor_item_icon_strip_pass_r(m);
+                break;
         }
         render_vendor_capture_texture_overlays_pass(i, x, y);
         setup_view_context();
@@ -991,11 +1011,9 @@ void render_vendor_capture_pass_sequence(char *m) {
         tex = capture_texture_tex0;
         if (pal_mode != 0) {
             append_subpixel_textured_screen_quad(w, h, x, y, 0, 0, (int)(sx - 1.0f),
-                          truncate_float_to_s32_r(sy * 0.92857146f - 1.0f),
-                          0x80808080, tex);
+                                                 truncate_float_to_s32_r(sy * 0.92857146f - 1.0f), 0x80808080, tex);
         } else {
-            append_subpixel_textured_screen_quad(w, h, x, y, 0, 0, (int)(sx - 1.0f), (int)(sy - 1.0f),
-                          0x80808080, tex);
+            append_subpixel_textured_screen_quad(w, h, x, y, 0, 0, (int)(sx - 1.0f), (int)(sy - 1.0f), 0x80808080, tex);
         }
         VU1_addGSregister_l(8, 0);
     }
@@ -1077,7 +1095,7 @@ typedef struct {
     f32 cell_width;
     f32 cell_height;
 } SurfaceHeightGrid;
-extern SurfaceHeightTile * surface_height_tiles_r __asm__("D_00161290") MACRO_ADDR;
+extern SurfaceHeightTile *surface_height_tiles_r __asm__("D_00161290") MACRO_ADDR;
 extern SurfaceHeightGrid surface_height_grid_r __asm__("D_001E69E0");
 extern short surface_height_layer;
 extern s32 FindZoneAtPoint(f32, f32, f32);
@@ -1145,8 +1163,7 @@ s32 sample_surface_height_map(f32 *height, f32 *normal, f32 x, f32 y, f32 z) {
     }
     if (height != 0) {
         first_row_height = h00 + (h10 - h00) * weight_x;
-        *height = first_row_height +
-                  ((h01 + (h11 - h01) * weight_x) - first_row_height) * weight_y + tile->z;
+        *height = first_row_height + ((h01 + (h11 - h01) * weight_x) - first_row_height) * weight_y + tile->z;
     }
     if (normal != 0) {
         x_tangent[0] = surface_height_grid_r.cell_width;

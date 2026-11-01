@@ -37,8 +37,7 @@ extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
 extern unsigned char normal_font_metrics[];
 extern unsigned char small_font_metrics[];
 extern unsigned char large_font_metrics[];
-extern void FontPrint(void *, void *, void *, void *, void *, int,
-                          unsigned char *);
+extern void FontPrint(void *, void *, void *, void *, void *, int, unsigned char *);
 extern int measure_text_width_regular(unsigned char *, int);
 extern int measure_text_width_small(unsigned char *, int);
 extern int GetEffectTex(int);
@@ -214,15 +213,13 @@ extern void VU1_addGSregister(int, int);
 extern void draw_map_overlay(void);
 extern void SetupGifPaging(int);
 extern void DoGifPaging(void);
-extern void func_001F68E8_c(int, int, long, void *, int)
-    __asm__("func_001F68E8");
+extern void func_001F68E8_c(int, int, long, void *, int) __asm__("func_001F68E8");
 extern void *msg_string_id(int) __asm__("func_001FE540");
 extern short panel_clear_color;
 extern void draw_hud_rect_blended(int, int, int, int, long, long);
 extern int GetIconFrame(int, int);
 extern void HudSprite(int, int, int, int, int, int);
-extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long,
-                          long);
+extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
 extern short fs_aa_buffer[];
 extern long transition_overlay_tex0;
 extern int acquire_menu_stream_buffer(int);
@@ -307,13 +304,24 @@ int calculate_voice_distance_volume(void *arg0, float x, float lo, float hi) {
     struct VoiceVolumeDefinition *definition = (struct VoiceVolumeDefinition *)arg0;
     int r;
     if (definition->attenuation_flags & 1) {
-        if (x <= lo) r = definition->near_volume;
-        else if (hi <= x) r = definition->far_volume;
-        else r = definition->far_volume + truncate_float_to_s32_i((hi - x) * (hi - x) * IntToFloat(definition->near_volume - definition->far_volume) / ((hi - lo) * (hi - lo)));
+        if (x <= lo)
+            r = definition->near_volume;
+        else if (hi <= x)
+            r = definition->far_volume;
+        else
+            r = definition->far_volume +
+                truncate_float_to_s32_i((hi - x) * (hi - x) *
+                                        IntToFloat(definition->near_volume - definition->far_volume) /
+                                        ((hi - lo) * (hi - lo)));
     } else {
-        if (x <= lo) r = definition->near_volume;
-        else if (hi <= x) r = definition->far_volume;
-        else r = definition->far_volume + truncate_float_to_s32_i((hi - x) * IntToFloat(definition->near_volume - definition->far_volume) / (hi - lo));
+        if (x <= lo)
+            r = definition->near_volume;
+        else if (hi <= x)
+            r = definition->far_volume;
+        else
+            r = definition->far_volume +
+                truncate_float_to_s32_i((hi - x) * IntToFloat(definition->near_volume - definition->far_volume) /
+                                        (hi - lo));
     }
     return r;
 }
@@ -575,8 +583,8 @@ s32 func_0022DD68_r(void) {
     if (voice_pool_DD68.reverb_commands & 8) {
         snd_SetReverbEx_DD68(2, 0, 0, 0, 0);
     } else if (voice_pool_DD68.reverb_commands & 0x13) {
-        snd_SetReverbEx_DD68(2, voice_pool_DD68.reverb_type, voice_pool_DD68.reverb_depth,
-                             voice_pool_DD68.reverb_delay, voice_pool_DD68.reverb_feedback);
+        snd_SetReverbEx_DD68(2, voice_pool_DD68.reverb_type, voice_pool_DD68.reverb_depth, voice_pool_DD68.reverb_delay,
+                             voice_pool_DD68.reverb_feedback);
     } else if (voice_pool_DD68.reverb_commands & 4) {
         snd_AutoReverb_DD68(2, voice_pool_DD68.reverb_depth, 0xC, 3);
     }
@@ -610,8 +618,7 @@ s32 func_0022DD68_r(void) {
         } while (previous_history_index != voice_pool_DD68.listener_history_position);
     }
     if (listener_sample_count >= 2) {
-        FastVecScale_DD68(&listener_velocity, &listener_velocity,
-                          1.0f / IntToFloat_DD68(listener_sample_count));
+        FastVecScale_DD68(&listener_velocity, &listener_velocity, 1.0f / IntToFloat_DD68(listener_sample_count));
     }
 
     if (game_mode_DD68 == 2) {
@@ -668,8 +675,7 @@ s32 func_0022DD68_r(void) {
         {
             s32 state = voice_pool_DD68.voices[slot_index].state;
             if (state == 4 ||
-                (state != 6 && owner_removed &&
-                 voice_pool_DD68.voices[slot_index].definition->source_state != 0)) {
+                (state != 6 && owner_removed && voice_pool_DD68.voices[slot_index].definition->source_state != 0)) {
                 voice_flags[slot_index] = 0x20;
                 continue;
             }
@@ -682,22 +688,17 @@ s32 func_0022DD68_r(void) {
             }
         }
 
-        if (voice_pool_DD68.voices[slot_index].moby != 0 &&
-            !(voice_pool_DD68.voices[slot_index].flags & 8)) {
+        if (voice_pool_DD68.voices[slot_index].moby != 0 && !(voice_pool_DD68.voices[slot_index].flags & 8)) {
             if (voice_pool_DD68.voices[slot_index].flags & 0x40) {
-                FastVecTransform_DD68(&direction, &voice_pool_DD68.voices[slot_index].position_offset,
-                                      &moby->rotation);
+                FastVecTransform_DD68(&direction, &voice_pool_DD68.voices[slot_index].position_offset, &moby->rotation);
                 FastVecAdd_DD68(&direction, &direction, &moby->position);
-                FastVecSub_DD68(&relative_velocity, &direction,
-                                &voice_pool_DD68.voices[slot_index].position);
+                FastVecSub_DD68(&relative_velocity, &direction, &voice_pool_DD68.voices[slot_index].position);
                 qcopy(&voice_pool_DD68.voices[slot_index].position, &direction);
             } else {
                 voice_pool_DD68.voices[slot_index].position.f[2] -= 1.0f;
-                FastVecSub_DD68(&relative_velocity,
-                                &voice_pool_DD68.voices[slot_index].moby->position,
-                                    &voice_pool_DD68.voices[slot_index].position);
-                qcopy(&voice_pool_DD68.voices[slot_index].position,
-                      &voice_pool_DD68.voices[slot_index].moby->position);
+                FastVecSub_DD68(&relative_velocity, &voice_pool_DD68.voices[slot_index].moby->position,
+                                &voice_pool_DD68.voices[slot_index].position);
+                qcopy(&voice_pool_DD68.voices[slot_index].position, &voice_pool_DD68.voices[slot_index].moby->position);
                 voice_pool_DD68.voices[slot_index].position.f[2] += 1.0f;
             }
         } else {
@@ -762,11 +763,9 @@ s32 func_0022DD68_r(void) {
                     }
                     voice_pool_DD68.occlusion_frame = world_update_time_DD68;
                 }
-                for (history_offset = 0, sample_index = 0; history_offset < 36;
-                     history_offset += 6, sample_index++) {
-                    voice_pool_DD68.voices[slot_index].occlusion_history[history_offset] =
-                        Sound_LineTest_DD68(&voice_pool_DD68.voices[slot_index],
-                                            &voice_pool_DD68.occlusion_samples[sample_index]);
+                for (history_offset = 0, sample_index = 0; history_offset < 36; history_offset += 6, sample_index++) {
+                    voice_pool_DD68.voices[slot_index].occlusion_history[history_offset] = Sound_LineTest_DD68(
+                        &voice_pool_DD68.voices[slot_index], &voice_pool_DD68.occlusion_samples[sample_index]);
                     for (repeat_index = 1; repeat_index < 6; repeat_index++) {
                         voice_pool_DD68.voices[slot_index].occlusion_history[history_offset + repeat_index] =
                             voice_pool_DD68.voices[slot_index].occlusion_history[history_offset];
@@ -791,21 +790,19 @@ s32 func_0022DD68_r(void) {
                             test_now = (slot_index & 3) == (world_update_time_DD68 & 3);
                         }
                         if (test_now) {
-                            voice_pool_DD68.voices[slot_index].occlusion_history
-                                [voice_pool_DD68.voices[slot_index].occlusion_history_position] =
-                                Sound_LineTest_DD68(&voice_pool_DD68.voices[slot_index],
-                                                    &listener_occlusion_position);
+                            voice_pool_DD68.voices[slot_index]
+                                .occlusion_history[voice_pool_DD68.voices[slot_index].occlusion_history_position] =
+                                Sound_LineTest_DD68(&voice_pool_DD68.voices[slot_index], &listener_occlusion_position);
                         } else {
-                            voice_pool_DD68.voices[slot_index].occlusion_history
-                                [voice_pool_DD68.voices[slot_index].occlusion_history_position] =
+                            voice_pool_DD68.voices[slot_index]
+                                .occlusion_history[voice_pool_DD68.voices[slot_index].occlusion_history_position] =
                                 voice_pool_DD68.voices[slot_index].occlusion_history
                                     [(voice_pool_DD68.voices[slot_index].occlusion_history_position + 35) % 36];
                         }
                     }
                 }
                 {
-                    s32 occluded =
-                        FastCountChars_DD68(voices[slot_index].occlusion_history, 36);
+                    s32 occluded = FastCountChars_DD68(voices[slot_index].occlusion_history, 36);
                     if (occluded >= 36) {
                         voice_volumes[slot_index] = 0;
                     } else if (occluded >= 19) {
@@ -839,8 +836,7 @@ s32 func_0022DD68_r(void) {
                 }
             }
         } else if (command_flags & 0x10) {
-            snd_SoundIsStillPlaying_DD68(handle, Sound_StoreHandleReset_DD68,
-                                         &voice_pool_DD68.voices[slot_index]);
+            snd_SoundIsStillPlaying_DD68(handle, Sound_StoreHandleReset_DD68, &voice_pool_DD68.voices[slot_index]);
         } else {
             pitch_bend = voice_pool_DD68.voices[slot_index].pitch_bend;
             parameter_mask = pitch_bend ? 0x11 : 1;
@@ -853,8 +849,8 @@ s32 func_0022DD68_r(void) {
             }
             if (voice_flags[slot_index] & 4) {
                 parameter_mask |= 8;
-                pitch_modifier = snd_GetDopplerPitchMod_DD68(
-                    truncate_float_to_s32_DD68(radial_velocities[slot_index] * 300.0f));
+                pitch_modifier =
+                    snd_GetDopplerPitchMod_DD68(truncate_float_to_s32_DD68(radial_velocities[slot_index] * 300.0f));
             }
             if (underwater && !(voice_pool_DD68.voices[slot_index].definition->attenuation_flags & 8)) {
                 parameter_mask |= 8;
@@ -863,15 +859,15 @@ s32 func_0022DD68_r(void) {
             {
                 s32 state = voice_pool_DD68.voices[slot_index].state;
                 if (state != 7) {
-                    snd_SetSoundParams_DD68(handle, parameter_mask, voice_volumes[slot_index], pan,
-                                            pitch_modifier, pitch_bend, Sound_StoreHandleReset_DD68,
+                    snd_SetSoundParams_DD68(handle, parameter_mask, voice_volumes[slot_index], pan, pitch_modifier,
+                                            pitch_bend, Sound_StoreHandleReset_DD68,
                                             &voice_pool_DD68.voices[slot_index]);
                 } else {
                     voice_pool_DD68.voices[slot_index].state = 1;
                     snd_PlaySoundVolPanPMPB_DD68(voice_pool_DD68.voices[slot_index].definition->bank_handle,
                                                  voice_pool_DD68.voices[slot_index].definition->sound_index,
-                                                voice_volumes[slot_index], pan, pitch_modifier, pitch_bend,
-                                                Sound_StoreHandleAdvance_DD68, &voice_pool_DD68.voices[slot_index]);
+                                                 voice_volumes[slot_index], pan, pitch_modifier, pitch_bend,
+                                                 Sound_StoreHandleAdvance_DD68, &voice_pool_DD68.voices[slot_index]);
                 }
             }
         }
@@ -984,15 +980,13 @@ extern void clear_u64_value_r(Vec4 *) __asm__("func_001F9BC0");
 extern s32 random_integer_below_r(s32) __asm__("func_002140B0");
 extern s32 calculate_voice_volume_r(VoiceSlot_2EB08 *, Vec4 *) __asm__("func_0022DB00");
 
-s32 func_0022EB08_r(VoiceDefinition_2EB08 *, u32, VoiceMoby_2EB08 *, Vec4 *,
-                    s32) __asm__("func_0022EB08");
+s32 func_0022EB08_r(VoiceDefinition_2EB08 *, u32, VoiceMoby_2EB08 *, Vec4 *, s32) __asm__("func_0022EB08");
 
 /* Takes a free voice of the sound pool for a definition (26 voices, 30 for the hero, the
    held item and class 0x472), places it at the moby or the given position, drops it when
    it would be inaudible and picks its pitch bend. Returns the voice index or -1.
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/textbin/fun_0022d7f0.c, allocate_voice_slot. */
-s32 func_0022EB08_r(VoiceDefinition_2EB08 *definition, u32 flags, VoiceMoby_2EB08 *moby,
-                    Vec4 *position, s32 volume) {
+s32 func_0022EB08_r(VoiceDefinition_2EB08 *definition, u32 flags, VoiceMoby_2EB08 *moby, Vec4 *position, s32 volume) {
     s32 volume_offset;
     s32 pitch_bend_max;
     s32 pitch_bend_min;
@@ -1079,7 +1073,7 @@ calculate_volume:
     }
     volume_offset = slot_index * 0x70;
     result = calculate_voice_volume_r((VoiceSlot_2EB08 *)(D_0013E6C0_2EB08 + volume_offset),
-                                 (Vec4 *)(D_0013E6C0_2EB08 + volume_offset + 0x20));
+                                      (Vec4 *)(D_0013E6C0_2EB08 + volume_offset + 0x20));
     goto check_calculated_volume;
 commit_if_audible:
     result = volume;
@@ -1095,8 +1089,7 @@ check_calculated_volume:
     pitch_bend_max = definition->pitch_bend_max;
     pitch_bend_min = definition->pitch_bend_min;
     if (pitch_bend_max != pitch_bend_min) {
-        pitch_bend =
-            random_integer_below_r(pitch_bend_max - pitch_bend_min) + definition->pitch_bend_min;
+        pitch_bend = random_integer_below_r(pitch_bend_max - pitch_bend_min) + definition->pitch_bend_min;
     } else {
         pitch_bend = pitch_bend_max;
     }

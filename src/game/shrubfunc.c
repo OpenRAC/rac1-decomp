@@ -35,8 +35,7 @@ extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
 extern unsigned char normal_font_metrics[];
 extern unsigned char small_font_metrics[];
 extern unsigned char large_font_metrics[];
-extern void FontPrint(void *, void *, void *, void *, void *, int,
-                          unsigned char *);
+extern void FontPrint(void *, void *, void *, void *, void *, int, unsigned char *);
 extern int measure_text_width_regular(unsigned char *, int);
 extern int measure_text_width_small(unsigned char *, int);
 extern int GetEffectTex(int);
@@ -212,15 +211,13 @@ extern void VU1_addGSregister(int, int);
 extern void draw_map_overlay(void);
 extern void SetupGifPaging(int);
 extern void DoGifPaging(void);
-extern void func_001F68E8_c(int, int, long, void *, int)
-    __asm__("func_001F68E8");
+extern void func_001F68E8_c(int, int, long, void *, int) __asm__("func_001F68E8");
 extern void *msg_string_id(int) __asm__("func_001FE540");
 extern short panel_clear_color;
 extern void draw_hud_rect_blended(int, int, int, int, long, long);
 extern int GetIconFrame(int, int);
 extern void HudSprite(int, int, int, int, int, int);
-extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long,
-                          long);
+extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
 extern short fs_aa_buffer[];
 extern long transition_overlay_tex0;
 extern int acquire_menu_stream_buffer(int);
@@ -288,7 +285,10 @@ void DmaShrubTextures(void) {
 extern int shrub_class_index_list[];
 extern char *shrub_render_classes[];
 extern short shrub_paging_table[];
-typedef struct { char *ptr; int pad; } ShrubRec_29D48;
+typedef struct {
+    char *ptr;
+    int pad;
+} ShrubRec_29D48;
 
 /* `items` declared inside the middle loop, and `rec = &items[i];
    rec->ptr` rather than `items[i].ptr`, give retail's base-first addu. */
@@ -299,13 +299,16 @@ void patch_shrub_gifs(void) {
         int i;
         for (i = 0; i < *(short *)(obj + 0x28); i++) {
             ShrubRec_29D48 *items = (ShrubRec_29D48 *)(obj + 0x40);
-            ShrubRec_29D48 *rec = &items[i]; int *hdr = (int *)(rec->ptr + 0x10);
+            ShrubRec_29D48 *rec = &items[i];
+            int *hdr = (int *)(rec->ptr + 0x10);
             char *e = (char *)hdr + hdr[1] * 0x10 + 0x10;
             int j;
             for (j = 0; j < hdr[0]; j++) {
                 short *ent = &shrub_paging_table[*(unsigned char *)(e + 0x13) * 2];
-                if (ent[0] != 0) *(int *)(e + 0x30) = (*(int *)(e + 0x30) & 0xFFFFC000) | ent[0];
-                if (ent[1] != 0) *(int *)(e + 0x20) = (*(int *)(e + 0x20) & 0xFFFFC000) | ent[1];
+                if (ent[0] != 0)
+                    *(int *)(e + 0x30) = (*(int *)(e + 0x30) & 0xFFFFC000) | ent[0];
+                if (ent[1] != 0)
+                    *(int *)(e + 0x20) = (*(int *)(e + 0x20) & 0xFFFFC000) | ent[1];
                 e += 0x40;
             }
         }

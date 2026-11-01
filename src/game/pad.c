@@ -36,8 +36,7 @@ extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
 extern unsigned char normal_font_metrics[];
 extern unsigned char small_font_metrics[];
 extern unsigned char large_font_metrics[];
-extern void FontPrint(void *, void *, void *, void *, void *, int,
-                          unsigned char *);
+extern void FontPrint(void *, void *, void *, void *, void *, int, unsigned char *);
 extern int measure_text_width_regular(unsigned char *, int);
 extern int measure_text_width_small(unsigned char *, int);
 extern int GetEffectTex(int);
@@ -217,50 +216,50 @@ void poll_pad_device_state(void *arg0) {
     p->device_state = sce_pad2_get_state(p->socket);
     if (p->device_state == 1) {
         switch (s = p->profile_state) {
-        case 0:
-            n = sce_pad2_get_button_profile(p->socket, buf);
-            if (*(unsigned int *)buf == 0xFFFFFFFF) {
-                p->unk1DC = 0x79;
-            } else {
-                p->unk1DC = 0;
-            }
-            if (n < 5) {
-                for (i = 0; i < n; i++) {
+            case 0:
+                n = sce_pad2_get_button_profile(p->socket, buf);
+                if (*(unsigned int *)buf == 0xFFFFFFFF) {
+                    p->unk1DC = 0x79;
+                } else {
+                    p->unk1DC = 0;
+                }
+                if (n < 5) {
+                    for (i = 0; i < n; i++) {
+                        p->profile[i] = buf[i];
+                    }
+                    p->profile_state = 1;
+                } else {
+                    n = 0;
+                    p->profile_state = 2;
+                }
+                for (i = n; i < 4; i++) {
                     p->profile[i] = buf[i];
                 }
-                p->profile_state = 1;
-            } else {
-                n = 0;
-                p->profile_state = 2;
-            }
-            for (i = n; i < 4; i++) {
-                p->profile[i] = buf[i];
-            }
-            n = sce_vib_get_profile(p->socket, buf);
-            if (n < 5) {
-                for (i = 0; i < n; i++) {
+                n = sce_vib_get_profile(p->socket, buf);
+                if (n < 5) {
+                    for (i = 0; i < n; i++) {
+                        p->act[i] = buf[i];
+                    }
+                } else {
+                    n = 0;
+                }
+                for (i = n; i < 4; i++) {
                     p->act[i] = buf[i];
                 }
-            } else {
-                n = 0;
-            }
-            for (i = n; i < 4; i++) {
-                p->act[i] = buf[i];
-            }
-            ClearPadInput(p);
-            p->unk18C = 2;
-            break;
-        case 1:
-            n = scePad2Read(p->socket, buf);
-            process_pad_input(p, buf, n);
-            if (p->unk18C != 0) {
-                p->unk18C--;
-            }
-            break;
-        case 2:
-            ClearPadInput(p);
-            p->unk18C = s;
-            break;
+                ClearPadInput(p);
+                p->unk18C = 2;
+                break;
+            case 1:
+                n = scePad2Read(p->socket, buf);
+                process_pad_input(p, buf, n);
+                if (p->unk18C != 0) {
+                    p->unk18C--;
+                }
+                break;
+            case 2:
+                ClearPadInput(p);
+                p->unk18C = s;
+                break;
         }
     } else {
         ClearPadInput(p);
@@ -464,8 +463,7 @@ void func_002181F0_r(PadState *p, u8 *buf, s32 len) {
         }
         if (!(p->pressed & 0x10000)) {
             for (k = 1; k < scale_game_frame_count_r(5); k++) {
-                if (FastDiffRots_r(p->hist_ang[(p->hist_idx - k + 30) % 30], ang) >
-                    0.9599311f) {
+                if (FastDiffRots_r(p->hist_ang[(p->hist_idx - k + 30) % 30], ang) > 0.9599311f) {
                     p->pressed |= 0x10000;
                     break;
                 }
