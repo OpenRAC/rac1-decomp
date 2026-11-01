@@ -38,7 +38,7 @@ class PlanTest(unittest.TestCase):
         self.assertFalse(mp.is_candidate("f", 'extern void f(void) __asm__("func_1");'))
         self.assertFalse(mp.is_candidate("f", "extern void f(struct Moby *m);"))
         self.assertFalse(mp.is_candidate("f", "extern void f(Vec4 *v);"))
-        self.assertFalse(mp.is_candidate("x", "extern int x;"))
+        self.assertTrue(mp.is_candidate("x", "extern int x;"))
         self.assertTrue(mp.is_candidate("f", "extern s32 f(void *a, float b);"))
 
     def test_two_definitions_stay(self):
@@ -59,6 +59,43 @@ class PlanTest(unittest.TestCase):
         _, takes = self.plan(sources, fragments={"src/game/c.c": "void v(void) { g(); }\n"})
         self.assertNotIn("src/game/c.c", takes)
         self.assertIn("src/game/a.c", takes)
+
+
+class CanonicalTest(unittest.TestCase):
+    def same(self, a, b):
+        self.assertEqual(mp.canonical("f", a), mp.canonical("f", b))
+
+    def differ(self, a, b):
+        self.assertNotEqual(mp.canonical("f", a), mp.canonical("f", b))
+
+    def test_spelling_and_parameter_names_do_not_count(self):
+        self.same("extern s32 f(s32 a);", "extern int f(int);")
+        self.same("extern u8 *f(void *dst, f32 x);", "extern unsigned char *f(void *, float);")
+        self.same("extern unsigned f(void);", "extern unsigned int f(void);")
+        self.same("extern void f(char *);", "extern void f(char * name);")
+
+    def test_real_differences_count(self):
+        self.differ("extern void f(void);", "extern void f();")
+        self.differ("extern int f(void);", "extern void f(void);")
+        self.differ("extern void f(int);", "extern void f(float);")
+        self.differ("extern void f(int, float);", "extern void f(float, int);")
+        self.differ("extern void f(int *);", "extern void f(int);")
+        self.differ("extern void f(short);", "extern void f(int);")
+        self.differ("extern void f(unsigned char);", "extern void f(char);")
+
+    def test_data(self):
+        self.same("extern s32 f;", "extern int f;")
+        self.differ("extern int f;", "extern short f;")
+        self.differ("extern int f;", "extern int f[];")
+
+
+class HomeTest(unittest.TestCase):
+    def test_homes(self):
+        self.assertEqual(mp.home_of("f", "extern void f(void);", {"src/game/d.c"}, {}), "game/d.h")
+        self.assertEqual(mp.home_of("f", "extern void f(void);", set(), {"f": {"func_001"}}), "asm/executable.h")
+        self.assertEqual(mp.home_of("x", "extern int x;", set(), {"x": {"D_L07_123"}}), "data/level_07.h")
+        self.assertEqual(mp.home_of("x", "extern int x;", set(), {"x": {"D_L00_123"}}), "data/shared_levels.h")
+        self.assertIsNone(mp.home_of("f", "extern void f(void);", {"a.c", "b.c"}, {}))
 
 
 class ApplyTest(unittest.TestCase):
