@@ -41,6 +41,15 @@ python3 tools/format.py --check
 python3 -m unittest discover -s tools/tests -p 'test_*.py'
 ```
 
+## Data in C
+
+A file in `src/data/` names a block of retail's data and says which source file owns it. It holds no values: those
+are generated from your own baserom into `build-sn/data_inc/`, and are never committed.
+
+```sh
+python3 tools/data_in_c.py add D_00165600:src/game/ui/pause.c
+```
+
 ## Move a source file
 
 Never use `git mv` on a `.c` file. The object lists, version folders and tools all name its path.

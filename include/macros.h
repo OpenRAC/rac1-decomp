@@ -66,6 +66,9 @@
  */
 #define SDATA(sym) __asm__(#sym "__gp") MACRO_ADDR
 
+/* Puts a block of data in a section of its own, so the linker can place it in retail's hole (tools/data_in_c.py). */
+#define DATA_SECTION(label) __attribute__((section(".data." #label)))
+
 /* The number of elements in an array. */
 #define ARRAY_COUNT(array) (sizeof(array) / sizeof((array)[0]))
 
