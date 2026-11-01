@@ -1198,20 +1198,6 @@ float compute_toxic_crab_group_approach_angle(char *self) {
     }
     return FastAddRots(FastAddRots(lo, FastDiffRots(hi, lo) * 0.5f), owner_to_self_angle);
 }
-/* NON_MATCHING BlargShipUpdate -- src/overlays/l10_orxon/vendor_002E30F8.c
- * Best so far: BYTES 58/3804 (98.5% of the bytes match), checked 2026-10-14.
- * Not built into anything: the retail assembly stays in the source file
- * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
- * What the last attempts found:
- *   Left: case 8 scheduling only. Before spawn_explosion: retail sets $s1=m+0x10 after $f14 and
- *   $f13 before $f12 (both 0.0 from $f20); before the two SpawnBreakFragment calls retail stores the
- *   stack arg (sw $s0,0($sp)) first and moves $a0 earlier, ours puts sw in the jal delay slot.
- *   Same values, same calls, same order.
- *   Prototype note: create_rocket is declared with its float last (vel, pos, a, b, c, scale);
- *   the definition (shared/vendor_00299AF0.c) has scale first. Floats travel in $f12 apart from the
- *   integer registers, so the call is the same; float-last is what put mov.s $f12 after $a3/$t0.
- *   sbs.py here is a side-by-side helper (reads obj.o, no compile).
- */
 typedef struct Ship_5E48 {
     char p00[0x10];
     V_2E52B0 pos;

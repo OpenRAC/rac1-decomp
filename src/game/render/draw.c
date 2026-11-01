@@ -2505,7 +2505,7 @@ void draw_fogged_fullscreen_sprite(char *arg0) {
 /* Sets GS register 1 from four bytes packed into one 64-bit value, then
    restores the default register set. The parameters are int, widened in
    the expression: with long parameters the scheduler hoists the last
-   dsll one slot early (it was a 6/144 near-miss that way). */
+   dsll one slot early. */
 extern int *g_render_packet_cursor MACRO_ADDR;
 
 /* Appends a GIF packet that sets GS register 1 from the four bytes a, b, c, d. */

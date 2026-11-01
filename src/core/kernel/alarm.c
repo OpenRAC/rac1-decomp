@@ -41,7 +41,7 @@ typedef struct {
 } D_00131358_pair;
 
 /*
- * Same-size near-miss (8/0xD4 bytes). Same shape as InitTLBFunctions:
+ * Same shape as InitTLBFunctions:
  * guarded by a hardware status bit at 0x10001810 (skip everything if
  * already done), two (addr,value) pokes through alarm_set_syscall, two
  * alarm_kernel_copy block copies (to a fixed load address and to

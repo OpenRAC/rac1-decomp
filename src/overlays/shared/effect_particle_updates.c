@@ -908,16 +908,6 @@ unsigned char *spawn_spinning_and_fading_effect_particle(void *pos, void *vel, u
     }
     return (unsigned char *)particle;
 }
-/* NON_MATCHING update_spinning_and_fading_effect_particle -- src/overlays/shared/partupd_0026A130.c
- * Best so far: SIZE ours 660 / retail 656, checked 2026-10-09.
- * Not built into anything: the retail assembly stays in the source file
- * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
- * What the last attempts found:
- *   update_spinning_and_fading_effect_particle: per-frame update of a particle; fades/scales it from a blend ratio =
- * FA8
- *   p3.c is one instruction over (660 vs 656): retail keeps the blend ratio in $f12 (div.s $f12,$f20,$f0) with lo 
- *   Tried: ratio inline vs via locals a/b, lo reassigned vs a separate x, declaration orders. Would need whatever 
- */
 extern unsigned char screen_globals_base[];
 extern float g_frame_time MACRO_ADDR;
 extern short spin_particle_speed_decay;

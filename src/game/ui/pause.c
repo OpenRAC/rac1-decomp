@@ -5716,8 +5716,7 @@ int draw_prompt_box(struct MenuScreen *arg0) {
 
 extern int pause_level_sprite_lists[];
 
-/* `pause_level_sprite_lists[(unsigned)g_current_level_index % 19]`; the older near-miss
-   predated MACRO_ADDR. */
+/* `pause_level_sprite_lists[(unsigned)g_current_level_index % 19]`. */
 int assign_pause_level_sprite_list(MenuScreen *screen) {
     *(int *)((char *)screen + 0x34) = pause_level_sprite_lists[(unsigned int)g_current_level_index % 19];
     return 0;

@@ -10,12 +10,8 @@
  */
 
 /*
- * REVERTED (2/8). Right size and right shape -- `alloc_part_slot()` as a
- * tail call, with the rewriter producing the bare `j` correctly -- but
- * the .s carries spimdisasm's "Handwritten function" marker, and its
- * delay slot is the trapping `addi $5,$0,0` where GCC emits the
- * non-trapping `addiu`.
- * Instruction selection, not source shape, so nothing in C reaches it.
+ * This stays asm. In C it is `alloc_part_slot()` as a tail call, but retail's delay slot is the trapping
+ * `addi $5,$0,0`, and GCC emits `addiu`. No source shape reaches that.
  */
 ASM_FUNC("asm/handwritten/text", func_00218928);
 

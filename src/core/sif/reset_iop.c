@@ -157,7 +157,7 @@ extern char tlb_functions_kernel_code[];
 extern int tlb_saved_syscall_3_entry;
 
 /*
- * Exact (it was a 2/0xC4 near-miss until the int/void fix below). Boot-time
+ * Boot-time
  * hardware init: three explicit (addr, value) pokes through
  * set_syscall, a kcopy block copy of tlb_functions_kernel_code (0x330 bytes)
  * to a fixed load address, an interrupt-disable/enable bracket, then a

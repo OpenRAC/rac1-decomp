@@ -338,22 +338,6 @@ int scf_bin_to_bcd(int arg0) {
     return ((v / 10) * 6 + v) & 0xFF;
 }
 
-/*
- * REVERTED (size mismatch: ours 28 bytes, retail 32). Semantics certain
- * -- BCD byte to binary:
- *
- *   int scf_bcd_to_bin(int arg0) {
- *       unsigned int v = arg0 & 0xFF;
- *       return (v - (v >> 4) * 6) & 0xFF;
- *   }
- *
- * (`unsigned` matters: it gives retail's `srl`, not `sra`.) Everything
- * matches except the multiply: retail uses the generic two-operand
- * `mult $0,$3,$4` followed by `mflo $3`, while this compiler uses the
- * EE three-operand `mult $v1,$v1,$a0` which writes the result directly
- * and needs no mflo -- one instruction fewer, hence 4 bytes short. That
- * is an ISA/codegen choice, not something the source can steer.
- */
 /* BCD byte to binary. The product goes through an unsigned char: combine
    folds the multiply into that narrowing copy and re-recognises it as the
    generic LO-destination multiply, which is retail's `mult $0,a,b` +

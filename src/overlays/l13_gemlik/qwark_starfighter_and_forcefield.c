@@ -2898,17 +2898,6 @@ void BlargSpaceCommandoUpdate(struct Moby *moby) {
             break;
     }
 }
-/* NON_MATCHING update_blarg_space_commando_damage_targeting_and_ground_motion --
-   src/overlays/l13_gemlik/vendor_002EBD00.c
- * Best so far: SIZE ours 1648 / retail 1632, checked 2026-10-09.
- * Not built into anything: the retail assembly stays in the source file
- * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
- * What the last attempts found:
- *   Level 13 moby update: effect state machine on moby[0x20] with a 12-way jump table on a value from func_0025B4D
- *   Best by size: p3.c (1648 vs 1632, 16 over). Cases 3-10 before 1/2 and the f20 branch sense match retail's layo
- *   Unblock: the saved-register set (regalloc.py on p3.c) and the 0x1A4/0x164 store shape around
- * is_point_inside_clip_volume.
- */
 extern void update_gemlik_trail(Moby *);
 extern void InitKnockback(void *, void *, float, int, int, int);
 extern int FindNearestEligibleMoby(void *, void *, float, int, int, void *, int);

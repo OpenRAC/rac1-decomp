@@ -1073,32 +1073,6 @@ void copy_level_object_positions(void) {
 void DebugEnter_Nop(void) {
 }
 
-/*
- * Close but not exact (16/36 bytes): 2D cross-product orientation test.
- * arg0 -= arg2; arg1 -= arg3; arg4 -= arg2; arg5 -= arg3;
- * return (arg4*arg1 - arg5*arg0) < 0;
- * Same operations/order/register reuse (in-place subtraction) as
- * retail, confirmed via objdump, but the final sign test compiles to
- * `srl $2,$2,0x1f` here where retail uses `slti $2,$2,0` -- two
- * different instructions computing the identical 0/1 result for
- * "value < 0". Not a scheduling/register question like the usual
- * near-misses, a pure instruction-selection choice for the same
- * boolean-from-sign-bit pattern; not investigated further.
- */
-/*
- * 4/36 (one instruction): 2D cross-product orientation test — is (x2,y2)
- * left of the (x0,y0)->(x1,y1) edge. Every register and all 7 arithmetic
- * instructions match retail exactly; the sole diff is the final sign
- * test, where this compiler emits `srl $2,$2,31` and retail has
- * `slti $2,$2,0`. Identical result, different instruction selection, and
- * it is not steerable from source: `< 0`, `<= -1`, `< 1-1`, a named
- * local, and `?1:0` all canonicalize to the same `srl`; only widening to
- * `long` changes it (to `dsrl32`, which is worse).
- *
- * The subtractions must be written in this order (x2/y2 before x1/y1) —
- * the last-source-statement-emits-first rotation applies to runs of
- * independent *arithmetic* statements, not just stores.
- */
 /* Sign of the 2D cross product (x2-x0,y2-y0) x (x1-x0,y1-y0): true when
    the second vector is clockwise from the first.
 
@@ -1106,7 +1080,10 @@ void DebugEnter_Nop(void) {
    the comparison directly makes GCC emit the cheap sign-bit extract
    `srl $v0,$v0,31`; retail has `slti $v0,$v0,0`, which is what you get
    when the comparison feeds a branch rather than being the return value
-   itself. That one instruction was this function's entire residual. */
+   itself.
+
+   The subtractions must be written in this order (x2/y2 before x1/y1): in a run of independent arithmetic
+   statements, the last one in the source is emitted first. */
 int point_is_clockwise(int x1, int y1, int x0, int y0, int x2, int y2) {
     int cross;
 

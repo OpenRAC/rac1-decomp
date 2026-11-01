@@ -175,7 +175,7 @@ void cd_sema_init(void) {
     sema.maxCount = 1;
     /* Both results use the same record; storing the first handle inside
        the second call's argument puts the store in that jal's delay slot,
-       as retail has it (the open residual of the old near-miss). */
+       as retail has it. */
     cd_scmd_sema_r[0] = create_semaphore_r((cd_ncmd_sema_r[0] = create_semaphore_r(&sema)) ? &sema : &sema);
     sema.initCount = 0;
     cd_callback_sema_r[0] = create_semaphore_r(&sema);

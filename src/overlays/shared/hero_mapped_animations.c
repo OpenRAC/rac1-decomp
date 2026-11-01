@@ -1646,8 +1646,7 @@ extern char source_bone4_joints_default[];
    matrix_copy_rows of the matrix to +0xC0), updates it (moby_anim_sphere_lerp), starts its sequence
    table for pack_pose (Sonic Summoner: source_bone4_joints_class1b1 with 6,
    others source_bone4_joints_default with 0), then clears +0x50 / +0x54 and points
-   +0x68 / +0x6C at source_bone4_pose_buffer. The four tail stores are in the order
-   decomp-permuter found for retail's schedule. */
+   +0x68 / +0x6C at source_bone4_pose_buffer. The four tail stores are in the order retail's schedule needs. */
 void configure_moby_from_source_bone4(int id, char *moby) {
     float m[16] __attribute__((aligned(16)));
 

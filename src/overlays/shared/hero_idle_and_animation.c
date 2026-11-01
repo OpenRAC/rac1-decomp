@@ -1230,15 +1230,6 @@ void check_hero_item_reward_conditions(void) {
     if (n >= 9)
         Help_Request(0x4E26, 0x50);
 }
-/* NON_MATCHING scan_hero_input_sequences -- src/overlays/shared/help_00203E98.c
- * Best so far: SIZE ours 716 / retail 720, checked 2026-10-09.
- * Not built into anything: the retail assembly stays in the source file
- * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
- * What the last attempts found:
- *   Cheat-code/input-sequence recorder: decides a code s (1..0xC) from game state words at base+0x198/0x208C/0x208
- *   p1 is the same size (720) with the right structure; stopped with 3 runs unspent because the diff is allocator/
- *   retail shares constant 4 (A==4 compare reg reused for s=4) but not 0xA (ours does the reverse), and the loop h
- */
 extern int challenge_mode MACRO_ADDR;
 extern int D_0015EF20 MACRO_ADDR;
 extern unsigned char draw_map51[4] MACRO_ADDR;
@@ -2866,15 +2857,6 @@ void update_hero_pitch_and_yaw_easing_targets(void) {
     *(float *)(h4 + 0x118) = *(float *)(h4 + 0x278) * 0.52f;
     *(float *)(h4 + 0x114) = *(float *)(h4 + 0x274) * 0.55f;
 }
-/* NON_MATCHING update_hero_idle_random_rotation_targets -- src/overlays/shared/help_00203E98.c
- * Best so far: SIZE ours 680 / retail 684, checked 2026-10-09.
- * Not built into anything: the retail assembly stays in the source file
- * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
- * What the last attempts found:
- *   update_hero_idle_random_rotation_targets: re-rolls four random motion records (shared help): for i in 0..3, if
- * fast_dec_timer(&q[i]) t
- *   Best p5: 680 vs 684 bytes (q as a named int * with q[1], q[2], q[i]); p7 (same size) adds j=i+13 but registers
- */
 
 /* Re-rolls four random motion parameters and copies each pair into its 0xB0-byte record. */
 void update_hero_idle_random_rotation_targets(void) {

@@ -152,39 +152,39 @@ extern void *libc_memcpy(void *, const void *, u32);
 /* dtoa for IEEE arithmetic (dmg): convert double to ASCII string. Inspired by "How to Print Floating-Point Numbers Accurately" by Guy L. Steele, Jr. and Jon L. White [Proc. ACM SIGPLAN '90, pp. 92-101]. Modifications: 1. Rather than iterating, we use a simple numeric overestimate to determine k = floor(log10(d)). We scale relevant quantities using O(log2(k)) rather than O(k) multiplications. 2. For some modes > 2 (corresponding to ecvt and fcvt), we don't try to generate digits strictly left to right. Instead, we compute with fewer bits and propagate the carry if necessary when rounding the final digit up. This is often faster. 3. Under the assumption that input will be rounded nearest, mode 0 renders 1e23 as 1e23 rather than 9.999999999999999e22. That is, we allow equality in stopping tests when the round-nearest rule will give the same floating-point value as would satisfaction of the stopping test with strict inequality. 4. We remove common factors of powers of 2 from relevant quantities. 5. When converting floating-point integers less than 1e16, we use floating-point arithmetic rather than resorting to multiple-precision integers. 6. When asked to produce fewer than 15 digits, we first try to get by with floating-point arithmetic; we resort to multiple-precision integer arithmetic only if we cannot guarantee that the floating-point calculation has given the correctly rounded result. For k requested digits and "uniformly" distributed input, the probability is something like 10^(k-15) that we must resort to the long calculation.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/sdk/library/_dtoa_r.c, _dtoa_r. */
 char *func_001126D8(struct _reent *ptr, f64 _d, s32 mode, s32 ndigits, s32 *decpt, s32 *sign, char **rve) {
-    /*	Arguments ndigits, decpt, sign are similar to those
-	of ecvt and fcvt; trailing zeros are suppressed from
-	the returned string.  If not null, *rve is set to point
-	to the end of the return value.  If d is +-Infinity or NaN,
-	then *decpt is set to 9999.
+    /*  Arguments ndigits, decpt, sign are similar to those
+    of ecvt and fcvt; trailing zeros are suppressed from
+    the returned string.  If not null, *rve is set to point
+    to the end of the return value.  If d is +-Infinity or NaN,
+    then *decpt is set to 9999.
 
-	mode:
-		0 ==> shortest string that yields d when read in
-			and rounded to nearest.
-		1 ==> like 0, but with Steele & White stopping rule;
-			e.g. with IEEE P754 arithmetic , mode 0 gives
-			1e23 whereas mode 1 gives 9.999999999999999e22.
-		2 ==> max(1,ndigits) significant digits.  This gives a
-			return value similar to that of ecvt, except
-			that trailing zeros are suppressed.
-		3 ==> through ndigits past the decimal point.  This
-			gives a return value similar to that from fcvt,
-			except that trailing zeros are suppressed, and
-			ndigits can be negative.
-		4-9 should give the same return values as 2-3, i.e.,
-			4 <= mode <= 9 ==> same return as mode
-			2 + (mode & 1).  These modes are mainly for
-			debugging; often they run slower but sometimes
-			faster than modes 2-3.
-		4,5,8,9 ==> left-to-right digit generation.
-		6-9 ==> don't try fast floating-point estimate
-			(if applicable).
+    mode:
+        0 ==> shortest string that yields d when read in
+            and rounded to nearest.
+        1 ==> like 0, but with Steele & White stopping rule;
+            e.g. with IEEE P754 arithmetic , mode 0 gives
+            1e23 whereas mode 1 gives 9.999999999999999e22.
+        2 ==> max(1,ndigits) significant digits.  This gives a
+            return value similar to that of ecvt, except
+            that trailing zeros are suppressed.
+        3 ==> through ndigits past the decimal point.  This
+            gives a return value similar to that from fcvt,
+            except that trailing zeros are suppressed, and
+            ndigits can be negative.
+        4-9 should give the same return values as 2-3, i.e.,
+            4 <= mode <= 9 ==> same return as mode
+            2 + (mode & 1).  These modes are mainly for
+            debugging; often they run slower but sometimes
+            faster than modes 2-3.
+        4,5,8,9 ==> left-to-right digit generation.
+        6-9 ==> don't try fast floating-point estimate
+            (if applicable).
 
-		Values of mode other than 0-9 are treated as mode 0.
+        Values of mode other than 0-9 are treated as mode 0.
 
-		Sufficient space is allocated to the return value
-		to hold the suppressed trailing zeros.
-	*/
+        Sufficient space is allocated to the return value
+        to hold the suppressed trailing zeros.
+    */
 
     s32 bbits, b2, b5, be, dig, i, ieps, ilim, ilim0, ilim1, j, j1, k, k0, k_check, leftright, m2, m5, s2, s5,
         spec_case, try_quick;
@@ -249,27 +249,27 @@ char *func_001126D8(struct _reent *ptr, f64 _d, s32 mode, s32 ndigits, s32 *decp
         ((d2).i[1]) &= 0xfffffU;
         ((d2).i[1]) |= 0x3ff00000U;
 
-        /* log(x)	~=~ log(1.5) + (x-1.5)/1.5
-		 * log10(x)	 =  log(x) / log(10)
-		 *		~=~ log(1.5)/log(10) + (x-1.5)/(1.5*log(10))
-		 * log10(d) = (i-Bias)*log(2)/log(10) + log10(d2)
-		 *
-		 * This suggests computing an approximation k to log10(d) by
-		 *
-		 * k = (i - Bias)*0.301029995663981
-		 *	+ ( (d2-1.5)*0.289529654602168 + 0.176091259055681 );
-		 *
-		 * We want k to be too large rather than too small.
-		 * The error in the first-order Taylor series approximation
-		 * is in our favor, so we just round up the constant enough
-		 * to compensate for any error in the multiplication of
-		 * (i - Bias) by 0.301029995663981; since |i - Bias| <= 1077,
-		 * and 1077 * 0.30103 * 2^-52 ~=~ 7.2e-14,
-		 * adding 1e-13 to the constant term more than suffices.
-		 * Hence we adjust the constant term to 0.1760912590558.
-		 * (We could get a more accurate k by invoking log10,
-		 *  but this is probably not worthwhile.)
-		 */
+        /* log(x)   ~=~ log(1.5) + (x-1.5)/1.5
+         * log10(x)  =  log(x) / log(10)
+         *      ~=~ log(1.5)/log(10) + (x-1.5)/(1.5*log(10))
+         * log10(d) = (i-Bias)*log(2)/log(10) + log10(d2)
+         *
+         * This suggests computing an approximation k to log10(d) by
+         *
+         * k = (i - Bias)*0.301029995663981
+         *  + ( (d2-1.5)*0.289529654602168 + 0.176091259055681 );
+         *
+         * We want k to be too large rather than too small.
+         * The error in the first-order Taylor series approximation
+         * is in our favor, so we just round up the constant enough
+         * to compensate for any error in the multiplication of
+         * (i - Bias) by 0.301029995663981; since |i - Bias| <= 1077,
+         * and 1077 * 0.30103 * 2^-52 ~=~ 7.2e-14,
+         * adding 1e-13 to the constant term more than suffices.
+         * Hence we adjust the constant term to 0.1760912590558.
+         * (We could get a more accurate k by invoking log10,
+         *  but this is probably not worthwhile.)
+         */
 
         i -= 1023;
 
@@ -404,8 +404,8 @@ char *func_001126D8(struct _reent *ptr, f64 _d, s32 mode, s32 ndigits, s32 *decp
 
         if (leftright) {
             /* Use Steele & White method of only
-	   * generating digits needed.
-	   */
+       * generating digits needed.
+       */
             eps.d = 0.5 / __mprec_tens[ilim - 1] - eps.d;
             for (i = 0;;) {
                 L = d.d;
@@ -618,8 +618,8 @@ char *func_001126D8(struct _reent *ptr, f64 _d, s32 mode, s32 ndigits, s32 *decp
         for (i = 1;; i++) {
             dig = dtoa_quorem_r(b, S) + '0';
             /* Do we yet have the shortest decimal string
-	   * that will round to d?
-	   */
+       * that will round to d?
+       */
             j = __mcmp_r(b, mlo);
             delta = __mdiff(ptr, S, mhi);
             j1 = delta->_sign ? 1 : __mcmp_r(b, delta);

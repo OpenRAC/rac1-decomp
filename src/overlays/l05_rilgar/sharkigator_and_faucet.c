@@ -1897,15 +1897,6 @@ int test_extermibot_offset_path_clearance(char *moby, float *goal, float s) {
     FastVecAdd_r2(w, w, (float *)(moby + 0x10));
     return test_path_segment_strict_crossing(d->polyline, v, w) == 0;
 }
-/* NON_MATCHING find_nearest_extermibot_group_target -- src/overlays/l05_rilgar/vendor_002D28D0.c
- * Best so far: EXACT, checked 2026-10-01.
- * Not built into anything: the retail assembly stays in the source file
- * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
- * What the last attempts found:
- *   Finds the nearest entry (flag 0x1000 set, state < 0x7F, within 120.0) of a per-index table of 15-bit ids into 
- *   Structure matches (p1: 220 vs 216 bytes); the one difference is the second read of moby_pool_4f60, which retai
- *   Both views of the symbol (Ent* MACRO_ADDR and a short alias) end up as lui/lw because the assembler takes the 
- */
 typedef struct {
     char p0[0x10];
     char pos[0x10];

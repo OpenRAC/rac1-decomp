@@ -288,8 +288,7 @@ typedef struct {
    matrix_mul_vec3 against the records at veldin2_arena_nodes + B * 0x80 (+0x30, +0x40)
    for the entry's vector and, when both of the result's first two components are
    within 1.0, clears the entry's +0x0C and sets its +0x14 to 1.0. The index is
-   copied (k = i) for the two stores and the loop tests `n > i`, as decomp-permuter
-   found for retail's register use. */
+   copied (k = i) for the two stores and the loop tests `n > i`, for retail's register use. */
 void mark_block_entries_within_transform_xy_bounds(int a, int b) {
     int i = 0;
     int k;
