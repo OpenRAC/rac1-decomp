@@ -947,7 +947,7 @@ void pipe_mounted_grating_update(struct Moby *moby) {
     }
 }
 extern int Moby_PlaySound(int, int, void *);
-struct GateVars_16378 {
+struct GateVars {
     s32 trigger; /* D_L05_0015FFD8 index of the moby whose byte 0xBC opens it */
     s32 riseTimer;
     s32 swingTimer;
@@ -968,7 +968,7 @@ extern float SteerAngleWithVelocity(float *, float *, float, float, float, float
 /* Gate: waits for its trigger moby, then rises to topZ and swings its yaw back to 0, with sounds per class.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l05/gameplay/entities/0030d6a0.c, FUN_L05_00314eb0. */
 void update_triggered_gate_motion(struct Moby *m) {
-    struct GateVars_16378 *d = (struct GateVars_16378 *)m->pvars;
+    struct GateVars *d = (struct GateVars *)m->pvars;
     struct Moby *t;
 
     switch (m->state) {
@@ -1020,20 +1020,20 @@ extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF
 extern void FastVecScale_r(void *, void *, float) __asm__("func_001F9C30");
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern float random_angle_radians_r(void) __asm__("func_00214158");
-struct EmitterVars_165B8 {
+struct EmitterVars {
     s32 unk0;
     s32 floor; /* row of rilgar_water_ripple_params_2 */
     s32 trigger; /* D_L05_0015FFD8 index of the moby whose byte 0xBC wakes it, -1: none */
     s32 *voice; /* voice slot shared by the emitters, -1: none */
     s32 age; /* frames since it started spraying */
 };
-struct VoiceSlot_165B8 {
+struct VoiceSlot {
     u8 pad0[0x88];
     struct Moby *owner;
     u8 pad8C[4];
     Vec4f pos;
 };
-struct FloorRow_165B8 {
+struct FloorRow {
     u8 pad0[8];
     f32 z;
     u8 padC[0x1190 - 0xC];
@@ -1050,7 +1050,7 @@ extern void spawn_splash_r(float, float, void *, void *, void *) __asm__("func_L
 extern unsigned char saved_mission_state_r[][16] __asm__("D_0014C150");
 extern short D_0015EE84_165B8 SDATA(D_0015EE84);
 extern short D_L05_00160098_165B8 SDATA(D_L05_00160098);
-extern struct FloorRow_165B8 *rilgar_water_patches_r __asm__("D_L05_00161390") MACRO_ADDR;
+extern struct FloorRow *rilgar_water_patches_r __asm__("D_L05_00161390") MACRO_ADDR;
 extern char rilgar_zero_vec_r[] __asm__("D_L05_0015F660") MACRO_ADDR;
 extern short D_L05_00161F58_165B8 SDATA(D_L05_00161F58);
 extern short D_L05_00161F5C_165B8 SDATA(D_L05_00161F5C);
@@ -1068,7 +1068,7 @@ void update_triggered_particle_spray_emitter(struct Moby *m) {
     float v[4];
     float w[4];
     float u[4];
-    struct EmitterVars_165B8 *d = (struct EmitterVars_165B8 *)m->pvars;
+    struct EmitterVars *d = (struct EmitterVars *)m->pvars;
     float floor;
     float lim;
     float a, b, c;
@@ -1098,19 +1098,19 @@ void update_triggered_particle_spray_emitter(struct Moby *m) {
             d->age++;
             if (FastVecDist_r(&m->pos, rilgar_camera_pos_r) < 64.0f) {
                 struct Moby *o;
-                if (*d->voice >= 0 && (o = ((struct VoiceSlot_165B8 *)(voice_pool_r + *d->voice * 0x70))->owner) != 0 &&
+                if (*d->voice >= 0 && (o = ((struct VoiceSlot *)(voice_pool_r + *d->voice * 0x70))->owner) != 0 &&
                     o->oclass == 0x357) {
                     if (o != m && (o->state != state || FastVecDist_r(&m->pos, rilgar_camera_pos_r) <
                                                             FastVecDist_r(&o->pos, rilgar_camera_pos_r))) {
                         vec_scale_to_length_r(v, &m->rot_row0, 2.5f);
-                        FastVecAdd_r(&((struct VoiceSlot_165B8 *)(voice_pool_r + *d->voice * 0x70))->pos, v, &m->pos);
-                        ((struct VoiceSlot_165B8 *)(voice_pool_r + *d->voice * 0x70))->owner = m;
+                        FastVecAdd_r(&((struct VoiceSlot *)(voice_pool_r + *d->voice * 0x70))->pos, v, &m->pos);
+                        ((struct VoiceSlot *)(voice_pool_r + *d->voice * 0x70))->owner = m;
                     }
                 } else {
                     *d->voice = Moby_PlaySound_r(0, 0xD, m);
                     if (*d->voice >= 0) {
                         vec_scale_to_length_r(v, &m->rot_row0, 2.5f);
-                        FastVecAdd_r(&((struct VoiceSlot_165B8 *)(voice_pool_r + *d->voice * 0x70))->pos, v, &m->pos);
+                        FastVecAdd_r(&((struct VoiceSlot *)(voice_pool_r + *d->voice * 0x70))->pos, v, &m->pos);
                     }
                 }
             }
@@ -1621,25 +1621,25 @@ extern float g_frame_scale_sq MACRO_ADDR;
 extern short g_breast_growth_count;
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 
-typedef struct TrailEffect_317CD8 {
+typedef struct TrailEffect {
     char pad0[0x64];
     float pulse;
     char pad68[8];
     float width;
     char pad74[0xC];
-} TrailEffect_317CD8;
+} TrailEffect;
 
-typedef struct TrailFields_317CD8 {
+typedef struct TrailFields {
     char pad0[0x140];
-    TrailEffect_317CD8 trail;
-} TrailFields_317CD8;
+    TrailEffect trail;
+} TrailFields;
 
 /* Updates the two trails of the moby; with the cheat counter on, they get wider and pulse. */
 void update_hoverboard_girl_boobs_animation(char *moby, int data_addr) {
     char *t = (char *)data_addr;
     int i;
     for (i = 0; i < 2; i++) {
-        TrailFields_317CD8 *e = (TrailFields_317CD8 *)(t + i * 0x80);
+        TrailFields *e = (TrailFields *)(t + i * 0x80);
         if (*(int *)&g_breast_growth_count != 0) {
             float value = *(int *)&g_breast_growth_count * 0.15f + 1.0f;
             int frame;

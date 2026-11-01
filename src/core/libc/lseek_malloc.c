@@ -58,7 +58,7 @@ typedef struct {
     long st_blksize;
     long st_blocks;
     long st_spare4[2];
-} Stat_114578;
+} Stat;
 
 typedef struct {
     void *_p;
@@ -80,7 +80,7 @@ typedef struct {
 void __smakebuf(File_114578 *fp) {
     unsigned int size, couldbetty;
     void *p;
-    Stat_114578 st;
+    Stat st;
 
     if (fp->_flags & 0x2) {
         fp->_bf_base = fp->_p = fp->_nbuf;

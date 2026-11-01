@@ -119,7 +119,7 @@ struct ConfiguredStateVars {
     s32 clip_volume; /* 0x28: hero must be inside, -1 for anywhere */
 };
 
-struct GeometryQuad_EBD00 {
+struct GeometryQuad {
     Vec4 positions[4];
     u32 colors[4];
     f32 texture_coordinates[4][2];
@@ -146,7 +146,7 @@ extern void draw_world_quad_r(void *, int, int) __asm__("func_L00_001FD1D8");
 /* Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l13/gameplay/entities/002ea8c8.c, FUN_L13_002ea8c8. */
 void draw_starfighter_tractor_beam(struct Moby *moby) {
     char *vars = (char *)moby->pvars;
-    struct GeometryQuad_EBD00 quad;
+    struct GeometryQuad quad;
     float start[4];
     float direction[4];
     float position[4];
@@ -2545,7 +2545,7 @@ typedef struct {
     u8 unk19;
     s16 oclass;
     u8 pad1C[0x14];
-} Shot_309330;
+} Shot;
 typedef struct {
     s32 unk0;
     f32 unk4;
@@ -2554,7 +2554,7 @@ typedef struct {
     u8 pad10[0x14];
     f32 unk24;
     u8 pad28[0x18];
-} Ctl_309330;
+} Ctl;
 typedef struct {
     u8 pad0[0x20];
     f32 unk20;
@@ -2570,7 +2570,7 @@ typedef struct {
     u8 pad5B[5];
     Vec4 vel; /* 0x60 */
     u8 pad70[0x50];
-    Ctl_309330 ctl; /* 0xC0 */
+    Ctl ctl; /* 0xC0 */
     u8 pad100[0x60];
     struct Moby *target; /* 0x160 */
     s32 unk164;
@@ -2588,14 +2588,14 @@ typedef struct {
     Vec4 unk1E0;
     u8 pad1F0[0x210];
     u8 unk400[1];
-} Vars_309330;
+} Vars;
 extern void update_blarg_space_commando_damage_targeting_and_ground_motion(struct Moby *);
 extern void Manipulator_ApplyScale(float, struct Moby *, int, void *);
 extern void set_ground_height_band(void *);
 extern void MoveCtl_Init(void *);
 extern void SteerAngleWithVelocity(float *, float, float *, float, float, float);
 extern float MobyGetFrameValue(struct Moby *);
-extern void sweep_hit_segment(void *, void *, void *, void *, struct Moby *, Shot_309330 *, int);
+extern void sweep_hit_segment(void *, void *, void *, void *, struct Moby *, Shot *, int);
 extern int move_w(struct Moby *, void *, void *, void *, float);
 extern int func_001160D8(void);
 extern void resolve_point_path_segment_xy_clearance(int, void *, void *, float);
@@ -2611,12 +2611,12 @@ extern float D_L13_00161F08_309330 SDATA(D_L13_00161F08);
 extern void MobySpringTurn_r(struct Moby *, float, float *, float, float, float) __asm__("func_L00_002592B0");
 /* Update function of moby Blarg Space Commando (blarg space commando): turn, walk its path, shoot, die. */
 void BlargSpaceCommandoUpdate(struct Moby *moby) {
-    Vars_309330 *vars = (Vars_309330 *)moby->pvars;
+    Vars *vars = (Vars *)moby->pvars;
     struct Moby *target;
     Vec4 a;
     Vec4 b;
     Vec4 c;
-    Shot_309330 shot;
+    Shot shot;
     s32 near;
     s32 close;
     s32 hit;
@@ -3136,22 +3136,22 @@ extern short gemlik_trail_arc_degrees, gemlik_trail_ticks;
 typedef struct V4_30A9B0 {
     float x, y, z, w;
 } __attribute__((aligned(16))) V4_30A9B0;
-typedef struct Rec_30A9B0 {
+typedef struct Rec {
     V4_30A9B0 v; /* 0x00 */
     float p, q; /* 0x10 */
     unsigned char a, b; /* 0x18 */
     unsigned short c; /* 0x1A */
-} __attribute__((aligned(16))) Rec_30A9B0;
+} __attribute__((aligned(16))) Rec;
 typedef struct Vars_30A9B0 {
     char pad0[0x1F0];
     V4_30A9B0 f1F0; /* 0x1F0: .w holds the timer */
     V4_30A9B0 f200; /* 0x200 */
     V4_30A9B0 pt[17]; /* 0x210 */
 } Vars_30A9B0;
-typedef struct Glob_30A9B0 {
+typedef struct Glob {
     char pad0[0x28];
     float f28; /* 0x28 */
-} Glob_30A9B0;
+} Glob;
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern float D_L13_00161F0C_30A9B0 SDATA(D_L13_00161F0C);
 extern char gemlik_coll_hit_result_r[] __asm__("D_L13_001741C0");
@@ -3180,7 +3180,7 @@ void update_gemlik_trail(Moby *m) {
             V4_30A9B0 r;
             V4_30A9B0 v20;
         } s;
-        Rec_30A9B0 rec;
+        Rec rec;
     } u;
     V4_30A9B0 v30;
     V4_30A9B0 v40;
@@ -3220,7 +3220,7 @@ void update_gemlik_trail(Moby *m) {
         qcopy(&v40, &d->pt[i]);
         v40.z = v40.z - 3.0f;
         if (coll_line_r(&v30, &v40, 2, 0, 0) && f20 < v0.z) {
-            ApproachValue_r(&v0.z, ((Glob_30A9B0 *)gemlik_coll_hit_result_r)->f28 + 0.35f, g_frame_time_r * 4.0f);
+            ApproachValue_r(&v0.z, ((Glob *)gemlik_coll_hit_result_r)->f28 + 0.35f, g_frame_time_r * 4.0f);
         }
         if (1.0f <= d->pt[i].w && coll_line_r(&d->pt[i], &v0, 2, 0, 0)) {
             v0.w = 0.98f;

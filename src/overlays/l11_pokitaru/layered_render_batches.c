@@ -59,7 +59,7 @@ void draw_level11_layered_effect_batches(void) {
 }
 typedef struct {
     int a, b;
-} PairA_31F760;
+} PairA;
 typedef struct {
     int a, b;
 } Pair8_31F760;
@@ -78,10 +78,10 @@ extern int pokitaru_layered_mesh8_colors[];
 extern int pokitaru_layered_mesh8_vertex_counts[];
 extern Pair8_31F760 pokitaru_layered_scroll_entries[] MACRO_ADDR;
 extern char pokitaru_player_camera[];
-extern PairA_31F760 pokitaru_layered_uv_scroll[];
-extern PairA_31F760 pokitaru_layered_wobble_phase[] MACRO_ADDR;
+extern PairA pokitaru_layered_uv_scroll[];
+extern PairA pokitaru_layered_wobble_phase[] MACRO_ADDR;
 extern float pokitaru_layered_scroll_entries_b[] MACRO_ADDR;
-extern PairA_31F760 pokitaru_layered_2b_scroll[] MACRO_ADDR;
+extern PairA pokitaru_layered_2b_scroll[] MACRO_ADDR;
 extern float layered_effect_pos_y MACRO_ADDR;
 extern float layered_effect_position_z MACRO_ADDR;
 extern float layered_effect_bounds_radius MACRO_ADDR;

@@ -173,19 +173,18 @@ typedef struct {
     s32 on_mobys[11]; /* -1, or a moby passed to FUN_L05_002f4f60 */
     u8 pad7C[2];
     s8 use_alt_target; /* nonzero: test D_L05_001671C0 instead of the hero */
-} TriggerVars_2f5200;
+} TriggerVars;
 extern Vec4 rilgar_camera_pos_r __asm__("D_L05_001672C0");
 extern s32 *rilgar_paths_r[] __asm__("D_L05_001B0CB0");
 extern f32 FastVecDist(void *, void *);
 extern s32 IsPointInPolygon(void *, void *, s32);
 extern s32 is_point_inside_clip_volume(void *, s32);
-extern void apply_spatial_trigger_to_moby_list_r(struct Moby *, TriggerVars_2f5200 *, s32,
-                                                 s32) __asm__("func_L05_002F6518");
-extern void apply_spatial_trigger_to_moby_r(s32, TriggerVars_2f5200 *, s32) __asm__("func_L05_002F62E8");
+extern void apply_spatial_trigger_to_moby_list_r(struct Moby *, TriggerVars *, s32, s32) __asm__("func_L05_002F6518");
+extern void apply_spatial_trigger_to_moby_r(s32, TriggerVars *, s32) __asm__("func_L05_002F62E8");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b3840.c, FUN_L05_002f5200. */
 void update_moby_spatial_trigger(struct Moby *m) {
-    TriggerVars_2f5200 *v = (TriggerVars_2f5200 *)m->pvars;
+    TriggerVars *v = (TriggerVars *)m->pvars;
     Vec4 target;
     s32 inside;
     s32 i;
@@ -592,7 +591,7 @@ typedef struct {
     int color[4];
     float texcoord[4][2];
     long control[4];
-} Quad_0D678;
+} Quad;
 extern void f_pos_0D678(void *, int, float *) __asm__("func_L00_00250800");
 extern void f_clear_0D678(float *) __asm__("func_001F9BC0");
 extern float f_sin_0D678(float) __asm__("func_001F9FA8");
@@ -621,7 +620,7 @@ extern int rilgar_wobble_quad_texture SDATA(D_L05_00161DCC);
    step. Adapted from Lombyte's project (GPL-3.0), FUN_L05_0030c220. */
 void draw_moby_wobble_quads(unsigned char *m) {
     struct Moby *moby = (struct Moby *)m;
-    Quad_0D678 quad_a, quad_b;
+    Quad quad_a, quad_b;
     float rotation[4];
     float position[4];
     /* Draw helper reads four consecutive vectors: side, direction, up, position. */
@@ -1278,7 +1277,7 @@ typedef struct {
     u32 col[4];
     float uv[8];
     u64 a, b, c, d;
-} Pk_31e468;
+} Pk;
 
 extern float rilgar_glow_quad_corners[4][4];
 extern short rilgar_glow_tip_offset;
@@ -1293,7 +1292,7 @@ extern void draw_world_quad(void *, void *, s32);
 /* Draws the moby's camera-facing glow sprite, flickering its alpha at random. */
 void draw_moby_glow_sprite(char *m) {
     struct GlowSpriteVars *d = (struct GlowSpriteVars *)((Moby *)m)->pvars;
-    Pk_31e468 pk;
+    Pk pk;
     float up[4];
     float M[4][4];
     float t[4];
@@ -1470,7 +1469,7 @@ typedef struct {
     u8 pad50[8];
     f32 unk58; /* 0x58 */
     f32 unk5C; /* 0x5C */
-} CameraFocus_32ABF0;
+} CameraFocus;
 typedef struct {
     Vec4 vel; /* 0x00 */
     u8 pad10[0x10];
@@ -1481,14 +1480,14 @@ typedef struct {
     u8 pad2E[0x12];
     f32 aspect; /* 0x40 */
     u8 pad44[0xC];
-} CameraView_32ABF0;
+} CameraView;
 typedef struct {
     f32 dist; /* 0x00 */
     f32 unk4; /* 0x04 */
     u8 pad8[8];
     f32 height; /* 0x10 */
     u8 pad14[0xC];
-} CameraSpring_32ABF0;
+} CameraSpring;
 typedef struct {
     Vec4 vel; /* 0x00 */
     f32 unk10; /* 0x10 */
@@ -1500,7 +1499,7 @@ typedef struct {
     s32 unk3C; /* 0x3C */
     s32 unk40; /* 0x40 */
     u8 pad44[0xC];
-} CameraTrack_32ABF0;
+} CameraTrack;
 typedef struct {
     Vec4 axis; /* 0x00 */
     f32 unk10; /* 0x10: 0.01 unless the preset gives one (FUN_L05_003294c0) */
@@ -1508,10 +1507,10 @@ typedef struct {
     s32 unk18; /* 0x18 */
     s16 mode; /* 0x1C: 0 waiting, 1 orbiting */
     u8 pad1E[0x12];
-    CameraView_32ABF0 view; /* 0x30 */
-    CameraFocus_32ABF0 focus; /* 0x80 */
-    CameraSpring_32ABF0 spring; /* 0xE0 */
-    CameraTrack_32ABF0 track; /* 0x100 */
+    CameraView view; /* 0x30 */
+    CameraFocus focus; /* 0x80 */
+    CameraSpring spring; /* 0xE0 */
+    CameraTrack track; /* 0x100 */
     f32 goal[3]; /* 0x150: yaw, pitch, distance */
     f32 vel[3]; /* 0x15C */
     f32 accel[3]; /* 0x168 */
@@ -1525,7 +1524,7 @@ typedef struct {
     u8 pad198[0x18];
     Vec4 unk1B0; /* 0x1B0 */
     Vec4 unk1C0; /* 0x1C0 */
-} CameraOrbit_32ABF0;
+} CameraOrbit;
 typedef struct {
     u8 pad0[0x30];
     Vec4 pos; /* 0x30 */
@@ -1534,7 +1533,7 @@ typedef struct {
     f32 pitch; /* 0x54 */
     f32 dist; /* 0x58 */
     u8 pad5C[0x14];
-    CameraOrbit_32ABF0 *orbit; /* 0x70 */
+    CameraOrbit *orbit; /* 0x70 */
     u8 pad74[0xA];
     s16 unk7E; /* 0x7E: cleared after a preset reset */
     u8 pad80[4];
@@ -1554,12 +1553,12 @@ typedef struct {
     f32 unk40; /* 0x40 */
     f32 unk44; /* 0x44 */
     s32 unk48; /* 0x48 */
-} CameraPreset_32ABF0;
+} CameraPreset;
 typedef struct {
     u8 pad0[0x1C];
-    CameraPreset_32ABF0 *preset; /* 0x1C */
-} CameraPresetRow_32ABF0;
-extern CameraPresetRow_32ABF0 *rilgar_camera_descriptors_r __asm__("D_L05_0015F050") MACRO_ADDR;
+    CameraPreset *preset; /* 0x1C */
+} CameraPresetRow;
+extern CameraPresetRow *rilgar_camera_descriptors_r __asm__("D_L05_0015F050") MACRO_ADDR;
 extern s32 g_hero_moby_r[] __asm__("D_001414D0");
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 
@@ -1569,13 +1568,13 @@ void func_L05_0032ABF0_r(Camera_32ABF0 *cam) __asm__("func_L05_0032ABF0");
    damping, cleared velocities, then places it.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/0031abe0.c, FUN_L05_003296e0. */
 void func_L05_0032ABF0_r(Camera_32ABF0 *cam) {
-    CameraPreset_32ABF0 *s = rilgar_camera_descriptors_r[cam->preset].preset;
-    CameraOrbit_32ABF0 *d;
-    CameraFocus_32ABF0 *focus;
-    CameraSpring_32ABF0 *spring;
-    CameraOrbit_32ABF0 *orbit;
-    CameraTrack_32ABF0 *track;
-    CameraView_32ABF0 *view;
+    CameraPreset *s = rilgar_camera_descriptors_r[cam->preset].preset;
+    CameraOrbit *d;
+    CameraFocus *focus;
+    CameraSpring *spring;
+    CameraOrbit *orbit;
+    CameraTrack *track;
+    CameraView *view;
 
     s->unk48 = 0;
     d = cam->orbit;
@@ -1728,7 +1727,7 @@ typedef struct {
     V_32B1F8 axis;
     char pad30[0x1C];
     float dist;
-} Focus_32B1F8;
+} Focus;
 typedef struct {
     float dist;
     char pad4[0xC];
@@ -1741,17 +1740,17 @@ typedef struct {
     char pad30[4];
     float k34, k38, k3C;
     float blend;
-} Track_32B1F8;
+} Track;
 typedef struct {
     float vel[4];
     float k10, k14, k18;
     short mode;
     char pad1E[0x62];
-    Focus_32B1F8 focus;
+    Focus focus;
     char padD0[0x10];
     Spring_32B1F8 spring;
     char padF4[0xC];
-    Track_32B1F8 track;
+    Track track;
     char pad150[0x30];
     float dist;
     float spring_dist;
@@ -1764,7 +1763,7 @@ typedef struct {
     V_32B1F8 bias;
     float bias_vel[4];
     V_32B1F8 next;
-} Orbit_32B1F8;
+} Orbit;
 typedef struct {
     V_32B1F8 fwd;
     V_32B1F8 up;
@@ -1772,21 +1771,21 @@ typedef struct {
     V_32B1F8 pos;
     char pad40[0x24];
     float vel[3];
-    Orbit_32B1F8 *orbit;
+    Orbit *orbit;
     char pad74[0x10];
     short preset;
 } Camera_32B1F8;
 typedef struct {
     char pad0[0x48];
     float vel;
-} Preset_32B1F8;
+} Preset;
 typedef struct {
     char pad0[0x1C];
-    Preset_32B1F8 *preset;
-} Row_32B1F8;
+    Preset *preset;
+} Row;
 
 extern char hero_globals_base_r[] __asm__("D_0013E633");
-extern Row_32B1F8 *rilgar_camera_descriptors_r2 __asm__("D_L05_0015F050") MACRO_ADDR;
+extern Row *rilgar_camera_descriptors_r2 __asm__("D_L05_0015F050") MACRO_ADDR;
 extern float rilgar_coll_resolved_pos_z_r __asm__("D_L05_00174378");
 extern float D_L05_00162268_32B1F8 SDATA(D_L05_00162268);
 extern void vec_scale_32B1F8(void *, void *, float) __asm__("func_L00_001FF4B0");
@@ -1813,11 +1812,11 @@ void update_orbit_camera_position(Camera_32B1F8 *m) {
     V_32B1F8 tmp;
     V_32B1F8 probe;
     V_32B1F8 step;
-    Orbit_32B1F8 *d = m->orbit;
+    Orbit *d = m->orbit;
     char *g = &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->gravity_dir;
-    Preset_32B1F8 *cur;
-    Focus_32B1F8 *q;
-    Track_32B1F8 *tr;
+    Preset *cur;
+    Focus *q;
+    Track *tr;
     float dist;
     Spring_32B1F8 *e;
     float *v;

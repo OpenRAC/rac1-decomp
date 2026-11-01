@@ -551,14 +551,14 @@ extern int STUB_printf_r() __asm__("func_001E9730");
 extern void initialize_wind_spark_r(Moby *, int, void *) __asm__("func_L14_002EC7E8");
 extern void update_wind_sparks_r(void *) __asm__("func_L14_002EC9C8");
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
-typedef struct Push_2EC3E8 {
+typedef struct Push {
     float x; /* 0x00 */
     float y; /* 0x04 */
     float z; /* 0x08 */
     float fC;
     float f10; /* 0x10 */
-} Push_2EC3E8;
-extern Push_2EC3E8 wind_push_vector_r __asm__("D_L14_00162300") MACRO_ADDR;
+} Push;
+extern Push wind_push_vector_r __asm__("D_L14_00162300") MACRO_ADDR;
 extern char wind_control_no_vol0_msg_r[] __asm__("D_L14_001FCCF0");
 extern char wind_control_no_node_msg_r[] __asm__("D_L14_001FCD50");
 extern char wind_control_no_vol500_msg_r[] __asm__("D_L14_001FCDA8");
@@ -1728,18 +1728,18 @@ extern int D_0013E6D0_2EFD38 __asm__("D_0013E6D0");
 extern char *g_hero_ground_moby_r __asm__("D_0013F74C");
 typedef struct {
     char b[0x70];
-} Voice_2EFD38;
+} Voice;
 typedef struct {
     char pad0[0x454];
     unsigned char b[1];
-} Tab_2EFD38;
+} Tab;
 
 typedef struct {
     char pad0[0x74];
     unsigned char b74;
     char pad75[0x88 - 0x75];
     char *owner;
-} Slot_2EFD38;
+} Slot;
 extern char voice_pool_r[] __asm__("D_0013E650");
 
 /* Elevator update (moby Elevator): runs its five-state switch, the lift-height test and the table lookups, then the
@@ -1787,7 +1787,7 @@ void elevator_685_update(char *moby) {
             {
                 unsigned short hw = ((Moby *)moby)->save_id;
                 int sh = (short)hw;
-                if (((Tab_2EFD38 *)oltanis_collected_flags_base_r)->b[sh]) {
+                if (((Tab *)oltanis_collected_flags_base_r)->b[sh]) {
                     data->locked = 0;
                 } else if (((*(int *)(level_moby_killed_r + ((sh >> 5) * 4 + (g_current_level_index_m << 8))) >>
                              (hw & 0x1F)) ^
@@ -1899,8 +1899,8 @@ void elevator_685_update(char *moby) {
             } else {
                 update_elevator_idle_glow_r(moby);
                 v = data->voice;
-                if (v != -1 && ((Slot_2EFD38 *)((Voice_2EFD38 *)voice_pool_r + v))->owner == moby &&
-                    ((Slot_2EFD38 *)((Voice_2EFD38 *)voice_pool_r + v))->b74 != 0) {
+                if (v != -1 && ((Slot *)((Voice *)voice_pool_r + v))->owner == moby &&
+                    ((Slot *)((Voice *)voice_pool_r + v))->b74 != 0) {
                     Sound_StopSlot_r(v);
                 }
                 data->voice = -1;
@@ -2169,7 +2169,7 @@ typedef struct {
     float pos[4];
     char pad40[0x30];
     float dir[4];
-} Pose_2F19C0;
+} Pose;
 
 typedef struct Data_2F19C0 {
     char pad00[0x20];
@@ -2219,7 +2219,7 @@ extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 extern void update_entity_matrix(char *, void *, void *, void *);
 extern int oltanis_frame_count MACRO_ADDR;
 extern int oltanis_shown_help_message MACRO_ADDR;
-extern Pose_2F19C0 *oltanis_clip_volumes_r2 __asm__("D_L14_001601AC") MACRO_ADDR;
+extern Pose *oltanis_clip_volumes_r2 __asm__("D_L14_001601AC") MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 
 /* Taxi update: waits at a station, flies the hero between stations along a path, and manages its sound. */
@@ -2484,14 +2484,14 @@ void TaxiUpdate(Moby *moby) {
     FastVecSub(position_delta, (*(float (*)[4]) & moby->pos), previous_position);
     update_entity_matrix(taxi_vars->f20, position_delta, previous_rotation, (*(float (*)[4]) & moby->rot));
 }
-struct L14PathPoint_2F24C8 {
+struct L14PathPoint {
     char pad0[0x30];
     float pos[4];
     char pad40[0x30];
     float rot[4];
 };
-extern struct L14PathPoint_2F24C8 *oltanis_clip_volumes_p __asm__("D_L14_001601AC") MACRO_ADDR;
-struct L14PickVars_2F24C8 {
+extern struct L14PathPoint *oltanis_clip_volumes_p __asm__("D_L14_001601AC") MACRO_ADDR;
+struct L14PickVars {
     char pad0[0x60];
     float pos[4];
     float rot[4];
@@ -2503,7 +2503,7 @@ struct L14PickVars_2F24C8 {
 /* Adapted from Lombyte's project (the US decompilation): FUN_L14_002f1040. */
 void initialize_taxi_stop_from_position(char *m) {
     Moby *moby = (Moby *)m;
-    struct L14PickVars_2F24C8 *d = (struct L14PickVars_2F24C8 *)moby->pvars;
+    struct L14PickVars *d = (struct L14PickVars *)moby->pvars;
     int i;
     d->picked = -1;
     for (i = 0; i < 5; i++) {
@@ -2515,7 +2515,7 @@ void initialize_taxi_stop_from_position(char *m) {
     moby->state = 1;
     {
         int k = d->points[d->picked];
-        struct L14PathPoint_2F24C8 *t = oltanis_clip_volumes_p;
+        struct L14PathPoint *t = oltanis_clip_volumes_p;
         qcopy(d->pos, t[k].pos);
         qcopy(d->rot, t[k].rot);
     }
@@ -3107,7 +3107,7 @@ void advance_enemy_fighter_along_flight_path(char *m) {
     }
 }
 typedef float Vec_2FE038[4] __attribute__((aligned(16)));
-typedef struct Jet_2FE038 {
+typedef struct Jet {
     char pad0[0x4];
     int f4;
     char pad1[0x58];
@@ -3129,18 +3129,18 @@ typedef struct Jet_2FE038 {
     int f9C;
     int fA0;
     int fA4;
-} Jet_2FE038;
-typedef struct Cam_2FE038 {
+} Jet;
+typedef struct Cam {
     char pad0[0x140];
     float pos[4];
     char pad1[0x4];
     float f154;
     float f158;
-} Cam_2FE038;
-typedef struct Lvl_2FE038 {
+} Cam;
+typedef struct Lvl {
     char pad0[0x454];
     unsigned char collected[1];
-} Lvl_2FE038;
+} Lvl;
 typedef struct Voice_2FE038 {
     char p0[0x74];
     unsigned char on;
@@ -3176,7 +3176,7 @@ extern int fast_dec_timer_r2(int *) __asm__("func_001F9908");
 extern void spawn_moby_exhaust_puffs_r(Moby *) __asm__("func_L14_002FE798");
 extern int Sound_IsPlaying_r3(void *, int) __asm__("func_L00_0028EB98");
 extern int Moby_PlaySound_r4(int, int, void *) __asm__("func_0022ED80");
-extern Lvl_2FE038 oltanis_collected_flags_base_r3 __asm__("D_L14_001BBCC0");
+extern Lvl oltanis_collected_flags_base_r3 __asm__("D_L14_001BBCC0");
 extern char level_moby_killed_r3[] __asm__("D_0014C290");
 extern Moby *oltanis_paths_r4[] __asm__("D_L14_001B0F30");
 extern int fighter_skill_hit_count_r2 __asm__("D_0015EF08") MACRO_ADDR;
@@ -3193,7 +3193,7 @@ extern int oltanis_moby_killed_bits_r[] __asm__("D_L14_001BAF60");
 void update_enemy_fighter_921(Moby *m) {
     Vec_2FE038 vt;
     Vec_2FE038 vb;
-    Jet_2FE038 *d = (struct Jet_2FE038 *)m->pvars;
+    Jet *d = (struct Jet *)m->pvars;
     unsigned short id;
 
     if (m->state == 0 &&
@@ -3271,21 +3271,20 @@ void update_enemy_fighter_921(Moby *m) {
                         is_point_inside_clip_volume_r3(
                             (*(Vec_2FE038 *)&((Hero *)(hero_globals_base_r + 0xE1D))->motion.pos), d->fA4) != 0) {
                         Moby *jet = (Moby *)(oltanis_mobys_r + (d->f8C << 8));
-                        Moby *seat = (Moby *)(oltanis_mobys_r + (((struct Jet_2FE038 *)jet->pvars)->f4 << 8));
+                        Moby *seat = (Moby *)(oltanis_mobys_r + (((struct Jet *)jet->pvars)->f4 << 8));
                         float pitch, yaw;
                         qcopy(vt, (*(Vec_2FE038 *)&seat->pos));
                         vt[2] = vt[2] + 4.0f;
-                        pitch = FastDiffRots_r(
-                            ((Cam_2FE038 *)oltanis_player_camera_r)->f154,
-                            -fast_atan2_r2(vec_distance_xy_r2(((Cam_2FE038 *)oltanis_player_camera_r)->pos, vt),
-                                           vt[2] - ((Cam_2FE038 *)oltanis_player_camera_r)->pos[2]));
+                        pitch =
+                            FastDiffRots_r(((Cam *)oltanis_player_camera_r)->f154,
+                                           -fast_atan2_r2(vec_distance_xy_r2(((Cam *)oltanis_player_camera_r)->pos, vt),
+                                                          vt[2] - ((Cam *)oltanis_player_camera_r)->pos[2]));
                         yaw = FastDiffRots_r(
-                            ((Cam_2FE038 *)oltanis_player_camera_r)->f158,
-                            fast_atan2_r2(
-                                (*(Vec_2FE038 *)&seat->pos)[0] - ((Cam_2FE038 *)oltanis_player_camera_r)->pos[0],
-                                (*(Vec_2FE038 *)&seat->pos)[1] - ((Cam_2FE038 *)oltanis_player_camera_r)->pos[1]));
+                            ((Cam *)oltanis_player_camera_r)->f158,
+                            fast_atan2_r2((*(Vec_2FE038 *)&seat->pos)[0] - ((Cam *)oltanis_player_camera_r)->pos[0],
+                                          (*(Vec_2FE038 *)&seat->pos)[1] - ((Cam *)oltanis_player_camera_r)->pos[1]));
                         if (yaw < 0.48869219f && pitch < 0.34906584f &&
-                            coll_line_r(((Cam_2FE038 *)oltanis_player_camera_r)->pos, vt, 0x12, seat, 0) == 0) {
+                            coll_line_r(((Cam *)oltanis_player_camera_r)->pos, vt, 0x12, seat, 0) == 0) {
                             *(int *)(level_moby_killed_r3 +
                                      (((short)m->save_id >> 5) * 4 + (g_current_level_index_m << 8))) |=
                                 1 << (m->save_id & 0x1F);
@@ -3553,7 +3552,7 @@ typedef struct {
     s32 target;
     s32 sound;
     s32 timer;
-} FlyerVars_2FF040;
+} FlyerVars;
 
 extern s32 D_L14_00162080_2FF040 SDATA(D_L14_00162080);
 extern f32 D_L14_00162078_2FF040 SDATA(D_L14_00162078);
@@ -3581,7 +3580,7 @@ extern void FastVecAdd_r3(u8 *, u8 *, u8 *) __asm__("func_001F9BD8");
  * turning toward it, and on arrival removes its target and itself with a burst.
  * Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l14/gameplay/entities/002df080.c, FUN_L14_002fdbb8. */
 void FlyerUpdate(struct Moby *moby) {
-    FlyerVars_2FF040 *vars = (FlyerVars_2FF040 *)moby->pvars;
+    FlyerVars *vars = (FlyerVars *)moby->pvars;
     Vec4f diff;
     Vec4 step;
     f32 dist;

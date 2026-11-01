@@ -1167,7 +1167,7 @@ typedef struct {
     short timer;
     char pad158[3];
     char active;
-} SpawnResetData_29B2B0;
+} SpawnResetData;
 extern void set_sentrybot_attention_target(char *, char *);
 extern int quartu_moby_array MACRO_ADDR;
 
@@ -1202,7 +1202,7 @@ void alert_visible_group_sentrybots(void *mobyv) {
             qcopy(b, m + 0x10);
             b[2] = b[2] + 1.0f;
             if (coll_line(b, a, 2, 0, 0) == 0) {
-                SpawnResetData_29B2B0 *reset = *(SpawnResetData_29B2B0 **)(idx + quartu_moby_array + 0x78);
+                SpawnResetData *reset = *(SpawnResetData **)(idx + quartu_moby_array + 0x78);
                 r = scale_ticks(0x12C);
                 reset->active = 0;
                 reset->timer = r;
@@ -1651,15 +1651,15 @@ void spawn_rocket_detonation_glow(char *moby) {
 typedef int u128_29E8A0 __attribute__((mode(TI)));
 typedef struct {
     int w[20];
-} __attribute__((aligned(16))) Tbl_29E8A0;
+} __attribute__((aligned(16))) Tbl;
 typedef struct {
     int c[6];
-} Cols_29E8A0;
+} Cols;
 typedef struct {
     char pad0[2];
     unsigned char f2;
     unsigned char f3;
-} Part_29E8A0;
+} Part;
 typedef struct {
     float v[4];
     char *moby;
@@ -1669,7 +1669,7 @@ typedef struct {
     unsigned short id;
     float radius;
     int count;
-} Coll_29E8A0;
+} Coll;
 typedef struct {
     float v[4];
     char *owner;
@@ -1701,9 +1701,9 @@ typedef struct M_29E8A0 {
     char padBD[3];
     float mtx[16];
 } M_29E8A0;
-extern Tbl_29E8A0 quartu_missile_camera_blast_params;
-extern Cols_29E8A0 quartu_missile_blast_start_colors;
-extern Cols_29E8A0 quartu_missile_blast_end_colors;
+extern Tbl quartu_missile_camera_blast_params;
+extern Cols quartu_missile_blast_start_colors;
+extern Cols quartu_missile_blast_end_colors;
 extern int missile_target_reticle_enabled MACRO_ADDR;
 extern float missile_distant_gray_glow_gate MACRO_ADDR;
 extern unsigned char *quartu_missile_smoke_texture_ptr;
@@ -1743,7 +1743,7 @@ extern void mine_camera_blast(void *, void *, int, int);
 
 /* update of moby class 256: a homing missile that leads its target, trails smoke and explodes on contact */
 void update_target_leading_missile(M_29E8A0 *m) {
-    Tbl_29E8A0 tbl;
+    Tbl tbl;
     float v50[4];
     float v60[4];
     float v70[4];
@@ -1847,7 +1847,7 @@ void update_target_leading_missile(M_29E8A0 *m) {
                                    g_frame_time_sq * 3.1415927f, g_frame_time * 4.712389f);
         }
         {
-            Part_29E8A0 *p;
+            Part *p;
             BuildSphericalOffset(vel, d->speed, m->rot[2], -m->rot[1]);
             *(u128_29E8A0 *)dv = 0;
             dv[0] = random_float_between(-1.0f, 1.0f);
@@ -1859,8 +1859,8 @@ void update_target_leading_missile(M_29E8A0 *m) {
             FastVecAdd(delta, delta, v90);
             vec_scale_to_length(v90, vel, random_float_between(0.0f, 1.0f) * d->speed);
             FastVecAdd(v90, v90, m->pos);
-            p = (Part_29E8A0 *)PartType44Spawn(v90, delta, scale_ticks(0x3C), 0x7F, 0x606060, 3, 40000.0f, 1000.0f,
-                                               1.0f, -0.0002f, 0.0f);
+            p = (Part *)PartType44Spawn(v90, delta, scale_ticks(0x3C), 0x7F, 0x606060, 3, 40000.0f, 1000.0f, 1.0f,
+                                        -0.0002f, 0.0f);
             if (p != 0) {
                 p->f2 = *quartu_missile_smoke_texture_ptr;
                 p->f3 = 0x44;
@@ -1882,7 +1882,7 @@ void update_target_leading_missile(M_29E8A0 *m) {
         return;
     }
     {
-        Coll_29E8A0 coll;
+        Coll coll;
         coll.flags = 0x830000;
         coll.radius = 3.0f;
         coll.moby = (char *)m;
@@ -2010,8 +2010,8 @@ void update_target_leading_missile(M_29E8A0 *m) {
                     i = 0;
                     while (i < n) {
                         float sz = random_float_between(8.0f, 10.0f) * g_frame_time - under * g_frame_time;
-                        Cols_29E8A0 c1 = quartu_missile_blast_start_colors;
-                        Cols_29E8A0 c2 = quartu_missile_blast_end_colors;
+                        Cols c1 = quartu_missile_blast_start_colors;
+                        Cols c2 = quartu_missile_blast_end_colors;
                         int *p1 = &c1.c[random_integer_below(6)];
                         int *p2 = &c2.c[random_integer_below(6)];
                         int l1 = rand_range(scale_ticks(0xF), scale_ticks(0x14));
@@ -2025,8 +2025,8 @@ void update_target_leading_missile(M_29E8A0 *m) {
                     }
                 }
                 for (j = 0; j < 10; j++) {
-                    Cols_29E8A0 c1 = quartu_missile_blast_start_colors;
-                    Cols_29E8A0 c2 = quartu_missile_blast_end_colors;
+                    Cols c1 = quartu_missile_blast_start_colors;
+                    Cols c2 = quartu_missile_blast_end_colors;
                     float dir[4];
                     {
                         float r5[4];
@@ -2604,7 +2604,7 @@ typedef struct {
     unsigned char active;
     unsigned char pad75[0x13];
     char *owner;
-} Voice_2A3DD0;
+} Voice;
 extern KillFlags_2A3DD0 quartu_collected_flags_base_r __asm__("D_L15_001BBB40");
 extern unsigned char saved_mission_state_r[][16] __asm__("D_0014C150");
 extern int level_moby_killed_r[][64] __asm__("D_0014C290");
@@ -2671,7 +2671,7 @@ void update_spark_emitter_moby(Moby *moby) {
                 saved_mission_state_r[g_current_level_index_r][moby->mission] == 0xFF) {
                 mark_moby_killed_and_release_owned_voice_r(moby);
             } else {
-                Voice_2A3DD0 *e = (Voice_2A3DD0 *)(voice_pool_r + moby->command * 0x70);
+                Voice *e = (Voice *)(voice_pool_r + moby->command * 0x70);
                 float lo, hi, z, one;
                 int i;
                 if (e->owner != (char *)moby || e->active == 0) {
@@ -2924,7 +2924,7 @@ typedef struct {
     float f1C;
     int i20;
     int pad24[3];
-} Ray_2A8090;
+} Ray;
 extern void matrix_copy_rows(void *, void *);
 
 extern float FastNormalizeAngle(float);
@@ -3029,7 +3029,7 @@ void spiderbot_update(Moby *moby) {
         }
     }
     {
-        Ray_2A8090 R;
+        Ray R;
         float T2[4];
         int i;
         *(u128_2A8090 *)B = 0;

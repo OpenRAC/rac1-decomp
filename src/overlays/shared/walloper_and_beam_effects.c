@@ -1455,10 +1455,10 @@ done:
     return (char *)res[0];
 }
 typedef int u128_2BDAF0 __attribute__((mode(TI)));
-typedef struct Vq_2BDAF0 {
+typedef struct Vq {
     float x, y, z, w;
-} __attribute__((aligned(16))) Vq_2BDAF0;
-typedef struct Ray_2BDAF0 {
+} __attribute__((aligned(16))) Vq;
+typedef struct Ray {
     float pos[4];
     Moby *target;
     float total;
@@ -1471,28 +1471,28 @@ typedef struct Ray_2BDAF0 {
     int delay;
     float yaw;
     float pitch;
-} Ray_2BDAF0;
-typedef struct Stats_2BDAF0 {
+} Ray;
+typedef struct Stats {
     char p0[0xA8];
     unsigned short kills;
     unsigned short best;
     int levels;
-} Stats_2BDAF0;
+} Stats;
 typedef struct Skill_2BDAF0 {
     char p0[8];
     unsigned char f8;
 } Skill_2BDAF0;
-typedef struct Light_2BDAF0 {
+typedef struct Light {
     float col[4];
     float pos[3];
     float radius;
-} Light_2BDAF0;
-typedef struct Voice_2BDAF0 {
+} Light;
+typedef struct Voice {
     char p0[0x74];
     unsigned char on;
     char p1[0x88 - 0x75];
     Moby *owner;
-} Voice_2BDAF0;
+} Voice;
 
 extern char g_hero_r[] __asm__("D_0013F450");
 extern char pad_globals_base_r[] __asm__("D_0013A5E0");
@@ -1551,10 +1551,10 @@ extern void draw_uniform_size_hud_stars_r(void) __asm__("func_L00_002377E0");
 // Morphoray (moby Morphoray) update: aims the hero's morph-o-ray, transforms what it hits over time,
 // and keeps its glow light and sound going while the gadget is held.
 void MorphorayUpdate(Moby *m) {
-    Vq_2BDAF0 v0;
-    Vq_2BDAF0 v[3];
-    Vq_2BDAF0 mt[4];
-    Ray_2BDAF0 *p;
+    Vq v0;
+    Vq v[3];
+    Vq mt[4];
+    Ray *p;
     int flag;
     int near;
     Moby *hit;
@@ -1564,7 +1564,7 @@ void MorphorayUpdate(Moby *m) {
     if (((Hero *)g_hero_r)->items[0].state == 3) {
         flag = 1;
     }
-    p = (struct Ray_2BDAF0 *)m->pvars;
+    p = (struct Ray *)m->pvars;
     if (m->state == 0) {
         m->state = 1;
         morphoray_light_slot_r = -1;
@@ -1584,15 +1584,15 @@ void MorphorayUpdate(Moby *m) {
         }
         if (p->seen == 0) {
             p->seen = 1;
-            if (((Stats_2BDAF0 *)(help_stats_base_r + 0x65))->kills <= 0xFFFE) {
-                ((Stats_2BDAF0 *)(help_stats_base_r + 0x65))->kills++;
+            if (((Stats *)(help_stats_base_r + 0x65))->kills <= 0xFFFE) {
+                ((Stats *)(help_stats_base_r + 0x65))->kills++;
             }
             r = scale_ticks_r(gameplay_event_frame_count_r) / 600;
-            if (((Stats_2BDAF0 *)(help_stats_base_r + 0x65))->best < r) {
-                ((Stats_2BDAF0 *)(help_stats_base_r + 0x65))->best = scale_ticks_r(gameplay_event_frame_count_r) / 600;
+            if (((Stats *)(help_stats_base_r + 0x65))->best < r) {
+                ((Stats *)(help_stats_base_r + 0x65))->best = scale_ticks_r(gameplay_event_frame_count_r) / 600;
             }
-            ((Stats_2BDAF0 *)(help_stats_base_r + 0x65))->levels =
-                ((Stats_2BDAF0 *)(help_stats_base_r + 0x65))->levels | (1 << g_current_level_index_r) | 0x80000000;
+            ((Stats *)(help_stats_base_r + 0x65))->levels =
+                ((Stats *)(help_stats_base_r + 0x65))->levels | (1 << g_current_level_index_r) | 0x80000000;
         }
         if (p->timer == 0) {
             p->timer = scale_ticks_r(15);
@@ -1671,10 +1671,10 @@ void MorphorayUpdate(Moby *m) {
             morphoray_light_fade_timer_r = scale_ticks_r(20);
             vec_scale_to_length_r(&v[0], &m->rot_row1, -0.5f);
             FastVecAdd_r(&v[1], p, &v[0]);
-            ((Light_2BDAF0 *)level_point_lights_r)[morphoray_light_slot_r].pos[0] = v[1].x;
-            ((Light_2BDAF0 *)level_point_lights_r)[morphoray_light_slot_r].pos[1] = v[1].y;
-            ((Light_2BDAF0 *)level_point_lights_r)[morphoray_light_slot_r].pos[2] = v[1].z;
-            ((Light_2BDAF0 *)level_point_lights_r)[morphoray_light_slot_r].radius = 7.5f;
+            ((Light *)level_point_lights_r)[morphoray_light_slot_r].pos[0] = v[1].x;
+            ((Light *)level_point_lights_r)[morphoray_light_slot_r].pos[1] = v[1].y;
+            ((Light *)level_point_lights_r)[morphoray_light_slot_r].pos[2] = v[1].z;
+            ((Light *)level_point_lights_r)[morphoray_light_slot_r].radius = 7.5f;
         }
         if (Sound_IsPlaying_r(m, morphoray_beam_voice_r) == 0) {
             morphoray_beam_voice_r = Moby_PlaySound_r(0, 4, m);
@@ -1692,14 +1692,14 @@ void MorphorayUpdate(Moby *m) {
             float f;
             vec_scale_to_length_r(&v0, &m->rot_row1, -0.5f);
             FastVecAdd_r(&v[0], p, &v0);
-            ((Light_2BDAF0 *)level_point_lights_r)[morphoray_light_slot_r].pos[0] = v[0].x;
-            ((Light_2BDAF0 *)level_point_lights_r)[morphoray_light_slot_r].pos[1] = v[0].y;
-            ((Light_2BDAF0 *)level_point_lights_r)[morphoray_light_slot_r].pos[2] = v[0].z;
-            ((Light_2BDAF0 *)level_point_lights_r)[morphoray_light_slot_r].radius = 7.5f;
+            ((Light *)level_point_lights_r)[morphoray_light_slot_r].pos[0] = v[0].x;
+            ((Light *)level_point_lights_r)[morphoray_light_slot_r].pos[1] = v[0].y;
+            ((Light *)level_point_lights_r)[morphoray_light_slot_r].pos[2] = v[0].z;
+            ((Light *)level_point_lights_r)[morphoray_light_slot_r].radius = 7.5f;
             f = IntToFloat_r(morphoray_light_fade_timer_r) * 0.05f;
-            ((Light_2BDAF0 *)level_point_lights_r)[morphoray_light_slot_r].col[0] = f;
-            ((Light_2BDAF0 *)level_point_lights_r)[morphoray_light_slot_r].col[1] = f;
-            ((Light_2BDAF0 *)level_point_lights_r)[morphoray_light_slot_r].col[2] = f * 0.25f;
+            ((Light *)level_point_lights_r)[morphoray_light_slot_r].col[0] = f;
+            ((Light *)level_point_lights_r)[morphoray_light_slot_r].col[1] = f;
+            ((Light *)level_point_lights_r)[morphoray_light_slot_r].col[2] = f * 0.25f;
             if (fast_dec_timer_r2(&morphoray_light_fade_timer_r) != 0) {
                 release_point_light_slot_r(morphoray_light_slot_r);
                 morphoray_light_slot_r = -1;
@@ -1710,9 +1710,8 @@ void MorphorayUpdate(Moby *m) {
             morphoray_light_slot_r = -1;
         }
         if (morphoray_beam_voice_r >= 0) {
-            if (morphoray_beam_voice_r != -1 &&
-                ((Voice_2BDAF0 *)(voice_pool_r + morphoray_beam_voice_r * 0x70))->owner == m &&
-                ((Voice_2BDAF0 *)(voice_pool_r + morphoray_beam_voice_r * 0x70))->on != 0) {
+            if (morphoray_beam_voice_r != -1 && ((Voice *)(voice_pool_r + morphoray_beam_voice_r * 0x70))->owner == m &&
+                ((Voice *)(voice_pool_r + morphoray_beam_voice_r * 0x70))->on != 0) {
                 Sound_StopSlot_r(morphoray_beam_voice_r);
             }
             morphoray_beam_voice_r = -1;
@@ -1771,14 +1770,14 @@ typedef struct {
     char pad14[0x34];
     float f48;
     float f4C;
-} Vars_2BE3A8;
+} Vars;
 typedef struct {
     char pad0[0x10];
     float height;
-} Info_2BE3A8;
+} Info;
 typedef struct {
     int c[5];
-} Tab_2BE3A8;
+} Tab;
 
 extern float D_L00_001617AC_2BE3A8 SDATA(D_L00_001617AC);
 extern float D_L00_001617C0_2BE3A8 SDATA(D_L00_001617C0);
@@ -1819,12 +1818,12 @@ extern Vec4A tesla_pulse_pos_r[3] __asm__("D_L00_001DD3A0");
 extern Vec4A tesla_pulse_dir_r[3] __asm__("D_L00_001DD3D0");
 extern Vec4A collision_hit_point_r __asm__("D_L00_00173F60");
 extern char veldin1_zero_vec_r[] __asm__("D_L00_0015F660") MACRO_ADDR;
-extern Tab_2BE3A8 tesla_spark_colors_r __asm__("D_L00_001E9E30");
+extern Tab tesla_spark_colors_r __asm__("D_L00_001E9E30");
 extern char hero_globals_base_r2[] __asm__("D_0013E633");
 extern void reset_beam_chain_and_pulse_state_r(void) __asm__("func_L00_002BE2A0");
 extern float normalize_angle_r(float) __asm__("func_L00_0025F368");
 extern void BuildSphericalOffset_r(void *, float, float, float) __asm__("func_00215C00");
-extern Info_2BE3A8 *GetFlaggedPvarWord_r2(Moby *) __asm__("func_L00_0025D390");
+extern Info *GetFlaggedPvarWord_r2(Moby *) __asm__("func_L00_0025D390");
 extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
 extern int coll_line_r(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
@@ -1862,8 +1861,8 @@ void update_beam_ring_rail_and_pulse_effects(Moby *m) {
     Vec4A tmp;
     Vec4A dir;
     Vec4A side;
-    Vars_2BE3A8 *p;
-    Info_2BE3A8 *info;
+    Vars *p;
+    Info *info;
     int j;
     int k;
     int q;
@@ -1876,7 +1875,7 @@ void update_beam_ring_rail_and_pulse_effects(Moby *m) {
     float w;
     float s;
 
-    p = (Vars_2BE3A8 *)m->pvars;
+    p = (Vars *)m->pvars;
     off.w = 1.0f;
     off.x = 0.0f;
     reset_beam_chain_and_pulse_state_r();
@@ -1981,7 +1980,7 @@ void update_beam_ring_rail_and_pulse_effects(Moby *m) {
         vec_scale_to_length_r2(&side, &m->rot_row1, D_L00_00161810_2BE3A8);
         FastVecAdd_r2(&tmp, &tesla_chain_points_r[0], &side);
         {
-            Tab_2BE3A8 cols;
+            Tab cols;
             Vec4A out;
             Vec4A up;
 
@@ -2882,12 +2881,12 @@ typedef struct Mob_2C0CF8 {
     char pad30[0x8C];
     unsigned char bBC; /* 0xBC */
 } Mob_2C0CF8;
-typedef struct Blk_2C0CF8 {
+typedef struct Blk {
     char pad0[0x38];
     void *p38; /* 0x38 */
     char pad3C[0x14];
     float f50; /* 0x50 */
-} Blk_2C0CF8;
+} Blk;
 extern void FastVecSub_r2(void *, void *, void *) __asm__("func_001F9BF0");
 extern int clamp_vec_length_xy_r(float, void *, void *) __asm__("func_L00_001FF5B0");
 extern void FastVecAdd_r3(void *, void *, void *) __asm__("func_001F9BD8");
@@ -2909,7 +2908,7 @@ extern void *g_coll_hit_moby_r2 __asm__("D_L00_00173F58");
 
 /* Tries a hop of the moby toward q: probes the ground at the landing point and the path to it, and sets the jump
  * state on success. When blocked and the hop is long enough it tries again with half the distance. */
-int try_start_moby_hop(Mob_2C0CF8 *m, Blk_2C0CF8 *p, void *q, int flag) {
+int try_start_moby_hop(Mob_2C0CF8 *m, Blk *p, void *q, int flag) {
     float d[4];
     float land[4];
     float from[4];

@@ -2590,7 +2590,7 @@ extern int blarg_moby_list_r2[] __asm__("D_L06_001AC500");
 typedef struct {
     int list;
     int out;
-} Iter_2F4720;
+} Iter;
 int func_L06_002F4720_r(char *moby, int flag) __asm__("func_L06_002F4720");
 
 /* Runs the candidate check process_gadgebot_interaction_candidate over the moby's candidate list (or the global
@@ -2598,7 +2598,7 @@ int func_L06_002F4720_r(char *moby, int flag) __asm__("func_L06_002F4720");
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00297d10.c, FUN_L06_002f32f0. */
 int func_L06_002F4720_r(char *moby, int flag) {
     char **moby_ref;
-    Iter_2F4720 iter;
+    Iter iter;
     char *state;
     int list_id;
     int *cursor;
@@ -2651,7 +2651,7 @@ extern void func_L06_002F4818_F4908(char *a, char *b, char *c, int *out, float *
 typedef struct {
     char *moby;
     f32 score;
-} Best_2f34d8_F4908;
+} Best;
 extern short D_L06_00161D78_F4908 SDATA(D_L06_00161D78);
 extern short D_L06_00161D74_F4908 SDATA(D_L06_00161D74);
 extern char *blarg_gadgebot_target_cache_r[] __asm__("D_L06_001DB1B0");
@@ -2661,7 +2661,7 @@ extern char *blarg_moby_list_r3[] __asm__("D_L06_001AC500");
    now), and stores it in *current.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00297d10.c, FUN_L06_002f34d8. */
 void select_hero_or_gadgebot_target(char *moby, char **current, f32 range) {
-    Best_2f34d8_F4908 best;
+    Best best;
     char *m;
     s32 i;
     if ((*(s32 *)&D_L06_00161D78_F4908) != blarg_frame_count_r) {
@@ -2836,7 +2836,7 @@ typedef struct {
     int idx; /* 0x1C */
     float f20; /* 0x20 */
     Moby *slots[7]; /* 0x24 */
-} Vars_2F6330;
+} Vars;
 
 extern Moby *level_mobys_q_r3 __asm__("D_L06_00160058") MACRO_ADDR;
 extern float rotation_group_angular_velocity_adjustment_degrees_gp SDATA(D_L06_00161DC8);
@@ -2853,7 +2853,7 @@ extern float FastSubRots(float, float);
 /* Moby class 1021 update (levels 6, 17, 18): a door ring of seven petals; opens when its trigger fires, eases its
    angle open and shut. */
 void update_moby_rotation_group(Moby *m) {
-    Vars_2F6330 *d = (Vars_2F6330 *)(*(void **)&m->pvars);
+    Vars *d = (Vars *)(*(void **)&m->pvars);
     float tmp[4];
     int i;
     int j;
@@ -3071,7 +3071,7 @@ typedef struct {
     int t[4];
     float sz[4];
     char *tgt;
-} Beam_2f8a58;
+} Beam;
 
 /* Draws the moby's light beam: four flickering glow sprites spaced from its target toward the camera,
  * plus, every fourth frame while visible, a spark drifting up or down from the moby. */
@@ -3080,7 +3080,7 @@ void update_energy_sphere_holder_beam_effects(char *m) {
     float step[4];
     float a[4];
     float b[4];
-    Beam_2f8a58 *d = ((Beam_2f8a58 *)((Moby *)m)->pvars);
+    Beam *d = ((Beam *)((Moby *)m)->pvars);
     int i;
     FastVecSub(pos, blarg_camera_pos, d->tgt + 0x10);
     vec_scale_to_length(pos, pos, -0.3f);

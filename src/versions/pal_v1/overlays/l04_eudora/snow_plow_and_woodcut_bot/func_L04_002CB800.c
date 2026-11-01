@@ -1,15 +1,15 @@
-void snow_plow_update(VehicleMoby_2CB800 *m) {
-    VehicleVec_2CB800 old, delta;
-    VehicleData_2CB800 *d = m->data;
+void snow_plow_update(VehicleMoby *m) {
+    VehicleVec old, delta;
+    VehicleData *d = m->data;
     u8 state = m->state;
-    VehicleSub_2CB800 *sub;
-    VehicleTrigger_2CB800 *trigger;
+    VehicleSub *sub;
+    VehicleTrigger *trigger;
     float zero;
     s32 izero;
     qcopy(&old, &m->pos);
     if (!d)
         return;
-    sub = (VehicleSub_2CB800 *)d->motion;
+    sub = (VehicleSub *)d->motion;
     if (state == 0) {
         if (sub->path_id != -1) {
             s32 *path = eudora_paths[sub->path_id];
@@ -137,7 +137,7 @@ void snow_plow_update(VehicleMoby_2CB800 *m) {
         }
     }
     if (d->partner != -1) {
-        VehicleMoby_2CB800 *other = MOBYS + d->partner;
+        VehicleMoby *other = MOBYS + d->partner;
         other->shield = 0x7F;
         switch (m->cls) {
             case 0x1E0:
@@ -176,7 +176,7 @@ void snow_plow_update(VehicleMoby_2CB800 *m) {
             case 19:
             case 20: {
                 {
-                    VehicleQuery_2CB800 query;
+                    VehicleQuery query;
                     query.flags = 0x810000;
                     query.strength = 1;
                     query.owner = m;
@@ -213,7 +213,7 @@ void snow_plow_update(VehicleMoby_2CB800 *m) {
                 {
                     VehicleArr_2CB800 offset = {0.0f, 0.0f, 0.75f};
                     VehicleArr_2CB800 none;
-                    VehicleQuery_2CB800 query2;
+                    VehicleQuery query2;
                     clear_u64_value(none);
                     Moby_GetJointWorldPos(m, 0, &delta);
                     FastVecAdd(&delta, &delta, offset);
@@ -313,7 +313,7 @@ void snow_plow_update(VehicleMoby_2CB800 *m) {
             m->flags &= 0xFFBE;
             d->visibility_active = 0;
             if (d->partner != -1) {
-                VehicleMoby_2CB800 *other = MOBYS + d->partner;
+                VehicleMoby *other = MOBYS + d->partner;
                 other->flags &= 0xFFBE;
             }
             m->flags |= 0x1000;
@@ -321,7 +321,7 @@ void snow_plow_update(VehicleMoby_2CB800 *m) {
             m->sort = 0;
             m->flags |= 0x41;
             if (d->partner != -1) {
-                VehicleMoby_2CB800 *other = MOBYS + d->partner;
+                VehicleMoby *other = MOBYS + d->partner;
                 other->flags |= 0x41;
             }
             m->flags &= 0xEFFF;

@@ -1,7 +1,7 @@
 void update_gameplay_frame(void) {
     Vec4A first_position;
     Vec4A next_position;
-    RenderSequenceActor_EB458 *actor;
+    RenderSequenceActor *actor;
     Vec4A *animation_positions;
     s32 actor_index;
     f32 fade;
@@ -30,7 +30,7 @@ void update_gameplay_frame(void) {
         actor->next_frame = frame_index + 1;
         update_moby_animation_state_r(actor);
         actor->frame_fraction = IntToFloat_r(render_sequence_r2.frame & 1) * 0.5f;
-        animation_positions = ((RenderSequenceSidecar_EB458 *)actor)->animation_positions;
+        animation_positions = ((RenderSequenceSidecar *)actor)->animation_positions;
         FastVecScale_r(&first_position, &animation_positions[actor->current_frame], 1.0f - actor->frame_fraction);
         FastVecScale_r(&next_position, &animation_positions[actor->next_frame], actor->frame_fraction);
         FastVecAdd_r(&actor->position, &first_position, &next_position);

@@ -62,7 +62,7 @@ extern short shrub_paging_table[];
 typedef struct {
     char *ptr;
     int pad;
-} ShrubRec_29D48;
+} ShrubRec;
 
 /* `items` declared inside the middle loop, and `rec = &items[i];
    rec->ptr` rather than `items[i].ptr`, give retail's base-first addu. */
@@ -72,8 +72,8 @@ void patch_shrub_gifs(void) {
         char *obj = shrub_render_classes[*p];
         int i;
         for (i = 0; i < *(short *)(obj + 0x28); i++) {
-            ShrubRec_29D48 *items = (ShrubRec_29D48 *)(obj + 0x40);
-            ShrubRec_29D48 *rec = &items[i];
+            ShrubRec *items = (ShrubRec *)(obj + 0x40);
+            ShrubRec *rec = &items[i];
             int *hdr = (int *)(rec->ptr + 0x10);
             char *e = (char *)hdr + hdr[1] * 0x10 + 0x10;
             int j;

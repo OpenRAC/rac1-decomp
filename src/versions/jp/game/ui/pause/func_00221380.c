@@ -1,7 +1,7 @@
-int draw_checking_memory_card_data_menu(struct Stream_21380 *menu) {
+int draw_checking_memory_card_data_menu(struct Stream *menu) {
     FontWindow_21380 text_window;
     short window_fields[12];
-    struct Cell_21380 *entry;
+    struct Cell *entry;
     char *text;
     int state = menu->state;
     long texture;
@@ -16,13 +16,12 @@ int draw_checking_memory_card_data_menu(struct Stream_21380 *menu) {
             goto done;
         }
         if (((MemoryCardState *)memory_card_state)->state < 3 && ((MemoryCardState *)memory_card_state)->err < 0 &&
-            ((struct MS_21380 *)menu_system)->ticks >= 0xB) {
+            ((struct MS *)menu_system)->ticks >= 0xB) {
             goto done;
         }
         SetupGifPaging(0);
-        text = ((char *(*)(int))msg_string)(((struct MS_21380 *)menu_system)->card_op_pending
-                                                ? ((struct MS_21380 *)menu_system)->card_op_text
-                                                : 0x4FBA);
+        text = ((char *(*)(int))msg_string)(
+            ((struct MS *)menu_system)->card_op_pending ? ((struct MS *)menu_system)->card_op_text : 0x4FBA);
         ((void *(*)(void *, int, unsigned int))libc_memset)(window_fields, 0, sizeof(window_fields));
         window_fields[1] = menu->height + 1;
         window_fields[0] = 1;
@@ -49,7 +48,7 @@ int draw_checking_memory_card_data_menu(struct Stream_21380 *menu) {
     }
     if (menu->flags & 4) {
         first = state < 4;
-        entry = &((struct MS_21380 *)menu_system)->current->focus->cells[menu->loaded_entry[first ^ 1]];
+        entry = &((struct MS *)menu_system)->current->focus->cells[menu->loaded_entry[first ^ 1]];
         if (entry->kind == 0 && (tp = (unsigned char *)&item_available, tp[entry->id] == 0)) {
             return 1;
         }

@@ -1,13 +1,13 @@
 extern unsigned char D_E1_L01_001BBA84[];
 void bomber_jet_update(Moby *m) {
-    Vars_F8B00 *d = (void *)m->pvars;
-    Sub_F8B00 *sub = &d->sub;
+    Vars *d = (void *)m->pvars;
+    Sub *sub = &d->sub;
     float s;
     void *hit;
     int i;
     int j;
-    Quad_F8B00 a;
-    Quad_F8B00 b;
+    Quad a;
+    Quad b;
     Vec4 dir;
     Vec4 pos;
     Vec4 col;
@@ -40,14 +40,14 @@ void bomber_jet_update(Moby *m) {
     do {
         if (m->state == 0) {
             if (sub->path != -1) {
-                Path_F8B00 *path = (Path_F8B00 *)novalis_paths[sub->path];
+                Path *path = (Path *)novalis_paths[sub->path];
                 j = 0;
                 d->fFC = d->fFC * 2.0f;
                 if (FastVecDist((char *)path + 0x10, (char *)path + (path->count << 4)) < 0.5f) {
                     path->count--;
                 }
                 for (i = 0; i < path->count; i++) {
-                    if (((Path_F8B00 *)((char *)path + (i << 4)))->w == 1.0f) {
+                    if (((Path *)((char *)path + (i << 4)))->w == 1.0f) {
                         d->slots[j] = i;
                         j++;
                         if (j >= 4)
@@ -90,7 +90,7 @@ void bomber_jet_update(Moby *m) {
                         if (d->turrets[j] != -1) {
                             Moby *o = (Moby *)(novalis_mobys_r3 + (d->turrets[j] << 8));
                             if (o != 0 && o->oclass == MOBY_CLASS_BIRDBOT && o->state != 0xFE && o->state != 0xFD) {
-                                Turret_F8B00 *t = (void *)o->pvars;
+                                Turret *t = (void *)o->pvars;
                                 t->f1E8 = 1;
                                 t->f1EC = scale_ticks(2);
                             }
@@ -124,7 +124,7 @@ void bomber_jet_update(Moby *m) {
                         if (d->turrets[j] != -1) {
                             Moby *o = (Moby *)((d->turrets[j] << 8) + novalis_mobys_r3);
                             if (o->oclass == MOBY_CLASS_BIRDBOT) {
-                                Turret_F8B00 *t = (void *)o->pvars;
+                                Turret *t = (void *)o->pvars;
                                 t->f1E8 = 1;
                                 t->f1EC = scale_ticks(2);
                             }
@@ -208,7 +208,7 @@ void bomber_jet_update(Moby *m) {
                             if (d->guards[i] != -1) {
                                 Moby *o = (Moby *)((d->guards[i] << 8) + novalis_mobys_r3);
                                 if (o->oclass == 0x2BC) {
-                                    Guard_F8B00 *g = (void *)o->pvars;
+                                    Guard *g = (void *)o->pvars;
                                     if (g->f4 == 0 && g->f0 == 0 && random_integer_below(0x64) < 0x64 &&
                                         is_point_inside_clip_volume(hero_globals_base + 0xE9D, g->f8) &&
                                         is_point_inside_clip_volume(camera_pos, g->f8)) {

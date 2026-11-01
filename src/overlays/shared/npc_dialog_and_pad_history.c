@@ -18,13 +18,13 @@ typedef struct {
     short state;
     char padC[4];
     short flag;
-} Slot_2670E0;
+} Slot;
 extern short music_flagged_track_started NOT_SDA;
 
 /* stores value in the slot passed as a 64-bit argument; a zero value resets the slot's state,
    otherwise a slot in state 1 moves to 4 and, with its flag set, music_flagged_track_started becomes 1 */
 void Stream_SetSlotValue(int value, long arg) {
-    Slot_2670E0 *s = (Slot_2670E0 *)arg;
+    Slot *s = (Slot *)arg;
 
     if (s == 0) {
         return;
@@ -48,7 +48,7 @@ void stream_slot_clear_state(void *a0, unsigned char *a1) {
 }
 /* Stream slot callback: store a negative result, wake a waiting slot (state 9 to 4), or reset it on 0. */
 void stream_slot_wake_waiting(int value, long arg) {
-    Slot_2670E0 *s = (Slot_2670E0 *)arg;
+    Slot *s = (Slot *)arg;
 
     if (s == 0) {
         return;
@@ -70,7 +70,7 @@ void stream_slot_wake_waiting(int value, long arg) {
 /* stores value in the slot passed as a 64-bit argument; a zero value resets the slot's state,
    otherwise a slot in state 1 moves to 8 */
 void func_L00_00267188(int value, long arg) {
-    Slot_2670E0 *s = (Slot_2670E0 *)arg;
+    Slot *s = (Slot *)arg;
 
     if (s == 0) {
         return;

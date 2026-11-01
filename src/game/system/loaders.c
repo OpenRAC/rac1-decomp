@@ -34,7 +34,7 @@ typedef struct {
     s32 pad18;
     s32 mip_count;
     u8 data[4];
-} MipTexture_202AA8;
+} MipTexture;
 
 typedef struct {
     s32 palette_address;
@@ -46,12 +46,12 @@ typedef struct {
     s32 buffer_widths[4];
     s32 width_log2;
     s32 height_log2;
-} MipUpload_202AA8;
+} MipUpload;
 
 /* sceGsLoadImage: twelve doublewords. */
 typedef struct {
     u64 q[12];
-} LoadImage_202AA8 __attribute__((aligned(16)));
+} LoadImage __attribute__((aligned(16)));
 
 /* As loaders.c declares them further down (sceGsSetDefLoadImage, sceGsExecLoadImage, FlushCache,
  * sceGsSyncPath). */
@@ -65,9 +65,9 @@ extern int wait_for_graphics_pipeline_idle(int, unsigned short);
 
 /* Uploads a texture and its mip levels to GS memory (with the palette for the 4/8-bit formats
    0x14/0x13) and writes the matching GS register words to regs. */
-s32 upload_mip_texture(MipTexture_202AA8 *tex, u64 *regs) {
-    MipUpload_202AA8 upload;
-    LoadImage_202AA8 load_image;
+s32 upload_mip_texture(MipTexture *tex, u64 *regs) {
+    MipUpload upload;
+    LoadImage load_image;
     s32 i;
     s32 bytes;
     u64 tex0;
@@ -737,10 +737,10 @@ void relocateObjectPointers(MobyClass *cls, int idx) {
 }
 
 typedef u32 u128_03B70 __attribute__((mode(TI), aligned(16)));
-typedef union MaterialMap_03B70 {
+typedef union MaterialMap {
     u128_03B70 q;
     u8 b[16];
-} MaterialMap_03B70;
+} MaterialMap;
 typedef struct {
     s32 draw_high;
     s32 draw_shift;
@@ -750,18 +750,18 @@ typedef struct {
     u8 pad18[0x8];
     s32 material_index;
     u8 pad24[0x1C];
-} ResidentRenderPacket_03B70;
+} ResidentRenderPacket;
 typedef struct {
     s32 blocks;
     s32 count;
     s32 auxiliary_data;
     s32 unused_C;
-} ResidentRenderGroup_03B70;
+} ResidentRenderGroup;
 typedef struct {
     u8 first_selector;
     u8 pad1[0xB];
     s32 target;
-} MaterialRun_03B70;
+} MaterialRun;
 typedef struct {
     u8 pad0[0x10];
     u8 count;
@@ -769,7 +769,7 @@ typedef struct {
     s32 optional_data_14;
     u8 pad18[4];
     s32 entry_offsets[1];
-} NestedRenderTable_03B70;
+} NestedRenderTable;
 typedef struct {
     s32 groups;
     u8 group_count_0;
@@ -787,33 +787,33 @@ typedef struct {
     s32 runtime_table;
     u8 pad2C[0x1C];
     s32 nested_tables[1];
-} ResidentClassRenderHeader_03B70;
+} ResidentClassRenderHeader;
 extern u8 resident_class_slot_by_id_r[] __asm__("D_001B3E40");
-extern MaterialMap_03B70 resident_class_material_maps_r[] __asm__("D_001B6C00");
-extern void build_indexed_resident_render_packet_r(ResidentRenderPacket_03B70 *, void *, s32, s32, s32, s32,
+extern MaterialMap resident_class_material_maps_r[] __asm__("D_001B6C00");
+extern void build_indexed_resident_render_packet_r(ResidentRenderPacket *, void *, s32, s32, s32, s32,
                                                    s32) __asm__("func_002035B0");
-extern void SetUpVisGifViewer_r(ResidentRenderPacket_03B70 *packet, s32 draw_high, s32 draw_shift, s32 material_base,
+extern void SetUpVisGifViewer_r(ResidentRenderPacket *packet, s32 draw_high, s32 draw_shift, s32 material_base,
                                 s32 material_shift, s32 material_index) __asm__("func_00203808");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/prepare_resident_class_render_data.c, prepare_resident_class_render_data. */
-extern void func_00203B70_r(ResidentClassRenderHeader_03B70 *header, u8 *textures, u8 *material_map,
+extern void func_00203B70_r(ResidentClassRenderHeader *header, u8 *textures, u8 *material_map,
                             s32 class_id) __asm__("func_00203B70");
 /* Prepares a resident class's render data: relocates its groups and binds its textures. */
-void func_00203B70_r(ResidentClassRenderHeader_03B70 *header, u8 *textures, u8 *material_map, s32 class_id) {
+void func_00203B70_r(ResidentClassRenderHeader *header, u8 *textures, u8 *material_map, s32 class_id) {
     s32 group_count;
     s32 class_slot;
     s32 group_index;
     s32 packet_quadword;
     s32 groups_remaining;
     s32 packet_extent;
-    ResidentRenderGroup_03B70 *group;
-    ResidentRenderGroup_03B70 *relocation_group;
-    MaterialRun_03B70 *material_run;
+    ResidentRenderGroup *group;
+    ResidentRenderGroup *relocation_group;
+    MaterialRun *material_run;
     u8 *selector;
-    NestedRenderTable_03B70 *nested_table;
+    NestedRenderTable *nested_table;
     s32 *entry_offset;
-    MaterialMap_03B70 *slot_materials;
-    ResidentRenderPacket_03B70 *packet;
+    MaterialMap *slot_materials;
+    ResidentRenderPacket *packet;
     s32 packed_extent;
     s32 packet_start;
     s32 material_index;
@@ -826,7 +826,7 @@ void func_00203B70_r(ResidentClassRenderHeader_03B70 *header, u8 *textures, u8 *
     group_count = header->group_count_0 + header->group_count_1 + header->group_count_2;
     if (header->groups != 0) {
         header->groups = (s32)header + header->groups;
-        relocation_group = (ResidentRenderGroup_03B70 *)header->groups;
+        relocation_group = (ResidentRenderGroup *)header->groups;
         if (group_count != 0) {
             groups_remaining = group_count;
             do {
@@ -855,7 +855,7 @@ void func_00203B70_r(ResidentClassRenderHeader_03B70 *header, u8 *textures, u8 *
     }
     if (header->material_runs != 0) {
         header->material_runs = (s32)header + header->material_runs;
-        material_run = (MaterialRun_03B70 *)header->material_runs;
+        material_run = (MaterialRun *)header->material_runs;
         do {
             material_run->target += (s32)header;
             selector = &material_run->first_selector;
@@ -872,7 +872,7 @@ void func_00203B70_r(ResidentClassRenderHeader_03B70 *header, u8 *textures, u8 *
     }
     for (nested_table_index = 0; nested_table_index < header->nested_table_count; nested_table_index++) {
         if (header->nested_tables[nested_table_index] != 0) {
-            nested_table = (NestedRenderTable_03B70 *)((u8 *)header + header->nested_tables[nested_table_index]);
+            nested_table = (NestedRenderTable *)((u8 *)header + header->nested_tables[nested_table_index]);
             header->nested_tables[nested_table_index] = (s32)nested_table;
             if (nested_table->optional_data_14 != 0) {
                 nested_table->optional_data_14 = (s32)header + nested_table->optional_data_14;
@@ -887,14 +887,14 @@ void func_00203B70_r(ResidentClassRenderHeader_03B70 *header, u8 *textures, u8 *
     class_slot = resident_class_slot_by_id_r[class_id];
     slot_materials = &resident_class_material_maps_r[class_slot];
     qcopy(slot_materials, material_map);
-    group = (ResidentRenderGroup_03B70 *)header->groups;
+    group = (ResidentRenderGroup *)header->groups;
     for (group_index = 0; group_index < group_count; group_index++, group++) {
         /* High half counts encoded quadwords; low half locates the packet end. */
         packed_extent = group->count;
         packet_extent = packed_extent >> 16;
         packet_start = packed_extent & 0xFFFF;
         group->count = packet_start;
-        packet = (ResidentRenderPacket_03B70 *)(group->blocks + (packet_start - packet_extent) * 16);
+        packet = (ResidentRenderPacket *)(group->blocks + (packet_start - packet_extent) * 16);
         for (packet_quadword = 0; packet_quadword < packet_extent; packet_quadword += 4) {
             material_index = packet->material_index;
             if (material_index >= 0) {
@@ -1111,7 +1111,7 @@ typedef struct {
     s16 mip_block_offset_0;
     s16 mip_block_offset_1;
     s16 mip_block_offset_2;
-} ShrubMipTextureDefinition_04340;
+} ShrubMipTextureDefinition;
 typedef struct {
     s32 draw_high;
     s32 draw_shift;
@@ -1121,7 +1121,7 @@ typedef struct {
     u8 pad18[8];
     s32 material_index;
     u8 pad24[0x1C];
-} ShrubRenderPacket_04340;
+} ShrubRenderPacket;
 typedef struct {
     u8 pad0[0x10];
     union {
@@ -1136,35 +1136,35 @@ typedef struct {
     u64 payload28;
     u64 miptbp1;
     u64 payload38;
-} ShrubMipPacket_04340;
+} ShrubMipPacket;
 typedef struct {
     s32 count;
     s32 prefix_record_count;
-} ShrubRenderGroupHeader_04340;
+} ShrubRenderGroupHeader;
 typedef struct {
     u8 pad0[0x10];
-    ShrubRenderGroupHeader_04340 group_header;
-} ShrubRenderGroup_04340;
+    ShrubRenderGroupHeader group_header;
+} ShrubRenderGroup;
 typedef struct {
-    ShrubRenderGroup_04340 *group;
+    ShrubRenderGroup *group;
     s32 pad4;
-} ShrubRenderGroupReference_04340;
+} ShrubRenderGroupReference;
 typedef struct {
     u8 pad0[0x10];
     f32 scale;
     u8 pad14[2];
     u16 instance_count;
     void *first_instance;
-    ShrubMipPacket_04340 *mip_packet;
+    ShrubMipPacket *mip_packet;
     u8 pad20[6];
     u16 class_slot;
     s16 group_count;
     u8 pad2A[2];
     s32 packed_geometry;
     u8 pad30[0x10];
-    ShrubRenderGroupReference_04340 groups[1];
-} ShrubRenderClass_04340;
-extern ShrubRenderClass_04340 *shrub_render_classes[64];
+    ShrubRenderGroupReference groups[1];
+} ShrubRenderClass;
+extern ShrubRenderClass *shrub_render_classes[64];
 extern s16 shrub_render_class_ids[64];
 extern u8 shrub_render_class_slot_by_id[0x400];
 extern s32 shrub_render_class_fixed_thresholds[64];
@@ -1180,16 +1180,16 @@ extern s32 log2dim(s32);
    MIPTBP1 words from the mip texture (or from the resident material templates when there is none), copies the
    class's material map and rewrites every packet's texture words. Adapted from Lombyte's project (GPL-3.0):
    src/rendering/register_shrub_render_class.c, register_shrub_render_class (US 0x203B08). */
-void register_shrub_render_class(ShrubRenderClass_04340 *render_class, ResidentRenderTextureDefinition *textures,
-                                 u128_04340 *material_map, ShrubMipTextureDefinition_04340 *mip_texture, s32 class_id) {
+void register_shrub_render_class(ShrubRenderClass *render_class, ResidentRenderTextureDefinition *textures,
+                                 u128_04340 *material_map, ShrubMipTextureDefinition *mip_texture, s32 class_id) {
     s32 group_index;
     s32 index;
     s32 fixed_threshold;
     MaterialMap_04340 *slot_materials;
-    ShrubMipPacket_04340 *packed_mip_packet;
-    ShrubMipPacket_04340 *mip_packet;
-    ShrubRenderGroupHeader_04340 *group_header;
-    ShrubRenderPacket_04340 *packet;
+    ShrubMipPacket *packed_mip_packet;
+    ShrubMipPacket *mip_packet;
+    ShrubRenderGroupHeader *group_header;
+    ShrubRenderPacket *packet;
 
     shrub_render_class_slot_by_id[class_id] = registered_shrub_render_class_count;
     shrub_render_class_ids[registered_shrub_render_class_count] = class_id;
@@ -1205,7 +1205,7 @@ void register_shrub_render_class(ShrubRenderClass_04340 *render_class, ResidentR
     }
     for (group_index = 0; group_index < render_class->group_count; group_index++) {
         render_class->groups[group_index].group =
-            (ShrubRenderGroup_04340 *)(((s32)render_class->groups[group_index].group) + ((s32)render_class));
+            (ShrubRenderGroup *)(((s32)render_class->groups[group_index].group) + ((s32)render_class));
     }
 
     packed_mip_packet = render_class->mip_packet;
@@ -1213,7 +1213,7 @@ void register_shrub_render_class(ShrubRenderClass_04340 *render_class, ResidentR
         s32 material_base;
         s32 material_shift;
 
-        mip_packet = (ShrubMipPacket_04340 *)((s32)packed_mip_packet + (s32)render_class);
+        mip_packet = (ShrubMipPacket *)((s32)packed_mip_packet + (s32)render_class);
         render_class->mip_packet = mip_packet;
         material_base = mip_packet->tex1.w[0];
         material_shift = mip_packet->tex1.w[1];
@@ -1289,7 +1289,7 @@ void register_shrub_render_class(ShrubRenderClass_04340 *render_class, ResidentR
     qcopy(slot_materials, material_map);
     for (group_index = 0; group_index < render_class->group_count; group_index++) {
         group_header = &render_class->groups[group_index].group->group_header;
-        packet = (ShrubRenderPacket_04340 *)((((u8 *)group_header) + (group_header->prefix_record_count * 16)) + 0x10);
+        packet = (ShrubRenderPacket *)((((u8 *)group_header) + (group_header->prefix_record_count * 16)) + 0x10);
         for (index = 0; index < group_header->count; index++) {
             s32 material_index;
             s32 material_base;
@@ -1378,7 +1378,7 @@ typedef struct {
     int x0;
     int x4;
     float scale;
-} FontHdr_04918;
+} FontHdr;
 typedef struct {
     char pad0[0x10];
     int glyphs; /* 0x10 */
@@ -1387,7 +1387,7 @@ typedef struct {
     char pad1E[0xA];
     unsigned char count; /* 0x28 */
     char pad29[0x17];
-} FontRun_04918;
+} FontRun;
 typedef struct {
     int x0;
     char pad4[0xC];
@@ -1397,11 +1397,11 @@ typedef struct {
     int x20;
     int x24;
     char pad28[0x28];
-} Glyph_04918;
+} Glyph;
 typedef struct {
     long lo;
     long hi;
-} GifQ_04918;
+} GifQ;
 typedef struct {
     short x0;
     short x2;
@@ -1411,14 +1411,14 @@ typedef struct {
     short xA;
     short xC;
     short xE;
-} GlyphSrc_04918;
+} GlyphSrc;
 extern int tfrag_render_record_count MACRO_ADDR;
 
 extern char *tfrag_render_records MACRO_ADDR;
 
 /* Sets up the tfrag render records: stores their count and LOD distances from hdr, relocates each
    record, and writes the GS texture words of every entry from the texture table tbl. */
-void initialize_tfrag_render_data(FontHdr_04918 *hdr, char *tbl) {
+void initialize_tfrag_render_data(FontHdr *hdr, char *tbl) {
     char *base;
     float scale;
     int i;
@@ -1439,15 +1439,15 @@ void initialize_tfrag_render_data(FontHdr_04918 *hdr, char *tbl) {
         *(int *)(base + k * 0x40 + 0x10) = (int)base + *(int *)(base + k * 0x40 + 0x10);
     }
     for (i = 0; i < tfrag_render_record_count; i++) {
-        for (j = 0; j < ((FontRun_04918 *)tfrag_render_records)[i].count; j++) {
-            FontRun_04918 *run = (FontRun_04918 *)((i << 6) + (int)tfrag_render_records);
+        for (j = 0; j < ((FontRun *)tfrag_render_records)[i].count; j++) {
+            FontRun *run = (FontRun *)((i << 6) + (int)tfrag_render_records);
             unsigned long *o = (unsigned long *)((char *)run->glyphs + run->off1C + j * 0x50);
-            int k0 = ((Glyph_04918 *)o)->x0;
-            int k10 = ((Glyph_04918 *)o)->x10;
-            int k14 = ((Glyph_04918 *)o)->x14;
-            int k20 = ((Glyph_04918 *)o)->x20;
-            int k24 = ((Glyph_04918 *)o)->x24;
-            GlyphSrc_04918 *m = (GlyphSrc_04918 *)(tbl + k0 * 16);
+            int k0 = ((Glyph *)o)->x0;
+            int k10 = ((Glyph *)o)->x10;
+            int k14 = ((Glyph *)o)->x14;
+            int k20 = ((Glyph *)o)->x20;
+            int k24 = ((Glyph *)o)->x24;
+            GlyphSrc *m = (GlyphSrc *)(tbl + k0 * 16);
             int t = m->x4 << 16;
             int a17 = t >> 22;
             int a19 = t >> 23;
@@ -1483,7 +1483,7 @@ void initialize_tfrag_render_data(FontHdr_04918 *hdr, char *tbl) {
             *o = clamp;
             o += 2;
             *o = mip1;
-            ((GifQ_04918 *)o)[1].lo = 0;
+            ((GifQ *)o)[1].lo = 0;
         }
     }
 }
@@ -1504,12 +1504,12 @@ int load_level_chunk_from_disc(void) {
     return 1;
 }
 
-struct LevelArchiveDiscEntry_04C60 {
+struct LevelArchiveDiscEntry {
     u8 pad_0[0x12C8];
     s32 start_sector;
     s32 sector_count;
 };
-struct LevelArchiveHeader_04C60 {
+struct LevelArchiveHeader {
     u8 pad_0[8];
     s32 sound_bank_offset;
 };
@@ -1521,14 +1521,14 @@ extern u32 sound_bank_handle_r __asm__("D_0015EE5C") MACRO_ADDR;
 extern s32 pal_mode_r __asm__("D_0015EE80") MACRO_ADDR;
 /* The load's state is one small-data object: the stage at its start is reached in one
    instruction (through $gp in a delay slot), the members behind it never are. */
-struct LevelArchiveLoad_04C60 {
+struct LevelArchiveLoad {
     u16 stage; /* level_archive_load_state */
     s16 busy; /* level_archive_load_busy */
-    struct LevelArchiveHeader_04C60 *shared; /* level_root */
+    struct LevelArchiveHeader *shared; /* level_root */
     u8 *sound; /* sound_archive_base */
     u8 *level; /* level_archive_base */
 };
-extern struct LevelArchiveLoad_04C60 level_archive_load_state_r __asm__("D_0015EF48") MACRO_ADDR;
+extern struct LevelArchiveLoad level_archive_load_state_r __asm__("D_0015EF48") MACRO_ADDR;
 extern s32 cd_read_wait_frames_r __asm__("D_0015EFBC") MACRO_ADDR;
 extern s32 cd_read_slowdown_applied_r __asm__("D_0015EFC0") MACRO_ADDR;
 extern u8 D_1FF8000_04C60[] __asm__("D_1FF8000");
@@ -1559,10 +1559,10 @@ s32 service_level_archive_load(void) {
     u8 *sound_archive_buffer;
     u8 *level_archive_buffer;
     u8 *shared_archive_buffer;
-    struct LevelArchiveDiscEntry_04C60 *disc_entry;
-    struct LevelArchiveDiscEntry_04C60 *next_disc_entry;
+    struct LevelArchiveDiscEntry *disc_entry;
+    struct LevelArchiveDiscEntry *next_disc_entry;
     s32 level_index;
-    struct LevelArchiveHeader_04C60 *shared_header;
+    struct LevelArchiveHeader *shared_header;
 
     level_index = ship_index_r[0] + 1;
     if (sce_cd_sync_s_r(1) != 0) {
@@ -1598,7 +1598,7 @@ s32 service_level_archive_load(void) {
             } else {
                 sound_aligned_bytes = ((disc_table_r.sound_archive.size << 11) + 0xFFF) & 0xFFFFF000;
             }
-            disc_entry = (struct LevelArchiveDiscEntry_04C60 *)((u8 *)&disc_table_r + level_index * 8);
+            disc_entry = (struct LevelArchiveDiscEntry *)((u8 *)&disc_table_r + level_index * 8);
             level_archive_sectors = *(s32 *)((u8 *)&disc_table_r + level_index * 8 + 0x12CC);
             sound_archive_buffer = D_1FF8000_04C60 - sound_aligned_bytes;
             sound_aligned_bytes = ((level_archive_sectors << 11) + 0xFFF) & 0xFFFFF000;
@@ -1609,12 +1609,12 @@ s32 service_level_archive_load(void) {
             archive_start_or_bytes = disc_table_r.shared_archive.sector;
             level_archive_load_state_r.level = level_archive_buffer;
             level_archive_load_state_r.sound = sound_archive_buffer;
-            level_archive_load_state_r.shared = (struct LevelArchiveHeader_04C60 *)shared_archive_buffer;
+            level_archive_load_state_r.shared = (struct LevelArchiveHeader *)shared_archive_buffer;
             Stream_SubmitRead_r(shared_archive_buffer, archive_start_or_bytes, archive_start_or_sectors);
             level_archive_load_state_r.stage = level_archive_load_state_r.stage + 1;
             break;
         case 1:
-            next_disc_entry = (struct LevelArchiveDiscEntry_04C60 *)((u8 *)&disc_table_r + level_index * 8);
+            next_disc_entry = (struct LevelArchiveDiscEntry *)((u8 *)&disc_table_r + level_index * 8);
             Stream_SubmitRead_r(level_archive_load_state_r.level,
                                 *(s32 *)((s32)&disc_table_r + (level_index << 3) + 0x12C8),
                                 *(s32 *)((s32)&disc_table_r + (level_index << 3) + 0x12CC));
@@ -1839,26 +1839,26 @@ typedef struct {
     char pad00[0x10];
     int class_id;
     char pad14[0x38];
-} GadgetRec_05270;
+} GadgetRec;
 typedef struct {
     char pad00[0x1A];
     short runtime_index;
     int resource_tag;
-} ClassRuntimeEntry_05270;
+} ClassRuntimeEntry;
 typedef struct {
     char *packet_data;
     int packed_packet_extent;
     char pad08[8];
-} ClassRenderGroup_05270;
+} ClassRenderGroup;
 typedef struct {
-    ClassRenderGroup_05270 *render_groups;
+    ClassRenderGroup *render_groups;
     char pad04[2];
     unsigned char third_render_group_count;
     unsigned char patch_group_index;
     char pad08[0x20];
-    ClassRuntimeEntry_05270 *runtime_table;
+    ClassRuntimeEntry *runtime_table;
     int original_field_2c;
-} ClassResourceHeader_05270;
+} ClassResourceHeader;
 
 extern int runtime_resource_tag MACRO_ADDR;
 extern int class_resource_count MACRO_ADDR;
@@ -1870,7 +1870,7 @@ extern int compressed_class_resources[];
 extern short class_runtime_indices[][16];
 extern char class_material_maps[][16];
 extern unsigned char resident_indexed_textures[];
-extern GadgetRec_05270 item_info_table[];
+extern GadgetRec item_info_table[];
 extern unsigned char gold_weapon_purchased[];
 extern long gold_weapon_texture_state[];
 
@@ -1879,7 +1879,7 @@ extern long gold_weapon_texture_state[];
 void select_world_object_resource_tables(int class_id, int buffer_index) {
     int runtime_index;
     int resource_table_index;
-    ClassResourceHeader_05270 *resource_data;
+    ClassResourceHeader *resource_data;
     void **resource_table;
     unsigned char class_slot;
     int resource_tag;
@@ -1898,7 +1898,7 @@ void select_world_object_resource_tables(int class_id, int buffer_index) {
         buffer_index = active_decode_buffer == 0;
     }
     active_decode_buffer = buffer_index;
-    resource_data = (ClassResourceHeader_05270 *)((char *)level_resource_buffers[4] + buffer_index * 0x18000);
+    resource_data = (ClassResourceHeader *)((char *)level_resource_buffers[4] + buffer_index * 0x18000);
     flush_cache(0);
     ((void (*)(int, void *))fast_decompress)(compressed_class_resources[active_class_resource_index], resource_data);
     flush_cache(0);
@@ -1913,19 +1913,19 @@ void select_world_object_resource_tables(int class_id, int buffer_index) {
     for (runtime_index = 0; runtime_index < 16; runtime_index++) {
         short e = class_runtime_indices[resource_table_index][runtime_index];
         if (e >= 0) {
-            ((ClassResourceHeader_05270 *)resource_table[class_slot])->runtime_table[runtime_index].runtime_index = e;
-            ((ClassResourceHeader_05270 *)resource_table[class_slot])->runtime_table[runtime_index].resource_tag =
+            ((ClassResourceHeader *)resource_table[class_slot])->runtime_table[runtime_index].runtime_index = e;
+            ((ClassResourceHeader *)resource_table[class_slot])->runtime_table[runtime_index].resource_tag =
                 resource_tag;
         }
     }
     for (vendor_item_index = 0; vendor_item_index < 0x25; vendor_item_index++) {
-        if (((GadgetRec_05270 *)((char *)item_info_table + 0x10 - 0x10))[vendor_item_index].class_id == class_id) {
-            ClassResourceHeader_05270 *rh;
-            ClassRenderGroup_05270 *rg;
+        if (((GadgetRec *)((char *)item_info_table + 0x10 - 0x10))[vendor_item_index].class_id == class_id) {
+            ClassResourceHeader *rh;
+            ClassRenderGroup *rg;
             char *pp;
             if (gold_weapon_purchased[vendor_item_index] == 0)
                 return;
-            rh = (ClassResourceHeader_05270 *)moby_class_resources[class_slot];
+            rh = (ClassResourceHeader *)moby_class_resources[class_slot];
             if (rh->third_render_group_count == 0)
                 return;
             rg = &rh->render_groups[rh->patch_group_index];

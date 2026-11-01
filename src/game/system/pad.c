@@ -135,12 +135,12 @@ void ClearPadInput(PadClr *p) {
 /* A 12-byte small-data block (load_level_zero_preserving_progress saves it whole); the byte at +4 mirrors left and
    right. A member behind the start of the object is a two-instruction access for the
    compiler, so it never lands in a delay slot. */
-struct PadOptions_181F0 {
+struct PadOptions {
     s32 unk0;
     u8 mirror;                /* draw_map51 */
     u8 pad5[7];
 };
-extern struct PadOptions_181F0 gCheats_r __asm__("D_0015EEB0") MACRO_ADDR;
+extern struct PadOptions gCheats_r __asm__("D_0015EEB0") MACRO_ADDR;
 extern PadState g_controller_state_r __asm__("D_0013CA40");
 extern s32 scale_game_frame_count_r(s32) __asm__("func_001F98C0");
 extern float vec_length_xy_r(float *) __asm__("func_001F9CE8");

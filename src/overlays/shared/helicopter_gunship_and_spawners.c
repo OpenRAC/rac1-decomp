@@ -767,8 +767,8 @@ typedef struct {
     float point[4];
     float pad30[4];
     float normal_x, normal_y, normal_z;
-} CHit_2C5AE0;
-extern CHit_2C5AE0 kerwan_coll_hit;
+} CHit;
+extern CHit kerwan_coll_hit;
 
 /* bomb update: drifts toward its owner's position, claims a child, and clamps its scale */
 void bomb_545_update(char *moby) {
@@ -1670,7 +1670,7 @@ typedef struct {
     Vec4A v20;
     Vec4A v30;
     void *moby;
-} Tgt_2D5B88;
+} Tgt;
 extern void FindNearestTargetMoby(void *, void *, float);
 extern void vec_set_length_xy(void *, void *, float);
 extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
@@ -1702,7 +1702,7 @@ extern float homing_spark_turn_rate SDATA(D_L03_00161BB0);
 /* Update of moby class 848: a spark that homes on its target moby, sheds particles and an arc when close, and dies on
    a hit. */
 void update_homing_spark_projectile(Moby *moby) {
-    Tgt_2D5B88 tgt;
+    Tgt tgt;
     Vec4A v50;
     Hit_2D5B88 hit;
     Vec4A v90;
@@ -2098,8 +2098,8 @@ void update_moby_draw_callback(unsigned char *moby) {
 typedef struct {
     u8 pad[0x454];
     u8 collected[1];
-} LevelCollected_2dddf8;
-extern LevelCollected_2dddf8 kerwan_checkpoint_level_state;
+} LevelCollected;
+extern LevelCollected kerwan_checkpoint_level_state;
 extern s32 level_moby_killed[][64];
 extern s32 g_current_level_index MACRO_ADDR;
 /* Rise 4 units at frame speed once the moby's save slot is collected or killed, then hold. */

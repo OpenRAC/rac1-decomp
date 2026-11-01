@@ -450,7 +450,7 @@ void update_mission_gated_taxi_platform(unsigned char *moby) {
         }
     }
 }
-typedef struct MobyData_2F6F20 {
+typedef struct MobyData {
     int f0;
     int f4;
     int f8;
@@ -459,28 +459,28 @@ typedef struct MobyData_2F6F20 {
     int f14;
     int f18;
     int f1C;
-} MobyData_2F6F20;
+} MobyData;
 
-typedef struct Anim_2F6F20 {
+typedef struct Anim {
     char pad0[0x30];
     float f30[4];
     char pad40[0x30];
     float f70[4];
-} Anim_2F6F20;
+} Anim;
 
-typedef struct Flags_2F6F20 {
+typedef struct Flags {
     char pad0[0x28];
     unsigned char f28;
     unsigned char f29;
     unsigned char f2A;
-} Flags_2F6F20;
+} Flags;
 
 extern unsigned char menu_item_enabled_25_r[] __asm__("D_0013D4B5");
 extern unsigned char special_items_base_r[] __asm__("D_0013D355");
 extern unsigned char hero_globals_base_r[] __asm__("D_0013E633");
 extern Moby *level_mobys_r __asm__("D_L07_00160058") MACRO_ADDR;
 extern int umbris_scene_state_r __asm__("D_L07_0015F6A8") MACRO_ADDR;
-extern Anim_2F6F20 *scene_points_r __asm__("D_L07_0016016C") MACRO_ADDR;
+extern Anim *scene_points_r __asm__("D_L07_0016016C") MACRO_ADDR;
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 extern void StartCutscene_r(int) __asm__("func_L00_00299B68");
 extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
@@ -497,7 +497,7 @@ extern void initialize_global_state_entry_r(int) __asm__("func_0022F4A0");
 
 /* Update for moby class 436 on level 07: steps the moby's state byte through its table of cases. */
 void update_umbris_scene_progression(Moby *moby) {
-    MobyData_2F6F20 *data = (MobyData_2F6F20 *)moby->pvars;
+    MobyData *data = (MobyData *)moby->pvars;
     float v[4];
 
     switch (moby->state) {
@@ -509,8 +509,8 @@ void update_umbris_scene_progression(Moby *moby) {
                 moby->state = 1;
             break;
         case 1:
-            if (((Flags_2F6F20 *)(special_items_base_r + 0x13B))->f28 == 0) {
-                ((Flags_2F6F20 *)(special_items_base_r + 0x13B))->f28 = 1;
+            if (((Flags *)(special_items_base_r + 0x13B))->f28 == 0) {
+                ((Flags *)(special_items_base_r + 0x13B))->f28 = 1;
                 moby->state = 2;
                 StartCutscene_r(0);
             } else {
@@ -525,11 +525,11 @@ void update_umbris_scene_progression(Moby *moby) {
             moby->state = 4;
             break;
         case 4:
-            if (((Flags_2F6F20 *)(special_items_base_r + 0x13B))->f29 == 0) {
+            if (((Flags *)(special_items_base_r + 0x13B))->f29 == 0) {
                 if (data->f0 != -1) {
                     if (is_point_inside_clip_volume_r(&((struct Hero *)(hero_globals_base_r + 0xE1D))->motion.pos,
                                                       data->f0) != 0) {
-                        ((Flags_2F6F20 *)(special_items_base_r + 0x13B))->f29 = 1;
+                        ((Flags *)(special_items_base_r + 0x13B))->f29 = 1;
                         if (data->fC != -1) {
                             Moby *e = &level_mobys_r[data->fC];
                             e->flags |= 0x41;
@@ -582,7 +582,7 @@ void update_umbris_scene_progression(Moby *moby) {
             moby->state = 8;
             break;
         case 8:
-            if (((Flags_2F6F20 *)(special_items_base_r + 0x13B))->f2A == 0) {
+            if (((Flags *)(special_items_base_r + 0x13B))->f2A == 0) {
                 Moby *e;
                 if (data->fC == -1 || (e = &level_mobys_r[data->fC]) == 0 || e->state == 0xFE || e->state == 0xFD) {
                     if (data->f4 != -1) {
@@ -590,7 +590,7 @@ void update_umbris_scene_progression(Moby *moby) {
                                                           data->f4) != 0) {
                             Hero_ResetToPosition_r(scene_points_r[data->f1C].f30, scene_points_r[data->f1C].f70, 0x72,
                                                    1);
-                            ((Flags_2F6F20 *)(special_items_base_r + 0x13B))->f2A = 1;
+                            ((Flags *)(special_items_base_r + 0x13B))->f2A = 1;
                             moby->state = 9;
                             StartCutscene_r(3);
                         }
@@ -661,7 +661,7 @@ void InitEnvMappedMoby(char *arg) {
 }
 struct AnimSeq;
 extern void moby_build_matrix_r(void *) __asm__("func_L00_00251E30");
-struct SpawnClassView_30C320 {
+struct SpawnClassView {
     u8 pad0[0x10];
     u32 unk10; /* 0x10 */
     u8 pad14[0x10];
@@ -669,28 +669,28 @@ struct SpawnClassView_30C320 {
     u8 pad28[0x1C];
     u16 flags; /* 0x44 */
 };
-struct SpawnMobyView_30C320 {
+struct SpawnMobyView {
     u8 pad0[0x36];
     s16 unk36; /* 0x36 */
     u8 pad38[0x39];
     u8 unk71; /* 0x71 */
 };
-struct AnimTimer_30C320 {
+struct AnimTimer {
     f32 frames;
     s16 length;
 };
 extern void moby_set_coll_cell_range_r(struct Moby *, u32) __asm__("func_L00_00251B58");
 extern void copy_hero_moby_field_38_r(struct Moby *) __asm__("func_L00_0025E210");
-extern struct AnimTimer_30C320 *GetFlaggedPvarWord_r(struct Moby *) __asm__("func_L00_0025D390");
+extern struct AnimTimer *GetFlaggedPvarWord_r(struct Moby *) __asm__("func_L00_0025D390");
 
 /* resets a spawned moby from its class defaults and restarts its animation.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l07/gameplay/entities/002cd2b0.c, FUN_L07_0030af40. */
 void reset_moby_from_class_defaults(struct Moby *m) {
-    struct SpawnClassView_30C320 *cls;
-    struct AnimTimer_30C320 *t;
+    struct SpawnClassView *cls;
+    struct AnimTimer *t;
 
     m->state = 0;
-    cls = (struct SpawnClassView_30C320 *)m->pclass;
+    cls = (struct SpawnClassView *)m->pclass;
     m->command = 0;
     m->flags = cls->flags;
     m->scale = cls->scale;
@@ -698,11 +698,11 @@ void reset_moby_from_class_defaults(struct Moby *m) {
     m->draw_dist = 0xFF;
     m->visible = 1;
     moby_set_coll_cell_range_r(m, 0x80807F7F);
-    ((struct SpawnMobyView_30C320 *)m)->unk36 = 0x7F80;
+    ((struct SpawnMobyView *)m)->unk36 = 0x7F80;
     m->unk72 = 0xFF;
     m->hit_slot = 0xFF;
-    ((struct SpawnMobyView_30C320 *)m)->unk71 = 0xFF;
-    m->collision = ((struct SpawnClassView_30C320 *)m->pclass)->unk10;
+    ((struct SpawnMobyView *)m)->unk71 = 0xFF;
+    m->collision = ((struct SpawnClassView *)m->pclass)->unk10;
     copy_hero_moby_field_38_r(m);
     moby_build_matrix_r(m);
     t = GetFlaggedPvarWord_r(m);
@@ -970,7 +970,7 @@ typedef struct {
     Vec4 origin; /* 0x40 */
     void *ignore; /* 0x50: collision owner to skip */
     int solid; /* 0x54 */
-} BoltVars_30CA88;
+} BoltVars;
 
 extern float FastVecLength(void *);
 extern void vec_scale_to_length(void *, void *, float);
@@ -987,7 +987,7 @@ extern char umbris_coll_hit_normal[];
 
 /* Bolt update: flies on, sparks out at the end of its range, bursts on impact, removes it out of bounds. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l07/gameplay/entities/002cd2b0.c, FUN_L07_0030b6a8. */
 void update_linear_projectile(Moby *m) {
-    BoltVars_30CA88 *v = (BoltVars_30CA88 *)((void *)m->pvars);
+    BoltVars *v = (BoltVars *)((void *)m->pvars);
     Vec4 old;
     Vec4 dir;
     Vec4 spark;
@@ -1082,7 +1082,7 @@ typedef struct {
     s32 variant; /* 0x14 */
     f32 spin_y; /* 0x18 */
     f32 spin_z; /* 0x1C */
-} DebrisVars_0CFA8;
+} DebrisVars;
 
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
                             int, int, int, int);
@@ -1094,7 +1094,7 @@ extern float g_frame_time_sq MACRO_ADDR;
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l07/gameplay/entities/002cd2b0.c, FUN_L07_0030bbc8. */
 void update_tumbling_ballistic_moby(struct Moby *m) {
     Vec4f *pos = &m->pos;
-    DebrisVars_0CFA8 *d = (DebrisVars_0CFA8 *)m->pvars;
+    DebrisVars *d = (DebrisVars *)m->pvars;
     Vec4 old;
     float size;
 
@@ -1144,7 +1144,7 @@ typedef struct {
     unsigned char b1D; /* 0x1D */
     short h1E; /* 0x1E */
     char rest[0x1170];
-} Rec_30D8E8;
+} Rec;
 typedef struct {
     float f0; /* 0x00 */
     float f4;
@@ -1163,12 +1163,12 @@ typedef struct {
     float f38;
     unsigned char b3C; /* 0x3C */
     unsigned char b3D;
-} Cab_30D8E8;
+} Cab;
 typedef struct {
     char pad0[0x10];
     float f10;
     float f14;
-} Dir_30D8E8;
+} Dir;
 typedef struct {
     float hi; /* 0x00 */
     float lo; /* 0x04 */
@@ -1180,16 +1180,16 @@ typedef struct {
     int f1C; /* 0x1C */
 } Data_30D8E8;
 
-extern Rec_30D8E8 umbris_water_grids_r[] __asm__("D_L07_001DD100");
-extern Dir_30D8E8 umbris_moby_lights;
-extern Cab_30D8E8 umbris_water_ripple_params;
+extern Rec umbris_water_grids_r[] __asm__("D_L07_001DD100");
+extern Dir umbris_moby_lights;
+extern Cab umbris_water_ripple_params;
 extern int umbris_water_patch_coords[][4];
 extern unsigned short umbris_water_grid_saved_states[];
 extern int umbris_pool_draw_count MACRO_ADDR;
 extern float umbris_water_ripple_params_1 MACRO_ADDR;
 extern float umbris_water_ripple_params_2 MACRO_ADDR;
 extern float umbris_water_ripple_params_3 MACRO_ADDR;
-extern Rec_30D8E8 *umbris_pool_draw_tiles MACRO_ADDR;
+extern Rec *umbris_pool_draw_tiles MACRO_ADDR;
 extern int (*umbris_pool_draw_tex)[4] MACRO_ADDR;
 extern int umbris_water_ripple_params_0 MACRO_ADDR;
 extern int water_shared_byte_clear_enabled SDATA(D_L07_00161BC8);
@@ -1238,8 +1238,8 @@ void WaterPlateUpdate(Moby *m) {
         case 0:
             m->flags |= 0x81;
             if (d->idx == 0) {
-                Cab_30D8E8 *cab;
-                Dir_30D8E8 *dir;
+                Cab *cab;
+                Dir *dir;
                 int (*p)[4];
                 RipplePatchesInit_r(umbris_water_grids_r, 0x24);
                 RescaleFloatTable_r(1.0f);
@@ -1274,8 +1274,8 @@ void WaterPlateUpdate(Moby *m) {
                     umbris_water_grids_r[d->idx].h1E = umbris_water_grid_saved_states[d->idx];
                 }
                 for (k = 0; k < 0x24; k++) {
-                    Rec_30D8E8 *t = umbris_water_grids_r;
-                    Rec_30D8E8 *r = &t[k];
+                    Rec *t = umbris_water_grids_r;
+                    Rec *r = &t[k];
                     for (j = 0; j < 2; j++) {
                         float x = r->x + random_float_between(-6.0f, 6.0f);
                         float y = r->y + random_float_between(-6.0f, 6.0f);
@@ -1310,7 +1310,7 @@ void WaterPlateUpdate(Moby *m) {
             if (random_integer_below(200) == 0) {
                 float x = umbris_water_grids_r[d->idx].x + random_float_between(-4.0f, 4.0f);
                 float y = random_float_between(-4.0f, 4.0f);
-                Rec_30D8E8 *r = &umbris_water_grids_r[d->idx];
+                Rec *r = &umbris_water_grids_r[d->idx];
                 RippleDisturb_r(r, 1, 1, x, r->y + y, 1.0f, -0.05f);
             }
             break;
@@ -1326,7 +1326,7 @@ void WaterPlateUpdate(Moby *m) {
             if (random_integer_below(200) == 0) {
                 float x = umbris_water_grids_r[d->idx].x + random_float_between(-4.0f, 4.0f);
                 float y = random_float_between(-4.0f, 4.0f);
-                Rec_30D8E8 *r = &umbris_water_grids_r[d->idx];
+                Rec *r = &umbris_water_grids_r[d->idx];
                 RippleDisturb_r(r, 1, 1, x, r->y + y, 1.0f, -0.05f);
             }
             break;
@@ -1367,7 +1367,7 @@ void WaterPlateUpdate(Moby *m) {
         return;
     }
     {
-        Cab_30D8E8 *cab = &umbris_water_ripple_params;
+        Cab *cab = &umbris_water_ripple_params;
         umbris_water_grids_r[d->idx].b1C = cab->b3C;
         umbris_water_grids_r[d->idx].b1D = cab->b3D;
     }
@@ -1871,7 +1871,7 @@ unsigned char *spawn_moby_class_1046(int a, void *pos, int b, float f0, float f1
 typedef u32 u128_0F0D0 __attribute__((mode(TI), aligned(16)));
 typedef struct {
     char b[0x90];
-} __attribute__((aligned(16))) Pkt_0F0D0;
+} __attribute__((aligned(16))) Pkt;
 extern long GetEffectTex(int);
 extern float split_float_fraction(void *, float);
 extern void draw_world_quad(void *, int, int);
@@ -1933,7 +1933,7 @@ void draw_fading_ring_effect(unsigned char *moby) {
         *(float *)(packet + 0x5C) = zero;
         *(float *)(packet + 0x08) = side + ((Moby *)moby)->pos.z;
         *(float *)(packet + 0x28) = ((Moby *)moby)->pos.z;
-        *(Pkt_0F0D0 *)second = *(Pkt_0F0D0 *)packet;
+        *(Pkt *)second = *(Pkt *)packet;
         *(float *)(second + 0x18) = ((Moby *)moby)->pos.z - 5.0f;
         *(float *)(second + 8) = *(float *)(second + 0x18);
         angle = -2.8274336f;
@@ -2113,13 +2113,13 @@ typedef struct {
     f32 unk4C;
     f32 unk50;
     f32 unk54;
-} LaunchParams_30FB00;
+} LaunchParams;
 extern void HeadingFromVector_r(Vec4f *, f32 *, f32 *, f32 *) __asm__("func_L00_0025BBA0");
-extern void InitKnockback_r(f32, void *, LaunchParams_30FB00 *, s32, s32, s32) __asm__("func_L00_0025D5B0");
-void func_L07_0030FB00_r(void *moby, LaunchParams_30FB00 *l, Vec4f *dir) __asm__("func_L07_0030FB00");
+extern void InitKnockback_r(f32, void *, LaunchParams *, s32, s32, s32) __asm__("func_L00_0025D5B0");
+void func_L07_0030FB00_r(void *moby, LaunchParams *l, Vec4f *dir) __asm__("func_L07_0030FB00");
 
 /* Fills a launch-parameter block (gravity, spin, bounce and size constants), aims it along dir and launches the moby with it. Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l07/gameplay/entities/002cd2b0.c, FUN_L07_0030e720. */
-void func_L07_0030FB00_r(void *moby, LaunchParams_30FB00 *l, Vec4f *dir) {
+void func_L07_0030FB00_r(void *moby, LaunchParams *l, Vec4f *dir) {
     Vec4f d;
     f32 ang;
 
@@ -2583,7 +2583,7 @@ extern char umbris_sharkigator_state0_msg[];
 extern short umbris_sharkigator_gap_next_state;
 extern short umbris_sharkigator_gap_anim;
 
-struct Tgt_3109D0 {
+struct Tgt {
     float pos[4];
     u128 q10;
     u128 q20;
@@ -2595,7 +2595,7 @@ struct Tgt_3109D0 {
 /* Update function of the sharkigator: tracks the hero, swims its path, lunges and bites. */
 void SharkigatorUpdate(unsigned char *moby) {
     char *data;
-    struct Tgt_3109D0 tgt;
+    struct Tgt tgt;
     float pos[4];
     float off[4];
     float rel[4];
@@ -3600,14 +3600,14 @@ int update_alternating_joint_emission_burst(void *mp, struct TimedLightObj *obj,
     }
     return ((Moby *)moby)->state;
 }
-typedef struct EffData_313800 {
+typedef struct EffData {
     char pad0[0x140];
     float f140[4];
     float f150[3];
     float f15C;
-} EffData_313800;
+} EffData;
 
-typedef struct Packet_313800 {
+typedef struct Packet {
     float a[4];
     float b[4];
     float c[4];
@@ -3618,7 +3618,7 @@ typedef struct Packet_313800 {
     long x128;
     long x130;
     long x138;
-} Packet_313800;
+} Packet;
 
 extern float IntToFloat_r2(int) __asm__("func_001FA888");
 extern float normalize_angle_r2(float) __asm__("func_L00_0025F368");
@@ -3644,8 +3644,8 @@ extern char umbris_coll_hit_point_r[] __asm__("D_L07_00173F60");
 /* Umbris: sets up the effect vectors from the moby's data block and emits the GS packet. */
 void draw_collision_clipped_moby_beam(Moby *arg) {
     float v0[4], v10[4], v20[4], v30[4], v40[4], v50[4], m[4], c2[4], h[4], ii[4], jj[4];
-    Packet_313800 pkt;
-    EffData_313800 *p = (EffData_313800 *)arg->pvars;
+    Packet pkt;
+    EffData *p = (EffData *)arg->pvars;
     float f20, t;
     int flag = 1;
     int k;

@@ -84,7 +84,7 @@ typedef struct {
     u8 active;
     u8 pad75[0x13];
     struct Moby *owner;
-} VoiceSlot_2C6B30;
+} VoiceSlot;
 
 /* The hero block g_hero, cut down to the position this function reads. */
 
@@ -142,7 +142,7 @@ void seeker_update(struct Moby *moby) {
     f32 height;
     f32 limit;
     f32 diff;
-    VoiceSlot_2C6B30 *slot;
+    VoiceSlot *slot;
 
     update_seeker_damage_and_target_r(moby);
     target = vars->target;
@@ -304,7 +304,7 @@ void seeker_update(struct Moby *moby) {
         case 6:
             voice = vars->voice;
             if (voice != -1) {
-                slot = (VoiceSlot_2C6B30 *)(voice_pool_r + voice * 0x70);
+                slot = (VoiceSlot *)(voice_pool_r + voice * 0x70);
                 if (slot->owner == moby && slot->active != 0) {
                     Sound_StopSlot_r(voice);
                 }
@@ -319,7 +319,7 @@ void seeker_update(struct Moby *moby) {
             SetDeathBits_r(moby, 0, -1);
             voice = vars->voice;
             if (voice != -1) {
-                slot = (VoiceSlot_2C6B30 *)(voice_pool_r + voice * 0x70);
+                slot = (VoiceSlot *)(voice_pool_r + voice * 0x70);
                 if (slot->owner == moby && slot->active != 0) {
                     Sound_StopSlot_r(voice);
                 }
@@ -336,7 +336,7 @@ typedef int Q_2C73D0 __attribute__((mode(TI)));
 typedef struct {
     char p0[0x24];
     float scale;
-} Cls_2C73D0;
+} Cls;
 typedef struct Data_2C73D0 {
     char p0[0x20];
     float health;
@@ -380,7 +380,7 @@ typedef struct {
     int count;
     int pad[3];
     float pts[1][4];
-} Path_2C73D0;
+} Path;
 extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
 extern int scale_ticks_r2(int) __asm__("func_001F9850");
 extern void RerollEffectCounter_r(void *, void *) __asm__("func_L00_0025E4B0");
@@ -403,7 +403,7 @@ extern float vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
 extern float FastAbsF_r(float) __asm__("func_001F9B88");
 extern float g_frame_time_sq_r2 __asm__("D_0015EE70") MACRO_ADDR;
 extern float g_frame_time_r2 __asm__("D_0015EE6C") MACRO_ADDR;
-extern Path_2C73D0 *gaspar_paths_r[] __asm__("D_L09_001B0930");
+extern Path *gaspar_paths_r[] __asm__("D_L09_001B0930");
 extern float D_L09_00161494_2C73D0 SDATA(D_L09_00161494);
 extern float D_L09_00161480_2C73D0 SDATA(D_L09_00161480);
 extern float D_L09_00161488_2C73D0 SDATA(D_L09_00161488);
@@ -431,7 +431,7 @@ void update_seeker_damage_and_target(Moby *m) {
     if (m->state == 0) {
         return;
     }
-    m->scale = m->scale + ((((Cls_2C73D0 *)m->pclass)->scale * D_L09_00161494_2C73D0) - m->scale) * 0.1f;
+    m->scale = m->scale + ((((Cls *)m->pclass)->scale * D_L09_00161494_2C73D0) - m->scale) * 0.1f;
     if (fast_dec_timer_r(&d->timer) == 2) {
         m->state = 7;
         return;
@@ -521,7 +521,7 @@ void update_seeker_damage_and_target(Moby *m) {
             res = FindNearestTargetMoby_r(m, tgt, 24.0f);
             lost = 2;
         } else {
-            Path_2C73D0 *tb;
+            Path *tb;
             d->reach = 12.0f;
             tb = gaspar_paths_r[d->path];
             tgt = d->target;
@@ -628,7 +628,7 @@ typedef struct {
     char padC[0x34];
     Moby *who;
     char pad44[0xC];
-} __attribute__((aligned(16))) Target_2E39E0;
+} __attribute__((aligned(16))) Target;
 
 extern float gaspar_camera_pos_r2[] __asm__("D_L09_00166FC0");
 extern char *gaspar_paths_r2[] __asm__("D_L09_001B0930");
@@ -650,7 +650,7 @@ extern void sound_2E39E0(float, Moby *, int, void *) __asm__("func_L00_00264B40"
 extern float distance_2E39E0(void *, void *) __asm__("func_001F9D10");
 extern float fast_distance_2E39E0(void *, void *) __asm__("func_001F9D48");
 extern void wake_2E39E0(Moby *) __asm__("func_L00_0025B178");
-extern int target_2E39E0(Moby *, Target_2E39E0 *, float) __asm__("func_L00_00260D30");
+extern int target_2E39E0(Moby *, Target *, float) __asm__("func_L00_00260D30");
 extern void steer_init_2E39E0(int *) __asm__("func_L01_0026E8E0");
 extern int rand_2E39E0(void) __asm__("func_001160D8");
 extern int range_2E39E0(int, int) __asm__("func_L00_00258BC8");
@@ -685,7 +685,7 @@ extern void effects_update_2E39E0(Moby *, void *) __asm__("func_L00_0025E590");
 /* Ground enemy update: damage reaction, leash and wake checks, then its chase / attack / return state machine. */
 void update_ground_melee_enemy(Moby *m) {
     V_2E39E0 previous;
-    Target_2E39E0 query;
+    Target query;
     V_2E39E0 step;
     V_2E39E0 goal;
     V_2E39E0 away;
@@ -1100,7 +1100,7 @@ typedef struct {
     f32 dist; /* 0x20: distance from the hero at spawn */
     s32 unk24; /* 0x24 */
     s32 unk28; /* 0x28 */
-} ShotVars_307ba8_08F58;
+} ShotVars;
 extern Vec4 gHeroPos_r __asm__("D_0013F4D0");
 extern struct Moby *CreateMoby_r(s32) __asm__("func_0020D348");
 extern f32 vec_length_xy_r(Vec4 *) __asm__("func_001F9CE8");
@@ -1118,7 +1118,7 @@ struct Moby *spawn_class_4ea_projectile(void *owner, Vec4 *pos, Vec4 *vel, s32 l
     Vec4 *pp = &p;
     Vec4 *vp = &v;
     struct Moby *m;
-    ShotVars_307ba8_08F58 *pv;
+    ShotVars *pv;
     f32 r;
     s32 trail;
 
@@ -1126,7 +1126,7 @@ struct Moby *spawn_class_4ea_projectile(void *owner, Vec4 *pos, Vec4 *vel, s32 l
     v.q = vel->q;
     m = CreateMoby_r(0x4EA);
     if (m != 0) {
-        pv = (ShotVars_307ba8_08F58 *)m->pvars;
+        pv = (ShotVars *)m->pvars;
         pv->owner = owner;
         m->rot.x = 0.0f;
         m->scale *= 4.0f;
@@ -1174,7 +1174,7 @@ typedef struct {
     s16 oclass; /* 0x1A */
     f32 radius; /* 0x1C */
     s32 unk20;
-} CollisionProbe_307d68_09118;
+} CollisionProbe;
 extern Vec4 gaspar_camera_pos_r3 __asm__("D_L09_00166FC0");
 extern Vec4 gaspar_coll_hit_point_r __asm__("D_L09_00174060");
 extern u8 gaspar_coll_hit_normal_r[] __asm__("D_L09_00174080");
@@ -1186,7 +1186,7 @@ extern void vec_set_length_xy_r(void *, void *, f32) __asm__("func_L00_001FF500"
 extern s32 Moby_PlaySound_r3(s32, s32, void *) __asm__("func_0022ED80");
 extern void DeleteMoby_r2(struct Moby *) __asm__("func_0020D678");
 extern s32 FastDecTimer_r(s16 *) __asm__("func_001F9938");
-extern s32 coll_line_r(void *, void *, s32, void *, CollisionProbe_307d68_09118 *) __asm__("func_L00_001EFFF0");
+extern s32 coll_line_r(void *, void *, s32, void *, CollisionProbe *) __asm__("func_L00_001EFFF0");
 extern f32 random_float_between_r4(f32, f32) __asm__("func_002140F8");
 extern void vec_reflect_r(void *, void *, void *) __asm__("func_L00_001FF610");
 extern f32 FastVecLength_r2(void *) __asm__("func_001F9CB8");
@@ -1204,11 +1204,11 @@ extern s32 coll_sphere_mobys_r(f32, void *, s32, void *, void *) __asm__("func_L
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/00307ba8.c, FUN_L09_00307d68. */
 void update_class_4ea_projectile(struct Moby *m) {
     Vec4 old;
-    CollisionProbe_307d68_09118 pr;
+    CollisionProbe pr;
     Vec4 push;
     Vec4 r;
     ShotVars_307ba8_09118 *v = (ShotVars_307ba8_09118 *)m->pvars;
-    CollisionProbe_307d68_09118 *probe;
+    CollisionProbe *probe;
     f32 d;
     s32 i;
 
@@ -1444,7 +1444,7 @@ extern float gaspar_zero_vec_r[] __asm__("D_L09_0015F660") MACRO_ADDR;
 typedef struct {
     char pad0[0xB0];
     char *slots[4];
-} Sp_30BF88;
+} Sp;
 
 /* Spawner update (moby Spawner): state 0 clears the slot list, state 1 picks a target slot and spawns a
  * moby towards it, state 2 is the explosion. The slot index `last` is declared in a block opened at its call,
@@ -1580,7 +1580,7 @@ void spawner_1885_update(char *moby) {
                     FastVecAdd_r2(pos2, pos2, arr);
                     rot[2] = jump_speed_4318_r(pos2, v, 0, f20, -(g_frame_time_sq_r2 * 9.8f));
                 }
-                ((Sp_30BF88 *)((char *)d))->slots[last] = spawn_spawner_egg_r(
+                ((Sp *)((char *)d))->slots[last] = spawn_spawner_egg_r(
                     (int)moby, pos2, rot, (unsigned char)*(char *)&d->egg_kind, (unsigned char)last);
                 d->spawn_timer = scale_ticks_r4(d->spawn_delay);
                 d->egg_count = (char)(*(char *)&d->egg_count + 1);

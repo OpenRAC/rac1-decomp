@@ -105,7 +105,7 @@ typedef struct {
     s32 ready; /* 0x68: segment lengths measured */
     u8 pad6C[4];
     s32 count; /* 0x70 */
-} RailVars_F7700;
+} RailVars;
 extern CameraPath *novalis_paths_r[] __asm__("D_L01_001B0C30");
 extern s32 g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 extern short D_0015EE60_F7700 SDATA(D_0015EE60);
@@ -132,7 +132,7 @@ extern f32 Spring_r(f32 *value, f32 target, f32 *speed, f32 accel, f32 decel, f3
    in range and pulls it along, faster on level 1 the more rail is left.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002f6328.c, FUN_L01_002f6328. */
 void update_rail_hero_motion(struct Moby *m) {
-    RailVars_F7700 *d = (RailVars_F7700 *)m->pvars;
+    RailVars *d = (RailVars *)m->pvars;
     CameraPath *path;
     CameraPath *best_path;
     Vec4 best_pt;
@@ -245,13 +245,13 @@ void update_rail_hero_motion(struct Moby *m) {
 }
 typedef struct {
     float x, y, z, w;
-} Vec_2F7E08 __attribute__((aligned(16)));
+} Vec __attribute__((aligned(16)));
 typedef struct {
     int c[6];
-} Cols_2F7E08;
+} Cols;
 typedef struct {
-    Vec_2F7E08 vel;
-    Vec_2F7E08 target;
+    Vec vel;
+    Vec target;
     int ids[4];
     int f30;
     int f34;
@@ -261,9 +261,9 @@ typedef struct {
     int timer;
     short h4;
     int vol;
-} Tgt_2F7E08;
+} Tgt;
 typedef struct {
-    Vec_2F7E08 dir;
+    Vec dir;
     Moby *owner;
     int flags;
     unsigned char b28;
@@ -271,7 +271,7 @@ typedef struct {
     short id;
     float scale;
     int count;
-} Dmg_2F7E08;
+} Dmg;
 extern int cutscene_active MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float novalis_cpu_frame_load MACRO_ADDR;
@@ -279,8 +279,8 @@ extern char *novalis_mobys MACRO_ADDR;
 
 extern char hero_globals_base[];
 extern Moby *novalis_coll_hit_moby;
-extern Cols_2F7E08 explosive_spark_colors_a;
-extern Cols_2F7E08 explosive_spark_colors_b;
+extern Cols explosive_spark_colors_a;
+extern Cols explosive_spark_colors_b;
 extern void FastVecAdd(void *, void *, void *);
 extern float FastVecLength(void *a);
 
@@ -307,8 +307,8 @@ extern int is_point_inside_clip_volume(void *, int);
 /* Update of moby class 686, a flying burst: drifts and trails smoke; on reaching its target it damages around it,
    sprays particles, arms nearby class 0x2BC targets and deletes itself. */
 void update_explosive_projectile(Moby *moby) {
-    Vec_2F7E08 old;
-    Vec_2F7E08 a;
+    Vec old;
+    Vec a;
     Data_2F7E08 *d;
     int div;
     int i;
@@ -329,52 +329,51 @@ void update_explosive_projectile(Moby *moby) {
         div = 4;
     }
     d = (*(void **)&moby->pvars);
-    qcopy(&old, &(*(Vec_2F7E08 *)&moby->pos));
-    FastVecAdd(&(*(Vec_2F7E08 *)&moby->pos), &(*(Vec_2F7E08 *)&moby->pos), d);
+    qcopy(&old, &(*(Vec *)&moby->pos));
+    FastVecAdd(&(*(Vec *)&moby->pos), &(*(Vec *)&moby->pos), d);
     len = FastVecLength(d);
     for (i = 0; cutscene_active != 0 ? i < 2 : i < 4; i++) {
-        Vec_2F7E08 b = {random_float_between(-1.0f, 1.0f), random_float_between(-1.0f, 1.0f),
-                        random_float_between(-1.0f, 1.0f)};
+        Vec b = {random_float_between(-1.0f, 1.0f), random_float_between(-1.0f, 1.0f),
+                 random_float_between(-1.0f, 1.0f)};
         {
             vec_scale_to_length(&b, &b, random_float_between(0.5f, 1.0f) * g_frame_time);
             vec_scale_to_length(&a, d, -random_float_between(g_frame_time * 0.1f, g_frame_time));
             FastVecAdd(&b, &b, &a);
             vec_scale_to_length(&a, d, random_float_between(0.0f, 1.0f) * len);
-            FastVecAdd(&a, &a, &(*(Vec_2F7E08 *)&moby->pos));
+            FastVecAdd(&a, &a, &(*(Vec *)&moby->pos));
             PartType04Spawn(&a, &b, 0x6F00AFFF, 0xFF, scale_ticks(rand_range(0x1E, 0x2D)) / div, 0x50,
                             rand_range(0x50, 0x8C) / div, 1);
             vec_scale_to_length(&a, d, random_float_between(0.0f, 1.0f) * len);
-            FastVecAdd(&a, &a, &(*(Vec_2F7E08 *)&moby->pos));
+            FastVecAdd(&a, &a, &(*(Vec *)&moby->pos));
             PartType04Spawn(&a, &b, 0x1FFFFFFF, 0x4F4F4F, scale_ticks(rand_range(0x3C, 0x78)) / div, 0x50,
                             rand_range(0xC8, 0x12C) / div, 0);
         }
     }
-    if ((*(Vec_2F7E08 *)&moby->pos).x < 0.0f || (*(Vec_2F7E08 *)&moby->pos).y < 0.0f ||
-        (*(Vec_2F7E08 *)&moby->pos).z < 0.0f) {
+    if ((*(Vec *)&moby->pos).x < 0.0f || (*(Vec *)&moby->pos).y < 0.0f || (*(Vec *)&moby->pos).z < 0.0f) {
         DeleteMoby(moby);
         return;
     }
-    if (FastVecDist(&d->target, &(*(Vec_2F7E08 *)&moby->pos)) < d->f38) {
-        qcopy(&(*(Vec_2F7E08 *)&moby->pos), &d->target);
+    if (FastVecDist(&d->target, &(*(Vec *)&moby->pos)) < d->f38) {
+        qcopy(&(*(Vec *)&moby->pos), &d->target);
         moby->state = 1;
     }
     if (moby->state != 0) {
         s = 8.0f;
-        camdist = FastVecDist(camera_pos, &(*(Vec_2F7E08 *)&moby->pos));
+        camdist = FastVecDist(camera_pos, &(*(Vec *)&moby->pos));
         if (cutscene_active != 0) {
             s = 4.0f;
         }
         FastVecScale(d, d, -0.55f);
         if (cutscene_active != 0) {
-            Dmg_2F7E08 dmg;
+            Dmg dmg;
             {
                 dmg.owner = moby;
                 dmg.flags = 0x810001;
                 dmg.scale = 0.0f;
                 clear_u64_value(&dmg);
                 dmg.count = 0;
-                coll_sphere_mobys(1.0f, &(*(Vec_2F7E08 *)&moby->pos), 9,
-                                  (void *)((Hero *)(hero_globals_base + 0xE1D))->moby, &dmg);
+                coll_sphere_mobys(1.0f, &(*(Vec *)&moby->pos), 9, (void *)((Hero *)(hero_globals_base + 0xE1D))->moby,
+                                  &dmg);
                 if (novalis_coll_hit_moby != 0 && novalis_coll_hit_moby->oclass >= 0x2C5 &&
                     novalis_coll_hit_moby->oclass < 0x2C8) {
                     Moby_PlaySound(2, 0, (int)moby);
@@ -383,7 +382,7 @@ void update_explosive_projectile(Moby *moby) {
                 }
             }
         }
-        dist = FastVecDist(&(*(Vec_2F7E08 *)&moby->pos), camera_pos);
+        dist = FastVecDist(&(*(Vec *)&moby->pos), camera_pos);
         k = 5;
         if (cutscene_active != 0) {
             k = 2;
@@ -399,51 +398,45 @@ void update_explosive_projectile(Moby *moby) {
         }
         for (j = 0; j < n; j++) {
             float spd = random_float_between(8.0f, 10.0f) * g_frame_time - fade * g_frame_time;
-            Cols_2F7E08 c1 = explosive_spark_colors_a;
-            Cols_2F7E08 c2 = explosive_spark_colors_b;
+            Cols c1 = explosive_spark_colors_a;
+            Cols c2 = explosive_spark_colors_b;
             spd = spd * s;
-            PartType11Spawn(&(*(Vec_2F7E08 *)&moby->pos), d, c1.c[random_integer_below(6)],
-                            c2.c[random_integer_below(6)], s * 400000.0f,
-                            rand_range(scale_ticks(0x1E), scale_ticks(0x28)) / div,
+            PartType11Spawn(&(*(Vec *)&moby->pos), d, c1.c[random_integer_below(6)], c2.c[random_integer_below(6)],
+                            s * 400000.0f, rand_range(scale_ticks(0x1E), scale_ticks(0x28)) / div,
                             rand_range(scale_ticks(0x3C), scale_ticks(0x5A)) / div, 0, 8, spd);
-            PartType11Spawn(&(*(Vec_2F7E08 *)&moby->pos), d, 0x7FFFFFFF, 0xFFFFFF, s * 400000.0f,
+            PartType11Spawn(&(*(Vec *)&moby->pos), d, 0x7FFFFFFF, 0xFFFFFF, s * 400000.0f,
                             rand_range(scale_ticks(0xA), scale_ticks(0x14)) / div,
                             rand_range(scale_ticks(0x1E), scale_ticks(0x28)) / div, 0, 8, spd * 0.5f);
         }
         for (m = 0; m < 5; m++) {
-            Cols_2F7E08 c1 = explosive_spark_colors_a;
-            Cols_2F7E08 c2 = explosive_spark_colors_b;
-            Vec_2F7E08 vel = {random_float_between(-1.0f, 1.0f), random_float_between(-1.0f, 1.0f),
-                              random_float_between(-1.0f, 1.0f)};
+            Cols c1 = explosive_spark_colors_a;
+            Cols c2 = explosive_spark_colors_b;
+            Vec vel = {random_float_between(-1.0f, 1.0f), random_float_between(-1.0f, 1.0f),
+                       random_float_between(-1.0f, 1.0f)};
             {
                 vec_scale_to_length(&vel, &vel, s * (random_float_between(0.0f, 3.0f) * g_frame_time));
-                spawn_particle_alt_9768(&(*(Vec_2F7E08 *)&moby->pos), &vel, c1.c[random_integer_below(6)],
+                spawn_particle_alt_9768(&(*(Vec *)&moby->pos), &vel, c1.c[random_integer_below(6)],
                                         c2.c[random_integer_below(6)],
                                         rand_range(scale_ticks(0xF), scale_ticks(0x14)) / div, 200000.0f);
             }
         }
         if (novalis_cpu_frame_load < 0.95f && dist > 9.0f) {
-            spawn_glow_particle(moby, &(*(Vec_2F7E08 *)&moby->pos), d, s * 4.0f, scale_ticks(0xF), 0x7F, 0x7F, 0x7F,
-                                0x20);
-            spawn_glow_particle(moby, &(*(Vec_2F7E08 *)&moby->pos), d, s * 4.0f, scale_ticks(0x18), 0x7F, 0x7F, 0x7F,
-                                0x20);
+            spawn_glow_particle(moby, &(*(Vec *)&moby->pos), d, s * 4.0f, scale_ticks(0xF), 0x7F, 0x7F, 0x7F, 0x20);
+            spawn_glow_particle(moby, &(*(Vec *)&moby->pos), d, s * 4.0f, scale_ticks(0x18), 0x7F, 0x7F, 0x7F, 0x20);
         }
-        spawn_glow_particle(moby, &(*(Vec_2F7E08 *)&moby->pos), d, s * 4.0f, scale_ticks(0x14), 0x7F, 0x7F, 0, 0x30);
-        spawn_glow_particle(moby, &(*(Vec_2F7E08 *)&moby->pos), d, s * 2.0f, scale_ticks(0x13), 0xFF, 0xFF, 0xFF, 0x20);
+        spawn_glow_particle(moby, &(*(Vec *)&moby->pos), d, s * 4.0f, scale_ticks(0x14), 0x7F, 0x7F, 0, 0x30);
+        spawn_glow_particle(moby, &(*(Vec *)&moby->pos), d, s * 2.0f, scale_ticks(0x13), 0xFF, 0xFF, 0xFF, 0x20);
         if (camdist > 100.0f) {
             if (novalis_cpu_frame_load < 0.95f && dist > 9.0f) {
-                spawn_glow_particle(moby, &(*(Vec_2F7E08 *)&moby->pos), d, 30.0f, scale_ticks(0xF), 0x7F, 0x7F, 0x7F,
-                                    0x20);
-                spawn_glow_particle(moby, &(*(Vec_2F7E08 *)&moby->pos), d, 30.0f, scale_ticks(0x18), 0x7F, 0x7F, 0x7F,
-                                    0x20);
+                spawn_glow_particle(moby, &(*(Vec *)&moby->pos), d, 30.0f, scale_ticks(0xF), 0x7F, 0x7F, 0x7F, 0x20);
+                spawn_glow_particle(moby, &(*(Vec *)&moby->pos), d, 30.0f, scale_ticks(0x18), 0x7F, 0x7F, 0x7F, 0x20);
             }
-            spawn_glow_particle(moby, &(*(Vec_2F7E08 *)&moby->pos), d, 30.0f, scale_ticks(0x14), 0x7F, 0x7F, 0, 0x30);
-            spawn_glow_particle(moby, &(*(Vec_2F7E08 *)&moby->pos), d, 15.0f, scale_ticks(0x13), 0xFF, 0xFF, 0xFF,
-                                0x20);
+            spawn_glow_particle(moby, &(*(Vec *)&moby->pos), d, 30.0f, scale_ticks(0x14), 0x7F, 0x7F, 0, 0x30);
+            spawn_glow_particle(moby, &(*(Vec *)&moby->pos), d, 15.0f, scale_ticks(0x13), 0xFF, 0xFF, 0xFF, 0x20);
         }
         for (q = 0; cutscene_active != 0 ? q < 10 : q < 40; q++) {
-            Vec_2F7E08 b = {random_float_between(-1.0f, 1.0f), random_float_between(-1.0f, 1.0f),
-                            random_float_between(-1.0f, 1.0f)};
+            Vec b = {random_float_between(-1.0f, 1.0f), random_float_between(-1.0f, 1.0f),
+                     random_float_between(-1.0f, 1.0f)};
             float sp = random_float_between(10.0f, 40.0f) * g_frame_time;
             float sz;
             vec_scale_to_length(&b, &b, cutscene_active != 0 ? sp * 0.2f : sp);
@@ -453,7 +446,7 @@ void update_explosive_projectile(Moby *moby) {
                 sz = 21000.0f;
             }
             spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(
-                &(*(Vec_2F7E08 *)&moby->pos), &b, 0x4F007FFF, 0x1F00007F, sz,
+                &(*(Vec *)&moby->pos), &b, 0x4F007FFF, 0x1F00007F, sz,
                 rand_range(scale_ticks(0x5A), scale_ticks(0x96)) / div, 1, -1, -1);
         }
         s = (200.0f - camdist) / 200.0f;
@@ -469,7 +462,7 @@ void update_explosive_projectile(Moby *moby) {
         for (r = 0; r < 4; r++) {
             if (cutscene_active == 0 && d->ids[r] != -1) {
                 if (((Moby *)novalis_mobys)[d->ids[r]].oclass == 0x2BC) {
-                    Tgt_2F7E08 *e = (*(void **)&((Moby *)novalis_mobys)[d->ids[r]].pvars);
+                    Tgt *e = (*(void **)&((Moby *)novalis_mobys)[d->ids[r]].pvars);
                     if (e->h4 == 0 && e->timer == 0 &&
                         is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
                                                     e->vol) != 0 &&
@@ -492,7 +485,7 @@ typedef struct {
     s32 unk20; /* 0x20 */
     f32 gravity; /* 0x24 */
     s32 unk28; /* 0x28 */
-} DebrisVars_2f8530_F9908;
+} DebrisVars;
 extern f32 g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern struct Moby *CreateMoby_r(s32) __asm__("func_0020D348");
 extern void copy_hero_moby_field_38_r(struct Moby *) __asm__("func_L00_0025E210");
@@ -510,7 +503,7 @@ struct Moby *spawn_debris_moby(Vec4f *pos, Vec4f *vel, s32 oclass, s32 a3, s32 a
     u128_F9908 *pp = &p;
     u128_F9908 *vp = &v;
     struct Moby *m;
-    DebrisVars_2f8530_F9908 *pv;
+    DebrisVars *pv;
     f32 r;
     f32 s;
 
@@ -518,7 +511,7 @@ struct Moby *spawn_debris_moby(Vec4f *pos, Vec4f *vel, s32 oclass, s32 a3, s32 a
     v = *(u128_F9908 *)vel;
     m = CreateMoby_r(oclass);
     if (m != 0) {
-        pv = (DebrisVars_2f8530_F9908 *)m->pvars;
+        pv = (DebrisVars *)m->pvars;
         copy_hero_moby_field_38_r(m);
         m->scale *= scale;
         m->update_dist = 0xFF;
@@ -1039,7 +1032,7 @@ typedef struct {
     s32 rearm; /* 0x10 */
     s32 in_volume; /* 0x14 */
     s32 spawn_slot; /* 0x18: slot in the level's D_0014C050 row, -1 for none */
-} PickupVars_015F8;
+} PickupVars;
 extern LevelState novalis_checkpoint_level_state_r __asm__("D_L01_001BB9C0");
 extern LevelState novalis_current_level_state_r __asm__("D_L01_001BAD60");
 extern s32 moby_killed_r[] __asm__("D_L01_001BAC60");
@@ -1051,7 +1044,7 @@ extern f32 ProbeGroundHeight_r(void *, s32, f32) __asm__("func_00214358");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002f6328.c, FUN_L01_00300220. */
 void spawn_point_update(struct Moby *moby) {
-    PickupVars_015F8 *vars = (PickupVars_015F8 *)moby->pvars;
+    PickupVars *vars = (PickupVars *)moby->pvars;
     s32 armed = 0;
     Vec4f pos;
     u32 state;
@@ -1176,20 +1169,20 @@ typedef struct {
     float lo;
     float hi;
     int vol;
-} Zone_303a20;
+} Zone;
 
-typedef struct ZoneVars_302648 {
-    Zone_303a20 zones[20]; /* 0x000: per zone: index into novalis_paths (-1 unused), z range, volume */
+typedef struct ZoneVars {
+    Zone zones[20]; /* 0x000: per zone: index into novalis_paths (-1 unused), z range, volume */
     s32 count; /* 0x140: frames the target has stood clear of every zone; 0 when it is inside one */
-} ZoneVars_302648;
+} ZoneVars;
 
 /* Counts how long the type-0xAC moby has stood clear of the 20 zones; after 90 ticks hands it on. */
 void update_target_outside_zone_timeout(char *m) {
     struct Moby *moby = (struct Moby *)m;
-    ZoneVars_302648 *zone_vars = (ZoneVars_302648 *)moby->pvars;
+    ZoneVars *zone_vars = (ZoneVars *)moby->pvars;
     struct Moby *target_moby = 0;
     struct Moby *candidate_moby;
-    Zone_303a20 *e;
+    Zone *e;
     Vec4f *tp;
 
     moby->update_dist = 0xFF;
@@ -1967,7 +1960,7 @@ typedef struct {
     int c[4];
     float uv[8];
     long g[4];
-} Quad_30a8c8;
+} Quad;
 extern short teleporter_ring_alpha_a, teleporter_ring_alpha_b, teleporter_ring_alpha_c, teleporter_ring_alpha_d,
     teleporter_ring_texture, teleporter_ring_color;
 extern short teleporter_ring_height;
@@ -1981,7 +1974,7 @@ extern void draw_world_quad(void *, void *, int);
    strips around its radius, thicker as the ring
  * shrinks below 1.15, and flags when it gets below 0.65. */
 void draw_moby_radius_ring(char *moby) {
-    Quad_30a8c8 q;
+    Quad q;
     float m[12];
     float pos[4];
     struct TeleporterVars *d;
@@ -2333,7 +2326,7 @@ typedef struct {
     u16 id;
     f32 scale;
     s32 count;
-} DropProbe_30c9a8;
+} DropProbe;
 extern f32 SpringTurn(f32 *, f32, f32, f32, f32, f32);
 extern void BuildSphericalOffset_r(f32 *, f32, f32, f32) __asm__("func_00215C00");
 extern f32 vec_distance_xy(void *, void *);
@@ -2351,7 +2344,7 @@ void update_sandmouse_projectile(char *m) {
     f32 *pos;
     Vec4 old_pos;
     Vec4 offset;
-    DropProbe_30c9a8 probe;
+    DropProbe probe;
     f32 desired_yaw, desired_pitch;
     f32 pitch_k, pitch_d, pitch_max;
     f32 height = *(f32 *)(*(char **)&((Moby *)m)->pclass + 0x24);
@@ -2570,7 +2563,7 @@ extern void FastVecSub_r2(void *, void *, void *) __asm__("func_001F9BF0");
 extern float fast_atan2_r2(float, float) __asm__("func_L00_001FF860");
 extern float vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
 extern int scale_ticks_r2(int) __asm__("func_001F9850");
-struct HoverVars_0EC58 {
+struct HoverVars {
     Vec4 goal; /* 0x00: point it flies back to */
     Vec4 vel; /* 0x10 */
     u8 pad20[0x10];
@@ -2580,14 +2573,14 @@ struct HoverVars_0EC58 {
     u8 pad52[0xE];
     struct Moby *target; /* 0x60: set by FUN_L01_0030d5f0 */
 };
-struct HoverTuning_0EC58 {
+struct HoverTuning {
     s32 unk0; /* passed to FUN_L00_00258ad0 */
     u8 pad4[0x10];
     f32 yaw_speed; /* 0x14: turn speed FUN_L00_00258278 keeps (D_L01_001DEB4C) */
     u8 pad18[0x18];
     f32 unk30;
 };
-extern struct HoverTuning_0EC58 sand_mouse_move_ctl_r __asm__("D_L01_001DEE08");
+extern struct HoverTuning sand_mouse_move_ctl_r __asm__("D_L01_001DEE08");
 extern f32 sand_mouse_move_ctl_turn_vel_r __asm__("D_L01_001DEE1C");
 extern f32 frame_scale_r __asm__("D_0015EE60") MACRO_ADDR;
 extern short D_L01_00162154_0EC58 SDATA(D_L01_00162154);
@@ -2608,7 +2601,7 @@ extern s32 move_moby_with_collision_integer_radius_r(struct Moby *, Vec4 *, f32,
 extern f32 normalize_angle_r(f32) __asm__("func_L00_0025F368");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/0030b618.c, FUN_L01_0030d880. */
-void update_sandmouse_hover_movement(struct Moby *m, struct HoverVars_0EC58 *p) {
+void update_sandmouse_hover_movement(struct Moby *m, struct HoverVars *p) {
     Vec4 v;
     f32 d;
     f32 k;
@@ -2616,7 +2609,7 @@ void update_sandmouse_hover_movement(struct Moby *m, struct HoverVars_0EC58 *p) 
     f32 len;
     s32 hit;
     s16 n;
-    struct HoverTuning_0EC58 *t;
+    struct HoverTuning *t;
 
     FastVecSub_r2(&v, p, &m->pos);
     if (m->state == 6) {
@@ -2742,7 +2735,7 @@ typedef struct {
     s32 f48;
     s32 f4C;
     Moby *owner; /* 0x50 */
-} Tune_30F318;
+} Tune;
 typedef struct {
     Vec4 goal; /* 0x00 */
     Vec4 vel; /* 0x10 */
@@ -2759,8 +2752,8 @@ typedef struct {
     s32 k5C;
     s32 pad60;
     s32 slot; /* 0x64 */
-} Pv_30F318;
-extern Tune_30F318 sand_mouse_move_ctl;
+} Pv;
+extern Tune sand_mouse_move_ctl;
 extern f32 sand_mouse_move_ctl_turn_vel;
 extern char sandmouse_collected_msg[];
 extern char sandmouse_no_link_msg[];
@@ -2798,13 +2791,13 @@ extern char *novalis_camera_moby;
 
 /* Sand mouse update: follows the hero, turns its linked moby, and runs its states. */
 void sandmouse_update(Moby *m) {
-    Pv_30F318 *p;
+    Pv *p;
     f32 ang;
     int dv;
     s16 t;
     if (m == 0)
         return;
-    p = (Pv_30F318 *)m->pvars;
+    p = (Pv *)m->pvars;
     if (p == 0)
         return;
     if (p->link != -1) {
@@ -3347,7 +3340,7 @@ typedef struct {
     int n;
     int pad[3];
     Node_316730 nodes[1];
-} Path_316730;
+} Path;
 
 typedef struct {
     char p00[0x20];
@@ -3355,30 +3348,30 @@ typedef struct {
     char p24[0x10];
     float f34;
     char p38[0x18];
-} SubA_316730;
+} SubA;
 
 typedef struct {
     float pos[4];
     char p10[0x3C];
     float f4C;
     char p50[0x80];
-} SubB_316730;
+} SubB;
 
 typedef struct {
     int idx;
     float t;
     int p08[2];
     int f10;
-} SubC_316730;
+} SubC;
 
 typedef struct {
     float vel[3];
     float f0C;
     float f10;
     char p14[0x1C];
-    SubA_316730 a;
-    SubB_316730 b;
-    SubC_316730 c;
+    SubA a;
+    SubB b;
+    SubC c;
 } Data_316730;
 
 typedef struct {
@@ -3392,18 +3385,18 @@ typedef struct {
     short f34;
     short f36;
     float f38;
-} Parm_316730;
+} Parm;
 
 typedef struct {
     char p00[0x1C];
-    Parm_316730 *f1C;
+    Parm *f1C;
 } Ent50_316730;
 
 typedef struct {
     char p00[0x10];
-    Path_316730 *f10;
+    Path *f10;
     char p14[0xC];
-} Ent7EC_316730;
+} Ent7EC;
 
 typedef struct {
     float f0[4];
@@ -3415,11 +3408,11 @@ typedef struct {
     Data_316730 *data;
     char p74[0x10];
     short f84;
-} Cam_316730;
+} Cam;
 
 extern Ent50_316730 *novalis_camera_descriptors MACRO_ADDR;
-extern Ent7EC_316730 *novalis_rails MACRO_ADDR;
-extern Path_316730 *novalis_paths_r3[] __asm__("D_L01_001B0C30");
+extern Ent7EC *novalis_rails MACRO_ADDR;
+extern Path *novalis_paths_r3[] __asm__("D_L01_001B0C30");
 extern float novalis_camera_up_axis[];
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
 extern int find_nearest_path_point(void *, void *, void *, int *, float *, int, float, float, float);
@@ -3434,7 +3427,7 @@ extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
 /* Update function of camera 3: follows a path beside the hero's and turns toward a look-at point on it.
    The four `= 0` initialisers in the mode 2 block are dead and leave no code: they make up for the insns
    qcopy()'s parameters add, which decide the size of gcse's hash table and so the order of the spill slots. */
-void update_camera_position_and_orientation_from_paths(Cam_316730 *cam) {
+void update_camera_position_and_orientation_from_paths(Cam *cam) {
     float v0[4];
     float v10[4];
     float v20[4];
@@ -3445,10 +3438,10 @@ void update_camera_position_and_orientation_from_paths(Cam_316730 *cam) {
     int seg;
     float frac;
     Data_316730 *d = cam->data;
-    SubA_316730 *a = &d->a;
-    SubB_316730 *b = &d->b;
-    SubC_316730 *c = &d->c;
-    Parm_316730 *p = novalis_camera_descriptors[cam->f84].f1C;
+    SubA *a = &d->a;
+    SubB *b = &d->b;
+    SubC *c = &d->c;
+    Parm *p = novalis_camera_descriptors[cam->f84].f1C;
     float k = 0.01f;
     int mode = p->f30;
     int pi = p->f20;
@@ -3458,7 +3451,7 @@ void update_camera_position_and_orientation_from_paths(Cam_316730 *cam) {
     float rot;
 
     if (mode == 0) {
-        Path_316730 *path;
+        Path *path;
         float dist;
 
         seg = ((Hero *)(hero_globals_base + 0xE1D))->rail_segment;
@@ -3468,8 +3461,7 @@ void update_camera_position_and_orientation_from_paths(Cam_316730 *cam) {
         Spline_AdvanceByDistance(novalis_paths_r3[pi], v0, &c->idx, &c->t, 1.0f, 0);
         qcopy(b->pos, v0);
         path = novalis_paths_r3[pi];
-        dist = path->nodes[seg].w *
-               (frac / ((Path_316730 *)((Hero *)(hero_globals_base + 0xE1D))->rail_spline)->nodes[seg].w);
+        dist = path->nodes[seg].w * (frac / ((Path *)((Hero *)(hero_globals_base + 0xE1D))->rail_spline)->nodes[seg].w);
         FastVecSub(v50, &path->nodes[seg + 1], &path->nodes[seg]);
         vec_scale_to_length(v40, v50, dist);
         FastVecAdd(v60, &path->nodes[seg], v40);
@@ -3477,10 +3469,10 @@ void update_camera_position_and_orientation_from_paths(Cam_316730 *cam) {
         cam->pos[1] = Cam_InterpValues(cam->pos[1], v60[1], &d->vel[1], k, 0.175f, 0.0f);
         cam->pos[2] = Cam_InterpValues(cam->pos[2], v60[2], &d->vel[2], k, 0.175f, 0.0f);
     } else if (mode == 2) {
-        Path_316730 *pathA = novalis_paths_r3[pi];
-        Path_316730 *pathD = novalis_rails[p->f24].f10;
-        Path_316730 *pathC = novalis_paths_r3[p->f28];
-        Path_316730 *pathB = novalis_paths_r3[p->f2C];
+        Path *pathA = novalis_paths_r3[pi];
+        Path *pathD = novalis_rails[p->f24].f10;
+        Path *pathC = novalis_paths_r3[p->f28];
+        Path *pathB = novalis_paths_r3[p->f2C];
         int i;
         int prev = 0;
         int lo = 0;
@@ -3552,7 +3544,7 @@ void update_camera_position_and_orientation_from_paths(Cam_316730 *cam) {
         cam->pos[1] = Cam_InterpValues(cam->pos[1], v40[1], &d->vel[1], d->f10, 0.175f, 0.0f);
         cam->pos[2] = Cam_InterpValues(cam->pos[2], v40[2], &d->vel[2], d->f10, 0.175f, 0.0f);
     } else {
-        Path_316730 *path = novalis_paths_r3[pi];
+        Path *path = novalis_paths_r3[pi];
 
         if (p->f24 < 0) {
             float off;
@@ -3572,8 +3564,8 @@ void update_camera_position_and_orientation_from_paths(Cam_316730 *cam) {
 
             hseg = ((Hero *)(hero_globals_base + 0xE1D))->rail_segment;
             hfrac = ((Hero *)(hero_globals_base + 0xE1D))->rail_seg_frac;
-            Spline_AdvanceByDistance((Path_316730 *)((Hero *)(hero_globals_base + 0xE1D))->rail_spline, v30, &hseg,
-                                     &hfrac, p->f38, 1);
+            Spline_AdvanceByDistance((Path *)((Hero *)(hero_globals_base + 0xE1D))->rail_spline, v30, &hseg, &hfrac,
+                                     p->f38, 1);
             find_nearest_path_point(path, v30, v0, &seg, &frac, 0, 20.0f, 1.0f, 0.0f);
         }
         cam->pos[0] = Cam_InterpValues(cam->pos[0], v0[0], &d->vel[0], k, 0.175f, 0.0f);
@@ -3581,7 +3573,7 @@ void update_camera_position_and_orientation_from_paths(Cam_316730 *cam) {
         cam->pos[2] = Cam_InterpValues(cam->pos[2], v0[2], &d->vel[2], k, 0.175f, 0.0f);
     }
     if (p->f24 < 0) {
-        Path_316730 *path = novalis_paths_r3[p->f20];
+        Path *path = novalis_paths_r3[p->f20];
 
         find_nearest_path_point(path, ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f, v40, &seg, &frac, 0, 20.0f,
                                 1.0f, 0.0f);
@@ -3598,8 +3590,8 @@ void update_camera_position_and_orientation_from_paths(Cam_316730 *cam) {
 
         hseg = ((Hero *)(hero_globals_base + 0xE1D))->rail_segment;
         hfrac = ((Hero *)(hero_globals_base + 0xE1D))->rail_seg_frac;
-        Spline_AdvanceByDistance((Path_316730 *)((Hero *)(hero_globals_base + 0xE1D))->rail_spline, v40, &hseg, &hfrac,
-                                 spd, 1);
+        Spline_AdvanceByDistance((Path *)((Hero *)(hero_globals_base + 0xE1D))->rail_spline, v40, &hseg, &hfrac, spd,
+                                 1);
     }
     vec_scale_to_length(v10, novalis_camera_up_axis, b->f4C);
     FastVecAdd(v30, v10, v40);

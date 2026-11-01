@@ -1066,14 +1066,14 @@ typedef struct {
     struct Moby *held;
     s32 timer;
     s32 delay;
-} CarrierVars_2c26c8;
+} CarrierVars;
 typedef struct {
     u8 pad0[0x50];
     u16 deliveries; /* D_001416D0: saturates at 0xFFFF */
     u16 unkA2;
     u32 levels;
-} DeliveryStats_2c26c8;
-extern DeliveryStats_2c26c8 item_usage;
+} DeliveryStats;
+extern DeliveryStats item_usage;
 extern struct Moby *active_mobies[];
 extern u8 *GetFlaggedPvarWord_r(struct Moby *) __asm__("func_L00_0025D390");
 extern struct PadState g_controller_state;
@@ -1110,7 +1110,7 @@ extern void Moby_GetJointWorldPos(void *, int, void *);
 /* Updates the grip, chooses a throw target, and handles the held moby states.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002bffa8.c, FUN_L00_002c26c8. */
 void bomb_glove_update(struct Moby *moby) {
-    CarrierVars_2c26c8 *vars;
+    CarrierVars *vars;
     Vec4 local[4], saved, offset, rotatedOffset, pos, target, basis[3], matrix[4];
     Vec4 launch;
     union {
@@ -1124,7 +1124,7 @@ void bomb_glove_update(struct Moby *moby) {
 
     if (moby == 0)
         return;
-    vars = (CarrierVars_2c26c8 *)moby->pvars;
+    vars = (CarrierVars *)moby->pvars;
     offset.q = 0;
     offset.f[1] = -0.09f;
     offset.f[2] = -0.02f;
@@ -1544,13 +1544,13 @@ typedef struct {
     u8 pad_46[0x6];
     f32 target_rot_x; /* 0x4C: pitch the moby turns toward */
     f32 target_rot_y; /* 0x50: yaw the moby turns toward */
-} ReleaseVars_2C4B90;
+} ReleaseVars;
 
 /* Tests a movement vector against the player and turns a colliding moby. */
 void release_moby_with_collision_check(float *release_position, char *m, void *initial_velocity) {
     float collision_start[4], collision_normal[4], rotated_normal[4];
     struct Moby *moby = (struct Moby *)m;
-    ReleaseVars_2C4B90 *state = (ReleaseVars_2C4B90 *)moby->pvars;
+    ReleaseVars *state = (ReleaseVars *)moby->pvars;
     struct Hero *camera;
     struct Moby *player;
     qcopy(&state->vel, initial_velocity);
@@ -2590,10 +2590,10 @@ typedef union {
 typedef struct {
     V_2C74B8 row[3];
 } M3_2C74B8;
-typedef struct HookData_2C74B8 {
+typedef struct HookData {
     char pad0[4];
     float speed;
-} HookData_2C74B8;
+} HookData;
 typedef struct Data_2C74B8 {
     char pad0[0x14];
     Moby *hook;
@@ -2633,7 +2633,7 @@ void func_L00_002C74B8_r(Moby *m) {
     V_2C74B8 v0;
     V_2C74B8 v10;
     Data_2C74B8 *d;
-    HookData_2C74B8 *hd;
+    HookData *hd;
     float speed;
     int n;
 

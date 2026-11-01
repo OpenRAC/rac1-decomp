@@ -412,7 +412,7 @@ void ultramech_scientist_update(char *moby) {
                                ease_limit * g_frame_scale_sq);
     }
 }
-typedef struct Talk_2EE7E8 {
+typedef struct Talk {
     int zone[4];
     int npc[3];
     int vol1C;
@@ -425,25 +425,25 @@ typedef struct Talk_2EE7E8 {
     int last;
     char pad44[0x54 - 0x44];
     int vol54;
-} Talk_2EE7E8;
+} Talk;
 typedef struct Help_2EE7E8 {
     int busy;
     char p0[0x24 - 4];
     int cur;
 } Help_2EE7E8;
-typedef struct Stats_2EE7E8 {
+typedef struct Stats {
     char p0[0x3DA];
     unsigned short t3DA;
     char p1[0x3E0 - 0x3DC];
     unsigned short n3E0;
     unsigned short t3E2;
     int lv3E4;
-} Stats_2EE7E8;
-typedef struct Items_2EE7E8 {
+} Stats;
+typedef struct Items {
     char p0[0x6E];
     unsigned char f6E;
     unsigned char f6F;
-} Items_2EE7E8;
+} Items;
 
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
@@ -465,7 +465,7 @@ extern unsigned char gHaveHeliPack_r[] __asm__("D_0013D5CA");
 /* Quartu moby update (class 1469): hint and dialogue triggers from the hero's zones, with the play-time
    records of the two hint messages. */
 void update_quartu_hint_triggers(Moby *m) {
-    Talk_2EE7E8 *t = (struct Talk_2EE7E8 *)m->pvars;
+    Talk *t = (struct Talk *)m->pvars;
     int st = m->state;
     Moby *e;
     int i, j, found, npc, pick;
@@ -489,40 +489,38 @@ void update_quartu_hint_triggers(Moby *m) {
                     if (gHaveHologuise_r[0] == 0) {
                         int lim, now;
                         now = scale_ticks_r(gameplay_event_frame_count_r);
-                        lim = now - ((Stats_2EE7E8 *)help_records_r)->t3DA * 600;
+                        lim = now - ((Stats *)help_records_r)->t3DA * 600;
                         if ((int)((float)scale_ticks_r(0x12) * 60.0f) < lim ||
-                            ((Stats_2EE7E8 *)help_records_r)->t3DA * 600 == 0) {
+                            ((Stats *)help_records_r)->t3DA * 600 == 0) {
                             Help_Request_r(0x3A98, 0x7B);
                         } else {
                             now = scale_ticks_r(gameplay_event_frame_count_r);
-                            if (now / 600 > ((Stats_2EE7E8 *)help_records_r)->t3DA) {
-                                ((Stats_2EE7E8 *)help_records_r)->t3DA =
-                                    scale_ticks_r(gameplay_event_frame_count_r) / 600;
+                            if (now / 600 > ((Stats *)help_records_r)->t3DA) {
+                                ((Stats *)help_records_r)->t3DA = scale_ticks_r(gameplay_event_frame_count_r) / 600;
                             }
                         }
-                    } else if (((Stats_2EE7E8 *)help_records_r)->n3E0 != 0) {
+                    } else if (((Stats *)help_records_r)->n3E0 != 0) {
                         int lim, now;
                         now = scale_ticks_r(gameplay_event_frame_count_r);
-                        lim = now - ((Stats_2EE7E8 *)help_records_r)->t3E2 * 600;
+                        lim = now - ((Stats *)help_records_r)->t3E2 * 600;
                         if ((int)((float)scale_ticks_r(0x12) * 60.0f) < lim ||
-                            ((Stats_2EE7E8 *)help_records_r)->t3E2 * 600 == 0) {
+                            ((Stats *)help_records_r)->t3E2 * 600 == 0) {
                             Help_Request_r(0x3A99, 0x7C);
                         } else {
                             now = scale_ticks_r(gameplay_event_frame_count_r);
-                            if (now / 600 > ((Stats_2EE7E8 *)help_records_r)->t3E2) {
-                                ((Stats_2EE7E8 *)help_records_r)->t3E2 =
-                                    scale_ticks_r(gameplay_event_frame_count_r) / 600;
+                            if (now / 600 > ((Stats *)help_records_r)->t3E2) {
+                                ((Stats *)help_records_r)->t3E2 = scale_ticks_r(gameplay_event_frame_count_r) / 600;
                             }
                         }
                     } else {
                         int now;
-                        ((Stats_2EE7E8 *)help_records_r)->n3E0++;
+                        ((Stats *)help_records_r)->n3E0++;
                         now = scale_ticks_r(gameplay_event_frame_count_r);
-                        if (now / 600 > ((Stats_2EE7E8 *)help_records_r)->t3E2) {
-                            ((Stats_2EE7E8 *)help_records_r)->t3E2 = scale_ticks_r(gameplay_event_frame_count_r) / 600;
+                        if (now / 600 > ((Stats *)help_records_r)->t3E2) {
+                            ((Stats *)help_records_r)->t3E2 = scale_ticks_r(gameplay_event_frame_count_r) / 600;
                         }
-                        ((Stats_2EE7E8 *)help_records_r)->lv3E4 =
-                            ((Stats_2EE7E8 *)help_records_r)->lv3E4 | (1 << g_current_level_index_r) | 0x80000000;
+                        ((Stats *)help_records_r)->lv3E4 =
+                            ((Stats *)help_records_r)->lv3E4 | (1 << g_current_level_index_r) | 0x80000000;
                     }
                 }
             }
@@ -575,12 +573,12 @@ void update_quartu_hint_triggers(Moby *m) {
             }
             if (((Hero *)(hero_globals_base_r + 0xE1D))->moby->seq == 0xC &&
                 ((Hero *)(hero_globals_base_r + 0xE1D))->vehicle_mode == 2) {
-                ((Items_2EE7E8 *)gSpecialItems_r)->f6F = 1;
+                ((Items *)gSpecialItems_r)->f6F = 1;
             }
             if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
                                               t->vol1C) != 0 &&
-                ((Hero *)(hero_globals_base_r + 0xE1D))->vehicle_mode == 2 &&
-                ((Items_2EE7E8 *)gSpecialItems_r)->f6F == 0 && ((Help_2EE7E8 *)quartu_help_popup_state_r)->busy == 0 &&
+                ((Hero *)(hero_globals_base_r + 0xE1D))->vehicle_mode == 2 && ((Items *)gSpecialItems_r)->f6F == 0 &&
+                ((Help_2EE7E8 *)quartu_help_popup_state_r)->busy == 0 &&
                 ((Help_2EE7E8 *)quartu_help_popup_state_r)->cur == -1 && *(int *)(help_stats_base_r + 0x751) >= 0) {
                 Help_Request_r(0x3A9C, 0x80);
             }
@@ -620,10 +618,10 @@ void update_quartu_hint_triggers(Moby *m) {
                 t->last = pick;
                 t->hold38 = 0;
             }
-            if (((Items_2EE7E8 *)gSpecialItems_r)->f6E == 0 &&
+            if (((Items *)gSpecialItems_r)->f6E == 0 &&
                 is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
                                               t->vol2C) != 0) {
-                ((Items_2EE7E8 *)gSpecialItems_r)->f6E = 1;
+                ((Items *)gSpecialItems_r)->f6E = 1;
             }
             break;
     }
@@ -688,7 +686,7 @@ typedef struct {
 typedef struct {
     float prev;
     float angle;
-} RingVars_2EF030;
+} RingVars;
 extern Quad4_2EF030 quartu_ripple_mesh_uv_scroll_factors;
 extern int quartu_ripple_mesh_counts[1] SDATA(D_L15_00162230);
 extern int quartu_ripple_mesh_positions[1] SDATA(D_L15_00162250);
@@ -707,7 +705,7 @@ extern float quartu_ripple_vertex_scale SDATA(D_L15_00162280);
    texture coordinates. */
 void draw_scaled_moby_radial_ripple_mesh(char *moby) {
     struct Moby *m = (struct Moby *)moby;
-    RingVars_2EF030 *data = (RingVars_2EF030 *)m->pvars;
+    RingVars *data = (RingVars *)m->pvars;
     unsigned int i;
     unsigned int uv_vertex_index;
     int j;

@@ -141,7 +141,7 @@ struct LeafVars {
  *   `spawn_explosion`; globals through MACRO_ADDR aliases. Not in alias form. The function is first in its f
  *   Final check against the destination file as of 2026-10-09 15:30 (others had landed into these files): run 3, B
  */
-#define MOBYS ((VehicleMoby_2CB800 *)D_L04_00160058)
+#define MOBYS ((VehicleMoby *)D_L04_00160058)
 extern char *eudora_mobys MACRO_ADDR;
 extern void Moby_PlaySound(int, int, int);
 
@@ -149,11 +149,11 @@ typedef int VehicleWide_2CB800 __attribute__((mode(TI)));
 typedef union {
     VehicleWide_2CB800 quad;
     float f[4];
-} VehicleVec_2CB800;
+} VehicleVec;
 typedef union {
     s32 id;
     u8 token;
-} VehicleTrigger_2CB800;
+} VehicleTrigger;
 typedef struct {
     char pad0[0x60];
     char motion[0x14];
@@ -171,14 +171,14 @@ typedef struct {
     u8 selected, phase;
     s16 phase_timer;
     float start_angle;
-    VehicleTrigger_2CB800 paths[4];
-    VehicleVec_2CB800 start_pos;
+    VehicleTrigger paths[4];
+    VehicleVec start_pos;
     s32 visibility_timer, visibility_active, shield, partner;
     char matrix0[0x40], matrix1[0x40];
-} VehicleData_2CB800;
+} VehicleData;
 typedef struct {
     char pad0[0x10];
-    VehicleVec_2CB800 pos;
+    VehicleVec pos;
     u8 state;
     char pad21[3];
     char *metadata;
@@ -188,9 +188,9 @@ typedef struct {
     s16 shield;
     u16 flags;
     char pad36[0xA];
-    VehicleVec_2CB800 rot;
+    VehicleVec rot;
     char pad50[0x28];
-    VehicleData_2CB800 *data;
+    VehicleData *data;
     char pad7C[0x18];
     s32 sort;
     char pad98[0xC];
@@ -199,30 +199,30 @@ typedef struct {
     s16 cls;
     char padA8[0x18];
     char matrix[0x40];
-} VehicleMoby_2CB800;
+} VehicleMoby;
 typedef struct {
     char pad[0x30];
-    VehicleVec_2CB800 pos;
+    VehicleVec pos;
     char pad40[0x38];
     float angle;
     char pad7C[4];
-} VehiclePath_2CB800;
+} VehiclePath;
 typedef struct {
-    VehicleVec_2CB800 vec;
-    VehicleMoby_2CB800 *owner;
+    VehicleVec vec;
+    VehicleMoby *owner;
     s32 flags, unused;
     float strength;
     s32 result;
-} VehicleQuery_2CB800;
+} VehicleQuery;
 extern s32 *eudora_paths[];
-extern VehiclePath_2CB800 *eudora_scene_points MACRO_ADDR;
+extern VehiclePath *eudora_scene_points MACRO_ADDR;
 extern char eudora_snow_plow_no_path_msg[];
 extern s32 eudora_skill_snow_plow_hits MACRO_ADDR;
 typedef struct {
     char pad[6];
     u8 flag;
-} VehicleWeapon_2CB800;
-extern VehicleWeapon_2CB800 gSkillPoints;
+} VehicleWeapon;
+extern VehicleWeapon gSkillPoints;
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
@@ -232,12 +232,12 @@ typedef struct {
     float x, y, z;
     char pad14C[12];
     float angle;
-} VehicleCamera_2CB800;
-extern VehicleCamera_2CB800 eudora_camera;
+} VehicleCamera;
+extern VehicleCamera eudora_camera;
 extern float FastVecDist(void *, void *);
 extern s32 truncate_float_to_s32(float);
 extern s32 STUB_printf();
-extern void gunship_follow_path(VehicleMoby_2CB800 *);
+extern void gunship_follow_path(VehicleMoby *);
 extern void FastDecTimer(void *);
 extern s32 is_point_inside_clip_volume(void *, s32);
 extern void MobySpringTurn(void *, void *, float, float, float, float);
@@ -271,21 +271,21 @@ typedef float VehicleArr_2CB800[4] __attribute__((aligned(16)));
 typedef struct {
     char pad[0x14];
     s32 path_id;
-} VehicleSub_2CB800;
+} VehicleSub;
 
 /* Moves generic vehicle mobys along triggered paths and updates their attached parts, damage effects and visibility. */
-void snow_plow_update(VehicleMoby_2CB800 *m) {
-    VehicleVec_2CB800 old, delta;
-    VehicleData_2CB800 *d = m->data;
+void snow_plow_update(VehicleMoby *m) {
+    VehicleVec old, delta;
+    VehicleData *d = m->data;
     u8 state = m->state;
-    VehicleSub_2CB800 *sub;
-    VehicleTrigger_2CB800 *trigger;
+    VehicleSub *sub;
+    VehicleTrigger *trigger;
     float zero;
     s32 izero;
     qcopy(&old, &m->pos);
     if (!d)
         return;
-    sub = (VehicleSub_2CB800 *)d->motion;
+    sub = (VehicleSub *)d->motion;
     if (state == 0) {
         if (sub->path_id != -1) {
             s32 *path = eudora_paths[sub->path_id];
@@ -413,7 +413,7 @@ void snow_plow_update(VehicleMoby_2CB800 *m) {
         }
     }
     if (d->partner != -1) {
-        VehicleMoby_2CB800 *other = MOBYS + d->partner;
+        VehicleMoby *other = MOBYS + d->partner;
         other->shield = 0x7F;
         switch (m->cls) {
             case 0x1E0:
@@ -452,7 +452,7 @@ void snow_plow_update(VehicleMoby_2CB800 *m) {
             case 19:
             case 20: {
                 {
-                    VehicleQuery_2CB800 query;
+                    VehicleQuery query;
                     query.flags = 0x810000;
                     query.strength = 1;
                     query.owner = m;
@@ -489,7 +489,7 @@ void snow_plow_update(VehicleMoby_2CB800 *m) {
                 {
                     VehicleArr_2CB800 offset = {0.0f, 0.0f, 0.75f};
                     VehicleArr_2CB800 none;
-                    VehicleQuery_2CB800 query2;
+                    VehicleQuery query2;
                     clear_u64_value(none);
                     Moby_GetJointWorldPos(m, 0, &delta);
                     FastVecAdd(&delta, &delta, offset);
@@ -589,7 +589,7 @@ void snow_plow_update(VehicleMoby_2CB800 *m) {
             m->flags &= 0xFFBE;
             d->visibility_active = 0;
             if (d->partner != -1) {
-                VehicleMoby_2CB800 *other = MOBYS + d->partner;
+                VehicleMoby *other = MOBYS + d->partner;
                 other->flags &= 0xFFBE;
             }
             m->flags |= 0x1000;
@@ -597,7 +597,7 @@ void snow_plow_update(VehicleMoby_2CB800 *m) {
             m->sort = 0;
             m->flags |= 0x41;
             if (d->partner != -1) {
-                VehicleMoby_2CB800 *other = MOBYS + d->partner;
+                VehicleMoby *other = MOBYS + d->partner;
                 other->flags |= 0x41;
             }
             m->flags &= 0xEFFF;
@@ -1827,7 +1827,7 @@ typedef struct {
     float b[4];
     int c[4];
     float d[4];
-} L10SpriteData_298940;
+} L10SpriteData;
 extern int fast_dec_timer(int *);
 extern int FastTweenColor(int, int, float);
 
@@ -1837,7 +1837,7 @@ extern int eudora_game_mode MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l04/unclassified_002ca420.c, FUN_L04_002e1d00. */
 void update_suck_cannon_particles(char *m) {
-    L10SpriteData_298940 *p = ((L10SpriteData_298940 *)((Moby *)m)->pvars);
+    L10SpriteData *p = ((L10SpriteData *)((Moby *)m)->pvars);
     float d[4] __attribute__((aligned(16)));
     float e[4] __attribute__((aligned(16)));
     int i, col;

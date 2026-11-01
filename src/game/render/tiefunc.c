@@ -140,7 +140,7 @@ extern int registered_object_render_class_count MACRO_ADDR;
 typedef struct {
     int unk00[6];
     int unk18;
-} DrawCfg_236CA8;
+} DrawCfg;
 
 /* DrawTies_2: DrawTies_1's two passes, the first with the odd ties' 0x8
    flag set (and the saved tie data swapped in around it), the second with
@@ -164,7 +164,7 @@ void DrawTies_2(void) {
     }
     ProfileMarker_Begin(str_tie_texs, 1);
     {
-        DrawCfg_236CA8 *d = (DrawCfg_236CA8 *)draw_config;
+        DrawCfg *d = (DrawCfg *)draw_config;
         if (d->unk18 != 0) {
             flush_cache(0);
             TieProc();
@@ -189,7 +189,7 @@ void DrawTies_2(void) {
         }
     }
     {
-        DrawCfg_236CA8 *d = (DrawCfg_236CA8 *)draw_config;
+        DrawCfg *d = (DrawCfg *)draw_config;
         int p = g_render_packet_cursor;
         tie_tex_dma_tag_slot = p;
         g_gs_texture_allocation_cursor = g_gs_texture_allocation_start;

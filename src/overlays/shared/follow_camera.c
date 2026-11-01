@@ -459,15 +459,15 @@ int set_beam_origin_transform_and_endpoint(int id, void *src, void *v) {
 typedef float Vec_2E3700[4] __attribute__((aligned(16)));
 typedef struct {
     float x, y, z, w;
-} Pt_2E3700;
+} Pt;
 typedef struct {
     char pad0[0x30];
     float v30[4];
-} Slot_2E3700;
+} Slot;
 typedef struct {
     float v[4];
     char pad10[0x30];
-} End_2E3700;
+} End;
 typedef struct {
     float v[4];
 } Q_2E3700;
@@ -477,25 +477,25 @@ typedef struct {
     short f14;
     short f16;
     int f18;
-} PartSub_2E3700;
+} PartSub;
 typedef struct {
     char pad0[0xA];
     short fA;
     float fC;
     char pad10[0x10];
-    PartSub_2E3700 sub;
-} Part_2E3700;
+    PartSub sub;
+} Part;
 typedef struct {
     char pad0[0x10];
     float v10[3];
     float f1C;
-} Snd_2E3700;
-extern Slot_2E3700 beam_origin_transforms_r[] __asm__("D_L00_001E7070");
-extern End_2E3700 beam_origin_transforms_translation_r[] __asm__("D_L00_001E70A0");
+} Snd;
+extern Slot beam_origin_transforms_r[] __asm__("D_L00_001E7070");
+extern End beam_origin_transforms_translation_r[] __asm__("D_L00_001E70A0");
 extern Q_2E3700 beam_endpoints_r[] __asm__("D_L00_001E7130");
 extern Q_2E3700 beam_tip_positions_r[] __asm__("D_L00_001E7160");
-extern Pt_2E3700 beam_strand_points_r[][20] __asm__("D_L00_001E7190");
-extern Snd_2E3700 level_point_lights_r[] __asm__("D_L00_001803C0");
+extern Pt beam_strand_points_r[][20] __asm__("D_L00_001E7190");
+extern Snd level_point_lights_r[] __asm__("D_L00_001803C0");
 extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern char veldin1_zero_vec_r[] __asm__("D_L00_0015F660") MACRO_ADDR;
 extern int beam_slot_states_r[] __asm__("D_L00_00161CC8") MACRO_ADDR;
@@ -522,8 +522,8 @@ extern void transform_vector_r(void *, void *, void *) __asm__("func_001F9EE8");
 extern void matrix_mul_vec3_r(void *, void *, void *) __asm__("func_001F9EC0");
 extern float randf_sym_r(float, float) __asm__("func_L00_00258C80");
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
-extern Part_2E3700 *spawn_mode_controlled_rotating_alpha_fade_particle_r(void *, void *, int,
-                                                                         int) __asm__("func_L00_002757E8");
+extern Part *spawn_mode_controlled_rotating_alpha_fade_particle_r(void *, void *, int,
+                                                                  int) __asm__("func_L00_002757E8");
 extern int random_integer_below_r(int) __asm__("func_002140B0");
 extern void FastVecScale_r(void *, void *, float) __asm__("func_001F9C30");
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
@@ -549,7 +549,7 @@ void update_slot_panes_and_effects(int unused, int idx) {
     float step;
     float ang;
     float one;
-    Pt_2E3700 *p;
+    Pt *p;
     int i;
     int j;
     int n;
@@ -559,8 +559,8 @@ void update_slot_panes_and_effects(int unused, int idx) {
     if (beam_slot_states_r[idx] == 2) {
         beam_slot_states_r[idx] = 3;
         for (i = 0; i < 20; i++) {
-            Pt_2E3700 *a = &beam_strand_points_r[k][i];
-            Pt_2E3700 *b = &beam_strand_points_r[k1][i];
+            Pt *a = &beam_strand_points_r[k][i];
+            Pt *b = &beam_strand_points_r[k1][i];
 
             a->x = step * (float)i;
             a->y = a->z = 0.0f;
@@ -577,7 +577,7 @@ void update_slot_panes_and_effects(int unused, int idx) {
     for (j = 0; j < 19; j++) {
         float fj = (float)j;
         float a = IntToFloat_r(j) / IntToFloat_r(20) * 0.3f + 0.1f;
-        Pt_2E3700 *p = &beam_strand_points_r[k][j];
+        Pt *p = &beam_strand_points_r[k][j];
 
         a = a * FastSin_r(normalize_angle_r(beam_strand_wave_phase_r[idx] + fj * ang));
         p->y = 0.0f;
@@ -631,14 +631,14 @@ void update_slot_panes_and_effects(int unused, int idx) {
         spawn_mode_controlled_rotating_alpha_fade_particle_r(beam_origin_transforms_r[idx].v30, &vel, 0x7F,
                                                              beam_slot_ids_r[idx]);
         if (random_integer_below_r(3) == 0) {
-            Part_2E3700 *p;
+            Part *p;
 
             FastVecScale_r(pos, &beam_origin_transforms_r[idx], 0.3f);
             FastVecAdd_r(pos, pos, beam_origin_transforms_r[idx].v30);
             p = spawn_mode_controlled_rotating_alpha_fade_particle_r(pos, veldin1_zero_vec_r, 0x7F,
                                                                      beam_slot_ids_r[idx]);
             if (p != 0) {
-                PartSub_2E3700 *q = &p->sub;
+                PartSub *q = &p->sub;
 
                 p->fC = 120000.0f;
                 p->fA = scale_ticks_r(4);
@@ -652,11 +652,11 @@ void update_slot_panes_and_effects(int unused, int idx) {
         random_spherical_offset_r(&vel, 0.01f, 0.05f);
         spawn_mode_controlled_rotating_alpha_fade_particle_r(tip, &vel, 0x7F, beam_slot_ids_r[idx]);
         if (random_integer_below_r(3) == 0) {
-            Part_2E3700 *p = spawn_mode_controlled_rotating_alpha_fade_particle_r(tip, veldin1_zero_vec_r, 0x7F,
-                                                                                  beam_slot_ids_r[idx]);
+            Part *p = spawn_mode_controlled_rotating_alpha_fade_particle_r(tip, veldin1_zero_vec_r, 0x7F,
+                                                                           beam_slot_ids_r[idx]);
 
             if (p != 0) {
-                PartSub_2E3700 *q = &p->sub;
+                PartSub *q = &p->sub;
 
                 p->fC = 120000.0f;
                 p->fA = scale_ticks_r(4);
@@ -676,7 +676,7 @@ void update_slot_panes_and_effects(int unused, int idx) {
                     allocate_colored_effect_slot_r(pos, D_L00_00161CC0_2E3700, 0.0f, 1.0f, 1.0f, 2.0f);
             }
             if (beam_origin_light_slots_r[idx] >= 0) {
-                Snd_2E3700 *s = &level_point_lights_r[beam_origin_light_slots_r[idx]];
+                Snd *s = &level_point_lights_r[beam_origin_light_slots_r[idx]];
 
                 qcopy(s->v10, pos);
                 s->f1C = D_L00_00161CC0_2E3700;
@@ -689,7 +689,7 @@ void update_slot_panes_and_effects(int unused, int idx) {
                     allocate_colored_effect_slot_r(tip, D_L00_00161CC0_2E3700, 0.0f, 1.0f, 1.0f, 2.0f);
             }
             if (beam_tip_light_slots_r[idx] >= 0) {
-                Snd_2E3700 *s = &level_point_lights_r[beam_tip_light_slots_r[idx]];
+                Snd *s = &level_point_lights_r[beam_tip_light_slots_r[idx]];
 
                 qcopy(s->v10, tip);
                 s->f1C = D_L00_00161CC0_2E3700;
@@ -699,10 +699,10 @@ void update_slot_panes_and_effects(int unused, int idx) {
 }
 typedef struct {
     char b[0x140];
-} Pane_2e3fa0;
+} Pane;
 extern float beam_texture_scroll_f[] __asm__("D_L00_00161D48") MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
-extern Pane_2e3fa0 beam_strand_points[];
+extern Pane beam_strand_points[];
 extern void VU1_addGSregister(int, long);
 extern void draw_beam_endpoint_quads_with_glow(int, int);
 extern void draw_beam_strand_with_glow(int, int, void *, int, int, int);
@@ -734,8 +734,8 @@ void draw_active_beam_slots(char *m) {
 
 typedef struct {
     Vec4 a, b, c, d;
-} Tbl_2e4138;
-extern Tbl_2e4138 beam_origin_transforms_field_10[];
+} Tbl;
+extern Tbl beam_origin_transforms_field_10[];
 extern long GetEffectTex(int);
 extern void FastVecScale(void *, void *, float);
 extern void FastVecCross(void *, void *, void *);
@@ -1916,16 +1916,16 @@ typedef struct R_2E6CE0 {
     char pad0[0x30];
     float f30;
 } R_2E6CE0;
-typedef struct CamD_2E6CE0 {
+typedef struct CamD {
     char pad0[0x20C];
     float f20C;
     float f210;
     float f214;
-} CamD_2E6CE0;
-typedef struct Cam_2E6CE0 {
+} CamD;
+typedef struct Cam {
     char pad0[0x70];
-    CamD_2E6CE0 *d;
-} Cam_2E6CE0;
+    CamD *d;
+} Cam;
 extern void Cam_GetHeroPosition_r(char *, void *) __asm__("func_L00_002E5618");
 extern void follow_cam_update_mode_r(char *) __asm__("func_L00_002E5DE0");
 extern void follow_cam_focus_velocity_r(char *, float *) __asm__("func_L00_002E6498");
@@ -1943,7 +1943,7 @@ extern int coll_line_r(void *, void *, int, int, int) __asm__("func_L00_001EFFF0
 extern float FastVecLength_r2(void *) __asm__("func_001F9CB8");
 extern void follow_camera_set_height_r(float, float) __asm__("func_L00_002E9968");
 extern char camera_view_r[] __asm__("D_L00_00166F10");
-extern Cam_2E6CE0 *g_current_follow_cam_r __asm__("D_L00_00166F00");
+extern Cam *g_current_follow_cam_r __asm__("D_L00_00166F00");
 extern int camera_collision_mask_r __asm__("D_L00_0015F058") MACRO_ADDR;
 extern int D_L00_00161DF0_2E6CE0 SDATA(D_L00_00161DF0);
 extern float D_L00_00161DA8_2E6CE0 SDATA(D_L00_00161DA8);
@@ -2072,7 +2072,7 @@ typedef struct {
     float unk50;
     float unk54;
     float unk58;
-} CamOrbit_2E72E8;
+} CamOrbit;
 typedef struct {
     char pad0[0xB0];
     float unkB0;
@@ -2090,7 +2090,7 @@ typedef struct {
     float unkE0;
     float unkE4;
     float unkE8;
-} CamTarget_2E72E8;
+} CamTarget;
 typedef struct {
     char pad0[0x10];
     short unk10;
@@ -2103,13 +2103,13 @@ typedef struct {
     float unk40;
     float unk44;
     int unk48;
-} CamSpring_2E72E8;
+} CamSpring;
 typedef struct {
     char pad0[0x6];
     short unk6;
     char pad8[4];
     float unkC;
-} CamEnd_2E72E8;
+} CamEnd;
 typedef struct {
     char pad0[0x10];
     int unk10;
@@ -2120,11 +2120,11 @@ typedef struct {
         float value;
     } unk1C;
     int unk20, unk24;
-} CamInit_2E72E8;
+} CamInit;
 typedef struct {
     char pad0[0x70];
     unsigned char *cam;
-} CamObject_2E72E8;
+} CamObject;
 float cam_interp_values(void *, float, float, float, float, float) __asm__("func_001EC120");
 
 /* Resets camera MOBY's state buffer for a new activation: eases the orbit distance and height (+0x130 block) and
@@ -2133,68 +2133,68 @@ float cam_interp_values(void *, float, float, float, float, float) __asm__("func
 void func_L00_002E72E8(unsigned char *moby) __asm__("func_L00_002E72E8");
 void follow_camera_approach(unsigned char *moby) {
     unsigned char *init, *cam, *defaults, *orbit, *target, *default_target, *default_orbit, *reset;
-    CamSpring_2E72E8 *spring_reset;
-    init = ((CamObject_2E72E8 *)moby)->cam + 0x1A8;
-    ((CamInit_2E72E8 *)init)->unk14 = follow_cam_setting_value_r;
-    ((CamInit_2E72E8 *)init)->unk1C.bits = 0;
-    ((CamInit_2E72E8 *)init)->unk20 = 0;
-    ((CamInit_2E72E8 *)init)->unk10 = 0;
-    ((CamInit_2E72E8 *)init)->unk24 = 0;
-    cam = ((CamObject_2E72E8 *)moby)->cam;
+    CamSpring *spring_reset;
+    init = ((CamObject *)moby)->cam + 0x1A8;
+    ((CamInit *)init)->unk14 = follow_cam_setting_value_r;
+    ((CamInit *)init)->unk1C.bits = 0;
+    ((CamInit *)init)->unk20 = 0;
+    ((CamInit *)init)->unk10 = 0;
+    ((CamInit *)init)->unk24 = 0;
+    cam = ((CamObject *)moby)->cam;
     defaults = *(unsigned char **)follow_cam_defaults_ptr_r;
     orbit = cam + 0x130;
     target = cam + 0x40;
     default_orbit = defaults + 0x130;
     default_target = defaults + 0x40;
-    if (((CamOrbit_2E72E8 *)orbit)->unk3C) {
-        ((CamOrbit_2E72E8 *)orbit)->unk2C = cam_interp_values(
-            cam + 0x174, ((CamOrbit_2E72E8 *)orbit)->unk2C, ((CamOrbit_2E72E8 *)orbit)->unk40.value,
-            ((CamOrbit_2E72E8 *)orbit)->unk48, D_L00_00161DD4_2E72E8, ((CamInit_2E72E8 *)init)->unk1C.value);
+    if (((CamOrbit *)orbit)->unk3C) {
+        ((CamOrbit *)orbit)->unk2C =
+            cam_interp_values(cam + 0x174, ((CamOrbit *)orbit)->unk2C, ((CamOrbit *)orbit)->unk40.value,
+                              ((CamOrbit *)orbit)->unk48, D_L00_00161DD4_2E72E8, ((CamInit *)init)->unk1C.value);
     } else {
-        ((CamOrbit_2E72E8 *)orbit)->unk2C = cam_interp_values(
-            cam + 0x174, ((CamOrbit_2E72E8 *)orbit)->unk2C, ((CamOrbit_2E72E8 *)default_orbit)->unk2C,
-            ((CamOrbit_2E72E8 *)orbit)->unk48, D_L00_00161DD4_2E72E8, ((CamInit_2E72E8 *)init)->unk1C.value);
+        ((CamOrbit *)orbit)->unk2C =
+            cam_interp_values(cam + 0x174, ((CamOrbit *)orbit)->unk2C, ((CamOrbit *)default_orbit)->unk2C,
+                              ((CamOrbit *)orbit)->unk48, D_L00_00161DD4_2E72E8, ((CamInit *)init)->unk1C.value);
     }
-    if (((CamOrbit_2E72E8 *)orbit)->unk3E) {
-        ((CamOrbit_2E72E8 *)orbit)->unk30 =
-            cam_interp_values(orbit + 0x50, ((CamOrbit_2E72E8 *)orbit)->unk30, ((CamOrbit_2E72E8 *)orbit)->unk4C.value,
-                              ((CamOrbit_2E72E8 *)orbit)->unk54, D_L00_00161DD8_2E72E8, 0.0f);
+    if (((CamOrbit *)orbit)->unk3E) {
+        ((CamOrbit *)orbit)->unk30 =
+            cam_interp_values(orbit + 0x50, ((CamOrbit *)orbit)->unk30, ((CamOrbit *)orbit)->unk4C.value,
+                              ((CamOrbit *)orbit)->unk54, D_L00_00161DD8_2E72E8, 0.0f);
     } else {
-        ((CamOrbit_2E72E8 *)orbit)->unk30 = cam_interp_values(
-            orbit + 0x50, ((CamOrbit_2E72E8 *)orbit)->unk30, ((CamOrbit_2E72E8 *)default_orbit)->unk30,
-            ((CamOrbit_2E72E8 *)orbit)->unk54, D_L00_00161DD8_2E72E8, 0.0f);
+        ((CamOrbit *)orbit)->unk30 =
+            cam_interp_values(orbit + 0x50, ((CamOrbit *)orbit)->unk30, ((CamOrbit *)default_orbit)->unk30,
+                              ((CamOrbit *)orbit)->unk54, D_L00_00161DD8_2E72E8, 0.0f);
     }
-    if (((CamTarget_2E72E8 *)target)->unkDA) {
-        ((CamTarget_2E72E8 *)target)->unkB0 = cam_interp_values(target + 0xBC, ((CamTarget_2E72E8 *)target)->unkB0,
-                                                                ((CamTarget_2E72E8 *)target)->unkB4.value,
-                                                                ((CamTarget_2E72E8 *)target)->unkB8, 0.2f, 0.0f);
+    if (((CamTarget *)target)->unkDA) {
+        ((CamTarget *)target)->unkB0 =
+            cam_interp_values(target + 0xBC, ((CamTarget *)target)->unkB0, ((CamTarget *)target)->unkB4.value,
+                              ((CamTarget *)target)->unkB8, 0.2f, 0.0f);
     } else {
-        ((CamTarget_2E72E8 *)target)->unkB0 = cam_interp_values(target + 0xBC, ((CamTarget_2E72E8 *)target)->unkB0,
-                                                                ((CamTarget_2E72E8 *)default_target)->unkB0,
-                                                                ((CamTarget_2E72E8 *)target)->unkB8, 0.2f, 0.0f);
+        ((CamTarget *)target)->unkB0 =
+            cam_interp_values(target + 0xBC, ((CamTarget *)target)->unkB0, ((CamTarget *)default_target)->unkB0,
+                              ((CamTarget *)target)->unkB8, 0.2f, 0.0f);
     }
-    ((CamOrbit_2E72E8 *)orbit)->unk3C = 0;
-    ((CamOrbit_2E72E8 *)orbit)->unk3E = 0;
-    ((CamOrbit_2E72E8 *)orbit)->unk40.bits = 0;
-    ((CamOrbit_2E72E8 *)orbit)->unk4C.bits = 0;
-    ((CamOrbit_2E72E8 *)orbit)->unk58 = ((CamOrbit_2E72E8 *)default_orbit)->unk2C;
-    ((CamTarget_2E72E8 *)target)->unkDA = 0;
-    ((CamTarget_2E72E8 *)target)->unkB4.bits = 0;
-    ((Cam_2E72E8 *)((CamObject_2E72E8 *)moby)->cam)->unk10 = 1;
-    ((Cam_2E72E8 *)((CamObject_2E72E8 *)moby)->cam)->unk22 = 0;
-    ((CamTarget_2E72E8 *)target)->unkDC = D_L00_00161D70_2E72E8;
-    ((CamTarget_2E72E8 *)target)->unkE4 = D_L00_00161D70_2E72E8;
-    ((CamTarget_2E72E8 *)target)->unkE0 = 0.2f;
-    ((CamTarget_2E72E8 *)target)->unkE8 = 0.2f;
-    ((CamTarget_2E72E8 *)target)->unkD6 = 0;
-    spring_reset = (CamSpring_2E72E8 *)(((CamObject_2E72E8 *)moby)->cam + 0x1D0);
+    ((CamOrbit *)orbit)->unk3C = 0;
+    ((CamOrbit *)orbit)->unk3E = 0;
+    ((CamOrbit *)orbit)->unk40.bits = 0;
+    ((CamOrbit *)orbit)->unk4C.bits = 0;
+    ((CamOrbit *)orbit)->unk58 = ((CamOrbit *)default_orbit)->unk2C;
+    ((CamTarget *)target)->unkDA = 0;
+    ((CamTarget *)target)->unkB4.bits = 0;
+    ((Cam_2E72E8 *)((CamObject *)moby)->cam)->unk10 = 1;
+    ((Cam_2E72E8 *)((CamObject *)moby)->cam)->unk22 = 0;
+    ((CamTarget *)target)->unkDC = D_L00_00161D70_2E72E8;
+    ((CamTarget *)target)->unkE4 = D_L00_00161D70_2E72E8;
+    ((CamTarget *)target)->unkE0 = 0.2f;
+    ((CamTarget *)target)->unkE8 = 0.2f;
+    ((CamTarget *)target)->unkD6 = 0;
+    spring_reset = (CamSpring *)(((CamObject *)moby)->cam + 0x1D0);
     spring_reset->unk44 = D_L00_00161DAC_2E72E8;
     spring_reset->unk3C = D_L00_00161DB4_2E72E8;
     spring_reset->unk40 = D_L00_00161DB0_2E72E8;
     spring_reset->unk48 = gCamSphereMaskBaseLvl_r;
-    reset = ((CamObject_2E72E8 *)moby)->cam + 0x220;
-    ((CamEnd_2E72E8 *)reset)->unkC = D_L00_00161DEC_2E72E8;
-    ((CamEnd_2E72E8 *)reset)->unk6 = 0;
+    reset = ((CamObject *)moby)->cam + 0x220;
+    ((CamEnd *)reset)->unkC = D_L00_00161DEC_2E72E8;
+    ((CamEnd *)reset)->unk6 = 0;
 }
 typedef struct {
     u8 pad[0xB0];
@@ -2608,7 +2608,7 @@ void reset_follow_camera_state_from_position(Camera *m) {
     }
 }
 typedef int V128_2E8210 __attribute__((mode(TI)));
-typedef struct CamE_2E8210 {
+typedef struct CamE {
     short h0; /* 0x00 */
     short h2; /* 0x02 */
     float f4; /* 0x04 */
@@ -2618,8 +2618,8 @@ typedef struct CamE_2E8210 {
     int i14; /* 0x14 */
     int i18; /* 0x18 */
     int pad1C;
-} CamE_2E8210;
-typedef struct CamA_2E8210 {
+} CamE;
+typedef struct CamA {
     float pos[4]; /* 0x00 */
     char pad10[0x40];
     float f50[4]; /* 0x50 */
@@ -2642,8 +2642,8 @@ typedef struct CamA_2E8210 {
     float fE4; /* 0xE4 */
     float fE8; /* 0xE8 */
     char padEC[4];
-} CamA_2E8210;
-typedef struct CamB_2E8210 {
+} CamA;
+typedef struct CamB {
     float v0[4]; /* 0x00 */
     float v10[4]; /* 0x10 */
     int i20; /* 0x20 */
@@ -2663,7 +2663,7 @@ typedef struct CamB_2E8210 {
     float f54; /* 0x54 */
     float f58; /* 0x58 */
     char pad5C[4];
-} CamB_2E8210;
+} CamB;
 typedef struct Cam190_2E8210 {
     int i0; /* 0x00 */
     int i4; /* 0x04 */
@@ -2684,7 +2684,7 @@ typedef struct Cam1A8_2E8210 {
     int i20; /* 0x20 */
     int i24; /* 0x24 */
 } Cam1A8_2E8210;
-typedef struct CamG_2E8210 {
+typedef struct CamG {
     char pad0[0x10];
     float v10[4]; /* 0x10 */
     float v20[4]; /* 0x20 */
@@ -2698,7 +2698,7 @@ typedef struct CamG_2E8210 {
     float f44; /* 0x44 */
     int i48; /* 0x48 */
     int i4C; /* 0x4C */
-} CamG_2E8210;
+} CamG;
 typedef struct Cam220_2E8210 {
     int i0; /* 0x00 */
     short h4; /* 0x04 */
@@ -2722,19 +2722,19 @@ typedef struct Cam_2E8210 {
     short h14; /* 0x014 */
     short h16; /* 0x016 */
     char pad18[8];
-    CamE_2E8210 e; /* 0x020 */
-    CamA_2E8210 a; /* 0x040 */
-    CamB_2E8210 b; /* 0x130 */
+    CamE e; /* 0x020 */
+    CamA a; /* 0x040 */
+    CamB b; /* 0x130 */
     Cam190_2E8210 p190; /* 0x190 */
     Cam1A8_2E8210 p1A8; /* 0x1A8 */
-    CamG_2E8210 g; /* 0x1D0 */
+    CamG g; /* 0x1D0 */
     Cam220_2E8210 p220; /* 0x220 */
     Cam240_2E8210 p240; /* 0x240 */
 } Cam_2E8210;
-typedef struct Ctl_2E8210 {
+typedef struct Ctl {
     char pad0[0x86];
     short h86; /* 0x86 */
-} Ctl_2E8210;
+} Ctl;
 extern Hero g_hero_r __asm__("D_0013F450");
 extern char gHeroPos_r[] __asm__("D_0013F4D0");
 extern int D_L00_00161E5C_2E8210 SDATA(D_L00_00161E5C);
@@ -2748,7 +2748,7 @@ extern int D_L00_00161DF4_2E8210 SDATA(D_L00_00161DF4);
 extern float follow_cam_turn_blend_weight_r __asm__("D_L00_0015F040") MACRO_ADDR;
 extern float follow_cam_setting_value_r2 __asm__("D_L00_0015F044") MACRO_ADDR;
 extern int gCamSphereMaskBaseLvl_r2 __asm__("D_L00_0015F060") MACRO_ADDR;
-extern Ctl_2E8210 *camera_cross_axis_ptr_r __asm__("D_L00_00166F04");
+extern Ctl *camera_cross_axis_ptr_r __asm__("D_L00_00166F04");
 extern int scale_ticks_r3(int) __asm__("func_001F9850");
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 extern void FastVecSub_r4(void *, void *, void *) __asm__("func_001F9BF0");
@@ -2761,13 +2761,13 @@ extern void rebuild_follow_camera_pose_r(int) __asm__("func_L00_002E7B68");
 
 /* Initialises the type-0 camera: fills its data blocks and seeds the first position. */
 void follow_camera_setup(Camera *m) {
-    CamA_2E8210 *a;
-    CamB_2E8210 *b;
+    CamA *a;
+    CamB *b;
     Cam_2E8210 *c;
     Cam_2E8210 *e;
-    CamE_2E8210 *f;
+    CamE *f;
     Cam_2E8210 *d;
-    CamG_2E8210 *g;
+    CamG *g;
     char *q1;
     char *q2;
     char *q3;
@@ -3071,14 +3071,14 @@ typedef struct Cam_2E8AC8 {
     float f210;
     float f214;
 } Cam_2E8AC8;
-typedef struct Mdata_2E8AC8 {
+typedef struct Mdata {
     char pad0[0x90];
     V4_2E8AC8 v90; /* 0x90 */
     char padA0[0x90];
     V4_2E8AC8 v130; /* 0x130 */
     char pad140[0x90];
     V4_2E8AC8 v1D0; /* 0x1D0 */
-} Mdata_2E8AC8;
+} Mdata;
 extern void clear_u64_value_r2(void *) __asm__("func_001F9BC0");
 extern void FastVecAdd_r3(void *, void *, void *) __asm__("func_001F9BD8");
 extern float resolve_level_path_segment_point_r(void *, void *, void *, void *, float) __asm__("func_L00_0025ED30");
@@ -3105,7 +3105,7 @@ int func_L00_002E8AC8_r(Camera *m, float *pos, int unused, float sa, float sb) {
     V4_2E8AC8 w;
     V4_2E8AC8 u;
     Cam_2E8AC8 *g = (Cam_2E8AC8 *)g_current_follow_cam_r2->state_buf;
-    Mdata_2E8AC8 *d = (Mdata_2E8AC8 *)m->state_buf;
+    Mdata *d = (Mdata *)m->state_buf;
     float *c = d->v130;
     float *q = d->v1D0;
     int res = 0;
@@ -3260,8 +3260,8 @@ typedef struct {
     s32 i2084;
     u8 pad2088[0x20A4 - 0x2088];
     u8 b20A4;
-} GS_2e7d20;
-#define D_0013F450_x (*(GS_2e7d20 *)D_0013F450)
+} GS;
+#define D_0013F450_x (*(GS *)D_0013F450)
 #define D_L00_00166F10_x ((u8 *)D_L00_00166F10)
 #define D_L00_00166EC0_x ((u8 *)D_L00_00166EC0)
 extern u8 *follow_cam_hidden_collision_mobies[];
@@ -3310,7 +3310,7 @@ void follow_camera_avoid_mobies(int mi) {
     W_2e7d20 hit_descriptor;
     u8 *x;
     u8 *orbit_state;
-    CamG_2E8210 *collision;
+    CamG *collision;
     s32 hit, cnt, any;
     s32 j;
     Moby *nearby_moby;
@@ -3327,11 +3327,11 @@ void follow_camera_avoid_mobies(int mi) {
     base = D_L00_00166F10_x;
     x = camera_moby->state_buf;
     orbit_state = x + 0x130;
-    collision = (CamG_2E8210 *)(x + 0x1D0);
+    collision = (CamG *)(x + 0x1D0);
     hit = 0;
     cnt = 0;
     any = 0;
-    probe_diameter = ((CamB_2E8210 *)orbit_state)->f2C - collision->f30 + 1.5f;
+    probe_diameter = ((CamB *)orbit_state)->f2C - collision->f30 + 1.5f;
     if (D_0015EE84_ANCH == 0xF) {
         any = D_0013F450_x.b20A4 == 2;
     }
@@ -3362,7 +3362,7 @@ void follow_camera_avoid_mobies(int mi) {
             CAST_func_001F9BF0(&planar_moby_direction, &moby_offset_or_camera_endpoint, &v20);
             vec_scale_to_length(&planar_moby_direction, &planar_moby_direction, 1.0f);
             f = FastVecDot(&planar_moby_direction, orbit_state);
-            f = FastArcSin(f / (((CamB_2E8210 *)orbit_state)->f2C - collision->f30));
+            f = FastArcSin(f / (((CamB *)orbit_state)->f2C - collision->f30));
             if (FastAbsF(1.5707964f - f) < 0.43633232f) {
                 FastVecCross(&orbit_side_direction, orbit_state, base + 0x30);
                 vec_scale_to_length(&orbit_side_direction, &orbit_side_direction, 1.0f);
@@ -3381,7 +3381,7 @@ void follow_camera_avoid_mobies(int mi) {
     }
     hit = CAST_func_L00_002E89D0(camera_moby) == 0 ? hit : 1;
     hit = CAST_func_L00_002E87C8(camera_moby) == 0 ? hit : 1;
-    g = ((CamB_2E8210 *)orbit_state)->f2C;
+    g = ((CamB *)orbit_state)->f2C;
     if (g - collision->f30 < *(f32 *)&follow_cam_moby_min_distance) {
         collision->f30 = g - *(f32 *)&follow_cam_moby_min_distance;
         collision->h34 = scale_ticks(2000);
@@ -3423,7 +3423,7 @@ slow:
         collision->h34 = scale_ticks(2000);
     }
 move:
-    vec_scale_to_length(orbit_state, orbit_state, ((CamB_2E8210 *)orbit_state)->f2C - collision->f30);
+    vec_scale_to_length(orbit_state, orbit_state, ((CamB *)orbit_state)->f2C - collision->f30);
     FastVecAdd(&moby_offset_or_camera_endpoint, orbit_state, (x + 0x90));
     if (D_0013F450_x.i2084 == 0x7F) {
         goto clear;
@@ -3814,7 +3814,7 @@ extern short follow_camera_pitch_input_return_step_limit;
 extern short follow_camera_pitch_input_tracking_step_limit;
 extern short follow_camera_pitch_angle_step_limit;
 
-typedef struct TurnPitchVec_2e8bb8 {
+typedef struct TurnPitchVec {
     Vec4 vec; /* 0x00: vector the look-at matrix is built in */
     u8 pad_10[0x24];
     f32 angle; /* 0x34: turn_pitch_gain * turn_pitch */
@@ -3822,9 +3822,9 @@ typedef struct TurnPitchVec_2e8bb8 {
         f32 f;
         s32 i;
     } step; /* 0x38: written as a float and zeroed as an int */
-} TurnPitchVec_2e8bb8;
+} TurnPitchVec;
 
-typedef struct TurnPitchState_2e8bb8 {
+typedef struct TurnPitchState {
     f32 turn_pitch; /* 0x00: eased pitch value */
     f32 turn_pitch_spring; /* 0x04: spring state Cam_InterpValues takes */
     f32 turn_rate; /* 0x08: eased stick turn value */
@@ -3833,25 +3833,25 @@ typedef struct TurnPitchState_2e8bb8 {
     f32 turn_pitch_gain; /* 0x14: multiplies turn_pitch */
     u8 pad_18[0x8];
     f32 turn_hold_pitch; /* 0x20: pitch used while the camera is not moving */
-} TurnPitchState_2e8bb8;
+} TurnPitchState;
 
-typedef struct CamTurnPitch_2e8bb8 {
+typedef struct CamTurnPitch {
     u8 pad_00[0x22];
     s16 unk22; /* 0x22: set to 1 when the pitch goes negative */
     u8 pad_24[0x10C];
-    TurnPitchVec_2e8bb8 turn_vec; /* 0x130: vector the look-at matrix is built in */
+    TurnPitchVec turn_vec; /* 0x130: vector the look-at matrix is built in */
     u8 pad_170[0x38];
-    TurnPitchState_2e8bb8 turn_state; /* 0x1A8 */
+    TurnPitchState turn_state; /* 0x1A8 */
     u8 pad_1CC[0x3C];
     s16 unk208; /* 0x208: negative while the camera is on its way down */
-} CamTurnPitch_2e8bb8;
+} CamTurnPitch;
 
 /* steers the hero heading and pitch towards a stick input. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay_vendor_002df730.c, FUN_L00_002e8bb8. */
 void follow_camera_turn_and_pitch(int mi, float a, float b) {
     Camera *cam = (Camera *)mi;
-    CamTurnPitch_2e8bb8 *camera_data = (CamTurnPitch_2e8bb8 *)cam->state_buf;
-    TurnPitchVec_2e8bb8 *turn_pitch_vector = &camera_data->turn_vec;
-    TurnPitchState_2e8bb8 *turn_pitch_state = &camera_data->turn_state;
+    CamTurnPitch *camera_data = (CamTurnPitch *)cam->state_buf;
+    TurnPitchVec *turn_pitch_vector = &camera_data->turn_vec;
+    TurnPitchState *turn_pitch_state = &camera_data->turn_state;
     CameraFollow *base = (CameraFollow *)camera_view;
     float axis[4];
     float zero, sel, e, abs_ang, lim;
@@ -3908,7 +3908,7 @@ void follow_camera_turn_and_pitch(int mi, float a, float b) {
             turn_pitch_vector->step.f = *(float *)&follow_camera_pitch_angle_step_limit;
         }
     } else if (lim < b) {
-        if (((CamTurnPitch_2e8bb8 *)cam->state_buf)->unk208 < 0) {
+        if (((CamTurnPitch *)cam->state_buf)->unk208 < 0) {
             turn_pitch_vector->step.i = 0;
         } else {
             if (FastAddRots(b, -*(float *)&follow_camera_pitch_angle_step_limit) < lim) {
@@ -3921,7 +3921,7 @@ void follow_camera_turn_and_pitch(int mi, float a, float b) {
         turn_pitch_vector->step.i = 0;
     }
     if (lim < 0.0f) {
-        ((CamTurnPitch_2e8bb8 *)cam->state_buf)->unk22 = 1;
+        ((CamTurnPitch *)cam->state_buf)->unk22 = 1;
     }
     build_look_at_matrix(turn_pitch_vector->vec.f, turn_pitch_vector->vec.f, axis, turn_pitch_vector->step.f);
 }

@@ -645,18 +645,18 @@ typedef struct {
     int fC;
     char p10[0x1C];
     int f2C[5];
-} PVar_2523C8;
+} PVar;
 typedef struct {
     char p0[0xC];
     int fC;
     int f10;
     char p14[0x18];
-} Rec2C_2523C8;
+} Rec2C;
 extern Hero g_hero_h2523C8 __asm__("D_0013F450");
 extern PadState g_controller_state_p2523C8 __asm__("D_0013CA40");
 extern int last_weapon_id_r __asm__("D_00141760");
 extern unsigned char item_available_r[] __asm__("D_0013D5C8");
-extern Rec2C_2523C8 rilgar_attack_records_r[] __asm__("D_L05_0017C188");
+extern Rec2C rilgar_attack_records_r[] __asm__("D_L05_0017C188");
 extern int gadget_double_tap_timer SDATA(D_L05_0015F754);
 extern int pad_pressed_within(int, int, int *);
 extern int is_wrench_moby(void *);
@@ -672,7 +672,7 @@ typedef struct {
     unsigned short hD8;
     unsigned short hDA;
     int fDC;
-} Stats_2523C8;
+} Stats;
 extern int hero_slot_item_id(int);
 extern unsigned short help_records_131_count[] NOT_SDA;
 extern unsigned short usage_stats_entry27_count[] NOT_SDA;
@@ -784,7 +784,7 @@ int process_hero_primary_item_input(void) {
                 }
             }
             if (g_hero_h2523C8.state.control_mode == 6) {
-                Rec2C_2523C8 *rec = &rilgar_attack_records_r[g_hero_h2523C8.attack_record];
+                Rec2C *rec = &rilgar_attack_records_r[g_hero_h2523C8.attack_record];
                 int t;
 
                 if (g_hero_h2523C8.state.current == HERO_STATE_CROUCH_SWING) {
@@ -901,12 +901,12 @@ int process_hero_primary_item_input(void) {
                 g_hero_h2523C8.state.control_mode == 2 || g_hero_h2523C8.state.control_mode == 4 ||
                 g_hero_h2523C8.state.control_mode == 5 || g_hero_h2523C8.state.control_mode == 0xF ||
                 g_hero_h2523C8.state.current == HERO_STATE_LOOK_RELEASE_WAIT) {
-                PVar_2523C8 *pv;
+                PVar *pv;
 
                 if (((Moby *)g_hero_h2523C8.items[0].moby) == 0) {
                     break;
                 }
-                pv = (PVar_2523C8 *)((Moby *)g_hero_h2523C8.items[0].moby)->pvars;
+                pv = (PVar *)((Moby *)g_hero_h2523C8.items[0].moby)->pvars;
                 if (((g_controller_state_p2523C8.held & mask) &&
                      g_hero_h2523C8.items[0].ready_frames > scale_ticks(5)) ||
                     (g_controller_state_p2523C8.pressed & mask)) {
@@ -992,7 +992,7 @@ int process_hero_primary_item_input(void) {
         case 36: {
             Moby *m;
             Moby *best;
-            Stats_2523C8 *stats;
+            Stats *stats;
             int now, per;
 
             if (g_hero_h2523C8.race_ammo != 0) {
@@ -1020,7 +1020,7 @@ int process_hero_primary_item_input(void) {
             }
             best = 0;
             if (((Moby *)g_hero_h2523C8.hoverboard_moby) != 0) {
-                PVar_2523C8 *pv = (PVar_2523C8 *)((Moby *)g_hero_h2523C8.hoverboard_moby)->pvars;
+                PVar *pv = (PVar *)((Moby *)g_hero_h2523C8.hoverboard_moby)->pvars;
                 float bestd = 9999999.0f;
                 int i;
 
@@ -1056,7 +1056,7 @@ int process_hero_primary_item_input(void) {
                     i++;
                 }
             }
-            stats = (Stats_2523C8 *)(help_stats_base + 0x22D);
+            stats = (Stats *)(help_stats_base + 0x22D);
             m->command = scale_ticks(7);
             g_hero_h2523C8.shot_cooldown = scale_ticks(0x32);
             if (stats->hD8 < 0xFFFF) {
@@ -1103,8 +1103,8 @@ int process_hero_primary_item_input(void) {
 typedef struct {
     int bank;
     int seq;
-} SndPair_254030;
-extern SndPair_254030 hoverboard_trick_sounds[];
+} SndPair;
+extern SndPair hoverboard_trick_sounds[];
 extern float predict_hero_trajectory_intercept_time(float a, float b, float c);
 extern void set_hero_animation(int, int, float);
 
@@ -1286,15 +1286,15 @@ void process_hero_race_object_interactions(void) {
         }
     }
 }
-#define G ((ScoreState_254838 *)(D_0013E633 + 0xE1D))
+#define G ((ScoreState *)(D_0013E633 + 0xE1D))
 extern unsigned char special_items_base[];
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern float multiply_global_factor(float);
 typedef struct {
     float value[5];
-} ScoreWeights_254838;
-extern ScoreWeights_254838 hoverboard_trick_multipliers;
+} ScoreWeights;
+extern ScoreWeights hoverboard_trick_multipliers;
 typedef struct {
     char pad0[0x6D0];
     float angle[3];
@@ -1308,20 +1308,20 @@ typedef struct {
     int turnScore, total;
     char pad718[0x190];
     int active;
-} ScoreState_254838;
+} ScoreState;
 typedef struct {
     char pad0[0xF0];
     unsigned short attempts, best;
     unsigned int levels;
-} ScoreStats_254838;
+} ScoreStats;
 
 /* Updates action and rotation scores while the challenge is active. */
 void update_hero_hoverboard_trick_score(void) {
     int i;
     if (special_items_base[0x13B] == 0)
         return;
-    if (((ScoreState_254838 *)(hero_globals_base + 0xE1D))->active != 0) {
-        ScoreStats_254838 *stats = (ScoreStats_254838 *)(help_stats_base + 0x22D);
+    if (((ScoreState *)(hero_globals_base + 0xE1D))->active != 0) {
+        ScoreStats *stats = (ScoreStats *)(help_stats_base + 0x22D);
         if (stats->attempts < 0xFFFF)
             stats->attempts++;
         if (scale_ticks(gameplay_event_frame_count) / 600 > stats->best)
@@ -1360,7 +1360,7 @@ void update_hero_hoverboard_trick_score(void) {
             G->actionCount++;
     }
     {
-        ScoreWeights_254838 weights = hoverboard_trick_multipliers;
+        ScoreWeights weights = hoverboard_trick_multipliers;
         G->multiplier = weights.value[G->actionCount];
         G->actionScore =
             truncate_float_to_s32((float)((G->elapsed * 100) / (int)(multiply_global_factor(1.0f) * 60.0f)));
@@ -1443,7 +1443,7 @@ typedef struct {
     int n;
     int pad[3];
     Node_254DE8 p[1];
-} Path_254DE8;
+} Path;
 typedef struct {
     char pad0[0x20];
     int f20;
@@ -1460,17 +1460,17 @@ typedef struct {
     char pad31[0xBC - 0x31];
     unsigned char fBC;
     char padBD[0x43];
-} Ent_254DE8;
+} Ent;
 typedef struct {
     char pad0[9];
     unsigned char f9;
-} Flags_254DE8;
+} Flags;
 
 extern unsigned char special_items_base_r[] __asm__("D_0013D355") NOT_SDA;
 extern unsigned char menu_item_enabled_115_r[] __asm__("D_0013D50F") NOT_SDA;
 extern unsigned char gHaveHologuise_r __asm__("D_0013D5E7") NOT_SDA;
-extern Path_254DE8 *rilgar_paths_r2[] __asm__("D_L05_001B0CB0");
-extern Ent_254DE8 *moby_pool_4f60_r2 __asm__("D_L05_00160098") MACRO_ADDR;
+extern Path *rilgar_paths_r2[] __asm__("D_L05_001B0CB0");
+extern Ent *moby_pool_4f60_r2 __asm__("D_L05_00160098") MACRO_ADDR;
 extern float frame_scale_r __asm__("D_0015EE60") MACRO_ADDR;
 extern int rilgar_hoverboard_races_finished_r __asm__("D_0015EF38") MACRO_ADDR;
 extern int kalebo3_hoverboard_races_finished_r __asm__("D_0015EF3C") MACRO_ADDR;
@@ -1500,7 +1500,7 @@ void update_hero_hoverboard_race_progress(void) {
     float v0[4] __attribute__((aligned(16)));
     float v1[4] __attribute__((aligned(16)));
     Data_254DE8 *d;
-    Path_254DE8 *path;
+    Path *path;
     int near;
     int j;
     int k;
@@ -1596,10 +1596,10 @@ void update_hero_hoverboard_race_progress(void) {
                 ((Hero *)(hero_globals_base + 0xE1D))->off_course_frames = 0;
                 ((Hero *)(hero_globals_base + 0xE1D))->board_air_yaw = v1[2];
                 Hero_ResetToPosition_r(v0, v1, 0x6B, 1);
-                if (((Path_254DE8 *)((Hero *)(hero_globals_base + 0xE1D))->race_path) != 0) {
-                    int r = select_point_index_by_distance_r(
-                        ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f,
-                        (Path_254DE8 *)((Hero *)(hero_globals_base + 0xE1D))->race_path, 0.0f);
+                if (((Path *)((Hero *)(hero_globals_base + 0xE1D))->race_path) != 0) {
+                    int r = select_point_index_by_distance_r(((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f,
+                                                             (Path *)((Hero *)(hero_globals_base + 0xE1D))->race_path,
+                                                             0.0f);
 
                     if (r < ((Hero *)(hero_globals_base + 0xE1D))->race_path_node) {
                         ((Hero *)(hero_globals_base + 0xE1D))->race_path_node = r;
@@ -1675,8 +1675,8 @@ void update_hero_hoverboard_race_progress(void) {
             t = scale_ticks(0x1644);
         }
         if (t >= ((Hero *)(hero_globals_base + 0xE1D))->race_time_frames) {
-            if (((Flags_254DE8 *)(menu_item_enabled_115_r + 1))->f9 == 0) {
-                ((Flags_254DE8 *)(menu_item_enabled_115_r + 1))->f9 = 1;
+            if (((Flags *)(menu_item_enabled_115_r + 1))->f9 == 0) {
+                ((Flags *)(menu_item_enabled_115_r + 1))->f9 = 1;
                 PlayBankSound_r(1, 0, 0);
                 ShowBanner_r(0x53DB, -1);
             }

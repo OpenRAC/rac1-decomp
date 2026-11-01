@@ -110,30 +110,30 @@ extern int spawn_moby_offset_effect(char *);
 extern short batalia_bolt_spin_min;
 extern short batalia_bolt_spin_max;
 
-typedef struct Target_2B94B0 {
+typedef struct Target {
     char pad0[0xA];
     short fA;
-} Target_2B94B0;
+} Target;
 
-typedef struct MobyData_2B94B0 {
+typedef struct MobyData {
     char pad0[8];
     float f8;
     float fC;
     float vel[4];
     int f20;
-    Target_2B94B0 *target;
+    Target *target;
     int ticks;
     int f2C;
-} MobyData_2B94B0;
+} MobyData;
 // Initialize the moby's rotation and data block, then fetch its handle.
 void initialize_bolt_pickup(char *moby) {
     float a = *(float *)&batalia_bolt_spin_min;
     float b = *(float *)&batalia_bolt_spin_max;
-    struct MobyData_2B94B0 *d;
+    struct MobyData *d;
     ((Moby *)moby)->rot.x = 0.0f;
     ((Moby *)moby)->rot.y = 0.5235988f;
     ((Moby *)moby)->rot.z = 0.0f;
-    d = (struct MobyData_2B94B0 *)((Moby *)moby)->pvars;
+    d = (struct MobyData *)((Moby *)moby)->pvars;
     d->fC = random_float_between(a, b);
     d->ticks = 0;
     d->f8 = ((Moby *)moby)->pos.z;
@@ -178,7 +178,7 @@ extern char level_render_state_base_r[] __asm__("D_0013DE6E");
 
 /* Level 8 moby update (class 152): state machine that steers the moby toward the hero and fires its event. */
 void update_bolt_pickup(Moby *m) {
-    MobyData_2B94B0 *d = (MobyData_2B94B0 *)m->pvars;
+    MobyData *d = (MobyData *)m->pvars;
     float A[4], F[4], B[4], C[4], P[4], E[4];
     float f20, t, f;
     int hit, ok, n;
@@ -777,7 +777,7 @@ typedef struct {
     int count;
     char pad4[0xC];
     char list[1];
-} Path_2D5FA8;
+} Path;
 
 extern float g_frame_time_r2 __asm__("D_0015EE6C") MACRO_ADDR;
 extern int bomber_tank_part1_destroyed_r __asm__("D_L08_0015F694") MACRO_ADDR;
@@ -785,7 +785,7 @@ extern int bomber_tank_part2_destroyed_r __asm__("D_L08_0015F698") MACRO_ADDR;
 extern int bomber_tank_part3_destroyed_r __asm__("D_L08_0015F69C") MACRO_ADDR;
 extern int bomber_tank_part4_destroyed_r __asm__("D_L08_0015F6A0") MACRO_ADDR;
 extern float batalia_zero_vec_r2[] __asm__("D_L08_0015F660") MACRO_ADDR;
-extern Path_2D5FA8 *batalia_path_table_r[] __asm__("D_L08_001B0FB0");
+extern Path *batalia_path_table_r[] __asm__("D_L08_001B0FB0");
 extern char hero_globals_base_r[] __asm__("D_0013E633") NOT_SDA;
 extern unsigned char menu_item_enabled_115_r[] __asm__("D_0013D50F") NOT_SDA;
 extern Hit_2D5FA8 *find_2D5FA8(Moby *, int, int) __asm__("func_L00_0025B478");
@@ -1009,7 +1009,7 @@ extern void Sound_SetPitchBend(int, int);
 typedef struct {
     u8 pad0[0x80];
     int volume;
-} SoundSlot_2d55c8;
+} SoundSlot;
 typedef struct {
     u8 pad0[0x40];
     float velocity[4];
@@ -1021,11 +1021,11 @@ typedef struct {
     float target_speed;
     u8 pad170[0x10];
     float speed;
-} PathMoverVars_2d55c8;
+} PathMoverVars;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l08/gameplay/entities/002b8228.c, FUN_L08_002d55c8. */
 void advance_bomber_tank_along_path(struct Moby *moby, int path_id) {
-    PathMoverVars_2d55c8 *vars = (PathMoverVars_2d55c8 *)moby->pvars;
+    PathMoverVars *vars = (PathMoverVars *)moby->pvars;
     int *path = (int *)batalia_path_table[path_id];
     float point[4];
     float step[3];
@@ -1075,17 +1075,17 @@ void advance_bomber_tank_along_path(struct Moby *moby, int path_id) {
         if (Sound_IsPlaying(moby, vars->sound) == 0) {
             vars->sound = Moby_PlaySound(1, 4, moby);
             Sound_SetPitchBend(vars->sound, 1);
-        } else if (((SoundSlot_2d55c8 *)(voice_pool + (vars->sound) * 0x70))->volume < 0x400) {
-            Sound_SetPitchBend(vars->sound, ((SoundSlot_2d55c8 *)(voice_pool + (vars->sound) * 0x70))->volume +
-                                                0x400 / scale_ticks(60));
+        } else if (((SoundSlot *)(voice_pool + (vars->sound) * 0x70))->volume < 0x400) {
+            Sound_SetPitchBend(vars->sound,
+                               ((SoundSlot *)(voice_pool + (vars->sound) * 0x70))->volume + 0x400 / scale_ticks(60));
         }
     } else if (Sound_IsPlaying(moby, vars->sound) != 0) {
-        if (((SoundSlot_2d55c8 *)(voice_pool + (vars->sound) * 0x70))->volume < 0x100) {
+        if (((SoundSlot *)(voice_pool + (vars->sound) * 0x70))->volume < 0x100) {
             Sound_StopSlot(vars->sound);
             vars->sound = -1;
         } else {
-            Sound_SetPitchBend(vars->sound, ((SoundSlot_2d55c8 *)(voice_pool + (vars->sound) * 0x70))->volume -
-                                                0x400 / scale_ticks(60));
+            Sound_SetPitchBend(vars->sound,
+                               ((SoundSlot *)(voice_pool + (vars->sound) * 0x70))->volume - 0x400 / scale_ticks(60));
         }
     }
 }
@@ -1598,8 +1598,8 @@ typedef struct {
     float x, y;
     char pad148[0x10];
     float f158;
-} Cam_DBF68;
-extern Cam_DBF68 batalia_player_camera_c __asm__("D_L08_00167500");
+} Cam;
+extern Cam batalia_player_camera_c __asm__("D_L08_00167500");
 extern int batalia_bombthrower_scale SDATA(D_L08_00161A3C);
 extern int batalia_bombthrower_fade_ticks SDATA(D_L08_00161A60);
 extern float batalia_bombthrower_knockback_speed SDATA(D_L08_00161A1C);
@@ -1611,7 +1611,7 @@ typedef struct {
     char pad0[0x40];
     Moby *target;
     int r44;
-} Look_DBF68;
+} Look;
 typedef struct {
     char pad0[0x20];
     float health;
@@ -1660,7 +1660,7 @@ typedef struct {
    up and throws bombs at the hero. */
 void blarg_bombthrower_update(Moby *moby) {
     Data_DBF68 *d = (Data_DBF68 *)moby->pvars;
-    Look_DBF68 look;
+    Look look;
     float v50[4];
     float v60[4];
     float v70[4];
@@ -1824,7 +1824,7 @@ void blarg_bombthrower_update(Moby *moby) {
             MobySpringTurn_x(fast_atan2(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y), moby, d->blk12C,
                              0.02f, 0.3f, 0.2f);
             if (dist < 20.0f && 8.0f < dist && fast_dec_timer(&d->i128) != 0) {
-                Cam_DBF68 *cam = &batalia_player_camera_c;
+                Cam *cam = &batalia_player_camera_c;
                 if (FastDiffRots(cam->f158, fast_atan2(moby->pos.x - cam->x, moby->pos.y - cam->y)) < 0.55850536f) {
                     goto attack;
                 }
@@ -1851,7 +1851,7 @@ void blarg_bombthrower_update(Moby *moby) {
                 ClassifyTargetInCone((char *)moby, d->blkD0, v50, (char *)d->v40);
             }
             if (moby->anim_flags & 2) {
-                Cam_DBF68 *cam;
+                Cam *cam;
                 if (vec_distance_xy(&moby->pos, &target->pos) < 6.0f ||
                     (cam = &batalia_player_camera_c,
                      0.55850536f < FastDiffRots(cam->f158, fast_atan2(moby->pos.x - cam->x, moby->pos.y - cam->y)))) {
@@ -2096,8 +2096,8 @@ typedef struct {
     int count;
     int pad[3];
     float e[1][4];
-} Route_2dd4f8;
-extern Route_2dd4f8 *batalia_path_table_r_r[] __asm__("D_L08_001B0FB0");
+} Route;
+extern Route *batalia_path_table_r_r[] __asm__("D_L08_001B0FB0");
 extern char help_stats_base_r_r[] __asm__("D_0014171B") NOT_SDA;
 extern float vec_distance_xy(void *, void *);
 
@@ -2134,7 +2134,7 @@ typedef struct ShuttleVars {
     f32 unk10C; /* 0x10C: velocity for unk108 */
     f32 unk110; /* 0x110 */
     u8 pad_114[0xC];
-    Route_2dd4f8 *cur_path; /* 0x120: route the hero follows */
+    Route *cur_path; /* 0x120: route the hero follows */
     s32 active; /* 0x124 */
 } ShuttleVars;
 // Transforms eight vectors of the current table entry by the moby's matrix.
@@ -2169,9 +2169,9 @@ void select_shuttle_route_for_hero(char *m) {
     Moby *moby = (Moby *)m;
     ShuttleVars *data = (ShuttleVars *)moby->pvars;
     char *pl = &((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos;
-    Route_2dd4f8 *route = batalia_path_table_r_r[data->route_index];
-    Route_2dd4f8 *configured_path = batalia_path_table_r_r[data->configured_index];
-    Route_2dd4f8 *alternate_path = batalia_path_table_r_r[data->alternate_index];
+    Route *route = batalia_path_table_r_r[data->route_index];
+    Route *configured_path = batalia_path_table_r_r[data->configured_index];
+    Route *alternate_path = batalia_path_table_r_r[data->alternate_index];
     float best_candidate_distance = FastVecDist(pl, (char *)route + (route->count << 4));
     float configured_path_start_distance = FastVecDist(pl, configured_path->e[0]);
     float alternate_path_start_distance = FastVecDist(pl, alternate_path->e[0]);
@@ -2359,7 +2359,7 @@ extern int batalia_coll_hit_moby;
 typedef struct __attribute__((packed)) EffectVectorCopy_2DC9A8 {
     unsigned long values[2];
 } EffectVectorCopy_2DC9A8;
-typedef struct EffectRecord_2DC9A8 {
+typedef struct EffectRecord {
     float pos[4];
     float velocity[4];
     void *owner;
@@ -2367,7 +2367,7 @@ typedef struct EffectRecord_2DC9A8 {
     int unknown;
     float scale;
     int state;
-} EffectRecord_2DC9A8;
+} EffectRecord;
 extern CollisionHit batalia_coll_hit;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l08/gameplay/entities/002b8228.c, FUN_L08_002dc9a8. */
@@ -2375,7 +2375,7 @@ void update_ballistic_projectile(struct Moby *moby) {
     char *m = (char *)moby;
     struct BomberShotVars *data = (struct BomberShotVars *)((Moby *)m)->pvars;
     float original[4];
-    EffectRecord_2DC9A8 record;
+    EffectRecord record;
     float *position;
     float effect[4];
     float velocity[4];
@@ -2519,7 +2519,7 @@ struct D46 {
     char pad55[3];
     int health;
     int pad5C;
-    Route_2dd4f8 *path;
+    Route *path;
     int path_index;
     char pad68[0x18];
     float yaw_velocity;
@@ -2532,7 +2532,7 @@ typedef struct {
     int waypoint;
     signed char direction;
     char pad5[0xB];
-    Route_2dd4f8 *path;
+    Route *path;
 } RouteState46;
 typedef struct {
     char pad0[0x2C];

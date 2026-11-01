@@ -348,18 +348,18 @@ void hero_update_hop_velocity(void) {
 typedef struct {
     char p0[0xC];
     int fC;
-} PVar_22F568;
+} PVar;
 typedef struct {
     char p0[0xC];
     int fC;
     int f10;
     char p14[0x18];
-} Rec2C_22F568;
+} Rec2C;
 extern Hero g_hero_h22F568 __asm__("D_0013F450");
 extern PadState g_controller_state_p22F568 __asm__("D_0013CA40");
 extern int last_weapon_id_r __asm__("D_00141760");
 extern unsigned char item_available_r[] __asm__("D_0013D5C8");
-extern Rec2C_22F568 aridia_attack_records_r[] __asm__("D_L02_0017C2A8");
+extern Rec2C aridia_attack_records_r[] __asm__("D_L02_0017C2A8");
 extern int D_L02_0015F754 SDATA(D_L02_0015F754);
 extern int pad_pressed_within(int, int, int *);
 extern int is_wrench_moby(void *);
@@ -466,7 +466,7 @@ int process_hero_item_action_input(void) {
                 }
             }
             if (g_hero_h22F568.state.control_mode == 6) {
-                Rec2C_22F568 *rec = &aridia_attack_records_r[g_hero_h22F568.attack_record];
+                Rec2C *rec = &aridia_attack_records_r[g_hero_h22F568.attack_record];
                 int t;
 
                 if (g_hero_h22F568.state.current == HERO_STATE_CROUCH_SWING) {
@@ -583,12 +583,12 @@ int process_hero_item_action_input(void) {
                 g_hero_h22F568.state.control_mode == 2 || g_hero_h22F568.state.control_mode == 4 ||
                 g_hero_h22F568.state.control_mode == 5 || g_hero_h22F568.state.control_mode == 0xF ||
                 g_hero_h22F568.state.current == HERO_STATE_LOOK_RELEASE_WAIT) {
-                PVar_22F568 *pv;
+                PVar *pv;
 
                 if (((Moby *)g_hero_h22F568.items[0].moby) == 0) {
                     break;
                 }
-                pv = (PVar_22F568 *)((Moby *)g_hero_h22F568.items[0].moby)->pvars;
+                pv = (PVar *)((Moby *)g_hero_h22F568.items[0].moby)->pvars;
                 if (((g_controller_state_p22F568.held & mask) &&
                      g_hero_h22F568.items[0].ready_frames > scale_ticks(5)) ||
                     (g_controller_state_p22F568.pressed & mask)) {

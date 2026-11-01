@@ -1,5 +1,5 @@
 void robot_qwark_update(unsigned char *m) {
-    Vars_DD158 *d = *(Vars_DD158 **)(m + 0x78);
+    Vars *d = *(Vars **)(m + 0x78);
     Hit_DD158 *hit;
     unsigned char type;
     char *w;

@@ -480,7 +480,7 @@ typedef struct {
     float v[4][4];
     int col[4];
     float uv[4][2];
-} Quad_2A62D0;
+} Quad;
 
 extern short light_beam_texture_scroll;
 extern short light_beam_glow_phase;
@@ -503,7 +503,7 @@ typedef struct {
 } __attribute__((aligned(16))) VendorGlowCorner;
 void draw_vendor_effects(char *m) {
     char *p = *(char **)(m + 0x78);
-    Quad_2A62D0 qd;
+    Quad qd;
     long pk[4];
     float q[4][4];
     float d0[4];
@@ -825,7 +825,7 @@ typedef struct {
     char pad0[0x24];
     float scale; /* 0x24 */
 } Class_A7078;
-typedef struct Vars_A7078 {
+typedef struct Vars {
     float pos[4]; /* 0x00: point it hovers around */
     float ang[4]; /* 0x10 */
     float vel[4]; /* 0x20 */
@@ -845,22 +845,22 @@ typedef struct Vars_A7078 {
     float start_z; /* 0x68 */
     short h6C; /* 0x6C */
     short h6E; /* 0x6E */
-} Vars_A7078;
+} Vars;
 typedef struct {
     float pos[4];
     char pad10[4];
     short h14; /* 0x14 */
     char pad16[0xA];
-} Trail_A7078;
+} Trail;
 typedef struct {
     unsigned char pad[0x454];
     unsigned char killed[1];
-} KillFlags_A7078;
+} KillFlags;
 
 extern int cinematic_mode_r __asm__("D_L00_0015F6A8") MACRO_ADDR;
 extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern CollisionHit coll_hit_result_r __asm__("D_L00_00173F40");
-extern Trail_A7078 glints_r[] __asm__("D_L00_0016EB40");
+extern Trail glints_r[] __asm__("D_L00_0016EB40");
 extern float bolt_glint_offsets_r[][4] __asm__("D_L00_001D76D0");
 extern Moby *moby_array_start_r __asm__("D_L00_00160098") MACRO_ADDR;
 extern Moby *level_mobys_end_r __asm__("D_L00_0016009C") MACRO_ADDR;
@@ -868,8 +868,8 @@ extern int free_moby_slot_count_r __asm__("D_L00_0016007C") MACRO_ADDR;
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
-extern KillFlags_A7078 current_level_state_r __asm__("D_L00_001BA960");
-extern KillFlags_A7078 checkpoint_level_state_r __asm__("D_L00_001BB5C0");
+extern KillFlags current_level_state_r __asm__("D_L00_001BA960");
+extern KillFlags checkpoint_level_state_r __asm__("D_L00_001BB5C0");
 extern unsigned char mission_state_r[] __asm__("D_L00_0015FD48") MACRO_ADDR;
 extern unsigned char saved_mission_state_r[][16] __asm__("D_0014C150");
 
@@ -916,7 +916,7 @@ extern void collect_bolt_r(void *) __asm__("func_L00_002A7E10");
 /* Bolt update (classes 13-16): lands where it was dropped, hovers and spins, bounces off the ground, flies to the hero
    when he is near or sucks bolts in, leaves a trail, and is collected on arrival. */
 void bolt_update(Moby *m) {
-    Vars_A7078 *d = *(Vars_A7078 **)&m->pvars;
+    Vars *d = *(Vars **)&m->pvars;
     union {
         struct {
             float a[4]; /* sp+0x00 */
@@ -1198,16 +1198,16 @@ int scale_ticks(int);
 typedef struct {
     u8 pad_00[0xB1];
     u8 id; /* 0x80 set: no id */
-} BoltSource_A7E10;
+} BoltSource;
 typedef struct {
     u16 unk0;
     u16 bolts;
-} BoltSourceStats_A7E10;
+} BoltSourceStats;
 extern s32 gBolts MACRO_ADDR;
 extern s32 counted_bolts_total MACRO_ADDR;
 extern s32 g_current_level_index MACRO_ADDR;
 extern s32 g_current_level_index_r2 __asm__("D_0015EE84") MACRO_ADDR;
-extern BoltSourceStats_A7E10 bolt_source_stats[][64];
+extern BoltSourceStats bolt_source_stats[][64];
 
 extern s32 current_moby_mission_complete MACRO_ADDR;
 extern short level_mobys_end;
@@ -1230,7 +1230,7 @@ void collect_bolt(struct Moby *bolt) {
     s32 spin;
     f32 k;
     f32 size;
-    BoltSource_A7E10 *src;
+    BoltSource *src;
 
     switch (bolt->oclass) {
         default:
@@ -1282,7 +1282,7 @@ extern void vec_scale_to_length(float *, float *, float);
 /* Steers a thrown moby along its path: builds its orientation from the data's angles and, when done, releases the held
    target. */
 void update_bolt_grounded_pose(char *moby, void *out1, void *out2) {
-    struct Vars_A7078 *data = (struct Vars_A7078 *)((Moby *)moby)->pvars;
+    struct Vars *data = (struct Vars *)((Moby *)moby)->pvars;
     float m0[12];
     float m1[12];
     float v60[4];
@@ -1390,7 +1390,7 @@ int begin_bolt_attraction(void *moby_v, int target_i, float sx, float sy) {
     char *moby = moby_v;
     char *target = (char *)target_i;
     float v[12];
-    struct Vars_A7078 *data = (struct Vars_A7078 *)((Moby *)moby)->pvars;
+    struct Vars *data = (struct Vars *)((Moby *)moby)->pvars;
 
     if (((Moby *)moby)->state == 4) {
         return 0;
@@ -2406,7 +2406,7 @@ typedef int Q_2aa998 __attribute__((mode(TI)));
 typedef struct {
     char pad[0x10];
     Vec4 position;
-} BoltOwner_2AA998;
+} BoltOwner;
 extern short homing_bolt_bounds_scale;
 extern short active_homing_missiles[];
 extern char *select_auto_aim_target_moby(void *, void *, void *, float *, float *, float *, float);
@@ -2472,7 +2472,7 @@ char *spawn_homing_bolt(void *owner, void *pos, float a, float b, float c, char 
                 d->unk_3C = r;
             }
         }
-        t.q = ((BoltOwner_2AA998 *)owner)->position.q;
+        t.q = ((BoltOwner *)owner)->position.q;
         t.f[2] = ((float *)pos)[2];
         if (coll_line(&t, pos, 0, *(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby, 0) != 0) {
             m[0xBC] = 1;

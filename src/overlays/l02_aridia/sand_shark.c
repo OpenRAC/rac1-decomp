@@ -268,7 +268,7 @@ extern short sand_shark_puff_start_color;
 extern short sand_shark_puff_end_color;
 
 /* pvars of moby Sand Shark (sand_shark), the fields its update function touches. */
-typedef struct Vars_2D5250 {
+typedef struct Vars {
     char pad000[0x20];
     float f20; /* 0x020 */
     short s24; /* 0x024 */
@@ -328,7 +328,7 @@ typedef struct Vars_2D5250 {
     int i298; /* 0x298 */
     int i29C; /* 0x29C */
     unsigned char blink[0x40]; /* 0x2A0 */
-} Vars_2D5250;
+} Vars;
 
 /* UpdateMoby_580 (sand_shark): swims its path under the sand, surfaces, leaps at the hero, dives back home and dies. */
 void sand_shark_update(unsigned char *moby) {
@@ -337,7 +337,7 @@ void sand_shark_update(unsigned char *moby) {
     float v2[4];
     float v3[4];
     float v4[4];
-    Vars_2D5250 *d;
+    Vars *d;
     char *m;
     float a;
     float g;
@@ -348,7 +348,7 @@ void sand_shark_update(unsigned char *moby) {
     }
     *(volatile int *)0x10000010 = 0x81;
     *(volatile int *)0x10000000 = 0;
-    d = ((Vars_2D5250 *)((Moby *)moby)->pvars);
+    d = ((Vars *)((Moby *)moby)->pvars);
     Manipulator_ApplyScale(2.1f, (int)moby, 0, d->blink);
     if (((Moby *)moby)->visible != 0 && FastVecDist(moby + 0x10, aridia_camera_pos) < 28.0f) {
         set_ground_height_band(moby);
@@ -972,7 +972,7 @@ void extend_group_sand_shark_timers(char *arg) {
         do {
             char *o = (char *)aridia_mobys_m + ((*(unsigned short *)p & 0x7FFF) << 8);
             if (((Moby *)o)->oclass == MOBY_CLASS_SAND_SHARK) {
-                struct Vars_2D5250 *d = (struct Vars_2D5250 *)((Moby *)o)->pvars;
+                struct Vars *d = (struct Vars *)((Moby *)o)->pvars;
                 float f = multiply_global_factor(random_float_between(240.0f, 300.0f));
                 if ((float)d->t25E < f) {
                     d->t25E = truncate_float_to_s32_r(f);
@@ -1298,7 +1298,7 @@ void *handle_sand_shark_suck_cannon_storage(char *moby, void *v) {
     if (r) {
         int idx;
         moby[0x20] = 9;
-        idx = ((struct Vars_2D5250 *)((Moby *)moby)->pvars)->i288;
+        idx = ((struct Vars *)((Moby *)moby)->pvars)->i288;
         if (idx >= 0) {
             char *o = *(char **)(D_L02_00160058_g + idx * 256 + 0x78);
             (*(int *)(o + 0x14C))--;
@@ -1335,7 +1335,7 @@ extern int scale_ticks(int);
 
 /* Sends a sand shark home when it leaves its path polygon. */
 void begin_sand_shark_return_home_if_outside_path(unsigned char *moby) {
-    struct Vars_2D5250 *data = (struct Vars_2D5250 *)((Moby *)moby)->pvars;
+    struct Vars *data = (struct Vars *)((Moby *)moby)->pvars;
     char *entry = aridia_paths[data->i290];
     if (IsPointInPolygon(moby + 0x10, entry + 0x10, *(int *)entry) == 0) {
         ((Moby *)moby)->state = 0x12;

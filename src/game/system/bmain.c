@@ -106,22 +106,22 @@ extern struct DiscTable disc_table_r __asm__("D_00137C80");
 typedef struct {
     s32 off;
     s32 size;
-} LevelChunk_E99D8;
+} LevelChunk;
 
 typedef struct {
     s32 gfx;
     s32 pad4;
     s32 gfx_alt;
     s32 padC;
-    LevelChunk_E99D8 intro[6];
-    LevelChunk_E99D8 loading[6];
+    LevelChunk intro[6];
+    LevelChunk loading[6];
     s32 code;
-} LevelHeader_E99D8;
+} LevelHeader;
 
 typedef struct {
     s32 pad[7];
     s32 bank;
-} SoundSlot_E99D8;
+} SoundSlot;
 
 extern s32 boot_level_active_r __asm__("D_0015F6C8") MACRO_ADDR;
 extern u8 menu_state_frame_count_r[] __asm__("D_00161380");
@@ -137,9 +137,9 @@ extern struct PadState g_controller_state_r __asm__("D_0013CA40");
 extern s32 intro_movie_disc_entry_ntsc_r[] __asm__("D_00139478");
 extern s32 intro_movie_disc_entry_pal_r[] __asm__("D_00139480");
 extern char str_loading_sound_bank_r[] __asm__("D_001E79C0");
-extern SoundSlot_E99D8 startlevel_sound_defs_r[] __asm__("D_00186200");
-extern SoundSlot_E99D8 moby_class_472_sound_defs_r[] __asm__("D_001862E0");
-extern SoundSlot_E99D8 *level_sound_defs_r __asm__("D_0015F714") MACRO_ADDR;
+extern SoundSlot startlevel_sound_defs_r[] __asm__("D_00186200");
+extern SoundSlot moby_class_472_sound_defs_r[] __asm__("D_001862E0");
+extern SoundSlot *level_sound_defs_r __asm__("D_0015F714") MACRO_ADDR;
 extern s32 level_sound_def_count_r __asm__("D_0015F710") MACRO_ADDR;
 extern u8 requested_video_mode_r[] __asm__("D_0016044C") MACRO_ADDR;
 extern s32 space_load_level_r __asm__("D_0015F6E4") MACRO_ADDR;
@@ -191,8 +191,8 @@ extern void DoSpaceTransition_r(void) __asm__("func_00233308");
    one of the bank value and the two globals are what the scheduler moves to the front.
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/textbin/world/startlevel.c, startlevel. */
 void startlevel(void) {
-    LevelHeader_E99D8 *hdr;
-    LevelChunk_E99D8 *tbl;
+    LevelHeader *hdr;
+    LevelChunk *tbl;
     s32 n;
     s32 i;
     s32 cur;
@@ -222,7 +222,7 @@ void startlevel(void) {
     ResetGsRegistersPr_r();
     PutDispBuffer_r();
     SetBackgroundColor_r(0, 0, 0);
-    hdr = (LevelHeader_E99D8 *)(((u32)image_end_round_16k_r & 0xFFFFC000) + 0x2C0000);
+    hdr = (LevelHeader *)(((u32)image_end_round_16k_r & 0xFFFFC000) + 0x2C0000);
     VU1_initChain_r();
     while ((cur = check_memory_card_r()) != 0 && (frames < 11 || g_controller_state_r.pressed == 0)) {
         if (cur != prev) {

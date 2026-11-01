@@ -146,7 +146,7 @@ void cd_read_end_callback(int arg0) {
 
 extern int cd_callback_sema;
 
-struct SemaParam_120B28 {
+struct SemaParam {
     s32 currentCount;
     s32 maxCount;
     s32 initCount;
@@ -158,14 +158,14 @@ extern volatile s32 cd_callback_sema_r[] __asm__("D_001313E0");
 extern s32 cd_ncmd_sema_r[] __asm__("D_001313E8");
 extern s32 cd_scmd_sema_r[] __asm__("D_001313EC");
 extern volatile s32 cd_ncmd_busy_r[] __asm__("D_001313F0");
-extern s32 create_semaphore_r(struct SemaParam_120B28 *) __asm__("func_00118C70");
+extern s32 create_semaphore_r(struct SemaParam *) __asm__("func_00118C70");
 
 /* cmd_sem_init: unless both command semaphores already exist, create them
    (count 1, max 1) and the completion semaphore (count 0) through
    create_semaphore (CreateSema), then clear cd_ncmd_busy.
    Adapted from Lombyte's project (GPL-3.0): src/sdk/library/cmd_sem_init.c, cmd_sem_init. */
 void cd_sema_init(void) {
-    struct SemaParam_120B28 sema;
+    struct SemaParam sema;
 
     if ((cd_ncmd_sema_r[0] != -1) && (cd_scmd_sema_r[0] != -1)) {
         return;

@@ -158,12 +158,12 @@ typedef struct {
     struct Moby *target;
     float *aim;
     float *src;
-} MissileVars_089d0;
+} MissileVars;
 typedef struct {
     u8 pad0[0x1A];
     s16 oclass;
     u8 pad1C[0x14];
-} MissileHit_089d0;
+} MissileHit;
 extern int level_frame MACRO_ADDR;
 extern char *pokitaru_mobys MACRO_ADDR;
 extern char pokitaru_coll_hit_normal[];
@@ -190,10 +190,10 @@ static inline void copy_xyz_089d0(float *dst, float *src) {
    impact it bursts into five sparks, otherwise it shrinks away once its timer runs out.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002c8830.c, FUN_L11_003089d0. */
 void update_homing_missile(struct Moby *moby) {
-    MissileVars_089d0 *vars = (MissileVars_089d0 *)moby->pvars;
+    MissileVars *vars = (MissileVars *)moby->pvars;
     float old[4];
     float look[4];
-    MissileHit_089d0 hit;
+    MissileHit hit;
     float q[4];
     float r[4];
     struct Moby *target;
@@ -476,19 +476,19 @@ void rocket_1034_update(struct Moby *moby) {
 }
 typedef struct {
     float u, v;
-} UV_30BCD8;
+} UV;
 typedef struct {
     float x, y, z;
-} Pos_30BCD8;
+} Pos;
 typedef struct {
     Vec4f v[4];
     int col[4];
-    UV_30BCD8 uv[4];
+    UV uv[4];
     long z70;
     long z78;
     long q80;
     long q88;
-} Quad_30BCD8;
+} Quad;
 typedef struct {
     int f0;
     int f4;
@@ -506,11 +506,11 @@ typedef struct {
 typedef struct {
     char pad[0x140];
     float x, y, z;
-} Cam_30BCD8;
+} Cam;
 typedef struct {
     char pad[0x228];
     float f228, f22C;
-} Fog_30BCD8;
+} Fog;
 
 extern void VU1_addGSregister(int, long);
 extern int GetEffectTex(int);
@@ -527,14 +527,14 @@ extern char pokitaru_camera_matrix[];
 
 extern float pokitaru_ocean_height MACRO_ADDR;
 extern char pokitaru_player_camera[];
-extern Pos_30BCD8 pokitaru_ocean_strip_verts[];
+extern Pos pokitaru_ocean_strip_verts[];
 extern int pokitaru_ocean_strip_colors[];
-extern UV_30BCD8 pokitaru_ocean_strip_uvs[];
-extern Pos_30BCD8 pokitaru_water_sheet_verts[];
+extern UV pokitaru_ocean_strip_uvs[];
+extern Pos pokitaru_water_sheet_verts[];
 extern int pokitaru_water_sheet_colors[];
-extern UV_30BCD8 pokitaru_water_sheet_uvs[];
+extern UV pokitaru_water_sheet_uvs[];
 extern float wave_speed[2] SDATA(D_L11_00161E88);
-extern UV_30BCD8 wave_offset[] MACRO_ADDR;
+extern UV wave_offset[] MACRO_ADDR;
 
 /* Draws the level's water sheet: a fading edge strip, a far quad, and two scrolling layers of grid cells around the
    camera. */
@@ -546,10 +546,10 @@ void draw_pokitaru_ocean(Moby *moby) {
     Vec4f c[4];
     Vec4f d0;
     Vec4f d1;
-    Quad_30BCD8 q;
+    Quad q;
     Data_30BCD8 *d = (Data_30BCD8 *)moby->pvars;
-    float s228 = ((Fog_30BCD8 *)pokitaru_render_view_params)->f228;
-    float s22C = ((Fog_30BCD8 *)pokitaru_render_view_params)->f22C;
+    float s228 = ((Fog *)pokitaru_render_view_params)->f228;
+    float s22C = ((Fog *)pokitaru_render_view_params)->f22C;
     int i;
     int layer;
     int colA;
@@ -560,8 +560,8 @@ void draw_pokitaru_ocean(Moby *moby) {
     float y;
 
     if (((Hero *)(hero_globals_base + 0xE1D))->state.current != 0x1D && pokitaru_render_setup_packet_default == 0) {
-        ((Fog_30BCD8 *)pokitaru_render_view_params)->f228 = 255.0f;
-        ((Fog_30BCD8 *)pokitaru_render_view_params)->f22C = 249.9f;
+        ((Fog *)pokitaru_render_view_params)->f228 = 255.0f;
+        ((Fog *)pokitaru_render_view_params)->f22C = 249.9f;
     }
     VU1_addGSregister(0x42, 0x3200000044L);
     VU1_addGSregister(8, 0);
@@ -626,7 +626,7 @@ void draw_pokitaru_ocean(Moby *moby) {
     q.q80 = 0xFF9000000260L;
     q.q88 = 0x8000000044L;
     q.z70 = 0;
-    if (d->f14 < ((Cam_30BCD8 *)pokitaru_player_camera)->z - d->f24 &&
+    if (d->f14 < ((Cam *)pokitaru_player_camera)->z - d->f24 &&
         ((Hero *)(hero_globals_base + 0xE1D))->state.current != 0x1D && pokitaru_render_setup_packet_default == 0) {
         q.uv[0].u = 0.0f;
         q.uv[0].v = 0.0f;
@@ -642,10 +642,10 @@ void draw_pokitaru_ocean(Moby *moby) {
         q.col[3] = q.col[1];
         *(u128 *)&q.v[0] = *(u128 *)&c[1];
         *(u128 *)&q.v[1] = *(u128 *)&c[1];
-        q.v[1].z = ((Cam_30BCD8 *)pokitaru_player_camera)->z - d->f24;
+        q.v[1].z = ((Cam *)pokitaru_player_camera)->z - d->f24;
         *(u128 *)&q.v[2] = *(u128 *)&c[3];
         *(u128 *)&q.v[3] = *(u128 *)&c[3];
-        q.v[3].z = ((Cam_30BCD8 *)pokitaru_player_camera)->z - d->f24;
+        q.v[3].z = ((Cam *)pokitaru_player_camera)->z - d->f24;
         draw_world_quad(&q, 0, 0);
     }
     VU1_addGSregister(0x42, 0x8000000048L);
@@ -654,7 +654,7 @@ void draw_pokitaru_ocean(Moby *moby) {
     VU1_addGSregister(0x47, 0x513F1);
     colA = d->fC;
     colB = d->f10;
-    t = 1.0f - (((Cam_30BCD8 *)pokitaru_player_camera)->z - pokitaru_ocean_height) / d->f2C;
+    t = 1.0f - (((Cam *)pokitaru_player_camera)->z - pokitaru_ocean_height) / d->f2C;
     if (t > 1.0f) {
         t = 1.0f;
     }
@@ -669,35 +669,35 @@ void draw_pokitaru_ocean(Moby *moby) {
                 for (x = d->f18 * -2.0f; x < d->f18 * 2.0f; x += d->f18) {
                     pokitaru_water_sheet_uvs[n].u = x / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].u;
                     pokitaru_water_sheet_uvs[n].v = y / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].v;
-                    pokitaru_water_sheet_verts[n].x = x + ((Cam_30BCD8 *)pokitaru_player_camera)->x + 1.0f;
-                    pokitaru_water_sheet_verts[n].y = y + ((Cam_30BCD8 *)pokitaru_player_camera)->y + 1.0f;
+                    pokitaru_water_sheet_verts[n].x = x + ((Cam *)pokitaru_player_camera)->x + 1.0f;
+                    pokitaru_water_sheet_verts[n].y = y + ((Cam *)pokitaru_player_camera)->y + 1.0f;
                     pokitaru_water_sheet_verts[n].z = pokitaru_ocean_height;
                     i = n + 1;
                     pokitaru_water_sheet_uvs[i].u = x / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].u;
                     pokitaru_water_sheet_uvs[i].v =
                         (y + d->f18) / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].v;
-                    pokitaru_water_sheet_verts[i].x = x + ((Cam_30BCD8 *)pokitaru_player_camera)->x + 1.0f;
-                    pokitaru_water_sheet_verts[i].y = y + d->f18 + ((Cam_30BCD8 *)pokitaru_player_camera)->y + 1.0f;
+                    pokitaru_water_sheet_verts[i].x = x + ((Cam *)pokitaru_player_camera)->x + 1.0f;
+                    pokitaru_water_sheet_verts[i].y = y + d->f18 + ((Cam *)pokitaru_player_camera)->y + 1.0f;
                     pokitaru_water_sheet_verts[i].z = pokitaru_ocean_height;
                     i = n + 2;
                     pokitaru_water_sheet_uvs[i].u =
                         (x + d->f18) / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].u;
                     pokitaru_water_sheet_uvs[i].v = y / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].v;
-                    pokitaru_water_sheet_verts[i].x = x + d->f18 + ((Cam_30BCD8 *)pokitaru_player_camera)->x + 1.0f;
-                    pokitaru_water_sheet_verts[i].y = y + ((Cam_30BCD8 *)pokitaru_player_camera)->y + 1.0f;
+                    pokitaru_water_sheet_verts[i].x = x + d->f18 + ((Cam *)pokitaru_player_camera)->x + 1.0f;
+                    pokitaru_water_sheet_verts[i].y = y + ((Cam *)pokitaru_player_camera)->y + 1.0f;
                     pokitaru_water_sheet_verts[i].z = pokitaru_ocean_height;
                     i = n + 3;
                     pokitaru_water_sheet_uvs[i].u =
                         (x + d->f18) / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].u;
                     pokitaru_water_sheet_uvs[i].v =
                         (y + d->f18) / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].v;
-                    pokitaru_water_sheet_verts[i].x = x + d->f18 + ((Cam_30BCD8 *)pokitaru_player_camera)->x + 1.0f;
-                    pokitaru_water_sheet_verts[i].y = y + d->f18 + ((Cam_30BCD8 *)pokitaru_player_camera)->y + 1.0f;
+                    pokitaru_water_sheet_verts[i].x = x + d->f18 + ((Cam *)pokitaru_player_camera)->x + 1.0f;
+                    pokitaru_water_sheet_verts[i].y = y + d->f18 + ((Cam *)pokitaru_player_camera)->y + 1.0f;
                     pokitaru_water_sheet_verts[i].z = pokitaru_ocean_height;
                     for (i = n; i < n + 4; i++) {
-                        v0.x = pokitaru_water_sheet_verts[i].x - ((Cam_30BCD8 *)pokitaru_player_camera)->x;
-                        v0.y = pokitaru_water_sheet_verts[i].y - ((Cam_30BCD8 *)pokitaru_player_camera)->y;
-                        v0.z = pokitaru_water_sheet_verts[i].z - ((Cam_30BCD8 *)pokitaru_player_camera)->z;
+                        v0.x = pokitaru_water_sheet_verts[i].x - ((Cam *)pokitaru_player_camera)->x;
+                        v0.y = pokitaru_water_sheet_verts[i].y - ((Cam *)pokitaru_player_camera)->y;
+                        v0.z = pokitaru_water_sheet_verts[i].z - ((Cam *)pokitaru_player_camera)->z;
                         v0.w = 1.0f;
                         t = vec_length_xy(&v0) / (d->f18 * 2.0f);
                         if (t > 1.0f) {
@@ -715,8 +715,8 @@ void draw_pokitaru_ocean(Moby *moby) {
             }
         }
     }
-    ((Fog_30BCD8 *)pokitaru_render_view_params)->f228 = s228;
-    ((Fog_30BCD8 *)pokitaru_render_view_params)->f22C = s22C;
+    ((Fog *)pokitaru_render_view_params)->f228 = s228;
+    ((Fog *)pokitaru_render_view_params)->f22C = s22C;
     VU1_addGSregister(0x47, 0x5360B);
 }
 typedef struct {
@@ -730,7 +730,7 @@ typedef struct {
     float scale; /* 0x18 */
     char pad1C[0x4];
     float limit; /* 0x20 */
-} OceanVars_30C728;
+} OceanVars;
 
 typedef struct {
     char pad000[0x140];
@@ -770,7 +770,7 @@ extern float frame_delta_time_r __asm__("D_0015EE7C") MACRO_ADDR;
 /* Ocean update: scrolls the two wave layers with the camera and the time, keeps their offsets in -1..1 and sets the
    level's tide values. */
 void ocean_pokitaru_update(Moby *moby) {
-    OceanVars_30C728 *d = (OceanVars_30C728 *)moby->pvars;
+    OceanVars *d = (OceanVars *)moby->pvars;
     float src[4];
     float out[4];
     float tide;
@@ -870,7 +870,7 @@ void Group_CopyZToTableSlots(Moby *moby) {
 typedef struct {
     unsigned char pad0[0x454];
     unsigned char collected[1];
-} LvState_3102C8;
+} LvState;
 
 typedef struct {
     char pad000[0x360];
@@ -879,7 +879,7 @@ typedef struct {
     unsigned int levels; /* 0x364 */
     char pad368[0x22];
     unsigned short best2; /* 0x38A */
-} Stats_3102C8;
+} Stats;
 
 typedef struct {
     char pad00[0x10];
@@ -893,15 +893,15 @@ typedef struct {
     unsigned char bB0; /* 0xB0 */
     char padB1;
     unsigned short uid; /* 0xB2 */
-} Lock_3102C8;
+} Lock;
 
 extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern unsigned char gHaveHeliPack_r[] __asm__("D_0013D5CA");
 extern unsigned char help_stats_base_r[] __asm__("D_0014171B");
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 extern int gameplay_event_frame_count_r __asm__("D_0015EFA4") MACRO_ADDR;
-extern LvState_3102C8 pokitaru_checkpoint_level_state_r __asm__("D_L11_001BBF40");
-extern LvState_3102C8 pokitaru_current_level_state_r __asm__("D_L11_001BB2E0");
+extern LvState pokitaru_checkpoint_level_state_r __asm__("D_L11_001BBF40");
+extern LvState pokitaru_current_level_state_r __asm__("D_L11_001BB2E0");
 extern unsigned char pokitaru_mission_group_state_r[] __asm__("D_L11_0015FD08");
 extern void Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 extern int Help_Request_r(int a, int b) __asm__("func_L00_00203F20");
@@ -910,14 +910,14 @@ extern int scale_ticks_r(int) __asm__("func_001F9850");
 
 // Thruster pack lock update: a state machine (0 idle, 1 armed, 2 attacking) that aims the pack and counts the cooldown
 // timers.
-void thruster_pack_lock_update(Lock_3102C8 *moby) {
+void thruster_pack_lock_update(Lock *moby) {
     char *d = moby->vars;
 
     switch (moby->state) {
         case 0: {
             int e = g_current_level_index_r;
-            ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->count = 0;
-            ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best = 0;
+            ((Stats *)(help_stats_base_r + 0x34D))->count = 0;
+            ((Stats *)(help_stats_base_r + 0x34D))->best = 0;
             *(unsigned short *)(d + 0x3E) |= 8;
             if (e == 0xB && moby->bB0 != 0xFF) {
                 if (pokitaru_checkpoint_level_state_r.collected[(short)moby->uid] != 0 ||
@@ -963,46 +963,46 @@ void thruster_pack_lock_update(Lock_3102C8 *moby) {
                 return;
             }
             if (gHaveHeliPack_r[1] == 0) {
-                int r = scale_ticks_r(gameplay_event_frame_count_r) -
-                        ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best2 * 600;
+                int r =
+                    scale_ticks_r(gameplay_event_frame_count_r) - ((Stats *)(help_stats_base_r + 0x34D))->best2 * 600;
                 if ((int)((float)scale_ticks_r(0x12) * 60.0f) < r ||
-                    ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best2 * 600 == 0) {
+                    ((Stats *)(help_stats_base_r + 0x34D))->best2 * 600 == 0) {
                     Help_Request_r(0x2B02, 0x71);
                     return;
                 }
                 {
                     int q = scale_ticks_r(gameplay_event_frame_count_r) / 600;
-                    if (((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best2 < q) {
-                        ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best2 =
+                    if (((Stats *)(help_stats_base_r + 0x34D))->best2 < q) {
+                        ((Stats *)(help_stats_base_r + 0x34D))->best2 =
                             scale_ticks_r(gameplay_event_frame_count_r) / 600;
                     }
                 }
-            } else if (((Stats_3102C8 *)(help_stats_base_r + 0x34D))->count != 0) {
-                int r = scale_ticks_r(gameplay_event_frame_count_r) -
-                        ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best * 600;
+            } else if (((Stats *)(help_stats_base_r + 0x34D))->count != 0) {
+                int r =
+                    scale_ticks_r(gameplay_event_frame_count_r) - ((Stats *)(help_stats_base_r + 0x34D))->best * 600;
                 if ((int)((float)scale_ticks_r(0x12) * 60.0f) < r ||
-                    ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best * 600 == 0) {
+                    ((Stats *)(help_stats_base_r + 0x34D))->best * 600 == 0) {
                     Help_Request_r(0x2B01, 0x6C);
                     return;
                 }
                 {
                     int q = scale_ticks_r(gameplay_event_frame_count_r) / 600;
-                    if (((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best < q) {
-                        ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best =
+                    if (((Stats *)(help_stats_base_r + 0x34D))->best < q) {
+                        ((Stats *)(help_stats_base_r + 0x34D))->best =
                             scale_ticks_r(gameplay_event_frame_count_r) / 600;
                     }
                 }
             } else {
-                ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->count += 1;
+                ((Stats *)(help_stats_base_r + 0x34D))->count += 1;
                 {
                     int q = scale_ticks_r(gameplay_event_frame_count_r) / 600;
-                    if (((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best < q) {
-                        ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best =
+                    if (((Stats *)(help_stats_base_r + 0x34D))->best < q) {
+                        ((Stats *)(help_stats_base_r + 0x34D))->best =
                             scale_ticks_r(gameplay_event_frame_count_r) / 600;
                     }
                 }
-                ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->levels =
-                    ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->levels | (1 << g_current_level_index_r) | 0x80000000;
+                ((Stats *)(help_stats_base_r + 0x34D))->levels =
+                    ((Stats *)(help_stats_base_r + 0x34D))->levels | (1 << g_current_level_index_r) | 0x80000000;
             }
             break;
     }

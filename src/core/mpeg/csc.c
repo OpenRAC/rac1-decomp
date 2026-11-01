@@ -58,15 +58,15 @@ typedef struct {
     int size;          /* 0x08 */
     int next;          /* 0x0C */
     int total;         /* 0x10 */
-} CscRec_2A558;
+} CscRec;
 
 /* libmpeg chunked DMA copy: arm the channel-3 callback with a progress record, start the transfer, wait for all
    chunks. */
 void do_csc2(void *arg0, unsigned int arg1, int arg2) {
     char *p = (char *)arg0;
     int event[8];
-    CscRec_2A558 rec;
-    CscRec_2A558 *rp;
+    CscRec rec;
+    CscRec *rp;
     int h;
     int r;
 

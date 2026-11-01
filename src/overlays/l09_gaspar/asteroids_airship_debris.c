@@ -330,16 +330,16 @@ typedef struct {
     char pad0[0x38];
     unsigned char b38;
     unsigned char b39;
-} Flags_2C3858;
+} Flags;
 typedef struct {
     int v[2];
-} Pair_2C3858;
+} Pair;
 /* one scratch slot of the frame: a joint matrix in state 0, two vectors (rows 0 and 1) elsewhere, and the effect id
    pair in state 4 */
 typedef union {
     float m[4][4];
-    Pair_2C3858 pair;
-} Buf_2C3858;
+    Pair pair;
+} Buf;
 
 extern int STUB_printf();
 extern void update_moby_vertical_oscillation(float, float, char *, float *, float *);
@@ -371,7 +371,7 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern char special_items_base[];
 extern unsigned char hero_globals_base[];
 extern char airship_part_no_parent_msg[];
-extern Pair_2C3858 airship_part_smoke_colors;
+extern Pair airship_part_smoke_colors;
 extern int G1613F0_3858 SDATA(D_L09_001613F0);
 extern int G1613F4_3858 SDATA(D_L09_001613F4);
 extern int G1613F8_3858 SDATA(D_L09_001613F8);
@@ -402,7 +402,7 @@ extern int G161450_3858 SDATA(D_L09_00161450);
    fall with smoke and sparks. */
 void update_airship_part(Moby *moby) {
     float vec[4];
-    Buf_2C3858 buf;
+    Buf buf;
     float rotm[4][4];
     float dist;
     int joint;
@@ -414,7 +414,7 @@ void update_airship_part(Moby *moby) {
             float s;
 
             Moby_GetJointWorldPos(moby, 0, vec);
-            if (d->f68 != -1 && ((Flags_2C3858 *)(special_items_base + 0x13B + d->f68))->b39 != 0) {
+            if (d->f68 != -1 && ((Flags *)(special_items_base + 0x13B + d->f68))->b39 != 0) {
                 DeleteMoby(moby);
                 return;
             }
@@ -493,9 +493,9 @@ void update_airship_part(Moby *moby) {
         }
         case 3: {
             FastDecTimer(&d->h2A);
-            ((Flags_2C3858 *)(special_items_base + 0x13B))->b38 = 1;
+            ((Flags *)(special_items_base + 0x13B))->b38 = 1;
             if (d->f68 != -1) {
-                ((Flags_2C3858 *)(special_items_base + 0x13B + d->f68))->b39 = 1;
+                ((Flags *)(special_items_base + 0x13B + d->f68))->b39 = 1;
             }
             SetDeathBits(moby, 0x200, -1);
             SpawnExplosionFx(moby, ((f32 *)&moby->pos), -1, 4.0f, 13.0f);
@@ -708,13 +708,13 @@ typedef struct {
     s32 unk48; /* 0x48 */
     u8 pad4C[4];
     Moby *owner; /* 0x50 */
-} PebbleVars_EBD30;
+} PebbleVars;
 typedef struct {
     s32 count;
     u8 pad4[0xC];
     Vec4 pts[1]; /* 0x10: count + 1 points, pts[-1] is this header */
-} PebblePath_EBD30;
-extern PebblePath_EBD30 *gaspar_paths_r[] __asm__("D_L09_001B0930");
+} PebblePath;
+extern PebblePath *gaspar_paths_r[] __asm__("D_L09_001B0930");
 extern char gaspar_camera_pos_r[] __asm__("D_L09_00166FC0");
 extern f32 g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern s32 random_integer_below_r(s32) __asm__("func_002140B0");
@@ -731,17 +731,17 @@ extern void vec_scale_to_length_r(void *, void *, f32) __asm__("func_L00_001FF4B
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l09/gameplay/entities/0021e538.c, FUN_L09_002eaa50. */
 Moby *spawn_path_following_asteroid(Moby *owner) {
     Moby *m;
-    PebbleVars_EBD30 *ovars;
-    PebbleVars_EBD30 *vars;
-    PebblePath_EBD30 *path;
+    PebbleVars *ovars;
+    PebbleVars *vars;
+    PebblePath *path;
     f32 r;
     Vec4 a;
     Vec4 b;
 
     m = CreateMoby_r(random_integer_below_r(4) + 0x107);
     if (m != 0) {
-        ovars = (PebbleVars_EBD30 *)owner->pvars;
-        vars = (PebbleVars_EBD30 *)m->pvars;
+        ovars = (PebbleVars *)owner->pvars;
+        vars = (PebbleVars *)m->pvars;
         qcopy(&m->pos, &owner->pos);
         ovars->count++;
         vars->owner = owner;
@@ -841,7 +841,7 @@ typedef struct {
     float f160;
     int f164;
     int f168;
-} Cam_2EC188;
+} Cam;
 extern unsigned char hero_globals_base[];
 extern float gaspar_coll_hit_point_z;
 extern V6_2EC188 asteroid_impact_start_colors;
@@ -932,7 +932,7 @@ void update_falling_asteroid(Moby *m) {
                 if (((Hero *)(hero_globals_base + 0xE1D))->state.current != 0x32) {
                     float dist = FastVecDist(d->pos, gaspar_camera_pos);
                     if (dist < 15.0f) {
-                        Cam_2EC188 *c = (Cam_2EC188 *)((char *)gaspar_camera_pos - 0x140);
+                        Cam *c = (Cam *)((char *)gaspar_camera_pos - 0x140);
                         c->f160 = (64.0f - dist) * 0.01f;
                         c->f168 = scale_ticks(10);
                     }
@@ -1003,7 +1003,7 @@ void update_falling_asteroid(Moby *m) {
                 if (((Hero *)(hero_globals_base + 0xE1D))->state.current != 0x32) {
                     float dist = FastVecDist(d->pos, gaspar_camera_pos);
                     if (dist < 15.0f) {
-                        Cam_2EC188 *c = (Cam_2EC188 *)((char *)gaspar_camera_pos - 0x140);
+                        Cam *c = (Cam *)((char *)gaspar_camera_pos - 0x140);
                         c->f160 = (64.0f - dist) * 0.01f;
                         c->f168 = scale_ticks(10);
                     }
@@ -1086,9 +1086,9 @@ typedef struct {
     int n;
     int pad[3];
     float pts[1][4]; /* 0x10 */
-} Path_2ECC50;
+} Path;
 
-extern Path_2ECC50 *gaspar_paths_r2[] __asm__("D_L09_001B0930");
+extern Path *gaspar_paths_r2[] __asm__("D_L09_001B0930");
 extern void update_fading_asteroid_debris(unsigned char *m);
 extern Moby *spawn_path_following_asteroid_r(void *m) __asm__("func_L09_002EBD30");
 extern Moby *spawn_falling_asteroid_r(void) __asm__("func_L09_002EBA58");
@@ -1100,7 +1100,7 @@ extern float FastVecDot_r(void *, void *) __asm__("func_001F9C78");
    follows its path and fades in and out at the path's ends. */
 void AsteroidBeltUpdate(Moby *m) {
     Data_2ECC50 *d = (*(Data_2ECC50 **)&m->pvars);
-    Path_2ECC50 *path;
+    Path *path;
     float v0[4];
     float v1[4];
     float len;
@@ -1119,7 +1119,7 @@ void AsteroidBeltUpdate(Moby *m) {
         d->speed = g_frame_time * 10.0f;
         d->centre[0] = d->centre[1] = d->centre[2] = 0.0f;
         if (d->path >= 0) {
-            Path_2ECC50 *ring = gaspar_paths_r2[d->path];
+            Path *ring = gaspar_paths_r2[d->path];
             for (i = 0; i < ring->n; i++) {
                 FastVecAdd(d->centre, d->centre, ring->pts[i]);
             }
@@ -1519,14 +1519,14 @@ typedef int u128_2F0BB8 __attribute__((mode(TI)));
 typedef struct {
     char pad[0x24];
     float scale;
-} SpawnClass_2F0BB8;
+} SpawnClass;
 typedef struct {
     float velocity[4];
     float spin;
     float roll;
     char *owner;
     int timer;
-} SpawnData_2F0BB8;
+} SpawnData;
 
 // Spawns a moby from class 0x140 + base, seeds random rotation and velocity data.
 char *spawn_tumbling_debris(char *owner, void *pos, void *vec, int base, float f) {
@@ -1536,7 +1536,7 @@ char *spawn_tumbling_debris(char *owner, void *pos, void *vec, int base, float f
     void *pb = &b;
     Moby *m = (Moby *)CreateMoby(base + 0x140);
     if (m != 0) {
-        SpawnData_2F0BB8 *d = (*(SpawnData_2F0BB8 **)&m->pvars);
+        SpawnData *d = (*(SpawnData **)&m->pvars);
         d->owner = owner;
         m->update_dist = 0x7F;
         m->draw_dist = 0x7F;
@@ -1549,7 +1549,7 @@ char *spawn_tumbling_debris(char *owner, void *pos, void *vec, int base, float f
         qcopy(d, pb);
         {
             float x;
-            SpawnClass_2F0BB8 *def = (*(SpawnClass_2F0BB8 **)&m->pclass);
+            SpawnClass *def = (*(SpawnClass **)&m->pclass);
             m->scale = def->scale * f;
             x = g_frame_time * 9.0757122f;
             d->spin = random_float_between(-x, x);
@@ -1732,7 +1732,7 @@ typedef struct {
     float f94; /* 0x94 */
     float f98; /* 0x98 */
     float f9C; /* 0x9C */
-} PlatVars_2F9A50;
+} PlatVars;
 
 extern void FastVecScale_r3(void *, void *, float) __asm__("func_001F9C30");
 extern int scale_ticks_r2(int) __asm__("func_001F9850");
@@ -1763,7 +1763,7 @@ extern float D_L09_00161A98_2F9A50 SDATA(D_L09_00161A98);
 
 // Platform moby (Platform) update on level 9: steers its height and tilt from the hero standing on it.
 void platform_664_update(Moby *moby) {
-    PlatVars_2F9A50 *data = (*(PlatVars_2F9A50 **)&moby->pvars);
+    PlatVars *data = (*(PlatVars **)&moby->pvars);
     Vec4A m0;
     Vec4A rot;
     Vec4A rel;
@@ -2109,7 +2109,7 @@ void PathPlatformL09_Update(unsigned char *moby) {
 typedef struct {
     u8 pad0[0x2C];
     f32 damage;
-} VendorHitSource_304EE0;
+} VendorHitSource;
 typedef struct {
     u8 pad0[0x26];
     s16 hurt_timer;
@@ -2117,24 +2117,24 @@ typedef struct {
     u8 anim[8];
     u8 pad68[8];
     s32 link;
-} VendorVars_304EE0;
+} VendorVars;
 extern short gaspar_mobys_r __asm__("D_L09_00160058");
 extern char refueling_station_hit_fmt_r[] __asm__("D_L09_00209280");
-extern VendorHitSource_304EE0 *MobyGetHitMessage_r2(Moby *, s32, s32) __asm__("func_L00_0025B478");
+extern VendorHitSource *MobyGetHitMessage_r2(Moby *, s32, s32) __asm__("func_L00_0025B478");
 extern s32 func_00120778_304EE0(f32) __asm__("func_00120778");
 extern void STUB_printf_r(char *, s32, s32) __asm__("func_001E9730");
-extern s32 ComputeHitResponse_r(Moby *, VendorHitSource_304EE0 *, f32 *, s32, s32 *, s32, s32,
+extern s32 ComputeHitResponse_r(Moby *, VendorHitSource *, f32 *, s32, s32 *, s32, s32,
                                 s32) __asm__("func_L00_0025B4D0");
 extern void SetDeathBits_r2(Moby *, s32, s32) __asm__("func_L00_002584A8");
 extern void RerollEffectCounter_r(Moby *, u8 *) __asm__("func_L00_0025E4B0");
 extern void StepColorFade_r(Moby *, u8 *) __asm__("func_L00_0025E590");
 extern s32 scale_ticks_r3(s32) __asm__("func_001F9850");
 
-void func_L09_00304EE0_r(Moby *moby, VendorVars_304EE0 *vars, f32 *health) __asm__("func_L09_00304EE0");
+void func_L09_00304EE0_r(Moby *moby, VendorVars *vars, f32 *health) __asm__("func_L09_00304EE0");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l09/gameplay/vendor/003033a0.c, FUN_L09_00303b30. */
-void func_L09_00304EE0_r(Moby *moby, VendorVars_304EE0 *vars, f32 *health) {
-    VendorHitSource_304EE0 *src;
+void func_L09_00304EE0_r(Moby *moby, VendorVars *vars, f32 *health) {
+    VendorHitSource *src;
     Moby *link;
     s32 hit;
 
@@ -2868,14 +2868,14 @@ void turret_update(struct Moby *moby) {
     }
 }
 typedef int u128_306DD8 __attribute__((mode(TI)));
-typedef struct SweepData_306DD8 {
+typedef struct SweepData {
     float radius;
     float length;
     int steps;
     float damage;
     int mask;
     int sound;
-} SweepData_306DD8;
+} SweepData;
 extern int Moby_PlaySound_i(int, int, int) __asm__("func_0022ED80");
 extern void initialize_hit_descriptor_c(void *, void *, int, float) __asm__("func_L00_0025A890");
 extern int coll_sphere_mobys_alt(float, void *, int, void *, void *) __asm__("func_L00_001F2BE8");
@@ -2889,7 +2889,7 @@ extern char damage_causer_hit_msg[];
 
 // Builds a swept hit test along the moby's heading and logs the hits.
 void update_damage_causer(Moby *moby) {
-    SweepData_306DD8 *data = (SweepData_306DD8 *)moby->pvars;
+    SweepData *data = (SweepData *)moby->pvars;
     float v[4];
     float v10[4];
     float w[4];
@@ -2947,9 +2947,9 @@ char *spawn_barrier_replacement(char *owner, int cls) {
     }
     return moby;
 }
-typedef struct BarrierData_309688 {
+typedef struct BarrierData {
     int idx;
-} BarrierData_309688;
+} BarrierData;
 
 typedef struct Hit_309688 {
     char pad0[0x10];
@@ -2991,7 +2991,7 @@ extern char special_items_base_r[] __asm__("D_0013D355");
 /* Moby update (barrier classes 1285-1287): bursts into pieces when hit and deletes itself; clears or sets
    its slot in the level's flag block. */
 void barrier_update(Moby *m) {
-    BarrierData_309688 *d = (*(BarrierData_309688 **)&m->pvars);
+    BarrierData *d = (*(BarrierData **)&m->pvars);
     float a20[4], a30[4], a40[4], a50[4], a60[4];
     Hit_309688 *r;
     int flag;
@@ -3105,7 +3105,7 @@ typedef int u128_30A560 __attribute__((mode(TI)));
 typedef struct {
     char pad0[0x18];
     float z;
-} Mpos_30A560;
+} Mpos;
 
 /* Level 9 moby update: 0 sets up and either rises from below or reports a missing target, 1 waits for the target
  * moby to die, 2 rides with the hero (wobbles data+0x60/0x64 towards the hero's offset) or settles back.
@@ -3204,11 +3204,11 @@ void update_floating_ship_piece(char *moby) {
                     (((Moby *)moby)->pos.z - v4[2]);
             } else {
                 float r;
-                ((Mpos_30A560 *)moby)->z = ((Mpos_30A560 *)moby)->z + (r = D_L09_00161E4C_30A560 * g_frame_time_r2) *
-                                                                          (data->base_z - ((Mpos_30A560 *)moby)->z);
-                if (((Mpos_30A560 *)moby)->z < data->base_z - 2.0f) {
+                ((Mpos *)moby)->z = ((Mpos *)moby)->z +
+                                    (r = D_L09_00161E4C_30A560 * g_frame_time_r2) * (data->base_z - ((Mpos *)moby)->z);
+                if (((Mpos *)moby)->z < data->base_z - 2.0f) {
                     float k;
-                    ((Mpos_30A560 *)moby)->z = ((Mpos_30A560 *)moby)->z + r;
+                    ((Mpos *)moby)->z = ((Mpos *)moby)->z + r;
                     k = 0.0174532924f;
                     SpringAngle_r2(&data->rot, 0.0f, &data->rot_vel, 0,
                                    D_L09_00161E60_30A560 * k * g_frame_time_sq_r * 3.0f,
@@ -3226,11 +3226,11 @@ void update_floating_ship_piece(char *moby) {
                         &data->rot.y, 0.0f, &data->rot_vel.y, 0, D_L09_00161E60_30A560 * k * g_frame_time_sq_r,
                         D_L09_00161E64_30A560 * g_frame_scale_sq_r, D_L09_00161E68_30A560 * k * g_frame_time_r2);
                 }
-                if (((Mpos_30A560 *)moby)->z > data->base_z) {
-                    ((Mpos_30A560 *)moby)->z = data->base_z;
+                if (((Mpos *)moby)->z > data->base_z) {
+                    ((Mpos *)moby)->z = data->base_z;
                 }
                 if (f25 < f24) {
-                    if (f24 <= ((Mpos_30A560 *)moby)->z) {
+                    if (f24 <= ((Mpos *)moby)->z) {
                         Moby_PlaySound_r4(2, 0, moby);
                     }
                 }

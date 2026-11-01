@@ -1380,7 +1380,7 @@ typedef struct {
     int col[4];
     float uv[4][2];
     unsigned long a, b, c, d;
-} Pk_2FDD20;
+} Pk;
 extern short gadgebot_launch_glow_blend_minuend_selector_r __asm__("D_L18_001626BC");
 extern short gadgebot_launch_glow_blend_subtrahend_selector_r __asm__("D_L18_001626C0");
 extern short gadgebot_launch_glow_blend_alpha_factor_selector_r __asm__("D_L18_001626C4");
@@ -1405,7 +1405,7 @@ void func_L18_002FDD20_r(struct Moby *m) __asm__("func_L18_002FDD20");
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l18/gameplay/vendor/002f88e8.c, FUN_L18_002fc860. */
 void func_L18_002FDD20_r(struct Moby *m) {
     struct GadgebotVars *d = (struct GadgebotVars *)m->pvars;
-    Pk_2FDD20 pk;
+    Pk pk;
     float mat[4][4];
     float w;
     float h;

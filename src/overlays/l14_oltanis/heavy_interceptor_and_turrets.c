@@ -131,7 +131,7 @@ struct TurretVars {
 
 /* Minibomber (moby Minibomber), for the helpers still on raw offsets;
    minibomber_update reads the same block as Data_2B5938, the path reset
-   as Mover_2B6E80. */
+   as Mover. */
 struct MinibomberVars {
     u8 pad_00[0x20];
     f32 health; /* 0x20: hit response block, ComputeHitResponse */
@@ -1171,7 +1171,7 @@ typedef struct {
     u32 col[4];
     float uv[8];
     unsigned long a, b, c, d;
-} Pk_2add48;
+} Pk;
 extern short interceptor_beam_offset;
 extern short interceptor_beam_offset_step;
 extern short interceptor_beam_quad_size;
@@ -1197,7 +1197,7 @@ extern void draw_world_quad_r(void *, int, int) __asm__("func_L00_001FD1D8");
 void draw_blarg_heavy_interceptor_spinning_beam(char *moby) {
     struct HeavyInterceptorVars *d = (struct HeavyInterceptorVars *)((Moby *)moby)->pvars;
     float src[4][4];
-    Pk_2add48 pk;
+    Pk pk;
     float mat[4][4];
     float t[4];
     float dir[4];
@@ -2177,10 +2177,10 @@ scan:
     } while (1);
 }
 INCLUDE_ASM("asm/overlays", func_L14_002B58E4);
-typedef union PathNode_2B5938 {
+typedef union PathNode {
     float v[4];
     int n;
-} PathNode_2B5938;
+} PathNode;
 
 struct Data_2B5938;
 
@@ -2228,7 +2228,7 @@ typedef struct Data_2B5938 {
     float f180[4]; /* 0x180 */
 } Data_2B5938;
 
-extern PathNode_2B5938 *oltanis_paths_r[] __asm__("D_L14_001B0F30");
+extern PathNode *oltanis_paths_r[] __asm__("D_L14_001B0F30");
 extern char minibomber_err_no_entry_path[];
 extern char minibomber_err_empty_entry_path[];
 extern char minibomber_err_no_target_path[];
@@ -2319,7 +2319,7 @@ void minibomber_update(Moby *moby) {
     }
     switch (moby->state) {
         case 0: {
-            PathNode_2B5938 *path;
+            PathNode *path;
             if (d->fD0 == -1) {
                 STUB_printf(minibomber_err_no_entry_path, (*(short *)&moby->save_id));
                 DeleteMoby(moby);
@@ -2388,7 +2388,7 @@ void minibomber_update(Moby *moby) {
             }
             break;
         case 2: {
-            PathNode_2B5938 *path;
+            PathNode *path;
             if (d->f10C == 0) {
                 path = oltanis_paths_r[d->fD0];
             } else {
@@ -2426,7 +2426,7 @@ void minibomber_update(Moby *moby) {
             break;
         }
         case 3: {
-            PathNode_2B5938 *path;
+            PathNode *path;
             if (d->f10C == 0) {
                 path = oltanis_paths_r[d->fD0];
             } else {
@@ -2456,7 +2456,7 @@ void minibomber_update(Moby *moby) {
                     d->fE8 = 0;
                     d->fEC = 0.0f;
                 } else {
-                    PathNode_2B5938 *q;
+                    PathNode *q;
                     d->fE8 = oltanis_paths_r[d->fDC]->n - 2;
                     q = oltanis_paths_r[d->fDC] + d->fE8;
                     d->fEC = q[1].v[3];
@@ -2486,7 +2486,7 @@ void minibomber_update(Moby *moby) {
                     minibomber_retrace_and_traversal_position_error_gain_gp, minibomber_position_velocity_damping_gp,
                     minibomber_position_snap_threshold_scale_gp, minibomber_retrace_and_traversal_heading_error_gain_gp,
                     minibomber_heading_velocity_damping_gp, minibomber_heading_velocity_limit_gp) != 0) {
-                PathNode_2B5938 *path;
+                PathNode *path;
                 moby->state = 4;
                 if (d->f10C == 0) {
                     d->f10C = 1;
@@ -2513,7 +2513,7 @@ void minibomber_update(Moby *moby) {
             }
             break;
         case 5: {
-            PathNode_2B5938 *q = oltanis_paths_r[d->fD8] + d->f100;
+            PathNode *q = oltanis_paths_r[d->fD8] + d->f100;
             tg = FastSubRots(fast_atan2(q[1].v[0] - moby->pos.x, q[1].v[1] - moby->pos.y), moby->rot.z);
             a = CosineInterpolate(tg, d->f104,
                                   (float)d->f102 / IntToFloat(scale_ticks(minibomber_bomb_aim_duration_frames)));
@@ -2530,7 +2530,7 @@ void minibomber_update(Moby *moby) {
         }
         case 6:
             if (IsFrameWithinWindow(moby, 3.0f) != 0) {
-                PathNode_2B5938 *q;
+                PathNode *q;
                 n = (float)scale_ticks(minibomber_bomb_flight_duration_frames);
                 axis_rotation_2d48(d->f120, 2, d->f104);
                 Moby_GetJointWorldPos(moby, 1, v);
@@ -2798,12 +2798,12 @@ typedef struct {
     int alt;
     char pad110[0x150 - 0x110];
     int pathB;
-} Mover_2B6E80;
+} Mover;
 void func_L14_002B6E80_r(Moby *moby) __asm__("func_L14_002B6E80");
 
 /* Picks the mover's active path, puts it on the path's last segment (node, weight, t = 0) and clears its offset vector. Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002460f8.c, FUN_L14_002b5c30. */
 void func_L14_002B6E80_r(Moby *moby) {
-    Mover_2B6E80 *d = (Mover_2B6E80 *)((char *)moby->pvars);
+    Mover *d = (Mover *)((char *)moby->pvars);
     int *p;
     int n;
     if (d->alt == 0)
@@ -3270,14 +3270,14 @@ typedef struct {
     float v[4];
     int i;
     float t;
-} PathPos_2D7668;
+} PathPos;
 
 /* Finds the path segments nearest to the two target points and sums the segment lengths between them. */
 void initialize_racer_path_tracking(char *m) {
     struct L14RacerVars *d = (struct L14RacerVars *)((Moby *)m)->pvars;
     char *path = *(char **)(race_paths_p + d->path * 32 + 0x10);
     char *tg;
-    PathPos_2D7668 s;
+    PathPos s;
     int k;
     float z;
     unsigned short n;

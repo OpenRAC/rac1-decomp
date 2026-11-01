@@ -506,10 +506,10 @@ typedef struct {
     u8 pad_0[0x2600];
     s32 held; /* 0x2600 */
     s32 pressed; /* 0x2604 */
-} PadWords_2E16A0;
+} PadWords;
 
 /* Updates the mounted Batalia cannon: entry/exit, aiming, alternating barrels, waves, and attached visuals. */
-extern PadWords_2E16A0 pad52 __asm__("D_0013A5E0");
+extern PadWords pad52 __asm__("D_0013A5E0");
 
 void update_batalia_cannon(Moby *moby) {
     enum { CANNON_INITIALIZE = 0, CANNON_UNMOUNTED_IDLE = 4, CANNON_MOUNTED_CONTROL = 5, CANNON_REMOVE = 6 };
@@ -926,7 +926,7 @@ typedef struct {
 } Data_2E2A38;
 typedef struct {
     int v[2];
-} Pair_2E2A38;
+} Pair;
 
 extern float random_float_between(float, float);
 extern int scale_ticks(int);
@@ -944,7 +944,7 @@ extern int truncate_float_to_s32(float);
 extern char *PartType02Spawn_r(void *, void *, void *, int, int, int, int, int, int) __asm__("func_00219780");
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
-extern Pair_2E2A38 falling_debris_smoke_choices;
+extern Pair falling_debris_smoke_choices;
 extern int falling_debris_burst_particle_count SDATA(D_L08_00161C90);
 extern int falling_debris_burst_lower SDATA(D_L08_00161C94);
 extern int falling_debris_burst_upper SDATA(D_L08_00161C98);
@@ -963,7 +963,7 @@ extern float falling_debris_burst_secondary_vector_w SDATA(D_L08_00161CBC);
 void update_falling_debris(Moby *m) {
     Data_2E2A38 *d = (Data_2E2A38 *)m->pvars;
     float v10[4];
-    Pair_2E2A38 tab;
+    Pair tab;
     float v30[4];
     float a40[4];
     int i;
@@ -1546,24 +1546,24 @@ void build_bolt_thief_target_list(char *moby) {
 }
 typedef struct {
     float f[4];
-} Vec_2E4168 __attribute__((aligned(16)));
+} Vec __attribute__((aligned(16)));
 typedef struct {
     int count;
     int pad4[3];
-    Vec_2E4168 pts[1];
-} Path_2E4168;
+    Vec pts[1];
+} Path;
 typedef struct {
     int idx;
     signed char dir;
     char pad5[0xB];
-    Path_2E4168 *path;
+    Path *path;
     int path_id;
-} Cursor_2E4168;
+} Cursor;
 typedef struct {
     char pad0[0x29];
     unsigned char b29;
     char pad2A[0x16];
-    Vec_2E4168 v40;
+    Vec v40;
     char pad50[0x10];
     char x60[7];
     unsigned char b67;
@@ -1578,9 +1578,9 @@ typedef struct {
     char pad98[0x15];
     unsigned char bAD;
     char padAE[0x22];
-    Cursor_2E4168 cur;
+    Cursor cur;
     char padE8[0x18];
-    Cursor_2E4168 side;
+    Cursor side;
     char pad118[0x40];
     struct Moby *list[0x32];
     int w220;
@@ -1592,7 +1592,7 @@ typedef struct {
 } Data_2E4168;
 
 extern float bolt_thief_move_speed SDATA(D_L08_00161CE0);
-extern Path_2E4168 *batalia_path_table_r[] __asm__("D_L08_001B0FB0");
+extern Path *batalia_path_table_r[] __asm__("D_L08_001B0FB0");
 
 extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
 extern float FastVecDist(void *, void *);
@@ -1617,8 +1617,8 @@ extern void StepColorFade(void *, void *);
 /* Bolt thief update: waits for the hero, runs its path, pulls bolts in and grabs them, flees along the side path, dies
    when hit. */
 void Batalia_BoltThiefUpdate(Moby *m) {
-    Vec_2E4168 va;
-    Vec_2E4168 vb;
+    Vec va;
+    Vec vb;
     Data_2E4168 *d;
 
     d = (Data_2E4168 *)m->pvars;
@@ -1684,8 +1684,8 @@ void Batalia_BoltThiefUpdate(Moby *m) {
             }
             break;
         case 2: {
-            Cursor_2E4168 *c;
-            Path_2E4168 *path;
+            Cursor *c;
+            Path *path;
             int next;
             float a;
 
@@ -1760,7 +1760,7 @@ void Batalia_BoltThiefUpdate(Moby *m) {
             break;
         }
         case 5: {
-            Cursor_2E4168 *c;
+            Cursor *c;
             int next;
             int found;
             int i;
@@ -1806,7 +1806,7 @@ void Batalia_BoltThiefUpdate(Moby *m) {
             break;
         }
         case 6: {
-            Cursor_2E4168 *c;
+            Cursor *c;
             int next;
             float a;
 
@@ -1836,13 +1836,13 @@ void Batalia_BoltThiefUpdate(Moby *m) {
             MobySpringTurn((char *)m, &d->f224, a, 0.01f, 0.3f, 0.1f);
             dist = FastVecDist(&h->motion.pos, &m->pos);
             if (dist < 17.0f || find_listed_moby_by_data_id(m) != 0) {
-                Cursor_2E4168 *c;
+                Cursor *c;
                 int next;
 
                 c = &d->side;
                 next = (c->idx + c->path->count + c->dir) % c->path->count;
                 m->state = 6;
-                if (FastVecDist(&h->motion.pos, (Vec_2E4168 *)c->path + (next + 1)) < dist) {
+                if (FastVecDist(&h->motion.pos, (Vec *)c->path + (next + 1)) < dist) {
                     c->dir *= -1;
                 }
             }
@@ -2806,7 +2806,7 @@ typedef struct {
     s16 fire_timer; /* 0x13A */
     s16 pad13C;
     s16 sound; /* 0x13E */
-} SwarmVars_EA0A8;
+} SwarmVars;
 extern short D_L08_00161DC0_EA0A8 SDATA(D_L08_00161DC0);
 extern short D_L08_00161DB4_EA0A8 SDATA(D_L08_00161DB4);
 extern s32 batalia_game_mode_r __asm__("D_L08_0015F6A8") MACRO_ADDR;
@@ -2816,7 +2816,7 @@ extern void process_shrub_part_hits_r(struct Moby *) __asm__("func_L08_002E9CB0"
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l08/gameplay/entities/002deee0.c, FUN_L08_002e8cd0. */
 void shrub_update(struct Moby *moby) {
-    SwarmVars_EA0A8 *vars = (SwarmVars_EA0A8 *)moby->pvars;
+    SwarmVars *vars = (SwarmVars *)moby->pvars;
     SwarmPathFollower_EA0A8 *follower;
     struct Moby *target;
     struct Moby *shot;

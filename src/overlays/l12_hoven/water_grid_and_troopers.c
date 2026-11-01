@@ -22,7 +22,7 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 
-/* Hoven troll walker (same class as TrollVars_e3528 below, which is defined after these functions). */
+/* Hoven troll walker (same class as TrollVars below, which is defined after these functions). */
 struct HovenTrollVars {
     u8 pad_00[0x120];
     u8 fall[0x10]; /* 0x120: knockback / fall state */
@@ -1136,11 +1136,11 @@ typedef struct {
     u8 pad2C8[0x20];
     s16 call_enabled; /* 0x2E8 */
     s16 call_timer; /* 0x2EA */
-} TrollVars_e3528;
+} TrollVars;
 typedef struct {
     u8 pad0[0x10];
     Vec4 pos;
-} TrollHit_e3528;
+} TrollHit;
 extern f32 D_L12_00161950_E4838 SDATA(D_L12_00161950);
 extern f32 D_L12_00161954_E4838 SDATA(D_L12_00161954);
 extern f32 g_frame_time MACRO_ADDR;
@@ -1154,8 +1154,8 @@ extern f32 FastSin(f32);
 extern s32 count_active_moby_group_members(s32, s32);
 extern void MobyGroup_SetByteBC(s32, s32);
 extern void PostHitMessage_r2(struct Moby *, s32, s32, Vec4f *, f32 *, f32) __asm__("func_L00_0025AC00");
-extern TrollHit_e3528 *MobyGetHitMessage_r(struct Moby *, s32, s32) __asm__("func_L00_0025B478");
-extern void ComputeHitResponse_r(struct Moby *, TrollHit_e3528 *, f32 *, s32, s32 *, f32 *, s32,
+extern TrollHit *MobyGetHitMessage_r(struct Moby *, s32, s32) __asm__("func_L00_0025B478");
+extern void ComputeHitResponse_r(struct Moby *, TrollHit *, f32 *, s32, s32 *, f32 *, s32,
                                  s32) __asm__("func_L00_0025B4D0");
 extern void HeadingFromVector_r(void *, f32 *, f32 *, f32 *) __asm__("func_L00_0025BBA0");
 extern void InitKnockback_r(struct Moby *, void *, s32, s32, s32, f32) __asm__("func_L00_0025D5B0");
@@ -1167,13 +1167,13 @@ extern void TrollSpawnBurst(struct Moby *);
    itself, and takes hits (dying, or staggering back).
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l12/gameplay/entities/002bf140.c, FUN_L12_002e3528. */
 void process_hoven_anklebiter_damage_and_alerts(struct Moby *moby) {
-    TrollVars_e3528 *vars = (TrollVars_e3528 *)moby->pvars;
+    TrollVars *vars = (TrollVars *)moby->pvars;
     Vec4 v;
     s32 hit;
     f32 dmg;
     f32 angle;
     f32 unused;
-    TrollHit_e3528 *coll;
+    TrollHit *coll;
 
     if (vars->reset_alert != 0) {
         vars->reset_alert = 0;
@@ -1350,7 +1350,7 @@ typedef struct {
     int n;
     int pad4[3];
     Node_2E51E8 nodes[1];
-} Path_2E51E8;
+} Path;
 typedef struct {
     char pad0[0x10];
     int f10;
@@ -1359,16 +1359,16 @@ typedef struct {
     int idx;
     signed char dir;
     char pad5[0xB];
-    Path_2E51E8 *path;
+    Path *path;
     int pathIdx;
-} Walk_2E51E8;
+} Walk;
 typedef struct {
     char pad0[0x3E];
     unsigned short f3E;
     float vel[4];
     char pad50[0x10];
     char f60[0x40];
-    Walk_2E51E8 walk;
+    Walk walk;
     char padB8[0x18];
     float fD0;
     float fD4;
@@ -1384,7 +1384,7 @@ typedef struct {
 } Data_2E51E8;
 
 extern Moby *hoven_mobys_r __asm__("D_L12_00160058") MACRO_ADDR;
-extern Path_2E51E8 *hoven_paths_r2[] __asm__("D_L12_001B0C30");
+extern Path *hoven_paths_r2[] __asm__("D_L12_001B0C30");
 extern int count_active_moby_group_members(int, int);
 
 extern void steer_platform_toward_target_r(void *, void *, void *, int, int) __asm__("func_L12_002E4F18");
@@ -1478,8 +1478,8 @@ void HovenPlatformUpdate(Moby *moby) {
             }
             break;
         case 7: {
-            Walk_2E51E8 *w = &d->walk;
-            Path_2E51E8 *path;
+            Walk *w = &d->walk;
+            Path *path;
             int next;
             emit_platform_exhaust_effects((char *)moby);
             path = w->path;
@@ -1503,7 +1503,7 @@ void HovenPlatformUpdate(Moby *moby) {
             break;
         }
         case 2: {
-            Path_2E51E8 *path = d->walk.path;
+            Path *path = d->walk.path;
             float t;
             d->fD4 = 0.0f;
             d->fD8 = FastAddRots(d->fD8, g_frame_time * 1.2217305f);
@@ -1531,7 +1531,7 @@ void HovenPlatformUpdate(Moby *moby) {
             break;
         }
         case 4: {
-            Path_2E51E8 *path = d->walk.path;
+            Path *path = d->walk.path;
             float t;
             d->fD8 = FastAddRots(d->fD8, g_frame_time * 1.2217305f);
             t = FastSin(d->fD8);
@@ -1672,21 +1672,21 @@ typedef struct {
     float position[4];
     char pad90[0x40];
     float aim[4];
-} Player_2E7FC8;
+} Player;
 typedef struct {
     unsigned char f0;
     unsigned char f1;
     char pad02[0x5F];
     unsigned char f61;
-} Flags_2E7FC8;
+} Flags;
 typedef struct {
     float target[4];
     float eye[4];
     float delta[4];
-} Scratch_2E7FC8;
+} Scratch;
 extern Moby *CreateMoby_r(int) __asm__("func_0020D348");
-extern Player_2E7FC8 hero_globals_base_r2 __asm__("D_0013E633");
-extern Flags_2E7FC8 special_items_base_r __asm__("D_0013D355");
+extern Player hero_globals_base_r2 __asm__("D_0013E633");
+extern Flags special_items_base_r __asm__("D_0013D355");
 extern unsigned char gCheats[] MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;
 extern short hoven_cinematic_mode_r __asm__("D_L12_0015F6A8");
@@ -1695,7 +1695,7 @@ extern char *hoven_camera_points MACRO_ADDR;
 /* Miner update on level 12: runs its conversation states, steers its body and head toward the player and keeps its
    helper moby attached. */
 void miner_update(Moby *m) {
-    Scratch_2E7FC8 scratch;
+    Scratch scratch;
     Data_2E7FC8 *d = (Data_2E7FC8 *)m->pvars;
     float rate;
     float head_rate;
@@ -1703,7 +1703,7 @@ void miner_update(Moby *m) {
     apply_npc_big_head_cheat((char *)m);
     switch (m->state) {
         case 0:
-            if (((Flags_2E7FC8 *)((char *)&special_items_base_r + 0x13B))->f1 != 0) {
+            if (((Flags *)((char *)&special_items_base_r + 0x13B))->f1 != 0) {
                 DeleteMoby(m);
                 return;
             }
@@ -1712,8 +1712,7 @@ void miner_update(Moby *m) {
             initialize_moby_grounding(m);
             break;
         case 1:
-            if (((Flags_2E7FC8 *)((char *)&special_items_base_r + 0x13B))->f1 == 0 &&
-                Npc_TryStartDialog(m, d->activation)) {
+            if (((Flags *)((char *)&special_items_base_r + 0x13B))->f1 == 0 && Npc_TryStartDialog(m, d->activation)) {
                 PlaceMarkerAheadOfMoby(2.5f, m);
                 m->anim_speed = 0.0f;
                 m->state = 2;
@@ -1721,7 +1720,7 @@ void miner_update(Moby *m) {
             break;
         case 2:
             if (*(int *)&hoven_cinematic_mode_r != 2) {
-                Flags_2E7FC8 *flags = (Flags_2E7FC8 *)((char *)&special_items_base_r + 0x13B);
+                Flags *flags = (Flags *)((char *)&special_items_base_r + 0x13B);
                 m->anim_speed = 1.0f;
                 flags->f1 = 1;
                 ShowBanner(0x2EE7, scale_ticks(300));
@@ -1743,9 +1742,8 @@ void miner_update(Moby *m) {
         char *player = &((struct Hero *)((char *)&hero_globals_base_r2 + 0xE1D))->motion.pos;
         tracking = 1;
         if (vec_distance_xy(&m->pos, player) < 8.0f &&
-            FastDiffRots(m->rot.z,
-                         fast_atan2(((Player_2E7FC8 *)((char *)&hero_globals_base_r2 + 0xE1D))->aim[0] - m->pos.x,
-                                    ((Player_2E7FC8 *)((char *)&hero_globals_base_r2 + 0xE1D))->aim[1] - m->pos.y)) <
+            FastDiffRots(m->rot.z, fast_atan2(((Player *)((char *)&hero_globals_base_r2 + 0xE1D))->aim[0] - m->pos.x,
+                                              ((Player *)((char *)&hero_globals_base_r2 + 0xE1D))->aim[1] - m->pos.y)) <
                 1.5707964f) {
             if (FastVecLength(player + 0x80) > 0.01f)
                 d->moving_timer = scale_ticks(120);
@@ -2338,7 +2336,7 @@ extern void InitKnockback(void *, void *, float, int, int, int);
 extern void RerollEffectCounter(void *m, short *p);
 extern void StepColorFade(void *, void *);
 
-typedef struct BlargTrooperVars_e81e0 {
+typedef struct BlargTrooperVars {
     u8 pad_00[0x20];
     f32 health; /* 0x20 */
     u8 pad_24[0x2];
@@ -2382,23 +2380,23 @@ typedef struct BlargTrooperVars_e81e0 {
     s32 call_timer; /* 0x288 */
     f32 alert_speed; /* 0x28C */
     s32 volume; /* 0x290 */
-} BlargTrooperVars_e81e0;
+} BlargTrooperVars;
 
-typedef struct BlargTrooperHit_e81e0 {
+typedef struct BlargTrooperHit {
     u8 pad_00[0x10];
     Vec4 pos; /* 0x10 */
     struct Moby *moby; /* 0x20 */
-} BlargTrooperHit_e81e0;
+} BlargTrooperHit;
 
 /* Hoven vendor moby update: counters, a timed check, then one of two anim setups; ends by setting moby+0xA4. */
 void process_blarg_trooper_damage_and_alerts(char *moby) {
-    BlargTrooperVars_e81e0 *vars = (BlargTrooperVars_e81e0 *)((struct Moby *)moby)->pvars;
+    BlargTrooperVars *vars = (BlargTrooperVars *)((struct Moby *)moby)->pvars;
     Vec4 help_direction_or_hit_position;
     s32 hit;
     f32 dmg;
     f32 angle;
     f32 unused;
-    BlargTrooperHit_e81e0 *coll;
+    BlargTrooperHit *coll;
     f32 pi;
     f32 b;
     f32 health;
@@ -2448,7 +2446,7 @@ void process_blarg_trooper_damage_and_alerts(char *moby) {
         }
     }
 
-    coll = (BlargTrooperHit_e81e0 *)MobyGetHitMessage(moby, 0x330000, 0);
+    coll = (BlargTrooperHit *)MobyGetHitMessage(moby, 0x330000, 0);
     dmg = 0.0f;
     ComputeHitResponse(moby, coll, &vars->health, 0, &hit, &dmg, 0, 4);
     if (coll != 0) {
@@ -2540,7 +2538,7 @@ extern void Moby_GetJointWorldPos(void *, int, void *);
 
 /* Keeps the Blarg trooper's attachment on its bone, spawning it if missing. */
 void update_blarg_trooper_attachment(unsigned char *moby) {
-    struct BlargTrooperVars_e81e0 *data = (struct BlargTrooperVars_e81e0 *)((char *)((Moby *)moby)->pvars);
+    struct BlargTrooperVars *data = (struct BlargTrooperVars *)((char *)((Moby *)moby)->pvars);
     unsigned char *target = *(unsigned char **)&data->attachment;
     if (target != 0) {
         unsigned char *current;
@@ -2583,7 +2581,7 @@ void steer_blarg_trooper_toward_point(struct Moby *moby, float *target, float ma
     float delta[4] __attribute__((aligned(16)));
     int count;
 
-    if (((struct BlargTrooperVars_e81e0 *)data)->unk242) {
+    if (((struct BlargTrooperVars *)data)->unk242) {
         float *rotation = &moby->rot.z;
         angle = fast_atan2(target[0] - moby->pos.x, target[1] - moby->pos.y);
         SteerAngleWithVelocity(rotation, data + 0x23c, angle, g_frame_time_sq * 15.707963f,
@@ -2614,21 +2612,21 @@ void steer_blarg_trooper_toward_point(struct Moby *moby, float *target, float ma
     }
     *(OvlQuad *)old = *(OvlQuad *)&moby->pos;
     move_moby_along_heading(moby, data + 0xd0);
-    if (((struct BlargTrooperVars_e81e0 *)data)->unk26C != -1) {
+    if (((struct BlargTrooperVars *)data)->unk26C != -1) {
         FastVecSub(delta, old, &moby->pos);
         vec_scale_to_length(delta, delta, 0.05f);
         FastVecAdd(next, old, delta);
-        if (SegmentCrossPolyline(((struct BlargTrooperVars_e81e0 *)data)->unk26C, &moby->pos, next, result)) {
-            char *path = hoven_paths[((struct BlargTrooperVars_e81e0 *)data)->unk26C];
+        if (SegmentCrossPolyline(((struct BlargTrooperVars *)data)->unk26C, &moby->pos, next, result)) {
+            char *path = hoven_paths[((struct BlargTrooperVars *)data)->unk26C];
             if (!IsPointInPolygon(&moby->pos, path + 0x10, *(int *)path))
                 *(OvlQuad *)&moby->pos = *(OvlQuad *)result;
             if (FastVecDist(&moby->pos, old) < g_frame_time * 0.5f) {
-                ++((struct BlargTrooperVars_e81e0 *)data)->unk243;
-                count = ((struct BlargTrooperVars_e81e0 *)data)->unk243;
+                ++((struct BlargTrooperVars *)data)->unk243;
+                count = ((struct BlargTrooperVars *)data)->unk243;
                 if (scale_ticks(15) < count)
-                    ((struct BlargTrooperVars_e81e0 *)data)->unk242 = 1;
+                    ((struct BlargTrooperVars *)data)->unk242 = 1;
             } else {
-                ((struct BlargTrooperVars_e81e0 *)data)->unk243 = 0;
+                ((struct BlargTrooperVars *)data)->unk243 = 0;
             }
         }
     }
@@ -3283,7 +3281,7 @@ void process_blarg_helicopter_hits(char *m) {
     moby->hit_slot = 0xFF;
     StepColorFade(moby, vars->anim);
 }
-typedef struct Helper_2EC8F0 {
+typedef struct Helper {
     char pad00[0x10];
     float position[4]; /* 0x10 */
     char pad20[0x11];
@@ -3292,11 +3290,11 @@ typedef struct Helper_2EC8F0 {
     unsigned short f34; /* 0x34 */
     char pad36[0xA];
     float rot[4]; /* 0x40 */
-} Helper_2EC8F0;
+} Helper;
 
 extern void attach_shared_manipulator_to_matching_class_moby(char *);
 
-extern Helper_2EC8F0 *CreateMoby_r2(int) __asm__("func_0020D348");
+extern Helper *CreateMoby_r2(int) __asm__("func_0020D348");
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern unsigned char race_gates_base_r[] __asm__("D_0013D605");
 extern unsigned char gHaveHeliPack[] NOT_SDA;
@@ -3334,8 +3332,8 @@ typedef struct L12WatchData {
     f32 head_yaw; /* 0x148 */
     u8 pad14C[0x14];
     s32 region; /* 0x160 -1 when none */
-    Helper_2EC8F0 *turret; /* 0x164 */
-    Helper_2EC8F0 *base; /* 0x168 */
+    Helper *turret; /* 0x164 */
+    Helper *base; /* 0x168 */
     u8 pad16C[0x4];
     f32 target[4]; /* 0x170 */
     u8 pad180[0x4];
@@ -3440,7 +3438,7 @@ void edwina_update(char *m) {
                 if (moby_data->turret == 0) {
                     moby_data->turret = CreateMoby_r2(0x4C1);
                     if (moby_data->turret != 0) {
-                        Helper_2EC8F0 *h;
+                        Helper *h;
                         moby_data->turret->f32 = *(unsigned short *)&moby->draw_dist;
                         moby_data->turret->f31 = 1;
                         h = moby_data->turret;
@@ -3460,7 +3458,7 @@ void edwina_update(char *m) {
                 if (moby_data->base == 0) {
                     moby_data->base = CreateMoby_r2(0x196);
                     if (moby_data->base != 0) {
-                        Helper_2EC8F0 *h;
+                        Helper *h;
                         moby_data->base->f32 = *(unsigned short *)&moby->draw_dist;
                         moby_data->base->f31 = 1;
                         h = moby_data->base;

@@ -350,7 +350,7 @@ struct Ent2_1A1A0 {
     struct Ent3_1A1A0 *unk48[1];
 };
 
-struct Ent_1A1A0 {
+struct Ent {
     u8 pad0[0x24];
     struct Ent2_1A1A0 *unk24;
     u8 pad28[0x30];
@@ -360,16 +360,16 @@ struct Ent_1A1A0 {
 extern s16 cd_read_active_r[] __asm__("D_001517D8");
 extern s32 vu1_chain_reserved_bytes_r __asm__("D_0015F698") MACRO_ADDR;
 extern s32 space_load_in_progress_r __asm__("D_0015F6FC") MACRO_ADDR;
-extern struct Ent_1A1A0 *panel_slots_r2[] __asm__("D_001D6120");
+extern struct Ent *panel_slots_r2[] __asm__("D_001D6120");
 
 extern void reset_active_camera_position_and_basis_r(void) __asm__("func_00219C08");
 extern void initialize_menu_preview_scene_r(void) __asm__("func_00219E90");
 extern void update_visible_resident_objects_r() __asm__("func_00213C78");
-extern s32 Moby_PlaySound_r(s32, s32, struct Ent_1A1A0 *) __asm__("func_0022ED80");
+extern s32 Moby_PlaySound_r(s32, s32, struct Ent *) __asm__("func_0022ED80");
 extern void mode_freeze_init_r(s32, MenuPage *, s32) __asm__("func_001FBC80");
 extern void calculate_dma_transfer_address_r(void) __asm__("func_002348B8");
 extern void UpdateFog_r(void) __asm__("func_001F2930");
-extern void MobySetAnimation_r2(struct Ent_1A1A0 *, s32, s32) __asm__("func_00213D28");
+extern void MobySetAnimation_r2(struct Ent *, s32, s32) __asm__("func_00213D28");
 extern void close_menu_system_r(void) __asm__("func_0021A0B0");
 
 /* Pause menu update: counts the update, closes down in state 0x14, opens the menu in
@@ -1922,9 +1922,9 @@ int leave_map_screen(void) {
 
 struct MapIcon_1CE60;
 struct MapMarker_1CE60;
-struct MapHdr_1CE60;
+struct MapHdr;
 
-struct MapState_1CE60 {
+struct MapState {
     u8 pad0[0x8];
     s32 unk8;
     u8 *mask;
@@ -1951,7 +1951,7 @@ struct MapState_1CE60 {
     s32 unk230;
     s32 unk234;
     u8 pad238[0x4];
-    struct MapHdr_1CE60 *hdr;
+    struct MapHdr *hdr;
     s32 map_image_vram;
     s32 tex_clut_vram;
     s32 tex0_vram;
@@ -1968,11 +1968,11 @@ struct MapState_1CE60 {
     s32 slot_size[5];
 };
 
-extern struct MapState_1CE60 level_map_selection_r __asm__("D_001A01F0");
+extern struct MapState level_map_selection_r __asm__("D_001A01F0");
 
 extern MenuSystem menu_system_r4 __asm__("D_001D5F70");
 
-struct MapHdr_1CE60 {
+struct MapHdr {
     s32 unk0;
     s32 unk4;
     s32 unk8;
@@ -1982,7 +1982,7 @@ struct MapHdr_1CE60 {
     s32 unk18;
 };
 
-struct MapEntry_1CE60 {
+struct MapEntry {
     s32 a;
     s32 b;
 };
@@ -1999,8 +1999,8 @@ extern s32 *menu_level_indices_r __asm__("D_001602E0") MACRO_ADDR;
 extern u8 gHaveMapOMatic_r[] __asm__("D_0013D5E9");
 extern u8 level_visit_state_r[] __asm__("D_0013DE60");
 extern u8 level_map_coverage_r[] __asm__("D_00141FC0");
-extern struct MapEntry_1CE60 map_screen_disc_entries_r[] __asm__("D_001384A0");
-extern struct MapEntry_1CE60 map_screen_disc_entries_alt_r[] __asm__("D_00138538");
+extern struct MapEntry map_screen_disc_entries_r[] __asm__("D_001384A0");
+extern struct MapEntry map_screen_disc_entries_alt_r[] __asm__("D_00138538");
 
 extern s32 update_map_zoom_and_pan_r() __asm__("func_00205C70");
 extern s32 find_id_in_terminated_table_r(s32 id) __asm__("func_00205A50");
@@ -2034,7 +2034,7 @@ s32 DrawMapScreen(MenuScreen *screen) {
     s32 id;
     s32 slot;
     s32 n;
-    struct MapHdr_1CE60 *hdr;
+    struct MapHdr *hdr;
     u8 *pal;
     u8 *pix;
     s32 buf;
@@ -2047,7 +2047,7 @@ s32 DrawMapScreen(MenuScreen *screen) {
     s32 pick;
     s32 next;
     s32 k;
-    struct MapEntry_1CE60 *e;
+    struct MapEntry *e;
 
     update_map_zoom_and_pan_r();
     if (!(screen->data.raw.unk34 & 0x40)) {
@@ -2243,7 +2243,7 @@ extern unsigned char level_available[];
 
 /* Pause slot-select tick. Adapted from Lombyte's project (GPL-3.0) for PAL: src/ui/menus/fun_0021c4c0.c, FUN_0021c4c0. */
 /* Map selection at level_map_selection (fields used here only). */
-struct MapSelection_21D4C0 {
+struct MapSelection {
     u8 pad_0[0x224];
     s32 level; /* 0x224: selected level 0..19 */
 };
@@ -2259,7 +2259,7 @@ int update_menu_mission_list(struct Menu *menu_screen) {
 
     {
         struct Menu *owner = (struct Menu *)((MenuSystem *)&menu_system_g)->current->focus;
-        old = ((struct MapSelection_21D4C0 *)&level_map_selection_lv)->level;
+        old = ((struct MapSelection *)&level_map_selection_lv)->level;
         if (owner != menu_screen) {
             if (old < 20) {
                 menu_screen->choice[old] = -1;
@@ -2272,46 +2272,44 @@ int update_menu_mission_list(struct Menu *menu_screen) {
         return 1;
     }
     if (((struct PadState *)&g_controller_state_g)->pressed_unmasked & PAD_R1) {
-        for (i = ((struct MapSelection_21D4C0 *)&level_map_selection_lv)->level + 1; i < 20; i++) {
+        for (i = ((struct MapSelection *)&level_map_selection_lv)->level + 1; i < 20; i++) {
             if (level_available[i] != 0 || g_current_level_index == i) {
-                ((struct MapSelection_21D4C0 *)&level_map_selection_lv)->level = i;
+                ((struct MapSelection *)&level_map_selection_lv)->level = i;
                 break;
             }
         }
     }
     if (((struct PadState *)&g_controller_state_g)->pressed_unmasked & PAD_L1) {
-        for (i = ((struct MapSelection_21D4C0 *)&level_map_selection_lv)->level - 1; i >= 0; i--) {
+        for (i = ((struct MapSelection *)&level_map_selection_lv)->level - 1; i >= 0; i--) {
             if (level_available[i] != 0 || g_current_level_index == i) {
-                ((struct MapSelection_21D4C0 *)&level_map_selection_lv)->level = i;
+                ((struct MapSelection *)&level_map_selection_lv)->level = i;
                 break;
             }
         }
     }
-    if (((struct MapSelection_21D4C0 *)&level_map_selection_lv)->level != old) {
+    if (((struct MapSelection *)&level_map_selection_lv)->level != old) {
         Moby_PlaySound(1, 0x11, menu_screen->unk14);
         update_mission_list_i();
     }
     if (menu_screen->count != 0) {
         pad = ((struct PadState *)&g_controller_state_g)->pressed_unmasked;
         ch = menu_screen->choice;
-        previous_mission_choice_index =
-            menu_screen->choice[((struct MapSelection_21D4C0 *)&level_map_selection_lv)->level];
+        previous_mission_choice_index = menu_screen->choice[((struct MapSelection *)&level_map_selection_lv)->level];
         if (pad & PAD_UP) {
-            menu_screen->choice[((struct MapSelection_21D4C0 *)&level_map_selection_lv)->level] =
+            menu_screen->choice[((struct MapSelection *)&level_map_selection_lv)->level] =
                 (previous_mission_choice_index + menu_screen->count - 1) % menu_screen->count;
         }
         if (pad & PAD_DOWN) {
-            menu_screen->choice[((struct MapSelection_21D4C0 *)&level_map_selection_lv)->level] =
-                (menu_screen->choice[((struct MapSelection_21D4C0 *)&level_map_selection_lv)->level] + 1) %
-                menu_screen->count;
+            menu_screen->choice[((struct MapSelection *)&level_map_selection_lv)->level] =
+                (menu_screen->choice[((struct MapSelection *)&level_map_selection_lv)->level] + 1) % menu_screen->count;
         }
-        if (menu_screen->choice[((struct MapSelection_21D4C0 *)&level_map_selection_lv)->level] !=
+        if (menu_screen->choice[((struct MapSelection *)&level_map_selection_lv)->level] !=
             previous_mission_choice_index) {
             Moby_PlaySound(1, 0x11, menu_screen->unk14);
         }
-        if ((pad & (PAD_UP | PAD_DOWN)) || ((struct MapSelection_21D4C0 *)&level_map_selection_lv)->level != old) {
+        if ((pad & (PAD_UP | PAD_DOWN)) || ((struct MapSelection *)&level_map_selection_lv)->level != old) {
             menu_screen->count = collect_mission_ids((void *)(7 << 28), (void *)0, (void *)((7 << 28) + 0x100), 1);
-            mission_choice_ptr = &ch[((struct MapSelection_21D4C0 *)&level_map_selection_lv)->level];
+            mission_choice_ptr = &ch[((struct MapSelection *)&level_map_selection_lv)->level];
             selected_mission_id = ((unsigned int *)(7 << 28))[*mission_choice_ptr];
             selected_mission_index = ((unsigned int *)((7 << 28) + 0x100))[*mission_choice_ptr];
         }
@@ -2463,7 +2461,7 @@ int set_pause_sound_volume(void) {
 
 extern MenuSystem menu_system_r5 __asm__("D_001D5F70");
 
-struct SoundMenuMixer_1DB30 {
+struct SoundMenuMixer {
     u8 pad_0[0x48];
     s32 group_0_volume;
     s32 group_1_volume;
@@ -2473,7 +2471,7 @@ struct SoundMenuMixer_1DB30 {
     s32 group_5_volume;
 };
 
-struct SoundMenu_1DB30 {
+struct SoundMenu {
     u8 pad_0[0x14];
     s32 sound_owner;
     u8 pad_18[0x18];
@@ -2483,7 +2481,7 @@ struct SoundMenu_1DB30 {
 };
 
 extern struct PadState g_controller_state_r2 __asm__("D_0013CA40");
-extern struct SoundMenuMixer_1DB30 voice_pool_r __asm__("D_0013E650");
+extern struct SoundMenuMixer voice_pool_r __asm__("D_0013E650");
 extern s32 menu_system_close_locked_r __asm__("D_001D6094") NOT_SDA;
 extern s32 music_volume_r __asm__("D_0015EEEC") MACRO_ADDR;
 extern s32 sound_volume_r __asm__("D_0015EEF0") MACRO_ADDR;
@@ -2496,7 +2494,7 @@ void func_0012E380_1DB30(s32 menu) __asm__("func_0012E380");
    the sound or music volume by 3 (0..0x400) and push the new levels to the mixer groups,
    confirm on the third row toggles mono/stereo.
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/textbin/ui/menus/audio/sound_options_menu.c, sound_options_menu. */
-s32 sound_options_menu(struct SoundMenu_1DB30 *menu) {
+s32 sound_options_menu(struct SoundMenu *menu) {
     s32 previous_selection;
     s32 *sound_volume_ptr;
     s32 previous_music_volume;
@@ -3476,11 +3474,11 @@ extern void DrawMobyList(int, int);
 /* The entry address is written inline in the index, as in
    draw_item_preview_screen; a `char *e` local swapped the addu. */
 /* Item preview screen (draw_available_item_preview_mobys): the two moby words, as the original int temporaries. */
-typedef struct PreviewScreenWords_21F610 {
+typedef struct PreviewScreenWords {
     u8 pad_00[0x44];
     s32 moby; /* 0x44: preview moby, drawn when nonzero */
     s32 second_moby; /* 0x48: optional, drawn after moby */
-} PreviewScreenWords_21F610;
+} PreviewScreenWords;
 
 /* Draws the item preview moby and the optional second one, only when the
    highlighted item is owned. Returns 0 when it is not. */
@@ -3493,11 +3491,11 @@ int draw_available_item_preview_mobys(char *arg0) {
     if (((unsigned char *)&item_available)[grid->cells[grid->selected_cell].id] == 0) {
         return 0;
     }
-    primary_moby = ((PreviewScreenWords_21F610 *)arg0)->moby;
+    primary_moby = ((PreviewScreenWords *)arg0)->moby;
     if (primary_moby != 0) {
         DrawMobyList(primary_moby, 1);
     }
-    secondary_moby = ((PreviewScreenWords_21F610 *)arg0)->second_moby;
+    secondary_moby = ((PreviewScreenWords *)arg0)->second_moby;
     if (secondary_moby != 0) {
         DrawMobyList(secondary_moby, 1);
     }
@@ -4204,7 +4202,7 @@ struct MapState_209A0 {
 
 extern struct MapState_209A0 level_map_selection_r2 __asm__("D_001A01F0");
 
-struct ClutImage_209A0 {
+struct ClutImage {
     u8 pad0[0x8];
     s32 width;
     s32 height;
@@ -4234,7 +4232,7 @@ s32 update_menu_stream_image(MenuScreen *stream) {
     s32 x;
     s32 y;
     u8 *p;
-    struct ClutImage_209A0 *b;
+    struct ClutImage *b;
     u8 *p20;
     u8 *p420;
 
@@ -4319,7 +4317,7 @@ s32 update_menu_stream_image(MenuScreen *stream) {
                                    stream->data.stream.buffer[0]);
                 stream->data.stream.read_offset = 0;
             }
-            b = (struct ClutImage_209A0 *)stream->data.stream.buffer[0];
+            b = (struct ClutImage *)stream->data.stream.buffer[0];
             p20 = b->clut;
             p420 = b->pixels;
             x = log2dim_r(b->width);
@@ -4363,16 +4361,16 @@ typedef struct MenuStreamData_220D08 {
     s32 elapsed_frames; /* 0x5C: updates since enter */
 } MenuStreamData_220D08;
 
-typedef struct StreamScreen_220D08 {
+typedef struct StreamScreen {
     u8 pad_00[0x30];
     struct {
         MenuStreamData_220D08 stream;
     } data; /* 0x30 */
-} StreamScreen_220D08;
+} StreamScreen;
 
 /* Enters a streamed menu image screen: grabs two stream buffers and resets their state. */
 int enter_menu_stream_image(void *arg0) {
-    StreamScreen_220D08 *menu = (StreamScreen_220D08 *)arg0;
+    StreamScreen *menu = (StreamScreen *)arg0;
 
     menu->data.stream.state = 0;
     menu->data.stream.buffer[0] = acquire_menu_stream_buffer(menu->data.stream.flags & 0x200);
@@ -4425,8 +4423,8 @@ extern MemoryCardState memory_card_state_r3 __asm__("D_0013D390");
 
 typedef struct {
     s32 values[6];
-} LanguageResourceOffsets_20DF0;
-extern LanguageResourceOffsets_20DF0 language_resource_offsets_r __asm__("D_001E8B00");
+} LanguageResourceOffsets;
+extern LanguageResourceOffsets language_resource_offsets_r __asm__("D_001E8B00");
 
 extern u8 gSkillPoints_r[] __asm__("D_0013D510");
 extern s32 scale_game_frame_count_r2() __asm__("func_001F98C0");
@@ -4444,7 +4442,7 @@ extern s32 clear_menu_stream_buffer_read_active_r2() __asm__("func_002270B0");
    the two-buffer read state machine that streams it in and unpacks it.
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/textbin/fun_0021fdc8.c, update_menu_resource_stream. */
 s32 update_menu_resource_stream(MenuScreen *stream) {
-    LanguageResourceOffsets_20DF0 language_offsets;
+    LanguageResourceOffsets language_offsets;
     s32 *completed_buffer_slot;
     s32 primary_entry_offset;
     s32 secondary_entry_offset;
@@ -4709,21 +4707,21 @@ typedef struct {
     unsigned short flags;
     short sx, sy;
 } FontWindow_21380;
-struct Cell_21380 {
+struct Cell {
     char pad0[4];
     short kind;
     short id;
     short se;
 };
-struct Grid_21380 {
+struct Grid {
     char pad0[0x48];
-    struct Cell_21380 *cells;
+    struct Cell *cells;
 };
-struct Focus_21380 {
+struct Focus {
     char pad0[0x40];
-    struct Grid_21380 *focus;
+    struct Grid *focus;
 };
-struct Stream_21380 {
+struct Stream {
     char pad0[0x20];
     int width;
     int height;
@@ -4736,9 +4734,9 @@ struct Stream_21380 {
     int buffer[2];
     int loaded_entry[2];
 };
-struct MS_21380 {
+struct MS {
     char pad0[4];
-    struct Focus_21380 *current;
+    struct Focus *current;
     char pad8[0x120];
     int card_op_pending;
     int card_op_text;
@@ -4750,10 +4748,10 @@ extern long load_texture_file(int);
 /* Draws the stream image screen: while the card is checked it prints the centred
    status text, otherwise it draws the streamed image full screen. Returns 1 when
    the item shown is not owned. */
-int draw_checking_memory_card_data_menu(struct Stream_21380 *menu) {
+int draw_checking_memory_card_data_menu(struct Stream *menu) {
     FontWindow_21380 text_window;
     short window_fields[12];
-    struct Cell_21380 *entry;
+    struct Cell *entry;
     char *text;
     int state = menu->state;
     long texture;
@@ -4768,13 +4766,12 @@ int draw_checking_memory_card_data_menu(struct Stream_21380 *menu) {
             goto done;
         }
         if (((MemoryCardState *)memory_card_state)->state < 3 && ((MemoryCardState *)memory_card_state)->err < 0 &&
-            ((struct MS_21380 *)menu_system)->ticks >= 0xB) {
+            ((struct MS *)menu_system)->ticks >= 0xB) {
             goto done;
         }
         SetupGifPaging(0);
-        text = ((char *(*)(int))msg_string)(((struct MS_21380 *)menu_system)->card_op_pending
-                                                ? ((struct MS_21380 *)menu_system)->card_op_text
-                                                : 0x4FB9);
+        text = ((char *(*)(int))msg_string)(
+            ((struct MS *)menu_system)->card_op_pending ? ((struct MS *)menu_system)->card_op_text : 0x4FB9);
         ((void *(*)(void *, int, unsigned int))libc_memset)(window_fields, 0, sizeof(window_fields));
         window_fields[1] = menu->height + 1;
         window_fields[0] = 1;
@@ -4801,7 +4798,7 @@ int draw_checking_memory_card_data_menu(struct Stream_21380 *menu) {
     }
     if (menu->flags & 4) {
         first = state < 4;
-        entry = &((struct MS_21380 *)menu_system)->current->focus->cells[menu->loaded_entry[first ^ 1]];
+        entry = &((struct MS *)menu_system)->current->focus->cells[menu->loaded_entry[first ^ 1]];
         if (entry->kind == 0 && (tp = (unsigned char *)&item_available, tp[entry->id] == 0)) {
             return 1;
         }
@@ -6242,7 +6239,7 @@ int ObtainAllGoldWeaponsMenu(MenuScreen *arg0) {
     return 2;
 }
 
-struct ThreeOptionMenu_23B40 {
+struct ThreeOptionMenu {
     u8 pad0[0x20];
     s32 menu_width;
     s32 height;
@@ -6270,7 +6267,7 @@ extern void FontPrint_r2(s32, s32, u64, char *, s32, s64, u8 *) __asm__("func_00
    lines to pick the regular or the narrow font, then a centred title and each line with its
    tick mark when complete.
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/textbin/ui/menus/draw_localized_three_option_menu.c, draw_localized_three_option_menu. */
-s32 DrawEndScreenMenuMaybe(struct ThreeOptionMenu_23B40 *menu) {
+s32 DrawEndScreenMenuMaybe(struct ThreeOptionMenu *menu) {
     char text_buffer[0x50];
     s32 font_texture_index;
     u8 *glyphs;
@@ -7047,7 +7044,7 @@ extern void update_menu_preview_animation_pose(void *);
    `g` local per block reading menu_system gives retail's %hi kept in a
    saved register with %lo rebuilt; the -1 stores are written in the
    order that gives retail's schedule. */
-struct MenuPreviewScreen_225358 {
+struct MenuPreviewScreen {
     u8 pad_00[0x44];
     struct Moby *gadget_moby; /* 0x44: gadget preview moby (create_menu_preview_moby_a(0)) */
     struct Moby *pose_moby; /* 0x48: pose moby (create_menu_preview_moby_a(0x259)) */
@@ -7091,7 +7088,7 @@ int initialize_menu_preview_objects(char *arg0) {
         second_attachment_manipulator[1] = 0;
     }
     object = create_menu_preview_moby_a(0);
-    held_flag = ((struct MenuPreviewScreen_225358 *)arg0)->flags + 23;
+    held_flag = ((struct MenuPreviewScreen *)arg0)->flags + 23;
     for (j = 23; j >= 0; j--) {
         *held_flag = 0;
         held_flag--;
@@ -7100,7 +7097,7 @@ int initialize_menu_preview_objects(char *arg0) {
         struct RotatingPreviewCamera *camera = (struct RotatingPreviewCamera *)gCamera;
         struct MenuSystem *g;
 
-        ((struct MenuPreviewScreen_225358 *)arg0)->gadget_moby = object;
+        ((struct MenuPreviewScreen *)arg0)->gadget_moby = object;
         object->flags = 0;
         object->pos.x = camera->pos.f[0] + 4.0f;
         object->pos.y = camera->pos.f[1];
@@ -7122,7 +7119,7 @@ int initialize_menu_preview_objects(char *arg0) {
         object->update = (void (*)(struct Moby *))update_menu_preview_animation_pose;
         object->flags = 4;
     }
-    ((struct MenuPreviewScreen_225358 *)arg0)->pose_moby = object;
+    ((struct MenuPreviewScreen *)arg0)->pose_moby = object;
     return 0;
 }
 __asm__(".section .text\n\tnop\n");
@@ -7138,10 +7135,10 @@ extern int delete_moby(int);
 extern int release_menu_stream_buffer(int);
 extern void clear_preview_resource_bindings(void);
 
-typedef struct MenuPreviewObjects_225548 {
+typedef struct MenuPreviewObjects {
     u8 pad_00[0x44];
     s32 objects[24]; /* 0x44: preview object handles, freed by delete_moby */
-} MenuPreviewObjects_225548;
+} MenuPreviewObjects;
 
 /* Leave hook for the preview screen: deletes the 24 preview objects, frees the
    two stream buffers and marks no animation loaded. */
@@ -7152,7 +7149,7 @@ int release_menu_preview_objects(void *arg0) {
     int resources_remaining;
     struct MenuSystem *resources;
 
-    object_slot = &((MenuPreviewObjects_225548 *)arg0)->objects[0];
+    object_slot = &((MenuPreviewObjects *)arg0)->objects[0];
     for (objects_remaining = 23; objects_remaining >= 0; objects_remaining--) {
         *object_slot = delete_moby(*object_slot);
         object_slot++;
@@ -7970,23 +7967,23 @@ typedef struct {
     u8 transition_flags;
     u8 pad_71[0xBC - 0x71];
     u8 animation_frame_counter;
-} StreamedAnimationMoby_26978;
+} StreamedAnimationMoby;
 typedef struct {
     u8 pad_0[0x48];
     u8 *animation_tables[4];
-} StreamedClassResource_26978;
+} StreamedClassResource;
 typedef struct {
     s32 offset;
     s32 reserved4;
-} AnimationTableHeader_26978;
+} AnimationTableHeader;
 typedef struct {
     u8 pad_0[0x34];
     s32 state;
     s32 pad_38;
     u8 *buffer;
     s32 read_offset;
-    StreamedAnimationMoby_26978 *moby;
-} MobyAnimationStream_26978;
+    StreamedAnimationMoby *moby;
+} MobyAnimationStream;
 extern s32 queued_dialogue_id[];
 extern s16 dialogue_playback_phase[];
 extern s32 g_game_language MACRO_ADDR;
@@ -7999,14 +7996,14 @@ extern s32 Music_ContinueStreamIfReady(void);
 extern int start_audio_stream_read(int, int, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/assembly/textbin/fun_002256e8.c, update_streamed_moby_animation. */
-s32 update_streamed_moby_animation(MobyAnimationStream_26978 *stream) {
+s32 update_streamed_moby_animation(MobyAnimationStream *stream) {
     extern s16 cd_read_active[];
     extern int mark_menu_stream_buffer_read_active(int);
     extern char *moby_class_resources[];
-    StreamedAnimationMoby_26978 *moby;
-    AnimationTableHeader_26978 *header;
-    StreamedClassResource_26978 **class_resource;
-    StreamedClassResource_26978 **classes;
+    StreamedAnimationMoby *moby;
+    AnimationTableHeader *header;
+    StreamedClassResource **class_resource;
+    StreamedClassResource **classes;
     s32 table_index;
     s32 k;
     s32 dialogue_column;
@@ -8038,11 +8035,11 @@ s32 update_streamed_moby_animation(MobyAnimationStream_26978 *stream) {
             animation_asset_read_active[0] = 0;
             fast_decompress((int)(stream->buffer + stream->read_offset), (int)stream->buffer);
             class_slot = resident_class_slot_by_id[0x7A5];
-            classes = (StreamedClassResource_26978 **)moby_class_resources;
-            header = (AnimationTableHeader_26978 *)stream->buffer;
+            classes = (StreamedClassResource **)moby_class_resources;
+            header = (AnimationTableHeader *)stream->buffer;
             class_resource = &classes[class_slot];
             for (k = 0; k < 3; k++) {
-                animation_table = stream->buffer + ((AnimationTableHeader_26978 *)((u8 *)header + (k << 3)))->offset;
+                animation_table = stream->buffer + ((AnimationTableHeader *)((u8 *)header + (k << 3)))->offset;
                 (*class_resource)->animation_tables[k + 1] = animation_table;
                 relocateObjectPointers((char *)*class_resource, k + 1);
             }
@@ -8924,11 +8921,11 @@ extern void fast_vec_normalize_r(f32 *, f32 *, f32) __asm__("func_001F9DC0");
 typedef union {
     u128_282D0 q;
     f32 v[4];
-} PauseVec_282D0;
+} PauseVec;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/ui/menus/fun_00226fb8.c, FUN_00226fb8. */
-void prepare_scaled_direction_and_perpendicular(PauseVec_282D0 *dir, f32 scale) {
-    PauseVec_282D0 d;
+void prepare_scaled_direction_and_perpendicular(PauseVec *dir, f32 scale) {
+    PauseVec d;
     f32 *v = d.v;
 
     d.q = dir->q;
@@ -9007,12 +9004,12 @@ void emit_selected_graphics_dma_packets(int arg0, int idx, int n) {
     emit_setup_strips_of_kind(arg0, ((int *)&setup_strip_pass_words)[idx]);
 }
 
-struct DisplayDims_284E8 {
+struct DisplayDims {
     u8 pad_0[0x150];
     s16 display_width; /* 0x150 */
     s16 display_height; /* 0x152 */
 };
-extern struct DisplayDims_284E8 fs_aa_buffer_r __asm__("D_00151880");
+extern struct DisplayDims fs_aa_buffer_r __asm__("D_00151880");
 extern s32 *g_render_packet_cursor_r __asm__("D_00161000") MACRO_ADDR;
 extern void VU1_addGSregister_r5(s32, s64) __asm__("func_00234C98");
 
@@ -9021,7 +9018,7 @@ void append_fullscreen_setup_strips(void) {
     s32 *base;
     s64 *commands;
     s64 *vertices;
-    struct DisplayDims_284E8 *dimensions;
+    struct DisplayDims *dimensions;
     s32 strip_count;
     s32 display_height;
     s32 display_width;

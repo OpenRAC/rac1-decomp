@@ -37,7 +37,7 @@ typedef struct {
     float b[4];
     int c[4];
     float d[4];
-} L10SpriteData_298940;
+} L10SpriteData;
 extern void FastVecSub(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
@@ -52,7 +52,7 @@ extern char orxon_camera_pos[];
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_00298940.c, FUN_L10_00298940. */
 void emit_moby_sprite_particles(char *m) {
-    L10SpriteData_298940 *p = ((L10SpriteData_298940 *)((Moby *)m)->pvars);
+    L10SpriteData *p = ((L10SpriteData *)((Moby *)m)->pvars);
     float d[4] __attribute__((aligned(16)));
     float e[4] __attribute__((aligned(16)));
     int i, col;
@@ -128,7 +128,7 @@ typedef struct {
     int passed;
     int warned;
     float dist;
-} Shot_cc2e8;
+} Shot;
 
 extern unsigned char g_hero[];
 extern char gHeroPos[];
@@ -155,7 +155,7 @@ extern void DeleteMoby(void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00298940.c, FUN_L10_002cc2e8. */
 void rocket_819_update(Moby *m) {
-    Shot_cc2e8 *d = ((Shot_cc2e8 *)m->pvars);
+    Shot *d = ((Shot *)m->pvars);
     float pos0[4] __attribute__((aligned(16)));
     float c[4] __attribute__((aligned(16)));
     float diff[4] __attribute__((aligned(16)));
@@ -338,7 +338,7 @@ typedef struct {
     int col[4];
     float uv[4][2];
     long unk70, tex, unk80, unk88;
-} Quad_2EA578;
+} Quad;
 extern short quad_layer_count;
 extern short orxon_quad_layer_alpha_a;
 extern short orxon_quad_layer_alpha_b;
@@ -361,14 +361,14 @@ extern void draw_world_quad(void *, void *, int);
 
 /* Draw the moby's textured quad layers with sine/cosine scrolling UVs in its frame. */
 void draw_moby_animated_quad_layers(unsigned char *m) {
-    Quad_2EA578 first, second;
+    Quad first, second;
     float transform[12] __attribute__((aligned(16)));
     float position[4] __attribute__((aligned(16)));
     float *scale;
     int pass, axis, c, i;
     float *pa, *pb, *qb;
     V4_2EA578 *s1, *s2;
-    Quad_2EA578 *sv;
+    Quad *sv;
 
     scale = ((float *)((Moby *)m)->pvars);
     copy_matrix_rotation(transform, m + 0xC0);

@@ -112,20 +112,20 @@ Slot *allocate_moby_animation_slot(char *o, int id) {
     *(Slot **)(o + 0x60) = s;
     return s;
 }
-typedef struct ListNode_24f0e8 ListNode_24f0e8;
-struct ListNode_24f0e8 {
+typedef struct ListNode ListNode;
+struct ListNode {
     u8 pad0[0x1C];
-    ListNode_24f0e8 *next; /* 0x1C */
+    ListNode *next; /* 0x1C */
 };
 typedef struct {
     u8 pad0[0x60];
-    ListNode_24f0e8 *head; /* 0x60 */
-} ListOwner_24f0e8;
+    ListNode *head; /* 0x60 */
+} ListOwner;
 extern void FastMemSet(void *, s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/state/0024eec0.c, FUN_L00_0024f0e8. */
-void release_moby_animation_slot(ListOwner_24f0e8 *owner, ListNode_24f0e8 **slot) {
-    ListNode_24f0e8 *p;
+void release_moby_animation_slot(ListOwner *owner, ListNode **slot) {
+    ListNode *p;
 
     if (*slot == 0)
         return;

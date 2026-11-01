@@ -305,7 +305,7 @@ typedef struct Hit_314800 {
     float f2C;
 } Hit_314800;
 
-typedef struct ThinkData_314800 {
+typedef struct ThinkData {
     char pad0[0x24];
     short f24;
     short f26;
@@ -322,26 +322,26 @@ typedef struct ThinkData_314800 {
     char pad1F4[4];
     int f1F8;
     float f1FC;
-} ThinkData_314800;
+} ThinkData;
 
-typedef struct Vec_314800 {
+typedef struct Vec {
     float f0;
     short s4;
-} Vec_314800;
+} Vec;
 
-typedef struct Anim_314800 {
+typedef struct Anim {
     char pad0[0x30];
     float f30[4];
     char pad40[0x30];
     float f70[4];
-} Anim_314800;
+} Anim;
 
-typedef struct Slot_314800 {
+typedef struct Slot {
     char pad0[0x74];
     unsigned char f74;
     char pad75[0x13];
     Moby *f88;
-} Slot_314800;
+} Slot;
 
 extern Hit_314800 *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
 extern int ComputeHitResponse_r(void *, void *, void *, int, int *, float *, int, int) __asm__("func_L00_0025B4D0");
@@ -358,14 +358,14 @@ extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern void Sound_StopSlot_r(int) __asm__("func_L00_0028EBF0");
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 extern void StepColorFade_r(void *, void *) __asm__("func_L00_0025E590");
-extern Anim_314800 *scene_points_r __asm__("D_L07_0016016C") MACRO_ADDR;
+extern Anim *scene_points_r __asm__("D_L07_0016016C") MACRO_ADDR;
 extern int hero_current_state_r __asm__("D_001414D4");
 extern char voice_pool_r[] __asm__("D_0013E650");
 
 /* Umbris moby think step: homes on its target, runs its timer and state changes. */
-void func_L07_00314800_r(Moby *moby, ThinkData_314800 *data, Vec_314800 *vec) __asm__("func_L07_00314800");
+void func_L07_00314800_r(Moby *moby, ThinkData *data, Vec *vec) __asm__("func_L07_00314800");
 /* Hit handling for a damageable enemy: scales and applies damage, plays hurt reactions. */
-void func_L07_00314800_r(Moby *moby, ThinkData_314800 *data, Vec_314800 *vec) {
+void func_L07_00314800_r(Moby *moby, ThinkData *data, Vec *vec) {
     int st;
     float fv;
     Hit_314800 *obj;
@@ -437,7 +437,7 @@ void func_L07_00314800_r(Moby *moby, ThinkData_314800 *data, Vec_314800 *vec) {
                         data->f1C8 = 0.0f;
                         data->f1C5 = 1;
                         if (data->f1F8 != -1) {
-                            Slot_314800 *e = (Slot_314800 *)(voice_pool_r + data->f1F8 * 0x70);
+                            Slot *e = (Slot *)(voice_pool_r + data->f1F8 * 0x70);
                             if (e->f88 == moby && e->f74 != 0) {
                                 Sound_StopSlot_r(data->f1F8);
                             }
@@ -555,7 +555,7 @@ int update_snagglebeast_chase_movement(char *m, char *a, void *p6, float *p7, fl
     return r;
 }
 extern f32 frame_scale_r __asm__("D_0015EE60") MACRO_ADDR;
-struct ChaserSpeed_315108 {
+struct ChaserSpeed {
     u8 pad0[0x80];
     f32 base;
     u8 pad84[0x10];
@@ -563,15 +563,15 @@ struct ChaserSpeed_315108 {
     u8 pad98[0x124];
     f32 rate2;
 };
-struct ChaserAnim_315108 {
+struct ChaserAnim {
     u8 pad0[0x58];
     f32 speed;
 };
-extern float func_L07_00315108_r(struct ChaserAnim_315108 *a, struct ChaserSpeed_315108 *s, float x, float y,
+extern float func_L07_00315108_r(struct ChaserAnim *a, struct ChaserSpeed *s, float x, float y,
                                  float k) __asm__("func_L07_00315108");
 
 /* Sets the chaser's speed from how far x is past y (eased over 50 units, between 0.06 and 0.1 of the frame step) and scales its animation speed to match. Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l07/gameplay/entities/00312948.c, FUN_L07_00313d30. */
-float func_L07_00315108_r(struct ChaserAnim_315108 *a, struct ChaserSpeed_315108 *s, float x, float y, float k) {
+float func_L07_00315108_r(struct ChaserAnim *a, struct ChaserSpeed *s, float x, float y, float k) {
     float r = frame_scale_r * 0.06f;
     if (y < x) {
         r = x - y;
@@ -1988,12 +1988,12 @@ typedef int u128_319080 __attribute__((mode(TI)));
 typedef union {
     u128_319080 q;
     float f[4];
-} RopeQuad_319080;
+} RopeQuad;
 typedef float RopeVec_319080[4] __attribute__((aligned(16)));
 typedef struct {
     int pad[5];
     char *moby;
-} RopeMobySlot_319080;
+} RopeMobySlot;
 extern int D_L07_00161BFC_319080 SDATA(D_L07_00161BFC);
 extern int D_L07_00161C00_319080 SDATA(D_L07_00161C00);
 extern float D_L07_00161C0C_319080 SDATA(D_L07_00161C0C);
@@ -2005,7 +2005,7 @@ extern char snagglebeast_rope_sway_to_r[] __asm__("D_L07_00161C30") MACRO_ADDR;
 extern RopeVec_319080 rope_previous_points_r[] __asm__("D_L07_0020DDB0");
 extern RopeVec_319080 snagglebeast_rope_centers_r[] __asm__("D_L07_0020DDC0");
 extern short snagglebeast_rope_row_alpha_r[] __asm__("D_L07_0020DE88");
-extern RopeMobySlot_319080 rope_particles_r[] __asm__("D_L07_0020CB00");
+extern RopeMobySlot rope_particles_r[] __asm__("D_L07_0020CB00");
 extern void norm_319080(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void add_319080(void *, void *, void *) __asm__("func_001F9BD8");
 extern void clear_319080(void *) __asm__("func_001F9BC0");
@@ -2018,13 +2018,13 @@ extern void look_319080(void *, void *, void *, float) __asm__("func_002156E0");
 void initialize_snagglebeast_rope(char *moby, void *anchor) {
     RopeVec_319080 step;
     RopeVec_319080 up;
-    RopeQuad_319080 c;
-    RopeQuad_319080 d;
+    RopeQuad c;
+    RopeQuad d;
     float r;
     int i;
     int j;
-    RopeQuad_319080 *pc;
-    RopeQuad_319080 *pd;
+    RopeQuad *pc;
+    RopeQuad *pd;
 
     if (D_L07_00161BFC_319080 == 0) {
         return;
@@ -2068,8 +2068,8 @@ typedef struct {
     float fC;
     float f10;
     char *moby;
-} RopePart_319230;
-extern RopePart_319230 rope_particles[];
+} RopePart;
+extern RopePart rope_particles[];
 typedef struct {
     char pad0[4];
     int mode;
@@ -2078,19 +2078,19 @@ typedef struct {
     char fade;
     char padC[4];
     float vel[4];
-} RopeTail_319230;
+} RopeTail;
 typedef struct {
     char pad0[0xA];
     short life;
     char padC[0x14];
-    RopeTail_319230 tail;
-} RopePuff_319230;
+    RopeTail tail;
+} RopePuff;
 extern void FastVecCross(void *, void *, void *);
 extern float FastArcSin(float);
 
 extern void lerp_vector(void *, void *, void *, float);
 extern float select_segment_point_near_sphere_surface(void *, void *, void *, void *, void *, float);
-extern RopePuff_319230 *PartType23Spawn(void *, float, float, float, int, void *, float, int);
+extern RopePuff *PartType23Spawn(void *, float, float, float, int, void *, float, int);
 extern void KillPart(void *);
 extern void LerpVec4(void *, void *, void *, float);
 extern RopeVec_319080 rope_previous_points_prev_base[];
@@ -2273,8 +2273,8 @@ float update_snagglebeast_rope(void *moby, void *anchor) {
         float sc;
         int r;
         int idx2;
-        RopePuff_319230 *p;
-        RopePuff_319230 *q;
+        RopePuff *p;
+        RopePuff *q;
         int k;
         short lf;
         lf = 200;
@@ -2296,7 +2296,7 @@ float update_snagglebeast_rope(void *moby, void *anchor) {
                         sc = random_float_between(60000.0f, 180000.0f);
                         p = PartType23Spawn(v60, 0.0f, 1.0f, 1.03f, random_integer_below(5) + 1, v70, sc, 0x404040);
                         if (p != 0) {
-                            RopeTail_319230 *tail = &p->tail;
+                            RopeTail *tail = &p->tail;
                             FastVecSub(vC0, v60, vB0);
                             nfly++;
                             norm_319080(tail->vel, vC0, 0.01f);
@@ -2309,7 +2309,7 @@ float update_snagglebeast_rope(void *moby, void *anchor) {
                                         0x7F404040);
                     rope_particles[k].moby = (char *)q;
                     if (q != 0) {
-                        RopeTail_319230 *tail;
+                        RopeTail *tail;
                         q->life = lf;
                         tail = &q->tail;
                         tail->mode = 2;
@@ -2405,7 +2405,7 @@ void detach_snagglebeast_rope_particles(int arg0) {
     float a[4];
     float b[4];
     float c[4];
-    RopePart_319230 *e;
+    RopePart *e;
     char *m;
     float len;
     int off;
@@ -2696,14 +2696,14 @@ typedef struct {
     Vec4 pos;
     u8 pad10[0x30];
     s32 found;
-} SwooperSight_31AAB0;
+} SwooperSight;
 typedef struct {
     u8 pad0[0x10];
     Vec4f pos;
     struct Moby *moby;
     u8 pad24[8];
     f32 kind;
-} MobyHit_31AAB0;
+} MobyHit;
 
 extern Vec4 debris_far_point_r __asm__("D_L07_00166EC0");
 extern struct Moby *debris_target_r __asm__("D_L07_00173F58");
@@ -2711,13 +2711,13 @@ extern Vec4 umbris_coll_resolved_pos_r __asm__("D_L07_00173F70");
 extern f32 g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern f32 g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 
-extern s32 see_31AAB0(struct Moby *, SwooperSight_31AAB0 *, f32) __asm__("func_L00_00260D30");
+extern s32 see_31AAB0(struct Moby *, SwooperSight *, f32) __asm__("func_L00_00260D30");
 extern f32 dist_31AAB0(void *, void *) __asm__("func_001F9D10");
 extern f32 distxy_31AAB0(void *, void *) __asm__("func_001F9D48");
 extern f32 fabs_31AAB0(f32) __asm__("func_001F9B88");
 extern void set_ground_height_band_r(struct Moby *) __asm__("func_L00_0025B178");
-extern MobyHit_31AAB0 *hit_31AAB0(struct Moby *, s32, s32) __asm__("func_L00_0025B478");
-extern s32 ComputeHitResponse_r2(struct Moby *, MobyHit_31AAB0 *, void *, s32, s32 *, s32, s32,
+extern MobyHit *hit_31AAB0(struct Moby *, s32, s32) __asm__("func_L00_0025B478");
+extern s32 ComputeHitResponse_r2(struct Moby *, MobyHit *, void *, s32, s32 *, s32, s32,
                                  s32) __asm__("func_L00_0025B4D0");
 extern void debris_31AAB0(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
                           int, int, int, int) __asm__("func_L00_0025F4A8");
@@ -2745,8 +2745,8 @@ extern s32 probe_31AAB0(f32, void *, s32, void *, void *) __asm__("func_L00_001F
 void update_swooper(struct Moby *moby) {
     SwooperVars_31AAB0 *vars;
     SwooperSpawnerVars_31AAB0 *spawner_vars;
-    SwooperSight_31AAB0 sight;
-    MobyHit_31AAB0 *hit;
+    SwooperSight sight;
+    MobyHit *hit;
     u8 *collision;
     Vec4 dir;
     u8 contact[0x30];
@@ -2879,7 +2879,7 @@ void update_swooper(struct Moby *moby) {
 typedef struct {
     s32 shards;
     Vec3f size;
-} BreakableVars_31B318;
+} BreakableVars;
 typedef struct {
     u8 pad0[0x10];
     Vec4f pos;
@@ -2904,7 +2904,7 @@ extern void delete_31B318(void *) __asm__("func_0020D678");
  * count of pieces over its rotated extent, spawns debris and removes itself.
  * Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l07/gameplay/entities/00312948.c, FUN_L07_00319f48. */
 void process_breakable_prop_hit(struct Moby *m) {
-    BreakableVars_31B318 *v = (BreakableVars_31B318 *)m->pvars;
+    BreakableVars *v = (BreakableVars *)m->pvars;
     MobyHit_31B318 *h;
     Vec4f ext, p, vel;
     f32 scale;
@@ -2940,7 +2940,7 @@ void process_breakable_prop_hit(struct Moby *m) {
     }
     m->hit_slot = 0xFF;
 }
-typedef struct Gun_31B620 {
+typedef struct Gun {
     char p0[0x20];
     char hit[6];
     short h26;
@@ -2964,7 +2964,7 @@ typedef struct Gun_31B620 {
     int burst;
     short shot;
     unsigned char kind;
-} Gun_31B620;
+} Gun;
 
 extern void *MobyGetHitMessage_r2(void *, int, int) __asm__("func_L00_0025B478");
 extern int ComputeHitResponse_r3(void *, void *, void *, int, int *, float *, int, int) __asm__("func_L00_0025B4D0");
@@ -2993,13 +2993,13 @@ void GunMoby_HandleHit(Moby *moby) {
     float pos[4];
     float vel[4];
     int cnt;
-    Gun_31B620 *data;
+    Gun *data;
     char *hit;
 
     if (moby == 0) {
         return;
     }
-    data = *(struct Gun_31B620 **)&moby->pvars;
+    data = *(struct Gun **)&moby->pvars;
     if (data == 0) {
         return;
     }

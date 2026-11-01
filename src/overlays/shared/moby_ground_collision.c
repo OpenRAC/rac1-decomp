@@ -2645,7 +2645,7 @@ typedef struct {
     unsigned char b19;
     unsigned short h1A;
     char p1C[0x14];
-} Ev_25F4A8;
+} Ev;
 typedef struct {
     int v[6];
 } S6_25F4A8;
@@ -2654,10 +2654,10 @@ typedef struct {
     float f160;
     int f164;
     int f168;
-} Cam_25F4A8;
+} Cam;
 typedef struct {
     float f[11];
-} Fl_25F4A8;
+} Fl;
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern float level_draw_frame_load_r __asm__("D_L00_0015F6B8") MACRO_ADDR;
 extern float cpu_frame_load_r __asm__("D_L00_0015F6B4") MACRO_ADDR;
@@ -2722,7 +2722,7 @@ void spawn_explosion(char *m, void *unused, char *pos, float fA, float fB, int n
     }
     {
         if (fA > 0.0f) {
-            Ev_25F4A8 ev;
+            Ev ev;
             initialize_hit_descriptor_r(&ev, m, 0x810001, fB);
             ev.b18 = 2;
             ev.b19 = 1;
@@ -2863,8 +2863,8 @@ void spawn_explosion(char *m, void *unused, char *pos, float fA, float fB, int n
             *(u128_25F4A8 *)&v = *(u128_25F4A8 *)pos;
             v.f[3] = 2.0f;
             if (FastBSphereCheck_r(&v, 10.0f) != -1) {
-                ((Cam_25F4A8 *)player_camera_r)->f160 = (dist < 20.0f) ? 0.4f - dist * 0.0175f : 0.050000012f;
-                ((Cam_25F4A8 *)player_camera_r)->f168 = scale_ticks_r(0x19);
+                ((Cam *)player_camera_r)->f160 = (dist < 20.0f) ? 0.4f - dist * 0.0175f : 0.050000012f;
+                ((Cam *)player_camera_r)->f168 = scale_ticks_r(0x19);
             }
         }
     }
@@ -2878,13 +2878,13 @@ void spawn_explosion(char *m, void *unused, char *pos, float fA, float fB, int n
             v.f[3] = fG;
             if (FastBSphereCheck_r(&v, 100.0f) != -1) {
                 if (0.0f < fG) {
-                    ((Fl_25F4A8 *)beam_explosion_blast_params_r)->f[9] = fG;
-                    ((Fl_25F4A8 *)beam_explosion_blast_params_r)->f[10] = fG;
-                    ((Fl_25F4A8 *)beam_explosion_blast_params_r)->f[8] = fG;
+                    ((Fl *)beam_explosion_blast_params_r)->f[9] = fG;
+                    ((Fl *)beam_explosion_blast_params_r)->f[10] = fG;
+                    ((Fl *)beam_explosion_blast_params_r)->f[8] = fG;
                 } else {
-                    ((Fl_25F4A8 *)beam_explosion_blast_params_r)->f[9] = 15.0f;
-                    ((Fl_25F4A8 *)beam_explosion_blast_params_r)->f[10] = 15.0f;
-                    ((Fl_25F4A8 *)beam_explosion_blast_params_r)->f[8] = 15.0f;
+                    ((Fl *)beam_explosion_blast_params_r)->f[9] = 15.0f;
+                    ((Fl *)beam_explosion_blast_params_r)->f[10] = 15.0f;
+                    ((Fl *)beam_explosion_blast_params_r)->f[8] = 15.0f;
                 }
                 if (flag) {
                     mine_camera_blast_r(beam_explosion_alt_color_blast_params_r, pos, 0, 0);

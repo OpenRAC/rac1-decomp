@@ -390,15 +390,15 @@ void update_scoutbot_health_and_target(char *m) {
    square), orients it towards the target moby (data+0x218) with a rotation matrix from two angles, and draws four
    pairs of quads (lit core and two flaring side strips, each drawn twice with the +-0.25 jitter). Not run against
    captured calls. */
-typedef struct Vec_2D4B80 {
+typedef struct Vec {
     float v[4];
-} Vec_2D4B80 __attribute__((aligned(16)));
-typedef struct Packet_2D4B80 {
-    Vec_2D4B80 vertices[4];
+} Vec __attribute__((aligned(16)));
+typedef struct Packet {
+    Vec vertices[4];
     unsigned int color[4];
     float uv[8];
     long tag[4];
-} Packet_2D4B80;
+} Packet;
 
 extern u64 GetEffectTex(s32);
 #define func_001F4868_4B80 ((long (*)(int))func_001F4868)
@@ -428,8 +428,8 @@ extern float scoutbot_beam_base_z;
 /* Draws the moby's targeting beam as a textured quad from the moby toward its target. */
 void draw_target_beam(char *m) {
     struct Data_3DF8 *data = (struct Data_3DF8 *)((Moby *)m)->pvars;
-    Packet_2D4B80 pk;
-    Vec_2D4B80 matrix[3], direction, pos, delta, angles;
+    Packet pk;
+    Vec matrix[3], direction, pos, delta, angles;
     float length;
     long tag;
     int i;
@@ -1997,11 +1997,11 @@ typedef struct {
     char p14C[8];
     float f154;
     float f158;
-} Cam_3091B0;
+} Cam;
 typedef struct {
     char p0[0x30];
     V_3091B0 v30;
-} Obj_3091B0;
+} Obj;
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 extern u128_3091B0 batalia_ground_scatter_hero_offset_r __asm__("D_L08_001602D0") MACRO_ADDR;
 extern float ground_particle_scatter_refresh_countdown_r __asm__("D_L08_00162400") MACRO_ADDR;
@@ -2039,7 +2039,7 @@ void scatter_ground_particles(Moby *m) {
     int big;
     int n;
     int cnt;
-    Obj_3091B0 *obj;
+    Obj *obj;
     float lo;
     float hi;
     float fall;
@@ -2078,7 +2078,7 @@ void scatter_ground_particles(Moby *m) {
         if (zero <= k)
             lo = k;
     }
-    obj = (Obj_3091B0 *)m->pvars;
+    obj = (Obj *)m->pvars;
     switch (m->state) {
         case 0:
             m->state = 2;
@@ -2092,9 +2092,9 @@ void scatter_ground_particles(Moby *m) {
             batalia_ground_scatter_hero_offset_r = *(u128_3091B0 *)&dv;
             *(u128_3091B0 *)&base = *(u128_3091B0 *)batalia_hero_pos;
             n = ground_particle_scatter_base_attempt_count_r;
-            fast_add_rotations_cf_r(&base, &base, 16.0f, ((Cam_3091B0 *)(batalia_hero_pos - 0x140))->f158,
-                                    ((Cam_3091B0 *)(batalia_hero_pos - 0x140))->f154);
-            base.z = ((Cam_3091B0 *)(batalia_hero_pos - 0x140))->f148 + D_L08_001623D4_3091B0;
+            fast_add_rotations_cf_r(&base, &base, 16.0f, ((Cam *)(batalia_hero_pos - 0x140))->f158,
+                                    ((Cam *)(batalia_hero_pos - 0x140))->f154);
+            base.z = ((Cam *)(batalia_hero_pos - 0x140))->f148 + D_L08_001623D4_3091B0;
             if (n > 0) {
                 V_3091B0 *po = &off;
                 cnt = n;
@@ -2129,9 +2129,9 @@ void scatter_ground_particles(Moby *m) {
                         par.z = -(h * frame_3DF8);
                         par.w = 0.0f;
                     }
-                    D_L08_001602E0_3091B0 = ((Cam_3091B0 *)(batalia_hero_pos - 0x140))->f148 - D_L08_001623EC_3091B0;
+                    D_L08_001602E0_3091B0 = ((Cam *)(batalia_hero_pos - 0x140))->f148 - D_L08_001623EC_3091B0;
                     f = ground_height_at_r(&pt);
-                    if (f < ((Cam_3091B0 *)(batalia_hero_pos - 0x140))->f148 + D_L08_001623D4_3091B0) {
+                    if (f < ((Cam *)(batalia_hero_pos - 0x140))->f148 + D_L08_001623D4_3091B0) {
                         void *q;
                         if (f < D_L08_001602E0_3091B0) {
                             w = D_L08_001602E0_3091B0;
@@ -2150,7 +2150,7 @@ void scatter_ground_particles(Moby *m) {
             }
             n = (int)((float)n * 1.4f);
             *(u128_3091B0 *)&base = *(u128_3091B0 *)batalia_hero_pos;
-            base.z = ((Cam_3091B0 *)(batalia_hero_pos - 0x140))->f148 + D_L08_001623D4_3091B0;
+            base.z = ((Cam *)(batalia_hero_pos - 0x140))->f148 + D_L08_001623D4_3091B0;
             if (n > 0) {
                 float s = -spread;
                 cnt = n;
@@ -2170,9 +2170,9 @@ void scatter_ground_particles(Moby *m) {
                     w = FastSin_r(random_float_between_r(0.0f, 6.2831855f));
                     w = w * random_float_between_r(0.0f, 8.0f);
                     pt.y += w;
-                    D_L08_001602E0_3091B0 = ((Cam_3091B0 *)(batalia_hero_pos - 0x140))->f148 - D_L08_001623EC_3091B0;
+                    D_L08_001602E0_3091B0 = ((Cam *)(batalia_hero_pos - 0x140))->f148 - D_L08_001623EC_3091B0;
                     f = ground_height_at_r(&pt);
-                    if (f < ((Cam_3091B0 *)(batalia_hero_pos - 0x140))->f148 + D_L08_001623D4_3091B0) {
+                    if (f < ((Cam *)(batalia_hero_pos - 0x140))->f148 + D_L08_001623D4_3091B0) {
                         if (f < D_L08_001602E0_3091B0) {
                             w = D_L08_001602E0_3091B0;
                         } else {
@@ -2190,10 +2190,10 @@ void scatter_ground_particles(Moby *m) {
                 int h;
                 w = 30.0f;
                 *(u128_3091B0 *)&base = *(u128_3091B0 *)batalia_hero_pos;
-                fast_add_rotations_cf_r(&base, &base, w, ((Cam_3091B0 *)(batalia_hero_pos - 0x140))->f158,
-                                        ((Cam_3091B0 *)(batalia_hero_pos - 0x140))->f154);
+                fast_add_rotations_cf_r(&base, &base, w, ((Cam *)(batalia_hero_pos - 0x140))->f158,
+                                        ((Cam *)(batalia_hero_pos - 0x140))->f154);
                 sign = n >> 31;
-                base.z = ((Cam_3091B0 *)(batalia_hero_pos - 0x140))->f148 + D_L08_001623D4_3091B0;
+                base.z = ((Cam *)(batalia_hero_pos - 0x140))->f148 + D_L08_001623D4_3091B0;
                 if (n > 0) {
                     cnt = n;
                     do {
@@ -2208,9 +2208,9 @@ void scatter_ground_particles(Moby *m) {
                     } while (--cnt != 0);
                 }
                 *(u128_3091B0 *)&base = *(u128_3091B0 *)batalia_hero_pos;
-                fast_add_rotations_cf_r(&base, &base, 4.0f, ((Cam_3091B0 *)(batalia_hero_pos - 0x140))->f158,
-                                        ((Cam_3091B0 *)(batalia_hero_pos - 0x140))->f154);
-                base.z = ((Cam_3091B0 *)(batalia_hero_pos - 0x140))->f148 + D_L08_001623D4_3091B0;
+                fast_add_rotations_cf_r(&base, &base, 4.0f, ((Cam *)(batalia_hero_pos - 0x140))->f158,
+                                        ((Cam *)(batalia_hero_pos - 0x140))->f154);
+                base.z = ((Cam *)(batalia_hero_pos - 0x140))->f148 + D_L08_001623D4_3091B0;
                 h = (n - sign) >> 1;
                 if (h > 0) {
                     cnt = h;
@@ -2301,7 +2301,7 @@ void update_ground_height_modulated_voice(char *m) {
     do {
         build_look_at_matrix(p, off, axis, ang);
         vadd_3DF8(p, batalia_hero_pos, p);
-        if (ground_height_at_r(p) < ((Cam_3091B0 *)(batalia_hero_pos - 0x140))->f148)
+        if (ground_height_at_r(p) < ((Cam *)(batalia_hero_pos - 0x140))->f148)
             open += 0.05f;
         ang += 0.31415927f;
     } while (ang < 6.2831855f);

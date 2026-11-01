@@ -777,7 +777,7 @@ void set_moby_and_links_to_states_2_and_3(char *a) {
 }
 typedef struct {
     float x, y, z, w;
-} __attribute__((aligned(16))) Vec_2F69D0;
+} __attribute__((aligned(16))) Vec;
 typedef struct Data_2F69D0 {
     char p0[0x60];
     int i60;
@@ -791,16 +791,16 @@ typedef struct Data_2F69D0 {
 } Data_2F69D0;
 typedef struct {
     char p0[0x30];
-    Vec_2F69D0 v30;
+    Vec v30;
     char p40[0x30];
-    Vec_2F69D0 v70;
+    Vec v70;
 } Node_2F69D0;
 typedef struct {
     char p0[0x74];
     unsigned char b74;
     char p75[0x13];
     struct Moby *p88;
-} Slot_2F69D0;
+} Slot;
 extern unsigned char hero_globals_base_r[] __asm__("D_0013E633");
 extern char voice_pool_r[] __asm__("D_0013E650");
 extern unsigned char gHaveMorphORay_r[] __asm__("D_0013D5DD");
@@ -851,7 +851,7 @@ extern int memcard_Save_r(int, int) __asm__("func_0020BFC8");
 /* Level 6 drawbridge (class 1028): spawns its two rows of deck pieces, waits for the hero's switch, then
    lowers through three hinge stages (drawbridge_slide/0C/10) while the camera follows the path nodes. */
 void update_drawbridge(Moby *m) {
-    Vec_2F69D0 v0, v10, v20, v30, v40, v50;
+    Vec v0, v10, v20, v30, v40, v50;
     Data_2F69D0 *s = (struct Data_2F69D0 *)m->pvars;
     float old, t;
     int i, j, k;
@@ -949,8 +949,8 @@ void update_drawbridge(Moby *m) {
             k = m->command;
             if (20.0f <= D_L06_00161E08_2F69D0) {
                 if (Sound_IsPlaying_r(s->c[9], k) != 0) {
-                    if (k != -1 && ((Slot_2F69D0 *)(voice_pool_r + k * 0x70))->p88 == s->c[9] &&
-                        ((Slot_2F69D0 *)(voice_pool_r + k * 0x70))->b74 != 0) {
+                    if (k != -1 && ((Slot *)(voice_pool_r + k * 0x70))->p88 == s->c[9] &&
+                        ((Slot *)(voice_pool_r + k * 0x70))->b74 != 0) {
                         Sound_StopSlot_r(k);
                     }
                     k = -1;
@@ -1002,12 +1002,12 @@ void update_drawbridge(Moby *m) {
 extern void matrix_mul_vec3(void *, void *, void *);
 extern float drawbridge_upper_min_slide SDATA(D_L06_00161E00);
 extern float drawbridge_upper_slide_step SDATA(D_L06_00161E04);
-extern Vec_2F69D0 drawbridge_row_a_offset SDATA(D_L06_00161DE0);
-extern Vec_2F69D0 drawbridge_row_b_offset SDATA(D_L06_00161DF0);
+extern Vec drawbridge_row_a_offset SDATA(D_L06_00161DE0);
+extern Vec drawbridge_row_b_offset SDATA(D_L06_00161DF0);
 
 /* Blarg drawbridge pieces: places and rotates the 20 + 10 chained segment mobys. */
 void update_drawbridge_segment_transforms(Moby *m) {
-    Vec_2F69D0 v, w, x;
+    Vec v, w, x;
     Data_2F69D0 *s = (Data_2F69D0 *)m->pvars;
     int i, j;
     float t, ang, a, b, c, d;
@@ -2082,9 +2082,9 @@ typedef struct {
     float z; /* 0x18 */
     char pad1C[0x4];
     struct Moby *owner; /* 0x20 */
-} Target_2FA618;
+} Target;
 
-typedef struct BlargVars_2FA618 {
+typedef struct BlargVars {
     char pad00[0x20];
     float health; /* 0x20 */
     char pad24[0x14];
@@ -2114,13 +2114,13 @@ typedef struct BlargVars_2FA618 {
     char pad1B4[0x14];
     float f1C8; /* 0x1C8 */
     int f1CC; /* 0x1CC */
-} BlargVars_2FA618;
+} BlargVars;
 
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
 extern float multiply_global_factor_r(float) __asm__("func_001F9878");
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
-extern Target_2FA618 *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
+extern Target *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
 extern int ComputeHitResponse_r(void *, void *, void *, int, int *, float *, int, int) __asm__("func_L00_0025B4D0");
 extern void transition_moby_group_state_1_to_2_r2(void *) __asm__("func_L06_002FAAC8");
 extern float fast_atan2_r2(float, float) __asm__("func_L00_001FF860");
@@ -2145,10 +2145,10 @@ extern float D_L06_00161F60_2FA618 SDATA(D_L06_00161F60);
 
 // Per-frame update for a Blarg moby: its data block (at 0x78) runs a state machine on the state byte at 0x20.
 void update_alien_snapper_hit_response_and_targeting(Moby *moby) {
-    BlargVars_2FA618 *data = (struct BlargVars_2FA618 *)moby->pvars;
+    BlargVars *data = (struct BlargVars *)moby->pvars;
     int hit;
     float dmg;
-    Target_2FA618 *target;
+    Target *target;
     int r;
 
     if (data->f38 != 0) {
@@ -3370,7 +3370,7 @@ typedef struct {
     int f10;
     char pad14[0x10];
     float f24;
-} Cls_2FDA70;
+} Cls;
 typedef struct {
     char pad0[0x20];
     char f20[0x40];
@@ -3400,7 +3400,7 @@ typedef struct {
 typedef struct {
     char pad0[0x20];
     unsigned char f20;
-} Flags_2FDA70;
+} Flags;
 extern int try_set_help_message(int, int);
 extern void FadeToBlack(int);
 extern void restore_hero_from_vehicle_mode(void);
@@ -3431,7 +3431,7 @@ void update_hero_triggered_moby_height_cycle(Moby *moby) {
 
     FastVecScale(&v0, &moby->pos, -1.0f);
     qcopy(&v10, &moby->rot);
-    moby->scale = ((Cls_2FDA70 *)moby->pclass)->f24 * blarg_lift_scale;
+    moby->scale = ((Cls *)moby->pclass)->f24 * blarg_lift_scale;
     switch (moby->state) {
         case 0:
             if (blarg_lift_cutscene_seen == -1) {
@@ -3462,8 +3462,8 @@ void update_hero_triggered_moby_height_cycle(Moby *moby) {
             break;
         case 1:
             if (is_point_inside_clip_volume(&((Hero *)(hero_globals_base + 0xE1D))->motion.pos, d->f70) != 0) {
-                if (((Flags_2FDA70 *)(special_items_base_r + 0x13B))->f20 == 0) {
-                    ((Flags_2FDA70 *)(special_items_base_r + 0x13B))->f20 = 1;
+                if (((Flags *)(special_items_base_r + 0x13B))->f20 == 0) {
+                    ((Flags *)(special_items_base_r + 0x13B))->f20 = 1;
                 }
                 moby->state = 3;
                 d->f90 = 0;
@@ -3523,7 +3523,7 @@ void update_hero_triggered_moby_height_cycle(Moby *moby) {
                         set_moby_and_links_to_states_2_and_3(level_mobys_q + (d->f60 << 8));
                         d->f84 = 1;
                         ((Moby *)level_mobys_q)[d->f6C].collision =
-                            ((Cls_2FDA70 *)((Moby *)level_mobys_q)[d->f6C].pclass)->f10;
+                            ((Cls *)((Moby *)level_mobys_q)[d->f6C].pclass)->f10;
                         ((Moby *)level_mobys_q)[d->f6C].flags &= 0xFFFE;
                         {
                             char *b = blarg_scene_points + (d->f80 << 7);

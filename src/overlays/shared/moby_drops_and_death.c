@@ -34,8 +34,8 @@ typedef struct {
     unsigned char pad[0xE];
     unsigned short count;
     unsigned char tail[8];
-} ItemCount_258250;
-extern ItemCount_258250 item_price_table[];
+} ItemCount;
+extern ItemCount item_price_table[];
 
 extern unsigned char vendor_stock[] MACRO_ADDR;
 extern unsigned char item_available[];
@@ -63,7 +63,7 @@ int ChooseDropItem(unsigned char *m, int *item) {
             for (scan_index = 0; scan_index < 12 && vendor_stock[scan_index] != 0xFF; scan_index++) {
                 id = vendor_stock[scan_index] & 0x3F;
                 if (item_available[id]) {
-                    ItemCount_258250 *count = &item_price_table[id];
+                    ItemCount *count = &item_price_table[id];
                     available++;
                     if (count->count != 0) {
                         stocked++;
@@ -81,7 +81,7 @@ int ChooseDropItem(unsigned char *m, int *item) {
                     ++i;
                     id = vendor_stock[i] & 0x3F;
                     if (item_available[id]) {
-                        ItemCount_258250 *count = &item_price_table[id];
+                        ItemCount *count = &item_price_table[id];
                         scan_index -= weapon_ammo_counts[id] < count->count;
                     }
                     if (scan_index < 0)
@@ -98,7 +98,7 @@ int ChooseDropItem(unsigned char *m, int *item) {
                         i++;
                         id = vendor_stock[i] & 0x3F;
                         if (item_available[id]) {
-                            ItemCount_258250 *count = &item_price_table[id];
+                            ItemCount *count = &item_price_table[id];
                             if (count->count != 0)
                                 scan_index--;
                         }

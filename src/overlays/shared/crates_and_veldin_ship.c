@@ -111,7 +111,7 @@ struct PointLightVars {
 typedef struct {
     f32 x, y, z, w;
 } __attribute__((aligned(16))) V_2cfcb8;
-struct Vars_2cfcb8;
+struct Vars;
 typedef struct M_2cfcb8 {
     u8 p0[0x10];
     V_2cfcb8 pos;
@@ -126,14 +126,14 @@ typedef struct M_2cfcb8 {
     f32 rot_y;
     f32 rot_z;
     u8 p4c[0x78 - 0x4C];
-    struct Vars_2cfcb8 *vars;
+    struct Vars *vars;
     u8 p7c[0xA6 - 0x7C];
     s16 oclass;
     u16 hA8;
     u8 pAA[0xB0 - 0xAA];
     u8 mission;
 } M_2cfcb8;
-typedef struct Vars_2cfcb8 {
+typedef struct Vars {
     u8 p0[0xA0];
     M_2cfcb8 *next_member;
     M_2cfcb8 *pA4;
@@ -151,7 +151,7 @@ typedef struct Vars_2cfcb8 {
     M_2cfcb8 *standing_on;
     f32 stack_level;
     s32 iF8;
-} Vars_2cfcb8;
+} Vars;
 typedef struct {
     s32 count;
     s32 pad_4[3];
@@ -190,8 +190,8 @@ void ground_attached_update(M_2cfcb8 *moby) {
     V_2cfcb8 probe_down;
     M_2cfcb8 *member;
     M_2cfcb8 *other;
-    Vars_2cfcb8 *vars;
-    Vars_2cfcb8 *below_vars;
+    Vars *vars;
+    Vars *below_vars;
     V_2cfcb8 *src1, *src2, *src3, *src4;
     R_2cfcb8 *route;
     s32 group, flags_before, i, member_flags;
@@ -979,7 +979,7 @@ typedef struct {
         f32 u, v;
     } uv[4];
     u64 texture[4];
-} __attribute__((aligned(16))) Quad_2d19b0;
+} __attribute__((aligned(16))) Quad;
 typedef struct {
     f32 x, y, z, w;
 } __attribute__((aligned(16))) Vec_2d19b0;
@@ -1020,7 +1020,7 @@ extern void draw_world_quad(void *, s32, s32);
 
 /* Draw the Veldin ship's glow quads from its vertices when the camera is near or it is active. */
 void veldin_ship_draw(u8 *m) {
-    Quad_2d19b0 quad;
+    Quad quad;
     Vec_2d19b0 a, c, b;
     u8 *vars = ((u8 *)((Moby *)m)->pvars);
     s32 i, j, index, active = 0;
@@ -1400,10 +1400,10 @@ L3D34:
 }
 typedef float Vec_2D3F40[4] __attribute__((aligned(16)));
 typedef int U128_2D3F40 __attribute__((mode(TI)));
-typedef union Vu_2D3F40 {
+typedef union Vu {
     U128_2D3F40 q;
     Vec_2D3F40 f;
-} Vu_2D3F40;
+} Vu;
 typedef struct Quad_2D3F40 {
     Vec_2D3F40 v[4];
     int c[4];
@@ -1438,7 +1438,7 @@ extern int D_L00_001619E8_2D3F40 SDATA(D_L00_001619E8);
 /* Draws the trail of fading ring sprites for a moby. */
 void draw_metal_detector_trail(Moby *moby) {
     Quad_2D3F40 q;
-    Vu_2D3F40 tt[6];
+    Vu tt[6];
     Data_2D3F40 *d = (Data_2D3F40 *)moby->pvars;
     float t, s, k;
     int col;
@@ -1541,17 +1541,17 @@ typedef struct Vars_2D4398 {
     Vec4 unk30;
 } Vars_2D4398;
 
-typedef struct TargetVars_2D4398 {
+typedef struct TargetVars {
     u8 pad0[0x18];
     s32 count;
-} TargetVars_2D4398;
+} TargetVars;
 
-typedef struct VoiceSlot_2D4398 {
+typedef struct VoiceSlot {
     u8 pad0[0x74];
     u8 active;
     u8 pad75[0x13];
     struct Moby *owner;
-} VoiceSlot_2D4398;
+} VoiceSlot;
 
 /* The hero block g_hero, cut down to what this function reads. */
 
@@ -1612,7 +1612,7 @@ extern void enqueue_2D4398(void *, void *) __asm__("func_001F49B0");
 void metal_detector_update(struct Moby *moby) {
     Vars_2D4398 *vars;
     struct Moby *t;
-    TargetVars_2D4398 *tv;
+    TargetVars *tv;
     Vec_2D4398 u;
     Vec_2D4398 v;
     Vec_2D4398 w;
@@ -1740,7 +1740,7 @@ void metal_detector_update(struct Moby *moby) {
                     t = ((Hero *)g_hero_r)->metal_detector_target;
                     if (t != 0 && t->oclass == 0x25D && t->state != 0xFE && t->state != 0xFD &&
                         ((Hero *)g_hero_r)->detector_target_dist < 1.0f) {
-                        tv = (TargetVars_2D4398 *)t->pvars;
+                        tv = (TargetVars *)t->pvars;
                         while (tv->count > 0) {
                             w[0] = rand_2D4398(1.0f, 10.0f) * g_frame_time_r;
                             w[1] = rand_2D4398(-10.0f, 10.0f) * g_frame_time_r;
@@ -1772,7 +1772,7 @@ void metal_detector_update(struct Moby *moby) {
                         vars->unk8 = 0x7FFF;
                         voice_2D4398(3, 0, moby);
                         if (vars->voice2 != -1) {
-                            VoiceSlot_2D4398 *e = (VoiceSlot_2D4398 *)(voice_pool_r + vars->voice2 * 0x70);
+                            VoiceSlot *e = (VoiceSlot *)(voice_pool_r + vars->voice2 * 0x70);
 
                             if (e->owner == moby && e->active != 0) {
                                 release_2D4398(vars->voice2);
@@ -1783,7 +1783,7 @@ void metal_detector_update(struct Moby *moby) {
                 } else {
                     moby->glow_color = 0x80808080;
                     if (vars->voice0 != -1) {
-                        VoiceSlot_2D4398 *e = (VoiceSlot_2D4398 *)(voice_pool_r + vars->voice0 * 0x70);
+                        VoiceSlot *e = (VoiceSlot *)(voice_pool_r + vars->voice0 * 0x70);
 
                         if (e->owner == moby && e->active != 0) {
                             release_2D4398(vars->voice0);
@@ -1791,7 +1791,7 @@ void metal_detector_update(struct Moby *moby) {
                     }
                     vars->voice0 = -1;
                     if (vars->voice1 != -1) {
-                        VoiceSlot_2D4398 *e = (VoiceSlot_2D4398 *)(voice_pool_r + vars->voice1 * 0x70);
+                        VoiceSlot *e = (VoiceSlot *)(voice_pool_r + vars->voice1 * 0x70);
 
                         if (e->owner == moby && e->active != 0) {
                             release_2D4398(vars->voice1);
@@ -1799,7 +1799,7 @@ void metal_detector_update(struct Moby *moby) {
                     }
                     vars->voice1 = -1;
                     if (vars->voice2 != -1) {
-                        VoiceSlot_2D4398 *e = (VoiceSlot_2D4398 *)(voice_pool_r + vars->voice2 * 0x70);
+                        VoiceSlot *e = (VoiceSlot *)(voice_pool_r + vars->voice2 * 0x70);
 
                         if (e->owner == moby && e->active != 0) {
                             release_2D4398(vars->voice2);
@@ -1812,7 +1812,7 @@ void metal_detector_update(struct Moby *moby) {
             }
             moby->glow_color = 0x80808080;
             if (vars->voice0 != -1) {
-                VoiceSlot_2D4398 *e = (VoiceSlot_2D4398 *)(voice_pool_r + vars->voice0 * 0x70);
+                VoiceSlot *e = (VoiceSlot *)(voice_pool_r + vars->voice0 * 0x70);
 
                 if (e->owner == moby && e->active != 0) {
                     release_2D4398(vars->voice0);
@@ -1820,7 +1820,7 @@ void metal_detector_update(struct Moby *moby) {
             }
             vars->voice0 = -1;
             if (vars->voice1 != -1) {
-                VoiceSlot_2D4398 *e = (VoiceSlot_2D4398 *)(voice_pool_r + vars->voice1 * 0x70);
+                VoiceSlot *e = (VoiceSlot *)(voice_pool_r + vars->voice1 * 0x70);
 
                 if (e->owner == moby && e->active != 0) {
                     release_2D4398(vars->voice1);
@@ -1828,7 +1828,7 @@ void metal_detector_update(struct Moby *moby) {
             }
             vars->voice1 = -1;
             if (vars->voice2 != -1) {
-                VoiceSlot_2D4398 *e = (VoiceSlot_2D4398 *)(voice_pool_r + vars->voice2 * 0x70);
+                VoiceSlot *e = (VoiceSlot *)(voice_pool_r + vars->voice2 * 0x70);
 
                 if (e->owner == moby && e->active != 0) {
                     release_2D4398(vars->voice2);
@@ -2810,18 +2810,18 @@ extern s32 Moby_PlaySound_r(s32, s32, void *) __asm__("func_0022ED80");
 typedef struct {
     u8 pad[0x454];
     u8 killed[1]; /* per spawn id: spawn slot + 2 */
-} KillFlags_2D6CE0;
+} KillFlags;
 typedef struct {
     s32 count;
     u8 pad04[8];
     f32 key;
-} KeyRow_2D6CE0;
+} KeyRow;
 typedef struct {
     s32 table; /* -1, or an index into level_paths */
     f32 key;
-} KeyVars_2D6CE0;
-extern KillFlags_2D6CE0 current_level_state_r __asm__("D_L00_001BA960");
-extern KillFlags_2D6CE0 checkpoint_level_state_r __asm__("D_L00_001BB5C0");
+} KeyVars;
+extern KillFlags current_level_state_r __asm__("D_L00_001BA960");
+extern KillFlags checkpoint_level_state_r __asm__("D_L00_001BB5C0");
 extern u8 mission_state_r[] __asm__("D_L00_0015FD48") MACRO_ADDR;
 extern u8 saved_mission_state_r[][16] __asm__("D_0014C150");
 void func_L00_002D6CE0_r(Moby *m) __asm__("func_L00_002D6CE0");
@@ -2830,7 +2830,7 @@ void func_L00_002D6CE0_r(Moby *m) __asm__("func_L00_002D6CE0");
    key table.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002cfcb8.c, FUN_L00_002d5830. */
 void func_L00_002D6CE0_r(Moby *m) {
-    KeyVars_2D6CE0 *v = (KeyVars_2D6CE0 *)m->pvars;
+    KeyVars *v = (KeyVars *)m->pvars;
     s32 i;
     if (m->state != 1) {
         return;
@@ -2847,8 +2847,8 @@ void func_L00_002D6CE0_r(Moby *m) {
     if (v->table == -1) {
         return;
     }
-    for (i = 0; i < ((KeyRow_2D6CE0 *)level_paths_r2[v->table])[0].count; i++) {
-        KeyRow_2D6CE0 *row = &((KeyRow_2D6CE0 *)level_paths_r2[v->table])[i];
+    for (i = 0; i < ((KeyRow *)level_paths_r2[v->table])[0].count; i++) {
+        KeyRow *row = &((KeyRow *)level_paths_r2[v->table])[i];
         if (row[1].key == v->key) {
             row[1].key = 0;
         }
@@ -3611,7 +3611,7 @@ typedef struct {
     int mesh_texture; /* 58 */
     u8 mesh_alpha, mesh_red, mesh_green, mesh_blue; /* 5C..5F */
 } Q_2D8898;
-struct GeometryQuad_2D8898 {
+struct GeometryQuad {
     Vec4 positions[4];
     u32 colors[4];
     f32 texture_coordinates[4][2];
@@ -3652,7 +3652,7 @@ extern void VU1_addGSregister(s32, s64);
 void draw_smoke_fire_spawner(P *spawner) {
     Vec4 position, up;
     Vec4 facing[4], flipped[4];
-    struct GeometryQuad_2D8898 quad;
+    struct GeometryQuad quad;
     Q_2D8898 *q = (Q_2D8898 *)spawner->q;
     T *volume;
     int mesh_alpha, mesh_color, end;

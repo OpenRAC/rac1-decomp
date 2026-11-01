@@ -137,7 +137,7 @@ typedef struct {
     s32 timer;
     s32 base;
     s32 pick;
-} BossVars_391E8;
+} BossVars;
 typedef struct {
     u8 pad0;
     u8 active;
@@ -145,7 +145,7 @@ typedef struct {
     f32 x;
     f32 y;
     f32 z;
-} Cam_391E8;
+} Cam;
 extern s32 queued_dialogue_id;
 extern s16 dialogue_playback_phase NOT_SDA;
 extern u8 gCheats_r[] __asm__("D_0015EEB0") MACRO_ADDR;
@@ -154,12 +154,12 @@ extern short resident_stream_resume_frames_s5;
 extern short resident_stream_resume_frames_s6;
 extern s32 resident_dialogue_started MACRO_ADDR;
 extern s32 resident_stream_pending MACRO_ADDR;
-extern BossVars_391E8 vendor_state_r __asm__("D_001E66C0");
+extern BossVars vendor_state_r __asm__("D_001E66C0");
 extern s32 vendor_state_dialogue_pick;
-extern Cam_391E8 resident_cheat_scale_manip;
+extern Cam resident_cheat_scale_manip;
 
-extern void AttachManipulator(Moby *, s32, Cam_391E8 *);
-extern void DetachManipulator(Moby *, Cam_391E8 *);
+extern void AttachManipulator(Moby *, s32, Cam *);
+extern void DetachManipulator(Moby *, Cam *);
 extern void MobyBlendAnimation(Moby *, s32, s32, s32);
 
 extern s32 IsFrameWithinWindow(Moby *, f32);

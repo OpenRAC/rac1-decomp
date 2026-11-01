@@ -105,8 +105,8 @@ typedef struct {
     short s22E0;
     short pad22E2;
     int c22E4;
-} GS_28598;
-#define GG ((GS_28598 *)(D_0013E633 + 0xE1D))
+} GS;
+#define GG ((GS *)(D_0013E633 + 0xE1D))
 
 /* Per-frame hero update: animation, movement, ground effects, vehicle, scaling and more. */
 void hero_frame_update(void) {
@@ -185,7 +185,7 @@ void hero_frame_update(void) {
                     GG->s22DC = 1;
                 }
             } else {
-                GS_28598 *g = GG;
+                GS *g = GG;
                 int e = g->b12E7;
                 g->i20B8 = 0;
                 if (e != 0 && g->i300 != 0 && *(unsigned char *)(gHaveMorphORay + 7) != 0 && g->s22DE == 0) {

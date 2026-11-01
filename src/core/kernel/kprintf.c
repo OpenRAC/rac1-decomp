@@ -1077,7 +1077,7 @@ void sif_rpc_request_call(void *request, void *data) {
         return;
     iWakeupThread(base[0]);
 }
-struct SifRpcClient_1B4C8 {
+struct SifRpcClient {
     volatile s32 packet;
     volatile s32 request_id;
     s32 semaphore_id;
@@ -1088,7 +1088,7 @@ struct SifRpcClient_1B4C8 {
     volatile s32 end_argument;
     s32 server;
 };
-struct SifRpcPacket_1B4C8 {
+struct SifRpcPacket {
     u8 pad_0[0x14];
     s32 packet_address;
     s32 request_id;
@@ -1110,17 +1110,17 @@ extern s32 sceSifSendCmd();
 extern s32 sceSifWriteBackDCache_r() __asm__("func_0011AD70");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/sdk/rpc/sce_sif_call_rpc.c, sceSifCallRpc. */
-extern s32 func_0011B4C8_r(struct SifRpcClient_1B4C8 *client, s32 rpc_number, s32 mode, s32 send_buf, s32 send_size,
+extern s32 func_0011B4C8_r(struct SifRpcClient *client, s32 rpc_number, s32 mode, s32 send_buf, s32 send_size,
                            s32 recv_buf, s32 recv_size, s32 end_func, s32 end_data) __asm__("func_0011B4C8");
-s32 func_0011B4C8_r(struct SifRpcClient_1B4C8 *client, s32 rpc_number, s32 mode, s32 send_buf, s32 send_size,
-                    s32 recv_buf, s32 recv_size, s32 end_func, s32 end_data) {
+s32 func_0011B4C8_r(struct SifRpcClient *client, s32 rpc_number, s32 mode, s32 send_buf, s32 send_size, s32 recv_buf,
+                    s32 recv_size, s32 end_func, s32 end_data) {
     s32 semaphore_parameters[6];
-    struct SifRpcPacket_1B4C8 *packet;
+    struct SifRpcPacket *packet;
     s32 semaphore_id;
     s32 skip_cache_writeback;
     s32 request_id;
     s32 allocation_failure_result;
-    packet = (struct SifRpcPacket_1B4C8 *)get_available_rpc_packet_r(sif_rpc_data_r);
+    packet = (struct SifRpcPacket *)get_available_rpc_packet_r(sif_rpc_data_r);
     allocation_failure_result = -1;
     if (packet == 0) {
         return allocation_failure_result;

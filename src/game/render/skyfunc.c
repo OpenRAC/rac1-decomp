@@ -259,19 +259,19 @@ void SkyLevelGeneric___maybe(void) {
     SkyDrawShell(3);
 }
 
-struct SkyShellSet_2C5A0 {
+struct SkyShellSet {
     u8 pad_0[4];
     u16 relocation_state;
     s16 shell_count;
 };
-struct SkyTransform_2C5A0 {
+struct SkyTransform {
     u8 pad[0x30];
     u64 translation;
 };
 extern f32 D_00160504_2C5A0 SDATA(D_00160504);
-extern struct SkyShellSet_2C5A0 *level_sky_effect_data_r3 __asm__("D_0016055C") MACRO_ADDR;
+extern struct SkyShellSet *level_sky_effect_data_r3 __asm__("D_0016055C") MACRO_ADDR;
 extern u8 sky_shell_translation_r2[] __asm__("D_00160560") MACRO_ADDR;
-extern struct SkyTransform_2C5A0 sky_matrix_r2 __asm__("D_001D9A70");
+extern struct SkyTransform sky_matrix_r2 __asm__("D_001D9A70");
 extern s32 depth_buffer_address_r __asm__("D_0015EF88") MACRO_ADDR;
 extern void clear_u64_value(f32 *);
 extern void scale_vector(void *, void *, f32);
@@ -458,22 +458,22 @@ void SkyDrawShell(s32 shell_index) {
 }
 
 typedef u32 u128_2CA00 __attribute__((mode(TI), aligned(16)));
-struct DmaTag_2CA00 {
+struct DmaTag {
     u32 tag;
     u32 addr;
     u32 vif0;
     u32 vif1;
 };
 struct GifTag_2CA00;
-union PacketCursor_2CA00 {
-    struct DmaTag_2CA00 *tag;
+union PacketCursor {
+    struct DmaTag *tag;
     struct GifTag_2CA00 *gif;
     s32 *words;
     u8 *bytes;
     s32 addr;
 };
-extern union PacketCursor_2CA00 g_render_packet_cursor_r __asm__("D_00161000") MACRO_ADDR;
-struct SkyTile_2CA00 {
+extern union PacketCursor g_render_packet_cursor_r __asm__("D_00161000") MACRO_ADDR;
+struct SkyTile {
     u128_2CA00 bounds; /* 16-byte aligned: tile fields are addressed from the tile base */
     s32 address;
     s16 unk4;
@@ -483,24 +483,24 @@ struct SkyTile_2CA00 {
     s16 unkC;
     s16 unkE;
 };
-struct Shell_2CA00 {
+struct Shell {
     s32 count;
     u8 pad4[0xC];
-    struct SkyTile_2CA00 tiles[1];
+    struct SkyTile tiles[1];
 };
 extern short sky_tile_spr_buffers;
 extern s32 D_00160510_2CA00 SDATA(D_00160510);
 extern u8 sky_textured_gs_block[];
-extern void sky_bsphere_check_r(struct SkyTile_2CA00 *tiles, s32 count, u8 *visibility) __asm__("func_0022D7E0");
+extern void sky_bsphere_check_r(struct SkyTile *tiles, s32 count, u8 *visibility) __asm__("func_0022D7E0");
 extern void DmaToSpr_r(s32 address, s32 qwc, s32 destination) __asm__("func_0020C210");
 extern void DmaToSprSync_r(void) __asm__("func_0020C230");
 extern s32 sky_transform_vertices_r(s32, s32, s32, s32) __asm__("func_0022D2AC");
 extern void sky_build_gif_textured_r(s32, s32, s32, s32) __asm__("func_0022D520");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/sky/sky_draw_shell_textured.c, sky_draw_shell_textured. */
-void func_0022CA00_r(struct Shell_2CA00 *shell) __asm__("func_0022CA00");
+void func_0022CA00_r(struct Shell *shell) __asm__("func_0022CA00");
 /* SkyDrawShellTextured */
-void func_0022CA00_r(struct Shell_2CA00 *shell) {
+void func_0022CA00_r(struct Shell *shell) {
     u8 visibility[shell->count];
     s32 i;
     s32 dest;

@@ -586,21 +586,21 @@ typedef struct {
     Vec4 joint6;
     Vec4 beam_start;
     Vec4 beam_end;
-} ShipVars_2B3850;
+} ShipVars;
 typedef struct {
     u8 pad0[0x10];
     f32 scale;
     u8 pad14[2];
     s16 mode;
     s32 color;
-} ParticleFade_2B3850;
+} ParticleFade;
 typedef struct {
     u8 pad0[0xA];
     s16 frames;
     f32 life;
     u8 pad10[0x10];
-    ParticleFade_2B3850 fade;
-} Particle_2B3850;
+    ParticleFade fade;
+} Particle;
 
 extern Vec4 oltanis_camera_pos_r __asm__("D_L14_001675C0");
 extern u8 oltanis_zero_vector_r[] __asm__("D_L14_0015F660") MACRO_ADDR;
@@ -615,8 +615,8 @@ extern void AddDrawCallback_r(void (*)(struct Moby *), struct Moby *) __asm__("f
 extern void Moby_GetJointWorldPos_r(struct Moby *, s32, void *) __asm__("func_L00_00250800");
 extern void MobyTransformScaledVertex_r(struct Moby *, s32, void *) __asm__("func_0020DAF8");
 extern void random_spherical_offset_r(void *, f32, f32) __asm__("func_002141A8");
-extern Particle_2B3850 *spawn_mode_controlled_rotating_alpha_fade_particle_r(
-    void *, void *, s32, struct Moby *) __asm__("func_L00_002757E8");
+extern Particle *spawn_mode_controlled_rotating_alpha_fade_particle_r(void *, void *, s32,
+                                                                      struct Moby *) __asm__("func_L00_002757E8");
 extern f32 random_float_between_r(f32, f32) __asm__("func_002140F8");
 extern s32 random_integer_below_r(s32) __asm__("func_002140B0");
 extern s32 scale_ticks_r(s32) __asm__("func_001F9850");
@@ -636,13 +636,13 @@ void update_plasmabot_visual_effects(struct Moby *m) {
     Vec4 dx;
     Vec4 dy;
     Vec4 dz;
-    ShipVars_2B3850 *pv;
-    Particle_2B3850 *p;
-    ParticleFade_2B3850 *fade;
+    ShipVars *pv;
+    Particle *p;
+    ParticleFade *fade;
     s32 i;
     f32 f;
 
-    pv = (ShipVars_2B3850 *)m->pvars;
+    pv = (ShipVars *)m->pvars;
     AddDrawCallback_r(draw_plasmabot_glow_quad_r, m);
     Moby_GetJointWorldPos_r(m, 1, &pos);
     FastVecSub_r(&dir, &pos, &oltanis_camera_pos_r);
@@ -824,7 +824,7 @@ typedef struct {
     u8 pad3C[0x1F8];
     f32 unk234; /* 0x234 */
     s32 delay; /* 0x238: frames, counted down */
-} DelayVars_2b2ed8;
+} DelayVars;
 extern short plasmabot_target_range;
 extern f32 random_float_between(f32, f32);
 extern f32 multiply_global_factor(f32);
@@ -833,7 +833,7 @@ extern s32 fast_dec_timer_r(s32 *) __asm__("func_001F9908");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b17d8.c, FUN_L14_002b2ed8. */
 void update_plasmabot_target_range(struct Moby *m) {
-    DelayVars_2b2ed8 *pv = (DelayVars_2b2ed8 *)m->pvars;
+    DelayVars *pv = (DelayVars *)m->pvars;
 
     if (pv->restart != 0) {
         pv->delay = truncate_float_to_s32(multiply_global_factor(random_float_between(180.0f, 240.0f)));
@@ -1176,7 +1176,7 @@ typedef struct {
     u32 col[4];
     float uv[8];
     u64 a, b, c, d;
-} Pk_2B4C70;
+} Pk;
 
 extern float plasmabot_glow_quad_corners[4][4];
 extern short plasmabot_glow_quad_size;
@@ -1194,7 +1194,7 @@ extern void draw_world_quad(void *, void *, s32);
 /* Draws the moby's glow quad, pulled toward the camera so it is not hidden by the moby. */
 void draw_plasmabot_glow_quad(Moby *m) {
     float pos[4];
-    Pk_2B4C70 pk;
+    Pk pk;
     float v[4];
     float w[4];
     float len;
@@ -1493,8 +1493,8 @@ typedef struct {
     u8 pad0[0x10];
     void *points;
     u8 pad14[0xC];
-} RacePath_dfd10;
-extern RacePath_dfd10 *race_paths MACRO_ADDR;
+} RacePath;
+extern RacePath *race_paths MACRO_ADDR;
 typedef struct {
     struct Moby *owner;
     s32 timer;
@@ -1633,11 +1633,11 @@ unsigned char *spawn_path_or_ballistic_debris(char *owner, float *scale, int mod
     }
     return m;
 }
-typedef struct Vars_2E17B8 {
+typedef struct Vars {
     char pad0[0x18];
     float f18; /* 0x18 */
     float f1C; /* 0x1C */
-} Vars_2E17B8;
+} Vars;
 typedef struct ParticleFade_2E17B8 {
     char pad0[4];
     int i4; /* 0x04 */
@@ -1686,7 +1686,7 @@ void emit_debris_trail_particles(Moby *m) {
     Vec4 dir;
     Vec4 vel;
     Vec4 off;
-    Vars_2E17B8 *pv;
+    Vars *pv;
     Particle_2E17B8 *p;
     Particle_2E17B8 *e;
     ParticleFade_2E17B8 *fade;
@@ -1696,7 +1696,7 @@ void emit_debris_trail_particles(Moby *m) {
     int alpha;
     float size;
 
-    pv = *(Vars_2E17B8 **)&m->pvars;
+    pv = *(Vars **)&m->pvars;
     vec_scale_to_length_r2(&dir, &*(Vec4 *)&m->rot_row2, 0.2f);
     FastVecAdd_r2(&pos, &*(Vec4 *)&m->pos, &dir);
     random_spherical_offset_r2(&vel, 0.005f, 0.03f);
@@ -1888,7 +1888,7 @@ typedef struct {
     float z_speed;
     float phase;
     float spin[3];
-} FloatMineVars_ff640;
+} FloatMineVars;
 typedef struct {
     float damage;
     s16 unk4;
@@ -1898,18 +1898,18 @@ typedef struct {
     u8 unk3A;
     u8 unk3B;
     u8 pad3C[4];
-} HitInfo_ff640;
+} HitInfo;
 typedef struct {
     u8 pad0[0x20];
     struct Moby *moby;
-} MobyHit_ff640;
+} MobyHit;
 extern char *oltanis_mobys_end MACRO_ADDR;
 extern short floating_mine_glow_phase_step_gp;
 extern float ProbeGroundHeight(float, void *, int);
 extern void Spring_r(float *, float *, float, float, float, float) __asm__("func_L00_0025C918");
-extern MobyHit_ff640 *MobyGetHitMessage_r(struct Moby *, int, int) __asm__("func_L00_0025B478");
+extern MobyHit *MobyGetHitMessage_r(struct Moby *, int, int) __asm__("func_L00_0025B478");
 extern void FastMemZero16(void *, int);
-extern int ComputeHitResponse_r(struct Moby *, MobyHit_ff640 *, HitInfo_ff640 *, int, int *, int, int,
+extern int ComputeHitResponse_r(struct Moby *, MobyHit *, HitInfo *, int, int *, int, int,
                                 int) __asm__("func_L00_0025B4D0");
 extern void clear_u64_value(void *);
 extern int Moby_PlaySound(int, int, struct Moby *);
@@ -1922,14 +1922,14 @@ extern float FastSin(float);
 /* Floating mine: spins and pulses (and bobs in level 16); blows up on a hit and respawns once out of view.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b17d8.c, FUN_L14_002ff640. */
 void update_floating_mine(struct Moby *moby) {
-    FloatMineVars_ff640 *vars = (FloatMineVars_ff640 *)moby->pvars;
+    FloatMineVars *vars = (FloatMineVars *)moby->pvars;
     union {
-        HitInfo_ff640 info;
+        HitInfo info;
         float sphere[4];
     } scratch;
     float vel[4];
     int count;
-    MobyHit_ff640 *hit;
+    MobyHit *hit;
     float s;
     int r;
     int g;
@@ -2145,9 +2145,9 @@ void update_vendor_beam(unsigned char *m) {
    segments each at d+0x420..) and, when the entry is at least 4.0 from the camera point, spawns 4+2 bursts of
    particles (PartType02Spawn). Meanings of the gp-relative tuning values are unknown; the operations follow the
    assembly. */
-typedef struct Vq_02C80 {
+typedef struct Vq {
     float x, y, z, w;
-} __attribute__((aligned(16))) Vq_02C80;
+} __attribute__((aligned(16))) Vq;
 
 extern float IntToFloat(int);
 extern int scale_ticks(int);
@@ -2182,10 +2182,10 @@ typedef struct {
     short s12;
     unsigned char pad14[4];
     unsigned char cnt[8];
-    Vq_02C80 pts[32];
-    Vq_02C80 off[32];
-    Vq_02C80 a[4][4];
-    Vq_02C80 b[4][4];
+    Vq pts[32];
+    Vq off[32];
+    Vq a[4][4];
+    Vq b[4][4];
     int r620;
 } D_02C80;
 
@@ -2200,10 +2200,10 @@ typedef struct {
 /* Init of a 32-point strip (rope/beam style) moby. */
 void start_vendor_beam_pulse(char *moby) {
     D_02C80 *beam = ((D_02C80 *)((Moby *)moby)->pvars);
-    Vq_02C80 path[32];
-    Vq_02C80 path_steps[32];
-    Vq_02C80 work, delta;
-    Vq_02C80 matrix[4];
+    Vq path[32];
+    Vq path_steps[32];
+    Vq work, delta;
+    Vq matrix[4];
     VendorBeamFrame *frame;
     float length;
     int low, high, duration;
@@ -2277,7 +2277,7 @@ void start_vendor_beam_pulse(char *moby) {
         qcopy(&matrix[3], (char *)((beam->idx << 7) + (int)oltanis_clip_volumes) + 0x30);
         for (l = 0; l < 32; l += 8) {
             int n;
-            Vq_02C80 *p = &beam->pts[l];
+            Vq *p = &beam->pts[l];
             transform_vector(&work, p, matrix);
             qcopy(&delta, &p[32]);
             delta.w = (*(float *)&vendor_beam_spark_step_w_gp);
@@ -2375,7 +2375,7 @@ typedef struct {
     s16 oclass;
     f32 range;
     s32 one;
-} VendorBeamReq_3039C0;
+} VendorBeamReq;
 
 extern char gHeroPos_r[] __asm__("D_0013F4D0");
 extern VendorBeamFrame_3039C0 *oltanis_clip_volumes_r __asm__("D_L14_001601AC") MACRO_ADDR;
@@ -2396,7 +2396,7 @@ extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_00
 void apply_vendor_beam_damage(char *self) {
     struct Moby *m = (struct Moby *)self;
     D1224_3039C0 *d = (D1224_3039C0 *)m->pvars;
-    VendorBeamReq_3039C0 req;
+    VendorBeamReq req;
     Vec4 dir, to_hero, base, end_a, end_b, from, to, off;
     f32 dot, len;
 

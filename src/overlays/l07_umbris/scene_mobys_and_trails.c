@@ -248,13 +248,13 @@ void update_swing_gate(EaseMoby1C7C0 *moby) {
 typedef struct {
     float x, y, z;
     float len; /* 0xC: length of the segment to the next node */
-} PathNode_31E6B0;
+} PathNode;
 
 typedef struct {
     int count;
     int pad[3];
-    PathNode_31E6B0 nodes[1]; /* 0x10 */
-} Path_31E6B0;
+    PathNode nodes[1]; /* 0x10 */
+} Path;
 
 typedef struct {
     int vol; /* 0x00 */
@@ -267,16 +267,16 @@ typedef struct {
     int div; /* 0x1C */
     float total; /* 0x20 */
     int target; /* 0x24 */
-} SparkVars_31E6B0;
+} SparkVars;
 
 typedef struct {
     char pad00[0x20];
     unsigned char state; /* 0x20 */
     char pad21[0x57];
-    SparkVars_31E6B0 *vars; /* 0x78 */
+    SparkVars *vars; /* 0x78 */
     char pad7C[0x36];
     short oclass; /* 0xB2 */
-} SparkMoby_31E6B0;
+} SparkMoby;
 
 typedef struct {
     char pad00[0x10];
@@ -288,7 +288,7 @@ typedef struct {
     char pad00[0xE];
     unsigned short max; /* 0x0E */
     char pad10[0x8];
-} Ent_31E6B0;
+} Ent;
 
 extern int is_point_inside_clip_volume_r(void *arg0, int arg1) __asm__("func_00215570");
 extern float IntToFloat_r(int) __asm__("func_001FA888");
@@ -306,7 +306,7 @@ extern char ammo_spawner_deleted_fmt_r[] __asm__("D_L07_00211E20");
 extern char ammo_spawner_count_fmt_r[] __asm__("D_L07_00211E40");
 extern char ammo_spawner_place_fmt_r[] __asm__("D_L07_00211E68");
 extern char ammo_spawner_remainder_fmt_r[] __asm__("D_L07_00211E98");
-extern Path_31E6B0 *umbris_paths_r[] __asm__("D_L07_001B0830");
+extern Path *umbris_paths_r[] __asm__("D_L07_001B0830");
 extern char umbris_item_price_table_r[] __asm__("D_L07_001C43B0");
 extern int D_L07_00161D30_31E6B0 SDATA(D_L07_00161D30);
 extern Moby256_31E6B0 *level_mobys_r __asm__("D_L07_00160058") MACRO_ADDR;
@@ -314,8 +314,8 @@ extern unsigned char hero_globals_base_r[] __asm__("D_0013E633");
 extern unsigned char menu_item_enabled_115_r[] __asm__("D_0013D50F");
 
 // Update for moby class 1142 on level 07: measures its path once, then places sparks for the listed counters.
-void update_equalizer_ammo_spawner(SparkMoby_31E6B0 *moby) {
-    SparkVars_31E6B0 *d = moby->vars;
+void update_equalizer_ammo_spawner(SparkMoby *moby) {
+    SparkVars *d = moby->vars;
     float vec[3];
     int ia;
     int fbz;
@@ -364,11 +364,11 @@ void update_equalizer_ammo_spawner(SparkMoby_31E6B0 *moby) {
         for (i = 0; (&D_L07_00161D30_31E6B0)[i] != -1; i++) {
             k = (&D_L07_00161D30_31E6B0)[i];
             have = IntToFloat_r(((int *)(menu_item_enabled_115_r + 0x21))[k]);
-            max = IntToFloat_r(((Ent_31E6B0 *)umbris_item_price_table_r)[k].max);
+            max = IntToFloat_r(((Ent *)umbris_item_price_table_r)[k].max);
             ratio = have / max;
             at = random_float_between_r(0.0f, d->total);
             if (d->lo / 100.0f <= ratio && ratio < d->hi / 100.0f) {
-                Path_31E6B0 *p;
+                Path *p;
                 int q;
                 a = max * (d->pa / 100.0f);
                 b = max * (d->pb / 100.0f);

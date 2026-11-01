@@ -33,8 +33,8 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
     FastDecTimer_r(&d->h26);
     if ((unsigned int)A >= 2 && m->state != 0xB && m->state != 0xC) {
         if (g_current_level_index_m == LEVEL_ORXON && r != 0 && r->f20 != 0 && r->f20->oclass == 0x31A) {
-            if (d->f1AC != 0 && ((Flags_2E52B0 *)(menu_item_enabled_115_r + 1))->b11 == 0) {
-                ((Flags_2E52B0 *)(menu_item_enabled_115_r + 1))->b11 = 1;
+            if (d->f1AC != 0 && ((Flags *)(menu_item_enabled_115_r + 1))->b11 == 0) {
+                ((Flags *)(menu_item_enabled_115_r + 1))->b11 = 1;
                 PlayBankSound_r(1, 0, 0);
                 ShowBanner_r(0x542D, -1);
             }

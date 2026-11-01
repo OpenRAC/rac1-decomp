@@ -40,15 +40,15 @@ struct TetheredMineVars {
     f32 base_tether_scale; /* 0x174 */
 };
 
-struct DmaTag_2BA898 {
+struct DmaTag {
     u32 tag;
     u32 addr;
     u32 vif0;
     u32 vif1;
 };
 struct GifTag_2BA898;
-union PacketCursor_2BA898 {
-    struct DmaTag_2BA898 *tag;
+union PacketCursor {
+    struct DmaTag *tag;
     struct GifTag_2BA898 *gif;
     s32 *words;
     u8 *bytes;
@@ -78,21 +78,21 @@ typedef struct {
     f32 v1; /* 0x4C */
     s32 frame; /* 0x50 */
     u8 pad54[0xC];
-} ScrollLayer_2BA898;
-extern union PacketCursor_2BA898 l01_packet_r __asm__("D_L01_00161240") MACRO_ADDR;
+} ScrollLayer;
+extern union PacketCursor l01_packet_r __asm__("D_L01_00161240") MACRO_ADDR;
 extern u8 water_setup_dma_block_r[] __asm__("D_L01_001CAF00");
 extern s32 FastBSphereCheck_r(void *, f32) __asm__("func_L00_00200290");
 extern u64 GetEffectTex_r(s32) __asm__("func_001F4868");
-extern void build_overlay_layer_wave_vertices_r(ScrollLayer_2BA898 *) __asm__("func_L01_002635C8");
+extern void build_overlay_layer_wave_vertices_r(ScrollLayer *) __asm__("func_L01_002635C8");
 extern void emit_textured_strip_packet_r(s32, s32, s32, s32, s32, s32) __asm__("func_L01_0021F9C8");
 
-void func_L01_002BA898_r(s32 count, ScrollLayer_2BA898 *l) __asm__("func_L01_002BA898");
+void func_L01_002BA898_r(s32 count, ScrollLayer *l) __asm__("func_L01_002BA898");
 
 /* Scrolls the UV offsets of count overlay layers (wrapping into [-1, 1]) and, for each one in view, queues its
    two-texture GS setup and draws it.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l01/gameplay/entities/002b96e0.c, FUN_L01_002b96e0. */
-void func_L01_002BA898_r(s32 count, ScrollLayer_2BA898 *l) {
-    struct DmaTag_2BA898 *tag;
+void func_L01_002BA898_r(s32 count, ScrollLayer *l) {
+    struct DmaTag *tag;
     u64 *q;
     s32 vis;
     s32 i;
@@ -2135,20 +2135,20 @@ extern char *novalis_mobys MACRO_ADDR;
 enum { CAVE_DOOR_STATE_INITIALIZE = 0, CAVE_DOOR_STATE_UPDATE_ROTATION = 1 };
 
 /* The cave door's pvars block (Moby.pvars at 0x78). */
-typedef struct CaveDoorVars_2BA898 {
+typedef struct CaveDoorVars {
     s32 target; /* 0x00 index of the moby whose Bolt Crank drives it, -1 none */
     f32 angle; /* 0x04 angle the door starts from (its rot.x) */
     f32 speed; /* 0x08 rotation speed, converted to radians on init */
-} CaveDoorVars_2BA898;
+} CaveDoorVars;
 
 /* Cave door: rotate between its rest angle and the open angle by the linked Bolt Crank moby's value. */
 void cave_door_update(char *m) {
     Moby *self = (Moby *)m;
-    CaveDoorVars_2BA898 *cave_door_vars;
+    CaveDoorVars *cave_door_vars;
     Moby *target_moby;
     f32 *mv;
 
-    cave_door_vars = (CaveDoorVars_2BA898 *)self->pvars;
+    cave_door_vars = (CaveDoorVars *)self->pvars;
     switch (self->state) {
         case CAVE_DOOR_STATE_INITIALIZE:
             cave_door_vars->angle = self->rot.x;
@@ -2676,18 +2676,18 @@ BeamMoby *spawn_beam(void *owner, u128_t *pos, u128_t *dir, u128_t *color, int k
 }
 typedef struct {
     int v[4];
-} Quad_F8B00;
+} Quad;
 typedef struct {
     int cur;
     char pad4[0x10];
     int path;
-} Sub_F8B00;
+} Sub;
 typedef struct {
     char pad0[0x2B];
     unsigned char b2B;
     unsigned char b2C;
     char pad2D[0x33];
-    Sub_F8B00 sub;
+    Sub sub;
     char pad78[0x58];
     float vD0[4];
     float vE0[4];
@@ -2709,23 +2709,23 @@ typedef struct {
     int targets[4][4];
     int guards[8];
     int turrets[4];
-} Vars_F8B00;
+} Vars;
 typedef struct {
     char pad0[0x1E8];
     int f1E8;
     short f1EC;
-} Turret_F8B00;
+} Turret;
 typedef struct {
     int f0;
     short f4;
     short pad6;
     int f8;
-} Guard_F8B00;
+} Guard;
 typedef struct {
     int count;
     char pad4[0x18];
     float w;
-} Path_F8B00;
+} Path;
 typedef struct {
     char pad0[0x18];
     Moby *moby;
@@ -2734,7 +2734,7 @@ typedef struct {
 extern float novalis_bomber_jet_min_scale SDATA(D_L01_00161C60);
 extern float novalis_bomber_jet_far_distance SDATA(D_L01_00161C64);
 extern float novalis_bomber_jet_near_distance SDATA(D_L01_00161C68);
-extern Quad_F8B00 novalis_bomber_jet_quad_template;
+extern Quad novalis_bomber_jet_quad_template;
 extern char novalis_bomber_jet_no_path_msg[];
 extern unsigned char novalis_checkpoint_level_state_killed[];
 extern Hit_F8B00 novalis_coll_hit;
@@ -2747,14 +2747,14 @@ extern Moby *spawn_beam_r(void *, void *, void *, void *, int, int) __asm__("fun
    and fires beams at the targets of its current path slot. The two scratch quads a and b serve the hit path as vectors
    and the target pick as int lists, as retail's frame has them. */
 void bomber_jet_update(Moby *m) {
-    Vars_F8B00 *d = (void *)m->pvars;
-    Sub_F8B00 *sub = &d->sub;
+    Vars *d = (void *)m->pvars;
+    Sub *sub = &d->sub;
     float s;
     void *hit;
     int i;
     int j;
-    Quad_F8B00 a;
-    Quad_F8B00 b;
+    Quad a;
+    Quad b;
     Vec4 dir;
     Vec4 pos;
     Vec4 col;
@@ -2787,14 +2787,14 @@ void bomber_jet_update(Moby *m) {
     do {
         if (m->state == 0) {
             if (sub->path != -1) {
-                Path_F8B00 *path = (Path_F8B00 *)novalis_paths[sub->path];
+                Path *path = (Path *)novalis_paths[sub->path];
                 j = 0;
                 d->fFC = d->fFC * 2.0f;
                 if (FastVecDist((char *)path + 0x10, (char *)path + (path->count << 4)) < 0.5f) {
                     path->count--;
                 }
                 for (i = 0; i < path->count; i++) {
-                    if (((Path_F8B00 *)((char *)path + (i << 4)))->w == 1.0f) {
+                    if (((Path *)((char *)path + (i << 4)))->w == 1.0f) {
                         d->slots[j] = i;
                         j++;
                         if (j >= 4)
@@ -2838,7 +2838,7 @@ void bomber_jet_update(Moby *m) {
                         if (d->turrets[j] != -1) {
                             Moby *o = (Moby *)(novalis_mobys_r3 + (d->turrets[j] << 8));
                             if (o != 0 && o->oclass == MOBY_CLASS_BIRDBOT && o->state != 0xFE && o->state != 0xFD) {
-                                Turret_F8B00 *t = (void *)o->pvars;
+                                Turret *t = (void *)o->pvars;
                                 t->f1E8 = 1;
                                 t->f1EC = scale_ticks(2);
                             }
@@ -2872,7 +2872,7 @@ void bomber_jet_update(Moby *m) {
                         if (d->turrets[j] != -1) {
                             Moby *o = (Moby *)((d->turrets[j] << 8) + novalis_mobys_r3);
                             if (o->oclass == MOBY_CLASS_BIRDBOT) {
-                                Turret_F8B00 *t = (void *)o->pvars;
+                                Turret *t = (void *)o->pvars;
                                 t->f1E8 = 1;
                                 t->f1EC = scale_ticks(2);
                             }
@@ -2957,7 +2957,7 @@ void bomber_jet_update(Moby *m) {
                             if (d->guards[i] != -1) {
                                 Moby *o = (Moby *)((d->guards[i] << 8) + novalis_mobys_r3);
                                 if (o->oclass == 0x2BC) {
-                                    Guard_F8B00 *g = (void *)o->pvars;
+                                    Guard *g = (void *)o->pvars;
                                     if (g->f4 == 0 && g->f0 == 0 && random_integer_below(0x64) < 0x64 &&
                                         is_point_inside_clip_volume(
                                             &((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos, g->f8) &&
