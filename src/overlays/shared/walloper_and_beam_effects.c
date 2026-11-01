@@ -331,7 +331,7 @@ void build_beam_and_arc_points(u8 *o) {
     InitDirectionalHitQuery(&hit, o, 0x210000, &camera_direction, enabled + 2.0f);
     hit.kind = 5;
     hit.mode = 1;
-    hit.id = *(short *)(o + 0xa6);
+    hit.id = ((Moby *)o)->oclass;
     v->count3e = 20;
     player = &hero43;
     coll_sphere_mobys(v, 0x10, player->moby, &hit, 0.3f);
@@ -497,7 +497,7 @@ void build_beam_and_arc_points(u8 *o) {
         InitDirectionalHitQuery(&effects.first.hit0, o, 0x210000, &target_delta, enabled + 2.0f);
         effects.first.hit0.kind = 5;
         effects.first.hit0.mode = 3;
-        effects.first.hit0.id = *(short *)(o + 0xa6);
+        effects.first.hit0.id = ((Moby *)o)->oclass;
         record_moby_hit(v->target, &effects.first.hit0);
         {
             char *aim;
@@ -517,7 +517,7 @@ void build_beam_and_arc_points(u8 *o) {
         InitDirectionalHitQuery(&effects.hit1, o, 0x210000, &target_delta, enabled + 2.0f);
         effects.hit1.kind = 5;
         effects.hit1.mode = 3;
-        effects.hit1.id = *(short *)(o + 0xa6);
+        effects.hit1.id = ((Moby *)o)->oclass;
         record_moby_hit(v->second_target, &effects.hit1);
         {
             char *aim;
