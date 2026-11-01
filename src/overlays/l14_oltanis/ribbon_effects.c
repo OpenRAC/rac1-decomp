@@ -8,7 +8,7 @@
 #include "structs/vector.h"
 #include "structs/hero.h"
 #include "structs/moby.h"
-#include "asm/executable.h"
+#include "asm_functions/executable.h"
 #include "overlays/shared/moby_ground_collision.h"
 
 extern float FastSubRots(float, float);

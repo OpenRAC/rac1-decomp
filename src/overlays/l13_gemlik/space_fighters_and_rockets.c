@@ -12,7 +12,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/rocket_and_path_camera.h"
 #include "overlays/shared/ship_pickup_and_rocket.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "data/level_13.h"
 #include "game/fastfunc.h"
 #include "game/hud.h"

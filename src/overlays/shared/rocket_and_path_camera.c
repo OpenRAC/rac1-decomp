@@ -7,7 +7,7 @@
 #include "game/mobyutil.h"
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/particle_spawns_and_path_splines.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "data/level_10.h"
 #include "game/fastfunc.h"
 #include "overlays/shared/moby_ground_collision.h"

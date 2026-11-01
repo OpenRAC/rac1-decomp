@@ -10,7 +10,7 @@
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/smoke_puff_projectiles.h"
 #include "overlays/shared/water_pool_and_sand_mouse.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "data/level_12.h"
 #include "game/fastfunc.h"
 #include "overlays/shared/moby_frame_packet.h"

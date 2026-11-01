@@ -3,7 +3,7 @@
 #include "include_asm.h"
 #include "structs/vector.h"
 #include "structs/moby.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 typedef int OvlQuad __attribute__((mode(TI)));

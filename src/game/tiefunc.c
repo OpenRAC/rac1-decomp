@@ -4,7 +4,7 @@
 #include "structs/misc.h"
 #include "game/draw.h"
 #include "game/vuchain.h"
-#include "asm/executable.h"
+#include "asm_functions/executable.h"
 #include "data/executable.h"
 
 /*

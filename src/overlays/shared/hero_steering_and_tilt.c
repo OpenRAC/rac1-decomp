@@ -11,7 +11,7 @@
 #include "overlays/shared/camera_switch_and_update.h"
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/hero_idle_and_animation.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "data/executable.h"
 #include "game/fastfunc.h"
 

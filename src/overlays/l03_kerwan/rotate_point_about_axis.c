@@ -3,8 +3,8 @@
 #include "callees.h"
 #include "include_asm.h"
 #include "game/mobyutil.h"
-#include "asm/executable.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 
 typedef unsigned int Q __attribute__((mode(TI), aligned(16)));
 

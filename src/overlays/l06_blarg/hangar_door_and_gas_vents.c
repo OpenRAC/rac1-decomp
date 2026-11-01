@@ -7,7 +7,7 @@
 #include "structs/moby.h"
 #include "game/draw.h"
 #include "overlays/l06_blarg/hangar_door_and_gas_vents.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "data/executable.h"
 #include "data/level_06.h"
 #include "game/fastfunc.h"

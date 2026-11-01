@@ -8,7 +8,7 @@
 #include "game/mobyutil.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "game/fastfunc.h"
 /* Break fragment: velocity, spin, life and gravity. */
 struct BreakFragmentVars {

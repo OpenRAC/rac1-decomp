@@ -5,7 +5,7 @@
 #include "game/draw.h"
 #include "overlays/shared/homing_missile_and_water_sheet.h"
 #include "overlays/shared/scoutbot_and_paratrooper.h"
-#include "asm/level_08.h"
+#include "asm_functions/level_08.h"
 #include "data/level_11.h"
 
 extern void VU1_addGSregister(int, long);

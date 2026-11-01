@@ -6,7 +6,7 @@
 #include "overlays/shared/hero_animation_slots.h"
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/hero_vehicle_and_collision.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "game/mobyutil.h"
 
 extern Hero g_hero;

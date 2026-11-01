@@ -11,7 +11,7 @@
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/nanotech_ball_and_suck_cannon.h"
 #include "overlays/shared/particle_spawns_and_path_splines.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "data/level_01.h"
 #include "game/fastfunc.h"
 #include "game/mobyutil.h"

@@ -10,7 +10,7 @@
 #include "overlays/shared/plasmabot.h"
 #include "overlays/shared/shot_tracking.h"
 #include "overlays/shared/trigger_switches_and_hoverboard.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "data/level_16.h"
 #include "game/fastfunc.h"
 #include "game/mobyutil.h"

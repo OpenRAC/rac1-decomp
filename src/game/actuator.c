@@ -1,6 +1,6 @@
 #include "common.h"
 #include "structs/misc.h"
-#include "asm/executable.h"
+#include "asm_functions/executable.h"
 
 /*
  * actuator.cpp in the original source; text 0x1E9080-0x1E94E8.

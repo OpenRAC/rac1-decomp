@@ -5,7 +5,7 @@
 #include "structs/vector.h"
 #include "structs/moby.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "data/level_18.h"
 #include "game/mobyutil.h"
 #include "overlays/shared/moby_ground_collision.h"

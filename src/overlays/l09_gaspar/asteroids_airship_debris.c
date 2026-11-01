@@ -10,7 +10,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/point_lights_and_glows.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "data/level_09.h"
 #include "game/fastfunc.h"
 #include "game/mobyutil.h"

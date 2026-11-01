@@ -9,8 +9,8 @@
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/shared/hero_update_ground_material.h"
 #include "overlays/shared/level_runtime_and_menus.h"
-#include "asm/executable.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 
 extern char hero_globals_base[];
 

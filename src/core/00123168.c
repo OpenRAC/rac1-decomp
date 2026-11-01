@@ -1,7 +1,7 @@
 #include "common.h"
 #include "callees.h"
 #include "structs/misc.h"
-#include "asm/executable.h"
+#include "asm_functions/executable.h"
 
 /*
  * core_text object 0x123168-0x1236F0. Boundaries are retail's linker fill

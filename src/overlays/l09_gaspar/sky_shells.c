@@ -4,7 +4,7 @@
 #include "game/draw.h"
 #include "game/skyfunc.h"
 #include "overlays/shared/sky_particles.h"
-#include "asm/level_01.h"
+#include "asm_functions/level_01.h"
 
 LINKER_REMNANT("asm/overlays", func_L09_0021E3E8);
 typedef struct Strip_21E410 {

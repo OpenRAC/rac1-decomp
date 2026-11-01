@@ -13,7 +13,7 @@
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
 #include "structs/hero_views.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "data/executable.h"
 #include "game/fastfunc.h"
 #include "game/mobyutil.h"

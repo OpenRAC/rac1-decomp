@@ -13,7 +13,7 @@
 #include "overlays/shared/particle_spawns_and_path_splines.h"
 #include "overlays/shared/ship_pickup_and_rocket.h"
 #include "overlays/shared/water_pool_and_sand_mouse.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "data/level_13.h"
 #include "game/fastfunc.h"
 #include "game/hud.h"

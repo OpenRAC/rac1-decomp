@@ -5,7 +5,7 @@
 #include "structs/moby.h"
 #include "game/skyfunc.h"
 #include "overlays/shared/sky_particles.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "data/level_04.h"
 
 extern float vec_distance_xy(void *, void *);

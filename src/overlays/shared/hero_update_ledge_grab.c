@@ -12,7 +12,7 @@
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/shared/hero_vehicle_and_collision.h"
 #include "overlays/shared/level_runtime_and_menus.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "overlays/shared/moby_ground_collision.h"
 
 typedef struct {

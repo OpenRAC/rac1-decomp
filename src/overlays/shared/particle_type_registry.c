@@ -2,7 +2,7 @@
 #include "common.h"
 #include "include_asm.h"
 #include "structs/vector.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 
 extern void update_color_fade_velocity_particle_r() __asm__("func_L00_002689B0");
 extern void update_falling_effect_particle_r() __asm__("func_L00_00269BE8");

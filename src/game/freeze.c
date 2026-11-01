@@ -9,7 +9,7 @@
 #include "game/memcard.h"
 #include "game/music.h"
 #include "game/pause.h"
-#include "asm/executable.h"
+#include "asm_functions/executable.h"
 #include "data/executable.h"
 #include "game/draw.h"
 #include "game/space.h"

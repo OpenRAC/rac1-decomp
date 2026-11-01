@@ -6,7 +6,7 @@
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/ship_mode_and_level_entry.h"
-#include "asm/executable.h"
+#include "asm_functions/executable.h"
 #include "data/executable.h"
 #include "data/shared_levels.h"
 #include "game/loaders.h"

@@ -10,7 +10,7 @@
 #include "overlays/shared/gadgebot_containers_and_frog.h"
 #include "overlays/shared/point_lights_and_glows.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
-#include "asm/level_06.h"
+#include "asm_functions/level_06.h"
 #include "data/level_07.h"
 #include "game/fastfunc.h"
 #include "game/hud.h"

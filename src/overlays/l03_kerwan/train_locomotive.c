@@ -8,7 +8,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/radial_particle_burst.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "data/level_03.h"
 #include "game/draw.h"
 #include "game/fastfunc.h"

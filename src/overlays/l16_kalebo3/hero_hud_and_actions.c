@@ -17,7 +17,7 @@
 #include "overlays/shared/sky_particles.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
 #include "structs/hero_views.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "data/executable.h"
 #include "data/level_16.h"
 #include "game/fastfunc.h"

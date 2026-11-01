@@ -11,7 +11,7 @@
 #include "overlays/shared/hero_update_ledge_grab.h"
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/trespasser_pad_and_background_ships.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "data/level_06.h"
 #include "game/mobyutil.h"
 #include "overlays/shared/camera_modes_and_scripts.h"

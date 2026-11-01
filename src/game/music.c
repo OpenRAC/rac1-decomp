@@ -4,7 +4,7 @@
 #include "structs/misc.h"
 #include "structs/music.h"
 #include "core/989snd.h"
-#include "asm/executable.h"
+#include "asm_functions/executable.h"
 
 /*
  * music.cpp in the original source; text 0x2161E0-0x217588.

@@ -2,7 +2,7 @@
 #include "common.h"
 #include "include_asm.h"
 #include "structs/vector.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "game/fastfunc.h"
 #include "game/mobyutil.h"
 

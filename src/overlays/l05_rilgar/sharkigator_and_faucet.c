@@ -10,7 +10,7 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/particle_spawns_and_path_splines.h"
 #include "overlays/shared/water_pool_and_sand_mouse.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "data/level_05.h"
 #include "game/fastfunc.h"
 #include "game/mobyutil.h"

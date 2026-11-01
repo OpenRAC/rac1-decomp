@@ -8,7 +8,7 @@
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/point_lights_and_glows.h"
 #include "overlays/shared/water_pool_and_sand_mouse.h"
-#include "asm/executable.h"
+#include "asm_functions/executable.h"
 #include "data/level_07.h"
 #include "game/fastfunc.h"
 #include "game/mobyutil.h"

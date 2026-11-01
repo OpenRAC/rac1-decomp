@@ -12,7 +12,7 @@
 #include "overlays/shared/hero_update_ground_material.h"
 #include "overlays/shared/hero_vehicle_and_collision.h"
 #include "overlays/shared/numeric_hud_sprites.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "data/level_05.h"
 #include "game/fastfunc.h"
 #include "overlays/shared/moby_ground_collision.h"

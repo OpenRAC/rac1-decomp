@@ -8,7 +8,7 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "data/level_03.h"
 #include "game/fastfunc.h"
 #include "game/mobyutil.h"

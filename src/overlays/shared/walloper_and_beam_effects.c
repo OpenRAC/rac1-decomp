@@ -6,7 +6,7 @@
 #include "structs/moby.h"
 #include "game/mobyutil.h"
 #include "overlays/shared/moby_frame_packet.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "game/fastfunc.h"
 
 /* Tesla beam: draw state read by the beam and arc effects. */

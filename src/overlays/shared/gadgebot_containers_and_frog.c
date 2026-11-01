@@ -10,7 +10,7 @@
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/hero_animation_slots.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "data/executable.h"
 #include "game/draw.h"
 #include "game/fastfunc.h"

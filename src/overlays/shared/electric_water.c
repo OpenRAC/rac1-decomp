@@ -7,7 +7,7 @@
 #include "overlays/shared/electric_water.h"
 #include "overlays/shared/hero_update_bone_attachment.h"
 #include "overlays/shared/point_lights_and_glows.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "data/level_15.h"
 #include "game/mobyutil.h"
 #include "overlays/shared/cutscene_and_movie_playback.h"

@@ -8,7 +8,7 @@
 #include "game/draw.h"
 #include "game/initonce.h"
 #include "game/vuchain.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "data/executable.h"
 #include "data/shared_levels.h"
 #include "game/mobyutil.h"

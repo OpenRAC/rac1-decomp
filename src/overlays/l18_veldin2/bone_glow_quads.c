@@ -6,7 +6,7 @@
 #include "common.h"
 #include "include_asm.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
-#include "asm/executable.h"
+#include "asm_functions/executable.h"
 
 extern float IntToFloat(int);
 extern float FastSin(float);

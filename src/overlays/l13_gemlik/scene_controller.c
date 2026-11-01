@@ -5,7 +5,7 @@
 #include "structs/moby.h"
 #include "structs/hero.h"
 #include "overlays/shared/rocket_and_path_camera.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "data/level_13.h"
 #include "game/mobyutil.h"
 

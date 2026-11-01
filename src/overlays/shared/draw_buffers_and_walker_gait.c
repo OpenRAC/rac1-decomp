@@ -5,7 +5,7 @@
 #include "structs/moby.h"
 #include "core/00122818.h"
 #include "core/00122AD8.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 
 extern void flush_cache(int);
 

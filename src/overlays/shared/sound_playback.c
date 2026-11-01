@@ -5,7 +5,7 @@
 #include "include_asm.h"
 #include "structs/hero.h"
 #include "overlays/shared/help_message_removal.h"
-#include "asm/executable.h"
+#include "asm_functions/executable.h"
 #include "overlays/shared/cutscene_and_movie_playback.h"
 
 /* Ship pickup moby: remembers whether the hero is at the ship entry point. */

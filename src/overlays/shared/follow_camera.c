@@ -8,7 +8,7 @@
 #include "structs/camera.h"
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/point_lights_and_glows.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "game/fastfunc.h"
 #include "overlays/shared/camera_modes_and_scripts.h"
 #include "overlays/shared/cutscene_and_movie_playback.h"

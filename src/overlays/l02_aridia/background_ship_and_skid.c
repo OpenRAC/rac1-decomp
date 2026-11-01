@@ -5,7 +5,7 @@
 #include "structs/moby.h"
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/trespasser_pad_and_background_ships.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "data/level_02.h"
 #include "game/draw.h"
 #include "game/hud.h"

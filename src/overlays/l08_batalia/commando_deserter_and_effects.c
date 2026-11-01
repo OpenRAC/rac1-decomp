@@ -11,7 +11,7 @@
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/scoutbot_and_paratrooper.h"
 #include "overlays/shared/trespasser_pad_and_background_ships.h"
-#include "asm/level_08.h"
+#include "asm_functions/level_08.h"
 #include "data/level_08.h"
 #include "game/mobyutil.h"
 #include "overlays/shared/cutscene_and_movie_playback.h"

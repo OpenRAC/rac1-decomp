@@ -99,7 +99,7 @@ class CanonicalTest(unittest.TestCase):
 class HomeTest(unittest.TestCase):
     def test_homes(self):
         self.assertEqual(mp.home_of("f", "extern void f(void);", {"src/game/d.c"}, {}), "game/d.h")
-        self.assertEqual(mp.home_of("f", "extern void f(void);", set(), {"f": {"func_001"}}), "asm/executable.h")
+        self.assertEqual(mp.home_of("f", "extern void f(void);", set(), {"f": {"func_001"}}), "asm_functions/executable.h")
         self.assertEqual(mp.home_of("x", "extern int x;", set(), {"x": {"D_L07_123"}}), "data/level_07.h")
         self.assertEqual(mp.home_of("x", "extern int x;", set(), {"x": {"D_L00_123"}}), "data/shared_levels.h")
         self.assertIsNone(mp.home_of("f", "extern void f(void);", {"a.c", "b.c"}, {}))

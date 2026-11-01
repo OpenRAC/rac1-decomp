@@ -11,7 +11,7 @@
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/shared/hero_update_ledge_grab.h"
 #include "overlays/shared/hero_vehicle_and_collision.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "data/level_17.h"
 #include "game/fastfunc.h"
 #include "overlays/l17_fleet/hero_voice_and_knockback.h"

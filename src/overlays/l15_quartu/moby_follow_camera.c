@@ -5,7 +5,7 @@
  * (docs/reference/BUILD_FIDELITY.md, "Flags"). */
 #include "common.h"
 #include "include_asm.h"
-#include "asm/level_15.h"
+#include "asm_functions/level_15.h"
 
 extern char hero_globals_base[];
 extern char *quartu_camera_descriptors MACRO_ADDR;

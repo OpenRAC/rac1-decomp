@@ -11,7 +11,7 @@
 #include "overlays/shared/plasmabot.h"
 #include "overlays/shared/rocket_and_path_camera.h"
 #include "overlays/shared/trespasser_pad_and_background_ships.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "data/level_14.h"
 #include "game/fastfunc.h"
 #include "overlays/shared/moby_frame_packet.h"

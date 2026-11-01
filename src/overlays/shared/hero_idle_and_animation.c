@@ -14,7 +14,7 @@
 #include "overlays/shared/level_runtime_and_menus.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "data/executable.h"
 #include "data/shared_levels.h"
 

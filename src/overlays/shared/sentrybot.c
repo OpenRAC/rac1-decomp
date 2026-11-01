@@ -10,7 +10,7 @@
 #include "overlays/shared/mine_bomb_and_debris.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/point_lights_and_glows.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "data/level_15.h"
 #include "game/fastfunc.h"
 #include "overlays/shared/effect_particle_updates.h"

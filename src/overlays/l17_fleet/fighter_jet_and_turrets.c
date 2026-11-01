@@ -13,7 +13,7 @@
 #include "overlays/shared/moby_group_flags.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/ship_pickup_and_rocket.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "data/level_17.h"
 #include "game/fastfunc.h"
 #include "game/hud.h"

@@ -4,7 +4,7 @@
 #include "structs/misc.h"
 #include "game/movie/movie.h"
 #include "game/pad.h"
-#include "asm/executable.h"
+#include "asm_functions/executable.h"
 
 extern int decoder_buffer_address MACRO_ADDR;
 extern int movie_play_step MACRO_ADDR;

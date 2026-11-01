@@ -3,7 +3,7 @@
 #include "callees.h"
 #include "include_asm.h"
 #include "game/mobyutil.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "overlays/shared/moby_ground_collision.h"
 
 LINKER_REMNANT("asm/overlays", func_L03_00249488);

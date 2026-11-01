@@ -15,7 +15,7 @@
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/ship_pickup_and_rocket.h"
 #include "overlays/shared/trespasser_pad_and_background_ships.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "data/level_17.h"
 #include "game/mobyutil.h"
 #include "overlays/shared/camera_modes_and_scripts.h"

@@ -19,7 +19,7 @@ further down.
 | `include/structs/` | Shared records: `moby.h`, `hero.h`, `camera.h`, `disc.h` |
 | `include/pvars/` | Moby private data |
 | `include/core/`, `include/game/`, `include/overlays/` | Function headers |
-| `include/asm/` | Functions with no C definition, one file per part of `include/names/` |
+| `include/asm_functions/` | Functions with no C definition, one file per part of `include/names/` |
 | `include/data/` | Data several files declare the same way, one file per part of `include/names/` |
 
 ## Function headers

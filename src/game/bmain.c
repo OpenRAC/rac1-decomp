@@ -6,7 +6,7 @@
 #include "game/memcard.h"
 #include "game/music.h"
 #include "game/sound.h"
-#include "asm/executable.h"
+#include "asm_functions/executable.h"
 
 /*
  * bmain.cpp in the original source; text 0x1E9808-0x1E9E70.

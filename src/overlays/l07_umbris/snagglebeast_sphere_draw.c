@@ -7,7 +7,7 @@
 #include "callees.h"
 #include "structs/vector.h"
 #include "structs/moby.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "overlays/shared/moby_ground_collision.h"
 
 /* Snagglebeast sphere effect: only the draw state is read here. */

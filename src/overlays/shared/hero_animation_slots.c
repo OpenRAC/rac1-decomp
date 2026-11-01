@@ -7,7 +7,7 @@
 #include "game/mobyutil.h"
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "overlays/shared/morphoray_chicken_and_drones.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "data/executable.h"
 #include "data/shared_levels.h"
 #include "game/draw.h"

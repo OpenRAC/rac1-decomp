@@ -13,7 +13,7 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/scoutbot_and_paratrooper.h"
-#include "asm/level_08.h"
+#include "asm_functions/level_08.h"
 #include "data/executable.h"
 #include "game/fastfunc.h"
 #include "game/mobyutil.h"

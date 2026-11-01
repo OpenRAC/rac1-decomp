@@ -4,7 +4,7 @@
 #include "structs/misc.h"
 #include "structs/hero.h"
 #include "structs/memcard.h"
-#include "asm/executable.h"
+#include "asm_functions/executable.h"
 #include "game/hud.h"
 
 /*

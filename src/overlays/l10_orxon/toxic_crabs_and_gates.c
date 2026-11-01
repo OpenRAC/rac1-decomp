@@ -9,7 +9,7 @@
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/radial_particle_burst.h"
 #include "overlays/shared/rocket_and_path_camera.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "data/level_10.h"
 #include "game/fastfunc.h"
 #include "game/mobyutil.h"

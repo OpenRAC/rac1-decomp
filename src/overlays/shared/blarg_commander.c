@@ -4,7 +4,7 @@
 #include "include_asm.h"
 #include "structs/moby.h"
 #include "game/draw.h"
-#include "asm/level_01.h"
+#include "asm_functions/level_01.h"
 #include "game/mobyutil.h"
 
 /* Blarg commander shot (class 0x55B): thrown by the commander, falls with mine_fall and bursts. */

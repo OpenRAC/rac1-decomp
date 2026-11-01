@@ -3,7 +3,7 @@
 #include "include_asm.h"
 #include "core/00121D18.h"
 #include "core/00122200.h"
-#include "asm/executable.h"
+#include "asm_functions/executable.h"
 #include "data/executable.h"
 #include "game/fastfunc.h"
 

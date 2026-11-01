@@ -11,7 +11,7 @@
 #include "overlays/shared/point_lights_and_glows.h"
 #include "overlays/shared/vendor_menu.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "data/executable.h"
 #include "game/fastfunc.h"
 #include "overlays/shared/hero_mapped_animations.h"

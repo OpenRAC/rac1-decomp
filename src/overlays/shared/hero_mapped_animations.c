@@ -4,7 +4,7 @@
 #include "structs/vector.h"
 #include "structs/hero.h"
 #include "overlays/shared/hero_idle_and_animation.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "data/executable.h"
 #include "data/shared_levels.h"
 #include "game/fastfunc.h"

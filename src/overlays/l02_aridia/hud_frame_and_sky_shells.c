@@ -3,7 +3,7 @@
 #include "include_asm.h"
 #include "game/skyfunc.h"
 #include "overlays/shared/sky_particles.h"
-#include "asm/executable.h"
+#include "asm_functions/executable.h"
 #include "game/hud.h"
 
 // Ticks two small counters up or down depending on a random roll; copies a value.

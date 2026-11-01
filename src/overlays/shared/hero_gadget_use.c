@@ -11,7 +11,7 @@
 #include "overlays/shared/hero_vehicle_and_collision.h"
 #include "overlays/shared/morphoray_chicken_and_drones.h"
 #include "overlays/shared/vendor_menu.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "game/fastfunc.h"
 #include "overlays/shared/moby_ground_collision.h"
 

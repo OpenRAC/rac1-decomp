@@ -5,7 +5,7 @@
 #include "include_asm.h"
 #include "structs/hero.h"
 #include "overlays/shared/radial_particle_burst.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "data/level_18.h"
 #include "game/mobyutil.h"
 

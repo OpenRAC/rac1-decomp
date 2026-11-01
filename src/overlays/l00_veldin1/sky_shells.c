@@ -5,8 +5,8 @@
 #include "game/skyfunc.h"
 #include "overlays/shared/point_lights_and_glows.h"
 #include "overlays/shared/sky_particles.h"
-#include "asm/executable.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 #include "game/mobyutil.h"
 #include "overlays/shared/moby_ground_collision.h"
 

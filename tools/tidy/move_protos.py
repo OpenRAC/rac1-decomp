@@ -6,7 +6,7 @@ Move function prototypes that several files declare the same way into one header
   python3 tools/tidy/move_protos.py --write
 
 A function defined in src/game/draw.c goes in include/game/draw.h. A function with no C definition goes in
-include/asm/<part>.h, and data goes in include/data/<part>.h, where <part> is the file of include/names/ its
+include/asm_functions/<part>.h, and data goes in include/data/<part>.h, where <part> is the file of include/names/ its
 name is in. A declaration moves only if:
   - every file declares the same type, and two or more files do. Spelling does not count: s32 is int, and
     parameter names are ignored. () and (void) are different, because a prototype can change a call.
@@ -101,7 +101,7 @@ def home_of(name, text, homes, aliases):
         return None
     if homes:
         return header_of(next(iter(homes)))
-    folder = "asm" if is_function(name, text) else "data"
+    folder = "asm_functions" if is_function(name, text) else "data"
     return f"{folder}/{part_of({name} | aliases.get(name, set()))}.h"
 
 
@@ -180,8 +180,8 @@ def header_text(header, names):
     guard = re.sub(r"\W", "_", header).upper()
     if header.startswith("data/"):
         about = f"Data declared the same way by several files: {header[5:-2]}."
-    elif header.startswith("asm/"):
-        about = f"Functions with no C definition: {header[4:-2]}."
+    elif header.startswith("asm_functions/"):
+        about = f"Functions with no C definition: {header[len('asm_functions/'):-2]}."
     else:
         about = f"Functions defined in src/{header[:-2]}.c."
     lines = [f"#ifndef {guard}", f"#define {guard}", "", f"/* {about} */", "", '#include "common.h"', ""]

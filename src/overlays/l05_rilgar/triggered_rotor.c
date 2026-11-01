@@ -3,7 +3,7 @@
  * while vendor_0030EB68.c also has small-data declarations of that symbol. */
 #include "common.h"
 #include "structs/moby.h"
-#include "asm/executable.h"
+#include "asm_functions/executable.h"
 extern float FastSubRots(float, float);
 
 typedef struct {

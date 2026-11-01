@@ -2,7 +2,7 @@
 #include "common.h"
 #include "include_asm.h"
 #include "structs/hero.h"
-#include "asm/executable.h"
+#include "asm_functions/executable.h"
 #include "game/hud.h"
 
 typedef struct {

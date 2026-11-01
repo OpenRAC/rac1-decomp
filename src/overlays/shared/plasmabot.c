@@ -6,7 +6,7 @@
 #include "structs/moby.h"
 #include "structs/hero.h"
 #include "overlays/shared/follow_camera.h"
-#include "asm/shared_levels.h"
+#include "asm_functions/shared_levels.h"
 #include "data/level_14.h"
 #include "game/fastfunc.h"
 #include "overlays/shared/moby_ground_collision.h"
