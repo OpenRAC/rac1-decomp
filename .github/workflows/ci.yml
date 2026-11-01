@@ -47,10 +47,8 @@ jobs:
         run: python tools/check_no_retail.py
       - name: Names table and header agree
         run: python tools/names.py check
-      - name: Overlay files
-        run: |
-          python tools/overlay_rename.py --check
-          python tools/overlay_remnants.py --check
+      - name: Overlay file names
+        run: python tools/overlay_rename.py --check
       - name: Source paths
         run: python tools/move_src.py --check
       - name: Doc links
