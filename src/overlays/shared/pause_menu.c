@@ -1013,14 +1013,10 @@ struct MenuSystemP {
     unsigned char pad0C[0x124 - 0xC];
     int close_locked;
 };
-struct CtrlP {
-    unsigned char pad[0x1C4];
-    unsigned int pressed_unmasked;
-};
 extern char level_menu_system[] NOT_SDA;
 extern char g_controller_state[];
 #define menu_system_p (*(struct MenuSystemP *)D_L00_001BA070)
-#define controller_state_p (*(struct CtrlP *)D_0013CA40)
+#define controller_state_p (*(struct PadState *)D_0013CA40)
 /* Menu input check for the page `screen`. */
 int Menu_CheckPageInput(void *screen) {
     if (menu_system_p.current->focus != screen) {
@@ -1082,7 +1078,7 @@ int Menu_SkipFilteredEntries(char *arg0, int arg1) {
     return 0;
 }
 INCLUDE_ASM("asm/overlays", func_L00_0027A3AC);
-extern struct CtrlP g_controller_state_r __asm__("D_0013CA40");
+extern struct PadState g_controller_state_r __asm__("D_0013CA40");
 extern struct MenuSystemP level_menu_system_r __asm__("D_L00_001BA070");
 extern int memory_card_state_field_fc;
 extern int map_menu_state_target_level;

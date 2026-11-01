@@ -85,10 +85,6 @@ typedef struct Data_2B33E8 {
     short light;
     short glow;
 } Data_2B33E8;
-typedef struct Input_2B33E8 {
-    char pad0[0x1A0];
-    int held;
-} Input_2B33E8;
 typedef struct Order_2B33E8 {
     unsigned char pad[0xB];
     unsigned char level;
@@ -117,7 +113,7 @@ typedef struct Light_2B33E8 {
 } Light_2B33E8;
 
 extern Hero hero_2B33E8 __asm__("D_0013F450");
-extern Input_2B33E8 input_2B33E8 __asm__("D_0013CA40");
+extern PadState input_2B33E8 __asm__("D_0013CA40");
 extern Order_2B33E8 order_2B33E8 __asm__("D_0013E620");
 extern unsigned char help_stats_base_r[] __asm__("D_0014171B");
 extern char player_camera_r[] __asm__("D_L00_00166D80");

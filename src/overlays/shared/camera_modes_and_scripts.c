@@ -2,6 +2,7 @@
 #include "common.h"
 #include "vector.h"
 #include "include_asm.h"
+#include "pad.h"
 #include "camera.h"
 #include "hero.h"
 #include "game/lights.h"
@@ -116,14 +117,8 @@ typedef struct {
 typedef struct {
     float a, va, b, vb, ang, z, vz;
 } S_9f38;
-typedef struct {
-    u8 pad0[0x100];
-    float f100, f104, f108, f10C;
-    u8 pad1[0x1A0 - 0x110];
-    int i1A0;
-} C940;
 extern Hero g_hero_r __asm__("D_0013F450");
-extern C940 g_controller_state;
+extern PadState g_controller_state;
 extern CameraSystem player_camera_r __asm__("D_L00_00166D80");
 extern int invert52 MACRO_ADDR;
 extern short hero_aligned_cam_gain_at_rest;
@@ -155,13 +150,13 @@ void update_hero_aligned_camera_from_input(Camera *o) {
     vec_scale_to_length(&up, ((u8 *)g_hero_r.moby) + 0xE0, 1.0f);
     if (player_camera_r.blend.phase == 0 && g_hero_r.unk20A5 == 0)
         g_hero_r.unk20A5 = 1;
-    t = -g_controller_state.f108;
+    t = -g_controller_state.analog[2];
     if (t == 0.0f)
-        t = -g_controller_state.f100;
+        t = -g_controller_state.analog[0];
     if (t == 0.0f)
-        t = IntToFloat((g_controller_state.i1A0 >> 15) & 1);
+        t = IntToFloat((g_controller_state.held >> 15) & 1);
     if (t == 0.0f)
-        t = -IntToFloat((g_controller_state.i1A0 >> 13) & 1);
+        t = -IntToFloat((g_controller_state.held >> 13) & 1);
     r = FastAbsF(st->a);
     k = (*(float *)&hero_aligned_cam_gain_at_rest) +
         ((*(float *)&hero_aligned_cam_gain_at_full) - (*(float *)&hero_aligned_cam_gain_at_rest)) * r;
@@ -172,13 +167,13 @@ void update_hero_aligned_camera_from_input(Camera *o) {
         build_look_at_matrix(o->basis, o->basis, &up, k * r);
     if (g_hero_r.motion.platform_carry.f[3] != 0.0f && g_hero_r.unk308 == 0)
         build_look_at_matrix(o->basis, o->basis, &up, g_hero_r.motion.platform_carry.f[3]);
-    t = -g_controller_state.f10C;
+    t = -g_controller_state.analog[3];
     if (t == 0.0f)
-        t = -g_controller_state.f104;
+        t = -g_controller_state.analog[1];
     if (t == 0.0f)
-        t = IntToFloat((g_controller_state.i1A0 >> 12) & 1);
+        t = IntToFloat((g_controller_state.held >> 12) & 1);
     if (t == 0.0f)
-        t = -IntToFloat((g_controller_state.i1A0 >> 14) & 1);
+        t = -IntToFloat((g_controller_state.held >> 14) & 1);
     if (player_camera_r.blend.phase != 0 && g_hero_r.state.prev == 2)
         t = 0.0f;
     if (invert52 == 0)

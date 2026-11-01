@@ -2,6 +2,7 @@
 #include "common.h"
 #include "callees.h"
 #include "include_asm.h"
+#include "pad.h"
 #include "hero.h"
 #include "moby.h"
 #include "game/draw.h"
@@ -962,12 +963,7 @@ int func_L15_002F99F8_2F9D38(char *moby) __asm__("func_L15_002F99F8");
 extern char *quartu_cuboids_r __asm__("D_L15_0016016C") MACRO_ADDR;
 int func_L15_002F9AE8_2F9D38(char *moby, float a, float b) __asm__("func_L15_002F9AE8");
 extern char *quartu_camera_moby_r __asm__("D_L15_00167480");
-typedef struct {
-    char pad[0x100];
-    float x;
-    float y;
-} G_88e8_2F9D38;
-extern G_88e8_2F9D38 g_controller_state_r __asm__("D_0013CA40");
+extern PadState g_controller_state_r __asm__("D_0013CA40");
 extern int try_select_follow_camera_volume_r(char *) __asm__("func_L00_002E9870");
 extern void clear_follow_camera_volume_if_current_r(char *) __asm__("func_L00_002E9838");
 extern int scale_ticks_r2(int) __asm__("func_001F9850");
@@ -1010,9 +1006,9 @@ void func_L15_002F9D38_r(char *m) {
     t3 = scale_ticks_r2(560);
     t4 = scale_ticks_r2(200);
     set_nonzero_follow_camera_parameters_r(1.0f, 12.0f, 0.11f);
-    if (g_controller_state_r.x != 0.0f)
+    if (g_controller_state_r.analog[0] != 0.0f)
         *(short *)(s + 0x20) = t1;
-    else if (g_controller_state_r.y != 0.0f)
+    else if (g_controller_state_r.analog[1] != 0.0f)
         *(short *)(s + 0x20) = t1;
     if (*(short *)(s + 0x20) >= t1) {
         if (++*(int *)(s + 0x3C) >= t2 && func_L15_002F9AE8_2F9D38(m, 30.0f, 0.0f))

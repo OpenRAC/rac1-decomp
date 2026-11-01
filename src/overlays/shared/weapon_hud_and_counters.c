@@ -3,6 +3,7 @@
 #include "moby.h"
 #include "callees.h"
 #include "include_asm.h"
+#include "pad.h"
 #include "hero.h"
 #include "game/draw.h"
 #include "game/initonce.h"
@@ -1095,19 +1096,7 @@ typedef struct {
     int w78;
     int w7C;
 } Obj_38530;
-typedef struct {
-    u8 p0[0x148];
-    float f148;
-    float f14C;
-    u8 p150[0x70];
-    int w1C0;
-    int w1C4;
-    u8 p1C8[4];
-    int w1CC;
-    u8 p1D0[8];
-    int w1D8;
-} G_t_38530;
-extern G_t_38530 g_controller_state_r __asm__("D_0013CA40");
+extern PadState g_controller_state_r __asm__("D_0013CA40");
 extern short quick_select_fade_steps;
 extern int D_L00_0015FB54_38530 SDATA(D_L00_0015FB54);
 extern Ent_38530 **hud_selector_slot_tables_r __asm__("D_L00_0015FB78") MACRO_ADDR;
@@ -1156,9 +1145,9 @@ void update_hud_item_selector_selection_and_visibility(Obj_38530 *p) {
     p->w7C = scale_ticks(0xB4);
     p->w6C = 0x18;
     if (FastDecTimer(hud_item_selector_close_timer))
-        g_controller_state_r.w1CC = 2;
-    x = g_controller_state_r.f148;
-    y = g_controller_state_r.f14C;
+        g_controller_state_r.mode = 2;
+    x = g_controller_state_r.analog_prev[2];
+    y = g_controller_state_r.analog_prev[3];
     mag = vec_length(x * x + y * y);
     if (mag != 0.0f) {
         x /= mag;
@@ -1166,14 +1155,14 @@ void update_hud_item_selector_selection_and_visibility(Obj_38530 *p) {
     }
     ang = fast_atan2(x, y);
     if ((p->w78 >> 24) == 0) {
-        if ((g_controller_state_r.w1C4 & 0xF000) || mag < 0.5f || --p->w78 == -1) {
+        if ((((int)g_controller_state_r.pressed_unmasked) & 0xF000) || mag < 0.5f || --p->w78 == -1) {
             p->w74 = -1;
             p->w78 = 0x10000FF;
         }
     }
     n = 0;
     old = p->w74;
-    if ((p->w78 >> 24) == 1 && (g_controller_state_r.w1C0 & 0x10)) {
+    if ((p->w78 >> 24) == 1 && (((int)g_controller_state_r.held_unmasked) & 0x10)) {
         if (mag > 0.9f) {
             a = ang + 3.1415927f + 3.1415927f + 1.5707964f + 3.1415927f / (float)quick_select_slot_count;
             f = a * ((float)quick_select_slot_count / 6.2831855f);
@@ -1195,10 +1184,10 @@ void update_hud_item_selector_selection_and_visibility(Obj_38530 *p) {
                 if ((*(float *)&quick_select_slot_angle_offset) > 0.0f)
                     n = 1;
             }
-        } else if (g_controller_state_r.w1D8 == 0 && (g_controller_state_r.w1C4 & 0xF000)) {
+        } else if (g_controller_state_r.stick_moved == 0 && (((int)g_controller_state_r.pressed_unmasked) & 0xF000)) {
             int w;
             w = old;
-            if (g_controller_state_r.w1C4 & 0x1000) {
+            if (((int)g_controller_state_r.pressed_unmasked) & 0x1000) {
                 int t;
                 if (w == -1)
                     t = quick_select_default_up_slot;
@@ -1206,7 +1195,7 @@ void update_hud_item_selector_selection_and_visibility(Obj_38530 *p) {
                     t = hud_selector_slot_tables_r[(*(s32 *)&quick_select_page)][w].f10;
                 w = t;
             }
-            if (g_controller_state_r.w1C4 & 0x4000) {
+            if (((int)g_controller_state_r.pressed_unmasked) & 0x4000) {
                 int t;
                 if (w == -1)
                     t = quick_select_default_down_slot;
@@ -1214,7 +1203,7 @@ void update_hud_item_selector_selection_and_visibility(Obj_38530 *p) {
                     t = hud_selector_slot_tables_r[(*(s32 *)&quick_select_page)][w].f14;
                 w = t;
             }
-            if (g_controller_state_r.w1C4 & 0x8000) {
+            if (((int)g_controller_state_r.pressed_unmasked) & 0x8000) {
                 int t;
                 if (w == -1)
                     t = quick_select_default_left_slot;
@@ -1222,7 +1211,7 @@ void update_hud_item_selector_selection_and_visibility(Obj_38530 *p) {
                     t = hud_selector_slot_tables_r[(*(s32 *)&quick_select_page)][w].f8;
                 w = t;
             }
-            if (g_controller_state_r.w1C4 & 0x2000) {
+            if (((int)g_controller_state_r.pressed_unmasked) & 0x2000) {
                 int t;
                 if (w == -1)
                     t = quick_select_default_right_slot;
@@ -1246,7 +1235,7 @@ void update_hud_item_selector_selection_and_visibility(Obj_38530 *p) {
         c[1] = 0;
     else if (c[1] < (*(int *)&quick_select_fade_steps))
         c[1]++;
-    if (!(g_controller_state_r.w1C0 & 0x10)) {
+    if (!(((int)g_controller_state_r.held_unmasked) & 0x10)) {
         int sel = p->w74;
         if (sel >= 0 && (id = hud_selector_slot_tables_r[(*(s32 *)&quick_select_page)][sel].f18) != 0) {
             Route *rr;
@@ -1517,17 +1506,7 @@ typedef struct {
     int w78;
     int w7C;
 } Obj;
-typedef struct {
-    u8 p0[0x148];
-    float f148;
-    float f14C;
-    u8 p150[0x70];
-    int w1C0;
-    int w1C4;
-    u8 p1C8[4];
-    int w1CC;
-} G_t;
-extern G_t g_controller_state;
+extern PadState g_controller_state;
 extern int radial_select_auto_close_flag;
 extern short quick_select_slot_count_r __asm__("D_L00_0015FB48");
 extern int quick_select_last_slot_export __asm__("D_L00_0015FB54") MACRO_ADDR;
@@ -1546,9 +1525,9 @@ void update_hud_radial_selector_selection_and_visibility(Obj *o) {
 
     o->w7C = scale_ticks(0xB4);
     o->w6C = 0x18;
-    g_controller_state.w1CC = 2;
-    x = g_controller_state.f148;
-    y = g_controller_state.f14C;
+    g_controller_state.mode = 2;
+    x = g_controller_state.analog_prev[2];
+    y = g_controller_state.analog_prev[3];
     len = vec_length(x * x + y * y);
     if (len != 0.0f) {
         x /= len;
@@ -1556,7 +1535,7 @@ void update_hud_radial_selector_selection_and_visibility(Obj *o) {
     }
     ang = fast_atan2(x, y);
     if ((o->w78 >> 24) == 0 && radial_select_auto_close_flag != 0) {
-        if ((g_controller_state.w1C4 & 0xF000) || len < 0.5f || --o->w78 == -1) {
+        if ((((int)g_controller_state.pressed_unmasked) & 0xF000) || len < 0.5f || --o->w78 == -1) {
             o->w74 = -1;
             o->w78 = 0x10000FF;
         }
@@ -1569,30 +1548,30 @@ void update_hud_radial_selector_selection_and_visibility(Obj *o) {
                 (int)((ang + 3.1415927f + 3.1415927f + 1.5707964f + 3.1415927f / (float)n) * ((float)n / 6.2831855f)) %
                 n;
         }
-        if (g_controller_state.w1C4 & 0xF000) {
+        if (((int)g_controller_state.pressed_unmasked) & 0xF000) {
             cur = o->w74;
-            if (g_controller_state.w1C4 & 0x1000) {
+            if (((int)g_controller_state.pressed_unmasked) & 0x1000) {
                 if (cur == -1)
                     t = radial_select_default_up_slot;
                 else
                     t = hud_selector_slot_tables_r2[(*(int *)&quick_select_page_r)][cur].f10;
                 cur = t;
             }
-            if (g_controller_state.w1C4 & 0x4000) {
+            if (((int)g_controller_state.pressed_unmasked) & 0x4000) {
                 if (cur == -1)
                     t = radial_select_default_down_slot;
                 else
                     t = hud_selector_slot_tables_r2[(*(int *)&quick_select_page_r)][cur].f14;
                 cur = t;
             }
-            if (g_controller_state.w1C4 & 0x8000) {
+            if (((int)g_controller_state.pressed_unmasked) & 0x8000) {
                 if (cur == -1)
                     t = radial_select_default_left_slot;
                 else
                     t = hud_selector_slot_tables_r2[(*(int *)&quick_select_page_r)][cur].f8;
                 cur = t;
             }
-            if (g_controller_state.w1C4 & 0x2000) {
+            if (((int)g_controller_state.pressed_unmasked) & 0x2000) {
                 if (cur == -1)
                     t = radial_select_default_right_slot;
                 else
@@ -1607,7 +1586,7 @@ void update_hud_radial_selector_selection_and_visibility(Obj *o) {
     } else if (c[1] < (*(int *)&quick_select_fade_steps)) {
         c[1]++;
     }
-    if (!(g_controller_state.w1C0 & 0x10)) {
+    if (!(((int)g_controller_state.held_unmasked) & 0x10)) {
         if (o->w74 == -1)
             radial_select_choice[0] = 0;
         else
