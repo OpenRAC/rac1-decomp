@@ -31,6 +31,7 @@ TARGETS = {
              'clone': None, 'clone_name': r'(?!)'},
     'collision': {'header': 'structs/collision.h', 'recs': {'CollisionHit': 'struct CollisionHit'},
                   'clone': None, 'clone_name': r'(?!)'},
+    'menu': {'header': 'structs/menu.h', 'recs': {'MenuSystem': 'struct MenuSystem'}, 'clone': None, 'clone_name': r'(?!)'},
     'usage': {'header': 'structs/usage_stats.h', 'recs': {'MoveUsageTable': 'struct MoveUsageTable', 'MoveUsage': 'struct MoveUsage'},
               'clone': None, 'clone_name': r'(?!)'},
     'vecf': {'header': 'structs/vector.h', 'recs': {},
