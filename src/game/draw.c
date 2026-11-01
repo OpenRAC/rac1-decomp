@@ -3013,8 +3013,8 @@ extern void DrawTexturedQuad_r(s32, s32, s32, s32, s32, s32, s32, s32, s64, s64)
 /* FontPrint: draws a string glyph by glyph; bytes 8..15 switch the colour, 0x80..0xA7 add an accent glyph,
    bytes below 0x20 are 24-pixel grey button glyphs.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/ui/text/font_print.c, font_print. */
-void func_001F6668_r(s32 x, s32 y, u64 color, u8 *text, s32 character_limit, s64 texture,
-                     struct Glyph_F6668 *glyphs) __asm__("func_001F6668");
+extern void func_001F6668_r(s32 x, s32 y, u64 color, u8 *text, s32 character_limit, s64 texture,
+                            struct Glyph_F6668 *glyphs) __asm__("func_001F6668");
 void func_001F6668_r(s32 x, s32 y, u64 color, u8 *text, s32 character_limit, s64 texture, struct Glyph_F6668 *glyphs) {
     s32 character_count;
     u8 *cursor;

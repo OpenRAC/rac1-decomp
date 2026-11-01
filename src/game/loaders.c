@@ -843,8 +843,8 @@ extern void SetUpVisGifViewer_r(ResidentRenderPacket_03B70 *packet, s32 draw_hig
                                 s32 material_shift, s32 material_index) __asm__("func_00203808");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/prepare_resident_class_render_data.c, prepare_resident_class_render_data. */
-void func_00203B70_r(ResidentClassRenderHeader_03B70 *header, u8 *textures, u8 *material_map,
-                     s32 class_id) __asm__("func_00203B70");
+extern void func_00203B70_r(ResidentClassRenderHeader_03B70 *header, u8 *textures, u8 *material_map,
+                            s32 class_id) __asm__("func_00203B70");
 /* Prepares a resident class's render data: relocates its groups and binds its textures. */
 void func_00203B70_r(ResidentClassRenderHeader_03B70 *header, u8 *textures, u8 *material_map, s32 class_id) {
     s32 group_count;
