@@ -2,6 +2,7 @@
 #include "common.h"
 #include "callees.h"
 #include "include_asm.h"
+#include "structs/usage_stats.h"
 #include "structs/pad.h"
 #include "structs/vector.h"
 #include "structs/hero.h"
@@ -301,23 +302,13 @@ typedef struct {
     Moby *f88;
 } Row13E650;
 
-typedef struct {
-    char p0[0x58];
-    unsigned short f58;
-    unsigned short f5A;
-    int f5C;
-    char p60[0x30];
-    unsigned short f90;
-    unsigned short f92;
-    int f94;
-} S141948;
 
 extern Hero g_hero;
 extern PadState g_controller_state;
 extern char pad_globals_base[];
 extern unsigned char item_available[];
 extern char voice_pool[];
-extern S141948 usage_stats;
+extern MoveUsageTable usage_stats;
 extern float frame_scale MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
@@ -461,13 +452,14 @@ void HeroL14_UpdateStatePhysics(void) {
                     turn_to(0, g_frame_scale_sq, g_frame_scale_sq * 0.0f, g_frame_time * 174.53293f);
                     if (*(int *)&oltanis_look_stat_timer > 0) {
                         if (fast_dec_timer((int *)&oltanis_look_stat_timer)) {
-                            if (usage_stats.f90 < 0xFFFF) {
-                                usage_stats.f90++;
+                            if (usage_stats.e[18].count < 0xFFFF) {
+                                usage_stats.e[18].count++;
                             }
-                            if (scale_ticks(gameplay_event_frame_count) / 600 > usage_stats.f92) {
-                                usage_stats.f92 = scale_ticks(gameplay_event_frame_count) / 600;
+                            if (scale_ticks(gameplay_event_frame_count) / 600 > usage_stats.e[18].best_minutes) {
+                                usage_stats.e[18].best_minutes = scale_ticks(gameplay_event_frame_count) / 600;
                             }
-                            usage_stats.f94 = usage_stats.f94 | (1 << g_current_level_index_m) | 0x80000000;
+                            usage_stats.e[18].level_mask =
+                                usage_stats.e[18].level_mask | (1 << g_current_level_index_m) | 0x80000000;
                             *(int *)&oltanis_look_stat_timer = -1;
                             (*(int *)&oltanis_look_stat_count)++;
                         }

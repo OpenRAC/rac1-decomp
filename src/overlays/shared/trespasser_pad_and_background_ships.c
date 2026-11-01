@@ -1196,11 +1196,10 @@ extern f32 FastSin(f32);
 extern f32 FastCos(f32);
 extern s32 truncate_float_to_s32(f32);
 extern s32 GetEffectTex(s32);
-typedef unsigned long u64_t;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002a4038.c, FUN_L02_002da938. */
 void draw_tresspasser_puzzle_radial_strip(void *unused, f32 a, f32 b, f32 c, s32 d) {
-    u64_t m[4];
+    u64 m[4];
     s32 a4[4];
     s32 p4[4];
     s32 t;
@@ -1249,42 +1248,42 @@ void draw_tresspasser_puzzle_radial_strip(void *unused, f32 a, f32 b, f32 c, s32
     {
         s32 q_ = (truncate_float_to_s32(f26));
         q_ = q_ << 20;
-        (m[0]) += (u64_t)(u32)(-q_ + 0x80000000u);
+        (m[0]) += (u64)(u32)(-q_ + 0x80000000u);
     };
     {
         s32 q_ = (truncate_float_to_s32(f29));
         q_ = (q_ << 4) + 0x8000;
-        (m[0]) += (u64_t)q_;
+        (m[0]) += (u64)q_;
     };
     {
         s32 q_ = (truncate_float_to_s32(f24));
         q_ = q_ << 20;
-        (m[1]) += (u64_t)(u32)(-q_ + 0x80000000u);
+        (m[1]) += (u64)(u32)(-q_ + 0x80000000u);
     };
     {
         s32 q_ = (truncate_float_to_s32(f25));
         q_ = (q_ << 4) + 0x8000;
-        (m[1]) += (u64_t)q_;
+        (m[1]) += (u64)q_;
     };
     {
         s32 q_ = (truncate_float_to_s32(f30));
         q_ = q_ << 20;
-        (m[2]) += (u64_t)(u32)(-q_ + 0x80000000u);
+        (m[2]) += (u64)(u32)(-q_ + 0x80000000u);
     };
     {
         s32 q_ = (truncate_float_to_s32(f31));
         q_ = (q_ << 4) + 0x8000;
-        (m[2]) += (u64_t)q_;
+        (m[2]) += (u64)q_;
     };
     {
         s32 q_ = (truncate_float_to_s32(f27));
         q_ = q_ << 20;
-        (m[3]) += (u64_t)(u32)(-q_ + 0x80000000u);
+        (m[3]) += (u64)(u32)(-q_ + 0x80000000u);
     };
     {
         s32 q_ = (truncate_float_to_s32(f28));
         q_ = (q_ << 4) + 0x8000;
-        (m[3]) += (u64_t)q_;
+        (m[3]) += (u64)q_;
     };
 
     tex = GetEffectTex((*(s32 *)&tresspasser_radial_strip_texture_index_gp));
@@ -1324,42 +1323,42 @@ void draw_tresspasser_puzzle_radial_strip(void *unused, f32 a, f32 b, f32 c, s32
     {
         s32 q_ = (truncate_float_to_s32(f26));
         q_ = q_ << 20;
-        (m[0]) += (u64_t)(u32)(-q_ + 0x80000000u);
+        (m[0]) += (u64)(u32)(-q_ + 0x80000000u);
     };
     {
         s32 q_ = (truncate_float_to_s32(f29));
         q_ = (q_ << 4) + 0x8000;
-        (m[0]) += (u64_t)q_;
+        (m[0]) += (u64)q_;
     };
     {
         s32 q_ = (truncate_float_to_s32(f24));
         q_ = q_ << 20;
-        (m[1]) += (u64_t)(u32)(-q_ + 0x80000000u);
+        (m[1]) += (u64)(u32)(-q_ + 0x80000000u);
     };
     {
         s32 q_ = (truncate_float_to_s32(f25));
         q_ = (q_ << 4) + 0x8000;
-        (m[1]) += (u64_t)q_;
+        (m[1]) += (u64)q_;
     };
     {
         s32 q_ = (truncate_float_to_s32(f30));
         q_ = q_ << 20;
-        (m[2]) += (u64_t)(u32)(-q_ + 0x80000000u);
+        (m[2]) += (u64)(u32)(-q_ + 0x80000000u);
     };
     {
         s32 q_ = (truncate_float_to_s32(f31));
         q_ = (q_ << 4) + 0x8000;
-        (m[2]) += (u64_t)q_;
+        (m[2]) += (u64)q_;
     };
     {
         s32 q_ = (truncate_float_to_s32(f27));
         q_ = q_ << 20;
-        (m[3]) += (u64_t)(u32)(-q_ + 0x80000000u);
+        (m[3]) += (u64)(u32)(-q_ + 0x80000000u);
     };
     {
         s32 q_ = (truncate_float_to_s32(f28));
         q_ = (q_ << 4) + 0x8000;
-        (m[3]) += (u64_t)q_;
+        (m[3]) += (u64)q_;
     };
 
     draw_geometry_quad_5188(m, p4, a4, tex, 0);

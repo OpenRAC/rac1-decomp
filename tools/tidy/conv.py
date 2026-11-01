@@ -29,6 +29,8 @@ TARGETS = {
                'clone': None, 'clone_name': r'(?!)'},
     'disc': {'header': 'structs/disc.h', 'recs': {'DiscTable': 'struct DiscTable', 'DiscFile': 'struct DiscFile'},
              'clone': None, 'clone_name': r'(?!)'},
+    'usage': {'header': 'structs/usage_stats.h', 'recs': {'MoveUsageTable': 'struct MoveUsageTable', 'MoveUsage': 'struct MoveUsage'},
+              'clone': None, 'clone_name': r'(?!)'},
     'vecf': {'header': 'structs/vector.h', 'recs': {},
              'clone': 'Vec4f', 'clone_name': r'(?!.*(Quat|Col|Rgb|Mat))(V\w*|\w*Vec\w*)'},
     'vec': {'header': 'structs/vector.h', 'recs': {},

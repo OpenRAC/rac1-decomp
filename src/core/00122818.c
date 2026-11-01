@@ -13,8 +13,6 @@
 
 
 extern void scePrintf();
-
-typedef unsigned long u_long_sd;
 typedef int u128_sd __attribute__((mode(TI)));
 typedef struct {
     unsigned long NLOOP : 15;

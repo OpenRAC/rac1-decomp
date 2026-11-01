@@ -227,7 +227,6 @@ void initialize_moby_animation_blend(A *a0, S *a1, s32 a2, s32 a3, s32 a4, s32 a
         advance_moby_animation_blend_r(a0, a1);
 }
 /* Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay/state/0024eec0.c, FUN_L00_0024f440. */
-typedef unsigned long u64_50478p;
 typedef struct {
     char pad0[6];
     short qwc; /* 0x06: size in quadwords */
@@ -235,7 +234,7 @@ typedef struct {
     short hA; /* 0x0A */
     char padC[2];
     short hE; /* 0x0E */
-    u64_50478p q[1]; /* 0x10 */
+    u64 q[1]; /* 0x10 */
 } Frame_50478p;
 typedef struct {
     char pad0[6];
@@ -244,7 +243,7 @@ typedef struct {
     short hA; /* 0x0A */
     short hC; /* 0x0C */
     short hE; /* 0x0E */
-    u64_50478p q[1]; /* 0x10 */
+    u64 q[1]; /* 0x10 */
 } Packet_50478p;
 
 typedef struct {
@@ -281,8 +280,8 @@ void func_L00_00250478_r(Object_50478p *obj, int i, int j, Packet_50478p *out) {
     int n;
     int k;
     unsigned char *ix;
-    u64_50478p *src;
-    u64_50478p *q;
+    u64 *src;
+    u64 *q;
 
     s = t->sequences[i]->frames[j];
     section(out, ((na + 3) * 8) & 0xFF0);
@@ -290,7 +289,7 @@ void func_L00_00250478_r(Object_50478p *obj, int i, int j, Packet_50478p *out) {
     k += s->hE;
     out->h8 = na * 8;
     {
-        void *from = &((u64_50478p *)s)[nb + 2];
+        void *from = &((u64 *)s)[nb + 2];
 
         out->h6 = (k + 1) >> 1;
         a = s->hA;
@@ -299,7 +298,7 @@ void func_L00_00250478_r(Object_50478p *obj, int i, int j, Packet_50478p *out) {
         out->hE = s->hE;
         n = s->qwc * 16 - nb * 8;
         if (n != 0)
-            FUN_001f9838_50478p(&((u64_50478p *)out)[na + 2], from, n);
+            FUN_001f9838_50478p(&((u64 *)out)[na + 2], from, n);
     }
     ix = obj->second->map + 4;
     src = s->q;
@@ -307,12 +306,12 @@ void func_L00_00250478_r(Object_50478p *obj, int i, int j, Packet_50478p *out) {
         int c = nb;
         do {
             c--;
-            ((u64_50478p *)out)[*ix + 2] = *src;
+            ((u64 *)out)[*ix + 2] = *src;
             ix++;
             src++;
         } while (c != 0);
     }
-    q = (u64_50478p *)((char *)out + out->h6 * 16);
+    q = (u64 *)((char *)out + out->h6 * 16);
     if (*q == 0)
         *q = 1;
     FUN_00118a80_50478p(0);
