@@ -706,6 +706,7 @@ typedef struct {
     int sfx;
     int timer;
 } Vars1448;
+extern void update_shuttle_help_message();
 
 /* UpdateMoby 1448: a moby that alternates between two camera points and starts a cutscene on a button press. */
 void Moby1448Update(unsigned char *m) {

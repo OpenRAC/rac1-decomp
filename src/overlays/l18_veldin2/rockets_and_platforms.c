@@ -2569,6 +2569,7 @@ extern void set_moby_list_state(char *arg, int val);
 void set_moby_group_state_two(char *arg) {
     set_moby_list_state(arg, 0x2);
 }
+extern void spawn_sparks_along_target_direction();
 
 extern short target_effect_first_rotation_rate_degrees_gp;
 extern short target_effect_second_rotation_rate_degrees_gp;

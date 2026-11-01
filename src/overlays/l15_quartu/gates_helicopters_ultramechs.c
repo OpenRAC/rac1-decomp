@@ -1345,6 +1345,8 @@ typedef struct {
     int pad[3];
     Vec4 pt[1];
 } UPath_6950;
+
+extern void process_helicopter_hits();
 typedef int u128_6950 __attribute__((mode(TI)));
 
 extern char *create_class_55b_moby_from_source(char *a0);

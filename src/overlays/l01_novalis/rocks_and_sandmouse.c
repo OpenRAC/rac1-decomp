@@ -1310,6 +1310,9 @@ void green_mushroom_update(char *m) {
             break;
     }
 }
+
+extern void DefaultVtbl_DeleteMoby();
+extern void update_and_draw_scrolling_overlay_layers();
 extern char novalis_four_scroll_layers[];
 /* The moby comes in $a0 and goes on to the delete, untouched. */
 void draw_four_scroll_layers(void *moby) {

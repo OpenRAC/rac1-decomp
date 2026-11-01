@@ -1827,6 +1827,8 @@ extern void spawn_color_swapped_explosion_burst(void *, void *, int, float, floa
 void spawn_blarg_trooper_death_effects(void *a, void *b) {
     spawn_color_swapped_explosion_burst(a, b, -1, 1.0f, 10.0f);
 }
+
+extern void SetDeathBits();
 /* functional: high. Same reads, writes, calls and arguments as retail; the jump table is a switch, the shared exits are gotos, quad copies are four-float copies, and the two DeleteMoby calls pass the pointer that retail leaves in $a0. No COP2/VU0 instructions in this function. */
 /* Level 12 (Hoven) moby update, one call per frame per moby. data = moby+0x78 is its state block, hero = the target
  * moby found by func_L00_00260D30 (or the hero global when none). Runs func_L00_00264BB0 on data+0x120, hides or shows

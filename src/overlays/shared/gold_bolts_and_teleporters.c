@@ -683,6 +683,9 @@ void attach_cutscene_fixed_scale_manipulator(void) {
         }
     }
 }
+
+extern void set_camera_position();
+extern void set_camera_rotation();
 extern void attach_cutscene_fixed_scale_manipulator_m(char *) __asm__("func_L01_002FC890");
 extern char cutscene_trigger_error_fmt[];
 extern LevelState novalis_checkpoint_level_state_s __asm__("D_L01_001BB9C0");

@@ -3108,6 +3108,7 @@ void Moby1297Update(unsigned char *moby) {
         }
     }
 }
+extern void spawn_moby_radial_spark();
 
 /* Spawns a spark effect moby from a source moby, initialises its particle bytes and warms it up. */
 char *spawn_class_511_moby_with_sparks(char *src, void *pos, int ticks) {

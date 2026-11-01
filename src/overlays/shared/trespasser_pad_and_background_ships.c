@@ -663,6 +663,8 @@ void tresspasser_pad_update(Moby *moby) {
     }
     StepColorFade_r(moby, data);
 }
+
+extern void FastVecSub();
 extern void ClampVectorLength(void *a, float x);
 extern float FastAddRots(float, float);
 extern float FastSubRots(float, float);
