@@ -1132,12 +1132,6 @@ extern void moby_build_matrix(void *);
 extern float g_frame_time MACRO_ADDR;
 extern short bombthrower_grass_spawn_height;
 
-struct Swirl {
-    char pad[0x18];
-    float a;
-    float b;
-};
-
 // Spawns a moby with a swirl/particle data block.
 char *spawn_bombthrower_grass_projectile(int owner, char *pos, char *vec) {
     Moby *moby = (Moby *)CreateMoby(0x3AA);
@@ -1283,10 +1277,6 @@ extern void SpawnExplosionFx_r(void *, void *, int, float, float) __asm__("func_
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 
 typedef int u128_2D9988 __attribute__((mode(TI)));
-
-typedef struct {
-    float x, y, z;
-} Vel_2D9988;
 
 typedef struct {
     char pad0[0x10];
@@ -1938,14 +1928,6 @@ void update_data_processor_linked_effect(struct Moby *moby) {
         }
     }
 }
-typedef struct Pkt_DBA50 {
-    f32 uv1[8];
-    u64 hdr1[4];
-    f32 pos[16];
-    u32 col[4];
-    f32 uv2[8];
-    u64 hdr2[4];
-} Pkt_DBA50;
 
 #define D_L10_00160058_DBA50 ((u8 *)orxon_mobys_r)
 #define D_L10_001672C0_DBA50 ((u8 *)&D_L10_001672C0)
@@ -2256,12 +2238,7 @@ extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern void SendRadialMessageToMobys(void *, void *, void *, int, int, int, int, int, float, float, float);
 extern float frame_scale MACRO_ADDR;
 extern char nearby_mobys[];
-typedef struct {
-    int owner;
-    float phase, speed, size;
-    int source, timer;
-    float growth;
-} EffectData;
+
 /* Advances an effect, scales its size over its lifetime and emits hits. */
 void update_path_spark_effect(Moby *m) {
     float old[4], pos[4], a, b;

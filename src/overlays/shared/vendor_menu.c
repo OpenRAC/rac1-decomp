@@ -167,11 +167,7 @@ typedef struct {
     s32 count;
     u8 pad214[0xC];
 } Vendor_pv;
-typedef struct {
-    u8 pad[0xE];
-    u16 text;
-    u8 tail[0x18 - 0x10];
-} VendorItem_pv;
+
 typedef struct {
     u8 b0;
     u8 hidden;

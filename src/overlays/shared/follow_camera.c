@@ -723,17 +723,7 @@ void draw_active_beam_slots(char *m) {
         draw_beam_strand_with_glow(a, b, &beam_strand_points[k1], 0x30, 0x10, i);
     }
 }
-typedef struct {
-    Vec4 corner[4];
-    int color[4];
-    struct {
-        float u, v;
-    } uv[4];
-    long unk70, tex, unk80, unk88;
-} Quad_2e4138;
-typedef struct {
-    Vec4 m[4];
-} Mat_2e4138;
+
 typedef struct {
     Vec4 a, b, c, d;
 } Tbl_2e4138;

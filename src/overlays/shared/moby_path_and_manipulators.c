@@ -946,13 +946,6 @@ void FastVecAdd(void *, void *, void *);
 void func_00215C00_64140(Vec4 *, float, float, float) __asm__("func_00215C00");
 MobyBound *GetFlaggedPvarWord(struct Moby *);
 int func_L00_001EFFF0_64140(void *, Vec4 *, int, void *, int) __asm__("func_L00_001EFFF0");
-typedef struct {
-    char _pad00[0x11];
-    unsigned char unk11; /* 0x11: copied to a moby's +0x7C */
-    unsigned char unk12; /* 0x12: copied to a moby's +0x7E */
-    char _pad13[0x1C - 0x13];
-    int frames[1]; /* 0x1C */
-} MobySeq;
 
 /* Picks the best auto-aim target moby (kind 5) for a shot from pos along dir: writes yaw/pitch toward it and its aim height, returns the moby or 0.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002630b8.c, FUN_L00_002630c8. */

@@ -10,11 +10,6 @@
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-
-typedef struct {
-    char b[0x13];
-} Cfg13;
-
 extern int level_map_selection[];
 
 extern int check_mission_condition(short type, int arg);

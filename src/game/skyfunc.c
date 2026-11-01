@@ -14,10 +14,6 @@
 
 extern int draw_config[];
 
-typedef struct {
-    char b[0x13];
-} Cfg13;
-
 extern float FastCos(float);
 extern float FastSin(float);
 
@@ -25,11 +21,6 @@ extern int func_001160D8(void);
 extern float random_angle_radians(void);
 
 extern float FastAddRots(float, float);
-
-typedef struct {
-    int key;
-    int flags;
-} PadBind;
 
 LINKER_REMNANT("asm/remnants/text", func_0022BEB0);
 

@@ -160,12 +160,7 @@ typedef struct {
     char pad0[0x14];
     unsigned char gold;
 } Order44;
-typedef struct {
-    char pad0[0x18];
-    M44 *moby;
-    int tri;
-    V44 normal, position, reflection;
-} Hit44;
+
 extern unsigned char hero_globals_base[] NOT_SDA;
 extern char coll_sphere_moby_hits[], D_L00_001E9EC8[], D_L00_001E9EF0[];
 extern int pause44 SDATA(D_L00_0015F6A8);

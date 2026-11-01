@@ -16,6 +16,7 @@
 #include "overlays/shared/hero_wrench_and_grapple.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "structs/hero_views.h"
 
 typedef int u128 __attribute__((mode(TI)));
 typedef float FVec4[4] __attribute__((aligned(16)));
@@ -35,26 +36,7 @@ typedef struct {
     char p1[0x13];
     Moby *f88;
 } Row13E650;
-typedef struct {
-    char p0[4];
-    int f4;
-    char p8[0x10];
-    int f18;
-    int f1C;
-    int f20;
-    char p24[8];
-} Rec2C;
-typedef struct {
-    char p0[0x18];
-    int f18;
-    char p1C[0x30];
-} Rec4C;
-typedef struct {
-    char p0[0x60];
-    float f60[4];
-    char p70[0x30];
-    float fA0[4];
-} Bone;
+
 typedef struct {
     char p0[0x58];
     unsigned short f58;
@@ -65,23 +47,7 @@ typedef struct {
     unsigned short f92;
     int f94;
 } S141948;
-typedef struct {
-    char p0[0x158];
-    float f158;
-    char p15C[4];
-    float f160;
-    char p164[4];
-    int f168;
-    char p16C[0x1E4];
-    float f350[4];
-} Cam;
-typedef struct {
-    char p0[8];
-    float f8;
-    float fC;
-    char p10[8];
-    float f18;
-} S17BEB8;
+
 extern Hero g_hero;
 extern PadState g_controller_state;
 extern char pad_globals_base[];
@@ -99,15 +65,15 @@ extern short kalebo3_look_stat_timer;
 extern short kalebo3_look_stat_count;
 extern unsigned char *kalebo3_water_patches MACRO_ADDR;
 extern int kalebo3_water_patch_count MACRO_ADDR;
-extern Cam kalebo3_player_camera;
+extern HeroPlayerCameraView kalebo3_player_camera;
 extern float kalebo3_camera_yaw;
 extern int *kalebo3_coll_sphere_moby_hits[];
 extern FVec4 kalebo3_hero_air_pose_vectors[];
-extern Rec4C kalebo3_item_defs[];
-extern Bone kalebo3_hero_bones[];
+extern HeroItemDefView kalebo3_item_defs[];
+extern HeroBoneRow kalebo3_hero_bones[];
 extern float kalebo3_hero_lean_angles[];
-extern Rec2C kalebo3_attack_records[];
-extern S17BEB8 kalebo3_hero_speed_bands;
+extern HeroAttackRecord kalebo3_attack_records[];
+extern HeroSpeedBands kalebo3_hero_speed_bands;
 extern float kalebo3_hero_swim_frame_speeds[];
 extern float kalebo3_hero_ledge_shimmy_frame_speeds[];
 
@@ -1740,7 +1706,7 @@ void Hero_UpdateStatePhysics(void) {
             }
         } break;
         case 0x13: {
-            Rec2C *r;
+            HeroAttackRecord *r;
 
             if (g_hero.anim_changing != 0 || g_hero.anim_frame < kalebo3_attack_records[g_hero.attack_record].f20) {
                 g_hero.items[0].timer = 2;

@@ -14,6 +14,7 @@
 #include "overlays/shared/hero_wrench_and_grapple.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "structs/hero_views.h"
 
 extern unsigned char hero_globals_base[];
 extern int g_current_level_index MACRO_ADDR;
@@ -692,15 +693,7 @@ typedef struct {
     char p1[0x13];
     Moby *f88;
 } Row13E650;
-typedef struct {
-    char p0[4];
-    int f4;
-    char p8[0x10];
-    int f18;
-    int f1C;
-    int f20;
-    char p24[8];
-} Rec2C;
+
 typedef struct {
     char p0[0x58];
     unsigned short f58;
@@ -711,23 +704,7 @@ typedef struct {
     unsigned short f92;
     int f94;
 } S141948;
-typedef struct {
-    char p0[0x158];
-    float f158;
-    char p15C[4];
-    float f160;
-    char p164[4];
-    int f168;
-    char p16C[0x1E4];
-    float f350[4];
-} Cam;
-typedef struct {
-    char p0[8];
-    float f8;
-    float fC;
-    char p10[8];
-    float f18;
-} S17BEB8;
+
 extern PadState g_controller_state;
 extern char pad_globals_base[];
 extern unsigned char item_available[];
@@ -739,11 +716,11 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern short aridia_usage_event_timer;
 extern short aridia_usage_event_count;
-extern Cam aridia_player_camera;
+extern HeroPlayerCameraView aridia_player_camera;
 extern float aridia_player_camera_yaw;
 extern Moby *aridia_coll_sphere_moby_hits[];
-extern Rec2C aridia_attack_records[];
-extern S17BEB8 aridia_hero_speed_bands;
+extern HeroAttackRecord aridia_attack_records[];
+extern HeroSpeedBands aridia_hero_speed_bands;
 extern float aridia_hero_anim_frame_speeds[];
 extern void build_scaled_hero_move_impulse(float, float);
 
@@ -1474,7 +1451,7 @@ void update_hero_state_motion(void) {
             }
         } break;
         case 0x13: {
-            Rec2C *r;
+            HeroAttackRecord *r;
 
             if (g_hero.anim_changing != 0 || g_hero.anim_frame < aridia_attack_records[g_hero.attack_record].f20) {
                 g_hero.items[0].timer = 2;

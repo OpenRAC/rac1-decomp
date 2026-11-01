@@ -9,39 +9,13 @@
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-
 extern void FastMemCopy(void *, void *, int);
-
-typedef struct {
-    char b[0x13];
-} Cfg13;
 
 extern int STUB_printf();
 
 extern void flush_cache(int);
 
 extern void VU1_addGSregister(int, long);
-
-typedef struct {
-    int key;
-    int flags;
-} PadBind;
-
-typedef struct {
-    int unk_00;
-    int unk_04;
-    int unk_08;
-    int unk_0C;
-} Rec10;
-
-typedef struct {
-    short a;
-    short b;
-} TexRemap;
-typedef struct {
-    char *items;
-    int count;
-} TexChunk;
 
 #define VIF0_STAT ((volatile unsigned int *)0x10008000)
 #define VIF0_FBRST ((volatile unsigned int *)0x10008020)

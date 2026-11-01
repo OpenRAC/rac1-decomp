@@ -446,10 +446,7 @@ typedef struct {
         } word;
     } keys;
 } Input_1F4918;
-typedef struct {
-    char pad[0x2460];
-    Input_1F4918 ctl;
-} InputBase_1F4918;
+
 extern Input_1F4918 g_controller_state;
 extern MenuCounts_1F4918 debug_menu_group_item_counts;
 typedef union {

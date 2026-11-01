@@ -1,5 +1,5 @@
 {
-  "address_names_in_code": 11724,
+  "address_names_in_code": 11721,
   "address_names_in_comments": 2803,
   "asm_aliases": 7497,
   "extern_lines": 33204,
@@ -7,11 +7,11 @@
   "hex_compares": 6314,
   "ids_in_comments": 316,
   "include_asm": 206,
-  "local_struct_typedefs": 3303,
+  "local_struct_typedefs": 3031,
   "long_lines": 1273,
   "numbered_type_names": 470,
   "oclass_literals": 492,
-  "offsets_in_comments": 1050,
+  "offsets_in_comments": 1048,
   "raw_offset_casts": 7015,
   "tab_lines": 60,
   "worker_notes_in_comments": 28

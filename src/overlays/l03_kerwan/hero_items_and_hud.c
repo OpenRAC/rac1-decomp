@@ -14,40 +14,8 @@
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "overlays/shared/sky_particles.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
+#include "structs/hero_views.h"
 
-typedef struct {
-    char p0[0x44];
-    int f44;
-    int f48;
-    char p1[0x10];
-    float f5C;
-    int f60;
-    char p2[0xC];
-} Rec70;
-typedef struct {
-    char p0[0x24];
-    int f24;
-    char p1[0x24];
-} Rec4C;
-typedef struct {
-    char p0[0xC];
-    int fC;
-    char p1[4];
-    int f14;
-    int f18;
-    char p2[0x10];
-} Rec2C;
-typedef struct {
-    char p0[0x254];
-    float f254;
-    float f258;
-} S17A800;
-typedef struct {
-    char p0[0xC];
-    float fC;
-    char p1[8];
-    float f18;
-} S17BF38;
 typedef struct {
     char p0[0xF8];
     unsigned short fF8;
@@ -80,11 +48,11 @@ extern int kerwan_hero_run_step1_start_frame MACRO_ADDR;
 extern short kerwan_hero_double_tap_timer;
 extern float kerwan_camera_yaw;
 extern int kerwan_hero_state_1e_clear_word;
-extern S17A800 kerwan_hero_bones;
-extern Rec70 kerwan_idle_fidgets[];
-extern Rec4C kerwan_item_defs[];
-extern Rec2C kerwan_attack_records[];
-extern S17BF38 kerwan_hero_speed_bands;
+extern HeroBoneScalars kerwan_hero_bones;
+extern HeroIdleFidget kerwan_idle_fidgets[];
+extern HeroItemDefView kerwan_item_defs[];
+extern HeroAttackRecord kerwan_attack_records[];
+extern HeroSpeedBands kerwan_hero_speed_bands;
 
 extern int scale_ticks(int);
 extern int queue_animation_update(int, int, int, int, int, int, int);
@@ -271,7 +239,7 @@ void HeroL03_UpdateStateTransitions(void) {
                             r = return_hero_animation_id_unchanged(moby[0x53]);
                             if (r == get_hero_idle_animation_index(0) && flag) {
                                 if (pick_idle_fidget(&sp20)) {
-                                    Rec70 *rec;
+                                    HeroIdleFidget *rec;
 
                                     g_hero.fidget_index = sp20;
                                     rec = &kerwan_idle_fidgets[sp20];
@@ -703,7 +671,7 @@ void HeroL03_UpdateStateTransitions(void) {
                             }
                         }
                         {
-                            Rec2C *rec = &kerwan_attack_records[g_hero.attack_record];
+                            HeroAttackRecord *rec = &kerwan_attack_records[g_hero.attack_record];
                             int t = (truncate_float_to_s32(g_hero.anim_frame) - rec->fC) * 2;
                             if ((float)rec->f14 < g_hero.anim_frame && g_hero.anim_changing == 0 &&
                                 !(g_hero.state.current == 0x15 && g_hero.unk308 != 0)) {

@@ -16,14 +16,6 @@ extern int sif_call_rpc();
 
 extern int sce_sif_check_stat_rpc(void *);
 
-typedef struct {
-    char unk_00[4];
-    int unk_04;
-    int unk_08;
-    char *unk_0C;
-    char unk_10[0x320];
-} Ent330;
-
 /* snd_StartSoundSystem. Ported from Lombyte's project (GPL-3.0); exact for the whole
  * 989snd object with retail ps2eeas and explicit small-data declarations.
  * The compiler output is assembled unchanged. */

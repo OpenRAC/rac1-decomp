@@ -15,17 +15,8 @@
 extern char voice_pool[];
 extern int bank_sound_count MACRO_ADDR;
 
-typedef struct {
-    char b[0x13];
-} Cfg13;
-
 extern void FastVecScale(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
-
-typedef struct {
-    int key;
-    int flags;
-} PadBind;
 
 extern char camera_position_a[] __asm__("D_00187180");
 extern char coll_hit_pos[];

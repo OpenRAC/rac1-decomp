@@ -1128,9 +1128,6 @@ struct FogRegs2P {
     s32 far_int;
     s32 near_int;
 };
-struct ClipP {
-    Vec4 constants[3];
-};
 
 extern Vec4 view_clip_constants[4];
 extern f32 view_depth_constants[4];
@@ -2011,22 +2008,6 @@ void DoGifPaging(void) {
 /* Retail carries 4 bytes of inter-function padding after this endlabel. */
 __asm__(".section .text\n\tnop\n");
 
-typedef struct EffectTexDef {
-    long tex0;
-    unsigned short texel_off;
-    unsigned short pal_off;
-    short wlog2;
-    short hlog2;
-} EffectTexDef;
-typedef struct TexUpload {
-    int clut_data;
-    short unk4;
-    short cbp;
-    int image_data;
-    unsigned char tw;
-    unsigned char th;
-    short tbp;
-} TexUpload;
 struct EffectTextureDefinition_et {
     u64 tex0;
     u16 texel_offset_quadwords;

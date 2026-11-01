@@ -14,40 +14,8 @@
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "overlays/shared/sky_particles.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
+#include "structs/hero_views.h"
 
-typedef struct {
-    char p0[0x44];
-    int f44;
-    int f48;
-    char p1[0x10];
-    float f5C;
-    int f60;
-    char p2[0xC];
-} Rec70;
-typedef struct {
-    char p0[0x24];
-    int f24;
-    char p1[0x24];
-} Rec4C;
-typedef struct {
-    char p0[0xC];
-    int fC;
-    char p1[4];
-    int f14;
-    int f18;
-    char p2[0x10];
-} Rec2C;
-typedef struct {
-    char p0[0x254];
-    float f254;
-    float f258;
-} S17ABE0;
-typedef struct {
-    char p0[0xC];
-    float fC;
-    char p1[8];
-    float f18;
-} S17C318;
 typedef struct {
     char p0[0xF8];
     unsigned short fF8;
@@ -80,11 +48,11 @@ extern int landing_run_entry_animation_frame MACRO_ADDR;
 extern short rilgar_hero_double_tap_timer;
 extern float rilgar_player_camera_yaw;
 extern int rilgar_hero_state_1e_clear_word;
-extern S17ABE0 rilgar_lean_state;
-extern Rec70 rilgar_idle_fidgets[];
-extern Rec4C rilgar_item_defs[];
-extern Rec2C rilgar_attack_records[];
-extern S17C318 rilgar_hero_speed_bands;
+extern HeroBoneScalars rilgar_lean_state;
+extern HeroIdleFidget rilgar_idle_fidgets[];
+extern HeroItemDefView rilgar_item_defs[];
+extern HeroAttackRecord rilgar_attack_records[];
+extern HeroSpeedBands rilgar_hero_speed_bands;
 
 extern int scale_ticks(int);
 extern int queue_animation_update(int, int, int, int, int, int, int);
@@ -275,7 +243,7 @@ void HeroL05_UpdateStateTransitions(void) {
                             r = return_hero_animation_id_unchanged(moby[0x53]);
                             if (r == get_hero_idle_animation_index(0) && flag) {
                                 if (pick_idle_fidget(&sp20)) {
-                                    Rec70 *rec;
+                                    HeroIdleFidget *rec;
 
                                     g_hero.fidget_index = sp20;
                                     rec = &rilgar_idle_fidgets[sp20];
@@ -718,7 +686,7 @@ void HeroL05_UpdateStateTransitions(void) {
                             }
                         }
                         {
-                            Rec2C *rec = &rilgar_attack_records[g_hero.attack_record];
+                            HeroAttackRecord *rec = &rilgar_attack_records[g_hero.attack_record];
                             int t = (truncate_float_to_s32(g_hero.anim_frame) - rec->fC) * 2;
                             if ((float)rec->f14 < g_hero.anim_frame && g_hero.anim_changing == 0 &&
                                 !(g_hero.state.current == 0x15 && g_hero.unk308 != 0)) {

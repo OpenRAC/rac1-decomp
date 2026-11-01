@@ -15,6 +15,7 @@
 #include "overlays/shared/hero_wrench_and_grapple.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
+#include "structs/hero_views.h"
 
 typedef struct {
     int a;
@@ -1532,39 +1533,7 @@ int HeroL02_SetMoveState(int a, int b) {
     }
     return 1;
 }
-typedef struct {
-    char p0[0x44];
-    int f44;
-    int f48;
-    char p1[0x10];
-    float f5C;
-    int f60;
-    char p2[0xC];
-} Rec70;
-typedef struct {
-    char p0[0x24];
-    int f24;
-    char p1[0x24];
-} Rec4C;
-typedef struct {
-    char p0[0xC];
-    int fC;
-    char p1[4];
-    int f14;
-    int f18;
-    char p2[0x10];
-} Rec2C;
-typedef struct {
-    char p0[0x254];
-    float f254;
-    float f258;
-} S17AD00;
-typedef struct {
-    char p0[0xC];
-    float fC;
-    char p1[8];
-    float f18;
-} S17C438;
+
 typedef struct {
     char p0[0xF8];
     unsigned short fF8;
@@ -1585,11 +1554,11 @@ extern int aridia_hero_run_step1_start_frame MACRO_ADDR;
 extern short aridia_hero_double_tap_timer;
 extern float aridia_player_camera_yaw;
 extern int aridia_hero_state_1e_clear_word;
-extern S17AD00 aridia_lean_state;
-extern Rec70 aridia_idle_fidgets[];
-extern Rec4C aridia_item_defs[];
-extern Rec2C aridia_attack_records_rec[] __asm__("D_L02_0017C2A8");
-extern S17C438 aridia_hero_speed_bands;
+extern HeroBoneScalars aridia_lean_state;
+extern HeroIdleFidget aridia_idle_fidgets[];
+extern HeroItemDefView aridia_item_defs[];
+extern HeroAttackRecord aridia_attack_records_rec[] __asm__("D_L02_0017C2A8");
+extern HeroSpeedBands aridia_hero_speed_bands;
 
 extern int HeroL02_TryKnockback(int);
 
@@ -1759,7 +1728,7 @@ void HeroL02_UpdateStateTransitions(void) {
                             r = return_hero_animation_id_unchanged(moby[0x53]);
                             if (r == get_hero_idle_animation_index(0) && flag) {
                                 if (pick_idle_fidget(&sp20)) {
-                                    Rec70 *rec;
+                                    HeroIdleFidget *rec;
 
                                     g_hero.fidget_index = sp20;
                                     rec = &aridia_idle_fidgets[sp20];
@@ -2054,7 +2023,7 @@ void HeroL02_UpdateStateTransitions(void) {
                             }
                         }
                         {
-                            Rec2C *rec = &aridia_attack_records_rec[g_hero.attack_record];
+                            HeroAttackRecord *rec = &aridia_attack_records_rec[g_hero.attack_record];
                             int t = (truncate_float_to_s32(g_hero.anim_frame) - rec->fC) * 2;
                             if ((float)rec->f14 < g_hero.anim_frame && g_hero.anim_changing == 0 &&
                                 !(g_hero.state.current == 0x15 && g_hero.unk308 != 0)) {

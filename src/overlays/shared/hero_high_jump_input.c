@@ -7,9 +7,6 @@
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/hero_vehicle_and_collision.h"
 
-typedef struct {
-    float f[4];
-} __attribute__((aligned(16))) V4h;
 extern Hero g_hero;
 typedef struct {
     char pad0[0x44];

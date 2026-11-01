@@ -19,10 +19,6 @@ extern void FastMemSet();
 
 extern void UpdateViewContext(void);
 
-typedef struct {
-    char b[0x13];
-} Cfg13;
-
 extern char image_end_round_16k[];
 extern int current_vu_chain MACRO_ADDR;
 extern int level_resource_buffers[];

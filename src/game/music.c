@@ -11,10 +11,6 @@
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-typedef struct {
-    char b[0x13];
-} Cfg13;
-
 extern short cd_read_state[];
 extern int snd_InitVAGStreamingEx(int, int, int, int);
 extern int snd_FlushSoundCommands(void);

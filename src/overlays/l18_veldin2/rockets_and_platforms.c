@@ -967,19 +967,6 @@ typedef struct {
     int i38;
 } L18E;
 
-typedef struct {
-    char pad0[0x10];
-    float v10[4];
-    char pad1[0x8];
-    L18Cls *cls;
-    char pad2[0x8];
-    float f2C;
-    char pad3[0x10];
-    float v40[4];
-    char pad4[0x28];
-    L18E *data;
-} L18M;
-
 /* Moby update for an energy-field emitter that manages three child mobys. */
 void thruster_pack_lock_green_update(char *moby) {
     enum { STATE_INITIALIZE = 0, STATE_UPDATE_LOCK_COMPONENTS = 1 };
@@ -2152,12 +2139,6 @@ char *create_class_274_ring_effect(void *owner, void *vector, float value) {
 }
 extern short ring_effect_max_timer;
 
-typedef struct {
-    float f0;
-    int unk4;
-    int timer;
-} MobyData;
-
 // Resets a moby's position and advances its counter, wrapping at a limit.
 void refresh_ring_effect(char *moby, void *pos, float f) {
     int *d = ((int *)((Moby *)moby)->pvars);
@@ -2472,12 +2453,6 @@ extern float FastAbsF(float);
 extern void PartType11Spawn(void *, void *, u32, u32, f32, s32, s32, f32, s32, s32);
 extern void spawn_particle_alt_9768(void *pos, void *vel, int color, int tag, int life, float size);
 void set_moby_group_state_two(char *arg);
-
-typedef struct {
-    char pad[0x40];
-    float r0;
-    float r1;
-} MobyR;
 
 /* Update function of a debris moby: spawn, burst into sparks and particles, fall. */
 void update_moby_hit_response_burst_and_ballistic_flight(char *moby) {

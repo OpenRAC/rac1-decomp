@@ -9,16 +9,6 @@
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-
-typedef struct {
-    char b[0x13];
-} Cfg13;
-
-typedef struct {
-    int key;
-    int flags;
-} PadBind;
-
 ASM_FUNC("asm/handwritten/text", func_00228A58);
 
 ASM_FUNC("asm/handwritten/text", func_00228D20);

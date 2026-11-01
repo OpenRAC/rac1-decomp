@@ -9,11 +9,6 @@
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-
-typedef struct {
-    char b[0x13];
-} Cfg13;
-
 ASM_FUNC("asm/handwritten/text", func_0020E6B8);
 
 ASM_FUNC("asm/handwritten/text", func_0020E838);

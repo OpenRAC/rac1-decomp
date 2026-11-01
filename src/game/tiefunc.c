@@ -15,34 +15,9 @@ extern void FastMemCopy(void *, void *, int);
 
 extern int draw_config[];
 
-typedef struct {
-    char b[0x13];
-} Cfg13;
-
 extern int STUB_printf();
 
 extern void flush_cache(int);
-
-typedef struct {
-    int key;
-    int flags;
-} PadBind;
-
-typedef struct {
-    int unk_00;
-    int unk_04;
-    int unk_08;
-    int unk_0C;
-} Rec10;
-
-typedef struct {
-    short a;
-    short b;
-} TexRemap;
-typedef struct {
-    char *items;
-    int count;
-} TexChunk;
 
 extern int g_render_packet_cursor MACRO_ADDR;
 extern int tie_tex_dma_tag_slot MACRO_ADDR;

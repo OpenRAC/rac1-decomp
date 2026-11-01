@@ -18,10 +18,6 @@ extern int measure_text_width_regular(unsigned char *, int);
 
 extern void UpdateViewContext(void);
 
-typedef struct {
-    char b[0x13];
-} Cfg13;
-
 extern void FastVecAdd(void *, void *, void *);
 
 extern void fast_vec_normalize(void *, void *, float);
@@ -35,30 +31,9 @@ extern int GetIconFrame(int, int);
 extern void HudSprite(int, int, int, int, int, int);
 extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
 
-typedef struct {
-    int key;
-    int flags;
-} PadBind;
-
 extern void FastVecSub(void *, void *, void *);
 
 extern void truncate_float_to_s32(float);
-
-typedef struct {
-    int unk_00;
-    int unk_04;
-    int unk_08;
-    int unk_0C;
-} Rec10;
-
-typedef struct {
-    short a;
-    short b;
-} TexRemap;
-typedef struct {
-    char *items;
-    int count;
-} TexChunk;
 
 extern char vendor_state[];
 

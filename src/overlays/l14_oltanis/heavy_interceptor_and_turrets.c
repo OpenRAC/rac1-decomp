@@ -3410,11 +3410,7 @@ void reset_racer_group_to_hero_path_position(struct Moby *m) {
 extern int race_paths MACRO_ADDR;
 
 typedef int u128_67e8 __attribute__((mode(TI)));
-typedef struct {
-    char pad00[0x64];
-    int seg;
-    float frac;
-} RacerSeg_67e8;
+
 typedef struct {
     float x, y, z, w;
 } V_67e8;

@@ -318,14 +318,7 @@ in:
 typedef struct {
     float f[4];
 } __attribute__((aligned(16))) V_28efc8;
-typedef struct {
-    V_28efc8 corner[4];
-    unsigned int color[4];
-    struct {
-        float u, v;
-    } uv[4];
-    long unk70, tex, unk80, unk88;
-} Q_28efc8;
+
 typedef struct {
     char *p0;
     char pad[0x22];

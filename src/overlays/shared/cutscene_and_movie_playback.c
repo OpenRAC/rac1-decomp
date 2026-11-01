@@ -454,9 +454,7 @@ typedef struct {
     char pad[0x5A];
     unsigned short x5a;
 } O5A;
-typedef struct {
-    unsigned char cnt;
-} MC;
+
 typedef struct {
     char pad[0xC];
     unsigned char n;
@@ -491,10 +489,6 @@ typedef struct {
     char pad[0xEC];
     Fl *p;
 } PP;
-typedef struct {
-    char pad[0x20A5];
-    char x20a5;
-} Hd;
 
 extern CT cutscene_state_c __asm__("D_L00_0016C960");
 extern float render_view_tan_half_fov;
@@ -746,12 +740,7 @@ extern u8 level_profile_mark_after_sound_r[] __asm__("D_L00_001610F8");
 extern void Profile_Mark(void *, s32);
 void finish_cutscene(void);
 int func_L00_0029A158_9A300(void) __asm__("func_L00_0029A158");
-typedef struct {
-    u8 pad0[0xC];
-    u8 count; /* 0x0C */
-    u8 pad0D[0x3B];
-    s32 slots[1]; /* 0x48 */
-} VendorMobyClass;
+
 typedef struct {
     f32 pos[3];
     u8 flag;

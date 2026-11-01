@@ -3230,13 +3230,7 @@ typedef struct {
     short rise;
     int music;
 } CapVars;
-typedef struct {
-    unsigned char pad0[0x80];
-    unsigned char pos[8];
-    float z;
-    unsigned char pad8c[0x2000];
-    unsigned int mode;
-} CapPlayer;
+
 typedef struct {
     unsigned int c[3];
 } CapColors;

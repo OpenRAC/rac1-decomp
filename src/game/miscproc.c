@@ -9,11 +9,6 @@
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-
-typedef struct {
-    char b[0x13];
-} Cfg13;
-
 /*
  * Not a decompile target: hand-written assembly, like the rest of this
  * DMAC block (func_0020C268/func_0020C2F8 are explicitly marked

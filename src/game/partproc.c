@@ -9,11 +9,6 @@
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-
-typedef struct {
-    char b[0x13];
-} Cfg13;
-
 /*
  * REVERTED (2/8). Right size and right shape -- `func_00218930()` as a
  * tail call, with the rewriter producing the bare `j` correctly -- but

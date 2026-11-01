@@ -13,18 +13,9 @@
 
 extern int draw_config[];
 
-typedef struct {
-    char b[0x13];
-} Cfg13;
-
 extern int STUB_printf();
 
 extern void flush_cache(int);
-
-typedef struct {
-    int key;
-    int flags;
-} PadBind;
 
 extern int g_render_packet_cursor MACRO_ADDR;
 extern int shrub_tex_dma_tag MACRO_ADDR;

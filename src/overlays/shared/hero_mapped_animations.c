@@ -1281,13 +1281,6 @@ int get_hero_target_pose_status(void) {
 int shared_return_two(void) {
     return 2;
 }
-typedef struct {
-    float x, y, z, w;
-} __attribute__((aligned(16))) Vec_234800;
-typedef struct {
-    char p0[0x3C];
-    int i3C;
-} Plat_234800;
 
 typedef struct {
     char p0[0x3C];

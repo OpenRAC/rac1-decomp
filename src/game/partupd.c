@@ -9,11 +9,6 @@
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-
-typedef struct {
-    char b[0x13];
-} Cfg13;
-
 extern float random_float_between(float, float);
 
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));

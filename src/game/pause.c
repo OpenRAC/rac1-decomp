@@ -37,10 +37,6 @@ extern int measure_text_width_regular(unsigned char *, int);
 extern int measure_text_width_small(unsigned char *, int);
 extern int GetEffectTex(int);
 
-typedef struct {
-    char b[0x13];
-} Cfg13;
-
 extern PadSlots level_map_selection_slots __asm__("D_001A01F0");
 extern int level_map_selection[];
 
@@ -289,11 +285,6 @@ void initialize_menu_preview_scene(void) {
 extern int g_gs_texture_allocation_start MACRO_ADDR;
 extern int delete_moby(int);
 extern int panel_slots[];
-
-typedef struct {
-    char pad[0x44];
-    char *items[14];
-} ObjList;
 
 /* Pause teardown: calls each object's +0xC handler, then refreshes the
    14 D_001D6120 handles. Retail's register copies come from gcse, so the
@@ -5016,13 +5007,6 @@ extern char pause_ring_left_glyph[];
 extern char pause_ring_right_glyph[];
 extern short panel_clear_color; /* SDA, gp -0x6A50 */
 
-/* The icon slots are a real member: written as pointer arithmetic, gcc
-   strength-reduces the index into a 7th saved register (retail uses 6). */
-typedef struct {
-    char pad[0x30];
-    int slots[8];
-} PauseIcons;
-
 /* Draws the pause menu's ring of 8 icons and the quick-select overlay.
    arg0 is the pause-state object: unk20/unk24 give the viewport
    width/height (used for the ring's center and radius), unk50 the
@@ -8994,10 +8978,6 @@ extern float direction_unit[] MACRO_ADDR;
 extern float direction_perpendicular[] MACRO_ADDR;
 
 extern void FastVecCross(void *, void *, void *);
-
-typedef struct {
-    float v[4];
-} __attribute__((aligned(16))) PauseVec;
 
 /* Build a basis from dir: D_00160470 = dir normalised,
    D_00160490 = that scaled, and D_00160480 = the cross product with a

@@ -11,15 +11,6 @@
  * like the prebuilt libvib.a.
  */
 
-
-typedef struct {
-    char unk_00[4];
-    int unk_04;
-    int unk_08;
-    char *unk_0C;
-    char unk_10[0x320];
-} Ent330;
-
 typedef struct {
     unsigned long a : 14;
     unsigned long b : 2;

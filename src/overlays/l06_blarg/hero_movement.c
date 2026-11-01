@@ -14,6 +14,7 @@
 #include "overlays/shared/hero_vehicle_and_collision.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "structs/hero_views.h"
 
 extern char hero_globals_base[];
 
@@ -776,26 +777,7 @@ typedef struct {
     char p1[0x13];
     Moby *f88;
 } Row13E650;
-typedef struct {
-    char p0[4];
-    int f4;
-    char p8[0x10];
-    int f18;
-    int f1C;
-    int f20;
-    char p24[8];
-} Rec2C;
-typedef struct {
-    char p0[0x18];
-    int f18;
-    char p1C[0x30];
-} Rec4C;
-typedef struct {
-    char p0[0x60];
-    float f60[4];
-    char p70[0x30];
-    float fA0[4];
-} Bone;
+
 typedef struct {
     char p0[0x58];
     unsigned short f58;
@@ -806,16 +788,7 @@ typedef struct {
     unsigned short f92;
     int f94;
 } S141948;
-typedef struct {
-    char p0[0x158];
-    float f158;
-    char p15C[4];
-    float f160;
-    char p164[4];
-    int f168;
-    char p16C[0x1E4];
-    float f350[4];
-} Cam;
+
 extern PadState g_controller_state;
 extern char pad_globals_base[];
 extern unsigned char item_available[];
@@ -824,13 +797,13 @@ extern S141948 usage_stats;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern short blarg_usage_event_timer;
 extern short blarg_usage_event_count;
-extern Cam referencePosition;
+extern HeroPlayerCameraView referencePosition;
 extern float blarg_player_camera_yaw;
 extern int *blarg_moby_hits[];
-extern Rec4C blarg_item_defs[];
-extern Bone blarg_hero_bones[];
+extern HeroItemDefView blarg_item_defs[];
+extern HeroBoneRow blarg_hero_bones[];
 extern float blarg_hero_lean_angles[];
-extern Rec2C blarg_attack_records[];
+extern HeroAttackRecord blarg_attack_records[];
 extern float blarg_hero_speed_bands_3;
 extern float blarg_hero_anim_frame_speeds_a[];
 extern float blarg_hero_anim_frame_speeds_b[];
@@ -1588,7 +1561,7 @@ void HeroL06_UpdateMovement(void) {
             }
         } break;
         case 0x13: {
-            Rec2C *r;
+            HeroAttackRecord *r;
 
             if (((Hero *)&g_hero)->anim_changing != 0 ||
                 ((Hero *)&g_hero)->anim_frame < blarg_attack_records[((Hero *)&g_hero)->attack_record].f20) {
@@ -2772,7 +2745,7 @@ void HeroL06_UpdateMovement(void) {
             }
             break;
         case 0x51: {
-            Rec2C *r;
+            HeroAttackRecord *r;
 
             ((Hero *)&g_hero)->target_speed = 0.0f;
             r = &blarg_attack_records[((Hero *)&g_hero)->attack_record];

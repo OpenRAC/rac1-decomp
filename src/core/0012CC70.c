@@ -11,15 +11,6 @@
  * emits those tail calls itself for a void function that ends in a call.
  */
 
-
-typedef struct {
-    char unk_00[4];
-    int unk_04;
-    int unk_08;
-    char *unk_0C;
-    char unk_10[0x320];
-} Ent330;
-
 extern void sce_ipu_stop_dma(void *arg0);
 
 void mpeg_stop_ipu_dma(void *arg0) {

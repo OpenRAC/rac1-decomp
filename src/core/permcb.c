@@ -6,15 +6,6 @@
  * permcb.cpp (0x12F308-0x12F348). Name from the NTSC split.
  */
 
-
-typedef struct {
-    char unk_00[4];
-    int unk_04;
-    int unk_08;
-    char *unk_0C;
-    char unk_10[0x320];
-} Ent330;
-
 /*
  * vsync_callback(int). The three counters are 64-bit (`ld`/`sd`) and
  * MACRO_ADDR; the last store lands in the jr delay slot, so it comes

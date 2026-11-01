@@ -1009,10 +1009,7 @@ typedef struct {
     s16 s270;
 } CamGlobals_2ED320;
 typedef int OvlQuad_2ED320 __attribute__((mode(TI)));
-typedef struct {
-    Vec4 pos; /* 0x80 */
-    Vec4 rot; /* 0x90: z is the yaw */
-} HeroMotion_2ED320;
+
 extern Hero hero_2ED320 __asm__("D_0013F450");
 extern CamGlobals_2ED320 cam_globals_2ED320 __asm__("D_L00_00166D80");
 extern s32 current_level_2ED320 __asm__("D_0015EE84") MACRO_ADDR;
@@ -1341,9 +1338,7 @@ s32 volume_camera_swing_active(A_2ec7e8 *a) {
     return 0;
 }
 typedef float CameraVec[4] __attribute__((aligned(16)));
-typedef struct {
-    f32 f[4];
-} Vec4x;
+
 typedef struct {
     f32 focus[4];
     f32 velocity[4];
@@ -1919,10 +1914,7 @@ typedef struct {
     FollowCamBlock_ee follow;
     FollowCamTail_ee tail;
 } FollowCamState_ee;
-typedef struct {
-    int m0[4];
-    int pad[0x2C - 4];
-} Dummy_ee;
+
 struct UpdateCam_ee {
     char pad0[0x30];
     float pos[4];

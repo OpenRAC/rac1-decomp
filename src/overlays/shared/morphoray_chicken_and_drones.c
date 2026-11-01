@@ -562,10 +562,7 @@ void reset_morphoray_chicken_slot_defaults(char *a) {
         *(int *)(a + 0xAC) = -1;
     }
 }
-typedef struct {
-    char pad[0x74];
-    int f74;
-} DD9;
+
 extern char *CreateMoby_r(int) __asm__("func_0020D348");
 extern int Moby_PlaySound_ri(int, int, char *) __asm__("func_0022ED80");
 extern void set_moby_color(void *, int, int, int);

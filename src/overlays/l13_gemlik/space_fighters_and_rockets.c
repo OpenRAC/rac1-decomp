@@ -352,10 +352,7 @@ extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 extern float frame_scale_r __asm__("D_0015EE60") MACRO_ADDR;
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern char hero_globals_base_r[] __asm__("D_0013E633");
-typedef struct {
-    char pad0[0x18];
-    char *f18;
-} G_2C32D0;
+
 extern char gemlik_coll_hit_result_r[] __asm__("D_L13_001741C0");
 
 typedef struct {

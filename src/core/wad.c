@@ -10,14 +10,6 @@
 
 extern int sce_cd_sync_s(int);
 
-typedef struct {
-    char unk_00[4];
-    int unk_04;
-    int unk_08;
-    char *unk_0C;
-    char unk_10[0x320];
-} Ent330;
-
 extern unsigned char cd_read_spindle_speed[4] MACRO_ADDR;
 extern int sce_cd_read(int, int, void *, void *);
 extern void sce_gs_sync_v(int);
