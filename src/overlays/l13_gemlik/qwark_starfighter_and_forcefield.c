@@ -15,6 +15,17 @@
 #include "overlays/shared/ship_pickup_and_rocket.h"
 #include "overlays/shared/water_pool_and_sand_mouse.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
+#include "asm/level_06.h"
+#include "asm/shared_levels.h"
+#include "data/executable.h"
+#include "data/level_13.h"
+#include "game/fastfunc.h"
+#include "game/hud.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/camera_modes_and_scripts.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/ripple_patches.h"
+#include "overlays/shared/sound_playback.h"
 
 /* Part attached to a joint of a source moby (spawn_moby_joint_attachment). */
 struct JointAttachVars {
@@ -208,7 +219,7 @@ extern int fast_dec_timer(void *);
 extern void fire_starfighter_homing_rocket(void *, void *);
 extern int scale_ticks(int);
 extern int queue_starfighter_voice_line(void *, void *, int, int);
-extern void Sound_StopSlot(int);
+
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern float FastVecDist(void *, void *);
 extern int fast_subtract_rotations_cf(void *);
@@ -523,12 +534,12 @@ extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
 
 extern float FastCos(float);
 extern float FastSin(float);
-extern void Hud_SetBarValueById(int, int);
+
 extern int STUB_printf();
 extern int queue_animation_update(int, int, int, int, int, int, int);
 
 extern void Hud_UpdateCounter();
-extern void draw_segmented_hud_meter_base();
+
 extern int advance_moby_along_selected_path(void *, void *, int, int);
 extern int select_point_index_by_distance(void *, void *, float);
 extern void update_qwarks_starfighter_attack_commands(void *, void *);
@@ -541,11 +552,11 @@ extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern int coll_line(void *, void *, int, void *, void *);
 extern int FastBSphereCheck(void *, float);
-extern float fast_atan2(float, float);
+
 extern float vec_distance_xy(void *, void *);
 extern void update_moby_spring_steering_and_banking(void *, void *, float, float);
 extern float FastSubRots(float, float);
-extern float FastAbsF(float);
+
 extern float normalize_angle(float);
 extern float FastAddRots(float, float);
 extern float FastDiffRots(float, float);
@@ -555,8 +566,7 @@ extern void detach_moby_joint_attachment(void *, void *, int);
 extern int fast_dec_timer(void *);
 extern void MobySpringTurn(void *moby, float *vel, float target, float k, float d, float max);
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
-extern int random_integer_below(int);
-extern float random_float_between(float, float);
+
 extern void SpawnExplosionFx(void *, void *, int, float, float);
 extern void emit_randomized_moby_joint_effects_2(void *, void *) __asm__("func_L13_002E9F90");
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
@@ -572,7 +582,7 @@ extern int Music_ContinueStreamIfReady(void);
 extern int FastDecTimer(void *);
 
 extern int starfighter_part_classes[];
-extern char *walker_paths[];
+
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
@@ -1278,7 +1288,7 @@ char *spawn_moby_joint_attachment(char *src, int arg, int id) {
 extern char gemlik_coll_hit_result[];
 extern void FastVecScale(void *, void *, float);
 extern int coll_sphere(float, void *, int, void *);
-extern void vec_reflect(void *, void *, void *);
+
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
 
@@ -1497,8 +1507,6 @@ void forcefield_update(Moby *moby) {
     }
     offset_moby_class_point_pairs(*(unsigned char **)&moby->pclass, dx, 0);
 }
-
-extern char level_render_state_base[];
 
 /* Clear a vendor moby's field and set its flags unless it is the current target. */
 void Moby_ClearUnlessTargeted(Moby *moby) {
@@ -2191,7 +2199,6 @@ extern char poison_vessel_burst_colors2[];
 extern float FastVecDot(void *a, void *b);
 extern char *spawn_poison_vessel_effect_moby(void *a, void *b, int c, int d);
 extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
-extern void clamp_vec_length(void *, void *, float);
 
 typedef struct {
     float f[4];
@@ -2563,7 +2570,7 @@ extern void sweep_hit_segment(void *, void *, void *, void *, struct Moby *, Sho
 extern int move_w(struct Moby *, void *, void *, void *, float);
 extern int func_001160D8(void);
 extern void resolve_point_path_segment_xy_clearance(int, void *, void *, float);
-extern int SegmentCrossPolyline(int, void *, void *, void *);
+
 extern int mine_fall(void *, void *);
 extern void initialize_gemlik_trail(char *m);
 extern void InitDirectionalHitQuery_r(void *, void *, int, void *, float) __asm__("func_L00_0025A8C0");
@@ -2875,7 +2882,7 @@ extern void update_gemlik_trail(Moby *);
 extern void InitKnockback(void *, void *, float, int, int, int);
 extern int FindNearestEligibleMoby(void *, void *, float, int, int, void *, int);
 extern float ProbeGroundHeight(void *, int, float);
-extern int CollType(void);
+
 extern char gemlik_reference_axis[] MACRO_ADDR;
 extern char gemlik_coll_hit_result[] MACRO_ADDR;
 extern short blarg_commando_scale;
@@ -3314,7 +3321,7 @@ extern void *gemlik_pool_draw_tex MACRO_ADDR;
 extern int gemlik_pool_tile_count MACRO_ADDR;
 extern short gemlik_pool_override_tile;
 extern unsigned short gemlik_pool_override_color;
-extern void RipplePatchesInit(void *, int);
+
 extern void RipplePatch_ToFixedPoint(void *, void *);
 extern void RescaleFloatTable(float);
 extern void RippleSimClock(void *, int);
@@ -3504,9 +3511,9 @@ extern void compute_lift_mount_transform(char *moby, float *p, float *q);
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
 extern int Sound_IsPlaying(void *, int);
-extern void CameraScript2(int);
+
 extern int HeroEnterMoveState(int, int);
-extern void CameraScript(void *, void *, int, int, int);
+
 extern void update_entity_matrix(char *, void *, void *, void *);
 extern char gemlik_camera_pos[];
 
@@ -3744,7 +3751,6 @@ void compute_lift_mount_transform(char *mobyp, float *mount_position, float *mou
     mount_rotation[2] = fast_atan2(base->motion.body_center.f[0] - mount_position[0],
                                    base->motion.body_center.f[1] - mount_position[1]);
 }
-extern short *gemlik_moby_groups[];
 
 // Counts the mobys of a list that are alive and idle, optionally ignoring those in a given state.
 int count_eligible_mobies_in_list(int idx, int arg) {

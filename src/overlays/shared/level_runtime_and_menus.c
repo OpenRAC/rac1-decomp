@@ -4,6 +4,7 @@
 #include "structs/hero.h"
 #include "structs/vector.h"
 #include "structs/disc.h"
+#include "overlays/shared/map_menu_filters.h"
 
 typedef struct {
     unsigned short count;
@@ -669,7 +670,6 @@ extern MapFilter map_filter_range_table[19][16] NOT_SDA;
 extern MapFilterCallback map_filter_callback_table[19][8] NOT_SDA;
 extern s32 map_filter_unlocked_flags[] NOT_SDA;
 extern void map_world_to_uv(f32, f32, f32 *, f32 *, s32);
-extern s32 ensure_menu_cache_entry(s32);
 
 void reveal_map_around_position(f32 *position) {
     s32 filters[16];

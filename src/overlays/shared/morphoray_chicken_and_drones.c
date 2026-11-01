@@ -8,6 +8,8 @@
 #include "structs/moby.h"
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/nanotech_ball_and_suck_cannon.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
 
 /* Morphoray chicken: AI blocks, a life timer and the color index of the slot it replaced. */
 struct ChickenVars {
@@ -566,7 +568,7 @@ void reset_morphoray_chicken_slot_defaults(char *a) {
 extern char *CreateMoby_r(int) __asm__("func_0020D348");
 extern int Moby_PlaySound_ri(int, int, char *) __asm__("func_0022ED80");
 extern void set_moby_color(void *, int, int, int);
-extern float random_float_between(float, float);
+
 extern void clear_u64_value(void *);
 extern float fast_atan2(float, float);
 extern float ProbeGroundHeight(void *, int, float);
@@ -1530,12 +1532,12 @@ void update_homing_shot(Moby *m) {
                       30000.0f);
 }
 extern void KillPart(void *);
-extern f32 random_float_between(f32, f32);
+
 extern void vec_scale_to_length(void *, void *, f32);
 extern s32 scale_ticks(s32);
 extern s32 rand_range(s32, s32);
 extern void *PartType27Spawn(void *, void *, u32, s32, f32);
-extern s32 random_integer_below(s32);
+
 extern u8 *PartType23Spawn(void *, s32, f32, f32, void *, u32, f32, f32);
 extern float g_frame_time MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
@@ -1601,7 +1603,7 @@ void clear_homing_shot_trail_and_spawn_end_effects(u8 *m, s32 enabled) {
     }
 }
 extern char *CreateMoby_r(int) __asm__("func_0020D348");
-extern float random_float_between(float, float);
+
 extern float randf_sym(float, float);
 extern int func_001160D8(void);
 extern float random_angle_radians(void);
@@ -1681,7 +1683,7 @@ char *spawn_feather_moby(int unused, float *pos, float *vel) {
 }
 extern void FastVecAdd(void *, void *, void *);
 extern float FastAddRots(float, float);
-extern float FastAbsF(float);
+
 extern int fast_dec_timer(int *);
 extern void DeleteMoby(void *);
 extern int scale_ticks(int);
@@ -2064,7 +2066,7 @@ typedef struct {
     float f[4];
 } __attribute__((aligned(16))) V4;
 extern unsigned char *CreateMoby(int);
-extern float random_float_between(float, float);
+
 extern void moby_build_matrix(void *);
 extern void BuildSphericalOffset(void *, float, float, float);
 extern void spawn_explosion_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
@@ -3000,7 +3002,7 @@ typedef struct {
     u8 pad0F;
     u32 unk10;
 } Part;
-extern f32 random_float_between(f32, f32);
+
 extern f32 ProbeGroundHeight(void *, int, f32);
 extern s32 scale_ticks(s32);
 extern s32 rand_range(s32, s32);

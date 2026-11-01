@@ -19,6 +19,12 @@
 #include "game/mobyutil.h"
 #include "game/pause.h"
 #include "game/stream.h"
+#include "core/989snd.h"
+#include "data/executable.h"
+#include "game/hud.h"
+#include "game/loaders.h"
+#include "game/music.h"
+#include "game/space.h"
 
 /*
  * pause.cpp in the original source; text 0x219C08-0x228A58.
@@ -29,10 +35,6 @@
 extern char voice_pool[];
 
 extern void FastMemSet();
-
-extern unsigned char normal_font_metrics[];
-extern unsigned char small_font_metrics[];
-extern unsigned char large_font_metrics[];
 
 extern int measure_text_width_regular(unsigned char *, int);
 extern int measure_text_width_small(unsigned char *, int);
@@ -91,11 +93,8 @@ void reset_active_camera_position_and_basis(void) {
     gCamera_r.matrix[2].f[3] = 1.0f;
 }
 
-extern void snd_PauseAllSoundsInGroup(int);
-extern void music_Pause(int);
-extern int camera_position_publication_suppressed;
 extern int pause_blocked_by_camera MACRO_ADDR;
-extern int last_weapon_id;
+
 extern unsigned char help_stats_base NOT_SDA;
 extern int challenge_mode MACRO_ADDR;
 extern int D_0015EF20 MACRO_ADDR;
@@ -841,10 +840,7 @@ int update_menu_icon_list(MenuScreen *arg0) {
 
 extern short panel_clear_color; /* SDA, gp -0x6A50 */
 extern void draw_hud_rect_blended(int, int, int, int, long, long);
-extern int GetIconFrame(int, int);
-extern void HudSprite(int, int, int, int, int, int);
-extern void draw_hud_sprite_flipped(int, int, int, int, int, int);
-extern void draw_hud_sprite_subpixel(int, int, int, int, int, int);
+
 extern int game_frame_counter MACRO_ADDR;
 extern int subtract_integer_with_clamp(int); /* abs */
 extern void SetupGifPaging(int);
@@ -1442,9 +1438,7 @@ typedef struct {
     s32 selected_entry;
 } MenuDescriptor;
 extern MenuPage *current_menu_page_r[] __asm__("D_001D5F74");
-extern u8 normal_font_metrics[];
-extern u8 small_font_metrics[];
-extern u8 large_font_metrics[];
+
 extern short text_shadow_x;
 extern short text_shadow_y;
 extern void VU1_addGSregister_r(s32, long) __asm__("func_00234C98");
@@ -2403,8 +2397,6 @@ int update_menu_item_slots(SelList_0021D7A0 *arg0) {
     return 0;
 }
 
-extern int pause_iop_sprite_lists[];
-
 typedef struct {
     char pad[0x30];
     int list[8]; /* 0x30 */
@@ -2430,8 +2422,6 @@ int load_selection_list(SelList_0021D9C8 *arg0) {
     arg0->idx %= 8;
     return 0;
 }
-
-extern int pause_iop_sprite_lists[];
 
 /* Copies the screen's eight sprite-list words (+0x30) into pause_iop_sprite_lists. */
 int pause_stage_sprite_lists(void *arg0) {
@@ -2656,7 +2646,7 @@ typedef struct {
 } Rec0C;
 extern int active_message_record_count MACRO_ADDR;
 extern Rec0C active_message_menu_items[];
-extern unsigned char active_message_records[];
+
 extern Half4 message_id_code_table_b[];
 
 /* Fills D_001CFFC0 with the active message records in reverse order, each
@@ -2745,7 +2735,7 @@ int restore_menu_help_text(MenuScreen *arg0) {
 }
 
 extern int g_game_language MACRO_ADDR;
-extern char g_help_state[];
+
 extern void copy_memory_aligned(void *, void *, int);
 
 /* The slot count at D_001997D0+0x2C, read through its own base pointer:
@@ -2972,8 +2962,7 @@ extern short menu_grid_icon_width;
 extern short menu_grid_icon_height;
 extern s32 subtract_integer_with_clamp(s32);
 extern void SetupGifPaging(s32);
-extern s32 GetIconFrame(s32, s32);
-extern void draw_hud_sprite_subpixel(s32, s32, s32, s32, s32, s32);
+
 extern void draw_hud_rect_blended_r2(s32, s32, s32, s32, u64, s32) __asm__("func_00201640");
 extern s32 VU1_addGSregister_r2(s32, s64) __asm__("func_00234C98");
 s32 draw_menu_item_grid(MenuScreen *grid);
@@ -3341,7 +3330,7 @@ extern void update_item_preview_transform();
 extern void noop_callback_q(s32, s32);
 extern void noop_callback_r_r(struct Moby *, s32) __asm__("func_001E97F8");
 extern f32 FastAddRots(f32, f32);
-extern void select_world_object_resource_tables(s32, s32);
+
 extern void MobySetAnimation(struct Moby *, s32, s32);
 extern struct Moby *create_menu_preview_moby_r2(s32) __asm__("func_00226720");
 extern struct Moby *delete_moby_r(struct Moby *) __asm__("func_002267C0");
@@ -4151,8 +4140,6 @@ int MissionMenu_DrawObjectives(char *arg) {
 
 extern short panel_clear_color; /* SDA, gp -0x6A50 */
 extern void draw_hud_rect_blended(int, int, int, int, long, long);
-extern int GetIconFrame(int, int);
-extern void HudSprite(int, int, int, int, int, int);
 
 /* Draws the map cursor: a 10x10 box with a coloured inner box at (x, y), plus a
    marker icon above it when flag is set. */
@@ -5514,7 +5501,7 @@ typedef struct {
     short pad6;
     int pad8;
 } Src0C;
-extern int gGalaxyList[];
+
 extern Src0C planet_icon_rows[];
 extern Out0C galaxy_menu_items[];
 extern short menu_level_indices_s __asm__("D_001602E0");
@@ -6547,7 +6534,6 @@ int saving_data_menu(struct MenuScreen *arg0) {
     return 0;
 }
 
-extern void initialize_global_state_entry(int arg0);
 extern short screen_globals_base_r[] __asm__("D_0013E15A");
 
 /* Load-slot menu handler (func_00224040's sibling): with a load armed it either aborts or starts the sound fade and loads; otherwise pad handling with slot selection. */
@@ -6696,7 +6682,6 @@ extern char save_menu_load_confirm_page[];
 extern short screen_globals_base[];
 
 extern void start_memory_card_save(int, int);
-extern void initialize_global_state_entry(int);
 
 /* Save slot screen tick: when focused, moves the slot cursor and on confirm
    starts the memory card save (or a level load for flag 0x2000). Plays a sound
@@ -8747,7 +8732,6 @@ void load_preview_resource_bindings(s32 first_resource, s32 resource_count) {
 }
 
 extern char save_clock_time[] MACRO_ADDR;
-extern char level_map_coverage[];
 
 /* Gathers the game state into save buffer arg0 (object positions, map coverage)
    and stores arg0 and arg1 in the memory card state; starts state 0x13 when idle. */

@@ -2,6 +2,8 @@
 #include "common.h"
 #include "include_asm.h"
 #include "structs/hero.h"
+#include "asm/executable.h"
+#include "game/hud.h"
 
 typedef struct {
     u8 pad[0x48];
@@ -10,7 +12,7 @@ typedef struct {
     u8 pad2[0x7C - 0x4C];
     s32 unk7C;
 } HudElemX;
-extern s32 scale_ticks(s32);
+
 extern void initialize_numeric_hud_values_and_dimensions(void *);
 extern s32 trick_combo_recent3 MACRO_ADDR;
 
@@ -30,7 +32,7 @@ void initialize_trick_combo_hud(HudElemX *e) {
 }
 extern float ApproachValue(float *p, float target, float maxstep);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern int scale_ticks(int);
+
 extern char hero_globals_base[];
 extern Hero hero_002670A0 __asm__("D_0013F450");
 extern int trick_combo_spins MACRO_ADDR;
@@ -178,9 +180,9 @@ extern int FontPrintCenterLarge_x(int, int, u64, int, int) __asm__("func_001F6FD
 extern char *msg_string_r(int) __asm__("func_001FE540");
 extern void draw_framed_text(int, int, int, int);
 extern int hud_screen_position(void *rec, int *x, int *y);
-extern int GetIconFrame(int, int);
+
 extern void draw_cropped_hud_sprite(int, int, int, int, int, int);
-extern void HudSprite(int, int, int, int, int, int);
+
 extern float FastSin(float);
 extern char rilgar_fmt_number[];
 extern char rilgar_fmt_count_and_word[];
@@ -335,7 +337,7 @@ int draw_trick_combo_hud(char *a) {
     }
     return *(int *)(a + 0x58);
 }
-extern void Hud_SetBarValueById(int arg0, int arg1);
+
 extern int animation_parameter_target_id MACRO_ADDR;
 extern int rilgar_hud_hold_active MACRO_ADDR;
 extern short rilgar_hud_release_count;
@@ -348,7 +350,6 @@ void hud_release_held_element(void) {
     rilgar_hud_hold_active = 0;
     *(int *)&rilgar_hud_release_count = *(int *)&rilgar_hud_release_count + 1;
 }
-extern int scale_ticks(int);
 
 typedef struct {
     char pad0[0x48];
@@ -370,7 +371,6 @@ void initialize_hud_element_defaults(HudElem *e) {
     e->unk4A = 0;
 }
 extern char hero_globals_base[];
-extern int scale_ticks(int);
 
 /* Fades the progress HUD in when the hero is in mode 0x16, else fades it out. */
 void set_progress_hud_fade_from_hero_mode(char *moby) {
@@ -401,7 +401,7 @@ extern short rilgar_counter_frame_width;
 extern char rilgar_fmt_label[];
 extern char rilgar_fmt_progress_number[];
 extern char rilgar_fmt_rank_label[];
-extern void draw_stretchable_ui_frame(int, int, int, int, int);
+
 extern char *msg_string(int);
 extern int sprintf(char *, char *, ...);
 extern void print_text_with_texture_3(int, int, long, char *, int);

@@ -11,6 +11,16 @@
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/nanotech_ball_and_suck_cannon.h"
 #include "overlays/shared/particle_spawns_and_path_splines.h"
+#include "asm/shared_levels.h"
+#include "data/level_01.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/camera_modes_and_scripts.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/pause_menu.h"
+#include "overlays/shared/sound_playback.h"
 /* Novalis elevator: rides its path while the hero stands on it. */
 struct NovalisElevatorVars {
     u8 pad_00[0x20];
@@ -260,7 +270,6 @@ extern void FastVecScale(void *, void *, f32);
 extern void transform_vector(void *, void *, void *);
 extern u32 is_vector_outside_clip(void *);
 extern void ripple_emit_sub_block(s32, s32);
-extern char camera_pos[];
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002b8cb0. */
 void cull_and_submit_water_grid_tile(f32 *pos, s32 index, s32 mode) {
@@ -377,7 +386,7 @@ extern void FastVecScale(void *, void *, float);
 
 extern void sce_vu0_mul_matrix(void *, void *, void *);
 extern void AA_BlurPass(void);
-extern char camera_pos[];
+
 extern int novalis_font_vu_state MACRO_ADDR;
 extern unsigned short font_vu_program_tag NOT_SDA;
 extern char font_vu_program[];
@@ -612,11 +621,11 @@ void render_water_grids(f32 *pos, s32 count) {
     l01_packet.words += 4;
 }
 extern char hero_globals_base[];
-extern char *novalis_paths[];
+
 extern LevelState novalis_checkpoint_level_state;
 extern unsigned char help_stats_base[] NOT_SDA;
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
-extern int moby_killed[];
+
 extern float g_frame_time MACRO_ADDR;
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern int FastDecTimer(void *);
@@ -625,9 +634,9 @@ extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float FastVecDist(void *, void *);
 extern float multiply_global_factor(float);
 extern float vec_distance_xy(void *, void *);
-extern float FastAbsF(float);
+
 extern int scale_ticks(int);
-extern void Sound_StopSlot(int);
+
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound_r(int, int, char *) __asm__("func_0022ED80");
 extern float IntToFloat(int);
@@ -823,13 +832,12 @@ void novalis_elevator_update(unsigned char *moby) {
 }
 LINKER_REMNANT("asm/overlays", func_L01_002C05B8);
 extern float vec_length_xy(void *);
-extern float fast_atan2(float, float);
-extern float randf_sym(float, float);
+
 extern void BuildSphericalOffset(void *, float, float, float);
-extern float random_float_between(float, float);
+
 extern void FastVecScale(void *, void *, float);
 extern void spawn_two_point_effect_particle(char *, char *);
-extern int rand_range(int, int);
+
 extern char *PartType21Spawn(void *, void *, int, int, int, int, float);
 extern char novalis_coll_hit_point[];
 extern float novalis_coll_hit[];
@@ -970,10 +978,10 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern unsigned char draw_map51[] MACRO_ADDR;
 extern int novalis_camera_moby;
-extern float novalis_player_camera_yaw;
+
 extern char *novalis_moby_list MACRO_ADDR;
 extern char *camera_points MACRO_ADDR;
-extern char novalis_saved_moby_bytes[];
+
 extern unsigned char saved_mission_state[][16];
 extern short bolt_crank_pull_spring_vel;
 
@@ -981,15 +989,13 @@ extern float FastSubRots(float, float);
 extern float FastDiffRots(float, float);
 extern int pad_pressed_within(int, int, int);
 extern int Hero_SetMoveState(int, int);
-extern void CameraScript(void *, void *, int, int, int);
+
 extern void set_camera_rotation(void *);
 extern void set_camera_position(void *);
 extern void set_camera_5_track_acceleration_yz(float, float);
 extern float ApproachValue(float *, float, float);
 extern void record_moby_context_bytes(void *, int, void *, int, void *);
-extern void jet_clear_persistent(int);
-extern void jet_reset_camera(void *, void *);
-extern void CameraScript2(int);
+
 extern void divide_vector_xyz(void *, void *, float);
 extern void euler_to_matrix(float *, float *);
 extern float FastVecDot(void *, void *);
@@ -1579,7 +1585,7 @@ extern short hover_ground_animation_height_threshold_gp;
 extern int func_001160D8(void);
 extern void MobyBlendAnimation(void *, int, int, int);
 extern void MobySpringTurn(void *, float, void *, float, float, float);
-extern void clamp_vec_length(void *, void *, float);
+
 extern int move_moby_with_collision_integer_radius(void *, void *, int, int, float, float);
 extern float FastVecLength(void *);
 extern float ProbeGroundHeight(void *, int, float);
@@ -2156,7 +2162,7 @@ extern void MoveCtl_Init_r(void *) __asm__("func_L01_0026E8E0");
 extern void move_w(void *, void *, void *, void *, float);
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 extern int mine_fall(void *, void *);
-extern int SegmentCrossPolyline(int, void *, void *, void *);
+
 extern void PostHitMessage_r(void *, void *, int, void *, void *, float) __asm__("func_L00_0025AC00");
 extern int CarriedMobyUpdate(void *, void *);
 extern void SetDeathBits(void *, int, int);
@@ -2164,7 +2170,7 @@ extern int IsFrameWithinWindow(float, void *);
 extern int is_point_inside_clip_volume(void *, int);
 extern void Moby_PlaySound(int, int, char *);
 extern void MobyBlendAnimation(void *, int, int, int);
-extern int random_integer_below(int);
+
 extern float random_angle_radians(void);
 extern int truncate_float_to_s32(float);
 extern float MobyGetFrameValue(void *);
@@ -2793,7 +2799,7 @@ none:
     } while (1);
     return 0;
 }
-extern unsigned short *novalis_moby_groups[];
+
 extern int novalis_mobys_m __asm__("D_L01_00160058") MACRO_ADDR;
 
 /* Returns the closest moby of type 0x26F with flag 0x1000 set and state below 0x7F, from the id list
@@ -2832,7 +2838,7 @@ extern short amoeboid_trail_a_life_max, amoeboid_trail_a_life_min,
 extern short amoeboid_second_movement_particle_secondary_sample_max_gp, amoeboid_trail_b_life_max,
     amoeboid_trail_b_life_min, amoeboid_second_movement_particle_header_and_data_value_gp,
     amoeboid_second_movement_particle_data_value_gp;
-extern int random_integer_below(int);
+
 extern float random_angle_radians(void);
 
 /* Spawns up to two particle effects on the moby, each aimed by a random direction and speed. */
@@ -3395,7 +3401,7 @@ extern void Moby_GetJointWorldPos(struct Moby *, s32, QVec *);
 extern s32 advance_path_node_index(PathCursor *);
 extern s32 resolve_path_node_index(PathCursor *, s32);
 extern void evaluate_cubic_hermite_segment(f32, QVec *, QVec *, QVec *, QVec *, QVec *);
-extern f32 normalize_angle(f32);
+
 extern void spawn_type_10_particle(QVec *, QVec *);
 extern void spawn_explosion(struct Moby *, QVec *, QVec *, f32, f32, s32, s32, s32, f32, f32, f32, f32, s32, f32, s32,
                             s32, s32, s32);

@@ -3,6 +3,8 @@
 #include "include_asm.h"
 #include "structs/vector.h"
 #include "structs/hero.h"
+#include "data/executable.h"
+#include "overlays/shared/hero_animation_slots.h"
 
 typedef struct {
     char pad[0x24];
@@ -11,7 +13,6 @@ typedef struct {
 } Rec;
 extern Rec fleet_item_defs[];
 extern char hero_globals_base[];
-extern int hero_slot_item_id(int);
 
 /* Returns the current help record's value, 0x54 or 0x6E in two special states, or 0 when no record applies. */
 int select_hero_help_value(int a) {
@@ -65,7 +66,7 @@ extern Hero g_hero;
 extern s32 fleet_game_mode MACRO_ADDR;
 extern T_8 fleet_moby_hits[];
 extern s32 g_current_level_index MACRO_ADDR;
-extern s32 level_hero_hit_counts[];
+
 extern s32 hero_hit_count MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
 extern u8 hero_velocity[];

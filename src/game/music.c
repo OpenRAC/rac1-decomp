@@ -4,6 +4,7 @@
 #include "structs/misc.h"
 #include "structs/music.h"
 #include "core/989snd.h"
+#include "asm/executable.h"
 
 /*
  * music.cpp in the original source; text 0x2161E0-0x217588.
@@ -847,7 +848,7 @@ extern void snd_set_sound_params_cb(s32, s32, s32, s32, s32, s32, void (*)(u32, 
 extern void set_sound_handle_id_r(u32, s64) __asm__("func_00217A08");
 extern void snd_ContinueVAGStream_r(s32) __asm__("func_0012EDE0");
 extern s32 snd_StreamSafeCdSync(s32);
-extern s32 scale_game_frame_count(s32);
+
 extern s32 fast_dec_timer(void *);
 extern void music_start_track_by_id(s32, s32, s32);
 extern void music_PreseekTrack(s32, s32, s32);

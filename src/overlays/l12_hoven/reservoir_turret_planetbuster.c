@@ -13,6 +13,15 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/scoutbot_and_paratrooper.h"
+#include "asm/level_08.h"
+#include "data/executable.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/camera_modes_and_scripts.h"
+#include "overlays/shared/cutscene_and_movie_playback.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/sound_playback.h"
 
 /* Planetbuster Maximus: sways along its path while its parts, guns and camera cut-in run. */
 struct PlanetbusterVars {
@@ -308,7 +317,7 @@ typedef struct {
     int moby;
 } ShotColl_ece00;
 extern ShotColl_ece00 hoven_coll_hit;
-extern int hero_current_state;
+
 extern int fast_dec_timer(int *);
 extern float FastAddRots(float, float);
 extern void FastVecAdd(void *, void *, void *);
@@ -321,7 +330,6 @@ extern float hoven_zero_vec[] MACRO_ADDR;
 extern char *MobyGetHitMessage(void *, int, int);
 extern void DeleteMoby(void *);
 extern void add_vectors(void *, void *, void *);
-extern int rand_range(int, int);
 
 extern int coll_line(void *, void *, int, struct Moby *, int);
 extern int coll_sphere(void *, int, struct Moby *, float);
@@ -968,7 +976,7 @@ extern void Moby_GetJointWorldPos(void *, int, void *);
 extern float vec_distance_xy(void *, void *);
 extern float FastSubRots(float, float);
 extern void Moby_PlaySound(int, int, int);
-extern void CameraScript(void *, void *, int, int, int);
+
 extern void MobySetAnimation(void *, int, int);
 
 extern void AddDrawCallback(void *, void *);
@@ -977,9 +985,7 @@ extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
 extern char *MobyGetHitMessage(void *, int, int);
 
 extern void DetachManipulator(void *, void *);
-extern void jet_clear_persistent(int);
-extern void PlayMovieEntryIfIdle(int);
-extern void unlock_planet(int);
+
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern float ApproachValue(float *, float, float);
 extern void axis_rotation_2d48(void *, int, float);
@@ -987,16 +993,15 @@ extern void MobyBlendAnimation(void *, int, int, int);
 extern int FastDecTimer(void *);
 extern void BuildSphericalOffset(void *, float, float, float);
 extern void create_moby_with_particles(void *, void *, void *, int);
-extern float random_float_between(float, float);
+
 extern float FastVecLength(void *);
 extern void vec_scale_to_length(void *, void *, float);
-extern int rand_range(int, int);
+
 extern char *PartType27Spawn(void *, void *, int, int, float);
-extern float randf_sym(float, float);
 
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
-extern void StartCutscene(int);
+
 extern int memcard_Save_r(int, int) __asm__("func_0020BFC8");
 extern void draw_hoven_turret_hud();
 extern void draw_hoven_turret_destruction_fade();
@@ -1478,7 +1483,6 @@ typedef struct {
     char pad0[0xAC];
     short value;
 } Level12VendorCounterData;
-
 
 extern int scale_ticks(int);
 extern void emit_rgba_draw_packet(int, int, int, int);
@@ -2138,8 +2142,6 @@ extern void update_moby_rotation_oscillation(void *, char *, char *, float, floa
 extern void MobySpringTurn(char *moby, float target, float *vel, float k, float d, float max);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void lerp_vector(void *, void *, void *, float);
-extern void CameraScript2(int);
-extern void Sound_StopSlot(int);
 
 /* Planetbuster part update: rides its path, drops its parts and hands its voice slot back when done. */
 void planetbuster_maximus_part_update(char *moby) {
@@ -2393,7 +2395,7 @@ void planetbuster_maximus_part_update(char *moby) {
         d->voice = -1;
     }
 }
-extern float random_float_between(float, float);
+
 extern void spawn_jittered_effect_particle_with_optional_basis(float, void *, int);
 extern int GetFlaggedPvarWord(char *);
 extern float g_frame_time MACRO_ADDR;
@@ -2506,7 +2508,7 @@ void homing_mine_spawner_update(Moby *m) {
     }
 }
 extern char hero_globals_base[] NOT_SDA;
-extern float FastAbsF(float);
+
 extern int FindNearestTargetMoby(char *, char *, float);
 
 /* per-frame update of a moby's timer and approach state */
@@ -2543,7 +2545,7 @@ extern char voice_pool[];
 extern int check_scaled_vector_bsphere(void *, float);
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 extern unsigned char *hoven_mobys MACRO_ADDR;
-extern void Sound_StopSlot(int);
+
 extern void draw_hoven_jittered_quad_layers(void);
 
 /* Pvars: d[0] is the moby to watch, d[1] the voice slot held for this moby.
@@ -2694,7 +2696,7 @@ void BreakableUpdate(char *m) {
 
 extern int GetEffectTex(int);
 extern int is_point_inside_clip_volume(void *, int);
-extern void add_uv_scroll_offset(void *, int, int, void *);
+
 extern void draw_env_overlay_mesh(int, int, int, void *, int);
 
 extern char hoven_camera_pos[];

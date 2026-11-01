@@ -5,6 +5,7 @@
 #include "structs/moby.h"
 #include "core/00122818.h"
 #include "core/00122AD8.h"
+#include "asm/shared_levels.h"
 
 extern void flush_cache(int);
 
@@ -188,7 +189,7 @@ extern float vec_distance_xy(void *, void *);
 extern float FastVecDist(void *, void *);
 extern void STUB_printf();
 extern float jump_speed_4318(float *a, float *b, float *out, float speed, float g);
-extern float fast_atan2(float, float);
+
 extern float IntToFloat(int);
 extern float g_frame_time MACRO_ADDR;
 extern float inv_frame_scale MACRO_ADDR;

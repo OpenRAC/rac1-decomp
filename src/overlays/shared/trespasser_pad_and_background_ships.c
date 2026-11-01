@@ -8,6 +8,12 @@
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/move_control_and_clear_path.h"
+#include "asm/shared_levels.h"
+#include "data/level_02.h"
+#include "game/fastfunc.h"
+#include "overlays/shared/camera_modes_and_scripts.h"
+#include "overlays/shared/cutscene_and_movie_playback.h"
+#include "overlays/shared/moby_ground_collision.h"
 
 /* Trespasser puzzle: three rings of 12 slots, marker ring and the rotation state. */
 struct TrespasserPuzzleVars {
@@ -383,7 +389,7 @@ extern char *aridia_scene_points MACRO_ADDR;
 extern char gHeroPos[];
 extern float FastAddRots(float, float);
 extern float FastDiffRots(float, float);
-extern float fast_atan2(float, float);
+
 extern float FastCos(float);
 extern float FastSin(float);
 extern void FastVecAdd(void *, void *, void *);
@@ -1393,7 +1399,7 @@ void draw_tresspasser_puzzle_textured_quads(void) {
 extern int scale_ticks(int);
 extern int fast_dec_timer(int *);
 extern float FastVecLength(void *);
-extern float FastAbsF(float);
+
 extern void update_entity_matrix(void *, void *, void *, void *);
 extern float g_frame_time_sq MACRO_ADDR;
 extern short escalator_reverse_delay;
@@ -1625,8 +1631,7 @@ extern void initialize_collectible_sprite_state(char *moby);
 extern float ProbeGroundHeight(void *, int, float);
 extern void update_collectible_sprite_effect(char *m);
 extern float vec_distance_xy(void *, void *);
-extern void StartCutscene(int);
-extern void grant_inventory_item(int, int);
+
 extern void ShowBanner(int, int);
 
 extern int Help_Request(int, int);
@@ -1635,11 +1640,11 @@ extern int memcard_Save(int, int);
 extern void DeleteMoby(void *);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void lerp_vector(void *, void *, void *, float);
-extern void CameraScript(void *, void *, int, int, int);
+
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
 extern float ApproachValue(float *, float, float);
-extern void CameraScript2(int);
+
 typedef int u128_002EB648 __attribute__((mode(TI)));
 
 /* Update function of moby class 1005 (tresspasser) on level 02, class 1016 (hydrodisplacer) on level 06: state machine. */
@@ -1817,15 +1822,13 @@ typedef struct {
     int c[4];
     float d[4];
 } L02SpriteData;
-extern char aridia_camera_pos[];
+
 extern void FastVecSub(void *, void *, void *);
 extern int fast_dec_timer(int *);
 extern float IntToFloat(int);
 extern int FastTweenColor_r(int, int, float) __asm__("func_001FA8A8");
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 extern unsigned char *PartType59Spawn(void *, int, unsigned char, int, int, int, int, float);
-
-extern float FastAbsF(float);
 
 /* Animates a moby's four sprite layers (func_L16_002CAA18 lifted by 0.5 instead of 0.1). */
 void update_collectible_sprite_effect(char *m) {
@@ -1921,7 +1924,7 @@ void prepare_background_ship_1_joint_billboards(char *moby) {
         }
     }
 }
-extern char *aridia_paths[];
+
 extern char *MobyGetHitMessage(void *, int, int);
 extern int STUB_printf();
 extern float FastVecDist(void *, void *);
@@ -2642,11 +2645,11 @@ void try_select_camera_offset_effect_moby(char *m) {
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 struct Moby;
 extern struct Hero g_hero;
-extern char *aridia_paths[];
+
 extern char *aridia_camera_descriptors MACRO_ADDR;
 extern char *aridia_camera_follow_override_moby;
 extern int is_point_inside_clip_volume(void *, int);
-extern int test_point_in_transformed_unit_cylinder(void *, int);
+
 extern int test_point_in_transformed_unit_sphere(void *, int);
 extern int IsPointInPolygon(void *, void *, int);
 

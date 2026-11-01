@@ -15,6 +15,11 @@
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/ship_pickup_and_rocket.h"
 #include "overlays/shared/trespasser_pad_and_background_ships.h"
+#include "asm/shared_levels.h"
+#include "data/level_17.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/camera_modes_and_scripts.h"
+#include "overlays/shared/moby_ground_collision.h"
 
 /* Robot dog: speed and turn state, plus the three glow points (also AimData_1BB0 below). */
 struct RobotDogVars {
@@ -140,14 +145,14 @@ typedef struct {
 extern char hero_globals_base[];
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
-extern float random_float_between(float, float);
+
 extern float multiply_global_factor(float);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern void update_float_countdown(float *);
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
 extern void HeadingFromVector(void *, float *, void *, void *);
-extern float fast_atan2(float, float);
+
 extern void InitKnockback(float, void *, void *, int, int, int);
 extern void RerollEffectCounter(void *m, short *p);
 extern int FindNearestEligibleMoby(float, char *, void *, int, int, void *, int);
@@ -422,7 +427,7 @@ extern int GetEffectTex(int);
 extern void VU1_addGSregister(int, long);
 extern float FastAddRots(float, float);
 extern void get_moby_color(void *, void *, void *, void *);
-extern float fast_fmod(float, float);
+
 extern float FastNormalizeAngle(float x);
 
 extern void draw_env_overlay_mesh(int, int, int, void *, int);
@@ -664,14 +669,13 @@ extern int Moby_PlaySound(int, int, int);
 
 extern void FadeToBlack(int);
 extern void clear_u64_value(void *);
-extern void CameraScript(void *, void *, int, int, int);
 
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
-extern void CameraScript2(int);
+
 extern void update_entity_matrix(char *, void *, void *, void *);
 
 extern char pad_globals_base[];
@@ -681,7 +685,7 @@ extern LevelState fleet_moby_collected;
 typedef int u128_2F3450 __attribute__((mode(TI)));
 extern int fleet_moby_killed_bits[];
 extern char *fleet_camera_points MACRO_ADDR;
-extern char fleet_paths[];
+
 extern short shuttle_scale_near;
 extern short shuttle_scale_far;
 extern short fleet_shown_help_message;
@@ -1265,7 +1269,7 @@ void update_fleet_guarded_moby_effects(unsigned char *m) {
 typedef int u128_2F4E30 __attribute__((mode(TI)));
 extern void FastVecCross(void *, void *, void *);
 extern void draw_world_quad(void *, void *, int);
-extern char fleet_camera_pos[];
+
 extern float fleet_view_params_field_a4;
 extern float fleet_backdrop_beam_widths[];
 extern float fleet_backdrop_beam_uvs[];
@@ -1471,12 +1475,11 @@ done:
     }
 }
 extern void update_moby_hit_stats_and_state(void *);
-extern float randf_sym(float lo, float hi);
+
 extern float random_angle_radians(void);
 extern void update_moby_trail_points(void *);
 extern void update_moby_path_transform(void *);
 extern void SpawnExplosionFx(void *, void *, int, float, float);
-extern int random_integer_below(int);
 
 extern int FastBSphereCheck(char *, float);
 extern float FastVecLength(void *);
@@ -1484,7 +1487,6 @@ extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void ClampVectorLength(void *a, float x);
 extern void matrix_mul_vec3(void *, void *, void *);
 
-extern char fleet_camera_rot[];
 extern char fleet_blarg_ship_gun_offset_alt[];
 extern char fleet_blarg_ship_gun_offset[];
 extern short fleet_blarg_ship_shot_speed;
@@ -1698,7 +1700,6 @@ void Moby1843Update(unsigned char *moby) {
     }
 }
 LINKER_REMNANT("asm/overlays", func_L17_002F6AF0);
-extern short *fleet_moby_groups[];
 
 /* Finds the listed moby of type 0x733 in state 4 and launches it along a rotated vector. */
 char *try_activate_blarg_ship_from_list(int list) {

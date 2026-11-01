@@ -7,6 +7,14 @@
 #include "overlays/shared/electric_water.h"
 #include "overlays/shared/hero_update_bone_attachment.h"
 #include "overlays/shared/point_lights_and_glows.h"
+#include "asm/shared_levels.h"
+#include "data/level_15.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/cutscene_and_movie_playback.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/pause_menu.h"
+#include "overlays/shared/sound_playback.h"
 /* Electric water countdown timer display. */
 struct ElectricWaterCountdownVars {
     u8 pad_00[0x12];
@@ -79,7 +87,6 @@ extern float quartu_fog_far_distance MACRO_ADDR;
 extern float quartu_fog_near_intensity MACRO_ADDR;
 extern float quartu_fog_far_intensity MACRO_ADDR;
 extern int is_point_inside_clip_volume(void *, int);
-extern void Sound_StopSlot(int);
 
 extern void reset_electric_water_switch(char *);
 extern float multiply_global_factor(float);
@@ -88,8 +95,7 @@ extern int scale_ticks(int);
 extern int hero_is_near_ground(void);
 extern int FastDecTimer(void *);
 extern void set_moby_color(void *, int, int, int);
-extern int rand_range(int, int);
-extern int random_integer_below(int);
+
 extern float FastVecDist(void *, void *);
 extern int allocate_colored_effect_slot(void *, float, float, float, float, float);
 extern void initialize_electric_water_bolt_effect(char *);
@@ -98,10 +104,10 @@ extern void update_electric_water_bolt_effect(Moby *);
 extern void draw_electric_water_countdown(char *);
 extern void AddDrawCallback(void *, void *);
 extern int Sound_PlayClassSound(int, int, void *, int);
-extern float random_float_between(float, float);
+
 extern float random_angle_radians(void);
 extern void BuildSphericalOffset(void *, float, float, float);
-extern void add_vectors(void *, void *, void *);
+
 extern float FastCos(float);
 extern float FastSin(float);
 extern void vec_set_length_xy(void *, void *, float);
@@ -480,7 +486,7 @@ extern float IntToFloat(int);
 extern float FastSin(float);
 extern int FastTweenColor(int, int, float);
 extern int scale_ticks(int);
-extern int random_integer_below(int);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern int quartu_frame_count MACRO_ADDR;
@@ -613,18 +619,16 @@ extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecCross(void *, void *, void *);
 extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
 extern void FastVecScale(void *, void *, float);
-extern float normalize_angle(float);
-extern float randf_sym(float lo, float hi);
+
 extern float random_angle_radians(void);
 extern void BuildSphericalOffset(void *, float, float, float);
 extern void lerp_vector(void *, void *, void *, float);
 extern float FastVecLength(void *);
 extern void FastVecAdd(void *, void *, void *);
-extern float fast_atan2(float, float);
+
 extern float FastCos(float);
 extern int FastDecTimer(void *);
-extern float random_float_between(float, float);
-extern int rand_range(int, int);
+
 extern void spawn_2d8fa0(void *, int, float, float, int, int, int, void *, float) __asm__("func_L00_00272F00");
 extern char hero_globals_base[];
 extern char hero_gravity_dir_r[] __asm__("D_0013F6E0");
@@ -984,7 +988,7 @@ void reset_electric_water_switch(char *moby) {
         *(float *)(moby + 0x18) += 1.5f;
     }
 }
-extern int quartu_coll_hit_moby[];
+
 extern float g_frame_time MACRO_ADDR;
 extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
 extern int coll_line(void *, void *, int, void *, void *);
@@ -1252,8 +1256,7 @@ void ripple_strips_moby_update(char *moby) {
 }
 extern void initialize_collectible_sprite_state(char *);
 extern void update_collectible_sprite_effect(char *);
-extern void StartCutscene(int);
-extern void ShowBanner(int arg0, int arg1);
+
 extern int memcard_Save(int, int);
 extern int g_current_level_index MACRO_ADDR;
 extern int quartu_game_mode MACRO_ADDR;
@@ -1323,7 +1326,7 @@ extern void try_set_help_message(int, int);
 
 extern void MobySetAnimation(void *, int, int);
 extern float ProbeGroundHeight(void *, int, float);
-extern void jet_reset_camera(void *, void *);
+
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern void enter_hero_vehicle_mode(int, int, char *);
 extern void MusicRequestTrack(int, int);

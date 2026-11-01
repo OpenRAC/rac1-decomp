@@ -5,6 +5,10 @@
 #include "structs/vector.h"
 #include "structs/moby.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "asm/shared_levels.h"
+#include "data/level_18.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/moby_ground_collision.h"
 
 /* Moby that drags a child moby along with it. */
 struct ChildCarrierVars {
@@ -116,13 +120,13 @@ extern void lerp_vector(void *, void *, void *, float);
 extern void spawn_deplanetizer_gun_trail_effects(void *a, void *b, void *c, float f0, float f1);
 extern void FastVecSub(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
-extern float fast_atan2(float, float);
+
 extern float vec_length_xy(void *);
 extern void update_beam_ring_rail_and_pulse_effects(void *);
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
-extern int random_integer_below(int);
+
 extern char *PartType23Spawn_c(void *, int, void *, float, float, float, float, int) __asm__("func_L00_0026DEA0");
 extern void draw_three_scaled_camera_facing_quads(void);
 extern void draw_moby_two_tint_glow_quads(struct Moby *m);
@@ -741,7 +745,7 @@ void draw_moby_three_scaled_two_tint_quads(struct Moby *m) {
     }
     draw_world_quad(&pk, 0, 0);
 }
-extern int random_integer_below(int);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern char *PartType23Spawn_c(void *, int, void *, float, float, float, float, int) __asm__("func_L00_0026DEA0");
 
@@ -788,7 +792,7 @@ void spawn_deplanetizer_gun_trail_effects(void *a, void *b, void *c, float f0, f
     } while (--i >= 0);
 }
 extern int veldin2_cinematic_mode MACRO_ADDR;
-extern int veldin2_cinematic_step;
+
 extern float FastAddRots(float, float);
 
 /* State machine: waits for level flags, then turns the moby around and back. */
@@ -876,7 +880,6 @@ typedef struct {
     void *child;
 } Level18VendorData;
 
-
 extern void DeleteMoby(void *);
 
 /* Remove a vendor moby and any child it owns. */
@@ -953,7 +956,7 @@ extern void update_gadgebot_damage_target_and_glow(void *);
 extern float fd9a0_c(void *, void *) __asm__("func_L18_002FD9A0");
 extern float f9d48_i(void *, void *) __asm__("func_001F9D48");
 extern void MobyBlendAnimation(void *, int, int, int);
-extern float fast_atan2(float, float);
+
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 extern int IsFrameWithinWindow(char *, float);
 extern void collect_mobies_in_sphere_at_moby_point(void *, float, float, float, int, int, int, int, int);
@@ -1314,7 +1317,6 @@ typedef struct {
     f32 unk1F4; /* 0x1F4: set to 1.0 on launch */
 } LaunchedMobyVars;
 extern float jump_speed_4318(void *, void *, float, float, int);
-extern float randf_sym(float, float);
 
 /* Launches the first idle (state 8) class-0x772 moby of group `group` from `from` towards `to` at `speed`. Returns 1 when one was launched.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l18/gameplay/vendor/002f88e8.c, FUN_L18_002fc668. */

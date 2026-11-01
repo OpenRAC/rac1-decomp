@@ -2,13 +2,17 @@
 #include "callees.h"
 #include "structs/records.h"
 #include "structs/misc.h"
+#include "asm/executable.h"
+#include "data/executable.h"
+#include "game/draw.h"
+#include "game/hud.h"
+#include "game/mobyutil.h"
 
 /*
  * help.cpp in the original source; text 0x1FDF10-0x1FF668.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
-
 
 extern int measure_text_width_regular(unsigned char *, int);
 
@@ -101,11 +105,10 @@ extern void SetupGifPaging(s32);
 extern void DoGifPaging(void);
 extern s32 measure_text_width_regular(u8 *, s32);
 extern void FontPrintLarge(s32, s32, u64, u8 *, s32);
-extern s32 scale_game_frame_count(s32);
+
 extern f32 vec_length_xy(f32 *);
 extern void *msg_string(s32);
-extern s32 GetIconFrame(s32, s32);
-extern void HudSprite(s32, s32, s32, s32, s32, s32);
+
 extern void draw_hud_sprite_uv(s32, s32, s32, s32, s32, s32, s32, s32);
 extern void draw_hud_rect(s32, s32, s32, s32, u64, s32);
 extern void draw_hud_rect_blended(s32, s32, s32, s32, u64, s32);
@@ -201,8 +204,6 @@ void draw_level_selection_map(s32 left, s32 right, s32 top, s32 bottom) {
     }
     DoGifPaging();
 }
-
-extern char g_help_state[];
 
 /* Advances the help screen's state (D_001997D0). Every access goes
    through the global, and cases 6 and 7 are spelled out: the jump table
@@ -332,9 +333,8 @@ void link_localized_display_text(void) {
 /* Retail carries 4 bytes of inter-function padding after this endlabel. */
 __asm__(".section .text\n\tnop\n");
 
-extern int scale_game_frame_count(int);
 extern int fast_dec_timer_r(int *arg0) __asm__("func_001F9908");
-extern int force_help_message(int arg0, int arg1);
+
 extern int Music_ContinueStreamIfReady(void);
 extern int pad_held;
 extern int pad0_pressed;
@@ -566,7 +566,6 @@ void Help_Update(void) {
     }
 }
 
-extern void DrawUIFrame(int, int, int, int, int);
 extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
 extern long GetEffectTex_l(int) __asm__("func_001F4868");
 
@@ -726,7 +725,7 @@ int find_help_entry(short key, int which, short *out) {
 __asm__(".section .text\n\tnop\n");
 
 extern int find_help_entry(short, int, short *);
-extern unsigned char active_message_records[];
+
 extern int active_message_record_count MACRO_ADDR;
 
 /* Moves the entry func_001FF4F8 finds for `id` (field a of its table)

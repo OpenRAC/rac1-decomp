@@ -4,6 +4,8 @@
 #include "include_asm.h"
 #include "structs/moby.h"
 #include "game/draw.h"
+#include "asm/level_01.h"
+#include "game/mobyutil.h"
 
 /* Blarg commander shot (class 0x55B): thrown by the commander, falls with mine_fall and bursts. */
 struct CommanderShotVars {
@@ -17,7 +19,7 @@ extern void VU1_addGSregister(int, long);
 
 extern int FastBSphereCheck(char *, float);
 extern void compute_reflection_env_uvs(int, int, int, int);
-extern void emit_textured_strip_packet(int, int, int, int, int, int);
+
 extern int *hoven_dma_packet_cursor MACRO_ADDR;
 extern char hoven_effect_list_setup_packet[];
 
@@ -114,7 +116,7 @@ char *create_class_55b_moby_from_source(char *a0) {
 }
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
-extern int random_integer_below(int);
+
 extern void Moby_PlaySound(int, int, void *);
 extern int truncate_float_to_s32(float);
 extern float FastAddRots(float, float);

@@ -7,6 +7,10 @@
 #include "structs/hero.h"
 #include "structs/camera.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "asm/shared_levels.h"
+#include "data/shared_levels.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
 
 extern void load_display_text_resource_entry(float *arg0, int *arg1);
 extern void FastVecAdd(void *, void *, void *);
@@ -14,7 +18,7 @@ extern float IntToFloat(int);
 extern int FastTweenColor(int, int, float);
 extern int FastDecTimer(void *);
 extern void lerp_vector(void *, void *, void *, float);
-extern void KillPart(void *);
+
 extern int level_frame_counter MACRO_ADDR;
 
 /* The record every particle type starts with (create_part returns one, KillPart frees it).
@@ -100,9 +104,9 @@ extern int coll_sphere(float, void *, int, void *);
 extern float FastCos(float);
 extern float FastSin(float);
 extern float FastVecDist(void *, void *);
-extern float fast_atan2(float, float);
+
 extern float FastSubRots(float, float);
-extern float FastAbsF(float);
+
 extern float FastAddRots(float, float);
 extern int coll_line(void *, void *, int, int, int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
@@ -241,7 +245,7 @@ extern void FastVecScale(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern int DefaultVtbl_DeleteMoby(int, int, float);
 extern int FastDecTimer(void *);
-extern void KillPart(void *);
+
 extern float frame_scale MACRO_ADDR;
 
 // updates a type 4 particle
@@ -286,7 +290,6 @@ void PartType05Spawn(void *pos, unsigned char c0, unsigned char c1, unsigned cha
 }
 extern int fast_dec_timer(void *);
 extern int scale_ticks(int);
-extern void KillPart(void *);
 
 /* Type 5 particle update: kills it once the timer at +0x20 runs out (func_001F9908), else grows its size (+0xC)
    by the rate at +0x24 and, over the last 6 ticks, fades the colour's alpha byte out. */
@@ -307,8 +310,7 @@ extern float IntToFloat(int);
 extern int truncate_float_to_s32(float);
 extern void euler_to_matrix(void *, void *);
 extern void transform_vector(void *, void *, void *);
-extern void clamp_vec_length(void *, void *, float);
-extern void KillPart(void *);
+
 extern f32 coll_hit_normal[];
 typedef int u128_6AB __attribute__((mode(TI)));
 
@@ -628,8 +630,7 @@ void update_damped_blue_shift_effect_particle(struct PartBase *m) {
     FastVecScale(&particle_data->vel, &particle_data->vel, frame_scale * -0.10000002384185791f + 1.0f);
     m->spin--;
 }
-extern int random_integer_below(int);
-extern float random_float_between(float, float);
+
 extern void vec_scale_to_length(void *, void *, float);
 extern float cpu_frame_load MACRO_ADDR;
 extern float level_draw_frame_load MACRO_ADDR;
@@ -703,7 +704,7 @@ void PartType11Spawn(void *pos, void *dir, int col, int d, int n, int b1A, int b
     q->branch_count = b18;
     q->flags = b19;
 }
-extern float random_float_between(float, float);
+
 extern void PartType11Spawn(void *, void *, int, int, int, int, int, float, int, float);
 extern int fast_subtract_rotations_cf(void *);
 extern void vec_scale_to_length(void *, void *, float);
@@ -959,8 +960,7 @@ void update_spinning_and_fading_effect_particle(struct PartBase *m) {
     }
 }
 extern float randf_sym(float lo, float hi);
-extern int random_integer_below(int);
-extern float random_float_between(float, float);
+
 extern unsigned char *part_type13_textures;
 
 typedef struct PartType13Data {
@@ -1351,7 +1351,7 @@ void update_descending_fade_in_out_effect_particle(struct PartBase *particle) {
     particle->spin = (int)(q->f8 * 255.0f);
     particle->pos.f[2] -= 0.02f;
 }
-extern int random_integer_below(int);
+
 extern unsigned char *part_type19_textures;
 
 /* spawn particle type 19 at a position with a velocity */
@@ -1375,7 +1375,7 @@ void spawn_two_point_effect_particle(char *pos, char *vel) {
     }
 }
 extern void FastVecAdd(void *, void *, void *);
-extern void KillPart(void *);
+
 /* Type 19 particle update: moves the position and the second point (+0x20) by the velocity at +0x30, takes 6 off the
    colour's alpha byte each frame (the colour is mirrored into +0xC) and kills the particle once the alpha wraps below 0. */
 void move_and_fade_two_point_particle(char *a) {
@@ -1589,7 +1589,7 @@ void spawn_effect_particle_with_target_scalar(void *pos, void *vel, int c, int d
         p->gravity = g_frame_time_sq * 1.24f;
     }
 }
-extern unsigned char *part_type23_textures;
+
 extern float randf_sym(float, float);
 
 /* spawn a type-0x17 particle with a random jitter and a randomly signed speed */
@@ -1750,7 +1750,6 @@ void update_source_bound_effect_particle(char *m) {
          << 24);
 }
 
-extern float random_float_between(float, float);
 extern unsigned char *part_type25_textures;
 
 /* spawns a type-25 particle at a position with a velocity */
@@ -2343,7 +2342,7 @@ void update_target_relative_two_point_effect_particle(unsigned char *p) {
     }
 }
 extern void *create_part(int);
-extern float random_float_between(float, float);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float frame_scale MACRO_ADDR;
 
@@ -2435,7 +2434,7 @@ void update_moby_bound_fade_in_out_effect_particle(char *m) {
     }
 }
 extern int FastDecTimer(void *);
-extern void KillPart(void *);
+
 /* Type 33 particle update: counts the timer at +0xA down and kills the particle when it expires. */
 void tick_effect_particle_lifetime(struct PartBase *a) {
     if (FastDecTimer(&a->timer) != 0) {
@@ -2593,7 +2592,7 @@ extern V collision_hit_point;
 extern int coll_hit_result[];
 extern char hero_globals_base[] NOT_SDA;
 extern int coll_line(void *, void *, int, int, int);
-extern int CollType(void);
+
 extern void spawn_moving_resizing_height_snapped_alpha_fade_particle(void *, int, int, float, float);
 extern void spawn_random_planar_drift_particle(void *, int, float, float);
 
@@ -2857,14 +2856,14 @@ extern f32 coll_hit_normal[];
 extern f32 frame_scale MACRO_ADDR;
 extern f32 g_frame_scale_sq MACRO_ADDR;
 extern s32 FastDecTimer_r3(s16 *) __asm__("func_001F9938");
-extern f32 random_float_between(f32, f32);
+
 extern void FastVecScale(void *, void *, f32);
 extern struct PartBase *spawn_splitting_effect_particle_with_collision_response_and_fade_r(
     void *, void *, s32, void *) __asm__("func_L00_00270BC8");
 extern s32 scale_ticks(s32);
 extern s32 coll_line_r(void *, void *, s32, void *, void *) __asm__("func_L00_001EFFF0");
 extern void vec_scale_to_length(void *, void *, f32);
-extern void vec_reflect(void *, void *, void *);
+
 extern void KillPart_r3(struct PartBase *) __asm__("func_L00_002688A8");
 extern f32 IntToFloat(s32);
 extern s32 truncate_float_to_s32(f32);
@@ -3100,7 +3099,7 @@ extern u8 *part_type12_textures_r[] __asm__("D_L00_001B2430");
 extern s32 FastDecTimer_r4(s16 *) __asm__("func_001F9938");
 extern struct PartBase *spawn_splitting_effect_particle_with_collision_and_fade_r(void *, void *, s32,
                                                                                   s32) __asm__("func_L00_002715F8");
-extern s32 random_integer_below(s32);
+
 extern s32 coll_line_r2(void *, void *, s32, s32, void *) __asm__("func_L00_001EFFF0");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering_00269290.c, FUN_L00_00270948. */

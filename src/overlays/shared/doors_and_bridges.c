@@ -3,6 +3,7 @@
 #include "include_asm.h"
 #include "structs/hero.h"
 #include "structs/moby.h"
+#include "data/level_07.h"
 
 /* Timed activation pads: stepped on, they count down until the group is activated. */
 struct TimedPadsVars {
@@ -231,7 +232,7 @@ void timed_activation_pads_update(unsigned char *moby) {
 }
 extern int g_current_level_index MACRO_ADDR;
 extern unsigned char saved_mission_state[];
-extern s32 umbris_indicator_states[];
+
 extern void FastVecAdd(void *, void *, void *);
 extern f32 FastVecLength(void *);
 extern void vec_scale_to_length(f32, void *, void *);
@@ -358,7 +359,7 @@ void door_update(u8 *moby) {
 }
 extern int g_current_level_index MACRO_ADDR;
 extern unsigned char saved_mission_state[];
-extern s32 umbris_indicator_states[];
+
 extern void FastVecScale(f32, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern f32 FastVecLength(void *);

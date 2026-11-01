@@ -9,9 +9,11 @@
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/shared/hero_update_ground_material.h"
 #include "overlays/shared/level_runtime_and_menus.h"
+#include "asm/executable.h"
+#include "asm/shared_levels.h"
 
 extern char hero_globals_base[];
-extern int scale_ticks(int);
+
 extern void FadeToBlack(int);
 extern void hero_frame_update(void);
 
@@ -37,7 +39,6 @@ extern void dispatch_hero_animation_timed_events(void);
 extern void scan_hero_input_sequences(void);
 extern void Profile_Mark(void *);
 
-extern void apply_env_zone_lighting(void *);
 extern void update_hero_blink_and_gold_weapon_tint(void);
 
 /* Per-frame driver: validates the cursor, then runs each update pass in order. */

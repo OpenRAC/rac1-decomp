@@ -10,6 +10,9 @@
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/shared/hero_vehicle_and_collision.h"
 #include "overlays/shared/level_runtime_and_menus.h"
+#include "asm/shared_levels.h"
+#include "data/executable.h"
+#include "game/fastfunc.h"
 
 extern unsigned char hero_globals_base[];
 extern char novalis_item_defs[];
@@ -75,7 +78,6 @@ extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void enqueue_hero_glow_draw_callback_once(void);
 extern void allocate_hero_voice_for_entry(int, int);
 extern void update_hero_moby_probed_height_bounds(void);
-extern void apply_env_zone_lighting(void *);
 
 typedef struct {
     char pad0[0x80];
@@ -223,7 +225,6 @@ extern void dispatch_hero_animation_timed_events(void);
 extern void scan_hero_input_sequences(void);
 extern void Profile_Mark(void *);
 
-extern void apply_env_zone_lighting(void *);
 extern void update_hero_blink_and_gold_weapon_tint(void);
 extern void update_hero_moby_probed_height_bounds(void);
 
@@ -325,9 +326,9 @@ void update_hero_blink_and_gold_weapon_tint(void) {
         update_item_tint_from_hero_r(g_hero_r.items[0].moby, g_hero_r.moby);
 }
 extern int coll_sphere(float, void *, int, void *);
-extern int CollType(void);
+
 extern void Hero_SetMoveState(int, int);
-extern float FastAbsF(float);
+
 extern void exit_hero_vehicle_mode_if_mode_three(void);
 
 // Handles a pending state change (func_L08_0021DFB8 without its state-2 flag): clears the request and sets per-state flags.
@@ -844,7 +845,7 @@ extern Hero g_hero_r3 __asm__("D_0013F450");
 extern s32 novalis_game_mode MACRO_ADDR;
 extern T_8 novalis_moby_hit_records[];
 extern s32 g_current_level_index MACRO_ADDR;
-extern s32 level_hero_hit_counts[];
+
 extern s32 hero_hit_count MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
 extern u8 hero_velocity[];
@@ -984,7 +985,7 @@ s32 HeroL01_TryTakeHit(s32 arg) {
     return 1;
 }
 extern Hero g_hero_r4 __asm__("D_0013F450");
-extern f32 g_hero_capsule_top[];
+
 extern f32 frame_scale_r __asm__("D_0015EE60") MACRO_ADDR;
 extern f32 g_frame_scale_sq MACRO_ADDR;
 f32 vec_distance_xy(void *, void *);
@@ -1065,8 +1066,7 @@ extern float FastSin(float);
 extern void FastVecScale(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern int coll_line(void *, void *, int, int, int);
-extern int CollType(void);
-extern float fast_atan2(float, float);
+
 extern float g_frame_time MACRO_ADDR;
 extern int novalis_coll_hit_type;
 extern char novalis_coll_hit[];

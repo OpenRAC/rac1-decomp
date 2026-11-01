@@ -5,6 +5,11 @@
 #include "structs/hero.h"
 #include "game/stream.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
+#include "asm/executable.h"
+#include "asm/shared_levels.h"
+#include "data/shared_levels.h"
+#include "game/hud.h"
+#include "overlays/shared/cutscene_and_movie_playback.h"
 
 typedef struct {
     int value;
@@ -86,15 +91,9 @@ extern char pad_globals_base[];
 extern char hero_globals_base[];
 extern short bolt_hud_item;
 extern s32 DialogRequest_Init(void *p, u8 *out_p);
-extern float fast_atan2(float, float);
-extern float FastDiffRots(float, float);
 
-extern void PlayMovieEntryIfIdle(int);
-extern int remove_hud_item(int);
-extern void StartCutscene(int);
 extern int hud_keep_visible(int, int);
 extern int queue_animation_update(int, int, void *, void *, void *, void *, int);
-extern int scale_ticks(int);
 
 extern void DefaultVtbl_DeleteMoby(void);
 
@@ -197,8 +196,7 @@ int Npc_TryStartDialog(char *p, char *q) {
     return 0;
 }
 extern s32 g_current_level_index MACRO_ADDR;
-extern s32 dialogue_entry_level_starts[];
-extern s32 dialogue_entry_ids[];
+
 /* Find the dialogue entry index of p within the current level's range; -1 if not found. */
 s32 get_dialogue_entry(s32 p, s32 unused) {
     s32 n = g_current_level_index;

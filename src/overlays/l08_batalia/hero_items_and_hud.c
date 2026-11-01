@@ -17,6 +17,12 @@
 #include "overlays/shared/sky_particles.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
 #include "structs/hero_views.h"
+#include "asm/shared_levels.h"
+#include "data/executable.h"
+#include "data/level_08.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/sound_playback.h"
 
 typedef struct {
     char p0[0xF8];
@@ -35,7 +41,7 @@ extern Hero g_hero;
 extern PadState g_controller_state;
 extern char voice_pool[];
 extern S141948 usage_stats;
-extern int last_weapon_id;
+
 extern unsigned char item_available[];
 extern int gBolts MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
@@ -49,7 +55,7 @@ extern float batalia_hero_fall_state_height MACRO_ADDR;
 extern int batalia_help_message_selector MACRO_ADDR;
 extern int batalia_hero_run_step1_start_frame MACRO_ADDR;
 extern short batalia_hero_double_tap_timer;
-extern float batalia_camera_yaw;
+
 extern int batalia_look_release_reset_word;
 extern HeroBoneScalars batalia_lean_state;
 extern HeroIdleFidget batalia_idle_fidgets[];
@@ -90,7 +96,6 @@ extern void hero_set_attack_ticks(int id);
 extern float vec_length_xy(void *);
 extern float vec_distance_xy(void *, void *);
 
-extern void Sound_StopSlot(int);
 extern void allocate_hero_voice_for_entry(int, int);
 
 extern float FastAddRots(float, float);
@@ -107,15 +112,14 @@ extern float ApproachValue(float *p, float target, float maxstep);
 extern void FastVecScale(void *, void *, float);
 
 extern float gravity_z(float *v);
-extern float FastAbsF(float);
-extern float random_float_between(float a, float b);
+
 extern void hero_switch_item(int i);
 extern void release_and_clear_hero_voice_slots(void);
 extern void clear_u64_value(void *);
 extern void FastVecAdd(void *, void *, void *);
 extern float FastVecDist(void *, void *);
 extern int coll_line(void *, void *, int, int, int);
-extern float fast_atan2(float, float);
+
 extern float randf_sym(float lo, float hi);
 extern float jump_speed_4318(float *a, float *b, float *out, float speed, float g);
 

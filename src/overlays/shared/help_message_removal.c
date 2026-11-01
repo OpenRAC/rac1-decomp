@@ -1,11 +1,11 @@
 /* Shared level code following mobyutil. Starts at 0x00265558 (was mobyutil_00265558.c). */
 #include "common.h"
 #include "include_asm.h"
+#include "game/hud.h"
 
 extern int timed_hud_visible MACRO_ADDR;
 extern int timed_hud_frames_left MACRO_ADDR;
 extern int timed_hud_handle MACRO_ADDR;
-extern int remove_hud_item(int);
 
 /* Removes the timed help message if it belongs to selector a; returns 1 when removed. */
 int remove_help_message_for_selector(int a) {

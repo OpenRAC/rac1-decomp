@@ -11,6 +11,9 @@
 #include "overlays/shared/hero_vehicle_and_collision.h"
 #include "overlays/shared/morphoray_chicken_and_drones.h"
 #include "overlays/shared/vendor_menu.h"
+#include "asm/shared_levels.h"
+#include "game/fastfunc.h"
+#include "overlays/shared/moby_ground_collision.h"
 
 extern float ApproachValue(float *p, float target, float maxstep);
 extern unsigned char hero_globals_base[] NOT_SDA;
@@ -76,7 +79,7 @@ extern int allocate_hero_voice_for_entry(int, int);
 extern int FastDecTimer(void *);
 
 extern int scale_ticks(int);
-extern int rand_range(int, int);
+
 extern void set_hero_item_switch_timer_for_item(int id);
 extern void set_hero_condition_animation_timer_for_item(int id);
 
@@ -538,10 +541,10 @@ void update_hero_movement_and_collision_probes(void) {
 }
 extern short rilgar_frame_count;
 extern float rilgar_coll_hit_z;
-extern float FastAbsF(float);
+
 extern void hero_get_collision_ray_endpoints(void *, void *, int, float, float);
 extern int coll_line(void *, void *, int, int, int);
-extern int CollType(void);
+
 extern void Hero_TryMoveStateL05(int, int);
 
 /* Decides whether the hero's current motion warrants the swing effect, running a probe when the conditions line up. */
@@ -674,7 +677,7 @@ extern unsigned short help_records_131_count[] NOT_SDA;
 extern unsigned short usage_stats_entry27_count[] NOT_SDA;
 extern int fast_subtract_rotations_cf(void *);
 extern int Help_Request(int a, int b);
-extern float fast_atan2(float, float);
+
 extern float FastDiffRots(float, float);
 extern float vec_distance_xy(void *, void *);
 extern void Moby_GetJointWorldPos(void *, int, void *);

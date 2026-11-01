@@ -8,6 +8,10 @@
 #include "structs/vector.h"
 #include "game/mobyutil.h"
 #include "overlays/shared/effect_particle_updates.h"
+#include "data/executable.h"
+#include "data/shared_levels.h"
+#include "game/fastfunc.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 
 extern int func_001160D8(void);
 /* Returns a random integer in the inclusive range lo..hi. */
@@ -89,7 +93,6 @@ void interpolate_wrapped_rotations_cosine_eased(float *out, float *a, float *b, 
     out[1] = FastAddRots(a[1], FastSubRots(b[1], a[1]) * s);
     out[2] = FastAddRots(a[2], FastSubRots(b[2], a[2]) * s);
 }
-extern float FastAbsF(float);
 
 /* spring-damped turn of a velocity toward a target angle; returns the stepped angle */
 float SpringTurn(float *vel, float cur, float target, float k, float d, float max) {
@@ -665,7 +668,6 @@ void predict_position_with_vertical_drop(void *a, void *b, void *c, int d, float
     t[2] -= IntToFloat((d * d + d) >> 1) * f;
     FastVecAdd(a, b, t);
 }
-extern float FastAbsF(float);
 
 // solves a*x^2 + b*x + c = 0; returns the number of roots
 int solve_quadratic_equation(float *r0, float *r1, float a, float b, float c) {
@@ -1675,7 +1677,6 @@ float interpolate_angle(float a, float b, float c) {
     float r = FastSubRots(b, a);
     return FastAddRots(a, r * c);
 }
-extern float FastAbsF(float arg0);
 
 /* Damped velocity step: adds b*rate - c*v, then clamps to limit and to |rate|. */
 void advance_damped_scalar_velocity(float *ptr, float rate, float b, float c, float limit) {
@@ -1696,7 +1697,6 @@ void advance_damped_scalar_velocity(float *ptr, float rate, float b, float c, fl
     }
 }
 extern void advance_damped_scalar_velocity(float *ptr, float rate, float b, float c, float limit);
-extern float FastAbsF(float);
 
 /* Moves *p toward t with a damped spring; snaps to t when close and returns the gap. */
 float Spring(float *p, float *v, float t, float u1, float u2, float eps) {
@@ -2377,7 +2377,7 @@ int Spline_AdvanceByDistance(Spline_0025E860 *s, float *out, int *idx, float *t,
 typedef struct {
     int a[4];
 } V __attribute__((aligned(16)));
-extern float FastAbsF(float);
+
 extern void vec_distance_xy(V *, V *);
 
 extern float vec_distance_xy_r(V *, V *) __asm__("func_001F9D48");
@@ -3071,7 +3071,7 @@ typedef struct {
     V25f878 *p78;
     u8 pad7c[0x100 - 0x7C];
 } M25f878;
-extern s16 active_homing_missiles[];
+
 extern u8 *moby_array_start_r3 __asm__("D_L00_00160098") MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/math/rotations/0025d238.c, FUN_L00_0025f878. */
@@ -3446,9 +3446,8 @@ void update_entity_matrix(char *a, Vx *b, void *c, void *d) {
 }
 /* From Lombyte's project (GPL-3.0), FUN_L00_002607d0 (PR #66), adapted to PAL. */
 extern unsigned char level_available[];
-extern int gGalaxyList[];
+
 extern int g_current_level_index MACRO_ADDR;
-extern void queue_planet_unlock_message(int);
 
 /* Unlocks planet id on the galaxy map and queues its unlock message. */
 void unlock_planet(int id) {
@@ -3469,7 +3468,7 @@ extern unsigned char item_available[] NOT_SDA;
 extern unsigned char items_acquired[] NOT_SDA;
 extern int weapon_ammo_counts[] NOT_SDA;
 extern unsigned char g_hero_field_20a5[] NOT_SDA;
-extern int pause_iop_sprite_lists[];
+
 extern int item_pickup_banner_ids[] NOT_SDA;
 typedef struct {
     char pad[8];
@@ -3485,9 +3484,8 @@ typedef struct {
     char pad2[0x40];
 } ItemDef;
 extern ItemDef item_defs[] NOT_SDA;
-extern int level_item_ids[];
+
 extern unsigned char vendor_stock[] MACRO_ADDR;
-extern void ShowBanner(int arg0, int arg1);
 
 /* Gives item ID to the player: plays its sound, raises its count and records it in the slot lists. */
 void grant_inventory_item(int id, int flag) {

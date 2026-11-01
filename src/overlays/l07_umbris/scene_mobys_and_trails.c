@@ -5,6 +5,8 @@
 #include "include_asm.h"
 #include "structs/hero.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/moby_ground_collision.h"
 
 /* functional: high. The NTSC decomp's matched C for the same instructions (FUN_L07_0031a9e8), carried to PAL's
    names by OpenRAC's tools/port.py. Not a PAL match: exact alone, but its file's other functions stop matching with it in place. */
@@ -420,9 +422,7 @@ typedef struct {
 extern void cutscene_set_camera_target(int);
 extern int scale_ticks(int);
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern float random_float_between(float, float);
-extern int rand_range(int, int);
-extern int random_integer_below(int);
+
 extern char *PartType23Spawn_c(void *, int, void *, int, float, float, float, float) __asm__("func_L00_0026DEA0");
 extern int umbris_scene_state MACRO_ADDR;
 extern char umbris_cutscene_state_c[] __asm__("D_L07_0016C960");

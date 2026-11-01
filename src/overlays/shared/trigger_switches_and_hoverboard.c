@@ -9,6 +9,10 @@
 #include "game/mobyutil.h"
 #include "overlays/shared/camera_switch_and_update.h"
 #include "overlays/shared/effect_particle_updates.h"
+#include "asm/shared_levels.h"
+#include "data/level_05.h"
+#include "game/fastfunc.h"
+#include "overlays/shared/moby_ground_collision.h"
 /* Hydrodisplacer faucet: pulse phase and strength. */
 struct FaucetPulseVars {
     u8 pad_00[0x18];
@@ -322,7 +326,6 @@ extern float random_angle_radians(void);
 extern f32 FastCos(f32);
 extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
-extern int rand_range(int, int);
 
 extern void FastVecScale(void *, void *, float);
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
@@ -475,7 +478,7 @@ extern float FastVecLength(void *);
 extern void set_identity_matrix(void *);
 extern void matrix_from_basis_rows(void *, void *);
 extern void transform_vector(void *, void *, void *);
-extern float FastAbsF(float);
+
 extern char hero_globals_base[];
 
 /* Scans two moby lists near the player and adds a timer bonus when one is in range. */
@@ -539,7 +542,7 @@ void add_moby_frames_for_group_proximity(char *moby) {
     }
 }
 extern float random_angle_radians(void);
-extern float randf_sym(float lo, float hi);
+
 extern void set_moby_color(void *, int, int, int);
 extern void AttachManipulator(char *, int, void *);
 extern void AddDrawCallback(void *, void *);
@@ -700,7 +703,7 @@ typedef struct {
 extern LvlDone_DA08 rilgar_checkpoint_level_state;
 extern LvlDone_DA08 rilgar_current_level_state;
 extern unsigned char rilgar_mission_state[] MACRO_ADDR;
-extern char *rilgar_paths[];
+
 extern int g_current_level_index MACRO_ADDR;
 extern int truncate_float_to_s32(float);
 extern int level_moby_killed[][64];
@@ -798,7 +801,7 @@ typedef struct {
 extern int rilgar_cinematic_mode MACRO_ADDR;
 extern unsigned char gCheats[] MACRO_ADDR;
 extern G rilgar_cutscene_state;
-extern unsigned char rilgar_big_head_manipulator[];
+
 extern short rilgar_big_head_scale;
 
 /* Resets the marker record's scale once for every moby sharing this one's class, while the level flag is 2. */
@@ -848,7 +851,7 @@ extern void FastVecAdd(void *, void *, void *);
 extern float IntToFloat(int);
 extern int coll_sphere(float, void *, int, void *);
 extern float FastVecDot(void *, void *);
-extern void vec_reflect(void *, void *, void *);
+
 extern void DeleteMoby(void *);
 extern char rilgar_coll_hit[];
 extern float g_frame_time_sq MACRO_ADDR;
@@ -1035,7 +1038,7 @@ void apply_moby_position_and_rotation_wobble(Moby *moby) {
         moby->rot.y = -0.17453292f;
 }
 extern void FastVecAdd(void *, void *, void *);
-extern char *rilgar_paths[];
+
 extern char rilgar_path_local_points[];
 extern char g_hero[];
 
@@ -1118,7 +1121,7 @@ struct Spark_c8e0 {
         u8 life; /* 0x2B */
     } draw;
 };
-extern char rilgar_camera_pos[];
+
 extern short rilgar_glow_tip_offset;
 extern short rilgar_glow_debris_forward_speed;
 extern short rilgar_glow_debris_up_speed;
@@ -1138,10 +1141,10 @@ extern f32 random_float_between(f32, f32);
 extern s32 random_integer_below(s32);
 extern f32 random_angle_radians(void);
 extern void BuildSphericalOffset(void *, f32, f32, f32);
-extern f32 randf_sym(f32, f32);
+
 extern void PartType53Spawn(void *, s32, f32, f32, s32, s32, s32, void *, f32);
 extern struct Spark_c8e0 *PartType23Spawn(void *, f32, f32, f32, s32, void *, f32, s32);
-extern s32 rand_range(s32, s32);
+
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
 extern char *spawn_moby_class_5ea_from_source(unsigned char *);
 void draw_moby_glow_sprite(char *m);
@@ -1272,7 +1275,7 @@ typedef struct {
     float uv[8];
     u64 a, b, c, d;
 } Pk_31e468;
-extern char rilgar_camera_pos[];
+
 extern float rilgar_glow_quad_corners[4][4];
 extern short rilgar_glow_tip_offset;
 extern short rilgar_glow_camera_pull;

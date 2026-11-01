@@ -9,6 +9,11 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/move_control_and_clear_path.h"
+#include "asm/shared_levels.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/ripple_patches.h"
+#include "overlays/shared/sound_playback.h"
 
 /* Colored half-scale moby: owner and fading-particle color. */
 struct HalfScaleMobyVars {
@@ -61,8 +66,7 @@ typedef struct {
 } DebrisMoby;
 extern DebrisColors rock_formation_debris_colors;
 extern float g_frame_time MACRO_ADDR;
-extern float random_float_between(float, float);
-extern int random_integer_below(int);
+
 extern float FastCos(float);
 extern float FastSin(float);
 extern void vec_scale_to_length(void *, void *, float);
@@ -171,7 +175,6 @@ typedef struct {
 
 extern float g_frame_time MACRO_ADDR;
 
-extern float random_float_between(float, float);
 extern int func_001160D8(void);
 extern void clear_u64_value(void *);
 extern void coll_sphere_mobys(void *, int, void *, void *, float);
@@ -213,7 +216,7 @@ void fan_update(SwayMoby *m) {
     m->rotz = FastAddRots(m->rotz, g_frame_time * -12.566371f * v->sway);
 }
 typedef u32 u128_FB158 __attribute__((mode(TI), aligned(16)));
-extern f32 random_float_between(f32, f32);
+
 extern f32 g_frame_time MACRO_ADDR;
 typedef struct {
     u32 c[3];
@@ -246,7 +249,7 @@ extern BurstColors bridge_piece_debris_colors;
 
 extern void DeleteMoby(void *);
 extern f32 random_angle_radians(void);
-extern s32 random_integer_below(s32);
+
 extern float FastCos(float);
 extern float FastSin(float);
 extern void vec_scale_to_length(void *, void *, f32);
@@ -940,7 +943,7 @@ void agnogg_ship_front_update(Moby *moby) {
     }
 }
 typedef int u128_2FCC80 __attribute__((mode(TI)));
-extern void Sound_StopSlot(int);
+
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound(int, int, int);
 extern float FastCos(float);
@@ -1058,13 +1061,13 @@ extern short pool_drip_timer;
 extern PoolTile *pool_draw_tiles MACRO_ADDR;
 extern u8 *pool_draw_tex MACRO_ADDR;
 extern s32 pool_draw_count MACRO_ADDR;
-extern void RipplePatchesInit(void *, s32);
+
 extern void RipplePatch_ToFixedPoint(void *, void *);
 extern void RescaleFloatTable(f32);
 extern void RippleSimClock(void *, s32);
 extern void pool_ripple(f32, f32, f32, f32, void *, s32);
 extern void RippleDisturb(int, int, int, float, float, float, float);
-extern f32 fast_atan2(f32, f32);
+
 extern int is_point_inside_clip_volume(void *, int);
 extern void Moby751Draw(void);
 extern void AddDrawCallback(void *, void *);
@@ -1394,7 +1397,7 @@ typedef struct {
 } HoverVars;
 extern char hero_globals_base[];
 extern float vec_distance_xy(void *, void *);
-extern float FastAbsF(float);
+
 extern float FastCos(float);
 extern float FastSin(float);
 
@@ -1458,7 +1461,7 @@ void door_left_update(Moby *m) {
     m->pos.y = v->home.f[1] + off.f[1];
 }
 extern char *MobyGetHitMessage(void *, int, int);
-extern int random_integer_below(int);
+
 extern int Moby_PlaySound(int, int, int);
 extern int rand_range(int, int);
 extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
@@ -1566,7 +1569,7 @@ void update_smoke_emitter(char *self) {
                                                  scale_ticks(rand_range(0x2D, 0x3C)));
     }
 }
-extern float random_float_between(float, float);
+
 extern void moby_build_matrix_spawn(void *) __asm__("func_L00_00251E30");
 extern float g_frame_time_sq_s __asm__("D_0015EE70") MACRO_ADDR;
 /* Spawns a scaled class-0x313 drip with position and randomized motion. */
@@ -1597,7 +1600,7 @@ char *pool_drip(void *position, float scale) {
 extern int pool_draw_tiles_s __asm__("D_L01_00161350") MACRO_ADDR;
 extern int pool_draw_count_s __asm__("D_L01_00161358") MACRO_ADDR;
 extern float novalis_coll_hit_point_z_s __asm__("D_L01_00174368") NOT_SDA;
-extern int CollType(void);
+
 extern void RippleDisturb(int, int, int, float, float, float, float);
 extern char *spawn_burst_moby(void *, float);
 
@@ -2045,7 +2048,7 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern BlobHitInfo novalis_coll_hit;
 extern void draw_moby_offset_textured_quad(void);
 extern int coll_sphere(float, void *, int, void *);
-extern void vec_reflect(void *, void *, void *);
+
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
                             int, int, int, int);
 extern void PartType21Spawn(void *, void *, int, int, float, int, int);
@@ -2123,7 +2126,7 @@ void update_explosive_moby(struct Moby *m) {
         }
     }
 }
-extern float random_float_between(float, float);
+
 extern void vec_scale_to_length(void *, void *, float);
 extern float randf_sym(float lo, float hi);
 extern int scale_ticks(int);

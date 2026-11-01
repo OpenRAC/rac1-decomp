@@ -11,6 +11,14 @@
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
+#include "data/shared_levels.h"
+#include "game/draw.h"
+#include "game/loaders.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/camera_modes_and_scripts.h"
+#include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/level_gameplay_loading.h"
+#include "overlays/shared/moby_ground_collision.h"
 
 extern int vendor_menu[];
 extern unsigned char g_class_slot_12 NOT_SDA;
@@ -225,7 +233,6 @@ extern void initialize_numeric_hud_timer_and_base_dimensions(void);
 extern void Hud_UpdateCounter(void);
 extern void draw_weapon_ammo_hud_panel(void);
 extern s32 Moby_PlaySound(s32, s32, void *);
-extern void FadeToBlack(s32);
 
 extern s32 HeroEnterMoveState(s32, s32);
 
@@ -233,7 +240,7 @@ extern void MobySetAnimation(void *, s32, s32);
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern f32 FastAddRots(f32, f32);
-extern void CameraScript(void *, void *, s32, s32, s32);
+
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
 extern void AttachManipulator(char *, s32, void *);
@@ -372,7 +379,7 @@ extern void matrix_mul_vec3(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern float FastAddRots(float, float);
 extern void Hero_ResetToPosition(void *, void *, int, int);
-extern void CameraScript2(int);
+
 extern void DeleteMoby(void *);
 
 extern int snd_FlushSoundCommands(void);
@@ -462,7 +469,7 @@ typedef struct {
     int x5c;
 } C_298840;
 extern C_298840 cutscene_state;
-extern char hero_scale_manipulator[];
+
 extern struct {
     int x0, x4, x8;
 } lvl_resource_buffers;
@@ -519,15 +526,12 @@ struct T_29ad08 {
     char p1[0x38];
 };
 extern struct T_29ad08 item_defs_r[] __asm__("D_L00_00179BC0");
-extern void CameraScript2(s32);
+
 extern float ProbeGroundHeight(float, void *, s32);
 extern void FastMemSet(void *, s32, s32);
 extern void euler_rotation_basis(void *, void *);
 extern void clear_u64_value(void *);
-extern void clear_hero_item_slot(s32, s32);
-extern void load_scene_chunks_with_fade(s32);
-extern void select_world_object_resource_tables(s32, s32);
-extern void parse_space_scene_chunk(s32);
+
 extern void Music_ContinueStreamIfReady(void);
 extern void sce_gs_sync_v(s32);
 
@@ -632,7 +636,7 @@ void restore_hero_after_vendor_exit_cutscene(void) {
     music_Unpause();
     snd_FlushSoundCommands();
 }
-extern int random_integer_below(int);
+
 extern int scale_ticks(int);
 extern void MobyBlendAnimation(void *, int, int, int);
 extern int vendor_auxiliary_moby_active MACRO_ADDR;
@@ -730,7 +734,6 @@ extern B vendor_item_slot2_placement[];
 extern short vendor_selected_item_local_offset;
 extern int vendor_selection_changed __attribute__((section(".sdata")));
 extern unsigned char discount_purchase_pricing[] __attribute__((section(".data")));
-extern void select_world_object_resource_tables(int, int);
 
 extern void moby_build_matrix(void *);
 extern void MobySetAnimation(void *, int, int);
@@ -872,7 +875,6 @@ extern char level_render_state_base[];
 extern void MobyAnimAdvance();
 extern s32 msg_string();
 extern void set_scrolling_status_message();
-extern void grant_inventory_item(int, int);
 
 /* vendor buy dialog: quantity selection with held-button repeat, confirm and purchase */
 void update_vendor_purchase(void) {

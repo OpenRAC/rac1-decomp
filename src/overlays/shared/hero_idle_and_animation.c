@@ -14,6 +14,9 @@
 #include "overlays/shared/level_runtime_and_menus.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "asm/shared_levels.h"
+#include "data/executable.h"
+#include "data/shared_levels.h"
 
 extern char help_popup_state[] NOT_SDA;
 typedef struct {
@@ -157,7 +160,7 @@ int return_minus_one(void) {
 typedef u32 u128_05278 __attribute__((mode(TI), aligned(16)));
 extern struct Hero g_hero_r __asm__("D_0013F450");
 extern Vec4 hero_spawn_pose[2];
-extern s32 last_weapon_id;
+
 extern struct Moby *moby_array_start MACRO_ADDR;
 extern struct Moby *level_mobys_end MACRO_ADDR;
 extern s32 ship_level_entry_active MACRO_ADDR;
@@ -847,12 +850,12 @@ extern float IntToFloat(int);
 extern int truncate_float_to_s32(float);
 extern void allocate_hero_voice_for_entry(int, int);
 extern void update_hero_moby_probed_height_bounds(void);
-extern void apply_env_zone_lighting(void *);
+
 extern unsigned char gCheats[] MACRO_ADDR;
 extern float sound_volume_r[] __asm__("D_0015EEF0") MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
-extern short sound_volume_10;
+
 extern float lean_state_25_scale;
 extern float lean_state_28_scale;
 extern float lean_state_30_scale;
@@ -1357,7 +1360,6 @@ extern void dispatch_hero_animation_timed_events(void);
 extern void scan_hero_input_sequences(void);
 extern void Profile_Mark(void *);
 
-extern void apply_env_zone_lighting(void *);
 extern void update_hero_color_and_item_tint(void);
 extern void update_hero_moby_probed_height_bounds(void);
 // Per-frame update of the resident game systems; fades out when the camera leaves bounds.
@@ -1462,10 +1464,7 @@ void update_item_tint_from_hero(void *a, char *m) {
 }
 extern unsigned char gCheats[] MACRO_ADDR;
 extern int sound_volume MACRO_ADDR;
-extern short sound_volume_10;
-extern char cheat_scale_manipulator[];
-extern char cheat_scale_manipulator_class_1a3[];
-extern char cheat_scale_manipulator_class_555[];
+
 extern float IntToFloat(int);
 extern float FastSin(float);
 extern int truncate_float_to_s32(float);
@@ -2252,7 +2251,6 @@ f32 adjust_hero_animation_speed_for_target_frame(f32 a, f32 b, f32 c, f32 d) {
 }
 extern unsigned char hero_globals_base[] NOT_SDA;
 extern int truncate_float_to_s32(float);
-extern float split_float_fraction(void *, float);
 
 /* Interpolates a per-frame table at the hero's current animation position. */
 float vector_length_xyz_cf(float *a, int n) {
@@ -2923,7 +2921,7 @@ void update_hero_idle_random_rotation_targets(void) {
 }
 extern int GetFlaggedPvarWord(char *);
 extern float vec_distance_xy(void *, void *);
-extern float fast_atan2(float, float);
+
 extern float FastDiffRots(float, float);
 extern int coll_line(void *, void *, int, int, int);
 extern char *active_mobies[];
@@ -3253,7 +3251,7 @@ void exit_hero_vehicle_mode_if_mode_three(void) {
     }
 }
 extern int coll_sphere(float, void *, int, void *);
-extern int CollType(void);
+
 extern void exit_hero_vehicle_mode_if_mode_three(void);
 extern void Hero_OnKilled(void);
 

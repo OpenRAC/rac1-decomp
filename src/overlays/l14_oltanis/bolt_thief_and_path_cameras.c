@@ -11,6 +11,14 @@
 #include "overlays/shared/plasmabot.h"
 #include "overlays/shared/rocket_and_path_camera.h"
 #include "overlays/shared/trespasser_pad_and_background_ships.h"
+#include "asm/shared_levels.h"
+#include "data/level_14.h"
+#include "game/fastfunc.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/pause_menu.h"
+#include "overlays/shared/sound_playback.h"
 
 /* Moby that points at a linked moby by index. */
 struct LinkedRemovalVars {
@@ -312,7 +320,7 @@ extern char oltanis_bolt_thief_no_trigger_msg[];
 extern int scale_ticks(int);
 extern void MobyBlendAnimation(void *, int, int, int);
 extern char *MobyGetHitMessage(void *, int, int);
-extern float fast_atan2(float, float);
+
 extern void InitKnockback(void *, void *, int, int, int, float);
 extern void SetDeathBits(void *, int, int);
 extern void MobySetAnimation(void *, int, int);
@@ -502,8 +510,6 @@ extern short oltanis_bolt_thief_path_speed;
 extern char *oltanis_paths[];
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
 extern void FastVecSub(void *dst, void *a, void *b);
-extern float FastAbsF(float);
-extern float fast_atan2(float, float);
 
 /* Samples a path table with func_L00_0025E860 and eases the moby's x, y and z toward the result;
  * returns that call's result. */
@@ -541,12 +547,11 @@ int update_bolt_thief_path_movement(char *moby) {
 }
 
 extern int DialogRequest_Init(void *, void *);
-extern void jet_clear_persistent(int);
-extern void jet_reset_camera(void *, void *);
+
 extern int Npc_TryStartDialog(void *, void *);
 extern void clear_u64_value(void *);
 extern void unlock_planet(int);
-extern void queue_planet_unlock_message(int);
+
 extern int memcard_Save(int, int);
 extern float vec_distance_xy(void *, void *);
 extern float FastDiffRots(float, float);
@@ -566,7 +571,7 @@ extern char oltanis_sam_dialogue_name[];
 extern char *oltanis_clip_volumes_r __asm__("D_L14_001601AC") MACRO_ADDR;
 extern char oltanis_cutscene_state_r[] __asm__("D_L14_0016D060");
 extern int oltanis_game_mode MACRO_ADDR;
-extern int oltanis_moby_killed_bits[];
+
 extern unsigned char gCheats[] MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;
 extern unsigned char gemlik_available[] NOT_SDA;
@@ -736,12 +741,12 @@ extern short spark_first_bounce_horizontal_speed_gp;
 extern int coll_sphere(void *, int, void *, float);
 extern int fast_dec_timer(int *);
 extern int FastDecTimer(short *);
-extern void LerpVec4(void *, void *, void *, float);
+
 extern int random_integer_below(int);
 extern float IntToFloat(int);
 extern int coll_line(void *, void *, int, void *, int);
 extern void vec_scale_to_length(void *, void *, float);
-extern void vec_reflect(void *, void *, void *);
+
 extern int Moby_PlaySound();
 extern void vec_set_length_xy(void *, void *, float);
 extern int truncate_float_to_s32(float);
@@ -905,7 +910,7 @@ void update_bouncing_spark(Moby *m) {
     m->rot.y = FastAddRots((((speed / (hi - lo)) * 7.0f) + 1.0f) * 0.017453292f, m->rot.y);
 }
 extern char *CreateMoby(int);
-extern float fast_atan2(float, float);
+
 extern void moby_build_matrix(void *);
 extern short oltanis_spark_trail_ticks;
 extern short oltanis_spark_start_scale;
@@ -1183,7 +1188,6 @@ extern int fast_dec_timer_r(int *arg0) __asm__("func_001F9908");
 extern float IntToFloat(int);
 extern int FastTweenColor(int, int, float);
 extern unsigned char *PartType59Spawn(float f, void *pos, int a1, unsigned char a2, int idx, int flag, int s, int mode);
-extern char oltanis_camera_pos[];
 
 typedef struct {
     float pad[2];
@@ -1752,7 +1756,7 @@ void update_flying_car(Moby *m) {
     }
 }
 extern float FastVecDist(void *, void *);
-extern float fast_atan2(float, float);
+
 extern char *oltanis_paths[];
 
 /* Precomputes per-point segment values of a path and snaps the moby to its first point. */
@@ -1776,7 +1780,7 @@ extern struct Hero g_hero_r3 __asm__("D_0013F450");
 extern f32 g_frame_scale_sq MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
 extern void FastVecSub(void *out, void *a, void *b);
-extern void Sound_StopSlot(s32);
+
 typedef struct {
     u8 pad0[0x10];
     s32 pitch_bend_min;
@@ -1832,7 +1836,7 @@ extern int Spline_AdvanceByDistance_r(char *path, float *out, void *pos, void *t
 extern void SpawnExplosionFx_r2(void *, void *, f32, f32, s32) __asm__("func_L00_00260108");
 extern void MobySpringTurn_r(struct Moby *, f32, f32 *, f32, f32, f32) __asm__("func_L00_002592B0");
 extern f32 Spring(f32 *, f32 *, f32, f32, f32, f32);
-extern float FastAbsF(float input);
+
 extern f32 vec_length_xy(void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/vendor/00300e00.c, FUN_L14_00307620. */
@@ -1942,9 +1946,9 @@ typedef struct {
     char pad34[0x144];
     int v178[2];
 } Level14State;
-extern int count_active_moby_group_members(int, int);
+
 extern int PlayBankSound(int, int, int);
-extern void ShowBanner(int arg0, int arg1);
+
 extern void cutscene_set_camera_target(int);
 extern Level14State oltanis_cutscene_state;
 extern unsigned char gSkillPoints[];

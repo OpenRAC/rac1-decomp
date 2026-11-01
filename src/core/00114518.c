@@ -1,5 +1,6 @@
 #include "common.h"
 #include "structs/misc.h"
+#include "data/executable.h"
 
 /*
  * core_text object 0x114518-0x1154C0. Boundaries are retail's linker fill
@@ -11,9 +12,6 @@
  * memmove.o and memset.o. Built with Sony's 2.9-ee (Makefile.sn,
  * EE29_CORE), like libc.a; _mbtowc_r is newlib's own text.
  */
-
-
-extern int SbrkErrno;
 
 extern long __sseek(void *arg0, void *arg1, void *arg2);
 
@@ -125,8 +123,7 @@ typedef struct MallocChunk {
 
 extern struct MallocChunk *__malloc_av_[3]; /* malloc_av_ bins; av_[2] is `top` */
 extern unsigned long __malloc_top_pad; /* malloc_top_pad (unsigned long) */
-extern char *__malloc_sbrk_base;         /* malloc_sbrk_base */
-extern int __malloc_current_mallinfo;           /* current_mallinfo.arena (sbrked_mem) */
+
 extern unsigned long __malloc_max_sbrked_mem; /* malloc_max_sbrked_mem */
 extern unsigned long __malloc_max_total_mem; /* malloc_max_total_mem */
 

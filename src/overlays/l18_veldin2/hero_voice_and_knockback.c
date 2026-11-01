@@ -6,12 +6,13 @@
 #include "structs/hero.h"
 #include "overlays/shared/hero_animation_slots.h"
 #include "overlays/shared/hero_idle_and_animation.h"
+#include "asm/shared_levels.h"
+#include "data/executable.h"
+#include "game/fastfunc.h"
 
 extern unsigned char hero_globals_base[];
 extern int g_current_level_index MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
-extern int CollType(void);
-extern float FastAbsF(float);
 
 extern void HeroL18_SetMoveState(int, int);
 
@@ -164,7 +165,7 @@ extern Hero g_hero;
 extern s32 veldin2_cinematic_mode MACRO_ADDR;
 extern T_210ce8 veldin2_moby_hits[];
 extern s32 g_current_level_index MACRO_ADDR;
-extern s32 level_hero_hit_counts[];
+
 extern s32 hero_hit_count MACRO_ADDR;
 extern u8 gHeroPos[];
 extern f32 g_frame_time MACRO_ADDR;

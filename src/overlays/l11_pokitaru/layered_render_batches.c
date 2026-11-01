@@ -5,6 +5,8 @@
 #include "game/draw.h"
 #include "overlays/shared/homing_missile_and_water_sheet.h"
 #include "overlays/shared/scoutbot_and_paratrooper.h"
+#include "asm/level_08.h"
+#include "data/level_11.h"
 
 extern void VU1_addGSregister(int, long);
 
@@ -67,8 +69,7 @@ extern float FastVecLength(void *);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern void AddDrawCallback(void (*)(void), void *);
-extern short pokitaru_layered_mesh_colors;
-extern short pokitaru_layered_mesh_vertex_counts;
+
 extern int pokitaru_layered_mesh11_colors[];
 extern int pokitaru_layered_mesh11_vertex_counts[];
 extern int pokitaru_layered_mesh8_colors[];
@@ -162,9 +163,9 @@ void update_level11_layered_effect_and_queue_draw(unsigned char *moby) {
             break;
     }
 }
-extern void add_uv_scroll_offset(void *, int, int, void *);
+
 extern void draw_env_overlay_mesh(int, int, int, void *, int);
-extern char pokitaru_faded_scrolled_uvs[];
+
 extern char pokitaru_faded_uv_scroll[];
 extern int pokitaru_faded_mesh_uv_sources[];
 extern int pokitaru_faded_mesh_vertex_counts[];
@@ -260,8 +261,7 @@ void draw_level11_distance_faded_effect_batches(char *m) {
 typedef struct {
     int a, b;
 } PairA_3205C0;
-extern int oil_tanker_2b_mesh_colors[];
-extern int oil_tanker_2b_mesh_vertex_counts[];
+
 extern PairA_3205C0 pokitaru_faded_uv_scroll_p[] __asm__("D_L11_00217A18");
 extern PairA_3205C0 distance_faded_effect_sine_phase_p[] __asm__("D_L11_001626C0") MACRO_ADDR;
 extern float pokitaru_faded_scroll_entries_b[] MACRO_ADDR;

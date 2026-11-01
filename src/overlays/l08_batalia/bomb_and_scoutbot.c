@@ -6,6 +6,10 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/smoke_puff_projectiles.h"
+#include "asm/shared_levels.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/sound_playback.h"
 
 /* Bomb (class 0xF8): thrown or dropped, bounces, fuse timer, explodes. */
 struct BombVars {
@@ -98,8 +102,6 @@ struct PathMoverFallVars {
     f32 bob; /* 0x0C: z offset per frame */
     Vec4A velocity; /* 0x10: fall velocity after a hit */
 };
-
-extern float random_float_between(float, float);
 
 extern int spawn_moby_offset_effect(char *);
 extern short batalia_bolt_spin_min;
@@ -277,8 +279,7 @@ void update_bolt_pickup(Moby *m) {
 }
 extern char *CreateMoby(int);
 extern int scale_ticks(int);
-extern float random_float_between(float, float);
-extern float fast_atan2(float, float);
+
 extern void moby_build_matrix(void *);
 /* Spawns a moby of class 0xF8 at a position and facing derived from a vector. */
 char *spawn_bomb_with_velocity(int arg, char *pos, char *vec) {
@@ -324,10 +325,10 @@ union Coll_36F8 {
 };
 
 extern int coll_sphere(float, void *, int, void *);
-extern void vec_reflect(void *, void *, void *);
+
 extern float FastVecLength(void *);
 extern float FastAddRots(float, float);
-extern int random_integer_below(int);
+
 extern void PartType04Spawn(void *, void *, int, int, int, int, int, int);
 extern void FastVecAdd(void *, void *, void *);
 extern int coll_line(void *, void *, int, void *, int);
@@ -1001,7 +1002,7 @@ extern float FastVecLength(void *);
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound(int, int, void *);
 extern void Sound_SetPitchBend(int, int);
-extern void Sound_StopSlot(int);
+
 typedef struct {
     u8 pad0[0x80];
     int volume;
@@ -1453,7 +1454,7 @@ extern float random_angle_radians(void);
 extern float FastCos(float);
 extern float FastSin(float);
 extern int rand_range(int, int);
-extern int random_integer_below(int);
+
 extern void FastVecAdd(void *, void *, void *);
 extern short batalia_line_puff_rise_speed_max;
 extern short batalia_line_puff_size;
@@ -2268,7 +2269,7 @@ void update_moby_transform_wobble(char *moby) {
 }
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void SamplePathAt(int *, int, void *, float *, int, float);
-extern float FastAbsF(float);
+
 extern float g_frame_time_sq MACRO_ADDR;
 
 /* Per-frame update: ease the angle and position fields toward their targets. */
@@ -2312,8 +2313,7 @@ void try_set_shuttle_departure_help_message(char *moby) {
 }
 extern char *CreateMoby(int);
 extern int scale_ticks(int);
-extern float random_float_between(float, float);
-extern float fast_atan2(float, float);
+
 /* Spawns a moby of class 0x1A9 at a position, with a random spin and a heading from a vector. */
 char *spawn_bomber_tank_projectile(char *src, char *pos, char *vec) {
     char *moby = CreateMoby(0x1A9);
@@ -2342,7 +2342,7 @@ typedef int OvlQuad __attribute__((mode(TI)));
 extern int coll_sphere_mobys(void *, float, int, void *, void *);
 extern int coll_line(void *, void *, int, void *, int);
 extern int fast_dec_timer(void *);
-extern void vec_reflect(void *, void *, void *);
+
 extern void vec_scale_to_length_r3(float, void *, void *) __asm__("func_L00_001FF4B0");
 extern int DefaultVtbl_DeleteMoby(float, int, int);
 extern void mine_debris(void *, void *, int, int, float, int, int);
@@ -2583,7 +2583,6 @@ extern void initialize_moby_launch_motion(void *, int, void *, void *, int);
 extern void spawn_rocket_explosion_and_debris(void *, int, int, int);
 extern float step_angle_toward_target(float *, int, float, float);
 extern void BuildSphericalOffset(void *, float, float, float);
-extern int coll_point_query_stub(void *, int, int, void *, int);
 
 /* Rocket guidance, route traversal, launch effects, and destruction. */
 void update_rocket(M46 *m) {

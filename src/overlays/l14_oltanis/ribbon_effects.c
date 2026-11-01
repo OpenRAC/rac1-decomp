@@ -8,14 +8,14 @@
 #include "structs/vector.h"
 #include "structs/hero.h"
 #include "structs/moby.h"
+#include "asm/executable.h"
+#include "overlays/shared/moby_ground_collision.h"
 
-extern float FastAddRots(float, float);
 extern float FastSubRots(float, float);
 extern float IntToFloat(int);
-extern float normalize_angle(float);
+
 extern float FastSin(float);
-extern float randf_sym(float, float);
-extern float FastCos(float x);
+
 struct Moby;
 extern void AddDrawCallback(void (*)(struct Moby *), struct Moby *);
 void draw_ribbon_effect(char *m);

@@ -3,6 +3,9 @@
 #include "include_asm.h"
 #include "core/00121D18.h"
 #include "core/00122200.h"
+#include "asm/executable.h"
+#include "data/executable.h"
+#include "game/fastfunc.h"
 
 ASM_FUNC("asm/overlays", func_L00_001FEF78);
 ASM_FUNC("asm/overlays", func_L00_001FEFE0);
@@ -43,8 +46,6 @@ ASM_FUNC("asm/overlays", func_L00_00200210);
 ASM_FUNC("asm/overlays", func_L00_00200290);
 ASM_FUNC("asm/overlays", func_L00_002003C8);
 extern float FastSubRots(float, float);
-extern float FastAddRots(float, float);
-extern float FastAbsF(float);
 
 /* Steps angle a toward b by at most c, with wraparound. */
 float step_rotation_toward_target(float a, float b, float c) {
@@ -130,12 +131,8 @@ extern void *active_fs_aa_buffer MACRO_ADDR;
 extern int display_buffer_address MACRO_ADDR;
 extern int draw_buffer_address MACRO_ADDR;
 extern int depth_buffer_address MACRO_ADDR;
-extern char first_clear_packet[];
+
 extern char second_clear_packet[];
-extern char fs_aa_draw_packet[];
-extern char fs_aa_transfer_packet[];
-extern char fs_aa_resample_packet[];
-extern char fs_aa_clear_packet[];
 
 #define FA ((FsAa_FAB40 *)D_0015EFB8)
 

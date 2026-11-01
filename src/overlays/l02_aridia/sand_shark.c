@@ -8,6 +8,16 @@
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/shot_tracking.h"
 #include "overlays/shared/trespasser_pad_and_background_ships.h"
+#include "asm/level_02.h"
+#include "asm/shared_levels.h"
+#include "data/executable.h"
+#include "data/level_02.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/camera_modes_and_scripts.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/sound_playback.h"
 
 /* Elevator with a rotating ring: volume, speed and lift offset. */
 struct ElevatorRingVars {
@@ -80,7 +90,7 @@ void prepare_scaled_table_on_stack(void) {
     prepare_scaled_table_with_byte_128(scratch);
 }
 extern void build_interpolated_dma_packet(void *);
-extern void write_spr_dma_channel(void *, int, int);
+
 extern char aridia_spr_upload_block[];
 
 /* Builds an interpolated DMA packet from the given parameters and uploads it to scratchpad. */
@@ -107,11 +117,9 @@ extern void FastVecSub(void *, void *, void *);
 extern void FastVecScale(void *, void *, float);
 extern float IntToFloat(int);
 extern void FastVecAdd(void *, void *, void *);
-extern int rand_range(int, int);
-extern float random_float_between(float, float);
-extern float randf_sym(float lo, float hi);
+
 extern char *PartType23Spawn__s(void *, float, float, float, int, void *, float, int) __asm__("func_L00_0026DEA0");
-extern int random_integer_below(int);
+
 extern float sand_shark_dust_rise_speed SDATA(D_L02_00161A64);
 extern float sand_shark_dust_puff_size SDATA(D_L02_00161A6C);
 extern unsigned short sand_shark_dust_puff_ticks SDATA(D_L02_00161A70);
@@ -210,7 +218,7 @@ extern void STUB_printf(char *, ...);
 extern void MoveCtl_Init(char *p);
 extern int func_001160D8(void);
 extern int scale_ticks(int);
-extern float fast_atan2(float, float);
+
 extern float FastAddRots(float, float);
 extern void MobySpringTurn(char *moby, float target, float *vel, float k, float d, float max);
 extern float FastCos(float);
@@ -220,7 +228,7 @@ extern void emit_sand_shark_single_particle(void *pos);
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern int move_w(void *, void *, void *, void *, float);
 extern void begin_sand_shark_return_home_if_outside_path(unsigned char *moby);
-extern int SegmentCrossPolyline(int, void *, void *, void *);
+
 extern float vec_distance_xy(void *, void *);
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 extern float ProbeGroundHeight(void *, int, float);
@@ -241,8 +249,7 @@ extern void SetDeathBits(void *, int, int);
 extern void spawn_color_swapped_explosion_burst(void *, void *, int, float, float);
 extern int select_group_class_29c_moby(void *argp);
 extern void DeleteMoby(void *);
-extern char aridia_camera_pos[];
-extern char *aridia_paths[];
+
 extern char sand_shark_no_path_fmt[];
 extern char sand_shark_empty_path_fmt[];
 extern char hero_globals_base[];
@@ -929,7 +936,6 @@ void sand_shark_update(unsigned char *moby) {
 }
 extern int aridia_moby_groups[];
 extern int aridia_mobys_m __asm__("D_L02_00160058") MACRO_ADDR;
-extern int random_integer_below(int);
 
 // Finds the last live moby of type 0x29C among the ones a level list names.
 int select_group_class_29c_moby(void *argp) {
@@ -951,7 +957,7 @@ int select_group_class_29c_moby(void *argp) {
     } while (*p++ >= 0);
     return result;
 }
-extern float random_float_between(float, float);
+
 extern float multiply_global_factor(float);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
@@ -1150,7 +1156,7 @@ extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern float g_frame_time_sq MACRO_ADDR;
 extern int FastDecTimer(void *);
 extern float vec_distance_xy(void *, void *);
-extern float FastAbsF(float);
+
 extern float ProbeGroundHeight(void *, int, float);
 extern void HeadingFromVector(void *, float *, void *, void *);
 extern int FindNearestEligibleMoby(float, void *, void *, int, int, void *, int);
@@ -1262,7 +1268,7 @@ void handle_sand_shark_damage_and_targeting(unsigned char *moby) {
     }
 }
 extern void MobyBlendAnimation(void *, int, int, int);
-extern float fast_atan2(float, float);
+
 extern void moby_build_matrix(void *);
 
 /* Launches a sand shark from a position along a direction. */
@@ -1320,7 +1326,7 @@ void prepare_sand_shark_for_relaunch_or_remove(unsigned char *moby) {
         DeleteMoby(moby);
     }
 }
-extern char *aridia_paths[];
+
 extern int IsPointInPolygon(void *, void *, int);
 extern int scale_ticks(int);
 
@@ -1352,7 +1358,7 @@ extern float FastDiffRots(float, float);
 extern float FastCos(float);
 extern float FastSin(float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern int rand_range(int, int);
+
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
 
@@ -1365,7 +1371,7 @@ extern void spawn_explosion(void *, void *, void *, float, float, int, int, int,
 /* The scale before the three vectors, as the other level files declare it. */
 extern void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float scale, float *v10,
                                 float *v11, float *v12);
-extern char aridia_camera_pos[];
+
 extern char hero_globals_base[];
 extern float g_frame_time MACRO_ADDR;
 extern char *aridia_scene_points MACRO_ADDR;
@@ -1883,8 +1889,7 @@ extern void transform_vector(void *, void *, void *);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void update_entity_matrix(char *, void *, void *, void *);
 extern int Sound_IsPlaying(void *, int);
-extern void Sound_StopSlot(int);
-extern int test_point_in_transformed_unit_cylinder(void *, int);
+
 extern int Moby_PlaySound(int, int, int);
 extern void AddDrawCallback(void *, void *);
 extern void DrawRotatingQuadRing(char *);
@@ -2536,8 +2541,7 @@ extern void request_hero_target_pose(void *, int, float);
 extern int get_hero_target_pose_status();
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
-extern void CameraScript(void *, void *, int, int, int);
-extern void CameraScript2(int);
+
 extern void PartType41Spawn(void *, void *, int, int, int, int, int, float);
 extern void HeroL02_SetMoveState(int, int);
 extern void enter_hero_idle_or_stop(void);
@@ -2972,7 +2976,6 @@ void snap_transport_pod_rails_to_offsets(char *moby) {
 extern char hero_globals_base[];
 extern short aridia_crane_anim_speed;
 extern int Moby_PlaySound(int, int, int);
-extern int random_integer_below(int);
 
 typedef struct VoiceSlot {
     u8 pad_00[0x74];
@@ -3165,7 +3168,7 @@ extern short rocket_launcher_near_sound_start;
 extern short rocket_launcher_near_sound_end;
 extern short rocket_launcher_far_sound_start;
 extern short rocket_launcher_far_sound_end;
-extern int hero_current_state;
+
 // Sets two sound-channel gains from distance when the expanding range reaches the hero.
 void play_rocket_launcher_delayed_shot_sounds(char *moby) {
     struct RocketSoundVars *data = (struct RocketSoundVars *)((Moby *)moby)->pvars;
@@ -3340,7 +3343,6 @@ void tresspasser_door2_update(char *moby) {
         }
     }
 }
-extern int rand_range(int, int);
 
 extern short sandshark_egg_dust_start_color;
 extern short sandshark_egg_dust_end_color;

@@ -10,6 +10,10 @@
 #include "overlays/shared/mine_bomb_and_debris.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/nanotech_ball_and_suck_cannon.h"
+#include "data/shared_levels.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/sound_playback.h"
 
 /* Glow particle (class 0x70): spinning shard that shrinks and fades out. */
 struct GlowParticleVars {
@@ -184,10 +188,10 @@ extern void MobyTransformScaledVertex(char *, int, char *);
 extern void matrix_copy_rows(void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern int scale_ticks(int);
-extern int random_integer_below(int);
+
 extern float resolve_camera_surface_height(float *, void *);
 extern void FastVecScale(void *, void *, float);
-extern float random_float_between(float, float);
+
 extern int PartType34Spawn(void *, void *, float, float);
 extern void vec_set_length_xy(void *, void *, float);
 extern float IntToFloat(int);
@@ -208,11 +212,11 @@ extern void FastVecSub(void *, void *, void *);
 extern void vec_reflect(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern float FastVecDot(void *, void *);
-extern f32 FastAbsF(f32);
+
 extern float fast_atan2(float, float);
 
 extern int RotateWithMoby(void *, void *, void *, void *, void *, void *);
-extern void Sound_StopSlot(int);
+
 extern void MobyBlendAnimation(void *, int, int, int);
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound(int, int, int);
@@ -2217,7 +2221,6 @@ extern int coll_line(void *, void *, int, int, int);
 extern void append_unique_moby_index(int, short *, short);
 extern unsigned char hero_globals_base_u[] __asm__("D_0013E633") NOT_SDA;
 extern char collision_hit_point[];
-extern short active_homing_missiles[];
 
 // spawns an effect moby (class 0x99) at pos, tied to an owner and a target, and aims its starting state
 // Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002aa670.c, FUN_L00_002afc70.
@@ -2494,7 +2497,7 @@ extern float cpu_frame_load MACRO_ADDR;
 extern float level_draw_frame_load MACRO_ADDR;
 extern Vec4 devastator_default_normal MACRO_ADDR;
 extern Vec4 devastator_default_surface_motion MACRO_ADDR;
-extern unsigned char *part_type23_textures;
+
 extern float dot1688(void *) __asm__("func_L00_001FF3E0");
 extern void cross1688(void *, void *, void *) __asm__("func_L00_001FF270");
 extern float horizontal1688(void *) __asm__("func_001F9CE8");

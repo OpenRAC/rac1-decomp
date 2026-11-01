@@ -6,6 +6,8 @@
 #include "overlays/shared/hero_animation_slots.h"
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/hero_vehicle_and_collision.h"
+#include "asm/shared_levels.h"
+#include "game/mobyutil.h"
 
 extern Hero g_hero;
 typedef struct {
@@ -24,7 +26,7 @@ extern int idle_fidgets_field_220 NOT_SDA;
 extern int g_current_level_index MACRO_ADDR;
 extern char hero_globals_base[];
 extern int hero_slot_item_id(int);
-extern float random_float_between(float, float);
+
 extern int coll_line(void *, void *, int, int, int);
 extern int scale_ticks(int);
 extern float multiply_global_factor(float);
@@ -252,7 +254,7 @@ int hero_handle_jump_press(void) {
     }
     return 0;
 }
-extern float fast_atan2(float, float);
+
 extern float FastDiffRots(float, float);
 extern float FastCos(float);
 extern float FastSin(float);

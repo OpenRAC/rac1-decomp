@@ -16,6 +16,10 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "structs/hero_views.h"
+#include "asm/shared_levels.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/sound_playback.h"
 
 typedef int u128 __attribute__((mode(TI)));
 typedef float FVec4[4] __attribute__((aligned(16)));
@@ -85,7 +89,6 @@ extern void turn_to(int, float, float, float);
 extern int fast_dec_timer(int *);
 extern int scale_ticks(int);
 
-extern float FastAbsF(float);
 extern void set_hero_animation(int, int, float);
 extern int hero_idle_sequence(int);
 extern float adjust_hero_animation_speed_for_target_frame(float, float, float, float);
@@ -102,7 +105,6 @@ extern int truncate_float_to_s32(float);
 extern float vec_length_xy(void *);
 extern int clamp_vec_length_xy(float, void *, void *);
 
-extern void Sound_StopSlot(int);
 extern int FastDecTimer(void *);
 
 extern void RippleDisturb(void *, int, int, float, float, float, float);
@@ -112,9 +114,8 @@ extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern int PartType34Spawn(void *, void *, float, float);
-extern int random_integer_below(int);
+
 extern int rand_range(int, int);
-extern float random_float_between(float, float);
 
 extern float FastAddRots(float, float);
 extern void BuildSphericalOffset(void *, float, float, float);
@@ -127,7 +128,7 @@ extern void Hero_SetTiltSpringParams(float, float);
 extern float FastSin(float);
 extern void FastVecSub(void *, void *, void *);
 extern void ClampVectorLength(void *, float);
-extern float fast_atan2(float, float);
+
 extern float FastVecDist(void *, void *);
 extern int solve_quadratic_equation(float *, float *, float, float, float);
 extern float step_angle_toward_target(float *, int, float, float);
@@ -172,8 +173,6 @@ extern void PostHitMessage(void *, int, int, void *, void *, float);
 
 extern float FastVecDot(void *, void *);
 extern int MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
-
-extern void add_vectors(void *, void *, void *);
 
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
 

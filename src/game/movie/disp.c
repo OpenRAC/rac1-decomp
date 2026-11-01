@@ -1,5 +1,6 @@
 #include "common.h"
 #include "structs/misc.h"
+#include "data/executable.h"
 
 /*
  * movie/disp.cpp in the original source; text 0x23C5E0-0x23C9C0.
@@ -13,7 +14,6 @@
  * 0x20-byte trailer and the end tag. */
 extern int draw_buffer_address MACRO_ADDR;
 extern char *active_fs_aa_buffer MACRO_ADDR;
-extern char fs_aa_resample_packet[];
 
 /* Builds the DMA packet that uploads a w x h movie image to the frame buffer in 16x16 blocks. */
 void setImageTag(unsigned long *p, unsigned int image, int w, int h) {

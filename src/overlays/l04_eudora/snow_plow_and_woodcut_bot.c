@@ -10,6 +10,11 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/trespasser_pad_and_background_ships.h"
+#include "asm/executable.h"
+#include "asm/shared_levels.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/moby_frame_packet.h"
 
 typedef int w128 __attribute__((mode(TI)));
 typedef struct {
@@ -234,14 +239,13 @@ extern void FastDecTimer(void *);
 extern s32 is_point_inside_clip_volume(void *, s32);
 extern void MobySpringTurn(void *, void *, float, float, float, float);
 extern float vec_distance_xy(void *, void *);
-extern float FastDiffRots(float, float);
-extern s32 scale_ticks(s32);
+
 extern void FastVecSub(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern float FastVecLength(void *);
 extern void AttachManipulator(void *, s32, void *);
-extern float FastAddRots(float, float);
+
 extern void axis_rotation_2d48(void *, s32, float);
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void MobyAnimAdvance(void *);
@@ -259,7 +263,6 @@ extern void SpawnExplosionFx(void *, void *, s32, float, float);
 extern void FastVecScale(void *, void *, float);
 extern void SpawnBreakFragment(void *, s32, void *, void *, s32, s32, float, void *, void *, void *);
 extern s32 fast_dec_timer(s32 *);
-extern float fast_atan2(float, float);
 
 typedef float VehicleArr_2CB800[4] __attribute__((aligned(16)));
 typedef struct {
@@ -603,12 +606,11 @@ extern short eudora_floating_platform_spin_rate_deg;
 extern float g_frame_time_b __asm__("D_0015EE6C") MACRO_ADDR;
 extern float g_frame_scale_sq_b __asm__("D_0015EE64") MACRO_ADDR;
 extern void DeleteMoby(void *);
-extern float random_float_between(float, float);
+
 extern float random_angle_radians(void);
 extern float MobyGetFrameValue(void *);
 extern float FastNormalizeAngle(float);
-extern float FastCos(float);
-extern float FastAddRots(float, float);
+
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern void FastVecSub(void *, void *, void *);
 extern void update_entity_matrix(char *, void *, void *, void *);
@@ -757,8 +759,7 @@ extern void FindNearestTargetMoby(void *, void *, float);
 extern void Manipulator_ApplyScale(float, void *, int, void *);
 extern float FastVecDist(void *, void *);
 extern void set_ground_height_band(void *);
-extern float fast_atan2(float, float);
-extern float FastDiffRots(float, float);
+
 extern float vec_distance_xy(void *, void *);
 extern void FastDecTimer(void *);
 extern char *MobyGetHitMessage(void *, int, int);
@@ -768,10 +769,10 @@ extern void InitKnockback(float, void *, void *, int, int, int);
 extern void SetDeathBits(void *, int, int);
 extern void RerollEffectCounter(void *, void *);
 extern float multiply_global_factor(float);
-extern int scale_ticks(int);
+
 extern void MobyBlendAnimation(void *, int, int, int);
 extern void reset_walker_gait_helpers(void *);
-extern float FastAddRots(float, float);
+
 extern void vec_scale_to_length(void *, void *, float);
 extern void transform_scaled_vertex_batch(void *, int, void *, void *);
 extern void coll_line(void *, void *, int, void *, void *);
@@ -781,11 +782,11 @@ extern void coll_sphere_mobys(void *, float, int, void *, void *);
 extern void AttachManipulator(void *, int, void *);
 extern void initialize_woodcut_bot_movement_data(void *);
 extern void *libc_memset(void *, int, int);
-extern int random_integer_below(int);
+
 extern int IsPointInPolygon(void *, void *, int);
 extern int IsFrameWithinWindow(void *, float);
 extern float FastSin(float);
-extern void add_vectors(void *, void *, void *);
+
 extern void spawn_crate_debris(void *, void *, void *, void *, int, int, float, float);
 
 extern int leg_walker_update(void *, void *, float, float, float);
@@ -1398,7 +1399,7 @@ void woodcut_bot_update(Moby *m) {
 typedef int u128 __attribute__((mode(TI)));
 extern struct Moby *CreateMoby_m(int) __asm__("func_0020D348");
 extern void moby_build_matrix(void *);
-extern void qcopy(void *, void *);
+
 // Spawns a class 0x23A moby copying fields from another and placing it at a position.
 void *spawn_class_23a_moby(char *src, char *pos) {
     char tmp[16];
@@ -1438,7 +1439,7 @@ void update_moby_translation_delta_matrix(char *m) {
 }
 extern char *eudora_mobys MACRO_ADDR;
 extern float IntToFloat(int);
-extern float fast_fmod(float, float);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 /* update: blend two keyframes of a path and write the result to a position */
@@ -1501,7 +1502,7 @@ extern int fast_dec_timer(s32 *);
 extern int rand_range(int, int);
 #define random_int_between func_L00_00258BC8
 #define collision_line ((int (*)(void *, void *, int, void *, void *))(func_L00_001EFFF0))
-extern void vec_reflect(void *, void *, void *);
+
 extern float eudora_leaf_drift[6];
 extern char eudora_coll_hit_point[];
 
@@ -1822,7 +1823,7 @@ typedef struct {
 } L10SpriteData_298940;
 extern int fast_dec_timer(int *);
 extern int FastTweenColor(int, int, float);
-extern float FastAbsF(float);
+
 extern unsigned char *PartType59Spawn(void *, int, unsigned char, int, int, int, int, float);
 extern int truncate_float_to_s32(float);
 extern int eudora_game_mode MACRO_ADDR;
@@ -1865,8 +1866,7 @@ extern int DialogRequest_Init(void *, void *);
 extern int is_point_inside_clip_volume(void *, int);
 extern int Npc_TryStartDialog(void *, void *);
 extern void unlock_planet(int);
-extern void jet_clear_persistent(int);
-extern float FastAddRots(float, float);
+
 extern int memcard_Save(int, int);
 extern char eudora_lieutenant_respawn_point[];
 extern unsigned char saved_mission_state[];
@@ -2240,7 +2240,7 @@ extern float eudora_debris_spin_max_deg SDATA(D_L04_00161E0C);
 extern int FastDecTimer_bounce(void *) __asm__("func_001F9938");
 extern int coll_sphere(float, void *, int, void *);
 extern float FastVecDot(void *a, void *b);
-extern void vec_reflect(void *, void *, void *);
+
 extern float randf_sym(float lo, float hi);
 
 // Updates a bouncing moby: spins it, then in state 0 reflects its direction off a plane and in state 1 fades it out.

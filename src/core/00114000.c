@@ -1,5 +1,6 @@
 #include "common.h"
 #include "structs/misc.h"
+#include "data/executable.h"
 
 /*
  * core_text object 0x114000-0x114060. Boundaries are retail's linker fill
@@ -8,9 +9,6 @@
  * newlib's fstatr.o (_fstat_r; the SDK's libc.a). Built with Sony's
  * 2.9-ee (Makefile.sn, EE29_CORE), like libc.a.
  */
-
-
-extern int SbrkErrno;
 
 int _fstat_r(int *errOut, void *arg1, void *arg2) {
     int r;

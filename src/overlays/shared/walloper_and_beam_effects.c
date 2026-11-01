@@ -6,6 +6,8 @@
 #include "structs/moby.h"
 #include "game/mobyutil.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "asm/shared_levels.h"
+#include "game/fastfunc.h"
 
 /* Tesla beam: draw state read by the beam and arc effects. */
 struct BeamArcVars {
@@ -1331,11 +1333,11 @@ extern short tesla_arc_range;
 extern short morphoray_target_angle_threshold_degrees_gp;
 extern Vec4 collision_hit_point;
 extern int coll_hit_result[];
-extern float fast_atan2(float, float);
+
 extern float vec_distance_xy(void *, void *);
 extern float FastDiffRots(float, float);
 extern float FastVecDist(void *, void *);
-extern float FastAbsF(float);
+
 extern float FastArcSin(float);
 extern int GetFlaggedPvarWord(char *);
 extern void BuildSphericalOffset(void *, float, float, float);
@@ -2574,9 +2576,9 @@ extern char *active_mobies[];
 extern char gHeroPos[];
 extern float FastVecDist(void *, void *);
 extern float vec_distance_xy(void *, void *);
-extern float fast_atan2(float, float);
+
 extern float FastDiffRots(float, float);
-extern float FastAbsF(float);
+
 extern int coll_line_r2(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b94d0.c, FUN_L00_002bed90. */
@@ -2667,7 +2669,7 @@ extern Hit *g_coll_hit_moby_r __asm__("D_L00_00173F58");
 extern XD coll_hit_result_r __asm__("D_L00_00173F40");
 extern Vec4 collision_hit_point;
 extern s32 truncate_float_to_s32(f32);
-extern f32 fast_atan2(f32, f32);
+
 extern f32 FastAddRots(f32, f32);
 extern f32 FastSubRots(f32, f32);
 extern f32 FastDiffRots(f32, f32);
@@ -2847,8 +2849,7 @@ void accumulate_local_vector_steps(char *a, char *b, int n) {
     }
 }
 extern float vec_distance_xy(void *, void *);
-extern float FastAbsF(float);
-extern float fast_atan2(float, float);
+
 extern float jump_speed_4318(void *, void *, int, float, float);
 extern float g_frame_time MACRO_ADDR;
 
@@ -3048,7 +3049,6 @@ typedef struct {
 extern TopStruct *g_coll_hit_moby;
 
 extern int coll_line(Vec4f *, Vec4f *, int, void *, int);
-extern int CollType(void);
 
 /*
  * Nudges a copy of a0's vector by -0.3/+1.0 on Z, hands both to the

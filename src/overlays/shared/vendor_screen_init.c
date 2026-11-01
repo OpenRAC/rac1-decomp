@@ -6,6 +6,11 @@
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
+#include "core/989snd.h"
+#include "game/loaders.h"
+#include "game/music.h"
+#include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/level_gameplay_loading.h"
 
 typedef struct {
     char p0[0x10];
@@ -26,8 +31,7 @@ extern short novalis_white_fade_level;
 extern char novalis_vendor_screen_anchor_offset;
 extern char hero_globals_base[];
 extern unsigned char help_stats_base[] NOT_SDA;
-extern void snd_PauseAllSoundsInGroup(int);
-extern void music_Pause(int);
+
 extern void snd_FlushSoundCommands(void);
 extern void FastMemSet();
 
@@ -39,10 +43,7 @@ extern float ProbeGroundHeight(void *, int, float);
 extern void clear_u64_value(void *);
 extern float FastAddRots(float, float);
 extern void calculate_dma_transfer_address(void);
-extern void clear_hero_item_slot(int, int);
-extern void select_world_object_resource_tables(int, int);
-extern void load_scene_chunks_with_fade(int);
-extern void parse_space_scene_chunk(int);
+
 extern int sce_gs_sync_v(int);
 
 extern int Music_ContinueStreamIfReady(void);

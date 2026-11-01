@@ -5,6 +5,7 @@
 #include "structs/misc.h"
 #include "game/draw.h"
 #include "game/vuchain.h"
+#include "data/executable.h"
 
 /*
  * mobyfunc.cpp in the original source; text 0x20D348-0x20E6B8.
@@ -16,7 +17,6 @@ extern char voice_pool[];
 
 extern void FastMemCopy(void *, void *, int);
 
-extern int draw_config[];
 extern void FastMemSet();
 
 extern int STUB_printf();
@@ -64,7 +64,7 @@ Moby *CreateMoby(int oClass) {
 }
 
 extern unsigned char resident_class_slot_by_id[] NOT_SDA;
-extern int resident_moby_class_data[];
+
 extern void *moby_class_resources[];
 extern int resident_object_pool MACRO_ADDR;
 extern void update_moby_animation_state_p(void *) __asm__("func_0020D6D0");
@@ -246,8 +246,6 @@ void DeleteMoby(MobyDel *m) {
     m->unk38 = world_update_time + 2;
     update_moby_grids(m, 0x80807F7F);
 }
-
-extern unsigned char debug_font_buffer[];
 
 /* Refresh a moby's animation frame pointers from its class's sequence
    table: seq 0xFF (none) points frameData into D_001AAF40 instead.
@@ -659,7 +657,7 @@ extern void VU0_loadMicroProgram(void *);
 extern void VU1_addGSregister(int, long);
 
 extern unsigned short moby_vu1_data_qwc NOT_SDA;
-extern char moby_vu1_data[];
+
 extern int font_state MACRO_ADDR;
 extern char moby_vu0_micro_program[];
 extern int g_gs_texture_allocation_start MACRO_ADDR;

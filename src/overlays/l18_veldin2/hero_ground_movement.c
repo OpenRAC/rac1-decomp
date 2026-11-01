@@ -19,6 +19,12 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "structs/hero_views.h"
+#include "asm/shared_levels.h"
+#include "data/level_18.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/sound_playback.h"
+#include "overlays/shared/variants.h"
 
 typedef int u128 __attribute__((mode(TI)));
 typedef float FVec4[4] __attribute__((aligned(16)));
@@ -63,12 +69,12 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int veldin2_frame_count MACRO_ADDR;
-extern short veldin2_look_stat_timer;
+
 extern short veldin2_look_stat_count;
 extern unsigned char *veldin2_water_patches MACRO_ADDR;
 extern int veldin2_water_patch_count MACRO_ADDR;
 extern HeroPlayerCameraView veldin2_player_camera;
-extern float veldin2_camera_yaw;
+
 extern int *veldin2_coll_sphere_moby_hits[];
 extern HeroItemDefView veldin2_item_defs[];
 extern HeroBoneRow veldin2_hero_bones[];
@@ -87,9 +93,8 @@ extern void turn_to(int, float, float, float);
 extern int fast_dec_timer(int *);
 extern int scale_ticks(int);
 
-extern float FastAbsF(float);
 extern void set_hero_animation(int, int, float);
-extern int HelpL15_GetRecordValue(int);
+
 extern float adjust_hero_animation_speed_for_target_frame(float, float, float, float);
 
 extern void clear_u64_value(void *);
@@ -100,7 +105,6 @@ extern int truncate_float_to_s32(float);
 extern float vec_length_xy(void *);
 extern int clamp_vec_length_xy(float, void *, void *);
 
-extern void Sound_StopSlot(int);
 extern int FastDecTimer(void *);
 
 extern void RippleDisturb(void *, int, int, float, float, float, float);
@@ -110,9 +114,8 @@ extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern int PartType34Spawn(void *, void *, float, float);
-extern int random_integer_below(int);
+
 extern int rand_range(int, int);
-extern float random_float_between(float, float);
 
 extern float FastAddRots(float, float);
 extern void BuildSphericalOffset(void *, float, float, float);
@@ -125,7 +128,7 @@ extern void Hero_SetTiltSpringParams(float, float);
 extern float FastSin(float);
 extern void FastVecSub(void *, void *, void *);
 extern void ClampVectorLength(void *, float);
-extern float fast_atan2(float, float);
+
 extern float FastVecDist(void *, void *);
 extern int solve_quadratic_equation(float *, float *, float, float, float);
 extern float step_angle_toward_target(float *, int, float, float);
@@ -169,8 +172,6 @@ extern void PostHitMessage(void *, int, int, void *, void *, float);
 
 extern float FastVecDot(void *, void *);
 extern int MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
-
-extern void add_vectors(void *, void *, void *);
 
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
 

@@ -2,6 +2,7 @@
 #include "callees.h"
 #include "structs/records.h"
 #include "structs/misc.h"
+#include "core/00119D88.h"
 
 /*
  * stash.cpp in the original source; text 0x233FF8-0x234380.
@@ -16,7 +17,7 @@ void initialize_sif_rpc(void) {
 }
 
 extern int sceSifBindRpc(void *client, int id, int mode);
-extern int sce_sif_check_stat_rpc(void *client);
+
 extern int sif_call_rpc(void *, int, int, void *, int, void *, int, void *, void *); /* sceSifCallRpc */
 
 /*

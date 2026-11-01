@@ -5,6 +5,8 @@
 #include "structs/moby.h"
 #include "game/skyfunc.h"
 #include "overlays/shared/sky_particles.h"
+#include "asm/shared_levels.h"
+#include "data/level_04.h"
 
 extern float vec_distance_xy(void *, void *);
 
@@ -292,9 +294,8 @@ void steer_child_moby(Moby **list, int n, Moby *m, Steer_1F3010 *c, float *f) {
 extern void FastVecAdd(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern int coll_sphere(float, void *, int, void *);
-extern float fast_atan2(float, float);
+
 extern float FastAddRots(float, float);
-extern char eudora_coll_resolved_pos[];
 
 /* steps a moby's position out of collision and aims it */
 void update_moby_movement_with_sphere_collision(char *a, char *b, char *c, float f) {

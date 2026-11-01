@@ -10,6 +10,19 @@
 #include "overlays/shared/linked_moby_transforms.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
+#include "asm/level_06.h"
+#include "asm/shared_levels.h"
+#include "data/level_18.h"
+#include "game/fastfunc.h"
+#include "game/hud.h"
+#include "game/mobyutil.h"
+#include "game/pause.h"
+#include "overlays/shared/camera_modes_and_scripts.h"
+#include "overlays/shared/follow_camera.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/pause_menu.h"
+#include "overlays/shared/sound_playback.h"
 
 /* Class 0x565 trigger: index of the transform whose xy bounds mark block entries. */
 struct Class565Vars {
@@ -65,7 +78,7 @@ extern short veldin2_moby_group_fall_progress;
 extern short veldin2_moby_group_debris_progress;
 extern short veldin2_moby_group_debris_start_rate;
 extern short veldin2_moby_group_debris_scale;
-extern float veldin2_camera_yaw;
+
 extern float veldin2_zero_vec[] MACRO_ADDR;
 
 extern int scale_ticks(int);
@@ -77,8 +90,7 @@ extern void mark_class_0630_moby_and_child_for_removal(void *);
 extern void DeleteMoby(void *);
 extern void lerp_vector(void *, void *, void *, float);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern int random_integer_below(int);
-extern float random_float_between(float, float);
+
 extern float FastAddRots(float, float);
 extern float FastCos(float);
 extern float FastSin(float);
@@ -251,7 +263,7 @@ void reset_drek_boss_class_0565_moby(Moby *moby) {
 }
 extern void FastVecSub(void *, void *, void *);
 extern void matrix_mul_vec3(void *, void *, void *);
-extern float FastAbsF(float);
+
 extern char *veldin2_arena_nodes MACRO_ADDR;
 extern unsigned char veldin2_tie_class_slot_by_id[];
 extern char *veldin2_tie_classes[];
@@ -296,7 +308,7 @@ extern void draw_glow_moby_layered_quads(struct Moby *);
 extern void AddDrawCallback(void (*)(void), void *);
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound(int, int, int);
-extern void Sound_StopSlot(int);
+
 extern float ApproachValue(float *p, float target, float maxstep);
 
 typedef struct VoiceSlot {
@@ -865,7 +877,7 @@ extern int *veldin2_paths[];
 extern short drek_boss_camera_reset_done;
 extern short drek_boss_intro_started;
 extern short drek_boss_arena_radius;
-extern short drek_boss_camera_move_request;
+
 extern short drek_boss_camera_move_ticks;
 extern short drek_boss_camera_move_hold_ticks;
 extern short drek_boss_class_3d7_ticks;
@@ -887,13 +899,12 @@ extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
 extern void set_ground_height_band(void *);
 
 extern void StartCutscene(int);
-extern void jet_reset_camera(void *, void *);
+
 extern void Hero_ResetToPosition(void *, void *, int, int);
-extern void jet_clear_persistent(int);
+
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern void vec_set_length_xy(void *, void *, float);
-extern void CameraScript(void *, void *, int, int, int);
 
 extern void queue_movie_with_game_language(int i);
 
@@ -901,16 +912,15 @@ extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern void spawn_explosion_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                 float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
-extern void PauseAllSounds(int arg0);
 extern void MobyBlendAnimation(void *, int, int, int);
 extern void clear_u64_value(void *);
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern int IsFrameWithinWindow(char *, float);
 extern int IsPointInPolygon(void *, void *, int);
 extern int FastTweenColor(int, int, float);
-extern float fast_atan2(float, float);
+
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
-extern float randf_sym(float lo, float hi);
+
 extern float FastVecDist(void *, void *);
 extern float vec_distance_xy(void *, void *);
 extern float FastVecLength(void *);
@@ -1974,7 +1984,6 @@ void drek_final_boss_robot_update(Moby *moby) {
         AddDrawCallback((void (*)(void))render_drek_boss_joint_glows, moby);
     }
 }
-extern short sinking_platform_fall_count;
 
 /* Latches the target from the global block once, and counts a class 0x24B hit. */
 void count_drek_boss_platform_event_once(char *moby) {
@@ -2023,7 +2032,7 @@ extern void set_moby_attached_effect_alpha_from_distance_v(void *, float) __asm_
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, void *, void *, int, int);
 extern void RerollEffectCounter(void *m, short *p);
-extern void Hud_SetBarValueById(int, int);
+
 extern void StepColorFade(void *, void *);
 extern char *CreateMoby_m(int) __asm__("func_0020D348");
 extern void MobyTransformScaledVertex(void *, int, void *);
@@ -2590,7 +2599,7 @@ typedef union {
     long long quad;
     float f[4];
 } L18Vector;
-extern float fast_atan2(float, float);
+
 extern float FastSubRots(float, float);
 
 /* Stores in dest the yaw from one point to another, relative to the source moby's yaw. */
@@ -2603,14 +2612,14 @@ void set_drek_boss_relative_aim_yaw(char *source, char *dest, L18Vector *from, L
                     ((struct Moby *)source)->rot.z);
 }
 extern void SetTableEntryFlagIfKind18(char *moby);
-extern void Hud_SetBarValueById(int arg0, int arg1);
+
 extern void Cam_SetDistanceGoal(float x, float y, int flag);
-extern void follow_camera_set_height(float x, float y);
+
 extern int queue_animation_update(int, int, int, int, int, int, int);
 extern float ApproachWithVelocity_p(float *, float, float *, float, float, float) __asm__("func_00214D88");
 
 extern void Hud_UpdateCounter();
-extern void draw_segmented_hud_meter_base();
+
 extern char *veldin2_camera_descriptors MACRO_ADDR;
 extern int veldin2_camera_trigger_used[];
 extern char veldin2_camera_trigger_records[];
@@ -2749,7 +2758,7 @@ typedef struct {
     float v[4];
 } __attribute__((aligned(16))) QVec;
 extern int fast_subtract_rotations_cf(void *);
-extern int rand_range(int, int);
+
 extern unsigned char *PartType44Spawn(void *pos, float *vec, int s, int a, int col, int n, float x, float y, float z,
                                       float w, float pw);
 extern char *PartType21Spawn(void *pos, void *dir, int c, int d, int n, int k, float f);

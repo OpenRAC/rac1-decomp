@@ -3,6 +3,7 @@
 #include "include_asm.h"
 #include "structs/vector.h"
 #include "structs/moby.h"
+#include "asm/shared_levels.h"
 
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 typedef int OvlQuad __attribute__((mode(TI)));
@@ -24,7 +25,6 @@ extern int coll_sphere(void *, float, int, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern void FastVecSub(void *, void *, void *);
 extern f32 vec_length_xy(void *);
-extern f32 fast_atan2(f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l15/math/interpolation/00247e90.c, FUN_L15_00247e90. */
 int move_moby_with_sphere_collision(struct Moby *obj, u128 *delta, int flags, float step, float radius) {

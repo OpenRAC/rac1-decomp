@@ -2,6 +2,7 @@
 #include "common.h"
 #include "include_asm.h"
 #include "structs/vector.h"
+#include "asm/shared_levels.h"
 
 extern void update_color_fade_velocity_particle_r() __asm__("func_L00_002689B0");
 extern void update_falling_effect_particle_r() __asm__("func_L00_00269BE8");
@@ -254,7 +255,6 @@ void spawn_timed_effect_particle(char *pos, int a1) {
     }
 }
 extern int FastDecTimer(void *);
-extern void KillPart(void *);
 
 /* Particle update: fade alpha and step the texture frame over the lifetime; kill at timer end. */
 void update_timed_effect_particle(char *m) {

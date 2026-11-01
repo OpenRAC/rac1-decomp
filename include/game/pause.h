@@ -5,6 +5,7 @@
 
 #include "common.h"
 
+extern void PauseAllSounds(int arg0);
 extern int acquire_menu_stream_buffer(int);
 extern void clear_scene_state_buffers(void);
 extern void load_level_zero_preserving_progress(int);

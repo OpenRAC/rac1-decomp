@@ -9,6 +9,10 @@
 #include "game/memcard.h"
 #include "game/music.h"
 #include "game/pause.h"
+#include "asm/executable.h"
+#include "data/executable.h"
+#include "game/draw.h"
+#include "game/space.h"
 
 /*
  * freeze.cpp in the original source; text 0x1FBC80-0x1FDF10.
@@ -18,15 +22,12 @@
 
 extern int space_load_in_progress MACRO_ADDR;
 
-extern unsigned char normal_font_metrics[];
-
 extern int GetEffectTex(int);
 
 extern void snd_PauseAllSoundsInGroup(int);
 extern void music_Pause(int);
 extern int msg_string(int);
 
-extern int scale_game_frame_count(int);
 extern int g_game_mode MACRO_ADDR;
 extern int memory_card_request;
 extern char mode_freeze_info[];
@@ -199,11 +200,11 @@ extern s32 race_best_times[] MACRO_ADDR;
 extern s32 race_best_records[] MACRO_ADDR;
 extern struct TextRegionP freeze_info_text_region;
 extern struct TextRegionP freeze_choice_text_region;
-extern u8 normal_font_metrics[];
+
 extern char g_hero[];
 extern char g_screen_extent[];
 extern void emit_rgba_draw_packet(s32, s32, s32, s32);
-extern void DrawUIFrame(s32, s32, s32, s32, s32);
+
 extern void draw_outlined_rect(s32, s32, s32, s32, s32);
 extern s32 FontPrintCenter(s32, s32, s64, char *, s32);
 extern void font_print_window_regular(struct TextRegionP *, long, char *, s32);
@@ -701,16 +702,13 @@ extern char memory_card_state[];
 extern char g_controller_state[];
 extern char D_00141150[];
 
-extern int scale_game_frame_count(int);
 extern void memcard_Save(int, int);
 extern void Profile_Mark(void);
 extern void noop_callback_k(void *, void *, int, int);
-extern void FadeToBlack(int);
+
 extern void Hud_SetBarValueById(int, int);
 
 extern void Music_QueueTrack(int, int);
-
-extern void initialize_global_state_entry(int);
 
 extern int snd_FlushSoundCommands(void);
 

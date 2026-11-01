@@ -11,6 +11,9 @@
 #include "game/pause.h"
 #include "game/stream.h"
 #include "overlays/shared/camera_switch_and_update.h"
+#include "core/00116070.h"
+#include "data/shared_levels.h"
+#include "game/framebuf.h"
 
 typedef struct G137C80_240398 {
     char pad[0x12CC];
@@ -446,10 +449,10 @@ extern void Load_r(void *, int, int) __asm__("func_002176C8");
 extern void flush_cache(int);
 extern int fast_decompress(void *, void *);
 extern void FastMemSet(void *, int, int);
-extern void srand(int);
+
 extern void SetUpdateModeTiming(int);
 extern void UpdateFog();
-extern void SetBackgroundColor(int, int, int);
+
 extern void VU0_loadMicroProgram(void *);
 extern int STUB_printf();
 extern void copy_memory_by_alignment(void *, void *, int);
@@ -493,7 +496,7 @@ extern char player_camera[];
 extern char moby_animation_slots[];
 extern float frame_scale MACRO_ADDR;
 extern Lvl173F40_422D8 coll_hit_result;
-extern char coll_hit_moby_record[];
+
 extern char coll_hit_vector_buffer[];
 extern char coll_cell_grid[];
 extern char coll_cell_slot_bitmap[];
@@ -514,7 +517,7 @@ extern int moby_draw_distance MACRO_ADDR;
 extern int level_particle_clip_dist MACRO_ADDR;
 extern u8 frame_vu0_micro_program[];
 extern unsigned char level_point_lights[];
-extern unsigned char level_point_light_data[];
+
 extern char level_moby_lights[];
 extern char too_many_moby_lights_msg[];
 extern char env_zone_spheres[];
@@ -549,7 +552,7 @@ extern char *moby_spawn_pvar_pool MACRO_ADDR;
 extern short moby_index_by_file_order[];
 extern unsigned char checkpoint_level_state_moby_flags[];
 extern unsigned char mission_state[] MACRO_ADDR;
-extern int session_moby_killed[];
+
 extern int level_moby_killed[][64];
 extern int g_current_level_index MACRO_ADDR;
 extern int level_moby_groups[];
@@ -586,8 +589,7 @@ extern char occlusion_tfrag_mismatch_msg[];
 extern char occlusion_tie_mismatch_fmt[];
 extern char no_occlusion_data_msg[];
 extern int g_debug_menu[];
-extern int glove_of_doom_ring[];
-extern short active_homing_missiles[];
+
 extern short thrown_mine_list[];
 extern short decoy_list[];
 extern int level_frame_counter MACRO_ADDR;

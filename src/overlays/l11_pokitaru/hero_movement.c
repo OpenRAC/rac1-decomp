@@ -15,13 +15,18 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "structs/hero_views.h"
+#include "asm/shared_levels.h"
+#include "data/level_11.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/sound_playback.h"
 
 extern char hero_globals_base[];
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
-extern int CollType(void);
+
 extern void Hero_TrySetMoveStateL11(int, int);
-extern float FastAbsF(float);
 
 /* Per-frame update of the player state flags from the current state. */
 void update_hero_surface_condition_flags(void) {
@@ -154,12 +159,12 @@ extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int level_frame MACRO_ADDR;
-extern short pokitaru_look_stat_timer;
+
 extern short pokitaru_look_stat_count;
 extern unsigned char *pokitaru_pool_draw_tiles MACRO_ADDR;
 extern int pokitaru_pool_draw_count MACRO_ADDR;
 extern HeroPlayerCameraView pokitaru_player_camera;
-extern float pokitaru_camera_yaw;
+
 extern Moby *pokitaru_coll_sphere_moby_hits[];
 extern HeroBoneRow pokitaru_hero_bones[];
 extern HeroAttackRecord pokitaru_attack_records[];
@@ -190,7 +195,6 @@ extern int truncate_float_to_s32(float);
 extern float vec_length_xy(void *);
 extern int clamp_vec_length_xy(float, void *, void *);
 
-extern void Sound_StopSlot(int);
 extern int FastDecTimer(void *);
 
 extern void RippleDisturb(void *, int, int, float, float, float, float);
@@ -200,9 +204,8 @@ extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern int PartType34Spawn(void *, void *, float, float);
-extern int random_integer_below(int);
+
 extern int rand_range(int, int);
-extern float random_float_between(float, float);
 
 extern float FastAddRots(float, float);
 extern void BuildSphericalOffset(void *, float, float, float);
@@ -215,7 +218,7 @@ extern void Hero_SetTiltSpringParams(float, float);
 extern float FastSin(float);
 extern void FastVecSub(void *, void *, void *);
 extern void ClampVectorLength(void *, float);
-extern float fast_atan2(float, float);
+
 extern float FastVecDist(void *, void *);
 extern int solve_quadratic_equation(float *, float *, float, float, float);
 extern float step_angle_toward_target(float *, int, float, float);
@@ -228,12 +231,10 @@ extern void transform_vector(void *, void *, void *);
 extern float gravity_z(float *);
 extern float Spring(float *, float *, float, float, float, float);
 
-extern void set_gravity_relative_vector_length_xy(float *, float *, float);
-extern void gravity_set_z(float *, float *, float);
 extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern void update_hero_target_heading(float, float, float);
-extern void offset_hero_position_against_gravity(float *, float *, float);
+
 extern int test_hero_animation_frame_window(float);
 
 extern void initialize_moby_transform_history(int, void *);
@@ -241,10 +242,9 @@ extern void create_moby_transform_history_entry(void *, int, int);
 
 extern void vec_set_length_xy(void *, void *, float);
 
-extern void gravity_flatten(float *, float *);
 extern int hero_slot_item_id(int);
 extern void allocate_hero_voice_for_entry(int, int);
-extern void add_hero_forward_offset(void *, void *, float);
+
 extern void HeroOffsetAlongViewZ(float *, float *, float);
 extern int coll_line(void *, void *, int, int, int);
 extern void transform_hero_local_offset_to_world(float *, float, float, float);

@@ -1,6 +1,7 @@
 #include "common.h"
 #include "callees.h"
 #include "structs/misc.h"
+#include "core/00119D88.h"
 
 /*
  * core_text object 0x12CC90-0x12D868. Boundaries are retail's linker fill
@@ -214,7 +215,7 @@ void sce_ipu_init(void) {
  * hence the cast on the return.
  */
 extern int sceOpen(void *, int);
-extern int sceRead(int, void *, int);
+
 extern void sceClose(int);
 extern signed char RomNameStateData[];
 extern char scf_romver_path[], scf_romver_open_failed_msg[], scf_romver_read_failed_msg[];

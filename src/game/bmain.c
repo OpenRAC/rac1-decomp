@@ -6,6 +6,7 @@
 #include "game/memcard.h"
 #include "game/music.h"
 #include "game/sound.h"
+#include "asm/executable.h"
 
 /*
  * bmain.cpp in the original source; text 0x1E9808-0x1E9E70.
@@ -32,7 +33,6 @@ extern char memory_card_state[];
 extern char level_resource_buffers[];
 extern void flush_cache(int);
 
-extern int scale_game_frame_count(int);
 extern void FadeToBlack(int);
 extern void snd_StreamSafeCdSync(int);
 
@@ -100,7 +100,6 @@ void start_level(int level) {
 /* Pad state, as far as this function reads it. */
 
 extern s32 g_game_language_r __asm__("D_0015EE88") MACRO_ADDR;
-
 
 extern struct DiscTable disc_table_r __asm__("D_00137C80");
 

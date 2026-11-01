@@ -2,6 +2,7 @@
 #include "common.h"
 #include "include_asm.h"
 #include "structs/vector.h"
+#include "asm/shared_levels.h"
 
 void VU1_addGSregister(s32 a0, s64 a1);
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
@@ -12,7 +13,7 @@ extern void set_identity_matrix(void *);
 extern void SkySpriteProc(void);
 extern void sky_particles_init(int, int);
 extern void sky_particles_update(void);
-extern void fast_euler_to_matrix(void *, void *);
+
 void SkyDrawShell(s32 arg0);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l00/unclassified_0023d968.c, FUN_L00_00289330. */

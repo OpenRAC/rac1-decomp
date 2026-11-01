@@ -10,6 +10,16 @@
 #include "overlays/shared/plasmabot.h"
 #include "overlays/shared/shot_tracking.h"
 #include "overlays/shared/trigger_switches_and_hoverboard.h"
+#include "asm/shared_levels.h"
+#include "data/level_16.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/camera_modes_and_scripts.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/pause_menu.h"
+#include "overlays/shared/sound_playback.h"
 
 /* Homing spark: chases a target moby, easing its speed and aim. */
 struct HomingSparkVars {
@@ -266,11 +276,11 @@ extern char kalebo3_zero_vec_spark[] __asm__("D_L16_0015F660") MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR, g_frame_time_sq MACRO_ADDR;
 extern float ApproachValue(float *, float, float);
 extern int scale_ticks(int);
-extern float fast_atan2(float, float);
+
 extern float vec_distance_xy(void *, void *);
 extern float SpringAngle_spark(void *, void *, float, float, float, float, int) __asm__("func_L00_0025CCF0");
 extern void BuildSphericalOffset(void *, float, float, float);
-extern float random_float_between(float, float);
+
 extern void vec_scale_to_length(void *, void *, float);
 extern void vec_set_length_xy(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
@@ -379,7 +389,7 @@ void HomingSparkUpdate(Moby *m) {
             break;
     }
 }
-extern char *kalebo3_path_table[];
+
 extern char hero_globals_base[];
 extern float g_frame_time MACRO_ADDR;
 extern void DeleteMoby(void *);
@@ -481,7 +491,7 @@ void update_path_following_rocket(unsigned char *moby) {
 }
 typedef int u128 __attribute__((mode(TI)));
 extern int coll_sphere(float, void *, int, void *);
-extern float random_float_between(float, float);
+
 extern void BuildSphericalOffset_57(float, float, float, void *) __asm__("func_00215C00");
 extern void FastVecAdd(void *, void *, void *);
 extern void *spawn_feather_moby(void *, void *, void *);
@@ -553,7 +563,7 @@ int is_moby_in_state_6(Level16VendorMoby *moby) {
     return moby->state == 6;
 }
 extern float FastVecDot(void *, void *);
-extern void vec_reflect(void *, void *, void *);
+
 extern void FastVecScale(void *, void *, float);
 extern float FastVecLength(void *);
 extern int fast_dec_timer(int *);
@@ -634,8 +644,7 @@ void update_thrown_bomb(L16FallingMoby *m) {
     StepColorFade(m, d);
 }
 extern char *CreateMoby_m(int) __asm__("func_0020D348");
-extern float random_float_between(float, float);
-extern float fast_atan2(float, float);
+
 extern void moby_build_matrix(void *);
 
 // Spawns a class 0x119 moby and initialises its data, position and angles.
@@ -662,7 +671,7 @@ unsigned char *spawn_thrown_bomb(int a, void *pos, float *dir, int c, float f) {
 }
 extern void initialize_moby_sprite_effect(char *);
 extern float ProbeGroundHeight(void *, int, float);
-extern float FastAbsF(float);
+
 extern float FastAddRots(float, float);
 extern void emit_moby_sprite_effect_particles(char *);
 extern float g_frame_time MACRO_ADDR;
@@ -691,7 +700,6 @@ void update_spinning_moby_sprite_effect(unsigned char *m) {
             break;
     }
 }
-extern int random_integer_below(int);
 
 // Initialises the per-moby data block with random values, tick scalars and constants.
 void initialize_moby_sprite_effect(char *moby) {
@@ -724,7 +732,7 @@ typedef struct {
     int c[4];
     float d[4];
 } L16SpriteData;
-extern char kalebo3_camera_pos[];
+
 extern void FastVecSub(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
@@ -820,7 +828,7 @@ void Moby471Update(unsigned char *m) {
     if (((Moby *)m)->state)
         update_conveyor_group_voice(m);
 }
-extern char kalebo3_camera_pos[];
+
 extern int *kalebo3_moby_groups[];
 extern char *kalebo3_moby_array MACRO_ADDR;
 extern void vec_scale_to_length(void *, void *, float);
@@ -1031,7 +1039,7 @@ typedef struct {
     char slots[0x20];
     char block140[1];
 } L16DummyData;
-extern char *kalebo3_coll_hit_moby;
+
 extern int test_dummy_hold_joint SDATA(D_L16_00161A88);
 extern float test_dummy_bomb_horizontal_launch_speed SDATA(D_L16_00161A8C);
 extern float test_dummy_path_movement_speed_limit_gp SDATA(D_L16_00161A90);
@@ -1715,7 +1723,7 @@ extern void initialize_linked_pair_group_r(void *) __asm__("func_L16_002D0990");
 extern int is_linked_pair_effect_enabled(void *);
 extern void draw_linked_pair_group_ribbons(char *);
 extern int Moby_PlaySound_i(int, int, void *) __asm__("func_0022ED80");
-extern void Sound_StopSlot(int);
+
 extern char hero_globals_base[];
 
 /* Updates a moby: waits for trigger, registers a draw callback and a sound handle. */
@@ -2061,8 +2069,7 @@ extern float g_frame_scale_sq MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern float SpringAngle(void *, void *, int, float, float, float, float);
 extern void DefaultVtbl_DeleteMoby_anim(void *, int, int, int) __asm__("func_L00_00237B70");
-extern int solve_quadratic_equation(float *, float *, float, float, float);
-extern int rand_range(int, int);
+
 typedef struct {
     char pad0[0x268];
     float height;
@@ -2171,7 +2178,7 @@ typedef struct {
     float yaw;
 } L16RacePlayer;
 extern L16RacePlayer kalebo3_player_camera;
-extern int *kalebo3_coll_sphere_moby_hits[];
+
 extern int kalebo3_hoverboard_races_finished SDATA(D_0015EF3C);
 extern int hoverboard_dummy_spray_initial_color SDATA(D_L16_00161AC8);
 extern int hoverboard_dummy_spray_final_color SDATA(D_L16_00161ACC);
@@ -2609,13 +2616,12 @@ extern void *set_class_0287_group_activation_and_find_nearest(int, int);
 extern void *activate_class_0287_group_and_find_nearest(int, int);
 extern int is_point_inside_clip_volume(void *, int);
 extern int fast_dec_timer(int *);
-extern void CameraScript(void *, void *, int, int, int);
+
 extern void activate_test_dummy_group(int);
 extern void compute_triggered_scene_path_pose(char *, void *, float *);
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
-extern int count_active_moby_group_members(int, int);
-extern void CameraScript2(int);
+
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
 extern void Moby_PlaySound(int, int, void *);
@@ -2730,7 +2736,7 @@ void update_triggered_group_objective(char *m) {
         }
     }
 }
-extern char *kalebo3_path_table[];
+
 extern short triggered_scene_rotation_y;
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void lerp_vector(void *, void *, void *, float);
@@ -2814,9 +2820,7 @@ extern int DialogRequest_Init(void *, void *);
 extern int Npc_TryStartDialog(void *, void *);
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern int Help_Request(int, int);
-extern void grant_inventory_item(int, int);
-extern void jet_clear_persistent(int);
-extern void jet_reset_camera(void *, void *);
+
 extern int memcard_Save(int, int);
 extern float FastSubRots(float, float);
 extern float multiply_global_factor(float);
@@ -3473,7 +3477,6 @@ void SelectNearestTargetSlot(void *moby_v) {
     qcopy(&data->pos, (void *)(idx + (int)g + 0x30));
     qcopy(&data->rot, (void *)(idx + (int)g + 0x70));
 }
-extern char *kalebo3_path_table[];
 
 /* Pick the path for the current segment and set the travel speeds from its length. */
 void prepare_taxi_departure_path(char *moby) {
@@ -3600,7 +3603,7 @@ void apply_moby_wobble(char *moby_arg) {
     else if (moby->rot.y < -0.17453292f)
         moby->rot.y = -0.17453292f;
 }
-extern char *kalebo3_path_table[];
+
 extern void matrix_mul_vec3(void *, void *, void *);
 extern char path_seven_point_local_offsets[];
 extern void FastVecAdd(void *, void *, void *);

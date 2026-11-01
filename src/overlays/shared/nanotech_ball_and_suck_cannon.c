@@ -10,6 +10,9 @@
 #include "overlays/shared/hero_animation_slots.h"
 #include "overlays/shared/mine_bomb_and_debris.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "data/shared_levels.h"
+#include "game/fastfunc.h"
+#include "overlays/shared/sound_playback.h"
 /* Class 0x326 moby: the moby it is linked to. */
 struct LinkedMobyVars {
     u8 pad_00[0xC];
@@ -1348,7 +1351,7 @@ extern void reset_suck40(M40 *) __asm__("func_L00_002DF150");
 extern int is_suck_cannon_suction_blocked_by_hero_state(void);
 
 extern int Moby_PlaySound(int, int, int);
-extern void Sound_StopSlot(int);
+
 extern void stop_suck_cannon_suction_effect(int);
 extern void update_suck_cannon_suction(u8 *, void *);
 extern void HeroEnterMoveState(int, int);
@@ -1371,7 +1374,7 @@ extern AimHeight40 *get_aim40(void *) __asm__("func_L00_0025D390");
 extern float vec_distance_xy(void *, void *);
 extern float FastDiffRots(float, float);
 extern float FastVecDist(void *, void *);
-extern float FastAbsF(float);
+
 extern void BuildSphericalOffset(void *, float, float, float);
 extern float FastArcSin(float);
 extern void compose_moby_rotation_with_euler_offset(char *, char *, void *);
@@ -2706,7 +2709,7 @@ void suck_reset(void) {
 extern Hero hero_2DF168 __asm__("D_0013F450");
 typedef int u128_DF168 __attribute__((mode(TI)));
 extern float suck_beam_segment_length MACRO_ADDR;
-extern char player_camera_matrix[];
+
 extern char suck_beam_points[];
 extern char suck_beam_points_base[];
 extern char suck_beam_wobble_from[] MACRO_ADDR;

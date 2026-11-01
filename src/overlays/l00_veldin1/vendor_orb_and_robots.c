@@ -8,6 +8,9 @@
 #include "overlays/shared/alpha_fade_particle_updates.h"
 #include "overlays/shared/follow_camera.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "asm/shared_levels.h"
+#include "game/space.h"
+#include "overlays/shared/moby_ground_collision.h"
 
 extern int cinematic_mode MACRO_ADDR;
 extern char help_stats_base[];
@@ -15,7 +18,7 @@ extern unsigned char special_items_base[];
 extern int DialogRequest_Init(void *, void *);
 extern int Npc_TryStartDialog(void *, void *);
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
-extern void initialize_global_state_entry(int arg0);
+
 extern char hero_globals_base[];
 
 typedef struct {
@@ -266,7 +269,7 @@ extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern int random_integer_below(int);
 extern void MobyBlendAnimation(void *, int, int, int);
 extern int scale_ticks(int);
-extern float fast_atan2(float, float);
+
 extern float SteerAngleWithVelocity(void *, float, void *, float, float, float);
 extern void FastVecSub(void *, void *, void *);
 extern float ApproachWithVelocity(float, float, float, float, float *, float *);
@@ -523,7 +526,7 @@ void veldin_robot_enemy_update(Moby *moby) {
     }
     update_veldin_robot_effects((char *)moby);
 }
-extern int rand_range(int, int);
+
 extern int FastDecTimer(void *);
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);

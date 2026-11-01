@@ -13,6 +13,15 @@
 #include "overlays/shared/moby_group_flags.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/ship_pickup_and_rocket.h"
+#include "asm/shared_levels.h"
+#include "data/level_17.h"
+#include "game/fastfunc.h"
+#include "game/hud.h"
+#include "overlays/shared/camera_modes_and_scripts.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/pause_menu.h"
+#include "overlays/shared/sound_playback.h"
 
 /* Dreks fleet turret: takes hits, flashes and fades colour. */
 struct FleetTurretVars {
@@ -116,7 +125,7 @@ extern float FastVecDot(void *, void *);
 extern void InitDirectionalHitQuery_alt(char *arg, int a, int b, float scale, void *src) __asm__("func_L00_0025A8C0");
 extern float random_float_between(float, float);
 extern void FastVecScale(void *, void *, float);
-extern void add_vectors(void *, void *, void *);
+
 extern unsigned char *spawn_trail_particle(char *parent, void *pos, float *vec);
 extern void AddDrawCallback(void *, void *);
 extern void draw_fleet_beam_quad(char *moby);
@@ -321,7 +330,7 @@ typedef int u128 __attribute__((mode(TI)));
 extern void FastVecCross(void *, void *, void *);
 extern int GetEffectTex(int);
 extern void draw_world_quad(void *, void *, int);
-extern char fleet_camera_pos[];
+
 extern struct {
     float a, b;
 } fleet_beam_quad_uvs[4];
@@ -381,7 +390,7 @@ extern void distribute_class_733_group_mobys_along_path(char *m);
 extern void DeleteMoby(void *);
 extern float vec_distance_xy(void *, void *);
 extern void transform_scaled_vertex_batch(char *arg0, int arg1, void *arg2, char *arg3);
-extern float fast_atan2(float, float);
+
 extern float SteerAngleWithVelocity(float *p, float *v, float a, float b, float c, float d);
 extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
@@ -632,8 +641,6 @@ void process_dreks_fleet_turret_hits(char *m) {
         StepColorFade(m, e);
     }
 }
-extern short *fleet_moby_groups[];
-extern char fleet_paths[];
 
 /* What a class 0x733 craft (moby 1843) keeps of its path: func_L17_002F5C18 follows it from these. */
 typedef struct {
@@ -856,7 +863,7 @@ typedef struct {
     long q80;
     long alpha;
 } RingPrim;
-extern float fast_fmod(float, float);
+
 extern void euler_to_matrix(float *, float *);
 extern struct {
     float x, y;
@@ -1009,8 +1016,7 @@ void update_fleet_bobbing_moby(char *m) {
 extern void DeleteMoby(void *); /* DeleteMoby */
 extern int Sound_IsPlaying(void *, int);
 extern float FastSin(float);
-extern float FastAbsF(float);
-extern void Sound_StopSlot(int);
+
 extern char *fleet_mobys MACRO_ADDR;
 extern int fleet_game_mode MACRO_ADDR;
 
@@ -1441,8 +1447,6 @@ void draw_fighter_jet_radar_contact_icon(char *rot, char *from, char *moby, int 
 
 extern void draw_fighter_jet_radar_contact_icon(char *, char *, char *, int, long, int);
 
-extern float normalize_angle(float);
-
 extern void matrix_from_basis_rows(void *, void *);
 extern char *fleet_moby_list MACRO_ADDR;
 extern float fleet_camera_matrix_row1[];
@@ -1672,7 +1676,7 @@ int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *
     return (int)ret;
 }
 extern unsigned char pad_globals_base[];
-extern char fleet_camera_rot[];
+
 extern short fleet_jet_lock_time;
 extern int select_fighter_jet_target_and_draw_contacts(int, char *, char *, char *, float, float, float, char *,
                                                        char *);
@@ -1956,7 +1960,7 @@ extern float SpringAngle(char *, char *, int, float, float, float, float);
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
 extern void UpdateViewContext(void);
-extern void vec_reflect(void *, void *, void *);
+
 extern void DrawFleetHud();
 extern float fleet_view_tan_half_fov;
 extern float fighter_jet_startup_speed_step_gp SDATA(D_L17_00162078);
@@ -2316,13 +2320,13 @@ void PlayerShipUpdate(Moby *m, Obj *o) {
     update_fighter_jet_aim_and_fire_projectile((char *)m, (char *)o, FastAddRots(o->f28, -o->f6C / 7.0f),
                                                -FastAddRots(o->f24, -(o->f70 / 7.0f) - 0.1f));
 }
-extern void clamp_vec_length(void *, void *, float);
+
 extern int HeroL17_SetMoveState(int, int);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
 
 extern void update_moby_class_flags_and_link(int, int, int, int);
-extern float jet_distance(void *, void *);
+
 extern int try_set_help_message(int, int);
 
 extern float ApproachValue(float *, float, float);
@@ -2330,16 +2334,12 @@ extern void jet_animate(unsigned char *, float);
 extern void MusicRequestTrack(int, int);
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern int force_help_message(int, int);
-extern void CameraScript(void *, void *, int, int, int);
 
-extern void CameraScript2(int);
-extern void Hud_SetBarValueById(int, int);
 extern void moby_anim_sphere_lerp(void *);
 extern int FastDecTimer(void *);
 
 extern int STUB_printf();
-extern void jet_clear_persistent(int);
-extern void jet_reset_camera(void *, void *);
+
 extern void emit_type_74_particles_from_moby_joints(void *, void *);
 extern char fleet_player_camera[];
 extern unsigned char saved_mission_state[][16] NOT_SDA;

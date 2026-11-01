@@ -11,6 +11,13 @@
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/scoutbot_and_paratrooper.h"
 #include "overlays/shared/trespasser_pad_and_background_ships.h"
+#include "asm/level_08.h"
+#include "data/level_08.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/cutscene_and_movie_playback.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/pause_menu.h"
+#include "overlays/shared/sound_playback.h"
 
 /* Lift/gate moby that follows a driver moby's progress between a base and a top height. */
 struct HeightFollowerVars {
@@ -361,7 +368,7 @@ extern u8 gSpecialItems[];
 extern f32 FastDiffRots(f32, f32);
 extern void euler_to_matrix(void *, void *);
 extern void transform_vector(void *, void *, void *);
-extern void Sound_StopSlot(s32);
+
 extern void Sound_SetPitchBend(s32, s32);
 extern int scale_ticks(int);
 
@@ -481,12 +488,7 @@ extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
 
 extern void AddDrawCallback(void (*)(void), void *);
 extern void draw_layered_mesh_effect(void);
-extern int batalia_mesh13_colors[];
-extern int batalia_mesh13_counts[];
-extern int batalia_mesh8_colors[];
-extern int batalia_mesh8_counts[];
-extern int batalia_mesh11_colors[];
-extern int batalia_mesh11_counts[];
+
 extern PairA batalia_uv_scroll[];
 extern PairA layered_mesh_sine_phase_p[] __asm__("D_L08_00161EB8") MACRO_ADDR;
 extern float scroll_pos_y[] MACRO_ADDR;
@@ -1210,19 +1212,17 @@ extern void set_ground_height_band(void *);
 extern void MobyBlendAnimation(void *, int, int, int);
 extern int DialogRequest_Init(void *, void *);
 extern int Npc_TryStartDialog(void *, void *);
-extern int random_integer_below(int);
 
 extern void unlock_planet(int);
 extern void queue_planet_unlock_message(int);
-extern void jet_clear_persistent(int);
-extern void jet_reset_camera(void *, void *);
+
 extern int memcard_Save(int, int);
 extern void DeleteMoby(void *);
 extern float vec_distance_xy(void *, void *);
 extern float fast_atan2(float, float);
 extern float FastDiffRots(float, float);
 extern int fast_dec_timer(int *arg0);
-extern float random_float_between(float, float);
+
 extern float multiply_global_factor(float);
 extern float FastAddRots(float, float);
 extern void BuildSphericalOffset(void *, float, float, float);
@@ -1651,14 +1651,13 @@ void attach_batalia_plumber_class_manipulator(char *moby) {
 }
 extern void attach_batalia_plumber_class_manipulator(char *moby);
 extern void request_batalia_cannon_mount(char *arg);
-extern void PlayMovieEntryIfIdle(int);
 
 extern void grant_inventory_item(int, int);
 extern void DeleteMoby(void *);
 extern float fast_atan2(float, float);
 extern float FastDiffRots(float, float);
 extern int fast_dec_timer(int *arg0);
-extern float random_float_between(float, float);
+
 extern float multiply_global_factor(float);
 extern float FastAddRots(float, float);
 extern void FastVecAdd(void *, void *, void *);
@@ -1987,7 +1986,7 @@ void update_batalia_selected_moby_effects(char *moby) {
             break;
     }
 }
-extern float random_float_between(float, float);
+
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern void spawn_effect_with_initial_motion(float *, float *, int, float);
@@ -2015,7 +2014,7 @@ void spawn_batalia_moby_effects_with_random_motion(char *moby) {
         spawn_effect_with_initial_motion(a, c, data->effect, data->speed);
     }
 }
-extern void add_uv_scroll_offset(void *, int, int, void *);
+
 extern void draw_env_overlay_mesh(int, int, int, void *, int);
 extern int batalia_textured_scrolled_uvs_r[] __asm__("D_L08_001F8820");
 extern int batalia_textured_mesh8_uv_sources[];

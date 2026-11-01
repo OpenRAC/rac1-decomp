@@ -12,6 +12,8 @@
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/shared/hero_vehicle_and_collision.h"
 #include "overlays/shared/level_runtime_and_menus.h"
+#include "asm/shared_levels.h"
+#include "overlays/shared/moby_ground_collision.h"
 
 typedef struct {
     char pad[0x24];
@@ -81,7 +83,6 @@ extern float IntToFloat(int);
 extern int truncate_float_to_s32(float);
 extern void allocate_hero_voice_for_entry(int, int);
 
-extern void apply_env_zone_lighting(void *);
 extern unsigned char hero_globals_base[];
 extern unsigned char gHaveMorphORay[];
 extern unsigned char gCheats[] MACRO_ADDR;
@@ -406,8 +407,6 @@ extern float FastSin(float);
 extern void FastVecScale(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern int coll_line(void *, void *, int, int, int);
-extern int CollType(void);
-extern float fast_atan2(float, float);
 
 typedef struct {
     char pad[0x98];
@@ -772,8 +771,6 @@ extern f32 blarg_collision_hit_point;
 extern void FastVecScale(void *, void *, f32);
 extern void clip_negative_segment_endpoint_xyz(Vec4 *, void *);
 extern s32 coll_line(void *, void *, s32, s32, s32);
-
-extern s32 solve_quadratic_equation(f32 *, f32 *, f32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00242950.c, FUN_L06_00242950. */
 f32 calculate_hero_motion_prediction_time(f32 a, f32 b, f32 c) {

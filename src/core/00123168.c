@@ -1,6 +1,7 @@
 #include "common.h"
 #include "callees.h"
 #include "structs/misc.h"
+#include "asm/executable.h"
 
 /*
  * core_text object 0x123168-0x1236F0. Boundaries are retail's linker fill
@@ -13,7 +14,6 @@
  * sceDmaGetChan, sceDmaReset, sceDmaPutEnv, sceDmaPause, ...).
  */
 
-
 extern int disable_interrupts(void);
 extern void enable_interrupts(void);
 
@@ -22,7 +22,7 @@ extern void scePrintf();
 extern void *sceGsGetGParam(void);
 extern int disable_intc_atomic(int);
 extern int remove_intc_handler(int, int);
-extern int add_intc_handler(int, void *, int);
+
 extern void enable_intc_atomic(int);
 
 /*

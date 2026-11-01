@@ -16,6 +16,12 @@
 #include "overlays/shared/npc_dialog_and_pad_history.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
 #include "structs/hero_views.h"
+#include "asm/shared_levels.h"
+#include "data/executable.h"
+#include "data/level_02.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/moby_ground_collision.h"
 
 typedef struct {
     int a;
@@ -26,7 +32,6 @@ typedef struct {
 extern void clear_moby_transform_history(char *o);
 
 extern int scale_ticks(int);
-extern int rand_range(int, int);
 
 extern int get_hero_idle_animation_index(int a);
 extern void clear_u64_value(void *);
@@ -39,9 +44,7 @@ extern float FastDiffRots(float, float);
 
 extern int allocate_hero_voice_for_entry(int, int);
 
-extern float fast_atan2(float, float);
 extern float FastVecDist(void *, void *);
-extern float randf_sym(float lo, float hi);
 
 extern void initialize_moby_transform_history(int a, char *b);
 extern void create_moby_transform_history_entry(char *o, int a, int b);
@@ -67,7 +70,7 @@ extern char hero_globals_base[];
 extern char help_stats_base[];
 extern char item_usage[];
 extern unsigned char draw_map51_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
-extern short aridia_usage_event_timer;
+
 extern short aridia_hero_run_step_start_frames;
 extern short aridia_hero_state_f_jump_velocity_keys;
 extern char aridia_hero_state_d_jump_velocity_keys[];
@@ -1543,7 +1546,7 @@ typedef struct {
 extern Hero g_hero;
 extern PadState g_controller_state;
 extern S141948 usage_stats;
-extern int last_weapon_id;
+
 extern unsigned char item_available[];
 extern int gBolts MACRO_ADDR;
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
@@ -1552,7 +1555,7 @@ extern float aridia_hero_fall_state_height MACRO_ADDR;
 extern int item_selector_hud_inhibit MACRO_ADDR;
 extern int aridia_hero_run_step1_start_frame MACRO_ADDR;
 extern short aridia_hero_double_tap_timer;
-extern float aridia_player_camera_yaw;
+
 extern int aridia_hero_state_1e_clear_word;
 extern HeroBoneScalars aridia_lean_state;
 extern HeroIdleFidget aridia_idle_fidgets[];
@@ -1595,8 +1598,7 @@ extern float ApproachValue(float *p, float target, float maxstep);
 extern void FastVecScale(void *, void *, float);
 
 extern float gravity_z(float *v);
-extern float FastAbsF(float);
-extern float random_float_between(float a, float b);
+
 extern void hero_switch_item(int i);
 
 /* Hero state machine: per-frame transition logic for the current hero state (level 02 build). */
@@ -3330,7 +3332,6 @@ extern void clip_negative_segment_endpoint_xyz(Vec4 *, void *);
 extern s32 coll_line(void *, void *, s32, s32, s32);
 
 extern f32 gravity_z_r(void *) __asm__("func_L00_002342F8");
-extern s32 solve_quadratic_equation(f32 *, f32 *, f32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l02/ui_help_002360c8.c, FUN_L02_002360c8. */
 f32 resolve_hero_trajectory_parameter(f32 a, f32 b, f32 c) {

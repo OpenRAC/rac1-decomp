@@ -5,6 +5,9 @@
 #include "include_asm.h"
 #include "structs/hero.h"
 #include "overlays/shared/radial_particle_burst.h"
+#include "asm/shared_levels.h"
+#include "data/level_18.h"
+#include "game/mobyutil.h"
 
 /* Rocket tank: aims its turret at the hero, drives along a path and owns two child mobys. */
 struct RocketTankVars {
@@ -49,7 +52,7 @@ extern char hero_globals_base[];
 extern float veldin2_zero_vec[] MACRO_ADDR;
 extern int scale_ticks(int);
 extern void DeleteMoby(void *);
-extern int random_integer_below(int);
+
 extern float FastAddRots(float, float);
 extern float FastCos(float);
 extern float FastSin(float);
@@ -63,12 +66,11 @@ extern float FastVecLength(void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern float vec_distance_xy(void *, void *);
 extern float g_frame_time MACRO_ADDR;
-extern float fast_atan2(float, float);
+
 extern float FastSubRots(float, float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern int veldin2_frame_count MACRO_ADDR;
 
-extern int veldin2_cinematic_step;
 extern int drek_boss_camera_reset_done MACRO_ADDR;
 typedef struct {
     char pad0[0x18];

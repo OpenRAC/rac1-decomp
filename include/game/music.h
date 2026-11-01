@@ -5,6 +5,7 @@
 
 #include "common.h"
 
+extern void music_Pause(int);
 extern void music_Stop(void);
 extern void music_Unpause(void);
 

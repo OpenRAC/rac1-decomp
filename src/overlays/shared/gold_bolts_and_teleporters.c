@@ -14,6 +14,13 @@
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/point_lights_and_glows.h"
 #include "overlays/shared/water_pool_and_sand_mouse.h"
+#include "data/level_01.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/camera_modes_and_scripts.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/pause_menu.h"
+#include "overlays/shared/sound_playback.h"
 
 /* Cutscene trigger: plays a camera sequence when the hero enters its volume. */
 struct CutsceneTriggerVars {
@@ -263,14 +270,14 @@ extern int cutscene_active MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float novalis_cpu_frame_load MACRO_ADDR;
 extern char *novalis_mobys MACRO_ADDR;
-extern char camera_pos[];
+
 extern char hero_globals_base[];
 extern Moby *novalis_coll_hit_moby;
 extern Cols_2F7E08 explosive_spark_colors_a;
 extern Cols_2F7E08 explosive_spark_colors_b;
 extern void FastVecAdd(void *, void *, void *);
 extern float FastVecLength(void *a);
-extern float random_float_between(float, float);
+
 extern void vec_scale_to_length(void *, void *, float);
 extern int rand_range(int, int);
 extern int scale_ticks(int);
@@ -283,7 +290,7 @@ extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern int Moby_PlaySound(int, int, int);
 extern float IntToFloat(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern int random_integer_below(int);
+
 extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
 extern void spawn_particle_alt_9768(void *, void *, int, int, int, float);
 extern int spawn_glow_particle(void *, void *, void *, float, int, int, int, int, int);
@@ -700,9 +707,8 @@ extern void DeleteMoby(void *);
 extern int scale_ticks(int);
 extern int is_point_inside_clip_volume(void *, int);
 extern void Hero_ResetToPosition(void *, void *, int, int);
-extern void CameraScript(void *, void *, int, int, int);
+
 extern int fast_dec_timer_c(void *) __asm__("func_001F9908");
-extern void CameraScript2(int);
 
 /* Cutscene trigger: unless already seen, starts its camera sequence when the hero enters the volume (or it is
  * triggered), then ends it after its timer and re-arms. */
@@ -821,8 +827,6 @@ extern void set_ground_height_band(void *);
 extern int DialogRequest_Init(void *, void *);
 extern int Npc_TryStartDialog(void *, void *);
 
-extern void jet_clear_persistent(int);
-extern void jet_reset_camera(void *, void *);
 extern void unlock_planet(int);
 extern void queue_planet_unlock_message(int);
 extern void record_moby_context_bytes(char *, int, char *, int, void *);
@@ -840,7 +844,7 @@ extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern char plumber_novalis_dialogue_name[];
 extern char plumber_batalia_dialogue_name[];
 extern char plumber_default_dialogue_name[];
-extern char novalis_saved_moby_bytes[];
+
 extern unsigned char saved_mission_state[];
 extern float g_frame_scale_sq MACRO_ADDR;
 extern unsigned char race_gates_base[];
@@ -1164,7 +1168,7 @@ void draw_visibomb_outside_zone_overlay(char *moby) {
 }
 extern char hero_globals_base[];
 extern char *novalis_moby_list MACRO_ADDR;
-extern char *novalis_paths[];
+
 extern short visibomb_outside_zone_overlay_enabled;
 extern void draw_visibomb_outside_zone_overlay(char *);
 extern int IsPointInPolygon(void *, void *, int);
@@ -1439,7 +1443,7 @@ void gold_bolt_update(Moby *moby) {
 extern float FastSin(float);
 extern float FastAddRots(float, float);
 extern void update_gold_bolt_glow_rings(char *);
-extern int random_integer_below(int);
+
 extern void spawn_gold_bolt_particles(char *);
 extern float g_frame_time MACRO_ADDR;
 extern short gold_bolt_scale_factor;
@@ -1470,7 +1474,7 @@ void update_gold_bolt_visuals(char *moby) {
         spawn_gold_bolt_particles(moby);
     }
 }
-extern int random_integer_below(int);
+
 extern int scale_ticks(int);
 
 typedef struct {
@@ -1510,7 +1514,7 @@ void initialize_gold_bolt_data(char *moby) {
     m->x4c = 2.5f;
     m->x48 = 3.0f;
 }
-extern char camera_pos[];
+
 extern short gold_bolt_ring_color_a;
 extern short gold_bolt_ring_color_b;
 extern short gold_bolt_ring_blend_flag;
@@ -1522,7 +1526,7 @@ extern void FastVecSub(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern int fast_dec_timer(void *);
-extern float FastAbsF(float);
+
 extern int FastTweenColor(int, int, float);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern unsigned char *PartType59Spawn(void *, int, unsigned char, int, int, int, int, float);
@@ -1675,7 +1679,6 @@ void spawn_gold_bolt_particles(char *m) {
 }
 extern void set_moby_list_state(char *arg, int val);
 extern unsigned char help_stats_base[] NOT_SDA;
-extern int moby_killed[];
 
 // marks the moby's flag bit in two bitsets and starts its state change
 void activate_teleporter_and_record_state(char *moby) {
@@ -2042,7 +2045,6 @@ typedef struct {
     char pad[0x14];
     Moby *slots[3];
 } L01MobyData;
-
 
 /* Mark the parent and its three attached objects active. */
 void hide_teleporter_and_children(Moby *moby) {
@@ -2689,7 +2691,7 @@ void update_sandmouse_hover_movement(struct Moby *m, struct HoverVars_0EC58 *p) 
                 (*(f32 *)&D_L01_0016216C_0EC58);
 }
 typedef int u128 __attribute__((mode(TI)));
-extern float random_float_between(float, float);
+
 extern void spawn_type_74_particle(void *, void *, void *, void *, int);
 extern char sandmouse_trail_particle_cfg_a, sandmouse_trail_particle_cfg_b, sandmouse_trail_particle_cfg_c;
 
@@ -2782,7 +2784,7 @@ extern void jet_animate(void *, f32);
 extern void compute_sand_mouse_approach_target(void *, void *);
 extern int Hero_SetMoveState(int, int);
 extern void set_hero_animation(f32, int, int);
-extern void Sound_StopSlot(int);
+
 extern void add_random_offset_to_vector_xyz(void *, f32);
 extern int func_001160D8(void);
 extern void *PartType53Spawn(void *, int, f32, f32, int, int, int, void *, f32);

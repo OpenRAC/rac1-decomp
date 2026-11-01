@@ -3,6 +3,9 @@
 #include "include_asm.h"
 #include "structs/vector.h"
 #include "structs/moby.h"
+#include "asm/shared_levels.h"
+#include "data/level_04.h"
+#include "game/fastfunc.h"
 
 extern float eudora_coll_hit_z;
 extern int coll_line(void *, void *, int, int, int);
@@ -105,7 +108,7 @@ extern float animation_end(int, int);
 extern float multiply_global_factor(float);
 extern void transform_scaled_vertex_batch(struct Moby *m, int count, int *joints, void *out);
 extern void MobyTransformScaledVertex(struct Moby *m, int joint, float *mtx);
-extern float fast_atan2(float, float);
+
 extern void AttachManipulator(struct Moby *m, int slot, void *manip);
 /* Sets up a two-legged rig on a moby. */
 void initialize_leg_rig(struct Moby *moby, LegRig_p *rig) {
@@ -201,7 +204,6 @@ typedef struct {
     char padE8[0x6];
     unsigned short flags; /* 0xEE */
 } Steer_2939E8;
-
 
 typedef struct {
     char pad00[0x40];
@@ -391,7 +393,7 @@ typedef struct {
     /* 0x0F0 */ LegRigLeg_93F08 legs[2];
 } LegRig_93F08;
 extern void MobyTransformScaledVertex_r(struct Moby *, int, float *) __asm__("func_0020DAF8");
-extern float fast_atan2(float, float);
+
 extern float FastAddRots(float, float);
 extern float FastSubRots(float, float);
 extern float SpringTurn(float, float, float *, float, float, float);
@@ -468,7 +470,7 @@ extern void WalkCycleStep_r(char *, char *, float, float, float, int) __asm__("f
 extern void rig_probe_setup(void *, int, int *, float *, float *, float *);
 extern int coll_capsule(float, float, void *, int, void *);
 extern float FastDiffRots(float, float);
-extern char eudora_coll_resolved_pos[];
+
 extern float g_frame_time MACRO_ADDR;
 extern float inv_frame_scale MACRO_ADDR;
 typedef int u128_96938 __attribute__((mode(TI)));
@@ -688,11 +690,11 @@ extern u8 eudora_leg_rig_anim_b7_values[13][4];
 extern void transform_scaled_vertex_batch(struct Moby *m, int count, int *joints, void *out);
 extern void MobyTransformScaledVertex(struct Moby *m, int joint, float *mtx);
 extern void AttachManipulator(struct Moby *m, int slot, void *manip);
-extern float fast_atan2(float, float);
+
 extern float MobyGetFrameValue(struct Moby *);
 extern float IntToFloat(int);
 extern float animation_start(int, int);
-extern float FastAbsF(float);
+
 extern int rig_pick_mode_r2(struct Moby *m, LegRig *rig, float t) __asm__("func_L04_00293990");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l04/runtime/dma/002922d0.c, FUN_L04_00295de8. */

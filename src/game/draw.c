@@ -11,6 +11,8 @@
 #include "game/framebuf.h"
 #include "game/tfragfunc.h"
 #include "game/vuchain.h"
+#include "core/00119D88.h"
+#include "data/executable.h"
 
 /*
  * draw.cpp in the original source; text 0x1F0F30-0x1F7C60.
@@ -19,8 +21,6 @@
  */
 
 extern void FastMemCopy(void *, void *, int);
-
-extern int draw_config[];
 
 /* Resets the texture DMA state words to 1. */
 void clear_dma_queue_entry(void) {
@@ -185,9 +185,7 @@ extern void UpdateViewContext(void);
 extern void UpdateFog(void);
 extern int libc_strlen(char *);
 extern int sceOpen(char *, int);
-extern int sceLseek(int, int, int);
-extern int sceWrite(int, void *, int);
-extern int sceRead(int, void *, int);
+
 extern int sceClose(int);
 
 /* Debug menu: pages of toggles, counters, fog and occlusion sample tools. */
@@ -750,8 +748,7 @@ void reset_graphics(void) {
 __asm__(".section .text\n\tnop\n");
 
 extern void scale_vector(void *, void *, float);
-extern int camera_position_publication_suppressed;
-extern char camera_rows[];
+
 extern char view_context_field_c0[];
 extern char sky_view_mtx[];
 
@@ -1559,7 +1556,6 @@ void ResetDrawGlobals(void) {
 extern int *g_render_packet_cursor MACRO_ADDR;
 extern void VU1_addGSregister(int, long);
 extern char reset_gs_regs_fixed[];
-extern char draw_environment[];
 
 /* ResetGsRegisters(void) */
 void ResetGsRegisters(void) {
@@ -1609,7 +1605,7 @@ extern unsigned char underwater_screen_tint_g_r[] __asm__("D_001611C1") MACRO_AD
 extern unsigned char underwater_screen_tint_b_r[] __asm__("D_001611C2") MACRO_ADDR;
 extern unsigned char underwater_screen_tint_a_r[] __asm__("D_001611C3") MACRO_ADDR;
 extern unsigned short moby_vu1_data_qwc NOT_SDA;
-extern char moby_vu1_data[];
+
 extern char profile_mark_frame_start[];
 extern char profile_mark_after_sky[];
 extern char profile_mark_after_ties[];
@@ -1882,7 +1878,6 @@ void DrawDebugProfiler(void) {
     occl_fallback_mode = 0;
 }
 
-extern short draw_enable_mask; /* SDA, gp -0x77CC */
 extern void DrawDebugProfiler(void);
 
 /* D_0015F6FC is read through a MACRO_ADDR alias: retail's one-register
@@ -2506,7 +2501,6 @@ void draw_fogged_fullscreen_sprite(char *arg0) {
    the expression: with long parameters the scheduler hoists the last
    dsll one slot early (it was a 6/144 near-miss that way). */
 extern int *g_render_packet_cursor MACRO_ADDR;
-extern char first_clear_packet[];
 
 /* Appends a GIF packet that sets GS register 1 from the four bytes a, b, c, d. */
 void emit_rgba_draw_packet(int a, int b, int c, int d) {
@@ -2927,9 +2921,6 @@ int measure_text_width(unsigned char *str, int count, void *table) {
 }
 
 extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
-extern unsigned char normal_font_metrics[];
-extern unsigned char small_font_metrics[];
-extern unsigned char large_font_metrics[];
 
 /* measure_text_width_regular: width of the first arg1 characters of arg0 in the regular font table. */
 int measure_text_width_regular(unsigned char *arg0, int arg1) {

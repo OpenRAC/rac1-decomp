@@ -6,6 +6,11 @@
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/ship_mode_and_level_entry.h"
+#include "asm/executable.h"
+#include "data/executable.h"
+#include "data/shared_levels.h"
+#include "game/loaders.h"
+#include "game/music.h"
 
 extern short ship_level_entry_active;
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
@@ -79,8 +84,7 @@ typedef struct {
 extern E_28e9c8 level_render_state_s __asm__("D_0013E130") NOT_SDA;
 extern C_28e9c8 cutscene_state_s __asm__("D_L00_0016C960");
 extern int skip_frame_m __asm__("D_L00_0015F6BC") MACRO_ADDR;
-extern char hero_scale_manipulator[];
-extern char cheat_scale_manipulator[];
+
 extern struct {
     int x0, x4, x8;
 } D_L00_00173F00_s __asm__("D_L00_00173F00");
@@ -102,9 +106,8 @@ extern void FastMemSet(void *, int, int);
 extern void calculate_dma_transfer_address(void);
 extern int HeroEnterMoveState(int, int);
 
-extern int scale_ticks(int);
 extern void load_chunks_with_optional_fade(int, int);
-extern void parse_space_scene_chunk(int);
+
 extern int sce_gs_sync_v(int);
 extern void Music_ContinueStreamIfReady(void);
 // Puts the hero into ship mode: clears the ship records, flags the matching mobys and picks the ship's start sound and camera set. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/gameplay_space_0028e8a0.c, FUN_L00_0028e9c8.
@@ -183,7 +186,6 @@ void initialize_level_transition_with_audio(int a) {
 extern char g_hero[] NOT_SDA;
 extern short skip_frame;
 extern unsigned char screen_globals_base[] NOT_SDA;
-extern void music_Pause(int);
 
 extern void initialize_level_transition_with_audio(int);
 /* Pauses music, clears the help message and starts the level transition. */
@@ -205,7 +207,7 @@ void prepare_level_transition_with_help_cleanup(void) {
     initialize_level_transition_with_audio(0);
     *(short *)(screen_globals_base + 2) = 0;
 }
-extern char level_render_state_base[];
+
 extern int level_draw_frame_load[] MACRO_ADDR;
 extern int lvl_vu_chain_buffer_size_base[] MACRO_ADDR;
 extern int lvl_vu_chain_buffer_size MACRO_ADDR;

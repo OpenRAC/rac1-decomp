@@ -5,6 +5,10 @@
 #include "game/skyfunc.h"
 #include "overlays/shared/point_lights_and_glows.h"
 #include "overlays/shared/sky_particles.h"
+#include "asm/executable.h"
+#include "asm/shared_levels.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/moby_ground_collision.h"
 
 extern void VU1_addGSregister(int, long);
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
@@ -103,16 +107,15 @@ typedef struct {
 } VeldinLevelState;
 
 extern void AddDrawCallback(void *, void *);
-extern int scale_ticks(int);
+
 extern void clear_u64_value(void *);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern float random_angle_radians(void);
-extern float random_float_between(float, float);
+
 extern void BuildSphericalOffset(void *, float, float, float);
-extern int rand_range(int, int);
+
 extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, int, float);
 
-extern void apply_env_zone_lighting(void *);
 extern void render_environment_mapped_object();
 extern void glow_quads_draw();
 extern float g_frame_time MACRO_ADDR;

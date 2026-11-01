@@ -2,14 +2,14 @@
 #include "callees.h"
 #include "structs/records.h"
 #include "structs/misc.h"
+#include "asm/executable.h"
+#include "data/executable.h"
 
 /*
  * vuchain.cpp in the original source; text 0x2347F0-0x2352C8.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
-
-extern void FastMemCopy(void *, void *, int);
 
 extern int STUB_printf();
 
@@ -289,8 +289,6 @@ void vu1_gs_regs_alt(void) {
 }
 
 LINKER_REMNANT("asm/remnants/text", func_00234FA0);
-
-extern char draw_environment[];
 
 /* Append a DMA ref tag that sends the draw environment (11 qwords) via DIRECT. */
 void vu1_gs_regs_font(void) {

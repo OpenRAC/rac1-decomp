@@ -11,6 +11,11 @@
 #include "overlays/shared/point_lights_and_glows.h"
 #include "overlays/shared/vendor_menu.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
+#include "asm/shared_levels.h"
+#include "data/executable.h"
+#include "game/fastfunc.h"
+#include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/sound_playback.h"
 
 /* Gadget vendor: a ring moby that glows and spins while the hero is near. */
 struct VendorVars {
@@ -74,7 +79,7 @@ LINKER_REMNANT("asm/overlays", func_L00_002A5138);
  * two 23x16 height buffers (current/previous frame, indices D_L00_001612D8 / D_L00_001612E0);
  * rows 16-22 mirror the eight neighbours' edges, so border cells are copied out to them. */
 extern float vec_length(float);
-extern float FastAbsF(float);
+
 extern float water_ripple_grid_params[];
 extern short water_grid_cur_index;
 extern short water_grid_prev_index;
@@ -208,7 +213,7 @@ extern float FastAddRots(float, float);
 extern float FastSubRots(float, float);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float multiply_global_factor(float);
-extern float FastAbsF(float);
+
 extern float g_frame_time MACRO_ADDR;
 struct Amb {
     float f0;
@@ -404,7 +409,7 @@ extern float g_frame_time MACRO_ADDR;
 extern void FastVecSub(void *, void *, void *);
 extern float FastVecDot(void *, void *);
 extern void FastVecScale(void *, void *, float);
-extern float FastAbsF(float);
+
 extern float FastVecLength(float *);
 extern float FastDiffRots(float, float);
 extern void FastVecAdd(void *, void *, void *);
@@ -647,7 +652,7 @@ extern float vec_distance_xy(void *, void *);
 extern void MobyBlendAnimation(void *, int, int, int);
 extern void AddDrawCallback(void (*)(void), void *);
 extern void axis_rotation_2d48(void *, int, float);
-extern float fast_atan2(float, float);
+
 extern int try_set_help_message(int, int);
 
 extern void draw_vendor_effects();
@@ -1204,7 +1209,7 @@ extern s32 counted_bolts_total MACRO_ADDR;
 extern s32 g_current_level_index MACRO_ADDR;
 extern s32 g_current_level_index_r2 __asm__("D_0015EE84") MACRO_ADDR;
 extern BoltSourceStats_A7E10 bolt_source_stats[][64];
-extern s32 level_bolts[];
+
 extern s32 current_moby_mission_complete MACRO_ADDR;
 extern short level_mobys_end;
 
@@ -1787,7 +1792,7 @@ extern V collision_hit_point;
 extern V g_debug_camera;
 extern int coll_hit_result[];
 extern float vec_length_xy(void *);
-extern float fast_atan2(float, float);
+
 extern int rand_range(int, int);
 extern void spawn_two_point_effect_particle(void *, void *);
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
@@ -1862,7 +1867,7 @@ void process_mobies_near_returning_wrench(char *a) {
     }
 }
 extern char hero_globals_base[] NOT_SDA;
-extern float fast_atan2(float, float);
+
 extern float FastVecLength(float *);
 extern void vec_scale_to_length(float *, float *, float);
 
@@ -1999,11 +2004,11 @@ extern void draw_wrench_swing_effect(void *);
 extern int coll_line(void *, void *, int, int, int);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern float FastCos(float);
-extern int CollType(void);
+
 extern int is_nonnull_moby_outside_table_or_class_range_500_to_540_or_class_502(char *);
 extern void PostHitMessage(void *, int, int, void *, void *, float);
 extern int test_hero_animation_frame_window(float);
-extern void offset_hero_position_against_gravity(float *, float *, float);
+
 extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
 extern void vec_set_length_xy(void *, void *, float);
 extern int sweep_hit_segment(void *, void *, void *, void *, void *, void *, int);
@@ -2015,11 +2020,10 @@ extern int fast_dec_timer(int *);
 extern float ProbeGroundHeight(void *, int, float);
 extern float ApproachValue(float *, float, float);
 extern void hero_set_attack_ticks(int);
-extern void Sound_StopSlot(int);
+
 extern int allocate_hero_voice_for_entry(int, int);
 extern void clear_moby_transform_history(char *);
 extern int is_moby_in_class_range_500_to_540(int);
-extern void LerpVec4(void *, void *, void *, float);
 
 static __inline__ WPlayer48 *wplayer48(void) {
     return (WPlayer48 *)g_hero;
@@ -2588,7 +2592,7 @@ typedef struct {
 extern int cinematic_mode MACRO_ADDR;
 extern float impact_marker_euler SDATA(D_L00_001614B0);
 extern float impact_marker_euler_v[] __asm__("D_L00_001614B0") MACRO_ADDR;
-extern float fast_atan2(float, float);
+
 extern int scale_ticks(int);
 extern float IntToFloat(int);
 extern float multiply_global_factor(float);
@@ -2719,7 +2723,7 @@ unsigned char *spawn_mine(int owner, q128_2a9ed0 *pos) {
     return m;
 }
 extern int coll_line(void *, void *, int, int, int);
-extern void vec_reflect(void *, void *, void *);
+
 extern float g_frame_time_sq MACRO_ADDR;
 
 typedef int ti_t __attribute__((mode(TI)));

@@ -5,6 +5,18 @@
 #include "structs/moby.h"
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/trespasser_pad_and_background_ships.h"
+#include "asm/shared_levels.h"
+#include "data/level_02.h"
+#include "game/draw.h"
+#include "game/hud.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/camera_modes_and_scripts.h"
+#include "overlays/shared/cutscene_and_movie_playback.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/pause_menu.h"
+#include "overlays/shared/sound_playback.h"
 
 /* Skid McMarx (Aridia): dialogue, blink timer and look-at state. Shares the block with McmarxRelocVars below. */
 struct SkidMcMarxVars {
@@ -59,19 +71,17 @@ extern float vec_distance_xy(void *, void *);
 extern int scale_ticks(int);
 extern int Help_Request(int a, int b);
 extern int FastDecTimer(int *);
-extern float random_float_between(float, float);
+
 extern float multiply_global_factor(float);
 extern int truncate_float_to_s32(float);
 extern void MobyBlendAnimation(void *, int, int, int);
-extern void jet_clear_persistent(int);
-extern void jet_reset_camera(void *, void *);
-extern void PlayMovieEntryIfIdle(int);
+
 extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern float ProbeGroundHeight(void *, int, float);
 extern void clear_u64_value(void *);
 extern float FastAddRots(float, float);
-extern void grant_inventory_item(int, int);
+
 extern int memcard_Save(int, int);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void lerp_vector(void *, void *, void *, float);
@@ -79,14 +89,14 @@ extern float FastSubRots(float, float);
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
 extern float ApproachValue(float *, float, float);
-extern void CameraScript2(int);
+
 extern void DeleteMoby(void *);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void MobyTransformScaledVertex(void *, int, void *);
 extern void matrix_copy_rows(void *, void *);
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void moby_build_matrix(void *);
-extern float fast_atan2(float, float);
+
 extern float FastDiffRots(float, float);
 extern float FastVecLength(void *);
 extern void BuildSphericalOffset(void *, float, float, float);
@@ -372,7 +382,7 @@ void skids_agent_update(Moby *m) {
 }
 extern void update_skid_mcmarx_relocation_sequence(char *);
 extern int fast_dec_timer(void *);
-extern int random_integer_below(int);
+
 extern void EaseManipulatorOffsets_r2(char *, char *, int, float, float) __asm__("func_L00_00263950");
 extern char skid_mcmarx_dialogue_name[];
 extern char talk_camera[];
@@ -516,10 +526,9 @@ void SkidMcMarxAridiaUpdate(char *m) {
 extern char gHeroPos[];
 extern char *aridia_mobys MACRO_ADDR;
 extern int is_point_inside_clip_volume(void *, int);
-extern void Hud_SetBarValueById(int, int);
+
 extern int scale_ticks(int);
-extern void FadeToBlack(int);
-extern float fast_atan2(float, float);
+
 extern float FastCos(float);
 extern float FastSin(float);
 extern void clear_u64_value(void *);
@@ -629,7 +638,7 @@ extern void FastVecAdd(void *out, void *a, void *b);
 extern float vec_distance_xy(void *a, void *b);
 extern void MobySetAnimation(void *, int, int);
 extern int Moby_PlaySound(int, int, void *);
-extern void Sound_StopSlot(int);
+
 extern void update_entity_matrix(void *, void *, void *, void *);
 
 /* Lift platform carried by an animated driver moby: follows the driver's joint 0, waits at an end (3/5) for the hero to step on, then plays the driver's up or down animation (2/4) with its loop sound until it ends.
@@ -738,7 +747,7 @@ void liftcar_platform_update(struct Moby *moby) {
     update_entity_matrix(data->entity_matrix, &delta, &old_rot, &moby->rot);
 }
 extern int aridia_ocean_clip_culling_override_r __asm__("D_L02_0015F6E8") MACRO_ADDR;
-extern char aridia_camera_pos[];
+
 extern char aridia_ocean_zone0_part[];
 extern char aridia_ocean_zone2_part[];
 extern char aridia_ocean_zone1_part0[];
@@ -913,7 +922,7 @@ typedef struct {
 
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern int PlayBankSound(int, int, int);
-extern void ShowBanner(int arg0, int arg1);
+
 extern int scale_ticks(int);
 extern Entry_L02_0017A140 aridia_item_defs[];
 extern unsigned char special_items_base[];

@@ -2,6 +2,7 @@
 #include "callees.h"
 #include "structs/misc.h"
 #include "core/00121750.h"
+#include "core/00119D88.h"
 
 /*
  * 989snd.c (0x12DB68-0x12F308): 989 Studios' sound library. The
@@ -13,8 +14,6 @@ extern void flush_cache(int);
 extern int sce_cd_sync_s(int);
 
 extern int sif_call_rpc();
-
-extern int sce_sif_check_stat_rpc(void *);
 
 /* snd_StartSoundSystem. Ported from Lombyte's project (GPL-3.0); exact for the whole
  * 989snd object with retail ps2eeas and explicit small-data declarations.
@@ -216,7 +215,7 @@ extern void flush_cache(int arg0);
 extern int sound_command_client;
 extern int func_00116078(void *arg0);
 extern char snd_no_return_error_string[];
-extern int sce_sif_check_stat_rpc(void *arg0);
+
 extern short snd_current_buffer;
 extern short snd_current_buffer_index;
 

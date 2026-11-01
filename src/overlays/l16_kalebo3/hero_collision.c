@@ -5,13 +5,14 @@
 #include "structs/hero.h"
 #include "structs/vector.h"
 #include "overlays/shared/hero_idle_and_animation.h"
+#include "data/level_16.h"
+#include "game/fastfunc.h"
 
 extern char hero_globals_base[];
 extern int g_current_level_index MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
 extern int CollType(void);
 extern void Hero_TryMoveState(int, int);
-extern float FastAbsF(float);
 
 /* Per-frame update of the pickup/hit state flags from the state code. */
 void HeroL16_UpdateStateFlags(void) {
@@ -489,7 +490,6 @@ extern void gravity_flatten(float *, float *);
 extern void set_gravity_relative_vector_length_xy(float *, float *, float);
 extern float forward_component(void *);
 extern float g_frame_time MACRO_ADDR;
-extern char *kalebo3_coll_hit_moby;
 
 /* Integrate player motion, resolve contacts, and measure the resulting movement. */
 void integrate_hero_motion(void) {

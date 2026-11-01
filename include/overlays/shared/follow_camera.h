@@ -6,6 +6,7 @@
 #include "common.h"
 
 extern void draw_active_beam_slots(void);
+extern void follow_camera_set_height(float x, float y);
 extern void follow_camera_start_slide(void);
 extern void release_beam_slot(int);
 extern void set_follow_camera_blend_output_flags(void);

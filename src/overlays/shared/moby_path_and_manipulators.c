@@ -8,6 +8,8 @@
 #include "game/mobyutil.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
+#include "asm/shared_levels.h"
+#include "game/fastfunc.h"
 /* Break fragment: velocity, spin, life and gravity. */
 struct BreakFragmentVars {
     u8 pad_00[0x10];
@@ -318,7 +320,7 @@ extern float FastSin(float);
 extern int MoveKeepingOverGround(void *, void *, void *, int, float, float, float, float);
 extern float ProbeGroundHeight(void *, int, float);
 extern float vec_distance_xy(void *, void *);
-extern float fast_atan2(float, float);
+
 extern int scale_ticks(int);
 
 /* Wander state (the idle_pos block in a moby's pvars). */
@@ -497,7 +499,7 @@ int SegmentCrossPolyline(int idx, void *a, void *b, void *c) {
     return found;
 }
 LINKER_REMNANT("asm/overlays", func_L00_00262DE8);
-extern f32 FastAbsF(f32);
+
 extern void FastVecAdd_r(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BD8");
 extern void FastVecSub_r2(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BF0");
 extern f32 FastVecDot(Vec4 *, Vec4 *);
@@ -827,7 +829,7 @@ void clear_moby_transform_history(struct TransformHistory *o) {
 LINKER_REMNANT("asm/overlays", func_L00_00263938);
 extern void DetachManipulator(int, void *);
 extern void AttachManipulator(int, int, void *);
-extern float FastAbsF(float);
+
 extern float SpringAngle(char *, char *, float, float, float, float, int);
 extern void build_quaternion_from_axis_rotations(void *a, float *v);
 extern void clear_u64_value(void *);

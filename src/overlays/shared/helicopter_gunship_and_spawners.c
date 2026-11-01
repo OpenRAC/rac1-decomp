@@ -7,6 +7,11 @@
 #include "overlays/shared/camera_switch_and_update.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/nanotech_ball_and_suck_cannon.h"
+#include "asm/level_02.h"
+#include "asm/shared_levels.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/sound_playback.h"
 
 /* Effect that follows its parent moby, fades between two colours and drifts along the parent's axis. */
 struct ParentFollowEffectVars {
@@ -66,7 +71,7 @@ struct FallingMobyVars {
 };
 
 extern void build_interpolated_dma_packet(char *);
-extern void write_spr_dma_channel(void *, int, int);
+
 extern void textured_grid_transform_cells(char *);
 extern void textured_grid_build_gif_packet(char *);
 extern void restore_view_after_textured_grid(char *);
@@ -121,7 +126,7 @@ void update_parent_following_effect(Moby *moby) {
     moby->scale = moby->scale * (frame_scale * 0.019999981f + 1.0f);
 }
 extern char *kerwan_camera_points MACRO_ADDR;
-extern float random_float_between(float, float);
+
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 
@@ -352,7 +357,7 @@ extern void Moby_GetJointWorldPos(void *, int, void *);
 extern float normalize_angle(float);
 extern float FastCos(float);
 extern float FastSin(float);
-extern void clamp_vec_length(void *, void *, float);
+
 extern void FastVecSub(void *, void *, void *);
 extern void FastVecScale(void *, void *, float);
 extern float FastVecLength(void *a);
@@ -360,7 +365,7 @@ extern void vec_scale_to_length(void *, void *, float);
 extern float ProbeGroundHeight(void *, int, float);
 extern int func_001160D8(void);
 extern void add_random_offset_to_vector_xyz(float *v, float s);
-extern void add_vectors(void *, void *, void *);
+
 extern float jump_speed_4318(void *, void *, void *, float, float);
 extern char *spawn_class_221_moby(char *owner, float *pos, float *dir, short ang, int arg);
 extern int scale_ticks(int);
@@ -747,10 +752,9 @@ extern int fast_dec_timer(int *arg0);
 extern void vec_scale_to_length(void *, void *, float);
 extern int coll_line(void *, void *, int, void *, void *);
 extern void FastVecSub(void *, void *, void *);
-extern void vec_reflect(void *, void *, void *);
+
 extern float vec_length_xy(void *);
-extern float fast_atan2(float, float);
-extern int CollType(void);
+
 extern int coll_sphere(float, void *, int, void *);
 extern void jet_animate(unsigned char *, float);
 typedef struct {
@@ -1554,11 +1558,11 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
         child->flags |= 6;
     }
 }
-extern float fast_atan2(float, float);
+
 extern float FastSubRots(float, float);
 extern float FastCos(float);
 extern float FastSin(float);
-extern float FastAbsF(float);
+
 extern int Moby_PlaySound(int, int, int);
 
 /* Moby update: advance a timer from a collision query, switch state, aim head angles. */
@@ -1672,7 +1676,7 @@ extern float step_angle_toward_target(float *, int, float, float);
 extern float vec_length_xy(void *);
 extern float vec_distance_xy(void *, void *);
 extern int Sound_IsPlaying(void *, int);
-extern void Sound_StopSlot(int);
+
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void FastVecSub(void *, void *, void *);
 extern void FastVecScale(void *, void *, float);
@@ -1683,7 +1687,7 @@ extern char *PartType27Spawn(void *pos, void *vel, int c, int d, float f);
 extern float multiply_global_factor(float);
 extern void create_type_31_part(void *, void *, void *, void *, int);
 extern int coll_line(void *, void *, int, void *, void *);
-extern void vec_reflect(void *, void *, void *);
+
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern int fast_dec_timer(int *arg0);
 extern char hero_globals_base[];
@@ -2124,7 +2128,7 @@ void garage_door_update(struct Moby *m) {
 INCLUDE_ASM("asm/overlays", func_L03_002DDE28);
 INCLUDE_ASM("asm/overlays", func_L03_002DDED8);
 extern float g_frame_time_sq MACRO_ADDR;
-extern void add_vectors(void *, void *, void *);
+
 extern float FastAddRots(float, float);
 extern float IntToFloat(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");

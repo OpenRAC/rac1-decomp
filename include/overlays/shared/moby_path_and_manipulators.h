@@ -5,10 +5,13 @@
 
 #include "common.h"
 
+extern int SegmentCrossPolyline(int, void *, void *, void *);
+extern void ShowBanner(int, int);
 extern void draw_offset_textured_effect_quad(void *, int, float, float);
 extern void draw_trail(void *, void *, void *, float, float);
 extern void fast_add_rotations_cf(void *, void *, float, float, float);
 extern void manipulator_set_scale(void *, float);
+extern void queue_planet_unlock_message(int);
 extern void spawn_moby_break_fragments(void *, int, int, int, int, int, int);
 extern void spawn_randomized_bolt_drop(void *, int, int, int, int);
 extern void update_moby_transform_history(void *, int);

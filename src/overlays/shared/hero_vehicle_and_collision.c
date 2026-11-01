@@ -8,6 +8,9 @@
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/vendor_menu.h"
+#include "asm/shared_levels.h"
+#include "game/fastfunc.h"
+#include "overlays/shared/moby_ground_collision.h"
 
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 extern struct Hero g_hero_r __asm__("D_0013F450");
@@ -30,7 +33,7 @@ extern CollisionHit coll_hit_result;
 extern void apply_hero_motion_and_resolve_collisions(void);
 extern s32 probe_hero_forward_collision(f32 *, f32, f32);
 extern f32 vec_length_xy(void *);
-extern f32 fast_atan2(f32, f32);
+
 extern s32 is_moby_in_class_range_500_to_540(s32);
 extern void transform_hero_local_offset_to_world(Vec4 *, f32, f32, f32);
 extern int coll_line_r(void *from, void *to, int mask, void *ignore, int) __asm__("func_L00_001EFFF0");
@@ -286,7 +289,7 @@ extern float g_frame_scale_sq MACRO_ADDR;
 extern float FastVecLength(void *);
 extern int scale_ticks(int);
 extern float vec_distance_xy(void *, void *);
-extern float fast_atan2(float, float);
+
 extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
 extern float FastCos(float);
 extern float FastSin(float);
@@ -553,7 +556,6 @@ typedef struct {
 extern void clear_moby_transform_history(char *o);
 
 extern void create_missing_hero_item_slot_animations(int a, int b);
-extern int rand_range(int, int);
 
 extern void set_hero_idle_state_for_vehicle_mode(void);
 extern int hero_idle_sequence(int a);
@@ -566,7 +568,6 @@ extern void cancel_hero_item_animation(void);
 
 extern int allocate_hero_voice_for_entry(int, int);
 
-extern float randf_sym(float lo, float hi);
 extern void scale_hero_motion(float);
 
 extern void initialize_moby_transform_history(int a, char *b);
@@ -590,7 +591,7 @@ extern void get_moby_color(void *, void *, void *, void *);
 extern int Moby_PlaySound(int, int, int);
 extern void RippleDisturb(int, int, int, float, float, float, float);
 extern void help_queue_add(int, int, int);
-extern float FastAbsF(float);
+
 extern void gravity_set_z(float *dst, float *src, float z);
 extern void spawn_hero_radial_particle_burst(void);
 extern void FastMemSet(void *, int, int);
@@ -3034,7 +3035,7 @@ collision_mode:
 }
 extern void hero_get_collision_ray_endpoints(void *, void *, int, float, float);
 extern int coll_line(void *, void *, int, int, int);
-extern int CollType(void);
+
 extern int allocate_hero_voice_for_entry(int a, int b);
 extern float coll_hit_point_z;
 extern int level_frame_counter MACRO_ADDR;

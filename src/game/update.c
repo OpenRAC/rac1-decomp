@@ -3,6 +3,9 @@
 #include "structs/records.h"
 #include "structs/moby.h"
 #include "structs/misc.h"
+#include "asm/executable.h"
+#include "data/executable.h"
+#include "game/mobyutil.h"
 
 /*
  * update.cpp in the original source; text 0x238D88-0x239628.
@@ -120,7 +123,6 @@ void project_graphics_bounds_float(Vec4 *a, Vec4 *b, float *w, float *h, float *
 
 LINKER_REMNANT("asm/remnants/text", func_00239180);
 
-extern char vendor_state[];
 extern char str_scrolling_status_fmt[];
 
 /* Formats arg0 into the scrolling status message and resets its offset. */
@@ -155,11 +157,11 @@ extern s32 resident_stream_pending MACRO_ADDR;
 extern BossVars_391E8 vendor_state_r __asm__("D_001E66C0");
 extern s32 vendor_state_dialogue_pick;
 extern Cam_391E8 resident_cheat_scale_manip;
-extern s32 scale_game_frame_count(s32);
+
 extern void AttachManipulator(Moby *, s32, Cam_391E8 *);
 extern void DetachManipulator(Moby *, Cam_391E8 *);
 extern void MobyBlendAnimation(Moby *, s32, s32, s32);
-extern s32 random_integer_below(s32);
+
 extern s32 IsFrameWithinWindow(Moby *, f32);
 extern s32 Music_ContinueStreamIfReady(void);
 

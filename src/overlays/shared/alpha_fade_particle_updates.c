@@ -6,10 +6,13 @@
 #include "structs/moby.h"
 #include "game/stash.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "asm/shared_levels.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
 
 extern unsigned char *create_part(int);
 extern int truncate_float_to_s32(float);
-extern int random_integer_below(int);
+
 extern float frame_scale MACRO_ADDR;
 extern unsigned char *part_type44_textures;
 
@@ -83,11 +86,11 @@ typedef struct {
     float f[4];
 } Q __attribute__((aligned(16)));
 extern int FastDecTimer(void *);
-extern void KillPart(void *);
+
 extern float IntToFloat(int);
 extern void FastVecAdd(void *, void *, void *);
 extern void scale_vector_xyz_in_place(void *, void *, float);
-extern void add_vectors(void *, void *, void *);
+
 extern void FastVecScale(void *, void *, float);
 extern unsigned char hero_globals_base[] NOT_SDA;
 
@@ -135,7 +138,7 @@ extern unsigned char *part_type45_textures;
 extern int truncate_float_to_s32(float);
 extern int func_001160D8(void);
 extern float random_angle_radians(void);
-extern float random_float_between(float, float);
+
 extern float FastCos(float);
 extern float FastSin(float);
 
@@ -173,8 +176,6 @@ unsigned char *spawn_moving_resizing_height_snapped_alpha_fade_particle(void *po
     return r;
 }
 extern void FastVecAdd(void *, void *, void *);
-extern void KillPart(void *);
-extern float FastAbsF(float);
 
 /* updates a type-45 particle: moves it, kills it when out of range or faded */
 void update_moving_resizing_height_snapped_alpha_fade_particle(struct PartBase *m) {
@@ -206,7 +207,6 @@ void update_moving_resizing_height_snapped_alpha_fade_particle(struct PartBase *
 extern unsigned char *part_type46_textures;
 extern void FastVecAdd(void *, void *, void *);
 extern int truncate_float_to_s32(float);
-extern void KillPart(void *);
 
 typedef struct ExpandRotMotion {
     Vec4f vel; /* 0x00 added to pos each frame (FastVecAdd) */
@@ -298,7 +298,7 @@ unsigned char *spawn_random_alpha_rotated_particle(void *a, void *b, float f) {
     return (unsigned char *)r;
 }
 extern void FastVecAdd(void *, void *, void *);
-extern void KillPart(void *);
+
 /* Particle update: damp and apply velocity, grow, spin, fade out; kill when fully transparent. */
 void update_expanding_damped_fading_particle(struct PartBase *m) {
     struct PartType47Data *v = (struct PartType47Data *)m->data;
@@ -324,7 +324,7 @@ struct PartType48Data {
 extern void FastVecAdd(void *, void *, void *);
 extern int FastTweenColor(int, int, float);
 extern int FastDecTimer(void *);
-extern void KillPart(void *);
+
 /* Particle update: move and spin, tween colour over the lifetime; kill when the timer ends. */
 void update_color_tween_particle(struct PartBase *m) {
     struct PartType48Data *v = (struct PartType48Data *)m->data;
@@ -1494,7 +1494,7 @@ void update_mode_controlled_orbiting_trail_particle(char *m) {
     r->unk10 = t;
     r->unk14 = FastAddRots(e, u);
 }
-extern float random_float_between(float, float);
+
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void MobyTransformScaledVertex(void *, int, void *);
 extern void vec_scale_to_length(void *, void *, float);
@@ -1625,7 +1625,7 @@ unsigned char *spawn_texture_indexed_rotated_particle(void *a, int idx, float an
     }
     return r;
 }
-extern void KillPart(void *);
+
 /* Particle update: drop alpha by 1 every 2 frames; kill the particle at zero alpha. */
 void update_periodic_alpha_fade_particle(struct PartBase *a) {
     int t = *(unsigned short *)&a->timer - 1;
@@ -1745,7 +1745,7 @@ unsigned char *spawn_random_size_rotated_particle(char *a, char *b, int c, float
     }
     return p;
 }
-extern void KillPart(void *);
+
 /* Particle update: spin the particle; kill it once its size reaches zero. */
 void update_size_gated_rotating_particle(struct PartBase *a) {
     a->spin = a->spin + a->data[24];

@@ -8,6 +8,9 @@
 #include "game/lights.h"
 #include "game/mobyutil.h"
 #include "overlays/shared/follow_camera.h"
+#include "asm/shared_levels.h"
+#include "game/fastfunc.h"
+#include "overlays/shared/moby_ground_collision.h"
 
 extern int vendor_stock[] MACRO_ADDR;
 extern short follow_cam_setting_values;
@@ -757,7 +760,7 @@ void update_orbit_camera_pose(char *camera_object) {
 typedef int u128 __attribute__((mode(TI)));
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void initialize_orbit_camera_from_parameters(char *, void *, void *, float);
-extern float fast_atan2(float, float);
+
 extern float FastDiffRots(float, float);
 extern float vec_distance_xy(void *, void *);
 extern char hero_globals_base[] NOT_SDA;
@@ -1280,7 +1283,7 @@ extern u8 *level_paths[];
 extern s32 hero_control_mode[];
 extern s32 g_hero_field_2284[];
 extern s32 is_point_inside_clip_volume(void *, s32);
-extern s32 test_point_in_transformed_unit_cylinder(void *, s32);
+
 extern s32 test_point_in_transformed_unit_sphere_r(void *, s32) __asm__("func_L00_00260B68");
 extern s32 IsPointInPolygon(void *, void *, s32);
 
@@ -1723,9 +1726,9 @@ int volume_camera_swing_check(char *m) {
     }
     return 0;
 }
-extern float FastAbsF(float);
+
 extern int is_point_inside_clip_volume(void *, int);
-extern int test_point_in_transformed_unit_cylinder(void *, int);
+
 extern int test_point_in_transformed_unit_sphere(float *, int);
 
 struct VolAimParams {

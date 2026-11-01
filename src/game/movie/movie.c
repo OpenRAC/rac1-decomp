@@ -4,6 +4,7 @@
 #include "structs/misc.h"
 #include "game/movie/movie.h"
 #include "game/pad.h"
+#include "asm/executable.h"
 
 extern int decoder_buffer_address MACRO_ADDR;
 extern int movie_play_step MACRO_ADDR;
@@ -214,7 +215,7 @@ extern void voBufCreate(void *, int, int, int);
 extern int create_thread(struct AudioDecoderThreadArgs *);
 extern int start_thread(int, void *);
 extern int set_state_fields(void *, int, int);
-extern int add_intc_handler(int, void *, int);
+
 extern int enable_intc_atomic(int);
 extern int add_dmac_handler(int, void *, int);
 extern int enable_dmac_atomic(int);

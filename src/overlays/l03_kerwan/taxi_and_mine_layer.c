@@ -8,6 +8,13 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
+#include "asm/shared_levels.h"
+#include "data/level_03.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/pause_menu.h"
+#include "overlays/shared/sound_playback.h"
 
 /* Path mover (class 0x382): rides a rail path, turning its matrix with it. */
 struct PathMoverVars {
@@ -99,7 +106,7 @@ extern f32 D_L03_0016199C_CB280 SDATA(D_L03_0016199C);
 extern f32 D_L03_001619A0_CB280 SDATA(D_L03_001619A0);
 extern f32 D_L03_00161990_CB280 SDATA(D_L03_00161990);
 extern f32 D_L03_00161994_CB280 SDATA(D_L03_00161994);
-extern char kerwan_camera_pos[];
+
 extern void FindNearestTargetMoby(void *, void *, f32);
 extern void Manipulator_ApplyScale(struct Moby *, int, void *, f32);
 void func_L03_002CBBD0_CB280(struct Moby *m) __asm__("func_L03_002CBBD0");
@@ -109,15 +116,15 @@ extern s32 fast_dec_timer_r(s32 *) __asm__("func_001F9908");
 extern s32 FastDecTimer(s16 *);
 extern void MoveCtl_Init(void *);
 extern void MobyBlendAnimation_r(struct Moby *, int, int, int) __asm__("func_00213DE0");
-extern f32 fast_atan2(f32, f32);
+
 extern void MobySpringTurn(f32, f32, f32, f32, struct Moby *, void *);
 extern f32 vec_distance_xy(void *, void *);
 extern f32 FastVecDist(void *, void *);
-extern f32 FastAbsF(f32);
+
 extern void ClassifyTargetInCone(struct Moby *, void *, void *, void *);
 extern void Sound_PlayClassSound_r(int, int, struct Moby *, int) __asm__("func_L00_0028EF68");
 extern f32 IntToFloat(s32);
-extern f32 random_float_between(f32, f32);
+
 extern void vec_set_length_xy(void *, void *, f32);
 extern void FastVecScale(void *, void *, f32);
 extern void FastVecAdd(void *, void *, void *);
@@ -376,7 +383,7 @@ extern f32 D_L03_00161988_CBBD0 SDATA(D_L03_00161988);
 extern f32 D_L03_0016198C_CBBD0 SDATA(D_L03_0016198C);
 extern TrooperHit_CBBD0 *MobyGetHitMessage_r(struct Moby *, s32, s32) __asm__("func_L00_0025B478");
 extern s32 ComputeHitResponse(struct Moby *, TrooperHit_CBBD0 *, f32 *, s32, s32 *, f32 *, s32, s32);
-extern f32 fast_atan2(f32, f32);
+
 extern void trooper_set_knockback(void *, f32, f32);
 extern void HeadingFromVector(Vec4 *, f32 *, f32 *, f32 *);
 extern void InitKnockback_r(f32, struct Moby *, void *, s32, s32, s32) __asm__("func_L00_0025D5B0");
@@ -520,8 +527,7 @@ extern void Moby_PlaySound_r(int, int, struct Moby *) __asm__("func_0022ED80");
 extern int coll_sphere_mobys(void *, int, struct Moby *, void *, f32);
 extern void SendRadialMessageToMobys(struct Moby *, void *, void *, int, int, int, int, int, f32, f32, f32);
 extern s32 truncate_float_to_s32(f32);
-extern s32 random_integer_below(s32);
-extern f32 random_float_between(f32, f32);
+
 extern f32 random_angle_radians(void);
 extern f32 FastCos(f32);
 extern f32 FastSin(f32);
@@ -690,7 +696,7 @@ void handle_mine_hit(unsigned char *arg) {
 extern char *CreateMoby(int);
 extern float g_frame_scale_sq MACRO_ADDR;
 extern float vec_length_xy(void *);
-extern float fast_atan2(float, float);
+
 extern void InitKnockback(void *, void *, int, int, int, float);
 
 /* Spawns a projectile moby (class 0x273) at pos, heading along dir, owned by parent p.
@@ -806,7 +812,7 @@ extern void request_hero_target_pose(void *, float, int);
 extern s32 get_hero_target_pose_status(void);
 extern void update_entity_matrix(void *, void *, void *, void *);
 extern void DeleteMoby_r3(struct Moby *) __asm__("func_0020D678");
-extern f32 fast_atan2(f32, f32);
+
 extern void FastVecSub(void *, void *, void *);
 extern f32 FastVecDist(void *, void *);
 extern f32 vec_distance_xy(void *, void *);
@@ -950,8 +956,7 @@ extern char hero_globals_base[];
 extern void FastVecSub(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
-extern float fast_atan2(float, float);
-extern char *kerwan_paths[];
+
 extern float g_frame_time_sq MACRO_ADDR;
 extern float kerwan_rail_taxi_max_speed SDATA(D_L03_00161B88);
 extern float kerwan_rail_taxi_speed_accel SDATA(D_L03_00161B8C);
@@ -965,7 +970,6 @@ extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern float SteerAngleWithVelocity(float *, float, float *, float, float, float);
 extern int Sound_IsPlaying(void *, int);
 extern int Sound_PlayClassSound(int, int, int, int);
-extern void Sound_StopSlot(int);
 
 typedef struct RailFlyerVars {
     u8 pad_00[0x60];
@@ -1087,11 +1091,10 @@ void robo_shack_sign_update(struct Moby *m) {
     update_entity_matrix_r(v->coll, &move, &oldRot, &m->rot);
 }
 extern struct Moby *CreateMoby_m(int) __asm__("func_0020D348");
-extern float fast_atan2(float, float);
+
 extern int scale_ticks(int);
 extern int coll_line(void *, void *, int, void *, void *);
 extern void moby_build_matrix(void *);
-extern char kerwan_coll_hit_point[];
 
 typedef int u128 __attribute__((mode(TI)));
 
@@ -1344,8 +1347,6 @@ extern int DialogRequest_Init(void *, unsigned char *);
 extern int Npc_TryStartDialog(struct Moby *, struct TalkState_hg *);
 extern void initialize_moby_grounding(struct Moby *);
 
-extern void jet_clear_persistent(int);
-extern void jet_reset_camera(void *, void *);
 extern void grant_inventory_item(int, int);
 extern void ShowBanner(int, int);
 extern void memcard_Save(int, int);
@@ -1923,7 +1924,7 @@ extern int DialogRequest_Init(void *, unsigned char *);
 
 extern void MobySetAnimation(unsigned char *, int, int);
 extern int PlayBankSound(int, int, int);
-extern void add_vectors(void *, void *, void *);
+
 extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
 
 extern unsigned char menu_item_enabled_115[];
@@ -2634,7 +2635,7 @@ extern struct L03Cutscene kerwan_cutscene_state_r __asm__("D_L03_0016C9E0");
 extern void cutscene_set_camera_target(void *);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern int rand_range(int, int);
-extern float random_float_between(float, float);
+
 extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
 
 /* Starts the cutscene, then during mode 3 (frames 900-10000) emits two particle beams from the listed moby.

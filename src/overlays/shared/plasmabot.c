@@ -6,6 +6,10 @@
 #include "structs/moby.h"
 #include "structs/hero.h"
 #include "overlays/shared/follow_camera.h"
+#include "asm/shared_levels.h"
+#include "data/level_14.h"
+#include "game/fastfunc.h"
+#include "overlays/shared/moby_ground_collision.h"
 /* Plasmabot: follows its path, tracks the hero, fires a sweeping plasma beam. */
 struct PlasmabotVars {
     u8 pad_00[0x20];
@@ -123,7 +127,7 @@ extern int check_listed_plasmabots_not_starting_path_traversal(unsigned char *);
 extern int scale_ticks(int);
 void activate_plasmabot(char *moby);
 extern void MobySetAnimation(void *, int, int);
-extern float fast_atan2(float, float);
+
 extern float MobyGetFrameValue(char *);
 int follow_plasmabot_path(char *moby);
 extern void MobyBlendAnimation(char *, int, int, int);
@@ -683,7 +687,7 @@ extern void FastVecScale(void *, void *, float);
 extern void transform_vector(void *, void *, void *);
 extern void draw_world_quad(void *, void *, s32);
 u64 GetEffectTex(s32);
-extern char oltanis_camera_pos[];
+
 extern Vec4 plasmabot_effect_quad_corners[];
 extern f32 D_L14_00161574_3B78 SDATA(D_L14_00161574);
 extern f32 D_L14_00161584_3B78 SDATA(D_L14_00161584);
@@ -846,7 +850,7 @@ extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
 extern int release_beam_slot_by_id(char *);
 extern int scale_ticks(int);
-extern float fast_atan2(float, float);
+
 extern void InitKnockback_i(void *, void *, float, int, int, int) __asm__("func_L00_0025D5B0");
 extern int truncate_float_to_s32(float);
 extern void SetDeathBits(void *, int, int);
@@ -1168,7 +1172,7 @@ typedef struct {
     float uv[8];
     u64 a, b, c, d;
 } Pk_2B4C70;
-extern char oltanis_camera_pos[];
+
 extern float plasmabot_glow_quad_corners[4][4];
 extern short plasmabot_glow_quad_size;
 extern short plasmabot_glow_camera_pull;
@@ -1340,10 +1344,10 @@ extern short spinning_debris_drag;
 extern short spinning_debris_gravity;
 extern void draw_spinning_debris(struct MobyDf *);
 extern void AddDrawCallback(void (*)(void), void *);
-extern float FastAbsF(float);
+
 extern int fast_dec_timer(void *);
 extern int random_integer_below(int);
-extern int rand_range(int, int);
+
 extern float random_float_between(float, float);
 extern int coll_sphere(float, void *, int, void *);
 extern void spawn_explosion(struct Moby *, void *, void *, float, float, int, int, int, float, float, float, float, int,
@@ -1427,7 +1431,7 @@ extern float random_float_between(float, float);
 extern void FastVecSub(void *dst, void *a, void *b);
 extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecCross(void *, void *, void *);
-extern float randf_sym(float lo, float hi);
+
 extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
 extern void moby_build_matrix(void *);
 
@@ -1471,7 +1475,7 @@ extern f32 g_frame_scale_sq MACRO_ADDR;
 extern void emit_debris_trail_particles_r(struct Moby *) __asm__("func_L14_002E17B8");
 extern s32 g_hero_moby;
 extern s32 fast_dec_timer_r2(s32 *) __asm__("func_001F9908");
-extern f32 FastAbsF(f32);
+
 extern void vec_scale_to_length(void *, void *, f32);
 extern f32 FastAddRots(f32, f32);
 extern s32 coll_sphere(f32, void *, s32, void *);
@@ -1567,7 +1571,7 @@ void update_path_or_ballistic_debris(struct Moby *moby) {
         emit_debris_trail_particles_r(moby);
 }
 extern void build_look_at_matrix(void *, void *, void *, float);
-extern float randf_sym(float, float);
+
 extern void find_nearest_path_point(void *, void *, void *, void *, void *, int, float, float, float);
 extern short path_debris_min_speed;
 extern short path_debris_max_speed;
@@ -2135,7 +2139,7 @@ typedef struct Vq_02C80 {
 
 extern float IntToFloat(int);
 extern int scale_ticks(int);
-extern int rand_range(int, int);
+
 extern float FastVecLength(void *);
 extern void clear_u64_value(void *);
 extern void rand_vec(void *, float, float);

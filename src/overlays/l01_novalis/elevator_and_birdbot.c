@@ -8,6 +8,16 @@
 #include "structs/moby.h"
 #include "overlays/shared/particle_spawns_and_path_splines.h"
 #include "overlays/shared/water_pool_and_sand_mouse.h"
+#include "asm/shared_levels.h"
+#include "data/level_01.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/camera_modes_and_scripts.h"
+#include "overlays/shared/follow_camera.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/sound_playback.h"
 
 /* Tethered mine: hangs on a tether with four chain links, scales down with distance and blows up when hit. */
 struct TetheredMineVars {
@@ -169,7 +179,7 @@ typedef struct {
 extern s32 g_current_level_index MACRO_ADDR;
 extern f32 frame_scale MACRO_ADDR;
 extern int FastBSphereCheck(void *, f32);
-extern f32 random_float_between(f32, f32);
+
 extern f32 FastAddRots(f32 a, f32 b);
 extern void euler_to_matrix(void *, void *);
 extern void transform_vector(void *, void *, void *);
@@ -267,13 +277,12 @@ typedef struct {
 extern SplashColors novalis_birdbot_splash_inner_colors;
 extern SplashColors novalis_birdbot_splash_outer_colors;
 extern float g_frame_time MACRO_ADDR;
-extern float random_float_between(float, float);
-extern int random_integer_below(int);
+
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void FastVecSub(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
-extern int rand_range(int, int);
+
 extern int scale_ticks(int);
 extern void spawn_effect_particle_with_target_scalar(void *, void *, unsigned int, unsigned int, float, int);
 
@@ -349,7 +358,7 @@ typedef struct {
 extern void FindNearestTargetMoby(void *, void *, f32);
 extern float FastVecDist(void *, void *);
 extern float vec_distance_xy(void *, void *);
-extern f32 fast_atan2(f32, f32);
+
 extern float FastDiffRots(float, float);
 
 /* Picks the path node the follower should head for: an ordered path just steps to the next stop; otherwise the nearest node and its two neighbours are scored (distance, or heading change for slow movers) and the best one is written to *idx. Returns nonzero when the pick differs from the nearest node.
@@ -576,7 +585,7 @@ extern char *camera_points MACRO_ADDR;
 extern int cutscene_active MACRO_ADDR;
 extern float novalis_zero_vec[] MACRO_ADDR;
 extern char novalis_birdbot_no_path_msg[];
-extern char *novalis_paths[];
+
 extern short novalis_birdbot_drift_speed;
 extern short novalis_birdbot_fly_speed;
 extern short novalis_birdbot_anim8_speed;
@@ -588,7 +597,7 @@ extern void FindNearestTargetMoby(void *, void *, float);
 extern void *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
 extern int FastDecTimer(void *);
-extern float fast_atan2(float, float);
+
 extern void HeadingFromVector(void *, float *, void *, void *);
 extern void InitKnockback(float, void *, void *, int, int, int);
 extern void RerollEffectCounter(void *m, short *p);
@@ -601,13 +610,13 @@ extern float ProbeGroundHeight(void *, int, float);
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
 extern int fast_dec_timer(void *);
 extern float vec_distance_xy(void *, void *);
-extern float FastAbsF(float);
+
 extern int coll_line(void *, void *, int, void *, void *);
 extern float FastVecDist(void *, void *);
-extern void CameraScript2(int);
+
 extern int Hero_SetMoveState(int, int);
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
-extern void CameraScript(void *, void *, int, int, int);
+
 extern void vec_scale_to_length(void *, void *, float);
 extern float FastVecLength(void *);
 extern float FastCos(float);
@@ -625,7 +634,6 @@ extern void SetDeathBits(void *, int, int);
 extern void DeleteMoby(void *);
 extern void StepColorFade(void *, void *);
 extern void set_range_centered_on_value(char *arg, float value);
-extern int CollType(void);
 
 /* Birdbot update: follows its path, turns on and shoots at the hero, flees when hurt, and blows up when it dies or leaves the level. */
 void birdbot_update(Moby *m) {
@@ -1346,7 +1354,6 @@ extern float peckbot_home_knockback_speed_gp SDATA(D_L01_00161AF8);
 extern float peckbot_home_knockback_acceleration_gp SDATA(D_L01_00161AFC);
 extern short novalis_peckbot_spawn_d0_record;
 
-extern void MobyGroup_SetByteBC(int, int);
 extern int func_001160D8(void);
 extern float random_angle_radians(void);
 extern void ClampVectorLength(void *, float);
@@ -2008,7 +2015,7 @@ typedef struct {
     int pad4[3];
     PeVec_F44F8 pts[1];
 } PePath_F44F8;
-extern char *novalis_paths[];
+
 typedef struct {
     Vec4 vel; /* 0x00: path velocity, copied to the hero push (motion.unkF0) */
     u8 pad_10[0x10];
@@ -2154,11 +2161,11 @@ void cave_door_update(char *m) {
             break;
     }
 }
-extern char camera_pos[];
+
 extern short novalis_tethered_mine_min_scale, novalis_tethered_mine_far_distance, novalis_tethered_mine_near_distance;
 extern unsigned char menu_item_enabled_115_k __asm__("D_0013D50F") NOT_SDA;
 extern void PlayBankSound(int, int, int);
-extern void ShowBanner(int, int);
+
 extern void SpawnDebrisMoby(char *, void *, float);
 extern void gunship_follow_path(char *);
 
@@ -2249,7 +2256,7 @@ struct VoicePoolWindow {
 };
 extern u8 voice_pool[];
 extern int Sound_IsPlaying(void *moby, int handle);
-extern void Sound_StopSlot(int);
+
 extern s32 Moby_PlaySound_r(s32, s32, void *) __asm__("func_0022ED80");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l01/gameplay/entities/002b96e0.c, FUN_L01_002f4710. */
@@ -2315,7 +2322,7 @@ typedef u32 u128_F5D38 __attribute__((mode(TI), aligned(16)));
 extern struct Hero g_hero_r __asm__("D_0013F450");
 extern f32 g_frame_time MACRO_ADDR;
 extern f32 g_frame_time_sq MACRO_ADDR;
-extern int rand_range(int lo, int hi);
+
 typedef struct {
     float f[4];
 } PeVec_F5D38 __attribute__((aligned(16)));
@@ -2613,7 +2620,7 @@ typedef struct {
 } BeamVars;
 
 extern BeamMoby *CreateMoby_b(int) __asm__("func_0020D348");
-extern float fast_atan2(float, float);
+
 extern float FastVecLength(void *);
 extern char *spawn_source_attached_fading_effect_particle(char *, int, int, int, float);
 extern void Moby_PlaySound(int, int, int);
@@ -2723,7 +2730,7 @@ extern char novalis_bomber_jet_no_path_msg[];
 extern unsigned char novalis_checkpoint_level_state_killed[];
 extern Hit_F8B00 novalis_coll_hit;
 extern int level_moby_killed[][64];
-extern int moby_killed[];
+
 extern int novalis_mobys_r3 __asm__("D_L01_00160058") MACRO_ADDR;
 extern Moby *spawn_beam_r(void *, void *, void *, void *, int, int) __asm__("func_L01_002F7C78");
 
@@ -2959,7 +2966,6 @@ void bomber_jet_update(Moby *m) {
     } while (d->timer > scale_ticks(0x1FE) - scale_ticks(0x78));
 }
 extern float frame_scale MACRO_ADDR;
-extern float FastAbsF(float);
 
 // Moves a value toward a target with a clamped, scaled step and returns a wrapped angle difference.
 float spring_axis_to(float target, float k, float a, float b, float *cur, float *vel) {
@@ -3185,7 +3191,7 @@ extern short novalis_falling_rock_cam_blend_speed;
 extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
 extern void set_follow_camera_angle_blend_from_direction(void *a, float x, float y);
 extern void Cam_SetDistanceGoal(float x, float y, int flag);
-extern void follow_camera_set_height(float x, float y);
+
 extern void Cam_SetEyeOffset(int, float, float);
 
 typedef struct {

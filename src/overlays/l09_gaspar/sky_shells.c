@@ -4,6 +4,7 @@
 #include "game/draw.h"
 #include "game/skyfunc.h"
 #include "overlays/shared/sky_particles.h"
+#include "asm/level_01.h"
 
 LINKER_REMNANT("asm/overlays", func_L09_0021E3E8);
 typedef struct Strip_21E410 {
@@ -98,7 +99,7 @@ void func_L09_0021E410_r(int a, int b, float t) {
 extern void queue_level09_strip_texture_packets(int, int);
 
 extern int FastBSphereCheck(char *, float);
-extern void emit_textured_strip_packet(int, int, int, int, int, int);
+
 extern int *l09_packet MACRO_ADDR;
 extern char gaspar_strip_gs_setup_packet[];
 extern int gaspar_frame_count MACRO_ADDR;

@@ -6,6 +6,7 @@
 #include "core/001236F0.h"
 #include "core/0012CC90.h"
 #include "game/menu.h"
+#include "data/executable.h"
 
 /*
  * memcard.cpp in the original source; text 0x209A60-0x20C210.
@@ -1642,7 +1643,7 @@ int memcard_RestoreData(void *src, int slot, int *table) {
 }
 
 extern char save_clock_time[] MACRO_ADDR;
-extern char level_map_coverage[];
+
 extern unsigned char level_visit_state[];
 extern int gBolts MACRO_ADDR;
 extern int game_clock_ticks MACRO_ADDR;

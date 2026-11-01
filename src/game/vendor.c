@@ -7,6 +7,9 @@
 #include "game/framebuf.h"
 #include "game/update.h"
 #include "game/vuchain.h"
+#include "data/executable.h"
+#include "game/hud.h"
+#include "game/mobyutil.h"
 
 /*
  * vendor.cpp in the original source; text 0x239628-0x23B670.
@@ -27,15 +30,12 @@ extern void DrawMobyList(int, int);
 extern void *msg_string_id(int) __asm__("func_001FE540");
 
 extern void draw_hud_rect_blended(int, int, int, int, long, long);
-extern int GetIconFrame(int, int);
-extern void HudSprite(int, int, int, int, int, int);
+
 extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
 
 extern void FastVecSub(void *, void *, void *);
 
 extern void truncate_float_to_s32(float);
-
-extern char vendor_state[];
 
 extern void transform_scaled_vertex_batch(char *arg0, int arg1, void *arg2, char *arg3);
 
@@ -134,7 +134,7 @@ void render_capture_scrolling_text(char *text, s32 start_x, s32 start_y, f32 sca
 }
 
 extern int libc_strlen_s(char *) __asm__("func_00116810");
-extern int random_integer_below(int);
+
 extern int status_message_text_ids[];
 extern void set_scrolling_status_message(void *);
 extern void render_capture_scrolling_text(char *, int, int, float);
@@ -528,7 +528,7 @@ LINKER_REMNANT("asm/remnants/text", func_0023A5D8);
 extern s32 vendor_flash_timers[];
 extern s32 vendor_scroll_timers[];
 extern void VU1_addGSregister_r(s32, u64) __asm__("func_00234C98");
-extern s32 random_integer_below(s32);
+
 extern s32 subtract_integer_with_clamp(s32);
 extern s64 GetEffectTex_r(s32) __asm__("func_001F4868");
 extern f32 IntToFloat(s32);

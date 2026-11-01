@@ -11,6 +11,16 @@
 #include "overlays/shared/hero_update_ledge_grab.h"
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/trespasser_pad_and_background_ships.h"
+#include "asm/shared_levels.h"
+#include "data/level_06.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/camera_modes_and_scripts.h"
+#include "overlays/shared/cutscene_and_movie_playback.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/pause_menu.h"
+#include "overlays/shared/sound_playback.h"
 
 /* Red button sequence controller: switches linked mobys on and off through the scripted cut scene. */
 struct SequenceVars {
@@ -341,7 +351,7 @@ void draw_dual_texture_864_quad_mesh(void) {
     } while (i < 0x360);
 }
 extern char hero_globals_base[];
-extern short *blarg_moby_groups[];
+
 extern char *level_mobys_q_p __asm__("D_L06_00160058") MACRO_ADDR;
 extern int is_point_inside_clip_volume(void *, int);
 extern void MobyBlendAnimation(void *, int, int, int);
@@ -419,17 +429,17 @@ void set_moby_list_state_17(int idx) {
 extern char *blarg_scene_points MACRO_ADDR;
 extern float blarg_fade_level MACRO_ADDR;
 extern float vec_distance_xy(void *, void *);
-extern float fast_atan2(float, float);
+
 extern float IntToFloat(int);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void lerp_vector(void *, void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern void Hero_ResetToPosition(void *, void *, int, int);
-extern void CameraScript(void *, void *, int, int, int);
+
 extern void set_camera_rotation(void *);
 
 extern void set_camera_position(void *);
-extern void CameraScript2(int);
+
 extern int HeroL06_TrySetMoveState(int, int);
 extern void spawn_moby_breakup_effect(char *, int);
 extern void AddDrawCallback(int, char *);
@@ -634,7 +644,7 @@ void update_moby_camera_sequence_and_draw_selection(char *moby) {
 }
 extern char *CreateMoby(int);
 extern void moby_build_matrix(void *);
-extern float random_float_between(float, float);
+
 extern float random_angle_radians(void);
 extern float FastCos(float);
 extern float FastSin(float);
@@ -903,11 +913,9 @@ extern int check_all_listed_class_33b_states_fe_fd_or_10(int);
 extern int FastDecTimer(void *);
 extern int Npc_TryStartDialog(void *, void *);
 
-extern void jet_clear_persistent(int);
-extern void grant_inventory_item(int, int);
 extern int memcard_Save(int, int);
 extern int Help_Request(int a, int b);
-extern void CameraScript(void *, void *, int, int, int);
+
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void lerp_vector(void *, void *, void *, float);
@@ -916,9 +924,9 @@ extern float FastAddRots(float, float);
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
 extern float ApproachValue(float *, float, float);
-extern void CameraScript2(int);
+
 extern float vec_distance_xy(void *, void *);
-extern float fast_atan2(float, float);
+
 extern float FastDiffRots(float, float);
 extern float FastVecLength(void *);
 extern float multiply_global_factor(float);
@@ -1384,7 +1392,6 @@ extern char help_stats_base[];
 extern short blarg_random_line_used;
 extern int blarg_random_line_used_1 MACRO_ADDR;
 extern int blarg_random_line_used_2 MACRO_ADDR;
-extern int random_integer_below(int);
 
 typedef struct {
     char pad0[0x38];
@@ -1481,9 +1488,8 @@ extern void spawn_timed_projected_sprite_effect(char *, int, int, int);
 extern void MusicRequestTrack(int, int);
 
 extern void FadeToBlack(int);
-extern float fast_atan2(float, float);
+
 extern float vec_distance_xy(void *, void *);
-extern void CameraScript(void *, void *, int, int, int);
 
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
@@ -1491,13 +1497,6 @@ extern void Hero_ResetToPosition(void *, void *, int, int);
 extern int update_shuttle_path_ride(char *, int);
 extern float FastAddRots(float, float);
 
-extern void CameraScript2(int);
-extern void StartCutscene(int);
-extern void unlock_planet(int);
-extern void jet_reset_camera(void *, void *);
-extern void queue_planet_unlock_message(int);
-
-extern void PlayMovieEntryIfIdle(int);
 extern void update_entity_matrix(char *, void *, void *, void *);
 extern unsigned char menu_item_enabled_19_r[] __asm__("D_0013D4AF");
 extern unsigned char gHaveMorphORay_r[] __asm__("D_0013D5DD");
@@ -1950,8 +1949,7 @@ int update_shuttle_path_ride(char *moby, int path) {
 }
 extern void rand_vec(void *, float, float);
 extern void SpawnExplosionFx(void *, void *, int, float, float);
-extern int random_integer_below(int);
-extern int rand_range(int, int);
+
 extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
 extern unsigned char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 extern int FastTweenColor(int, int, float);
@@ -2055,7 +2053,7 @@ void ScatterPiecesExplode(float f, struct Moby *a0, void *a1, void *a2, int n) {
 typedef u32 u128_04FA8 __attribute__((mode(TI), aligned(16)));
 void begin_moby_linear_and_angular_motion(char *arg, void *a, void *b);
 extern char *level_mobys_q MACRO_ADDR;
-extern short *blarg_moby_groups[];
+
 extern short blarg_explosion_flash_ticks_r __asm__("D_L06_00162198");
 extern short blarg_explosion_flash_color_a_r __asm__("D_L06_0016219C");
 extern short blarg_explosion_flash_color_b_r __asm__("D_L06_001621A0");
@@ -2411,8 +2409,7 @@ typedef struct {
     int v[6];
 } V6;
 extern void clear_u64_value(void *);
-extern int random_integer_below(int);
-extern int rand_range(int, int);
+
 extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
 extern V6 red_button_burst_colors_end;
 extern V6 red_button_burst_colors_start;
@@ -2448,13 +2445,13 @@ void emit_red_button_particle_burst(int unused, void *obj) {
         } while (i < *(int *)&red_button_burst_count);
     }
 }
-extern void Sound_StopSlot(int);
+
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 extern void set_vec_to_origin_point(void *);
 extern void euler_to_matrix(float *, float *);
 extern void set_scale_matrix(float *, float);
-extern float randf_sym(float lo, float hi);
+
 extern void spawn_moving_hero_relative_alpha_fade_particle_r(void *, void *, int, float, int, int,
                                                              int) __asm__("func_L00_00273F80");
 extern int vector_stream_fade_ticks MACRO_ADDR;
@@ -3009,7 +3006,7 @@ void SparkEmitterUpdate(Moby *m) {
     }
 }
 extern int FastBSphereCheck(char *, float);
-extern float random_float_between(float, float);
+
 extern float multiply_global_factor(float);
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
 extern char *level_mobys_q MACRO_ADDR;

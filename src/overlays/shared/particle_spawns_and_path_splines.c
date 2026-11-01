@@ -3,11 +3,14 @@
 #include "structs/vector.h"
 #include "include_asm.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "data/level_01.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
 
 extern unsigned char *create_part(int);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern float random_float_between(float, float);
+
 extern int scale_ticks(int);
 extern unsigned char *novalis_part_type10_textures;
 
@@ -33,7 +36,7 @@ void spawn_type_10_particle(char *pos, char *vel) {
     }
 }
 extern float randf_sym(float, float);
-extern int random_integer_below(int);
+
 extern unsigned char *novalis_part_type14_textures;
 
 /* spawns a type 14 particle at the given position with jitter */
@@ -173,7 +176,6 @@ unsigned char *spawn_type_74_particle(char *m, char *pos, float *vel, char *cfg,
 }
 LINKER_REMNANT("asm/overlays", func_L01_0028C1D0);
 extern float FastVecDist(void *, void *);
-extern char *novalis_paths[];
 
 // Resets a path object and computes per-segment lengths of its points.
 void initialize_path_descriptor(char *p) {
@@ -197,8 +199,6 @@ typedef struct {
     int pad[3];
     float e[1][4];
 } List;
-
-extern float FastAbsF(float);
 
 /* Returns the index of the entry whose distance to arg0 is closest to a target value. */
 int select_point_index_by_distance(void *arg0, List *arg1, float target) {

@@ -3,6 +3,7 @@
 #include "include_asm.h"
 #include "structs/hero.h"
 #include "game/map.h"
+#include "data/shared_levels.h"
 
 extern int hero_control_mode;
 extern unsigned char menu_item_enabled_2[];
@@ -237,8 +238,6 @@ int ensure_menu_cache_entry(int key) {
     return miss;
 }
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
-extern int dialogue_entry_level_starts[];
-extern int dialogue_entry_ids[];
 
 /* stores a value into a table slot chosen by the current index */
 void store_current_level_table_value(int a, int b) {

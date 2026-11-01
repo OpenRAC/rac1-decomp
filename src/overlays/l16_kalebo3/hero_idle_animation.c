@@ -12,6 +12,10 @@
 #include "overlays/shared/hero_update_ground_material.h"
 #include "overlays/shared/hero_vehicle_and_collision.h"
 #include "overlays/shared/numeric_hud_sprites.h"
+#include "asm/shared_levels.h"
+#include "data/level_16.h"
+#include "game/fastfunc.h"
+#include "overlays/shared/moby_ground_collision.h"
 
 typedef int u128 __attribute__((mode(TI)));
 typedef struct {
@@ -23,7 +27,6 @@ typedef struct {
 extern void clear_moby_transform_history(char *o);
 
 extern int scale_ticks(int);
-extern int rand_range(int, int);
 
 extern int get_hero_idle_animation_index(int a);
 extern void clear_u64_value(void *);
@@ -36,9 +39,7 @@ extern float FastDiffRots(float, float);
 
 extern int allocate_hero_voice_for_entry(int, int);
 
-extern float fast_atan2(float, float);
 extern float FastVecDist(void *, void *);
-extern float randf_sym(float lo, float hi);
 
 extern void initialize_moby_transform_history(int a, char *b);
 extern void create_moby_transform_history_entry(char *o, int a, int b);
@@ -58,7 +59,6 @@ extern float FastVecLength(void *a);
 extern void vec_scale_to_length(void *, void *, float);
 extern float FastVecDot(void *a, void *b);
 extern void RippleDisturb(void *, int, int, float, float, float, float);
-extern float FastAbsF(float);
 
 extern void FastMemSet(void *, int, int);
 extern void gravity_set_z(float *dst, float *src, float z);
@@ -81,7 +81,7 @@ extern char hero_globals_base[];
 extern char help_stats_base[];
 extern char item_usage[];
 extern unsigned char draw_map51_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
-extern short kalebo3_look_stat_timer;
+
 extern short kalebo3_hero_idle_anim_modes;
 extern short kalebo3_hero_state_f_jump_velocity_keys;
 extern char kalebo3_hero_state_d_jump_velocity_keys[];

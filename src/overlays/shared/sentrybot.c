@@ -10,6 +10,12 @@
 #include "overlays/shared/mine_bomb_and_debris.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/point_lights_and_glows.h"
+#include "asm/shared_levels.h"
+#include "data/level_15.h"
+#include "game/fastfunc.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/sound_playback.h"
 
 /* Sentrybot: patrols a path, turns toward what it notices, raises its
    linked alarm and shoots when it sees the hero. */
@@ -149,7 +155,7 @@ extern int fast_dec_timer(void *);
 extern void begin_sentrybot_turn_toward_point(char *moby, void *a, float *point, void *b, void *c);
 extern void MobyBlendAnimation(void *, int, int, int);
 extern void mark_moby_killed_and_release_owned_voice(int);
-extern float fast_atan2(float, float);
+
 extern float FastDiffRots(float, float);
 extern float animation_end(int a, unsigned int b);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
@@ -171,7 +177,7 @@ extern float vec_length_xy(void *);
 extern char *spawn_class_3a6_moby(char *, float *, char *, char *);
 extern int mine_fall(void *, void *);
 extern float ProbeGroundHeight(void *, int, float);
-extern int CollType(void);
+
 extern int Moby_PlaySound(int, int, int);
 extern void SpawnExplosionFx(void *, void *, int, float, float);
 extern void SetDeathBits(void *, int, int);
@@ -1295,7 +1301,7 @@ extern int update_float_countdown(void *);
 #define func_L08_00211A38_r func_L08_00211A38
 extern int truncate_float_to_s32(float);
 #define truncate_float_to_s32_r func_001FA898
-extern float FastAbsF(float);
+
 #define func_L00_001EFFF0_r func_L00_001EFFF0
 extern int FindNearestEligibleMoby(void *, void *, float, int, int, void *, int);
 #define quartu_moby_array_m D_L15_00160058
@@ -1535,7 +1541,7 @@ void draw_sentrybot_effect_quads(char *m) {
     }
 }
 extern char quartu_camera_pos_r[] __asm__("D_L15_00167440");
-extern int quartu_coll_hit_moby[];
+
 extern unsigned char hero_vehicle_mode[];
 extern int Sound_PlayClassSound(int, int, void *, int);
 extern void FastVecScale(void *, void *, float);
@@ -1702,7 +1708,7 @@ extern char *quartu_coll_sphere_moby_hits[];
 extern char quartu_player_camera[];
 extern void EffectQueue_Add(void *, int, float, float, void *, int, int, float, int);
 extern void vec3_sub_in_place_second_arg(void *, void *, void *);
-extern float lensq_cc2e8(void *);
+
 extern float vec_length(float);
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
 extern void BuildSphericalOffset(void *, float, float, float);
@@ -1712,24 +1718,22 @@ extern void matrix_mul_vec3(void *, void *, void *);
 extern float random_angle_radians(void);
 extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
-extern void add_vectors(void *, void *, void *);
+
 extern void vec_set_length_xy(void *, void *, float);
-extern void vec_reflect(void *, void *, void *);
+
 extern void moby_index_list_remove(void *, void *);
 extern int coll_sphere_mobys(void *, float, int, void *, void *);
 extern void SendRadialMessageToMobys(void *, void *, void *, int, int, int, int, int, float, float, float);
 extern void sce_vu0_mul_matrix(void *, void *, void *);
-extern void matrix4_scale(void *, void *, float);
-extern void matrix4_add(void *, void *, void *);
+
 extern void set_identity_matrix(void *);
 extern void transform_vector(void *, void *, void *);
-extern int rand_range(int, int);
+
 extern void *spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(void *, void *, int, int, float, int,
                                                                                int, int, int);
-extern void clamp_vec_length(void *, void *, float);
 
 extern void PartType11Spawn(void *, void *, int, int, float, int, int, float, int, int);
-extern void spawn_particle_alt_9768(void *pos, void *vel, int color, int tag, int life, float size);
+
 extern void mine_camera_blast(void *, void *, int, int);
 
 /* update of moby class 256: a homing missile that leads its target, trails smoke and explodes on contact */
@@ -2139,8 +2143,7 @@ typedef struct {
     char pad10[0x10];
     PartSub29FF90 sub;
 } Part29FF90;
-extern int rand_range(int, int);
-extern void add_vectors(void *, void *, void *);
+
 extern void spawn_owner_target_particle(int a0, void *a1, char *a2);
 extern void PartType05Spawn_r(void *, unsigned char, unsigned char, unsigned char, float, float,
                               int) __asm__("func_L00_0026AA10");
@@ -2880,7 +2883,6 @@ extern KillFlags quartu_collected_flags_base;
 extern u8 quartu_mission_group_state[] MACRO_ADDR;
 extern u8 saved_mission_state[][16];
 extern u8 voice_pool[];
-extern void Sound_StopSlot(s32);
 
 /* Marks the moby as killed in the level's spawn tables and releases the voice slot it still owns.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00278fd8.c, FUN_L15_002a35d8. */
@@ -2922,7 +2924,7 @@ extern void matrix_copy_rows(void *, void *);
 
 extern float FastNormalizeAngle(float);
 extern int func_001160D8(void);
-extern u8 quartu_coll_hit_point[];
+
 extern short quartu_spiderbot_spark_count;
 extern short quartu_spiderbot_spark_scale;
 extern short quartu_spiderbot_spark_life;
@@ -3148,7 +3150,7 @@ typedef struct {
     s32 start_volume;
     s32 stop_volume;
 } MovingMobyVars;
-extern f32 FastAbsF(f32);
+
 extern f32 FastCos(f32);
 extern f32 FastSin(f32);
 
@@ -3481,7 +3483,7 @@ void prepare_sentrybot_alarm(unsigned char *moby) {
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound(int, int, int);
 extern void AddDrawCallback(void (*)(void), void *);
-extern void Sound_StopSlot(int);
+
 extern void emit_sine_modulated_rgba_draw_packet(void);
 extern short g_current_level_index;
 extern short quartu_alarm_raised;

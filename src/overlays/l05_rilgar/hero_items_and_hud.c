@@ -15,6 +15,12 @@
 #include "overlays/shared/sky_particles.h"
 #include "overlays/shared/weapon_hud_and_counters.h"
 #include "structs/hero_views.h"
+#include "data/executable.h"
+#include "data/level_05.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/sound_playback.h"
 
 typedef struct {
     char p0[0xF8];
@@ -31,7 +37,7 @@ typedef struct {
 extern Hero g_hero;
 extern PadState g_controller_state;
 extern S141948 usage_stats;
-extern int last_weapon_id;
+
 extern unsigned char item_available[];
 extern char voice_pool[];
 extern int gBolts MACRO_ADDR;
@@ -46,7 +52,7 @@ extern float rilgar_hero_fall_state_height MACRO_ADDR;
 extern int item_selector_hud_open_blocker MACRO_ADDR;
 extern int landing_run_entry_animation_frame MACRO_ADDR;
 extern short rilgar_hero_double_tap_timer;
-extern float rilgar_player_camera_yaw;
+
 extern int rilgar_hero_state_1e_clear_word;
 extern HeroBoneScalars rilgar_lean_state;
 extern HeroIdleFidget rilgar_idle_fidgets[];
@@ -69,7 +75,6 @@ extern float multiply_global_factor(float);
 extern int Hero_TryMoveStateL05(int, int);
 
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
-extern int rand_range(int, int);
 
 extern void stick_target(int, float);
 
@@ -103,11 +108,9 @@ extern float ApproachValue(float *p, float target, float maxstep);
 extern void FastVecScale(void *, void *, float);
 
 extern float gravity_z(float *v);
-extern float FastAbsF(float);
-extern float random_float_between(float a, float b);
+
 extern void apply_hero_item_slot_selection(int i);
 extern void release_and_clear_hero_voice_slots(void);
-extern void Sound_StopSlot(int);
 
 extern int compute_hero_hoverboard_respawn_transform(float *, float *);
 extern void Hero_ResetToPosition(void *, void *, int, int);

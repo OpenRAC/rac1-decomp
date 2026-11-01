@@ -8,6 +8,7 @@
 extern int Hero_CanUseGadget(void);
 extern void Hero_OnKilled(void);
 extern void cancel_hero_item_animation(void);
+extern void clear_hero_item_slot(int, int);
 extern void compute_hero_fixed_offset_world_position(float *);
 extern void correct_hero_airborne_wall_velocity(void);
 extern void correct_hero_ground_penetration(void);
@@ -15,6 +16,7 @@ extern void create_missing_hero_item_slot_animations(int a, int b);
 extern float forward_component(void *);
 extern float get_hero_yaw_history(int back);
 extern void hero_integrate_velocity(void);
+extern int hero_slot_item_id(int);
 extern char *hero_slot_moby(int);
 extern void hero_update(void);
 extern int probe_hero_ledge_edge(float *, float *);

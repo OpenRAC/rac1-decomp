@@ -4,6 +4,13 @@
 #include "structs/hero.h"
 #include "structs/moby.h"
 #include "overlays/shared/effect_particle_updates.h"
+#include "asm/level_08.h"
+#include "asm/shared_levels.h"
+#include "data/level_08.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/sound_playback.h"
 
 /* Paratrooper fire bolt (class 0x50C): flies along its velocity until it hits something or its time runs out. */
 struct FireBoltVars {
@@ -339,7 +346,6 @@ extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, 
 extern void SetDeathBits(void *, int, int);
 extern int FindNearestEligibleMoby_f(char *, void *, float, int, int, void *, int) __asm__("func_L00_00260FB0");
 extern float vec_distance_xy(void *, void *);
-extern float FastAbsF(float);
 
 /* Takes hits (dying at 0 health), then follows the moby's path and gives up on it when too far off. */
 void update_scoutbot_health_and_target(char *m) {
@@ -400,7 +406,7 @@ extern void clear_u64_value(void *);
 #define func_001F9BC0_4B80 func_001F9BC0
 extern float vec_length_xy(void *);
 #define func_001F9CE8_4B80 ((float (*)(void *))func_001F9CE8)
-extern float fast_atan2(float, float);
+
 #define func_L00_001FF860_4B80 ((float (*)(float, float))func_L00_001FF860)
 extern void euler_to_matrix(void *, void *);
 #define func_001FA218_4B80 ((void (*)(void *, void *))func_001FA218)
@@ -546,7 +552,7 @@ extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern void FastVecSub(void *dst, void *a, void *b);
 extern float g_frame_time_sq MACRO_ADDR;
-extern int coll_point_query_stub(void *, int, int, void *, int);
+
 extern float batalia_coll_resolved_pos[];
 
 /* Steers a moby along its path state and lifts it clear of the ground. */
@@ -683,12 +689,12 @@ extern char *CreateMoby(int);
 extern void set_moby_color(void *, int, int, int);
 extern void moby_build_matrix(void *);
 extern float vec_length_xy(void *);
-extern float fast_atan2(float, float);
+
 extern void euler_to_matrix(void *, void *);
 extern float random_angle_radians(void);
-extern float random_float_between(float, float);
+
 extern float FastCos(float);
-extern int rand_range(int, int);
+
 extern void *PartType21Spawn(void *, void *, int, int, int, int, float);
 extern int truncate_float_to_s32(float);
 extern float multiply_global_factor(float);
@@ -794,7 +800,7 @@ extern void FastVecSub(void *out, void *a, void *b);
 extern void FastVecScale(void *, void *, float);
 extern float FastVecDist(void *, void *);
 extern float random_angle_radians(void);
-extern float random_float_between(float, float);
+
 extern float FastCos(float);
 extern float multiply_global_factor(float);
 extern int truncate_float_to_s32(float);
@@ -922,12 +928,12 @@ typedef struct {
     int a, b;
 } Pair;
 extern int batalia_mesh13_uv_sources[];
-extern int batalia_mesh13_counts[];
+
 extern int batalia_mesh13_positions[];
-extern int batalia_mesh13_colors[];
+
 extern char batalia_scrolled_uvs[];
 extern Pair batalia_uv_scroll[];
-extern void add_uv_scroll_offset(void *, int, int, void *);
+
 extern void draw_env_overlay_mesh(int, int, int, void *, int);
 
 /* Runs the two per-entry update calls over a 13-entry table. */
@@ -944,9 +950,9 @@ typedef struct {
     int a, b;
 } Pair8;
 extern int batalia_mesh11_uv_sources[];
-extern int batalia_mesh11_counts[];
+
 extern int batalia_mesh11_positions[];
-extern int batalia_mesh11_colors[];
+
 extern Pair8 scroll_pos_x[] MACRO_ADDR;
 
 /* Places the level's 11 effect pieces from their tables (a relative of func_L11_0031FCC8). */
@@ -960,9 +966,9 @@ void Moby600_DrawQuads11(int a) {
     }
 }
 extern int batalia_mesh8_uv_sources[];
-extern int batalia_mesh8_counts[];
+
 extern int batalia_mesh8_positions[];
-extern int batalia_mesh8_colors[];
+
 extern Pair batalia_mesh8_scroll_offset[] MACRO_ADDR;
 
 /* Runs the two per-entry update calls over an 8-entry table. */
@@ -1071,7 +1077,7 @@ void advance_scroll_entry(int i) {
 }
 extern int fast_dec_timer(int *);
 extern void euler_to_matrix(void *, void *);
-extern float random_float_between(float, float);
+
 extern float multiply_global_factor(float);
 extern int truncate_float_to_s32(float);
 extern void PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
@@ -1656,7 +1662,7 @@ extern void spawn_randomized_bolt_drop(void *, int, int, int, int);
 extern void RerollEffectCounter(void *m, short *p);
 extern void StepColorFade(void *, void *);
 extern int FastDecTimer(void *);
-extern s32 random_integer_below(s32);
+
 extern int FindNearestEligibleMoby(char *, void *, float, int, int, void *, int);
 extern float ProbeGroundHeight(void *, int, float);
 extern short paratrooper_scale;
@@ -1855,7 +1861,7 @@ void update_blarg_paratrooper_damage_and_state(char *m) {
 }
 extern char *CreateMoby(int);
 extern int scale_ticks(int);
-extern float fast_atan2(float, float);
+
 extern float vec_length_xy(void *);
 extern void moby_build_matrix(void *);
 
@@ -1884,8 +1890,6 @@ char *spawn_paratrooper_projectile(char *pos, char *dir, int a2, int a3, int a4,
 }
 extern char batalia_coll_hit[];
 extern void FastVecScale(void *, void *, float);
-extern void add_vectors(void *, void *, void *);
-extern int rand_range(int, int);
 
 extern int coll_line(void *, void *, int, int, int);
 extern void PostHitMessage(void *, int, int, void *, void *, float);
@@ -1940,7 +1944,7 @@ void update_fire_bolt(char *m) {
             break;
     }
 }
-extern float random_float_between(float, float);
+
 extern float multiply_global_factor(float);
 extern float g_frame_time MACRO_ADDR;
 extern float ground_particle_scatter_spawn_vector_x_bias[2] MACRO_ADDR;
@@ -2273,7 +2277,6 @@ void set_level_state_flag_88(void) {
 extern short batalia_wind_level;
 extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
 extern int Sound_SetPitchBend(int, int);
-extern int play_voice(int a, int b, int c, int d);
 
 /* Wind ambience: probes 20 points around the hero; the more of them are below the camera, the louder the loop. */
 void update_ground_height_modulated_voice(char *m) {

@@ -6,6 +6,13 @@
 #include "structs/vector.h"
 #include "structs/hero.h"
 #include "game/draw.h"
+#include "asm/level_08.h"
+#include "asm/shared_levels.h"
+#include "data/level_11.h"
+#include "game/fastfunc.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 
 /* Class 0x3F1 shot: flies along vel for ticks, owned by the firing moby. */
 struct ShotVars {
@@ -47,7 +54,7 @@ void remove_moby_when_near_hero(char *a0) {
     }
 }
 extern float vec_distance_xy(void *, void *);
-extern float fast_atan2(float, float);
+
 extern float FastDiffRots(float, float);
 extern float FastVecDist(void *, void *);
 extern char *pokitaru_moby_list MACRO_ADDR;
@@ -95,7 +102,7 @@ char *select_homing_missile_target(float *pos, float *aim, float r1, float r2, f
 extern char *CreateMoby();
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float vec_length_xy(void *);
-extern float fast_atan2(float, float);
+
 extern void vec_scale_to_length(void *, void *, float);
 extern float FastVecLength(void *);
 extern void set_moby_color(void *, int, int, int);
@@ -158,15 +165,13 @@ extern char pokitaru_coll_hit_normal[];
 extern int truncate_float_to_s32(float);
 extern float FastSubRots(float, float);
 extern float FastAddRots(float, float);
-extern float FastAbsF(float);
+
 extern void BuildSphericalOffset(void *, float, float, float);
 extern void Profile_Mark(void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern void initialize_hit_descriptor(float, void *, struct Moby *, int);
 extern int coll_line(void *, void *, int, void *, void *);
-extern float random_float_between(float, float);
-extern void vec_reflect(void *, void *, void *);
-extern int rand_range(int, int);
+
 extern char *PartType27Spawn_r(void *, void *, int, int, float) __asm__("func_L00_0026EBC0");
 extern int fast_dec_timer(int *);
 /* Copy an xyz vector. */
@@ -261,7 +266,7 @@ void update_homing_missile(struct Moby *moby) {
 }
 extern char *CreateMoby(int);
 extern int truncate_float_to_s32(float);
-extern float fast_atan2(float, float);
+
 extern void vec_scale_to_length(void *, void *, float);
 
 /* spawns a streak moby aimed along a direction with the given size and colour */
@@ -299,7 +304,7 @@ extern short projectile_trail_color_a, projectile_trail_color_b, projectile_trai
     projectile_trail_speed_scale;
 extern char pokitaru_coll_hit_normal[];
 extern float g_frame_time_e __asm__("D_0015EE6C") MACRO_ADDR;
-extern float random_float_between(float, float);
+
 extern int FastTweenColor(int, int, float);
 extern void rand_vec(float *, float, float);
 extern void FastVecAdd(void *, void *, void *);
@@ -307,8 +312,7 @@ extern void FastVecScale(void *, void *, float);
 extern char *PartType27Spawn(char *pos, char *vel, int c, int d, float f);
 extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
 extern int coll_line(void *, void *, int, void *, void *);
-extern void vec_reflect(void *, void *, void *);
-extern int rand_range(int, int);
+
 extern int fast_dec_timer(int *);
 
 /* Fireball: flies along its velocity leaving smoke; when it hits something it bursts into five puffs
@@ -369,7 +373,6 @@ struct PClass {
     u8 pad[0x24];
     f32 scale;
 };
-
 
 typedef struct {
     Vec4 step;
@@ -513,9 +516,9 @@ extern void draw_env_overlay_mesh_r(int, void *, void *, void *, int) __asm__("f
 extern void draw_world_quad(void *, void *, int);
 extern char hero_globals_base[];
 extern char pokitaru_render_view_params[];
-extern int pokitaru_render_setup_packet_default;
+
 extern char pokitaru_camera_matrix[];
-extern float camera_pos_b358[];
+
 extern float pokitaru_ocean_height MACRO_ADDR;
 extern char pokitaru_player_camera[];
 extern Pos_30BCD8 pokitaru_ocean_strip_verts[];
@@ -722,7 +725,6 @@ typedef struct {
     float limit; /* 0x20 */
 } OceanVars_30C728;
 
-
 typedef struct {
     char pad000[0x140];
     V4_30C728 pos; /* 0x140 */
@@ -841,8 +843,7 @@ void ocean_pokitaru_update(Moby *moby) {
     }
     AddDrawCallback_r((void *)draw_pokitaru_ocean_r, moby);
 }
-extern short *pokitaru_moby_groups[];
-extern char pokitaru_pool_tiles[];
+
 extern int pokitaru_mobys_m __asm__("D_L11_00160058") MACRO_ADDR;
 
 // For each index in the moby's list, copy its z to the entry and to the table slot the entry points at.
@@ -1404,7 +1405,7 @@ extern int skill_point_18_kill_count MACRO_ADDR;
 extern unsigned char gSkillPoints[] NOT_SDA;
 extern char *MobyGetHitMessage(void *, int, int);
 extern int PlayBankSound(int, int, int);
-extern void ShowBanner(int, int);
+
 extern void MobyBlendAnimation(void *, int, int, int);
 extern int coll_sphere(float, void *, int, void *);
 
@@ -1550,14 +1551,12 @@ typedef struct {
     int a, b;
 } Pair8;
 
-extern void add_uv_scroll_offset(void *, int, int, void *);
 extern void draw_env_overlay_mesh(int, int, int, void *, int);
 
-extern char pokitaru_faded_scrolled_uvs[];
 extern int oil_tanker_2b_mesh_uv_sources[];
-extern int oil_tanker_2b_mesh_vertex_counts[];
+
 extern int oil_tanker_2b_mesh_positions[];
-extern int oil_tanker_2b_mesh_colors[];
+
 extern Pair8 pokitaru_faded_2b_scroll[] MACRO_ADDR;
 
 // Fills 5 rows of a three-column table and hands each row to two builders.

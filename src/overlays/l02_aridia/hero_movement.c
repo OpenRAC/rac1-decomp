@@ -15,12 +15,15 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "structs/hero_views.h"
+#include "data/executable.h"
+#include "data/level_02.h"
+#include "game/fastfunc.h"
+#include "overlays/shared/sound_playback.h"
 
 extern unsigned char hero_globals_base[];
 extern int g_current_level_index MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
 extern int CollType(void);
-extern float FastAbsF(float);
 
 extern void HeroL02_SetMoveState(int, int);
 extern void Hero_OnKilled(void);
@@ -155,7 +158,7 @@ extern Hero g_hero_r __asm__("D_0013F450");
 extern s32 aridia_cinematic_mode MACRO_ADDR;
 extern T_8 aridia_moby_hits[];
 extern s32 g_current_level_index MACRO_ADDR;
-extern s32 level_hero_hit_counts[];
+
 extern s32 hero_hit_count MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
 extern u8 hero_velocity[];
@@ -262,7 +265,7 @@ s32 HeroL02_TryKnockback(s32 arg) {
     return 1;
 }
 extern Hero g_hero_r2 __asm__("D_0013F450");
-extern f32 g_hero_capsule_top[];
+
 extern f32 frame_scale MACRO_ADDR;
 extern f32 g_frame_scale_sq MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
@@ -656,10 +659,10 @@ extern float g_frame_scale_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
-extern short aridia_usage_event_timer;
+
 extern short aridia_usage_event_count;
 extern HeroPlayerCameraView aridia_player_camera;
-extern float aridia_player_camera_yaw;
+
 extern Moby *aridia_coll_sphere_moby_hits[];
 extern HeroAttackRecord aridia_attack_records[];
 extern HeroSpeedBands aridia_hero_speed_bands;
@@ -686,7 +689,6 @@ extern int truncate_float_to_s32(float);
 extern float vec_length_xy(void *);
 extern int clamp_vec_length_xy(float, void *, void *);
 
-extern void Sound_StopSlot(int);
 extern float SpringAngle(void *, float, void *, int, float, float, float);
 extern float FastSubRots(float, float);
 extern float FastAddRots(float, float);

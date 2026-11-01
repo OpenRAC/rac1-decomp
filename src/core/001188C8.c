@@ -2,6 +2,7 @@
 #include "callees.h"
 #include "structs/misc.h"
 #include "core/00118A40.h"
+#include "data/executable.h"
 
 /*
  * core_text object 0x1188C8-0x118A40. Boundaries are retail's linker fill
@@ -11,8 +12,6 @@
  * (__swsetup), back to back. Built with Sony's 2.9-ee (Makefile.sn,
  * EE29_CORE), like libc.a.
  */
-
-extern int SbrkErrno;
 
 int _write_r(int *errOut, void *a, void *b, void *c) {
     int r;
