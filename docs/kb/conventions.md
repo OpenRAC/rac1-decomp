@@ -148,8 +148,8 @@ pass. A cast into a `pad_` field means the field should be named in the header
 | `Pad_2D9F08` | `src/overlays/shared/trespasser_pad_and_background_ships.c` | reads `held` and `pressed` as one doubleword (`b1C0`); `PadState`'s separate `s32` fields would change the load |
 
 *(inferred from the definitions and uses; the pad reason is from the
-header-tidy notes.)* Small `fNN` data views in `help_*.c` (`S141948`, `Cam`,
-`Row13E650`, `Rec2C` ...) are also still private.
+header-tidy notes.)* Small `fNN` data views in `help_*.c` (`S141948`,
+`Row13E650` ...) are also still private. Shared hero views are in `include/structs/hero_views.h`.
 
 ## 4. Comments and provenance
 
