@@ -15,23 +15,12 @@
 #include "game/hud.h"
 #include "game/loaders.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "structs/collision.h"
 
 struct Moby;
 extern struct Hero g_hero_r __asm__("D_0013F450");
 typedef int OvlQuad __attribute__((mode(TI)));
-typedef struct {
-    u8 pad0[0x18];
-    s32 moby; /* 0x18: passed to FUN_002141f8 (reads moby+0x34, moby+0x78); 0 when no moby was hit */
-    s32 unk1C; /* 0x1C: > 0 gates copying point and the normal into the hero (shared/ui/help/00226f10.c) */
-    union {
-        OvlQuad q;
-        f32 f[4];
-    } point; /* 0x20: f[2] is read as the ground height */
-    u8 pad30[0x10]; /* 0x30: position after push-out (copied into hero.motion.pos) */
-    f32 normal_x; /* 0x40: start of the surface normal; its angle is tested against 50 degrees (0.87266463) */
-    f32 normal_y; /* 0x44: FUN_001f9e90 (atan2) of normal_x, normal_y is stored in the hero */
-    f32 normal_z; /* 0x48: ledge probes compare atan2(normal_z, xy length) with 20 degrees */
-} CollisionHit;
+
 f32 FastCos(f32);
 f32 FastSin(f32);
 /* Adds to v an xy offset of length 2r in direction ang. */
@@ -90,7 +79,8 @@ int probe_hero_ledge_edge(Vec4 *pos, f32 *dir) {
         if (coll_line_r(&top, &low, 4, g_hero_r.moby, 0)) {
             material = CollType();
             if (material != 9 && material != 12) {
-                if (fast_atan2(coll_hit_result_r.normal_z, vec_length_xy(&coll_hit_result_r.normal_x)) < max_slope)
+                if (fast_atan2(coll_hit_result_r.normal.f[2], vec_length_xy(&coll_hit_result_r.normal.f[0])) <
+                    max_slope)
                     found = 1;
             }
         }
@@ -120,7 +110,7 @@ int probe_hero_ledge_edge(Vec4 *pos, f32 *dir) {
         low.f[2] = wall.f[2];
         if (coll_line_r(&low, &wall, 2, 0, 0)) {
             hit = 1;
-            wall_yaw = fast_atan2(coll_hit_result_r.normal_x, coll_hit_result_r.normal_y);
+            wall_yaw = fast_atan2(coll_hit_result_r.normal.f[0], coll_hit_result_r.normal.f[1]);
             break;
         }
     }
@@ -3090,21 +3080,21 @@ void clip_hero_velocity_against_probed_surfaces(int arg) {
         if (coll_line(primary_probe_start.f, primary_probe_offset_or_end.f, 4, (int)h3->moby, 0)) {
             pos_base = (char *)coll_hit_result;
             if (((CollisionHit *)pos_base)->unk1C > 0) {
-                primary_hit_normal_angle = fast_atan2(((CollisionHit *)pos_base)->normal_z,
-                                                      vec_length_xy(&((CollisionHit *)pos_base)->normal_x));
+                primary_hit_normal_angle = fast_atan2(((CollisionHit *)pos_base)->normal.f[2],
+                                                      vec_length_xy(&((CollisionHit *)pos_base)->normal.f[0]));
             }
         }
         if (primary_hit_normal_angle >= 0.87266463f || r == 8 || r == 12) {
             h4 = (struct Hero *)(hero_globals_base + 0xE1D);
             hit = (CollisionHit *)coll_hit_result;
-            *(s32 *)&hit->normal_z = 0;
+            *(s32 *)&hit->normal.f[2] = 0;
             h4->unk240 = hit->moby;
-            sceVu0Normalize(&hit->normal_x, &hit->normal_x);
+            sceVu0Normalize(&hit->normal.f[0], &hit->normal.f[0]);
             inward_velocity_component =
-                -h4->motion.velocity.f[0] * hit->normal_x - h4->motion.velocity.f[1] * hit->normal_y;
+                -h4->motion.velocity.f[0] * hit->normal.f[0] - h4->motion.velocity.f[1] * hit->normal.f[1];
             if (inward_velocity_component > 0.0f) {
-                FastVecScale(&hit->normal_x, &hit->normal_x, inward_velocity_component);
-                FastVecAdd(h4->motion.velocity.f, h4->motion.velocity.f, &hit->normal_x);
+                FastVecScale(&hit->normal.f[0], &hit->normal.f[0], inward_velocity_component);
+                FastVecAdd(h4->motion.velocity.f, h4->motion.velocity.f, &hit->normal.f[0]);
             }
         }
     }

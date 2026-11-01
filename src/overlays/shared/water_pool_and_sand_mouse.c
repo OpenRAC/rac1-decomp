@@ -21,6 +21,7 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/sound_playback.h"
+#include "structs/collision.h"
 /* Novalis elevator: rides its path while the hero stands on it. */
 struct NovalisElevatorVars {
     u8 pad_00[0x20];
@@ -872,19 +873,7 @@ void spawn_collision_particle_bursts(void) {
     }
 }
 typedef int OvlQuad __attribute__((mode(TI)));
-typedef struct {
-    u8 pad0[0x18];
-    s32 moby; /* 0x18: passed to FUN_002141f8 (reads moby+0x34, moby+0x78); 0 when no moby was hit */
-    s32 unk1C; /* 0x1C: > 0 gates copying point and the normal into the hero (shared/ui/help/00226f10.c) */
-    union {
-        OvlQuad q;
-        f32 f[4];
-    } point; /* 0x20: f[2] is read as the ground height */
-    u8 pad30[0x10]; /* 0x30: position after push-out (copied into hero.motion.pos) */
-    f32 normal_x; /* 0x40: start of the surface normal; its angle is tested against 50 degrees (0.87266463) */
-    f32 normal_y; /* 0x44: FUN_001f9e90 (atan2) of normal_x, normal_y is stored in the hero */
-    f32 normal_z; /* 0x48: ledge probes compare atan2(normal_z, xy length) with 20 degrees */
-} CollisionHit;
+
 extern s32 truncate_float_to_s32(f32);
 void spawn_collision_particle_bursts(void);
 extern int fast_dec_timer(void *);

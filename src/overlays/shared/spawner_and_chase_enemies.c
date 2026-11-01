@@ -5,6 +5,7 @@
 #include "structs/hero.h"
 #include "structs/moby.h"
 #include "game/fastfunc.h"
+#include "structs/collision.h"
 
 /* Spawner (class 0x75D): picks a target, then throws eggs (class 0x75E) towards it, up to max_eggs alive. */
 struct SpawnerVars {
@@ -1643,19 +1644,7 @@ typedef int OvlQuad __attribute__((mode(TI)));
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 extern f32 fast_atan2(f32, f32);
 void remove_spawner_egg(void *moby, char *data);
-typedef struct {
-    u8 pad0[0x18];
-    s32 moby; /* 0x18: passed to FUN_002141f8 (reads moby+0x34, moby+0x78); 0 when no moby was hit */
-    s32 unk1C; /* 0x1C: > 0 gates copying point and the normal into the hero (shared/ui/help/00226f10.c) */
-    union {
-        OvlQuad q;
-        f32 f[4];
-    } point; /* 0x20: f[2] is read as the ground height */
-    u8 pad30[0x10]; /* 0x30: position after push-out (copied into hero.motion.pos) */
-    f32 normal_x; /* 0x40: start of the surface normal; its angle is tested against 50 degrees (0.87266463) */
-    f32 normal_y; /* 0x44: FUN_001f9e90 (atan2) of normal_x, normal_y is stored in the hero */
-    f32 normal_z; /* 0x48: ledge probes compare atan2(normal_z, xy length) with 20 degrees */
-} CollisionHit;
+
 typedef struct {
     Vec4 vel; /* 0x00 */
     struct Moby *owner; /* 0x10: class 0x75D spawner; its pvars hold the bubble list at 0xB0 */
@@ -1695,16 +1684,16 @@ static inline void bubble_bounce(struct Moby *moby, BubbleVars *vars) {
     CollisionHit *hit = &gaspar_coll_hit;
 
     if (hit->moby == 0) {
-        vec_reflect(&vars->vel, &vars->vel, &hit->normal_x);
-        if (fast_atan2(hit->normal_z, vec_length_xy(&hit->normal_x)) < 0.6981317f && CollType() == -1) {
+        vec_reflect(&vars->vel, &vars->vel, &hit->normal.f[0]);
+        if (fast_atan2(hit->normal.f[2], vec_length_xy(&hit->normal.f[0])) < 0.6981317f && CollType() == -1) {
             FastVecScale(&vars->vel, &vars->vel, 0.5f);
             if (FastVecLength(&vars->vel) < 0.025f) {
                 moby->state = 1;
             }
         }
     } else if (((struct Moby *)hit->moby)->oclass != 0x75E) {
-        vec_reflect(&vars->vel, &vars->vel, &hit->normal_x);
-        if (fast_atan2(hit->normal_z, vec_length_xy(&hit->normal_x)) < 0.6981317f && CollType() == -1) {
+        vec_reflect(&vars->vel, &vars->vel, &hit->normal.f[0]);
+        if (fast_atan2(hit->normal.f[2], vec_length_xy(&hit->normal.f[0])) < 0.6981317f && CollType() == -1) {
             FastVecScale(&vars->vel, &vars->vel, 1.2f);
         }
     } else {
@@ -1746,9 +1735,9 @@ void spawner_egg_update(struct Moby *moby) {
                 bubble_bounce(moby, vars);
             }
             if (coll_sphere(0.2f, &moby->pos, 4, moby) != 0) {
-                FastVecSub(&step, &gaspar_coll_hit.point, gaspar_coll_hit.pad30);
+                FastVecSub(&step, &gaspar_coll_hit.point, gaspar_coll_hit.pushed.f);
                 vec_scale_to_length(&step, &step, 0.015f);
-                FastVecAdd(&moby->pos, gaspar_coll_hit.pad30, &step);
+                FastVecAdd(&moby->pos, gaspar_coll_hit.pushed.f, &step);
                 bubble_bounce(moby, vars);
             }
             owner = (BubbleOwnerVars *)vars->owner->pvars;

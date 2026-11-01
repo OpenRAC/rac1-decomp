@@ -11,6 +11,7 @@
 #include "data/executable.h"
 #include "data/shared_levels.h"
 #include "game/fastfunc.h"
+#include "structs/collision.h"
 /* Trespasser: set once the pickup was collected. */
 struct TrespasserVars {
     u8 pad_00[0x4];
@@ -1586,19 +1587,7 @@ void release_moby_with_collision_check(float *release_position, char *m, void *i
         moby->state = 2;
 }
 typedef int OvlQuad __attribute__((mode(TI)));
-typedef struct {
-    u8 pad0[0x18];
-    s32 moby; /* 0x18: passed to FUN_002141f8 (reads moby+0x34, moby+0x78); 0 when no moby was hit */
-    s32 unk1C; /* 0x1C: > 0 gates copying point and the normal into the hero (shared/ui/help/00226f10.c) */
-    union {
-        OvlQuad q;
-        f32 f[4];
-    } point; /* 0x20: f[2] is read as the ground height */
-    u8 pad30[0x10]; /* 0x30: position after push-out (copied into hero.motion.pos) */
-    f32 normal_x; /* 0x40: start of the surface normal; its angle is tested against 50 degrees (0.87266463) */
-    f32 normal_y; /* 0x44: FUN_001f9e90 (atan2) of normal_x, normal_y is stored in the hero */
-    f32 normal_z; /* 0x48: ledge probes compare atan2(normal_z, xy length) with 20 degrees */
-} CollisionHit;
+
 s32 CollType();
 int scale_ticks(int);
 extern f32 g_frame_time MACRO_ADDR;
@@ -1941,7 +1930,7 @@ void decoy_update(Moby *moby) {
                             }
                         }
                     }
-                    vec_reflect(vars->vel_xy, vars->vel_xy, &coll_hit_result_r3.normal_x);
+                    vec_reflect(vars->vel_xy, vars->vel_xy, &coll_hit_result_r3.normal.f[0]);
                     if (coll_hit_result_r3.moby != 0 && coll_hit_result_r3.unk1C <= 0)
                         FastVecScale(vars->vel_xy, vars->vel_xy, 1.05f);
                     else
@@ -1951,7 +1940,8 @@ void decoy_update(Moby *moby) {
                         (g_hero_r4.ground_moby != 0 && moby_get_ride_transform((int)g_hero_r4.ground_moby) != 0 &&
                          FastVecLength(vars->vel_xy) <
                              frame_scale * 0.01f + FastVecLength(&g_hero_r4.motion.displacement))) {
-                        angle = fast_atan2(coll_hit_result_r3.normal_z, vec_length_xy(&coll_hit_result_r3.normal_x));
+                        angle =
+                            fast_atan2(coll_hit_result_r3.normal.f[2], vec_length_xy(&coll_hit_result_r3.normal.f[0]));
                         if (angle < 0.61086524f) {
                             int t44 = *(unsigned short *)&vars->timer + 1;
                             vars->timer = t44;
@@ -1965,7 +1955,7 @@ void decoy_update(Moby *moby) {
                                 moby->state = 3;
                                 vars->timer = (short)scale_ticks(600);
                                 moby->pos.z = coll_hit_result_r3.point.f[2];
-                                qcopy(xv, &coll_hit_result_r3.normal_x);
+                                qcopy(xv, &coll_hit_result_r3.normal.f[0]);
                                 {
                                     float cos_a, sin_a;
                                     cos_a = FastCos(moby->rot.z);
@@ -2083,7 +2073,7 @@ void decoy_update(Moby *moby) {
                     if (moby->pos.z < len) {
                         moby->pos.z = len;
                         qzero(vars->vel_xy);
-                        qcopy(v, &coll_hit_result_r3.normal_x);
+                        qcopy(v, &coll_hit_result_r3.normal.f[0]);
                         {
                             float cos_a, sin_a;
                             cos_a = FastCos(moby->rot.z);

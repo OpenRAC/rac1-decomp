@@ -2,6 +2,7 @@
 #include "common.h"
 #include "callees.h"
 #include "include_asm.h"
+#include "structs/collision.h"
 #include "structs/hero.h"
 #include "structs/moby.h"
 #include "structs/vector.h"
@@ -2479,15 +2480,7 @@ typedef union {
         Vec4 target;
     } vectors;
 } MissilePhase1688;
-typedef struct {
-    char pad0[0x18];
-    M910 *moby;
-    int kind;
-    Vec4 position;
-    char pad30[0x10];
-    Vec4 normal, velocity_end, velocity_start;
-} Impact1688;
-extern Impact1688 impact1688 __asm__("D_L00_00173F40");
+extern CollisionHit impact1688 __asm__("D_L00_00173F40");
 extern Hero hero_motion1688 __asm__("D_0013F450");
 extern B910 devastator_blast_fx;
 extern B910 devastator_gold_blast_fx;
@@ -2679,12 +2672,12 @@ void gold_devastator_missile_update(M910 *m) {
     phase.collision.cls = m->cls;
     phase.collision.b9 = 1;
     if (collision1688(&previous, (&m->pos), 0, (char *)g_hero.moby, &phase.collision)) {
-        Impact1688 *hit = &impact1688;
+        CollisionHit *hit = &impact1688;
         Vec4 *hit_normal;
-        if (hit->moby) {
-            if (hit->moby != (M910 *)((char *)g_hero.moby) && hit->moby != d->owner) {
+        if (((M910 *)hit->moby)) {
+            if (((M910 *)hit->moby) != (M910 *)((char *)g_hero.moby) && ((M910 *)hit->moby) != d->owner) {
                 m->bBC = 2;
-                qcopy((&m->pos), &hit->position);
+                qcopy((&m->pos), &hit->point);
                 FastVecSub(&surface_motion, &hit->velocity_end, &hit->velocity_start);
                 hit_normal = &hit->normal;
                 skip = m;
@@ -2693,9 +2686,9 @@ void gold_devastator_missile_update(M910 *m) {
                 vec_scale_to_length(&blast_velocity, &blast_velocity, g_frame_time + g_frame_time);
                 vec_scale_to_length(&normal, hit_normal, 1.0f);
             }
-        } else if (hit->kind > 0) {
+        } else if (hit->unk1C > 0) {
             m->bBC = 1;
-            qcopy((&m->pos), &hit->position);
+            qcopy((&m->pos), &hit->point);
             FastVecSub(&surface_motion, &hit->velocity_end, &hit->velocity_start);
             hit_normal = &hit->normal;
             vec_scale_to_length(&surface_motion, &surface_motion, 1.0f);
@@ -2892,11 +2885,11 @@ void gold_devastator_missile_update(M910 *m) {
             d->pitch_velocity = 0.0f;
             vec_scale_to_length(&bounce[1], &impact1688.normal, 0.05f);
             FastVecAdd((&m->pos), (&m->pos), &bounce[1]);
-            if (impact1688.moby)
-                d->owner = impact1688.moby;
+            if (((M910 *)impact1688.moby))
+                d->owner = (M910 *)impact1688.moby;
             if (!d->bounce_timer)
                 d->bounce_timer = scale_ticks(90);
-            select_gold_devastator_missile_target((char *)m, (O *)d, (char *)impact1688.moby);
+            select_gold_devastator_missile_target((char *)m, (O *)d, (char *)((M910 *)impact1688.moby));
             Moby_PlaySound(1, 0, (int)m);
         }
     }
