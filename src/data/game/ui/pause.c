@@ -29,12 +29,42 @@ u32 panel_slot_enabled[] DATA_SECTION(D_001CE640) = {
 #include "data_inc/D_001CE640.inc"
 };
 
+#include "data_inc/D_001CE938.refs"
+u32 pause_menu_screen_a[] DATA_SECTION(D_001CE938) = {
+#include "data_inc/D_001CE938.inc"
+};
+
+#include "data_inc/D_001CEAC8.refs"
+u32 pause_menu_screen_b[] DATA_SECTION(D_001CEAC8) = {
+#include "data_inc/D_001CEAC8.inc"
+};
+
+#include "data_inc/D_001CEB18.refs"
+u32 pause_menu_screen_optional[] DATA_SECTION(D_001CEB18) = {
+#include "data_inc/D_001CEB18.inc"
+};
+
+#include "data_inc/D_001CEFA0.refs"
+u32 gadget_menu_slots_row0[] DATA_SECTION(D_001CEFA0) = {
+#include "data_inc/D_001CEFA0.inc"
+};
+
 u32 gadget_menu_slots_row1[] DATA_SECTION(D_001CEFE0) = {
 #include "data_inc/D_001CEFE0.inc"
 };
 
 u32 gadget_menu_slots_row2[] DATA_SECTION(D_001CF000) = {
 #include "data_inc/D_001CF000.inc"
+};
+
+#include "data_inc/D_001CF020.refs"
+u32 gadget_menu_slots_row3[] DATA_SECTION(D_001CF020) = {
+#include "data_inc/D_001CF020.inc"
+};
+
+#include "data_inc/D_001CF4A0.refs"
+u32 pause_weapon_menu_slots[] DATA_SECTION(D_001CF4A0) = {
+#include "data_inc/D_001CF4A0.inc"
 };
 
 u32 selected_mission_index[] DATA_SECTION(D_001CFAD8) = {
@@ -47,6 +77,21 @@ u16 active_message_menu_items[] DATA_SECTION(D_001CFFC0) = {
 
 u32 pause_entry_cleared_word[] DATA_SECTION(D_001D0718) = {
 #include "data_inc/D_001D0718.inc"
+};
+
+#include "data_inc/D_001D1080.refs"
+u32 pause_weapon_menu_grid[] DATA_SECTION(D_001D1080) = {
+#include "data_inc/D_001D1080.inc"
+};
+
+#include "data_inc/D_001D1408.refs"
+u32 gadget_menu_grid[] DATA_SECTION(D_001D1408) = {
+#include "data_inc/D_001D1408.inc"
+};
+
+#include "data_inc/D_001D28F8.refs"
+u32 save_overwrite_confirm_page[] DATA_SECTION(D_001D28F8) = {
+#include "data_inc/D_001D28F8.inc"
 };
 
 u32 save_confirm_slot[] DATA_SECTION(D_001D29C0) = {
@@ -63,6 +108,36 @@ u32 reward_menu_page[] DATA_SECTION(D_001D2BF8) = {
 
 u32 cheat_toggle_menu_items[] DATA_SECTION(D_001D3E90) = {
 #include "data_inc/D_001D3E90.inc"
+};
+
+#include "data_inc/D_001D48A8.refs"
+u32 pause_level_sprite_lists[] DATA_SECTION(D_001D48A8) = {
+#include "data_inc/D_001D48A8.inc"
+};
+
+#include "data_inc/D_001D4B90.refs"
+u32 pause_action_list_pal[] DATA_SECTION(D_001D4B90) = {
+#include "data_inc/D_001D4B90.inc"
+};
+
+#include "data_inc/D_001D4BC0.refs"
+u32 pause_action_list_short[] DATA_SECTION(D_001D4BC0) = {
+#include "data_inc/D_001D4BC0.inc"
+};
+
+#include "data_inc/D_001D51B8.refs"
+u32 save_menu_overwrite_confirm_page[] DATA_SECTION(D_001D51B8) = {
+#include "data_inc/D_001D51B8.inc"
+};
+
+#include "data_inc/D_001D5240.refs"
+u32 restart_confirm_page[] DATA_SECTION(D_001D5240) = {
+#include "data_inc/D_001D5240.inc"
+};
+
+#include "data_inc/D_001D5318.refs"
+u32 save_menu_load_confirm_page[] DATA_SECTION(D_001D5318) = {
+#include "data_inc/D_001D5318.inc"
 };
 
 u32 menu_preview_slot_enabled[] DATA_SECTION(D_001D53A0) = {
@@ -163,6 +238,16 @@ u32 scene_state_buffer_1[] DATA_SECTION(D_001D74C0) = {
 
 u32 graphics_setup_dma_packets[] DATA_SECTION(D_001D8120) = {
 #include "data_inc/D_001D8120.inc"
+};
+
+#include "data_inc/D_001D81E0.refs"
+u32 ntsc_graphics_setup_packet[] DATA_SECTION(D_001D81E0) = {
+#include "data_inc/D_001D81E0.inc"
+};
+
+#include "data_inc/D_001D8250.refs"
+u32 pal_graphics_setup_packet[] DATA_SECTION(D_001D8250) = {
+#include "data_inc/D_001D8250.inc"
 };
 
 u16 planet_icon_rows[] DATA_SECTION(D_001DE0C0) = {

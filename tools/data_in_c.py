@@ -34,6 +34,8 @@ CORE_DATA_END = 0x00154200
 OUT = ROOT / "build-sn/data_inc"
 BLOCK = re.compile(r"^dlabel (\S+)\n(.*?)^enddlabel \1", re.S | re.M)
 DIRECTIVE = {".word": "u32", ".float": "u32", ".short": "u16", ".byte": "u8"}
+# A word that points at a symbol, with an optional offset. Each gets a generated declaration (see references).
+SYMBOL = re.compile(r"((?:func|D)_[0-9A-Za-z_]+)(?:\s*\+\s*(0[xX][0-9A-Fa-f]+|[0-9]+))?")
 RAW_WORD = re.compile(r"/\*\s*[0-9A-Fa-f]+\s+[0-9A-Fa-f]{8}\s+([0-9A-Fa-f]{8})\s*\*/")
 PER_LINE = 8
 HEADER = "# Blocks of retail's data with a C file (tools/data_in_c.py). No values here.\n# label\ttype\tsource\n"
@@ -70,8 +72,7 @@ def parse(body):
     """(element type, values) of a block, or None if it is not all one simple form.
 
     A float keeps its exact bits, taken from the disassembly's raw word: a decimal could round, and denormals have
-    bitten this build before. A pointer is not plain: its value is a symbol. Trailing .align lines are padding that the
-    pieces around the hole already lay out.
+    bitten this build before. Trailing .align lines are padding that the pieces around the hole already lay out.
     """
     element, found = None, []
     for line in body.splitlines():
@@ -100,10 +101,25 @@ def parse(body):
             continue
         for value in m.group(2).split(","):
             value = value.strip()
-            if not re.fullmatch(r"-?(0[xX][0-9A-Fa-f]+|[0-9]+)", value):
+            symbol = SYMBOL.fullmatch(value)
+            if symbol and m.group(1) == ".word":
+                offset = f" + {symbol.group(2)}" if symbol.group(2) else ""
+                found.append(f"(u32)ref_{symbol.group(1)}{offset}")
+            elif re.fullmatch(r"-?(0[xX][0-9A-Fa-f]+|[0-9]+)", value):
+                found.append(value)
+            else:
                 return None
-            found.append(value)
     return (element, found) if element else None
+
+
+def references(found):
+    """Generated declarations for the symbols a block points at.
+
+    Each is aliased to the real symbol, so it cannot clash with a type the same symbol has in this file. The alias is
+    only in generated output: committed C keeps to the no-new-aliases rule.
+    """
+    names = sorted({m for value in found for m in re.findall(r"\bref_(\w+)", value)})
+    return "".join(f'extern char ref_{name}[] __asm__("{name}");\n' for name in names)
 
 
 def render(found, element="u32"):
@@ -121,13 +137,14 @@ def fits_retail(label, count, element="u32"):
 def generate():
     blocks = all_blocks()
     OUT.mkdir(parents=True, exist_ok=True)
-    for stale in OUT.glob("*.inc"):
+    for stale in [*OUT.glob("*.inc"), *OUT.glob("*.refs")]:
         stale.unlink()
     for label, element, _ in rows():
         parsed = parse(blocks[label]) if label in blocks else None
         if parsed is None or parsed[0] != element:
             sys.exit(f"*** {label}: its block is not plain {element}")
         (OUT / f"{label}.inc").write_text(render(parsed[1], element))
+        (OUT / f"{label}.refs").write_text(references(parsed[1]))
     print(f"wrote {len(rows())} include files to {OUT.relative_to(ROOT)}")
 
 
@@ -163,8 +180,12 @@ def add(pairs):
         table.append((label, parsed[0], source))
     TABLE.write_text(HEADER + "".join("\t".join(row) + "\n" for row in sorted(table)))
     for source in sorted({row[2] for row in table}):
-        write_source(source, sorted((row[0], row[1], len(parse(blocks[row[0]])[1])) for row in table if row[2] == source),
-                     names)
+        entries = []
+        for row in table:
+            if row[2] == source:
+                found = parse(blocks[row[0]])[1]
+                entries.append((row[0], row[1], len(found), bool(references(found))))
+        write_source(source, sorted(entries), names)
     print(f"{len(table)} blocks in {len({row[2] for row in table})} files")
 
 
@@ -175,15 +196,17 @@ def readable_names():
 
 
 def write_source(source, entries, names):
-    """entries: (label, element type, number of values)."""
+    """entries: (label, element type, number of values, whether it points at symbols)."""
     if source == "src/data/shared/data.c":
         about = "Data with no one owner: several files use it, or no C file does yet."
     else:
         about = f"Data owned by {'src/' + source[len('src/data/'):]}."
     parts = [f"/* {about} Its values come from your own baserom (tools/data_in_c.py). */\n", '#include "common.h"\n\n']
-    for label, element, count in entries:
+    for label, element, count, pointers in entries:
         include = f'#include "data_inc/{label}.inc"\n'
         name = names.get(label, label)
+        if pointers:
+            parts.append(f'#include "data_inc/{label}.refs"\n')
         if element == "char":
             parts.append(f"char {name}[] DATA_SECTION({label}) =\n{include};\n\n")
         elif count == 1:

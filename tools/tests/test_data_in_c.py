@@ -12,6 +12,8 @@ WORDS = """
 /* 4 165584 00000002 */ .word 0x00000002
 """
 POINTER = "/* 0 165580 00000001 */ .word func_00112380\n"
+OFFSET = "/* 0 165580 00000001 */ .word D_00170000 + 0x3\n"
+LABEL = "/* 0 165580 00000001 */ .word .L00112380\n"
 MIXED = "/* 0 165580 00000001 */ .word 0x1\n/* 4 165584 00 */ .byte 0x1\n"
 
 
@@ -19,9 +21,17 @@ class ValuesTest(unittest.TestCase):
     def test_plain_words(self):
         self.assertEqual(d.parse(WORDS), ("u32", ["0x00000001", "0x00000002"]))
 
-    def test_a_pointer_or_a_mix_is_not_plain(self):
-        self.assertIsNone(d.parse(POINTER))
+    def test_a_mix_or_a_local_label_is_not_plain(self):
         self.assertIsNone(d.parse(MIXED))
+        self.assertIsNone(d.parse(LABEL))
+
+    def test_pointers(self):
+        self.assertEqual(d.parse(POINTER), ("u32", ["(u32)ref_func_00112380"]))
+        self.assertEqual(d.parse(OFFSET), ("u32", ["(u32)ref_D_00170000 + 0x3"]))
+
+    def test_references_are_aliased_and_listed_once(self):
+        text = d.references(["(u32)ref_func_1", "(u32)ref_func_1 + 0x4", "0x5"])
+        self.assertEqual(text, 'extern char ref_func_1[] __asm__("func_1");\n')
 
     def test_a_float_keeps_its_exact_bits(self):
         # The disassembly's raw column is in file order: 1.0f is 00 00 80 3F on this little-endian CPU.
@@ -71,18 +81,22 @@ class SourceTest(unittest.TestCase):
             return (Path(folder) / "src/data/game/x.c").read_text()
 
     def test_no_values_in_the_source(self):
-        text = self.write([("D_00165580", "u32", 2), ("D_00165590", "u32", 1)])
+        text = self.write([("D_00165580", "u32", 2, False), ("D_00165590", "u32", 1, False)])
         self.assertIn('u32 D_00165580[] DATA_SECTION(D_00165580) = {\n#include "data_inc/D_00165580.inc"\n};', text)
         self.assertIn("u32 D_00165590 DATA_SECTION(D_00165590) =", text)
         self.assertNotIn("0x", text)
 
     def test_a_readable_name_is_used_and_the_section_keeps_the_address(self):
-        text = self.write([("D_00165580", "u32", 2)], {"D_00165580": "fog_table"})
+        text = self.write([("D_00165580", "u32", 2, False)], {"D_00165580": "fog_table"})
         self.assertIn("u32 fog_table[] DATA_SECTION(D_00165580) = {", text)
 
     def test_a_string(self):
-        text = self.write([("D_00165580", "char", 1)])
+        text = self.write([("D_00165580", "char", 1, False)])
         self.assertIn('char D_00165580[] DATA_SECTION(D_00165580) =\n#include "data_inc/D_00165580.inc"\n;', text)
+
+    def test_a_pointer_block_includes_its_references_first(self):
+        text = self.write([("D_00165580", "u32", 2, True)])
+        self.assertLess(text.index('"data_inc/D_00165580.refs"'), text.index("u32 D_00165580[]"))
 
     def test_segments(self):
         self.assertEqual(d.segment_of("D_0012F580"), "core")

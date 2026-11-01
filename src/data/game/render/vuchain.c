@@ -1,6 +1,11 @@
 /* Data owned by src/game/render/vuchain.c. Its values come from your own baserom (tools/data_in_c.py). */
 #include "common.h"
 
+#include "data_inc/D_001DE338.refs"
+u32 vu_chain_table[] DATA_SECTION(D_001DE338) = {
+#include "data_inc/D_001DE338.inc"
+};
+
 u32 gs_regs_normal_packet[] DATA_SECTION(D_001DE740) = {
 #include "data_inc/D_001DE740.inc"
 };

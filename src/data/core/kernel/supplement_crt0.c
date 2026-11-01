@@ -5,6 +5,11 @@ u32 initsys_kernel_scan_address[] DATA_SECTION(D_00130408) = {
 #include "data_inc/D_00130408.inc"
 };
 
+#include "data_inc/D_00130410.refs"
+u32 initsys_syscall_patch_table[] DATA_SECTION(D_00130410) = {
+#include "data_inc/D_00130410.inc"
+};
+
 u32 FirstSemaphore DATA_SECTION(D_00130420) =
 #include "data_inc/D_00130420.inc"
     ;

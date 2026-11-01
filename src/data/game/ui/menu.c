@@ -37,6 +37,16 @@ u32 map_region_enabled_5 DATA_SECTION(D_001A04BC) =
 #include "data_inc/D_001A04BC.inc"
     ;
 
+#include "data_inc/D_001A04C0.refs"
+u32 map_region_enabled_6[] DATA_SECTION(D_001A04C0) = {
+#include "data_inc/D_001A04C0.inc"
+};
+
+#include "data_inc/D_001A0538.refs"
+u32 menu_state_handlers[] DATA_SECTION(D_001A0538) = {
+#include "data_inc/D_001A0538.inc"
+};
+
 u32 level_object_index_ranges[] DATA_SECTION(D_001E06B8) = {
 #include "data_inc/D_001E06B8.inc"
 };

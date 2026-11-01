@@ -8,3 +8,8 @@ u32 mc_current_command DATA_SECTION(D_00132EA8) =
 u32 pad2_initialized[] DATA_SECTION(D_00132ED0) = {
 #include "data_inc/D_00132ED0.inc"
 };
+
+#include "data_inc/D_00132ED8.refs"
+u32 pad2_last_dma_counters[] DATA_SECTION(D_00132ED8) = {
+#include "data_inc/D_00132ED8.inc"
+};
