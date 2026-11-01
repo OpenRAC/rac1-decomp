@@ -1,5 +1,7 @@
 # Workflow
 
+All 5116 functions match now. Use this for the other versions, or to rewrite a function that is already matched.
+
 How a function goes from `INCLUDE_ASM` to matched C, in order. Every step
 reflects a real incident. `docs/reference/DECOMP_PROGRESS.md` covers the levers and
 the dead ends; this file is the procedure.

@@ -13,6 +13,40 @@
 | [OVERLAYS.md](OVERLAYS.md) | Level code |
 | [VERSIONS.md](VERSIONS.md) | US, PAL and JP |
 
+## Where things are
+
+| Path | What it holds |
+|---|---|
+| `src/core/` | Kernel, libc, CD, graphics, sound and other low-level code, by system |
+| `src/game/` | Game code, by system. These files are the original compile units, so they are not split |
+| `src/overlays/` | Level code: one folder per level, and `shared/` for code in many levels |
+| `src/data/` | Data in C: names, types and owners. Values come from your baserom at build time |
+| `src/versions/` | Functions that differ in US, JP or the other PAL build |
+| `include/` | `structs/`, `enums/`, function headers, and `names/` (generated) |
+| `config/` | Symbol names, file lists, version maps, and the counts CI checks |
+| `tools/` | Build and checks. `tools/tidy/` holds the scripts that clean up the source |
+| `tools/old/` | Tools no longer in use |
+
+## Checks
+
+| Command | What it does |
+|---|---|
+| `bash tools/check_all.sh` | Everything: build, all versions, reports, format and counts |
+| `python3 tools/gate_loop.py` | The same, and it reverts any file that breaks a match |
+| `bash tools/land_pr.sh BRANCH` | Merges a PR once its newest commit passes |
+| `python3 tools/ratchets.py --check` | Counts of things to reduce. They may only go down |
+| `python3 tools/fakematch_scan.py --check` | Every fakematch site has a row in `config/fakematch.tsv` |
+
+## What is left
+
+The match is finished. This is what could still read better:
+
+- **Raw offsets and local structs.** Each one needs its record identified, so no tool can finish them. See the counts in
+  `config/ratchets.json`.
+- **Fakematch sites.** `config/fakematch.tsv` lists each one and what it does.
+- **Sound and animation IDs.** No name data exists for them.
+- **Data inside larger records.** About a quarter of the data is not in C yet. See `config/data_in_c.tsv`.
+
 ## Game knowledge
 
 [kb/README.md](kb/README.md) covers how the game works: architecture, data structures and mobys.

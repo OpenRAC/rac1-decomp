@@ -5,7 +5,7 @@
 1. `common.h` first. It brings in the types and `names.h`.
 2. `include_asm.h`, if the file has stubs.
 3. Shared headers, such as `structs/moby.h` and `structs/hero.h`.
-4. Function headers, such as `game/draw.h`.
+4. Function headers, such as `game/render/draw.h`.
 
 Do not sort them. The `names.h` macros depend on the order. New includes go in the block at the top of the file, not
 further down.
@@ -28,7 +28,7 @@ Each source file can have a header at the same path:
 
 | Source | Header |
 |---|---|
-| `src/game/render/draw.c` | `include/game/draw.h` |
+| `src/game/render/draw.c` | `include/game/render/draw.h` |
 | `src/overlays/shared/sky_particles.c` | `include/overlays/shared/sky_particles.h` |
 
 These hold prototypes for functions that the source file defines. `tools/tidy/move_protos.py` writes them.
