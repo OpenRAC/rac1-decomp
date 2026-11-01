@@ -49,9 +49,10 @@ int ChooseDropItem(unsigned char *m, int *item) {
     unsigned int selected_item;
     unsigned char *entry;
 
-    if (*item <= 0 || (m != 0 &&
-        ((*(int *)(help_stats_base + 0xAB75 + ((short)*(unsigned short *)(m + 0xB2) >> 5) * 4 + *(int *)&g_current_level_index * 256) >>
-          (*(unsigned short *)(m + 0xB2) & 31)) & 1))) {
+    if (*item <= 0 || (m != 0 && ((*(int *)(help_stats_base + 0xAB75 + ((short)*(unsigned short *)(m + 0xB2) >> 5) * 4 +
+                                            *(int *)&g_current_level_index * 256) >>
+                                   (*(unsigned short *)(m + 0xB2) & 31)) &
+                                  1))) {
         {
             for (scan_index = 0; scan_index < 12 && vendor_stock[scan_index] != 0xFF; scan_index++) {
                 id = vendor_stock[scan_index] & 0x3F;
@@ -77,7 +78,8 @@ int ChooseDropItem(unsigned char *m, int *item) {
                         ItemCount_258250 *count = &item_price_table[id];
                         scan_index -= weapon_ammo_counts[id] < count->count;
                     }
-                    if (scan_index < 0) break;
+                    if (scan_index < 0)
+                        break;
                 }
             }
             *item = vendor_stock[i] & 0x3F;
@@ -91,9 +93,11 @@ int ChooseDropItem(unsigned char *m, int *item) {
                         id = vendor_stock[i] & 0x3F;
                         if (item_available[id]) {
                             ItemCount_258250 *count = &item_price_table[id];
-                            if (count->count != 0) scan_index--;
+                            if (count->count != 0)
+                                scan_index--;
                         }
-                        if (scan_index < 0) break;
+                        if (scan_index < 0)
+                            break;
                     }
                 }
                 *item = vendor_stock[i] & 0x3F;
@@ -116,13 +120,22 @@ extern int level_moby_killed[][64];
 extern unsigned char saved_mission_state[][16];
 extern short bolt_source_stats[][64][2];
 extern int session_moby_killed[];
-typedef struct { unsigned char p[0x454]; unsigned char a[1]; } S_257470;
+typedef struct {
+    unsigned char p[0x454];
+    unsigned char a[1];
+} S_257470;
 extern S_257470 current_level_state;
 extern S_257470 checkpoint_level_state;
 extern unsigned char mission_state[];
 extern unsigned char death_bits_moby_debug_format[];
 extern unsigned char death_bits_bolt_amount_debug_format[];
-typedef struct { char p0[0x80]; char v80[0x2084 - 0x80]; int i2084; char p1[0x20B2 - 0x2088]; unsigned char b20B2; } P_257470;
+typedef struct {
+    char p0[0x80];
+    char v80[0x2084 - 0x80];
+    int i2084;
+    char p1[0x20B2 - 0x2088];
+    unsigned char b20B2;
+} P_257470;
 extern P_257470 g_hero;
 extern void STUB_printf(void *, ...);
 extern int truncate_float_to_s32(float);
@@ -142,7 +155,8 @@ void SetDeathBits(unsigned char *m, int flags, int arg) {
     unsigned char *g;
 
     amt = *(short *)(m + 0xB4);
-    STUB_printf(death_bits_moby_debug_format, *(short *)(m + 0xA6), *(short *)(m + 0xB2), *(short *)(m + 0xB4), *(short *)(m + 0xB6));
+    STUB_printf(death_bits_moby_debug_format, *(short *)(m + 0xA6), *(short *)(m + 0xB2), *(short *)(m + 0xB4),
+                *(short *)(m + 0xB6));
     if (m[0xB1] == 0xFE) {
         return;
     }
@@ -154,10 +168,12 @@ void SetDeathBits(unsigned char *m, int flags, int arg) {
     session_moby_killed[*(short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
     current_level_state.a[*(short *)(m + 0xB2)] = m[0xB0] + 2;
     k = m[0xB0];
-    {unsigned int u = k & 0xFF;
-    if (k == 0xFF || (mission_state[u] != 0xFF && saved_mission_state[lvl][u] == 0xFF)) {
-        checkpoint_level_state.a[*(short *)(m + 0xB2)] = k + 2;
-    }}
+    {
+        unsigned int u = k & 0xFF;
+        if (k == 0xFF || (mission_state[u] != 0xFF && saved_mission_state[lvl][u] == 0xFF)) {
+            checkpoint_level_state.a[*(short *)(m + 0xB2)] = k + 2;
+        }
+    }
     if ((signed char)m[0xB1] >= 0) {
         int n1 = *(short *)(m + 0xB6);
         d = n1 - bolt_source_stats[g_current_level_index_r][m[0xB1]][1];
@@ -203,10 +219,10 @@ void SetDeathBits(unsigned char *m, int flags, int arg) {
             r = 1;
         }
         {
-        int n2 = truncate_float_to_s32(amt);
-        int hi = n2 + r;
-        n2 -= r;
-        spawn_randomized_bolt_drop(m, n2, hi, f, arg);
+            int n2 = truncate_float_to_s32(amt);
+            int hi = n2 + r;
+            n2 -= r;
+            spawn_randomized_bolt_drop(m, n2, hi, f, arg);
         }
     }
 }

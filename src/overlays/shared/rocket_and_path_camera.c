@@ -97,7 +97,7 @@ char *create_rocket(float scale, void *vel, void *pos, int a, int b, int c) {
         d->owner_a = a;
         d->owner_b = b;
         d->hit_flag = 0;
-        d->start_dist = FastVecDist(&m->pos,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
+        d->start_dist = FastVecDist(&m->pos, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
         d->unk_30 = 0;
         d->unk_34 = 0;
         m->rot.z = fast_atan2(*(float *)((char *)d), d->vel_y);
@@ -167,94 +167,89 @@ void Moby819Update(Moby *m) {
     char *tb;
 
     switch ((unsigned char)*(char *)&m->state) {
-    case 1:
-        qcopy(pos0, &m->pos);
-        if (d->target == 0 || (unsigned char)d->target[0x20] == 0xFE ||
-            (unsigned char)d->target[0x20] == 0xFD)
-            m->state = 2;
-        p = (char *)&m->pos;
-        g = g_hero;
-        if ((unsigned char)(g[0x20A4] - 1) < 2 && (tg = d->target) == *(char **)(g + 0x2080)) {
-            speed = FastVecLength(d);
-            qcopy(tp, tg + 0x10);
-            h = ProbeGroundHeight(tp, 0, 0.5f) + 0.2f;
-            *(Q_cc2e8 *)hv = *(Q_cc2e8 *)(g + 0x100);
-            hv[2] = 0.0f;
-            tp[2] = h;
-            if (g[0x20A4] == 2)
-                tp[2] = h + 2.0f;
-            FastVecSub(diff, tp, p);
-            a = speed * speed - lensq_cc2e8(hv);
-            b = (hv[0] * diff[0] + hv[1] * diff[1] + hv[2] * diff[2]) * -2.0f;
-            s = vec_length(b * b - a * 4.0f * -lensq_cc2e8(diff));
-            r1 = (-b + s) / (a + a);
-            r2 = (-b - s) / (a + a);
-            if (r1 > 0.0f && r2 > 0.0f) {
-                if (r1 > r2)
-                    t = r1;
-                else
-                    t = r2;
-            } else if (r1 > 0.0f) {
-                t = r1;
-            } else {
-                t = -1.0f;
-                if (r2 > 0.0f)
-                    t = r2;
-            }
-            if (t > 0.0f) {
-                FastVecScale(aim, hv, t);
-                FastVecAdd_r2(aim, aim, diff);
-                yaw = fast_atan2(aim[0], aim[1]);
-                pitch = -fast_atan2(vec_length_xy(aim), aim[2]);
-            } else {
-                yaw = fast_atan2(diff[0], diff[1]);
-                pitch = -fast_atan2(vec_length_xy(diff), diff[2]);
-            }
-            m->rot.z = SpringTurn(m->rot.z, yaw, g_frame_time_sq * 6.2831855f,
-                                              g_frame_time_sq * 3.1415927f, g_frame_time * 6.2831855f,
-                                              &d->yawSpeed);
-            m->rot.y = SpringTurn(m->rot.y, pitch, g_frame_time_sq * 6.2831855f,
-                                              g_frame_time_sq * 3.1415927f, g_frame_time * 6.2831855f,
-                                              &d->pitchSpeed);
-            m->rot.x = FastAddRots(m->rot.x, g_frame_time * 6.2831855f);
-            BuildSphericalOffset(speed, m->rot.z, -m->rot.y, d);
-        }
-        clear_u64_value(c);
-        PartType04Spawn(p, c, 0x6F00AFFF, 0xFF, scale_ticks(rand_range(15, 22)), 0x28,
-                    rand_range(20, 35), 1);
-        PartType04Spawn(p, c, 0x1FFFFFFF, 0x4F4F4F, scale_ticks(rand_range(30, 60)), 0x28,
-                    rand_range(50, 75), 0);
-        dist = FastVecDist(p, gHeroPos);
-        FastVecAdd_r2(p, p, d);
-        if (d->warned == 0 && d->passed != 0 && d->dist < dist && dist < 5.0f) {
-            Moby_PlaySound(0, 0, m);
-            d->warned = 1;
-        }
-        if (dist < d->dist)
-            d->passed = 1;
-        d->dist = dist;
-        if (coll_line(p, pos0, 0x10, d->owner, 0)) {
-            tb = ground_hit;
-            if (*(int *)(tb + 0x18) != d->owner) {
-                if (*(int *)(tb + 0x18) != 0) {
-                    vec_set_length_xy(diff, d, 1.0f);
-                    d->vel[2] = 1.0f;
-                    PostHitMessage(1.0f, *(int *)(tb + 0x18), m, 0x10003, tb + 0x20, diff);
-                }
+        case 1:
+            qcopy(pos0, &m->pos);
+            if (d->target == 0 || (unsigned char)d->target[0x20] == 0xFE || (unsigned char)d->target[0x20] == 0xFD)
                 m->state = 2;
+            p = (char *)&m->pos;
+            g = g_hero;
+            if ((unsigned char)(g[0x20A4] - 1) < 2 && (tg = d->target) == *(char **)(g + 0x2080)) {
+                speed = FastVecLength(d);
+                qcopy(tp, tg + 0x10);
+                h = ProbeGroundHeight(tp, 0, 0.5f) + 0.2f;
+                *(Q_cc2e8 *)hv = *(Q_cc2e8 *)(g + 0x100);
+                hv[2] = 0.0f;
+                tp[2] = h;
+                if (g[0x20A4] == 2)
+                    tp[2] = h + 2.0f;
+                FastVecSub(diff, tp, p);
+                a = speed * speed - lensq_cc2e8(hv);
+                b = (hv[0] * diff[0] + hv[1] * diff[1] + hv[2] * diff[2]) * -2.0f;
+                s = vec_length(b * b - a * 4.0f * -lensq_cc2e8(diff));
+                r1 = (-b + s) / (a + a);
+                r2 = (-b - s) / (a + a);
+                if (r1 > 0.0f && r2 > 0.0f) {
+                    if (r1 > r2)
+                        t = r1;
+                    else
+                        t = r2;
+                } else if (r1 > 0.0f) {
+                    t = r1;
+                } else {
+                    t = -1.0f;
+                    if (r2 > 0.0f)
+                        t = r2;
+                }
+                if (t > 0.0f) {
+                    FastVecScale(aim, hv, t);
+                    FastVecAdd_r2(aim, aim, diff);
+                    yaw = fast_atan2(aim[0], aim[1]);
+                    pitch = -fast_atan2(vec_length_xy(aim), aim[2]);
+                } else {
+                    yaw = fast_atan2(diff[0], diff[1]);
+                    pitch = -fast_atan2(vec_length_xy(diff), diff[2]);
+                }
+                m->rot.z = SpringTurn(m->rot.z, yaw, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f,
+                                      g_frame_time * 6.2831855f, &d->yawSpeed);
+                m->rot.y = SpringTurn(m->rot.y, pitch, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f,
+                                      g_frame_time * 6.2831855f, &d->pitchSpeed);
+                m->rot.x = FastAddRots(m->rot.x, g_frame_time * 6.2831855f);
+                BuildSphericalOffset(speed, m->rot.z, -m->rot.y, d);
             }
-        }
-        if (fast_dec_timer(&d->timer))
-            m->state = 2;
-        break;
-    case 2:
-        if (g_current_level_index != 10)
-            SpawnExplosionFx(m, &m->pos, -1, 0.25f, 13.0f);
-        else
-            SpawnExplosionFx(m, &m->pos, -1, 0.25f, 0.0f);
-        Sound_PlayClassSound(0, 0, m, 0x99);
-        DeleteMoby(m);
-        break;
+            clear_u64_value(c);
+            PartType04Spawn(p, c, 0x6F00AFFF, 0xFF, scale_ticks(rand_range(15, 22)), 0x28, rand_range(20, 35), 1);
+            PartType04Spawn(p, c, 0x1FFFFFFF, 0x4F4F4F, scale_ticks(rand_range(30, 60)), 0x28, rand_range(50, 75), 0);
+            dist = FastVecDist(p, gHeroPos);
+            FastVecAdd_r2(p, p, d);
+            if (d->warned == 0 && d->passed != 0 && d->dist < dist && dist < 5.0f) {
+                Moby_PlaySound(0, 0, m);
+                d->warned = 1;
+            }
+            if (dist < d->dist)
+                d->passed = 1;
+            d->dist = dist;
+            if (coll_line(p, pos0, 0x10, d->owner, 0)) {
+                tb = ground_hit;
+                if (*(int *)(tb + 0x18) != d->owner) {
+                    if (*(int *)(tb + 0x18) != 0) {
+                        vec_set_length_xy(diff, d, 1.0f);
+                        d->vel[2] = 1.0f;
+                        PostHitMessage(1.0f, *(int *)(tb + 0x18), m, 0x10003, tb + 0x20, diff);
+                    }
+                    m->state = 2;
+                }
+            }
+            if (fast_dec_timer(&d->timer))
+                m->state = 2;
+            break;
+        case 2:
+            if (g_current_level_index != 10)
+                SpawnExplosionFx(m, &m->pos, -1, 0.25f, 13.0f);
+            else
+                SpawnExplosionFx(m, &m->pos, -1, 0.25f, 0.0f);
+            Sound_PlayClassSound(0, 0, m, 0x99);
+            DeleteMoby(m);
+            break;
     }
 }
 extern float random_angle_radians(void);
@@ -278,7 +273,8 @@ void spawn_type_52_particle_near_moby(char *moby) {
     float a = random_angle_radians();
     float b = random_float_between(0.0f, *(float *)&orxon_type52_particle_spawn_radius);
     float c = random_float_between(0.0f, *(float *)&orxon_type52_particle_start_size_max);
-    float d = random_float_between(*(float *)&orxon_type52_particle_start_size_max, *(float *)&orxon_type52_particle_end_size_max);
+    float d = random_float_between(*(float *)&orxon_type52_particle_start_size_max,
+                                   *(float *)&orxon_type52_particle_end_size_max);
     int e = rand_range(*(int *)&orxon_type52_particle_life_min, *(int *)&orxon_type52_particle_life_max);
     v[0] = FastCos(a) * b;
     v[1] = FastSin(a) * b;
@@ -306,29 +302,29 @@ void update_hero_flag_from_moby_local_box(unsigned char *m) {
     char *hero;
     unsigned int s = m[0x20];
     switch (s) {
-    case 0:
-        m[0x20] = 1;
-        *(unsigned short *)(m + 0x34) |= 1;
-        m[0x31] = 0;
-        break;
-    case 1:
-        hero =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
-        if (FastVecDist(m + 0x10, hero) < 8.0f) {
-            FastVecSub(v, hero + 0x50, m + 0x10);
-            matrix_from_basis_rows(mtx, m + 0xC0);
-            transform_vector(v, v, mtx);
-            if (-5.0f < v[0] && v[0] < 5.0f && 0.0f < v[2] && v[2] < 8.0f) {
-                if (v[1] < 0.5f) {
-                    hero[0x224B] = 1;
-                } else {
-                    hero[0x224B] = 0;
+        case 0:
+            m[0x20] = 1;
+            *(unsigned short *)(m + 0x34) |= 1;
+            m[0x31] = 0;
+            break;
+        case 1:
+            hero = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
+            if (FastVecDist(m + 0x10, hero) < 8.0f) {
+                FastVecSub(v, hero + 0x50, m + 0x10);
+                matrix_from_basis_rows(mtx, m + 0xC0);
+                transform_vector(v, v, mtx);
+                if (-5.0f < v[0] && v[0] < 5.0f && 0.0f < v[2] && v[2] < 8.0f) {
+                    if (v[1] < 0.5f) {
+                        hero[0x224B] = 1;
+                    } else {
+                        hero[0x224B] = 0;
+                    }
+                } else if (0.0f < v[1]) {
+                    help_stats_base_q[0] = 0;
                 }
-            } else if (0.0f < v[1]) {
-                help_stats_base_q[0] = 0;
             }
-        }
-        AddDrawCallback(draw_moby_animated_quad_layers, m);
-        break;
+            AddDrawCallback(draw_moby_animated_quad_layers, m);
+            break;
     }
 }
 typedef struct {
@@ -356,9 +352,9 @@ extern void copy_matrix_rotation(void *, void *);
 extern long GetEffectTex(int);
 extern void draw_world_quad(void *, void *, int);
 
-#define ALPHA_2EA578(a, b, c, d, fix) \
-    ((unsigned long)(a) | ((unsigned long)(b) << 2) | ((unsigned long)(c) << 4) | \
-     ((unsigned long)(d) << 6) | ((unsigned long)(fix) << 32))
+#define ALPHA_2EA578(a, b, c, d, fix)                                                                         \
+    ((unsigned long)(a) | ((unsigned long)(b) << 2) | ((unsigned long)(c) << 4) | ((unsigned long)(d) << 6) | \
+     ((unsigned long)(fix) << 32))
 
 /* Draw the moby's textured quad layers with sine/cosine scrolling UVs in its frame. */
 void draw_moby_animated_quad_layers(unsigned char *m) {
@@ -404,10 +400,12 @@ void draw_moby_animated_quad_layers(unsigned char *m) {
     for (pass = 0; pass < *(int *)&quad_layer_count; pass++) {
         int parity = pass & 1;
         int level;
-        first.unk88 = ALPHA_2EA578(((int *)&orxon_quad_layer_alpha_a)[parity], ((int *)&orxon_quad_layer_alpha_b)[parity],
-                                   ((int *)&orxon_quad_layer_alpha_c)[parity], ((int *)&orxon_quad_layer_alpha_d)[parity], 0x80);
-        second.unk88 = ALPHA_2EA578(((int *)&orxon_quad_layer_alpha_a)[parity], ((int *)&orxon_quad_layer_alpha_b)[parity],
-                                    ((int *)&orxon_quad_layer_alpha_c)[parity], ((int *)&orxon_quad_layer_alpha_d)[parity], 0x80);
+        first.unk88 =
+            ALPHA_2EA578(((int *)&orxon_quad_layer_alpha_a)[parity], ((int *)&orxon_quad_layer_alpha_b)[parity],
+                         ((int *)&orxon_quad_layer_alpha_c)[parity], ((int *)&orxon_quad_layer_alpha_d)[parity], 0x80);
+        second.unk88 =
+            ALPHA_2EA578(((int *)&orxon_quad_layer_alpha_a)[parity], ((int *)&orxon_quad_layer_alpha_b)[parity],
+                         ((int *)&orxon_quad_layer_alpha_c)[parity], ((int *)&orxon_quad_layer_alpha_d)[parity], 0x80);
         level = orxon_quad_layer_levels[pass];
         second.col[2] = level;
         second.col[0] = level;
@@ -418,7 +416,9 @@ void draw_moby_animated_quad_layers(unsigned char *m) {
         for (i = 0; i < 4; i++) {
             for (axis = 0; axis < 2; axis++) {
                 int limit = truncate_float_to_s32(orxon_quad_layer_uv_periods[pass][axis] * 360.0f);
-                float angle = IntToFloat(quad_uv_animation_phase_input % limit) / orxon_quad_layer_uv_periods[pass][axis] - 180.0f;
+                float angle =
+                    IntToFloat(quad_uv_animation_phase_input % limit) / orxon_quad_layer_uv_periods[pass][axis] -
+                    180.0f;
                 float delta;
                 if (orxon_quad_layer_uv_use_cos[pass][axis] != 0) {
                     delta = FastCos(angle * 0.017453292f);
@@ -449,7 +449,7 @@ void draw_moby_animated_quad_layers(unsigned char *m) {
         }
     }
 }
-extern char * orxon_camera_descriptors MACRO_ADDR;
+extern char *orxon_camera_descriptors MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002e3de8.c, FUN_L10_002f5a50. */
 void activate_descriptor(int i) {
@@ -458,28 +458,29 @@ void activate_descriptor(int i) {
     q[0x38] = 1;
     q[0x39] = 0;
 }
-extern char * orxon_paths[];
+extern char *orxon_paths[];
 extern int is_point_inside_clip_volume(void *, int);
 extern int test_point_in_transformed_unit_cylinder(void *, int);
 extern int test_point_in_transformed_unit_sphere(float *, int);
 extern int IsPointInPolygon(float *, float *, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002e3de8.c, FUN_L10_002f5a78. */
-int check_descriptor_hero_trigger(char *moby, char *unused)
-{
+int check_descriptor_hero_trigger(char *moby, char *unused) {
     unsigned char *e = *(unsigned char **)(orxon_camera_descriptors + *(short *)(moby + 0x84) * 32 + 0x1C);
 
     if (*(int *)(e + 0x0C) >= 0) {
-        if (is_point_inside_clip_volume(gHeroPos, *(int *)(e + 0x0C))) return 1;
+        if (is_point_inside_clip_volume(gHeroPos, *(int *)(e + 0x0C)))
+            return 1;
     } else if (*(int *)(e + 0x10) >= 0) {
-        if (test_point_in_transformed_unit_cylinder(gHeroPos, *(int *)(e + 0x10))) return 1;
+        if (test_point_in_transformed_unit_cylinder(gHeroPos, *(int *)(e + 0x10)))
+            return 1;
     } else if (*(int *)(e + 0x08) >= 0) {
-        if (test_point_in_transformed_unit_sphere((float *)gHeroPos, *(int *)(e + 0x08))) return 1;
+        if (test_point_in_transformed_unit_sphere((float *)gHeroPos, *(int *)(e + 0x08)))
+            return 1;
     } else if (*(int *)(e + 0x14) >= 0) {
         int i = *(int *)(e + 0x14);
-        if (IsPointInPolygon((float *)gHeroPos,
-                                  (float *)(orxon_paths[i] + 0x10),
-                                  *(int *)orxon_paths[i])) return 1;
+        if (IsPointInPolygon((float *)gHeroPos, (float *)(orxon_paths[i] + 0x10), *(int *)orxon_paths[i]))
+            return 1;
     } else if (e[0x38] != 0 && e[0x39] == 0) {
         return 1;
     }
@@ -498,56 +499,56 @@ extern char orxon_player_camera[];
 /* The vendor camera record: the table row at D_L10_0015F050 holds a pointer to it at +0x1C. */
 typedef struct CamPathRec {
     u8 pad00[0x20];
-    s32 path;                  /* 0x20: path list index, < 0 none */
-    s32 look_path;             /* 0x24: look path list index, < 0 none */
+    s32 path; /* 0x20: path list index, < 0 none */
+    s32 look_path; /* 0x24: look path list index, < 0 none */
     u8 pad28[0x10];
-    u8 done;                   /* 0x38: set to 1 */
+    u8 done; /* 0x38: set to 1 */
     u8 pad39;
-    s16 frames;                /* 0x3A */
-    f32 speed;                 /* 0x3C: path length per second, times 60 */
+    s16 frames; /* 0x3A */
+    f32 speed; /* 0x3C: path length per second, times 60 */
     u8 pad40[0xC];
-    s32 unk4C;                 /* 0x4C: 0 lets the switch go on */
+    s32 unk4C; /* 0x4C: 0 lets the switch go on */
 } CamPathRec;
 
 /* The run state kept in the saved state at +0x40. */
 typedef struct VendorCamRun_5f18 {
-    s32 seg;                   /* 0x00 */
-    f32 t;                     /* 0x04 */
-    f32 path_length;           /* 0x08 */
-    f32 look_path_length;      /* 0x0C */
-    f32 dist;                  /* 0x10 */
-    s16 started;               /* 0x14 */
-    s16 timer;                 /* 0x16 */
+    s32 seg; /* 0x00 */
+    f32 t; /* 0x04 */
+    f32 path_length; /* 0x08 */
+    f32 look_path_length; /* 0x0C */
+    f32 dist; /* 0x10 */
+    s16 started; /* 0x14 */
+    s16 timer; /* 0x16 */
 } VendorCamRun_5f18;
 
 /* The stop table kept in the saved state at +0x58: eight segment ids, eight stop angles, the end angle. */
 typedef struct VendorCamStops_5f18 {
-    s16 seg[8];                /* 0x00 */
-    f32 fov[8];                /* 0x10 */
-    f32 fov_end;               /* 0x30 */
+    s16 seg[8]; /* 0x00 */
+    f32 fov[8]; /* 0x10 */
+    f32 fov_end; /* 0x30 */
 } VendorCamStops_5f18;
 
 /* The camera slot (0xA0 bytes). */
 typedef struct PathCam {
-    f32 m0[4];                 /* 0x00 */
-    f32 m1[4];                 /* 0x10 */
-    f32 m2[4];                 /* 0x20 */
-    f32 pos[4];                /* 0x30 */
-    u8 pad40[0x24];            /* 0x40 per-type state */
-    f32 prev_pos[3];           /* 0x64 */
-    void *saved_state;         /* 0x70 */
-    u8 state;                  /* 0x74 */
+    f32 m0[4]; /* 0x00 */
+    f32 m1[4]; /* 0x10 */
+    f32 m2[4]; /* 0x20 */
+    f32 pos[4]; /* 0x30 */
+    u8 pad40[0x24]; /* 0x40 per-type state */
+    f32 prev_pos[3]; /* 0x64 */
+    void *saved_state; /* 0x70 */
+    u8 state; /* 0x74 */
     u8 pad75[3];
-    f32 transition_duration;   /* 0x78 */
-    u8 active;                 /* 0x7C */
-    u8 handoff_state;          /* 0x7D */
-    s16 transition_state;      /* 0x7E */
+    f32 transition_duration; /* 0x78 */
+    u8 active; /* 0x7C */
+    u8 handoff_state; /* 0x7D */
+    s16 transition_state; /* 0x7E */
     u8 pad80[4];
-    s16 descriptor_index;      /* 0x84 */
-    s16 unk86;                 /* 0x86 */
+    s16 descriptor_index; /* 0x84 */
+    s16 unk86; /* 0x86 */
     u8 pad88[4];
-    s16 type;                  /* 0x8C */
-    s16 activation_blocked;    /* 0x8E */
+    s16 type; /* 0x8C */
+    s16 activation_blocked; /* 0x8E */
     u8 pad90[0x10];
 } PathCam;
 
@@ -731,7 +732,7 @@ void Camera19_Update(char *moby) {
             } else {
                 FastVecSub(va, b + 0x10, pm);
             }
-            FastVecScale(v1,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->gravity_dir, -1.0f);
+            FastVecScale(v1, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->gravity_dir, -1.0f);
             vec_scale_to_length(moby, va, 1.0f);
             FastVecCross(moby + 0x10, moby, v1);
             vec_scale_to_length(moby + 0x10, moby + 0x10, 1.0f);
@@ -780,7 +781,8 @@ void Camera19_Update(char *moby) {
 
         g = orxon_paths[*(int *)(e + 0x20)];
         qcopy(va, (moby + 0x30));
-        rr = Spline_AdvanceByDistance(g, (moby + 0x30), (int *)f, (float *)(f + 4), *(float *)(e + 0x3C) * g_frame_time, 0);
+        rr = Spline_AdvanceByDistance(g, (moby + 0x30), (int *)f, (float *)(f + 4), *(float *)(e + 0x3C) * g_frame_time,
+                                      0);
         if (*(short *)(f + 0x16) != 0) {
             if (FastDecTimer(f + 0x16) != 0) {
                 rr = 1;
@@ -853,7 +855,7 @@ void Camera19_Update(char *moby) {
             Profile_Mark(h + 0x10, h + (*(int *)h << 4));
             FastVecSub(v1, v2, (moby + 0x30));
         }
-        FastVecScale(v2,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->gravity_dir, -1.0f);
+        FastVecScale(v2, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->gravity_dir, -1.0f);
         vec_scale_to_length(moby, v1, 1.0f);
         FastVecCross(moby + 0x10, moby, v2);
         vec_scale_to_length(moby + 0x10, moby + 0x10, 1.0f);
@@ -864,17 +866,18 @@ extern char *orxon_camera_descriptors MACRO_ADDR;
 
 typedef struct UpdateCam {
     u8 pad00[0x7C];
-    u8 active;                 /* 0x7C */
+    u8 active; /* 0x7C */
     u8 pad7D;
-    s16 transition_state;      /* 0x7E */
+    s16 transition_state; /* 0x7E */
     u8 pad80[4];
-    s16 descriptor_index;      /* 0x84 */
-    s16 unk86;                 /* 0x86 */
+    s16 descriptor_index; /* 0x84 */
+    s16 unk86; /* 0x86 */
 } UpdateCam;
 
 // Decides whether a moby's camera target passes the checks; -1 disabled, 0 no, 1 yes.
 int evaluate_descriptor_eligibility(char *descriptor_owner, char *comparison_object) {
-    unsigned char *descriptor_record = *(unsigned char **)(orxon_camera_descriptors + ((UpdateCam *)descriptor_owner)->descriptor_index * 32 + 0x1C);
+    unsigned char *descriptor_record =
+        *(unsigned char **)(orxon_camera_descriptors + ((UpdateCam *)descriptor_owner)->descriptor_index * 32 + 0x1C);
     int x;
     int y;
     if (descriptor_record[0x39] != 0) {
@@ -883,7 +886,9 @@ int evaluate_descriptor_eligibility(char *descriptor_owner, char *comparison_obj
     if (descriptor_record[0x38] != 0 && ((UpdateCam *)comparison_object)->unk86 != 0x13) {
         return 1;
     }
-    if (comparison_object != 0 && ((UpdateCam *)comparison_object)->transition_state == 0 && (unsigned char)((UpdateCam *)comparison_object)->active >= (unsigned char)((UpdateCam *)descriptor_owner)->active) {
+    if (comparison_object != 0 && ((UpdateCam *)comparison_object)->transition_state == 0 &&
+        (unsigned char)((UpdateCam *)comparison_object)->active >=
+            (unsigned char)((UpdateCam *)descriptor_owner)->active) {
         return 0;
     }
     if (check_descriptor_hero_trigger(descriptor_owner, comparison_object) == 0) {

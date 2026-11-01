@@ -133,7 +133,7 @@ extern void ClampVectorLength(void *a, float x);
 // Builds a vector from two global blocks, transforms it, and passes it on with a summed float.
 void compose_and_limit_hero_velocity(void) {
     char tmp[16];
-    char *p =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->unk770;
+    char *p = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->unk770;
     char *q;
     qcopy(p, p - 0x670);
     q = p - 0x770;
@@ -177,14 +177,35 @@ typedef struct {
     u8 pad298[0x1c];
     f32 xF298;
     u8 pad2c0[0x24];
-    union { f32 f[2]; s32 i[2]; } a2c0;
-    union { f32 f[2]; s32 i[2]; } a2c8;
-    union { f32 f[2]; s32 i[2]; } a2d0;
-    union { f32 F; s32 I; } u2d8;
+    union {
+        f32 f[2];
+        s32 i[2];
+    } a2c0;
+    union {
+        f32 f[2];
+        s32 i[2];
+    } a2c8;
+    union {
+        f32 f[2];
+        s32 i[2];
+    } a2d0;
+    union {
+        f32 F;
+        s32 I;
+    } u2d8;
     f32 xF2dc;
-    union { f32 F; s32 I; } u2e0;
-    union { f32 F; s32 I; } u2e4;
-    union { f32 F; s32 I; } u2e8;
+    union {
+        f32 F;
+        s32 I;
+    } u2e0;
+    union {
+        f32 F;
+        s32 I;
+    } u2e4;
+    union {
+        f32 F;
+        s32 I;
+    } u2e8;
     f32 xF2ec;
     f32 xF2f0;
     f32 xF2f4;
@@ -193,8 +214,14 @@ typedef struct {
     s32 xI300;
     u8 pad30a[0x6];
     s16 xH30a;
-    union { s16 H; u16 U; } u30c;
-    union { s16 H; u16 U; } u30e;
+    union {
+        s16 H;
+        u16 U;
+    } u30c;
+    union {
+        s16 H;
+        u16 U;
+    } u30e;
     u8 pada80[0x770];
     s32 xIa80;
     u8 pad12e0[0x85c];
@@ -214,7 +241,10 @@ typedef struct {
     u8 pad0[0x18];
     s32 i18;
     s32 i1C;
-    union { Q q; f32 f[4]; } v20;
+    union {
+        Q q;
+        f32 f[4];
+    } v20;
     u8 pad30[0x10];
     f32 f40;
     f32 f44;
@@ -248,7 +278,8 @@ void HeroL16_UpdateGroundCollision(void) {
         g_hero.xI2f8++;
     }
     k = 0;
-    if (g_hero.xB20b3) k = 1;
+    if (g_hero.xB20b3)
+        k = 1;
     g = g_hero.xF234 * 2.2f;
     if (g_hero.xI208c == 2) {
         g = g_hero.xF234 * 2.9f;
@@ -333,17 +364,17 @@ tail:
 d1:
     clear_u64_value(((u8 *)&g_hero + 0x290));
     switch (g_hero.xB20b3) {
-    case 0:
-        g_hero.xF298 = -1.0f;
-        break;
-    case 1:
-        qcopy((u8 *)&g_hero + 0x290, ((u8 *)&g_hero + 0x290) - 0x20);
-        FastVecScale(((u8 *)&g_hero + 0x290), ((u8 *)&g_hero + 0x290), -1.0f);
-        break;
-    case 2:
-        FastVecSub(((u8 *)&g_hero + 0x290), ((u8 *)&g_hero + 0x290) - 0x1E0, ((u8 *)&g_hero + 0x290) - 0x210);
-        vec_scale_to_length(((u8 *)&g_hero + 0x290), ((u8 *)&g_hero + 0x290), 1.0f);
-        break;
+        case 0:
+            g_hero.xF298 = -1.0f;
+            break;
+        case 1:
+            qcopy((u8 *)&g_hero + 0x290, ((u8 *)&g_hero + 0x290) - 0x20);
+            FastVecScale(((u8 *)&g_hero + 0x290), ((u8 *)&g_hero + 0x290), -1.0f);
+            break;
+        case 2:
+            FastVecSub(((u8 *)&g_hero + 0x290), ((u8 *)&g_hero + 0x290) - 0x1E0, ((u8 *)&g_hero + 0x290) - 0x210);
+            vec_scale_to_length(((u8 *)&g_hero + 0x290), ((u8 *)&g_hero + 0x290), 1.0f);
+            break;
     }
     g_hero.u2e4.I = 0;
     g_hero.u2e8.I = 0;
@@ -353,7 +384,8 @@ d1:
     g_hero.a2c8.i[1] = 0;
     g_hero.a2c0.i[0] = 0;
     g_hero.a2c0.i[1] = 0;
-    if (g_hero.xI208c == 0xF || g_hero.xI208c == 0x15 || g_hero.xI208c == 6 || g_hero.xI208c == 4 || g_hero.xI208c == 5 || g_hero.xI208c == 3) {
+    if (g_hero.xI208c == 0xF || g_hero.xI208c == 0x15 || g_hero.xI208c == 6 || g_hero.xI208c == 4 ||
+        g_hero.xI208c == 5 || g_hero.xI208c == 3) {
         return;
     }
     if (!(g_hero.xF2dc < 0.25f)) {
@@ -454,26 +486,32 @@ int HeroL16_ApplyPositionOffset(int mode) {
     for (i = 0; i < 8; i++) {
         if (hero.gravity_mode != 0) {
             collision_result = coll_sphere(frame_scale * 0.4f, &hero.motion.pos, mask, hero.moby);
-            if (collision_result == 0) break;
+            if (collision_result == 0)
+                break;
         } else {
             control_mode = hero.state.control_mode;
             if (control_mode == 0x11) {
                 collision_result = coll_sphere(0.6f, &hero.motion.pos, mask, hero.moby);
-                if (collision_result == 0) break;
+                if (collision_result == 0)
+                    break;
             } else if (control_mode == 0x16) {
                 collision_result = coll_sphere(frame_scale * 0.5f, &hero.motion.pos, mask, hero.moby);
-                if (collision_result == 0) break;
+                if (collision_result == 0)
+                    break;
             } else if (control_mode == 0xF) {
                 collision_result = coll_sphere(frame_scale * 0.45f, &hero.motion.pos, mask, hero.moby);
-                if (collision_result == 0) break;
+                if (collision_result == 0)
+                    break;
             } else {
                 collision_extent_or_displacement_length = hero.capsule_top - hero.capsule_bottom;
                 if (collision_extent_or_displacement_length < 0.05f) {
                     collision_extent_or_displacement_length = 0.05f;
                 }
-                collision_result = coll_capsule(hero.capsule_radius, collision_extent_or_displacement_length, &hero.motion.pos, mask, hero.moby);
+                collision_result = coll_capsule(hero.capsule_radius, collision_extent_or_displacement_length,
+                                                &hero.motion.pos, mask, hero.moby);
                 collision_result |= coll_sphere_hero_groups(hero.capsule_radius, &hero.motion.pos);
-                if (collision_result == 0) break;
+                if (collision_result == 0)
+                    break;
             }
         }
         collision_output = (Vec4 *)kalebo3_coll_resolved_pos;
@@ -558,13 +596,15 @@ void integrate_hero_motion(void) {
             position = (float *)&((Hero *)(hero_globals_base + 0xE1D))->motion.velocity;
             length = gravity_length_xy(position);
             limit = player->capsule_radius - 0.02f;
-            if (limit < length) vec_scale_to_length(position, position, limit);
+            if (limit < length)
+                vec_scale_to_length(position, position, limit);
         }
         limited_velocity = (float *)&((Hero *)(hero_globals_base + 0xE1D))->motion.velocity;
         magnitude = gravity_z(limited_velocity);
         limit = -*(float *)((char *)limited_velocity + 0x1FC); /* the player's gravity_limit */
         if (magnitude < limit) {
-            if (limit > 0.0f) limit = 0.0f;
+            if (limit > 0.0f)
+                limit = 0.0f;
             gravity_set_z(limited_velocity, limited_velocity, limit);
         }
     } else if (player->state.control_mode == 15) {
@@ -576,7 +616,8 @@ void integrate_hero_motion(void) {
             position = (float *)&((Hero *)(hero_globals_base + 0xE1D))->motion.velocity;
             length = vec_length_xy(position);
             limit = player->capsule_radius - 0.02f;
-            if (limit < length) vec_set_length_xy(position, position, limit);
+            if (limit < length)
+                vec_set_length_xy(position, position, limit);
         }
     } else if (player->state.control_mode == 21) {
         float limit = 0.6f;
@@ -584,7 +625,8 @@ void integrate_hero_motion(void) {
         if (!player->collision_off_frames) {
             float *limited_velocity = (float *)&((Hero *)(hero_globals_base + 0xE1D))->motion.velocity;
 
-            if (FastVecLength(limited_velocity) > limit) vec_scale_to_length(limited_velocity, limited_velocity, limit);
+            if (FastVecLength(limited_velocity) > limit)
+                vec_scale_to_length(limited_velocity, limited_velocity, limit);
         }
     } else if (player->state.control_mode == 22) {
         qcopy(work.f, position);
@@ -602,7 +644,8 @@ void integrate_hero_motion(void) {
                     position = player->motion.velocity.f;
                     length = vec_length_xy(position);
                     limit = player->capsule_radius - 0.02f;
-                    if (limit < length) vec_set_length_xy(position, position, limit);
+                    if (limit < length)
+                        vec_set_length_xy(position, position, limit);
                 }
             }
         }
@@ -615,7 +658,8 @@ void integrate_hero_motion(void) {
                 position = (float *)&((Hero *)(hero_globals_base + 0xE1D))->motion.velocity;
                 length = FastVecLength(position);
                 limit = player->capsule_radius - 0.02f;
-                if (limit < length) vec_scale_to_length(position, position, limit);
+                if (limit < length)
+                    vec_scale_to_length(position, position, limit);
             }
         }
     }
@@ -645,28 +689,32 @@ void integrate_hero_motion(void) {
     velocity = (float *)&((Hero *)(hero_globals_base + 0xE1D))->motion.velocity;
     vec_scale_to_length(delta, delta, 1.0f);
     magnitude = FastVecDot(delta, velocity);
-    if (magnitude < 0.0f) magnitude = 0.0f;
+    if (magnitude < 0.0f)
+        magnitude = 0.0f;
     vec_scale_to_length(delta, velocity, magnitude);
     qcopy(work.f, velocity);
     gravity_flatten(work.f, work.f);
     gravity_flatten(horizontal, horizontal);
     vec_scale_to_length(horizontal, horizontal, 1.0f);
     magnitude = FastVecDot(horizontal, work.f);
-    if (magnitude < 0.0f) magnitude = 0.0f;
+    if (magnitude < 0.0f)
+        magnitude = 0.0f;
     vec_scale_to_length(horizontal, work.f, magnitude);
     qcopy(plane.f, velocity);
     set_gravity_relative_vector_length_xy(plane.f, plane.f, 0.0f);
     set_gravity_relative_vector_length_xy(vertical, vertical, 0.0f);
     vec_scale_to_length(vertical, vertical, 1.0f);
     magnitude = FastVecDot(vertical, plane.f);
-    if (magnitude < 0.0f) magnitude = 0.0f;
+    if (magnitude < 0.0f)
+        magnitude = 0.0f;
     vec_scale_to_length(vertical, plane.f, magnitude);
     motion_player = (Hero *)(hero_globals_base + 0xE1D);
     motion_player->motion.speed_xy = FastVecLength(delta);
     motion_player->motion.flat_speed = vec_length_xy(delta);
     work.q = *(Q *)delta;
     motion_player->motion.forward_speed = forward_component(work.f);
-    if (motion_player->motion.forward_speed < 0.0f) motion_player->motion.forward_speed = 0.0f;
+    if (motion_player->motion.forward_speed < 0.0f)
+        motion_player->motion.forward_speed = 0.0f;
     qcopy(work.f, new_position);
     contact = (float *)&((Hero *)(hero_globals_base + 0xE1D))->motion.platform_delta;
     external = (float *)&((Hero *)(hero_globals_base + 0xE1D))->motion.displacement;
@@ -689,13 +737,16 @@ void integrate_hero_motion(void) {
     motion_player->motion.move_slope = 0.0f;
     if (motion_player->motion.flat_speed > 0.004f) {
         motion_player->motion.move_slope = motion_player->motion.displacement.f[2] / motion_player->motion.flat_speed;
-        if (motion_player->motion.move_slope > 0.5f) motion_player->motion.move_slope = 0.5f;
-        else if (motion_player->motion.move_slope < -0.5f) motion_player->motion.move_slope = -0.5f;
+        if (motion_player->motion.move_slope > 0.5f)
+            motion_player->motion.move_slope = 0.5f;
+        else if (motion_player->motion.move_slope < -0.5f)
+            motion_player->motion.move_slope = -0.5f;
     }
     cap_player = (Hero *)(hero_globals_base + 0xE1D);
     magnitude = g_frame_time * 52.0f;
     if (magnitude < cap_player->motion.speed_xy) {
-        FastVecScale(cap_player->motion.displacement.f, cap_player->motion.displacement.f, magnitude / cap_player->motion.speed_xy);
+        FastVecScale(cap_player->motion.displacement.f, cap_player->motion.displacement.f,
+                     magnitude / cap_player->motion.speed_xy);
         cap_player->motion.speed_xy = g_frame_time * 52.0f;
     }
 }

@@ -193,8 +193,7 @@ extern f32 ground_height_at(Vec4 *);
 extern void KillPart_r(FallingParticle *) __asm__("func_L00_002688A8");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering/effects/00268900.c, FUN_L00_00268d48. */
-void update_falling_effect_particle(FallingParticle *p)
-{
+void update_falling_effect_particle(FallingParticle *p) {
     Vec4 step;
     Vec4 tmp1;
     Vec4 tmp2;
@@ -203,8 +202,8 @@ void update_falling_effect_particle(FallingParticle *p)
     s32 cell_x;
     s32 cell_y;
 
-    if (p->pos.f[2] < ground || p->pos.f[0] < 0.0f || p->pos.f[1] < 0.0f
-        || 512.0f < p->pos.f[0] || 512.0f < p->pos.f[1])
+    if (p->pos.f[2] < ground || p->pos.f[0] < 0.0f || p->pos.f[1] < 0.0f || 512.0f < p->pos.f[0] ||
+        512.0f < p->pos.f[1])
         goto die;
 
     cell_x = p->probe.f[0];

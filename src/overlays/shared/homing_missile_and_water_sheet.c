@@ -8,21 +8,21 @@
 
 /* Class 0x3F1 shot: flies along vel for ticks, owned by the firing moby. */
 struct ShotVars {
-    Vec3f vel;                      /* 0x00 */
-    f32 scale;                      /* 0x10 */
-    s32 life;                       /* 0x14: ticks to live */
-    s32 timer;                      /* 0x18 */
-    char *owner;                    /* 0x1C */
+    Vec3f vel; /* 0x00 */
+    f32 scale; /* 0x10 */
+    s32 life; /* 0x14: ticks to live */
+    s32 timer; /* 0x18 */
+    char *owner; /* 0x1C */
 };
 
 /* Class 0x3F9 fireball: flies along vel leaving smoke, bursts on a hit, shrinks when the timer ends. */
 struct FireballVars {
-    Vec3f vel;                      /* 0x00 */
-    f32 scale;                      /* 0x10 */
-    s32 life;                       /* 0x14: ticks to live */
-    s32 timer;                      /* 0x18 */
-    s32 owner;                      /* 0x1C */
-    f32 hit_radius;                 /* 0x20 */
+    Vec3f vel; /* 0x00 */
+    f32 scale; /* 0x10 */
+    s32 life; /* 0x14: ticks to live */
+    s32 timer; /* 0x18 */
+    s32 owner; /* 0x1C */
+    f32 hit_radius; /* 0x20 */
 };
 
 LINKER_REMNANT("asm/overlays", func_L11_002C99E0);
@@ -37,8 +37,7 @@ extern int sprintf(void *, void *);
 extern void DeleteMoby(void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002c8830.c, FUN_L11_002cb790. */
-void remove_moby_when_near_hero(char *a0)
-{
+void remove_moby_when_near_hero(char *a0) {
     if (FastVecDist(a0 + 0x10, gHeroPos) < 2.0f) {
         gSpecialItems_1[0] = 1;
         sprintf(pokitaru_pickup_message_buffer, pokitaru_raritanium_acquired_text);
@@ -61,7 +60,8 @@ char *select_homing_missile_target(float *pos, float *aim, float r1, float r2, f
     Moby *p = (Moby *)pokitaru_moby_list;
     float bestd = 10.0f;
     while (p != 0) {
-        if ((p->flags & 0x1000) && p != 0 && *(char **)&p->pclass != 0 && *(short *)(*(char **)&p->pclass + 0x46) == 5) {
+        if ((p->flags & 0x1000) && p != 0 && *(char **)&p->pclass != 0 &&
+            *(short *)(*(char **)&p->pclass + 0x46) == 5) {
             float d;
             q = (char *)&p->pos;
             d = vec_distance_xy(pos, q);
@@ -123,7 +123,7 @@ unsigned char *spawn_class_3f1_moby(char *owner, float *dir, float *pos, float a
         *(int *)&d->owner = d->timer = truncate_float_to_s32_r(a / b);
         *(short *)&((Moby *)m)->flags = 0x200;
         ((Moby *)m)->scale = *(float *)(*(char **)&((Moby *)m)->pclass + 0x24) *
-            (*(float *)(owner + 0x2C) / *(float *)(*(char **)(owner + 0x24) + 0x24));
+                             (*(float *)(owner + 0x2C) / *(float *)(*(char **)(owner + 0x24) + 0x24));
         ((Moby *)m)->alpha = truncate_float_to_s32_r(*(float *)&d->life * 24.0f);
         set_moby_color(m, 0xFF, 0xFF, 0xFF);
         moby_build_matrix(m);
@@ -150,7 +150,7 @@ typedef struct {
     u8 pad1C[0x14];
 } MissileHit_089d0;
 extern int level_frame MACRO_ADDR;
-extern char * pokitaru_mobys MACRO_ADDR;
+extern char *pokitaru_mobys MACRO_ADDR;
 extern char pokitaru_coll_hit_normal[];
 extern int truncate_float_to_s32(float);
 extern float FastSubRots(float, float);
@@ -194,15 +194,18 @@ void update_homing_missile(struct Moby *moby) {
     copy_xyz_089d0(look, vars->target_pos);
     ((int *)look)[3] = 0;
     target = vars->target;
-    if (target == 0 || target->state == 0xFE || target->state == 0xFD ||
-        FastVecDist(&target->pos, look) > 3.0f)
-        vars->target = (struct Moby *)select_homing_missile_target((float *)&moby->pos, (float *)&moby->rot, 0.2617994f, 0.2617994f, 60.0f);
+    if (target == 0 || target->state == 0xFE || target->state == 0xFD || FastVecDist(&target->pos, look) > 3.0f)
+        vars->target = (struct Moby *)select_homing_missile_target((float *)&moby->pos, (float *)&moby->rot, 0.2617994f,
+                                                                   0.2617994f, 60.0f);
     if (vars->target != 0) {
         copy_xyz_089d0(vars->target_pos, (float *)&vars->target->pos);
         speed = FastVecLength(vars);
-        yaw_off = FastSubRots(fast_atan2(vars->target->pos.x - moby->pos.x, vars->target->pos.y - moby->pos.y), moby->rot.z);
+        yaw_off =
+            FastSubRots(fast_atan2(vars->target->pos.x - moby->pos.x, vars->target->pos.y - moby->pos.y), moby->rot.z);
         yaw = FastAbsF(yaw_off);
-        pitch_off = FastSubRots(-fast_atan2(vec_distance_xy(&moby->pos, &vars->target->pos), vars->target->pos.z - moby->pos.z), moby->rot.y);
+        pitch_off =
+            FastSubRots(-fast_atan2(vec_distance_xy(&moby->pos, &vars->target->pos), vars->target->pos.z - moby->pos.z),
+                        moby->rot.y);
         pitch = FastAbsF(pitch_off);
         if (yaw < 0.2617994f && pitch < 0.2617994f) {
             max_yaw = g_frame_time * 0.87266463f;
@@ -289,7 +292,8 @@ char *spawn_class_3f9_moby(int owner, float *dir, float *pos, float size, float 
     }
     return m;
 }
-extern short projectile_trail_color_a, projectile_trail_color_b, projectile_trail_life_ticks, projectile_trail_size, projectile_trail_speed_scale;
+extern short projectile_trail_color_a, projectile_trail_color_b, projectile_trail_life_ticks, projectile_trail_size,
+    projectile_trail_speed_scale;
 extern char pokitaru_coll_hit_normal[];
 extern float g_frame_time_e __asm__("D_0015EE6C") MACRO_ADDR;
 extern float random_float_between(float, float);
@@ -317,16 +321,20 @@ void update_projectile_with_trail(Moby *m) {
     char *d;
     char *pos;
     int c;
-    if (m == 0) return;
+    if (m == 0)
+        return;
     d = ((char *)m->pvars);
-    if (d == 0) return;
+    if (d == 0)
+        return;
     pos = (char *)&m->pos;
     qcopy(old, pos);
-    c = FastTweenColor(*(int *)&projectile_trail_color_a, *(int *)&projectile_trail_color_b, random_float_between(0.0f, 1.0f));
+    c = FastTweenColor(*(int *)&projectile_trail_color_a, *(int *)&projectile_trail_color_b,
+                       random_float_between(0.0f, 1.0f));
     rand_vec(p, 0.0f, 0.1f);
     FastVecAdd(p, p, pos);
     FastVecScale(v, &((struct FireballVars *)d)->vel, *(float *)&projectile_trail_speed_scale);
-    PartType27Spawn((char *)p, (char *)v, c, scale_ticks(*(int *)&projectile_trail_life_ticks), (float)*(int *)&projectile_trail_size);
+    PartType27Spawn((char *)p, (char *)v, c, scale_ticks(*(int *)&projectile_trail_life_ticks),
+                    (float)*(int *)&projectile_trail_size);
     FastVecAdd(pos, pos, &((struct FireballVars *)d)->vel);
     InitDirectionalHitQuery(hit, m, 0x10000, *(float *)(d + 0x20), d);
     if (coll_line(old, pos, 0, *(void **)&((struct FireballVars *)d)->hit_radius, hit)) {
@@ -341,7 +349,8 @@ void update_projectile_with_trail(Moby *m) {
             vec_scale_to_length(q, q, FastVecLength(r) * 0.5f);
             FastVecAdd(q, r, q);
             vec_scale_to_length(q, q, random_float_between(g_frame_time_e * 5.0f, g_frame_time_e * 9.0f));
-            PartType27Spawn((char *)&m->pos, (char *)q, 0x7F2F4F6F, rand_range(scale_ticks(10), scale_ticks(15)), 90000.0f);
+            PartType27Spawn((char *)&m->pos, (char *)q, 0x7F2F4F6F, rand_range(scale_ticks(10), scale_ticks(15)),
+                            90000.0f);
         }
         DeleteMoby(m);
         return;
@@ -391,7 +400,8 @@ extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 extern unsigned char *PartType44Spawn(void *, void *, int, int, int, int, float, float, float, float, float);
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float, int, int, int, int);
+extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
+                            int, int, int, int);
 extern char pokitaru_particle_textures_ptr_base[];
 extern char pokitaru_collision_hit_point[];
 extern float g_frame_time_sq MACRO_ADDR;
@@ -416,15 +426,14 @@ void Moby1034Update(struct PMoby *moby) {
     vec_scale_to_length(&velocity, &velocity, random_float_between(0.1f, 0.2f) * g_frame_time);
     vec_scale_to_length(&offset, &data->step, -random_float_between(g_frame_time * 0.1f, g_frame_time));
     FastVecAdd(&velocity, &velocity, &offset);
-    PartType44Spawn(&moby->pos, &velocity, scale_ticks(6), 0x7f, 0xb0b0b0,
-               3, 40000.0f, 1000.0f, 1.0f, -0.0004f, 0.0f);
+    PartType44Spawn(&moby->pos, &velocity, scale_ticks(6), 0x7f, 0xb0b0b0, 3, 40000.0f, 1000.0f, 1.0f, -0.0004f, 0.0f);
     texture = pokitaru_particle_textures_ptr_base;
     for (fraction = 0.0f; fraction < 1.0f; fraction += 0.33333334f) {
         unsigned char *p;
         vec_scale_to_length(&offset, &data->step, random_float_between(fraction, fraction + 0.33333334f) * data->speed);
         FastVecAdd(&offset, &offset, &moby->pos);
-        p = PartType44Spawn(&offset, &velocity, scale_ticks(60), 0x7f, 0x606060, 3, 40000.0f,
-                       1000.0f, 1.0f, -0.0002f, 0.0f);
+        p = PartType44Spawn(&offset, &velocity, scale_ticks(60), 0x7f, 0x606060, 3, 40000.0f, 1000.0f, 1.0f, -0.0002f,
+                            0.0f);
         if (p != 0) {
             unsigned char *texture_pixels = *(unsigned char **)(texture + 0x5c);
             unsigned char texture_pixel = texture_pixels[0];
@@ -446,9 +455,9 @@ void Moby1034Update(struct PMoby *moby) {
         qcopy(&data->target_pos, &data->target->pos);
     } else {
         SteerAngleWithVelocity(&moby->rot.z, &data->turn_speed, moby->rot.z, g_frame_time_sq * 251.32741f,
-               g_frame_time_sq * 251.32741f, g_frame_time * 2513.2742f);
+                               g_frame_time_sq * 251.32741f, g_frame_time * 2513.2742f);
         SteerAngleWithVelocity(&moby->rot.y, &data->turn_speed, moby->rot.y, g_frame_time_sq * 251.32741f,
-               g_frame_time_sq * 251.32741f, g_frame_time * 2513.2742f);
+                               g_frame_time_sq * 251.32741f, g_frame_time * 2513.2742f);
         data->target = 0;
     }
     BuildSphericalOffset(&data->step, data->speed, moby->rot.z, -moby->rot.y);
@@ -460,16 +469,20 @@ void Moby1034Update(struct PMoby *moby) {
     }
     Moby_GetJointWorldPos(moby, 1, &spray);
     if (coll_line(&previous_pos, &spray, 0, data->collision, 0)) {
-        spawn_explosion(moby, data, pokitaru_collision_hit_point, 2.0f, 10.0f, 10, 3, 0x10, 4.0f, 2.0f, 9.0f, 1.0f,
-                -1, 20.0f, 0, 1, -1, 0);
+        spawn_explosion(moby, data, pokitaru_collision_hit_point, 2.0f, 10.0f, 10, 3, 0x10, 4.0f, 2.0f, 9.0f, 1.0f, -1,
+                        20.0f, 0, 1, -1, 0);
         DeleteMoby(moby);
         return;
     }
     if (fast_dec_timer(&data->timer))
         DeleteMoby(moby);
 }
-typedef struct { float u, v; } UV_30BCD8;
-typedef struct { float x, y, z; } Pos_30BCD8;
+typedef struct {
+    float u, v;
+} UV_30BCD8;
+typedef struct {
+    float x, y, z;
+} Pos_30BCD8;
 typedef struct {
     Vec4f v[4];
     int col[4];
@@ -493,8 +506,14 @@ typedef struct {
     float f28;
     float f2C;
 } Data_30BCD8;
-typedef struct { char pad[0x140]; float x, y, z; } Cam_30BCD8;
-typedef struct { char pad[0x228]; float f228, f22C; } Fog_30BCD8;
+typedef struct {
+    char pad[0x140];
+    float x, y, z;
+} Cam_30BCD8;
+typedef struct {
+    char pad[0x228];
+    float f228, f22C;
+} Fog_30BCD8;
 
 extern void VU1_addGSregister(int, long);
 extern int GetEffectTex(int);
@@ -657,19 +676,23 @@ void draw_pokitaru_ocean(Moby *moby) {
                     pokitaru_water_sheet_verts[n].z = pokitaru_ocean_height;
                     i = n + 1;
                     pokitaru_water_sheet_uvs[i].u = x / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].u;
-                    pokitaru_water_sheet_uvs[i].v = (y + d->f18) / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].v;
+                    pokitaru_water_sheet_uvs[i].v =
+                        (y + d->f18) / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].v;
                     pokitaru_water_sheet_verts[i].x = x + ((Cam_30BCD8 *)pokitaru_player_camera)->x + 1.0f;
                     pokitaru_water_sheet_verts[i].y = y + d->f18 + ((Cam_30BCD8 *)pokitaru_player_camera)->y + 1.0f;
                     pokitaru_water_sheet_verts[i].z = pokitaru_ocean_height;
                     i = n + 2;
-                    pokitaru_water_sheet_uvs[i].u = (x + d->f18) / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].u;
+                    pokitaru_water_sheet_uvs[i].u =
+                        (x + d->f18) / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].u;
                     pokitaru_water_sheet_uvs[i].v = y / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].v;
                     pokitaru_water_sheet_verts[i].x = x + d->f18 + ((Cam_30BCD8 *)pokitaru_player_camera)->x + 1.0f;
                     pokitaru_water_sheet_verts[i].y = y + ((Cam_30BCD8 *)pokitaru_player_camera)->y + 1.0f;
                     pokitaru_water_sheet_verts[i].z = pokitaru_ocean_height;
                     i = n + 3;
-                    pokitaru_water_sheet_uvs[i].u = (x + d->f18) / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].u;
-                    pokitaru_water_sheet_uvs[i].v = (y + d->f18) / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].v;
+                    pokitaru_water_sheet_uvs[i].u =
+                        (x + d->f18) / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].u;
+                    pokitaru_water_sheet_uvs[i].v =
+                        (y + d->f18) / (d->f18 * 2.0f) * wave_speed[layer] + wave_offset[layer].v;
                     pokitaru_water_sheet_verts[i].x = x + d->f18 + ((Cam_30BCD8 *)pokitaru_player_camera)->x + 1.0f;
                     pokitaru_water_sheet_verts[i].y = y + d->f18 + ((Cam_30BCD8 *)pokitaru_player_camera)->y + 1.0f;
                     pokitaru_water_sheet_verts[i].z = pokitaru_ocean_height;
@@ -689,7 +712,8 @@ void draw_pokitaru_ocean(Moby *moby) {
                         raise_kernel_trap();
                     }
                 }
-                draw_env_overlay_mesh_r(n, pokitaru_water_sheet_verts, pokitaru_water_sheet_colors, pokitaru_water_sheet_uvs, 1);
+                draw_env_overlay_mesh_r(n, pokitaru_water_sheet_verts, pokitaru_water_sheet_colors,
+                                        pokitaru_water_sheet_uvs, 1);
             }
         }
     }
@@ -697,29 +721,31 @@ void draw_pokitaru_ocean(Moby *moby) {
     ((Fog_30BCD8 *)pokitaru_render_view_params)->f22C = s22C;
     VU1_addGSregister(0x47, 0x5360B);
 }
-typedef struct { float u, v; } UV_30C728;
+typedef struct {
+    float u, v;
+} UV_30C728;
 typedef float V4_30C728[4] __attribute__((aligned(16)));
 
 typedef struct {
     char pad00[0x14];
-    float level;            /* 0x14 */
-    float scale;            /* 0x18 */
+    float level; /* 0x14 */
+    float scale; /* 0x18 */
     char pad1C[0x4];
-    float limit;            /* 0x20 */
+    float limit; /* 0x20 */
 } OceanVars_30C728;
 
 typedef struct {
     char pad00[0x20];
-    unsigned char state;    /* 0x20 */
+    unsigned char state; /* 0x20 */
     char pad21[0xF];
-    unsigned char f30;      /* 0x30 */
+    unsigned char f30; /* 0x30 */
     char pad31[0x47];
     OceanVars_30C728 *vars; /* 0x78 */
 } OceanMoby_30C728;
 
 typedef struct {
     char pad000[0x140];
-    V4_30C728 pos;          /* 0x140 */
+    V4_30C728 pos; /* 0x140 */
 } Cam_30C728;
 
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
@@ -753,8 +779,7 @@ extern int level_frame_r __asm__("D_L11_0015F6B0") MACRO_ADDR;
 extern float frame_delta_time_r __asm__("D_0015EE7C") MACRO_ADDR;
 
 /* Ocean update: scrolls the two wave layers with the camera and the time, keeps their offsets in -1..1 and sets the level's tide values. */
-void ocean_pokitaru_update(OceanMoby_30C728 *moby)
-{
+void ocean_pokitaru_update(OceanMoby_30C728 *moby) {
     OceanVars_30C728 *d = moby->vars;
     float src[4];
     float out[4];
@@ -853,29 +878,32 @@ void Group_CopyZToTableSlots(Moby *moby) {
         *(float *)(s + 8) = moby->pos.z;
     } while (*p++ >= 0);
 }
-typedef struct { unsigned char pad0[0x454]; unsigned char collected[1]; } LvState_3102C8;
+typedef struct {
+    unsigned char pad0[0x454];
+    unsigned char collected[1];
+} LvState_3102C8;
 
 typedef struct {
     char pad000[0x360];
-    unsigned short count;   /* 0x360 */
-    unsigned short best;    /* 0x362 */
-    unsigned int levels;    /* 0x364 */
+    unsigned short count; /* 0x360 */
+    unsigned short best; /* 0x362 */
+    unsigned int levels; /* 0x364 */
     char pad368[0x22];
-    unsigned short best2;   /* 0x38A */
+    unsigned short best2; /* 0x38A */
 } Stats_3102C8;
 
 typedef struct {
     char pad00[0x10];
-    float pos[2];           /* 0x10 */
-    float z;                /* 0x18 */
+    float pos[2]; /* 0x10 */
+    float z; /* 0x18 */
     char pad1C[0x4];
-    unsigned char state;    /* 0x20 */
+    unsigned char state; /* 0x20 */
     char pad21[0x57];
-    char *vars;             /* 0x78 */
+    char *vars; /* 0x78 */
     char pad7C[0x34];
-    unsigned char bB0;      /* 0xB0 */
+    unsigned char bB0; /* 0xB0 */
     char padB1;
-    unsigned short uid;     /* 0xB2 */
+    unsigned short uid; /* 0xB2 */
 } Lock_3102C8;
 
 extern char hero_globals_base_r[] __asm__("D_0013E633");
@@ -893,99 +921,105 @@ extern int scale_ticks_r(int) __asm__("func_001F9850");
 
 
 // Thruster pack lock update: a state machine (0 idle, 1 armed, 2 attacking) that aims the pack and counts the cooldown timers.
-void thruster_pack_lock_update(Lock_3102C8 *moby)
-{
+void thruster_pack_lock_update(Lock_3102C8 *moby) {
     char *d = moby->vars;
 
     switch (moby->state) {
-    case 0: {
-        int e = g_current_level_index_r;
-        ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->count = 0;
-        ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best = 0;
-        *(unsigned short *)(d + 0x3E) |= 8;
-        if (e == 0xB && moby->bB0 != 0xFF) {
-            if (pokitaru_checkpoint_level_state_r.collected[(short)moby->uid] != 0 ||
-                ((*(int *)(help_stats_base_r + 0xAB75 + (((short)moby->uid >> 5) * 4 + (e << 8))) >> (moby->uid & 0x1F)) & 1)) {
+        case 0: {
+            int e = g_current_level_index_r;
+            ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->count = 0;
+            ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best = 0;
+            *(unsigned short *)(d + 0x3E) |= 8;
+            if (e == 0xB && moby->bB0 != 0xFF) {
+                if (pokitaru_checkpoint_level_state_r.collected[(short)moby->uid] != 0 ||
+                    ((*(int *)(help_stats_base_r + 0xAB75 + (((short)moby->uid >> 5) * 4 + (e << 8))) >>
+                      (moby->uid & 0x1F)) &
+                     1)) {
+                    moby->state = 2;
+                    moby->z = moby->z - 1.5f;
+                    Moby_PlaySound_r(0, 0, moby);
+                    return;
+                }
+            }
+            moby->state = 1;
+            break;
+        }
+        case 1:
+            if (((void *)((Hero *)(hero_globals_base_r + 0xE1D))->ground_moby) == moby && gHaveHeliPack_r[1] != 0 &&
+                ((Hero *)(hero_globals_base_r + 0xE1D))->air_frames.s == 0 &&
+                ((Hero *)(hero_globals_base_r + 0xE1D))->state.current == 0x22) {
+                if (g_current_level_index_r == 0xB && moby->bB0 != 0xFF) {
+                    int c;
+                    int u;
+                    pokitaru_current_level_state_r.collected[(short)moby->uid] = moby->bB0 + 2;
+                    c = moby->bB0;
+                    u = c & 0xFF;
+                    if (c == 0xFF || (pokitaru_mission_group_state_r[u] != 0xFF &&
+                                      (help_stats_base_r + 0xAA35)[u + (g_current_level_index_r << 4)] == 0xFF)) {
+                        pokitaru_checkpoint_level_state_r.collected[(short)moby->uid] = c + 2;
+                    }
+                }
                 moby->state = 2;
                 moby->z = moby->z - 1.5f;
                 Moby_PlaySound_r(0, 0, moby);
+            }
+            if (moby->bB0 == 0xFF) {
                 return;
             }
-        }
-        moby->state = 1;
-        break;
-    }
-    case 1:
-        if (((void *)((Hero *)(hero_globals_base_r + 0xE1D))->ground_moby) == moby && gHaveHeliPack_r[1] != 0 &&
-            ((Hero *)(hero_globals_base_r + 0xE1D))->air_frames.s == 0 && ((Hero *)(hero_globals_base_r + 0xE1D))->state.current == 0x22) {
-            if (g_current_level_index_r == 0xB && moby->bB0 != 0xFF) {
-                int c;
-                int u;
-                pokitaru_current_level_state_r.collected[(short)moby->uid] = moby->bB0 + 2;
-                c = moby->bB0;
-                u = c & 0xFF;
-                if (c == 0xFF || (pokitaru_mission_group_state_r[u] != 0xFF &&
-                                  (help_stats_base_r + 0xAA35)[u + (g_current_level_index_r << 4)] == 0xFF)) {
-                    pokitaru_checkpoint_level_state_r.collected[(short)moby->uid] = c + 2;
-                }
-            }
-            moby->state = 2;
-            moby->z = moby->z - 1.5f;
-            Moby_PlaySound_r(0, 0, moby);
-        }
-        if (moby->bB0 == 0xFF) {
-            return;
-        }
-        if (!(vec_distance_xy_r(moby->pos, hero_globals_base_r + 0xE9D) < 4.0f)) {
-            return;
-        }
-        if (!((unsigned int)*(int *)(hero_globals_base_r + 0xE9D + 0x200C) < 2)) {
-            return;
-        }
-        if (gHaveHeliPack_r[1] == 0) {
-            int r = scale_ticks_r(gameplay_event_frame_count_r) - ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best2 * 600;
-            if ((int)((float)scale_ticks_r(0x12) * 60.0f) < r ||
-                ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best2 * 600 == 0) {
-                Help_Request_r(0x2B02, 0x71);
+            if (!(vec_distance_xy_r(moby->pos, hero_globals_base_r + 0xE9D) < 4.0f)) {
                 return;
             }
-            {
-                int q = scale_ticks_r(gameplay_event_frame_count_r) / 600;
-                if (((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best2 < q) {
-                    ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best2 = scale_ticks_r(gameplay_event_frame_count_r) / 600;
-                }
-            }
-        } else if (((Stats_3102C8 *)(help_stats_base_r + 0x34D))->count != 0) {
-            int r = scale_ticks_r(gameplay_event_frame_count_r) - ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best * 600;
-            if ((int)((float)scale_ticks_r(0x12) * 60.0f) < r ||
-                ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best * 600 == 0) {
-                Help_Request_r(0x2B01, 0x6C);
+            if (!((unsigned int)*(int *)(hero_globals_base_r + 0xE9D + 0x200C) < 2)) {
                 return;
             }
-            {
-                int q = scale_ticks_r(gameplay_event_frame_count_r) / 600;
-                if (((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best < q) {
-                    ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best = scale_ticks_r(gameplay_event_frame_count_r) / 600;
+            if (gHaveHeliPack_r[1] == 0) {
+                int r = scale_ticks_r(gameplay_event_frame_count_r) -
+                        ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best2 * 600;
+                if ((int)((float)scale_ticks_r(0x12) * 60.0f) < r ||
+                    ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best2 * 600 == 0) {
+                    Help_Request_r(0x2B02, 0x71);
+                    return;
                 }
-            }
-        } else {
-            ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->count += 1;
-            {
-                int q = scale_ticks_r(gameplay_event_frame_count_r) / 600;
-                if (((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best < q) {
-                    ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best = scale_ticks_r(gameplay_event_frame_count_r) / 600;
+                {
+                    int q = scale_ticks_r(gameplay_event_frame_count_r) / 600;
+                    if (((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best2 < q) {
+                        ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best2 =
+                            scale_ticks_r(gameplay_event_frame_count_r) / 600;
+                    }
                 }
+            } else if (((Stats_3102C8 *)(help_stats_base_r + 0x34D))->count != 0) {
+                int r = scale_ticks_r(gameplay_event_frame_count_r) -
+                        ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best * 600;
+                if ((int)((float)scale_ticks_r(0x12) * 60.0f) < r ||
+                    ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best * 600 == 0) {
+                    Help_Request_r(0x2B01, 0x6C);
+                    return;
+                }
+                {
+                    int q = scale_ticks_r(gameplay_event_frame_count_r) / 600;
+                    if (((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best < q) {
+                        ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best =
+                            scale_ticks_r(gameplay_event_frame_count_r) / 600;
+                    }
+                }
+            } else {
+                ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->count += 1;
+                {
+                    int q = scale_ticks_r(gameplay_event_frame_count_r) / 600;
+                    if (((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best < q) {
+                        ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->best =
+                            scale_ticks_r(gameplay_event_frame_count_r) / 600;
+                    }
+                }
+                ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->levels =
+                    ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->levels | (1 << g_current_level_index_r) | 0x80000000;
             }
-            ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->levels =
-                ((Stats_3102C8 *)(help_stats_base_r + 0x34D))->levels | (1 << g_current_level_index_r) | 0x80000000;
-        }
-        break;
+            break;
     }
 }
 /* Recognize the active vendor object state. */
 int test_linked_moby_turn_trigger(Moby *moby) {
-    if (moby->oclass == 0x49B &&
-        moby->state == 2) {
+    if (moby->oclass == 0x49B && moby->state == 2) {
         return 1;
     }
     return 0;
@@ -997,7 +1031,8 @@ extern u128_ad0 screen_strip_gif_tag_tail;
 extern int g_screen_extent[];
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/0030e690.c, FUN_L11_00310ad0. */
-void append_scaled_screen_triangle_strip(short *pts, int n, float x0, float y0, unsigned int col, unsigned long prim, float scale) {
+void append_scaled_screen_triangle_strip(short *pts, int n, float x0, float y0, unsigned int col, unsigned long prim,
+                                         float scale) {
     int q = (n + 1) / 2 + 3;
     unsigned long *o;
     int x, y;
@@ -1029,7 +1064,8 @@ void append_scaled_screen_triangle_strip(short *pts, int n, float x0, float y0, 
     for (i = 0; i < n; i++) {
         x = truncate_float_to_s32((IntToFloat(pts[i * 2]) * scale + x0) * 16.0f);
         y = truncate_float_to_s32((IntToFloat(pts[i * 2 + 1]) * scale + y0) * 16.0f);
-        o[i] = (unsigned long)(x + g_screen_extent[4] - 8) | ((unsigned long)(y + g_screen_extent[5] - 8) << 16) | ((unsigned long)col << 32);
+        o[i] = (unsigned long)(x + g_screen_extent[4] - 8) | ((unsigned long)(y + g_screen_extent[5] - 8) << 16) |
+               ((unsigned long)col << 32);
     }
     pokitaru_dma_packet_cursor += ((n + 1) / 2) * 16;
 }
@@ -1042,8 +1078,8 @@ extern unsigned char screen_globals_base[];
 extern int pokitaru_dma_packet_cursor MACRO_ADDR;
 
 /* Builds one GIF packet for a rotated textured sprite and advances the packet pointer. */
-void append_rotated_textured_screen_quad(float fa, float fb, float fc, float fd, float fe, int a0, int a1, long a2, int a3,
-                       int a4, int a5, int a6, int a7) {
+void append_rotated_textured_screen_quad(float fa, float fb, float fc, float fd, float fe, int a0, int a1, long a2,
+                                         int a3, int a4, int a5, int a6, int a7) {
     float s[4];
     float t[4];
     float v[4];
@@ -1147,11 +1183,13 @@ void append_rotated_textured_screen_quad(float fa, float fb, float fc, float fd,
 
     pokitaru_dma_packet_cursor += 0x70;
 }
-extern void append_rotated_textured_screen_quad(float, float, float, float, float, int, int, long, int, int, int, int, int);
+extern void append_rotated_textured_screen_quad(float, float, float, float, float, int, int, long, int, int, int, int,
+                                                int);
 extern float FastAddRots(float, float);
 
 /* Draws four quads with the angle advanced by a quarter turn each time. */
-void draw_quarter_turn_textured_quads(unsigned char a, unsigned char b, unsigned char c, unsigned char d, float x, float y, float s, float ang) {
+void draw_quarter_turn_textured_quads(unsigned char a, unsigned char b, unsigned char c, unsigned char d, float x,
+                                      float y, float s, float ang) {
     int h;
     float w;
     h = GetEffectTex(0x42);
@@ -1414,7 +1452,8 @@ void update_moby_hit_stats_and_state(Moby *m) {
             *(unsigned short *)(st + 0x157EA) = scale_ticks(gameplay_event_frame_count) / 600;
         }
         *(int *)(st + 0x157EC) = *(int *)(st + 0x157EC) | (1 << g_current_level_index_r) | 0x80000000;
-        if (g_current_level_index_r == 0xB && *(char **)(info + 0x20) != 0 && *(short *)(*(char **)(info + 0x20) + 0xA6) == 0xAC) {
+        if (g_current_level_index_r == 0xB && *(char **)(info + 0x20) != 0 &&
+            *(short *)(*(char **)(info + 0x20) + 0xA6) == 0xAC) {
             if (++skill_point_18_kill_count >= 3 && gSkillPoints[0x12] == 0) {
                 gSkillPoints[0x12] = 1;
                 PlayBankSound(1, 0, 0);
@@ -1522,12 +1561,15 @@ void update_moby_path_transform(Moby *moby) {
     FastVecAdd_r(E, E, G);
     vel = 0.0f;
     d = FastVecDist_r(&moby->pos, E);
-    ApproachWithVelocity_r(&vel, &data->speed, d, g_frame_time_sq_r * 10.0f, g_frame_time_sq_r * 10.0f, g_frame_time_e * 20.0f);
+    ApproachWithVelocity_r(&vel, &data->speed, d, g_frame_time_sq_r * 10.0f, g_frame_time_sq_r * 10.0f,
+                           g_frame_time_e * 20.0f);
     FastVecSub_r2(G, E, &moby->pos);
     vec_scale_to_length_r(G, G, data->speed);
     FastVecAdd_r(&moby->pos, &moby->pos, G);
 }
-typedef struct { int a, b; } Pair8;
+typedef struct {
+    int a, b;
+} Pair8;
 
 extern void add_uv_scroll_offset(void *, int, int, void *);
 extern void draw_env_overlay_mesh(int, int, int, void *, int);
@@ -1543,7 +1585,9 @@ extern Pair8 pokitaru_faded_2b_scroll[] MACRO_ADDR;
 void queue_oil_tanker_front_texture_2b_batches(int a) {
     int i;
     for (i = 0; i < 5; i++) {
-        add_uv_scroll_offset(pokitaru_faded_scrolled_uvs, oil_tanker_2b_mesh_uv_sources[i], oil_tanker_2b_mesh_vertex_counts[i], &pokitaru_faded_2b_scroll[a]);
-        draw_env_overlay_mesh(oil_tanker_2b_mesh_vertex_counts[i], oil_tanker_2b_mesh_positions[i], oil_tanker_2b_mesh_colors[i], pokitaru_faded_scrolled_uvs, 1);
+        add_uv_scroll_offset(pokitaru_faded_scrolled_uvs, oil_tanker_2b_mesh_uv_sources[i],
+                             oil_tanker_2b_mesh_vertex_counts[i], &pokitaru_faded_2b_scroll[a]);
+        draw_env_overlay_mesh(oil_tanker_2b_mesh_vertex_counts[i], oil_tanker_2b_mesh_positions[i],
+                              oil_tanker_2b_mesh_colors[i], pokitaru_faded_scrolled_uvs, 1);
     }
 }

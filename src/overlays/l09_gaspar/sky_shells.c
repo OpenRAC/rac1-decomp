@@ -10,7 +10,8 @@ typedef struct Strip_21E410 {
     char padC[4];
 } Strip_21E410;
 extern long GetEffectTex_r(int) __asm__("func_001F4868");
-extern void vu0_lerp_vertex_table_pairs_21E410_t(void *, void *, void *, void *, void *, int, float) __asm__("func_L02_00250C78");
+extern void vu0_lerp_vertex_table_pairs_21E410_t(void *, void *, void *, void *, void *, int,
+                                                 float) __asm__("func_L02_00250C78");
 extern void VU1_addGSregister_r(int, long) __asm__("func_00234C98");
 extern int *l09_packet_r __asm__("D_L09_00161240") MACRO_ADDR;
 extern char gaspar_texture_table_r[] __asm__("D_L09_0016D380");
@@ -47,8 +48,9 @@ void func_L09_0021E410_r(int a, int b, float t) {
 
         gaspar_strip_texture_buffer_r[0] = 0x0800000000000400L;
         gaspar_strip_texture_buffer_r[1] = 0;
-        vu0_lerp_vertex_table_pairs_21E410_t(&gaspar_strip_texture_buffer_r[2], texture_vertices_r + (a0 << 4), texture_vertices_r + (a1 << 4),
-                                 texture_vertices_r + (b0 << 4), texture_vertices_r + (b1 << 4), 0x1000, t);
+        vu0_lerp_vertex_table_pairs_21E410_t(&gaspar_strip_texture_buffer_r[2], texture_vertices_r + (a0 << 4),
+                                             texture_vertices_r + (a1 << 4), texture_vertices_r + (b0 << 4),
+                                             texture_vertices_r + (b1 << 4), 0x1000, t);
         l09_packet_r[0] = 0x10000006;
         l09_packet_r[1] = 0;
         l09_packet_r[2] = 0;
@@ -99,7 +101,10 @@ extern char gaspar_strip_gs_setup_packet[];
 extern int gaspar_frame_count MACRO_ADDR;
 
 extern void queue_level09_strip_texture_packets_t(int, int, float) __asm__("func_L09_0021E410");
-typedef struct { char pad[0x20]; short idx[16]; } Strip;
+typedef struct {
+    char pad[0x20];
+    short idx[16];
+} Strip;
 
 /* Draws a list of scrolling-texture strips (water) into the scratchpad. */
 void draw_level09_scrolling_textured_strips(char *list, float t, int count, long tex0, long tex1) {
@@ -126,7 +131,8 @@ void draw_level09_scrolling_textured_strips(char *list, float t, int count, long
     for (i = 0; i < count; i++) {
         char *e = list + i * 64;
         idx = FastBSphereCheck(e, 256.0f);
-        if (idx == -1) continue;
+        if (idx == -1)
+            continue;
         for (j = 0; j < *(int *)(e + 0x1C); j++) {
             int n;
             float *src;
@@ -141,7 +147,8 @@ void draw_level09_scrolling_textured_strips(char *list, float t, int count, long
                 *a++ = *src + s0;
                 *b++ = *src++ + s1;
             }
-            emit_textured_strip_packet(n, *(int *)(e + 0x10) + ((Strip *)e)->idx[j] * 12, 0x70000000, 0x70001000, 0x70002000, idx == 0);
+            emit_textured_strip_packet(n, *(int *)(e + 0x10) + ((Strip *)e)->idx[j] * 12, 0x70000000, 0x70001000,
+                                       0x70002000, idx == 0);
         }
     }
 }

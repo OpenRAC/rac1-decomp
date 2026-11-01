@@ -216,8 +216,10 @@ extern short *hero_mapped_moby_seq_pairs;
 int lookup_s16_pair_value(int key, int *out) {
     short *base = hero_mapped_moby_seq_pairs;
     short *p;
-    if (!base) return 0;
-    if (base[0] == -1) goto missing;
+    if (!base)
+        return 0;
+    if (base[0] == -1)
+        goto missing;
     p = base;
     do {
         if (key == p[0]) {
@@ -263,8 +265,8 @@ void sync_hero_mapped_moby_animation_speed(void) {
     Hero *base = (Hero *)g_hero;
     int buf[4];
 
-    if (base->unk2278 != 0 && base->unk227C != 0
-        && lookup_s16_pair_value(*(unsigned char *)(*(char **)&base->moby + 0x53), buf) != 0) {
+    if (base->unk2278 != 0 && base->unk227C != 0 &&
+        lookup_s16_pair_value(*(unsigned char *)(*(char **)&base->moby + 0x53), buf) != 0) {
         *(float *)(*(char **)&base->unk2278 + 0x58) = base->anim_speed;
     }
 }
@@ -441,17 +443,17 @@ void hero_set_attack_ticks(int id) {
 #include "moby.h"
 typedef struct {
     u8 pad0[0x10];
-    u8 frame_count;     /* 0x10 */
+    u8 frame_count; /* 0x10 */
     u8 unk11;
-    u8 trigger_count;   /* 0x12 */
+    u8 trigger_count; /* 0x12 */
     u8 pad13[9];
-    void *frames[1];    /* 0x1C; the sound triggers (sound | frame << 16) follow the frames */
+    void *frames[1]; /* 0x1C; the sound triggers (sound | frame << 16) follow the frames */
 } AnimSeq_32EF0;
 typedef struct {
     u8 pad0[0x7E];
-    s16 sound;          /* 0x7E */
+    s16 sound; /* 0x7E */
     u8 pad80[8];
-    Moby *owner;        /* 0x88 */
+    Moby *owner; /* 0x88 */
 } VoiceSlot_32EF0;
 extern f32 hero_anim_blend_curves[][25];
 extern int cinematic_mode MACRO_ADDR;
@@ -565,7 +567,6 @@ void advance_hero_animation(void) {
 }
 
 
-
 typedef int V4q_32b90 __attribute__((mode(TI), aligned(16)));
 typedef struct {
     char pad000[0x80];
@@ -600,74 +601,73 @@ f32 predict_hero_trajectory_intercept_time(f32 a, f32 b, f32 c) {
     f32 x, y, z;
 
     switch ((&g_hero_r)->mode) {
-    case 0:
-        if (c < 0.0f) {
-            FastVecScale(t, &(&g_hero_r)->vE0, a);
-            t[2] -= ((a * a + a) * 0.5f) * b;
-            FastVecAdd(t, t, &(&g_hero_r)->v80);
-            v.q = (&g_hero_r)->v80.q;
-            clip_negative_segment_endpoint_xyz(&v, t);
-            qcopy(&v, &(&g_hero_r)->v80);
-            if (coll_line(&v, t, 0x24, 0, 0) != 0) {
-                if (compute_gravity_relative_vector_inclination_r((f32 *)coll_hit_normal) <= 0.87266463f) {
-                    c = *(f32 *)(coll_hit_normal - 0x18);
+        case 0:
+            if (c < 0.0f) {
+                FastVecScale(t, &(&g_hero_r)->vE0, a);
+                t[2] -= ((a * a + a) * 0.5f) * b;
+                FastVecAdd(t, t, &(&g_hero_r)->v80);
+                v.q = (&g_hero_r)->v80.q;
+                clip_negative_segment_endpoint_xyz(&v, t);
+                qcopy(&v, &(&g_hero_r)->v80);
+                if (coll_line(&v, t, 0x24, 0, 0) != 0) {
+                    if (compute_gravity_relative_vector_inclination_r((f32 *)coll_hit_normal) <= 0.87266463f) {
+                        c = *(f32 *)(coll_hit_normal - 0x18);
+                    }
                 }
             }
-        }
-        if (c > 0.0f) {
-            if (solve_quadratic_equation(&o[0], &o[1], b * -0.5f, (&g_hero_r)->vE0.f[2] - b * -0.5f, (&g_hero_r)->v80.f[2] - c) > 0
-                && o[0] > 0.0f) {
-                return o[0];
+            if (c > 0.0f) {
+                if (solve_quadratic_equation(&o[0], &o[1], b * -0.5f, (&g_hero_r)->vE0.f[2] - b * -0.5f,
+                                             (&g_hero_r)->v80.f[2] - c) > 0 &&
+                    o[0] > 0.0f) {
+                    return o[0];
+                }
             }
-        }
-        break;
-    case 1:
-        qcopy(&v, &(&g_hero_r)->v270);
-        vec_scale_to_length(&v, &v, b);
-        FastVecScale(&v, &v, -1.0f);
-        FastVecScale(t, &(&g_hero_r)->vE0, a);
-        FastVecScale(&t1, &v, ((a * a + a) * 0.5f) * b);
-        FastVecAdd(t, &t1, t);
-        FastVecAdd(t, &(&g_hero_r)->v80, t);
-        v2.q = (&g_hero_r)->v80.q;
-        clip_negative_segment_endpoint_xyz(&v2, t);
-        if (coll_line(&(&g_hero_r)->v80, t, 0x24, 0, 0) != 0) {
-            f32 nb;
-            nb = b * -0.5f;
-            z = gravity_z_r(&(&g_hero_r)->vE0) - nb;
-            x = gravity_z_r(&(&g_hero_r)->v80);
-            y = gravity_z_r(&collision_hit_point);
-            if (solve_quadratic_equation(&o[2], &o[3], nb, z, x - y) > 0
-                && o[2] > 0.0f) {
-                return o[2];
+            break;
+        case 1:
+            qcopy(&v, &(&g_hero_r)->v270);
+            vec_scale_to_length(&v, &v, b);
+            FastVecScale(&v, &v, -1.0f);
+            FastVecScale(t, &(&g_hero_r)->vE0, a);
+            FastVecScale(&t1, &v, ((a * a + a) * 0.5f) * b);
+            FastVecAdd(t, &t1, t);
+            FastVecAdd(t, &(&g_hero_r)->v80, t);
+            v2.q = (&g_hero_r)->v80.q;
+            clip_negative_segment_endpoint_xyz(&v2, t);
+            if (coll_line(&(&g_hero_r)->v80, t, 0x24, 0, 0) != 0) {
+                f32 nb;
+                nb = b * -0.5f;
+                z = gravity_z_r(&(&g_hero_r)->vE0) - nb;
+                x = gravity_z_r(&(&g_hero_r)->v80);
+                y = gravity_z_r(&collision_hit_point);
+                if (solve_quadratic_equation(&o[2], &o[3], nb, z, x - y) > 0 && o[2] > 0.0f) {
+                    return o[2];
+                }
             }
-        }
-        break;
-    case 2:
-        t1.f[2] = 100.0f;
-        t1.f[1] = 100.0f;
-        t1.f[0] = 100.0f;
-        FastVecSub(&v, &(&g_hero_r)->v80, &t1);
-        vec_scale_to_length(&v, &v, b);
-        FastVecScale(&v, &v, -1.0f);
-        FastVecScale(t, &(&g_hero_r)->vE0, a);
-        FastVecScale(&t1, &v, ((a * a + a) * 0.5f) * b);
-        FastVecAdd(t, &t1, t);
-        FastVecAdd(t, &(&g_hero_r)->v80, t);
-        v2.q = (&g_hero_r)->v80.q;
-        clip_negative_segment_endpoint_xyz(&v2, t);
-        if (coll_line(&(&g_hero_r)->v80, t, 0x24, 0, 0) != 0) {
-            f32 nb;
-            nb = b * -0.5f;
-            z = gravity_z_r(&(&g_hero_r)->vE0) - nb;
-            x = gravity_z_r(&(&g_hero_r)->v80);
-            y = gravity_z_r(&collision_hit_point);
-            if (solve_quadratic_equation(&o[4], &o[5], nb, z, x - y) > 0
-                && o[4] > 0.0f) {
-                return o[4];
+            break;
+        case 2:
+            t1.f[2] = 100.0f;
+            t1.f[1] = 100.0f;
+            t1.f[0] = 100.0f;
+            FastVecSub(&v, &(&g_hero_r)->v80, &t1);
+            vec_scale_to_length(&v, &v, b);
+            FastVecScale(&v, &v, -1.0f);
+            FastVecScale(t, &(&g_hero_r)->vE0, a);
+            FastVecScale(&t1, &v, ((a * a + a) * 0.5f) * b);
+            FastVecAdd(t, &t1, t);
+            FastVecAdd(t, &(&g_hero_r)->v80, t);
+            v2.q = (&g_hero_r)->v80.q;
+            clip_negative_segment_endpoint_xyz(&v2, t);
+            if (coll_line(&(&g_hero_r)->v80, t, 0x24, 0, 0) != 0) {
+                f32 nb;
+                nb = b * -0.5f;
+                z = gravity_z_r(&(&g_hero_r)->vE0) - nb;
+                x = gravity_z_r(&(&g_hero_r)->v80);
+                y = gravity_z_r(&collision_hit_point);
+                if (solve_quadratic_equation(&o[4], &o[5], nb, z, x - y) > 0 && o[4] > 0.0f) {
+                    return o[4];
+                }
             }
-        }
-        break;
+            break;
     }
     return a;
 }
@@ -773,8 +773,8 @@ void HeroClearObjectFlags(void) {
         }
     }
     blk4 = g_hero;
-    if ((*(unsigned char *)(blk4 + 0x20AE) != 0 && *(int *)(blk4 + 0x10B8) == 8)
-        || *(unsigned char *)(blk4 + 0x20AF) != 0) {
+    if ((*(unsigned char *)(blk4 + 0x20AE) != 0 && *(int *)(blk4 + 0x10B8) == 8) ||
+        *(unsigned char *)(blk4 + 0x20AF) != 0) {
         Hero *blk5 = (Hero *)g_hero;
 
         obj = ((ObjPair *)blk5->items)[0].a;
@@ -808,7 +808,8 @@ void clear_hero_moby_flag_bit0(void) {
     }
 }
 /* Stores two floats, an index and a byte, and sets the bits of a byte mask in a flag halfword. */
-void configure_hero_point_effect_emission(float a, float b, short c, unsigned char d, unsigned char e, unsigned char f) {
+void configure_hero_point_effect_emission(float a, float b, short c, unsigned char d, unsigned char e,
+                                          unsigned char f) {
     struct Hero *base = (struct Hero *)(hero_globals_base + 0xE1D);
 
     base->items[6].unk38 = c;
@@ -880,9 +881,8 @@ int resolve_hero_gravity_mode(void) {
     int state = base->state.current;
     int r = base->unk308;
 
-    if (state == 0x3F || state == 0x71 || state == 0x70
-        || (base->on_magnet_ground != 0 && gHaveMagneboots != 0 && state == 0
-            && base->air_frames.s < scale_ticks(4))) {
+    if (state == 0x3F || state == 0x71 || state == 0x70 ||
+        (base->on_magnet_ground != 0 && gHaveMagneboots != 0 && state == 0 && base->air_frames.s < scale_ticks(4))) {
         r = 1;
     }
     return r;
@@ -900,21 +900,21 @@ void HeroMoveDownAlongNormal(float *dst, float *src, float h) {
     float d[4] __attribute__((aligned(16)));
 
     switch (base->gravity_mode) {
-    case 0:
-        dst[2] = src[2] - h;
-        break;
-    case 1:
-        vec_scale_to_length(d, &base->ground_normal, -h);
-        FastVecAdd(dst, src, d);
-        break;
-    case 2:
-        if (base->state.current == 0x3E && base->air_frames.s == 0) {
+        case 0:
+            dst[2] = src[2] - h;
+            break;
+        case 1:
             vec_scale_to_length(d, &base->ground_normal, -h);
-        } else {
-            vec_scale_to_length(d, g_hero + 0x290, h);
-        }
-        FastVecAdd(dst, src, d);
-        break;
+            FastVecAdd(dst, src, d);
+            break;
+        case 2:
+            if (base->state.current == 0x3E && base->air_frames.s == 0) {
+                vec_scale_to_length(d, &base->ground_normal, -h);
+            } else {
+                vec_scale_to_length(d, g_hero + 0x290, h);
+            }
+            FastVecAdd(dst, src, d);
+            break;
     }
 }
 extern float FastCos(float);
@@ -971,21 +971,21 @@ void add_hero_forward_offset(float *dst, float *src, float r) {
     float angle;
 
     switch (base->gravity_mode) {
-    case 0:
-        qcopy(dst, src);
-        dst[0] += FastCos(*(float *)(*(char **)&base->moby + 0x48)) * r;
-        dst[1] += FastSin(*(float *)(*(char **)&base->moby + 0x48)) * r;
-        break;
-    case 1:
-    case 2:
-        angle = 0.0f;
-        off[0] = FastCos(angle) * r;
-        off[1] = FastSin(angle) * r;
-        off[2] = angle;
-        euler_to_matrix(m, *(char **)&base->moby + 0x40);
-        transform_vector(off, off, m);
-        FastVecAdd(dst, src, off);
-        break;
+        case 0:
+            qcopy(dst, src);
+            dst[0] += FastCos(*(float *)(*(char **)&base->moby + 0x48)) * r;
+            dst[1] += FastSin(*(float *)(*(char **)&base->moby + 0x48)) * r;
+            break;
+        case 1:
+        case 2:
+            angle = 0.0f;
+            off[0] = FastCos(angle) * r;
+            off[1] = FastSin(angle) * r;
+            off[2] = angle;
+            euler_to_matrix(m, *(char **)&base->moby + 0x40);
+            transform_vector(off, off, m);
+            FastVecAdd(dst, src, off);
+            break;
     }
 }
 
@@ -1000,18 +1000,18 @@ void HeroOffsetAlongViewZ(float *dst, float *src, float dz) {
     float off[4] __attribute__((aligned(16)));
 
     switch (base->gravity_mode) {
-    case 0:
-        qcopy(dst, src);
-        dst[2] += dz;
-        break;
-    case 1:
-    case 2:
-        clear_u64_value(off);
-        off[2] = dz;
-        euler_to_matrix(m, *(char **)&base->moby + 0x40);
-        transform_vector(off, off, m);
-        FastVecAdd(dst, src, off);
-        break;
+        case 0:
+            qcopy(dst, src);
+            dst[2] += dz;
+            break;
+        case 1:
+        case 2:
+            clear_u64_value(off);
+            off[2] = dz;
+            euler_to_matrix(m, *(char **)&base->moby + 0x40);
+            transform_vector(off, off, m);
+            FastVecAdd(dst, src, off);
+            break;
     }
 }
 extern float FastVecDot(void *, void *);
@@ -1028,19 +1028,19 @@ void gravity_flatten(float *dst, float *src) {
     float n[4] __attribute__((aligned(16)));
 
     switch (base->gravity_mode) {
-    case 0:
-        qcopy(dst, src);
-        dst[2] = 0.0f;
-        break;
-    case 1:
-        vec_scale_to_length(n, &base->ground_normal, 1.0f);
-        FastVecScale(n, n, FastVecDot(n, src));
-        FastVecSub(dst, src, n);
-        break;
-    case 2:
-        FastVecScale(n, &base->gravity_dir, FastVecDot(&base->gravity_dir, src));
-        FastVecSub(dst, src, n);
-        break;
+        case 0:
+            qcopy(dst, src);
+            dst[2] = 0.0f;
+            break;
+        case 1:
+            vec_scale_to_length(n, &base->ground_normal, 1.0f);
+            FastVecScale(n, n, FastVecDot(n, src));
+            FastVecSub(dst, src, n);
+            break;
+        case 2:
+            FastVecScale(n, &base->gravity_dir, FastVecDot(&base->gravity_dir, src));
+            FastVecSub(dst, src, n);
+            break;
     }
 }
 extern float vec_length_xy(void *);
@@ -1058,14 +1058,14 @@ float gravity_length_xy(float *v) {
     float out[4] __attribute__((aligned(16)));
 
     switch (base->gravity_mode) {
-    case 0:
-        return vec_length_xy(v);
-    case 1:
-    case 2:
-        euler_to_matrix(m, *(char **)&base->moby + 0x40);
-        matrix_from_basis_rows(inv, m);
-        transform_vector(out, v, inv);
-        return vec_length_xy(out);
+        case 0:
+            return vec_length_xy(v);
+        case 1:
+        case 2:
+            euler_to_matrix(m, *(char **)&base->moby + 0x40);
+            matrix_from_basis_rows(inv, m);
+            transform_vector(out, v, inv);
+            return vec_length_xy(out);
     }
     return 0.0f;
 }
@@ -1080,15 +1080,15 @@ float gravity_z(float *v) {
     float axis[4] __attribute__((aligned(16)));
 
     switch (base->gravity_mode) {
-    case 0:
-        return v[2];
-    case 1:
-    case 2:
-        clear_u64_value(axis);
-        axis[2] = 1.0f;
-        euler_to_matrix(m, *(char **)&base->moby + 0x40);
-        transform_vector(axis, axis, m);
-        return FastVecDot(axis, v);
+        case 0:
+            return v[2];
+        case 1:
+        case 2:
+            clear_u64_value(axis);
+            axis[2] = 1.0f;
+            euler_to_matrix(m, *(char **)&base->moby + 0x40);
+            transform_vector(axis, axis, m);
+            return FastVecDot(axis, v);
     }
     return 0.0f;
 }
@@ -1103,16 +1103,16 @@ void gravity_set_z(float *dst, float *src, float z) {
     Hero *base = (Hero *)g_hero;
 
     switch (base->gravity_mode) {
-    case 0:
-        qcopy(dst, src);
-        dst[2] = z;
-        break;
-    case 1:
-    case 2:
-        transform_vector(dst, src, base->inv_rot_matrix);
-        dst[2] = z;
-        transform_vector(dst, dst, base->rot_matrix);
-        break;
+        case 0:
+            qcopy(dst, src);
+            dst[2] = z;
+            break;
+        case 1:
+        case 2:
+            transform_vector(dst, src, base->inv_rot_matrix);
+            dst[2] = z;
+            transform_vector(dst, dst, base->rot_matrix);
+            break;
     }
 }
 extern void vec_set_length_xy(float *, float *, float);
@@ -1125,15 +1125,15 @@ void set_gravity_relative_vector_length_xy(float *dst, float *src, float z) {
     Hero *base = (Hero *)g_hero;
 
     switch (base->gravity_mode) {
-    case 0:
-        vec_set_length_xy(dst, src, z);
-        break;
-    case 1:
-    case 2:
-        transform_vector(dst, src, base->inv_rot_matrix);
-        vec_set_length_xy(dst, dst, z);
-        transform_vector(dst, dst, base->rot_matrix);
-        break;
+        case 0:
+            vec_set_length_xy(dst, src, z);
+            break;
+        case 1:
+        case 2:
+            transform_vector(dst, src, base->inv_rot_matrix);
+            vec_set_length_xy(dst, dst, z);
+            transform_vector(dst, dst, base->rot_matrix);
+            break;
     }
 }
 extern float IntToFloat(int);
@@ -1152,21 +1152,21 @@ float predict_hero_trajectory_z(float *pos, float *vel, int *steps, float step) 
     float r;
 
     switch (((Hero *)g_hero)->gravity_mode) {
-    case 0:
-        n = truncate_float_to_s32(vel[2] / step);
-        a = IntToFloat(n);
-        r = pos[2] + vel[2] * a - IntToFloat((n * n + n) >> 1) * step;
-        if (steps != 0) {
-            *steps = n;
-        }
-        return r;
-    case 1:
-    case 2:
-        k = truncate_float_to_s32(gravity_z(vel) / step);
-        if (steps != 0) {
-            *steps = k;
-        }
-        return pos[2] + vel[2] * 0.5f;
+        case 0:
+            n = truncate_float_to_s32(vel[2] / step);
+            a = IntToFloat(n);
+            r = pos[2] + vel[2] * a - IntToFloat((n * n + n) >> 1) * step;
+            if (steps != 0) {
+                *steps = n;
+            }
+            return r;
+        case 1:
+        case 2:
+            k = truncate_float_to_s32(gravity_z(vel) / step);
+            if (steps != 0) {
+                *steps = k;
+            }
+            return pos[2] + vel[2] * 0.5f;
     }
     return 0.0f;
 }
@@ -1183,17 +1183,21 @@ float compute_gravity_relative_vector_inclination(float *v) {
     float tmp[4] __attribute__((aligned(16)));
 
     switch (base->gravity_mode) {
-    case 0:
-        return fast_atan2(v[2], vec_length_xy(v));
-    case 1:
-    case 2:
-        qcopy(tmp, v);
-        transform_vector(tmp, tmp, base->inv_rot_matrix);
-        return fast_atan2(tmp[2], vec_length_xy(tmp));
+        case 0:
+            return fast_atan2(v[2], vec_length_xy(v));
+        case 1:
+        case 2:
+            qcopy(tmp, v);
+            transform_vector(tmp, tmp, base->inv_rot_matrix);
+            return fast_atan2(tmp[2], vec_length_xy(tmp));
     }
     return 0.0f;
 }
-typedef struct { u8 pad[0xE]; u16 max; u8 pad2[8]; } AmmoInfo;
+typedef struct {
+    u8 pad[0xE];
+    u16 max;
+    u8 pad2[8];
+} AmmoInfo;
 extern AmmoInfo item_price_table[];
 extern int g_hero_equipped_item_id;
 extern int weapon_ammo_counts[];
@@ -1201,10 +1205,13 @@ extern int weapon_ammo_used[];
 /* takes amount from the weapon's ammo (the current weapon for -1): 1 when taken or the weapon has no ammo limit, 0 when there is too little */
 int use_ammo(int id, int amount) {
     AmmoInfo *e;
-    if (id == -1) id = g_hero_equipped_item_id;
+    if (id == -1)
+        id = g_hero_equipped_item_id;
     e = &item_price_table[id];
-    if (e->max == 0) return 1;
-    if (weapon_ammo_counts[id] < amount) return 0;
+    if (e->max == 0)
+        return 1;
+    if (weapon_ammo_counts[id] < amount)
+        return 0;
     weapon_ammo_counts[id] -= amount;
     weapon_ammo_used[id] += amount;
     return 1;
@@ -1231,9 +1238,11 @@ int add_ammo(int a, int b) {
 /* the weapon's ammo (the current weapon for -1), or 1 when it has no ammo limit */
 int get_ammo(int id) {
     AmmoInfo *e;
-    if (id == -1) id = g_hero_equipped_item_id;
+    if (id == -1)
+        id = g_hero_equipped_item_id;
     e = &item_price_table[id];
-    if (e->max == 0) return 1;
+    if (e->max == 0)
+        return 1;
     return weapon_ammo_counts[id];
 }
 extern void HeroEnterMoveState(int, int);
@@ -1260,11 +1269,11 @@ extern int hero_current_state;
 /* 1 when the word at 0x1414D4 is 101 or 102, 2 when it is 103, else 0 */
 int get_hero_target_pose_status(void) {
     switch (hero_current_state) {
-    case 101:
-    case 102:
-        return 1;
-    case 103:
-        return 2;
+        case 101:
+        case 102:
+            return 1;
+        case 103:
+            return 2;
     }
     return 0;
 }
@@ -1365,32 +1374,47 @@ void update_hero_attachment(void) {
     if (plat == 0) {
         return;
     }
-    if (((((Hero *)g_hero)->state.control_mode == 0 || ((Hero *)g_hero)->state.control_mode == 12) && FastVecLength(&((Hero *)g_hero)->motion.momentum) == 0.0f && ((Hero *)g_hero)->air_frames.s == 0 && ((Hero *)g_hero)->unk1F6 == 0)
-        || (unsigned int)(((Hero *)g_hero)->state.current - 0x18) < 2) {
+    if (((((Hero *)g_hero)->state.control_mode == 0 || ((Hero *)g_hero)->state.control_mode == 12) &&
+         FastVecLength(&((Hero *)g_hero)->motion.momentum) == 0.0f && ((Hero *)g_hero)->air_frames.s == 0 &&
+         ((Hero *)g_hero)->unk1F6 == 0) ||
+        (unsigned int)(((Hero *)g_hero)->state.current - 0x18) < 2) {
         if ((((Hero *)g_hero)->attach_flags ^ 1) & 1) {
             if ((unsigned int)(((Hero *)g_hero)->state.current - 0x18) < 2) {
                 qcopy(&v20, &((Hero *)g_hero)->ledge_hang_pos);
                 v20.x += FastCos(FastAddRots(((Hero *)g_hero)->ledge_normal_yaw, 3.1415925f)) * 0.45f;
                 v20.y += FastSin(FastAddRots(((Hero *)g_hero)->ledge_normal_yaw, 3.1415925f)) * 0.45f;
                 v20.z -= -1.43f;
-                RotateWithMoby((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby, &((Hero *)g_hero)->ledge_hang_pos, &((Hero *)g_hero)->motion.rot, &v30, &v40);
-                RotateWithMoby((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby, &v20, &((Hero *)g_hero)->motion.rot, &v20, &v40);
-                convert_pose_to_reference_local((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby, &((Hero *)g_hero)->ledge_hang_pos, &((Hero *)g_hero)->motion.rot, &((Hero *)g_hero)->platform_local_pos, &v40);
-                convert_pose_to_reference_local((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby, &v20, &((Hero *)g_hero)->motion.rot, &((Hero *)g_hero)->attach_anchor_alt_pos, &v40);
+                RotateWithMoby((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby,
+                               &((Hero *)g_hero)->ledge_hang_pos, &((Hero *)g_hero)->motion.rot, &v30, &v40);
+                RotateWithMoby((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby, &v20,
+                               &((Hero *)g_hero)->motion.rot, &v20, &v40);
+                convert_pose_to_reference_local((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby,
+                                                &((Hero *)g_hero)->ledge_hang_pos, &((Hero *)g_hero)->motion.rot,
+                                                &((Hero *)g_hero)->platform_local_pos, &v40);
+                convert_pose_to_reference_local((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby, &v20,
+                                                &((Hero *)g_hero)->motion.rot, &((Hero *)g_hero)->attach_anchor_alt_pos,
+                                                &v40);
             } else if (plat->i3C & 4) {
-                convert_pose_to_reference_local((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby, &((Hero *)g_hero)->motion.pos, &((Hero *)g_hero)->motion.rot, &((Hero *)g_hero)->platform_local_pos, &v20);
+                convert_pose_to_reference_local((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby,
+                                                &((Hero *)g_hero)->motion.pos, &((Hero *)g_hero)->motion.rot,
+                                                &((Hero *)g_hero)->platform_local_pos, &v20);
             } else {
-                RotateWithMoby((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby, &((Hero *)g_hero)->motion.pos, &((Hero *)g_hero)->motion.rot, &v30, &v40);
-                convert_pose_to_reference_local((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby, &v30, &v40, &((Hero *)g_hero)->platform_local_pos, &v20);
+                RotateWithMoby((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby,
+                               &((Hero *)g_hero)->motion.pos, &((Hero *)g_hero)->motion.rot, &v30, &v40);
+                convert_pose_to_reference_local((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby, &v30,
+                                                &v40, &((Hero *)g_hero)->platform_local_pos, &v20);
             }
             ((Hero *)g_hero)->attach_flags |= 1;
         }
     } else {
         ((Hero *)g_hero)->attach_flags &= ~1;
     }
-    if ((((Hero *)g_hero)->state.control_mode == 0 || ((Hero *)g_hero)->state.control_mode == 12) && ((Hero *)g_hero)->motion.yaw_rate == 0.0f && ((Hero *)g_hero)->air_frames.s == 0) {
+    if ((((Hero *)g_hero)->state.control_mode == 0 || ((Hero *)g_hero)->state.control_mode == 12) &&
+        ((Hero *)g_hero)->motion.yaw_rate == 0.0f && ((Hero *)g_hero)->air_frames.s == 0) {
         if (!(((Hero *)g_hero)->attach_flags & 2)) {
-            convert_pose_to_reference_local((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby, &((Hero *)g_hero)->motion.pos, &((Hero *)g_hero)->motion.rot, &v20, &((Hero *)g_hero)->attach_anchor_rot);
+            convert_pose_to_reference_local((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby,
+                                            &((Hero *)g_hero)->motion.pos, &((Hero *)g_hero)->motion.rot, &v20,
+                                            &((Hero *)g_hero)->attach_anchor_rot);
             ((Hero *)g_hero)->attach_flags |= 2;
         }
     } else {
@@ -1414,15 +1438,22 @@ void update_hero_attachment(void) {
         }
         qcopy(&v30, &v20);
     } else if (mode == 1) {
-        RotateWithMoby((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby, &((Hero *)g_hero)->motion.pos, &((Hero *)g_hero)->motion.rot, &v0, &v10);
+        RotateWithMoby((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby, &((Hero *)g_hero)->motion.pos,
+                       &((Hero *)g_hero)->motion.rot, &v0, &v10);
         ((Hero *)g_hero)->motion.rot.f[2] = v10.z;
         FastVecSub(&v20, &v0, &((Hero *)g_hero)->motion.pos);
         qcopy((Vec4A *)(g_hero + 0x350), &v20);
     } else if (mode == 2) {
-        RotateWithMoby((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby, &((Hero *)g_hero)->motion.pos, &((Hero *)g_hero)->motion.rot, &v40, &v50);
-        transform_attachment_pose((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby, &((Hero *)g_hero)->platform_local_pos, &((Hero *)g_hero)->attach_anchor_rot, &v60, &v70);
-        transform_attachment_pose((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby, &((Hero *)g_hero)->attach_anchor_alt_pos, &((Hero *)g_hero)->attach_anchor_rot, &v80, &v90);
-        if ((((Hero *)g_hero)->state.current == 1 || ((Hero *)g_hero)->state.current == 0x1E) && ((Hero *)g_hero)->unk20A5 != 0) {
+        RotateWithMoby((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby, &((Hero *)g_hero)->motion.pos,
+                       &((Hero *)g_hero)->motion.rot, &v40, &v50);
+        transform_attachment_pose((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby,
+                                  &((Hero *)g_hero)->platform_local_pos, &((Hero *)g_hero)->attach_anchor_rot, &v60,
+                                  &v70);
+        transform_attachment_pose((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby,
+                                  &((Hero *)g_hero)->attach_anchor_alt_pos, &((Hero *)g_hero)->attach_anchor_rot, &v80,
+                                  &v90);
+        if ((((Hero *)g_hero)->state.current == 1 || ((Hero *)g_hero)->state.current == 0x1E) &&
+            ((Hero *)g_hero)->unk20A5 != 0) {
             ((Hero *)g_hero)->motion.rot.f[2] = v50.z;
         } else if (((Hero *)g_hero)->attach_flags & 2) {
             ((Hero *)g_hero)->motion.rot.f[2] = v70.z;
@@ -1475,14 +1506,22 @@ extern int resolve_point_path_segment_clearance(int, void *, void *, float);
 void Hero_ConstrainToPath(void) {
     Hero *base = (Hero *)g_hero;
 
-    if (resolve_point_path_segment_clearance(base->path_constrain_pending, &base->motion, &base->motion, base->capsule_radius) != 0) {
+    if (resolve_point_path_segment_clearance(base->path_constrain_pending, &base->motion, &base->motion,
+                                             base->capsule_radius) != 0) {
         base->unk1F6 = 4;
     }
 }
 typedef struct {
-    char p0[0x11D0]; char *m11D0, *m11D4; char p11D8[0x1220 - 0x11D8]; char *m1220;
-    char p1224[0x1D90 - 0x1224]; u8 b1D90, b1D91; char p1D92[0x1DA0 - 0x1D92]; char v1DA0[0x10];
-    char p1DB0[0x22E8 - 0x1DB0]; f32 f22E8, f22EC, f22F0;
+    char p0[0x11D0];
+    char *m11D0, *m11D4;
+    char p11D8[0x1220 - 0x11D8];
+    char *m1220;
+    char p1224[0x1D90 - 0x1224];
+    u8 b1D90, b1D91;
+    char p1D92[0x1DA0 - 0x1D92];
+    char v1DA0[0x10];
+    char p1DB0[0x22E8 - 0x1DB0];
+    f32 f22E8, f22EC, f22F0;
 } P_234808;
 extern P_234808 g_hero_r2 __asm__("D_0013F450");
 extern s32 cinematic_mode MACRO_ADDR;
@@ -1501,8 +1540,10 @@ void animate_hero_slot4_and_slot5_visuals(void) {
     f32 t;
     m0 = g_hero_r2.m11D0;
     if (m0) {
-        if (cinematic_mode == 2) g_hero_r2.f22E8 = FastAddRots(g_hero_r2.f22E8, (*(f32 *)&g_frame_time) * 1.2217305f);
-        else g_hero_r2.f22E8 = FastAddRots(g_hero_r2.f22E8, (*(f32 *)&g_frame_time) * 2.0943952f);
+        if (cinematic_mode == 2)
+            g_hero_r2.f22E8 = FastAddRots(g_hero_r2.f22E8, (*(f32 *)&g_frame_time) * 1.2217305f);
+        else
+            g_hero_r2.f22E8 = FastAddRots(g_hero_r2.f22E8, (*(f32 *)&g_frame_time) * 2.0943952f);
         *(s32 *)(m0 + 0x90) = FastTweenColor(0xD2D2D2, 0x285050, FastSin(g_hero_r2.f22E8) * 0.5f + 0.5f);
     }
     m1 = g_hero_r2.m11D4;
@@ -1511,7 +1552,8 @@ void animate_hero_slot4_and_slot5_visuals(void) {
             f32 v;
             g_hero_r2.f22EC = v = FastAddRots(g_hero_r2.f22EC, (*(f32 *)&g_frame_time) * 2.9670596f);
             b = 0x1EE628;
-            if (0.0f < v && v < 1.9198622f) b = 0x1E1ED2;
+            if (0.0f < v && v < 1.9198622f)
+                b = 0x1E1ED2;
             *(s32 *)(m1 + 0x90) = FastTweenColor(*(s32 *)(m1 + 0x90), b, 0.07f);
         } else {
             f32 v;
@@ -1521,12 +1563,16 @@ void animate_hero_slot4_and_slot5_visuals(void) {
     }
     m2 = g_hero_r2.m1220;
     if (m2) {
-        if (cinematic_mode == 2) g_hero_r2.f22F0 = FastAddRots(g_hero_r2.f22EC, (*(f32 *)&g_frame_time) * 1.3962634f);
-        else g_hero_r2.f22F0 = FastAddRots(g_hero_r2.f22EC, (*(f32 *)&g_frame_time) * 1.9198622f);
-            *(s32 *)(m2 + 0x90) = FastTweenColor(0xAAC8AA, 0x965050, FastSin(g_hero_r2.f22F0) * 0.5f + 0.5f);
+        if (cinematic_mode == 2)
+            g_hero_r2.f22F0 = FastAddRots(g_hero_r2.f22EC, (*(f32 *)&g_frame_time) * 1.3962634f);
+        else
+            g_hero_r2.f22F0 = FastAddRots(g_hero_r2.f22EC, (*(f32 *)&g_frame_time) * 1.9198622f);
+        *(s32 *)(m2 + 0x90) = FastTweenColor(0xAAC8AA, 0x965050, FastSin(g_hero_r2.f22F0) * 0.5f + 0.5f);
         if (m2) {
-            if (!g_hero_r2.b1D91) AttachManipulator(m2, 0, &g_hero_r2.b1D90);
-            else axis_rotation_2d48(g_hero_r2.v1DA0, 0, g_hero_r2.f22F0);
+            if (!g_hero_r2.b1D91)
+                AttachManipulator(m2, 0, &g_hero_r2.b1D90);
+            else
+                axis_rotation_2d48(g_hero_r2.v1DA0, 0, g_hero_r2.f22F0);
         }
     }
 }
@@ -1585,7 +1631,8 @@ void HeroAttachManipulators(char *obj) {
     int c1, c0;
     float t;
     if (cinematic_mode == 6) {
-        if (1.33f < f20) f20 = 1.33f;
+        if (1.33f < f20)
+            f20 = 1.33f;
     }
     s0 = hero_scale_manipulator;
     if (*(unsigned char *)(s0 + 1) == 0) {
@@ -1594,9 +1641,10 @@ void HeroAttachManipulators(char *obj) {
         *(float *)(s0 + 0x24) = f20;
         *(float *)(s0 + 0x28) = f20;
     }
-    if (g_current_level_index == 2 || g_current_level_index == 9 || g_current_level_index == 0xB || g_current_level_index == 0xD) {
+    if (g_current_level_index == 2 || g_current_level_index == 9 || g_current_level_index == 0xB ||
+        g_current_level_index == 0xD) {
         int i;
-                char *qq;
+        char *qq;
         for (i = 0; qq = cutscene_state, i < *(short *)(qq + 0x44); i++) {
             char *m = ((char **)(cutscene_state + 0x178))[i];
             if (m != 0) {
@@ -1693,7 +1741,9 @@ extern int queue_animation_update_p(int, int, void *, void *, void *, void *, in
    callbacks and the data at D_001416F8. func_001FFB38 is declared with
    int parameters in hud.c; the alias passes pointers. */
 void show_health_hud(void) {
-    queue_animation_update_p(1, 0x7535, initialize_hud_element_with_counters, update_health_hud_animation_and_visibility, draw_health_hud_panel, health_hud_bank_data, 8);
+    queue_animation_update_p(1, 0x7535, initialize_hud_element_with_counters,
+                             update_health_hud_animation_and_visibility, draw_health_hud_panel, health_hud_bank_data,
+                             8);
 }
 
 extern char g_hero[];

@@ -7,8 +7,12 @@
 #include "moby.h"
 
 typedef int w128 __attribute__((mode(TI)));
-typedef struct { int v[6]; } WBJoints;
-typedef struct { float v[5]; } WBAngles;
+typedef struct {
+    int v[6];
+} WBJoints;
+typedef struct {
+    float v[5];
+} WBAngles;
 
 typedef struct WBData {
     /* 0x000 */ char pad000[0x20];
@@ -47,8 +51,8 @@ typedef struct WBData {
     /* 0x121 */ unsigned char f121;
     /* 0x122 */ char pad122[0xE];
     /* 0x130 */ char f130[0x30];
-    /* 0x160 */ char f160[0x70];           /* leg rig, passed to initialize_leg_rig */
-    /* 0x1D0 */ int anim_ids[13];          /* anim ids copied from the class table */
+    /* 0x160 */ char f160[0x70]; /* leg rig, passed to initialize_leg_rig */
+    /* 0x1D0 */ int anim_ids[13]; /* anim ids copied from the class table */
     /* 0x204 */ char pad204[0xC];
     /* 0x210 */ unsigned char unk_210;
     /* 0x211 */ unsigned char unk_211;
@@ -97,17 +101,17 @@ typedef struct WBData {
 
 /* Eudora leaf: drifts on the wind, bounces off the ground and fades out after a random time. */
 struct LeafVars {
-    Vec4A vel;                      /* 0x00 */
-    Vec4A drift;                    /* 0x10: wind drift, z = lift */
-    f32 spin_x;                     /* 0x20 */
-    f32 spin_y;                     /* 0x24 */
-    f32 spin_z;                     /* 0x28 */
+    Vec4A vel; /* 0x00 */
+    Vec4A drift; /* 0x10: wind drift, z = lift */
+    f32 spin_x; /* 0x20 */
+    f32 spin_y; /* 0x24 */
+    f32 spin_z; /* 0x28 */
     u8 pad_2C[0x4];
-    Vec4A home_pos;                 /* 0x30: where it respawns */
-    s32 life;                       /* 0x40 */
-    s32 timer;                      /* 0x44 */
+    Vec4A home_pos; /* 0x30: where it respawns */
+    s32 life; /* 0x40 */
+    s32 timer; /* 0x44 */
     u8 pad_48[0x4];
-    f32 base_scale;                 /* 0x4C */
+    f32 base_scale; /* 0x4C */
 };
 
 /* NON_MATCHING func_L04_002CB800 -- src/overlays/l04_eudora/vendor_002CB800.c
@@ -129,325 +133,463 @@ extern char *eudora_mobys MACRO_ADDR;
 extern void Moby_PlaySound(int, int, int);
 
 typedef int VehicleWide_2CB800 __attribute__((mode(TI)));
-typedef union { VehicleWide_2CB800 quad; float f[4]; } VehicleVec_2CB800;
-typedef union { s32 id; u8 token; } VehicleTrigger_2CB800;
+typedef union {
+    VehicleWide_2CB800 quad;
+    float f[4];
+} VehicleVec_2CB800;
+typedef union {
+    s32 id;
+    u8 token;
+} VehicleTrigger_2CB800;
 typedef struct {
     char pad0[0x60];
-    char motion[0x14]; s32 path_id;
-    char pad78[4]; float turn_velocity;
-    char pad80[0x7C]; float speed;
-    char pad100[0x1C]; s32 moving_timer;
-    char pad120[0x18]; float start_speed;
-    char pad13C[4]; float angle0,angle1;
-    u8 selected, phase; s16 phase_timer;
-    float start_angle; VehicleTrigger_2CB800 paths[4];
+    char motion[0x14];
+    s32 path_id;
+    char pad78[4];
+    float turn_velocity;
+    char pad80[0x7C];
+    float speed;
+    char pad100[0x1C];
+    s32 moving_timer;
+    char pad120[0x18];
+    float start_speed;
+    char pad13C[4];
+    float angle0, angle1;
+    u8 selected, phase;
+    s16 phase_timer;
+    float start_angle;
+    VehicleTrigger_2CB800 paths[4];
     VehicleVec_2CB800 start_pos;
     s32 visibility_timer, visibility_active, shield, partner;
-    char matrix0[0x40],matrix1[0x40];
+    char matrix0[0x40], matrix1[0x40];
 } VehicleData_2CB800;
 typedef struct {
-    char pad0[0x10]; VehicleVec_2CB800 pos;
-    u8 state; char pad21[3]; char *metadata;
-    char pad28[8]; u8 alpha; char pad31; s16 shield; u16 flags;
-    char pad36[0xA]; VehicleVec_2CB800 rot;
-    char pad50[0x28]; VehicleData_2CB800 *data;
-    char pad7C[0x18]; s32 sort;
-    char pad98[0xC]; u8 draw_alpha; char padA5; s16 cls;
-    char padA8[0x18]; char matrix[0x40];
+    char pad0[0x10];
+    VehicleVec_2CB800 pos;
+    u8 state;
+    char pad21[3];
+    char *metadata;
+    char pad28[8];
+    u8 alpha;
+    char pad31;
+    s16 shield;
+    u16 flags;
+    char pad36[0xA];
+    VehicleVec_2CB800 rot;
+    char pad50[0x28];
+    VehicleData_2CB800 *data;
+    char pad7C[0x18];
+    s32 sort;
+    char pad98[0xC];
+    u8 draw_alpha;
+    char padA5;
+    s16 cls;
+    char padA8[0x18];
+    char matrix[0x40];
 } VehicleMoby_2CB800;
-typedef struct { char pad[0x30]; VehicleVec_2CB800 pos; char pad40[0x38]; float angle; char pad7C[4]; } VehiclePath_2CB800;
-typedef struct { VehicleVec_2CB800 vec; VehicleMoby_2CB800 *owner; s32 flags, unused; float strength; s32 result; } VehicleQuery_2CB800;
+typedef struct {
+    char pad[0x30];
+    VehicleVec_2CB800 pos;
+    char pad40[0x38];
+    float angle;
+    char pad7C[4];
+} VehiclePath_2CB800;
+typedef struct {
+    VehicleVec_2CB800 vec;
+    VehicleMoby_2CB800 *owner;
+    s32 flags, unused;
+    float strength;
+    s32 result;
+} VehicleQuery_2CB800;
 extern s32 *eudora_paths[];
 extern VehiclePath_2CB800 *eudora_scene_points MACRO_ADDR;
 extern char eudora_snow_plow_no_path_msg[];
 extern s32 eudora_skill_snow_plow_hits MACRO_ADDR;
-typedef struct { char pad[6]; u8 flag; } VehicleWeapon_2CB800;
+typedef struct {
+    char pad[6];
+    u8 flag;
+} VehicleWeapon_2CB800;
 extern VehicleWeapon_2CB800 gSkillPoints;
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
 extern float eudora_zero_vector[] MACRO_ADDR;
-typedef struct { char pad[0x140]; float x,y,z; char pad14C[12]; float angle; } VehicleCamera_2CB800;
+typedef struct {
+    char pad[0x140];
+    float x, y, z;
+    char pad14C[12];
+    float angle;
+} VehicleCamera_2CB800;
 extern VehicleCamera_2CB800 eudora_camera;
-extern float FastVecDist(void *,void *);
+extern float FastVecDist(void *, void *);
 extern s32 truncate_float_to_s32(float);
 extern s32 STUB_printf();
 extern void gunship_follow_path(VehicleMoby_2CB800 *);
 extern void FastDecTimer(void *);
-extern s32 is_point_inside_clip_volume(void *,s32);
-extern void MobySpringTurn(void *,void *,float,float,float,float);
-extern float vec_distance_xy(void *,void *);
-extern float FastDiffRots(float,float);
+extern s32 is_point_inside_clip_volume(void *, s32);
+extern void MobySpringTurn(void *, void *, float, float, float, float);
+extern float vec_distance_xy(void *, void *);
+extern float FastDiffRots(float, float);
 extern s32 scale_ticks(s32);
-extern void FastVecSub(void *,void *,void *);
-extern void vec_scale_to_length(void *,void *,float);
-extern void FastVecAdd(void *,void *,void *);
+extern void FastVecSub(void *, void *, void *);
+extern void vec_scale_to_length(void *, void *, float);
+extern void FastVecAdd(void *, void *, void *);
 extern float FastVecLength(void *);
-extern void AttachManipulator(void *,s32,void *);
-extern float FastAddRots(float,float);
-extern void axis_rotation_2d48(void *,s32,float);
-extern void matrix_mul_vec3(void *,void *,void *);
+extern void AttachManipulator(void *, s32, void *);
+extern float FastAddRots(float, float);
+extern void axis_rotation_2d48(void *, s32, float);
+extern void matrix_mul_vec3(void *, void *, void *);
 extern void MobyAnimAdvance(void *);
 extern void moby_build_matrix(void *);
 extern void moby_anim_sphere_lerp(void *);
-extern char *MobyGetHitMessage(void *,s32,s32);
-extern s32 PlayBankSound(s32,s32,s32);
-extern void ShowBanner(s32,s32);
+extern char *MobyGetHitMessage(void *, s32, s32);
+extern s32 PlayBankSound(s32, s32, s32);
+extern void ShowBanner(s32, s32);
 extern void clear_u64_value(void *);
-extern void coll_sphere_mobys(void *,float,s32,void *,void *);
-extern void spawn_explosion(void *,void *,void *,float,float,s32,s32,s32,float,float,float,float,s32,float,s32,s32,s32,s32);
-extern void Moby_GetJointWorldPos(void *,s32,void *);
-extern void SpawnExplosionFx(void *,void *,s32,float,float);
-extern void FastVecScale(void *,void *,float);
-extern void SpawnBreakFragment(void *,s32,void *,void *,s32,s32,float,void *,void *,void *);
+extern void coll_sphere_mobys(void *, float, s32, void *, void *);
+extern void spawn_explosion(void *, void *, void *, float, float, s32, s32, s32, float, float, float, float, s32, float,
+                            s32, s32, s32, s32);
+extern void Moby_GetJointWorldPos(void *, s32, void *);
+extern void SpawnExplosionFx(void *, void *, s32, float, float);
+extern void FastVecScale(void *, void *, float);
+extern void SpawnBreakFragment(void *, s32, void *, void *, s32, s32, float, void *, void *, void *);
 extern s32 fast_dec_timer(s32 *);
-extern float fast_atan2(float,float);
+extern float fast_atan2(float, float);
 
 typedef float VehicleArr_2CB800[4] __attribute__((aligned(16)));
-typedef struct { char pad[0x14]; s32 path_id; } VehicleSub_2CB800;
+typedef struct {
+    char pad[0x14];
+    s32 path_id;
+} VehicleSub_2CB800;
 
 /* Moves generic vehicle mobys along triggered paths and updates their attached parts, damage effects and visibility. */
 void snow_plow_update(VehicleMoby_2CB800 *m) {
     VehicleVec_2CB800 old, delta;
-    VehicleData_2CB800 *d=m->data;
-    u8 state=m->state;
+    VehicleData_2CB800 *d = m->data;
+    u8 state = m->state;
     VehicleSub_2CB800 *sub;
     VehicleTrigger_2CB800 *trigger;
-    float zero; s32 izero;
-    qcopy(&old,&m->pos);
-    if (!d) return;
-    sub=(VehicleSub_2CB800 *)d->motion;
-    if (state==0) {
-        if (sub->path_id!=-1) {
-            s32 *path=eudora_paths[sub->path_id];
-            if (FastVecDist((char *)path+0x10,(char *)path+(*path<<4))<0.5f) --*path;
+    float zero;
+    s32 izero;
+    qcopy(&old, &m->pos);
+    if (!d)
+        return;
+    sub = (VehicleSub_2CB800 *)d->motion;
+    if (state == 0) {
+        if (sub->path_id != -1) {
+            s32 *path = eudora_paths[sub->path_id];
+            if (FastVecDist((char *)path + 0x10, (char *)path + (*path << 4)) < 0.5f)
+                --*path;
         } else {
-            STUB_printf(eudora_snow_plow_no_path_msg,m->cls,truncate_float_to_s32((float)((s32)((char *)m-(char *)MOBYS)>>8)));
+            STUB_printf(eudora_snow_plow_no_path_msg, m->cls,
+                        truncate_float_to_s32((float)((s32)((char *)m - (char *)MOBYS) >> 8)));
         }
-        m->shield=0x7F;
-        m->alpha=0xFF;
-        d->start_speed=d->speed;
-        d->shield=m->shield;
+        m->shield = 0x7F;
+        m->alpha = 0xFF;
+        d->start_speed = d->speed;
+        d->shield = m->shield;
     }
-    izero=0; zero=*(float *)&izero;
+    izero = 0;
+    zero = *(float *)&izero;
     gunship_follow_path(m);
-    if (m->cls!=0x1E4) {
+    if (m->cls != 0x1E4) {
         FastDecTimer(&d->phase_timer);
         switch (d->phase) {
-        case 0: {
-            s32 i;
-            if (d->speed<d->start_speed) {
-                d->speed+=g_frame_time_sq*20.0f;
-                if (d->speed>d->start_speed) d->speed=d->start_speed;
-            }
-            for (i=0,trigger=d->paths;i<4;i++,trigger++) {
-                if (d->phase_timer==0 && d->paths[i].id!=-1 && is_point_inside_clip_volume(&m->pos,d->paths[i].id)) {
-                    qcopy(&d->start_pos,&m->pos);
-                    d->selected=trigger->token;
-                    d->phase=1;
-                    d->start_angle=m->rot.f[2];
-                    d->turn_velocity=0;
-                    m->state=3;
-                    d->moving_timer=scale_ticks(0x8CA0);
-                    break;
+            case 0: {
+                s32 i;
+                if (d->speed < d->start_speed) {
+                    d->speed += g_frame_time_sq * 20.0f;
+                    if (d->speed > d->start_speed)
+                        d->speed = d->start_speed;
                 }
+                for (i = 0, trigger = d->paths; i < 4; i++, trigger++) {
+                    if (d->phase_timer == 0 && d->paths[i].id != -1 &&
+                        is_point_inside_clip_volume(&m->pos, d->paths[i].id)) {
+                        qcopy(&d->start_pos, &m->pos);
+                        d->selected = trigger->token;
+                        d->phase = 1;
+                        d->start_angle = m->rot.f[2];
+                        d->turn_velocity = 0;
+                        m->state = 3;
+                        d->moving_timer = scale_ticks(0x8CA0);
+                        break;
+                    }
+                }
+                break;
             }
-            break;
-        }
-        case 1:
-            MobySpringTurn(m,&d->turn_velocity,eudora_scene_points[d->selected].angle,g_frame_time_sq*1.0471976f,g_frame_time_sq*3.1415927f,g_frame_time*3.1415927f);
-            if (vec_distance_xy(&m->pos,&eudora_scene_points[d->selected].pos)<1.0f &&
-                FastDiffRots(m->rot.f[2],eudora_scene_points[d->selected].angle)<0.17453292f) {
-                d->phase=2;
-                d->phase_timer=scale_ticks(300);
+            case 1:
+                MobySpringTurn(m, &d->turn_velocity, eudora_scene_points[d->selected].angle,
+                               g_frame_time_sq * 1.0471976f, g_frame_time_sq * 3.1415927f, g_frame_time * 3.1415927f);
+                if (vec_distance_xy(&m->pos, &eudora_scene_points[d->selected].pos) < 1.0f &&
+                    FastDiffRots(m->rot.f[2], eudora_scene_points[d->selected].angle) < 0.17453292f) {
+                    d->phase = 2;
+                    d->phase_timer = scale_ticks(300);
+                }
+                FastVecSub(&delta, &eudora_scene_points[d->selected].pos, &m->pos);
+                vec_scale_to_length(&delta, &delta, g_frame_time * 3.0f);
+                FastVecAdd(&m->pos, &m->pos, &delta);
+                break;
+            case 2:
+                if (d->phase_timer == 0) {
+                    d->turn_velocity = zero;
+                    d->phase = 3;
+                }
+                break;
+            case 3: {
+                float length, step;
+                MobySpringTurn(m, &d->turn_velocity, d->start_angle, g_frame_time_sq * 1.0471976f,
+                               g_frame_time_sq * 3.1415927f, g_frame_time * 3.1415927f);
+                if (vec_distance_xy(&m->pos, &d->start_pos) < 1.0f &&
+                    FastDiffRots(m->rot.f[2], d->start_angle) < 0.034906585f) {
+                    d->phase = 0;
+                    d->phase_timer = scale_ticks(600);
+                    d->speed = zero;
+                    d->turn_velocity = zero;
+                    d->moving_timer = 0;
+                }
+                FastVecSub(&delta, &d->start_pos, &m->pos);
+                length = FastVecLength(&delta);
+                vec_scale_to_length(&delta, &delta, g_frame_time * 3.0f > length ? length : g_frame_time * 3.0f);
+                FastVecAdd(&m->pos, &m->pos, &delta);
+                break;
             }
-            FastVecSub(&delta,&eudora_scene_points[d->selected].pos,&m->pos);
-            vec_scale_to_length(&delta,&delta,g_frame_time*3.0f);
-            FastVecAdd(&m->pos,&m->pos,&delta);
-            break;
-        case 2:
-            if (d->phase_timer==0) { d->turn_velocity=zero; d->phase=3; }
-            break;
-        case 3: {
-            float length,step;
-            MobySpringTurn(m,&d->turn_velocity,d->start_angle,g_frame_time_sq*1.0471976f,g_frame_time_sq*3.1415927f,g_frame_time*3.1415927f);
-            if (vec_distance_xy(&m->pos,&d->start_pos)<1.0f && FastDiffRots(m->rot.f[2],d->start_angle)<0.034906585f) {
-                d->phase=0;
-                d->phase_timer=scale_ticks(600);
-                d->speed=zero;
-                d->turn_velocity=zero;
-                d->moving_timer=0;
-            }
-            FastVecSub(&delta,&d->start_pos,&m->pos);
-            length=FastVecLength(&delta);
-            vec_scale_to_length(&delta,&delta,g_frame_time*3.0f>length ? length : g_frame_time*3.0f);
-            FastVecAdd(&m->pos,&m->pos,&delta);
-            break;
-        }
         }
     }
-    if (state==0) {
-        switch ((s16)((u16)m->cls-0x1D2)) {
-        case 0:case 14:case 19:case 20:case 28:case 29:case 32:case 89:
-            AttachManipulator(m,0,d->matrix0);d->angle0=0;break;
-        case 22:case 27:
-            AttachManipulator(m,0,d->matrix0);d->angle0=0;
-            AttachManipulator(m,1,d->matrix1);d->angle1=0;break;
+    if (state == 0) {
+        switch ((s16)((u16)m->cls - 0x1D2)) {
+            case 0:
+            case 14:
+            case 19:
+            case 20:
+            case 28:
+            case 29:
+            case 32:
+            case 89:
+                AttachManipulator(m, 0, d->matrix0);
+                d->angle0 = 0;
+                break;
+            case 22:
+            case 27:
+                AttachManipulator(m, 0, d->matrix0);
+                d->angle0 = 0;
+                AttachManipulator(m, 1, d->matrix1);
+                d->angle1 = 0;
+                break;
         }
     } else {
-        switch ((s16)((u16)m->cls-0x1D2)) {
-        case 0:case 14:
-            d->angle0=FastAddRots(d->angle0,g_frame_time*12.566371f);
-            axis_rotation_2d48(d->matrix0+0x10,0,d->angle0);break;
-        case 19:case 20:case 28:case 29:case 32:case 89:
-            d->angle0=FastAddRots(d->angle0,g_frame_time*12.566371f);
-            axis_rotation_2d48(d->matrix0+0x10,2,d->angle0);break;
-        case 22:case 27:
-            d->angle0=FastAddRots(d->angle0,g_frame_time*12.566371f);
-            axis_rotation_2d48(d->matrix0+0x10,2,d->angle0);
-            d->angle1=FastAddRots(d->angle1,g_frame_time*12.566371f);
-            axis_rotation_2d48(d->matrix1+0x10,2,d->angle1);break;
+        switch ((s16)((u16)m->cls - 0x1D2)) {
+            case 0:
+            case 14:
+                d->angle0 = FastAddRots(d->angle0, g_frame_time * 12.566371f);
+                axis_rotation_2d48(d->matrix0 + 0x10, 0, d->angle0);
+                break;
+            case 19:
+            case 20:
+            case 28:
+            case 29:
+            case 32:
+            case 89:
+                d->angle0 = FastAddRots(d->angle0, g_frame_time * 12.566371f);
+                axis_rotation_2d48(d->matrix0 + 0x10, 2, d->angle0);
+                break;
+            case 22:
+            case 27:
+                d->angle0 = FastAddRots(d->angle0, g_frame_time * 12.566371f);
+                axis_rotation_2d48(d->matrix0 + 0x10, 2, d->angle0);
+                d->angle1 = FastAddRots(d->angle1, g_frame_time * 12.566371f);
+                axis_rotation_2d48(d->matrix1 + 0x10, 2, d->angle1);
+                break;
         }
     }
-    if (d->partner!=-1) {
-        VehicleMoby_2CB800 *other=MOBYS+d->partner;
-        other->shield=0x7F;
+    if (d->partner != -1) {
+        VehicleMoby_2CB800 *other = MOBYS + d->partner;
+        other->shield = 0x7F;
         switch (m->cls) {
-        case 0x1E0:
-            delta.quad=0;
-            delta.f[0]=0.5f;delta.f[2]=-5.0f;
-            matrix_mul_vec3(&delta,&delta,m->matrix);
-            FastVecAdd(&other->pos,&m->pos,&delta);
-            qcopy(&other->rot,&m->rot);
-            other->rot.f[1]=FastAddRots(other->rot.f[1],1.5707964f);
-            MobyAnimAdvance(other);moby_build_matrix(other);moby_anim_sphere_lerp(other);
-            other->flags|=6;
-            break;
-        case 0x1EE:
-            delta.quad=0;delta.f[2]=-2.0f;
-            matrix_mul_vec3(&delta,&delta,m->matrix);
-            FastVecAdd(&other->pos,&m->pos,&delta);
-            qcopy(&other->rot,&m->rot);
-            MobyAnimAdvance(other);moby_build_matrix(other);moby_anim_sphere_lerp(other);
-            other->flags|=6;
-            break;
+            case 0x1E0:
+                delta.quad = 0;
+                delta.f[0] = 0.5f;
+                delta.f[2] = -5.0f;
+                matrix_mul_vec3(&delta, &delta, m->matrix);
+                FastVecAdd(&other->pos, &m->pos, &delta);
+                qcopy(&other->rot, &m->rot);
+                other->rot.f[1] = FastAddRots(other->rot.f[1], 1.5707964f);
+                MobyAnimAdvance(other);
+                moby_build_matrix(other);
+                moby_anim_sphere_lerp(other);
+                other->flags |= 6;
+                break;
+            case 0x1EE:
+                delta.quad = 0;
+                delta.f[2] = -2.0f;
+                matrix_mul_vec3(&delta, &delta, m->matrix);
+                FastVecAdd(&other->pos, &m->pos, &delta);
+                qcopy(&other->rot, &m->rot);
+                MobyAnimAdvance(other);
+                moby_build_matrix(other);
+                moby_anim_sphere_lerp(other);
+                other->flags |= 6;
+                break;
         }
     }
-    if (MobyGetHitMessage(m,0x210000,0)) {
-        if (++eudora_skill_snow_plow_hits>=10 && gSkillPoints.flag==0) {
-            gSkillPoints.flag=1;
-            PlayBankSound(1,0,0);ShowBanner(0x53DB,-1);
+    if (MobyGetHitMessage(m, 0x210000, 0)) {
+        if (++eudora_skill_snow_plow_hits >= 10 && gSkillPoints.flag == 0) {
+            gSkillPoints.flag = 1;
+            PlayBankSound(1, 0, 0);
+            ShowBanner(0x53DB, -1);
         }
-        switch ((s16)((u16)m->cls-0x1D2)) {
-        case 19:case 20: {
-            {
-                VehicleQuery_2CB800 query;
-                query.flags=0x810000;query.strength=1;query.owner=m;
-                clear_u64_value(&query.vec);query.result=0;
-                coll_sphere_mobys(&m->pos,4.0f,16,m,&query);
+        switch ((s16)((u16)m->cls - 0x1D2)) {
+            case 19:
+            case 20: {
+                {
+                    VehicleQuery_2CB800 query;
+                    query.flags = 0x810000;
+                    query.strength = 1;
+                    query.owner = m;
+                    clear_u64_value(&query.vec);
+                    query.result = 0;
+                    coll_sphere_mobys(&m->pos, 4.0f, 16, m, &query);
+                }
+            }
+            case 0:
+            case 14:
+            case 22:
+            case 24:
+            case 28:
+            case 29:
+            case 32:
+            case 89: {
+                {
+                    VehicleArr_2CB800 none;
+                    delta.quad = 0;
+                    delta.f[2] = 0.75f;
+                    clear_u64_value(none);
+                    FastVecAdd(&delta, &delta, &m->pos);
+                    spawn_explosion(m, none, &delta, 0.0f, 0.0f, 10, 3, 4, 2, 1, 100000, 3, -1, 15, 1, 1, -1, 0);
+                    if (m->cls == 0x1F2 || m->cls == 0x22B)
+                        Moby_PlaySound(0, 0, (s32)m);
+                    else if (m->cls != 0x1E6)
+                        Moby_PlaySound(1, 0, (s32)m);
+                    d->visibility_timer = scale_ticks(600);
+                    d->visibility_active = 1;
+                }
+                break;
+            }
+            case 27: {
+                {
+                    VehicleArr_2CB800 offset = {0.0f, 0.0f, 0.75f};
+                    VehicleArr_2CB800 none;
+                    VehicleQuery_2CB800 query2;
+                    clear_u64_value(none);
+                    Moby_GetJointWorldPos(m, 0, &delta);
+                    FastVecAdd(&delta, &delta, offset);
+                    SpawnExplosionFx(m, &delta, -1, 1.0f, 13.0f);
+                    Moby_GetJointWorldPos(m, 1, &delta);
+                    FastVecAdd(&delta, &delta, offset);
+                    SpawnExplosionFx(m, &delta, -1, 1.0f, 13.0f);
+                    FastVecAdd(&delta, offset, &m->pos);
+                    spawn_explosion(m, none, &delta, 0.0f, 0.0f, 20, 5, 4, 2, 1, 100000, 3, -1, 15, 1, 1, -1, 0);
+                    Moby_PlaySound(1, 0, (s32)m);
+                    query2.flags = 0x810000;
+                    query2.strength = 2;
+                    query2.owner = m;
+                    clear_u64_value(&query2.vec);
+                    query2.result = 0;
+                    coll_sphere_mobys(&m->pos, 6.0f, 16, m, &query2);
+                    d->visibility_timer = scale_ticks(600);
+                    d->visibility_active = 1;
+                }
+                break;
             }
         }
-        case 0:case 14:case 22:case 24:case 28:case 29:case 32:case 89: {
-            {
-                VehicleArr_2CB800 none;
-                delta.quad=0;delta.f[2]=0.75f;
-                clear_u64_value(none);
-                FastVecAdd(&delta,&delta,&m->pos);
-                spawn_explosion(m,none,&delta,0.0f,0.0f,10,3,4,2,1,100000,3,-1,15,1,1,-1,0);
-                if (m->cls==0x1F2 || m->cls==0x22B) Moby_PlaySound(0,0,(s32)m);
-                else if (m->cls!=0x1E6) Moby_PlaySound(1,0,(s32)m);
-                d->visibility_timer=scale_ticks(600);d->visibility_active=1;
-            }
-            break;
-        }
-        case 27: {
-            {
-                VehicleArr_2CB800 offset={0.0f,0.0f,0.75f};
-                VehicleArr_2CB800 none;
-                VehicleQuery_2CB800 query2;
-                clear_u64_value(none);
-                Moby_GetJointWorldPos(m,0,&delta);
-                FastVecAdd(&delta,&delta,offset);
-                SpawnExplosionFx(m,&delta,-1,1.0f,13.0f);
-                Moby_GetJointWorldPos(m,1,&delta);
-                FastVecAdd(&delta,&delta,offset);
-                SpawnExplosionFx(m,&delta,-1,1.0f,13.0f);
-                FastVecAdd(&delta,offset,&m->pos);
-                spawn_explosion(m,none,&delta,0.0f,0.0f,20,5,4,2,1,100000,3,-1,15,1,1,-1,0);
-                Moby_PlaySound(1,0,(s32)m);
-                query2.flags=0x810000;query2.strength=2;query2.owner=m;
-                clear_u64_value(&query2.vec);query2.result=0;
-                coll_sphere_mobys(&m->pos,6.0f,16,m,&query2);
-                d->visibility_timer=scale_ticks(600);d->visibility_active=1;
-            }
-            break;
-        }
-        }
-        FastVecScale(&delta,m->matrix,frame_scale*0.075f);
-        delta.f[2]+=frame_scale*0.08f;
-        if (m->cls==0x1D2) {
-            SpawnBreakFragment(m,0x63F,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
-            SpawnBreakFragment(m,0x641,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
-            SpawnBreakFragment(m,0x642,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
-        }
-        else if (m->cls==0x1E0) {
-            SpawnBreakFragment(m,0x642,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
-            SpawnBreakFragment(m,0x643,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
-            SpawnBreakFragment(m,0x644,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
-        }
-        else if (m->cls==0x1E6) {
+        FastVecScale(&delta, m->matrix, frame_scale * 0.075f);
+        delta.f[2] += frame_scale * 0.08f;
+        if (m->cls == 0x1D2) {
+            SpawnBreakFragment(m, 0x63F, &m->pos, &m->rot, scale_ticks(90), 0, g_frame_time_sq * 12.0f, &delta,
+                               eudora_zero_vector, eudora_zero_vector);
+            SpawnBreakFragment(m, 0x641, &m->pos, &m->rot, scale_ticks(90), 0, g_frame_time_sq * 12.0f, &delta,
+                               eudora_zero_vector, eudora_zero_vector);
+            SpawnBreakFragment(m, 0x642, &m->pos, &m->rot, scale_ticks(90), 0, g_frame_time_sq * 12.0f, &delta,
+                               eudora_zero_vector, eudora_zero_vector);
+        } else if (m->cls == 0x1E0) {
+            SpawnBreakFragment(m, 0x642, &m->pos, &m->rot, scale_ticks(90), 0, g_frame_time_sq * 12.0f, &delta,
+                               eudora_zero_vector, eudora_zero_vector);
+            SpawnBreakFragment(m, 0x643, &m->pos, &m->rot, scale_ticks(90), 0, g_frame_time_sq * 12.0f, &delta,
+                               eudora_zero_vector, eudora_zero_vector);
+            SpawnBreakFragment(m, 0x644, &m->pos, &m->rot, scale_ticks(90), 0, g_frame_time_sq * 12.0f, &delta,
+                               eudora_zero_vector, eudora_zero_vector);
+        } else if (m->cls == 0x1E6) {
             s32 i;
-            SpawnBreakFragment(m,0x645,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
-            for (i=0;i<6;i++) {
-            SpawnBreakFragment(m,0x646,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
+            SpawnBreakFragment(m, 0x645, &m->pos, &m->rot, scale_ticks(90), 0, g_frame_time_sq * 12.0f, &delta,
+                               eudora_zero_vector, eudora_zero_vector);
+            for (i = 0; i < 6; i++) {
+                SpawnBreakFragment(m, 0x646, &m->pos, &m->rot, scale_ticks(90), 0, g_frame_time_sq * 12.0f, &delta,
+                                   eudora_zero_vector, eudora_zero_vector);
             }
-        }
-        else if (m->cls==0x1EA) {
-            SpawnBreakFragment(m,0x647,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
-            SpawnBreakFragment(m,0x648,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
-            SpawnBreakFragment(m,0x649,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
-        }
-        else if (m->cls==0x1EE) {
-            SpawnBreakFragment(m,0x64D,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
-            SpawnBreakFragment(m,0x64E,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
-        }
-        else if (m->cls==0x1EF) {
-            SpawnBreakFragment(m,0x64F,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
-            SpawnBreakFragment(m,0x650,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
-            SpawnBreakFragment(m,0x651,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
-            SpawnBreakFragment(m,0x658,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
-        }
-        else if (m->cls==0x1F2) {
-            SpawnBreakFragment(m,0x652,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
-            SpawnBreakFragment(m,0x653,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
-            SpawnBreakFragment(m,0x654,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
-        }
-        else if (m->cls==0x1ED) {
-            s32 j,k;
-            SpawnBreakFragment(m,0x793,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
-            SpawnBreakFragment(m,0x794,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
-            for (j=0;j<3;j++) {
-            SpawnBreakFragment(m,0x795,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
+        } else if (m->cls == 0x1EA) {
+            SpawnBreakFragment(m, 0x647, &m->pos, &m->rot, scale_ticks(90), 0, g_frame_time_sq * 12.0f, &delta,
+                               eudora_zero_vector, eudora_zero_vector);
+            SpawnBreakFragment(m, 0x648, &m->pos, &m->rot, scale_ticks(90), 0, g_frame_time_sq * 12.0f, &delta,
+                               eudora_zero_vector, eudora_zero_vector);
+            SpawnBreakFragment(m, 0x649, &m->pos, &m->rot, scale_ticks(90), 0, g_frame_time_sq * 12.0f, &delta,
+                               eudora_zero_vector, eudora_zero_vector);
+        } else if (m->cls == 0x1EE) {
+            SpawnBreakFragment(m, 0x64D, &m->pos, &m->rot, scale_ticks(90), 0, g_frame_time_sq * 12.0f, &delta,
+                               eudora_zero_vector, eudora_zero_vector);
+            SpawnBreakFragment(m, 0x64E, &m->pos, &m->rot, scale_ticks(90), 0, g_frame_time_sq * 12.0f, &delta,
+                               eudora_zero_vector, eudora_zero_vector);
+        } else if (m->cls == 0x1EF) {
+            SpawnBreakFragment(m, 0x64F, &m->pos, &m->rot, scale_ticks(90), 0, g_frame_time_sq * 12.0f, &delta,
+                               eudora_zero_vector, eudora_zero_vector);
+            SpawnBreakFragment(m, 0x650, &m->pos, &m->rot, scale_ticks(90), 0, g_frame_time_sq * 12.0f, &delta,
+                               eudora_zero_vector, eudora_zero_vector);
+            SpawnBreakFragment(m, 0x651, &m->pos, &m->rot, scale_ticks(90), 0, g_frame_time_sq * 12.0f, &delta,
+                               eudora_zero_vector, eudora_zero_vector);
+            SpawnBreakFragment(m, 0x658, &m->pos, &m->rot, scale_ticks(90), 0, g_frame_time_sq * 12.0f, &delta,
+                               eudora_zero_vector, eudora_zero_vector);
+        } else if (m->cls == 0x1F2) {
+            SpawnBreakFragment(m, 0x652, &m->pos, &m->rot, scale_ticks(90), 0, g_frame_time_sq * 12.0f, &delta,
+                               eudora_zero_vector, eudora_zero_vector);
+            SpawnBreakFragment(m, 0x653, &m->pos, &m->rot, scale_ticks(90), 0, g_frame_time_sq * 12.0f, &delta,
+                               eudora_zero_vector, eudora_zero_vector);
+            SpawnBreakFragment(m, 0x654, &m->pos, &m->rot, scale_ticks(90), 0, g_frame_time_sq * 12.0f, &delta,
+                               eudora_zero_vector, eudora_zero_vector);
+        } else if (m->cls == 0x1ED) {
+            s32 j, k;
+            SpawnBreakFragment(m, 0x793, &m->pos, &m->rot, scale_ticks(90), 0, g_frame_time_sq * 12.0f, &delta,
+                               eudora_zero_vector, eudora_zero_vector);
+            SpawnBreakFragment(m, 0x794, &m->pos, &m->rot, scale_ticks(90), 0, g_frame_time_sq * 12.0f, &delta,
+                               eudora_zero_vector, eudora_zero_vector);
+            for (j = 0; j < 3; j++) {
+                SpawnBreakFragment(m, 0x795, &m->pos, &m->rot, scale_ticks(90), 0, g_frame_time_sq * 12.0f, &delta,
+                                   eudora_zero_vector, eudora_zero_vector);
             }
-            for (k=0;k<3;k++) {
-            SpawnBreakFragment(m,0x796,&m->pos,&m->rot,scale_ticks(90),0,g_frame_time_sq*12.0f,&delta,eudora_zero_vector,eudora_zero_vector);
+            for (k = 0; k < 3; k++) {
+                SpawnBreakFragment(m, 0x796, &m->pos, &m->rot, scale_ticks(90), 0, g_frame_time_sq * 12.0f, &delta,
+                                   eudora_zero_vector, eudora_zero_vector);
             }
         }
     }
-    m->draw_alpha=0xFF;
+    m->draw_alpha = 0xFF;
     if (d->visibility_active) {
         if (fast_dec_timer(&d->visibility_timer) &&
-            FastDiffRots(eudora_camera.angle,fast_atan2(m->pos.f[0]-eudora_camera.x,m->pos.f[1]-eudora_camera.y))>1.5707964f) {
-            m->sort=*(s32 *)(m->metadata+0x10);
-            m->flags&=0xFFBE;
-            d->visibility_active=0;
-            if (d->partner!=-1) { VehicleMoby_2CB800 *other=MOBYS+d->partner; other->flags&=0xFFBE; }
-            m->flags|=0x1000;
+            FastDiffRots(eudora_camera.angle,
+                         fast_atan2(m->pos.f[0] - eudora_camera.x, m->pos.f[1] - eudora_camera.y)) > 1.5707964f) {
+            m->sort = *(s32 *)(m->metadata + 0x10);
+            m->flags &= 0xFFBE;
+            d->visibility_active = 0;
+            if (d->partner != -1) {
+                VehicleMoby_2CB800 *other = MOBYS + d->partner;
+                other->flags &= 0xFFBE;
+            }
+            m->flags |= 0x1000;
         } else {
-            m->sort=0;
-            m->flags|=0x41;
-            if (d->partner!=-1) { VehicleMoby_2CB800 *other=MOBYS+d->partner; other->flags|=0x41; }
-            m->flags&=0xEFFF;
+            m->sort = 0;
+            m->flags |= 0x41;
+            if (d->partner != -1) {
+                VehicleMoby_2CB800 *other = MOBYS + d->partner;
+                other->flags |= 0x41;
+            }
+            m->flags &= 0xEFFF;
         }
     }
 }
@@ -478,41 +620,42 @@ void FloatingPlatformUpdate(char *m) {
         return;
     }
     switch (((unsigned char *)m)[0x20]) {
-    case 0: {
-        int i;
-        ((Moby *)m)->anim_speed = random_float_between(0.5f, 0.8f);
-        m[0x20] = 1;
-        *(float *)(d + 0x220) = ((Moby *)m)->pos.z + 15.0f;
-        ((unsigned char *)m)[0x30] = 0xFF;
-        *(short *)(d + 0x3E) = 0xD;
-        for (i = 0; i < 3; i++) {
-            ((float *)(d + 0x224))[i] = random_angle_radians();
-        }
-        break;
-    }
-    case 1: {
-        float off = 0.0f;
-        float bob = FastCos(FastNormalizeAngle(MobyGetFrameValue(m) * 6.2831855f / 118.0f)) * 0.75f;
-        int i;
-        for (i = 0; i < 3; i++) {
-            float *p = (float *)(d + 0x224) + i;
-            float a = FastAddRots(*p, *(float *)&eudora_floating_platform_spin_rate_deg * 0.017453292f * g_frame_time_b);
-            float g = g_frame_scale_sq_b;
-            *p = a;
-            *(float *)(d + 0x108 + i * 0x80) = a;
-            EaseManipulatorOffsets(m, d + 0xA0 + i * 0x80, i, g * 0.03f, g * 0.3f);
-        }
-        if (*(int *)(d + 0x230) != -1) {
-            char *o = eudora_mobys_b + (*(int *)(d + 0x230) << 8);
-            if (((Moby *)o)->oclass == 0x118) {
-                off = *((float *)((Moby *)o)->pvars) * 15.0f;
+        case 0: {
+            int i;
+            ((Moby *)m)->anim_speed = random_float_between(0.5f, 0.8f);
+            m[0x20] = 1;
+            *(float *)(d + 0x220) = ((Moby *)m)->pos.z + 15.0f;
+            ((unsigned char *)m)[0x30] = 0xFF;
+            *(short *)(d + 0x3E) = 0xD;
+            for (i = 0; i < 3; i++) {
+                ((float *)(d + 0x224))[i] = random_angle_radians();
             }
-        } else {
-            off = 15.0f;
+            break;
         }
-        ((Moby *)m)->pos.z = *(float *)(d + 0x220) + bob - off;
-        break;
-    }
+        case 1: {
+            float off = 0.0f;
+            float bob = FastCos(FastNormalizeAngle(MobyGetFrameValue(m) * 6.2831855f / 118.0f)) * 0.75f;
+            int i;
+            for (i = 0; i < 3; i++) {
+                float *p = (float *)(d + 0x224) + i;
+                float a =
+                    FastAddRots(*p, *(float *)&eudora_floating_platform_spin_rate_deg * 0.017453292f * g_frame_time_b);
+                float g = g_frame_scale_sq_b;
+                *p = a;
+                *(float *)(d + 0x108 + i * 0x80) = a;
+                EaseManipulatorOffsets(m, d + 0xA0 + i * 0x80, i, g * 0.03f, g * 0.3f);
+            }
+            if (*(int *)(d + 0x230) != -1) {
+                char *o = eudora_mobys_b + (*(int *)(d + 0x230) << 8);
+                if (((Moby *)o)->oclass == 0x118) {
+                    off = *((float *)((Moby *)o)->pvars) * 15.0f;
+                }
+            } else {
+                off = 15.0f;
+            }
+            ((Moby *)m)->pos.z = *(float *)(d + 0x220) + bob - off;
+            break;
+        }
     }
     FastVecSub(delta, m + 0x10, old);
     update_entity_matrix(d + 0x60, delta, m + 0x40, m + 0x40);
@@ -583,9 +726,8 @@ void initialize_woodcut_bot_movement_data(void *m) {
 }
 extern void clear_u64_value(void *);
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int, int,
-                                  float, float, float, float, int, float, int, int, int, int)
-    __asm__("func_L00_0025F4A8");
+extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
+                                  float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
 // Clears a vector and spawns an effect on the moby.
 void emit_woodcut_bot_death_effects(void *m) {
@@ -593,8 +735,7 @@ void emit_woodcut_bot_death_effects(void *m) {
     char vec[16];
     clear_u64_value(vec);
     Moby_GetJointWorldPos(m, 12, pos);
-    func_L00_0025F4A8_alt(m, vec, pos, 0.0f, 0.0f, 10, 3, 4,
-                          2.0f, 1.0f, 100000.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
+    func_L00_0025F4A8_alt(m, vec, pos, 0.0f, 0.0f, 10, 3, 4, 2.0f, 1.0f, 100000.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
 }
 
 
@@ -680,7 +821,8 @@ void woodcut_bot_update(Moby *m) {
     float dist;
     float hd;
 
-    if (d->f38 != 0 || d->t3C6 != 0) excited = 1;
+    if (d->f38 != 0 || d->t3C6 != 0)
+        excited = 1;
     FindNearestTargetMoby(m, tgt, excited ? d->f3E8 * 2.0f : d->f3E8);
     p = &d->f120;
     Manipulator_ApplyScale(2.5f, m, 6, p);
@@ -738,76 +880,78 @@ void woodcut_bot_update(Moby *m) {
             d->fD4 = b;
             d->fD8 = c;
             d->hp -= damage;
-            if (d->hp <= 0.0f) r = 1;
+            if (d->hp <= 0.0f)
+                r = 1;
             switch (r) {
-            case 0:
-                break;
-            case 1:
-            case 2:
-                d->fD4 = g_frame_time_sq * 17.0f;
-                d->fD8 = g_frame_time * 7.0f;
-                d->fDC = g_frame_time * 13.0f;
-                *(w128 *)v = *(w128 *)(p + 0x10);
-                HeadingFromVector(v, &angle, &d->fD8, &d->fDC);
-                InitKnockback(angle, m, d->fC0, 8, 1, 0);
-                d->f110 = 14.0f;
-                d->f114 = 24.0f;
-                m->state = 0xB;
-                SetDeathBits(m, 0, -1);
-                d->fB7 = 0x78;
-                RerollEffectCounter(m, d->fB0);
-                d->f3E4 = (2.0f / multiply_global_factor(15.0f)) * 2.0f;
-                break;
-            case 3:
-            case 6:
-                d->f3C8 = -0.5235988f;
-                if (m->seq != 4 || hd < 16.0f || hd > 27.0f) {
-                    short cls;
-
-                    m->command |= 5;
-                    MobyBlendAnimation(m, 5, 0, scale_ticks(3));
-                    reset_walker_gait_helpers(d->f160);
-                    m->state = 9;
-                    cls = *(short *)(*(char **)(p + 0x20) + 0xA6);
-                    if (cls == 0x131 || cls == 0xB0) {
-                        d->f3E4 = (2.0f / multiply_global_factor(15.0f)) * 0.5f;
-                    } else {
-                        d->f3E4 = 2.0f / multiply_global_factor(15.0f);
-                    }
+                case 0:
+                    break;
+                case 1:
+                case 2:
+                    d->fD4 = g_frame_time_sq * 17.0f;
+                    d->fD8 = g_frame_time * 7.0f;
+                    d->fDC = g_frame_time * 13.0f;
                     *(w128 *)v = *(w128 *)(p + 0x10);
-                    HeadingFromVector(v, &angle, &d->f3E4, &one);
+                    HeadingFromVector(v, &angle, &d->fD8, &d->fDC);
+                    InitKnockback(angle, m, d->fC0, 8, 1, 0);
+                    d->f110 = 14.0f;
+                    d->f114 = 24.0f;
+                    m->state = 0xB;
+                    SetDeathBits(m, 0, -1);
                     d->fB7 = 0x78;
                     RerollEffectCounter(m, d->fB0);
-                    d->t3C4 = scale_ticks(0xF);
+                    d->f3E4 = (2.0f / multiply_global_factor(15.0f)) * 2.0f;
+                    break;
+                case 3:
+                case 6:
+                    d->f3C8 = -0.5235988f;
+                    if (m->seq != 4 || hd < 16.0f || hd > 27.0f) {
+                        short cls;
+
+                        m->command |= 5;
+                        MobyBlendAnimation(m, 5, 0, scale_ticks(3));
+                        reset_walker_gait_helpers(d->f160);
+                        m->state = 9;
+                        cls = *(short *)(*(char **)(p + 0x20) + 0xA6);
+                        if (cls == 0x131 || cls == 0xB0) {
+                            d->f3E4 = (2.0f / multiply_global_factor(15.0f)) * 0.5f;
+                        } else {
+                            d->f3E4 = 2.0f / multiply_global_factor(15.0f);
+                        }
+                        *(w128 *)v = *(w128 *)(p + 0x10);
+                        HeadingFromVector(v, &angle, &d->f3E4, &one);
+                        d->fB7 = 0x78;
+                        RerollEffectCounter(m, d->fB0);
+                        d->t3C4 = scale_ticks(0xF);
+                        d->t3C6 = scale_ticks(0xF0);
+                    }
+                    break;
+                case 4:
+                case 5:
+                    MobyBlendAnimation(m, 6, 0, scale_ticks(10));
+                    reset_walker_gait_helpers(d->f160);
+                    m->state = 1;
+                    d->f3E4 = 2.0f / multiply_global_factor(15.0f);
+                    *(w128 *)v = *(w128 *)(p + 0x10);
+                    HeadingFromVector(v, &angle, &d->f3E4, &one);
+                    m->rot.z = FastAddRots(3.1415927f, angle);
+                    d->fB7 = 0x78;
+                    RerollEffectCounter(m, d->fB0);
+                    d->t3C4 = scale_ticks(0x1E);
+                    d->t3C2 = scale_ticks(0xB4);
                     d->t3C6 = scale_ticks(0xF0);
-                }
-                break;
-            case 4:
-            case 5:
-                MobyBlendAnimation(m, 6, 0, scale_ticks(10));
-                reset_walker_gait_helpers(d->f160);
-                m->state = 1;
-                d->f3E4 = 2.0f / multiply_global_factor(15.0f);
-                *(w128 *)v = *(w128 *)(p + 0x10);
-                HeadingFromVector(v, &angle, &d->f3E4, &one);
-                m->rot.z = FastAddRots(3.1415927f, angle);
-                d->fB7 = 0x78;
-                RerollEffectCounter(m, d->fB0);
-                d->t3C4 = scale_ticks(0x1E);
-                d->t3C2 = scale_ticks(0xB4);
-                d->t3C6 = scale_ticks(0xF0);
-                break;
-            case 7:
-            case 8:
-            case 9:
-            case 10:
-            case 11:
-                break;
+                    break;
+                case 7:
+                case 8:
+                case 9:
+                case 10:
+                case 11:
+                    break;
             }
         }
     }
     m->hit_slot = 0xFF;
-    if (d->f38 != 0) d->t3C6 = scale_ticks(0xF0);
+    if (d->f38 != 0)
+        d->t3C6 = scale_ticks(0xF0);
     tm = &d->t3C2;
     d->f38 = 0;
     FastDecTimer(&d->t3C6);
@@ -823,11 +967,12 @@ void woodcut_bot_update(Moby *m) {
             s.f14 = 0x10001;
             s.f1C = 1.0f;
             s.m = m;
-            FastVecSub(&s,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, pos);
+            FastVecSub(&s, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, pos);
             vec_scale_to_length(&s, &s, g_frame_time * 5.0f);
             s.f20 = 1;
             transform_scaled_vertex_batch(m, 6, &joints, pts);
-            for (i = 0; i < 5; i++) coll_line(pts[i], pts[i + 1], 9, m, &s);
+            for (i = 0; i < 5; i++)
+                coll_line(pts[i], pts[i + 1], 9, m, &s);
             FastVecAdd(mid, pts[0], pts[4]);
             FastVecScale(mid, mid, 0.5f);
             coll_sphere_mobys(mid, FastVecDist(pts[0], pts[4]) * 0.5f, 0x10, m, &s);
@@ -838,352 +983,374 @@ void woodcut_bot_update(Moby *m) {
     FastDecTimer(tm);
 
     switch (m->state) {
-    case 0:
-        d->hp = 2.0f;
-        d->f24 = 2;
-        d->f30 = 1.0f;
-        d->f28 = 1;
-        d->f29 = 0;
-        m->command = 0;
-        d->f3E0 = 0.0f;
-        d->t3C6 = 0;
-        d->f58 = 8;
-        d->f5A = 8;
-        qcopy(d->f3B0, pos);
-        if (d->f121 == 0) AttachManipulator(m, 6, p120);
-        initialize_woodcut_bot_movement_data(m);
-        if (d->f3C0 != 0) {
-            m->state = 3;
-            MobyBlendAnimation(m, 0xB, 0, scale_ticks(10));
-        } else {
-            m->state = 1;
-        }
-        break;
-    case 1:
-        if (m->anim_flags & 2) {
-            if (excited ? (d->f3E8 * 2.0f < dist) : (d->f3E8 < dist)) {
-                int anims[6];
-
-                libc_memset(anims, 0, 0x18);
-                anims[5] = 1;
-                MobyBlendAnimation(m, anims[random_integer_below(6)], 0, scale_ticks(0x14));
+        case 0:
+            d->hp = 2.0f;
+            d->f24 = 2;
+            d->f30 = 1.0f;
+            d->f28 = 1;
+            d->f29 = 0;
+            m->command = 0;
+            d->f3E0 = 0.0f;
+            d->t3C6 = 0;
+            d->f58 = 8;
+            d->f5A = 8;
+            qcopy(d->f3B0, pos);
+            if (d->f121 == 0)
+                AttachManipulator(m, 6, p120);
+            initialize_woodcut_bot_movement_data(m);
+            if (d->f3C0 != 0) {
+                m->state = 3;
+                MobyBlendAnimation(m, 0xB, 0, scale_ticks(10));
             } else {
-                MobyBlendAnimation(m, 0, 0, scale_ticks(0x14));
-            }
-        }
-        if (d->t3C2 == 0) {
-            if (dist < 3.0f && adiff < 1.5707964f) {
-                MobyBlendAnimation(m, 4, 0, scale_ticks(10));
-                m->state = 8;
-            } else if (excited ? (dist < d->f3E8 * 2.0f) : (dist < d->f3E8)) {
-                if (m->command & 1) {
-                    if (excited || d->f3DC == -1 || IsPointInPolygon(tgt, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) != 0) {
-                        m->state = 5;
-                        m->command |= 8;
-                    }
-                } else {
-                    d->f3D0 = 0.0f;
-                    MobyBlendAnimation(m, 0x10, 0, scale_ticks(10));
-                    reset_walker_gait_helpers(d->f160);
-                    m->state = 0xA;
-                    m->command |= 1;
-                }
-            }
-            if (!excited) {
-                if (vec_distance_xy(pos, d->f3B0) > 2.0f) {
-                    if (d->f3E8 < dist || (d->f3DC != -1 && IsPointInPolygon(tgt, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) == 0)) {
-                        m->state = 6;
-                        m->command |= 8;
-                    }
-                }
-            }
-        }
-        break;
-    case 2:
-        if (m->seq == 2 && (m->anim_flags & 2)) {
-            if (excited || d->f3DC == -1 || IsPointInPolygon(tgt, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) != 0) {
-                m->state = 5;
-                m->command |= 8;
-            } else {
-                MobyBlendAnimation(m, 0, 0, scale_ticks(10));
                 m->state = 1;
             }
-        }
-        break;
-    case 3: {
-        if (m->seq != 0 && (m->anim_flags & 2)) {
-            MobyBlendAnimation(m, 0xC, 0, scale_ticks(10));
-            m->anim_speed = random_float_between(0.8f, 1.2f);
-        }
-        if (IsFrameWithinWindow(m, 36.0f) != 0) {
-            int i;
+            break;
+        case 1:
+            if (m->anim_flags & 2) {
+                if (excited ? (d->f3E8 * 2.0f < dist) : (d->f3E8 < dist)) {
+                    int anims[6];
 
-            for (i = 0; i < 20; i++) {
-                float p[4];
-                float vel[4];
-                float off[4];
-                float rot[4];
-                float mtx[16];
-
-                *(w128 *)rot = 0;
-                rot[0] = random_float_between(-1.0f, 1.0f);
-                rot[1] = random_float_between(-1.0f, 1.0f);
-                rot[2] = random_float_between(-1.0f, 1.0f);
-                *(w128 *)off = *(w128 *)rot;
-                Moby_GetJointWorldPos(m, 0, p);
-                vel[0] = FastCos(m->rot.z) * -(random_float_between(5.0f, 10.0f) * g_frame_time);
-                vel[1] = FastSin(m->rot.z) * -(random_float_between(5.0f, 10.0f) * g_frame_time);
-                vel[2] = 0.0f;
-                vec_scale_to_length(off, off, g_frame_time * 3.0f);
-                off[2] += g_frame_time * 3.0f;
-                add_vectors(mtx, vel, off);
-                rot[0] = random_angle_radians();
-                rot[1] = random_angle_radians();
-                rot[2] = random_angle_radians();
-                spawn_crate_debris(m, vel, p, rot, 0x5EC, 0, 0.35f, 0.7f);
-            }
-        }
-        if (d->t3C2 == 0) {
-            if (dist < 3.0f && adiff < 1.5707964f) {
-                MobyBlendAnimation(m, 4, 0, scale_ticks(10));
-                m->state = 8;
-            } else if (excited ? (dist < d->f3E8 * 2.0f) : (dist < d->f3E8)) {
-                if (m->command & 1) {
-                    if (excited || d->f3DC == -1 || IsPointInPolygon(tgt, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) != 0) {
-                        m->state = 5;
-                        m->command |= 8;
-                    }
+                    libc_memset(anims, 0, 0x18);
+                    anims[5] = 1;
+                    MobyBlendAnimation(m, anims[random_integer_below(6)], 0, scale_ticks(0x14));
                 } else {
-                    d->f3D0 = 0.0f;
-                    MobyBlendAnimation(m, 0x10, 0, scale_ticks(10));
-                    reset_walker_gait_helpers(d->f160);
-                    m->state = 0xA;
-                    m->command |= 1;
+                    MobyBlendAnimation(m, 0, 0, scale_ticks(0x14));
                 }
             }
-        }
-        break;
-    }
-    case 4:
-        if (excited) {
-            if (dist < 3.0f && adiff < 1.5707964f) {
-                MobyBlendAnimation(m, 4, 0, scale_ticks(10));
-                reset_walker_gait_helpers(d->f160);
-                m->state = 8;
-            } else if (d->f3DC == -1 || IsPointInPolygon(tgt, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) != 0) {
-                m->state = 5;
-                m->command |= 8;
-            } else if (adiff > 1.5707964f) {
-                d->f3D0 = 0.0f;
-                MobyBlendAnimation(m, 0x10, 0, scale_ticks(10));
-                reset_walker_gait_helpers(d->f160);
-                m->state = 0xA;
-            }
-        } else {
-            m->state = 1;
-        }
-        break;
-    case 5: {
-        if (m->command & 8) {
-            m->command &= ~8;
-            reset_leg_rig_from_animation(m, d->f160);
-        }
-        leg_walker_update(m, d->f160, g_frame_time * 4.0f, fast_atan2(tgt[0] - m->pos.x, tgt[1] - m->pos.y), g_frame_time_sq * 20.0f);
-        if (dist < 3.0f && adiff < 1.5707964f) {
-            MobyBlendAnimation(m, 4, 0, scale_ticks(10));
-            reset_walker_gait_helpers(d->f160);
-            m->state = 8;
-        } else if (d->f3DC != -1) {
-            float v[4];
-
-            v[0] = FastCos(m->rot.z) * 2.0f;
-            v[1] = FastSin(m->rot.z) * 2.0f;
-            v[2] = 0.0f;
-            p = (unsigned char *)v;
-            FastVecAdd(p, p, pos);
-            if (IsPointInPolygon(p, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) == 0) {
-                if (excited && IsPointInPolygon(tgt, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) == 0) {
-                    m->state = 7;
-                } else if (IsPointInPolygon(tgt, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) != 0) {
-                    d->f3D0 = 0.0f;
-                    MobyBlendAnimation(m, 0x10, 0, scale_ticks(10));
-                    reset_walker_gait_helpers(d->f160);
-                    m->state = 0xA;
-                }
-            }
-            if (!excited) {
-                if (IsPointInPolygon(tgt, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) == 0) {
-                    m->state = 6;
-                }
-            }
-        }
-        break;
-    }
-    case 6:
-        if (m->command & 8) {
-            m->command &= ~8;
-            reset_leg_rig_from_animation(m, d->f160);
-        }
-        if (dist < 3.0f && adiff < 1.5707964f) {
-            MobyBlendAnimation(m, 4, 0, scale_ticks(10));
-            reset_walker_gait_helpers(d->f160);
-            m->state = 8;
-        } else {
-            if (m->command & 8) {
-                m->command &= ~8;
-                reset_leg_rig_from_animation(m, d->f160);
-            }
-            if (vec_distance_xy(pos, d->f3B0) < 2.0f) {
-                m->state = 7;
-            } else {
-                leg_walker_update(m, d->f160, g_frame_time * 4.0f, fast_atan2(d->f3B0[0] - m->pos.x, d->f3B0[1] - m->pos.y), g_frame_time_sq * 20.0f);
-                if (d->f3DC != -1) {
-                    float v[4];
-
-                    v[0] = FastCos(m->rot.z) * 2.0f;
-                    v[1] = FastSin(m->rot.z) * 2.0f;
-                    v[2] = 0.0f;
-                    FastVecAdd(v, v, pos);
-                    if (IsPointInPolygon(v, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) == 0) {
+            if (d->t3C2 == 0) {
+                if (dist < 3.0f && adiff < 1.5707964f) {
+                    MobyBlendAnimation(m, 4, 0, scale_ticks(10));
+                    m->state = 8;
+                } else if (excited ? (dist < d->f3E8 * 2.0f) : (dist < d->f3E8)) {
+                    if (m->command & 1) {
+                        if (excited || d->f3DC == -1 ||
+                            IsPointInPolygon(tgt, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) != 0) {
+                            m->state = 5;
+                            m->command |= 8;
+                        }
+                    } else {
                         d->f3D0 = 0.0f;
                         MobyBlendAnimation(m, 0x10, 0, scale_ticks(10));
                         reset_walker_gait_helpers(d->f160);
                         m->state = 0xA;
-                        m->command |= 0x10;
-                    } else if (IsPointInPolygon(tgt, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) != 0) {
-                        m->state = 7;
+                        m->command |= 1;
+                    }
+                }
+                if (!excited) {
+                    if (vec_distance_xy(pos, d->f3B0) > 2.0f) {
+                        if (d->f3E8 < dist || (d->f3DC != -1 && IsPointInPolygon(tgt, eudora_paths[d->f3DC] + 4,
+                                                                                 *eudora_paths[d->f3DC]) == 0)) {
+                            m->state = 6;
+                            m->command |= 8;
+                        }
                     }
                 }
             }
-        }
-        break;
-    case 7:
-        if (dist < 3.0f && adiff < 1.5707964f) {
-            MobyBlendAnimation(m, 4, 0, scale_ticks(10));
-            reset_walker_gait_helpers(d->f160);
-            m->state = 8;
-        } else {
-            leg_walker_update(m, d->f160, g_frame_time * 0.0f, m->rot.z, g_frame_time_sq * 20.0f);
-            if (d->f217 == 0) {
-                if (excited) {
-                    m->state = 4;
+            break;
+        case 2:
+            if (m->seq == 2 && (m->anim_flags & 2)) {
+                if (excited || d->f3DC == -1 ||
+                    IsPointInPolygon(tgt, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) != 0) {
+                    m->state = 5;
+                    m->command |= 8;
                 } else {
-                    m->state = 1;
-                }
-            }
-        }
-        break;
-    case 8:
-        if (m->seq == 4 && (m->anim_flags & 2)) {
-            d->t3C2 = 0;
-            MobyBlendAnimation(m, 0, 0, scale_ticks(10));
-            m->state = 1;
-        }
-        break;
-    case 9:
-        if (m->prev_seq != 5 || (m->seq == 5 && (m->anim_flags & 2))) {
-            if (m->command & 4) {
-                m->command &= ~4;
-                if (d->f3DC == -1) {
                     MobyBlendAnimation(m, 0, 0, scale_ticks(10));
                     m->state = 1;
-                    d->t3C2 = 0;
-                } else {
-                    WBAngles tab = eudora_woodcut_bot_angles;
-                    float v[4];
-                    float sign = 1.0f;
-                    int found = 0;
-                    int i;
+                }
+            }
+            break;
+        case 3: {
+            if (m->seq != 0 && (m->anim_flags & 2)) {
+                MobyBlendAnimation(m, 0xC, 0, scale_ticks(10));
+                m->anim_speed = random_float_between(0.8f, 1.2f);
+            }
+            if (IsFrameWithinWindow(m, 36.0f) != 0) {
+                int i;
 
-                    for (i = 0; i < 9; i++) {
-                        struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
-                        float ang;
+                for (i = 0; i < 20; i++) {
+                    float p[4];
+                    float vel[4];
+                    float off[4];
+                    float rot[4];
+                    float mtx[16];
 
-                        if ((i & 1) == 0) {
-                            sign = 1.0f;
-                            if (random_integer_below(100) & 1) sign = -1.0f;
-                        } else {
-                            sign = -sign;
+                    *(w128 *)rot = 0;
+                    rot[0] = random_float_between(-1.0f, 1.0f);
+                    rot[1] = random_float_between(-1.0f, 1.0f);
+                    rot[2] = random_float_between(-1.0f, 1.0f);
+                    *(w128 *)off = *(w128 *)rot;
+                    Moby_GetJointWorldPos(m, 0, p);
+                    vel[0] = FastCos(m->rot.z) * -(random_float_between(5.0f, 10.0f) * g_frame_time);
+                    vel[1] = FastSin(m->rot.z) * -(random_float_between(5.0f, 10.0f) * g_frame_time);
+                    vel[2] = 0.0f;
+                    vec_scale_to_length(off, off, g_frame_time * 3.0f);
+                    off[2] += g_frame_time * 3.0f;
+                    add_vectors(mtx, vel, off);
+                    rot[0] = random_angle_radians();
+                    rot[1] = random_angle_radians();
+                    rot[2] = random_angle_radians();
+                    spawn_crate_debris(m, vel, p, rot, 0x5EC, 0, 0.35f, 0.7f);
+                }
+            }
+            if (d->t3C2 == 0) {
+                if (dist < 3.0f && adiff < 1.5707964f) {
+                    MobyBlendAnimation(m, 4, 0, scale_ticks(10));
+                    m->state = 8;
+                } else if (excited ? (dist < d->f3E8 * 2.0f) : (dist < d->f3E8)) {
+                    if (m->command & 1) {
+                        if (excited || d->f3DC == -1 ||
+                            IsPointInPolygon(tgt, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) != 0) {
+                            m->state = 5;
+                            m->command |= 8;
                         }
-                        ang = FastAddRots(sign * tab.v[i >> 1], fast_atan2(m->pos.x - h->motion.pos.f[0], m->pos.y - h->motion.pos.f[1]));
-                        BuildSphericalOffset(v, 6.0f, ang, m->rot.y);
+                    } else {
+                        d->f3D0 = 0.0f;
+                        MobyBlendAnimation(m, 0x10, 0, scale_ticks(10));
+                        reset_walker_gait_helpers(d->f160);
+                        m->state = 0xA;
+                        m->command |= 1;
+                    }
+                }
+            }
+            break;
+        }
+        case 4:
+            if (excited) {
+                if (dist < 3.0f && adiff < 1.5707964f) {
+                    MobyBlendAnimation(m, 4, 0, scale_ticks(10));
+                    reset_walker_gait_helpers(d->f160);
+                    m->state = 8;
+                } else if (d->f3DC == -1 ||
+                           IsPointInPolygon(tgt, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) != 0) {
+                    m->state = 5;
+                    m->command |= 8;
+                } else if (adiff > 1.5707964f) {
+                    d->f3D0 = 0.0f;
+                    MobyBlendAnimation(m, 0x10, 0, scale_ticks(10));
+                    reset_walker_gait_helpers(d->f160);
+                    m->state = 0xA;
+                }
+            } else {
+                m->state = 1;
+            }
+            break;
+        case 5: {
+            if (m->command & 8) {
+                m->command &= ~8;
+                reset_leg_rig_from_animation(m, d->f160);
+            }
+            leg_walker_update(m, d->f160, g_frame_time * 4.0f, fast_atan2(tgt[0] - m->pos.x, tgt[1] - m->pos.y),
+                              g_frame_time_sq * 20.0f);
+            if (dist < 3.0f && adiff < 1.5707964f) {
+                MobyBlendAnimation(m, 4, 0, scale_ticks(10));
+                reset_walker_gait_helpers(d->f160);
+                m->state = 8;
+            } else if (d->f3DC != -1) {
+                float v[4];
+
+                v[0] = FastCos(m->rot.z) * 2.0f;
+                v[1] = FastSin(m->rot.z) * 2.0f;
+                v[2] = 0.0f;
+                p = (unsigned char *)v;
+                FastVecAdd(p, p, pos);
+                if (IsPointInPolygon(p, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) == 0) {
+                    if (excited && IsPointInPolygon(tgt, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) == 0) {
+                        m->state = 7;
+                    } else if (IsPointInPolygon(tgt, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) != 0) {
+                        d->f3D0 = 0.0f;
+                        MobyBlendAnimation(m, 0x10, 0, scale_ticks(10));
+                        reset_walker_gait_helpers(d->f160);
+                        m->state = 0xA;
+                    }
+                }
+                if (!excited) {
+                    if (IsPointInPolygon(tgt, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) == 0) {
+                        m->state = 6;
+                    }
+                }
+            }
+            break;
+        }
+        case 6:
+            if (m->command & 8) {
+                m->command &= ~8;
+                reset_leg_rig_from_animation(m, d->f160);
+            }
+            if (dist < 3.0f && adiff < 1.5707964f) {
+                MobyBlendAnimation(m, 4, 0, scale_ticks(10));
+                reset_walker_gait_helpers(d->f160);
+                m->state = 8;
+            } else {
+                if (m->command & 8) {
+                    m->command &= ~8;
+                    reset_leg_rig_from_animation(m, d->f160);
+                }
+                if (vec_distance_xy(pos, d->f3B0) < 2.0f) {
+                    m->state = 7;
+                } else {
+                    leg_walker_update(m, d->f160, g_frame_time * 4.0f,
+                                      fast_atan2(d->f3B0[0] - m->pos.x, d->f3B0[1] - m->pos.y),
+                                      g_frame_time_sq * 20.0f);
+                    if (d->f3DC != -1) {
+                        float v[4];
+
+                        v[0] = FastCos(m->rot.z) * 2.0f;
+                        v[1] = FastSin(m->rot.z) * 2.0f;
+                        v[2] = 0.0f;
                         FastVecAdd(v, v, pos);
-                        if (IsPointInPolygon(v, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) != 0) {
-                            found = 1;
+                        if (IsPointInPolygon(v, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) == 0) {
+                            d->f3D0 = 0.0f;
                             MobyBlendAnimation(m, 0x10, 0, scale_ticks(10));
-                            d->f3D4 = ang;
-                            d->f3D8 = 0.0f;
-                            break;
+                            reset_walker_gait_helpers(d->f160);
+                            m->state = 0xA;
+                            m->command |= 0x10;
+                        } else if (IsPointInPolygon(tgt, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) != 0) {
+                            m->state = 7;
                         }
                     }
-                    if (!found) {
-                        if (m->seq == 5) {
-                            if (dist < 3.0f && adiff < 1.5707964f) {
-                                MobyBlendAnimation(m, 4, 0, scale_ticks(10));
-                                m->state = 8;
+                }
+            }
+            break;
+        case 7:
+            if (dist < 3.0f && adiff < 1.5707964f) {
+                MobyBlendAnimation(m, 4, 0, scale_ticks(10));
+                reset_walker_gait_helpers(d->f160);
+                m->state = 8;
+            } else {
+                leg_walker_update(m, d->f160, g_frame_time * 0.0f, m->rot.z, g_frame_time_sq * 20.0f);
+                if (d->f217 == 0) {
+                    if (excited) {
+                        m->state = 4;
+                    } else {
+                        m->state = 1;
+                    }
+                }
+            }
+            break;
+        case 8:
+            if (m->seq == 4 && (m->anim_flags & 2)) {
+                d->t3C2 = 0;
+                MobyBlendAnimation(m, 0, 0, scale_ticks(10));
+                m->state = 1;
+            }
+            break;
+        case 9:
+            if (m->prev_seq != 5 || (m->seq == 5 && (m->anim_flags & 2))) {
+                if (m->command & 4) {
+                    m->command &= ~4;
+                    if (d->f3DC == -1) {
+                        MobyBlendAnimation(m, 0, 0, scale_ticks(10));
+                        m->state = 1;
+                        d->t3C2 = 0;
+                    } else {
+                        WBAngles tab = eudora_woodcut_bot_angles;
+                        float v[4];
+                        float sign = 1.0f;
+                        int found = 0;
+                        int i;
+
+                        for (i = 0; i < 9; i++) {
+                            struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
+                            float ang;
+
+                            if ((i & 1) == 0) {
+                                sign = 1.0f;
+                                if (random_integer_below(100) & 1)
+                                    sign = -1.0f;
+                            } else {
+                                sign = -sign;
+                            }
+                            ang = FastAddRots(sign * tab.v[i >> 1],
+                                              fast_atan2(m->pos.x - h->motion.pos.f[0], m->pos.y - h->motion.pos.f[1]));
+                            BuildSphericalOffset(v, 6.0f, ang, m->rot.y);
+                            FastVecAdd(v, v, pos);
+                            if (IsPointInPolygon(v, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) != 0) {
+                                found = 1;
+                                MobyBlendAnimation(m, 0x10, 0, scale_ticks(10));
+                                d->f3D4 = ang;
+                                d->f3D8 = 0.0f;
+                                break;
+                            }
+                        }
+                        if (!found) {
+                            if (m->seq == 5) {
+                                if (dist < 3.0f && adiff < 1.5707964f) {
+                                    MobyBlendAnimation(m, 4, 0, scale_ticks(10));
+                                    m->state = 8;
+                                } else {
+                                    MobyBlendAnimation(m, 0, 0, scale_ticks(10));
+                                    m->state = 1;
+                                }
                             } else {
                                 MobyBlendAnimation(m, 0, 0, scale_ticks(10));
                                 m->state = 1;
+                                d->t3C2 = 0;
                             }
-                        } else {
-                            MobyBlendAnimation(m, 0, 0, scale_ticks(10));
-                            m->state = 1;
-                            d->t3C2 = 0;
                         }
                     }
-                }
-            } else {
-                float v[4];
-
-                if (hd < 28.0f && m->seq == 0x10) {
-                    float lim = frame_scale * 0.11111111f;
-
-                    if (d->f3D8 < lim) {
-                        d->f3D8 = d->f3D8 + g_frame_time_sq * 20.0f;
-                    } else {
-                        d->f3D8 = lim;
-                    }
-                    BuildSphericalOffset(v, d->f3D8, d->f3D4, m->rot.y);
-                    FastVecAdd(pos, pos, v);
-                    m->rot.z = SpringTurn(m->rot.z, fast_atan2(tgt[0] - m->pos.x, tgt[1] - m->pos.y), &d->f3D0, g_frame_time_sq * 3.1415927f, g_frame_time_sq * 6.2831855f, g_frame_time * 4.1887903f);
-                } else if (d->f3D8 > 0.0f) {
-                    d->f3D8 -= g_frame_time_sq * 200.0f;
-                    BuildSphericalOffset(v, d->f3D8, d->f3D4, m->rot.y);
-                    FastVecAdd(pos, pos, v);
-                    m->rot.z = SpringTurn(m->rot.z, fast_atan2(tgt[0] - m->pos.x, tgt[1] - m->pos.y), &d->f3D0, g_frame_time_sq * 3.1415927f, g_frame_time_sq * 6.2831855f, g_frame_time * 4.1887903f);
                 } else {
-                    m->state = 1;
-                    d->t3C2 = 0;
+                    float v[4];
+
+                    if (hd < 28.0f && m->seq == 0x10) {
+                        float lim = frame_scale * 0.11111111f;
+
+                        if (d->f3D8 < lim) {
+                            d->f3D8 = d->f3D8 + g_frame_time_sq * 20.0f;
+                        } else {
+                            d->f3D8 = lim;
+                        }
+                        BuildSphericalOffset(v, d->f3D8, d->f3D4, m->rot.y);
+                        FastVecAdd(pos, pos, v);
+                        m->rot.z = SpringTurn(m->rot.z, fast_atan2(tgt[0] - m->pos.x, tgt[1] - m->pos.y), &d->f3D0,
+                                              g_frame_time_sq * 3.1415927f, g_frame_time_sq * 6.2831855f,
+                                              g_frame_time * 4.1887903f);
+                    } else if (d->f3D8 > 0.0f) {
+                        d->f3D8 -= g_frame_time_sq * 200.0f;
+                        BuildSphericalOffset(v, d->f3D8, d->f3D4, m->rot.y);
+                        FastVecAdd(pos, pos, v);
+                        m->rot.z = SpringTurn(m->rot.z, fast_atan2(tgt[0] - m->pos.x, tgt[1] - m->pos.y), &d->f3D0,
+                                              g_frame_time_sq * 3.1415927f, g_frame_time_sq * 6.2831855f,
+                                              g_frame_time * 4.1887903f);
+                    } else {
+                        m->state = 1;
+                        d->t3C2 = 0;
+                    }
                 }
             }
-        }
-        break;
-    case 10:
-        if (m->seq == 0x10 && (m->anim_flags & 2)) {
-            if ((m->command & 0x10) || IsPointInPolygon(tgt, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) == 0) {
-                m->state = 6;
-                MobyBlendAnimation(m, 0, 0, scale_ticks(10));
+            break;
+        case 10:
+            if (m->seq == 0x10 && (m->anim_flags & 2)) {
+                if ((m->command & 0x10) ||
+                    IsPointInPolygon(tgt, eudora_paths[d->f3DC] + 4, *eudora_paths[d->f3DC]) == 0) {
+                    m->state = 6;
+                    MobyBlendAnimation(m, 0, 0, scale_ticks(10));
+                } else {
+                    m->state = 5;
+                    MobyBlendAnimation(m, 0, 0, scale_ticks(10));
+                }
+                m->command = (m->command | 8) & ~0x10;
+            } else if (m->command & 0x10) {
+                m->rot.z =
+                    SpringTurn(m->rot.z, fast_atan2(d->f3B0[0] - m->pos.x, d->f3B0[1] - m->pos.y), &d->f3D0,
+                               g_frame_time_sq * 3.1415927f, g_frame_time_sq * 6.2831855f, g_frame_time * 4.1887903f);
             } else {
-                m->state = 5;
-                MobyBlendAnimation(m, 0, 0, scale_ticks(10));
+                m->rot.z = SpringTurn(m->rot.z, fast_atan2(tgt[0] - m->pos.x, tgt[1] - m->pos.y), &d->f3D0, 0.03f, 0.3f,
+                                      g_frame_time * 6.4577184f);
             }
-            m->command = (m->command | 8) & ~0x10;
-        } else if (m->command & 0x10) {
-            m->rot.z = SpringTurn(m->rot.z, fast_atan2(d->f3B0[0] - m->pos.x, d->f3B0[1] - m->pos.y), &d->f3D0, g_frame_time_sq * 3.1415927f, g_frame_time_sq * 6.2831855f, g_frame_time * 4.1887903f);
-        } else {
-            m->rot.z = SpringTurn(m->rot.z, fast_atan2(tgt[0] - m->pos.x, tgt[1] - m->pos.y), &d->f3D0, 0.03f, 0.3f, g_frame_time * 6.4577184f);
-        }
-        break;
-    case 11:
-        if ((mine_fall(m, d->fC0) & 0x40) || m->pos.z < 1.0f) {
-            emit_woodcut_bot_death_effects(m);
-            SpawnBreakFragment(m, 0x6CB, pos, &m->rot, 0, 0, 0.0f, eudora_zero_vector, eudora_zero_vector, eudora_zero_vector);
-            SpawnBreakFragment(m, 0x6CC, pos, &m->rot, 0, 0, 0.0f, eudora_zero_vector, eudora_zero_vector, eudora_zero_vector);
-            SpawnBreakFragment(m, 0x6CD, pos, &m->rot, 0, 0, 0.0f, eudora_zero_vector, eudora_zero_vector, eudora_zero_vector);
-            DeleteMoby(m);
-            return;
-        }
-        break;
+            break;
+        case 11:
+            if ((mine_fall(m, d->fC0) & 0x40) || m->pos.z < 1.0f) {
+                emit_woodcut_bot_death_effects(m);
+                SpawnBreakFragment(m, 0x6CB, pos, &m->rot, 0, 0, 0.0f, eudora_zero_vector, eudora_zero_vector,
+                                   eudora_zero_vector);
+                SpawnBreakFragment(m, 0x6CC, pos, &m->rot, 0, 0, 0.0f, eudora_zero_vector, eudora_zero_vector,
+                                   eudora_zero_vector);
+                SpawnBreakFragment(m, 0x6CD, pos, &m->rot, 0, 0, 0.0f, eudora_zero_vector, eudora_zero_vector,
+                                   eudora_zero_vector);
+                DeleteMoby(m);
+                return;
+            }
+            break;
     }
 
     {
@@ -1204,7 +1371,8 @@ void woodcut_bot_update(Moby *m) {
         axis_rotation_2d48(w, 1, d->f3C8);
         axis_rotation_2d48(d->f130, 2, 0.0f);
         multiply_quaternions(d->f130, d->f130, w);
-        if (m->state != 9) d->f3C1 = m->state;
+        if (m->state != 9)
+            d->f3C1 = m->state;
         if (m->state != 5 && m->command != 6) {
             float g;
 
@@ -1289,7 +1457,8 @@ void interpolate_moby_and_linked_moby_positions_on_path(char *moby) {
     g = (one - src[0]) * f;
     f = fast_fmod(g, one);
     idx = truncate_float_to_s32_r(g);
-    if (f == 0.0f) n = 0;
+    if (f == 0.0f)
+        n = 0;
     n += idx;
     FastVecScale(a, (char *)t + (idx * 16 + 0x10), one - f);
     FastVecScale(b, (char *)t + (n * 16 + 0x10), f);
@@ -1300,11 +1469,16 @@ typedef unsigned int VecQuadP __attribute__((mode(TI), aligned(16)));
 struct MobyP {
     unsigned char pad0[0x10];
     Vec4 pos;
-    unsigned char state; unsigned char pad21[0xB];
+    unsigned char state;
+    unsigned char pad21[0xB];
     float scale;
-    unsigned char update_dist; unsigned char pad31; short draw_dist;
+    unsigned char update_dist;
+    unsigned char pad31;
+    short draw_dist;
     unsigned char pad34[0xC];
-    struct { float x, y, z; } rot;
+    struct {
+        float x, y, z;
+    } rot;
     unsigned char pad4c[0x78 - 0x4C];
     void *pvars;
 };
@@ -1349,95 +1523,99 @@ void leaf_update(struct MobyP *moby) {
     speed = vector_length_xy(&data->vel);
     qcopy(&old, &moby->pos);
     switch (moby->state) {
-    case 0:
-        qcopy(&data->home_pos, &moby->pos);
-        data->life = data->timer = random_int_between(120, 2400);
-        data->base_scale = moby->scale * random_float_between(0.8f, 1.2f);
-        moby->state = 1;
-        break;
-    case 1:
-        if (!(vec_distance_xy(&moby->pos, eudora_camera_pos) < 32.0f))
+        case 0:
+            qcopy(&data->home_pos, &moby->pos);
+            data->life = data->timer = random_int_between(120, 2400);
+            data->base_scale = moby->scale * random_float_between(0.8f, 1.2f);
+            moby->state = 1;
+            break;
+        case 1:
+            if (!(vec_distance_xy(&moby->pos, eudora_camera_pos) < 32.0f))
+                return;
+            if (!fast_dec_timer(&data->timer))
+                return;
+            direction.q = 0;
+            direction.f[0] = random_float_between(-1.0f, 1.0f);
+            direction.f[1] = random_float_between(-1.0f, 1.0f);
+            direction.f[2] = random_float_between(-1.0f, 1.0f);
+            moby->update_dist = 0xff;
+            moby->draw_dist = 0x40;
+            moby->scale = 0.0f;
+            motion = (float *)moby->pvars;
+            initialDirection.q = direction.q;
+            normalize_vector_xyz(&initialDirection, &initialDirection, eudora_leaf_drift[5] / 5.0f);
+            motion[0] = eudora_leaf_drift[5] * fast_cos(eudora_leaf_drift[1]);
+            {
+                float sn = fast_sin(eudora_leaf_drift[1]);
+                float st = eudora_leaf_drift[5];
+                float ft = frame_time;
+                motion[1] = st * sn;
+                motion[2] = ft * -0.5f;
+            }
+            normalize_vector_xyz(&moby->rot, &initialDirection, 3.1415927f);
+            normalize_vector_xyz(motion + 8, &initialDirection, 0.098174773f);
+            normalize_vector_xyz(motion + 4, &initialDirection, eudora_leaf_drift[5] * 0.5f);
+            *(int *)(motion + 16) = *(int *)(motion + 17) = random_int_between(720, 1200);
+            moby->state = 2;
             return;
-        if (!fast_dec_timer(&data->timer))
-            return;
-        direction.q = 0;
-        direction.f[0] = random_float_between(-1.0f, 1.0f);
-        direction.f[1] = random_float_between(-1.0f, 1.0f);
-        direction.f[2] = random_float_between(-1.0f, 1.0f);
-        moby->update_dist = 0xff;
-        moby->draw_dist = 0x40;
-        moby->scale = 0.0f;
-        motion = (float *)moby->pvars;
-        initialDirection.q = direction.q;
-        normalize_vector_xyz(&initialDirection, &initialDirection, eudora_leaf_drift[5] / 5.0f);
-        motion[0] = eudora_leaf_drift[5] * fast_cos(eudora_leaf_drift[1]);
-        { float sn = fast_sin(eudora_leaf_drift[1]); float st = eudora_leaf_drift[5]; float ft = frame_time;
-        motion[1] = st * sn;
-        motion[2] = ft * -0.5f; }
-        normalize_vector_xyz(&moby->rot, &initialDirection, 3.1415927f);
-        normalize_vector_xyz(motion + 8, &initialDirection, 0.098174773f);
-        normalize_vector_xyz(motion + 4, &initialDirection, eudora_leaf_drift[5] * 0.5f);
-        *(int *)(motion + 16) = *(int *)(motion + 17) = random_int_between(720, 1200);
-        moby->state = 2;
-        return;
-    case 2:
-        fast_dec_timer(&data->timer);
-        normalize_vector_xyz(&random, &random, eudora_leaf_drift[5] / 10.0f);
-        add_vector_xyz(&data->drift, &data->drift, &random);
-        normalize_vector_xyz(&work, &data->drift, 5.0f);
-        normalize_vector_xyz(&data->drift, &data->drift, eudora_leaf_drift[5] * 0.5f);
-        add_vector_xyz(&work, &work, &moby->pos);
-        if (collision_line(&old, &work, 6, 0, 0) && !rib_p(8)) {
-            vec_reflect(&data->drift, &data->drift, eudora_coll_hit_point + 0x20);
-            data->drift.z += eudora_leaf_drift[5] / 10.0f;
-        }
-        add_vector_xyz(&data->vel, &data->vel, &data->drift);
-        work.f[0] = eudora_leaf_drift[5] * fast_cos(eudora_leaf_drift[1]);
-        work.f[1] = eudora_leaf_drift[5] * fast_sin(eudora_leaf_drift[1]);
-        work.f[2] = frame_time * -0.5f;
-        scale_vector_xyz(&work, &work, 0.4f);
-        scale_vector_xyz(&data->vel, &data->vel, 0.6f);
-        add_vector_xyz(&data->vel, &work, &data->vel);
-        add_vector_xyz(&moby->pos, &moby->pos, &data->vel);
-        if (collision_line(&old, &moby->pos, 6, 0, 0)) {
-            qcopy(&moby->pos, eudora_coll_hit_point);
-            vec_reflect(&data->vel, &data->vel, eudora_coll_hit_point + 0x20);
-            scale_vector_xyz(&data->vel, &data->vel, 0.25f);
+        case 2:
+            fast_dec_timer(&data->timer);
+            normalize_vector_xyz(&random, &random, eudora_leaf_drift[5] / 10.0f);
+            add_vector_xyz(&data->drift, &data->drift, &random);
+            normalize_vector_xyz(&work, &data->drift, 5.0f);
+            normalize_vector_xyz(&data->drift, &data->drift, eudora_leaf_drift[5] * 0.5f);
+            add_vector_xyz(&work, &work, &moby->pos);
+            if (collision_line(&old, &work, 6, 0, 0) && !rib_p(8)) {
+                vec_reflect(&data->drift, &data->drift, eudora_coll_hit_point + 0x20);
+                data->drift.z += eudora_leaf_drift[5] / 10.0f;
+            }
+            add_vector_xyz(&data->vel, &data->vel, &data->drift);
+            work.f[0] = eudora_leaf_drift[5] * fast_cos(eudora_leaf_drift[1]);
+            work.f[1] = eudora_leaf_drift[5] * fast_sin(eudora_leaf_drift[1]);
+            work.f[2] = frame_time * -0.5f;
+            scale_vector_xyz(&work, &work, 0.4f);
+            scale_vector_xyz(&data->vel, &data->vel, 0.6f);
+            add_vector_xyz(&data->vel, &work, &data->vel);
             add_vector_xyz(&moby->pos, &moby->pos, &data->vel);
-            data->vel.z += eudora_leaf_drift[5] / 5.0f;
-        }
-        if (eudora_leaf_drift[5] < speed)
-            normalize_vector_xyz(&data->vel, &data->vel, eudora_leaf_drift[5]);
-        {
-            float amount = frame_time * -0.5f;
-            if (amount < data->vel.z)
-                data->vel.z += amount / 10.0f;
-            else
-                data->vel.z = amount;
-        }
-        moby->rot.x = fast_add_rotations(moby->rot.x, data->spin_x);
-        moby->rot.y = fast_add_rotations(moby->rot.y, data->spin_y);
-        moby->rot.z = fast_add_rotations(moby->rot.z, data->spin_z);
-        if (data->life - scale_ticks(10) < data->timer) {
-            amount = cif_p(data->timer - data->life);
-            moby->scale = (data->base_scale * amount) / multiply_global_factor(10.0f);
-        } else {
-            if (data->timer < scale_ticks(100))
-                moby->scale *= 0.99f;
-            else
-                moby->scale = data->base_scale;
-        }
-        if (data->timer > 0)
+            if (collision_line(&old, &moby->pos, 6, 0, 0)) {
+                qcopy(&moby->pos, eudora_coll_hit_point);
+                vec_reflect(&data->vel, &data->vel, eudora_coll_hit_point + 0x20);
+                scale_vector_xyz(&data->vel, &data->vel, 0.25f);
+                add_vector_xyz(&moby->pos, &moby->pos, &data->vel);
+                data->vel.z += eudora_leaf_drift[5] / 5.0f;
+            }
+            if (eudora_leaf_drift[5] < speed)
+                normalize_vector_xyz(&data->vel, &data->vel, eudora_leaf_drift[5]);
+            {
+                float amount = frame_time * -0.5f;
+                if (amount < data->vel.z)
+                    data->vel.z += amount / 10.0f;
+                else
+                    data->vel.z = amount;
+            }
+            moby->rot.x = fast_add_rotations(moby->rot.x, data->spin_x);
+            moby->rot.y = fast_add_rotations(moby->rot.y, data->spin_y);
+            moby->rot.z = fast_add_rotations(moby->rot.z, data->spin_z);
+            if (data->life - scale_ticks(10) < data->timer) {
+                amount = cif_p(data->timer - data->life);
+                moby->scale = (data->base_scale * amount) / multiply_global_factor(10.0f);
+            } else {
+                if (data->timer < scale_ticks(100))
+                    moby->scale *= 0.99f;
+                else
+                    moby->scale = data->base_scale;
+            }
+            if (data->timer > 0)
+                return;
+            qcopy(&moby->pos, &data->home_pos);
+            timer = random_int_between(120, 2400);
+            /* Preserve the retail ordering of the timer reload stores. */
+            *(volatile int *)&data->life = timer;
+            *(volatile int *)&data->timer = timer;
+            moby->state = 1;
+            break;
+        default:
             return;
-        qcopy(&moby->pos, &data->home_pos);
-        timer = random_int_between(120, 2400);
-        /* Preserve the retail ordering of the timer reload stores. */
-        *(volatile int *)&data->life = timer;
-        *(volatile int *)&data->timer = timer;
-        moby->state = 1;
-        break;
-    default:
-        return;
     }
     moby->scale = 0.0f;
 }
@@ -1464,25 +1642,44 @@ float riser_rise_speed(char *moby) {
     };
     struct Moby *m = (struct Moby *)moby;
     switch (m->oclass) {
-    case RISER_CLASS_ASCENDING_WITH_COMPLETION_VOICE:
-    case RISER_CLASS_ASCENDING_WITHOUT_COMPLETION_VOICE:
-        return 1.3f;
-    case RISER_CLASS_FAST_DESCENDING:
-        return -2.55f;
+        case RISER_CLASS_ASCENDING_WITH_COMPLETION_VOICE:
+        case RISER_CLASS_ASCENDING_WITHOUT_COMPLETION_VOICE:
+            return 1.3f;
+        case RISER_CLASS_FAST_DESCENDING:
+            return -2.55f;
     }
     return -2.05f;
 }
 INCLUDE_ASM("asm/overlays", func_L04_002E2B90);
 INCLUDE_ASM("asm/overlays", func_L04_002E2BA4);
-typedef struct { int owner; float height; int timer; } CollectData2BB8;
-typedef struct { char pad[0x18]; float height; char pad1[4]; unsigned char state; char pad2[0x57]; CollectData2BB8 *data; char pad3[0x2a]; short oclass; char pad4[0xa]; unsigned short id; char pad5[0x4c]; } CollectMoby2BB8;
+typedef struct {
+    int owner;
+    float height;
+    int timer;
+} CollectData2BB8;
+typedef struct {
+    char pad[0x18];
+    float height;
+    char pad1[4];
+    unsigned char state;
+    char pad2[0x57];
+    CollectData2BB8 *data;
+    char pad3[0x2a];
+    short oclass;
+    char pad4[0xa];
+    unsigned short id;
+    char pad5[0x4c];
+} CollectMoby2BB8;
 extern int Sound_PlayClassSound(int i, int a1, int v, int k);
 extern float riser_rise_speed(char *);
 extern int fast_dec_timer_i(int *arg0) __asm__("func_001F9908");
 extern void Moby_PlaySound(int, int, int);
 extern int g_current_level_index MACRO_ADDR;
 extern int level_moby_killed[][64] NOT_SDA;
-typedef struct { unsigned char pad[0x454]; unsigned char taken[0]; } CollectFlags2BB8;
+typedef struct {
+    unsigned char pad[0x454];
+    unsigned char taken[0];
+} CollectFlags2BB8;
 extern CollectFlags2BB8 D_L04_001BB6C0_flags __asm__("D_L04_001BB6C0") NOT_SDA;
 extern int eudora_moby_killed_bits[];
 extern CollectMoby2BB8 *D_L04_00160058_pickups SDATA(D_L04_00160058);
@@ -1492,39 +1689,41 @@ void upper_door_update(CollectMoby2BB8 *m) {
     CollectData2BB8 *d = m->data;
     unsigned short u;
     switch (m->state) {
-    case 0:
-        d->height = m->height;
-        m->state = 1;
-        break;
-    case 1:
-        u = m->id;
-        if (D_L04_001BB6C0_flags.taken[(short)u] == 0 && ((level_moby_killed[g_current_level_index][(short)u >> 5] >> (u & 0x1F)) & 1) == 0) {
-            int o = d->owner;
-            CollectMoby2BB8 *q;
-            if (o == -1) break;
-            q = (CollectMoby2BB8 *)((o << 8) + (unsigned int)D_L04_00160058_pickups);
-            if (!((q->oclass == 0x267 && q->state == 4) ||
-                  (q->oclass == 0x4A6 && q->state == 2)))
-                break;
+        case 0:
+            d->height = m->height;
+            m->state = 1;
+            break;
+        case 1:
+            u = m->id;
+            if (D_L04_001BB6C0_flags.taken[(short)u] == 0 &&
+                ((level_moby_killed[g_current_level_index][(short)u >> 5] >> (u & 0x1F)) & 1) == 0) {
+                int o = d->owner;
+                CollectMoby2BB8 *q;
+                if (o == -1)
+                    break;
+                q = (CollectMoby2BB8 *)((o << 8) + (unsigned int)D_L04_00160058_pickups);
+                if (!((q->oclass == 0x267 && q->state == 4) || (q->oclass == 0x4A6 && q->state == 2)))
+                    break;
+            }
+            if (m->oclass == 0x44D || m->oclass == 0x5FC)
+                Sound_PlayClassSound(0, 0, (int)m, 0x44D);
+            m->state = 2;
+            d->timer = scale_ticks(0x3C);
+            break;
+        case 2: {
+            unsigned short id1, id2;
+            m->height = m->height + riser_rise_speed((char *)m) * g_frame_time;
+            if (fast_dec_timer_i(&d->timer) != 0) {
+                id1 = m->id;
+                level_moby_killed[g_current_level_index][(short)id1 >> 5] |= 1 << (id1 & 0x1F);
+                id2 = m->id;
+                eudora_moby_killed_bits[(short)id2 >> 5] |= 1 << (id2 & 0x1F);
+                if (m->oclass == 0x44D)
+                    Moby_PlaySound(1, 0, (int)m);
+                m->state = 3;
+            }
+            break;
         }
-        if (m->oclass == 0x44D || m->oclass == 0x5FC)
-            Sound_PlayClassSound(0, 0, (int)m, 0x44D);
-        m->state = 2;
-        d->timer = scale_ticks(0x3C);
-        break;
-    case 2: {
-        unsigned short id1, id2;
-        m->height = m->height + riser_rise_speed((char *)m) * g_frame_time;
-        if (fast_dec_timer_i(&d->timer) != 0) {
-            id1 = m->id;
-            level_moby_killed[g_current_level_index][(short)id1 >> 5] |= 1 << (id1 & 0x1F);
-            id2 = m->id;
-            eudora_moby_killed_bits[(short)id2 >> 5] |= 1 << (id2 & 0x1F);
-            if (m->oclass == 0x44D) Moby_PlaySound(1, 0, (int)m);
-            m->state = 3;
-        }
-        break;
-    }
     }
 }
 typedef struct {
@@ -1571,44 +1770,44 @@ void suck_cannon_update(Moby *moby) {
     else if (moby->flags & 1)
         moby->flags &= ~0x41;
     switch (moby->state) {
-    case 0:
-        initialize_moby_particle_effect_r(moby);
-        if (*(discount_purchase_pricing_r + 0xE)) {
+        case 0:
+            initialize_moby_particle_effect_r(moby);
+            if (*(discount_purchase_pricing_r + 0xE)) {
+                remove_moby_002E2DF0(moby);
+                break;
+            }
+            moby->state = 1;
+            moby->pos.z += 1.0f;
+            break;
+        case 1:
+            update_suck_cannon_particles_r(moby);
+            if (dist_002E2DF0(&moby->pos, gHeroPos_r) < 3.0f) {
+                moby->flags |= 0x41;
+                StartCutscene_r(2);
+                moby->state = 2;
+            }
+            break;
+        case 2:
+            if (eudora_game_mode_r == 2)
+                break;
+            if (!*(gHaveHeliPack_r + 7))
+                ShowBanner_r(0xFA7, -1);
+            else
+                ShowBanner_r(0x53E4, -1);
+            dialogue_message_duration_frames_r = 0xB4;
+            grant_inventory_item_r(9, 1);
+            if (vars->exitMoby != -1) {
+                exit = &portal_mobys_002E2DF0[vars->exitMoby];
+                jet_reset_camera_r(&exit->pos, &exit->rot);
+            } else {
+                STUB_printf_r(suck_cannon_no_exit_fmt_r, *(s16 *)&moby->save_id);
+            }
+            moby->state = 3;
+            memcard_Save_r(0, -1);
+            break;
+        case 3:
             remove_moby_002E2DF0(moby);
             break;
-        }
-        moby->state = 1;
-        moby->pos.z += 1.0f;
-        break;
-    case 1:
-        update_suck_cannon_particles_r(moby);
-        if (dist_002E2DF0(&moby->pos, gHeroPos_r) < 3.0f) {
-            moby->flags |= 0x41;
-            StartCutscene_r(2);
-            moby->state = 2;
-        }
-        break;
-    case 2:
-        if (eudora_game_mode_r == 2)
-            break;
-        if (!*(gHaveHeliPack_r + 7))
-            ShowBanner_r(0xFA7, -1);
-        else
-            ShowBanner_r(0x53E4, -1);
-        dialogue_message_duration_frames_r = 0xB4;
-        grant_inventory_item_r(9, 1);
-        if (vars->exitMoby != -1) {
-            exit = &portal_mobys_002E2DF0[vars->exitMoby];
-            jet_reset_camera_r(&exit->pos, &exit->rot);
-        } else {
-            STUB_printf_r(suck_cannon_no_exit_fmt_r, *(s16 *)&moby->save_id);
-        }
-        moby->state = 3;
-        memcard_Save_r(0, -1);
-        break;
-    case 3:
-        remove_moby_002E2DF0(moby);
-        break;
     }
 }
 typedef struct {
@@ -1685,47 +1884,49 @@ void lieutenant_update(char *m) {
     }
     attach_big_head_cheat_manipulator_to_matching_moby(m);
     switch (((Moby *)m)->state) {
-    case 0:
-        c = ((Moby *)m)->mission;
-        g = g_current_level_index;
-        if (saved_mission_state[c + (g << 4)] == 0xFF) goto done;
-        ((Moby *)m)->state = 1;
-        DialogRequest_Init(m, data);
-        break;
-    case 1:
-        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, *(int *)(data + 0x140)) != 0) {
-            *(float *)(data + 0xC) = 255.0f;
-        } else {
-            *(float *)(data + 0xC) = 1.0f;
-        }
-        if (Npc_TryStartDialog(m, data) != 0) {
-            ((Moby *)m)->state = 2;
-        }
-        break;
-    case 2:
-        if (*(short *)(data + 4) == 2) {
-            unlock_planet(6);
-            jet_clear_persistent(((Moby *)m)->mission);
-            vec_scale_to_length(a, m + 0xC0, 2.0f);
-            FastVecAdd(a, a, m + 0x10);
-            qcopy(b, m + 0x40);
-            b[2] = FastAddRots(b[2], 3.14159f);
-            qcopy(eudora_lieutenant_respawn_point, a);
-            qcopy(eudora_lieutenant_respawn_point + 0x10, b);
-            eudora_lieutenant_respawn_point[0x3A] = 1;
-            memcard_Save(0, -1);
-        done:
-            ((Moby *)m)->state = 3;
-            ((Moby *)m)->flags |= 0x41;
+        case 0:
+            c = ((Moby *)m)->mission;
+            g = g_current_level_index;
+            if (saved_mission_state[c + (g << 4)] == 0xFF)
+                goto done;
+            ((Moby *)m)->state = 1;
+            DialogRequest_Init(m, data);
+            break;
+        case 1:
+            if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
+                                            *(int *)(data + 0x140)) != 0) {
+                *(float *)(data + 0xC) = 255.0f;
+            } else {
+                *(float *)(data + 0xC) = 1.0f;
+            }
+            if (Npc_TryStartDialog(m, data) != 0) {
+                ((Moby *)m)->state = 2;
+            }
+            break;
+        case 2:
+            if (*(short *)(data + 4) == 2) {
+                unlock_planet(6);
+                jet_clear_persistent(((Moby *)m)->mission);
+                vec_scale_to_length(a, m + 0xC0, 2.0f);
+                FastVecAdd(a, a, m + 0x10);
+                qcopy(b, m + 0x40);
+                b[2] = FastAddRots(b[2], 3.14159f);
+                qcopy(eudora_lieutenant_respawn_point, a);
+                qcopy(eudora_lieutenant_respawn_point + 0x10, b);
+                eudora_lieutenant_respawn_point[0x3A] = 1;
+                memcard_Save(0, -1);
+            done:
+                ((Moby *)m)->state = 3;
+                ((Moby *)m)->flags |= 0x41;
+                *(int *)&((Moby *)m)->collision = 0;
+            } else if (*(int *)&eudora_game_mode != 2) {
+                Npc_TryStartDialog(m, data);
+            }
+            break;
+        case 3:
             *(int *)&((Moby *)m)->collision = 0;
-        } else if (*(int *)&eudora_game_mode != 2) {
-            Npc_TryStartDialog(m, data);
-        }
-        break;
-    case 3:
-        *(int *)&((Moby *)m)->collision = 0;
-        ((Moby *)m)->flags |= 0x41;
-        break;
+            ((Moby *)m)->flags |= 0x41;
+            break;
     }
 }
 
@@ -1786,231 +1987,250 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
     Data_2E57F8 *data = *(void **)&moby->pvars;
 
     switch (moby->state) {
-    case 0:
-        moby->update_dist = 0xFF;
-        moby->state = 1;
-        data->f14 = -1;
-        break;
-    case 1:
-        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, data->f0) != 0
-            && eudora_help_popup_state[0] == 0 && eudora_help_popup_state[9] == -1
-            && saved_mission_state[moby->mission + (g_current_level_index << 4)] != 0xFF) {
-            if (data->f14 == -1) {
-                Help_2E57F8 *h = (Help_2E57F8 *)(help_stats_base + 0x22D);
-                data->f14 = hero_death_count;
-                if (h[0x18].count < 0xFFFF) {
-                    h[0x18].count++;
-                }
-                if (scale_ticks(gameplay_event_frame_count) / 600 > h[0x18].time) {
-                    h[0x18].time = scale_ticks(gameplay_event_frame_count) / 600;
-                }
-                h[0x18].mask = h[0x18].mask | (1 << g_current_level_index) | 0x80000000;
-            } else if (usage_stats_entry24_count >= 3) {
-                if (item_available_20 == 0) {
-                    Help_2E57F8 *b = (Help_2E57F8 *)(help_stats_base + 0x34D);
-                    if (b[0x1D].count == 0) {
-                        Help_Request(0xFA1, 0x1D);
+        case 0:
+            moby->update_dist = 0xFF;
+            moby->state = 1;
+            data->f14 = -1;
+            break;
+        case 1:
+            if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
+                                            data->f0) != 0 &&
+                eudora_help_popup_state[0] == 0 && eudora_help_popup_state[9] == -1 &&
+                saved_mission_state[moby->mission + (g_current_level_index << 4)] != 0xFF) {
+                if (data->f14 == -1) {
+                    Help_2E57F8 *h = (Help_2E57F8 *)(help_stats_base + 0x22D);
+                    data->f14 = hero_death_count;
+                    if (h[0x18].count < 0xFFFF) {
+                        h[0x18].count++;
                     }
-                } else {
-                    int t = scale_ticks(gameplay_event_frame_count) - item_usage_entry40_last_time * 600;
-                    if (scale_ticks(0x4650) < t) {
+                    if (scale_ticks(gameplay_event_frame_count) / 600 > h[0x18].time) {
+                        h[0x18].time = scale_ticks(gameplay_event_frame_count) / 600;
+                    }
+                    h[0x18].mask = h[0x18].mask | (1 << g_current_level_index) | 0x80000000;
+                } else if (usage_stats_entry24_count >= 3) {
+                    if (item_available_20 == 0) {
                         Help_2E57F8 *b = (Help_2E57F8 *)(help_stats_base + 0x34D);
-                        if (b[0x1C].count == 0) {
-                            Help_Request(0xFA0, 0x1C);
+                        if (b[0x1D].count == 0) {
+                            Help_Request(0xFA1, 0x1D);
+                        }
+                    } else {
+                        int t = scale_ticks(gameplay_event_frame_count) - item_usage_entry40_last_time * 600;
+                        if (scale_ticks(0x4650) < t) {
+                            Help_2E57F8 *b = (Help_2E57F8 *)(help_stats_base + 0x34D);
+                            if (b[0x1C].count == 0) {
+                                Help_Request(0xFA0, 0x1C);
+                            }
                         }
                     }
                 }
             }
-        }
 
-        {
-            Help_2E57F8 *b = (Help_2E57F8 *)(help_stats_base + 0x34D);
-            if (b[0x42].count < 4) {
-                if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, data->f34) != 0
-                    || is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, data->f38) != 0) {
-                    Hero *h = (Hero *)(hero_globals_base + 0xE1D);
-                    if (h->state.prev == 0x3B && h->state_timer == 0) {
-                        Moby *m;
-                        for (m = eudora_moby_list_r; m != 0; m = m->next) {
-                            if (m->oclass == 0x118
-                                && FastVecDist(((float *)&m->pos),&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) < 3.0f
-                                && *(float *)*(void **)&m->pvars != 1.0f) {
-                                data->f20++;
-                                if (data->f20 == 3 || data->f20 == 6) {
-                                    Help_Request(0x3EE, 0x42);
+            {
+                Help_2E57F8 *b = (Help_2E57F8 *)(help_stats_base + 0x34D);
+                if (b[0x42].count < 4) {
+                    if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
+                                                    data->f34) != 0 ||
+                        is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
+                                                    data->f38) != 0) {
+                        Hero *h = (Hero *)(hero_globals_base + 0xE1D);
+                        if (h->state.prev == 0x3B && h->state_timer == 0) {
+                            Moby *m;
+                            for (m = eudora_moby_list_r; m != 0; m = m->next) {
+                                if (m->oclass == 0x118 &&
+                                    FastVecDist(((float *)&m->pos),
+                                                &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) <
+                                        3.0f &&
+                                    *(float *)*(void **)&m->pvars != 1.0f) {
+                                    data->f20++;
+                                    if (data->f20 == 3 || data->f20 == 6) {
+                                        Help_Request(0x3EE, 0x42);
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-        }
 
-        {
-            unsigned char *g = discount_purchase_pricing + 5;
-            if (g[9] != 0 && eudora_help_popup_state[0] == 0 && eudora_help_popup_state[9] == -1) {
-                Help_2E57F8 *b = (Help_2E57F8 *)(help_stats_base + 0x34D);
-                if (b[0x1E].count == 0) {
-                    Help_Request(0xFA2, 0x1E);
+            {
+                unsigned char *g = discount_purchase_pricing + 5;
+                if (g[9] != 0 && eudora_help_popup_state[0] == 0 && eudora_help_popup_state[9] == -1) {
+                    Help_2E57F8 *b = (Help_2E57F8 *)(help_stats_base + 0x34D);
+                    if (b[0x1E].count == 0) {
+                        Help_Request(0xFA2, 0x1E);
+                    }
                 }
             }
-        }
 
-        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, data->f3C) != 0 && usage_stats_entry31_count == 0
-            && eudora_help_popup_state[0] == 0 && eudora_help_popup_state[9] == -1) {
-            Help_2E57F8 *b = (Help_2E57F8 *)(help_stats_base + 0x34D);
-            if (b[0x77].count == 0) {
-                Help_Request(0x4E2D, 0x77);
-            }
-        }
-
-        if (data->f48 != -1) {
-            if (eudora_mobys_r[data->f48].oclass == 0x267 && eudora_mobys_r[data->f48].state == 4) {
-                menu_item_enabled_16 = 1;
-            }
-        }
-        if (data->f4C != -1) {
-            if (eudora_mobys_r[data->f4C].oclass == 0x267 && eudora_mobys_r[data->f4C].state == 4) {
-                menu_item_enabled_17 = 1;
-            }
-        }
-        if (data->f40 != -1) {
-            if (eudora_mobys_r[data->f40].oclass == 0x118 && eudora_mobys_r[data->f40].state == 5) {
-                menu_item_enabled_18 = 1;
-            }
-        }
-        if (data->f44 != -1) {
-            if (eudora_mobys_r[data->f44].oclass == 0x118 && eudora_mobys_r[data->f44].state == 5) {
-                menu_item_enabled_19 = 1;
-            }
-        }
-
-        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, data->f4) != 0
-            && (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9)
-            && eudora_help_popup_state[0] == 0 && eudora_help_popup_state[9] == -1) {
-            if (item_available_26 == 0) {
+            if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
+                                            data->f3C) != 0 &&
+                usage_stats_entry31_count == 0 && eudora_help_popup_state[0] == 0 && eudora_help_popup_state[9] == -1) {
                 Help_2E57F8 *b = (Help_2E57F8 *)(help_stats_base + 0x34D);
-                int t = scale_ticks(gameplay_event_frame_count) - b[0x1F].time * 600;
-                if ((int)(scale_ticks(0x12) * 60.0f) < t || b[0x1F].time * 600 == 0) {
-                    Help_Request(0xFA3, 0x1F);
+                if (b[0x77].count == 0) {
+                    Help_Request(0x4E2D, 0x77);
+                }
+            }
+
+            if (data->f48 != -1) {
+                if (eudora_mobys_r[data->f48].oclass == 0x267 && eudora_mobys_r[data->f48].state == 4) {
+                    menu_item_enabled_16 = 1;
+                }
+            }
+            if (data->f4C != -1) {
+                if (eudora_mobys_r[data->f4C].oclass == 0x267 && eudora_mobys_r[data->f4C].state == 4) {
+                    menu_item_enabled_17 = 1;
+                }
+            }
+            if (data->f40 != -1) {
+                if (eudora_mobys_r[data->f40].oclass == 0x118 && eudora_mobys_r[data->f40].state == 5) {
+                    menu_item_enabled_18 = 1;
+                }
+            }
+            if (data->f44 != -1) {
+                if (eudora_mobys_r[data->f44].oclass == 0x118 && eudora_mobys_r[data->f44].state == 5) {
+                    menu_item_enabled_19 = 1;
+                }
+            }
+
+            if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
+                                            data->f4) != 0 &&
+                (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 ||
+                 ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9) &&
+                eudora_help_popup_state[0] == 0 && eudora_help_popup_state[9] == -1) {
+                if (item_available_26 == 0) {
+                    Help_2E57F8 *b = (Help_2E57F8 *)(help_stats_base + 0x34D);
+                    int t = scale_ticks(gameplay_event_frame_count) - b[0x1F].time * 600;
+                    if ((int)(scale_ticks(0x12) * 60.0f) < t || b[0x1F].time * 600 == 0) {
+                        Help_Request(0xFA3, 0x1F);
+                    } else {
+                        int n = scale_ticks(gameplay_event_frame_count) / 600;
+                        if (b[0x1F].time < n) {
+                            b[0x1F].time = scale_ticks(gameplay_event_frame_count) / 600;
+                        }
+                    }
                 } else {
-                    int n = scale_ticks(gameplay_event_frame_count) / 600;
-                    if (b[0x1F].time < n) {
-                        b[0x1F].time = scale_ticks(gameplay_event_frame_count) / 600;
-                    }
-                }
-            } else {
-                if (data->f48 != -1 && eudora_mobys_r[data->f48].oclass == 0x267 && eudora_mobys_r[data->f48].state == 4) {
-                    Help_2E57F8 *h = (Help_2E57F8 *)(help_stats_base + 0x22D);
-                    unsigned int c = h[0x11].count;
-                    if (c <= 0xFFFE) {
-                        h[0x11].count = c + 1;
-                    }
-                    if (scale_ticks(gameplay_event_frame_count) / 600 > h[0x11].time) {
-                        h[0x11].time = scale_ticks(gameplay_event_frame_count) / 600;
-                    }
-                    h[0x11].mask = h[0x11].mask | (1 << g_current_level_index) | 0x80000000;
-                } else if (data->fC == 0) {
-                    if (usage_stats_entry17_count == 0) {
-                        Help_2E57F8 *b;
-                        data->f8++;
-                        b = (Help_2E57F8 *)(help_stats_base + 0x34D);
-                        if (b[0x20].count != 0) {
-                            int t = scale_ticks(gameplay_event_frame_count) - b[0x20].time * 600;
-                            if ((int)(scale_ticks(0x12) * 60.0f) < t || b[0x20].time * 600 == 0) {
-                                Help_Request(0xFA4, 0x20);
+                    if (data->f48 != -1 && eudora_mobys_r[data->f48].oclass == 0x267 &&
+                        eudora_mobys_r[data->f48].state == 4) {
+                        Help_2E57F8 *h = (Help_2E57F8 *)(help_stats_base + 0x22D);
+                        unsigned int c = h[0x11].count;
+                        if (c <= 0xFFFE) {
+                            h[0x11].count = c + 1;
+                        }
+                        if (scale_ticks(gameplay_event_frame_count) / 600 > h[0x11].time) {
+                            h[0x11].time = scale_ticks(gameplay_event_frame_count) / 600;
+                        }
+                        h[0x11].mask = h[0x11].mask | (1 << g_current_level_index) | 0x80000000;
+                    } else if (data->fC == 0) {
+                        if (usage_stats_entry17_count == 0) {
+                            Help_2E57F8 *b;
+                            data->f8++;
+                            b = (Help_2E57F8 *)(help_stats_base + 0x34D);
+                            if (b[0x20].count != 0) {
+                                int t = scale_ticks(gameplay_event_frame_count) - b[0x20].time * 600;
+                                if ((int)(scale_ticks(0x12) * 60.0f) < t || b[0x20].time * 600 == 0) {
+                                    Help_Request(0xFA4, 0x20);
+                                } else {
+                                    int n = scale_ticks(gameplay_event_frame_count) / 600;
+                                    if (b[0x20].time < n) {
+                                        b[0x20].time = scale_ticks(gameplay_event_frame_count) / 600;
+                                    }
+                                }
                             } else {
-                                int n = scale_ticks(gameplay_event_frame_count) / 600;
+                                int n;
+                                b[0x20].count++;
+                                n = scale_ticks(gameplay_event_frame_count) / 600;
                                 if (b[0x20].time < n) {
                                     b[0x20].time = scale_ticks(gameplay_event_frame_count) / 600;
                                 }
+                                b[0x20].mask = b[0x20].mask | (1 << g_current_level_index) | 0x80000000;
                             }
-                        } else {
-                            int n;
-                            b[0x20].count++;
-                            n = scale_ticks(gameplay_event_frame_count) / 600;
-                            if (b[0x20].time < n) {
-                                b[0x20].time = scale_ticks(gameplay_event_frame_count) / 600;
-                            }
-                            b[0x20].mask = b[0x20].mask | (1 << g_current_level_index) | 0x80000000;
                         }
                     }
                 }
+            } else if (data->fC != 0) {
+                if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
+                                                data->f4) == 0) {
+                    data->fC = 0;
+                }
             }
-        } else if (data->fC != 0) {
-            if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, data->f4) == 0) {
-                data->fC = 0;
-            }
-        }
 
-        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, data->f50) != 0
-            && (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9)
-            && eudora_help_popup_state[0] == 0 && eudora_help_popup_state[9] == -1) {
-            int t = scale_ticks(gameplay_event_frame_count) - g_help_play_time_offset * 600;
-            if (scale_ticks(0x34BC0) < t) {
+            if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
+                                            data->f50) != 0 &&
+                (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 ||
+                 ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9) &&
+                eudora_help_popup_state[0] == 0 && eudora_help_popup_state[9] == -1) {
+                int t = scale_ticks(gameplay_event_frame_count) - g_help_play_time_offset * 600;
+                if (scale_ticks(0x34BC0) < t) {
+                    Help_2E57F8 *b = (Help_2E57F8 *)(help_stats_base + 0x34D);
+                    if (!(b[0x43].mask & (1 << g_current_level_index))) {
+                        Help_Request(0x3EF, 0x43);
+                    }
+                }
+            }
+
+            {
                 Help_2E57F8 *b = (Help_2E57F8 *)(help_stats_base + 0x34D);
-                if (!(b[0x43].mask & (1 << g_current_level_index))) {
-                    Help_Request(0x3EF, 0x43);
-                }
-            }
-        }
-
-        {
-            Help_2E57F8 *b = (Help_2E57F8 *)(help_stats_base + 0x34D);
-            if (b[0x46].count == 0 || b[0x47].count == 0) {
-                Hero *h = (Hero *)(hero_globals_base + 0xE1D);
-                Moby *p;
-                if (h->state.current == 0x72 && (p = h->ground_moby) != 0 && p->oclass == 0x267
-                    && is_point_inside_clip_volume((char *)h + 0x80, data->f4) != 0) {
-                    if (b[0x46].count == 0) {
-                        Help_Request(0x7DB, 0x46);
-                    } else if (b[0x47].count == 0) {
-                        data->f1C++;
-                        if (scale_ticks(0x708) < data->f1C) {
-                            Help_Request(0x7DC, 0x47);
+                if (b[0x46].count == 0 || b[0x47].count == 0) {
+                    Hero *h = (Hero *)(hero_globals_base + 0xE1D);
+                    Moby *p;
+                    if (h->state.current == 0x72 && (p = h->ground_moby) != 0 && p->oclass == 0x267 &&
+                        is_point_inside_clip_volume((char *)h + 0x80, data->f4) != 0) {
+                        if (b[0x46].count == 0) {
+                            Help_Request(0x7DB, 0x46);
+                        } else if (b[0x47].count == 0) {
+                            data->f1C++;
+                            if (scale_ticks(0x708) < data->f1C) {
+                                Help_Request(0x7DC, 0x47);
+                            }
                         }
+                    } else {
+                        data->f1C = 0;
                     }
-                } else {
-                    data->f1C = 0;
                 }
             }
-        }
 
-        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, data->f30) != 0) {
-            Help_2E57F8 *h = (Help_2E57F8 *)(help_stats_base + 0x22D);
-            if (h[0x19].count == 0
-                && (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9)) {
-                int n;
-                h[0x19].count++;
-                n = scale_ticks(gameplay_event_frame_count) / 600;
-                if (h[0x19].time < n) {
-                    h[0x19].time = scale_ticks(gameplay_event_frame_count) / 600;
+            if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
+                                            data->f30) != 0) {
+                Help_2E57F8 *h = (Help_2E57F8 *)(help_stats_base + 0x22D);
+                if (h[0x19].count == 0 &&
+                    (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 ||
+                     ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9)) {
+                    int n;
+                    h[0x19].count++;
+                    n = scale_ticks(gameplay_event_frame_count) / 600;
+                    if (h[0x19].time < n) {
+                        h[0x19].time = scale_ticks(gameplay_event_frame_count) / 600;
+                    }
+                    h[0x19].mask = h[0x19].mask | (1 << g_current_level_index) | 0x80000000;
                 }
-                h[0x19].mask = h[0x19].mask | (1 << g_current_level_index) | 0x80000000;
             }
-        }
 
-        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, data->f2C) != 0 && usage_stats_entry25_count == 0
-            && ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) >= 2 && ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) != 9
-            && data->f28 == 0) {
-            data->f24++;
-            data->f28 = scale_ticks(0xB4);
-        } else if (data->f28 != 0) {
-            if (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9) {
-                data->f28 = 0;
+            if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
+                                            data->f2C) != 0 &&
+                usage_stats_entry25_count == 0 &&
+                ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) >= 2 &&
+                ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) != 9 && data->f28 == 0) {
+                data->f24++;
+                data->f28 = scale_ticks(0xB4);
+            } else if (data->f28 != 0) {
+                if (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 ||
+                    ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9) {
+                    data->f28 = 0;
+                }
             }
-        }
 
-        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, data->f2C) != 0 && usage_stats_entry25_count == 0
-            && (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 || ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9)
-            && data->f24 >= 3
-            && eudora_help_popup_state[0] == 0 && eudora_help_popup_state[9] == -1) {
-            Help_2E57F8 *b = (Help_2E57F8 *)(help_stats_base + 0x34D);
-            if (b[0x49].count == 0) {
-                Help_Request(0xFA5, 0x49);
+            if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
+                                            data->f2C) != 0 &&
+                usage_stats_entry25_count == 0 &&
+                (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 ||
+                 ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9) &&
+                data->f24 >= 3 && eudora_help_popup_state[0] == 0 && eudora_help_popup_state[9] == -1) {
+                Help_2E57F8 *b = (Help_2E57F8 *)(help_stats_base + 0x34D);
+                if (b[0x49].count == 0) {
+                    Help_Request(0xFA5, 0x49);
+                }
             }
-        }
-        break;
+            break;
     }
 }
 extern char eudora_coll_hit_normal[];
@@ -2024,16 +2244,16 @@ extern float randf_sym(float lo, float hi);
 
 // Updates a bouncing moby: spins it, then in state 0 reflects its direction off a plane and in state 1 fades it out.
 typedef struct BounceData2E6558 {
-    char pad0[4]; float floor, radius;
-    short bounces; short timer;
-    float velocity[4]; float spin[3];
+    char pad0[4];
+    float floor, radius;
+    short bounces;
+    short timer;
+    float velocity[4];
+    float spin[3];
 } BounceData2E6558;
 /* Fragment update: fall, spin and bounce off geometry; sink below the floor, then delete. */
 void update_entity_bounce_and_decay(char *moby) {
-    enum {
-        ENTITY_MOTION_STATE_BOUNCE = 0,
-        ENTITY_MOTION_STATE_DECAY_AND_REMOVE = 1
-    };
+    enum { ENTITY_MOTION_STATE_BOUNCE = 0, ENTITY_MOTION_STATE_DECAY_AND_REMOVE = 1 };
     struct Moby *entity = (struct Moby *)moby;
     BounceData2E6558 *pv = (BounceData2E6558 *)entity->pvars;
     float old[4];
@@ -2047,36 +2267,38 @@ void update_entity_bounce_and_decay(char *moby) {
     entity->rot.y = FastAddRots(entity->rot.y, pv->spin[1]);
     entity->rot.z = FastAddRots(entity->rot.z, pv->spin[2]);
     switch (entity->state) {
-    case ENTITY_MOTION_STATE_BOUNCE:
-        if (entity->pos.z < pv->floor - 3.0f) {
-            entity->state = ENTITY_MOTION_STATE_DECAY_AND_REMOVE;
-        } else if (FastDecTimer_bounce(&pv->timer) != 0 && pv->bounces != 0) {
-            if (coll_sphere(pv->radius, pos, 2, 0) != 0) {
-                VecQuad *collision_normal = (VecQuad *)eudora_coll_hit_normal;
-                float zero;
-                if (FastVecDot(vel, collision_normal) < (zero = 0.0f)) {
-                    qcopy(pos, collision_normal - 1);
-                    *(unsigned short *)&pv->bounces = *(unsigned short *)&pv->bounces - 1;
-                    vec_reflect(vel, vel, collision_normal);
-                    FastVecScale(vel, vel, 0.75f);
-                    pv->spin[0] = zero;
-                    pv->spin[1] = randf_sym(eudora_debris_spin_min_deg, eudora_debris_spin_max_deg) * 0.017453292f * g_frame_time;
-                    pv->spin[2] = randf_sym(eudora_debris_spin_min_deg, eudora_debris_spin_max_deg) * 0.017453292f * g_frame_time;
+        case ENTITY_MOTION_STATE_BOUNCE:
+            if (entity->pos.z < pv->floor - 3.0f) {
+                entity->state = ENTITY_MOTION_STATE_DECAY_AND_REMOVE;
+            } else if (FastDecTimer_bounce(&pv->timer) != 0 && pv->bounces != 0) {
+                if (coll_sphere(pv->radius, pos, 2, 0) != 0) {
+                    VecQuad *collision_normal = (VecQuad *)eudora_coll_hit_normal;
+                    float zero;
+                    if (FastVecDot(vel, collision_normal) < (zero = 0.0f)) {
+                        qcopy(pos, collision_normal - 1);
+                        *(unsigned short *)&pv->bounces = *(unsigned short *)&pv->bounces - 1;
+                        vec_reflect(vel, vel, collision_normal);
+                        FastVecScale(vel, vel, 0.75f);
+                        pv->spin[0] = zero;
+                        pv->spin[1] = randf_sym(eudora_debris_spin_min_deg, eudora_debris_spin_max_deg) * 0.017453292f *
+                                      g_frame_time;
+                        pv->spin[2] = randf_sym(eudora_debris_spin_min_deg, eudora_debris_spin_max_deg) * 0.017453292f *
+                                      g_frame_time;
+                    }
                 }
             }
+            break;
+        case ENTITY_MOTION_STATE_DECAY_AND_REMOVE: {
+            unsigned t;
+            entity->scale = entity->scale * 0.9f;
+            t = entity->alpha;
+            if (t < 4) {
+                DeleteMoby(moby);
+            } else {
+                entity->alpha = t - 4;
+            }
+            break;
         }
-        break;
-    case ENTITY_MOTION_STATE_DECAY_AND_REMOVE: {
-        unsigned t;
-        entity->scale = entity->scale * 0.9f;
-        t = entity->alpha;
-        if (t < 4) {
-            DeleteMoby(moby);
-        } else {
-            entity->alpha = t - 4;
-        }
-        break;
-    }
     }
 }
 extern s32 eudora_game_mode MACRO_ADDR;
@@ -2092,24 +2314,24 @@ extern void cutscene_set_camera_target(int);
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l04/gameplay/vendor/002e3078.c, FUN_L04_002e53a0. */
 void dispatch_mode_selected_slot(struct Moby *m) {
     switch (m->state) {
-    case 0:
-        m->update_dist = 0xFF;
-        m->state = 1;
-        break;
-    case 1:
-        if (eudora_game_mode == 2) {
-            if (eudora_cutscene_action.mode == 0 || eudora_cutscene_action.mode == 1) {
-                int v = eudora_cutscene_action.mode;
-                int i;
-                i = 0;
-                if (v == 0)
-                    i = 3;
-                else if (v == 1)
-                    i = 2;
-                cutscene_set_camera_target(eudora_cutscene_action.slot[i]);
+        case 0:
+            m->update_dist = 0xFF;
+            m->state = 1;
+            break;
+        case 1:
+            if (eudora_game_mode == 2) {
+                if (eudora_cutscene_action.mode == 0 || eudora_cutscene_action.mode == 1) {
+                    int v = eudora_cutscene_action.mode;
+                    int i;
+                    i = 0;
+                    if (v == 0)
+                        i = 3;
+                    else if (v == 1)
+                        i = 2;
+                    cutscene_set_camera_target(eudora_cutscene_action.slot[i]);
+                }
             }
-        }
-        break;
+            break;
     }
 }
 extern void spawn_proximity_gated_bolts(void *);
@@ -2121,19 +2343,21 @@ void BreakableL04_Update(char *m) {
     int hit = 0;
     char *r = MobyGetHitMessage(m, 0x10000, 0);
     switch (*(unsigned char *)(m + 0x20)) {
-    case 0:
-        m[0x20] = 1;
-        break;
-    case 1:
-        if (r != 0 && *(float *)(r + 0x2C) > 0.0f) hit = 1;
-        if (hit) m[0x20] = 2;
-        break;
-    case 2:
-        Moby_PlaySound(0, 0, (int)m);
-        spawn_proximity_gated_bolts(m);
-        spawn_moby_break_fragments(m, 0x72C, 1, 0x72C, 1, 1, 2);
-        spawn_moby_from_placement(m, 0x72B);
-        DeleteMoby(m);
-        break;
+        case 0:
+            m[0x20] = 1;
+            break;
+        case 1:
+            if (r != 0 && *(float *)(r + 0x2C) > 0.0f)
+                hit = 1;
+            if (hit)
+                m[0x20] = 2;
+            break;
+        case 2:
+            Moby_PlaySound(0, 0, (int)m);
+            spawn_proximity_gated_bolts(m);
+            spawn_moby_break_fragments(m, 0x72C, 1, 0x72C, 1, 1, 2);
+            spawn_moby_from_placement(m, 0x72B);
+            DeleteMoby(m);
+            break;
     }
 }

@@ -19,7 +19,7 @@ struct ElectricWaterBoltVars {
 struct SpinningProjectileVars {
     u8 pad_00[0x38];
     s32 timer; /* 0x38 */
-    char * last_hit; /* 0x3C */
+    char *last_hit; /* 0x3C */
 };
 
 /* Giant Clank pad: linked moby indices. */
@@ -149,43 +149,43 @@ extern int hero_is_in_special_state(void);
 #define CUBP_2D7C00(i) (D_L15_0016016C + ((i) << 7))
 #define CUB_2D7C00(i) ((char *)(((i) << 7) + (int)D_L15_0016016C))
 /* A sound voice stopped if it still plays for this owner. */
-#define STOP_2D7C00(i, own)                                                                        \
-    if ((i) != -1) {                                                                               \
-        unsigned char *e_ = voice_pool + (i) * 0x70;                                                 \
-        if (*(unsigned char **)(e_ + 0x88) == (own) && e_[0x74] != 0) {                                     \
-            Sound_StopSlot(i);                                                           \
-        }                                                                                          \
+#define STOP_2D7C00(i, own)                                             \
+    if ((i) != -1) {                                                    \
+        unsigned char *e_ = voice_pool + (i) * 0x70;                    \
+        if (*(unsigned char **)(e_ + 0x88) == (own) && e_[0x74] != 0) { \
+            Sound_StopSlot(i);                                          \
+        }                                                               \
     }
-#define RELEASE_2D7C00(pv)                                                                         \
-    STOP_2D7C00((pv)->voice0, (pv)->owner);                                                        \
-    (pv)->voice0 = -1;                                                                             \
-    STOP_2D7C00((pv)->voice1, (pv)->owner);                                                        \
+#define RELEASE_2D7C00(pv)                  \
+    STOP_2D7C00((pv)->voice0, (pv)->owner); \
+    (pv)->voice0 = -1;                      \
+    STOP_2D7C00((pv)->voice1, (pv)->owner); \
     (pv)->voice1 = -1;
 #define SECS_2D7C00(x) func_001FA898(func_001F9878((x) * 60.0f))
 
 typedef struct ElectricWaterVars {
-    s32 switches[4];              /* 0x00 moby indices of the switches, -1 = empty */
-    s16 on_timer;                 /* 0x10 */
-    s16 off_timer;                /* 0x12 */
-    s32 voice0;                   /* 0x14 */
-    f32 off_seconds;              /* 0x18 */
-    s32 shock_count;              /* 0x1C */
-    s32 water_areas[12];          /* 0x20 */
-    f32 saved_fog[4];             /* 0x50 */
-    s32 water_level_areas[4];     /* 0x60 */
-    s32 reset_area_a;             /* 0x70 */
-    s32 lamps[3];                 /* 0x74 */
-    s32 voice1;                   /* 0x80 */
-    struct Moby *owner;           /* 0x84 */
-    u8 saved_fog_color[4];        /* 0x88 */
-    s32 armed;                    /* 0x8C */
-    s32 lines[24];                /* 0x90 spark lines, 8 entries each, -1 ends one */
-    Q_2D7C00 bolt_start;          /* 0xF0 */
-    Q_2D7C00 bolt_end;            /* 0x100 */
-    Q_2D7C00 bolt_aim;            /* 0x110 */
-    s32 light;                    /* 0x120 */
-    s32 active_area;              /* 0x124 */
-    s32 reset_area_b;             /* 0x128 */
+    s32 switches[4]; /* 0x00 moby indices of the switches, -1 = empty */
+    s16 on_timer; /* 0x10 */
+    s16 off_timer; /* 0x12 */
+    s32 voice0; /* 0x14 */
+    f32 off_seconds; /* 0x18 */
+    s32 shock_count; /* 0x1C */
+    s32 water_areas[12]; /* 0x20 */
+    f32 saved_fog[4]; /* 0x50 */
+    s32 water_level_areas[4]; /* 0x60 */
+    s32 reset_area_a; /* 0x70 */
+    s32 lamps[3]; /* 0x74 */
+    s32 voice1; /* 0x80 */
+    struct Moby *owner; /* 0x84 */
+    u8 saved_fog_color[4]; /* 0x88 */
+    s32 armed; /* 0x8C */
+    s32 lines[24]; /* 0x90 spark lines, 8 entries each, -1 ends one */
+    Q_2D7C00 bolt_start; /* 0xF0 */
+    Q_2D7C00 bolt_end; /* 0x100 */
+    Q_2D7C00 bolt_aim; /* 0x110 */
+    s32 light; /* 0x120 */
+    s32 active_area; /* 0x124 */
+    s32 reset_area_b; /* 0x128 */
 } ElectricWaterVars;
 
 /* Electric water: switch the shock on or off, light its lamps, and hurt the hero when wet inside it. */
@@ -221,283 +221,287 @@ void electric_water_update(unsigned char *m) {
     }
 
     switch (moby->state) {
-    case ELECTRIC_WATER_INITIALIZE:
-        moby->update_dist = 0xFF;
-        for (reset_sw = 0; reset_sw < 4; reset_sw++) {
-            if (vars->switches[reset_sw] == -1) {
-                continue;
-            }
-            if (((struct Moby *)MOBY_2D7C00(vars->switches[reset_sw]))->oclass == 0x33E) {
-                quartu_current_level_state_moby_flags[*(short *)&((struct Moby *)MOBY_2D7C00(vars->switches[reset_sw]))->save_id] = 0;
-                quartu_checkpoint_level_state_moby_flags[*(short *)&((struct Moby *)MOBY_2D7C00(vars->switches[reset_sw]))->save_id] = 0;
-                save_id = ((struct Moby *)MOBY_2D7C00(vars->switches[reset_sw]))->save_id;
-                *(int *)((((short)save_id >> 5) << 2) + (g_current_level_index << 8) + (int)level_moby_killed) &= ~(1 << (save_id & 0x1F));
-                save_id = ((struct Moby *)MOBY_2D7C00(vars->switches[reset_sw]))->save_id;
-                *(int *)((((short)save_id >> 5) << 2) + (int)quartu_moby_killed) &= ~(1 << (save_id & 0x1F));
-            } else {
-                reset_electric_water_switch(MOBY_2D7C00(vars->switches[reset_sw]));
-            }
-        }
-        vars->on_timer = SECS_2D7C00((*(float *)&electric_water_on_duration_seconds));
-        vars->off_timer = scale_ticks(200);
-        vars->shock_count = 0;
-        vars->light = -1;
-        moby->state = ELECTRIC_WATER_ON;
-        vars->voice0 = -1;
-        vars->voice1 = -1;
-        break;
-
-    case ELECTRIC_WATER_ON:
-        inside = 0;
-        wet = hero_is_near_ground();
-        if (FastDecTimer(&vars->on_timer) != 0) {
-            vars->off_timer = SECS_2D7C00((*(float *)&electric_water_off_duration_seconds));
-            moby->state = ELECTRIC_WATER_OFF;
-            if (vars->owner != 0) {
-                STOP_2D7C00(vars->voice1, vars->owner);
-                vars->voice1 = -1;
-            }
-        }
-        for (area = 0; area < 12; area++) {
-            if (is_point_inside_clip_volume(gHeroPos, vars->water_areas[area]) != 0) {
-                inside = 1;
-                break;
-            }
-        }
-        if (moby->state == ELECTRIC_WATER_OFF) {
-            for (dim_lamp = 0; dim_lamp < 3; dim_lamp++) {
-                if (vars->lamps[dim_lamp] != -1) {
-                    set_moby_color(MOBYP_2D7C00(vars->lamps[dim_lamp]), 0x40, 0x40, 0x40);
-                }
-            }
-        } else {
-            for (lamp = 0; lamp < 3; lamp++) {
-                int v = rand_range(0x40, 0x7F);
-                if (vars->lamps[lamp] != -1) {
-                    set_moby_color(MOBYP_2D7C00(vars->lamps[lamp]), v, v, v);
-                }
-            }
-        }
-
-        if ((!inside || !wet) && random_integer_below(1) == 0 && (*(float *)&electric_water_path_arc_inhibit_gp) == 0.0f) {
-            best = 0;
-            for (line_offset = 0; line_offset < 24; line_offset += 8) {
-                line = &vars->lines[line_offset];
-                if (line[0] == -1) {
+        case ELECTRIC_WATER_INITIALIZE:
+            moby->update_dist = 0xFF;
+            for (reset_sw = 0; reset_sw < 4; reset_sw++) {
+                if (vars->switches[reset_sw] == -1) {
                     continue;
                 }
+                if (((struct Moby *)MOBY_2D7C00(vars->switches[reset_sw]))->oclass == 0x33E) {
+                    quartu_current_level_state_moby_flags
+                        [*(short *)&((struct Moby *)MOBY_2D7C00(vars->switches[reset_sw]))->save_id] = 0;
+                    quartu_checkpoint_level_state_moby_flags
+                        [*(short *)&((struct Moby *)MOBY_2D7C00(vars->switches[reset_sw]))->save_id] = 0;
+                    save_id = ((struct Moby *)MOBY_2D7C00(vars->switches[reset_sw]))->save_id;
+                    *(int *)((((short)save_id >> 5) << 2) + (g_current_level_index << 8) + (int)level_moby_killed) &=
+                        ~(1 << (save_id & 0x1F));
+                    save_id = ((struct Moby *)MOBY_2D7C00(vars->switches[reset_sw]))->save_id;
+                    *(int *)((((short)save_id >> 5) << 2) + (int)quartu_moby_killed) &= ~(1 << (save_id & 0x1F));
+                } else {
+                    reset_electric_water_switch(MOBY_2D7C00(vars->switches[reset_sw]));
+                }
+            }
+            vars->on_timer = SECS_2D7C00((*(float *)&electric_water_on_duration_seconds));
+            vars->off_timer = scale_ticks(200);
+            vars->shock_count = 0;
+            vars->light = -1;
+            moby->state = ELECTRIC_WATER_ON;
+            vars->voice0 = -1;
+            vars->voice1 = -1;
+            break;
+
+        case ELECTRIC_WATER_ON:
+            inside = 0;
+            wet = hero_is_near_ground();
+            if (FastDecTimer(&vars->on_timer) != 0) {
+                vars->off_timer = SECS_2D7C00((*(float *)&electric_water_off_duration_seconds));
+                moby->state = ELECTRIC_WATER_OFF;
+                if (vars->owner != 0) {
+                    STOP_2D7C00(vars->voice1, vars->owner);
+                    vars->voice1 = -1;
+                }
+            }
+            for (area = 0; area < 12; area++) {
+                if (is_point_inside_clip_volume(gHeroPos, vars->water_areas[area]) != 0) {
+                    inside = 1;
+                    break;
+                }
+            }
+            if (moby->state == ELECTRIC_WATER_OFF) {
+                for (dim_lamp = 0; dim_lamp < 3; dim_lamp++) {
+                    if (vars->lamps[dim_lamp] != -1) {
+                        set_moby_color(MOBYP_2D7C00(vars->lamps[dim_lamp]), 0x40, 0x40, 0x40);
+                    }
+                }
+            } else {
+                for (lamp = 0; lamp < 3; lamp++) {
+                    int v = rand_range(0x40, 0x7F);
+                    if (vars->lamps[lamp] != -1) {
+                        set_moby_color(MOBYP_2D7C00(vars->lamps[lamp]), v, v, v);
+                    }
+                }
+            }
+
+            if ((!inside || !wet) && random_integer_below(1) == 0 &&
+                (*(float *)&electric_water_path_arc_inhibit_gp) == 0.0f) {
+                best = 0;
+                for (line_offset = 0; line_offset < 24; line_offset += 8) {
+                    line = &vars->lines[line_offset];
+                    if (line[0] == -1) {
+                        continue;
+                    }
+                    if (best != 0) {
+                        distance = FastVecDist(CUBP_2D7C00(best[0]) + 0x30, gHeroPos);
+                        if (!(FastVecDist(CUBP_2D7C00(line[0]) + 0x30, gHeroPos) < distance)) {
+                            continue;
+                        }
+                    }
+                    best = line;
+                }
                 if (best != 0) {
-                    distance = FastVecDist(CUBP_2D7C00(best[0]) + 0x30, gHeroPos);
-                    if (!(FastVecDist(CUBP_2D7C00(line[0]) + 0x30, gHeroPos) < distance)) {
+                    length = 8;
+                    for (j = 0; j < 8; j++) {
+                        if (best[j] == -1) {
+                            length = j;
+                            break;
+                        }
+                    }
+                    if (length >= 2) {
+                        line = (int *)((rand_range(0, length - 2) << 2) + (int)best);
+                        vars->bolt_start = *(Q_2D7C00 *)(CUB_2D7C00(line[0]) + 0x30);
+                        vars->bolt_aim = vars->bolt_end = *(Q_2D7C00 *)(CUB_2D7C00(line[1]) + 0x30);
+                        if (vars->light == -1) {
+                            vars->light = allocate_colored_effect_slot(&vars->bolt_start, 8.0f, 0.0f, 1.0f, 1.0f, 0.5f);
+                        } else {
+                            Light_2D7C00 *l = (Light_2D7C00 *)(quartu_lights + (vars->light << 5));
+                            qcopy(&l->pos, &vars->bolt_start);
+                            *(float *)((char *)l + 0x1C) = 8.0f;
+                            l->f0 = 1.0f;
+                            l->f4 = 1.0f;
+                            l->f8 = 0.5f;
+                            l->iC = 0;
+                        }
+                        initialize_electric_water_bolt_effect((char *)moby);
+                        update_electric_water_bolt_effect(moby);
+                        AddDrawCallback(draw_electric_water_bolt_effect, moby);
+                    }
+                }
+            }
+
+            if (inside && wet) {
+                if (vars->owner != 0 && vars->owner != (struct Moby *)g_hero.moby) {
+                    RELEASE_2D7C00(vars);
+                }
+                vars->owner = (struct Moby *)g_hero.moby;
+                vars->voice0 = Sound_PlayClassSound(0, 4, g_hero.moby, 0x28F);
+                vars->voice1 = Sound_PlayClassSound(1, 4, g_hero.moby, 0x28F);
+                if (vars->shock_count == 0) {
+                    vars->saved_fog[0] = quartu_fog_near_distance;
+                    vars->saved_fog[1] = quartu_fog_far_distance;
+                    vars->saved_fog[2] = quartu_fog_near_intensity;
+                    vars->saved_fog[3] = quartu_fog_far_intensity;
+                    vars->saved_fog_color[0] = quartu_fog_color_red[0];
+                    vars->saved_fog_color[1] = quartu_fog_color_green[0];
+                    vars->saved_fog_color[2] = quartu_fog_color_blue[0];
+                }
+                vars->shock_count = vars->shock_count + 1;
+                quartu_fog_color_red[0] = 0x7F;
+                quartu_fog_color_green[0] = 0x7F;
+                quartu_fog_color_blue[0] = 0x7F;
+                quartu_fog_far_distance = 131072.0f;
+                *(int *)&quartu_fog_near_distance = 0;
+                quartu_fog_near_intensity = random_float_between(128.0f, 255.0f);
+                *(int *)&quartu_fog_far_intensity = 0;
+                radius = random_float_between(5.0f, 8.0f);
+                theta = random_angle_radians();
+                phi = random_angle_radians();
+                BuildSphericalOffset(&vars->bolt_aim, radius, theta, phi);
+                add_vectors(unused_vector_argument, &vars->bolt_aim, &g_hero.body);
+                vars->bolt_end = vars->bolt_aim;
+                vars->bolt_start = g_hero.body;
+                initialize_electric_water_bolt_effect((char *)moby);
+                update_electric_water_bolt_effect(moby);
+                AddDrawCallback(draw_electric_water_bolt_effect, moby);
+                hit.attacker = m;
+                hit.flags = 0x10001;
+                hit.damage = 1.0f;
+                hit.v[0] = FastCos(moby->rot.z) * 0.2f;
+                hit.v[1] = FastSin(moby->rot.z) * 0.2f;
+                *(s32 *)&hit.v[2] = 0;
+                vec_set_length_xy(hit.v, hit.v, 1.0f);
+                hit.b29 = 1;
+                hit.oclass = *(u16 *)&moby->oclass;
+                hit.v[2] = 1.0f;
+                hit.v[3] = 5627.9248f;
+                hit.b28 = 0;
+                record_moby_hit(g_hero.moby, &hit);
+                if (moby->state == ELECTRIC_WATER_OFF) {
+                    quartu_fog_near_distance = vars->saved_fog[0];
+                    quartu_fog_far_distance = vars->saved_fog[1];
+                    quartu_fog_near_intensity = vars->saved_fog[2];
+                    quartu_fog_far_intensity = vars->saved_fog[3];
+                    quartu_fog_color_red[0] = vars->saved_fog_color[0];
+                    quartu_fog_color_green[0] = vars->saved_fog_color[1];
+                    quartu_fog_color_blue[0] = vars->saved_fog_color[2];
+                }
+            }
+            /* fall through: the hum and the switches, as in state 2 */
+        case ELECTRIC_WATER_OFF:
+            nearest = 0;
+            for (near_lamp = 0; near_lamp < 3; near_lamp++) {
+                if (vars->lamps[near_lamp] == -1) {
+                    continue;
+                }
+                if (nearest != 0) {
+                    distance = vec_distance_xy(&nearest->pos, quartu_camera_pos);
+                    if (!(vec_distance_xy(&((struct Moby *)MOBYP_2D7C00(vars->lamps[near_lamp]))->pos,
+                                          quartu_camera_pos) < distance)) {
                         continue;
                     }
                 }
-                best = line;
+                nearest = (struct Moby *)MOBYP_2D7C00(vars->lamps[near_lamp]);
             }
-            if (best != 0) {
-                length = 8;
-                for (j = 0; j < 8; j++) {
-                    if (best[j] == -1) {
-                        length = j;
+            if (vars->owner == 0 || (distance = vec_distance_xy(&vars->owner->pos, quartu_camera_pos),
+                                     vec_distance_xy(&nearest->pos, quartu_camera_pos) < distance)) {
+                if (vars->owner != 0) {
+                    RELEASE_2D7C00(vars);
+                }
+                vars->owner = nearest;
+            }
+            if (Sound_IsPlaying(vars->owner, vars->voice0) == 0) {
+                vars->voice0 = Sound_PlayClassSound(0, 5, vars->owner, 0x28F);
+            }
+            if (moby->state == ELECTRIC_WATER_ON && Sound_IsPlaying(vars->owner, vars->voice1) == 0) {
+                vars->voice1 = Sound_PlayClassSound(1, 5, vars->owner, 0x28F);
+            }
+            if (FastDecTimer(&vars->off_timer) != 0 && moby->state == ELECTRIC_WATER_OFF) {
+                vars->on_timer = SECS_2D7C00((*(float *)&electric_water_on_duration_seconds));
+                vars->off_timer = scale_ticks(200);
+                vars->shock_count = 0;
+                moby->state = ELECTRIC_WATER_ON;
+            }
+            for (sw = 0; sw < 4; sw++) {
+                if (vars->switches[sw] != -1 && ((struct Moby *)MOBY_2D7C00(vars->switches[sw]))->oclass == 0x33E &&
+                    ((struct Moby *)MOBY_2D7C00(vars->switches[sw]))->state == 2) {
+                    vars->off_timer = SECS_2D7C00(vars->off_seconds);
+                    moby->state = ELECTRIC_WATER_SWITCH_DISABLED;
+                    Sound_PlayClassSound(2, 0, MOBYP_2D7C00(vars->switches[sw]), 0x28F);
+                    vars->armed = 0;
+                } else if (vars->switches[sw] != -1 &&
+                           test_linked_moby_turn_trigger(MOBYP_2D7C00(vars->switches[sw])) != 0) {
+                    vars->off_timer = SECS_2D7C00(vars->off_seconds);
+                    moby->state = ELECTRIC_WATER_SWITCH_DISABLED;
+                    Sound_PlayClassSound(2, 0, MOBYP_2D7C00(vars->switches[sw]), 0x28F);
+                    vars->armed = 0;
+                }
+            }
+            break;
+
+        case ELECTRIC_WATER_SWITCH_DISABLED:
+            for (i = 0; i < 3; i++) {
+                if (vars->lamps[i] != -1) {
+                    set_moby_color(MOBYP_2D7C00(vars->lamps[i]), 0x40, 0x40, 0x40);
+                }
+            }
+            if (vars->light != -1) {
+                release_point_light_slot(vars->light);
+                vars->light = -1;
+            }
+            if (vars->off_timer != 0) {
+                AddDrawCallback(draw_electric_water_countdown, moby);
+            }
+            if (vars->owner != 0) {
+                RELEASE_2D7C00(vars);
+                vars->owner = 0;
+            }
+            for (i = 0; i < 4; i++) {
+                if (vars->switches[i] == -1) {
+                    continue;
+                }
+                if (g_hero.standing != MOBYP_2D7C00(vars->switches[i]) ||
+                    ((struct Moby *)g_hero.standing)->oclass != 0x33E || g_hero.airTicks != 0) {
+                    continue;
+                }
+                if (vars->armed != 0) {
+                    remaining = vars->off_timer;
+                    if (remaining < SECS_2D7C00(vars->off_seconds) - scale_ticks(0x3C)) {
+                        vars->off_timer = SECS_2D7C00(vars->off_seconds);
+                        Sound_PlayClassSound(2, 0, MOBYP_2D7C00(vars->switches[i]), 0x28F);
+                    }
+                }
+                armed = 0;
+            }
+            vars->armed = armed;
+            if (FastDecTimer(&vars->off_timer) == 0) {
+                if (is_point_inside_clip_volume(&g_hero.pos, vars->reset_area_a) == 0 || g_hero.airTicks != 0) {
+                    if (is_point_inside_clip_volume(&g_hero.pos, vars->reset_area_b) == 0) {
                         break;
                     }
                 }
-                if (length >= 2) {
-                    line = (int *)((rand_range(0, length - 2) << 2) + (int)best);
-                    vars->bolt_start = *(Q_2D7C00 *)(CUB_2D7C00(line[0]) + 0x30);
-                    vars->bolt_aim = vars->bolt_end = *(Q_2D7C00 *)(CUB_2D7C00(line[1]) + 0x30);
-                    if (vars->light == -1) {
-                        vars->light = allocate_colored_effect_slot(&vars->bolt_start, 8.0f, 0.0f, 1.0f, 1.0f, 0.5f);
-                    } else {
-                        Light_2D7C00 *l = (Light_2D7C00 *)(quartu_lights + (vars->light << 5));
-                        qcopy(&l->pos, &vars->bolt_start);
-                        *(float *)((char *)l + 0x1C) = 8.0f;
-                        l->f0 = 1.0f;
-                        l->f4 = 1.0f;
-                        l->f8 = 0.5f;
-                        l->iC = 0;
-                    }
-                    initialize_electric_water_bolt_effect((char *)moby);
-                    update_electric_water_bolt_effect(moby);
-                    AddDrawCallback(draw_electric_water_bolt_effect, moby);
-                }
             }
-        }
-
-        if (inside && wet) {
-            if (vars->owner != 0 && vars->owner != (struct Moby *)g_hero.moby) {
-                RELEASE_2D7C00(vars);
-            }
-            vars->owner = (struct Moby *)g_hero.moby;
-            vars->voice0 = Sound_PlayClassSound(0, 4, g_hero.moby, 0x28F);
-            vars->voice1 = Sound_PlayClassSound(1, 4, g_hero.moby, 0x28F);
-            if (vars->shock_count == 0) {
-                vars->saved_fog[0] = quartu_fog_near_distance;
-                vars->saved_fog[1] = quartu_fog_far_distance;
-                vars->saved_fog[2] = quartu_fog_near_intensity;
-                vars->saved_fog[3] = quartu_fog_far_intensity;
-                vars->saved_fog_color[0] = quartu_fog_color_red[0];
-                vars->saved_fog_color[1] = quartu_fog_color_green[0];
-                vars->saved_fog_color[2] = quartu_fog_color_blue[0];
-            }
-            vars->shock_count = vars->shock_count + 1;
-            quartu_fog_color_red[0] = 0x7F;
-            quartu_fog_color_green[0] = 0x7F;
-            quartu_fog_color_blue[0] = 0x7F;
-            quartu_fog_far_distance = 131072.0f;
-            *(int *)&quartu_fog_near_distance = 0;
-            quartu_fog_near_intensity = random_float_between(128.0f, 255.0f);
-            *(int *)&quartu_fog_far_intensity = 0;
-            radius = random_float_between(5.0f, 8.0f);
-            theta = random_angle_radians();
-            phi = random_angle_radians();
-            BuildSphericalOffset(&vars->bolt_aim, radius, theta, phi);
-            add_vectors(unused_vector_argument, &vars->bolt_aim, &g_hero.body);
-            vars->bolt_end = vars->bolt_aim;
-            vars->bolt_start = g_hero.body;
-            initialize_electric_water_bolt_effect((char *)moby);
-            update_electric_water_bolt_effect(moby);
-            AddDrawCallback(draw_electric_water_bolt_effect, moby);
-            hit.attacker = m;
-            hit.flags = 0x10001;
-            hit.damage = 1.0f;
-            hit.v[0] = FastCos(moby->rot.z) * 0.2f;
-            hit.v[1] = FastSin(moby->rot.z) * 0.2f;
-            *(s32 *)&hit.v[2] = 0;
-            vec_set_length_xy(hit.v, hit.v, 1.0f);
-            hit.b29 = 1;
-            hit.oclass = *(u16 *)&moby->oclass;
-            hit.v[2] = 1.0f;
-            hit.v[3] = 5627.9248f;
-            hit.b28 = 0;
-            record_moby_hit(g_hero.moby, &hit);
-            if (moby->state == ELECTRIC_WATER_OFF) {
-                quartu_fog_near_distance = vars->saved_fog[0];
-                quartu_fog_far_distance = vars->saved_fog[1];
-                quartu_fog_near_intensity = vars->saved_fog[2];
-                quartu_fog_far_intensity = vars->saved_fog[3];
-                quartu_fog_color_red[0] = vars->saved_fog_color[0];
-                quartu_fog_color_green[0] = vars->saved_fog_color[1];
-                quartu_fog_color_blue[0] = vars->saved_fog_color[2];
-            }
-        }
-        /* fall through: the hum and the switches, as in state 2 */
-    case ELECTRIC_WATER_OFF:
-        nearest = 0;
-        for (near_lamp = 0; near_lamp < 3; near_lamp++) {
-            if (vars->lamps[near_lamp] == -1) {
-                continue;
-            }
-            if (nearest != 0) {
-                distance = vec_distance_xy(&nearest->pos, quartu_camera_pos);
-                if (!(vec_distance_xy(&((struct Moby *)MOBYP_2D7C00(vars->lamps[near_lamp]))->pos, quartu_camera_pos) < distance)) {
+            for (i = 0; i < 4; i++) {
+                if (vars->switches[i] == -1) {
                     continue;
                 }
+                if (((struct Moby *)MOBY_2D7C00(vars->switches[i]))->oclass == 0x33E) {
+                    ((struct Moby *)MOBY_2D7C00(vars->switches[i]))->state = ELECTRIC_WATER_ON;
+                } else {
+                    reset_electric_water_switch(MOBY_2D7C00(vars->switches[i]));
+                }
             }
-            nearest = (struct Moby *)MOBYP_2D7C00(vars->lamps[near_lamp]);
-        }
-        if (vars->owner == 0
-            || (distance = vec_distance_xy(&vars->owner->pos, quartu_camera_pos),
-                vec_distance_xy(&nearest->pos, quartu_camera_pos) < distance)) {
-            if (vars->owner != 0) {
-                RELEASE_2D7C00(vars);
-            }
-            vars->owner = nearest;
-        }
-        if (Sound_IsPlaying(vars->owner, vars->voice0) == 0) {
-            vars->voice0 = Sound_PlayClassSound(0, 5, vars->owner, 0x28F);
-        }
-        if (moby->state == ELECTRIC_WATER_ON && Sound_IsPlaying(vars->owner, vars->voice1) == 0) {
-            vars->voice1 = Sound_PlayClassSound(1, 5, vars->owner, 0x28F);
-        }
-        if (FastDecTimer(&vars->off_timer) != 0 && moby->state == ELECTRIC_WATER_OFF) {
             vars->on_timer = SECS_2D7C00((*(float *)&electric_water_on_duration_seconds));
             vars->off_timer = scale_ticks(200);
             vars->shock_count = 0;
             moby->state = ELECTRIC_WATER_ON;
-        }
-        for (sw = 0; sw < 4; sw++) {
-            if (vars->switches[sw] != -1
-                && ((struct Moby *)MOBY_2D7C00(vars->switches[sw]))->oclass == 0x33E
-                && ((struct Moby *)MOBY_2D7C00(vars->switches[sw]))->state == 2) {
-                vars->off_timer = SECS_2D7C00(vars->off_seconds);
-                moby->state = ELECTRIC_WATER_SWITCH_DISABLED;
-                Sound_PlayClassSound(2, 0, MOBYP_2D7C00(vars->switches[sw]), 0x28F);
-                vars->armed = 0;
-            } else if (vars->switches[sw] != -1 && test_linked_moby_turn_trigger(MOBYP_2D7C00(vars->switches[sw])) != 0) {
-                vars->off_timer = SECS_2D7C00(vars->off_seconds);
-                moby->state = ELECTRIC_WATER_SWITCH_DISABLED;
-                Sound_PlayClassSound(2, 0, MOBYP_2D7C00(vars->switches[sw]), 0x28F);
-                vars->armed = 0;
-            }
-        }
-        break;
-
-    case ELECTRIC_WATER_SWITCH_DISABLED:
-        for (i = 0; i < 3; i++) {
-            if (vars->lamps[i] != -1) {
-                set_moby_color(MOBYP_2D7C00(vars->lamps[i]), 0x40, 0x40, 0x40);
-            }
-        }
-        if (vars->light != -1) {
-            release_point_light_slot(vars->light);
-            vars->light = -1;
-        }
-        if (vars->off_timer != 0) {
-            AddDrawCallback(draw_electric_water_countdown, moby);
-        }
-        if (vars->owner != 0) {
-            RELEASE_2D7C00(vars);
-            vars->owner = 0;
-        }
-        for (i = 0; i < 4; i++) {
-            if (vars->switches[i] == -1) {
-                continue;
-            }
-            if (g_hero.standing != MOBYP_2D7C00(vars->switches[i])
-                || ((struct Moby *)g_hero.standing)->oclass != 0x33E
-                || g_hero.airTicks != 0) {
-                continue;
-            }
-            if (vars->armed != 0) {
-                remaining = vars->off_timer;
-                if (remaining < SECS_2D7C00(vars->off_seconds) - scale_ticks(0x3C)) {
-                    vars->off_timer = SECS_2D7C00(vars->off_seconds);
-                    Sound_PlayClassSound(2, 0, MOBYP_2D7C00(vars->switches[i]), 0x28F);
-                }
-            }
-            armed = 0;
-        }
-        vars->armed = armed;
-        if (FastDecTimer(&vars->off_timer) == 0) {
-            if (is_point_inside_clip_volume(&g_hero.pos, vars->reset_area_a) == 0 || g_hero.airTicks != 0) {
-                if (is_point_inside_clip_volume(&g_hero.pos, vars->reset_area_b) == 0) {
-                    break;
-                }
-            }
-        }
-        for (i = 0; i < 4; i++) {
-            if (vars->switches[i] == -1) {
-                continue;
-            }
-            if (((struct Moby *)MOBY_2D7C00(vars->switches[i]))->oclass == 0x33E) {
-                ((struct Moby *)MOBY_2D7C00(vars->switches[i]))->state = ELECTRIC_WATER_ON;
-            } else {
-                reset_electric_water_switch(MOBY_2D7C00(vars->switches[i]));
-            }
-        }
-        vars->on_timer = SECS_2D7C00((*(float *)&electric_water_on_duration_seconds));
-        vars->off_timer = scale_ticks(200);
-        vars->shock_count = 0;
-        moby->state = ELECTRIC_WATER_ON;
-        break;
+            break;
     }
 
     {
         char *pos = gHeroPos;
         Hero_2D7C00 *g = (Hero_2D7C00 *)(pos - 0x80);
         for (level_area = 0; level_area < 4; level_area++) {
-            if (is_point_inside_clip_volume(pos, vars->water_level_areas[level_area]) != 0 && hero_is_in_special_state() != 0) {
+            if (is_point_inside_clip_volume(pos, vars->water_level_areas[level_area]) != 0 &&
+                hero_is_in_special_state() != 0) {
                 g->waterLevel = *(float *)(CUB_2D7C00(vars->water_level_areas[level_area]) + 0x38);
             }
         }
@@ -530,8 +534,10 @@ void draw_electric_water_countdown(char *moby) {
     float v;
     int col;
 
-    DrawUIFrame(W(electric_water_timer_frame_y0) + W(electric_water_timer_y), W(electric_water_timer_frame_y1) + W(electric_water_timer_y),
-                  W(electric_water_timer_frame_x0) + W(electric_water_timer_x), W(electric_water_timer_frame_x1) + W(electric_water_timer_x), W(electric_water_timer_frame_alpha));
+    DrawUIFrame(W(electric_water_timer_frame_y0) + W(electric_water_timer_y),
+                W(electric_water_timer_frame_y1) + W(electric_water_timer_y),
+                W(electric_water_timer_frame_x0) + W(electric_water_timer_x),
+                W(electric_water_timer_frame_x1) + W(electric_water_timer_x), W(electric_water_timer_frame_alpha));
     v = FastSin(IntToFloat(quartu_frame_count % 60) / 60.0f * 6.28318f) * 3.0f + 0.5f;
     if (v > 1.0f) {
         v = 1.0f;
@@ -587,7 +593,8 @@ void initialize_electric_water_bolt_effect(char *m) {
     if ((*(int *)&electric_water_bolt_init_requested) != 0) {
         (*(int *)&electric_water_bolt_init_requested) = 0;
         (*(int *)&electric_water_bolt_reset_word) = 0;
-        electric_water_bolt_initial_scaled_frame_count = scale_ticks((*(int *)&electric_water_bolt_initial_frame_count));
+        electric_water_bolt_initial_scaled_frame_count =
+            scale_ticks((*(int *)&electric_water_bolt_initial_frame_count));
         (*(int *)&quartu_beam_arc_outer_color) = 0x7F2020;
         FastVecSub(v, &d->end, &d->start);
         vec_scale_to_length(step, v, (*(float *)&electric_water_bolt_initial_length_scale) / 20.0f);
@@ -613,10 +620,22 @@ void initialize_electric_water_bolt_effect(char *m) {
         (*(int *)&electric_water_mirror_bolt_height_phase) = 0;
     }
 }
-typedef struct { float f[4]; } __attribute__((aligned(16))) V_2d8fa0;
-typedef struct { V_2d8fa0 p[5]; } P_2d8fa0;
-typedef struct { V_2d8fa0 hdr; V_2d8fa0 p[4]; } H_2d8fa0;
-typedef struct { char pad[0xF0]; V_2d8fa0 a; V_2d8fa0 b; V_2d8fa0 c; } Data_2d8fa0;
+typedef struct {
+    float f[4];
+} __attribute__((aligned(16))) V_2d8fa0;
+typedef struct {
+    V_2d8fa0 p[5];
+} P_2d8fa0;
+typedef struct {
+    V_2d8fa0 hdr;
+    V_2d8fa0 p[4];
+} H_2d8fa0;
+typedef struct {
+    char pad[0xF0];
+    V_2d8fa0 a;
+    V_2d8fa0 b;
+    V_2d8fa0 c;
+} Data_2d8fa0;
 
 extern float FastAddRots(float, float);
 extern float FastSubRots(float, float);
@@ -682,9 +701,12 @@ void update_electric_water_bolt_effect(Moby *moby) {
     float f20;
     int r;
 
-    *(float *)&electric_water_bolt_wave_phase = FastAddRots(*(float *)&electric_water_bolt_wave_phase, *(float *)&electric_water_bolt_wave_speed);
-    *(float *)&electric_water_mirror_bolt_phase = FastSubRots(*(float *)&electric_water_mirror_bolt_phase, *(float *)&electric_water_mirror_bolt_phase_speed);
-    *(float *)&electric_water_mirror_bolt_height_phase = FastAddRots(*(float *)&electric_water_mirror_bolt_height_phase, *(float *)&electric_water_mirror_bolt_height_speed);
+    *(float *)&electric_water_bolt_wave_phase =
+        FastAddRots(*(float *)&electric_water_bolt_wave_phase, *(float *)&electric_water_bolt_wave_speed);
+    *(float *)&electric_water_mirror_bolt_phase =
+        FastSubRots(*(float *)&electric_water_mirror_bolt_phase, *(float *)&electric_water_mirror_bolt_phase_speed);
+    *(float *)&electric_water_mirror_bolt_height_phase = FastAddRots(
+        *(float *)&electric_water_mirror_bolt_height_phase, *(float *)&electric_water_mirror_bolt_height_speed);
     scale = FastVecDist(&data->a, &data->c) * 0.05f;
     if (flag) {
         *(int *)&quartu_beam_arc_outer_color_r = 0x7F2040;
@@ -704,11 +726,15 @@ void update_electric_water_bolt_effect(Moby *moby) {
         float len0;
         float a;
         float b;
-        f21 = *(float *)&electric_water_bolt_wave_amp_start
-              + (*(float *)&electric_water_bolt_wave_amp_end - *(float *)&electric_water_bolt_wave_amp_start) * (IntToFloat(i) * 0.05f);
-        f21 = f21 * FastSin(normalize_angle(*(float *)&electric_water_bolt_wave_phase + (float)i * *(float *)&electric_water_bolt_wave_point_phase));
-        f21 = f21 + randf_sym(*(float *)&electric_water_bolt_jitter_center, *(float *)&electric_water_bolt_jitter_range);
-        electric_water_bolt_points_r2[0][i].f[2] = electric_water_bolt_points_r2[0][i].f[2] - electric_water_bolt_wave_offsets[i];
+        f21 = *(float *)&electric_water_bolt_wave_amp_start +
+              (*(float *)&electric_water_bolt_wave_amp_end - *(float *)&electric_water_bolt_wave_amp_start) *
+                  (IntToFloat(i) * 0.05f);
+        f21 = f21 * FastSin(normalize_angle(*(float *)&electric_water_bolt_wave_phase +
+                                            (float)i * *(float *)&electric_water_bolt_wave_point_phase));
+        f21 =
+            f21 + randf_sym(*(float *)&electric_water_bolt_jitter_center, *(float *)&electric_water_bolt_jitter_range);
+        electric_water_bolt_points_r2[0][i].f[2] =
+            electric_water_bolt_points_r2[0][i].f[2] - electric_water_bolt_wave_offsets[i];
         electric_water_bolt_wave_offsets[i] = f21;
         a = random_angle_radians();
         b = random_angle_radians();
@@ -746,9 +772,11 @@ void update_electric_water_bolt_effect(Moby *moby) {
             float h;
             float ang;
             float m;
-            g = normalize_angle(*(float *)&electric_water_mirror_bolt_phase + (float)i * *(float *)&electric_water_mirror_bolt_point_phase);
-            h = *(float *)&electric_water_mirror_bolt_height_amp
-                * FastSin(normalize_angle(*(float *)&electric_water_mirror_bolt_height_phase + (float)i * *(float *)&electric_water_mirror_bolt_height_point_phase));
+            g = normalize_angle(*(float *)&electric_water_mirror_bolt_phase +
+                                (float)i * *(float *)&electric_water_mirror_bolt_point_phase);
+            h = *(float *)&electric_water_mirror_bolt_height_amp *
+                FastSin(normalize_angle(*(float *)&electric_water_mirror_bolt_height_phase +
+                                        (float)i * *(float *)&electric_water_mirror_bolt_height_point_phase));
             qcopy(&electric_water_bolt_points_r2[1][i], &electric_water_bolt_points_r2[0][i]);
             h = h * FastSin(g) + randf_sym(0.0f, 0.1f);
             electric_water_bolt_points_r2[1][i].f[2] = electric_water_bolt_points_r2[1][i].f[2] + h;
@@ -763,8 +791,10 @@ void update_electric_water_bolt_effect(Moby *moby) {
         } else {
             int r = 21 - i;
             qcopy(&electric_water_bolt_points_r2[1][i], &electric_water_bolt_points_r2[0][i]);
-            electric_water_bolt_points_r2[1][i].f[2] = electric_water_bolt_points_r2[1][i].f[2] + electric_water_mirror_bolt_height_offsets[r];
-            FastVecAdd(&electric_water_bolt_points_r2[1][i], &electric_water_bolt_points_r2[1][i], &electric_water_mirror_bolt_side_offsets[r]);
+            electric_water_bolt_points_r2[1][i].f[2] =
+                electric_water_bolt_points_r2[1][i].f[2] + electric_water_mirror_bolt_height_offsets[r];
+            FastVecAdd(&electric_water_bolt_points_r2[1][i], &electric_water_bolt_points_r2[1][i],
+                       &electric_water_mirror_bolt_side_offsets[r]);
             qcopy(&s[4], &electric_water_mirror_bolt_side_offsets[i]);
         }
     }
@@ -797,19 +827,22 @@ void update_electric_water_bolt_effect(Moby *moby) {
                 f20 = random_float_between(0.17453292f, 0.959931076f) * t;
                 t = -t;
                 build_look_at_matrix(&s[5], &s[5], &s[9], f20);
-                FastVecAdd((electric_water_side_arc_points_r[k].p + j), &electric_water_side_arc_points_base[k].p[j - 1], &s[5]);
+                FastVecAdd((electric_water_side_arc_points_r[k].p + j),
+                           &electric_water_side_arc_points_base[k].p[j - 1], &s[5]);
             }
         } else {
             int j;
             for (j = 1; j < 5; j++) {
-                FastVecSub(&d[j], (electric_water_side_arc_points_r[k].p + j), &electric_water_side_arc_points_base[k].p[j - 1]);
+                FastVecSub(&d[j], (electric_water_side_arc_points_r[k].p + j),
+                           &electric_water_side_arc_points_base[k].p[j - 1]);
                 d[j].f[0] += randf_sym(0.0f, 0.1f);
                 d[j].f[1] += randf_sym(0.0f, 0.1f);
                 d[j].f[2] += randf_sym(0.0f, 0.1f);
             }
             qcopy(&electric_water_side_arc_points_r[k].p[0], &s[8]);
             for (j = 1; j < 5; j++) {
-                FastVecAdd((electric_water_side_arc_points_r[k].p + j), &electric_water_side_arc_points_base[k].p[j - 1], &d[j]);
+                FastVecAdd((electric_water_side_arc_points_r[k].p + j),
+                           &electric_water_side_arc_points_base[k].p[j - 1], &d[j]);
             }
             {
                 int x = electric_water_side_arc_fade_ticks[k];
@@ -832,15 +865,19 @@ void update_electric_water_bolt_effect(Moby *moby) {
     build_look_at_matrix(&s[5], &s[5], &s[6], f20);
     build_look_at_matrix(&s[5], &s[5], &s[7], scale);
     r = rand_range(1, 8);
-    if (random_integer_below(2)) r = -r;
+    if (random_integer_below(2))
+        r = -r;
     f20 = random_float_between(0.2f, 0.6f);
-    spawn_2d8fa0(&data->a, scale_ticks(15), f20 * 0.3f, f20, *(int *)&quartu_beam_arc_outer_color_r | 0x7F000000, 0, r, &s[5], 0.0f);
+    spawn_2d8fa0(&data->a, scale_ticks(15), f20 * 0.3f, f20, *(int *)&quartu_beam_arc_outer_color_r | 0x7F000000, 0, r,
+                 &s[5], 0.0f);
     r = -r;
     spawn_2d8fa0(&data->a, scale_ticks(15), f20 * 0.15f, f20 * 0.5f, 0x307F7F7F, 0, r, &s[5], 0.0f);
     r = rand_range(1, 8);
-    if (random_integer_below(2)) r = -r;
+    if (random_integer_below(2))
+        r = -r;
     f20 = random_float_between(0.15f, 3.0f);
-    spawn_2d8fa0(&data->c, scale_ticks(12), f20 * 0.1f, f20, *(int *)&quartu_beam_arc_outer_color_r | 0x7F000000, 0, r, quartu_zero_vec_r, 0.0f);
+    spawn_2d8fa0(&data->c, scale_ticks(12), f20 * 0.1f, f20, *(int *)&quartu_beam_arc_outer_color_r | 0x7F000000, 0, r,
+                 quartu_zero_vec_r, 0.0f);
 }
 extern char electric_water_bolt_points[];
 extern char electric_water_side_arc_points[];
@@ -872,26 +909,41 @@ void draw_electric_water_bolt_effect(char *moby) {
     if (v <= -8.0f) {
         F(quartu_beam_arc_tex_scroll) = v + 8.0f;
     }
-    draw_beam_and_arc_two_pass_quads(electric_water_bolt_points, W(quartu_beam_arc_main_inner_alpha), W(quartu_beam_arc_main_outer_alpha), 0x14,
-                      F(quartu_beam_arc_main_half_width), F(quartu_beam_arc_main_outer_half_width), F(quartu_beam_arc_main_end_extension));
-    draw_beam_and_arc_two_pass_quads(electric_water_bolt_points + 0x140, W(quartu_beam_arc_second_inner_alpha), W(quartu_beam_arc_second_outer_alpha), 0x14,
-                      F(quartu_beam_arc_bolt_half_width), F(quartu_beam_arc_bolt_outer_half_width), F(quartu_beam_arc_second_end_extension));
-    draw_beam_and_arc_two_pass_quads(electric_water_side_arc_points, *(short *)&first_side_arc_fade_level, *(short *)&first_side_arc_fade_level, 5,
-                      F(quartu_beam_arc_bolt_half_width), F(quartu_beam_arc_bolt_outer_half_width), 0.2f);
-    draw_beam_and_arc_two_pass_quads(electric_water_side_arc_points + 0x50, *(short *)&second_side_arc_fade_level, *(short *)&second_side_arc_fade_level, 5,
-                      F(quartu_beam_arc_bolt_half_width), F(quartu_beam_arc_bolt_outer_half_width), 0.2f);
-    draw_beam_and_arc_two_pass_quads(electric_water_side_arc_points + 0xA0, *(short *)&third_side_arc_fade_level, *(short *)&third_side_arc_fade_level, 5,
-                      F(quartu_beam_arc_bolt_half_width), F(quartu_beam_arc_bolt_outer_half_width), 0.2f);
-    draw_beam_and_arc_two_pass_quads(electric_water_side_arc_points + 0xF0, *(short *)&fourth_side_arc_fade_level, *(short *)&fourth_side_arc_fade_level, 5,
-                      F(quartu_beam_arc_bolt_half_width), F(quartu_beam_arc_bolt_outer_half_width), 0.2f);
+    draw_beam_and_arc_two_pass_quads(electric_water_bolt_points, W(quartu_beam_arc_main_inner_alpha),
+                                     W(quartu_beam_arc_main_outer_alpha), 0x14, F(quartu_beam_arc_main_half_width),
+                                     F(quartu_beam_arc_main_outer_half_width), F(quartu_beam_arc_main_end_extension));
+    draw_beam_and_arc_two_pass_quads(electric_water_bolt_points + 0x140, W(quartu_beam_arc_second_inner_alpha),
+                                     W(quartu_beam_arc_second_outer_alpha), 0x14, F(quartu_beam_arc_bolt_half_width),
+                                     F(quartu_beam_arc_bolt_outer_half_width), F(quartu_beam_arc_second_end_extension));
+    draw_beam_and_arc_two_pass_quads(electric_water_side_arc_points, *(short *)&first_side_arc_fade_level,
+                                     *(short *)&first_side_arc_fade_level, 5, F(quartu_beam_arc_bolt_half_width),
+                                     F(quartu_beam_arc_bolt_outer_half_width), 0.2f);
+    draw_beam_and_arc_two_pass_quads(electric_water_side_arc_points + 0x50, *(short *)&second_side_arc_fade_level,
+                                     *(short *)&second_side_arc_fade_level, 5, F(quartu_beam_arc_bolt_half_width),
+                                     F(quartu_beam_arc_bolt_outer_half_width), 0.2f);
+    draw_beam_and_arc_two_pass_quads(electric_water_side_arc_points + 0xA0, *(short *)&third_side_arc_fade_level,
+                                     *(short *)&third_side_arc_fade_level, 5, F(quartu_beam_arc_bolt_half_width),
+                                     F(quartu_beam_arc_bolt_outer_half_width), 0.2f);
+    draw_beam_and_arc_two_pass_quads(electric_water_side_arc_points + 0xF0, *(short *)&fourth_side_arc_fade_level,
+                                     *(short *)&fourth_side_arc_fade_level, 5, F(quartu_beam_arc_bolt_half_width),
+                                     F(quartu_beam_arc_bolt_outer_half_width), 0.2f);
     draw_electric_water_bolt_start_quads(moby);
 }
-typedef struct { float f[4]; } __attribute__((aligned(16))) V2d8e48;
-typedef struct { float u, v; } UV2d8e48;
-typedef struct { V2d8e48 corner[4]; unsigned int color[4]; UV2d8e48 uv[4]; long unk70, tex, unk80, unk88; } Q2d8e48;
-extern short electric_water_glow_core_color_r __asm__("D_L15_00161D2C") ;
-extern short electric_water_glow_core_size_r __asm__("D_L15_00161D34") ;
-extern short electric_water_glow_halo_size_r __asm__("D_L15_00161D38") ;
+typedef struct {
+    float f[4];
+} __attribute__((aligned(16))) V2d8e48;
+typedef struct {
+    float u, v;
+} UV2d8e48;
+typedef struct {
+    V2d8e48 corner[4];
+    unsigned int color[4];
+    UV2d8e48 uv[4];
+    long unk70, tex, unk80, unk88;
+} Q2d8e48;
+extern short electric_water_glow_core_color_r __asm__("D_L15_00161D2C");
+extern short electric_water_glow_core_size_r __asm__("D_L15_00161D34");
+extern short electric_water_glow_halo_size_r __asm__("D_L15_00161D38");
 extern V2d8e48 D_L15_00167440 __asm__("D_L15_00167440") NOT_SDA;
 extern V2d8e48 D_0013F6E0 __asm__("D_0013F6E0");
 extern V2d8e48 D_L15_001D39C0[] __asm__("D_L15_001D39C0") NOT_SDA;
@@ -958,8 +1010,7 @@ void draw_electric_water_bolt_start_quads(char *mv) {
 extern int test_linked_moby_turn_trigger(void *);
 
 /* Electric water switch: when its linked trigger turns, go to state 1 and raise it by 1.5. */
-void reset_electric_water_switch(char *moby)
-{
+void reset_electric_water_switch(char *moby) {
     if (test_linked_moby_turn_trigger(moby)) {
         moby[0x20] = 1;
         *(float *)(moby + 0x18) += 1.5f;
@@ -993,7 +1044,8 @@ void update_spinning_projectile(unsigned char *m) {
     FastVecAdd(next, m + 0x10, d);
     InitDirectionalHitQuery(col, m, 1, 2.0f, d);
     *(short *)(col + 0x1A) = ((Moby *)m)->oclass;
-    if (coll_line(m + 0x10, next, 0, m, col) != 0 || coll_sphere(m + 0x10, 0, m, 0.3f) != 0 || fast_dec_timer(&((struct SpinningProjectileVars *)d)->timer) != 0) {
+    if (coll_line(m + 0x10, next, 0, m, col) != 0 || coll_sphere(m + 0x10, 0, m, 0.3f) != 0 ||
+        fast_dec_timer(&((struct SpinningProjectileVars *)d)->timer) != 0) {
         hit = (char *)quartu_coll_hit_moby[0];
         if (hit != 0 && (int)hit != *(int *)&((struct SpinningProjectileVars *)d)->last_hit) {
             if (*(short *)(hit + 0xA6) != 0x4E)
@@ -1095,119 +1147,124 @@ void underwater_ring_update(unsigned char *moby) {
         if (FastVecLength(delta) < vars->distance) {
             matrix_from_basis_rows(matrix, moby + 0xC0);
             transform_vector(delta, delta, matrix);
-            if (*(float *)(delta + 4) < 0.2f) near_parent = 1;
+            if (*(float *)(delta + 4) < 0.2f)
+                near_parent = 1;
         }
     }
     switch (((Moby *)moby)->state) {
-    case 0:
-        if (vars->initialized == 0) {
-            Moby_GetJointWorldPos(moby, 0, delta);
-            vars->distance = FastVecDist(moby + 0x10, delta);
-            vars->notified_count = 0;
-            vars->parent = moby;
-            get_first_moby_in_group(&child, ((Moby *)moby)->group, 0, 0);
-            while (child != 0) {
-                if ((unsigned char *)child != moby && *(short *)(child + 0xA6) == 0x4b9) {
-                    RingVars_6D48 *other = *(RingVars_6D48 **)(child + 0x78);
-                    other->parent = moby;
-                    other->initialized = 1;
-                    other->distance = vars->distance;
+        case 0:
+            if (vars->initialized == 0) {
+                Moby_GetJointWorldPos(moby, 0, delta);
+                vars->distance = FastVecDist(moby + 0x10, delta);
+                vars->notified_count = 0;
+                vars->parent = moby;
+                get_first_moby_in_group(&child, ((Moby *)moby)->group, 0, 0);
+                while (child != 0) {
+                    if ((unsigned char *)child != moby && *(short *)(child + 0xA6) == 0x4b9) {
+                        RingVars_6D48 *other = *(RingVars_6D48 **)(child + 0x78);
+                        other->parent = moby;
+                        other->initialized = 1;
+                        other->distance = vars->distance;
+                    }
+                    vars->notified_count++;
+                    get_next_moby_in_group(&child, child, 0, 0);
                 }
-                vars->notified_count++;
-                get_next_moby_in_group(&child, child, 0, 0);
             }
-        }
-        vars->timer = 0;
-        vars->delay = 0;
-        vars->child_count = 0;
-        vars->triggered = 0;
-        vars->flash_timer = 0;
-        set_moby_color(moby, 0, 0, 0);
-        ((Moby *)moby)->state = 1;
-        break;
-    case 1:
-    case 2:
-        save_id = ((Moby *)moby)->save_id;
-        save_byte = (unsigned char *)quartu_collected_flags_base;
-        save_byte -= -(short)save_id;
-        if (save_byte[0x454] != 0 ||
-            ((((int)*(unsigned int *)(((((short)save_id >> 5) << 2) + (g_current_level_index << 8)) + (unsigned char *)(help_stats_base + 0xAB75))) >> (save_id & 31)) & 1) != 0) {
-            if (vars->enabled != 0) {
-                set_moby_list_state(((Moby *)moby)->group, 4);
-                vars->timer = vars->restart_timer;
-                ((Moby *)moby)->state = 4;
-                break;
+            vars->timer = 0;
+            vars->delay = 0;
+            vars->child_count = 0;
+            vars->triggered = 0;
+            vars->flash_timer = 0;
+            set_moby_color(moby, 0, 0, 0);
+            ((Moby *)moby)->state = 1;
+            break;
+        case 1:
+        case 2:
+            save_id = ((Moby *)moby)->save_id;
+            save_byte = (unsigned char *)quartu_collected_flags_base;
+            save_byte -= -(short)save_id;
+            if (save_byte[0x454] != 0 ||
+                ((((int)*(unsigned int *)(((((short)save_id >> 5) << 2) + (g_current_level_index << 8)) +
+                                          (unsigned char *)(help_stats_base + 0xAB75))) >>
+                  (save_id & 31)) &
+                 1) != 0) {
+                if (vars->enabled != 0) {
+                    set_moby_list_state(((Moby *)moby)->group, 4);
+                    vars->timer = vars->restart_timer;
+                    ((Moby *)moby)->state = 4;
+                    break;
+                }
             }
-        }
-        if (vars->triggered == 0 && near_parent) {
-            unsigned char *parent = vars->parent;
-            RingVars_6D48 *parent_vars = ((RingVars_6D48 *)((Moby *)parent)->pvars);
-            if (((Moby *)parent)->state == 1) {
-                vars->child_count = 0;
-                ((Moby *)parent)->state = 2;
-                parent_vars->timer = parent_vars->frame_count < 1 ? 900 : scale_ticks(vars->frame_count);
-            }
-            parent_vars->child_count++;
-            Moby_PlaySound(3, 0x31, (int)moby);
-            set_moby_color(moby, 0, 0xff, 0);
-            vars->triggered = 1;
-        }
-        if (((Moby *)moby)->state == 2) {
-            if (vars->child_count >= vars->notified_count) {
-                set_moby_list_state(((Moby *)moby)->group, 4);
-                ((int (*)(int, int, int))Moby_PlaySound)(1, 0x31, (int)moby);
-                vars->timer = vars->restart_timer;
-                ((Moby *)moby)->state = 4;
-                break;
-            } else {
-                if (FastDecTimer(&vars->timer) != 0) {
+            if (vars->triggered == 0 && near_parent) {
+                unsigned char *parent = vars->parent;
+                RingVars_6D48 *parent_vars = ((RingVars_6D48 *)((Moby *)parent)->pvars);
+                if (((Moby *)parent)->state == 1) {
                     vars->child_count = 0;
-                    vars->triggered = 0;
-                    Moby_PlaySound(2, 0x31, (int)moby);
-                    set_moby_list_state(((Moby *)moby)->group, 3);
-                } else if (FastDecTimer(&vars->delay) != 0) {
-                    Moby_PlaySound(0, 0x31, (int)moby);
-                    first = scale_ticks(0x2d);
-                    second = scale_ticks(5);
-                    divisor = scale_ticks(0x28);
-                    if (first < second + vars->timer / divisor)
-                        vars->delay = scale_ticks(0x2d);
-                    else {
-                        int delay = scale_ticks(5);
-                        int delay_divisor = scale_ticks(0x28);
-                        delay_divisor = delay + vars->timer / delay_divisor;
-                        vars->delay = delay_divisor;
+                    ((Moby *)parent)->state = 2;
+                    parent_vars->timer = parent_vars->frame_count < 1 ? 900 : scale_ticks(vars->frame_count);
+                }
+                parent_vars->child_count++;
+                Moby_PlaySound(3, 0x31, (int)moby);
+                set_moby_color(moby, 0, 0xff, 0);
+                vars->triggered = 1;
+            }
+            if (((Moby *)moby)->state == 2) {
+                if (vars->child_count >= vars->notified_count) {
+                    set_moby_list_state(((Moby *)moby)->group, 4);
+                    ((int (*)(int, int, int))Moby_PlaySound)(1, 0x31, (int)moby);
+                    vars->timer = vars->restart_timer;
+                    ((Moby *)moby)->state = 4;
+                    break;
+                } else {
+                    if (FastDecTimer(&vars->timer) != 0) {
+                        vars->child_count = 0;
+                        vars->triggered = 0;
+                        Moby_PlaySound(2, 0x31, (int)moby);
+                        set_moby_list_state(((Moby *)moby)->group, 3);
+                    } else if (FastDecTimer(&vars->delay) != 0) {
+                        Moby_PlaySound(0, 0x31, (int)moby);
+                        first = scale_ticks(0x2d);
+                        second = scale_ticks(5);
+                        divisor = scale_ticks(0x28);
+                        if (first < second + vars->timer / divisor)
+                            vars->delay = scale_ticks(0x2d);
+                        else {
+                            int delay = scale_ticks(5);
+                            int delay_divisor = scale_ticks(0x28);
+                            delay_divisor = delay + vars->timer / delay_divisor;
+                            vars->delay = delay_divisor;
+                        }
                     }
                 }
             }
-        }
-        break;
-    case 3:
-        set_moby_color(moby, 0, 0, 0);
-        vars->child_count = 0;
-        vars->triggered = 0;
-        ((Moby *)moby)->state = 1;
-        break;
-    case 4: {
-        unsigned short save_id;
-        unsigned int *bits;
-        if (FastDecTimer(&vars->flash_timer) != 0) {
-            vars->flash_timer = scale_ticks(0x14);
-            if (vars->flash_color != 0) {
-                set_moby_color(moby, 0, 0xff, 0);
-                vars->flash_color = 0;
-            } else {
-                set_moby_color(moby, 0xff, 0xff, 0xff);
-                vars->flash_color = 1;
+            break;
+        case 3:
+            set_moby_color(moby, 0, 0, 0);
+            vars->child_count = 0;
+            vars->triggered = 0;
+            ((Moby *)moby)->state = 1;
+            break;
+        case 4: {
+            unsigned short save_id;
+            unsigned int *bits;
+            if (FastDecTimer(&vars->flash_timer) != 0) {
+                vars->flash_timer = scale_ticks(0x14);
+                if (vars->flash_color != 0) {
+                    set_moby_color(moby, 0, 0xff, 0);
+                    vars->flash_color = 0;
+                } else {
+                    set_moby_color(moby, 0xff, 0xff, 0xff);
+                    vars->flash_color = 1;
+                }
             }
+            save_id = ((Moby *)moby)->save_id;
+            bits = (unsigned int *)(((((short)save_id >> 5) << 2) + (g_current_level_index << 8)) +
+                                    (unsigned char *)(help_stats_base + 0xAB75));
+            *bits |= 1U << (save_id & 31);
+            save_id = ((Moby *)moby)->save_id;
+            quartu_moby_killed[(short)save_id >> 5] |= 1U << (save_id & 31);
+            break;
         }
-        save_id = ((Moby *)moby)->save_id;
-        bits = (unsigned int *)(((((short)save_id >> 5) << 2) + (g_current_level_index << 8)) + (unsigned char *)(help_stats_base + 0xAB75));
-        *bits |= 1U << (save_id & 31);
-        save_id = ((Moby *)moby)->save_id;
-        quartu_moby_killed[(short)save_id >> 5] |= 1U << (save_id & 31);
-        break;
-    }
     }
 }
 extern void set_moby_color(void *, int, int, int);
@@ -1215,8 +1272,7 @@ extern void AddDrawCallback(void *, void *);
 extern void draw_moby_radial_ripple_mesh_buffers(void);
 
 // First call sets up and marks the moby; later calls queue a draw callback and set a flag.
-void ripple_strips_moby_update(char *moby)
-{
+void ripple_strips_moby_update(char *moby) {
     if (*(unsigned char *)(moby + 0x20) == 0) {
         set_moby_color(moby, 0x40, 0x40, 0x40);
         moby[0x20] = 1;
@@ -1256,39 +1312,39 @@ void codebot_update(unsigned char *moby) {
         m->rot.z = FastAddRots(m->rot.z, g_frame_time * 1.5707964f);
         m->scale = m->pclass->scale * *(float *)&quartu_codebot_scale_factor;
         switch (m->state) {
-        case CODEBOT_INITIALIZE:
-            initialize_collectible_sprite_state(moby);
-            if (special_items_base[0x13D] != 0) {
-                DeleteMoby(moby);
-            } else {
-                m->state = 1;
-                m->pos.z += 1.0f;
-            }
-            break;
-        case CODEBOT_CHECK_HERO_PROXIMITY:
-            update_collectible_sprite_effect(moby);
-            if (FastVecDist(&m->pos, &((Hero_2D7C00 *)&g_hero)->pos) < 3.0f) {
-                if (((HeroStateWord_2D7C00 *)&g_hero)->current != 0x32) {
-                    m->flags |= 0x41;
-                    StartCutscene(1);
-                    m->state = 2;
+            case CODEBOT_INITIALIZE:
+                initialize_collectible_sprite_state(moby);
+                if (special_items_base[0x13D] != 0) {
+                    DeleteMoby(moby);
+                } else {
+                    m->state = 1;
+                    m->pos.z += 1.0f;
                 }
-            }
-            break;
-        case CODEBOT_RECORD_COLLECTION:
-            if (quartu_game_mode != 2) {
-                ShowBanner(0x426A, -1);
-                quartu_dialogue_message_duration = scale_ticks(0xB4);
-                collection_flags = special_items_base + 0x13B;
-                collection_flags[2] = 1;
-                collection_flags[0x78] = 1;
-                m->state = 3;
-                memcard_Save(0, -1);
-            }
-            break;
-        case CODEBOT_REMOVE:
-            DeleteMoby(moby);
-            break;
+                break;
+            case CODEBOT_CHECK_HERO_PROXIMITY:
+                update_collectible_sprite_effect(moby);
+                if (FastVecDist(&m->pos, &((Hero_2D7C00 *)&g_hero)->pos) < 3.0f) {
+                    if (((HeroStateWord_2D7C00 *)&g_hero)->current != 0x32) {
+                        m->flags |= 0x41;
+                        StartCutscene(1);
+                        m->state = 2;
+                    }
+                }
+                break;
+            case CODEBOT_RECORD_COLLECTION:
+                if (quartu_game_mode != 2) {
+                    ShowBanner(0x426A, -1);
+                    quartu_dialogue_message_duration = scale_ticks(0xB4);
+                    collection_flags = special_items_base + 0x13B;
+                    collection_flags[2] = 1;
+                    collection_flags[0x78] = 1;
+                    m->state = 3;
+                    memcard_Save(0, -1);
+                }
+                break;
+            case CODEBOT_REMOVE:
+                DeleteMoby(moby);
+                break;
         }
     }
 }
@@ -1329,90 +1385,100 @@ void giant_clank_pad_update(char *m) {
 
     st = ((unsigned char *)m)[0x20];
     switch (st) {
-    case 0:
-        idx = data->target_idx;
-        if (idx == -1) {
-            DeleteMoby(m);
-            return;
-        }
-        p0 = &quartu_moby_array_m[idx];
-        p0->flags = p0->flags | 1;
-        p0->collision = 0;
-        p0->visible = 0;
-        if (g_current_level_index != 0x12 || (b = (unsigned char *)help_stats_base + 0xAA35, x = b + ((unsigned char *)m)[0xB0], x[0x120] != 0xFF)) {
-            ns = 1;
-        } else {
-            ns = 3;
-        }
-        m[0x20] = ns;
-        data->unk_68 = -1;
-        return;
-    case 1:
-        m[0x20] = 2;
-        return;
-    case 2:
-        if ((char *)g_hero_r.ground_moby != m) break;
-        if (g_hero_r.air_frames.s != 0) break;
-        if (quartu_game_mode == st) break;
-        if (g_hero_r.state.current == 0x1D) break;
-        v = g_hero_r.vehicle_mode;
-        if (v == 0) {
-            try_set_help_message(4, 0x3AA4);
-        } else if (v == st) {
-            if (g_current_level_index != 0x12) try_set_help_message(4, 0x3AA5);
-        }
-        if ((g_controller_state_r.pressed & 0x10) == 0) return;
-        if (quartu_help_message_selector != 4) return;
-        if (g_hero_r.vehicle_mode == 2 && (gm = g_current_level_index) == 0xF) {
-            other = quartu_moby_array_m;
-            other += data->target_idx;
-            other->flags = other->flags | 1;
-            other->collision = 0;
-            other->visible = 0;
-            restore_saved_hero_moby_and_clear_vehicle_mode();
-            MobySetAnimation(other, 0, 0);
-            if (g_current_level_index == 0xF) {
-                StartCutscene(9);
-                MusicRequestTrack(0, 5);
+        case 0:
+            idx = data->target_idx;
+            if (idx == -1) {
+                DeleteMoby(m);
+                return;
             }
+            p0 = &quartu_moby_array_m[idx];
+            p0->flags = p0->flags | 1;
+            p0->collision = 0;
+            p0->visible = 0;
+            if (g_current_level_index != 0x12 ||
+                (b = (unsigned char *)help_stats_base + 0xAA35, x = b + ((unsigned char *)m)[0xB0], x[0x120] != 0xFF)) {
+                ns = 1;
+            } else {
+                ns = 3;
+            }
+            m[0x20] = ns;
+            data->unk_68 = -1;
             return;
-        }
-        if (g_hero_r.vehicle_mode != 0) return;
+        case 1:
+            m[0x20] = 2;
+            return;
+        case 2:
+            if ((char *)g_hero_r.ground_moby != m)
+                break;
+            if (g_hero_r.air_frames.s != 0)
+                break;
+            if (quartu_game_mode == st)
+                break;
+            if (g_hero_r.state.current == 0x1D)
+                break;
+            v = g_hero_r.vehicle_mode;
+            if (v == 0) {
+                try_set_help_message(4, 0x3AA4);
+            } else if (v == st) {
+                if (g_current_level_index != 0x12)
+                    try_set_help_message(4, 0x3AA5);
+            }
+            if ((g_controller_state_r.pressed & 0x10) == 0)
+                return;
+            if (quartu_help_message_selector != 4)
+                return;
+            if (g_hero_r.vehicle_mode == 2 && (gm = g_current_level_index) == 0xF) {
+                other = quartu_moby_array_m;
+                other += data->target_idx;
+                other->flags = other->flags | 1;
+                other->collision = 0;
+                other->visible = 0;
+                restore_saved_hero_moby_and_clear_vehicle_mode();
+                MobySetAnimation(other, 0, 0);
+                if (g_current_level_index == 0xF) {
+                    StartCutscene(9);
+                    MusicRequestTrack(0, 5);
+                }
+                return;
+            }
+            if (g_hero_r.vehicle_mode != 0)
+                return;
 
-        other = &quartu_moby_array_m[data->target_idx];
-        if (data->link_idx != -1) {
-            o2 = &quartu_moby_array_m[data->link_idx];
-            if (o2 != 0 && o2->state != 0xFE && o2->state != 0xFD) {
-                DeleteMoby(o2);
-                data->link_idx = -1;
+            other = &quartu_moby_array_m[data->target_idx];
+            if (data->link_idx != -1) {
+                o2 = &quartu_moby_array_m[data->link_idx];
+                if (o2 != 0 && o2->state != 0xFE && o2->state != 0xFD) {
+                    DeleteMoby(o2);
+                    data->link_idx = -1;
+                }
             }
-        }
-        *(u128_2EE458 *)V = *(u128_2EE458 *)(m + 0x10);
-        f = ProbeGroundHeight(V, 0, 0.5f);
-        V[2] = f + 0.1f;
-        if (g_current_level_index == 0xF) jet_reset_camera(V, m + 0x40);
-        Hero_ResetToPosition(V, m + 0x40, 0, 1);
-        o3 = (char *)other->pclass;
-        other->collision = *(int *)(o3 + 0x10);
-        other->visible = 1;
-        other->flags = other->flags & 0xFFFE;
-        enter_hero_vehicle_mode(2, 0x5A, (char *)other);
-        if (g_current_level_index == 0xF) {
-            StartCutscene(8);
-            *(u128_2EE458 *)g_hero_r.saved_pos_rot = *(u128_2EE458 *)&g_hero_r.motion.pos;
-            *(u128_2EE458 *)(g_hero_r.saved_pos_rot + 0x10) = *(u128_2EE458 *)&g_hero_r.motion.rot;
-            MusicRequestTrack(2, 4);
+            *(u128_2EE458 *)V = *(u128_2EE458 *)(m + 0x10);
+            f = ProbeGroundHeight(V, 0, 0.5f);
+            V[2] = f + 0.1f;
+            if (g_current_level_index == 0xF)
+                jet_reset_camera(V, m + 0x40);
+            Hero_ResetToPosition(V, m + 0x40, 0, 1);
+            o3 = (char *)other->pclass;
+            other->collision = *(int *)(o3 + 0x10);
+            other->visible = 1;
+            other->flags = other->flags & 0xFFFE;
+            enter_hero_vehicle_mode(2, 0x5A, (char *)other);
+            if (g_current_level_index == 0xF) {
+                StartCutscene(8);
+                *(u128_2EE458 *)g_hero_r.saved_pos_rot = *(u128_2EE458 *)&g_hero_r.motion.pos;
+                *(u128_2EE458 *)(g_hero_r.saved_pos_rot + 0x10) = *(u128_2EE458 *)&g_hero_r.motion.rot;
+                MusicRequestTrack(2, 4);
+                return;
+            }
+            if (g_current_level_index == 0x12) {
+                StartCutscene(6);
+                *(u128_2EE458 *)g_hero_r.saved_pos_rot = *(u128_2EE458 *)&g_hero_r.motion.pos;
+                *(u128_2EE458 *)(g_hero_r.saved_pos_rot + 0x10) = *(u128_2EE458 *)&g_hero_r.motion.rot;
+                m[0x20] = 3;
+            }
             return;
-        }
-        if (g_current_level_index == 0x12) {
-            StartCutscene(6);
-            *(u128_2EE458 *)g_hero_r.saved_pos_rot = *(u128_2EE458 *)&g_hero_r.motion.pos;
-            *(u128_2EE458 *)(g_hero_r.saved_pos_rot + 0x10) = *(u128_2EE458 *)&g_hero_r.motion.rot;
-            m[0x20] = 3;
-        }
-        return;
-    default:
-        return;
+        default:
+            return;
     }
     data->unk_68 = -1;
 }

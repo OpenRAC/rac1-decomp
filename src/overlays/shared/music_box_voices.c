@@ -86,7 +86,8 @@ void update_box_positional_voice(Moby_0031AD00 *m) {
                 b[2] = -1.0f;
             }
             t = FastVecLength_r(b);
-            vol = calculate_voice_distance_volume_r((char *)novalis_level_sound_slots_r + (p->cls << 5), inner, t, outer);
+            vol =
+                calculate_voice_distance_volume_r((char *)novalis_level_sound_slots_r + (p->cls << 5), inner, t, outer);
         }
         e = voice_pool_r + p->handle * 0x70;
         if (novalis_level_sound_slots_r[p->cls].f18) {
@@ -132,14 +133,15 @@ void update_requested_state_from_box_position(char *moby) {
     float a[4];
     float b[4];
     unsigned char *data = *(unsigned char **)(moby + 8);
-    FastVecSub(a,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, moby + 0x40);
+    FastVecSub(a, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, moby + 0x40);
     a[3] = 0;
     matrix_mul_vec3(b, a, moby + 0x50);
     if (FastAbsF(b[0]) <= 1.0f && FastAbsF(b[1]) <= 1.0f && FastAbsF(b[2]) <= 1.0f) {
         float t = (b[0] + 1.0f) * 0.5f;
         int v = truncate_float_to_s32_r(IntToFloat(*(int *)(data + 4)) * t);
         int w = *(int *)(data + 4);
-        if (!(w < v)) w = v;
+        if (!(w < v))
+            w = v;
         set_requested_state_and_mark_changes((int)moby, data[0], w, data[1], data[2]);
         data[3] = 1;
     } else if (data[3] != 0) {
@@ -186,7 +188,7 @@ void update_music_box_exit_trigger(int *moby) {
     float v[8];
     int *p = (int *)moby[2];
     if (((unsigned *)p)[3] != 0xFFFFFFFF) {
-        FastVecSub(v,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, (char *)moby + 0x40);
+        FastVecSub(v, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, (char *)moby + 0x40);
         v[3] = 0;
         matrix_mul_vec3(v + 4, v, (char *)moby + 0x50);
         if (FastAbsF(v[4]) <= 1.0f && FastAbsF(v[5]) <= 1.0f && FastAbsF(v[6]) <= 1.0f) {
@@ -195,8 +197,10 @@ void update_music_box_exit_trigger(int *moby) {
         }
         if (p[2] != 0) {
             short *s = (short *)p;
-            if (s[7] == -1) s[7] = s[6];
-            if (s[6] == -1) s[6] = s[7];
+            if (s[7] == -1)
+                s[7] = s[6];
+            if (s[6] == -1)
+                s[6] = s[7];
             if (v[4] > 0) {
                 MusicRequestTrack(p[1], s[7]);
             } else {

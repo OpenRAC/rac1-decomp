@@ -44,7 +44,10 @@ extern int FastDecTimer(void *);
 extern char *spawn_spinning_and_fading_effect_particle(void *, void *, unsigned long, float);
 extern void spawn_color_decaying_effect_particle(void *, void *, int);
 
-typedef struct { char *p[7]; short timer; } Slots_265E88;
+typedef struct {
+    char *p[7];
+    short timer;
+} Slots_265E88;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00264e40.c, FUN_L02_00264e70. */
 void effect_slots_fire(char *slots, float *position, float *direction, float distance) {
@@ -73,24 +76,32 @@ void effect_slots_fire(char *slots, float *position, float *direction, float dis
     FastVecAdd(end, adjusted, origin);
     if (coll_line(origin, end, 2, 0, 0)) {
         travel = FastVecDist(origin, aridia_coll_hit_point) - 0.75f;
-        if (travel < 0.0f) travel = 0.0f;
+        if (travel < 0.0f)
+            travel = 0.0f;
     } else {
         travel = distance;
     }
     acceleration = g_frame_time_sq;
     ApproachWithVelocity(&speed, &travel_step, travel, 1.0f, acceleration * 48.0f,
-                  (*(float *)&aridia_shot_stream_max_speed) * g_frame_time);
+                         (*(float *)&aridia_shot_stream_max_speed) * g_frame_time);
     ((float (*)(void *, void *, float))vec_scale_to_length)(adjusted, adjusted, travel_step);
     n = (*(int *)&aridia_shot_stream_extra_count);
     first_count = (*(int *)&aridia_shot_stream_lead_count);
-    if (travel < 4.0f) first_count = 1;
+    if (travel < 4.0f)
+        first_count = 1;
     for (i = 0; i < n + first_count; i++) {
         rand_vec(offset, 0.0f,
-            (((*(float *)&aridia_shot_stream_spread_far) - (*(float *)&aridia_shot_stream_spread_near)) * (travel / distance) + (*(float *)&aridia_shot_stream_spread_near)) * g_frame_time);
+                 (((*(float *)&aridia_shot_stream_spread_far) - (*(float *)&aridia_shot_stream_spread_near)) *
+                      (travel / distance) +
+                  (*(float *)&aridia_shot_stream_spread_near)) *
+                     g_frame_time);
         FastVecAdd(offset, offset, adjusted);
         FastVecScale(velocity, adjusted, random_float_between(0.0f, 1.0f));
         FastVecAdd(velocity, velocity, origin);
-        if (i < first_count) fl = 1; else fl = 0;
+        if (i < first_count)
+            fl = 1;
+        else
+            fl = 0;
         shot = spawn_spinning_and_fading_effect_particle(velocity, offset, fl, travel);
         if (i == 2 && save_shot) {
             int j;
@@ -120,7 +131,8 @@ void collect_mobies_around_tracked_objects(char **slots, int a, int b) {
     int i;
     for (i = 6; i >= 0; i--, slots++) {
         char *m = *slots;
-        if (m == 0) continue;
+        if (m == 0)
+            continue;
         if ((unsigned char)m[0] != 12) {
             *slots = 0;
             continue;
@@ -129,7 +141,8 @@ void collect_mobies_around_tracked_objects(char **slots, int a, int b) {
             *slots = 0;
         } else {
             coll_sphere_mobys(*(float *)(m + 0xC) / 210000.0f * 0.25f, m + 0x10, 0, a, b);
-            if (*(short *)(m + 0xA) < 5) *slots = 0;
+            if (*(short *)(m + 0xA) < 5)
+                *slots = 0;
         }
     }
 }

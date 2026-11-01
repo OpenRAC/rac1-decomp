@@ -45,16 +45,43 @@ void deactivate_recorded_moby(void) {
         *(int *)(level_render_state + 0x94) = 0;
     }
 }
-typedef struct { char pad[0x20]; unsigned char st; char pad21[0x13]; unsigned short flags; char pad36[0x70]; short type; char pada8[0x58]; } O_28e9c8;
-typedef struct { char pad[0x34]; unsigned short flags; } F_28e9c8;
-typedef struct { F_28e9c8 *x0; int x4; int x8; char padc[0x14]; int x20; short x24; short x26; char pad28[4]; short x2c; } E_28e9c8;
-typedef struct { char pad[0x58]; int x58; int x5c; } C_28e9c8;
+typedef struct {
+    char pad[0x20];
+    unsigned char st;
+    char pad21[0x13];
+    unsigned short flags;
+    char pad36[0x70];
+    short type;
+    char pada8[0x58];
+} O_28e9c8;
+typedef struct {
+    char pad[0x34];
+    unsigned short flags;
+} F_28e9c8;
+typedef struct {
+    F_28e9c8 *x0;
+    int x4;
+    int x8;
+    char padc[0x14];
+    int x20;
+    short x24;
+    short x26;
+    char pad28[4];
+    short x2c;
+} E_28e9c8;
+typedef struct {
+    char pad[0x58];
+    int x58;
+    int x5c;
+} C_28e9c8;
 extern E_28e9c8 level_render_state_s __asm__("D_0013E130") NOT_SDA;
 extern C_28e9c8 cutscene_state_s __asm__("D_L00_0016C960");
 extern int skip_frame_m __asm__("D_L00_0015F6BC") MACRO_ADDR;
 extern char hero_scale_manipulator[];
 extern char cheat_scale_manipulator[];
-extern struct { int x0, x4, x8; } D_L00_00173F00_s __asm__("D_L00_00173F00");
+extern struct {
+    int x0, x4, x8;
+} D_L00_00173F00_s __asm__("D_L00_00173F00");
 extern int lvl_vu_chain_buffer_size MACRO_ADDR;
 extern int cinematic_mode MACRO_ADDR;
 extern float gFadeLvl MACRO_ADDR;
@@ -62,7 +89,12 @@ extern int level_white_fade_level MACRO_ADDR;
 extern unsigned char g_hero_field_20a5[] NOT_SDA;
 extern O_28e9c8 *level_mobys_end MACRO_ADDR;
 extern unsigned char gHaveHeliPack[] NOT_SDA;
-typedef struct { char pad[0x1C]; int x1c; char pad20[0x3A]; short x5a; } S_171b;
+typedef struct {
+    char pad[0x1C];
+    int x1c;
+    char pad20[0x3A];
+    short x5a;
+} S_171b;
 extern unsigned char help_stats_base[] NOT_SDA;
 extern void FastMemSet(void *, int, int);
 extern void calculate_dma_transfer_address(void);
@@ -98,7 +130,8 @@ void initialize_level_transition_with_audio(int a) {
     HeroSetObjectFlags();
     level_render_state_s.x0->flags |= 1;
     for (o = level_mobys_end; o->st != 0xFF; o++) {
-        if (!(o->st & 0x80) && (o->type == 0x4A || o->type == 0xCB)) o->flags |= 0x80;
+        if (!(o->st & 0x80) && (o->type == 0x4A || o->type == 0xCB))
+            o->flags |= 0x80;
     }
     if (a == 0) {
         n = level_render_state_s.x26;
@@ -117,19 +150,23 @@ void initialize_level_transition_with_audio(int a) {
         n = level_render_state_s.x26;
         k = level_render_state_s.x2c;
         t = n + 3;
-        if (k) t = n;
+        if (k)
+            t = n;
         m2 = n + 5;
         if (g_current_level_index_m == 10 && n == 1 && gHaveHeliPack[4] == 0) {
             t = 10;
-            if (k) t = 9;
+            if (k)
+                t = 9;
             m2 = 4;
         } else if (g_current_level_index_m == 14 && level_render_state_s.x26 == 2) {
             t = 13;
-            if (level_render_state_s.x2c) t = 12;
+            if (level_render_state_s.x2c)
+                t = 12;
             m2 = 9;
         }
         r = 0;
-        if (!level_render_state_s.x2c) r = scale_ticks(6);
+        if (!level_render_state_s.x2c)
+            r = scale_ticks(6);
         load_chunks_with_optional_fade(m2, r);
     }
     z = (S_171b *)(help_stats_base + 0x100B5);
@@ -150,14 +187,16 @@ extern void initialize_level_transition_with_audio(int);
 /* Pauses music, clears the help message and starts the level transition. */
 void prepare_level_transition_with_help_cleanup(void) {
     char *g = g_hero;
-    
-    if (*(int *)(g + 0x22A8) <= 0) *(int *)(g + 0x22A8) = 1;
+
+    if (*(int *)(g + 0x22A8) <= 0)
+        *(int *)(g + 0x22A8) = 1;
     *(int *)&skip_frame = 1;
     music_Pause(0);
     {
         char *p = (char *)help_stats_base + 0x100B5;
         unsigned short h = *(unsigned short *)(p + 0x5A);
-        if ((unsigned short)(h - 6) >= 2) *(short *)(p + 0x5A) = 5;
+        if ((unsigned short)(h - 6) >= 2)
+            *(short *)(p + 0x5A) = 5;
     }
     sound_update();
     clear_active_help_record();
@@ -199,7 +238,8 @@ void prepare_target_level_transition(int dest) {
         int v;
         int t;
         initialize_level_transition_with_audio(8);
-        if (pal_mode) d = 0x50;
+        if (pal_mode)
+            d = 0x50;
         v = scale_ticks(((int *)&level_transition_ticks_by_variant)[*(short *)(g + 0x26)]);
         *(int *)(h + 0x34) = v;
         t = v / d;
@@ -213,10 +253,23 @@ void prepare_target_level_transition(int dest) {
         *(short *)(g + 0x24) = -1;
     }
 }
-typedef struct { char p0[0x20]; s32 x20; s16 x24; s16 p26; s16 p28; s16 x2a; s16 x2c; } E_eed0;
+typedef struct {
+    char p0[0x20];
+    s32 x20;
+    s16 x24;
+    s16 p26;
+    s16 p28;
+    s16 x2a;
+    s16 x2c;
+} E_eed0;
 extern E_eed0 level_render_state_r __asm__("D_0013E130");
-extern struct { int x0, x4, x8_c; } D_L00_00173F00_901A8 __asm__("D_L00_00173F00");
-extern struct { char p[0x58]; int x58, x5c; } D_L00_0016C960_901A8 __asm__("D_L00_0016C960");
+extern struct {
+    int x0, x4, x8_c;
+} D_L00_00173F00_901A8 __asm__("D_L00_00173F00");
+extern struct {
+    char p[0x58];
+    int x58, x5c;
+} D_L00_0016C960_901A8 __asm__("D_L00_0016C960");
 extern int lvl_vu_chain_buffer_size_r __asm__("D_L00_0016128C") MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern u8 level_available_base NOT_SDA;
@@ -230,15 +283,24 @@ void initialize_level_transition_with_audio(s32);
 void prepare_level_entry_transition(void) {
     int m, u;
     level_render_state_r.x2c = 1;
-    if (level_render_state_r.x2a != 0) level_render_state_r.x2a = 0;
+    if (level_render_state_r.x2a != 0)
+        level_render_state_r.x2a = 0;
     m = g_current_level_index;
-    if (m == 1 && level_available_base == 0) { cinematic_mode = 0; return; }
+    if (m == 1 && level_available_base == 0) {
+        cinematic_mode = 0;
+        return;
+    }
     if (m != 0) {
-        if (m == 0xE) { if (menu_item_enabled_92[0] == 0) goto out; }
-        if (m < 0x14) goto in;
+        if (m == 0xE) {
+            if (menu_item_enabled_92[0] == 0)
+                goto out;
+        }
+        if (m < 0x14)
+            goto in;
     }
 out:
-    cinematic_mode = 0; return;
+    cinematic_mode = 0;
+    return;
 in:
     level_render_state_r.x24 = -1;
     cinematic_mode = 6;
@@ -251,14 +313,22 @@ in:
     lvl_vu_chain_buffer_size_r = u;
     initialize_level_transition_with_audio(8);
 }
-typedef struct { float f[4]; } __attribute__((aligned(16))) V_28efc8;
+typedef struct {
+    float f[4];
+} __attribute__((aligned(16))) V_28efc8;
 typedef struct {
     V_28efc8 corner[4];
     unsigned int color[4];
-    struct { float u, v; } uv[4];
+    struct {
+        float u, v;
+    } uv[4];
     long unk70, tex, unk80, unk88;
 } Q_28efc8;
-typedef struct { char *p0; char pad[0x22]; short h26; } G_28efc8;
+typedef struct {
+    char *p0;
+    char pad[0x22];
+    short h26;
+} G_28efc8;
 extern G_28efc8 level_render_state_r2 __asm__("D_0013E130");
 extern V_28efc8 variant_effect_quad_offsets[];
 extern V_28efc8 variant_effect_quad_offsets_1[];
@@ -276,13 +346,13 @@ void draw_world_quad(void *, void *, int);
 
 /* The 0x90-byte quad the effect builds: the NTSC GeometryQuad layout. */
 struct GeometryQuad {
-    V_28efc8 positions[4];          /* 0x00 */
-    u32 colors[4];                  /* 0x40 */
-    f32 texture_coordinates[4][2];  /* 0x50 */
-    u64 reserved;                   /* 0x70 */
-    u64 texture;                    /* 0x78 */
-    u64 texture_state;              /* 0x80 */
-    u64 primitive;                  /* 0x88 */
+    V_28efc8 positions[4]; /* 0x00 */
+    u32 colors[4]; /* 0x40 */
+    f32 texture_coordinates[4][2]; /* 0x50 */
+    u64 reserved; /* 0x70 */
+    u64 texture; /* 0x78 */
+    u64 texture_state; /* 0x80 */
+    u64 primitive; /* 0x88 */
 };
 
 /* One row of the variant offset tables (quad_positions and its variants). */
@@ -295,8 +365,10 @@ void build_variant_effect_quads(unsigned char *quad_source) {
     QuadOffset *selected_quad_offsets;
     int i, j, k;
     selected_quad_offsets = variant_effect_quad_offsets;
-    if (level_render_state_r2.h26 == 1) selected_quad_offsets = variant_effect_quad_offsets_1;
-    else if (level_render_state_r2.h26 == 2) selected_quad_offsets = variant_effect_quad_offsets_2;
+    if (level_render_state_r2.h26 == 1)
+        selected_quad_offsets = variant_effect_quad_offsets_1;
+    else if (level_render_state_r2.h26 == 2)
+        selected_quad_offsets = variant_effect_quad_offsets_2;
     quad.texture = GetEffectTex(5);
     quad.texture_state = 0xFF9000000260L;
     quad.primitive = 0x8000000048L;
@@ -310,10 +382,12 @@ void build_variant_effect_quads(unsigned char *quad_source) {
         int quad_alpha = quad_source[0xBC];
         u32 col;
         float quad_scale;
-        if (*(short *)(quad_source + 0xB2)) quad_alpha += random_integer_below(*(short *)(quad_source + 0xB2));
+        if (*(short *)(quad_source + 0xB2))
+            quad_alpha += random_integer_below(*(short *)(quad_source + 0xB2));
         quad_scale = IntToFloat(quad_alpha) * (selected_quad_offsets[i].f[3] / 40.0f);
         col = (quad_alpha << 24) | 0x2058B0;
-        if (*(short *)(quad_source + 0xA6) == 0x215) col = (quad_alpha << 24) | 0x308000;
+        if (*(short *)(quad_source + 0xA6) == 0x215)
+            col = (quad_alpha << 24) | 0x308000;
         for (k = 0; k < 4; k++) {
             quad.colors[k] = col;
             FastVecScale(quad_scale, &quad.positions[k], &variant_effect_quad_corners[k]);

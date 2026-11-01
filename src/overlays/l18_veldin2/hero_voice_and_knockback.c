@@ -25,7 +25,8 @@ void HeroL18_UpdateStateFlags(void) {
     g->ground_type = -1;
     g->wading = 0;
     g->unk308 = 0;
-    if (s == -1) return;
+    if (s == -1)
+        return;
     if (s == 2) {
         if (g->frames_off_ground.s == 0 || g->ground_distance < 0.3f) {
             g->on_magnet_ground = 1;
@@ -68,12 +69,30 @@ void HeroL18_UpdateStateFlags(void) {
             }
         }
     }
-    if (s == 0xB) { struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D); p->selector_11 = 1; }
-    if (s == 2) { struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D); p->on_magnet_ground = 1; }
-    if (s == 4) { struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D); p->selector_4 = 1; }
-    if (s == 8) { struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D); p->on_slip_ground = 1; }
-    if (s == 9) { struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D); p->unk12EE = 1; }
-    if (s == 0xC) { struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D); p->on_slip_ground = 1; }
+    if (s == 0xB) {
+        struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        p->selector_11 = 1;
+    }
+    if (s == 2) {
+        struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        p->on_magnet_ground = 1;
+    }
+    if (s == 4) {
+        struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        p->selector_4 = 1;
+    }
+    if (s == 8) {
+        struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        p->on_slip_ground = 1;
+    }
+    if (s == 9) {
+        struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        p->unk12EE = 1;
+    }
+    if (s == 0xC) {
+        struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        p->on_slip_ground = 1;
+    }
     {
         struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         if (p->selector_4 != 0 && p->grounded_frames != 0) {
@@ -259,79 +278,79 @@ s32 HeroL18_TryTakeHit(s32 arg) {
         v.i[2] = 0;
     }
     switch (g_hero.b20A4) {
-    case 0:
-        mob = g_hero.p2280;
-        if (mob != 0 && (*(s16 *)(mob + 0xA6) == 0x4EB || *(s16 *)(mob + 0xA6) == 0x558)) {
-            id = 0x80;
-        call_ret:
-            HeroL18_SetMoveState(id, 1);
-            return 1;
-        }
-        if (g_hero.i208C == 0x16) {
-            HeroL18_SetMoveState(0x6D, 1);
-            g_hero.f128 = g_frame_time * 7.0f;
-            return 1;
-        }
-        if (g_hero.i208C == 0x12) {
+        case 0:
             mob = g_hero.p2280;
-            if (mob != 0 && *(s16 *)(mob + 0xA6) == 0x28F) {
-                id = 0x82;
-                goto call_ret;
+            if (mob != 0 && (*(s16 *)(mob + 0xA6) == 0x4EB || *(s16 *)(mob + 0xA6) == 0x558)) {
+                id = 0x80;
+            call_ret:
+                HeroL18_SetMoveState(id, 1);
+                return 1;
             }
-            HeroL18_SetMoveState(0x75, 1);
-        } else if (g_hero.i208C == 0x11) {
-            mob = g_hero.p2280;
-            if (mob != 0 && *(s16 *)(mob + 0xA6) == 0x28F) {
-                id = 0x82;
-                goto call_ret;
+            if (g_hero.i208C == 0x16) {
+                HeroL18_SetMoveState(0x6D, 1);
+                g_hero.f128 = g_frame_time * 7.0f;
+                return 1;
             }
-            if (g_current_level_index == 0xF || g_current_level_index == 0x11) {
+            if (g_hero.i208C == 0x12) {
                 mob = g_hero.p2280;
-                if (mob != 0 && (*(s16 *)(mob + 0xA6) == 0x28F || *(s16 *)(mob + 0xA6) == 0x7B
-                                 || *(s16 *)(mob + 0xA6) == 0x29D)) {
-                    allocate_hero_voice_for_entry(0x1C, 0);
-                }
-            }
-            HeroL18_SetMoveState(0x76, 1);
-        } else if (g_hero.i208C == 3) {
-            mob = g_hero.p2280;
-            if (mob != 0) {
-                id = 0x82;
-                if (*(s16 *)(mob + 0xA6) == 0x28F) {
+                if (mob != 0 && *(s16 *)(mob + 0xA6) == 0x28F) {
+                    id = 0x82;
                     goto call_ret;
                 }
+                HeroL18_SetMoveState(0x75, 1);
+            } else if (g_hero.i208C == 0x11) {
+                mob = g_hero.p2280;
+                if (mob != 0 && *(s16 *)(mob + 0xA6) == 0x28F) {
+                    id = 0x82;
+                    goto call_ret;
+                }
+                if (g_current_level_index == 0xF || g_current_level_index == 0x11) {
+                    mob = g_hero.p2280;
+                    if (mob != 0 && (*(s16 *)(mob + 0xA6) == 0x28F || *(s16 *)(mob + 0xA6) == 0x7B ||
+                                     *(s16 *)(mob + 0xA6) == 0x29D)) {
+                        allocate_hero_voice_for_entry(0x1C, 0);
+                    }
+                }
+                HeroL18_SetMoveState(0x76, 1);
+            } else if (g_hero.i208C == 3) {
+                mob = g_hero.p2280;
+                if (mob != 0) {
+                    id = 0x82;
+                    if (*(s16 *)(mob + 0xA6) == 0x28F) {
+                        goto call_ret;
+                    }
+                }
+                HeroL18_SetMoveState(0x16, 1);
+            } else {
+                HeroL18_SetMoveState(0x16, 1);
             }
-            HeroL18_SetMoveState(0x16, 1);
-        } else {
-            HeroL18_SetMoveState(0x16, 1);
-        }
-        e = g_frame_time;
-        a = e * 5.7f;
-        b = e * 2.4f;
-        if (g_hero.b12E7 != 0) {
-            a = 0.0f;
-            b = e * 1.7f;
-        }
-        hero_knockback(&v, flag, a, b);
-        if (flag != 0 && tbl->b28 == 4) {
-            v.f[2] += v.f[2];
-        }
-        break;
-    case 2:
-        if ((tbl->i24 & 4) || g_hero.i1630 <= 0) {
-            HeroL18_SetMoveState(0x5D, 1);
-            remove_tracked_class_5f3_moby();
-            if (g_hero.h30E == 0) {
-                hero_knockback(&v, flag, g_frame_time * 7.0f, g_frame_time * 3.5f);
-                break;
+            e = g_frame_time;
+            a = e * 5.7f;
+            b = e * 2.4f;
+            if (g_hero.b12E7 != 0) {
+                a = 0.0f;
+                b = e * 1.7f;
             }
-        }
-        clear_u64_value(&v);
-        break;
-    case 3:
-        HeroL18_SetMoveState(0x56, 1);
-        hero_knockback(&v, flag, g_frame_time * 5.0f, g_frame_time * 2.4f);
-        break;
+            hero_knockback(&v, flag, a, b);
+            if (flag != 0 && tbl->b28 == 4) {
+                v.f[2] += v.f[2];
+            }
+            break;
+        case 2:
+            if ((tbl->i24 & 4) || g_hero.i1630 <= 0) {
+                HeroL18_SetMoveState(0x5D, 1);
+                remove_tracked_class_5f3_moby();
+                if (g_hero.h30E == 0) {
+                    hero_knockback(&v, flag, g_frame_time * 7.0f, g_frame_time * 3.5f);
+                    break;
+                }
+            }
+            clear_u64_value(&v);
+            break;
+        case 3:
+            HeroL18_SetMoveState(0x56, 1);
+            hero_knockback(&v, flag, g_frame_time * 5.0f, g_frame_time * 2.4f);
+            break;
     }
     FastVecAdd(hero_velocity, hero_velocity, &v);
     FastVecAdd(hero_velocity + 0x20, hero_velocity + 0x20, &v);

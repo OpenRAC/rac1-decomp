@@ -30,7 +30,10 @@ void set_moby_attached_effect_alpha_from_distance(Level18Moby *moby, float scale
     if (effect == 0) {
         return;
     }
-    alpha = truncate_float_to_s32(FastVecDist(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, moby->position) * 8.0f * scale) - 1;
+    alpha = truncate_float_to_s32(
+                FastVecDist(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, moby->position) * 8.0f *
+                scale) -
+            1;
     if (alpha >= 256) {
         alpha = 255;
     } else if (alpha < 0) {

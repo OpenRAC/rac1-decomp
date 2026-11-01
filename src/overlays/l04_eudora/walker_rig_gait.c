@@ -13,10 +13,12 @@ float probe_leg_rig_ground_height(float *pos) {
     float b[4];
     qcopy(a, pos);
     a[2] = a[2] - 2.5f;
-    if (a[2] < 0.1f) a[2] = 0.1f;
+    if (a[2] < 0.1f)
+        a[2] = 0.1f;
     qcopy(b, pos);
     b[2] = b[2] + 0.75f;
-    if (coll_line(b, a, 2, 0, 0) != 0) return eudora_coll_hit_z;
+    if (coll_line(b, a, 2, 0, 0) != 0)
+        return eudora_coll_hit_z;
     return 0.0f;
 }
 /* Writes the four joint angle limits of a leg-rig block. */
@@ -123,12 +125,14 @@ void initialize_leg_rig(struct Moby *moby, LegRig_p *rig) {
         rig->anims[i]->len = animation_end(moby->class_slot, rig->anims[i]->id) - rig->anims[i]->start;
         if (rig->anims[i]->len != 0.0f) {
             for (j = 0; j < 2; j++) {
-                rig->anims[i]->phase[1].span[j] = rig->anims[i]->phase[1].from[j] <= rig->anims[i]->phase[1].to[j]
-                    ? rig->anims[i]->phase[1].to[j] - rig->anims[i]->phase[1].from[j]
-                    : rig->anims[i]->phase[1].to[j] + rig->anims[i]->len - rig->anims[i]->phase[1].from[j];
-                rig->anims[i]->phase[0].span[j] = rig->anims[i]->phase[0].from[j] <= rig->anims[i]->phase[0].to[j]
-                    ? rig->anims[i]->phase[0].to[j] - rig->anims[i]->phase[0].from[j]
-                    : rig->anims[i]->phase[0].to[j] + rig->anims[i]->len - rig->anims[i]->phase[0].from[j];
+                rig->anims[i]->phase[1].span[j] =
+                    rig->anims[i]->phase[1].from[j] <= rig->anims[i]->phase[1].to[j]
+                        ? rig->anims[i]->phase[1].to[j] - rig->anims[i]->phase[1].from[j]
+                        : rig->anims[i]->phase[1].to[j] + rig->anims[i]->len - rig->anims[i]->phase[1].from[j];
+                rig->anims[i]->phase[0].span[j] =
+                    rig->anims[i]->phase[0].from[j] <= rig->anims[i]->phase[0].to[j]
+                        ? rig->anims[i]->phase[0].to[j] - rig->anims[i]->phase[0].from[j]
+                        : rig->anims[i]->phase[0].to[j] + rig->anims[i]->len - rig->anims[i]->phase[0].from[j];
             }
             rig->anims[i]->rate = rig->anims[i]->unk4 / multiply_global_factor(rig->anims[i]->len + rig->anims[i]->len);
         }
@@ -173,39 +177,41 @@ int rig_pick_mode(char *arg0, char *arg1, float t) {
     int i;
     for (i = 12; i >= 0; i--) {
         int *e = *p++;
-        if (*e == (int)(unsigned char)arg0[0x52]) found = e;
+        if (*e == (int)(unsigned char)arg0[0x52])
+            found = e;
     }
-    if (found == 0) return (unsigned char)arg1[0xB6];
+    if (found == 0)
+        return (unsigned char)arg1[0xB6];
     return walker_gait_mask_t(found, t);
 }
 
 typedef struct {
-    Vec4f pts[6];      /* 0x00: probe points */
+    Vec4f pts[6]; /* 0x00: probe points */
     char pad60[0x2C];
-    float *f8C;             /* 0x8C */
+    float *f8C; /* 0x8C */
     char pad90[0x26];
-    unsigned char mask;     /* 0xB6 */
-    unsigned char kind;     /* 0xB7 */
-    float tilt;             /* 0xB8 */
+    unsigned char mask; /* 0xB6 */
+    unsigned char kind; /* 0xB7 */
+    float tilt; /* 0xB8 */
     char padBC[0x1C];
-    float vel;              /* 0xD8 */
-    float accel;            /* 0xDC */
+    float vel; /* 0xD8 */
+    float accel; /* 0xDC */
     char padE0[0x4];
-    float ground;           /* 0xE4 */
+    float ground; /* 0xE4 */
     char padE8[0x6];
-    unsigned short flags;   /* 0xEE */
+    unsigned short flags; /* 0xEE */
 } Steer_2939E8;
 
 typedef struct {
     char pad00[0x10];
-    Vec4f pos;         /* 0x10 */
+    Vec4f pos; /* 0x10 */
     char pad20[0x28];
-    float rotz;             /* 0x48 */
+    float rotz; /* 0x48 */
 } StMoby_2939E8;
 
 typedef struct {
     char pad00[0x40];
-    Vec4f v40;         /* 0x40 */
+    Vec4f v40; /* 0x40 */
 } StTab_2939E8;
 
 extern float ProbeGroundHeight_r(void *, int, float) __asm__("func_00214358");
@@ -220,8 +226,7 @@ extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
 extern char eudora_coll_hit_r[] __asm__("D_L04_00174040");
 
 /* Steers a moby from the arg block: height and push terms, returns 2 when the tilt is past pi/4. */
-int update_leg_rig_height_and_tilt(StMoby_2939E8 *m, Steer_2939E8 *a)
-{
+int update_leg_rig_height_and_tilt(StMoby_2939E8 *m, Steer_2939E8 *a) {
     float push[4];
     float dir[4];
     int ret = 0;
@@ -417,22 +422,20 @@ void rig_animate(struct Moby *moby, LegRig_93F08 *rig, int flags) {
         leg = &rig->legs[i];
         MobyTransformScaledVertex_r(moby, leg->joint, joint);
         heading = fast_atan2(joint[4], joint[5]);
-        twist = FastAddRots(
-            FastAddRots(FastSubRots(leg->yaw, heading), leg->upper_turn),
-            leg->lower_turn);
+        twist = FastAddRots(FastAddRots(FastSubRots(leg->yaw, heading), leg->upper_turn), leg->lower_turn);
         base_yaw = FastSubRots(heading, twist);
         if (rig->unkB7 == 0 || (flags & mask) == 0) {
             leg->upper_turn = SpringTurn(leg->upper_turn, 0.0f, &rig->legs[i].upper_turn_speed, 0.1f, 0.1f,
-                                           frame_scale * 0.034906585f);
+                                         frame_scale * 0.034906585f);
             leg->lower_turn = SpringTurn(leg->lower_turn, 0.0f, &rig->legs[i].lower_turn_speed, 0.1f, 0.1f,
-                                           frame_scale * 0.034906585f);
+                                         frame_scale * 0.034906585f);
         } else {
             if (rig->unkB7 == 13)
                 leg->upper_turn = SpringTurn(leg->upper_turn, 0.0f, &rig->legs[i].upper_turn_speed, 0.1f, 0.1f,
-                                               frame_scale * 0.034906585f);
+                                             frame_scale * 0.034906585f);
             else
-                leg->upper_turn = SpringTurn(leg->upper_turn, twist * 0.5f, &rig->legs[i].upper_turn_speed, 0.1f,
-                                               0.1f, frame_scale * 0.034906585f);
+                leg->upper_turn = SpringTurn(leg->upper_turn, twist * 0.5f, &rig->legs[i].upper_turn_speed, 0.1f, 0.1f,
+                                             frame_scale * 0.034906585f);
             leg->lower_turn = FastSubRots(twist, leg->upper_turn);
             leg->lower_turn_speed = 0.0f;
         }
@@ -504,18 +507,18 @@ int leg_walker_update(Moby *m, char *s, float speed, float ang, float accel) {
     }
     flags = rig_pick_mode_r((char *)m, s, t);
     if (*(unsigned short *)(s + 0xEE) & 4) {
-        m->rot.z = SpringTurn(m->rot.z, *(float *)(s + 0x6C), (float *)(s + 0xC8),
-                                                 *(float *)(s + 0xCC), *(float *)(s + 0xD0), *(float *)(s + 0xD4));
+        m->rot.z = SpringTurn(m->rot.z, *(float *)(s + 0x6C), (float *)(s + 0xC8), *(float *)(s + 0xCC),
+                              *(float *)(s + 0xD0), *(float *)(s + 0xD4));
     } else if (flags & 0xF) {
-        m->rot.z = SpringTurn(m->rot.z, ang, (float *)(s + 0xC8),
-                                                 *(float *)(s + 0xCC), *(float *)(s + 0xD0), *(float *)(s + 0xD4));
+        m->rot.z = SpringTurn(m->rot.z, ang, (float *)(s + 0xC8), *(float *)(s + 0xCC), *(float *)(s + 0xD0),
+                              *(float *)(s + 0xD4));
     } else {
-        m->rot.z = SpringTurn(m->rot.z, ang, (float *)(s + 0xC8),
-                                                 0.0f, *(float *)(s + 0xD0) + *(float *)(s + 0xD0), *(float *)(s + 0xD4));
+        m->rot.z = SpringTurn(m->rot.z, ang, (float *)(s + 0xC8), 0.0f, *(float *)(s + 0xD0) + *(float *)(s + 0xD0),
+                              *(float *)(s + 0xD4));
     }
     rig_animate_r((char *)m, s, flags, ang);
-    m->rot.y = SpringTurn(m->rot.y, *(float *)(s + 0xB8), (float *)(s + 0xBC),
-                                             0.005f, 0.01f, frame_scale * 0.017453292f);
+    m->rot.y =
+        SpringTurn(m->rot.y, *(float *)(s + 0xB8), (float *)(s + 0xBC), 0.005f, 0.01f, frame_scale * 0.017453292f);
 
     ((int *)buf)[0] = *(unsigned char *)(s + 0xF0);
     ((int *)buf)[1] = *(unsigned char *)(s + 0xF1);
@@ -552,13 +555,16 @@ int leg_walker_update(Moby *m, char *s, float speed, float ang, float accel) {
 
     changed = (flags ^ *(unsigned char *)(s + 0xB6)) & flags;
     *(unsigned char *)(s + 0xB6) = flags;
-    if (*(float *)(s + 0xC4) < accel) accel = *(float *)(s + 0xC4);
+    if (*(float *)(s + 0xC4) < accel)
+        accel = *(float *)(s + 0xC4);
     if (*(float *)(s + 0xC0) < speed) {
         *(float *)(s + 0xC0) = *(float *)(s + 0xC0) + accel;
-        if (speed < *(float *)(s + 0xC0)) *(float *)(s + 0xC0) = speed;
+        if (speed < *(float *)(s + 0xC0))
+            *(float *)(s + 0xC0) = speed;
     } else if (speed < *(float *)(s + 0xC0)) {
         *(float *)(s + 0xC0) = *(float *)(s + 0xC0) - accel;
-        if (*(float *)(s + 0xC0) < speed) *(float *)(s + 0xC0) = speed;
+        if (*(float *)(s + 0xC0) < speed)
+            *(float *)(s + 0xC0) = speed;
     }
 
     res = update_leg_rig_height_and_tilt_r((char *)m, s);
@@ -566,8 +572,7 @@ int leg_walker_update(Moby *m, char *s, float speed, float ang, float accel) {
 
     if (!(*(unsigned short *)(s + 0xEE) & 4)) {
         rig_probe_setup(m, 0, &a90, (float *)buf, &a94, &a98);
-        if (m->prev_seq == **(int **)(s + 0x7C) ||
-            m->prev_seq == **(int **)(s + 0x74) ||
+        if (m->prev_seq == **(int **)(s + 0x7C) || m->prev_seq == **(int **)(s + 0x74) ||
             m->prev_seq == **(int **)(s + 0x78)) {
             *(float *)(s + 0xE8) = *(float *)(s + 0xE0) + *(float *)(s + 0xE0);
         } else if (m->prev_seq == **(int **)(s + 0x8C) && (*(unsigned char *)(s + 0xB6) & 0xF)) {
@@ -584,7 +589,8 @@ int leg_walker_update(Moby *m, char *s, float speed, float ang, float accel) {
         }
         FastVecSub(v20, buf, &m->pos);
         FastVecAdd_r(&m->pos, buf, buf + 4);
-        if (vec_length_xy_r(v20) < *(float *)(s + 0xC0) * 0.5f) res |= 2;
+        if (vec_length_xy_r(v20) < *(float *)(s + 0xC0) * 0.5f)
+            res |= 2;
     }
 
     ((int *)buf)[0] = *(unsigned char *)(s + 0xF0);
@@ -603,8 +609,7 @@ int leg_walker_update(Moby *m, char *s, float speed, float ang, float accel) {
         pp = (char **)(s + 0x70);
         for (i = 0; i < 13; i++, pp++) {
             if (*((int **)(s + 0x70))[i] == m->seq) {
-                if (!(*(float *)(s + 0xC0) < g_frame_time * 0.19f) ||
-                    !(FastDiffRots(m->rot.z, ang) > 0.092399783f) ||
+                if (!(*(float *)(s + 0xC0) < g_frame_time * 0.19f) || !(FastDiffRots(m->rot.z, ang) > 0.092399783f) ||
                     !(speed < g_frame_time * 0.19f)) {
                     f = ((float **)(s + 0x70))[i];
                     t = *(float *)(s + 0xC0);

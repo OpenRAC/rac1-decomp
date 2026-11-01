@@ -7,9 +7,9 @@
 /* Blarg commander shot (class 0x55B): thrown by the commander, falls with mine_fall and bursts. */
 struct CommanderShotVars {
     u8 pad_00[0x10];
-    s32 mine_ptr;                   /* 0x10: address of mine_state */
+    s32 mine_ptr; /* 0x10: address of mine_state */
     u8 pad_14[0xC];
-    u8 mine_state[0x10];            /* 0x20: mine_fall state */
+    u8 mine_state[0x10]; /* 0x20: mine_fall state */
 };
 
 extern void VU1_addGSregister(int, long);
@@ -42,8 +42,10 @@ void draw_textured_effect_list(void *list_, int count, int tex0, int tex1) {
         for (i = count; i != 0; i--) {
             idx = FastBSphereCheck(list, 256.0f);
             if (idx != -1) {
-                compute_reflection_env_uvs(*(int *)(list + 0x1C), *(int *)(list + 0x10), *(int *)(list + 0x18), 0x70001000);
-                emit_textured_strip_packet(*(int *)(list + 0x1C), *(int *)(list + 0x10), 0x70000000, *(int *)(list + 0x14), 0x70001000, idx == 0);
+                compute_reflection_env_uvs(*(int *)(list + 0x1C), *(int *)(list + 0x10), *(int *)(list + 0x18),
+                                           0x70001000);
+                emit_textured_strip_packet(*(int *)(list + 0x1C), *(int *)(list + 0x10), 0x70000000,
+                                           *(int *)(list + 0x14), 0x70001000, idx == 0);
             }
             list += 0x20;
         }
@@ -92,8 +94,7 @@ extern char *CreateMoby(int);
 extern void moby_build_matrix(void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_00308670.c, FUN_L12_00308670. */
-char *create_class_55b_moby_from_source(char *a0)
-{
+char *create_class_55b_moby_from_source(char *a0) {
     unsigned char *m = (unsigned char *)CreateMoby(0x55B);
     if (m != 0) {
         char *d = ((char *)((Moby *)m)->pvars);
@@ -180,9 +181,8 @@ void start_blarg_commander_knockback(void *unused, struct Moby *m) {
     MobyBlendAnimation(m, 1, 0, 0);
 }
 extern int mine_fall(void *, void *);
-extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int, int,
-                                  float, float, float, float, int, float, int, int, int, int)
-    __asm__("func_L00_0025F4A8");
+extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
+                                  float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern void DeleteMoby(void *);
 
 // updates a moby's velocity and either spawns an effect and deletes itself or expires by height
@@ -203,8 +203,7 @@ void blarg_commander_update(char *m) {
         if (r & 0x61) {
             qcopy(v, m + 0x10);
             ((float *)v)[2] += 1.0f;
-            func_L00_0025F4A8_alt(m, p, v, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 1.0f, 0, 15.0f,
-                                  1, st, -1, 0);
+            func_L00_0025F4A8_alt(m, p, v, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 1.0f, 0, 15.0f, 1, st, -1, 0);
             DeleteMoby(m);
         } else if (((Moby *)m)->pos.z < 5.0f) {
             DeleteMoby(m);

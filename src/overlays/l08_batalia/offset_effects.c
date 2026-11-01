@@ -15,8 +15,7 @@ extern short batalia_offset_effect_color;
 extern short batalia_offset_effect_size;
 
 /* Spawns an effect moby at the position of moby a. */
-unsigned char *spawn_moby_offset_effect(char *a)
-{
+unsigned char *spawn_moby_offset_effect(char *a) {
     float v[4];
     unsigned char *m = create_part(0x27);
     char *p;
@@ -44,10 +43,8 @@ extern int func_001160D8(void);
 extern unsigned char *batalia_part_type43_textures;
 
 /* Spawns a coloured effect at pos with the given vector, size and lifetime. */
-unsigned char *func_L08_0027C218(int owner, void *pos, void *vec, short ticks,
-                                 unsigned char r, unsigned char g, unsigned char b, unsigned char a,
-                                 float size)
-{
+unsigned char *func_L08_0027C218(int owner, void *pos, void *vec, short ticks, unsigned char r, unsigned char g,
+                                 unsigned char b, unsigned char a, float size) {
     unsigned char *m = create_part(0x2B);
     unsigned char *q;
     if (m != 0) {

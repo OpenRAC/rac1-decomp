@@ -8,7 +8,7 @@
 /* Ship pickup moby: remembers whether the hero is at the ship entry point. */
 struct ShipPickupVars {
     u8 pad_00[0xC];
-    s16 near_entry;                 /* 0x0C: 1 while hero is within 4 units of the entry point */
+    s16 near_entry; /* 0x0C: 1 while hero is within 4 units of the entry point */
 };
 
 extern char hero_globals_base[];
@@ -18,7 +18,8 @@ int Sound_IsPlaying(int a, int i) {
         char *p = hero_globals_base + 0x1D + i * 0x70;
         if (*(int *)(p + 0x88) == a) {
             int t = *(unsigned char *)(p + 0x74);
-            if (t == 1 || t == 2) return 1;
+            if (t == 1 || t == 2)
+                return 1;
         }
     }
     return 0;
@@ -68,7 +69,8 @@ extern char *level_sound_slots MACRO_ADDR;
 /* Plays level sound a with the given settings; returns the voice slot or -1. */
 int play_voice(int a, int b, int c, int d) {
     int r;
-    if (a >= level_sound_slot_count) return -1;
+    if (a >= level_sound_slot_count)
+        return -1;
     r = allocate_voice_slot(level_sound_slots + a * 32, b, 0, c + 0x40, d);
     if (r >= 0) {
         char *e = hero_globals_base + 0x1D + r * 0x70;
@@ -86,7 +88,8 @@ extern int grouped_voice_definition_base_index MACRO_ADDR;
 /* Starts a sound bank entry chosen by (a0, a1, a2) offset from a
    level-specific table row, the same shape as func_0022EE28. */
 int request_grouped_voice(int a0, int a1, int a2, int a3, int a4) {
-    int idx = grouped_voice_level_rows[g_current_level_index_m] + a0 * 4 + a1 * 2 + a2 + grouped_voice_definition_base_index;
+    int idx =
+        grouped_voice_level_rows[g_current_level_index_m] + a0 * 4 + a1 * 2 + a2 + grouped_voice_definition_base_index;
     int h;
 
     if (idx >= level_sound_slot_count) {
@@ -107,7 +110,10 @@ int Sound_SetPitchBend(int i, int v) {
     *(int *)(e + 0x84) = v;
     return 1;
 }
-typedef struct { int k; int v; } TE;
+typedef struct {
+    int k;
+    int v;
+} TE;
 extern TE lookup_record_key_values[];
 
 /* Finds the record's key in the key/value table and stores the index and value in it. */
@@ -121,10 +127,12 @@ void resolve_lookup_record(short *a) {
 /* stores a sound value and transitions or clears its entry */
 void Sound_SetEntryValue(int value, long long address) {
     unsigned char *entry = (unsigned char *)(int)address;
-    if (entry == 0) return;
+    if (entry == 0)
+        return;
     *(int *)entry = value;
     if (value != 0) {
-        if (entry[4] == 1) entry[4] = 2;
+        if (entry[4] == 1)
+            entry[4] = 2;
     } else {
         *(int *)(entry + 0x18) = 0;
         *(int *)(entry + 0x1C) = 0;
@@ -183,7 +191,7 @@ void update_moby_proximity_interaction(unsigned char *m) {
         if (d->near_entry != 0) {
             matrix_mul_vec3(tmp, ship_entry_point_offsets + ship_index[0] * 16, m + 0xC0);
             FastVecAdd(tmp, tmp, p);
-            if (FastVecDist(tmp,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) > 4.1f) {
+            if (FastVecDist(tmp, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) > 4.1f) {
                 d->near_entry = 0;
             }
         } else {
@@ -202,7 +210,8 @@ void update_moby_proximity_interaction(unsigned char *m) {
         if (d->near_entry != 0) {
             int r = try_set_help_message(2, 0x53E9) != 0;
             if ((*(int *)(pad_globals_base + 0x2604) & 0x10) && r) {
-                if (g_current_level_index_m == 10 && ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->vehicle_mode == 1) {
+                if (g_current_level_index_m == 10 &&
+                    ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->vehicle_mode == 1) {
                     ((Moby *)m)->state = 0x2A;
                     ((Moby *)m)->flags |= 0x41;
                     StartCutscene(9);

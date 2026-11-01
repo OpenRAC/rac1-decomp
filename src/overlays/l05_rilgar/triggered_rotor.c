@@ -29,31 +29,32 @@ void update_triggered_moby_yaw(Moby *moby) {
     RotorData17B68 *p = (RotorData17B68 *)moby->pvars;
     float f;
     switch (moby->state) {
-    case 0:
-        if (p->flag != 0) {
-            moby->flags |= 0x8000;
-        }
-        moby->state = 1;
-        p->angle = moby->rot.z;
-        if (p->flag != 0) {
-            moby->rot.z = FastSubRots(moby->rot.z, 1.5707964f);
-        } else {
-            moby->rot.z = FastAddRots(moby->rot.z, 1.5707964f);
-        }
+        case 0:
+            if (p->flag != 0) {
+                moby->flags |= 0x8000;
+            }
+            moby->state = 1;
+            p->angle = moby->rot.z;
+            if (p->flag != 0) {
+                moby->rot.z = FastSubRots(moby->rot.z, 1.5707964f);
+            } else {
+                moby->rot.z = FastAddRots(moby->rot.z, 1.5707964f);
+            }
         /* fallthrough */
-    case 1:
-        if (moby_pool_4f60_pool[p->target].flag != 0) {
-            Moby_PlaySound_i(0, 0, moby);
-            moby->state = 2;
-        }
-        break;
-    case 2:
-        if (p->flag != 0) {
-            f = FastSubRots(p->angle, 0.6981317f);
-        } else {
-            f = FastAddRots(p->angle, 0.6981317f);
-        }
-        ease_rotation_317B68(&moby->rot.z, f, &p->velocity, g_frame_time_sq * 12.566371f, g_frame_time_sq * 12.566371f, g_frame_time * 12.566371f);
-        break;
+        case 1:
+            if (moby_pool_4f60_pool[p->target].flag != 0) {
+                Moby_PlaySound_i(0, 0, moby);
+                moby->state = 2;
+            }
+            break;
+        case 2:
+            if (p->flag != 0) {
+                f = FastSubRots(p->angle, 0.6981317f);
+            } else {
+                f = FastAddRots(p->angle, 0.6981317f);
+            }
+            ease_rotation_317B68(&moby->rot.z, f, &p->velocity, g_frame_time_sq * 12.566371f,
+                                 g_frame_time_sq * 12.566371f, g_frame_time * 12.566371f);
+            break;
     }
 }

@@ -16,10 +16,10 @@ extern Rec4C quartu_item_defs[];
 int HelpL15_GetRecordValue(int a) {
     struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
     switch (g->vehicle_mode) {
-    case 2:
-        return 0;
-    case 3:
-        return 0;
+        case 2:
+            return 0;
+        case 3:
+            return 0;
     }
     {
         struct Hero *g2 = (struct Hero *)((char *)hero_globals_base + 0xE1D);

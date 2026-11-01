@@ -20,16 +20,16 @@ void create_type_49_particle(void *pos, int kind, void *vel, float f) {
         float s = 0.0f;
         int c = 0;
         switch (kind) {
-        case 0:
-            c = 0x20;
-            s = 0.12f;
-            random_float_between(0.25f, 0.25f);
-            break;
-        case 1:
-            c = 0xD;
-            s = 0.5f;
-            random_float_between(1.0f, 1.0f);
-            break;
+            case 0:
+                c = 0x20;
+                s = 0.12f;
+                random_float_between(0.25f, 0.25f);
+                break;
+            case 1:
+                c = 0xD;
+                s = 0.5f;
+                random_float_between(1.0f, 1.0f);
+                break;
         }
         *(short *)(p + 0xA) = scale_ticks(0x37);
         *(int *)(p + 4) = (c << 24) | 0xFFFFFF;

@@ -10,9 +10,9 @@ extern void FastVecSub(float *, float *, float *);
 extern float update_follow_camera_angle_blend_from_direction(char *, float *, float);
 
 /* Blend the follow camera angle toward the direction from its target to position arg. */
-void update_follow_camera_angle_blend_from_position(char *moby, int arg, float f)
-{
+void update_follow_camera_angle_blend_from_position(char *moby, int arg, float f) {
     float scratch[4];
     char *data = *(char **)(moby + 0x70);
-    update_follow_camera_angle_blend_from_direction(moby, (FastVecSub(scratch, (float *)arg, (float *)(data + 0x40)), scratch), f);
+    update_follow_camera_angle_blend_from_direction(
+        moby, (FastVecSub(scratch, (float *)arg, (float *)(data + 0x40)), scratch), f);
 }

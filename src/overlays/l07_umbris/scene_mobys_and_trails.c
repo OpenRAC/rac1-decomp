@@ -60,109 +60,120 @@ void update_moby_offset_motion(struct Moby *moby) {
     }
 
     switch (moby->state) {
-    case 0:
-        qcopy(&vars->home, &moby->pos);
-        if (vars->indicator != -1)
-            umbris_indicator_states[vars->indicator] = 0;
-        moby->state = 1;
-        vars->home.w = 0;
-        return;
-    case 1:
-        if (force_start)
+        case 0:
+            qcopy(&vars->home, &moby->pos);
+            if (vars->indicator != -1)
+                umbris_indicator_states[vars->indicator] = 0;
+            moby->state = 1;
+            vars->home.w = 0;
             return;
-        if (!force_end && vars->target != -1 &&
-            (target = &level_mobys[vars->target]) != 0 &&
-            target->state != 0xfe && target->state != 0xfd &&
-            target->state != vars->openState)
-            return;
-        start.q = 0;
-        start.f[0] = vars->destination.x;
-        start.f[1] = vars->destination.y;
-        start.f[2] = vars->destination.z;
-        next.q = start.q;
-        vars->home.w = FastVecLength(&next);
-        if (vars->startSound != -1)
-            Moby_PlaySound(vars->startSound, 0, (int)moby);
-        moby->state = 2;
-        break;
-    case 2:
-        if (force_start || (!force_end && vars->target != -1 &&
-            (target = &level_mobys[vars->target]) != 0 &&
-            target->state != 0xfe && target->state != 0xfd &&
-            target->state == vars->shutState)) {
-            if (vars->startSound != -1)
-                Moby_PlaySound(vars->startSound, 0, (int)moby);
-            moby->state = 4;
-            break;
-        }
-        start.q = 0;
-        start.f[0] = vars->destination.x;
-        start.f[1] = vars->destination.y;
-        start.f[2] = vars->destination.z;
-        next.q = start.q;
-        matrix_mul_vec3(&next, &next, &moby->rot_row0);
-        vec_scale_to_length(&start, &next, vars->destination.w * g_frame_time);
-        FastVecAdd(&moby->pos, &moby->pos, &start);
-        time = vars->home.w - vars->destination.w * g_frame_time;
-        vars->home.w = time;
-        if (!(time < 0.0f))
-            return;
-        FastVecAdd(&moby->pos, &vars->home, &next);
-        vars->home.w = 0;
-        if (vars->indicator != -1)
-            umbris_indicator_states[vars->indicator] = 1;
-        moby->state = 3;
-        if (vars->endSound != -1)
-            Moby_PlaySound(vars->startSound, 0, (int)moby);
-        return;
-    case 3:
-        if (!force_start && (force_end || vars->target == -1 ||
-            (target = &level_mobys[vars->target]) == 0 ||
-            target->state == 0xfe || target->state == 0xfd ||
-            target->state != vars->shutState))
-            return;
-        vars->home.w = 0;
-        if (vars->startSound != -1)
-            Moby_PlaySound(vars->startSound, 0, (int)moby);
-        moby->state = 4;
-        break;
-    case 4:
-        if (!force_start && (force_end || vars->target == -1 ||
-            (target = &level_mobys[vars->target]) == 0 ||
-            target->state == 0xfe || target->state == 0xfd ||
-            target->state == vars->openState)) {
+        case 1:
+            if (force_start)
+                return;
+            if (!force_end && vars->target != -1 && (target = &level_mobys[vars->target]) != 0 &&
+                target->state != 0xfe && target->state != 0xfd && target->state != vars->openState)
+                return;
+            start.q = 0;
+            start.f[0] = vars->destination.x;
+            start.f[1] = vars->destination.y;
+            start.f[2] = vars->destination.z;
+            next.q = start.q;
+            vars->home.w = FastVecLength(&next);
             if (vars->startSound != -1)
                 Moby_PlaySound(vars->startSound, 0, (int)moby);
             moby->state = 2;
             break;
-        }
-        start.q = 0;
-        start.f[0] = vars->destination.x;
-        start.f[1] = vars->destination.y;
-        start.f[2] = vars->destination.z;
-        next.q = start.q;
-        distance = FastVecLength(&next);
-        vec_scale_to_length(&next, &next, -(vars->speed * g_frame_time));
-        matrix_mul_vec3(&start, &next, &moby->rot_row0);
-        FastVecAdd(&moby->pos, &moby->pos, &start);
-        time = vars->home.w + vars->speed * g_frame_time;
-        vars->home.w = time;
-        if (!(distance < time))
+        case 2:
+            if (force_start || (!force_end && vars->target != -1 && (target = &level_mobys[vars->target]) != 0 &&
+                                target->state != 0xfe && target->state != 0xfd && target->state == vars->shutState)) {
+                if (vars->startSound != -1)
+                    Moby_PlaySound(vars->startSound, 0, (int)moby);
+                moby->state = 4;
+                break;
+            }
+            start.q = 0;
+            start.f[0] = vars->destination.x;
+            start.f[1] = vars->destination.y;
+            start.f[2] = vars->destination.z;
+            next.q = start.q;
+            matrix_mul_vec3(&next, &next, &moby->rot_row0);
+            vec_scale_to_length(&start, &next, vars->destination.w * g_frame_time);
+            FastVecAdd(&moby->pos, &moby->pos, &start);
+            time = vars->home.w - vars->destination.w * g_frame_time;
+            vars->home.w = time;
+            if (!(time < 0.0f))
+                return;
+            FastVecAdd(&moby->pos, &vars->home, &next);
+            vars->home.w = 0;
+            if (vars->indicator != -1)
+                umbris_indicator_states[vars->indicator] = 1;
+            moby->state = 3;
+            if (vars->endSound != -1)
+                Moby_PlaySound(vars->startSound, 0, (int)moby);
             return;
-        qcopy(&moby->pos, &vars->home);
-        if (vars->startSound != -1)
-            Moby_PlaySound(vars->endSound, 0, (int)moby);
-        if (vars->indicator != -1)
-            umbris_indicator_states[vars->indicator] = 0;
-        moby->state = 1;
-        break;
-    case 5:
-        break;
+        case 3:
+            if (!force_start && (force_end || vars->target == -1 || (target = &level_mobys[vars->target]) == 0 ||
+                                 target->state == 0xfe || target->state == 0xfd || target->state != vars->shutState))
+                return;
+            vars->home.w = 0;
+            if (vars->startSound != -1)
+                Moby_PlaySound(vars->startSound, 0, (int)moby);
+            moby->state = 4;
+            break;
+        case 4:
+            if (!force_start && (force_end || vars->target == -1 || (target = &level_mobys[vars->target]) == 0 ||
+                                 target->state == 0xfe || target->state == 0xfd || target->state == vars->openState)) {
+                if (vars->startSound != -1)
+                    Moby_PlaySound(vars->startSound, 0, (int)moby);
+                moby->state = 2;
+                break;
+            }
+            start.q = 0;
+            start.f[0] = vars->destination.x;
+            start.f[1] = vars->destination.y;
+            start.f[2] = vars->destination.z;
+            next.q = start.q;
+            distance = FastVecLength(&next);
+            vec_scale_to_length(&next, &next, -(vars->speed * g_frame_time));
+            matrix_mul_vec3(&start, &next, &moby->rot_row0);
+            FastVecAdd(&moby->pos, &moby->pos, &start);
+            time = vars->home.w + vars->speed * g_frame_time;
+            vars->home.w = time;
+            if (!(distance < time))
+                return;
+            qcopy(&moby->pos, &vars->home);
+            if (vars->startSound != -1)
+                Moby_PlaySound(vars->endSound, 0, (int)moby);
+            if (vars->indicator != -1)
+                umbris_indicator_states[vars->indicator] = 0;
+            moby->state = 1;
+            break;
+        case 5:
+            break;
     }
 }
-typedef union { int i; float f; } EaseWord1C7C0;
-typedef struct { int target; int startState; int endState; float speed; float decay; float limit; EaseWord1C7C0 value; } EaseData1C7C0;
-typedef struct { char pad[0x20]; unsigned char state; char pad1[0x23]; EaseWord1C7C0 angle; char pad2[0x30]; EaseData1C7C0 *data; char pad3[0x84]; } EaseMoby1C7C0;
+typedef union {
+    int i;
+    float f;
+} EaseWord1C7C0;
+typedef struct {
+    int target;
+    int startState;
+    int endState;
+    float speed;
+    float decay;
+    float limit;
+    EaseWord1C7C0 value;
+} EaseData1C7C0;
+typedef struct {
+    char pad[0x20];
+    unsigned char state;
+    char pad1[0x23];
+    EaseWord1C7C0 angle;
+    char pad2[0x30];
+    EaseData1C7C0 *data;
+    char pad3[0x84];
+} EaseMoby1C7C0;
 extern int Moby_PlaySound(int, int, int);
 extern float FastCos(float);
 extern float FastAddRots(float, float);
@@ -177,63 +188,61 @@ void update_swing_gate(EaseMoby1C7C0 *moby) {
     float v, w;
     if (d) {
         switch (moby->state) {
-        case 0:
-            moby->angle.i = 0;
-            moby->state = 1;
-            d->value.i = 0;
-            break;
-        case 1:
-            if (d->target != -1 && (o = level_mobys_ease + d->target) != 0 &&
-                o->state != 0xFE && o->state != 0xFD &&
-                o->state != d->startState) {
-                return;
-            }
-            {
-                float dt = g_frame_time;
-                v = d->speed * dt;
-            }
-            d->value.f = v;
-            moby->angle.f = v;
-            Moby_PlaySound(0, 0, (int)moby);
-            moby->state = 3;
-            break;
-        case 3:
-            d->value.f = FastAddRots(d->value.f, FastCos(moby->angle.f) * (d->speed * g_frame_time));
-            moby->angle.f = FastAddRots(moby->angle.f, d->value.f);
-            o = level_mobys_ease + d->target;
-            d->value.f = d->value.f * d->decay;
-            if (o != 0 && o->state != 0xFE && o->state != 0xFD) {
-                if (o->state != d->endState) {
+            case 0:
+                moby->angle.i = 0;
+                moby->state = 1;
+                d->value.i = 0;
+                break;
+            case 1:
+                if (d->target != -1 && (o = level_mobys_ease + d->target) != 0 && o->state != 0xFE &&
+                    o->state != 0xFD && o->state != d->startState) {
                     return;
                 }
-                moby->state = 4;
-            }
-            break;
-        case 4:
-            if (d->target == -1 || (o = level_mobys_ease + d->target) == 0 ||
-                o->state == 0xFE || o->state == 0xFD ||
-                o->state == d->startState) {
-                Moby_PlaySound(0, 0, (int)moby);
-                moby->state = 2;
-            } else {
-                w = FastSubRots(moby->angle.f, d->limit);
-                moby->angle.f = w;
-                if (0.0f < w) {
-                    moby->angle.f = 0.0f;
-                    d->value.f = 0.0f;
-                    moby->state = 1;
+                {
+                    float dt = g_frame_time;
+                    v = d->speed * dt;
                 }
-            }
-            break;
-        case 2:
-        case 5:
-            break;
+                d->value.f = v;
+                moby->angle.f = v;
+                Moby_PlaySound(0, 0, (int)moby);
+                moby->state = 3;
+                break;
+            case 3:
+                d->value.f = FastAddRots(d->value.f, FastCos(moby->angle.f) * (d->speed * g_frame_time));
+                moby->angle.f = FastAddRots(moby->angle.f, d->value.f);
+                o = level_mobys_ease + d->target;
+                d->value.f = d->value.f * d->decay;
+                if (o != 0 && o->state != 0xFE && o->state != 0xFD) {
+                    if (o->state != d->endState) {
+                        return;
+                    }
+                    moby->state = 4;
+                }
+                break;
+            case 4:
+                if (d->target == -1 || (o = level_mobys_ease + d->target) == 0 || o->state == 0xFE ||
+                    o->state == 0xFD || o->state == d->startState) {
+                    Moby_PlaySound(0, 0, (int)moby);
+                    moby->state = 2;
+                } else {
+                    w = FastSubRots(moby->angle.f, d->limit);
+                    moby->angle.f = w;
+                    if (0.0f < w) {
+                        moby->angle.f = 0.0f;
+                        d->value.f = 0.0f;
+                        moby->state = 1;
+                    }
+                }
+                break;
+            case 2:
+            case 5:
+                break;
         }
     }
 }
 typedef struct {
     float x, y, z;
-    float len;              /* 0xC: length of the segment to the next node */
+    float len; /* 0xC: length of the segment to the next node */
 } PathNode_31E6B0;
 
 typedef struct {
@@ -243,36 +252,36 @@ typedef struct {
 } Path_31E6B0;
 
 typedef struct {
-    int vol;                /* 0x00 */
-    int path;               /* 0x04 */
-    float lo;               /* 0x08: percent */
-    float hi;               /* 0x0C */
-    float pa;               /* 0x10 */
-    float pb;               /* 0x14 */
-    int mode;               /* 0x18 */
-    int div;                /* 0x1C */
-    float total;            /* 0x20 */
-    int target;             /* 0x24 */
+    int vol; /* 0x00 */
+    int path; /* 0x04 */
+    float lo; /* 0x08: percent */
+    float hi; /* 0x0C */
+    float pa; /* 0x10 */
+    float pb; /* 0x14 */
+    int mode; /* 0x18 */
+    int div; /* 0x1C */
+    float total; /* 0x20 */
+    int target; /* 0x24 */
 } SparkVars_31E6B0;
 
 typedef struct {
     char pad00[0x20];
-    unsigned char state;    /* 0x20 */
+    unsigned char state; /* 0x20 */
     char pad21[0x57];
     SparkVars_31E6B0 *vars; /* 0x78 */
     char pad7C[0x36];
-    short oclass;           /* 0xB2 */
+    short oclass; /* 0xB2 */
 } SparkMoby_31E6B0;
 
 typedef struct {
     char pad00[0x10];
-    float pos[4];           /* 0x10 */
+    float pos[4]; /* 0x10 */
     char pad20[0xE0];
 } Moby256_31E6B0;
 
 typedef struct {
     char pad00[0xE];
-    unsigned short max;     /* 0x0E */
+    unsigned short max; /* 0x0E */
     char pad10[0x8];
 } Ent_31E6B0;
 
@@ -300,8 +309,7 @@ extern unsigned char hero_globals_base_r[] __asm__("D_0013E633");
 extern unsigned char menu_item_enabled_115_r[] __asm__("D_0013D50F");
 
 // Update for moby class 1142 on level 07: measures its path once, then places sparks for the listed counters.
-void update_equalizer_ammo_spawner(SparkMoby_31E6B0 *moby)
-{
+void update_equalizer_ammo_spawner(SparkMoby_31E6B0 *moby) {
     SparkVars_31E6B0 *d = moby->vars;
     float vec[3];
     int ia;
@@ -336,8 +344,7 @@ void update_equalizer_ammo_spawner(SparkMoby_31E6B0 *moby)
         for (j = 0; j < umbris_paths_r[d->path]->count; j++) {
             int nj = (j + 1) % umbris_paths_r[d->path]->count;
             umbris_paths_r[d->path]->nodes[j].len =
-                FastVecDist_r(&umbris_paths_r[d->path]->nodes[j],
-                                     &umbris_paths_r[d->path]->nodes[nj]);
+                FastVecDist_r(&umbris_paths_r[d->path]->nodes[j], &umbris_paths_r[d->path]->nodes[nj]);
             d->total = d->total + umbris_paths_r[d->path]->nodes[j].len;
         }
         moby->state = 1;
@@ -345,7 +352,8 @@ void update_equalizer_ammo_spawner(SparkMoby_31E6B0 *moby)
         int done;
         int i, k, m, n, rem;
         float have, max, ratio, at, a, b, v, c, near, step;
-        if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, d->vol) == 0) {
+        if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
+                                          d->vol) == 0) {
             return;
         }
         for (i = 0; (&D_L07_00161D30_31E6B0)[i] != -1; i++) {
@@ -388,9 +396,9 @@ void update_equalizer_ammo_spawner(SparkMoby_31E6B0 *moby)
                             }
                         } while (done == 0);
                         n = rem;
-                        STUB_printf_r(ammo_spawner_place_fmt_r, k, m,
-                                             func_00120778_31E6B0(vec[0]), func_00120778_31E6B0(vec[1]),
-                                             func_00120778_31E6B0(vec[2]), func_00120778_31E6B0(at));
+                        STUB_printf_r(ammo_spawner_place_fmt_r, k, m, func_00120778_31E6B0(vec[0]),
+                                      func_00120778_31E6B0(vec[1]), func_00120778_31E6B0(vec[2]),
+                                      func_00120778_31E6B0(at));
                         spawn_on_path_r(vec, k, m, 0);
                         at = at + random_float_between_r(d->total / step, 2.0f);
                         if (rem < m) {
@@ -404,7 +412,10 @@ void update_equalizer_ammo_spawner(SparkMoby_31E6B0 *moby)
         moby->state = 2;
     }
 }
-typedef struct { char pad[0x178]; int arr[8]; } L07SparkState;
+typedef struct {
+    char pad[0x178];
+    int arr[8];
+} L07SparkState;
 extern void cutscene_set_camera_target(int);
 extern int scale_ticks(int);
 extern void Moby_GetJointWorldPos(void *, int, void *);
@@ -428,46 +439,51 @@ void update_scene_moby_effect_bursts(char *m) {
     char *S;
     float buf[4];
     switch (state) {
-    case 0:
-        *(unsigned char *)(m + 0x30) = 0xFF;
-        m[0x20] = 1;
-        break;
-    case 1:
-        a = umbris_scene_state;
-        if (a != 2) return;
-        S = umbris_cutscene_state_c;
-        t = *(int *)(S + 0x30) - 3;
-        if ((unsigned)t < 2) {
-            int idx = (unsigned)t > 1 ? 0 : 2;
-            cutscene_set_camera_target(((L07SparkState *)S)->arr[idx]);
-        }
-        if (*(int *)(S + 0x30) != a) return;
-        k = 7;
-        if (*(int *)(S + 0x34) != scale_ticks(0xA8A)) k = 0;
-        if (*(int *)(S + 0x34) == scale_ticks(0xACE)) k = 6;
-        if (k != 0) {
-            mob = (char *)((L07SparkState *)S)->arr[k];
-            for (i = 0; i < 4; i++) {
-                Moby_GetJointWorldPos(mob, i, buf);
-                for (j = 9; j >= 0; j--) {
-                    float d = random_float_between(20000.0f, 200000.0f);
-                    int col = (rand_range(0x20, 0x80) << 24) | 0x7F7F7F;
-                    int v = rand_range(0, 4);
-                    char *p;
-                    char *q;
-                    if (random_integer_below(2) != 0) v = -v;
-                    p = PartType23Spawn_c(buf, v, umbris_zero_vec, col, 0.6f, 1.0f, 1.01f, d);
-                    if (p != 0) {
-                        q = p + 0x20;
-                        *(short *)(p + 0xA) = scale_ticks(rand_range(0x3C, 0x5A));
-                        *(int *)(q + 4) = 2;
-                        *(char *)(q + 0xA) = col >> 24;
-                        *(char *)(q + 0xB) = *(unsigned char *)(p + 0xA);
+        case 0:
+            *(unsigned char *)(m + 0x30) = 0xFF;
+            m[0x20] = 1;
+            break;
+        case 1:
+            a = umbris_scene_state;
+            if (a != 2)
+                return;
+            S = umbris_cutscene_state_c;
+            t = *(int *)(S + 0x30) - 3;
+            if ((unsigned)t < 2) {
+                int idx = (unsigned)t > 1 ? 0 : 2;
+                cutscene_set_camera_target(((L07SparkState *)S)->arr[idx]);
+            }
+            if (*(int *)(S + 0x30) != a)
+                return;
+            k = 7;
+            if (*(int *)(S + 0x34) != scale_ticks(0xA8A))
+                k = 0;
+            if (*(int *)(S + 0x34) == scale_ticks(0xACE))
+                k = 6;
+            if (k != 0) {
+                mob = (char *)((L07SparkState *)S)->arr[k];
+                for (i = 0; i < 4; i++) {
+                    Moby_GetJointWorldPos(mob, i, buf);
+                    for (j = 9; j >= 0; j--) {
+                        float d = random_float_between(20000.0f, 200000.0f);
+                        int col = (rand_range(0x20, 0x80) << 24) | 0x7F7F7F;
+                        int v = rand_range(0, 4);
+                        char *p;
+                        char *q;
+                        if (random_integer_below(2) != 0)
+                            v = -v;
+                        p = PartType23Spawn_c(buf, v, umbris_zero_vec, col, 0.6f, 1.0f, 1.01f, d);
+                        if (p != 0) {
+                            q = p + 0x20;
+                            *(short *)(p + 0xA) = scale_ticks(rand_range(0x3C, 0x5A));
+                            *(int *)(q + 4) = 2;
+                            *(char *)(q + 0xA) = col >> 24;
+                            *(char *)(q + 0xB) = *(unsigned char *)(p + 0xA);
+                        }
                     }
                 }
             }
-        }
-        break;
+            break;
     }
 }
 extern char *MobyGetHitMessage(void *, int, int);
@@ -485,33 +501,35 @@ void mushroom_update(char *m) {
     char *p;
     char *q;
     switch (*(unsigned char *)(m + 0x20)) {
-    case 0:
-        m[0x20] = 1;
-        break;
-    case 1:
-        if (r != 0 && *(float *)(r + 0x2C) > 0.0f) hit = 1;
-        if (hit) m[0x20] = 2;
-        break;
-    case 2:
-        Moby_PlaySound(0, 0, (int)m);
-        d = umbris_zero_vec;
-        spawn_proximity_gated_bolts(m);
-        p = m + 0x10;
-        q = m + 0x40;
-        SpawnBreakFragment(m, 0x674, p, q, 0, 0, 0.0f, d, d, d);
-        SpawnBreakFragment(m, 0x675, p, q, 0, 0, 0.0f, d, d, d);
-        SpawnBreakFragment(m, 0x676, p, q, 0, 0, 0.0f, d, d, d);
-        n = CreateMoby(0x673);
-        if (n != 0) {
-            n[0x31] = 1;
-            *(short *)(n + 0x32) = 0xFF;
-            qcopy(n + 0x10, p);
-            qcopy(n + 0x40, q);
-            *(long *)(n + 0x38) = *(long *)(m + 0x38);
-            moby_build_matrix(n);
-        }
-        DeleteMoby(m);
-        break;
+        case 0:
+            m[0x20] = 1;
+            break;
+        case 1:
+            if (r != 0 && *(float *)(r + 0x2C) > 0.0f)
+                hit = 1;
+            if (hit)
+                m[0x20] = 2;
+            break;
+        case 2:
+            Moby_PlaySound(0, 0, (int)m);
+            d = umbris_zero_vec;
+            spawn_proximity_gated_bolts(m);
+            p = m + 0x10;
+            q = m + 0x40;
+            SpawnBreakFragment(m, 0x674, p, q, 0, 0, 0.0f, d, d, d);
+            SpawnBreakFragment(m, 0x675, p, q, 0, 0, 0.0f, d, d, d);
+            SpawnBreakFragment(m, 0x676, p, q, 0, 0, 0.0f, d, d, d);
+            n = CreateMoby(0x673);
+            if (n != 0) {
+                n[0x31] = 1;
+                *(short *)(n + 0x32) = 0xFF;
+                qcopy(n + 0x10, p);
+                qcopy(n + 0x40, q);
+                *(long *)(n + 0x38) = *(long *)(m + 0x38);
+                moby_build_matrix(n);
+            }
+            DeleteMoby(m);
+            break;
     }
 }
 extern char *mk_a(int) __asm__("func_0020D348");
@@ -522,36 +540,39 @@ void robot_head_update(char *self) {
     int flag = 0;
     char *o = MobyGetHitMessage(self, 0x10000, 0);
     switch (((unsigned char *)self)[0x20]) {
-    case 0:
-        self[0x20] = 1;
-        break;
-    case 1:
-        if (o != 0 && *(float *)(o + 0x2C) > 0.0f) {
-            flag = 1;
+        case 0:
+            self[0x20] = 1;
+            break;
+        case 1:
+            if (o != 0 && *(float *)(o + 0x2C) > 0.0f) {
+                flag = 1;
+            }
+            if (flag) {
+                self[0x20] = 2;
+            }
+            break;
+        case 2: {
+            char *m;
+            Moby_PlaySound(0, 0, (int)self);
+            spawn_proximity_gated_bolts(self);
+            SpawnBreakFragment(self, 0x68E, self + 0x10, self + 0x40, 0, 0, 0.0f, umbris_zero_vec, umbris_zero_vec,
+                               umbris_zero_vec);
+            SpawnBreakFragment(self, 0x68F, self + 0x10, self + 0x40, 0, 0, 0.0f, umbris_zero_vec, umbris_zero_vec,
+                               umbris_zero_vec);
+            SpawnBreakFragment(self, 0x690, self + 0x10, self + 0x40, 0, 0, 0.0f, umbris_zero_vec, umbris_zero_vec,
+                               umbris_zero_vec);
+            m = mk_a(0x68D);
+            if (m != 0) {
+                m[0x31] = 1;
+                *(short *)(m + 0x32) = 0xFF;
+                qcopy(m + 0x10, self + 0x10);
+                qcopy(m + 0x40, self + 0x40);
+                *(long *)(m + 0x38) = *(long *)(self + 0x38);
+                upd_a(m);
+            }
+            DeleteMoby(self);
+            break;
         }
-        if (flag) {
-            self[0x20] = 2;
-        }
-        break;
-    case 2: {
-        char *m;
-        Moby_PlaySound(0, 0, (int)self);
-        spawn_proximity_gated_bolts(self);
-        SpawnBreakFragment(self, 0x68E, self + 0x10, self + 0x40, 0, 0, 0.0f, umbris_zero_vec, umbris_zero_vec, umbris_zero_vec);
-        SpawnBreakFragment(self, 0x68F, self + 0x10, self + 0x40, 0, 0, 0.0f, umbris_zero_vec, umbris_zero_vec, umbris_zero_vec);
-        SpawnBreakFragment(self, 0x690, self + 0x10, self + 0x40, 0, 0, 0.0f, umbris_zero_vec, umbris_zero_vec, umbris_zero_vec);
-        m = mk_a(0x68D);
-        if (m != 0) {
-            m[0x31] = 1;
-            *(short *)(m + 0x32) = 0xFF;
-            qcopy(m + 0x10, self + 0x10);
-            qcopy(m + 0x40, self + 0x40);
-            *(long *)(m + 0x38) = *(long *)(self + 0x38);
-            upd_a(m);
-        }
-        DeleteMoby(self);
-        break;
-    }
     }
 }
 
@@ -562,27 +583,29 @@ void seashell_update(unsigned char *m) {
     char *p, *pos, *vel;
     char *x = MobyGetHitMessage(m, 0x10000, 0);
     switch (m[0x20]) {
-    case 0:
-        m[0x20] = 1;
-        break;
-    case 1:
-        if (x != 0) {
-            if (*(float *)(x + 0x2C) > 0.0f) flag = 1;
-        }
-        if (flag) m[0x20] = 2;
-        break;
-    case 2:
-        Moby_PlaySound(0, 0, (int)m);
-        z = 0.0f;
-        p = umbris_zero_vec;
-        pos = m + 0x10;
-        spawn_proximity_gated_bolts(m);
-        vel = m + 0x40;
-        SpawnBreakFragment(m, 0x698, pos, vel, 0, 0, z, p, p, p);
-        SpawnBreakFragment(m, 0x699, pos, vel, 0, 0, z, p, p, p);
-        SpawnBreakFragment(m, 0x69A, pos, vel, 0, 0, z, p, p, p);
-        DeleteMoby(m);
-        break;
+        case 0:
+            m[0x20] = 1;
+            break;
+        case 1:
+            if (x != 0) {
+                if (*(float *)(x + 0x2C) > 0.0f)
+                    flag = 1;
+            }
+            if (flag)
+                m[0x20] = 2;
+            break;
+        case 2:
+            Moby_PlaySound(0, 0, (int)m);
+            z = 0.0f;
+            p = umbris_zero_vec;
+            pos = m + 0x10;
+            spawn_proximity_gated_bolts(m);
+            vel = m + 0x40;
+            SpawnBreakFragment(m, 0x698, pos, vel, 0, 0, z, p, p, p);
+            SpawnBreakFragment(m, 0x699, pos, vel, 0, 0, z, p, p, p);
+            SpawnBreakFragment(m, 0x69A, pos, vel, 0, 0, z, p, p, p);
+            DeleteMoby(m);
+            break;
     }
 }
 
@@ -598,38 +621,43 @@ extern short umbris_scene_trail_glow_size;
  * Matched using lever: g - (-(idx * 4)) + 0x178 fixes addu operand order. */
 void update_scene_moby_trails(unsigned char *moby) {
     switch (moby[0x20]) {
-    case 0:
-        moby[0x30] = 0xFF;
-        moby[0x20] = 1;
-        break;
-    case 1:
-        if (umbris_scene_state == 2) {
-            char *g = umbris_cutscene_state;
-            int s = *(int *)(g + 0x30);
-            if (s == 1 || s == 2) {
-                float a0[4], a1[4], a2[4], b0[4], b1[4], b2[4], c0[4], c1[4], c2[4];
-                int idx = 0;
-                char *o;
-                if (s == 1) idx = 3;
-                if (s == 2) idx = 4;
-                o = *(char **)(g - (-(idx * 4)) + 0x178);
-                Moby_GetJointWorldPos(o, 0, a0);
-                Moby_GetJointWorldPos(o, 3, b0);
-                FastVecSub(c0, a0, b0);
-                vec_scale_to_length(c0, c0, *(float *)&umbris_scene_trail_speed);
-                draw_trail(a0, a0, c0, *(float *)&umbris_scene_trail_glow_size, *(float *)&umbris_scene_trail_core_size);
-                Moby_GetJointWorldPos(o, 1, a1);
-                Moby_GetJointWorldPos(o, 4, b1);
-                FastVecSub(c1, a1, b1);
-                vec_scale_to_length(c1, c1, *(float *)&umbris_scene_trail_speed);
-                draw_trail(a1, a1, c1, *(float *)&umbris_scene_trail_glow_size, *(float *)&umbris_scene_trail_core_size);
-                Moby_GetJointWorldPos(o, 2, a2);
-                Moby_GetJointWorldPos(o, 5, b2);
-                FastVecSub(c2, a2, b2);
-                vec_scale_to_length(c2, c2, *(float *)&umbris_scene_trail_speed);
-                draw_trail(a2, a2, c2, *(float *)&umbris_scene_trail_glow_size, *(float *)&umbris_scene_trail_core_size);
+        case 0:
+            moby[0x30] = 0xFF;
+            moby[0x20] = 1;
+            break;
+        case 1:
+            if (umbris_scene_state == 2) {
+                char *g = umbris_cutscene_state;
+                int s = *(int *)(g + 0x30);
+                if (s == 1 || s == 2) {
+                    float a0[4], a1[4], a2[4], b0[4], b1[4], b2[4], c0[4], c1[4], c2[4];
+                    int idx = 0;
+                    char *o;
+                    if (s == 1)
+                        idx = 3;
+                    if (s == 2)
+                        idx = 4;
+                    o = *(char **)(g - (-(idx * 4)) + 0x178);
+                    Moby_GetJointWorldPos(o, 0, a0);
+                    Moby_GetJointWorldPos(o, 3, b0);
+                    FastVecSub(c0, a0, b0);
+                    vec_scale_to_length(c0, c0, *(float *)&umbris_scene_trail_speed);
+                    draw_trail(a0, a0, c0, *(float *)&umbris_scene_trail_glow_size,
+                               *(float *)&umbris_scene_trail_core_size);
+                    Moby_GetJointWorldPos(o, 1, a1);
+                    Moby_GetJointWorldPos(o, 4, b1);
+                    FastVecSub(c1, a1, b1);
+                    vec_scale_to_length(c1, c1, *(float *)&umbris_scene_trail_speed);
+                    draw_trail(a1, a1, c1, *(float *)&umbris_scene_trail_glow_size,
+                               *(float *)&umbris_scene_trail_core_size);
+                    Moby_GetJointWorldPos(o, 2, a2);
+                    Moby_GetJointWorldPos(o, 5, b2);
+                    FastVecSub(c2, a2, b2);
+                    vec_scale_to_length(c2, c2, *(float *)&umbris_scene_trail_speed);
+                    draw_trail(a2, a2, c2, *(float *)&umbris_scene_trail_glow_size,
+                               *(float *)&umbris_scene_trail_core_size);
+                }
             }
-        }
-        break;
+            break;
     }
 }

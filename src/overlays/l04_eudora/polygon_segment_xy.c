@@ -12,9 +12,7 @@ int find_first_positive_polygon_edge_cross_xy(float *p, float *poly, int n) {
     int i;
 
     for (i = 0; i < n; i++) {
-        if ((v[(i + 1) % n].x - v[i].x) * (p[1] - v[i].y) -
-                (v[(i + 1) % n].y - v[i].y) * (p[0] - v[i].x) >
-            0.0f) {
+        if ((v[(i + 1) % n].x - v[i].x) * (p[1] - v[i].y) - (v[(i + 1) % n].y - v[i].y) * (p[0] - v[i].x) > 0.0f) {
             return i + 1;
         }
     }
@@ -49,8 +47,10 @@ float find_closest_point_on_segment_xy(float *dst, float *a, float *b, float *c)
     t = d1[1] * d2[0] - d1[0] * d2[1];
     t = t * det;
     r = t;
-    if (r < 0.0f) r = 0.0f;
-    if (1.0f < r) r = 1.0f;
+    if (r < 0.0f)
+        r = 0.0f;
+    if (1.0f < r)
+        r = 1.0f;
     FastVecScale(dst, d0, r);
     FastVecAdd(dst, dst, a);
     return t;

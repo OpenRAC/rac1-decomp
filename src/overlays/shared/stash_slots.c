@@ -9,10 +9,13 @@ extern int sce_sif_set_dma(void *buf, int flag);
 int send_dma_to_stash_slot(int arg, unsigned int slot, int off, int size) {
     int req[4];
     int lim;
-    if (slot >= 0x40) return -3;
+    if (slot >= 0x40)
+        return -3;
     lim = stash_slots[slot].qwc;
-    if (lim == 0) return -3;
-    if (lim < off + size) return -1;
+    if (lim == 0)
+        return -3;
+    if (lim < off + size)
+        return -1;
     req[0] = arg;
     req[1] = (int)((char *)stash_slots[slot].ram + off * 16);
     req[2] = size * 16;
@@ -23,7 +26,8 @@ int send_dma_to_stash_slot(int arg, unsigned int slot, int off, int size) {
 /* The quadword count of stash slot SLOT, or -3 when there is no such slot. The catalogue splits
  * the `return -3` off as func_L00_002951C8 (config/overlays/joined.tsv). */
 int GetStashSlotSize(unsigned int slot) {
-    if (slot >= 0x40) return -3;
+    if (slot >= 0x40)
+        return -3;
     return stash_slots[slot].qwc;
 }
 // Returns the constant -3.

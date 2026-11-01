@@ -3,8 +3,23 @@
 #include "include_asm.h"
 #include "vector.h"
 
-typedef struct { unsigned char b0, b1, b2, b3; int pad4; float f8; short hC; short hE; float f10; float f14; float f18; float f1C; } E;
-typedef struct { char pad[8]; short n; char pad2[0x12]; E *list; } Sky;
+typedef struct {
+    unsigned char b0, b1, b2, b3;
+    int pad4;
+    float f8;
+    short hC;
+    short hE;
+    float f10;
+    float f14;
+    float f18;
+    float f1C;
+} E;
+typedef struct {
+    char pad[8];
+    short n;
+    char pad2[0x12];
+    E *list;
+} Sky;
 extern Sky *D_sky __asm__("D_L00_001605DC") MACRO_ADDR;
 extern int func_001160D8(void);
 extern int random_integer_below(int);
@@ -126,21 +141,32 @@ void update_sky_shells_static(void) {
     }
 }
 extern int level_frame_counter MACRO_ADDR;
-void fast_euler_to_matrix(void *,void *);
+void fast_euler_to_matrix(void *, void *);
 /* rotates animated sky shells and draws each layer */
 void update_sky_shells_animated(void) {
- float v[4] __attribute__((aligned(16))); int i;
- *(short *)(sky_data+4)=0;
- qzero(v);
- for(i=0;i<*(short *)(sky_data+6);i++) {
- switch(i) {
- case 2: v[2]=(level_frame_counter&0x3ffff)*0.000023968450f-3.14159265f; fast_euler_to_matrix(sky_shell_matrix,v); break;
- case 3: v[2]=(level_frame_counter&0x1ffff)*0.000047936900f-3.14159265f; fast_euler_to_matrix(sky_shell_matrix,v); break;
- case 4: v[2]=(unsigned short)level_frame_counter*0.000095873800f-3.14159265f; fast_euler_to_matrix(sky_shell_matrix,v); break;
- default:set_identity_matrix(sky_shell_matrix);
- }
- SkyDrawShell(i);
- }
+    float v[4] __attribute__((aligned(16)));
+    int i;
+    *(short *)(sky_data + 4) = 0;
+    qzero(v);
+    for (i = 0; i < *(short *)(sky_data + 6); i++) {
+        switch (i) {
+            case 2:
+                v[2] = (level_frame_counter & 0x3ffff) * 0.000023968450f - 3.14159265f;
+                fast_euler_to_matrix(sky_shell_matrix, v);
+                break;
+            case 3:
+                v[2] = (level_frame_counter & 0x1ffff) * 0.000047936900f - 3.14159265f;
+                fast_euler_to_matrix(sky_shell_matrix, v);
+                break;
+            case 4:
+                v[2] = (unsigned short)level_frame_counter * 0.000095873800f - 3.14159265f;
+                fast_euler_to_matrix(sky_shell_matrix, v);
+                break;
+            default:
+                set_identity_matrix(sky_shell_matrix);
+        }
+        SkyDrawShell(i);
+    }
 }
 extern void SkySpriteProc(void);
 extern void VU1_addGSregister(int, long);
@@ -152,7 +178,12 @@ typedef struct {
     u8 b3;
     u32 color;
     f32 f8;
-    union { struct { u16 a, b; } h; u32 w; } c;
+    union {
+        struct {
+            u16 a, b;
+        } h;
+        u32 w;
+    } c;
     f32 x;
     f32 y;
     f32 z;
@@ -210,8 +241,14 @@ void draw_four_sky_shells_with_animated_particles(void) {
                 t18 = random_integer_below(0x20) << 24;
                 {
                     u32 u, w;
-                    if ((func_001160D8() >> 16) & 1) { u = (t16 << 16) + 0x30505050; w = t18 + u; }
-                    else { u = (t16 << 8) + 0x30505050; w = t18 + u; w |= t16; }
+                    if ((func_001160D8() >> 16) & 1) {
+                        u = (t16 << 16) + 0x30505050;
+                        w = t18 + u;
+                    } else {
+                        u = (t16 << 8) + 0x30505050;
+                        w = t18 + u;
+                        w |= t16;
+                    }
                     s->c.w = w;
                 }
             }
@@ -228,11 +265,19 @@ void draw_four_sky_shells_with_animated_particles(void) {
             s->x = FastCos(a) * FastSin(b) * 50.0f;
             s->y = FastSin(a) * FastSin(b) * 50.0f;
             s->z = FastAbsF(FastCos(b)) * 50.0f;
-            if ((s->c.h.a & 0x3F) < 8) s->color = 0x702020F0;
-            else s->color = 0x202020F0;
+            if ((s->c.h.a & 0x3F) < 8)
+                s->color = 0x702020F0;
+            else
+                s->color = 0x202020F0;
         } else if (s->type == 3) {
             r = func_001160D8() >> 16;
-            { u32 u = ((r & 0x1F00) << 10) + 0xFFDFDFE0; u32 c = s->c.w + u; c += (r & 0x1F0) << 6; c += (r & 0x1F) << 2; s->color = c; }
+            {
+                u32 u = ((r & 0x1F00) << 10) + 0xFFDFDFE0;
+                u32 c = s->c.w + u;
+                c += (r & 0x1F0) << 6;
+                c += (r & 0x1F) << 2;
+                s->color = c;
+            }
         }
     }
     SkySpriteProc();
@@ -241,40 +286,49 @@ void draw_four_sky_shells_with_animated_particles(void) {
     SkyDrawShell(3);
 }
 extern int level_frame_counter MACRO_ADDR;
-void fast_euler_to_matrix(void *,void *);
+void fast_euler_to_matrix(void *, void *);
 /* refreshes two rotating shrub transform layers */
 void sky_shells_rotate_two(void) {
- float v[4] __attribute__((aligned(16)));
- *(short *)(sky_data+4)=0;
- set_identity_matrix(sky_shell_matrix);
- SkyDrawShell(0);
- qzero(v);
- v[2]=(unsigned short)level_frame_counter*0.000095873800f-3.14159265f;
- fast_euler_to_matrix(sky_shell_matrix,v);
- SkyDrawShell(1);
- v[2]=(level_frame_counter&0x1ffff)*0.000047936900f-3.14159265f;
- fast_euler_to_matrix(sky_shell_matrix,v);
- SkyDrawShell(2);
+    float v[4] __attribute__((aligned(16)));
+    *(short *)(sky_data + 4) = 0;
+    set_identity_matrix(sky_shell_matrix);
+    SkyDrawShell(0);
+    qzero(v);
+    v[2] = (unsigned short)level_frame_counter * 0.000095873800f - 3.14159265f;
+    fast_euler_to_matrix(sky_shell_matrix, v);
+    SkyDrawShell(1);
+    v[2] = (level_frame_counter & 0x1ffff) * 0.000047936900f - 3.14159265f;
+    fast_euler_to_matrix(sky_shell_matrix, v);
+    SkyDrawShell(2);
 }
-extern void fast_euler_to_matrix(void *,void *);
+extern void fast_euler_to_matrix(void *, void *);
 /* draws sky shells with two animated rotation offsets */
 void draw_sky_shells_with_fast_and_slow_rotation(void) {
- float v[4] __attribute__((aligned(16))); int i;
- *(short *)(sky_data+4)=0; qzero(v);
- for(i=0;i<*(short *)(sky_data+6);++i) {
- switch(i) {
- case 1: v[2]=(float)*(unsigned short *)&level_frame_counter*0.0000958738017f-3.14159265f; fast_euler_to_matrix(sky_shell_matrix,v); break;
- case 2: v[2]=(float)(level_frame_counter&0x1FFFF)*0.00004793690085f-3.14159265f;
- fast_euler_to_matrix(sky_shell_matrix,v); break;
- default: set_identity_matrix(sky_shell_matrix); break;
- }
- SkyDrawShell(i);
- }
+    float v[4] __attribute__((aligned(16)));
+    int i;
+    *(short *)(sky_data + 4) = 0;
+    qzero(v);
+    for (i = 0; i < *(short *)(sky_data + 6); ++i) {
+        switch (i) {
+            case 1:
+                v[2] = (float)*(unsigned short *)&level_frame_counter * 0.0000958738017f - 3.14159265f;
+                fast_euler_to_matrix(sky_shell_matrix, v);
+                break;
+            case 2:
+                v[2] = (float)(level_frame_counter & 0x1FFFF) * 0.00004793690085f - 3.14159265f;
+                fast_euler_to_matrix(sky_shell_matrix, v);
+                break;
+            default:
+                set_identity_matrix(sky_shell_matrix);
+                break;
+        }
+        SkyDrawShell(i);
+    }
 }
 void sky_particles_init(s32 a, s32 b);
 void sky_particles_update(void);
 extern char sky_shell_matrix[];
-extern char * sky_data MACRO_ADDR;
+extern char *sky_data MACRO_ADDR;
 void set_identity_matrix();
 void SkyDrawShell();
 extern int level_frame_counter MACRO_ADDR;
@@ -287,7 +341,8 @@ void draw_sky_shells_with_particles_and_modulo_50000_rotation(void) {
     float v[4] __attribute__((aligned(16)));
     set_identity_matrix(sky_shell_matrix);
     SkyDrawShell(0);
-    if (*(short *)(sky_data + 8) == 0) sky_particles_init(0x78, 8);
+    if (*(short *)(sky_data + 8) == 0)
+        sky_particles_init(0x78, 8);
     sky_particles_update();
     SkySpriteProc();
     VU1_addGSregister(0x42, (0x8000L << 24) | 0x44);
@@ -297,8 +352,16 @@ void draw_sky_shells_with_particles_and_modulo_50000_rotation(void) {
     SkyDrawShell(1);
 }
 typedef union {
-    struct { s16 h0; s16 h2; } h;
-    struct { u8 c0; u8 c1; u8 c2; u8 c3; } c;
+    struct {
+        s16 h0;
+        s16 h2;
+    } h;
+    struct {
+        u8 c0;
+        u8 c1;
+        u8 c2;
+        u8 c3;
+    } c;
     u32 w;
 } PU;
 typedef struct {
@@ -322,7 +385,7 @@ typedef struct {
     u8 padA[0x1C - 0xA];
     Part *parts;
 } Sys;
-extern Sys * sky_data_r __asm__("D_L00_001605DC") MACRO_ADDR;
+extern Sys *sky_data_r __asm__("D_L00_001605DC") MACRO_ADDR;
 extern short sky_star_colors;
 extern short sky_pair_particle_colors;
 extern u8 sky_shell_matrix_r[] __asm__("D_L00_001BDB70");
@@ -378,12 +441,12 @@ void draw_three_sky_shells_with_three_particle_types(void) {
                 p->f8 = random_angle_radians();
                 p->type = 2;
                 {
-                    s32 paletteOffset=k*4;
-                    u32 *paletteWord=(u32 *)(paletteOffset+(char *)&sky_pair_particle_colors);
-                    void *source=k*16+sky_pair_particle_positions;
-                    void *destination=&p->f10;
-                    p->col=*paletteWord;
-                    qcopy(destination,source);
+                    s32 paletteOffset = k * 4;
+                    u32 *paletteWord = (u32 *)(paletteOffset + (char *)&sky_pair_particle_colors);
+                    void *source = k * 16 + sky_pair_particle_positions;
+                    void *destination = &p->f10;
+                    p->col = *paletteWord;
+                    qcopy(destination, source);
                 }
                 p->u.c.c0 = k;
                 {
@@ -406,9 +469,15 @@ void draw_three_sky_shells_with_three_particle_types(void) {
                 r1 = random_integer_below(0x18) + 8;
                 r2 = random_integer_below(0x20) << 24;
                 if ((func_001160D8() >> 16) & 1) {
-                    { u32 t = (r1 << 16) + 0x30505050; p->u.w = r2 - -t; }
+                    {
+                        u32 t = (r1 << 16) + 0x30505050;
+                        p->u.w = r2 - -t;
+                    }
                 } else {
-                    { u32 t = (r1 << 8) + 0x30505050; p->u.w = (r2 - -t) | r1; }
+                    {
+                        u32 t = (r1 << 8) + 0x30505050;
+                        p->u.w = (r2 - -t) | r1;
+                    }
                 }
             }
         }
@@ -437,16 +506,17 @@ void draw_three_sky_shells_with_three_particle_types(void) {
                 p2->f8 = IntToFloat((q2->c.c1 << 5) + ((func_001160D8() >> 16) & 0xF) - 8) * 0.024543693f;
             }
             k2 = q2->c.c2 * 4;
-            if (k2 > 0x60) k2 = 0xC0 - k2;
+            if (k2 > 0x60)
+                k2 = 0xC0 - k2;
             {
-            s32 rr = func_001160D8() >> 16;
-            u32 x;
-            x = (((u32 *)&sky_pair_particle_colors))[p2->u.c.c0];
-            x += (rr & 0xF00) << 8;
-            x += (rr & 0xF0) << 4;
-            x += rr & 0xF;
-            x += k2 << 24;
-            p2->col = x;
+                s32 rr = func_001160D8() >> 16;
+                u32 x;
+                x = (((u32 *)&sky_pair_particle_colors))[p2->u.c.c0];
+                x += (rr & 0xF00) << 8;
+                x += (rr & 0xF0) << 4;
+                x += rr & 0xF;
+                x += k2 << 24;
+                p2->col = x;
             }
         } else if (p2->type == 3) {
             s32 rs = func_001160D8() >> 16;
@@ -479,7 +549,8 @@ void draw_three_sky_shells_with_particles_and_modulo_50000_rotation(void) {
     float v[4] __attribute__((aligned(16)));
     set_identity_matrix(sky_shell_matrix);
     SkyDrawShell(0);
-    if (*(short *)(sky_data + 8) == 0) sky_particles_init(0x78, 8);
+    if (*(short *)(sky_data + 8) == 0)
+        sky_particles_init(0x78, 8);
     sky_particles_update();
     SkySpriteProc();
     VU1_addGSregister(0x42, (0x8000L << 24) | 0x44);
@@ -491,7 +562,7 @@ void draw_three_sky_shells_with_particles_and_modulo_50000_rotation(void) {
 }
 void set_identity_matrix();
 typedef int q128 __attribute__((mode(TI)));
-extern u8 * sky_data_r2 __asm__("D_L00_001605DC") MACRO_ADDR;
+extern u8 *sky_data_r2 __asm__("D_L00_001605DC") MACRO_ADDR;
 extern s32 level_frame_counter MACRO_ADDR;
 void SkyDrawShell(s32);
 void fast_euler_to_matrix(void *, void *);
@@ -534,33 +605,34 @@ typedef int T28a480_q __attribute__((mode(TI)));
 extern int level_frame_counter_r __asm__("D_L00_0015F6B0") MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_00288ec0.c, FUN_L00_0028a480. */
-void draw_sky_shells_with_scaled_phase_rotation(void)
-{
+void draw_sky_shells_with_scaled_phase_rotation(void) {
     T28a480_q v[1];
     int i;
 
     qzero(v);
     for (i = 0; i < *(short *)(sky_data + 6); i++) {
         switch (i) {
-        case 0:
-            ((float *)v)[2] = (float)((level_frame_counter * 2) & 0x1FFFF) * (3.14159265f / 65536.0f) - 3.14159265f;
-            fast_euler_to_matrix(sky_shell_matrix, v);
-            break;
-        case 1:
-            ((float *)v)[2] = (float)((level_frame_counter_r * 5) & 0x1FFFF) * (3.14159265f / 65536.0f) - 3.14159265f;
-            fast_euler_to_matrix(sky_shell_matrix, v);
-            break;
-        case 2:
-            ((float *)v)[2] = (float)((level_frame_counter_r * 10) & 0x3FFFF) * 2.39684496e-05f - 3.14159265f;
-            fast_euler_to_matrix(sky_shell_matrix, v);
-            break;
-        case 3:
-            ((float *)v)[2] = (float)((level_frame_counter * 10) & 0x1FFFF) * (3.14159265f / 65536.0f) - 3.14159265f;
-            fast_euler_to_matrix(sky_shell_matrix, v);
-            break;
-        default:
-            set_identity_matrix(sky_shell_matrix);
-            break;
+            case 0:
+                ((float *)v)[2] = (float)((level_frame_counter * 2) & 0x1FFFF) * (3.14159265f / 65536.0f) - 3.14159265f;
+                fast_euler_to_matrix(sky_shell_matrix, v);
+                break;
+            case 1:
+                ((float *)v)[2] =
+                    (float)((level_frame_counter_r * 5) & 0x1FFFF) * (3.14159265f / 65536.0f) - 3.14159265f;
+                fast_euler_to_matrix(sky_shell_matrix, v);
+                break;
+            case 2:
+                ((float *)v)[2] = (float)((level_frame_counter_r * 10) & 0x3FFFF) * 2.39684496e-05f - 3.14159265f;
+                fast_euler_to_matrix(sky_shell_matrix, v);
+                break;
+            case 3:
+                ((float *)v)[2] =
+                    (float)((level_frame_counter * 10) & 0x1FFFF) * (3.14159265f / 65536.0f) - 3.14159265f;
+                fast_euler_to_matrix(sky_shell_matrix, v);
+                break;
+            default:
+                set_identity_matrix(sky_shell_matrix);
+                break;
         }
         SkyDrawShell(i);
     }
@@ -568,28 +640,30 @@ void draw_sky_shells_with_scaled_phase_rotation(void)
 extern short level_frame_counter_s __asm__("D_L00_0015F6B0");
 // Rotates each sky shell at its assigned angular rate before drawing.
 void draw_sky_shells_with_slow_medium_and_fast_rotation(void) {
- float v[4] __attribute__((aligned(16)));
- int i;
- *(short *)(sky_data + 4) = 0;
- qzero(v);
- for (i = 0; i < *(short *)(sky_data + 6); i++) {
-  switch (i) {
-   case 1:
-    v[2] = (level_frame_counter & 0x3FFFF) * (3.14159265f / 131072.0f) - 3.14159265f;
-    fast_euler_to_matrix(sky_shell_matrix, v);
-    break;
-   case 2:
-    v[2] = (level_frame_counter & 0x1FFFF) * (3.14159265f / 65536.0f) - 3.14159265f;
-    fast_euler_to_matrix(sky_shell_matrix, v);
-    break;
-   case 3:
-    v[2] = *(unsigned short *)&level_frame_counter_s * (3.14159265f / 32768.0f) - 3.14159265f;
-    fast_euler_to_matrix(sky_shell_matrix, v);
-    break;
-   default: set_identity_matrix(sky_shell_matrix); break;
-  }
-  SkyDrawShell(i);
- }
+    float v[4] __attribute__((aligned(16)));
+    int i;
+    *(short *)(sky_data + 4) = 0;
+    qzero(v);
+    for (i = 0; i < *(short *)(sky_data + 6); i++) {
+        switch (i) {
+            case 1:
+                v[2] = (level_frame_counter & 0x3FFFF) * (3.14159265f / 131072.0f) - 3.14159265f;
+                fast_euler_to_matrix(sky_shell_matrix, v);
+                break;
+            case 2:
+                v[2] = (level_frame_counter & 0x1FFFF) * (3.14159265f / 65536.0f) - 3.14159265f;
+                fast_euler_to_matrix(sky_shell_matrix, v);
+                break;
+            case 3:
+                v[2] = *(unsigned short *)&level_frame_counter_s * (3.14159265f / 32768.0f) - 3.14159265f;
+                fast_euler_to_matrix(sky_shell_matrix, v);
+                break;
+            default:
+                set_identity_matrix(sky_shell_matrix);
+                break;
+        }
+        SkyDrawShell(i);
+    }
 }
 extern char sky_shell_matrix[] NOT_SDA;
 extern char *sky_data MACRO_ADDR;
@@ -602,7 +676,8 @@ void draw_three_sky_shells_with_particles(void) {
     set_identity_matrix(sky_shell_matrix);
     SkyDrawShell(0);
     SkyDrawShell(1);
-    if (*(short *)(sky_data + 8) == 0) sky_particles_init(0x78, 8);
+    if (*(short *)(sky_data + 8) == 0)
+        sky_particles_init(0x78, 8);
     sky_particles_update();
     SkySpriteProc();
     VU1_addGSregister(0x42, 0x8000000044L);
@@ -629,7 +704,8 @@ void SkyShellsRotatePair(void) {
 void draw_two_sky_shells_with_particles(void) {
     set_identity_matrix(sky_shell_matrix);
     SkyDrawShell(0);
-    if (*(short *)(sky_data + 8) == 0) sky_particles_init(0x78, 8);
+    if (*(short *)(sky_data + 8) == 0)
+        sky_particles_init(0x78, 8);
     sky_particles_update();
     SkySpriteProc();
     VU1_addGSregister(0x42, 0x8000000044L);
@@ -681,8 +757,14 @@ void render_three_shell_particle_sky(void) {
                 t18 = random_integer_below(0x20) << 24;
                 {
                     u32 u, w;
-                    if ((func_001160D8() >> 16) & 1) { u = (t16 << 16) + 0x30505050; w = t18 + u; }
-                    else { u = (t16 << 8) + 0x30505050; w = t18 + u; w |= t16; }
+                    if ((func_001160D8() >> 16) & 1) {
+                        u = (t16 << 16) + 0x30505050;
+                        w = t18 + u;
+                    } else {
+                        u = (t16 << 8) + 0x30505050;
+                        w = t18 + u;
+                        w |= t16;
+                    }
                     s->c.w = w;
                 }
             }
@@ -700,11 +782,19 @@ void render_three_shell_particle_sky(void) {
             s->y = FastSin(a) * FastSin(b) * 50.0f;
             s->z = FastCos(b) * 50.0f;
             s->color &= 0xFFFFFF;
-            if ((s->c.h.a & 0x3F) < 8) s->color |= 0x70000000;
-            else s->color |= 0x24000000;
+            if ((s->c.h.a & 0x3F) < 8)
+                s->color |= 0x70000000;
+            else
+                s->color |= 0x24000000;
         } else {
             r = func_001160D8() >> 16;
-            { u32 u = ((r & 0x1F00) << 10) + 0xFFDFDFE0; u32 c = s->c.w + u; c += (r & 0x1F0) << 6; c += (r & 0x1F) << 2; s->color = c; }
+            {
+                u32 u = ((r & 0x1F00) << 10) + 0xFFDFDFE0;
+                u32 c = s->c.w + u;
+                c += (r & 0x1F0) << 6;
+                c += (r & 0x1F) << 2;
+                s->color = c;
+            }
         }
     }
     SkySpriteProc();
@@ -735,7 +825,11 @@ void draw_seven_sky_shells_with_modulo_40000_and_60000_rotation(void) {
     SkyDrawShell(6);
 }
 typedef int q_28b1a0 __attribute__((mode(TI)));
-typedef struct { short h0, h2, h4, h6; unsigned char pad[0x18]; unsigned char *e[1]; } S_28b1a0;
+typedef struct {
+    short h0, h2, h4, h6;
+    unsigned char pad[0x18];
+    unsigned char *e[1];
+} S_28b1a0;
 extern S_28b1a0 *sky_data_r3 __asm__("D_L00_001605DC") MACRO_ADDR;
 extern unsigned char sky_shell_matrix_r2[] __asm__("D_L00_001BDB70") NOT_SDA;
 extern short sky_shell_rotation_phase_step_r __asm__("D_L00_00160580");
@@ -746,8 +840,7 @@ void func_L00_001FFA40_28b1a0(void *, void *) __asm__("func_L00_001FFA40");
 void func_001F9C48_28b1a0(void *, void *, float) __asm__("func_001F9C48");
 void func_0022C9A8_28b1a0(int) __asm__("func_0022C9A8");
 /* Per-entry update of a table of up to five entries (a switch on the index): each entry gets its own tilt, scale and turn speed, and its matrix is rebuilt every frame. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_00288ec0.c, FUN_L00_0028b1a0. */
-void SkyShellsEntryUpdate(void)
-{
+void SkyShellsEntryUpdate(void) {
     float v[4] __attribute__((aligned(16)));
     int i = 0;
     float *p;
@@ -760,33 +853,33 @@ void SkyShellsEntryUpdate(void)
         p = (float *)(sky_data_r3->e[i] + 8);
         k = 1.0f;
         switch (i) {
-        case 1:
-            v[1] = 0.02f;
-            k = 3.0f;
-            *p += (*(float *)&sky_shell_rotation_phase_step_r) * 0.55f;
-            break;
-        case 2:
-            v[1] = -0.02f;
-            k = 2.5f;
-            *p += (*(float *)&sky_shell_rotation_phase_step_r) * 0.6f;
-            break;
-        case 3:
-            v[1] = 0.01f;
-            k = 2.0f;
-            *p += (*(float *)&sky_shell_rotation_phase_step_r) * 0.7f;
-            break;
-        case 4:
-            v[1] = -0.01f;
-            k = 1.5f;
-            *p += (*(float *)&sky_shell_rotation_phase_step_r) * 0.75f;
-            break;
-        case 5:
-            k = 1.25f;
-            *p += (*(float *)&sky_shell_rotation_phase_step_r) * 0.8f;
-            break;
-        default:
-            func_001FA190_28b1a0(sky_shell_matrix_r2);
-            break;
+            case 1:
+                v[1] = 0.02f;
+                k = 3.0f;
+                *p += (*(float *)&sky_shell_rotation_phase_step_r) * 0.55f;
+                break;
+            case 2:
+                v[1] = -0.02f;
+                k = 2.5f;
+                *p += (*(float *)&sky_shell_rotation_phase_step_r) * 0.6f;
+                break;
+            case 3:
+                v[1] = 0.01f;
+                k = 2.0f;
+                *p += (*(float *)&sky_shell_rotation_phase_step_r) * 0.7f;
+                break;
+            case 4:
+                v[1] = -0.01f;
+                k = 1.5f;
+                *p += (*(float *)&sky_shell_rotation_phase_step_r) * 0.75f;
+                break;
+            case 5:
+                k = 1.25f;
+                *p += (*(float *)&sky_shell_rotation_phase_step_r) * 0.8f;
+                break;
+            default:
+                func_001FA190_28b1a0(sky_shell_matrix_r2);
+                break;
         }
         if (i > 0) {
             M = sky_shell_matrix_r2;

@@ -4,6 +4,7 @@
 
 /* 0 when a is the end the header computes, else a's offset from the header's start in 2 KB sectors */
 u32 Strfile_GetSectorOffset(u32 *h, u32 a) {
-    if (a == (((h[2] << 4) + h[1] + 0x10) & 0x0FFFFFFF)) return 0;
+    if (a == (((h[2] << 4) + h[1] + 0x10) & 0x0FFFFFFF))
+        return 0;
     return (a - h[0]) >> 11;
 }

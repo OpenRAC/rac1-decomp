@@ -72,16 +72,20 @@ void build_vendor_menu_rows(s32 skip_unflagged) {
 
     count = 0;
     if (vendor_stock[0] != 0xFF) {
-        do count++; while (count < 12 && vendor_stock[count] != 0xFF);
+        do
+            count++;
+        while (count < 12 && vendor_stock[count] != 0xFF);
     }
     vendor_menu_r2.count = 0;
     for (i = 0; i < count; i++) {
         value = vendor_stock[i];
-        if (value == 0xFF) continue;
+        if (value == 0xFF)
+            continue;
         item = value & 0x3F;
         if (value & 0x40) {
             s32 sound;
-            if (item_price_table[item].h8 == 0) continue;
+            if (item_price_table[item].h8 == 0)
+                continue;
             sound = vendor_item_info[item].sound;
             vendor_menu_r2.entries[vendor_menu_r2.count].item = item;
             vendor_menu_r2.entries[vendor_menu_r2.count].selected = 1;
@@ -90,7 +94,8 @@ void build_vendor_menu_rows(s32 skip_unflagged) {
             vendor_menu_r2.count++;
         } else {
             s32 sound;
-            if (skip_unflagged) continue;
+            if (skip_unflagged)
+                continue;
             sound = vendor_item_info[item].sound;
             vendor_menu_r2.entries[vendor_menu_r2.count].item = item;
             vendor_menu_r2.entries[vendor_menu_r2.count].selected = 0;
@@ -101,12 +106,16 @@ void build_vendor_menu_rows(s32 skip_unflagged) {
     }
     for (k = 0; k < 37; k++) {
         s32 sound;
-        if (!item_available[k]) continue;
-        if (!item_price_table[k].h8) continue;
+        if (!item_available[k])
+            continue;
+        if (!item_price_table[k].h8)
+            continue;
         for (j = 0; j < vendor_menu_r2.count; j++) {
-            if (vendor_menu_r2.entries[j].item == k) break;
+            if (vendor_menu_r2.entries[j].item == k)
+                break;
         }
-        if (j < vendor_menu_r2.count) continue;
+        if (j < vendor_menu_r2.count)
+            continue;
         sound = vendor_item_info[k].sound;
         vendor_menu_r2.entries[vendor_menu_r2.count].item = k;
         vendor_menu_r2.entries[vendor_menu_r2.count].selected = 1;
@@ -177,7 +186,12 @@ typedef struct {
 
 #define VP (*(Vendor_pv *)D_L00_001CA7C0)
 extern VendorSlot_pv vendor_slot_manipulators[4];
-typedef struct { u8 p[0x140]; f32 x; f32 y; f32 z; } VendorCam_pv;
+typedef struct {
+    u8 p[0x140];
+    f32 x;
+    f32 y;
+    f32 z;
+} VendorCam_pv;
 extern VendorCam_pv player_camera;
 extern s32 vendor_exit_requested MACRO_ADDR;
 extern s32 vendor_intro_active MACRO_ADDR;
@@ -272,18 +286,20 @@ void open_vendor_menu(VendorMoby_pv *m) {
     build_vendor_menu_rows(VP.mode != 0);
     half = VP.count;
     sel = half / 2;
-    if (half < 3) sel = 1;
+    if (half < 3)
+        sel = 1;
     VP.cursor = half / 2;
     VP.scroll = (sel - half / 2) * 0x28;
     reset_hud_and_suspend_weapon_updates();
-    VP.title_text = queue_animation_update(0x12, 0x754E, initialize_bolt_counter_hud, update_bolt_counter_hud_animation_and_visibility,
-                                               draw_bolt_counter_hud_panel, &gBolts, 0x98967F);
+    VP.title_text = queue_animation_update(0x12, 0x754E, initialize_bolt_counter_hud,
+                                           update_bolt_counter_hud_animation_and_visibility,
+                                           draw_bolt_counter_hud_panel, &gBolts, 0x98967F);
     if (VP.entries[VP.cursor].selected == 1) {
         s32 item = VP.entries[VP.cursor].item;
 
         VP.item_text = queue_animation_update(0x30, item + 0xEA60, initialize_numeric_hud_timer_and_base_dimensions,
-                                                  Hud_UpdateCounter, draw_weapon_ammo_hud_panel,
-                                                  &weapon_ammo_counts[item], item_price_table[item].hE);
+                                              Hud_UpdateCounter, draw_weapon_ammo_hud_panel, &weapon_ammo_counts[item],
+                                              item_price_table[item].hE);
     }
     skip_frame = 1;
     VP.f0 = 0;
@@ -371,17 +387,17 @@ extern char vendor_close_hero_local_offset;
 /* The mode word at D_0014171B + 0x100B5 + 0x5A. */
 typedef struct MusicModeBlock {
     u8 pad_00[0x5A];
-    u16 mode;                  /* 0x5A */
+    u16 mode; /* 0x5A */
 } MusicModeBlock;
 
 typedef struct VendorMenuState {
     u8 pad_00[0x1C];
-    struct Moby *moby;          /* 0x1C: the vendor's moby, only passed on or cleared here */
+    struct Moby *moby; /* 0x1C: the vendor's moby, only passed on or cleared here */
     u8 pad_20[0x20];
-    s32 unk40;                  /* 0x40 */
+    s32 unk40; /* 0x40 */
     u8 pad_44[0xC];
-    s32 hud_bar_50;             /* 0x50: HUD bar id, -1 when none */
-    s32 hud_bar_54;             /* 0x54: HUD bar id, -1 when none */
+    s32 hud_bar_50; /* 0x50: HUD bar id, -1 when none */
+    s32 hud_bar_54; /* 0x54: HUD bar id, -1 when none */
 } VendorMenuState;
 
 /* Closes the vendor menu: clears its HUD bars, gives control back to the hero and puts the hero in
@@ -390,8 +406,10 @@ void close_vendor_menu(int exit_cutscene_completed) {
     Vec4A world_position;
     Vec4A euler_rotation;
     VendorMenuState *vendor_state_base = (VendorMenuState *)vendor_menu;
-    if (vendor_state_base->hud_bar_54 != -1) Hud_SetBarValueById(vendor_state_base->hud_bar_54, 0);
-    if (vendor_state_base->hud_bar_50 != -1) Hud_SetBarValueById(vendor_state_base->hud_bar_50, 0);
+    if (vendor_state_base->hud_bar_54 != -1)
+        Hud_SetBarValueById(vendor_state_base->hud_bar_54, 0);
+    if (vendor_state_base->hud_bar_50 != -1)
+        Hud_SetBarValueById(vendor_state_base->hud_bar_50, 0);
     vendor_state_base->hud_bar_54 = -1;
     vendor_state_base->hud_bar_50 = -1;
     update_resource_counter();
@@ -417,8 +435,10 @@ void close_vendor_menu(int exit_cutscene_completed) {
         VendorMenuState *vendor_state = (VendorMenuState *)vendor_menu;
         MusicModeBlock *music = (MusicModeBlock *)((char *)help_stats_base + 0x100B5);
         *((char *)vendor_state->moby + 0x20) = 1;
-        if ((unsigned short)(music->mode - 6) >= 2) music->mode = 5;
-        if (vendor_state->unk40) DeleteMoby(vendor_state->moby);
+        if ((unsigned short)(music->mode - 6) >= 2)
+            music->mode = 5;
+        if (vendor_state->unk40)
+            DeleteMoby(vendor_state->moby);
     }
     snd_ContinueAllSoundsInGroup(0x1D);
     music_Unpause();
@@ -444,7 +464,9 @@ typedef struct {
 } C_298840;
 extern C_298840 cutscene_state;
 extern char hero_scale_manipulator[];
-extern struct { int x0, x4, x8; } lvl_resource_buffers;
+extern struct {
+    int x0, x4, x8;
+} lvl_resource_buffers;
 extern s32 gFadeLvl MACRO_ADDR;
 void VU1_syncChain(s32);
 void calculate_dma_transfer_address(void);
@@ -498,9 +520,16 @@ extern s32 vendor_item_cutscene_index[];
 extern Vendor_29a6b0 vendor_menu_r3 __asm__("D_L00_001CA7C0");
 extern short level_white_fade_level;
 extern short vendor_exit_cutscene_local_offset;
-struct S16_29ad08 { char pad[0x5A]; s16 mode; };
+struct S16_29ad08 {
+    char pad[0x5A];
+    s16 mode;
+};
 extern struct S16_29ad08 cd_read_state;
-struct T_29ad08 { char p0[0x10]; s32 id; char p1[0x38]; };
+struct T_29ad08 {
+    char p0[0x10];
+    s32 id;
+    char p1[0x38];
+};
 extern struct T_29ad08 item_defs_r[] __asm__("D_L00_00179BC0");
 extern void CameraScript2(s32);
 extern float ProbeGroundHeight(float, void *, s32);
@@ -577,16 +606,16 @@ extern short vendor_exit_hero_local_offset;
 /* The 0x28-byte record at D_L00_001CA7C0: the actor it follows is at +0x28. */
 typedef struct VendorExitActor {
     u8 pad_00[0x10];
-    Vec4f pos;                 /* 0x10: position, added to the spawn point */
+    Vec4f pos; /* 0x10: position, added to the spawn point */
     u8 pad_20[0x28];
-    f32 yaw;                   /* 0x48: rot.z */
+    f32 yaw; /* 0x48: rot.z */
     u8 pad_4C[0x74];
-    Vec4f basis[3];            /* 0xC0: rotation rows */
+    Vec4f basis[3]; /* 0xC0: rotation rows */
 } VendorExitActor;
 
 typedef struct VendorExitState {
     u8 pad_00[0x28];
-    VendorExitActor *actor;    /* 0x28 */
+    VendorExitActor *actor; /* 0x28 */
 } VendorExitState;
 
 /* resets state and snaps the camera for a new scene */
@@ -609,7 +638,8 @@ void restore_hero_after_vendor_exit_cutscene(void) {
     Hero_ResetToPosition(&world_position, &euler_rotation, 0, 1);
     update_resource_counter();
     mode_block = (MusicModeBlock *)((char *)help_stats_base + 0x100B5);
-    if (!(mode_block->mode >= 6 && mode_block->mode <= 7)) mode_block->mode = 5;
+    if (!(mode_block->mode >= 6 && mode_block->mode <= 7))
+        mode_block->mode = 5;
     snd_ContinueAllSoundsInGroup(0x1D);
     music_Unpause();
     snd_FlushSoundCommands();
@@ -630,50 +660,81 @@ void handle_vendor_auxiliary_moby_event(int a) {
     int s2;
     int r0;
     int r1;
-    if (vendor_auxiliary_moby_active == 0) return;
+    if (vendor_auxiliary_moby_active == 0)
+        return;
     b = vendor_menu;
     m = *(unsigned char **)(b + 0x24);
     switch (a) {
-    case 0:
-        s = m[0x20];
-        if (s == 2 || s == 0) {
-            if (random_integer_below(4) == 0) {
-                if (*(int *)(b + 0x30) + scale_ticks(0x168) < rendered_frame_count) {
-                    *(int *)(b + 0x30) = rendered_frame_count;
-                    r0 = random_integer_below(2);
-                    *(int *)(b + 0x3C) = r0;
-                    vendor_auxiliary_reaction_started = 1;
-                    vendor_auxiliary_reaction_reset_flag = 0;
-                    *(int *)(help_stats_base + 0x100D1) = (r0 * 3 + 2) * 6 + *(int *)(b + 0x38) + 10000;
-                    m[0x20] = 0xB;
+        case 0:
+            s = m[0x20];
+            if (s == 2 || s == 0) {
+                if (random_integer_below(4) == 0) {
+                    if (*(int *)(b + 0x30) + scale_ticks(0x168) < rendered_frame_count) {
+                        *(int *)(b + 0x30) = rendered_frame_count;
+                        r0 = random_integer_below(2);
+                        *(int *)(b + 0x3C) = r0;
+                        vendor_auxiliary_reaction_started = 1;
+                        vendor_auxiliary_reaction_reset_flag = 0;
+                        *(int *)(help_stats_base + 0x100D1) = (r0 * 3 + 2) * 6 + *(int *)(b + 0x38) + 10000;
+                        m[0x20] = 0xB;
+                    }
                 }
             }
-        }
-        break;
-    case 1:
-        r1 = random_integer_below(2);
-        *(int *)(b + 0x3C) = r1;
-        vendor_auxiliary_reaction_started = a;
-        vendor_auxiliary_reaction_reset_flag = 0;
-        *(int *)(help_stats_base + 0x100D1) = r1 * 0x12 + *(int *)(b + 0x38) + 10000;
-        if (m[0x53] != a) MobyBlendAnimation(m, 1, 0, 10);
-        m[0x20] = 10;
-        break;
-    case 2:
-    case 3:
-        s2 = m[0x20];
-        if (s2 == 2 || s2 == 0) {
-            char *q = vendor_menu;
-            *(int *)(q + 0x34) = 0;
-        }
-        break;
+            break;
+        case 1:
+            r1 = random_integer_below(2);
+            *(int *)(b + 0x3C) = r1;
+            vendor_auxiliary_reaction_started = a;
+            vendor_auxiliary_reaction_reset_flag = 0;
+            *(int *)(help_stats_base + 0x100D1) = r1 * 0x12 + *(int *)(b + 0x38) + 10000;
+            if (m[0x53] != a)
+                MobyBlendAnimation(m, 1, 0, 10);
+            m[0x20] = 10;
+            break;
+        case 2:
+        case 3:
+            s2 = m[0x20];
+            if (s2 == 2 || s2 == 0) {
+                char *q = vendor_menu;
+                *(int *)(q + 0x34) = 0;
+            }
+            break;
     }
 }
-typedef struct { int pad[4]; int f; char pad2[0x38]; } Rec;
-typedef struct { char p0[0xC]; float c; float d0; float d4; float d8; char pad[0x14]; } A;
-typedef struct { char p0[0x30]; int v; char pad[0xC]; } B;
-typedef struct { int a; int b; int c; int d; int e; } Ent;
-typedef struct { char pad[0x1C]; char *cam; char *obj; char pad2[0x58 - 0x24]; int idx; char pad3[0xD0 - 0x5C]; Ent tbl[4]; } S;
+typedef struct {
+    int pad[4];
+    int f;
+    char pad2[0x38];
+} Rec;
+typedef struct {
+    char p0[0xC];
+    float c;
+    float d0;
+    float d4;
+    float d8;
+    char pad[0x14];
+} A;
+typedef struct {
+    char p0[0x30];
+    int v;
+    char pad[0xC];
+} B;
+typedef struct {
+    int a;
+    int b;
+    int c;
+    int d;
+    int e;
+} Ent;
+typedef struct {
+    char pad[0x1C];
+    char *cam;
+    char *obj;
+    char pad2[0x58 - 0x24];
+    int idx;
+    char pad3[0xD0 - 0x5C];
+    Ent tbl[4];
+} S;
 extern Rec item_defs[] __attribute__((section(".data")));
 extern A vendor_item_slot1_placement_offset[];
 extern A vendor_item_slot1_placement[];
@@ -774,7 +835,13 @@ void initialize_vendor_selected_item_mobys(void) {
     vendor_selection_changed = 0;
 }
 typedef int u128_9CDE0 __attribute__((mode(TI)));
-typedef struct { s32 item; s32 sel; s32 f8; s32 fC; s32 f10; } VBEnt_9CDE0;
+typedef struct {
+    s32 item;
+    s32 sel;
+    s32 f8;
+    s32 fC;
+    s32 f10;
+} VBEnt_9CDE0;
 typedef struct {
     u8 pad0[0x1C];
     char *cam;
@@ -792,11 +859,24 @@ typedef struct {
     VBEnt_9CDE0 e[16];
     s32 count;
 } VBuy_9CDE0;
-typedef struct { u8 pad[0x10]; u8 cnt; } VBSub_9CDE0;
-typedef struct { u8 pad[0x48]; VBSub_9CDE0 *sub; } VBCls_9CDE0;
-typedef struct { u8 pad[0x424]; VBCls_9CDE0 *pc; } VBObj_9CDE0;
+typedef struct {
+    u8 pad[0x10];
+    u8 cnt;
+} VBSub_9CDE0;
+typedef struct {
+    u8 pad[0x48];
+    VBSub_9CDE0 *sub;
+} VBCls_9CDE0;
+typedef struct {
+    u8 pad[0x424];
+    VBCls_9CDE0 *pc;
+} VBObj_9CDE0;
 extern VBuy_9CDE0 vendor_menu_r4 __asm__("D_L00_001CA7C0");
-extern struct { char pad[0x1C0]; s32 held; s32 pressed; } D_0013CA40_9CDE0 __asm__("D_0013CA40");
+extern struct {
+    char pad[0x1C0];
+    s32 held;
+    s32 pressed;
+} D_0013CA40_9CDE0 __asm__("D_0013CA40");
 extern int vendor_purchase_confirmed SDATA(D_L00_00161F0C);
 extern int vendor_quantity_adjustable SDATA(D_L00_00161F10);
 extern s32 vendor_quantity_decrease_hold_frames MACRO_ADDR;
@@ -815,7 +895,8 @@ void update_vendor_purchase(void) {
     int room;
     int price;
     int cost;
-    if (vendor_menu_r4.state == 0) return;
+    if (vendor_menu_r4.state == 0)
+        return;
     if (vendor_menu_r4.state == 1) {
         int pr1;
         vendor_buy_quantity = 1;
@@ -834,12 +915,13 @@ void update_vendor_purchase(void) {
         moby_build_matrix(vendor_menu_r4.obj + 0x400);
         pack_render_command_fields(vendor_menu_r4.obj + 0x400, 0x101010, 0xE, 0xE, 0);
         vendor_quantity_adjustable = 0;
-        if (vendor_menu_r4.e[vendor_menu_r4.idx].sel == 1
-            && weapon_ammo_counts[vendor_menu_r4.e[vendor_menu_r4.idx].item] >= item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hE) {
+        if (vendor_menu_r4.e[vendor_menu_r4.idx].sel == 1 &&
+            weapon_ammo_counts[vendor_menu_r4.e[vendor_menu_r4.idx].item] >=
+                item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hE) {
             Moby_PlaySound(2, 0, vendor_menu_r4.cam);
         } else if (vendor_menu_r4.e[vendor_menu_r4.idx].sel == 1) {
             pr1 = vendor_menu_r4.f40 ? item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hA
-                                             : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].h8;
+                                     : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].h8;
             if (gBolts < pr1) {
                 Moby_PlaySound(2, 0, vendor_menu_r4.cam);
             } else {
@@ -847,7 +929,7 @@ void update_vendor_purchase(void) {
             }
         } else {
             pr1 = discount_purchase_pricing[0] ? item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].f4
-                                  : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].f0;
+                                               : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].f0;
             if (gBolts < pr1) {
                 Moby_PlaySound(2, 0, vendor_menu_r4.cam);
             }
@@ -856,12 +938,17 @@ void update_vendor_purchase(void) {
     } else if (vendor_menu_r4.state == 2) {
         int n2;
         if (vendor_quantity_adjustable == 1) {
-            if (D_0013CA40_9CDE0.held & 0x8000) vendor_quantity_decrease_hold_frames++;
-            else vendor_quantity_decrease_hold_frames = 0;
-            if (D_0013CA40_9CDE0.held & 0x2000) vendor_quantity_increase_hold_frames++;
-            else vendor_quantity_increase_hold_frames = 0;
-            if ((D_0013CA40_9CDE0.pressed & 0x8000)
-                || (vendor_quantity_decrease_hold_frames >= 16 && !(vendor_quantity_decrease_hold_frames & 7)) || vendor_quantity_decrease_hold_frames >= 48) {
+            if (D_0013CA40_9CDE0.held & 0x8000)
+                vendor_quantity_decrease_hold_frames++;
+            else
+                vendor_quantity_decrease_hold_frames = 0;
+            if (D_0013CA40_9CDE0.held & 0x2000)
+                vendor_quantity_increase_hold_frames++;
+            else
+                vendor_quantity_increase_hold_frames = 0;
+            if ((D_0013CA40_9CDE0.pressed & 0x8000) ||
+                (vendor_quantity_decrease_hold_frames >= 16 && !(vendor_quantity_decrease_hold_frames & 7)) ||
+                vendor_quantity_decrease_hold_frames >= 48) {
                 if (vendor_buy_quantity >= 2) {
                     vendor_buy_quantity--;
                     if (!(vendor_quantity_decrease_hold_frames & 3) || vendor_quantity_decrease_hold_frames < 16) {
@@ -869,15 +956,17 @@ void update_vendor_purchase(void) {
                     }
                 }
             }
-            if ((D_0013CA40_9CDE0.pressed & 0x2000)
-                || (vendor_quantity_increase_hold_frames >= 16 && !(vendor_quantity_increase_hold_frames & 7)) || vendor_quantity_increase_hold_frames >= 48) {
+            if ((D_0013CA40_9CDE0.pressed & 0x2000) ||
+                (vendor_quantity_increase_hold_frames >= 16 && !(vendor_quantity_increase_hold_frames & 7)) ||
+                vendor_quantity_increase_hold_frames >= 48) {
                 if ((vendor_menu_r4.f40 ? item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hA
-                                              : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].h8) > 0) {
+                                        : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].h8) > 0) {
                     n2 = vendor_menu_r4.f40 ? gBolts / item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hA
-                                                 : gBolts / item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].h8;
-                    room = item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hE
-                         - weapon_ammo_counts[vendor_menu_r4.e[vendor_menu_r4.idx].item];
-                    if (room < n2) n2 = room;
+                                            : gBolts / item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].h8;
+                    room = item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hE -
+                           weapon_ammo_counts[vendor_menu_r4.e[vendor_menu_r4.idx].item];
+                    if (room < n2)
+                        n2 = room;
                     if (vendor_buy_quantity < n2) {
                         vendor_buy_quantity++;
                         if (!(vendor_quantity_increase_hold_frames & 3) || vendor_quantity_increase_hold_frames < 16) {
@@ -921,27 +1010,34 @@ void update_vendor_purchase(void) {
             if (vendor_purchase_confirmed == 1) {
                 if (vendor_menu_r4.e[vendor_menu_r4.idx].sel == 1) {
                     cost = vendor_menu_r4.f40
-                        ? item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hA * vendor_buy_quantity
-                        : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].h8 * vendor_buy_quantity;
+                               ? item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hA * vendor_buy_quantity
+                               : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].h8 * vendor_buy_quantity;
                 } else {
-                    cost = discount_purchase_pricing[0] ? item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].f4
-                                          : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].f0;
+                    cost = discount_purchase_pricing[0]
+                               ? item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].f4
+                               : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].f0;
                 }
-                if (gBolts < cost
-                    && weapon_ammo_counts[vendor_menu_r4.e[vendor_menu_r4.idx].item] >= item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hE) {
+                if (gBolts < cost && weapon_ammo_counts[vendor_menu_r4.e[vendor_menu_r4.idx].item] >=
+                                         item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hE) {
                     Moby_PlaySound(0, 0, vendor_menu_r4.cam);
                 } else if (vendor_menu_r4.e[vendor_menu_r4.idx].sel == 1) {
-                    if (weapon_ammo_counts[vendor_menu_r4.e[vendor_menu_r4.idx].item] < item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hE) {
+                    if (weapon_ammo_counts[vendor_menu_r4.e[vendor_menu_r4.idx].item] <
+                        item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hE) {
                         price = (vendor_menu_r4.f40 ? item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hA
-                                                          : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].h8) * vendor_buy_quantity;
+                                                    : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].h8) *
+                                vendor_buy_quantity;
                         if (gBolts >= price) {
-                            if (weapon_ammo_counts[vendor_menu_r4.e[vendor_menu_r4.idx].item] > item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hE) {
-                                weapon_ammo_counts[vendor_menu_r4.e[vendor_menu_r4.idx].item] = item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hE;
+                            if (weapon_ammo_counts[vendor_menu_r4.e[vendor_menu_r4.idx].item] >
+                                item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hE) {
+                                weapon_ammo_counts[vendor_menu_r4.e[vendor_menu_r4.idx].item] =
+                                    item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hE;
                             }
                             n = vendor_buy_quantity;
                             n -= add_ammo(vendor_menu_r4.e[vendor_menu_r4.idx].item, n);
-                            price = (vendor_menu_r4.f40 ? item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hA
-                                                              : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].h8) * n;
+                            price =
+                                (vendor_menu_r4.f40 ? item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hA
+                                                    : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].h8) *
+                                n;
                             ((int *)(level_render_state_base + 0xA))[vendor_menu_r4.e[vendor_menu_r4.idx].item] += n;
                             handle_vendor_auxiliary_moby_event(3);
                             gBolts = gBolts - price;
@@ -956,8 +1052,9 @@ void update_vendor_purchase(void) {
                         Moby_PlaySound(0, 0, vendor_menu_r4.cam);
                     }
                 } else {
-                    price = discount_purchase_pricing[0] ? item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].f4
-                                          : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].f0;
+                    price = discount_purchase_pricing[0]
+                                ? item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].f4
+                                : item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].f0;
                     if (gBolts >= price) {
                         handle_vendor_auxiliary_moby_event(2);
                         grant_inventory_item(vendor_menu_r4.e[vendor_menu_r4.idx].item, 1);
@@ -967,13 +1064,16 @@ void update_vendor_purchase(void) {
                         }
                         gBolts = gBolts - price;
                         build_vendor_menu_rows(vendor_menu_r4.f40 != 0);
-                        if (vendor_menu_r4.f50 != -1) Hud_SetBarValueById(vendor_menu_r4.f50, 0);
+                        if (vendor_menu_r4.f50 != -1)
+                            Hud_SetBarValueById(vendor_menu_r4.f50, 0);
                         vendor_menu_r4.f50 = -1;
                         if (vendor_menu_r4.e[vendor_menu_r4.idx].sel == 1) {
-                            vendor_menu_r4.f50 = queue_animation_update(0x30, vendor_menu_r4.e[vendor_menu_r4.idx].item + 0xEA60,
-                                                                     initialize_numeric_hud_timer_and_base_dimensions, Hud_UpdateCounter, draw_weapon_ammo_hud_panel,
-                                                                     &weapon_ammo_counts[vendor_menu_r4.e[vendor_menu_r4.idx].item],
-                                                                     item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hE);
+                            vendor_menu_r4.f50 =
+                                queue_animation_update(0x30, vendor_menu_r4.e[vendor_menu_r4.idx].item + 0xEA60,
+                                                       initialize_numeric_hud_timer_and_base_dimensions,
+                                                       Hud_UpdateCounter, draw_weapon_ammo_hud_panel,
+                                                       &weapon_ammo_counts[vendor_menu_r4.e[vendor_menu_r4.idx].item],
+                                                       item_price_table[vendor_menu_r4.e[vendor_menu_r4.idx].item].hE);
                         } else {
                             if (vendor_menu_r4.count - 1 < vendor_menu_r4.idx) {
                                 vendor_menu_r4.idx = vendor_menu_r4.count - 1;
@@ -995,7 +1095,12 @@ void update_vendor_purchase(void) {
         moby_build_matrix(vendor_menu_r4.obj + 0x400);
     }
 }
-typedef struct { u8 pad[0xC]; u8 count; u8 padD[0x3B]; void *slots[1]; } PClassD;
+typedef struct {
+    u8 pad[0xC];
+    u8 count;
+    u8 padD[0x3B];
+    void *slots[1];
+} PClassD;
 typedef struct VMobD {
     u8 pad0[0x10];
     Vec4 pos;
@@ -1025,9 +1130,17 @@ typedef struct VMobD {
     u8 padA8[0x18];
     f32 mtx[16];
 } VMobD;
-typedef struct { s32 fD0; s32 fD4; s32 fD8; char pad[0x14 - 0xC]; } VItemD;
 typedef struct {
-    s32 state; s32 f4; s32 f8; s32 fC;
+    s32 fD0;
+    s32 fD4;
+    s32 fD8;
+    char pad[0x14 - 0xC];
+} VItemD;
+typedef struct {
+    s32 state;
+    s32 f4;
+    s32 f8;
+    s32 fC;
     char pad10[4];
     VMobD *f14;
     char pad18[4];
@@ -1051,32 +1164,79 @@ typedef struct {
     VItemD fD0[16];
     s32 f210;
 } VMenuD;
-typedef struct { char pad[0x1C0]; s32 held; s32 pressed; } PadD;
-typedef struct { char pad[8]; s32 flags; } UpdD;
-typedef struct { f32 p[3]; u8 flag; u8 padD[3]; f32 rot[4]; } CamKeyD;
+typedef struct {
+    char pad[0x1C0];
+    s32 held;
+    s32 pressed;
+} PadD;
+typedef struct {
+    char pad[8];
+    s32 flags;
+} UpdD;
+typedef struct {
+    f32 p[3];
+    u8 flag;
+    u8 padD[3];
+    f32 rot[4];
+} CamKeyD;
 typedef struct {
     char pad0[0x34];
-    s32 f34; s32 f38; s32 f3C;
-    s16 h40; char pad42[2];
-    s16 h44; char pad46[0xE];
+    s32 f34;
+    s32 f38;
+    s32 f3C;
+    s16 h40;
+    char pad42[2];
+    s16 h44;
+    char pad46[0xE];
     CamKeyD *f54;
     char pad58[0x120];
     VMobD *f178[1];
 } CutD;
-typedef struct { char pad0[0x140]; Vec4 pos; char pad150[0x200]; f32 basis[12]; } CamD;
-typedef struct { char pad0[0x10]; s32 sound; } SoundD;
-typedef struct { char pad0[0x10]; f32 f10; f32 f14; char pad18[8]; Vec4 v20; char pad30[0x10]; } Slot40D;
-typedef struct { f32 f0; f32 f4; f32 f8; char padC[4]; f32 f10; f32 f14; char pad18[8]; Vec4 v20; } Slot30D;
-typedef struct { char pad0; u8 b1; char pad2[0x3E]; } RowD;
-typedef struct { char pad[0x1090]; VMobD *moby; } HeroD;
+typedef struct {
+    char pad0[0x140];
+    Vec4 pos;
+    char pad150[0x200];
+    f32 basis[12];
+} CamD;
+typedef struct {
+    char pad0[0x10];
+    s32 sound;
+} SoundD;
+typedef struct {
+    char pad0[0x10];
+    f32 f10;
+    f32 f14;
+    char pad18[8];
+    Vec4 v20;
+    char pad30[0x10];
+} Slot40D;
+typedef struct {
+    f32 f0;
+    f32 f4;
+    f32 f8;
+    char padC[4];
+    f32 f10;
+    f32 f14;
+    char pad18[8];
+    Vec4 v20;
+} Slot30D;
+typedef struct {
+    char pad0;
+    u8 b1;
+    char pad2[0x3E];
+} RowD;
+typedef struct {
+    char pad[0x1090];
+    VMobD *moby;
+} HeroD;
 
-extern PadD g_controller_state ;
-extern UpdD g_debug_menu ;
-extern Slot30D vendor_item_slot3_placement[] ;
-extern Vec4 vendor_saved_camera_basis[3] ;
-extern u8 vendor_profile_mark_after_mobys[] ;
-extern u8 vendor_profile_mark_after_hero[] ;
-extern u8 vendor_profile_mark_after_parts[] ;
+extern PadD g_controller_state;
+extern UpdD g_debug_menu;
+extern Slot30D vendor_item_slot3_placement[];
+extern Vec4 vendor_saved_camera_basis[3];
+extern u8 vendor_profile_mark_after_mobys[];
+extern u8 vendor_profile_mark_after_hero[];
+extern u8 vendor_profile_mark_after_parts[];
 extern unsigned char menu_item_enabled_115[];
 extern unsigned char pad_globals_base[];
 extern short vendor_auxiliary_moby_local_offset;
@@ -1130,26 +1290,26 @@ extern void HeroAttachManipulators();
 extern void initialize_numeric_hud_timer_and_base_dimensions();
 extern void Hud_UpdateCounter();
 extern void draw_weapon_ammo_hud_panel();
-#define vendor_menu_r (*(VMenuD*)&D_L00_001CA7C0)
+#define vendor_menu_r (*(VMenuD *)&D_L00_001CA7C0)
 #define pad_state D_0013CA40
 #define upd_d D_L00_0016C158
-#define cut_d (*(CutD*)&D_L00_0016C960)
-#define cam_d (*(CamD*)&D_L00_00166D80)
-#define snd_d ((SoundD*)&D_L00_001C2488)
-#define slot40_d ((Slot40D*)&D_L00_001C92F0)
+#define cut_d (*(CutD *)&D_L00_0016C960)
+#define cam_d (*(CamD *)&D_L00_00166D80)
+#define snd_d ((SoundD *)&D_L00_001C2488)
+#define slot40_d ((Slot40D *)&D_L00_001C92F0)
 #define slot30_d D_L00_001C9C30
-#define row_d ((RowD*)D_L00_00165F80)
-#define idx_d ((s32*)&D_L00_001CA320)
+#define row_d ((RowD *)D_L00_00165F80)
+#define idx_d ((s32 *)&D_L00_001CA320)
 #define snap_d D_L00_00166080
 #define cls_d ((void **)&D_L00_00197680)
 #define t0_d D_L00_001611E8
 #define t1_d D_L00_001611F8
 #define t2_d D_L00_00161208
-#define off_a_d (*(Vec4*)&D_L00_00161140)
-#define off_b_d (*(Vec4*)&D_L00_00161160)
-#define off_c_d (*(Vec4*)&D_L00_00161170)
-#define off_d_d (*(Vec4*)&D_L00_00161180)
-#define fade_level_d (*(f32*)&D_L00_0015F4FC)
+#define off_a_d (*(Vec4 *)&D_L00_00161140)
+#define off_b_d (*(Vec4 *)&D_L00_00161160)
+#define off_c_d (*(Vec4 *)&D_L00_00161170)
+#define off_d_d (*(Vec4 *)&D_L00_00161180)
+#define fade_level_d (*(f32 *)&D_L00_0015F4FC)
 #define G1248_d D_L00_00161248
 #define G124C_d D_L00_0016124C
 #define G1F14_d D_L00_00161F14
@@ -1162,63 +1322,63 @@ extern void draw_weapon_ammo_hud_panel();
 #define G15EE80_d D_0015EE80
 #define G15EE60_d D_0015EE60
 #define G16CBF0_d D_L00_0016CBF0
-#define d_00299108 ((void(*)(void))(func_L00_00299108))
-#define d_00297e70 ((void(*)(void))(func_L00_00299148))
-#define d_update_visible ((void(*)(void))(func_00213C78))
-#define d_0022dc50 ((void(*)(void))(func_0022EF68))
-#define d_timing ((void(*)(void *, s32))(func_001E9768))
-#define d_002070d0 ((void(*)(void))(func_L00_002076E8))
-#define d_00217b88 ((void(*)(void))(func_00218A80))
-#define d_scale ((s32(*)(s32))(func_001F9850))
-#define d_blend ((void(*)(void *, s32, s32, s32))(func_00213DE0))
-#define d_voice ((s32(*)(s32, s32, void *))(func_0022ED80))
-#define d_0020cb88 ((void(*)(void *, void *))(func_0020D9D8))
-#define d_0029ad08 ((void(*)(void))(func_L00_0029C070))
-#define d_0029ab70 ((void(*)(s32))(func_L00_0029BED8))
-#define d_0023ac78 ((void(*)(s32))(func_L00_0023B610))
-#define d_001f4600 ((void(*)(void *, void *))(func_001F49B0))
-#define d_0029f990 ((void(*)(void))(func_L00_002A0C20))
-#define d_ea9d8 ((void(*)(void *))(func_L00_002EBE88))
-#define d_eaa30 ((void(*)(void *))(func_L00_002EBEE0))
-#define d_00201a28 ((void(*)(void))(func_00202260))
-#define d_0029a330 ((void(*)(void))(func_L00_0029B6A0))
-#define d_0020c5f0 ((void(*)(void *, s32))(func_0020D440))
-#define d_00250df8 ((void(*)(void *))(func_L00_00251E30))
-#define d_0020d4f0 ((void(*)(void *, s32, s32, s32, s32))(func_0020E340))
-#define d_0029b4d8 ((void(*)(s32))(func_L00_0029C840))
-#define d_0020d580 ((void(*)(void *))(func_L00_002514B8))
-#define d_mtx_apply ((void(*)(void *, void *, void *))(func_001F9EC0))
-#define d_vadd ((void(*)(void *, void *, void *))(func_001F9BD8))
-#define d_00237ed0 ((void(*)(void *))(func_002391E8))
-#define d_scalef ((f32(*)(f32))(func_001F9878))
-#define d_addang ((f32(*)(f32, f32))(func_001FA748))
-#define d_cos ((f32(*)(f32))(func_001F9FA8))
-#define d_001fa030 ((void(*)(void *, void *))(func_001FA1F8))
-#define d_helptext ((s32(*)(s32))(func_001FE540))
-#define d_status ((void(*)(s32))(func_002391A8))
-#define d_meter_free ((void(*)(s32, s32))(func_001FFDA0))
-#define d_meter ((s32(*)(s32, s32, void *, void *, void *, void *, s32))(func_001FFB38))
-#define d_0029ba78 ((void(*)(void))(func_L00_0029CDE0))
-#define d_002335a0 ((void(*)(void))(func_002348B8))
-#define d_00204a40 ((void(*)(s32, s32))(func_00205270))
-#define d_0020c880 ((void(*)(void *))(func_0020D6D0))
-#define d_0029b680 ((void(*)(void))(func_L00_0029C9E8))
-#define d_001f2d98 ((void(*)(void))(func_001F3140))
-#define d_0020c828 ((void(*)(void *))(func_0020D678))
-#define d_0029af80 ((void(*)(void))(func_L00_0029C2E8))
-#define d_002049f0 ((void(*)(s32))(func_00205220))
-#define d_mat_id ((void(*)(void *))(func_00125358))
-#define d_mat_a ((void(*)(void *, void *, f32))(func_001254A0))
-#define d_mat_b ((void(*)(void *, void *, f32))(func_00125548))
-#define d_mat_c ((void(*)(void *, void *, f32))(func_001253F8))
-#define d_001fa6c0 ((f32(*)(s32))(func_001FA888))
-#define d_vscale ((void(*)(void *, void *, f32))(func_001F9C30))
-#define d_00213700 ((void(*)(void *))(func_00214550))
-#define d_00234b38 ((void(*)(void *))(func_L00_002353B8))
-#define d_0022ca50 ((void(*)(void))(func_0022DD68))
-#define d_cb1 ((void(*)(void))(func_L00_0023B0F8))
-#define d_cb2 ((void(*)(void))(func_L00_00236830))
-#define d_cb3 ((void(*)(void))(func_L00_0023B140))
+#define d_00299108 ((void (*)(void))(func_L00_00299108))
+#define d_00297e70 ((void (*)(void))(func_L00_00299148))
+#define d_update_visible ((void (*)(void))(func_00213C78))
+#define d_0022dc50 ((void (*)(void))(func_0022EF68))
+#define d_timing ((void (*)(void *, s32))(func_001E9768))
+#define d_002070d0 ((void (*)(void))(func_L00_002076E8))
+#define d_00217b88 ((void (*)(void))(func_00218A80))
+#define d_scale ((s32 (*)(s32))(func_001F9850))
+#define d_blend ((void (*)(void *, s32, s32, s32))(func_00213DE0))
+#define d_voice ((s32 (*)(s32, s32, void *))(func_0022ED80))
+#define d_0020cb88 ((void (*)(void *, void *))(func_0020D9D8))
+#define d_0029ad08 ((void (*)(void))(func_L00_0029C070))
+#define d_0029ab70 ((void (*)(s32))(func_L00_0029BED8))
+#define d_0023ac78 ((void (*)(s32))(func_L00_0023B610))
+#define d_001f4600 ((void (*)(void *, void *))(func_001F49B0))
+#define d_0029f990 ((void (*)(void))(func_L00_002A0C20))
+#define d_ea9d8 ((void (*)(void *))(func_L00_002EBE88))
+#define d_eaa30 ((void (*)(void *))(func_L00_002EBEE0))
+#define d_00201a28 ((void (*)(void))(func_00202260))
+#define d_0029a330 ((void (*)(void))(func_L00_0029B6A0))
+#define d_0020c5f0 ((void (*)(void *, s32))(func_0020D440))
+#define d_00250df8 ((void (*)(void *))(func_L00_00251E30))
+#define d_0020d4f0 ((void (*)(void *, s32, s32, s32, s32))(func_0020E340))
+#define d_0029b4d8 ((void (*)(s32))(func_L00_0029C840))
+#define d_0020d580 ((void (*)(void *))(func_L00_002514B8))
+#define d_mtx_apply ((void (*)(void *, void *, void *))(func_001F9EC0))
+#define d_vadd ((void (*)(void *, void *, void *))(func_001F9BD8))
+#define d_00237ed0 ((void (*)(void *))(func_002391E8))
+#define d_scalef ((f32 (*)(f32))(func_001F9878))
+#define d_addang ((f32 (*)(f32, f32))(func_001FA748))
+#define d_cos ((f32 (*)(f32))(func_001F9FA8))
+#define d_001fa030 ((void (*)(void *, void *))(func_001FA1F8))
+#define d_helptext ((s32 (*)(s32))(func_001FE540))
+#define d_status ((void (*)(s32))(func_002391A8))
+#define d_meter_free ((void (*)(s32, s32))(func_001FFDA0))
+#define d_meter ((s32 (*)(s32, s32, void *, void *, void *, void *, s32))(func_001FFB38))
+#define d_0029ba78 ((void (*)(void))(func_L00_0029CDE0))
+#define d_002335a0 ((void (*)(void))(func_002348B8))
+#define d_00204a40 ((void (*)(s32, s32))(func_00205270))
+#define d_0020c880 ((void (*)(void *))(func_0020D6D0))
+#define d_0029b680 ((void (*)(void))(func_L00_0029C9E8))
+#define d_001f2d98 ((void (*)(void))(func_001F3140))
+#define d_0020c828 ((void (*)(void *))(func_0020D678))
+#define d_0029af80 ((void (*)(void))(func_L00_0029C2E8))
+#define d_002049f0 ((void (*)(s32))(func_00205220))
+#define d_mat_id ((void (*)(void *))(func_00125358))
+#define d_mat_a ((void (*)(void *, void *, f32))(func_001254A0))
+#define d_mat_b ((void (*)(void *, void *, f32))(func_00125548))
+#define d_mat_c ((void (*)(void *, void *, f32))(func_001253F8))
+#define d_001fa6c0 ((f32 (*)(s32))(func_001FA888))
+#define d_vscale ((void (*)(void *, void *, f32))(func_001F9C30))
+#define d_00213700 ((void (*)(void *))(func_00214550))
+#define d_00234b38 ((void (*)(void *))(func_L00_002353B8))
+#define d_0022ca50 ((void (*)(void))(func_0022DD68))
+#define d_cb1 ((void (*)(void))(func_L00_0023B0F8))
+#define d_cb2 ((void (*)(void))(func_L00_00236830))
+#define d_cb3 ((void (*)(void))(func_L00_0023B140))
 #define func_L00_0029D988_r func_L00_0029D988
 
 /* Updates the vendor menu state machine. */
@@ -1247,375 +1407,397 @@ void func_L00_0029D988_r(void) {
     u8 flag;
 
     switch (vendor_menu_r.state) {
-    case 0:
-    case 2:
-        if (vendor_menu_r.f40 == 0 || vendor_menu_r.state == 2) {
+        case 0:
+        case 2:
+            if (vendor_menu_r.f40 == 0 || vendor_menu_r.state == 2) {
+                if ((((upd_d.flags & (2)) ||
+                      ((upd_d.flags & 0x10) && (*(s32 *)(pad_globals_base + 0x2604) & 0x200))))) {
+                    d_00299108();
+                }
+                if ((((upd_d.flags & (2)) ||
+                      ((upd_d.flags & 0x10) && (*(s32 *)(pad_globals_base + 0x2604) & 0x200))))) {
+                    d_update_visible();
+                    d_0022dc50();
+                }
+                d_timing(t0_d, 3);
+                if ((((upd_d.flags & (1)) ||
+                      ((upd_d.flags & 0x10) && (*(s32 *)(pad_globals_base + 0x2604) & 0x200))))) {
+                    d_002070d0();
+                }
+                d_timing(t1_d, 7);
+                if ((((upd_d.flags & (4)) ||
+                      ((upd_d.flags & 0x10) && (*(s32 *)(pad_globals_base + 0x2604) & 0x200))))) {
+                    d_00217b88();
+                }
+                d_timing(t2_d, 5);
+            }
+            st = vendor_menu_r.state;
+            if (st == 0) {
+                fade_level_d -= 0.34f;
+                if (fade_level_d < 0.0f) {
+                    fade_level_d = 0.0f;
+                }
+                vendor_menu_r.f4++;
+                if (vendor_menu_r.f4 >= d_scale(40) || vendor_menu_r.f40 != 0) {
+                    fade_level_d = 0.0f;
+                    vendor_menu_r.fC = 1;
+                    vendor_menu_r.state = 1;
+                    vendor_menu_r.f4 = 0;
+                    d_blend(vendor_menu_r.f1c, 3, 0, 8);
+                    vendor_menu_r.f1c->f58 = 1.0f;
+                    G1F20_d = 1;
+                    G1F1C_d = 8;
+                    d_voice(4, 0, vendor_menu_r.f1c);
+                }
+            } else if (st == 2) {
+                ok = 0;
+                if (vendor_menu_r.f40 == 0 && vendor_menu_r.f48 >= 0) {
+                    if (idx_d[vendor_menu_r.f48] >= 0) {
+                        ok = 1;
+                    }
+                }
+                vendor_menu_r.f4++;
+                if (vendor_menu_r.f4 >= d_scale(40) || vendor_menu_r.f40 != 0) {
+                    d_blend(vendor_menu_r.f1c, 1, 0, 8);
+                    row = row_d;
+                    for (k = 0; k < 4; k++) {
+                        if (row->b1 == 1) {
+                            d_0020cb88(vendor_menu_r.f1c, row);
+                        }
+                        row++;
+                    }
+                    if (ok) {
+                        d_0029ad08();
+                    } else {
+                        d_0029ab70(0);
+                        d_voice(6, 0, vendor_menu_r.f1c);
+                    }
+                }
+                d_0023ac78(1);
+            }
+            if (vendor_menu_r.f4 <= d_scale(36)) {
+                d_001f4600(d_0029f990, vendor_menu_r.f1c);
+            }
+            if (vendor_menu_r.f40 == 0) {
+                d_ea9d8(&vendor_menu_r.f60);
+                d_eaa30(&vendor_menu_r.f70);
+            }
+            d_00201a28();
             if ((((upd_d.flags & (2)) || ((upd_d.flags & 0x10) && (*(s32 *)(pad_globals_base + 0x2604) & 0x200))))) {
-                d_00299108();
-            }
-            if ((((upd_d.flags & (2)) || ((upd_d.flags & 0x10) && (*(s32 *)(pad_globals_base + 0x2604) & 0x200))))) {
-                d_update_visible();
-                d_0022dc50();
-            }
-            d_timing(t0_d, 3);
-            if ((((upd_d.flags & (1)) || ((upd_d.flags & 0x10) && (*(s32 *)(pad_globals_base + 0x2604) & 0x200))))) {
-                d_002070d0();
-            }
-            d_timing(t1_d, 7);
-            if ((((upd_d.flags & (4)) || ((upd_d.flags & 0x10) && (*(s32 *)(pad_globals_base + 0x2604) & 0x200))))) {
-                d_00217b88();
-            }
-            d_timing(t2_d, 5);
-        }
-        st = vendor_menu_r.state;
-        if (st == 0) {
-            fade_level_d -= 0.34f;
-            if (fade_level_d < 0.0f) {
-                fade_level_d = 0.0f;
-            }
-            vendor_menu_r.f4++;
-            if (vendor_menu_r.f4 >= d_scale(40) || vendor_menu_r.f40 != 0) {
-                fade_level_d = 0.0f;
-                vendor_menu_r.fC = 1;
-                vendor_menu_r.state = 1;
-                vendor_menu_r.f4 = 0;
-                d_blend(vendor_menu_r.f1c, 3, 0, 8);
-                vendor_menu_r.f1c->f58 = 1.0f;
-                G1F20_d = 1;
-                G1F1C_d = 8;
-                d_voice(4, 0, vendor_menu_r.f1c);
-            }
-        } else if (st == 2) {
-            ok = 0;
-            if (vendor_menu_r.f40 == 0 && vendor_menu_r.f48 >= 0) {
-                if (idx_d[vendor_menu_r.f48] >= 0) { ok = 1; }
-            }
-            vendor_menu_r.f4++;
-            if (vendor_menu_r.f4 >= d_scale(40) || vendor_menu_r.f40 != 0) {
-                d_blend(vendor_menu_r.f1c, 1, 0, 8);
-                row = row_d;
-                for (k = 0; k < 4; k++) {
-                    if (row->b1 == 1) {
-                        d_0020cb88(vendor_menu_r.f1c, row);
-                    }
-                    row++;
-                }
-                if (ok) {
-                    d_0029ad08();
-                } else {
-                    d_0029ab70(0);
-                    d_voice(6, 0, vendor_menu_r.f1c);
-                }
-            }
-            d_0023ac78(1);
-        }
-        if (vendor_menu_r.f4 <= d_scale(36)) {
-            d_001f4600(d_0029f990, vendor_menu_r.f1c);
-        }
-        if (vendor_menu_r.f40 == 0) {
-            d_ea9d8(&vendor_menu_r.f60);
-            d_eaa30(&vendor_menu_r.f70);
-        }
-        d_00201a28();
-        if ((((upd_d.flags & (2)) || ((upd_d.flags & 0x10) && (*(s32 *)(pad_globals_base + 0x2604) & 0x200))))) {
-            d_00297e70();
-        }
-        break;
-    case 1:
-        if (G1248_d == 0 && *(s16 *)(help_stats_base + 0x100BD) == 0 && G124C_d != 0) {
-            d_0029a330();
-            vendor_menu_r.f24 = vendor_menu_r.f14;
-            d_0020c5f0(vendor_menu_r.f24, 0xC);
-            vendor_menu_r.f24->h32 = 0x40;
-            vendor_menu_r.f24->rot.f[2] = vendor_menu_r.f1c->rot.f[2];
-            d_00250df8(vendor_menu_r.f24);
-            d_0020d4f0(vendor_menu_r.f24, 0x202020, 0xE, 0xE, 0);
-            G1248_d = 1;
-            G124C_d = 0;
-            d_0029b4d8(1);
-        }
-        d_0020d580(vendor_menu_r.f1c);
-        d_00250df8(vendor_menu_r.f1c);
-        if (G1248_d == 1) {
-            d_mtx_apply(&vendor_menu_r.f24->pos, &off_a_d, vendor_menu_r.f1c->mtx);
-            d_vadd(&vendor_menu_r.f24->pos, &vendor_menu_r.f24->pos, &vendor_menu_r.f1c->pos);
-            d_0020d580(vendor_menu_r.f24);
-            d_00250df8(vendor_menu_r.f24);
-            d_00237ed0(vendor_menu_r.f24);
-        }
-        k1 = -0.05f;
-        k2 = -0.36f;
-        d_mtx_apply(&vendor_menu_r.f20[0].pos, &off_c_d, vendor_menu_r.f1c->mtx);
-        k3 = 0.05f;
-        d_vadd(&vendor_menu_r.f20[0].pos, &vendor_menu_r.f20[0].pos, &vendor_menu_r.f1c->pos);
-        vendor_menu_r.f20[0].rot.f[0] = d_addang(vendor_menu_r.f20[0].rot.f[0], d_scalef(k1));
-        vendor_menu_r.f20[0].rot.f[1] = k2;
-        vendor_menu_r.f20[0].rot.f[2] = d_addang(vendor_menu_r.f20[0].rot.f[2], d_scalef(k3));
-        d_00250df8(&vendor_menu_r.f20[0]);
-        d_mtx_apply(&vendor_menu_r.f20[5].pos, &off_d_d, vendor_menu_r.f1c->mtx);
-        d_vadd(&vendor_menu_r.f20[5].pos, &vendor_menu_r.f20[5].pos, &vendor_menu_r.f1c->pos);
-        vendor_menu_r.f20[5].rot.f[0] = d_addang(vendor_menu_r.f20[5].rot.f[0], d_scalef(k1));
-        vendor_menu_r.f20[5].rot.f[1] = k2;
-        vendor_menu_r.f20[5].rot.f[2] = d_addang(vendor_menu_r.f20[5].rot.f[2], d_scalef(k3));
-        d_00250df8(&vendor_menu_r.f20[5]);
-        G1F24_d = d_addang(G1F24_d, d_scalef(k3));
-        d_0020d580(&vendor_menu_r.f20[1]);
-        if (!vendor_menu_r.f20[1].b53 && (vendor_menu_r.f20[1].b70 & 2)) {
-            d_blend(&vendor_menu_r.f20[1], 1, 0, 8);
-        }
-        d_00250df8(&vendor_menu_r.f20[1]);
-        b.q = 0;
-        b.f[2] = d_cos(G1F24_d) / 20.0f;
-        a.q = b.q;
-        d_vadd(&a, &off_b_d, &a);
-        d_vadd(&a, &a, &slot40_d[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].v20);
-        d_mtx_apply(&vendor_menu_r.f20[2].pos, &a, vendor_menu_r.f1c->mtx);
-        d_vadd(&vendor_menu_r.f20[2].pos, &vendor_menu_r.f20[2].pos, &vendor_menu_r.f1c->pos);
-        vendor_menu_r.f20[2].rot.f[0] = slot40_d[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].f10;
-        vendor_menu_r.f20[2].rot.f[1] = slot40_d[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].f14;
-        vendor_menu_r.f20[2].rot.f[2] = G1F24_d;
-        d_00250df8(&vendor_menu_r.f20[2]);
-        b.q = 0;
-        b.f[2] = d_cos(G1F24_d) / 20.0f;
-        a.q = b.q;
-        d_vadd(&a, &off_b_d, &a);
-        d_vadd(&a, &a, &slot30_d[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].v20);
-        d_mtx_apply(&vendor_menu_r.f20[3].pos, &a, vendor_menu_r.f1c->mtx);
-        d_vadd(&vendor_menu_r.f20[3].pos, &vendor_menu_r.f20[3].pos, &vendor_menu_r.f1c->pos);
-        vendor_menu_r.f20[3].rot.f[0] = slot30_d[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].f10;
-        vendor_menu_r.f20[3].rot.f[1] = slot30_d[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].f14;
-        vendor_menu_r.f20[3].rot.f[2] = G1F24_d;
-        d_0020d580(&vendor_menu_r.f20[3]);
-        if (!vendor_menu_r.f20[3].b53 && (vendor_menu_r.f20[3].b70 & 2)) {
-            d_blend(&vendor_menu_r.f20[3], 1, 0, 8);
-        }
-        d_00250df8(&vendor_menu_r.f20[3]);
-        b.f[0] = slot30_d[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].f0;
-        b.f[1] = slot30_d[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].f4;
-        b.f[2] = slot30_d[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].f8;
-        d_001fa030(vendor_menu_r.f20[3].mtx, &vendor_menu_r.f20[3].rot);
-        d_mtx_apply(&b, &b, vendor_menu_r.f20[3].mtx);
-        d_vadd(&vendor_menu_r.f20[3].pos, &vendor_menu_r.f20[3].pos, &b);
-        vendor_menu_r.f4++;
-        if (vendor_menu_r.f5c == 0 && G1F18_d == 0) {
-            if (vendor_menu_r.f210 < 8) {
-                if ((pad_state.pressed & 0x2000)) {
-                    if (vendor_menu_r.f58 < vendor_menu_r.f210 - 1) {
-                        G1F34_d = 1;
-                        d_0029b4d8(0);
-                        vendor_menu_r.f58++;
-                        d_voice(1, 0, vendor_menu_r.f1c);
-                        d_status(d_helptext(vendor_item_info[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].pad[3]));
-                        if (vendor_menu_r.f50 != -1) {
-                            d_meter_free(vendor_menu_r.f50, 0);
-                        }
-                        vendor_menu_r.f50 = -1;
-                        if ((vendor_menu_r.fD0[vendor_menu_r.f58]).fD4 == 1) {
-                            vendor_menu_r.f50 = d_meter(0x30, (vendor_menu_r.fD0[vendor_menu_r.f58]).fD0 + 0xEA60, d_cb1, d_cb2, d_cb3, &((*(s32 *)(menu_item_enabled_115 + 0x21 + ((vendor_menu_r.fD0[vendor_menu_r.f58]).fD0) * 4))), item_price_table[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].hE);
-                        }
-                    }
-                }
-                if ((pad_state.pressed & 0x8000)) {
-                    if (vendor_menu_r.f58 > 0) {
-                        G1F34_d = 1;
-                        d_0029b4d8(0);
-                        vendor_menu_r.f58--;
-                        d_voice(1, 0, vendor_menu_r.f1c);
-                        d_status(d_helptext(vendor_item_info[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].pad[3]));
-                        if (vendor_menu_r.f50 != -1) {
-                            d_meter_free(vendor_menu_r.f50, 0);
-                        }
-                        vendor_menu_r.f50 = -1;
-                        if ((vendor_menu_r.fD0[vendor_menu_r.f58]).fD4 == 1) {
-                            vendor_menu_r.f50 = d_meter(0x30, (vendor_menu_r.fD0[vendor_menu_r.f58]).fD0 + 0xEA60, d_cb1, d_cb2, d_cb3, &((*(s32 *)(menu_item_enabled_115 + 0x21 + ((vendor_menu_r.fD0[vendor_menu_r.f58]).fD0) * 4))), item_price_table[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].hE);
-                        }
-                    }
-                }
-            } else {
-                if ((pad_state.pressed & 0x2000)) {
-                    if (vendor_menu_r.f4c <= 0x38) {
-                        G1F34_d = 1;
-                        vendor_menu_r.f4c += 0x38;
-                        d_voice(1, 0, vendor_menu_r.f1c);
-                        d_0029b4d8(0);
-                        if (vendor_menu_r.f58 < vendor_menu_r.f210 - 1) {
-                            vendor_menu_r.f58++;
-                        } else {
-                            vendor_menu_r.f58 = 0;
-                        }
-                        d_status(d_helptext(vendor_item_info[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].pad[3]));
-                        if (vendor_menu_r.f50 != -1) {
-                            d_meter_free(vendor_menu_r.f50, 0);
-                        }
-                        vendor_menu_r.f50 = -1;
-                        if ((vendor_menu_r.fD0[vendor_menu_r.f58]).fD4 == 1) {
-                            vendor_menu_r.f50 = d_meter(0x30, (vendor_menu_r.fD0[vendor_menu_r.f58]).fD0 + 0xEA60, d_cb1, d_cb2, d_cb3, &((*(s32 *)(menu_item_enabled_115 + 0x21 + ((vendor_menu_r.fD0[vendor_menu_r.f58]).fD0) * 4))), item_price_table[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].hE);
-                        }
-                    }
-                }
-                if ((pad_state.pressed & 0x8000)) {
-                    if (vendor_menu_r.f4c >= -0x38) {
-                        G1F34_d = 1;
-                        vendor_menu_r.f4c -= 0x38;
-                        d_voice(1, 0, vendor_menu_r.f1c);
-                        d_0029b4d8(0);
-                        if (vendor_menu_r.f58 > 0) {
-                            vendor_menu_r.f58--;
-                        } else {
-                            vendor_menu_r.f58 = vendor_menu_r.f210 - 1;
-                        }
-                        d_status(d_helptext(vendor_item_info[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].pad[3]));
-                        if (vendor_menu_r.f50 != -1) {
-                            d_meter_free(vendor_menu_r.f50, 0);
-                        }
-                        vendor_menu_r.f50 = -1;
-                        if ((vendor_menu_r.fD0[vendor_menu_r.f58]).fD4 == 1) {
-                            vendor_menu_r.f50 = d_meter(0x30, (vendor_menu_r.fD0[vendor_menu_r.f58]).fD0 + 0xEA60, d_cb1, d_cb2, d_cb3, &((*(s32 *)(menu_item_enabled_115 + 0x21 + ((vendor_menu_r.fD0[vendor_menu_r.f58]).fD0) * 4))), item_price_table[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].hE);
-                        }
-                    }
-                }
-            }
-            if ((pad_state.pressed & 0x40) && (vendor_menu_r.fD0[vendor_menu_r.f58]).fD8 == 0) {
-                vendor_menu_r.f5c = 1;
-                d_voice(0, 0, vendor_menu_r.f1c);
-            }
-            if ((pad_state.pressed & 0x10) && G124C_d == 0) {
-                G1F14_d = 8;
-                G1F18_d = 1;
-                d_voice(5, 0, vendor_menu_r.f1c);
-            }
-        }
-        d_0029ba78();
-        if (G1F20_d == 1) {
-            if (G1F1C_d == 0) {
-                G1F20_d = 0;
-            } else {
-                G1F1C_d--;
-            }
-        }
-        if (G1F18_d == 1) {
-            if (--G1F14_d == 0) {
-                G15F6BC_d = 1;
-                d_002335a0();
-                d_blend(vendor_menu_r.f1c, 4, 9, 8);
-                vendor_menu_r.f1c->f58 = G15EE60_d * -0.5f;
-                if (vendor_menu_r.f40 != 0) {
-                    qcopy((char *)&cam_d.pos + 0x10, &vendor_menu_r.f70);
-                }
-                ((Vec4 *)cam_d.basis)[0].q = snap_d[0].q;
-                ((Vec4 *)cam_d.basis)[1].q = snap_d[1].q;
-                ((Vec4 *)cam_d.basis)[2].q = snap_d[2].q;
-                vendor_menu_r.state = 2;
-                vendor_menu_r.f8 = 0;
-                vendor_menu_r.f4 = 0;
-                if (((HeroD *)(hero_globals_base + 0xE1D))->moby != 0) {
-                    d_00204a40(((HeroD *)(hero_globals_base + 0xE1D))->moby->oclass, -1);
-                    ((HeroD *)(hero_globals_base + 0xE1D))->moby->pclass =
-                        cls_d[((HeroD *)(hero_globals_base + 0xE1D))->moby->class_id];
-                    d_0020c880(((HeroD *)(hero_globals_base + 0xE1D))->moby);
-                }
-            }
-        } else if (G1F34_d != 0) {
-            d_0029b680();
-        }
-        d_0023ac78(1);
-        break;
-    case 3:
-        d_00299108();
-        d_update_visible();
-        d_0022dc50();
-        d_002070d0();
-        d_00217b88();
-        cut_d.f38++;
-        cut_d.f34++;
-        if (cut_d.h40 - 12 < cut_d.f34) {
-            fade_level_d += 0.1f;
-            if (fade_level_d > 1.0f) {
-                fade_level_d = 1.0f;
-            }
-        } else {
-            fade_level_d -= 0.125f;
-            if (fade_level_d < 0.0f) {
-                fade_level_d = 0.0f;
-            }
-        }
-        cs = &cut_d;
-        if (cs->f34 >= cs->h40) {
-            fade_level_d = 0.0f;
-            d_002335a0();
-            G16CBF0_d = 0.63f;
-            d_001f2d98();
-            for (j = 0; j < cut_d.h44; j++) {
-                m2 = cut_d.f178[j];
-                if (m2 != 0) {
-                    m2->pclass->count--;
-                    m2->pclass->slots[m2->pclass->count] = 0;
-                    d_0020c828(m2);
-                }
-            }
-            if (vendor_menu_r.f28 != 0) {
-                d_0029af80();
-            } else {
-                d_0029ab70(1);
+                d_00297e70();
             }
             break;
-        }
-        lim = G15EE80_d ? 0x50 : 0x60;
-        if (cs->f38 >= lim) {
-            cs->f3C++;
-            d_002049f0(cs->f3C);
-        }
-        cam = &cs->f54[cs->f38];
-        rot = cam->rot;
-        flag = cam->flag;
-        G16CBF0_d = rot[3];
-        d_001f2d98();
-        qcopy(cam_d.pos.f, cam);
-        d_mtx_apply(cam_d.pos.f, cam_d.pos.f, vendor_menu_r.f80);
-        d_vadd(cam_d.pos.f, cam_d.pos.f, &vendor_menu_r.fC0);
-        ang = d_addang(rot[2], vendor_menu_r.f80[3].f[2]);
-        d_mat_id(m);
-        d_mat_a(m, m, rot[0]);
-        d_mat_b(m, m, rot[1]);
-        d_mat_c(m, m, ang);
-        cam_d.basis[0] = -m[2][0];
-        cam_d.basis[4] = -m[0][0];
-        cam_d.basis[8] = m[1][0];
-        cam_d.basis[1] = -m[2][1];
-        cam_d.basis[5] = -m[0][1];
-        cam_d.basis[9] = m[1][1];
-        cam_d.basis[2] = -m[2][2];
-        cam_d.basis[6] = -m[0][2];
-        cam_d.basis[10] = m[1][2];
-        for (i = 0; i < cut_d.h44; i++) {
-            mb = cut_d.f178[i];
-            id = cut_d.f38 >> 1;
-            mb->next_frame = id + 1;
-            mb->frame = id;
-            d_0020c880(mb);
-            mb->blend = d_001fa6c0(cut_d.f38 & 1) * 0.5f;
-            if (flag && (cut_d.f38 & 1)) {
-                mb->blend = 1.0f;
+        case 1:
+            if (G1248_d == 0 && *(s16 *)(help_stats_base + 0x100BD) == 0 && G124C_d != 0) {
+                d_0029a330();
+                vendor_menu_r.f24 = vendor_menu_r.f14;
+                d_0020c5f0(vendor_menu_r.f24, 0xC);
+                vendor_menu_r.f24->h32 = 0x40;
+                vendor_menu_r.f24->rot.f[2] = vendor_menu_r.f1c->rot.f[2];
+                d_00250df8(vendor_menu_r.f24);
+                d_0020d4f0(vendor_menu_r.f24, 0x202020, 0xE, 0xE, 0);
+                G1248_d = 1;
+                G124C_d = 0;
+                d_0029b4d8(1);
             }
-            keys = mb->keys;
-            d_vscale(&a, &keys[mb->frame], 1.0f - mb->blend);
-            d_vscale(&b, &keys[mb->next_frame], mb->blend);
-            d_vadd(&mb->pos, &a, &b);
-            d_mtx_apply(&mb->pos, &mb->pos, vendor_menu_r.f80);
-            d_vadd(&mb->pos, &mb->pos, &vendor_menu_r.fC0);
-            mb->rot.f[2] = vendor_menu_r.f80[3].f[2];
-            mb->b71 = 0xFF;
-            d_00250df8(mb);
-            if (mb->b7F) {
-                d_00213700(mb);
+            d_0020d580(vendor_menu_r.f1c);
+            d_00250df8(vendor_menu_r.f1c);
+            if (G1248_d == 1) {
+                d_mtx_apply(&vendor_menu_r.f24->pos, &off_a_d, vendor_menu_r.f1c->mtx);
+                d_vadd(&vendor_menu_r.f24->pos, &vendor_menu_r.f24->pos, &vendor_menu_r.f1c->pos);
+                d_0020d580(vendor_menu_r.f24);
+                d_00250df8(vendor_menu_r.f24);
+                d_00237ed0(vendor_menu_r.f24);
             }
-            if (mb->oclass == 0) {
-                d_00234b38(mb);
+            k1 = -0.05f;
+            k2 = -0.36f;
+            d_mtx_apply(&vendor_menu_r.f20[0].pos, &off_c_d, vendor_menu_r.f1c->mtx);
+            k3 = 0.05f;
+            d_vadd(&vendor_menu_r.f20[0].pos, &vendor_menu_r.f20[0].pos, &vendor_menu_r.f1c->pos);
+            vendor_menu_r.f20[0].rot.f[0] = d_addang(vendor_menu_r.f20[0].rot.f[0], d_scalef(k1));
+            vendor_menu_r.f20[0].rot.f[1] = k2;
+            vendor_menu_r.f20[0].rot.f[2] = d_addang(vendor_menu_r.f20[0].rot.f[2], d_scalef(k3));
+            d_00250df8(&vendor_menu_r.f20[0]);
+            d_mtx_apply(&vendor_menu_r.f20[5].pos, &off_d_d, vendor_menu_r.f1c->mtx);
+            d_vadd(&vendor_menu_r.f20[5].pos, &vendor_menu_r.f20[5].pos, &vendor_menu_r.f1c->pos);
+            vendor_menu_r.f20[5].rot.f[0] = d_addang(vendor_menu_r.f20[5].rot.f[0], d_scalef(k1));
+            vendor_menu_r.f20[5].rot.f[1] = k2;
+            vendor_menu_r.f20[5].rot.f[2] = d_addang(vendor_menu_r.f20[5].rot.f[2], d_scalef(k3));
+            d_00250df8(&vendor_menu_r.f20[5]);
+            G1F24_d = d_addang(G1F24_d, d_scalef(k3));
+            d_0020d580(&vendor_menu_r.f20[1]);
+            if (!vendor_menu_r.f20[1].b53 && (vendor_menu_r.f20[1].b70 & 2)) {
+                d_blend(&vendor_menu_r.f20[1], 1, 0, 8);
             }
-        }
-        d_00201a28();
-        d_00297e70();
-        break;
+            d_00250df8(&vendor_menu_r.f20[1]);
+            b.q = 0;
+            b.f[2] = d_cos(G1F24_d) / 20.0f;
+            a.q = b.q;
+            d_vadd(&a, &off_b_d, &a);
+            d_vadd(&a, &a, &slot40_d[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].v20);
+            d_mtx_apply(&vendor_menu_r.f20[2].pos, &a, vendor_menu_r.f1c->mtx);
+            d_vadd(&vendor_menu_r.f20[2].pos, &vendor_menu_r.f20[2].pos, &vendor_menu_r.f1c->pos);
+            vendor_menu_r.f20[2].rot.f[0] = slot40_d[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].f10;
+            vendor_menu_r.f20[2].rot.f[1] = slot40_d[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].f14;
+            vendor_menu_r.f20[2].rot.f[2] = G1F24_d;
+            d_00250df8(&vendor_menu_r.f20[2]);
+            b.q = 0;
+            b.f[2] = d_cos(G1F24_d) / 20.0f;
+            a.q = b.q;
+            d_vadd(&a, &off_b_d, &a);
+            d_vadd(&a, &a, &slot30_d[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].v20);
+            d_mtx_apply(&vendor_menu_r.f20[3].pos, &a, vendor_menu_r.f1c->mtx);
+            d_vadd(&vendor_menu_r.f20[3].pos, &vendor_menu_r.f20[3].pos, &vendor_menu_r.f1c->pos);
+            vendor_menu_r.f20[3].rot.f[0] = slot30_d[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].f10;
+            vendor_menu_r.f20[3].rot.f[1] = slot30_d[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].f14;
+            vendor_menu_r.f20[3].rot.f[2] = G1F24_d;
+            d_0020d580(&vendor_menu_r.f20[3]);
+            if (!vendor_menu_r.f20[3].b53 && (vendor_menu_r.f20[3].b70 & 2)) {
+                d_blend(&vendor_menu_r.f20[3], 1, 0, 8);
+            }
+            d_00250df8(&vendor_menu_r.f20[3]);
+            b.f[0] = slot30_d[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].f0;
+            b.f[1] = slot30_d[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].f4;
+            b.f[2] = slot30_d[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].f8;
+            d_001fa030(vendor_menu_r.f20[3].mtx, &vendor_menu_r.f20[3].rot);
+            d_mtx_apply(&b, &b, vendor_menu_r.f20[3].mtx);
+            d_vadd(&vendor_menu_r.f20[3].pos, &vendor_menu_r.f20[3].pos, &b);
+            vendor_menu_r.f4++;
+            if (vendor_menu_r.f5c == 0 && G1F18_d == 0) {
+                if (vendor_menu_r.f210 < 8) {
+                    if ((pad_state.pressed & 0x2000)) {
+                        if (vendor_menu_r.f58 < vendor_menu_r.f210 - 1) {
+                            G1F34_d = 1;
+                            d_0029b4d8(0);
+                            vendor_menu_r.f58++;
+                            d_voice(1, 0, vendor_menu_r.f1c);
+                            d_status(d_helptext(vendor_item_info[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].pad[3]));
+                            if (vendor_menu_r.f50 != -1) {
+                                d_meter_free(vendor_menu_r.f50, 0);
+                            }
+                            vendor_menu_r.f50 = -1;
+                            if ((vendor_menu_r.fD0[vendor_menu_r.f58]).fD4 == 1) {
+                                vendor_menu_r.f50 = d_meter(
+                                    0x30, (vendor_menu_r.fD0[vendor_menu_r.f58]).fD0 + 0xEA60, d_cb1, d_cb2, d_cb3,
+                                    &((*(s32 *)(menu_item_enabled_115 + 0x21 +
+                                                ((vendor_menu_r.fD0[vendor_menu_r.f58]).fD0) * 4))),
+                                    item_price_table[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].hE);
+                            }
+                        }
+                    }
+                    if ((pad_state.pressed & 0x8000)) {
+                        if (vendor_menu_r.f58 > 0) {
+                            G1F34_d = 1;
+                            d_0029b4d8(0);
+                            vendor_menu_r.f58--;
+                            d_voice(1, 0, vendor_menu_r.f1c);
+                            d_status(d_helptext(vendor_item_info[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].pad[3]));
+                            if (vendor_menu_r.f50 != -1) {
+                                d_meter_free(vendor_menu_r.f50, 0);
+                            }
+                            vendor_menu_r.f50 = -1;
+                            if ((vendor_menu_r.fD0[vendor_menu_r.f58]).fD4 == 1) {
+                                vendor_menu_r.f50 = d_meter(
+                                    0x30, (vendor_menu_r.fD0[vendor_menu_r.f58]).fD0 + 0xEA60, d_cb1, d_cb2, d_cb3,
+                                    &((*(s32 *)(menu_item_enabled_115 + 0x21 +
+                                                ((vendor_menu_r.fD0[vendor_menu_r.f58]).fD0) * 4))),
+                                    item_price_table[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].hE);
+                            }
+                        }
+                    }
+                } else {
+                    if ((pad_state.pressed & 0x2000)) {
+                        if (vendor_menu_r.f4c <= 0x38) {
+                            G1F34_d = 1;
+                            vendor_menu_r.f4c += 0x38;
+                            d_voice(1, 0, vendor_menu_r.f1c);
+                            d_0029b4d8(0);
+                            if (vendor_menu_r.f58 < vendor_menu_r.f210 - 1) {
+                                vendor_menu_r.f58++;
+                            } else {
+                                vendor_menu_r.f58 = 0;
+                            }
+                            d_status(d_helptext(vendor_item_info[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].pad[3]));
+                            if (vendor_menu_r.f50 != -1) {
+                                d_meter_free(vendor_menu_r.f50, 0);
+                            }
+                            vendor_menu_r.f50 = -1;
+                            if ((vendor_menu_r.fD0[vendor_menu_r.f58]).fD4 == 1) {
+                                vendor_menu_r.f50 = d_meter(
+                                    0x30, (vendor_menu_r.fD0[vendor_menu_r.f58]).fD0 + 0xEA60, d_cb1, d_cb2, d_cb3,
+                                    &((*(s32 *)(menu_item_enabled_115 + 0x21 +
+                                                ((vendor_menu_r.fD0[vendor_menu_r.f58]).fD0) * 4))),
+                                    item_price_table[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].hE);
+                            }
+                        }
+                    }
+                    if ((pad_state.pressed & 0x8000)) {
+                        if (vendor_menu_r.f4c >= -0x38) {
+                            G1F34_d = 1;
+                            vendor_menu_r.f4c -= 0x38;
+                            d_voice(1, 0, vendor_menu_r.f1c);
+                            d_0029b4d8(0);
+                            if (vendor_menu_r.f58 > 0) {
+                                vendor_menu_r.f58--;
+                            } else {
+                                vendor_menu_r.f58 = vendor_menu_r.f210 - 1;
+                            }
+                            d_status(d_helptext(vendor_item_info[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].pad[3]));
+                            if (vendor_menu_r.f50 != -1) {
+                                d_meter_free(vendor_menu_r.f50, 0);
+                            }
+                            vendor_menu_r.f50 = -1;
+                            if ((vendor_menu_r.fD0[vendor_menu_r.f58]).fD4 == 1) {
+                                vendor_menu_r.f50 = d_meter(
+                                    0x30, (vendor_menu_r.fD0[vendor_menu_r.f58]).fD0 + 0xEA60, d_cb1, d_cb2, d_cb3,
+                                    &((*(s32 *)(menu_item_enabled_115 + 0x21 +
+                                                ((vendor_menu_r.fD0[vendor_menu_r.f58]).fD0) * 4))),
+                                    item_price_table[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].hE);
+                            }
+                        }
+                    }
+                }
+                if ((pad_state.pressed & 0x40) && (vendor_menu_r.fD0[vendor_menu_r.f58]).fD8 == 0) {
+                    vendor_menu_r.f5c = 1;
+                    d_voice(0, 0, vendor_menu_r.f1c);
+                }
+                if ((pad_state.pressed & 0x10) && G124C_d == 0) {
+                    G1F14_d = 8;
+                    G1F18_d = 1;
+                    d_voice(5, 0, vendor_menu_r.f1c);
+                }
+            }
+            d_0029ba78();
+            if (G1F20_d == 1) {
+                if (G1F1C_d == 0) {
+                    G1F20_d = 0;
+                } else {
+                    G1F1C_d--;
+                }
+            }
+            if (G1F18_d == 1) {
+                if (--G1F14_d == 0) {
+                    G15F6BC_d = 1;
+                    d_002335a0();
+                    d_blend(vendor_menu_r.f1c, 4, 9, 8);
+                    vendor_menu_r.f1c->f58 = G15EE60_d * -0.5f;
+                    if (vendor_menu_r.f40 != 0) {
+                        qcopy((char *)&cam_d.pos + 0x10, &vendor_menu_r.f70);
+                    }
+                    ((Vec4 *)cam_d.basis)[0].q = snap_d[0].q;
+                    ((Vec4 *)cam_d.basis)[1].q = snap_d[1].q;
+                    ((Vec4 *)cam_d.basis)[2].q = snap_d[2].q;
+                    vendor_menu_r.state = 2;
+                    vendor_menu_r.f8 = 0;
+                    vendor_menu_r.f4 = 0;
+                    if (((HeroD *)(hero_globals_base + 0xE1D))->moby != 0) {
+                        d_00204a40(((HeroD *)(hero_globals_base + 0xE1D))->moby->oclass, -1);
+                        ((HeroD *)(hero_globals_base + 0xE1D))->moby->pclass =
+                            cls_d[((HeroD *)(hero_globals_base + 0xE1D))->moby->class_id];
+                        d_0020c880(((HeroD *)(hero_globals_base + 0xE1D))->moby);
+                    }
+                }
+            } else if (G1F34_d != 0) {
+                d_0029b680();
+            }
+            d_0023ac78(1);
+            break;
+        case 3:
+            d_00299108();
+            d_update_visible();
+            d_0022dc50();
+            d_002070d0();
+            d_00217b88();
+            cut_d.f38++;
+            cut_d.f34++;
+            if (cut_d.h40 - 12 < cut_d.f34) {
+                fade_level_d += 0.1f;
+                if (fade_level_d > 1.0f) {
+                    fade_level_d = 1.0f;
+                }
+            } else {
+                fade_level_d -= 0.125f;
+                if (fade_level_d < 0.0f) {
+                    fade_level_d = 0.0f;
+                }
+            }
+            cs = &cut_d;
+            if (cs->f34 >= cs->h40) {
+                fade_level_d = 0.0f;
+                d_002335a0();
+                G16CBF0_d = 0.63f;
+                d_001f2d98();
+                for (j = 0; j < cut_d.h44; j++) {
+                    m2 = cut_d.f178[j];
+                    if (m2 != 0) {
+                        m2->pclass->count--;
+                        m2->pclass->slots[m2->pclass->count] = 0;
+                        d_0020c828(m2);
+                    }
+                }
+                if (vendor_menu_r.f28 != 0) {
+                    d_0029af80();
+                } else {
+                    d_0029ab70(1);
+                }
+                break;
+            }
+            lim = G15EE80_d ? 0x50 : 0x60;
+            if (cs->f38 >= lim) {
+                cs->f3C++;
+                d_002049f0(cs->f3C);
+            }
+            cam = &cs->f54[cs->f38];
+            rot = cam->rot;
+            flag = cam->flag;
+            G16CBF0_d = rot[3];
+            d_001f2d98();
+            qcopy(cam_d.pos.f, cam);
+            d_mtx_apply(cam_d.pos.f, cam_d.pos.f, vendor_menu_r.f80);
+            d_vadd(cam_d.pos.f, cam_d.pos.f, &vendor_menu_r.fC0);
+            ang = d_addang(rot[2], vendor_menu_r.f80[3].f[2]);
+            d_mat_id(m);
+            d_mat_a(m, m, rot[0]);
+            d_mat_b(m, m, rot[1]);
+            d_mat_c(m, m, ang);
+            cam_d.basis[0] = -m[2][0];
+            cam_d.basis[4] = -m[0][0];
+            cam_d.basis[8] = m[1][0];
+            cam_d.basis[1] = -m[2][1];
+            cam_d.basis[5] = -m[0][1];
+            cam_d.basis[9] = m[1][1];
+            cam_d.basis[2] = -m[2][2];
+            cam_d.basis[6] = -m[0][2];
+            cam_d.basis[10] = m[1][2];
+            for (i = 0; i < cut_d.h44; i++) {
+                mb = cut_d.f178[i];
+                id = cut_d.f38 >> 1;
+                mb->next_frame = id + 1;
+                mb->frame = id;
+                d_0020c880(mb);
+                mb->blend = d_001fa6c0(cut_d.f38 & 1) * 0.5f;
+                if (flag && (cut_d.f38 & 1)) {
+                    mb->blend = 1.0f;
+                }
+                keys = mb->keys;
+                d_vscale(&a, &keys[mb->frame], 1.0f - mb->blend);
+                d_vscale(&b, &keys[mb->next_frame], mb->blend);
+                d_vadd(&mb->pos, &a, &b);
+                d_mtx_apply(&mb->pos, &mb->pos, vendor_menu_r.f80);
+                d_vadd(&mb->pos, &mb->pos, &vendor_menu_r.fC0);
+                mb->rot.f[2] = vendor_menu_r.f80[3].f[2];
+                mb->b71 = 0xFF;
+                d_00250df8(mb);
+                if (mb->b7F) {
+                    d_00213700(mb);
+                }
+                if (mb->oclass == 0) {
+                    d_00234b38(mb);
+                }
+            }
+            d_00201a28();
+            d_00297e70();
+            break;
     }
     d_0022ca50();
 }

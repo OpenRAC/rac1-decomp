@@ -22,8 +22,14 @@ void draw_ribbon_effect(char *m);
 
 typedef struct RibbonPoint {
     f32 x;                              /* 0x00 */
-    union { f32 f; s32 i; } aux;        /* 0x04: zeroed as an int in the ring; the sweep's cosine */
-    union { f32 f; s32 i; } height;     /* 0x08: ring height; the sweep's height is zeroed as an int first */
+    union {
+        f32 f;
+        s32 i;
+    } aux;        /* 0x04: zeroed as an int in the ring; the sweep's cosine */
+    union {
+        f32 f;
+        s32 i;
+    } height;     /* 0x08: ring height; the sweep's height is zeroed as an int first */
     f32 one;                            /* 0x0C */
 } RibbonPoint;
 
@@ -38,8 +44,7 @@ typedef struct RibbonVars {
 } RibbonVars;
 
 // Per-frame update for the level 14 moby: refreshes its ring table and hands the table to func_001F49B0.
-void animate_ribbon_effect_paths(char *moby)
-{
+void animate_ribbon_effect_paths(char *moby) {
     RibbonVars *d = (RibbonVars *)((struct Moby *)moby)->pvars;
     RibbonPoint *o;
     int i;

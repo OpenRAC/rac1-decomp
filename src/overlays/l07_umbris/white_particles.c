@@ -60,23 +60,29 @@ float select_segment_point_near_sphere_surface(char *dst, char *a1, char *a2, ch
         t20 = vec_length(ap);
         t20 = t20 / FastVecLength(v + 1);
         lo = f21 - t20;
-        if (lo < 0) lo = 0;
-        else if (lo > 1) lo = 1;
+        if (lo < 0)
+            lo = 0;
+        else if (lo > 1)
+            lo = 1;
         hi = f21 + t20;
-        if (hi < 0) hi = 0;
-        else if (hi > 1) hi = 1;
+        if (hi < 0)
+            hi = 0;
+        else if (hi > 1)
+            hi = 1;
         FastVecScale(v + 3, v + 1, lo);
         FastVecAdd(v + 3, v + 3, a3);
         r2 = FastVecDist(v + 3, a2);
         t22 = FastAbsF(r2 - f);
         thr = f * 0.01f;
-        if (t22 < thr) t22 = 0;
+        if (t22 < thr)
+            t22 = 0;
         q4 = v + 4;
         FastVecScale(q4, v + 1, hi);
         FastVecAdd(q4, q4, a3);
         r3 = FastVecDist(q4, a2);
         f21 = FastAbsF(r3 - f);
-        if (f21 < thr) f21 = 0;
+        if (f21 < thr)
+            f21 = 0;
         if (t22 < f21 || (t22 == f21 && FastVecDist(v + 3, a1) < FastVecDist(q4, a1))) {
             qcopy(dst, v + 3);
             r1 = t22;
@@ -94,7 +100,8 @@ float select_segment_point_near_sphere_surface(char *dst, char *a1, char *a2, ch
         } else {
             qcopy(dst, v + 2);
         }
-        if (r1 < f * 0.01f) r1 = 0;
+        if (r1 < f * 0.01f)
+            r1 = 0;
     }
     return r1;
 }

@@ -5,11 +5,11 @@
 extern char level_render_state[];
 /* clears two moby flags and refreshes its linked value */
 void show_tracked_moby(void) {
- char *first=*(char **)level_render_state;
- if(first!=0) {
- char *moby;
- *(unsigned short *)(first+0x34)&=0xfffc;
- moby=*(char **)level_render_state;
- *(int *)(moby+0x94)=*(int *)(*(char **)(moby+0x24)+0x10);
- }
+    char *first = *(char **)level_render_state;
+    if (first != 0) {
+        char *moby;
+        *(unsigned short *)(first + 0x34) &= 0xfffc;
+        moby = *(char **)level_render_state;
+        *(int *)(moby + 0x94) = *(int *)(*(char **)(moby + 0x24) + 0x10);
+    }
 }

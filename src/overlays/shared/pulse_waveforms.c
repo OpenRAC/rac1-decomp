@@ -53,12 +53,14 @@ int tick_pulse_waveforms(int *out) {
         Pulse *p;
         int r, v;
         unsigned short life;
-        if (pulse_waveform_slots[i].type == 0) continue;
+        if (pulse_waveform_slots[i].type == 0)
+            continue;
         p = &pulse_waveform_slots[i];
         active++;
         life = pulse_waveform_slots[i].life;
         pulse_waveform_slots[i].life = life - 1;
-        if ((short)life <= 0) p->type = 0;
+        if ((short)life <= 0)
+            p->type = 0;
         if (pulse_waveform_slots[i].delay != 0) {
             pulse_waveform_slots[i].delay = pulse_waveform_slots[i].delay - 1;
             continue;
@@ -67,47 +69,61 @@ int tick_pulse_waveforms(int *out) {
         pulse_waveform_slots[i].time++;
         r = p->time % (p->rise + p->fall);
         switch (p->type) {
-        case 0:
-            break;
-        case 1:
-            if (r < p->rise) v = p->amp + p->base;
-            else v = p->base;
-            break;
-        case 2:
-            if (r < p->rise) v = (p->amp * r) / p->rise;
-            else v = (p->amp * (p->fall + p->rise - r)) / p->fall;
-            v = v + p->base;
-            break;
-        case 3:
-            if (r < p->rise) v = (p->amp * r) / p->rise + p->base;
-            break;
-        case 4:
-            if (r >= p->rise) v = (p->amp * (p->fall + p->rise - r)) / p->fall + p->base;
-            break;
-        case 5: {
-            float f, g;
-            if (r < p->fall) {
-                f = IntToFloat(r) * 3.1415927f / IntToFloat(p->fall);
-            } else {
-                f = 3.1415927f - IntToFloat(r - p->fall) * 3.1415927f / IntToFloat(p->rise);
+            case 0:
+                break;
+            case 1:
+                if (r < p->rise)
+                    v = p->amp + p->base;
+                else
+                    v = p->base;
+                break;
+            case 2:
+                if (r < p->rise)
+                    v = (p->amp * r) / p->rise;
+                else
+                    v = (p->amp * (p->fall + p->rise - r)) / p->fall;
+                v = v + p->base;
+                break;
+            case 3:
+                if (r < p->rise)
+                    v = (p->amp * r) / p->rise + p->base;
+                break;
+            case 4:
+                if (r >= p->rise)
+                    v = (p->amp * (p->fall + p->rise - r)) / p->fall + p->base;
+                break;
+            case 5: {
+                float f, g;
+                if (r < p->fall) {
+                    f = IntToFloat(r) * 3.1415927f / IntToFloat(p->fall);
+                } else {
+                    f = 3.1415927f - IntToFloat(r - p->fall) * 3.1415927f / IntToFloat(p->rise);
+                }
+                f = FastCos(f);
+                g = IntToFloat(p->amp);
+                v = truncate_float_to_s32((f * g + g) * 0.5f) + p->base;
+                if (v >= 256)
+                    v = 255;
+                break;
             }
-            f = FastCos(f);
-            g = IntToFloat(p->amp);
-            v = truncate_float_to_s32((f * g + g) * 0.5f) + p->base;
-            if (v >= 256) v = 255;
-            break;
-        }
         }
         if (p->weighted != 0) {
             aa[0][p->slot] = aa[0][p->slot] + v;
-            { int *t = q1 + p->slot; *t = *t + 1; }
+            {
+                int *t = q1 + p->slot;
+                *t = *t + 1;
+            }
         } else {
             out[p->slot] = out[p->slot] + v;
-            { int *t = q2 + p->slot; *t = *t + 1; }
+            {
+                int *t = q2 + p->slot;
+                *t = *t + 1;
+            }
         }
     }
     for (i = 0; i < 2; i++) {
-        if (q2[i] != 0) out[i] = out[i] / q2[i];
+        if (q2[i] != 0)
+            out[i] = out[i] / q2[i];
         if (q1[i] != 0) {
             aa[0][i] = aa[0][i] / q1[i];
             out[i] = (out[i] * aa[0][i]) / 255;

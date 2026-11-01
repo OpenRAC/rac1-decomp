@@ -21,13 +21,13 @@ extern struct Moby *CreateMoby_r(int oclass) __asm__("func_0020D348");
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
 extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
-extern void spawn_source_attached_fading_effect_particle_r(struct Moby *, int color, int life, int, float size) __asm__("func_L00_0026E940");
+extern void spawn_source_attached_fading_effect_particle_r(struct Moby *, int color, int life, int,
+                                                           float size) __asm__("func_L00_0026E940");
 extern void moby_build_matrix_r(void *) __asm__("func_L00_00251E30");
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002aee30.c, FUN_L04_002aee30. */
-struct Moby *spawn_class_b8_projectile(struct Moby *owner, void *pos, void *dir, int life)
-{
+struct Moby *spawn_class_b8_projectile(struct Moby *owner, void *pos, void *dir, int life) {
     struct Moby *m;
     ShotVars_B0068 *vars;
     OvlQuad_B0068 pos_q;
@@ -89,7 +89,9 @@ extern float g_frame_time MACRO_ADDR;
 typedef struct {
     union {
         u128_B0290 q;
-        struct { f32 x, y, z, w; } v;
+        struct {
+            f32 x, y, z, w;
+        } v;
     } dir; /* 0x00: unit direction; z/w overwritten with 1 and a range */
     struct Moby *self; /* 0x10: moby to ignore */
     s32 mask; /* 0x14: collision classes */
@@ -118,8 +120,7 @@ extern void PartType27Spawn(void *, void *, u32, s32, f32);
 
 /* Update of the class 0xB8 shot (spawned by FUN_L04_002aee30): moves along its direction, plays its sound once it starts moving away from the hero within 3 units, dies off the arena, and on a hit (probing for its owner's targets until the timer runs out) bursts into five sparks and is removed.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002aee30.c, FUN_L04_002af058. */
-void update_class_b8_projectile(struct Moby *m)
-{
+void update_class_b8_projectile(struct Moby *m) {
     Vec4 old;
     CollisionProbe pr;
     Vec4 push;
@@ -145,8 +146,7 @@ void update_class_b8_projectile(struct Moby *m)
     if (d < v->hero_dist)
         v->unk24 = 1;
     v->hero_dist = d;
-    if (m->pos.x < 0.0f || m->pos.y < 0.0f || m->pos.z < 0.0f
-        || range < vec_distance_xy(&m->pos, eudora_camera_pos)) {
+    if (m->pos.x < 0.0f || m->pos.y < 0.0f || m->pos.z < 0.0f || range < vec_distance_xy(&m->pos, eudora_camera_pos)) {
         DeleteMoby(m);
         return;
     }
@@ -192,8 +192,7 @@ void update_class_b8_projectile(struct Moby *m)
             vec_scale_to_length(&push, &push, FastVecLength(&r) * 0.5f);
             FastVecAdd(&push, &r, &push);
             vec_scale_to_length(&push, &push, random_float_between(g_frame_time * 3.0f, g_frame_time * 6.0f));
-            PartType27Spawn(&m->pos, &push, 0x7F2F4F6F,
-                             rand_range(scale_ticks(10), scale_ticks(15)), 30000.0f);
+            PartType27Spawn(&m->pos, &push, 0x7F2F4F6F, rand_range(scale_ticks(10), scale_ticks(15)), 30000.0f);
         }
     }
     DeleteMoby(m);
@@ -217,7 +216,9 @@ void spawn_moby_table_segment_puffs(char *a, int i, int j, int k) {
     v10[3] = 1.0f;
     matrix_mul_vec3(v10, v10, a + 0xC0);
     FastVecAdd(v10, v10, a + 0x10);
-    spawn_smoke_puff_trail_with_endpoint_bursts(a, v0, v10, k, *(float *)(pi + 0xC) * *(float *)&eudora_segment_puff_size_scale, *(float *)(pj + 0xC) * *(float *)&eudora_segment_puff_size_scale);
+    spawn_smoke_puff_trail_with_endpoint_bursts(a, v0, v10, k,
+                                                *(float *)(pi + 0xC) * *(float *)&eudora_segment_puff_size_scale,
+                                                *(float *)(pj + 0xC) * *(float *)&eudora_segment_puff_size_scale);
 }
 extern short eudora_puff_count_a;
 extern short eudora_puff_count_b;
@@ -230,8 +231,7 @@ extern short eudora_puff_count_h;
 extern void spawn_moby_table_segment_puffs(char *a, int i, int j, int k);
 
 // Calls the pair helper for each edge index pair with a per-pair global value.
-void spawn_moby_table_puff_pattern(char *a)
-{
+void spawn_moby_table_puff_pattern(char *a) {
     spawn_moby_table_segment_puffs(a, 0, 1, *(int *)&eudora_puff_count_a);
     spawn_moby_table_segment_puffs(a, 2, 3, *(int *)&eudora_puff_count_b);
     spawn_moby_table_segment_puffs(a, 4, 5, *(int *)&eudora_puff_count_c);
@@ -254,8 +254,7 @@ extern void moby_build_matrix(void *);
 
 /* Spawns moby class 0x1F3, copies the 16-byte position from b and a few
    fields from a into it, hands the new moby to func_L00_00251E30. */
-char *spawn_moby_attachment(char *a, char *b)
-{
+char *spawn_moby_attachment(char *a, char *b) {
     u128 v = *(u128 *)b;
     u128 *p = &v;
     char *moby = (char *)CreateMoby_m(0x1F3);

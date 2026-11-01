@@ -29,19 +29,26 @@ int draw_segmented_hud_meter(unsigned char *p) {
 
     ntsc_y = frame_size - 50;
     y = frame_size - 42;
-    if (!pal_mode) y = ntsc_y;
+    if (!pal_mode)
+        y = ntsc_y;
     level = g_current_level_index;
-    if (level == 7 || level == 13) segments = 6;
-    if (level == 18) segments = 7;
-    if (p[0x70] == 0) return *(int *)(p + 0x58);
+    if (level == 7 || level == 13)
+        segments = 6;
+    if (level == 18)
+        segments = 7;
+    if (p[0x70] == 0)
+        return *(int *)(p + 0x58);
     {
         if (level == 13) {
             y = 18;
-            if (pal_mode != 0) y = 10;
+            if (pal_mode != 0)
+                y = 10;
         }
         alpha = IntToFloat(p[0x70]) * 0.125f;
-        if (alpha > 1.0f) alpha = 1.0f;
-        else if (alpha < 0.0f) alpha = 0.0f;
+        if (alpha > 1.0f)
+            alpha = 1.0f;
+        else if (alpha < 0.0f)
+            alpha = 0.0f;
         remaining = segments - 1;
         scaled_alpha = alpha * 128.0f;
         i = truncate_float_to_s32(scaled_alpha);

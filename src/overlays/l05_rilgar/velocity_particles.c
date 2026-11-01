@@ -41,7 +41,8 @@ extern float random_float_between(float, float);
 extern int scale_ticks(int);
 
 /* spawn a particle at a position with a velocity and random parameters */
-unsigned char *create_particle_with_velocity_and_randomized_parameters(void *pos, void *vel, int arg2, int arg3, float a, float b, float c) {
+unsigned char *create_particle_with_velocity_and_randomized_parameters(void *pos, void *vel, int arg2, int arg3,
+                                                                       float a, float b, float c) {
     unsigned char *p = create_part(0x32);
     unsigned char *q;
     if (p != 0) {
