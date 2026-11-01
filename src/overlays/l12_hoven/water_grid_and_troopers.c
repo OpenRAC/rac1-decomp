@@ -353,15 +353,11 @@ int carried_moby_place_and_set_state(Moby *a, void *pos, void *t, float h) {
     }
     return r;
 }
-typedef struct {
-    char pad0[0x20];
-    unsigned char state;
-} Level12VendorStateMoby;
 
-extern int cancel_suck_cannon_suction(Level12VendorStateMoby *);
+extern int cancel_suck_cannon_suction(Moby *);
 
 /* Move the vendor moby to state eight unless it is in state nine or eleven. */
-int cancel_suck_cannon_suction_and_set_state_eight(Level12VendorStateMoby *moby) {
+int cancel_suck_cannon_suction_and_set_state_eight(Moby *moby) {
     int result = cancel_suck_cannon_suction(moby);
     if (moby->state == 9 || moby->state == 11) {
         return 0;
@@ -2514,22 +2510,16 @@ typedef struct {
     void *child;
 } Level12VendorData;
 
-typedef struct {
-    char pad0[0x78];
-    Level12VendorData *data;
-    char pad7C[0x38];
-    short fieldB4;
-} Level12VendorMoby;
 
-extern void SetDeathBits(Level12VendorMoby *, int, int);
+extern void SetDeathBits(Moby *, int, int);
 extern void DeleteMoby(void *);
 
 /* Release the vendor moby and any child it owns. */
-void remove_blarg_trooper_and_attachment(Level12VendorMoby *moby) {
-    moby->fieldB4 = 0;
+void remove_blarg_trooper_and_attachment(Moby *moby) {
+    moby->unkB4 = 0;
     SetDeathBits(moby, 0, -1);
-    if (moby->data->child != 0) {
-        DeleteMoby(moby->data->child);
+    if (((Level12VendorData *)moby->pvars)->child != 0) {
+        DeleteMoby(((Level12VendorData *)moby->pvars)->child);
     }
     DeleteMoby(moby);
 }

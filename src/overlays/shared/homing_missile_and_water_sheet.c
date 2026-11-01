@@ -368,27 +368,12 @@ struct PClass {
     f32 scale;
 };
 
-struct PMoby {
-    Vec4f bsphere;
-    Vec4f pos;
-    u8 state;
-    u8 pad21[3];
-    struct PClass *pclass;
-    struct PMoby *next;
-    f32 scale;
-    u8 pad30[0x10];
-    Vec4f rot;
-    u8 pad50[0x28];
-    u8 *pvars;
-    u8 pad7C[0x44];
-    Vec4f rot_row0;
-};
 
 typedef struct {
     Vec4 step;
     Vec4 target_pos;
     void *collision;
-    struct PMoby *target;
+    struct Moby *target;
     s32 timer;
     f32 speed;
     f32 turn_speed;
@@ -409,16 +394,16 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 
 /* Moby update for a missile that homes on its target. */
-void Moby1034Update(struct PMoby *moby) {
+void Moby1034Update(struct Moby *moby) {
     Missile *data = (Missile *)moby->pvars;
     Vec4f *pos;
     Vec4 previous_pos, spray, offset, velocity, random;
     float fraction;
-    struct PMoby *target;
+    struct Moby *target;
     char *texture;
 
     qcopy(&previous_pos, &moby->pos);
-    moby->scale += (moby->pclass->scale - moby->scale) * 0.1f;
+    moby->scale += (((struct PClass *)moby->pclass)->scale - moby->scale) * 0.1f;
     random.q = 0;
     random.f[0] = random_float_between(-1.0f, 1.0f);
     random.f[1] = random_float_between(-1.0f, 1.0f);
@@ -735,14 +720,6 @@ typedef struct {
     float limit; /* 0x20 */
 } OceanVars_30C728;
 
-typedef struct {
-    char pad00[0x20];
-    unsigned char state; /* 0x20 */
-    char pad21[0xF];
-    unsigned char f30; /* 0x30 */
-    char pad31[0x47];
-    OceanVars_30C728 *vars; /* 0x78 */
-} OceanMoby_30C728;
 
 typedef struct {
     char pad000[0x140];
@@ -780,8 +757,8 @@ extern int level_frame_r __asm__("D_L11_0015F6B0") MACRO_ADDR;
 extern float frame_delta_time_r __asm__("D_0015EE7C") MACRO_ADDR;
 
 /* Ocean update: scrolls the two wave layers with the camera and the time, keeps their offsets in -1..1 and sets the level's tide values. */
-void ocean_pokitaru_update(OceanMoby_30C728 *moby) {
-    OceanVars_30C728 *d = moby->vars;
+void ocean_pokitaru_update(Moby *moby) {
+    OceanVars_30C728 *d = (OceanVars_30C728 *)moby->pvars;
     float src[4];
     float out[4];
     float tide;
@@ -789,7 +766,7 @@ void ocean_pokitaru_update(OceanMoby_30C728 *moby) {
 
     if (moby->state == 0) {
         moby->state = 1;
-        moby->f30 = 0xFF;
+        moby->update_dist = 0xFF;
         for (k = 0; k < 2; k++) {
             wave_offset_r[k].u = 0.0f;
             wave_offset_r[k].v = 0.0f;

@@ -2073,17 +2073,11 @@ typedef struct {
     short field124;
 } Level14VendorData;
 
-typedef struct {
-    char pad0[0x78];
-    Level14VendorData *data;
-    char pad7C[0x40];
-    unsigned char state;
-} Level14VendorMoby;
 
 /* Select the vendor moby's state from its value and mark it initialized. */
-void enable_elevator_alternate_route(Level14VendorMoby *moby) {
-    Level14VendorData *data = moby->data;
-    moby->state = data->value < 0.0f ? 2 : 1;
+void enable_elevator_alternate_route(Moby *moby) {
+    Level14VendorData *data = (Level14VendorData *)moby->pvars;
+    moby->command = data->value < 0.0f ? 2 : 1;
     data->field124 = 1;
 }
 typedef struct {
@@ -2092,20 +2086,14 @@ typedef struct {
     char padB0[0x74];
     short field124;
 } Level14VendorData_F0A30;
-typedef struct {
-    char pad0[0x78];
-    Level14VendorData_F0A30 *data;
-    char pad7C[0x40];
-    unsigned char state;
-} Level14VendorMoby_F0A30;
 extern s32 level_moby_killed_r2[][64] __asm__("D_0014C290");
 extern int oltanis_moby_killed_bits[];
-void func_L14_002F0A30_r(Level14VendorMoby_F0A30 *m) __asm__("func_L14_002F0A30");
+void func_L14_002F0A30_r(Moby *m) __asm__("func_L14_002F0A30");
 
 /* Clears the moby's state byte and its data's field 0x124, then sets its save bit in the per-level table and in the level's own bit table. Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002ef5a8. */
-void func_L14_002F0A30_r(Level14VendorMoby_F0A30 *m) {
-    m->state = 0;
-    m->data->field124 = 0;
+void func_L14_002F0A30_r(Moby *m) {
+    m->command = 0;
+    ((Level14VendorData_F0A30 *)m->pvars)->field124 = 0;
     level_moby_killed_r2[g_current_level_index_m][(short)*(unsigned short *)((char *)m + 0xB2) >> 5] |=
         1 << (*(unsigned short *)((char *)m + 0xB2) & 0x1F);
     oltanis_moby_killed_bits[(short)*(unsigned short *)((char *)m + 0xB2) >> 5] |=

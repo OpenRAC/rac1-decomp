@@ -202,12 +202,6 @@ typedef struct {
     unsigned short flags; /* 0xEE */
 } Steer_2939E8;
 
-typedef struct {
-    char pad00[0x10];
-    Vec4f pos; /* 0x10 */
-    char pad20[0x28];
-    float rotz; /* 0x48 */
-} StMoby_2939E8;
 
 typedef struct {
     char pad00[0x40];
@@ -226,7 +220,7 @@ extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
 extern char eudora_coll_hit_r[] __asm__("D_L04_00174040");
 
 /* Steers a moby from the arg block: height and push terms, returns 2 when the tilt is past pi/4. */
-int update_leg_rig_height_and_tilt(StMoby_2939E8 *m, Steer_2939E8 *a) {
+int update_leg_rig_height_and_tilt(Moby *m, Steer_2939E8 *a) {
     float push[4];
     float dir[4];
     int ret = 0;
@@ -282,8 +276,8 @@ int update_leg_rig_height_and_tilt(StMoby_2939E8 *m, Steer_2939E8 *a) {
             }
         }
         if (push[0] != 0.0f || push[1] != 0.0f || push[2] != 0.0f) {
-            dir[0] = FastCos_r(m->rotz);
-            dir[1] = FastSin_r(m->rotz);
+            dir[0] = FastCos_r(m->rot.z);
+            dir[1] = FastSin_r(m->rot.z);
             dir[2] = 0.0f;
             FastVecCross_r(dir, dir, push);
             FastVecCross_r(dir, dir, push);

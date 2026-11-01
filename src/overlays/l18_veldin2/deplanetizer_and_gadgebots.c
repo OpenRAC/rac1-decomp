@@ -876,19 +876,13 @@ typedef struct {
     void *child;
 } Level18VendorData;
 
-typedef struct {
-    char pad0[0x78];
-    Level18VendorData *data;
-    char pad7C[0x2A];
-    short class_id;
-} Level18VendorMoby;
 
 extern void DeleteMoby(void *);
 
 /* Remove a vendor moby and any child it owns. */
-void mark_class_0630_moby_and_child_for_removal(Level18VendorMoby *moby) {
-    if (moby->class_id == 0x630) {
-        void *child = moby->data->child;
+void mark_class_0630_moby_and_child_for_removal(Moby *moby) {
+    if (moby->oclass == 0x630) {
+        void *child = ((Level18VendorData *)moby->pvars)->child;
         if (child != 0) {
             DeleteMoby(child);
         }

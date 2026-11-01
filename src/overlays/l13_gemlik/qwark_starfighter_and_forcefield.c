@@ -1497,19 +1497,13 @@ void forcefield_update(Moby *moby) {
     }
     offset_moby_class_point_pairs(*(unsigned char **)&moby->pclass, dx, 0);
 }
-typedef struct {
-    char pad0[0x34];
-    unsigned short flags;
-    char pad36[0x5E];
-    int field94;
-} Level13VendorMoby;
 
 extern char level_render_state_base[];
 
 /* Clear a vendor moby's field and set its flags unless it is the current target. */
-void Moby_ClearUnlessTargeted(Level13VendorMoby *moby) {
+void Moby_ClearUnlessTargeted(Moby *moby) {
     if (*(void **)(level_render_state_base + 0x2C2) != moby) {
-        moby->field94 = 0;
+        moby->collision = 0;
         moby->flags |= 3;
     }
 }
@@ -1752,7 +1746,6 @@ void update_controller_linked_gate(Moby *m) {
 }
 struct Manip_306D40;
 struct GifEntry_306D40;
-struct AnimSeq;
 typedef int OvlQuad_306D40 __attribute__((mode(TI)));
 extern char *CreateMoby_r(int) __asm__("func_0020D348");
 extern void Moby_GetJointWorldPos_r2(void *, int, void *) __asm__("func_L00_00250800");
@@ -3282,9 +3275,6 @@ void spawn_point_table_sparks(char *moby) {
                         *(int *)&gemlik_trail_spark_texture);
     }
 }
-struct Manip;
-struct GifEntry;
-struct AnimSeq;
 typedef struct {
     float x;
     float y;

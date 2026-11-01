@@ -119,14 +119,6 @@ typedef struct D9668Rec {
     char p3[0x1C];
     float ox, oy, oz;
 } D9668Rec;
-typedef struct D9668Moby {
-    char p0[0x10];
-    float x, y, z;
-    char p1[0x5C];
-    D9668Rec *rec;
-    char p2[0x40];
-    char flag;
-} D9668Moby;
 extern int coll_line(void *, void *, int, int, int);
 extern int is_moby_in_class_range_500_to_540(void *);
 extern float coll_hit_point_z;
@@ -134,8 +126,8 @@ extern int coll_hit_result[];
 extern float g_frame_time_sq MACRO_ADDR;
 
 /* Drops a moby onto the ground or a riding platform: follows the platform if there is one, else falls under gravity. */
-void update_nanotech_ball_grounding_and_fall(D9668Moby *m) {
-    D9668Rec *d = m->rec;
+void update_nanotech_ball_grounding_and_fall(Moby *m) {
+    D9668Rec *d = (D9668Rec *)m->pvars;
     Vt P;
     Vt Q;
     int hit = 0;
@@ -144,7 +136,7 @@ void update_nanotech_ball_grounding_and_fall(D9668Moby *m) {
     float y;
     float z;
     float zz;
-    qcopy(&P, &m->x);
+    qcopy(&P, &m->pos.x);
     P.z = P.z + 0.5f;
     qcopy(&Q, &P);
     Q.z = Q.z - 1.5f;
@@ -157,34 +149,34 @@ void update_nanotech_ball_grounding_and_fall(D9668Moby *m) {
     if (hit) {
         if (coll_hit_result[6] != 0) {
             if (is_moby_in_class_range_500_to_540((void *)coll_hit_result[6])) {
-                m->x = d->x = ((D9668Moby *)coll_hit_result[6])->x;
-                m->y = d->y = ((D9668Moby *)coll_hit_result[6])->y;
-                d->z = (m->z = *(float *)&coll_hit_result[10]) + 0.5f;
+                m->pos.x = d->x = ((Moby *)coll_hit_result[6])->pos.x;
+                m->pos.y = d->y = ((Moby *)coll_hit_result[6])->pos.y;
+                d->z = (m->pos.z = *(float *)&coll_hit_result[10]) + 0.5f;
             } else if (d->s != 0) {
-                m->x = d->x = ((D9668Moby *)coll_hit_result[6])->x + d->ox;
-                m->y = d->y = ((D9668Moby *)coll_hit_result[6])->y + d->oy;
-                d->z = (m->z = ((D9668Moby *)coll_hit_result[6])->z + d->oz) + 0.5f;
+                m->pos.x = d->x = ((Moby *)coll_hit_result[6])->pos.x + d->ox;
+                m->pos.y = d->y = ((Moby *)coll_hit_result[6])->pos.y + d->oy;
+                d->z = (m->pos.z = ((Moby *)coll_hit_result[6])->pos.z + d->oz) + 0.5f;
             } else {
                 d->s = 1;
-                d->ox = m->x - ((D9668Moby *)coll_hit_result[6])->x;
-                d->oy = m->y - ((D9668Moby *)coll_hit_result[6])->y;
-                d->oz = m->z - ((D9668Moby *)coll_hit_result[6])->z;
+                d->ox = m->pos.x - ((Moby *)coll_hit_result[6])->pos.x;
+                d->oy = m->pos.y - ((Moby *)coll_hit_result[6])->pos.y;
+                d->oz = m->pos.z - ((Moby *)coll_hit_result[6])->pos.z;
             }
         }
     }
-    zz = m->z;
+    zz = m->pos.z;
     if (zz <= ground) {
-        m->flag = 0;
+        m->command = 0;
         if (d->s != 0) {
             d->oz = d->oz + (ground - zz);
         }
-        m->z = ground;
+        m->pos.z = ground;
         *(int *)&d->v = 0;
     } else {
         float v;
         float w;
-        m->flag = 1;
-        m->z = zz - d->v;
+        m->command = 1;
+        m->pos.z = zz - d->v;
         v = d->v + g_frame_time_sq * 9.8f;
         d->v = v;
         w = !(0.3f < v) ? v : 0.3f;

@@ -809,24 +809,18 @@ int update_moby_state_pause(struct Moby *m, void *pos, void *target) {
     }
     return r;
 }
-typedef struct {
-    char pad0[0x20];
-    unsigned char state;
-    char pad21[0x9B];
-    unsigned char saved_state;
-} Level18VendorMoby;
 
-extern int store_moby_in_suck_cannon_h(Level18VendorMoby *, void *, void *, float) __asm__("func_L00_002DCFD0");
+extern int store_moby_in_suck_cannon_h(Moby *, void *, void *, float) __asm__("func_L00_002DCFD0");
 /* Switch to state four while active, then restore the saved state. */
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
    calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as
    they came (retail touches none of a1, a2 and $f12 before its call). */
-int moby_hold_state_while_active(Level18VendorMoby *moby, void *arg, void *t, float h) {
+int moby_hold_state_while_active(Moby *moby, void *arg, void *t, float h) {
     int active = store_moby_in_suck_cannon_h(moby, arg, t, h);
     if (active != 0) {
         moby->state = 4;
     } else if (moby->state == 4) {
-        moby->state = moby->saved_state;
+        moby->state = moby->command;
     }
     return active;
 }
@@ -1177,14 +1171,10 @@ typedef struct {
     int mode;
 } Level18VendorActionData;
 
-typedef struct {
-    char pad0[0x78];
-    Level18VendorActionData *data;
-} Level18VendorActionMoby;
 
 /* Initialize the vendor action mode and scale. */
-void moby_init_action_mode(Level18VendorActionMoby *moby) {
-    Level18VendorActionData *data = moby->data;
+void moby_init_action_mode(Moby *moby) {
+    Level18VendorActionData *data = (Level18VendorActionData *)moby->pvars;
     data->mode = 5;
     data->scale = 1.5f;
 }
@@ -2404,14 +2394,10 @@ typedef struct {
     float value;
 } Level18VendorFloatData;
 
-typedef struct {
-    char pad0[0x78];
-    Level18VendorFloatData *data;
-} Level18VendorFloatMoby;
 
 /* Read the vendor moby's current float value. */
-float get_position_and_rotation_transition_progress(Level18VendorFloatMoby *moby) {
-    return moby->data->value;
+float get_position_and_rotation_transition_progress(Moby *moby) {
+    return ((Level18VendorFloatData *)moby->pvars)->value;
 }
 /* 1 when the byte at +0x20 is 2, 2 when it is 3, else 0 */
 int classify_moby_state_two_or_three(u8 *p) {

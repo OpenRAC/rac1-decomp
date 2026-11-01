@@ -1697,11 +1697,10 @@ extern short teleporter_pad_open_accel;
 extern short teleporter_pad_open_brake;
 extern short teleporter_pad_open_max_speed;
 extern short novalis_help_message_selector;
-struct L01Moby;
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern void show_teleporter_and_children(char *);
 extern char *CreateMoby(int);
-extern void hide_teleporter_and_children(struct L01Moby *);
+extern void hide_teleporter_and_children(struct Moby *);
 extern void try_set_teleporter_help_message(char *);
 
 extern void draw_moby_radius_ring(char *);
@@ -1766,7 +1765,7 @@ void TeleporterPadUpdate(char *moby) {
                 ((Moby *)moby)->state = 6;
             } else {
                 ((Moby *)moby)->state = 5;
-                hide_teleporter_and_children((struct L01Moby *)moby);
+                hide_teleporter_and_children((struct Moby *)moby);
             }
             update_teleporter_child_transforms(moby);
             break;
@@ -2036,34 +2035,23 @@ void draw_moby_radius_ring(char *moby) {
         draw_world_quad(&q, m, 0);
     }
 }
-typedef struct L01Moby L01Moby;
 typedef struct {
     char pad[0x14];
-    L01Moby *slots[3];
+    Moby *slots[3];
 } L01MobyData;
 
-struct L01Moby {
-    char pad0[0x31];
-    unsigned char state;
-    char pad32[2];
-    unsigned short flags;
-    char pad36[0x42];
-    L01MobyData *data;
-    char pad7c[0x18];
-    int field94;
-};
 
 /* Mark the parent and its three attached objects active. */
-void hide_teleporter_and_children(L01Moby *moby) {
-    L01Moby **slots = moby->data->slots;
+void hide_teleporter_and_children(Moby *moby) {
+    Moby **slots = ((L01MobyData *)moby->pvars)->slots;
     int i;
-    moby->field94 = 0;
+    moby->collision = 0;
     moby->flags |= 1;
-    moby->state = 0;
+    moby->visible = 0;
     for (i = 2; i >= 0; i--, slots++) {
         if (*slots != 0) {
             (*slots)->flags |= 1;
-            (*slots)->state = 0;
+            (*slots)->visible = 0;
         }
     }
 }

@@ -446,7 +446,6 @@ void close_vendor_menu(int exit_cutscene_completed) {
 }
 extern s32 skip_frame MACRO_ADDR;
 extern s32 lvl_vu_chain_buffer_size MACRO_ADDR;
-struct Moby;
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 extern struct Hero g_hero;
 extern void sound_update(void);
@@ -505,17 +504,6 @@ typedef struct {
     s32 count;
     u8 pad214[0xC];
 } Vendor_29a6b0;
-typedef struct {
-    u8 pad0[0x10];
-    Vec4 pos;
-    u8 state;
-    u8 pad21[0x11];
-    s16 h32;
-    u8 pad34[0xC];
-    Vec4 rot;
-    u8 pad50[8];
-    f32 f58;
-} VendorMoby_29a6b0;
 extern s32 vendor_item_cutscene_index[];
 extern Vendor_29a6b0 vendor_menu_r3 __asm__("D_L00_001CA7C0");
 extern short level_white_fade_level;
@@ -546,7 +534,7 @@ extern void sce_gs_sync_v(s32);
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00295100.c, FUN_L00_0029ad08. */
 void start_vendor_exit_cutscene(void) {
     Vendor_29a6b0 *g;
-    VendorMoby_29a6b0 *moby;
+    Moby *moby;
     s32 index, item, offset;
     f32 *vec;
     struct S16_29ad08 *state;
@@ -558,17 +546,17 @@ void start_vendor_exit_cutscene(void) {
         cd_read_state.mode = 5;
     g = &vendor_menu_r3;
     skip_frame = 1;
-    ((VendorMoby_29a6b0 *)g->moby)->state = 1;
+    ((Moby *)g->moby)->state = 1;
     g->f0 = 3;
     g->f4 = 0;
     vec = (f32 *)((char *)g + 0xC0);
     matrix_mul_vec3(vec, &(*(s32 *)&vendor_exit_cutscene_local_offset), g->moby + 0xC0);
-    moby = (VendorMoby_29a6b0 *)g->moby;
+    moby = (Moby *)g->moby;
     FastVecAdd(vec, vec, (char *)moby + 0x10);
     *(f32 *)((char *)g + 0xC8) += 2.0f;
     *(f32 *)((char *)g + 0xC8) = ProbeGroundHeight(0.5f, vec, 0);
     clear_u64_value((char *)g + 0xB0);
-    *(f32 *)((char *)g + 0xB8) = FastAddRots(((VendorMoby_29a6b0 *)g->moby)->rot.f[2], 3.1415927f);
+    *(f32 *)((char *)g + 0xB8) = FastAddRots(((Moby *)g->moby)->rot.z, 3.1415927f);
     euler_rotation_basis((char *)g + 0x80, (char *)g + 0xB0);
     FastMemSet(&cutscene_state, 0, 0x1C0);
     FastMemSet(hero_scale_manipulator, 0, 0x40);

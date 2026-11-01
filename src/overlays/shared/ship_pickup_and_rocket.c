@@ -485,17 +485,13 @@ typedef struct {
     char pad0[0x1C];
     Level13VendorItem *item;
 } Level13VendorRecord;
-typedef struct {
-    char pad0[0x86];
-    short class_id;
-} Level13VendorCurrentMoby;
-extern Level13VendorCurrentMoby *gemlik_player_camera;
+extern Moby *gemlik_player_camera;
 extern Level13VendorRecord *gemlik_camera_descriptors MACRO_ADDR;
 /* marks a vendor item for the current moby class */
 void flag_vendor_item(int index) {
-    Level13VendorCurrentMoby *m = gemlik_player_camera;
+    Moby *m = gemlik_player_camera;
     Level13VendorRecord *rec = (Level13VendorRecord *)(index * 32 + (int)gemlik_camera_descriptors);
     Level13VendorItem *item = rec->item;
-    if (m->class_id == 0x13)
+    if (m->unk86 == 0x13)
         item->field39 = 1;
 }
