@@ -142,8 +142,11 @@ def move_version_dirs(root, old, new):
     for version in sorted(p for p in versions.iterdir() if p.is_dir()) if versions.is_dir() else []:
         src, dst = version / stem(old), version / stem(new)
         if src.is_dir():
+            # Through a temporary name: game/pause/ may have to move into game/pause/pause/.
+            tmp = version / (stem(old).replace("/", "_") + ".moving")
+            subprocess.run(["git", "mv", str(src), str(tmp)], cwd=root, check=True)
             dst.parent.mkdir(parents=True, exist_ok=True)
-            subprocess.run(["git", "mv", str(src), str(dst)], cwd=root, check=True)
+            subprocess.run(["git", "mv", str(tmp), str(dst)], cwd=root, check=True)
             moved.append(version.name)
     return moved
 

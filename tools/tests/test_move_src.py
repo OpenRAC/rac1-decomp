@@ -49,6 +49,10 @@ class MoveSrcTest(unittest.TestCase):
         self.assertIn('"$*" = libc/stdio ]', self.read("Makefile.sn"))
         self.assertEqual(move_src.load_aliases(self.root), {"core/libc/stdio": "core/00116FA0"})
 
+    def test_move_into_a_folder_named_after_the_file(self):
+        move_src.move(self.root, "src/core/00116FA0.c", "src/core/00116FA0/stdio.c")
+        self.assertTrue((self.root / "src/versions/us/core/00116FA0/stdio/func_1.c").exists())
+
     def test_second_move_keeps_the_first_report_name(self):
         move_src.move(self.root, "src/core/00116FA0.c", "src/core/a.c")
         move_src.move(self.root, "src/core/a.c", "src/core/b.c")
