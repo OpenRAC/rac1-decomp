@@ -13,15 +13,6 @@
  * libvu0.a.
  */
 
-
-typedef struct {
-    char unk_00[4];
-    int unk_04;
-    int unk_08;
-    char *unk_0C;
-    char unk_10[0x320];
-} Ent330;
-
 LINKER_REMNANT("asm/remnants/core_text", func_001252A0);
 void sceVu0Normalize(void *dst, void *src) {
     __asm__ __volatile__("lqc2 $vf4,0x0(%1)\n\t"

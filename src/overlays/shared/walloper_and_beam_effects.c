@@ -43,12 +43,7 @@ typedef struct {
     char pad14[0x32];
     short category;
 } Class43;
-typedef struct {
-    char pad0[4];
-    short kind;
-    char pad6[10];
-    float height;
-} Aim43;
+
 typedef struct {
     V43 position, end;
     M43 *target;
@@ -96,29 +91,7 @@ typedef struct {
     char pad150[8];
     float yaw;
 } Camera43;
-typedef struct {
-    V43 normal;
-    int x, y;
-    unsigned char type, mode;
-    unsigned short id;
-    float amount;
-    int flags, pad[3];
-} Damage43;
-typedef struct {
-    V43 target0, target1;
-    Damage43 damage;
-    V43 normal, direction, delta, next, step, noise;
-    M43 *ignored[128];
-    V43 goal;
-    union {
-        struct {
-            V43 origin;
-            Damage43 timed;
-        } arc;
-        Damage43 second;
-    } tail;
-    V43 differences[5];
-} Work43;
+
 #define F43(x) (*(float *)&(x))
 extern char hero_globals_base[];
 extern Camera43 player_camera;

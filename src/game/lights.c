@@ -10,10 +10,6 @@
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-typedef struct {
-    char b[0x13];
-} Cfg13;
-
 extern char dir_lights[];
 extern float gCamera_yaw;
 extern char point_lights[];

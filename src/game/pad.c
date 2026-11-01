@@ -10,11 +10,6 @@
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-
-typedef struct {
-    char b[0x13];
-} Cfg13;
-
 extern char g_controller_state[];
 
 extern int sce_pad2_get_state(int);

@@ -325,9 +325,6 @@ void update_hero_smoothing_parameters(void) {
     }
 }
 
-typedef struct {
-    float x, y, z, w;
-} Vx __attribute__((aligned(16)));
 extern char quartu_coll_hit_type[];
 extern char quartu_coll_hit[];
 extern float gravity_length_xy(float *v);

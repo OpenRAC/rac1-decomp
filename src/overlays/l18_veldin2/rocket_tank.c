@@ -68,29 +68,6 @@ extern float FastSubRots(float, float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern int veldin2_frame_count MACRO_ADDR;
 
-typedef struct {
-    char pad0[0x18];
-    float f18;
-    char pad1C[4];
-    unsigned char state;
-    char pad21[0x0F];
-    unsigned short flags2;
-    char pad32[2];
-    unsigned short flags;
-    char pad36[0x0A];
-    float f40;
-    char pad44[0x20];
-} L18M;
-typedef struct {
-    char pad0[0x20];
-    unsigned char state;
-    char pad21[0x10];
-    unsigned char substate;
-    char pad32[2];
-    unsigned short flags;
-    char pad36[0x0A];
-    float f40;
-} L18M2;
 extern int veldin2_cinematic_step;
 extern int drek_boss_camera_reset_done MACRO_ADDR;
 typedef struct {

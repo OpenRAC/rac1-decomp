@@ -34,10 +34,6 @@ extern int GetEffectTex(int);
 
 extern void UpdateViewContext(void);
 
-typedef struct {
-    char b[0x13];
-} Cfg13;
-
 extern int render_sequence NOT_SDA;
 
 extern int current_vu_chain MACRO_ADDR;
@@ -69,11 +65,6 @@ extern void DoGifPaging(void);
 extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
 
 extern unsigned char resident_class_slot_by_id[] NOT_SDA;
-
-typedef struct {
-    int key;
-    int flags;
-} PadBind;
 
 extern char camera_position[];
 extern void FastVecSub(void *, void *, void *);
@@ -506,12 +497,6 @@ typedef struct {
     u8 pad28[0x48 - 0x28];
     s32 frames[1]; /* 0x48 */
 } LevelFrame_RM;
-
-typedef struct {
-    u8 pad00[0x10];
-    LevelFrame_V4 position;   /* 0x10 */
-    LevelFrame_RM *model; /* 0x20 */
-} LevelFrame_ROH;
 
 typedef struct {
     u8 pad00[0x10];
@@ -1822,9 +1807,7 @@ void dispatch_game_state_update(void) {
 }
 
 extern s32 current_vu_chain MACRO_ADDR;
-typedef struct {
-    long q[2];
-} dummy_q;
+
 typedef struct {
     s32 tex; /* 0x00 */
     s32 data_offset; /* 0x04 */
@@ -1893,20 +1876,7 @@ typedef struct {
     u8 pad[0x13B8];
     DiscFile_q unk13B8;
 } DiscTable_q;
-typedef struct {
-    s32 pad0, pad4, pad8, padC;
-    s32 pad10;
-    s32 pad14;
-} Unused_q;
-typedef struct {
-    s32 state;
-    s16 timer;
-    u8 pad26[0x32];
-    s32 history_index;
-    s32 history_count;
-    s32 scene_mode;
-    s32 scene_state;
-} LevelRenderTail_q;
+
 typedef struct {
     u8 pad0[0x20];
     s32 state;

@@ -1720,10 +1720,7 @@ typedef struct {
     char pad0[0x454];
     unsigned char b[1];
 } Tab_2EFD38;
-typedef struct {
-    char pad0[0x130];
-    int f130;
-} Data_2EFD38;
+
 typedef struct {
     char pad0[0x74];
     unsigned char b74;
@@ -2171,10 +2168,7 @@ typedef struct {
     char pad40[0x30];
     float dir[4];
 } Pose_2F19C0;
-typedef struct {
-    char pad00[0x10];
-    int f10;
-} Model_2F19C0;
+
 typedef struct Data_2F19C0 {
     char pad00[0x20];
     char f20[0x40];

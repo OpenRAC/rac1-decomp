@@ -967,13 +967,6 @@ extern int Sound_IsPlaying(void *, int);
 extern int Sound_PlayClassSound(int, int, int, int);
 extern void Sound_StopSlot(int);
 
-typedef struct PathFollower4CE0 {
-    char pad0[0x60];
-    float speed;
-    int waypoint;
-    float yawVelocity, pitchVelocity, rollVelocity;
-} PathFollower4CE0;
-
 typedef struct RailFlyerVars {
     u8 pad_00[0x60];
     f32 speed; /* 0x60 */
@@ -1725,14 +1718,7 @@ struct GuideVars_gd {
     s32 watch_timer;
     s32 target_timer;
 };
-typedef struct {
-    u8 pad0[0x454];
-    u8 collected[1];
-} LevelState_gd;
-typedef struct {
-    u8 pad0[0x14C];
-    s32 unk14C;
-} GameFlags_gd;
+
 #define WT (((char **)&D_L03_00160058)[0x45])
 
 #define stage (D_0014171B + 0xAA35)

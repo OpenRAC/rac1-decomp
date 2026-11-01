@@ -12,10 +12,6 @@
 
 extern void FastMemCopy(void *, void *, int);
 
-typedef struct {
-    char b[0x13];
-} Cfg13;
-
 extern int log2dim(int);
 extern int g_gs_texture_allocation_cursor MACRO_ADDR;
 extern int pending_texture_upload_count MACRO_ADDR;

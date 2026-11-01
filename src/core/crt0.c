@@ -8,15 +8,6 @@
  * the NTSC split, shifted by the entry point (+0x140).
  */
 
-
-typedef struct {
-    char unk_00[4];
-    int unk_04;
-    int unk_08;
-    char *unk_0C;
-    char unk_10[0x320];
-} Ent330;
-
 ASM_FUNC("asm/handwritten/core_text", func_0012D868); /* _start */
 
 extern void Exit(int);

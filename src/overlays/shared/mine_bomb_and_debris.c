@@ -1044,11 +1044,6 @@ typedef struct M_2acbf0_002acbf0 {
     PV_2acbf0_002acbf0 *pv; /* 0x78 */
 } M_2acbf0_002acbf0;
 
-typedef struct BombE910 {
-    u8 pad_00[0xA];
-    u8 bA; /* 0x0A */
-} BombE910;
-
 /* Draws two spinning textured quads around the moby, oriented by its velocity. */
 void draw_bomb_landing_marker(char *moby) {
     QuadPkt q;
@@ -1202,18 +1197,6 @@ typedef struct BombMoby {
     u8 pad_A8[0x14];
     u8 command; /* 0xBC */
 } BombMoby;
-
-typedef struct BombHeroMotion {
-    Vec4 pos; /* 0x00 (hero 0x80) */
-    u8 pad_10[0x70];
-    Vec4 displacement; /* 0x80 (hero 0x100) */
-} BombHeroMotion;
-
-typedef struct BombHeroState {
-    s32 current; /* 0x00 (hero 0x2084) */
-    s32 step; /* 0x04 */
-    s32 control_mode; /* 0x08 (hero 0x208C) */
-} BombHeroState;
 
 /* Launch a bomb with the given velocity, adding the hero's or target's motion, and aim it. */
 void launch_bomb(float *pos, unsigned char *moby, float *velocity) {

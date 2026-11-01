@@ -136,12 +136,6 @@ void initialize_bolt_pickup(char *moby) {
     *(int *)&d->target = spawn_moby_offset_effect(moby);
 }
 
-typedef struct Goal_2B94B0 {
-    int active;
-    int pad4;
-    float pos[4];
-} Goal_2B94B0;
-
 extern float FastVecLength_r(void *a) __asm__("func_001F9CB8");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");

@@ -1893,9 +1893,7 @@ void update_timed_alpha_fade_particle(struct PartBase *a) {
         KillPart(a);
     }
 }
-typedef struct {
-    float x, y, z, w;
-} Vx __attribute__((aligned(16)));
+
 extern int truncate_float_to_s32(float);
 
 typedef struct {

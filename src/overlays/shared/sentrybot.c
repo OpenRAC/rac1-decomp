@@ -133,10 +133,7 @@ typedef struct {
     char pad1[0x258];
     short f22E0;
 } Hero98BB8;
-typedef struct {
-    char pad0[0x180];
-    int f180[4];
-} Sentry98BB8;
+
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern void update_sentrybot_hit_response_and_target_visibility(void *, int);
 

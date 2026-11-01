@@ -13,29 +13,13 @@
 
 extern int draw_config[];
 
-typedef struct {
-    char b[0x13];
-} Cfg13;
-
 extern int STUB_printf();
 
 extern void FastVecScale(void *, void *, float);
 
 extern void flush_cache(int);
 
-typedef struct {
-    int key;
-    int flags;
-} PadBind;
-
 extern char camera_position[];
-
-typedef struct {
-    int unk_00;
-    int unk_04;
-    int unk_08;
-    int unk_0C;
-} Rec10;
 
 /*
  * Retail aligns func_00234380 to 16 bytes, and func_00234350's .s file

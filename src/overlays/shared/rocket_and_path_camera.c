@@ -122,12 +122,7 @@ typedef struct {
     int warned;
     float dist;
 } Shot_cc2e8;
-typedef struct {
-    char pad00[0x40];
-    float rx;
-    float ry;
-    float rz;
-} Rot_cc2e8;
+
 extern unsigned char g_hero[];
 extern char gHeroPos[];
 extern char ground_hit[];

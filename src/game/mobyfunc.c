@@ -19,10 +19,6 @@ extern void FastMemCopy(void *, void *, int);
 extern int draw_config[];
 extern void FastMemSet();
 
-typedef struct {
-    char b[0x13];
-} Cfg13;
-
 extern int STUB_printf();
 
 /* A moby instance: 0x100 bytes, in one array from D_0016001C to

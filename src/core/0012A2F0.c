@@ -7,20 +7,11 @@
  * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
  */
 
-
 extern void disable_dmac_atomic(int);
 extern void remove_dmac_handler(int, int);
 
 extern int disable_interrupts(void);
 extern void enable_interrupts(void);
-
-typedef struct {
-    char unk_00[4];
-    int unk_04;
-    int unk_08;
-    char *unk_0C;
-    char unk_10[0x320];
-} Ent330;
 
 extern void _Error_a(void *, void *) __asm__("func_0012C468");
 

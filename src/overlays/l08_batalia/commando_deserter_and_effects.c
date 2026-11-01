@@ -755,12 +755,7 @@ typedef struct {
     float uv[8];
     long gs[4];
 } Quad45;
-typedef struct {
-    V45 corner[4], step, side_step[2], side[2], point, edge, normal;
-    float matrix[16];
-    Quad45 quad;
-    V45 scratch[5];
-} Work45;
+
 typedef struct {
     char pad0[0x10];
     V45 position;

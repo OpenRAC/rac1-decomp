@@ -8,16 +8,7 @@
  * sq, as v1.14 does (docs/reference/TOOLCHAIN.md). Name from the NTSC split.
  */
 
-
 extern void flush_cache(int);
-
-typedef struct {
-    char unk_00[4];
-    int unk_04;
-    int unk_08;
-    char *unk_0C;
-    char unk_10[0x320];
-} Ent330;
 
 extern int *level_root MACRO_ADDR;
 

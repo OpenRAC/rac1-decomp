@@ -1218,12 +1218,6 @@ typedef struct {
 } Ent_302FE8;
 
 typedef struct {
-    char pad0[0xB8];
-    float fB8;
-    int iBC;
-} Dat_302FE8;
-
-typedef struct {
     char pad0[0x160];
     float f160;
     int i164;

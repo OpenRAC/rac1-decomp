@@ -13,10 +13,6 @@
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-typedef struct {
-    char b[0x13];
-} Cfg13;
-
 extern char memory_card_state[];
 
 extern char memcard_save_dir_name[];

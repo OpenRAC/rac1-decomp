@@ -1567,11 +1567,6 @@ typedef struct {
     char pad71[0x4B];
     unsigned char command;
 } M_4BA8;
-typedef struct {
-    int count;
-    char pad4[0x2C];
-    float spread;
-} Emit_4BA8;
 
 extern char sand_mouse_move_ctl_turn_vel[];
 extern float frame_scale MACRO_ADDR;

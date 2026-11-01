@@ -3284,11 +3284,7 @@ typedef struct Helper_2EC8F0 {
     char pad36[0xA];
     float rot[4]; /* 0x40 */
 } Helper_2EC8F0;
-typedef struct Data_2EC8F0 {
-    char pad00[0x164];
-    Helper_2EC8F0 *h1; /* 0x164 */
-    Helper_2EC8F0 *h2; /* 0x168 */
-} Data_2EC8F0;
+
 extern void attach_shared_manipulator_to_matching_class_moby(char *);
 extern void grant_inventory_item(int, int);
 extern Helper_2EC8F0 *CreateMoby_r2(int) __asm__("func_0020D348");

@@ -11,14 +11,9 @@
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-
 extern void FastMemCopy(void *, void *, int);
 
 extern void FastMemSet();
-
-typedef struct {
-    char b[0x13];
-} Cfg13;
 
 extern int level_map_selection[];
 

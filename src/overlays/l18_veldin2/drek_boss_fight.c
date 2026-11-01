@@ -569,12 +569,6 @@ typedef struct {
     char pad2[0x1190 - 12];
 } E;
 extern E veldin2_lift_link_entries[];
-typedef struct {
-    char pad[0x18];
-    float f;
-    char pad2[0x5];
-    unsigned char idx;
-} S;
 
 /* Copies the lift's height to every moby in its group and to their linked table entries. */
 void synchronize_lift_group_height(void *a) {

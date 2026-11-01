@@ -37,30 +37,7 @@ struct GiantClankPadVars {
 };
 
 typedef unsigned int Q_2D7C00 __attribute__((mode(TI), aligned(16)));
-typedef struct {
-    int sw[4];
-    short onT;
-    short offT;
-    int voice0;
-    float offSecs;
-    int shocks;
-    int water[12];
-    float fog[4];
-    int levels[4];
-    int resetA;
-    int lamps[3];
-    int voice1;
-    unsigned char *owner;
-    unsigned char fogRGB[4];
-    int armed;
-    int lines[24];
-    Q_2D7C00 start;
-    Q_2D7C00 end;
-    Q_2D7C00 aim;
-    int light;
-    int area;
-    int resetB;
-} Pv_2D7C00;
+
 typedef struct {
     float v[4];
     unsigned char *attacker;

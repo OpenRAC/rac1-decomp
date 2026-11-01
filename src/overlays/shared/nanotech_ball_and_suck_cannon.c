@@ -43,19 +43,6 @@ struct ColoredFragmentVars {
 };
 
 typedef struct {
-    char p0[0x10];
-    char v10[16];
-    float f14;
-    char p18[0x8];
-    float f2C;
-    char p30[0x10];
-    char q40[16];
-} S_002d7f88;
-typedef struct {
-    char p0[0xA6];
-    short hA6;
-} O_hdr;
-typedef struct {
     char *o;
     float f4;
     char v8[4];
@@ -2181,9 +2168,7 @@ void spawn_suck_cannon_projectile_explosion(char *self, char *q) {
 typedef struct {
     int v[16];
 } __attribute__((aligned(16))) Mtx2DDDE8;
-typedef struct {
-    float v[4];
-} __attribute__((aligned(16))) Q2DDDE8;
+
 extern void spawn_suck_cannon_projectile_explosion(char *, char *);
 
 // Initializes an object from its template and calls its handler.

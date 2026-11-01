@@ -2496,9 +2496,7 @@ extern short transport_pod_camera_param_4;
 extern short transport_pod_camera_param_5;
 extern short transport_pod_camera_param_6;
 typedef float OvlVec4[4] __attribute__((aligned(16)));
-typedef struct {
-    float f[4];
-} PVec4;
+
 typedef struct {
     char pad0[0x20];
     char riders[0x40];

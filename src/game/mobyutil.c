@@ -11,10 +11,6 @@
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-typedef struct {
-    char b[0x13];
-} Cfg13;
-
 extern void copy_matrix_rotation_2(void *, void *) __asm__("func_001FA460");
 extern void FastVecScale(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
