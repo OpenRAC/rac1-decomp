@@ -17,11 +17,23 @@ MIXED = "/* 0 165580 00000001 */ .word 0x1\n/* 4 165584 00 */ .byte 0x1\n"
 
 class ValuesTest(unittest.TestCase):
     def test_plain_words(self):
-        self.assertEqual(d.values(WORDS, "u32"), ["0x00000001", "0x00000002"])
+        self.assertEqual(d.parse(WORDS), ("u32", ["0x00000001", "0x00000002"]))
 
     def test_a_pointer_or_a_mix_is_not_plain(self):
-        self.assertIsNone(d.values(POINTER, "u32"))
-        self.assertIsNone(d.values(MIXED, "u32"))
+        self.assertIsNone(d.parse(POINTER))
+        self.assertIsNone(d.parse(MIXED))
+
+    def test_a_float_keeps_its_exact_bits(self):
+        # The disassembly's raw column is in file order: 1.0f is 00 00 80 3F on this little-endian CPU.
+        self.assertEqual(d.parse("/* 0 00165580 0000803F */ .float 1\n"), ("u32", ["0x3F800000"]))
+
+    def test_shorts_bytes_and_a_string(self):
+        self.assertEqual(d.parse("/* 0 00165580 */ .short 0x0003\n"), ("u16", ["0x0003"]))
+        self.assertEqual(d.parse("/* 0 00165580 */ .byte 0x01\n"), ("u8", ["0x01"]))
+        self.assertEqual(d.parse('/* 0 00165580 */ .asciz "Su"\n.align 2\n'), ("char", ['"Su"']))
+
+    def test_two_strings_are_not_one_block(self):
+        self.assertIsNone(d.parse('.asciz "a"\n.asciz "b"\n'))
 
     def test_render(self):
         self.assertEqual(d.render(["0x1"]), "0x1\n")
@@ -33,24 +45,48 @@ class FitsRetailTest(unittest.TestCase):
         self.assertTrue(d.fits_retail("D_00165580", 4))
         self.assertTrue(d.fits_retail("D_00165584", 1))
         self.assertFalse(d.fits_retail("D_00165584", 2))
+        self.assertFalse(d.fits_retail("D_00165584", 1, "char"))
+        self.assertTrue(d.fits_retail("D_00165580", 1, "char"))
+
+
+class NextPieceTest(unittest.TestCase):
+    def test_the_next_block_must_be_on_4(self):
+        blocks = {"D_00199810": "", "D_00199812": "", "D_00199818": ""}
+        self.assertFalse(d.next_piece_fits("D_00199810", blocks))
+        self.assertTrue(d.next_piece_fits("D_00199812", blocks))
+        self.assertTrue(d.next_piece_fits("D_00199818", blocks))
+
+
+class AddTest(unittest.TestCase):
+    def test_a_jump_table_is_refused(self):
+        with patch.object(d, "all_blocks", return_value={"jtbl_00165580": WORDS}), patch.object(d, "readable_names", return_value={}):
+            with patch.object(d, "rows", return_value=[]), self.assertRaises(SystemExit):
+                d.add(["jtbl_00165580:shared"])
 
 
 class SourceTest(unittest.TestCase):
-    def test_no_values_in_the_source(self):
-        blocks = {"D_00165580": WORDS, "D_00165590": "/* 0 0 0 */ .word 0xDEADBEEF\n"}
+    def write(self, entries, names=None):
         with tempfile.TemporaryDirectory() as folder, patch.object(d, "ROOT", Path(folder)):
-            d.write_source("src/data/game/x.c", ["D_00165580", "D_00165590"], blocks, {})
-            text = (Path(folder) / "src/data/game/x.c").read_text()
+            d.write_source("src/data/game/x.c", entries, names or {})
+            return (Path(folder) / "src/data/game/x.c").read_text()
+
+    def test_no_values_in_the_source(self):
+        text = self.write([("D_00165580", "u32", 2), ("D_00165590", "u32", 1)])
         self.assertIn('u32 D_00165580[] DATA_SECTION(D_00165580) = {\n#include "data_inc/D_00165580.inc"\n};', text)
         self.assertIn("u32 D_00165590 DATA_SECTION(D_00165590) =", text)
         self.assertNotIn("0x", text)
-        self.assertNotIn("DEADBEEF", text)
 
     def test_a_readable_name_is_used_and_the_section_keeps_the_address(self):
-        with tempfile.TemporaryDirectory() as folder, patch.object(d, "ROOT", Path(folder)):
-            d.write_source("src/data/game/x.c", ["D_00165580"], {"D_00165580": WORDS}, {"D_00165580": "fog_table"})
-            text = (Path(folder) / "src/data/game/x.c").read_text()
+        text = self.write([("D_00165580", "u32", 2)], {"D_00165580": "fog_table"})
         self.assertIn("u32 fog_table[] DATA_SECTION(D_00165580) = {", text)
+
+    def test_a_string(self):
+        text = self.write([("D_00165580", "char", 1)])
+        self.assertIn('char D_00165580[] DATA_SECTION(D_00165580) =\n#include "data_inc/D_00165580.inc"\n;', text)
+
+    def test_segments(self):
+        self.assertEqual(d.segment_of("D_0012F580"), "core")
+        self.assertEqual(d.segment_of("D_00165580"), "data")
 
 
 if __name__ == "__main__":

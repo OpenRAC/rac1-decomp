@@ -562,7 +562,7 @@ def compiled_data() -> list[tuple[str, str, int]]:
         m = EXE_LABEL.match(label)
         if m:                                      # level code's tables live in the levels
             out.append((obj, f".rodata.{label}", int(m.group(1), 16)))
-    for label, obj, section in data_in_c.provided():
+    for label, obj, section in data_in_c.provided("data") + data_in_c.provided("core"):
         out.append((obj, section, int(EXE_LABEL.match(label).group(1), 16)))
     return out
 

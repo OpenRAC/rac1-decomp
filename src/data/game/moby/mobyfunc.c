@@ -17,6 +17,10 @@ u32 moby_backup_buffer[] DATA_SECTION(D_001B3200) = {
 #include "data_inc/D_001B3200.inc"
 };
 
+u16 moby_gs_loc_stash[] DATA_SECTION(D_001B6100) = {
+#include "data_inc/D_001B6100.inc"
+};
+
 u32 moby_class_rectify[] DATA_SECTION(D_001B6880) = {
 #include "data_inc/D_001B6880.inc"
 };

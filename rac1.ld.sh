@@ -75,7 +75,11 @@ cat >> build-sn/rac1.ld <<'EOF'
   __CTOR_LIST__ = 0x0015ED18;
 
   . = 0x12f580;
-  .core_data : { build-sn/core_data.data.o(.data) }
+  .core_data : {
+EOF
+python tools/data_in_c.py ld core >> build-sn/rac1.ld
+cat >> build-sn/rac1.ld <<'EOF'
+  }
 
   . = 0x152300;
   /* Split around the read-only data compiled objects now bring themselves

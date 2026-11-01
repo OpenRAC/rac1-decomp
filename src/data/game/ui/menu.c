@@ -5,6 +5,10 @@ u32 menu_action_messages[] DATA_SECTION(D_00199578) = {
 #include "data_inc/D_00199578.inc"
 };
 
+u32 level_map_transforms[] DATA_SECTION(D_0019EA70) = {
+#include "data_inc/D_0019EA70.inc"
+};
+
 u32 map_coverage_active[] DATA_SECTION(D_001A0218) = {
 #include "data_inc/D_001A0218.inc"
 };

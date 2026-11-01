@@ -25,6 +25,10 @@ u32 gold_weapon_texture_state[] DATA_SECTION(D_0019E7F0) = {
 #include "data_inc/D_0019E7F0.inc"
 };
 
+u16 resident_class_id_by_slot[] DATA_SECTION(D_001B3C80) = {
+#include "data_inc/D_001B3C80.inc"
+};
+
 u32 class_resource_ids[] DATA_SECTION(D_001CBE40) = {
 #include "data_inc/D_001CBE40.inc"
 };
@@ -37,6 +41,10 @@ u32 class_material_maps[] DATA_SECTION(D_001CBF60) = {
 #include "data_inc/D_001CBF60.inc"
 };
 
+u16 class_runtime_indices[] DATA_SECTION(D_001CC0E0) = {
+#include "data_inc/D_001CC0E0.inc"
+};
+
 u32 particle_texture_ranges[] DATA_SECTION(D_001CDD00) = {
 #include "data_inc/D_001CDD00.inc"
 };
@@ -45,12 +53,20 @@ u32 particle_texture_data[] DATA_SECTION(D_001CE500) = {
 #include "data_inc/D_001CE500.inc"
 };
 
+u16 shrub_render_class_ids[] DATA_SECTION(D_001D83C0) = {
+#include "data_inc/D_001D83C0.inc"
+};
+
 u32 shrub_render_class_fixed_thresholds[] DATA_SECTION(D_001D9040) = {
 #include "data_inc/D_001D9040.inc"
 };
 
 u32 shrub_render_class_material_maps[] DATA_SECTION(D_001D9640) = {
 #include "data_inc/D_001D9640.inc"
+};
+
+u16 object_render_class_ids[] DATA_SECTION(D_001E1C00) = {
+#include "data_inc/D_001E1C00.inc"
 };
 
 u32 object_render_class_fixed_thresholds[] DATA_SECTION(D_001E3100) = {

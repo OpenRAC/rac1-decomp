@@ -41,12 +41,20 @@ u32 selected_mission_index[] DATA_SECTION(D_001CFAD8) = {
 #include "data_inc/D_001CFAD8.inc"
 };
 
+u16 active_message_menu_items[] DATA_SECTION(D_001CFFC0) = {
+#include "data_inc/D_001CFFC0.inc"
+};
+
 u32 pause_entry_cleared_word[] DATA_SECTION(D_001D0718) = {
 #include "data_inc/D_001D0718.inc"
 };
 
 u32 save_confirm_slot[] DATA_SECTION(D_001D29C0) = {
 #include "data_inc/D_001D29C0.inc"
+};
+
+u16 reward_menu_items[] DATA_SECTION(D_001D2B80) = {
+#include "data_inc/D_001D2B80.inc"
 };
 
 u32 reward_menu_page[] DATA_SECTION(D_001D2BF8) = {
@@ -89,6 +97,22 @@ u32 panel_slots[] DATA_SECTION(D_001D6120) = {
 #include "data_inc/D_001D6120.inc"
 };
 
+u8 class_pose_manipulator[] DATA_SECTION(D_001D6160) = {
+#include "data_inc/D_001D6160.inc"
+};
+
+u8 first_attachment_manipulator[] DATA_SECTION(D_001D61A0) = {
+#include "data_inc/D_001D61A0.inc"
+};
+
+u8 second_attachment_manipulator[] DATA_SECTION(D_001D61E0) = {
+#include "data_inc/D_001D61E0.inc"
+};
+
+u32 ammo_preview_offsets[] DATA_SECTION(D_001D6220) = {
+#include "data_inc/D_001D6220.inc"
+};
+
 u32 ammo_preview_velocities[] DATA_SECTION(D_001D6238) = {
 #include "data_inc/D_001D6238.inc"
 };
@@ -101,8 +125,16 @@ u32 menu_stream_buffers[] DATA_SECTION(D_001D6448) = {
 #include "data_inc/D_001D6448.inc"
 };
 
+u16 pause_weapon_menu_items[] DATA_SECTION(D_001D6470) = {
+#include "data_inc/D_001D6470.inc"
+};
+
 u32 pause_weapon_menu_item_field40[] DATA_SECTION(D_001D6508) = {
 #include "data_inc/D_001D6508.inc"
+};
+
+u16 gadget_menu_items[] DATA_SECTION(D_001D6548) = {
+#include "data_inc/D_001D6548.inc"
 };
 
 u32 gadget_menu_item_field40[] DATA_SECTION(D_001D65D8) = {
@@ -133,8 +165,16 @@ u32 graphics_setup_dma_packets[] DATA_SECTION(D_001D8120) = {
 #include "data_inc/D_001D8120.inc"
 };
 
+u16 planet_icon_rows[] DATA_SECTION(D_001DE0C0) = {
+#include "data_inc/D_001DE0C0.inc"
+};
+
 u32 map_screen_layer_insets[] DATA_SECTION(D_001DE2E8) = {
 #include "data_inc/D_001DE2E8.inc"
+};
+
+u32 preview_placements[] DATA_SECTION(D_001E0708) = {
+#include "data_inc/D_001E0708.inc"
 };
 
 u32 map_gold_bolt_totals[] DATA_SECTION(D_001E0B88) = {
