@@ -33,7 +33,7 @@ extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecSub(void *, void *, void *);
-extern unsigned char * umbris_part_type61_textures;
+extern unsigned char *umbris_part_type61_textures;
 extern float frame_scale MACRO_ADDR;
 extern float debris_far_point[];
 

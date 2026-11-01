@@ -22,7 +22,7 @@ typedef struct {
     u8 pad[12];
     Vec4 points[1];
 } SegmentPath_261d78;
-extern SegmentPath_261d78 * level_paths[];
+extern SegmentPath_261d78 *level_paths[];
 extern void clear_u64_value(void *);
 extern int random_integer_below(int);
 extern int scale_ticks(int);
@@ -56,8 +56,7 @@ extern char bolt_bonus_divisor_debug_format[];
 
 /* Per-moby effect update: builds a short vector set from the moby's
    0x10 vector and calls the helper chain for each queued unit. */
-void spawn_randomized_bolt_drop(Moby *a, int b, int c, int flags, int idx)
-{
+void spawn_randomized_bolt_drop(Moby *a, int b, int c, int flags, int idx) {
     float s0[4], s10[4], s20[4], s30[4], s40[4], s50[4], s60[4];
     float t70, t74;
     int f84;
@@ -73,8 +72,7 @@ void spawn_randomized_bolt_drop(Moby *a, int b, int c, int flags, int idx)
     c30 = 0;
     clear_u64_value(s0);
     if (!(flags & 0x20)) {
-        if (a->mission != 0xFF
-            && (unsigned)(*(unsigned short *)&a->oclass - 0x1F4) >= 0x29) {
+        if (a->mission != 0xFF && (unsigned)(*(unsigned short *)&a->oclass - 0x1F4) >= 0x29) {
             current_moby_mission_complete = mission_state[a->mission] == 0xFF;
         }
     }
@@ -118,9 +116,11 @@ void spawn_randomized_bolt_drop(Moby *a, int b, int c, int flags, int idx)
                     n *= (0xBE - m) / 20;
                 }
                 if (challenge_mode) {
-                    if (n > 0x3E8) n = 0x3E8;
+                    if (n > 0x3E8)
+                        n = 0x3E8;
                 } else {
-                    if (n > 0x1F4) n = 0x1F4;
+                    if (n > 0x1F4)
+                        n = 0x1F4;
                 }
             } else if (m >= 0x12D) {
                 if (m >= 0x160) {
@@ -174,37 +174,37 @@ void spawn_randomized_bolt_drop(Moby *a, int b, int c, int flags, int idx)
         c11 = 0x96;
         c5 = 3;
         if (ones + c23 + c22 + c30 >= 4) {
-        if (n < c11) {
-            do {
-                if (c16) {
-                    c16--;
-                    c13++;
-                } else if (c13) {
-                    c13--;
-                    c14++;
-                } else if (c14) {
-                    c14--;
-                    c17++;
-                }
-                c11 = c16 * 50 + c13 * 20 + c14 * 5 + c17;
-            } while (n < c11 && c11 >= 4);
-        }
-        c5 = 3;
-        if (c5 < n) {
-            do {
-                if (c15) {
-                    c15--;
-                    c10++;
-                } else if (c10) {
-                    c10--;
-                    c12++;
-                } else if (c12) {
-                    c12--;
-                    c20++;
-                }
-                c5 = c20 * 50 + c12 * 20 + c10 * 5 + c15;
-            } while (c5 < n && c5 < 0x96);
-        }
+            if (n < c11) {
+                do {
+                    if (c16) {
+                        c16--;
+                        c13++;
+                    } else if (c13) {
+                        c13--;
+                        c14++;
+                    } else if (c14) {
+                        c14--;
+                        c17++;
+                    }
+                    c11 = c16 * 50 + c13 * 20 + c14 * 5 + c17;
+                } while (n < c11 && c11 >= 4);
+            }
+            c5 = 3;
+            if (c5 < n) {
+                do {
+                    if (c15) {
+                        c15--;
+                        c10++;
+                    } else if (c10) {
+                        c10--;
+                        c12++;
+                    } else if (c12) {
+                        c12--;
+                        c20++;
+                    }
+                    c5 = c20 * 50 + c12 * 20 + c10 * 5 + c15;
+                } while (c5 < n && c5 < 0x96);
+            }
         }
         if ((c11 - n) < (n - c5)) {
             ones = c17;
@@ -282,11 +282,27 @@ extern float frame_delta_time MACRO_ADDR;
 extern int pal_mode MACRO_ADDR;
 /* selects timing constants for the active update mode */
 void SetUpdateModeTiming(int mode) {
- if(!mode) {
- pal_mode=0; frame_scale=1.0f; g_frame_scale_sq=1.0f; inv_frame_scale=1.0f; g_frame_time_sq=0.00027777778450399637f; g_frame_time_cube=0.0000046296295295178425f; frame_scale_fifths=5; g_frame_time=0.01666666753590107f; frame_delta_time=0.01666666753590107f;
- } else {
- pal_mode=1; frame_scale=1.2f; g_frame_scale_sq=1.44f; inv_frame_scale=0.8333333134651184f; g_frame_time=0.020000001415610313f; g_frame_time_sq=0.0004000000189989805f; g_frame_time_cube=0.000007999999979801942f; frame_scale_fifths=6; frame_delta_time=0.019999999552965164f;
- }
+    if (!mode) {
+        pal_mode = 0;
+        frame_scale = 1.0f;
+        g_frame_scale_sq = 1.0f;
+        inv_frame_scale = 1.0f;
+        g_frame_time_sq = 0.00027777778450399637f;
+        g_frame_time_cube = 0.0000046296295295178425f;
+        frame_scale_fifths = 5;
+        g_frame_time = 0.01666666753590107f;
+        frame_delta_time = 0.01666666753590107f;
+    } else {
+        pal_mode = 1;
+        frame_scale = 1.2f;
+        g_frame_scale_sq = 1.44f;
+        inv_frame_scale = 0.8333333134651184f;
+        g_frame_time = 0.020000001415610313f;
+        g_frame_time_sq = 0.0004000000189989805f;
+        g_frame_time_cube = 0.000007999999979801942f;
+        frame_scale_fifths = 6;
+        frame_delta_time = 0.019999999552965164f;
+    }
 }
 INCLUDE_ASM("asm/overlays", func_L00_00262450);
 typedef int u128 __attribute__((mode(TI)));
@@ -306,19 +322,19 @@ extern float interpolate_angle(float, float, float);
 
 /* Wander state (the idle_pos block in a moby's pvars). */
 struct WanderState {
-    f32 home_x;                         /* 0x00: home point */
-    f32 home_y;                         /* 0x04 */
+    f32 home_x; /* 0x00: home point */
+    f32 home_y; /* 0x04 */
     u8 pad_08[0x8];
-    f32 unk_10;                         /* 0x10: passed to MoveKeepingOverGround */
-    f32 speed;                          /* 0x14: step length per frame */
-    f32 turn_rate;                      /* 0x18 */
-    f32 max_dist;                       /* 0x1C: max distance from home */
-    f32 hero_avoid_dist;                /* 0x20: steer away from the hero inside this */
-    f32 heading;                        /* 0x24: target yaw */
-    s16 wandering;                      /* 0x28: 1 while a heading is picked */
-    s16 timer;                          /* 0x2A */
-    s16 timer_min;                      /* 0x2C */
-    s16 timer_max;                      /* 0x2E */
+    f32 unk_10; /* 0x10: passed to MoveKeepingOverGround */
+    f32 speed; /* 0x14: step length per frame */
+    f32 turn_rate; /* 0x18 */
+    f32 max_dist; /* 0x1C: max distance from home */
+    f32 hero_avoid_dist; /* 0x20: steer away from the hero inside this */
+    f32 heading; /* 0x24: target yaw */
+    s16 wandering; /* 0x28: 1 while a heading is picked */
+    s16 timer; /* 0x2A */
+    s16 timer_min; /* 0x2C */
+    s16 timer_max; /* 0x2E */
 };
 
 // Steers a moby around: picks a wander heading, moves it and updates its heading toward a target.
@@ -335,7 +351,8 @@ void update_object_wander_movement(Moby *moby, struct WanderState *d, float a, f
         d->wandering = 1;
     } else {
         step_angle_toward_target(&moby->rot.z, 0, d->heading, d->turn_rate);
-        if (FastDecTimer(&d->timer) != 0) d->wandering = 0;
+        if (FastDecTimer(&d->timer) != 0)
+            d->wandering = 0;
         pos = (char *)&moby->pos;
     }
     qcopy(v, pos);
@@ -350,12 +367,13 @@ void update_object_wander_movement(Moby *moby, struct WanderState *d, float a, f
         d->timer = rand_range(t, scale_ticks(0x5A));
         d->wandering = 1;
     } else {
-        char *g =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
+        char *g = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
         dist = vec_distance_xy(pos, g);
         if (dist < d->hero_avoid_dist) {
             char *q = g - 0x80;
             dist = dist / d->hero_avoid_dist;
-            d->heading = interpolate_angle(d->heading, fast_atan2(moby->pos.x - *(float *)(q + 0x80), moby->pos.y - *(float *)(q + 0x84)), dist);
+            d->heading = interpolate_angle(
+                d->heading, fast_atan2(moby->pos.x - *(float *)(q + 0x80), moby->pos.y - *(float *)(q + 0x84)), dist);
         }
     }
 }
@@ -544,7 +562,7 @@ typedef struct {
     u8 pad[12];
     Vec4 points[1];
 } SegmentPath_262030;
-extern SegmentPath_262030 * level_paths_r2[] __asm__("D_L00_001B0830");
+extern SegmentPath_262030 *level_paths_r2[] __asm__("D_L00_001B0830");
 extern Vec4 hero_gravity_dir;
 extern void FastVecAdd_r2(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BD8");
 extern void FastVecSub_r3(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BF0");
@@ -619,7 +637,7 @@ s32 resolve_point_path_segment_clearance(f32 distance, s32 path_index, Vec4 *poi
                     FastVecAdd_r2(&working, &scaled_difference, current);
                 }
             }
-next_segment_262030:
+        next_segment_262030:
             i = next;
         } while (i < entry->count - 1);
     }
@@ -687,14 +705,14 @@ typedef int q_263680 __attribute__((mode(TI)));
 struct TransformHistory {
     q_263680 pos[8];
     q_263680 rot[8];
-    int trail_alpha[4];               /* 0x100: alpha of each trailing moby */
-    int delay[4];                     /* 0x110: samples each trailing moby lags behind */
-    struct Moby *trail[4];            /* 0x120 */
-    short head;                       /* 0x130 */
-    short count;                      /* 0x132 */
-    struct Moby *src;                 /* 0x134 */
-    int n;                            /* 0x138: trailing mobys in use */
-    int active;                       /* 0x13C */
+    int trail_alpha[4]; /* 0x100: alpha of each trailing moby */
+    int delay[4]; /* 0x110: samples each trailing moby lags behind */
+    struct Moby *trail[4]; /* 0x120 */
+    short head; /* 0x130 */
+    short count; /* 0x132 */
+    struct Moby *src; /* 0x134 */
+    int n; /* 0x138: trailing mobys in use */
+    int active; /* 0x13C */
 };
 /* Starts a manipulator state in b if it is idle. */
 void initialize_moby_transform_history(int a, struct TransformHistory *b) {
@@ -720,7 +738,8 @@ void create_moby_transform_history_entry(struct TransformHistory *o, int a, int 
                 m->flags = 0x80A;
                 m->update_dist = 0;
                 m->collision = 0;
-                if (m->oclass == 0) m->unk72 = 0;
+                if (m->oclass == 0)
+                    m->unk72 = 0;
                 m->alpha = a;
                 o->delay[o->n] = b;
                 o->trail_alpha[o->n] = a;
@@ -815,20 +834,20 @@ extern void clear_u64_value(void *);
 /* A manipulator state: eased rotation offsets and scale applied to a held moby. */
 struct ManipState {
     u8 pad_00;
-    u8 attached;                        /* 0x01: AttachManipulator done */
+    u8 attached; /* 0x01: AttachManipulator done */
     u8 pad_02[0xE];
-    f32 quat[4];                        /* 0x10: built from euler */
-    f32 scale[3];                       /* 0x20 */
+    f32 quat[4]; /* 0x10: built from euler */
+    f32 scale[3]; /* 0x20 */
     u8 pad_2C[0x14];
-    f32 euler[3];                       /* 0x40: eased offsets */
+    f32 euler[3]; /* 0x40: eased offsets */
     u8 pad_4C[4];
-    f32 euler_vel[3];                   /* 0x50 */
+    f32 euler_vel[3]; /* 0x50 */
     u8 pad_5C[4];
-    f32 goal[3];                        /* 0x60: offsets are eased toward this */
+    f32 goal[3]; /* 0x60: offsets are eased toward this */
     u8 pad_6C[4];
-    f32 goal_scale;                     /* 0x70: scale applied each frame, then reset to 1 */
+    f32 goal_scale; /* 0x70: scale applied each frame, then reset to 1 */
     u8 pad_74[4];
-    struct Moby *target;                /* 0x78: held moby */
+    struct Moby *target; /* 0x78: held moby */
 };
 
 /* Eases a moby's per-axis offsets toward zero and applies them and its scale to the held object, resetting when settled.
@@ -844,11 +863,8 @@ void EaseManipulatorOffsets(int m, struct ManipState *p, int c, float fa, float 
         p->attached = 0;
         *(int *)&p->target = m;
     }
-    if (p->goal[0] == 0.0f && p->goal[1] == 0.0f && p->goal[2] == 0.0f
-        && p->goal_scale == 1.0f
-        && FastAbsF(p->euler[0]) < 0.005f
-        && FastAbsF(p->euler[1]) < 0.005f
-        && FastAbsF(p->euler[2]) < 0.005f) {
+    if (p->goal[0] == 0.0f && p->goal[1] == 0.0f && p->goal[2] == 0.0f && p->goal_scale == 1.0f &&
+        FastAbsF(p->euler[0]) < 0.005f && FastAbsF(p->euler[1]) < 0.005f && FastAbsF(p->euler[2]) < 0.005f) {
         if (p->attached)
             DetachManipulator(m, p);
         return;
@@ -894,13 +910,17 @@ void fast_add_rotations_cf(void *a, void *b, float r, float y, float z) {
 }
 extern void ShowBanner(int arg0, int arg1);
 extern char planet_unlock_message_ids[];
-typedef struct { int v[19]; } Tbl;
+typedef struct {
+    int v[19];
+} Tbl;
 
 // Shows the banner message for planet index a (clamped to the table), copying the table locally.
 void queue_planet_unlock_message(int a) {
     Tbl t = *(Tbl *)planet_unlock_message_ids;
-    if (a < 0) a = 0;
-    if (a > 18) a = 18;
+    if (a < 0)
+        a = 0;
+    if (a > 18)
+        a = 18;
     ShowBanner(t.v[a], scale_ticks(0x49C));
 }
 LINKER_REMNANT("asm/overlays", func_L00_00264130);
@@ -911,7 +931,7 @@ typedef struct MobyBound {
     u8 padb[5];
     f32 height; /* 0x10: aim height above the moby position */
 } MobyBound;
-extern struct Moby * suck_moby_list MACRO_ADDR;
+extern struct Moby *suck_moby_list MACRO_ADDR;
 extern u8 g_debug_camera_r[] __asm__("D_L00_00166EC0");
 float fast_atan2(float, float);
 float vec_length_xy(void *);
@@ -935,8 +955,8 @@ typedef struct {
 
 /* Picks the best auto-aim target moby (kind 5) for a shot from pos along dir: writes yaw/pitch toward it and its aim height, returns the moby or 0.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002630b8.c, FUN_L00_002630c8. */
-struct Moby *select_auto_aim_target_moby(void *ignore, Vec4 *pos_in, Vec4 *dir_in, f32 *yaw, f32 *pitch,
-                              f32 *height, f32 max_angle) {
+struct Moby *select_auto_aim_target_moby(void *ignore, Vec4 *pos_in, Vec4 *dir_in, f32 *yaw, f32 *pitch, f32 *height,
+                                         f32 max_angle) {
     Vec4 pos, dir, target, probe;
     Vec4 *pp = &pos, *dp = &dir;
     struct Moby *best = 0;
@@ -965,9 +985,8 @@ struct Moby *select_auto_aim_target_moby(void *ignore, Vec4 *pos_in, Vec4 *dir_i
         t_pitch = fast_atan2(vec_distance_xy(pp, &target), target.f[2] - pp->f[2]);
         dist = FastVecDist(pp, &target);
         if (dist < 7.5f &&
-            FastDiffRots(g_hero.moby->rot.z,
-                         fast_atan2(m->pos.x - g_hero.motion.pos.f[0],
-                                      m->pos.y - g_hero.motion.pos.f[1])) < 1.0471976f &&
+            FastDiffRots(g_hero.moby->rot.z, fast_atan2(m->pos.x - g_hero.motion.pos.f[0],
+                                                        m->pos.y - g_hero.motion.pos.f[1])) < 1.0471976f &&
             FastAbsF(t_pitch) < 1.0471976f) {
             *pitch = -t_pitch;
             *yaw = t_yaw;
@@ -998,7 +1017,9 @@ struct Moby *select_auto_aim_target_moby(void *ignore, Vec4 *pos_in, Vec4 *dir_i
     }
     return best;
 }
-typedef struct { float f[4]; } V __attribute__((aligned(16)));
+typedef struct {
+    float f[4];
+} V __attribute__((aligned(16)));
 extern int height_map_width MACRO_ADDR;
 extern unsigned char *height_map_data MACRO_ADDR;
 extern float height_map_min_height MACRO_ADDR, height_map_max_height MACRO_ADDR;
@@ -1010,7 +1031,10 @@ float ground_height_at(V *p) {
     float t = (float)(height_map_data + height_map_width * y)[x] / 255.0f;
     return (height_map_max_height - height_map_min_height) * (1.0f - t) + height_map_min_height;
 }
-typedef struct { char pad[0x140]; V pos; } S166D;
+typedef struct {
+    char pad[0x140];
+    V pos;
+} S166D;
 extern S166D player_camera;
 extern V collision_hit_point;
 extern int coll_line(void *, void *, int, int, int);
@@ -1032,7 +1056,8 @@ void spawn_ground_contact_effect_particle(V *v) {
         u.f[2] = u.f[2] - (k + k);
         if (coll_line(&t, &u, 0x12, 0, 0)) {
             FastVecSub(&d, &collision_hit_point, &b->pos);
-            spawn_timed_effect_particle((char *)&collision_hit_point, (unsigned char)(int)(vec_length_xy(&d) / 60.0f * 191.0f + 64.0f));
+            spawn_timed_effect_particle((char *)&collision_hit_point,
+                                        (unsigned char)(int)(vec_length_xy(&d) / 60.0f * 191.0f + 64.0f));
         }
     }
 }
@@ -1059,12 +1084,21 @@ void draw_offset_textured_effect_quad(float *p, int b, float s, float t) {
     int i;
     float *r;
     float *src;
-    *(u128_264690 *)up = z; up[2] = one; up[3] = one;
+    *(u128_264690 *)up = z;
+    up[2] = one;
+    up[3] = one;
     g[1] = GetEffectTex(11);
     g[3] = 0x8000000048LL;
     g[2] = 0xFF9000000260LL;
     g[0] = 5;
-    c[0] = 0; c[1] = 0; c[2] = 0; c[3] = one; c[4] = one; c[5] = 0; c[6] = one; c[7] = one;
+    c[0] = 0;
+    c[1] = 0;
+    c[2] = 0;
+    c[3] = one;
+    c[4] = one;
+    c[5] = 0;
+    c[6] = one;
+    c[7] = one;
     qcopy(v4, p);
     FastVecSub(v0, g_debug_camera, v4);
     vec_scale_to_length(v0, v0, one);
@@ -1073,7 +1107,10 @@ void draw_offset_textured_effect_quad(float *p, int b, float s, float t) {
     FastVecCross(v2, v1, v0);
     FastVecScale(v3, v0, t);
     FastVecAdd(v4, v4, v3);
-    bb[3] = b; bb[2] = b; bb[1] = b; bb[0] = b;
+    bb[3] = b;
+    bb[2] = b;
+    bb[1] = b;
+    bb[0] = b;
     src = offset_effect_quad_corners;
     r = m;
     for (i = 3; i >= 0; i--) {
@@ -1137,8 +1174,7 @@ void cutscene_set_camera_target(u8 *m) {
                 n = random_integer_below(0x10);
                 if (random_integer_below(2) != 0)
                     n = -n;
-                effect = PartType23Spawn(&pos, size, 1.0f, 0.75f, n,
-                                                   veldin1_zero_vec_r, lifetime, 0x503030ff);
+                effect = PartType23Spawn(&pos, size, 1.0f, 0.75f, n, veldin1_zero_vec_r, lifetime, 0x503030ff);
                 if (effect) {
                     EffectTail_2637f8 *tail = &effect->tail;
                     effect->hA = scale_ticks(6);
@@ -1160,8 +1196,7 @@ void cutscene_set_camera_target(u8 *m) {
             FastVecAdd(&pos, &vectors[3], &scaled);
             count = 4;
             do {
-                effect = PartType23Spawn(&pos, size, 1.0f, 1.0f, 0x10,
-                                                   veldin1_zero_vec_r, lifetime, 0x7fffffff);
+                effect = PartType23Spawn(&pos, size, 1.0f, 1.0f, 0x10, veldin1_zero_vec_r, lifetime, 0x7fffffff);
                 if (effect) {
                     EffectTail_2637f8 *tail = &effect->tail;
                     effect->hA = scale_ticks(2);
@@ -1272,12 +1307,14 @@ extern char banner_text_buffer[] NOT_SDA;
 extern void sprintf(void *, int, int);
 /* Like func_L00_00264DB8, but draws message a with parameter b. */
 void queue_formatted_dialogue_message(int a, int b, int c) {
-    if (c == -1) c = scale_ticks(0xB4);
+    if (c == -1)
+        c = scale_ticks(0xB4);
     sprintf(banner_text_buffer, msg_string(a), b);
     banner_display_ticks = c;
 }
 extern float veldin1_zero_vec[] MACRO_ADDR;
-extern void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float *v10, float *v11, float scale, float *v12);
+extern void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float *v10, float *v11,
+                                float scale, float *v12);
 extern int generate_random_points_from_shape_entries(void *, int, void *, void *, float);
 extern float random_angle_radians(void);
 
@@ -1291,9 +1328,11 @@ void spawn_moby_break_fragments(char *m, int n, int cnt, int base, int range, in
         mode = 2;
     }
     if (n > 0) {
-        if (cnt > 0) for (i = 0; i < cnt; i++) {
-            SpawnBreakFragment(m, n + i, (float *)(m + 0x10), m + 0x40, 0, mode, veldin1_zero_vec, veldin1_zero_vec, 0.0f, veldin1_zero_vec);
-        }
+        if (cnt > 0)
+            for (i = 0; i < cnt; i++) {
+                SpawnBreakFragment(m, n + i, (float *)(m + 0x10), m + 0x40, 0, mode, veldin1_zero_vec, veldin1_zero_vec,
+                                   0.0f, veldin1_zero_vec);
+            }
     }
     if (n > 0 && range > 0) {
         k = generate_random_points_from_shape_entries(m, cnt2, buf, (void *)0xFFFF, 1000.0f);
@@ -1303,7 +1342,8 @@ void spawn_moby_break_fragments(char *m, int n, int cnt, int base, int range, in
                 v[0] = random_angle_radians();
                 v[1] = random_angle_radians();
                 v[2] = random_angle_radians();
-                SpawnBreakFragment(m, base + random_integer_below(range), (float *)(buf + i * 16), v, 0, mode, veldin1_zero_vec, veldin1_zero_vec, 0.0f, veldin1_zero_vec);
+                SpawnBreakFragment(m, base + random_integer_below(range), (float *)(buf + i * 16), v, 0, mode,
+                                   veldin1_zero_vec, veldin1_zero_vec, 0.0f, veldin1_zero_vec);
             }
         }
     }
@@ -1315,7 +1355,8 @@ extern float FastVecLength(void *a);
 extern void rand_vec(float *, float, float);
 
 /* Spawns a break-effect fragment moby of class cls from src, and initialises its motion data. */
-void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float *v10, float *v11, float scale, float *v12) {
+void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float *v10, float *v11, float scale,
+                         float *v12) {
     Moby *m = (Moby *)((char *)CreateMoby_m(cls));
     struct BreakFragmentVars *d;
     float t[4];
@@ -1395,7 +1436,9 @@ void update_timed_hud_visibility(void) {
     if (timed_hud_visible == 0 || (*(int *)&timed_hud_visibility_gate_g) == 0) {
         (*(int *)&timed_hud_handle_g) = -1;
     } else if ((*(int *)&timed_hud_handle_g) == -1) {
-        (*(int *)&timed_hud_handle_g) = queue_animation_update(0xC, 0, (void *)((char *)draw_uniform_size_hud_stars + 0x340), DefaultVtbl_DeleteMoby, draw_hud_text_panel, 0, 0);
+        (*(int *)&timed_hud_handle_g) =
+            queue_animation_update(0xC, 0, (void *)((char *)draw_uniform_size_hud_stars + 0x340),
+                                   DefaultVtbl_DeleteMoby, draw_hud_text_panel, 0, 0);
     } else {
         hud_keep_visible((*(int *)&timed_hud_handle_g), 0xA);
     }

@@ -35,8 +35,7 @@ extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
 extern unsigned char normal_font_metrics[];
 extern unsigned char small_font_metrics[];
 extern unsigned char large_font_metrics[];
-extern void FontPrint(void *, void *, void *, void *, void *, int,
-                          unsigned char *);
+extern void FontPrint(void *, void *, void *, void *, void *, int, unsigned char *);
 extern int measure_text_width_regular(unsigned char *, int);
 extern int measure_text_width_small(unsigned char *, int);
 extern int GetEffectTex(int);
@@ -212,15 +211,13 @@ extern void VU1_addGSregister(int, int);
 extern void draw_map_overlay(void);
 extern void SetupGifPaging(int);
 extern void DoGifPaging(void);
-extern void func_001F68E8_c(int, int, long, void *, int)
-    __asm__("func_001F68E8");
+extern void func_001F68E8_c(int, int, long, void *, int) __asm__("func_001F68E8");
 extern void *msg_string_id(int) __asm__("func_001FE540");
 extern short panel_clear_color;
 extern void draw_hud_rect_blended(int, int, int, int, long, long);
 extern int GetIconFrame(int, int);
 extern void HudSprite(int, int, int, int, int, int);
-extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long,
-                          long);
+extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
 extern short fs_aa_buffer[];
 extern long transition_overlay_tex0;
 extern int acquire_menu_stream_buffer(int);
@@ -281,33 +278,33 @@ void DrawSkyShellsScrolling(void) {
         p = (f32 *)(tab[i] + 8);
         scale = 1.0f;
         switch (i) {
-        case 1:
-            rot[1] = 0.02f;
-            scale = 3.0f;
-            *p += D_00160500_2BEB0 * 0.55f;
-            break;
-        case 2:
-            rot[1] = -0.02f;
-            scale = 2.5f;
-            *p += D_00160500_2BEB0 * 0.6f;
-            break;
-        case 3:
-            rot[1] = 0.01f;
-            scale = 2.0f;
-            *p += D_00160500_2BEB0 * 0.7f;
-            break;
-        case 4:
-            rot[1] = -0.01f;
-            scale = 1.5f;
-            *p += D_00160500_2BEB0 * 0.75f;
-            break;
-        case 5:
-            scale = 1.25f;
-            *p += D_00160500_2BEB0 * 0.8f;
-            break;
-        default:
-            set_identity_matrix_r(sky_matrix_r);
-            break;
+            case 1:
+                rot[1] = 0.02f;
+                scale = 3.0f;
+                *p += D_00160500_2BEB0 * 0.55f;
+                break;
+            case 2:
+                rot[1] = -0.02f;
+                scale = 2.5f;
+                *p += D_00160500_2BEB0 * 0.6f;
+                break;
+            case 3:
+                rot[1] = 0.01f;
+                scale = 2.0f;
+                *p += D_00160500_2BEB0 * 0.7f;
+                break;
+            case 4:
+                rot[1] = -0.01f;
+                scale = 1.5f;
+                *p += D_00160500_2BEB0 * 0.75f;
+                break;
+            case 5:
+                scale = 1.25f;
+                *p += D_00160500_2BEB0 * 0.8f;
+                break;
+            default:
+                set_identity_matrix_r(sky_matrix_r);
+                break;
         }
         if (i > 0) {
             f32 v = (f32)i * 2000.0f;
@@ -352,7 +349,7 @@ struct SkyEffect {
     f32 position_z;
     f32 size;
 };
-extern struct LevelSkyEffectData * level_sky_effect_data_r2 __asm__("D_0016055C") MACRO_ADDR;
+extern struct LevelSkyEffectData *level_sky_effect_data_r2 __asm__("D_0016055C") MACRO_ADDR;
 extern u8 sky_matrix[];
 extern void srand(s32);
 extern f32 FastAbsF(f32);
@@ -416,8 +413,7 @@ void SkyLevelGeneric___maybe(void) {
                 effect->flags = effect_flags;
                 effect->state.angles.azimuth = color_delta;
                 effect->angle = random_angle_radians();
-                effect->size =
-                    IntToFloat(random_integer_below(0x18) + 0x20) * 0.00390625f;
+                effect->size = IntToFloat(random_integer_below(0x18) + 0x20) * 0.00390625f;
                 azimuth = FastAddRots(-3.0f, random_angle_radians() * 0.2f);
                 elevation = random_angle_radians();
                 elevation = elevation * 0.09f;
@@ -436,8 +432,7 @@ void SkyLevelGeneric___maybe(void) {
                 if ((func_001160D8() >> 0x10) & 1) {
                     effect->state.base_color = alpha_delta + ((color_delta << 0x10) + base_color);
                 } else {
-                    effect->state.base_color =
-                        (alpha_delta + ((color_delta << 8) + base_color)) | color_delta;
+                    effect->state.base_color = (alpha_delta + ((color_delta << 8) + base_color)) | color_delta;
                 }
             }
         }
@@ -492,7 +487,7 @@ struct SkyTransform_2C5A0 {
     u64 translation;
 };
 extern f32 D_00160504_2C5A0 SDATA(D_00160504);
-extern struct SkyShellSet_2C5A0 * level_sky_effect_data_r3 __asm__("D_0016055C") MACRO_ADDR;
+extern struct SkyShellSet_2C5A0 *level_sky_effect_data_r3 __asm__("D_0016055C") MACRO_ADDR;
 extern u8 sky_shell_translation_r2[] __asm__("D_00160560") MACRO_ADDR;
 extern struct SkyTransform_2C5A0 sky_matrix_r2 __asm__("D_001D9A70");
 extern s32 depth_buffer_address_r __asm__("D_0015EF88") MACRO_ADDR;
@@ -520,34 +515,34 @@ void draw_sky_shells(void) {
         do {
             shell_scale = 1.0f;
             switch (shell_index) {
-            case 0:
-                *(s32 *)&rotation_angles[1] = 0;
-                rotation_angles[2] = D_00160504_2C5A0;
-            case 1:
-                *(s32 *)&rotation_angles[1] = 0;
-                rotation_angles[2] = FastAddRots(D_00160504_2C5A0, rotation_angles[1]);
-                shell_scale = 1.0f;
-                break;
-            case 2:
-                rotation_angles[1] = -0.075f;
-                rotation_angles[2] = FastAddRots(D_00160504_2C5A0, -0.15f);
-                shell_scale = 1.25f;
-                break;
-            case 3:
-                rotation_angles[1] = 0.05f;
-                rotation_angles[2] = FastAddRots(D_00160504_2C5A0, 0.125f);
-                shell_scale = 1.5f;
-                break;
-            case 4:
-                rotation_angles[1] = 0.1f;
-                rotation_angles[2] = FastAddRots(D_00160504_2C5A0, -0.05f);
-                shell_scale = 1.75f;
-                break;
-            case 5:
-                rotation_angles[1] = -0.15f;
-                rotation_angles[2] = FastAddRots(D_00160504_2C5A0, 0.1f);
-                shell_scale = 2.0f;
-                break;
+                case 0:
+                    *(s32 *)&rotation_angles[1] = 0;
+                    rotation_angles[2] = D_00160504_2C5A0;
+                case 1:
+                    *(s32 *)&rotation_angles[1] = 0;
+                    rotation_angles[2] = FastAddRots(D_00160504_2C5A0, rotation_angles[1]);
+                    shell_scale = 1.0f;
+                    break;
+                case 2:
+                    rotation_angles[1] = -0.075f;
+                    rotation_angles[2] = FastAddRots(D_00160504_2C5A0, -0.15f);
+                    shell_scale = 1.25f;
+                    break;
+                case 3:
+                    rotation_angles[1] = 0.05f;
+                    rotation_angles[2] = FastAddRots(D_00160504_2C5A0, 0.125f);
+                    shell_scale = 1.5f;
+                    break;
+                case 4:
+                    rotation_angles[1] = 0.1f;
+                    rotation_angles[2] = FastAddRots(D_00160504_2C5A0, -0.05f);
+                    shell_scale = 1.75f;
+                    break;
+                case 5:
+                    rotation_angles[1] = -0.15f;
+                    rotation_angles[2] = FastAddRots(D_00160504_2C5A0, 0.1f);
+                    shell_scale = 2.0f;
+                    break;
             }
             euler_to_matrix_ee(&sky_matrix_r2, rotation_angles);
             transform_row = (u8 *)&sky_matrix_r2;
@@ -578,13 +573,13 @@ typedef struct {
 } SkyGifPage;
 typedef struct {
     char unk_00[6];
-    short count;          /* 0x6: shells */
+    short count; /* 0x6: shells */
     char unk_08[4];
-    short npages;         /* 0xC: GIF pages */
+    short npages; /* 0xC: GIF pages */
     short unk_0E;
-    SkyGifPage *pages;    /* 0x10 */
+    SkyGifPage *pages; /* 0x10 */
     char unk_14[0xC];
-    void *shells[1];      /* 0x20 */
+    void *shells[1]; /* 0x20 */
 } SkyDef;
 extern SkyDef *level_sky_effect_data MACRO_ADDR;
 
@@ -665,7 +660,7 @@ extern void SkyDrawShellGouraud(void *);
 /* Minimal layout for one sky shell: only the flag at +4 is read here. */
 struct SkyShell {
     u8 pad_0[4];
-    s32 gouraud_enabled;   /* 0x04: nonzero draws the Gouraud path */
+    s32 gouraud_enabled; /* 0x04: nonzero draws the Gouraud path */
 };
 
 /* SkyDrawShell(int) */
@@ -748,7 +743,7 @@ void func_0022CA00_r(struct Shell_2CA00 *shell) {
     D_00160510_2CA00 = 1 - D_00160510_2CA00;
     if (visibility[0] == 1) {
         DmaToSpr_r(shell->tiles[0].address, shell->tiles[0].unkE >> 4,
-                                 (((s32 *)&sky_tile_spr_buffers))[D_00160510_2CA00]);
+                   (((s32 *)&sky_tile_spr_buffers))[D_00160510_2CA00]);
     }
 
     for (i = 0; i < shell->count; i++) {
@@ -760,7 +755,7 @@ void func_0022CA00_r(struct Shell_2CA00 *shell) {
         D_00160510_2CA00 = 1 - D_00160510_2CA00;
         if (next < shell->count && visibility[next] == 1) {
             DmaToSpr_r(shell->tiles[next].address, shell->tiles[next].unkE >> 4,
-                                     (((s32 *)&sky_tile_spr_buffers))[D_00160510_2CA00]);
+                       (((s32 *)&sky_tile_spr_buffers))[D_00160510_2CA00]);
         }
 
         if (visibility[i] == 1) {
@@ -768,7 +763,7 @@ void func_0022CA00_r(struct Shell_2CA00 *shell) {
             c_dest = dest + shell->tiles[i].unkC;
             a_dest = dest + shell->tiles[i].unkA;
             if (sky_transform_vertices_r(dest + shell->tiles[i].unk8, 0x70002000, shell->tiles[i].unk4,
-                             (&shell->tiles[i])->unkC) == 0) {
+                                         (&shell->tiles[i])->unkC) == 0) {
                 sky_build_gif_textured_r(shell->tiles[i].unk6, c_dest, a_dest, 0x70002000);
             }
         }
@@ -841,7 +836,7 @@ void func_0022CC40_r(struct Shell_2CC40 *shell) {
     D_00160510_2CC40 = 1 - D_00160510_2CC40;
     if (visibility[0] == 1) {
         DmaToSpr_r2(shell->tiles[0].address, shell->tiles[0].unkE >> 4,
-                                 (((s32 *)&sky_tile_spr_buffers))[D_00160510_2CC40]);
+                    (((s32 *)&sky_tile_spr_buffers))[D_00160510_2CC40]);
     }
 
     for (i = 0; i < shell->count; i++) {
@@ -853,7 +848,7 @@ void func_0022CC40_r(struct Shell_2CC40 *shell) {
         D_00160510_2CC40 = 1 - D_00160510_2CC40;
         if (next < shell->count && visibility[next] == 1) {
             DmaToSpr_r2(shell->tiles[next].address, shell->tiles[next].unkE >> 4,
-                                     (((s32 *)&sky_tile_spr_buffers))[D_00160510_2CC40]);
+                        (((s32 *)&sky_tile_spr_buffers))[D_00160510_2CC40]);
         }
 
         if (visibility[i] == 1) {
@@ -861,7 +856,7 @@ void func_0022CC40_r(struct Shell_2CC40 *shell) {
             c_dest = dest + shell->tiles[i].unkC;
             a_dest = dest + shell->tiles[i].unkA;
             if (sky_transform_vertices_r2(dest + shell->tiles[i].unk8, 0x70002000, shell->tiles[i].unk4,
-                             (&shell->tiles[i])->unkC) == 0) {
+                                          (&shell->tiles[i])->unkC) == 0) {
                 sky_build_gif_gouraud_r(shell->tiles[i].unk6, c_dest, a_dest, 0x70002000);
             }
         }

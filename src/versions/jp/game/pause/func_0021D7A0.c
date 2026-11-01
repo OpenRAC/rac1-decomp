@@ -14,8 +14,7 @@ int update_menu_item_slots(SelList_0021D7A0 *arg0) {
     if (arg0->idx != old) {
         Moby_PlaySound(1, 0x11, arg0->id);
     }
-    if (item != 0 && ((unsigned char *)&item_available)[item] != 0
-        && (*(int *)(pad + 0x1C4) & 0x60)) {
+    if (item != 0 && ((unsigned char *)&item_available)[item] != 0 && (*(int *)(pad + 0x1C4) & 0x60)) {
         Stats_0021D7A0 *s = &usage_stats;
 
         if (s->count <= 0xFFFE) {

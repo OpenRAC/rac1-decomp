@@ -13,7 +13,9 @@ typedef struct Pkt {
     long state;
     long flags;
 } Pkt;
-typedef struct Vq { float x, y, z, w; } __attribute__((aligned(16))) Vq;
+typedef struct Vq {
+    float x, y, z, w;
+} __attribute__((aligned(16))) Vq;
 
 extern long GetEffectTex(int);
 extern void copy_matrix_rotation(void *, void *);
@@ -50,10 +52,12 @@ void draw_hoven_jittered_quad_layers(char *m) {
     c0 = *(int *)&hoven_jitter_quad_color;
     c1 = *(int *)&hoven_jitter_quad_back_color;
     P[0].state = P[1].state = 0xFF9000000260L;
-    P[0].flags = (long)*(int *)&hoven_jitter_quad_blend_a | ((long)*(int *)&hoven_jitter_quad_blend_b << 2) | ((long)*(int *)&hoven_jitter_quad_blend_c << 4)
-                 | ((long)*(int *)&hoven_jitter_quad_blend_d << 6) | (0x8000L << 24);
-    P[1].flags = (long)*(int *)&hoven_jitter_quad_back_blend_a | ((long)*(int *)&hoven_jitter_quad_back_blend_b << 2) | ((long)*(int *)&hoven_jitter_quad_back_blend_c << 4)
-                 | ((long)*(int *)&hoven_jitter_quad_back_blend_d << 6) | (0x8000L << 24);
+    P[0].flags = (long)*(int *)&hoven_jitter_quad_blend_a | ((long)*(int *)&hoven_jitter_quad_blend_b << 2) |
+                 ((long)*(int *)&hoven_jitter_quad_blend_c << 4) | ((long)*(int *)&hoven_jitter_quad_blend_d << 6) |
+                 (0x8000L << 24);
+    P[1].flags = (long)*(int *)&hoven_jitter_quad_back_blend_a | ((long)*(int *)&hoven_jitter_quad_back_blend_b << 2) |
+                 ((long)*(int *)&hoven_jitter_quad_back_blend_c << 4) |
+                 ((long)*(int *)&hoven_jitter_quad_back_blend_d << 6) | (0x8000L << 24);
     P[0].color[0] = P[0].color[1] = P[0].color[2] = P[0].color[3] = c0;
     P[0].zero = P[1].zero = 0;
     P[1].color[0] = P[1].color[1] = P[1].color[2] = P[1].color[3] = c1;
@@ -87,7 +91,8 @@ void draw_hoven_jittered_quad_layers(char *m) {
             f20 = 0.0f;
             P[0].corner[0][1] = f0;
             P[0].corner[1][1] = f0;
-            if (more) f20 = random_float_between(-0.2f, 0.2f);
+            if (more)
+                f20 = random_float_between(-0.2f, 0.2f);
             f0 = (float)nb + f20;
             P[0].corner[2][1] = f0;
             P[0].corner[3][1] = f0;

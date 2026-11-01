@@ -35,8 +35,7 @@ extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
 extern unsigned char normal_font_metrics[];
 extern unsigned char small_font_metrics[];
 extern unsigned char large_font_metrics[];
-extern void FontPrint(void *, void *, void *, void *, void *, int,
-                          unsigned char *);
+extern void FontPrint(void *, void *, void *, void *, void *, int, unsigned char *);
 extern int measure_text_width_regular(unsigned char *, int);
 extern int measure_text_width_small(unsigned char *, int);
 extern int GetEffectTex(int);
@@ -213,8 +212,8 @@ struct Obj {
     u128 q10;
     struct Sub sub;
 };
-extern u8 * particle_texture_ptrs[];
-extern u8 * particle_texture_ptrs_23[];
+extern u8 *particle_texture_ptrs[];
+extern u8 *particle_texture_ptrs_23[];
 extern struct Obj *create_part(s32);
 extern s32 truncate_float_to_s32(f32);
 extern f32 random_float_between(f32, f32);
@@ -222,7 +221,8 @@ extern void pack_vector_xyz_with_shared_scale(void *, void *);
 extern void load_display_text_resource_entry(void *, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/fun_00218888.c, FUN_00218888. */
-struct Obj *PartType02Spawn(u128 *arg0, f32 *arg1, f32 *arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7, s32 arg8) {
+struct Obj *PartType02Spawn(u128 *arg0, f32 *arg1, f32 *arg2, s32 arg3, s32 arg4, s32 arg5, s32 arg6, s32 arg7,
+                            s32 arg8) {
     struct Obj *o;
     struct Sub *s;
     f32 t0[4];

@@ -26,12 +26,9 @@ extern void libc_fflush(void);
 extern void _fwalk(void *, void *);
 extern char locale_lconv[];
 extern int libc_glue_read();
-extern long func_00116108_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_00116108");
-extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_001188C8");
-extern long func_00114518_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_00114518");
+extern long func_00116108_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00116108");
+extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c) __asm__("func_001188C8");
+extern long func_00114518_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00114518");
 extern int _close_r(int *errOut, int arg1);
 extern int __sfvwrite(int, void *);
 extern void __sinit(void *);
@@ -141,16 +138,16 @@ int sce_cd_read(int lba, int sectors, void *buf, unsigned char *mode) {
     *(void **)(req + 0x14) = &cd_read_status;
 
     switch (mode[2]) {
-    case 1:
-        size = sectors * 0x918;
-        break;
-    case 2:
-        size = sectors * 0x924;
-        break;
-    case 0:
-    default:
-        size = sectors << 11;
-        break;
+        case 1:
+            size = sectors * 0x918;
+            break;
+        case 2:
+            size = sectors * 0x924;
+            break;
+        case 0:
+        default:
+            size = sectors << 11;
+            break;
     }
 
     cd_read_status = 0;
@@ -166,8 +163,7 @@ int sce_cd_read(int lba, int sectors, void *buf, unsigned char *mode) {
 
     cd_callback_num = 1;
     *(volatile int *)&cd_ncmd_busy = 1;
-    r = sif_call_rpc(cd_ncmd_rpc_client, 1, 1, req, 0x18, 0, 0,
-                      (void *)cd_read_end_callback, cd_read_reply_buffer);
+    r = sif_call_rpc(cd_ncmd_rpc_client, 1, 1, req, 0x18, 0, 0, (void *)cd_read_end_callback, cd_read_reply_buffer);
     if (r < 0) {
         cd_callback_num = 0;
         *(volatile int *)&cd_ncmd_busy = 0;
@@ -285,33 +281,33 @@ void sceGsResetGraph(short mode, short inter, short out, short ff) {
     sceGsGParam *gp;
 
     switch (mode) {
-    case 0:
-        gp = (sceGsGParam *)sceGsGetGParam();
-        *(volatile unsigned long *)0x12001000 = 0x200;
-        gp->sceGsInterMode = inter;
-        gp->sceGsOutMode = out;
-        gp->sceGsVersion = (short)((*(volatile unsigned long *)0x12001000 >> 16) & 0xFF);
-        gs_put_imr(0xFF00);
-        gp->sceGsFFMode = (ff != 0);
-        if (gp->sceGsVSCfunc != 0) {
-            disable_intc_atomic(2);
-            remove_intc_handler(2, gp->sceGsVSCid);
-            gp->sceGsVSCfunc = 0;
-            gp->sceGsVSCid = 0;
-        }
-        set_gs_crt(inter & 1, out & 0xFF, ff & 1);
-        break;
-    case 1:
-        *(volatile unsigned long *)0x12001000 = 0x100;
-        break;
-    case 5:
-        gp = (sceGsGParam *)sceGsGetGParam();
-        gp->sceGsFFMode = (ff != 0);
-        gp->sceGsInterMode = inter;
-        gp->sceGsOutMode = out;
-        gp->sceGsVersion = (short)((*(volatile unsigned long *)0x12001000 >> 16) & 0xFF);
-        set_gs_crt(inter & 1, out & 0xFF, ff & 1);
-        break;
+        case 0:
+            gp = (sceGsGParam *)sceGsGetGParam();
+            *(volatile unsigned long *)0x12001000 = 0x200;
+            gp->sceGsInterMode = inter;
+            gp->sceGsOutMode = out;
+            gp->sceGsVersion = (short)((*(volatile unsigned long *)0x12001000 >> 16) & 0xFF);
+            gs_put_imr(0xFF00);
+            gp->sceGsFFMode = (ff != 0);
+            if (gp->sceGsVSCfunc != 0) {
+                disable_intc_atomic(2);
+                remove_intc_handler(2, gp->sceGsVSCid);
+                gp->sceGsVSCfunc = 0;
+                gp->sceGsVSCid = 0;
+            }
+            set_gs_crt(inter & 1, out & 0xFF, ff & 1);
+            break;
+        case 1:
+            *(volatile unsigned long *)0x12001000 = 0x100;
+            break;
+        case 5:
+            gp = (sceGsGParam *)sceGsGetGParam();
+            gp->sceGsFFMode = (ff != 0);
+            gp->sceGsInterMode = inter;
+            gp->sceGsOutMode = out;
+            gp->sceGsVersion = (short)((*(volatile unsigned long *)0x12001000 >> 16) & 0xFF);
+            set_gs_crt(inter & 1, out & 0xFF, ff & 1);
+            break;
     }
 }
 

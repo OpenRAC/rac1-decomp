@@ -53,6 +53,10 @@ jobs:
         run: python tools/move_src.py --check
       - name: Doc links
         run: python tools/check_docs.py
+      - name: Formatted
+        run: |
+          pip install -q clang-format==22.1.8
+          python tools/format.py --check
       - name: Counts did not go up
         run: python tools/ratchets.py --check
 

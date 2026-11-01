@@ -60,8 +60,7 @@ extern MobyRecord *moby_array_start MACRO_ADDR;
 extern void MobyAnimAdvance(MobyRecord *);
 extern void moby_build_matrix(MobyRecord *);
 
-void link_and_update_all_mobys(void)
-{
+void link_and_update_all_mobys(void) {
     MobyRecord *cur;
     MobyRecord *m;
     MobyRecord *prev;
@@ -99,7 +98,13 @@ void link_and_update_all_mobys(void)
                     MobyAnimAdvance(cur);
                 }
                 /* inline asm: hook call (beq/move/jal with empty slots). The original used inline asm here too: GCC 2.95 reorg leaves both slots empty only next to asm (see reorg.c stop_search_p). */
-                { int r; __asm__ volatile("beq %1,$0,1f\n\tmove $4,%2\n\tjal $31,%1\n1:" : "=r"(r) : "r"(cur->updateFn), "r"(cur) : "$4", "$31", "memory"); }
+                {
+                    int r;
+                    __asm__ volatile("beq %1,$0,1f\n\tmove $4,%2\n\tjal $31,%1\n1:"
+                                     : "=r"(r)
+                                     : "r"(cur->updateFn), "r"(cur)
+                                     : "$4", "$31", "memory");
+                }
                 if (!(cur->flags & 0x4)) {
                     moby_build_matrix(cur);
                 }

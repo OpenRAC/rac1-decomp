@@ -21,8 +21,7 @@ typedef struct {
 } Pkt_23e4c8;
 
 /* Builds the object's tilted frame and emits three batches of four quads offset around it. */
-void glow_quads_draw(char *moby)
-{
+void glow_quads_draw(char *moby) {
     float q[4][4] __attribute__((aligned(16)));
     Pkt_23e4c8 pk;
     float m[4][4] __attribute__((aligned(16)));
@@ -164,11 +163,11 @@ extern float rnda_23e008(void) __asm__("func_00214158");
 extern void dir_23e008(void *, float, float, float) __asm__("func_00215C00");
 extern float rnd_23e008(float, float) __asm__("func_L00_00258C80");
 extern int fr_23e008(int) __asm__("func_001F9850");
-extern unsigned char *emit_23e008(float *, int, float, float, float, int, int, int, void *) __asm__("func_L00_00272F00");
+extern unsigned char *emit_23e008(float *, int, float, float, float, int, int, int,
+                                  void *) __asm__("func_L00_00272F00");
 extern int rf_23e008(float) __asm__("func_001FA898");
 /* Spawns a burst of directed particles with randomised speeds from the frame time. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_0023db30.c, FUN_L00_0023e008. */
-void emit_moby_particle_pairs(void *p)
-{
+void emit_moby_particle_pairs(void *p) {
     ti_23e008 dir[1];
     ti_23e008 old[1];
     float pos[4] __attribute__((aligned(16)));
@@ -179,7 +178,8 @@ void emit_moby_particle_pairs(void *p)
         float s = rndf_23e008(0.15f, 0.5f);
         int k = rndi_23e008(2);
         float a, b;
-        if (k == 0) k--;
+        if (k == 0)
+            k--;
         a = rnda_23e008();
         b = rndf_23e008(0.34906584f, 1.53588974f);
         dir_23e008(dir, rndf_23e008(0.05f, 0.2f) * frame_scale_r, a, b);
@@ -234,8 +234,16 @@ int allocate_packed_color_point_light_slot(float *pos, float radius, float inten
     return i;
 }
 typedef unsigned int u128_pt __attribute__((mode(TI)));
-typedef struct { float x, y, z, b_0023e738; Vec4 pos; } P_0023e738;
-typedef struct { char pad[0xc]; char *buf; int used; char pad2[0x30 - 0x14]; } T_0023e738;
+typedef struct {
+    float x, y, z, b_0023e738;
+    Vec4 pos;
+} P_0023e738;
+typedef struct {
+    char pad[0xc];
+    char *buf;
+    int used;
+    char pad2[0x30 - 0x14];
+} T_0023e738;
 extern float level_draw_frame_load_r __asm__("D_L00_0015F6B8") MACRO_ADDR;
 extern T_0023e738 level_point_light_data_r[] __asm__("D_L00_001805C0");
 extern P_0023e738 level_point_lights_r[] __asm__("D_L00_001803C0");
@@ -246,11 +254,13 @@ int allocate_colored_effect_slot(u128_pt *v, float a, float b_0023e738, float c,
     int i;
     T_0023e738 *t;
     P_0023e738 *p;
-    if (0.8f < level_draw_frame_load_r) return -1;
-    for (i = 0;
-    i < 8;
-    i++) if (level_point_light_data_r[i].used == 0) break;
-    if (i == 8) return -1;
+    if (0.8f < level_draw_frame_load_r)
+        return -1;
+    for (i = 0; i < 8; i++)
+        if (level_point_light_data_r[i].used == 0)
+            break;
+    if (i == 8)
+        return -1;
     t = &level_point_light_data_r[i];
     p = &level_point_lights_r[i];
     qcopy(&p->pos, v);
@@ -269,8 +279,7 @@ extern unsigned char level_point_lights[];
 extern unsigned char level_point_light_data[];
 
 /* release_point_light_slot: detaches point light index and clears its slots. */
-void release_point_light_slot(int index)
-{
+void release_point_light_slot(int index) {
     DetachPointLight(index);
     FastMemZero16(level_point_lights + index * 0x20, 0x20);
     FastMemZero16(level_point_light_data + index * 0x30, 0x30);

@@ -5,8 +5,7 @@
 #include "hero.h"
 
 // Fills a jump pattern record with its default constants.
-void MoveCtl_Init(char *p)
-{
+void MoveCtl_Init(char *p) {
     *(int *)(p + 0x0) = 0x280;
     *(float *)(p + 0x4) = 1.0f;
     *(float *)(p + 0x8) = 0.5f;
@@ -65,8 +64,7 @@ void MobyGroup_SetByteBC(int i, int v) {
 extern int novalis_mobys_m __asm__("D_L01_00160058") MACRO_ADDR;
 
 // Walks a list of moby indices and sets the state byte of each one that is non-negative.
-void set_moby_list_state(int list, int state)
-{
+void set_moby_list_state(int list, int state) {
     unsigned short *p;
     unsigned short *q = (unsigned short *)novalis_moby_groups[list];
     if (q != 0) {
@@ -83,8 +81,7 @@ extern void scale_vector(void *, void *, float);
 extern int FastBSphereCheck(char *, float);
 
 /* Run a bounding-sphere check of radius scale at vec scaled down by 1/1024. */
-void check_scaled_vector_bsphere(char *vec, float scale)
-{
+void check_scaled_vector_bsphere(char *vec, float scale) {
     char scratch[16];
     scale_vector(scratch, vec, 0.0009765625f);
     FastBSphereCheck(scratch, scale);
@@ -98,8 +95,7 @@ extern char *novalis_paths[];
 typedef int u128 __attribute__((mode(TI)));
 
 // Returns a bitmask of the table's spheres that no listed object touches, testing swept offsets.
-int compute_clear_path_point_mask(int *objs, int n, int idx, float f, float *pos)
-{
+int compute_clear_path_point_mask(int *objs, int n, int idx, float f, float *pos) {
     char *t = novalis_paths[idx];
     int mask = 0;
     int k;
@@ -129,18 +125,20 @@ int compute_clear_path_point_mask(int *objs, int n, int idx, float f, float *pos
                     found = 1;
                 }
             } else {
-                if (test_path_segment_strict_crossing(objs[j], pos, t + (k * 16 + 0x10)) != 0) found = 1;
+                if (test_path_segment_strict_crossing(objs[j], pos, t + (k * 16 + 0x10)) != 0)
+                    found = 1;
             }
-            if (found) break;
+            if (found)
+                break;
         }
-        if (!found) mask |= 1 << k;
+        if (!found)
+            mask |= 1 << k;
     }
     return mask;
 }
 
 // Expands a bit mask through a table of per-bit masks until it meets another mask.
-int expand_path_mask_to_intersection(int idx, int a, int mask)
-{
+int expand_path_mask_to_intersection(int idx, int a, int mask) {
     char *p = novalis_paths[idx];
     int i;
     int j;
@@ -167,7 +165,7 @@ typedef struct {
     u8 pad04[0xC];
     Vec4 pts[1];
 } Path_276a48;
-extern Path_276a48 * novalis_paths_r[] __asm__("D_L01_001B0C30");
+extern Path_276a48 *novalis_paths_r[] __asm__("D_L01_001B0C30");
 extern void FastVecSub_r(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BF0");
 extern void FastVecAdd_r(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BD8");
 extern void vec_scale_to_length_r(Vec4 *, Vec4 *, f32) __asm__("func_L00_001FF4B0");
@@ -176,8 +174,7 @@ s32 func_L01_00277A38_77FD8(s32 *ids, s32 n, f32 radius, s32 path_index, Vec4 *p
 extern f32 vec_distance_xy_r(Vec4 *, Vec4 *) __asm__("func_001F9D48");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/state/00276a48.c, FUN_L01_00276fe8. */
-s32 follow_path(s32 *ids, s32 n, s32 path_index, f32 radius,
-                       Vec4 *pos, Vec4 *target, Vec4 *out) {
+s32 follow_path(s32 *ids, s32 n, s32 path_index, f32 radius, Vec4 *pos, Vec4 *target, Vec4 *out) {
     Vec4 side;
     Vec4 left;
     Vec4 right;
@@ -209,7 +206,8 @@ s32 follow_path(s32 *ids, s32 n, s32 path_index, f32 radius,
         } else if (test_path_segment_strict_crossing_r(ids[j], pos, target)) {
             hit = 1;
         }
-        if (hit) break;
+        if (hit)
+            break;
     }
     if (hit) {
         path = novalis_paths_r[path_index];
@@ -281,10 +279,9 @@ extern void spawn_randomized_bolt_drop(void *, int, int, int, int);
 extern char hero_globals_base[];
 
 // Breaks an object into fragments, with a flag when it is near the origin.
-void spawn_proximity_gated_bolts(char *moby)
-{
+void spawn_proximity_gated_bolts(char *moby) {
     int r = 0;
-    if (vec_distance_xy(moby + 0x10,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) < 7.0f) {
+    if (vec_distance_xy(moby + 0x10, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) < 7.0f) {
         r = 2;
     }
     spawn_randomized_bolt_drop(moby, 4, 7, r, -1);
@@ -299,7 +296,8 @@ void spawn_moby_from_placement(char *src, int oClass) {
     if (m != 0) {
         *(short *)(m + 0x32) = 0xFF;
         m[0x31] = 1;
-        *(float *)(m + 0x2C) = *(float *)(m + 0x2C) * (*(float *)(src + 0x2C) / *(float *)(*(char **)(src + 0x24) + 0x24));
+        *(float *)(m + 0x2C) =
+            *(float *)(m + 0x2C) * (*(float *)(src + 0x2C) / *(float *)(*(char **)(src + 0x24) + 0x24));
         qcopy(m + 0x10, src + 0x10);
         qcopy(m + 0x40, src + 0x40);
         *(long *)(m + 0x38) = *(long *)(src + 0x38);

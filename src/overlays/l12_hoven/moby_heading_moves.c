@@ -28,13 +28,17 @@ extern float FastDiffRots(float, float);
 /* tests whether a point lies within height, distance and heading limits of a moby */
 int test_point_within_moby_limits(char *a, float *b, float x, float y, float z) {
     float d = FastAbsF(b[2] - *(float *)(a + 0x18));
-    if (d > y) return 0;
-    if (FastVecDist(b, a + 0x10) > x) return 0;
-    if (!(0.0f < z)) return 1;
+    if (d > y)
+        return 0;
+    if (FastVecDist(b, a + 0x10) > x)
+        return 0;
+    if (!(0.0f < z))
+        return 1;
     {
         float r = fast_atan2(b[0] - *(float *)(a + 0x10), b[1] - *(float *)(a + 0x14));
         r = FastDiffRots(*(float *)(a + 0x48), r);
-        if (r > z) return 0;
+        if (r > z)
+            return 0;
     }
     return 1;
 }
@@ -67,7 +71,8 @@ extern char *hoven_paths[];
 void cache_consecutive_point_distances(int idx) {
     char *p;
     int i;
-    if (idx == -1) return;
+    if (idx == -1)
+        return;
     p = hoven_paths[idx];
     for (i = 0; i < *(int *)p - 1; i++) {
         int o = i * 16;

@@ -5,7 +5,7 @@
 
 void VU1_addGSregister(s32 a0, s64 a1);
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
-extern char * sky_data MACRO_ADDR;
+extern char *sky_data MACRO_ADDR;
 extern char sky_shell_matrix[];
 extern int level_frame_counter MACRO_ADDR;
 extern void set_identity_matrix(void *);
@@ -22,7 +22,8 @@ void draw_sky_shells_with_particles_and_rotating_shell(void) {
     *(short *)(sky_data + 4) = 0;
     SkyDrawShell(0);
     SkyDrawShell(1);
-    if (*(short *)(sky_data + 8) == 0) sky_particles_init(0xF4, 0xC);
+    if (*(short *)(sky_data + 8) == 0)
+        sky_particles_init(0xF4, 0xC);
     sky_particles_update();
     SkySpriteProc();
     VU1_addGSregister(0x42, 0x8000000044L);

@@ -36,8 +36,7 @@ extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
 extern unsigned char normal_font_metrics[];
 extern unsigned char small_font_metrics[];
 extern unsigned char large_font_metrics[];
-extern void FontPrint(void *, void *, void *, void *, void *, int,
-                          unsigned char *);
+extern void FontPrint(void *, void *, void *, void *, void *, int, unsigned char *);
 extern int measure_text_width_regular(unsigned char *, int);
 extern int measure_text_width_small(unsigned char *, int);
 extern int GetEffectTex(int);
@@ -110,8 +109,7 @@ extern int wait_for_graphics_pipeline_idle(int, unsigned short);
 
 /* Uploads a texture and its mip levels to GS memory (with the palette for the 4/8-bit formats
    0x14/0x13) and writes the matching GS register words to regs. */
-s32 upload_mip_texture(MipTexture_202AA8 *tex, u64 *regs)
-{
+s32 upload_mip_texture(MipTexture_202AA8 *tex, u64 *regs) {
     MipUpload_202AA8 upload;
     LoadImage_202AA8 load_image;
     s32 i;
@@ -123,47 +121,47 @@ s32 upload_mip_texture(MipTexture_202AA8 *tex, u64 *regs)
 
     FastMemSet(&upload, 0, sizeof(upload));
     switch (tex->psm) {
-    case 0:
-    case 2:
-        upload.palette_address = 0;
-        upload.palette_size = 0;
-        break;
-    case 0x13:
-    case 0x14:
-        upload.palette_address = (s32)tex->data;
-        if (tex->psm == 0x14) {
-            if (tex->palette_psm == 0) {
-                upload.palette_size = 0x40;
+        case 0:
+        case 2:
+            upload.palette_address = 0;
+            upload.palette_size = 0;
+            break;
+        case 0x13:
+        case 0x14:
+            upload.palette_address = (s32)tex->data;
+            if (tex->psm == 0x14) {
+                if (tex->palette_psm == 0) {
+                    upload.palette_size = 0x40;
+                } else {
+                    upload.palette_size = 0x20;
+                }
             } else {
-                upload.palette_size = 0x20;
+                if (tex->palette_psm == 0) {
+                    upload.palette_size = 0x400;
+                } else {
+                    upload.palette_size = 0x200;
+                }
             }
-        } else {
-            if (tex->palette_psm == 0) {
-                upload.palette_size = 0x400;
-            } else {
-                upload.palette_size = 0x200;
-            }
-        }
-        break;
-    default:
-        break;
+            break;
+        default:
+            break;
     }
     upload.width_log2 = log2dim(tex->width);
     upload.height_log2 = log2dim(tex->height);
     upload.mip_addresses[0] = (s32)tex->data + upload.palette_size;
     switch (tex->psm) {
-    case 0:
-        upload.mip_sizes[0] = tex->width * tex->height * 4;
-        break;
-    case 2:
-        upload.mip_sizes[0] = tex->width * tex->height * 2;
-        break;
-    case 0x13:
-        upload.mip_sizes[0] = tex->width * tex->height;
-        break;
-    case 0x14:
-        upload.mip_sizes[0] = (tex->width * tex->height) >> 1;
-        break;
+        case 0:
+            upload.mip_sizes[0] = tex->width * tex->height * 4;
+            break;
+        case 2:
+            upload.mip_sizes[0] = tex->width * tex->height * 2;
+            break;
+        case 0x13:
+            upload.mip_sizes[0] = tex->width * tex->height;
+            break;
+        case 0x14:
+            upload.mip_sizes[0] = (tex->width * tex->height) >> 1;
+            break;
     }
     if (tex->psm == 0x13 || tex->psm == 0x14) {
         upload.palette_block = g_gs_texture_allocation_cursor >> 8;
@@ -183,13 +181,13 @@ s32 upload_mip_texture(MipTexture_202AA8 *tex, u64 *regs)
         upload.mip_addresses[i] = upload.mip_addresses[i - 1] + upload.mip_sizes[i - 1];
     }
     for (i = 0; i < tex->mip_count; i++) {
-                upload.buffer_widths[i] = tex->width >> (i + 6);
+        upload.buffer_widths[i] = tex->width >> (i + 6);
         if (upload.buffer_widths[i] <= 0) {
             upload.buffer_widths[i] = 1;
         }
         upload.blocks[i] = g_gs_texture_allocation_cursor >> 8;
-        sceGsSetDefLoadImage(&load_image, upload.blocks[i], upload.buffer_widths[i], tex->psm, 0, 0,
-                      tex->width >> i, tex->height >> i);
+        sceGsSetDefLoadImage(&load_image, upload.blocks[i], upload.buffer_widths[i], tex->psm, 0, 0, tex->width >> i,
+                             tex->height >> i);
         flush_cache(0);
         sceGsExecLoadImage(&load_image, (void *)upload.mip_addresses[i]);
         wait_for_graphics_pipeline_idle(0, 0);
@@ -227,7 +225,10 @@ LINKER_REMNANT("asm/remnants/text", func_00202EF8);
 extern int particle_texture_range_count MACRO_ADDR;
 extern char particle_texture_data[];
 extern int particle_texture_ptrs[];
-typedef struct { int a; int b; } Pair_2F00;
+typedef struct {
+    int a;
+    int b;
+} Pair_2F00;
 extern Pair_2F00 particle_texture_ranges[];
 extern void copy_memory_aligned(void *, void *, int);
 extern int log2dim(int);
@@ -241,8 +242,10 @@ void ParseParticleTexs(int *hdr, int base, int *list, int count) {
     int i;
 
     for (i = 0; i < n; i++, p++) {
-        if (*p == 0) particle_texture_ptrs[i] = (int)particle_texture_data;
-        else particle_texture_ptrs[i] = *p - (off - (int)particle_texture_data);
+        if (*p == 0)
+            particle_texture_ptrs[i] = (int)particle_texture_data;
+        else
+            particle_texture_ptrs[i] = *p - (off - (int)particle_texture_data);
     }
     copy_memory_aligned(particle_texture_data, (char *)hdr + off, size);
     for (particle_texture_range_count = 0; particle_texture_range_count < count; particle_texture_range_count++) {
@@ -467,48 +470,48 @@ void LoadHudBanks(void) {
     fname = hud_bank_alloc_file;
     d941c0 = level_resource_buffers;
     size24 = ALIGN64(base->bank[0].size);
-    header = (HudHdr *) Hud_HeapAlloc_d(size24, 0, fname, 0x23B);
-    FastMemCopy(header, (void *) (base->bank[0].off + (int) base), size24);
+    header = (HudHdr *)Hud_HeapAlloc_d(size24, 0, fname, 0x23B);
+    FastMemCopy(header, (void *)(base->bank[0].off + (int)base), size24);
 
     hud_state_arena.header = header;
-    hud_state_arena.unk1C = (char *) header + header->unk04;
+    hud_state_arena.unk1C = (char *)header + header->unk04;
     bank2 = d941c0[2] + 0x60000;
-    hud_state_arena.unk20 = (char *) header + header->unk08;
-    hud_state_arena.unk28 = (char *) header + header->unk0C;
-    hud_state_arena.unk24 = (char *) header + header->unk10;
+    hud_state_arena.unk20 = (char *)header + header->unk08;
+    hud_state_arena.unk28 = (char *)header + header->unk0C;
+    hud_state_arena.unk24 = (char *)header + header->unk10;
 
     if (header->unk54 != 0) {
-        shift54 = (unsigned int) ALIGN64(base->bank[1].size) >> 4;
+        shift54 = (unsigned int)ALIGN64(base->bank[1].size) >> 4;
         LoadCompressedHudBank(0, bank2);
-        hud_state_arena.header->unk94 = Stash_SendData(
-            base->bank[1].off + (int) base, shift54, shift54, (int) hud_bank1_stash_comment);
-        Hud_SendResidentBank(0, (void *) bank2, 1);
+        hud_state_arena.header->unk94 =
+            Stash_SendData(base->bank[1].off + (int)base, shift54, shift54, (int)hud_bank1_stash_comment);
+        Hud_SendResidentBank(0, (void *)bank2, 1);
     }
 
     size58 = hud_state_arena.header->unk58;
     if (size58 != 0) {
         bank58 = Hud_HeapAlloc_d(size58, 0, fname, 0x262);
-        LoadCompressedHudBank(1, (int) bank58);
+        LoadCompressedHudBank(1, (int)bank58);
         flush_cache(0);
-        LinkHudBank(1, (int) bank58);
+        LinkHudBank(1, (int)bank58);
     }
 
     if (hud_state_arena.header->unk5C != 0) {
-        shift5C = (unsigned int) ALIGN64(base->bank[3].size) >> 4;
-        hud_state_arena.header->unk9C = Stash_SendData(
-            base->bank[3].off + (int) base, shift5C, shift5C, (int) hud_bank3_stash_comment);
+        shift5C = (unsigned int)ALIGN64(base->bank[3].size) >> 4;
+        hud_state_arena.header->unk9C =
+            Stash_SendData(base->bank[3].off + (int)base, shift5C, shift5C, (int)hud_bank3_stash_comment);
     }
 
     if (hud_state_arena.header->unk60 != 0) {
-        shift60 = (unsigned int) ALIGN64(base->bank[4].size) >> 4;
-        hud_state_arena.header->unkA0 = Stash_SendData(
-            base->bank[4].off + (int) base, shift60, shift60, (int) hud_bank4_stash_comment);
+        shift60 = (unsigned int)ALIGN64(base->bank[4].size) >> 4;
+        hud_state_arena.header->unkA0 =
+            Stash_SendData(base->bank[4].off + (int)base, shift60, shift60, (int)hud_bank4_stash_comment);
     }
 
     if (hud_state_arena.header->unk64 != 0) {
-        shift64 = (unsigned int) ALIGN64(base->bank[5].size) >> 4;
-        hud_state_arena.header->unkA4 = Stash_SendData(
-            base->bank[5].off + (int) base, shift64, shift64, (int) hud_bank5_stash_comment);
+        shift64 = (unsigned int)ALIGN64(base->bank[5].size) >> 4;
+        hud_state_arena.header->unkA4 =
+            Stash_SendData(base->bank[5].off + (int)base, shift64, shift64, (int)hud_bank5_stash_comment);
     }
 }
 
@@ -558,10 +561,8 @@ extern u64 alternate_special_material_template_r[3] __asm__("D_0019E7D8");
 extern s32 log2dim(s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/build_indexed_resident_render_packet.c, build_indexed_resident_render_packet. */
-void build_indexed_resident_render_packet(u64 *packet,
-                                          struct ResidentRenderTextureDefinition *texture,
-                                          s32 draw_high, s32 draw_shift, s32 material_base,
-                                          s32 material_shift, s32 material_index) {
+void build_indexed_resident_render_packet(u64 *packet, struct ResidentRenderTextureDefinition *texture, s32 draw_high,
+                                          s32 draw_shift, s32 material_base, s32 material_shift, s32 material_index) {
     s32 width_units_128;
     s32 width_units_64;
     s32 width_log2;
@@ -703,10 +704,10 @@ extern int sceGsExecLoadImage(void *, void *);
 extern int wait_for_graphics_pipeline_idle(int, unsigned short);
 
 typedef struct {
-    int type;   /* GS pixel format: 0x13 PSMT8, 2 PSMCT16, 0 PSMCT32 */
+    int type; /* GS pixel format: 0x13 PSMT8, 2 PSMCT16, 0 PSMCT32 */
     int packed; /* width in the low half, height in the high half */
     int pad8;
-    int size;   /* offset of the image data from the base */
+    int size; /* offset of the image data from the base */
 } Chunk;
 
 typedef struct {
@@ -836,12 +837,14 @@ typedef struct {
 } ResidentClassRenderHeader_03B70;
 extern u8 resident_class_slot_by_id_r[] __asm__("D_001B3E40");
 extern MaterialMap_03B70 resident_class_material_maps_r[] __asm__("D_001B6C00");
-extern void build_indexed_resident_render_packet_r(ResidentRenderPacket_03B70 *, void *, s32, s32, s32, s32, s32) __asm__("func_002035B0");
-extern void SetUpVisGifViewer_r(ResidentRenderPacket_03B70 *packet, s32 draw_high, s32 draw_shift, s32 material_base, s32 material_shift, s32 material_index) __asm__("func_00203808");
+extern void build_indexed_resident_render_packet_r(ResidentRenderPacket_03B70 *, void *, s32, s32, s32, s32,
+                                                   s32) __asm__("func_002035B0");
+extern void SetUpVisGifViewer_r(ResidentRenderPacket_03B70 *packet, s32 draw_high, s32 draw_shift, s32 material_base,
+                                s32 material_shift, s32 material_index) __asm__("func_00203808");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/prepare_resident_class_render_data.c, prepare_resident_class_render_data. */
-void func_00203B70_r(ResidentClassRenderHeader_03B70 *header, u8 *textures, u8 *material_map, s32 class_id)
-    __asm__("func_00203B70");
+extern void func_00203B70_r(ResidentClassRenderHeader_03B70 *header, u8 *textures, u8 *material_map,
+                            s32 class_id) __asm__("func_00203B70");
 /* Prepares a resident class's render data: relocates its groups and binds its textures. */
 void func_00203B70_r(ResidentClassRenderHeader_03B70 *header, u8 *textures, u8 *material_map, s32 class_id) {
     s32 group_count;
@@ -914,17 +917,14 @@ void func_00203B70_r(ResidentClassRenderHeader_03B70 *header, u8 *textures, u8 *
     if (header->runtime_table != 0) {
         header->runtime_table = (s32)header + header->runtime_table;
     }
-    for (nested_table_index = 0; nested_table_index < header->nested_table_count;
-         nested_table_index++) {
+    for (nested_table_index = 0; nested_table_index < header->nested_table_count; nested_table_index++) {
         if (header->nested_tables[nested_table_index] != 0) {
-            nested_table =
-                (NestedRenderTable_03B70 *)((u8 *)header + header->nested_tables[nested_table_index]);
+            nested_table = (NestedRenderTable_03B70 *)((u8 *)header + header->nested_tables[nested_table_index]);
             header->nested_tables[nested_table_index] = (s32)nested_table;
             if (nested_table->optional_data_14 != 0) {
                 nested_table->optional_data_14 = (s32)header + nested_table->optional_data_14;
             }
-            for (nested_entry_index = 0; nested_entry_index < nested_table->count;
-                 nested_entry_index++) {
+            for (nested_entry_index = 0; nested_entry_index < nested_table->count; nested_entry_index++) {
                 nested_table->entry_offsets[nested_entry_index] =
                     (s32)header + nested_table->entry_offsets[nested_entry_index];
             }
@@ -948,13 +948,12 @@ void func_00203B70_r(ResidentClassRenderHeader_03B70 *header, u8 *textures, u8 *
                 material_index = slot_materials->b[material_index];
             }
             if (textures != 0) {
-                build_indexed_resident_render_packet_r(
-                    packet, textures + material_index * 16, packet->draw_high, packet->draw_shift,
-                    packet->material_base, packet->material_shift, material_index);
+                build_indexed_resident_render_packet_r(packet, textures + material_index * 16, packet->draw_high,
+                                                       packet->draw_shift, packet->material_base,
+                                                       packet->material_shift, material_index);
             } else {
-                SetUpVisGifViewer_r(packet, packet->draw_high, packet->draw_shift,
-                                                      packet->material_base, packet->material_shift,
-                                                      material_index);
+                SetUpVisGifViewer_r(packet, packet->draw_high, packet->draw_shift, packet->material_base,
+                                    packet->material_shift, material_index);
             }
             packet++;
         }
@@ -1011,7 +1010,8 @@ extern char object_render_class_material_maps[] NOT_SDA;
 extern int truncate_float_to_s32(float);
 
 /* Registers an object render class: assigns its slot, fixes pointers and sets thresholds. */
-void register_object_render_class(ObjectRenderClass *self, ResidentRenderTextureDefinition *textures, char *src, int a3) {
+void register_object_render_class(ObjectRenderClass *self, ResidentRenderTextureDefinition *textures, char *src,
+                                  int a3) {
     int N;
     int N2;
     int R;
@@ -1089,7 +1089,10 @@ void register_object_render_class(ObjectRenderClass *self, ResidentRenderTexture
         local12 = *(int *)(cur + 0x34);
 
         if (textures != 0) {
-            int h, w; int f1; long HH, WW; long G;
+            int h, w;
+            int f1;
+            long HH, WW;
+            long G;
             rec = &textures[idx];
             t4 = (int)((unsigned int)(unsigned short)rec->width << 16);
             h = t4 >> 22;
@@ -1108,14 +1111,13 @@ void register_object_render_class(ObjectRenderClass *self, ResidentRenderTexture
             t4 = rec->clut_block_offset + K;
             S8 = rec->draw_control_count;
 
-            HH = ((unsigned long)(long)h << 14) | ((unsigned long)0x13 << 20) | ((unsigned long)(long)f1 << 26)
-               | ((unsigned long)(long)F2 << 30) | ((unsigned long)1 << 34)
-               | ((unsigned long)(long)t4 << 37) | ((unsigned long)4 << 61);
-            D1 = ((unsigned long)(long)(S8 - 1) << 2) | ((unsigned long)1 << 5)
-               | ((unsigned long)(long)t23 << 6) | ((unsigned long)(long)local4 << 32);
-            WW = ((unsigned long)(long)w << 14) | ((unsigned long)(long)c9 << 20)
-               | ((unsigned long)1 << 34) | ((unsigned long)(long)c7 << 40)
-               | ((unsigned long)1 << 54);
+            HH = ((unsigned long)(long)h << 14) | ((unsigned long)0x13 << 20) | ((unsigned long)(long)f1 << 26) |
+                 ((unsigned long)(long)F2 << 30) | ((unsigned long)1 << 34) | ((unsigned long)(long)t4 << 37) |
+                 ((unsigned long)4 << 61);
+            D1 = ((unsigned long)(long)(S8 - 1) << 2) | ((unsigned long)1 << 5) | ((unsigned long)(long)t23 << 6) |
+                 ((unsigned long)(long)local4 << 32);
+            WW = ((unsigned long)(long)w << 14) | ((unsigned long)(long)c9 << 20) | ((unsigned long)1 << 34) |
+                 ((unsigned long)(long)c7 << 40) | ((unsigned long)1 << 54);
             D3 = (unsigned long)(long)local8 | ((unsigned long)(long)local12 << 2) | ((unsigned long)(long)idx << 24);
 
             *(unsigned long *)(cur + 0x00) = HH;
@@ -1226,7 +1228,7 @@ extern s32 log2dim(s32);
    class's material map and rewrites every packet's texture words. Adapted from Lombyte's project (GPL-3.0):
    src/rendering/register_shrub_render_class.c, register_shrub_render_class (US 0x203B08). */
 void register_shrub_render_class(ShrubRenderClass_04340 *render_class, ResidentRenderTextureDefinition *textures,
-                   u128_04340 *material_map, ShrubMipTextureDefinition_04340 *mip_texture, s32 class_id) {
+                                 u128_04340 *material_map, ShrubMipTextureDefinition_04340 *mip_texture, s32 class_id) {
     s32 group_index;
     s32 index;
     s32 fixed_threshold;
@@ -1294,8 +1296,14 @@ void register_shrub_render_class(ShrubRenderClass_04340 *render_class, ResidentR
             mip_block_0 = mip_texture->mip_block_offset_0 + gs_block_base;
             mip_block_1 = mip_texture->mip_block_offset_1 + gs_block_base;
             mip_block_2 = mip_texture->mip_block_offset_2 + gs_block_base;
-            mip_packet->tex1.d = (s64)(((u64)(draw_control_count - 1) << 2) | ((u64)1 << 5) | ((u64)material_shift << 6)) | ((s64)material_base << 32);
-            mip_packet->tex0.d = (s64)((u64)((s64)palette_block | ((s64)mip_width_units[0] << 14) | ((s64)0x13 << 20) | ((s64)width_log2 << 26)) | ((u64)height_log2 << 30) | ((u64)1 << 34) | ((u64)(texture_block + gs_block_base) << 37)) | ((s64)4 << 61);
+            mip_packet->tex1.d =
+                (s64)(((u64)(draw_control_count - 1) << 2) | ((u64)1 << 5) | ((u64)material_shift << 6)) |
+                ((s64)material_base << 32);
+            mip_packet->tex0.d =
+                (s64)((u64)((s64)palette_block | ((s64)mip_width_units[0] << 14) | ((s64)0x13 << 20) |
+                            ((s64)width_log2 << 26)) |
+                      ((u64)height_log2 << 30) | ((u64)1 << 34) | ((u64)(texture_block + gs_block_base) << 37)) |
+                ((s64)4 << 61);
             draw_word = (u64)mip_block_0 | ((u64)mip_width_units[1] << 14);
             draw_word |= (u64)mip_block_1 << 20;
             draw_word |= (u64)mip_width_units[2] << 34;
@@ -1374,10 +1382,15 @@ void register_shrub_render_class(ShrubRenderClass_04340 *render_class, ResidentR
                 width_bits = texture->clut_block_offset + gs_block_base;
                 mip_block_0 = texture->mip_block_offset_0 + gs_block_base;
                 mip_block_1 = texture->mip_block_offset_1 + gs_block_base;
-                tex1_word = (s64)(((u64)(draw_control_count - 1) << 2) | ((u64)1 << 5) | ((u64)draw_shift << 6)) | ((s64)draw_high << 32);
+                tex1_word = (s64)(((u64)(draw_control_count - 1) << 2) | ((u64)1 << 5) | ((u64)draw_shift << 6)) |
+                            ((s64)draw_high << 32);
                 clamp_word = (u64)material_base | ((u64)material_shift << 2) | ((u64)material_index << 24);
-                mip_word = (s64)(((u64)width_units_128 << 14) | ((u64)mip_block_0 << 20) | ((u64)1 << 34) | ((u64)mip_block_1 << 40)) | ((s64)1 << 54);
-                tex0_word = (s64)((u64)(((s64)width_units_64 << 14) | ((s64)0x13 << 20) | ((s64)width_log2 << 26)) | ((u64)height_log2 << 30) | ((u64)1 << 34) | ((u64)width_bits << 37)) | ((s64)4 << 61);
+                mip_word = (s64)(((u64)width_units_128 << 14) | ((u64)mip_block_0 << 20) | ((u64)1 << 34) |
+                                 ((u64)mip_block_1 << 40)) |
+                           ((s64)1 << 54);
+                tex0_word = (s64)((u64)(((s64)width_units_64 << 14) | ((s64)0x13 << 20) | ((s64)width_log2 << 26)) |
+                                  ((u64)height_log2 << 30) | ((u64)1 << 34) | ((u64)width_bits << 37)) |
+                            ((s64)4 << 61);
                 *(u64 *)&packet->draw_high = tex1_word;
                 *(u64 *)&packet->material_base = clamp_word;
                 *(u64 *)&packet->material_index = mip_word;
@@ -1408,14 +1421,18 @@ void register_shrub_render_class(ShrubRenderClass_04340 *render_class, ResidentR
     }
 }
 
-typedef struct { int x0; int x4; float scale; } FontHdr_04918;
+typedef struct {
+    int x0;
+    int x4;
+    float scale;
+} FontHdr_04918;
 typedef struct {
     char pad0[0x10];
-    int glyphs;            /* 0x10 */
+    int glyphs; /* 0x10 */
     char pad14[8];
-    unsigned short off1C;  /* 0x1C */
+    unsigned short off1C; /* 0x1C */
     char pad1E[0xA];
-    unsigned char count;   /* 0x28 */
+    unsigned char count; /* 0x28 */
     char pad29[0x17];
 } FontRun_04918;
 typedef struct {
@@ -1428,8 +1445,20 @@ typedef struct {
     int x24;
     char pad28[0x28];
 } Glyph_04918;
-typedef struct { long lo; long hi; } GifQ_04918;
-typedef struct { short x0; short x2; unsigned short x4; short x6; short x8; short xA; short xC; short xE; } GlyphSrc_04918;
+typedef struct {
+    long lo;
+    long hi;
+} GifQ_04918;
+typedef struct {
+    short x0;
+    short x2;
+    unsigned short x4;
+    short x6;
+    short x8;
+    short xA;
+    short xC;
+    short xE;
+} GlyphSrc_04918;
 extern int tfrag_render_record_count MACRO_ADDR;
 extern float tfrag_render_ranges[3];
 extern char *tfrag_render_records MACRO_ADDR;
@@ -1484,20 +1513,17 @@ void initialize_tfrag_render_data(FontHdr_04918 *hdr, char *tbl) {
             u = log2dim(t >> 16);
             v = log2dim(m->x6);
             gs = g_gs_texture_allocation_base >> 8;
-            tex0 = (unsigned long)0 | ((unsigned long)a17 << 14) | ((unsigned long)0x13 << 20)
-                  | ((unsigned long)u << 26) | ((unsigned long)v << 30) | ((unsigned long)1 << 34)
-                  | ((unsigned long)0 << 35) | ((unsigned long)(m->xA + gs) << 37)
-                  | ((unsigned long)0 << 51) | ((unsigned long)0 << 55) | ((unsigned long)0 << 56)
-                  | ((unsigned long)4 << 61);
+            tex0 = (unsigned long)0 | ((unsigned long)a17 << 14) | ((unsigned long)0x13 << 20) |
+                   ((unsigned long)u << 26) | ((unsigned long)v << 30) | ((unsigned long)1 << 34) |
+                   ((unsigned long)0 << 35) | ((unsigned long)(m->xA + gs) << 37) | ((unsigned long)0 << 51) |
+                   ((unsigned long)0 << 55) | ((unsigned long)0 << 56) | ((unsigned long)4 << 61);
             t = m->x8 - 1;
-            tex1 = (unsigned long)0 | ((unsigned long)t << 2) | ((unsigned long)1 << 5)
-                  | ((unsigned long)k14 << 6) | ((unsigned long)0 << 9) | ((unsigned long)0 << 19)
-                  | ((unsigned long)(unsigned int)k10 << 32);
-            clamp = (unsigned long)k20 | ((unsigned long)k24 << 2) | ((unsigned long)0 << 4)
-                  | ((unsigned long)0 << 14) | ((unsigned long)k0 << 24) | ((unsigned long)0 << 34);
-            mip1 = (unsigned long)0 | ((unsigned long)a19 << 14) | ((unsigned long)(m->xC + gs) << 20)
-                  | ((unsigned long)1 << 34) | ((unsigned long)(m->xE + gs) << 40)
-                  | ((unsigned long)1 << 54);
+            tex1 = (unsigned long)0 | ((unsigned long)t << 2) | ((unsigned long)1 << 5) | ((unsigned long)k14 << 6) |
+                   ((unsigned long)0 << 9) | ((unsigned long)0 << 19) | ((unsigned long)(unsigned int)k10 << 32);
+            clamp = (unsigned long)k20 | ((unsigned long)k24 << 2) | ((unsigned long)0 << 4) |
+                    ((unsigned long)0 << 14) | ((unsigned long)k0 << 24) | ((unsigned long)0 << 34);
+            mip1 = (unsigned long)0 | ((unsigned long)a19 << 14) | ((unsigned long)(m->xC + gs) << 20) |
+                   ((unsigned long)1 << 34) | ((unsigned long)(m->xE + gs) << 40) | ((unsigned long)1 << 54);
             *o = tex0;
             o += 2;
             *o = tex1;
@@ -1534,9 +1560,9 @@ struct DiscTable_04C60 {
     u8 pad_0[0x12C8];
     struct DiscFile_04C60 level_archives[24]; /* 0x12C8, by level index */
     u8 pad_1388[0x15E0];
-    struct DiscFile_04C60 shared_archive;     /* 0x2968 */
-    struct DiscFile_04C60 sound_archive;      /* 0x2970 */
-    struct DiscFile_04C60 sound_archive_alt;  /* 0x2978, while D_0015EE80 is set */
+    struct DiscFile_04C60 shared_archive; /* 0x2968 */
+    struct DiscFile_04C60 sound_archive; /* 0x2970 */
+    struct DiscFile_04C60 sound_archive_alt; /* 0x2978, while D_0015EE80 is set */
 };
 struct LevelArchiveDiscEntry_04C60 {
     u8 pad_0[0x12C8];
@@ -1556,11 +1582,11 @@ extern s32 pal_mode_r __asm__("D_0015EE80") MACRO_ADDR;
 /* The load's state is one small-data object: the stage at its start is reached in one
    instruction (through $gp in a delay slot), the members behind it never are. */
 struct LevelArchiveLoad_04C60 {
-    u16 stage;                                /* D_0015EF48 */
-    s16 busy;                                 /* D_0015EF4A */
-    struct LevelArchiveHeader_04C60 *shared;  /* D_0015EF4C */
-    u8 *sound;                                /* D_0015EF50 */
-    u8 *level;                                /* D_0015EF54 */
+    u16 stage; /* D_0015EF48 */
+    s16 busy; /* D_0015EF4A */
+    struct LevelArchiveHeader_04C60 *shared; /* D_0015EF4C */
+    u8 *sound; /* D_0015EF50 */
+    u8 *level; /* D_0015EF54 */
 };
 extern struct LevelArchiveLoad_04C60 level_archive_load_state_r __asm__("D_0015EF48") MACRO_ADDR;
 extern s32 cd_read_wait_frames_r __asm__("D_0015EFBC") MACRO_ADDR;
@@ -1626,148 +1652,148 @@ s32 service_level_archive_load(void) {
     }
     stage = (s16)level_archive_load_state_r.stage;
     switch (stage) {
-    case 0:
-        if (pal_mode_r != 0) {
-            sound_aligned_bytes =
-                ((disc_table_r.sound_archive_alt.size << 11) + 0xFFF) & 0xFFFFF000;
-        } else {
-            sound_aligned_bytes = ((disc_table_r.sound_archive.size << 11) + 0xFFF) & 0xFFFFF000;
-        }
-        disc_entry = (struct LevelArchiveDiscEntry_04C60 *)((u8 *)&disc_table_r + level_index * 8);
-        level_archive_sectors = *(s32 *)((u8 *)&disc_table_r + level_index * 8 + 0x12CC);
-        sound_archive_buffer = D_1FF8000_04C60 - sound_aligned_bytes;
-        sound_aligned_bytes = ((level_archive_sectors << 11) + 0xFFF) & 0xFFFFF000;
-        level_archive_buffer = sound_archive_buffer - sound_aligned_bytes;
-        archive_start_or_sectors = disc_table_r.shared_archive.size;
-        sound_aligned_bytes = ((archive_start_or_sectors << 11) + 0xFFF) & 0xFFFFF000;
-        shared_archive_buffer = level_archive_buffer - sound_aligned_bytes;
-        archive_start_or_bytes = disc_table_r.shared_archive.sector;
-        level_archive_load_state_r.level = level_archive_buffer;
-        level_archive_load_state_r.sound = sound_archive_buffer;
-        level_archive_load_state_r.shared = (struct LevelArchiveHeader_04C60 *)shared_archive_buffer;
-        Stream_SubmitRead_r(shared_archive_buffer, archive_start_or_bytes,
-                            archive_start_or_sectors);
-        level_archive_load_state_r.stage = level_archive_load_state_r.stage + 1;
-        break;
-    case 1:
-        next_disc_entry = (struct LevelArchiveDiscEntry_04C60 *)((u8 *)&disc_table_r + level_index * 8);
-        Stream_SubmitRead_r(level_archive_load_state_r.level, *(s32 *)((s32)&disc_table_r + (level_index << 3) + 0x12C8), *(s32 *)((s32)&disc_table_r + (level_index << 3) + 0x12CC));
-        level_archive_load_state_r.stage = level_archive_load_state_r.stage + 1;
-        break;
-    case 2:
-        if (pal_mode_r != 0) {
-            Stream_SubmitRead_r(level_archive_load_state_r.sound, disc_table_r.sound_archive_alt.sector,
-                                disc_table_r.sound_archive_alt.size);
-        } else {
-            Stream_SubmitRead_r(level_archive_load_state_r.sound, disc_table_r.sound_archive.sector,
-                                disc_table_r.sound_archive.size);
-        }
-        level_archive_load_state_r.stage = level_archive_load_state_r.stage + 1;
-        break;
-    case 3:
-        if (level_archive_load_state_r.busy != 0) {
-            return 0;
-        }
-        snd_StopAllSounds_r();
-        if (sound_bank_handle_r != 0) {
+        case 0:
+            if (pal_mode_r != 0) {
+                sound_aligned_bytes = ((disc_table_r.sound_archive_alt.size << 11) + 0xFFF) & 0xFFFFF000;
+            } else {
+                sound_aligned_bytes = ((disc_table_r.sound_archive.size << 11) + 0xFFF) & 0xFFFFF000;
+            }
+            disc_entry = (struct LevelArchiveDiscEntry_04C60 *)((u8 *)&disc_table_r + level_index * 8);
+            level_archive_sectors = *(s32 *)((u8 *)&disc_table_r + level_index * 8 + 0x12CC);
+            sound_archive_buffer = D_1FF8000_04C60 - sound_aligned_bytes;
+            sound_aligned_bytes = ((level_archive_sectors << 11) + 0xFFF) & 0xFFFFF000;
+            level_archive_buffer = sound_archive_buffer - sound_aligned_bytes;
+            archive_start_or_sectors = disc_table_r.shared_archive.size;
+            sound_aligned_bytes = ((archive_start_or_sectors << 11) + 0xFFF) & 0xFFFFF000;
+            shared_archive_buffer = level_archive_buffer - sound_aligned_bytes;
+            archive_start_or_bytes = disc_table_r.shared_archive.sector;
+            level_archive_load_state_r.level = level_archive_buffer;
+            level_archive_load_state_r.sound = sound_archive_buffer;
+            level_archive_load_state_r.shared = (struct LevelArchiveHeader_04C60 *)shared_archive_buffer;
+            Stream_SubmitRead_r(shared_archive_buffer, archive_start_or_bytes, archive_start_or_sectors);
+            level_archive_load_state_r.stage = level_archive_load_state_r.stage + 1;
+            break;
+        case 1:
+            next_disc_entry = (struct LevelArchiveDiscEntry_04C60 *)((u8 *)&disc_table_r + level_index * 8);
+            Stream_SubmitRead_r(level_archive_load_state_r.level,
+                                *(s32 *)((s32)&disc_table_r + (level_index << 3) + 0x12C8),
+                                *(s32 *)((s32)&disc_table_r + (level_index << 3) + 0x12CC));
+            level_archive_load_state_r.stage = level_archive_load_state_r.stage + 1;
+            break;
+        case 2:
+            if (pal_mode_r != 0) {
+                Stream_SubmitRead_r(level_archive_load_state_r.sound, disc_table_r.sound_archive_alt.sector,
+                                    disc_table_r.sound_archive_alt.size);
+            } else {
+                Stream_SubmitRead_r(level_archive_load_state_r.sound, disc_table_r.sound_archive.sector,
+                                    disc_table_r.sound_archive.size);
+            }
+            level_archive_load_state_r.stage = level_archive_load_state_r.stage + 1;
+            break;
+        case 3:
+            if (level_archive_load_state_r.busy != 0) {
+                return 0;
+            }
+            snd_StopAllSounds_r();
+            if (sound_bank_handle_r != 0) {
+                next_stage = level_archive_load_state_r.stage;
+                level_archive_load_state_r.stage = next_stage + 1;
+            } else {
+                level_archive_load_state_r.stage = 6;
+            }
+            break;
+        case 4:
+            if (snd_FlushSoundCommands_r() != 0) {
+                return 0;
+            }
+            snd_UnloadBank_r(sound_bank_handle_r);
             next_stage = level_archive_load_state_r.stage;
+            sound_bank_handle_r = 0;
             level_archive_load_state_r.stage = next_stage + 1;
-        } else {
-            level_archive_load_state_r.stage = 6;
-        }
-        break;
-    case 4:
-        if (snd_FlushSoundCommands_r() != 0) {
-            return 0;
-        }
-        snd_UnloadBank_r(sound_bank_handle_r);
-        next_stage = level_archive_load_state_r.stage;
-        sound_bank_handle_r = 0;
-        level_archive_load_state_r.stage = next_stage + 1;
-        break;
-    case 5:
-        if (snd_FlushSoundCommands_r() != 0) {
-            return 0;
-        }
-        snd_ResolveBankXREFS_r();
-        level_archive_load_state_r.stage = level_archive_load_state_r.stage + 1;
-        break;
-    case 6:
-        if (snd_FlushSoundCommands_r() != 0) {
-            return 0;
-        }
-        shared_header = level_archive_load_state_r.shared;
-        sound_bank_handle_r = 0xFFFFFFFFU;
-        snd_BankLoadFromEE_CB_r(shared_header->sound_bank_offset + (s32)shared_header,
-                            (s32)SoundBank_StoreHandle_r, (u32)&sound_bank_handle_r);
-        level_archive_load_state_r.stage = level_archive_load_state_r.stage + 1;
-        break;
-    case 7:
-        if (snd_FlushSoundCommands_r() != 0) {
-            return 0;
-        }
-        if ((u32)sound_bank_handle_r == 0xFFFFFFFFU) {
-            return 0;
-        }
-        snd_ResolveBankXREFS_r();
-        return 1;
+            break;
+        case 5:
+            if (snd_FlushSoundCommands_r() != 0) {
+                return 0;
+            }
+            snd_ResolveBankXREFS_r();
+            level_archive_load_state_r.stage = level_archive_load_state_r.stage + 1;
+            break;
+        case 6:
+            if (snd_FlushSoundCommands_r() != 0) {
+                return 0;
+            }
+            shared_header = level_archive_load_state_r.shared;
+            sound_bank_handle_r = 0xFFFFFFFFU;
+            snd_BankLoadFromEE_CB_r(shared_header->sound_bank_offset + (s32)shared_header, (s32)SoundBank_StoreHandle_r,
+                                    (u32)&sound_bank_handle_r);
+            level_archive_load_state_r.stage = level_archive_load_state_r.stage + 1;
+            break;
+        case 7:
+            if (snd_FlushSoundCommands_r() != 0) {
+                return 0;
+            }
+            if ((u32)sound_bank_handle_r == 0xFFFFFFFFU) {
+                return 0;
+            }
+            snd_ResolveBankXREFS_r();
+            return 1;
     }
     return 0;
 }
 
 struct PartList {
     unsigned char pad00[6];
-    unsigned char flag;          /* 0x06 */
+    unsigned char flag; /* 0x06 */
     unsigned char pad07[5];
-    unsigned char used;          /* 0x0C */
+    unsigned char used; /* 0x0C */
     unsigned char pad0D[0x3B];
-    int entries[1];   /* 0x48 */
+    int entries[1]; /* 0x48 */
 };
 
 struct ColorSrc {
     unsigned char pad00[0x38];
-    unsigned long color;        /* 0x38 */
+    unsigned long color; /* 0x38 */
 };
 
 struct RenderGlobals {
     unsigned char pad00[0x2080];
-    struct ColorSrc *color_src;  /* 0x2080 */
+    struct ColorSrc *color_src; /* 0x2080 */
 };
 
 struct GlobalIndex {
     unsigned char pad00[0x26];
-    short slot;         /* 0x26 */
+    short slot; /* 0x26 */
 };
 
 
 struct ModelRec {
-    unsigned short flags;        /* 0x00 */
+    unsigned short flags; /* 0x00 */
     unsigned char pad02[2];
-    int part_count;   /* 0x04 */
+    int part_count; /* 0x04 */
     unsigned short pad08;
     unsigned char pad0A[2];
-    unsigned short num_parts;    /* 0x0C */
+    unsigned short num_parts; /* 0x0C */
     unsigned char pad0E[2];
-    int end_off;      /* 0x10 */
-    int part_off[1];  /* 0x14 */
+    int end_off; /* 0x10 */
+    int part_off[1]; /* 0x14 */
 };
 
 struct TransferState {
     unsigned char pad00[0x38];
-    int unk38;        /* 0x38 */
+    int unk38; /* 0x38 */
     unsigned char pad3C[4];
-    unsigned short unk40;        /* 0x40 */
+    unsigned short unk40; /* 0x40 */
     unsigned char pad42[2];
-    short num_parts;    /* 0x44 */
-    unsigned short unk46;        /* 0x46 */
+    short num_parts; /* 0x44 */
+    unsigned short unk46; /* 0x46 */
     unsigned char pad48[4];
-    int unk4C;        /* 0x4C */
-    int unk50;        /* 0x50 */
-    int unk54;        /* 0x54 */
-    struct ModelRec *rec;     /* 0x58 */
-    int unk5C;        /* 0x5C */
+    int unk4C; /* 0x4C */
+    int unk50; /* 0x50 */
+    int unk54; /* 0x54 */
+    struct ModelRec *rec; /* 0x58 */
+    int unk5C; /* 0x5C */
     unsigned char pad60[0x118];
-    struct Moby *slots[1];    /* 0x178 */
+    struct Moby *slots[1]; /* 0x178 */
 };
 
 extern struct TransferState render_sequence_t __asm__("D_0018CC20") NOT_SDA;
@@ -1876,9 +1902,21 @@ void parse_space_scene_chunk(int arg0) {
     *(int *)(base + 0x5C) = vu1_chain_buffer_2 + current_vu_chain_m;
 }
 
-typedef struct { char pad00[0x10]; int class_id; char pad14[0x38]; } GadgetRec_05270;
-typedef struct { char pad00[0x1A]; short runtime_index; int resource_tag; } ClassRuntimeEntry_05270;
-typedef struct { char *packet_data; int packed_packet_extent; char pad08[8]; } ClassRenderGroup_05270;
+typedef struct {
+    char pad00[0x10];
+    int class_id;
+    char pad14[0x38];
+} GadgetRec_05270;
+typedef struct {
+    char pad00[0x1A];
+    short runtime_index;
+    int resource_tag;
+} ClassRuntimeEntry_05270;
+typedef struct {
+    char *packet_data;
+    int packed_packet_extent;
+    char pad08[8];
+} ClassRenderGroup_05270;
 typedef struct {
     ClassRenderGroup_05270 *render_groups;
     char pad04[2];
@@ -1917,7 +1955,8 @@ void select_world_object_resource_tables(int class_id, int buffer_index) {
     if (active_class_resource_index >= 0 && class_resource_ids[active_class_resource_index] == class_id) {
         return;
     }
-    for (active_class_resource_index = 0; active_class_resource_index < class_resource_count; active_class_resource_index++) {
+    for (active_class_resource_index = 0; active_class_resource_index < class_resource_count;
+         active_class_resource_index++) {
         if (class_resource_ids[active_class_resource_index] == class_id) {
             break;
         }
@@ -1934,14 +1973,16 @@ void select_world_object_resource_tables(int class_id, int buffer_index) {
     resource_table = moby_class_resources;
     resource_table[class_slot] = resource_data;
     resident_class_original_field_2c[class_slot] = resource_data->original_field_2c;
-    ((void (*)(void *, void *, void *, int))prepare_resident_class_render_data)(resource_data, resident_indexed_textures, class_material_maps[active_class_resource_index], class_id);
+    ((void (*)(void *, void *, void *, int))prepare_resident_class_render_data)(
+        resource_data, resident_indexed_textures, class_material_maps[active_class_resource_index], class_id);
     resource_table_index = active_class_resource_index;
     resource_tag = runtime_resource_tag;
     for (runtime_index = 0; runtime_index < 16; runtime_index++) {
         short e = class_runtime_indices[resource_table_index][runtime_index];
         if (e >= 0) {
             ((ClassResourceHeader_05270 *)resource_table[class_slot])->runtime_table[runtime_index].runtime_index = e;
-            ((ClassResourceHeader_05270 *)resource_table[class_slot])->runtime_table[runtime_index].resource_tag = resource_tag;
+            ((ClassResourceHeader_05270 *)resource_table[class_slot])->runtime_table[runtime_index].resource_tag =
+                resource_tag;
         }
     }
     for (vendor_item_index = 0; vendor_item_index < 0x25; vendor_item_index++) {
@@ -1949,9 +1990,11 @@ void select_world_object_resource_tables(int class_id, int buffer_index) {
             ClassResourceHeader_05270 *rh;
             ClassRenderGroup_05270 *rg;
             char *pp;
-            if (gold_weapon_purchased[vendor_item_index] == 0) return;
+            if (gold_weapon_purchased[vendor_item_index] == 0)
+                return;
             rh = (ClassResourceHeader_05270 *)moby_class_resources[class_slot];
-            if (rh->third_render_group_count == 0) return;
+            if (rh->third_render_group_count == 0)
+                return;
             rg = &rh->render_groups[rh->patch_group_index];
             pp = rg->packet_data + (rg->packed_packet_extent - 4) * 0x10;
             *(long *)(pp + 0x20) = gold_weapon_texture_state[0];

@@ -22,12 +22,9 @@ extern void libc_fflush(void);
 extern void _fwalk(void *, void *);
 extern char locale_lconv[];
 extern int libc_glue_read();
-extern long func_00116108_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_00116108");
-extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_001188C8");
-extern long func_00114518_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_00114518");
+extern long func_00116108_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00116108");
+extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c) __asm__("func_001188C8");
+extern long func_00114518_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00114518");
 extern int _close_r(int *errOut, int arg1);
 extern int __sfvwrite(int, void *);
 extern void __sinit(void *);
@@ -100,21 +97,38 @@ extern char CoreDataTable[];
 
 typedef int u128_si __attribute__((mode(TI)));
 typedef struct {
-    unsigned long SBP:14; unsigned long p14:2; unsigned long SBW:6; unsigned long p22:2;
-    unsigned long SPSM:6; unsigned long p30:2; unsigned long DBP:14; unsigned long p46:2;
-    unsigned long DBW:6; unsigned long p54:2; unsigned long DPSM:6; unsigned long p62:2;
+    unsigned long SBP : 14;
+    unsigned long p14 : 2;
+    unsigned long SBW : 6;
+    unsigned long p22 : 2;
+    unsigned long SPSM : 6;
+    unsigned long p30 : 2;
+    unsigned long DBP : 14;
+    unsigned long p46 : 2;
+    unsigned long DBW : 6;
+    unsigned long p54 : 2;
+    unsigned long DPSM : 6;
+    unsigned long p62 : 2;
 } SiBitbltbuf;
 typedef struct {
-    unsigned long RRW:12; unsigned long p12:20; unsigned long RRH:12; unsigned long p44:20;
+    unsigned long RRW : 12;
+    unsigned long p12 : 20;
+    unsigned long RRH : 12;
+    unsigned long p44 : 20;
 } SiTrxreg;
 typedef struct {
     unsigned int vifcode[4];
     unsigned long giftag[2];
-    SiBitbltbuf bitbltbuf; long bitbltbufaddr;
-    unsigned long trxpos; long trxposaddr;
-    SiTrxreg trxreg; long trxregaddr;
-    unsigned long finish; long finishaddr;
-    unsigned long trxdir; long trxdiraddr;
+    SiBitbltbuf bitbltbuf;
+    long bitbltbufaddr;
+    unsigned long trxpos;
+    long trxposaddr;
+    SiTrxreg trxreg;
+    long trxregaddr;
+    unsigned long finish;
+    long finishaddr;
+    unsigned long trxdir;
+    long trxdiraddr;
 } SiStoreImage __attribute__((aligned(16)));
 
 extern char gs_store_image_dma1_timeout_msg[];
@@ -125,98 +139,100 @@ extern u128_si gs_store_image_vif1_restore_qword;
 extern unsigned long gs_get_imr(void);
 extern int gs_put_imr(unsigned long);
 
-int sceGsExecStoreImage(SiStoreImage *sp, u128_si *dstaddr)
-{
+int sceGsExecStoreImage(SiStoreImage *sp, u128_si *dstaddr) {
     unsigned int cnt = 0;
     int nfull = 0, nrem = 0, nbyte = 0, nrest = 0;
     int w, h, psm, bytes, i, old, n;
     int h2;
-    union { u128_si q; unsigned char c[16]; } buf;
+    union {
+        u128_si q;
+        unsigned char c[16];
+    } buf;
 
     w = sp->trxreg.RRW;
     h = sp->trxreg.RRH;
     psm = sp->bitbltbuf.SPSM;
     h2 = 0;
     switch (psm) {
-    case 0x00:
-    case 0x30:
-        bytes = w * h * 4;
-        nbyte = bytes & 0xF;
-        nfull = (bytes >> 4) & ~7u;
-        nrem = (bytes >> 4) & 7;
-        if (!nbyte) {
-            h2 = h;
-            nrest = 0;
-        } else {
-            h2 = (h + 3) & ~3;
-            n = w * h2;
-            nrest = (n >> 2) - nfull - nrem - 1;
-        }
-        break;
-    case 0x01:
-    case 0x31:
-        bytes = w * h * 3;
-        nbyte = bytes & 0xF;
-        nfull = (bytes >> 4) & ~7u;
-        nrem = (bytes >> 4) & 7;
-        if (!nbyte) {
-            h2 = h;
-            nrest = 0;
-        } else {
-            h2 = (h + 15) & ~15;
-            n = w * h2;
-            n = ((n * 3) >> 4) - nfull;
-            nrest = n - nrem - 1;
-        }
-        break;
-    case 0x02:
-    case 0x0A:
-    case 0x32:
-    case 0x3A:
-        bytes = w * h * 2;
-        nbyte = bytes & 0xF;
-        nrem = (bytes >> 4) & 7;
-        nfull = (bytes >> 4) & ~7u;
-        if (!nbyte) {
-            h2 = h;
-            nrest = 0;
-        } else {
-            h2 = (h + 7) & ~7u;
-            n = w * h2;
-            nrest = (n >> 3) - nfull - nrem - 1;
-        }
-        break;
-    case 0x13:
-    case 0x1B:
-        bytes = w * h;
-        nbyte = bytes & 0xF;
-        nrem = (bytes >> 4) & 7;
-        nfull = (bytes >> 4) & ~7u;
-        if (!nbyte) {
-            h2 = h;
-            nrest = 0;
-        } else {
-            h2 = (h + 7) & ~7u;
-            n = w * h2;
-            nrest = (n >> 4) - nfull - nrem - 1;
-        }
-        break;
-    case 0x14:
-    case 0x24:
-    case 0x2C:
-        bytes = (w * h) >> 1;
-        nbyte = bytes & 0xF;
-        nrem = (bytes >> 4) & 7;
-        nfull = (bytes >> 4) & ~7u;
-        if (!nbyte) {
-            h2 = h;
-            nrest = 0;
-        } else {
-            h2 = (h + 7) & ~7u;
-            n = w * h2;
-            nrest = (n >> 5) - nfull - nrem - 1;
-        }
-        break;
+        case 0x00:
+        case 0x30:
+            bytes = w * h * 4;
+            nbyte = bytes & 0xF;
+            nfull = (bytes >> 4) & ~7u;
+            nrem = (bytes >> 4) & 7;
+            if (!nbyte) {
+                h2 = h;
+                nrest = 0;
+            } else {
+                h2 = (h + 3) & ~3;
+                n = w * h2;
+                nrest = (n >> 2) - nfull - nrem - 1;
+            }
+            break;
+        case 0x01:
+        case 0x31:
+            bytes = w * h * 3;
+            nbyte = bytes & 0xF;
+            nfull = (bytes >> 4) & ~7u;
+            nrem = (bytes >> 4) & 7;
+            if (!nbyte) {
+                h2 = h;
+                nrest = 0;
+            } else {
+                h2 = (h + 15) & ~15;
+                n = w * h2;
+                n = ((n * 3) >> 4) - nfull;
+                nrest = n - nrem - 1;
+            }
+            break;
+        case 0x02:
+        case 0x0A:
+        case 0x32:
+        case 0x3A:
+            bytes = w * h * 2;
+            nbyte = bytes & 0xF;
+            nrem = (bytes >> 4) & 7;
+            nfull = (bytes >> 4) & ~7u;
+            if (!nbyte) {
+                h2 = h;
+                nrest = 0;
+            } else {
+                h2 = (h + 7) & ~7u;
+                n = w * h2;
+                nrest = (n >> 3) - nfull - nrem - 1;
+            }
+            break;
+        case 0x13:
+        case 0x1B:
+            bytes = w * h;
+            nbyte = bytes & 0xF;
+            nrem = (bytes >> 4) & 7;
+            nfull = (bytes >> 4) & ~7u;
+            if (!nbyte) {
+                h2 = h;
+                nrest = 0;
+            } else {
+                h2 = (h + 7) & ~7u;
+                n = w * h2;
+                nrest = (n >> 4) - nfull - nrem - 1;
+            }
+            break;
+        case 0x14:
+        case 0x24:
+        case 0x2C:
+            bytes = (w * h) >> 1;
+            nbyte = bytes & 0xF;
+            nrem = (bytes >> 4) & 7;
+            nfull = (bytes >> 4) & ~7u;
+            if (!nbyte) {
+                h2 = h;
+                nrest = 0;
+            } else {
+                h2 = (h + 7) & ~7u;
+                n = w * h2;
+                nrest = (n >> 5) - nfull - nrem - 1;
+            }
+            break;
     }
 
     if (nbyte) {

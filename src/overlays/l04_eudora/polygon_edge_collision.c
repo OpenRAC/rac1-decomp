@@ -20,7 +20,10 @@ int find_nearest_point_index_xy(char *a, char *b, int n) {
     }
     return best;
 }
-typedef union { Vec4A v; int n; } PathEl_1F3010;
+typedef union {
+    Vec4A v;
+    int n;
+} PathEl_1F3010;
 typedef struct {
     Vec4A vel;
     Vec4A pos;

@@ -114,7 +114,7 @@ void SwitchCamera(Camera *next_camera) {
     } else if (previous_transition_state == 2 || blend_kind == 1 || blend_kind == 5) {
         if (blend_kind == 1) {
             mode_one_duration = next_camera->blend_time;
-            player_camera.blend.next_kind =0;
+            player_camera.blend.next_kind = 0;
             if (mode_one_duration > 0.0f) {
                 player_camera.blend.lerp.pos_rate_cfg = mode_one_duration;
                 player_camera.blend.lerp.rot_rate_cfg = mode_one_duration;
@@ -124,7 +124,7 @@ void SwitchCamera(Camera *next_camera) {
             }
         } else if (blend_kind == 5) {
             transition_duration = next_camera->blend_time;
-            player_camera.blend.next_kind =2;
+            player_camera.blend.next_kind = 2;
             if (transition_duration > 0.0f) {
                 player_camera.blend.orbit.frames = truncate_float_to_s32(transition_duration);
             } else {
@@ -136,8 +136,7 @@ void SwitchCamera(Camera *next_camera) {
         } else {
             player_camera.blend.phase = 2;
         }
-    } else if (previous_transition_state == 3 || previous_transition_state == 5 ||
-               blend_kind == 3 || blend_kind == 6) {
+    } else if (previous_transition_state == 3 || previous_transition_state == 5 || blend_kind == 3 || blend_kind == 6) {
         qcopy(&next_camera->pos, &previous_camera->pos);
         qcopy(&next_camera->basis[0], &previous_camera->basis[0]);
         qcopy(&next_camera->basis[1], &previous_camera->basis[1]);
@@ -145,7 +144,7 @@ void SwitchCamera(Camera *next_camera) {
         next_camera->handoff_state = 2;
         if (previous_camera->transition_state == 5 || blend_kind == 6) {
             handoff_duration = next_camera->blend_time;
-            player_camera.blend.next_kind =0;
+            player_camera.blend.next_kind = 0;
             if (handoff_duration > 0.0f) {
                 player_camera.blend.lerp.pos_rate_cfg = handoff_duration;
                 player_camera.blend.lerp.rot_rate_cfg = handoff_duration;
@@ -293,8 +292,8 @@ void Camera_CaptureTransform(Camera *from) {
             vec_scale_to_length(local1, *(char **)&g->moby + 0xD0, 1.0f);
             vec_scale_to_length(local2, *(char **)&g->moby + 0xE0, 1.0f);
             Camera_Pos2Polar3d(&r->orbit.yaw, &from->pos,
-                          &(*(Camera **)((char *)r - 0xF0))->pos, /* player_camera.current */
-                          local0, local1, local2);
+                               &(*(Camera **)((char *)r - 0xF0))->pos, /* player_camera.current */
+                               local0, local1, local2);
             extract_matrix_rotation_quaternion(&r->orbit.rot, from);
             qcopy(&r->orbit.saved_rot, &r->orbit.rot);
         }
@@ -375,22 +374,22 @@ void Camera_PickCollisionMasksLvl(void) {
             return;
         }
         if (g[0x12EB]) {
-            d->coll_bits =0xB00;
+            d->coll_bits = 0xB00;
             camera_collision_mask = 0xBB4;
             return;
         }
         if (g[0x12E6]) {
-            d->coll_bits =0x300;
+            d->coll_bits = 0x300;
             camera_collision_mask = 0x3B4;
             return;
         }
         if (g[0x12EC]) {
-            d->coll_bits =0xD00;
+            d->coll_bits = 0xD00;
             camera_collision_mask = 0xDB4;
             return;
         }
         if (g[0x12E4] != 0) {
-            d->coll_bits =0;
+            d->coll_bits = 0;
             camera_collision_mask = 0xB4;
             return;
         }
@@ -466,7 +465,7 @@ frozen:
     apply_camera_shake((char *)&v[0], 0);
     apply_camera_shake((char *)&v[1], 1);
     update_camera_underwater_flag();
-    update_camera_environment_from_regions((char *)v - 0x20);       /* &player_camera.pos */
+    update_camera_environment_from_regions((char *)v - 0x20); /* &player_camera.pos */
     if (draw_map51_r[0] != 0) {
         FastVecCross((char *)v + 0x200, (char *)v + 0x210, (char *)v + 0x1F0); /* matrix[1] = matrix[2] x matrix[0] */
     }

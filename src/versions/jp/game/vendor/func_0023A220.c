@@ -17,7 +17,9 @@ void render_vendor_buy_label_pass(char *unused, int x, int y) {
     if (((VendorA *)vendor_state)->sel != 0) {
         if (((VendorA *)vendor_state)->slots[((VendorA *)vendor_state)->idx].kind == 1 &&
             weapon_ammo_counts[((VendorA *)vendor_state)->slots[((VendorA *)vendor_state)->idx].type] >=
-                ((WeaponInfoA *)(vendor_item_prices + ((VendorA *)vendor_state)->slots[((VendorA *)vendor_state)->idx].type * sz))->max) {
+                ((WeaponInfoA *)(vendor_item_prices +
+                                 ((VendorA *)vendor_state)->slots[((VendorA *)vendor_state)->idx].type * sz))
+                    ->max) {
             m = 0x528A;
         } else {
             v = (VendorA *)vendor_state;

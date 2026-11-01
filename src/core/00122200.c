@@ -23,12 +23,9 @@ extern void libc_fflush(void);
 extern void _fwalk(void *, void *);
 extern char locale_lconv[];
 extern int libc_glue_read();
-extern long func_00116108_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_00116108");
-extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_001188C8");
-extern long func_00114518_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_00114518");
+extern long func_00116108_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00116108");
+extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c) __asm__("func_001188C8");
+extern long func_00114518_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00114518");
 extern int _close_r(int *errOut, int arg1);
 extern int __sfvwrite(int, void *);
 extern void __sinit(void *);
@@ -156,8 +153,7 @@ extern short sceGszbufaddr(short psm, short w, short h); /* sceGszbufaddr */
  * color buffer; ztest==0 disables Z (mask writes, ZTE/ZTST forced on).
  * prmodecont/colclamp are read-modify-write: only their AC/CLAMP bit is
  * set, whatever else the caller's memory already held is left alone. */
-int sce_gs_set_def_draw_env(DrawEnv1_1222C8 *draw, short psm, short w, short h,
-                   short ztest, short zpsm) {
+int sce_gs_set_def_draw_env(DrawEnv1_1222C8 *draw, short psm, short w, short h, short ztest, short zpsm) {
     short fbw = ((w + 63) >> 6) & 0x3F;
     short zbp;
 
@@ -175,8 +171,7 @@ int sce_gs_set_def_draw_env(DrawEnv1_1222C8 *draw, short psm, short w, short h,
     {
         long ofx = 2048L - (w >> 1);
         long ofy = 2048L - (h >> 1);
-        draw->xyoffset1 = (unsigned long)(ofx << 4) |
-                          ((unsigned long)(ofy << 4) << 32);
+        draw->xyoffset1 = (unsigned long)(ofx << 4) | ((unsigned long)(ofy << 4) << 32);
     }
     draw->scissor1addr = 0x40;
     draw->scissor1 = ((unsigned long)(w - 1) << 16) | ((unsigned long)(h - 1) << 48);

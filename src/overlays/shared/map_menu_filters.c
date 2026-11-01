@@ -7,7 +7,8 @@ extern int hero_control_mode;
 extern unsigned char menu_item_enabled_2[];
 /* Returns 1 when v is nonzero. */
 static inline unsigned char is_set_249720(unsigned char v) {
-    if (v != 0) return 1;
+    if (v != 0)
+        return 1;
     return 0;
 }
 
@@ -20,7 +21,8 @@ int ovl_map_filter_l01_4(int item, float a, float b, float x) {
         return is_set_249720(menu_item_enabled_2[0]);
     }
     if (x >= 58.0f && x <= 86.0f) {
-        if (locked == 0) return 1;
+        if (locked == 0)
+            return 1;
     }
     return 0;
 }
@@ -51,17 +53,21 @@ int ovl_map_filter_l01_5(int item, float a, float b, float x) {
     }
     return x >= 95.0f;
 }
-int ovl_map_filter_l01_5_tail(float a, float b, float x) { return x >= 95.0f; }
+int ovl_map_filter_l01_5_tail(float a, float b, float x) {
+    return x >= 95.0f;
+}
 extern int map_menu_state_field_2d0;
 extern int map_menu_state_field_2c8;
 
 /* Level 7 map filter: true when x is in the range for b's side and that side's flag is set. */
 int ovl_map_filter_l07_5(float c, float d, float x, int a, int b) {
     if (b < 0x9D) {
-        if (x < 73.5f || 80.0f < x || map_menu_state_field_2d0 == 0) return 0;
+        if (x < 73.5f || 80.0f < x || map_menu_state_field_2d0 == 0)
+            return 0;
         return 1;
     }
-    if (x < 51.5f || 54.0f < x || map_menu_state_field_2c8 == 0) return 0;
+    if (x < 51.5f || 54.0f < x || map_menu_state_field_2c8 == 0)
+        return 0;
     return 1;
 }
 INCLUDE_ASM("asm/overlays", func_L00_00249F40);
@@ -69,47 +75,60 @@ extern unsigned char menu_item_enabled_41 NOT_SDA;
 extern int hero_control_mode;
 // Checks a menu flag for small values and mode 15 for larger values.
 int ovl_map_filter_l08_0(int unused, int value) {
-    if (value >= 257) return hero_control_mode == 15;
+    if (value >= 257)
+        return hero_control_mode == 15;
     return menu_item_enabled_41 != 0;
 }
 INCLUDE_ASM("asm/overlays", func_L00_0024A12C);
 /* a < 224: x >= 47.75f; else x < 29.0f (the joined tail). */
 int ovl_map_filter_l08_1(int a, float b, float c, float x) {
-    if (a < 224) return x >= 47.75f;
+    if (a < 224)
+        return x >= 47.75f;
     return x < 29.0f;
 }
-int ovl_map_filter_l08_1_tail(float a, float b, float x) { return x < 29.0f; }
+int ovl_map_filter_l08_1_tail(float a, float b, float x) {
+    return x < 29.0f;
+}
 /* tests the vertical menu range according to the integer selection */
 int ovl_map_filter_l08_2(int a, float b, float c, float x) {
- if (a < 224) return x >= 44.0f && x <= 45.0f;
- return x >= 37.0f;
+    if (a < 224)
+        return x >= 44.0f && x <= 45.0f;
+    return x >= 37.0f;
 }
 INCLUDE_ASM("asm/overlays", func_L00_0024A1E4);
 /* tests menu coordinate bounds selected by item */
 int test_selected_z_range(int item, float a, float b, float x) {
- if (item < 224) return x >= 42.0f && x <= 43.0f;
- return x >= 39.0f;
+    if (item < 224)
+        return x >= 42.0f && x <= 43.0f;
+    return x >= 39.0f;
 }
 INCLUDE_ASM("asm/overlays", func_L00_0024A25C);
 extern unsigned char menu_item_enabled_68[];
 /* a >= 190: D_0013D4E0 != 0; else x >= 58.5f (the joined tail). */
 int ovl_map_filter_l10_0(int a, float b, float c, float x) {
-    if (a >= 190) return menu_item_enabled_68[0] != 0;
+    if (a >= 190)
+        return menu_item_enabled_68[0] != 0;
     return x >= 58.5f;
 }
-int ovl_map_filter_l10_0_tail(float a, float b, float x) { return x >= 58.5f; }
+int ovl_map_filter_l10_0_tail(float a, float b, float x) {
+    return x >= 58.5f;
+}
 /* a < 221: 232.0f <= x <= 235.0f and D_0013D4E6 != 0; else x <= 180.0f (the joined tail). */
 extern unsigned char menu_item_enabled_74[];
 /* Same test as func_L00_0024A404 with a leading selector. */
 int ovl_map_filter_l11_0(int a, float b, float c, float x) {
-    if (a < 221) return x >= 232.0f && x <= 235.0f && menu_item_enabled_74[0] != 0;
+    if (a < 221)
+        return x >= 232.0f && x <= 235.0f && menu_item_enabled_74[0] != 0;
     return x <= 180.0f;
 }
-int ovl_map_filter_l11_0_tail(float a, float b, float x) { return x <= 180.0f; }
+int ovl_map_filter_l11_0_tail(float a, float b, float x) {
+    return x <= 180.0f;
+}
 extern unsigned char menu_item_enabled_75[];
 /* a < 221: x >= 242.0f; else x <= 180.0f and D_0013D4E7 != 0 (the joined tail). */
 int ovl_map_filter_l11_1(int a, float b, float c, float x) {
-    if (a < 221) return x >= 242.0f;
+    if (a < 221)
+        return x >= 242.0f;
     return x <= 180.0f && menu_item_enabled_75[0] != 0;
 }
 /* True when x <= 180.0f and D_0013D4E7[0] is set. */
@@ -118,7 +137,8 @@ int ovl_map_filter_l11_1_tail(float a, float b, float x) {
 }
 /* Range test on x selected by a, with a D_0013D4E7[1] fallback. */
 int ovl_map_filter_l11_2(int a, float b, float c, float x) {
-    if (a < 221) return x >= 238.0f && x <= 241.0f;
+    if (a < 221)
+        return x >= 238.0f && x <= 241.0f;
     return x <= 180.0f && menu_item_enabled_75[1] != 0;
 }
 /* Joined to func_L00_0024A490. */
@@ -129,8 +149,7 @@ extern unsigned char menu_item_enabled_78[];
 int ovl_map_filter_l11_3(int item, float a, float b, float x) {
     int r = 0;
 
-    if (g_hero_r.state.control_mode == 0x11 || g_hero_r.state.control_mode == 0x12 ||
-        g_hero_r.base_condition == 1) {
+    if (g_hero_r.state.control_mode == 0x11 || g_hero_r.state.control_mode == 0x12 || g_hero_r.base_condition == 1) {
         r = 1;
     }
     if (item < 351) {
@@ -144,7 +163,8 @@ int ovl_map_filter_l11_3_tail(float a, float b, float x) {
 }
 /* Range test on x selected by a, with a D_0013D4EA[1] fallback. */
 int ovl_map_filter_l11_4(int a, float b, float c, float x) {
-    if (a < 351) return x >= 228.0f && x <= 230.0f;
+    if (a < 351)
+        return x >= 228.0f && x <= 230.0f;
     return x >= 233.0f && x <= 235.0f && menu_item_enabled_78[1] != 0;
 }
 /* Joined to func_L00_0024A5C0. */
@@ -187,13 +207,15 @@ int ensure_menu_cache_entry(int key) {
     if (map_menu_state.e[0].key != key) {
         times = &map_menu_state.e[0].stamp;
         entry = &map_menu_state.e[0].key;
-        do { do {
-            if (entry[1] < times[victim * 4]) {
-                victim = i;
-            }
-            ++i;
-            entry += 4;
-        } while (i < 8 && *entry != key); } while (0);
+        do {
+            do {
+                if (entry[1] < times[victim * 4]) {
+                    victim = i;
+                }
+                ++i;
+                entry += 4;
+            } while (i < 8 && *entry != key);
+        } while (0);
     }
     if (i == 8) {
         decode_map_rle_row(map_menu_state.e[victim].dst, key, map_menu_state.src, map_menu_state.offs);
@@ -205,7 +227,8 @@ int ensure_menu_cache_entry(int key) {
         base = (MenuCacheQuad *)&map_menu_state.e[0];
         other = base + i;
         temp = *other;
-        miss++; miss--;
+        miss++;
+        miss--;
         *other = *base;
         *base = temp;
     }
@@ -263,15 +286,26 @@ extern int mode_freeze_state MACRO_ADDR;
 extern int memory_card_state[];
 /* advances the card menu according to input and card status */
 void AdvanceCardMenu(void) {
- int old=mode_freeze_flags;
- int intermediate=old&~4;
- int flags=intermediate&~2;
- mode_freeze_flags=flags;
- if(memory_card_state[0xfc/4]==0) mode_freeze_state=3;
- else if(old&0x80) { mode_freeze_state=21; mode_freeze_flags=(flags^0x80)|0x40; }
- else if(old&0x100) { mode_freeze_state=20; mode_freeze_flags=(flags^0x100)|0x40; }
- else if(memory_card_state[7]!=0) { memory_card_state[0xfc/4]=0; mode_freeze_flags=flags|1; mode_freeze_state=2; }
- else if(old&0x200) { mode_freeze_flags=flags^0x200; mode_freeze_state=22; }
+    int old = mode_freeze_flags;
+    int intermediate = old & ~4;
+    int flags = intermediate & ~2;
+    mode_freeze_flags = flags;
+    if (memory_card_state[0xfc / 4] == 0)
+        mode_freeze_state = 3;
+    else if (old & 0x80) {
+        mode_freeze_state = 21;
+        mode_freeze_flags = (flags ^ 0x80) | 0x40;
+    } else if (old & 0x100) {
+        mode_freeze_state = 20;
+        mode_freeze_flags = (flags ^ 0x100) | 0x40;
+    } else if (memory_card_state[7] != 0) {
+        memory_card_state[0xfc / 4] = 0;
+        mode_freeze_flags = flags | 1;
+        mode_freeze_state = 2;
+    } else if (old & 0x200) {
+        mode_freeze_flags = flags ^ 0x200;
+        mode_freeze_state = 22;
+    }
 }
 INCLUDE_ASM("asm/overlays", func_L00_0024B788);
 INCLUDE_ASM("asm/overlays", func_L00_0024B7AC);
@@ -279,13 +313,17 @@ extern int mode_freeze_flags MACRO_ADDR;
 extern int mode_freeze_state MACRO_ADDR;
 /* clears the menu flag and advances based on card status */
 void CardMenu_AdvanceOnStatus(void) {
- mode_freeze_flags &= ~0x20;
- if (memory_card_state[2] == 2) {
-  int v = memory_card_state[7];
-  if (v == 0) mode_freeze_state = 9;
-  else if (v == -1) { memory_card_state[7] = 0; mode_freeze_state = 9; }
-  else if (v == -2) mode_freeze_state = 5;
- }
+    mode_freeze_flags &= ~0x20;
+    if (memory_card_state[2] == 2) {
+        int v = memory_card_state[7];
+        if (v == 0)
+            mode_freeze_state = 9;
+        else if (v == -1) {
+            memory_card_state[7] = 0;
+            mode_freeze_state = 9;
+        } else if (v == -2)
+            mode_freeze_state = 5;
+    }
 }
 INCLUDE_ASM("asm/overlays", func_L00_0024B8F0);
 INCLUDE_ASM("asm/overlays", func_L00_0024B908);
@@ -361,12 +399,30 @@ extern int mode_freeze_state;
 INCLUDE_ASM("asm/overlays", func_L00_0024BA8C);
 /* Marks the selected card slot as 2 if it was 1, then picks the next menu state. */
 void MarkSelectedCardSlot(void) {
- char *p=(char *)memory_card_state; int *item;
- if (*(int *)(p+0xDC)>=3 || *(int *)(p+0xE4)>=0) { int index=*(int *)(p+0xCC); char *r=p+0xB0; item=(int *)(index*192+r); if (*item==1) *item=2; }
- p=(char *)memory_card_state;
- if (*(int *)(p+0x1C)<-1 || *(int *)(p+0xEC)) { mode_freeze_state=3; return; }
- if (*(int *)(p+0x14)==-2) { if (*(int *)(p+0xC)+*(int *)(p+0xAC)<350) { mode_freeze_state=19; return; } mode_freeze_state=12; return; }
- if (*(int *)(p+0x14)>=-1) mode_freeze_state=16;
+    char *p = (char *)memory_card_state;
+    int *item;
+    if (*(int *)(p + 0xDC) >= 3 || *(int *)(p + 0xE4) >= 0) {
+        int index = *(int *)(p + 0xCC);
+        char *r = p + 0xB0;
+        item = (int *)(index * 192 + r);
+        if (*item == 1)
+            *item = 2;
+    }
+    p = (char *)memory_card_state;
+    if (*(int *)(p + 0x1C) < -1 || *(int *)(p + 0xEC)) {
+        mode_freeze_state = 3;
+        return;
+    }
+    if (*(int *)(p + 0x14) == -2) {
+        if (*(int *)(p + 0xC) + *(int *)(p + 0xAC) < 350) {
+            mode_freeze_state = 19;
+            return;
+        }
+        mode_freeze_state = 12;
+        return;
+    }
+    if (*(int *)(p + 0x14) >= -1)
+        mode_freeze_state = 16;
 }
 INCLUDE_ASM("asm/overlays", func_L00_0024BB5C);
 INCLUDE_ASM("asm/overlays", func_L00_0024BB90);
@@ -402,25 +458,43 @@ void CardMenu_SetStateTwelve(void) {
     *(int *)&mode_freeze_state = 12;
 }
 INCLUDE_ASM("asm/overlays", func_L00_0024BC38);
-typedef struct { int v[60]; } MenuState;
+typedef struct {
+    int v[60];
+} MenuState;
 extern int mode_freeze_flags_m __asm__("D_0015EFB4") MACRO_ADDR;
 /* advances the active menu state or requests its alternate action */
 void CardMenu_AdvanceOrAlternate(void) {
- MenuState *p = &memory_card_state;
- if (p->v[55]==2 && p->v[57]<0) {
- if (p->v[59]) { mode_freeze_state=18; mode_freeze_flags_m |= 64; }
- else { p->v[50]=0; p->v[57]=7; p->v[5]=0; p->v[58]=0; mode_freeze_state=16; }
- }
+    MenuState *p = &memory_card_state;
+    if (p->v[55] == 2 && p->v[57] < 0) {
+        if (p->v[59]) {
+            mode_freeze_state = 18;
+            mode_freeze_flags_m |= 64;
+        } else {
+            p->v[50] = 0;
+            p->v[57] = 7;
+            p->v[5] = 0;
+            p->v[58] = 0;
+            mode_freeze_state = 16;
+        }
+    }
 }
 INCLUDE_ASM("asm/overlays", func_L00_0024BCF0);
 /* clears the menu flags 4 and 2, then picks the card menu's next state from the flags and the card status */
 void CardMenu_NextStateFromFlags(void) {
-    if (mode_freeze_flags & 4) mode_freeze_flags &= ~4;
-    if (mode_freeze_flags & 2) mode_freeze_flags &= ~2;
-    if (mode_freeze_flags & 0x80) { mode_freeze_state = 21; mode_freeze_flags = (mode_freeze_flags ^ 0x80) | 0x40; }
-    else if (mode_freeze_flags & 0x100) { mode_freeze_state = 20; mode_freeze_flags = (mode_freeze_flags ^ 0x100) | 0x40; }
-    else if (memory_card_state[7] != 0) mode_freeze_state = 3;
-    else if (memory_card_state[0xfc/4] != 0) mode_freeze_state = 1;
+    if (mode_freeze_flags & 4)
+        mode_freeze_flags &= ~4;
+    if (mode_freeze_flags & 2)
+        mode_freeze_flags &= ~2;
+    if (mode_freeze_flags & 0x80) {
+        mode_freeze_state = 21;
+        mode_freeze_flags = (mode_freeze_flags ^ 0x80) | 0x40;
+    } else if (mode_freeze_flags & 0x100) {
+        mode_freeze_state = 20;
+        mode_freeze_flags = (mode_freeze_flags ^ 0x100) | 0x40;
+    } else if (memory_card_state[7] != 0)
+        mode_freeze_state = 3;
+    else if (memory_card_state[0xfc / 4] != 0)
+        mode_freeze_state = 1;
 }
 INCLUDE_ASM("asm/overlays", func_L00_0024BD84);
 INCLUDE_ASM("asm/overlays", func_L00_0024BDB8);

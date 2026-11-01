@@ -18,12 +18,9 @@ extern void libc_fflush(void);
 extern void _fwalk(void *, void *);
 extern char locale_lconv[];
 extern int libc_glue_read();
-extern long func_00116108_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_00116108");
-extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_001188C8");
-extern long func_00114518_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_00114518");
+extern long func_00116108_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00116108");
+extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c) __asm__("func_001188C8");
+extern long func_00114518_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00114518");
 extern int _close_r(int *errOut, int arg1);
 extern int __sfvwrite(int, void *);
 extern void __sinit(void *);
@@ -108,8 +105,8 @@ extern char str_dbc_set_work_addr_error[];
 extern int sceDbcGetDepNumber(int);
 typedef struct {
     char unk_00[4];
-    int  unk_04;
-    int  unk_08;
+    int unk_04;
+    int unk_08;
     char *unk_0C;
     char unk_10[0x320];
 } Ent330;

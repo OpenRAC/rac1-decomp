@@ -29,7 +29,9 @@ extern void sce_cd_sync_s(int);
 
 /* Reads movie sectors and advances the cursor after a synchronous read. */
 int read_cd_stream_sectors(void *arg0, int arg1, int arg2, int arg3) {
-    struct { unsigned char retries, speed, pattern, padding; } mode;
+    struct {
+        unsigned char retries, speed, pattern, padding;
+    } mode;
     int r = 0;
     int n = arg2 >> 11;
 

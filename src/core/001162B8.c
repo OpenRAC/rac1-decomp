@@ -41,13 +41,11 @@ extern int reentrant_read(int *errOut, void *a, void *b, void *c);
    since its own `r == -1` would become an unsupported 64-bit compare) and
    the call site goes through a declaration that spells the return type the
    way retail's header did. Emits a plain `jal func_00116108`. */
-extern long func_00116108_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_00116108");
+extern long func_00116108_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00116108");
 
 int __sread(void *arg0, void *arg1, void *arg2) {
     Node1E4 *s = (Node1E4 *)arg0;
-    int r = func_00116108_wide((int *)s->owner,
-                               (void *)(int)s->handle, arg1, arg2);
+    int r = func_00116108_wide((int *)s->owner, (void *)(int)s->handle, arg1, arg2);
     if (r >= 0) {
         s->pos += r;
     } else {
@@ -60,31 +58,26 @@ int __sread(void *arg0, void *arg1, void *arg2) {
    above -- see that note. Here the narrowing lands on the return value
    itself: retail's trailing dsll32/dsra32 pair is func_001188C8's 64-bit
    result being handed back through this function's int return type. */
-extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_001188C8");
+extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c) __asm__("func_001188C8");
 
 int __swrite(void *arg0, void *arg1, void *arg2) {
     char *s = (char *)arg0;
     if (*(unsigned short *)(s + 0xC) & 0x100) {
-        _lseek_r(*(int **)(s + 0x54), (void *)(int)*(short *)(s + 0xE),
-                      (void *)0, (void *)2);
+        _lseek_r(*(int **)(s + 0x54), (void *)(int)*(short *)(s + 0xE), (void *)0, (void *)2);
     }
     *(unsigned short *)(s + 0xC) &= 0xEFFF;
-    return func_001188C8_wide(*(int **)(s + 0x54),
-                              (void *)(int)*(short *)(s + 0xE), arg1, arg2);
+    return func_001188C8_wide(*(int **)(s + 0x54), (void *)(int)*(short *)(s + 0xE), arg1, arg2);
 }
 
 /* Third of the family. This one keeps the 64-bit type all the way out --
    the return is the raw call result, and the only place retail narrows it
    is the 32-bit store to +0x50. Writing the `== -1` arm first is what puts
    the mask branch on the fallthrough path, as retail has it. */
-extern long func_00114518_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_00114518");
+extern long func_00114518_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00114518");
 
 long __sseek(void *arg0, void *arg1, void *arg2) {
     Node1E4 *s = (Node1E4 *)arg0;
-    long r = func_00114518_wide((int *)s->owner,
-                                (void *)(int)s->handle, arg1, arg2);
+    long r = func_00114518_wide((int *)s->owner, (void *)(int)s->handle, arg1, arg2);
     if (r == -1) {
         s->flags = (unsigned short)s->flags & 0xEFFF;
     } else {

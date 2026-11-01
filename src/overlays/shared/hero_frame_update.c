@@ -42,7 +42,8 @@ extern void update_hero_moby_probed_height_bounds(void);
 /* Per-frame driver: validates the cursor, then runs each update pass in order. */
 void HeroL03_FrameUpdate(void) {
     struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
-    if (g->motion.pos.f[0] < 2.0f || g->motion.pos.f[1] < 2.0f || g->motion.pos.f[0] > 1022.0f || g->motion.pos.f[1] > 1022.0f) {
+    if (g->motion.pos.f[0] < 2.0f || g->motion.pos.f[1] < 2.0f || g->motion.pos.f[0] > 1022.0f ||
+        g->motion.pos.f[1] > 1022.0f) {
         struct Hero *q;
         FadeToBlack(scale_ticks(0x10));
         q = (struct Hero *)((char *)hero_globals_base + 0xE1D);

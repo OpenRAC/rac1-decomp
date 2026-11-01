@@ -21,8 +21,7 @@ extern void AddDrawCallback(void (*)(void *), void *);
 
 /* Register the level draw callback for the target moby in state four. */
 void register_level07_moby_draw_callback(void) {
-    if (g_current_level_index == 7 && umbris_cutscene_state.state == 4 &&
-        umbris_cutscene_state.moby != 0 &&
+    if (g_current_level_index == 7 && umbris_cutscene_state.state == 4 && umbris_cutscene_state.moby != 0 &&
         umbris_cutscene_state.moby->class_id == 0x214) {
         AddDrawCallback(render_environment_mapped_object, umbris_cutscene_state.moby);
     }

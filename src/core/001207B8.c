@@ -18,12 +18,13 @@ extern u128_t vif1_reset_fifo_qword_1;
 void reset_vif1_gif(void) {
     *(volatile int *)0x10003C10 = 1;
     *(volatile int *)0x10003C20 = 2;
-    __asm__ __volatile__(
-        "move $4, $0\n\tsync\n\t"
-        "cfc2.ni $4, $vi28\n\tnop\n\tori $4, $4, 0x200\n\tctc2.ni $4, $vi28\n\tsync.p\n"
-        "1:\n\tcfc2.ni $4, $vi29\n\tnop\n\tnop\n\tnop\n\tandi $4, $4, 0x100\n\tbnez $4, 1b\n\t"
-        "addiu $4, $0, 0x404\n\tctc2.ni $4, $vi28\n\tnop"
-        : : : "$4");
+    __asm__ __volatile__("move $4, $0\n\tsync\n\t"
+                         "cfc2.ni $4, $vi28\n\tnop\n\tori $4, $4, 0x200\n\tctc2.ni $4, $vi28\n\tsync.p\n"
+                         "1:\n\tcfc2.ni $4, $vi29\n\tnop\n\tnop\n\tnop\n\tandi $4, $4, 0x100\n\tbnez $4, 1b\n\t"
+                         "addiu $4, $0, 0x404\n\tctc2.ni $4, $vi28\n\tnop"
+                         :
+                         :
+                         : "$4");
     *(volatile u128_t *)0x10005000 = vif1_reset_fifo_qword_0;
     *(volatile u128_t *)0x10005000 = vif1_reset_fifo_qword_1;
     *(volatile int *)0x10003000 = 1;
@@ -35,12 +36,17 @@ int wait_for_graphics_pipeline_idle(void) {
 
     do {
         busy = 0;
-        if (*(volatile int *)0x10009000 & 0x100) busy = 1;
-        if (*(volatile int *)0x1000A000 & 0x100) busy |= 2;
-        if (*(volatile int *)0x10003C00 & 3) busy |= 4;
+        if (*(volatile int *)0x10009000 & 0x100)
+            busy = 1;
+        if (*(volatile int *)0x1000A000 & 0x100)
+            busy |= 2;
+        if (*(volatile int *)0x10003C00 & 3)
+            busy |= 4;
         __asm__ __volatile__("cfc2.ni %0, $vi29\n\tnop" : "=r"(stat));
-        if (stat & 0x100) busy |= 8;
-        if (*(volatile int *)0x10003020 & 0xC00) busy |= 0x10;
+        if (stat & 0x100)
+            busy |= 8;
+        if (*(volatile int *)0x10003020 & 0xC00)
+            busy |= 0x10;
     } while (busy);
     return 0;
 }

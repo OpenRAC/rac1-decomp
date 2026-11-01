@@ -23,12 +23,9 @@ extern void libc_fflush(void);
 extern void _fwalk(void *, void *);
 extern char locale_lconv[];
 extern int libc_glue_read();
-extern long func_00116108_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_00116108");
-extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_001188C8");
-extern long func_00114518_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_00114518");
+extern long func_00116108_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00116108");
+extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c) __asm__("func_001188C8");
+extern long func_00114518_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00114518");
 extern int _close_r(int *errOut, int arg1);
 extern int __sfvwrite(int, void *);
 extern void __sinit(void *);
@@ -180,53 +177,50 @@ void sceGsDefDispEnv(GsDispEnv *disp, short psm, short w, short h, short dx, sho
     } else {
         disp->smode2 = 2;
     }
-    disp->dispfb = ((unsigned long)(psm & 0xF) << 15) |
-                   ((unsigned long)(((w + 63) >> 6) & 0x3F) << 9);
+    disp->dispfb = ((unsigned long)(psm & 0xF) << 15) | ((unsigned long)(((w + 63) >> 6) & 0x3F) << 9);
     omode = gp->outMode;
     if (omode == 2) {
         if ((short)imode == 1) {
             int magh = (w + 2559) / w;
             unsigned long dxo = (unsigned long)dx1 + 636;
-            disp->display = ((((unsigned long)(magh - 1) << 23) |
-                            (((dx * magh + dxo) & 0xFFF) |
-                             ((unsigned long)(gp->ffMode ? (h << 1) - 1 : h - 1) << 44))) |
-                            (((unsigned long)(dy + dy1 + 50) & 0xFFF) << 12)) |
-                            ((unsigned long)(magh * w - 1) << 32);
+            disp->display =
+                ((((unsigned long)(magh - 1) << 23) |
+                  (((dx * magh + dxo) & 0xFFF) | ((unsigned long)(gp->ffMode ? (h << 1) - 1 : h - 1) << 44))) |
+                 (((unsigned long)(dy + dy1 + 50) & 0xFFF) << 12)) |
+                ((unsigned long)(magh * w - 1) << 32);
         } else {
             int magh = (w + 2559) / w;
             unsigned long dxo = (unsigned long)dx1 + 636;
             magh = (w + 2559) / w;
             disp->display = ((((unsigned long)((w + 2559) / w - 1) << 23) |
-                            (((dx * ((w + 2559) / w) + dxo) & 0xFFF) |
-                             ((unsigned long)(h - 1) << 44))) |
-                            (((unsigned long)(dy + dy1 + 25) & 0xFFF) << 12)) |
+                              (((dx * ((w + 2559) / w) + dxo) & 0xFFF) | ((unsigned long)(h - 1) << 44))) |
+                             (((unsigned long)(dy + dy1 + 25) & 0xFFF) << 12)) |
                             ((unsigned long)((w + 2559) / w * w - 1) << 32);
         }
     } else if (omode == 3) {
         if ((short)imode == 1) {
             int magh = (w + 2559) / w;
             unsigned long dxo = (unsigned long)dx1 + 656;
-            disp->display = ((((unsigned long)(magh - 1) << 23) |
-                            (((dx * magh + dxo) & 0xFFF) |
-                             ((unsigned long)(gp->ffMode ? (h << 1) - 1 : h - 1) << 44))) |
-                            (((unsigned long)(dy + dy1 + 72) & 0xFFF) << 12)) |
-                            ((unsigned long)(magh * w - 1) << 32);
+            disp->display =
+                ((((unsigned long)(magh - 1) << 23) |
+                  (((dx * magh + dxo) & 0xFFF) | ((unsigned long)(gp->ffMode ? (h << 1) - 1 : h - 1) << 44))) |
+                 (((unsigned long)(dy + dy1 + 72) & 0xFFF) << 12)) |
+                ((unsigned long)(magh * w - 1) << 32);
         } else {
             int magh = (w + 2559) / w;
             unsigned long dxo = (unsigned long)dx1 + 656;
             magh = (w + 2559) / w;
             disp->display = ((((unsigned long)((w + 2559) / w - 1) << 23) |
-                            (((dx * ((w + 2559) / w) + dxo) & 0xFFF) |
-                             ((unsigned long)(h - 1) << 44))) |
-                            (((unsigned long)(dy + dy1 + 36) & 0xFFF) << 12)) |
+                              (((dx * ((w + 2559) / w) + dxo) & 0xFFF) | ((unsigned long)(h - 1) << 44))) |
+                             (((unsigned long)(dy + dy1 + 36) & 0xFFF) << 12)) |
                             ((unsigned long)((w + 2559) / w * w - 1) << 32);
         }
     } else if (omode == 0x50) {
         unsigned long dxo = (unsigned long)(dx * 2) + 232;
-        disp->display = ((((unsigned long)(h - 1) << 44) |
-                          ((((720 - w) / 2 * 2 + (unsigned long)dx1 + dxo) & 0xFFF) | 0x800000)) |
-                         (((unsigned long)(dy + dy1 + 35) & 0xFFF) << 12)) |
-                        ((unsigned long)(w * 2 - 1) << 32);
+        disp->display =
+            ((((unsigned long)(h - 1) << 44) | ((((720 - w) / 2 * 2 + (unsigned long)dx1 + dxo) & 0xFFF) | 0x800000)) |
+             (((unsigned long)(dy + dy1 + 35) & 0xFFF) << 12)) |
+            ((unsigned long)(w * 2 - 1) << 32);
     } else {
         scePrintf(gs_def_disp_env_mode_error_msg);
     }

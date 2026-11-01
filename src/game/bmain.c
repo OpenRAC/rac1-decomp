@@ -263,10 +263,10 @@ void startlevel(void) {
     startlevel_code_addr_r = code;
     if (pal_mode_r == 0) {
         Movie_Play_r(intro_movie_disc_entry_ntsc_r[0], intro_movie_disc_entry_ntsc_r[1], (code + 0x3F) & ~0x3F,
-                        (code + 0x2C003F) & ~0x3F, 0);
+                     (code + 0x2C003F) & ~0x3F, 0);
     } else {
         Movie_Play_r(intro_movie_disc_entry_pal_r[0], intro_movie_disc_entry_pal_r[1], (code + 0x3F) & ~0x3F,
-                        (code + 0x2C003F) & ~0x3F, 0);
+                     (code + 0x2C003F) & ~0x3F, 0);
     }
     decode_mode_r = 0;
     FadeToBlack_r(scale_game_frame_count_r(0xC));

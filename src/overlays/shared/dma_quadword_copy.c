@@ -5,8 +5,8 @@
 ASM_FUNC("asm/overlays", func_L00_0024E798);
 /* Empty function: its body is two nops. */
 void miscproc_empty_function(void) {
-    __asm__ volatile ("nop");
-    __asm__ volatile ("nop");
+    __asm__ volatile("nop");
+    __asm__ volatile("nop");
 }
 ASM_FUNC("asm/overlays", func_L00_0024EBF8);
 ASM_FUNC("asm/overlays", func_L00_0024EC20);

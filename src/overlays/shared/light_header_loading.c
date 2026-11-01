@@ -9,10 +9,14 @@ extern float height_map_max_height MACRO_ADDR;
 extern char *height_map_data MACRO_ADDR;
 /* Reads the height map header (size, height range) and points at its data. */
 void load_two_int_two_float_header(char *p) {
-    height_map_width = *(int *)p; p += 4;
-    height_map_rows = *(int *)p; p += 4;
-    height_map_min_height = *(float *)p; p += 4;
-    height_map_max_height = *(float *)p; p += 4;
+    height_map_width = *(int *)p;
+    p += 4;
+    height_map_rows = *(int *)p;
+    p += 4;
+    height_map_min_height = *(float *)p;
+    p += 4;
+    height_map_max_height = *(float *)p;
+    p += 4;
     height_map_data = p;
 }
 extern u32 level_textured_spheres MACRO_ADDR;

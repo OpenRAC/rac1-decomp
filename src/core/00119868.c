@@ -24,12 +24,9 @@ extern void libc_fflush(void);
 extern void _fwalk(void *, void *);
 extern char locale_lconv[];
 extern int libc_glue_read();
-extern long func_00116108_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_00116108");
-extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_001188C8");
-extern long func_00114518_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_00114518");
+extern long func_00116108_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00116108");
+extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c) __asm__("func_001188C8");
+extern long func_00114518_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00114518");
 extern int _close_r(int *errOut, int arg1);
 extern int __sfvwrite(int, void *);
 extern void __sinit(void *);
@@ -130,49 +127,49 @@ void sceTtyHandler(int event, int param, TtyHandlerState *ti) {
     int n;
 
     switch (event) {
-    case 1:
-    case 2:
-        if (param != 0) {
-            if ((unsigned int)(ti->rlen + param) > 0x140) {
-                kprintf(tty_packet_too_large_msg);
-            }
-            {
-                int off = ti->rlen;
+        case 1:
+        case 2:
+            if (param != 0) {
+                if ((unsigned int)(ti->rlen + param) > 0x140) {
+                    kprintf(tty_packet_too_large_msg);
+                }
+                {
+                    int off = ti->rlen;
 
-                n = isceDeci2ExRecv_r(ti->sock, ti->rbuf + off, param);
-            }
-            if (n < 0) {
-                kprintf(tty_receive_error_msg);
-            }
-            ti->rlen += n;
-        } else {
-            TtyHdr *h = (TtyHdr *)ti->rbuf;
+                    n = isceDeci2ExRecv_r(ti->sock, ti->rbuf + off, param);
+                }
+                if (n < 0) {
+                    kprintf(tty_receive_error_msg);
+                }
+                ti->rlen += n;
+            } else {
+                TtyHdr *h = (TtyHdr *)ti->rbuf;
 
-            for (n = 0xC; n < h->len; n++) {
-                *ti->queue->wp = ti->rbuf[n];
-                tty_queue_write_advance((char *)ti->queue);
+                for (n = 0xC; n < h->len; n++) {
+                    *ti->queue->wp = ti->rbuf[n];
+                    tty_queue_write_advance((char *)ti->queue);
+                }
+                ti->rlen = 0;
             }
-            ti->rlen = 0;
+            break;
+        case 3: {
+            int w = isceDeci2ExSend_r(ti->sock, ti->wbuf, ti->wlen);
+
+            if (w < 0) {
+                kprintf(tty_send_error_msg, w);
+                ti->busy = 0;
+            } else {
+                ti->wbuf += w;
+                ti->wlen -= w;
+            }
+            break;
         }
-        break;
-    case 3: {
-        int w = isceDeci2ExSend_r(ti->sock, ti->wbuf, ti->wlen);
-
-        if (w < 0) {
-            kprintf(tty_send_error_msg, w);
+        case 4:
+            if (ti->wlen != 0) {
+                kprintf(tty_wlen_error_msg, ti->wlen);
+            }
             ti->busy = 0;
-        } else {
-            ti->wbuf += w;
-            ti->wlen -= w;
-        }
-        break;
-    }
-    case 4:
-        if (ti->wlen != 0) {
-            kprintf(tty_wlen_error_msg, ti->wlen);
-        }
-        ti->busy = 0;
-        break;
+            break;
     }
 }
 
@@ -272,7 +269,7 @@ typedef struct {
     int unk0C;
     char *wbuf;
     char *rbuf;
-    TtyQueue *queue;    /* 0x18 */
+    TtyQueue *queue; /* 0x18 */
 } TtyState2;
 
 extern TtyState2 tty_info_t __asm__("D_00154B50");

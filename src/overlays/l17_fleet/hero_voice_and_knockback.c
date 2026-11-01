@@ -4,7 +4,11 @@
 #include "vector.h"
 #include "hero.h"
 
-typedef struct { char pad[0x24]; int v; char pad2[0x24]; } Rec;
+typedef struct {
+    char pad[0x24];
+    int v;
+    char pad2[0x24];
+} Rec;
 extern Rec fleet_item_defs[];
 extern char hero_globals_base[];
 extern int hero_slot_item_id(int);
@@ -13,10 +17,10 @@ extern int hero_slot_item_id(int);
 int select_hero_help_value(int a) {
     struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
     switch (g->vehicle_mode) {
-    case 1:
-        return 0;
-    case 3:
-        return 0;
+        case 1:
+            return 0;
+        case 3:
+            return 0;
     }
     {
         struct Hero *g2 = (struct Hero *)((char *)hero_globals_base + 0xE1D);
@@ -160,72 +164,72 @@ s32 HeroL17_TryTakeHit(s32 arg) {
         v.i[2] = 0;
     }
     switch (g_hero.b20A4) {
-    case 0:
-        mob = g_hero.p2280;
-        if (mob != 0 && (*(s16 *)(mob + 0xA6) == 0x4EB || *(s16 *)(mob + 0xA6) == 0x558)) {
-            id = 0x80;
-        call_ret:
-            HeroL17_SetMoveState(id, 1);
-            return 1;
-        }
-        if (g_hero.i208C == 0x16) {
-            HeroL17_SetMoveState(0x6D, 1);
-            g_hero.f128 = g_frame_time * 7.0f;
-            return 1;
-        }
-        if (g_hero.i208C == 0x12) {
+        case 0:
             mob = g_hero.p2280;
-            if (mob != 0 && *(s16 *)(mob + 0xA6) == 0x28F) {
-                id = 0x82;
-                goto call_ret;
+            if (mob != 0 && (*(s16 *)(mob + 0xA6) == 0x4EB || *(s16 *)(mob + 0xA6) == 0x558)) {
+                id = 0x80;
+            call_ret:
+                HeroL17_SetMoveState(id, 1);
+                return 1;
             }
-            HeroL17_SetMoveState(0x75, 1);
-        } else if (g_hero.i208C == 0x11) {
-            mob = g_hero.p2280;
-            if (mob != 0 && *(s16 *)(mob + 0xA6) == 0x28F) {
-                id = 0x82;
-                goto call_ret;
+            if (g_hero.i208C == 0x16) {
+                HeroL17_SetMoveState(0x6D, 1);
+                g_hero.f128 = g_frame_time * 7.0f;
+                return 1;
             }
-            if (g_current_level_index == 0xF || g_current_level_index == 0x11) {
+            if (g_hero.i208C == 0x12) {
                 mob = g_hero.p2280;
-                if (mob != 0 && (*(s16 *)(mob + 0xA6) == 0x28F || *(s16 *)(mob + 0xA6) == 0x7B
-                                 || *(s16 *)(mob + 0xA6) == 0x29D)) {
-                    allocate_hero_voice_for_entry(0x1C, 0);
-                }
-            }
-            HeroL17_SetMoveState(0x76, 1);
-        } else if (g_hero.i208C == 3) {
-            mob = g_hero.p2280;
-            if (mob != 0) {
-                id = 0x82;
-                if (*(s16 *)(mob + 0xA6) == 0x28F) {
+                if (mob != 0 && *(s16 *)(mob + 0xA6) == 0x28F) {
+                    id = 0x82;
                     goto call_ret;
                 }
+                HeroL17_SetMoveState(0x75, 1);
+            } else if (g_hero.i208C == 0x11) {
+                mob = g_hero.p2280;
+                if (mob != 0 && *(s16 *)(mob + 0xA6) == 0x28F) {
+                    id = 0x82;
+                    goto call_ret;
+                }
+                if (g_current_level_index == 0xF || g_current_level_index == 0x11) {
+                    mob = g_hero.p2280;
+                    if (mob != 0 && (*(s16 *)(mob + 0xA6) == 0x28F || *(s16 *)(mob + 0xA6) == 0x7B ||
+                                     *(s16 *)(mob + 0xA6) == 0x29D)) {
+                        allocate_hero_voice_for_entry(0x1C, 0);
+                    }
+                }
+                HeroL17_SetMoveState(0x76, 1);
+            } else if (g_hero.i208C == 3) {
+                mob = g_hero.p2280;
+                if (mob != 0) {
+                    id = 0x82;
+                    if (*(s16 *)(mob + 0xA6) == 0x28F) {
+                        goto call_ret;
+                    }
+                }
+                HeroL17_SetMoveState(0x16, 1);
+            } else {
+                HeroL17_SetMoveState(0x16, 1);
             }
-            HeroL17_SetMoveState(0x16, 1);
-        } else {
-            HeroL17_SetMoveState(0x16, 1);
-        }
-        e = g_frame_time;
-        a = e * 5.7f;
-        b = e * 2.4f;
-        if (g_hero.b12E7 != 0) {
-            a = 0.0f;
-            b = e * 1.7f;
-        }
-        hero_knockback(&v, flag, a, b);
-        if (flag != 0 && tbl->b28 == 4) {
-            v.f[2] += v.f[2];
-        }
-        break;
-    case 1:
-        HeroL17_SetMoveState(0x46, 1);
-        hero_knockback(&v, flag, g_frame_time * 5.0f, g_frame_time * 3.0f);
-        break;
-    case 3:
-        HeroL17_SetMoveState(0x56, 1);
-        hero_knockback(&v, flag, g_frame_time * 5.0f, g_frame_time * 2.4f);
-        break;
+            e = g_frame_time;
+            a = e * 5.7f;
+            b = e * 2.4f;
+            if (g_hero.b12E7 != 0) {
+                a = 0.0f;
+                b = e * 1.7f;
+            }
+            hero_knockback(&v, flag, a, b);
+            if (flag != 0 && tbl->b28 == 4) {
+                v.f[2] += v.f[2];
+            }
+            break;
+        case 1:
+            HeroL17_SetMoveState(0x46, 1);
+            hero_knockback(&v, flag, g_frame_time * 5.0f, g_frame_time * 3.0f);
+            break;
+        case 3:
+            HeroL17_SetMoveState(0x56, 1);
+            hero_knockback(&v, flag, g_frame_time * 5.0f, g_frame_time * 2.4f);
+            break;
     }
     FastVecAdd(hero_velocity, hero_velocity, &v);
     FastVecAdd(hero_velocity + 0x20, hero_velocity + 0x20, &v);
@@ -247,21 +251,21 @@ void update_hero_smoothing(void) {
     float *p;
 
     switch (a->vehicle_mode) {
-    case 0:
-        a->capsule_top_target = 0.8f;
-        a->capsule_bottom_target = 0.7f;
-        a->capsule_radius_target = 0.45f;
-        break;
-    case 1:
-        a->capsule_top_target = 0.59999996f;
-        a->capsule_bottom_target = 0.45000002f;
-        a->capsule_radius_target = 0.3f;
-        break;
-    case 3:
-        a->capsule_top_target = 0.8f;
-        a->capsule_bottom_target = 0.6f;
-        a->capsule_radius_target = 0.45f;
-        break;
+        case 0:
+            a->capsule_top_target = 0.8f;
+            a->capsule_bottom_target = 0.7f;
+            a->capsule_radius_target = 0.45f;
+            break;
+        case 1:
+            a->capsule_top_target = 0.59999996f;
+            a->capsule_bottom_target = 0.45000002f;
+            a->capsule_radius_target = 0.3f;
+            break;
+        case 3:
+            a->capsule_top_target = 0.8f;
+            a->capsule_bottom_target = 0.6f;
+            a->capsule_radius_target = 0.45f;
+            break;
     }
     b = (struct Hero *)((char *)hero_globals_base + 0xE1D);
     if (b->state.control_mode == 4) {
@@ -287,8 +291,8 @@ void update_hero_smoothing(void) {
         }
     }
     c = (struct Hero *)((char *)hero_globals_base + 0xE1D);
-    if (c->wall_hit != 0 && c->state.prev_control_mode != 0x12
-        && c->state.control_mode != 0x11 && c->base_condition == 0) {
+    if (c->wall_hit != 0 && c->state.prev_control_mode != 0x12 && c->state.control_mode != 0x11 &&
+        c->base_condition == 0) {
         float d = vec_distance_xy(&c->wall_contact_point, &c->motion.pos);
         if (!(c->capsule_radius * 0.5f < d)) {
             return;
@@ -298,6 +302,5 @@ void update_hero_smoothing(void) {
     g = (char *)p - 0x220;
     ApproachValue(p, *(float *)(g + 0x228), frame_scale * 0.02f);
     ApproachValue(p + 1, *(float *)(g + 0x22C), frame_scale * 0.02f);
-    Spring(p + 5, p + 6, *(float *)(g + 0x230),
-                      g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.3f, g_frame_time * 4.0f);
+    Spring(p + 5, p + 6, *(float *)(g + 0x230), g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.3f, g_frame_time * 4.0f);
 }

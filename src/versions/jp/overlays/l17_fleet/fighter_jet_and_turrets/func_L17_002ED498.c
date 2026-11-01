@@ -30,8 +30,10 @@ void DrawFleetHud(char *moby) {
     float q;
 
     VU1_addGSregister(0x42, 0x8000000044L);
-    DrawTexturedQuad(0x170, (s = (char *)screen_globals_base + 0x4A6, *(int *)(s + 4)) - 0x90, 0x80, 0x80, 0, 0, 0x80, 0x80, 0x70808080, GetEffectTex_l(*(int *)(d + 0x104) + 0x28));
-    DrawTexturedQuad(0x170, *(int *)(s + 4) - 0x90, 0x80, 0x80, 0, 0, 0x80, 0x80, 0x70808080, GetEffectTex_l(*(int *)(d + 0x104) + 0x29));
+    DrawTexturedQuad(0x170, (s = (char *)screen_globals_base + 0x4A6, *(int *)(s + 4)) - 0x90, 0x80, 0x80, 0, 0, 0x80,
+                     0x80, 0x70808080, GetEffectTex_l(*(int *)(d + 0x104) + 0x28));
+    DrawTexturedQuad(0x170, *(int *)(s + 4) - 0x90, 0x80, 0x80, 0, 0, 0x80, 0x80, 0x70808080,
+                     GetEffectTex_l(*(int *)(d + 0x104) + 0x29));
     VU1_addGSregister(0x42, 0x8000000048L);
     update_fighter_jet_target_lock((int)moby, d);
     if (*(int *)(d + 0x88) != 0) {
@@ -41,13 +43,17 @@ void DrawFleetHud(char *moby) {
             t = t / IntToFloat(*(int *)&fleet_jet_lock_anim_frames);
             m = 2.0f * (1.0f - t);
             k = t * 5.0f + 1.0f;
-            if (m > 1.0f) m = 1.0f;
+            if (m > 1.0f)
+                m = 1.0f;
             c = truncate_float_to_s32_r(m * 96.0f);
-            draw_four_quarter_turn_effect_quads_f(IntToFloat(sp10), IntToFloat(sp14), k, normalize_angle(IntToFloat(fleet_frame_count) / 30.0f), 0, 0xFF, 0, c);
+            draw_four_quarter_turn_effect_quads_f(IntToFloat(sp10), IntToFloat(sp14), k,
+                                                  normalize_angle(IntToFloat(fleet_frame_count) / 30.0f), 0, 0xFF, 0,
+                                                  c);
             *(int *)(d + 0xEC) = 0;
         } else {
             a = 0xFF;
-            if ((*(int *)(d + 0x8C) / scale_ticks(0x14)) & 1) a = 0;
+            if ((*(int *)(d + 0x8C) / scale_ticks(0x14)) & 1)
+                a = 0;
             draw_four_quarter_turn_effect_quads_f(IntToFloat(sp10), IntToFloat(sp14), 1.0f, 0.0f, 0xFF, a, 0, 0x60);
             *(int *)(d + 0xEC) = *(int *)(d + 0x88);
         }
@@ -74,8 +80,10 @@ void DrawFleetHud(char *moby) {
     ey = *(int *)(d + 0xE4);
     tex = GetEffectTex(0x11);
     append_rotated_sprite_quad(ex, ey, 40.0f, 40.0f, 0.0f, 0x3F, 0x3F, tex, 0xFFFFF3, 0xFF20FF20, 0, 0, 0.5f, 0.5f);
-    append_rotated_sprite_quad(ex, ey, 40.0f, 40.0f, 0.0f, 0x3F, 0x3F, GetEffectTex(0x12), 0xFFFFF3, 0xFF20FF20, 0, 0, 0.5f, 0.5f);
-    append_rotated_sprite_quad(ex, ey, 10.0f, 10.0f, 0.0f, 0x1F, 0x1F, GetEffectTex(8), 0xFFFFF3, 0xFF20FF20, 0, 0, 0.5f, 0.5f);
+    append_rotated_sprite_quad(ex, ey, 40.0f, 40.0f, 0.0f, 0x3F, 0x3F, GetEffectTex(0x12), 0xFFFFF3, 0xFF20FF20, 0, 0,
+                               0.5f, 0.5f);
+    append_rotated_sprite_quad(ex, ey, 10.0f, 10.0f, 0.0f, 0x1F, 0x1F, GetEffectTex(8), 0xFFFFF3, 0xFF20FF20, 0, 0,
+                               0.5f, 0.5f);
     b = hero_globals_base + 0xE1D;
     if (*(float *)(b + 0x15FC) < *(float *)(b + 0x1600) / 10.0f && (fleet_frame_count / 90) & 1) {
         FontPrintCenterSmall_c(0x100, 0x186, 0x80000080L, msg_string_id(0x52C0), 0x64);
@@ -87,11 +95,14 @@ void DrawFleetHud(char *moby) {
     f = *(float *)(h + 0x15FC) - *(float *)(d + 0xF0);
     f *= 0.2f;
     q = FastAbsF(f);
-    if (q > 1.0f) f /= q;
+    if (q > 1.0f)
+        f /= q;
     *(float *)(d + 0xF0) += f;
     v = truncate_float_to_s32_r(*(float *)(d + 0xF0) * 251.0f / *(float *)(h + 0x1600)) + 2;
-    if (v > 0xFD) v = 0xFD;
-    if (v < 2) v = 2;
+    if (v > 0xFD)
+        v = 0xFD;
+    if (v < 2)
+        v = 2;
     lo = *(int *)(d + 0xF4) <= v ? *(int *)(d + 0xF4) : v;
     hi = *(int *)(d + 0xF4) < v ? v : *(int *)(d + 0xF4);
     for (j = lo; j <= hi; j++) {

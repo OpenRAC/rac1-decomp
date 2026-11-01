@@ -4,9 +4,21 @@
 #include "include_asm.h"
 #include "hero.h"
 
-typedef struct { float f[4]; } __attribute__((aligned(16))) V4h;
+typedef struct {
+    float f[4];
+} __attribute__((aligned(16))) V4h;
 extern Hero g_hero;
-typedef struct { char pad0[0x44]; int use_state_40; char pad48[8]; int item_id; char pad54[4]; float interval; char pad5c[4]; int duration_frames; char pad64[0xC]; } Ent;
+typedef struct {
+    char pad0[0x44];
+    int use_state_40;
+    char pad48[8];
+    int item_id;
+    char pad54[4];
+    float interval;
+    char pad5c[4];
+    int duration_frames;
+    char pad64[0xC];
+} Ent;
 extern Ent idle_fidgets[] NOT_SDA;
 extern int idle_fidgets_field_220 NOT_SDA;
 extern int g_current_level_index MACRO_ADDR;
@@ -30,11 +42,14 @@ int pick_idle_fidget(int *index) {
     float total, pick;
 
     count = 0;
-    if (g_hero.fidget_cooldown != 0) return 0;
+    if (g_hero.fidget_cooldown != 0)
+        return 0;
     if (g_hero.health.hp == 1) {
         *index = 4;
-        if (idle_fidgets_field_220 != 0) return 0;
-        if (!(g_hero.anim_flags & 2)) return 0;
+        if (idle_fidgets_field_220 != 0)
+            return 0;
+        if (!(g_hero.anim_flags & 2))
+            return 0;
         return random_float_between(0.0f, 1.0f) < 0.33f;
     }
     i = 0;
@@ -44,29 +59,40 @@ int pick_idle_fidget(int *index) {
     for (; i < 5; i++) {
         table = idle_fidgets;
         entry = &table[i];
-        if (entry->duration_frames != 0) continue;
-        if (entry->interval == 0.0f) continue;
+        if (entry->duration_frames != 0)
+            continue;
+        if (entry->interval == 0.0f)
+            continue;
         item = hero_slot_item_id(0);
-        if (entry->item_id != -1 && entry->item_id != item) continue;
-        if (entry->use_state_40 != 0 && ((int)g_hero.ground_moby) != 0) continue;
+        if (entry->item_id != -1 && entry->item_id != item)
+            continue;
+        if (entry->use_state_40 != 0 && ((int)g_hero.ground_moby) != 0)
+            continue;
         if (i == 3) {
-            if (g_current_level_index != 12) continue;
-            if (hero_slot_item_id(0) == 23) continue;
+            if (g_current_level_index != 12)
+                continue;
+            if (hero_slot_item_id(0) == 23)
+                continue;
             qcopy(startp, &g_hero.motion.body_center);
             qcopy(endp, startp);
             end.f[2] += 8.0f;
-            if (coll_line(startp, endp, 2, (int)g_hero.moby, 0)) continue;
+            if (coll_line(startp, endp, 2, (int)g_hero.moby, 0))
+                continue;
         }
         if (i == 4) {
-            if (g_hero.state.prev_control_mode != 1) continue;
-            if (scale_ticks(50) < g_hero.state_timer) continue;
-            if (g_hero.health.hp >= 2) continue;
+            if (g_hero.state.prev_control_mode != 1)
+                continue;
+            if (scale_ticks(50) < g_hero.state_timer)
+                continue;
+            if (g_hero.health.hp >= 2)
+                continue;
         }
         *next = i;
         count++;
         next++;
     }
-    if (count == 0) return 0;
+    if (count == 0)
+        return 0;
     total = 0.0f;
     for (i = 0; i < count; i++) {
         Ent *choice = &idle_fidgets[choices[i]];
@@ -80,7 +106,8 @@ int pick_idle_fidget(int *index) {
             *index = picked;
             choice = &idle_fidgets[picked];
             total -= 1.0f / (float)(int)(multiply_global_factor(choice->interval) * 60.0f);
-            if (total < pick) break;
+            if (total < pick)
+                break;
         }
         return 1;
     }
@@ -105,7 +132,8 @@ void update_hero_locomotion_state(void) {
     int n;
     b = hero_globals_base + 0xE1D;
     ((struct Hero *)b)->unk2284 = 0;
-    if (((struct Hero *)b)->on_ice_ground != 0 && *(float *)&g_frame_time_r * 0.5f < ((struct Hero *)b)->motion.flat_speed) {
+    if (((struct Hero *)b)->on_ice_ground != 0 &&
+        *(float *)&g_frame_time_r * 0.5f < ((struct Hero *)b)->motion.flat_speed) {
         HeroEnterMoveState(0x2F, 1);
         return;
     }
@@ -125,17 +153,20 @@ void update_hero_locomotion_state(void) {
         if (HeroEnterMoveState(2, 0)) {
             *(int *)(c + 0x2088) = 1;
             n = scale_ticks(8);
-            if (scale_ticks(5) < *(int *)(c + 0x418)) n = scale_ticks(14);
+            if (scale_ticks(5) < *(int *)(c + 0x418))
+                n = scale_ticks(14);
             set_hero_animation(4, hero_run_step_start_frames_1, (float)n);
             *(short *)(c + 0x3BC) = 1;
         }
         return;
     }
     d = hero_globals_base + 0xE1D;
-    if ((*(float *)&g_frame_time_r * 3.0f < *(float *)(d + 0x168) && scale_ticks(3) < *(int *)(d + 0x418)) || *(int *)(d + 0x2084) == 0x10) {
+    if ((*(float *)&g_frame_time_r * 3.0f < *(float *)(d + 0x168) && scale_ticks(3) < *(int *)(d + 0x418)) ||
+        *(int *)(d + 0x2084) == 0x10) {
         if (HeroEnterMoveState(3, 0)) {
             set_hero_animation(5, 0, -1.0f);
-            ClampVectorLength(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.momentum, *(float *)((char *)&g_frame_scale_sq + 8) * 5.0f);
+            ClampVectorLength(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.momentum,
+                              *(float *)((char *)&g_frame_scale_sq + 8) * 5.0f);
         }
         return;
     }
@@ -171,9 +202,10 @@ int hero_handle_jump_press(void) {
     }
     n = get_hero_high_jump_input_window_frames();
     t = scale_ticks(5);
-    if ((*(int *)(pad_globals_base + 0x2600) & 0xA) != 0 && n > 0 && check_pad_press_separation(0x40, 0x1F000, t + n, n) != 0) {
+    if ((*(int *)(pad_globals_base + 0x2600) & 0xA) != 0 && n > 0 &&
+        check_pad_press_separation(0x40, 0x1F000, t + n, n) != 0) {
         m = 0xB;
-found:
+    found:
         HeroEnterMoveState(m, 1);
         return 1;
     }
@@ -184,15 +216,14 @@ found:
             return 0;
         }
         if (hero_slot_item_id(3) == 2 && gHaveHeliPack != 0 && p->pack_disabled == 0 &&
-            (2.5f < p->wall_probe_distance || p->wall_normal_pitch < 0.785398185f) &&
-            0.7f < p->stick_magnitude && g_frame_time * 0.9f < p->motion.forward_speed) {
+            (2.5f < p->wall_probe_distance || p->wall_normal_pitch < 0.785398185f) && 0.7f < p->stick_magnitude &&
+            g_frame_time * 0.9f < p->motion.forward_speed) {
             m = 0xA;
             goto found;
         }
         if (hero_slot_item_id(3) == 3) {
             struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
-            if (q->pack_disabled == 0 &&
-                0.7f < q->stick_magnitude &&
+            if (q->pack_disabled == 0 && 0.7f < q->stick_magnitude &&
                 (2.5f < q->wall_probe_distance || q->wall_probe_moby_in_class_range != 0) &&
                 g_frame_time * 0.9f < q->motion.forward_speed) {
                 if (q->long_jump_lockout != 0) {
@@ -252,7 +283,11 @@ int check_hero_forward_collision_height(void) {
     }
     return 0;
 }
-typedef struct { char pad[0x24]; int v; char pad2[0x24]; } Rec;
+typedef struct {
+    char pad[0x24];
+    int v;
+    char pad2[0x24];
+} Rec;
 extern Rec item_defs[] __attribute__((section(".data")));
 extern void cancel_hero_item_animation(void);
 extern int HeroEnterMoveState(int, int);
@@ -268,9 +303,11 @@ int try_start_hero_item_idle_animation(void) {
             return 0;
         }
         v = item_defs[i].v;
-        if (HeroEnterMoveState(0, 0) == 0) return 0;
+        if (HeroEnterMoveState(0, 0) == 0)
+            return 0;
         set_hero_animation(v, 0, (float)scale_ticks(11));
-        if (*(int *)&p->held_item_anim_blend[0] != 0) p->unkD14 = 1;
+        if (*(int *)&p->held_item_anim_blend[0] != 0)
+            p->unkD14 = 1;
         p->item_hold_anim = v;
         return 1;
     }

@@ -4,7 +4,11 @@
 #include "include_asm.h"
 #include "hero.h"
 
-typedef struct { char p0[0x10]; int f10; char p14[0x4C - 0x14]; } R_2afd00;
+typedef struct {
+    char p0[0x10];
+    int f10;
+    char p14[0x4C - 0x14];
+} R_2afd00;
 extern char novalis_vendor_screen_state[];
 extern char fx_cutscene[];
 extern char novalis_hero_scale_manipulator[];

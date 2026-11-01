@@ -13,7 +13,7 @@ void interpolate_rotation_angle(float *dst, float a, float b, float scale) {
     *dst = v;
     *dst = FastAddRots(v, a);
 }
-extern char * gaspar_paths[];
+extern char *gaspar_paths[];
 extern float g_frame_time MACRO_ADDR;
 extern float FastVecDist(void *, void *);
 extern void FastVecAdd(void *, void *, void *);
@@ -70,11 +70,11 @@ int advance_shuttle_along_path(struct Moby *moby) {
     FastVecSub(&step, &target, &moby->pos);
     vec_scale_to_length(&step, &step, vars->speed);
     FastVecAdd(&moby->pos, &moby->pos, &step);
-    interpolate_rotation_angle(&moby->rot.z, moby->rot.z,
-                     FastAddRots(fast_atan2(path->node[vars->node].f[0] - moby->pos.x,
-                                         path->node[vars->node].f[1] - moby->pos.y),
-                                 vars->yaw_offset),
-                     (1.0f - vars->lag) * 0.02f);
+    interpolate_rotation_angle(
+        &moby->rot.z, moby->rot.z,
+        FastAddRots(fast_atan2(path->node[vars->node].f[0] - moby->pos.x, path->node[vars->node].f[1] - moby->pos.y),
+                    vars->yaw_offset),
+        (1.0f - vars->lag) * 0.02f);
     interpolate_rotation_angle(&moby->rot.x, moby->rot.x, 0.0f, 0.02f);
     interpolate_rotation_angle(&moby->rot.y, moby->rot.y, 0.0f, 0.02f);
     if (vars->dir > 0) {
@@ -107,7 +107,8 @@ int advance_shuttle_along_path(struct Moby *moby) {
         qcopy(&puff, &moby->pos);
         add_random_offset_to_vector_xyz(&puff, 0.5f);
         puff.f[2] = 25.01f;
-        spawn_moving_resizing_height_snapped_alpha_fade_particle(&puff, 0, 0x40103080, vars->speed * 3.0f / (g_frame_time * 10.0f), 12600.0f);
+        spawn_moving_resizing_height_snapped_alpha_fade_particle(&puff, 0, 0x40103080,
+                                                                 vars->speed * 3.0f / (g_frame_time * 10.0f), 12600.0f);
     }
     return done;
 }
@@ -122,19 +123,21 @@ void BreakableL09_Update(char *m) {
     int hit = 0;
     char *r = MobyGetHitMessage(m, 0x10000, 0);
     switch (*(unsigned char *)(m + 0x20)) {
-    case 0:
-        m[0x20] = 1;
-        break;
-    case 1:
-        if (r != 0 && *(float *)(r + 0x2C) > 0.0f) hit = 1;
-        if (hit) m[0x20] = 2;
-        break;
-    case 2:
-        Moby_PlaySound(0, 0, (int)m);
-        spawn_proximity_gated_bolts(m);
-        spawn_moby_break_fragments(m, 0x73B, 1, 0x73B, 1, 7, 2);
-        spawn_moby_from_placement(m, 0x73A);
-        DeleteMoby(m);
-        break;
+        case 0:
+            m[0x20] = 1;
+            break;
+        case 1:
+            if (r != 0 && *(float *)(r + 0x2C) > 0.0f)
+                hit = 1;
+            if (hit)
+                m[0x20] = 2;
+            break;
+        case 2:
+            Moby_PlaySound(0, 0, (int)m);
+            spawn_proximity_gated_bolts(m);
+            spawn_moby_break_fragments(m, 0x73B, 1, 0x73B, 1, 7, 2);
+            spawn_moby_from_placement(m, 0x73A);
+            DeleteMoby(m);
+            break;
     }
 }

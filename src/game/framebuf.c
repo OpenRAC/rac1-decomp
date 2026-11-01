@@ -35,8 +35,7 @@ extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
 extern unsigned char normal_font_metrics[];
 extern unsigned char small_font_metrics[];
 extern unsigned char large_font_metrics[];
-extern void FontPrint(void *, void *, void *, void *, void *, int,
-                          unsigned char *);
+extern void FontPrint(void *, void *, void *, void *, void *, int, unsigned char *);
 extern int measure_text_width_regular(unsigned char *, int);
 extern int measure_text_width_small(unsigned char *, int);
 extern int GetEffectTex(int);
@@ -52,35 +51,35 @@ LINKER_REMNANT("asm/remnants/text", func_001FAB20);
 typedef unsigned int u128_FAB40 __attribute__((mode(TI)));
 
 typedef struct {
-    unsigned long NLOOP:15;
-    unsigned long EOP:1;
-    unsigned long pad16:16;
-    unsigned long id:14;
-    unsigned long PRE:1;
-    unsigned long PRIM:11;
-    unsigned long FLG:2;
-    unsigned long NREG:4;
-    unsigned long REGS0:4;
-    unsigned long REGS1:4;
-    unsigned long REGS2:4;
-    unsigned long REGS3:4;
-    unsigned long REGS4:4;
-    unsigned long REGS5:4;
-    unsigned long REGS6:4;
-    unsigned long REGS7:4;
-    unsigned long REGS8:4;
-    unsigned long REGS9:4;
-    unsigned long REGS10:4;
-    unsigned long REGS11:4;
-    unsigned long REGS12:4;
-    unsigned long REGS13:4;
-    unsigned long REGS14:4;
-    unsigned long REGS15:4;
+    unsigned long NLOOP : 15;
+    unsigned long EOP : 1;
+    unsigned long pad16 : 16;
+    unsigned long id : 14;
+    unsigned long PRE : 1;
+    unsigned long PRIM : 11;
+    unsigned long FLG : 2;
+    unsigned long NREG : 4;
+    unsigned long REGS0 : 4;
+    unsigned long REGS1 : 4;
+    unsigned long REGS2 : 4;
+    unsigned long REGS3 : 4;
+    unsigned long REGS4 : 4;
+    unsigned long REGS5 : 4;
+    unsigned long REGS6 : 4;
+    unsigned long REGS7 : 4;
+    unsigned long REGS8 : 4;
+    unsigned long REGS9 : 4;
+    unsigned long REGS10 : 4;
+    unsigned long REGS11 : 4;
+    unsigned long REGS12 : 4;
+    unsigned long REGS13 : 4;
+    unsigned long REGS14 : 4;
+    unsigned long REGS15 : 4;
 } GifTag_FAB40;
 
 typedef struct {
-    unsigned long FBP:9;
-    unsigned long rest:55;
+    unsigned long FBP : 9;
+    unsigned long rest : 55;
 } GsFbp_FAB40;
 
 typedef struct {
@@ -132,7 +131,7 @@ extern int sce_gs_set_def_draw_env(void *, short, short, short, short, short);
 #define FA ((FsAa_FAB40 *)D_0015EFB8)
 
 void SetupFS_AA_buffer(int display_width, int display_height, int storage_width, int storage_height,
-                   int display_offset_x, int display_offset_y) {
+                       int display_offset_x, int display_offset_y) {
     unsigned long *q;
 
     active_fs_aa_buffer = &fs_aa_buffer;
@@ -150,21 +149,19 @@ void SetupFS_AA_buffer(int display_width, int display_height, int storage_width,
     fs_aa_buffer.fbp1 = display_buffer_address >> 13;
     fs_aa_buffer.fbp0 = draw_buffer_address >> 13;
     fs_aa_buffer.zbp = depth_buffer_address >> 13;
-    sceGsDefDispEnv(&fs_aa_buffer, 0, storage_width, storage_height, display_offset_x,
-                  display_offset_y);
+    sceGsDefDispEnv(&fs_aa_buffer, 0, storage_width, storage_height, display_offset_x, display_offset_y);
     FA->dispfb.FBP = fs_aa_buffer.fbp1;
-    sce_gs_set_def_draw_env(&FA->frame0, fs_aa_buffer.psm, fs_aa_buffer.display_width,
-                  fs_aa_buffer.display_height, 3, fs_aa_buffer.zpsm);
+    sce_gs_set_def_draw_env(&FA->frame0, fs_aa_buffer.psm, fs_aa_buffer.display_width, fs_aa_buffer.display_height, 3,
+                            fs_aa_buffer.zpsm);
     FA->frame0.FBP = fs_aa_buffer.fbp0;
-    *(unsigned long *)&FA->draw0[1] =
-        (long)fs_aa_buffer.zbp | ((unsigned long)(fs_aa_buffer.zpsm & 0xF) << 24);
+    *(unsigned long *)&FA->draw0[1] = (long)fs_aa_buffer.zbp | ((unsigned long)(fs_aa_buffer.zpsm & 0xF) << 24);
     *(u128_FAB40 *)&FA->giftag0 = 0;
     FA->giftag0.NLOOP = 8;
     FA->giftag0.EOP = 1;
     FA->giftag0.NREG = 1;
     FA->giftag0.REGS0 = 0xE;
     sce_gs_set_def_draw_env(&FA->frame1, fs_aa_buffer.storage_psm, fs_aa_buffer.storage_width,
-                  fs_aa_buffer.storage_height, 0, 0);
+                            fs_aa_buffer.storage_height, 0, 0);
     FA->frame1.FBP = fs_aa_buffer.fbp1;
     *(unsigned long *)&FA->draw1[1] = 1UL << 32;
     *(u128_FAB40 *)&FA->giftag1 = 0;
@@ -182,8 +179,8 @@ void SetupFS_AA_buffer(int display_width, int display_height, int storage_width,
     q[5] = 8;
     q[6] = 0x100000261UL;
     q[7] = 0x14;
-    q[8] = ((long)FA->fbp0 << 5) | ((unsigned long)((FA->display_width >> 6) & 0x3F) << 14) |
-           ((long)FA->psm << 20) | 0xEA8000000UL;
+    q[8] = ((long)FA->fbp0 << 5) | ((unsigned long)((FA->display_width >> 6) & 0x3F) << 14) | ((long)FA->psm << 20) |
+           0xEA8000000UL;
     q[9] = 6;
     q[10] = 0x4400000000008010UL;
     q[11] = 0x5353;
@@ -213,8 +210,8 @@ void SetupFS_AA_buffer(int display_width, int display_height, int storage_width,
     q[3] = 0x47;
     q[4] = 0x100000261UL;
     q[5] = 0x14;
-    q[6] = ((long)FA->fbp0 << 5) | ((unsigned long)((FA->display_width >> 6) & 0x3F) << 14) |
-           ((long)FA->psm << 20) | 0xEA8000000UL;
+    q[6] = ((long)FA->fbp0 << 5) | ((unsigned long)((FA->display_width >> 6) & 0x3F) << 14) | ((long)FA->psm << 20) |
+           0xEA8000000UL;
     q[7] = 6;
     q[8] = 0x4400000000008010UL;
     q[9] = 0x5353;
@@ -238,8 +235,8 @@ void SetupFS_AA_buffer(int display_width, int display_height, int storage_width,
     q[5] = 8;
     q[6] = 0x100000261UL;
     q[7] = 0x14;
-    q[8] = ((long)FA->fbp0 << 5) | ((unsigned long)((FA->display_width >> 6) & 0x3F) << 14) |
-           ((long)FA->psm << 20) | 0xEA8000000UL;
+    q[8] = ((long)FA->fbp0 << 5) | ((unsigned long)((FA->display_width >> 6) & 0x3F) << 14) | ((long)FA->psm << 20) |
+           0xEA8000000UL;
     q[9] = 6;
     q[10] = 0x4400000000008010UL;
     q[11] = 0x5353;
@@ -366,13 +363,13 @@ extern long capture_texture_tex0 MACRO_ADDR;
 extern int sce_gs_set_def_draw_env(void *, short, short, short, short, short);
 
 typedef struct {
-    unsigned long FBP:9;
-    unsigned long pad09:7;
-    unsigned long FBW:6;
-    unsigned long pad22:2;
-    unsigned long PSM:6;
-    unsigned long pad30:2;
-    unsigned long FBMSK:32;
+    unsigned long FBP : 9;
+    unsigned long pad09 : 7;
+    unsigned long FBW : 6;
+    unsigned long pad22 : 2;
+    unsigned long PSM : 6;
+    unsigned long pad30 : 2;
+    unsigned long FBMSK : 32;
 } GsFrame; /* sceGsFrame */
 
 /* Sets up a (1 << a) x (1 << b) render target at GS address c (see
@@ -396,9 +393,8 @@ void setup_render_target(int a, int b, int c) {
     fs_aa_buffer_f.fbp = c >> 13;
     fs_aa_buffer_f.w = 1 << a;
     fs_aa_buffer_f.h = 1 << b;
-    capture_texture_tex0 = (unsigned long)(c >> 8) | ((unsigned long)(1 << x) << 14)
-               | ((unsigned long)0 << 20) | ((unsigned long)a << 26)
-               | ((unsigned long)b << 30) | ((unsigned long)1 << 34);
+    capture_texture_tex0 = (unsigned long)(c >> 8) | ((unsigned long)(1 << x) << 14) | ((unsigned long)0 << 20) |
+                           ((unsigned long)a << 26) | ((unsigned long)b << 30) | ((unsigned long)1 << 34);
     FastMemZero16(g_render_packet_cursor, 0xF0);
     g_render_packet_cursor[0] = 0x1000000E;
     g_render_packet_cursor[1] = 0;

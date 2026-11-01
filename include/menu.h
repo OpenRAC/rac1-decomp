@@ -176,23 +176,23 @@ struct MenuLabelData {
 };
 
 struct MenuTextBoxData {
-    s32 flags;                  /* 0x30 */
+    s32 flags; /* 0x30 */
     union {
-        s32 text_id;            /* 0x34: single text id */
-        s32 *text_list;         /* 0x34: -1-terminated list of text ids */
-        char *page;             /* 0x34: credits page pointer */
+        s32 text_id; /* 0x34: single text id */
+        s32 *text_list; /* 0x34: -1-terminated list of text ids */
+        char *page; /* 0x34: credits page pointer */
     };
-    u8 pad_38[0x4];             /* 0x38 */
-    s32 scroll;                 /* 0x3C: line scroll */
-    s32 countdown;              /* 0x40: scaled timer */
-    u8 pad_44[0xC];             /* 0x44 */
-    s32 step;                   /* 0x50: sequence state/step */
-    s32 scroll_done;            /* 0x54: flagged when text ends */
+    u8 pad_38[0x4]; /* 0x38 */
+    s32 scroll; /* 0x3C: line scroll */
+    s32 countdown; /* 0x40: scaled timer */
+    u8 pad_44[0xC]; /* 0x44 */
+    s32 step; /* 0x50: sequence state/step */
+    s32 scroll_done; /* 0x54: flagged when text ends */
 };
 
 struct MenuScreen {
     s32 (*update)(struct MenuScreen *); /* 0x00 */
-    s32 (*draw)(struct MenuScreen *);   /* 0x04: per-frame draw callback */
+    s32 (*draw)(struct MenuScreen *); /* 0x04: per-frame draw callback */
     void (*enter)(struct MenuScreen *, s32); /* 0x08 */
     void (*leave)(struct MenuScreen *, s32); /* 0x0C */
     union {
@@ -328,14 +328,14 @@ typedef struct MenuGridCell MenuGridCell;
 
 /* PVars layout for the 14 panel mobys in panel_slots (D_001D6120). */
 typedef struct PanelMobyPvars {
-    Vec4 frame_vectors[4];            /* 0x00..0x40: corner vectors */
-    f32 width;                        /* 0x40 */
-    f32 height;                       /* 0x44 */
+    Vec4 frame_vectors[4]; /* 0x00..0x40: corner vectors */
+    f32 width; /* 0x40 */
+    f32 height; /* 0x44 */
     u8 pad_48[0x8];
-    s32 screen_x;                     /* 0x50 */
-    s32 screen_y;                     /* 0x54 */
-    s32 projected_width;              /* 0x58 */
-    s32 projected_height;             /* 0x5C */
+    s32 screen_x; /* 0x50 */
+    s32 screen_y; /* 0x54 */
+    s32 projected_width; /* 0x58 */
+    s32 projected_height; /* 0x5C */
 } PanelMobyPvars;
 
 #endif /* MENU_H */

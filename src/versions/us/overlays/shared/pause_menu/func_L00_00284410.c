@@ -5,18 +5,26 @@ void process_unlock_code_input(void) {
     int pressed, direction, count, j, code, index, matched;
     if ((*(long *)(pad + 0x1C0) & 0xF) == 6) {
         pressed = *(int *)(pad + 0x1C4);
-        if (!(pressed & 0xF0A0)) return;
+        if (!(pressed & 0xF0A0))
+            return;
 
-        if (*(int *)&unlock_code_input_count >= 20) return;
-        if (pressed & 0x1000) direction = 0;
-        else if (pressed & 0x4000) direction = 1;
-        else if (pressed & 0x8000) direction = 2;
-        else if (pressed & 0x2000) direction = 3;
-        else direction = (pressed & 0x80) ? 4 : 5;
+        if (*(int *)&unlock_code_input_count >= 20)
+            return;
+        if (pressed & 0x1000)
+            direction = 0;
+        else if (pressed & 0x4000)
+            direction = 1;
+        else if (pressed & 0x8000)
+            direction = 2;
+        else if (pressed & 0x2000)
+            direction = 3;
+        else
+            direction = (pressed & 0x80) ? 4 : 5;
         count = *(int *)&unlock_code_input_count;
         unlock_code_input[count++] = direction;
         *(int *)&unlock_code_input_count = count;
-        if (count != 20) return;
+        if (count != 20)
+            return;
         code = -1;
         index = 2;
         lim0 = 0x93;
@@ -34,7 +42,8 @@ void process_unlock_code_input(void) {
                 break;
             }
         }
-        if (code == -1) return;
+        if (code == -1)
+            return;
         va = code - 0x24;
         vb = code - 0x37;
         vc = code - 0x3d;

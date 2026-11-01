@@ -10,10 +10,35 @@ extern void font_print_window_small(void *, long, char *, int);
 extern int sprintf(char *str, const char *fmt, ...);
 extern void FontPrintSmall(int, int, long, char *, int);
 extern void font_print_right_small(int, int, long, char *, int);
-typedef struct { int i0; int i4; unsigned short h8; unsigned short hA; unsigned short hC; unsigned short hE; int i10; int i14; } Row;
-typedef struct { short unused0, y, unused4, x, half_x, half_y, left, top, width, style; unsigned char rest[4]; } TBox;
-typedef struct { int fD0; int fD4; char pad[12]; } DRow;
-typedef struct { char pad0[0x20]; int f20; char pad24[0x1c]; int f40; char pad44[0x14]; int f58; char pad5c[0x74]; DRow rows[16]; } DMenu;
+typedef struct {
+    int i0;
+    int i4;
+    unsigned short h8;
+    unsigned short hA;
+    unsigned short hC;
+    unsigned short hE;
+    int i10;
+    int i14;
+} Row;
+typedef struct {
+    short unused0, y, unused4, x, half_x, half_y, left, top, width, style;
+    unsigned char rest[4];
+} TBox;
+typedef struct {
+    int fD0;
+    int fD4;
+    char pad[12];
+} DRow;
+typedef struct {
+    char pad0[0x20];
+    int f20;
+    char pad24[0x1c];
+    int f40;
+    char pad44[0x14];
+    int f58;
+    char pad5c[0x74];
+    DRow rows[16];
+} DMenu;
 extern int vendor_menu[];
 #define MENU (*(DMenu *)D_L00_001CA7C0)
 extern Row item_price_table[] NOT_SDA;
@@ -37,7 +62,10 @@ void draw_vendor_purchase_text(void *m, int x, int y) {
     int total;
 
     draw_framebuffer_rect(0, 0, 0x200, 0x80, 0x200, 0x80, 0);
-    { int n = sizeof(box); libc_memset((void *)&box, 0, n); }
+    {
+        int n = sizeof(box);
+        libc_memset((void *)&box, 0, n);
+    }
     box.half_x = x / 2;
     box.half_y = y / 2;
     box.left = x - 8;
@@ -47,7 +75,8 @@ void draw_vendor_purchase_text(void *m, int x, int y) {
     box.y = (short)y;
     box.x = (short)x;
 
-    if (MENU.rows[MENU.f58].fD4 == 1 && weapon_ammo_counts[MENU.rows[MENU.f58].fD0] >= item_price_table[MENU.rows[MENU.f58].fD0].hE) {
+    if (MENU.rows[MENU.f58].fD4 == 1 &&
+        weapon_ammo_counts[MENU.rows[MENU.f58].fD0] >= item_price_table[MENU.rows[MENU.f58].fD0].hE) {
         message_id = 0x523B;
         goto message;
     }
@@ -92,7 +121,8 @@ message:
     font_print_window_small((void *)&box, 0x80f0f0f0L, msg_string(message_id), -1);
     return;
 purchase:
-    cost = discount_purchase_pricing ? item_price_table[MENU.rows[MENU.f58].fD0].i4 : item_price_table[MENU.rows[MENU.f58].fD0].i0;
+    cost = discount_purchase_pricing ? item_price_table[MENU.rows[MENU.f58].fD0].i4
+                                     : item_price_table[MENU.rows[MENU.f58].fD0].i0;
     if (gBolts >= cost) {
         FontPrintSmall(6, 6, 0x80f0f0f0L, msg_string(0x523E), -1);
         FontPrintSmall(2, 0x20, 0x80f0f0f0L, msg_string(0x5239), -1);
@@ -181,7 +211,9 @@ void draw_vendor_inset_quads(char *m) {
     }
 }
 typedef int q2A __attribute__((mode(TI)));
-typedef struct { int a, b, c; } I3_2A;
+typedef struct {
+    int a, b, c;
+} I3_2A;
 extern I3_2A vendor_purchase_panel_joint_ids __attribute__((section(".data")));
 extern void project_graphics_bounds(void *, void *, int *, int *, int *, int *);
 extern void configure_capture_target(int, int, float);
@@ -238,7 +270,9 @@ void draw_vendor_purchase_panel(void *m) {
     DrawTexturedQuad(w, h, x, y, 0, 0, x, y, 0x80808080L, capture_texture_tex0);
 }
 extern void matrix_mul_vec3(void *, void *, void *);
-struct Quad { int a, b, c, d; };
+struct Quad {
+    int a, b, c, d;
+};
 extern struct Quad vendor_hologram_cone_quads[];
 extern float vendor_hologram_cone_vertices[][4];
 extern float vendor_hologram_cone_uvs[][2];
@@ -259,16 +293,21 @@ void draw_vendor_hologram_cone(void) {
     float v[4][4];
     int i;
     *(float *)&vendor_screen_uv_scroll = *(float *)&vendor_screen_uv_scroll + 0.01f;
-    if (*(float *)&vendor_screen_uv_scroll > 1.0f) *(float *)&vendor_screen_uv_scroll = *(float *)&vendor_screen_uv_scroll - 1.0f;
+    if (*(float *)&vendor_screen_uv_scroll > 1.0f)
+        *(float *)&vendor_screen_uv_scroll = *(float *)&vendor_screen_uv_scroll - 1.0f;
     s.hdr[2] = 1;
     s.hdr[3] = 0x4000000044L;
     s.hdr[0] = 0;
     s.hdr[1] = GetEffectTex(0x18);
     for (i = 0; i < 4; i++) {
-        matrix_mul_vec3(v[0], vendor_hologram_cone_vertices[vendor_hologram_cone_quads[i].a], (char *)vendor_menu[7] + 0xC0);
-        matrix_mul_vec3(v[1], vendor_hologram_cone_vertices[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 4)], (char *)vendor_menu[7] + 0xC0);
-        matrix_mul_vec3(v[2], vendor_hologram_cone_vertices[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 8)], (char *)vendor_menu[7] + 0xC0);
-        matrix_mul_vec3(v[3], vendor_hologram_cone_vertices[vendor_hologram_cone_quads[i].d], (char *)vendor_menu[7] + 0xC0);
+        matrix_mul_vec3(v[0], vendor_hologram_cone_vertices[vendor_hologram_cone_quads[i].a],
+                        (char *)vendor_menu[7] + 0xC0);
+        matrix_mul_vec3(v[1], vendor_hologram_cone_vertices[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 4)],
+                        (char *)vendor_menu[7] + 0xC0);
+        matrix_mul_vec3(v[2], vendor_hologram_cone_vertices[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 8)],
+                        (char *)vendor_menu[7] + 0xC0);
+        matrix_mul_vec3(v[3], vendor_hologram_cone_vertices[vendor_hologram_cone_quads[i].d],
+                        (char *)vendor_menu[7] + 0xC0);
         s.pos[0][0] = *(float *)((char *)vendor_menu[7] + 0x10) + v[0][0];
         s.pos[0][1] = *(float *)((char *)vendor_menu[7] + 0x14) + v[0][1];
         s.pos[0][2] = *(float *)((char *)vendor_menu[7] + 0x18) + v[0][2];
@@ -288,9 +327,11 @@ void draw_vendor_hologram_cone(void) {
         s.uv[0][0] = vendor_hologram_cone_uvs[vendor_hologram_cone_quads[i].a][0];
         s.uv[0][1] = vendor_hologram_cone_uvs[vendor_hologram_cone_quads[i].a][1] + *(float *)&vendor_screen_uv_scroll;
         s.uv[1][0] = vendor_hologram_cone_uvs[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 4)][0];
-        s.uv[1][1] = vendor_hologram_cone_uvs[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 4)][1] + *(float *)&vendor_screen_uv_scroll;
+        s.uv[1][1] = vendor_hologram_cone_uvs[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 4)][1] +
+                     *(float *)&vendor_screen_uv_scroll;
         s.uv[2][0] = vendor_hologram_cone_uvs[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 8)][0];
-        s.uv[2][1] = vendor_hologram_cone_uvs[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 8)][1] + *(float *)&vendor_screen_uv_scroll;
+        s.uv[2][1] = vendor_hologram_cone_uvs[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 8)][1] +
+                     *(float *)&vendor_screen_uv_scroll;
         s.uv[3][0] = vendor_hologram_cone_uvs[vendor_hologram_cone_quads[i].d][0];
         s.uv[3][1] = vendor_hologram_cone_uvs[vendor_hologram_cone_quads[i].d][1] + *(float *)&vendor_screen_uv_scroll;
         draw_world_quad(&s, 0, 1);
@@ -408,81 +449,83 @@ void draw_vendor_screen(void) {
     }
     append_gif_transfer_packet_r();
     switch (((A02b0_obj_2A1540 *)vendor_menu_r)->f8) {
-    case 0:
-        if (((A02b0_obj_2A1540 *)vendor_menu_r)->fC != 0) {
-            *(u16 *)(((A02b0_obj_2A1540 *)vendor_menu_r)->f1C + 0x34) |= 1;
-        }
-        debug_profiler_color_r = 0x100FF;
-        if (((A02b0_obj_2A1540 *)vendor_menu_r)->fC != 0 || *(s32 *)vendor_menu_r == 3) {
-            debug_profiler_color_r = 0x7F;
-        }
-        DrawDebugProfiler_r();
-        if (((A02b0_obj_2A1540 *)vendor_menu_r)->fC == 0) {
-            return;
-        }
-        ((A02b0_obj_2A1540 *)vendor_menu_r)->f8 = 1;
-        ((A02b0_obj_2A1540 *)vendor_menu_r)->fC = 0;
-        VU1_syncChain_r(1);
-        sce_gs_sync_v_r(0);
-        rendered_frame_count_r = rendered_frame_count_r + 1;
-        VU1_sendChain_r();
-        VU1_swapChain_r();
-        lvl_vu_chain_buffer_size_r = 0x60000;
-        capture_draw_buffer_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f10);
-        *(u16 *)(((A02b0_obj_2A1540 *)vendor_menu_r)->f1C + 0x34) &= 0xFFFE;
-        *(f32 *)(((A02b0_obj_2A1540 *)vendor_menu_r)->f1C + 0x2C) = 0.14190800487995148f;
-        if (((A02b0_obj_2A1540 *)vendor_menu_r)->f40 != 0) {
-            qcopy(&((A02b0_obj_2A1540 *)vendor_menu_r)->f70, &camera_rotation_r[0]);
-            {
-                u128_2A1540 *s = &camera_rotation_r[32];
-                vendor_saved_camera_basis_r[0] = s[0];
-                vendor_saved_camera_basis_r[1] = s[1];
-                vendor_saved_camera_basis_r[2] = s[2];
-                qzero(s);
+        case 0:
+            if (((A02b0_obj_2A1540 *)vendor_menu_r)->fC != 0) {
+                *(u16 *)(((A02b0_obj_2A1540 *)vendor_menu_r)->f1C + 0x34) |= 1;
             }
-            qzero(D_L00_001670E0_2A1540);
-            qzero(D_L00_001670F0_2A1540);
-            ((A02b0_mtx_2A1540 *)player_camera_r)->f350 = 1.0f;
-            ((A02b0_mtx_2A1540 *)player_camera_r)->f364 = 1.0f;
-            ((A02b0_mtx_2A1540 *)player_camera_r)->f378 = 1.0f;
-            ((A02b0_mtx_2A1540 *)player_camera_r)->f37C = 1.0f;
-            BuildViewMatrices_r();
-        } else {
-            vendor_saved_camera_basis_r[0] = player_camera_matrix_r[0];
-            vendor_saved_camera_basis_r[1] = player_camera_matrix_r[1];
-            vendor_saved_camera_basis_r[2] = player_camera_matrix_r[2];
-            FastVecCross_r(&player_camera_matrix_r[1], &player_camera_matrix_r[0], &player_camera_matrix_r[2]);
-        }
-        ((A02b0_obj_2A1540 *)vendor_menu_r)->f20 = ((A02b0_obj_2A1540 *)vendor_menu_r)->f14 + 0x100;
-        InitMobyInstance_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f20, 0xD);
-        *(u16 *)(((A02b0_obj_2A1540 *)vendor_menu_r)->f20 + 0x32) = 0x40;
-        moby_build_matrix_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f20);
-        pack_render_command_fields_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f20, 0x202020, 0xE, 0xE, 0);
-        InitMobyInstance_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f20 + 0x500, 0xD);
-        *(u16 *)(((A02b0_obj_2A1540 *)vendor_menu_r)->f20 + 0x532) = 0x40;
-        moby_build_matrix_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f20 + 0x500);
-        pack_render_command_fields_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f20 + 0x500, 0x202020, 0xE, 0xE, 0);
-        initialize_vendor_selected_item_mobys_r();
-        ((A02b0_obj_2A1540 *)vendor_menu_r)->f2C = ((A02b0_obj_2A1540 *)vendor_menu_r)->f14 + 0x1400;
-        FastMemZero16_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f2C, 0x400);
-        ((A02b0_obj_2A1540 *)vendor_menu_r)->f18 = ((A02b0_obj_2A1540 *)vendor_menu_r)->f2C + 0x400;
-        if (cd_read_active_r[0] == 0) {
-            if (start_audio_stream_read_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f18 + 0x80000, ((A02b0_disc_2A1540 *)disc_table_r)->sector,
-                                        ((A02b0_disc_2A1540 *)disc_table_r)->size) != 0) {
-                vendor_auxiliary_moby_load_pending_r = 1;
+            debug_profiler_color_r = 0x100FF;
+            if (((A02b0_obj_2A1540 *)vendor_menu_r)->fC != 0 || *(s32 *)vendor_menu_r == 3) {
+                debug_profiler_color_r = 0x7F;
+            }
+            DrawDebugProfiler_r();
+            if (((A02b0_obj_2A1540 *)vendor_menu_r)->fC == 0) {
+                return;
+            }
+            ((A02b0_obj_2A1540 *)vendor_menu_r)->f8 = 1;
+            ((A02b0_obj_2A1540 *)vendor_menu_r)->fC = 0;
+            VU1_syncChain_r(1);
+            sce_gs_sync_v_r(0);
+            rendered_frame_count_r = rendered_frame_count_r + 1;
+            VU1_sendChain_r();
+            VU1_swapChain_r();
+            lvl_vu_chain_buffer_size_r = 0x60000;
+            capture_draw_buffer_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f10);
+            *(u16 *)(((A02b0_obj_2A1540 *)vendor_menu_r)->f1C + 0x34) &= 0xFFFE;
+            *(f32 *)(((A02b0_obj_2A1540 *)vendor_menu_r)->f1C + 0x2C) = 0.14190800487995148f;
+            if (((A02b0_obj_2A1540 *)vendor_menu_r)->f40 != 0) {
+                qcopy(&((A02b0_obj_2A1540 *)vendor_menu_r)->f70, &camera_rotation_r[0]);
+                {
+                    u128_2A1540 *s = &camera_rotation_r[32];
+                    vendor_saved_camera_basis_r[0] = s[0];
+                    vendor_saved_camera_basis_r[1] = s[1];
+                    vendor_saved_camera_basis_r[2] = s[2];
+                    qzero(s);
+                }
+                qzero(D_L00_001670E0_2A1540);
+                qzero(D_L00_001670F0_2A1540);
+                ((A02b0_mtx_2A1540 *)player_camera_r)->f350 = 1.0f;
+                ((A02b0_mtx_2A1540 *)player_camera_r)->f364 = 1.0f;
+                ((A02b0_mtx_2A1540 *)player_camera_r)->f378 = 1.0f;
+                ((A02b0_mtx_2A1540 *)player_camera_r)->f37C = 1.0f;
+                BuildViewMatrices_r();
+            } else {
+                vendor_saved_camera_basis_r[0] = player_camera_matrix_r[0];
+                vendor_saved_camera_basis_r[1] = player_camera_matrix_r[1];
+                vendor_saved_camera_basis_r[2] = player_camera_matrix_r[2];
+                FastVecCross_r(&player_camera_matrix_r[1], &player_camera_matrix_r[0], &player_camera_matrix_r[2]);
+            }
+            ((A02b0_obj_2A1540 *)vendor_menu_r)->f20 = ((A02b0_obj_2A1540 *)vendor_menu_r)->f14 + 0x100;
+            InitMobyInstance_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f20, 0xD);
+            *(u16 *)(((A02b0_obj_2A1540 *)vendor_menu_r)->f20 + 0x32) = 0x40;
+            moby_build_matrix_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f20);
+            pack_render_command_fields_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f20, 0x202020, 0xE, 0xE, 0);
+            InitMobyInstance_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f20 + 0x500, 0xD);
+            *(u16 *)(((A02b0_obj_2A1540 *)vendor_menu_r)->f20 + 0x532) = 0x40;
+            moby_build_matrix_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f20 + 0x500);
+            pack_render_command_fields_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f20 + 0x500, 0x202020, 0xE, 0xE, 0);
+            initialize_vendor_selected_item_mobys_r();
+            ((A02b0_obj_2A1540 *)vendor_menu_r)->f2C = ((A02b0_obj_2A1540 *)vendor_menu_r)->f14 + 0x1400;
+            FastMemZero16_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f2C, 0x400);
+            ((A02b0_obj_2A1540 *)vendor_menu_r)->f18 = ((A02b0_obj_2A1540 *)vendor_menu_r)->f2C + 0x400;
+            if (cd_read_active_r[0] == 0) {
+                if (start_audio_stream_read_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f18 + 0x80000,
+                                              ((A02b0_disc_2A1540 *)disc_table_r)->sector,
+                                              ((A02b0_disc_2A1540 *)disc_table_r)->size) != 0) {
+                    vendor_auxiliary_moby_load_pending_r = 1;
+                } else {
+                    vendor_auxiliary_moby_load_pending_r = 0;
+                }
             } else {
                 vendor_auxiliary_moby_load_pending_r = 0;
             }
-        } else {
-            vendor_auxiliary_moby_load_pending_r = 0;
-        }
-        break;
-    case 1:
-        break;
-    default:
-        return;
+            break;
+        case 1:
+            break;
+        default:
+            return;
     }
-    append_draw_buffer_upload_packets_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f10, draw_buffer_address_r, frame_size_r[0] << 11);
+    append_draw_buffer_upload_packets_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f10, draw_buffer_address_r,
+                                        frame_size_r[0] << 11);
     SetupGifPaging_r(0);
     BuildViewMatrices_r();
     ResetGsRegisters_r();
@@ -491,7 +534,8 @@ void draw_vendor_screen(void) {
     StashMobyClassDists_r();
     if (vendor_selection_changed_r == 0 && ((A02b0_obj_2A1540 *)vendor_menu_r)->f40 == 0) {
         if (((A02b0_obj_2A1540 *)vendor_menu_r)->arr[((A02b0_obj_2A1540 *)vendor_menu_r)->f58].b == 1) {
-            g = &vendor_item_slot2_placement_r[((A02b0_obj_2A1540 *)vendor_menu_r)->arr[((A02b0_obj_2A1540 *)vendor_menu_r)->f58].a];
+            g = &vendor_item_slot2_placement_r
+                    [((A02b0_obj_2A1540 *)vendor_menu_r)->arr[((A02b0_obj_2A1540 *)vendor_menu_r)->f58].a];
             if (g->f30 != 0) {
                 DrawMobyList_r(((A02b0_obj_2A1540 *)vendor_menu_r)->f20 + 0x200, 1);
             }

@@ -25,12 +25,9 @@ extern void libc_fflush(void);
 extern void _fwalk(void *, void *);
 extern char locale_lconv[];
 extern int libc_glue_read();
-extern long func_00116108_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_00116108");
-extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_001188C8");
-extern long func_00114518_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_00114518");
+extern long func_00116108_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00116108");
+extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c) __asm__("func_001188C8");
+extern long func_00114518_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00114518");
 extern int _close_r(int *errOut, int arg1);
 extern int __sfvwrite(int, void *);
 extern void __sinit(void *);
@@ -232,7 +229,10 @@ extern int tlb_saved_syscall_3_entry;
  * (605 words), and reordering the locals, which did nothing; the fix was
  * func_0011D3B8's return type (below).
  */
-typedef struct { int a; int b; } D_00130138_pair;
+typedef struct {
+    int a;
+    int b;
+} D_00130138_pair;
 
 extern void set_syscall_v(int, int) __asm__("func_0011D3B8");
 

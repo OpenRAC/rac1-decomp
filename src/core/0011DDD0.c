@@ -19,12 +19,9 @@ extern void libc_fflush(void);
 extern void _fwalk(void *, void *);
 extern char locale_lconv[];
 extern int libc_glue_read();
-extern long func_00116108_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_00116108");
-extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_001188C8");
-extern long func_00114518_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_00114518");
+extern long func_00116108_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00116108");
+extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c) __asm__("func_001188C8");
+extern long func_00114518_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00114518");
 extern int _close_r(int *errOut, int arg1);
 extern int __sfvwrite(int, void *);
 extern void __sinit(void *);
@@ -99,7 +96,10 @@ extern int alarm_syscall_patch_table[];
 extern char alarm_kernel_patch_code[];
 extern char alarm_scratchpad_patch_code[];
 
-typedef struct { int a; int b; } D_00131358_pair;
+typedef struct {
+    int a;
+    int b;
+} D_00131358_pair;
 
 /*
  * Same-size near-miss (8/0xD4 bytes). Same shape as func_0011D3C8:

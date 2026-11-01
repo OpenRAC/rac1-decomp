@@ -9,53 +9,53 @@
 struct PlanetbusterVars {
     struct {
         u8 pad_00[0x20];
-        s32 moby_slot;              /* 0x20: part moby slot, -1 once detached */
+        s32 moby_slot; /* 0x20: part moby slot, -1 once detached */
         u8 pad_24[0xC];
-    } parts[17];                    /* 0x00: 0x30 bytes each */
+    } parts[17]; /* 0x00: 0x30 bytes each */
     u8 pad_330[0x290];
-    s32 path_id;                    /* 0x5C0 */
+    s32 path_id; /* 0x5C0 */
     u8 pad_5C4[0x4];
-    f32 bob_phase;                  /* 0x5C8: update_moby_vertical_oscillation state */
-    f32 bob_amount;                 /* 0x5CC */
-    s32 part_order[5];              /* 0x5D0: indices into parts */
-    f32 sway_a;                     /* 0x5E4: update_moby_rotation_oscillation state */
-    f32 sway_b;                     /* 0x5E8 */
-    s32 clip_manned;                /* 0x5EC: clip volume of the turret area */
-    f32 path_speed;                 /* 0x5F0 */
-    f32 path_turn;                  /* 0x5F4 */
-    s16 path_index;                 /* 0x5F8 */
-    s16 break_step;                 /* 0x5FA */
-    s16 unk_5FC;                    /* 0x5FC */
+    f32 bob_phase; /* 0x5C8: update_moby_vertical_oscillation state */
+    f32 bob_amount; /* 0x5CC */
+    s32 part_order[5]; /* 0x5D0: indices into parts */
+    f32 sway_a; /* 0x5E4: update_moby_rotation_oscillation state */
+    f32 sway_b; /* 0x5E8 */
+    s32 clip_manned; /* 0x5EC: clip volume of the turret area */
+    f32 path_speed; /* 0x5F0 */
+    f32 path_turn; /* 0x5F4 */
+    s16 path_index; /* 0x5F8 */
+    s16 break_step; /* 0x5FA */
+    s16 unk_5FC; /* 0x5FC */
     u8 pad_5FE[0x6];
-    s32 voice;                      /* 0x604: sound slot, -1 when none */
-    s32 cam_from;                   /* 0x608: camera point index */
-    s32 cam_to;                     /* 0x60C */
-    f32 cam_t;                      /* 0x610: 0..1 between the two camera points */
-    f32 cam_vel;                    /* 0x614 */
-    f32 base_z;                     /* 0x618 */
-    s32 clip_hero_a;                /* 0x61C */
-    s32 timer;                      /* 0x620 */
-    s32 clip_camera;                /* 0x624 */
-    s32 clip_hero_b;                /* 0x628 */
-    f32 spring_vel;                 /* 0x62C */
+    s32 voice; /* 0x604: sound slot, -1 when none */
+    s32 cam_from; /* 0x608: camera point index */
+    s32 cam_to; /* 0x60C */
+    f32 cam_t; /* 0x610: 0..1 between the two camera points */
+    f32 cam_vel; /* 0x614 */
+    f32 base_z; /* 0x618 */
+    s32 clip_hero_a; /* 0x61C */
+    s32 timer; /* 0x620 */
+    s32 clip_camera; /* 0x624 */
+    s32 clip_hero_b; /* 0x628 */
+    f32 spring_vel; /* 0x62C */
 };
 
 /* Homing mine spawner: keeps up to 12 mines alive while it has a target in range. */
 struct MineSpawnerVars {
     u8 pad_00[0x38];
-    s32 hit_flag;                   /* 0x38 */
+    s32 hit_flag; /* 0x38 */
     u8 pad_3C[0x34];
-    Vec4A target_pos;               /* 0x70: z at 0x78 */
+    Vec4A target_pos; /* 0x70: z at 0x78 */
     u8 pad_80[0x30];
-    s32 target;                     /* 0xB0: targeted moby */
-    s32 target_state;               /* 0xB4: 2 = no target */
+    s32 target; /* 0xB0: targeted moby */
+    s32 target_state; /* 0xB4: 2 = no target */
     u8 pad_B8[0x8];
-    s32 slots[12];                  /* 0xC0: mine moby slots, -1 when free */
-    s32 next_slot;                  /* 0xF0 */
-    f32 base_range;                 /* 0xF4 */
-    f32 range;                      /* 0xF8 */
-    s16 spawn_timer;                /* 0xFC */
-    s16 alert_timer;                /* 0xFE */
+    s32 slots[12]; /* 0xC0: mine moby slots, -1 when free */
+    s32 next_slot; /* 0xF0 */
+    f32 base_range; /* 0xF4 */
+    f32 range; /* 0xF8 */
+    s16 spawn_timer; /* 0xFC */
+    s16 alert_timer; /* 0xFE */
 };
 
 typedef struct Data_2EDAA0 {
@@ -107,22 +107,22 @@ void water_reservoir_update(Moby *moby) {
     float f20;
 
     switch (moby->state) {
-    case 0:
-        moby->state = 1;
-        moby->command = 2;
-        data->angle = random_angle_radians_r();
-        data->level = 5.0f;
-        break;
-    case 1:
-        if (moby->command & 8) {
-            moby->command = 1;
-            data->timer = scale_ticks_r(D_L12_00161A50_2EDAA0);
-        } else if (moby->command & 4) {
+        case 0:
+            moby->state = 1;
             moby->command = 2;
-            data->timer = scale_ticks_r(D_L12_00161A50_2EDAA0);
-        }
-        data->angle = FastAddRots_r(data->angle, D_L12_00161A4C_2EDAA0 * 0.0174532924f * g_frame_time_r);
-        break;
+            data->angle = random_angle_radians_r();
+            data->level = 5.0f;
+            break;
+        case 1:
+            if (moby->command & 8) {
+                moby->command = 1;
+                data->timer = scale_ticks_r(D_L12_00161A50_2EDAA0);
+            } else if (moby->command & 4) {
+                moby->command = 2;
+                data->timer = scale_ticks_r(D_L12_00161A50_2EDAA0);
+            }
+            data->angle = FastAddRots_r(data->angle, D_L12_00161A4C_2EDAA0 * 0.0174532924f * g_frame_time_r);
+            break;
     }
 
     if (hoven_fade_level_r == 0.0f) {
@@ -157,7 +157,7 @@ void water_reservoir_update(Moby *moby) {
                 v40[3] = random_float_between_r(D_L12_00161A60_2EDAA0, D_L12_00161A64_2EDAA0);
                 v50[3] = random_float_between_r(D_L12_00161A60_2EDAA0, D_L12_00161A64_2EDAA0);
                 PartType02Spawn_r(v10, v40, v50, D_L12_00161A74_2EDAA0, D_L12_00161A74_2EDAA0, D_L12_00161A68_2EDAA0,
-                                     scale_ticks_r(D_L12_00161A6C_2EDAA0), D_L12_00161A70_2EDAA0, D_L12_00161A78_2EDAA0);
+                                  scale_ticks_r(D_L12_00161A6C_2EDAA0), D_L12_00161A70_2EDAA0, D_L12_00161A78_2EDAA0);
             }
         }
         if ((moby->command & 1) && data->timer == 0) {
@@ -207,8 +207,11 @@ void draw_water_reservoir(Moby *moby) {
     q.g[1] = GetEffectTex(0x10);
     q.g[0] = 0;
     q.g[2] = 0xFF9000000260UL;
-    q.g[3] = (long)*(int *)&water_reservoir_blend_a | ((long)*(int *)&water_reservoir_blend_b << 2) | ((long)*(int *)&water_reservoir_blend_c << 4) | ((long)*(int *)&water_reservoir_blend_d << 6) | (0x8000L << 24);
-    col = FastTweenColor(*(int *)&water_reservoir_color_from, *(int *)&water_reservoir_color_to, (FastSin(*(float *)data) + 1.0f) * 0.5f);
+    q.g[3] = (long)*(int *)&water_reservoir_blend_a | ((long)*(int *)&water_reservoir_blend_b << 2) |
+             ((long)*(int *)&water_reservoir_blend_c << 4) | ((long)*(int *)&water_reservoir_blend_d << 6) |
+             (0x8000L << 24);
+    col = FastTweenColor(*(int *)&water_reservoir_color_from, *(int *)&water_reservoir_color_to,
+                         (FastSin(*(float *)data) + 1.0f) * 0.5f);
     for (i = 0; i < 4; i++) {
         q.uv[i * 2] = 0.5f;
         *(&q.uv[i * 2] + 1) = 0.5f;
@@ -239,14 +242,14 @@ extern void moby_build_matrix(void *);
 
 /* Rocket pvars (class 0x199). */
 struct HovenRocketVars {
-    f32 dir[4];                     /* 0x00: flight direction */
-    s32 owner;                      /* 0x10 */
-    s32 timer;                      /* 0x14 */
-    f32 unk_18;                     /* 0x18 */
-    f32 unk_1C;                     /* 0x1C */
+    f32 dir[4]; /* 0x00: flight direction */
+    s32 owner; /* 0x10 */
+    s32 timer; /* 0x14 */
+    f32 unk_18; /* 0x18 */
+    f32 unk_1C; /* 0x1C */
     u8 pad_20[4];
-    f32 unk_24;                     /* 0x24 */
-    s32 unk_28;                     /* 0x28 */
+    f32 unk_24; /* 0x24 */
+    s32 unk_28; /* 0x28 */
 };
 
 // Spawns a moby with a data block aimed from its direction vector.
@@ -291,7 +294,10 @@ typedef struct {
     int pad1C;
     int pad20[4];
 } ShotHit_ece00;
-typedef struct { char pad0[0x18]; int moby; } ShotColl_ece00;
+typedef struct {
+    char pad0[0x18];
+    int moby;
+} ShotColl_ece00;
 extern ShotColl_ece00 hoven_coll_hit;
 extern int hero_current_state;
 extern int fast_dec_timer(int *);
@@ -312,7 +318,8 @@ extern int coll_line(void *, void *, int, struct Moby *, int);
 extern int coll_sphere(void *, int, struct Moby *, float);
 extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
 extern void record_moby_hit(int, void *);
-extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float, int, int, int, int);
+extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
+                            int, int, int, int);
 extern void SpawnExplosionFx(void *, void *, int, float, float);
 
 /* Level 12 shot: flies with a smoke trail, damages the first moby it hits other than its owner, then pops.
@@ -328,73 +335,72 @@ void HovenShotUpdate(struct Moby *moby) {
     ShotHit_ece00 hit;
     float f20;
     switch (moby->state) {
-    case 1: {
-        char *touch = MobyGetHitMessage(moby, 0x230000, 0);
-        int damage;
-        if (touch != 0 && *(struct Moby **)(touch + 0x20) != vars->owner) {
-            moby->state = 2;
-            break;
-        }
-        if (g_current_level_index_e == 12 && hero_current_state == 50 && vars->owner != 0) {
-            if ((signed char)vars->owner->state < 0) {
-                DeleteMoby(moby);
-                return;
-            }
-            if (vars->owner->state < 2) {
+        case 1: {
+            char *touch = MobyGetHitMessage(moby, 0x230000, 0);
+            int damage;
+            if (touch != 0 && *(struct Moby **)(touch + 0x20) != vars->owner) {
                 moby->state = 2;
                 break;
             }
-        }
-        qcopy(old_pos, &moby->pos);
-        FastVecAdd(&moby->pos, &moby->pos, vars);
-        moby->rot.z = vars->yaw;
-        moby->rot.x = FastAddRots(moby->rot.x, g_frame_time * 6.2831855f);
-        f20 = 0.2f;
-        vec_scale_to_length(side, vars, f20);
-        vec_scale_to_length(back, vars, -0.2f);
-        add_vectors(trail, back, &moby->pos);
-        PartType04Spawn(back, side, 0x6F00AFFF, 0xFF, scale_ticks(rand_range(15, 22)), 40,
-                         rand_range(20, 35), 1);
-        PartType04Spawn(back, side, 0x1FFFFFFF, 0x4F4F4F, scale_ticks(rand_range(30, 60)), 40,
-                         rand_range(50, 75), 0);
-        if (coll_line(&moby->pos, old_pos, 0, moby, 0) || coll_sphere(&moby->pos, 0, (struct Moby *)moby, f20)) {
-            if (hoven_coll_hit.moby != 0 && hoven_coll_hit.moby != (int)vars->owner) {
-                damage = 1;
-                if (g_current_level_index_e == 12 && hero_current_state == 50) {
-                    damage = hoven_turret_attempts >= 16 ? 2 : 3;
+            if (g_current_level_index_e == 12 && hero_current_state == 50 && vars->owner != 0) {
+                if ((signed char)vars->owner->state < 0) {
+                    DeleteMoby(moby);
+                    return;
                 }
-                InitDirectionalHitQuery(&hit, moby, 0x10003, damage, vars);
-                hit.dir[0] = FastCos(vars->yaw);
-                hit.dir[1] = FastSin(vars->yaw);
-                hit.dir[2] = 1.0f;
-                hit.dir[3] = 5627.9248f;
-                hit.unk18 = 1;
-                hit.unk19 = 1;
-                hit.oclass = moby->oclass;
-                record_moby_hit(hoven_coll_hit.moby, &hit);
+                if (vars->owner->state < 2) {
+                    moby->state = 2;
+                    break;
+                }
             }
-            moby->state = 2;
+            qcopy(old_pos, &moby->pos);
+            FastVecAdd(&moby->pos, &moby->pos, vars);
+            moby->rot.z = vars->yaw;
+            moby->rot.x = FastAddRots(moby->rot.x, g_frame_time * 6.2831855f);
+            f20 = 0.2f;
+            vec_scale_to_length(side, vars, f20);
+            vec_scale_to_length(back, vars, -0.2f);
+            add_vectors(trail, back, &moby->pos);
+            PartType04Spawn(back, side, 0x6F00AFFF, 0xFF, scale_ticks(rand_range(15, 22)), 40, rand_range(20, 35), 1);
+            PartType04Spawn(back, side, 0x1FFFFFFF, 0x4F4F4F, scale_ticks(rand_range(30, 60)), 40, rand_range(50, 75),
+                            0);
+            if (coll_line(&moby->pos, old_pos, 0, moby, 0) || coll_sphere(&moby->pos, 0, (struct Moby *)moby, f20)) {
+                if (hoven_coll_hit.moby != 0 && hoven_coll_hit.moby != (int)vars->owner) {
+                    damage = 1;
+                    if (g_current_level_index_e == 12 && hero_current_state == 50) {
+                        damage = hoven_turret_attempts >= 16 ? 2 : 3;
+                    }
+                    InitDirectionalHitQuery(&hit, moby, 0x10003, damage, vars);
+                    hit.dir[0] = FastCos(vars->yaw);
+                    hit.dir[1] = FastSin(vars->yaw);
+                    hit.dir[2] = 1.0f;
+                    hit.dir[3] = 5627.9248f;
+                    hit.unk18 = 1;
+                    hit.unk19 = 1;
+                    hit.oclass = moby->oclass;
+                    record_moby_hit(hoven_coll_hit.moby, &hit);
+                }
+                moby->state = 2;
+            }
+            if (fast_dec_timer(&vars->timer)) {
+                moby->state = 2;
+            }
+            break;
         }
-        if (fast_dec_timer(&vars->timer)) {
-            moby->state = 2;
-        }
-        break;
-    }
-    case 2:
-        FastVecSub(old_pos, &moby->pos, hoven_camera_pos);
-        vec_scale_to_length(old_pos, old_pos, 0.4f);
-        FastVecAdd(&moby->pos, &moby->pos, old_pos);
-        if (g_current_level_index_e == 12 && hero_current_state == 50) {
-            char *camera = hoven_camera_pos - 0x140;
-            spawn_explosion(moby, hoven_zero_vec, 0, 0.0f, 0.0f, 3, 3, 5, 0.3f, 0.2f, 0.0f, -1, 0.15f, 0.0f, 0, 0,
-                             -1, 0);
-            *(float *)(camera + 0x160) = 0.025f;
-            *(int *)(camera + 0x168) = scale_ticks(20);
-        } else {
-            SpawnExplosionFx(moby, &moby->pos, 0, 0.25f, 13.0f);
-        }
-        DeleteMoby(moby);
-        break;
+        case 2:
+            FastVecSub(old_pos, &moby->pos, hoven_camera_pos);
+            vec_scale_to_length(old_pos, old_pos, 0.4f);
+            FastVecAdd(&moby->pos, &moby->pos, old_pos);
+            if (g_current_level_index_e == 12 && hero_current_state == 50) {
+                char *camera = hoven_camera_pos - 0x140;
+                spawn_explosion(moby, hoven_zero_vec, 0, 0.0f, 0.0f, 3, 3, 5, 0.3f, 0.2f, 0.0f, -1, 0.15f, 0.0f, 0, 0,
+                                -1, 0);
+                *(float *)(camera + 0x160) = 0.025f;
+                *(int *)(camera + 0x168) = scale_ticks(20);
+            } else {
+                SpawnExplosionFx(moby, &moby->pos, 0, 0.25f, 13.0f);
+            }
+            DeleteMoby(moby);
+            break;
     }
 }
 extern unsigned char menu_item_enabled_115_e[] __asm__("D_0013D50F");
@@ -439,9 +445,9 @@ void update_hoven_help_and_dialogue(char *m) {
     }
     {
         char *h = help_stats_base_e + 0x34D;
-        if (*(unsigned short *)(h + 0x370) == 0
-            || (*(unsigned short *)(h + 0x370) < 2
-                && scale_ticks(gameplay_event_frame_count_e) - *(unsigned short *)(h + 0x372) * 600 > scale_ticks(72000))) {
+        if (*(unsigned short *)(h + 0x370) == 0 ||
+            (*(unsigned short *)(h + 0x370) < 2 &&
+             scale_ticks(gameplay_event_frame_count_e) - *(unsigned short *)(h + 0x372) * 600 > scale_ticks(72000))) {
             Hero *q = (Hero *)(hero_globals_base_e + 0xE1D);
             if (q->state.current == 0x81) {
                 d[1]++;
@@ -459,7 +465,8 @@ void update_hoven_help_and_dialogue(char *m) {
                     if (scale_ticks(gameplay_event_frame_count_e) / 600 > *(unsigned short *)(g + 0x372)) {
                         *(unsigned short *)(g + 0x372) = scale_ticks(gameplay_event_frame_count_e) / 600;
                     }
-                    *(unsigned int *)(g + 0x374) = *(unsigned int *)(g + 0x374) | (1 << g_current_level_index_e) | 0x80000000;
+                    *(unsigned int *)(g + 0x374) =
+                        *(unsigned int *)(g + 0x374) | (1 << g_current_level_index_e) | 0x80000000;
                 }
                 {
                     int a = scale_ticks(0x1C20);
@@ -552,7 +559,8 @@ void draw_oscillating_target_link_strips(Moby *moby) {
         cp[15] = 1.0f;
     }
     quad[1].g[1] = GetEffectTex_r(0xE);
-    quad[1].g[3] = (long)D_L12_00161E4C_303CA8 | ((long)D_L12_00161E50_303CA8 << 2) | ((long)D_L12_00161E54_303CA8 << 4) | ((long)D_L12_00161E58_303CA8 << 6) | (0x8000L << 24);
+    quad[1].g[3] = (long)D_L12_00161E4C_303CA8 | ((long)D_L12_00161E50_303CA8 << 2) |
+                   ((long)D_L12_00161E54_303CA8 << 4) | ((long)D_L12_00161E58_303CA8 << 6) | (0x8000L << 24);
     quad[1].g[2] = 0xFF9000000260UL;
     quad[1].g[0] = 0;
     {
@@ -566,11 +574,13 @@ void draw_oscillating_target_link_strips(Moby *moby) {
     }
     for (idx = 0; idx < 4; idx++) {
         if (oscillating_link_strip_fade_pivot_ticks_r < data->phase[idx]) {
-            t = IntToFloat_r2(data->phase[idx] - oscillating_link_strip_fade_pivot_ticks_r) / IntToFloat_r2(oscillating_link_strip_reset_ticks_r - oscillating_link_strip_fade_pivot_ticks_r);
+            t = IntToFloat_r2(data->phase[idx] - oscillating_link_strip_fade_pivot_ticks_r) /
+                IntToFloat_r2(oscillating_link_strip_reset_ticks_r - oscillating_link_strip_fade_pivot_ticks_r);
         } else {
             t = 1.0f - IntToFloat_r2(data->phase[idx]) / IntToFloat_r2(oscillating_link_strip_fade_pivot_ticks_r);
         }
-        quad[1].c[0] = quad[1].c[1] = quad[1].c[2] = quad[1].c[3] = FastTweenColor_r(D_L12_00161E6C_303CA8, D_L12_00161E70_303CA8, t);
+        quad[1].c[0] = quad[1].c[1] = quad[1].c[2] = quad[1].c[3] =
+            FastTweenColor_r(D_L12_00161E6C_303CA8, D_L12_00161E70_303CA8, t);
         u = 0.0f;
         for (j = 0; j < data->count - 1; j++) {
             u = u + D_L12_00161E74_303CA8;
@@ -609,7 +619,8 @@ void update_oscillating_target_link_strips(struct Moby *moby) {
     float cycle = (*(float *)&electric_arc_tex_scroll) + (*(float *)&electric_arc_tex_scroll_speed) * g_frame_time;
     int strip;
     (*(float *)&electric_arc_tex_scroll) = cycle;
-    if (cycle > 1.0f) (*(float *)&electric_arc_tex_scroll) = cycle - 1.0f;
+    if (cycle > 1.0f)
+        (*(float *)&electric_arc_tex_scroll) = cycle - 1.0f;
     for (strip = 0; strip < 4; strip++) {
         int count;
         int i;
@@ -718,66 +729,66 @@ void update_oscillating_target_link(Moby *moby) {
         return;
     }
     switch (moby->state) {
-    case 0:
-        oscillating_link_strip_fade_pivot_ticks_r = 0x16;
-        oscillating_link_strip_reset_ticks_r = 0x2D;
-        data->f231C = -1;
-        data->f2304 = 0xB;
-        data->f2308 = 0x17;
-        data->f230C = 0x22;
-        data->f2300 = 0;
-        moby->state = 1;
-        break;
-    case 1:
-        moby->rot.z = fast_atan2_r(hoven_mobys_r[data->target].pos.x - moby->pos.x,
-                                             hoven_mobys_r[data->target].pos.y - moby->pos.y);
-        data->dist = FastVecDist_r(((float *)&moby->pos), (char *)hoven_mobys_r + (data->target << 8) + 0x10);
-        data->angle = FastAddRots_r2(data->angle, data->turn * 0.017453292f * g_frame_time_r);
-        row = hoven_paths_r[data->row];
-        a = FastSin_r(data->angle);
-        if (1.5707964f < data->angle && data->angle < 3.1415927f) {
-            a = 2.0f - a;
-        }
-        if (-3.1415927f < data->angle && data->angle < -1.5707964f) {
-            a = 2.0f - a;
-        }
-        half = 0.5f;
-        a = a * half;
-        a = a + half;
-        if (1.0f < a) {
-            a = a - 2.0f;
-        }
-        a = FastAbsF_r(a);
-        tmp0.q = row->v10;
-        tmp1.q = row->v20;
-        LerpVec4_r(((float *)&moby->pos), &tmp0, &tmp1, a);
-        if (vec_distance_xy_r(((float *)&moby->pos), gHeroPos_r) > 64.0f) {
-            return;
-        }
-        if (moby->visible == 0 && hoven_mobys_r[data->target].visible == 0) {
-            FastVecAdd_r3(&tmp0, ((float *)&moby->pos), ((float *)&hoven_mobys_r[data->target].pos));
-            FastVecScale_r2(&tmp0, &tmp0, half);
-            tmp0.f[3] = 16.0f;
-            if (FastBSphereCheck_r(&tmp0, 32.0f) == -1) {
+        case 0:
+            oscillating_link_strip_fade_pivot_ticks_r = 0x16;
+            oscillating_link_strip_reset_ticks_r = 0x2D;
+            data->f231C = -1;
+            data->f2304 = 0xB;
+            data->f2308 = 0x17;
+            data->f230C = 0x22;
+            data->f2300 = 0;
+            moby->state = 1;
+            break;
+        case 1:
+            moby->rot.z = fast_atan2_r(hoven_mobys_r[data->target].pos.x - moby->pos.x,
+                                       hoven_mobys_r[data->target].pos.y - moby->pos.y);
+            data->dist = FastVecDist_r(((float *)&moby->pos), (char *)hoven_mobys_r + (data->target << 8) + 0x10);
+            data->angle = FastAddRots_r2(data->angle, data->turn * 0.017453292f * g_frame_time_r);
+            row = hoven_paths_r[data->row];
+            a = FastSin_r(data->angle);
+            if (1.5707964f < data->angle && data->angle < 3.1415927f) {
+                a = 2.0f - a;
+            }
+            if (-3.1415927f < data->angle && data->angle < -1.5707964f) {
+                a = 2.0f - a;
+            }
+            half = 0.5f;
+            a = a * half;
+            a = a + half;
+            if (1.0f < a) {
+                a = a - 2.0f;
+            }
+            a = FastAbsF_r(a);
+            tmp0.q = row->v10;
+            tmp1.q = row->v20;
+            LerpVec4_r(((float *)&moby->pos), &tmp0, &tmp1, a);
+            if (vec_distance_xy_r(((float *)&moby->pos), gHeroPos_r) > 64.0f) {
                 return;
             }
-        }
-        if (data->f2330 != -1 && is_point_inside_clip_volume_r(hoven_camera_pos_r, data->f2330) != 0) {
-            return;
-        }
-        if (data->f2320 == 0) {
-            return;
-        }
-        update_oscillating_target_link_strips_r(moby);
-        idx = data->target;
-        if (idx == -1) {
-            return;
-        }
-        qcopy(&tmp0, &moby->pos.z);
-        qcopy(&tmp1, ((float *)&hoven_mobys_r[idx].pos));
-        InitDirectionalHitQuery_r(tmp2, moby, 0x10001, 1.0f, hoven_zero_vec_r);
-        coll_line_r(&tmp0, &tmp1, 0, 0, tmp2);
-        break;
+            if (moby->visible == 0 && hoven_mobys_r[data->target].visible == 0) {
+                FastVecAdd_r3(&tmp0, ((float *)&moby->pos), ((float *)&hoven_mobys_r[data->target].pos));
+                FastVecScale_r2(&tmp0, &tmp0, half);
+                tmp0.f[3] = 16.0f;
+                if (FastBSphereCheck_r(&tmp0, 32.0f) == -1) {
+                    return;
+                }
+            }
+            if (data->f2330 != -1 && is_point_inside_clip_volume_r(hoven_camera_pos_r, data->f2330) != 0) {
+                return;
+            }
+            if (data->f2320 == 0) {
+                return;
+            }
+            update_oscillating_target_link_strips_r(moby);
+            idx = data->target;
+            if (idx == -1) {
+                return;
+            }
+            qcopy(&tmp0, &moby->pos.z);
+            qcopy(&tmp1, ((float *)&hoven_mobys_r[idx].pos));
+            InitDirectionalHitQuery_r(tmp2, moby, 0x10001, 1.0f, hoven_zero_vec_r);
+            coll_line_r(&tmp0, &tmp1, 0, 0, tmp2);
+            break;
     }
 }
 extern void set_level_state_flag_88(void *);
@@ -831,7 +842,7 @@ void update_hoven_turret_target_alignment_timer(void *moby) {
 
     for (i = 0; i < 10; i++) {
         if (data->targets[i] != -1) {
-            Moby *target = &(*(Moby * *)&hoven_mobys_r2)[data->targets[i]];
+            Moby *target = &(*(Moby **)&hoven_mobys_r2)[data->targets[i]];
             float yaw_limit;
             float pitch_limit;
             float yaw;
@@ -847,8 +858,10 @@ void update_hoven_turret_target_alignment_timer(void *moby) {
                 pitch_limit = 0.05235988f;
                 position.f[2] += 1.5f;
             }
-            yaw = fast_atan2(position.f[0] - hoven_player_camera.position.f[0], position.f[1] - hoven_player_camera.position.f[1]);
-            pitch = fast_atan2(vec_distance_xy(&hoven_player_camera.position, &position), position.f[2] - hoven_player_camera.position.f[2]);
+            yaw = fast_atan2(position.f[0] - hoven_player_camera.position.f[0],
+                             position.f[1] - hoven_player_camera.position.f[1]);
+            pitch = fast_atan2(vec_distance_xy(&hoven_player_camera.position, &position),
+                               position.f[2] - hoven_player_camera.position.f[2]);
             if (FastDiffRots(yaw, hoven_player_camera.yaw) < yaw_limit &&
                 FastDiffRots(pitch, -hoven_player_camera.pitch) < pitch_limit)
                 found = 1;
@@ -973,7 +986,8 @@ extern int rand_range(int, int);
 extern char *PartType27Spawn(void *, void *, int, int, float);
 extern float randf_sym(float, float);
 extern void fast_add_rotations_cf(void *, void *, float, float, float);
-extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float, int, int, int, int);
+extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
+                            int, int, int, int);
 extern void StartCutscene(int);
 extern int memcard_Save_r(int, int) __asm__("func_0020BFC8");
 extern void draw_hoven_turret_hud();
@@ -985,247 +999,259 @@ void hoven_turret_update(Moby *moby) {
 
     ((Snd_304920 *)(hero_globals_base_e + 0x1D))->f6C = moby;
     switch (moby->state) {
-    case 0:
-        hoven_turret_manned = 0;
-        hoven_turret_destroyed = 0;
-        if ((help_stats_base_r + 0xAA35)[moby->mission + (g_current_level_index_e << 4)] == 0xFF) {
-            moby->state = 6;
-        } else {
-            AttachManipulator(moby, 0, d);
-            moby->state = 3;
-            d->f84 = 0xC8;
-            moby->rot.y = 0.0f;
-            d->f70 = scale_ticks(0x1E);
-            d->f72 = 0;
-            d->f78 = 0.0f;
-            d->f7C = 0.0f;
-            d->fA0 = moby->pos.z;
-            d->f98 = -1;
-            moby->rot.z = 3.1415927f;
-            ((Snd_304920 *)(hero_globals_base_e + 0x1D))->f6C = moby;
-        }
-        break;
-    case 3: {
-        {
-            Vec_304920 out;
-
-            Moby_GetJointWorldPos(moby, 3, out);
-        }
-        if (vec_distance_xy(((float *)&moby->pos), ((Hero *)(hero_globals_base_e + 0xE1D))->motion.pos.f) < 7.0f
-            || ((Hero *)(hero_globals_base_e + 0xE1D))->ground_moby == moby) {
-            moby->pos.z = moby->pos.z + ((d->fA0 - 1.2f) - moby->pos.z) * 0.11f;
-            d->fA4 = FastAddRots(d->fA4, FastAddRots(FastSubRots(fast_atan2(((Hero *)(hero_globals_base_e + 0xE1D))->motion.pos.f[0] - moby->pos.x, ((Hero *)(hero_globals_base_e + 0xE1D))->motion.pos.f[1] - moby->pos.y), moby->rot.z), 1.5707964f) * 0.01f) * 0.9f;
-            moby->rot.z = FastAddRots(moby->rot.z, d->fA4);
-        } else {
-            if (moby->pos.z < d->fA0) {
-                moby->pos.z = moby->pos.z + g_frame_time;
+        case 0:
+            hoven_turret_manned = 0;
+            hoven_turret_destroyed = 0;
+            if ((help_stats_base_r + 0xAA35)[moby->mission + (g_current_level_index_e << 4)] == 0xFF) {
+                moby->state = 6;
             } else {
-                moby->pos.z = d->fA0;
-            }
-            if (((Hero *)(hero_globals_base_e + 0xE1D))->ground_moby != moby && d->f98 != -1) {
-                Moby_PlaySound(2, 0, (int)moby);
-            }
-        }
-        if (vec_distance_xy(((float *)&moby->pos), ((float *)&((Hero *)(hero_globals_base_e + 0xE1D))->moby->pos)) < 1.3f) {
-            if (scale_ticks(0xF) < ((Hero *)(hero_globals_base_e + 0xE1D))->grounded_frames) {
-                CameraScript(((float *)&moby->pos), ((float *)&moby->rot), 1, 0, 0);
-                if (moby->prev_seq != 5) {
-                    MobySetAnimation(moby, 5, 0);
-                }
-                HeroL12_SetMoveState(0x32, 1);
-                update_hoven_turret_camera((char *)moby);
-                d->f8C = 200.0f;
-                moby->hit_slot = 0xFF;
-                hoven_turret_attempts++;
-                moby->state = 4;
-            }
-        }
-        break;
-    }
-    case 4:
-        hoven_turret_manned = 1;
-        ((Hero *)(hero_globals_base_e + 0xE1D))->unk20A5 = 1;
-        ((Hero *)(hero_globals_base_e + 0xE1D))->collision_off_frames = scale_ticks(0x78);
-        ((Hero *)(hero_globals_base_e + 0xE1D))->invulnerable_frames = scale_ticks(0x78);
-        if (hoven_cinematic_mode != 2 && planetbuster_death_cam_active == 0) {
-            AddDrawCallback(draw_hoven_turret_hud, moby);
-        }
-        update_hoven_turret_target_alignment_timer(moby);
-        if (fast_dec_timer_r2(&d->f90)) {
-            Hit_304920 *hit = (Hit_304920 *)MobyGetHitMessage(moby, 0x10000, 0);
-            if (hit != 0) {
-                d->f90 = scale_ticks(4);
-                d->f8C = d->f8C - hit->f2C;
-            }
-            moby->hit_slot = 0xFF;
-        }
-        if (planetbuster_defeated == 0) {
-            if (((Hero *)(hero_globals_base_e + 0xE1D))->ship_flags & 1) {
-                if (d->f8C > 100.0f) {
-                    hoven_turret_attempts--;
-                }
-                ((Hero *)(hero_globals_base_e + 0xE1D))->ship_flags = 0;
-                Hero_OnKilled();
-            }
-            if (d->f8C <= 0.0f) {
-                hoven_turret_destroyed = 1;
-                d->fAC = scale_ticks(0x78);
-                moby->state = 7;
-                break;
-            }
-        }
-        if (d->f94 != -1 && (signed char)((Moby *)((d->f94 << 8) + hoven_mobys_m))->state < 0) {
-            if (hoven_cinematic_mode == 2) {
-                if (d->b1 != 0) {
-                    DetachManipulator(moby, d);
-                }
-                if (moby->prev_seq != 0) {
-                    MobySetAnimation(moby, 0, 0);
-                }
-                moby->pos.z = d->fA0;
+                AttachManipulator(moby, 0, d);
+                moby->state = 3;
+                d->f84 = 0xC8;
+                moby->rot.y = 0.0f;
+                d->f70 = scale_ticks(0x1E);
+                d->f72 = 0;
+                d->f78 = 0.0f;
+                d->f7C = 0.0f;
+                d->fA0 = moby->pos.z;
+                d->f98 = -1;
                 moby->rot.z = 3.1415927f;
-            } else {
-                jet_clear_persistent(moby->mission);
-                PlayMovieEntryIfIdle(0xD);
-                unlock_planet(0xD);
-                {
-                    Vec_304920 cpos = { 328.4f, 338.7f, 60.98f };
-                    Vec_304920 crot = { 0.0f, 0.0f, -1.7f };
-
-                    hoven_turret_manned = 0;
-                    Hero_ResetToPosition(cpos, crot, 0, 1);
-                }
-                moby->state = 5;
-                break;
+                ((Snd_304920 *)(hero_globals_base_e + 0x1D))->f6C = moby;
             }
-        }
-        if (planetbuster_death_cam_active != 0) {
+            break;
+        case 3: {
+            {
+                Vec_304920 out;
+
+                Moby_GetJointWorldPos(moby, 3, out);
+            }
+            if (vec_distance_xy(((float *)&moby->pos), ((Hero *)(hero_globals_base_e + 0xE1D))->motion.pos.f) < 7.0f ||
+                ((Hero *)(hero_globals_base_e + 0xE1D))->ground_moby == moby) {
+                moby->pos.z = moby->pos.z + ((d->fA0 - 1.2f) - moby->pos.z) * 0.11f;
+                d->fA4 = FastAddRots(
+                             d->fA4,
+                             FastAddRots(
+                                 FastSubRots(
+                                     fast_atan2(((Hero *)(hero_globals_base_e + 0xE1D))->motion.pos.f[0] - moby->pos.x,
+                                                ((Hero *)(hero_globals_base_e + 0xE1D))->motion.pos.f[1] - moby->pos.y),
+                                     moby->rot.z),
+                                 1.5707964f) *
+                                 0.01f) *
+                         0.9f;
+                moby->rot.z = FastAddRots(moby->rot.z, d->fA4);
+            } else {
+                if (moby->pos.z < d->fA0) {
+                    moby->pos.z = moby->pos.z + g_frame_time;
+                } else {
+                    moby->pos.z = d->fA0;
+                }
+                if (((Hero *)(hero_globals_base_e + 0xE1D))->ground_moby != moby && d->f98 != -1) {
+                    Moby_PlaySound(2, 0, (int)moby);
+                }
+            }
+            if (vec_distance_xy(((float *)&moby->pos), ((float *)&((Hero *)(hero_globals_base_e + 0xE1D))->moby->pos)) <
+                1.3f) {
+                if (scale_ticks(0xF) < ((Hero *)(hero_globals_base_e + 0xE1D))->grounded_frames) {
+                    CameraScript(((float *)&moby->pos), ((float *)&moby->rot), 1, 0, 0);
+                    if (moby->prev_seq != 5) {
+                        MobySetAnimation(moby, 5, 0);
+                    }
+                    HeroL12_SetMoveState(0x32, 1);
+                    update_hoven_turret_camera((char *)moby);
+                    d->f8C = 200.0f;
+                    moby->hit_slot = 0xFF;
+                    hoven_turret_attempts++;
+                    moby->state = 4;
+                }
+            }
             break;
         }
-        {
-            float joy[2];
-            float y;
-            float tgt;
-            float tgt2;
-
-            joy[0] = ((Hero *)(hero_globals_base_e + 0xE1D))->stick_x;
-            y = ((Hero *)(hero_globals_base_e + 0xE1D))->stick_y;
-            if (vendor_stock_r[3] == 0) {
-                y = -y;
+        case 4:
+            hoven_turret_manned = 1;
+            ((Hero *)(hero_globals_base_e + 0xE1D))->unk20A5 = 1;
+            ((Hero *)(hero_globals_base_e + 0xE1D))->collision_off_frames = scale_ticks(0x78);
+            ((Hero *)(hero_globals_base_e + 0xE1D))->invulnerable_frames = scale_ticks(0x78);
+            if (hoven_cinematic_mode != 2 && planetbuster_death_cam_active == 0) {
+                AddDrawCallback(draw_hoven_turret_hud, moby);
             }
-            joy[1] = y;
-            tgt = hoven_turret_yaw_input_rate * 0.017453292f * g_frame_time * -joy[0];
-            if ((d->f7C >= 0.0f && d->f7C < tgt) || (d->f7C <= 0.0f && tgt < d->f7C)) {
-                ApproachValue(&d->f7C, tgt, hoven_turret_yaw_acceleration_rate * 0.017453292f * g_frame_time_sq);
-            } else {
-                ApproachValue(&d->f7C, tgt, hoven_turret_yaw_braking_rate * 0.017453292f * g_frame_time_sq);
+            update_hoven_turret_target_alignment_timer(moby);
+            if (fast_dec_timer_r2(&d->f90)) {
+                Hit_304920 *hit = (Hit_304920 *)MobyGetHitMessage(moby, 0x10000, 0);
+                if (hit != 0) {
+                    d->f90 = scale_ticks(4);
+                    d->f8C = d->f8C - hit->f2C;
+                }
+                moby->hit_slot = 0xFF;
             }
-            moby->rot.z = FastAddRots(moby->rot.z, d->f7C);
-            tgt2 = -(hoven_turret_pitch_input_rate * 0.017453292f * g_frame_time) * -joy[1];
-            if ((d->f78 >= 0.0f && d->f78 < tgt2) || (d->f78 <= 0.0f && tgt2 < d->f78)) {
-                ApproachValue(&d->f78, tgt2, hoven_turret_pitch_acceleration_rate * 0.017453292f * g_frame_time_sq);
-            } else {
-                ApproachValue(&d->f78, tgt2, hoven_turret_pitch_braking_rate * 0.017453292f * g_frame_time_sq);
+            if (planetbuster_defeated == 0) {
+                if (((Hero *)(hero_globals_base_e + 0xE1D))->ship_flags & 1) {
+                    if (d->f8C > 100.0f) {
+                        hoven_turret_attempts--;
+                    }
+                    ((Hero *)(hero_globals_base_e + 0xE1D))->ship_flags = 0;
+                    Hero_OnKilled();
+                }
+                if (d->f8C <= 0.0f) {
+                    hoven_turret_destroyed = 1;
+                    d->fAC = scale_ticks(0x78);
+                    moby->state = 7;
+                    break;
+                }
             }
-            d->f74 = FastAddRots(d->f74, d->f78);
-            if (d->f74 > hoven_turret_pitch_max) {
-                d->f74 = hoven_turret_pitch_max;
-            }
-            if (d->f74 < hoven_turret_pitch_min) {
-                d->f74 = hoven_turret_pitch_min;
-            }
-            axis_rotation_2d48(d->f10, 1, -d->f74);
-            if (moby->anim_flags & 2) {
-                MobyBlendAnimation(moby, 5, 0, 1);
-            }
-            FastDecTimer(&d->f70);
-            if ((pad_globals_base_e[0x2600 / 4] & 0xA0) && d->f70 == 0) {
-                Vec_304920 dir;
-                Vec_304920 muz;
-                float yaw;
-                int i;
-
-                MobyBlendAnimation(moby, d->f80 == 1 ? 4 : 3, 0, 1);
-                yaw = FastAddRots(moby->rot.z, 1.5707964f);
-                BuildSphericalOffset(dir, hoven_turret_firing_offset_rate * g_frame_time, yaw, d->f74);
-                if (d->f80 == 1) {
-                    d->f80 = 0;
-                    Moby_GetJointWorldPos(moby, 2, muz);
+            if (d->f94 != -1 && (signed char)((Moby *)((d->f94 << 8) + hoven_mobys_m))->state < 0) {
+                if (hoven_cinematic_mode == 2) {
+                    if (d->b1 != 0) {
+                        DetachManipulator(moby, d);
+                    }
+                    if (moby->prev_seq != 0) {
+                        MobySetAnimation(moby, 0, 0);
+                    }
+                    moby->pos.z = d->fA0;
+                    moby->rot.z = 3.1415927f;
                 } else {
-                    Moby_GetJointWorldPos(moby, 1, muz);
-                    d->f80 = 1;
-                }
-                FastVecAdd(muz, muz, dir);
-                FastVecAdd(muz, muz, dir);
-                FastVecAdd(muz, muz, dir);
-                create_moby_with_particles(moby, muz, dir, 0);
-                Moby_PlaySound(0, 0, (int)moby);
-                ((Cam_304920 *)hoven_player_camera_r)->f160 = 0.03f;
-                ((Cam_304920 *)hoven_player_camera_r)->f168 = scale_ticks(0xA);
-                ((Cam_304920 *)hoven_player_camera_r)->f170 = 0.03f;
-                ((Cam_304920 *)hoven_player_camera_r)->f178 = scale_ticks(7);
-                d->f70 = scale_ticks(0x14);
-                for (i = 0; i < 5; i++) {
-                    Vec_304920 vel;
-                    Vec_304920 rnd;
+                    jet_clear_persistent(moby->mission);
+                    PlayMovieEntryIfIdle(0xD);
+                    unlock_planet(0xD);
+                    {
+                        Vec_304920 cpos = {328.4f, 338.7f, 60.98f};
+                        Vec_304920 crot = {0.0f, 0.0f, -1.7f};
 
-                    *(u128 *)rnd = 0;
-                    rnd[0] = random_float_between(-1.0f, 1.0f);
-                    rnd[1] = random_float_between(-1.0f, 1.0f);
-                    rnd[2] = random_float_between(-1.0f, 1.0f);
-                    *(u128 *)vel = *(u128 *)rnd;
-                    vec_scale_to_length(vel, vel, FastVecLength(dir) * (frame_scale * (0.65f - 1.0f) + 1.0f));
-                    FastVecAdd(vel, dir, vel);
-                    vec_scale_to_length(vel, vel, random_float_between(g_frame_time * 3.0f, g_frame_time * 6.0f));
-                    PartType27Spawn(muz, vel, 0x5F2F4F6F, rand_range(scale_ticks(5), scale_ticks(0xA)), 50000.0f);
+                        hoven_turret_manned = 0;
+                        Hero_ResetToPosition(cpos, crot, 0, 1);
+                    }
+                    moby->state = 5;
+                    break;
                 }
-                vec_scale_to_length(dir, dir, g_frame_time * 0.5f);
-                PartType27Spawn(muz, dir, 0x2F4F7F7F, rand_range(scale_ticks(4), scale_ticks(7)), 500000.0f);
             }
-            if (planetbuster_death_cam_active == 0) {
-                update_hoven_turret_camera((char *)moby);
+            if (planetbuster_death_cam_active != 0) {
+                break;
             }
-        }
-        break;
-    case 7:
-        AddDrawCallback(draw_hoven_turret_destruction_fade, moby);
-        if (FastDecTimer(&d->fAE)) {
-            Vec_304920 v;
-            float a;
-            float b;
-            float c;
-            float t;
+            {
+                float joy[2];
+                float y;
+                float tgt;
+                float tgt2;
 
-            a = random_float_between(hoven_turret_destruction_view_offset_distance_min, hoven_turret_destruction_view_offset_distance_max);
-            b = FastAddRots(((Cam_304920 *)hoven_player_camera_r)->f158, randf_sym(0.0f, 0.5235988f));
-            c = FastAddRots(((Cam_304920 *)hoven_player_camera_r)->f154, randf_sym(0.0f, 0.5235988f));
-            qcopy(v, ((Cam_304920 *)hoven_player_camera_r)->f140);
-            fast_add_rotations_cf(v, v, a, b, c);
-            t = random_float_between(0.5f, 1.3f);
-            spawn_explosion(moby, hoven_zero_vec, v, 0.0f, 0.0f, 7, 0xF, 0x19, t, t * 0.57f, 10.0f, 3, 0.7f, 0.0f, 0, 0, -1, 0);
-            d->fAE = scale_ticks(rand_range(5, 0xD));
-        }
-        if (FastDecTimer(&d->fAC)) {
-            Hero_OnKilled();
-        }
-        break;
-    case 5:
-        if (hoven_cinematic_mode != 2) {
-            StartCutscene(1);
-            moby->state = 8;
-        }
-        break;
-    case 8:
-        if (hoven_cinematic_mode != 2) {
-            memcard_Save_r(0, -1);
-            moby->state = 6;
-        }
-        break;
-    case 6:
-        if (moby->prev_seq != 0) {
-            MobySetAnimation(moby, 0, 0);
-        }
-        break;
+                joy[0] = ((Hero *)(hero_globals_base_e + 0xE1D))->stick_x;
+                y = ((Hero *)(hero_globals_base_e + 0xE1D))->stick_y;
+                if (vendor_stock_r[3] == 0) {
+                    y = -y;
+                }
+                joy[1] = y;
+                tgt = hoven_turret_yaw_input_rate * 0.017453292f * g_frame_time * -joy[0];
+                if ((d->f7C >= 0.0f && d->f7C < tgt) || (d->f7C <= 0.0f && tgt < d->f7C)) {
+                    ApproachValue(&d->f7C, tgt, hoven_turret_yaw_acceleration_rate * 0.017453292f * g_frame_time_sq);
+                } else {
+                    ApproachValue(&d->f7C, tgt, hoven_turret_yaw_braking_rate * 0.017453292f * g_frame_time_sq);
+                }
+                moby->rot.z = FastAddRots(moby->rot.z, d->f7C);
+                tgt2 = -(hoven_turret_pitch_input_rate * 0.017453292f * g_frame_time) * -joy[1];
+                if ((d->f78 >= 0.0f && d->f78 < tgt2) || (d->f78 <= 0.0f && tgt2 < d->f78)) {
+                    ApproachValue(&d->f78, tgt2, hoven_turret_pitch_acceleration_rate * 0.017453292f * g_frame_time_sq);
+                } else {
+                    ApproachValue(&d->f78, tgt2, hoven_turret_pitch_braking_rate * 0.017453292f * g_frame_time_sq);
+                }
+                d->f74 = FastAddRots(d->f74, d->f78);
+                if (d->f74 > hoven_turret_pitch_max) {
+                    d->f74 = hoven_turret_pitch_max;
+                }
+                if (d->f74 < hoven_turret_pitch_min) {
+                    d->f74 = hoven_turret_pitch_min;
+                }
+                axis_rotation_2d48(d->f10, 1, -d->f74);
+                if (moby->anim_flags & 2) {
+                    MobyBlendAnimation(moby, 5, 0, 1);
+                }
+                FastDecTimer(&d->f70);
+                if ((pad_globals_base_e[0x2600 / 4] & 0xA0) && d->f70 == 0) {
+                    Vec_304920 dir;
+                    Vec_304920 muz;
+                    float yaw;
+                    int i;
+
+                    MobyBlendAnimation(moby, d->f80 == 1 ? 4 : 3, 0, 1);
+                    yaw = FastAddRots(moby->rot.z, 1.5707964f);
+                    BuildSphericalOffset(dir, hoven_turret_firing_offset_rate * g_frame_time, yaw, d->f74);
+                    if (d->f80 == 1) {
+                        d->f80 = 0;
+                        Moby_GetJointWorldPos(moby, 2, muz);
+                    } else {
+                        Moby_GetJointWorldPos(moby, 1, muz);
+                        d->f80 = 1;
+                    }
+                    FastVecAdd(muz, muz, dir);
+                    FastVecAdd(muz, muz, dir);
+                    FastVecAdd(muz, muz, dir);
+                    create_moby_with_particles(moby, muz, dir, 0);
+                    Moby_PlaySound(0, 0, (int)moby);
+                    ((Cam_304920 *)hoven_player_camera_r)->f160 = 0.03f;
+                    ((Cam_304920 *)hoven_player_camera_r)->f168 = scale_ticks(0xA);
+                    ((Cam_304920 *)hoven_player_camera_r)->f170 = 0.03f;
+                    ((Cam_304920 *)hoven_player_camera_r)->f178 = scale_ticks(7);
+                    d->f70 = scale_ticks(0x14);
+                    for (i = 0; i < 5; i++) {
+                        Vec_304920 vel;
+                        Vec_304920 rnd;
+
+                        *(u128 *)rnd = 0;
+                        rnd[0] = random_float_between(-1.0f, 1.0f);
+                        rnd[1] = random_float_between(-1.0f, 1.0f);
+                        rnd[2] = random_float_between(-1.0f, 1.0f);
+                        *(u128 *)vel = *(u128 *)rnd;
+                        vec_scale_to_length(vel, vel, FastVecLength(dir) * (frame_scale * (0.65f - 1.0f) + 1.0f));
+                        FastVecAdd(vel, dir, vel);
+                        vec_scale_to_length(vel, vel, random_float_between(g_frame_time * 3.0f, g_frame_time * 6.0f));
+                        PartType27Spawn(muz, vel, 0x5F2F4F6F, rand_range(scale_ticks(5), scale_ticks(0xA)), 50000.0f);
+                    }
+                    vec_scale_to_length(dir, dir, g_frame_time * 0.5f);
+                    PartType27Spawn(muz, dir, 0x2F4F7F7F, rand_range(scale_ticks(4), scale_ticks(7)), 500000.0f);
+                }
+                if (planetbuster_death_cam_active == 0) {
+                    update_hoven_turret_camera((char *)moby);
+                }
+            }
+            break;
+        case 7:
+            AddDrawCallback(draw_hoven_turret_destruction_fade, moby);
+            if (FastDecTimer(&d->fAE)) {
+                Vec_304920 v;
+                float a;
+                float b;
+                float c;
+                float t;
+
+                a = random_float_between(hoven_turret_destruction_view_offset_distance_min,
+                                         hoven_turret_destruction_view_offset_distance_max);
+                b = FastAddRots(((Cam_304920 *)hoven_player_camera_r)->f158, randf_sym(0.0f, 0.5235988f));
+                c = FastAddRots(((Cam_304920 *)hoven_player_camera_r)->f154, randf_sym(0.0f, 0.5235988f));
+                qcopy(v, ((Cam_304920 *)hoven_player_camera_r)->f140);
+                fast_add_rotations_cf(v, v, a, b, c);
+                t = random_float_between(0.5f, 1.3f);
+                spawn_explosion(moby, hoven_zero_vec, v, 0.0f, 0.0f, 7, 0xF, 0x19, t, t * 0.57f, 10.0f, 3, 0.7f, 0.0f,
+                                0, 0, -1, 0);
+                d->fAE = scale_ticks(rand_range(5, 0xD));
+            }
+            if (FastDecTimer(&d->fAC)) {
+                Hero_OnKilled();
+            }
+            break;
+        case 5:
+            if (hoven_cinematic_mode != 2) {
+                StartCutscene(1);
+                moby->state = 8;
+            }
+            break;
+        case 8:
+            if (hoven_cinematic_mode != 2) {
+                memcard_Save_r(0, -1);
+                moby->state = 6;
+            }
+            break;
+        case 6:
+            if (moby->prev_seq != 0) {
+                MobySetAnimation(moby, 0, 0);
+            }
+            break;
     }
 }
 extern void VU1_addGSregister(int, long);
@@ -1308,13 +1334,29 @@ void draw_hoven_turret_hud(Moby *moby) {
         xy[2] = 0xFFFFF000000000L;
         xy[1] = 0xFFFFF000000000L;
         xy[0] = 0xFFFFF000000000L;
-        xy[0] += (u32)((truncate_float_to_s32_r((*(float *)&hoven_turret_gauge_center_y + *(float *)&hoven_turret_gauge_frame_half_height * sy) * 16.0f) << 16) - (int)0x80000000);
-        xy[0] += (truncate_float_to_s32_r(*(float *)&hoven_turret_gauge_center_x + *(float *)&hoven_turret_gauge_frame_half_width * sx) << 4) + 0x8000;
-        xy[1] += (u32)((truncate_float_to_s32_r(*(float *)&hoven_turret_gauge_center_y * 16.0f) << 16) - (int)0x80000000);
-        xy[1] += (truncate_float_to_s32_r(*(float *)&hoven_turret_gauge_center_x + *(float *)&hoven_turret_gauge_frame_half_width * sx) << 4) + 0x8000;
-        xy[2] += (u32)((truncate_float_to_s32_r((*(float *)&hoven_turret_gauge_center_y + *(float *)&hoven_turret_gauge_frame_half_height * sy) * 16.0f) << 16) - (int)0x80000000);
+        xy[0] += (u32)((truncate_float_to_s32_r((*(float *)&hoven_turret_gauge_center_y +
+                                                 *(float *)&hoven_turret_gauge_frame_half_height * sy) *
+                                                16.0f)
+                        << 16) -
+                       (int)0x80000000);
+        xy[0] += (truncate_float_to_s32_r(*(float *)&hoven_turret_gauge_center_x +
+                                          *(float *)&hoven_turret_gauge_frame_half_width * sx)
+                  << 4) +
+                 0x8000;
+        xy[1] +=
+            (u32)((truncate_float_to_s32_r(*(float *)&hoven_turret_gauge_center_y * 16.0f) << 16) - (int)0x80000000);
+        xy[1] += (truncate_float_to_s32_r(*(float *)&hoven_turret_gauge_center_x +
+                                          *(float *)&hoven_turret_gauge_frame_half_width * sx)
+                  << 4) +
+                 0x8000;
+        xy[2] += (u32)((truncate_float_to_s32_r((*(float *)&hoven_turret_gauge_center_y +
+                                                 *(float *)&hoven_turret_gauge_frame_half_height * sy) *
+                                                16.0f)
+                        << 16) -
+                       (int)0x80000000);
         xy[2] += (truncate_float_to_s32_r(*(float *)&hoven_turret_gauge_center_x) << 4) + 0x8000;
-        xy[3] += (u32)((truncate_float_to_s32_r(*(float *)&hoven_turret_gauge_center_y * 16.0f) << 16) - (int)0x80000000);
+        xy[3] +=
+            (u32)((truncate_float_to_s32_r(*(float *)&hoven_turret_gauge_center_y * 16.0f) << 16) - (int)0x80000000);
         xy[3] += (truncate_float_to_s32_r(*(float *)&hoven_turret_gauge_center_x) << 4) + 0x8000;
         draw_geometry_quad_5188_r(xy, uv, col, tex, 1);
     }
@@ -1354,13 +1396,17 @@ void draw_hoven_turret_hud(Moby *moby) {
         xy[2] = 0xFFFFF000000000L;
         xy[1] = 0xFFFFF000000000L;
         xy[0] = 0xFFFFF000000000L;
-        xy[0] += (u32)((truncate_float_to_s32_r((*(float *)&hoven_turret_gauge_center_y + (float)y1) * 16.0f) << 16) - (int)0x80000000);
+        xy[0] += (u32)((truncate_float_to_s32_r((*(float *)&hoven_turret_gauge_center_y + (float)y1) * 16.0f) << 16) -
+                       (int)0x80000000);
         xy[0] += (truncate_float_to_s32_r(*(float *)&hoven_turret_gauge_center_x + (float)x1) << 4) + 0x8000;
-        xy[1] += (u32)((truncate_float_to_s32_r(*(float *)&hoven_turret_gauge_center_y * 16.0f) << 16) - (int)0x80000000);
+        xy[1] +=
+            (u32)((truncate_float_to_s32_r(*(float *)&hoven_turret_gauge_center_y * 16.0f) << 16) - (int)0x80000000);
         xy[1] += (truncate_float_to_s32_r(*(float *)&hoven_turret_gauge_center_x) << 4) + 0x8000;
-        xy[2] += (u32)((truncate_float_to_s32_r((*(float *)&hoven_turret_gauge_center_y + (float)y0) * 16.0f) << 16) - (int)0x80000000);
+        xy[2] += (u32)((truncate_float_to_s32_r((*(float *)&hoven_turret_gauge_center_y + (float)y0) * 16.0f) << 16) -
+                       (int)0x80000000);
         xy[2] += (truncate_float_to_s32_r(*(float *)&hoven_turret_gauge_center_x + (float)x0) << 4) + 0x8000;
-        xy[3] += (u32)((truncate_float_to_s32_r(*(float *)&hoven_turret_gauge_center_y * 16.0f) << 16) - (int)0x80000000);
+        xy[3] +=
+            (u32)((truncate_float_to_s32_r(*(float *)&hoven_turret_gauge_center_y * 16.0f) << 16) - (int)0x80000000);
         xy[3] += (truncate_float_to_s32_r(*(float *)&hoven_turret_gauge_center_x) << 4) + 0x8000;
         draw_geometry_quad_5188_r(xy, uv, col, tex, 1);
     }
@@ -1382,16 +1428,20 @@ void draw_hoven_turret_hud(Moby *moby) {
     xy[1] = 0xFFFFF000000000L;
     xy[0] = 0xFFFFF000000000L;
     a = FastNormalizeAngle_r(FastAddRots(moby->rot.z * 4.0f, 0.0f));
-    xy[0] += (u32)((truncate_float_to_s32_r(FastSin(a) * *(float *)&hoven_turret_gauge_marker_radius_y * 16.0f) << 16) - (int)0x80000000);
+    xy[0] += (u32)((truncate_float_to_s32_r(FastSin(a) * *(float *)&hoven_turret_gauge_marker_radius_y * 16.0f) << 16) -
+                   (int)0x80000000);
     xy[0] += truncate_float_to_s32_r(FastCos(a) * *(float *)&hoven_turret_gauge_marker_radius_x * 16.0f) + 0x8000;
     a = FastNormalizeAngle_r(FastAddRots(moby->rot.z * 4.0f, 1.5707964f));
-    xy[1] += (u32)((truncate_float_to_s32_r(FastSin(a) * *(float *)&hoven_turret_gauge_marker_radius_y * 16.0f) << 16) - (int)0x80000000);
+    xy[1] += (u32)((truncate_float_to_s32_r(FastSin(a) * *(float *)&hoven_turret_gauge_marker_radius_y * 16.0f) << 16) -
+                   (int)0x80000000);
     xy[1] += truncate_float_to_s32_r(FastCos(a) * *(float *)&hoven_turret_gauge_marker_radius_x * 16.0f) + 0x8000;
     a = FastNormalizeAngle_r(FastAddRots(moby->rot.z * 4.0f, -1.5707964f));
-    xy[2] += (u32)((truncate_float_to_s32_r(FastSin(a) * *(float *)&hoven_turret_gauge_marker_radius_y * 16.0f) << 16) - (int)0x80000000);
+    xy[2] += (u32)((truncate_float_to_s32_r(FastSin(a) * *(float *)&hoven_turret_gauge_marker_radius_y * 16.0f) << 16) -
+                   (int)0x80000000);
     xy[2] += truncate_float_to_s32_r(FastCos(a) * *(float *)&hoven_turret_gauge_marker_radius_x * 16.0f) + 0x8000;
     a = FastNormalizeAngle_r(FastAddRots(moby->rot.z * 4.0f, 3.1415927f));
-    xy[3] += (u32)((truncate_float_to_s32_r(FastSin(a) * *(float *)&hoven_turret_gauge_marker_radius_y * 16.0f) << 16) - (int)0x80000000);
+    xy[3] += (u32)((truncate_float_to_s32_r(FastSin(a) * *(float *)&hoven_turret_gauge_marker_radius_y * 16.0f) << 16) -
+                   (int)0x80000000);
     xy[3] += truncate_float_to_s32_r(FastCos(a) * *(float *)&hoven_turret_gauge_marker_radius_x * 16.0f) + 0x8000;
     draw_geometry_quad_5188_r(xy, uv, col, GetEffectTex(*(int *)&hoven_turret_hud_yaw_indicator_texture_index), 1);
     xy[3] = 0xFFFFF000000000L;
@@ -1399,16 +1449,20 @@ void draw_hoven_turret_hud(Moby *moby) {
     xy[1] = 0xFFFFF000000000L;
     xy[0] = 0xFFFFF000000000L;
     a = FastNormalizeAngle_r(FastAddRots(d->f74 * 8.0f, 0.0f));
-    xy[0] += (u32)((truncate_float_to_s32_r(FastSin(a) * *(float *)&hoven_turret_gauge_marker_radius_y * 16.0f) << 16) - (int)0x80000000);
+    xy[0] += (u32)((truncate_float_to_s32_r(FastSin(a) * *(float *)&hoven_turret_gauge_marker_radius_y * 16.0f) << 16) -
+                   (int)0x80000000);
     xy[0] += truncate_float_to_s32_r(FastCos(a) * *(float *)&hoven_turret_gauge_marker_radius_x * 16.0f) + 0x8000;
     a = FastNormalizeAngle_r(FastAddRots(d->f74 * 8.0f, 1.5707964f));
-    xy[1] += (u32)((truncate_float_to_s32_r(FastSin(a) * *(float *)&hoven_turret_gauge_marker_radius_y * 16.0f) << 16) - (int)0x80000000);
+    xy[1] += (u32)((truncate_float_to_s32_r(FastSin(a) * *(float *)&hoven_turret_gauge_marker_radius_y * 16.0f) << 16) -
+                   (int)0x80000000);
     xy[1] += truncate_float_to_s32_r(FastCos(a) * *(float *)&hoven_turret_gauge_marker_radius_x * 16.0f) + 0x8000;
     a = FastNormalizeAngle_r(FastAddRots(d->f74 * 8.0f, -1.5707964f));
-    xy[2] += (u32)((truncate_float_to_s32_r(FastSin(a) * *(float *)&hoven_turret_gauge_marker_radius_y * 16.0f) << 16) - (int)0x80000000);
+    xy[2] += (u32)((truncate_float_to_s32_r(FastSin(a) * *(float *)&hoven_turret_gauge_marker_radius_y * 16.0f) << 16) -
+                   (int)0x80000000);
     xy[2] += truncate_float_to_s32_r(FastCos(a) * *(float *)&hoven_turret_gauge_marker_radius_x * 16.0f) + 0x8000;
     a = FastNormalizeAngle_r(FastAddRots(d->f74 * 8.0f, 3.1415927f));
-    xy[3] += (u32)((truncate_float_to_s32_r(FastSin(a) * *(float *)&hoven_turret_gauge_marker_radius_y * 16.0f) << 16) - (int)0x80000000);
+    xy[3] += (u32)((truncate_float_to_s32_r(FastSin(a) * *(float *)&hoven_turret_gauge_marker_radius_y * 16.0f) << 16) -
+                   (int)0x80000000);
     xy[3] += truncate_float_to_s32_r(FastCos(a) * *(float *)&hoven_turret_gauge_marker_radius_x * 16.0f) + 0x8000;
     draw_geometry_quad_5188_r(xy, uv, col, GetEffectTex(*(int *)&hoven_turret_hud_pitch_indicator_texture_index), 1);
 }
@@ -1448,7 +1502,8 @@ extern float ProbeGroundHeight(void *, int, float);
 extern int coll_sphere_mobys(void *, int, struct Moby *, void *, float);
 extern int coll_sphere(void *, int, struct Moby *, float);
 extern void Spring(float *, float *, float, float, float, float);
-extern void spawn_explosion_r(struct Moby *, void *, void *, float, float, int, int, int, float, float, float, float, int, float, int, int, int, int) __asm__("func_L00_0025F4A8");
+extern void spawn_explosion_r(struct Moby *, void *, void *, float, float, int, int, int, float, float, float, float,
+                              int, float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern void SetDeathBits(struct Moby *, int, int);
 extern void jet_animate(float, struct Moby *);
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
@@ -1467,7 +1522,7 @@ typedef struct {
     u8 pad0[0x20];
     struct Moby *moby;
 } HitSource_304e00;
-extern struct Moby * hit_moby;
+extern struct Moby *hit_moby;
 
 /* A homing mine: rises, then steers toward the point ahead and blows up near it or on contact.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l12/gameplay/vendor/003028c8.c, FUN_L12_00304e00. */
@@ -1489,85 +1544,83 @@ void update_homing_mine(struct Moby *moby) {
     FindNearestTargetMoby_r(moby, target, 8.0f);
     source = MobyGetHitMessage_r(moby, 0x230000, 0);
     ComputeHitResponse(moby, source, damage, 0, &hits, 0, 0, 4);
-    if (vec_distance_xy(&moby->pos, target) < 0.25f ||
-        (hits >= 2 && source != 0 && source->moby->oclass != 0x4F5)) {
-        spawn_explosion_r(moby, hoven_zero_vec, 0, 0.0f, 0.0f, 3, 3, 5,
-            1.0f, 0.5f, 4.0f, 0.7f, 2, 7.0f, 0, 0, -1, 0);
+    if (vec_distance_xy(&moby->pos, target) < 0.25f || (hits >= 2 && source != 0 && source->moby->oclass != 0x4F5)) {
+        spawn_explosion_r(moby, hoven_zero_vec, 0, 0.0f, 0.0f, 3, 3, 5, 1.0f, 0.5f, 4.0f, 0.7f, 2, 7.0f, 0, 0, -1, 0);
         SetDeathBits(moby, 0, -1);
         DeleteMoby_r(moby);
         return;
     }
     switch (moby->state) {
-    case 0:
-        moby->flags |= 0x1000;
-        qcopy(&data->start, &moby->pos);
-        moby->state = 1;
-        data->turn = 0.6981317f;
-        if (moby->parent != 0 && ((struct Moby *)moby->parent)->command != 0)
-            data->turn = -data->turn;
-        data->timer = 0;
-        break;
-    case 1:
-        data->timer++;
-        if (data->timer < scale_ticks(30))
-            moby->pos.z += FastSin((f32)data->timer * 3.1415927f / (f32)scale_ticks(30)) * 0.07f;
-        if (scale_ticks(15) < data->timer)
-            data->speed += (*(f32 *)&g_frame_time_sq_r) * 30.0f;
-        if (scale_ticks(30) < data->timer) {
-            if (moby->prev_seq == 0)
-                MobyBlendAnimation_r(moby, 1, 0, 2);
-            if (moby->prev_seq == 1 && (moby->anim_flags & 2))
-                MobyBlendAnimation_r(moby, 2, 0, 2);
-        }
-        if (g_frame_time * 5.75f < data->speed)
-            data->speed = g_frame_time * 5.75f;
-        angle = fast_atan2(target[0] - moby->pos.x, target[1] - moby->pos.y);
-        turn = angle;
-        if (vec_distance_xy(&moby->pos, target) < 7.0f)
-            turn = FastAddRots(angle, data->turn);
-        velocity[0] = FastCos(turn) * data->speed;
-        velocity[1] = FastSin(turn) * data->speed;
-        velocity[2] = 0.0f;
-        FastVecAdd(&moby->pos, &moby->pos, velocity);
-        if (scale_ticks(30) < data->timer) {
-            data->bob_angle = FastAddRots(data->bob_angle, g_frame_time * 5.2359877f);
-            moby->pos.z -= data->bob;
-            data->bob = FastSin(data->bob_angle) * 0.1f;
-            moby->pos.z += data->bob;
-        }
-        if (scale_ticks(30) < data->timer) {
-            height = ProbeGroundHeight(&moby->pos, 0, 0.5f);
-            if (height < g_hero.ground_z.f)
-                height = g_hero.ground_z.f;
-            difference = height - moby->pos.z;
-            if (difference < 0.5f && -3.0f < difference)
-                Spring(&moby->pos.z, &data->climb, height + 0.58f,
-                    (*(f32 *)&g_frame_scale_sq) * 0.02f, (*(f32 *)&g_frame_scale_sq) * 0.3f, g_frame_time * 4.0f);
-        }
-        if (scale_ticks(30) < data->timer) {
-            direction.f[0] = FastCos(angle) * 0.3f;
-            direction.f[1] = FastSin(angle) * 0.3f;
-            direction.f[3] = 5627.925f;
-            direction.f[2] = 1.2f;
-            InitDirectionalHitQuery(hit_info, moby, 0x10001, 1.0f, &direction);
-            qcopy(&probe, &moby->pos);
-            probe.f[2] += 0.4f;
-            if (!coll_sphere_mobys(&probe, 0x10, moby, hit_info, 0.4f) || hit_moby == 0 ||
-                hit_moby->oclass == 0x4F5 || hit_moby == moby->parent) {
-                qcopy(&probe, &moby->pos);
-                probe.f[2] += 0.35f;
-                if (coll_sphere(&probe, 0, moby, 0.35f))
-                    moby->state = 2;
-            } else {
-                moby->state = 2;
+        case 0:
+            moby->flags |= 0x1000;
+            qcopy(&data->start, &moby->pos);
+            moby->state = 1;
+            data->turn = 0.6981317f;
+            if (moby->parent != 0 && ((struct Moby *)moby->parent)->command != 0)
+                data->turn = -data->turn;
+            data->timer = 0;
+            break;
+        case 1:
+            data->timer++;
+            if (data->timer < scale_ticks(30))
+                moby->pos.z += FastSin((f32)data->timer * 3.1415927f / (f32)scale_ticks(30)) * 0.07f;
+            if (scale_ticks(15) < data->timer)
+                data->speed += (*(f32 *)&g_frame_time_sq_r) * 30.0f;
+            if (scale_ticks(30) < data->timer) {
+                if (moby->prev_seq == 0)
+                    MobyBlendAnimation_r(moby, 1, 0, 2);
+                if (moby->prev_seq == 1 && (moby->anim_flags & 2))
+                    MobyBlendAnimation_r(moby, 2, 0, 2);
             }
-        }
-        break;
-    case 2:
-        spawn_explosion_r(moby, hoven_zero_vec, 0, 0.0f, 0.0f, 5, 15, 25,
-            2.0f, 1.0f, 4.0f, 1.0f, 2, 7.0f, 0, 9, -1, 0);
-        DeleteMoby_r(moby);
-        return;
+            if (g_frame_time * 5.75f < data->speed)
+                data->speed = g_frame_time * 5.75f;
+            angle = fast_atan2(target[0] - moby->pos.x, target[1] - moby->pos.y);
+            turn = angle;
+            if (vec_distance_xy(&moby->pos, target) < 7.0f)
+                turn = FastAddRots(angle, data->turn);
+            velocity[0] = FastCos(turn) * data->speed;
+            velocity[1] = FastSin(turn) * data->speed;
+            velocity[2] = 0.0f;
+            FastVecAdd(&moby->pos, &moby->pos, velocity);
+            if (scale_ticks(30) < data->timer) {
+                data->bob_angle = FastAddRots(data->bob_angle, g_frame_time * 5.2359877f);
+                moby->pos.z -= data->bob;
+                data->bob = FastSin(data->bob_angle) * 0.1f;
+                moby->pos.z += data->bob;
+            }
+            if (scale_ticks(30) < data->timer) {
+                height = ProbeGroundHeight(&moby->pos, 0, 0.5f);
+                if (height < g_hero.ground_z.f)
+                    height = g_hero.ground_z.f;
+                difference = height - moby->pos.z;
+                if (difference < 0.5f && -3.0f < difference)
+                    Spring(&moby->pos.z, &data->climb, height + 0.58f, (*(f32 *)&g_frame_scale_sq) * 0.02f,
+                           (*(f32 *)&g_frame_scale_sq) * 0.3f, g_frame_time * 4.0f);
+            }
+            if (scale_ticks(30) < data->timer) {
+                direction.f[0] = FastCos(angle) * 0.3f;
+                direction.f[1] = FastSin(angle) * 0.3f;
+                direction.f[3] = 5627.925f;
+                direction.f[2] = 1.2f;
+                InitDirectionalHitQuery(hit_info, moby, 0x10001, 1.0f, &direction);
+                qcopy(&probe, &moby->pos);
+                probe.f[2] += 0.4f;
+                if (!coll_sphere_mobys(&probe, 0x10, moby, hit_info, 0.4f) || hit_moby == 0 ||
+                    hit_moby->oclass == 0x4F5 || hit_moby == moby->parent) {
+                    qcopy(&probe, &moby->pos);
+                    probe.f[2] += 0.35f;
+                    if (coll_sphere(&probe, 0, moby, 0.35f))
+                        moby->state = 2;
+                } else {
+                    moby->state = 2;
+                }
+            }
+            break;
+        case 2:
+            spawn_explosion_r(moby, hoven_zero_vec, 0, 0.0f, 0.0f, 5, 15, 25, 2.0f, 1.0f, 4.0f, 1.0f, 2, 7.0f, 0, 9, -1,
+                              0);
+            DeleteMoby_r(moby);
+            return;
     }
     jet_animate(1.0f, moby);
 }
@@ -1634,238 +1687,241 @@ void update_planetbuster_maximus_guns(char *moby) {
         float s;
 
         if (*(int *)(d - -(i * 4) + 0x5D0) != -1) {
-        idx = *(int *)(d - -(i * 4) + 0x5D0);
-        ent = d + idx * 0x30;
-        m = (char *)(hoven_mobys_m + (*(int *)(ent + 0x20) << 8));
-        md = ((Gun_306890 *)((Moby *)m)->pvars);
-        qcopy(v0, hoven_camera_pos_r);
-        pv1 = v1;
-        v0[2] -= 0.7f;
-        qcopy_nc(pv1, m + 0x10);
-        v1[2] += 1.5f;
-        md->f60 = fast_atan2(vec_distance_xy(v1, v0), v0[2] - v1[2]);
-        EaseManipulatorOffsets(m, (char *)md, 0, g_frame_scale_sq_f * 0.008f, g_frame_scale_sq_f * 0.3f);
-        yaw = FastSubRots(FastAddRots(fast_atan2(((Hero *)(hero_globals_base_e + 0xE1D))->motion.pos.f[0] - ((Moby *)m)->pos.x,
-                                                            ((Hero *)(hero_globals_base_e + 0xE1D))->motion.pos.f[1] - ((Moby *)m)->pos.y),
-                                          -1.5707964f),
-                            ((Moby *)moby)->rot.z);
-        if (md->h90 == 0) {
-            if (step_angle_toward_target((float *)(ent + 0x18), yaw, 0,
-                                  g_frame_time * 0.5235988f + g_frame_time * 0.17453292f * (float)i) < 0.08726646f) {
-                md->h90 = 1;
-                md->f8C = 1.0f;
-                if (i & 1) {
-                    md->f8C = -1.0f;
-                }
-            }
-        } else {
-            float a = FastAddRots(yaw, md->f8C * 0.55850536f);
-            if (FastAbsF_r(SpringAngle(ent + 0x18, a, (char *)md + 0x94, 0, g_frame_scale_sq_f * 0.022f, g_frame_scale_sq_f * 0.3f,
-                                                g_frame_time * 0.2617994f + (float)i * (g_frame_time * 0.05235988f)))
-                < 0.017453292f) {
-                md->f8C = -md->f8C;
-            }
-        }
-        flag = 0;
-        hp = (float *)(hero_globals_base_e + 0xE1D + 0x80);
-        dist = vec_distance_xy(moby + 0x10, hp);
-        dz = FastAbsF_r(hp[2] - ((Moby *)moby)->pos.z);
-        if (scale_ticks(0x4B0) < planetbuster_aggro_timer) {
-            if (dist < 80.0f && dz < 4.0f) {
-                flag = 1;
-            }
-        }
-        if (dist > 90.0f || dz > 7.0f) {
-            planetbuster_aggro_timer = 0;
-        }
-        if ((hoven_turret_manned_m != 0 || flag) && md->f80 > 0.0f) {
-            FastDecTimer(&md->h98);
-            FastDecTimer(&md->h9C);
-            if (md->h98 == 0) {
-                if (FastDiffRots(*(float *)(d + idx * 0x30 + 0x18), yaw) < 0.06981317f) {
-                    md->h9E = scale_ticks(0x14);
-                }
-                if (FastDecTimer(&md->h9E) == 0) {
-                    if (fast_subtract_rotations_cf(&md->b92) == 0) {
-                        if (fast_subtract_rotations_cf(&md->b93) != 0) {
-                            Moby_PlaySound_r(0, 0, m);
-                            md->b93 = scale_ticks(9);
-                        }
+            idx = *(int *)(d - -(i * 4) + 0x5D0);
+            ent = d + idx * 0x30;
+            m = (char *)(hoven_mobys_m + (*(int *)(ent + 0x20) << 8));
+            md = ((Gun_306890 *)((Moby *)m)->pvars);
+            qcopy(v0, hoven_camera_pos_r);
+            pv1 = v1;
+            v0[2] -= 0.7f;
+            qcopy_nc(pv1, m + 0x10);
+            v1[2] += 1.5f;
+            md->f60 = fast_atan2(vec_distance_xy(v1, v0), v0[2] - v1[2]);
+            EaseManipulatorOffsets(m, (char *)md, 0, g_frame_scale_sq_f * 0.008f, g_frame_scale_sq_f * 0.3f);
+            yaw = FastSubRots(
+                FastAddRots(fast_atan2(((Hero *)(hero_globals_base_e + 0xE1D))->motion.pos.f[0] - ((Moby *)m)->pos.x,
+                                       ((Hero *)(hero_globals_base_e + 0xE1D))->motion.pos.f[1] - ((Moby *)m)->pos.y),
+                            -1.5707964f),
+                ((Moby *)moby)->rot.z);
+            if (md->h90 == 0) {
+                if (step_angle_toward_target((float *)(ent + 0x18), yaw, 0,
+                                             g_frame_time * 0.5235988f + g_frame_time * 0.17453292f * (float)i) <
+                    0.08726646f) {
+                    md->h90 = 1;
+                    md->f8C = 1.0f;
+                    if (i & 1) {
+                        md->f8C = -1.0f;
                     }
-                    if (FastDecTimer(&md->h9C) != 0) {
-                        float rz;
-                        float pitch;
-                        int n;
-                        Moby_GetJointWorldPos(m, md->h9A + 1, v0);
-                        md->h9A = md->h9A == 0;
-                        rz = FastAddRots(((Moby *)m)->rot.z, 1.5707964f);
-                        if (hoven_turret_manned_m != 0) {
-                            qcopy(v2, hoven_camera_pos_r);
-                            v2[2] += random_float_between(-1.5f, 0.3f);
-                        } else {
-                            qcopy(v2, &((Hero *)(hero_globals_base_e + 0xE1D))->motion.body_center);
-                            v2[2] += randf_sym(0.0f, 0.5f);
-                        }
-                        n = D_L12_00161FA0_s - 3;
-                        if (scale_ticks(5) < n) {
-                            n = scale_ticks(5);
-                        }
-                        if (n < 0) {
-                            n = 0;
-                        }
-                        v2[2] += random_float_between((float)n * -0.3f, (float)n * 0.3f);
-                        pitch = fast_atan2(vec_distance_xy(v0, v2), v2[2] - v0[2]);
-                        BuildSphericalOffset(v1, g_frame_time * 80.0f, rz, pitch);
-                        if (spawn_class_b8_projectile(m, v0, v1, scale_ticks(0x96)) != 0) {
-                            int j;
-                            md->b92 = scale_ticks(0x14);
-                            for (j = 0; j < 9; j++) {
-                                int c0;
-                                int c1;
-                                int life;
-                                v3[0] = randf_sym(0.0f, g_frame_time * 1.7f);
-                                v3[1] = randf_sym(0.0f, g_frame_time * 1.7f);
-                                v3[2] = randf_sym(0.0f, g_frame_time * 1.7f);
-                                c0 = rand_range(0xAA, 0xF0);
-                                c1 = rand_range(0x6E, 0xC8);
-                                c1 = 0x7F000000 | (c1 << 8) | c0;
-                                life = scale_ticks(rand_range(0xF, 0x1E));
-                                PartType04Spawn(v0, v3, c1, 0xFF, life, 0x37, rand_range(0xB4, 0x10E), 1);
+                }
+            } else {
+                float a = FastAddRots(yaw, md->f8C * 0.55850536f);
+                if (FastAbsF_r(SpringAngle(
+                        ent + 0x18, a, (char *)md + 0x94, 0, g_frame_scale_sq_f * 0.022f, g_frame_scale_sq_f * 0.3f,
+                        g_frame_time * 0.2617994f + (float)i * (g_frame_time * 0.05235988f))) < 0.017453292f) {
+                    md->f8C = -md->f8C;
+                }
+            }
+            flag = 0;
+            hp = (float *)(hero_globals_base_e + 0xE1D + 0x80);
+            dist = vec_distance_xy(moby + 0x10, hp);
+            dz = FastAbsF_r(hp[2] - ((Moby *)moby)->pos.z);
+            if (scale_ticks(0x4B0) < planetbuster_aggro_timer) {
+                if (dist < 80.0f && dz < 4.0f) {
+                    flag = 1;
+                }
+            }
+            if (dist > 90.0f || dz > 7.0f) {
+                planetbuster_aggro_timer = 0;
+            }
+            if ((hoven_turret_manned_m != 0 || flag) && md->f80 > 0.0f) {
+                FastDecTimer(&md->h98);
+                FastDecTimer(&md->h9C);
+                if (md->h98 == 0) {
+                    if (FastDiffRots(*(float *)(d + idx * 0x30 + 0x18), yaw) < 0.06981317f) {
+                        md->h9E = scale_ticks(0x14);
+                    }
+                    if (FastDecTimer(&md->h9E) == 0) {
+                        if (fast_subtract_rotations_cf(&md->b92) == 0) {
+                            if (fast_subtract_rotations_cf(&md->b93) != 0) {
+                                Moby_PlaySound_r(0, 0, m);
+                                md->b93 = scale_ticks(9);
                             }
                         }
-                        md->h9C = scale_ticks(7);
-                        n = D_L12_00161FA0_s;
-                        if (scale_ticks(0xB) < n) {
-                            n = scale_ticks(0xB);
+                        if (FastDecTimer(&md->h9C) != 0) {
+                            float rz;
+                            float pitch;
+                            int n;
+                            Moby_GetJointWorldPos(m, md->h9A + 1, v0);
+                            md->h9A = md->h9A == 0;
+                            rz = FastAddRots(((Moby *)m)->rot.z, 1.5707964f);
+                            if (hoven_turret_manned_m != 0) {
+                                qcopy(v2, hoven_camera_pos_r);
+                                v2[2] += random_float_between(-1.5f, 0.3f);
+                            } else {
+                                qcopy(v2, &((Hero *)(hero_globals_base_e + 0xE1D))->motion.body_center);
+                                v2[2] += randf_sym(0.0f, 0.5f);
+                            }
+                            n = D_L12_00161FA0_s - 3;
+                            if (scale_ticks(5) < n) {
+                                n = scale_ticks(5);
+                            }
+                            if (n < 0) {
+                                n = 0;
+                            }
+                            v2[2] += random_float_between((float)n * -0.3f, (float)n * 0.3f);
+                            pitch = fast_atan2(vec_distance_xy(v0, v2), v2[2] - v0[2]);
+                            BuildSphericalOffset(v1, g_frame_time * 80.0f, rz, pitch);
+                            if (spawn_class_b8_projectile(m, v0, v1, scale_ticks(0x96)) != 0) {
+                                int j;
+                                md->b92 = scale_ticks(0x14);
+                                for (j = 0; j < 9; j++) {
+                                    int c0;
+                                    int c1;
+                                    int life;
+                                    v3[0] = randf_sym(0.0f, g_frame_time * 1.7f);
+                                    v3[1] = randf_sym(0.0f, g_frame_time * 1.7f);
+                                    v3[2] = randf_sym(0.0f, g_frame_time * 1.7f);
+                                    c0 = rand_range(0xAA, 0xF0);
+                                    c1 = rand_range(0x6E, 0xC8);
+                                    c1 = 0x7F000000 | (c1 << 8) | c0;
+                                    life = scale_ticks(rand_range(0xF, 0x1E));
+                                    PartType04Spawn(v0, v3, c1, 0xFF, life, 0x37, rand_range(0xB4, 0x10E), 1);
+                                }
+                            }
+                            md->h9C = scale_ticks(7);
+                            n = D_L12_00161FA0_s;
+                            if (scale_ticks(0xB) < n) {
+                                n = scale_ticks(0xB);
+                            }
+                            if (n < 0) {
+                                n = 0;
+                            }
+                            md->h9C += n;
                         }
-                        if (n < 0) {
-                            n = 0;
-                        }
-                        md->h9C += n;
                     }
                 }
             }
-        }
-        if (hoven_turret_destroyed_m == 0 && md->f80 > 0.0f) {
-            if (fast_dec_timer_r2(&md->w84) != 0) {
-                float dmg = 1.0f;
-                char *r = MobyGetHitMessage(m, 0x50000, 0);
-                if (r == 0) {
-                    int k = planetbuster_gun_part_index[i];
-                    char *t = 0;
-                    if (k == 0x11) {
-                        t = moby;
-                    } else {
-                        int id = *(int *)(d + k * 0x30 + 0x20);
-                        if (id != -1) {
-                            t = (char *)(hoven_mobys_m + (id << 8));
+            if (hoven_turret_destroyed_m == 0 && md->f80 > 0.0f) {
+                if (fast_dec_timer_r2(&md->w84) != 0) {
+                    float dmg = 1.0f;
+                    char *r = MobyGetHitMessage(m, 0x50000, 0);
+                    if (r == 0) {
+                        int k = planetbuster_gun_part_index[i];
+                        char *t = 0;
+                        if (k == 0x11) {
+                            t = moby;
+                        } else {
+                            int id = *(int *)(d + k * 0x30 + 0x20);
+                            if (id != -1) {
+                                t = (char *)(hoven_mobys_m + (id << 8));
+                            }
+                        }
+                        if (t != 0) {
+                            dmg = 0.2f;
+                            r = MobyGetHitMessage(t, 0x50000, 0);
+                            ((unsigned char *)t)[0xA4] = 0xFF;
+                        }
+                        if (r == 0) {
+                            goto done;
                         }
                     }
-                    if (t != 0) {
-                        dmg = 0.2f;
-                        r = MobyGetHitMessage(t, 0x50000, 0);
-                        ((unsigned char *)t)[0xA4] = 0xFF;
-                    }
-                    if (r == 0) {
+                    if (hoven_turret_manned_m == 0) {
+                        planetbuster_aggro_timer = scale_ticks(0xFA0);
                         goto done;
                     }
-                }
-                if (hoven_turret_manned_m == 0) {
-                    planetbuster_aggro_timer = scale_ticks(0xFA0);
-                    goto done;
-                }
-                md->w84 = scale_ticks(0x14);
-                md->f80 -= dmg;
-                if (md->f80 <= 0.0f) {
-                    int j;
-                    int k;
-                    *(short *)(d + 0x5FC) -= 0x14;
-                    if (*(short *)(d + 0x5FC) < 0) {
-                        *(short *)(d + 0x5FC) = 0;
-                    }
-                    Moby_PlaySound_r(1, 0, m);
-                    if (*(short *)(d + 0x5FC) > 0) {
-                        int k = planetbuster_gun_part_index[i];
-                        if (k != 0x11) {
-                            planetbuster_detached_part_ids[k] = *(int *)(d + k * 0x30 + 0x20);
-                            *(int *)(d + k * 0x30 + 0x20) = -1;
-                        } else {
-                            planetbuster_detached_part_ids[0x11] = 1;
+                    md->w84 = scale_ticks(0x14);
+                    md->f80 -= dmg;
+                    if (md->f80 <= 0.0f) {
+                        int j;
+                        int k;
+                        *(short *)(d + 0x5FC) -= 0x14;
+                        if (*(short *)(d + 0x5FC) < 0) {
+                            *(short *)(d + 0x5FC) = 0;
                         }
-                        initialize_planetbuster_maximus_detached_part_motion((struct Moby *)moby, k);
-                        if (i == 4) {
-                            for (j = 0; j < 0x11; j++) {
-                                int id = *(int *)(d + j * 0x30 + 0x20);
-                                if (id != -1 && *(short *)((id << 8) + hoven_mobys_m + 0xA6) == 0x4FD) {
-                                    planetbuster_detached_part_ids[j] = id;
-                                    *(int *)(d + j * 0x30 + 0x20) = -1;
-                                    initialize_planetbuster_maximus_detached_part_motion((struct Moby *)moby, j);
+                        Moby_PlaySound_r(1, 0, m);
+                        if (*(short *)(d + 0x5FC) > 0) {
+                            int k = planetbuster_gun_part_index[i];
+                            if (k != 0x11) {
+                                planetbuster_detached_part_ids[k] = *(int *)(d + k * 0x30 + 0x20);
+                                *(int *)(d + k * 0x30 + 0x20) = -1;
+                            } else {
+                                planetbuster_detached_part_ids[0x11] = 1;
+                            }
+                            initialize_planetbuster_maximus_detached_part_motion((struct Moby *)moby, k);
+                            if (i == 4) {
+                                for (j = 0; j < 0x11; j++) {
+                                    int id = *(int *)(d + j * 0x30 + 0x20);
+                                    if (id != -1 && *(short *)((id << 8) + hoven_mobys_m + 0xA6) == 0x4FD) {
+                                        planetbuster_detached_part_ids[j] = id;
+                                        *(int *)(d + j * 0x30 + 0x20) = -1;
+                                        initialize_planetbuster_maximus_detached_part_motion((struct Moby *)moby, j);
+                                    }
                                 }
                             }
                         }
+                        for (k = 0; k < 0x82; k++) {
+                            int c;
+                            qcopy(v0, m + 0x10);
+                            v0[2] += random_float_between(0.1f, 0.5f);
+                            ang = random_angle_radians_r();
+                            s = random_float_between(0.1f, 0.8f);
+                            v0[0] += FastCos(ang) * s;
+                            v0[1] += FastSin(ang) * s;
+                            c = rand_range(scale_ticks(0x5A), scale_ticks(0xB4));
+                            s = random_float_between(g_frame_time * 0.7f, g_frame_time * 1.5f);
+                            v1[0] = FastCos(ang) * s;
+                            v1[1] = FastSin(ang) * s;
+                            v1[2] = 0.0f;
+                            v1[2] = random_float_between(g_frame_time, g_frame_time * 5.5f);
+                            spawn_effect_particle_with_target_scalar(v0, v1, 0x500A1414, 0xA0A0A, 420000.0f, c);
+                        }
+                        *(int *)&((Moby *)m)->collision = 0;
+                        ((Moby *)m)->flags |= 0x41;
                     }
-                    for (k = 0; k < 0x82; k++) {
-                        int c;
-                        qcopy(v0, m + 0x10);
-                        v0[2] += random_float_between(0.1f, 0.5f);
-                        ang = random_angle_radians_r();
-                        s = random_float_between(0.1f, 0.8f);
-                        v0[0] += FastCos(ang) * s;
-                        v0[1] += FastSin(ang) * s;
-                        c = rand_range(scale_ticks(0x5A), scale_ticks(0xB4));
-                        s = random_float_between(g_frame_time * 0.7f, g_frame_time * 1.5f);
-                        v1[0] = FastCos(ang) * s;
-                        v1[1] = FastSin(ang) * s;
-                        v1[2] = 0.0f;
-                        v1[2] = random_float_between(g_frame_time, g_frame_time * 5.5f);
-                        spawn_effect_particle_with_target_scalar(v0, v1, 0x500A1414, 0xA0A0A, 420000.0f, c);
-                    }
-                    *(int *)&((Moby *)m)->collision = 0;
-                    ((Moby *)m)->flags |= 0x41;
+                }
+            done:
+                ((unsigned char *)m)[0xA4] = 0xFF;
+            } else {
+                ((unsigned char *)m)[0xA4] = 0xFF;
+            }
+            if (md->f80 > 0.0f && md->f80 < 10.0f) {
+                int lvl = (9 - truncate_float_to_s32_r(md->f80)) / 2;
+                int j;
+                int n = lvl + 3;
+                for (j = 0; j < n; j++) {
+                    int c;
+                    qcopy(v0, m + 0x10);
+                    v0[2] += 0.7f;
+                    ang = random_angle_radians_r();
+                    s = random_float_between(0.1f, 0.4f);
+                    v0[0] += FastCos(ang) * s;
+                    v0[1] += FastSin(ang) * s;
+                    c = rand_range(scale_ticks(0x19), scale_ticks(0x37));
+                    s = random_float_between(g_frame_time * 0.5f, g_frame_time * 3.0f);
+                    v1[0] = FastCos(ang) * s;
+                    v1[1] = FastSin(ang) * s;
+                    v1[2] = 0.0f;
+                    v1[2] = random_float_between(g_frame_time * 7.0f, g_frame_time * 17.0f) * IntToFloat_r3(lvl) *
+                            1.5f / IntToFloat_r3(5);
+                    spawn_effect_particle_with_target_scalar(v0, v1, (rand_range(0x46, 0xCD) << 8) | 0x460A00AA,
+                                                             0xA0A46, 420000.0f, c);
+                }
+                for (j = 0; j < 3; j++) {
+                    int c;
+                    qcopy(v0, m + 0x10);
+                    ang = random_angle_radians_r();
+                    s = random_float_between(0.1f, 0.8f);
+                    v0[0] += FastCos(ang) * s;
+                    v0[1] += FastSin(ang) * s;
+                    c = rand_range(scale_ticks(0x28), scale_ticks(0x46));
+                    s = random_float_between(g_frame_time * 0.1f, g_frame_time * 0.4f);
+                    v1[0] = FastCos(ang) * s;
+                    v1[1] = FastSin(ang) * s;
+                    v1[2] = 0.0f;
+                    v1[2] = random_float_between(g_frame_time * 2.4f, g_frame_time * 5.5f);
+                    spawn_effect_particle_with_target_scalar(v0, v1, 0x460A1414, 0xA0A0A, 504000.03f, c);
                 }
             }
-        done:
-            ((unsigned char *)m)[0xA4] = 0xFF;
-        } else {
-            ((unsigned char *)m)[0xA4] = 0xFF;
-        }
-        if (md->f80 > 0.0f && md->f80 < 10.0f) {
-            int lvl = (9 - truncate_float_to_s32_r(md->f80)) / 2;
-            int j;
-            int n = lvl + 3;
-            for (j = 0; j < n; j++) {
-                int c;
-                qcopy(v0, m + 0x10);
-                v0[2] += 0.7f;
-                ang = random_angle_radians_r();
-                s = random_float_between(0.1f, 0.4f);
-                v0[0] += FastCos(ang) * s;
-                v0[1] += FastSin(ang) * s;
-                c = rand_range(scale_ticks(0x19), scale_ticks(0x37));
-                s = random_float_between(g_frame_time * 0.5f, g_frame_time * 3.0f);
-                v1[0] = FastCos(ang) * s;
-                v1[1] = FastSin(ang) * s;
-                v1[2] = 0.0f;
-                v1[2] = random_float_between(g_frame_time * 7.0f, g_frame_time * 17.0f) * IntToFloat_r3(lvl) * 1.5f
-                        / IntToFloat_r3(5);
-                spawn_effect_particle_with_target_scalar(v0, v1, (rand_range(0x46, 0xCD) << 8) | 0x460A00AA, 0xA0A46, 420000.0f, c);
-            }
-            for (j = 0; j < 3; j++) {
-                int c;
-                qcopy(v0, m + 0x10);
-                ang = random_angle_radians_r();
-                s = random_float_between(0.1f, 0.8f);
-                v0[0] += FastCos(ang) * s;
-                v0[1] += FastSin(ang) * s;
-                c = rand_range(scale_ticks(0x28), scale_ticks(0x46));
-                s = random_float_between(g_frame_time * 0.1f, g_frame_time * 0.4f);
-                v1[0] = FastCos(ang) * s;
-                v1[1] = FastSin(ang) * s;
-                v1[2] = 0.0f;
-                v1[2] = random_float_between(g_frame_time * 2.4f, g_frame_time * 5.5f);
-                spawn_effect_particle_with_target_scalar(v0, v1, 0x460A1414, 0xA0A0A, 504000.03f, c);
-            }
-        }
         }
     }
     update_planetbuster_maximus_detached_parts(moby);
@@ -1877,7 +1933,7 @@ void update_planetbuster_maximus_guns(char *moby) {
 }
 extern f32 g_frame_time MACRO_ADDR;
 extern f32 g_frame_time_sq MACRO_ADDR;
-extern char * hoven_mobys_r3 __asm__("D_L12_00160058") MACRO_ADDR;
+extern char *hoven_mobys_r3 __asm__("D_L12_00160058") MACRO_ADDR;
 extern int planetbuster_detached_part_ids[];
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l12/gameplay/vendor/003028c8.c, FUN_L12_00306350. */
@@ -1983,7 +2039,8 @@ void update_planetbuster_maximus_detached_parts(char *moby) {
             SpringAngle(&obj->rot.y, 1.5707964f, data + 0x454 + i * 16, 0, 0.00200000009f, 0.3f, 0.0f);
         } else if (obj->oclass == 0x4FD) {
             obj->rot.x = FastAddRots(obj->rot.x, *(float *)(data + 0x450 + i * 16));
-            SpringAngle(&obj->rot.y, -1.5707964f, (float *)(data + 0x450 + i * 16) + 1, 0, *(float *)(data + 0x45C + i * 16), 0.3f, 0.0f);
+            SpringAngle(&obj->rot.y, -1.5707964f, (float *)(data + 0x450 + i * 16) + 1, 0,
+                        *(float *)(data + 0x45C + i * 16), 0.3f, 0.0f);
         } else if (obj->oclass == 0x4FA) {
             float t;
             obj->rot.x = FastAddRots(obj->rot.x, g_frame_time * -0.87266463f);
@@ -2028,7 +2085,8 @@ void update_planetbuster_maximus_glow_color(char *moby) {
         } else {
             other = (struct Moby *)((char *)hoven_mobys_r + ((unsigned int)*(int *)(data + i * 0x30 + 0x20) << 8));
         }
-        if (other->oclass == 0x4FE) continue;
+        if (other->oclass == 0x4FE)
+            continue;
         {
             period = scale_ticks(0xAA);
             divisor = IntToFloat(period);
@@ -2038,18 +2096,30 @@ void update_planetbuster_maximus_glow_color(char *moby) {
             red = truncate_float_to_s32(color);
             green = truncate_float_to_s32(color);
             blue = truncate_float_to_s32(sine * 10.0f);
-            packed_color = ((blue + 0x46) << 16) | alpha |
-                ((green + 0xB4 > 0xFF ? 0xFF : green + 0xB4) << 8) |
-                (red + 0xB4 > 0xFF ? 0xFF : red + 0xB4);
+            packed_color = ((blue + 0x46) << 16) | alpha | ((green + 0xB4 > 0xFF ? 0xFF : green + 0xB4) << 8) |
+                           (red + 0xB4 > 0xFF ? 0xFF : red + 0xB4);
             other->flags |= 0x10;
             other->glow_color = packed_color;
         }
     }
 }
-typedef struct { float v[4]; } P_7DB0;
-typedef struct { char pad[0x80]; float f80; } F80_7DB0;
-typedef struct { char pad[0x34]; unsigned short flags; } M34_7DB0;
-typedef struct { unsigned char pad0[0x74]; unsigned char active; unsigned char pad75[0x13]; char *owner; } Voice_7DB0;
+typedef struct {
+    float v[4];
+} P_7DB0;
+typedef struct {
+    char pad[0x80];
+    float f80;
+} F80_7DB0;
+typedef struct {
+    char pad[0x34];
+    unsigned short flags;
+} M34_7DB0;
+typedef struct {
+    unsigned char pad0[0x74];
+    unsigned char active;
+    unsigned char pad75[0x13];
+    char *owner;
+} Voice_7DB0;
 extern P_7DB0 *hoven_paths_r2[] __asm__("D_L12_001B0C30");
 extern unsigned char saved_mission_state_r[][16] __asm__("D_0014C150");
 extern int planetbuster_engaged MACRO_ADDR;
@@ -2078,212 +2148,244 @@ void planetbuster_maximus_part_update(char *moby) {
         qcopy(moby + 0x40, (char *)&planetbuster_path_rot);
     }
     switch ((unsigned char)moby[0x20]) {
-    case 0:
-        planetbuster_engaged = 0;
-        if (saved_mission_state_r[g_current_level_index_e][(unsigned char)moby[0xB0]] == 0xFF) {
-            int i;
-            for (i = 0; i < 17; i++) {
-                int s = *(int *)(((char *)d) + i * 0x30 + 0x20);
-                if (s != -1) DeleteMoby((char *)hoven_mobys_m + (s << 8));
-            }
-            DeleteMoby(moby);
-            return;
-        } else {
-            P_7DB0 *path;
-            int i;
-            int j;
-            planetbuster_defeated = 0;
-            capture_linked_moby_relative_transforms(moby, ((char *)d), 0x11);
-            path = hoven_paths_r2[d->path_id];
-            qcopy(moby + 0x10, path + 1);
-            d->base_z = ((Moby *)moby)->pos.z;
-            ((Moby *)moby)->rot.z = fast_atan2(path[2].v[0] - path[1].v[0], path[2].v[1] - path[1].v[1]);
-            if (((struct Hero *)((char *)&hero_globals_base_e + 0xE1D))->motion.pos.f[2] < 52.0f) {
-                ((Moby *)moby)->pos.z = ((Moby *)moby)->pos.z + 3.0f;
-            }
-            for (i = 0; i < 5; i++) {
-                int k = *(int *)(((char *)d) + 0x5D0 + i * 4);
-                char *o = (char *)hoven_mobys_m + (*(int *)(((char *)d) + k * 0x30 + 0x20) << 8);
-                (((F80_7DB0 *)((Moby *)o)->pvars))->f80 = 10.0f;
-            }
-            planetbuster_fall_pos = -1.0f;
-            for (j = 17; j >= 0; j--) planetbuster_detached_part_ids[j] = 0;
-            d->voice = -1;
-            d->unk_5FC = 100;
-            moby[0x20] = 1;
-        }
-        break;
-    case 1: {
-        char *h;
-        int r;
-        if (is_point_inside_clip_volume(hoven_camera_pos, d->clip_camera)) {
-            int i;
-            char *base = (char *)hoven_mobys_m;
-            ((Moby *)moby)->flags |= 0x41;
-            for (i = 0; i < 17; i++) {
-                int s = *(int *)(((char *)d) + i * 0x30 + 0x20);
-                if (s != -1) ((M34_7DB0 *)(base + (s << 8)))->flags |= 0x41;
-            }
-        } else {
-            int i;
-            char *base = (char *)hoven_mobys_m;
-            ((Moby *)moby)->flags &= ~0x41;
-            for (i = 0; i < 17; i++) {
-                int s = *(int *)(((char *)d) + i * 0x30 + 0x20);
-                if (s != -1) ((M34_7DB0 *)(base + (s << 8)))->flags &= ~0x41;
-            }
-        }
-        h =&((struct Hero *)((char *)&hero_globals_base_e + 0xE1D))->motion.pos;
-        r = is_point_inside_clip_volume(h, d->clip_hero_b);
-        if (*(float *)(h + 8) > 52.0f && r == 0) {
-            ApproachValue((float *)(moby + 0x18), d->base_z, g_frame_time + g_frame_time);
-        } else {
-            float add = 3.0f;
-            if (r) add = 10.0f;
-            if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base_e + 0xE1D))->motion.pos, d->clip_hero_a)) {
-                d->timer = scale_ticks(0x5A);
-            }
-            if (!fast_dec_timer(&d->timer)) add = 19.0f;
-            Spring((float *)(moby + 0x18), &d->spring_vel, d->base_z + add,
-                              g_frame_scale_sq * 0.03f, g_frame_scale_sq * 0.3f, g_frame_time * 2.7f);
-        }
-        update_moby_vertical_oscillation(0.7f, g_frame_time * 1.2217305f, moby, &d->bob_amount, &d->bob_phase);
-        update_moby_rotation_oscillation(moby, (char *)&d->sway_a, (char *)&d->sway_b, *(float *)&planetbuster_sway_amplitude,
-                          *(float *)&planetbuster_maximus_rotation_oscillation_common_factor_phase_rate_degrees * 0.017453292f * g_frame_time,
-                          *(float *)&planetbuster_maximus_rotation_oscillation_component_mix_phase_rate_degrees * 0.017453292f * g_frame_time);
-        apply_linked_moby_relative_transforms(moby, ((char *)d), 0x11);
-        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base_e + 0xE1D))->motion.pos, d->clip_manned) || hoven_turret_manned_m) {
-            int i;
-            planetbuster_engaged = 1;
-            for (i = 0; i < 5; i++) {
-                int k = *(int *)(((char *)d) + 0x5D0 + i * 4);
-                ((unsigned char *)hoven_mobys_m + (*(int *)(((char *)d) + k * 0x30 + 0x20) << 8))[0xA4] = 0xFF;
-            }
-            moby[0x20] = 2;
-        }
-        break;
-    }
-    case 2: {
-        P_7DB0 *path;
-        int nx;
-        float f;
-        update_moby_vertical_oscillation(0.7f, g_frame_time * 1.2217305f, moby, &d->bob_amount, &d->bob_phase);
-        update_moby_rotation_oscillation(moby, (char *)&d->sway_a, (char *)&d->sway_b, *(float *)&planetbuster_sway_amplitude,
-                          *(float *)&planetbuster_maximus_rotation_oscillation_common_factor_phase_rate_degrees * 0.017453292f * g_frame_time,
-                          *(float *)&planetbuster_maximus_rotation_oscillation_component_mix_phase_rate_degrees * 0.017453292f * g_frame_time);
-        path = hoven_paths_r2[d->path_id];
-        if (d->path_index < *(int *)path - 11) {
-            ApproachValue(&d->path_speed, g_frame_time * 8.0f, g_frame_time_sq * 10.0f);
-        } else {
-            ApproachValue(&d->path_speed, 0.0f, g_frame_time_sq * 8.0f);
-            if (d->path_speed == 0.0f) {
-                moby[0x20] = 3;
-                break;
-            }
-        }
-        nx = (d->path_index + 1) % *(int *)path;
-        FastVecSub(v, &path[nx + 1], &path[d->path_index + 1]);
-        vec_scale_to_length(v, v, d->path_speed);
-        FastVecAdd(moby + 0x10, moby + 0x10, v);
-        f = fast_atan2(*(float *)((char *)path + (nx << 4) + 0x10) - *(float *)((char *)path + (d->path_index << 4) + 0x10),
-                              *(float *)((char *)path + (nx << 4) + 0x14) - *(float *)((char *)path + (d->path_index << 4) + 0x14));
-        if (*(int *)path - 20 < d->path_index) f = 3.0543261f;
-        MobySpringTurn(moby, f, &d->path_turn, g_frame_scale_sq * 0.0015f, g_frame_scale_sq * 0.3f, g_frame_time * 0.17453292f);
-        if (vec_distance_xy(moby + 0x10, &path[d->path_index + 1]) < 5.0f
-            || FastDiffRots(((Moby *)moby)->rot.z,
-                             fast_atan2(*(float *)((char *)path + (d->path_index << 4) + 0x10) - ((Moby *)moby)->pos.x,
-                                               *(float *)((char *)path + (d->path_index << 4) + 0x14) - ((Moby *)moby)->pos.y)) > 1.5707964f) {
-            d->path_index = (d->path_index + 1) % *(int *)path;
-        }
-        apply_linked_moby_relative_transforms(moby, ((char *)d), 0x11);
-        update_planetbuster_maximus_guns(moby);
-        break;
-    }
-    case 3:
-        planetbuster_aggro_timer++;
-        SpringAngle(moby + 0x48, 3.0543261f, &d->path_turn, -1, g_frame_scale_sq * 0.0015f, g_frame_scale_sq * 0.3f, g_frame_time * 0.17453292f);
-        update_moby_vertical_oscillation(0.7f, g_frame_time * 1.2217305f, moby, &d->bob_amount, &d->bob_phase);
-        update_moby_rotation_oscillation(moby, (char *)&d->sway_a, (char *)&d->sway_b, *(float *)&planetbuster_sway_amplitude,
-                          *(float *)&planetbuster_maximus_rotation_oscillation_common_factor_phase_rate_degrees * 0.017453292f * g_frame_time,
-                          *(float *)&planetbuster_maximus_rotation_oscillation_component_mix_phase_rate_degrees * 0.017453292f * g_frame_time);
-        apply_linked_moby_relative_transforms(moby, ((char *)d), 0x11);
-        update_planetbuster_maximus_guns(moby);
-        break;
-    case 4:
-        if (d->cam_from != -1 && d->cam_to != -1) {
-            switch ((unsigned char)moby[0xBC]) {
-            case 0:
-                moby[0xBC] = 1;
-                set_camera_position(hoven_camera_points + d->cam_from * 128 + 0x30);
-                set_camera_rotation(hoven_camera_points + d->cam_from * 128 + 0x70);
-                hoven_cutscene_active = 1;
-                planetbuster_death_cam_active = 1;
-                break;
-            case 1:
-                if (d->cam_t < 1.0f) {
-                    ApproachWithVelocity(&d->cam_t, &d->cam_vel, 1.0f,
-                                  g_frame_time_sq * 0.666f, g_frame_time_sq * 0.666f, g_frame_time * 0.4f);
-                    lerp_vector(v, hoven_camera_points + d->cam_from * 128 + 0x30,
-                                  hoven_camera_points + d->cam_to * 128 + 0x30, d->cam_t);
-                    clear_u64_value(w);
-                    w[0] = FastSubRots(*(float *)(hoven_camera_points + d->cam_to * 128 + 0x70),
-                                         *(float *)(hoven_camera_points + d->cam_from * 128 + 0x70)) * d->cam_t;
-                    w[0] = FastAddRots(*(float *)(hoven_camera_points + d->cam_from * 128 + 0x70), w[1]);
-                    w[1] = FastSubRots(*(float *)(hoven_camera_points + d->cam_to * 128 + 0x74),
-                                         *(float *)(hoven_camera_points + d->cam_from * 128 + 0x74)) * d->cam_t;
-                    w[1] = FastAddRots(*(float *)(hoven_camera_points + d->cam_from * 128 + 0x74), w[1]);
-                    w[2] = FastSubRots(*(float *)(hoven_camera_points + d->cam_to * 128 + 0x78),
-                                         *(float *)(hoven_camera_points + d->cam_from * 128 + 0x78)) * d->cam_t;
-                    w[2] = FastAddRots(*(float *)(hoven_camera_points + d->cam_from * 128 + 0x78), w[2]);
-                    set_camera_position(v);
-                    set_camera_rotation(w);
-                } else {
-                    moby[0xBC] = 2;
-                    hoven_cutscene_active = 0;
-                    CameraScript2(3);
-                }
-                break;
-            case 2: {
+        case 0:
+            planetbuster_engaged = 0;
+            if (saved_mission_state_r[g_current_level_index_e][(unsigned char)moby[0xB0]] == 0xFF) {
                 int i;
                 for (i = 0; i < 17; i++) {
                     int s = *(int *)(((char *)d) + i * 0x30 + 0x20);
-                    if (s != -1) {
-                        char *o = (char *)hoven_mobys_m + (s << 8);
-                        if (o[0x20] >= 0) DeleteMoby(o);
-                        *(int *)(((char *)d) + i * 0x30 + 0x20) = -1;
-                    } else if (planetbuster_detached_part_ids[i] > 0) {
-                        char *o = (char *)hoven_mobys_m + (planetbuster_detached_part_ids[i] << 8);
-                        if (o[0x20] >= 0) DeleteMoby(o);
-                    }
+                    if (s != -1)
+                        DeleteMoby((char *)hoven_mobys_m + (s << 8));
                 }
-                planetbuster_engaged = 0;
-                StartCutscene(7);
                 DeleteMoby(moby);
                 return;
+            } else {
+                P_7DB0 *path;
+                int i;
+                int j;
+                planetbuster_defeated = 0;
+                capture_linked_moby_relative_transforms(moby, ((char *)d), 0x11);
+                path = hoven_paths_r2[d->path_id];
+                qcopy(moby + 0x10, path + 1);
+                d->base_z = ((Moby *)moby)->pos.z;
+                ((Moby *)moby)->rot.z = fast_atan2(path[2].v[0] - path[1].v[0], path[2].v[1] - path[1].v[1]);
+                if (((struct Hero *)((char *)&hero_globals_base_e + 0xE1D))->motion.pos.f[2] < 52.0f) {
+                    ((Moby *)moby)->pos.z = ((Moby *)moby)->pos.z + 3.0f;
+                }
+                for (i = 0; i < 5; i++) {
+                    int k = *(int *)(((char *)d) + 0x5D0 + i * 4);
+                    char *o = (char *)hoven_mobys_m + (*(int *)(((char *)d) + k * 0x30 + 0x20) << 8);
+                    (((F80_7DB0 *)((Moby *)o)->pvars))->f80 = 10.0f;
+                }
+                planetbuster_fall_pos = -1.0f;
+                for (j = 17; j >= 0; j--)
+                    planetbuster_detached_part_ids[j] = 0;
+                d->voice = -1;
+                d->unk_5FC = 100;
+                moby[0x20] = 1;
             }
+            break;
+        case 1: {
+            char *h;
+            int r;
+            if (is_point_inside_clip_volume(hoven_camera_pos, d->clip_camera)) {
+                int i;
+                char *base = (char *)hoven_mobys_m;
+                ((Moby *)moby)->flags |= 0x41;
+                for (i = 0; i < 17; i++) {
+                    int s = *(int *)(((char *)d) + i * 0x30 + 0x20);
+                    if (s != -1)
+                        ((M34_7DB0 *)(base + (s << 8)))->flags |= 0x41;
+                }
+            } else {
+                int i;
+                char *base = (char *)hoven_mobys_m;
+                ((Moby *)moby)->flags &= ~0x41;
+                for (i = 0; i < 17; i++) {
+                    int s = *(int *)(((char *)d) + i * 0x30 + 0x20);
+                    if (s != -1)
+                        ((M34_7DB0 *)(base + (s << 8)))->flags &= ~0x41;
+                }
             }
+            h = &((struct Hero *)((char *)&hero_globals_base_e + 0xE1D))->motion.pos;
+            r = is_point_inside_clip_volume(h, d->clip_hero_b);
+            if (*(float *)(h + 8) > 52.0f && r == 0) {
+                ApproachValue((float *)(moby + 0x18), d->base_z, g_frame_time + g_frame_time);
+            } else {
+                float add = 3.0f;
+                if (r)
+                    add = 10.0f;
+                if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base_e + 0xE1D))->motion.pos,
+                                                d->clip_hero_a)) {
+                    d->timer = scale_ticks(0x5A);
+                }
+                if (!fast_dec_timer(&d->timer))
+                    add = 19.0f;
+                Spring((float *)(moby + 0x18), &d->spring_vel, d->base_z + add, g_frame_scale_sq * 0.03f,
+                       g_frame_scale_sq * 0.3f, g_frame_time * 2.7f);
+            }
+            update_moby_vertical_oscillation(0.7f, g_frame_time * 1.2217305f, moby, &d->bob_amount, &d->bob_phase);
+            update_moby_rotation_oscillation(
+                moby, (char *)&d->sway_a, (char *)&d->sway_b, *(float *)&planetbuster_sway_amplitude,
+                *(float *)&planetbuster_maximus_rotation_oscillation_common_factor_phase_rate_degrees * 0.017453292f *
+                    g_frame_time,
+                *(float *)&planetbuster_maximus_rotation_oscillation_component_mix_phase_rate_degrees * 0.017453292f *
+                    g_frame_time);
+            apply_linked_moby_relative_transforms(moby, ((char *)d), 0x11);
+            if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base_e + 0xE1D))->motion.pos,
+                                            d->clip_manned) ||
+                hoven_turret_manned_m) {
+                int i;
+                planetbuster_engaged = 1;
+                for (i = 0; i < 5; i++) {
+                    int k = *(int *)(((char *)d) + 0x5D0 + i * 4);
+                    ((unsigned char *)hoven_mobys_m + (*(int *)(((char *)d) + k * 0x30 + 0x20) << 8))[0xA4] = 0xFF;
+                }
+                moby[0x20] = 2;
+            }
+            break;
         }
-        if (d->break_step == 0) {
-            int i;
-            for (i = 0; i < 17; i++) {
-                if (planetbuster_detached_part_ids[i] == 0) planetbuster_detached_part_ids[i] = *(int *)(((char *)d) + i * 0x30 + 0x20);
-                *(int *)(((char *)d) + i * 0x30 + 0x20) = -1;
+        case 2: {
+            P_7DB0 *path;
+            int nx;
+            float f;
+            update_moby_vertical_oscillation(0.7f, g_frame_time * 1.2217305f, moby, &d->bob_amount, &d->bob_phase);
+            update_moby_rotation_oscillation(
+                moby, (char *)&d->sway_a, (char *)&d->sway_b, *(float *)&planetbuster_sway_amplitude,
+                *(float *)&planetbuster_maximus_rotation_oscillation_common_factor_phase_rate_degrees * 0.017453292f *
+                    g_frame_time,
+                *(float *)&planetbuster_maximus_rotation_oscillation_component_mix_phase_rate_degrees * 0.017453292f *
+                    g_frame_time);
+            path = hoven_paths_r2[d->path_id];
+            if (d->path_index < *(int *)path - 11) {
+                ApproachValue(&d->path_speed, g_frame_time * 8.0f, g_frame_time_sq * 10.0f);
+            } else {
+                ApproachValue(&d->path_speed, 0.0f, g_frame_time_sq * 8.0f);
+                if (d->path_speed == 0.0f) {
+                    moby[0x20] = 3;
+                    break;
+                }
             }
-            planetbuster_detached_part_ids[17] = 1;
-            for (i = 0; i < 18; i++) initialize_planetbuster_maximus_detached_part_motion((struct Moby *)moby, i);
+            nx = (d->path_index + 1) % *(int *)path;
+            FastVecSub(v, &path[nx + 1], &path[d->path_index + 1]);
+            vec_scale_to_length(v, v, d->path_speed);
+            FastVecAdd(moby + 0x10, moby + 0x10, v);
+            f = fast_atan2(
+                *(float *)((char *)path + (nx << 4) + 0x10) - *(float *)((char *)path + (d->path_index << 4) + 0x10),
+                *(float *)((char *)path + (nx << 4) + 0x14) - *(float *)((char *)path + (d->path_index << 4) + 0x14));
+            if (*(int *)path - 20 < d->path_index)
+                f = 3.0543261f;
+            MobySpringTurn(moby, f, &d->path_turn, g_frame_scale_sq * 0.0015f, g_frame_scale_sq * 0.3f,
+                           g_frame_time * 0.17453292f);
+            if (vec_distance_xy(moby + 0x10, &path[d->path_index + 1]) < 5.0f ||
+                FastDiffRots(((Moby *)moby)->rot.z,
+                             fast_atan2(*(float *)((char *)path + (d->path_index << 4) + 0x10) - ((Moby *)moby)->pos.x,
+                                        *(float *)((char *)path + (d->path_index << 4) + 0x14) -
+                                            ((Moby *)moby)->pos.y)) > 1.5707964f) {
+                d->path_index = (d->path_index + 1) % *(int *)path;
+            }
+            apply_linked_moby_relative_transforms(moby, ((char *)d), 0x11);
+            update_planetbuster_maximus_guns(moby);
+            break;
         }
-        d->break_step = d->break_step + 1;
-        update_planetbuster_maximus_detached_parts(moby);
-        break;
+        case 3:
+            planetbuster_aggro_timer++;
+            SpringAngle(moby + 0x48, 3.0543261f, &d->path_turn, -1, g_frame_scale_sq * 0.0015f, g_frame_scale_sq * 0.3f,
+                        g_frame_time * 0.17453292f);
+            update_moby_vertical_oscillation(0.7f, g_frame_time * 1.2217305f, moby, &d->bob_amount, &d->bob_phase);
+            update_moby_rotation_oscillation(
+                moby, (char *)&d->sway_a, (char *)&d->sway_b, *(float *)&planetbuster_sway_amplitude,
+                *(float *)&planetbuster_maximus_rotation_oscillation_common_factor_phase_rate_degrees * 0.017453292f *
+                    g_frame_time,
+                *(float *)&planetbuster_maximus_rotation_oscillation_component_mix_phase_rate_degrees * 0.017453292f *
+                    g_frame_time);
+            apply_linked_moby_relative_transforms(moby, ((char *)d), 0x11);
+            update_planetbuster_maximus_guns(moby);
+            break;
+        case 4:
+            if (d->cam_from != -1 && d->cam_to != -1) {
+                switch ((unsigned char)moby[0xBC]) {
+                    case 0:
+                        moby[0xBC] = 1;
+                        set_camera_position(hoven_camera_points + d->cam_from * 128 + 0x30);
+                        set_camera_rotation(hoven_camera_points + d->cam_from * 128 + 0x70);
+                        hoven_cutscene_active = 1;
+                        planetbuster_death_cam_active = 1;
+                        break;
+                    case 1:
+                        if (d->cam_t < 1.0f) {
+                            ApproachWithVelocity(&d->cam_t, &d->cam_vel, 1.0f, g_frame_time_sq * 0.666f,
+                                                 g_frame_time_sq * 0.666f, g_frame_time * 0.4f);
+                            lerp_vector(v, hoven_camera_points + d->cam_from * 128 + 0x30,
+                                        hoven_camera_points + d->cam_to * 128 + 0x30, d->cam_t);
+                            clear_u64_value(w);
+                            w[0] = FastSubRots(*(float *)(hoven_camera_points + d->cam_to * 128 + 0x70),
+                                               *(float *)(hoven_camera_points + d->cam_from * 128 + 0x70)) *
+                                   d->cam_t;
+                            w[0] = FastAddRots(*(float *)(hoven_camera_points + d->cam_from * 128 + 0x70), w[1]);
+                            w[1] = FastSubRots(*(float *)(hoven_camera_points + d->cam_to * 128 + 0x74),
+                                               *(float *)(hoven_camera_points + d->cam_from * 128 + 0x74)) *
+                                   d->cam_t;
+                            w[1] = FastAddRots(*(float *)(hoven_camera_points + d->cam_from * 128 + 0x74), w[1]);
+                            w[2] = FastSubRots(*(float *)(hoven_camera_points + d->cam_to * 128 + 0x78),
+                                               *(float *)(hoven_camera_points + d->cam_from * 128 + 0x78)) *
+                                   d->cam_t;
+                            w[2] = FastAddRots(*(float *)(hoven_camera_points + d->cam_from * 128 + 0x78), w[2]);
+                            set_camera_position(v);
+                            set_camera_rotation(w);
+                        } else {
+                            moby[0xBC] = 2;
+                            hoven_cutscene_active = 0;
+                            CameraScript2(3);
+                        }
+                        break;
+                    case 2: {
+                        int i;
+                        for (i = 0; i < 17; i++) {
+                            int s = *(int *)(((char *)d) + i * 0x30 + 0x20);
+                            if (s != -1) {
+                                char *o = (char *)hoven_mobys_m + (s << 8);
+                                if (o[0x20] >= 0)
+                                    DeleteMoby(o);
+                                *(int *)(((char *)d) + i * 0x30 + 0x20) = -1;
+                            } else if (planetbuster_detached_part_ids[i] > 0) {
+                                char *o = (char *)hoven_mobys_m + (planetbuster_detached_part_ids[i] << 8);
+                                if (o[0x20] >= 0)
+                                    DeleteMoby(o);
+                            }
+                        }
+                        planetbuster_engaged = 0;
+                        StartCutscene(7);
+                        DeleteMoby(moby);
+                        return;
+                    }
+                }
+            }
+            if (d->break_step == 0) {
+                int i;
+                for (i = 0; i < 17; i++) {
+                    if (planetbuster_detached_part_ids[i] == 0)
+                        planetbuster_detached_part_ids[i] = *(int *)(((char *)d) + i * 0x30 + 0x20);
+                    *(int *)(((char *)d) + i * 0x30 + 0x20) = -1;
+                }
+                planetbuster_detached_part_ids[17] = 1;
+                for (i = 0; i < 18; i++)
+                    initialize_planetbuster_maximus_detached_part_motion((struct Moby *)moby, i);
+            }
+            d->break_step = d->break_step + 1;
+            update_planetbuster_maximus_detached_parts(moby);
+            break;
     }
     update_planetbuster_maximus_glow_color(moby);
     if ((unsigned char)moby[0x20] >= 1 && (unsigned char)moby[0x20] <= 3) {
-        if (d->voice == -1) d->voice = Moby_PlaySound_r(0, 4, moby);
+        if (d->voice == -1)
+            d->voice = Moby_PlaySound_r(0, 4, moby);
     } else {
         int s = d->voice;
         if (s != -1) {
             Voice_7DB0 *e = (Voice_7DB0 *)(hero_globals_base_e + 0x1D + s * 0x70);
-            if (e->owner == moby && e->active != 0) Sound_StopSlot(s);
+            if (e->owner == moby && e->active != 0)
+                Sound_StopSlot(s);
         }
         d->voice = -1;
     }
@@ -2321,7 +2423,8 @@ void spawn_next_linked_moby(char *moby) {
     moby_build_matrix(spawned_moby);
     spawned_moby->parent = spawner;
     for (i = 0; i < 14; i++) {
-        spawn_jittered_effect_particle_with_optional_basis(random_float_between(g_frame_time * 3.0f, g_frame_time * 5.0f), &spawner->pos, 0);
+        spawn_jittered_effect_particle_with_optional_basis(
+            random_float_between(g_frame_time * 3.0f, g_frame_time * 5.0f), &spawner->pos, 0);
     }
     aim_height_data = (short *)GetFlaggedPvarWord(spawned_moby);
     if (aim_height_data != 0) {
@@ -2341,62 +2444,62 @@ void homing_mine_spawner_update(Moby *m) {
     update_homing_mine_spawner_target((char *)m);
     slots = &d->slots[0];
     switch (m->state) {
-    case 0:
-        for (i = 0; i < 12; i++) {
-            if (slots[i] != -1) {
-                char *o = (char *)(hoven_mobys_m + (slots[i] << 8));
-                if (o != 0 && ((unsigned char *)o)[0x20] != 0xFE && ((unsigned char *)o)[0x20] != 0xFD) {
-                    DeleteMoby(o);
+        case 0:
+            for (i = 0; i < 12; i++) {
+                if (slots[i] != -1) {
+                    char *o = (char *)(hoven_mobys_m + (slots[i] << 8));
+                    if (o != 0 && ((unsigned char *)o)[0x20] != 0xFE && ((unsigned char *)o)[0x20] != 0xFD) {
+                        DeleteMoby(o);
+                    }
                 }
             }
-        }
-        m->state = 1;
-        break;
-    case 1:
-        if (d->target_state != 2) {
-            if (vec_distance_xy(&m->pos, &d->target_pos) < d->range) {
-                m->state = 2;
+            m->state = 1;
+            break;
+        case 1:
+            if (d->target_state != 2) {
+                if (vec_distance_xy(&m->pos, &d->target_pos) < d->range) {
+                    m->state = 2;
+                }
             }
-        }
-        break;
-    case 2:
-        if (m->prev_seq != 1) {
-            MobyBlendAnimation(m, 1, 0, scale_ticks(2));
-        }
-        if (*(char *)&m->anim_flags & 2) {
-            if (m->prev_seq != 2) {
-                MobyBlendAnimation(m, 2, 0, scale_ticks(2));
+            break;
+        case 2:
+            if (m->prev_seq != 1) {
+                MobyBlendAnimation(m, 1, 0, scale_ticks(2));
             }
-            m->state = 3;
-        }
-        break;
-    case 3:
-        if (FastDecTimer(&d->spawn_timer)) {
-            if (slots[d->next_slot] != -1) {
-                spawn_next_linked_moby((char *)m);
-                m->command = m->command == 0;
-                d->spawn_timer = scale_ticks(0x28);
+            if (*(char *)&m->anim_flags & 2) {
+                if (m->prev_seq != 2) {
+                    MobyBlendAnimation(m, 2, 0, scale_ticks(2));
+                }
+                m->state = 3;
             }
-            d->next_slot += 1;
-        }
-        if (d->next_slot == 12 || slots[d->next_slot] == -1) {
-            m->state = 4;
-        }
-        break;
-    case 4:
-        m->flags &= 0xEFFF;
-        if (m->prev_seq != 3) {
-            MobyBlendAnimation(m, 3, 0, scale_ticks(2));
-        }
-        if (*(char *)&m->anim_flags & 2) {
-            if (m->prev_seq != 0) {
-                MobyBlendAnimation(m, 0, 0, scale_ticks(2));
+            break;
+        case 3:
+            if (FastDecTimer(&d->spawn_timer)) {
+                if (slots[d->next_slot] != -1) {
+                    spawn_next_linked_moby((char *)m);
+                    m->command = m->command == 0;
+                    d->spawn_timer = scale_ticks(0x28);
+                }
+                d->next_slot += 1;
             }
-            m->state = 5;
-        }
-        break;
-    case 5:
-        break;
+            if (d->next_slot == 12 || slots[d->next_slot] == -1) {
+                m->state = 4;
+            }
+            break;
+        case 4:
+            m->flags &= 0xEFFF;
+            if (m->prev_seq != 3) {
+                MobyBlendAnimation(m, 3, 0, scale_ticks(2));
+            }
+            if (*(char *)&m->anim_flags & 2) {
+                if (m->prev_seq != 0) {
+                    MobyBlendAnimation(m, 0, 0, scale_ticks(2));
+                }
+                m->state = 5;
+            }
+            break;
+        case 5:
+            break;
     }
 }
 extern char hero_globals_base[] NOT_SDA;
@@ -2436,7 +2539,7 @@ extern unsigned char saved_mission_state[];
 extern char voice_pool[];
 extern int check_scaled_vector_bsphere(void *, float);
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
-extern unsigned char * hoven_mobys MACRO_ADDR;
+extern unsigned char *hoven_mobys MACRO_ADDR;
 extern void Sound_StopSlot(int);
 extern void draw_hoven_jittered_quad_layers(void);
 
@@ -2448,45 +2551,45 @@ void update_moby_draw_and_monitor_linked_state(struct Moby *m) {
     int *d = (int *)m->pvars;
 
     switch (st) {
-    case 0:
-        if (m->mission != 0xFF && saved_mission_state[m->mission + (*(s32 *)&g_current_level_index) * 16] == 0xFF) {
-            DeleteMoby(m);
+        case 0:
+            if (m->mission != 0xFF && saved_mission_state[m->mission + (*(s32 *)&g_current_level_index) * 16] == 0xFF) {
+                DeleteMoby(m);
+                break;
+            }
+            m->state = 1;
             break;
-        }
-        m->state = 1;
-        break;
-    case 1:
-        vis = 1;
-        if (check_scaled_vector_bsphere(m, 48.0f) == -1) {
-            vis = 0;
-        }
-        if (vis) {
-            AddDrawCallback(draw_hoven_jittered_quad_layers, m);
-        }
-        if (d[1] == -1) {
-            d[1] = Moby_PlaySound_r(0, 4, m);
-        }
-        if (d[0] >= 0) {
-            int i = d[1];
-            char *e;
-            if (i != -1) {
-                e = voice_pool + i * 0x70;
-                if (*(struct Moby **)(e + 0x88) == m && *(unsigned char *)(e + 0x74) != 0) {
-                    Sound_StopSlot(i);
+        case 1:
+            vis = 1;
+            if (check_scaled_vector_bsphere(m, 48.0f) == -1) {
+                vis = 0;
+            }
+            if (vis) {
+                AddDrawCallback(draw_hoven_jittered_quad_layers, m);
+            }
+            if (d[1] == -1) {
+                d[1] = Moby_PlaySound_r(0, 4, m);
+            }
+            if (d[0] >= 0) {
+                int i = d[1];
+                char *e;
+                if (i != -1) {
+                    e = voice_pool + i * 0x70;
+                    if (*(struct Moby **)(e + 0x88) == m && *(unsigned char *)(e + 0x74) != 0) {
+                        Sound_StopSlot(i);
+                    }
+                }
+                e = (char *)((d[0] << 8) + (int)hoven_mobys);
+                d[1] = -1;
+                if (*(unsigned char *)(e + 0x20) == 7) {
+                    if (m->mission != 0xFF) {
+                        jet_clear_persistent(m->mission);
+                    }
+                    Moby_PlaySound_r(1, 0, m);
+                    m->collision = 0;
+                    m->state = 2;
                 }
             }
-            e = (char *)((d[0] << 8) + (int)hoven_mobys);
-            d[1] = -1;
-            if (*(unsigned char *)(e + 0x20) == 7) {
-                if (m->mission != 0xFF) {
-                    jet_clear_persistent(m->mission);
-                }
-                Moby_PlaySound_r(1, 0, m);
-                m->collision = 0;
-                m->state = 2;
-            }
-        }
-        break;
+            break;
     }
 }
 extern char special_items_base[];
@@ -2507,7 +2610,7 @@ void trigger_scene_once_in_clip_volume(char *moby) {
             DeleteMoby(moby);
             return;
         }
-        p =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
+        p = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
         if (is_point_inside_clip_volume(p, *(int *)data) != 0) {
             *(char *)(*(int *)(data + 4) + base + 0x5C) = 1;
             qcopy(hoven_cutscene_hero_pos, p);
@@ -2530,7 +2633,8 @@ extern void cutscene_set_camera_target(int);
 
 /* Picks cutscene moby slot 2 for step 1, else slot 0. */
 static inline unsigned char func_L12_pick(int cur) {
-    if (cur == 1) return 2;
+    if (cur == 1)
+        return 2;
     return 0;
 }
 
@@ -2541,21 +2645,21 @@ void emit_phase_selected_moby_effects(Moby *moby) {
     int cur;
     int k;
     switch (moby->state) {
-    case 0:
-        moby->update_dist = 0xFF;
-        moby->state = 1;
-        break;
-    case 1:
-        if (hoven_cinematic_mode == 2) {
-            list = &hoven_cutscene_state;
-            cur = list->current;
-            if (cur == 1 || cur == 7) {
-                k = func_L12_pick(cur);
-                l2 = &hoven_cutscene_state;
-                cutscene_set_camera_target((int)l2->mobys[k]);
+        case 0:
+            moby->update_dist = 0xFF;
+            moby->state = 1;
+            break;
+        case 1:
+            if (hoven_cinematic_mode == 2) {
+                list = &hoven_cutscene_state;
+                cur = list->current;
+                if (cur == 1 || cur == 7) {
+                    k = func_L12_pick(cur);
+                    l2 = &hoven_cutscene_state;
+                    cutscene_set_camera_target((int)l2->mobys[k]);
+                }
             }
-        }
-        break;
+            break;
     }
 }
 extern void Moby_PlaySound(int, int, int);
@@ -2567,20 +2671,22 @@ void BreakableUpdate(char *m) {
     int hit = 0;
     char *r = MobyGetHitMessage(m, 0x10000, 0);
     switch (*(unsigned char *)(m + 0x20)) {
-    case 0:
-        m[0x20] = 1;
-        break;
-    case 1:
-        if (r != 0 && *(float *)(r + 0x2C) > 0.0f) hit = 1;
-        if (hit) m[0x20] = 2;
-        break;
-    case 2:
-        Moby_PlaySound(0, 0, (int)m);
-        spawn_proximity_gated_bolts(m);
-        spawn_moby_break_fragments(m, 0x748, 1, 0x748, 1, 11, 2);
-        spawn_moby_from_placement(m, 0x747);
-        DeleteMoby(m);
-        break;
+        case 0:
+            m[0x20] = 1;
+            break;
+        case 1:
+            if (r != 0 && *(float *)(r + 0x2C) > 0.0f)
+                hit = 1;
+            if (hit)
+                m[0x20] = 2;
+            break;
+        case 2:
+            Moby_PlaySound(0, 0, (int)m);
+            spawn_proximity_gated_bolts(m);
+            spawn_moby_break_fragments(m, 0x748, 1, 0x748, 1, 11, 2);
+            spawn_moby_from_placement(m, 0x747);
+            DeleteMoby(m);
+            break;
     }
 }
 extern void font_queue_vu_state(void);
@@ -2610,8 +2716,10 @@ void draw_hoven_scrolling_texture_layers(char *m) {
     if (is_point_inside_clip_volume(hoven_camera_pos, d[0])) {
         VU1_addGSregister(6, GetEffectTex(0x2C));
         for (i = 0; i < 10; i++) {
-            add_uv_scroll_offset(hoven_overlay_uv_buffer, hoven_overlay_piece_uvs[i], hoven_overlay_piece_vertex_counts[i], hoven_overlay_uv_scroll);
-            draw_env_overlay_mesh(hoven_overlay_piece_vertex_counts[i], hoven_overlay_piece_meshes[i], hoven_overlay_piece_colors[i], hoven_overlay_uv_buffer, 1);
+            add_uv_scroll_offset(hoven_overlay_uv_buffer, hoven_overlay_piece_uvs[i],
+                                 hoven_overlay_piece_vertex_counts[i], hoven_overlay_uv_scroll);
+            draw_env_overlay_mesh(hoven_overlay_piece_vertex_counts[i], hoven_overlay_piece_meshes[i],
+                                  hoven_overlay_piece_colors[i], hoven_overlay_uv_buffer, 1);
         }
     }
     VU1_addGSregister(6, GetEffectTex(0x2F));
@@ -2630,7 +2738,7 @@ extern float hoven_layer_uv_scroll_speed_v0D3D0[] __asm__("D_L12_00162160") MACR
 extern float D_L12_00162158_0D3D0[2] SDATA(D_L12_00162158);
 extern float hoven_overlay_uv_scroll_speed_v0D3D0[] __asm__("D_L12_00162158") MACRO_ADDR;
 extern float frame_delta_time MACRO_ADDR;
-extern int * hoven_front_piece_colors[];
+extern int *hoven_front_piece_colors[];
 extern int hoven_front_piece_vertex_counts[];
 extern void scale_rgba_tables(void *, int, void *, float, float, float, float, int);
 typedef struct {
@@ -2646,52 +2754,54 @@ typedef struct {
 void update_hoven_scrolling_texture_layers(M_bff0 *m) {
     int i;
     switch (m->state) {
-    case 0:
-        if (D_L12_00162170_0D3D0 == 0) {
-            scale_rgba_tables(hoven_front_piece_colors, 5, hoven_front_piece_vertex_counts, 0.1f, 0.5f, 0.4f, 0.5f, 1);
-            scale_rgba_tables(hoven_overlay_piece_colors, 10, hoven_overlay_piece_vertex_counts, 0.1f, 0.6f, 0.4f, 0.5f, 1);
-            D_L12_00162170_0D3D0 = 1;
-        }
-        m->state = 1;
-        m->b30 = 0xFF;
-        m->h32 = 0xFF;
-        for (i = 0; i < 2; i++) {
-            hoven_layer_uv_scroll[i * 2] = 0.0f;
-            hoven_layer_uv_scroll_v[i * 2] = 0.0f;
-        }
-        break;
-    case 1:
-        for (i = 0; i < 2; i++) {
-            hoven_layer_uv_scroll[i * 2] += D_L12_00162160_0D3D0[i * 2] * frame_delta_time;
-            if (hoven_layer_uv_scroll[i * 2] > 1.0f) {
-                hoven_layer_uv_scroll[i * 2] -= 1.0f;
+        case 0:
+            if (D_L12_00162170_0D3D0 == 0) {
+                scale_rgba_tables(hoven_front_piece_colors, 5, hoven_front_piece_vertex_counts, 0.1f, 0.5f, 0.4f, 0.5f,
+                                  1);
+                scale_rgba_tables(hoven_overlay_piece_colors, 10, hoven_overlay_piece_vertex_counts, 0.1f, 0.6f, 0.4f,
+                                  0.5f, 1);
+                D_L12_00162170_0D3D0 = 1;
             }
-            if (hoven_layer_uv_scroll[i * 2] < -1.0f) {
-                hoven_layer_uv_scroll[i * 2] += 1.0f;
+            m->state = 1;
+            m->b30 = 0xFF;
+            m->h32 = 0xFF;
+            for (i = 0; i < 2; i++) {
+                hoven_layer_uv_scroll[i * 2] = 0.0f;
+                hoven_layer_uv_scroll_v[i * 2] = 0.0f;
             }
-            hoven_layer_uv_scroll_v[i * 2] += hoven_layer_uv_scroll_speed_v0D3D0[i * 2 + 1] * frame_delta_time;
-            if (hoven_layer_uv_scroll_v[i * 2] > 1.0f) {
-                hoven_layer_uv_scroll_v[i * 2] -= 1.0f;
+            break;
+        case 1:
+            for (i = 0; i < 2; i++) {
+                hoven_layer_uv_scroll[i * 2] += D_L12_00162160_0D3D0[i * 2] * frame_delta_time;
+                if (hoven_layer_uv_scroll[i * 2] > 1.0f) {
+                    hoven_layer_uv_scroll[i * 2] -= 1.0f;
+                }
+                if (hoven_layer_uv_scroll[i * 2] < -1.0f) {
+                    hoven_layer_uv_scroll[i * 2] += 1.0f;
+                }
+                hoven_layer_uv_scroll_v[i * 2] += hoven_layer_uv_scroll_speed_v0D3D0[i * 2 + 1] * frame_delta_time;
+                if (hoven_layer_uv_scroll_v[i * 2] > 1.0f) {
+                    hoven_layer_uv_scroll_v[i * 2] -= 1.0f;
+                }
+                if (hoven_layer_uv_scroll_v[i * 2] < -1.0f) {
+                    hoven_layer_uv_scroll_v[i * 2] += 1.0f;
+                }
             }
-            if (hoven_layer_uv_scroll_v[i * 2] < -1.0f) {
-                hoven_layer_uv_scroll_v[i * 2] += 1.0f;
+            hoven_overlay_uv_scroll_r[0] += D_L12_00162158_0D3D0[0] * frame_delta_time;
+            if (hoven_overlay_uv_scroll_r[0] > 1.0f) {
+                hoven_overlay_uv_scroll_r[0] -= 1.0f;
             }
-        }
-        hoven_overlay_uv_scroll_r[0] += D_L12_00162158_0D3D0[0] * frame_delta_time;
-        if (hoven_overlay_uv_scroll_r[0] > 1.0f) {
-            hoven_overlay_uv_scroll_r[0] -= 1.0f;
-        }
-        if (hoven_overlay_uv_scroll_r[0] < -1.0f) {
-            hoven_overlay_uv_scroll_r[0] += 1.0f;
-        }
-        hoven_overlay_uv_scroll_r[1] += hoven_overlay_uv_scroll_speed_v0D3D0[1] * frame_delta_time;
-        if (hoven_overlay_uv_scroll_r[1] > 1.0f) {
-            hoven_overlay_uv_scroll_r[1] -= 1.0f;
-        }
-        if (hoven_overlay_uv_scroll_r[1] < -1.0f) {
-            hoven_overlay_uv_scroll_r[1] += 1.0f;
-        }
-        AddDrawCallback(func_L12_0030D248_0D3D0, m);
-        break;
+            if (hoven_overlay_uv_scroll_r[0] < -1.0f) {
+                hoven_overlay_uv_scroll_r[0] += 1.0f;
+            }
+            hoven_overlay_uv_scroll_r[1] += hoven_overlay_uv_scroll_speed_v0D3D0[1] * frame_delta_time;
+            if (hoven_overlay_uv_scroll_r[1] > 1.0f) {
+                hoven_overlay_uv_scroll_r[1] -= 1.0f;
+            }
+            if (hoven_overlay_uv_scroll_r[1] < -1.0f) {
+                hoven_overlay_uv_scroll_r[1] += 1.0f;
+            }
+            AddDrawCallback(func_L12_0030D248_0D3D0, m);
+            break;
     }
 }

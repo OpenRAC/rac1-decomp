@@ -35,8 +35,7 @@ extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
 extern unsigned char normal_font_metrics[];
 extern unsigned char small_font_metrics[];
 extern unsigned char large_font_metrics[];
-extern void FontPrint(void *, void *, void *, void *, void *, int,
-                          unsigned char *);
+extern void FontPrint(void *, void *, void *, void *, void *, int, unsigned char *);
 extern int measure_text_width_regular(unsigned char *, int);
 extern int measure_text_width_small(unsigned char *, int);
 extern int GetEffectTex(int);
@@ -184,11 +183,10 @@ void draw_level_selection_map(s32 left, s32 right, s32 top, s32 bottom) {
     texture_index = GetIconFrame(0xE99A, 0xE);
     screen_width_subpixels = (right - left) * 16;
     screen_height_subpixels = (bottom - top) * 16;
-    draw_hud_sprite_uv(texture_index, 0, 0, screen_width_subpixels, screen_height_subpixels, 0, 0,
-                       0x80);
+    draw_hud_sprite_uv(texture_index, 0, 0, screen_width_subpixels, screen_height_subpixels, 0, 0, 0x80);
     VU1_addGSregister(8, 0);
-    draw_hud_sprite_uv(GetIconFrame(0xE99A, 0xF), 0, 0, screen_width_subpixels,
-                       screen_height_subpixels, game_frame_counter & 0xFFF, 0, 0x80);
+    draw_hud_sprite_uv(GetIconFrame(0xE99A, 0xF), 0, 0, screen_width_subpixels, screen_height_subpixels,
+                       game_frame_counter & 0xFFF, 0, 0x80);
     VU1_addGSregister(8, 5);
     for (level_index = 1; level_index < 20; level_index++) {
         if (level_map_markers[level_index].x == 0) {
@@ -204,11 +202,9 @@ void draw_level_selection_map(s32 left, s32 right, s32 top, s32 bottom) {
             marker_y = marker_y * 0x1C0 / 0x1A0;
         }
         if (availability == 3 ||
-            (availability == 2 &&
-             game_frame_counter % (scale_game_frame_count(0x16) + scale_game_frame_count(8)) <
-                 scale_game_frame_count(0x16))) {
-            HudSprite(GetIconFrame(0xE99A, 0xC), marker_x - 5,
-                            marker_y - 5, 10, 10, 0x80);
+            (availability == 2 && game_frame_counter % (scale_game_frame_count(0x16) + scale_game_frame_count(8)) <
+                                      scale_game_frame_count(0x16))) {
+            HudSprite(GetIconFrame(0xE99A, 0xC), marker_x - 5, marker_y - 5, 10, 10, 0x80);
         }
         if (level_index == level_map_selection.level) {
             label_x = marker_x + level_map_markers[level_index].label_offset_x;
@@ -226,17 +222,14 @@ void draw_level_selection_map(s32 left, s32 right, s32 top, s32 bottom) {
             } else {
                 line_end_x = label_x + text_width;
             }
-            draw_hud_rect(line_start_x + 1, line_start_y + 1, label_x + 1, label_y + 1, 0x80000000,
-                          0);
+            draw_hud_rect(line_start_x + 1, line_start_y + 1, label_x + 1, label_y + 1, 0x80000000, 0);
             draw_hud_rect(label_x + 1, label_y + 1, line_end_x + 1, label_y + 1, 0x80000000, 0);
             text_x = (line_end_x < label_x) ? line_end_x : label_x;
-            FontPrintLarge(text_x + 1, label_y - (*(s32 *)&map_label_text_y_offset) + 1, 0x80000000, label_text,
-                             -1);
+            FontPrintLarge(text_x + 1, label_y - (*(s32 *)&map_label_text_y_offset) + 1, 0x80000000, label_text, -1);
             draw_hud_rect(line_start_x, line_start_y, label_x, label_y, 0x80F0F0F0, 0);
             draw_hud_rect(label_x, label_y, line_end_x, label_y, 0x80F0F0F0, 0);
             FontPrintLarge(text_x, label_y - (*(s32 *)&map_label_text_y_offset), 0x80F0F0F0, label_text, -1);
-            HudSprite(GetIconFrame(0xE99A, 0xD), marker_x - 10,
-                            marker_y - 10, 20, 20, 0x80);
+            HudSprite(GetIconFrame(0xE99A, 0xD), marker_x - 10, marker_y - 10, 20, 20, 0x80);
         }
     }
     DoGifPaging();
@@ -249,37 +242,37 @@ extern char g_help_state[];
    has eight entries. */
 void dismiss_help(void) {
     switch (((HelpState *)g_help_state)->state) {
-    case 0:
-        ((HelpState *)g_help_state)->x24 = -1;
-        break;
-    case 1:
-    case 2:
-        ((HelpState *)g_help_state)->state = 7;
-        ((HelpState *)g_help_state)->x04 = 0;
-        break;
-    case 3:
-        ((HelpState *)g_help_state)->state = 7;
-        ((HelpState *)g_help_state)->x04 = 0;
-        break;
-    case 4:
-        ((HelpState *)g_help_state)->state = 6;
-        ((HelpState *)g_help_state)->x04 = 4 - ((HelpState *)g_help_state)->x04;
-        break;
-    case 5:
-        ((HelpState *)g_help_state)->state = 6;
-        ((HelpState *)g_help_state)->x04 = 0;
-        break;
-    case 6:
-    case 7:
-        break;
+        case 0:
+            ((HelpState *)g_help_state)->x24 = -1;
+            break;
+        case 1:
+        case 2:
+            ((HelpState *)g_help_state)->state = 7;
+            ((HelpState *)g_help_state)->x04 = 0;
+            break;
+        case 3:
+            ((HelpState *)g_help_state)->state = 7;
+            ((HelpState *)g_help_state)->x04 = 0;
+            break;
+        case 4:
+            ((HelpState *)g_help_state)->state = 6;
+            ((HelpState *)g_help_state)->x04 = 4 - ((HelpState *)g_help_state)->x04;
+            break;
+        case 5:
+            ((HelpState *)g_help_state)->state = 6;
+            ((HelpState *)g_help_state)->x04 = 0;
+            break;
+        case 6:
+        case 7:
+            break;
     }
 }
 
 LINKER_REMNANT("asm/remnants/text", func_001FE4C0);
 
 typedef struct {
-    char *text;   /* 0x0 */
-    int id;       /* 0x4 */
+    char *text; /* 0x0 */
+    int id; /* 0x4 */
     int unk_08;
     int unk_0C;
 } HelpEntry;
@@ -321,8 +314,7 @@ extern int gHelpDeskVoice_i __asm__("D_0015EF1C") MACRO_ADDR;
 #define D_0015EF1D_b (*(unsigned char *)&gHelpDeskText_i)
 #define D_0015EF1C_b (*(unsigned char *)&gHelpDeskVoice_i)
 extern int PlayBankSound(int, int, int);
-extern void FontSetWindow(void *arg0, int a1, int a2, int a3, int a4, int a5,
-                          int a6, int a7, int a8);
+extern void FontSetWindow(void *arg0, int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8);
 extern void font_print_window_small(void *a, long b, void *c, int d);
 extern int frame_size;
 
@@ -384,18 +376,18 @@ extern int gameplay_event_frame_count MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 
 typedef struct {
-    int state;     /* 0x00 */
-    int timer;     /* 0x04 */
-    int pad08[6];  /* 0x08 */
-    int msg;       /* 0x20 */
-    int pending;   /* 0x24 */
-    int entry;     /* 0x28 */
-    int count;     /* 0x2C */
-    int started;   /* 0x30 */
-    int delay;     /* 0x34 */
-    short queued;  /* 0x38 */
-    short shown;   /* 0x3A */
-    int wait[1];   /* 0x3C */
+    int state; /* 0x00 */
+    int timer; /* 0x04 */
+    int pad08[6]; /* 0x08 */
+    int msg; /* 0x20 */
+    int pending; /* 0x24 */
+    int entry; /* 0x28 */
+    int count; /* 0x2C */
+    int started; /* 0x30 */
+    int delay; /* 0x34 */
+    short queued; /* 0x38 */
+    short shown; /* 0x3A */
+    int wait[1]; /* 0x3C */
 } HelpSt;
 
 typedef struct {
@@ -420,18 +412,17 @@ extern PlayerHud cd_read_state;
 #define HS (*(HelpSt *)D_001997D0)
 #define PLAY_TIME (func_001F98C0(D_0015EFA4) / 600)
 
-#define RECORD_COUNT()                                   \
-    if (D_00141A68[HS.entry].count < 0xFFFF) {           \
-        help_records[HS.entry].count++;                    \
+#define RECORD_COUNT()                         \
+    if (D_00141A68[HS.entry].count < 0xFFFF) { \
+        help_records[HS.entry].count++;        \
     }
 
-#define RECORD_BEST()                                    \
-    if (PLAY_TIME > D_00141A68[HS.entry].best) {         \
-        help_records[HS.entry].best = PLAY_TIME;           \
+#define RECORD_BEST()                            \
+    if (PLAY_TIME > D_00141A68[HS.entry].best) { \
+        help_records[HS.entry].best = PLAY_TIME; \
     }
 
-#define RECORD_FLAGS() \
-    D_00141A68[HS.entry].flags = D_00141A68[HS.entry].flags | (1 << D_0015EE84) | 0x80000000
+#define RECORD_FLAGS() D_00141A68[HS.entry].flags = D_00141A68[HS.entry].flags | (1 << D_0015EE84) | 0x80000000
 
 /* Advances the help popup's state machine: delay, open, hold, close, record stats. Adapted from Lombyte's project (GPL-3.0) for PAL: ui/help/update_help_state.c, update_help_state. */
 void Help_Update(void) {
@@ -455,159 +446,156 @@ void Help_Update(void) {
 
     HS.timer++;
     switch (HS.state) {
-    case 8:
-        if (HS.queued != 0) {
-            break;
-        }
-        if (HS.msg >= 0) {
-            if (HS.shown == 0) {
-                if (fast_dec_timer_r(HS.wait) != 0) {
-                    link_localized_display_text();
-                    HS.shown++;
-                }
+        case 8:
+            if (HS.queued != 0) {
                 break;
             }
-            RECORD_COUNT();
-        }
-        RECORD_BEST();
-        RECORD_FLAGS();
-        HS.msg = -1;
-        HS.state = 0;
-        HS.shown = 0;
-        break;
-
-    case 0:
-        if (HS.pending >= 0) {
-            HS.msg = Help_FindIndex(HS.pending);
-            HS.pending = -1;
             if (HS.msg >= 0) {
-                link_localized_display_text();
+                if (HS.shown == 0) {
+                    if (fast_dec_timer_r(HS.wait) != 0) {
+                        link_localized_display_text();
+                        HS.shown++;
+                    }
+                    break;
+                }
+                RECORD_COUNT();
             }
-        }
-        break;
-
-    case 1: {
-        int id;
-
-        force_help_message(5, 0);
-        id = help_msgs[HS.msg].unk_08;
-        if (id >= 0 && cd_read_state.unk50 == 0 && cd_read_state.unk1C == -1) {
-            cd_read_state.unk1C = id + 0x7530;
-        }
-        if (pad0_pressed & 0x10) {
-            RECORD_COUNT();
             RECORD_BEST();
             RECORD_FLAGS();
-            HS.timer = 8 - HS.timer;
-            HS.state = 7;
-        } else if (HS.timer >= 6) {
-            HS.timer = 0;
-            HS.state = 2;
+            HS.msg = -1;
+            HS.state = 0;
+            HS.shown = 0;
+            break;
+
+        case 0:
+            if (HS.pending >= 0) {
+                HS.msg = Help_FindIndex(HS.pending);
+                HS.pending = -1;
+                if (HS.msg >= 0) {
+                    link_localized_display_text();
+                }
+            }
+            break;
+
+        case 1: {
+            int id;
+
+            force_help_message(5, 0);
+            id = help_msgs[HS.msg].unk_08;
+            if (id >= 0 && cd_read_state.unk50 == 0 && cd_read_state.unk1C == -1) {
+                cd_read_state.unk1C = id + 0x7530;
+            }
+            if (pad0_pressed & 0x10) {
+                RECORD_COUNT();
+                RECORD_BEST();
+                RECORD_FLAGS();
+                HS.timer = 8 - HS.timer;
+                HS.state = 7;
+            } else if (HS.timer >= 6) {
+                HS.timer = 0;
+                HS.state = 2;
+            }
+            break;
         }
-        break;
-    }
 
-    case 2: {
-        int id;
+        case 2: {
+            int id;
 
-        force_help_message(5, 0);
-        if (pad0_pressed & 0x10) {
-            RECORD_COUNT();
-            RECORD_BEST();
-            HS.state = 7;
-            HS.timer = 0;
-            RECORD_FLAGS();
-        } else if (HS.timer >= scale_game_frame_count(0x18)) {
-            if (cd_read_state.unk5A == 3
-                || (id = help_msgs[HS.msg].unk_08) == -1
-                || id != cd_read_state.unk54 - 0x7530) {
-                HS.state = 3;
+            force_help_message(5, 0);
+            if (pad0_pressed & 0x10) {
+                RECORD_COUNT();
+                RECORD_BEST();
+                HS.state = 7;
+                HS.timer = 0;
+                RECORD_FLAGS();
+            } else if (HS.timer >= scale_game_frame_count(0x18)) {
+                if (cd_read_state.unk5A == 3 || (id = help_msgs[HS.msg].unk_08) == -1 ||
+                    id != cd_read_state.unk54 - 0x7530) {
+                    HS.state = 3;
+                    HS.timer = 0;
+                }
+            }
+            break;
+        }
+
+        case 3:
+            force_help_message(5, 0);
+            if (pad0_pressed & 0x10) {
+                RECORD_COUNT();
+                RECORD_BEST();
+                HS.state = 7;
+                HS.timer = 0;
+                RECORD_FLAGS();
+            } else if (HS.timer >= 8) {
+                HS.timer = 0;
+                HS.state = 4;
+            }
+            break;
+
+        case 4: {
+            int id;
+
+            force_help_message(5, 0);
+            if (pad0_pressed & 0x10) {
+                RECORD_COUNT();
+                RECORD_BEST();
+                HS.state = 6;
+                RECORD_FLAGS();
+                HS.timer = 4 - HS.timer;
+            } else if (HS.timer >= 4) {
+                id = help_msgs[HS.msg].unk_08;
+                if (id != -1 && id == cd_read_state.unk54 - 0x7530 && cd_read_state.unk5A == 3) {
+                    Music_ContinueStreamIfReady();
+                }
+                HS.state = 5;
                 HS.timer = 0;
             }
+            break;
         }
-        break;
-    }
 
-    case 3:
-        force_help_message(5, 0);
-        if (pad0_pressed & 0x10) {
-            RECORD_COUNT();
-            RECORD_BEST();
-            HS.state = 7;
-            HS.timer = 0;
-            RECORD_FLAGS();
-        } else if (HS.timer >= 8) {
-            HS.timer = 0;
-            HS.state = 4;
+        case 5: {
+            int id;
+
+            force_help_message(5, 0);
+            if ((HS.timer >= scale_game_frame_count(0x1A4) &&
+                 ((id = help_msgs[HS.msg].unk_08) == -1 || id != cd_read_state.unk54 - 0x7530 ||
+                  (cd_read_state.unk50 == 0 && cd_read_state.unk1C == -1))) ||
+                (pad0_pressed & 0x10)) {
+                RECORD_COUNT();
+                RECORD_BEST();
+                HS.state = 6;
+                HS.timer = 0;
+                RECORD_FLAGS();
+            }
+            break;
         }
-        break;
 
-    case 4: {
-        int id;
+        case 6:
+            if (D_0015EF1D_b == 0 || HS.timer >= 4 || (pad0_pressed & 0x10)) {
+                HS.state = 7;
+                HS.timer = 0;
+            }
+            break;
 
-        force_help_message(5, 0);
-        if (pad0_pressed & 0x10) {
-            RECORD_COUNT();
-            RECORD_BEST();
-            HS.state = 6;
-            RECORD_FLAGS();
-            HS.timer = 4 - HS.timer;
-        } else if (HS.timer >= 4) {
+        case 7: {
+            int id;
+
+            force_help_message(5, 0);
             id = help_msgs[HS.msg].unk_08;
-            if (id != -1 && id == cd_read_state.unk54 - 0x7530 && cd_read_state.unk5A == 3) {
-                Music_ContinueStreamIfReady();
+            if (id != -1 && id == cd_read_state.unk54 - 0x7530 && (unsigned short)cd_read_state.unk5A - 6U >= 2) {
+                cd_read_state.unk5A = 5;
             }
-            HS.state = 5;
-            HS.timer = 0;
-        }
-        break;
-    }
-
-    case 5: {
-        int id;
-
-        force_help_message(5, 0);
-        if ((HS.timer >= scale_game_frame_count(0x1A4)
-             && ((id = help_msgs[HS.msg].unk_08) == -1
-                 || id != cd_read_state.unk54 - 0x7530
-                 || (cd_read_state.unk50 == 0 && cd_read_state.unk1C == -1)))
-            || (pad0_pressed & 0x10)) {
-            RECORD_COUNT();
-            RECORD_BEST();
-            HS.state = 6;
-            HS.timer = 0;
-            RECORD_FLAGS();
-        }
-        break;
-    }
-
-    case 6:
-        if (D_0015EF1D_b == 0 || HS.timer >= 4 || (pad0_pressed & 0x10)) {
-            HS.state = 7;
-            HS.timer = 0;
-        }
-        break;
-
-    case 7: {
-        int id;
-
-        force_help_message(5, 0);
-        id = help_msgs[HS.msg].unk_08;
-        if (id != -1 && id == cd_read_state.unk54 - 0x7530
-            && (unsigned short)cd_read_state.unk5A - 6U >= 2) {
-            cd_read_state.unk5A = 5;
-        }
-        if (HS.timer >= 8) {
-            if (HS.queued != 0) {
-                HS.state = 8;
-            } else {
-                HS.state = 0;
-                HS.msg = -1;
+            if (HS.timer >= 8) {
+                if (HS.queued != 0) {
+                    HS.state = 8;
+                } else {
+                    HS.state = 0;
+                    HS.msg = -1;
+                }
+                HS.timer = 0;
             }
-            HS.timer = 0;
+            break;
         }
-        break;
-    }
     }
 }
 
@@ -628,10 +616,8 @@ void Help_DrawPrompt(void) {
 
     ((HelpState *)g_help_state)->pad[4] = 0x20;
     ((HelpState *)g_help_state)->pad[5] = 0x20;
-    DrawUIFrame(((HelpState *)g_help_state)->pad[3] - 0x20,
-                  ((HelpState *)g_help_state)->pad[3] + 0x20,
-                  ((HelpState *)g_help_state)->pad[2] - 0x20,
-                  ((HelpState *)g_help_state)->pad[2] + 0x20, 0x60);
+    DrawUIFrame(((HelpState *)g_help_state)->pad[3] - 0x20, ((HelpState *)g_help_state)->pad[3] + 0x20,
+                ((HelpState *)g_help_state)->pad[2] - 0x20, ((HelpState *)g_help_state)->pad[2] + 0x20, 0x60);
     if (((HelpState *)g_help_state)->state == 1 || ((HelpState *)g_help_state)->state == 7) {
         alpha = ((HelpState *)g_help_state)->x04 * 0x15;
     } else {
@@ -640,9 +626,8 @@ void Help_DrawPrompt(void) {
     if (alpha > 0x80) {
         alpha = 0x80;
     }
-    DrawTexturedQuad(((HelpState *)g_help_state)->pad[2] - 0x20,
-                  ((HelpState *)g_help_state)->pad[3] - 0x20, 0x40, 0x40, 0, 0, 0x40, 0x40,
-                  (alpha << 24) | 0x808080, GetEffectTex_l(4));
+    DrawTexturedQuad(((HelpState *)g_help_state)->pad[2] - 0x20, ((HelpState *)g_help_state)->pad[3] - 0x20, 0x40, 0x40,
+                     0, 0, 0x40, 0x40, (alpha << 24) | 0x808080, GetEffectTex_l(4));
 }
 
 __asm__(".section .text\n\tnop\n");
@@ -665,83 +650,76 @@ void draw_help(void) {
         return;
     }
     switch (((HelpState *)g_help_state)->state) {
-    case 1:
-        if (D_0015EF1D_b) {
-            int s = ((HelpState *)g_help_state)->x04 * 4 + 8;
+        case 1:
+            if (D_0015EF1D_b) {
+                int s = ((HelpState *)g_help_state)->x04 * 4 + 8;
 
-            ((HelpState *)g_help_state)->pad[4] = s;
-            ((HelpState *)g_help_state)->pad[5] = s;
-            DrawUIFrame(((HelpState *)g_help_state)->pad[3] - s,
-                          ((HelpState *)g_help_state)->pad[3] + s,
-                          ((HelpState *)g_help_state)->pad[2] - s,
-                          ((HelpState *)g_help_state)->pad[2] + s, 0x60);
-        }
-        break;
-    case 2:
-        if (D_0015EF1D_b) {
-            Help_DrawPrompt();
-        }
-        break;
-    case 3:
-        if (D_0015EF1D_b) {
-            int a = (((HelpState *)g_help_state)->pad[0] - 0x20) * ((HelpState *)g_help_state)->x04 / 8 + 0x20;
-            int b = (((HelpState *)g_help_state)->pad[1] - 0x20) * ((HelpState *)g_help_state)->x04 / 8 + 0x20;
-            int alpha;
-
-            ((HelpState *)g_help_state)->pad[4] = a;
-            ((HelpState *)g_help_state)->pad[5] = b;
-            DrawUIFrame(((HelpState *)g_help_state)->pad[3] - b,
-                          ((HelpState *)g_help_state)->pad[3] + b,
-                          ((HelpState *)g_help_state)->pad[2] - a,
-                          ((HelpState *)g_help_state)->pad[2] + a, 0x60);
-            alpha = (8 - ((HelpState *)g_help_state)->x04) * 16;
-            if (alpha < 0) {
-                alpha = 0;
+                ((HelpState *)g_help_state)->pad[4] = s;
+                ((HelpState *)g_help_state)->pad[5] = s;
+                DrawUIFrame(((HelpState *)g_help_state)->pad[3] - s, ((HelpState *)g_help_state)->pad[3] + s,
+                            ((HelpState *)g_help_state)->pad[2] - s, ((HelpState *)g_help_state)->pad[2] + s, 0x60);
             }
-            DrawTexturedQuad(((HelpState *)g_help_state)->pad[2] - 0x20,
-                          ((HelpState *)g_help_state)->pad[3] - 0x20, 0x40, 0x40, 0, 0, 0x40, 0x40,
-                          (alpha << 24) | 0x808080, GetEffectTex_l(4));
-        }
-        break;
-    case 4:
-    case 5:
-    case 6:
-        if (D_0015EF1D_b) {
-            short win[12];
-            int col = 0x80FFA888;
-            char *text;
-
-            ((HelpState *)g_help_state)->pad[4] = ((HelpState *)g_help_state)->pad[0];
-            ((HelpState *)g_help_state)->pad[5] = ((HelpState *)g_help_state)->pad[1];
-            DrawUIFrame(((HelpState *)g_help_state)->pad[3] - ((HelpState *)g_help_state)->pad[1],
-                          ((HelpState *)g_help_state)->pad[3] + ((HelpState *)g_help_state)->pad[1],
-                          ((HelpState *)g_help_state)->pad[2] - ((HelpState *)g_help_state)->pad[0],
-                          ((HelpState *)g_help_state)->pad[2] + ((HelpState *)g_help_state)->pad[0], 0x60);
-            if (((HelpState *)g_help_state)->state == 4) {
-                col = 0xFFA888 | (((HelpState *)g_help_state)->x04 << 29);
-            } else if (((HelpState *)g_help_state)->state == 6) {
-                col = ((4 - ((HelpState *)g_help_state)->x04) << 29) | 0xFFA888;
+            break;
+        case 2:
+            if (D_0015EF1D_b) {
+                Help_DrawPrompt();
             }
-            text = help_msgs[((HelpState *)g_help_state)->pad[6]].text;
-            FontSetWindow((void *)win, 0xF0, 0x1E0, 0x2C, 0x1D4, 0x100,
-                          ((HelpState *)g_help_state)->pad[3], 0x10, 3);
-            font_print_window_small((void *)win, col, text, -1);
-        }
-        break;
-    case 7:
-        if (D_0015EF1D_b) {
-            int b = ((HelpState *)g_help_state)->pad[4]
-                  - (((HelpState *)g_help_state)->pad[4] - 8) * ((HelpState *)g_help_state)->x04 / 8;
-            int a = ((HelpState *)g_help_state)->pad[5]
-                  - (((HelpState *)g_help_state)->pad[5] - 8) * ((HelpState *)g_help_state)->x04 / 8;
+            break;
+        case 3:
+            if (D_0015EF1D_b) {
+                int a = (((HelpState *)g_help_state)->pad[0] - 0x20) * ((HelpState *)g_help_state)->x04 / 8 + 0x20;
+                int b = (((HelpState *)g_help_state)->pad[1] - 0x20) * ((HelpState *)g_help_state)->x04 / 8 + 0x20;
+                int alpha;
 
-            DrawUIFrame(((HelpState *)g_help_state)->pad[3] - a,
-                          ((HelpState *)g_help_state)->pad[3] + a,
-                          ((HelpState *)g_help_state)->pad[2] - b,
-                          ((HelpState *)g_help_state)->pad[2] + b,
-                          (8 - ((HelpState *)g_help_state)->x04) * 12);
-        }
-        break;
+                ((HelpState *)g_help_state)->pad[4] = a;
+                ((HelpState *)g_help_state)->pad[5] = b;
+                DrawUIFrame(((HelpState *)g_help_state)->pad[3] - b, ((HelpState *)g_help_state)->pad[3] + b,
+                            ((HelpState *)g_help_state)->pad[2] - a, ((HelpState *)g_help_state)->pad[2] + a, 0x60);
+                alpha = (8 - ((HelpState *)g_help_state)->x04) * 16;
+                if (alpha < 0) {
+                    alpha = 0;
+                }
+                DrawTexturedQuad(((HelpState *)g_help_state)->pad[2] - 0x20, ((HelpState *)g_help_state)->pad[3] - 0x20,
+                                 0x40, 0x40, 0, 0, 0x40, 0x40, (alpha << 24) | 0x808080, GetEffectTex_l(4));
+            }
+            break;
+        case 4:
+        case 5:
+        case 6:
+            if (D_0015EF1D_b) {
+                short win[12];
+                int col = 0x80FFA888;
+                char *text;
+
+                ((HelpState *)g_help_state)->pad[4] = ((HelpState *)g_help_state)->pad[0];
+                ((HelpState *)g_help_state)->pad[5] = ((HelpState *)g_help_state)->pad[1];
+                DrawUIFrame(((HelpState *)g_help_state)->pad[3] - ((HelpState *)g_help_state)->pad[1],
+                            ((HelpState *)g_help_state)->pad[3] + ((HelpState *)g_help_state)->pad[1],
+                            ((HelpState *)g_help_state)->pad[2] - ((HelpState *)g_help_state)->pad[0],
+                            ((HelpState *)g_help_state)->pad[2] + ((HelpState *)g_help_state)->pad[0], 0x60);
+                if (((HelpState *)g_help_state)->state == 4) {
+                    col = 0xFFA888 | (((HelpState *)g_help_state)->x04 << 29);
+                } else if (((HelpState *)g_help_state)->state == 6) {
+                    col = ((4 - ((HelpState *)g_help_state)->x04) << 29) | 0xFFA888;
+                }
+                text = help_msgs[((HelpState *)g_help_state)->pad[6]].text;
+                FontSetWindow((void *)win, 0xF0, 0x1E0, 0x2C, 0x1D4, 0x100, ((HelpState *)g_help_state)->pad[3], 0x10,
+                              3);
+                font_print_window_small((void *)win, col, text, -1);
+            }
+            break;
+        case 7:
+            if (D_0015EF1D_b) {
+                int b = ((HelpState *)g_help_state)->pad[4] -
+                        (((HelpState *)g_help_state)->pad[4] - 8) * ((HelpState *)g_help_state)->x04 / 8;
+                int a = ((HelpState *)g_help_state)->pad[5] -
+                        (((HelpState *)g_help_state)->pad[5] - 8) * ((HelpState *)g_help_state)->x04 / 8;
+
+                DrawUIFrame(((HelpState *)g_help_state)->pad[3] - a, ((HelpState *)g_help_state)->pad[3] + a,
+                            ((HelpState *)g_help_state)->pad[2] - b, ((HelpState *)g_help_state)->pad[2] + b,
+                            (8 - ((HelpState *)g_help_state)->x04) * 12);
+            }
+            break;
     }
 }
 

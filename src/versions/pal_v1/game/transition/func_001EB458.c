@@ -31,10 +31,8 @@ void update_gameplay_frame(void) {
         update_moby_animation_state_r(actor);
         actor->frame_fraction = IntToFloat_r(render_sequence_r2.frame & 1) * 0.5f;
         animation_positions = ((RenderSequenceSidecar_EB458 *)actor)->animation_positions;
-        FastVecScale_r(&first_position, &animation_positions[actor->current_frame],
-                            1.0f - actor->frame_fraction);
-        FastVecScale_r(&next_position, &animation_positions[actor->next_frame],
-                            actor->frame_fraction);
+        FastVecScale_r(&first_position, &animation_positions[actor->current_frame], 1.0f - actor->frame_fraction);
+        FastVecScale_r(&next_position, &animation_positions[actor->next_frame], actor->frame_fraction);
         FastVecAdd_r(&actor->position, &first_position, &next_position);
         actor->cached_frame = 0xFF;
         refresh_moby_spatial_bounds_r(actor);
@@ -54,7 +52,7 @@ void update_gameplay_frame(void) {
         if (scale_game_frame_count_r(0x78) < intro_overlay_timer_r) {
             language_intro_overlay_alpha_r =
                 (s32)(FastCos_r((intro_overlay_timer_r - scale_game_frame_count_r(0x78)) % 60 * 0.10471976f +
-                                          -3.1415927f) *
+                                -3.1415927f) *
                       32.0f) +
                 0x60;
         }

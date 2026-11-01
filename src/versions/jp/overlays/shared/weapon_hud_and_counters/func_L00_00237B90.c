@@ -1,5 +1,6 @@
 int draw_hud_text_panel(char *e) {
-    int w1, tex, l1, y, i, width, left, w2, l2, alpha, color, c, level, elapsed, score, interval, per, seconds, minutes, rem, idx;
+    int w1, tex, l1, y, i, width, left, w2, l2, alpha, color, c, level, elapsed, score, interval, per, seconds, minutes,
+        rem, idx;
     float fade;
     HudPoint_237B90 points[2];
     HudPoint_237B90 point;
@@ -15,8 +16,10 @@ int draw_hud_text_panel(char *e) {
     }
     fade = IntToFloat(*opacity);
     fade /= multiply_global_factor(8.0f);
-    if (fade < 0.0f) fade = 0.0f;
-    if (fade > 1.0f) fade = 1.0f;
+    if (fade < 0.0f)
+        fade = 0.0f;
+    if (fade > 1.0f)
+        fade = 1.0f;
     text_y = y + 8;
     i = 0;
     alpha = truncate_float_to_s32(fade * 128.0f);

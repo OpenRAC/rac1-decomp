@@ -58,97 +58,16 @@ void update_trick_combo_hud(char *a) {
     u = (unsigned char *)(a + 0x70);
     *(int *)(a + 0x74) = truncate_float_to_s32_r(cur);
     switch (u[2]) {
-    case 0: {
-        struct Hero *H = (struct Hero *)(hero_globals_base + 0xE1D);
-        if (H->air_frames.s < 6) {
-            return;
-        }
-        v = H->unk70C;
-        if (!((float)v >= 1.0f)) {
-            return;
-        }
-        trick_combo_spins = v;
-        trick_combo_trick_count = 0;
-        {
-            int k;
-            for (k = 3; k >= 0; k--) {
-                (&trick_combo_trick_flags)[k] = 0;
-            }
-        }
-        u[2] = 1;
-        u[1] = *(unsigned char *)&trick_combo_flash_ticks;
-        u[0] = 0;
-        break;
-    }
-    case 1: {
-        struct Hero *T;
-        struct Hero *H;
-        char *G;
-        if (*(unsigned char *)(a + 0x70) < 10) {
-            *(unsigned char *)(a + 0x70) += 1;
-        }
-        if (u[1] != 0) {
-            u[1]--;
-        }
-        T = (struct Hero *)(hero_globals_base + 0xE1D);
-        trick_combo_trick_count = T->tricks_landed[4];
-        {
-            int k;
-            for (k = 0; k < 4; k++) {
-                (&trick_combo_trick_flags)[k] = ((int *)T->tricks_landed)[k];
-            }
-        }
-        H = (struct Hero *)(hero_globals_base + 0xE1D);
-        if (trick_combo_spins < H->unk70C) {
-            trick_combo_spins = H->unk70C;
-            u[1] = *(unsigned char *)&trick_combo_flash_ticks;
-        }
-        if (H->grounded_frames == 0) {
-            if (!(H->state.current >= 0x6D && H->state.current <= 0x6F)) {
+        case 0: {
+            struct Hero *H = (struct Hero *)(hero_globals_base + 0xE1D);
+            if (H->air_frames.s < 6) {
                 return;
             }
-        }
-        trick_combo_score = 0;
-        H->unk70C = 0;
-        H->tricks_landed[4] = 0;
-        {
-            int k;
-            for (k = 3; k >= 0; k--) {
-                ((int *)H->tricks_landed)[k] = 0;
+            v = H->unk70C;
+            if (!((float)v >= 1.0f)) {
+                return;
             }
-        }
-        G = (char *)&hero_002670A0;
-        {
-            int k;
-            for (k = 2; k >= 0; k--) {
-                ((int *)(G + 0x700))[k] = 0;
-            }
-        }
-        {
-        struct Hero *K = (struct Hero *)(hero_globals_base + 0xE1D);
-        if (K->state.current == 0x6B) {
-            if (trick_combo_trick_count >= 3) {
-                trick_combo_recent3 = trick_combo_recent2;
-                trick_combo_recent2 = trick_combo_recent1;
-                trick_combo_recent1 = trick_combo_recent;
-                trick_combo_recent = -1;
-            }
-            u[2] = 3;
-            u[1] = *(unsigned char *)&trick_combo_flash_ticks;
-            u[0] = scale_ticks(0x78);
-        } else {
-            u[2] = 2;
-            u[1] = *(unsigned char *)&trick_combo_flash_ticks;
-            u[0] = scale_ticks(0x3C);
-        }
-        }
-        break;
-    }
-    case 2:
-    case 3:
-        if (u[0] == 0) {
-            trick_combo_score = 0;
-            trick_combo_spins = 0;
+            trick_combo_spins = v;
             trick_combo_trick_count = 0;
             {
                 int k;
@@ -156,19 +75,100 @@ void update_trick_combo_hud(char *a) {
                     (&trick_combo_trick_flags)[k] = 0;
                 }
             }
-            u[2] = 0;
+            u[2] = 1;
+            u[1] = *(unsigned char *)&trick_combo_flash_ticks;
             u[0] = 0;
-        } else if (u[2] == 3 && u[0] == scale_ticks(0x6E)) {
-            int n = trick_combo_score;
-            H = hero_globals_base + 0xE1D;
-            *(int *)(H + 0x8A8) += n;
-            *(int *)(H + 0x864) += n * 5;
-            if ((int)((float)scale_ticks(0x11) * 60.0f) < *(int *)(H + 0x864)) {
-                *(int *)(H + 0x864) = (int)((float)scale_ticks(0x11) * 60.0f);
-            }
+            break;
         }
-        u[0]--;
-        break;
+        case 1: {
+            struct Hero *T;
+            struct Hero *H;
+            char *G;
+            if (*(unsigned char *)(a + 0x70) < 10) {
+                *(unsigned char *)(a + 0x70) += 1;
+            }
+            if (u[1] != 0) {
+                u[1]--;
+            }
+            T = (struct Hero *)(hero_globals_base + 0xE1D);
+            trick_combo_trick_count = T->tricks_landed[4];
+            {
+                int k;
+                for (k = 0; k < 4; k++) {
+                    (&trick_combo_trick_flags)[k] = ((int *)T->tricks_landed)[k];
+                }
+            }
+            H = (struct Hero *)(hero_globals_base + 0xE1D);
+            if (trick_combo_spins < H->unk70C) {
+                trick_combo_spins = H->unk70C;
+                u[1] = *(unsigned char *)&trick_combo_flash_ticks;
+            }
+            if (H->grounded_frames == 0) {
+                if (!(H->state.current >= 0x6D && H->state.current <= 0x6F)) {
+                    return;
+                }
+            }
+            trick_combo_score = 0;
+            H->unk70C = 0;
+            H->tricks_landed[4] = 0;
+            {
+                int k;
+                for (k = 3; k >= 0; k--) {
+                    ((int *)H->tricks_landed)[k] = 0;
+                }
+            }
+            G = (char *)&hero_002670A0;
+            {
+                int k;
+                for (k = 2; k >= 0; k--) {
+                    ((int *)(G + 0x700))[k] = 0;
+                }
+            }
+            {
+                struct Hero *K = (struct Hero *)(hero_globals_base + 0xE1D);
+                if (K->state.current == 0x6B) {
+                    if (trick_combo_trick_count >= 3) {
+                        trick_combo_recent3 = trick_combo_recent2;
+                        trick_combo_recent2 = trick_combo_recent1;
+                        trick_combo_recent1 = trick_combo_recent;
+                        trick_combo_recent = -1;
+                    }
+                    u[2] = 3;
+                    u[1] = *(unsigned char *)&trick_combo_flash_ticks;
+                    u[0] = scale_ticks(0x78);
+                } else {
+                    u[2] = 2;
+                    u[1] = *(unsigned char *)&trick_combo_flash_ticks;
+                    u[0] = scale_ticks(0x3C);
+                }
+            }
+            break;
+        }
+        case 2:
+        case 3:
+            if (u[0] == 0) {
+                trick_combo_score = 0;
+                trick_combo_spins = 0;
+                trick_combo_trick_count = 0;
+                {
+                    int k;
+                    for (k = 3; k >= 0; k--) {
+                        (&trick_combo_trick_flags)[k] = 0;
+                    }
+                }
+                u[2] = 0;
+                u[0] = 0;
+            } else if (u[2] == 3 && u[0] == scale_ticks(0x6E)) {
+                int n = trick_combo_score;
+                H = hero_globals_base + 0xE1D;
+                *(int *)(H + 0x8A8) += n;
+                *(int *)(H + 0x864) += n * 5;
+                if ((int)((float)scale_ticks(0x11) * 60.0f) < *(int *)(H + 0x864)) {
+                    *(int *)(H + 0x864) = (int)((float)scale_ticks(0x11) * 60.0f);
+                }
+            }
+            u[0]--;
+            break;
     }
 }
 extern int sprintf_r(char *, const char *, ...) __asm__("func_00116248");
@@ -236,12 +236,16 @@ int draw_trick_combo_hud(char *a) {
         h = truncate_float_to_s32_r(f21 * 128.0f) << 24;
         acc += h;
         if (u[2] == 1 || u[2] == 2) {
-            FontPrintCenterLarge_x(*(int *)&trick_combo_spin_text_x + 1, *(int *)&trick_combo_spin_text_y + 1, h, (int)buf, -1);
-            FontPrintCenterLarge_x(*(int *)&trick_combo_spin_text_x, *(int *)&trick_combo_spin_text_y, acc, (int)buf, -1);
+            FontPrintCenterLarge_x(*(int *)&trick_combo_spin_text_x + 1, *(int *)&trick_combo_spin_text_y + 1, h,
+                                   (int)buf, -1);
+            FontPrintCenterLarge_x(*(int *)&trick_combo_spin_text_x, *(int *)&trick_combo_spin_text_y, acc, (int)buf,
+                                   -1);
             sprintf_r(buf, rilgar_fmt_count_and_word, trick_combo_trick_count,
-                                   msg_string_r(trick_combo_trick_count == 1 ? 0x517C : 0x517D));
-            FontPrintCenterLarge_x(*(int *)&trick_combo_count_text_x + 1, *(int *)&trick_combo_count_text_y + 1, h, (int)buf, -1);
-            FontPrintCenterLarge_x(*(int *)&trick_combo_count_text_x, *(int *)&trick_combo_count_text_y, acc, (int)buf, -1);
+                      msg_string_r(trick_combo_trick_count == 1 ? 0x517C : 0x517D));
+            FontPrintCenterLarge_x(*(int *)&trick_combo_count_text_x + 1, *(int *)&trick_combo_count_text_y + 1, h,
+                                   (int)buf, -1);
+            FontPrintCenterLarge_x(*(int *)&trick_combo_count_text_x, *(int *)&trick_combo_count_text_y, acc, (int)buf,
+                                   -1);
         } else if (u[2] == 3) {
             sel = -1;
             if (trick_combo_trick_count == 3) {
@@ -289,16 +293,18 @@ int draw_trick_combo_hud(char *a) {
                 if (trick_combo_trick_count == 1) {
                     trick_combo_score = trick_combo_spins * 10;
                     sprintf_r(buf, rilgar_fmt_number, trick_combo_score);
-                    draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y - 0x18, acc, (int)buf);
+                    draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y - 0x18, acc,
+                                     (int)buf);
                     sprintf_r(buf, rilgar_fmt_single_trick_line, msg_string_r(out[0] + 0x5183), trick_combo_spins,
-                                           msg_string_r(trick_combo_spins == 0x168 ? 0x50A7 : 0x50A8));
+                              msg_string_r(trick_combo_spins == 0x168 ? 0x50A7 : 0x50A8));
                     draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y, acc, (int)buf);
                 } else {
                     trick_combo_score = trick_combo_spins * 20;
                     sprintf_r(buf, rilgar_fmt_number, trick_combo_score);
-                    draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y - 0x18, acc, (int)buf);
+                    draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y - 0x18, acc,
+                                     (int)buf);
                     sprintf_r(buf, rilgar_fmt_double_trick_line, msg_string_r(out[0] + 0x5183),
-                                           msg_string_r(out[1] + 0x5183), trick_combo_spins);
+                              msg_string_r(out[1] + 0x5183), trick_combo_spins);
                     draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y, acc, (int)buf);
                 }
             }
@@ -321,7 +327,8 @@ int draw_trick_combo_hud(char *a) {
         r3 = scale_ticks(0x3C);
         f0 = IntToFloat(rilgar_frame_count % r3) / (float)r3;
         f0 = FastSin(f0 * 6.283180236816406f - 3.141590118408203f);
-        r3 = FastTweenColor(*(int *)&trick_combo_banner_color_from, *(int *)&trick_combo_banner_color_to, f0 * 0.5f + 0.5f);
+        r3 = FastTweenColor(*(int *)&trick_combo_banner_color_from, *(int *)&trick_combo_banner_color_to,
+                            f0 * 0.5f + 0.5f);
         sprintf_r(buf, msg_string_r(0x531F));
         draw_framed_text(*(int *)&trick_combo_banner_x + 1, *(int *)&trick_combo_banner_y + 1, 0x80000000, (int)buf);
         draw_framed_text(*(int *)&trick_combo_banner_x, *(int *)&trick_combo_banner_y, r3, (int)buf);
@@ -366,8 +373,7 @@ extern char hero_globals_base[];
 extern int scale_ticks(int);
 
 /* Fades the progress HUD in when the hero is in mode 0x16, else fades it out. */
-void set_progress_hud_fade_from_hero_mode(char *moby)
-{
+void set_progress_hud_fade_from_hero_mode(char *moby) {
     if (((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.control_mode == 0x16) {
         *(int *)(moby + 0x7C) = scale_ticks(0x1E);
         *(int *)(moby + 0x6C) = 5;
@@ -432,7 +438,8 @@ int draw_hud_progress_and_rank(char *e) {
     y = hud_sub_66D10(g_screen_extent[1], pal, &rilgar_progress_text_bottom);
     hd = (struct Hero *)(hero_globals_base + 0xE1D);
     y1 = y + 1;
-    draw_stretchable_ui_frame(*(int *)&(rilgar_progress_frame_x), x, *(int *)&(rilgar_progress_frame_width), *(int *)&(rilgar_progress_frame_height), *(int *)&(rilgar_progress_frame_alpha));
+    draw_stretchable_ui_frame(*(int *)&(rilgar_progress_frame_x), x, *(int *)&(rilgar_progress_frame_width),
+                              *(int *)&(rilgar_progress_frame_height), *(int *)&(rilgar_progress_frame_alpha));
     tx = *(int *)&(rilgar_progress_label_x);
     sprintf(buf, rilgar_fmt_label, msg_string(0x5244));
     print_text_with_texture_3(tx - 1, y1, 0x80000000L, buf, -1);
@@ -441,7 +448,8 @@ int draw_hud_progress_and_rank(char *e) {
     tx = tx + w;
     {
         int n = hd->race_lap + 1;
-        if (!(n < 4)) n = 3;
+        if (!(n < 4))
+            n = 3;
         sprintf(buf, rilgar_fmt_progress_number, n);
     }
     print_text_with_texture_3(tx - 1, y + 2, 0x80000000L, buf, -1);
@@ -450,7 +458,8 @@ int draw_hud_progress_and_rank(char *e) {
         int n = hd->race_position;
         tx = *(int *)&(rilgar_progress_rank_right_x);
         n = n - 1;
-        if (!(n < 5)) n = 4;
+        if (!(n < 5))
+            n = 4;
         sprintf(buf, rilgar_fmt_string, msg_string(n + 0x5229));
     }
     w = measure_text_width_regular(buf, -1);
@@ -542,7 +551,8 @@ int draw_hud_timer(HudElem_002670A0 *e) {
     hund = frames * 100 / per_sec;
 
     if (gSpecialItems_r[0]) {
-        draw_stretchable_ui_frame_r(D_L05_0015FACC_002670A0, y0, D_L05_0015FAD4_002670A0, D_L05_0015FAD8_002670A0, D_L05_0015FADC_002670A0);
+        draw_stretchable_ui_frame_r(D_L05_0015FACC_002670A0, y0, D_L05_0015FAD4_002670A0, D_L05_0015FAD8_002670A0,
+                                    D_L05_0015FADC_002670A0);
         x = D_L05_0015FAE8_002670A0;
         sprintf_r(buf, rilgar_fmt_race_score_width_r, msg_string_r(0x50A6), hero_002670A0.race_score);
         x -= measure_text_width_regular_r(buf, -1) >> 1;

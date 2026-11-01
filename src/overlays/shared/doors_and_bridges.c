@@ -6,44 +6,44 @@
 
 /* Timed activation pads: stepped on, they count down until the group is activated. */
 struct TimedPadsVars {
-    s32 timer;                      /* 0x00: ticks left */
-    s32 step_timer;                 /* 0x04: next tick sound */
-    s32 active;                     /* 0x08 */
-    s16 blink_timer;                /* 0x0C */
-    s16 blink_phase;                /* 0x0E */
-    s32 duration;                   /* 0x10: seconds, 0 for the default */
+    s32 timer; /* 0x00: ticks left */
+    s32 step_timer; /* 0x04: next tick sound */
+    s32 active; /* 0x08 */
+    s16 blink_timer; /* 0x0C */
+    s16 blink_phase; /* 0x0E */
+    s32 duration; /* 0x10: seconds, 0 for the default */
 };
 
 /* Sliding door: opens along dir, closes back to closed_pos. */
 struct DoorVars {
-    Vec3f closed_pos;               /* 0x00 */
-    f32 travel;                     /* 0x0C: distance left to open or closed */
-    s32 trigger;                    /* 0x10: index of the controlling moby, -1 none */
-    u32 closed_cmd;                 /* 0x14: trigger state that closes */
-    u32 open_cmd;                   /* 0x18: trigger state that opens */
-    Vec3f dir;                      /* 0x1C: open offset */
-    f32 open_speed;                 /* 0x28 */
-    f32 close_speed;                /* 0x2C */
-    s32 sound_move;                 /* 0x30 */
-    s32 sound_stop;                 /* 0x34 */
-    s32 indicator;                  /* 0x38: umbris indicator slot */
+    Vec3f closed_pos; /* 0x00 */
+    f32 travel; /* 0x0C: distance left to open or closed */
+    s32 trigger; /* 0x10: index of the controlling moby, -1 none */
+    u32 closed_cmd; /* 0x14: trigger state that closes */
+    u32 open_cmd; /* 0x18: trigger state that opens */
+    Vec3f dir; /* 0x1C: open offset */
+    f32 open_speed; /* 0x28 */
+    f32 close_speed; /* 0x2C */
+    s32 sound_move; /* 0x30 */
+    s32 sound_stop; /* 0x34 */
+    s32 indicator; /* 0x38: umbris indicator slot */
 };
 
 /* Bridge: same motion as the door, plus an entity matrix block. */
 struct BridgeVars {
     u8 pad_00[0x60];
-    u8 entity[0x40];                /* 0x60: update_entity_matrix block */
-    Vec3f closed_pos;               /* 0xA0 */
-    f32 travel;                     /* 0xAC */
-    s32 trigger;                    /* 0xB0 */
-    u32 closed_cmd;                 /* 0xB4 */
-    u32 open_cmd;                   /* 0xB8 */
-    Vec3f dir;                      /* 0xBC */
-    f32 open_speed;                 /* 0xC8 */
-    f32 close_speed;                /* 0xCC */
-    s32 sound_move;                 /* 0xD0 */
-    s32 sound_stop;                 /* 0xD4 */
-    s32 indicator;                  /* 0xD8 */
+    u8 entity[0x40]; /* 0x60: update_entity_matrix block */
+    Vec3f closed_pos; /* 0xA0 */
+    f32 travel; /* 0xAC */
+    s32 trigger; /* 0xB0 */
+    u32 closed_cmd; /* 0xB4 */
+    u32 open_cmd; /* 0xB8 */
+    Vec3f dir; /* 0xBC */
+    f32 open_speed; /* 0xC8 */
+    f32 close_speed; /* 0xCC */
+    s32 sound_move; /* 0xD0 */
+    s32 sound_stop; /* 0xD4 */
+    s32 indicator; /* 0xD8 */
 };
 
 extern void prepare_scaled_float_table_with_target_byte(void *, int, float);
@@ -52,17 +52,16 @@ extern char umbris_ambient_stream_scaled_table[];
 extern char register_audio_stream_callback[];
 
 /* Umbris ambient stream moby: sets up its table, then queues the audio stream. */
-void AmbientStreamL07Update(unsigned char *moby)
-{
+void AmbientStreamL07Update(unsigned char *moby) {
     switch (moby[0x20]) {
-    case 0:
-        moby[0x20] = 1;
-        moby[0x30] = 0xFF;
-        prepare_scaled_float_table_with_target_byte(umbris_ambient_stream_scaled_table, 0x80, 1.0f);
-        break;
-    case 1:
-        AddDrawCallback(register_audio_stream_callback, moby);
-        break;
+        case 0:
+            moby[0x20] = 1;
+            moby[0x30] = 0xFF;
+            prepare_scaled_float_table_with_target_byte(umbris_ambient_stream_scaled_table, 0x80, 1.0f);
+            break;
+        case 1:
+            AddDrawCallback(register_audio_stream_callback, moby);
+            break;
     }
 }
 extern int D_0015EE84_30D370 SDATA(D_0015EE84);
@@ -86,8 +85,7 @@ extern int FastDecTimer_r(void *) __asm__("func_001F9938");
 /* Timed activation pad update: runs the 10-state machine on the data block at moby+0x78.
  * The timer is a MIN() of two expressions with calls in them, so the calls are made twice;
  * the timer of state 1 is a call in each arm (retail cross-jumps the two calls into one). */
-void timed_activation_pads_update(unsigned char *moby)
-{
+void timed_activation_pads_update(unsigned char *moby) {
     struct TimedPadsVars *d;
     struct Hero *p;
     float o[4];
@@ -143,91 +141,92 @@ void timed_activation_pads_update(unsigned char *moby)
             } else if (fast_dec_timer_r(&d->step_timer)) {
                 Moby_PlaySound_r(0, 0, (int)moby);
                 d->step_timer = scale_ticks_r(0x2D) < scale_ticks_r(5) + d->timer / scale_ticks_r(0x28)
-                    ? scale_ticks_r(0x2D) : scale_ticks_r(5) + d->timer / scale_ticks_r(0x28);
+                                    ? scale_ticks_r(0x2D)
+                                    : scale_ticks_r(5) + d->timer / scale_ticks_r(0x28);
             }
         }
     }
 
     switch (((Moby *)moby)->state) {
-    case 0:
-        set_moby_color_r(moby, 0x80, 0x80, 0x80);
-        MobyGroup_SetByteBC_r(((Moby *)moby)->group, 0);
-        set_moby_list_state_r(((Moby *)moby)->group, 1);
-        break;
-    case 1:
-        d->active = 0;
-        set_moby_color_r(moby, 0x80, 0x80, 0x80);
-        if (flag) {
-            if (d->duration > 0)
-                d->timer = scale_ticks_r(d->duration * 60);
-            else
-                d->timer = scale_ticks_r(900);
-            on = 1;
-            set_moby_color_r(moby, 0, 0xFF, 0);
-            d->active = on;
+        case 0:
+            set_moby_color_r(moby, 0x80, 0x80, 0x80);
             MobyGroup_SetByteBC_r(((Moby *)moby)->group, 0);
-            ((Moby *)moby)->command = on;
-            Moby_PlaySound_r(3, 0, (int)moby);
-            set_moby_list_state_r(((Moby *)moby)->group, 2);
-        }
-        break;
-    case 2:
-        ((Moby *)moby)->state = 3;
-        break;
-    case 3:
-        if (flag) {
-            d->active = 1;
-            set_moby_color_r(moby, 0, 0xFF, 0);
-            Moby_PlaySound_r(3, 0, (int)moby);
-            set_moby_list_state_r(((Moby *)moby)->group, 4);
-        }
-        break;
-    case 4:
-        ((Moby *)moby)->state = 5;
-        break;
-    case 5:
-        if (flag) {
-            d->active = 1;
-            set_moby_color_r(moby, 0, 0xFF, 0);
-            set_moby_list_state_r(((Moby *)moby)->group, 6);
-            Moby_PlaySound_r(1, 0, (int)moby);
-        }
-        break;
-    case 6:
-        d->blink_timer = scale_ticks_r(0x14);
-        d->blink_phase = 0;
-        set_moby_color_r(moby, 0x80, 0xFF, 0x80);
-        ((Moby *)moby)->state = 7;
-        break;
-    case 7:
-        if (((Moby *)moby)->mission != 0xFF) {
-            if (saved_mission_state_r[((Moby *)moby)->mission + (D_0015EE84_30D370 << 4)] != 0xFF)
-                jet_clear_persistent_r(((Moby *)moby)->mission);
-        }
-        if (FastDecTimer_r(&d->blink_timer)) {
-            d->blink_timer = scale_ticks_r(0x14);
-            switch (d->blink_phase) {
-            case 0:
+            set_moby_list_state_r(((Moby *)moby)->group, 1);
+            break;
+        case 1:
+            d->active = 0;
+            set_moby_color_r(moby, 0x80, 0x80, 0x80);
+            if (flag) {
+                if (d->duration > 0)
+                    d->timer = scale_ticks_r(d->duration * 60);
+                else
+                    d->timer = scale_ticks_r(900);
+                on = 1;
                 set_moby_color_r(moby, 0, 0xFF, 0);
-                d->blink_phase = 1;
-                break;
-            case 1:
-                set_moby_color_r(moby, 0xFF, 0xFF, 0xFF);
-                d->blink_phase = 0;
-                break;
-            case 2 ... 5:
-                d->blink_phase = 0;
-                break;
+                d->active = on;
+                MobyGroup_SetByteBC_r(((Moby *)moby)->group, 0);
+                ((Moby *)moby)->command = on;
+                Moby_PlaySound_r(3, 0, (int)moby);
+                set_moby_list_state_r(((Moby *)moby)->group, 2);
             }
-        }
-        break;
-    case 8:
-        set_moby_color_r(moby, 0x80, 0x80, 0x80);
-        ((Moby *)moby)->command = 0;
-        ((Moby *)moby)->state = 1;
-        break;
-    case 9:
-        break;
+            break;
+        case 2:
+            ((Moby *)moby)->state = 3;
+            break;
+        case 3:
+            if (flag) {
+                d->active = 1;
+                set_moby_color_r(moby, 0, 0xFF, 0);
+                Moby_PlaySound_r(3, 0, (int)moby);
+                set_moby_list_state_r(((Moby *)moby)->group, 4);
+            }
+            break;
+        case 4:
+            ((Moby *)moby)->state = 5;
+            break;
+        case 5:
+            if (flag) {
+                d->active = 1;
+                set_moby_color_r(moby, 0, 0xFF, 0);
+                set_moby_list_state_r(((Moby *)moby)->group, 6);
+                Moby_PlaySound_r(1, 0, (int)moby);
+            }
+            break;
+        case 6:
+            d->blink_timer = scale_ticks_r(0x14);
+            d->blink_phase = 0;
+            set_moby_color_r(moby, 0x80, 0xFF, 0x80);
+            ((Moby *)moby)->state = 7;
+            break;
+        case 7:
+            if (((Moby *)moby)->mission != 0xFF) {
+                if (saved_mission_state_r[((Moby *)moby)->mission + (D_0015EE84_30D370 << 4)] != 0xFF)
+                    jet_clear_persistent_r(((Moby *)moby)->mission);
+            }
+            if (FastDecTimer_r(&d->blink_timer)) {
+                d->blink_timer = scale_ticks_r(0x14);
+                switch (d->blink_phase) {
+                    case 0:
+                        set_moby_color_r(moby, 0, 0xFF, 0);
+                        d->blink_phase = 1;
+                        break;
+                    case 1:
+                        set_moby_color_r(moby, 0xFF, 0xFF, 0xFF);
+                        d->blink_phase = 0;
+                        break;
+                    case 2 ... 5:
+                        d->blink_phase = 0;
+                        break;
+                }
+            }
+            break;
+        case 8:
+            set_moby_color_r(moby, 0x80, 0x80, 0x80);
+            ((Moby *)moby)->command = 0;
+            ((Moby *)moby)->state = 1;
+            break;
+        case 9:
+            break;
     }
 }
 extern int g_current_level_index MACRO_ADDR;
@@ -238,12 +237,11 @@ extern f32 FastVecLength(void *);
 extern void vec_scale_to_length(f32, void *, void *);
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void Moby_PlaySound(s32, s32, void *);
-extern u8 * level_mobys MACRO_ADDR;
+extern u8 *level_mobys MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
 
 /* Door update: moves between open and closed states, gated by its mission state. */
-void door_update(u8 *moby)
-{
+void door_update(u8 *moby) {
     struct DoorVars *data = (struct DoorVars *)((Moby *)moby)->pvars;
     u8 *other;
     f32 vectors[8];
@@ -257,110 +255,105 @@ void door_update(u8 *moby)
 
     state = ((Moby *)moby)->state;
     switch (state) {
-    case 0:
-        qcopy(&data->closed_pos, moby + 0x10);
-        if (data->indicator != -1)
-            umbris_indicator_states[data->indicator] = 0;
-        ((Moby *)moby)->state = 1;
-        *(s32 *)&data->travel = 0;
-        return;
-    case 1:
-        if (data->indicator != -1)
-            umbris_indicator_states[data->indicator] = 0;
-        if (data->trigger != -1) {
-            other = level_mobys + data->trigger * 0x100;
-            if (other != 0 && other[0x20] != 0xfe && other[0x20] != 0xfd &&
-                other[0x20] != data->closed_cmd)
-                return;
-        }
-        *(quadword *)(vectors + 4) = 0;
-        vectors[4] = data->dir.x;
-        vectors[5] = data->dir.y;
-        vectors[6] = data->dir.z;
-        *(quadword *)vectors = *(quadword *)(vectors + 4);
-        data->travel = FastVecLength(vectors);
-        if (data->sound_move != -1)
-            Moby_PlaySound(data->sound_move, 0, moby);
-        ((Moby *)moby)->state = 2;
-        return;
-    case 2:
-        if (data->indicator != -1)
-            umbris_indicator_states[data->indicator] = 1;
-        if (data->trigger != -1) {
-            other = level_mobys + data->trigger * 0x100;
-            if (other != 0 && other[0x20] != 0xfe && other[0x20] != 0xfd &&
-                other[0x20] == data->open_cmd) {
-                if (data->sound_move != -1)
-                    Moby_PlaySound(data->sound_move, 0, moby);
-                ((Moby *)moby)->state = 4;
-                return;
+        case 0:
+            qcopy(&data->closed_pos, moby + 0x10);
+            if (data->indicator != -1)
+                umbris_indicator_states[data->indicator] = 0;
+            ((Moby *)moby)->state = 1;
+            *(s32 *)&data->travel = 0;
+            return;
+        case 1:
+            if (data->indicator != -1)
+                umbris_indicator_states[data->indicator] = 0;
+            if (data->trigger != -1) {
+                other = level_mobys + data->trigger * 0x100;
+                if (other != 0 && other[0x20] != 0xfe && other[0x20] != 0xfd && other[0x20] != data->closed_cmd)
+                    return;
             }
-        }
-        *(quadword *)(vectors + 4) = 0;
-        vectors[4] = data->dir.x;
-        vectors[5] = data->dir.y;
-        vectors[6] = data->dir.z;
-        *(quadword *)vectors = *(quadword *)(vectors + 4);
-        matrix_mul_vec3(vectors, vectors, moby + 0xc0);
-        vec_scale_to_length(data->open_speed * g_frame_time, vectors + 4, vectors);
-        FastVecAdd(moby + 0x10, moby + 0x10, vectors + 4);
-        data->travel -= data->open_speed * g_frame_time;
-        if (!(data->travel < 0.0f))
-            return;
-        FastVecAdd(moby + 0x10, &data->closed_pos, vectors);
-        data->travel = 0.0f;
-        ((Moby *)moby)->state = 3;
-        if (data->sound_stop != -1)
-            Moby_PlaySound(data->sound_move, 0, moby);
-        return;
-    case 3:
-        if (data->indicator != -1)
-            umbris_indicator_states[data->indicator] = 1;
-        if (data->trigger == -1)
-            return;
-        other = level_mobys + data->trigger * 0x100;
-        if (other == 0 || other[0x20] == 0xfe || other[0x20] == 0xfd ||
-            other[0x20] != data->open_cmd)
-            return;
-        *(s32 *)&data->travel = 0;
-        if (data->sound_move != -1)
-            Moby_PlaySound(data->sound_move, 0, moby);
-        ((Moby *)moby)->state = 4;
-        return;
-    case 4:
-        if (data->indicator != -1)
-            umbris_indicator_states[data->indicator] = 0;
-        if (data->trigger == -1 ||
-            (other = level_mobys + data->trigger * 0x100) == 0 ||
-            other[0x20] == 0xfe || other[0x20] == 0xfd ||
-            other[0x20] == data->closed_cmd) {
-            if (data->sound_move != -1)
-                Moby_PlaySound(data->sound_move, 0, moby);
-            ((Moby *)moby)->state = 2;
-        } else {
             *(quadword *)(vectors + 4) = 0;
             vectors[4] = data->dir.x;
             vectors[5] = data->dir.y;
             vectors[6] = data->dir.z;
             *(quadword *)vectors = *(quadword *)(vectors + 4);
-            distance = FastVecLength(vectors);
-            vec_scale_to_length(-(data->close_speed * g_frame_time), vectors, vectors);
-            matrix_mul_vec3(vectors + 4, vectors, moby + 0xc0);
-            FastVecAdd(moby + 0x10, moby + 0x10, vectors + 4);
-            data->travel += data->close_speed * g_frame_time;
-            if (!(distance < data->travel))
-                return;
-            qcopy(moby + 0x10, &data->closed_pos);
+            data->travel = FastVecLength(vectors);
             if (data->sound_move != -1)
-                Moby_PlaySound(data->sound_stop, 0, moby);
+                Moby_PlaySound(data->sound_move, 0, moby);
+            ((Moby *)moby)->state = 2;
+            return;
+        case 2:
+            if (data->indicator != -1)
+                umbris_indicator_states[data->indicator] = 1;
+            if (data->trigger != -1) {
+                other = level_mobys + data->trigger * 0x100;
+                if (other != 0 && other[0x20] != 0xfe && other[0x20] != 0xfd && other[0x20] == data->open_cmd) {
+                    if (data->sound_move != -1)
+                        Moby_PlaySound(data->sound_move, 0, moby);
+                    ((Moby *)moby)->state = 4;
+                    return;
+                }
+            }
+            *(quadword *)(vectors + 4) = 0;
+            vectors[4] = data->dir.x;
+            vectors[5] = data->dir.y;
+            vectors[6] = data->dir.z;
+            *(quadword *)vectors = *(quadword *)(vectors + 4);
+            matrix_mul_vec3(vectors, vectors, moby + 0xc0);
+            vec_scale_to_length(data->open_speed * g_frame_time, vectors + 4, vectors);
+            FastVecAdd(moby + 0x10, moby + 0x10, vectors + 4);
+            data->travel -= data->open_speed * g_frame_time;
+            if (!(data->travel < 0.0f))
+                return;
+            FastVecAdd(moby + 0x10, &data->closed_pos, vectors);
+            data->travel = 0.0f;
+            ((Moby *)moby)->state = 3;
+            if (data->sound_stop != -1)
+                Moby_PlaySound(data->sound_move, 0, moby);
+            return;
+        case 3:
+            if (data->indicator != -1)
+                umbris_indicator_states[data->indicator] = 1;
+            if (data->trigger == -1)
+                return;
+            other = level_mobys + data->trigger * 0x100;
+            if (other == 0 || other[0x20] == 0xfe || other[0x20] == 0xfd || other[0x20] != data->open_cmd)
+                return;
+            *(s32 *)&data->travel = 0;
+            if (data->sound_move != -1)
+                Moby_PlaySound(data->sound_move, 0, moby);
+            ((Moby *)moby)->state = 4;
+            return;
+        case 4:
             if (data->indicator != -1)
                 umbris_indicator_states[data->indicator] = 0;
-            ((Moby *)moby)->state = 1;
-        }
-        break;
-    case 5:
-    default:
-        return;
+            if (data->trigger == -1 || (other = level_mobys + data->trigger * 0x100) == 0 || other[0x20] == 0xfe ||
+                other[0x20] == 0xfd || other[0x20] == data->closed_cmd) {
+                if (data->sound_move != -1)
+                    Moby_PlaySound(data->sound_move, 0, moby);
+                ((Moby *)moby)->state = 2;
+            } else {
+                *(quadword *)(vectors + 4) = 0;
+                vectors[4] = data->dir.x;
+                vectors[5] = data->dir.y;
+                vectors[6] = data->dir.z;
+                *(quadword *)vectors = *(quadword *)(vectors + 4);
+                distance = FastVecLength(vectors);
+                vec_scale_to_length(-(data->close_speed * g_frame_time), vectors, vectors);
+                matrix_mul_vec3(vectors + 4, vectors, moby + 0xc0);
+                FastVecAdd(moby + 0x10, moby + 0x10, vectors + 4);
+                data->travel += data->close_speed * g_frame_time;
+                if (!(distance < data->travel))
+                    return;
+                qcopy(moby + 0x10, &data->closed_pos);
+                if (data->sound_move != -1)
+                    Moby_PlaySound(data->sound_stop, 0, moby);
+                if (data->indicator != -1)
+                    umbris_indicator_states[data->indicator] = 0;
+                ((Moby *)moby)->state = 1;
+            }
+            break;
+        case 5:
+        default:
+            return;
     }
 }
 extern int g_current_level_index MACRO_ADDR;
@@ -373,12 +366,11 @@ extern void vec_scale_to_length(f32, void *, void *);
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void Moby_PlaySound(s32, s32, void *);
 extern void update_entity_matrix(void *, void *, void *, void *);
-extern u8 * level_mobys MACRO_ADDR;
+extern u8 *level_mobys MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b1e48.c, FUN_L07_0031aee0. */
-void bridge_update(u8 *moby)
-{
+void bridge_update(u8 *moby) {
     struct BridgeVars *data = (struct BridgeVars *)((Moby *)moby)->pvars;
     u8 *other;
     f32 delta[4];
@@ -397,103 +389,98 @@ void bridge_update(u8 *moby)
 
     state = ((Moby *)moby)->state;
     switch (state) {
-    case 0:
-        qcopy(&data->closed_pos, moby + 0x10);
-        if (data->indicator != -1)
-            umbris_indicator_states[data->indicator] = 0;
-        ((Moby *)moby)->state = 1;
-        *(s32 *)&data->travel = 0;
-        break;
-    case 1:
-        if (data->trigger != -1) {
-            other = level_mobys + data->trigger * 0x100;
-            if (other != 0 && other[0x20] != 0xfe && other[0x20] != 0xfd &&
-                other[0x20] != data->closed_cmd)
-                break;
-        }
-        *(quadword *)(vectors + 4) = 0;
-        vectors[4] = data->dir.x;
-        vectors[5] = data->dir.y;
-        vectors[6] = data->dir.z;
-        *(quadword *)vectors = *(quadword *)(vectors + 4);
-        data->travel = FastVecLength(vectors);
-        if (data->sound_move != -1)
-            Moby_PlaySound(data->sound_move, 0, moby);
-        ((Moby *)moby)->state = 2;
-        break;
-    case 2:
-        if (data->trigger != -1) {
-            other = level_mobys + data->trigger * 0x100;
-            if (other != 0 && other[0x20] != 0xfe && other[0x20] != 0xfd &&
-                other[0x20] == data->open_cmd) {
-                if (data->sound_move != -1)
-                    Moby_PlaySound(data->sound_move, 0, moby);
-                ((Moby *)moby)->state = 4;
-                break;
-            }
-        }
-        *(quadword *)(vectors + 4) = 0;
-        vectors[4] = data->dir.x;
-        vectors[5] = data->dir.y;
-        vectors[6] = data->dir.z;
-        *(quadword *)vectors = *(quadword *)(vectors + 4);
-        matrix_mul_vec3(vectors, vectors, moby + 0xc0);
-        vec_scale_to_length(data->open_speed * g_frame_time, vectors + 4, vectors);
-        FastVecAdd(moby + 0x10, moby + 0x10, vectors + 4);
-        data->travel -= data->open_speed * g_frame_time;
-        if (data->travel < 0.0f) {
-            FastVecAdd(moby + 0x10, &data->closed_pos, vectors);
-            data->travel = 0.0f;
+        case 0:
+            qcopy(&data->closed_pos, moby + 0x10);
             if (data->indicator != -1)
-                umbris_indicator_states[data->indicator] = 1;
-            ((Moby *)moby)->state = 3;
-            if (data->sound_stop != -1)
-                Moby_PlaySound(data->sound_move, 0, moby);
-        }
-        break;
-    case 3:
-        if (data->trigger != -1) {
-            other = level_mobys + data->trigger * 0x100;
-            if (other != 0 && other[0x20] != 0xfe && other[0x20] != 0xfd &&
-                other[0x20] == data->open_cmd) {
-                *(s32 *)&data->travel = 0;
-                if (data->sound_move != -1)
-                    Moby_PlaySound(data->sound_move, 0, moby);
-                ((Moby *)moby)->state = 4;
+                umbris_indicator_states[data->indicator] = 0;
+            ((Moby *)moby)->state = 1;
+            *(s32 *)&data->travel = 0;
+            break;
+        case 1:
+            if (data->trigger != -1) {
+                other = level_mobys + data->trigger * 0x100;
+                if (other != 0 && other[0x20] != 0xfe && other[0x20] != 0xfd && other[0x20] != data->closed_cmd)
+                    break;
             }
-        }
-        break;
-    case 4:
-        if (data->trigger == -1 ||
-            (other = level_mobys + data->trigger * 0x100) == 0 ||
-            other[0x20] == 0xfe || other[0x20] == 0xfd ||
-            other[0x20] == data->closed_cmd) {
-            if (data->sound_move != -1)
-                Moby_PlaySound(data->sound_move, 0, moby);
-            ((Moby *)moby)->state = 2;
-        } else {
             *(quadword *)(vectors + 4) = 0;
             vectors[4] = data->dir.x;
             vectors[5] = data->dir.y;
             vectors[6] = data->dir.z;
             *(quadword *)vectors = *(quadword *)(vectors + 4);
-                distance = FastVecLength(vectors);
-            vec_scale_to_length(-(data->close_speed * g_frame_time), vectors, vectors);
-            matrix_mul_vec3(vectors + 4, vectors, moby + 0xc0);
-            FastVecAdd(moby + 0x10, moby + 0x10, vectors + 4);
-            data->travel += data->close_speed * g_frame_time;
-            if (distance < data->travel) {
-                qcopy(moby + 0x10, &data->closed_pos);
-                if (data->sound_move != -1)
-                    Moby_PlaySound(data->sound_stop, 0, moby);
-                if (data->indicator != -1)
-                    umbris_indicator_states[data->indicator] = 0;
-                ((Moby *)moby)->state = 1;
+            data->travel = FastVecLength(vectors);
+            if (data->sound_move != -1)
+                Moby_PlaySound(data->sound_move, 0, moby);
+            ((Moby *)moby)->state = 2;
+            break;
+        case 2:
+            if (data->trigger != -1) {
+                other = level_mobys + data->trigger * 0x100;
+                if (other != 0 && other[0x20] != 0xfe && other[0x20] != 0xfd && other[0x20] == data->open_cmd) {
+                    if (data->sound_move != -1)
+                        Moby_PlaySound(data->sound_move, 0, moby);
+                    ((Moby *)moby)->state = 4;
+                    break;
+                }
             }
-        }
-        break;
-    case 5:
-        break;
+            *(quadword *)(vectors + 4) = 0;
+            vectors[4] = data->dir.x;
+            vectors[5] = data->dir.y;
+            vectors[6] = data->dir.z;
+            *(quadword *)vectors = *(quadword *)(vectors + 4);
+            matrix_mul_vec3(vectors, vectors, moby + 0xc0);
+            vec_scale_to_length(data->open_speed * g_frame_time, vectors + 4, vectors);
+            FastVecAdd(moby + 0x10, moby + 0x10, vectors + 4);
+            data->travel -= data->open_speed * g_frame_time;
+            if (data->travel < 0.0f) {
+                FastVecAdd(moby + 0x10, &data->closed_pos, vectors);
+                data->travel = 0.0f;
+                if (data->indicator != -1)
+                    umbris_indicator_states[data->indicator] = 1;
+                ((Moby *)moby)->state = 3;
+                if (data->sound_stop != -1)
+                    Moby_PlaySound(data->sound_move, 0, moby);
+            }
+            break;
+        case 3:
+            if (data->trigger != -1) {
+                other = level_mobys + data->trigger * 0x100;
+                if (other != 0 && other[0x20] != 0xfe && other[0x20] != 0xfd && other[0x20] == data->open_cmd) {
+                    *(s32 *)&data->travel = 0;
+                    if (data->sound_move != -1)
+                        Moby_PlaySound(data->sound_move, 0, moby);
+                    ((Moby *)moby)->state = 4;
+                }
+            }
+            break;
+        case 4:
+            if (data->trigger == -1 || (other = level_mobys + data->trigger * 0x100) == 0 || other[0x20] == 0xfe ||
+                other[0x20] == 0xfd || other[0x20] == data->closed_cmd) {
+                if (data->sound_move != -1)
+                    Moby_PlaySound(data->sound_move, 0, moby);
+                ((Moby *)moby)->state = 2;
+            } else {
+                *(quadword *)(vectors + 4) = 0;
+                vectors[4] = data->dir.x;
+                vectors[5] = data->dir.y;
+                vectors[6] = data->dir.z;
+                *(quadword *)vectors = *(quadword *)(vectors + 4);
+                distance = FastVecLength(vectors);
+                vec_scale_to_length(-(data->close_speed * g_frame_time), vectors, vectors);
+                matrix_mul_vec3(vectors + 4, vectors, moby + 0xc0);
+                FastVecAdd(moby + 0x10, moby + 0x10, vectors + 4);
+                data->travel += data->close_speed * g_frame_time;
+                if (distance < data->travel) {
+                    qcopy(moby + 0x10, &data->closed_pos);
+                    if (data->sound_move != -1)
+                        Moby_PlaySound(data->sound_stop, 0, moby);
+                    if (data->indicator != -1)
+                        umbris_indicator_states[data->indicator] = 0;
+                    ((Moby *)moby)->state = 1;
+                }
+            }
+            break;
+        case 5:
+            break;
     }
     FastVecAdd(delta, delta, moby + 0x10);
     update_entity_matrix(data->entity, delta, old_rotation, moby + 0x40);

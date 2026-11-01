@@ -35,8 +35,7 @@ extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
 extern unsigned char normal_font_metrics[];
 extern unsigned char small_font_metrics[];
 extern unsigned char large_font_metrics[];
-extern void FontPrint(void *, void *, void *, void *, void *, int,
-                          unsigned char *);
+extern void FontPrint(void *, void *, void *, void *, void *, int, unsigned char *);
 extern int measure_text_width_regular(unsigned char *, int);
 extern int measure_text_width_small(unsigned char *, int);
 extern int GetEffectTex(int);
@@ -292,8 +291,7 @@ void Hud_SendResidentBank(s32 bank, s32 base, s32 immediate) {
         width_log2 = hud_state_r.image_pages[i].width_log2;
         height_log2 = hud_state_r.image_pages[i].height_log2;
         size = 1 << (width_log2 + height_log2);
-        Hud_sendTexture_r(hud_state_r.image_pages[i].source_address, page, 0x1B, width_log2,
-                         height_log2, immediate);
+        Hud_sendTexture_r(hud_state_r.image_pages[i].source_address, page, 0x1B, width_log2, height_log2, immediate);
         address += size * 4;
         hud_state_r.image_pages[i].gs_block_offset = page;
     }
@@ -364,10 +362,8 @@ int queue_animation_update(int arg0, int arg1, int arg2, int arg3, int arg4,
     if (g_game_mode == 5 && idx != 2 && idx != 0) {
         return 0;
     }
-    if (p->unk2C == arg5 && p->unk28 == arg6
-        && p->unk20 == arg1 && p->unk24 == masked0
-        && p->unk30 == arg2 && p->unk34 == arg3
-        && p->unk38 == arg4) {
+    if (p->unk2C == arg5 && p->unk28 == arg6 && p->unk20 == arg1 && p->unk24 == masked0 && p->unk30 == arg2 &&
+        p->unk34 == arg3 && p->unk38 == arg4) {
         return p->unk64;
     }
     cur = hud_state;
@@ -401,22 +397,22 @@ extern void load_animation_definition(void *, int);
    slot), which also makes the scheduler load +0x30 first. */
 typedef struct AnimRec {
     u8 pad_00[0x4];
-    s32 a;                   /* 0x04 */
-    s32 d;                   /* 0x08 */
-    s32 e;                   /* 0x0C */
-    void (*fn)(void *);      /* 0x10: handler, called with the record if nonzero */
-    s32 c;                   /* 0x14 */
-    s32 b;                   /* 0x18 */
+    s32 a; /* 0x04 */
+    s32 d; /* 0x08 */
+    s32 e; /* 0x0C */
+    void (*fn)(void *); /* 0x10: handler, called with the record if nonzero */
+    s32 c; /* 0x14 */
+    s32 b; /* 0x18 */
     u8 pad_1C[0x4];
-    s32 next_id;             /* 0x20: definition id for load_animation_definition */
-    s32 next_a;              /* 0x24 */
-    s32 next_d;              /* 0x28 */
-    s32 next_e;              /* 0x2C */
+    s32 next_id; /* 0x20: definition id for load_animation_definition */
+    s32 next_a; /* 0x24 */
+    s32 next_d; /* 0x28 */
+    s32 next_e; /* 0x2C */
     void (*next_fn)(void *); /* 0x30 */
-    s32 next_c;              /* 0x34 */
-    s32 next_b;              /* 0x38 */
+    s32 next_c; /* 0x34 */
+    s32 next_b; /* 0x38 */
     u8 pad_3C[0x2C];
-    s32 pending;             /* 0x68: cleared once the pending values are applied */
+    s32 pending; /* 0x68: cleared once the pending values are applied */
 } AnimRec;
 
 /* Loads the queued animation and copies its pending values into place. */
@@ -714,12 +710,9 @@ u64 func_00200248_r(s32 frame_id) {
     u64 tex0_word;
     u64 palette_word;
 
-    frame =
-        (struct FrameTextureRef_00248 *)(frame_id * 4 + hud_state_r2.frame_references_address);
-    palette_page = (struct FramePalettePage_00248 *)(hud_state_r2.palette_pages_address +
-                                               frame->palette_index * 8);
-    image_page = (struct FrameImagePage_00248 *)(hud_state_r2.image_pages_address +
-                                           frame->image_index * 8);
+    frame = (struct FrameTextureRef_00248 *)(frame_id * 4 + hud_state_r2.frame_references_address);
+    palette_page = (struct FramePalettePage_00248 *)(hud_state_r2.palette_pages_address + frame->palette_index * 8);
+    image_page = (struct FrameImagePage_00248 *)(hud_state_r2.image_pages_address + frame->image_index * 8);
     queued_transfer = 0;
 
     if (palette_page->gs_block_offset == 0 || image_page->gs_block_offset == 0) {
@@ -761,8 +754,7 @@ u64 func_00200248_r(s32 frame_id) {
         if (image_upload_count < 0x40) {
             queued_transfer = 1;
             packet = pending_texture_uploads_r + image_upload_count;
-            *(s32 *)((u8 *)pending_texture_uploads_r + image_upload_count * 0x10 + 8) =
-                image_page->source_address;
+            *(s32 *)((u8 *)pending_texture_uploads_r + image_upload_count * 0x10 + 8) = image_page->source_address;
             packet->tw = image_page->width_log2;
             packet->th = image_page->height_log2;
             packet->tbp = image_page->gs_block_offset;
@@ -804,8 +796,8 @@ extern long GetFrameTex(int);
    the arena's +0x20 index table into its +0x24 texture table. */
 void HudSprite(int tex, int x, int y, int w, int h, int alpha) {
     char *arena = hud_state_raw;
-    unsigned char *e = (unsigned char *)(*(char **)(arena + 0x24)
-        + *(short *)(*(char **)(arena + 0x20) + tex * 4 + 2) * 8);
+    unsigned char *e =
+        (unsigned char *)(*(char **)(arena + 0x24) + *(short *)(*(char **)(arena + 0x20) + tex * 4 + 2) * 8);
     int th;
     int tw;
     int *base;
@@ -827,13 +819,11 @@ void HudSprite(int tex, int x, int y, int w, int h, int alpha) {
     p[3] = 0x156;
     p[4] = ((long)alpha << 24) | 0x7F7F7F;
     p[5] = 0;
-    p[6] = (x * 16 + g_screen_extent[4] - 8)
-         | ((long)(y * 16 + g_screen_extent[5] - 8) << 16)
-         | ((long)*(int *)(arena + 0xC) << 32);
+    p[6] = (x * 16 + g_screen_extent[4] - 8) | ((long)(y * 16 + g_screen_extent[5] - 8) << 16) |
+           ((long)*(int *)(arena + 0xC) << 32);
     p[7] = (th << 20) + tw * 16;
-    p[8] = ((x + w) * 16 + g_screen_extent[4] - 8)
-         | ((long)((y + h) * 16 + g_screen_extent[5] - 8) << 16)
-         | ((long)*(int *)(arena + 0xC) << 32);
+    p[8] = ((x + w) * 16 + g_screen_extent[4] - 8) | ((long)((y + h) * 16 + g_screen_extent[5] - 8) << 16) |
+           ((long)*(int *)(arena + 0xC) << 32);
     p[9] = 0;
     g_render_packet_cursor = (int *)((char *)g_render_packet_cursor + 0x50);
 }
@@ -843,8 +833,8 @@ void HudSprite(int tex, int x, int y, int w, int h, int alpha) {
    (x+w, y+h), (x+w, y) take UVs (tw, 0), (tw, th), (0, 0), (0, th). */
 void draw_hud_sprite_flipped(int tex, int x, int y, int w, int h, int alpha) {
     char *arena = hud_state_raw;
-    unsigned char *e = (unsigned char *)(*(char **)(arena + 0x24)
-        + *(short *)(*(char **)(arena + 0x20) + tex * 4 + 2) * 8);
+    unsigned char *e =
+        (unsigned char *)(*(char **)(arena + 0x24) + *(short *)(*(char **)(arena + 0x20) + tex * 4 + 2) * 8);
     int th;
     int tw;
     int *base;
@@ -866,21 +856,17 @@ void draw_hud_sprite_flipped(int tex, int x, int y, int w, int h, int alpha) {
     p[3] = 0x154;
     p[4] = ((long)alpha << 24) | 0x7F7F7F;
     p[5] = tw * 16;
-    p[6] = (x * 16 + g_screen_extent[4] - 8)
-         | ((long)((y + h) * 16 + g_screen_extent[5] - 8) << 16)
-         | ((long)*(int *)(arena + 0xC) << 32);
+    p[6] = (x * 16 + g_screen_extent[4] - 8) | ((long)((y + h) * 16 + g_screen_extent[5] - 8) << 16) |
+           ((long)*(int *)(arena + 0xC) << 32);
     p[7] = (th << 20) + tw * 16;
-    p[8] = (x * 16 + g_screen_extent[4] - 8)
-         | ((long)(y * 16 + g_screen_extent[5] - 8) << 16)
-         | ((long)*(int *)(arena + 0xC) << 32);
+    p[8] = (x * 16 + g_screen_extent[4] - 8) | ((long)(y * 16 + g_screen_extent[5] - 8) << 16) |
+           ((long)*(int *)(arena + 0xC) << 32);
     p[9] = 0;
-    p[10] = ((x + w) * 16 + g_screen_extent[4] - 8)
-          | ((long)((y + h) * 16 + g_screen_extent[5] - 8) << 16)
-          | ((long)*(int *)(arena + 0xC) << 32);
+    p[10] = ((x + w) * 16 + g_screen_extent[4] - 8) | ((long)((y + h) * 16 + g_screen_extent[5] - 8) << 16) |
+            ((long)*(int *)(arena + 0xC) << 32);
     p[11] = th << 20;
-    p[12] = ((x + w) * 16 + g_screen_extent[4] - 8)
-          | ((long)(y * 16 + g_screen_extent[5] - 8) << 16)
-          | ((long)*(int *)(arena + 0xC) << 32);
+    p[12] = ((x + w) * 16 + g_screen_extent[4] - 8) | ((long)(y * 16 + g_screen_extent[5] - 8) << 16) |
+            ((long)*(int *)(arena + 0xC) << 32);
     p[13] = 0;
     g_render_packet_cursor = (int *)((char *)g_render_packet_cursor + 0x70);
 }
@@ -890,8 +876,8 @@ LINKER_REMNANT("asm/remnants/text", func_002008B0);
 /* func_00200468 with the position and size already in 16ths of a pixel. */
 void draw_hud_sprite_subpixel(int tex, int x, int y, int w, int h, int alpha) {
     char *arena = hud_state_raw;
-    unsigned char *e = (unsigned char *)(*(char **)(arena + 0x24)
-        + *(short *)(*(char **)(arena + 0x20) + tex * 4 + 2) * 8);
+    unsigned char *e =
+        (unsigned char *)(*(char **)(arena + 0x24) + *(short *)(*(char **)(arena + 0x20) + tex * 4 + 2) * 8);
     int th;
     int tw;
     int *base;
@@ -913,13 +899,11 @@ void draw_hud_sprite_subpixel(int tex, int x, int y, int w, int h, int alpha) {
     p[3] = 0x156;
     p[4] = ((long)alpha << 24) | 0x7F7F7F;
     p[5] = 0;
-    p[6] = (x + g_screen_extent[4] - 8)
-         | ((long)(y + g_screen_extent[5] - 8) << 16)
-         | ((long)*(int *)(arena + 0xC) << 32);
+    p[6] =
+        (x + g_screen_extent[4] - 8) | ((long)(y + g_screen_extent[5] - 8) << 16) | ((long)*(int *)(arena + 0xC) << 32);
     p[7] = (th << 20) + tw * 16;
-    p[8] = (x + w + g_screen_extent[4] - 8)
-         | ((long)(y + h + g_screen_extent[5] - 8) << 16)
-         | ((long)*(int *)(arena + 0xC) << 32);
+    p[8] = (x + w + g_screen_extent[4] - 8) | ((long)(y + h + g_screen_extent[5] - 8) << 16) |
+           ((long)*(int *)(arena + 0xC) << 32);
     p[9] = 0;
     g_render_packet_cursor = (int *)((char *)g_render_packet_cursor + 0x50);
 }
@@ -951,13 +935,9 @@ void draw_hud_sprite_uv(int tex, int x, int y, int w, int h, int u, int v, int a
     p[3] = 0x156;
     p[4] = ((long)alpha << 24) | 0x7F7F7F;
     p[5] = u | ((long)v << 16);
-    p[6] = (x + g_screen_extent[4] - 8)
-         | ((long)(y + g_screen_extent[5] - 8) << 16)
-         | ((long)hud->z << 32);
+    p[6] = (x + g_screen_extent[4] - 8) | ((long)(y + g_screen_extent[5] - 8) << 16) | ((long)hud->z << 32);
     p[7] = (u + tw) | ((long)(v + th) << 16);
-    p[8] = (x + w + g_screen_extent[4] - 8)
-         | ((long)(y + h + g_screen_extent[5] - 8) << 16)
-         | ((long)hud->z << 32);
+    p[8] = (x + w + g_screen_extent[4] - 8) | ((long)(y + h + g_screen_extent[5] - 8) << 16) | ((long)hud->z << 32);
     p[9] = 0;
     g_render_packet_cursor = (int *)((char *)g_render_packet_cursor + 0x50);
 }
@@ -988,7 +968,7 @@ typedef struct {
 /* The HUD arena's depth word at +0xC (sprite_depth_state.z_and_fog in the NTSC decomp). */
 struct SpriteDepthState {
     u8 pad_00[0xC];
-    s32 z_and_fog;                 /* 0x0C */
+    s32 z_and_fog; /* 0x0C */
 };
 
 extern SpriteCursor render_packet_cursor __asm__("D_00161000") MACRO_ADDR;
@@ -1014,14 +994,12 @@ void append_power_of_two_textured_screen_sprite(long texture_register_value, s32
     packet_words[4] = ((s64)alpha << 24) | 0x7F7F7F;
     packet_words[3] = 0x156;
     packet_words[5] = texture_u | ((s64)texture_v << 16);
-    packet_words[6] = (screen_x + g_screen_extent[4] - 8)
-                    | ((s64)(screen_y + g_screen_extent[5] - 8) << 16)
-                    | ((long)arena->z_and_fog << 32);
-    packet_words[7] = (texture_u + (1 << (texture_width_log2 + 4)))
-                    | ((s64)(texture_v + (1 << (texture_height_log2 + 4))) << 16);
-    packet_words[8] = (screen_x + screen_width + g_screen_extent[4] - 8)
-                    | ((s64)(screen_y + screen_height + g_screen_extent[5] - 8) << 16)
-                    | ((long)arena->z_and_fog << 32);
+    packet_words[6] = (screen_x + g_screen_extent[4] - 8) | ((s64)(screen_y + g_screen_extent[5] - 8) << 16) |
+                      ((long)arena->z_and_fog << 32);
+    packet_words[7] =
+        (texture_u + (1 << (texture_width_log2 + 4))) | ((s64)(texture_v + (1 << (texture_height_log2 + 4))) << 16);
+    packet_words[8] = (screen_x + screen_width + g_screen_extent[4] - 8) |
+                      ((s64)(screen_y + screen_height + g_screen_extent[5] - 8) << 16) | ((long)arena->z_and_fog << 32);
     packet_words[9] = 0;
     render_packet_cursor.p = (struct SpritePacket *)((u8 *)render_packet_cursor.p + 0x50);
 }
@@ -1081,21 +1059,13 @@ void draw_rotated_sprite(int u, int v, long tex, float x, float y, float w, floa
     p[3] = 0x154;
     p[4] = 0x807F7F7FL;
     p[5] = u * 16;
-    p[6] = ((int)c0[0] + vp[4] - 8)
-         | ((long)((int)c0[1] + vp[5] - 8) << 16)
-         | ((long)*(int *)(arena + 0xC) << 32);
+    p[6] = ((int)c0[0] + vp[4] - 8) | ((long)((int)c0[1] + vp[5] - 8) << 16) | ((long)*(int *)(arena + 0xC) << 32);
     p[7] = v * 0x100000 + u * 16;
-    p[8] = ((int)c1[0] + vp[4] - 8)
-         | ((long)((int)c1[1] + vp[5] - 8) << 16)
-         | ((long)*(int *)(arena + 0xC) << 32);
+    p[8] = ((int)c1[0] + vp[4] - 8) | ((long)((int)c1[1] + vp[5] - 8) << 16) | ((long)*(int *)(arena + 0xC) << 32);
     p[9] = 0;
-    p[10] = ((int)c2[0] + vp[4] - 8)
-          | ((long)((int)c2[1] + vp[5] - 8) << 16)
-          | ((long)*(int *)(arena + 0xC) << 32);
+    p[10] = ((int)c2[0] + vp[4] - 8) | ((long)((int)c2[1] + vp[5] - 8) << 16) | ((long)*(int *)(arena + 0xC) << 32);
     p[11] = v * 0x100000;
-    p[12] = ((int)c3[0] + vp[4] - 8)
-          | ((long)((int)c3[1] + vp[5] - 8) << 16)
-          | ((long)*(int *)(arena + 0xC) << 32);
+    p[12] = ((int)c3[0] + vp[4] - 8) | ((long)((int)c3[1] + vp[5] - 8) << 16) | ((long)*(int *)(arena + 0xC) << 32);
     p[13] = 0;
     g_render_packet_cursor = (int *)((char *)g_render_packet_cursor + 0x70);
 }
@@ -1126,13 +1096,9 @@ void draw_hud_sprite_rect(int tex, int x0, int y0, int x1, int y1,
     p[4] = ((long)alpha << 24) | 0x7F7F7F;
     p[5] = u0 | ((long)v0 << 16);
     arena = (HudDepthView *)hud_state_raw;
-    p[6] = (x0 + g_screen_extent[4] - 8)
-         | ((long)(y0 + g_screen_extent[5] - 8) << 16)
-         | ((long)arena->depth << 32);
+    p[6] = (x0 + g_screen_extent[4] - 8) | ((long)(y0 + g_screen_extent[5] - 8) << 16) | ((long)arena->depth << 32);
     p[7] = u1 | ((long)v1 << 16);
-    p[8] = (x1 + g_screen_extent[4] - 8)
-         | ((long)(y1 + g_screen_extent[5] - 8) << 16)
-         | ((long)arena->depth << 32);
+    p[8] = (x1 + g_screen_extent[4] - 8) | ((long)(y1 + g_screen_extent[5] - 8) << 16) | ((long)arena->depth << 32);
     p[9] = 0;
     g_render_packet_cursor = (int *)((char *)g_render_packet_cursor + 0x50);
 }
@@ -1210,8 +1176,8 @@ extern int *g_render_packet_cursor MACRO_ADDR;
    parameter -- one fewer int argument than func_002017C8. */
 struct Screen {
     s32 pad_00[4];
-    s32 left;                       /* 0x10 */
-    s32 top;                        /* 0x14 */
+    s32 left; /* 0x10 */
+    s32 top; /* 0x14 */
 };
 
 extern struct Screen screen_extent __asm__("D_0013E600") NOT_SDA;
@@ -1232,19 +1198,15 @@ void draw_hud_rect(int x0, int y0, int x1, int y1, long prim, int pixels) {
     packet_words[4] = 0x41;
     packet_words[5] = prim;
     if (pixels != 0) {
-        packet_words[6] = (x0 + screen_extent.left - 8)
-            | ((long)(y0 + screen_extent.top - 8) << 16)
-            | 0x00FFFFF000000000L;
-        packet_words[7] = (x1 + screen_extent.left - 8)
-            | ((long)(y1 + screen_extent.top - 8) << 16)
-            | 0x00FFFFF000000000L;
+        packet_words[6] =
+            (x0 + screen_extent.left - 8) | ((long)(y0 + screen_extent.top - 8) << 16) | 0x00FFFFF000000000L;
+        packet_words[7] =
+            (x1 + screen_extent.left - 8) | ((long)(y1 + screen_extent.top - 8) << 16) | 0x00FFFFF000000000L;
     } else {
-        packet_words[6] = (x0 * 16 + screen_extent.left - 0x10)
-            | ((long)(y0 * 16 + screen_extent.top - 0x10) << 16)
-            | 0x00FFFFF000000000L;
-        packet_words[7] = (x1 * 16 + screen_extent.left - 0x10)
-            | ((long)(y1 * 16 + screen_extent.top - 0x10) << 16)
-            | 0x00FFFFF000000000L;
+        packet_words[6] = (x0 * 16 + screen_extent.left - 0x10) | ((long)(y0 * 16 + screen_extent.top - 0x10) << 16) |
+                          0x00FFFFF000000000L;
+        packet_words[7] = (x1 * 16 + screen_extent.left - 0x10) | ((long)(y1 * 16 + screen_extent.top - 0x10) << 16) |
+                          0x00FFFFF000000000L;
     }
     g_render_packet_cursor += 12;
 }
@@ -1272,22 +1234,14 @@ void draw_hud_rect_blended(int arg0, int arg1, int arg2, int arg3, long arg4,
     *(long *)((char *)base + 0x28) = arg4;
     if (arg5 != 0) {
         *(long *)((char *)base + 0x30) =
-            (arg0 + g_screen_extent[4] - 8)
-            | ((long)(arg1 + g_screen_extent[5] - 8) << 16)
-            | 0x00FFFFF000000000L;
+            (arg0 + g_screen_extent[4] - 8) | ((long)(arg1 + g_screen_extent[5] - 8) << 16) | 0x00FFFFF000000000L;
         *(long *)((char *)base + 0x38) =
-            (arg2 + g_screen_extent[4] - 8)
-            | ((long)(arg3 + g_screen_extent[5] - 8) << 16)
-            | 0x00FFFFF000000000L;
+            (arg2 + g_screen_extent[4] - 8) | ((long)(arg3 + g_screen_extent[5] - 8) << 16) | 0x00FFFFF000000000L;
     } else {
-        *(long *)((char *)base + 0x30) =
-            (arg0 * 16 + g_screen_extent[4] - 0x10)
-            | ((long)(arg1 * 16 + g_screen_extent[5] - 0x10) << 16)
-            | 0x00FFFFF000000000L;
-        *(long *)((char *)base + 0x38) =
-            (arg2 * 16 + g_screen_extent[4] - 0x10)
-            | ((long)(arg3 * 16 + g_screen_extent[5] - 0x10) << 16)
-            | 0x00FFFFF000000000L;
+        *(long *)((char *)base + 0x30) = (arg0 * 16 + g_screen_extent[4] - 0x10) |
+                                         ((long)(arg1 * 16 + g_screen_extent[5] - 0x10) << 16) | 0x00FFFFF000000000L;
+        *(long *)((char *)base + 0x38) = (arg2 * 16 + g_screen_extent[4] - 0x10) |
+                                         ((long)(arg3 * 16 + g_screen_extent[5] - 0x10) << 16) | 0x00FFFFF000000000L;
     }
     g_render_packet_cursor = (int *)((char *)g_render_packet_cursor + 0x30);
 }
@@ -1319,22 +1273,14 @@ void draw_hud_rect_depth(int arg0, int arg1, int arg2, int arg3, long arg4,
     *(long *)((char *)base + 0x28) = arg4;
     if (arg6 != 0) {
         *(long *)((char *)base + 0x30) =
-            (arg0 + g_screen_extent[4] - 8)
-            | ((long)(arg1 + g_screen_extent[5] - 8) << 16)
-            | ((long)arg5 << 32);
+            (arg0 + g_screen_extent[4] - 8) | ((long)(arg1 + g_screen_extent[5] - 8) << 16) | ((long)arg5 << 32);
         *(long *)((char *)base + 0x38) =
-            (arg2 + g_screen_extent[4] - 8)
-            | ((long)(arg3 + g_screen_extent[5] - 8) << 16)
-            | ((long)arg5 << 32);
+            (arg2 + g_screen_extent[4] - 8) | ((long)(arg3 + g_screen_extent[5] - 8) << 16) | ((long)arg5 << 32);
     } else {
-        *(long *)((char *)base + 0x30) =
-            (arg0 * 16 + g_screen_extent[4] - 0x10)
-            | ((long)(arg1 * 16 + g_screen_extent[5] - 0x10) << 16)
-            | ((long)arg5 << 32);
-        *(long *)((char *)base + 0x38) =
-            (arg2 * 16 + g_screen_extent[4] - 0x10)
-            | ((long)(arg3 * 16 + g_screen_extent[5] - 0x10) << 16)
-            | ((long)arg5 << 32);
+        *(long *)((char *)base + 0x30) = (arg0 * 16 + g_screen_extent[4] - 0x10) |
+                                         ((long)(arg1 * 16 + g_screen_extent[5] - 0x10) << 16) | ((long)arg5 << 32);
+        *(long *)((char *)base + 0x38) = (arg2 * 16 + g_screen_extent[4] - 0x10) |
+                                         ((long)(arg3 * 16 + g_screen_extent[5] - 0x10) << 16) | ((long)arg5 << 32);
     }
     g_render_packet_cursor = (int *)((char *)g_render_packet_cursor + 0x30);
 }

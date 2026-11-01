@@ -26,12 +26,9 @@ extern void libc_fflush(void);
 extern void _fwalk(void *, void *);
 extern char locale_lconv[];
 extern int libc_glue_read();
-extern long func_00116108_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_00116108");
-extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_001188C8");
-extern long func_00114518_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_00114518");
+extern long func_00116108_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00116108");
+extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c) __asm__("func_001188C8");
+extern long func_00114518_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00114518");
 extern int _close_r(int *errOut, int arg1);
 extern int __sfvwrite(int, void *);
 extern void __sinit(void *);
@@ -115,8 +112,8 @@ extern char str_dbc_set_work_addr_error[];
 extern int sceDbcGetDepNumber(int);
 typedef struct {
     char unk_00[4];
-    int  unk_04;
-    int  unk_08;
+    int unk_04;
+    int unk_08;
     char *unk_0C;
     char unk_10[0x320];
 } Ent330;
@@ -154,15 +151,15 @@ long mpeg_type2id(int id, int value) {
 
     if ((u32)id < 10) {
         switch (mpeg_stream_type_keys_r[id].type) {
-        case 0xFFFFFFFFFF:
-            shift = 0;
-            break;
-        case 0xFFFF000000:
-            shift = 24;
-            break;
-        case 0xFF00000000:
-            shift = 32;
-            break;
+            case 0xFFFFFFFFFF:
+                shift = 0;
+                break;
+            case 0xFFFF000000:
+                shift = 24;
+                break;
+            case 0xFF00000000:
+                shift = 32;
+                break;
         }
         result = mpeg_stream_type_keys_r[id].id | ((u64)value << shift);
     }
@@ -264,8 +261,8 @@ int sce_mpeg_demux_pss_ring_buffer(sceMpeg *mp, u8 *start, int size, u8 *bufstar
         if (sysbit_show_r(b, 32) == 0x1BA) {
             mpeg_pack_header_r(b, &h->pack);
         }
-        while (sysbit_show_r(b, 24) == 1 && sysbit_show_r(b, 32) != 0x1BA &&
-               sysbit_show_r(b, 32) != 0x1B9 && b->pos < size * 8 && cont) {
+        while (sysbit_show_r(b, 24) == 1 && sysbit_show_r(b, 32) != 0x1BA && sysbit_show_r(b, 32) != 0x1B9 &&
+               b->pos < size * 8 && cont) {
             mpeg_pes_packet_r(sys, b, &h->pes);
             if (b->pos > size * 8) {
                 continue;
@@ -309,11 +306,14 @@ extern long mpeg_type2id(int arg0, int arg1);
 typedef struct {
     long key;
     long extra;
-    int  cb;
-    int  data;
+    int cb;
+    int data;
 } StrCbEnt; /* 0x18 */
 
-typedef struct { char pad[8]; long extra; } Tbl16;
+typedef struct {
+    char pad[8];
+    long extra;
+} Tbl16;
 extern Tbl16 mpeg_stream_type_keys[];
 
 /*
@@ -441,12 +441,12 @@ int mpeg_pes_packet(int arg0, struct PES_BS *bs, struct PES_HDR *hdr) {
     struct PES_TBL tbl;
     int ctx;
     int flag1;
-    int len;         /* PES_header_data_length */
-    int base;        /* (int)bs->stamp, captured before the header fields */
-    long now;         /* the same stamp, re-read at the sync point */
-    int v7;          /* PTS_DTS_flags */
-    int v8;          /* 4-bit length, indexes tbl */
-    int v5;          /* PES_extension_flag */
+    int len; /* PES_header_data_length */
+    int base; /* (int)bs->stamp, captured before the header fields */
+    long now; /* the same stamp, re-read at the sync point */
+    int v7; /* PTS_DTS_flags */
+    int v8; /* 4-bit length, indexes tbl */
+    int v5; /* PES_extension_flag */
 
     ctx = arg0;
     hdr->unk28 = (int)bs->stamp;
@@ -456,14 +456,10 @@ int mpeg_pes_packet(int arg0, struct PES_BS *bs, struct PES_HDR *hdr) {
     hdr->unk8 = sysbit_get(bs, 0x10);
     hdr->unk18 = -1;
     hdr->unk10 = -1;
-    if (hdr->unk0 != ((unsigned long)0xBC00 << 0x18) &&
-        hdr->unk0 != ((unsigned long)0xBE00 << 0x18) &&
-        hdr->unk0 != ((unsigned long)0xBF00 << 0x18) &&
-        hdr->unk0 != ((unsigned long)0xF000 << 0x18) &&
-        hdr->unk0 != ((unsigned long)0xF100 << 0x18) &&
-        hdr->unk0 != ((unsigned long)0xFF00 << 0x18) &&
-        hdr->unk0 != ((unsigned long)0xF200 << 0x18) &&
-        hdr->unk0 != ((unsigned long)0xF800 << 0x18)) {
+    if (hdr->unk0 != ((unsigned long)0xBC00 << 0x18) && hdr->unk0 != ((unsigned long)0xBE00 << 0x18) &&
+        hdr->unk0 != ((unsigned long)0xBF00 << 0x18) && hdr->unk0 != ((unsigned long)0xF000 << 0x18) &&
+        hdr->unk0 != ((unsigned long)0xF100 << 0x18) && hdr->unk0 != ((unsigned long)0xFF00 << 0x18) &&
+        hdr->unk0 != ((unsigned long)0xF200 << 0x18) && hdr->unk0 != ((unsigned long)0xF800 << 0x18)) {
         sysbit_get(bs, 2);
         hdr->unkC = sysbit_get(bs, 2);
         sysbit_get(bs, 4);
@@ -540,32 +536,29 @@ int mpeg_pes_packet(int arg0, struct PES_BS *bs, struct PES_HDR *hdr) {
         }
         now = bs->stamp;
         {
-        int delta = len - (int)((now - base) >> 3);
-        if (delta != 0) {
-            sysbit_jump(bs, delta);
-        }
+            int delta = len - (int)((now - base) >> 3);
+            if (delta != 0) {
+                sysbit_jump(bs, delta);
+            }
         }
         {
-        int n = hdr->unk8 - len;
-        int m;
-        hdr->unk24 = n - 3;
-        hdr->unk20 = (int)bs->stamp;
-        if (hdr->unk0 == ((unsigned long)0xBD00 << 0x18)) {
-            hdr->unk0 |= (unsigned long)(unsigned int)sysbit_get(bs, 0x20);
-            m = n - 7;
-        } else {
-            m = n - 3;
+            int n = hdr->unk8 - len;
+            int m;
+            hdr->unk24 = n - 3;
+            hdr->unk20 = (int)bs->stamp;
+            if (hdr->unk0 == ((unsigned long)0xBD00 << 0x18)) {
+                hdr->unk0 |= (unsigned long)(unsigned int)sysbit_get(bs, 0x20);
+                m = n - 7;
+            } else {
+                m = n - 3;
+            }
+            if (m != 0) {
+                sysbit_jump(bs, m);
+            }
         }
-        if (m != 0) {
-            sysbit_jump(bs, m);
-        }
-        }
-    } else if (hdr->unk0 == ((unsigned long)0xBC00 << 0x18) ||
-               hdr->unk0 == ((unsigned long)0xBF00 << 0x18) ||
-               hdr->unk0 == ((unsigned long)0xF000 << 0x18) ||
-               hdr->unk0 == ((unsigned long)0xF100 << 0x18) ||
-               hdr->unk0 == ((unsigned long)0xFF00 << 0x18) ||
-               hdr->unk0 == ((unsigned long)0xF200 << 0x18) ||
+    } else if (hdr->unk0 == ((unsigned long)0xBC00 << 0x18) || hdr->unk0 == ((unsigned long)0xBF00 << 0x18) ||
+               hdr->unk0 == ((unsigned long)0xF000 << 0x18) || hdr->unk0 == ((unsigned long)0xF100 << 0x18) ||
+               hdr->unk0 == ((unsigned long)0xFF00 << 0x18) || hdr->unk0 == ((unsigned long)0xF200 << 0x18) ||
                hdr->unk0 == ((unsigned long)0xF800 << 0x18)) {
         int n = hdr->unk8;
         if (hdr->unk0 == ((unsigned long)0xBF00 << 0x18)) {
@@ -597,12 +590,10 @@ extern void sce_ipu_init(void);
 void sce_mpeg_init(void) {
     int r = disable_interrupts();
 
-    *(volatile unsigned int *)0x1000F590 =
-        *(volatile unsigned int *)0x1000F520 | 0x10000;
+    *(volatile unsigned int *)0x1000F590 = *(volatile unsigned int *)0x1000F520 | 0x10000;
     *(volatile unsigned int *)0x1000B000 &= ~0x100;
     *(volatile unsigned int *)0x1000B400 &= ~0x100;
-    *(volatile unsigned int *)0x1000F590 =
-        *(volatile unsigned int *)0x1000F520 & ~0x10000;
+    *(volatile unsigned int *)0x1000F590 = *(volatile unsigned int *)0x1000F520 & ~0x10000;
 
     if (r != 0) {
         enable_interrupts();
@@ -800,20 +791,38 @@ void sce_mpeg_reset(void *arg0) {
 int sce_mpeg_clear_ref_buff(void *arg0) {
     char *b = *(char **)((char *)arg0 + 0x40);
     char *p;
-    p = *(char **)(b + 0x1B8); if (p != 0) *(int *)(p + 0x28) = 0;
-    p = *(char **)(b + 0x1C8); if (p != 0) *(int *)(p + 0x28) = 0;
-    p = *(char **)(b + 0x1D8); if (p != 0) *(int *)(p + 0x28) = 0;
-    p = *(char **)(b + 0x1BC); if (p != 0) *(int *)(p + 0x28) = 0;
-    p = *(char **)(b + 0x1CC); if (p != 0) *(int *)(p + 0x28) = 0;
-    p = *(char **)(b + 0x1DC); if (p != 0) *(int *)(p + 0x28) = 0;
+    p = *(char **)(b + 0x1B8);
+    if (p != 0)
+        *(int *)(p + 0x28) = 0;
+    p = *(char **)(b + 0x1C8);
+    if (p != 0)
+        *(int *)(p + 0x28) = 0;
+    p = *(char **)(b + 0x1D8);
+    if (p != 0)
+        *(int *)(p + 0x28) = 0;
+    p = *(char **)(b + 0x1BC);
+    if (p != 0)
+        *(int *)(p + 0x28) = 0;
+    p = *(char **)(b + 0x1CC);
+    if (p != 0)
+        *(int *)(p + 0x28) = 0;
+    p = *(char **)(b + 0x1DC);
+    if (p != 0)
+        *(int *)(p + 0x28) = 0;
     return 1;
 }
 
 /* The callback table at +0x40: {callback, data} pairs from +0xC, one
    per callback type. */
 typedef int (*MpegCbFn)(void *, void *, void *);
-typedef struct { MpegCbFn func; void *data; } MpegCbEnt;
-typedef struct { char pad[0xC]; MpegCbEnt cb[1]; } MpegCbTbl;
+typedef struct {
+    MpegCbFn func;
+    void *data;
+} MpegCbEnt;
+typedef struct {
+    char pad[0xC];
+    MpegCbEnt cb[1];
+} MpegCbTbl;
 
 /*
  * sceMpegAddCallback: install (callback arg2, data arg3) for type arg1 and
@@ -901,8 +910,7 @@ extern char mpeg_work_area_size_too_small_msg[];
    of the fall-through `b`, as retail. Written overflow-first, as 2.95.3
    needed, 2.9-ee inverts the test and puts the store in a beql slot,
    one instruction short (SIZE 104/108). */
-unsigned int reserve_aligned_buffer_space(void *arg0, char *r, unsigned int size,
-                           unsigned int align) {
+unsigned int reserve_aligned_buffer_space(void *arg0, char *r, unsigned int size, unsigned int align) {
     unsigned int aligned;
     unsigned int end;
 
@@ -959,33 +967,36 @@ int mpeg_getpic(void *arg0) {
         if (lastResult != -1) {
             for (;;) {
                 pictureType = mpeg_next_header(inner);
-                if (pictureType == 0) break;
-                if (*(int *)(inner + 0x174) == *(int *)(inner + 0xD4)) break;
-                if (*(int *)(inner + 0x848) == 0) break;
+                if (pictureType == 0)
+                    break;
+                if (*(int *)(inner + 0x174) == *(int *)(inner + 0xD4))
+                    break;
+                if (*(int *)(inner + 0x848) == 0)
+                    break;
             }
         }
 
         switch (pictureType) {
-        case 0:
-            mpeg_flush_last_frame(w);
-            *(int *)inner = 1;
-            break;
-        case 1:
-            *(int *)(inner + 0xA8) = 0;
-            *(int *)(inner + 0xA4) = 0;
-            *(int *)(inner + 0xA0) = 0;
-            lastResult = mpeg_decode_or_skip(w, 0, *(int *)(inner + 0x94));
-            *(int *)(inner + 0xA0) = *(int *)(inner + 0xA0) + 1;
-            break;
-        case 2:
-            lastResult = mpeg_decode_or_skip(w, *(int *)(inner + 0xA4), *(int *)(inner + 0x98));
-            *(int *)(inner + 0xA4) = *(int *)(inner + 0xA4) + 1;
-            break;
-        case 3:
-        case 4:
-            lastResult = mpeg_decode_or_skip(w, *(int *)(inner + 0xA8), *(int *)(inner + 0x9C));
-            *(int *)(inner + 0xA8) = *(int *)(inner + 0xA8) + 1;
-            break;
+            case 0:
+                mpeg_flush_last_frame(w);
+                *(int *)inner = 1;
+                break;
+            case 1:
+                *(int *)(inner + 0xA8) = 0;
+                *(int *)(inner + 0xA4) = 0;
+                *(int *)(inner + 0xA0) = 0;
+                lastResult = mpeg_decode_or_skip(w, 0, *(int *)(inner + 0x94));
+                *(int *)(inner + 0xA0) = *(int *)(inner + 0xA0) + 1;
+                break;
+            case 2:
+                lastResult = mpeg_decode_or_skip(w, *(int *)(inner + 0xA4), *(int *)(inner + 0x98));
+                *(int *)(inner + 0xA4) = *(int *)(inner + 0xA4) + 1;
+                break;
+            case 3:
+            case 4:
+                lastResult = mpeg_decode_or_skip(w, *(int *)(inner + 0xA8), *(int *)(inner + 0x9C));
+                *(int *)(inner + 0xA8) = *(int *)(inner + 0xA8) + 1;
+                break;
         }
 
         if (*(int *)(inner + 0x820) != 0) {
@@ -1056,108 +1067,94 @@ int mpeg_decode_or_skip(void *arg0, int arg1, int arg2) {
     }
 }
 
-struct MpegFieldDec
-{
-  int unk0;
-  int unk4;
-  int unk8;
-  unsigned char pad_C[0xA0];
-  int unkAC;
-  unsigned char pad_B0[0x24];
-  int unkD4;
-  unsigned char pad_D8[0x40];
-  int unk118;
-  int unk11C;
-  int unk120;
-  unsigned char pad_124[0x50];
-  int unk174;
+struct MpegFieldDec {
+    int unk0;
+    int unk4;
+    int unk8;
+    unsigned char pad_C[0xA0];
+    int unkAC;
+    unsigned char pad_B0[0x24];
+    int unkD4;
+    unsigned char pad_D8[0x40];
+    int unk118;
+    int unk11C;
+    int unk120;
+    unsigned char pad_124[0x50];
+    int unk174;
 };
-struct MpegHandle
-{
-  unsigned char pad_0[0x8];
-  int unk8;
-  unsigned char pad_C[0x34];
-  struct MpegFieldDec *unk40;
+struct MpegHandle {
+    unsigned char pad_0[0x8];
+    int unk8;
+    unsigned char pad_C[0x34];
+    struct MpegFieldDec *unk40;
 };
 extern int mpeg_dec_picture();
 extern int mpeg_update_ref_image();
 extern void mpeg_output_frame();
 /* _decodeOrSkipField (libmpeg). Adapted from Lombyte's project (GPL-3.0) for PAL. */
-int mpeg_decode_or_skip_field(void *handle, int arg1, int arg2)
-{
-  struct MpegHandle *arg0 = handle;
-  struct MpegFieldDec *p;
-  int decode;
-  unsigned int ref;
-  int want;
-  long r;
-  int ret;
-  int gate;
-  decode = 0;
-  p = arg0->unk40;
-  p->unk120 = 0;
-  if ((arg2 == (-1)) || (arg1 < arg2))
-  {
-    decode = 1;
-  }
-  if (p->unk8 == 0)
-  {
-    arg0->unk8 = 0;
-    p->unk8 = 1;
-  }
-  r = mpeg_update_ref_image(p, 0);
-  if ((r != 0) && (decode != 0))
-  {
-    mpeg_dec_picture(p);
-  }
-  p->unk120 = 1;
-  r = mpeg_next_header(p);
-  if (r == 0)
-  {
-    mpeg_flush_last_frame(arg0);
-    p->unk0 = 1;
-    return 0;
-  }
-  want = 2;
-  if (p->unkD4 != 1)
-  {
-    want = 1;
-  }
-  if (p->unk174 != want)
-  {
-    return -1;
-  }
-  ref = mpeg_update_ref_image(p, 1);
-  gate = 0;
-  if (ref != 0)
-  {
-    gate = 1;
-  }
-  ret = 0;
-  if (gate != 0)
-  {
-    if (decode == 0)
-    {
-      goto out;
+int mpeg_decode_or_skip_field(void *handle, int arg1, int arg2) {
+    struct MpegHandle *arg0 = handle;
+    struct MpegFieldDec *p;
+    int decode;
+    unsigned int ref;
+    int want;
+    long r;
+    int ret;
+    int gate;
+    decode = 0;
+    p = arg0->unk40;
+    p->unk120 = 0;
+    if ((arg2 == (-1)) || (arg1 < arg2)) {
+        decode = 1;
     }
-    r = mpeg_dec_picture(p);
-    if (r != 0)
-    {
-      ret = 1;
+    if (p->unk8 == 0) {
+        arg0->unk8 = 0;
+        p->unk8 = 1;
     }
-  }
-  out:
-  mpeg_output_frame(p, p->unk118, p->unk4);
+    r = mpeg_update_ref_image(p, 0);
+    if ((r != 0) && (decode != 0)) {
+        mpeg_dec_picture(p);
+    }
+    p->unk120 = 1;
+    r = mpeg_next_header(p);
+    if (r == 0) {
+        mpeg_flush_last_frame(arg0);
+        p->unk0 = 1;
+        return 0;
+    }
+    want = 2;
+    if (p->unkD4 != 1) {
+        want = 1;
+    }
+    if (p->unk174 != want) {
+        return -1;
+    }
+    ref = mpeg_update_ref_image(p, 1);
+    gate = 0;
+    if (ref != 0) {
+        gate = 1;
+    }
+    ret = 0;
+    if (gate != 0) {
+        if (decode == 0) {
+            goto out;
+        }
+        r = mpeg_dec_picture(p);
+        if (r != 0) {
+            ret = 1;
+        }
+    }
+out:
+    mpeg_output_frame(p, p->unk118, p->unk4);
 
-  p->unk120 = 0;
-  arg0->unk8 = p->unk118 - p->unkAC;
-  p->unk118 = p->unk118 + 1;
-  p->unk4 = (unsigned long long) (p->unk4 + 1);
-  if (decode == 0)
-  {
-    dispatch_mpeg_cb_nodata((int)arg0);
-  }
-  return ret;
+    p->unk120 = 0;
+    arg0->unk8 = p->unk118 - p->unkAC;
+    p->unk118 = p->unk118 + 1;
+    p->unk4 = (unsigned long long)(p->unk4 + 1);
+    if (decode == 0) {
+        dispatch_mpeg_cb_nodata((int)arg0);
+    }
+    return ret;
 }
 
 extern void mpeg_last_frame(void *);
@@ -1193,13 +1190,13 @@ extern char mpeg_second_field_missing_msg[];
    Adapted from Lombyte's project (GPL-3.0): src/sdk/library/_lastFrame.c, _lastFrame. */
 typedef struct {
     u8 pad0[0x118];
-    s32 frame_count;         /* 0x118 */
+    s32 frame_count; /* 0x118 */
     u8 pad11C[4];
-    s32 second_field;        /* 0x120 */
+    s32 second_field; /* 0x120 */
     u8 pad124[0x50];
-    s32 picture_structure;   /* 0x174 */
+    s32 picture_structure; /* 0x174 */
     u8 pad178[0x40];
-    void *ref_images[10];    /* 0x1B8 */
+    void *ref_images[10]; /* 0x1B8 */
 } MpegDecoder_12C278;
 
 extern s32 _Error_lf(MpegDecoder_12C278 *, u8 *, s32) __asm__("func_0012C468");
@@ -1278,13 +1275,11 @@ void mpeg_clear_each(void *arg0) {
     *(int *)(s + 0x1B0) = 0;
     r = disable_interrupts();
 
-    *(volatile unsigned int *)0x1000F590 =
-        *(volatile unsigned int *)0x1000F520 | 0x10000;
+    *(volatile unsigned int *)0x1000F590 = *(volatile unsigned int *)0x1000F520 | 0x10000;
     *(volatile unsigned int *)0x1000B000 = 0;
     *(volatile unsigned int *)0x1000B400 = 0;
     *(volatile unsigned int *)0x1000D400 = 0;
-    *(volatile unsigned int *)0x1000F590 =
-        *(volatile unsigned int *)0x1000F520 & ~0x10000;
+    *(volatile unsigned int *)0x1000F590 = *(volatile unsigned int *)0x1000F520 & ~0x10000;
 
     if (r != 0) {
         enable_interrupts();
@@ -1415,8 +1410,8 @@ void _sequenceHeader(void *arg0) {
 
 void mpeg_init_seq(void *arg0) {
     extern void mpeg_init_ref_image_addrs(unsigned int *, unsigned int *, unsigned int *, unsigned int *,
-                              unsigned int *, unsigned int *, unsigned int *, unsigned int *,
-                              unsigned int *, int, int, int, int, int);
+                                          unsigned int *, unsigned int *, unsigned int *, unsigned int *,
+                                          unsigned int *, int, int, int, int, int);
     int *a = (int *)arg0;
     char *s = *(char **)((char *)arg0 + 0x40);
     int f = *(int *)(s + 0x848);
@@ -1441,61 +1436,67 @@ void mpeg_init_seq(void *arg0) {
     mbh = h << 4;
     mbw = *(int *)(s + 0x12C) << 4;
     {
-    unsigned int *p;
-    if (mbw != a[0]) {
-        p = (unsigned int *)(s + 0x528);
-    } else {
-        if (mbh == a[1])
-            return;
-        p = (unsigned int *)(s + 0x528);
-    }
-    a[0] = mbw;
-    a[1] = mbh;
-    if ((mbw & 0xF) && (mbw & 0xE))
-        p = q8;
-    q8 = p;
-    t = mbh * 0x180;
-    q0 = (unsigned int *)(s + 0x1E8);
-    q1 = (unsigned int *)(s + 0x250);
-    q2 = (unsigned int *)(s + 0x2B8);
-    q3 = (unsigned int *)(s + 0x320);
-    q4 = (unsigned int *)(s + 0x388);
-    q5 = (unsigned int *)(s + 0x3F0);
-    q6 = (unsigned int *)(s + 0x458);
-    q7 = (unsigned int *)(s + 0x4C0);
-    n = (mbw * t) >> 8;
-    mpeg_work_area_reset_to_mark(s + 0x108);
-    *(unsigned int *)(s + 0xFC) = reserve_aligned_buffer_space(s, s + 0x108, n, 0x40);
-    *(unsigned int *)(s + 0x100) = reserve_aligned_buffer_space(s, s + 0x108, n, 0x40);
-    *(unsigned int *)(s + 0x104) = reserve_aligned_buffer_space(s, s + 0x108, n, 0x40);
-    mpeg_init_ref_image_addrs(q0, q1, q2,
-                  q3, q4, q5,
-                  q6, q7, q8,
-                  *(int *)(s + 0xFC), *(int *)(s + 0x100), *(int *)(s + 0x104), mbw, mbh);
-    mpeg_set_frame_size(q0, mbw, mbh);
-    mpeg_set_frame_size(q1, mbw, mbh);
-    mpeg_set_frame_size(q2, mbw, mbh);
-    mpeg_set_frame_size(q3, mbw, mbh >> 1);
-    mpeg_set_frame_size(q4, mbw, mbh >> 1);
-    mpeg_set_frame_size(q5, mbw, mbh >> 1);
-    mpeg_set_frame_size(q6, mbw, mbh >> 1);
-    mpeg_set_frame_size(q7, mbw, mbh >> 1);
-    mpeg_set_frame_size(q8, mbw, mbh >> 1);
+        unsigned int *p;
+        if (mbw != a[0]) {
+            p = (unsigned int *)(s + 0x528);
+        } else {
+            if (mbh == a[1])
+                return;
+            p = (unsigned int *)(s + 0x528);
+        }
+        a[0] = mbw;
+        a[1] = mbh;
+        if ((mbw & 0xF) && (mbw & 0xE))
+            p = q8;
+        q8 = p;
+        t = mbh * 0x180;
+        q0 = (unsigned int *)(s + 0x1E8);
+        q1 = (unsigned int *)(s + 0x250);
+        q2 = (unsigned int *)(s + 0x2B8);
+        q3 = (unsigned int *)(s + 0x320);
+        q4 = (unsigned int *)(s + 0x388);
+        q5 = (unsigned int *)(s + 0x3F0);
+        q6 = (unsigned int *)(s + 0x458);
+        q7 = (unsigned int *)(s + 0x4C0);
+        n = (mbw * t) >> 8;
+        mpeg_work_area_reset_to_mark(s + 0x108);
+        *(unsigned int *)(s + 0xFC) = reserve_aligned_buffer_space(s, s + 0x108, n, 0x40);
+        *(unsigned int *)(s + 0x100) = reserve_aligned_buffer_space(s, s + 0x108, n, 0x40);
+        *(unsigned int *)(s + 0x104) = reserve_aligned_buffer_space(s, s + 0x108, n, 0x40);
+        mpeg_init_ref_image_addrs(q0, q1, q2, q3, q4, q5, q6, q7, q8, *(int *)(s + 0xFC), *(int *)(s + 0x100),
+                                  *(int *)(s + 0x104), mbw, mbh);
+        mpeg_set_frame_size(q0, mbw, mbh);
+        mpeg_set_frame_size(q1, mbw, mbh);
+        mpeg_set_frame_size(q2, mbw, mbh);
+        mpeg_set_frame_size(q3, mbw, mbh >> 1);
+        mpeg_set_frame_size(q4, mbw, mbh >> 1);
+        mpeg_set_frame_size(q5, mbw, mbh >> 1);
+        mpeg_set_frame_size(q6, mbw, mbh >> 1);
+        mpeg_set_frame_size(q7, mbw, mbh >> 1);
+        mpeg_set_frame_size(q8, mbw, mbh >> 1);
     }
 }
 
-void mpeg_init_ref_image_addrs(unsigned int *o0, unsigned int *o1, unsigned int *o2, unsigned int *o3,
-                   unsigned int *o4, unsigned int *o5, unsigned int *o6, unsigned int *o7,
-                   unsigned int *o8, int a, int b, int c, int w, int h) {
+void mpeg_init_ref_image_addrs(unsigned int *o0, unsigned int *o1, unsigned int *o2, unsigned int *o3, unsigned int *o4,
+                               unsigned int *o5, unsigned int *o6, unsigned int *o7, unsigned int *o8, int a, int b,
+                               int c, int w, int h) {
     unsigned int x = (a & 0xFFFFFFF) | 0x20000000;
     unsigned int y = (b & 0xFFFFFFF) | 0x20000000;
     unsigned int z = (c & 0xFFFFFFF) | 0x20000000;
     int q = (w * h) / 512;
     int s6, s7, s8;
-    s6 = q * 384; s6 += a;
-    s7 = q * 384; s7 += b;
-    s8 = q * 384; s8 += c;
-    *o0 = x; *o1 = y; *o2 = z; *o3 = x; *o4 = y; *o5 = z;
+    s6 = q * 384;
+    s6 += a;
+    s7 = q * 384;
+    s7 += b;
+    s8 = q * 384;
+    s8 += c;
+    *o0 = x;
+    *o1 = y;
+    *o2 = z;
+    *o3 = x;
+    *o4 = y;
+    *o5 = z;
     *o6 = (s6 & 0xFFFFFFF) | 0x20000000;
     *o7 = (s7 & 0xFFFFFFF) | 0x20000000;
     *o8 = (s8 & 0xFFFFFFF) | 0x20000000;

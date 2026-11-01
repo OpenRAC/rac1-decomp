@@ -135,266 +135,270 @@ void ultramech_scientist_update(char *moby) {
     }
 
     switch (((struct Moby *)moby)->state) {
-    case ULTRAMECH_SCIENTIST_INITIALIZE:
-        ((struct Moby *)moby)->state = 1;
-        ((struct Moby *)moby)->update_dist = 0xFF;
-        data->unk_0C = 20.0f;
-        DialogRequest_Init(moby, data);
-        if (((unsigned char *)(help_stats_base + 0xAA35))[data->jet_group + (g_current_level_index << 4)] != 0xFF) {
-            break;
-        }
-        if (*(unsigned char *)(gemlik_available + 3) != 0) {
-            ((struct Moby *)moby)->state = 9;
-            break;
-        }
-        ((struct Moby *)moby)->state = 3;
-        other = (Moby *)quartu_moby_list;
-        if (other == 0) {
-            break;
-        }
-        {
-        int dead_state = 0xFE;
-        int gone_state = 0xFD;
-        for (; other != 0; other = (Moby *)(*(char **)&other->next)) {
-            if (other->mission != data->jet_group) {
-                continue;
+        case ULTRAMECH_SCIENTIST_INITIALIZE:
+            ((struct Moby *)moby)->state = 1;
+            ((struct Moby *)moby)->update_dist = 0xFF;
+            data->unk_0C = 20.0f;
+            DialogRequest_Init(moby, data);
+            if (((unsigned char *)(help_stats_base + 0xAA35))[data->jet_group + (g_current_level_index << 4)] != 0xFF) {
+                break;
             }
-            if (((char *)other) == moby) {
-                continue;
-            }
-            if (other == 0) {
-                continue;
-            }
-            if (other->state == dead_state) {
-                continue;
-            }
-            if (other->state == gone_state) {
-                continue;
-            }
-            DeleteMoby(other);
-        }
-        }
-        break;
-    case ULTRAMECH_SCIENTIST_WAIT_FOR_DIALOGUE:
-        hero_pos =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
-        if (is_point_inside_clip_volume(hero_pos, data->clip_volume) == 0) {
-            break;
-        }
-        control_mode = *(int *)(hero_pos + 0x200C);
-        if ((unsigned int)control_mode >= 2 && control_mode != 9) {
-            break;
-        }
-        if (Npc_TryStartDialog(moby, data) == 0) {
-            break;
-        }
-        jet_clear_persistent(data->jet_group);
-        ((struct Moby *)moby)->anim_speed = 0.0f;
-        ((struct Moby *)moby)->state = 2;
-        other = (Moby *)quartu_moby_list;
-        if (other == 0) {
-            break;
-        }
-        {
-        int dead_state = 0xFE;
-        int gone_state = 0xFD;
-        for (; other != 0; other = (Moby *)(*(char **)&other->next)) {
-            if (other->mission != data->jet_group) {
-                continue;
-            }
-            if (((char *)other) == moby) {
-                continue;
-            }
-            if (other == 0) {
-                continue;
-            }
-            if (other->state == dead_state) {
-                continue;
-            }
-            if (other->state == gone_state) {
-                continue;
-            }
-            DeleteMoby(other);
-        }
-        }
-        break;
-    case ULTRAMECH_SCIENTIST_RESUME_AFTER_DIALOGUE:
-        if (quartu_game_mode == 2) {
-            break;
-        }
-        ((struct Moby *)moby)->anim_speed = 1.0f;
-        if (data->unk_04 == 0) {
-            if (data->camera_path != -1) {
-                char *paths = quartu_cuboids;
-                jet_reset_camera(paths + (data->camera_path << 7) + 0x30, paths + (data->camera_path << 7) + 0x70);
+            if (*(unsigned char *)(gemlik_available + 3) != 0) {
+                ((struct Moby *)moby)->state = 9;
+                break;
             }
             ((struct Moby *)moby)->state = 3;
-        } else {
-            ((struct Moby *)moby)->state = 9;
-        }
-        break;
-    case ULTRAMECH_SCIENTIST_WAIT_FOR_PRE_SCENE_CONDITIONS:
-        {
+            other = (Moby *)quartu_moby_list;
+            if (other == 0) {
+                break;
+            }
+            {
+                int dead_state = 0xFE;
+                int gone_state = 0xFD;
+                for (; other != 0; other = (Moby *)(*(char **)&other->next)) {
+                    if (other->mission != data->jet_group) {
+                        continue;
+                    }
+                    if (((char *)other) == moby) {
+                        continue;
+                    }
+                    if (other == 0) {
+                        continue;
+                    }
+                    if (other->state == dead_state) {
+                        continue;
+                    }
+                    if (other->state == gone_state) {
+                        continue;
+                    }
+                    DeleteMoby(other);
+                }
+            }
+            break;
+        case ULTRAMECH_SCIENTIST_WAIT_FOR_DIALOGUE:
+            hero_pos = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
+            if (is_point_inside_clip_volume(hero_pos, data->clip_volume) == 0) {
+                break;
+            }
+            control_mode = *(int *)(hero_pos + 0x200C);
+            if ((unsigned int)control_mode >= 2 && control_mode != 9) {
+                break;
+            }
+            if (Npc_TryStartDialog(moby, data) == 0) {
+                break;
+            }
+            jet_clear_persistent(data->jet_group);
+            ((struct Moby *)moby)->anim_speed = 0.0f;
+            ((struct Moby *)moby)->state = 2;
+            other = (Moby *)quartu_moby_list;
+            if (other == 0) {
+                break;
+            }
+            {
+                int dead_state = 0xFE;
+                int gone_state = 0xFD;
+                for (; other != 0; other = (Moby *)(*(char **)&other->next)) {
+                    if (other->mission != data->jet_group) {
+                        continue;
+                    }
+                    if (((char *)other) == moby) {
+                        continue;
+                    }
+                    if (other == 0) {
+                        continue;
+                    }
+                    if (other->state == dead_state) {
+                        continue;
+                    }
+                    if (other->state == gone_state) {
+                        continue;
+                    }
+                    DeleteMoby(other);
+                }
+            }
+            break;
+        case ULTRAMECH_SCIENTIST_RESUME_AFTER_DIALOGUE:
+            if (quartu_game_mode == 2) {
+                break;
+            }
+            ((struct Moby *)moby)->anim_speed = 1.0f;
+            if (data->unk_04 == 0) {
+                if (data->camera_path != -1) {
+                    char *paths = quartu_cuboids;
+                    jet_reset_camera(paths + (data->camera_path << 7) + 0x30, paths + (data->camera_path << 7) + 0x70);
+                }
+                ((struct Moby *)moby)->state = 3;
+            } else {
+                ((struct Moby *)moby)->state = 9;
+            }
+            break;
+        case ULTRAMECH_SCIENTIST_WAIT_FOR_PRE_SCENE_CONDITIONS: {
             struct Hero *player = (struct Hero *)(hero_globals_base + 0xE1D);
             if (player->vehicle_mode != 2) {
                 break;
             }
         }
-        if (data->spawned_slot != -1) {
-            char *spawned = (char *)quartu_moby_array + (data->spawned_slot << 8);
-            if (spawned != 0) {
-                int state = *(unsigned char *)(spawned + 0x20);
-                if (state != 0xFE) {
-                    if (state != 0xFD) {
-                        DeleteMoby(spawned);
-                        data->spawned_slot = -1;
+            if (data->spawned_slot != -1) {
+                char *spawned = (char *)quartu_moby_array + (data->spawned_slot << 8);
+                if (spawned != 0) {
+                    int state = *(unsigned char *)(spawned + 0x20);
+                    if (state != 0xFE) {
+                        if (state != 0xFD) {
+                            DeleteMoby(spawned);
+                            data->spawned_slot = -1;
+                        }
                     }
                 }
             }
-        }
-        if (count_active_moby_group_members(data->group_144, 0x40) != 0) {
+            if (count_active_moby_group_members(data->group_144, 0x40) != 0) {
+                break;
+            }
+            if (count_active_moby_group_members(data->group_148, 0x40) != 0) {
+                break;
+            }
+            ((struct Moby *)moby)->state = 4;
+            data->delay_timer = scale_ticks(120);
             break;
-        }
-        if (count_active_moby_group_members(data->group_148, 0x40) != 0) {
+        case ULTRAMECH_SCIENTIST_WAIT_FOR_PRE_SCENE_DELAY:
+            if (fast_dec_timer(&data->delay_timer) == 0) {
+                break;
+            }
+            restore_saved_hero_moby_and_clear_vehicle_mode();
+            MobySetAnimation((char *)quartu_moby_array + (data->scientist_slot << 8), 0, 0);
+            data->unk_140 = 1;
+            data->unk_36 = 1;
+            data->unk_08 = 1;
+            unlock_planet(0x10);
+            jet_clear_persistent(data->jet_clear_id);
+            MusicRequestTrack(0, 5);
+            if (data->hero_path != -1) {
+                char *paths = quartu_cuboids;
+                char *paths_again;
+                Hero_ResetToPosition(paths + (data->hero_path << 7) + 0x30, paths + (data->hero_path << 7) + 0x70, 0,
+                                     1);
+                paths_again = quartu_cuboids;
+                jet_reset_camera(paths_again + (data->hero_path << 7) + 0x30,
+                                 paths_again + (data->hero_path << 7) + 0x70);
+            }
+            ((struct Moby *)moby)->state = 5;
             break;
-        }
-        ((struct Moby *)moby)->state = 4;
-        data->delay_timer = scale_ticks(120);
-        break;
-    case ULTRAMECH_SCIENTIST_WAIT_FOR_PRE_SCENE_DELAY:
-        if (fast_dec_timer(&data->delay_timer) == 0) {
+        case ULTRAMECH_SCIENTIST_START_FIRST_SCENE:
+            StartCutscene(1);
+            ((struct Moby *)moby)->state = 6;
             break;
-        }
-        restore_saved_hero_moby_and_clear_vehicle_mode();
-        MobySetAnimation((char *)quartu_moby_array + (data->scientist_slot << 8), 0, 0);
-        data->unk_140 = 1;
-        data->unk_36 = 1;
-        data->unk_08 = 1;
-        unlock_planet(0x10);
-        jet_clear_persistent(data->jet_clear_id);
-        MusicRequestTrack(0, 5);
-        if (data->hero_path != -1) {
-            char *paths = quartu_cuboids;
-            char *paths_again;
-            Hero_ResetToPosition(paths + (data->hero_path << 7) + 0x30, paths + (data->hero_path << 7) + 0x70, 0, 1);
-            paths_again = quartu_cuboids;
-            jet_reset_camera(paths_again + (data->hero_path << 7) + 0x30, paths_again + (data->hero_path << 7) + 0x70);
-        }
-        ((struct Moby *)moby)->state = 5;
-        break;
-    case ULTRAMECH_SCIENTIST_START_FIRST_SCENE:
-        StartCutscene(1);
-        ((struct Moby *)moby)->state = 6;
-        break;
-    case ULTRAMECH_SCIENTIST_WAIT_FOR_FIRST_SCENE:
-        if (quartu_game_mode == 2) {
+        case ULTRAMECH_SCIENTIST_WAIT_FOR_FIRST_SCENE:
+            if (quartu_game_mode == 2) {
+                break;
+            }
+            PlayMovieEntryIfIdle(0x10);
+            ((struct Moby *)moby)->state = 7;
             break;
-        }
-        PlayMovieEntryIfIdle(0x10);
-        ((struct Moby *)moby)->state = 7;
-        break;
-    case ULTRAMECH_SCIENTIST_START_SECOND_SCENE_AND_SAVE:
-        if (quartu_game_mode != 2) {
-            queue_planet_unlock_message(0x10);
-            StartCutscene(2);
-            ((struct Moby *)moby)->state = 8;
-        }
-        memcard_Save(0, -1);
-        ((struct Moby *)moby)->state = 9;
-        break;
-    case ULTRAMECH_SCIENTIST_SAVE_AND_DISABLE:
-        memcard_Save(0, -1);
-        ((struct Moby *)moby)->state = 9;
-        break;
-    default:
-        break;
+        case ULTRAMECH_SCIENTIST_START_SECOND_SCENE_AND_SAVE:
+            if (quartu_game_mode != 2) {
+                queue_planet_unlock_message(0x10);
+                StartCutscene(2);
+                ((struct Moby *)moby)->state = 8;
+            }
+            memcard_Save(0, -1);
+            ((struct Moby *)moby)->state = 9;
+            break;
+        case ULTRAMECH_SCIENTIST_SAVE_AND_DISABLE:
+            memcard_Save(0, -1);
+            ((struct Moby *)moby)->state = 9;
+            break;
+        default:
+            break;
     }
 
     {
-    struct Hero *player;
-    float target[4];
-    float eye[4];
-    float eye_to_target_vector[4];
-    float value;
-    float pitch;
-    float yaw;
-    float deg_to_rad;
-    float heading;
-    float ease_rate;
-    float ease_limit;
-    /* Fakematch: an always-true flag around the aiming block keeps retail's register allocation. */
-    int aim = 0;
-    ease_rate = 0.02f;
-    ease_limit = 0.3f;
-    aim = 1;
-    value = vec_distance_xy((float *)&((struct Moby *)moby)->pos, (float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos));
-    if (value < 8.0f) {
-        player = (struct Hero *)(hero_globals_base + 0xE1D);
-        value = fast_atan2(player->motion.body_center.f[0] - ((struct Moby *)moby)->pos.x,
-                                  player->motion.body_center.f[1] - ((struct Moby *)moby)->pos.y);
-        value = FastDiffRots(((struct Moby *)moby)->rot.z, value);
-        if (value < 1.5707964f) {
-            value = FastVecLength(&player->motion.displacement);
-            if (0.01f < value) {
-                data->look_timer = scale_ticks(120);
-            } else {
-                fast_dec_timer(&data->look_timer);
-            }
-            goto wander;
-        }
-    }
-    if (data->look_timer != 0) {
-        data->look_timer = 0;
-        qcopy(&data->look_target, hero_globals_base + 0xE1D + 0xD0);
-    }
-wander:
-    if (fast_dec_timer(&data->unk_278) == 0) {
-        goto aim_head;
-    }
-    deg_to_rad = 0.017453292f;
-    value = random_float_between(180.0f, 300.0f);
-    value = multiply_global_factor(value);
-    data->unk_278 = truncate_float_to_s32(value);
-    value = random_float_between(-90.0f, 90.0f);
-    heading = FastAddRots(((struct Moby *)moby)->rot.z, value * deg_to_rad);
-    value = random_float_between(0.0f, 30.0f);
-    BuildSphericalOffset(&data->look_target, 6.0f, heading, value * deg_to_rad);
-    FastVecAdd(&data->look_target, &data->look_target, &((struct Moby *)moby)->pos);
-aim_head:
-    if (data->look_timer != 0) {
-        qcopy(target, hero_globals_base + 0xE1D + 0xD0);
-        ease_rate = 0.04f;
+        struct Hero *player;
+        float target[4];
+        float eye[4];
+        float eye_to_target_vector[4];
+        float value;
+        float pitch;
+        float yaw;
+        float deg_to_rad;
+        float heading;
+        float ease_rate;
+        float ease_limit;
+        /* Fakematch: an always-true flag around the aiming block keeps retail's register allocation. */
+        int aim = 0;
+        ease_rate = 0.02f;
         ease_limit = 0.3f;
-    } else {
-        qcopy(target, &data->look_target);
-    }
-    if (aim != 0) {
-    qcopy(eye, &((struct Moby *)moby)->pos);
-    eye[2] = eye[2] + 1.0f;
-    FastVecSub(eye_to_target_vector, target, eye);
-    value = fast_atan2(eye_to_target_vector[0], eye_to_target_vector[1]);
-    yaw = FastSubRots(value, ((struct Moby *)moby)->rot.z);
-    value = vec_length_xy(eye_to_target_vector);
-    value = fast_atan2(value, eye_to_target_vector[2]);
-    pitch = -value;
-    if (yaw > 1.5707964f) {
-        yaw = 1.5707964f;
-    } else if (yaw < -1.5707964f) {
-        yaw = -1.5707964f;
-    }
-    if (pitch > 0.5235988f) {
-        pitch = 0.5235988f;
-    } else if (pitch < -0.5235988f) {
-        pitch = -0.5235988f;
-    }
-    data->unk_1C8 = yaw * 0.5f;
-    data->unk_1C4 = pitch * 1.25f;
-    data->unk_248 = yaw * 0.5f;
-    }
-    if (gCheats[0] != 0) {
-        data->unk_1D0 = 2.75f;
-    }
-    EaseManipulatorOffsets(moby, (char *)&data->manip_160, 1, ease_rate * g_frame_scale_sq, ease_limit * g_frame_scale_sq);
-    EaseManipulatorOffsets(moby, (char *)&data->manip_1E0, 0, ease_rate * g_frame_scale_sq, ease_limit * g_frame_scale_sq);
+        aim = 1;
+        value = vec_distance_xy((float *)&((struct Moby *)moby)->pos,
+                                (float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos));
+        if (value < 8.0f) {
+            player = (struct Hero *)(hero_globals_base + 0xE1D);
+            value = fast_atan2(player->motion.body_center.f[0] - ((struct Moby *)moby)->pos.x,
+                               player->motion.body_center.f[1] - ((struct Moby *)moby)->pos.y);
+            value = FastDiffRots(((struct Moby *)moby)->rot.z, value);
+            if (value < 1.5707964f) {
+                value = FastVecLength(&player->motion.displacement);
+                if (0.01f < value) {
+                    data->look_timer = scale_ticks(120);
+                } else {
+                    fast_dec_timer(&data->look_timer);
+                }
+                goto wander;
+            }
+        }
+        if (data->look_timer != 0) {
+            data->look_timer = 0;
+            qcopy(&data->look_target, hero_globals_base + 0xE1D + 0xD0);
+        }
+    wander:
+        if (fast_dec_timer(&data->unk_278) == 0) {
+            goto aim_head;
+        }
+        deg_to_rad = 0.017453292f;
+        value = random_float_between(180.0f, 300.0f);
+        value = multiply_global_factor(value);
+        data->unk_278 = truncate_float_to_s32(value);
+        value = random_float_between(-90.0f, 90.0f);
+        heading = FastAddRots(((struct Moby *)moby)->rot.z, value * deg_to_rad);
+        value = random_float_between(0.0f, 30.0f);
+        BuildSphericalOffset(&data->look_target, 6.0f, heading, value * deg_to_rad);
+        FastVecAdd(&data->look_target, &data->look_target, &((struct Moby *)moby)->pos);
+    aim_head:
+        if (data->look_timer != 0) {
+            qcopy(target, hero_globals_base + 0xE1D + 0xD0);
+            ease_rate = 0.04f;
+            ease_limit = 0.3f;
+        } else {
+            qcopy(target, &data->look_target);
+        }
+        if (aim != 0) {
+            qcopy(eye, &((struct Moby *)moby)->pos);
+            eye[2] = eye[2] + 1.0f;
+            FastVecSub(eye_to_target_vector, target, eye);
+            value = fast_atan2(eye_to_target_vector[0], eye_to_target_vector[1]);
+            yaw = FastSubRots(value, ((struct Moby *)moby)->rot.z);
+            value = vec_length_xy(eye_to_target_vector);
+            value = fast_atan2(value, eye_to_target_vector[2]);
+            pitch = -value;
+            if (yaw > 1.5707964f) {
+                yaw = 1.5707964f;
+            } else if (yaw < -1.5707964f) {
+                yaw = -1.5707964f;
+            }
+            if (pitch > 0.5235988f) {
+                pitch = 0.5235988f;
+            } else if (pitch < -0.5235988f) {
+                pitch = -0.5235988f;
+            }
+            data->unk_1C8 = yaw * 0.5f;
+            data->unk_1C4 = pitch * 1.25f;
+            data->unk_248 = yaw * 0.5f;
+        }
+        if (gCheats[0] != 0) {
+            data->unk_1D0 = 2.75f;
+        }
+        EaseManipulatorOffsets(moby, (char *)&data->manip_160, 1, ease_rate * g_frame_scale_sq,
+                               ease_limit * g_frame_scale_sq);
+        EaseManipulatorOffsets(moby, (char *)&data->manip_1E0, 0, ease_rate * g_frame_scale_sq,
+                               ease_limit * g_frame_scale_sq);
     }
 }
 typedef struct Talk_2EE7E8 {
@@ -456,140 +460,161 @@ void update_quartu_hint_triggers(Moby *m) {
     int i, j, found, npc, pick;
 
     switch (st) {
-    case 0:
-        m->update_dist = 0xFF;
-        t->wait = scale_ticks_r(0x4B0);
-        m->state = 1;
-        break;
-    case 1:
-        if (t->npc[0] != -1) {
-            e = (Moby *)(quartu_moby_array_r + (t->npc[0] << 8));
-            if (e != 0 && e->oclass == 0x4E && e->state != 0xFE && e->state != 0xFD && e->state != 3
-                && is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, t->zone[3]) != 0
-                && (((Hero *)(hero_globals_base_r + 0xE1D))->state.control_mode < 2u || ((Hero *)(hero_globals_base_r + 0xE1D))->state.control_mode == 9)
-                && ((Help_2EE7E8 *)quartu_help_popup_state_r)->busy == 0 && ((Help_2EE7E8 *)quartu_help_popup_state_r)->cur == -1) {
-                if (gHaveHologuise_r[0] == 0) {
-                    int lim, now;
-                    now = scale_ticks_r(gameplay_event_frame_count_r);
-                    lim = now - ((Stats_2EE7E8 *)help_records_r)->t3DA * 600;
-                    if ((int)((float)scale_ticks_r(0x12) * 60.0f) < lim || ((Stats_2EE7E8 *)help_records_r)->t3DA * 600 == 0) {
-                        Help_Request_r(0x3A98, 0x7B);
-                    } else {
+        case 0:
+            m->update_dist = 0xFF;
+            t->wait = scale_ticks_r(0x4B0);
+            m->state = 1;
+            break;
+        case 1:
+            if (t->npc[0] != -1) {
+                e = (Moby *)(quartu_moby_array_r + (t->npc[0] << 8));
+                if (e != 0 && e->oclass == 0x4E && e->state != 0xFE && e->state != 0xFD && e->state != 3 &&
+                    is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
+                                                  t->zone[3]) != 0 &&
+                    (((Hero *)(hero_globals_base_r + 0xE1D))->state.control_mode < 2u ||
+                     ((Hero *)(hero_globals_base_r + 0xE1D))->state.control_mode == 9) &&
+                    ((Help_2EE7E8 *)quartu_help_popup_state_r)->busy == 0 &&
+                    ((Help_2EE7E8 *)quartu_help_popup_state_r)->cur == -1) {
+                    if (gHaveHologuise_r[0] == 0) {
+                        int lim, now;
                         now = scale_ticks_r(gameplay_event_frame_count_r);
-                        if (now / 600 > ((Stats_2EE7E8 *)help_records_r)->t3DA) {
-                            ((Stats_2EE7E8 *)help_records_r)->t3DA = scale_ticks_r(gameplay_event_frame_count_r) / 600;
+                        lim = now - ((Stats_2EE7E8 *)help_records_r)->t3DA * 600;
+                        if ((int)((float)scale_ticks_r(0x12) * 60.0f) < lim ||
+                            ((Stats_2EE7E8 *)help_records_r)->t3DA * 600 == 0) {
+                            Help_Request_r(0x3A98, 0x7B);
+                        } else {
+                            now = scale_ticks_r(gameplay_event_frame_count_r);
+                            if (now / 600 > ((Stats_2EE7E8 *)help_records_r)->t3DA) {
+                                ((Stats_2EE7E8 *)help_records_r)->t3DA =
+                                    scale_ticks_r(gameplay_event_frame_count_r) / 600;
+                            }
                         }
-                    }
-                } else if (((Stats_2EE7E8 *)help_records_r)->n3E0 != 0) {
-                    int lim, now;
-                    now = scale_ticks_r(gameplay_event_frame_count_r);
-                    lim = now - ((Stats_2EE7E8 *)help_records_r)->t3E2 * 600;
-                    if ((int)((float)scale_ticks_r(0x12) * 60.0f) < lim || ((Stats_2EE7E8 *)help_records_r)->t3E2 * 600 == 0) {
-                        Help_Request_r(0x3A99, 0x7C);
+                    } else if (((Stats_2EE7E8 *)help_records_r)->n3E0 != 0) {
+                        int lim, now;
+                        now = scale_ticks_r(gameplay_event_frame_count_r);
+                        lim = now - ((Stats_2EE7E8 *)help_records_r)->t3E2 * 600;
+                        if ((int)((float)scale_ticks_r(0x12) * 60.0f) < lim ||
+                            ((Stats_2EE7E8 *)help_records_r)->t3E2 * 600 == 0) {
+                            Help_Request_r(0x3A99, 0x7C);
+                        } else {
+                            now = scale_ticks_r(gameplay_event_frame_count_r);
+                            if (now / 600 > ((Stats_2EE7E8 *)help_records_r)->t3E2) {
+                                ((Stats_2EE7E8 *)help_records_r)->t3E2 =
+                                    scale_ticks_r(gameplay_event_frame_count_r) / 600;
+                            }
+                        }
                     } else {
+                        int now;
+                        ((Stats_2EE7E8 *)help_records_r)->n3E0++;
                         now = scale_ticks_r(gameplay_event_frame_count_r);
                         if (now / 600 > ((Stats_2EE7E8 *)help_records_r)->t3E2) {
                             ((Stats_2EE7E8 *)help_records_r)->t3E2 = scale_ticks_r(gameplay_event_frame_count_r) / 600;
                         }
+                        ((Stats_2EE7E8 *)help_records_r)->lv3E4 =
+                            ((Stats_2EE7E8 *)help_records_r)->lv3E4 | (1 << g_current_level_index_r) | 0x80000000;
                     }
-                } else {
-                    int now;
-                    ((Stats_2EE7E8 *)help_records_r)->n3E0++;
-                    now = scale_ticks_r(gameplay_event_frame_count_r);
-                    if (now / 600 > ((Stats_2EE7E8 *)help_records_r)->t3E2) {
-                        ((Stats_2EE7E8 *)help_records_r)->t3E2 = scale_ticks_r(gameplay_event_frame_count_r) / 600;
-                    }
-                    ((Stats_2EE7E8 *)help_records_r)->lv3E4 = ((Stats_2EE7E8 *)help_records_r)->lv3E4 | (1 << g_current_level_index_r) | 0x80000000;
                 }
             }
-        }
-        if (quartu_pending_help_flag_r != 0 && ((Help_2EE7E8 *)quartu_help_popup_state_r)->busy == 0
-            && ((Help_2EE7E8 *)quartu_help_popup_state_r)->cur == -1 && *(unsigned short *)(help_stats_base_r + 0x795) == 0) {
-            Help_Request_r(0x3A9F, 0x89);
-            quartu_pending_help_flag_r = 0;
-        }
-        if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, t->vol54) != 0
-            && ((Hero *)(hero_globals_base_r + 0xE1D))->vehicle_mode == 3 && ((Hero *)(hero_globals_base_r + 0xE1D))->glow_pulse_level == 0
-            && quartu_alarm_on_r == 0 && *(unsigned short *)(help_stats_base_r + 0x78D) == 0) {
-            Help_Request_r(0x3A9E, 0x88);
-        }
-        pick = -1;
-        npc = -1;
-        found = 0;
-        for (i = 0; i < 1; i++) {
-            if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, t->zone[i]) != 0) {
-                pick = t->zone[i];
-                npc = t->npc[i];
-                found = 1;
-                break;
+            if (quartu_pending_help_flag_r != 0 && ((Help_2EE7E8 *)quartu_help_popup_state_r)->busy == 0 &&
+                ((Help_2EE7E8 *)quartu_help_popup_state_r)->cur == -1 &&
+                *(unsigned short *)(help_stats_base_r + 0x795) == 0) {
+                Help_Request_r(0x3A9F, 0x89);
+                quartu_pending_help_flag_r = 0;
             }
-        }
-        if (found != 0) {
-            t->hold3C = t->hold3C + 1;
-        } else {
-            t->hold3C = 0;
-            t->last = -1;
-        }
-        if (npc != -1) {
-            e = (Moby *)(quartu_moby_array_r + (npc << 8));
-            if (e != 0 && e->oclass == 0x4E && e->state != 0xFE && e->state != 0xFD && e->state != 3
-                && t->hold3C > t->wait && pick != -1 && pick != t->last
-                && (((Hero *)(hero_globals_base_r + 0xE1D))->state.control_mode < 2u || ((Hero *)(hero_globals_base_r + 0xE1D))->state.control_mode == 9)
-                && ((Help_2EE7E8 *)quartu_help_popup_state_r)->busy == 0 && ((Help_2EE7E8 *)quartu_help_popup_state_r)->cur == -1
-                && gHaveHologuise_r[0] != 0) {
-                t->wait = scale_ticks_r(0x708);
-                if (*(int *)(help_stats_base_r + 0x739) >= 0) {
-                    Help_Request_r(0x3A9A, 0x7D);
+            if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
+                                              t->vol54) != 0 &&
+                ((Hero *)(hero_globals_base_r + 0xE1D))->vehicle_mode == 3 &&
+                ((Hero *)(hero_globals_base_r + 0xE1D))->glow_pulse_level == 0 && quartu_alarm_on_r == 0 &&
+                *(unsigned short *)(help_stats_base_r + 0x78D) == 0) {
+                Help_Request_r(0x3A9E, 0x88);
+            }
+            pick = -1;
+            npc = -1;
+            found = 0;
+            for (i = 0; i < 1; i++) {
+                if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
+                                                  t->zone[i]) != 0) {
+                    pick = t->zone[i];
+                    npc = t->npc[i];
+                    found = 1;
+                    break;
                 }
-                t->last = pick;
+            }
+            if (found != 0) {
+                t->hold3C = t->hold3C + 1;
+            } else {
                 t->hold3C = 0;
-            }
-        }
-        if (((Hero *)(hero_globals_base_r + 0xE1D))->moby->seq == 0xC && ((Hero *)(hero_globals_base_r + 0xE1D))->vehicle_mode == 2) {
-            ((Items_2EE7E8 *)gSpecialItems_r)->f6F = 1;
-        }
-        if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, t->vol1C) != 0 && ((Hero *)(hero_globals_base_r + 0xE1D))->vehicle_mode == 2
-            && ((Items_2EE7E8 *)gSpecialItems_r)->f6F == 0 && ((Help_2EE7E8 *)quartu_help_popup_state_r)->busy == 0
-            && ((Help_2EE7E8 *)quartu_help_popup_state_r)->cur == -1 && *(int *)(help_stats_base_r + 0x751) >= 0) {
-            Help_Request_r(0x3A9C, 0x80);
-        }
-        if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, t->vol20[0]) != 0 && ((Help_2EE7E8 *)quartu_help_popup_state_r)->busy == 0
-            && ((Help_2EE7E8 *)quartu_help_popup_state_r)->cur == -1 && gHaveHeliPack_r[2] == 0
-            && !(*(unsigned int *)(help_stats_base_r + 0x761) & (1 << g_current_level_index_r))) {
-            Help_Request_r(0x3A9D, 0x82);
-        }
-        pick = -1;
-        found = 0;
-        for (j = 0; j < 3; j++) {
-            if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, t->vol20[j]) != 0) {
-                found = 1;
-                if (t->last != t->vol20[j]) {
-                    pick = t->vol20[j];
-                }
-                break;
-            }
-        }
-        if (found == 0) {
-            t->hold38 = 0;
-            t->last = -1;
-        } else {
-            t->hold38 = t->hold38 + 1;
-            if (((Hero *)(hero_globals_base_r + 0xE1D))->state.current == 0x35) {
-                t->hold38 = 0;
                 t->last = -1;
             }
-        }
-        if (scale_ticks_r(0xE10) < t->hold38 && pick != -1 && Hero_IsInSpecialState_r() != 0
-            && ((Help_2EE7E8 *)quartu_help_popup_state_r)->busy == 0 && ((Help_2EE7E8 *)quartu_help_popup_state_r)->cur == -1
-            && gHaveHeliPack_r[2] != 0) {
-            Help_Request_r(0x4E2E, 0x78);
-            t->last = pick;
-            t->hold38 = 0;
-        }
-        if (((Items_2EE7E8 *)gSpecialItems_r)->f6E == 0 && is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, t->vol2C) != 0) {
-            ((Items_2EE7E8 *)gSpecialItems_r)->f6E = 1;
-        }
-        break;
+            if (npc != -1) {
+                e = (Moby *)(quartu_moby_array_r + (npc << 8));
+                if (e != 0 && e->oclass == 0x4E && e->state != 0xFE && e->state != 0xFD && e->state != 3 &&
+                    t->hold3C > t->wait && pick != -1 && pick != t->last &&
+                    (((Hero *)(hero_globals_base_r + 0xE1D))->state.control_mode < 2u ||
+                     ((Hero *)(hero_globals_base_r + 0xE1D))->state.control_mode == 9) &&
+                    ((Help_2EE7E8 *)quartu_help_popup_state_r)->busy == 0 &&
+                    ((Help_2EE7E8 *)quartu_help_popup_state_r)->cur == -1 && gHaveHologuise_r[0] != 0) {
+                    t->wait = scale_ticks_r(0x708);
+                    if (*(int *)(help_stats_base_r + 0x739) >= 0) {
+                        Help_Request_r(0x3A9A, 0x7D);
+                    }
+                    t->last = pick;
+                    t->hold3C = 0;
+                }
+            }
+            if (((Hero *)(hero_globals_base_r + 0xE1D))->moby->seq == 0xC &&
+                ((Hero *)(hero_globals_base_r + 0xE1D))->vehicle_mode == 2) {
+                ((Items_2EE7E8 *)gSpecialItems_r)->f6F = 1;
+            }
+            if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
+                                              t->vol1C) != 0 &&
+                ((Hero *)(hero_globals_base_r + 0xE1D))->vehicle_mode == 2 &&
+                ((Items_2EE7E8 *)gSpecialItems_r)->f6F == 0 && ((Help_2EE7E8 *)quartu_help_popup_state_r)->busy == 0 &&
+                ((Help_2EE7E8 *)quartu_help_popup_state_r)->cur == -1 && *(int *)(help_stats_base_r + 0x751) >= 0) {
+                Help_Request_r(0x3A9C, 0x80);
+            }
+            if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
+                                              t->vol20[0]) != 0 &&
+                ((Help_2EE7E8 *)quartu_help_popup_state_r)->busy == 0 &&
+                ((Help_2EE7E8 *)quartu_help_popup_state_r)->cur == -1 && gHaveHeliPack_r[2] == 0 &&
+                !(*(unsigned int *)(help_stats_base_r + 0x761) & (1 << g_current_level_index_r))) {
+                Help_Request_r(0x3A9D, 0x82);
+            }
+            pick = -1;
+            found = 0;
+            for (j = 0; j < 3; j++) {
+                if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
+                                                  t->vol20[j]) != 0) {
+                    found = 1;
+                    if (t->last != t->vol20[j]) {
+                        pick = t->vol20[j];
+                    }
+                    break;
+                }
+            }
+            if (found == 0) {
+                t->hold38 = 0;
+                t->last = -1;
+            } else {
+                t->hold38 = t->hold38 + 1;
+                if (((Hero *)(hero_globals_base_r + 0xE1D))->state.current == 0x35) {
+                    t->hold38 = 0;
+                    t->last = -1;
+                }
+            }
+            if (scale_ticks_r(0xE10) < t->hold38 && pick != -1 && Hero_IsInSpecialState_r() != 0 &&
+                ((Help_2EE7E8 *)quartu_help_popup_state_r)->busy == 0 &&
+                ((Help_2EE7E8 *)quartu_help_popup_state_r)->cur == -1 && gHaveHeliPack_r[2] != 0) {
+                Help_Request_r(0x4E2E, 0x78);
+                t->last = pick;
+                t->hold38 = 0;
+            }
+            if (((Items_2EE7E8 *)gSpecialItems_r)->f6E == 0 &&
+                is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
+                                              t->vol2C) != 0) {
+                ((Items_2EE7E8 *)gSpecialItems_r)->f6E = 1;
+            }
+            break;
     }
 }
 extern int quartu_game_mode MACRO_ADDR;
@@ -605,27 +630,27 @@ extern void cutscene_set_camera_target(int);
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l15/gameplay/vendor/002e73c0.c, FUN_L15_002edb20. */
 void emit_cutscene_mode_moby_effects(struct Moby *m) {
     switch (m->state) {
-    case 0:
-        m->update_dist = 0xFF;
-        m->state = 1;
-        break;
-    case 1:
-        if (quartu_game_mode == 2) {
-            if (g_mission.mode == 1 || g_mission.mode == 2 || g_mission.mode == 3 ||
-                g_mission.mode == 4 || g_mission.mode == 6) {
-                int v = g_mission.mode;
-                int i;
-                i = 0;
-                if (v == 1)
-                    i = 4;
-                else if (v == 2 || v == 3 || v == 4)
-                    i = 2;
-                else if (v == 6)
-                    i = 1;
-                cutscene_set_camera_target(g_mission.slot[i]);
+        case 0:
+            m->update_dist = 0xFF;
+            m->state = 1;
+            break;
+        case 1:
+            if (quartu_game_mode == 2) {
+                if (g_mission.mode == 1 || g_mission.mode == 2 || g_mission.mode == 3 || g_mission.mode == 4 ||
+                    g_mission.mode == 6) {
+                    int v = g_mission.mode;
+                    int i;
+                    i = 0;
+                    if (v == 1)
+                        i = 4;
+                    else if (v == 2 || v == 3 || v == 4)
+                        i = 2;
+                    else if (v == 6)
+                        i = 1;
+                    cutscene_set_camera_target(g_mission.slot[i]);
+                }
             }
-        }
-        break;
+            break;
     }
 }
 extern float IntToFloat(int);
@@ -646,7 +671,9 @@ extern float quartu_ripple_mesh_template_verts[][3];
 extern int quartu_ripple_vertex_colors[];
 extern float quartu_ripple_mesh_base_uvs[][2];
 extern float quartu_ripple_scrolled_uvs[][2];
-typedef struct { float f[2][2]; } Quad4_2EF030;
+typedef struct {
+    float f[2][2];
+} Quad4_2EF030;
 typedef struct {
     float prev;
     float angle;
@@ -684,7 +711,8 @@ void draw_scaled_moby_radial_ripple_mesh(char *moby) {
     VU1_addGSregister(8, 0);
     VU1_addGSregister(0x14, 0xFF9000000260L);
     data->prev = data->angle;
-    data->angle = FastAddRots(data->angle, 360.0f / multiply_global_factor(scaled_ripple_phase_advance_divisor_gp) * 0.017453292f * g_frame_time);
+    data->angle = FastAddRots(data->angle, 360.0f / multiply_global_factor(scaled_ripple_phase_advance_divisor_gp) *
+                                               0.017453292f * g_frame_time);
     get_moby_color(moby, &r, &g, &b);
     color = (quartu_ripple_mesh_alpha << 24) | (b << 16) | (g << 8) | r;
     for (i = 0; i < 46; i++) {
@@ -697,18 +725,22 @@ void draw_scaled_moby_radial_ripple_mesh(char *moby) {
         float z = FastSin(FastAddRots(w, data->angle));
         quartu_ripple_world_verts[i][0] = quartu_ripple_vertex_scale * template_vertex[0] + m->pos.x;
         quartu_ripple_world_verts[i][1] = quartu_ripple_vertex_scale * template_vertex[1] + m->pos.y;
-        quartu_ripple_world_verts[i][2] = quartu_ripple_vertex_scale * template_vertex[2] + m->pos.z + quartu_ripple_mesh_wave_height * z;
+        quartu_ripple_world_verts[i][2] =
+            quartu_ripple_vertex_scale * template_vertex[2] + m->pos.z + quartu_ripple_mesh_wave_height * z;
         quartu_ripple_vertex_colors[i] = color;
     }
     for (j = 0; j < 2; j++) {
         for (uv_vertex_index = 0; uv_vertex_index < 46; uv_vertex_index++) {
             Quad4_2EF030 uv_scroll_factors = quartu_ripple_mesh_uv_scroll_factors;
-            quartu_ripple_scrolled_uvs[uv_vertex_index][0] = quartu_ripple_mesh_base_uvs[uv_vertex_index][0] + fast_fmod(scale * uv_scroll_factors.f[j][0], 1.0f);
-            quartu_ripple_scrolled_uvs[uv_vertex_index][1] = quartu_ripple_mesh_base_uvs[uv_vertex_index][1] + fast_fmod(scale * uv_scroll_factors.f[j][1], 1.0f);
+            quartu_ripple_scrolled_uvs[uv_vertex_index][0] =
+                quartu_ripple_mesh_base_uvs[uv_vertex_index][0] + fast_fmod(scale * uv_scroll_factors.f[j][0], 1.0f);
+            quartu_ripple_scrolled_uvs[uv_vertex_index][1] =
+                quartu_ripple_mesh_base_uvs[uv_vertex_index][1] + fast_fmod(scale * uv_scroll_factors.f[j][1], 1.0f);
         }
         font_queue_vu_state();
         for (k = 0; k < 1; k++) {
-            draw_env_overlay_mesh(quartu_ripple_mesh_counts[k], quartu_ripple_mesh_positions[k], quartu_ripple_mesh_colors[k], (void *)quartu_ripple_mesh_uvs[k], 1);
+            draw_env_overlay_mesh(quartu_ripple_mesh_counts[k], quartu_ripple_mesh_positions[k],
+                                  quartu_ripple_mesh_colors[k], (void *)quartu_ripple_mesh_uvs[k], 1);
         }
     }
 }
@@ -717,7 +749,9 @@ extern float quartu_ripple88_template_verts[][3];
 extern int quartu_ripple88_vertex_colors[];
 extern float quartu_ripple88_base_uvs[][2];
 extern float quartu_ripple88_scrolled_uvs[][2];
-typedef struct { float f[2][2]; } Quad4_2EF410;
+typedef struct {
+    float f[2][2];
+} Quad4_2EF410;
 typedef struct {
     float prev;
     float angle;
@@ -754,7 +788,8 @@ void draw_scaled_88_vertex_moby_radial_ripple_mesh(char *moby) {
     VU1_addGSregister(8, 0);
     VU1_addGSregister(0x14, 0xFF9000000260L);
     data->prev = data->angle;
-    data->angle = FastAddRots(data->angle, 360.0f / multiply_global_factor(ripple_88_phase_advance_divisor_gp) * 0.017453292f * g_frame_time);
+    data->angle = FastAddRots(data->angle, 360.0f / multiply_global_factor(ripple_88_phase_advance_divisor_gp) *
+                                               0.017453292f * g_frame_time);
     get_moby_color(moby, &r, &g, &b);
     color = (quartu_ripple88_alpha << 24) | (b << 16) | (g << 8) | r;
     for (i = 0; i < 88; i++) {
@@ -765,20 +800,26 @@ void draw_scaled_88_vertex_moby_radial_ripple_mesh(char *moby) {
         float radius_remainder = fast_fmod(rad, quartu_ripple88_wavelength);
         float w = FastNormalizeAngle(radius_remainder * 6.2831855f / quartu_ripple88_wavelength);
         float z = FastSin(FastAddRots(w, data->angle));
-        quartu_ripple88_world_verts[i][0] = quartu_ripple88_vertex_scale * template_vertex[0] + ((struct Moby *)moby)->pos.x;
-        quartu_ripple88_world_verts[i][1] = quartu_ripple88_vertex_scale * template_vertex[1] + ((struct Moby *)moby)->pos.y;
-        quartu_ripple88_world_verts[i][2] = quartu_ripple88_vertex_scale * template_vertex[2] + ((struct Moby *)moby)->pos.z + quartu_ripple88_wave_height * z;
+        quartu_ripple88_world_verts[i][0] =
+            quartu_ripple88_vertex_scale * template_vertex[0] + ((struct Moby *)moby)->pos.x;
+        quartu_ripple88_world_verts[i][1] =
+            quartu_ripple88_vertex_scale * template_vertex[1] + ((struct Moby *)moby)->pos.y;
+        quartu_ripple88_world_verts[i][2] = quartu_ripple88_vertex_scale * template_vertex[2] +
+                                            ((struct Moby *)moby)->pos.z + quartu_ripple88_wave_height * z;
         quartu_ripple88_vertex_colors[i] = color;
     }
     for (j = 0; j < 2; j++) {
         for (uv_vertex_index = 0; uv_vertex_index < 88; uv_vertex_index++) {
             Quad4_2EF410 uv_scroll_factors = quartu_ripple88_uv_scroll_factors;
-            quartu_ripple88_scrolled_uvs[uv_vertex_index][0] = quartu_ripple88_base_uvs[uv_vertex_index][0] + fast_fmod(scale * uv_scroll_factors.f[j][0], 1.0f);
-            quartu_ripple88_scrolled_uvs[uv_vertex_index][1] = quartu_ripple88_base_uvs[uv_vertex_index][1] + fast_fmod(scale * uv_scroll_factors.f[j][1], 1.0f);
+            quartu_ripple88_scrolled_uvs[uv_vertex_index][0] =
+                quartu_ripple88_base_uvs[uv_vertex_index][0] + fast_fmod(scale * uv_scroll_factors.f[j][0], 1.0f);
+            quartu_ripple88_scrolled_uvs[uv_vertex_index][1] =
+                quartu_ripple88_base_uvs[uv_vertex_index][1] + fast_fmod(scale * uv_scroll_factors.f[j][1], 1.0f);
         }
         font_queue_vu_state();
         for (k = 0; k < 1; k++) {
-            draw_env_overlay_mesh(quartu_ripple88_mesh_counts[k], quartu_ripple88_mesh_positions[k], quartu_ripple88_mesh_colors[k], (void *)quartu_ripple88_mesh_uvs[k], 1);
+            draw_env_overlay_mesh(quartu_ripple88_mesh_counts[k], quartu_ripple88_mesh_positions[k],
+                                  quartu_ripple88_mesh_colors[k], (void *)quartu_ripple88_mesh_uvs[k], 1);
         }
     }
 }
@@ -798,12 +839,14 @@ int can_spawn_codebot_slot_effect(int index) {
     char *sub;
     char *moby;
     char *data;
-    if (*(short *)(other + 0x86) != 0x13) return 1;
+    if (*(short *)(other + 0x86) != 0x13)
+        return 1;
     entries = (Entry_F8D30 *)quartu_camera_descriptors;
     sub = entries[index].sub;
     moby = *(char **)(sub + 4);
     data = *(char **)(moby + 0x70) + 0x40;
-    if (*(short *)(data + 0x14) == 1 && codebot_slot_effect_spawn_gate != 0.0f) return 1;
+    if (*(short *)(data + 0x14) == 1 && codebot_slot_effect_spawn_gate != 0.0f)
+        return 1;
     return *(short *)(data + 0x14) == 3;
 }
 INCLUDE_ASM("asm/overlays", func_L15_002F8D9C);
@@ -819,7 +862,8 @@ int is_hero_in_moby_follow_camera_region(char *moby) {
     int *e = *(int **)(quartu_camera_descriptors + *(short *)(moby + 0x84) * 32 + 0x1C);
     int r;
     int i;
-    if (e[10] >= 0 && test_point_in_transformed_unit_cylinder(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, e[10])) {
+    if (e[10] >= 0 && test_point_in_transformed_unit_cylinder(
+                          &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, e[10])) {
         return 0;
     }
     if (e[3] >= 0) {
@@ -827,16 +871,19 @@ int is_hero_in_moby_follow_camera_region(char *moby) {
             return 1;
         }
     } else if (e[4] >= 0) {
-        if (test_point_in_transformed_unit_cylinder(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, e[4])) {
+        if (test_point_in_transformed_unit_cylinder(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
+                                                    e[4])) {
             return 1;
         }
     } else if (e[2] >= 0) {
-        if (test_point_in_transformed_unit_sphere((float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos), e[2])) {
+        if (test_point_in_transformed_unit_sphere(
+                (float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos), e[2])) {
             return 1;
         }
     } else if (e[5] >= 0) {
         i = e[5];
-        if (IsPointInPolygon((float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos), (float *)(quartu_paths[i] + 4), quartu_paths[i][0])) {
+        if (IsPointInPolygon((float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos),
+                             (float *)(quartu_paths[i] + 4), quartu_paths[i][0])) {
             return 1;
         }
     }
@@ -908,12 +955,16 @@ int check_moby_target_angular_limits(char *moby, float a, float b) {
     }
     return 0;
 }
-extern char * quartu_camera_descriptors_r __asm__("D_L15_0015F050") MACRO_ADDR;
+extern char *quartu_camera_descriptors_r __asm__("D_L15_0015F050") MACRO_ADDR;
 int func_L15_002F99F8_2F9D38(char *moby) __asm__("func_L15_002F99F8");
-extern char * quartu_cuboids_r __asm__("D_L15_0016016C") MACRO_ADDR;
+extern char *quartu_cuboids_r __asm__("D_L15_0016016C") MACRO_ADDR;
 int func_L15_002F9AE8_2F9D38(char *moby, float a, float b) __asm__("func_L15_002F9AE8");
-extern char * quartu_camera_moby_r __asm__("D_L15_00167480");
-typedef struct { char pad[0x100]; float x; float y; } G_88e8_2F9D38;
+extern char *quartu_camera_moby_r __asm__("D_L15_00167480");
+typedef struct {
+    char pad[0x100];
+    float x;
+    float y;
+} G_88e8_2F9D38;
 extern G_88e8_2F9D38 g_controller_state_r __asm__("D_0013CA40");
 extern int try_select_follow_camera_volume_r(char *) __asm__("func_L00_002E9870");
 extern void clear_follow_camera_volume_if_current_r(char *) __asm__("func_L00_002E9838");
@@ -991,4 +1042,3 @@ void func_L15_002F9D38_r(char *m) {
 }
 extern char *quartu_camera_moby;
 extern void update_moby_follow_camera(void *);
-

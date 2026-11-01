@@ -2,9 +2,28 @@
 #include "common.h"
 #include "include_asm.h"
 
-typedef struct { char pad[0x10]; float pos[4]; } Owner5F0A0;
-typedef union { int bits __attribute__((mode(TI))); float v[4]; } ParticleVector5F0A0;
-typedef struct { unsigned char pad; unsigned char flags; unsigned char pad1; unsigned char type; int color; unsigned char frame; unsigned char alpha; short life; int rgb; ParticleVector5F0A0 pos; ParticleVector5F0A0 velocity; Owner5F0A0 *owner; } Particle5F0A0;
+typedef struct {
+    char pad[0x10];
+    float pos[4];
+} Owner5F0A0;
+typedef union {
+    int bits __attribute__((mode(TI)));
+    float v[4];
+} ParticleVector5F0A0;
+typedef struct {
+    unsigned char pad;
+    unsigned char flags;
+    unsigned char pad1;
+    unsigned char type;
+    int color;
+    unsigned char frame;
+    unsigned char alpha;
+    short life;
+    int rgb;
+    ParticleVector5F0A0 pos;
+    ParticleVector5F0A0 velocity;
+    Owner5F0A0 *owner;
+} Particle5F0A0;
 typedef int u128 __attribute__((mode(TI)));
 extern unsigned char *create_part(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
@@ -16,7 +35,9 @@ extern int quartu_owner_target_particle_life SDATA(D_L15_0016027C);
 
 // spawns a particle at a position offset from a moby
 void spawn_owner_target_particle(int a0, void *a1, char *a2) {
-    struct { u128 pos, s, d; } scratch;
+    struct {
+        u128 pos, s, d;
+    } scratch;
     Particle5F0A0 *p;
     Owner5F0A0 *owner = (Owner5F0A0 *)a2;
     scratch.pos = *(u128 *)a1;
@@ -27,20 +48,20 @@ void spawn_owner_target_particle(int a0, void *a1, char *a2) {
         FastVecSub(dp, &scratch.pos, q);
         scratch.s = scratch.d;
         {
-        u128 *sp = &scratch.s;
-        FastVecScale(sp, sp, 0.25f);
-        FastVecAdd(dp, q, sp);
-        p->pos.bits = scratch.d;
-        p->velocity.bits = scratch.pos;
-        p->color = a0;
-        p->rgb = a0 & 0xFFFFFF;
-        p->alpha = truncate_float_to_s32_r(4.0f) + 0x70;
-        p->type = 0x44;
-        p->flags = 2;
-        {
-            p->life = scale_ticks(quartu_owner_target_particle_life);
-            p->owner = owner;
-        }
+            u128 *sp = &scratch.s;
+            FastVecScale(sp, sp, 0.25f);
+            FastVecAdd(dp, q, sp);
+            p->pos.bits = scratch.d;
+            p->velocity.bits = scratch.pos;
+            p->color = a0;
+            p->rgb = a0 & 0xFFFFFF;
+            p->alpha = truncate_float_to_s32_r(4.0f) + 0x70;
+            p->type = 0x44;
+            p->flags = 2;
+            {
+                p->life = scale_ticks(quartu_owner_target_particle_life);
+                p->owner = owner;
+            }
         }
     }
 }

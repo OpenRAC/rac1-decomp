@@ -20,10 +20,10 @@ extern int hero_slot_item_id(int);
 int get_hero_help_value(int a) {
     char *g = (char *)g_hero_r;
     switch (*(unsigned char *)(g + 0x20A4)) {
-    case 1:
-        return 0;
-    case 3:
-        return 0;
+        case 1:
+            return 0;
+        case 3:
+            return 0;
     }
     {
         char *g2 = (char *)g_hero_r;
@@ -151,10 +151,12 @@ void update_hero_vehicle_attachments_and_effects(void) {
         update_hero_motion_response_parameters();
     }
     HeroL06_UpdateStateTransitions();
-    if (G_HERO->vehicle_mode == 0) return;
+    if (G_HERO->vehicle_mode == 0)
+        return;
     update_hero_delayed_voice_requests();
     update_hero_easing_records();
-    if (G_HERO->vehicle_mode == 0) return;
+    if (G_HERO->vehicle_mode == 0)
+        return;
     update_hero_vehicle_moby();
     update_hero_scalar_pulse();
     apply_hero_and_item_scale_sequence();
@@ -191,9 +193,12 @@ void update_hero_vehicle_attachments_and_effects(void) {
                 *(float *)(G_HERO->unk1624 + 0x18) -= off[2];
                 moby_build_matrix((struct Moby *)G_HERO->unk1624);
                 k = 1.7f;
-                if (gCheats[3] != 0) k = 3.1f;
-                if (G_HERO->unk22FC != 0) k *= 1.4f;
-                ApproachValue((float *)(G_HERO->unk1624 + 0x2C), *(float *)(*(char **)(G_HERO->unk1624 + 0x24) + 0x24) * k, 0.02f);
+                if (gCheats[3] != 0)
+                    k = 3.1f;
+                if (G_HERO->unk22FC != 0)
+                    k *= 1.4f;
+                ApproachValue((float *)(G_HERO->unk1624 + 0x2C),
+                              *(float *)(*(char **)(G_HERO->unk1624 + 0x24) + 0x24) * k, 0.02f);
             }
         }
         ca = 0x281414C8;
@@ -202,33 +207,35 @@ void update_hero_vehicle_attachments_and_effects(void) {
         if (FastDecTimer(&G_HERO->unk22FC) == 0) {
             G_HERO->glow_phase = FastAddRots(G_HERO->glow_phase, g_frame_time * 12.217304229736328f);
             switch (G_HERO->unk22FE) {
-            case 1:
-                ca = 0x2814C814;
-                cb = 0x1E004B00;
-                break;
-            case 2:
-                ca = 0x2814C8C8;
-                cb = 0x1E004B4B;
-                break;
-            case 3:
-                ca = 0x323232FA;
-                cb = 0x1E000078;
-                break;
-            case 4:
-                ca = 0x28F01414;
-                cb = 0x1E4B0000;
-                break;
+                case 1:
+                    ca = 0x2814C814;
+                    cb = 0x1E004B00;
+                    break;
+                case 2:
+                    ca = 0x2814C8C8;
+                    cb = 0x1E004B4B;
+                    break;
+                case 3:
+                    ca = 0x323232FA;
+                    cb = 0x1E000078;
+                    break;
+                case 4:
+                    ca = 0x28F01414;
+                    cb = 0x1E4B0000;
+                    break;
             }
         }
         col = FastTweenColor(ca, cb, FastSin(G_HERO->glow_phase) * 0.5f + 0.5f);
         if (G_HERO->unk1624 != 0) {
-            *(int *)(G_HERO->unk1624 + 0x90) = FastTweenColor(*(int *)(G_HERO->unk1624 + 0x90), col, frame_scale * 0.1f);
+            *(int *)(G_HERO->unk1624 + 0x90) =
+                FastTweenColor(*(int *)(G_HERO->unk1624 + 0x90), col, frame_scale * 0.1f);
         }
         G_HERO->unk2300 = FastTweenColor(G_HERO->unk2300, col, frame_scale * 0.1f);
         if (G_HERO->unk1620 == 0) {
             m = (char *)CreateMoby(0x47A);
             G_HERO->unk1620 = m;
-            if (m == 0) goto skip;
+            if (m == 0)
+                goto skip;
             {
                 qcopy_nc(m + 0x10, G_HERO->pos);
                 qcopy_nc(m + 0x40, G_HERO->rot);
@@ -257,7 +264,7 @@ void update_hero_vehicle_attachments_and_effects(void) {
                 MobyBlendAnimation(G_HERO->unk1620, 0, 0, scale_ticks(0x11));
             }
         }
-skip:
+    skip:
         if (G_HERO->unk22C0 != 0) {
             Moby_PlaySound(G_HERO->unk22C0 + 0x10, 0, G_HERO->moby);
             G_HERO->unk22FE = (short)(int)G_HERO->unk22C0;
@@ -287,8 +294,10 @@ skip:
         r17 = truncate_float_to_s32(f20 * 70.0f) + 0xB4;
         t = truncate_float_to_s32(f20 * 10.0f);
         *(unsigned short *)(G_HERO->moby + 0x34) |= 0x10;
-        if (r16 >= 0x100) r16 = 0xFF;
-        if (r17 >= 0x100) r17 = 0xFF;
+        if (r16 >= 0x100)
+            r16 = 0xFF;
+        if (r17 >= 0x100)
+            r17 = 0xFF;
         r18 = t + 0x14;
         if (G_HERO->glow_pulse_level == 2) {
             color = (c20 << 24) | (r18 << 16) | (((r16 + (int)((unsigned int)r16 >> 31)) >> 1) << 8) | r17;
@@ -361,30 +370,30 @@ void restore_hero_from_vehicle_mode(void) {
         }
     }
     {
-    Hero *g2 = (Hero *)g_hero;
-    reset_hero_easing_records();
-    g2->vehicle_mode = 0;
-    m = (Moby *)g2->unkA84;
-    if (m) {
-        m->flags &= ~6;
-    }
-    g2->unkA84 = 0;
-    if (g2->vehicle_mode3_moby) {
-        DeleteMoby(g2->vehicle_mode3_moby);
-        g2->vehicle_mode3_moby = 0;
-    }
-    release_and_clear_hero_voice_slots();
-    {
-        Moby *o = (Moby *)g2->unkA88;
-        g2->moby = o;
-        qcopy(&o->pos, &g2->motion.pos);
-        o->collision_disable = 0;
-    }
-    g2->anim_frame_rate = 1.0f;
-    clear_hero_queued_animation();
-    if (g2->state.current != 100 || (level_game_mode_q != 2 && level_game_mode_q != 6)) {
-        HeroL06_TrySetMoveState(0, 1);
-    }
+        Hero *g2 = (Hero *)g_hero;
+        reset_hero_easing_records();
+        g2->vehicle_mode = 0;
+        m = (Moby *)g2->unkA84;
+        if (m) {
+            m->flags &= ~6;
+        }
+        g2->unkA84 = 0;
+        if (g2->vehicle_mode3_moby) {
+            DeleteMoby(g2->vehicle_mode3_moby);
+            g2->vehicle_mode3_moby = 0;
+        }
+        release_and_clear_hero_voice_slots();
+        {
+            Moby *o = (Moby *)g2->unkA88;
+            g2->moby = o;
+            qcopy(&o->pos, &g2->motion.pos);
+            o->collision_disable = 0;
+        }
+        g2->anim_frame_rate = 1.0f;
+        clear_hero_queued_animation();
+        if (g2->state.current != 100 || (level_game_mode_q != 2 && level_game_mode_q != 6)) {
+            HeroL06_TrySetMoveState(0, 1);
+        }
     }
 }
 extern unsigned char hero_globals_base[];
@@ -401,7 +410,10 @@ extern int coll_line(void *, void *, int, int, int);
 extern int CollType(void);
 extern float fast_atan2(float, float);
 
-typedef struct { char pad[0x98]; float ang; } G98;
+typedef struct {
+    char pad[0x98];
+    float ang;
+} G98;
 
 // Builds two view-offset vectors from a stored position and the camera angle, tests them against the level, and possibly realigns the aim vector.
 void adjust_hero_velocity_from_collision_probes(int arg) {
@@ -415,8 +427,10 @@ void adjust_hero_velocity_from_collision_probes(int arg) {
     char *r;
     int s;
     float f;
-    if (p->unk308 != 0) return;
-    if (gravity_length_xy((float *)&p->motion.velocity) < g_frame_time * 0.1f) return;
+    if (p->unk308 != 0)
+        return;
+    if (gravity_length_xy((float *)&p->motion.velocity) < g_frame_time * 0.1f)
+        return;
     sa = 0.37f;
     sb = 0.5f;
     if ((unsigned)(p->state.control_mode - 0x11) < 2) {
@@ -457,13 +471,13 @@ void adjust_hero_velocity_from_collision_probes(int arg) {
     }
     f = 0.0f;
     {
-    struct Hero *g2 = (struct Hero *)((char *)hero_globals_base + 0xE1D);
-    if (coll_line(&a0, &u, 4, *(int *)&g2->moby, 0) != 0) {
-        char *q = blarg_coll_hit;
-        if (*(int *)(q + 0x1C) > 0) {
-            f = fast_atan2(*(float *)(q + 0x48), vec_length_xy(q + 0x40));
+        struct Hero *g2 = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        if (coll_line(&a0, &u, 4, *(int *)&g2->moby, 0) != 0) {
+            char *q = blarg_coll_hit;
+            if (*(int *)(q + 0x1C) > 0) {
+                f = fast_atan2(*(float *)(q + 0x48), vec_length_xy(q + 0x40));
+            }
         }
-    }
     }
     if (f >= 0.87266463f || s == 8 || s == 12) {
         struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
@@ -717,7 +731,8 @@ void update_hero_timers_and_spatial_state(void) {
     }
     g_hero_r3.current_path_dist = 9999.0f;
     if (g_hero_r3.air_frames.s != 0 && gravity_z(&g_hero_r3.motion.velocity) < 0.0f) {
-        if (g_hero_r3.pos_history_count != 0x20) goto skip;
+        if (g_hero_r3.pos_history_count != 0x20)
+            goto skip;
         clear_u64_value(&sum);
         n8 = 8;
         for (i = 0; i < n8; i++) {
@@ -769,9 +784,15 @@ skip:
 // Dispatches on a mode byte and calls func_L06_00235E08 with a matching id.
 void enter_hero_idle_state_for_current_vehicle_mode(void) {
     switch (hero_globals_base[0x2EC1]) {
-    case 0: HeroL06_TrySetMoveState(0, 1); break;
-    case 1: HeroL06_TrySetMoveState(0x43, 1); break;
-    case 3: HeroL06_TrySetMoveState(0x53, 1); break;
+        case 0:
+            HeroL06_TrySetMoveState(0, 1);
+            break;
+        case 1:
+            HeroL06_TrySetMoveState(0x43, 1);
+            break;
+        case 3:
+            HeroL06_TrySetMoveState(0x53, 1);
+            break;
     }
 }
 typedef int V4q_32b90 __attribute__((mode(TI), aligned(16)));
@@ -804,73 +825,73 @@ f32 calculate_hero_motion_prediction_time(f32 a, f32 b, f32 c) {
     f32 x, y, z;
 
     switch ((&g_hero_r4)->mode) {
-    case 0:
-        if (c < 0.0f) {
-            FastVecScale(t, &(&g_hero_r4)->vE0, a);
-            t[2] -= ((a * a + a) * 0.5f) * b;
-            FastVecAdd(t, t, &(&g_hero_r4)->v80);
-            v.q = (&g_hero_r4)->v80.q;
-            clip_negative_segment_endpoint_xyz(&v, t);
-            qcopy(&v, &(&g_hero_r4)->v80);
-            if (coll_line(&v, t, 0xd24, 0, 0) != 0) {
-                if (compute_gravity_relative_vector_inclination((f32 *)blarg_coll_hit_normal) <= 0.87266463f) {
-                    c = *(f32 *)(blarg_coll_hit_normal - 0x18);
+        case 0:
+            if (c < 0.0f) {
+                FastVecScale(t, &(&g_hero_r4)->vE0, a);
+                t[2] -= ((a * a + a) * 0.5f) * b;
+                FastVecAdd(t, t, &(&g_hero_r4)->v80);
+                v.q = (&g_hero_r4)->v80.q;
+                clip_negative_segment_endpoint_xyz(&v, t);
+                qcopy(&v, &(&g_hero_r4)->v80);
+                if (coll_line(&v, t, 0xd24, 0, 0) != 0) {
+                    if (compute_gravity_relative_vector_inclination((f32 *)blarg_coll_hit_normal) <= 0.87266463f) {
+                        c = *(f32 *)(blarg_coll_hit_normal - 0x18);
+                    }
                 }
             }
-        }
-        if (c > 0.0f) {
-            if (solve_quadratic_equation(&o[0], &o[1], b * -0.5f, (&g_hero_r4)->vE0.f[2] - b * -0.5f,
-                                       (&g_hero_r4)->v80.f[2] - c) > 0 &&
-                o[0] > 0.0f) {
-                return o[0];
+            if (c > 0.0f) {
+                if (solve_quadratic_equation(&o[0], &o[1], b * -0.5f, (&g_hero_r4)->vE0.f[2] - b * -0.5f,
+                                             (&g_hero_r4)->v80.f[2] - c) > 0 &&
+                    o[0] > 0.0f) {
+                    return o[0];
+                }
             }
-        }
-        break;
-    case 1:
-        qcopy(&v, &(&g_hero_r4)->v270);
-        vec_scale_to_length(&v, &v, b);
-        FastVecScale(&v, &v, -1.0f);
-        FastVecScale(t, &(&g_hero_r4)->vE0, a);
-        FastVecScale(&t1, &v, ((a * a + a) * 0.5f) * b);
-        FastVecAdd(t, &t1, t);
-        FastVecAdd(t, &(&g_hero_r4)->v80, t);
-        v2.q = (&g_hero_r4)->v80.q;
-        clip_negative_segment_endpoint_xyz(&v2, t);
-        if (coll_line(&(&g_hero_r4)->v80, t, 0xd24, 0, 0) != 0) {
-            f32 nb;
-            nb = b * -0.5f;
-            z = gravity_z(&(&g_hero_r4)->vE0) - nb;
-            x = gravity_z(&(&g_hero_r4)->v80);
-            y = gravity_z(&blarg_collision_hit_point);
-            if (solve_quadratic_equation(&o[2], &o[3], nb, z, x - y) > 0 && o[2] > 0.0f) {
-                return o[2];
+            break;
+        case 1:
+            qcopy(&v, &(&g_hero_r4)->v270);
+            vec_scale_to_length(&v, &v, b);
+            FastVecScale(&v, &v, -1.0f);
+            FastVecScale(t, &(&g_hero_r4)->vE0, a);
+            FastVecScale(&t1, &v, ((a * a + a) * 0.5f) * b);
+            FastVecAdd(t, &t1, t);
+            FastVecAdd(t, &(&g_hero_r4)->v80, t);
+            v2.q = (&g_hero_r4)->v80.q;
+            clip_negative_segment_endpoint_xyz(&v2, t);
+            if (coll_line(&(&g_hero_r4)->v80, t, 0xd24, 0, 0) != 0) {
+                f32 nb;
+                nb = b * -0.5f;
+                z = gravity_z(&(&g_hero_r4)->vE0) - nb;
+                x = gravity_z(&(&g_hero_r4)->v80);
+                y = gravity_z(&blarg_collision_hit_point);
+                if (solve_quadratic_equation(&o[2], &o[3], nb, z, x - y) > 0 && o[2] > 0.0f) {
+                    return o[2];
+                }
             }
-        }
-        break;
-    case 2:
-        t1.f[2] = 100.0f;
-        t1.f[1] = 100.0f;
-        t1.f[0] = 100.0f;
-        FastVecSub(&v, &(&g_hero_r4)->v80, &t1);
-        vec_scale_to_length(&v, &v, b);
-        FastVecScale(&v, &v, -1.0f);
-        FastVecScale(t, &(&g_hero_r4)->vE0, a);
-        FastVecScale(&t1, &v, ((a * a + a) * 0.5f) * b);
-        FastVecAdd(t, &t1, t);
-        FastVecAdd(t, &(&g_hero_r4)->v80, t);
-        v2.q = (&g_hero_r4)->v80.q;
-        clip_negative_segment_endpoint_xyz(&v2, t);
-        if (coll_line(&(&g_hero_r4)->v80, t, 0xd24, 0, 0) != 0) {
-            f32 nb;
-            nb = b * -0.5f;
-            z = gravity_z(&(&g_hero_r4)->vE0) - nb;
-            x = gravity_z(&(&g_hero_r4)->v80);
-            y = gravity_z(&blarg_collision_hit_point);
-            if (solve_quadratic_equation(&o[4], &o[5], nb, z, x - y) > 0 && o[4] > 0.0f) {
-                return o[4];
+            break;
+        case 2:
+            t1.f[2] = 100.0f;
+            t1.f[1] = 100.0f;
+            t1.f[0] = 100.0f;
+            FastVecSub(&v, &(&g_hero_r4)->v80, &t1);
+            vec_scale_to_length(&v, &v, b);
+            FastVecScale(&v, &v, -1.0f);
+            FastVecScale(t, &(&g_hero_r4)->vE0, a);
+            FastVecScale(&t1, &v, ((a * a + a) * 0.5f) * b);
+            FastVecAdd(t, &t1, t);
+            FastVecAdd(t, &(&g_hero_r4)->v80, t);
+            v2.q = (&g_hero_r4)->v80.q;
+            clip_negative_segment_endpoint_xyz(&v2, t);
+            if (coll_line(&(&g_hero_r4)->v80, t, 0xd24, 0, 0) != 0) {
+                f32 nb;
+                nb = b * -0.5f;
+                z = gravity_z(&(&g_hero_r4)->vE0) - nb;
+                x = gravity_z(&(&g_hero_r4)->v80);
+                y = gravity_z(&blarg_collision_hit_point);
+                if (solve_quadratic_equation(&o[4], &o[5], nb, z, x - y) > 0 && o[4] > 0.0f) {
+                    return o[4];
+                }
             }
-        }
-        break;
+            break;
     }
     return a;
 }

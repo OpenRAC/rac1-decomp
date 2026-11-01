@@ -33,69 +33,69 @@ extern void b8f8_b(void) __asm__("func_L00_0028B8F8");
 void draw_level_sky(void) {
     SetupSkyGifPaging();
     switch (g_current_level_index_m) {
-    case 0:
-        draw_sky_shells_with_particles_and_rotating_shell();
-        break;
-    case 1:
-        update_sky_shells_animated();
-        break;
-    case 2:
-        draw_four_sky_shells_with_animated_particles();
-        break;
-    case 3:
-        sky_shells_rotate_two();
-        break;
-    case 4:
-        draw_sky_shells_with_fast_and_slow_rotation();
-        break;
-    case 5:
-        draw_sky_shells_with_particles_and_modulo_50000_rotation();
-        break;
-    case 6:
-        draw_three_sky_shells_with_three_particle_types();
-        break;
-    case 7:
-        draw_three_sky_shells_with_particles_and_modulo_50000_rotation();
-        break;
-    case 8:
-        draw_sky_shells_with_modulo_40000_rotation();
-        break;
-    case 9:
-        draw_sky_shells_with_modulo_25000_rotation();
-        break;
-    case 10:
-        draw_sky_shells_with_scaled_phase_rotation();
-        break;
-    case 11:
-        draw_sky_shells_with_slow_medium_and_fast_rotation();
-        break;
-    case 12:
-        b8f8_a();
-        break;
-    case 13:
-        draw_three_sky_shells_with_particles();
-        break;
-    case 14:
-        SkyShellsRotatePair();
-        break;
-    case 15:
-        draw_two_sky_shells_with_particles();
-        break;
-    case 16:
-        b8f8_b();
-        break;
-    case 17:
-        render_three_shell_particle_sky();
-        break;
-    case 18:
-        draw_seven_sky_shells_with_modulo_40000_and_60000_rotation();
-        break;
-    case 19:
-        SkyShellsEntryUpdate();
-        break;
-    default:
-        update_sky_shells_static();
-        break;
+        case 0:
+            draw_sky_shells_with_particles_and_rotating_shell();
+            break;
+        case 1:
+            update_sky_shells_animated();
+            break;
+        case 2:
+            draw_four_sky_shells_with_animated_particles();
+            break;
+        case 3:
+            sky_shells_rotate_two();
+            break;
+        case 4:
+            draw_sky_shells_with_fast_and_slow_rotation();
+            break;
+        case 5:
+            draw_sky_shells_with_particles_and_modulo_50000_rotation();
+            break;
+        case 6:
+            draw_three_sky_shells_with_three_particle_types();
+            break;
+        case 7:
+            draw_three_sky_shells_with_particles_and_modulo_50000_rotation();
+            break;
+        case 8:
+            draw_sky_shells_with_modulo_40000_rotation();
+            break;
+        case 9:
+            draw_sky_shells_with_modulo_25000_rotation();
+            break;
+        case 10:
+            draw_sky_shells_with_scaled_phase_rotation();
+            break;
+        case 11:
+            draw_sky_shells_with_slow_medium_and_fast_rotation();
+            break;
+        case 12:
+            b8f8_a();
+            break;
+        case 13:
+            draw_three_sky_shells_with_particles();
+            break;
+        case 14:
+            SkyShellsRotatePair();
+            break;
+        case 15:
+            draw_two_sky_shells_with_particles();
+            break;
+        case 16:
+            b8f8_b();
+            break;
+        case 17:
+            render_three_shell_particle_sky();
+            break;
+        case 18:
+            draw_seven_sky_shells_with_modulo_40000_and_60000_rotation();
+            break;
+        case 19:
+            SkyShellsEntryUpdate();
+            break;
+        default:
+            update_sky_shells_static();
+            break;
     }
     DoSkyGifPaging();
     VU1_addGSregister(0x47, 0x5360B);
@@ -162,8 +162,8 @@ void apply_level_specific_cutscene_moby_effects(void) {
             }
         }
     }
-    if (g_current_level_index_m == 3 && cutscene_state.state == 5 && scale_ticks(900) < cutscene_state.timer
-        && cutscene_state.timer < scale_ticks(1100)) {
+    if (g_current_level_index_m == 3 && cutscene_state.state == 5 && scale_ticks(900) < cutscene_state.timer &&
+        cutscene_state.timer < scale_ticks(1100)) {
         src = cutscene_state.unk184;
         if (src != 0) {
             for (n = 0; n < 4; n++) {
@@ -173,12 +173,13 @@ void apply_level_specific_cutscene_moby_effects(void) {
                 b = random_angle_radians();
                 BuildSphericalOffset(v, random_float_between(g_frame_time * 0.7f, g_frame_time * 2.2f), a, b);
                 r = scale_ticks(0xC);
-                spawn_effect_particle_with_target_scalar(buf, v, 0x80808080, 0x808080, rand_range(r, scale_ticks(0x23)), 147000.0f);
+                spawn_effect_particle_with_target_scalar(buf, v, 0x80808080, 0x808080, rand_range(r, scale_ticks(0x23)),
+                                                         147000.0f);
             }
         }
     }
-    if (g_current_level_index_m == 7 && cutscene_state.state == 4 && cutscene_state.unk188 != 0
-        && cutscene_state.unk188->oclass == 0x214) {
+    if (g_current_level_index_m == 7 && cutscene_state.state == 4 && cutscene_state.unk188 != 0 &&
+        cutscene_state.unk188->oclass == 0x214) {
         AddDrawCallback((void *)render_environment_mapped_object, (void *)cutscene_state.unk188);
     }
     if (g_current_level_index_m == 14 && cutscene_state.state == 0) {

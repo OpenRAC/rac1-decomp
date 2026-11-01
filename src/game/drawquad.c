@@ -36,8 +36,7 @@ extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
 extern unsigned char normal_font_metrics[];
 extern unsigned char small_font_metrics[];
 extern unsigned char large_font_metrics[];
-extern void FontPrint(void *, void *, void *, void *, void *, int,
-                          unsigned char *);
+extern void FontPrint(void *, void *, void *, void *, void *, int, unsigned char *);
 extern int measure_text_width_regular(unsigned char *, int);
 extern int measure_text_width_small(unsigned char *, int);
 extern int GetEffectTex(int);
@@ -53,31 +52,32 @@ ASM_FUNC("asm/handwritten/text", func_001F7DD8);
 /* Store in dst the point on segment a-b closest to c (VU0); return its clamped 0..1 position t. */
 float closest_point_on_segment(float *dst, float *a, float *b, float *c) {
     float t;
-    __asm__ __volatile__(
-        "vaddw.xyz $vf24,$vf0,$vf0w\n\t"
-        "lqc2 $vf1,0(%2)\n\t"
-        "lqc2 $vf2,0(%3)\n\t"
-        "lqc2 $vf3,0(%4)\n\t"
-        "vsub.xyz $vf4,$vf2,$vf1\n\t"
-        "vsub.xyz $vf5,$vf3,$vf1\n\t"
-        "vmul.xyz $vf6,$vf4,$vf4\n\t"
-        "vmul.xyz $vf7,$vf4,$vf5\n\t"
-        "vadday.x ACC,$vf6,$vf6y\n\t"
-        "vmaddz.x $vf6,$vf24,$vf6z\n\t"
-        "vadday.x ACC,$vf7,$vf7y\n\t"
-        "vmaddz.x $vf7,$vf24,$vf7z\n\t"
-        "vdiv Q,$vf7x,$vf6x\n\t"
-        "vwaitq\n\t"
-        "vaddq.x $vf8,$vf0,Q\n\t"
-        "vminiw.x $vf7,$vf8,$vf0w\n\t"
-        "qmfc2.ni $8,$vf8\n\t"
-        "nop\n\t"
-        "vmaxx.x $vf7,$vf7,$vf0x\n\t"
-        "mtc1 $8,%0\n\t"
-        "vmulax.xyz ACC,$vf4,$vf7x\n\t"
-        "vmaddw.xyz $vf1,$vf1,$vf0w\n\t"
-        "sqc2 $vf1,0(%1)"
-        : "=f"(t) : "r"(dst), "r"(a), "r"(b), "r"(c) : "$8", "memory");
+    __asm__ __volatile__("vaddw.xyz $vf24,$vf0,$vf0w\n\t"
+                         "lqc2 $vf1,0(%2)\n\t"
+                         "lqc2 $vf2,0(%3)\n\t"
+                         "lqc2 $vf3,0(%4)\n\t"
+                         "vsub.xyz $vf4,$vf2,$vf1\n\t"
+                         "vsub.xyz $vf5,$vf3,$vf1\n\t"
+                         "vmul.xyz $vf6,$vf4,$vf4\n\t"
+                         "vmul.xyz $vf7,$vf4,$vf5\n\t"
+                         "vadday.x ACC,$vf6,$vf6y\n\t"
+                         "vmaddz.x $vf6,$vf24,$vf6z\n\t"
+                         "vadday.x ACC,$vf7,$vf7y\n\t"
+                         "vmaddz.x $vf7,$vf24,$vf7z\n\t"
+                         "vdiv Q,$vf7x,$vf6x\n\t"
+                         "vwaitq\n\t"
+                         "vaddq.x $vf8,$vf0,Q\n\t"
+                         "vminiw.x $vf7,$vf8,$vf0w\n\t"
+                         "qmfc2.ni $8,$vf8\n\t"
+                         "nop\n\t"
+                         "vmaxx.x $vf7,$vf7,$vf0x\n\t"
+                         "mtc1 $8,%0\n\t"
+                         "vmulax.xyz ACC,$vf4,$vf7x\n\t"
+                         "vmaddw.xyz $vf1,$vf1,$vf0w\n\t"
+                         "sqc2 $vf1,0(%1)"
+                         : "=f"(t)
+                         : "r"(dst), "r"(a), "r"(b), "r"(c)
+                         : "$8", "memory");
     return t;
 }
 
@@ -165,28 +165,24 @@ void append_billboard_batch(void) {
         distance = FastVecLength(&projected_position);
         FastVecScale(&projected_position, &projected_position, 1024.0f);
         transform_vector(&projected_position, &projected_position, camera_position - 0x100);
-        multiply_vector_components(&clip_position, &projected_position,
-                                   (char *)&view_context + 0x180);
+        multiply_vector_components(&clip_position, &projected_position, (char *)&view_context + 0x180);
         if (is_vector_outside_clip(&clip_position) != 0) {
             FastMemSet(record, 0, 0x20);
             continue;
         }
-        FastVecScale(&projected_position, &projected_position,
-                       view_context.projection_scale / projected_position.w);
+        FastVecScale(&projected_position, &projected_position, view_context.projection_scale / projected_position.w);
         color = (record->alpha << 24) | 0x808080;
         x = truncate_float_to_s32(projected_position.x * 16.0f) + 0x8000;
         y = truncate_float_to_s32(projected_position.y * 16.0f) + 0x8000;
-        packed_position = ((s64)truncate_float_to_s32(projected_position.z * 0.9997f +
-                                                         view_context.depth_offset)
-                           << 32) |
-                          ((s64)y << 16) | x;
+        packed_position =
+            ((s64)truncate_float_to_s32(projected_position.z * 0.9997f + view_context.depth_offset) << 32) |
+            ((s64)y << 16) | x;
         if (distance > 18.0f) {
             distance = 18.0f;
         } else if (distance < 2.0f) {
             distance = 2.0f;
         }
-        radius = record->radius_scale * (IntToFloat(record->alpha + 16) * 0.015625f) *
-                 ((24.0f - distance) * 16.0f);
+        radius = record->radius_scale * (IntToFloat(record->alpha + 16) * 0.015625f) * ((24.0f - distance) * 16.0f);
         sine_offset = truncate_float_to_s32(radius * FastSin(record->angle));
         cosine_offset = truncate_float_to_s32(radius * FastCos(record->angle));
         g_render_packet_cursor.p->tag = 0x10000009;

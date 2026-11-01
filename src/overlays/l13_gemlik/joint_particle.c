@@ -8,7 +8,8 @@ extern void Moby_GetJointWorldPos(void *, int, void *);
 extern unsigned char *gemlik_part_type68_textures;
 
 /* Allocates and fills a particle-process record attached to a moby. */
-unsigned char *create_moby_joint_particle(char *moby, unsigned char a, int b, int c, unsigned char d, float x, float y, float z) {
+unsigned char *create_moby_joint_particle(char *moby, unsigned char a, int b, int c, unsigned char d, float x, float y,
+                                          float z) {
     unsigned char *e = create_part(0x44);
     if (e != 0) {
         char *p;

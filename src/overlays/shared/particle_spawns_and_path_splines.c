@@ -67,7 +67,7 @@ char *spawn_type_14_particle(int a, char *b) {
     }
     return p;
 }
-extern char * novalis_part_type41_textures[];
+extern char *novalis_part_type41_textures[];
 extern char *create_part_r(int) __asm__("func_00218928");
 extern int truncate_float_to_s32(float);
 
@@ -128,42 +128,54 @@ unsigned char *spawn_type_52_particle(void *a, int b, int c, int d, float f, flo
     return r;
 }
 extern int func_001160D8(void);
-extern void FastVecSub(void *,void *,void *);
-extern void matrix_from_basis_rows(void *,void *);
-extern void transform_vector(void *,void *,void *);
+extern void FastVecSub(void *, void *, void *);
+extern void matrix_from_basis_rows(void *, void *);
+extern void transform_vector(void *, void *, void *);
 extern unsigned char novalis_part_type74_textures_b[] __asm__("D_L01_001B2928");
 /* spawns a type-74 particle with transformed offset and velocity */
-unsigned char *spawn_type_74_particle(char *m,char *pos,float *vel,char *cfg,int flag) {
- float v[4]; float mat[16];
- unsigned char *p=create_part(74);
- if(p) {
- char *q;
- p[9]=truncate_float_to_s32_r(4.0f)-0x60;
- if(flag) p[3]=0x48; else p[3]=0x44;
- p[1]=0;
- q=(char *)p+0x20;
- p[2]=**(unsigned char **)novalis_part_type74_textures_b;
- p[8]=func_001160D8(); *(int *)(p+0xc)=0;
- qcopy(p+0x10,pos);
- *(float *)q=vel[0]; *(float *)(q+4)=vel[1]; *(float *)(q+8)=vel[2];
- FastVecSub(v,pos,m+0x10);
- qzero(mat);qzero(mat+4);qzero(mat+8);qzero(mat+12);
- matrix_from_basis_rows(mat,m+0xc0);
- transform_vector(v,v,mat);
- *(float *)(q+0x10)=v[0]; *(float *)(q+0x14)=v[1]; *(float *)(q+0x18)=v[2];
- *(char **)(q+0xc)=m; *(char **)(q+0x1c)=cfg;
- *(short *)(p+0xa)=*(unsigned short *)(cfg+0xc);
- *(int *)(p+4)=*(int *)cfg;
- }
- return p;
+unsigned char *spawn_type_74_particle(char *m, char *pos, float *vel, char *cfg, int flag) {
+    float v[4];
+    float mat[16];
+    unsigned char *p = create_part(74);
+    if (p) {
+        char *q;
+        p[9] = truncate_float_to_s32_r(4.0f) - 0x60;
+        if (flag)
+            p[3] = 0x48;
+        else
+            p[3] = 0x44;
+        p[1] = 0;
+        q = (char *)p + 0x20;
+        p[2] = **(unsigned char **)novalis_part_type74_textures_b;
+        p[8] = func_001160D8();
+        *(int *)(p + 0xc) = 0;
+        qcopy(p + 0x10, pos);
+        *(float *)q = vel[0];
+        *(float *)(q + 4) = vel[1];
+        *(float *)(q + 8) = vel[2];
+        FastVecSub(v, pos, m + 0x10);
+        qzero(mat);
+        qzero(mat + 4);
+        qzero(mat + 8);
+        qzero(mat + 12);
+        matrix_from_basis_rows(mat, m + 0xc0);
+        transform_vector(v, v, mat);
+        *(float *)(q + 0x10) = v[0];
+        *(float *)(q + 0x14) = v[1];
+        *(float *)(q + 0x18) = v[2];
+        *(char **)(q + 0xc) = m;
+        *(char **)(q + 0x1c) = cfg;
+        *(short *)(p + 0xa) = *(unsigned short *)(cfg + 0xc);
+        *(int *)(p + 4) = *(int *)cfg;
+    }
+    return p;
 }
 LINKER_REMNANT("asm/overlays", func_L01_0028C1D0);
 extern float FastVecDist(void *, void *);
 extern char *novalis_paths[];
 
 // Resets a path object and computes per-segment lengths of its points.
-void initialize_path_descriptor(char *p)
-{
+void initialize_path_descriptor(char *p) {
     int i;
     int off;
     char *q;
@@ -173,7 +185,8 @@ void initialize_path_descriptor(char *p)
     for (i = 0; i < **(int **)(p + 0x10); i++) {
         q = *(char **)(p + 0x10);
         off = i << 4;
-        *(float *)(*(char **)(p + 0x10) + off + 0x1C) = FastVecDist(q + (off + 0x10), q + ((((i + 1) % *(int *)q) << 4) + 0x10));
+        *(float *)(*(char **)(p + 0x10) + off + 0x1C) =
+            FastVecDist(q + (off + 0x10), q + ((((i + 1) % *(int *)q) << 4) + 0x10));
         *(float *)(*(char **)(p + 0x10) + off + 0x18) += 0.5f;
         *(float *)(*(char **)(p + 0x10) + off + 0x18) -= 0.5f;
     }
@@ -244,8 +257,17 @@ int select_list_point_toward_target(char *a0, List_8C3A8 *list, char *pt, char *
     qcopy(out, pt);
     return -1;
 }
-typedef struct { int n; int pad[3]; float e[1][4]; } List_0028C578;
-typedef struct { int cur; signed char f4; char pad5[11]; List_0028C578 *list; } Eff_0028C578;
+typedef struct {
+    int n;
+    int pad[3];
+    float e[1][4];
+} List_0028C578;
+typedef struct {
+    int cur;
+    signed char f4;
+    char pad5[11];
+    List_0028C578 *list;
+} Eff_0028C578;
 
 // Returns the list entry for a step count, wrapping past the end and counting back from it when negative.
 void *get_path_node(void *effect, int steps) {
@@ -277,8 +299,7 @@ int resolve_path_node_index(char *effect, int steps) {
 INCLUDE_ASM("asm/overlays", func_L01_0028C618);
 INCLUDE_ASM("asm/overlays", func_L01_0028C628);
 /* Steps the path node index forward, wrapping at the path's last node; returns it. */
-int advance_path_node_index(char *p)
-{
+int advance_path_node_index(char *p) {
     int max = 0;
     int next;
     if (p[4] >= 0) {
@@ -318,7 +339,10 @@ void compute_path_node_tangent(void *out, int *l, int idx, float a, float b) {
     }
     d1 = FastVecDist(p[0], p[1]);
     d2 = FastVecDist(p[1], p[2]);
-    if (d1 < d2) m = d1; else m = d2;
+    if (d1 < d2)
+        m = d1;
+    else
+        m = d2;
     FastVecSub(v1, p[1], p[0]);
     FastVecScale(v1, v1, wb);
     FastVecSub(v2, p[2], p[1]);

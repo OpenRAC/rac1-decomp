@@ -37,8 +37,7 @@ extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
 extern unsigned char normal_font_metrics[];
 extern unsigned char small_font_metrics[];
 extern unsigned char large_font_metrics[];
-extern void FontPrint(void *, void *, void *, void *, void *, int,
-                          unsigned char *);
+extern void FontPrint(void *, void *, void *, void *, void *, int, unsigned char *);
 extern int measure_text_width_regular(unsigned char *, int);
 extern int measure_text_width_small(unsigned char *, int);
 extern int GetEffectTex(int);
@@ -111,12 +110,15 @@ extern Menu13F450 g_hero;
 /* Menu hit test: arg3 is the third float ($f14). b (state 16) is
    computed before a, as retail evaluates it; the second if's own
    `arg1 >= 0xC8` is retail's second test of $a1. */
-int map_filter_l01_3(void *unused_input, int reveal_test_selector, float unused1, float unused2, float reveal_test_value) {
+int map_filter_l01_3(void *unused_input, int reveal_test_selector, float unused1, float unused2,
+                     float reveal_test_value) {
     Hero *hero_ptr = (Hero *)&g_hero;
     int hero_state_blocks_high_range_reveal = hero_ptr->state.control_mode == 16;
-    int hero_state_blocks_low_range_reveal = hero_ptr->state.control_mode == 17 || hero_ptr->state.control_mode == 18 || hero_ptr->base_condition == 1;
+    int hero_state_blocks_low_range_reveal =
+        hero_ptr->state.control_mode == 17 || hero_ptr->state.control_mode == 18 || hero_ptr->base_condition == 1;
 
-    if (reveal_test_selector < 0xC8 && reveal_test_value >= 39.5f && reveal_test_value <= 42.5f && !hero_state_blocks_low_range_reveal) {
+    if (reveal_test_selector < 0xC8 && reveal_test_value >= 39.5f && reveal_test_value <= 42.5f &&
+        !hero_state_blocks_low_range_reveal) {
         return 1;
     }
     if (reveal_test_selector >= 0xC8 && reveal_test_value >= 87.0f && !hero_state_blocks_high_range_reveal) {
@@ -149,7 +151,8 @@ int map_filter_l01_4(int arg0, float unused1, float unused2, float arg1) {
 int map_filter_l01_5(int reveal_test_selector, float unused1, float unused2, float reveal_test_value) {
     if (reveal_test_selector < 0x100) {
         struct Hero *hero_ptr = (struct Hero *)&g_hero;
-        return hero_ptr->state.control_mode == 17 || hero_ptr->state.control_mode == 18 || hero_ptr->base_condition == 1;
+        return hero_ptr->state.control_mode == 17 || hero_ptr->state.control_mode == 18 ||
+               hero_ptr->base_condition == 1;
     }
     return (reveal_test_value >= 95.0f) ? 1 : 0;
 }
@@ -264,21 +267,20 @@ extern int map_region_enabled_0 NOT_SDA;
    the first box with arg1 >= 0x135 and D_001A04A8 set and arg3 >= 47.7,
    which can succeed even when `a` is true; or, only when `a` is true,
    all three of a second group of boxes hit. */
-int map_filter_l07_1(int arg0, int arg1, float unused1, float unused2,
-                   float arg3) {
+int map_filter_l07_1(int arg0, int arg1, float unused1, float unused2, float arg3) {
     Menu13F450 *s = &g_hero;
     int a = s->unk208C == 17 || s->unk208C == 18 || s->unk12E4 == 1;
 
-    if (point_is_clockwise(arg0, arg1, 0x93, 0x168, 0x182, 0x168) != 0
-        && arg1 >= 0x135 && map_region_enabled_0 != 0 && arg3 >= 47.7f) {
+    if (point_is_clockwise(arg0, arg1, 0x93, 0x168, 0x182, 0x168) != 0 && arg1 >= 0x135 && map_region_enabled_0 != 0 &&
+        arg3 >= 47.7f) {
         return 1;
     }
     if (!a) {
         return 0;
     }
-    if (point_is_clockwise(arg0, arg1, 0xC5, 0x9A, 0x13C, 0xE1) != 0
-        && point_is_clockwise(arg0, arg1, 0xD6, 0xC3, 0x157, 0xC5) != 0
-        && point_is_clockwise(arg0, arg1, 0x107, 0xDA, 0x171, 0xA0) != 0) {
+    if (point_is_clockwise(arg0, arg1, 0xC5, 0x9A, 0x13C, 0xE1) != 0 &&
+        point_is_clockwise(arg0, arg1, 0xD6, 0xC3, 0x157, 0xC5) != 0 &&
+        point_is_clockwise(arg0, arg1, 0x107, 0xDA, 0x171, 0xA0) != 0) {
         return 1;
     }
     return 0;
@@ -294,10 +296,10 @@ int map_filter_l07_1(int arg0, int arg1, float unused1, float unused2,
    as branches instead of an sltu. */
 int map_filter_l07_2(int arg0, int arg1) {
     if (arg1 < 0xE9) {
-        if (point_is_clockwise(arg0, arg1, 0x132, 0xA0, 0x15F, 0xD8)
-            && point_is_clockwise(arg0, arg1, 0x14D, 0xD8, 0x181, 0x9A)
-            && point_is_clockwise(arg0, arg1, 0x182, 0xB4, 0x137, 0x93)
-            && point_is_clockwise(arg0, arg1, 0x157, 0x8C, 0x130, 0xAA)) {
+        if (point_is_clockwise(arg0, arg1, 0x132, 0xA0, 0x15F, 0xD8) &&
+            point_is_clockwise(arg0, arg1, 0x14D, 0xD8, 0x181, 0x9A) &&
+            point_is_clockwise(arg0, arg1, 0x182, 0xB4, 0x137, 0x93) &&
+            point_is_clockwise(arg0, arg1, 0x157, 0x8C, 0x130, 0xAA)) {
             return 1;
         }
         return 0;
@@ -338,15 +340,16 @@ extern int map_region_enabled_5 NOT_SDA;
 int map_filter_l07_3(int px, int py, float unused1, float unused2, float reveal_test_value) {
     if (py < 0xBB) {
         Hero *hero_ptr = (Hero *)&g_hero;
-        int hero_state_blocks_low_y_reveal = hero_ptr->state.control_mode == 17 || hero_ptr->state.control_mode == 18 || hero_ptr->base_condition == 1;
+        int hero_state_blocks_low_y_reveal =
+            hero_ptr->state.control_mode == 17 || hero_ptr->state.control_mode == 18 || hero_ptr->base_condition == 1;
 
         if (!hero_state_blocks_low_y_reveal && map_region_enabled_5 != 0) {
             return 1;
         }
         return 0;
     }
-    if (reveal_test_value >= 51.5f && reveal_test_value <= 54.0f
-        && point_is_clockwise(px, py, 0x10A, 0xE5, 0x124, 0xF9) != 0) {
+    if (reveal_test_value >= 51.5f && reveal_test_value <= 54.0f &&
+        point_is_clockwise(px, py, 0x10A, 0xE5, 0x124, 0xF9) != 0) {
         return 1;
     }
     return 0;
@@ -536,7 +539,8 @@ extern unsigned char menu_item_enabled_68_far __asm__("D_0013D4E0") NOT_SDA;
 /* The recorded C was right; the two ps2eeas nops were the only
    residual. */
 int map_filter_l10_0(int arg0, float unused1, float unused2, float arg1) {
-    if (arg0 >= 0xBE) return menu_item_enabled_68_far != 0;
+    if (arg0 >= 0xBE)
+        return menu_item_enabled_68_far != 0;
     return (arg1 >= 58.5f) ? 1 : 0;
 }
 
@@ -608,7 +612,8 @@ extern unsigned char menu_item_enabled_78 NOT_SDA;
    other arm is func_00208160's second test with D_0013D4EA. */
 int map_filter_l11_3(int reveal_test_selector, float unused1, float unused2, float reveal_test_value) {
     struct Hero *hero_ptr = (struct Hero *)&g_hero;
-    int hero_state_allows_reveal = hero_ptr->state.control_mode == 17 || hero_ptr->state.control_mode == 18 || hero_ptr->base_condition == 1;
+    int hero_state_allows_reveal =
+        hero_ptr->state.control_mode == 17 || hero_ptr->state.control_mode == 18 || hero_ptr->base_condition == 1;
 
     if (reveal_test_selector < 0x15F) {
         return (reveal_test_value >= 200.0f) ? hero_state_allows_reveal : 0;
@@ -666,8 +671,8 @@ extern float vec_distance_xy(float *, float *);
    quadword with one por/sq (a plain float[4] gets a memset call). */
 int map_filter_l15_0(int x, int y) {
     if (map_region_enabled_0 == 0) {
-        FVec4 p = { (float)x, (float)y };
-        FVec4 c = { 0 };
+        FVec4 p = {(float)x, (float)y};
+        FVec4 c = {0};
 
         c[0] = 161.5f;
         c[1] = 249.0f;
@@ -941,8 +946,8 @@ void downsample_map_coverage(void *arg0) {
                 }
             }
             for (m = 0; m < 128; m += 8) {
-                *out++ = acc[m] | acc[m + 1] | acc[m + 2] | acc[m + 3]
-                       | acc[m + 4] | acc[m + 5] | acc[m + 6] | acc[m + 7];
+                *out++ =
+                    acc[m] | acc[m + 1] | acc[m + 2] | acc[m + 3] | acc[m + 4] | acc[m + 5] | acc[m + 6] | acc[m + 7];
             }
         }
     }
@@ -987,7 +992,7 @@ void FormatMenuItemText(int bank, unsigned char *dst) {
     if (*src == 'b') {
         char *t2 = (char *)level_map_selection;
         sprintf_3(buf, menu_item_price_fmt,
-                        *(int *)(vendor_item_prices + *(short *)(*(char **)(t2 + 0x20) + bank * 0x28 + 0xC) * 0x18));
+                  *(int *)(vendor_item_prices + *(short *)(*(char **)(t2 + 0x20) + bank * 0x28 + 0xC) * 0x18));
     } else {
         sprintf_2(buf, menu_token_error_text);
     }
@@ -1049,8 +1054,8 @@ LINKER_REMNANT("asm/remnants/text", func_00208D30);
 typedef struct {
     float x;
     float y;
-    int icon;           /* icon id, or -1 for a plain square */
-    unsigned int sub;   /* the icon's frame, or the square's colour */
+    int icon; /* icon id, or -1 for a plain square */
+    unsigned int sub; /* the icon's frame, or the square's colour */
 } MapMarker;
 
 extern int marker_half_size MACRO_ADDR;
@@ -1080,20 +1085,21 @@ void draw_map_markers(int left, int top, int right, int bottom) {
         }
         if (m->icon == -1) {
             draw_hud_rect_blended(sx - marker_half_size, sy - marker_half_size, sx + marker_half_size,
-                          sy + marker_half_size, m->sub, 1);
+                                  sy + marker_half_size, m->sub, 1);
         } else {
             int tex = GetIconFrame(m->icon, m->sub);
             int *st = level_map_selection;
-            float *sc = (float *)(st + 0x2D);   /* the zoom scale table, at 0xB4 of the same block (the assembly's D_001A02A4) */
+            float *sc =
+                (float *)(st + 0x2D); /* the zoom scale table, at 0xB4 of the same block (the assembly's D_001A02A4) */
             char *arena = hud_state_raw;
-            unsigned char *e = (unsigned char *)(*(char **)(arena + 0x24)
-                + *(short *)(*(char **)(arena + 0x20) + tex * 4 + 2) * 8);
+            unsigned char *e =
+                (unsigned char *)(*(char **)(arena + 0x24) + *(short *)(*(char **)(arena + 0x20) + tex * 4 + 2) * 8);
             float scale = (2.0f * sc[st[0x89]] + 5.0f) / 13.0f;
             float w = scale * (float)(1 << (e[6] + 4));
 
             draw_hud_sprite_subpixel(tex, sx - (int)(scale * (float)(1 << (e[6] + 3))),
-                          sy - (int)(scale * (float)(1 << (e[7] + 3))),
-                          (int)w, (int)(scale * (float)(1 << (e[7] + 4))), 0x80);
+                                     sy - (int)(scale * (float)(1 << (e[7] + 3))), (int)w,
+                                     (int)(scale * (float)(1 << (e[7] + 4))), 0x80);
         }
         m++;
     }

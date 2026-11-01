@@ -18,9 +18,7 @@ int allocate_glint_slot(u128_pt *v, int b, float x) {
     int i;
     *tp = *v;
     e = glints_r;
-    for (i = 0;
-    i < 16;
-    i++, e += 0x20) {
+    for (i = 0; i < 16; i++, e += 0x20) {
         if (*(short *)(e + 0x10) <= 0) {
             qcopy(e, tp);
             *(float *)(e + 0x1c) = x;
@@ -32,7 +30,14 @@ int allocate_glint_slot(u128_pt *v, int b, float x) {
     }
     return -1;
 }
-typedef struct { char pad[0x10]; short life; unsigned short ang; char pad2[4]; float f; char pad3[4]; } P;
+typedef struct {
+    char pad[0x10];
+    short life;
+    unsigned short ang;
+    char pad2[4];
+    float f;
+    char pad3[4];
+} P;
 extern P glints[16];
 extern float g_frame_time MACRO_ADDR;
 extern float FastSubRots(float, float);

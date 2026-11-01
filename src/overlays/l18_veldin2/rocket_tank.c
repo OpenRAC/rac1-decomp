@@ -8,35 +8,35 @@
 /* Rocket tank: aims its turret at the hero, drives along a path and owns two child mobys. */
 struct RocketTankVars {
     u8 pad_00[0x20];
-    f32 health;                     /* 0x20: hit response block */
+    f32 health; /* 0x20: hit response block */
     u8 pad_24[0x1C];
-    u8 explosion[0x10];             /* 0x40: spawn_explosion_alt */
+    u8 explosion[0x10]; /* 0x40: spawn_explosion_alt */
     u8 pad_50[0x10];
-    s16 color_fade;                 /* 0x60: StepColorFade block */
+    s16 color_fade; /* 0x60: StepColorFade block */
     u8 pad_62[0x5];
-    u8 flash;                       /* 0x67: hit flash strength */
+    u8 flash; /* 0x67: hit flash strength */
     u8 pad_68[0x8];
-    Vec4A aim_pos;                  /* 0x70: point the turret aims at */
+    Vec4A aim_pos; /* 0x70: point the turret aims at */
     u8 pad_80[0x30];
-    char *target;                   /* 0xB0: moby being aimed at */
-    s32 target_state;               /* 0xB4: 2 = no target */
+    char *target; /* 0xB0: moby being aimed at */
+    s32 target_state; /* 0xB4: 2 = no target */
     u8 pad_B8[0x18];
-    Vec4A turret_rot;               /* 0xD0 */
+    Vec4A turret_rot; /* 0xD0 */
     u8 pad_E0[0x20];
-    s32 path_id;                    /* 0x100 */
+    s32 path_id; /* 0x100 */
     u8 pad_104[0xC];
-    f32 turret_yaw;                 /* 0x110 */
-    f32 turret_yaw_vel;             /* 0x114 */
-    f32 turret_pitch;               /* 0x118 */
-    f32 turret_pitch_vel;           /* 0x11C */
-    s32 path_index;                 /* 0x120: current path point */
+    f32 turret_yaw; /* 0x110 */
+    f32 turret_yaw_vel; /* 0x114 */
+    f32 turret_pitch; /* 0x118 */
+    f32 turret_pitch_vel; /* 0x11C */
+    s32 path_index; /* 0x120: current path point */
     u8 pad_124[0x4];
-    f32 turn_vel;                   /* 0x128 */
-    f32 speed;                      /* 0x12C */
-    f32 aim_range;                  /* 0x130: max distance of the aim vector */
-    f32 aim_phase;                  /* 0x134: sway angle */
-    char *child_a;                  /* 0x138 */
-    char *child_b;                  /* 0x13C */
+    f32 turn_vel; /* 0x128 */
+    f32 speed; /* 0x12C */
+    f32 aim_range; /* 0x130: max distance of the aim vector */
+    f32 aim_phase; /* 0x134: sway angle */
+    char *child_a; /* 0x138 */
+    char *child_b; /* 0x13C */
 };
 
 /* Declarations this file shares with vendor_002F2AE0.c, which it was part of until the two were found to be
@@ -108,28 +108,28 @@ typedef struct {
 /* Shows the moby during a cinematic step; flips it and reflects its height when the boss camera resets. */
 void update_moby_scene_visibility_and_height_reflection(M *moby) {
     switch (moby->state) {
-    case 0:
-        moby->state = 1;
-    case 1:
-        if ((veldin2_cinematic_mode == 2 && veldin2_cinematic_step == 3) ||
-            (veldin2_frame_count < 5 && drek_boss_camera_reset_done != 0 && moby->f40 == 0.0f)) {
-            moby->state = 2;
-            moby->flags |= 1;
-            moby->substate = 0;
-        }
-        break;
-    case 2:
-        if (drek_boss_camera_reset_done != 0 && moby->f40 == 0.0f) {
-            float d = 101.6f - moby->f18;
-            moby->f40 = FastAddRots(moby->f40, 3.14159274f);
-            moby->f18 += d + d;
-        }
-        if (veldin2_cinematic_mode != 2) {
-            moby->substate = 1;
+        case 0:
             moby->state = 1;
-            moby->flags &= 0xFFFE;
-        }
-        break;
+        case 1:
+            if ((veldin2_cinematic_mode == 2 && veldin2_cinematic_step == 3) ||
+                (veldin2_frame_count < 5 && drek_boss_camera_reset_done != 0 && moby->f40 == 0.0f)) {
+                moby->state = 2;
+                moby->flags |= 1;
+                moby->substate = 0;
+            }
+            break;
+        case 2:
+            if (drek_boss_camera_reset_done != 0 && moby->f40 == 0.0f) {
+                float d = 101.6f - moby->f18;
+                moby->f40 = FastAddRots(moby->f40, 3.14159274f);
+                moby->f18 += d + d;
+            }
+            if (veldin2_cinematic_mode != 2) {
+                moby->substate = 1;
+                moby->state = 1;
+                moby->flags &= 0xFFFE;
+            }
+            break;
     }
 }
 extern short rocket_tank_shot_speed;
@@ -177,110 +177,113 @@ void rocket_tank_update(M1454 *m) {
     D1454 *d = m->data;
     update_rocket_tank_damage_and_aim(m);
     switch (m->state) {
-    case 0:
-        AttachManipulator((char *)m, 0, d->buf);
-        *(short *)((char *)d + 0x24) = 6;
-        *(unsigned char *)((char *)d + 0x28) = 3;
-        *(float *)((char *)d + 0x20) = 6.0f;
-        d->w124 = scale_ticks(240);
-        d->w120 = 0;
-        if (d->c138 == 0) {
-            char *c = CreateMoby_m(0x14B);
-            d->c138 = c;
-            c[0x30] = 0x40;
-            *(short *)(d->c138 + 0x32) = 0x40;
-            d->c138[0x31] = 1;
-            {
-                char *pl = *(char **)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby;
-                long t = *(long *)(pl + 0x38);
-                *(long *)(d->c138 + 0x38) = t;
+        case 0:
+            AttachManipulator((char *)m, 0, d->buf);
+            *(short *)((char *)d + 0x24) = 6;
+            *(unsigned char *)((char *)d + 0x28) = 3;
+            *(float *)((char *)d + 0x20) = 6.0f;
+            d->w124 = scale_ticks(240);
+            d->w120 = 0;
+            if (d->c138 == 0) {
+                char *c = CreateMoby_m(0x14B);
+                d->c138 = c;
+                c[0x30] = 0x40;
+                *(short *)(d->c138 + 0x32) = 0x40;
+                d->c138[0x31] = 1;
+                {
+                    char *pl = *(char **)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby;
+                    long t = *(long *)(pl + 0x38);
+                    *(long *)(d->c138 + 0x38) = t;
+                }
+                *(unsigned short *)(d->c138 + 0x34) = 0x4000;
+                {
+                    char *t = d->c138;
+                    qcopy(t + 0x10, (char *)m + 0x10);
+                    *(int *)(t + 0x94) = 0;
+                }
+                MobyBlendAnimation(d->c138, 0, 0, 0);
+                moby_build_matrix(d->c138);
             }
-            *(unsigned short *)(d->c138 + 0x34) = 0x4000;
-            {
-                char *t = d->c138;
-                qcopy(t + 0x10, (char *)m + 0x10);
-                *(int *)(t + 0x94) = 0;
+            if (d->c13c == 0) {
+                char *c = CreateMoby_m(0x14B);
+                d->c13c = c;
+                c[0x30] = 0x40;
+                *(short *)(d->c13c + 0x32) = 0x40;
+                d->c13c[0x31] = 1;
+                {
+                    char *pl = *(char **)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby;
+                    long t = *(long *)(pl + 0x38);
+                    *(long *)(d->c13c + 0x38) = t;
+                }
+                *(unsigned short *)(d->c13c + 0x34) = 0x8000;
+                {
+                    char *t = d->c13c;
+                    qcopy(t + 0x10, (char *)m + 0x10);
+                    *(int *)(t + 0x94) = 0;
+                }
+                MobyBlendAnimation(d->c13c, 0, 0, 0);
+                moby_build_matrix(d->c13c);
             }
-            MobyBlendAnimation(d->c138, 0, 0, 0);
-            moby_build_matrix(d->c138);
-        }
-        if (d->c13c == 0) {
-            char *c = CreateMoby_m(0x14B);
-            d->c13c = c;
-            c[0x30] = 0x40;
-            *(short *)(d->c13c + 0x32) = 0x40;
-            d->c13c[0x31] = 1;
-            {
-                char *pl = *(char **)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby;
-                long t = *(long *)(pl + 0x38);
-                *(long *)(d->c13c + 0x38) = t;
-            }
-            *(unsigned short *)(d->c13c + 0x34) = 0x8000;
-            {
-                char *t = d->c13c;
-                qcopy(t + 0x10, (char *)m + 0x10);
-                *(int *)(t + 0x94) = 0;
-            }
-            MobyBlendAnimation(d->c13c, 0, 0, 0);
-            moby_build_matrix(d->c13c);
-        }
-        if (m->b53 != 1) {
-            MobyBlendAnimation(m, 1, 0, scale_ticks(10));
-        }
-        m->state = 1;
-        break;
-    case 1:
-        update_rocket_tank_path_movement_v(m);
-        if (*(int *)((char *)d + 0xB4) != 2) {
-            d->f134 = 0;
-            d->f130 = 10.0f;
-            if (m->b53 != 2) {
-                MobyBlendAnimation(m, 2, 0, scale_ticks(20));
-            }
-            m->state = 2;
-        }
-        break;
-    case 2:
-        update_rocket_tank_path_movement_v(m);
-        ApproachValue(&d->f130, 30.0f, g_frame_time * 6.0f);
-        d->f134 = FastAddRots(d->f134, g_frame_time * 6.2831855f);
-        if (IsFrameWithinWindow((char *)m, 4.0f) || IsFrameWithinWindow((char *)m, 10.0f)) {
-            float v[4];
-            float w[4];
-            float s;
-            if (MobyGetFrameValue(m) < 7.0f) {
-                Moby_GetJointWorldPos(m, 1, w);
-                s = *(float *)&rocket_tank_shot_speed;
-            } else {
-                Moby_GetJointWorldPos(m, 2, w);
-                s = *(float *)&rocket_tank_shot_speed_b;
-            }
-            s *= g_frame_time;
-            v[0] = FastCos(d->f110) * (FastCos(d->f118) * s);
-            v[1] = FastSin(d->f110) * (FastCos(d->f118) * s);
-            v[2] = 0;
-            v[2] = -FastSin(d->f118) * s;
-            Moby_PlaySound(0, 0, (int)m);
-            emit_radial_particle_burst(m, w, 0);
-            if (vec_distance_xy((char *)m + 0x10,&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) > 10.0f) {
-                create_class_29_moby((char *)m, w, v, 0);
-            } else {
-                create_class_29_moby((char *)m, w, v, 1);
-            }
-        }
-        if (*(int *)((char *)d + 0xB4) == 2) {
             if (m->b53 != 1) {
-                MobyBlendAnimation(m, 1, 0, scale_ticks(20));
+                MobyBlendAnimation(m, 1, 0, scale_ticks(10));
             }
             m->state = 1;
-        }
-        break;
+            break;
+        case 1:
+            update_rocket_tank_path_movement_v(m);
+            if (*(int *)((char *)d + 0xB4) != 2) {
+                d->f134 = 0;
+                d->f130 = 10.0f;
+                if (m->b53 != 2) {
+                    MobyBlendAnimation(m, 2, 0, scale_ticks(20));
+                }
+                m->state = 2;
+            }
+            break;
+        case 2:
+            update_rocket_tank_path_movement_v(m);
+            ApproachValue(&d->f130, 30.0f, g_frame_time * 6.0f);
+            d->f134 = FastAddRots(d->f134, g_frame_time * 6.2831855f);
+            if (IsFrameWithinWindow((char *)m, 4.0f) || IsFrameWithinWindow((char *)m, 10.0f)) {
+                float v[4];
+                float w[4];
+                float s;
+                if (MobyGetFrameValue(m) < 7.0f) {
+                    Moby_GetJointWorldPos(m, 1, w);
+                    s = *(float *)&rocket_tank_shot_speed;
+                } else {
+                    Moby_GetJointWorldPos(m, 2, w);
+                    s = *(float *)&rocket_tank_shot_speed_b;
+                }
+                s *= g_frame_time;
+                v[0] = FastCos(d->f110) * (FastCos(d->f118) * s);
+                v[1] = FastSin(d->f110) * (FastCos(d->f118) * s);
+                v[2] = 0;
+                v[2] = -FastSin(d->f118) * s;
+                Moby_PlaySound(0, 0, (int)m);
+                emit_radial_particle_burst(m, w, 0);
+                if (vec_distance_xy((char *)m + 0x10,
+                                    &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) > 10.0f) {
+                    create_class_29_moby((char *)m, w, v, 0);
+                } else {
+                    create_class_29_moby((char *)m, w, v, 1);
+                }
+            }
+            if (*(int *)((char *)d + 0xB4) == 2) {
+                if (m->b53 != 1) {
+                    MobyBlendAnimation(m, 1, 0, scale_ticks(20));
+                }
+                m->state = 1;
+            }
+            break;
     }
 }
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, void *, void *, int, int);
-extern void spawn_explosion_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float, int, int, int, int) __asm__("func_L00_0025F4A8");
-extern void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float scale, float *v10, float *v11, float *v12);
+extern void spawn_explosion_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
+                                float, int, int, int, int) __asm__("func_L00_0025F4A8");
+extern void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float scale, float *v10,
+                                float *v11, float *v12);
 extern void SetDeathBits(void *, int, int);
 extern void RerollEffectCounter(void *, short *);
 extern int FindNearestTargetMoby(unsigned char *, char *, float);
@@ -310,7 +313,8 @@ void update_rocket_tank_damage_and_aim(void *mv) {
             qcopy(v, m + 0x10);
             v[2] = v[2] + 1.0f;
             pa = (float *)(m + 0x10);
-            spawn_explosion_alt(m, d->explosion, v, 0.0f, 0.0f, 20, 8, 20, 4.0f, 2.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
+            spawn_explosion_alt(m, d->explosion, v, 0.0f, 0.0f, 20, 8, 20, 4.0f, 2.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1,
+                                0);
             dv = veldin2_zero_vec;
             SpawnBreakFragment(m, 0x700, pa, m + 0x40, 0, 0, 0.0f, dv, dv, dv);
             SpawnBreakFragment(m, 0x701, pa, m + 0x40, 0, 0, 0.0f, dv, dv, dv);
@@ -336,7 +340,7 @@ void update_rocket_tank_damage_and_aim(void *mv) {
     ((Moby *)m)->hit_slot = 0xFF;
     if (FindNearestTargetMoby(m, (char *)&d->aim_pos, 30.0f) != 2) {
         float *pa = (float *)(m + 0x10);
-        char *pl =&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
+        char *pl = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
         if (vec_distance_xy(pa, pl) < 10.0f) {
             char *q = pl - 0x80;
             d->target = *(char **)(q + 0x2080);
@@ -362,11 +366,15 @@ void update_rocket_tank_damage_and_aim(void *mv) {
         } else if (b < -0.7853982f) {
             b = -0.7853982f;
         }
-        SteerAngleWithVelocity(&d->turret_yaw, &d->turret_yaw_vel, a, g_frame_time_sq * 12.566371f, g_frame_time_sq * 12.566371f, g_frame_time * 9.424778f);
-        SteerAngleWithVelocity(&d->turret_pitch, &d->turret_pitch_vel, b, g_frame_time_sq * 12.566371f, g_frame_time_sq * 12.566371f, g_frame_time * 9.424778f);
+        SteerAngleWithVelocity(&d->turret_yaw, &d->turret_yaw_vel, a, g_frame_time_sq * 12.566371f,
+                               g_frame_time_sq * 12.566371f, g_frame_time * 9.424778f);
+        SteerAngleWithVelocity(&d->turret_pitch, &d->turret_pitch_vel, b, g_frame_time_sq * 12.566371f,
+                               g_frame_time_sq * 12.566371f, g_frame_time * 9.424778f);
     } else {
-        SteerAngleWithVelocity(&d->turret_yaw, &d->turret_yaw_vel, ((Moby *)m)->rot.z, g_frame_time_sq * 12.566371f, g_frame_time_sq * 12.566371f, g_frame_time * 9.424778f);
-        SteerAngleWithVelocity(&d->turret_pitch, &d->turret_pitch_vel, 0.0f, g_frame_time_sq * 12.566371f, g_frame_time_sq * 12.566371f, g_frame_time * 9.424778f);
+        SteerAngleWithVelocity(&d->turret_yaw, &d->turret_yaw_vel, ((Moby *)m)->rot.z, g_frame_time_sq * 12.566371f,
+                               g_frame_time_sq * 12.566371f, g_frame_time * 9.424778f);
+        SteerAngleWithVelocity(&d->turret_pitch, &d->turret_pitch_vel, 0.0f, g_frame_time_sq * 12.566371f,
+                               g_frame_time_sq * 12.566371f, g_frame_time * 9.424778f);
     }
     axis_rotation_2d48(v, 1, d->turret_pitch);
     axis_rotation_2d48(&d->turret_rot, 2, FastSubRots(d->turret_yaw, ((Moby *)m)->rot.z));
@@ -390,7 +398,8 @@ void update_rocket_tank_path_movement(char *m) {
     char *p;
     qcopy(t, (char *)veldin2_paths[d->path_id] + d->path_index * 16 + 0x10);
     ang = fast_atan2(t[0] - ((Moby *)m)->pos.x, t[1] - ((Moby *)m)->pos.y);
-    SteerAngleWithVelocity((float *)(m + 0x48), &d->turn_vel, ang, g_frame_time_sq * 3.1415927f, g_frame_time_sq * 3.1415927f, g_frame_time * 6.2831855f);
+    SteerAngleWithVelocity((float *)(m + 0x48), &d->turn_vel, ang, g_frame_time_sq * 3.1415927f,
+                           g_frame_time_sq * 3.1415927f, g_frame_time * 6.2831855f);
     f = *(float *)&rocket_tank_path_speed * g_frame_time;
     if (FastDiffRots(ang, ((Moby *)m)->rot.z) > 0.2617994f) {
         f = g_frame_time_g;
@@ -404,8 +413,10 @@ void update_rocket_tank_path_movement(char *m) {
         d->path_index = (d->path_index + k) % *veldin2_paths[d->path_id];
     }
     sc = d->speed / (*(float *)&rocket_tank_child_anim_ref_speed * g_frame_time);
-    if (sc > 2.0f) sc = 2.0f;
-    else if (sc < z) sc = z;
+    if (sc > 2.0f)
+        sc = 2.0f;
+    else if (sc < z)
+        sc = z;
     p = d->child_a;
     if (p) {
         char *q;

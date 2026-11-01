@@ -25,12 +25,9 @@ extern void libc_fflush(void);
 extern void _fwalk(void *, void *);
 extern char locale_lconv[];
 extern int libc_glue_read();
-extern long func_00116108_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_00116108");
-extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_001188C8");
-extern long func_00114518_wide(int *errOut, void *a, void *b, void *c)
-    __asm__("func_00114518");
+extern long func_00116108_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00116108");
+extern long func_001188C8_wide(int *errOut, void *a, void *b, void *c) __asm__("func_001188C8");
+extern long func_00114518_wide(int *errOut, void *a, void *b, void *c) __asm__("func_00114518");
 extern int _close_r(int *errOut, int arg1);
 extern int __sfvwrite(int, void *);
 extern void __sinit(void *);
@@ -77,18 +74,18 @@ void topThread(void *arg0) {
         ctx->counter = i + 1;
         type = ctx->entries[i].type;
         switch (type) {
-        case 0:
-            WakeupThread(ctx->entries[i].id);
-            break;
-        case 1:
-            rotate_thread_ready_queue(ctx->entries[i].id);
-            break;
-        case 2:
-            SuspendThread(ctx->entries[i].id);
-            break;
-        default:
-            kprintf(top_thread_bad_request_message);
-            break;
+            case 0:
+                WakeupThread(ctx->entries[i].id);
+                break;
+            case 1:
+                rotate_thread_ready_queue(ctx->entries[i].id);
+                break;
+            case 2:
+                SuspendThread(ctx->entries[i].id);
+                break;
+            default:
+                kprintf(top_thread_bad_request_message);
+                break;
         }
     }
 }

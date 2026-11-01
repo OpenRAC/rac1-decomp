@@ -35,21 +35,21 @@
  * together.
  */
 typedef struct Node1E4 {
-    /* 0x00 */ int   unk00;
-    /* 0x04 */ int   unk04;
-    /* 0x08 */ int   unk08;
+    /* 0x00 */ int unk00;
+    /* 0x04 */ int unk04;
+    /* 0x08 */ int unk08;
     /* 0x0C */ short flags;     /* bit 0x1000: last dispatch succeeded */
     /* 0x0E */ short handle;    /* passed down to the layer below */
-    /* 0x10 */ int   unk10;
-    /* 0x14 */ int   unk14;
-    /* 0x18 */ int   unk18;
+    /* 0x10 */ int unk10;
+    /* 0x14 */ int unk14;
+    /* 0x18 */ int unk18;
     /* 0x1C */ void *self;      /* points at this node */
     /* 0x20 */ void *fn20;
     /* 0x24 */ void *fn24;
     /* 0x28 */ void *fn28;
     /* 0x2C */ void *fn2C;
-    /* 0x30 */ char  unk30[0x20];
-    /* 0x50 */ int   pos;       /* accumulated by the dispatch routines */
+    /* 0x30 */ char unk30[0x20];
+    /* 0x50 */ int pos;       /* accumulated by the dispatch routines */
     /* 0x54 */ void *owner;     /* the parent object this is embedded in */
 } Node1E4;
 
@@ -69,23 +69,23 @@ typedef struct Node1E4 {
  * propagate into every caller.
  */
 typedef struct Obj23C {
-    /* 0x00 */ int  state;
+    /* 0x00 */ int state;
     /* 0x04 */ char unk04[0x10];
-    /* 0x14 */ int  unk14;
-    /* 0x18 */ int  unk18;
+    /* 0x14 */ int unk14;
+    /* 0x18 */ int unk18;
     /* 0x1C */ char unk1C[0x14];
-    /* 0x30 */ int  unk30;
-    /* 0x34 */ int  unk34;
-    /* 0x38 */ int  unk38;
-    /* 0x3C */ int  unk3C;
-    /* 0x40 */ int  unk40;
-    /* 0x44 */ int  unk44;
-    /* 0x48 */ int  unk48;
-    /* 0x4C */ int  unk4C;
-    /* 0x50 */ int  unk50;
-    /* 0x54 */ int  unk54;
-    /* 0x58 */ int  unk58;
-    /* 0x5C */ int  unk5C;
+    /* 0x30 */ int unk30;
+    /* 0x34 */ int unk34;
+    /* 0x38 */ int unk38;
+    /* 0x3C */ int unk3C;
+    /* 0x40 */ int unk40;
+    /* 0x44 */ int unk44;
+    /* 0x48 */ int unk48;
+    /* 0x4C */ int unk4C;
+    /* 0x50 */ int unk50;
+    /* 0x54 */ int unk54;
+    /* 0x58 */ int unk58;
+    /* 0x5C */ int unk5C;
 } Obj23C;
 
 /*
@@ -113,7 +113,7 @@ typedef struct Obj23C {
 typedef struct Slot1B8 {
     /* 0x00 */ void *unk00;
     /* 0x04 */ void *unk04;
-    /* 0x08 */ int   unk08;
+    /* 0x08 */ int unk08;
     /* 0x0C */ void *unk0C;
 } Slot1B8;  /* 0x10 */
 
@@ -182,27 +182,27 @@ typedef struct Slot1B8 {
  */
 typedef struct Handler {
     /* 0x00 */ void *fn;
-    /* 0x04 */ int   data;
+    /* 0x04 */ int data;
 } Handler;  /* 0x8 */
 
 typedef struct Obj40 {
-    /* 0x000 */ char    unk000[0x4];
-    /* 0x004 */ int     unk004;
-    /* 0x008 */ int     unk008;
+    /* 0x000 */ char unk000[0x4];
+    /* 0x004 */ int unk004;
+    /* 0x008 */ int unk008;
     /* 0x00C */ Handler handlers[0x14];
-    /* 0x0AC */ int     unk0AC;
-    /* 0x0B0 */ char    unk0B0[0x68];
-    /* 0x118 */ int     unk118;
-    /* 0x11C */ char    unk11C[0x4];
-    /* 0x120 */ int     unk120;
-    /* 0x124 */ char    unk124[0x2C];
-    /* 0x150 */ int     unk150;
-    /* 0x154 */ char    unk154[0x20];
-    /* 0x174 */ int     unk174;
-    /* 0x178 */ char    unk178[0x40];
+    /* 0x0AC */ int unk0AC;
+    /* 0x0B0 */ char unk0B0[0x68];
+    /* 0x118 */ int unk118;
+    /* 0x11C */ char unk11C[0x4];
+    /* 0x120 */ int unk120;
+    /* 0x124 */ char unk124[0x2C];
+    /* 0x150 */ int unk150;
+    /* 0x154 */ char unk154[0x20];
+    /* 0x174 */ int unk174;
+    /* 0x178 */ char unk178[0x40];
     /* 0x1B8 */ Slot1B8 slots[3];
-    /* 0x1E8 */ char    unk1E8[0x638];
-    /* 0x820 */ int     unk820;
+    /* 0x1E8 */ char unk1E8[0x638];
+    /* 0x820 */ int unk820;
 } Obj40;
 
 /*
@@ -213,9 +213,9 @@ typedef struct Obj40 {
  * passing it straight to func_0012C278.
  */
 typedef struct Wrapper {
-    /* 0x00 */ char   unk00[0x8];
-    /* 0x08 */ int    unk08;
-    /* 0x0C */ char   unk0C[0x34];
+    /* 0x00 */ char unk00[0x8];
+    /* 0x08 */ int unk08;
+    /* 0x0C */ char unk0C[0x34];
     /* 0x40 */ Obj40 *obj;
 } Wrapper;
 
@@ -274,37 +274,37 @@ typedef enum CardState {
  * Recovered from save file streams and memcard_PrepData / memcard_RestoreData handlers.
  */
 typedef enum SaveGameBlockId {
-    SAVE_BLOCK_LEVEL                    = 0,     /* Current / last level ID (int) */
-    SAVE_BLOCK_BOLT_COUNT               = 1,     /* Total bolt count (int) */
-    SAVE_BLOCK_GAME_COMPLETES           = 2,     /* Challenge mode / playthrough counter (int) */
-    SAVE_BLOCK_ELAPSED_TIME             = 3,     /* In-game elapsed time (int) */
-    SAVE_BLOCK_LAST_SAVE_TIME           = 4,     /* Timestamp (sceCdCLOCK) */
-    SAVE_BLOCK_GLOBAL_FLAGS             = 5,     /* Global progression bit flags */
-    SAVE_BLOCK_CHEATS_ACTIVATED         = 7,     /* Active cheats bitmask */
-    SAVE_BLOCK_SKILL_POINTS             = 8,     /* Skill points unlocked bitmask */
-    SAVE_BLOCK_AMMO                     = 9,     /* Current ammo table */
-    SAVE_BLOCK_UNLOCKS                  = 10,    /* Weapon / Gadget unlock bitmask */
+    SAVE_BLOCK_LEVEL = 0,     /* Current / last level ID (int) */
+    SAVE_BLOCK_BOLT_COUNT = 1,     /* Total bolt count (int) */
+    SAVE_BLOCK_GAME_COMPLETES = 2,     /* Challenge mode / playthrough counter (int) */
+    SAVE_BLOCK_ELAPSED_TIME = 3,     /* In-game elapsed time (int) */
+    SAVE_BLOCK_LAST_SAVE_TIME = 4,     /* Timestamp (sceCdCLOCK) */
+    SAVE_BLOCK_GLOBAL_FLAGS = 5,     /* Global progression bit flags */
+    SAVE_BLOCK_CHEATS_ACTIVATED = 7,     /* Active cheats bitmask */
+    SAVE_BLOCK_SKILL_POINTS = 8,     /* Skill points unlocked bitmask */
+    SAVE_BLOCK_AMMO = 9,     /* Current ammo table */
+    SAVE_BLOCK_UNLOCKS = 10,    /* Weapon / Gadget unlock bitmask */
     SAVE_BLOCK_PURCHASABLE_VENDOR_ITEMS = 12,    /* Vendor purchase availability */
-    SAVE_BLOCK_GALACTIC_MAP             = 14,    /* Visited planet coordinates / map state */
-    SAVE_BLOCK_HELP_MESSAGES            = 16,    /* Help prompt messages */
-    SAVE_BLOCK_HELP_MISC                = 17,    /* Miscellaneous help data */
-    SAVE_BLOCK_HELP_GADGETS             = 18,    /* Gadget help prompts */
-    SAVE_BLOCK_CAMERA_UP_DOWN_MODE      = 25,    /* Invert pitch setting (int) */
-    SAVE_BLOCK_CAMERA_LEFT_RIGHT_MODE   = 26,    /* Invert yaw setting (int) */
-    SAVE_BLOCK_CAMERA_ROTATION_SPEED    = 27,    /* Camera sensitivity (int) */
-    SAVE_BLOCK_CHEATS_EVER_ACTIVATED    = 37,    /* Permanent cheat taint flag */
-    SAVE_BLOCK_TOTAL_PLAY_TIME          = 1003,  /* Lifetime playtime (int) */
-    SAVE_BLOCK_TOTAL_DEATHS             = 1005,  /* Lifetime death counter (int) */
-    SAVE_BLOCK_HELP_LOG                 = 1010,  /* Help log history */
-    SAVE_BLOCK_HELP_LOG_POS             = 1011   /* Help log write cursor (int) */
+    SAVE_BLOCK_GALACTIC_MAP = 14,    /* Visited planet coordinates / map state */
+    SAVE_BLOCK_HELP_MESSAGES = 16,    /* Help prompt messages */
+    SAVE_BLOCK_HELP_MISC = 17,    /* Miscellaneous help data */
+    SAVE_BLOCK_HELP_GADGETS = 18,    /* Gadget help prompts */
+    SAVE_BLOCK_CAMERA_UP_DOWN_MODE = 25,    /* Invert pitch setting (int) */
+    SAVE_BLOCK_CAMERA_LEFT_RIGHT_MODE = 26,    /* Invert yaw setting (int) */
+    SAVE_BLOCK_CAMERA_ROTATION_SPEED = 27,    /* Camera sensitivity (int) */
+    SAVE_BLOCK_CHEATS_EVER_ACTIVATED = 37,    /* Permanent cheat taint flag */
+    SAVE_BLOCK_TOTAL_PLAY_TIME = 1003,  /* Lifetime playtime (int) */
+    SAVE_BLOCK_TOTAL_DEATHS = 1005,  /* Lifetime death counter (int) */
+    SAVE_BLOCK_HELP_LOG = 1010,  /* Help log history */
+    SAVE_BLOCK_HELP_LOG_POS = 1011   /* Help log write cursor (int) */
 } SaveGameBlockId;
 
 typedef enum SaveLevelBlockId {
-    SAVE_LEVEL_BLOCK_VISITED            = 3001,  /* 0=unvisited, 1=visited, 2=completed (char) */
-    SAVE_LEVEL_BLOCK_GOLD_BOLTS         = 3003,  /* Gold bolts collected in level */
+    SAVE_LEVEL_BLOCK_VISITED = 3001,  /* 0=unvisited, 1=visited, 2=completed (char) */
+    SAVE_LEVEL_BLOCK_GOLD_BOLTS = 3003,  /* Gold bolts collected in level */
     SAVE_LEVEL_BLOCK_SEGMENTS_COMPLETED = 3004,  /* Level mission segments completed */
-    SAVE_LEVEL_BLOCK_TOTAL_BOLTS        = 4000,  /* Total bolts collected on this level */
-    SAVE_LEVEL_BLOCK_TOTAL_DEATHS       = 4002   /* Total deaths on this level (int) */
+    SAVE_LEVEL_BLOCK_TOTAL_BOLTS = 4000,  /* Total bolts collected on this level */
+    SAVE_LEVEL_BLOCK_TOTAL_DEATHS = 4002   /* Total deaths on this level (int) */
 } SaveLevelBlockId;
 
 /*
@@ -312,36 +312,32 @@ typedef enum SaveLevelBlockId {
  * Recovered from unstripped IOPSTASH.IRX STABS debug symbols in the June 25, 2002 prototype.
  * Original source path: C:\code\i5\stash\iopstash.c
  */
-enum {
-    IOP_STASH_SEND  = 0,
-    IOP_STASH_FETCH = 1,
-    IOP_STASH_INFO  = 2
-};
+enum { IOP_STASH_SEND = 0, IOP_STASH_FETCH = 1, IOP_STASH_INFO = 2 };
 
 typedef struct StashBlock {
-    /* 0x00 */ int   ram;      /* IOP stash RAM address */
-    /* 0x04 */ int   qwc;      /* quadword count (16 bytes per unit) */
-    /* 0x08 */ int   comment;  /* char* debug comment / tag */
-    /* 0x0C */ int   pad;
+    /* 0x00 */ int ram;      /* IOP stash RAM address */
+    /* 0x04 */ int qwc;      /* quadword count (16 bytes per unit) */
+    /* 0x08 */ int comment;  /* char* debug comment / tag */
+    /* 0x0C */ int pad;
 } StashBlock;
 
 typedef struct StashFetch {
-    /* 0x00 */ int   ram;
-    /* 0x04 */ int   pad[3];
+    /* 0x00 */ int ram;
+    /* 0x04 */ int pad[3];
 } StashFetch;
 
 typedef struct StashGetInfo {
-    /* 0x00 */ int   base;
-    /* 0x04 */ int   size;
-    /* 0x08 */ int   pad[2];
+    /* 0x00 */ int base;
+    /* 0x04 */ int size;
+    /* 0x08 */ int pad[2];
 } StashGetInfo;
 
 typedef struct StashInfo {
-    /* 0x00 */ int   base;
-    /* 0x04 */ int   size;
-    /* 0x08 */ int   cd[10];   /* sceSifClientData (0x28 bytes) */
-    /* 0x30 */ int   free;     /* next free address in stash RAM */
-    /* 0x34 */ int   block;    /* allocated block count (max 0x40) */
+    /* 0x00 */ int base;
+    /* 0x04 */ int size;
+    /* 0x08 */ int cd[10];   /* sceSifClientData (0x28 bytes) */
+    /* 0x30 */ int free;     /* next free address in stash RAM */
+    /* 0x34 */ int block;    /* allocated block count (max 0x40) */
 } StashInfo;
 
 /*
@@ -366,13 +362,13 @@ typedef struct vec4 {
  * Demangled signature: InitMobyInstance(MobyInstance *, int)
  */
 typedef struct MobyInstance {
-    /* 0x00 */ BSphere       bSphere;              /* bounding sphere in world space */
-    /* 0x10 */ vec4          pos;                  /* world position (x, y, z, w) */
+    /* 0x00 */ BSphere bSphere;              /* bounding sphere in world space */
+    /* 0x10 */ vec4 pos;                  /* world position (x, y, z, w) */
     /* 0x20 */ unsigned char state;                /* current moby state (0xFE=free, 0xFF=tail) */
     /* 0x21 */ unsigned char group;                /* collision / grouping index */
     /* 0x22 */ unsigned char mClass;               /* class sub-type / moby class byte */
     /* 0x23 */ unsigned char alpha;                /* opacity / blend alpha (default 0x80) */
-    /* 0x24 */ void         *pClass;               /* pointer to class definition */
+    /* 0x24 */ void *pClass;               /* pointer to class definition */
     /* 0x28 */ struct MobyInstance *pChain;        /* next moby in chain / update list */
     /* 0x2C */ unsigned char collDamage;           /* collision damage value */
     /* 0x2D */ unsigned char deathCnt;             /* death counter */
@@ -383,19 +379,19 @@ typedef struct MobyInstance {
     /* 0x34 */ unsigned short modeBits;            /* mode flags (0x40 = no pre-update) */
     /* 0x36 */ unsigned short modeBits2;           /* secondary mode flags */
     /* 0x38 */ unsigned long lights;               /* light bitmask / color */
-    /* 0x40 */ void         *animSeq;              /* animation sequence pointer */
-    /* 0x44 */ float         animSeqT;             /* animation time parameter */
-    /* 0x48 */ float         animSpeed;            /* animation playback speed */
-    /* 0x4C */ short         animIScale;           /* animation interpolation scale */
-    /* 0x4E */ short         poseCacheEntryIndex;  /* pose cache index */
-    /* 0x50 */ void         *animLayers;           /* animation layer list */
+    /* 0x40 */ void *animSeq;              /* animation sequence pointer */
+    /* 0x44 */ float animSeqT;             /* animation time parameter */
+    /* 0x48 */ float animSpeed;            /* animation playback speed */
+    /* 0x4C */ short animIScale;           /* animation interpolation scale */
+    /* 0x4E */ short poseCacheEntryIndex;  /* pose cache index */
+    /* 0x50 */ void *animLayers;           /* animation layer list */
     /* 0x54 */ unsigned char animSeqId;            /* active sequence ID */
     /* 0x55 */ unsigned char animFlags;            /* animation flags */
     /* 0x56 */ unsigned char lSeq;                 /* loop / layer sequence */
     /* 0x57 */ unsigned char jointCnt;             /* joint count */
-    /* 0x58 */ void         *jointCache;           /* joint matrix cache */
-    /* 0x5C */ void         *pManipulator;         /* IK / joint manipulator */
-    /* 0x60 */ unsigned int  glow_rgba;            /* glow color (RGBA) */
+    /* 0x58 */ void *jointCache;           /* joint matrix cache */
+    /* 0x5C */ void *pManipulator;         /* IK / joint manipulator */
+    /* 0x60 */ unsigned int glow_rgba;            /* glow color (RGBA) */
     /* 0x64 */ unsigned char lod_trans;            /* LOD transition */
     /* 0x65 */ unsigned char lod_trans2;           /* secondary LOD transition */
     /* 0x66 */ unsigned char metal;                /* metal surface flag */
@@ -406,71 +402,71 @@ typedef struct MobyInstance {
     /* 0x6C */ unsigned char soundTrigger;         /* sound trigger */
     /* 0x6D */ unsigned char soundDesired;         /* sound desired */
     /* 0x6E */ unsigned short soundChannel;        /* audio channel index */
-    /* 0x70 */ float         scale;                /* actor scale */
+    /* 0x70 */ float scale;                /* actor scale */
     /* 0x74 */ unsigned short bangles;             /* bangles / attachment bits */
     /* 0x76 */ unsigned char shadow;               /* shadow flag */
     /* 0x77 */ unsigned char shadow_index;         /* shadow texture index */
-    /* 0x78 */ float         shadow_plane;         /* shadow ground plane Y */
-    /* 0x7C */ float         shadow_range;         /* shadow max distance */
-    /* 0x80 */ BSphere       lSphere;              /* local bounding sphere */
-    /* 0x90 */ void         *netObject;            /* network / multiplayer object */
+    /* 0x78 */ float shadow_plane;         /* shadow ground plane Y */
+    /* 0x7C */ float shadow_range;         /* shadow max distance */
+    /* 0x80 */ BSphere lSphere;              /* local bounding sphere */
+    /* 0x90 */ void *netObject;            /* network / multiplayer object */
     /* 0x94 */ unsigned short updateID;            /* update tick ID */
     /* 0x96 */ unsigned short spad0;               /* scratchpad scratch var */
-    /* 0x98 */ void         *collData;             /* collision mesh / pill data */
-    /* 0x9C */ unsigned int  collActive;           /* active collision bitmask */
-    /* 0xA0 */ int           collCnt;              /* collision check count */
+    /* 0x98 */ void *collData;             /* collision mesh / pill data */
+    /* 0x9C */ unsigned int collActive;           /* active collision bitmask */
+    /* 0xA0 */ int collCnt;              /* collision check count */
     /* 0xA4 */ unsigned char grid_min_x;           /* PVS grid bounds min X */
     /* 0xA5 */ unsigned char grid_min_y;           /* PVS grid bounds min Y */
     /* 0xA6 */ unsigned char grid_max_x;           /* PVS grid bounds max X */
     /* 0xA7 */ unsigned char grid_max_y;           /* PVS grid bounds max Y */
-    /* 0xA8 */ void        (*pUpdate)(struct MobyInstance *); /* per-tick update function */
-    /* 0xAC */ void         *pVar;                 /* private moby state (0x80 bytes per moby) */
+    /* 0xA8 */ void (*pUpdate)(struct MobyInstance *); /* per-tick update function */
+    /* 0xAC */ void *pVar;                 /* private moby state (0x80 bytes per moby) */
     /* 0xB0 */ unsigned char mission;              /* mission ID */
     /* 0xB1 */ unsigned char pad;
-    /* 0xB2 */ short         UID;                  /* unique instance ID in level */
-    /* 0xB4 */ short         bolts;                /* bolt drop reward */
+    /* 0xB2 */ short UID;                  /* unique instance ID in level */
+    /* 0xB4 */ short bolts;                /* bolt drop reward */
     /* 0xB6 */ unsigned short xp;                  /* experience / nanotech reward */
     /* 0xB8 */ struct MobyInstance *pParent;       /* parent moby pointer */
-    /* 0xBC */ short         oClass;               /* Object Class ID */
+    /* 0xBC */ short oClass;               /* Object Class ID */
     /* 0xBE */ unsigned char triggers;             /* trigger flags */
     /* 0xBF */ unsigned char standarddeathcalled;  /* death handler invoked flag */
-    /* 0xC0 */ float         rMtx[3][4];           /* 3x4 orientation/rotation matrix */
-    /* 0xF0 */ vec4          rot;                  /* Euler rotation (pitch, yaw, roll) */
+    /* 0xC0 */ float rMtx[3][4];           /* 3x4 orientation/rotation matrix */
+    /* 0xF0 */ vec4 rot;                  /* Euler rotation (pitch, yaw, roll) */
 } MobyInstance;
 
 /*
  * RaC1 Gadget and Weapon Enum (reused across the franchise and save-import).
  */
 typedef enum RaC1GadgetId {
-    GADGET_BOMB_GLOVE       = 0,
-    GADGET_PYROCITOR        = 1,
-    GADGET_BLASTER          = 2,
-    GADGET_GLOVE_OF_DOOM    = 3,
-    GADGET_SUCK_CANNON      = 4,
-    GADGET_SWINGSHOT        = 5,
-    GADGET_HYDRODISPLACER   = 6,
-    GADGET_SONIC_SUMMONER   = 7,
-    GADGET_RYNO             = 8,
-    GADGET_WALLOPER         = 9,
-    GADGET_VISIBOMB         = 10,
-    GADGET_DECOY_GLOVE      = 11,
-    GADGET_TESLA_CLAW       = 12,
-    GADGET_TAUNTER          = 13,
-    GADGET_TRESPASSER       = 14,
-    GADGET_METAL_DETECTOR   = 15,
-    GADGET_MAGNEBOOTS       = 16,
-    GADGET_GRIND_BOOTS      = 17,
-    GADGET_HOVERBOARD       = 18,
-    GADGET_HELI_PACK        = 19,
-    GADGET_THRUSTER_PACK    = 20,
-    GADGET_HYDRO_PACK       = 21,
-    GADGET_O2_MASK          = 22,
-    GADGET_PILOTS_HELMET    = 23,
-    GADGET_MORPH_O_RAY      = 24,
-    GADGET_CODEBOT          = 25,
-    GADGET_HOLOGUISE        = 26,
-    GADGET_PDA              = 27,
-    GADGET_PERSUADER        = 28
+    GADGET_BOMB_GLOVE = 0,
+    GADGET_PYROCITOR = 1,
+    GADGET_BLASTER = 2,
+    GADGET_GLOVE_OF_DOOM = 3,
+    GADGET_SUCK_CANNON = 4,
+    GADGET_SWINGSHOT = 5,
+    GADGET_HYDRODISPLACER = 6,
+    GADGET_SONIC_SUMMONER = 7,
+    GADGET_RYNO = 8,
+    GADGET_WALLOPER = 9,
+    GADGET_VISIBOMB = 10,
+    GADGET_DECOY_GLOVE = 11,
+    GADGET_TESLA_CLAW = 12,
+    GADGET_TAUNTER = 13,
+    GADGET_TRESPASSER = 14,
+    GADGET_METAL_DETECTOR = 15,
+    GADGET_MAGNEBOOTS = 16,
+    GADGET_GRIND_BOOTS = 17,
+    GADGET_HOVERBOARD = 18,
+    GADGET_HELI_PACK = 19,
+    GADGET_THRUSTER_PACK = 20,
+    GADGET_HYDRO_PACK = 21,
+    GADGET_O2_MASK = 22,
+    GADGET_PILOTS_HELMET = 23,
+    GADGET_MORPH_O_RAY = 24,
+    GADGET_CODEBOT = 25,
+    GADGET_HOLOGUISE = 26,
+    GADGET_PDA = 27,
+    GADGET_PERSUADER = 28
 } RaC1GadgetId;
 
 typedef struct HelpState {
@@ -483,4 +479,3 @@ typedef struct HelpState {
 } HelpState;
 
 #endif /* STRUCTS_H */
-

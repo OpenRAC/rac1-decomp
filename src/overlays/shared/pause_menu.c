@@ -263,12 +263,14 @@ void initialize_pause_menu(void) {
         initialize_render_archive_transfer();
     }
     apply_group_entry_adjustment(0);
-    if ((*(Menu_277208 *)level_menu_system).state == 11 || (*(Menu_277208 *)level_menu_system).state == 15 || (*(Menu_277208 *)level_menu_system).state == 0x12) {
+    if ((*(Menu_277208 *)level_menu_system).state == 11 || (*(Menu_277208 *)level_menu_system).state == 15 ||
+        (*(Menu_277208 *)level_menu_system).state == 0x12) {
         decompress_and_relocate_selected_groups(1);
     } else {
         decompress_and_relocate_selected_groups(0);
     }
-    transfer_draw_buffer_chunks((*(Menu_277208 *)level_menu_system).unk10, draw_buffer_address, *(int *)((char *)screen_globals_base + 0x4AA) << 11);
+    transfer_draw_buffer_chunks((*(Menu_277208 *)level_menu_system).unk10, draw_buffer_address,
+                                *(int *)((char *)screen_globals_base + 0x4AA) << 11);
     t = g_gs_texture_allocation_start;
     (*(Menu_277208 *)level_menu_system).unk18 = t;
     if ((*(Menu_277208 *)level_menu_system).state == 11 || (*(Menu_277208 *)level_menu_system).state == 15) {
@@ -314,7 +316,8 @@ void initialize_pause_menu(void) {
                 ((Moby_277208 **)menu_preview_mobys)[i]->r44 = 0;
                 ((Moby_277208 **)menu_preview_mobys)[i]->r48 = 0;
                 k = ((struct { int ids[14]; } *)(*(Menu_277208 *)level_menu_system).page)->ids[i];
-                MobySetAnimation(((Moby_277208 **)menu_preview_mobys)[i], k, ((Moby_277208 **)menu_preview_mobys)[i]->cls->anims[k]->b10 - 1);
+                MobySetAnimation(((Moby_277208 **)menu_preview_mobys)[i], k,
+                                 ((Moby_277208 **)menu_preview_mobys)[i]->cls->anims[k]->b10 - 1);
             }
         }
     }
@@ -378,10 +381,7 @@ void close_pause_menu(void) {
                 MenuSystem *s = (MenuSystem *)level_menu_system;
                 struct Hero *h = (struct Hero *)((char *)&hero_globals_base + 0xE1D);
                 if (((int *)(&help_stats_base + 0x45))[3 - i] != s->equipped[3 - i]) {
-                    h->pending_item[3 - i] =
-                        s->equipped[3 - i] != 0
-                            ? s->equipped[3 - i]
-                            : value;
+                    h->pending_item[3 - i] = s->equipped[3 - i] != 0 ? s->equipped[3 - i] : value;
                 }
             }
         }
@@ -408,8 +408,9 @@ void close_pause_menu(void) {
         }
         handle = show_health_hud();
         hud_keep_visible(handle, scale_ticks(0xB4));
-        handle = queue_animation_update(2, 0x754E, initialize_bolt_counter_hud, update_bolt_counter_hud_animation_and_visibility,
-                               draw_bolt_counter_hud_panel, &gBolts, 9999999);
+        handle = queue_animation_update(2, 0x754E, initialize_bolt_counter_hud,
+                                        update_bolt_counter_hud_animation_and_visibility, draw_bolt_counter_hud_panel,
+                                        &gBolts, 9999999);
         hud_keep_visible(handle, scale_ticks(0xB4));
         {
             char *s = level_menu_system;
@@ -428,7 +429,11 @@ void close_pause_menu(void) {
         skip_frame = 1;
         {
             int *tbl = (int *)coll_hit_result;
-            ((struct { int p[4]; int f; } *)tbl)->f &= 0x7FFFFFFF;
+            ((struct {
+                int p[4];
+                int f;
+            } *)tbl)
+                ->f &= 0x7FFFFFFF;
         }
         VU1_sendChain();
         VU1_syncChain(1);
@@ -495,9 +500,20 @@ typedef struct {
     int unk154;
 } GS_t;
 
-typedef struct Ent2 { unsigned char pad0[0x48]; struct Ent3 *unk48[1]; } Ent2;
-struct Ent3 { unsigned char pad0[0x10]; unsigned char unk10; };
-struct HEnt { unsigned char pad0[0x24]; Ent2 *unk24; unsigned char pad28[0x30]; float unk58; };
+typedef struct Ent2 {
+    unsigned char pad0[0x48];
+    struct Ent3 *unk48[1];
+} Ent2;
+struct Ent3 {
+    unsigned char pad0[0x10];
+    unsigned char unk10;
+};
+struct HEnt {
+    unsigned char pad0[0x24];
+    Ent2 *unk24;
+    unsigned char pad28[0x30];
+    float unk58;
+};
 
 extern GS_t GS __asm__("D_L00_001BA070");
 extern HEnt *menu_preview_mobys[];
@@ -575,12 +591,12 @@ void update_pause_menu(void) {
         GS.unk154 = 0;
     }
     switch (GS.state) {
-    case 2:
-    case 0x1A:
-    case 0x1E:
-    case 0x1F:
-        level_game_clock_paused = 1;
-        break;
+        case 2:
+        case 0x1A:
+        case 0x1E:
+        case 0x1F:
+            level_game_clock_paused = 1;
+            break;
     }
     if (GS.state == 0x14) {
         if (GS.unk14 != 0) {
@@ -658,8 +674,7 @@ void update_pause_menu(void) {
         return;
     }
     v = GS.state;
-    if (v == 0 || v == 0xA || v == 0xE || v == 0x11 || v == 0x21 || v == 0x2D ||
-        v == 0x23) {
+    if (v == 0 || v == 0xA || v == 0xE || v == 0x11 || v == 0x21 || v == 0x2D || v == 0x23) {
         initialize_pause_menu();
     }
     if ((mode_freeze_flags_m & 1) && !(*(int *)&cinematic_mode_frames < 8)) {
@@ -695,10 +710,9 @@ void update_pause_menu(void) {
             }
         }
         flag = (GS.unk8 == GS.owner->unk38);
-        if (GS.owner == GS.unk8 && GS.owner != &pause_menu_state_21_page &&
-            GS.owner != &pause_menu_no_toggle_page_4 && GS.owner != &pause_menu_no_toggle_page_5 &&
-            GS.owner != &pause_menu_no_toggle_page_1 && GS.owner != &pause_menu_no_toggle_page_3 &&
-            GS.owner != &pause_menu_no_toggle_page_2) {
+        if (GS.owner == GS.unk8 && GS.owner != &pause_menu_state_21_page && GS.owner != &pause_menu_no_toggle_page_4 &&
+            GS.owner != &pause_menu_no_toggle_page_5 && GS.owner != &pause_menu_no_toggle_page_1 &&
+            GS.owner != &pause_menu_no_toggle_page_3 && GS.owner != &pause_menu_no_toggle_page_2) {
             if (GS.state != 0x23) {
                 flag = flag ^ 1;
             }
@@ -819,7 +833,8 @@ void draw_pause_menu_pages(int transfer_only) {
 
     append_gif_transfer_packet();
     page_objects = 0;
-    append_draw_buffer_upload_packets(PM.unk10, draw_buffer_address, *(int *)((char *)screen_globals_base + 0x4AA) << 11);
+    append_draw_buffer_upload_packets(PM.unk10, draw_buffer_address,
+                                      *(int *)((char *)screen_globals_base + 0x4AA) << 11);
     if (transfer_only != 0) {
         return;
     }
@@ -869,7 +884,8 @@ void draw_pause_menu_pages(int transfer_only) {
         page_data->y = rect.y;
         page_data->w = rect.w;
         page_data->h = rect.h;
-        draw_hud_rect_blended(rect.x + 1, rect.y + 1, rect.x + rect.w - 1, rect.y + rect.h - 1, pause_menu_panel_bg_color, 0);
+        draw_hud_rect_blended(rect.x + 1, rect.y + 1, rect.x + rect.w - 1, rect.y + rect.h - 1,
+                              pause_menu_panel_bg_color, 0);
     }
     for (pass = 0; pass < 2; pass++) {
         HEnt **mobys = menu_preview_mobys;
@@ -964,7 +980,8 @@ void draw_pause_menu_pages(int transfer_only) {
             } else if (!(draw_result & 0x10)) {
                 continue;
             }
-            DrawTexturedQuad(x, y, width, height, u_start, v_start, u_end - u_start, v_end - v_start, 0x80808080L, capture_texture_tex0);
+            DrawTexturedQuad(x, y, width, height, u_start, v_start, u_end - u_start, v_end - v_start, 0x80808080L,
+                             capture_texture_tex0);
         }
         if (pass == 0) {
             RestoreMobyClassDists();
@@ -982,9 +999,23 @@ void draw_pause_menu_pages(int transfer_only) {
     DoGifPaging();
 }
 LINKER_REMNANT("asm/overlays", func_L00_002788C8);
-struct MenuPageP { unsigned char pad0[0x38]; struct MenuPageP *back; unsigned char pad3C[4]; void *focus; };
-struct MenuSystemP { unsigned char pad0[4]; struct MenuPageP *current; struct MenuPageP *next; unsigned char pad0C[0x124 - 0xC]; int close_locked; };
-struct CtrlP { unsigned char pad[0x1C4]; unsigned int pressed_unmasked; };
+struct MenuPageP {
+    unsigned char pad0[0x38];
+    struct MenuPageP *back;
+    unsigned char pad3C[4];
+    void *focus;
+};
+struct MenuSystemP {
+    unsigned char pad0[4];
+    struct MenuPageP *current;
+    struct MenuPageP *next;
+    unsigned char pad0C[0x124 - 0xC];
+    int close_locked;
+};
+struct CtrlP {
+    unsigned char pad[0x1C4];
+    unsigned int pressed_unmasked;
+};
 extern char level_menu_system[] NOT_SDA;
 extern char g_controller_state[];
 #define menu_system_p (*(struct MenuSystemP *)D_L00_001BA070)
@@ -1060,28 +1091,31 @@ extern int level_loop_exit_requested MACRO_ADDR;
 
 /* input of a pause menu entry: accept returns -1, cancel goes back a page or returns -1 when closing is allowed, and 0x20 sets the transition flags */
 int pause_menu_entry_input(char *entry) {
- unsigned int pressed = g_controller_state_r.pressed_unmasked;
- if (pressed & 0xD00) {
-  if (*(int *)(entry + 0x30) & 0x20) map_menu_state_target_level = g_current_level_index_m;
-  return -1;
- }
- if (pressed & 0x10) {
-  struct MenuPageP *back;
-  if (*(int *)(entry + 0x30) & 0x20) map_menu_state_target_level = g_current_level_index_m;
-  back = level_menu_system_r.current->back;
-  if (back) {
-   level_menu_system_r.next = back;
-   return 0;
-  }
-  if (!level_menu_system_r.close_locked) return -1;
- }
- if (g_controller_state_r.pressed_unmasked & 0x20) {
-  memory_card_state_field_fc = 0;
-  memcard_last_save_slot = -1;
-  level_loop_exit_requested = 1;
-  skip_frame = 1;
- }
- return 0;
+    unsigned int pressed = g_controller_state_r.pressed_unmasked;
+    if (pressed & 0xD00) {
+        if (*(int *)(entry + 0x30) & 0x20)
+            map_menu_state_target_level = g_current_level_index_m;
+        return -1;
+    }
+    if (pressed & 0x10) {
+        struct MenuPageP *back;
+        if (*(int *)(entry + 0x30) & 0x20)
+            map_menu_state_target_level = g_current_level_index_m;
+        back = level_menu_system_r.current->back;
+        if (back) {
+            level_menu_system_r.next = back;
+            return 0;
+        }
+        if (!level_menu_system_r.close_locked)
+            return -1;
+    }
+    if (g_controller_state_r.pressed_unmasked & 0x20) {
+        memory_card_state_field_fc = 0;
+        memcard_last_save_slot = -1;
+        level_loop_exit_requested = 1;
+        skip_frame = 1;
+    }
+    return 0;
 }
 INCLUDE_ASM("asm/overlays", func_L00_0027D454);
 INCLUDE_ASM("asm/overlays", func_L00_0027D464);
@@ -1161,18 +1195,26 @@ void process_unlock_code_input(void) {
     int pressed, direction, count, j, code, index, matched;
     if ((*(long *)(pad + 0x1C0) & 0xF) == 6) {
         pressed = *(int *)(pad + 0x1C4);
-        if (!(pressed & 0xF0A0)) return;
+        if (!(pressed & 0xF0A0))
+            return;
 
-        if (*(int *)&unlock_code_input_count >= 20) return;
-        if (pressed & 0x1000) direction = 0;
-        else if (pressed & 0x4000) direction = 1;
-        else if (pressed & 0x8000) direction = 2;
-        else if (pressed & 0x2000) direction = 3;
-        else direction = (pressed & 0x80) ? 4 : 5;
+        if (*(int *)&unlock_code_input_count >= 20)
+            return;
+        if (pressed & 0x1000)
+            direction = 0;
+        else if (pressed & 0x4000)
+            direction = 1;
+        else if (pressed & 0x8000)
+            direction = 2;
+        else if (pressed & 0x2000)
+            direction = 3;
+        else
+            direction = (pressed & 0x80) ? 4 : 5;
         count = *(int *)&unlock_code_input_count;
         unlock_code_input[count++] = direction;
         *(int *)&unlock_code_input_count = count;
-        if (count != 20) return;
+        if (count != 20)
+            return;
         code = -1;
         index = 2;
         lim0 = 0x93;
@@ -1190,7 +1232,8 @@ void process_unlock_code_input(void) {
                 break;
             }
         }
-        if (code == -1) return;
+        if (code == -1)
+            return;
         va = code - 0x24;
         vb = code - 0x37;
         vc = code - 0x3d;
@@ -1257,7 +1300,8 @@ int StreamSlot_GetSize(int id) {
     for (i = 0; i < 5; i++, p += 2) {
         if (p[0] == id) {
             int result = 0x11800;
-            if (p[1] & 1) result = 0x4F000;
+            if (p[1] & 1)
+                result = 0x4F000;
             return result;
         }
     }
@@ -1289,12 +1333,15 @@ int StreamSlot_ClearFlag4(int id) {
     }
     return 1;
 }
-typedef struct { int f[14]; } Rec;
+typedef struct {
+    int f[14];
+} Rec;
 extern int queued_record_count MACRO_ADDR;
 extern Rec queued_records[];
 
 /* appends one 13-argument record to the queue of 8 entries; returns 0, or -1 when full */
-int QueueRecord(int a0, int a1, int a2, int a3, int a4, int a5, int a6, int a7, int s0, int s1, int s2, int s3, int s4) {
+int QueueRecord(int a0, int a1, int a2, int a3, int a4, int a5, int a6, int a7, int s0, int s1, int s2, int s3,
+                int s4) {
     int n = queued_record_count;
     Rec *r;
     if (n >= 8) {
@@ -1318,7 +1365,10 @@ int QueueRecord(int a0, int a1, int a2, int a3, int a4, int a5, int a6, int a7, 
     r->f[13] = s4;
     return 0;
 }
-typedef struct { short uid; short bolts; } BoltSource_286068;
+typedef struct {
+    short uid;
+    short bolts;
+} BoltSource_286068;
 extern BoltSource_286068 bolt_source_stats[][64];
 
 /* the bolt tally slot of moby uid in level lvl: scanning down from slot 63, the first slot that
@@ -1341,7 +1391,10 @@ int find_or_assign_bolt_source_slot(int lvl, int uid) {
 extern void copy_memory_by_alignment(int, void *, unsigned short);
 
 /* level data, not declared anywhere else yet */
-typedef struct { unsigned char h[0x404]; unsigned char f[0x7FF]; } B_00284e50;
+typedef struct {
+    unsigned char h[0x404];
+    unsigned char f[0x7FF];
+} B_00284e50;
 extern B_00284e50 current_moby_states;
 extern B_00284e50 checkpoint_moby_states;
 extern int session_moby_killed[];
@@ -1378,8 +1431,7 @@ struct CheckpointState {
 };
 
 /* Seeds the pause-menu snapshot: copies the header, marks valid entries in the bitmasks, fills the state record. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay_state_00284e50.c, FUN_L00_00284e50. */
-void jet_reset_camera(void *a0, void *a1)
-{
+void jet_reset_camera(void *a0, void *a1) {
     unsigned char *src;
     int i;
     int lvl;
@@ -1389,8 +1441,10 @@ void jet_reset_camera(void *a0, void *a1)
     lvl = g_current_level_index_m;
     for (src = current_moby_states.f, i = 0; i < 0x7FF; i++, src++) {
         int v = *src;
-        if ((unsigned char)v == 0) continue;
-        if ((unsigned char)v != 1 && saved_mission_state[lvl][(unsigned char)v - 2] != 0xFF) continue;
+        if ((unsigned char)v == 0)
+            continue;
+        if ((unsigned char)v != 1 && saved_mission_state[lvl][(unsigned char)v - 2] != 0xFF)
+            continue;
         checkpoint_moby_states.f[i] = v;
         level_moby_killed[lvl][i >> 5] |= 1 << (i & 0x1F);
         session_moby_killed[i >> 5] |= 1 << (i & 0x1F);
@@ -1460,17 +1514,18 @@ void restore_or_clear_level_state(void) {
     *(unsigned short *)(&help_stats_base + 0x100ED) = *(unsigned short *)&p->unk_C54;
     b[0x6B] |= 7;
     k = p->vehicle_mode;
-    if (k == 0 || k == 3) goto done;
+    if (k == 0 || k == 3)
+        goto done;
     s = 0;
     switch (k) {
-    case 1:
-        s = 0x57;
-        break;
-    case 2:
-        s = 0x1A3;
-        break;
-    default:
-        raise_kernel_trap();
+        case 1:
+            s = 0x57;
+            break;
+        case 2:
+            s = 0x1A3;
+            break;
+        default:
+            raise_kernel_trap();
     }
     for (i = 0; (e = (char *)moby_array_start + (i << 8)) < (char *)level_mobys_end; i++) {
         if (*(short *)(e + 0xA6) == s) {
@@ -1479,12 +1534,11 @@ void restore_or_clear_level_state(void) {
             break;
         }
     }
-done:
-    {
-        char *h = g_hero;
-        moby_build_matrix(*(void **)(h + 0x2080));
-        euler_rotation_basis(*(char **)(h + 0x2080) + 0xC0, h + 0x90);
-    }
+done: {
+    char *h = g_hero;
+    moby_build_matrix(*(void **)(h + 0x2080));
+    euler_rotation_basis(*(char **)(h + 0x2080) + 0xC0, h + 0x90);
+}
     init_camera_system();
     register_audio_stream_callback();
 }
@@ -1500,7 +1554,14 @@ int find_moby_by_id(int a, int id) {
     return 0;
 }
 INCLUDE_ASM("asm/overlays", func_L00_002864CC);
-typedef struct { int off; int pad; unsigned short len; short kind; short a; short b; } Ent;
+typedef struct {
+    int off;
+    int pad;
+    unsigned short len;
+    short kind;
+    short a;
+    short b;
+} Ent;
 extern int find_moby_by_id(int, int);
 
 /* Applies a patch table to the matching records. */

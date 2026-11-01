@@ -16,9 +16,7 @@ extern void moby_joints_to_scratchpad(void *moby, short joint, int flags);
 
 /* Joint positions in scratchpad, 16 bytes each.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/state/00263a28.c, FUN_L01_00263a28. */
-int rig_probe_setup(char *moby, int index, unsigned int *type, float *result,
-                      float *radius, float *distance)
-{
+int rig_probe_setup(char *moby, int index, unsigned int *type, float *result, float *radius, float *distance) {
     char *entry;
     float scale;
     u128 matrix[4];

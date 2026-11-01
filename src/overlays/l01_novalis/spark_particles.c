@@ -10,7 +10,8 @@ extern int PackColorRGBA(float, float, float, float);
 extern unsigned char *novalis_part_type_textures[];
 
 /* Spawns a type 6 particle with position, colour, scale and owner. */
-void create_spark_particle(int owner, float *pos, int snd, unsigned char arg, unsigned char idx, unsigned char mode, float x, float y, float z, float scale, float f21, float r, float g, float b, float a) {
+void create_spark_particle(int owner, float *pos, int snd, unsigned char arg, unsigned char idx, unsigned char mode,
+                           float x, float y, float z, float scale, float f21, float r, float g, float b, float a) {
     float buf[4];
     float *tmp = buf;
     unsigned char *p;
@@ -23,8 +24,10 @@ void create_spark_particle(int owner, float *pos, int snd, unsigned char arg, un
             qcopy(p + 0x10, tmp);
             if (mode == 0xFF) {
                 p[9] = ((arg >> 5) << 4) + truncate_float_to_s32_r(4.0f);
-                if (arg & 1) p[3] = 0x48;
-                else p[3] = 0x44;
+                if (arg & 1)
+                    p[3] = 0x48;
+                else
+                    p[3] = 0x44;
             } else {
                 p[9] = arg;
                 p[3] = mode;

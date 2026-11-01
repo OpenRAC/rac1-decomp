@@ -16,11 +16,14 @@ int draw_checking_memory_card_data_menu(struct Stream_21380 *menu) {
         if (((MemoryCardState *)memory_card_state)->card[0].type != 2) {
             goto done;
         }
-        if (((MemoryCardState *)memory_card_state)->state < 3 && ((MemoryCardState *)memory_card_state)->err < 0 && ((struct MS_21380 *)menu_system)->ticks >= 0xB) {
+        if (((MemoryCardState *)memory_card_state)->state < 3 && ((MemoryCardState *)memory_card_state)->err < 0 &&
+            ((struct MS_21380 *)menu_system)->ticks >= 0xB) {
             goto done;
         }
         SetupGifPaging(0);
-        text = ((char *(*)(int))msg_string)(((struct MS_21380 *)menu_system)->card_op_pending ? ((struct MS_21380 *)menu_system)->card_op_text : 0x4FBA);
+        text = ((char *(*)(int))msg_string)(((struct MS_21380 *)menu_system)->card_op_pending
+                                                ? ((struct MS_21380 *)menu_system)->card_op_text
+                                                : 0x4FBA);
         ((void *(*)(void *, int, unsigned int))libc_memset)(window_fields, 0, sizeof(window_fields));
         window_fields[1] = menu->height + 1;
         window_fields[0] = 1;

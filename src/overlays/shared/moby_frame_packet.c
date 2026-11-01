@@ -7,14 +7,14 @@ extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 typedef struct O0024ed18Key {
     u8 pad_00[4];
-    s16 h;                       /* 0x04 */
+    s16 h; /* 0x04 */
 } O0024ed18Key;
 
 typedef struct O0024ed18 {
     u8 pad_00[0x10];
-    u8 n;                        /* 0x10 */
+    u8 n; /* 0x10 */
     u8 pad_11[0xB];
-    O0024ed18Key *k[1];          /* 0x1C */
+    O0024ed18Key *k[1]; /* 0x1C */
 } O0024ed18;
 
 /* Finds the index of the keyframe nearest to the given time, or -1. */
@@ -25,7 +25,8 @@ int find_nearest_animation_sequence_entry(char *a, float time) {
     for (i = 0; i < animation_sequence->n; i++) {
         if (scaled_target_position < animation_sequence->k[i]->h) {
             if (i > 0) {
-                if (scaled_target_position - animation_sequence->k[i - 1]->h < animation_sequence->k[i]->h - scaled_target_position)
+                if (scaled_target_position - animation_sequence->k[i - 1]->h <
+                    animation_sequence->k[i]->h - scaled_target_position)
                     i = i - 1;
             }
             return i;
@@ -60,7 +61,18 @@ void offset_moby_class_point_pairs(unsigned char *a, int dx, int dy) {
     int *t = *(int **)a;
     for (i = 0; i < n; i++, t += 4) {
         unsigned short *e = *(unsigned short **)t;
-        int c = ((unsigned char *)e)[2]; int cnt; e += 2; if (c != 0) { cnt = c; do { e[0] = e[0] + dx; e[1] = e[1] + dy; e += 2; cnt--; } while (cnt != 0); }
+        int c = ((unsigned char *)e)[2];
+        int cnt;
+        e += 2;
+        if (c != 0) {
+            cnt = c;
+            do {
+                e[0] = e[0] + dx;
+                e[1] = e[1] + dy;
+                e += 2;
+                cnt--;
+            } while (cnt != 0);
+        }
     }
 }
 typedef struct Slot {
@@ -188,8 +200,17 @@ void advance_moby_animation_blend(void *unused, unsigned char *a) {
     }
     moby_blend_anim_frames_to_spr(a);
 }
-typedef struct { u8 pad[0x20]; u8 b20, b21, b22, b23; s32 i24; f32 f28; f32 f2c; } S;
-typedef struct { u8 pad[0x51]; u8 b51, b52, b53; } A;
+typedef struct {
+    u8 pad[0x20];
+    u8 b20, b21, b22, b23;
+    s32 i24;
+    f32 f28;
+    f32 f2c;
+} S;
+typedef struct {
+    u8 pad[0x51];
+    u8 b51, b52, b53;
+} A;
 extern void advance_moby_animation_blend_r(void *, void *) __asm__("func_L00_002501C8");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_state_0024eec0.c, FUN_L00_0024f3e0. */
@@ -201,32 +222,46 @@ void initialize_moby_animation_blend(A *a0, S *a1, s32 a2, s32 a3, s32 a4, s32 a
     a1->i24 = 0;
     a1->f28 = 1.0f;
     a1->f2c = 1.0f / (f32)a4;
-    if (a5) advance_moby_animation_blend_r(a0, a1);
+    if (a5)
+        advance_moby_animation_blend_r(a0, a1);
 }
 /* Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay/state/0024eec0.c, FUN_L00_0024f440. */
 typedef unsigned long u64_50478p;
 typedef struct {
     char pad0[6];
-    short qwc;        /* 0x06: size in quadwords */
+    short qwc; /* 0x06: size in quadwords */
     char pad8[2];
-    short hA;         /* 0x0A */
+    short hA; /* 0x0A */
     char padC[2];
-    short hE;         /* 0x0E */
-    u64_50478p q[1];  /* 0x10 */
+    short hE; /* 0x0E */
+    u64_50478p q[1]; /* 0x10 */
 } Frame_50478p;
 typedef struct {
     char pad0[6];
-    short h6;         /* 0x06 */
-    short h8;         /* 0x08 */
-    short hA;         /* 0x0A */
-    short hC;         /* 0x0C */
-    short hE;         /* 0x0E */
-    u64_50478p q[1];  /* 0x10 */
+    short h6; /* 0x06 */
+    short h8; /* 0x08 */
+    short hA; /* 0x0A */
+    short hC; /* 0x0C */
+    short hE; /* 0x0E */
+    u64_50478p q[1]; /* 0x10 */
 } Packet_50478p;
 
-typedef struct { char pad0[0x1C]; Frame_50478p *frames[1]; } Sequence_50478p;
-typedef struct { char pad0[8]; unsigned char count; char pad9[0x13]; unsigned char *map; char pad20[0x28]; Sequence_50478p *sequences[1]; } Model_50478p;
-typedef struct { char pad0[0x14]; Model_50478p *first, *second; } Object_50478p;
+typedef struct {
+    char pad0[0x1C];
+    Frame_50478p *frames[1];
+} Sequence_50478p;
+typedef struct {
+    char pad0[8];
+    unsigned char count;
+    char pad9[0x13];
+    unsigned char *map;
+    char pad20[0x28];
+    Sequence_50478p *sequences[1];
+} Model_50478p;
+typedef struct {
+    char pad0[0x14];
+    Model_50478p *first, *second;
+} Object_50478p;
 extern void section(void *, int) __asm__("func_001F99D8");
 extern void FUN_001f9838_50478p(void *, void *, int) __asm__("func_L00_001FF040");
 extern void FUN_00118a80_50478p(int) __asm__("func_00118D80");
@@ -374,7 +409,9 @@ void apply_nearest_environment_sample(char *o) {
     }
     off = idx * 0x30;
     e1 = (char *)(off + (int)environment_samples);
-    pack_render_command_fields(o, *(int *)(o + 0x80) = (*(int *)(e1 + 0x18) << 16) + (*(int *)(e1 + 0x14) << 8) + *(int *)(e1 + 0x10), 0, 0, 0);
+    pack_render_command_fields(
+        o, *(int *)(o + 0x80) = (*(int *)(e1 + 0x18) << 16) + (*(int *)(e1 + 0x14) << 8) + *(int *)(e1 + 0x10), 0, 0,
+        0);
     *(int *)(o + 0x38) = *(int *)((char *)(off + (int)environment_samples) + 0x1C);
     e2 = (char *)(off + (int)environment_samples);
     if (*(unsigned char *)(e2 + 0x27) != 0) {

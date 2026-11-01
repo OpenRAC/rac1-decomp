@@ -27,7 +27,9 @@ extern void vec_scale_to_length(void *, void *, float);
 extern float IntToFloat(int);
 u64 GetEffectTex(s32);
 extern void draw_world_quad(void *, void *, int);
-typedef struct { float v[8][4]; } Frame_03430;
+typedef struct {
+    float v[8][4];
+} Frame_03430;
 extern char *oltanis_clip_volumes MACRO_ADDR;
 extern char oltanis_camera_pos[];
 extern float oltanis_vendor_beam_quad_uvs[][2];
@@ -70,8 +72,10 @@ void draw_vendor_beam(char *m) {
     FastVecSub(v230, oltanis_camera_pos, ((Frame_03430 *)oltanis_clip_volumes)[d->idx].v[3]);
     matrix_mul_vec3(v230, v230, M2);
     tex = GetEffectTex(*(int *)&oltanis_vendor_beam_tex_index);
-    flags = (long)*(int *)&vendor_beam_blend_minuend_selector_gp | ((long)*(int *)&vendor_beam_blend_subtrahend_selector_gp << 2) | ((long)*(int *)&vendor_beam_blend_alpha_factor_selector_gp << 4)
-            | ((long)*(int *)&vendor_beam_blend_addend_selector_gp << 6) | (0x8000L << 24);
+    flags = (long)*(int *)&vendor_beam_blend_minuend_selector_gp |
+            ((long)*(int *)&vendor_beam_blend_subtrahend_selector_gp << 2) |
+            ((long)*(int *)&vendor_beam_blend_alpha_factor_selector_gp << 4) |
+            ((long)*(int *)&vendor_beam_blend_addend_selector_gp << 6) | (0x8000L << 24);
     P[2].state = 0xFF9000000260L;
     P[1].state = 0xFF9000000260L;
     P[0].state = 0xFF9000000260L;
@@ -111,12 +115,16 @@ void draw_vendor_beam(char *m) {
             for (k = 0; k < 4; k++) {
                 if (k < 2) {
                     qcopy(P[0].corner[k], d->pts[i]);
-                    if (k & 1) FastVecAdd(P[0].corner[k], P[0].corner[k], v240);
-                    else FastVecSub(P[0].corner[k], P[0].corner[k], v240);
+                    if (k & 1)
+                        FastVecAdd(P[0].corner[k], P[0].corner[k], v240);
+                    else
+                        FastVecSub(P[0].corner[k], P[0].corner[k], v240);
                 } else {
                     qcopy(P[0].corner[k], d->pts[i + 1]);
-                    if (k & 1) FastVecAdd(P[0].corner[k], P[0].corner[k], v250);
-                    else FastVecSub(P[0].corner[k], P[0].corner[k], v250);
+                    if (k & 1)
+                        FastVecAdd(P[0].corner[k], P[0].corner[k], v250);
+                    else
+                        FastVecSub(P[0].corner[k], P[0].corner[k], v250);
                 }
                 P[0].uv[k][0] = oltanis_vendor_beam_quad_uvs[k][0] + IntToFloat(i - i / 4 * 4) * 0.25f;
             }
@@ -126,8 +134,10 @@ void draw_vendor_beam(char *m) {
     for (j = 0; j < 4; j++) {
         clear_u64_value(v250);
         c = d->cnt[j];
-        if (c >= 0x1F) continue;
-        if (c <= -1) continue;
+        if (c >= 0x1F)
+            continue;
+        if (c <= -1)
+            continue;
         for (n = 0; n < 3; n++) {
             qcopy(v240, v250);
             if (n < 2) {
@@ -138,16 +148,21 @@ void draw_vendor_beam(char *m) {
             } else {
                 clear_u64_value(v250);
             }
-            if (n == 0) qcopy(v240, v250);
+            if (n == 0)
+                qcopy(v240, v250);
             for (k = 0; k < 4; k++) {
                 if (k < 2) {
                     qcopy(P[0].corner[k], d->seg[n][j]);
-                    if (k & 1) FastVecAdd(P[0].corner[k], P[0].corner[k], v240);
-                    else FastVecSub(P[0].corner[k], P[0].corner[k], v240);
+                    if (k & 1)
+                        FastVecAdd(P[0].corner[k], P[0].corner[k], v240);
+                    else
+                        FastVecSub(P[0].corner[k], P[0].corner[k], v240);
                 } else {
                     qcopy(P[0].corner[k], d->seg[n + 1][j]);
-                    if (k & 1) FastVecAdd(P[0].corner[k], P[0].corner[k], v250);
-                    else FastVecSub(P[0].corner[k], P[0].corner[k], v250);
+                    if (k & 1)
+                        FastVecAdd(P[0].corner[k], P[0].corner[k], v250);
+                    else
+                        FastVecSub(P[0].corner[k], P[0].corner[k], v250);
                 }
                 P[0].uv[k][0] = oltanis_vendor_beam_quad_uvs[k][0] + IntToFloat(n - n / 4 * 4) * 0.25f;
             }

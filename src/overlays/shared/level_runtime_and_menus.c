@@ -136,8 +136,7 @@ void run_level_main_loop(void) {
     int per;
     int sel;
 
-    if (((level_bss_end_r - level_bss_start_r) & 0xF) == 0 &&
-        ((unsigned int)level_bss_start_r & 0xF) == 0) {
+    if (((level_bss_end_r - level_bss_start_r) & 0xF) == 0 && ((unsigned int)level_bss_start_r & 0xF) == 0) {
         FastMemZero16_r(level_bss_start_r, level_bss_end_r - level_bss_start_r);
     } else {
         STUB_printf_r(level_bss_unaligned_msg_r);
@@ -201,49 +200,49 @@ void run_level_main_loop(void) {
         snd_FlushSoundCommands_r();
         v = cinematic_mode_r;
         switch (v) {
-        case -1:
-            func_00216270_2465F8();
-            update_debug_menu_r();
-            draw_debug_menu_r();
-            break;
-        case 0:
-            func_00216270_2465F8();
-            handle_pause_input_r();
-            draw_debug_profiler_if_enabled_r();
-            break;
-        case 1:
-            play_queued_movie_r();
-            break;
-        case 2:
-            func_00216270_2465F8();
-            update_cutscene_playback_r();
-            prepare_debug_profiler_render_r();
-            break;
-        case 3:
-            func_00216270_2465F8();
-            update_pause_menu_r();
-            draw_page_contents_r();
-            break;
-        case 4:
-            func_00216270_2465F8();
-            update_mode_freeze_r();
-            draw_dialog_background_and_text_r();
-            break;
-        case 5:
-            func_00216270_2465F8();
-            update_vendor_menu_r();
-            draw_vendor_screen_r();
-            break;
-        case 6:
-            func_00216270_2465F8();
-            update_resident_gameplay_state_r();
-            dispatch_game_state_update_r();
-            break;
-        case 7:
-            func_00216270_2465F8();
-            update_slideshow_r();
-            draw_framebuffer_with_timed_text_r();
-            break;
+            case -1:
+                func_00216270_2465F8();
+                update_debug_menu_r();
+                draw_debug_menu_r();
+                break;
+            case 0:
+                func_00216270_2465F8();
+                handle_pause_input_r();
+                draw_debug_profiler_if_enabled_r();
+                break;
+            case 1:
+                play_queued_movie_r();
+                break;
+            case 2:
+                func_00216270_2465F8();
+                update_cutscene_playback_r();
+                prepare_debug_profiler_render_r();
+                break;
+            case 3:
+                func_00216270_2465F8();
+                update_pause_menu_r();
+                draw_page_contents_r();
+                break;
+            case 4:
+                func_00216270_2465F8();
+                update_mode_freeze_r();
+                draw_dialog_background_and_text_r();
+                break;
+            case 5:
+                func_00216270_2465F8();
+                update_vendor_menu_r();
+                draw_vendor_screen_r();
+                break;
+            case 6:
+                func_00216270_2465F8();
+                update_resident_gameplay_state_r();
+                dispatch_game_state_update_r();
+                break;
+            case 7:
+                func_00216270_2465F8();
+                update_slideshow_r();
+                draw_framebuffer_with_timed_text_r();
+                break;
         }
         if (cinematic_mode_r != v) {
             cinematic_mode_frames_r = 0;
@@ -272,8 +271,8 @@ void run_level_main_loop(void) {
                 t = GetIconFrame_r(0x755D, 0);
                 HudSprite_r(t, 0x32, 0x12C, 0x40, 0x40, 0x80);
                 ang = (float)(rendered_frame_count_r % n) * -6.2831855f / (float)n;
-                draw_rotated_sprite_r(1312.0f, 5312.0f, 0x40, 0x40, GetFrameTex_r(GetIconFrame_r(0x755D, 1)),
-                                     size, size, ang);
+                draw_rotated_sprite_r(1312.0f, 5312.0f, 0x40, 0x40, GetFrameTex_r(GetIconFrame_r(0x755D, 1)), size,
+                                      size, ang);
                 DoGifPaging_r();
             }
         }
@@ -373,26 +372,32 @@ void initialize_level_map_archive(void) {
     extern char disc_table[];
 
     map_menu_state[4] = 1;
-    { int i;
-    for (i = 0; i < 20; i++) {
-        map_menu_state[0x41 + i] = map_menu_initial_value_pairs[i * 2];
-        ((float *)map_menu_state)[0x2D + i] = 0.65f;
-        map_menu_state[0x55 + i] = map_menu_initial_value_pairs[i * 2 + 1];
-    } }
+    {
+        int i;
+        for (i = 0; i < 20; i++) {
+            map_menu_state[0x41 + i] = map_menu_initial_value_pairs[i * 2];
+            ((float *)map_menu_state)[0x2D + i] = 0.65f;
+            map_menu_state[0x55 + i] = map_menu_initial_value_pairs[i * 2 + 1];
+        }
+    }
     v = g_current_level_index_r;
     map_menu_state[0x8B] = -1;
     map_menu_state[0x89] = v > 18 ? 0 : v;
-    { int i;
-    for (i = 0; i < 19; i++) {
-        float a = map_points[i * 8], b = map_points[i * 8 + 1], c = map_points[i * 8 + 2], dd = map_points[i * 8 + 3];
-        float ee = map_points[i * 8 + 4], f = map_points[i * 8 + 5], gg = map_points[i * 8 + 6], h = map_points[i * 8 + 7];
-        float p = (ee - gg) / (a - c);
-        float r = (f - h) / (b - dd);
-        map_coefficients[i * 4 + 1] = p;
-        map_coefficients[i * 4 + 3] = r;
-        map_coefficients[i * 4] = ee - p * a;
-        map_coefficients[i * 4 + 2] = f - r * b;
-    } }
+    {
+        int i;
+        for (i = 0; i < 19; i++) {
+            float a = map_points[i * 8], b = map_points[i * 8 + 1], c = map_points[i * 8 + 2],
+                  dd = map_points[i * 8 + 3];
+            float ee = map_points[i * 8 + 4], f = map_points[i * 8 + 5], gg = map_points[i * 8 + 6],
+                  h = map_points[i * 8 + 7];
+            float p = (ee - gg) / (a - c);
+            float r = (f - h) / (b - dd);
+            map_coefficients[i * 4 + 1] = p;
+            map_coefficients[i * 4 + 3] = r;
+            map_coefficients[i * 4] = ee - p * a;
+            map_coefficients[i * 4 + 2] = f - r * b;
+        }
+    }
     pp = (unsigned char *)menu_item_enabled_115 + 0xB9;
     if (pp[0x21] != 0) {
         map_menu_state[0x8C] = 1;
@@ -438,8 +443,7 @@ void initialize_level_map_archive(void) {
         lim = 256.0f;
         for (y = 0; y < 32; y++) {
             for (x = 0; x < 32; x++) {
-                if ((15.5f - (float)x) * (15.5f - (float)x) +
-                    (15.5f - (float)y) * (15.5f - (float)y) > lim) {
+                if ((15.5f - (float)x) * (15.5f - (float)x) + (15.5f - (float)y) * (15.5f - (float)y) > lim) {
                     map_menu_state_circle_mask[x / 8 + y * 4] |= 1 << (x - (x / 8) * 8);
                 }
             }
@@ -619,7 +623,7 @@ void initialize_render_archive_transfer(void) {
             archive_index = state->archive_index;
             bytes = disc_table.render_archives[archive_index].size << 7;
             start_audio_stream_read(buffer, disc_table.render_archives[archive_index].sector,
-                         disc_table.render_archives[archive_index].size);
+                                    disc_table.render_archives[archive_index].size);
             update_audio_stream_until_idle(1);
             state->loaded = 1;
             state->transfer_bytes = bytes;
@@ -650,7 +654,8 @@ int Map_FindUnsetKeySlot(int reverse) {
     int *keys = base + 5;
     do {
         int slot = reverse ? 4 - i : i;
-        if (base[slot] && keys[slot] == -1) return slot;
+        if (base[slot] && keys[slot] == -1)
+            return slot;
         ++i;
     } while (i < 5);
     return -1;
@@ -760,7 +765,8 @@ void reveal_map_around_position(f32 *position) {
         level = 0;
     }
     state = 0;
-    if (((Hero *)g_hero_r)->state.control_mode == 17 || ((Hero *)g_hero_r)->state.control_mode == 18 || ((Hero *)g_hero_r)->base_condition == 1) {
+    if (((Hero *)g_hero_r)->state.control_mode == 17 || ((Hero *)g_hero_r)->state.control_mode == 18 ||
+        ((Hero *)g_hero_r)->base_condition == 1) {
         state = 1;
     }
     mode16 = ((Hero *)g_hero_r)->state.control_mode == 16;

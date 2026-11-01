@@ -30,22 +30,22 @@ void spawn_span_particle(float *pos, int kind, float *vec, float scale) {
         f20 = 0.0f;
         s = f20;
         switch (k) {
-        case 0:
-            c = 0x14;
-            f20 = 0.015f;
-            s = random_float_between(0.01f, 1.0f);
-            break;
-        case 1:
-            c = 0xD;
-            f20 = 0.5f;
-            s = random_float_between(1.0f, 5.0f);
-            break;
-        case 2:
-            c = 0xD;
-            f20 = 1.0f;
-            k = 1;
-            s = random_float_between(20.0f, 30.0f);
-            break;
+            case 0:
+                c = 0x14;
+                f20 = 0.015f;
+                s = random_float_between(0.01f, 1.0f);
+                break;
+            case 1:
+                c = 0xD;
+                f20 = 0.5f;
+                s = random_float_between(1.0f, 5.0f);
+                break;
+            case 2:
+                c = 0xD;
+                f20 = 1.0f;
+                k = 1;
+                s = random_float_between(20.0f, 30.0f);
+                break;
         }
         *(u128 *)w = *(u128 *)vp;
         vec_scale_to_length(w, w, s);
