@@ -153,13 +153,13 @@ struct AlienQueenVars {
 struct SlidePairVars {
     s32 clip_volume; /* 0x00 */
     s32 mode; /* 0x04 */
-    f32 unk_08; /* 0x08 */
+    volatile f32 unk_08; /* 0x08 */
     volatile float unk_0C; /* 0x0C */
     Vec4A closed_pos; /* 0x10 */
     Vec4A rot; /* 0x20 */
     Vec4A axis; /* 0x30 */
     char *child; /* 0x40 */
-    f32 unk_44; /* 0x44 */
+    volatile f32 unk_44; /* 0x44 */
     volatile float unk_48; /* 0x48 */
     s32 timer; /* 0x4C */
 };
@@ -3348,14 +3348,10 @@ void update_moby_pair_transforms(char *moby) {
             child = data->child + 0x10;
             qcopy(child, moby + 0x10);
             qcopy(child + 0x30, moby + 0x40);
-            /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
-            *(volatile float *)(((char *)data) + 0x48) = 0.0f;
-            /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
-            *(volatile float *)&data->unk_08 = 0.0f;
-            /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
-            *(volatile float *)(((char *)data) + 0xc) = 0.0f;
-            /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
-            *(volatile float *)&data->unk_44 = 0.0f;
+            data->unk_48 = 0.0f;
+            data->unk_08 = 0.0f;
+            data->unk_0C = 0.0f;
+            data->unk_44 = 0.0f;
             return;
     }
 }

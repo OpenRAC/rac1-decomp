@@ -115,7 +115,7 @@ void VU1_sendChain(void) {
     int err;
     int *chan;
 
-    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
+    /* KEPT: volatile: the store stays out of the delay slot. The short declaration is for $gp. */
     *(volatile int *)&vif_chain_flags |= 0x1F;
     size = (int)g_render_packet_cursor - vu1_chain_buffers[vu1_chain_buffer_index];
     err = 0;
@@ -136,12 +136,12 @@ void VU1_sendChain(void) {
         flush_cache(0);
         sce_dma_send(chan, vu1_chain_buffers[vu1_chain_buffer_index]);
     } else {
-        /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
+        /* KEPT: volatile, as above. */
         *(volatile int *)&vif_chain_flags = 0;
     }
 }
 
-extern short vif_chain_flags;              /* SDA, gp -0x5D20 */
+extern short vif_chain_flags; /* SDA, gp -0x5D20 */
 extern char vu1_sync_timeout_msg[];
 extern void reset_graphics(void);
 
