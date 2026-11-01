@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-How many matches depend on a build step (docs/BUILD_FIDELITY.md, rule 4).
+How many matches depend on a build step (docs/reference/BUILD_FIDELITY.md, rule 4).
 
   bash tools/docker/run.sh python tools/measure_build_step.py STEP [STEP ...]
 

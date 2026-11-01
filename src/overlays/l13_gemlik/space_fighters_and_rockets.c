@@ -444,7 +444,7 @@ void update_level_13_class_53_projectile(char *moby_raw) {
 /* NON_MATCHING func_L13_002C3840 -- src/overlays/l13_gemlik/vendor_002C2638.c
  * Best so far: SIZE ours 1900 / retail 1912, checked 2026-10-08.
  * Not built into anything: the retail assembly stays in the source file
- * until a candidate is EXACT (docs/NONMATCHING.md). Start from this one.
+ * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
  * No longer builds in its file (COMPILE failed, 2026-10-09): match its declarations to the file's first.
  * What the last attempts found:
  *   Blarg space fighter moby update (class 101, level 13): state machine on moby+0x20 (9 cases, jtbl_L13_001F4920)
@@ -1902,7 +1902,7 @@ end:
 /* NON_MATCHING func_L13_002D0298 -- src/overlays/l13_gemlik/vendor_002C2638.c
  * Best so far: SIZE ours 1320 / retail 1328, checked 2026-10-09.
  * Not built into anything: the retail assembly stays in the source file
- * until a candidate is EXACT (docs/NONMATCHING.md). Start from this one.
+ * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
  * What the last attempts found:
  *   Forcefield tower update (moby class 170): a switch on moby[0x20] (0 = start, 1 = wait/linger, 2 = active), wit
  *   Differences left: the state-1 "v != 0" block gets a movz (`run448` flag) and an extra `addiu $s1,1` where reta

@@ -4,7 +4,7 @@
 
 /*
  * core_text object 0x11D700-0x11D960. Boundaries are retail's linker fill
- * (0xCDCDCDCD) between objects; see docs/DECOMP_PROGRESS.md.
+ * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
  *
  * Sony's EE kernel library (libkernl), tlbtrap.o: the TLB/debug
  * exception handlers, hand-written assembly (so no compiler applies).

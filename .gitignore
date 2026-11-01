@@ -2,7 +2,7 @@
 baserom*/
 
 # Third-party toolchain mirrors (e.g. SN Systems ProDG) - local tooling only,
-# never committed. See docs/TOOLCHAIN.md.
+# never committed. See docs/reference/TOOLCHAIN.md.
 toolchain/
 *.iso
 *.bin

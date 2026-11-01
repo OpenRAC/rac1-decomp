@@ -7,7 +7,7 @@
 /*
  * stream.cpp in the original source; text 0x217588-0x217F68.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
- * sizes -- see docs/DECOMP_PROGRESS.md. Compiled as C for now.
+ * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
 /* Declarations in scope here before the split. */

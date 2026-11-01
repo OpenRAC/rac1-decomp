@@ -24,7 +24,7 @@ int remove_help_message_for_selector(int a) {
 /* NON_MATCHING func_L00_002657B8 -- src/overlays/shared/mobyutil_00265558.c
  * Best so far: SIZE ours 264 / retail 260, checked 2026-10-09.
  * Not built into anything: the retail assembly stays in the source file
- * until a candidate is EXACT (docs/NONMATCHING.md). Start from this one.
+ * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
  * What the last attempts found:
  *   `-mno-split-addresses`), so that lever doesn't apply here: the mismatch
  *   is a branch-likely/delay-slot-fill choice, not a saved-register or

@@ -16,7 +16,7 @@ pick it up instead of starting over, and not redo it by accident.
 - the candidate, exactly as `tools/try_func.py` takes it (externs, then
   the function).
 
-[`nonmatching/README.md`](../nonmatching/README.md) lists every one,
+[`nonmatching/README.md`](../../nonmatching/README.md) lists every one,
 closest first. It is generated: never edit it by hand.
 
 Nothing builds these files into the game, and none of the tools that read

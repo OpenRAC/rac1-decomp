@@ -6,7 +6,7 @@
 /*
  * transition.cpp in the original source; text 0x1E9E70-0x1EC038.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
- * sizes -- see docs/DECOMP_PROGRESS.md. Compiled as C for now.
+ * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
 /*
@@ -24,7 +24,7 @@
  * Means the sq/lq choice isn't purely "s-regs vs ra", it's something
  * more granular retail decides per-function (maybe per translation
  * unit, or some other property not yet isolated). See "Open toolchain
- * questions" in docs/DECOMP_PROGRESS.md.
+ * questions" in docs/reference/DECOMP_PROGRESS.md.
  */
 extern void SetupSkyGifPaging(void);
 extern void SkyLevelGeneric___maybe(void);

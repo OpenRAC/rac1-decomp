@@ -4,7 +4,7 @@
 
 /*
  * core_text object 0x118A40-0x119328. Boundaries are retail's linker fill
- * (0xCDCDCDCD) between objects; see docs/DECOMP_PROGRESS.md.
+ * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
  *
  * Sony's EE kernel library (libkernl), three members back to back:
  * klib.o (the syscall stubs, CreateSema ... _InitTLB), glue.o (newlib's

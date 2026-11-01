@@ -13,7 +13,7 @@ The full procedure is in [`docs/WORKFLOW.md`](docs/WORKFLOW.md). In short:
 3. Iterate. `python tools/try_func.py func_XXXXXXXX c1.c c2.c ...`
    compiles each candidate through the real pipeline and says `EXACT` or
    how many bytes are off, in seconds, without touching `src/`.
-   [`docs/LEVERS.md`](docs/LEVERS.md) is the one-page list of what makes
+   [`docs/agents/LEVERS.md`](docs/agents/LEVERS.md) is the one-page list of what makes
    a function match. For a side-by-side view, `sh tools/diff.sh
    func_XXXXXXXX` (or `tools\diff.bat` on Windows) runs
    [asm-differ](https://github.com/simonlindholm/asm-differ).
@@ -35,7 +35,7 @@ git clone https://github.com/simonlindholm/asm-differ tools/ext/asm-differ
 
 The build uses retail's own compilers and assembles what they emit as it is,
 apart from a short, documented list of assembler and linker behaviours.
-[docs/BUILD_FIDELITY.md](docs/BUILD_FIDELITY.md) has the list, the evidence
+[docs/reference/BUILD_FIDELITY.md](docs/reference/BUILD_FIDELITY.md) has the list, the evidence
 for each entry and how many matches depend on it. So:
 
 - never add a step that changes the compiler's output to make a function
@@ -71,12 +71,12 @@ to check a match against. On 2026-09-30 the movie code (`movie/*`, Sony's
 ezmpeg sample in retail) and one libmpeg helper were reverted to
 assembly for exactly this: they had been compiled from that sample's
 source. They are to be redone from the assembly alone.
-The rules for doing that are in [`docs/MOVIE.md`](docs/MOVIE.md).
+The rules for doing that are in [`docs/reference/MOVIE.md`](docs/reference/MOVIE.md).
 
 Known compiler behaviour, useful levers and measured dead ends are collected
-in [`docs/DECOMP_PROGRESS.md`](docs/DECOMP_PROGRESS.md).
+in [`docs/reference/DECOMP_PROGRESS.md`](docs/reference/DECOMP_PROGRESS.md).
 
-For LLM agents, [`docs/CONTAINERS.md`](docs/CONTAINERS.md) describes a
+For LLM agents, [`docs/reference/CONTAINERS.md`](docs/reference/CONTAINERS.md) describes a
 Ghidra container that serves decompilation and disassembly over MCP, and
 `tools/export_dataset.py` exports every exact match with its retail
 assembly as training pairs.

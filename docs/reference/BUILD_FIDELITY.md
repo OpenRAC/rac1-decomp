@@ -16,7 +16,7 @@ The default profiles use retail's own compilers:
 
 | Code | Compiler | Why we know |
 |---|---|---|
-| game code (`src/game/`, most of `src/overlays/`), and the non-SDK `src/core/` objects | SN Systems ProDG GCC 2.95.3, build v1.14 (`ee-gcc2953.exe`) | its save-slot layout, small-data use and scheduling are retail's; see docs/TOOLCHAIN.md |
+| game code (`src/game/`, most of `src/overlays/`), and the non-SDK `src/core/` objects | SN Systems ProDG GCC 2.95.3, build v1.14 (`ee-gcc2953.exe`) | its save-slot layout, small-data use and scheduling are retail's; see docs/reference/TOOLCHAIN.md |
 | Sony SDK objects (`ee29` in `config/core_text.objects`) and libgcc | Sony EE-GCC 2.9-ee-991111 (and 991111-01 for three libgcc modules) | functions match members of Sony's own `libgcc.a` and SDK archives byte for byte; 2.9-ee emits retail's `sd` saves and tail jumps natively |
 
 ### Public frontend for the retained scalar assembly wrappers
@@ -27,7 +27,7 @@ include `-ffast-math`. This is a C reconstruction path for the retained
 assembly wrappers, not evidence that retail used GCC 3.2.3.
 
 `tools/gcc323.py` builds the pinned GNU release with the unmodified published
-PS2DEV patch (sources and hashes in `docs/TOOLCHAIN.md`), then invokes its
+PS2DEV patch (sources and hashes in `docs/reference/TOOLCHAIN.md`), then invokes its
 driver to produce assembly. It does not read or alter the resulting assembly.
 The existing assembler/linker pipeline remains in use. No function-specific
 compiler options, register bindings, inline-assembly wrappers, or byte edits
@@ -111,7 +111,7 @@ from ProDG 3.01) assemble this build's compiler output, once one line is
 left out. Every source file includes `include/labels.inc`, the GNU assembler
 macros the retail-assembly stubs use (`include/include_asm.h`), and ps2eeas
 cannot read them: that line, not the compiler's output, made both versions
-overflow their stack in the earlier attempts (docs/DECOMP_PROGRESS.md, and
+overflow their stack in the earlier attempts (docs/reference/DECOMP_PROGRESS.md, and
 again on 2026-10-07 before the cause was found). rac3-uya-decomp, which
 assembles some functions with ps2eeas, never gives it those macros.
 
@@ -223,7 +223,7 @@ how matches are made is implicit:
   because GCC 2.95 has no C form for them. Matched functions call them;
   no function contains assembly of its own.
 - Linker remnants and handwritten functions are retail assembly, counted as
-  finished under docs/ASM_CLASSIFICATION.md; they are never presented as C.
+  finished under docs/reference/ASM_CLASSIFICATION.md; they are never presented as C.
 
 A port to other platforms replaces all three; matching keeps them because
 they are how this compiler reaches retail's bytes from plain C.

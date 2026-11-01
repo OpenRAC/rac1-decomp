@@ -25,7 +25,7 @@ memory map 0x1E8B50 in level 00 vs 0x1E8080 in the ELF), so the xref
 columns there are unreliable.
 
 Older notes (source files, `CardState`, save chunk ids, hub functions):
-[`docs/DATAMINED_REVERSE_ENGINEERING.md`](../DATAMINED_REVERSE_ENGINEERING.md).
+[`docs/reference/DATAMINED_REVERSE_ENGINEERING.md`](../reference/DATAMINED_REVERSE_ENGINEERING.md).
 
 ---
 
@@ -371,7 +371,7 @@ In every level: `Already got pilot helmet... deleting.`,
 Moved to [mobys.md](mobys.md#classes-named-by-retail-debug-strings)
 (verbatim strings, levels, update functions). Extra notes:
 
-- `docs/PVARS.md` names 774 the Plumber (Novalis).
+- `docs/reference/PVARS.md` names 774 the Plumber (Novalis).
 - 794 reads as needing an effect moby (10).
 - Kinds named without class ids: `Hovertank`, `Turret`, `Paratrooper`,
   `Kamikaze`, `Shark`, `Ship`, `Bigship`, `train`.
@@ -439,7 +439,7 @@ old libpad (**inferred**).
 - **Movies** (**verified** names, referenced from every level's data):
   `\DEMOLOGO.NTS`, `\INFOBOT2.PSS`..`\INFOBOT4.PSS`, `\REPORTER.PSS;1`,
   `\INFOBOT7.PSS;1`, `\IBOT5_F/G/S/I.PSS;1` (languages **inferred** from the
-  letters). See `docs/MOVIE.md`.
+  letters). See `docs/reference/MOVIE.md`.
 - **Level data**: `cdrom0:\DATA\LEVELS\LEVEL` + number (3 refs per level).
 
 ---

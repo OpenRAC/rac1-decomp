@@ -100,7 +100,7 @@ sizeof = 0x100
   keeps slot -> class header in `D_001B3580[slot]`
   (`src/game/loaders.c:973`). Same data or not: unchecked.
 - **Do not take offsets from `MobyInstance` (`include/structs.h`) or
-  `docs/PVARS.md`**: they put update/pvars/oClass at 0xA8/0xAC/0xBC,
+  `docs/reference/PVARS.md`**: they put update/pvars/oClass at 0xA8/0xAC/0xBC,
   contradicted by matched code (0x74/0x78/0xA6). Likely another game's
   layout (inferred).
 

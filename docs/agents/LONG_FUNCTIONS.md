@@ -15,7 +15,7 @@ they all apply. Its loop does not; follow the one below.
   its control flow and expressions are a fast start.
 - `nonmatching/<dir>/<FUNC>.c`, if there is one: the closest attempt so
   far, with what the last workers found in its header
-  ([NONMATCHING.md](NONMATCHING.md)). Start from it rather than from
+  ([NONMATCHING.md](../reference/NONMATCHING.md)). Start from it rather than from
   `m2c.c`; never edit it.
 - Write only in `build-sn/try/<FUNC>/<ARM>/`, only files you create. Do
   not read the other folders under `build-sn/try/<FUNC>/`.

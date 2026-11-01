@@ -2,7 +2,7 @@
 """
 Decompile a level's code in Ghidra, with this repository's function names.
 
-The Ghidra MCP project (docs/CONTAINERS.md) holds only the executable, so a
+The Ghidra MCP project (docs/reference/CONTAINERS.md) holds only the executable, so a
 level's own code (the part that replaces `main` when the level loads,
 docs/OVERLAYS.md) is not there, and the headless server cannot import files.
 This builds a flat image of the level's memory (the executable's resident

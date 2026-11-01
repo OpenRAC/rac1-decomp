@@ -9,7 +9,7 @@ Datamine Ghidra for comprehensive project intelligence:
 Outputs:
 - config/ghidra_functions.json
 - config/ghidra_callgraph.json
-- docs/DATAMINED_REVERSE_ENGINEERING.md
+- docs/reference/DATAMINED_REVERSE_ENGINEERING.md
 """
 import argparse
 import bisect
@@ -157,7 +157,7 @@ def main():
     print(f"Wrote call graph to {out_cg}")
 
     # 5. Generate comprehensive Markdown report
-    report_path = ROOT / "docs/DATAMINED_REVERSE_ENGINEERING.md"
+    report_path = ROOT / "docs/reference/DATAMINED_REVERSE_ENGINEERING.md"
     generate_report(report_path, functions_catalog, callgraph, strings_by_fn)
     print(f"Generated comprehensive report: {report_path}")
 

@@ -31,7 +31,7 @@ in-game and must be kept.
   (inferred).
 - Each slot owns **0x80 bytes of pvars** at `D_00160028 + idx * 0x80`,
   zeroed by `CreateMoby`: the class's private state. Catalogue:
-  `docs/PVARS.md` (offset caveat above). Level code casts pvars to private
+  `docs/reference/PVARS.md` (offset caveat above). Level code casts pvars to private
   structs, e.g. `KillFlags`/`VoiceSlot` in
   `src/overlays/shared/sentrybot.c`.
 

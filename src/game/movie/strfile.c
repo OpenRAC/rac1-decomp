@@ -4,7 +4,7 @@
 /*
  * movie/strfile.cpp in the original source; text 0x23CE18-0x23CEC8.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
- * sizes -- see docs/DECOMP_PROGRESS.md. Compiled as C for now.
+ * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
 /* StrFile: only the fields these functions touch are known. */

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Assembles the standalone data/rodata .s files (not part of any C file)
-# through the SN Systems ProDG assembler. See docs/TOOLCHAIN.md.
+# through the SN Systems ProDG assembler. See docs/reference/TOOLCHAIN.md.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 . tools/toolchain.sh

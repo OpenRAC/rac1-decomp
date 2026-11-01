@@ -8,8 +8,8 @@ token. The setup follows
 and every setting below was measured here (2026-09-30; the model tiers
 again on 2026-10-07).
 
-[WORKFLOW.md](WORKFLOW.md) covers the build and the manual loop,
-[QUEUE.md](QUEUE.md) is the workers' protocol, [OVERLAYS.md](OVERLAYS.md)
+[WORKFLOW.md](../WORKFLOW.md) covers the build and the manual loop,
+[QUEUE.md](QUEUE.md) is the workers' protocol, [OVERLAYS.md](../OVERLAYS.md)
 the level-code catalogue the waves draw from.
 
 ## At a glance
@@ -36,7 +36,7 @@ the level-code catalogue the waves draw from.
 - A worker's whole prompt is one line:
 
   ```
-  Read docs/QUEUE.md and follow it exactly. WAVE=q5 ID=k03 N=8 COUNT=2. Keep claiming until you have handled 8 functions or the claim prints QUEUE EMPTY; do not stop after your first claim.
+  Read docs/agents/QUEUE.md and follow it exactly. WAVE=q5 ID=k03 N=8 COUNT=2. Keep claiming until you have handled 8 functions or the claim prints QUEUE EMPTY; do not stop after your first claim.
   ```
 
   `WAVE` is the wave's name, `ID` the worker's id (never reused within a
@@ -58,7 +58,7 @@ Picking a function for an Opus worker:
 `python3 tools/wave.py long NAME func_X ...` sets each one up (dossier,
 m2c sketch, `PACKET.md`, a 30-run budget in `build-sn/try/func_X/opus/`),
 refuses a blocked one, and prints each worker's one-line prompt:
-`Read docs/LONG_FUNCTIONS.md and follow it exactly. FUNC=func_X ARM=opus.`
+`Read docs/agents/LONG_FUNCTIONS.md and follow it exactly. FUNC=func_X ARM=opus.`
 Its runs land through `wave.py salvage`, and a near miss goes to the next
 near wave; both read the arm's run log.
 
@@ -85,17 +85,17 @@ problem.
 | `tools/wave.py status NAME`, `tokens NAME` | verdicts from the run logs; tokens per worker and per match |
 | `tools/wave.py land NAME --batch` | applies every exact candidate and re-checks it in its file |
 | `tools/wave.py salvage [--ports] [--level NN]` | lands every stub that already has an EXACT run logged; Lombyte ports only with `--ports` |
-| `tools/wave.py stage [--level NN]` | shares near misses: each function's closest attempt (within 15%) goes to `nonmatching/` ([NONMATCHING.md](NONMATCHING.md)) |
+| `tools/wave.py stage [--level NN]` | shares near misses: each function's closest attempt (within 15%) goes to `nonmatching/` ([NONMATCHING.md](../reference/NONMATCHING.md)) |
 | `tools/wave.py long NAME func_X ...` | sets up Opus long-function workers: dossier, m2c sketch, packet, per-arm budget |
 | `tools/wave.py plan NAME --queue --overlay --near` | a near wave: earlier attempts within 10% of retail, each packet with its best candidate and what still differs (`tools/near_diffs.py`) |
 | `tools/overlay_variants.py clone` | matches variants of matched functions with no model |
 | `.claude/agents/match-worker.md` | the sub-agent type: Read, Write, Edit, Grep, Glob, Bash; Sonnet by default |
-| `docs/QUEUE.md` | the workers' whole instruction set, under 2K tokens |
+| `docs/agents/QUEUE.md` | the workers' whole instruction set, under 2K tokens |
 | `tools/claims.py` | shared claims and the landing lock, for several agents in one checkout |
 
 The gate is `try_func`. For level code its `EXACT` is strict: the
 candidate is linked at the function's address in its level and every byte
-and relocation is compared ([OVERLAYS.md](OVERLAYS.md)). Nothing a worker
+and relocation is compared ([OVERLAYS.md](../OVERLAYS.md)). Nothing a worker
 says counts; only what `try_func` logged.
 
 ## The lead's loop
@@ -157,7 +157,7 @@ says counts; only what `try_func` logged.
    - any change to the build itself that edits compiler output, or a flag
      for one function: options go per file (`config/file_cflags.txt`), and
      a new assembler or linker step needs evidence and a section in
-     [BUILD_FIDELITY.md](BUILD_FIDELITY.md) first.
+     [BUILD_FIDELITY.md](../reference/BUILD_FIDELITY.md) first.
      `tools/check_build_fidelity.py` runs in the report's `--check`.
 
    The `extern short D_x;` read as `*(int *)&D_x` is not a hack: it is
@@ -171,9 +171,9 @@ says counts; only what `try_func` logged.
    ```
 
    Every new match can bring its variants; `names.py apply` writes the
-   readable names into the new bodies ([NAMES.md](NAMES.md)). Then
+   readable names into the new bodies ([NAMES.md](../NAMES.md)). Then
    `python3 tools/wave.py stage`: every near miss the batch left goes to
-   `nonmatching/` ([NONMATCHING.md](NONMATCHING.md)), so nobody redoes
+   `nonmatching/` ([NONMATCHING.md](../reference/NONMATCHING.md)), so nobody redoes
    it and anyone can pick it up. Landing a function removes its file.
 7. **Report and commit.** `bash tools/docker/run.sh python
    tools/gen_progress_report.py --no-build` regenerates the report (about
@@ -229,7 +229,7 @@ Why it is shaped this way:
 
 ## Picking functions: family order
 
-`--family` orders the pool for reuse ([OVERLAYS.md](OVERLAYS.md),
+`--family` orders the pool for reuse ([OVERLAYS.md](../OVERLAYS.md),
 "Relatives" and "Variants"):
 
 1. functions with a matched relative or variant parent, most similar
@@ -336,7 +336,7 @@ A function that stopped is not owed another round at the same tier. OpenRAC's
 What the native port needs and no tier has matched is written as functional C: the same
 behaviour, not the same bytes, in `nonmatching/functional/` with a row in
 `nonmatching/functional.tsv`. It is never in `src/` and never in the report
-(docs/NONMATCHING.md). CI uploads the list beside the report as `functional.json`
+(docs/reference/NONMATCHING.md). CI uploads the list beside the report as `functional.json`
 (`tools/gen_functional_list.py`, which reads each file's `functional:` line for its
 confidence); ByteMatch shows it on its own line under the Code bar and never as progress.
 
@@ -344,7 +344,7 @@ confidence); ByteMatch shows it on its own line under the Code bar and never as 
 
 The cheapest match is the one no worker makes.
 
-- **Variants** ([OVERLAYS.md](OVERLAYS.md#variants)): 137 catalogued
+- **Variants** ([OVERLAYS.md](../OVERLAYS.md#variants)): 137 catalogued
   functions differ from another only in a constant, a float or a struct
   offset. `overlay_variants.py clone` takes the parent's C, renames the
   function and the symbols its assembly names differently, replaces the
@@ -433,7 +433,7 @@ They are in QUEUE.md, so the one-line prompt is enough:
   (CONTRIBUTING.md, "Sources");
 - never a level address as a number: the symbol the assembly names;
 - the build is fixed: no new step that edits compiler output, no
-  per-function flags ([BUILD_FIDELITY.md](BUILD_FIDELITY.md)).
+  per-function flags ([BUILD_FIDELITY.md](../reference/BUILD_FIDELITY.md)).
 
 ## Running it on a smaller plan
 

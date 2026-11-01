@@ -1142,7 +1142,7 @@ void check_hero_item_reward_conditions(void) {
 /* NON_MATCHING func_L00_00207418 -- src/overlays/shared/help_00203E98.c
  * Best so far: SIZE ours 716 / retail 720, checked 2026-10-09.
  * Not built into anything: the retail assembly stays in the source file
- * until a candidate is EXACT (docs/NONMATCHING.md). Start from this one.
+ * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
  * What the last attempts found:
  *   Cheat-code/input-sequence recorder: decides a code s (1..0xC) from game state words at base+0x198/0x208C/0x208
  *   p1 is the same size (720) with the right structure; stopped with 3 runs unspent because the diff is allocator/
@@ -2703,7 +2703,7 @@ void update_hero_pitch_and_yaw_easing_targets(void) {
 /* NON_MATCHING func_L00_0020B060 -- src/overlays/shared/help_00203E98.c
  * Best so far: SIZE ours 680 / retail 684, checked 2026-10-09.
  * Not built into anything: the retail assembly stays in the source file
- * until a candidate is EXACT (docs/NONMATCHING.md). Start from this one.
+ * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
  * What the last attempts found:
  *   func_L00_0020B060: re-rolls four random motion records (shared help): for i in 0..3, if func_001F9908(&q[i]) t
  *   Best p5: 680 vs 684 bytes (q as a named int * with q[1], q[2], q[i]); p7 (same size) adds j=i+13 but registers

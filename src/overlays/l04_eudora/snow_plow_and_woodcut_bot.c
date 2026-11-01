@@ -113,7 +113,7 @@ struct LeafVars {
 /* NON_MATCHING func_L04_002CB800 -- src/overlays/l04_eudora/vendor_002CB800.c
  * Best so far: BYTES 159/4972 (96.8% of the bytes match), checked 2026-10-09.
  * Not built into anything: the retail assembly stays in the source file
- * until a candidate is EXACT (docs/NONMATCHING.md). Start from this one.
+ * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
  * What the last attempts found:
  *   More on A (2026-10-09, later): $f20 is not used again until case 4's constants, so the zero is a variable that
  *   GCSE did not propagate. cprop records each `(set (reg) (const))` pattern once, so the same constant set in bot

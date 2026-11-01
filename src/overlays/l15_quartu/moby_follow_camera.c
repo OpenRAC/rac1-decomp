@@ -2,7 +2,7 @@
 /* Level 15 (Quartu): func_L15_002F9FF8 in a file of its own, built with -fno-force-mem
  * (config/file_cflags.txt). GCC 2.95 takes options per translation unit,
  * and the functions of the file it came from do not build with this one
- * (docs/BUILD_FIDELITY.md, "Flags"). */
+ * (docs/reference/BUILD_FIDELITY.md, "Flags"). */
 #include "common.h"
 #include "include_asm.h"
 

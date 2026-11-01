@@ -4,7 +4,7 @@
 /*
  * actuator.cpp in the original source; text 0x1E9080-0x1E94E8.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
- * sizes -- see docs/DECOMP_PROGRESS.md. Compiled as C for now.
+ * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
 LINKER_REMNANT("asm/remnants/text", func_001E9080);

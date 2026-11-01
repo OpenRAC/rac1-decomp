@@ -1,6 +1,6 @@
 # Matching cheat sheet
 
-The short version of `docs/DECOMP_PROGRESS.md`, for whoever is turning
+The short version of `docs/reference/DECOMP_PROGRESS.md`, for whoever is turning
 assembly into matching C. Read this instead; go to the long file only
 for a lever named here.
 
@@ -60,7 +60,7 @@ go in `$f12`, `$f13`, `$f14`... `long` is 64-bit, `long long` 128-bit.
 
 1. **Lombyte first.** `python3 tools/lombyte.py func_X` finds the same
    function in Lombyte, the matching decompilation of the US build
-   ([SIBLING_DECOMPS.md](agents/SIBLING_DECOMPS.md)). If it is matched there, port
+   ([SIBLING_DECOMPS.md](SIBLING_DECOMPS.md)). If it is matched there, port
    it: rename functions and globals to ours, keep its control flow.
 2. **List every global and how retail reaches it**: through `$gp`
    (sized declaration), `lui`/`%lo` split across two registers (plain
@@ -146,7 +146,7 @@ in `config/core_rodata.txt`).
    `*(long long *)p = 0` adds a `por` first.
 
 10. **Flags for a whole file.** Retail built some code with other options,
-    for example `-mno-split-addresses` ([SIBLING_DECOMPS.md](agents/SIBLING_DECOMPS.md)).
+    for example `-mno-split-addresses` ([SIBLING_DECOMPS.md](SIBLING_DECOMPS.md)).
     There a global is one assembler macro: every access is `lui $at` +
     `%lo(sym)($at)` (loads, stores and FP ones alike), no `%hi` survives a
     call, and gcc never puts such an access in a delay slot. If that's what
@@ -154,7 +154,7 @@ in `config/core_rodata.txt`).
     candidate with `TRY_CFLAGS=-mno-split-addresses` (a diagnostic: it
     applies to the whole file). GCC 2.95 takes options per translation unit,
     so a match with a flag only counts when the flag can hold for a whole
-    file (docs/BUILD_FIDELITY.md, "Flags"):
+    file (docs/reference/BUILD_FIDELITY.md, "Flags"):
     - every C function of the file still matches with it: the file goes in
       `config/file_cflags.txt` (`src/game/movie/disp.c` is built that way);
     - a level file (`src/overlays/`, groupings this project chose): the
@@ -297,7 +297,7 @@ and stop, rather than spending the budget on it:
 
 ## Overlay functions
 
-`func_LNN_XXXXXXXX` is level code ([OVERLAYS.md](OVERLAYS.md)), stubbed in
+`func_LNN_XXXXXXXX` is level code ([OVERLAYS.md](../OVERLAYS.md)), stubbed in
 `src/overlays/`. `CONTEXT.md` covers most of this for your function.
 
 - Assembly: `asm/overlays/<name>.s`, same format as the executable's.

@@ -8,7 +8,7 @@
  * In Ratchet & Clank 1, every MobyInstance has a pointer at offset 0xAC
  * (moby->pVar) pointing to class-specific private state data.
  * These structures represent reverse-engineered layouts for R&C 1 moby classes.
- * See docs/PVARS.md for detailed documentation and class mapping.
+ * See docs/reference/PVARS.md for detailed documentation and class mapping.
  */
 #ifndef MOBY_PVARS_H
 #define MOBY_PVARS_H

@@ -1,11 +1,11 @@
 # Decompilation progress
 
-> Historical log. `tools/fix_core_spills.py`, `tools/fix_tail_calls.py`, `tools/fix_trunc_slot.py` and `tools/func_cflags.py`, which it describes, were removed on 2026-10-07 for rewriting compiler output; see docs/BUILD_FIDELITY.md for the current build.
+> Historical log. `tools/fix_core_spills.py`, `tools/fix_tail_calls.py`, `tools/fix_trunc_slot.py` and `tools/func_cflags.py`, which it describes, were removed on 2026-10-07 for rewriting compiler output; see docs/reference/BUILD_FIDELITY.md for the current build.
 
 The project's knowledge base: the levers that close near-misses, the
 toolchain questions (solved and open), the dead ends with their counts,
 and a per-function log. The step-by-step procedure lives in
-`docs/WORKFLOW.md`; the toolchain itself in `docs/TOOLCHAIN.md`.
+`docs/WORKFLOW.md`; the toolchain itself in `docs/reference/TOOLCHAIN.md`.
 
 Verification, in short (see `docs/WORKFLOW.md` for the full procedure):
 
@@ -61,7 +61,7 @@ regenerates it from a from-scratch build, and CI fails when it is out of
 date with `src/` or the original-assembly manifests. The report counts
 byte-verified handwritten assembly and dead-strip remnants as finished;
 `tools/sweep_matches.py` still reports exact C matches separately. See
-`docs/ASM_CLASSIFICATION.md` for the tracked list and setup procedure.
+`docs/reference/ASM_CLASSIFICATION.md` for the tracked list and setup procedure.
 It leaves out retail's linker fill (the `0xCDCDCDCD`
 runs between objects that splat also emits as 4-byte "functions"; 38 of
 them, 200 bytes): fill is not code, and the build reproduces it byte for
@@ -369,7 +369,7 @@ of these came out of them.
 
 **2026-09-24: batches with cheaper workers (691 to 903).** Matching ran as
 batches of 10-15 functions per agent, grouped by file, with
-`docs/LEVERS.md` as the one-page brief and `tools/integrate.py` to check
+`docs/agents/LEVERS.md` as the one-page brief and `tools/integrate.py` to check
 and apply each batch's manifest. Per function matched, Sonnet workers
 cost roughly 60-100K tokens on library code with a reference source,
 rising past 250K once that ran dry, and 370K+ on game code (0 of 15 on
@@ -408,7 +408,7 @@ the assembly. What was new:
   same symbol before its LO16 came out as `lui 0xd390` in the image, where
   retail has a bare `lui 0x14`. It stays a stub until that is reproduced.
 
-Build changes this round (docs/TOOLCHAIN.md): compiled core objects place
+Build changes this round (docs/reference/TOOLCHAIN.md): compiled core objects place
 their literals and jump tables in core_rdata (`config/core_rodata.txt`);
 data pieces after a cut are laid out with `.org` at retail offsets, and a
 `jtbl_` cut keeps the data splat merged after the table; the bss equates

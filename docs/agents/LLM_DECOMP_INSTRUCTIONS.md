@@ -20,7 +20,7 @@ Your sole objective is to decompile remaining functions in the repository into 1
    - Symbol aliasing at file scope is allowed ONLY for typed extern declarations:
      `extern StructType D_0019A4E8_arena __asm__("D_0019A4E8");` or `extern int func_alias(...) __asm__("func_orig");`.
    - One sanctioned helper: `qcopy(dst, src)` in `include/common.h` is retail's own inline-asm 16-byte vector copy (`lq`/`sq` through `$2`, each address at offset 0), which no C form produces. Beside it are `qcopy_nc(dst, src)`, the same copy without the "memory" clobber (for the places where retail keeps a value live across the copy), and `qzero(p)`, retail's `sq $zero,0(p)`. Call them; never write asm inside a function.
-   - NO BUILD TRANSFORMS: never add or extend a step between the compiler and the assembler that changes the compiler's output, and never build one function with flags its file does not have (GCC 2.95 has no per-function options). The build's only extra steps model retail's assembler and linker; they are listed, with evidence, in `docs/BUILD_FIDELITY.md`, and `tools/check_build_fidelity.py` enforces the list in CI. A function that only matches through a new transform is not matched.
+   - NO BUILD TRANSFORMS: never add or extend a step between the compiler and the assembler that changes the compiler's output, and never build one function with flags its file does not have (GCC 2.95 has no per-function options). The build's only extra steps model retail's assembler and linker; they are listed, with evidence, in `docs/reference/BUILD_FIDELITY.md`, and `tools/check_build_fidelity.py` enforces the list in CI. A function that only matches through a new transform is not matched.
 2. MEANINGFUL DATA STRUCTURES OVER VOID CASTS:
    - When encountering struct/array access patterns (e.g., `ptr + 0x14`, `*(int*)(base + idx*8 + 4)`), define clean C `typedef struct { ... }` with proper types, array dimensions, or padding arrays (`char pad0[0x18];`).
    - DO NOT commit messy pointer arithmetic like `*(int*)((char*)p + 0x24) = val;` if a struct definition represents the entity.
@@ -36,7 +36,7 @@ Your sole objective is to decompile remaining functions in the repository into 1
 - NO FILLER TEXT: Do not output apologies, introductory greetings, pleasantries, or verbose explanations of standard C concepts.
 - NO GREP SPAM: Do not run broad grep or find loops across the entire filesystem. Target specific files directly.
 - SINGLE-SHOT INVESTIGATION:
-  - If the Ghidra MCP container is running (`docs/CONTAINERS.md`): query `decompile_function` with address `0xXXXXXXXX` (strip `func_`).
+  - If the Ghidra MCP container is running (`docs/reference/CONTAINERS.md`): query `decompile_function` with address `0xXXXXXXXX` (strip `func_`).
   - Read retail disassembly directly from `asm/nonmatchings/{text,core_text}/func_XXXXXXXX.s`.
 - FAST FEEDBACK LOOP: Use `tools/try_func.py` inside Docker for rapid trial compiles without touching the main tree.
 

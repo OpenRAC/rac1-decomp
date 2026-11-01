@@ -2,7 +2,7 @@
 /* Level 14 code: func_L14_00303430 in a file of its own, built with -fno-sched-spec
  * (config/file_cflags.txt). The functions of vendor_002B2A28.c do not build
  * with it (func_L14_00300130 changes), so it was another object in retail
- * (docs/BUILD_FIDELITY.md, rule 2). */
+ * (docs/reference/BUILD_FIDELITY.md, rule 2). */
 #include "common.h"
 #include "moby.h"
 

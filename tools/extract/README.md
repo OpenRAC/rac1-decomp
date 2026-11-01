@@ -140,7 +140,7 @@ To edit a level:
     `rc1_spawn_flags` (0), `rc1_draw_distance` and `rc1_update_distance`
     (64), `rc1_mode_bits` (32), `rc1_occlusion` (1), `rc1_light` (0),
     `rc1_unknown_74` (-1), and a few unknown fields
-    ([docs/ASSETS.md](../../docs/ASSETS.md#mobys)).
+    ([docs/reference/ASSETS.md](../../docs/reference/ASSETS.md#mobys)).
 - Textures are ordinary PNGs. Editing one changes every mesh that uses it.
 
 Run a level (F6) to fly around it:
@@ -241,12 +241,12 @@ Approximations:
   to the sky at run time are not included.
 
 Not yet extracted: low-detail moby meshes, hero collision, audio, video
-and each level's code overlay. [docs/ASSETS.md](../../docs/ASSETS.md) describes
+and each level's code overlay. [docs/reference/ASSETS.md](../../docs/reference/ASSETS.md) describes
 the formats and the evidence for them.
 
 ## Code
 
-The GDScript files follow [`docs/GDSCRIPT_CONVENTIONS.md`](../../docs/GDSCRIPT_CONVENTIONS.md).
+The GDScript files follow [`docs/reference/GDSCRIPT_CONVENTIONS.md`](../../docs/reference/GDSCRIPT_CONVENTIONS.md).
 
 | File | Contents |
 |---|---|
@@ -267,7 +267,7 @@ The decoders accept only the layouts found on this disc and raise
 - **[Wrench](https://github.com/chaoticgd/wrench)** by chaoticgd and
   contributors (GPL-3.0-or-later). Most of what the extractor knows about
   terrain, ties, shrubs, the sky, textures and placements comes from
-  reading its source. [docs/ASSETS.md](../../docs/ASSETS.md#sources-and-credits)
+  reading its source. [docs/reference/ASSETS.md](../../docs/reference/ASSETS.md#sources-and-credits)
   lists which files each format came from.
 - **[Replanetizer](https://github.com/RatchetModding/Replanetizer)** by
   RatchetModding contributors, consulted for what fields mean.
@@ -276,7 +276,7 @@ The decoders accept only the layouts found on this disc and raise
   class format (packets, vertex cache, skinning slots, normals, the
   untextured faces, skeletons and animation sequences), and the collision
   block and the meaning of its surface bytes
-  ([docs/ASSETS.md](../../docs/ASSETS.md#collision)).
+  ([docs/reference/ASSETS.md](../../docs/reference/ASSETS.md#collision)).
 - **[Lombyte](https://github.com/mateuszklysz/Lombyte)** (GPL-3.0): the moby
   class names on the labels (`moby_classes.tsv`, see its header).
 - **[OpenGOAL's jak-project](https://github.com/open-goal/jak-project)**,

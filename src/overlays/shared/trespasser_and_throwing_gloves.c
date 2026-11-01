@@ -68,7 +68,7 @@ struct AmmoCollectVars {
 /* NON_MATCHING func_L00_002C12B0 -- src/overlays/shared/vendor_002C12B0.c
  * Best so far: BYTES 12/5996 (99.8% of the bytes match), checked 2026-10-19.
  * Not built into anything: the retail assembly stays in the source file
- * until a candidate is EXACT (docs/NONMATCHING.md). Start from this one.
+ * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
  * What the last attempts found:
  *   f12,f15,a0,f13,a1,f14: only the a0/a1 swap is left, but then the two arms are not cross-jumped (SIZE 6096/5996
  *   cross-jump does not run on identical post-reload tails here).

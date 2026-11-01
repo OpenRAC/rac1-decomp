@@ -4,7 +4,7 @@
 
 /*
  * core_text object 0x1252A0-0x125630. Boundaries are retail's linker fill
- * (0xCDCDCDCD) between objects; see docs/DECOMP_PROGRESS.md.
+ * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
  *
  * Sony's libvu0, libvu0.o: the sceVu0 matrix and vector routines, VU0
  * macro-mode inline assembly (_sceVu0ecossin and sceVu0RotMatrixZ/X/Y

@@ -394,7 +394,7 @@ void update_hero_from_debug_camera(void) {
 /* NON_MATCHING func_L00_001F4918 -- src/overlays/shared/draw_001F3A78.c
  * Best so far: BYTES 169/4932 (96.6% of the bytes match), checked 2026-10-09.
  * Not built into anything: the retail assembly stays in the source file
- * until a candidate is EXACT (docs/NONMATCHING.md). Start from this one.
+ * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
  * What the last attempts found:
  *   $s0; ctx high in $s2 shared with the x4 block, ctx in $s1; x4 block reloads x and y (no forwarding).
  *   staged (view=&ctx in both arms): ctx high in arms (wrong). q3/q4 (o=&options in arms): options high in arms
