@@ -11,21 +11,18 @@ s32 update_menu_entry_actions(MenuScreen *menu) {
     focused = menu_system_r3.current->focus == menu;
     for (entry_index = 0; menu->data.list.items[entry_index].text != 0; entry_index++) {
         if (focused && menu->data.list.selected == entry_index) {
-            menu->data.list.items[entry_index].fade_timer =
-                menu->data.list.items[entry_index].fade_timer + 1;
+            menu->data.list.items[entry_index].fade_timer = menu->data.list.items[entry_index].fade_timer + 1;
             if (menu->data.list.items[entry_index].fade_timer > 0x7D00) {
                 menu->data.list.items[entry_index].fade_timer = 0x7D00;
             }
         } else {
             fade_timer = menu->data.list.items[entry_index].fade_timer;
             if (scale_game_frame_count_r(D_001602B4_1BB90) < fade_timer) {
-                menu->data.list.items[entry_index].fade_timer =
-                    scale_game_frame_count_r(D_001602B4_1BB90);
+                menu->data.list.items[entry_index].fade_timer = scale_game_frame_count_r(D_001602B4_1BB90);
             }
-            menu->data.list.items[entry_index].fade_timer =
-                menu->data.list.items[entry_index].fade_timer > 0
-                    ? menu->data.list.items[entry_index].fade_timer - 1
-                    : 0;
+            menu->data.list.items[entry_index].fade_timer = menu->data.list.items[entry_index].fade_timer > 0
+                                                                ? menu->data.list.items[entry_index].fade_timer - 1
+                                                                : 0;
         }
     }
     if (!focused) {
@@ -52,71 +49,69 @@ s32 update_menu_entry_actions(MenuScreen *menu) {
         /* Index through menu-> directly: locals for items/selected change
            which register keeps the copy of selected that actions 6 and 9 reuse. */
         switch (menu->data.list.items[menu->data.list.selected].action) {
-        case 0:
-            break;
+            case 0:
+                break;
         /* No case 1 in PAL: retail's table sends action 1 to the default. */
-        case 3:
-            menu_system_r3.next =
-                (MenuPage *)menu->data.list.items[menu->data.list.selected].param.value;
-            break;
-        case 4:
-            Moby_PlaySound_r2(0, 0x11, menu->moby);
-            menu_system_r3.unk150 = 0;
-            mode_freeze_flags_r = (mode_freeze_flags_r | 2) & ~4;
-            mode_freeze_init_r2(3, menu->data.list.items[menu->data.list.selected].param.value, 0);
-            break;
-        case 5:
-            Moby_PlaySound_r2(0, 0x11, menu->moby);
-            mode_freeze_flags_r = (mode_freeze_flags_r | 4) & ~2;
-            mode_freeze_init_r2(3, menu->data.list.items[menu->data.list.selected].param.value, 0);
-            menu_system_r3.unk150 = 1;
-            break;
-        case 6:
+            case 3:
+                menu_system_r3.next = (MenuPage *)menu->data.list.items[menu->data.list.selected].param.value;
+                break;
+            case 4:
+                Moby_PlaySound_r2(0, 0x11, menu->moby);
+                menu_system_r3.unk150 = 0;
+                mode_freeze_flags_r = (mode_freeze_flags_r | 2) & ~4;
+                mode_freeze_init_r2(3, menu->data.list.items[menu->data.list.selected].param.value, 0);
+                break;
+            case 5:
+                Moby_PlaySound_r2(0, 0x11, menu->moby);
+                mode_freeze_flags_r = (mode_freeze_flags_r | 4) & ~2;
+                mode_freeze_init_r2(3, menu->data.list.items[menu->data.list.selected].param.value, 0);
+                menu_system_r3.unk150 = 1;
+                break;
+            case 6:
             /* This action passes the low halfword; the other indexed actions pass the full word. */
-            message_index = menu->data.list.items[menu->data.list.selected].param.half.hi;
-            if (message_index != 0) {
-                menu_system_r3.unkEC = menu_action_messages_r[message_index];
-            }
-            menu_system_r3.close_request = 5;
-            menu_system_r3.unkF0 = menu_system_r3.current;
-            menu_system_r3.unkF4 = 0;
-            menu_system_r3.unkE4 =
-                menu->data.list.items[menu->data.list.selected].param.half.lo;
-            Moby_PlaySound_r2(0, 0x11, menu->moby);
-            return 0;
-        case 7:
-            menu_system_r3.unkF4 = 2;
-            menu_system_r3.unkF0 = menu_system_r3.current;
-            menu_system_r3.close_request = 3;
-            menu_system_r3.unkE4 = menu->data.list.items[menu->data.list.selected].param.value;
-            Moby_PlaySound_r2(0, 0x11, menu->moby);
-            return 0;
-        case 8:
-            menu_system_r3.unkF4 = 2;
-            menu_system_r3.unkF0 = menu_system_r3.current;
-            menu_system_r3.close_request = 4;
-            menu_system_r3.unkE4 = menu->data.list.items[menu->data.list.selected].param.value;
-            Moby_PlaySound_r2(0, 0x11, menu->moby);
-            return 0;
-        case 10:
-            menu_system_r3.unkF4 = 2;
-            menu_system_r3.unkF0 = menu_system_r3.current;
-            menu_system_r3.close_request = 6;
-            menu_system_r3.unkE4 = menu->data.list.items[menu->data.list.selected].param.value;
-            Moby_PlaySound_r2(0, 0x11, menu->moby);
-            return 0;
-        case 11:
-            menu_system_r3.unkF0 = menu_system_r3.current;
-            menu_system_r3.unkF4 = 2;
-            menu_system_r3.close_request = 7;
-            Moby_PlaySound_r2(0, 0x11, menu->moby);
-            return 0;
-        case 9:
-            g_game_language_r = menu->data.list.items[menu->data.list.selected].param.value;
-            return 0;
-        case 2:
-            Moby_PlaySound_r2(2, 0x11, menu->moby);
-            break;
+                message_index = menu->data.list.items[menu->data.list.selected].param.half.hi;
+                if (message_index != 0) {
+                    menu_system_r3.unkEC = menu_action_messages_r[message_index];
+                }
+                menu_system_r3.close_request = 5;
+                menu_system_r3.unkF0 = menu_system_r3.current;
+                menu_system_r3.unkF4 = 0;
+                menu_system_r3.unkE4 = menu->data.list.items[menu->data.list.selected].param.half.lo;
+                Moby_PlaySound_r2(0, 0x11, menu->moby);
+                return 0;
+            case 7:
+                menu_system_r3.unkF4 = 2;
+                menu_system_r3.unkF0 = menu_system_r3.current;
+                menu_system_r3.close_request = 3;
+                menu_system_r3.unkE4 = menu->data.list.items[menu->data.list.selected].param.value;
+                Moby_PlaySound_r2(0, 0x11, menu->moby);
+                return 0;
+            case 8:
+                menu_system_r3.unkF4 = 2;
+                menu_system_r3.unkF0 = menu_system_r3.current;
+                menu_system_r3.close_request = 4;
+                menu_system_r3.unkE4 = menu->data.list.items[menu->data.list.selected].param.value;
+                Moby_PlaySound_r2(0, 0x11, menu->moby);
+                return 0;
+            case 10:
+                menu_system_r3.unkF4 = 2;
+                menu_system_r3.unkF0 = menu_system_r3.current;
+                menu_system_r3.close_request = 6;
+                menu_system_r3.unkE4 = menu->data.list.items[menu->data.list.selected].param.value;
+                Moby_PlaySound_r2(0, 0x11, menu->moby);
+                return 0;
+            case 11:
+                menu_system_r3.unkF0 = menu_system_r3.current;
+                menu_system_r3.unkF4 = 2;
+                menu_system_r3.close_request = 7;
+                Moby_PlaySound_r2(0, 0x11, menu->moby);
+                return 0;
+            case 9:
+                g_game_language_r = menu->data.list.items[menu->data.list.selected].param.value;
+                return 0;
+            case 2:
+                Moby_PlaySound_r2(2, 0x11, menu->moby);
+                break;
         }
     }
     /* Count first, then read selected/flags: in the other order (or as a

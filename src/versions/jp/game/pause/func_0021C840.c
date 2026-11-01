@@ -69,8 +69,8 @@ s32 update_menu_grid_selection(MenuScreen *grid) {
                     column = 0;
                 }
             }
-            next->data.grid.selected_cell = (next_rows - 1) * next_columns +
-                                            (column < next_columns - 1 ? column : next_columns - 1);
+            next->data.grid.selected_cell =
+                (next_rows - 1) * next_columns + (column < next_columns - 1 ? column : next_columns - 1);
         } else if (!(grid->data.grid.flags & 0x8000)) {
             grid->data.grid.selected_cell = column_count * (row_count - 1) + cursor;
         }
@@ -104,8 +104,7 @@ s32 update_menu_grid_selection(MenuScreen *grid) {
                     column = 0;
                 }
             }
-            next->data.grid.selected_cell =
-                column < next_column_count - 1 ? column : next_column_count - 1;
+            next->data.grid.selected_cell = column < next_column_count - 1 ? column : next_column_count - 1;
         } else if (!(grid->data.grid.flags & 0x8000)) {
             grid->data.grid.selected_cell =
                 grid->data.grid.selected_cell - grid->data.grid.cols * (grid->data.grid.rows - 1);

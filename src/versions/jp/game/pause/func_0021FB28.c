@@ -65,20 +65,20 @@ s32 DrawItemsMenu(ItemsMenu *menu) {
     font_print_right(0xC8, 0x54, 0x80FFA888L, msg_string_r3(0x4F52), -1);
     collected_count = count_nonzero_entries_up_to_40();
     sprintf(text_buffer, fmt_decimal, collected_count);
-    font_print_right_large(add_offset((*(s32 *)&text_shadow_x), 0xF0), add_offset((*(s32 *)&text_shadow_y), 0x1D), 0x80000000L,
-                    text_buffer, -1);
+    font_print_right_large(add_offset((*(s32 *)&text_shadow_x), 0xF0), add_offset((*(s32 *)&text_shadow_y), 0x1D),
+                           0x80000000L, text_buffer, -1);
     font_print_right_large(0xF0, 0x1D, 0x80FFA888L, text_buffer, -1);
     sprintf(text_buffer, fmt_decimal, count_nonzero_entries_up_to_10() * 4);
-    font_print_right_large(add_offset((*(s32 *)&text_shadow_x), 0xF0), add_offset((*(s32 *)&text_shadow_y), 0x36), 0x80000000L,
-                    text_buffer, -1);
+    font_print_right_large(add_offset((*(s32 *)&text_shadow_x), 0xF0), add_offset((*(s32 *)&text_shadow_y), 0x36),
+                           0x80000000L, text_buffer, -1);
     font_print_right_large(0xF0, 0x36, 0x80FFA888L, text_buffer, -1);
     sprintf(text_buffer, fmt_decimal, compute_clamped_count_difference());
-    font_print_right_large(add_offset((*(s32 *)&text_shadow_x), 0xF0), add_offset((*(s32 *)&text_shadow_y), 0x54), 0x80000000L,
-                    text_buffer, -1);
+    font_print_right_large(add_offset((*(s32 *)&text_shadow_x), 0xF0), add_offset((*(s32 *)&text_shadow_y), 0x54),
+                           0x80000000L, text_buffer, -1);
     font_print_right_large(0xF0, 0x54, 0x80FFA888L, text_buffer, -1);
     draw_hud_rect_blended_r3(add_offset((*(s32 *)&text_shadow_x), 0xD0), add_offset((*(s32 *)&text_shadow_y), 0x4D),
-                              add_offset((*(s32 *)&text_shadow_x), 0xF2), add_offset((*(s32 *)&text_shadow_y), 0x50),
-                              0x80000000L, 0);
+                             add_offset((*(s32 *)&text_shadow_x), 0xF2), add_offset((*(s32 *)&text_shadow_y), 0x50),
+                             0x80000000L, 0);
     draw_hud_rect_blended_r3(0xD0, 0x4D, 0xF2, 0x50, 0x80FFA888L, 0);
     DoGifPaging();
     return 8;

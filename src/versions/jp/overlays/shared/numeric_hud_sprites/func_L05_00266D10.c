@@ -12,7 +12,8 @@ int draw_hud_progress_and_rank(char *e) {
     y = hud_sub_66D10(g_screen_extent[1], pal, &rilgar_progress_text_bottom);
     hd = hero_globals_base + 0xE1D;
     y1 = y + 1;
-    draw_stretchable_ui_frame(*(int *)&(rilgar_progress_frame_x), x, *(int *)&(rilgar_progress_frame_width), *(int *)&(rilgar_progress_frame_height), *(int *)&(rilgar_progress_frame_alpha));
+    draw_stretchable_ui_frame(*(int *)&(rilgar_progress_frame_x), x, *(int *)&(rilgar_progress_frame_width),
+                              *(int *)&(rilgar_progress_frame_height), *(int *)&(rilgar_progress_frame_alpha));
     tx = *(int *)&(rilgar_progress_label_x);
     sprintf(buf, rilgar_fmt_label, msg_string(0x5296));
     print_text_with_texture_3(tx - 1, y1, 0x80000000L, buf, -1);
@@ -21,7 +22,8 @@ int draw_hud_progress_and_rank(char *e) {
     tx = tx + w;
     {
         int n = *(short *)(hd + 0x89A) + 1;
-        if (!(n < 4)) n = 3;
+        if (!(n < 4))
+            n = 3;
         sprintf(buf, rilgar_fmt_progress_number, n);
     }
     print_text_with_texture_3(tx - 1, y + 2, 0x80000000L, buf, -1);
@@ -30,7 +32,8 @@ int draw_hud_progress_and_rank(char *e) {
         int n = *(int *)(hd + 0x8C0);
         tx = *(int *)&(rilgar_progress_rank_right_x);
         n = n - 1;
-        if (!(n < 5)) n = 4;
+        if (!(n < 5))
+            n = 4;
         sprintf(buf, rilgar_fmt_string, msg_string(n + 0x527A));
     }
     w = measure_text_width_regular(buf, -1);

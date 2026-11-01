@@ -36,7 +36,8 @@ void update_screamer_hit_reactions_and_targeting(struct Moby *moby) {
                 }
                 data->f20 = 0.0f;
                 moby->flags &= 0xEFFF;
-                if (moby->prev_seq != 5) MobyBlendAnimation(moby, 5, 0, scale_ticks(10));
+                if (moby->prev_seq != 5)
+                    MobyBlendAnimation(moby, 5, 0, scale_ticks(10));
                 moby->state = 11;
                 data->f70 = g_frame_time_sq * 26.0f;
                 data->f9D = 3;
@@ -44,8 +45,10 @@ void update_screamer_hit_reactions_and_targeting(struct Moby *moby) {
                 data->f84 = 9;
                 data->f78 = g_frame_time * 7.0f;
                 data->f7C = g_frame_time * 10.0f;
-                if (r->f30 & 1) ang = fast_atan2(r->f10[0], r->f10[1]);
-                else ang = fast_atan2(moby->pos.x - r->x, moby->pos.y - r->y);
+                if (r->f30 & 1)
+                    ang = fast_atan2(r->f10[0], r->f10[1]);
+                else
+                    ang = fast_atan2(moby->pos.x - r->x, moby->pos.y - r->y);
                 InitKnockback(moby, data->f60, ang, 5, 1, 0);
                 data->f117 = 0x78;
                 RerollEffectCounter(moby, data->f110);
@@ -60,10 +63,14 @@ void update_screamer_hit_reactions_and_targeting(struct Moby *moby) {
         }
     }
     StepColorFade(moby, data->f110);
-    if (data->f174 == 2) data->f180 = 42.0f;
-    else if (data->f184 != 0) data->f180 = data->f178 + 6.0f;
-    else if (moby->state == 1) data->f180 = data->f188;
-    else data->f180 = data->f178;
+    if (data->f174 == 2)
+        data->f180 = 42.0f;
+    else if (data->f184 != 0)
+        data->f180 = data->f178 + 6.0f;
+    else if (moby->state == 1)
+        data->f180 = data->f188;
+    else
+        data->f180 = data->f178;
 
     if (data->f174 == 2) {
         r19 = FindNearestTargetMoby(data->f180, moby, data->fC0);
@@ -72,18 +79,24 @@ void update_screamer_hit_reactions_and_targeting(struct Moby *moby) {
             FastVecSub(v, hero_globals_base + 0xE9D, bp->f30);
             v[3] = 0.0f;
             matrix_mul_vec3(w, v, bp->f40);
-            if (w[0] <= -1.0f || 0.0f <= w[0] || w[1] <= -1.0f || 1.0f <= w[1] || w[2] <= -1.0f || 1.0f <= w[2]) data->f104 = 2;
+            if (w[0] <= -1.0f || 0.0f <= w[0] || w[1] <= -1.0f || 1.0f <= w[1] || w[2] <= -1.0f || 1.0f <= w[2])
+                data->f104 = 2;
         }
     } else if (moby->state == 1 && data->f18C >= 0) {
-        r19 = FindNearestEligibleMoby(data->f180, moby, data->fC0, 0, 0, ((Path_2E0FF8 **)orxon_paths)[data->f18C]->pts, ((Path_2E0FF8 **)orxon_paths)[data->f18C]->count);
+        r19 = FindNearestEligibleMoby(data->f180, moby, data->fC0, 0, 0, ((Path_2E0FF8 **)orxon_paths)[data->f18C]->pts,
+                                      ((Path_2E0FF8 **)orxon_paths)[data->f18C]->count);
     } else if (moby->state != 1 && data->f17C >= 0) {
-        r19 = FindNearestEligibleMoby(data->f180, moby, data->fC0, 0, 0, ((Path_2E0FF8 **)orxon_paths)[data->f17C]->pts, ((Path_2E0FF8 **)orxon_paths)[data->f17C]->count);
+        r19 = FindNearestEligibleMoby(data->f180, moby, data->fC0, 0, 0, ((Path_2E0FF8 **)orxon_paths)[data->f17C]->pts,
+                                      ((Path_2E0FF8 **)orxon_paths)[data->f17C]->count);
     } else {
         r19 = FindNearestTargetMoby(data->f180, moby, data->fC0);
     }
     if (r19 != 2) {
-        if (data->f180 < vec_distance_xy(data->f130, data->fC0)) data->f104 = 2;
-        else if (moby->visible == 0) data->f104 = 2;
+        if (data->f180 < vec_distance_xy(data->f130, data->fC0))
+            data->f104 = 2;
+        else if (moby->visible == 0)
+            data->f104 = 2;
     }
-    if (data->f100 == 0) data->f100 = *(int *)(hero_globals_base + 0x2E9D);
+    if (data->f100 == 0)
+        data->f100 = *(int *)(hero_globals_base + 0x2E9D);
 }

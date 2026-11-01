@@ -24,10 +24,9 @@ void MorphorayUpdate(Moby *m) {
         near = 0;
     }
     FastDecTimer_r(&p->timer);
-    if ((((unsigned int)((Hero *)g_hero_r)->state.control_mode < 2 || ((Hero *)g_hero_r)->state.control_mode == 12
-          || ((Hero *)g_hero_r)->state.control_mode == 4 || ((Hero *)g_hero_r)->state.control_mode == 5))
-        && (*(int *)(pad_globals_base_r + 0x2600) & ((Hero *)g_hero_r)->items[0].button_mask) != 0
-        && !flag && near) {
+    if ((((unsigned int)((Hero *)g_hero_r)->state.control_mode < 2 || ((Hero *)g_hero_r)->state.control_mode == 12 ||
+          ((Hero *)g_hero_r)->state.control_mode == 4 || ((Hero *)g_hero_r)->state.control_mode == 5)) &&
+        (*(int *)(pad_globals_base_r + 0x2600) & ((Hero *)g_hero_r)->items[0].button_mask) != 0 && !flag && near) {
         if (((Hero *)g_hero_r)->item_anim_active == 0) {
             start_equipped_item_animation_r();
         }
@@ -40,7 +39,8 @@ void MorphorayUpdate(Moby *m) {
             if (((Stats_2BDAF0 *)(help_stats_base_r + 0x65))->best < r) {
                 ((Stats_2BDAF0 *)(help_stats_base_r + 0x65))->best = scale_ticks_r(gameplay_event_frame_count_r) / 600;
             }
-            ((Stats_2BDAF0 *)(help_stats_base_r + 0x65))->levels = ((Stats_2BDAF0 *)(help_stats_base_r + 0x65))->levels | (1 << g_current_level_index_r) | 0x80000000;
+            ((Stats_2BDAF0 *)(help_stats_base_r + 0x65))->levels =
+                ((Stats_2BDAF0 *)(help_stats_base_r + 0x65))->levels | (1 << g_current_level_index_r) | 0x80000000;
         }
         if (p->timer == 0) {
             p->timer = scale_ticks_r(15);
@@ -50,8 +50,8 @@ void MorphorayUpdate(Moby *m) {
             HeroEnterMoveState_r(30, 1);
         }
         *(u128_2BDAF0 *)&v0 = 0;
-        if (((Hero *)g_hero_r)->state.current == 30
-            && (*(unsigned short *)((char *)((Hero *)g_hero_r)->moby + 0x34) & 1)) {
+        if (((Hero *)g_hero_r)->state.current == 30 &&
+            (*(unsigned short *)((char *)((Hero *)g_hero_r)->moby + 0x34) & 1)) {
             matrix_copy_rows_r(v, player_camera_r);
             matrix_from_basis_rows_r(mt, v);
             v0.z = 1.0f;
@@ -77,20 +77,20 @@ void MorphorayUpdate(Moby *m) {
             }
         }
         if (hit != 0 || p->delay != 0) {
-        if (hit != 0) {
-            float *s = GetFlaggedPvarWord_r(hit);
-            if (hit != p->target && p->delay == 0) {
-                p->target = hit;
-                p->total = IntToFloat_r(((short *)s)[2]);
-                p->left = s[0];
-                p->delay = scale_ticks_r(30);
-                if (p->total <= 1.0f) {
-                    p->left = 0.0f;
+            if (hit != 0) {
+                float *s = GetFlaggedPvarWord_r(hit);
+                if (hit != p->target && p->delay == 0) {
+                    p->target = hit;
+                    p->total = IntToFloat_r(((short *)s)[2]);
+                    p->left = s[0];
+                    p->delay = scale_ticks_r(30);
+                    if (p->total <= 1.0f) {
+                        p->left = 0.0f;
+                    }
+                    p->snd = queue_animation_update_r(4, 0x7533, Hud_InitParticles_r, Hud_UpdateParticles_r,
+                                                      draw_uniform_size_hud_stars_r, &D_L00_001617BC_2BDAF0, 10000);
                 }
-                p->snd = queue_animation_update_r(4, 0x7533, Hud_InitParticles_r, Hud_UpdateParticles_r,
-                                              draw_uniform_size_hud_stars_r, &D_L00_001617BC_2BDAF0, 10000);
             }
-        }
             {
                 float a = IntToFloat_r(hero_globals_base_r[2]) * 0.33f + 1.0f;
                 float d = p->left - D_L00_001617B0_2BDAF0 * g_frame_time_r * a;
@@ -102,7 +102,8 @@ void MorphorayUpdate(Moby *m) {
             D_L00_001617BC_2BDAF0 = 10000 - truncate_float_to_s32_r2(p->left * 10000.0f / p->total);
         }
         if (p->target != 0 && p->left <= 0.0f) {
-            if (g_current_level_index_r == 5 && p->target->oclass == 0x271 && ((Skill_2BDAF0 *)gSkillPoints_r)->f8 == 0) {
+            if (g_current_level_index_r == 5 && p->target->oclass == 0x271 &&
+                ((Skill_2BDAF0 *)gSkillPoints_r)->f8 == 0) {
                 ((Skill_2BDAF0 *)gSkillPoints_r)->f8 = 1;
                 PlayBankSound_r(1, 0, 0);
                 ShowBanner_r(0x542D, -1);
@@ -157,8 +158,9 @@ void MorphorayUpdate(Moby *m) {
             morphoray_light_slot_r = -1;
         }
         if (morphoray_beam_voice_r >= 0) {
-            if (morphoray_beam_voice_r != -1 && ((Voice_2BDAF0 *)(voice_pool_r + morphoray_beam_voice_r * 0x70))->owner == m
-                && ((Voice_2BDAF0 *)(voice_pool_r + morphoray_beam_voice_r * 0x70))->on != 0) {
+            if (morphoray_beam_voice_r != -1 &&
+                ((Voice_2BDAF0 *)(voice_pool_r + morphoray_beam_voice_r * 0x70))->owner == m &&
+                ((Voice_2BDAF0 *)(voice_pool_r + morphoray_beam_voice_r * 0x70))->on != 0) {
                 Sound_StopSlot_r(morphoray_beam_voice_r);
             }
             morphoray_beam_voice_r = -1;

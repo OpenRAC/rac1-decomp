@@ -26,9 +26,9 @@ void update_hoven_help_and_dialogue(char *m) {
     }
     {
         char *h = help_stats_base_e + 0x34D;
-        if (*(unsigned short *)(h + 0x370) == 0
-            || (*(unsigned short *)(h + 0x370) < 2
-                && scale_ticks(gameplay_event_frame_count_e) - *(unsigned short *)(h + 0x372) * 600 > scale_ticks(72000))) {
+        if (*(unsigned short *)(h + 0x370) == 0 ||
+            (*(unsigned short *)(h + 0x370) < 2 &&
+             scale_ticks(gameplay_event_frame_count_e) - *(unsigned short *)(h + 0x372) * 600 > scale_ticks(72000))) {
             char *q = hero_globals_base_e + 0xE1D;
             if (*(int *)(q + 0x2084) == 0x81) {
                 d[1]++;
@@ -46,7 +46,8 @@ void update_hoven_help_and_dialogue(char *m) {
                     if (scale_ticks(gameplay_event_frame_count_e) / 600 > *(unsigned short *)(g + 0x372)) {
                         *(unsigned short *)(g + 0x372) = scale_ticks(gameplay_event_frame_count_e) / 600;
                     }
-                    *(unsigned int *)(g + 0x374) = *(unsigned int *)(g + 0x374) | (1 << g_current_level_index_e) | 0x80000000;
+                    *(unsigned int *)(g + 0x374) =
+                        *(unsigned int *)(g + 0x374) | (1 << g_current_level_index_e) | 0x80000000;
                 }
                 {
                     int a = scale_ticks(0x1C20);

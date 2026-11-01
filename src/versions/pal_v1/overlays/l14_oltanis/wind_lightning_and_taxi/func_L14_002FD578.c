@@ -27,48 +27,45 @@ void update_enemy_fighter(struct Moby *moby) {
         data->sound = -1;
     }
     switch (moby->state) {
-    case 0:
-        path_index = data->path;
-        if (path_index == -1) {
-            STUB_printf_r2(enemy_fighter_no_path_msg_r, moby->save_id);
-            DeleteMoby_r2(moby);
-            return;
-        }
-        if (*(int *)oltanis_paths_r3[path_index] == 0) {
-            STUB_printf_r2(enemy_fighter_path_unset_msg_r, moby->save_id);
-            DeleteMoby_r2(moby);
-            return;
-        }
-        initialize_flight_path_state_r(moby);
-        moby->state = 1;
-        moby->update_dist = 0xff;
-        moby->draw_dist = 0xff;
-        data->sound = -1;
-        data->timer = scale_ticks_r2(D_L14_0016202C_FD578);
-        break;
-    case 1:
-        advance_enemy_fighter_along_flight_path_r(moby);
-        break;
-    case 2:
-      if (fast_dec_timer_r(&data->timer)) {
-        path = oltanis_paths_r3[data->path];
-        moby->flags &= 0xffbe;
-        moby->collision = moby->pclass->collision;
-        data->timer = scale_ticks_r2(D_L14_0016202C_FD578);
-        moby->state = 1;
-        data->segment = 0;
-        data->along = 0;
-        qcopy(&moby->pos, path + 0x10);
-        moby->rot.z = fast_atan2_r(*(float *)(path + 0x20) - *(float *)(path + 0x10),
-                                              *(float *)(path + 0x24) - *(float *)(path + 0x14));
-        data->f80 = data->f84 =
-            data->f88 = data->f70 =
-            data->f74 = data->f78 = 0.0f;
-      }
-      break;
+        case 0:
+            path_index = data->path;
+            if (path_index == -1) {
+                STUB_printf_r2(enemy_fighter_no_path_msg_r, moby->save_id);
+                DeleteMoby_r2(moby);
+                return;
+            }
+            if (*(int *)oltanis_paths_r3[path_index] == 0) {
+                STUB_printf_r2(enemy_fighter_path_unset_msg_r, moby->save_id);
+                DeleteMoby_r2(moby);
+                return;
+            }
+            initialize_flight_path_state_r(moby);
+            moby->state = 1;
+            moby->update_dist = 0xff;
+            moby->draw_dist = 0xff;
+            data->sound = -1;
+            data->timer = scale_ticks_r2(D_L14_0016202C_FD578);
+            break;
+        case 1:
+            advance_enemy_fighter_along_flight_path_r(moby);
+            break;
+        case 2:
+            if (fast_dec_timer_r(&data->timer)) {
+                path = oltanis_paths_r3[data->path];
+                moby->flags &= 0xffbe;
+                moby->collision = moby->pclass->collision;
+                data->timer = scale_ticks_r2(D_L14_0016202C_FD578);
+                moby->state = 1;
+                data->segment = 0;
+                data->along = 0;
+                qcopy(&moby->pos, path + 0x10);
+                moby->rot.z = fast_atan2_r(*(float *)(path + 0x20) - *(float *)(path + 0x10),
+                                           *(float *)(path + 0x24) - *(float *)(path + 0x14));
+                data->f80 = data->f84 = data->f88 = data->f70 = data->f74 = data->f78 = 0.0f;
+            }
+            break;
     }
     spawn_enemy_fighter_exhaust_r(moby);
-    if (moby->state != 0 && moby->state != 2 &&
-        Sound_IsPlaying_r2(moby, data->sound) == 0)
+    if (moby->state != 0 && moby->state != 2 && Sound_IsPlaying_r2(moby, data->sound) == 0)
         data->sound = Moby_PlaySound_r3(0, 4, moby);
 }

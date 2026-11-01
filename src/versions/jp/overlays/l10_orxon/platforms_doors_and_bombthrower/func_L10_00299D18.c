@@ -25,7 +25,8 @@ void update_hero_relocation_trigger(char *m) {
     }
     id = *(unsigned short *)(m + 0xB2);
     if (orxon_collected_flags_base.collected[(short)id] != 0 ||
-        ((*(int *)(help_stats_base + 0xAB75 + ((((short)id >> 5) * 4) + (g_current_level_index << 8))) >> (id & 0x1F)) & 1) != 0) {
+        ((*(int *)(help_stats_base + 0xAB75 + ((((short)id >> 5) * 4) + (g_current_level_index << 8))) >> (id & 0x1F)) &
+         1) != 0) {
         if (gHaveHeliPack[4] != 0) {
             char *bs = orxon_mobys_r;
             *(unsigned short *)((*(int *)d << 8) + (int)bs + 0x34) |= 1;
@@ -52,19 +53,24 @@ void update_hero_relocation_trigger(char *m) {
                         *(int *)(T + 0x104) = w;
                     }
                     try_set_help_message(1, 0x5448);
-                    if (((unsigned char *)hero_globals_base)[0x2EC1] == 1) return;
+                    if (((unsigned char *)hero_globals_base)[0x2EC1] == 1)
+                        return;
                 } else {
-                    if (((unsigned char *)hero_globals_base)[0x2EC1] == 1) return;
+                    if (((unsigned char *)hero_globals_base)[0x2EC1] == 1)
+                        return;
                 }
             } else {
-                if (((unsigned char *)hero_globals_base)[0x2EC1] == 1) return;
+                if (((unsigned char *)hero_globals_base)[0x2EC1] == 1)
+                    return;
             }
         }
     }
-    *(int *)(help_stats_base + 0xAB75 + ((((short)*(unsigned short *)(m + 0xB2) >> 5) * 4) + (g_current_level_index << 8)))
-        |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
+    *(int *)(help_stats_base + 0xAB75 +
+             ((((short)*(unsigned short *)(m + 0xB2) >> 5) * 4) + (g_current_level_index << 8))) |=
+        1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
     orxon_moby_killed[(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
-    if (*(int *)(d + 8) == -1 || *(int *)d == -1) return;
+    if (*(int *)(d + 8) == -1 || *(int *)d == -1)
+        return;
     if (gHaveHeliPack[4] == 0) {
         char *e = (char *)((*(int *)d << 8) + (int)orxon_mobys_r);
         int eo = g_current_level_index << 4;
@@ -84,17 +90,18 @@ void update_hero_relocation_trigger(char *m) {
     } else {
         unsigned char *h = (unsigned char *)hero_globals_base + 0xE1D;
         if (h[0x20A4] == 1) {
-        exit_hero_vehicle_mode();
-        {
-            Hero_ResetToPosition(orxon_scene_points + (*(int *)(d + 4) << 7) + 0x30, orxon_scene_points + (*(int *)(d + 4) << 7) + 0x70, 0, 1);
-        }
-        MusicRequestTrack(0, 5);
-        {
-            char *bs = orxon_mobys_r;
-            *(unsigned short *)((*(int *)d << 8) + (int)bs + 0x34) |= 1;
-            *(unsigned short *)((*(int *)d << 8) + (int)bs + 0x34) |= 2;
-            *(int *)((*(int *)d << 8) + (int)bs + 0x94) = 0;
-        }
+            exit_hero_vehicle_mode();
+            {
+                Hero_ResetToPosition(orxon_scene_points + (*(int *)(d + 4) << 7) + 0x30,
+                                     orxon_scene_points + (*(int *)(d + 4) << 7) + 0x70, 0, 1);
+            }
+            MusicRequestTrack(0, 5);
+            {
+                char *bs = orxon_mobys_r;
+                *(unsigned short *)((*(int *)d << 8) + (int)bs + 0x34) |= 1;
+                *(unsigned short *)((*(int *)d << 8) + (int)bs + 0x34) |= 2;
+                *(int *)((*(int *)d << 8) + (int)bs + 0x94) = 0;
+            }
             h[0x22CB] = 1;
             DeleteMoby(m);
         } else {

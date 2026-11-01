@@ -20,12 +20,10 @@ int DrawGBsShipMenu__maybe(char *arg0) {
             }
         }
     }
-    sprintf(buf, fmt_gold_bolt_count_line, msg_string_id(0x4F50), count,
-                  msg_string_id(0x4F54), map_gold_bolt_totals[level_map_selection[0x89]]);
-    font_print_right_c(*(int *)(arg0 + 0x20) - 0x10, (g_screen_extent[1] >> 1) - 8,
-                    0x80000000L, buf, -1);
-    font_print_right_c(*(int *)(arg0 + 0x20) - 0x11, (g_screen_extent[1] >> 1) - 9,
-                    0x80FFA888L, buf, -1);
+    sprintf(buf, fmt_gold_bolt_count_line, msg_string_id(0x4F50), count, msg_string_id(0x4F54),
+            map_gold_bolt_totals[level_map_selection[0x89]]);
+    font_print_right_c(*(int *)(arg0 + 0x20) - 0x10, (g_screen_extent[1] >> 1) - 8, 0x80000000L, buf, -1);
+    font_print_right_c(*(int *)(arg0 + 0x20) - 0x11, (g_screen_extent[1] >> 1) - 9, 0x80FFA888L, buf, -1);
     DoGifPaging();
     if (0) {
         /* no code: registers the 2-byte view last (see above) */

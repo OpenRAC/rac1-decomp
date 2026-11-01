@@ -21,7 +21,8 @@ void update_slideshow(void) {
                 end_slideshow();
                 return;
             }
-            if (IIDX >= 0x2B) goto quit;
+            if (IIDX >= 0x2B)
+                goto quit;
             ICNT = -1;
             IST = 1;
         }
