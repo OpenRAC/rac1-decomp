@@ -4,7 +4,7 @@ Extract defined strings and their cross-references from Ghidra via Ghidra MCP RE
 Saves the extracted dataset to config/strings.json and config/strings.tsv.
 
 Usage:
-  python3 tools/extract_ghidra_strings.py [--url http://127.0.0.1:8089] [--token rac1-local]
+  python3 tools/old/extract_ghidra_strings.py [--url http://127.0.0.1:8089] [--token rac1-local]
 """
 import argparse
 import bisect
@@ -15,7 +15,7 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parents[2]
 
 
 def get_json(url: str, token: str, params: dict = None, post_data: dict = None):

@@ -380,7 +380,7 @@ with `tools/lombyte.py`'s size alignment on 969 Lombyte functions,
 corrects 2 that alignment put one function off (`IsNaN`,
 `JumpToRfuStatus`) and pairs 216 it could not.
 
-`tools/lombyte.py` pairs through the map (docs/SIBLING_DECOMPS.md).
+`tools/lombyte.py` pairs through the map (docs/agents/SIBLING_DECOMPS.md).
 Rerun `us-map` after the catalogue changes, then `rerac-notes`.
 
 ## ReRAC notes

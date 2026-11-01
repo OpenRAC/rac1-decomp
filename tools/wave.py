@@ -621,7 +621,7 @@ def packet(name: str, budget: int, near: bool = False) -> str:
 def lombyte_port(name: str) -> tuple[str, str, str, str] | None:
     """(Lombyte file, its name, its C, a caveat when its function's size
     differs from ours) when Lombyte matched NAME's US counterpart
-    (tools/lombyte.py; docs/SIBLING_DECOMPS.md)."""
+    (tools/lombyte.py; docs/agents/SIBLING_DECOMPS.md)."""
     import lombyte
     if not lombyte.MAP.exists() or not lombyte.LOMBYTE.is_dir():
         return None
@@ -650,7 +650,7 @@ def start_from(name: str) -> list[tuple[str, str]]:
             return extract_definition(entry[0], other)
         if not OVERLAY_NAME.match(other):          # a relative in the executable
             start = re.compile(rf"^(?!extern\b)[A-Za-z_][^;]*\b{other}\s*\([^;]*$")
-            for path in sorted((ROOT / "src/game").glob("*.c")):
+            for path in sorted((ROOT / "src/game").rglob("*.c")):
                 lines = path.read_text(errors="replace").splitlines()
                 for i, line in enumerate(lines):
                     if other in line and start.match(line):

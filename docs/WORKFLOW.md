@@ -292,7 +292,7 @@ Measured on 2026-09-26/27 (Sonnet workers, one function each):
 
 - **Ports first.** Functions Lombyte has matched (`tools/lombyte.py todo`,
   66 on 2026-09-27, 6.8% of code) should match in a run or two once
-  renamed. See [SIBLING_DECOMPS.md](SIBLING_DECOMPS.md).
+  renamed. See [SIBLING_DECOMPS.md](agents/SIBLING_DECOMPS.md).
 - **Fresh functions pay best.** A pool that a tool fix just unblocked
   (the `$fp` save rule, `qcopy()`) matched at 28%. Leftovers that earlier
   waves stopped on matched at 6%.

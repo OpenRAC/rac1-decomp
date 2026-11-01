@@ -4,7 +4,7 @@ Cross-platform diff helper for Ratchet & Clank decompilation.
 Works directly on Windows PowerShell / Command Prompt / Git Bash.
 
 Usage:
-    python tools/diff_func.py func_XXXXXXXX [extra asm-differ options]
+    python tools/old/diff_func.py func_XXXXXXXX [extra asm-differ options]
 """
 import sys
 import subprocess
@@ -12,7 +12,7 @@ from pathlib import Path
 
 import os
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
+REPO_ROOT = Path(__file__).resolve().parents[2]
 TC_BIN = REPO_ROOT / "toolchain" / "sn-prodg-3.01" / "usr" / "local" / "sce" / "ee" / "gcc" / "bin"
 TC_MAKE = TC_BIN / "make.exe"
 TC_LD = TC_BIN / "ee-ld.exe"
@@ -34,7 +34,7 @@ def ensure_env():
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python tools/diff_func.py func_XXXXXXXX [args]")
+        print("Usage: python tools/old/diff_func.py func_XXXXXXXX [args]")
         sys.exit(1)
 
     func_name = sys.argv[1]

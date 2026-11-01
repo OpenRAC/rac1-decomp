@@ -60,7 +60,7 @@ go in `$f12`, `$f13`, `$f14`... `long` is 64-bit, `long long` 128-bit.
 
 1. **Lombyte first.** `python3 tools/lombyte.py func_X` finds the same
    function in Lombyte, the matching decompilation of the US build
-   ([SIBLING_DECOMPS.md](SIBLING_DECOMPS.md)). If it is matched there, port
+   ([SIBLING_DECOMPS.md](agents/SIBLING_DECOMPS.md)). If it is matched there, port
    it: rename functions and globals to ours, keep its control flow.
 2. **List every global and how retail reaches it**: through `$gp`
    (sized declaration), `lui`/`%lo` split across two registers (plain
@@ -146,7 +146,7 @@ in `config/core_rodata.txt`).
    `*(long long *)p = 0` adds a `por` first.
 
 10. **Flags for a whole file.** Retail built some code with other options,
-    for example `-mno-split-addresses` ([SIBLING_DECOMPS.md](SIBLING_DECOMPS.md)).
+    for example `-mno-split-addresses` ([SIBLING_DECOMPS.md](agents/SIBLING_DECOMPS.md)).
     There a global is one assembler macro: every access is `lui $at` +
     `%lo(sym)($at)` (loads, stores and FP ones alike), no `%hi` survives a
     call, and gcc never puts such an access in a delay slot. If that's what
@@ -227,11 +227,7 @@ in `config/core_rodata.txt`).
       them with a file-scope `__asm__(".section .text\n\tnop...")`
       (func_0022F258), or the whole segment shifts.
 
-13. **From rac3-uya-decomp** (the same compiler family, working with
-    us): [RAC3_PATTERNS.md](RAC3_PATTERNS.md) has what carries over:
-    int/float order in prototypes, arguments retail never sets, float
-    constants and gcse, loop constants, stack slot order, switch tables,
-    cross-jumping. For a register tie, `bash tools/docker/run.sh python
+13. **Register ties.** For a register tie, `bash tools/docker/run.sh python
     tools/regalloc.py func_X CANDIDATE.c` prints the allocator's order and
     priorities: change what outranks or overlaps the variable.
 

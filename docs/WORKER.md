@@ -43,7 +43,7 @@ function's name, your role and your budget. Everything else is here, in
 2. Read [LEVERS.md](LEVERS.md), and do its "Start here" steps before
    writing C:
    - `python3 tools/lombyte.py <func>`: if Lombyte has matched the same
-     function, port its C (see [SIBLING_DECOMPS.md](SIBLING_DECOMPS.md)).
+     function, port its C (see [SIBLING_DECOMPS.md](agents/SIBLING_DECOMPS.md)).
      That usually takes one or two runs.
    - List every global and how retail reaches it; that decides the
      declarations.

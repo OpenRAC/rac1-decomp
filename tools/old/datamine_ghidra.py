@@ -22,7 +22,7 @@ import urllib.request
 from collections import defaultdict
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parents[2]
 
 
 def get_json(url: str, token: str, params: dict = None, post_data: dict = None):

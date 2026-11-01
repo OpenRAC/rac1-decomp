@@ -78,7 +78,7 @@ dataset*.jsonl
 # tools/export_dataset.py output: carries retail disassembly.
 *.jsonl
 
-# Ghidra local datamining cache (generate on demand via tools/datamine_ghidra.py)
+# Ghidra local datamining cache (generate on demand via tools/old/datamine_ghidra.py)
 config/ghidra_*.json
 .agents/
 

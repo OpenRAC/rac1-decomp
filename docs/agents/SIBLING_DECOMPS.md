@@ -185,8 +185,7 @@ ratchet-uya-decomp) matches R&C 3's `frontbin.elf`, its main executable
 `boot_elf.elf` and its launcher `i5bootn.elf` with the compiler our game
 code uses, SN ee-gcc 2.95.3, and works directly with this project. Its
 [compiler matrix](https://github.com/OpenRAC/rac3-uya-decomp/blob/main/docs/compiler_matrix_findings.md)
-tested 15 compilers and 8 flag sets; the C patterns that carry over are in
-[RAC3_PATTERNS.md](RAC3_PATTERNS.md). What else carries over:
+tested 15 compilers and 8 flag sets. What carries over:
 
 - **Retail compiled some files with `-mno-split-addresses`.** Such a
   file loads a global with one assembler macro (`lw $v0, X`), so the
@@ -353,10 +352,10 @@ What carries over:
   the layout of private state variables (`pvars`) for ~20 moby classes (Plumber,
   Skid McMarx, Big Al, Novalis lift, etc.) and shared NPC dialogue systems
   (`npcVars`, `npcStep`, `npcstring`). These are adapted into
-  [`include/moby_pvars.h`](../include/moby_pvars.h) and documented in
-  [`docs/PVARS.md`](PVARS.md).
+  [`include/moby_pvars.h`](../../include/moby_pvars.h) and documented in
+  [`docs/PVARS.md`](../PVARS.md).
 - **Asset and level formats**: Level data headers, WAD compression, terrain
-  (`tfrag`), ties, shrubs, sky, and occlusion bounds ([`docs/ASSETS.md`](ASSETS.md)).
+  (`tfrag`), ties, shrubs, sky, and occlusion bounds ([`docs/ASSETS.md`](../ASSETS.md)).
 - **Moby class catalogue**: Class IDs and naming schemes
   (`tools/extract/moby_classes.tsv`).
 
