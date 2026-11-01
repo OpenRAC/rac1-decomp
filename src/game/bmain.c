@@ -1,4 +1,5 @@
 #include "common.h"
+#include "structs/disc.h"
 #include "pad.h"
 #include "structs.h"
 #include "core/permcb.h"
@@ -100,12 +101,8 @@ void start_level(int level) {
 
 extern s32 g_game_language_r __asm__("D_0015EE88") MACRO_ADDR;
 
-struct DiscTable_E99D8 {
-    u8 pad_0[0x14E0];
-    s32 sound_bank;                        /* 0x14E0 */
-};
 
-extern struct DiscTable_E99D8 disc_table_r __asm__("D_00137C80");
+extern struct DiscTable disc_table_r __asm__("D_00137C80");
 
 typedef struct {
     s32 off;

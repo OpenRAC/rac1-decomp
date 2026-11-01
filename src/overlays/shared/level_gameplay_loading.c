@@ -2,6 +2,7 @@
 #include "common.h"
 #include "callees.h"
 #include "include_asm.h"
+#include "structs/disc.h"
 #include "moby.h"
 #include "hero.h"
 #include "game/draw.h"
@@ -319,13 +320,6 @@ typedef struct {
     int f4;
 } PvarEnt_422D8;
 typedef int u128_422D8 __attribute__((mode(TI)));
-typedef struct {
-    char pad0[0x2970];
-    int f2970;
-    int f2974;
-    int f2978;
-    int f297C;
-} G137C80_422D8;
 typedef struct TieMtx_422D8 {
     float m0[3];
     float fC;
@@ -489,7 +483,7 @@ extern void update_moby_proximity_interaction();
 
 extern Lvl173F00_422D8 lvl_resource_buffers;
 extern int pal_mode MACRO_ADDR;
-extern G137C80_422D8 disc_table_r2 __asm__("D_00137C80");
+extern DiscTable disc_table_r2 __asm__("D_00137C80");
 /* The two pointers at 0x15EF4C and 0x15EF50, as one object. The assembly names the second D_0015EF50; under a
    name of its own its store lands in a branch delay slot where retail has a nop (8 bytes short), so it is
    reached as element 1 of the pair. Nothing else in the project names D_0015EF50. */
@@ -617,9 +611,9 @@ char *load_level_gameplay(int arg0) {
     mem = lvl_resource_buffers.f18;
     if (arg0 == 0) {
         if (pal_mode != 0) {
-            Load_r(mem, disc_table_r2.f2978, disc_table_r2.f297C);
+            Load_r(mem, disc_table_r2.sound_archive_alt.sector, disc_table_r2.sound_archive_alt.size);
         } else {
-            Load_r(mem, disc_table_r2.f2970, disc_table_r2.f2974);
+            Load_r(mem, disc_table_r2.sound_archive.sector, disc_table_r2.sound_archive.size);
         }
         level_root_r[1] = mem; /* D_0015EF50 */
     }
@@ -2310,17 +2304,9 @@ s32 start_cutscene_chunk_read(s32 i) {
     }
     return 1;
 }
-typedef struct {
-    int a;
-    int b;
-} LevelLoad;
-typedef struct {
-    char pad0[0x1530];
-    LevelLoad normal[14];
-    LevelLoad alt[14];
-} Globals137C80;
+
 extern int pal_mode MACRO_ADDR;
-extern Globals137C80 disc_table_g __asm__("D_00137C80");
+extern DiscTable disc_table_g __asm__("D_00137C80");
 typedef struct {
     char pad0[0x5C];
     char *base;
@@ -2336,9 +2322,11 @@ void load_scene_chunks_with_fade(int arg) {
     int *q;
     int i;
     if (pal_mode == 0) {
-        start_audio_stream_read((int)cutscene_state.base, disc_table_g.normal[arg].a, disc_table_g.normal[arg].b);
+        start_audio_stream_read((int)cutscene_state.base, disc_table_g.unk1530[arg].sector,
+                                disc_table_g.unk1530[arg].size);
     } else {
-        start_audio_stream_read((int)cutscene_state.base, disc_table_g.alt[arg].a, disc_table_g.alt[arg].b);
+        start_audio_stream_read((int)cutscene_state.base, disc_table_g.unk15A0[arg].sector,
+                                disc_table_g.unk15A0[arg].size);
     }
     update_audio_stream_until_idle(0);
     FadeToBlack(4);

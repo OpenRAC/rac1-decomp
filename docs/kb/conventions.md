@@ -121,6 +121,7 @@ Use these, not private struct copies (fields: [data-structures.md](data-structur
 | `include/hero.h` | `struct Hero` (`D_0013F450`) and its records (`HeroMotion`, `HeroState`, `HeroItemSlot`, `HeroManipulator`, `HeroHealth`, `HeroEase`, `HeroRandTimer`, `HeroVelocityKey`, `MobyTrail`) |
 | `include/pad.h` | `struct PadState` (0x350 bytes, `D_0013CA40`) |
 | `include/vector.h` | `Vec4f`, `Vec4A` (16-byte aligned), `Vec4` (union moved with one `lq`/`sq`), `VecQuad` (128-bit integer) |
+| `include/structs/disc.h` | `struct DiscTable` (`disc_table`, `D_00137C80`) and `struct DiscFile` |
 | `include/records.h` | `DispatchRec` (0x14-byte function-pointer entry), `PadSlots`, `AnimSeq` |
 | `include/callees.h` | prototypes of engine functions that three or more files declared the same way |
 | `include/structs.h`, `include/moby_pvars.h` | older shared structs; `moby_pvars.h` (class pvars adapted from Wrench) is not included by any source file today |
@@ -152,7 +153,9 @@ These hero views still change bytes or break a version's C when converted to `st
 (`morphoray_chicken_and_drones.c`), `Hero40` (`nanotech_ball_and_suck_cannon.c`) and `G_6570`
 (`heavy_interceptor_and_turrets.c`). So do these camera and pad views: `SceneG` (`draw.c`), `P` and `PadStateWords`
 (`cutscene_and_movie_playback.c`), `Input_1F4918` (`debug_menu_and_text.c`), `G` (`hero_steering_and_tilt.c`) and `PadD`
-(`vendor_menu.c`, a JP version fragment depends on it).
+(`vendor_menu.c`, a JP version fragment depends on it). These `disc_table` views stay too: `Tab`
+(`alpha_fade_particle_updates.c`) and `Tab_245610` (`level_gameplay_loading.c`) index from a base pointer, and rewriting
+that as `[28 + i]` changes the code.
 
 *(inferred from the definitions and uses; the pad reason is from the
 header-tidy notes.)* Small `fNN` data views in `help_*.c` (`S141948`,

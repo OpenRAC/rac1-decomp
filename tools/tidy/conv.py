@@ -2,7 +2,7 @@
 """Replace a level file's private copies of a shared struct by the shared one.
 
   conv.py FILE [--dry] [--only NAME,...] [--skip NAME,...] [--cast-arrays] [--cast-stores]
-          [--target moby|hero]
+          [--target moby|hero|pad|camera|disc]
 
 Every access through a private record becomes an access to the shared field at
 the same offset. When the types agree it is the shared field itself; when they
@@ -27,6 +27,8 @@ TARGETS = {
             'alias': {'PadState': r'(Pad|PadState)(_[0-9A-Fa-f_]+)?'}, 'clone': None, 'clone_name': r'(?!)'},
     'camera': {'header': 'camera.h', 'recs': {'CameraSystem': 'struct CameraSystem', 'Camera': 'struct Camera'},
                'clone': None, 'clone_name': r'(?!)'},
+    'disc': {'header': 'structs/disc.h', 'recs': {'DiscTable': 'struct DiscTable', 'DiscFile': 'struct DiscFile'},
+             'clone': None, 'clone_name': r'(?!)'},
     'vecf': {'header': 'vector.h', 'recs': {},
              'clone': 'Vec4f', 'clone_name': r'(?!.*(Quat|Col|Rgb|Mat))(V\w*|\w*Vec\w*)'},
     'vec': {'header': 'vector.h', 'recs': {},

@@ -1,4 +1,5 @@
 #include "common.h"
+#include "structs/disc.h"
 #include "hero.h"
 #include "moby.h"
 #include "callees.h"
@@ -1502,18 +1503,6 @@ int load_level_chunk_from_disc(void) {
     return 1;
 }
 
-struct DiscFile_04C60 {
-    s32 sector;
-    s32 size;
-};
-struct DiscTable_04C60 {
-    u8 pad_0[0x12C8];
-    struct DiscFile_04C60 level_archives[24]; /* 0x12C8, by level index */
-    u8 pad_1388[0x15E0];
-    struct DiscFile_04C60 shared_archive; /* 0x2968 */
-    struct DiscFile_04C60 sound_archive; /* 0x2970 */
-    struct DiscFile_04C60 sound_archive_alt; /* 0x2978, while D_0015EE80 is set */
-};
 struct LevelArchiveDiscEntry_04C60 {
     u8 pad_0[0x12C8];
     s32 start_sector;
@@ -1524,7 +1513,7 @@ struct LevelArchiveHeader_04C60 {
     s32 sound_bank_offset;
 };
 
-extern struct DiscTable_04C60 disc_table_r __asm__("D_00137C80");
+extern struct DiscTable disc_table_r __asm__("D_00137C80");
 extern s16 ship_index_r[] __asm__("D_0013E156");
 extern s32 cd_read_spindle_speed_r __asm__("D_0015EE58") MACRO_ADDR;
 extern u32 sound_bank_handle_r __asm__("D_0015EE5C") MACRO_ADDR;
@@ -1704,7 +1693,6 @@ struct ColorSrc {
     unsigned char pad00[0x38];
     unsigned long color; /* 0x38 */
 };
-
 
 struct GlobalIndex {
     unsigned char pad00[0x26];

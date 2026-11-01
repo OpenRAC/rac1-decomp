@@ -1,4 +1,5 @@
 #include "common.h"
+#include "structs/disc.h"
 #include "camera.h"
 #include "hero.h"
 #include "callees.h"
@@ -4837,15 +4838,8 @@ done:
 
 /* The per-controller request slots in D_00137C80 (declared above as a
    flat int array). */
-typedef struct {
-    int a, b;
-} Pair8;
-typedef struct {
-    char pad[0x2C8];
-    Pair8 req0[6]; /* 0x2C8 */
-    Pair8 req2[6]; /* 0x2F8 */
-} Tbl137C80;
-extern Tbl137C80 disc_table_t __asm__("D_00137C80");
+
+extern DiscTable disc_table_t __asm__("D_00137C80");
 extern int g_game_language MACRO_ADDR;
 
 /* Pause sub-state machine at arg0+0x44. States 0 and 2 wait for their
@@ -4859,8 +4853,8 @@ int advance_audio_stream_state(MenuScreen *arg0) {
     switch (arg0->data.stream.state) {
         case 0:
             if (arg0->data.stream.buffer[0] != 0 && cd_read_state[4] == 0) {
-                if (start_audio_stream_read_3(arg0->data.stream.buffer[0], disc_table_t.req0[g_game_language].a,
-                                              disc_table_t.req0[g_game_language].b) != 0) {
+                if (start_audio_stream_read_3(arg0->data.stream.buffer[0], disc_table_t.unk2C8[g_game_language].sector,
+                                              disc_table_t.unk2C8[g_game_language].size) != 0) {
                     arg0->data.stream.state += 1;
                 } else {
                     arg0->data.stream.state = -1;
@@ -4874,8 +4868,8 @@ int advance_audio_stream_state(MenuScreen *arg0) {
             break;
         case 2:
             if (arg0->data.stream.buffer[1] != 0 && cd_read_state[4] == 0) {
-                if (start_audio_stream_read_3(arg0->data.stream.buffer[1], disc_table_t.req2[g_game_language].a,
-                                              disc_table_t.req2[g_game_language].b) != 0) {
+                if (start_audio_stream_read_3(arg0->data.stream.buffer[1], disc_table_t.unk2F8[g_game_language].sector,
+                                              disc_table_t.unk2F8[g_game_language].size) != 0) {
                     arg0->data.stream.state += 1;
                 } else {
                     arg0->data.stream.state = -1;
