@@ -20,7 +20,7 @@ struct HitProxyVars {
 };
 
 /* Moby 1805: takes hits until its health is gone. */
-struct Moby1805Vars {
+struct BlargShip1805Vars {
     u8 pad_00[0x20];
     f32 health; /* 0x20: hit response block */
     u8 pad_24[0x3C];
@@ -652,9 +652,9 @@ extern void StepColorFade(void *, void *);
 /* UpdateMoby_1805: deletes itself if its bit is set in D_0014C290. State 0 moves to state 1; state 1 takes a hit's value
  * (at +0x2C) off the float at data + 0x20 and moves to state 2 when it falls short; state 2 sets the bit and spawns
  * func_L00_00265050 effects for types 0x709 to 0x70C, twice. */
-void Moby1805Update(void *moby) {
+void blarg_ship_1805_update(void *moby) {
     char *m = moby;
-    struct Moby1805Vars *data;
+    struct BlargShip1805Vars *data;
     char *item;
     char *p;
     int st;
@@ -666,7 +666,7 @@ void Moby1805Update(void *moby) {
         DeleteMoby(moby);
         return;
     }
-    data = (struct Moby1805Vars *)((Moby *)m)->pvars;
+    data = (struct BlargShip1805Vars *)((Moby *)m)->pvars;
     item = MobyGetHitMessage(moby, 0x10000, 0);
     ComputeHitResponse(moby, item, &data->health, 0, &st, 0, 0, 4);
     switch (((unsigned char *)m)[0x20]) {

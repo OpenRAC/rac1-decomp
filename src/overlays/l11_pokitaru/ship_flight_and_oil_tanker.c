@@ -1545,7 +1545,7 @@ extern short puffoid_jump_horizontal_speed_gp;
 extern short puffoid_jump_gravity;
 extern void update_puffoid_damage_and_path_goal();
 extern void update_moby_target_heading_and_conditional_movement(char *a0, float *a1);
-extern short count_group_class_4de_mobys_in_states_13_to_17(struct Moby *self);
+extern short count_group_puffoid_mobys_in_states_13_to_17(struct Moby *self);
 extern void Manipulator_ApplyScale(struct Moby *, int, void *, float);
 extern float FastVecDist(void *, void *);
 extern float vec_distance_xy();
@@ -1826,7 +1826,7 @@ void puffoid_update(struct Moby *moby) {
         case 12: {
             float basis[16];
             float dest[4];
-            if (d->unk214 != 2 && count_group_class_4de_mobys_in_states_13_to_17(moby) < 5) {
+            if (d->unk214 != 2 && count_group_puffoid_mobys_in_states_13_to_17(moby) < 5) {
                 struct Moby *c = (struct Moby *)(pokitaru_mobys + (d->carrier << 8));
                 matrix_from_basis_rows(basis, &c->rot_row0);
                 FastVecSub(pos, &moby->pos, &c->pos);
@@ -2302,7 +2302,7 @@ void update_moby_target_heading_and_conditional_movement(char *m, float *p) {
 }
 extern char *pokitaru_mobys MACRO_ADDR;
 /* Counts the Puffoid mobys in this moby's group that are in states 13..17. */
-short count_group_class_4de_mobys_in_states_13_to_17(struct Moby *self_) {
+short count_group_puffoid_mobys_in_states_13_to_17(struct Moby *self_) {
     struct Moby *self = (struct Moby *)self_;
     unsigned short *p;
     short n;
@@ -2550,7 +2550,7 @@ void update_two_door_gate(struct PMoby *moby) {
             break;
     }
 }
-extern void distribute_group_class_527_mobys_along_path(void *, int);
+extern void distribute_group_blarg_ship_1319_mobys_along_path(void *, int);
 extern void update_oil_tanker_link_path_poses(void *);
 extern void process_oil_tanker_damage_and_destruction(void *);
 extern void update_oil_tanker_front_path_pose(char *moby);
@@ -2598,7 +2598,7 @@ void oil_tanker_front_update(char *moby) {
             short *h;
             int *z;
             int i;
-            distribute_group_class_527_mobys_along_path(moby, chain_vars->path_index);
+            distribute_group_blarg_ship_1319_mobys_along_path(moby, chain_vars->path_index);
             if (((unsigned char *)(help_stats_base +
                                    0xAA35))[((struct Moby *)moby)->mission + (map_data_0015EE84 << 4)] == 0xFF) {
                 DeleteMoby(moby);
@@ -2952,7 +2952,7 @@ struct L11ChainVars_19510 {
 };
 
 /* Adapted from Lombyte's project (the US decompilation): FUN_L11_003180a0. */
-void distribute_group_class_527_mobys_along_path(void *mp, int table_index) {
+void distribute_group_blarg_ship_1319_mobys_along_path(void *mp, int table_index) {
     Moby *moby = mp;
     short group = ((struct L11ChainVars_19510 *)moby->pvars)->group;
     u16 *list = (u16 *)pokitaru_moby_groups[group];
@@ -3077,7 +3077,7 @@ extern void spawn_explosion(void *, void *, void *, float, float, int, int, int,
 extern short energy_sphere_glow_size;
 
 // Update function for a moby that eases values, then flies to a target and bursts.
-void Moby1297Update(unsigned char *moby) {
+void energy_sphere_1297_update(unsigned char *moby) {
     struct EnergySphereVars *data = (struct EnergySphereVars *)((Moby *)moby)->pvars;
     float v[4];
     float *vp;

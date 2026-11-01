@@ -1,4 +1,4 @@
-void Moby1805Update(void *moby) {
+void blarg_ship_1805_update(void *moby) {
     char *m = moby;
     char *data;
     char *item;

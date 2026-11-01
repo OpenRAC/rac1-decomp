@@ -1470,7 +1470,7 @@ extern char *spawn_pipe_replacement_moby(char *owner);
 typedef int u128b __attribute__((mode(TI)));
 
 // Breakable prop update: when hit, spawns a burst of debris sparks then replaces itself.
-void Moby778Update(char *m) {
+void pipe_778_update(char *m) {
     struct SparkBurstVars *d = (struct SparkBurstVars *)((Moby *)m)->pvars;
     char *t = MobyGetHitMessage(m, 0x10000, 0);
     ((Moby *)m)->hit_slot = 0xFF;

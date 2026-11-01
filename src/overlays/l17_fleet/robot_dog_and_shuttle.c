@@ -713,7 +713,7 @@ typedef struct {
 extern void update_shuttle_help_message();
 
 /* UpdateMoby 1448: a moby that alternates between two camera points and starts a cutscene on a button press. */
-void Moby1448Update(unsigned char *m) {
+void shuttle_1448_update(unsigned char *m) {
     Vars1448 *v = ((Vars1448 *)((Moby *)m)->pvars);
     float old_pos[4];
     float old_rot[4];
@@ -1493,7 +1493,7 @@ extern char fleet_blarg_ship_gun_offset[];
 extern short fleet_blarg_ship_shot_speed;
 
 /* UpdateMoby 1843: a flying fleet craft that circles, follows a path, strafes the player and fires. */
-void Moby1843Update(unsigned char *moby) {
+void blarg_ship_1843_update(unsigned char *moby) {
     enum {
         BLARG_SHIP_INITIALIZE = 0,
         BLARG_SHIP_FOLLOW_PATH = 1,

@@ -7,7 +7,7 @@
 
 extern short active_homing_missiles[];
 extern char cheat_scale_manipulator[];
-extern char cheat_scale_manipulator_class_1a3[];
+extern char D_L00_0017C4C0[];
 extern char cheat_scale_manipulator_class_555[];
 extern char coll_hit_moby_record[];
 extern int dialogue_entry_ids[];

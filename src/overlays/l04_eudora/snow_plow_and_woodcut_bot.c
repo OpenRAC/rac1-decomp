@@ -1402,7 +1402,7 @@ extern struct Moby *CreateMoby_m(int) __asm__("func_0020D348");
 extern void moby_build_matrix(void *);
 
 // Spawns a Axe moby copying fields from another and placing it at a position.
-void *spawn_class_23a_moby(char *src, char *pos) {
+void *spawn_axe_moby(char *src, char *pos) {
     char tmp[16];
     char *p = tmp;
     char *m;

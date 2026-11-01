@@ -1358,7 +1358,7 @@ typedef struct {
 extern void process_helicopter_hits();
 typedef int u128_6950 __attribute__((mode(TI)));
 
-extern char *create_class_55b_moby_from_source(char *a0);
+extern char *create_blarg_commander_moby_from_source(char *a0);
 extern void FindNearestTargetMoby(void *, float *, float);
 extern int FindNearestEligibleMoby(float, void *, void *, int, int, void *, int);
 extern void AttachManipulator(char *, int, unsigned char *);
@@ -1406,7 +1406,7 @@ void helicopter_update(HMoby_6950 *m) {
     oldpos.q = m->pos.q;
     d = m->data;
     if (d->child == 0) {
-        d->child = (HMoby_6950 *)create_class_55b_moby_from_source((char *)m);
+        d->child = (HMoby_6950 *)create_blarg_commander_moby_from_source((char *)m);
     }
     if (m->state != 0 && m->state != 0x40 && d->w1A4 != 0 && hero_globals_base[0x2EC1] != 2) {
         m->w94 = 0;

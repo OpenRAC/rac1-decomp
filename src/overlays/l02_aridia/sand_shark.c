@@ -248,7 +248,7 @@ extern void rand_vec(void *, float, float);
 extern float FastSubRots(float, float);
 extern void SetDeathBits(void *, int, int);
 extern void spawn_color_swapped_explosion_burst(void *, void *, int, float, float);
-extern int select_group_class_29c_moby(void *argp);
+extern int select_group_sand_shark_nest_moby(void *argp);
 extern void DeleteMoby(void *);
 
 extern char sand_shark_no_path_fmt[];
@@ -888,7 +888,7 @@ void sand_shark_update(unsigned char *moby) {
                 v0[2] += 0.333f;
                 SetDeathBits(moby, 0, -1);
                 spawn_color_swapped_explosion_burst(moby, v0, -1, 0.333f, 0.0f);
-                if ((d->i27C = select_group_class_29c_moby(moby)) != 0) {
+                if ((d->i27C = select_group_sand_shark_nest_moby(moby)) != 0) {
                     emit_sand_shark_dust_burst(moby);
                     ((Moby *)moby)->anim_speed = 0.0f;
                     ((Moby *)moby)->state = 0x1A;
@@ -914,7 +914,7 @@ void sand_shark_update(unsigned char *moby) {
                 ((Moby *)moby)->alpha -= 8;
                 break;
             }
-            if ((d->i27C = select_group_class_29c_moby(moby)) != 0) {
+            if ((d->i27C = select_group_sand_shark_nest_moby(moby)) != 0) {
                 emit_sand_shark_dust_burst(moby);
                 ((Moby *)moby)->alpha = 0x80;
                 ((Moby *)moby)->state = 0x1A;
@@ -927,7 +927,7 @@ void sand_shark_update(unsigned char *moby) {
             DeleteMoby(moby);
             return;
         case 0x1A:
-            if ((d->i27C = select_group_class_29c_moby(moby)) == 0) {
+            if ((d->i27C = select_group_sand_shark_nest_moby(moby)) == 0) {
                 DeleteMoby(moby);
                 return;
             }
@@ -939,7 +939,7 @@ extern int aridia_moby_groups[];
 extern int aridia_mobys_m __asm__("D_L02_00160058") MACRO_ADDR;
 
 // Finds the last live moby of type 0x29C among the ones a level list names.
-int select_group_class_29c_moby(void *argp) {
+int select_group_sand_shark_nest_moby(void *argp) {
     char *arg = argp;
     int result = 0;
     short *p;
@@ -1161,7 +1161,7 @@ extern float vec_distance_xy(void *, void *);
 extern float ProbeGroundHeight(void *, int, float);
 extern void HeadingFromVector(void *, float *, void *, void *);
 extern int FindNearestEligibleMoby(float, void *, void *, int, int, void *, int);
-extern int select_group_class_29c_moby(void *argp);
+extern int select_group_sand_shark_nest_moby(void *argp);
 extern void extend_group_sand_shark_timers(char *arg);
 extern void DeleteMoby(void *);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
@@ -1192,7 +1192,7 @@ void handle_sand_shark_damage_and_targeting(unsigned char *moby) {
         if (d->i288 >= 0) {
             (*(Vars_2D70C0 **)((d->i288 << 8) + aridia_mobys_m + 0x78))->i14C -= 1;
         }
-        if ((d->i27C = select_group_class_29c_moby(moby)) == 0) {
+        if ((d->i27C = select_group_sand_shark_nest_moby(moby)) == 0) {
             DeleteMoby(moby);
             return;
         }
@@ -1306,7 +1306,7 @@ void *handle_sand_shark_suck_cannon_storage(char *moby, void *v) {
     }
     return r;
 }
-extern int select_group_class_29c_moby(void *);
+extern int select_group_sand_shark_nest_moby(void *);
 extern void emit_sand_shark_dust_burst(void *);
 extern void DeleteMoby(void *);
 
@@ -1314,7 +1314,7 @@ extern void DeleteMoby(void *);
 void prepare_sand_shark_for_relaunch_or_remove(unsigned char *moby) {
     struct Moby *m = (struct Moby *)moby;
     char *data = (char *)m->pvars;
-    int result = select_group_class_29c_moby(moby);
+    int result = select_group_sand_shark_nest_moby(moby);
     *(int *)(data + 0x27C) = result;
     if (result != 0) {
         m->state = 0x1A;

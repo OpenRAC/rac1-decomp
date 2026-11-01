@@ -1881,7 +1881,7 @@ typedef int u128_2E8640 __attribute__((mode(TI)));
 #define COPY4(dst, src) qcopy((void *)(dst), (void *)(src))
 
 /* Blarg trooper update: movement, attacks, damage and death. */
-void Moby294Update(char *moby) {
+void blarg_trooper_294_update(char *moby) {
     char *data;
     char *hero;
     char *B;
@@ -2649,7 +2649,7 @@ extern void process_blarg_helicopter_hits(char *);
 typedef int (*Fn_ED80)(int, int, void *);
 
 extern void start_blarg_commander_knockback(void *, void *);
-extern char *create_class_55b_moby_from_source(void *);
+extern char *create_blarg_commander_moby_from_source(void *);
 extern void cache_consecutive_point_distances(int);
 extern int follow_blarg_helicopter_path(struct Moby *, int);
 extern void Help_Request(int, int);
@@ -2679,7 +2679,7 @@ typedef int u128q __attribute__((mode(TI)));
      } *)(p))        \
          ->v)
 /* Blarg helicopter update: targeting, hits, movement and removal. */
-void Moby326Update(char *moby) {
+void blarg_helicopter_326_update(char *moby) {
     char *data;
     float buf[20] __attribute__((aligned(16)));
     float v70[4] __attribute__((aligned(16)));
@@ -2794,7 +2794,7 @@ void Moby326Update(char *moby) {
                 M_S16(moby, 0x32) = 0x80;
             }
             if (M_P(data, 0xAC) == 0) {
-                char *o = create_class_55b_moby_from_source(moby);
+                char *o = create_blarg_commander_moby_from_source(moby);
                 char *o2;
                 M_P(data, 0xAC) = o;
                 M_U8(o, 0x30) = 0;
@@ -3562,7 +3562,7 @@ extern short helicopter_rotation_smoothing_divisor;
 /* UpdateMoby_336: does nothing without a data block. State 0 picks a table from D_L12_001B0C30[data + 0x74] and
  * places the moby at one of its points; state 1 walks the table's points (index at data + 0x60), easing the angles at
  * +0x40 and +0x48 toward the next point and setting +0x44 to 0.5236. */
-void Moby336Update(Moby *m) {
+void helicopter_336_update(Moby *m) {
     struct HelicopterPathVars *d = (struct HelicopterPathVars *)m->pvars;
     float A[4];
     float B[4];

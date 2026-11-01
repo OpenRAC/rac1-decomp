@@ -330,7 +330,7 @@ extern int scale_ticks(int);
 extern void MobyBlendAnimation(void *, int, int, int);
 
 /* Spawns a Mine moby at a position, with its data block filled in. */
-unsigned char *spawn_class_53_projectile(char *owner, char *pos, char *vec) {
+unsigned char *spawn_mine_83_projectile(char *owner, char *pos, char *vec) {
     unsigned char *moby = (unsigned char *)CreateMoby(0x53);
     if (moby != 0) {
         struct ProjectileVars_2C32D0 *data;
@@ -386,7 +386,7 @@ typedef struct {
 
 /* Moby update for Mine on level 13: drifts toward its target and steers, calling the shared helpers.
  * The block at D_L13_001741C0 is read through a struct cast at each use, so the base stays in a register. */
-void update_level_13_class_53_projectile(char *moby_raw) {
+void update_level_13_mine_83_projectile(char *moby_raw) {
     Vec4 steering_and_collision_vector;
     float hitpos[12];
     Moby *moby = (Moby *)moby_raw;
@@ -3765,11 +3765,11 @@ unsigned char *fire_starfighter_homing_rocket(struct Moby *firing_moby, unsigned
 }
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void FastVecSub(void *dst, void *a, void *b);
-extern unsigned char *spawn_class_53_projectile(char *owner, char *pos, char *vec);
+extern unsigned char *spawn_mine_83_projectile(char *owner, char *pos, char *vec);
 extern void Moby_PlaySound(int, int, int);
 
 /* computes a velocity vector for a moby from the camera/player and spawns a projectile */
-unsigned char *fire_class_53_projectile(char *a, char *b) {
+unsigned char *fire_mine_83_projectile(char *a, char *b) {
     float v0[4], v1[4], v2[4], v3[4], v4[4];
     struct Hero *x;
     unsigned char *r;
@@ -3790,7 +3790,7 @@ unsigned char *fire_class_53_projectile(char *a, char *b) {
         rand_vec(v1, g_frame_time * 0.0f, g_frame_time * 30.0f);
     }
     FastVecAdd(v1, v1, b + 0x70);
-    r = spawn_class_53_projectile(a, (char *)v0, (char *)v1);
+    r = spawn_mine_83_projectile(a, (char *)v0, (char *)v1);
     if (r)
         Moby_PlaySound(3, 0, (int)a);
     return r;

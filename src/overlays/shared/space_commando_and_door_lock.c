@@ -125,7 +125,7 @@ typedef struct {
     Vec4 unk200;
     u8 pad210[0x210];
     u8 unk420[1];
-} Moby1068Vars;
+} BlargSpaceCommando1068Vars;
 extern f32 g_frame_time MACRO_ADDR;
 extern f32 g_frame_time_sq MACRO_ADDR;
 extern f32 D_L06_00162038_FF000 SDATA(D_L06_00162038);
@@ -170,7 +170,7 @@ extern void initialize_blarg_space_commando_beam_r(struct Moby *) __asm__("func_
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002fdbd0.c, FUN_L06_002fdbd0. */
 void blarg_space_commando_update(struct Moby *moby) {
-    Moby1068Vars *vars = (Moby1068Vars *)moby->pvars;
+    BlargSpaceCommando1068Vars *vars = (BlargSpaceCommando1068Vars *)moby->pvars;
     struct Moby *target;
     s32 *route;
     Vec4 a;

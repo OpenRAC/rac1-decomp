@@ -71,7 +71,7 @@
 #define move_frog_with_collision_resolution                       func_L06_002EAF90
 #define activate_state_15_moby_at_position                        func_L06_002EB140
 #define set_moby_list_state_15                                    func_L06_002EB260
-#define check_all_listed_class_33b_states_fe_fd_or_10             func_L06_002EB2D0
+#define check_all_listed_frog_states_fe_fd_or_10                  func_L06_002EB2D0
 #define destroy_frog_child_moby                                   func_L06_002EB360
 #define process_gadgebot_interactions                             func_L06_002F4720
 #define handle_gadgebot_hit_knockback                             func_L06_002F4A70

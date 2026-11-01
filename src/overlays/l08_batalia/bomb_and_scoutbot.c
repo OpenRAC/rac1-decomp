@@ -2866,7 +2866,7 @@ extern int batalia_1b3_projectile_blue SDATA(D_L08_00161ACC);
 extern float batalia_1b3_projectile_scale SDATA(D_L08_00161AD0);
 
 /* Adapted from Lombyte's project (the US decompilation): FUN_L08_002de3e0. */
-Moby *spawn_class_1b3_projectile(void *pos, Moby *target, void *velocity, float pitch, float yaw) {
+Moby *spawn_rocket_435_projectile(void *pos, Moby *target, void *velocity, float pitch, float yaw) {
     Moby *moby = CreateMoby_mb(0x1B3);
     struct Projectile1B3Vars *data;
     float *reference;

@@ -3664,7 +3664,7 @@ extern float g_frame_time MACRO_ADDR;
 extern void Spline_AdvanceByDistance(int a, char *pos, char *b, char *c, int d, float f);
 
 // Calls func_L00_0025E860 with a table entry, the moby position and two data fields, scaled.
-void Moby211_AdvanceOnPath(char *moby) {
+void plasmabot_211_advance_on_path(char *moby) {
     struct L14RacerVars *data = (struct L14RacerVars *)((Moby *)moby)->pvars;
     int idx = data->path;
     Spline_AdvanceByDistance(*(int *)((idx << 5) + race_paths + 0x10), moby + 0x10, (char *)&data->seg,

@@ -3185,7 +3185,7 @@ void scatter_moby_from_hazards(Moby *m) {
     if (random_integer_below(10))
         return;
     if (*(int *)&m->pclass == 0 || *(short *)(*(int *)&m->pclass + 0x46) != 0x13) {
-        if (!is_moby_class_e2_cc_de_3ee_d6_e1_d5_or_df(m))
+        if (!is_bomb_glove_ammo_cc_de_3ee_d6_e1_d5_or_df(m))
             return;
     }
     if (!(FastVecDist(&m->pos, pos = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) < 30.0f))

@@ -21,7 +21,7 @@
 #define update_batalia_bolt_pickup                                   func_L08_002E4BE8
 #define set_batalia_bolt_pickup_surface_rotation                     func_L08_002E6130
 #define compute_batalia_bolt_pickup_surface_pose                     func_L08_002E6208
-#define Moby458Update                                                func_L08_002E95E8
+#define rocket_458_update                                            func_L08_002E95E8
 #define spawn_shrub_parts                                            func_L08_002E9B60
 #define spawn_joint_linked_moby_parts                                func_L08_002EA930
 #define update_path_following_moby_swarm                             func_L08_002EAF48
@@ -61,7 +61,7 @@
 #define try_set_shuttle_departure_help_message                       func_L08_002DDB68
 #define spawn_bomber_tank_projectile                                 func_L08_002DDC18
 #define update_ballistic_projectile                                  func_L08_002DDD20
-#define spawn_class_1b3_projectile                                   func_L08_002DF758
+#define spawn_rocket_435_projectile                                  func_L08_002DF758
 #define update_path_following_moby                                   func_L08_002DFBC0
 #define spawn_moby_motion_spark                                      func_L08_002E0008
 #define spawn_joint_aligned_moby_part                                func_L08_002E3010
@@ -88,7 +88,7 @@
 #define update_layered_mesh_effect                                   func_L08_002F2A08
 #define update_path_following_moby_with_fade                         func_L08_002F5980
 #define the_plumber_batalia_update                                   func_L08_00307A98
-#define Moby1283SetMode                                              func_L08_00307FF0
+#define the_plumber_batalia_set_mode                                 func_L08_00307FF0
 #define spawn_paratrooper_projectile                                 func_L08_00308650
 #define update_batalia_item_triggers_and_help                        func_L08_00308A00
 #define update_batalia_selected_moby_effects                         func_L08_00309998

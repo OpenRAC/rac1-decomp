@@ -123,7 +123,7 @@ void alien_queen_update(unsigned char *moby) {
         case 6:
             update_alien_queen_orbit_movement_q(moby);
             if (((unsigned char)moby[0x20] == 4 &&
-                 check_all_listed_class_33b_states_fe_fd_or_10_q(*(int *)(data + 0xF0)) != 0) ||
+                 check_all_listed_frog_states_fe_fd_or_10_q(*(int *)(data + 0xF0)) != 0) ||
                 ((unsigned char)moby[0x20] == 6 && count_active_moby_group_members_q(*(int *)(data + 0xF4), -1) == 0)) {
                 moby[0x20] = 8;
                 *(int *)(data + 0x120) = scale_ticks_q(0x4B0);

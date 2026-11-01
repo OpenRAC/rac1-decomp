@@ -2624,7 +2624,7 @@ int is_moby_in_class_range_500_to_540(void *moby) {
 }
 INCLUDE_ASM("asm/overlays", func_L00_0025F420);
 /* True when the moby is one of eight specific classes. */
-int is_moby_class_e2_cc_de_3ee_d6_e1_d5_or_df(void *p) {
+int is_bomb_glove_ammo_cc_de_3ee_d6_e1_d5_or_df(void *p) {
     short v = *(short *)((char *)p + 0xA6);
     if (v == 0xE2 || v == 0xCC || v == 0xDE || v == 0x3EE || v == 0xD6 || v == 0xE1 || v == 0xD5 || v == 0xDF) {
         return 1;

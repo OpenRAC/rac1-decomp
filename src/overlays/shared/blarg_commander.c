@@ -97,7 +97,7 @@ extern char *CreateMoby(int);
 extern void moby_build_matrix(void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_00308670.c, FUN_L12_00308670. */
-char *create_class_55b_moby_from_source(char *a0) {
+char *create_blarg_commander_moby_from_source(char *a0) {
     unsigned char *m = (unsigned char *)CreateMoby(0x55B);
     if (m != 0) {
         char *d = ((char *)((Moby *)m)->pvars);

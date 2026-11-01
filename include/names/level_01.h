@@ -85,7 +85,7 @@
 #define update_scroll_layers_and_queue_draw                         func_L01_002FFF30
 #define door_left_update                                            func_L01_00300140
 #define the_plumber_update                                          func_L01_003004F0
-#define Moby778Update                                               func_L01_00300C38
+#define pipe_778_update                                             func_L01_00300C38
 #define pool_drip                                                   func_L01_003010A8
 #define spawn_point_update                                          func_L01_003015F8
 #define beehive_update                                              func_L01_00303590
@@ -166,7 +166,7 @@
 #define update_sand_mouse_targeted_spawning                         func_L01_002E4920
 #define update_hover_moby_steering                                  func_L01_002E4BA8
 #define process_amoeboid_hits_and_update_targeting                  func_L01_002F0040
-#define find_nearest_class_26f_moby_in_list                         func_L01_002F0850
+#define find_nearest_extermibot_moby_in_list                        func_L01_002F0850
 #define spawn_amoeboid_burst_sparks                                 func_L01_002F0B48
 #define process_amoeboid_suck_cannon_suction                        func_L01_002F0E60
 #define moby_hold_state_if_found                                    func_L01_002F0ED0

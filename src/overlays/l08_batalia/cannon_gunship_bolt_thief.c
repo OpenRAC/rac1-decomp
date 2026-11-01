@@ -475,7 +475,7 @@ extern void CameraScript2_r(int) __asm__("func_L00_002EC0C8");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void divide_vector_xyz_r(void *, void *, float) __asm__("func_L00_001FF328");
 extern void Hero_ResetToPosition_r(void *, void *, int, int) __asm__("func_L00_00217718");
-extern void Moby1283SetMode_r(char *, int) __asm__("func_L08_00307FF0");
+extern void the_plumber_batalia_set_mode_r(char *, int) __asm__("func_L08_00307FF0");
 extern void Hero_OnKilled_r(void) __asm__("func_L00_00211908");
 extern void CameraScript_r(void *, void *, int, int, int) __asm__("func_L00_002EBF50");
 extern void set_camera_position_r(void *) __asm__("func_L00_002EBE88");
@@ -546,7 +546,7 @@ void update_batalia_cannon(Moby *moby) {
             vec_scale_to_length_r(work, &node->rot_row0, 2.5f);
             FastVecAdd_r(work, work, &node->pos);
             Hero_ResetToPosition_r(work, direction, 0, 1);
-            Moby1283SetMode_r((char *)node, 0);
+            the_plumber_batalia_set_mode_r((char *)node, 0);
             return;
         }
         if (visited52[g_current_level_index_r][moby->mission] != 0xFF && (hero52.ship_flags & 1))
@@ -799,7 +799,7 @@ void update_batalia_cannon(Moby *moby) {
                                 vec_scale_to_length_r(direction, &node->rot_row0, 2.5f);
                                 FastVecAdd_r(direction, direction, &node->pos);
                                 Hero_ResetToPosition_r(direction, muzzle, 0, 1);
-                                Moby1283SetMode_r((char *)node, 1);
+                                the_plumber_batalia_set_mode_r((char *)node, 1);
                                 data->visual_angle = 1.5707964f;
                                 return;
                             }
@@ -1350,7 +1350,7 @@ extern void vec_scale_to_length(void *, void *, f32);
 extern void MobySpringTurn_r(struct Moby *, f32, f32 *, f32, f32, f32) __asm__("func_L00_002592B0");
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 extern void SpawnExplosionFx(void *, void *, s32, f32, f32);
-extern struct Moby *spawn_class_1b3_projectile(void *, struct Moby *, void *, f32, f32);
+extern struct Moby *spawn_rocket_435_projectile(void *, struct Moby *, void *, f32, f32);
 extern void process_gunship_part_hits(struct Moby *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l08/gameplay/entities/002deee0.c, FUN_L08_002e24e8. */
@@ -1437,7 +1437,7 @@ void update_gunship(struct Moby *moby) {
             }
             vec_scale_to_length(&velocity, &step,
                                 ((*(f32 *)&gunship_fly_speed) + (*(f32 *)&gunship_fly_speed)) * g_frame_time);
-            shot = spawn_class_1b3_projectile(&muzzle, target, &velocity, pitch, yaw);
+            shot = spawn_rocket_435_projectile(&muzzle, target, &velocity, pitch, yaw);
             shot->scale = shot->pclass->scale / 5.0f;
             target_vars = (SwarmTargetVars *)target->pvars;
             for (slot = 0; slot < 8; slot++) {
@@ -1485,7 +1485,7 @@ void update_gunship(struct Moby *moby) {
             yaw = random_angle_radians();
             vec_scale_to_length(&velocity, &step,
                                 ((*(f32 *)&gunship_fly_speed) + (*(f32 *)&gunship_fly_speed)) * g_frame_time);
-            bolt = spawn_class_1b3_projectile(&muzzle, 0, &velocity, pitch, yaw);
+            bolt = spawn_rocket_435_projectile(&muzzle, 0, &velocity, pitch, yaw);
             if (bolt != 0) {
                 bolt->rot.z = vars->links[4].part->rot.z;
                 bolt->state = 5;
@@ -2784,7 +2784,7 @@ extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern void MobySpringTurn_r2(struct Moby *, f32, f32 *, f32, f32, f32) __asm__("func_L00_002592B0");
 extern void SpawnExplosionFx_r(void *, void *, s32, f32, f32) __asm__("func_L00_00260108");
-extern struct Moby *spawn_class_1b3_projectile_r(void *, struct Moby *, void *, f32, f32) __asm__("func_L08_002DF758");
+extern struct Moby *spawn_rocket_435_projectile_r(void *, struct Moby *, void *, f32, f32) __asm__("func_L08_002DF758");
 typedef struct {
     struct Moby *moby;
     struct Moby *parent;
@@ -2890,7 +2890,7 @@ void shrub_update(struct Moby *moby) {
             }
             vec_scale_to_length_r2(
                 &velocity, &step, ((*(f32 *)&D_L08_00161DB4_EA0A8) + (*(f32 *)&D_L08_00161DB4_EA0A8)) * g_frame_time_r);
-            shot = spawn_class_1b3_projectile_r(&muzzle, target, &velocity, pitch, yaw);
+            shot = spawn_rocket_435_projectile_r(&muzzle, target, &velocity, pitch, yaw);
             shot->scale = shot->pclass->scale / 5.0f;
             target_vars = (SwarmTargetVars_EA0A8 *)target->pvars;
             for (slot = 0; slot < 8; slot++) {
@@ -2938,7 +2938,7 @@ void shrub_update(struct Moby *moby) {
             yaw = random_angle_radians_r();
             vec_scale_to_length_r2(
                 &velocity, &step, ((*(f32 *)&D_L08_00161DB4_EA0A8) + (*(f32 *)&D_L08_00161DB4_EA0A8)) * g_frame_time_r);
-            bolt = spawn_class_1b3_projectile_r(&muzzle, 0, &velocity, pitch, yaw);
+            bolt = spawn_rocket_435_projectile_r(&muzzle, 0, &velocity, pitch, yaw);
             if (bolt != 0) {
                 bolt->rot.z = vars->parts[3].moby->rot.z;
                 bolt->state = 5;

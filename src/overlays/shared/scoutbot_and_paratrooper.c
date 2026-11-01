@@ -826,7 +826,7 @@ extern short homing_projectile_trail_secondary_motion_w_gp;
 extern float batalia_coll_hit_point[4];
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002937a0.c, FUN_L08_002e8210. */
-void Moby458Update(char *moby) {
+void rocket_458_update(char *moby) {
     char *position_ptr = moby + 0x10;
     char *data = ((char *)((Moby *)moby)->pvars);
     float position_copy[4] __attribute__((aligned(16)));

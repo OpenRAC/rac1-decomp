@@ -75,7 +75,7 @@ typedef struct {
     s32 moving;
     u8 pad19C[0xE4];
     u8 unk280[1];
-} Moby52Vars_2C6B30;
+} SeekerVars;
 
 typedef struct {
     u8 pad0[0x74];
@@ -130,7 +130,7 @@ extern void update_seeker_damage_and_target_r(struct Moby *) __asm__("func_L09_0
  * and bursts or is removed in its last states.
  * Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay/entities/002c5990.c, FUN_L09_002c5990. */
 void seeker_update(struct Moby *moby) {
-    Moby52Vars_2C6B30 *vars = (Moby52Vars_2C6B30 *)moby->pvars;
+    SeekerVars *vars = (SeekerVars *)moby->pvars;
     struct Moby *target;
     Vec4 vel;
     s32 mode;
@@ -1446,7 +1446,7 @@ typedef struct {
  * moby towards it, state 2 is the explosion. The slot index `last` is declared in a block opened at its call,
  * and d[0x91] is read at each use: both only decide the order GCSE creates its hoisted registers in (its table
  * has 201 buckets here and hashes by register number), which is the order of the four spill slots 0x64..0x70. */
-void Moby1885Update(char *moby) {
+void spawner_1885_update(char *moby) {
     struct SpawnerVars *d = (struct SpawnerVars *)((Moby *)moby)->pvars;
     float v[4];
     float rot[4];

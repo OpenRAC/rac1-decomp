@@ -20,7 +20,7 @@
 #define turret_update                                               func_L09_00306030
 #define update_class_4ea_projectile                                 func_L09_00309118
 #define barrier_update                                              func_L09_00309688
-#define Moby1885Update                                              func_L09_0030BF88
+#define spawner_1885_update                                         func_L09_0030BF88
 #define spawner_egg_update                                          func_L09_0030C7F0
 #define queue_level09_strip_texture_packets                         func_L09_0021E410
 #define scale_by_one_minus_random_squared                           func_L09_002785C0
@@ -38,7 +38,7 @@
 #define spawn_class_144_moby                                        func_L09_002F10F8
 #define spawn_radially_scattered_moby                               func_L09_002F1198
 #define update_drifting_moby                                        func_L09_002F1390
-#define Moby664Update                                               func_L09_002F9A50
+#define platform_664_update                                         func_L09_002F9A50
 #define handle_refueling_station_damage                             func_L09_00304EE0
 #define handle_linked_moby_damage                                   func_L09_00305378
 #define find_nearby_chain_attachment                                func_L09_00305580
@@ -46,7 +46,7 @@
 #define spawn_class_4ea_projectile                                  func_L09_00308F58
 #define spawn_barrier_replacement                                   func_L09_003095D0
 #define update_floating_ship_piece                                  func_L09_0030A560
-#define Moby1766Update                                              func_L09_0030AFB8
+#define shuttle_1766_update                                         func_L09_0030AFB8
 #define interpolate_rotation_angle                                  func_L09_0030B5E8
 #define process_spawner_hit_record                                  func_L09_0030BD98
 #define refresh_spawner_population_and_find_free_slot               func_L09_0030BEE8

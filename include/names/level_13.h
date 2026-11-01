@@ -24,7 +24,7 @@
 #define update_gemlik_scene_controller                                 func_L13_0030CAE0
 #define update_moby_path_follower                                      func_L13_0030D028
 #define update_moby_motion_and_emit_sparks                             func_L13_0030D880
-#define Moby1805Update                                                 func_L13_0030E280
+#define blarg_ship_1805_update                                         func_L13_0030E280
 #define draw_paged_sky_shells                                          func_L13_0024A0F0
 #define jet_group_state                                                func_L13_00266060
 #define jet_group_flag                                                 func_L13_00266128
@@ -46,8 +46,8 @@
 #define interpolate_value_with_repeated_squaring                       func_L13_002BB2F8
 #define JetFighterUpdateL13                                            func_L13_002BC2D8
 #define update_level_13_homing_rocket                                  func_L13_002C27B0
-#define spawn_class_53_projectile                                      func_L13_002C31B0
-#define update_level_13_class_53_projectile                            func_L13_002C32D0
+#define spawn_mine_83_projectile                                       func_L13_002C31B0
+#define update_level_13_mine_83_projectile                             func_L13_002C32D0
 #define update_hovering_rocket_attacker_common                         func_L13_002C3FB8
 #define process_blarg_space_fighter_damage                             func_L13_002C4A68
 #define steer_blarg_space_fighter                                      func_L13_002C4C10
@@ -78,7 +78,7 @@
 #define predict_hero_ship_projectile_lead_position                     func_L13_002EB768
 #define calculate_hero_aim_angles                                      func_L13_002EB838
 #define fire_starfighter_homing_rocket                                 func_L13_002EB978
-#define fire_class_53_projectile                                       func_L13_002EBAF0
+#define fire_mine_83_projectile                                        func_L13_002EBAF0
 #define draw_starfighter_tractor_beam                                  func_L13_002EBD00
 #define spawn_moby_joint_attachment                                    func_L13_002EE148
 #define spawn_forcefield_contact_effects                               func_L13_002EE590
@@ -89,7 +89,7 @@
 #define create_attached_rocket                                         func_L13_00306D40
 #define launch_attached_rocket                                         func_L13_00306E20
 #define update_attached_rocket                                         func_L13_00306EF0
-#define Moby1261Update                                                 func_L13_00308FA8
+#define poison_vessel_1261_update                                      func_L13_00308FA8
 #define update_blarg_space_commando_damage_targeting_and_ground_motion func_L13_0030A1C8
 #define spawn_point_table_sparks                                       func_L13_0030B080
 #define render_level13_water_grids                                     func_L13_0030B918

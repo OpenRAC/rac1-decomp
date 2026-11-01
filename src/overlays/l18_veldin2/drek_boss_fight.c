@@ -931,7 +931,7 @@ extern float IntToFloat(int);
 extern float FastDiffRots(float, float);
 extern float ProbeGroundHeight(void *, int, float);
 extern float random_angle_radians(void);
-extern void set_class_247_list_data_fields(int idx);
+extern void set_thruster_pack_lock_green_list_data_fields(int idx);
 extern void moby_init_action_mode(void *moby);
 extern void request_thruster_pack_lock_red_wait(unsigned char *arg, int value);
 extern void end_thruster_pack_lock_red_wait(unsigned char *arg);
@@ -940,19 +940,19 @@ extern void start_position_and_rotation_transition(char *moby, void *v0, void *v
 extern void refresh_moby_position_and_activate(unsigned char *arg, void *src, void *position, int active, float speed);
 extern void refresh_ring_effect(char *moby, void *pos, float f);
 extern void spawn_class_270_moby(char *pos, float *vec, int arg, float fa, float fb);
-extern char *find_nearest_class_247_moby_in_list(void *pos, int idx);
-extern void *find_class_247_moby_with_largest_xy_angle_in_list(float *a, float *b, int idx);
+extern char *find_nearest_thruster_pack_lock_green_moby_in_list(void *pos, int idx);
+extern void *find_thruster_pack_lock_green_moby_with_largest_xy_angle_in_list(float *a, float *b, int idx);
 extern char *create_class_274_ring_effect(void *owner, void *vector, float value);
 extern char *create_class_3d7_moby(void *owner, void *vector, int value);
 extern float get_position_and_rotation_transition_progress(void *moby);
 extern int classify_moby_state_two_or_three(void *moby);
 extern int activate_drek_fight_missiles_in_group(char *moby, int idx, float *pos);
-extern int launch_first_idle_group_class_0772_moby(int idx, float *pos, float *dir, float speed);
-extern int count_group_class_0772_mobys_not_in_state_8(int idx);
+extern int launch_first_idle_group_gadgebot_1906_moby(int idx, float *pos, float *dir, float speed);
+extern int count_group_gadgebot_1906_mobys_not_in_state_8(int idx);
 /* Parameter order as retail sets the arguments up (the floats before the last integers); the definition of
    func_L18_002D70E8 in vendor_002A8400.c lists its float first, with the same registers. */
 extern char *create_rocket_moby(float *pos, float *dir, float *target, float a, float b, int frames, int kind);
-extern char *launch_class_238_moby_from_list(int owner, int idx, float *from, float *to, float speed, int frames);
+extern char *launch_mine_568_moby_from_list(int owner, int idx, float *from, float *to, float speed, int frames);
 
 /* Update of the final boss robot (Drek Final Boss Robot): one step of its state machine, then its bob, aim and tint. */
 void drek_final_boss_robot_update(Moby *moby) {
@@ -1031,7 +1031,7 @@ void drek_final_boss_robot_update(Moby *moby) {
             } else if (((BossShared *)&veldin2_cutscene_state)->f30 == 3) {
                 if (scale_ticks(0x3B6) < ((BossShared *)&veldin2_cutscene_state)->f34 &&
                     ((BossShared *)&veldin2_cutscene_state)->f34 < scale_ticks(0x3C0)) {
-                    set_class_247_list_data_fields(d->f200);
+                    set_thruster_pack_lock_green_list_data_fields(d->f200);
                 }
                 if (*(int *)&drek_boss_camera_reset_done == 0) {
                     char *b = veldin2_arena_nodes + d->f294 * 0x80;
@@ -1090,7 +1090,7 @@ void drek_final_boss_robot_update(Moby *moby) {
                     d->f344 = d->f250[1];
                 } else if (FastVecDist(g_hero.motion.pos.f, veldin2_arena_nodes + (d->f250[2] << 7) + 0x30) < 50.0f) {
                     if (*(int *)&drek_boss_camera_reset_done != 0) {
-                        set_class_247_list_data_fields(d->f200);
+                        set_thruster_pack_lock_green_list_data_fields(d->f200);
                         if (Sound_IsPlaying(moby, d->f3B0) != 0) {
                             int i = d->f3B0;
                             if (i != -1) {
@@ -1309,8 +1309,8 @@ void drek_final_boss_robot_update(Moby *moby) {
                         moby->state = 4;
                     } else {
                         moby->state = 0x15;
-                        d->f330 =
-                            find_class_247_moby_with_largest_xy_angle_in_list(d->f3C0, g_hero.motion.pos.f, d->f200);
+                        d->f330 = find_thruster_pack_lock_green_moby_with_largest_xy_angle_in_list(
+                            d->f3C0, g_hero.motion.pos.f, d->f200);
                     }
                     break;
                 }
@@ -1325,7 +1325,7 @@ void drek_final_boss_robot_update(Moby *moby) {
                 *(int *)&drek_boss_intro_started = 1;
                 moby->state = 7;
                 d->f39C = 5;
-                d->f330 = (Moby *)find_nearest_class_247_moby_in_list(g_hero.motion.pos.f, d->f200);
+                d->f330 = (Moby *)find_nearest_thruster_pack_lock_green_moby_in_list(g_hero.motion.pos.f, d->f200);
                 moby->flags |= 0x41;
                 StartCutscene(2);
                 for (i = 0; i < 3; i++) {
@@ -1676,8 +1676,8 @@ void drek_final_boss_robot_update(Moby *moby) {
                     float speed = vec_distance_xy(v2, v1) / (float)scale_ticks(0x3C);
                     float w = random_float_between(18.0f, 20.0f);
 
-                    launch_class_238_moby_from_list((int)moby, d->f29C, v1, v2, speed,
-                                                    truncate_float_to_s32_r(multiply_global_factor(w * 60.0f)));
+                    launch_mine_568_moby_from_list((int)moby, d->f29C, v1, v2, speed,
+                                                   truncate_float_to_s32_r(multiply_global_factor(w * 60.0f)));
                 }
                 d->f354 = scale_ticks(0xF);
             }
@@ -1707,12 +1707,12 @@ void drek_final_boss_robot_update(Moby *moby) {
                     /* v1 is not written in this state; retail passes it all the same. */
                     float speed = vec_distance_xy(v0, v1) / (float)scale_ticks(0x3C);
 
-                    if (launch_first_idle_group_class_0772_moby(d->f210, v0, v0, speed) != 0 && d->f354 == 0) {
+                    if (launch_first_idle_group_gadgebot_1906_moby(d->f210, v0, v0, speed) != 0 && d->f354 == 0) {
                         d->f354 = scale_ticks(0x3C);
                     }
                 }
             }
-            n = count_group_class_0772_mobys_not_in_state_8(d->f210);
+            n = count_group_gadgebot_1906_mobys_not_in_state_8(d->f210);
             if (n >= 11 && scale_ticks(0x3C) > d->f354) {
                 d->f354 = scale_ticks(1000);
             } else if (n < 3 && scale_ticks(0x3C) < d->f354) {
@@ -1904,7 +1904,7 @@ void drek_final_boss_robot_update(Moby *moby) {
                         d->f3AC = 1;
                     }
                 } else if (d->f3AC == 0) {
-                    set_class_247_list_data_fields(d->f200);
+                    set_thruster_pack_lock_green_list_data_fields(d->f200);
                 }
                 if (d->f3AC != 0) {
                     int n = d->f3AC++;
@@ -2281,7 +2281,7 @@ void update_drek_boss_damage_and_phase_transitions(char *moby) {
                 if (((Moby *)moby)->prev_seq != 0) {
                     MobyBlendAnimation(moby, 0, 0, scale_ticks(0x14));
                 }
-                boss_data->f330 = find_class_247_moby_with_largest_xy_angle_in_list(
+                boss_data->f330 = find_thruster_pack_lock_green_moby_with_largest_xy_angle_in_list(
                     (float *)boss_data->f3C0,
                     (float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos), boss_data->f200);
                 *(int *)&boss_data->f390 = 0;
