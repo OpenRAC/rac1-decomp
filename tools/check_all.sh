@@ -36,18 +36,4 @@ python3 tools/check_syntax.py
 python3 tools/ratchets.py --check
 python3 tools/format.py --check "${FORMAT_PATHS[@]}"
 
-python3 - <<'EOF'
-import json, subprocess, sys
-from pathlib import Path
-
-bad = 0
-for path in sorted(Path("progress").rglob("report.json")):
-    old = subprocess.run(["git", "show", f"HEAD:{path}"], capture_output=True, text=True)
-    if old.returncode:
-        continue
-    was = json.loads(old.stdout)["measures"]["fuzzy_match_percent"]
-    now = json.loads(path.read_text())["measures"]["fuzzy_match_percent"]
-    print(f"{path}: {was} -> {now}")
-    bad += now < was
-sys.exit(f"*** match dropped in {bad} report(s)" if bad else 0)
-EOF
+python3 tools/check_regressions.py
