@@ -3,6 +3,8 @@
 #include "include_asm.h"
 #include "hero.h"
 #include "moby.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/trespasser_pad_and_background_ships.h"
 
 /* Skid McMarx (Aridia): dialogue, blink timer and look-at state. Shares the block with McmarxRelocVars below. */
 struct SkidMcMarxVars {
@@ -47,13 +49,12 @@ struct ProjectileVars {
     s32 life; /* 0x10 */
 };
 
-extern void attach_big_head_cheat_manipulator_to_matching_moby(void *);
 extern int DialogRequest_Init(void *, void *);
 extern void initialize_moby_grounding(void *);
 extern char *CreateMoby(int);
 extern int is_point_inside_clip_volume(void *, int);
 extern int Npc_TryStartDialog(void *, void *);
-extern void PlaceMarkerAheadOfMoby(float, void *);
+
 extern float vec_distance_xy(void *, void *);
 extern int scale_ticks(int);
 extern int Help_Request(int a, int b);

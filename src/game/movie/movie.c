@@ -2,6 +2,8 @@
 #include "pad.h"
 #include "callees.h"
 #include "structs.h"
+#include "game/movie/movie.h"
+#include "game/pad.h"
 
 extern int decoder_buffer_address MACRO_ADDR;
 extern int movie_play_step MACRO_ADDR;
@@ -45,13 +47,13 @@ typedef struct MvGlobals {
 extern MvGlobals voice_pool;
 extern void flush_cache(int);
 extern int sce_gs_sync_v(int);
-extern void UpdatePad(void);
+
 extern void videoDecAbort(char *);
 extern int readBufBeginPut(char *, int *);
 extern int read_cd_stream_sectors(int *, int, int, int);
 extern int readBufEndPut(char *, int);
 extern void proceedAudio(void);
-extern void switchThread(void);
+
 extern int readBufBeginGet(char *, int *);
 extern int sce_mpeg_demux_pss_ring_buffer(char *, int, int, char *, int);
 extern int readBufEndGet(char *, int);

@@ -4,6 +4,9 @@
 #include "callees.h"
 #include "include_asm.h"
 #include "hero.h"
+#include "game/draw.h"
+#include "game/initonce.h"
+#include "game/vuchain.h"
 
 typedef struct {
     char pad[0x50];
@@ -2764,12 +2767,11 @@ extern char shrub_class_slot_flags[];
 extern void FastMemSet(void *, int, int);
 extern void register_audio_stream_callback(void);
 extern void calculate_dma_transfer_address(void);
-extern void InitMemSlots(void);
-extern void InitViewContext(void);
+
 extern void UpdateViewContext(void);
-extern void VU1_initChain(void);
+
 extern void register_part_types(void);
-extern void DMAC_VIF1_Enable(void);
+
 extern void init_level_item_inventory(void);
 extern void unlock_planet(int);
 

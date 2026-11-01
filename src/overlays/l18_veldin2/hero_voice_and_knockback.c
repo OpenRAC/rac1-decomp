@@ -4,15 +4,16 @@
 #include "include_asm.h"
 #include "vector.h"
 #include "hero.h"
+#include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/hero_idle_and_animation.h"
 
 extern unsigned char hero_globals_base[];
 extern int g_current_level_index MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
 extern int CollType(void);
 extern float FastAbsF(float);
-extern void exit_hero_vehicle_mode_if_mode_three(void);
+
 extern void HeroL18_SetMoveState(int, int);
-extern void Hero_OnKilled(void);
 
 /* Updates the pickup/aim flags after a state change, and requests a follow-up state when the target is in range. */
 void HeroL18_UpdateStateFlags(void) {

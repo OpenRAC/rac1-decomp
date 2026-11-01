@@ -1,5 +1,6 @@
 #include "common.h"
 #include "structs.h"
+#include "core/00116D30.h"
 
 /*
  * core_text object 0x112380-0x112468. Boundaries are retail's linker fill
@@ -9,8 +10,6 @@
  * back to back. Built with Sony's 2.9-ee (Makefile.sn, EE29_CORE), like
  * libc.a.
  */
-
-extern long strtol(int arg0, int arg1, int arg2);
 
 int libc_atoi(int arg0) {
     return (int)strtol(arg0, 0, 10);

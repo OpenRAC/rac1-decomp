@@ -4,6 +4,10 @@
 #include "include_asm.h"
 #include "hero.h"
 #include "moby.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/point_lights_and_glows.h"
+#include "overlays/shared/water_pool_and_sand_mouse.h"
 
 /* Umbris taxi platform: slides along a path between its two ends when the hero rides it. */
 struct TaxiPlatformVars {
@@ -110,7 +114,7 @@ struct SharkigatorVars {
 
 extern int FastDecTimer(void *);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern int is_hero_on_moby(void *);
+
 extern void HeroEnterMoveState(int, int);
 extern float multiply_global_factor(float);
 extern float vec_distance_xy(void *, void *);
@@ -119,7 +123,7 @@ extern int scale_ticks(int);
 extern void Sound_StopSlot(int);
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound(int, int, int);
-extern void set_hero_idle_state_for_vehicle_mode(void);
+
 extern float IntToFloat(int);
 extern void FastVecSub(void *, void *, void *);
 extern void FastVecScale(void *, void *, float);
@@ -450,7 +454,6 @@ typedef struct MobyData_2F6F20 {
     int f18;
     int f1C;
 } MobyData_2F6F20;
-
 
 typedef struct Anim_2F6F20 {
     char pad0[0x30];
@@ -1382,7 +1385,7 @@ void WaterPlateUpdate(Moby *m) {
         umbris_water_grid_saved_states[d->idx] = umbris_water_grid_override_value;
     }
 }
-extern void render_water_grids(char *, int);
+
 extern char umbris_water_grids[];
 /* Draws Umbris's water grids. */
 void render_level07_water_grids(void) {
@@ -3528,7 +3531,7 @@ void rumble_by_distance(char *moby) {
     *(int *)(state + 0x168) = 0x14;
     *(float *)(state + 0x160) = ((80.0f - distance) / 80.0f) * 0.1f;
 }
-extern void release_point_light_slot(int);
+
 extern int FastTweenColor(int, int, float);
 extern char umbris_lights[];
 
@@ -3596,7 +3599,6 @@ typedef struct EffData_313800 {
     float f150[3];
     float f15C;
 } EffData_313800;
-
 
 typedef struct Packet_313800 {
     float a[4];

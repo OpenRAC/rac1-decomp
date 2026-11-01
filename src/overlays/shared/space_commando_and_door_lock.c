@@ -3,6 +3,7 @@
 #include "include_asm.h"
 #include "hero.h"
 #include "moby.h"
+#include "game/draw.h"
 /* Blarg space commando: takes hits, fires a beam at the hero. */
 struct SpaceCommandoVars {
     u8 pad_00[0x20];
@@ -1021,7 +1022,6 @@ extern int FastTweenColor(int, int, float);
 extern int scale_ticks(int);
 extern int random_integer_below(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern int FontPrintCenterLarge(int a, int b, int c, int d, int e);
 
 #define W(x) (*(int *)&(x))
 
@@ -1462,7 +1462,7 @@ void spawn_timed_projected_sprite_effect(char *src, int a1, int a2, int a3) {
     }
 }
 extern unsigned char screen_globals_base[];
-extern void project_to_screen(float *, void *);
+
 extern void draw_geometry_quad_5188(void *, void *, void *, u64, int);
 extern s32 D_L06_001624A4_FF000 SDATA(D_L06_001624A4);
 extern s32 D_L06_001624A8_FF000 SDATA(D_L06_001624A8);

@@ -8,6 +8,16 @@
 #include "structs.h"
 #include "menu.h"
 #include "memcard.h"
+#include "core/00121750.h"
+#include "core/0012CC90.h"
+#include "game/draw.h"
+#include "game/freeze.h"
+#include "game/memcard.h"
+#include "game/menu.h"
+#include "game/mobyfunc.h"
+#include "game/mobyutil.h"
+#include "game/pause.h"
+#include "game/stream.h"
 
 /*
  * pause.cpp in the original source; text 0x219C08-0x228A58.
@@ -65,7 +75,6 @@ extern void FontPrintLarge(void *a, void *b, void *c, void *d, void *e);
 extern void *msg_string(void);
 
 extern void memcard_MakeWholeSave(char *out);
-extern void request_audio_stream_break(void);
 
 extern struct CameraSystem gCamera_r __asm__("D_00187040");
 extern s32 active_camera_basis_column1_x;
@@ -509,18 +518,14 @@ extern void draw_hud_rect_blended();
 extern void DrawTexturedQuad();
 extern void SetupGifPaging();
 extern void DoGifPaging();
-extern void DrawMobysSetup(void);
-extern void InitMobyClassDists(void);
-extern void StashMobyClassDists(void);
+
 extern void DrawMobyList(s32, s32);
-extern void reset_active_camera_position_and_basis(void);
+
 extern void BuildViewMatrices(void);
 extern void project_graphics_bounds(Vec4 *, Vec4 *, s32 *, s32 *, s32 *, s32 *);
 extern void configure_graphics_render_target_and_projection(s32, s32, s32, f32);
 extern void draw_hud_rect_depth(s32, s32, s32, s32, u64, u32, s32);
-extern void begin_draw_frame(void);
-extern void RestoreMobyClassDists(void);
-extern void DrawMobysCleanUp(void);
+
 extern void draw_menu_flashing_panel();
 
 /* Per-frame menu render: draws the resident and panel-slot mobys, projects each
@@ -1453,8 +1458,7 @@ extern short text_shadow_y;
 extern void VU1_addGSregister_r(s32, long) __asm__("func_00234C98");
 extern void SetupGifPaging(s32);
 extern s32 GetEffectTex(s32);
-extern void Font_EnableColorCodes(void);
-extern void Font_DisableColorCodes(void);
+
 extern s32 measure_text_width_r(char *, s32, u8 *) __asm__("func_001F65B0");
 extern void FontPrint_r(s32, s32, long, char *, s32, s32, u8 *) __asm__("func_001F6668");
 extern char *msg_string_r(s32) __asm__("func_001FE540");
@@ -2818,8 +2822,7 @@ extern void FontPrintWindow_a(void *, long, char *, int, int, unsigned char *) _
 extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
 extern void *msg_string_id(int) __asm__("func_001FE540");
 extern void libc_memset(void *, int, int); /* memset */
-extern void Font_DisableColorCodes(void);
-extern void Font_EnableColorCodes(void);
+
 extern void draw_menu_selection_marker(int x, int y, int flag);
 
 typedef struct {
@@ -3760,7 +3763,7 @@ extern void font_print_window_regular_r(struct TextRegion *, u64, char *, s32) _
 extern char *msg_string_r3(s32) __asm__("func_001FE540");
 extern void draw_hud_rect_blended_r3(s32, s32, s32, s32, u64, s32) __asm__("func_00201640");
 extern void DrawMobyList(s32, s32);
-extern s32 compute_clamped_count_difference(void);
+
 extern s32 count_nonzero_entries_up_to_40(void);
 extern s32 count_nonzero_entries_up_to_10(void);
 extern void *libc_memset_r(void *, s32, u32) __asm__("func_001153FC");
@@ -3995,8 +3998,6 @@ int draw_map_screen_overlay(void) {
     return 8;
 }
 
-extern void Font_DisableColorCodes(void);
-extern void Font_EnableColorCodes(void);
 extern void FontPrintSmall_c(int, int, long, void *, int) __asm__("func_001F6968");
 
 /* DrawMissionsMenu: the menu's text lines (0x4EEE, 0x4EEF only when
@@ -4368,8 +4369,6 @@ int draw_transition_overlay(MenuScreen *arg0) {
                      arg0->data.stream.texture_height, 0x80808080L, transition_overlay_tex0);
     return 0x10;
 }
-
-extern int acquire_menu_stream_buffer(int);
 
 /* Sibling of func_00220DA0 below: the same slot set (0x44/0x48/0x4C/
    0x50/0x54/0x5C) on the same object, seeded here instead of torn down.
@@ -5117,7 +5116,7 @@ int draw_pause_ring(char *arg0) {
 }
 
 extern void Moby_PlaySound(int, int, int);
-extern void mode_freeze_init(int, void *, int);
+
 extern int scale_game_frame_count(int);
 extern void FadeToBlack(int);
 extern float gFade MACRO_ADDR;
@@ -5635,7 +5634,6 @@ int handle_menu_action_buttons(MenuScreen *arg0) {
     return 0;
 }
 
-extern int acquire_menu_stream_buffer(int);
 extern char *current_menu_page NOT_SDA;
 
 /* Enter hook for the prompt screen: clears the page's +0x84 word and takes a stream buffer. */
@@ -5917,7 +5915,7 @@ int draw_selected_menu_item_text(MenuScreen *arg0) {
 extern int mode_freeze_flags_m __asm__("D_0015EFB4") MACRO_ADDR;
 extern int pause_restart_reset_flag MACRO_ADDR;
 extern char restart_confirm_page[];
-extern void mode_freeze_init(int, void *, int);
+
 extern unsigned char gold_bolts_collected_18[];
 extern unsigned char gCheats[] MACRO_ADDR;
 extern unsigned char selector_available[] MACRO_ADDR;
@@ -5926,7 +5924,6 @@ extern void memcard_RestoreGame(int);
 extern void memcard_Save(int, int);
 extern int scale_game_frame_count(int);
 extern unsigned char g_hero[];
-extern void clear_scene_state_buffers(void);
 
 /* Pad handler for the restart option (pad word D_0013CBE4): 0x20 opens
    the confirm popup; 0x40 restarts: the level reload (func_00209CE8)
@@ -6719,10 +6716,10 @@ typedef struct __attribute__((packed)) {
 extern char save_menu_overwrite_confirm_page[];
 extern char save_menu_load_confirm_page[];
 extern short screen_globals_base[];
-extern void load_level_zero_preserving_progress(int);
+
 extern void start_memory_card_save(int, int);
 extern void initialize_global_state_entry(int);
-extern void load_and_initialize_level_chunk(void);
+
 /* Save slot screen tick: when focused, moves the slot cursor and on confirm
    starts the memory card save (or a level load for flag 0x2000). Plays a sound
    when the slot changes. */
@@ -7550,7 +7547,7 @@ void attachment_update_callback(void) {
 extern char item_info_table_a[] __asm__("D_001864D0");
 extern int advance_moby_animation(void *);
 extern void MobyTransformScaledVertex(int, int, void *);
-extern void normalize_vector_triplet(void *);
+
 extern void moby_anim_sphere_lerp(void *);
 extern void noop_callback_s(void *, void *, int, int, int);
 
@@ -7887,8 +7884,6 @@ void update_ammo_preview_transform(struct AmmoPreviewMoby *moby) {
    see it -- a second NOT_SDA extern for the same symbol is a hard
    error. */
 extern unsigned char resident_class_slot_by_id[] NOT_SDA;
-
-extern void pack_render_command_fields(void *, int, int, int, int);
 
 extern void *CreateMoby_c(int) __asm__("func_0020D348");
 
@@ -8399,7 +8394,7 @@ extern int start_audio_stream_read(int, int, int);
 extern void relocateObjectPointers(char *, int);
 extern int advance_preview_animation_queue(void);
 extern void load_preview_resource_bindings(s32, s32);
-extern void blend_moby_animation_ex(void *, int, int, int, int);
+
 extern void MobySetAnimation_q(void *, int, int) __asm__("func_00213D28");
 extern void attachment_update_callback(void);
 
@@ -8775,10 +8770,6 @@ void load_preview_resource_bindings(s32 first_resource, s32 resource_count) {
 
 extern char save_clock_time[] MACRO_ADDR;
 extern char level_map_coverage[];
-extern void sce_cd_read_clock(void *);
-extern void sce_scf_get_local_time_from_rtc(void *);
-extern void copy_level_object_positions(void);
-extern void save_map_coverage(void *);
 
 /* Gathers the game state into save buffer arg0 (object positions, map coverage)
    and stores arg0 and arg1 in the memory card state; starts state 0x13 when idle. */
@@ -8797,9 +8788,6 @@ void prepare_save_game(int arg0, int arg1) {
         b->err = 0x13;
     }
 }
-
-/* func_00209DC0 (memcard.c) takes nothing. */
-extern void load_and_initialize_level_chunk(void);
 
 /* func_00227C78's sibling: runs func_00209DC0, the D_0015EF98 pair and
    func_0020BA00(arg0), then records arg0/arg1 in D_0013D390 (+0xF4,

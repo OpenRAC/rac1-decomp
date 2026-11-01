@@ -2,6 +2,7 @@
 #include "common.h"
 #include "callees.h"
 #include "include_asm.h"
+#include "game/mobyfunc.h"
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
@@ -379,7 +380,6 @@ extern char *environment_samples MACRO_ADDR;
 extern char no_environment_sample_msg[];
 extern float FastVecLength(void *);
 extern void STUB_printf();
-extern void pack_render_command_fields(void *, int, int, int, int);
 
 /* Finds the table entry nearest the object's position (within 8 units) and applies its fields to the object and globals. */
 void apply_nearest_environment_sample(char *o) {

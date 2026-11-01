@@ -3,6 +3,7 @@
 #include "include_asm.h"
 #include "vector.h"
 #include "moby.h"
+#include "game/mobyutil.h"
 
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 extern f32 FastCos(f32);
@@ -46,7 +47,7 @@ extern void MobyTransformScaledVertex(void *, int, void *);
 extern void MobyAnimAdvance(void *);
 extern void moby_build_matrix(void *);
 extern void matrix_copy_rows(void *, void *);
-extern void normalize_vector_triplet(void *);
+
 extern void moby_anim_sphere_lerp(void *);
 
 /* Attach child to a bone of parent: copy its position and basis, and mirror the parent's draw flag. */

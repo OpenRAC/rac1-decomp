@@ -1,12 +1,12 @@
 #include "common.h"
 #include "callees.h"
 #include "structs.h"
+#include "core/001236F0.h"
 
 /*
  * core_text object 0x1236F0-0x125218. Boundaries are retail's linker fill
  * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
  */
-
 
 extern int disable_interrupts(void);
 
@@ -27,7 +27,7 @@ typedef struct {
 } SifRpcClientData;
 
 extern int mc_semaphore;
-extern int sce_mc_sync(int, int *, int *);
+
 extern int wait_semaphore(int);
 extern int sceSifInitRpc(int);
 extern char mc_rpc_client[];

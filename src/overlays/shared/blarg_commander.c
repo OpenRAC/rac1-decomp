@@ -3,6 +3,7 @@
 #include "callees.h"
 #include "include_asm.h"
 #include "moby.h"
+#include "game/draw.h"
 
 /* Blarg commander shot (class 0x55B): thrown by the commander, falls with mine_fall and bursts. */
 struct CommanderShotVars {
@@ -13,7 +14,7 @@ struct CommanderShotVars {
 };
 
 extern void VU1_addGSregister(int, long);
-extern void font_queue_vu_state(void);
+
 extern int FastBSphereCheck(char *, float);
 extern void compute_reflection_env_uvs(int, int, int, int);
 extern void emit_textured_strip_packet(int, int, int, int, int, int);

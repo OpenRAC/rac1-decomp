@@ -1,0 +1,10 @@
+#ifndef GAME_BLOADERS_H
+#define GAME_BLOADERS_H
+
+/* Functions defined in src/game/bloaders.c. */
+
+#include "common.h"
+
+extern void LoadPifAsPSMT8H(void *arg0, void *arg1, int arg2, int arg3);
+
+#endif /* GAME_BLOADERS_H */

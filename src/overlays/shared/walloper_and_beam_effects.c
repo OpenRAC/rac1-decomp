@@ -4,6 +4,8 @@
 #include "vector.h"
 #include "hero.h"
 #include "moby.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/moby_frame_packet.h"
 
 /* Tesla beam: draw state read by the beam and arc effects. */
 struct BeamArcVars {
@@ -931,7 +933,7 @@ char *spawn_linked_moby_from_basis(char *src) {
 extern char hero_globals_base[];
 extern void DeleteMoby(void *);
 extern int scale_ticks(int);
-extern void offset_moby_class_point_pairs(unsigned char *, int, int);
+
 extern float random_float_between(float, float);
 extern float normalize_angle(float);
 extern float FastAddRots(float, float);
@@ -993,7 +995,7 @@ extern float MobyGetFrameValue(void *);
 extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
 extern float IntToFloat(int);
 extern void MobyBlendAnimation(void *, int, int, int);
-extern void random_spherical_offset(void *, float, float);
+
 extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
 extern void AddDrawCallback(void *, void *);
 extern void draw_walloper_arc_and_quad_effects(int);

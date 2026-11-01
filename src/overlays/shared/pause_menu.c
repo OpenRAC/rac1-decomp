@@ -6,6 +6,16 @@
 #include "vector.h"
 #include "menu.h"
 #include "hero.h"
+#include "core/989snd.h"
+#include "game/draw.h"
+#include "game/freeze.h"
+#include "game/mobyfunc.h"
+#include "game/music.h"
+#include "game/pause.h"
+#include "game/vuchain.h"
+#include "overlays/shared/camera_switch_and_update.h"
+#include "overlays/shared/cutscene_and_movie_playback.h"
+#include "overlays/shared/weapon_hud_and_counters.h"
 
 typedef unsigned int Q_277208 __attribute__((mode(TI), aligned(16)));
 
@@ -117,12 +127,12 @@ extern char player_camera[];
 extern void update_mission_list(void);
 extern void FastVecScale(void *, void *, float);
 extern void UpdateViewContext(void);
-extern void reset_active_camera_position_and_basis(void);
+
 extern void BuildViewMatrices(void);
 extern void VU1_syncChain(int);
 extern int sce_gs_sync_v(int);
 extern void initialize_menu_stream_buffers(int);
-extern void VU1_initChain(void);
+
 extern void initialize_render_archive_transfer(void);
 extern void apply_group_entry_adjustment(int);
 extern void decompress_and_relocate_selected_groups(int);
@@ -333,7 +343,7 @@ extern MobyClass *moby_class_headers[] NOT_SDA;
 extern unsigned char texture_group_header[];
 extern int coll_hit_result[];
 extern void VU1_syncChain(int);
-extern void VU1_initChain(void);
+
 extern void Hud_SendResidentBank(int, int, int);
 extern void apply_group_entry_adjustment(int);
 extern struct HEnt *delete_moby(struct HEnt *);
@@ -341,10 +351,6 @@ extern int show_health_hud(void);
 extern int scale_ticks(int);
 extern int hud_keep_visible(int, int);
 extern int queue_animation_update(int, int, void *, void *, void *, void *, int);
-extern void VU1_sendChain(void);
-extern void initialize_bolt_counter_hud(void);
-extern void update_bolt_counter_hud_animation_and_visibility(void);
-extern void draw_bolt_counter_hud_panel(void);
 
 /* PageMenuClose: closes the pause menu. */
 void close_pause_menu(void) {
@@ -550,13 +556,11 @@ extern void PlayMovieEntryIfIdle(int);
 extern void queue_movie_with_game_language(int);
 extern void queue_language_zero_movie(int);
 extern void StartCutscene(int);
-extern void start_slideshow(void);
-extern void snd_ContinueAllSoundsInGroup(int);
-extern void music_Unpause(void);
+
 extern int snd_FlushSoundCommands(void);
 extern int sound_update(void); /* sound update: ends in `return 0`, so it returns a value */
 extern void initialize_pause_menu(void);
-extern void mode_freeze_init(int, void *, int);
+
 extern void process_unlock_code_input(void);
 extern void Moby_PlaySound(int, int, void *);
 extern void MobySetAnimation(void *, int, int);
@@ -771,18 +775,15 @@ extern void append_draw_buffer_upload_packets(int a, int b, int n);
 extern void ResetGsRegisters(void);
 extern void emit_rgba_draw_packet(int, int, int, int);
 extern void VU1_addGSregister(int, long);
-extern void DrawMobysSetup(void);
-extern void InitMobyClassDists(void);
-extern void StashMobyClassDists(void);
+
 extern void DrawMobyList(int, int);
 extern void project_graphics_bounds(void *, void *, int *, int *, int *, int *);
 extern void draw_hud_rect_blended(int, int, int, int, long, long);
 extern void configure_graphics_render_target_and_projection(int a, int b, int flag, float f);
 extern void draw_hud_rect_depth(int arg0, int arg1, int arg2, int arg3, long arg4, int arg5, int arg6);
-extern void begin_draw_frame(void);
+
 extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
-extern void RestoreMobyClassDists(void);
-extern void DrawMobysCleanUp(void);
+
 extern void VU1_syncChain(int);
 extern void PatchMobyGifs(void);
 extern void SetupGifPaging(int);
@@ -1258,7 +1259,7 @@ void process_unlock_code_input(void) {
     }
 }
 extern void *create_menu_preview_moby_a(int) __asm__("func_00226720");
-extern int acquire_menu_stream_buffer(int);
+
 extern void Profile_Mark(void *);
 extern char player_camera[];
 
@@ -1485,7 +1486,7 @@ extern void raise_kernel_trap(void);
 extern void enter_hero_vehicle_mode(int, int, char *);
 extern void moby_build_matrix(void *);
 extern void euler_rotation_basis(void *, void *);
-extern void init_camera_system(void);
+
 extern void register_audio_stream_callback(void);
 
 /* loads the saved pause-menu state block into the game globals */

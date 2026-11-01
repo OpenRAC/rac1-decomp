@@ -3,10 +3,11 @@
 #include "callees.h"
 #include "include_asm.h"
 #include "moby.h"
+#include "core/00122818.h"
+#include "core/00122AD8.h"
 
-extern void sceGsSetDefStoreImage(void *, int, int, int, int, int, int, int);
 extern void flush_cache(int);
-extern void sceGsExecStoreImage(void *, int);
+
 extern void wait_for_graphics_pipeline_idle(int, int);
 
 // Copies the frame buffer out in 0x4000-sized strips.
@@ -126,7 +127,6 @@ typedef struct WalkSeqClass {
     char pad00[0x48];
     char *seqs[1]; /* 0x48 */
 } WalkSeqClass;
-
 
 typedef struct WalkAnim {
     int id; /* 0x00 */

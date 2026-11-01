@@ -6,6 +6,12 @@
 #include "include_asm.h"
 #include "hero.h"
 #include "moby.h"
+#include "overlays/l13_gemlik/qwark_starfighter_and_forcefield.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/homing_missile_and_water_sheet.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/rocket_and_path_camera.h"
+#include "overlays/shared/ship_pickup_and_rocket.h"
 
 /* Class 0x53 shot: flies along velocity until the timer ends. */
 typedef struct ProjectileVars_2C32D0 {
@@ -298,7 +304,6 @@ void update_level_13_homing_rocket(Moby *m) {
 }
 extern int scale_ticks(int);
 extern void MobyBlendAnimation(void *, int, int, int);
-extern void copy_hero_moby_field_38(void *);
 
 /* Spawns a moby of class 0x53 at a position, with its data block filled in. */
 unsigned char *spawn_class_53_projectile(char *owner, char *pos, char *vec) {
@@ -352,7 +357,6 @@ typedef struct {
     char *f18;
 } G_2C32D0;
 extern char gemlik_coll_hit_result_r[] __asm__("D_L13_001741C0");
-
 
 typedef struct {
     u8 pad_00[0x18];
@@ -1336,10 +1340,10 @@ extern void FastVecCross(void *, void *, void *);
 extern float FastSin(float);
 extern float FastCos(float);
 extern void add_random_offset_to_vector_xyz(float *v, float s);
-extern char *spawn_class_3f9_moby(int owner, float *dir, float *pos, float size, float len, float z);
+
 extern void Sound_StopSlot(int);
 extern int func_001160D8(void);
-extern unsigned char *spawn_ship_pickup(char *position, int moby_class);
+
 extern char blarg_space_fighter_no_path_format[];
 extern char *gemlik_moby_array_start MACRO_ADDR;
 extern float optional_glow_suppression_level MACRO_ADDR;
@@ -2986,7 +2990,7 @@ extern int gemlik_frame_count MACRO_ADDR;
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern int rand_range(int, int);
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
-extern void PartType04Spawn(void *, void *, int, int, int, int, int, int);
+
 extern int random_integer_below(int);
 typedef int u128 __attribute__((mode(TI)));
 
@@ -3019,7 +3023,7 @@ void emit_randomized_moby_joint_effects(Moby *moby) {
         }
     }
 }
-extern char *spawn_moby_joint_attachment(char *, int, int);
+
 extern int gemlik_attachment_joint_by_command[];
 
 /* The attachment record a moby's data pointer leads to: the joint children, the selected child and the pose follower. */
@@ -3281,7 +3285,7 @@ extern void SetDeathBits_r2(struct Moby *, int, int) __asm__("func_L00_002584A8"
 extern void RerollEffectCounter(void *, short *);
 extern char *gemlik_moby_array_start MACRO_ADDR;
 int queue_starfighter_voice_line(void *unused, unsigned char *p, int base, int n);
-extern void activate_descriptor(int);
+
 extern void Hud_SetBarValueById(int, int);
 extern char *gemlik_scene_points MACRO_ADDR;
 

@@ -2,13 +2,14 @@
 #include "callees.h"
 #include "records.h"
 #include "structs.h"
+#include "game/draw.h"
+#include "game/vuchain.h"
 
 /*
  * tfragfunc.cpp in the original source; text 0x234380-0x2347F0.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
-
 
 extern int draw_config[];
 
@@ -90,7 +91,6 @@ extern int g_gs_texture_allocation_cursor MACRO_ADDR;
 extern char str_tfrag_texture_overflow[];
 extern void ComputeTfragTextureUsage(void);
 extern int build_tfrag_texture_dma(int);
-extern void VU1_texFlush(void);
 
 /* DmaTfragTextures: the tfrag twin of DmaShrubTextures (func_00229C08),
    which also warns "tfrag texture overflow" past 0x400000 bytes and keeps
@@ -174,8 +174,7 @@ extern int g_gs_texture_allocation_start MACRO_ADDR;
 extern char str_tfrag_texs[];
 extern char str_tfrag_draw[];
 extern char tfrag_dma_block[];
-extern void ProfileMarker_Begin(void *, int); /* empty profiling marker */
-extern void ProfileMarker_End(void *, int); /* empty profiling marker */
+
 extern void set_identity_matrix(void *);
 extern void write_vif_unpack_packet(int, void *, int);
 extern void TfragProc(void);

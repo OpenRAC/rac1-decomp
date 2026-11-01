@@ -5,6 +5,10 @@
 #include "pad.h"
 #include "hero.h"
 #include "moby.h"
+#include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/point_lights_and_glows.h"
 
 /* Crate: falls, stacks on other crates and rides moving platforms. */
 struct CrateVars {
@@ -1240,9 +1244,8 @@ extern int spawn_decoy(void *, void *, void *);
 extern void HeroEnterMoveState(int, int);
 extern int fast_dec_timer(int *);
 extern int scale_ticks(int);
-extern int get_ammo(int);
+
 extern int allocate_hero_voice_for_entry(int, int);
-extern int use_ammo(int, int);
 
 extern void release_moby_with_collision_check(float *, char *, void *);
 extern short decoy_list[];
@@ -1832,7 +1835,6 @@ void helipack_update(Moby *a) {
 }
 extern char *CreateMoby(int);
 extern void moby_build_matrix(void *);
-extern void copy_hero_moby_field_38(void *);
 
 /* spawn a moby of type 0x27F and copy a spawn record into its data */
 char *mine_camera_blast(char *a, char *b, int c, char *d) {
@@ -1897,7 +1899,7 @@ extern char *moby_array_start MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
 extern unsigned char level_point_lights[];
 extern float IntToFloat(int);
-extern void release_point_light_slot(int);
+
 extern float random_float_between(float, float);
 extern void FastVecScale(void *, void *, float);
 extern int FastDecTimer(void *);
@@ -2304,7 +2306,7 @@ extern float SteerAngleWithVelocity_r(void *, float, void *, float, float, float
 extern float move_horny_toad_toward_position(unsigned char *m, float *t, float vel);
 extern int rand_range(int, int);
 extern float random_float_between(float, float);
-extern void update_object_wander_movement(char *moby, char *d, float a, float b);
+
 extern float FastDiffRots(float, float);
 extern int IsFrameWithinWindow(void *, float);
 extern void collect_mobies_in_sphere_at_moby_point(void *, float, float, float, int, int, int, int, int);

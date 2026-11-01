@@ -1,6 +1,8 @@
 #include "common.h"
 #include "callees.h"
 #include "structs.h"
+#include "core/00125630.h"
+#include "core/0012AC80.h"
 
 /*
  * core_text object 0x12AC80-0x12CC70. Boundaries are retail's linker fill
@@ -14,7 +16,6 @@
  * 2.9-ee's type-based alias analysis.
  */
 
-
 extern int disable_interrupts(void);
 extern void enable_interrupts(void);
 
@@ -25,9 +26,6 @@ typedef struct {
     char *unk_0C;
     char unk_10[0x320];
 } Ent330;
-
-extern void dispatch_mpeg_cb_nodata(int);
-extern void wait_ipu_idle(void *);
 
 extern void _Error_a(void *, void *) __asm__("func_0012C468");
 
@@ -505,7 +503,6 @@ void sce_mpeg_init(void) {
     sce_ipu_init();
 }
 
-extern void _Error(void *, void *);
 /* memset returns its pointer: the unused return moves the first temporary
    after the call from $v0 to $v1. */
 extern void *libc_memset_p(void *, int, unsigned int) __asm__("func_001153FC");
@@ -513,7 +510,7 @@ extern char mpeg_create_work_area_too_small_msg[];
 extern void mpeg_work_area_init(void *, int, int);
 extern unsigned int reserve_aligned_buffer_space(void *, char *, unsigned int, unsigned int);
 extern void mpeg_clear_once(void *);
-extern void sce_mpeg_reset(void *);
+
 extern int sce_mpeg_clear_ref_buff(void *);
 extern void mpeg_work_area_set_mark(void *);
 extern void mpeg_stop_ipu_dma(void);
@@ -798,7 +795,6 @@ void mpeg_work_area_reset_to_mark(void *arg0) {
     *(int *)(p + 0x8) = *(int *)(p + 0xC);
 }
 
-extern void _Error(void *, void *);
 extern char mpeg_work_area_size_too_small_msg[];
 
 /* Bump allocator out of a region {base, size, used}: round `used` up to
@@ -1236,14 +1232,12 @@ int mpeg_set_frame_size(void *arg0, int arg1, int arg2) {
     return 1;
 }
 
-extern int _nextBit(void *, int);
-extern void _Error(void *, void *);
 extern char mpeg_vertical_size_too_large_msg[];
 extern void send_ipu_command(void *, unsigned int);
 extern void mpeg_set_default_qm(void *, int, int);
 extern char mpeg_default_intra_qm[];
 extern char mpeg_default_non_intra_qm[];
-extern void _extensionAndUserData(void *);
+
 extern void mpeg_init_seq(void *);
 
 /*
@@ -1428,7 +1422,6 @@ void mpeg_set_default_qm(void *arg, int cmd, int addr) {
     dispatch_mpeg_callback(*(void **)(mp + 0x858), cb);
 }
 
-extern void _Error(void *, void *);
 extern char mpeg_chroma_format_not_420_msg[];
 extern char mpeg_unsupported_profile_level_msg[];
 

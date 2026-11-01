@@ -5,6 +5,11 @@
 #include "hero.h"
 #include "moby.h"
 #include "vector.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/fast_vector_math.h"
+#include "overlays/shared/mine_bomb_and_debris.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/nanotech_ball_and_suck_cannon.h"
 
 /* Glow particle (class 0x70): spinning shard that shrinks and fades out. */
 struct GlowParticleVars {
@@ -196,7 +201,7 @@ extern void clear_u64_value(float *);
 extern char *spawn_burst_moby(void *, float);
 extern float random_angle_radians(void);
 extern int rand_range(int, int);
-extern void PartType35Spawn(void *, void *, int, int);
+
 extern s32 is_moby_in_class_range_500_to_540(s32);
 extern float ProbeGroundHeight(void *, int, float);
 extern void FastVecSub(void *, void *, void *);
@@ -205,7 +210,7 @@ extern void vec_scale_to_length(void *, void *, float);
 extern float FastVecDot(void *, void *);
 extern f32 FastAbsF(f32);
 extern float fast_atan2(float, float);
-extern float step_rotation_toward_target(float, float, float);
+
 extern int RotateWithMoby(void *, void *, void *, void *, void *, void *);
 extern void Sound_StopSlot(int);
 extern void MobyBlendAnimation(void *, int, int, int);
@@ -226,7 +231,7 @@ extern void moby_index_list_remove(void *, void *);
 extern void DeleteMoby(void *);
 extern float FastAddRots(float, float);
 extern void SendRadialMessageToMobys(void *, void *, void *, int, int, int, int, int, float, float, float);
-extern float probe_ground_height_flag20(void *);
+
 extern void spawn_gravity_floor_burst_particle(void *, void *, int, float, float, float, int, int, int);
 extern int DefaultVtbl_DeleteMoby(int, int, float);
 extern unsigned swap_packed_color_channels(unsigned c, int mask);
@@ -1210,7 +1215,6 @@ typedef struct BombHeroState {
     s32 control_mode; /* 0x08 (hero 0x208C) */
 } BombHeroState;
 
-
 /* Launch a bomb with the given velocity, adding the hero's or target's motion, and aim it. */
 void launch_bomb(float *pos, unsigned char *moby, float *velocity) {
     BombMoby *m = (BombMoby *)moby;
@@ -1548,15 +1552,12 @@ extern int predict_throw_landing(void *, void *, int);
 extern void rand_vec(float *, float, float);
 extern int FastTweenColor(int, int, float);
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
-extern char *SpawnFallingSpark(char *, char *, int, int, int);
+
 extern void clamp_vec_length(void *, void *, float);
 extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
-extern char *spawn_randomly_rotated_colored_moby(void *, void *, void *, float, int, unsigned char, unsigned char,
-                                                 unsigned char, int);
-extern void swap_color_channel_words(int *, int *, int *, int);
+
 extern int Sound_PlayClassSound(int i, int a1, int v, int k);
 extern float normalize_angle(float);
-extern float interpolate_scalar_linear(float, float, float);
 
 /* Update of moby class 121, a thrown bomb: it flies and spins, bounces once on the ground, explodes on a hit or when its timer runs out, then its blast ring grows for 15 frames. */
 void bomb_update(M_2aedd0 *m) {
@@ -2059,7 +2060,6 @@ typedef struct {
     float x1c;
 } W_2af5b8;
 extern C_2af5b8 debris_spark_colors;
-extern void PartType04Spawn(void *, void *, int, int, int, int, int, int);
 
 // Per-frame update of a falling spark moby: emits a burst particle, moves, fades and dies when out of bounds. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002aa670.c, FUN_L00_002af5b8.
 void debris_update(unsigned char *m) {

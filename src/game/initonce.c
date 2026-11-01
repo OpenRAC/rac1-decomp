@@ -2,6 +2,12 @@
 #include "callees.h"
 #include "records.h"
 #include "structs.h"
+#include "core/001207B8.h"
+#include "core/00121750.h"
+#include "core/00123168.h"
+#include "core/permcb.h"
+#include "game/draw.h"
+#include "game/vuchain.h"
 
 /*
  * initonce.cpp in the original source; text 0x201E10-0x202260.
@@ -9,10 +15,8 @@
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-
 extern void FastMemSet();
 
-extern void InitViewContext(void);
 extern void UpdateViewContext(void);
 
 typedef struct {
@@ -53,9 +57,6 @@ void InitMemSlots(void) {
     level_resource_buffers[10] = 0x7200000;
 }
 
-/* Externs this function needs that initonce.c does not already declare. */
-extern void reset_vif1_gif(void);
-extern int sceDmaReset(int);
 extern void sce_cd_init(int);
 extern void sce_cd_disk_ready(int);
 extern int sce_sif_reboot_iop(void *);
@@ -71,7 +72,7 @@ extern int sce_fs_reset(void);
 extern int wad_GetSectors_FiiPv(int lba, int sectors, void *buf);
 extern void flush_cache(int);
 extern void memcard_get_name(void *arg0);
-extern void sceGsResetGraph(int, int, int, int);
+
 extern void InitDma(void);
 extern void SetPalMode(void);
 extern void VU0_loadMicroProgram(void *);
@@ -79,10 +80,10 @@ extern int load_disc_sectors_into_global_buffer(void);
 extern void fast_decompress(void *, void *);
 extern int LoadIRXModule(void *arg0, void *arg1);
 extern void init_pads(void);
-extern void vsync_callback(void); /* vsync_callback(int) */
+
 extern int sceGsSyncVCallback(void *arg0);
 extern void memcard_Init(void);
-extern void VU1_initChain(void);
+
 extern void initialize_gameplay_sound_system(void);
 extern int sceGsSetDefLoadImage(void *, short, short, short, short, short, short, short);
 extern int sceGsExecLoadImage(void *src, void *dst);

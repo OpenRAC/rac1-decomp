@@ -2,13 +2,14 @@
 #include "callees.h"
 #include "records.h"
 #include "structs.h"
+#include "core/00121D18.h"
+#include "core/00122200.h"
 
 /*
  * framebuf.cpp in the original source; text 0x1FAA28-0x1FBC80.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
-
 
 extern void append_gif_transfer_packet(void);
 
@@ -95,8 +96,6 @@ extern char fs_aa_draw_packet[];
 extern char fs_aa_transfer_packet[];
 extern char fs_aa_resample_packet[];
 extern char fs_aa_clear_packet[];
-extern void sceGsDefDispEnv(void *, short, short, short, short, short);
-extern int sce_gs_set_def_draw_env(void *, short, short, short, short, short);
 
 #define FA ((FsAa_FAB40 *)D_0015EFB8)
 
@@ -329,8 +328,6 @@ typedef struct {
 } FrameCfg;
 extern FrameCfg fs_aa_buffer_f __asm__("D_00151880");
 extern long capture_texture_tex0 MACRO_ADDR;
-/* sceGsSetDefDrawEnv */
-extern int sce_gs_set_def_draw_env(void *, short, short, short, short, short);
 
 typedef struct {
     unsigned long FBP : 9;

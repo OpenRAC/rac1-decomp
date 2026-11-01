@@ -2,13 +2,14 @@
 #include "callees.h"
 #include "records.h"
 #include "structs.h"
+#include "game/draw.h"
+#include "game/vuchain.h"
 
 /*
  * shrubfunc.cpp in the original source; text 0x229C08-0x229F00.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
-
 
 extern int draw_config[];
 
@@ -31,7 +32,6 @@ extern int max_shrub_texture_dma_size MACRO_ADDR;
 extern int g_gs_texture_allocation_cursor MACRO_ADDR;
 extern char str_shrub_texture_overflow[];
 extern int BuildShrubTextureDma(int);
-extern void VU1_texFlush(void);
 
 /* DmaShrubTextures: DmaMobyTextures' splice around the shrub texture
    upload, which also warns past 0x400000 bytes and keeps the largest
@@ -104,8 +104,7 @@ extern int shrub_draw_enabled;
 extern char str_shrub_texs[];
 extern char str_shrub_draw[];
 extern char shrub_scratchpad_copy[];
-extern void ProfileMarker_Begin(void *, int); /* empty profiling marker */
-extern void ProfileMarker_End(void *, int); /* empty profiling marker */
+
 extern void ShrubProc(void);
 extern void DmaShrubTextures(void);
 

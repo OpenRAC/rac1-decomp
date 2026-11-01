@@ -5,6 +5,8 @@
 #include "include_asm.h"
 #include "hero.h"
 #include "moby.h"
+#include "game/draw.h"
+#include "overlays/l06_blarg/hangar_door_and_gas_vents.h"
 
 /* Hangar door: swings to a target angle, drives seven linked door pieces. */
 struct HangarDoorVars {
@@ -1391,7 +1393,7 @@ extern void set_scale_matrix(void *, float);
 extern void sce_vu0_mul_matrix(void *, void *, void *);
 extern int GetEffectTex(int);
 extern void VU1_addGSregister(int, long);
-extern void font_queue_vu_state(void);
+
 extern unsigned int FastTweenColor_r(unsigned int, unsigned int, float) __asm__("func_001FA8A8");
 extern void blarg_draw_strand_strip(int *, float *);
 extern short beam_barrier_draw_scale;
@@ -2064,7 +2066,6 @@ typedef struct {
     struct Moby *owner; /* 0x20 */
 } Target_2FA618;
 
-
 typedef struct BlargVars_2FA618 {
     char pad00[0x20];
     float health; /* 0x20 */
@@ -2096,7 +2097,6 @@ typedef struct BlargVars_2FA618 {
     float f1C8; /* 0x1C8 */
     int f1CC; /* 0x1CC */
 } BlargVars_2FA618;
-
 
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
 extern float multiply_global_factor_r(float) __asm__("func_001F9878");
@@ -2938,7 +2938,6 @@ void update_alien_queen_hit_response_and_recovery(void *moby_) {
         data->target = *(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby;
 }
 extern float random_float_between(float, float);
-extern int activate_state_15_moby_at_position(void *, void *);
 
 /* raise each listed moby's position z by a fixed amount and notify it */
 void activate_listed_state_15_mobys_at_raised_positions(char *moby) {

@@ -2,6 +2,7 @@
 #include "common.h"
 #include "callees.h"
 #include "include_asm.h"
+#include "game/mobyutil.h"
 
 typedef unsigned int Q __attribute__((mode(TI), aligned(16)));
 extern float FastCos(float);
@@ -9,7 +10,6 @@ extern float FastSin(float);
 extern void matrix4_scale(void *, void *, float);
 extern void matrix4_add(void *, void *, void *);
 extern void set_identity_matrix(void *);
-extern void matrix_to_euler(void *, void *);
 
 typedef unsigned int Q_50B88 __attribute__((mode(TI), aligned(16)));
 extern void sce_vu0_mul_matrix(void *, void *, void *);

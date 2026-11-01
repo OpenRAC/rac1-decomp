@@ -3,13 +3,14 @@
 #include "callees.h"
 #include "records.h"
 #include "structs.h"
+#include "game/stash.h"
+#include "game/tfragfunc.h"
 
 /*
  * loaders.cpp in the original source; text 0x202AA8-0x205520.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
-
 
 extern void FastMemCopy(void *, void *, int);
 
@@ -378,7 +379,7 @@ extern HudArena hud_state_arena __asm__("D_0019A4E8");
 
 extern char *Hud_HeapAlloc_d(int, int, char *, int) __asm__("func_001FFAB8");
 extern void LoadCompressedHudBank(int idx, int size);
-extern int Stash_SendData(int arg0, int arg1, int arg2, int arg3);
+
 extern void Hud_SendResidentBank(int, void *, int);
 extern void flush_cache(int);
 extern void LinkHudBank(int bank, int addr);
@@ -1415,7 +1416,6 @@ typedef struct {
 extern int tfrag_render_record_count MACRO_ADDR;
 extern float tfrag_render_ranges[3];
 extern char *tfrag_render_records MACRO_ADDR;
-extern void SetTfragDists(void);
 
 /* Sets up the tfrag render records: stores their count and LOD distances from hdr, relocates each
    record, and writes the GS texture words of every entry from the texture table tbl. */

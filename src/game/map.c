@@ -2,13 +2,13 @@
 #include "callees.h"
 #include "records.h"
 #include "structs.h"
+#include "game/map.h"
 
 /*
  * map.cpp in the original source; text 0x205520-0x2071A8.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
-
 
 extern void FastMemCopy(void *, void *, int);
 
@@ -1000,8 +1000,6 @@ void draw_map_overlay(void) {
         do_gif_paging();
     }
 }
-
-extern void decode_map_rle_row(unsigned char *dst, int row, unsigned char *src, short *offs);
 
 /* Builds the map's 1-bit coverage mask: each of the 256 rows is decoded
    into the scratchpad (func_00207090), then every 4-bit pixel that is

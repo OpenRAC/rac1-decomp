@@ -5,6 +5,11 @@
 #include "vector.h"
 #include "moby.h"
 #include "hero.h"
+#include "game/draw.h"
+#include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/radial_particle_burst.h"
+#include "overlays/shared/rocket_and_path_camera.h"
 
 /* Quartu helicopter: hit response, knockback and recoil. */
 struct HelicopterVars {
@@ -1986,7 +1991,7 @@ extern int IsFrameWithinWindow(char *, float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern char *create_rocket_v(void *vel, float scale, void *pos, int a, int b, int c) __asm__("func_L10_002CD578");
 extern void add_vectors(void *, void *, void *);
-extern void emit_radial_particle_burst(void *, void *, int);
+
 extern float compute_ultramech_flocking_steering_point(void *, void *, float);
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
 extern int MoveKeepingOverGround(void *, void *, void *, int, float, float, float, float);
@@ -1999,7 +2004,7 @@ extern void Profile_Mark(void *, void *);
 extern int mine_fall(void *, void *);
 extern float jump_speed_4318(void *a, void *b, void *out, float speed, float g);
 extern void *SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
-extern void spawn_moby_break_fragments(void *, int, int, int, int, int, int);
+
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound(int, int, int);
 extern float random_float_between(float, float);
@@ -2935,7 +2940,7 @@ extern void VU1_addGSregister(int, long);
 extern void get_moby_color(void *, void *, void *, void *);
 extern float fast_fmod(float, float);
 extern float FastNormalizeAngle(float x);
-extern void font_queue_vu_state(void);
+
 extern void draw_env_overlay_mesh(int, int, int, void *, int);
 extern int quartu_frame_count MACRO_ADDR;
 extern short quartu_ripple_strip_counts;
@@ -3109,9 +3114,9 @@ extern short quartu_alarm_on;
 extern char *quartu_cuboids MACRO_ADDR;
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern void jet_clear_persistent(int idx);
-extern void HeroSetObjectFlags(void);
+
 extern void PlayMovieEntryIfIdle(int);
-extern void HeroClearObjectFlags(void);
+
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern void unlock_planet(int);
 extern void jet_reset_camera(void *a0, void *a1);
@@ -3325,7 +3330,7 @@ extern int gBolts MACRO_ADDR;
 extern int quartu_codebot_slot_done;
 extern unsigned char special_items_base[];
 extern void set_moby_list_visibility(int, int);
-extern void activate_descriptor(int);
+
 extern int can_spawn_codebot_slot_effect(int);
 extern char *spawn_codebot_slot_effect(char *pos, char *vec);
 extern int count_missing_or_dying_mobys_in_list(int);

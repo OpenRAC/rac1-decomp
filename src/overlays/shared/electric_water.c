@@ -2,6 +2,10 @@
 #include "common.h"
 #include "include_asm.h"
 #include "moby.h"
+#include "game/draw.h"
+#include "overlays/shared/electric_water.h"
+#include "overlays/shared/hero_update_bone_attachment.h"
+#include "overlays/shared/point_lights_and_glows.h"
 /* Electric water countdown timer display. */
 struct ElectricWaterCountdownVars {
     u8 pad_00[0x12];
@@ -31,7 +35,6 @@ struct GiantClankPadVars {
     u8 pad_6C[0x4];
     s32 link_idx; /* 0x70 */
 };
-
 
 typedef unsigned int Q_2D7C00 __attribute__((mode(TI), aligned(16)));
 typedef struct {
@@ -113,7 +116,7 @@ extern float quartu_fog_near_intensity MACRO_ADDR;
 extern float quartu_fog_far_intensity MACRO_ADDR;
 extern int is_point_inside_clip_volume(void *, int);
 extern void Sound_StopSlot(int);
-extern void release_point_light_slot(int);
+
 extern void reset_electric_water_switch(char *);
 extern float multiply_global_factor(float);
 extern int truncate_float_to_s32(float);
@@ -127,7 +130,7 @@ extern float FastVecDist(void *, void *);
 extern int allocate_colored_effect_slot(void *, float, float, float, float, float);
 extern void initialize_electric_water_bolt_effect(char *);
 extern void update_electric_water_bolt_effect(Moby *);
-extern void draw_electric_water_bolt_effect(char *);
+
 extern void draw_electric_water_countdown(char *);
 extern void AddDrawCallback(void *, void *);
 extern int Sound_PlayClassSound(int, int, void *, int);
@@ -514,7 +517,7 @@ extern int FastTweenColor(int, int, float);
 extern int scale_ticks(int);
 extern int random_integer_below(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern int FontPrintCenterLarge(int a, int b, int c, int d, int e);
+
 extern int quartu_frame_count MACRO_ADDR;
 extern short electric_water_timer_x;
 extern short electric_water_timer_y;
@@ -1353,7 +1356,7 @@ void codebot_update(unsigned char *moby) {
 extern Hero g_hero_r __asm__("D_0013F450");
 extern PadState g_controller_state_r __asm__("D_0013CA40");
 extern void try_set_help_message(int, int);
-extern void restore_saved_hero_moby_and_clear_vehicle_mode(void);
+
 extern void MobySetAnimation(void *, int, int);
 extern float ProbeGroundHeight(void *, int, float);
 extern void jet_reset_camera(void *, void *);

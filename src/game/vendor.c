@@ -3,6 +3,10 @@
 #include "callees.h"
 #include "records.h"
 #include "structs.h"
+#include "game/draw.h"
+#include "game/framebuf.h"
+#include "game/update.h"
+#include "game/vuchain.h"
 
 /*
  * vendor.cpp in the original source; text 0x239628-0x23B670.
@@ -10,11 +14,8 @@
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-
 extern int measure_text_width_regular(unsigned char *, int);
 
-extern void PutDrawBufferLarge(void);
-extern void InitViewContext(void);
 extern void UpdateViewContext(void);
 
 typedef struct {
@@ -162,7 +163,6 @@ extern int random_integer_below(int);
 extern int status_message_text_ids[];
 extern void set_scrolling_status_message(void *);
 extern void render_capture_scrolling_text(char *, int, int, float);
-extern void draw_framebuffer_rect(int, int, int, int, int, int, int);
 
 /* Two base locals, one before the join and one after, make gcse share
    only the %hi and rebuild the %lo base after the join; the first must
@@ -631,7 +631,6 @@ void render_vendor_capture_texture_overlays_pass(s32 pass_index, f32 capture_wid
     }
 }
 
-extern void setup_render_target(int, int, int);
 extern void configure_graphics_projection(int, int, float, float, float, float, float);
 extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
 
@@ -672,9 +671,7 @@ extern short capture_primary_transition_step;
 extern int pal_mode MACRO_ADDR;
 extern long capture_texture_tex0 MACRO_ADDR;
 extern float FastVecLength(void *);
-extern void project_graphics_bounds_float(void *, void *, float *, float *, float *, float *);
-extern void draw_centered_capture_background(int, int);
-extern void VU1_texFlush(void);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern void update_scrolling_status_message_r(char *) __asm__("func_00239838");
 extern void render_vendor_item_details_pass_r(char *) __asm__("func_00239CF8");

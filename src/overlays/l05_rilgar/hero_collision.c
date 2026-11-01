@@ -4,12 +4,13 @@
 #include "include_asm.h"
 #include "hero.h"
 #include "vector.h"
+#include "overlays/shared/hero_idle_and_animation.h"
 
 extern unsigned char g_hero[] NOT_SDA;
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
 extern int CollType(void);
-extern void exit_hero_vehicle_mode_if_mode_three(void);
+
 extern float FastAbsF(float);
 extern void Hero_TryMoveStateL05(int, int);
 extern void Hero_OnKilled(void);

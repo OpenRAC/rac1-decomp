@@ -4,6 +4,7 @@
 #include "callees.h"
 #include "include_asm.h"
 #include "hero.h"
+#include "overlays/shared/radial_particle_burst.h"
 
 /* Rocket tank: aims its turret at the hero, drives along a path and owns two child mobys. */
 struct RocketTankVars {
@@ -140,7 +141,7 @@ extern void MobyBlendAnimation(void *, int, int, int);
 extern void moby_build_matrix(void *);
 extern int IsFrameWithinWindow(char *, float);
 extern float MobyGetFrameValue(void *);
-extern void emit_radial_particle_burst(void *, void *, int);
+
 extern char *create_class_29_moby(char *owner, float *pos, float *vec, int arg3);
 
 typedef struct {

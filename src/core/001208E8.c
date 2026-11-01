@@ -1,6 +1,7 @@
 #include "common.h"
 #include "callees.h"
 #include "structs.h"
+#include "core/001208E8.h"
 
 /*
  * core_text object 0x1208E8-0x121750. Boundaries are retail's linker fill
@@ -12,7 +13,6 @@
  * EE29_CORE), like the prebuilt libcdvd.a it matches. The module sees
  * most of its globals as volatile (func_001209D8).
  */
-
 
 extern int create_semaphore(void *);
 
@@ -320,7 +320,7 @@ int cd_ncmd_prechk(int arg0) {
 }
 
 extern int sif_call_rpc();
-extern int cd_ncmd_prechk(int);
+
 extern void signal_semaphore(int);
 extern int cd_ncmd_recv_buffer;
 
@@ -635,7 +635,7 @@ s32 sce_cd_disk_ready(s32 mode) {
 
 extern int cd_scmd_send_buffer;
 extern int cd_scmd_recv_buffer;
-extern int cd_scmd_prechk(int);
+
 extern void sceSifWriteBackDCache(void *, int);
 
 /* sceCdMmode */

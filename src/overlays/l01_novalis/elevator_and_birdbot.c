@@ -6,6 +6,8 @@
 #include "records.h"
 #include "hero.h"
 #include "moby.h"
+#include "overlays/shared/particle_spawns_and_path_splines.h"
+#include "overlays/shared/water_pool_and_sand_mouse.h"
 
 /* Tethered mine: hangs on a tether with four chain links, scales down with distance and blows up when hit. */
 struct TetheredMineVars {
@@ -1351,11 +1353,11 @@ extern void ClampVectorLength(void *, float);
 extern int coll_sphere(float, void *, int, void *);
 extern float ApproachValue(float *, float, float);
 extern float jump_speed_4318(void *, void *, void *, float, float);
-extern int select_list_point_toward_target(void *, void *, void *, void *);
+
 extern int move_w(void *, void *, void *, void *, float);
 extern void PostHitMessage(void *, int, int, void *, void *, float);
 extern int CarriedMobyUpdate(void *, void *);
-extern int reserve_expired_frame_slot(int *, int, int);
+
 extern void SpawnExplosionFx(void *, void *, int, float, float);
 extern float FastSubRots(float, float);
 extern float IntToFloat(int);

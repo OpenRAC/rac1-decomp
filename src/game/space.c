@@ -5,6 +5,15 @@
 #include "vector.h"
 #include "structs.h"
 #include "memcard.h"
+#include "core/989snd.h"
+#include "core/permcb.h"
+#include "game/draw.h"
+#include "game/framebuf.h"
+#include "game/initonce.h"
+#include "game/memcard.h"
+#include "game/pad.h"
+#include "game/sound.h"
+#include "game/vuchain.h"
 
 /*
  * space.cpp in the original source; text 0x22F128-0x233FF8.
@@ -20,11 +29,9 @@ extern void FastMemSet();
 
 extern short draw_enable_mask;
 extern void append_gif_transfer_packet(void);
-extern void DrawDebugProfiler(void);
 
 extern int GetEffectTex(int);
-extern void PutDrawBufferLarge(void);
-extern void InitViewContext(void);
+
 extern void UpdateViewContext(void);
 
 typedef struct {
@@ -52,13 +59,9 @@ extern float random_float_between(float, float);
 
 extern void fast_vec_normalize(void *, void *, float);
 
-extern void snd_StreamSafeCdCallback(void *);
-
 extern void sce_gs_sync_v(int);
 
-extern void snd_reset_state_and_flush_commands(void);
 extern void snd_FlushSoundCommands(void);
-extern void snd_reenable_command_flush(void);
 
 extern void SetupGifPaging(int);
 extern void DoGifPaging(void);
@@ -1952,8 +1955,7 @@ extern u8 level_available[20] NOT_SDA;
 extern u8 level_init_cleared_block[];
 extern u8 level_init_cleared_block2[];
 extern u32 sound_bank_handle MACRO_ADDR;
-extern void InitMemSlots(void);
-extern void VU1_initChain(void);
+
 extern s32 Stream_SubmitRead(void *buf, u32 lsn, u32 sectors);
 extern void FadeToBlack(s32 n);
 extern s32 fast_decompress(s32, s32);
@@ -2198,7 +2200,7 @@ extern int level_resource_buffer_base;
 extern int Movie_Play(int, int, int, int, int);
 extern void wait_for_graphics_pipeline_idle(int, int);
 extern void sceGsSyncVCallback(void *);
-extern void vsync_callback(void);
+
 extern void FadeToBlack(int);
 
 /* Plays movie id, taking its {sector, size} from the WAD table of
@@ -2464,15 +2466,13 @@ extern void ResetGsRegistersPr(void);
 extern void FadeToBlack(s32);
 extern void DrawTexturedQuad_r(s32, s32, s32, s32, s32, s32, s32, s32, u64, u64) __asm__("func_001F5800");
 extern f32 IntToFloat(s32);
-extern void PutDrawBufferSmall(void);
+
 extern s32 service_level_archive_load(void);
 extern void Menu_RunStateHandler(void);
-extern void memcard_update_state(void);
+
 extern void append_scrolling_textured_quad_r(s32, s32, s32, s32, u64, u64, f32, f32, f32, f32) __asm__("func_00232A00");
 extern void prepare_loading_slide_textures(s32, s32, s32, u64 *, u64 *, u64 *);
-extern void VU1_initChain(void);
-extern void VU1_swapChain(void);
-extern void VU1_sendChain(void);
+
 extern void VU1_syncChain(s32);
 extern void VU1_addGSregister_r2(s32, u64) __asm__("func_00234C98");
 extern void sce_gs_sync_v(s32);
@@ -2613,17 +2613,17 @@ extern int snd_StreamSafeCdSync_i(int) __asm__("func_0012EF48");
 extern int sce_cd_sync_s_i(int) __asm__("func_00120F30");
 
 extern void snd_set_reverb_ex(int, int, int, int, int);
-extern void sound_StopAllSounds(void);
+
 extern void music_Stop(void);
 extern void snd_UnloadBank(int);
 extern void SetBackgroundColor(int, int, int);
 extern int load_level_chunk_from_disc(void);
-extern void DMAC_VIF1_Disable(void);
+
 extern void play_level_loading_slides(int, int, int, int, int);
 extern void initialize_level_runtime(void);
 extern int read_file_entry_with_retry(int);
 extern void append_palette_transfer_packet(void);
-extern void UpdatePad(void);
+
 extern void update_resident_gameplay_state(void);
 extern void tick_space_transition(void);
 extern int service_level_archive_load(void);

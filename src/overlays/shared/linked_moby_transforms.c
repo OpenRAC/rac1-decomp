@@ -2,11 +2,12 @@
 #include "common.h"
 #include "callees.h"
 #include "include_asm.h"
+#include "game/mobyutil.h"
 
 extern void matrix_from_basis_rows(void *, void *);
 extern void FastVecSub(void *, void *, void *);
 extern void transform_vector(void *, void *, void *);
-extern void matrix_to_euler(void *, void *);
+
 extern char *hoven_mobys MACRO_ADDR;
 
 // Transforms an array of n 0x30-byte entries into the space of a moby, skipping empty slots.

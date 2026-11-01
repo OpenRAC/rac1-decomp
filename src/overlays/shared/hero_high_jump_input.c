@@ -3,6 +3,9 @@
 #include "vector.h"
 #include "include_asm.h"
 #include "hero.h"
+#include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
 
 typedef struct {
     float f[4];
@@ -121,7 +124,7 @@ extern void set_hero_animation(int, int, float);
 extern void stick_target(int, float);
 extern void ClampVectorLength(void *a, float x);
 extern int hero_idle_sequence(int);
-extern void hero_queue_sequence(int bank, int seq);
+
 extern short g_frame_time_r __asm__("D_0015EE6C");
 extern float g_frame_scale_sq MACRO_ADDR;
 extern int hero_run_step_start_frames_1 MACRO_ADDR;
@@ -184,7 +187,7 @@ void update_hero_locomotion_state(void) {
 extern unsigned char pad_globals_base[] NOT_SDA;
 extern unsigned char gHaveHeliPack NOT_SDA;
 extern float g_frame_time MACRO_ADDR;
-extern int get_hero_high_jump_input_window_frames(void);
+
 extern int check_pad_press_separation(int, int, int, int);
 extern int HeroEnterMoveState(int, int);
 extern int HeroEnterMoveState_b(int, int) __asm__("func_L00_00222B80");
@@ -289,7 +292,7 @@ typedef struct {
     char pad2[0x24];
 } Rec;
 extern Rec item_defs[] __attribute__((section(".data")));
-extern void cancel_hero_item_animation(void);
+
 extern int HeroEnterMoveState(int, int);
 
 /* starts the pending global action if conditions hold; returns 1 on success */

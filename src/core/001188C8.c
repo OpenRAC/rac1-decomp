@@ -1,6 +1,7 @@
 #include "common.h"
 #include "callees.h"
 #include "structs.h"
+#include "core/00118A40.h"
 
 /*
  * core_text object 0x1188C8-0x118A40. Boundaries are retail's linker fill
@@ -11,10 +12,7 @@
  * EE29_CORE), like libc.a.
  */
 
-
 extern int SbrkErrno;
-
-extern int libc_glue_write();
 
 int _write_r(int *errOut, void *a, void *b, void *c) {
     int r;

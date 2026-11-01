@@ -4,6 +4,13 @@
 #include "moby.h"
 #include "hero.h"
 #include "include_asm.h"
+#include "core/989snd.h"
+#include "game/hud.h"
+#include "game/mobyfunc.h"
+#include "game/music.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/weapon_hud_and_counters.h"
 
 extern int vendor_menu[];
 extern unsigned char g_class_slot_12 NOT_SDA;
@@ -215,19 +222,17 @@ extern void snd_PauseAllSoundsInGroup(s32);
 extern void music_Pause(s32);
 extern int snd_FlushSoundCommands(void);
 extern void build_vendor_menu_rows(s32);
-extern void reset_hud_and_suspend_weapon_updates(void);
+
 extern s32 queue_animation_update(s32, s32, void *, void *, void *, void *, s32);
-extern void initialize_bolt_counter_hud(void);
-extern void update_bolt_counter_hud_animation_and_visibility(void);
-extern void draw_bolt_counter_hud_panel(void);
+
 extern void initialize_numeric_hud_timer_and_base_dimensions(void);
 extern void Hud_UpdateCounter(void);
 extern void draw_weapon_ammo_hud_panel(void);
 extern s32 Moby_PlaySound(s32, s32, void *);
 extern void FadeToBlack(s32);
-extern void clear_active_help_record(void);
+
 extern s32 HeroEnterMoveState(s32, s32);
-extern void HeroSetObjectFlags(void);
+
 extern void MobySetAnimation(void *, s32, s32);
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
@@ -364,17 +369,16 @@ void open_vendor_menu(VendorMoby_pv *m) {
     vendor_auxiliary_moby_load_pending = 0;
 }
 extern void Hud_SetBarValueById(int, int);
-extern void update_resource_counter(void);
+
 extern int HeroEnterMoveState(int, int);
-extern void HeroClearObjectFlags(void);
+
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern float FastAddRots(float, float);
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern void CameraScript2(int);
 extern void DeleteMoby(void *);
-extern void snd_ContinueAllSoundsInGroup(int);
-extern void music_Unpause(void);
+
 extern int snd_FlushSoundCommands(void);
 extern int skip_frame MACRO_ADDR;
 extern short cinematic_mode;
@@ -743,11 +747,10 @@ extern short vendor_selected_item_local_offset;
 extern int vendor_selection_changed __attribute__((section(".sdata")));
 extern unsigned char discount_purchase_pricing[] __attribute__((section(".data")));
 extern void select_world_object_resource_tables(int, int);
-extern void InitMobyInstance(void *, int);
+
 extern void moby_build_matrix(void *);
 extern void MobySetAnimation(void *, int, int);
 extern void update_moby_animation_state(void *);
-extern void pack_render_command_fields(void *, int, int, int, int);
 
 #define GG g
 #define P (GG->obj)
@@ -886,7 +889,6 @@ extern void MobyAnimAdvance();
 extern s32 msg_string();
 extern void set_scrolling_status_message();
 extern void grant_inventory_item(int, int);
-extern int add_ammo(int, int);
 
 /* vendor buy dialog: quantity selection with held-button repeat, confirm and purchase */
 void update_vendor_purchase(void) {

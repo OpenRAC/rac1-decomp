@@ -6,6 +6,11 @@
 #include "hero.h"
 #include "moby.h"
 #include "camera.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/camera_switch_and_update.h"
+#include "overlays/shared/plasmabot.h"
+#include "overlays/shared/rocket_and_path_camera.h"
+#include "overlays/shared/trespasser_pad_and_background_ships.h"
 
 /* Moby that points at a linked moby by index. */
 struct LinkedRemovalVars {
@@ -294,7 +299,6 @@ typedef struct L14Data {
     int mode;
 } L14Data;
 
-
 extern char hero_globals_base[];
 extern float g_frame_time MACRO_ADDR;
 extern short oltanis_bolt_thief_spring_stiffness;
@@ -313,15 +317,13 @@ extern void InitKnockback(void *, void *, int, int, int, float);
 extern void SetDeathBits(void *, int, int);
 extern void MobySetAnimation(void *, int, int);
 extern int STUB_printf();
-extern void initialize_moby_path_state(void *);
+
 extern void MobySpringTurn(char *moby, float target, float *vel, float k, float d, float max);
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
-extern char *spawn_floating_mine(void *, void *);
-extern void update_linked_moby_position(void *);
+
 extern int update_bolt_thief_path_movement(char *);
 extern float Spring(float *, float *, float, float, float, float);
-extern void moby_set_state_one(void *);
-extern void emit_moby_offset_particles(void *);
+
 extern int mine_fall(void *, void *);
 extern void SpawnExplosionFx(void *, void *, int, float, float);
 extern void StepColorFade(void *, void *);
@@ -537,7 +539,7 @@ int update_bolt_thief_path_movement(char *moby) {
     }
     return r;
 }
-extern void attach_big_head_cheat_manipulator_to_matching_moby(void *);
+
 extern int DialogRequest_Init(void *, void *);
 extern void jet_clear_persistent(int);
 extern void jet_reset_camera(void *, void *);
@@ -965,7 +967,7 @@ extern L14LevelState oltanis_collected_flags_base;
 extern s32 level_moby_killed[][64];
 extern float IntToFloat(int);
 extern int fast_dec_timer(int *);
-extern void activate_descriptor(int);
+
 extern void save_and_lower_unlock_sequence_mobys_r(struct Moby *) __asm__("func_L14_00306A88");
 extern void raise_unlock_sequence_mobys_r(struct Moby *) __asm__("func_L14_00306B08");
 
@@ -2187,7 +2189,7 @@ extern VendorView_5290 oltanis_view_params;
 extern int Spline_AdvanceByDistance_r2(char *path, float *out, void *seg, void *t, int dir,
                                        float step) __asm__("func_L00_0025E860");
 extern void matrix_mul_vec3(void *, void *, void *);
-extern float CosineInterpolate(float, float, float);
+
 extern void UpdateViewContext(void);
 extern float FastSin(float);
 extern float FastCos(float);
@@ -2550,7 +2552,6 @@ typedef struct {
     float t2C;
 } CamKey171D0;
 
-
 typedef struct {
     char pad0[0x274];
     float f274;
@@ -2577,7 +2578,7 @@ extern float oltanis_key_cam_moby_step_progress[][3];
 extern CamKey171D0 oltanis_path_camera_keys[];
 extern char oltanis_lean_state[];
 extern float interpolate_angle(float, float, float);
-extern float Camera_SmoothAngle(void *, float, float, float, float, float);
+
 extern float Cam_InterpValues(void *, float, float, float, float, float);
 extern void compute_position_from_spherical_offset(void *, void *, void *);
 extern void FastVecScale(void *, void *, float);

@@ -3,6 +3,8 @@
 #include "include_asm.h"
 #include "vector.h"
 #include "moby.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/move_control_and_clear_path.h"
 
 extern float FastSubRots(float, float);
 extern float FastAddRots(float, float);
@@ -115,8 +117,7 @@ int advance_shuttle_along_path(struct Moby *moby) {
 extern char *MobyGetHitMessage(void *, int, int);
 extern void Moby_PlaySound(int, int, int);
 extern void spawn_proximity_gated_bolts(void *);
-extern void spawn_moby_break_fragments(void *, int, int, int, int, int, int);
-extern void spawn_moby_from_placement(void *, int);
+
 extern void DeleteMoby(void *);
 /* Breakable update: on a hit, play its sound, drop bolts, spawn pieces and delete itself. */
 void BreakableL09_Update(char *m) {

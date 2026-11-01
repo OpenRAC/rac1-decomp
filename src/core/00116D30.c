@@ -1,13 +1,12 @@
 #include "common.h"
 #include "callees.h"
 #include "structs.h"
+#include "core/00116D30.h"
 
 /*
  * core_text object 0x116D30-0x116FA0. Boundaries are retail's linker fill
  * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
  */
-
-extern long strtol(int arg0, int arg1, int arg2);
 
 extern void *_impure_ptr NOT_SDA;
 

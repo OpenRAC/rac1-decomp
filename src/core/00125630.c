@@ -1,6 +1,8 @@
 #include "common.h"
 #include "callees.h"
 #include "structs.h"
+#include "core/00125630.h"
+#include "core/0012AC80.h"
 
 /*
  * core_text object 0x125630-0x12A2F0. Boundaries are retail's linker fill
@@ -13,7 +15,6 @@
  * wait loops that 2.95.3 hoisted into saved registers (func_00128968,
  * func_00128860) are 2.9-ee's rematerialised constants.
  */
-
 
 extern int disable_interrupts(void);
 extern void enable_interrupts(void);
@@ -461,7 +462,6 @@ void _getRef0(struct MpegDecoder *d, struct MpegRefImage *ref, int sfield, int d
     d->mb_buf[d->mb_buf_index].fetch_count++;
 }
 
-extern void _Error(void *, void *);
 extern void mpeg_clamp_pack_block(int, int);
 extern void mpeg_add_block_clamp(int, int, int);
 extern char str_mpeg_intra_skip_mb[];
@@ -533,9 +533,8 @@ void ipu_set_mpeg1(int arg0) {
 }
 
 extern char str_mpeg_bdec_error[];
-extern void wait_ipu_idle(void *);
+
 extern void dispatch_mpeg_callback(int, void *);
-extern void _Error(void *, void *);
 
 #define IPU_CTRL ((volatile unsigned int *)0x10002010)
 #define IPU_BP ((volatile unsigned int *)0x10002020)
@@ -687,7 +686,6 @@ extern char str_mpeg_skip_to_next_picture[];
 extern int _slice0(void *, int);
 extern int _waitBdecOut(void *);
 extern int _doMC(void *, int);
-extern void _Error(void *, void *);
 
 int _pictureData0(void *arg0) {
     struct MpegDecoder *s = (struct MpegDecoder *)((char *)arg0);
@@ -727,7 +725,7 @@ int _pictureData0(void *arg0) {
 
 extern void next_start_code(void *);
 extern int _sliceB(void *);
-extern void _Error(void *, void *);
+
 extern char str_mpeg_slice_start_code_range[];
 extern char str_mpeg_slice_a0_error[];
 
@@ -786,7 +784,7 @@ int _sliceA0(void *arg0, int arg1, int *arg2, int *arg3, void *arg4) {
 
 extern int _sliceA0(void *, int, int *, int *, void *);
 extern int mb_address_increment(void *);
-extern void _Error(void *, void *);
+
 extern char str_mpeg_too_many_macroblocks[];
 extern int _decMB0(void *, int *, int *, int *, void *, void *, void *);
 extern int _motionComp0(void *, int, int, int, int, void *, void *, void *);
@@ -893,7 +891,6 @@ int _slice0(void *arg0, int mbCount) {
     }
 }
 
-extern void _Error(void *, void *);
 extern char str_mpeg_skipped_mb_in_i_picture[];
 
 /* arg0 is a moby/entity-ish struct: a table index at +0x810 selects a
@@ -941,7 +938,7 @@ int _skipMB0(void *a0, int *a1, int *a2, int *a3, int *a4) {
 }
 
 extern char str_mpeg_invalid_mb_type[];
-extern int _nextBit(void *, int);
+
 extern void motion_vector(void *, int *, int *, int, int, int, int, int);
 extern void motion_vectors_x(void *, int *, int *, int *, int, int, int, int, int, int, int) __asm__("func_00128270");
 extern void receive_data_from_ipu(void *, int);
@@ -1162,8 +1159,6 @@ void send_ipu_command(char *arg0, unsigned int arg1) {
     *reg = arg1;
     ((struct MpegDecoder *)arg0)->ipu_cmd_status = IpuCommandTable[arg1 >> 28];
 }
-
-extern void dispatch_mpeg_cb_nodata(int);
 
 /* Spins until the VIF1 DMA channel (D_CHCR 0x10002010) reports idle,
    nudging the IOP via func_0012BCC8 every 5001 spins so a stalled
@@ -1469,7 +1464,6 @@ int mpeg_next_header(void *arg0) {
     }
 }
 
-extern void _extensionAndUserData(void *);
 extern void update_temp_track_data(void *, int);
 
 /* pictureHeader (libmpeg.a:mpc.o): ISO/IEC 13818-2 6.2.3 picture_header().
@@ -1660,7 +1654,6 @@ void _groupOfPicturesHeader(void *arg0) {
     _extensionAndUserData(s);
 }
 
-extern void _Error(void *, void *);
 extern char str_mpeg_load_chroma_intra_qm[];
 extern char str_mpeg_load_chroma_non_intra_qm[];
 

@@ -4,6 +4,13 @@
 #include "include_asm.h"
 #include "hero.h"
 #include "moby.h"
+#include "game/draw.h"
+#include "overlays/l06_blarg/hangar_door_and_gas_vents.h"
+#include "overlays/shared/gadgebot_containers_and_frog.h"
+#include "overlays/shared/help_message_removal.h"
+#include "overlays/shared/hero_update_ledge_grab.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/trespasser_pad_and_background_ships.h"
 
 /* Red button sequence controller: switches linked mobys on and off through the scripted cut scene. */
 struct SequenceVars {
@@ -339,7 +346,7 @@ extern char *level_mobys_q_p __asm__("D_L06_00160058") MACRO_ADDR;
 extern int is_point_inside_clip_volume(void *, int);
 extern void MobyBlendAnimation(void *, int, int, int);
 extern int fast_dec_timer(void *);
-extern int activate_state_15_moby_at_position(void *, void *);
+
 extern int scale_ticks(int);
 
 /* Trigger moby: waits for the hero in its zone, plays its open animation, then launches a listed moby. */
@@ -420,7 +427,7 @@ extern void FastVecAdd(void *, void *, void *);
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern void CameraScript(void *, void *, int, int, int);
 extern void set_camera_rotation(void *);
-extern void set_selected_object_float_triplets(float, float, float, float, float, float);
+
 extern void set_camera_position(void *);
 extern void CameraScript2(int);
 extern int HeroL06_TrySetMoveState(int, int);
@@ -895,7 +902,7 @@ extern int DialogRequest_Init(void *, void *);
 extern int check_all_listed_class_33b_states_fe_fd_or_10(int);
 extern int FastDecTimer(void *);
 extern int Npc_TryStartDialog(void *, void *);
-extern void PlaceMarkerAheadOfMoby(float, void *);
+
 extern void jet_clear_persistent(int);
 extern void grant_inventory_item(int, int);
 extern int memcard_Save(int, int);
@@ -1478,24 +1485,24 @@ extern void clear_u64_value(void *);
 extern int level_game_mode_q MACRO_ADDR;
 extern void spawn_timed_projected_sprite_effect(char *, int, int, int);
 extern void MusicRequestTrack(int, int);
-extern int remove_help_message_for_selector(int);
+
 extern void FadeToBlack(int);
 extern float fast_atan2(float, float);
 extern float vec_distance_xy(void *, void *);
 extern void CameraScript(void *, void *, int, int, int);
-extern void set_selected_object_float_triplets(float, float, float, float, float, float);
+
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern int update_shuttle_path_ride(char *, int);
 extern float FastAddRots(float, float);
-extern void initialize_moby_particle_effect_state(char *);
+
 extern void CameraScript2(int);
 extern void StartCutscene(int);
 extern void unlock_planet(int);
 extern void jet_reset_camera(void *, void *);
 extern void queue_planet_unlock_message(int);
-extern void enter_hero_idle_state_for_current_vehicle_mode(void);
+
 extern void PlayMovieEntryIfIdle(int);
 extern void update_entity_matrix(char *, void *, void *, void *);
 extern unsigned char menu_item_enabled_19_r[] __asm__("D_0013D4AF");
@@ -2664,7 +2671,7 @@ extern void euler_to_matrix(float *, float *);
 extern void set_scale_matrix(float *, float);
 extern int GetEffectTex(int);
 extern void VU1_addGSregister(int, long);
-extern void font_queue_vu_state(void);
+
 extern void blarg_draw_strand_strip(int *, float *);
 extern float vector_stream_rotations[];
 extern int vector_stream_regen_ticks MACRO_ADDR;

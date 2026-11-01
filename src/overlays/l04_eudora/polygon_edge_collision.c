@@ -3,6 +3,8 @@
 #include "include_asm.h"
 #include "hero.h"
 #include "moby.h"
+#include "game/skyfunc.h"
+#include "overlays/shared/sky_particles.h"
 
 extern float vec_distance_xy(void *, void *);
 
@@ -315,11 +317,9 @@ void update_moby_movement_with_sphere_collision(char *a, char *b, char *c, float
     }
     *(float *)(a + 0x48) = FastAddRots(fast_atan2(*(float *)(b + 0x10), *(float *)(b + 0x14)), 3.14159265f);
 }
-extern void SetupSkyGifPaging(void);
+
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
-extern void draw_sky_shells_with_fast_and_slow_rotation(void);
-extern void update_sky_shells_static(void);
-extern void DoSkyGifPaging(void);
+
 extern void VU1_addGSregister(int, long);
 extern int depth_buffer_address MACRO_ADDR;
 /* Draw the Eudora sky shells (rotating in level 4, static elsewhere) and restore GS test and Z. */

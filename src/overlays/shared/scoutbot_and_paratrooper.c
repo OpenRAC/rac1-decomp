@@ -3,6 +3,7 @@
 #include "include_asm.h"
 #include "hero.h"
 #include "moby.h"
+#include "overlays/shared/effect_particle_updates.h"
 
 /* Paratrooper fire bolt (class 0x50C): flies along its velocity until it hits something or its time runs out. */
 struct FireBoltVars {
@@ -1885,7 +1886,7 @@ extern char batalia_coll_hit[];
 extern void FastVecScale(void *, void *, float);
 extern void add_vectors(void *, void *, void *);
 extern int rand_range(int, int);
-extern void PartType04Spawn(void *, void *, int, int, int, int, int, int);
+
 extern int coll_line(void *, void *, int, int, int);
 extern void PostHitMessage(void *, int, int, void *, void *, float);
 extern int fast_dec_timer_i(void *) __asm__("func_001F9908");

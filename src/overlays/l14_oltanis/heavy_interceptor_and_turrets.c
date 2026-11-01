@@ -6,6 +6,11 @@
 #include "hero.h"
 #include "vector.h"
 #include "moby.h"
+#include "game/draw.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/point_lights_and_glows.h"
 
 /* Blarg heavy interceptor: flies a patrol path while its light beam sweeps an
    aim path, calls the turrets of its group when the beam finds the hero. */
@@ -193,7 +198,7 @@ extern float g_frame_time MACRO_ADDR;
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern int FastDecTimer(void *);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern int is_hero_on_moby(void *);
+
 extern float FastVecDist(void *, void *);
 extern float multiply_global_factor(float);
 extern float vec_distance_xy(void *, void *);
@@ -1083,7 +1088,6 @@ extern void draw_env_overlay_mesh(int, void *, void *, void *, int);
 extern void transform_vector(void *, void *, void *);
 extern s64 GetEffectTex_r(s32) __asm__("func_001F4868");
 extern void VU1_addGSregister(s32, s64);
-extern void font_queue_vu_state(void);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002460f8.c, FUN_L14_002ada18. */
 void draw_blarg_heavy_interceptor_light_ring(char *moby) {
@@ -2261,7 +2265,7 @@ extern void AttachManipulator(void *, int, void *);
 extern void initialize_minibomber_path_following(char *moby);
 extern int advance_minibomber_along_path(char *moby, char *a1, int a2, int a3, float *v, float *vel, float f12,
                                          float f13, float f14, float f15, float f16, float f17, float f18);
-extern float CosineInterpolate(float, float, float);
+
 extern void clear_u64_value(void *);
 extern void initialize_minibomber_path_retrace(char *moby);
 extern int IsFrameWithinWindow(void *, float);
@@ -3073,7 +3077,7 @@ unsigned char *spawn_flying_debris(char *owner, float angle, char *posp) {
     }
     return m;
 }
-extern void release_point_light_slot(int);
+
 extern void DeleteMoby(void *);
 
 /* Release the debris' point light slot and delete the moby. */
@@ -3451,7 +3455,7 @@ extern void MatrixToQuaternion(void *, void *);
 extern void quat_nlerp(void *, void *, void *, float);
 extern void register_beam_slot(struct Moby *, int, int);
 extern int set_beam_origin_transform_and_endpoint(struct Moby *, void *, void *);
-extern char *spawn_mode_controlled_rotating_alpha_fade_particle(void *, void *, int, void *);
+
 extern int allocate_colored_effect_slot(float *, float, float, float, float, float);
 
 /* Racer update: track the race path ahead of the hero, orient along it and fire its beam weapon. */
@@ -3755,8 +3759,7 @@ extern char oltanis_lights[];
 extern short joint_effect_light_range;
 extern float oltanis_zero_vector[] MACRO_ADDR;
 extern int allocate_colored_effect_slot(float *, float, float, float, float, float);
-extern void random_spherical_offset(void *, float, float);
-extern char *spawn_mode_controlled_rotating_alpha_fade_particle(void *, void *, int, void *);
+
 extern void draw_racer_glow_quads(struct Moby *);
 
 /* Puffs smoke from the moby's exhaust joint: keeps its light in place while active, then spawns four puffs. */

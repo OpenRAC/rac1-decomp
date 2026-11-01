@@ -2,9 +2,10 @@
 #include "common.h"
 #include "vector.h"
 #include "include_asm.h"
+#include "overlays/shared/moby_ground_collision.h"
 
 extern unsigned char *create_part(int);
-extern int PackColorRGBA(float, float, float, float);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float random_float_between(float, float);
 extern int scale_ticks(int);

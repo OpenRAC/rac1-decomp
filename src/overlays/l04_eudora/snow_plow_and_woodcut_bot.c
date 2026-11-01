@@ -5,6 +5,11 @@
 #include "include_asm.h"
 #include "hero.h"
 #include "moby.h"
+#include "overlays/l04_eudora/walker_rig_gait.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/trespasser_pad_and_background_ships.h"
 
 typedef int w128 __attribute__((mode(TI)));
 typedef struct {
@@ -738,7 +743,6 @@ void emit_woodcut_bot_death_effects(void *m) {
     func_L00_0025F4A8_alt(m, vec, pos, 0.0f, 0.0f, 10, 3, 4, 2.0f, 1.0f, 100000.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
 }
 
-
 typedef struct WBQuery {
     /* 0x00 */ float v[4];
     /* 0x10 */ void *m;
@@ -783,7 +787,7 @@ extern int IsFrameWithinWindow(void *, float);
 extern float FastSin(float);
 extern void add_vectors(void *, void *, void *);
 extern void spawn_crate_debris(void *, void *, void *, void *, int, int, float, float);
-extern void reset_leg_rig_from_animation(void *, void *);
+
 extern int leg_walker_update(void *, void *, float, float, float);
 extern void BuildSphericalOffset(void *, float, float, float);
 extern float SpringTurn(float, float, void *, float, float, float);
@@ -1415,7 +1419,6 @@ void *spawn_class_23a_moby(char *src, char *pos) {
     }
     return m;
 }
-extern void copy_hero_moby_field_38(void *);
 
 /* UpdateMoby_584 */
 void update_moby_translation_delta_matrix(char *m) {
@@ -1858,7 +1861,6 @@ void update_suck_cannon_particles(char *m) {
     }
 }
 
-extern void attach_big_head_cheat_manipulator_to_matching_moby(void *);
 extern int DialogRequest_Init(void *, void *);
 extern int is_point_inside_clip_volume(void *, int);
 extern int Npc_TryStartDialog(void *, void *);
@@ -1953,7 +1955,6 @@ typedef struct {
     int f4C;
     int f50;
 } Data_2E57F8;
-
 
 typedef struct {
     unsigned short count;
@@ -2335,8 +2336,7 @@ void dispatch_mode_selected_slot(struct Moby *m) {
     }
 }
 extern void spawn_proximity_gated_bolts(void *);
-extern void spawn_moby_break_fragments(void *, int, int, int, int, int, int);
-extern void spawn_moby_from_placement(void *, int);
+
 extern void DeleteMoby(void *);
 /* Breakable update: on a hit, play its sound, drop bolts, spawn pieces and delete itself. */
 void BreakableL04_Update(char *m) {

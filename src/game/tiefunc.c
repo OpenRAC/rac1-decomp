@@ -2,13 +2,14 @@
 #include "callees.h"
 #include "records.h"
 #include "structs.h"
+#include "game/draw.h"
+#include "game/vuchain.h"
 
 /*
  * tiefunc.cpp in the original source; text 0x236958-0x236F00.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
-
 
 extern void FastMemCopy(void *, void *, int);
 
@@ -49,7 +50,6 @@ extern int max_tie_texture_dma_size MACRO_ADDR;
 extern int g_gs_texture_allocation_cursor MACRO_ADDR;
 extern char str_tie_texture_overflow[];
 extern int BuildTieTextureDma(int);
-extern void VU1_texFlush(void);
 
 /* DmaTieTextures: the same splice for ties, largest size in D_00161074. */
 void DmaTieTextures(void) {
@@ -134,8 +134,7 @@ extern int tie_proc_enabled;
 extern char str_tie_texs[];
 extern char str_tie_draw[];
 extern char tie_packet_tail_tags[];
-extern void ProfileMarker_Begin(void *, int); /* empty profiling marker */
-extern void ProfileMarker_End(void *, int); /* empty profiling marker */
+
 extern void TieProc(void);
 extern void DmaTieTextures(void); /* DmaTieTextures */
 

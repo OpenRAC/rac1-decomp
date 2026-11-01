@@ -3,6 +3,9 @@
 #include "include_asm.h"
 #include "hero.h"
 #include "moby.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/smoke_puff_projectiles.h"
 
 /* Bomb (class 0xF8): thrown or dropped, bounces, fuse timer, explodes. */
 struct BombVars {
@@ -97,7 +100,7 @@ struct PathMoverFallVars {
 };
 
 extern float random_float_between(float, float);
-extern void copy_hero_moby_field_38(void *);
+
 extern int spawn_moby_offset_effect(char *);
 extern short batalia_bolt_spin_min;
 extern short batalia_bolt_spin_max;
@@ -132,7 +135,6 @@ void initialize_bolt_pickup(char *moby) {
     copy_hero_moby_field_38(moby);
     *(int *)&d->target = spawn_moby_offset_effect(moby);
 }
-
 
 typedef struct Goal_2B94B0 {
     int active;
@@ -1578,7 +1580,7 @@ char *select_blarg_bombthrower_waypoint(char *moby) {
 }
 extern void Manipulator_ApplyScale_x(Moby *, int, float, char *) __asm__("func_L00_00264B40");
 extern void set_ground_height_band(void *);
-extern void spawn_moby_table_puff_pattern(void *);
+
 extern int ClassifyTargetInCone(char *m, char *p, float *pos, char *v);
 extern void InitKnockback(void *, void *, float, int, int, int);
 extern int FindNearestTargetMoby(void *, float, void *);
@@ -2574,7 +2576,7 @@ extern void spawn_explosion(void *, void *, void *, float, float, int, int, int,
                             int, int, int, int);
 extern int Moby_PlaySound(int, int, void *);
 extern void SpawnExplosionFx(void *, void *, int, float, float);
-extern void fast_add_rotations_cf(void *, void *, float, float, float);
+
 extern void ClampVectorLength(void *, float);
 extern float random_angle_radians(void), FastCos(float);
 extern void vec_scale_to_length(void *, void *, float);

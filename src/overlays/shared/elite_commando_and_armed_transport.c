@@ -5,6 +5,7 @@
 #include "vector.h"
 #include "moby.h"
 #include "hero.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 
 /* One aimed joint of the elite commando: manipulator block plus the eased pitch and yaw. */
 struct EliteJointAim {
@@ -268,7 +269,7 @@ char *spawn_class_32_moby(char *owner, char *vec, void *pos, void *vel, int c) {
     return m;
 }
 extern void update_blarg_elite_commando_damage_and_pursuit(char *);
-extern void manipulator_set_scale(void *, float);
+
 extern float random_angle_radians(void);
 extern float multiply_global_factor(float);
 extern int truncate_float_to_s32(float);

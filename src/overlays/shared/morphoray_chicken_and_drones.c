@@ -6,6 +6,8 @@
 #include "vector.h"
 #include "hero.h"
 #include "moby.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/nanotech_ball_and_suck_cannon.h"
 
 /* Morphoray chicken: AI blocks, a life timer and the color index of the slot it replaced. */
 struct ChickenVars {
@@ -1121,8 +1123,7 @@ int moby_set_state_from_check(char *a, void *p, void *t, float h) {
     }
     return r;
 }
-extern char *get_moby_suck_cannon_record(char *);
-extern int launch_suck_cannon_projectile(char *, int, int, float);
+
 extern void Moby_PlaySound(int, int, char *);
 
 /* Launch the moby's suck cannon shot: state 5 on success, back to 1 on a failed refire. */
@@ -2152,7 +2153,7 @@ extern void FastVecSub(void *dst, void *a, void *b);
 extern float lensq_cc2e8(void *);
 extern float vec_length(float);
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
-extern void PartType04Spawn(void *, void *, int, int, int, int, int, int);
+
 extern void euler_to_matrix(void *, void *);
 extern void transform_vector(void *, void *, void *);
 extern void vec_set_length_xy(void *, void *, float);

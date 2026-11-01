@@ -2,6 +2,9 @@
 #include "callees.h"
 #include "moby.h"
 #include "structs.h"
+#include "game/fastfunc.h"
+#include "game/skyfunc.h"
+#include "game/stream.h"
 
 /*
  * transition.cpp in the original source; text 0x1E9E70-0x1EC038.
@@ -26,9 +29,9 @@
  * unit, or some other property not yet isolated). See "Open toolchain
  * questions" in docs/reference/DECOMP_PROGRESS.md.
  */
-extern void SetupSkyGifPaging(void);
+
 extern void SkyLevelGeneric___maybe(void);
-extern void DoSkyGifPaging(void);
+
 extern void VU1_addGSregister(int, long);
 extern int depth_buffer_address MACRO_ADDR;
 
@@ -157,14 +160,14 @@ extern int LightTfrags();
 extern int LightShrubs();
 extern int LightTies();
 extern float FastVecLength(void *);
-extern float max_float(float, float);
+
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void scale_vector(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern int truncate_float_to_s32(float);
 extern float IntToFloat(int);
 extern void ResetDrawGlobals(void);
-extern void pad_resetState(void);
+
 extern void Font_EnableColorCodes(void);
 
 extern int pal_mode MACRO_ADDR;

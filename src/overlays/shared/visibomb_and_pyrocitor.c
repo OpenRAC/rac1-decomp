@@ -6,6 +6,10 @@
 #include "vector.h"
 #include "hero.h"
 #include "moby.h"
+#include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/point_lights_and_glows.h"
 /* Saved fog settings, restored when the effect ends. */
 struct FogSaveVars {
     u8 pad_00[0x30];
@@ -54,7 +58,6 @@ struct ThrownMineVars {
     u8 pad_00[0x78];
     char *target; /* 0x78 */
 };
-
 
 typedef unsigned int Q_2B33E8 __attribute__((mode(TI)));
 typedef union {
@@ -437,14 +440,14 @@ extern char player_camera[];
 extern char help_stats_base[] NOT_SDA;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
-extern int use_ammo(int, int);
+
 extern float fast_atan2(float, float);
 extern float vec_length_xy(void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern void BuildSphericalOffset(void *, float, float, float);
 extern void MobyBlendAnimation(void *, int, int, int);
-extern void jet_camera_mode(void);
+
 extern int spawn_visibomb_missile(void *, void *, float, float);
 extern int scale_ticks(int);
 extern int Moby_PlaySound(int, int, int);
@@ -1636,7 +1639,7 @@ extern int hero_control_mode_11_flag NOT_SDA;
 extern void select_camera_mode_by_hero_alignment_and_distance(int);
 extern void HeroEnterMoveState(int, int);
 extern void moby_restore_globals_state(int, int);
-extern void clear_jet_camera_mode_latch(void);
+
 extern void DeleteMoby(int);
 /* Ends Visibomb control: deletes the missile, restores the camera and the hero's move state. */
 void terminate_visibomb_missile(int a, int *b) {
@@ -2528,9 +2531,7 @@ extern void MobyBlendAnimation(void *, int, int, int);
 extern Moby *spawn_linked_moby_from_basis(void *);
 extern void lerp_vector(void *, void *, void *, float);
 extern float FastVecLength(void *);
-extern void release_point_light_slot(int);
-extern int get_ammo(int);
-extern void start_equipped_item_animation(void);
+
 extern int allocate_packed_color_point_light_slot(void *, float, float, int);
 extern void FastVecAdd(void *, void *, void *);
 extern float FastSin(float);
@@ -2550,8 +2551,7 @@ extern int FastDecTimer(void *);
 extern float multiply_global_factor(float);
 extern int truncate_float_to_s32(float);
 extern void spawn_color_decaying_effect_particle(void *, void *, int);
-extern int use_ammo(int, int);
-extern void cancel_hero_item_animation(void);
+
 extern void Sound_StopSlot(int);
 extern void euler_rotation_basis(void *, void *);
 extern void multiply_matrix3x3(void *, void *, void *);

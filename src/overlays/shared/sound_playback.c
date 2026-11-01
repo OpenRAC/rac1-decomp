@@ -4,6 +4,7 @@
 #include "callees.h"
 #include "include_asm.h"
 #include "hero.h"
+#include "overlays/shared/help_message_removal.h"
 
 /* Ship pickup moby: remembers whether the hero is at the ship entry point. */
 struct ShipPickupVars {
@@ -159,7 +160,7 @@ extern void FastVecAdd(void *, void *, void *);
 extern float FastVecDist(void *, void *);
 extern int try_set_help_message(int, int);
 extern void StartCutscene(int);
-extern int remove_help_message_for_selector(int);
+
 extern void PlayMovieEntryIfIdle(int);
 extern void render_environment_mapped_object(void);
 extern void draw_light_flare(void);

@@ -1,5 +1,7 @@
 #include "common.h"
 #include "structs.h"
+#include "core/0012AC80.h"
+#include "game/movie/movie.h"
 
 /* Retail-disassembly reconstruction of decoder buffer operations. */
 extern int sce_mpeg_create(void *, unsigned char *, int);
@@ -178,9 +180,9 @@ extern char *voBufGetData(void *);
 extern void voBufIncCount(void *);
 extern int sce_mpeg_get_picture(void *, void *, int);
 extern int sce_mpeg_is_end(void *);
-extern void sce_mpeg_reset(void *);
+
 extern void ErrMessage(char *);
-extern void switchThread(void);
+
 extern void STUB_printf(char *, ...);
 extern void setImageTag(void *, void *, int, int);
 /* sceMpegGetPicture(VideoDec *) */

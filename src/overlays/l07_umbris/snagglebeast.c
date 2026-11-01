@@ -5,6 +5,11 @@
 #include "vector.h"
 #include "moby.h"
 #include "hero.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/camera_switch_and_update.h"
+#include "overlays/shared/gadgebot_containers_and_frog.h"
+#include "overlays/shared/point_lights_and_glows.h"
+#include "overlays/shared/weapon_hud_and_counters.h"
 /* Snagglebeast: senses the target, chases along umbris paths and whips its rope. */
 struct SnagglebeastVars {
     u8 pad_00[0x20];
@@ -707,7 +712,7 @@ extern void set_moby_dialogue_record_value(void *, int);
 extern void SetDeathBits(void *, int, int);
 extern void jet_clear_persistent(int);
 extern void jet_reset_camera(void *, void *);
-extern void matrix_to_euler(void *, void *);
+
 extern float FastAddRots(float, float);
 extern float update_snagglebeast_rope(void *, void *);
 extern void HeroEnterMoveState(int, int);
@@ -718,15 +723,14 @@ extern char *spawn_on_path(void *, int, int, int);
 extern void Hud_SetBarValueById(int, int);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
-extern void initialize_moby_particle_effect_state(char *);
-extern void release_point_light_slot(int);
+
 extern void DeleteMoby(void *);
 extern void jet_animate(unsigned char *, float);
 extern void update_timed_point_light_color(char *);
 extern int scale_ticks(int);
 extern void draw_collision_clipped_moby_beam();
 extern void draw_and_probe_snagglebeast_rope_attack();
-extern void reset_numeric_hud_element();
+
 extern void Hud_UpdateCounter();
 extern void draw_segmented_hud_meter_base();
 extern char debris_far_point[];
@@ -2072,7 +2076,7 @@ typedef struct {
 } RopePuff_319230;
 extern void FastVecCross(void *, void *, void *);
 extern float FastArcSin(float);
-extern float Camera_SmoothAngle(void *, float, float, float, float, float);
+
 extern void lerp_vector(void *, void *, void *, float);
 extern float select_segment_point_near_sphere_surface(void *, void *, void *, void *, void *, float);
 extern RopePuff_319230 *PartType23Spawn(void *, float, float, float, int, void *, float, int);

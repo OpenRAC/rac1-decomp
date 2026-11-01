@@ -2,30 +2,16 @@
 #include "common.h"
 #include "include_asm.h"
 #include "moby.h"
+#include "game/skyfunc.h"
+#include "overlays/shared/point_lights_and_glows.h"
+#include "overlays/shared/sky_particles.h"
 
-extern void SetupSkyGifPaging(void);
-extern void DoSkyGifPaging(void);
 extern void VU1_addGSregister(int, long);
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern int depth_buffer_address MACRO_ADDR;
-extern void update_sky_shells_static(void);
+
 extern void draw_sky_shells_with_particles_and_rotating_shell(void);
-extern void update_sky_shells_animated(void);
-extern void draw_four_sky_shells_with_animated_particles(void);
-extern void sky_shells_rotate_two(void);
-extern void draw_sky_shells_with_fast_and_slow_rotation(void);
-extern void draw_sky_shells_with_particles_and_modulo_50000_rotation(void);
-extern void draw_three_sky_shells_with_three_particle_types(void);
-extern void draw_three_sky_shells_with_particles_and_modulo_50000_rotation(void);
-extern void draw_sky_shells_with_modulo_40000_rotation(void);
-extern void draw_sky_shells_with_modulo_25000_rotation(void);
-extern void draw_sky_shells_with_scaled_phase_rotation(void);
-extern void draw_sky_shells_with_slow_medium_and_fast_rotation(void);
-extern void draw_three_sky_shells_with_particles(void);
-extern void SkyShellsRotatePair(void);
-extern void draw_two_sky_shells_with_particles(void);
-extern void render_three_shell_particle_sky(void);
-extern void draw_seven_sky_shells_with_modulo_40000_and_60000_rotation(void);
+
 extern void SkyShellsEntryUpdate(void);
 extern void b8f8_a(void) __asm__("func_L00_0028B8F8");
 extern void b8f8_b(void) __asm__("func_L00_0028B8F8");
@@ -125,7 +111,7 @@ extern float random_float_between(float, float);
 extern void BuildSphericalOffset(void *, float, float, float);
 extern int rand_range(int, int);
 extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, int, float);
-extern void emit_moby_particle_pairs(void *);
+
 extern void apply_env_zone_lighting(void *);
 extern void render_environment_mapped_object();
 extern void glow_quads_draw();

@@ -5,6 +5,9 @@
 #include "vector.h"
 #include "hero.h"
 #include "moby.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/radial_particle_burst.h"
 
 typedef struct Train292890 {
     u8 pad_00[0x60];
@@ -450,7 +453,7 @@ extern int find_nearest_path_point_r(void *, void *, void *, int *, float *, int
 extern void Sound_StopSlot(int);
 extern void FadeToBlack(int);
 extern void set_moby_state_14(unsigned char *);
-extern int is_hero_on_moby(void *);
+
 extern int is_moby_class_23e_in_state_14(char *);
 extern void clear_u64_value(void *);
 
@@ -2264,13 +2267,13 @@ extern void is_value_within_interpolated_window_cf(void *);
 extern int IsFrameWithinWindow(char *, float);
 extern void vec_scale_to_length(void *, void *, float);
 extern void add_vectors(void *, void *, void *);
-extern void emit_radial_particle_burst(void *, void *, int);
+
 extern void compute_interpolated_record_value_cf(void *, void *, void *, int, float, float, float);
 extern void record_moby_hit(void *, void *);
 extern int ClassifyTargetInCone(char *m, char *p, float *pos, char *v);
 extern void find_nearest_path_point(void *, void *, void *, int *, float *, int, float, float, float);
 extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
-extern float probe_ground_height_flag20(void *);
+
 extern float ApproachValue(float *p, float target, float maxstep);
 extern int coll_line(void *, void *, int, void *, void *);
 extern float IntToFloat(int);

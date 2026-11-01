@@ -5,7 +5,12 @@
 #include "vector.h"
 #include "hero.h"
 #include "moby.h"
-
+#include "game/mobyutil.h"
+#include "game/stream.h"
+#include "overlays/shared/bolts_and_wrench.h"
+#include "overlays/shared/camera_switch_and_update.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/hero_idle_and_animation.h"
 
 extern Hero g_hero_s __asm__("D_0013F450");
 extern float g_frame_scale_sq MACRO_ADDR;
@@ -24,7 +29,7 @@ extern void speed_step(float, float);
 extern void turn_to(int, float, float, float);
 extern void stick_target(int, float);
 extern float SpringAngle_r(void *, float, void *, int, float, float, float) __asm__("func_L00_0025CCF0");
-extern void rotate_hero_about_fixed_local_pivot(float, float, float);
+
 extern void set_gravity_relative_vector_length_xy(float *, float *, float);
 extern void add_hero_forward_offset(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
@@ -608,7 +613,6 @@ extern float FastVecDot(void *a, void *b);
 extern void FastVecCross(void *, void *, void *);
 extern void fast_euler_to_matrix(void *, void *);
 extern float SpringAngle(char *, char *, int, float, float, float, float);
-extern void matrix_to_euler(void *, void *);
 
 typedef struct {
     float f[4];
@@ -1044,13 +1048,13 @@ void update_hero_delayed_voice_requests(void) {
 extern int hero_control_mode_11_flag NOT_SDA;
 extern void clear_hero_target_and_ground_speeds(void);
 extern void clear_moby_transform_history(char *o);
-extern void pad_resetState(void);
+
 extern void cancel_hero_item_animation(void);
-extern void reset_hero_easing_records(void);
+
 extern void HeroEnterMoveState(int, int);
 extern void HeroStartSequenceInBank(int bank, int seq);
 extern void update_hero_ground_contact_and_surface_slopes(void);
-extern void init_camera_system(void);
+
 extern void apply_nearest_environment_sample(int);
 
 /* resets the level state from two vectors: sets up camera matrices, clears flags, starts sound bank */
@@ -1179,7 +1183,7 @@ void stop_hero_motion_without_forward_support(float a, float b) {
         scale_hero_motion(0.0f);
 }
 extern void offset_hero_position_against_gravity(float *dst, float *src, float h);
-extern void emit_randomized_sparkle_pairs(void *, int);
+
 extern int *coll_sphere_moby_hits[];
 
 /* Initialise the pool once, then for each of the first n entries of type 5 or 9 halve and apply its position. */
@@ -1211,7 +1215,6 @@ extern float random_angle_radians(void);
 extern void BuildSphericalOffset(void *, float, float, float);
 extern float FastCos(float);
 extern float FastSin(float);
-extern void PartType04Spawn(void *, void *, int, int, int, int, int, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00214658.c, FUN_L00_00217450. */
 void spawn_hero_radial_particle_burst(void) {

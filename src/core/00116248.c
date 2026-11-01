@@ -1,6 +1,7 @@
 #include <stdarg.h>
 #include "common.h"
 #include "structs.h"
+#include "core/00116FA0.h"
 
 /*
  * core_text object 0x116248-0x1162B8: the C library's sprintf.c. Retail
@@ -25,7 +26,6 @@ typedef struct {
     char _pad18[0x54 - 0x18];
     void *_data;                /* 0x54 */
 } NewlibFile;
-extern int vfprintf(void *, const char *, va_list);
 
 /* sprintf: vfprintf into a string FILE of unbounded size, then terminate
    the string. */

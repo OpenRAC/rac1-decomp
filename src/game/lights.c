@@ -2,13 +2,13 @@
 #include "callees.h"
 #include "records.h"
 #include "structs.h"
+#include "game/lights.h"
 
 /*
  * lights.cpp in the original source; text 0x202260-0x202AA8.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
-
 
 typedef struct {
     char b[0x13];
@@ -23,7 +23,6 @@ extern float FastCos(float);
 extern float FastSin(float);
 extern float FastVecDist(void *, void *);
 extern void CreatePointLight(int);
-extern void RefreshPointLight(int);
 
 /* Per-frame light update: the ambient colour (0.8 grey, -0.3) and a key
    light 0.8 rad behind the camera heading, tilted down; then every
@@ -197,8 +196,6 @@ void CreatePointLight(int i) {
         }
     }
 }
-
-extern void DetachPointLight(int);
 
 /* RefreshPointLight */
 void RefreshPointLight(int arg0) {

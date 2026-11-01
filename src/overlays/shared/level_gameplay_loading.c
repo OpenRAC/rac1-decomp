@@ -4,6 +4,12 @@
 #include "include_asm.h"
 #include "moby.h"
 #include "hero.h"
+#include "game/draw.h"
+#include "game/fastfunc.h"
+#include "game/mobyfunc.h"
+#include "game/pause.h"
+#include "game/stream.h"
+#include "overlays/shared/camera_switch_and_update.h"
 
 typedef struct G137C80_240398 {
     char pad[0x12CC];
@@ -456,7 +462,7 @@ extern void copy_memory_by_alignment(void *, void *, int);
 extern void LightTfrags(void *);
 extern void matrix_mul_vec3(void *, void *, void *);
 extern float FastVecLength(void *);
-extern float max_float(float, float);
+
 extern void scale_vector(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern void LightTies(void *);
@@ -465,10 +471,10 @@ extern float IntToFloat(int);
 extern void LightShrubs(void *);
 extern void resolve_lookup_record(short *);
 extern int find_or_assign_bolt_source_slot(int, int);
-extern void InitMobyInstance(void *, int);
+
 extern float ProbeGroundHeight(void *, int, float);
 extern void moby_build_matrix(void *);
-extern void pack_render_command_fields(void *, int, int, int, int);
+
 extern void store_current_level_table_value(int, int);
 extern void FastMemCopy(void *, void *, int);
 extern void initialize_moby_state_record(char *);
@@ -478,9 +484,7 @@ extern void Level_ResetGameplayGlobals(void);
 extern void initialize_hero(void);
 extern void reset_hero_to_idle(void);
 extern void setup_level_cameras(void);
-extern void Camera_UpdateFrame(void);
-extern void pad_resetState(void);
-extern void Font_EnableColorCodes(void);
+
 extern void update_moby_proximity_interaction();
 
 extern Lvl173F00_422D8 lvl_resource_buffers;
@@ -1906,7 +1910,7 @@ extern void register_moby_class(char *, void *, void *, s32);
 extern void register_object_render_class(char *, void *, void *, s32);
 extern void register_shrub_render_class(char *, void *, void *, void *, s32);
 extern void initialize_tfrag_render_data(char *, void *);
-extern void clear_scene_state_buffers(void);
+
 extern void load_two_int_two_float_header(char *);
 extern void relocate_counted_pointer_table(char *);
 extern char *load_level_texture_bank(char *, s32 *);

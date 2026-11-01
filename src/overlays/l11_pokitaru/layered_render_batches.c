@@ -2,12 +2,14 @@
 #include "common.h"
 #include "moby.h"
 #include "include_asm.h"
+#include "game/draw.h"
+#include "overlays/shared/homing_missile_and_water_sheet.h"
+#include "overlays/shared/scoutbot_and_paratrooper.h"
 
 extern void VU1_addGSregister(int, long);
-extern void font_queue_vu_state(void);
+
 extern int GetEffectTex(int);
-extern void Moby600_DrawQuads11(int);
-extern void emit_pair_offset_render_batch(int);
+
 extern void emit_level11_layered_effect_batches_with_pair_offset(int);
 extern short layered_effect_texture_2c_fixed_alpha;
 extern short layered_effect_texture_2a_pair_zero_fixed_alpha;
@@ -57,14 +59,13 @@ typedef struct {
 typedef struct {
     int a, b;
 } Pair8_31F760;
-extern void scale_rgba_tables(void *, int, void *, float, float, float, float, int);
+
 extern int FastBSphereCheck(char *, float);
 extern void FastVecSub(void *, void *, void *);
 extern float FastVecLength(void *);
-extern void advance_scroll_offsets(int);
-extern void advance_wrapped_sine_pair(void *, float, float, float, void *);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern void advance_scroll_entry(int);
+
 extern void AddDrawCallback(void (*)(void), void *);
 extern short pokitaru_layered_mesh_colors;
 extern short pokitaru_layered_mesh_vertex_counts;
@@ -202,7 +203,7 @@ void emit_oil_tanker_render_batches_with_pair_offset(int a) {
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern void emit_render_batches_with_pair_offset(int arg);
 extern void emit_oil_tanker_render_batches_with_pair_offset(int);
-extern void queue_oil_tanker_front_texture_2b_batches(int);
+
 extern int distance_faded_effect_fade_alpha_w __asm__("D_L11_001626A0") MACRO_ADDR;
 extern int distance_faded_effect_texture_29_fixed_alpha_scale MACRO_ADDR;
 extern int distance_faded_effect_texture_2a_pair_one_fixed_alpha MACRO_ADDR;

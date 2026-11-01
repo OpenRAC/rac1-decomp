@@ -6,6 +6,9 @@
 #include "hero.h"
 #include "moby.h"
 #include "camera.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/camera_switch_and_update.h"
+#include "overlays/shared/effect_particle_updates.h"
 /* Hydrodisplacer faucet: pulse phase and strength. */
 struct FaucetPulseVars {
     u8 pad_00[0x18];
@@ -56,7 +59,6 @@ struct GlowSpriteVars {
     u8 pad_6C[0x4];
     f32 scale; /* 0x70 */
 };
-
 
 LINKER_REMNANT("asm/overlays", func_L05_002CF2C0);
 LINKER_REMNANT("asm/overlays", func_L05_002D5398);
@@ -321,7 +323,7 @@ extern f32 FastCos(f32);
 extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern int rand_range(int, int);
-extern void PartType04Spawn(void *, void *, int, int, int, int, int, int);
+
 extern void FastVecScale(void *, void *, float);
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 extern short rilgar_frame_count;
@@ -1617,7 +1619,7 @@ void func_L05_0032ABF0_r(Camera_32ABF0 *cam) {
 extern float FastVecDot(void *a, void *b);
 extern float FastArcSin(float x);
 extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
-extern float Camera_SmoothAngle(void *, float, float, float, float, float);
+
 extern f32 Cam_InterpValues_r(f32 *vel, f32 from, f32 to, f32 stiffness, f32 damping, f32 max) __asm__("func_001EC120");
 
 // Steers the moby's two axis angles toward its target, then runs the blend step once its state byte is 1.
@@ -1956,7 +1958,7 @@ void update_orbit_camera_position(Camera_32B1F8 *m) {
     vec_cross_32B1F8(&m->side, &m->up, &m->fwd);
 }
 extern char *rilgar_camera_init_source;
-extern void extract_matrix_rotation_quaternion(void *, void *);
+
 extern void reset_hero_follow_camera_from_preset(void *);
 
 /* Copies the matrix at D_L05_00167304 into out and finishes with func_L05_0032ABF0. */

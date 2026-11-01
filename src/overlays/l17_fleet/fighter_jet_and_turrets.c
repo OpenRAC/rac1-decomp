@@ -4,6 +4,15 @@
 #include "include_asm.h"
 #include "moby.h"
 #include "hero.h"
+#include "game/draw.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/help_message_removal.h"
+#include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "overlays/shared/homing_missile_and_water_sheet.h"
+#include "overlays/shared/moby_group_flags.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/ship_pickup_and_rocket.h"
 
 /* Dreks fleet turret: takes hits, flashes and fades colour. */
 struct FleetTurretVars {
@@ -684,7 +693,7 @@ void distribute_class_733_group_mobys_along_path(char *moby) {
 }
 typedef int u128_2D8CC8 __attribute__((mode(TI)));
 extern int hero_is_in_special_state(void);
-extern void normalize_vector_triplet(void *);
+
 extern void copy_matrix_rotation(void *, void *);
 extern float IntToFloat(int);
 extern float FastNormalizeAngle(float);
@@ -1353,8 +1362,7 @@ char *spawn_class_558_moby_toward_target(char *source_moby, char *spawn_position
     return (char *)spawned_moby;
 }
 extern int GetEffectTex(int);
-extern void append_rotated_textured_screen_quad(float, float, float, float, float, int, int, long, int, int, int, int,
-                                                int);
+
 /* Draws effect texture 0x2E four times at x, y, each copy turned a further 90 degrees. */
 void draw_four_quarter_turn_effect_quads(unsigned char a, unsigned char b, unsigned char c, unsigned char d, float x,
                                          float y, float s, float ang) {
@@ -1430,11 +1438,11 @@ void draw_fighter_jet_radar_contact_icon(char *rot, char *from, char *moby, int 
                          GetEffectTex(tex + 0x28 + t->tex));
     }
 }
-extern void project_world_point_to_screen_pixels(void *, void *, void *, int);
+
 extern void draw_fighter_jet_radar_contact_icon(char *, char *, char *, int, long, int);
-extern void project_to_screen(float *, void *);
+
 extern float normalize_angle(float);
-extern void emit_transformed_2d_vertex_packet(void *, int, int, long, float, float, float, float);
+
 extern void matrix_from_basis_rows(void *, void *);
 extern char *fleet_moby_list MACRO_ADDR;
 extern float fleet_camera_matrix_row1[];
@@ -1743,9 +1751,7 @@ extern long GetEffectTex_l(int) __asm__("func_001F4868");
 extern void update_fighter_jet_target_lock(int a, char *p);
 extern void draw_four_quarter_turn_effect_quads_f(float, float, float, float, unsigned char, unsigned char,
                                                   unsigned char, unsigned char) __asm__("func_L17_002EBF08");
-extern void append_scaled_screen_triangle_strip(float, float, float, void *, int, int, long);
-extern void append_rotated_sprite_quad(float, float, float, float, float, int, int, int, int, int, int, int, float,
-                                       float);
+
 extern void *msg_string_id(int) __asm__("func_001FE540");
 extern int FontPrintCenterSmall_c(int, int, long, void *, int) __asm__("func_001F6F40");
 extern char fleet_hud_ammo_pip_shape[];
@@ -1873,7 +1879,7 @@ void DrawFleetHud(char *moby) {
     d->bar_value = v;
 }
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern int spawn_class_3f1_moby(void *, void *, void *, float, float);
+
 extern short fleet_jet_gun_aim_distance;
 extern short fleet_jet_gun_fire_delay;
 extern short fleet_frame_scale;
@@ -1946,7 +1952,7 @@ void try_fire_fighter_jet_rocket(char *moby, char *ship_vars) {
 void adjust_fighter_jet_steering_for_flight_bounds(char *moby, float *a, float *b);
 extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
 extern float SpringAngle(char *, char *, int, float, float, float, float);
-extern float interpolate_value_with_repeated_squaring(int, int, float, float, float, float, float);
+
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
 extern void UpdateViewContext(void);
@@ -2024,7 +2030,6 @@ extern short fleet_jet_crash_time;
 extern short fleet_jet_default_heading_target;
 
 typedef float W4[4] __attribute__((aligned(16)));
-
 
 typedef struct {
     char pad00[0x10];
@@ -2315,24 +2320,23 @@ extern void clamp_vec_length(void *, void *, float);
 extern int HeroL17_SetMoveState(int, int);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
-extern void jet_group_state(int, int, int, int);
+
 extern void update_moby_class_flags_and_link(int, int, int, int);
 extern float jet_distance(void *, void *);
 extern int try_set_help_message(int, int);
-extern int remove_help_message_for_selector(int);
+
 extern float ApproachValue(float *, float, float);
 extern void jet_animate(unsigned char *, float);
 extern void MusicRequestTrack(int, int);
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern int force_help_message(int, int);
 extern void CameraScript(void *, void *, int, int, int);
-extern void jet_camera_mode(void);
+
 extern void CameraScript2(int);
 extern void Hud_SetBarValueById(int, int);
 extern void moby_anim_sphere_lerp(void *);
 extern int FastDecTimer(void *);
-extern void clear_jet_camera_mode_latch(void);
-extern void Hero_OnKilled(void);
+
 extern int STUB_printf();
 extern void jet_clear_persistent(int);
 extern void jet_reset_camera(void *, void *);
@@ -3179,7 +3183,7 @@ typedef struct {
 extern void update_robot_dog_hit_reaction_and_target_detection(void *, int);
 extern void update_robot_dog_aim_joint(void *);
 extern void update_robot_dog_glow_effects(void *);
-extern void manipulator_set_scale(void *, float);
+
 extern void set_ground_height_band(void *);
 extern void MobyBlendAnimation(void *, int, int, int);
 extern int CarriedMobyUpdate(void *, void *);
@@ -3188,7 +3192,7 @@ extern void MobySpringTurn(char *moby, float *vel, float target, float k, float 
 extern int move_robot_dog_toward_position(char *moby, float *target, float speed);
 extern void PostHitMessage(int, int, int, void *, void *, float);
 extern int mine_fall(void *, void *);
-extern void spawn_moby_break_fragments(void *, int, int, int, int, int, int);
+
 extern void SetDeathBits(void *, int, int);
 extern short class1382_move_params;
 

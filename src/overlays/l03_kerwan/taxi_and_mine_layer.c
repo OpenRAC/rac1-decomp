@@ -4,6 +4,10 @@
 #include "include_asm.h"
 #include "hero.h"
 #include "moby.h"
+#include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/weapon_hud_and_counters.h"
 
 /* Path mover (class 0x382): rides a rail path, turning its matrix with it. */
 struct PathMoverVars {
@@ -797,7 +801,7 @@ extern s32 D_L03_0015F674_D4560 SDATA(D_L03_0015F674);
 extern void set_moby_dialogue_record_value(void *, int);
 extern void PartType41Spawn(void *, struct Moby *, s32, u32, s32, s32, s32, f32);
 extern int is_point_inside_clip_volume(void *, int);
-extern int is_hero_on_moby(void *);
+
 extern void request_hero_target_pose(void *, float, int);
 extern s32 get_hero_target_pose_status(void);
 extern void update_entity_matrix(void *, void *, void *, void *);
@@ -1346,7 +1350,7 @@ extern void record_moby_context_bytes(void *, int, struct Moby *, int, void *);
 extern int DialogRequest_Init(void *, unsigned char *);
 extern int Npc_TryStartDialog(struct Moby *, struct TalkState_hg *);
 extern void initialize_moby_grounding(struct Moby *);
-extern void PlaceMarkerAheadOfMoby(float, void *);
+
 extern void jet_clear_persistent(int);
 extern void jet_reset_camera(void *, void *);
 extern void grant_inventory_item(int, int);
@@ -1930,7 +1934,7 @@ void big_al_update(struct Moby *m) {
 typedef unsigned int u128_DD158 __attribute__((mode(TI), aligned(16)));
 
 extern int DialogRequest_Init(void *, unsigned char *);
-extern void PlaceMarkerAheadOfMoby(float, void *);
+
 extern void MobySetAnimation(unsigned char *, int, int);
 extern int PlayBankSound(int, int, int);
 extern void add_vectors(void *, void *, void *);
@@ -2082,9 +2086,8 @@ int IsStateAndPvarFlagSet(unsigned char *moby, char *data) {
 }
 extern int queue_animation_update(int, int, int, int, int, int, int);
 extern void hud_keep_visible(int, int);
-extern void initialize_numeric_hud_element(void);
+
 extern void DefaultVtbl_DeleteMoby(void);
-extern void draw_hud_text_panel(void);
 
 /* Shows a help message for the mode, then keeps a hud queue entry alive. */
 void update_rail_lift_help_and_hud(char *m, int mode) {
@@ -2306,7 +2309,6 @@ typedef struct Data_2E08E8 {
     int f7C;
 } Data_2E08E8;
 
-
 typedef struct Help_2E08E8 {
     unsigned short count;
     unsigned short time;
@@ -2324,7 +2326,7 @@ extern void fast_dec_timer(int *arg0);
 extern int is_point_inside_clip_volume(void *, int);
 extern int Help_Request(int a, int b);
 extern float vec_distance_xy(void *, void *);
-extern int get_ammo(int);
+
 extern int PlayBankSound(int, int, int);
 extern void ShowBanner(int, int);
 extern Help_2E08E8 usage_stats_r[] __asm__("D_00141948");
@@ -2698,8 +2700,7 @@ void update_kerwan_cutscene_effects(char *m) {
 }
 extern void Moby_PlaySound(int, int, int);
 extern void spawn_proximity_gated_bolts(void *);
-extern void spawn_moby_break_fragments(void *, int, int, int, int, int, int);
-extern void spawn_moby_from_placement(void *, int);
+
 extern void DeleteMoby(void *);
 /* Lightpost update: on a hit it plays a sound, drops bolts, breaks apart and spawns its remains. */
 void lightpost_update(char *m) {

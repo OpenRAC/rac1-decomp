@@ -8,6 +8,7 @@
 #include "camera.h"
 #include "hero.h"
 #include "moby.h"
+#include "overlays/shared/camera_switch_and_update.h"
 
 extern CameraSystem player_camera;
 extern char hero_globals_base[];
@@ -19,7 +20,6 @@ extern int gCameraDefCountLvl MACRO_ADDR;
 extern short follow_cam_turn_blend_weight;
 extern CameraDef *camera_descriptors MACRO_ADDR;
 extern void clear_u64_value(void *);
-extern void init_camera_system(void);
 
 /* Initialises the camera slot tables and the camera state from the hero's transform. */
 void setup_level_cameras(void) {

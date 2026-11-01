@@ -2,13 +2,15 @@
 #include "callees.h"
 #include "records.h"
 #include "structs.h"
+#include "game/draw.h"
+#include "game/skyfunc.h"
+#include "game/vuchain.h"
 
 /*
  * skyfunc.cpp in the original source; text 0x22BEB0-0x22CEB8.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
-
 
 extern int draw_config[];
 
@@ -283,8 +285,7 @@ extern void clear_u64_value(f32 *);
 extern void scale_vector(void *, void *, f32);
 extern void set_identity_matrix_r2(void *) __asm__("func_001FA190");
 extern void euler_to_matrix_ee(void *, f32 *);
-extern void SetupSkyGifPaging(void);
-extern void DoSkyGifPaging(void);
+
 extern void VU1_addGSregister_r2(s32, s64) __asm__("func_00234C98");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/sky/draw_sky_shells.c, draw_sky_shells. */
@@ -354,7 +355,7 @@ extern int g_gs_texture_allocation_start MACRO_ADDR;
 extern int g_gs_texture_allocation_cursor MACRO_ADDR;
 extern int pending_texture_upload_count MACRO_ADDR;
 extern char str_sky_texs[];
-extern void ProfileMarker_Begin(void *, int);
+
 typedef struct {
     long tag;
     long unk_08;
@@ -401,7 +402,6 @@ extern int *g_render_packet_cursor_p __asm__("D_00161000") MACRO_ADDR;
 extern int *sky_gif_paging_tag_p __asm__("D_00160570") MACRO_ADDR;
 extern int *sky_gif_paging_start MACRO_ADDR;
 extern void flush_pending_texture_uploads(void);
-extern void VU1_texFlush(void);
 
 /* DoSkyGifPaging: DoGifPaging's twin (func_001F4748) for the sky. Pushes
    two 4-word GIF tags (0x20000000 in the first word) onto the D_00161000

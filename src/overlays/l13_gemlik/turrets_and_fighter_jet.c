@@ -4,6 +4,15 @@
 #include "include_asm.h"
 #include "moby.h"
 #include "hero.h"
+#include "game/draw.h"
+#include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "overlays/shared/homing_missile_and_water_sheet.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/moby_group_flags.h"
+#include "overlays/shared/particle_spawns_and_path_splines.h"
+#include "overlays/shared/ship_pickup_and_rocket.h"
+#include "overlays/shared/water_pool_and_sand_mouse.h"
 
 /* Volume trigger: while the hero is inside the clip volume it sets the *_in states, outside the *_out states. */
 struct VolumeTriggerVars {
@@ -677,7 +686,6 @@ void update_blarg_turret_target_and_state(unsigned char *moby) {
 }
 extern char *CreateMoby(int);
 extern void moby_build_matrix(void *);
-extern void copy_hero_moby_field_38(void *);
 
 /* Spawns a class 0x24 child moby that copies its parent's placement and scale. */
 char *spawn_blarg_turret_child(char *parent) {
@@ -925,12 +933,12 @@ extern int move_4318(void *, void *, float, float, float, int);
 extern float multiply_global_factor(float);
 extern float jump_speed_4318(void *, void *, void *, float, float);
 extern int mine_fall(void *, void *);
-extern int select_list_point_toward_target(void *, void *, void *, void *);
+
 extern int move_w(void *, void *, void *, void *, float);
 extern float MobyGetFrameValue(void *);
 extern void PostHitMessage(void *, int, int, void *, void *, float);
 extern int CarriedMobyUpdate(void *, void *);
-extern int reserve_expired_frame_slot(int *, int, int);
+
 extern void SpawnExplosionFx(void *, void *, int, float, float);
 extern void vec_scale_to_length(void *, void *, float);
 extern float IntToFloat(int);
@@ -1859,8 +1867,7 @@ void robosquawker_update(Moby *m) {
     }
 }
 extern int GetEffectTex(int);
-extern void append_rotated_textured_screen_quad(float, float, float, float, float, int, int, long, int, int, int, int,
-                                                int);
+
 extern float FastAddRots(float, float);
 /* Append the same effect quad four times at x, y, each turned a further quarter turn. */
 void append_four_quarter_turn_effect_quads(unsigned char a, unsigned char b, unsigned char c, unsigned char d, float x,
@@ -1986,11 +1993,11 @@ void draw_fighter_jet_radar_icon(char *rot, char *from, char *moby, int icon, lo
                          GetEffectTex(tex + 0x28 + t->tex));
     }
 }
-extern void project_world_point_to_screen_pixels(void *, void *, void *, int);
+
 extern void draw_fighter_jet_radar_icon(char *rot, char *from, char *moby, int icon, long color, int tex);
-extern void project_to_screen(float *, void *);
+
 extern float normalize_angle(float);
-extern void emit_transformed_2d_vertex_packet(void *, int, int, long, float, float, float, float);
+
 extern void matrix_from_basis_rows(void *, void *);
 extern unsigned char screen_globals_base[];
 extern float gemlik_view_basis_row1[];
@@ -2270,9 +2277,7 @@ skip:
 extern long GetEffectTex_l(int) __asm__("func_001F4868");
 extern void append_four_quarter_turn_effect_quads_f(float, float, float, float, unsigned char, unsigned char,
                                                     unsigned char, unsigned char) __asm__("func_L13_002B9590");
-extern void append_scaled_screen_triangle_strip(float, float, float, void *, int, int, long);
-extern void append_rotated_sprite_quad(float, float, float, float, float, int, int, int, int, int, int, int, float,
-                                       float);
+
 extern void *msg_string_id(int) __asm__("func_001FE540");
 extern int FontPrintCenterSmall_c(int, int, long, void *, int) __asm__("func_001F6F40");
 extern char gemlik_turret_hud_pip_strip[];
@@ -2393,7 +2398,7 @@ void DrawGemlikTurretHud(char *moby) {
 }
 extern float g_frame_time MACRO_ADDR;
 extern void BuildSphericalOffset(void *, float, float, float);
-extern int spawn_class_3f1_moby(void *, void *, void *, float, float);
+
 extern int fast_dec_timer_i(void *) __asm__("func_001F9908");
 
 /* Builds a rotated offset vector from the moby, flips a facing flag on a pad press, and updates the aim. */
@@ -2454,7 +2459,7 @@ extern char jet_camera_mode_warning_msg[];
 extern float gemlik_view_tan_half_fov;
 extern float Spring(float *, float *, float, float, float, float);
 extern float SpringAngle(char *, char *, int, float, float, float, float);
-extern float interpolate_value_with_repeated_squaring(int, int, float, float, float, float, float);
+
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void UpdateViewContext(void);
 extern void AddDrawCallback(void *, void *);
@@ -2866,7 +2871,6 @@ extern short jet_boarding_group_ids_b;
 extern void clamp_vec_length(void *, void *, float);
 extern void vec_reflect(void *, void *, void *);
 
-extern void jet_group_state(int, int, int, int);
 extern void jet_group_switch(short *, int, int, int);
 extern void jet_group_flag(int, int);
 extern float jet_distance(void *, void *);
@@ -2876,12 +2880,12 @@ extern void jet_animate(unsigned char *, float);
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern void CameraScript(void *, void *, int, int, int);
 extern void PlayerFighterFlight(void *, void *);
-extern void jet_camera_mode(void);
+
 extern void MusicRequestTrack(int, int);
 extern int force_help_message(int, int);
 extern void Hud_SetBarValueById(int, int);
 extern void moby_anim_sphere_lerp(void *);
-extern void Hero_OnKilled(void);
+
 extern void jet_clear_persistent(int);
 extern void jet_reset_camera(void *, void *);
 

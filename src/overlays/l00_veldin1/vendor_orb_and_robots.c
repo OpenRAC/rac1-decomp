@@ -4,6 +4,10 @@
 #include "moby.h"
 #include "vector.h"
 #include "hero.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/follow_camera.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 
 extern int cinematic_mode MACRO_ADDR;
 extern char help_stats_base[];
@@ -254,7 +258,7 @@ extern VendPath *level_paths[];
 extern float veldin1_zero_vec[] MACRO_ADDR;
 
 extern void update_veldin_robot_damage_and_targeting(void *);
-extern void manipulator_set_scale(void *, float);
+
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern float FastVecDist(void *, void *);
 extern void set_ground_height_band(void *);
@@ -282,7 +286,7 @@ extern int release_beam_slot_by_id(void *);
 extern int set_beam_origin_transform_and_endpoint(void *, void *, void *);
 extern int mine_fall(void *, void *);
 extern void SpawnExplosionFx(void *, void *, int, float, float);
-extern void spawn_moby_break_fragments(void *, int, int, int, int, int, int);
+
 extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
 extern void DeleteMoby(void *);
 extern void update_veldin_robot_effects(char *);
@@ -698,8 +702,7 @@ void update_veldin_robot_damage_and_targeting(void *mv) {
     }
 }
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void random_spherical_offset(void *, float, float);
-extern char *spawn_mode_controlled_rotating_alpha_fade_particle(void *, void *, int, void *);
+
 extern float random_float_between(float, float);
 extern float IntToFloat(int);
 extern void AddDrawCallback(void (*)(void), void *);
@@ -801,9 +804,6 @@ void draw_veldin_robot_effect_quad(char *m) {
 }
 extern int beam_slot_ids[] MACRO_ADDR;
 extern int beam_slot_states[] MACRO_ADDR;
-extern void release_beam_slot(int);
-extern void update_slot_panes_and_effects(int, int);
-extern void draw_active_beam_slots(void);
 
 /* Slot update: state 0 clears the two slot arrays, state 1 services the pending slots. The arrays are MACRO_ADDR (retail loads their addresses unsplit), as the NTSC decomp declares them. */
 void update_beam_slot_controller(unsigned char *m) {
@@ -841,7 +841,7 @@ void update_beam_slot_controller(unsigned char *m) {
     }
 }
 extern void cutscene_set_camera_target(int);
-extern void draw_trail(void *, void *, void *, float, float);
+
 extern char *PartType23Spawn(void *, int, void *, int, float, float, float, float);
 extern float veldin1_zero_vec_b[] __asm__("D_L00_0015F660") MACRO_ADDR;
 typedef struct {

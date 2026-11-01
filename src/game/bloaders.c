@@ -1,5 +1,6 @@
 #include "common.h"
 #include "structs.h"
+#include "game/bloaders.h"
 
 /*
  * bloaders.cpp in the original source; text 0x1E94E8-0x1E9730.
@@ -91,8 +92,6 @@ void LoadPifAsPSMT8H(void *arg0, void *arg1, int tbp, int cbp) {
 
 extern int disc_table[];
 extern int Load(void *, int, int);
-
-extern void LoadPifAsPSMT8H(void *arg0, void *arg1, int arg2, int arg3);
 
 extern unsigned char debug_font_buffer[];
 

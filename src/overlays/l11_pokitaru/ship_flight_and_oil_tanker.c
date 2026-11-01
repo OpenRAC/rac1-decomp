@@ -7,6 +7,11 @@
 #include "vector.h"
 #include "hero.h"
 #include "moby.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/move_control_and_clear_path.h"
 
 /* Player ship: steering, lock-on target, reticle and hit-point bar. */
 struct ShipVars {
@@ -933,7 +938,7 @@ extern void Hud_SetBarValueById(int, int);
 extern void moby_anim_sphere_lerp(void *);
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern void Sound_StopSlot(int);
-extern void Hero_OnKilled(void);
+
 extern int STUB_printf();
 extern void jet_clear_persistent(int);
 extern void emit_type_74_particles_from_moby_joints(void *, void *);
@@ -1546,7 +1551,7 @@ extern float random_float_between(float, float);
 extern int random_integer_below(int);
 extern float random_angle_radians(void);
 extern float ProbeGroundHeight(void *, int, float);
-extern float probe_ground_height_flag20(void *);
+
 extern int IsPointInPolygon(void *, void *, int);
 extern void MobySphereHitDirectional(struct Moby *, void *, float, int, float, float, int, int, int);
 extern float jump_speed_4318(void *, void *, int, float, float);
@@ -3675,7 +3680,7 @@ char *spawn_class_5f4_moby_with_random_rotation(void *position, void *vector, vo
 extern short bubble_splash_color_a;
 extern short bubble_splash_color_b;
 extern int rand_range(int, int);
-extern void PartType35Spawn(void *, void *, int, int);
+
 extern char *spawn_splash_p(void *, void *, void *, float, float) __asm__("func_L00_00272770");
 extern float multiply_global_factor(float);
 
@@ -3749,8 +3754,7 @@ void spawn_bubble_spark(char *m) {
 extern char *MobyGetHitMessage(void *, int, int);
 extern void Moby_PlaySound(int, int, int);
 extern void spawn_proximity_gated_bolts(void *);
-extern void spawn_moby_break_fragments(void *, int, int, int, int, int, int);
-extern void spawn_moby_from_placement(void *, int);
+
 extern void DeleteMoby(void *);
 /* Moby update for a breakable object that plays effects when hit. */
 void Pokitaru_BreakOnHitUpdate(char *m) {

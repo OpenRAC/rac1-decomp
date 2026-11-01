@@ -5,6 +5,11 @@
 #include "vector.h"
 #include "hero.h"
 #include "moby.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/particle_spawns_and_path_splines.h"
+#include "overlays/shared/water_pool_and_sand_mouse.h"
 
 /* Extermibot: wakes from its dormant pose, wanders around its home, walks
    its path toward the target and strikes it; Wing_3047E8 is the same block
@@ -222,7 +227,7 @@ extern void euler_rotation_basis(void *, void *);
 extern int IsPointInPolygon(void *, void *, int);
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern void Moby_PlaySound(int, int, int);
-extern void Hero_OnKilled(void);
+
 extern void CameraScript(void *, void *, int, int, int);
 extern void spawn_sharkigator_surface_effects(char *moby);
 extern void spawn_sharkigator_splash_effects(int unused, char *p);
@@ -485,7 +490,7 @@ extern float FastCos(float);
 extern float FastSin(float);
 extern int rand_range(int, int);
 extern int random_integer_below(int);
-extern void PartType35Spawn(void *, void *, int, int);
+
 extern void rand_vec(float *, float, float);
 extern void FastVecAdd(void *, void *, void *);
 extern float multiply_global_factor(float);
@@ -526,7 +531,6 @@ void spawn_sharkigator_splash_effects(int unused, char *p) {
 }
 extern int get_first_moby_in_group(int *, int, int, int);
 extern int get_next_moby_in_group(int *, int, int, int);
-extern void draw_offset_textured_effect_quad(void *, int, float, float);
 
 // For each moby of the same type in a list, run a 3-iteration loop over its sub-entries.
 void draw_group_moby_glow_quads(unsigned char *moby) {
@@ -1010,7 +1014,6 @@ extern float random_float_between(float, float);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float FastSin(float);
 extern void FastVecAdd(void *, void *, void *);
-extern void spawn_type_52_particle(float *, float, float, int, int, int);
 
 /* Emits up to two particle effects around the moby, each in a random direction. */
 void spawn_amoeboid_particles(unsigned char *moby) {
@@ -1104,7 +1107,7 @@ char *spawn_racer_child(char *owner) {
     }
     return moby;
 }
-extern void manipulator_set_scale(void *, float);
+
 extern void set_ground_height_band(void *);
 void handle_extermibot_hits_and_update_targeting(Moby *m);
 void move_extermibot_along_path(struct Moby *m, s32 node, f32 side);
@@ -2775,14 +2778,13 @@ extern void PostHitMessage(void *, int, int, void *, void *, float);
 extern float ProbeGroundHeight(void *, int, float);
 extern float FastAbsF(float);
 extern int FastDecTimer(void *);
-extern void manipulator_set_scale(void *, float);
+
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern char rilgar_camera_pos[];
 extern unsigned char special_items_base[];
 extern float g_frame_scale_sq MACRO_ADDR;
 extern int rilgar_hoverboard_races_finished MACRO_ADDR;
 extern int rilgar_nearby_mobys[];
-
 
 typedef struct {
     int count;
@@ -2829,7 +2831,6 @@ typedef struct {
     char p00[0x50];
     int f50;
 } ChildData_308D68;
-
 
 /* Update function of moby class 717 (skid_mcmarx): a hoverboard racer that follows its path, jumps, and steers. */
 void SkidMcMarxUpdate(Moby *moby) {
@@ -3512,7 +3513,7 @@ void synchronize_group_water_heights(char *moby) {
         }
     } while (*p++ >= 0);
 }
-extern void render_water_grids(char *, int);
+
 extern char water_records[];
 /* Draws the level's ripple patches. */
 void DrawRipplePatches(void) {

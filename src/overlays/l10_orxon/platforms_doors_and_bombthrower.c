@@ -6,6 +6,10 @@
 #include "records.h"
 #include "hero.h"
 #include "moby.h"
+#include "overlays/shared/fast_vector_math.h"
+#include "overlays/shared/follow_camera.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/point_lights_and_glows.h"
 /* Cycling platform: rises, waits, drops and waits again. */
 struct CyclingPlatformVars {
     u8 pad_00[0x20];
@@ -116,7 +120,6 @@ struct PathSparkEffectVars {
     f32 unk_18; /* 0x18 */
 };
 
-
 extern int STUB_printf();
 extern void DeleteMoby(void *);
 extern float multiply_global_factor(float);
@@ -181,7 +184,7 @@ void update_cycling_platform(char *m) {
 typedef int Q_296dc0 __attribute__((mode(TI)));
 extern float g_frame_time_x __asm__("D_0015EE6C") MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
-extern int is_hero_on_moby(void *);
+
 extern float random_angle_radians(void);
 extern float randf_sym(float lo, float hi);
 extern void update_moby_vertical_oscillation(float, float, char *, float *, float *);
@@ -536,11 +539,11 @@ extern unsigned int FastTweenColor(unsigned int, unsigned int, float);
 #define func_001F9908_2BFBB8 ((int (*)(int *))func_001F9908)
 extern void follow_camera_set_lateral_spring(float, float);
 #define func_L00_002E9A40_2BFBB8 func_L00_002E9A40
-extern void set_follow_camera_blend_output_flags(void);
+
 #define func_L00_002E9B30_2BFBB8 func_L00_002E9B30
-extern void follow_camera_start_slide(void);
+
 #define func_L00_002E9AF8_2BFBB8 func_L00_002E9AF8
-extern void set_follow_camera_orbit_clamp_mode(int);
+
 #define func_L00_002E9A18_2BFBB8 func_L00_002E9A18
 
 /* Moby update that emits sparkles and a sound when the hero is near the target moby. */
@@ -1165,7 +1168,7 @@ extern float FastVecDot(void *a, void *b);
 extern float FastCos(float);
 extern float FastSin(float);
 extern float fast_atan2(float, float);
-extern float step_rotation_toward_target(float, float, float);
+
 extern float ProbeGroundHeight(void *, int, float);
 extern float FastVecLength(void *a);
 
@@ -1280,7 +1283,6 @@ extern void SpawnExplosionFx_r(void *, void *, int, float, float) __asm__("func_
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 
 typedef int u128_2D9988 __attribute__((mode(TI)));
-
 
 typedef struct {
     float x, y, z;
@@ -1488,7 +1490,7 @@ extern char path_spark_no_path_fmt[];
 extern char orxon_point_light_slots[];
 extern int orxon_frame_count MACRO_ADDR;
 extern int STUB_printf_r(void *, int) __asm__("func_001E9730");
-extern void release_point_light_slot(int);
+
 extern int fast_dec_timer_v(void *) __asm__("func_001F9908");
 extern float FastVecDist(void *, void *);
 extern void PathSampleAtDistance_f(float, float, void *, int *, float *, void *) __asm__("func_L00_002633D8");

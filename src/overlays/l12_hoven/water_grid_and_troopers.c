@@ -4,6 +4,12 @@
 #include "vector.h"
 #include "moby.h"
 #include "hero.h"
+#include "game/mobyutil.h"
+#include "overlays/shared/blarg_commander.h"
+#include "overlays/shared/effect_particle_updates.h"
+#include "overlays/shared/move_control_and_clear_path.h"
+#include "overlays/shared/smoke_puff_projectiles.h"
+#include "overlays/shared/water_pool_and_sand_mouse.h"
 
 /* Hoven troll walker (same class as TrollVars_e3528 below, which is defined after these functions). */
 struct HovenTrollVars {
@@ -253,7 +259,7 @@ void update_level_12_water_tile(char *moby) {
         }
     }
 }
-extern void render_water_grids(char *, int);
+
 extern char hoven_ripple_patches[];
 /* Draws Hoven's water ripple grids. */
 void render_level_12_water_grids(void) {
@@ -1374,7 +1380,7 @@ extern Moby *hoven_mobys_r __asm__("D_L12_00160058") MACRO_ADDR;
 extern Path_2E51E8 *hoven_paths_r2[] __asm__("D_L12_001B0C30");
 extern int count_active_moby_group_members(int, int);
 extern float fast_atan2(float, float);
-extern int is_hero_on_moby(void *);
+
 extern void steer_platform_toward_target_r(void *, void *, void *, int, int) __asm__("func_L12_002E4F18");
 extern float FastAddRots(float, float);
 extern float FastAbsF(float);
@@ -1619,11 +1625,11 @@ void HovenPlatformUpdate(Moby *moby) {
     FastVecSub(delta, (*(float (*)[4]) & moby->pos), oldPos);
     update_entity_matrix(d->f60, delta, oldRot, (*(float (*)[4]) & moby->rot));
 }
-extern void apply_npc_big_head_cheat(char *);
+
 extern int DialogRequest_Init(void *, void *);
 extern void initialize_moby_grounding(void *);
 extern int Npc_TryStartDialog(void *, void *);
-extern void PlaceMarkerAheadOfMoby(float, void *);
+
 extern void ShowBanner(int, int);
 extern void jet_clear_persistent(int);
 extern void jet_reset_camera(void *, void *);
@@ -1843,7 +1849,7 @@ extern int func_001160D8(void);
 extern int rand_range(int, int);
 extern float randf_sym(float, float);
 extern float ProbeGroundHeight(void *, int, float);
-extern void blend_moby_animation_ex(void *, int, int, int, int);
+
 extern int test_point_within_moby_limits(void *, void *, float, float, float);
 extern int coll_line(void *, void *, int, void *, void *);
 extern int select_point_index_by_distance(void *, void *, float);
@@ -2528,7 +2534,6 @@ void remove_blarg_trooper_and_attachment(Level12VendorMoby *moby) {
     DeleteMoby(moby);
 }
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void *spawn_moby_attachment(void *, void *);
 
 /* Keeps the Blarg trooper's attachment on its bone, spawning it if missing. */
 void update_blarg_trooper_attachment(unsigned char *moby) {
@@ -2657,7 +2662,7 @@ extern void Help_Request(int, int);
 extern float SpringTurn(float *, float, float, float, float, float);
 extern void update_blarg_helicopter_motion_tilt(char *);
 extern char *spawn_rocket(void *, void *, void *, int, float, float, float);
-extern void PartType04Spawn(void *, void *, int, int, int, int, int, int);
+
 extern void MobyAnimAdvance(void *);
 extern void set_ground_height_band(void *);
 

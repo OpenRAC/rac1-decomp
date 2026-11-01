@@ -3,6 +3,15 @@
 #include "moby.h"
 #include "include_asm.h"
 #include "hero.h"
+#include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/hero_gadget_use.h"
+#include "overlays/shared/hero_high_jump_input.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/hero_update_ground_material.h"
+#include "overlays/shared/hero_vehicle_and_collision.h"
+#include "overlays/shared/numeric_hud_sprites.h"
 
 typedef int u128 __attribute__((mode(TI)));
 typedef struct {
@@ -12,12 +21,10 @@ typedef struct {
     char pad[0x20];
 } T2C_21EA88;
 extern void clear_moby_transform_history(char *o);
-extern void exit_hero_vehicle_mode_if_mode_three(void);
-extern void create_missing_hero_item_slot_animations(int a, int b);
+
 extern int scale_ticks(int);
 extern int rand_range(int, int);
-extern void clear_hero_idle_rotation_targets(void);
-extern void request_hero_idle_state_for_vehicle_mode(void);
+
 extern int get_hero_idle_animation_index(int a);
 extern void clear_u64_value(void *);
 extern void set_hero_animation(int, int, float);
@@ -26,28 +33,23 @@ extern void ClampVectorLength(void *a, float x);
 extern float vec_length_xy(void *);
 extern void stick_target(float, int);
 extern float FastDiffRots(float, float);
-extern void cancel_hero_item_animation(void);
-extern int try_start_hero_item_idle_animation(void);
-extern float gravity_length_xy(float *v);
-extern int return_hero_animation_id_unchanged(int);
+
 extern int allocate_hero_voice_for_entry(int, int);
-extern void hero_queue_sequence(int bank, int seq);
+
 extern float fast_atan2(float, float);
 extern float FastVecDist(void *, void *);
 extern float randf_sym(float lo, float hi);
-extern void scale_hero_motion(float);
-extern void emit_hero_surface_effect_burst(int, int, int);
+
 extern void initialize_moby_transform_history(int a, char *b);
 extern void create_moby_transform_history_entry(char *o, int a, int b);
-extern float get_hero_yaw_history(int back);
-extern int stick_direction_vs_facing(void);
+
 extern int truncate_float_to_s32(float);
 extern void update_hero_target_heading(float a, float b, float c);
-extern char *hero_slot_moby(int);
+
 extern int is_wrench_moby(char *);
 extern float FastAddRots(float, float);
 extern void *MobyGetHitMessage(void *, int, int);
-extern void hero_change_health(int n);
+
 extern int hero_is_in_special_state(void);
 extern void release_and_clear_hero_voice_slots(void);
 extern int Spline_AdvanceByDistance(int *tab, float *out, int *a, float *b, int c, float d);
@@ -57,22 +59,16 @@ extern void vec_scale_to_length(void *, void *, float);
 extern float FastVecDot(void *a, void *b);
 extern void RippleDisturb(void *, int, int, float, float, float, float);
 extern float FastAbsF(float);
-extern void help_queue_add(int, int, int);
+
 extern void FastMemSet(void *, int, int);
 extern void gravity_set_z(float *dst, float *src, float z);
 extern int select_point_index_by_distance(void *, void *, float);
-extern void hud_release_held_element(void);
+
 extern int queue_animation_update(int, int, int, int, int, int, int);
-extern int select_hero_hoverboard_animation_variant(void);
+
 extern void FastVecScale(void *, void *, float);
 extern void gravity_flatten(float *dst, float *src);
-extern void initialize_trick_combo_hud(void);
-extern void update_trick_combo_hud(void);
-extern void draw_trick_combo_hud(void);
-extern void initialize_hud_element_defaults(void);
-extern void set_progress_hud_fade_from_hero_mode(void);
-extern void draw_hud_progress_and_rank(void);
-extern void draw_hud_timer(void);
+
 extern int kalebo3_game_mode MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;

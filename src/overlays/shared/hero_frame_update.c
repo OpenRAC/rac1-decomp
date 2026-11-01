@@ -2,42 +2,43 @@
 #include "common.h"
 #include "include_asm.h"
 #include "hero.h"
+#include "game/draw.h"
+#include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/hero_idle_and_animation.h"
+#include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/hero_steering_and_tilt.h"
+#include "overlays/shared/hero_update_ground_material.h"
+#include "overlays/shared/level_runtime_and_menus.h"
 
 extern char hero_globals_base[];
 extern int scale_ticks(int);
 extern void FadeToBlack(int);
 extern void hero_frame_update(void);
-extern void advance_hero_animation(void);
-extern void hero_update(void);
+
 extern void update_hero_ground_material_effects(void);
-extern void update_hero_ledge_probe(void);
+
 extern void update_hero_offset_rail_candidate(void);
 extern void HeroL03_UpdateStateTransitions(void);
-extern void update_hero_delayed_voice_requests(void);
+
 extern void update_hero_easing_targets_and_point_effects(void);
 extern void update_hero_collision_ease_target(void);
 extern void update_hero_pitch_and_yaw_easing_targets(void);
 extern void update_hero_target_tracking(void);
 extern void update_hero_idle_random_rotation_targets(void);
 extern void update_hero_rotation_targets_and_random_manipulators(void);
-extern void update_hero_glow_and_extra_manipulators(void);
-extern void update_hero_transformed_negative_z_angle_parameters(void);
-extern void update_hero_easing_records(void);
+
 extern void update_hero_moby(void);
-extern void update_hero_world_matrices(int);
+
 extern void update_hero_equipped_items(void);
-extern void begin_draw_frame(void);
-extern void update_hero_scalar_pulse(void);
-extern void apply_hero_and_item_scale_sequence(void);
+
 extern void check_hero_item_reward_conditions(void);
 extern void update_hero_bolt_exclamation_hud(void);
 extern void dispatch_hero_animation_timed_events(void);
 extern void scan_hero_input_sequences(void);
 extern void Profile_Mark(void *);
-extern void reveal_map_around_position(void *);
+
 extern void apply_env_zone_lighting(void *);
 extern void update_hero_blink_and_gold_weapon_tint(void);
-extern void update_hero_moby_probed_height_bounds(void);
 
 /* Per-frame driver: validates the cursor, then runs each update pass in order. */
 void HeroL03_FrameUpdate(void) {
