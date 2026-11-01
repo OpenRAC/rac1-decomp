@@ -4,3 +4,11 @@
 u32 moby_blend_slot_poses[] DATA_SECTION(D_001B2F80) = {
 #include "data_inc/D_001B2F80.inc"
 };
+
+u8 damage_reaction_code_table[] DATA_SECTION(D_001CC400) = {
+#include "data_inc/D_001CC400.inc"
+};
+
+u32 damage_reaction_scale_table[] DATA_SECTION(D_001CC448) = {
+#include "data_inc/D_001CC448.inc"
+};

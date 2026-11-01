@@ -24,7 +24,8 @@ class ValuesTest(unittest.TestCase):
         self.assertIsNone(d.parse(MIXED))
 
     def test_a_float_keeps_its_exact_bits(self):
-        self.assertEqual(d.parse("/* 0 00165580 3F800000 */ .float 1\n"), ("u32", ["0x3F800000"]))
+        # The disassembly's raw column is in file order: 1.0f is 00 00 80 3F on this little-endian CPU.
+        self.assertEqual(d.parse("/* 0 00165580 0000803F */ .float 1\n"), ("u32", ["0x3F800000"]))
 
     def test_shorts_bytes_and_a_string(self):
         self.assertEqual(d.parse("/* 0 00165580 */ .short 0x0003\n"), ("u16", ["0x0003"]))
@@ -46,6 +47,21 @@ class FitsRetailTest(unittest.TestCase):
         self.assertFalse(d.fits_retail("D_00165584", 2))
         self.assertFalse(d.fits_retail("D_00165584", 1, "char"))
         self.assertTrue(d.fits_retail("D_00165580", 1, "char"))
+
+
+class NextPieceTest(unittest.TestCase):
+    def test_the_next_block_must_be_on_4(self):
+        blocks = {"D_00199810": "", "D_00199812": "", "D_00199818": ""}
+        self.assertFalse(d.next_piece_fits("D_00199810", blocks))
+        self.assertTrue(d.next_piece_fits("D_00199812", blocks))
+        self.assertTrue(d.next_piece_fits("D_00199818", blocks))
+
+
+class AddTest(unittest.TestCase):
+    def test_a_jump_table_is_refused(self):
+        with patch.object(d, "all_blocks", return_value={"jtbl_00165580": WORDS}), patch.object(d, "readable_names", return_value={}):
+            with patch.object(d, "rows", return_value=[]), self.assertRaises(SystemExit):
+                d.add(["jtbl_00165580:shared"])
 
 
 class SourceTest(unittest.TestCase):

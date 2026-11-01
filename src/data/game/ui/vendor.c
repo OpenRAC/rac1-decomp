@@ -13,10 +13,18 @@ u32 capture_glyph_advances[] DATA_SECTION(D_001E6418) = {
 #include "data_inc/D_001E6418.inc"
 };
 
+u32 capture_bounds_adjustments[] DATA_SECTION(D_001E6518) = {
+#include "data_inc/D_001E6518.inc"
+};
+
 u32 vendor_flash_timers[] DATA_SECTION(D_001E6920) = {
 #include "data_inc/D_001E6920.inc"
 };
 
 u32 vendor_scroll_timers[] DATA_SECTION(D_001E6940) = {
 #include "data_inc/D_001E6940.inc"
+};
+
+u32 surface_height_grid[] DATA_SECTION(D_001E69E0) = {
+#include "data_inc/D_001E69E0.inc"
 };

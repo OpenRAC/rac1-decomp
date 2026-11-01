@@ -41,8 +41,20 @@ u32 resident_quad_corners[] DATA_SECTION(D_001D9DE0) = {
 #include "data_inc/D_001D9DE0.inc"
 };
 
+u32 resident_quad_level_scales[] DATA_SECTION(D_001D9E20) = {
+#include "data_inc/D_001D9E20.inc"
+};
+
 u32 sky_shell_scroll_dirs[] DATA_SECTION(D_001D9E70) = {
 #include "data_inc/D_001D9E70.inc"
+};
+
+u32 sky_shell_base_rot_z_by_mode[] DATA_SECTION(D_001D9EC0) = {
+#include "data_inc/D_001D9EC0.inc"
+};
+
+u32 cam_mode_min_fov[] DATA_SECTION(D_001D9ED8) = {
+#include "data_inc/D_001D9ED8.inc"
 };
 
 u32 flare_spark_offsets[] DATA_SECTION(D_001D9EF0) = {
@@ -51,4 +63,12 @@ u32 flare_spark_offsets[] DATA_SECTION(D_001D9EF0) = {
 
 u32 env_map_world_positions[] DATA_SECTION(D_001DC870) = {
 #include "data_inc/D_001DC870.inc"
+};
+
+u32 env_map_uvs[] DATA_SECTION(D_001DCED0) = {
+#include "data_inc/D_001DCED0.inc"
+};
+
+u32 env_map_saved_uvs[] DATA_SECTION(D_001DD200) = {
+#include "data_inc/D_001DD200.inc"
 };

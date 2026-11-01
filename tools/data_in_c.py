@@ -95,7 +95,8 @@ def parse(body):
         if m.group(1) == ".float":
             if not raw:
                 return None
-            found.append("0x" + raw.group(1).upper())
+            # The raw column is in file order, and the EE is little-endian.
+            found.append("0x" + bytes.fromhex(raw.group(1))[::-1].hex().upper())
             continue
         for value in m.group(2).split(","):
             value = value.strip()
@@ -130,6 +131,15 @@ def generate():
     print(f"wrote {len(rows())} include files to {OUT.relative_to(ROOT)}")
 
 
+def next_piece_fits(label, blocks):
+    """The blob's piece after a cut starts at the next block, and the assembler aligns a .data section to at least 4."""
+    labels = list(blocks)
+    at = labels.index(label)
+    if at + 1 == len(labels):
+        return True
+    return int(labels[at + 1].rsplit("_", 1)[1], 16) % 4 == 0
+
+
 def add(pairs):
     """Add blocks: each pair is LABEL:OWNER (a source file under src/, or shared for a block with no one owner)."""
     blocks = all_blocks()
@@ -140,11 +150,15 @@ def add(pairs):
         label, owner = pair.split(":", 1)
         if label in known:
             continue
+        if not label.startswith("D_"):
+            sys.exit(f"*** {label}: not a data block. A jump table comes from its compiled function")
         parsed = parse(blocks[label]) if label in blocks else None
         if parsed is None:
             sys.exit(f"*** {label}: not a plain block")
         if not fits_retail(label, len(parsed[1]), parsed[0]):
             sys.exit(f"*** {label}: not on an 8-byte boundary, so retail had something else here")
+        if not next_piece_fits(label, blocks):
+            sys.exit(f"*** {label}: the block after it is not on a 4-byte boundary, so the blob cannot be cut here")
         source = "src/data/shared/data.c" if owner == "shared" else "src/data/" + owner[len("src/"):]
         table.append((label, parsed[0], source))
     TABLE.write_text(HEADER + "".join("\t".join(row) + "\n" for row in sorted(table)))

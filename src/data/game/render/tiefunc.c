@@ -9,6 +9,10 @@ u32 tie_packet_tail_tags[] DATA_SECTION(D_001DF3B0) = {
 #include "data_inc/D_001DF3B0.inc"
 };
 
+u16 tie_tex_remap_table[] DATA_SECTION(D_001E2D00) = {
+#include "data_inc/D_001E2D00.inc"
+};
+
 u32 tie_gif_patch_list[] DATA_SECTION(D_001E3300) = {
 #include "data_inc/D_001E3300.inc"
 };
