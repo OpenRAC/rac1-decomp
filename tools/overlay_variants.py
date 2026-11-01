@@ -82,7 +82,7 @@ def spans(path: Path) -> dict[str, tuple[int, int, bool]]:
 
 
 def index() -> dict[str, tuple[Path, int, int, bool]]:
-    return {n: (p, *s) for p in sorted(SRC.glob("*/*.c")) for n, s in spans(p).items()}
+    return {n: (p, *s) for p in sorted(SRC.glob("*/**/*.c")) for n, s in spans(p).items()}
 
 
 def branches_to(name: str, target: str) -> bool:

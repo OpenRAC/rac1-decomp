@@ -52,6 +52,7 @@ from libgcc_units import (MODULES, FUNCTIONS as LIBGCC_FUNCTIONS, SEGMENT_SOURCE
 from organize_asm import LISTS, entries
 from toolchain import TC, make_sn, sn, start_wineserver
 from levels import NUM_LEVELS, dirname as level_dirname, level_of_dir, title as level_title
+import move_src
 import srcnames
 
 SHARED_TITLE = "Shared level code"
@@ -62,6 +63,7 @@ def is_level_unit(unit: dict) -> bool:
     return "level_code" in (unit.get("metadata") or {}).get("progress_categories", [])
 
 REPORT = Path("progress/report.json")
+UNIT_ALIASES = move_src.load_aliases(Path("."))
 BASEROM = "baserom/SCES_509.16"
 LINKED_ELF = "build-sn/rac1.elf"
 
@@ -165,6 +167,11 @@ def classified_asm() -> dict[str, str]:
     return {name: folder for name, (folder, _) in expected.items()}
 
 
+def report_unit(unit: str) -> str:
+    """The name the report keeps for a moved object (tools/move_src.py), so its history survives."""
+    return UNIT_ALIASES.get(unit, unit)
+
+
 def unit_of(name: str, seg: str, vram: int) -> tuple[str, str, str]:
     """(unit name, source path, progress category)."""
     for mod, src, fns, stubs in MODULES:
@@ -172,9 +179,9 @@ def unit_of(name: str, seg: str, vram: int) -> tuple[str, str, str]:
             return f"libgcc/{mod}", src, "libgcc"
     if seg == "text":
         name, src, _ = object_of("text", vram)
-        return name, src, "game"
+        return report_unit(name), src, "game"
     name, src, _ = object_of("core_text", vram)
-    return f"core/{name}", src, "game"
+    return report_unit(f"core/{name}"), src, "game"
 
 
 def overlay_catalogue() -> dict[str, tuple[str, int]]:
@@ -248,7 +255,7 @@ def overlay_listed(listing: Path, marker: re.Pattern) -> set[str]:
         sys.exit(f"*** {listing}: a name is listed twice")
     marked = []
     for directory, _ in overlay_dirs():
-        for path in sorted(directory.glob("*.c")):
+        for path in sorted(directory.rglob("*.c")):
             marked += marker.findall(path.read_text(errors="replace"))
     if sorted(marked) != sorted(listed):
         sys.exit(f"*** {listing} disagrees with src/overlays/: "
@@ -288,7 +295,7 @@ def overlay_file_map() -> dict[Path, list[tuple[str, bool]]]:
     or src/overlays/lNN_<planet>/."""
     return {path: overlay_file_functions(path)
             for directory, _ in overlay_dirs()
-            for path in sorted(directory.glob("*.c"))}
+            for path in sorted(directory.rglob("*.c"))}
 
 
 def _build_and_check(path: Path, c_names: list[str]) -> tuple[Path, dict[str, float] | str]:
@@ -387,7 +394,7 @@ def overlay_units(file_map: dict, fuzzy: dict) -> tuple[list[dict], list, dict, 
     for directory, cats in overlay_dirs():
         shared = directory.name == "shared"
         groups = []     # [(unit name, source path, rows)]
-        for path in sorted(directory.glob("*.c")):
+        for path in sorted(directory.rglob("*.c")):
             fns = file_map[path]
             if not fns:
                 continue
@@ -450,7 +457,7 @@ def overlay_c_functions() -> tuple[dict, set[str]]:
     file_map = overlay_file_map()
     have_c = set()
     for directory, _cats in overlay_dirs():
-        for path in sorted(directory.glob("*.c")):
+        for path in sorted(directory.rglob("*.c")):
             for name, is_c in file_map[path]:
                 if name not in catalogue:
                     sys.exit(f"*** {path}: {name} is not in {OVERLAYS_CATALOGUE}")
@@ -562,9 +569,7 @@ def unit_of_object(obj: str) -> str:
     name = obj.rsplit("/", 1)[1][:-2]
     if obj.startswith("build-sn/libgcc/"):
         return "libgcc/" + name.removeprefix("l2_")
-    if obj.startswith("build-sn/core/"):
-        return f"core/{name}"
-    return obj[len("build-sn/"):-2]
+    return report_unit(obj[len("build-sn/"):-2])
 
 
 def data_results() -> tuple[int, list[tuple[str, int, bool]]]:

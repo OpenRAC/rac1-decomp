@@ -139,7 +139,7 @@ def main() -> None:
     files = [a for a in sys.argv[1:] if not a.startswith("--")]
     if not files:
         game = [str(p) for p in gpr.SEGMENT_SOURCES.get("text", [])]
-        files = game + sorted(str(p) for p in Path("src/overlays").glob("*/*.c"))
+        files = game + sorted(str(p) for p in Path("src/overlays").glob("*/**/*.c"))
     start_wineserver()
     WORK.mkdir(parents=True, exist_ok=True)
     with ProcessPoolExecutor(max_workers=os.cpu_count() or 4) as pool:
