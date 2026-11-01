@@ -63,7 +63,6 @@ struct ProjectedSpriteVars {
     s32 arg_b; /* 0x0C */
 };
 
-
 extern struct Hero g_hero;
 typedef struct {
     s32 unk0;
@@ -497,7 +496,6 @@ void func_L06_002FFF70_r(char *m) __asm__("func_L06_002FFF70");
 /* functional: medium. Level 06 update of a 12-state moby (aims at a target, spawns hit sparks in states 1-2, a burst in 3-10, then a ground-probe against the target); starts from the staged near miss, checked statically against the assembly. */
 extern int truncate_float_to_s32(float);
 extern short space_commando_scale;
-extern char menu_item_enabled_115[];
 
 // Level 06 update for a moby with a 12-state machine: aims at a target, runs timed effects, and sets its rotation.
 void process_blarg_space_commando_hits(char *m) {

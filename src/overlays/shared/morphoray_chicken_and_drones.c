@@ -1106,7 +1106,7 @@ void update_morphoray_chicken(Moby *m) {
         m->anim_speed = save58;
     }
 }
-extern int process_moby_suck_cannon_suction(void *);
+
 extern int process_moby_suck_cannon_suction_r(void *, void *, void *, float) __asm__("func_L00_002DCDA8");
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
    calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as

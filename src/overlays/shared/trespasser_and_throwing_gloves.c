@@ -64,7 +64,6 @@ struct AmmoCollectVars {
     f32 rise_speed; /* 0x24 */
 };
 
-
 /* NON_MATCHING func_L00_002C12B0 -- src/overlays/shared/vendor_002C12B0.c
  * Best so far: BYTES 12/5996 (99.8% of the bytes match), checked 2026-10-19.
  * Not built into anything: the retail assembly stays in the source file
@@ -666,7 +665,7 @@ void trespasser_update(Moby *m) {
 }
 extern float D_L00_001618F8_C2A80 SDATA(D_L00_001618F8);
 extern short trespasser_pickup_spin_step;
-extern float coll_hit_point_z;
+
 extern int level_frame_counter_r __asm__("D_L00_0015F6B0") MACRO_ADDR;
 extern unsigned char g_hero_r[] __asm__("D_0013F450");
 void func_00214358_C2A80(void *, int, float) __asm__("func_00214358");
@@ -1503,7 +1502,7 @@ u8 *spawn_decoy(s32 value, u128_C48C8 *position, u128_C48C8 *other_position) {
     return m;
 }
 typedef int u128 __attribute__((mode(TI)));
-extern unsigned char *GetFlaggedPvarWord(int);
+
 extern unsigned char *moby_get_ride_transform(int);
 extern void FastVecAdd(void *, void *, void *);
 extern void FastVecSub(void *, void *, void *);
@@ -3062,7 +3061,6 @@ void compute_glove_of_doom_launch_velocity(float *pos, float *tgt, float *out, f
         out[2] = v;
     }
 }
-
 
 typedef struct Hit_2C88A8 {
     char pad0[0x18];

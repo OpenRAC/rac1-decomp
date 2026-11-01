@@ -471,7 +471,7 @@ extern short light_beam_texture_scroll;
 extern short light_beam_glow_phase;
 extern float light_beam_corner_table[][4];
 extern float light_beam_corner_uvs[][2];
-extern float D_L00_001D76F4[][2];
+
 extern int light_beam_corner_colors[];
 extern int light_beam_quad_corner_indices[][4];
 

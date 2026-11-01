@@ -818,7 +818,7 @@ extern void break_crate(void *, int, int);
 extern void crate_drop_bolts(void *);
 extern float ApproachValue(float *p, float target, float maxstep);
 extern int transform_attachment_pose(int x, char *o, float *p, float *q, float *r, float *s);
-extern int GetFlaggedPvarWord(char *);
+
 extern int moby_get_ride_transform(char *);
 extern void update_entity_matrix(char *a, Vx *b, void *c, void *d);
 extern int coll_line(void *, void *, int, int, int);
@@ -2566,10 +2566,7 @@ extern void StepColorFade(void *, void *);
 extern int FindNearestEligibleMoby(float, void *, void *, int, int, void *, int);
 extern int FastDecTimer(void *);
 extern float multiply_global_factor(float);
-extern short D_L00_00161A40;
-extern short D_L00_00161A44;
-extern short D_L00_00161A48;
-extern short D_L00_00161A4C;
+
 extern short D_L00_00161A58;
 extern short D_L00_00161A5C;
 
@@ -2758,7 +2755,7 @@ float move_horny_toad_toward_position(unsigned char *m, float *t, float vel) {
         return d;
     return 37.0f;
 }
-extern int process_moby_suck_cannon_suction(void *, void *, void *);
+
 extern int process_moby_suck_cannon_suction_h(void *, void *, void *, float) __asm__("func_L00_002DCDA8");
 /* Runs the func_L00_002DCDA8 check and switches the moby to or from state 9; returns its result. */
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy

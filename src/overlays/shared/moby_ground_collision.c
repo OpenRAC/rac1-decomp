@@ -2382,7 +2382,7 @@ typedef struct {
 } V __attribute__((aligned(16)));
 extern float FastAbsF(float);
 extern void vec_distance_xy(V *, V *);
-extern void FastVecDist(V *, V *);
+
 extern float vec_distance_xy_r(V *, V *) __asm__("func_001F9D48");
 extern float FastVecDist_r(V *, V *) __asm__("func_001F9D10");
 /* Distance from a to b; XY only when their heights differ by less than r, else full 3D. */

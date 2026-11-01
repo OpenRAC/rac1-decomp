@@ -327,7 +327,7 @@ void update_hero_smoothing_parameters(void) {
         Spring(q + 5, q + 6, b->f230, g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.3f, g_frame_time * 4.0f);
     }
 }
-extern char gHeroPos[];
+
 typedef struct {
     float x, y, z, w;
 } Vx __attribute__((aligned(16)));
