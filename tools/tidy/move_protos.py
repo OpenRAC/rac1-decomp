@@ -191,11 +191,10 @@ def header_text(header, names):
 def merge_header(path, header, names):
     """Add these names to a header that may already exist."""
     if path.exists():
-        for line in path.read_text().splitlines():
-            if line.startswith("extern "):
-                found = pe.declared_names(line)
-                if found and found[0] not in names:
-                    names[found[0]] = line
+        for _, _, statement in pe.find_externs(path.read_text()):
+            found = pe.declared_names(statement)
+            if found and found[0] not in names:
+                names[found[0]] = normal(statement)
     return header_text(header, names)
 
 

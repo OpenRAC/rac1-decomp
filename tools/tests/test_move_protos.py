@@ -112,6 +112,15 @@ class ApplyTest(unittest.TestCase):
         text = '#include "common.h"\nextern void f(int a); /* Adapted from Lombyte\'s project */\n'
         self.assertIn("Adapted", mp.apply_to_source(text, {"game/d.h": {"f"}}))
 
+    def test_a_wrapped_prototype_survives_a_merge(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "d.h"
+            path.write_text("extern void old(int a,\n                int b);\n")
+            text = mp.merge_header(path, "game/d.h", {"f": "extern void f(int a);"})
+        self.assertIn("extern void old(int a, int b);", text)
+        self.assertIn("extern void f(int a);", text)
+
     def test_header_text(self):
         text = mp.header_text("game/d.h", {"f": "extern void f(int a);"})
         self.assertIn("#ifndef GAME_D_H", text)
