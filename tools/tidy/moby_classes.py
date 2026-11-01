@@ -137,11 +137,11 @@ def outside_comments_and_strings(text, function):
     return "".join(out)
 
 
-def rewrite_switches(text, names):
-    """Case labels of a switch on oclass, at the switch's own level only."""
+def rewrite_switches(text, names, switch=SWITCH):
+    """Case labels of a matching switch, at the switch's own level only."""
     masked = pe.COMMENT_OR_STRING.sub(pe.blank, text)
     edits = []
-    for m in SWITCH.finditer(masked):
+    for m in switch.finditer(masked):
         depth, i = 1, m.end()
         while i < len(masked) and depth:
             if masked[i] == "{":
