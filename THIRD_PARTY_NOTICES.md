@@ -980,18 +980,18 @@ code and notes, or quote it:
 
 - `tools/extract/mobys.py`: the moby instance record and what the level
   loader does with each field, from `crates/rc-formats/src/gameplay.rs` and
-  `docs/plan/moby_render_notes.md`; described in `docs/ASSETS.md` ("Mobys").
+  `docs/plan/moby_render_notes.md`; described in `docs/reference/ASSETS.md` ("Mobys").
 - `tools/extract/moby_class.py`: the moby class header and model format
   (packets, vertex cache, skinning slots, normals, untextured faces), from
   `docs/formats/moby_rac1.md` §1-§2 and `crates/rc-formats/src/moby.rs`;
-  described in `docs/ASSETS.md` ("Moby classes").
+  described in `docs/reference/ASSETS.md` ("Moby classes").
 - `tools/extract/moby_anim.py`: moby skeletons and animation sequences,
   from `docs/formats/moby_rac1.md` §3-§4, `docs/plan/moby_animation.md` and
   `crates/rc-formats/src/moby_anim.rs`.
 - `tools/extract/collision.py`: the collision block (cell tree, packed
   vertices, faces and surface bytes), from `docs/formats/collision_rac1.md`,
   `docs/plan/collision_queries.md` and `crates/rc-formats/src/collision.rs`;
-  described in `docs/ASSETS.md` ("Collision").
+  described in `docs/reference/ASSETS.md` ("Collision").
 - `config/overlays/rerac_notes.tsv`: names and notes quoted from its
   `tools/ghidra/names/doc_names.csv` (the commit is in the file's header),
   shown in worker packets.
@@ -1024,12 +1024,12 @@ its source code and reverse-engineering findings:
   structures (`Manipulator`, `Tweaker`), adapted from
   `data/overlay/src/game_common/` and `data/overlay/src/game_rac/` for C
   compilation with SN ProDG.
-- `docs/PVARS.md`: documentation of moby pvar layouts and subsystem
+- `docs/reference/PVARS.md`: documentation of moby pvar layouts and subsystem
   architecture synthesized from Wrench's overlay definitions.
 - `tools/extract/`: asset extraction logic (disc layout, table of contents
   groups, level data header sections, core block bounds, WAD compression,
   terrain, ties, shrubs, sky, gameplay block boundaries), as described in
-  `docs/ASSETS.md`.
+  `docs/reference/ASSETS.md`.
 - `tools/extract/moby_classes.tsv`: moby class names and categories joined with
   Wrench's `data/underlay/rac_moby_classes.asset`.
 

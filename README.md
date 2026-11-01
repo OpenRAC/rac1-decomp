@@ -80,13 +80,15 @@ Every function links at its original retail address. Functions not yet decompile
    ```
 
 For detailed documentation on the toolchain and container setup:
-- [`docs/TOOLCHAIN.md`](docs/TOOLCHAIN.md) – Compiler and assembler configurations
-- [`docs/BUILD_FIDELITY.md`](docs/BUILD_FIDELITY.md) – What the build reproduces of retail's toolchain, what it models, and the rules that keep it honest
-- [`docs/CONTAINERS.md`](docs/CONTAINERS.md) – Docker/Podman container workflow
+- [`docs/reference/TOOLCHAIN.md`](docs/reference/TOOLCHAIN.md) – Compiler and assembler configurations
+- [`docs/reference/BUILD_FIDELITY.md`](docs/reference/BUILD_FIDELITY.md) – What the build reproduces of retail's toolchain, what it models, and the rules that keep it honest
+- [`docs/reference/CONTAINERS.md`](docs/reference/CONTAINERS.md) – Docker/Podman container workflow
 
 ---
 
 ## Contributing
+
+All docs are listed in [docs/README.md](docs/README.md). Code style is in [docs/STYLE.md](docs/STYLE.md).
 
 Contributions are warmly welcome! Whether you are interested in decompiling functions, researching engine quirks, or improving documentation:
 

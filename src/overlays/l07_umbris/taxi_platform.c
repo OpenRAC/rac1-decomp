@@ -3338,7 +3338,7 @@ void update_hero_triggered_falling_platform(Moby *m) {
 /* NON_MATCHING func_L07_00313298 -- src/overlays/l07_umbris/vendor_002CE470.c
  * Best so far: BYTES 38/544 (93.0% of the bytes match), checked 2026-10-09.
  * Not built into anything: the retail assembly stays in the source file
- * until a candidate is EXACT (docs/NONMATCHING.md). Start from this one.
+ * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
  * What the last attempts found:
  *   Dynamic light slot update (obj+0x280 id, +0x282 owner, +0x284/0x286 fade, +0x288 color, +0x28C): allocates via
  *   p5.c: size and all instructions match; only saved-register naming differs (retail pos=s5, pa=s6, e=s1, color=s

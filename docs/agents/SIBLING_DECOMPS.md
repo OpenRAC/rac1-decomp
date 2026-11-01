@@ -217,7 +217,7 @@ tested 15 compilers and 8 flag sets. What carries over:
   handwritten functions and 69 dead-strip remnants (83,796 bytes) listed
   in `config/`. Fragment buckets remain unmatched pending boundary fixes.
   The full build audit still counts exact C matches separately; see
-  `docs/ASM_CLASSIFICATION.md`.
+  `docs/reference/ASM_CLASSIFICATION.md`.
 - It writes VU0 functions as C with inline asm, as their original source
   was. That doesn't carry over to us: our large VU functions (51
   functions, 67K bytes) have no gcc stack frame and use trapping
@@ -263,7 +263,7 @@ files need which flags is not mapped yet.
   ps2eeas cannot read (it overflows its stack); UYA never feeds it those.
   Without that line ps2eeas assembles our compiler output, and
   `tools/check_ps2eeas.py` compares it with the build function by function
-  (docs/BUILD_FIDELITY.md, "Checked against the real assembler").
+  (docs/reference/BUILD_FIDELITY.md, "Checked against the real assembler").
 
 ### Measured on this build on 2026-10-07
 
@@ -273,12 +273,12 @@ files need which flags is not mapped yet.
   410 near misses exact, so retail RAC1 was not built with it.
 - **Its 23 functions with identical code here**: 16 are VU0 inline
   assembly in UYA (not allowed here), 7 are the movie player's buffers
-  (never ported, docs/MOVIE.md). None came over.
+  (never ported, docs/reference/MOVIE.md). None came over.
 - **`_exit`** (func_0012DA28, a bare `j exit` with `$a0` cleared):
   UYA's launcher has an `_exit` that matches as 2.9-ee C, but ours sits
   between the two handwritten functions of `crt0`, an assembly object, so
   it is assembly too; marking it handwritten is upstream's call
-  (docs/ASM_CLASSIFICATION.md).
+  (docs/reference/ASM_CLASSIFICATION.md).
 - **Its short-loop padding fixes** (counting `jal`, loops with a `div`, a
   `$gp` load in a poll loop) correct a filter that counts lines of the
   compiler's output; `tools/ps2eeas_nops.py` measures loops in the
@@ -353,9 +353,9 @@ What carries over:
   Skid McMarx, Big Al, Novalis lift, etc.) and shared NPC dialogue systems
   (`npcVars`, `npcStep`, `npcstring`). These are adapted into
   [`include/moby_pvars.h`](../../include/moby_pvars.h) and documented in
-  [`docs/PVARS.md`](../PVARS.md).
+  [`docs/reference/PVARS.md`](../reference/PVARS.md).
 - **Asset and level formats**: Level data headers, WAD compression, terrain
-  (`tfrag`), ties, shrubs, sky, and occlusion bounds ([`docs/ASSETS.md`](../ASSETS.md)).
+  (`tfrag`), ties, shrubs, sky, and occlusion bounds ([`docs/reference/ASSETS.md`](../reference/ASSETS.md)).
 - **Moby class catalogue**: Class IDs and naming schemes
   (`tools/extract/moby_classes.tsv`).
 

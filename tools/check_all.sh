@@ -19,6 +19,7 @@ for version in us pal_v1 jp; do
 done
 python3 tools/gen_progress_report.py --check
 python3 tools/move_src.py --check
+python3 tools/check_docs.py
 
 python3 - <<'EOF'
 import json, subprocess, sys

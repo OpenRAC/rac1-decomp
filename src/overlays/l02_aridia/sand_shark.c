@@ -3270,7 +3270,7 @@ void sandshark_egg_update(char *moby) {
 /* NON_MATCHING func_L02_002E1B58 -- src/overlays/l02_aridia/vendor_002A59D8.c
  * Best so far: SIZE ours 988 / retail 992, checked 2026-10-09.
  * Not built into anything: the retail assembly stays in the source file
- * until a candidate is EXACT (docs/NONMATCHING.md). Start from this one.
+ * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
  * What the last attempts found:
  *   Rock moby (class 762) update, level 02: two sampling loops (200 and 49 passes) that fill three Vec4 scratch bu
  *   Left: retail keeps a second pointer to the scratch vector across the loop boundary (daddu $18,$20 plus nop bef

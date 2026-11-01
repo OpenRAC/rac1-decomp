@@ -4,7 +4,7 @@
 
 /*
  * core_text object 0x125630-0x12A2F0. Boundaries are retail's linker fill
- * (0xCDCDCDCD) between objects; see docs/DECOMP_PROGRESS.md.
+ * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
  *
  * Sony's MPEG library (libmpeg): the macroblock/slice/picture decoder
  * ("Invalid macroblock_type code", "slice_start_code out of range", ...)

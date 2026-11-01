@@ -3,7 +3,7 @@
 What builds the matching image today, and why each piece is the way it
 is. The procedure (setup, iterate, verify, publish) is in
 `docs/WORKFLOW.md`; how each choice was established is in the SOLVED
-sections of `docs/DECOMP_PROGRESS.md`. How the project got here is kept
+sections of `docs/reference/DECOMP_PROGRESS.md`. How the project got here is kept
 under "History" at the end of this file.
 
 ## Where the binaries come from
@@ -74,7 +74,7 @@ All game code is compiled with **`-O2 -G2 -Iinclude -Wa,-I,.`**.
   own 2.9-ee (the `ee29` objects), which emits them natively; the few game
   objects in `core_text` (crt0, boot, permcb, wad, 989snd and the one at
   0x1207B8) are built with v1.14 like `text`. No step narrows spills any
-  more (docs/BUILD_FIDELITY.md, "Removed").
+  more (docs/reference/BUILD_FIDELITY.md, "Removed").
 - **`-G2`, not `-G0`.** Retail's small-data threshold is between 1 and 3:
 
   | `-G` | float constants | small globals via `$gp` |
@@ -159,7 +159,7 @@ gives that whole file; there are no per-function flags.
   backward branch (the R5900 short-loop erratum), and puts a nop between
   an FP compare and a directly following `bc1` (never adjacent in retail
   text, 191 of 191). Two-pass: both are measured in a first assembly. See
-  "SOLVED: the short-loop erratum" in `docs/DECOMP_PROGRESS.md`.
+  "SOLVED: the short-loop erratum" in `docs/reference/DECOMP_PROGRESS.md`.
 - **`tools/ps2eeas_dli.py`** (game code only): rewrites each `dli` into
   the instructions ps2eeas uses for that 64-bit constant. GNU as picks a
   different sequence for many values (`0x8000000044`: ps2eeas `ori 0x8000;
@@ -171,7 +171,7 @@ gives that whole file; there are no per-function flags.
   `func_0011DF10`) and one of size 0 mod 8 vanishes. It reads the sizes
   from a first assembly of the same file. Used for libgcc's L__main,
   dp-bit.o and fp-bit.o; see "Retail's linker dead-stripped unreferenced
-  functions" in `docs/DECOMP_PROGRESS.md`.
+  functions" in `docs/reference/DECOMP_PROGRESS.md`.
 - **`tools/check_macro_slots.py`**: a `MACRO_ADDR` global access that the
   compiler put in a branch delay slot is rewritten to the `$gp`-relative
   form retail's toolchain produced there. Anything it cannot handle (an
@@ -226,7 +226,7 @@ gives that whole file; there are no per-function flags.
   inserts delay-slot `nop`s that are not in the compiler's `.s`, so count
   instructions in the linked ELF (`tools/diff_words.py`), never in `.s`.
   See "SN's assembler fills delay slots only from AFTER the branch" in
-  `docs/DECOMP_PROGRESS.md`.
+  `docs/reference/DECOMP_PROGRESS.md`.
 - **VU0 macro-mode instructions** assemble natively with `ee-as`.
   `tools/setup_asm.sh` still runs `tools/fix_vu0_macro.py`, which writes
   them as `.word` with the instruction's own encoding; the bytes are

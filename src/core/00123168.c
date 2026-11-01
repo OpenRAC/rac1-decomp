@@ -4,7 +4,7 @@
 
 /*
  * core_text object 0x123168-0x1236F0. Boundaries are retail's linker fill
- * (0xCDCDCDCD) between objects; see docs/DECOMP_PROGRESS.md.
+ * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
  *
  * Two Sony libraries back to back, both built with Sony's 2.9-ee
  * (Makefile.sn, EE29_CORE): libgraph's sceGsSyncVCallback (func_00123168,

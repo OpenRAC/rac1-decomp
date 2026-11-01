@@ -2,7 +2,7 @@
 /* Level 14 code: func_L14_002E0538 in a file of its own, built with -fno-gcse
  * (config/file_cflags.txt). The functions of vendor_002E0538.c do not build
  * with it (18 of 36 change), so it was another object in retail
- * (docs/BUILD_FIDELITY.md, rule 2). */
+ * (docs/reference/BUILD_FIDELITY.md, rule 2). */
 #include "common.h"
 #include "records.h"
 #include "vector.h"

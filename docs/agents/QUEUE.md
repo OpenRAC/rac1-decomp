@@ -54,7 +54,7 @@ fails on `wave.py`).
   flags apply only to whole files (GCC 2.95 has no per-function options).
   Never propose a new post-processing step or a per-function flag; a
   function that only matches that way is not a match
-  (docs/BUILD_FIDELITY.md).
+  (docs/reference/BUILD_FIDELITY.md).
 - Sources: work from the assembly and from what the packet gives you.
   Never use Sony SDK source, sample code or headers, or any leaked
   material, from memory either (CONTRIBUTING.md, "Sources"). If a function
@@ -83,7 +83,7 @@ compile). No string literals: `extern char D_xxx[];`.
 
 When the packet shows "Lombyte's matched C", Lombyte (the US build's
 decompilation, MIT) has matched this function. Port it rather than start
-over ([SIBLING_DECOMPS.md](agents/SIBLING_DECOMPS.md), "Porting a function"):
+over ([SIBLING_DECOMPS.md](SIBLING_DECOMPS.md), "Porting a function"):
 
 - Keep its control flow, statement order and types; they are what
   matched. Its file (the path in the packet) has the structs and
@@ -110,7 +110,7 @@ instruction that still differs. Your first attempt is `best.c` with one
 change aimed at the first difference; never start over.
 
 The repository keeps each function's closest attempt in
-`nonmatching/<dir>/<func>.c` ([NONMATCHING.md](NONMATCHING.md)); `best.c`
+`nonmatching/<dir>/<func>.c` ([NONMATCHING.md](../reference/NONMATCHING.md)); `best.c`
 already is the closer of that file and the run logs. Never edit
 `nonmatching/`: your runs are logged, and the lead re-stages what got
 closer.

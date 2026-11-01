@@ -63,19 +63,19 @@ type changes. Also seen:
 - `_r` definitions: a function defined under another C name with an
   `__asm__` label (`func_L00_00250478_r(...) __asm__("func_L00_00250478")`),
   when the file's existing prototype has another type
-  ([LEVERS.md](../LEVERS.md) "Rules"). Tools read `func_X_r` as `func_X`.
+  ([LEVERS.md](../agents/LEVERS.md) "Rules"). Tools read `func_X_r` as `func_X`.
 - Function-pointer macros (`#define d_update_visible ((void(*)(void))(func_00213C78))`
   in `src/overlays/shared/vendor_menu.c`).
 
 An alias names one existing symbol, never an expression
-(`"D_0013E633 + 0xF1D"`) or a number ([QUEUE.md](../QUEUE.md) "Rules");
+(`"D_0013E633 + 0xF1D"`) or a number ([QUEUE.md](../agents/QUEUE.md) "Rules");
 hardware registers are `*(volatile int *)0x10000000`.
 
 **New or reworked C adds no `__asm__`** (no aliases, `_r` definitions,
 `SDATA()` or asm statements; exceptions in [section 5](#5-pure-c-no-permuter)).
 Use the file's own declarations, value casts, real symbol names and struct
 copies. Existing aliases stay until tidied with identical bytes. Where
-[LEVERS.md](../LEVERS.md) or [QUEUE.md](../QUEUE.md) still allow aliases, this
+[LEVERS.md](../agents/LEVERS.md) or [QUEUE.md](../agents/QUEUE.md) still allow aliases, this
 stricter rule wins.
 
 ### How a global is addressed: `$gp` vs `lui`
@@ -90,7 +90,7 @@ Retail reaches some globals via `$gp` (small data, base 0x166D00), others via
 | `SDATA(sym)` | `__asm__(#sym "__gp") MACRO_ADDR` | a scalar of a level file's own small data with its real type, reached through `$gp` (`tools/check_macro_slots.py` equates the `sym__gp` label). Legacy |
 
 Older idiom: `extern short D_x;` read as `*(float *)&D_x` or `*(int *)&D_x`
-(2 bytes makes it small data at `-G2`; [AGENT_WORKFLOW.md](../AGENT_WORKFLOW.md)).
+(2 bytes makes it small data at `-G2`; [AGENT_WORKFLOW.md](../agents/AGENT_WORKFLOW.md)).
 A port reads these as plain globals of the cast-to type. One `MACRO_ADDR`
 alias changes a symbol's form for the whole file, so every landing re-checks
 the whole file.
@@ -107,7 +107,7 @@ Macros from `include/include_asm.h`:
 | `INCLUDE_RODATA` | retail rodata included verbatim |
 
 Empty under `M2CTX`/`PERMUTER`. `.s` files come from `tools/setup_asm.sh` and
-are never committed ([ASM_CLASSIFICATION.md](../ASM_CLASSIFICATION.md)). A
+are never committed ([ASM_CLASSIFICATION.md](../reference/ASM_CLASSIFICATION.md)). A
 port supplies its own code for these (`nonmatching/functional/` has port-only C).
 
 ## 3. Shared headers
@@ -135,7 +135,7 @@ Write `x = (s32)h->motion.unk10;` / `h->field = (T)(v);`, not
 `*(T *)&D_0013F450.pad_x`. An address cast folds the offset into the symbol (`%hi(D_0013F450+off)`) and
 can change the code; value casts fixed about 60 hero mismatches in the header
 pass. A cast into a `pad_` field means the field should be named in the header
-([LEVERS.md](../LEVERS.md) lever 15).
+([LEVERS.md](../agents/LEVERS.md) lever 15).
 
 ### Private views that stay on purpose
 
@@ -165,12 +165,12 @@ header-tidy notes.)* Small `fNN` data views in `help_*.c` (`S141948`, `Cam`,
   or `... for PAL by OpenRAC's tools/port.py: <file>, <name>.`; headers
   (`include/moby.h`, `include/hero.h`) carry the same. Names inside them
   (`FUN_L04_002aee30`) are the source project's US names.
-- Old stub comments are often wrong ([LEVERS.md](../LEVERS.md) "Rules").
+- Old stub comments are often wrong ([LEVERS.md](../agents/LEVERS.md) "Rules").
 
 ## 5. Pure C, no permuter
 
-Rules for new C besides section 2's no-`__asm__` rule ([WORKER.md](../WORKER.md),
-[QUEUE.md](../QUEUE.md#rules), [AGENT_WORKFLOW.md](../AGENT_WORKFLOW.md),
+Rules for new C besides section 2's no-`__asm__` rule ([WORKER.md](../agents/WORKER.md),
+[QUEUE.md](../agents/QUEUE.md#rules), [AGENT_WORKFLOW.md](../agents/AGENT_WORKFLOW.md),
 current policy):
 
 - Plain C. No register pins, artificial barriers (`__asm__("" : ...)`,
@@ -184,7 +184,7 @@ current policy):
   - since 2026-10-17, functions whose retail code is VU0 (`v*.xyzw`,
     `qmtc2`/`qmfc2`, `lqc2`/`sqc2`, `vcallms`, `ctc2`/`cfc2`) or hand-written
     assembly.
-- No decomp-permuter ([PERMUTER.md](../PERMUTER.md) is unused); decompile by
+- No decomp-permuter ([PERMUTER.md](../agents/PERMUTER.md) is unused); decompile by
   hand, led by Ghidra and the assembly.
 - The build is fixed: no step that edits compiler output, no per-function
   flags. Options are per file, in `config/file_cflags.txt`.
@@ -212,7 +212,7 @@ Comment- and rename-only edits get the check too: a changed declaration type
 or section can change code.
 
 Several agents in one checkout: `tools/claims.py`
-([AGENT_WORKFLOW.md](../AGENT_WORKFLOW.md) "Several agents at once").
+([AGENT_WORKFLOW.md](../agents/AGENT_WORKFLOW.md) "Several agents at once").
 
 ```sh
 python3 tools/claims.py claim <owner> func_L05_002559DC   # before working on it
@@ -235,5 +235,5 @@ names. Functions stay in retail's address order.
 `ShotVars *v = (ShotVars *)m->pvars;` in `func_L04_002B0290`
 ([mobys.md](mobys.md#memory-the-moby-array-and-pvars)). Other spellings
 (`*(T **)&m->pvars`, `m->pvars + 0xC0`) stay as matched.
-[PVARS.md](../PVARS.md) has wrong offsets and level numbers; see
+[PVARS.md](../reference/PVARS.md) has wrong offsets and level numbers; see
 [known inconsistencies](README.md#known-inconsistencies).

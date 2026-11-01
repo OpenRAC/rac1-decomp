@@ -4,7 +4,7 @@
 
 /*
  * core_text object 0x116FA0-0x1188C8. Boundaries are retail's linker fill
- * (0xCDCDCDCD) between objects; see docs/DECOMP_PROGRESS.md.
+ * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
  *
  * newlib's vfprintf.c (the SDK's libc.a member vfprintf.o): __sprint,
  * __sbprintf, vfprintf, _vfprintf_r, cvt and exponent. Built with Sony's

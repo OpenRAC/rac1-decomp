@@ -6,7 +6,7 @@ and for the native PC port that imports this C.
 ## The one rule
 
 **Byte-exact matching decompilation**: every C function compiles with the original SN Systems
-GCC 2.95 toolchain to the retail bytes ([BUILD_FIDELITY.md](../BUILD_FIDELITY.md)), so it
+GCC 2.95 toolchain to the retail bytes ([BUILD_FIDELITY.md](../reference/BUILD_FIDELITY.md)), so it
 behaves 1:1 with the PS2 game, bugs and quirks included (speedrun routes depend on them).
 Edits to matched code are type, name and comment changes that keep identical bytes
 ([verify](conventions.md#6-verifying-a-change)). When a comment and the code disagree, the
@@ -25,16 +25,16 @@ access), not observable results, outside the matched C where possible.
 | [refactor-camera.md](refactor-camera.md) | Camera system map: state, layouts (`include/camera.h`), functions and callers, names, and the byte-neutral rules for turning its raw offsets into fields |
 
 Older, more detailed documents:
-[OVERLAYS.md](../OVERLAYS.md), [ASSETS.md](../ASSETS.md), [NAMES.md](../NAMES.md),
-[TOOLCHAIN.md](../TOOLCHAIN.md), [BUILD_FIDELITY.md](../BUILD_FIDELITY.md),
-[LEVERS.md](../LEVERS.md), [PVARS.md](../PVARS.md),
-[DATAMINED_REVERSE_ENGINEERING.md](../DATAMINED_REVERSE_ENGINEERING.md).
+[OVERLAYS.md](../OVERLAYS.md), [ASSETS.md](../reference/ASSETS.md), [NAMES.md](../NAMES.md),
+[TOOLCHAIN.md](../reference/TOOLCHAIN.md), [BUILD_FIDELITY.md](../reference/BUILD_FIDELITY.md),
+[LEVERS.md](../agents/LEVERS.md), [PVARS.md](../reference/PVARS.md),
+[DATAMINED_REVERSE_ENGINEERING.md](../reference/DATAMINED_REVERSE_ENGINEERING.md).
 
 ## Known inconsistencies
 
 Not fixed yet:
 
-- `docs/PVARS.md` and `MobyInstance` in `include/structs.h` put the moby's update pointer,
+- `docs/reference/PVARS.md` and `MobyInstance` in `include/structs.h` put the moby's update pointer,
   pvars and oClass at 0xA8 / 0xAC / 0xBC. The matched code and `include/moby.h` use
   0x74 / 0x78 / 0xA6. Use `moby.h`. PVARS.md's level numbers are also off (Pokitaru is 11;
   see [OVERLAYS.md](../OVERLAYS.md#levels)).
@@ -43,9 +43,9 @@ Not fixed yet:
   (PAL: `D_0015EEB4`).
 - Fixed: `func_001E9808` was named `showDebugFont` from the NTSC decomp, but its body starts a
   level; it is now `StartLevel` via `config/names_local.tsv`.
-- `docs/ASM_CLASSIFICATION.md` counts 212 handwritten functions; `config/handwritten_asm.txt`
+- `docs/reference/ASM_CLASSIFICATION.md` counts 212 handwritten functions; `config/handwritten_asm.txt`
   lists 245 (the 33 VU0 helpers added on 2026-10-17 are not counted).
-- `docs/DATAMINED_REVERSE_ENGINEERING.md` calls the camera unit `camera.c` (no such string
+- `docs/reference/DATAMINED_REVERSE_ENGINEERING.md` calls the camera unit `camera.c` (no such string
   exists; the header of `src/game/camera.c` says the original was `camera.cpp`), its
   `RaC1GadgetId` enum does not match retail item ids, and its `MobyInstance` layout cannot come
   from debug symbols: this ELF has no debug sections. See [datamining.md](datamining.md) §12.

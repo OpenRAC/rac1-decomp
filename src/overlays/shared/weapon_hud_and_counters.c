@@ -2589,7 +2589,7 @@ void init_level_runtime_state(void) {
 /* NON_MATCHING func_L00_0023DB30 -- src/overlays/shared/hud_00235960.c
  * Best so far: BYTES 36/572 (93.7% of the bytes match), checked 2026-10-09.
  * Not built into anything: the retail assembly stays in the source file
- * until a candidate is EXACT (docs/NONMATCHING.md). Start from this one.
+ * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
  * What the last attempts found:
  *   func_L00_0023DB30: vendor stock init. If D_0015EE84 >= 19 it fills two 0x25-byte flag arrays with 1, sets seve
  *   Best candidate p7.c: schedule identical to retail (source order bytes, then ints 4..0x18, then the 0x1C store 

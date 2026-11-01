@@ -1042,7 +1042,7 @@ char *spawn_class_3a6_moby(char *src, float *v, char *pos) {
 /* NON_MATCHING func_L15_002E6D48 -- src/overlays/shared/vendor_002D7C00.c
  * Best so far: SIZE ours 1288 / retail 1300, checked 2026-10-09.
  * Not built into anything: the retail assembly stays in the source file
- * until a candidate is EXACT (docs/NONMATCHING.md). Start from this one.
+ * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
  * What the last attempts found:
  *   Underwater ring update (moby class 1209): an approach test, then a five-state switch on moby[0x20] with a jump
  *   Remaining differences are scheduling and argument placement: a `daddu $a0,$s1` before the func_L00_00251328 ca

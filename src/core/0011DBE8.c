@@ -4,7 +4,7 @@
 
 /*
  * core_text object 0x11DBE8-0x11DD68. Boundaries are retail's linker fill
- * (0xCDCDCDCD) between objects; see docs/DECOMP_PROGRESS.md.
+ * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
  */
 
 /* Declarations in scope here before the split. */

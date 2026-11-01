@@ -6,7 +6,7 @@
 /*
  * initonce.cpp in the original source; text 0x201E10-0x202260.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
- * sizes -- see docs/DECOMP_PROGRESS.md. Compiled as C for now.
+ * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
 /* Declarations in scope here before the split. */

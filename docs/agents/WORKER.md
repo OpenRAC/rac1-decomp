@@ -8,7 +8,7 @@ function's name, your role and your budget. Everything else is here, in
 
 - Do the work yourself. Don't start sub-agents, search the web or install
   software.
-- The build is fixed: no step may change what the compiler emitted, and flags apply only to whole files (GCC 2.95 has no per-function options). Never propose a new post-processing step or a per-function flag; a function that only matches that way is not a match (docs/BUILD_FIDELITY.md).
+- The build is fixed: no step may change what the compiler emitted, and flags apply only to whole files (GCC 2.95 has no per-function options). Never propose a new post-processing step or a per-function flag; a function that only matches that way is not a match (docs/reference/BUILD_FIDELITY.md).
 - Plain C only, as upstream requires
   ([LLM_DECOMP_INSTRUCTIONS.md](LLM_DECOMP_INSTRUCTIONS.md)): no register
   pins, no inline assembly inside a function, no artificial barriers
@@ -43,7 +43,7 @@ function's name, your role and your budget. Everything else is here, in
 2. Read [LEVERS.md](LEVERS.md), and do its "Start here" steps before
    writing C:
    - `python3 tools/lombyte.py <func>`: if Lombyte has matched the same
-     function, port its C (see [SIBLING_DECOMPS.md](agents/SIBLING_DECOMPS.md)).
+     function, port its C (see [SIBLING_DECOMPS.md](SIBLING_DECOMPS.md)).
      That usually takes one or two runs.
    - List every global and how retail reaches it; that decides the
      declarations.

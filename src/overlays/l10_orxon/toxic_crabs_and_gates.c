@@ -1116,7 +1116,7 @@ float compute_toxic_crab_group_approach_angle(char *self) {
 /* NON_MATCHING func_L10_002E5E48 -- src/overlays/l10_orxon/vendor_002E30F8.c
  * Best so far: BYTES 58/3804 (98.5% of the bytes match), checked 2026-10-14.
  * Not built into anything: the retail assembly stays in the source file
- * until a candidate is EXACT (docs/NONMATCHING.md). Start from this one.
+ * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
  * What the last attempts found:
  *   Left: case 8 scheduling only. Before func_L00_0025F4A8: retail sets $s1=m+0x10 after $f14 and
  *   $f13 before $f12 (both 0.0 from $f20); before the two func_L00_00265050 calls retail stores the

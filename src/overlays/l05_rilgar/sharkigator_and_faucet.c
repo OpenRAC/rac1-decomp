@@ -1816,7 +1816,7 @@ int test_extermibot_offset_path_clearance(char *moby, float *goal, float s)
 /* NON_MATCHING func_L05_003053D8 -- src/overlays/l05_rilgar/vendor_002D28D0.c
  * Best so far: EXACT, checked 2026-10-01.
  * Not built into anything: the retail assembly stays in the source file
- * until a candidate is EXACT (docs/NONMATCHING.md). Start from this one.
+ * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
  * What the last attempts found:
  *   Finds the nearest entry (flag 0x1000 set, state < 0x7F, within 120.0) of a per-index table of 15-bit ids into 
  *   Structure matches (p1: 220 vs 216 bytes); the one difference is the second read of D_L05_00160098, which retai

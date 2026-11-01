@@ -82,11 +82,11 @@ WORK_ROOT = Path("build-sn/overlays/report")
 # pyelftools at module scope for the toolchain-driven build/compare path,
 # which CI (no toolchain, no baserom) never runs.
 OVERLAY_STUB = re.compile(r'^\s*(?:INCLUDE_ASM|LINKER_REMNANT|ASM_FUNC)\([^)]*\b(func_L\d{2}_[0-9A-Fa-f]{8})\)')
-# Level-code linker remnants (docs/ASM_CLASSIFICATION.md): what the linker left of stripped functions
+# Level-code linker remnants (docs/reference/ASM_CLASSIFICATION.md): what the linker left of stripped functions
 # (each one's last delay slot), kept as assembly and counted as finished, as the executable's are.
 OVERLAY_REMNANT = re.compile(r'^\s*LINKER_REMNANT\("asm/overlays",\s*(func_L\d{2}_[0-9A-Fa-f]{8})\);', re.M)
 OVERLAY_REMNANTS = Path("config/overlays/linker_remnants.txt")
-# Level-code hand-written functions (docs/ASM_CLASSIFICATION.md): original assembly, kept as it is
+# Level-code hand-written functions (docs/reference/ASM_CLASSIFICATION.md): original assembly, kept as it is
 # and counted as finished, as the executable's ASM_FUNC functions are.
 OVERLAY_HANDWRITTEN = re.compile(r'^\s*ASM_FUNC\("asm/overlays",\s*(func_L\d{2}_[0-9A-Fa-f]{8})\);', re.M)
 OVERLAY_HANDWRITTEN_LIST = Path("config/overlays/handwritten_asm.txt")
@@ -276,7 +276,7 @@ def overlay_remnants() -> set[str]:
 
 def overlay_handwritten() -> set[str]:
     """The level-code hand-written functions: config/overlays/handwritten_asm.txt and the
-    ASM_FUNC lines of src/overlays/ (docs/ASM_CLASSIFICATION.md, "Level code"). A joined
+    ASM_FUNC lines of src/overlays/ (docs/reference/ASM_CLASSIFICATION.md, "Level code"). A joined
     function is listed under its first name; its later pieces are finished with it."""
     return overlay_listed(OVERLAY_HANDWRITTEN_LIST, OVERLAY_HANDWRITTEN)
 
@@ -358,7 +358,7 @@ def overlay_match_results(file_map: dict) -> dict[str, float]:
     for owner, pieces in overlay_joined().items():
         if out.get(owner) == 100.0:
             out.update({piece: 100.0 for piece in pieces if piece in out})
-    # Near misses staged in nonmatching/ (docs/NONMATCHING.md): their share
+    # Near misses staged in nonmatching/ (docs/reference/NONMATCHING.md): their share
     # of matching bytes as fuzzy_match_percent. They are never finished:
     # only an EXACT C definition in src/overlays/ counts as matched code.
     import nonmatching
@@ -748,7 +748,7 @@ def generate() -> dict:
 
 
 def check() -> None:
-    # The build runs only documented assembler/linker steps, with flags per file (docs/BUILD_FIDELITY.md).
+    # The build runs only documented assembler/linker steps, with flags per file (docs/reference/BUILD_FIDELITY.md).
     import check_build_fidelity
     check_build_fidelity.main()
     if not REPORT.exists():

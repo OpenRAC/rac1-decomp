@@ -1,6 +1,6 @@
 # Asset formats
 
-What the extractor ([tools/extract](../tools/extract/README.md)) knows
+What the extractor ([tools/extract](../../tools/extract/README.md)) knows
 about the data on the PAL disc (`SCES_509.16` v2.00), and the evidence for
 each piece. This file describes formats and measured metadata only; it
 contains no game data.

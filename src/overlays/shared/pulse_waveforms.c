@@ -5,7 +5,7 @@
 /* NON_MATCHING func_L00_001EAD88 -- src/overlays/shared/start_001EAD88.c
  * Best so far: BYTES 2/1044 (99.8% of the bytes match), checked 2026-10-15.
  * Not built into anything: the retail assembly stays in the source file
- * until a candidate is EXACT (docs/NONMATCHING.md). Start from this one.
+ * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
  * What the last attempts found:
  *   2026-10-15: one function of 1044 bytes in six catalogue pieces (joined.tsv). Updates eight pulse channels
  *   at D_L00_00166100 (16 bytes each) and averages them into out[0..1]. Its switch has six cases (none,

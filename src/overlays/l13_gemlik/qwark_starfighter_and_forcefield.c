@@ -2796,7 +2796,7 @@ void BlargSpaceCommandoUpdate(struct Moby *moby) {
 /* NON_MATCHING func_L13_0030A1C8 -- src/overlays/l13_gemlik/vendor_002EBD00.c
  * Best so far: SIZE ours 1648 / retail 1632, checked 2026-10-09.
  * Not built into anything: the retail assembly stays in the source file
- * until a candidate is EXACT (docs/NONMATCHING.md). Start from this one.
+ * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
  * What the last attempts found:
  *   Level 13 moby update: effect state machine on moby[0x20] with a 12-way jump table on a value from func_0025B4D
  *   Best by size: p3.c (1648 vs 1632, 16 over). Cases 3-10 before 1/2 and the f20 branch sense match retail's layo

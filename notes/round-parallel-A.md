@@ -1,7 +1,7 @@
 # Range A (`src/text.c`, vram 0x1E9080-0x1F9B00)
 
 > **Historical round notes (September 2026), kept as a record.**
-> `docs/DECOMP_PROGRESS.md` and `progress/report.json` hold the current
+> `docs/reference/DECOMP_PROGRESS.md` and `progress/report.json` hold the current
 > state. Superseded since this was written:
 > - "`$gp`-relative addressing ... at `-G0` neither is reachable": the
 >   build uses `-G2` now, and `$gp` functions match.

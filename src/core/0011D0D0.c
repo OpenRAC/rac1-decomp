@@ -4,7 +4,7 @@
 
 /*
  * core_text object 0x11D0D0-0x11D700. Boundaries are retail's linker fill
- * (0xCDCDCDCD) between objects; see docs/DECOMP_PROGRESS.md.
+ * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
  *
  * Sony's EE kernel library (libkernl): the IOP reset (sceSifRebootIop,
  * func_0011D248, "rom0:UDNL "), the boot-time kernel patch/poke sequence

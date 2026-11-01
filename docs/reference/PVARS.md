@@ -4,7 +4,7 @@ A reference guide for moby instance private variables (`pvars`) in *Ratchet &
 Clank* (PS2, 2002), how the engine manages object-specific state, and the
 reverse-engineered class layouts adapted from **Wrench**.
 
-The matching C declarations are in [`include/moby_pvars.h`](../include/moby_pvars.h).
+The matching C declarations are in [`include/moby_pvars.h`](../../include/moby_pvars.h).
 
 ---
 
@@ -12,7 +12,7 @@ The matching C declarations are in [`include/moby_pvars.h`](../include/moby_pvar
 
 Every interactive actor or entity in the game — Ratchet, Clank, NPCs, enemies,
 hazards, moving platforms, projectiles, and collectables — is represented by a
-[`MobyInstance`](../include/structs.h) record in memory.
+[`MobyInstance`](../../include/structs.h) record in memory.
 
 While all mobys share common header fields (position, rotation matrix, bounding
 sphere, animation sequence, class ID, update function pointer), each class has
@@ -92,7 +92,7 @@ NPCs and complex props look at the player as Ratchet walks past:
 ## 3. Reverse-Engineered Class Catalog
 
 The following moby classes and pvars were reverse-engineered by **Wrench** and
-adapted into [`include/moby_pvars.h`](../include/moby_pvars.h):
+adapted into [`include/moby_pvars.h`](../../include/moby_pvars.h):
 
 | Class ID | Friendly Name | Planet / Level | PVar Struct | Size | Description & Key Fields |
 |---|---|---|---|---:|---|
@@ -120,7 +120,7 @@ adapted into [`include/moby_pvars.h`](../include/moby_pvars.h):
 
 ## 4. How to Use in Level Decompilation
 
-When decompiling functions in [`src/overlays/`](../src/overlays/):
+When decompiling functions in [`src/overlays/`](../../src/overlays):
 
 1. Include the header:
    ```c
@@ -140,7 +140,7 @@ When decompiling functions in [`src/overlays/`](../src/overlays/):
 
 ## 5. Sources and Attribution
 
-The structures in this document and [`include/moby_pvars.h`](../include/moby_pvars.h)
+The structures in this document and [`include/moby_pvars.h`](../../include/moby_pvars.h)
 are adapted from **[Wrench](https://github.com/chaoticgd/wrench)** by
 **chaoticgd and contributors**, licensed under the **GNU General Public
 License v3.0 or later (GPL-3.0-or-later)**.
@@ -153,4 +153,4 @@ Specific upstream files:
 - `data/overlay/src/game_rac/mobyutil.h`: R&C 1 common moby sub-vars
 - `data/overlay/src/game_rac/update/moby*.h`: level-specific moby update structs
 
-See [`THIRD_PARTY_NOTICES.md`](../THIRD_PARTY_NOTICES.md) for full licensing terms.
+See [`THIRD_PARTY_NOTICES.md`](../../THIRD_PARTY_NOTICES.md) for full licensing terms.
