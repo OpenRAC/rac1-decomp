@@ -5,6 +5,7 @@
 #include "structs/vector.h"
 #include "structs/disc.h"
 #include "overlays/shared/map_menu_filters.h"
+#include "enums/level.h"
 
 typedef struct {
     unsigned short count;
@@ -168,7 +169,7 @@ void run_level_main_loop(void) {
     PutDispBuffer_r();
     music_StartTrack_r(((Music_2465F8 *)cd_read_state_r)->track, 1, 0x400);
     if ((g_current_level_index_r == one && level_available_base_r[0] == 0) ||
-        (g_current_level_index_r == 0 && D_0013D498_2465F8[0] != 0)) {
+        (g_current_level_index_r == LEVEL_VELDIN1 && D_0013D498_2465F8[0] != 0)) {
         music_Unpause_r();
     } else {
         music_Pause_r(0);

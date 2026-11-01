@@ -11,6 +11,7 @@
 #include "overlays/shared/hero_animation_slots.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/level.h"
 
 extern char g_hero[];
 extern int select_hero_slot3_animation_pair(int, int *, int *);
@@ -1593,8 +1594,8 @@ void HeroAttachManipulators(char *obj) {
         *(float *)(s0 + 0x24) = f20;
         *(float *)(s0 + 0x28) = f20;
     }
-    if (g_current_level_index == 2 || g_current_level_index == 9 || g_current_level_index == 0xB ||
-        g_current_level_index == 0xD) {
+    if (g_current_level_index == LEVEL_ARIDIA || g_current_level_index == LEVEL_GASPAR ||
+        g_current_level_index == LEVEL_POKITARU || g_current_level_index == LEVEL_GEMLIK) {
         int i;
         char *qq;
         for (i = 0; qq = cutscene_state, i < *(short *)(qq + 0x44); i++) {
@@ -1611,7 +1612,7 @@ void HeroAttachManipulators(char *obj) {
     c1 = 0x806E8C6E;
     c0 = 0x805A3232;
     q->glow_phase = FastAddRots(q->glow_phase, g_frame_time * 2.0943951f);
-    if (g_current_level_index == 0) {
+    if (g_current_level_index == LEVEL_VELDIN1) {
         b = cutscene_state;
         if (*(int *)(b + 0x30) == 0) {
             if (*(int *)(b + 0x34) >= scale_ticks(0x343)) {

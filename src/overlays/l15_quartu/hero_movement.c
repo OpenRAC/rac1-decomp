@@ -28,6 +28,7 @@
 #include "game/mobyutil.h"
 #include "overlays/shared/sound_playback.h"
 #include "overlays/shared/variants.h"
+#include "enums/level.h"
 
 extern unsigned char hero_globals_base[];
 extern int g_current_level_index MACRO_ADDR;
@@ -79,7 +80,7 @@ void Hero_UpdateAimFlags(void) {
         struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         p->selector_3 = 1;
     }
-    if (g_current_level_index == 0xD) {
+    if (g_current_level_index == LEVEL_GEMLIK) {
         struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         if (p->state.current != 0x7B) {
             if (coll_sphere(p->capsule_radius + 0.03f, &p->motion.body_center, 2, 0) != 0) {
@@ -292,7 +293,7 @@ s32 process_hero_incoming_hit(s32 arg) {
                     id = 0x82;
                     goto call_ret;
                 }
-                if (g_current_level_index == 0xF || g_current_level_index == 0x11) {
+                if (g_current_level_index == LEVEL_QUARTU || g_current_level_index == LEVEL_FLEET) {
                     mob = (unsigned char *)g_hero.damage_source_moby;
                     if (mob != 0 && (*(s16 *)(mob + 0xA6) == 0x28F || *(s16 *)(mob + 0xA6) == 0x7B ||
                                      *(s16 *)(mob + 0xA6) == 0x29D)) {
@@ -1820,12 +1821,12 @@ void Hero_UpdateStatePhysicsL15(void) {
             }
         } break;
         case 0x31:
-            if (g_current_level_index == 0xF) {
+            if (g_current_level_index == LEVEL_QUARTU) {
                 release_voice_slot_cf(2, (int)g_hero.moby, 0x1D);
             } else {
                 release_voice_slot_cf(2, (int)g_hero.moby, 6);
             }
-            if (g_current_level_index != 0xF) {
+            if (g_current_level_index != LEVEL_QUARTU) {
 
                 emit_hero_randomized_motion_effects(4, 2);
                 vec[0][0] = g_hero.motion.pos.f[0] + random_float_between(-0.25f, 0.25f);

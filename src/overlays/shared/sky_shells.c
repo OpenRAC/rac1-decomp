@@ -3,6 +3,7 @@
 #include "include_asm.h"
 #include "game/skyfunc.h"
 #include "overlays/shared/sky_particles.h"
+#include "enums/level.h"
 
 extern void VU1_addGSregister(int, long);
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
@@ -11,7 +12,7 @@ extern int depth_buffer_address MACRO_ADDR;
 // Level init: pick a setup by mode, then issue two draw commands.
 void DrawSkyL01(void) {
     SetupSkyGifPaging();
-    if (g_current_level_index_m == 1) {
+    if (g_current_level_index_m == LEVEL_NOVALIS) {
         update_sky_shells_animated();
     } else {
         update_sky_shells_static();

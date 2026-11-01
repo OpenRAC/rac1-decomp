@@ -20,6 +20,7 @@
 #include "data/level_02.h"
 #include "game/fastfunc.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/level.h"
 
 extern unsigned char hero_globals_base[];
 extern int g_current_level_index MACRO_ADDR;
@@ -56,7 +57,7 @@ void process_hero_ground_material_effects(void) {
         struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         q->selector_3 = 1;
     }
-    if (g_current_level_index == 0xD) {
+    if (g_current_level_index == LEVEL_GEMLIK) {
         struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         if (q->state.current != 0x7B) {
             if (coll_sphere(q->capsule_radius + 0.03f, &q->motion.body_center, 2, 0) != 0) {
@@ -400,7 +401,7 @@ void Hero_UpdateGroundContact(void) {
             goto d1;
         }
         collision_sound_class = coll_sound_class();
-        if (g_current_level_index == 1 || g_current_level_index == 0x12) {
+        if (g_current_level_index == LEVEL_NOVALIS || g_current_level_index == LEVEL_VELDIN2) {
             collision_sound_class = 3;
         }
         g_hero.ground_sound_class = collision_sound_class;

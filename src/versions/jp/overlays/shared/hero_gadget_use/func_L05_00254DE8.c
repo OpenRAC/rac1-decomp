@@ -20,7 +20,7 @@ void update_hero_hoverboard_race_progress(void) {
     }
     path = rilgar_paths_r2[d->f20];
     ((Hero *)(hero_globals_base + 0xE1D))->race_path = (void *)path;
-    if (g_current_level_index_r == 0x10) {
+    if (g_current_level_index_r == LEVEL_KALEBO3) {
         *(u128_254DE8 *)v0 = 0;
         v0[0] = 163.0f;
         v0[1] = 119.0f;
@@ -63,7 +63,7 @@ void update_hero_hoverboard_race_progress(void) {
         }
     }
     near = 0;
-    if (g_current_level_index_r == 0x10) {
+    if (g_current_level_index_r == LEVEL_KALEBO3) {
         if (((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[2] <
             path->p[((Hero *)(hero_globals_base + 0xE1D))->race_path_node].z - 2.0f) {
             near = 1;
@@ -163,12 +163,12 @@ void update_hero_hoverboard_race_progress(void) {
     if (*(special_items_base_r + 0x13B) != 0) {
         hoverboard_race_finished = 1;
     }
-    if (g_current_level_index_r == 5) {
+    if (g_current_level_index_r == LEVEL_RILGAR) {
         rilgar_hoverboard_races_finished_r++;
-    } else if (g_current_level_index_r == 0x10) {
+    } else if (g_current_level_index_r == LEVEL_KALEBO3) {
         kalebo3_hoverboard_races_finished_r++;
     }
-    if (g_current_level_index_r == 5) {
+    if (g_current_level_index_r == LEVEL_RILGAR) {
         int t;
 
         if (pal_mode_r != 0) {
@@ -209,7 +209,7 @@ void update_hero_hoverboard_race_progress(void) {
             ((Hero *)(hero_globals_base + 0xE1D))->trick_hud_handle = -1;
         }
         update_resource_counter_r();
-    } else if (g_current_level_index_r == 0x10) {
+    } else if (g_current_level_index_r == LEVEL_KALEBO3) {
         if (d->f28 == -1) {
             return;
         }

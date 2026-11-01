@@ -18,6 +18,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "structs/small_records.h"
 #include "enums/moby_class.h"
+#include "enums/level.h"
 
 /* Seeker bolt (Rocket): flies along vel, optionally turning to the hero, bursts on a hit or when the timer ends. */
 struct SeekerBoltVars {
@@ -1257,7 +1258,7 @@ void thruster_pack_lock_red_update(struct Moby *moby) {
                 moby->state = 5;
                 moby->command = 1;
                 moby->pos.z -= 1.5f;
-                if (g_current_level_index == 0x12)
+                if (g_current_level_index == LEVEL_VELDIN2)
                     menu_item_enabled_115 = 1;
             }
             if (vec_distance_xy(&moby->pos, &g_hero_r2.motion.pos) < 2.5f) {

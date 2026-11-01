@@ -11,6 +11,7 @@
 #include "data/shared_levels.h"
 #include "game/loaders.h"
 #include "game/music.h"
+#include "enums/level.h"
 
 extern short ship_level_entry_active;
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
@@ -24,7 +25,7 @@ void initialize_moby_state_record(char *m) {
     int *src;
     *(int *)&ship_level_entry_active = 1;
     deactivate_recorded_moby();
-    if (g_current_level_index_m == 0xD) {
+    if (g_current_level_index_m == LEVEL_GEMLIK) {
         char *q = level_render_state_a;
         *(float *)(q + 0x60) = 464.66f;
         *(float *)(q + 0x64) = 580.68f;
@@ -142,10 +143,10 @@ void initialize_level_transition_with_audio(int a) {
         n = level_render_state_s.x26;
         m = n + 1;
         t = n + 6;
-        if (g_current_level_index_m == 10 && n == 1 && gHaveHeliPack[4] == 0) {
+        if (g_current_level_index_m == LEVEL_ORXON && n == 1 && gHaveHeliPack[4] == 0) {
             m = 0;
             t = 11;
-        } else if (g_current_level_index_m == 14 && level_render_state_s.x26 == 2) {
+        } else if (g_current_level_index_m == LEVEL_OLTANIS && level_render_state_s.x26 == 2) {
             m = 8;
             t = 14;
         }
@@ -158,12 +159,12 @@ void initialize_level_transition_with_audio(int a) {
         if (k)
             t = n;
         m2 = n + 5;
-        if (g_current_level_index_m == 10 && n == 1 && gHaveHeliPack[4] == 0) {
+        if (g_current_level_index_m == LEVEL_ORXON && n == 1 && gHaveHeliPack[4] == 0) {
             t = 10;
             if (k)
                 t = 9;
             m2 = 4;
-        } else if (g_current_level_index_m == 14 && level_render_state_s.x26 == 2) {
+        } else if (g_current_level_index_m == LEVEL_OLTANIS && level_render_state_s.x26 == 2) {
             t = 13;
             if (level_render_state_s.x2c)
                 t = 12;

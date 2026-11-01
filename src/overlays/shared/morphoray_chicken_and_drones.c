@@ -12,6 +12,7 @@
 #include "game/fastfunc.h"
 #include "game/mobyutil.h"
 #include "enums/moby_class.h"
+#include "enums/level.h"
 
 /* Morphoray chicken: AI blocks, a life timer and the color index of the slot it replaced. */
 struct ChickenVars {
@@ -3131,7 +3132,8 @@ void crate_update(struct Moby *moby) {
     switch (moby->state) {
         case CRATE_STATE_INITIALIZE:
             clear_u64_value(&crate_vars->unk40);
-            if (g_current_level_index == 0x12 && moby->oclass == MOBY_CLASS_AMMO_CRATE && crate_vars->unkC8 != 0) {
+            if (g_current_level_index == LEVEL_VELDIN2 && moby->oclass == MOBY_CLASS_AMMO_CRATE &&
+                crate_vars->unkC8 != 0) {
                 moby->state = 6;
                 moby->flags |= 0x41;
                 moby->collision = 0;
@@ -3256,7 +3258,7 @@ void crate_update(struct Moby *moby) {
                     moby->unkB4 = 1;
                 }
                 moby->state = 6;
-                if (g_current_level_index == 0x12) {
+                if (g_current_level_index == LEVEL_VELDIN2) {
                     crate_vars->unkC9 = rand_range(300, 720);
                 } else {
                     crate_vars->unkC9 = rand_range(30, 60);
@@ -3287,7 +3289,7 @@ void crate_update(struct Moby *moby) {
             {
                 s32 ok = 1;
 
-                if (g_current_level_index == 0x12) {
+                if (g_current_level_index == LEVEL_VELDIN2) {
                     s32 low = 0;
                     s32 total = 0;
                     s32 i;

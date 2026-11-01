@@ -24,6 +24,7 @@
 #include "game/fastfunc.h"
 #include "game/mobyutil.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/level.h"
 
 typedef struct {
     char p0[0x74];
@@ -385,7 +386,7 @@ void HeroL08_UpdateStateTransitions(void) {
                                 }
                             }
                             if (ok && 0.22f < g_hero.stick_magnitude) {
-                                if (g_current_level_index_m == 0xC) {
+                                if (g_current_level_index_m == LEVEL_HOVEN) {
                                     int slot = g_hero.ground_sound_class;
                                     request_hero_voice_if_enabled(slot, 0, 0);
                                     request_hero_voice_if_enabled(slot, 1, 0);
@@ -572,7 +573,7 @@ void HeroL08_UpdateStateTransitions(void) {
                         break;
                     case 118:
                         if (g_hero.health.hp <= 0) {
-                            if (g_current_level_index_m == 0xF || g_current_level_index_m == 0x11) {
+                            if (g_current_level_index_m == LEVEL_QUARTU || g_current_level_index_m == LEVEL_FLEET) {
                                 Hero_TryMoveStateL08(0x82, 1);
                                 break;
                             }
@@ -1155,8 +1156,8 @@ void HeroL08_UpdateStateTransitions(void) {
                         } else {
                             int ice = 0;
 
-                            if (g_current_level_index_m == 0x10 && g_hero.wall_hit != 0 && g_hero.coll_hit_moby != 0 &&
-                                *(short *)(g_hero.coll_hit_moby + 0xA6) == 0x101) {
+                            if (g_current_level_index_m == LEVEL_KALEBO3 && g_hero.wall_hit != 0 &&
+                                g_hero.coll_hit_moby != 0 && *(short *)(g_hero.coll_hit_moby + 0xA6) == 0x101) {
                                 ice = 1;
                                 g_hero.coll_hit_moby[0xBC] = 1;
                             }
@@ -1165,7 +1166,7 @@ void HeroL08_UpdateStateTransitions(void) {
                                 ice || g_hero.unk5BE != 0) {
                                 int ok = 1;
 
-                                if (g_current_level_index_m != 0x10) {
+                                if (g_current_level_index_m != LEVEL_KALEBO3) {
                                     qcopy(v0, g_hero.rail_point.f);
                                     v0[2] += 2.0f;
                                     v1[0] = FastCos(g_hero.rail_dir_yaw) * 5.0f;
@@ -1212,7 +1213,7 @@ void HeroL08_UpdateStateTransitions(void) {
                         if (g_hero.state.current == 0x28) {
                             int can = 1;
 
-                            if (g_current_level_index_m == 8) {
+                            if (g_current_level_index_m == LEVEL_BATALIA) {
                                 *(u128 *)v0 = 0;
                                 v0[0] = 342.0f;
                                 v0[1] = 111.1f;
@@ -1657,9 +1658,9 @@ void HeroL08_UpdateStateTransitions(void) {
                         }
                         break;
                     case 119:
-                        if ((g_current_level_index_m == 3 && 5.0f > g_hero.motion.pos.f[2]) ||
-                            (g_current_level_index_m == 6 && 50.0f > g_hero.motion.pos.f[2]) ||
-                            (g_current_level_index_m == 0x10 &&
+                        if ((g_current_level_index_m == LEVEL_KERWAN && 5.0f > g_hero.motion.pos.f[2]) ||
+                            (g_current_level_index_m == LEVEL_BLARG && 50.0f > g_hero.motion.pos.f[2]) ||
+                            (g_current_level_index_m == LEVEL_KALEBO3 &&
                              (77.0f > g_hero.motion.pos.f[2] || (g_hero.state_timer > 0x14 && g_hero.wall_hit != 0 &&
                                                                  g_hero.motion.displacement.f[2] >= 0.0f))) ||
                             g_hero.state_timer > scale_ticks(0x78)) {
@@ -2123,7 +2124,7 @@ void HeroL08_UpdateStateTransitions(void) {
                             Hero_TryMoveStateL08(6, 1);
                             break;
                         }
-                        if (g_current_level_index_m == 0x10 && g_hero.motion.velocity.f[2] < 0.0f &&
+                        if (g_current_level_index_m == LEVEL_KALEBO3 && g_hero.motion.velocity.f[2] < 0.0f &&
                             g_hero.health.hp == 0 && g_hero.state.prev_control_mode == 0xF) {
                             Hero_TryMoveStateL08(0x77, 1);
                             break;
@@ -2344,7 +2345,7 @@ extern int depth_buffer_address MACRO_ADDR;
 /* Draws the Batalia sky shells (rotating on level 8), then restores the GS draw registers. */
 void Sky_DrawLevel08(void) {
     SetupSkyGifPaging();
-    if (g_current_level_index_m == 8) {
+    if (g_current_level_index_m == LEVEL_BATALIA) {
         draw_sky_shells_with_modulo_40000_rotation();
     } else {
         update_sky_shells_static();

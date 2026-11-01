@@ -18,7 +18,7 @@ void background_ship_2_update(char *moby) {
             int m1;
             *(unsigned char *)(moby + 0x30) = 0xFF;
             *(short *)(moby + 0x32) = 0xFF;
-            if (g_current_level_index_r == 10) {
+            if (g_current_level_index_r == LEVEL_ORXON) {
                 *(float *)(moby + 0x2C) = *(float *)(moby + 0x2C) * 0.5f;
             }
             m1 = -1;
@@ -45,7 +45,7 @@ void background_ship_2_update(char *moby) {
             break;
         }
         case 1:
-            if (*(unsigned char *)(hero_globals_base + 0x2EC1) == 1 && g_current_level_index_r == 10) {
+            if (*(unsigned char *)(hero_globals_base + 0x2EC1) == 1 && g_current_level_index_r == LEVEL_ORXON) {
                 DeleteMoby(moby);
                 return;
             }
@@ -54,7 +54,7 @@ void background_ship_2_update(char *moby) {
                 *(int *)(d + 0x6C) = Moby_PlaySound_r_r(1, 4, (int)moby);
             }
             p2 = *(float *)&background_ship_2_speed * g_frame_time;
-            if (g_current_level_index_r == 10) {
+            if (g_current_level_index_r == LEVEL_ORXON) {
                 p2 = p2 * 0.25f;
             }
             *(float *)(d + 0x64) = *(float *)(d + 0x64) + p2 / *(float *)(d + 0x70);
@@ -74,7 +74,7 @@ void background_ship_2_update(char *moby) {
                 *(int *)(moby + 0x94) = *(int *)(*(char **)(moby + 0x24) + 0x10);
             }
             if (*(unsigned char *)(moby + 0x31) != 0) {
-                if (g_current_level_index_r != 10) {
+                if (g_current_level_index_r != LEVEL_ORXON) {
                     spawn_background_ship_2_joint_sparks(moby, tv);
                 } else {
                     spawn_background_ship_2_level_10_joint_sparks(moby, tv);
@@ -88,7 +88,7 @@ void background_ship_2_update(char *moby) {
             }
             break;
         case 2:
-            if (g_current_level_index_r == 2) {
+            if (g_current_level_index_r == LEVEL_ARIDIA) {
                 aridia_skill_ship_kills = aridia_skill_ship_kills + 1;
                 if (aridia_skill_ship_kills >= 3) {
                     unsigned char *p = menu_item_enabled_115 + 1;
@@ -99,7 +99,7 @@ void background_ship_2_update(char *moby) {
                     }
                 }
             }
-            if (g_current_level_index_r == 9) {
+            if (g_current_level_index_r == LEVEL_GASPAR) {
                 if (*(int *)(hero_globals_base + 0x2EA1) == 0x32) {
                     gaspar_skill_ship_kills = gaspar_skill_ship_kills + 1;
                     if (gaspar_skill_ship_kills >= 5) {

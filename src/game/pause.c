@@ -26,6 +26,7 @@
 #include "game/music.h"
 #include "game/space.h"
 #include "enums/moby_class.h"
+#include "enums/level.h"
 
 /*
  * pause.cpp in the original source; text 0x219C08-0x228A58.
@@ -131,11 +132,11 @@ void PauseAllSounds(int arg0) {
     }
     {
         struct MenuSystem *g = (struct MenuSystem *)menu_system;
-        g->unk134 = g_current_level_index == 0xD || help_stats_base != 0;
+        g->unk134 = g_current_level_index == LEVEL_GEMLIK || help_stats_base != 0;
     }
     {
         struct MenuSystem *g = (struct MenuSystem *)menu_system;
-        g->unk138 = g_current_level_index == 0 || g_current_level_index == 0xE;
+        g->unk138 = g_current_level_index == LEVEL_VELDIN1 || g_current_level_index == LEVEL_OLTANIS;
     }
     {
         struct MenuSystem *g = (struct MenuSystem *)menu_system;
@@ -160,7 +161,7 @@ void PauseAllSounds(int arg0) {
         g->unk10 = 0;
         g->update_count = 0;
     }
-    if (g_current_level_index < 0x13) {
+    if (g_current_level_index < LEVEL_COUNT) {
         selected_level_index = g_current_level_index;
     } else {
         selected_level_index = 0;
@@ -3995,7 +3996,7 @@ int DrawMissionsMenu(char *arg0) {
     if (text_width >= w) {
         w = text_width;
     }
-    if (g_current_level_index != 0) {
+    if (g_current_level_index != LEVEL_VELDIN1) {
         text_width = measure_text_width_small(msg_string_id(0x4EEF), -1);
         if (text_width >= w) {
             w = text_width;
@@ -4017,11 +4018,11 @@ int DrawMissionsMenu(char *arg0) {
     if (x < 2) {
         x = 2;
     }
-    step = ((Menu *)arg0)->height / (g_current_level_index != 0 ? 7 : 6);
+    step = ((Menu *)arg0)->height / (g_current_level_index != LEVEL_VELDIN1 ? 7 : 6);
     Font_DisableColorCodes();
     y = step - 6;
     FontPrintSmall_c(x, y, 0x80FFA888L, msg_string_id(0x4EEE), -1);
-    if (g_current_level_index != 0) {
+    if (g_current_level_index != LEVEL_VELDIN1) {
         y += step;
         FontPrintSmall_c(x, y, 0x80FFA888L, msg_string_id(0x4EEF), -1);
     }

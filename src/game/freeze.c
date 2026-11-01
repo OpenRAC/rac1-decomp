@@ -13,6 +13,7 @@
 #include "data/executable.h"
 #include "game/draw.h"
 #include "game/space.h"
+#include "enums/level.h"
 
 /*
  * freeze.cpp in the original source; text 0x1FBC80-0x1FDF10.
@@ -744,7 +745,7 @@ void update_mode_freeze(void) {
             t = scale_game_frame_count(0x78);
             if (t < r5->x20 && (PAD & 0x40)) {
                 g_game_mode = 0;
-                if (g_current_level_index == 1) {
+                if (g_current_level_index == LEVEL_NOVALIS) {
                     memcard_Save(0, -1);
                 }
             }
@@ -893,9 +894,9 @@ void update_mode_freeze(void) {
                         update_resource_counter();
                         t = scale_game_frame_count(0x1068);
                         if (t < *(int *)(h3 + 0x19C)) {
-                            if (g_current_level_index == 5) {
+                            if (g_current_level_index == LEVEL_RILGAR) {
                                 rilgar_hoverboard_races_finished = rilgar_hoverboard_races_finished + 1;
-                            } else if (g_current_level_index == 0x10) {
+                            } else if (g_current_level_index == LEVEL_KALEBO3) {
                                 kalebo3_hoverboard_races_finished = kalebo3_hoverboard_races_finished + 1;
                             }
                         }

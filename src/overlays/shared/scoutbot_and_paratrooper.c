@@ -13,6 +13,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "structs/small_records.h"
 #include "enums/moby_class.h"
+#include "enums/level.h"
 
 /* Paratrooper fire bolt (class 0x50C): flies along its velocity until it hits something or its time runs out. */
 struct FireBoltVars {
@@ -787,7 +788,7 @@ char *create_moby_with_particles(int owner, float *position, float *rotation, in
                                 (*(int *)&homing_shot_launch_upper), a, b, c, -1);
             } while ((float)i < (*(float *)&homing_shot_launch_puffs));
         }
-        if (g_current_level_index == 12)
+        if (g_current_level_index == LEVEL_HOVEN)
             *(int *)(data + 0x18) = scale_ticks(120);
         else
             *(int *)(data + 0x18) = truncate_float_to_s32(multiply_global_factor((*(float *)&homing_shot_lifetime)));
@@ -2041,7 +2042,7 @@ void scatter_ground_particles(Moby *m) {
     float w;
     float zero;
 
-    if (g_current_level_index_r == 0xC || g_current_level_index_r == 0x200) {
+    if (g_current_level_index_r == LEVEL_HOVEN || g_current_level_index_r == 0x200) {
         flag = 1;
     } else {
         flag = 0;

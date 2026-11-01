@@ -16,6 +16,7 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/pause_menu.h"
 #include "enums/moby_class.h"
+#include "enums/level.h"
 
 /* Crate: falls, stacks on other crates and rides moving platforms. */
 struct CrateVars {
@@ -440,7 +441,7 @@ void func_L00_002D19E8_r(u8 *a) {
             func_L00_00261478_2D19E8(a, *(s32 *)&((struct CrateVars *)b)->attach_moby, a + 0x10, a + 0x40, &v30, &v40);
             func_001F9BF0_2D19E8(&v20, &v30, a + 0x10);
         }
-        if (g_current_level_index_r == 0xF && func_001F9B88_2D19E8(((Moby *)a)->pos.x - 166.0f) < 6.0f &&
+        if (g_current_level_index_r == LEVEL_QUARTU && func_001F9B88_2D19E8(((Moby *)a)->pos.x - 166.0f) < 6.0f &&
             func_001F9B88_2D19E8(((Moby *)a)->pos.y - 193.0f) < 6.0f) {
             s32 save = current_moby_mission_complete_r;
             current_moby_mission_complete_r = 0;

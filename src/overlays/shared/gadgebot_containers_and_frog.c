@@ -18,6 +18,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
+#include "enums/level.h"
 
 /* Blarg frog: hops along its path, chases the hero or a gadgebot and respawns after it is destroyed. */
 struct FrogVars {
@@ -1586,7 +1587,7 @@ void GadgebotUpdate(Moby *moby) {
             int j;
 
             qcopy(v40, (*(float (*)[4]) & moby->pos));
-            if (g_current_level_index != 6) {
+            if (g_current_level_index != LEVEL_BLARG) {
                 d->f27C = -1;
                 if (d->f310 >= 2) {
                     int i;
@@ -1749,7 +1750,7 @@ void GadgebotUpdate(Moby *moby) {
                            &d->ctl.f14, g_frame_scale_sq * 0.05f, g_frame_scale_sq * 0.3f, g_frame_time * 3.4906585f);
             break;
         case 5:
-            if (g_current_level_index != 6) {
+            if (g_current_level_index != LEVEL_BLARG) {
                 int i;
 
                 d->f27C = -1;
@@ -2970,7 +2971,7 @@ void energy_sphere_holder_update(Moby *m) {
                           (help_stats_base_r + 0xAB75)) >>
                      (m->save_id & 0x1F) &
                  1) &&
-                (g_current_level_index_r != 10 ||
+                (g_current_level_index_r != LEVEL_ORXON ||
                  (q = (unsigned char *)(help_stats_base_r2 + 0xAA35), (q + m->mission))[0xA0] == 0xFF)) {
                 m->state = 2;
                 m->command = 1;

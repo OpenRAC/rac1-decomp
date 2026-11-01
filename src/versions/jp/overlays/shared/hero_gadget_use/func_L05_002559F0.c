@@ -87,7 +87,7 @@ L_BAC:
     r16 = select_point_index_by_distance(vp, pp, 0.0f);
     r4 = offset_path_index(((H_9F0 *)(hero_globals_base + 0xE1D))->p8B4, r16, -1, 1);
     ((H_9F0 *)(hero_globals_base + 0xE1D))->s8C8 = r16;
-    if (g_current_level_index_r != 5)
+    if (g_current_level_index_r != LEVEL_RILGAR)
         goto L_D68;
     pts = (float (*)[4])((H_9F0 *)(hero_globals_base + 0xE1D))->p8B4;
     f1 = *(float *)((char *)pts + (r16 << 4) + 0x18);
@@ -157,7 +157,7 @@ L_DEC:
     }
 
     if (special_items_base_r[0x13B] != 0) {
-        if (g_current_level_index_r == 5 && ((H_9F0 *)(hero_globals_base + 0xE1D))->i6F0 == 4 &&
+        if (g_current_level_index_r == LEVEL_RILGAR && ((H_9F0 *)(hero_globals_base + 0xE1D))->i6F0 == 4 &&
             ((H_9F0 *)(hero_globals_base + 0xE1D))->i70C >= 4) {
             Flags_9F0 *fl = (Flags_9F0 *)(menu_item_enabled_115 + 1);
             if (fl->f7 == 0) {

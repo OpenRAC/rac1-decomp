@@ -16,7 +16,7 @@ void update_enemy_fighter_921(Moby *m) {
         void *r = MobyGetHitMessage_r2(m, 0x800000, 0);
         m->hit_slot = 0xFF;
         if (r != 0 && d->f8C == -1 && m->state != 3) {
-            if (g_current_level_index_m == 0xE) {
+            if (g_current_level_index_m == LEVEL_OLTANIS) {
                 fighter_skill_hit_count_r2 = fighter_skill_hit_count_r2 + 1;
                 if (fighter_skill_hit_count_r2 >= 3 && ((Skill_2FE038 *)gSkillPoints_r)->f18 == 0) {
                     ((Skill_2FE038 *)gSkillPoints_r)->f18 = 1;

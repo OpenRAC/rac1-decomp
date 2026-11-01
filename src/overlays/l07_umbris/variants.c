@@ -3,6 +3,7 @@
 #include "include_asm.h"
 #include "game/skyfunc.h"
 #include "overlays/shared/sky_particles.h"
+#include "enums/level.h"
 
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 
@@ -11,7 +12,7 @@ extern int depth_buffer_address MACRO_ADDR;
 /* Draw the Umbris sky shells (animated in level 7, static elsewhere) and restore GS test and Z. */
 void DrawSkyUmbris(void) {
     SetupSkyGifPaging();
-    if (g_current_level_index_m == 7) {
+    if (g_current_level_index_m == LEVEL_UMBRIS) {
         draw_three_sky_shells_with_particles_and_modulo_50000_rotation();
     } else {
         update_sky_shells_static();

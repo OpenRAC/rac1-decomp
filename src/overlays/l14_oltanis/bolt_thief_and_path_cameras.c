@@ -20,6 +20,7 @@
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
+#include "enums/level.h"
 
 /* Moby that points at a linked moby by index. */
 struct LinkedRemovalVars {
@@ -521,7 +522,7 @@ int update_bolt_thief_path_movement(char *moby) {
     float t = *(float *)&oltanis_bolt_thief_path_speed * g_frame_time;
     int r;
     char *path;
-    if (g_current_level_index == 0x10)
+    if (g_current_level_index == LEVEL_KALEBO3)
         t = g_frame_time * 20.0f;
     if (data->speed != 0.0f)
         t = data->speed * g_frame_time;

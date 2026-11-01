@@ -10,6 +10,7 @@
 #include "asm_functions/shared_levels.h"
 #include "data/shared_levels.h"
 #include "game/fastfunc.h"
+#include "enums/level.h"
 
 /* The level copies of the camera tables (include/structs/camera.h). */
 extern Camera gCameraSlotsLvl[];
@@ -156,7 +157,7 @@ void SwitchCamera(Camera *next_camera) {
             } else {
                 player_camera.blend.lerp.pos_rate_cfg = 0.018f;
                 player_camera.blend.lerp.rot_rate_cfg = 0.018f;
-                if (g_current_level_index_r == 1) {
+                if (g_current_level_index_r == LEVEL_NOVALIS) {
                     player_camera.blend.lerp.pos_rate_cfg = 0.01f;
                     player_camera.blend.lerp.rot_rate_cfg = 0.01f;
                 }

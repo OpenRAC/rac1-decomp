@@ -6,7 +6,7 @@ void update_enemy_fighter(struct Moby *moby) {
     char *path;
     moby->hit_slot = 0xff;
     if (hit && moby->state != 2) {
-        if (g_current_level_index_r == 14) {
+        if (g_current_level_index_r == LEVEL_OLTANIS) {
             fighter_skill_hit_count_r = fighter_skill_hit_count_r + 1;
             if (fighter_skill_hit_count_r > 2 && D_0013D510_FD578.flag == 0) {
                 D_0013D510_FD578.flag = 1;

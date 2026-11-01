@@ -19,6 +19,7 @@
 #include "overlays/shared/ripple_patches.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
+#include "enums/level.h"
 
 /* Hoven troll walker (same class as TrollVars_e3528 below, which is defined after these functions). */
 struct HovenTrollVars {
@@ -2884,7 +2885,7 @@ void blarg_helicopter_326_update(char *moby) {
             char *tgt;
             float f;
             float d;
-            if (g_current_level_index == 12 && gHaveHeliPack[9] == 0 &&
+            if (g_current_level_index == LEVEL_HOVEN && gHaveHeliPack[9] == 0 &&
                 *(unsigned short *)(help_stats_base + 0x635) == 0) {
                 Help_Request(0x2EE2, 0x5D);
             }

@@ -22,6 +22,7 @@
 #include "game/fastfunc.h"
 #include "game/mobyutil.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/level.h"
 
 typedef int Q_2343F8 __attribute__((mode(TI)));
 
@@ -261,7 +262,7 @@ void update_hero_airborne_planar_motion(void) {
             FastSin(((Hero *)(hero_globals_base + 0xE1D))->motion.rot.f[2]) *
             ((Hero *)(hero_globals_base + 0xE1D))->ledge_jump_speed;
     } else if (state == 11 || state == 12) {
-        if (g_current_level_index != 0xE) {
+        if (g_current_level_index != LEVEL_OLTANIS) {
             if (hero_slot_item_id(3) == 3) {
                 if (((Hero *)(hero_globals_base + 0xE1D))->state_timer == scale_ticks(5)) {
                     allocate_hero_voice_for_entry(1, 0);
@@ -1593,12 +1594,12 @@ void HeroStatePhysics(void) {
             }
         } break;
         case 0x31:
-            if (g_current_level_index == 0xF) {
+            if (g_current_level_index == LEVEL_QUARTU) {
                 release_voice_slot_cf(2, (int)g_hero.moby, 0x1D);
             } else {
                 release_voice_slot_cf(2, (int)g_hero.moby, 6);
             }
-            if (g_current_level_index != 0xF) {
+            if (g_current_level_index != LEVEL_QUARTU) {
 
                 emit_hero_randomized_motion_effects(4, 2);
                 vec[0][0] = g_hero.motion.pos.f[0] + random_float_between(-0.25f, 0.25f);

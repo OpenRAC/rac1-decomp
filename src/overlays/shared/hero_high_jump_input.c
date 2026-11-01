@@ -8,6 +8,7 @@
 #include "overlays/shared/hero_vehicle_and_collision.h"
 #include "asm_functions/shared_levels.h"
 #include "game/mobyutil.h"
+#include "enums/level.h"
 
 extern Hero g_hero;
 typedef struct {
@@ -71,7 +72,7 @@ int pick_idle_fidget(int *index) {
         if (entry->use_state_40 != 0 && ((int)g_hero.ground_moby) != 0)
             continue;
         if (i == 3) {
-            if (g_current_level_index != 12)
+            if (g_current_level_index != LEVEL_HOVEN)
                 continue;
             if (hero_slot_item_id(0) == 23)
                 continue;

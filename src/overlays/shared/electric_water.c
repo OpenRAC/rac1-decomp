@@ -16,6 +16,7 @@
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
+#include "enums/level.h"
 /* Electric water countdown timer display. */
 struct ElectricWaterCountdownVars {
     u8 pad_00[0x12];
@@ -1282,7 +1283,7 @@ void codebot_update(unsigned char *moby) {
     };
     Moby *m = (Moby *)moby;
     unsigned char *collection_flags;
-    if (g_current_level_index != 0xF) {
+    if (g_current_level_index != LEVEL_QUARTU) {
         m->rot.z = FastAddRots(m->rot.z, g_frame_time * 1.5707964f);
         m->scale = m->pclass->scale * *(float *)&quartu_codebot_scale_factor;
         switch (m->state) {
@@ -1368,7 +1369,7 @@ void giant_clank_pad_update(char *m) {
             p0->flags = p0->flags | 1;
             p0->collision = 0;
             p0->visible = 0;
-            if (g_current_level_index != 0x12 ||
+            if (g_current_level_index != LEVEL_VELDIN2 ||
                 (b = (unsigned char *)help_stats_base + 0xAA35, x = b + ((unsigned char *)m)[0xB0], x[0x120] != 0xFF)) {
                 ns = 1;
             } else {
@@ -1393,7 +1394,7 @@ void giant_clank_pad_update(char *m) {
             if (v == 0) {
                 try_set_help_message(4, 0x3AA4);
             } else if (v == st) {
-                if (g_current_level_index != 0x12)
+                if (g_current_level_index != LEVEL_VELDIN2)
                     try_set_help_message(4, 0x3AA5);
             }
             if ((g_controller_state_r.pressed & PAD_TRIANGLE) == 0)
@@ -1408,7 +1409,7 @@ void giant_clank_pad_update(char *m) {
                 other->visible = 0;
                 restore_saved_hero_moby_and_clear_vehicle_mode();
                 MobySetAnimation(other, 0, 0);
-                if (g_current_level_index == 0xF) {
+                if (g_current_level_index == LEVEL_QUARTU) {
                     StartCutscene(9);
                     MusicRequestTrack(0, 5);
                 }
@@ -1428,7 +1429,7 @@ void giant_clank_pad_update(char *m) {
             *(u128_2EE458 *)V = *(u128_2EE458 *)(m + 0x10);
             f = ProbeGroundHeight(V, 0, 0.5f);
             V[2] = f + 0.1f;
-            if (g_current_level_index == 0xF)
+            if (g_current_level_index == LEVEL_QUARTU)
                 jet_reset_camera(V, m + 0x40);
             Hero_ResetToPosition(V, m + 0x40, 0, 1);
             o3 = (char *)other->pclass;
@@ -1436,14 +1437,14 @@ void giant_clank_pad_update(char *m) {
             other->visible = 1;
             other->flags = other->flags & 0xFFFE;
             enter_hero_vehicle_mode(2, 0x5A, (char *)other);
-            if (g_current_level_index == 0xF) {
+            if (g_current_level_index == LEVEL_QUARTU) {
                 StartCutscene(8);
                 *(u128_2EE458 *)g_hero_r.saved_pos_rot = *(u128_2EE458 *)&g_hero_r.motion.pos;
                 *(u128_2EE458 *)(g_hero_r.saved_pos_rot + 0x10) = *(u128_2EE458 *)&g_hero_r.motion.rot;
                 MusicRequestTrack(2, 4);
                 return;
             }
-            if (g_current_level_index == 0x12) {
+            if (g_current_level_index == LEVEL_VELDIN2) {
                 StartCutscene(6);
                 *(u128_2EE458 *)g_hero_r.saved_pos_rot = *(u128_2EE458 *)&g_hero_r.motion.pos;
                 *(u128_2EE458 *)(g_hero_r.saved_pos_rot + 0x10) = *(u128_2EE458 *)&g_hero_r.motion.rot;

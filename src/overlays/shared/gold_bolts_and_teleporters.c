@@ -23,6 +23,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "structs/collision.h"
 #include "enums/moby_class.h"
+#include "enums/level.h"
 
 /* Cutscene trigger: plays a camera sequence when the hero enters its volume. */
 struct CutsceneTriggerVars {
@@ -184,7 +185,7 @@ void update_rail_hero_motion(struct Moby *m) {
     if (d->range < best) {
         return;
     }
-    if (g_current_level_index_r == 1) {
+    if (g_current_level_index_r == LEVEL_NOVALIS) {
         left = 0.0f;
         for (n = best_seg; n < best_path->count - 1; n++) {
             left += best_path->pts[n].f[3];
@@ -891,14 +892,14 @@ void the_plumber_update(char *m) {
         case 0:
             plumber_moby->update_dist = 0xFF;
             plumber_vars->i44 = 0;
-            if (g_current_level_index_c == 1) {
+            if (g_current_level_index_c == LEVEL_NOVALIS) {
                 if (race_gates_base[0x845] != 0) {
                     DeleteMoby(m);
                     return;
                 }
                 plumber_vars->p20 = plumber_novalis_dialogue_name;
                 plumber_moby->state = 1;
-            } else if (g_current_level_index_c == 8) {
+            } else if (g_current_level_index_c == LEVEL_BATALIA) {
                 plumber_vars->p20 = plumber_batalia_dialogue_name;
                 plumber_moby->state = 4;
             } else {
@@ -1932,24 +1933,24 @@ extern void try_set_help_message(int, int);
 void try_set_teleporter_help_message(char *moby) {
     int *data = ((int *)((Moby *)moby)->pvars);
     switch (g_current_level_index_c) {
-        case 12:
+        case LEVEL_HOVEN:
             try_set_help_message(4, ((int *)&teleporter_help_ids_hoven)[data[4]]);
             break;
-        case 17:
+        case LEVEL_FLEET:
             try_set_help_message(4, teleporter_help_ids_fleet[data[4]]);
             break;
-        case 1:
-        case 7:
-        case 13:
+        case LEVEL_NOVALIS:
+        case LEVEL_UMBRIS:
+        case LEVEL_GEMLIK:
             try_set_help_message(4, teleporter_help_ids_default[data[4]]);
             break;
-        case 8:
+        case LEVEL_BATALIA:
             try_set_help_message(4, ((int *)&teleporter_help_ids_batalia)[data[4]]);
             break;
-        case 16:
+        case LEVEL_KALEBO3:
             try_set_help_message(4, ((int *)&teleporter_help_ids_kalebo3)[data[4]]);
             break;
-        case 18:
+        case LEVEL_VELDIN2:
             try_set_help_message(4, ((int *)&teleporter_help_ids_veldin2)[data[4]]);
             break;
     }
@@ -3574,7 +3575,7 @@ void update_camera_position_and_orientation_from_paths(Cam_316730 *cam) {
 
         find_nearest_path_point(path, ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f, v40, &seg, &frac, 0, 20.0f,
                                 1.0f, 0.0f);
-        if (g_current_level_index_c == 0xE && p->f30 == 0) {
+        if (g_current_level_index_c == LEVEL_OLTANIS && p->f30 == 0) {
             Spline_AdvanceByDistance(path, v50, &seg, &frac, spd, 0);
         } else {
             Spline_AdvanceByDistance(path, v50, &seg, &frac, spd, 1);

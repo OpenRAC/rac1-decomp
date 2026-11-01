@@ -13,6 +13,7 @@
 #include "asm_functions/shared_levels.h"
 #include "data/executable.h"
 #include "game/fastfunc.h"
+#include "enums/level.h"
 
 extern unsigned char hero_globals_base[];
 extern char novalis_item_defs[];
@@ -303,7 +304,7 @@ void update_hero_blink_and_gold_weapon_tint(void) {
     blink = 0;
     if (g_hero_r.state.current == 0x80 || g_hero_r.state.current == 0x82)
         blink = g_hero_r.state_timer < scale_ticks_r(30);
-    if (g_current_level_index_r == 0xF || g_current_level_index_r == 0x11) {
+    if (g_current_level_index_r == LEVEL_QUARTU || g_current_level_index_r == LEVEL_FLEET) {
         if (g_hero_r.state.current == 0x76 && g_hero_r.state_timer < scale_ticks_r(20))
             blink = 1;
     }
@@ -371,7 +372,7 @@ void update_hero_ground_material_effects(void) {
         q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         q->base_condition = 1;
     }
-    if (g_current_level_index_r == 0xD) {
+    if (g_current_level_index_r == LEVEL_GEMLIK) {
         struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         if (q->state.current != 0x7B) {
             if (coll_sphere(q->capsule_radius + 0.03f, &q->motion.body_center, 2, 0)) {
@@ -943,7 +944,7 @@ s32 HeroL01_TryTakeHit(s32 arg) {
                     id = 0x82;
                     goto call_ret;
                 }
-                if (g_current_level_index == 0xF || g_current_level_index == 0x11) {
+                if (g_current_level_index == LEVEL_QUARTU || g_current_level_index == LEVEL_FLEET) {
                     mob = (u8 *)g_hero_r3.damage_source_moby;
                     if (mob != 0 && (*(s16 *)(mob + 0xA6) == 0x28F || *(s16 *)(mob + 0xA6) == 0x7B ||
                                      *(s16 *)(mob + 0xA6) == 0x29D)) {
@@ -1241,7 +1242,7 @@ void HeroGroundProbe(void) {
             goto d1;
         }
         r = coll_sound_class();
-        if (g_current_level_index == 1 || g_current_level_index == 0x12) {
+        if (g_current_level_index == LEVEL_NOVALIS || g_current_level_index == LEVEL_VELDIN2) {
             r = 3;
         }
         g_hero.ground_sound_class = r;

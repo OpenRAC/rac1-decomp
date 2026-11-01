@@ -24,6 +24,7 @@
 #include "game/fastfunc.h"
 #include "game/mobyutil.h"
 #include "overlays/shared/hero_move_impulse.h"
+#include "enums/level.h"
 
 typedef int u128 __attribute__((mode(TI)));
 extern Hero g_hero;
@@ -386,7 +387,7 @@ void HeroOltanis_UpdateStateTransitions(void) {
                                 }
                             }
                             if (ok && 0.22f < g_hero.stick_magnitude) {
-                                if (g_current_level_index_m == 0xC) {
+                                if (g_current_level_index_m == LEVEL_HOVEN) {
                                     int slot = g_hero.ground_sound_class;
                                     emit_hero_animation_voice_and_ground_particle(slot, 0, 0);
                                     emit_hero_animation_voice_and_ground_particle(slot, 1, 0);
@@ -1029,7 +1030,7 @@ void HeroOltanis_UpdateStateTransitions(void) {
                             float len;
 
                             grab = 0;
-                            if (g_current_level_index_m == 0x10 && g_hero.wall_hit != 0) {
+                            if (g_current_level_index_m == LEVEL_KALEBO3 && g_hero.wall_hit != 0) {
                                 unsigned char *m = g_hero.coll_hit_moby;
                                 if (m != 0 && *(short *)(m + 0xA6) == 0x101) {
                                     grab = 1;
@@ -1040,7 +1041,7 @@ void HeroOltanis_UpdateStateTransitions(void) {
                             if (len < vec_length_xy(g_hero.motion.velocity.f) * 0.5f || grab || g_hero.unk5BE != 0) {
                                 int ok = 1;
 
-                                if (g_current_level_index_m != 0x10) {
+                                if (g_current_level_index_m != LEVEL_KALEBO3) {
                                     qcopy(v0, g_hero.rail_point.f);
                                     v0[2] += 2.0f;
                                     v1[0] = FastCos(g_hero.rail_dir_yaw) * 5.0f;
@@ -1087,7 +1088,7 @@ void HeroOltanis_UpdateStateTransitions(void) {
                         if (g_hero.state.current == 0x28) {
                             int go = 1;
 
-                            if (g_current_level_index_m == 8) {
+                            if (g_current_level_index_m == LEVEL_BATALIA) {
                                 *(u128 *)v0 = 0;
                                 v0[0] = 342.0f;
                                 v0[1] = 111.1f;
@@ -1529,9 +1530,9 @@ void HeroOltanis_UpdateStateTransitions(void) {
                         }
                         break;
                     case 119:
-                        if ((g_current_level_index_m == 3 && 5.0f > g_hero.motion.pos.f[2]) ||
-                            (g_current_level_index_m == 6 && 50.0f > g_hero.motion.pos.f[2]) ||
-                            (g_current_level_index_m == 0x10 &&
+                        if ((g_current_level_index_m == LEVEL_KERWAN && 5.0f > g_hero.motion.pos.f[2]) ||
+                            (g_current_level_index_m == LEVEL_BLARG && 50.0f > g_hero.motion.pos.f[2]) ||
+                            (g_current_level_index_m == LEVEL_KALEBO3 &&
                              (77.0f > g_hero.motion.pos.f[2] || (g_hero.state_timer > 0x14 && g_hero.wall_hit != 0 &&
                                                                  g_hero.motion.displacement.f[2] >= 0.0f))) ||
                             g_hero.state_timer > scale_ticks(0x78)) {
@@ -1995,7 +1996,7 @@ void HeroOltanis_UpdateStateTransitions(void) {
                             Hero_TryMoveStateL14(6, 1);
                             break;
                         }
-                        if (g_current_level_index_m == 0x10 && g_hero.motion.velocity.f[2] < 0.0f &&
+                        if (g_current_level_index_m == LEVEL_KALEBO3 && g_hero.motion.velocity.f[2] < 0.0f &&
                             g_hero.health.hp == 0 && g_hero.state.prev_control_mode == 0xF) {
                             Hero_TryMoveStateL14(0x77, 1);
                             break;
@@ -2216,7 +2217,7 @@ extern int depth_buffer_address MACRO_ADDR;
 /* Draw the Oltanis sky shells (rotating in level 14, static elsewhere) and restore GS test and Z. */
 void render_sky_shells_with_gif_paging(void) {
     SetupSkyGifPaging();
-    if (g_current_level_index_m == 14) {
+    if (g_current_level_index_m == LEVEL_OLTANIS) {
         SkyShellsRotatePair();
     } else {
         update_sky_shells_static();

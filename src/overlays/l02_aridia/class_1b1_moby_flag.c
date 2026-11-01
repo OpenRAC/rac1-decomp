@@ -3,6 +3,7 @@
 #include "include_asm.h"
 #include "structs/moby.h"
 #include "enums/moby_class.h"
+#include "enums/level.h"
 
 
 typedef struct {
@@ -18,7 +19,7 @@ extern Level02MobyList talk_camera;
 /* Mark every Sonic Summoner moby in the active level. */
 void set_level02_sonic_summoner_moby_flag_0800(void) {
     int i;
-    if (g_current_level_index == 2) {
+    if (g_current_level_index == LEVEL_ARIDIA) {
         for (i = 0; i < talk_camera.count; i++) {
             Moby *moby = talk_camera.mobys[i];
             if (moby->oclass == MOBY_CLASS_SONIC_SUMMONER) {

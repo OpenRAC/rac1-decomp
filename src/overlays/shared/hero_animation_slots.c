@@ -18,6 +18,7 @@
 #include "structs/collision.h"
 #include "structs/hero_views.h"
 #include "enums/moby_class.h"
+#include "enums/level.h"
 
 struct Moby;
 extern struct Hero g_hero_r __asm__("D_0013F450");
@@ -231,7 +232,7 @@ void find_grind_rail(void) {
     g_hero_r2.grind_rail = 0;
     if (g_hero_r2.unk1C8 != 0)
         return;
-    if (g_current_level_index_r == 16) {
+    if (g_current_level_index_r == LEVEL_KALEBO3) {
         *(Q_cf58 *)&v0 = 0;
         v0.x = 115.0f;
         v0.y = 264.0f;
@@ -244,7 +245,7 @@ void find_grind_rail(void) {
             if (12.0f < func_001F9D10_0D5F0(&g_hero_r2.motion.pos, &v1))
                 return;
         }
-    } else if (g_current_level_index_r == 14) {
+    } else if (g_current_level_index_r == LEVEL_OLTANIS) {
         *(Q_cf58 *)&v0 = 0;
         v0.x = 157.0f;
         v0.y = 265.0f;
@@ -263,7 +264,7 @@ void find_grind_rail(void) {
                     return;
             }
         }
-    } else if (g_current_level_index_r == 6) {
+    } else if (g_current_level_index_r == LEVEL_BLARG) {
         *(Q_cf58 *)&v0 = 0;
         v0.x = 177.0f;
         v0.y = 304.0f;
@@ -2464,7 +2465,7 @@ s32 hero_check_damage(s32 arg) {
                     id = 0x82;
                     goto call_ret;
                 }
-                if (g_current_level_index == 0xF || g_current_level_index == 0x11) {
+                if (g_current_level_index == LEVEL_QUARTU || g_current_level_index == LEVEL_FLEET) {
                     mob = (Moby *)g_hero_r4.damage_source_moby;
                     if (mob != 0 &&
                         (mob->oclass == 0x28F || mob->oclass == MOBY_CLASS_SPIDERBOT || mob->oclass == 0x29D)) {
@@ -3219,7 +3220,7 @@ void update_hero_ground_contact_and_surface_slopes(void) {
             goto d1;
         }
         r = coll_sound_class();
-        if (g_current_level_index_r == 1 || g_current_level_index_r == 0x12) {
+        if (g_current_level_index_r == LEVEL_NOVALIS || g_current_level_index_r == LEVEL_VELDIN2) {
             r = 3;
         }
         D_0013F450_12E70.ground_sound_class = r;
@@ -3910,7 +3911,7 @@ void hero_integrate_velocity(void) {
                 near = hero_slot_item_id(3) == 3;
             }
         }
-        if (g_current_level_index != 14) {
+        if (g_current_level_index != LEVEL_OLTANIS) {
             if (hero_slot_item_id(3) == 3) {
                 char *k = hero_globals_base + 0xE1D;
                 if (((struct Hero *)k)->state_timer == scale_ticks(5)) {

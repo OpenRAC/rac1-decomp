@@ -21,6 +21,7 @@
 #include "game/fastfunc.h"
 #include "game/mobyutil.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "enums/level.h"
 
 extern Hero g_hero;
 extern PadState g_controller_state;
@@ -349,7 +350,7 @@ void HeroL11_UpdateStateTransitions(void) {
                                 }
                             }
                             if (ok && 0.22f < g_hero.stick_magnitude) {
-                                if (g_current_level_index_m == 0xC) {
+                                if (g_current_level_index_m == LEVEL_HOVEN) {
                                     int slot = g_hero.ground_sound_class;
                                     request_hero_voice_if_enabled(slot, 0, 0);
                                     request_hero_voice_if_enabled(slot, 1, 0);
@@ -536,7 +537,7 @@ void HeroL11_UpdateStateTransitions(void) {
                         break;
                     case 118:
                         if (g_hero.health.hp <= 0) {
-                            if (g_current_level_index_m == 0xF || g_current_level_index_m == 0x11) {
+                            if (g_current_level_index_m == LEVEL_QUARTU || g_current_level_index_m == LEVEL_FLEET) {
                                 Hero_TrySetMoveStateL11(0x82, 1);
                                 break;
                             }
@@ -1249,9 +1250,9 @@ void HeroL11_UpdateStateTransitions(void) {
                         }
                         break;
                     case 119:
-                        if ((g_current_level_index_m == 3 && 5.0f > g_hero.motion.pos.f[2]) ||
-                            (g_current_level_index_m == 6 && 50.0f > g_hero.motion.pos.f[2]) ||
-                            (g_current_level_index_m == 0x10 &&
+                        if ((g_current_level_index_m == LEVEL_KERWAN && 5.0f > g_hero.motion.pos.f[2]) ||
+                            (g_current_level_index_m == LEVEL_BLARG && 50.0f > g_hero.motion.pos.f[2]) ||
+                            (g_current_level_index_m == LEVEL_KALEBO3 &&
                              (77.0f > g_hero.motion.pos.f[2] || (g_hero.state_timer > 0x14 && g_hero.wall_hit != 0 &&
                                                                  g_hero.motion.displacement.f[2] >= 0.0f))) ||
                             g_hero.state_timer > scale_ticks(0x78)) {
@@ -1927,7 +1928,7 @@ extern int depth_buffer_address MACRO_ADDR;
 /* Draws the Pokitaru sky shells and sets the GS test and depth registers. */
 void Sky_RenderLimited(void) {
     SetupSkyGifPaging();
-    if (g_current_level_index_m == 11) {
+    if (g_current_level_index_m == LEVEL_POKITARU) {
         draw_sky_shells_with_slow_medium_and_fast_rotation();
     } else {
         update_sky_shells_static();

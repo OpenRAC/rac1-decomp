@@ -19,6 +19,7 @@
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
+#include "enums/level.h"
 
 /* Tethered mine: hangs on a tether with four chain links, scales down with distance and blows up when hit. */
 struct TetheredMineVars {
@@ -212,7 +213,7 @@ void update_spark_particle_emitter(EmitterMoby *self) {
     s32 i;
 
     v = self->vars;
-    if (g_current_level_index == 1) {
+    if (g_current_level_index == LEVEL_NOVALIS) {
         p.q = self->pos.q;
         p.f[3] = 20.0f;
         if (FastBSphereCheck(&p, 240.0f) == -1) {

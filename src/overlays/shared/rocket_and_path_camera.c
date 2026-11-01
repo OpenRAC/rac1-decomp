@@ -11,6 +11,7 @@
 #include "data/level_10.h"
 #include "game/fastfunc.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "enums/level.h"
 /* Rocket: velocity, owner, life and start distance. */
 struct RocketVars {
     f32 vel_x; /* 0x00 */
@@ -243,7 +244,7 @@ void rocket_819_update(Moby *m) {
                 m->state = 2;
             break;
         case 2:
-            if (g_current_level_index != 10)
+            if (g_current_level_index != LEVEL_ORXON)
                 SpawnExplosionFx(m, &m->pos, -1, 0.25f, 13.0f);
             else
                 SpawnExplosionFx(m, &m->pos, -1, 0.25f, 0.0f);

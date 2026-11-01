@@ -23,6 +23,7 @@
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
+#include "enums/level.h"
 
 /* Ribbon effect: two ribbon paths (0x00 and 0xA0) and the texture scroll. */
 struct RibbonVars {
@@ -1181,7 +1182,7 @@ void update_path_lightning_controller(char *m) {
     float v[4];
     int st;
     if (((unsigned char *)m)[0x20] == 0) {
-        if (g_current_level_index_m == 0xE)
+        if (g_current_level_index_m == LEVEL_OLTANIS)
             *(short *)(help_stats_base_c + 0xD) = 1;
         m[0x20] = 1;
         ((unsigned char *)m)[0x30] = 0xFF;
@@ -2836,7 +2837,7 @@ void update_enemy_fighter(struct Moby *moby) {
     char *path;
     moby->hit_slot = 0xff;
     if (hit && moby->state != 2) {
-        if (g_current_level_index_r == 14) {
+        if (g_current_level_index_r == LEVEL_OLTANIS) {
             fighter_skill_hit_count_r = fighter_skill_hit_count_r + 1;
             if (fighter_skill_hit_count_r > 2 && D_0013D510_FD578.flag == 0) {
                 D_0013D510_FD578.flag = 1;
@@ -3200,7 +3201,7 @@ void update_enemy_fighter_921(Moby *m) {
         void *r = MobyGetHitMessage_r2(m, 0x800000, 0);
         m->hit_slot = 0xFF;
         if (r != 0 && d->f8C == -1 && m->state != 3) {
-            if (g_current_level_index_m == 0xE) {
+            if (g_current_level_index_m == LEVEL_OLTANIS) {
                 fighter_skill_hit_count_r2 = fighter_skill_hit_count_r2 + 1;
                 if (fighter_skill_hit_count_r2 >= 3 && ((Skill_2FE038 *)gSkillPoints_r)->f18 == 0) {
                     ((Skill_2FE038 *)gSkillPoints_r)->f18 = 1;

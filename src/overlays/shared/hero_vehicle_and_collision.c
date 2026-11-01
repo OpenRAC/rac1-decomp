@@ -13,6 +13,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "structs/collision.h"
 #include "enums/moby_class.h"
+#include "enums/level.h"
 
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 extern struct Hero g_hero_r __asm__("D_0013F450");
@@ -1702,11 +1703,11 @@ int HeroEnterMoveState(int a, int b) {
                     u->unk498 = scale_ticks(2);
                     u->jump_max_frames = scale_ticks(0x78);
                     hero_change_health(1);
-                    if (g_current_level_index == 0xA) {
+                    if (g_current_level_index == LEVEL_ORXON) {
                         HeroEnterMoveState(0x7C, 1);
                         return 0;
                     }
-                    if (g_current_level_index != 6) {
+                    if (g_current_level_index != LEVEL_BLARG) {
                         if (u->state.prev == 0x3C || u->state.prev2 == 0x3C || u->health.hp == 0) {
                             struct Hero *w = (struct Hero *)((char *)hero_globals_base + 0xE1D);
                             w->sink_jump_count = w->sink_jump_count + 1;
@@ -2404,7 +2405,7 @@ int HeroEnterMoveState(int a, int b) {
             char *p = (char *)hero_globals_base + 0xE1D;
             ((struct Hero *)p)->state.control_mode = 0x19;
             ((struct Hero *)p)->unk2284 = 0;
-            if (g_current_level_index == 0xF)
+            if (g_current_level_index == LEVEL_QUARTU)
                 spawn_hero_radial_particle_burst();
             ((struct Hero *)p)->collision_off_frames = 0x2710;
             allocate_hero_voice_for_entry(9, 0);
@@ -2414,7 +2415,7 @@ int HeroEnterMoveState(int a, int b) {
             break;
         }
         case 0x7C: {
-            if (g_current_level_index == 6) {
+            if (g_current_level_index == LEVEL_BLARG) {
                 int c0;
                 int c1;
                 int c2;

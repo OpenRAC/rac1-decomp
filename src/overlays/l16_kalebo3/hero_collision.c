@@ -7,6 +7,7 @@
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "data/level_16.h"
 #include "game/fastfunc.h"
+#include "enums/level.h"
 
 extern char hero_globals_base[];
 extern int g_current_level_index MACRO_ADDR;
@@ -233,7 +234,7 @@ void HeroL16_UpdateGroundCollision(void) {
             goto d1;
         }
         r = coll_sound_class();
-        if (g_current_level_index == 1 || g_current_level_index == 0x12) {
+        if (g_current_level_index == LEVEL_NOVALIS || g_current_level_index == LEVEL_VELDIN2) {
             r = 3;
         }
         g_hero.ground_sound_class = r;

@@ -2,6 +2,7 @@
 #include "common.h"
 #include "include_asm.h"
 #include "asm_functions/shared_levels.h"
+#include "enums/level.h"
 
 typedef struct {
     char pad0[0x30];
@@ -18,7 +19,7 @@ extern Level15State g_mission;
 /* Update each moby while the level event is in phase three or four. */
 void update_level15_mission_mobys(void) {
     int i;
-    if (g_current_level_index == 15 && (unsigned)(g_mission.state - 3) < 2) {
+    if (g_current_level_index == LEVEL_QUARTU && (unsigned)(g_mission.state - 3) < 2) {
         for (i = 0; i < g_mission.count; i++) {
             apply_env_zone_lighting(g_mission.mobys[i]);
         }

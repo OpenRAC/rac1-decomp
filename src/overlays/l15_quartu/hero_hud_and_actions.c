@@ -25,6 +25,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/sound_playback.h"
 #include "overlays/shared/variants.h"
+#include "enums/level.h"
 
 typedef struct {
     char p0[0x160];
@@ -373,7 +374,7 @@ void HeroL15_UpdateStateTransitions(void) {
                                 }
                             }
                             if (ok && 0.22f < g_hero.stick_magnitude) {
-                                if (g_current_level_index_m == 0xC) {
+                                if (g_current_level_index_m == LEVEL_HOVEN) {
                                     int slot = g_hero.ground_sound_class;
                                     request_hero_voice_if_enabled(slot, 0, 0);
                                     request_hero_voice_if_enabled(slot, 1, 0);
@@ -554,7 +555,7 @@ void HeroL15_UpdateStateTransitions(void) {
                         break;
                     case 118:
                         if (g_hero.health.hp <= 0) {
-                            if (g_current_level_index_m == 0xF || g_current_level_index_m == 0x11) {
+                            if (g_current_level_index_m == LEVEL_QUARTU || g_current_level_index_m == LEVEL_FLEET) {
                                 HeroQuartu_TrySetMoveState(0x82, 1);
                                 break;
                             }
@@ -1296,9 +1297,9 @@ void HeroL15_UpdateStateTransitions(void) {
                         }
                         break;
                     case 119:
-                        if ((g_current_level_index_m == 3 && 5.0f > g_hero.motion.pos.f[2]) ||
-                            (g_current_level_index_m == 6 && 50.0f > g_hero.motion.pos.f[2]) ||
-                            (g_current_level_index_m == 0x10 &&
+                        if ((g_current_level_index_m == LEVEL_KERWAN && 5.0f > g_hero.motion.pos.f[2]) ||
+                            (g_current_level_index_m == LEVEL_BLARG && 50.0f > g_hero.motion.pos.f[2]) ||
+                            (g_current_level_index_m == LEVEL_KALEBO3 &&
                              (77.0f > g_hero.motion.pos.f[2] || (g_hero.state_timer > 0x14 && g_hero.wall_hit != 0 &&
                                                                  g_hero.motion.displacement.f[2] >= 0.0f))) ||
                             g_hero.state_timer > scale_ticks(0x78)) {
@@ -2206,7 +2207,7 @@ extern int depth_buffer_address MACRO_ADDR;
 /* Draws the Quartu sky shells and sets the GS test and depth registers. */
 void Sky_DrawLevel15(void) {
     SetupSkyGifPaging();
-    if (g_current_level_index_m == 15) {
+    if (g_current_level_index_m == LEVEL_QUARTU) {
         draw_two_sky_shells_with_particles();
     } else {
         update_sky_shells_static();

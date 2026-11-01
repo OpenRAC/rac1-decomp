@@ -21,6 +21,7 @@
 #include "game/fastfunc.h"
 #include "game/mobyutil.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/level.h"
 
 extern char hero_globals_base[];
 
@@ -400,7 +401,7 @@ void HeroL06_ResetMotionState(void) {
             goto d1;
         }
         r = coll_sound_class();
-        if (g_current_level_index == 1 || g_current_level_index == 0x12) {
+        if (g_current_level_index == LEVEL_NOVALIS || g_current_level_index == LEVEL_VELDIN2) {
             r = 3;
         }
         g_hero.ground_sound_class = r;
@@ -598,7 +599,8 @@ void update_hero_airborne_planar_velocity(void) {
         g_hero_s.motion.velocity.f[0] = FastCos(g_hero_s.motion.rot.f[2]) * g_hero_s.ledge_jump_speed;
         g_hero_s.motion.velocity.f[1] = FastSin(g_hero_s.motion.rot.f[2]) * g_hero_s.ledge_jump_speed;
     } else if (state == 11 || state == 12) {
-        if (g_current_level_index != 0xE && hero_slot_item_id(3) == 3 && g_hero_s.state_timer == scale_ticks(5)) {
+        if (g_current_level_index != LEVEL_OLTANIS && hero_slot_item_id(3) == 3 &&
+            g_hero_s.state_timer == scale_ticks(5)) {
             allocate_hero_voice_for_entry(1, 0);
         }
         g_hero_s.motion.move_yaw = g_hero_s.takeoff_yaw;

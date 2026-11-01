@@ -14,6 +14,7 @@
 #include "game/fastfunc.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/moby_class.h"
+#include "enums/level.h"
 /* Hydrodisplacer faucet: pulse phase and strength. */
 struct FaucetPulseVars {
     u8 pad_00[0x18];
@@ -1370,7 +1371,7 @@ void update_hero_follow_camera_focus(char *moby) {
     transform_vector(v, v, g_hero);
     FastVecAdd(p, g_hero + 0x80, v);
     qcopy(d + 0x1D0, p);
-    if (g_current_level_index == 5) {
+    if (g_current_level_index == LEVEL_RILGAR) {
         float w[4];
         *(u128 *)w = 0;
         w[0] = 286.16f;
@@ -1386,7 +1387,7 @@ void update_hero_follow_camera_focus(char *moby) {
                 p[2] = 67.2f;
             }
         }
-    } else if (g_current_level_index == 0x10) {
+    } else if (g_current_level_index == LEVEL_KALEBO3) {
         if (p[2] < 77.5f) {
             p[2] = 77.5f;
         }

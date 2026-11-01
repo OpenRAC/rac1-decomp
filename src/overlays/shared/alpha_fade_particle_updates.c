@@ -9,6 +9,7 @@
 #include "asm_functions/shared_levels.h"
 #include "game/fastfunc.h"
 #include "game/mobyutil.h"
+#include "enums/level.h"
 
 extern unsigned char *create_part(int);
 extern int truncate_float_to_s32(float);
@@ -1223,7 +1224,7 @@ void update_gravity_floor_burst_particle(struct EmberParticle *p) {
         spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(&p->pos, &m->vel, p->color, m->color2, f, n,
                                                                           0, p->tex, p->blend);
     }
-    if (g_current_level_index == 10) {
+    if (g_current_level_index == LEVEL_ORXON) {
         if (!random_integer_below(0x13)) {
             t.q = p->pos.q;
             t.f[2] += 0.1f;

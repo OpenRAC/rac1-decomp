@@ -12,6 +12,7 @@
 #include "data/executable.h"
 #include "game/fastfunc.h"
 #include "enums/moby_class.h"
+#include "enums/level.h"
 
 /*
  * camera.cpp in the original source; text 0x1EC038-0x1EDFF8.
@@ -203,7 +204,7 @@ void switch_active_camera_record(Camera *next_camera) {
             } else {
                 gCamera.blend.lerp.pos_rate_cfg = 0.018f;
                 gCamera.blend.lerp.rot_rate_cfg = 0.018f;
-                if (g_current_level_index == 1) {
+                if (g_current_level_index == LEVEL_NOVALIS) {
                     gCamera.blend.lerp.pos_rate_cfg = 0.01f;
                     gCamera.blend.lerp.rot_rate_cfg = 0.01f;
                 }

@@ -16,6 +16,7 @@
 #include "game/mobyutil.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
+#include "enums/level.h"
 /* Cycling platform: rises, waits, drops and waits again. */
 struct CyclingPlatformVars {
     u8 pad_00[0x20];
@@ -716,7 +717,7 @@ void gate_update(Moby *m) {
                     orxon_collected_flags_base.collected[*(short *)&m->save_id] = b + 2;
                 }
                 m->state = 2;
-                if (g_current_level_index == 10)
+                if (g_current_level_index == LEVEL_ORXON)
                     menu_item_enabled_67[1] = 1;
             }
             break;
@@ -1862,7 +1863,7 @@ void update_data_processor_linked_effect(struct Moby *moby) {
     }
     switch (moby->state) {
         case MOBY_STATE_INITIALIZE:
-            if (g_current_level_index == 10 && ((unsigned char *)hero_globals_base)[0x2EC1] == 1) {
+            if (g_current_level_index == LEVEL_ORXON && ((unsigned char *)hero_globals_base)[0x2EC1] == 1) {
                 DeleteMoby(moby);
                 break;
             }
@@ -2134,7 +2135,7 @@ void update_jitter_strand_grid_moby(unsigned char *moby) {
 
     switch (((Moby *)moby)->state) {
         case 0:
-            if (g_current_level_index_r2 == 10 && hero_globals_base_r2[0x2EC1] == 1) {
+            if (g_current_level_index_r2 == LEVEL_ORXON && hero_globals_base_r2[0x2EC1] == 1) {
                 f_delete_DE018(moby);
                 break;
             }

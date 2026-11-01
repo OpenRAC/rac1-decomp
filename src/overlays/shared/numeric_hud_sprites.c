@@ -4,6 +4,7 @@
 #include "structs/hero.h"
 #include "asm_functions/executable.h"
 #include "game/hud.h"
+#include "enums/level.h"
 
 typedef struct {
     u8 pad[0x48];
@@ -471,7 +472,7 @@ int draw_hud_progress_and_rank(char *e) {
     tx = tx - w;
     print_text_with_texture_3(tx + 1, y1, 0x80000000L, buf, -1);
     print_text_with_texture_3(tx, y, *(int *)&(rilgar_progress_label_color), buf, -1);
-    if (g_current_level_index != 0x10)
+    if (g_current_level_index != LEVEL_KALEBO3)
         return *(int *)(e + 0x58);
     sprintf(buf + 0x40, rilgar_fmt_number, hd->race_ammo);
     py = pal_mode ? 0xA : 0x12;
