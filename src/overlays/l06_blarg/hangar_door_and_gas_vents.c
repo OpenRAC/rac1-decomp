@@ -3348,9 +3348,13 @@ void update_moby_pair_transforms(char *moby) {
             child = data->child + 0x10;
             qcopy(child, moby + 0x10);
             qcopy(child + 0x30, moby + 0x40);
+            /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
             *(volatile float *)(((char *)data) + 0x48) = 0.0f;
+            /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
             *(volatile float *)&data->unk_08 = 0.0f;
+            /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
             *(volatile float *)(((char *)data) + 0xc) = 0.0f;
+            /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
             *(volatile float *)&data->unk_44 = 0.0f;
             return;
     }

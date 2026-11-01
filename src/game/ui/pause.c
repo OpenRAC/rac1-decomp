@@ -3544,6 +3544,7 @@ void update_item_preview_transform(struct Moby *moby) {
     struct CameraSystem *camera;
 
     moby->rot.z = preview->rotation_angle;
+    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
     (*(volatile f32 *)&moby->pos.x) = gCamera_r4.pos.f[0] + ((flags & 1) ? preview_placements[item_index].alternate_x
                                                                          : preview_placements[item_index].normal_x);
     camera = &gCamera_r4;
@@ -3555,6 +3556,7 @@ void update_item_preview_transform(struct Moby *moby) {
     cosine = FastCos(moby->rot.z);
     negated_forward_offset = -forward_offset;
     sine = FastSin(moby->rot.z);
+    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
     (*(volatile f32 *)&moby->pos.x) += negated_forward_offset * sine + side_offset * cosine;
     moby->pos.y += forward_offset * cosine + side_offset * sine;
 }
@@ -3891,6 +3893,7 @@ int DrawGBsShipMenu__maybe(char *arg0) {
     font_print_right_c(screen->width - 0x10, (g_screen_extent[1] >> 1) - 8, 0x80000000L, buf, -1);
     font_print_right_c(screen->width - 0x11, (g_screen_extent[1] >> 1) - 9, 0x80FFA888L, buf, -1);
     DoGifPaging();
+    /* FAKEMATCH: a dead if (0) block changes the code around it. */
     if (0) {
         /* no code: registers the 2-byte view last (see above) */
         (void)gold_bolt_marker_y_offset_s;
@@ -4752,6 +4755,7 @@ int draw_checking_memory_card_data_menu(struct Stream_21380 *menu) {
     char *text;
     int state = menu->state;
     long texture;
+    /* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
     extern void font_print_window_small(FontWindow_21380 *, long, char *, int);
     int first;
     unsigned char *tp;
@@ -5533,6 +5537,7 @@ int BuildGalaxyMenu(MenuObj40 *arg0) {
             break;
         }
     }
+    /* FAKEMATCH: a dead if (0) block changes the code around it. */
     if (0) {
         /* no code: registers the 2-byte view last, so the file ends with
            `.extern D_001602E0, 2` and the assembler uses $gp */
@@ -5669,6 +5674,7 @@ extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
 extern void SetupGifPaging(int);
 extern void DoGifPaging(void);
 extern void *msg_string_id(int) __asm__("func_001FE540");
+/* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
 extern void font_print_window_small(TextBox *, long, char *, int);
 
 /* Draws the two-line prompt box (text 0x4FB3 for D_001D6044 in 0..2,
@@ -8578,14 +8584,21 @@ void clear_preview_resource_bindings(void);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/ui/menus/item_preview/clear_preview_resource_bindings.c, clear_preview_resource_bindings. */
 void clear_preview_resource_bindings(void) {
+    /* FAKEMATCH: the register keyword steers register allocation. */
     register s32 class_slot;
+    /* FAKEMATCH: the register keyword steers register allocation. */
     register s32 class_resource_address;
     s32 resource_index;
+    /* FAKEMATCH: the register keyword steers register allocation. */
     register u8 *binding_base;
     PreviewResourceBinding *binding;
+    /* FAKEMATCH: the register keyword steers register allocation. */
     register s32 animation_address;
+    /* FAKEMATCH: the register keyword steers register allocation. */
     register s32 resource_first;
+    /* FAKEMATCH: the register keyword steers register allocation. */
     register s32 resource_count;
+    /* FAKEMATCH: the register keyword steers register allocation. */
     register s32 resource_end;
 
     resource_index = D_001D5F70_27A70.unkA8;

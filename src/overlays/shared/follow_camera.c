@@ -3462,6 +3462,7 @@ fin:
 }
 /* Empty function that only reserves 0x50 bytes of stack. Adapted from Lombyte's project (GPL-3.0), FUN_L00_002e8378; the volatile buffer is what keeps the frame. */
 void run_follow_camera_noop(int a) {
+    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
     volatile char buf[0x50];
 }
 typedef struct {
@@ -3590,6 +3591,7 @@ void Cam_SetEyeOffset(int add, float a, float b) {
 }
 /* From Lombyte's project (GPL-3.0), FUN_L00_002e8534 (PR #66), adapted to PAL. */
 void cam_set_eye_offset_tail(void *u, char *p, float a) {
+    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
     *(volatile float *)(p + 0xB4) = a;
 }
 /* Sets the float at +0x1CC of the hero camera's state buffer while the current camera's id is 0. */

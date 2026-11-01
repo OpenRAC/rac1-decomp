@@ -596,7 +596,7 @@ void build_beam_and_arc_points(u8 *o) {
         spin = -spin;
     amplitude = random_float_between(0.15f, 3.0f);
     {
-        /* Fakematch: a never-taken branch (cprop proves dead == 0, then jump deletes it). Retail
+        /* FAKEMATCH: a never-taken branch (cprop proves dead == 0, then jump deletes it). Retail
            had about 30 more insns before gcse that vanish later; they size the PRE hash table,
            which orders the &target_delta and &effects spill slots. */
         int dead = 0;

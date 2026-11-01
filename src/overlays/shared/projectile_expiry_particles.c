@@ -56,9 +56,13 @@ unsigned char *spawn_moby_point_offset_particle(void *m, short index, float amou
         }
         p[8] = func_001160D8();
         *(int *)(p + 4) = 0x7f7f7f;
+        /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
         *(volatile unsigned char *)(p + 9) = truncate_float_to_s32(4.0f) + 0x40;
+        /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
         *(volatile unsigned char *)(p + 3) = 0x48;
+        /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
         *(volatile unsigned char *)(p + 1) = 0;
+        /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
         *(volatile float *)(p + 0xc) = amount;
         p[2] = umbris_part_type61_textures[*(short *)(q + 0xc)];
         *(float *)(q + 0x10) = frame_scale * 0.015f;

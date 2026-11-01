@@ -1126,6 +1126,7 @@ void draw_visibomb_outside_zone_overlay(char *moby) {
     int row;
     int column;
     float screen_center[2];
+    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
     volatile float coordinate[2];
     float opacity;
     int color;

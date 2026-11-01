@@ -752,7 +752,7 @@ void update_level_gameplay_frame(void) {
             animation_positions = object->animation_positions;
             FastVecScale(&first_position, animation_positions + current_frame * 16, 1.0f - blend);
             FastVecScale(&second_position, animation_positions + next_frame * 16, object->blend);
-            /* Fakematch: the u16 copy gives the second 2 its own register. */
+            /* FAKEMATCH: the u16 copy gives the second 2 its own register. */
             transform_count = 2;
             FastVecAdd(object->position, &first_position, &second_position);
             object->selected_a = 2;
@@ -791,7 +791,7 @@ void update_level_gameplay_frame(void) {
                                                                       ((*(LevelFrame_LGS *)&render_sequence)).time) *
                                                                 0.017857144f);
                     for (color_index = 0; color_index < 3; color_index++) {
-                        /* Fakematch: ((*(LevelFrame_LGS *)&render_sequence)), see its declaration. */
+                        /* FAKEMATCH: ((*(LevelFrame_LGS *)&render_sequence)), see its declaration. */
                         warp_trail_colors[color_index].w0 =
                             (warp_trail_colors[color_index].w0 & 0xFFFFFF) |
                             ((((LevelFrame_LGS *)render_sequence_c)->end - ((*(LevelFrame_LGS *)&render_sequence)).time)

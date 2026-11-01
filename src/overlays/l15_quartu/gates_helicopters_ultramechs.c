@@ -1164,11 +1164,17 @@ void steer_helicopter(struct Moby *moby, Vec4 *goal, Vec4 *look) {
     vars->delta.q = delta.q;
     add_vectors(&delta, &vars->delta, &scaled);
     move_moby_with_sphere_collision(1.0f, 2.0f, moby, &vars->delta, 0);
+    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
     height = *(volatile float *)&vars->height;
+    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
     pos_x = *(volatile float *)&moby->pos.x;
+    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
     *(volatile float *)&moby->pos.z = height;
+    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
     pos_y = *(volatile float *)&moby->pos.y;
+    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
     dy = *(volatile float *)&look_at->f[1];
+    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
     dx = *(volatile float *)&look_at->f[0];
     dy = dy - pos_y;
     dx = dx - pos_x;
@@ -2027,6 +2033,7 @@ extern void MobySphereHitDirectional(int, float, void *, int, float, float, int,
 extern unsigned char hero_globals_base[];
 extern unsigned char hero_vehicle_mode[];
 extern unsigned char help_stats_base[] NOT_SDA;
+/* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
 extern UPath *quartu_paths[];
 extern float g_frame_time_sq MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;

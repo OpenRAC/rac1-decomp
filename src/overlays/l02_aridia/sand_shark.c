@@ -2418,6 +2418,7 @@ char *select_inactive_group_sand_shark_for_nest(char *m) {
     short *group_ids;
     Moby *g;
     Moby *mobys;
+    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
     if (((volatile unsigned char *)m)[0x21] == 0xFF) {
         return 0;
     }

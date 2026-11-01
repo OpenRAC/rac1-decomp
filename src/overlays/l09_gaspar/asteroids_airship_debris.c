@@ -134,9 +134,12 @@ void build_packet_and_draw_scaled_entries(void *data_ptr, void *list_ptr, int co
         int *packet;
         int *packet_end;
         (*(int *volatile *)&l09_packet)[0] = 0x10000000;
+        /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
         (*(int *volatile *)&l09_packet)[1] = 0;
         (*(int *volatile *)&l09_packet)[2] = 0x11000000;
+        /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
         (*(int *volatile *)&l09_packet)[3] = 0x01000404;
+        /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
         packet = (*(int *volatile *)&l09_packet);
         packet[4] = 0;
         packet[5] = 0;
@@ -165,28 +168,38 @@ void build_packet_and_draw_scaled_entries(void *data_ptr, void *list_ptr, int co
         packet[59] = 0;
         packet_end = packet + 60;
         {
+            /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
             int *words = (*(int *volatile *)&l09_packet);
             *words |= (((int)packet_end - (int)words) >> 4) - 1;
         }
         l09_packet = packet_end;
         packet[60] = 0x30000003;
     }
+    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
     (*(int *volatile *)&l09_packet)[1] = (int)gaspar_grid_setup_dma_block;
+    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
     (*(int *volatile *)&l09_packet)[2] = 0;
+    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
     (*(int *volatile *)&l09_packet)[3] = 0x50000003;
     {
+        /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
         int *packet = (*(int *volatile *)&l09_packet) + 4;
         l09_packet = packet;
         packet[0] = 0x10000008;
     }
+    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
     (*(int *volatile *)&l09_packet)[1] = 0;
+    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
     (*(int *volatile *)&l09_packet)[2] = 0;
+    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
     (*(int *volatile *)&l09_packet)[3] = 0x50000008;
+    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
     packet = (*(int *volatile *)&l09_packet);
     words = (u64 *)(packet + 4);
     l09_packet = packet + 4;
     color = (unsigned char)data[0x30] | (unsigned char)data[0x31] << 8 | (unsigned char)data[0x32] << 16;
     /* Retail reads the mode after the packet cursor stores. */
+    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
     if (*(volatile int *)&textured_grid_view_settings_mode == 1)
         color = (long)(*(int *)(current + 0x230 / 4) | (*(int *)(current + 0x234 / 4) << 8) |
                        (*(int *)(current + 0x238 / 4) << 16));
@@ -198,9 +211,11 @@ void build_packet_and_draw_scaled_entries(void *data_ptr, void *list_ptr, int co
         blend = (unsigned char)data[0x3f];
         words[3] = 0x42;
         /* Retail stores packed alpha before reading D_L09_001612F0. */
+        /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
         *(volatile u64 *)&words[2] = (blend << 32) | 100;
         alpha = alpha <= 0x60U ? 0x5370b : 0x5360a;
         blend = alpha;
+        /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
         words[4] = *(volatile u64 *)&gaspar_grid_tex0;
         scratch_color = 0x757c8e;
         words[5] = 6;

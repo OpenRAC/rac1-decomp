@@ -32,6 +32,7 @@ void capture_linked_moby_relative_transforms(char *moby, char *arr, int n) {
         }
     }
 }
+/* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
 extern void euler_to_matrix(float *, float *);
 extern void FastVecAdd(void *, void *, void *);
 extern void moby_build_matrix(void *);

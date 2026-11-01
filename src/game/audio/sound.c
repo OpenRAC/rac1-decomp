@@ -432,7 +432,7 @@ s32 func_0022DD68_r(void) {
         }
         moby = voice_pool_DD68.voices[slot_index].moby;
         owner_removed = 0;
-        /* Fakematch: the goto pair keeps retail's branch order for the two removal states. */
+        /* FAKEMATCH: the goto pair keeps retail's branch order for the two removal states. */
         if (moby != 0) {
             u8 owner_state = moby->state;
             if (owner_state == 0xFE)
@@ -506,7 +506,7 @@ s32 func_0022DD68_r(void) {
         }
         {
             s32 voice_flags_byte = voice_pool_DD68.voices[slot_index].flags;
-            /* Fakematch: the xor test gives retail's xori/andi flag test. */
+            /* FAKEMATCH: the xor test gives retail's xori/andi flag test. */
             if ((voice_flags_byte ^ 1) & 1) {
                 voice_flags[slot_index] |= 2;
                 if (!(voice_pool_DD68.voices[slot_index].flags & 0x20)) {

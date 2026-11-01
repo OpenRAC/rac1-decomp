@@ -255,6 +255,7 @@ void update_hero_transformed_negative_z_angle_parameters(void) {
     (D_L00_0017A780_15738.f[(0x114) / 4]) = x;
     (D_L00_0017A780_15738.f[(0x274) / 4]) = -x * 0.5f;
     /* Keep the independent scalar reloads used by retail. */
+    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
     y = -((volatile f32 *)vec.f)[1] * 0.6981317f;
     if (limit < y)
         y = limit;
@@ -262,6 +263,7 @@ void update_hero_transformed_negative_z_angle_parameters(void) {
         y = -limit;
     (D_L00_0017A780_15738.f[(0x110) / 4]) = y;
     (D_L00_0017A780_15738.f[(0x270) / 4]) = -y * 0.25f;
+    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
     x = -((volatile f32 *)vec.f)[0] * 1.2217305f;
     if (0.99483764f < x)
         x = 0.99483764f;

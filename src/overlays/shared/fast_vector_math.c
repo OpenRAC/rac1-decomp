@@ -16,6 +16,7 @@ INCLUDE_ASM("asm/overlays", func_L00_001FF0B0);
 /* Clears the first twelve bytes at v. */
 void clear_twelve_bytes(s64 *v) {
     v[0] = 0;
+    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
     __asm__ volatile("nop");
     ((s32 *)v)[2] = 0;
 }

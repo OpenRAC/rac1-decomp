@@ -25,6 +25,7 @@ int DrawGBsShipMenu__maybe(char *arg0) {
     font_print_right_c(*(int *)(arg0 + 0x20) - 0x10, (g_screen_extent[1] >> 1) - 8, 0x80000000L, buf, -1);
     font_print_right_c(*(int *)(arg0 + 0x20) - 0x11, (g_screen_extent[1] >> 1) - 9, 0x80FFA888L, buf, -1);
     DoGifPaging();
+    /* FAKEMATCH: a dead if (0) block changes the code around it. */
     if (0) {
         /* no code: registers the 2-byte view last (see above) */
         (void)gold_bolt_marker_y_offset_s;

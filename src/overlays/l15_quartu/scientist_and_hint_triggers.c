@@ -331,7 +331,7 @@ void ultramech_scientist_update(char *moby) {
         float heading;
         float ease_rate;
         float ease_limit;
-        /* Fakematch: an always-true flag around the aiming block keeps retail's register allocation. */
+        /* FAKEMATCH: an always-true flag around the aiming block keeps retail's register allocation. */
         int aim = 0;
         ease_rate = 0.02f;
         ease_limit = 0.3f;

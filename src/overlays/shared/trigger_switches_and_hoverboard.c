@@ -1179,7 +1179,7 @@ void update_moby_glow_and_contact_explosion(struct Moby *moby) {
         moby->glow_color = (0x7F000000 | vars->glow_b << 16 | vars->glow_g << 8) | vars->glow_r;
         vars->color = vars->spark_b << 16 | vars->spark_g << 8 | vars->spark_r;
     }
-    /* Fakematch: the distance passes through a second variable; assigned directly,
+    /* FAKEMATCH: the distance passes through a second variable; assigned directly,
        the compiler keeps it in $f0 and picks other registers for the fade below. */
     camera_distance = vec_distance_xy_r(rilgar_camera_pos, &moby->pos);
     distance = camera_distance;
