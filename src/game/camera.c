@@ -13,12 +13,10 @@
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-/* Declarations in scope here before the split. */
 /* The camera block and the debug free camera (include/camera.h). */
 extern CameraSystem gCamera;
 extern DebugFreeCam occl_cam_state;
-extern char voice_pool[];
-extern int bank_sound_count;
+
 extern int noop_callback_l(void *arg0);
 
 /* Same signature as the declaration further down this file; duplicate

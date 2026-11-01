@@ -959,7 +959,6 @@ unsigned char Transition_UpdateMovieCamera(void) {
     return flag;
 }
 
-
 typedef struct {
     u8 pad0[0x10];
     Vec4A position;
@@ -1239,7 +1238,6 @@ void Transition_DefaultDraw(s32 *arg0) {
 }
 
 extern char voice_pool[];
-extern int bank_sound_count;
 
 extern int bank_sound_count_m __asm__("D_0015F694") MACRO_ADDR;
 

@@ -37,7 +37,7 @@ typedef struct VideoDec {
 
 extern int sce_mpeg_add_str_callback(void *, int, int, int, int);
 extern void viBufBeginPut(void *, unsigned char **, int *, unsigned char **, int *);
-extern void viBufEndPut(void *);
+
 extern int viBufCount(void *);
 
 /* videoDecSetStream(VideoDec *, int, int, int (*)(sceMpeg *, sceMpegCbData *, void *), void *)

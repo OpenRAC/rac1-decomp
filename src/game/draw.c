@@ -12,14 +12,8 @@
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-/* Declarations in scope here before the split. */
-extern char voice_pool[];
-extern int bank_sound_count;
+
 extern void FastMemCopy(void *, void *, int);
-extern char backup_cam[];
-extern char gCamBackupState[];
-extern void *cur_cam NOT_SDA;
-extern DispatchRec camera_types[];
 
 extern int draw_config[];
 
@@ -673,7 +667,6 @@ extern float screen_projection_focal;
 /* The camera block as a struct: all four accesses then share one base
    register with field offsets, as in retail. */
 extern CameraSystem gCamera_cam __asm__("D_00187040");
-
 
 /* Projects camera-space point a1 through the camera matrix, divides by
    depth (D_0018D010 / w) and scales to x16 screen units. func_002346C0
@@ -1895,10 +1888,8 @@ void DrawDebugProfiler(void) {
     occl_fallback_mode = 0;
 }
 
-extern int space_load_in_progress;
 extern short draw_enable_mask; /* SDA, gp -0x77CC */
 extern void DrawDebugProfiler(void);
-
 
 /* D_0015F6FC is read through a MACRO_ADDR alias: retail's one-register
    lui $2 / lw $2 (an older note filed it as an allocator question). */
@@ -2552,7 +2543,6 @@ void emit_rgba_draw_packet(int a, int b, int c, int d) {
     g_render_packet_cursor[3] = 0x50000014;
     g_render_packet_cursor += 4;
 }
-
 
 /* DrawRectOverlay: append a GIF packet drawing the rectangle x0..x1,
    y0..y1 (in 16ths, offset by the viewport origin D_0013E600[4]/[5]

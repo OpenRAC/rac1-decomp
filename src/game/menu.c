@@ -11,67 +11,16 @@
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-/* Declarations in scope here before the split. */
-extern char voice_pool[];
-extern int bank_sound_count;
+
 extern void FastMemCopy(void *, void *, int);
-extern char backup_cam[];
-extern char gCamBackupState[];
-extern void *cur_cam NOT_SDA;
-extern DispatchRec camera_types[];
-extern int draw_config[];
+
 extern void FastMemSet();
-extern void BuildOcclVisibility(void);
-extern int occl_update NOT_SDA;
-extern char occl_visibility[];
-extern long gs_display_settings[3];
-extern int space_load_in_progress;
-extern short draw_enable_mask;
-extern void append_gif_transfer_packet(void);
-extern void DrawDebugProfiler(void);
-extern int draw_callback_count;
-extern int draw_callback_args[];
-extern int draw_callback_funcs[];
-extern short GlobalStateFlag;
-extern int measure_text_width(unsigned char *arg0, int arg1, void *arg2);
-extern unsigned char normal_font_metrics[];
-extern unsigned char small_font_metrics[];
-extern unsigned char large_font_metrics[];
-extern void FontPrint(void *, void *, void *, void *, void *, int, unsigned char *);
-extern int measure_text_width_regular(unsigned char *, int);
-extern int measure_text_width_small(unsigned char *, int);
-extern int GetEffectTex(int);
-extern void PutDrawBufferLarge(void);
-extern void InitViewContext(void);
-extern void UpdateViewContext(void);
-extern int bit_swap_lut[];
-extern long background_rgbaq NOT_SDA;
-extern int Help_FindIndex(void);
-extern char s_paradox_this_message_does_not[];
-extern short help_msgs;
-extern int hud_heap_base NOT_SDA;
-extern int hud_state NOT_SDA;
-extern int Hud_GetIconIndex(int);
+
 typedef struct {
     char b[0x13];
 } Cfg13;
-extern Cfg13 message_text_buffer NOT_SDA;
-extern Cfg13 message_too_long_label NOT_SDA;
-extern int libc_strlen(void);
-extern void libc_strcpy(Cfg13 *, void *);
-extern short ResourceCounter;
-extern void draw_stretchable_ui_frame(int, int, int, int, int);
-extern void CreatePointLight(int);
-extern void DetachPointLight(int);
-extern void update_world_object_animation(void *);
-extern int render_sequence NOT_SDA;
-extern int vu1_chain_buffer_2 NOT_SDA;
-extern int current_vu_chain;
-extern int map_slot_use[];
-extern void move_map_entry_slot(int a, int b);
-extern PadSlots level_map_selection_slots __asm__("D_001A01F0");
+
 extern int level_map_selection[];
-extern int *menu_level_indices;
 
 /* Map hit test: point_is_clockwise of (x1, y1) against one fixed map edge. */
 int Menu_IsPointInFixedQuad(int x1, int y1) {
@@ -533,8 +482,6 @@ int map_filter_l09_2(void) {
     return menu_item_enabled_57 != 0;
 }
 
-extern unsigned char menu_item_enabled_68;
-
 extern unsigned char menu_item_enabled_68_far __asm__("D_0013D4E0") NOT_SDA;
 /* The recorded C was right; the two ps2eeas nops were the only
    residual. */
@@ -910,7 +857,6 @@ typedef struct {
 extern NibbleBits nibble_popcount_table;
 extern unsigned char *map_coverage_buffer;
 
-
 /* Condenses D_001A01FC's 0x200 rows of 64 bytes (two 4-bit samples
    each) into a 1-bit image at arg0: every four rows the per-column
    bit counts (D_001E83B0 is the nibble popcount table, copied onto the
@@ -1059,7 +1005,7 @@ typedef struct {
 } MapMarker;
 
 extern int marker_half_size MACRO_ADDR;
-extern float marker_scale_by_level[];
+
 extern char hud_state_raw[] __asm__("D_0019A4E8");
 extern void draw_hud_rect_blended(int, int, int, int, long, int);
 extern int GetIconFrame(int, int);
@@ -1550,7 +1496,6 @@ void CardMenu_State16NextState(void) {
         mode_freeze_state = 1;
     }
 }
-
 
 /* Format failed state: free the busy slot and go to state 3 once the message closes. */
 void save_card_state_format_failed(void) {

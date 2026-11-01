@@ -91,9 +91,9 @@ void LoadPifAsPSMT8H(void *arg0, void *arg1, int tbp, int cbp) {
 
 extern int disc_table[];
 extern int Load(void *, int, int);
-extern int depth_buffer_address;
+
 extern void LoadPifAsPSMT8H(void *arg0, void *arg1, int arg2, int arg3);
-extern long debug_font_pif_header;
+
 extern unsigned char debug_font_buffer[];
 
 extern int depth_buffer_address_m __asm__("D_0015EF88") MACRO_ADDR;

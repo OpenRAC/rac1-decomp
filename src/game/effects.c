@@ -8,14 +8,6 @@
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-/* Declarations in scope here before the split. */
-extern char voice_pool[];
-extern int bank_sound_count;
-extern void FastMemCopy(void *, void *, int);
-extern char backup_cam[];
-extern char gCamBackupState[];
-extern void *cur_cam NOT_SDA;
-extern DispatchRec camera_types[];
 
 typedef struct {
     u8 pad_0[0x10];
