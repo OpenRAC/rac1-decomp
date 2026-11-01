@@ -22,6 +22,16 @@ class FormatCheckTest(unittest.TestCase):
         self.assertEqual(fmt.tool_problems("void f(int a,\n       int b) {\n"), [])
         self.assertEqual(len(fmt.tool_problems("void\nf(int a) {\n")), 1)
 
+    def test_wrapped_prototype_needs_extern(self):
+        self.assertEqual(len(fmt.tool_problems("void f(int a,\n       int b);\n")), 1)
+        self.assertEqual(fmt.tool_problems("extern void f(int a,\n       int b);\n"), [])
+        self.assertEqual(fmt.tool_problems("void f(int a, int b);\n"), [])
+        self.assertEqual(fmt.tool_problems("void f(int a,\n       int b) {\n}\n"), [])
+
+    def test_old_style_definition_stays_on_two_lines(self):
+        self.assertEqual(len(fmt.tool_problems("void f(p) char *p;\n{\n}\n")), 1)
+        self.assertEqual(fmt.tool_problems("void f(p)\n    char *p;\n{\n}\n"), [])
+
 
 if __name__ == "__main__":
     unittest.main()

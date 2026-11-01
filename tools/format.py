@@ -12,6 +12,8 @@ after. A file that fails is put back.
 The tools read source with line regexes, so --check also fails on:
   - an INCLUDE_ASM, ASM_FUNC or LINKER_REMNANT that does not start its line
   - a function whose return type is alone on the line above its name
+  - a prototype without extern wrapped over two lines: its first line looks like a definition
+  - an old-style (K&R) definition joined on one line
 """
 import concurrent.futures
 import re
@@ -25,6 +27,10 @@ VERSION = "22.1"
 SKIP = ("include/names.h", "src/libgcc/")
 STRING = re.compile(r'"(?:\\.|[^"\\\n])*"')
 MARKER = re.compile(r"^([ \t]+)(INCLUDE_ASM|ASM_FUNC|LINKER_REMNANT)\s*\(", re.M)
+# A prototype without extern, wrapped: its first line looks like a function definition.
+WRAPPED_PROTO = re.compile(r"^(?!extern\b|typedef\b|#|__asm__|struct\b[^(]*\{)[A-Za-z_][^;{}()\n=]*\([^;{}]*?\n[^;{}]*?\)[^;{}\n]*;", re.M)
+# An old-style definition joined on one line. Keep these in /* clang-format off */.
+JOINED_KR = re.compile(r"^(?!extern\b|typedef\b)[A-Za-z_][^;{}=\n]*\([A-Za-z_0-9, ]+\) +[A-Za-z_][^;(){}\n]*;[ \t]*\n\{", re.M)
 SPLIT_NAME = re.compile(r"^(?:static\s+|const\s+|unsigned\s+|struct\s+)*[A-Za-z_]\w*[ \t*]*\n[A-Za-z_]\w*\s*\([^;]*$", re.M)
 
 
@@ -70,6 +76,8 @@ def tool_problems(text):
     """Why the line-based tools could not read this text."""
     problems = [f"{m.group(2)} does not start its line" for m in MARKER.finditer(text)]
     problems += ["return type on its own line: " + m.group(0).split("\n")[0] for m in SPLIT_NAME.finditer(text)]
+    problems += ["wrapped prototype needs extern: " + m.group(0).split("\n")[0] for m in WRAPPED_PROTO.finditer(text)]
+    problems += ["old-style definition joined: " + m.group(0).split("\n")[0] for m in JOINED_KR.finditer(text)]
     return problems
 
 
