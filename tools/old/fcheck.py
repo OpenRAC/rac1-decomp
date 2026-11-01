@@ -4,8 +4,8 @@ Does a candidate do what the retail function does? A check by behaviour, for
 the native port: the candidate need not match a byte, only leave the same
 memory, result and registers as retail from real calls.
 
-  /opt/homebrew/bin/python3 tools/fcheck.py FUNC CANDIDATE.c [--ulps N]
-  /opt/homebrew/bin/python3 tools/fcheck.py capture LIST.txt [--frames N] [--level N]
+  /opt/homebrew/bin/python3 tools/old/fcheck.py FUNC CANDIDATE.c [--ulps N]
+  /opt/homebrew/bin/python3 tools/old/fcheck.py capture LIST.txt [--frames N] [--level N]
 
 The first form builds the candidate in its file as tools/try_func.py does
 (through Docker, the retail compiler), places it in memory that the game
@@ -36,7 +36,7 @@ import sys
 import zlib
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parents[2]
 OPENRAC = Path(__import__("os").environ.get("OPENRAC_ROOT", str(Path.home() / "Projects/RAC/OpenRAC")))
 BOOT = OPENRAC / "build/runtime/openrac-boot"
 FCHECK = OPENRAC / "build/runtime/openrac-fcheck"
@@ -284,7 +284,7 @@ def check(name: str, candidate: Path, ulps: int = 0) -> int:
     if out.exists():
         out.unlink()
     rel = lambda p: str(Path(p).resolve().relative_to(ROOT))
-    r = subprocess.run(["bash", "tools/docker/run.sh", "python3", "tools/fcheck.py", "--build", name,
+    r = subprocess.run(["bash", "tools/docker/run.sh", "python3", "tools/old/fcheck.py", "--build", name,
                         rel(candidate), rel(out)], cwd=ROOT, capture_output=True, text=True)
     if r.returncode or not out.exists():
         msg = (r.stdout + r.stderr).strip().splitlines()

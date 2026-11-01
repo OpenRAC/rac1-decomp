@@ -621,7 +621,7 @@ def packet(name: str, budget: int, near: bool = False) -> str:
 def lombyte_port(name: str) -> tuple[str, str, str, str] | None:
     """(Lombyte file, its name, its C, a caveat when its function's size
     differs from ours) when Lombyte matched NAME's US counterpart
-    (tools/lombyte.py; docs/SIBLING_DECOMPS.md)."""
+    (tools/lombyte.py; docs/agents/SIBLING_DECOMPS.md)."""
     import lombyte
     if not lombyte.MAP.exists() or not lombyte.LOMBYTE.is_dir():
         return None

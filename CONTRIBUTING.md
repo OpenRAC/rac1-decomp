@@ -58,7 +58,7 @@ as references:
   anything else whose license permits it, credited in
   `THIRD_PARTY_NOTICES.md`;
 - other public decompilations and ports of this game (Lombyte, the NTSC decomp,
-  ReRAC: docs/SIBLING_DECOMPS.md), credited, and public hardware
+  ReRAC: docs/agents/SIBLING_DECOMPS.md), credited, and public hardware
   documentation. The NTSC decomp is never vendored: tools read it at the
   commit pinned in `config/versions/us/ntsc_decomp.txt`, from a cache
   outside the checkout (`python3 tools/ntsc_source.py path`), and

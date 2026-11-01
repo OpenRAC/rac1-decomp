@@ -83,7 +83,7 @@ compile). No string literals: `extern char D_xxx[];`.
 
 When the packet shows "Lombyte's matched C", Lombyte (the US build's
 decompilation, MIT) has matched this function. Port it rather than start
-over ([SIBLING_DECOMPS.md](SIBLING_DECOMPS.md), "Porting a function"):
+over ([SIBLING_DECOMPS.md](agents/SIBLING_DECOMPS.md), "Porting a function"):
 
 - Keep its control flow, statement order and types; they are what
   matched. Its file (the path in the packet) has the structs and

@@ -1,6 +1,9 @@
 """Regression checks for shared FP labels and short-loop hazard padding."""
+import sys
 import unittest
+from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from ps2eeas_nops import fp_label_nop, implicit_loop_compare_nop, mfc1_branches, mfc1_sites
 
 
