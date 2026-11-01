@@ -3,7 +3,7 @@
   "address_names_in_comments": 2772,
   "asm_aliases": 7497,
   "extern_lines": 31497,
-  "fakematch_tags": 32,
+  "fakematch_tags": 31,
   "float_int_casts": 2408,
   "hex_compares": 4154,
   "ids_in_comments": 110,

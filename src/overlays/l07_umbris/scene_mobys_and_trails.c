@@ -52,7 +52,7 @@ void update_moby_offset_motion(struct Moby *moby) {
         vars->target = -1;
     spawn_id = moby->mission;
     force_end = 0;
-    /* FAKEMATCH: the 0xFF compare needs its own variable for retail register order. */
+    /* KEPT: retail loads 0xFF before the byte. A local does that, and it is ordinary C. */
     no_spawn = 0xff;
     force_start = 0;
     if (umbris_mission_group_state[spawn_id] == no_spawn) {

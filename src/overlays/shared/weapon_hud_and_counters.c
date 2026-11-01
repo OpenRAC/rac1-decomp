@@ -159,7 +159,7 @@ void select_moby_context(int state) {
         old7C = alt_moby_spawn_pvar_pool;
         /* KEPT: the short declaration is for $gp, so volatile has to be in the cast. */
         (*(volatile int *)&moby_context_index) = oldState ^ 1;
-        /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
+        /* FAKEMATCH: without volatile, only this store moves, from here to near the end. */
         *(volatile int *)&moby_array_start = old70;
         level_mobys_end = old74;
         moby_array_last = old78;
