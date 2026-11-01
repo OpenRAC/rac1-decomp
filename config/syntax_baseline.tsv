@@ -1,21 +1,16 @@
 # C files clang cannot parse yet, and how many errors each has (tools/check_syntax.py).
 # GCC 2.95 accepts them. Fix them, then run --update. A count may only go down.
-src/game/render/draw.c	1
 src/game/movie/movie.c	1
-src/game/ui/pause.c	2
-src/overlays/l05_rilgar/sharkigator_and_faucet.c	1
+src/game/render/draw.c	1
 src/overlays/l07_umbris/snagglebeast.c	1
 src/overlays/l08_batalia/commando_deserter_and_effects.c	2
 src/overlays/l13_gemlik/qwark_starfighter_and_forcefield.c	1
 src/overlays/l14_oltanis/wind_lightning_and_taxi.c	6
-src/overlays/l15_quartu/gates_helicopters_ultramechs.c	1
 src/overlays/l18_veldin2/deplanetizer_and_gadgebots.c	1
 src/overlays/shared/debug_menu_and_text.c	1
 src/overlays/shared/electric_water.c	2
 src/overlays/shared/level_runtime_and_menus.c	2
-src/overlays/shared/linked_moby_transforms.c	1
 src/overlays/shared/moby_drops_and_death.c	1
-src/overlays/shared/nanotech_ball_and_suck_cannon.c	1
 src/overlays/shared/npc_dialog_and_pad_history.c	1
 src/overlays/shared/vendor_menu.c	1
 src/overlays/shared/weapon_hud_and_counters.c	1

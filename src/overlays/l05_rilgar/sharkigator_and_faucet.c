@@ -253,9 +253,10 @@ static inline short pick_2D28D0(int c) {
         return 600;
     return 180;
 }
+extern struct Hero g_hero;
+
 /* State 3 follows Lombyte's project (sharkigator_update): repeated join statements and the no-op moby++/moby-- give retail's schedule. */
 void rilgar_sharkigator_update(char *moby) {
-    extern char g_hero[];
     char *data = *(char **)(moby + 0x78);
     int state = ((Moby *)moby)->state;
     int one = 1;
@@ -335,7 +336,7 @@ state_one: {
         *(int *)(data + 0x6c) = ((int (*)(int))scale_ticks)(600);
     }
     {
-        char *h = g_hero;
+        char *h = (char *)&g_hero;
         if ((HI(0x208C) == 0x12 || HI(0x2084) == 0x12) &&
             ((float (*)(void *, void *))vec_distance_xy)(moby + 0x10, h + 0x80) < 8.0f) {
             speed = ((hero_clip_volume_bounds[2]) - (*(float *)&D_L05_00161450)) - 2.0f;
@@ -352,7 +353,7 @@ state_one: {
 state_two: {
     ((int (*)(void *))fast_dec_timer)(data + 0x7c);
     {
-        char *h = g_hero;
+        char *h = (char *)&g_hero;
         height = ((float (*)(float))FastAbsF)(HF(0x2F0) - *(float *)(data + 0x74));
         if (height < 0.33f && HI(0x208C) == 0x12) {
             char *d;
@@ -377,7 +378,7 @@ state_two: {
         }
     }
     {
-        char *h = g_hero;
+        char *h = (char *)&g_hero;
         if (HI(0x2084) == 0x12)
             return;
         {
@@ -391,7 +392,7 @@ state_two: {
 state_three: {
     float speed;
     {
-        char *h = g_hero;
+        char *h = (char *)&g_hero;
         if (HF(0x2F0) < ((Moby *)moby)->pos.z || *(float *)(data + 0x78) < 0.0f) {
             if (HI(0x2084) != 0x72) {
                 qcopy_nc(v, h + 0x80);
@@ -433,7 +434,7 @@ state_three: {
         }
     }
     if (*(float *)(data + 0x78) < 0.0f) {
-        char *h = g_hero;
+        char *h = (char *)&g_hero;
         if (((Moby *)moby)->pos.z < HF(0x2F0) && ((Moby *)moby)->command == 0) {
             ((Moby *)moby)->command = 1;
             ((int (*)(int, int, char *))Moby_PlaySound)(0, 0, moby);
@@ -2355,8 +2356,6 @@ void extermitank_update(unsigned char *m) {
     }
 }
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
-/* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
-extern struct Hero g_hero;
 struct AnimSeq_065D0;
 typedef struct {
     char _pad00[0x10];
