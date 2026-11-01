@@ -155,7 +155,7 @@ void HeroL06_UpdateStateTransitions(void) {
             (g_hero.state.current == 0 || g_hero.state.current == 2)) {
             HeroL06_TrySetMoveState(0x3D, 1);
         } else if (process_hero_item_action_input() == 0 && try_start_hero_weapon_fire_state() == 0) {
-            if ((g_controller_state.pressed & 0x10) || (((int)g_controller_state.pressed_unmasked) & 0x10)) {
+            if ((g_controller_state.pressed & PAD_TRIANGLE) || (((int)g_controller_state.pressed_unmasked) & 0x10)) {
                 if (g_hero.items[0].switch_lock != 2 && blarg_shown_help_message == 0 &&
                     (g_hero.item_use_locked == 0 || g_hero.vehicle_mode == 1 || g_hero.unk1B2 != 0) &&
                     (g_hero.item_select_blocked == 0 || g_hero.vehicle_mode == 1 || g_hero.unk1B2 != 0)) {
@@ -189,7 +189,7 @@ void HeroL06_UpdateStateTransitions(void) {
             }
             FastDecTimer(&g_hero.quick_swap_tap_timer);
             FastDecTimer(&g_hero.quick_swap_tap_window);
-            if (g_controller_state.pressed & 0x10) {
+            if (g_controller_state.pressed & PAD_TRIANGLE) {
                 g_hero.quick_swap_tap_timer = scale_ticks(0x14);
             }
             if ((g_hero.quick_swap_tap_timer != 0 || g_hero.quick_swap_tap_window != 0) &&
@@ -222,7 +222,7 @@ void HeroL06_UpdateStateTransitions(void) {
             } else {
                 switch (g_hero.state.current) {
                     case 0:
-                        if (g_controller_state.held & 5) {
+                        if (g_controller_state.held & (PAD_L2 | PAD_L1)) {
                             HeroL06_TrySetMoveState(1, 1);
                             break;
                         }
@@ -372,7 +372,7 @@ void HeroL06_UpdateStateTransitions(void) {
                                 break;
                             }
                         }
-                        if ((g_controller_state.held & 0xA) && g_hero.grounded_frames != 0) {
+                        if ((g_controller_state.held & (PAD_R2 | PAD_R1)) && g_hero.grounded_frames != 0) {
                             if (((unsigned char *)g_hero.moby)[0x53] != 0x1A || !(g_hero.anim_frame < 108.0f)) {
                                 HeroL06_TrySetMoveState(4, 1);
                                 break;
@@ -403,7 +403,7 @@ void HeroL06_UpdateStateTransitions(void) {
                         }
                         break;
                     case 0x40:
-                        if (g_controller_state.held & 5) {
+                        if (g_controller_state.held & (PAD_L2 | PAD_L1)) {
                             HeroL06_TrySetMoveState(1, 1);
                             break;
                         }
@@ -411,11 +411,11 @@ void HeroL06_UpdateStateTransitions(void) {
                             HeroL06_TrySetMoveState(0x41, 1);
                             break;
                         }
-                        if (g_controller_state.held & 0x40) {
+                        if (g_controller_state.held & PAD_CROSS) {
                             HeroL06_TrySetMoveState(0x41, 1);
                             break;
                         }
-                        if (g_controller_state.held & 0xA) {
+                        if (g_controller_state.held & (PAD_R2 | PAD_R1)) {
                             HeroL06_TrySetMoveState(0x41, 1);
                             break;
                         }
@@ -439,7 +439,7 @@ void HeroL06_UpdateStateTransitions(void) {
                             if (try_start_hero_jump(scale_ticks(7), 0)) {
                                 break;
                             }
-                            if (g_controller_state.held & 0xA) {
+                            if (g_controller_state.held & (PAD_R2 | PAD_R1)) {
                                 HeroL06_TrySetMoveState(4, 1);
                                 break;
                             }
@@ -472,7 +472,7 @@ void HeroL06_UpdateStateTransitions(void) {
                     case 1:
                         if (g_hero.vehicle_mode == 0) {
                             if (g_hero.unk20AA == 0 || g_hero.unk20A5 != 0) {
-                                if (g_controller_state.held & 0xA) {
+                                if (g_controller_state.held & (PAD_R2 | PAD_R1)) {
                                     if (((unsigned char *)g_hero.moby)[0x53] != 0xD) {
                                         set_hero_animation(0xD, 0, scale_ticks(8));
                                     }
@@ -490,7 +490,7 @@ void HeroL06_UpdateStateTransitions(void) {
                             if (m != 0 && is_wrench_moby(m) && m[0x20] != 0) {
                                 ok = 0;
                             }
-                            if (g_controller_state.held & 5) {
+                            if (g_controller_state.held & (PAD_L2 | PAD_L1)) {
                                 break;
                             }
                             if (!ok) {
@@ -501,7 +501,7 @@ void HeroL06_UpdateStateTransitions(void) {
                             enter_hero_idle_state_for_current_vehicle_mode();
                             break;
                         }
-                        if (g_controller_state.held & 0xA) {
+                        if (g_controller_state.held & (PAD_R2 | PAD_R1)) {
                             HeroL06_TrySetMoveState(4, 1);
                             break;
                         }
@@ -572,7 +572,7 @@ void HeroL06_UpdateStateTransitions(void) {
                             if ((float)rec->f14 < g_hero.anim_frame && g_hero.anim_changing == 0 &&
                                 !(g_hero.state.current == 0x15 && g_hero.unk308 != 0)) {
                                 if (pad_pressed_within(0x40, t, 0)) {
-                                    if (g_controller_state.held & 0xA) {
+                                    if (g_controller_state.held & (PAD_R2 | PAD_R1)) {
                                         if (hero_handle_jump_press()) {
                                             break;
                                         }
@@ -654,12 +654,12 @@ void HeroL06_UpdateStateTransitions(void) {
                         }
                         if (g_hero.on_ice_ground == 0 ||
                             (g_frame_time * 2.0f > g_hero.motion.flat_speed && g_hero.ground_slope.f < 0.08726646f)) {
-                            if (g_controller_state.held & 5) {
+                            if (g_controller_state.held & (PAD_L2 | PAD_L1)) {
                                 HeroL06_TrySetMoveState(1, 1);
                                 break;
                             }
                         }
-                        if (g_controller_state.held & 0xA) {
+                        if (g_controller_state.held & (PAD_R2 | PAD_R1)) {
                             HeroL06_TrySetMoveState(4, 1);
                             break;
                         }
@@ -754,16 +754,16 @@ void HeroL06_UpdateStateTransitions(void) {
                         }
                         break;
                     case 3:
-                        if (g_controller_state.held & 5) {
+                        if (g_controller_state.held & (PAD_L2 | PAD_L1)) {
                             HeroL06_TrySetMoveState(1, 1);
                             break;
                         }
                         if (g_hero.move_lock_timer == 0) {
-                            if (g_controller_state.pressed & 0x40) {
+                            if (g_controller_state.pressed & PAD_CROSS) {
                                 HeroL06_TrySetMoveState(7, 1);
                                 break;
                             }
-                            if (g_controller_state.held & 0xA) {
+                            if (g_controller_state.held & (PAD_R2 | PAD_R1)) {
                                 HeroL06_TrySetMoveState(4, 1);
                                 break;
                             }
@@ -798,11 +798,11 @@ void HeroL06_UpdateStateTransitions(void) {
                         }
                         break;
                     case 4:
-                        if (g_controller_state.held & 5) {
+                        if (g_controller_state.held & (PAD_L2 | PAD_L1)) {
                             HeroL06_TrySetMoveState(1, 1);
                             break;
                         }
-                        if (g_hero.state_timer > scale_ticks(0xB) && !(g_controller_state.held & 0xA)) {
+                        if (g_hero.state_timer > scale_ticks(0xB) && !(g_controller_state.held & (PAD_R2 | PAD_R1))) {
                             HeroL06_TrySetMoveState(0, 0);
                             set_hero_animation(get_hero_help_value(0), 0, -2.0f);
                             break;
@@ -913,7 +913,7 @@ void HeroL06_UpdateStateTransitions(void) {
                             (g_hero.state.prev2 != 0x10 || (g_hero.state.prev != 8 && g_hero.state.prev != 6)) &&
                             g_hero.state.prev != 0xF && g_hero.state.prev != 0xA && g_hero.state.prev != 0x10 &&
                             g_hero.state.prev != 0x12 && g_hero.state.prev != 0x3C &&
-                            (g_controller_state.pressed & 0x40)) {
+                            (g_controller_state.pressed & PAD_CROSS)) {
                             HeroL06_TrySetMoveState(0x10, 1);
                         }
                         {
@@ -1253,7 +1253,7 @@ void HeroL06_UpdateStateTransitions(void) {
                         }
                         if ((g_hero.stick_magnitude > 0.5f && pad_pressed_within(0x40, scale_ticks(9), 0) &&
                              2.3561945f < FastDiffRots(g_hero.motion.move_yaw, g_hero.motion.rot.f[2])) ||
-                            (g_controller_state.pressed & 0xA)) {
+                            (g_controller_state.pressed & (PAD_R2 | PAD_R1))) {
                             HeroL06_TrySetMoveState(6, 1);
                             g_hero.ledge_probe_cooldown = scale_ticks(0xA);
                             break;
@@ -1411,8 +1411,9 @@ void HeroL06_UpdateStateTransitions(void) {
                         if (g_hero.health.hp <= 0) {
                             break;
                         }
-                        if ((g_controller_state.held & 0x40) && item_available[2] != 0 && hero_slot_item_id(3) != 4 &&
-                            g_hero.pack_disabled == 0 && g_hero.move_lock_timer == 0 && g_hero.ground_distance > 0.6f) {
+                        if ((g_controller_state.held & PAD_CROSS) && item_available[2] != 0 &&
+                            hero_slot_item_id(3) != 4 && g_hero.pack_disabled == 0 && g_hero.move_lock_timer == 0 &&
+                            g_hero.ground_distance > 0.6f) {
                             HeroL06_TrySetMoveState(8, 1);
                             break;
                         }
@@ -1427,7 +1428,8 @@ void HeroL06_UpdateStateTransitions(void) {
                         }
                         if (hero_slot_item_id(3) == 3 && g_hero.pack_disabled == 0) {
                             if (check_pad_press_separation(0x40, 0xA, scale_ticks(9), scale_ticks(8))) {
-                                if ((g_controller_state.held & 0xA) && (g_controller_state.pressed & 0x40)) {
+                                if ((g_controller_state.held & (PAD_R2 | PAD_R1)) &&
+                                    (g_controller_state.pressed & PAD_CROSS)) {
                                     if (g_hero.past_jump_apex == 0 || g_hero.ground_distance > 1.5f) {
                                         HeroL06_TrySetMoveState(0x10, 1);
                                         break;
@@ -1466,17 +1468,17 @@ void HeroL06_UpdateStateTransitions(void) {
                             fast_dec_timer_r((int *)&blarg_hero_double_tap_timer);
                             if (*(int *)&blarg_hero_double_tap_timer != 0) {
                                 both = 1;
-                                if (!((g_controller_state.held & 8) && (g_controller_state.pressed & 8))) {
+                                if (!((g_controller_state.held & PAD_R1) && (g_controller_state.pressed & PAD_R1))) {
                                     both = 0;
                                 }
                             }
-                            if (g_controller_state.pressed & 8) {
+                            if (g_controller_state.pressed & PAD_R1) {
                                 *(int *)&blarg_hero_double_tap_timer = scale_ticks(0x1E);
                             }
                             if (!(g_hero.state_timer > scale_ticks(0x14))) {
                                 break;
                             }
-                            if (hero_slot_item_id(3) == 3 && !(g_controller_state.pressed & 0x40) && !both) {
+                            if (hero_slot_item_id(3) == 3 && !(g_controller_state.pressed & PAD_CROSS) && !both) {
                                 break;
                             }
                         }
@@ -1510,7 +1512,7 @@ void HeroL06_UpdateStateTransitions(void) {
                                 break;
                             }
                         }
-                        if (g_hero.state_timer > scale_ticks(0x1E) && !(g_controller_state.held & 0x40) &&
+                        if (g_hero.state_timer > scale_ticks(0x1E) && !(g_controller_state.held & PAD_CROSS) &&
                             !(((int)g_controller_state.held_unmasked) & 0x40)) {
                             HeroL06_TrySetMoveState(6, 1);
                             break;
@@ -1534,7 +1536,7 @@ void HeroL06_UpdateStateTransitions(void) {
                             g_hero.move_lock_timer = scale_ticks(0x22);
                             break;
                         }
-                        if (g_controller_state.held & 0xA) {
+                        if (g_controller_state.held & (PAD_R2 | PAD_R1)) {
                             HeroL06_TrySetMoveState(4, 1);
                             configure_hero_point_effect_emission(0.016f, 0.002f, 5, 2, 0, 1);
                             break;
@@ -1613,7 +1615,7 @@ void HeroL06_UpdateStateTransitions(void) {
                                     }
                                     if (ok) {
                                         if (pad_pressed_within(0x1F000, scale_ticks(5), 0)) {
-                                            if (g_controller_state.held & 0xA) {
+                                            if (g_controller_state.held & (PAD_R2 | PAD_R1)) {
                                                 HeroL06_TrySetMoveState(0xB, 1);
                                                 break;
                                             }
@@ -1627,7 +1629,7 @@ void HeroL06_UpdateStateTransitions(void) {
                             g_hero.state.current != 0x3C && g_hero.state.current != 0xF &&
                             g_hero.state.current != 0xA && g_hero.state.current != 0x69 &&
                             (g_hero.state.current == 0xE || scale_ticks(9) < g_hero.state_timer) &&
-                            (g_controller_state.held & 0xA)) {
+                            (g_controller_state.held & (PAD_R2 | PAD_R1))) {
                             if (pad_pressed_within(0x40, scale_ticks(8), 0)) {
                                 HeroL06_TrySetMoveState(0x10, 1);
                                 break;
@@ -1886,7 +1888,7 @@ void HeroL06_UpdateStateTransitions(void) {
                                           FastAbsF(gravity_z(g_hero.motion.velocity.f)) < g_frame_time * 5.8f))) {
                                         HeroL06_TrySetMoveState(0xE, 1);
                                     } else if (item_available[2] != 0 && hero_slot_item_id(3) != 4 &&
-                                               g_hero.pack_disabled == 0 && (g_controller_state.held & 0x40) &&
+                                               g_hero.pack_disabled == 0 && (g_controller_state.held & PAD_CROSS) &&
                                                delay < g_hero.state_timer && g_hero.unk4A6 < g_hero.state_timer) {
                                         float lim = 0.6f;
                                         if (g_hero.state.current == 9 || g_hero.state.current == 7) {
@@ -1948,7 +1950,7 @@ void HeroL06_UpdateStateTransitions(void) {
                             HeroL06_TrySetMoveState(0x52, 1);
                             break;
                         }
-                        if (g_controller_state.held & 5) {
+                        if (g_controller_state.held & (PAD_L2 | PAD_L1)) {
                             HeroL06_TrySetMoveState(1, 1);
                             break;
                         }
@@ -2106,7 +2108,7 @@ void HeroL06_UpdateStateTransitions(void) {
                         }
                         break;
                     case 79:
-                        if (g_hero.state_timer > scale_ticks(0x1E) && !(g_controller_state.held & 0x40)) {
+                        if (g_hero.state_timer > scale_ticks(0x1E) && !(g_controller_state.held & PAD_CROSS)) {
                             HeroL06_TrySetMoveState(0x45, 1);
                             break;
                         }
@@ -2255,7 +2257,7 @@ void HeroL06_UpdateStateTransitions(void) {
                         }
                         if ((g_hero.stick_magnitude > 0.5f && pad_pressed_within(0x40, scale_ticks(9), 0) &&
                              2.3561945f < FastDiffRots(g_hero.motion.move_yaw, g_hero.motion.rot.f[2])) ||
-                            (g_controller_state.held & 0xA)) {
+                            (g_controller_state.held & (PAD_R2 | PAD_R1))) {
                             HeroL06_TrySetMoveState(0x45, 1);
                             g_hero.ledge_probe_cooldown = scale_ticks(0xA);
                             break;
@@ -2333,7 +2335,7 @@ void HeroL06_UpdateStateTransitions(void) {
                             HeroL06_TrySetMoveState(0x58, 1);
                             break;
                         }
-                        if (g_controller_state.held & 5) {
+                        if (g_controller_state.held & (PAD_L2 | PAD_L1)) {
                             HeroL06_TrySetMoveState(1, 1);
                             break;
                         }
@@ -2341,7 +2343,7 @@ void HeroL06_UpdateStateTransitions(void) {
                             HeroL06_TrySetMoveState(0x55, 1);
                             break;
                         }
-                        if (g_controller_state.pressed & 0x20) {
+                        if (g_controller_state.pressed & PAD_CIRCLE) {
                             HeroL06_TrySetMoveState(0x59, 1);
                             break;
                         }
@@ -2377,7 +2379,7 @@ void HeroL06_UpdateStateTransitions(void) {
                             HeroL06_TrySetMoveState(0x58, 1);
                             break;
                         }
-                        if (g_hero.state_timer > scale_ticks(0x2D) && !(g_controller_state.held & 0x20)) {
+                        if (g_hero.state_timer > scale_ticks(0x2D) && !(g_controller_state.held & PAD_CIRCLE)) {
                             HeroL06_TrySetMoveState(0x53, 0);
                             set_hero_animation(0, 0, scale_ticks(0x14));
                         }
@@ -2427,7 +2429,7 @@ void HeroL06_UpdateStateTransitions(void) {
                             hero_switch_item(0);
                             break;
                         }
-                        if (g_controller_state.pressed & 0x20) {
+                        if (g_controller_state.pressed & PAD_CIRCLE) {
                             HeroL06_TrySetMoveState(0x59, 1);
                             break;
                         }
@@ -2456,7 +2458,7 @@ void HeroL06_UpdateStateTransitions(void) {
                     case 30:
                         if (g_hero.vehicle_mode == 0) {
                             if (g_hero.unk20AA == 0 || g_hero.unk20A5 != 0) {
-                                if (g_controller_state.held & 0xA) {
+                                if (g_controller_state.held & (PAD_R2 | PAD_R1)) {
                                     if (((unsigned char *)g_hero.moby)[0x53] != 0xD) {
                                         set_hero_animation(0xD, 0, scale_ticks(8));
                                     }
@@ -2468,7 +2470,7 @@ void HeroL06_UpdateStateTransitions(void) {
                                 }
                             }
                         }
-                        if (g_controller_state.held & 5) {
+                        if (g_controller_state.held & (PAD_L2 | PAD_L1)) {
                             break;
                         }
                         if (g_hero.state.current == 0x1E) {
@@ -2490,7 +2492,7 @@ void HeroL06_UpdateStateTransitions(void) {
                         break;
                     case 35:
                         if (19.0f < g_hero.anim_frame && pad_pressed_within(0x40, scale_ticks(0xB), 0)) {
-                            if (g_controller_state.held & 0xA) {
+                            if (g_controller_state.held & (PAD_R2 | PAD_R1)) {
                                 hero_handle_jump_press();
                                 break;
                             }

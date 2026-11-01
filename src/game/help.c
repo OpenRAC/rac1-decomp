@@ -7,6 +7,7 @@
 #include "game/draw.h"
 #include "game/hud.h"
 #include "game/mobyutil.h"
+#include "structs/pad.h"
 
 /*
  * help.cpp in the original source; text 0x1FDF10-0x1FF668.
@@ -394,7 +395,7 @@ extern PlayerHud cd_read_state;
 /* Advances the help popup's state machine: delay, open, hold, close, record stats. Adapted from Lombyte's project (GPL-3.0) for PAL: ui/help/update_help_state.c, update_help_state. */
 void Help_Update(void) {
     if (HS.started == 0) {
-        if (HS.delay == 0 && (pad_held & 0xF000)) {
+        if (HS.delay == 0 && (pad_held & (PAD_UP | PAD_RIGHT | PAD_DOWN | PAD_LEFT))) {
             HS.delay = 1;
         }
         if (HS.delay != 0) {
@@ -452,7 +453,7 @@ void Help_Update(void) {
             if (id >= 0 && cd_read_state.unk50 == 0 && cd_read_state.unk1C == -1) {
                 cd_read_state.unk1C = id + 0x7530;
             }
-            if (pad0_pressed & 0x10) {
+            if (pad0_pressed & PAD_TRIANGLE) {
                 RECORD_COUNT();
                 RECORD_BEST();
                 RECORD_FLAGS();
@@ -469,7 +470,7 @@ void Help_Update(void) {
             int id;
 
             force_help_message(5, 0);
-            if (pad0_pressed & 0x10) {
+            if (pad0_pressed & PAD_TRIANGLE) {
                 RECORD_COUNT();
                 RECORD_BEST();
                 HS.state = 7;
@@ -487,7 +488,7 @@ void Help_Update(void) {
 
         case 3:
             force_help_message(5, 0);
-            if (pad0_pressed & 0x10) {
+            if (pad0_pressed & PAD_TRIANGLE) {
                 RECORD_COUNT();
                 RECORD_BEST();
                 HS.state = 7;
@@ -503,7 +504,7 @@ void Help_Update(void) {
             int id;
 
             force_help_message(5, 0);
-            if (pad0_pressed & 0x10) {
+            if (pad0_pressed & PAD_TRIANGLE) {
                 RECORD_COUNT();
                 RECORD_BEST();
                 HS.state = 6;
@@ -527,7 +528,7 @@ void Help_Update(void) {
             if ((HS.timer >= scale_game_frame_count(0x1A4) &&
                  ((id = help_msgs[HS.msg].unk_08) == -1 || id != cd_read_state.unk54 - 0x7530 ||
                   (cd_read_state.unk50 == 0 && cd_read_state.unk1C == -1))) ||
-                (pad0_pressed & 0x10)) {
+                (pad0_pressed & PAD_TRIANGLE)) {
                 RECORD_COUNT();
                 RECORD_BEST();
                 HS.state = 6;
@@ -538,7 +539,7 @@ void Help_Update(void) {
         }
 
         case 6:
-            if (D_0015EF1D_b == 0 || HS.timer >= 4 || (pad0_pressed & 0x10)) {
+            if (D_0015EF1D_b == 0 || HS.timer >= 4 || (pad0_pressed & PAD_TRIANGLE)) {
                 HS.state = 7;
                 HS.timer = 0;
             }

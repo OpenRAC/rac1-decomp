@@ -24,6 +24,7 @@
 #include "game/fastfunc.h"
 #include "game/pause.h"
 #include "enums/moby_class.h"
+#include "structs/pad.h"
 
 extern int level_reset_counter_524 MACRO_ADDR;
 extern int radial_select_auto_close_flag[];
@@ -797,22 +798,22 @@ void update_cutscene_playback(void) {
     f32 a[4] __attribute__((aligned(16)));
     f32 b[4] __attribute__((aligned(16)));
 
-    if ((g_debug_menu_r.update_flags & 2) || ((g_debug_menu_r.update_flags & 0x10) && (pad0_pressed & 0x200))) {
+    if ((g_debug_menu_r.update_flags & 2) || ((g_debug_menu_r.update_flags & 0x10) && (pad0_pressed & PAD_L3))) {
         reset_frame_counters();
     }
-    if (!(g_debug_menu_r.update_flags & 0x10) || (pad0_pressed & 0x220)) {
+    if (!(g_debug_menu_r.update_flags & 0x10) || (pad0_pressed & (PAD_CIRCLE | PAD_L3))) {
         apply_level_specific_cutscene_moby_effects();
     }
-    if ((g_debug_menu_r.update_flags & 2) || ((g_debug_menu_r.update_flags & 0x10) && (pad0_pressed & 0x200))) {
+    if ((g_debug_menu_r.update_flags & 2) || ((g_debug_menu_r.update_flags & 0x10) && (pad0_pressed & PAD_L3))) {
         update_visible_resident_objects();
         enqueue_voice_request();
     }
     Profile_Mark(level_profile_mark_after_mobys_r, 3);
-    if ((g_debug_menu_r.update_flags & 1) || ((g_debug_menu_r.update_flags & 0x10) && (pad0_pressed & 0x200))) {
+    if ((g_debug_menu_r.update_flags & 1) || ((g_debug_menu_r.update_flags & 0x10) && (pad0_pressed & PAD_L3))) {
         coordinate_hero_frame_update();
     }
     Profile_Mark(level_profile_mark_after_hero_r, 7);
-    if ((g_debug_menu_r.update_flags & 4) || ((g_debug_menu_r.update_flags & 0x10) && (pad0_pressed & 0x200))) {
+    if ((g_debug_menu_r.update_flags & 4) || ((g_debug_menu_r.update_flags & 0x10) && (pad0_pressed & PAD_L3))) {
         UpdateParts();
     }
     Profile_Mark(level_profile_mark_after_parts_r, 5);
@@ -880,7 +881,7 @@ void update_cutscene_playback(void) {
     Profile_Mark(level_profile_mark_after_sound_r, 6);
     UpdateAllPointLights();
     update_resident_packed_direction();
-    if ((g_debug_menu_r.update_flags & 2) || ((g_debug_menu_r.update_flags & 0x10) && (pad0_pressed & 0x200))) {
+    if ((g_debug_menu_r.update_flags & 2) || ((g_debug_menu_r.update_flags & 0x10) && (pad0_pressed & PAD_L3))) {
         update_game_frame_and_idle_counters();
     }
 }

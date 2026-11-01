@@ -2298,11 +2298,11 @@ void HeroL06_UpdateMovement(void) {
                 b = a;
             }
             stick_target(((Hero *)&g_hero)->stick_magnitude * b, 0);
-            if (((Hero *)&g_hero)->stick_magnitude > 0.2f && !(g_controller_state.held & 3)) {
+            if (((Hero *)&g_hero)->stick_magnitude > 0.2f && !(g_controller_state.held & (PAD_L2 | PAD_R2))) {
                 turn_to(0, g_frame_scale_sq * 0.027f, g_frame_scale_sq * 0.3f,
                         g_frame_time * 5.934119f * ((Hero *)&g_hero)->stick_magnitude);
             }
-            if (g_controller_state.held & 3) {
+            if (g_controller_state.held & (PAD_L2 | PAD_R2)) {
                 float keep;
 
                 keep = ((Hero *)&g_hero)->motion.move_yaw;

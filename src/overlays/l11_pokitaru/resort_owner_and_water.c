@@ -20,6 +20,7 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/ripple_patches.h"
 #include "enums/moby_class.h"
+#include "structs/pad.h"
 
 /* Resort owner (boss): path pointers, rail table, walk target and speeds. */
 struct ResortOwnerVars {
@@ -1397,7 +1398,7 @@ void teleporter_318_update(struct Moby *moby) {
             if (*(short *)(g + 0x30E) != 0)
                 break;
             request_teleporter_help_message(moby);
-            if (!(pad0_pressed & 0x10))
+            if (!(pad0_pressed & PAD_TRIANGLE))
                 break;
             if (pokitaru_shown_help_message != 0xB)
                 break;

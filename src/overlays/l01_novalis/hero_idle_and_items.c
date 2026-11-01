@@ -1655,7 +1655,7 @@ int handle_hero_gadget_button(void) {
                 if (m->state != 0) {
                     break;
                 }
-                if ((g_controller_state_p241620.held & 0xA) ||
+                if ((g_controller_state_p241620.held & (PAD_R2 | PAD_R1)) ||
                     ((g_hero_h241620.state.current == 1 || g_hero_h241620.state.current == 0x1E) &&
                      g_hero_h241620.state_timer > scale_ticks(0x14))) {
                     if ((g_hero_h241620.state.current == 1 || g_hero_h241620.state.current == 0x1E) &&
@@ -1712,7 +1712,8 @@ int handle_hero_gadget_button(void) {
                         if (g_hero_h241620.anim_changing != 0) {
                             break;
                         }
-                        if (g_hero_h241620.anim_frame >= (float)rec->f10 && (g_controller_state_p241620.held & 0xA) &&
+                        if (g_hero_h241620.anim_frame >= (float)rec->f10 &&
+                            (g_controller_state_p241620.held & (PAD_R2 | PAD_R1)) &&
                             pad_pressed_within_r(mask, scale_ticks(0xF), 0)) {
                             Hero_SetMoveState(0x15, 1);
                             break;
@@ -1738,7 +1739,7 @@ int handle_hero_gadget_button(void) {
                 if (!pad_pressed_within_r(mask, t, 0)) {
                     break;
                 }
-                if (g_controller_state_p241620.held & 0xA) {
+                if (g_controller_state_p241620.held & (PAD_R2 | PAD_R1)) {
                     Hero_SetMoveState(0x15, 1);
                     break;
                 }
@@ -1829,7 +1830,7 @@ int handle_hero_gadget_button(void) {
                 t = scale_ticks(7);
                 n = g_hero_h241620.items[0].ready_frames;
                 if (pad_pressed_within_r(mask, t <= n ? t : n, &out[1]) ||
-                    ((g_controller_state_p241620.held & 0x20) && n > scale_ticks(8) && n < scale_ticks(0x11))) {
+                    ((g_controller_state_p241620.held & PAD_CIRCLE) && n > scale_ticks(8) && n < scale_ticks(0x11))) {
                     if (get_ammo(-1)) {
                         if (g_hero_h241620.state.control_mode == 0xC || g_hero_h241620.state.control_mode == 0 ||
                             g_hero_h241620.state.current == 3 ||
@@ -1880,12 +1881,12 @@ int handle_hero_gadget_button(void) {
                 if (g_hero_h241620.state.control_mode < 2U || g_hero_h241620.state.control_mode == 0xC ||
                     ((g_hero_h241620.state.control_mode == 2 || g_hero_h241620.state.control_mode == 4) &&
                      g_hero_h241620.grounded_frames != 0)) {
-                    if ((g_controller_state_p241620.held & 8) && (g_controller_state_p241620.pressed & 8)) {
+                    if ((g_controller_state_p241620.held & PAD_R1) && (g_controller_state_p241620.pressed & PAD_R1)) {
                         Hero_SetMoveState(0x81, 1);
                     }
                 }
             }
-            if ((g_controller_state_p241620.pressed & 8) && g_hero_h241620.state.current != 0x81) {
+            if ((g_controller_state_p241620.pressed & PAD_R1) && g_hero_h241620.state.current != 0x81) {
                 r1_double_tap_timer = scale_ticks(0x1E);
             }
         } else if (g_hero_h241620.state.current != 0x13 && g_hero_h241620.state.current != 0x81 &&

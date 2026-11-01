@@ -181,7 +181,7 @@ void func_L00_0029D988_r(void) {
             vendor_menu_r.f4++;
             if (vendor_menu_r.f5c == 0 && G1F18_d == 0) {
                 if (vendor_menu_r.f210 < 8) {
-                    if ((pad_state.pressed & 0x2000)) {
+                    if ((pad_state.pressed & PAD_RIGHT)) {
                         if (vendor_menu_r.f58 < vendor_menu_r.f210 - 1) {
                             G1F34_d = 1;
                             d_0029b4d8(0);
@@ -201,7 +201,7 @@ void func_L00_0029D988_r(void) {
                             }
                         }
                     }
-                    if ((pad_state.pressed & 0x8000)) {
+                    if ((pad_state.pressed & PAD_LEFT)) {
                         if (vendor_menu_r.f58 > 0) {
                             G1F34_d = 1;
                             d_0029b4d8(0);
@@ -222,7 +222,7 @@ void func_L00_0029D988_r(void) {
                         }
                     }
                 } else {
-                    if ((pad_state.pressed & 0x2000)) {
+                    if ((pad_state.pressed & PAD_RIGHT)) {
                         if (vendor_menu_r.f4c <= 0x38) {
                             G1F34_d = 1;
                             vendor_menu_r.f4c += 0x38;
@@ -247,7 +247,7 @@ void func_L00_0029D988_r(void) {
                             }
                         }
                     }
-                    if ((pad_state.pressed & 0x8000)) {
+                    if ((pad_state.pressed & PAD_LEFT)) {
                         if (vendor_menu_r.f4c >= -0x38) {
                             G1F34_d = 1;
                             vendor_menu_r.f4c -= 0x38;
@@ -273,11 +273,11 @@ void func_L00_0029D988_r(void) {
                         }
                     }
                 }
-                if ((pad_state.pressed & 0x60) && (vendor_menu_r.fD0[vendor_menu_r.f58]).fD8 == 0) {
+                if ((pad_state.pressed & (PAD_CIRCLE | PAD_CROSS)) && (vendor_menu_r.fD0[vendor_menu_r.f58]).fD8 == 0) {
                     vendor_menu_r.f5c = 1;
                     d_voice(0, 0, vendor_menu_r.f1c);
                 }
-                if ((pad_state.pressed & 0x10) && G124C_d == 0) {
+                if ((pad_state.pressed & PAD_TRIANGLE) && G124C_d == 0) {
                     G1F14_d = 8;
                     G1F18_d = 1;
                     d_voice(5, 0, vendor_menu_r.f1c);

@@ -173,7 +173,7 @@ void update_hero_timers_and_reach_state(void) {
     FastDecTimer_r(&g_hero_r.unk1F6);
     FastDecTimer_r(&g_hero_r.unk1DA);
     FastDecTimer_r(&g_hero_r.unk1F8);
-    if (!(g_controller_state_r.held & 5)) {
+    if (!(g_controller_state_r.held & (PAD_L2 | PAD_L1))) {
         g_hero_r.unk1EC = 0;
     }
     if (g_hero_r.item_anim_active != 0) {
@@ -3011,7 +3011,7 @@ collision_mode:
     qcopy(&end, &start);
     end.f[2] += 0.3f;
     if (coll_line_r2(&start, &end, 2, g_hero_r2.moby, 0)) {
-        if (item_available[4] != 0 && (pad_held & 10) != 0) {
+        if (item_available[4] != 0 && (pad_held & (PAD_R2 | PAD_R1)) != 0) {
             state = 0x35;
             goto change_state;
         }
@@ -3230,7 +3230,7 @@ int process_hero_equipped_item_input(void) {
                 if (m->state != 0) {
                     break;
                 }
-                if ((g_controller_state_p228770.held & 0xA) ||
+                if ((g_controller_state_p228770.held & (PAD_R2 | PAD_R1)) ||
                     ((g_hero_h228770.state.current == 1 || g_hero_h228770.state.current == 0x1E) &&
                      g_hero_h228770.state_timer > scale_ticks(0x14))) {
                     if ((g_hero_h228770.state.current == 1 || g_hero_h228770.state.current == 0x1E) &&
@@ -3290,7 +3290,8 @@ int process_hero_equipped_item_input(void) {
                         if (g_hero_h228770.anim_changing != 0) {
                             break;
                         }
-                        if (g_hero_h228770.anim_frame >= (float)rec->f10 && (g_controller_state_p228770.held & 0xA) &&
+                        if (g_hero_h228770.anim_frame >= (float)rec->f10 &&
+                            (g_controller_state_p228770.held & (PAD_R2 | PAD_R1)) &&
                             pad_pressed_within_r2(mask, scale_ticks(0xF), 0)) {
                             HeroEnterMoveState(0x15, 1);
                             break;
@@ -3316,7 +3317,7 @@ int process_hero_equipped_item_input(void) {
                 if (!pad_pressed_within_r2(mask, t, 0)) {
                     break;
                 }
-                if (g_controller_state_p228770.held & 0xA) {
+                if (g_controller_state_p228770.held & (PAD_R2 | PAD_R1)) {
                     HeroEnterMoveState(0x15, 1);
                     break;
                 }
@@ -3441,7 +3442,7 @@ int process_hero_equipped_item_input(void) {
                 t = scale_ticks(7);
                 n = g_hero_h228770.items[0].ready_frames;
                 if (pad_pressed_within_r2(mask, t <= n ? t : n, &out[1]) ||
-                    ((g_controller_state_p228770.held & 0x20) && n > scale_ticks(8) && n < scale_ticks(0x11))) {
+                    ((g_controller_state_p228770.held & PAD_CIRCLE) && n > scale_ticks(8) && n < scale_ticks(0x11))) {
                     if (get_ammo(-1)) {
                         if (g_hero_h228770.state.control_mode == 0xC || g_hero_h228770.state.control_mode == 0 ||
                             g_hero_h228770.state.current == 3 ||
@@ -3492,12 +3493,12 @@ int process_hero_equipped_item_input(void) {
                 if (g_hero_h228770.state.control_mode < 2U || g_hero_h228770.state.control_mode == 0xC ||
                     ((g_hero_h228770.state.control_mode == 2 || g_hero_h228770.state.control_mode == 4) &&
                      g_hero_h228770.grounded_frames != 0)) {
-                    if ((g_controller_state_p228770.held & 8) && (g_controller_state_p228770.pressed & 8)) {
+                    if ((g_controller_state_p228770.held & PAD_R1) && (g_controller_state_p228770.pressed & PAD_R1)) {
                         HeroEnterMoveState(0x81, 1);
                     }
                 }
             }
-            if ((g_controller_state_p228770.pressed & 8) && g_hero_h228770.state.current != 0x81) {
+            if ((g_controller_state_p228770.pressed & PAD_R1) && g_hero_h228770.state.current != 0x81) {
                 hero_repeat_press_window_frames = scale_ticks(0x1E);
             }
         } else if (g_hero_h228770.state.current != 0x13 && g_hero_h228770.state.current != 0x81 &&

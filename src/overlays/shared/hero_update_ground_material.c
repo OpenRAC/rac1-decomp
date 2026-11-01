@@ -1616,7 +1616,7 @@ void update_hero_timers_and_vehicle_transitions(void) {
     FastDecTimer(&g_hero_r.unk1F6);
     FastDecTimer(&g_hero_r.unk1DA);
     FastDecTimer(&g_hero_r.unk1F8);
-    if (!(g_controller_state.held & 5)) {
+    if (!(g_controller_state.held & (PAD_L2 | PAD_L1))) {
         g_hero_r.unk1EC = 0;
     }
     if (g_hero_r.item_anim_active != 0) {
