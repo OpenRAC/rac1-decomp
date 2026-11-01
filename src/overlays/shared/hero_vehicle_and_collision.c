@@ -3558,18 +3558,6 @@ int try_start_hero_jump(void *a0, int a1) {
     HeroEnterMoveState(HERO_STATE_JUMP, 1);
     return 1;
 }
-/* NON_MATCHING update_hero_animation_for_movement_speed -- src/overlays/shared/help_00221A98.c
- * Best so far: SIZE ours 908 / retail 912, checked 2026-10-09.
- * Not built into anything: the retail assembly stays in the source file
- * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
- * What the last attempts found:
- *   update_hero_animation_for_movement_speed (HeroWalkRunAnim, shared, 912 bytes): sets the hero animation speed
- * (p+0xA90) from speed and
- *   Not exact: size 892 vs 912 with p7.c (904 with the for-loop variant p6.c), 10 runs spent. Structure, top clamp
- *   Difference: retail's two index loops carry extra register copies (p, table base and old copied into fresh regi
- *   Hero walk/run anim speed + gait step. Remaining diff is the upward index loop and the gait-step table setup: r
- *   hq13/n02 (8 runs, p11-p17): p15.c is the best by size (908/912): the gait-step block now matches exactly (j = 
- */
 struct T {
     float lo, hi, c, d;
 };

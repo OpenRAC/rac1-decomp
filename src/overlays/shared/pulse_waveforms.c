@@ -4,19 +4,6 @@
 #include "include_asm.h"
 #include "asm_functions/executable.h"
 
-/* NON_MATCHING tick_pulse_waveforms -- src/overlays/shared/start_001EAD88.c
- * Best so far: BYTES 2/1044 (99.8% of the bytes match), checked 2026-10-15.
- * Not built into anything: the retail assembly stays in the source file
- * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
- * What the last attempts found:
- *   2026-10-15: one function of 1044 bytes in six catalogue pieces (joined.tsv). Updates eight pulse channels
- *   at pulse_waveform_slots (16 bytes each) and averages them into out[0..1]. Its switch has six cases (none,
- *   square, triangle, ramp up, ramp down, FastCos pulse). Needed: the jump table tools read joined pieces, an
- *   explicit case 0, timers life/delay/time through pulse_waveform_slots[i], the pointer set after the type test,
- *   amp converted once. BYTES 2/1044: count and sum_count get swapped saved registers. Their address pseudos
- *   (sp+0x10, sp+0x20) tie, and ours always numbers sp+0x10 first. No declaration order, init order, arm order
- *   or acc[3][4] array changes it.
- */
 extern float IntToFloat(int);
 extern int truncate_float_to_s32(float);
 

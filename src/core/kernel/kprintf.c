@@ -790,23 +790,6 @@ void sif_rpc_free_packet(void *arg0) {
     *(unsigned int *)(self + 0x10) = flags & 0xFFFFFFFEu;
 }
 
-/*
- * REVERTED at 20/48 (same size). Semantics are certain:
- *
- *   int rem = *(int *)(arg0 + 0x24) % *(int *)(arg0 + 0x18);
- *   *(int *)(arg0 + 0x24) = rem + 1;
- *   return *(int *)(arg0 + 0x14) + (rem << 6);
- *
- * A wrapping counter: takes the modulo of field 0x24 by field 0x18,
- * writes back rem+1, and returns field 0x14 + rem*64 (a 64-byte-stride
- * table index). Every instruction matches retail including the div trap
- * guard; the residual is the allocator picking the opposite registers
- * for the divisor and the mfhi result ($2/$3 swapped versus retail),
- * which then reorders the tail so the store lands in the jr delay slot
- * where retail puts the addu. Tried: hoisting the base load into a
- * local, and naming rem+1 as a separate local -- neither changed the
- * allocation. Same open scratch-register question as func_001160D8.
- */
 /* Hand out the next 0x40-byte slot of the ring {.., +0x14 base, +0x18
    count, .., +0x24 next}: take next modulo count, advance next past it,
    return the slot. The slot address has to be formed BEFORE the store of
@@ -1184,23 +1167,6 @@ s32 func_0011B4C8_r(struct SifRpcClient *client, s32 rpc_number, s32 mode, s32 s
     }
 }
 
-/*
- * REVERTED: size mismatch, 56 bytes against retail's 60. Semantics are
- * certain:
- *
- *   char *p = *(char **)arg0;
- *   if (p == 0) return 0;
- *   if (*(int *)(arg0 + 4) != *(int *)(p + 0x18)) return 0;
- *   if (*(int *)(p + 0x10) & 1) return 1;
- *   return 0;
- *
- * Retail keeps TWO exit blocks -- a shared `return 0` and a separate
- * `return 1`, each with its own `jr` -- which is 15 instructions. This
- * compiler merges them into a single exit and sets $v0 in the branch
- * delay slots, 14 instructions. Tried both the && chain and explicit
- * early returns; both merge. The exit structure is not expressible from
- * C here.
- */
 /* Is the handle {slot, id} at arg0 still live: the slot is set, its id at
    +0x18 still matches the handle's, and its in-use bit (+0x10 bit 0) is
    set. Written as one inverted guard that returns 0, then `return 1`:

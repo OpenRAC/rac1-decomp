@@ -127,20 +127,6 @@ struct LeafVars {
     f32 base_scale; /* 0x4C */
 };
 
-/* NON_MATCHING snow_plow_update -- src/overlays/l04_eudora/vendor_002CB800.c
- * Best so far: BYTES 159/4972 (96.8% of the bytes match), checked 2026-10-09.
- * Not built into anything: the retail assembly stays in the source file
- * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
- * What the last attempts found:
- *   More on A (2026-10-09, later): $f20 is not used again until case 4's constants, so the zero is a variable that
- *   GCSE did not propagate. cprop records each `(set (reg) (const))` pattern once, so the same constant set in bot
- *   is still "available" and propagated; two different patterns that only later become the same `mtc1 $0` (cross-j
- *   from both arms into the join after reload) would explain retail, but no such pair was found.
- *   Declarations: private typedefs suffixed _2CB800; callee aliases `gunship_follow_path` (func_L01_002F654
- *   `MobySpringTurn` (MobySpringTurn), `Moby_PlaySound` (Moby_PlaySound, pointer third argument),
- *   `spawn_explosion`; globals through MACRO_ADDR aliases. Not in alias form. The function is first in its f
- *   Final check against the destination file as of 2026-10-09 15:30 (others had landed into these files): run 3, B
- */
 #define MOBYS ((VehicleMoby *)D_L04_00160058)
 extern char *eudora_mobys MACRO_ADDR;
 extern void Moby_PlaySound(int, int, int);

@@ -118,13 +118,8 @@ ASM_FUNC("asm/handwritten/text", func_001F9BA0);
 ASM_FUNC("asm/handwritten/text", func_001F9BB0);
 
 /*
- * Same-size-but-4-over near-miss NOT kept (size mismatch: 12 vs
- * retail's 8): `*(unsigned long long *)arg0 = 0;` (confirmed the
- * correct 128-bit lq/sq type per the 64-bit-field-type rule) compiles
- * to `por v0,zero,zero` materializing the zero into a real register
- * before the `sq`, where retail's `sq zero,0(a0)` uses $0 directly as
- * the store source. `__builtin_memset(arg0, 0, 16)` produces the same
- * extra instruction. Not reachable from source tried so far.
+ * This stays asm. `*(unsigned long long *)arg0 = 0;` compiles to `por v0,zero,zero` before the `sq`, where retail's
+ * `sq zero,0(a0)` uses $0 directly. `__builtin_memset(arg0, 0, 16)` gives the same extra instruction.
  */
 ASM_FUNC("asm/handwritten/text", func_001F9BC0);
 

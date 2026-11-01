@@ -1,6 +1,6 @@
 {
   "address_names_in_code": 11718,
-  "address_names_in_comments": 852,
+  "address_names_in_comments": 849,
   "asm_aliases": 5901,
   "extern_lines": 31497,
   "fakematch_tags": 31,
@@ -12,8 +12,8 @@
   "long_lines": 686,
   "numbered_names": 269,
   "oclass_literals": 126,
-  "offsets_in_comments": 1032,
+  "offsets_in_comments": 1007,
   "raw_offset_casts": 6947,
-  "tab_lines": 55,
-  "worker_notes_in_comments": 7
+  "tab_lines": 0,
+  "worker_notes_in_comments": 0
 }

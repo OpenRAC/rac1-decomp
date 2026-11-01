@@ -120,12 +120,6 @@ void memcard_RestoreGame(int arg0) {
     }
 }
 
-/*
- * 3/168: the only residual is the allocator holding the loaded pointer
- * in $2 where retail uses $3. Everything else, including saving the
- * three globals across memcard_RestoreGame and the $at store of g_current_level_index,
- * is instruction-for-instruction retail.
- */
 extern int disc_table[];
 extern void calculate_ring_buffer_bounds(int, void *, void *);
 extern void update_audio_stream_until_idle(int);

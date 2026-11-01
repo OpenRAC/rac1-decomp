@@ -386,14 +386,6 @@ void resort_owner_update(unsigned char *moby) {
     update_resort_owner_state_transitions(moby);
     update_resort_owner_look_tracking(moby);
 }
-/* NON_MATCHING update_resort_owner_state_actions -- src/overlays/l11_pokitaru/vendor_002CC828.c
- * Best so far: BYTES 13/780 (98.3% of the bytes match), checked 2026-10-09.
- * Not built into anything: the retail assembly stays in the source file
- * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
- * What the last attempts found:
- *   mini35 main-only: started from staged108/780, updated current turning-helper prototype. Typed BossMoby/BossMov
- *   hq12 s10 (5 runs, p7-p11): p10 (the rail index read inline as d->rail[k], no arr local) takes the case 9 block
- */
 typedef struct {
     char pad0[0xf0];
     int rail[2];

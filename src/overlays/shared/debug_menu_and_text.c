@@ -412,20 +412,6 @@ void update_hero_from_debug_camera(void) {
     copy_memory_by_alignment((int)(m + 0xC0), b, 0x30);
     moby_build_matrix(*(void **)&((struct Hero *)b)->moby);
 }
-/* NON_MATCHING update_debug_menu -- src/overlays/shared/draw_001F3A78.c
- * Best so far: BYTES 169/4932 (96.6% of the bytes match), checked 2026-10-09.
- * Not built into anything: the retail assembly stays in the source file
- * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
- * What the last attempts found:
- *   $s0; ctx high in $s2 shared with the x4 block, ctx in $s1; x4 block reloads x and y (no forwarding).
- *   staged (view=&ctx in both arms): ctx high in arms (wrong). q3/q4 (o=&options in arms): options high in arms
- *   (right) but y forwarded into the x4 block and ctx in $s0. q5/q6 (both pointers in arms): both highs in arms, +
- *   3. case 10: retail tests the loaded byte in $v0 and builds the value in $a1 (bnez; daddu $a1,0 in slot;
- *   addiu $a1,0xFF). Every form with a separate test pseudo becomes movz (c10a..e, n, p); forms that keep a branch
- *   test the value's own pseudo (lbu $a1) (q2, c10i..m) or do not fold (~*p: nor+andi, c10f/g/h/o).
- *   4. case 3: 0x18 constant and item_price_table address swapped ($a0/$a1) (local alloc order).
- *   5. second sprintf call of case 5: arg setup order (t0/t1/a0 before a1/a2 in ours).
- */
 
 typedef struct {
     s32 v[6];

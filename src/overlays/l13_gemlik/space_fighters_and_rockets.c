@@ -494,16 +494,6 @@ void update_level_13_mine_83_projectile(char *moby_raw) {
         }
     }
 }
-/* NON_MATCHING update_hovering_rocket_attacker -- src/overlays/l13_gemlik/vendor_002C2638.c
- * Best so far: SIZE ours 1900 / retail 1912, checked 2026-10-08.
- * Not built into anything: the retail assembly stays in the source file
- * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
- * No longer builds in its file (COMPILE failed, 2026-10-09): match its declarations to the file's first.
- * What the last attempts found:
- *   Blarg space fighter moby update (Blarg Space Fighter, level 13): state machine on moby+0x20 (9 cases,
- * jtbl_L13_001F4920)
- *   Still differs: retail rematerialises -1 for the D4 compare and the store (ours keeps one li $16,-1), and case 
- */
 extern void update_hovering_rocket_attacker_common(unsigned char *);
 extern int create_attached_rocket(void *, int);
 extern void launch_attached_rocket(char *, char *, int, float);
@@ -2023,16 +2013,6 @@ void process_forcefield_tower_damage(char *m, char *d, float *hp) {
 end:
     StepColorFade(m, d + 0x60);
 }
-/* NON_MATCHING forcefield_tower_update -- src/overlays/l13_gemlik/vendor_002C2638.c
- * Best so far: SIZE ours 1320 / retail 1328, checked 2026-10-09.
- * Not built into anything: the retail assembly stays in the source file
- * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
- * What the last attempts found:
- *   Forcefield tower update (moby Forcefield Tower): a switch on moby[0x20] (0 = start, 1 = wait/linger, 2 = active),
- * wit
- *   Differences left: the state-1 "v != 0" block gets a movz (`run448` flag) and an extra `addiu $s1,1` where reta
- *   Unblock: a way to get the zero store and the 16-byte copy through `por`/`sq $v0` without a typedef clash (the 
- */
 typedef int u128z_2D0298 __attribute__((mode(TI)));
 extern int g_current_level_index MACRO_ADDR;
 extern int linked_state_flags[];

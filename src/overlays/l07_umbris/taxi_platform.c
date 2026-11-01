@@ -3430,15 +3430,6 @@ void update_hero_triggered_falling_platform(Moby *m) {
     FastVecSub(v, &m->pos, prev);
     update_entity_matrix(((struct FallingPlatformVars *)d)->matrix, v, &m->rot, &m->rot);
 }
-/* NON_MATCHING configure_timed_point_light -- src/overlays/l07_umbris/vendor_002CE470.c
- * Best so far: BYTES 38/544 (93.0% of the bytes match), checked 2026-10-09.
- * Not built into anything: the retail assembly stays in the source file
- * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
- * What the last attempts found:
- *   Dynamic light slot update (obj+0x280 id, +0x282 owner, +0x284/0x286 fade, +0x288 color, +0x28C): allocates via
- *   p5.c: size and all instructions match; only saved-register naming differs (retail pos=s5, pa=s6, e=s1, color=s
- *   Note: file declares the function with int pa and unsigned color, so the candidate uses aliases/casts.
- */
 /* Object data with a timed dynamic light (and an alternating emission burst). */
 struct TimedLightObj {
     u8 pad_00[0x160];

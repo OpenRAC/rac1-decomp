@@ -1070,14 +1070,6 @@ char *spawn_class_3a6_moby(char *src, float *v, char *pos) {
     }
     return m;
 }
-/* NON_MATCHING underwater_ring_update -- src/overlays/shared/vendor_002D7C00.c
- * Best so far: SIZE ours 1288 / retail 1300, checked 2026-10-09.
- * Not built into anything: the retail assembly stays in the source file
- * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
- * What the last attempts found:
- *   Underwater ring update (moby Underwater Ring): an approach test, then a five-state switch on moby[0x20] with a jump
- *   Remaining differences are scheduling and argument placement: a `daddu $a0,$s1` before the set_moby_color ca
- */
 extern float FastVecLength(void *a);
 extern void matrix_from_basis_rows(void *, void *);
 extern void transform_vector(void *, void *, void *);

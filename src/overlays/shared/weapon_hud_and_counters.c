@@ -2784,16 +2784,6 @@ void init_level_runtime_state(void) {
     }
     game_clock_ticks += 0xB4;
 }
-/* NON_MATCHING init_level_item_inventory -- src/overlays/shared/hud_00235960.c
- * Best so far: BYTES 36/572 (93.7% of the bytes match), checked 2026-10-09.
- * Not built into anything: the retail assembly stays in the source file
- * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
- * What the last attempts found:
- *   init_level_item_inventory: vendor stock init. If g_current_level_index >= 19 it fills two 0x25-byte flag arrays
- * with 1, sets seve
- *   Best candidate p7.c: schedule identical to retail (source order bytes, then ints 4..0x18, then the 0x1C store 
- *   Would unblock: making the int-constant pseudos rank before the byte-constant pseudos without changing the sche
- */
 extern unsigned char vendor_stock[] MACRO_ADDR;
 
 extern void append_level_item_if_absent(int idx);

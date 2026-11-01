@@ -73,20 +73,6 @@ struct AmmoCollectVars {
     f32 rise_speed; /* 0x24 */
 };
 
-/* NON_MATCHING doom_bot_update -- src/overlays/shared/vendor_002C12B0.c
- * Best so far: BYTES 12/5996 (99.8% of the bytes match), checked 2026-10-19.
- * Not built into anything: the retail assembly stays in the source file
- * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
- * What the last attempts found:
- *   f12,f15,a0,f13,a1,f14: only the a0/a1 swap is left, but then the two arms are not cross-jumped (SIZE 6096/5996
- *   cross-jump does not run on identical post-reload tails here).
- *   - No effect (same 12 bytes): temps for k/d/m in all 6 orders (w10-15), reversed prototype order (w5), directio
- *   (SIZE), a pointer local for &turn_velocity (x1, w22), &data->target for BFED0 (x2), hero first (x4: worse),
- *   int return types for MobySpringTurn / BFED0 (y1-y3). BFED0 arg as moby->data (w4) gives a0,f15,a1,f13,f12 + an lw.
- *   - sched1 orders the arg moves f12,a0,a1 (emission order); retail needs a1 before a0 AND no WAW boost on a0.
- *   Remaining: the 3-word order difference. Needs a source shape where BFED0's `$4=$21` is not in the same sched2 
- *   as spring's `$4=$20` yet the arms still merge, and a1 is emitted before a0.
- */
 typedef union {
     float f[4];
     struct {
