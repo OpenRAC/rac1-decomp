@@ -729,13 +729,13 @@ void initialize_moby_transform_history(int a, struct TransformHistory *b) {
         b->head = 0;
     }
 }
-extern struct Moby *CreateMoby_m(int) __asm__("func_0020D348");
+extern struct Moby *func_0020D348(int);
 
 /* adds a spawned copy of an object to the owner's list (up to 4) */
 void create_moby_transform_history_entry(struct TransformHistory *o, int a, int b) {
     if (o->n != 4) {
         if (b < 9) {
-            Moby *m = CreateMoby_m(o->src->oclass);
+            Moby *m = CreateMoby(o->src->oclass);
             if (m != 0) {
                 m->draw_dist = o->src->draw_dist;
                 m->spawn_frame = o->src->spawn_frame;
@@ -755,7 +755,7 @@ void create_moby_transform_history_entry(struct TransformHistory *o, int a, int 
     }
 }
 extern void clear_moby_transform_history(struct TransformHistory *o);
-extern void update_moby_animation_state_a(void *) __asm__("func_0020D6D0");
+extern void func_0020D6D0(void *);
 extern void moby_build_matrix(void *);
 
 /* Pushes the source object's transforms into an 8-entry ring and replays them into the trailing objects, ending them
@@ -788,7 +788,7 @@ void update_moby_transform_history(struct TransformHistory *s, int dec) {
             o->frame = s->src->frame;
             o->prev_frame = s->src->prev_frame;
             o->anim_time = s->src->anim_time;
-            update_moby_animation_state_a(o);
+            update_moby_animation_state(o);
             qcopy(&o->pos, &s->pos[k]);
             qcopy(&o->rot, &s->rot[k]);
             moby_build_matrix(o);
@@ -1211,12 +1211,12 @@ void cutscene_set_camera_target(u8 *m) {
         }
     }
 }
-extern unsigned char draw_map51_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
+extern unsigned char D_0015EEB4[4] MACRO_ADDR;
 
 /* Sets a moby's three float fields to x, running its setup call first when it has a flag byte; without the global flag
    only runs DetachManipulator on a flagged moby. */
 void Manipulator_ApplyScale(float x, int a, int b, struct ManipState *m) {
-    if (draw_map51_m[3] != 0) {
+    if (draw_map51[3] != 0) {
         if (m->attached == 0) {
             AttachManipulator(a, b, m);
         }
@@ -1359,7 +1359,7 @@ extern void rand_vec(float *, float, float);
 /* Spawns a break-effect fragment moby of class cls from src, and initialises its motion data. */
 void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float *v10, float *v11, float scale,
                          float *v12) {
-    Moby *m = (Moby *)((char *)CreateMoby_m(cls));
+    Moby *m = (Moby *)((char *)CreateMoby(cls));
     struct BreakFragmentVars *d;
     float t[4];
     float r, f21, k, k2;
@@ -1420,8 +1420,8 @@ void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int 
 }
 extern int timed_hud_frames_left MACRO_ADDR;
 extern int timed_hud_visible MACRO_ADDR;
-extern short timed_hud_handle_g __asm__("D_L00_00161F04");
-extern short timed_hud_visibility_gate_g __asm__("D_L00_00161F08");
+extern short D_L00_00161F04;
+extern short D_L00_00161F08;
 extern int queue_animation_update(int, int, void *, void *, void *, int, int);
 extern void draw_uniform_size_hud_stars(void);
 extern void DefaultVtbl_DeleteMoby(void);
@@ -1435,13 +1435,13 @@ void update_timed_hud_visibility(void) {
             timed_hud_visible = 0;
         }
     }
-    if (timed_hud_visible == 0 || (*(int *)&timed_hud_visibility_gate_g) == 0) {
-        (*(int *)&timed_hud_handle_g) = -1;
-    } else if ((*(int *)&timed_hud_handle_g) == -1) {
-        (*(int *)&timed_hud_handle_g) =
+    if (timed_hud_visible == 0 || (*(int *)&timed_hud_visibility_gate) == 0) {
+        (*(int *)&timed_hud_handle) = -1;
+    } else if ((*(int *)&timed_hud_handle) == -1) {
+        (*(int *)&timed_hud_handle) =
             queue_animation_update(0xC, 0, (void *)((char *)draw_uniform_size_hud_stars + 0x340),
                                    DefaultVtbl_DeleteMoby, draw_hud_text_panel, 0, 0);
     } else {
-        hud_keep_visible((*(int *)&timed_hud_handle_g), 0xA);
+        hud_keep_visible((*(int *)&timed_hud_handle), 0xA);
     }
 }

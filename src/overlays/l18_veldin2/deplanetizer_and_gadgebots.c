@@ -826,7 +826,7 @@ void update_moby_visibility_and_half_turn(char *moby) {
 }
 extern void FastVecSub(void *, void *, void *);
 extern void update_entity_matrix(char *a, void *b, void *c, void *d);
-extern char *CreateMoby_m(int) __asm__("func_0020D348");
+extern char *func_0020D348(int);
 extern void moby_build_matrix(void *);
 
 /* updates a moby that drags a child moby along with it */
@@ -844,7 +844,7 @@ void update_moby_transform_and_child(char *moby) {
             break;
     }
     if (((Moby *)moby)->command != 0 && data->has_child_class != 0 && *(int *)&data->child == 0) {
-        char *c = CreateMoby_m(0x764);
+        char *c = CreateMoby(0x764);
         data->child = c;
         if (c != 0) {
             *(unsigned short *)(c + 0x32) = *(unsigned short *)&((Moby *)moby)->draw_dist;
@@ -1381,18 +1381,18 @@ typedef struct {
     float uv[4][2];
     unsigned long a, b, c, d;
 } Pk;
-extern short gadgebot_launch_glow_blend_minuend_selector_r __asm__("D_L18_001626BC");
-extern short gadgebot_launch_glow_blend_subtrahend_selector_r __asm__("D_L18_001626C0");
-extern short gadgebot_launch_glow_blend_alpha_factor_selector_r __asm__("D_L18_001626C4");
-extern short gadgebot_launch_glow_blend_addend_selector_r __asm__("D_L18_001626C8");
-extern short gadgebot_launch_glow_tint_start_r __asm__("D_L18_001626CC");
-extern short gadgebot_launch_glow_tint_end_r __asm__("D_L18_001626D0");
-extern short gadgebot_launch_glow_texture_index_r __asm__("D_L18_001626D4");
-extern short gadgebot_launch_glow_z_offset_r __asm__("D_L18_001626D8");
-extern short gadgebot_launch_glow_vertical_scale_adjustment_r __asm__("D_L18_001626DC");
-extern short gadgebot_launch_glow_horizontal_scale_adjustment_r __asm__("D_L18_001626E0");
+extern short D_L18_001626BC;
+extern short D_L18_001626C0;
+extern short D_L18_001626C4;
+extern short D_L18_001626C8;
+extern short D_L18_001626CC;
+extern short D_L18_001626D0;
+extern short D_L18_001626D4;
+extern short D_L18_001626D8;
+extern short D_L18_001626DC;
+extern short D_L18_001626E0;
 extern char veldin2_camera_pos_r[] __asm__("D_L18_00167840");
-extern float gadgebot_launch_glow_uvs_r[4][2] __asm__("D_L18_001EFF90");
+extern float D_L18_001EFF90[4][2];
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern void FastVecCross_r(void *, void *, void *) __asm__("func_001F9CA0");
@@ -1412,10 +1412,10 @@ void func_L18_002FDD20_r(struct Moby *m) {
     int c;
     int i;
     float *p;
-    h = d->glow + 1.0f + (*(float *)&gadgebot_launch_glow_vertical_scale_adjustment_r);
-    w = 1.0f - d->glow + (*(float *)&gadgebot_launch_glow_horizontal_scale_adjustment_r);
+    h = d->glow + 1.0f + (*(float *)&gadgebot_launch_glow_vertical_scale_adjustment);
+    w = 1.0f - d->glow + (*(float *)&gadgebot_launch_glow_horizontal_scale_adjustment);
     qcopy(mat[3], &m->pos);
-    mat[3][2] -= (*(float *)&gadgebot_launch_glow_z_offset_r);
+    mat[3][2] -= (*(float *)&gadgebot_launch_glow_z_offset);
     clear_u64_value_r(mat[2]);
     mat[2][2] = h;
     FastVecSub_r(mat[0], veldin2_camera_pos_r, &m->pos);
@@ -1423,18 +1423,17 @@ void func_L18_002FDD20_r(struct Moby *m) {
     FastVecCross_r(mat[0], mat[1], mat[2]);
     vec_scale_to_length_r(mat[0], mat[0], w);
     vec_scale_to_length_r(mat[1], mat[1], w);
-    pk.b = GetEffectTex_r((*(int *)&gadgebot_launch_glow_texture_index_r));
+    pk.b = GetEffectTex_r((*(int *)&gadgebot_launch_glow_texture_index));
     pk.c = 0x0000FF9000000260ULL;
     pk.a = 0;
-    pk.d = (unsigned long)(*(int *)&gadgebot_launch_glow_blend_minuend_selector_r) |
-           ((unsigned long)(*(int *)&gadgebot_launch_glow_blend_subtrahend_selector_r) << 2) |
-           ((unsigned long)(*(int *)&gadgebot_launch_glow_blend_alpha_factor_selector_r) << 4) |
-           ((unsigned long)(*(int *)&gadgebot_launch_glow_blend_addend_selector_r) << 6) | 0x8000000000ULL;
-    c = FastTweenColor_r((*(int *)&gadgebot_launch_glow_tint_start_r), (*(int *)&gadgebot_launch_glow_tint_end_r),
-                         d->glow);
+    pk.d = (unsigned long)(*(int *)&gadgebot_launch_glow_blend_minuend_selector) |
+           ((unsigned long)(*(int *)&gadgebot_launch_glow_blend_subtrahend_selector) << 2) |
+           ((unsigned long)(*(int *)&gadgebot_launch_glow_blend_alpha_factor_selector) << 4) |
+           ((unsigned long)(*(int *)&gadgebot_launch_glow_blend_addend_selector) << 6) | 0x8000000000ULL;
+    c = FastTweenColor_r((*(int *)&gadgebot_launch_glow_tint_start), (*(int *)&gadgebot_launch_glow_tint_end), d->glow);
     for (i = 0; i < 4; i++) {
-        pk.uv[i][0] = gadgebot_launch_glow_uvs_r[i][0];
-        pk.uv[i][1] = gadgebot_launch_glow_uvs_r[i][1];
+        pk.uv[i][0] = gadgebot_launch_glow_uvs[i][0];
+        pk.uv[i][1] = gadgebot_launch_glow_uvs[i][1];
         p = pk.m[i];
         clear_u64_value_r(p);
         if (i & 1)
@@ -1475,13 +1474,13 @@ void draw_group_gadgebot_1906_joint_glows(unsigned char *moby) {
         }
     }
 }
-extern int process_moby_suck_cannon_suction_pos(void *, void *, void *, float) __asm__("func_L00_002DCDA8");
+extern int func_L00_002DCDA8(void *, void *, void *, float);
 /* Runs process_moby_suck_cannon_suction on the moby and switches state 7 accordingly; returns its result. */
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
    calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as
    they came (retail touches none of a1, a2 and $f12 before its call). */
 int gadgebot_1906_hit_check(char *a, void *pos, void *target, float h) {
-    int r = process_moby_suck_cannon_suction_pos(a, pos, target, h);
+    int r = process_moby_suck_cannon_suction(a, pos, target, h);
     if (r == 0) {
         if (*(unsigned char *)(a + 0x20) == 7)
             a[0x20] = 2;

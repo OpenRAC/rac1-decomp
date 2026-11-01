@@ -2643,17 +2643,17 @@ void update_hero_collision_capsule_dimensions(void) {
 }
 #include "structs/pad.h"
 extern Hero D_0013F450_211D28 __asm__("D_0013F450");
-extern struct PadState g_controller_state_r __asm__("D_0013CA40");
-extern char resolve_hero_gravity_mode_a(void) __asm__("func_L00_00233CC0");
+extern struct PadState D_0013CA40;
+extern char func_L00_00233CC0(void);
 extern float get_capped_hero_stick_magnitude_a(void) __asm__("func_L00_00211EE8");
 extern float vec_length_xy_a(void *) __asm__("func_001F9CE8");
-extern void hero_update_movement_a(void) __asm__("func_L00_002180F8");
+extern void func_L00_002180F8(void);
 extern void euler_to_matrix_a(void *, void *) __asm__("func_001FA218");
-extern void set_identity_matrix_a(void *) __asm__("func_001FA190");
-extern void matrix_from_basis_rows_a(void *, void *) __asm__("func_001FA4A0");
+extern void func_001FA190(void *);
+extern void func_001FA4A0(void *, void *);
 extern void update_hero_collision_capsule_dimensions_a(void) __asm__("func_L00_00211A38");
-extern void update_hero_motion_and_collision_probes_a(void) __asm__("func_L00_00221A98");
-extern void update_hero_timers_and_reach_state_a(void) __asm__("func_L00_00221D50");
+extern void func_L00_00221A98(void);
+extern void func_L00_00221D50(void);
 
 /* Hero per-frame input update: the stick axes from the pad (the d-pad bits stand in below 0.25), the
    voice and input history rings, then the hero's matrices. */
@@ -2664,13 +2664,13 @@ void hero_update(void) {
     int l2;
     int r2;
 
-    D_0013F450_211D28.gravity_mode = resolve_hero_gravity_mode_a();
+    D_0013F450_211D28.gravity_mode = resolve_hero_gravity_mode();
     D_0013F450_211D28.stick_magnitude = get_capped_hero_stick_magnitude_a();
     D_0013F450_211D28.unk240 = 0;
-    D_0013F450_211D28.stick_x = g_controller_state_r.analog[2];
-    D_0013F450_211D28.stick_y = g_controller_state_r.analog[3];
+    D_0013F450_211D28.stick_x = g_controller_state.analog[2];
+    D_0013F450_211D28.stick_y = g_controller_state.analog[3];
     if (vec_length_xy_a(&D_0013F450_211D28.stick_x) < 0.25f) {
-        raw = g_controller_state_r.raw_held;
+        raw = g_controller_state.raw_held;
         l = (raw >> 13) & 1;
         r = (raw >> 15) & 1;
         r = l - r;
@@ -2680,7 +2680,7 @@ void hero_update(void) {
         r2 = l2 - r2;
         D_0013F450_211D28.stick_y = (float)r2;
     }
-    hero_update_movement_a();
+    hero_update_movement();
     D_0013F450_211D28.yaw_history[D_0013F450_211D28.yaw_history_index] = D_0013F450_211D28.motion.rot.f[2];
     D_0013F450_211D28.yaw_history_index = (D_0013F450_211D28.yaw_history_index + 1) % 32;
     D_0013F450_211D28.yaw_ring_count = D_0013F450_211D28.yaw_ring_count + 1;
@@ -2694,11 +2694,11 @@ void hero_update(void) {
         D_0013F450_211D28.pos_history_count = 0x20;
     }
     euler_to_matrix_a(&D_0013F450_211D28, &D_0013F450_211D28.motion.rot);
-    set_identity_matrix_a(D_0013F450_211D28.inv_rot_matrix);
-    matrix_from_basis_rows_a(D_0013F450_211D28.inv_rot_matrix, &D_0013F450_211D28);
+    set_identity_matrix(D_0013F450_211D28.inv_rot_matrix);
+    matrix_from_basis_rows(D_0013F450_211D28.inv_rot_matrix, &D_0013F450_211D28);
     update_hero_collision_capsule_dimensions_a();
-    update_hero_motion_and_collision_probes_a();
-    update_hero_timers_and_reach_state_a();
+    update_hero_motion_and_collision_probes();
+    update_hero_timers_and_reach_state();
 }
 extern float vec_length_xy(void *);
 

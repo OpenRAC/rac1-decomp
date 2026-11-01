@@ -306,7 +306,7 @@ extern float FastSin(float);
 extern float FastVecDist_update(void *, void *) __asm__("func_001F9D10");
 extern int Sound_IsPlaying(void *, int);
 extern char hero_globals_base[];
-extern unsigned char draw_map51_update[4] __asm__("D_0015EEB4") MACRO_ADDR;
+extern unsigned char D_0015EEB4[4] MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
@@ -334,7 +334,7 @@ void blarg_elite_commando_update(char *m) {
     } else {
         qcopy(target, owner + 0x10);
     }
-    if (draw_map51_update[3])
+    if (draw_map51[3])
         manipulator_set_scale(d->joints, 2.5f);
     switch (((unsigned char *)m)[0x20]) {
         case 0:
@@ -1349,7 +1349,7 @@ void update_armed_transport_damage_and_targeting(char *m) {
         qcopy(&d->target, player->position);
     }
 }
-extern void SamplePathAt_path42(float, void *, int, void *, void *, int) __asm__("func_00215CA8");
+extern void func_00215CA8(float, void *, int, void *, void *, int);
 extern float FastVecDist_path42(void *, void *) __asm__("func_001F9D10");
 extern float ApproachWithVelocity_path42(float, float, float, float, float *, float *) __asm__("func_00214D88");
 extern short armed_transport_path_accel, armed_transport_max_path_speed;
@@ -1365,7 +1365,7 @@ int advance_armed_transport_along_path(char *m, char *path) {
     d->node_t = progress - (float)index;
     if (index < *(int *)path - 1) {
         position = m + 0x10;
-        SamplePathAt_path42(progress, path, 0, position, m + 0x40, 0);
+        SamplePathAt(progress, path, 0, position, m + 0x40, 0);
         d->base_z = ((Moby *)m)->pos.z;
         speed = 0.0f;
         distance = FastVecDist_path42(position, path + (*(int *)path << 4));

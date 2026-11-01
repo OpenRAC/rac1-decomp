@@ -56,9 +56,9 @@ void videoDecBeginPut(VideoDec *dec, unsigned char **p1, int *n1, unsigned char 
 }
 /* videoDecEndPut(VideoDec *, int size) -- viBufEndPut on the decoder's input buffer;
  * the size in $a1 passes straight through. */
-extern void vibuf_end_put(void *, int) __asm__("func_0023D2E8");
+extern void func_0023D2E8(void *, int);
 void videoDecEndPut(VideoDec *dec, int size) {
-    vibuf_end_put(dec->viBuf, size);
+    viBufEndPut(dec->viBuf, size);
 }
 /* videoDecReset(VideoDec *) -- clears the decoder state. */
 void videoDecReset(VideoDec *dec) {

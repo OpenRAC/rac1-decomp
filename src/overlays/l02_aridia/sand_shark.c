@@ -121,7 +121,7 @@ extern void FastVecScale(void *, void *, float);
 extern float IntToFloat(int);
 extern void FastVecAdd(void *, void *, void *);
 
-extern char *PartType23Spawn__s(void *, float, float, float, int, void *, float, int) __asm__("func_L00_0026DEA0");
+extern char *func_L00_0026DEA0(void *, float, float, float, int, void *, float, int);
 
 extern float sand_shark_dust_rise_speed SDATA(D_L02_00161A64);
 extern float sand_shark_dust_puff_size SDATA(D_L02_00161A6C);
@@ -159,7 +159,7 @@ void emit_sand_shark_dust_puffs_along_segment(void *moby, void *va_, void *vb_, 
         s[0] = randf_sym(0.0f, 0.0025f);
         s[1] = randf_sym(0.0f, 0.0025f);
         s[2] = random_float_between(sand_shark_dust_rise_speed * 0.1f, sand_shark_dust_rise_speed);
-        p = PartType23Spawn__s(tmp, sand_shark_dust_puff_size, 1.0f, sp, r, s, step + fa * 210000.0f, (a << 24) | col);
+        p = PartType23Spawn(tmp, sand_shark_dust_puff_size, 1.0f, sp, r, s, step + fa * 210000.0f, (a << 24) | col);
         if (p != 0) {
             char *q = p + 0x20;
             if (random_integer_below(2) != 0) {
@@ -1291,10 +1291,10 @@ void launch_sand_shark(unsigned char *moby, void *position, float *direction) {
 extern int D_L02_00160058_g SDATA(D_L02_00160058);
 
 // Checks a moby's associated object; sets state 9 and decrements a counter, or restores state 1.
-extern void *store_moby_in_suck_cannon_pt(void *, void *) __asm__("func_L00_002DCFD0");
+extern void *func_L00_002DCFD0(void *, void *);
 
 void *handle_sand_shark_suck_cannon_storage(char *moby, void *v) {
-    void *r = store_moby_in_suck_cannon_pt(moby, v);
+    void *r = store_moby_in_suck_cannon(moby, v);
     if (r) {
         int idx;
         moby[0x20] = 9;
@@ -3404,8 +3404,8 @@ void sandshark_egg_update(char *moby) {
  *   Unblock: the source's exact pointer variables for the scratch vectors. The struct copy of
  * aridia_rocks_debris_colors_r (ldl/
  */
-extern unsigned char menu_item_enabled_9_r __asm__("D_0013D4A5") NOT_SDA;
-extern char aridia_rocks_debris_colors_r[] __asm__("D_L02_00161D60");
+extern unsigned char D_0013D4A5 NOT_SDA;
+extern char D_L02_00161D60[];
 extern short D_L02_00161D54_2E1B58 SDATA(D_L02_00161D54);
 extern short D_L02_00161D58_2E1B58 SDATA(D_L02_00161D58);
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
@@ -3419,11 +3419,9 @@ extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern int rand_range_r(int, int) __asm__("func_L00_00258BC8");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
-extern void spawn_effect_particle_with_target_scalar_r(void *, void *, int, int, float,
-                                                       int) __asm__("func_L00_0026DD70");
+extern void func_L00_0026DD70(void *, void *, int, int, float, int);
 extern int random_integer_below_r(int) __asm__("func_002140B0");
-extern void spawn_debris_moby_r(void *, void *, unsigned int, float, int, float, float, float,
-                                int) __asm__("func_L01_002F9908");
+extern void func_L01_002F9908(void *, void *, unsigned int, float, int, float, float, float, int);
 
 typedef struct {
     int b[3];
@@ -3451,7 +3449,7 @@ void rocks_update(unsigned char *moby) {
     hit_record = MobyGetHitMessage_r(moby, 0x800000, 0);
     switch (((struct Moby *)moby)->state) {
         case ROCKS_INITIALIZE:
-            if (menu_item_enabled_9_r != 0) {
+            if (menu_item_enabled_9 != 0) {
                 DeleteMoby_r(moby);
             } else {
                 ((struct Moby *)moby)->state = ROCKS_WAIT_FOR_HIT;
@@ -3464,7 +3462,7 @@ void rocks_update(unsigned char *moby) {
     }
     if (hit_record == 0)
         return;
-    menu_item_enabled_9_r = 1;
+    menu_item_enabled_9 = 1;
     Moby_PlaySound_r(0, 0, (int)moby);
     for (i = 0; i < 200; i++) {
         *(u128 *)A = 0;
@@ -3486,13 +3484,13 @@ void rocks_update(unsigned char *moby) {
         vec_scale_to_length_r(C, C, k);
         s = random_float_between_r(1.5f, 3.5f) * 210000.0f;
         r = scale_ticks_r(rand_range_r(120, 240));
-        spawn_effect_particle_with_target_scalar_r(A, C, *(int *)&D_L02_00161D54_2E1B58, *(int *)&D_L02_00161D58_2E1B58,
-                                                   s, r);
+        spawn_effect_particle_with_target_scalar(A, C, *(int *)&D_L02_00161D54_2E1B58, *(int *)&D_L02_00161D58_2E1B58,
+                                                 s, r);
     }
 
     j = 49;
     do {
-        *(Int3 *)C = *(Int3 *)aridia_rocks_debris_colors_r;
+        *(Int3 *)C = *(Int3 *)aridia_rocks_debris_colors;
         *(u128 *)B = 0;
         j--;
         B[0] = random_float_between_r(-1.0f, 1.0f);
@@ -3514,7 +3512,7 @@ void rocks_update(unsigned char *moby) {
         pc = (unsigned int *)C + random_integer_below_r(3);
         s = random_float_between_r(0.05f, 0.15f);
         n = rand_range_r(60, 180);
-        spawn_debris_moby_r(B, A, *pc, s, n, 1.0f, 1.0f, 0.75f, 0);
+        spawn_debris_moby(B, A, *pc, s, n, 1.0f, 1.0f, 0.75f, 0);
     } while (j >= 0);
     DeleteMoby_r(moby);
 }

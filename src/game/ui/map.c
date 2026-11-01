@@ -253,7 +253,7 @@ int find_map_entry_slot(int arg0) {
 
 extern unsigned char gHaveMapOMatic NOT_SDA;
 /* The MACRO_ADDR view declared further down, needed here already. */
-extern int *menu_level_indices_m __asm__("D_001602E0") MACRO_ADDR;
+extern int *D_001602E0 MACRO_ADDR;
 
 /* Picks the map to load next: the current map id (level_map_selection+0x224,
    +0x100 when gHaveMapOMatic is set) unless find_map_entry_slot finds it already
@@ -275,7 +275,7 @@ int pick_next_map(void) {
     }
     i = 0;
     if (*(int *)(m + 0x224) < 20) {
-        while (menu_level_indices_m[i] != *(int *)(m + 0x224)) {
+        while (menu_level_indices[i] != *(int *)(m + 0x224)) {
             i++;
         }
     }
@@ -283,8 +283,8 @@ int pick_next_map(void) {
     do {
         int j = i + step;
         if (j >= 0) {
-            if (j < 20 && menu_level_indices_m[j] != 0) {
-                key = menu_level_indices_m[j] + off;
+            if (j < 20 && menu_level_indices[j] != 0) {
+                key = menu_level_indices[j] + off;
                 if (find_map_entry_slot(key) == -1) {
                     return key;
                 }
@@ -300,8 +300,8 @@ int pick_next_map(void) {
 int find_id_in_terminated_table(int arg0) {
     int i;
 
-    for (i = 0; menu_level_indices_m[i] != 0 && i < 20; i++) {
-        if (menu_level_indices_m[i] == arg0) {
+    for (i = 0; menu_level_indices[i] != 0 && i < 20; i++) {
+        if (menu_level_indices[i] == arg0) {
             return i;
         }
     }
@@ -546,16 +546,16 @@ typedef struct {
     s32 y1;
 } MapIconBounds;
 
-extern struct TagPtr map_data_00161000 __asm__("D_00161000") MACRO_ADDR;
-extern struct ScreenOffsets map_data_0013E600 __asm__("D_0013E600");
+extern struct TagPtr D_00161000 MACRO_ADDR;
+extern struct ScreenOffsets D_0013E600;
 extern MapOverlayState map_data_001A01F0 __asm__("D_001A01F0");
-extern Hero map_data_0013F450 __asm__("D_0013F450");
-extern MapTextureTables map_data_0019A4E8 __asm__("D_0019A4E8");
-extern MapIdFlags map_data_0013D6C4[] __asm__("D_0013D6C4");
-extern u16 map_data_001519D2[] __asm__("D_001519D2");
+extern Hero D_0013F450;
+extern MapTextureTables D_0019A4E8;
+extern MapIdFlags D_0013D6C4[];
+extern u16 D_001519D2[];
 extern s32 map_data_0015EE84 __asm__("D_0015EE84") MACRO_ADDR;
 extern s32 map_current_level_205E70 SDATA(D_0015EE84);
-extern u8 map_data_0015EEB4[4] __asm__("D_0015EEB4") MACRO_ADDR;
+extern u8 D_0015EEB4[4] MACRO_ADDR;
 extern s32 map_data_0015FE20 SDATA(D_0015FE20);
 extern f32 map_data_0015FE40 SDATA(D_0015FE40);
 extern f32 map_data_0015FE44 SDATA(D_0015FE44);
@@ -563,27 +563,27 @@ extern f32 map_data_0015FE48 SDATA(D_0015FE48);
 extern f32 map_data_0015FE4C SDATA(D_0015FE4C);
 extern f32 map_data_0015FE50 SDATA(D_0015FE50);
 extern f32 map_data_0015FE54 SDATA(D_0015FE54);
-extern u8 map_data_001E8398[] __asm__("D_001E8398");
+extern u8 D_001E8398[];
 
 extern s32 print_debug_text_centered(s32, s32, s32, u8 *);
-extern void setup_gif_paging(s32) __asm__("func_001F4630");
-extern void do_gif_paging(void) __asm__("func_001F4748");
+extern void func_001F4630(s32);
+extern void func_001F4748(void);
 extern void draw_ui_frame(s32, s32, s32, s32, s32) __asm__("func_001F62C8");
 extern void font_print_window_small(void *, u64, void *, s32);
 extern f32 fast_add_rotations(f32, f32) __asm__("func_001FA748");
-extern f32 fast_subtract_rotations(f32, f32) __asm__("func_001FA790");
+extern f32 func_001FA790(f32, f32);
 extern s32 get_icon_frame(s32, s32) __asm__("func_00200198");
-extern u64 get_frame_texture(s32) __asm__("func_00200248");
+extern u64 func_00200248(s32);
 extern void draw_hud_sprite_subpixel(s32, s32, s32, s32, s32, s32);
 extern void draw_rotated_sprite(f32, f32, f32, f32, f32, s32, s32, u64);
-extern void append_screen_rect_packet(s32, s32, s32, s32, u64, s32) __asm__("func_00201640");
-extern void format_menu_item_text(s32, void *) __asm__("func_00208AB0");
+extern void func_00201640(s32, s32, s32, s32, u64, s32);
+extern void func_00208AB0(s32, void *);
 extern void world_to_map_coords_r(f32 *, f32 *, s32, f32, f32) __asm__("func_00208C38");
 /* EABI places floating and integer arguments in independent register banks. */
 extern void world_to_map_coords_xy_205E70(f32, f32, f32 *, f32 *, s32) __asm__("func_00208C38");
 extern void draw_map_markers(s32, s32, s32, s32);
-extern void vu1_add_g_sregister(s32, s64) __asm__("func_00234C98");
-extern void *map_memset_205E70(void *, s32, u32) __asm__("func_001153FC");
+extern void func_00234C98(s32, s64);
+extern void *func_001153FC(void *, s32, u32);
 
 /* UNK_NoMapAvailable */
 void draw_map_overlay(void) {
@@ -630,11 +630,11 @@ void draw_map_overlay(void) {
     s32 tile_limit;
 
     if (map_data_001A01F0.enabled == 0) {
-        u8 *font = map_data_001E8398;
+        u8 *font = str_no_map_available;
 
-        setup_gif_paging(0);
-        print_debug_text_centered(0x100, (s16)map_data_001519D2[0] >> 1, 0x80909090, font);
-        do_gif_paging();
+        SetupGifPaging(0);
+        print_debug_text_centered(0x100, (s16)occl_cam_param1[0] >> 1, 0x80909090, font);
+        DoGifPaging();
         return;
     }
     if (map_data_001A01F0.selected_map < 0) {
@@ -642,9 +642,9 @@ void draw_map_overlay(void) {
     }
 
     rx0 = 0x1000;
-    setup_gif_paging(0);
+    SetupGifPaging(0);
     ry0 = 0x800;
-    mirror_sign = map_data_0015EEB4[0] ? -1 : 1;
+    mirror_sign = draw_map51[0] ? -1 : 1;
     zoom = map_data_001A01F0.zoom[map_data_001A01F0.selected_map];
     pan_y = zoom * (f32)(map_data_001A01F0.offset_y[map_data_001A01F0.selected_map] >> 15);
     map_extent = zoom * 8192.0f;
@@ -666,40 +666,40 @@ void draw_map_overlay(void) {
     u = ((left_tile_count + right_tile_count) << 9) + 0x2000;
     v = ((top_tile_count + bottom_tile_count) << 9) + 0x2000;
 
-    vu1_add_g_sregister(8, 0);
-    vu1_add_g_sregister(0x47, 0);
-    map_data_00161000.p->tag = 0x10000005;
-    map_data_00161000.p->addr = 0;
-    map_data_00161000.p->vif0 = 0;
-    map_data_00161000.p->vif1 = 0x50000005;
-    map_data_00161000.p++;
-    background_tex0 = get_frame_texture(get_icon_frame(0xE999, map_data_001A01F0.selected_map));
-    packet_words = (u64 *)map_data_00161000.p;
+    VU1_addGSregister(8, 0);
+    VU1_addGSregister(0x47, 0);
+    g_render_packet_cursor.p->tag = 0x10000005;
+    g_render_packet_cursor.p->addr = 0;
+    g_render_packet_cursor.p->vif0 = 0;
+    g_render_packet_cursor.p->vif1 = 0x50000005;
+    g_render_packet_cursor.p++;
+    background_tex0 = GetFrameTex(get_icon_frame(0xE999, map_data_001A01F0.selected_map));
+    packet_words = (u64 *)g_render_packet_cursor.p;
     packet_words[0] = 0x7400000000008001;
     packet_words[1] = 0x5353106;
     packet_words[2] = background_tex0;
     packet_words[3] = 0x156;
     packet_words[4] = 0x80808080;
     packet_words[5] = 0;
-    packet_words[6] = ((x0 + map_data_0013E600.x) - 8) | ((u64)((y0 + map_data_0013E600.y) - 8) << 16) |
-                      ((u64)map_data_001A01F0.z << 32);
+    packet_words[6] =
+        ((x0 + g_screen_extent.x) - 8) | ((u64)((y0 + g_screen_extent.y) - 8) << 16) | ((u64)map_data_001A01F0.z << 32);
     packet_words[7] = u | ((u64)v << 16);
-    packet_words[8] = ((x1 + map_data_0013E600.x) - 8) | ((u64)((y1 + map_data_0013E600.y) - 8) << 16) |
-                      ((u64)map_data_001A01F0.z << 32);
+    packet_words[8] =
+        ((x1 + g_screen_extent.x) - 8) | ((u64)((y1 + g_screen_extent.y) - 8) << 16) | ((u64)map_data_001A01F0.z << 32);
     packet_words[9] = 0;
-    map_data_00161000.p = (struct DmaTag *)((u8 *)map_data_00161000.p + 0x50);
-    vu1_add_g_sregister(8, 5);
-    vu1_add_g_sregister(0x47, 0x60B);
+    g_render_packet_cursor.p = (struct DmaTag *)((u8 *)g_render_packet_cursor.p + 0x50);
+    VU1_addGSregister(8, 5);
+    VU1_addGSregister(0x47, 0x60B);
 
     palette_block = (background_tex0 >> 37) & 0x3FFF;
-    map_data_00161000.p->tag = 0x10000005;
-    map_data_00161000.p->addr = 0;
-    map_data_00161000.p->vif0 = 0;
-    map_data_00161000.p->vif1 = 0x50000005;
+    g_render_packet_cursor.p->tag = 0x10000005;
+    g_render_packet_cursor.p->addr = 0;
+    g_render_packet_cursor.p->vif0 = 0;
+    g_render_packet_cursor.p->vif1 = 0x50000005;
     map_tex0 = (u64)((map_data_001A01F0.texture_address >> 8) | (8 << 14) | (0x13 << 20) | (9 << 26)) | ((u64)9 << 30) |
                ((u64)1 << 34) | ((u64)palette_block << 37) | ((long)0x8000000000000000ULL);
-    tag = map_data_00161000.p;
-    map_data_00161000.p = tag + 1;
+    tag = g_render_packet_cursor.p;
+    g_render_packet_cursor.p = tag + 1;
     packet_words = (u64 *)(tag + 1);
     packet_words[0] = 0x7400000000008001;
     packet_words[1] = 0x5353106;
@@ -707,14 +707,14 @@ void draw_map_overlay(void) {
     packet_words[3] = 0x156;
     packet_words[4] = 0x80808080;
     packet_words[5] = 0;
-    packet_words[6] = ((rx0 + map_data_0013E600.x) - 8) | ((u64)((ry0 + map_data_0013E600.y) - 8) << 16) |
+    packet_words[6] = ((rx0 + g_screen_extent.x) - 8) | ((u64)((ry0 + g_screen_extent.y) - 8) << 16) |
                       ((u64)map_data_001A01F0.z << 32);
     packet_words[7] = 0x20002000;
-    packet_words[8] = ((rx1 + map_data_0013E600.x) - 8) | ((u64)((ry1 + map_data_0013E600.y) - 8) << 16) |
+    packet_words[8] = ((rx1 + g_screen_extent.x) - 8) | ((u64)((ry1 + g_screen_extent.y) - 8) << 16) |
                       ((u64)map_data_001A01F0.z << 32);
     packet_words[9] = 0;
-    map_data_00161000.p = (struct DmaTag *)((u8 *)map_data_00161000.p + 0x50);
-    vu1_add_g_sregister(0x47, 0x360B);
+    g_render_packet_cursor.p = (struct DmaTag *)((u8 *)g_render_packet_cursor.p + 0x50);
+    VU1_addGSregister(0x47, 0x360B);
 
     if (map_data_001A01F0.show_markers != 0 && map_data_001A01F0.marks_enabled != 0) {
         dx = rx1 - rx0;
@@ -724,8 +724,8 @@ void draw_map_overlay(void) {
             if (cell >= 0) {
                 cell_x = cell % 16;
                 cell_y = cell / 16;
-                append_screen_rect_packet(rx0 + cell_x * dx / 16, ry0 + cell_y * dy / 16, rx0 + (cell_x + 1) * dx / 16,
-                                          ry0 + (cell_y + 1) * dy / 16, 0x20000000, 1);
+                draw_hud_rect_blended(rx0 + cell_x * dx / 16, ry0 + cell_y * dy / 16, rx0 + (cell_x + 1) * dx / 16,
+                                      ry0 + (cell_y + 1) * dy / 16, 0x20000000, 1);
             }
         }
     }
@@ -756,7 +756,7 @@ void draw_map_overlay(void) {
                     image_index = get_icon_frame(texture_id, map_data_001A01F0.icons[i].frame_index);
                     icon_center_x = (f32)rx0 + map_data_001A01F0.icons[i].x * (f32)(rx1 - rx0);
                     icon_center_y = (f32)ry0 + map_data_001A01F0.icons[i].y * (f32)(ry1 - ry0);
-                    texture_info = &map_data_0019A4E8.textures[map_data_0019A4E8.references[image_index].image_index];
+                    texture_info = &hud_state.textures[hud_state.references[image_index].image_index];
                     if (map_data_001A01F0.icons[i].flags & 0x200) {
                         s = map_data_001A01F0.zoom[map_data_001A01F0.selected_map];
                     } else {
@@ -853,9 +853,9 @@ void draw_map_overlay(void) {
                         sprite_word = map_data_001A01F0.icons[i].frame_index;
                         if (id != 0) {
                             if (map_data_001A01F0.icons[i].flags & 0x40) {
-                                append_screen_rect_packet(icon_bounds[i].x0 - 0x20, icon_bounds[i].y0 - 0x20,
-                                                          icon_bounds[i].x1 + 0x20, icon_bounds[i].y1 + 0x20,
-                                                          0x80000000, 1);
+                                draw_hud_rect_blended(icon_bounds[i].x0 - 0x20, icon_bounds[i].y0 - 0x20,
+                                                      icon_bounds[i].x1 + 0x20, icon_bounds[i].y1 + 0x20, 0x80000000,
+                                                      1);
                             }
                             if (map_data_001A01F0.icons[i].flags & 0x200) {
                                 s = map_data_001A01F0.zoom[map_data_001A01F0.selected_map];
@@ -872,7 +872,7 @@ void draw_map_overlay(void) {
                                     texture_width = 0x40;
                                     sprite_width = s * map_data_0015FE48;
                                     sprite_height = s * map_data_0015FE4C;
-                                    if (map_data_0013D6C4[map_data_001A01F0.icons[i].id].flags & 2) {
+                                    if (map_icon_flags_table[map_data_001A01F0.icons[i].id].flags & 2) {
                                         sprite_word++;
                                     }
                                 }
@@ -881,7 +881,7 @@ void draw_map_overlay(void) {
                                     texture_width = 0x40;
                                     sprite_width = s * map_data_0015FE40;
                                     sprite_height = s * map_data_0015FE44;
-                                    if (map_data_0013D6C4[map_data_001A01F0.icons[i].id].flags & 2) {
+                                    if (map_icon_flags_table[map_data_001A01F0.icons[i].id].flags & 2) {
                                         sprite_word++;
                                     }
                                 }
@@ -893,8 +893,7 @@ void draw_map_overlay(void) {
                                 center_x = (f32)(icon_bounds[i].x0 + icon_bounds[i].x1) * 0.5f;
                                 center_y = (f32)(icon_bounds[i].y0 + icon_bounds[i].y1) * 0.5f;
                                 draw_rotated_sprite(center_x, center_y, sprite_width, sprite_height, angle,
-                                                    texture_width, 0x20,
-                                                    get_frame_texture(get_icon_frame(id, sprite_word)));
+                                                    texture_width, 0x20, GetFrameTex(get_icon_frame(id, sprite_word)));
                             } else {
                                 draw_hud_sprite_subpixel(get_icon_frame(id, sprite_word), icon_bounds[i].x0,
                                                          icon_bounds[i].y0, icon_bounds[i].x1 - icon_bounds[i].x0,
@@ -924,8 +923,8 @@ void draw_map_overlay(void) {
                                     }
                                 }
                                 draw_ui_frame(label_y, label_y + label_height, label_x, label_x + label_width, 0x40);
-                                format_menu_item_text(i, &label_buffer);
-                                map_memset_205E70(&text_window, 0, sizeof(text_window));
+                                FormatMenuItemText(i, &label_buffer);
+                                libc_memset(&text_window, 0, sizeof(text_window));
                                 text_window.s[1] = label_y + label_height;
                                 text_window.s[3] = label_x + label_width;
                                 text_window.s[4] = label_x + label_width / 2;
@@ -955,37 +954,37 @@ void draw_map_overlay(void) {
 
             image_index = get_icon_frame(0xE99A, 5);
             s = ((m->zoom[m->selected_map] * 4.0f + 10.0f) * 0.75f) / 13.0f;
-            angle = map_data_0013F450.motion.rot.f[2];
-            flip = map_data_0013F450.state.control_mode == 0xF;
+            angle = g_hero.motion.rot.f[2];
+            flip = g_hero.state.control_mode == 0xF;
             if (flip) {
                 angle = fast_add_rotations(angle, 1.5707964f);
             }
             if (map_data_0015FE20 != 0) {
                 world_to_map_coords_r(&label_buffer.f[0], &label_buffer.f[1], map_data_0015EE84 + 100,
-                                      map_data_0013F450.motion.pos.f[0], map_data_0013F450.motion.pos.f[1]);
+                                      g_hero.motion.pos.f[0], g_hero.motion.pos.f[1]);
                 angle = fast_add_rotations(angle, 1.5707964f);
             } else {
-                world_to_map_coords_xy_205E70(map_data_0013F450.motion.pos.f[0], map_data_0013F450.motion.pos.f[1],
-                                              &label_buffer.f[0], &label_buffer.f[1], map_current_level_205E70);
+                world_to_map_coords_xy_205E70(g_hero.motion.pos.f[0], g_hero.motion.pos.f[1], &label_buffer.f[0],
+                                              &label_buffer.f[1], map_current_level_205E70);
             }
             label_buffer.f[0] = (f32)rx0 + label_buffer.f[0] * (f32)(rx1 - rx0);
             label_buffer.f[1] = (f32)ry0 + label_buffer.f[1] * (f32)(ry1 - ry0);
-            if (map_data_0015EEB4[0] != 0) {
-                angle = fast_subtract_rotations(-fast_add_rotations(angle, 1.5707964f), 1.5707964f);
+            if (draw_map51[0] != 0) {
+                angle = FastSubRots(-fast_add_rotations(angle, 1.5707964f), 1.5707964f);
             }
             {
                 f32 sz = s * 256.0f;
 
                 draw_rotated_sprite(label_buffer.f[0], label_buffer.f[1], sz, sz, angle, 0x40, 0x40,
-                                    get_frame_texture(image_index));
+                                    GetFrameTex(image_index));
             }
         }
     }
-    do_gif_paging();
+    DoGifPaging();
     if (map_data_001A01F0.grid != 0) {
-        setup_gif_paging(0);
+        SetupGifPaging(0);
         draw_map_markers(rx0, ry0, rx1, ry1);
-        do_gif_paging();
+        DoGifPaging();
     }
 }
 

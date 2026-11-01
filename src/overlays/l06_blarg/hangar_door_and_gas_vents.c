@@ -802,15 +802,15 @@ typedef struct {
     struct Moby *p88;
 } Slot;
 extern unsigned char hero_globals_base_r[] __asm__("D_0013E633");
-extern char voice_pool_r[] __asm__("D_0013E650");
-extern unsigned char gHaveMorphORay_r[] __asm__("D_0013D5DD");
-extern unsigned char saved_mission_state_r[] __asm__("D_0014C150");
+extern char D_0013E650[];
+extern unsigned char D_0013D5DD[];
+extern unsigned char D_0014C150[];
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 extern char *blarg_scene_points_r __asm__("D_L06_0016016C") MACRO_ADDR;
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern int level_game_mode_q_r __asm__("D_L06_0015F6A8") MACRO_ADDR;
-extern float blarg_fade_level_r __asm__("D_L06_0015F4FC") MACRO_ADDR;
+extern float D_L06_0015F4FC MACRO_ADDR;
 extern float D_L06_00161E08_2F69D0 SDATA(D_L06_00161E08);
 extern float D_L06_00161E0C_2F69D0 SDATA(D_L06_00161E0C);
 extern float D_L06_00161E10_2F69D0 SDATA(D_L06_00161E10);
@@ -846,7 +846,7 @@ extern void enter_hero_idle_state_for_current_vehicle_mode_r(void) __asm__("func
 extern void CameraScript2_r(int) __asm__("func_L00_002EC0C8");
 extern int Help_Request_r(int, int) __asm__("func_L00_00203F20");
 extern void ShowBanner_r(int, int) __asm__("func_L00_00264DB8");
-extern int memcard_Save_r(int, int) __asm__("func_0020BFC8");
+extern int func_0020BFC8(int, int);
 
 /* Level 6 drawbridge (class 1028): spawns its two rows of deck pieces, waits for the hero's switch, then
    lowers through three hinge stages (drawbridge_slide/0C/10) while the camera follows the path nodes. */
@@ -858,7 +858,7 @@ void update_drawbridge(Moby *m) {
 
     switch (m->state) {
         case 0: {
-            int t = saved_mission_state_r[m->mission + (g_current_level_index_r << 4)];
+            int t = saved_mission_state[m->mission + (g_current_level_index_r << 4)];
             if (t == 0xFF) {
                 m->state = 6;
                 D_L06_00161E08_2F69D0 = 20.0f;
@@ -903,8 +903,8 @@ void update_drawbridge(Moby *m) {
             break;
         }
         case 1:
-            if (hero_globals_base_r[0x2EC1] == 1 && gHaveMorphORay_r[1] != 0 && level_game_mode_q_r == 0) {
-                blarg_fade_level_r = 1.0f;
+            if (hero_globals_base_r[0x2EC1] == 1 && gHaveMorphORay[1] != 0 && level_game_mode_q_r == 0) {
+                blarg_fade_level = 1.0f;
                 m->state = 3;
                 s->f6C = -0.01f;
             }
@@ -914,7 +914,7 @@ void update_drawbridge(Moby *m) {
         case 3:
             old = s->f6C;
             ApproachValue_r(&s->f6C, 1.0f, 1.0f / scale_ticks_r(20));
-            blarg_fade_level_r = 1.0f - FastAbsF_r(s->f6C);
+            blarg_fade_level = 1.0f - FastAbsF_r(s->f6C);
             if (old < 0.0f && 0.0f <= s->f6C) {
                 Hero_ResetToPosition_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
                                        &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.rot, 0x72, 1);
@@ -949,8 +949,8 @@ void update_drawbridge(Moby *m) {
             k = m->command;
             if (20.0f <= D_L06_00161E08_2F69D0) {
                 if (Sound_IsPlaying_r(s->c[9], k) != 0) {
-                    if (k != -1 && ((Slot *)(voice_pool_r + k * 0x70))->p88 == s->c[9] &&
-                        ((Slot *)(voice_pool_r + k * 0x70))->b74 != 0) {
+                    if (k != -1 && ((Slot *)(voice_pool + k * 0x70))->p88 == s->c[9] &&
+                        ((Slot *)(voice_pool + k * 0x70))->b74 != 0) {
                         Sound_StopSlot_r(k);
                     }
                     k = -1;
@@ -984,7 +984,7 @@ void update_drawbridge(Moby *m) {
         case 5:
             old = s->f6C;
             ApproachValue_r(&s->f6C, 1.0f, 1.0f / scale_ticks_r(20));
-            blarg_fade_level_r = 1.0f - FastAbsF_r(s->f6C);
+            blarg_fade_level = 1.0f - FastAbsF_r(s->f6C);
             if (old < 0.0f && 0.0f <= s->f6C) {
                 enter_hero_idle_state_for_current_vehicle_mode_r();
                 CameraScript2_r(3);
@@ -992,7 +992,7 @@ void update_drawbridge(Moby *m) {
                 m->state = 6;
                 Help_Request_r(0x1776, 0x2D);
                 ShowBanner_r(0x177C, -1);
-                memcard_Save_r(0, -1);
+                memcard_Save(0, -1);
             }
             break;
         case 6:
@@ -1630,17 +1630,17 @@ typedef struct {
 extern void update_alien_snapper_hit_response_and_targeting_r(Moby *) __asm__("func_L06_002FA618");
 extern void Manipulator_ApplyScale_r(float, Moby *, int, void *) __asm__("func_L00_00264B40");
 extern void set_ground_height_band_r(Moby *) __asm__("func_L00_0025B178");
-extern void MoveCtl_Init_r(void *) __asm__("func_L01_0026E8E0");
+extern void func_L01_0026E8E0(void *);
 extern void MobyBlendAnimation_r(Moby *, int, int, int) __asm__("func_00213DE0");
 extern void transition_moby_group_state_1_to_2_r(Moby *) __asm__("func_L06_002FAAC8");
-extern float jump_speed_4318_r(void *, void *, void *, float, float) __asm__("func_L00_0025BC48");
+extern float func_L00_0025BC48(void *, void *, void *, float, float);
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
 extern void InitKnockback_r2(Moby *, void *, int, int, int, float) __asm__("func_L00_0025D5B0");
-extern int mine_fall_r(Moby *, void *) __asm__("func_L00_0025D6F0");
-extern void MobySpringTurn_r(Moby *, float, float *, float, float, float) __asm__("func_L00_002592B0");
+extern int func_L00_0025D6F0(Moby *, void *);
+extern void func_L00_002592B0(Moby *, float, float *, float, float, float);
 extern float ApproachValue_r2(float *, float, float) __asm__("func_00214D28");
 extern float compute_alien_snapper_target_gap_angle_r(Moby *) __asm__("func_L06_002FAB28");
-extern int move_w_r(Moby *, void *, void *, void *, float) __asm__("func_L00_00259B88");
+extern int func_L00_00259B88(Moby *, void *, void *, void *, float);
 extern void resolve_point_path_segment_xy_clearance_r(float, int, void *, void *) __asm__("func_L00_00262DF0");
 extern void resolve_point_path_segment_xy_clearance_r2(int, void *, void *, float) __asm__("func_L00_00262DF0");
 extern int SegmentCrossPolyline_r(int, void *, void *, void *) __asm__("func_L00_00262BC0");
@@ -1648,7 +1648,7 @@ extern float FastAbsF_r2(float) __asm__("func_001F9B88");
 extern float MobyGetFrameValue_r(Moby *) __asm__("func_0020D830");
 extern void Moby_GetJointWorldPos_r(Moby *, int, void *) __asm__("func_L00_00250800");
 extern int coll_sphere_mobys_r(float, void *, int, Moby *, void *) __asm__("func_L00_001F2BE8");
-extern int IsPointInPolygon_r(void *, void *, int) __asm__("func_L00_0025A778");
+extern int func_L00_0025A778(void *, void *, int);
 extern void spawn_color_swapped_explosion_burst_r(Moby *, void *, int, float, float) __asm__("func_L00_00260460");
 extern void spawn_moby_break_fragments_r(Moby *, int, int, int, int, int, int) __asm__("func_L00_00264EA8");
 extern float SteerAngleWithVelocity_r(float *, float, float *, float, float, float) __asm__("func_L00_0025CE58");
@@ -1703,7 +1703,7 @@ void alien_snapper_update(Moby *moby) {
             moby->flags |= 0x5000;
             qcopy(&v->home, &moby->pos);
             v->f1C4 = random_float_between(0.0f, 1.0f);
-            MoveCtl_Init_r(&v->fD0);
+            MoveCtl_Init(&v->fD0);
             v->fDC = 2.0f;
             v->fD8 = 2.0f;
             v->fD0 = truncate_float_to_s32(D_L06_00161F40_91A8 * 1024.0f);
@@ -1798,7 +1798,7 @@ void alien_snapper_update(Moby *moby) {
                         moby->state = 5;
                         qcopy(&v->home, &((Node_2F69D0 *)blarg_scene_points)[v->f1BC].v30);
                         v->f88 = vec_distance_xy(&moby->pos, &v->home) / (float)scale_ticks(60);
-                        v->f8C = jump_speed_4318_r(&moby->pos, &v->home, 0, v->f88, -v->f80);
+                        v->f8C = jump_speed_4318(&moby->pos, &v->home, 0, v->f88, -v->f80);
                         v->f94 = 5;
                         v->fAD = 3;
                         InitKnockback_r2(moby, v->f70, 7, 1, 0,
@@ -1811,7 +1811,7 @@ void alien_snapper_update(Moby *moby) {
             }
             break;
         case 5:
-            if (mine_fall_r(moby, v->f70) & 1) {
+            if (mine_fall(moby, v->f70) & 1) {
                 moby->state = 6;
                 if (moby->prev_seq != 2) {
                     MobyBlendAnimation_r(moby, 2, 0, 5);
@@ -1819,8 +1819,8 @@ void alien_snapper_update(Moby *moby) {
             }
             break;
         case 6:
-            MobySpringTurn_r(moby, fast_atan2_r(v->f120 - moby->pos.x, v->f124 - moby->pos.y), &v->f190, 0.05f, 0.3f,
-                             g_frame_time * 6.2831855f);
+            MobySpringTurn(moby, fast_atan2_r(v->f120 - moby->pos.x, v->f124 - moby->pos.y), &v->f190, 0.05f, 0.3f,
+                           g_frame_time * 6.2831855f);
             if (v->f164 != 2) {
                 moby->state = 7;
                 v->timer = truncate_float_to_s32(random_float_between(0.0f, (float)v->f1B8));
@@ -1835,8 +1835,8 @@ void alien_snapper_update(Moby *moby) {
             int near;
 
             ApproachValue_r2(&v->fF4, v->f1A4 * g_frame_time, g_frame_time_sq * 6.0f);
-            MobySpringTurn_r(moby, fast_atan2_r(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y), &v->f190,
-                             0.05f, 0.3f, g_frame_time * 6.2831855f);
+            MobySpringTurn(moby, fast_atan2_r(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y), &v->f190,
+                           0.05f, 0.3f, g_frame_time * 6.2831855f);
             dist = vec_distance_xy(&moby->pos, &target->pos);
             if (D_L06_00161F54_91A8 < dist) {
                 dist = D_L06_00161F54_91A8;
@@ -1852,7 +1852,7 @@ void alien_snapper_update(Moby *moby) {
             u.m.dir[0] = FastCos(moby->rot.z) * 2.0f;
             u.m.dir[1] = FastSin(moby->rot.z) * 2.0f;
             u.m.dir[2] = 0.0f;
-            move_w_r(moby, &v->fD0, u.m.dir, u.m.out, 1.0f);
+            move_w(moby, &v->fD0, u.m.dir, u.m.out, 1.0f);
             moby->rot.z = rot;
             resolve_point_path_segment_xy_clearance_r(0.5f, v->path, &moby->pos, &moby->pos);
             if (SegmentCrossPolyline_r(v->path, &moby->pos, &target->pos, u.m.c) != 0 &&
@@ -1897,8 +1897,8 @@ void alien_snapper_update(Moby *moby) {
             } else {
                 ApproachValue_r2(&v->fF4, 0.0f, g_frame_time_sq * 20.0f);
             }
-            MobySpringTurn_r(moby, fast_atan2_r(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y), &v->f190,
-                             0.05f, 0.3f, g_frame_time * 6.2831855f);
+            MobySpringTurn(moby, fast_atan2_r(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y), &v->f190,
+                           0.05f, 0.3f, g_frame_time * 6.2831855f);
             dist = vec_distance_xy(&moby->pos, &target->pos);
             if (D_L06_00161F54_91A8 < dist) {
                 dist = D_L06_00161F54_91A8;
@@ -1913,7 +1913,7 @@ void alien_snapper_update(Moby *moby) {
             u.m.dir[0] = FastCos(moby->rot.z) * 2.0f;
             u.m.dir[1] = FastSin(moby->rot.z) * 2.0f;
             u.m.dir[2] = 0.0f;
-            move_w_r(moby, &v->fD0, u.m.dir, u.m.out, 1.0f);
+            move_w(moby, &v->fD0, u.m.dir, u.m.out, 1.0f);
             moby->rot.z = rot;
             resolve_point_path_segment_xy_clearance_r(0.5f, v->path, &moby->pos, &moby->pos);
             if (D_L06_00161F58_91A8 < FastVecDist(&moby->pos, &v->home) || v->f164 == 2) {
@@ -1933,8 +1933,8 @@ void alien_snapper_update(Moby *moby) {
             break;
         }
         case 11:
-            MobySpringTurn_r(moby, fast_atan2_r(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y), &v->f190,
-                             0.05f, 0.3f, g_frame_time * 6.2831855f);
+            MobySpringTurn(moby, fast_atan2_r(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y), &v->f190,
+                           0.05f, 0.3f, g_frame_time * 6.2831855f);
             if (1.0f < MobyGetFrameValue_r(moby) && MobyGetFrameValue_r(moby) < 8.0f) {
                 u.bite.push[0] = FastCos(moby->rot.z) * 0.2f;
                 u.bite.push[1] = FastSin(moby->rot.z) * 0.2f;
@@ -1957,14 +1957,14 @@ void alien_snapper_update(Moby *moby) {
             break;
         case 13: {
             ApproachValue_r2(&v->fF4, v->f1A4 * 3.0f * g_frame_time, g_frame_time_sq * 20.0f);
-            MobySpringTurn_r(moby, fast_atan2_r(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y), &v->f190,
-                             0.05f, 0.3f, g_frame_time * 6.2831855f);
+            MobySpringTurn(moby, fast_atan2_r(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y), &v->f190,
+                           0.05f, 0.3f, g_frame_time * 6.2831855f);
             rot = moby->rot.z;
             moby->rot.z = FastAddRots(fast_atan2_r(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y), 3.14159f);
             u.m.dir[0] = FastCos(moby->rot.z) * 2.0f;
             u.m.dir[1] = FastSin(moby->rot.z) * 2.0f;
             u.m.dir[2] = 0.0f;
-            move_w_r(moby, &v->fD0, u.m.dir, u.m.out, 1.0f);
+            move_w(moby, &v->fD0, u.m.dir, u.m.out, 1.0f);
             moby->rot.z = rot;
             resolve_point_path_segment_xy_clearance_r(0.5f, v->path, &moby->pos, &moby->pos);
             if (fast_dec_timer(&v->timer) != 0 || D_L06_00161F64_91A8 < FastVecDist(&moby->pos, &target->pos)) {
@@ -1984,12 +1984,12 @@ void alien_snapper_update(Moby *moby) {
         }
         case 12: {
             ApproachValue_r2(&v->fF4, v->f1A4 * g_frame_time, g_frame_time_sq * 6.0f);
-            MobySpringTurn_r(moby, fast_atan2_r(v->home.x - moby->pos.x, v->home.y - moby->pos.y), &v->f190, 0.05f,
-                             0.3f, g_frame_time * 6.2831855f);
+            MobySpringTurn(moby, fast_atan2_r(v->home.x - moby->pos.x, v->home.y - moby->pos.y), &v->f190, 0.05f, 0.3f,
+                           g_frame_time * 6.2831855f);
             u.m.dir[0] = FastCos(moby->rot.z) * 2.0f;
             u.m.dir[1] = FastSin(moby->rot.z) * 2.0f;
             u.m.dir[2] = 0.0f;
-            move_w_r(moby, &v->fD0, u.m.dir, u.m.out, 1.0f);
+            move_w(moby, &v->fD0, u.m.dir, u.m.out, 1.0f);
             resolve_point_path_segment_xy_clearance_r2(v->path, &moby->pos, &moby->pos, 0.5f);
             if (FastVecDist(&moby->pos, &v->home) < 1.0f) {
                 moby->state = 6;
@@ -2047,10 +2047,10 @@ void alien_snapper_update(Moby *moby) {
             break;
         }
         case 14:
-            if (mine_fall_r(moby, v->f70) & 0x41) {
+            if (mine_fall(moby, v->f70) & 0x41) {
                 int *route = blarg_paths_r[v->path];
 
-                if (IsPointInPolygon_r(&moby->pos, route + 4, *route) == 0) {
+                if (IsPointInPolygon(&moby->pos, route + 4, *route) == 0) {
                     DeleteMoby_r(moby);
                     break;
                 }
@@ -2064,7 +2064,7 @@ void alien_snapper_update(Moby *moby) {
             resolve_point_path_segment_xy_clearance_r(0.5f, v->path, &moby->pos, &moby->pos);
             break;
         case 17:
-            if (mine_fall_r(moby, v->f70) & 0x40) {
+            if (mine_fall(moby, v->f70) & 0x40) {
                 qcopy(u.m.dir, &moby->pos);
                 spawn_color_swapped_explosion_burst_r(moby, u.m.dir, -1, 1.5f, 10.0f);
                 spawn_moby_break_fragments_r(moby, 0x6A0, 2, 0x69F, 1, 5, 2);
@@ -2128,8 +2128,7 @@ extern void InitKnockback_r3(void *, void *, int, int, int, float) __asm__("func
 extern void SetDeathBits_r(void *, int, int) __asm__("func_L00_002584A8");
 extern void RerollEffectCounter_r(void *, void *) __asm__("func_L00_0025E4B0");
 extern void StepColorFade_r(void *, void *) __asm__("func_L00_0025E590");
-extern void MobySphereHitDirectional_r(void *, float, void *, int, float, float, int, int,
-                                       int) __asm__("func_L00_0025A8E8");
+extern void func_L00_0025A8E8(void *, float, void *, int, float, float, int, int, int);
 extern float FastAddRots_r2(float, float) __asm__("func_001FA748");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern int FastTweenColor_r2(int, int, float) __asm__("func_001FA8A8");
@@ -2220,7 +2219,7 @@ void update_alien_snapper_hit_response_and_targeting(Moby *moby) {
         case 12:
         case 13:
             if (D_L06_0015F6B0_2FA618 % 4 == (((int)moby >> 8) & 3)) {
-                MobySphereHitDirectional_r(moby, 0.7f, &moby->pos.x, 0x10000, 0.9f, 1.0f, 0, 1, 0);
+                MobySphereHitDirectional(moby, 0.7f, &moby->pos.x, 0x10000, 0.9f, 1.0f, 0, 1, 0);
             }
             break;
     }
@@ -2912,7 +2911,7 @@ void update_alien_queen_hit_response_and_recovery(void *moby_) {
     if (timer != 0 && data->unk_170 != 0) {
         --data->timer2;
         if (data->timer2 < scale_ticks(10))
-            blarg_fade_level_r = 1.0f - IntToFloat(data->timer2) / multiply_global_factor(10.0f);
+            blarg_fade_level = 1.0f - IntToFloat(data->timer2) / multiply_global_factor(10.0f);
         if (data->timer2 == 0 && (unsigned char)moby[0x20] != 1) {
             if (data->health > 10.0f) {
                 data->health = 19.9f;
@@ -2943,7 +2942,7 @@ void update_alien_queen_hit_response_and_recovery(void *moby_) {
         }
     } else if (data->unk_170 == 0) {
         if (data->timer2 < scale_ticks(10)) {
-            blarg_fade_level_r = 1.0f - IntToFloat(++data->timer2) / 10.0f;
+            blarg_fade_level = 1.0f - IntToFloat(++data->timer2) / 10.0f;
         }
     }
     data->angle =
@@ -3411,8 +3410,8 @@ extern void enter_hero_vehicle_mode_and_set_moby(int, int, int);
 extern int FastTweenColor(int, int, float);
 extern void update_entity_matrix(char *, void *, void *, void *);
 extern unsigned char menu_item_enabled_19_r[] __asm__("D_0013D4AF");
-extern unsigned char gHaveHeliPack_r[] __asm__("D_0013D5CA");
-extern unsigned char special_items_base_r[] __asm__("D_0013D355");
+extern unsigned char D_0013D5CA[];
+extern unsigned char D_0013D355[];
 extern char pad_globals_base_r[] __asm__("D_0013A5E0");
 extern float blarg_lift_scale SDATA(D_L06_00161FF0);
 extern float blarg_lift_max_speed SDATA(D_L06_00161FF4);
@@ -3435,7 +3434,7 @@ void update_hero_triggered_moby_height_cycle(Moby *moby) {
     switch (moby->state) {
         case 0:
             if (blarg_lift_cutscene_seen == -1) {
-                if (gHaveMorphORay_r[1] != 0) {
+                if (gHaveMorphORay[1] != 0) {
                     blarg_lift_cutscene_seen = 1;
                 } else {
                     blarg_lift_cutscene_seen = 0;
@@ -3462,8 +3461,8 @@ void update_hero_triggered_moby_height_cycle(Moby *moby) {
             break;
         case 1:
             if (is_point_inside_clip_volume(&((Hero *)(hero_globals_base + 0xE1D))->motion.pos, d->f70) != 0) {
-                if (((Flags *)(special_items_base_r + 0x13B))->f20 == 0) {
-                    ((Flags *)(special_items_base_r + 0x13B))->f20 = 1;
+                if (((Flags *)(special_items_base + 0x13B))->f20 == 0) {
+                    ((Flags *)(special_items_base + 0x13B))->f20 = 1;
                 }
                 moby->state = 3;
                 d->f90 = 0;
@@ -3484,7 +3483,7 @@ void update_hero_triggered_moby_height_cycle(Moby *moby) {
                 int ok;
                 if (((Hero *)(hero_globals_base + 0xE1D))->vehicle_mode == 1) {
                     ok = try_set_help_message(9, 0x1781) != 0;
-                } else if (gHaveHeliPack_r[4] == 0) {
+                } else if (gHaveHeliPack[4] == 0) {
                     ok = try_set_help_message(9, 0x177E) != 0;
                 } else if (d->f84 != 0) {
                     ok = try_set_help_message(9, 0x1785) != 0;
@@ -3510,13 +3509,13 @@ void update_hero_triggered_moby_height_cycle(Moby *moby) {
                         MusicRequestTrack(0, 10);
                         ((Moby *)level_mobys_q)[d->f6C].flags |= 1;
                         ((Moby *)level_mobys_q)[d->f6C].flags |= 2;
-                        if (gHaveMorphORay_r[1] != 0 && blarg_lift_cutscene_seen == 0) {
+                        if (gHaveMorphORay[1] != 0 && blarg_lift_cutscene_seen == 0) {
                             blarg_lift_cutscene_seen = 1;
                             StartCutscene(3);
                             moby->state = 2;
                             break;
                         }
-                    } else if (gHaveHeliPack_r[4] == 0) {
+                    } else if (gHaveHeliPack[4] == 0) {
                         FadeToBlack(scale_ticks(0x10));
                         set_moby_and_links_to_states_4_and_5(level_mobys_q + (d->f64 << 8));
                         set_moby_and_links_to_states_8_and_9(level_mobys_q + (d->f68 << 8));

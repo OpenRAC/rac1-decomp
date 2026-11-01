@@ -112,22 +112,22 @@ typedef struct {
 extern struct PadState g_controller_state_r __asm__("D_0013CA40");
 extern Entry70_2215c8_21D50 D_L00_001799F0_21D50[] __asm__("D_L00_001799F0");
 extern short D_L00_0015F6A8_21D50 SDATA(D_L00_0015F6A8);
-extern u8 gHaveBoltGrabber_r __asm__("D_0013D5EA") NOT_SDA;
+extern u8 D_0013D5EA NOT_SDA;
 extern f32 g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern void update_hero_tilt_r(void) __asm__("func_L00_00216D40");
 extern s32 fast_dec_timer_r(s32 *) __asm__("func_001F9908");
-extern s16 FastDecTimer_r(s16 *) __asm__("func_001F9938");
-extern void exit_hero_vehicle_mode_r(void) __asm__("func_L00_002111E8");
+extern s16 func_001F9938(s16 *);
+extern void func_L00_002111E8(void);
 extern s32 scale_ticks_r(s32) __asm__("func_001F9850");
 extern s32 pad_pressed_within_r(s32, s32, s32) __asm__("func_L00_00267BA8");
-extern struct Moby *CreateMoby_r(s32) __asm__("func_0020D348");
-extern void moby_build_matrix_r(struct Moby *) __asm__("func_L00_00251E30");
-extern void enter_hero_vehicle_mode_r(s32, s32, struct Moby *) __asm__("func_L00_002110C0");
-extern f32 gravity_z_r(void *) __asm__("func_L00_002342F8");
+extern struct Moby *func_0020D348(s32);
+extern void func_L00_00251E30(struct Moby *);
+extern void func_L00_002110C0(s32, s32, struct Moby *);
+extern f32 func_L00_002342F8(void *);
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
-extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
-extern void FastVecScale_r(void *, void *, f32) __asm__("func_001F9C30");
+extern void func_001F9BD8(void *, void *, void *);
+extern void func_001F9C30(void *, void *, f32);
 extern f32 FastVecLength_r(void *) __asm__("func_001F9CB8");
 extern void update_hero_planar_distance_spring_motion_r(void) __asm__("func_L00_002222F0");
 extern void transform_hero_local_offset_to_world_r(void *, f32, f32, f32) __asm__("func_L00_00233EE0");
@@ -151,30 +151,30 @@ void update_hero_timers_and_reach_state(void) {
     g_hero_r.anim_seq_frames++;
     fast_dec_timer_r(&g_hero_r.move_lock_timer);
     fast_dec_timer_r(&g_hero_r.invulnerable_frames);
-    FastDecTimer_r(&g_hero_r.unk1B2);
+    FastDecTimer(&g_hero_r.unk1B2);
     fast_dec_timer_r(&g_hero_r.long_jump_lockout);
-    FastDecTimer_r(&g_hero_r.jump_lockout_timer);
-    FastDecTimer_r(&g_hero_r.unk1DE);
+    FastDecTimer(&g_hero_r.jump_lockout_timer);
+    FastDecTimer(&g_hero_r.unk1DE);
     fast_dec_timer_r(&g_hero_r.wall_jump_window);
-    FastDecTimer_r(&g_hero_r.unk1F0);
-    FastDecTimer_r(&g_hero_r.ledge_probe_cooldown);
-    FastDecTimer_r(&g_hero_r.unk1C8);
-    FastDecTimer_r(&g_hero_r.rail_catch_grace);
-    FastDecTimer_r(&g_hero_r.rail_grab_cooldown);
-    FastDecTimer_r(&g_hero_r.grapple_lockout_timer);
+    FastDecTimer(&g_hero_r.unk1F0);
+    FastDecTimer(&g_hero_r.ledge_probe_cooldown);
+    FastDecTimer(&g_hero_r.unk1C8);
+    FastDecTimer(&g_hero_r.rail_catch_grace);
+    FastDecTimer(&g_hero_r.rail_grab_cooldown);
+    FastDecTimer(&g_hero_r.grapple_lockout_timer);
     fast_dec_timer_r(&g_hero_r.collision_off_frames);
     fast_dec_timer_r(&g_hero_r.unk1D0);
     fast_dec_timer_r(&g_hero_r.jump_buffer_lockout);
-    FastDecTimer_r(&g_hero_r.fidget_cooldown);
-    FastDecTimer_r(&g_hero_r.unk1E0);
-    FastDecTimer_r(&g_hero_r.unk1EE);
-    FastDecTimer_r(&g_hero_r.unk1EA);
-    FastDecTimer_r(&g_hero_r.unk1F4);
-    FastDecTimer_r(&g_hero_r.jump_lock_timer);
-    FastDecTimer_r(&g_hero_r.unk1DC);
-    FastDecTimer_r(&g_hero_r.unk1F6);
-    FastDecTimer_r(&g_hero_r.unk1DA);
-    FastDecTimer_r(&g_hero_r.unk1F8);
+    FastDecTimer(&g_hero_r.fidget_cooldown);
+    FastDecTimer(&g_hero_r.unk1E0);
+    FastDecTimer(&g_hero_r.unk1EE);
+    FastDecTimer(&g_hero_r.unk1EA);
+    FastDecTimer(&g_hero_r.unk1F4);
+    FastDecTimer(&g_hero_r.jump_lock_timer);
+    FastDecTimer(&g_hero_r.unk1DC);
+    FastDecTimer(&g_hero_r.unk1F6);
+    FastDecTimer(&g_hero_r.unk1DA);
+    FastDecTimer(&g_hero_r.unk1F8);
     if (!(g_controller_state_r.held & (PAD_L2 | PAD_L1))) {
         g_hero_r.unk1EC = 0;
     }
@@ -190,15 +190,15 @@ void update_hero_timers_and_reach_state(void) {
         g_hero_r.stick_idle_frames = 0;
         g_hero_r.stick_held_frames++;
     }
-    if (g_hero_r.vehicle_toggle_timer != 0 && FastDecTimer_r(&g_hero_r.vehicle_toggle_timer) != 0 &&
+    if (g_hero_r.vehicle_toggle_timer != 0 && FastDecTimer(&g_hero_r.vehicle_toggle_timer) != 0 &&
         g_hero_r.health.hp != 0 && (*(s32 *)&D_L00_0015F6A8_21D50) == 0) {
         if (g_hero_r.vehicle_mode == 3) {
-            exit_hero_vehicle_mode_r();
+            exit_hero_vehicle_mode();
             if (pad_pressed_within_r(0x80, scale_ticks_r(0x12), 0)) {
                 g_hero_r.force_slot0_item8 = 1;
             }
         } else {
-            m = CreateMoby_r(0x27A);
+            m = CreateMoby(0x27A);
             g_hero_r.vehicle_mode3_moby = m;
             if (m != 0) {
                 qcopy(&m->pos, &g_hero_r.motion.pos);
@@ -207,19 +207,19 @@ void update_hero_timers_and_reach_state(void) {
                 ((struct Moby *)g_hero_r.vehicle_mode3_moby)->visible = 1;
                 ((struct Moby *)g_hero_r.vehicle_mode3_moby)->glow_color = 0;
                 ((struct Moby *)g_hero_r.vehicle_mode3_moby)->spawn_frame = g_hero_r.moby->spawn_frame;
-                moby_build_matrix_r(g_hero_r.vehicle_mode3_moby);
-                enter_hero_vehicle_mode_r(3, 0x53, g_hero_r.vehicle_mode3_moby);
+                moby_build_matrix(g_hero_r.vehicle_mode3_moby);
+                enter_hero_vehicle_mode(3, 0x53, g_hero_r.vehicle_mode3_moby);
             }
         }
     }
     if (g_hero_r.vehicle_mode == 2) {
-        FastDecTimer_r(&g_hero_r.vehicle_triangle_cooldown);
+        FastDecTimer(&g_hero_r.vehicle_triangle_cooldown);
     }
     for (i = 0; i < 5; i++) {
         fast_dec_timer_r(&D_L00_001799F0_21D50[i].w0);
     }
     g_hero_r.current_path_dist = 9999.0f;
-    if (g_hero_r.air_frames.s != 0 && gravity_z_r(&g_hero_r.motion.velocity) < 0.0f) {
+    if (g_hero_r.air_frames.s != 0 && gravity_z(&g_hero_r.motion.velocity) < 0.0f) {
         if (g_hero_r.pos_history_count != 0x20)
             goto skip;
         clear_u64_value_r(&sum);
@@ -231,9 +231,9 @@ void update_hero_timers_and_reach_state(void) {
                 s32 b = (n + 0x1E) % 32;
                 FastVecSub_r(&d, &g_hero_r.pos_history[a], &g_hero_r.pos_history[b]);
             }
-            FastVecAdd_r(&sum, &sum, &d);
+            FastVecAdd(&sum, &sum, &d);
         }
-        FastVecScale_r(&sum, &sum, 1.0f / (f32)n8);
+        FastVecScale(&sum, &sum, 1.0f / (f32)n8);
         if (FastVecLength_r(&sum) < g_frame_time_r) {
             g_hero_r.still_frames++;
             goto skip;
@@ -255,7 +255,7 @@ skip:
             break;
         default:
             transform_hero_local_offset_to_world_r(&g_hero_r.motion.body_center, 0.0f, 0.0f, 0.7f);
-            if (gHaveBoltGrabber_r) {
+            if (gHaveBoltGrabber) {
                 g_hero_r.reach_distance = 12.0f;
                 g_hero_r.reach_height = 4.5f;
             } else {
@@ -600,7 +600,7 @@ extern int pal_mode MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
 extern char help_stats_base[];
 extern char item_usage[];
-extern unsigned char draw_map51_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
+extern unsigned char D_0015EEB4[4] MACRO_ADDR;
 extern short veldin1_look_stat_timer;
 extern short hero_run_step_start_frames;
 extern short hero_state_f_jump_velocity_keys;
@@ -2079,7 +2079,7 @@ int HeroEnterMoveState(int a, int b) {
                         if (q->unk450 == 2)
                             q->unk450 = 0;
                         id = q->unk450 + 0x1C;
-                        if (draw_map51_m[1] != 0) {
+                        if (draw_map51[1] != 0) {
                             if (id == 0x1C) {
                                 id = 0x1D;
                             } else if (id == 0x1D) {

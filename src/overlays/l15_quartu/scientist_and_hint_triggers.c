@@ -447,20 +447,20 @@ typedef struct Items {
 
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
-extern int Help_Request_r(int, int) __asm__("func_L00_00203F20");
-extern int Hero_IsInSpecialState_r(void) __asm__("func_L00_0020DC00");
-extern unsigned char gHaveHologuise_r[] __asm__("D_0013D5E7");
-extern int gameplay_event_frame_count_r __asm__("D_0015EFA4") MACRO_ADDR;
+extern int func_L00_00203F20(int, int);
+extern int func_L00_0020DC00(void);
+extern unsigned char D_0013D5E7[];
+extern int D_0015EFA4 MACRO_ADDR;
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
-extern int quartu_pending_help_flag_r __asm__("D_L15_0015F684") MACRO_ADDR;
-extern int quartu_alarm_on_r __asm__("D_L15_00161B48") MACRO_ADDR;
+extern int D_L15_0015F684 MACRO_ADDR;
+extern int D_L15_00161B48 MACRO_ADDR;
 extern char *quartu_moby_array_r __asm__("D_L15_00160058") MACRO_ADDR;
-extern char quartu_help_popup_state_r[] __asm__("D_L15_00179A90");
+extern char D_L15_00179A90[];
 extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern char help_stats_base_r[] __asm__("D_0014171B");
-extern char help_records_r[] __asm__("D_00141A68");
-extern char gSpecialItems_r[] __asm__("D_0013D490");
-extern unsigned char gHaveHeliPack_r[] __asm__("D_0013D5CA");
+extern char D_00141A68[];
+extern char D_0013D490[];
+extern unsigned char D_0013D5CA[];
 
 /* Quartu moby update (class 1469): hint and dialogue triggers from the hero's zones, with the play-time
    records of the two hint messages. */
@@ -484,58 +484,58 @@ void update_quartu_hint_triggers(Moby *m) {
                                                   t->zone[3]) != 0 &&
                     (((Hero *)(hero_globals_base_r + 0xE1D))->state.control_mode < 2u ||
                      ((Hero *)(hero_globals_base_r + 0xE1D))->state.control_mode == 9) &&
-                    ((Help_2EE7E8 *)quartu_help_popup_state_r)->busy == 0 &&
-                    ((Help_2EE7E8 *)quartu_help_popup_state_r)->cur == -1) {
-                    if (gHaveHologuise_r[0] == 0) {
+                    ((Help_2EE7E8 *)quartu_help_popup_state)->busy == 0 &&
+                    ((Help_2EE7E8 *)quartu_help_popup_state)->cur == -1) {
+                    if (gHaveHologuise[0] == 0) {
                         int lim, now;
-                        now = scale_ticks_r(gameplay_event_frame_count_r);
-                        lim = now - ((Stats *)help_records_r)->t3DA * 600;
+                        now = scale_ticks_r(gameplay_event_frame_count);
+                        lim = now - ((Stats *)help_records)->t3DA * 600;
                         if ((int)((float)scale_ticks_r(0x12) * 60.0f) < lim ||
-                            ((Stats *)help_records_r)->t3DA * 600 == 0) {
-                            Help_Request_r(0x3A98, 0x7B);
+                            ((Stats *)help_records)->t3DA * 600 == 0) {
+                            Help_Request(0x3A98, 0x7B);
                         } else {
-                            now = scale_ticks_r(gameplay_event_frame_count_r);
-                            if (now / 600 > ((Stats *)help_records_r)->t3DA) {
-                                ((Stats *)help_records_r)->t3DA = scale_ticks_r(gameplay_event_frame_count_r) / 600;
+                            now = scale_ticks_r(gameplay_event_frame_count);
+                            if (now / 600 > ((Stats *)help_records)->t3DA) {
+                                ((Stats *)help_records)->t3DA = scale_ticks_r(gameplay_event_frame_count) / 600;
                             }
                         }
-                    } else if (((Stats *)help_records_r)->n3E0 != 0) {
+                    } else if (((Stats *)help_records)->n3E0 != 0) {
                         int lim, now;
-                        now = scale_ticks_r(gameplay_event_frame_count_r);
-                        lim = now - ((Stats *)help_records_r)->t3E2 * 600;
+                        now = scale_ticks_r(gameplay_event_frame_count);
+                        lim = now - ((Stats *)help_records)->t3E2 * 600;
                         if ((int)((float)scale_ticks_r(0x12) * 60.0f) < lim ||
-                            ((Stats *)help_records_r)->t3E2 * 600 == 0) {
-                            Help_Request_r(0x3A99, 0x7C);
+                            ((Stats *)help_records)->t3E2 * 600 == 0) {
+                            Help_Request(0x3A99, 0x7C);
                         } else {
-                            now = scale_ticks_r(gameplay_event_frame_count_r);
-                            if (now / 600 > ((Stats *)help_records_r)->t3E2) {
-                                ((Stats *)help_records_r)->t3E2 = scale_ticks_r(gameplay_event_frame_count_r) / 600;
+                            now = scale_ticks_r(gameplay_event_frame_count);
+                            if (now / 600 > ((Stats *)help_records)->t3E2) {
+                                ((Stats *)help_records)->t3E2 = scale_ticks_r(gameplay_event_frame_count) / 600;
                             }
                         }
                     } else {
                         int now;
-                        ((Stats *)help_records_r)->n3E0++;
-                        now = scale_ticks_r(gameplay_event_frame_count_r);
-                        if (now / 600 > ((Stats *)help_records_r)->t3E2) {
-                            ((Stats *)help_records_r)->t3E2 = scale_ticks_r(gameplay_event_frame_count_r) / 600;
+                        ((Stats *)help_records)->n3E0++;
+                        now = scale_ticks_r(gameplay_event_frame_count);
+                        if (now / 600 > ((Stats *)help_records)->t3E2) {
+                            ((Stats *)help_records)->t3E2 = scale_ticks_r(gameplay_event_frame_count) / 600;
                         }
-                        ((Stats *)help_records_r)->lv3E4 =
-                            ((Stats *)help_records_r)->lv3E4 | (1 << g_current_level_index_r) | 0x80000000;
+                        ((Stats *)help_records)->lv3E4 =
+                            ((Stats *)help_records)->lv3E4 | (1 << g_current_level_index_r) | 0x80000000;
                     }
                 }
             }
-            if (quartu_pending_help_flag_r != 0 && ((Help_2EE7E8 *)quartu_help_popup_state_r)->busy == 0 &&
-                ((Help_2EE7E8 *)quartu_help_popup_state_r)->cur == -1 &&
+            if (quartu_pending_help_flag != 0 && ((Help_2EE7E8 *)quartu_help_popup_state)->busy == 0 &&
+                ((Help_2EE7E8 *)quartu_help_popup_state)->cur == -1 &&
                 *(unsigned short *)(help_stats_base_r + 0x795) == 0) {
-                Help_Request_r(0x3A9F, 0x89);
-                quartu_pending_help_flag_r = 0;
+                Help_Request(0x3A9F, 0x89);
+                quartu_pending_help_flag = 0;
             }
             if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
                                               t->vol54) != 0 &&
                 ((Hero *)(hero_globals_base_r + 0xE1D))->vehicle_mode == 3 &&
-                ((Hero *)(hero_globals_base_r + 0xE1D))->glow_pulse_level == 0 && quartu_alarm_on_r == 0 &&
+                ((Hero *)(hero_globals_base_r + 0xE1D))->glow_pulse_level == 0 && quartu_alarm_on == 0 &&
                 *(unsigned short *)(help_stats_base_r + 0x78D) == 0) {
-                Help_Request_r(0x3A9E, 0x88);
+                Help_Request(0x3A9E, 0x88);
             }
             pick = -1;
             npc = -1;
@@ -561,11 +561,11 @@ void update_quartu_hint_triggers(Moby *m) {
                     t->hold3C > t->wait && pick != -1 && pick != t->last &&
                     (((Hero *)(hero_globals_base_r + 0xE1D))->state.control_mode < 2u ||
                      ((Hero *)(hero_globals_base_r + 0xE1D))->state.control_mode == 9) &&
-                    ((Help_2EE7E8 *)quartu_help_popup_state_r)->busy == 0 &&
-                    ((Help_2EE7E8 *)quartu_help_popup_state_r)->cur == -1 && gHaveHologuise_r[0] != 0) {
+                    ((Help_2EE7E8 *)quartu_help_popup_state)->busy == 0 &&
+                    ((Help_2EE7E8 *)quartu_help_popup_state)->cur == -1 && gHaveHologuise[0] != 0) {
                     t->wait = scale_ticks_r(0x708);
                     if (*(int *)(help_stats_base_r + 0x739) >= 0) {
-                        Help_Request_r(0x3A9A, 0x7D);
+                        Help_Request(0x3A9A, 0x7D);
                     }
                     t->last = pick;
                     t->hold3C = 0;
@@ -573,21 +573,21 @@ void update_quartu_hint_triggers(Moby *m) {
             }
             if (((Hero *)(hero_globals_base_r + 0xE1D))->moby->seq == 0xC &&
                 ((Hero *)(hero_globals_base_r + 0xE1D))->vehicle_mode == 2) {
-                ((Items *)gSpecialItems_r)->f6F = 1;
+                ((Items *)gSpecialItems)->f6F = 1;
             }
             if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
                                               t->vol1C) != 0 &&
-                ((Hero *)(hero_globals_base_r + 0xE1D))->vehicle_mode == 2 && ((Items *)gSpecialItems_r)->f6F == 0 &&
-                ((Help_2EE7E8 *)quartu_help_popup_state_r)->busy == 0 &&
-                ((Help_2EE7E8 *)quartu_help_popup_state_r)->cur == -1 && *(int *)(help_stats_base_r + 0x751) >= 0) {
-                Help_Request_r(0x3A9C, 0x80);
+                ((Hero *)(hero_globals_base_r + 0xE1D))->vehicle_mode == 2 && ((Items *)gSpecialItems)->f6F == 0 &&
+                ((Help_2EE7E8 *)quartu_help_popup_state)->busy == 0 &&
+                ((Help_2EE7E8 *)quartu_help_popup_state)->cur == -1 && *(int *)(help_stats_base_r + 0x751) >= 0) {
+                Help_Request(0x3A9C, 0x80);
             }
             if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
                                               t->vol20[0]) != 0 &&
-                ((Help_2EE7E8 *)quartu_help_popup_state_r)->busy == 0 &&
-                ((Help_2EE7E8 *)quartu_help_popup_state_r)->cur == -1 && gHaveHeliPack_r[2] == 0 &&
+                ((Help_2EE7E8 *)quartu_help_popup_state)->busy == 0 &&
+                ((Help_2EE7E8 *)quartu_help_popup_state)->cur == -1 && gHaveHeliPack[2] == 0 &&
                 !(*(unsigned int *)(help_stats_base_r + 0x761) & (1 << g_current_level_index_r))) {
-                Help_Request_r(0x3A9D, 0x82);
+                Help_Request(0x3A9D, 0x82);
             }
             pick = -1;
             found = 0;
@@ -611,17 +611,17 @@ void update_quartu_hint_triggers(Moby *m) {
                     t->last = -1;
                 }
             }
-            if (scale_ticks_r(0xE10) < t->hold38 && pick != -1 && Hero_IsInSpecialState_r() != 0 &&
-                ((Help_2EE7E8 *)quartu_help_popup_state_r)->busy == 0 &&
-                ((Help_2EE7E8 *)quartu_help_popup_state_r)->cur == -1 && gHaveHeliPack_r[2] != 0) {
-                Help_Request_r(0x4E2E, 0x78);
+            if (scale_ticks_r(0xE10) < t->hold38 && pick != -1 && hero_is_in_special_state() != 0 &&
+                ((Help_2EE7E8 *)quartu_help_popup_state)->busy == 0 &&
+                ((Help_2EE7E8 *)quartu_help_popup_state)->cur == -1 && gHaveHeliPack[2] != 0) {
+                Help_Request(0x4E2E, 0x78);
                 t->last = pick;
                 t->hold38 = 0;
             }
-            if (((Items *)gSpecialItems_r)->f6E == 0 &&
+            if (((Items *)gSpecialItems)->f6E == 0 &&
                 is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
                                               t->vol2C) != 0) {
-                ((Items *)gSpecialItems_r)->f6E = 1;
+                ((Items *)gSpecialItems)->f6E = 1;
             }
             break;
     }
@@ -971,17 +971,17 @@ int func_L15_002F99F8_2F9D38(char *moby) __asm__("func_L15_002F99F8");
 extern char *quartu_cuboids_r __asm__("D_L15_0016016C") MACRO_ADDR;
 int func_L15_002F9AE8_2F9D38(char *moby, float a, float b) __asm__("func_L15_002F9AE8");
 extern char *quartu_camera_moby_r __asm__("D_L15_00167480");
-extern PadState g_controller_state_r __asm__("D_0013CA40");
-extern int try_select_follow_camera_volume_r(char *) __asm__("func_L00_002E9870");
-extern void clear_follow_camera_volume_if_current_r(char *) __asm__("func_L00_002E9838");
+extern PadState D_0013CA40;
+extern int func_L00_002E9870(char *);
+extern void func_L00_002E9838(char *);
 extern int scale_ticks_r2(int) __asm__("func_001F9850");
-extern void set_nonzero_follow_camera_parameters_r(float, float, float) __asm__("func_L02_002F79D0");
+extern void func_L02_002F79D0(float, float, float);
 extern float IntToFloat_r(int) __asm__("func_001FA888");
-extern void set_follow_camera_angle_blend_from_position_r(void *, float, float) __asm__("func_L00_002E9E20");
-extern void Cam_SetDistanceGoal_r(int, float, float) __asm__("func_L00_002E9900");
-extern void set_follow_camera_flag_226_r(void) __asm__("func_L00_002E9AD0");
+extern void func_L00_002E9E20(void *, float, float);
+extern void func_L00_002E9900(int, float, float);
+extern void func_L00_002E9AD0(void);
 extern void follow_camera_set_height_r(float, float) __asm__("func_L00_002E9968");
-extern void Cam_SetEyeOffset_r(int, float, float) __asm__("func_L00_002E99A0");
+extern void func_L00_002E99A0(int, float, float);
 
 void func_L15_002F9D38_r(char *m) __asm__("func_L15_002F9D38");
 
@@ -997,13 +997,13 @@ void func_L15_002F9D38_r(char *m) {
     int t4;
     float r;
     float a;
-    if (try_select_follow_camera_volume_r(m) <= 0) {
+    if (try_select_follow_camera_volume(m) <= 0) {
         *(short *)(s + 0x20) = 0;
         return;
     }
     if (func_L15_002F99F8_2F9D38(m) == 0) {
         *(short *)(s + 0x20) = 0;
-        clear_follow_camera_volume_if_current_r(m);
+        clear_follow_camera_volume_if_current(m);
         return;
     }
     *(int *)(*(char **)(quartu_camera_moby_r + 0x70) + 0x230) = 2;
@@ -1013,10 +1013,10 @@ void func_L15_002F9D38_r(char *m) {
     t2 = scale_ticks_r2(400);
     t3 = scale_ticks_r2(560);
     t4 = scale_ticks_r2(200);
-    set_nonzero_follow_camera_parameters_r(1.0f, 12.0f, 0.11f);
-    if (g_controller_state_r.analog[0] != 0.0f)
+    set_nonzero_follow_camera_parameters(1.0f, 12.0f, 0.11f);
+    if (g_controller_state.analog[0] != 0.0f)
         *(short *)(s + 0x20) = t1;
-    else if (g_controller_state_r.analog[1] != 0.0f)
+    else if (g_controller_state.analog[1] != 0.0f)
         *(short *)(s + 0x20) = t1;
     if (*(short *)(s + 0x20) >= t1) {
         if (++*(int *)(s + 0x3C) >= t2 && func_L15_002F9AE8_2F9D38(m, 30.0f, 0.0f))
@@ -1036,14 +1036,14 @@ void func_L15_002F9D38_r(char *m) {
     r = IntToFloat_r(*(short *)(s + 0x20)) / IntToFloat_r(t4);
     a = *(float *)s * 0.017453292f * r;
     if (done)
-        set_follow_camera_angle_blend_from_position_r(o + 0x30, a, 0.0f);
+        set_follow_camera_angle_blend_from_position(o + 0x30, a, 0.0f);
     if (*(float *)(s + 0x34) != 0.0f) {
-        Cam_SetDistanceGoal_r(0, *(float *)(s + 0x34), 0.003f);
-        set_follow_camera_flag_226_r();
+        Cam_SetDistanceGoal(0, *(float *)(s + 0x34), 0.003f);
+        set_follow_camera_flag_226();
     }
     if (*(float *)(s + 0x38) != 0.0f)
         follow_camera_set_height_r(*(float *)(s + 0x38), 0.003f);
     if (*(float *)(s + 0x44) != 0.0f)
-        Cam_SetEyeOffset_r(0, *(float *)(s + 0x44), 0.005f);
+        Cam_SetEyeOffset(0, *(float *)(s + 0x44), 0.005f);
 }
 extern char *quartu_camera_moby;

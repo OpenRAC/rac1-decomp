@@ -370,23 +370,23 @@ struct MapState {
     s32 pan_y[20];               /* 0x154 */
 };
 extern struct MapState level_map_selection_r __asm__("D_001A01F0");
-extern struct Hero g_hero_r __asm__("D_0013F450");
-extern s32 g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
+extern struct Hero D_0013F450;
+extern s32 D_0015EE84 MACRO_ADDR;
 extern u8 level_visit_state_r[] __asm__("D_0013DE60");
-extern struct MapIcon *map_icon_lists_r[] __asm__("D_001A2F40");
+extern struct MapIcon *D_001A2F40[];
 extern s32 D_001A02F4_0CDE0[] __asm__("D_001A02F4");
-extern s32 map_use_alt_level_layout_r __asm__("D_0015FE20") MACRO_ADDR;
-extern MapWorldObject *menu_action_messages_r[] __asm__("D_00199578");
+extern s32 D_0015FE20 MACRO_ADDR;
+extern MapWorldObject *D_00199578[];
 extern MapPoint race_gates_r2[] __asm__("D_0013D6B8");
-extern s32 D_0013D6C4_0CDE0[] __asm__("D_0013D6C4");
+extern s32 D_0013D6C4[];
 extern struct {
     u8 pad0[0x10];
     MapIconLink *links;
 } D_001A2F90_0CDE0 __asm__("D_001A2F90");
 
-extern void func_00208C38_0CDE0(f32 *outx, f32 *outy, s32 view, f32 x, f32 y) __asm__("func_00208C38");
-extern void FormatMenuItemText_r(s32 idx, char *dst) __asm__("func_00208AB0");
-extern void func_001F75D0_0CDE0(struct TextRegion *, long, char *, int) __asm__("func_001F75D0");
+extern void func_00208C38(f32 *outx, f32 *outy, s32 view, f32 x, f32 y);
+extern void func_00208AB0(s32 idx, char *dst);
+extern void func_001F75D0(struct TextRegion *, long, char *, int);
 
 /* Map screen icon refresh: picks the level's icon list, centres the map on the hero when
    it is the current level, places the fixed icons (-1..-9) and projects the others to map
@@ -400,14 +400,14 @@ void update_map_icons(s32 level, s32 flag) {
     s32 icon_index;
 
     if (level < 19 && level_visit_state_r[level] != 0) {
-        level_map_selection_r.icons = map_icon_lists_r[level];
+        level_map_selection_r.icons = map_icon_lists[level];
     } else {
         level_map_selection_r.icons = 0;
     }
 
-    if (g_hero_r.motion.pos.f[2] != 0.0f && level == g_current_level_index_r && flag) {
-        func_00208C38_0CDE0(&map_x, &map_y, map_use_alt_level_layout_r ? level + 100 : level, g_hero_r.motion.pos.f[0],
-                            g_hero_r.motion.pos.f[1]);
+    if (g_hero.motion.pos.f[2] != 0.0f && level == g_current_level_index && flag) {
+        world_to_map_coords(&map_x, &map_y, map_use_alt_level_layout ? level + 100 : level, g_hero.motion.pos.f[0],
+                            g_hero.motion.pos.f[1]);
         level_map_selection_r.pan_x[level] = (s32)(map_x * 4096.0f) << 16;
         level_map_selection_r.pan_y[level] = (s32)(map_y * 4096.0f) << 16;
     } else {
@@ -453,14 +453,14 @@ void update_map_icons(s32 level, s32 flag) {
                 icon->x = 0.625f;
                 icon->y = 0.72265625f;
             } else {
-                if (level == g_current_level_index_r) {
-                    if (menu_action_messages_r[icon->id] != 0) {
-                        func_00208C38_0CDE0(&icon->x, &icon->y, level, menu_action_messages_r[icon->id]->x,
-                                            menu_action_messages_r[icon->id]->y);
-                        level_map_selection_r.icons[icon_index].angle = menu_action_messages_r[icon->id]->z;
+                if (level == g_current_level_index) {
+                    if (menu_action_messages[icon->id] != 0) {
+                        world_to_map_coords(&icon->x, &icon->y, level, menu_action_messages[icon->id]->x,
+                                            menu_action_messages[icon->id]->y);
+                        level_map_selection_r.icons[icon_index].angle = menu_action_messages[icon->id]->z;
                     }
                 } else {
-                    func_00208C38_0CDE0(&icon->x, &icon->y, level, race_gates_r2[icon->id].x,
+                    world_to_map_coords(&icon->x, &icon->y, level, race_gates_r2[icon->id].x,
                                         race_gates_r2[icon->id].y);
                     level_map_selection_r.icons[icon_index].angle = race_gates_r2[icon->id].z;
                 }
@@ -478,7 +478,7 @@ void update_map_icons(s32 level, s32 flag) {
         } else {
             icon->active = D_001A2F90_0CDE0.links[icon->link].active == 1;
         }
-        if ((icon->flags & 0x1000) && (D_0013D6C4_0CDE0[icon->id * 4] ^ 1) & 1) {
+        if ((icon->flags & 0x1000) && (map_icon_flags_table[icon->id * 4] ^ 1) & 1) {
             icon->active = 0;
         }
         if (level_map_selection_r.icons[icon_index].label_text_id != 0) {
@@ -486,15 +486,15 @@ void update_map_icons(s32 level, s32 flag) {
             s16 previous_label_height;
 
             level_map_selection_r.icons[icon_index].flags |= 0x10;
-            FormatMenuItemText_r(icon_index, label_text);
+            FormatMenuItemText(icon_index, label_text);
             {
                 struct TextRegion text_window = {0, icon->label_height, 0, icon->label_width, 4, 4, 0, 0, 0xF, 4};
-                func_001F75D0_0CDE0(&text_window, 0x80FFA888L, label_text, -1);
+                font_print_window_small(&text_window, 0x80FFA888L, label_text, -1);
                 icon->label_height = text_window.rendered_height + 8;
                 previous_label_height = text_window.rendered_height;
                 do {
                     text_window.right -= 4;
-                    func_001F75D0_0CDE0(&text_window, 0x80FFA888L, label_text, -1);
+                    font_print_window_small(&text_window, 0x80FFA888L, label_text, -1);
                     if (text_window.rendered_height != previous_label_height) {
                         label_height_changed = 1;
                     }

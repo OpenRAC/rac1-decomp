@@ -1799,14 +1799,14 @@ extern int D_L00_00161820_2BE3A8 SDATA(D_L00_00161820);
 extern float D_L00_00161828_2BE3A8 SDATA(D_L00_00161828);
 extern float D_L00_0016182C_2BE3A8 SDATA(D_L00_0016182C);
 extern float D_L00_00161838_2BE3A8 SDATA(D_L00_00161838);
-extern signed char D_L00_00161833_2BE3A8[] __asm__("D_L00_00161833") MACRO_ADDR;
+extern signed char D_L00_00161833[] MACRO_ADDR;
 extern float tesla_chain_segment_length_r __asm__("D_L00_0016189C") MACRO_ADDR;
 extern float tesla_rail_twist_phase_r __asm__("D_L00_001618A0") MACRO_ADDR;
 extern int tesla_pulse_spawn_timer_r __asm__("D_L00_001618F4") MACRO_ADDR;
 extern float frame_scale_r __asm__("D_0015EE60") MACRO_ADDR;
-extern int tesla_pulse_timer_r[3] __asm__("D_L00_001618A8") MACRO_ADDR;
+extern int D_L00_001618A8[3] MACRO_ADDR;
 extern float tesla_pulse_alpha_r[3] __asm__("D_L00_001618B8") MACRO_ADDR;
-extern float tesla_pulse_travel_r[3] __asm__("D_L00_001618C8") MACRO_ADDR;
+extern float D_L00_001618C8[3] MACRO_ADDR;
 extern float tesla_pulse_size_r[3] __asm__("D_L00_001618D8") MACRO_ADDR;
 extern int tesla_pulse_active_r[3] __asm__("D_L00_001618E8") MACRO_ADDR;
 extern Vec4A tesla_chain_points_base_r[12] __asm__("D_L00_001DC250");
@@ -1818,7 +1818,7 @@ extern Vec4A tesla_pulse_pos_r[3] __asm__("D_L00_001DD3A0");
 extern Vec4A tesla_pulse_dir_r[3] __asm__("D_L00_001DD3D0");
 extern Vec4A collision_hit_point_r __asm__("D_L00_00173F60");
 extern char veldin1_zero_vec_r[] __asm__("D_L00_0015F660") MACRO_ADDR;
-extern Tab tesla_spark_colors_r __asm__("D_L00_001E9E30");
+extern Tab D_L00_001E9E30;
 extern char hero_globals_base_r2[] __asm__("D_0013E633");
 extern void reset_beam_chain_and_pulse_state_r(void) __asm__("func_L00_002BE2A0");
 extern float normalize_angle_r(float) __asm__("func_L00_0025F368");
@@ -1846,8 +1846,7 @@ extern int scale_ticks_r2(int) __asm__("func_001F9850");
 extern void PartType53Spawn_r(void *, int, int, int, int, void *, float, float, float) __asm__("func_L00_00272F00");
 extern float randf_sym_r(float, float) __asm__("func_L00_00258C80");
 extern int truncate_float_to_s32_r3(float) __asm__("func_001FA898");
-extern void spawn_proximity_corrected_size_alpha_tween_particle_r(void *, int, int, int, int, void *, Moby *, float,
-                                                                  float) __asm__("func_L00_002767B0");
+extern void func_L00_002767B0(void *, int, int, int, int, void *, Moby *, float, float);
 extern int fast_dec_timer_r3(int *) __asm__("func_001F9908");
 
 /* Tesla claw arc: bends the twelve-point beam toward the target, builds the two side rails and the ring of
@@ -1984,7 +1983,7 @@ void update_beam_ring_rail_and_pulse_effects(Moby *m) {
             Vec4A out;
             Vec4A up;
 
-            cols = tesla_spark_colors_r;
+            cols = tesla_spark_colors;
             col = cols.c[random_integer_below_r(5)];
             w = randf_sym_r(0.0f, D_L00_0016180C_2BE3A8);
             build_look_at_matrix_r(&out, &dir, &((struct Hero *)((char *)&hero_globals_base_r2 + 0xE1D))->gravity_dir,
@@ -1995,9 +1994,9 @@ void update_beam_ring_rail_and_pulse_effects(Moby *m) {
             if (p->target != 0) {
                 n = n * 3;
             }
-            spawn_proximity_corrected_size_alpha_tween_particle_r(&tmp, n, col, 0, sign, &out, p->target, s * 0.1f, s);
-            spawn_proximity_corrected_size_alpha_tween_particle_r(&tmp, n, 0x7F7F7F7F, 1, -sign, &out, p->target,
-                                                                  s * 0.07f, s * 0.7f);
+            spawn_proximity_corrected_size_alpha_tween_particle(&tmp, n, col, 0, sign, &out, p->target, s * 0.1f, s);
+            spawn_proximity_corrected_size_alpha_tween_particle(&tmp, n, 0x7F7F7F7F, 1, -sign, &out, p->target,
+                                                                s * 0.07f, s * 0.7f);
         }
     }
     if (fast_dec_timer_r3(&tesla_pulse_spawn_timer_r) != 0) {
@@ -2005,10 +2004,10 @@ void update_beam_ring_rail_and_pulse_effects(Moby *m) {
         for (k = 0; k < 3; k++) {
             if (tesla_pulse_active_r[k] == 0) {
                 tesla_pulse_active_r[k] = 1;
-                tesla_pulse_timer_r[k] = scale_ticks_r2(D_L00_0016181C_2BE3A8);
-                tesla_pulse_travel_r[k] = 0.0f;
+                tesla_pulse_timer[k] = scale_ticks_r2(D_L00_0016181C_2BE3A8);
+                tesla_pulse_travel[k] = 0.0f;
                 tesla_pulse_size_r[k] = D_L00_0016182C_2BE3A8;
-                tesla_pulse_alpha_r[k] = IntToFloat_r2(D_L00_00161833_2BE3A8[0]);
+                tesla_pulse_alpha_r[k] = IntToFloat_r2(tesla_pulse_initial_alpha_r[0]);
                 qcopy(&tesla_pulse_pos_r[k], p);
                 FastVecSub_r(&side, &tesla_chain_points_r[1], &tesla_chain_points_r[0]);
                 vec_scale_to_length_r2(&tesla_pulse_dir_r[k], &side, 1.0f);
@@ -2028,18 +2027,18 @@ void update_beam_ring_rail_and_pulse_effects(Moby *m) {
         if (tesla_pulse_active_r[q] == 0) {
             continue;
         }
-        if (fast_dec_timer_r3(&tesla_pulse_timer_r[q]) != 0) {
+        if (fast_dec_timer_r3(&tesla_pulse_timer[q]) != 0) {
             tesla_pulse_active_r[q] = 0;
             continue;
         }
-        if (tesla_pulse_timer_r[q] < D_L00_00161820_2BE3A8) {
+        if (tesla_pulse_timer[q] < D_L00_00161820_2BE3A8) {
             tesla_pulse_alpha_r[q] = tesla_pulse_alpha_r[q] - D_L00_00161838_2BE3A8;
         }
         dt = D_L00_00161818_2BE3A8 * g_frame_time_r;
-        sum = tesla_pulse_travel_r[q] + dt;
+        sum = tesla_pulse_travel[q] + dt;
         full = D_L00_001617AC_2BE3A8;
         ratio = sum / full;
-        tesla_pulse_travel_r[q] = sum;
+        tesla_pulse_travel[q] = sum;
         if (1.0f < ratio) {
             ratio = 1.0f;
         }
@@ -2050,7 +2049,7 @@ void update_beam_ring_rail_and_pulse_effects(Moby *m) {
             continue;
         }
         n = truncate_float_to_s32_r3(sum / tesla_chain_segment_length_r);
-        rem = tesla_pulse_travel_r[q] - IntToFloat_r2(n) * tesla_chain_segment_length_r;
+        rem = tesla_pulse_travel[q] - IntToFloat_r2(n) * tesla_chain_segment_length_r;
         qcopy(&tesla_pulse_pos_r[q], &tesla_chain_points_r[n]);
         if (n == 11) {
             FastVecSub_r(&side, &tesla_chain_points_r[n], &tesla_chain_points_base_r[n]);
@@ -2888,7 +2887,7 @@ typedef struct Blk {
     float f50; /* 0x50 */
 } Blk;
 extern void FastVecSub_r2(void *, void *, void *) __asm__("func_001F9BF0");
-extern int clamp_vec_length_xy_r(float, void *, void *) __asm__("func_L00_001FF5B0");
+extern int func_L00_001FF5B0(float, void *, void *);
 extern void FastVecAdd_r3(void *, void *, void *) __asm__("func_001F9BD8");
 extern void FastVecScale_r3(void *, void *, float) __asm__("func_001F9C30");
 extern float vec_length_xy_r2(void *) __asm__("func_001F9CE8");
@@ -2903,7 +2902,7 @@ extern float calculate_triangular_corrected_scalar_r(void *a, void *b, int *out,
 extern void accumulate_local_vector_steps_r(void *a, void *b, int n, int c, int d, int e, float g,
                                             int f) __asm__("func_L00_002C0B18");
 extern int coll_line_r4(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
-extern char coll_hit_normal_r[] __asm__("D_L00_00173F80");
+extern char D_L00_00173F80[];
 extern void *g_coll_hit_moby_r2 __asm__("D_L00_00173F58");
 
 /* Tries a hop of the moby toward q: probes the ground at the landing point and the path to it, and sets the jump
@@ -2922,7 +2921,7 @@ int try_start_moby_hop(Mob_2C0CF8 *m, Blk *p, void *q, int flag) {
 
     ok = 1;
     FastVecSub_r2(d, q, m->pos);
-    clamp_vec_length_xy_r(m->f2C * 5.2f / m->p24->f24, d, d);
+    clamp_vec_length_xy(m->f2C * 5.2f / m->p24->f24, d, d);
     FastVecAdd_r3(land, m->pos, d);
     FastVecScale_r3(half, d, 0.5f);
     len = vec_length_xy_r2(half);
@@ -2944,7 +2943,7 @@ int try_start_moby_hop(Mob_2C0CF8 *m, Blk *p, void *q, int flag) {
         }
         return 0;
     }
-    qcopy(mid, coll_hit_normal_r);
+    qcopy(mid, coll_hit_normal);
     vec_scale_to_length_r3(mid, mid, 1.0f);
     sum = FastAbsF_r(mid[0]);
     sum = sum + FastAbsF_r(mid[1]);

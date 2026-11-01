@@ -157,28 +157,27 @@ typedef struct Frame {
 
 extern void UpdateViewContext_r(void) __asm__("func_001F3140");
 extern void BuildViewMatrices_r(void) __asm__("func_001F2608");
-extern void set_scale_matrix_r(float *, float) __asm__("func_001FA1C0");
+extern void func_001FA1C0(float *, float);
 extern void FastVecScale_r(void *, void *, float) __asm__("func_001F9C30");
 extern void VU1_addDataRef_r(void *, int) __asm__("func_00234B48");
 extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
-extern void vu0_lerp_vertex_table_pairs_r(void *, void *, void *, void *, void *, int,
-                                          float) __asm__("func_L02_00250C78");
+extern void func_L02_00250C78(void *, void *, void *, void *, void *, int, float);
 extern char aridia_view_params_r[] __asm__("D_L02_0016D0C0");
-extern int textured_grid_fog_source_mode_r __asm__("D_L02_0015F558") MACRO_ADDR;
+extern int D_L02_0015F558 MACRO_ADDR;
 extern float textured_grid_saved_fog_near_distance_r __asm__("D_L02_00161378") MACRO_ADDR;
 extern float textured_grid_saved_fog_far_distance_r __asm__("D_L02_0016137C") MACRO_ADDR;
 extern float textured_grid_saved_fog_near_intensity_r __asm__("D_L02_00161380") MACRO_ADDR;
 extern float textured_grid_saved_fog_far_intensity_r __asm__("D_L02_00161384") MACRO_ADDR;
 extern char aridia_camera_pos_r[] __asm__("D_L02_00167440");
-extern unsigned short font_vu_program_tag_r __asm__("D_0010E800") NOT_SDA;
-extern char font_vu_program_r[] __asm__("D_0010E810");
+extern unsigned short D_0010E800 NOT_SDA;
+extern char D_0010E810[];
 extern int *l02_packet_r __asm__("D_L02_00161240") MACRO_ADDR;
-extern char aridia_interp_dma_ref_block_r[] __asm__("D_L02_001CBB70");
-extern Frame aridia_interp_anim_frames_r[] __asm__("D_L02_0016D800");
+extern char D_L02_001CBB70[];
+extern Frame D_L02_0016D800[];
 extern int frame_counter_ref_r __asm__("D_L02_0015F6B0") MACRO_ADDR;
-extern char *aridia_interp_vertex_tables_r __asm__("D_L02_0015F520") MACRO_ADDR;
-extern int g_gs_texture_allocation_cursor_r __asm__("D_0015EF74") MACRO_ADDR;
-extern long quad_texture_state_r __asm__("D_L02_00161370") MACRO_ADDR;
+extern char *D_L02_0015F520 MACRO_ADDR;
+extern int D_0015EF74 MACRO_ADDR;
+extern long D_L02_00161370 MACRO_ADDR;
 
 /* Builds one moby's VU1 draw packet: camera matrices and screen setup, the two interpolated vertex tables of
  * its animation frame, then the GS register block for its texture. */
@@ -195,7 +194,7 @@ void build_interpolated_dma_packet(Arg *arg) {
     textured_grid_saved_fog_far_distance_r = ((Cam *)aridia_view_params_r)->f21C;
     textured_grid_saved_fog_near_intensity_r = ((Cam *)aridia_view_params_r)->f228;
     textured_grid_saved_fog_far_intensity_r = ((Cam *)aridia_view_params_r)->f22C;
-    if (textured_grid_fog_source_mode_r != 1) {
+    if (textured_grid_fog_source_mode != 1) {
         ((Cam *)aridia_view_params_r)->f218 = arg->f20;
         ((Cam *)aridia_view_params_r)->f21C = arg->f24;
         ((Cam *)aridia_view_params_r)->f228 = arg->f28;
@@ -203,10 +202,10 @@ void build_interpolated_dma_packet(Arg *arg) {
     }
     UpdateViewContext_r();
     BuildViewMatrices_r();
-    set_scale_matrix_r(m, 1024.0f);
+    set_scale_matrix(m, 1024.0f);
     FastVecScale_r(&m[12], aridia_camera_pos_r, -1024.0f);
     m[15] = 1.0f;
-    VU1_addDataRef_r(font_vu_program_r, font_vu_program_tag_r);
+    VU1_addDataRef_r(font_vu_program, font_vu_program_tag);
     l02_packet_r[0] = 0x10000000;
     l02_packet_r[1] = 0;
     l02_packet_r[2] = 0x11000000;
@@ -240,7 +239,7 @@ void build_interpolated_dma_packet(Arg *arg) {
     l02_packet_r[0] |= ((char *)p - (char *)l02_packet_r >> 4) - 1;
     l02_packet_r = p;
     l02_packet_r[0] = 0x30000003;
-    l02_packet_r[1] = (int)aridia_interp_dma_ref_block_r;
+    l02_packet_r[1] = (int)aridia_interp_dma_ref_block;
     l02_packet_r[2] = 0;
     l02_packet_r[3] = 0x50000003;
     l02_packet_r += 4;
@@ -260,20 +259,20 @@ void build_interpolated_dma_packet(Arg *arg) {
         t = frame_counter_ref_r;
         q = t / arg->frames;
         frac = (float)t / (float)arg->frames - (float)q;
-        e1 = &aridia_interp_anim_frames_r[arg->first + q % arg->count];
-        e2 = &aridia_interp_anim_frames_r[arg->first + (q + 1) % arg->count];
-        pa = aridia_interp_vertex_tables_r + e1->a * 16;
-        pb = aridia_interp_vertex_tables_r + e1->b * 16;
-        pd = aridia_interp_vertex_tables_r + e2->b * 16;
-        pc = aridia_interp_vertex_tables_r + e2->a * 16;
+        e1 = &aridia_interp_anim_frames[arg->first + q % arg->count];
+        e2 = &aridia_interp_anim_frames[arg->first + (q + 1) % arg->count];
+        pa = aridia_interp_vertex_tables + e1->a * 16;
+        pb = aridia_interp_vertex_tables + e1->b * 16;
+        pd = aridia_interp_vertex_tables + e2->b * 16;
+        pc = aridia_interp_vertex_tables + e2->a * 16;
         dst = arg->dst;
         *(long *)dst = 0x0800000000000400;
         *(long *)(arg->dst + 8) = 0;
-        vu0_lerp_vertex_table_pairs_r(arg->dst + 0x10, pa, pb, pc, pd, 0x1000, frac);
+        vu0_lerp_vertex_table_pairs(arg->dst + 0x10, pa, pb, pc, pd, 0x1000, frac);
     }
-    quad_texture_state_r = (g_gs_texture_allocation_cursor_r >> 8) | 0x18100000 | 0x580000000;
+    quad_texture_state = (g_gs_texture_allocation_cursor >> 8) | 0x18100000 | 0x580000000;
     w = arg->c30 | arg->c31 << 8 | arg->c32 << 16;
-    if (textured_grid_fog_source_mode_r == 1) {
+    if (textured_grid_fog_source_mode == 1) {
         w = ((Cam *)aridia_view_params_r)->c230 | ((Cam *)aridia_view_params_r)->c234 << 8 |
             ((Cam *)aridia_view_params_r)->c238 << 16;
     }
@@ -287,11 +286,11 @@ void build_interpolated_dma_packet(Arg *arg) {
     c[1] = 0xEEEEEEEE;
     c[2] = (long)arg->alpha << 32 | 0x64;
     c[3] = 0x42;
-    c[4] = quad_texture_state_r;
+    c[4] = quad_texture_state;
     c[5] = 6;
     c[6] = w;
     c[7] = 0x3D;
-    c[8] = (long)(g_gs_texture_allocation_cursor_r >> 8) << 32 | 0x1000000000000;
+    c[8] = (long)(g_gs_texture_allocation_cursor >> 8) << 32 | 0x1000000000000;
     c[9] = 0x50;
     c[10] = 0;
     c[11] = 0x51;
@@ -318,7 +317,7 @@ void build_interpolated_dma_packet(Arg *arg) {
     c[2] = 0;
     c[3] = 0x3F;
     l02_packet_r = (int *)(c + 4);
-    g_gs_texture_allocation_cursor_r += 0x4000;
+    g_gs_texture_allocation_cursor += 0x4000;
 }
 extern void vu1_add_vif_code(int);
 extern void UpdateViewContext(void);
@@ -367,13 +366,13 @@ void trackdrive_left_update(struct Moby *moby) {
         moby->flags |= 0x40;
     }
 }
-extern int process_moby_suck_cannon_suction_pt(void *, void *, void *, float) __asm__("func_L00_002DCDA8");
+extern int func_L00_002DCDA8(void *, void *, void *, float);
 /* Calls process_moby_suck_cannon_suction(a) and sets state 9 from its result; returns the result. */
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
    calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as
    they came (retail touches none of a1, a2 and $f12 before its call). */
 int Moby_UpdateState9FromCheck(struct Moby *moby, void *pos, void *target, float h) {
-    int r = process_moby_suck_cannon_suction_pt(moby, pos, target, h);
+    int r = process_moby_suck_cannon_suction(moby, pos, target, h);
     if (r == 0) {
         if (moby->state == 9)
             moby->state = 1;
@@ -449,8 +448,8 @@ typedef struct {
 } Idle;
 extern int Moby_PlaySound_r(int, int, Moby *) __asm__("func_0022ED80");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
-extern int HeroL02_SetMoveState_r(int, int) __asm__("func_L02_0022BE40");
-extern void set_hero_animation_r(int, int, float) __asm__("func_L00_00232C10");
+extern int func_L02_0022BE40(int, int);
+extern void func_L00_00232C10(int, int, float);
 extern void CameraScript_r(void *, void *, int, int, int) __asm__("func_L00_002EBF50");
 extern void align_hero_to_tresspasser_pad_r(Moby *) __asm__("func_L02_002DA728");
 extern void compute_tresspasser_pad_camera_transform_r(void *, void *, Moby *) __asm__("func_L02_002D9D48");
@@ -464,25 +463,25 @@ extern int force_help_message_r(int, int) __asm__("func_00216028");
 extern float FastDiffRots_r(float, float) __asm__("func_001FA850");
 extern void AddDrawCallback_r(void (*)(void), Moby *) __asm__("func_001F49B0");
 extern void draw_tresspasser_puzzle_r(void) __asm__("func_L02_002DA820");
-extern int FastDecTimer_r(void *) __asm__("func_001F9938");
+extern int func_001F9938(void *);
 extern void CameraScript2_r(int) __asm__("func_L00_002EC0C8");
 extern void request_hero_idle_state_for_vehicle_mode_r(void) __asm__("func_L01_00240CE8");
-extern void StepColorFade_r(Moby *, struct TrespasserPuzzleVars *) __asm__("func_L00_0025E590");
+extern void func_L00_0025E590(Moby *, struct TrespasserPuzzleVars *);
 extern float trespasser_arrow_corners_r[4][4] __asm__("D_L02_001D3680");
 typedef struct {
     char pad0[0x454];
     unsigned char collected[1];
 } Lvl;
-extern Lvl aridia_moby_collected_r __asm__("D_L02_001BBB40");
+extern Lvl D_L02_001BBB40;
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
-extern char level_moby_killed_r[] __asm__("D_0014C290");
+extern char D_0014C290[];
 extern Vec4A aridia_camera_pos_r2[] __asm__("D_L02_00167440");
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
-extern int aridia_tresspasser_pad_camera_set_r __asm__("D_L02_0017EB88");
+extern int D_L02_0017EB88;
 extern Cam_2D9F08 aridia_player_camera_r2 __asm__("D_L02_00167300");
 extern Idle aridia_help_popup_state_r __asm__("D_L02_00179A90");
-extern int aridia_moby_killed_r[] __asm__("D_L02_001BADE0");
+extern int D_L02_001BADE0[];
 extern int D_L02_00161BAC_2D9F08 SDATA(D_L02_00161BAC);
 extern int D_L02_00161B38_2D9F08 SDATA(D_L02_00161B38);
 extern int D_L02_00161B34_2D9F08 SDATA(D_L02_00161B34);
@@ -515,8 +514,8 @@ void tresspasser_pad_update(Moby *moby) {
             trespasser_arrow_corners_r[0][0] = 17.0f;
             D_L02_00161BAC_2D9F08 = data->unk_EC;
             if (moby->mission != 0xFF) {
-                if (aridia_moby_collected_r.collected[(short)moby->save_id] != 0 ||
-                    (((int *)(level_moby_killed_r + (g_current_level_index_r << 8)))[(short)moby->save_id >> 5] >>
+                if (aridia_moby_collected.collected[(short)moby->save_id] != 0 ||
+                    (((int *)(level_moby_killed + (g_current_level_index_r << 8)))[(short)moby->save_id >> 5] >>
                      (moby->save_id & 0x1F)) &
                         1) {
                     moby->state = 4;
@@ -544,8 +543,8 @@ void tresspasser_pad_update(Moby *moby) {
                     data->timer = scale_ticks_r(0x12C);
                     data->unk_11C = 0;
                     data->input_flags = 0;
-                    HeroL02_SetMoveState_r(0x72, 0);
-                    set_hero_animation_r(0x57, 0, scale_ticks_r(6));
+                    HeroL02_SetMoveState(0x72, 0);
+                    set_hero_animation(0x57, 0, scale_ticks_r(6));
                     CameraScript_r(&aridia_camera_pos_r2[0], &aridia_camera_pos_r2[1], 1, 0, 0);
                     moby->state = 2;
                     data->timer = scale_ticks_r(0x3C);
@@ -570,7 +569,7 @@ void tresspasser_pad_update(Moby *moby) {
                 FastAddRots_r(FastSubRots_r(camera_rot.y, data->camera_rot.y) * data->camera_t, data->camera_rot.y);
             set_camera_position_r(&camera_pos);
             set_camera_rotation_r(&camera_rot);
-            aridia_tresspasser_pad_camera_set_r = 1;
+            aridia_tresspasser_pad_camera_set = 1;
             force_help_message_r(6, 0);
             if (aridia_player_camera_r2.p180 != 0 && aridia_player_camera_r2.p180->unk86 != 5) {
                 CameraScript_r(&aridia_player_camera_r2.v140, &aridia_player_camera_r2.v150, 1, 0, 0);
@@ -615,7 +614,7 @@ void tresspasser_pad_update(Moby *moby) {
                         }
                     }
                 } else if (i == 12) {
-                    if (FastDecTimer_r(&data->timer)) {
+                    if (FastDecTimer(&data->timer)) {
                         moby->state = 3;
                     }
                 } else if (((PadDwords *)(pad_globals_base_r + 0x2460))->unmasked.l & 0xA00000000000) {
@@ -644,7 +643,7 @@ void tresspasser_pad_update(Moby *moby) {
                     }
                 }
             } else if (g_hero_r.anim_flags & 2) {
-                set_hero_animation_r(0x58, 0, scale_ticks_r(6));
+                set_hero_animation(0x58, 0, scale_ticks_r(6));
             }
             if (i != 12) {
                 if (((((PadState *)(pad_globals_base_r + 0x2460))->pressed & 0x10) &&
@@ -661,18 +660,18 @@ void tresspasser_pad_update(Moby *moby) {
         case 3:
             if (g_hero_r.anim_flags & 2) {
                 if (moby->mission != 0xFF) {
-                    ((int *)(level_moby_killed_r + (g_current_level_index_r << 8)))[(short)moby->save_id >> 5] |=
+                    ((int *)(level_moby_killed + (g_current_level_index_r << 8)))[(short)moby->save_id >> 5] |=
                         1 << (moby->save_id & 0x1F);
-                    aridia_moby_killed_r[(short)moby->save_id >> 5] |= 1 << (moby->save_id & 0x1F);
+                    aridia_moby_killed[(short)moby->save_id >> 5] |= 1 << (moby->save_id & 0x1F);
                 }
                 CameraScript2_r(1);
-                HeroL02_SetMoveState_r(HERO_STATE_IDLE, 1);
+                HeroL02_SetMoveState(HERO_STATE_IDLE, 1);
                 moby->command = 1;
                 moby->state = 4;
             }
             break;
     }
-    StepColorFade_r(moby, data);
+    StepColorFade(moby, data);
 }
 
 extern void FastVecSub();
@@ -1501,8 +1500,8 @@ state3:
 move:
     update_entity_matrix(data->entity_matrix, &data->velocity, &moby->rot, &moby->rot);
 }
-extern int aridia_mobys_x __asm__("D_L02_00160058") MACRO_ADDR;
-extern unsigned char help_stats_base_x[] __asm__("D_0014171B");
+extern int D_L02_00160058 MACRO_ADDR;
+extern unsigned char D_0014171B[];
 extern float g_frame_time_sq MACRO_ADDR;
 extern short versatarget_sparkle_lifetime;
 extern short versatarget_sparkle_color;
@@ -1511,7 +1510,7 @@ extern short versatarget_sparkle_offset;
 extern void set_moby_color(void *, int, int, int);
 extern void initialize_camera_offset_effect_state_c(char *) __asm__("func_L02_002FBB10");
 extern void try_select_camera_offset_effect_moby_c(char *) __asm__("func_L02_002FBC00");
-extern float SteerAngleWithVelocity_f(float *, float, float *, float, float, float) __asm__("func_L00_0025CE58");
+extern float func_L00_0025CE58(float *, float, float *, float, float, float);
 extern void vec_scale_to_length(void *, void *, float);
 extern float multiply_global_factor(float);
 extern int truncate_float_to_s32(float);
@@ -1539,7 +1538,7 @@ void swingshot_versatarget_update(char *m) {
         case VERSATARGET_STATE_INITIALIZE:
             if (moby_data->unk30 != -1 ||
                 (moby_data->unk3C != -1 &&
-                 (linked_moby = (struct Moby *)(aridia_mobys_x + (moby_data->unk3C << 8))) != 0 &&
+                 (linked_moby = (struct Moby *)(aridia_mobys + (moby_data->unk3C << 8))) != 0 &&
                  linked_moby->state != 0xFE && linked_moby->state != 0xFD)) {
                 ((struct Moby *)m)->update_dist = 0xFF;
                 ((struct Moby *)m)->state = 2;
@@ -1556,8 +1555,8 @@ void swingshot_versatarget_update(char *m) {
                 float *rz = &((struct Moby *)m)->rot.z;
                 float yaw = fast_atan2(hero_ptr->motion.pos.f[0] - ((struct Moby *)m)->pos.x,
                                        hero_ptr->motion.pos.f[1] - ((struct Moby *)m)->pos.y);
-                SteerAngleWithVelocity_f(rz, yaw, &moby_data->unk38, g_frame_time_sq * 6.2831855f,
-                                         g_frame_time_sq * 6.2831855f, g_frame_time * 12.566371f);
+                SteerAngleWithVelocity(rz, yaw, &moby_data->unk38, g_frame_time_sq * 6.2831855f,
+                                       g_frame_time_sq * 6.2831855f, g_frame_time * 12.566371f);
                 if (frame_counter_ref_r & 1) {
                     if (((struct Moby *)m)->visible != 0) {
                         float direction_sign = 1.0f;
@@ -1585,9 +1584,9 @@ void swingshot_versatarget_update(char *m) {
             }
             break;
         case VERSATARGET_STATE_INACTIVE:
-            if ((help_stats_base_x + 0xAA35)[moby_data->unk30 + (g_current_level_index_r << 4)] != 0 ||
+            if ((help_stats_base + 0xAA35)[moby_data->unk30 + (g_current_level_index_r << 4)] != 0 ||
                 (moby_data->unk3C != -1 &&
-                 ((linked_moby = (struct Moby *)(aridia_mobys_x + (moby_data->unk3C << 8))) == 0 ||
+                 ((linked_moby = (struct Moby *)(aridia_mobys + (moby_data->unk3C << 8))) == 0 ||
                   linked_moby->state == 0xFE || linked_moby->state == 0xFD))) {
                 ((struct Moby *)m)->flags &= 0xFFBE;
                 moby_data->unk30 = -1;
@@ -2770,10 +2769,10 @@ int test_moby_camera_target_angle_limits(char *moby, float a, float b) {
     }
     return 0;
 }
-extern PadState g_controller_state_r __asm__("D_0013CA40");
-extern int aridia_moby_groups_r[] __asm__("D_L02_001AC140");
-extern void f_reset_2FCE00(char *) __asm__("func_L00_002E9838");
-extern int f_ready_2FCE00(char *) __asm__("func_L00_002E9870");
+extern PadState D_0013CA40;
+extern int D_L02_001AC140[];
+extern void func_L00_002E9838(char *);
+extern int func_L00_002E9870(char *);
 extern int f_trigger_2FCE00(char *) __asm__("func_L02_002FCA80");
 extern float f_atan_2FCE00(float, float) __asm__("func_L00_001FF860");
 extern float f_abs_2FCE00(float) __asm__("func_001F9B88");
@@ -2785,10 +2784,10 @@ extern void f_6598_2FCE00(float, float, float) __asm__("func_L02_002F79D0");
 extern float f_itof_2FCE00(int) __asm__("func_001FA888");
 extern float f_cos_2FCE00(float) __asm__("func_001F9F90");
 extern float f_sin_2FCE00(float) __asm__("func_001F9FA8");
-extern void f_8918_2FCE00(float, float, float *) __asm__("func_L00_002E9DC8");
-extern void f_8970_2FCE00(float, float, void *) __asm__("func_L00_002E9E20");
-extern void f_8450_2FCE00(int, float, float) __asm__("func_L00_002E9900");
-extern void f_8620_2FCE00(void) __asm__("func_L00_002E9AD0");
+extern void func_L00_002E9DC8(float, float, float *);
+extern void func_L00_002E9E20(float, float, void *);
+extern void func_L00_002E9900(int, float, float);
+extern void func_L00_002E9AD0(void);
 extern void f_84b8_2FCE00(float, float) __asm__("func_L00_002E9968");
 extern void f_84f0_2FCE00(int, float, float) __asm__("func_L00_002E99A0");
 extern void f_8568_2FCE00(int) __asm__("func_L00_002E9A18");
@@ -2821,15 +2820,15 @@ void apply_moby_camera_control(char *moby) {
 
     if (*(int *)(data + 0x50) != 0) {
         *(short *)(data + 0x20) = 0;
-        f_reset_2FCE00(moby);
+        clear_follow_camera_volume_if_current(moby);
         return;
     }
     index = *(int *)(data + 0x44);
     if (index >= 0) {
-        group = (unsigned short *)aridia_moby_groups_r[index];
+        group = (unsigned short *)aridia_moby_groups[index];
         if (group == 0) {
             *(short *)(data + 0x20) = -1;
-            f_reset_2FCE00(moby);
+            clear_follow_camera_volume_if_current(moby);
             return;
         }
         {
@@ -2838,7 +2837,7 @@ void apply_moby_camera_control(char *moby) {
             int b;
             {
                 int e = *group;
-                b = aridia_mobys_x;
+                b = aridia_mobys;
                 first_group_target = (char *)(b + ((e & 0x7fff) << 8));
                 id = e;
             }
@@ -2846,13 +2845,13 @@ void apply_moby_camera_control(char *moby) {
                 do {
                     if ((id << 16) < 0) {
                         *(short *)(data + 0x20) = -1;
-                        f_reset_2FCE00(moby);
+                        clear_follow_camera_volume_if_current(moby);
                         return;
                     }
                     group++;
                     {
                         int e = *group;
-                        b = aridia_mobys_x;
+                        b = aridia_mobys;
                         u = (char *)(b + ((e & 0x7fff) << 8));
                         id = e;
                     }
@@ -2863,34 +2862,34 @@ void apply_moby_camera_control(char *moby) {
             }
         }
     } else {
-        target = (char *)(aridia_mobys_x + (*(int *)(data + 0x28) << 8));
+        target = (char *)(aridia_mobys + (*(int *)(data + 0x28) << 8));
         if (*(signed char *)(target + 0x20) < 0) {
             *(short *)(data + 0x20) = -1;
-            f_reset_2FCE00(moby);
+            clear_follow_camera_volume_if_current(moby);
             return;
         }
     }
     *(char **)(data + 0x48) = target;
     if (*(short *)(data + 0x3c) == 6 && (char *)g_hero.ground_moby != target) {
         *(short *)(data + 0x20) = 0;
-        f_reset_2FCE00(moby);
+        clear_follow_camera_volume_if_current(moby);
         return;
     }
-    if (f_ready_2FCE00(moby) <= 0) {
+    if (try_select_follow_camera_volume(moby) <= 0) {
         *(short *)(data + 0x20) = 0;
         return;
     }
     if (f_trigger_2FCE00(moby) == 0) {
         *(short *)(data + 0x20) = 0;
-        f_reset_2FCE00(moby);
+        clear_follow_camera_volume_if_current(moby);
         return;
     }
     if (*(short *)(data + 0x3c) == 5) {
         angle = f_atan_2FCE00(*(float *)aridia_camera_moby, *(float *)(aridia_camera_moby + 4));
         if (*(short *)(data + 0x20) < 2)
             *(float *)(data + 0x40) = *(float *)(aridia_camera_descriptors + *(short *)(moby + 0x84) * 32 + 0x18);
-        else if (f_abs_2FCE00(g_controller_state_r.analog[0]) >= 0.3f ||
-                 f_abs_2FCE00(g_controller_state_r.analog[1]) >= 0.3f)
+        else if (f_abs_2FCE00(g_controller_state.analog[0]) >= 0.3f ||
+                 f_abs_2FCE00(g_controller_state.analog[1]) >= 0.3f)
             *(float *)(data + 0x40) = angle;
         heading = *(float *)(data + 0x40);
         if (f_diffrot_2FCE00(heading, angle) > 1.5707964f)
@@ -2918,7 +2917,7 @@ void apply_moby_camera_control(char *moby) {
         frames = f_frames_2FCE00(200);
     }
     if (*(short *)(data + 0x3c) == 7) {
-        if (g_controller_state_r.analog[0] != 0.0f)
+        if (g_controller_state.analog[0] != 0.0f)
             *(short *)(data + 0x20) = duration;
         count = *(short *)(data + 0x20);
         if (count >= duration) {
@@ -2941,7 +2940,7 @@ void apply_moby_camera_control(char *moby) {
     } else if ((unsigned short)(*(short *)(data + 0x3c) - 1) < 2) {
         f_6570_2FCE00(176);
         f_6598_2FCE00(1.0f, 12.0f, 0.11f);
-        if (g_controller_state_r.analog[0] != 0.0f || g_controller_state_r.analog[1] != 0.0f)
+        if (g_controller_state.analog[0] != 0.0f || g_controller_state.analog[1] != 0.0f)
             *(short *)(data + 0x20) = duration;
         if (*(short *)(data + 0x20) >= duration) {
             int waited = (unsigned short)*(short *)(data + 0x3e) + 1;
@@ -2976,7 +2975,7 @@ void apply_moby_camera_control(char *moby) {
                 vec[0] = f_cos_2FCE00(*(float *)(data + 0x40));
                 vec[1] = f_sin_2FCE00(*(float *)(data + 0x40));
                 vec[2] = 0.0f;
-                f_8918_2FCE00(amount, 0.0f, vec);
+                set_follow_camera_angle_blend_from_direction(amount, 0.0f, vec);
             } else if (*(short *)(data + 0x3c) == 3) {
                 float speed;
                 if (*(short *)(data + 0x20) < f_frames_2FCE00(90))
@@ -2984,15 +2983,15 @@ void apply_moby_camera_control(char *moby) {
                         (amount - 0.0f) * ((float)*(short *)(data + 0x20) / f_itof_2FCE00(f_frames_2FCE00(90))) + 0.0f;
                 else
                     speed = amount;
-                f_8970_2FCE00(speed, 0.0f, target + 0x10);
+                set_follow_camera_angle_blend_from_position(speed, 0.0f, target + 0x10);
             } else {
-                f_8970_2FCE00(amount, 0.0f, target + 0x10);
+                set_follow_camera_angle_blend_from_position(amount, 0.0f, target + 0x10);
             }
         }
     }
     if (*(float *)(data + 0x34) != 0.0f) {
-        f_8450_2FCE00(0, *(float *)(data + 0x34), 0.003f);
-        f_8620_2FCE00();
+        Cam_SetDistanceGoal(0, *(float *)(data + 0x34), 0.003f);
+        set_follow_camera_flag_226();
     }
     if (*(float *)(data + 0x38) != 0.0f)
         f_84b8_2FCE00(*(float *)(data + 0x38), 0.003f);
@@ -3001,7 +3000,7 @@ void apply_moby_camera_control(char *moby) {
     if (*(short *)(data + 0x3c) == 3) {
         float heading;
         f_8568_2FCE00(0);
-        f_8620_2FCE00();
+        set_follow_camera_flag_226();
         f_8648_2FCE00();
         f_upspring_2FCE00(0.01f, 0.2f);
         if (*(short *)(data + 0x20) >= f_frames_2FCE00(120))
@@ -3012,19 +3011,19 @@ void apply_moby_camera_control(char *moby) {
     }
     if ((unsigned short)(*(short *)(data + 0x3c) - 4) < 2) {
         f_8568_2FCE00(0);
-        f_8620_2FCE00();
+        set_follow_camera_flag_226();
         f_8648_2FCE00();
         f_upspring_2FCE00(0.02f, 0.2f);
-        f_8450_2FCE00(0, 5.84f, 0.003f);
+        Cam_SetDistanceGoal(0, 5.84f, 0.003f);
         if (*(short *)(data + 0x3c) == 4) {
             float angle;
             f_vsub_2FCE00(vec, target + 0x10, &g_hero.motion.pos);
             angle = f_atan_2FCE00(vec[0], vec[1]);
             if (hit && f_diffrot_2FCE00(angle, *(float *)(data + 0x40)) > 1.9198622f) {
                 if (*(float *)(data + 0x34) != 0.0f)
-                    f_8450_2FCE00(0, *(float *)(data + 0x34) + 3.36f, 0.003f);
+                    Cam_SetDistanceGoal(0, *(float *)(data + 0x34) + 3.36f, 0.003f);
                 else
-                    f_8450_2FCE00(0, 8.0f, 0.003f);
+                    Cam_SetDistanceGoal(0, 8.0f, 0.003f);
             }
         }
         f_6570_2FCE00(176);

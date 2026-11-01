@@ -553,7 +553,7 @@ typedef struct {
 extern LeanState lean_state_r2 __asm__("D_L00_0017A780");
 extern f32 lean_state_18_scale[];
 
-extern u8 gCheats_r[] __asm__("D_0015EEB0") MACRO_ADDR;
+extern u8 D_0015EEB0[] MACRO_ADDR;
 
 /* In hero state 2, sets the lean values from motion.unk188 (clamped to +-1.4); needs the moby in item slot 3.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00214658.c, FUN_L00_00215ef8. */
@@ -566,7 +566,7 @@ void update_hero_lean_and_sway_parameters(void) {
 
     if (h->items[3].moby2 == 0)
         return;
-    if (gCheats_r[3] != 0)
+    if (gCheats[3] != 0)
         lean_state_18_scale[0] = (*(f32 *)&sound_volume_10);
     scale = 1024.0f / h->items[3].moby2->scale;
     if (h->state.current == HERO_STATE_RUN) {

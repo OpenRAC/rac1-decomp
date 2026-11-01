@@ -7,7 +7,7 @@
 extern int scale_ticks(int);
 extern unsigned char *create_part(int);
 extern void FastVecSub(void *, void *, void *);
-extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
+extern int func_001FA898(float);
 extern unsigned char *fleet_trail_texture_ptr;
 
 // Spawns a Scenery Ship particle at a position with a direction, optionally relative to a parent.
@@ -30,7 +30,7 @@ unsigned char *spawn_trail_particle(char *parent, void *pos, float *vec) {
         }
         *(char **)(d + 0x1C) = parent;
         *(int *)(p + 4) = 0x604040FF;
-        p[9] = truncate_float_to_s32_r(1.0f) + 0x20;
+        p[9] = truncate_float_to_s32(1.0f) + 0x20;
         p[3] = 0x48;
         *(float *)(p + 0xC) = 42000.0f;
         p[8] = b;
@@ -54,7 +54,7 @@ unsigned char *create_drone_flight_trail_record(char *pos, int mode, int step) {
         p = create_part(0x50);
         if (p != 0) {
             qcopy(p + 0x10, pos);
-            p[9] = truncate_float_to_s32_r(1.0f) + 0x70;
+            p[9] = truncate_float_to_s32(1.0f) + 0x70;
             *(int *)(p + 0x20) = mode;
             if (mode == 0) {
                 int d = 0xF - step;

@@ -68,7 +68,7 @@ extern int FastBSphereCheck(char *, float);
 extern void FastVecSub(void *, void *, void *);
 extern float FastVecLength(void *);
 
-extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
+extern int func_001FA898(float);
 
 extern void AddDrawCallback(void (*)(void), void *);
 
@@ -154,7 +154,7 @@ void update_level11_layered_effect_and_queue_draw(unsigned char *moby) {
                     *(unsigned char *)&pokitaru_layered_fade_alpha = 0xFF;
                 } else if (effect_distance < 35.0f) {
                     *(char *)&pokitaru_layered_fade_alpha =
-                        truncate_float_to_s32_r((1.0f - (effect_distance - 15.0f) / 20.0f) * 255.0f);
+                        truncate_float_to_s32((1.0f - (effect_distance - 15.0f) / 20.0f) * 255.0f);
                 } else {
                     *(char *)&pokitaru_layered_fade_alpha = 0;
                 }
@@ -206,7 +206,7 @@ extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern void emit_render_batches_with_pair_offset(int arg);
 extern void emit_oil_tanker_render_batches_with_pair_offset(int);
 
-extern int distance_faded_effect_fade_alpha_w __asm__("D_L11_001626A0") MACRO_ADDR;
+extern int D_L11_001626A0 MACRO_ADDR;
 extern int distance_faded_effect_texture_29_fixed_alpha_scale MACRO_ADDR;
 extern int distance_faded_effect_texture_2a_pair_one_fixed_alpha MACRO_ADDR;
 extern short distance_faded_effect_texture_2c_fixed_alpha;
@@ -233,16 +233,16 @@ void draw_level11_distance_faded_effect_batches(char *m) {
         VU1_addGSregister(0x42, ((long)*(int *)&distance_faded_effect_texture_2c_fixed_alpha << 32) | 0x44);
         emit_render_batches_with_pair_offset(0);
     }
-    if (*(unsigned char *)&distance_faded_effect_fade_alpha_w != 0 && flag) {
+    if (*(unsigned char *)&distance_faded_effect_fade_alpha != 0 && flag) {
         VU1_addGSregister(6, GetEffectTex(0x29));
         VU1_addGSregister(0x42, ((long)((distance_faded_effect_texture_29_fixed_alpha_scale *
-                                         *(unsigned char *)&distance_faded_effect_fade_alpha_w) >>
+                                         *(unsigned char *)&distance_faded_effect_fade_alpha) >>
                                         8)
                                  << 32) |
                                     0x68);
         emit_render_batches_with_pair_offset(1);
         VU1_addGSregister(0x42, ((long)((distance_faded_effect_texture_29_fixed_alpha_scale *
-                                         *(unsigned char *)&distance_faded_effect_fade_alpha_w) >>
+                                         *(unsigned char *)&distance_faded_effect_fade_alpha) >>
                                         8)
                                  << 32) |
                                     0x62);
@@ -264,7 +264,7 @@ typedef struct {
 } PairA_3205C0;
 
 extern PairA_3205C0 pokitaru_faded_uv_scroll_p[] __asm__("D_L11_00217A18");
-extern PairA_3205C0 distance_faded_effect_sine_phase_p[] __asm__("D_L11_001626C0") MACRO_ADDR;
+extern PairA_3205C0 D_L11_001626C0[] MACRO_ADDR;
 extern float pokitaru_faded_scroll_entries_b[] MACRO_ADDR;
 extern PairA_3205C0 pokitaru_faded_2b_scroll[] MACRO_ADDR;
 extern float distance_faded_effect_position_y MACRO_ADDR;
@@ -305,8 +305,8 @@ void update_level11_distance_faded_effect_and_queue_draw(unsigned char *moby) {
             for (i = 0; i < 3; i++) {
                 pokitaru_faded_uv_scroll_p[i].a = 0;
                 pokitaru_faded_uv_scroll_p[i].b = 0;
-                distance_faded_effect_sine_phase_p[0].a = 0;
-                distance_faded_effect_sine_phase_p[0].b = 0;
+                distance_faded_effect_sine_phase[0].a = 0;
+                distance_faded_effect_sine_phase[0].b = 0;
             }
             for (i = 0; i < 2; i++) {
                 pokitaru_faded_scroll_entries[i].a = 0;
@@ -335,15 +335,15 @@ void update_level11_distance_faded_effect_and_queue_draw(unsigned char *moby) {
                         if (effect_distance <= 100.0f) {
                             advance_scroll_offsets(0);
                             advance_wrapped_sine_pair(pokitaru_faded_uv_wobble, 0.52f, 0.62f, 0.06f,
-                                                      distance_faded_effect_sine_phase_p);
+                                                      distance_faded_effect_sine_phase);
                             advance_scroll_offsets(2);
                             if (effect_distance < 80.0f) {
-                                *(unsigned char *)&distance_faded_effect_fade_alpha_w = 0xFF;
+                                *(unsigned char *)&distance_faded_effect_fade_alpha = 0xFF;
                             } else if (effect_distance < 100.0f) {
-                                *(char *)&distance_faded_effect_fade_alpha_w =
-                                    truncate_float_to_s32_r((1.0f - (effect_distance - 80.0f) / 20.0f) * 255.0f);
+                                *(char *)&distance_faded_effect_fade_alpha =
+                                    truncate_float_to_s32((1.0f - (effect_distance - 80.0f) / 20.0f) * 255.0f);
                             } else {
-                                *(char *)&distance_faded_effect_fade_alpha_w = 0;
+                                *(char *)&distance_faded_effect_fade_alpha = 0;
                             }
                         }
                         advance_scroll_entry(0);

@@ -271,10 +271,10 @@ typedef struct {
     float unk30[4];
     float normal[4];
 } L16SparkHit;
-extern L16SparkHit kalebo3_coll_hit_hit __asm__("D_L16_001742C0");
+extern L16SparkHit D_L16_001742C0;
 extern char *kalebo3_part_type23_textures;
 extern char hero_globals_base[];
-extern char kalebo3_zero_vec_spark[] __asm__("D_L16_0015F660") MACRO_ADDR;
+extern char D_L16_0015F660[] MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR, g_frame_time_sq MACRO_ADDR;
 extern float ApproachValue(float *, float, float);
 extern int scale_ticks(int);
@@ -291,7 +291,7 @@ extern void matrix_mul_vec3(void *, void *, void *);
 extern float random_angle_radians(void);
 extern void build_look_at_matrix(void *, void *, void *, float);
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
-extern int coll_line_spark(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
+extern int func_L00_001EFFF0(void *, void *, int, void *, void *);
 extern int FastDecTimer(void *);
 extern void DeleteMoby(void *);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
@@ -367,8 +367,8 @@ void HomingSparkUpdate(Moby *m) {
                 query.kind = 3;
                 query.cls = *(unsigned short *)&m->oclass;
                 query.enabled = impact_state;
-                if (coll_line_spark(previous.f, position, 0, *(void **)&player->moby, &query)) {
-                    L16SparkHit *result = &kalebo3_coll_hit_hit;
+                if (coll_line(previous.f, position, 0, *(void **)&player->moby, &query)) {
+                    L16SparkHit *result = &kalebo3_coll_hit;
                     char *hit = result->moby;
                     if (hit) {
                         if (hit == *(char **)&player->moby || hit == *(char **)((char *)d))
@@ -385,8 +385,7 @@ void HomingSparkUpdate(Moby *m) {
             break;
         }
         case 1:
-            spawn_explosion(m, kalebo3_zero_vec_spark, 0, 0.0f, 0.0f, 3, 3, 5, 1.0f, 0.5f, 4.0f, 0, 0.7f, 7.0f, 0, 0,
-                            -1, 0);
+            spawn_explosion(m, kalebo3_zero_vec, 0, 0.0f, 0.0f, 3, 3, 5, 1.0f, 0.5f, 4.0f, 0, 0.7f, 7.0f, 0, 0, -1, 0);
             DeleteMoby(m);
             break;
     }
@@ -600,20 +599,20 @@ void update_thrown_bomb(L16FallingMoby *m) {
            copied a second time for the ground test). */
             qcopy(previous, m->position);
             FastVecAdd(m->position, m->position, d->velocity);
-            if (coll_line_spark(previous, m->position, 5, d->owner, 0)) {
-                vec_scale_to_length(normal, kalebo3_coll_hit_hit.normal, 1.0f);
+            if (coll_line(previous, m->position, 5, d->owner, 0)) {
+                vec_scale_to_length(normal, kalebo3_coll_hit.normal, 1.0f);
                 if (FastVecDot(normal, d->velocity) < 0.0f) {
                     vec_reflect(d->velocity, d->velocity, normal);
                     FastVecScale(d->velocity, d->velocity, 0.25f);
                 }
             }
             if (coll_sphere(0.333f, m->position, 2, 0)) {
-                vec_scale_to_length(normal, kalebo3_coll_hit_hit.normal, 0.333f);
+                vec_scale_to_length(normal, kalebo3_coll_hit.normal, 0.333f);
                 if (FastVecDot(normal, d->velocity) < 0.0f) {
                     vec_reflect(d->velocity, d->velocity, normal);
                     FastVecScale(d->velocity, d->velocity, 0.25f);
                 }
-                qcopy(m->position, kalebo3_coll_hit_hit.position);
+                qcopy(m->position, kalebo3_coll_hit.position);
                 m->position[2] += normal[2];
                 if (normal[2] >= 0.3f && FastVecLength(d->velocity) < g_frame_time * 0.25f) {
                     m->state = 2;
@@ -638,20 +637,20 @@ void update_thrown_bomb(L16FallingMoby *m) {
             break;
         case 3:
             Moby_PlaySound_i(0, 0, m);
-            spawn_explosion(m, kalebo3_zero_vec_spark, 0, 1.5f, 1.0f, 7, 10, 20, 3.0f, 1.7f, 4.0f, -1, 1.0f, 7.0f, 0, 7,
-                            -1, 0);
+            spawn_explosion(m, kalebo3_zero_vec, 0, 1.5f, 1.0f, 7, 10, 20, 3.0f, 1.7f, 4.0f, -1, 1.0f, 7.0f, 0, 7, -1,
+                            0);
             DeleteMoby(m);
             return;
     }
     StepColorFade(m, d);
 }
-extern char *CreateMoby_m(int) __asm__("func_0020D348");
+extern char *func_0020D348(int);
 
 extern void moby_build_matrix(void *);
 
 // Spawns a Bomb moby and initialises its data, position and angles.
 unsigned char *spawn_thrown_bomb(int a, void *pos, float *dir, int c, float f) {
-    unsigned char *moby = (unsigned char *)CreateMoby_m(0x119);
+    unsigned char *moby = (unsigned char *)CreateMoby(0x119);
     if (moby != 0) {
         struct ThrownBombVars *data = (struct ThrownBombVars *)((Moby *)moby)->pvars;
         ((Moby *)moby)->update_dist = 0xFF;
@@ -1124,13 +1123,13 @@ void test_dummy_update(unsigned char *moby) {
             qcopy(dummy_data->spawn, &((struct Moby *)moby)->pos);
             switch (dummy_data->kind) {
                 case TEST_DUMMY_KIND_THROWER:
-                    dummy_data->child = CreateMoby_m(0x35F);
+                    dummy_data->child = CreateMoby(0x35F);
                     break;
                 case TEST_DUMMY_KIND_PATH_MOVER:
-                    dummy_data->child = CreateMoby_m(0x374);
+                    dummy_data->child = CreateMoby(0x374);
                     break;
                 case TEST_DUMMY_KIND_SPRAYER:
-                    dummy_data->child = CreateMoby_m(0x36C);
+                    dummy_data->child = CreateMoby(0x36C);
                     reset_shot_tracking(dummy_data->slots);
                     break;
             }
@@ -1336,12 +1335,12 @@ void test_dummy_update(unsigned char *moby) {
             dummy_data->f20 = 2.0f;
             dummy_data->timer = scale_ticks(60);
             burst = g_frame_time_sq * 12.0f;
-            SpawnBreakFragment(moby, 0x655, position, rot, 0, 0, burst, kalebo3_zero_vec_spark, kalebo3_zero_vec_spark,
-                               kalebo3_zero_vec_spark);
-            SpawnBreakFragment(moby, 0x656, position, rot, 0, 0, burst, kalebo3_zero_vec_spark, kalebo3_zero_vec_spark,
-                               kalebo3_zero_vec_spark);
-            SpawnBreakFragment(moby, 0x657, position, rot, 0, 0, burst, kalebo3_zero_vec_spark, kalebo3_zero_vec_spark,
-                               kalebo3_zero_vec_spark);
+            SpawnBreakFragment(moby, 0x655, position, rot, 0, 0, burst, kalebo3_zero_vec, kalebo3_zero_vec,
+                               kalebo3_zero_vec);
+            SpawnBreakFragment(moby, 0x656, position, rot, 0, 0, burst, kalebo3_zero_vec, kalebo3_zero_vec,
+                               kalebo3_zero_vec);
+            SpawnBreakFragment(moby, 0x657, position, rot, 0, 0, burst, kalebo3_zero_vec, kalebo3_zero_vec,
+                               kalebo3_zero_vec);
             qcopy(position_or_delta.f, position);
             position_or_delta.f[2] += 1.2f;
             SpawnExplosionFx(moby, position_or_delta.f, -1, 0.5f, 10.0f);
@@ -2070,7 +2069,7 @@ typedef struct {
 extern float g_frame_scale_sq MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern float SpringAngle(void *, void *, int, float, float, float, float);
-extern void DefaultVtbl_DeleteMoby_anim(void *, int, int, int) __asm__("func_L00_00237B70");
+extern void func_L00_00237B70(void *, int, int, int);
 
 typedef struct {
     char pad0[0x268];
@@ -2110,7 +2109,7 @@ void update_hoverboard_dummy_jump_animation_and_pitch(Moby *m) {
         float duration;
         float acceleration;
         if (m->prev_seq != 5 && scale_ticks(3) > d->timer) {
-            DefaultVtbl_DeleteMoby_anim(m, 5, 4, scale_ticks(5));
+            DefaultVtbl_DeleteMoby(m, 5, 4, scale_ticks(5));
             d->sequence = -1;
         }
         acceleration = g_frame_time_sq * 21.0f * -0.5f;
@@ -2127,7 +2126,7 @@ void update_hoverboard_dummy_jump_animation_and_pitch(Moby *m) {
             chosen = rand_range(0, 3) + 1;
             d->sequence = chosen;
             sequence = chosen;
-            DefaultVtbl_DeleteMoby_anim(m, sequence, 3, scale_ticks(7));
+            DefaultVtbl_DeleteMoby(m, sequence, 3, scale_ticks(7));
         }
         if (d->sequence != -1) {
             if (m->seq == m->prev_seq) {
@@ -2143,10 +2142,10 @@ void update_hoverboard_dummy_jump_animation_and_pitch(Moby *m) {
             }
             if (d->sequence != -1) {
                 if (duration < (float)scale_ticks(5)) {
-                    DefaultVtbl_DeleteMoby_anim(m, 5, 0x33, scale_ticks(5));
+                    DefaultVtbl_DeleteMoby(m, 5, 0x33, scale_ticks(5));
                     d->sequence = -1;
                 } else if (m->anim_flags & 2) {
-                    DefaultVtbl_DeleteMoby_anim(m, 5, 0x1C, scale_ticks(7));
+                    DefaultVtbl_DeleteMoby(m, 5, 0x1C, scale_ticks(7));
                     d->sequence = -1;
                 }
             }
@@ -2161,7 +2160,7 @@ void update_hoverboard_dummy_jump_animation_and_pitch(Moby *m) {
     } else {
         m->anim_speed = 1.0f;
         if ((m->anim_flags & 2) && m->prev_seq != 0) {
-            DefaultVtbl_DeleteMoby_anim(m, 0, 0, scale_ticks(8));
+            DefaultVtbl_DeleteMoby(m, 0, 0, scale_ticks(8));
         }
     }
 }
@@ -2288,8 +2287,8 @@ void test_dummy_on_hoverboard_update(unsigned char *m) {
             if (MobyGetHitMessage(m, mask, 0)) {
                 qcopy(pos, &((Moby *)m)->pos);
                 pos[2] += 0.5f;
-                spawn_explosion(m, kalebo3_zero_vec_spark, pos, 0.0f, 0.0f, 5, 15, 25, 2.5f, 1.5f, 4.0f, -1, 1.0f, 7.0f,
-                                0, 9, -1, 0);
+                spawn_explosion(m, kalebo3_zero_vec, pos, 0.0f, 0.0f, 5, 15, 25, 2.5f, 1.5f, 4.0f, -1, 1.0f, 7.0f, 0, 9,
+                                -1, 0);
                 spawn_moby_break_fragments(m, 0x655, 1, 0x656, 2, 2, 0);
                 spawn_moby_break_fragments(m, 0x6FA, 1, 0x6FB, 1, 1, 0);
                 d->unk_2F2 = 0;
@@ -3086,7 +3085,7 @@ extern void MobySetAnimation(void *, int, int);
 extern int STUB_printf();
 
 extern void InitKnockback(void *, void *, int, int, int, float);
-extern void MobySpringTurn_path54(char *, float, float *, float, float, float) __asm__("func_L00_002592B0");
+extern void func_L00_002592B0(char *, float, float *, float, float, float);
 
 extern int advance_bolt_thief_path(char *moby);
 extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
@@ -3165,9 +3164,9 @@ void CratePlatformUpdate(L16CrateMoby *m) {
         case 1: {
             L16CratePlayer *hero = (L16CratePlayer *)(hero_globals_base + 0xE1D);
 
-            MobySpringTurn_path54((char *)m,
-                                  fast_atan2(hero->position[0] - m->position[0], hero->position[1] - m->position[1]),
-                                  &d->turn, 0.005f, 0.2f, 0.0f);
+            MobySpringTurn((char *)m,
+                           fast_atan2(hero->position[0] - m->position[0], hero->position[1] - m->position[1]), &d->turn,
+                           0.005f, 0.2f, 0.0f);
             emit_moby_offset_particles(m);
             break;
         }
@@ -3262,7 +3261,7 @@ void CratePlatformUpdate(L16CrateMoby *m) {
     }
     StepColorFade(m, d->effect);
 }
-extern int Spline_AdvanceByDistance_path54(char *, float *, float *, float *, int, float) __asm__("func_L00_0025E860");
+extern int func_L00_0025E860(char *, float *, float *, float *, int, float);
 extern char *kalebo3_path_table_path54[] __asm__("D_L16_001B0C30");
 extern short bolt_thief_path_speed, kalebo3_path_spring_stiffness, kalebo3_path_spring_damping;
 
@@ -3278,7 +3277,7 @@ int advance_bolt_thief_path(char *moby) {
         path = kalebo3_path_table_path54[data->path_b];
     else
         path = kalebo3_path_table_path54[data->path_a];
-    r = Spline_AdvanceByDistance_path54(path, pos, (float *)&data->spline_seg, &data->spline_t, 0, t);
+    r = Spline_AdvanceByDistance(path, pos, (float *)&data->spline_seg, &data->spline_t, 0, t);
     Spring(&((Moby *)moby)->pos.x, &data->pos_vel.x, pos[0], *(float *)&kalebo3_path_spring_stiffness,
            *(float *)&kalebo3_path_spring_damping, 0.0f);
     Spring(&((Moby *)moby)->pos.y, &data->pos_vel.y, pos[1], *(float *)&kalebo3_path_spring_stiffness,
@@ -3288,9 +3287,8 @@ int advance_bolt_thief_path(char *moby) {
     FastVecSub(delta, pos, &((Moby *)moby)->pos);
     if (FastAbsF(delta[0]) > 0.01f) {
         if (FastAbsF(delta[1]) > 0.01f) {
-            MobySpringTurn_path54(moby, fast_atan2(delta[0], delta[1]), &data->turn_vel,
-                                  *(float *)&kalebo3_path_spring_stiffness, *(float *)&kalebo3_path_spring_damping,
-                                  0.0f);
+            MobySpringTurn(moby, fast_atan2(delta[0], delta[1]), &data->turn_vel,
+                           *(float *)&kalebo3_path_spring_stiffness, *(float *)&kalebo3_path_spring_damping, 0.0f);
         }
     }
     return r;
@@ -3440,7 +3438,7 @@ void PathPickup_Update(char *moby) {
     FastVecSub(v20, &((Moby *)moby)->pos, v00);
     update_entity_matrix(d->matrix, v20, v10, &((Moby *)moby)->rot);
 }
-extern unsigned char item_available_b[] __asm__("D_0013D5C8");
+extern unsigned char D_0013D5C8[];
 
 /* picks the nearest target slot and sets the moby's state */
 void SelectNearestTargetSlot(void *moby_v) {
@@ -3457,7 +3455,7 @@ void SelectNearestTargetSlot(void *moby_v) {
         }
     }
     {
-        if (item_available_b[0x21] != 0 || data->slot == 2) {
+        if (item_available[0x21] != 0 || data->slot == 2) {
             int v = *(int *)(*(char **)&moby->pclass + 0x10);
             moby->visible = 1;
             *(int *)&moby->collision = v;

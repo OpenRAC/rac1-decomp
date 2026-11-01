@@ -711,7 +711,7 @@ void ProfileMarker_End(void) {
 void ProfileMarker_Begin(void) {
 }
 
-extern int space_load_in_progress_m __asm__("D_0015F6FC") MACRO_ADDR;
+extern int D_0015F6FC MACRO_ADDR;
 extern int pal_mode MACRO_ADDR;
 extern int g_gs_texture_allocation_start MACRO_ADDR;
 extern int *g_render_packet_cursor MACRO_ADDR;
@@ -720,7 +720,7 @@ extern void InitDma(void);
 
 extern void SetPalMode(void);
 
-extern volatile int vif_chain_flags_v __asm__("D_00160FE0") MACRO_ADDR;
+extern volatile int D_00160FE0 MACRO_ADDR;
 
 /* Render setup: raises space_load_in_progress, clears vif_chain_flags, runs the setup calls,
    picks sceGsResetGraph's mode from pal_mode (retail's movz), then runs
@@ -733,8 +733,8 @@ void reset_graphics(void) {
     int flag;
     int pal;
 
-    space_load_in_progress_m = 1;
-    vif_chain_flags_v = 0;
+    space_load_in_progress = 1;
+    vif_chain_flags = 0;
     DMAC_VIF1_Disable();
     sceDmaReset(1);
     InitDma();
@@ -1432,9 +1432,9 @@ typedef struct {
 extern FsAaBuf fs_aa_buffer_3890 __asm__("D_00151880");
 extern ScreenExtent screen_extent_3890 __asm__("D_0013E600");
 extern GsDrawEnvRegs draw_env_3890 __asm__("D_0013D010");
-extern u64 depth_reg_3890 __asm__("D_0013D200");
-extern u64 masked_depth_reg_3890 __asm__("D_0013D270");
-extern unsigned char clear_buf_3890[] __asm__("D_001942C0");
+extern u64 D_0013D200;
+extern u64 D_0013D270;
+extern unsigned char D_001942C0[];
 extern int g_gs_texture_allocation_cursor MACRO_ADDR;
 extern int display_buffer_address MACRO_ADDR;
 extern int draw_buffer_address MACRO_ADDR;
@@ -1494,22 +1494,22 @@ void SetPalMode(void) {
     draw_env_3890.zbuf2 = zbuf;
     draw_env_3890.xyoffset2 = screen_extent_3890.left | ((u64)screen_extent_3890.top << 32);
     scissor = ((u64)(screen_extent_3890.width - 1) << 16) | ((u64)(screen_extent_3890.height - 1) << 48);
-    depth_reg_3890 = zbuf;
+    depth_buffer_register = zbuf;
     draw_env_3890.scissor1 = scissor;
     draw_env_3890.scissor2 = scissor;
-    masked_depth_reg_3890 = zbuf | ((u64)0x8000 << 17);
+    masked_depth_buffer_register = zbuf | ((u64)0x8000 << 17);
     flush_cache(0);
     PutDrawBufferLarge();
     append_gif_transfer_packet();
     flush_cache(0);
     wait_for_graphics_pipeline_idle(0, 0);
     PutDispBuffer();
-    FastMemSet(clear_buf_3890, 0, 0x1000);
+    FastMemSet(image_clear_buffer, 0, 0x1000);
     n = (fs_aa_buffer_3890.storage_width * fs_aa_buffer_3890.storage_height) >> 10;
     for (i = 0; i < n; i++) {
         sceGsSetDefLoadImage(&image, i << 4, 1, 0, 0, 0, 32, 32);
         flush_cache(0);
-        sceGsExecLoadImage(&image, clear_buf_3890);
+        sceGsExecLoadImage(&image, image_clear_buffer);
         wait_for_graphics_pipeline_idle(0, 0);
     }
 }
@@ -1602,14 +1602,14 @@ extern int draw_force_gif_transfer[];
 extern int draw_enable_mask_f __asm__("D_0015F534") MACRO_ADDR;
 extern int font_state MACRO_ADDR;
 extern int g_game_mode MACRO_ADDR;
-extern unsigned char subtitles_enabled_r[] __asm__("D_0015EF40") MACRO_ADDR;
+extern unsigned char D_0015EF40[] MACRO_ADDR;
 extern float gFade MACRO_ADDR;
 extern float white_fade_level MACRO_ADDR;
 extern float draw_frame_time_ratio MACRO_ADDR;
-extern unsigned char underwater_screen_tint_r_r[] __asm__("D_001611C0") MACRO_ADDR;
-extern unsigned char underwater_screen_tint_g_r[] __asm__("D_001611C1") MACRO_ADDR;
-extern unsigned char underwater_screen_tint_b_r[] __asm__("D_001611C2") MACRO_ADDR;
-extern unsigned char underwater_screen_tint_a_r[] __asm__("D_001611C3") MACRO_ADDR;
+extern unsigned char D_001611C0[] MACRO_ADDR;
+extern unsigned char D_001611C1[] MACRO_ADDR;
+extern unsigned char D_001611C2[] MACRO_ADDR;
+extern unsigned char D_001611C3[] MACRO_ADDR;
 extern unsigned short moby_vu1_data_qwc NOT_SDA;
 
 extern char profile_mark_frame_start[];
@@ -1805,7 +1805,7 @@ void DrawDebugProfiler(void) {
         draw_help();
         draw_letterbox_bars();
     }
-    if (g_game_mode == 2 && subtitles_enabled_r[0] != 0) {
+    if (g_game_mode == 2 && subtitles_enabled[0] != 0) {
         draw_subtitles();
     }
     ProfileMarker_Begin_a(profile_mark_after_hud, 0xE);
@@ -1815,8 +1815,8 @@ void DrawDebugProfiler(void) {
         if (draw_config[0x44 / 4] != 0) {
             VU1_addGSregister(0x42, 0x8000000044L);
             if (use_alt_fog != 0) {
-                emit_rgba_draw_packet(underwater_screen_tint_r_r[0], underwater_screen_tint_g_r[0],
-                                      underwater_screen_tint_b_r[0], underwater_screen_tint_a_r[0]);
+                emit_rgba_draw_packet(underwater_screen_tint_r[0], underwater_screen_tint_g[0],
+                                      underwater_screen_tint_b[0], underwater_screen_tint_a[0]);
             }
             if (gFade > 0.0f) {
                 if (gFade > 1.0f) {
@@ -1889,7 +1889,7 @@ extern void DrawDebugProfiler(void);
 /* space_load_in_progress is read through a MACRO_ADDR alias: retail's one-register
    lui $2 / lw $2 (an older note filed it as an allocator question). */
 void prepare_debug_profiler_render(void) {
-    if (space_load_in_progress_m == 0) {
+    if (space_load_in_progress == 0) {
         append_gif_transfer_packet();
         *(int *)&draw_enable_mask = 0x7F;
         DrawDebugProfiler();
@@ -2023,9 +2023,9 @@ struct TextureUpload_et {
 };
 
 extern struct EffectTextureDefinition_et effect_texture_definitions_et[] __asm__("D_0018D540");
-extern struct TextureUpload_et pending_texture_uploads_et[0x40] __asm__("D_0018D140");
+extern struct TextureUpload_et D_0018D140[0x40];
 extern s32 pending_texture_upload_count_et __asm__("D_0015F558") MACRO_ADDR;
-extern s32 level_texture_payload_address_et __asm__("D_0015F560") MACRO_ADDR;
+extern s32 D_0015F560 MACRO_ADDR;
 extern s32 gs_texture_allocation_cursor_et __asm__("D_0015EF74") MACRO_ADDR;
 
 /* GetEffectTex: the GS TEX0 word of effect texture slot index. The first
@@ -2070,12 +2070,12 @@ u64 func_001F4868_r(s32 index) {
         gs_texture_allocation_cursor_et = texel_address + (1 << width_log2);
         texture->tex0 = tex0_word;
         if (pending_texture_upload_count_snapshot < 0x40) {
-            upload = &pending_texture_uploads_et[pending_texture_upload_count_snapshot];
-            upload->clut_data = level_texture_payload_address_et + texture->palette_offset_quadwords * 0x10;
+            upload = &pending_texture_uploads[pending_texture_upload_count_snapshot];
+            upload->clut_data = level_texture_payload_address + texture->palette_offset_quadwords * 0x10;
             upload->cbp = palette_block_offset;
             upload->unk4 = 0;
-            *(s32 *)((u8 *)pending_texture_uploads_et + pending_texture_upload_count_snapshot * 0x10 + 8) =
-                level_texture_payload_address_et + texture->texel_offset_quadwords * 0x10;
+            *(s32 *)((u8 *)pending_texture_uploads + pending_texture_upload_count_snapshot * 0x10 + 8) =
+                level_texture_payload_address + texture->texel_offset_quadwords * 0x10;
             upload->tw = (u8)texture->width_log2;
             upload->th = (u8)texture->height_log2;
             upload->tbp = texel_block_offset;
@@ -2216,7 +2216,7 @@ void draw_light_quads(void) {
     }
 }
 
-extern int sce_gs_sync_v_i(int) __asm__("func_00122598");
+extern int func_00122598(int);
 
 extern int *g_render_packet_cursor MACRO_ADDR;
 extern int game_frame_counter MACRO_ADDR;
@@ -2234,7 +2234,7 @@ void FadeToBlack(int frames) {
     int q;
 
     VU1_syncChain(1);
-    sce_gs_sync_v_i(0);
+    sce_gs_sync_v(0);
     game_frame_counter = game_frame_counter + 1;
     VU1_initChain();
     n = frames - 1;
@@ -2258,7 +2258,7 @@ void FadeToBlack(int frames) {
             g_render_packet_cursor += 4;
 
             VU1_syncChain(1);
-            sce_gs_sync_v_i(0);
+            sce_gs_sync_v(0);
             game_frame_counter = game_frame_counter + 1;
             VU1_sendChain();
             VU1_swapChain();
@@ -2266,7 +2266,7 @@ void FadeToBlack(int frames) {
     }
 
     VU1_syncChain(1);
-    sce_gs_sync_v_i(0);
+    sce_gs_sync_v(0);
     game_frame_counter = game_frame_counter + 1;
     VU1_initChain();
     PutDrawBufferLarge();
@@ -2284,7 +2284,7 @@ typedef struct {
     char pad38[0x14];
     char *subs; /* 0x4C */
 } SubState;
-extern SubState render_sequence_s __asm__("D_0018CC20");
+extern SubState D_0018CC20;
 extern int g_game_language MACRO_ADDR;
 extern int g_screen_extent[];
 extern void FontSetWindow(void *arg0, int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8);
@@ -2306,16 +2306,16 @@ void draw_subtitles(void) {
     int lang;
     int idx;
 
-    if (render_sequence_s.subs == 0) {
+    if (render_sequence.subs == 0) {
         return;
     }
     lang = g_game_language;
     idx = (lang >= 2 && lang <= 5) ? lang - 1 : 0;
-    for (p = (Subtitle *)render_sequence_s.subs; p->start >= 0; p++) {
-        if (render_sequence_s.time < p->start) {
+    for (p = (Subtitle *)render_sequence.subs; p->start >= 0; p++) {
+        if (render_sequence.time < p->start) {
             continue;
         }
-        if (p->end < render_sequence_s.time) {
+        if (p->end < render_sequence.time) {
             continue;
         }
         {
@@ -2324,7 +2324,7 @@ void draw_subtitles(void) {
             int hw, hh;
 
             FontSetWindow(win, 0xC8, 0x208, 0x28, 0x1D8, 0x100, g_screen_extent[1] - 0x38, 0x12, 7);
-            font_print_window_regular_l(win, 0x80B0B0B0, render_sequence_s.subs + p->text[idx], -1);
+            font_print_window_regular_l(win, 0x80B0B0B0, render_sequence.subs + p->text[idx], -1);
             win[5] = g_screen_extent[1] - 0x3C;
             w = win[6];
             h = win[7];
@@ -2335,7 +2335,7 @@ void draw_subtitles(void) {
             }
             DrawUIFrame(win[5] - hh, win[5] + hh, 0x100 - hw, 0x100 + hw, 0x60);
             win[9] &= ~4;
-            font_print_window_regular_l(win, 0x80B0B0B0, render_sequence_s.subs + p->text[idx], -1);
+            font_print_window_regular_l(win, 0x80B0B0B0, render_sequence.subs + p->text[idx], -1);
             return;
         }
     }

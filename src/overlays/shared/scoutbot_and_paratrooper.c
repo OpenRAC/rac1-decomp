@@ -115,21 +115,21 @@ extern float sine_3DF8(float) __asm__("func_001F9F90");
 extern float cosine_3DF8(float) __asm__("func_001F9FA8");
 extern void vadd_3DF8(void *, void *, void *) __asm__("func_001F9BD8");
 extern float angle_3DF8(float, float) __asm__("func_L00_001FF860");
-extern void turn_3DF8(void *, float, float *, float, float, float) __asm__("func_L00_002592B0");
+extern void func_L00_002592B0(void *, float, float *, float, float, float);
 extern float anglediff_3DF8(float, float) __asm__("func_001FA850");
 extern float fast_distance_3DF8(void *, void *) __asm__("func_001F9D48");
 extern float fabs_3DF8(float) __asm__("func_001F9B88");
-extern int sound_id_3DF8(int, int, void *) __asm__("func_0022ED80");
+extern int func_0022ED80(int, int, void *);
 extern float animframe_3DF8(void *) __asm__("func_0020D830");
-extern void draw_3DF8(void *, void *) __asm__("func_001F49B0");
-extern int animdone_3DF8(void *, float) __asm__("func_00215B18");
+extern void func_001F49B0(void *, void *);
+extern int func_00215B18(void *, float);
 extern void shoot_3DF8(void *, void *, int, void *, void *, float) __asm__("func_L00_0025AC00");
-extern int sound_busy_3DF8(void *, int) __asm__("func_L00_0028EB98");
-extern int hitreact_3DF8(void *, void *) __asm__("func_L00_002DDEA0");
+extern int func_L00_0028EB98(void *, int);
+extern int func_L00_002DDEA0(void *, void *);
 extern void explode_3DF8(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                          int, int, int, int) __asm__("func_L00_0025F4A8");
 extern void delete_3DF8(void *) __asm__("func_0020D678");
-extern int colorlerp_3DF8(int, int, float) __asm__("func_001FA8A8");
+extern int func_001FA8A8(int, int, float);
 extern void joint_3DF8(void *, int, void *) __asm__("func_L00_00250800");
 extern void glow_3DF8() __asm__("func_L08_002D4B80");
 extern void body_3DF8() __asm__("func_L08_002D5410");
@@ -211,7 +211,7 @@ void scoutbot_update(Moby *moby) {
         case 7: {
             float a = angle_3DF8(d->v1F0[0] - moby->pos.x, d->v1F0[1] - moby->pos.y);
 
-            turn_3DF8(moby, a, &d->f210, 0.01f, 0.3f, 0.05f);
+            MobySpringTurn(moby, a, &d->f210, 0.01f, 0.3f, 0.05f);
             if (anglediff_3DF8(moby->rot.z, a) < 0.7853982f) {
                 d->v40[0] += sine_3DF8(moby->rot.z) * (dt_3DF8 * 12.0f);
                 d->v40[1] += cosine_3DF8(moby->rot.z) * (dt_3DF8 * 12.0f);
@@ -227,14 +227,14 @@ void scoutbot_update(Moby *moby) {
         case 2: {
             float a = angle_3DF8(tgt[0] - moby->pos.x, tgt[1] - moby->pos.y);
 
-            turn_3DF8(moby, a, &d->f210, 0.01f, 0.3f, 0.05f);
+            MobySpringTurn(moby, a, &d->f210, 0.01f, 0.3f, 0.05f);
             if (anglediff_3DF8(moby->rot.z, a) < 0.7853982f) {
                 d->v40[0] += sine_3DF8(moby->rot.z) * (dt_3DF8 * 12.0f);
                 d->v40[1] += cosine_3DF8(moby->rot.z) * (dt_3DF8 * 12.0f);
             }
             if (fast_distance_3DF8(&moby->pos, &d->f218->pos) < 3.0f &&
                 fabs_3DF8(d->f218->pos.z - moby->pos.z) < 2.0f) {
-                d->h214 = sound_id_3DF8(0, 0, moby);
+                d->h214 = Moby_PlaySound(0, 0, moby);
                 moby->state = 6;
             } else if (fast_distance_3DF8(tgt, d->v1C0) > 15.0f || fabs_3DF8(d->v1C0[2] - tgt[2]) > 4.0f) {
                 d->f200 = 4.0f;
@@ -251,7 +251,7 @@ void scoutbot_update(Moby *moby) {
 
             d->f200 = 4.0f;
             d->f208 = 0.5f;
-            turn_3DF8(moby, a, &d->f210, 0.01f, 0.3f, 0.05f);
+            MobySpringTurn(moby, a, &d->f210, 0.01f, 0.3f, 0.05f);
             if (anglediff_3DF8(moby->rot.z, a) < 0.7853982f) {
                 d->v40[0] += sine_3DF8(moby->rot.z) * (dt_3DF8 * 12.0f);
                 d->v40[1] += cosine_3DF8(moby->rot.z) * (dt_3DF8 * 12.0f);
@@ -268,7 +268,7 @@ void scoutbot_update(Moby *moby) {
             float a = angle_3DF8(tgt[0] - moby->pos.x, tgt[1] - moby->pos.y);
             float t;
 
-            turn_3DF8(moby, a, &d->f210, 0.01f, 0.3f, 0.05f);
+            MobySpringTurn(moby, a, &d->f210, 0.01f, 0.3f, 0.05f);
             t = animframe_3DF8(moby);
             if (moby->seq == moby->prev_seq && t >= 9.0f && t <= 14.0f) {
                 float u = (t - 9.0f) / 5.0f;
@@ -281,9 +281,9 @@ void scoutbot_update(Moby *moby) {
                 d->v1D0[2] = sine_3DF8(r) * 0.25f * u;
                 d->v1E0[1] = cosine_3DF8(r) * 0.25f * u;
                 d->v1E0[2] = sine_3DF8(r) * 0.25f * u;
-                draw_3DF8(glow_3DF8, moby);
+                AddDrawCallback(glow_3DF8, moby);
             }
-            if (animdone_3DF8(moby, 14.0f)) {
+            if (IsFrameWithinWindow(moby, 14.0f)) {
                 if (fast_distance_3DF8(&d->f1B0->pos, &moby->pos) < 3.0f &&
                     fabs_3DF8(d->f218->pos.z - moby->pos.z) < 1.0f) {
                     v30[0] = sine_3DF8(moby->rot.z) * 0.2f;
@@ -305,8 +305,8 @@ void scoutbot_update(Moby *moby) {
         case 6: {
             float a = angle_3DF8(tgt[0] - moby->pos.x, tgt[1] - moby->pos.y);
 
-            turn_3DF8(moby, a, &d->f210, 0.01f, 0.3f, 0.05f);
-            if (sound_busy_3DF8(moby, d->h214) == 0) {
+            MobySpringTurn(moby, a, &d->f210, 0.01f, 0.3f, 0.05f);
+            if (Sound_IsPlaying(moby, d->h214) == 0) {
                 if (moby->prev_seq != 3) {
                     animate_3DF8(moby, 3, 0, 3);
                 }
@@ -315,7 +315,7 @@ void scoutbot_update(Moby *moby) {
             break;
         }
         case 5:
-            if (hitreact_3DF8(moby, d->f110)) {
+            if (CarriedMobyUpdate(moby, d->f110)) {
                 d->f200 = 4.0f;
                 d->f208 = 0.5f;
                 if (moby->prev_seq != 2) {
@@ -327,7 +327,7 @@ void scoutbot_update(Moby *moby) {
         case 0x63:
             qcopy(v30, &moby->pos);
             v30[2] += 1.0f;
-            sound_id_3DF8(1, 0, moby);
+            Moby_PlaySound(1, 0, moby);
             explode_3DF8(moby, d->v40, v30, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, -1, 1.0f, 0.0f, 0, 1, -1, 0);
             delete_3DF8(moby);
             return;
@@ -339,9 +339,9 @@ void scoutbot_update(Moby *moby) {
         if (moby->state == 4 || moby->state == 6) {
             col = 0x7F2828A0;
         }
-        moby->glow_color = colorlerp_3DF8(moby->glow_color, col, 0.1f);
+        moby->glow_color = FastTweenColor(moby->glow_color, col, 0.1f);
         joint_3DF8(moby, 3, d->f220);
-        draw_3DF8(body_3DF8, moby);
+        AddDrawCallback(body_3DF8, moby);
     }
 }
 extern char hero_globals_base[];
@@ -1179,9 +1179,9 @@ void Moby648Update(char *m) {
     }
 }
 extern char batalia_hero_pos[];
-extern int level_mode302618 __asm__("D_L08_0015F6A8") MACRO_ADDR;
+extern int D_L08_0015F6A8 MACRO_ADDR;
 extern char paratrooper_no_path1_msg[], paratrooper_no_path2_msg[];
-extern char *target302618 __asm__("D_L08_001746D8") NOT_SDA;
+extern char *D_L08_001746D8 NOT_SDA;
 extern float batalia_frame_cpu_load MACRO_ADDR;
 extern float batalia_draw_frame_load MACRO_ADDR;
 extern float delay_random302618 SDATA(D_L08_0015F6B8);
@@ -1201,22 +1201,22 @@ extern int timer302618(void *) __asm__("func_001F9908");
 extern float distance302618(void *, void *) __asm__("func_001F9D10");
 extern float fast_distance302618(void *, void *) __asm__("func_001F9D48");
 extern float angle302618(float, float) __asm__("func_L00_001FF860");
-extern float turn302618(void *, float, void *, float, float, float) __asm__("func_L00_0025CE58");
+extern float func_L00_0025CE58(void *, float, void *, float, float, float);
 extern void animate302618(void *, int, int, int) __asm__("func_00213DE0");
 extern void delete302618(void *) __asm__("func_0020D678");
 extern void helper302618(void *) __asm__("func_L08_00303998");
 extern void sound302618(float, void *, int, void *) __asm__("func_L00_00264B40");
 extern void wake302618(void *) __asm__("func_L00_0025B178");
 extern int hero_anim302618(int) __asm__("func_002140B0");
-extern void log302618(char *, int) __asm__("func_001E9730");
-extern void steering_init302618(void *) __asm__("func_L01_0026E8E0");
-extern int closest302618(void *, void *, float) __asm__("func_L01_0028C2D8");
-extern void steer302618(void *, void *, void *, void *) __asm__("func_L00_0025A060");
+extern void func_001E9730(char *, int);
+extern void func_L01_0026E8E0(void *);
+extern int func_L01_0028C2D8(void *, void *, float);
+extern void func_L00_0025A060(void *, void *, void *, void *);
 extern int range302618(int, int) __asm__("func_L00_00258BC8");
 extern void subtract302618(void *, void *, void *) __asm__("func_001F9BF0");
 extern float dot302618(void *, void *) __asm__("func_001F9C78");
 extern float animframe302618(void *) __asm__("func_0020D830");
-extern void lerp302618(void *, void *, void *, float) __asm__("func_001F9C08");
+extern void func_001F9C08(void *, void *, void *, float);
 extern int ray302618(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
 extern float rangef302618(float, float) __asm__("func_002140F8");
 extern float scale_float302618(float) __asm__("func_001F9878");
@@ -1225,16 +1225,15 @@ extern float sine302618(float) __asm__("func_001F9F90");
 extern float cosine302618(float) __asm__("func_001F9FA8");
 extern char *projectile302618(void *, void *, void *, void *, int, int) __asm__("func_L08_00308650");
 extern void vec_limit302618(void *, float) __asm__("func_L00_002607A8");
-extern void push302618(void *, void *, float, float, float, int) __asm__("func_L00_00259868");
+extern void func_L00_00259868(void *, void *, float, float, float, int);
 extern void vec_scale302618(void *, void *, float) __asm__("func_L00_001FF4B0");
-extern void hit_init302618(void *, void *, int, float, void *) __asm__("func_L00_0025A8C0");
-extern int damage302618(float, void *, int, void *, void *) __asm__("func_L00_001F2BE8");
-extern int dying302618(void *, void *) __asm__("func_L00_0025D6F0");
+extern void func_L00_0025A8C0(void *, void *, int, float, void *);
+extern int func_L00_001F2BE8(float, void *, int, void *, void *);
+extern int func_L00_0025D6F0(void *, void *);
 extern void zero302618(void *) __asm__("func_001F9BC0");
 extern void explode302618(void *, int, int) __asm__("func_L00_002584A8");
 extern void effect302618(void *, void *, int, float, float) __asm__("func_L00_00260108");
-extern void *debris302618(void *, int, void *, void *, int, int, float, void *, void *,
-                          void *) __asm__("func_L00_00265050");
+extern void *func_L00_00265050(void *, int, void *, void *, int, int, float, void *, void *, void *);
 typedef struct Paratrooper302618 {
     char pad0[0x20];
     float f20;
@@ -1322,7 +1321,7 @@ void blarg_paratrooper_update(char *m) {
         wake302618(m);
         (*(unsigned char *)((char *)(m) + 0x7F)) = 23;
     }
-    if (level_mode302618 == 2)
+    if (batalia_game_mode == 2)
         return;
     path = 0;
     helper302618(m);
@@ -1355,14 +1354,14 @@ void blarg_paratrooper_update(char *m) {
             d->f58 = randomf302618(15.0f);
             d->f5A = randomf302618(12.0f);
             if (d->f1D0 == -1) {
-                log302618(paratrooper_no_path1_msg, (*(short *)((char *)(m) + 0xB2)));
+                STUB_printf(paratrooper_no_path1_msg, (*(short *)((char *)(m) + 0xB2)));
                 goto delete_self;
             }
             if (d->f1D4 == -1) {
-                log302618(paratrooper_no_path2_msg, (*(short *)((char *)(m) + 0xB2)));
+                STUB_printf(paratrooper_no_path2_msg, (*(short *)((char *)(m) + 0xB2)));
                 goto delete_self;
             }
-            steering_init302618((char *)d + 0xD0);
+            MoveCtl_Init((char *)d + 0xD0);
             d->fDC = 0.5f;
             d->fD8 = 0.5f;
             d->fD0 = randomf302618(512.0f);
@@ -1378,7 +1377,7 @@ void blarg_paratrooper_update(char *m) {
                 int index;
                 short direction;
                 d->f20C = 2 * (random302618() & 1) - 1;
-                index = closest302618(m + 0x10, path, 0.0f) + d->f20C;
+                index = select_point_index_by_distance(m + 0x10, path, 0.0f) + d->f20C;
                 direction = d->f20C;
                 d->f1F4 = index;
                 if (index >= (*(int *)((char *)(path) + 0)) || index < 0) {
@@ -1404,21 +1403,21 @@ void blarg_paratrooper_update(char *m) {
                     d->f1F4 = index + 2 * d->f20C;
                 }
             }
-            steer302618(m, (char *)d + 0xD0, path + 0x10 + d->f1F4 * 16, pos);
+            ClassifyTargetInCone(m, (char *)d + 0xD0, path + 0x10 + d->f1F4 * 16, pos);
             if (target && d->f164 != 2 && timer302618((char *)d + 0x1F0)) {
-                d->f1F4 = closest302618(m + 0x10, batalia_path_table[d->f1D4], 0.0f);
+                d->f1F4 = select_point_index_by_distance(m + 0x10, batalia_path_table[d->f1D4], 0.0f);
                 (*(unsigned char *)((char *)(m) + 0x20)) = 2;
             }
             break;
         case 2: {
             float distance;
-            d->f1F4 = closest302618(m + 0x10, batalia_path_table[d->f1D4], 0.0f);
+            d->f1F4 = select_point_index_by_distance(m + 0x10, batalia_path_table[d->f1D4], 0.0f);
             distance = fast_distance302618(m + 0x10, batalia_path_table[d->f1D4] + 0x10 + d->f1F4 * 16);
             if (distance < 1.0f || distance < d->fE0) {
                 d->fE0 = 0.0f;
                 (*(unsigned char *)((char *)(m) + 0x20)) = 3;
             } else {
-                steer302618(m, (char *)d + 0xD0, batalia_path_table[d->f1D4] + 0x10 + d->f1F4 * 16, pos);
+                ClassifyTargetInCone(m, (char *)d + 0xD0, batalia_path_table[d->f1D4] + 0x10 + d->f1F4 * 16, pos);
                 if ((*(unsigned char *)((char *)(m) + 0x53)) != 2)
                     animate302618(m, 2, 0, random302618() % 4 + 7);
             }
@@ -1430,8 +1429,8 @@ void blarg_paratrooper_update(char *m) {
             float frame;
             heading = angle302618((*(float *)((char *)(target) + 0x10)) - (*(float *)((char *)(m) + 0x10)),
                                   (*(float *)((char *)(target) + 0x14)) - (*(float *)((char *)(m) + 0x14)));
-            turn302618(rotation, heading, (char *)d + 0x1E0, g_frame_time_sq * 8.726646f, g_frame_time_sq * 8.726646f,
-                       g_frame_time * 12.566371f);
+            SteerAngleWithVelocity(rotation, heading, (char *)d + 0x1E0, g_frame_time_sq * 8.726646f,
+                                   g_frame_time_sq * 8.726646f, g_frame_time * 12.566371f);
             if ((*(unsigned char *)((char *)(m) + 0x70)) & 2) {
                 int oldanim = (*(unsigned char *)((char *)(m) + 0x53));
                 if (oldanim != (random302618() & 1)) {
@@ -1472,8 +1471,8 @@ void blarg_paratrooper_update(char *m) {
             float frame;
             heading = angle302618((*(float *)((char *)(target) + 0x10)) - (*(float *)((char *)(m) + 0x10)),
                                   (*(float *)((char *)(target) + 0x14)) - (*(float *)((char *)(m) + 0x14)));
-            turn302618(rotation, heading, (char *)d + 0x1E0, g_frame_time_sq * 8.726646f, g_frame_time_sq * 8.726646f,
-                       g_frame_time * 12.566371f);
+            SteerAngleWithVelocity(rotation, heading, (char *)d + 0x1E0, g_frame_time_sq * 8.726646f,
+                                   g_frame_time_sq * 8.726646f, g_frame_time * 12.566371f);
             frame = animframe302618(m);
             if (frame > 12.0f && frame < 23.0f &&
                 (*(unsigned char *)((char *)(m) + 0x52)) == (*(unsigned char *)((char *)(m) + 0x53))) {
@@ -1483,7 +1482,7 @@ void blarg_paratrooper_update(char *m) {
                     t = 1.0f;
                 else if (t < 0.0f)
                     t = 0.0f;
-                lerp302618(pos, (char *)d + 0x1C0, batalia_path_table[d->f1D4] + 0x10 + d->f1F4 * 16, t);
+                lerp_vector(pos, (char *)d + 0x1C0, batalia_path_table[d->f1D4] + 0x10 + d->f1F4 * 16, t);
                 x = 2.0f * (t - 0.5f);
                 pos[2] += height302618 * (1.0f - x * x);
                 qcopy(m + 0x10, pos);
@@ -1501,7 +1500,7 @@ void blarg_paratrooper_update(char *m) {
                     (*(unsigned char *)((char *)(m) + 0x20)) = 9;
                 } else if (fast_distance302618(m + 0x10, target + 0x10) < melee302618) {
                     goto melee_state;
-                } else if (target302618 != target) {
+                } else if (batalia_coll_hit_moby != target) {
                     (*(unsigned char *)((char *)(m) + 0x20)) = 3;
                     if ((*(unsigned char *)((char *)(m) + 0x53)) != 0)
                         animate302618(m, 0, 0, scale302618(5));
@@ -1561,13 +1560,13 @@ void blarg_paratrooper_update(char *m) {
             float frame;
             heading = angle302618((*(float *)((char *)(target) + 0x10)) - (*(float *)((char *)(m) + 0x10)),
                                   (*(float *)((char *)(target) + 0x14)) - (*(float *)((char *)(m) + 0x14)));
-            turn302618(rotation, heading, (char *)d + 0x1E0, g_frame_time_sq * 8.726646f, g_frame_time_sq * 8.726646f,
-                       g_frame_time * 12.566371f);
+            SteerAngleWithVelocity(rotation, heading, (char *)d + 0x1E0, g_frame_time_sq * 8.726646f,
+                                   g_frame_time_sq * 8.726646f, g_frame_time * 12.566371f);
             frame = animframe302618(m);
             if (frame > 12.0f && frame < 23.0f && (*(float *)((char *)(m) + 0x54)) == 0.0f) {
                 subtract302618(pos, batalia_path_table[d->f1D4] + 0x10, m + 0x10);
                 vec_limit302618(pos, g_frame_time * 24.0f);
-                push302618(m, pos, shove302618, shove_rate302618, 0.0f, 0);
+                move_4318(m, pos, shove302618, shove_rate302618, 0.0f, 0);
             } else if ((*(unsigned char *)((char *)(m) + 0x70)) & 2) {
                 d->f1F0 = randomf302618(scale_float302618(rangef302618(45.0f, 90.0f)));
                 (*(unsigned char *)((char *)(m) + 0x20)) = 3;
@@ -1582,8 +1581,8 @@ void blarg_paratrooper_update(char *m) {
             float frame;
             heading = angle302618((*(float *)((char *)(target) + 0x10)) - (*(float *)((char *)(m) + 0x10)),
                                   (*(float *)((char *)(target) + 0x14)) - (*(float *)((char *)(m) + 0x14)));
-            turn302618(rotation, heading, (char *)d + 0x1E0, g_frame_time_sq * 8.726646f, g_frame_time_sq * 8.726646f,
-                       g_frame_time * 12.566371f);
+            SteerAngleWithVelocity(rotation, heading, (char *)d + 0x1E0, g_frame_time_sq * 8.726646f,
+                                   g_frame_time_sq * 8.726646f, g_frame_time * 12.566371f);
             frame = animframe302618(m);
             if (frame > 16.5f && frame < 20.0f) {
                 joint302618(m, 4, pos);
@@ -1592,8 +1591,8 @@ void blarg_paratrooper_update(char *m) {
                 vec_scale302618(dir, dir, 1.0f);
                 dir[2] = 1.0f;
                 pos[2] -= 0.25f;
-                hit_init302618(hit, m, 1, 1.0f, dir);
-                damage302618(0.8f, pos, 0, m, hit);
+                InitDirectionalHitQuery(hit, m, 1, 1.0f, dir);
+                coll_sphere_mobys(0.8f, pos, 0, m, hit);
             }
             if ((*(unsigned char *)((char *)(m) + 0x70)) & 2)
                 (*(unsigned char *)((char *)(m) + 0x20)) = 2;
@@ -1608,7 +1607,7 @@ void blarg_paratrooper_update(char *m) {
             }
             break;
         case 10: {
-            int flags = dying302618(m, (char *)d + 0x70);
+            int flags = mine_fall(m, (char *)d + 0x70);
             if (flags & 0x40) {
                 if (fast_distance302618(m + 0x10, target + 0x10) < melee302618) {
                 melee_state:
@@ -1632,7 +1631,7 @@ void blarg_paratrooper_update(char *m) {
             }
         } break;
         case 11:
-            if (dying302618(m, (char *)d + 0x70) & 0x160) {
+            if (mine_fall(m, (char *)d + 0x70) & 0x160) {
                 float *color;
                 char *rotation;
                 zero302618(pos);
@@ -1640,9 +1639,9 @@ void blarg_paratrooper_update(char *m) {
                 explode302618(m, 0, -1);
                 effect302618(m, m + 0x10, 0, 0.5f, 13.0f);
                 rotation = m + 0x40;
-                debris302618(m, 0x69C, m + 0x10, rotation, 0, 0, 0.0f, color, color, color);
-                debris302618(m, 0x69D, m + 0x10, rotation, 0, 0, 0.0f, color, color, color);
-                debris302618(m, 0x69E, m + 0x10, rotation, 0, 0, 0.0f, color, color, color);
+                SpawnBreakFragment(m, 0x69C, m + 0x10, rotation, 0, 0, 0.0f, color, color, color);
+                SpawnBreakFragment(m, 0x69D, m + 0x10, rotation, 0, 0, 0.0f, color, color, color);
+                SpawnBreakFragment(m, 0x69E, m + 0x10, rotation, 0, 0, 0.0f, color, color, color);
                 delete302618(m);
                 if (d->f1F8)
                     delete302618(d->f1F8);
@@ -2003,7 +2002,7 @@ typedef struct {
     V_3091B0 v30;
 } Obj;
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
-extern u128_3091B0 batalia_ground_scatter_hero_offset_r __asm__("D_L08_001602D0") MACRO_ADDR;
+extern u128_3091B0 D_L08_001602D0 MACRO_ADDR;
 extern float ground_particle_scatter_refresh_countdown_r __asm__("D_L08_00162400") MACRO_ADDR;
 extern float ground_particle_scatter_spawn_vector_x_bias_r[2] __asm__("D_L08_001623F0") MACRO_ADDR;
 extern float ground_particle_scatter_spawn_vector_y_bias_r __asm__("D_L08_001623F4") MACRO_ADDR;
@@ -2016,17 +2015,17 @@ extern void *D_L08_001623E8_3091B0 SDATA(D_L08_001623E8);
 extern float D_L08_001623EC_3091B0 SDATA(D_L08_001623EC);
 extern float D_L08_001602E0_3091B0 SDATA(D_L08_001602E0);
 extern void randomize_ground_particle_scatter_parameters_r(int) __asm__("func_L08_00309050");
-extern int update_float_countdown_r(float *) __asm__("func_L08_00211A38");
+extern int func_L08_00211A38(float *);
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern void fast_add_rotations_cf_r(void *, void *, float, float, float) __asm__("func_L00_00263D68");
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
 extern float FastCos_r(float) __asm__("func_001F9F90");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
-extern float ground_height_at_r(void *) __asm__("func_L00_002644E0");
+extern float func_L00_002644E0(void *);
 extern void spawn_span_particle_r(void *, void *, float, void *) __asm__("func_L08_00273A80");
-extern void create_type_49_particle_r(void *, void *, float, void *) __asm__("func_L08_002803B8");
-extern void spawn_ground_contact_effect_particle_r(void *) __asm__("func_L00_00264570");
+extern void func_L08_002803B8(void *, void *, float, void *);
+extern void func_L00_00264570(void *);
 
 /* moby class 1400 update: steers the offset vectors from the mode, fans them out to the object over counted loops */
 void scatter_ground_particles(Moby *m) {
@@ -2086,10 +2085,10 @@ void scatter_ground_particles(Moby *m) {
             randomize_ground_particle_scatter_parameters_r(flag);
             break;
         case 2:
-            if (update_float_countdown_r(&ground_particle_scatter_refresh_countdown_r))
+            if (update_float_countdown(&ground_particle_scatter_refresh_countdown_r))
                 randomize_ground_particle_scatter_parameters_r(flag);
             FastVecSub_r(&dv, batalia_hero_pos, &obj->v30);
-            batalia_ground_scatter_hero_offset_r = *(u128_3091B0 *)&dv;
+            batalia_ground_scatter_hero_offset = *(u128_3091B0 *)&dv;
             *(u128_3091B0 *)&base = *(u128_3091B0 *)batalia_hero_pos;
             n = ground_particle_scatter_base_attempt_count_r;
             fast_add_rotations_cf_r(&base, &base, 16.0f, ((Cam *)(batalia_hero_pos - 0x140))->f158,
@@ -2130,7 +2129,7 @@ void scatter_ground_particles(Moby *m) {
                         par.w = 0.0f;
                     }
                     D_L08_001602E0_3091B0 = ((Cam *)(batalia_hero_pos - 0x140))->f148 - D_L08_001623EC_3091B0;
-                    f = ground_height_at_r(&pt);
+                    f = ground_height_at(&pt);
                     if (f < ((Cam *)(batalia_hero_pos - 0x140))->f148 + D_L08_001623D4_3091B0) {
                         void *q;
                         if (f < D_L08_001602E0_3091B0) {
@@ -2144,7 +2143,7 @@ void scatter_ground_particles(Moby *m) {
                         if (flag == 0)
                             spawn_span_particle_r(&pt, q, w, &par);
                         if (flag == 1)
-                            create_type_49_particle_r(&pt, q, w, &par);
+                            create_type_49_particle(&pt, q, w, &par);
                     }
                 } while (--cnt != 0);
             }
@@ -2171,7 +2170,7 @@ void scatter_ground_particles(Moby *m) {
                     w = w * random_float_between_r(0.0f, 8.0f);
                     pt.y += w;
                     D_L08_001602E0_3091B0 = ((Cam *)(batalia_hero_pos - 0x140))->f148 - D_L08_001623EC_3091B0;
-                    f = ground_height_at_r(&pt);
+                    f = ground_height_at(&pt);
                     if (f < ((Cam *)(batalia_hero_pos - 0x140))->f148 + D_L08_001623D4_3091B0) {
                         if (f < D_L08_001602E0_3091B0) {
                             w = D_L08_001602E0_3091B0;
@@ -2181,7 +2180,7 @@ void scatter_ground_particles(Moby *m) {
                         if (flag == 0)
                             spawn_span_particle_r(&pt, 0, w, &off);
                         if (flag == 1)
-                            create_type_49_particle_r(&pt, 0, w, &off);
+                            create_type_49_particle(&pt, 0, w, &off);
                     }
                 } while (--cnt != 0);
             }
@@ -2204,7 +2203,7 @@ void scatter_ground_particles(Moby *m) {
                         w = FastSin_r(random_float_between_r(0.0f, 6.2831855f));
                         w = w * random_float_between_r(0.0f, 30.0f);
                         pt.y += w;
-                        spawn_ground_contact_effect_particle_r(&pt);
+                        spawn_ground_contact_effect_particle(&pt);
                     } while (--cnt != 0);
                 }
                 *(u128_3091B0 *)&base = *(u128_3091B0 *)batalia_hero_pos;
@@ -2222,7 +2221,7 @@ void scatter_ground_particles(Moby *m) {
                         w = FastSin_r(random_float_between_r(0.0f, 6.2831855f));
                         w = w * random_float_between_r(0.0f, 8.0f);
                         pt.y += w;
-                        spawn_ground_contact_effect_particle_r(&pt);
+                        spawn_ground_contact_effect_particle(&pt);
                     } while (--cnt != 0);
                 }
             }
@@ -2301,7 +2300,7 @@ void update_ground_height_modulated_voice(char *m) {
     do {
         build_look_at_matrix(p, off, axis, ang);
         vadd_3DF8(p, batalia_hero_pos, p);
-        if (ground_height_at_r(p) < ((Cam *)(batalia_hero_pos - 0x140))->f148)
+        if (ground_height_at(p) < ((Cam *)(batalia_hero_pos - 0x140))->f148)
             open += 0.05f;
         ang += 0.31415927f;
     } while (ang < 6.2831855f);

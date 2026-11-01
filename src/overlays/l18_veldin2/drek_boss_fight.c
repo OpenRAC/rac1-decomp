@@ -92,7 +92,7 @@ extern int fast_dec_timer(int *);
 extern void mark_class_0630_moby_and_child_for_removal(void *);
 extern void DeleteMoby(void *);
 extern void lerp_vector(void *, void *, void *, float);
-extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
+extern int func_001FA898(float);
 
 extern float FastAddRots(float, float);
 extern float FastCos(float);
@@ -209,7 +209,7 @@ void update_linked_moby_group_transform_and_fall(unsigned char *moby) {
                 float s, z, f20;
                 int n;
                 d->f344 = d->f344 + 0.25f;
-                if (random_integer_below(truncate_float_to_s32_r(d->f344)) == 0) {
+                if (random_integer_below(truncate_float_to_s32(d->f344)) == 0) {
                     s = random_float_between(-1.0471976f, 1.0471976f);
                     f20 = FastAddRots(s, veldin2_camera_yaw);
                     z = random_float_between(0.0f, 20.0f);
@@ -432,7 +432,7 @@ void draw_glow_moby_layered_quads(struct Moby *moby) {
                              ((u64) * (int *)&glow_moby_blend_factor_selector_gp << 4) |
                              ((u64) * (int *)&glow_moby_blend_addend_selector_gp << 6) | 0x8000000000ULL;
         phase = vars->scroll + i * step;
-        phase = phase - (float)truncate_float_to_s32_r(phase);
+        phase = phase - (float)truncate_float_to_s32(phase);
         color = FastTweenColor(*(int *)&veldin2_glow_color_start, *(int *)&veldin2_glow_color_end, phase);
         color = FastTweenColor(color & 0xFFFFFF, color, alpha);
         for (j = 0; j < 4; j++) {
@@ -912,8 +912,8 @@ extern void vec_set_length_xy(void *, void *, float);
 extern void queue_movie_with_game_language(int i);
 
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
-extern void spawn_explosion_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
-                                float, int, int, int, int) __asm__("func_L00_0025F4A8");
+extern void func_L00_0025F4A8(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
+                              float, int, int, int, int);
 
 extern void MobyBlendAnimation(void *, int, int, int);
 extern void clear_u64_value(void *);
@@ -1180,7 +1180,7 @@ void drek_final_boss_robot_update(Moby *moby) {
                         } else if (e < 60.0f) {
                             e = 60.0f;
                         }
-                        create_rocket_moby(v1, v2, v0, a, c, truncate_float_to_s32_r(multiply_global_factor(e)), 0);
+                        create_rocket_moby(v1, v2, v0, a, c, truncate_float_to_s32(multiply_global_factor(e)), 0);
                     }
                 }
             }
@@ -1595,7 +1595,7 @@ void drek_final_boss_robot_update(Moby *moby) {
                     } else if (e < 60.0f) {
                         e = 60.0f;
                     }
-                    create_rocket_moby(v1, v2, v0, a, c, truncate_float_to_s32_r(multiply_global_factor(e)), 2);
+                    create_rocket_moby(v1, v2, v0, a, c, truncate_float_to_s32(multiply_global_factor(e)), 2);
                     spawn_drek_boss_firing_effects((char *)moby, v1);
                 }
             }
@@ -1679,7 +1679,7 @@ void drek_final_boss_robot_update(Moby *moby) {
                     float w = random_float_between(18.0f, 20.0f);
 
                     launch_mine_568_moby_from_list((int)moby, d->f29C, v1, v2, speed,
-                                                   truncate_float_to_s32_r(multiply_global_factor(w * 60.0f)));
+                                                   truncate_float_to_s32(multiply_global_factor(w * 60.0f)));
                 }
                 d->f354 = scale_ticks(0xF);
             }
@@ -1862,8 +1862,8 @@ void drek_final_boss_robot_update(Moby *moby) {
                 v0[2] = 0.0f;
                 v0[2] = random_float_between(3.0f, 8.0f);
                 FastVecAdd(v0, v0, d->f3C0);
-                spawn_explosion_alt(moby, veldin2_zero_vec, v0, 0.0f, 0.0f, 0x14, 6, 0x20, 1.0f, 2.5f, 9.0f, 1.0f, -1,
-                                    0.0f, 0, 0, -1, 0);
+                spawn_explosion(moby, veldin2_zero_vec, v0, 0.0f, 0.0f, 0x14, 6, 0x20, 1.0f, 2.5f, 9.0f, 1.0f, -1, 0.0f,
+                                0, 0, -1, 0);
             }
             if (d->f358 == scale_ticks(0x78)) {
                 if (moby->prev_seq != 14) {
@@ -1873,8 +1873,8 @@ void drek_final_boss_robot_update(Moby *moby) {
                 v0[1] = FastSin(moby->rot.z) * 3.0f;
                 v0[2] = 6.0f;
                 FastVecAdd(v0, v0, d->f3C0);
-                spawn_explosion_alt(moby, veldin2_zero_vec, v0, 0.0f, 0.0f, 0x28, 0xA, 0x20, 2.5f, 5.0f, 9.0f, 2.0f, -1,
-                                    10.0f, 0, 0, -1, 0);
+                spawn_explosion(moby, veldin2_zero_vec, v0, 0.0f, 0.0f, 0x28, 0xA, 0x20, 2.5f, 5.0f, 9.0f, 2.0f, -1,
+                                10.0f, 0, 0, -1, 0);
             }
             if (moby->seq == moby->prev_seq && moby->seq == 14 && IsFrameWithinWindow((char *)moby, 30.0f) != 0) {
                 moby->state = 0x1B;
@@ -2034,13 +2034,13 @@ typedef struct {
     char pad40[0x40];
 } L18Node;
 
-extern void set_moby_attached_effect_alpha_from_distance_v(void *, float) __asm__("func_L18_00267000");
+extern void func_L18_00267000(void *, float);
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, void *, void *, int, int);
 extern void RerollEffectCounter(void *m, short *p);
 
 extern void StepColorFade(void *, void *);
-extern char *CreateMoby_m(int) __asm__("func_0020D348");
+extern char *func_0020D348(int);
 extern void MobyTransformScaledVertex(void *, int, void *);
 extern void matrix_copy_rows(void *, void *);
 extern void moby_build_matrix(void *);
@@ -2070,7 +2070,7 @@ void update_drek_boss_damage_and_phase_transitions(char *moby) {
     float VA0[4];
 
     ((Moby *)moby)->scale = ((Moby *)moby)->pclass->scale * *(float *)&drek_boss_scale;
-    set_moby_attached_effect_alpha_from_distance_v(moby, 0.5f);
+    set_moby_attached_effect_alpha_from_distance(moby, 0.5f);
     f20 = (7.0f - (float)boss_data->f34C - 2.0f) / 7.0f * 350.0f;
     step = 0.0f;
     hit_record = MobyGetHitMessage(moby, 0x330000, 0);
@@ -2146,10 +2146,10 @@ void update_drek_boss_damage_and_phase_transitions(char *moby) {
         }
     }
     ((Moby *)moby)->hit_slot = 0xFF;
-    *(int *)boss_data->p36C = truncate_float_to_s32_r(boss_data->f38C);
+    *(int *)boss_data->p36C = truncate_float_to_s32(boss_data->f38C);
     StepColorFade(moby, (char *)&boss_data->p34[0x2C]);
     if (boss_data->f3A0 == 0) {
-        spawned_child_moby = (struct Moby *)CreateMoby_m(0x58F);
+        spawned_child_moby = (struct Moby *)CreateMoby(0x58F);
         boss_data->f3A0 = spawned_child_moby;
         spawned_child_moby->update_dist = 0xFF;
         ((Moby *)boss_data->f3A0)->visible = 1;
@@ -2162,7 +2162,7 @@ void update_drek_boss_damage_and_phase_transitions(char *moby) {
     Moby_GetJointWorldPos(moby, 4, &((Moby *)boss_data->f3A0)->pos);
     moby_build_matrix(boss_data->f3A0);
     if (boss_data->f3A4 == 0) {
-        spawned_child_moby = (struct Moby *)CreateMoby_m(0x4E1);
+        spawned_child_moby = (struct Moby *)CreateMoby(0x4E1);
         boss_data->f3A4 = (char *)spawned_child_moby;
         spawned_child_moby->update_dist = 0xFF;
         ((Moby *)boss_data->f3A4)->visible = 1;
@@ -2373,7 +2373,7 @@ typedef struct {
 /* The hero block g_hero, cut down to what this function reads. */
 
 extern char g_hero_r[] __asm__("D_0013F450");
-extern char gHeroPos_r[] __asm__("D_0013F4D0");
+extern char D_0013F4D0[];
 extern char *veldin2_arena_nodes_r __asm__("D_L18_0016016C") MACRO_ADDR;
 extern f32 g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern f32 D_L18_001623E0_2F7F00 SDATA(D_L18_001623E0);
@@ -2448,7 +2448,7 @@ void func_L18_002F7F00_r(Moby *moby) {
             fast = 10.0f;
             far *= 1.5f;
         }
-        dist = vec_distance_xy_r(&moby->pos, gHeroPos_r);
+        dist = vec_distance_xy_r(&moby->pos, gHeroPos);
         if (far < dist)
             dist = far;
         else if (dist < near)
@@ -2809,8 +2809,8 @@ void spawn_drek_boss_firing_effects(char *moby, void *p) {
             vec_scale_to_length(d, &a,
                                 random_float_between(*(float *)&drek_boss_fire_spark_speed_min,
                                                      *(float *)&drek_boss_fire_spark_speed_max));
-            h = truncate_float_to_s32_r(randf_sym((float)*(int *)&drek_boss_fire_spark_spin_min,
-                                                  (float)*(int *)&drek_boss_fire_spark_spin_max));
+            h = truncate_float_to_s32(randf_sym((float)*(int *)&drek_boss_fire_spark_spin_min,
+                                                (float)*(int *)&drek_boss_fire_spark_spin_max));
             PartType44Spawn(
                 p, d,
                 scale_ticks(rand_range(*(int *)&drek_boss_fire_spark_life_min, *(int *)&drek_boss_fire_spark_life_max)),

@@ -34,16 +34,16 @@ typedef struct {
     s32 ox;
     s32 oy;
 } ScreenInfo;
-extern u8 D_00187080_1edff8[] __asm__("D_00187180");
+extern u8 D_00187180[];
 extern ScreenInfo g_screen_extent_r __asm__("D_0013E600");
-extern LensFlare D_00187300_1edff8 __asm__("D_00187400");
-extern f32 FastVecDist_r(void *, void *) __asm__("func_001F9D10");
+extern LensFlare D_00187400;
+extern f32 func_001F9D10(void *, void *);
 extern f32 ConvertIntegerToFloat(s32) __asm__("func_001FA888");
 extern s32 truncate_float_to_s32(f32) __asm__("func_001FA898");
 extern float AbsoluteFloat(float input) __asm__("func_001F9B88");
 extern void project_to_screen_r(f32 *, void *) __asm__("func_001F2418");
 extern s64 get_effect_texture(s32) __asm__("func_001F4868");
-extern void draw_textured_quad(s32, s32, s32, s32, s32, s32, s32, s32, s64, s64) __asm__("func_001F5800");
+extern void func_001F5800(s32, s32, s32, s32, s32, s32, s32, s32, s64, s64);
 /* Lens flare: projects the flare moby to the screen and fills the per-element alpha, texture, colour, distance and scale tables. Adapted from Lombyte's project (GPL-3.0) for PAL: rendering/effects/fun_001edc50.c, FUN_001edc50. */
 void draw_lens_flare(void) {
     f32 scr[4];
@@ -64,26 +64,26 @@ void draw_lens_flare(void) {
     s32 x;
     s32 y;
 
-    if (D_00187300_1edff8.state != 1 || (D_00187300_1edff8.moby->flags & 0x80)) {
-        D_00187300_1edff8.state = 0;
+    if (effect_ribbon.state != 1 || (effect_ribbon.moby->flags & 0x80)) {
+        effect_ribbon.state = 0;
         return;
     }
-    if (D_00187300_1edff8.intensity <= 0.0f) {
+    if (effect_ribbon.intensity <= 0.0f) {
         return;
     }
-    dist = FastVecDist_r(D_00187080_1edff8, D_00187300_1edff8.moby->pos);
+    dist = FastVecDist(camera_position, effect_ribbon.moby->pos);
     ctr[0] = ConvertIntegerToFloat(g_screen_extent_r.cx);
     ctr[1] = ConvertIntegerToFloat(g_screen_extent_r.cy);
-    project_to_screen_r(scr, D_00187300_1edff8.moby->pos);
+    project_to_screen_r(scr, effect_ribbon.moby->pos);
     scr[0] = (scr[0] - ConvertIntegerToFloat(g_screen_extent_r.ox)) * 0.0625f;
     scr[1] = (scr[1] - ConvertIntegerToFloat(g_screen_extent_r.oy)) * 0.0625f;
     d[0] = ctr[0] - scr[0];
     d[1] = ctr[1] - scr[1];
     for (i = 0; i < 16; i++) {
-        tex = get_effect_texture(D_00187300_1edff8.tex[i] + 6);
+        tex = get_effect_texture(effect_ribbon.tex[i] + 6);
         size = (i != 0) ? 0x20 : 0x40;
-        off[0] = d[0] * D_00187300_1edff8.dist[i];
-        off[1] = d[1] * D_00187300_1edff8.dist[i];
+        off[0] = d[0] * effect_ribbon.dist[i];
+        off[1] = d[1] * effect_ribbon.dist[i];
         at[0] = ctr[0] + off[0];
         at[1] = ctr[1] + off[1];
         fade = dist - 5.0f;
@@ -105,15 +105,14 @@ void draw_lens_flare(void) {
             fy = 0.0f;
         }
         fade = fade * (fx * fy);
-        rgba =
-            (truncate_float_to_s32(fade * D_00187300_1edff8.alpha[i]) << 24) | (D_00187300_1edff8.color[i] & 0xFFFFFF);
-        w = truncate_float_to_s32(size * D_00187300_1edff8.scale[i]);
+        rgba = (truncate_float_to_s32(fade * effect_ribbon.alpha[i]) << 24) | (effect_ribbon.color[i] & 0xFFFFFF);
+        w = truncate_float_to_s32(size * effect_ribbon.scale[i]);
         half = w >> 1;
         x = truncate_float_to_s32(at[0] - half);
         y = truncate_float_to_s32(at[1] - half);
-        draw_textured_quad(x, y, w, w, 0, 0, size, size, rgba, tex);
+        DrawTexturedQuad(x, y, w, w, 0, 0, size, size, rgba, tex);
     }
-    D_00187300_1edff8.intensity = 0.0f;
+    effect_ribbon.intensity = 0.0f;
 }
 
 extern int GetEffectTex(int);

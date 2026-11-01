@@ -751,7 +751,7 @@ void liftcar_platform_update(struct Moby *moby) {
     FastVecAdd(&delta, &delta, &moby->pos);
     update_entity_matrix(data->entity_matrix, &delta, &old_rot, &moby->rot);
 }
-extern int aridia_ocean_clip_culling_override_r __asm__("D_L02_0015F6E8") MACRO_ADDR;
+extern int D_L02_0015F6E8 MACRO_ADDR;
 
 extern char aridia_ocean_zone0_part[];
 extern char aridia_ocean_zone2_part[];
@@ -761,8 +761,7 @@ extern char aridia_ocean_zone1_part2[];
 extern char aridia_ocean_zone1_part3[];
 extern char aridia_ocean_zone1_part4[];
 extern char aridia_ocean_frame_state[];
-extern void begin_animated_frame_rendering_r(float, float, float, float, int, int, int, int, int, int,
-                                             void *) __asm__("func_L02_002A59F8");
+extern void func_L02_002A59F8(float, float, float, float, int, int, int, int, int, int, void *);
 extern void prepare_scaled_table_on_stack_r(void) __asm__("func_L02_002A59D8");
 extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
 extern void RefreshPointLight_r(void *) __asm__("func_00202790");
@@ -773,12 +772,12 @@ void func_L02_002EB480_r(Moby *m) __asm__("func_L02_002EB480");
 void func_L02_002EB480_r(Moby *m) {
     int *d = (int *)m->pvars;
 
-    begin_animated_frame_rendering_r(0.0f, 260080.0f, 255.0f, 0.0f, 15, 15, 25, 30, 40, 64, aridia_ocean_frame_state);
-    if (aridia_ocean_clip_culling_override_r != 0 ||
+    begin_animated_frame_rendering(0.0f, 260080.0f, 255.0f, 0.0f, 15, 15, 25, 30, 40, 64, aridia_ocean_frame_state);
+    if (aridia_ocean_clip_culling_override != 0 ||
         (d[0] != -1 && is_point_inside_clip_volume_r(aridia_camera_pos, d[0]))) {
         RefreshPointLight_r(aridia_ocean_zone0_part);
     }
-    if (aridia_ocean_clip_culling_override_r != 0 ||
+    if (aridia_ocean_clip_culling_override != 0 ||
         (d[1] != -1 && is_point_inside_clip_volume_r(aridia_camera_pos, d[1]))) {
         RefreshPointLight_r(aridia_ocean_zone1_part0);
         RefreshPointLight_r(aridia_ocean_zone1_part1);
@@ -786,7 +785,7 @@ void func_L02_002EB480_r(Moby *m) {
         RefreshPointLight_r(aridia_ocean_zone1_part3);
         RefreshPointLight_r(aridia_ocean_zone1_part4);
     }
-    if (aridia_ocean_clip_culling_override_r != 0 ||
+    if (aridia_ocean_clip_culling_override != 0 ||
         (d[2] != -1 && is_point_inside_clip_volume_r(aridia_camera_pos, d[2]))) {
         RefreshPointLight_r(aridia_ocean_zone2_part);
     }
@@ -823,7 +822,7 @@ typedef struct {
 } LevelFx;
 extern short D_L02_00161FE8_ED358 SDATA(D_L02_00161FE8);
 extern short D_L02_00161FEC_ED358 SDATA(D_L02_00161FEC);
-extern s32 shard_debris_head_color_r __asm__("D_L02_00161FF0") MACRO_ADDR;
+extern s32 D_L02_00161FF0 MACRO_ADDR;
 extern f32 g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern LevelFx D_L02_001B2980_ED358 __asm__("D_L02_001B2980");
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
@@ -836,7 +835,7 @@ extern f32 random_float_between_r(f32, f32) __asm__("func_002140F8");
 extern s32 truncate_float_to_s32_r(f32) __asm__("func_001FA898");
 extern s32 scale_ticks_r(s32) __asm__("func_001F9850");
 extern void fast_dec_timer_r(s32 *) __asm__("func_001F9908");
-extern u8 *PartType44Spawn_r(void *, void *, s32, s32, s32, s32, f32, f32, f32, f32, f32) __asm__("func_L00_00272158");
+extern u8 *func_L00_00272158(void *, void *, s32, s32, s32, s32, f32, f32, f32, f32, f32);
 extern void rand_vec_r(void *, f32, f32) __asm__("func_L00_00258DB0");
 
 /* Shard debris update: drifts along its velocity, sheds particle trails and expires when its timer runs out.
@@ -864,9 +863,9 @@ void update_shard_debris(struct Moby *m) {
     FastVecScale_r(&back, &v->vel, -0.1f);
     for (i = 1; i >= 0; i--) {
         s32 t = scale_ticks_r(truncate_float_to_s32_r(random_float_between_r(20.0f, 60.0f)));
-        q = PartType44Spawn_r(&p, &back, t, (*(s32 *)&D_L02_00161FEC_ED358) >> 24,
-                              (*(s32 *)&D_L02_00161FEC_ED358) & 0xFFFFFF, 3,
-                              random_float_between_r(300000.0f, 500000.0f), 10000.0f, 1.0f, -0.0002f, 0.0f);
+        q = PartType44Spawn(&p, &back, t, (*(s32 *)&D_L02_00161FEC_ED358) >> 24,
+                            (*(s32 *)&D_L02_00161FEC_ED358) & 0xFFFFFF, 3, random_float_between_r(300000.0f, 500000.0f),
+                            10000.0f, 1.0f, -0.0002f, 0.0f);
         if (q) {
             q[2] = *D_L02_001B2980_ED358.tint;
             q[9] = truncate_float_to_s32_r(4.0f) - 0x80;
@@ -875,8 +874,8 @@ void update_shard_debris(struct Moby *m) {
         rand_vec_r(&jit, 0.5f, 1.5f);
         FastVecAdd_r(&p, &p, &jit);
     }
-    q = PartType44Spawn_r(&m->pos, &back, scale_ticks_r(6), shard_debris_head_color_r >> 24,
-                          (*(s32 *)&D_L02_00161FEC_ED358) & 0xFFFFFF, 3, 250000.0f, 5000.0f, 1.0f, -0.0004f, 0.0f);
+    q = PartType44Spawn(&m->pos, &back, scale_ticks_r(6), shard_debris_head_color >> 24,
+                        (*(s32 *)&D_L02_00161FEC_ED358) & 0xFFFFFF, 3, 250000.0f, 5000.0f, 1.0f, -0.0004f, 0.0f);
     if (q)
         q[9] = truncate_float_to_s32_r(4.0f) - 0x80;
     if (m->visible == 0)
@@ -1217,7 +1216,7 @@ extern int D_L02_001621F0_2F0458 SDATA(D_L02_001621F0);
 extern int D_L02_001621F4_2F0458 SDATA(D_L02_001621F4);
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern void euler_rotation_basis_r(void *, void *) __asm__("func_001FA1F8");
-extern int FastBSphereCheck_r(void *, float) __asm__("func_L00_00200290");
+extern int func_L00_00200290(void *, float);
 extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
 extern float random_float_between_r2(float, float) __asm__("func_002140F8");
 extern float multiply_global_factor_r(float) __asm__("func_001F9878");
@@ -1226,8 +1225,8 @@ extern int random_integer_below_r(int) __asm__("func_002140B0");
 extern void rand_vec_r2(void *, float, float) __asm__("func_L00_00258DB0");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
-extern int FastTweenColor_r(int, int, float) __asm__("func_001FA8A8");
-extern void *PartType02Spawn_r(void *, void *, void *, int, int, int, int, int, int) __asm__("func_00219780");
+extern int func_001FA8A8(int, int, float);
+extern void *func_00219780(void *, void *, void *, int, int, int, int, int, int);
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 extern void DeleteMoby_r2(void *) __asm__("func_0020D678");
 
@@ -1248,7 +1247,7 @@ void update_smoke_vent(Moby *m) {
         case 1:
             qcopy(&vec, &*(V_2F0458 *)&m->pos);
             vec.w = 6.0f;
-            if (FastBSphereCheck_r(&vec, 120.0f) == -1)
+            if (FastBSphereCheck(&vec, 120.0f) == -1)
                 break;
             if (fast_dec_timer_r2(&d->fC0)) {
                 int cnt;
@@ -1272,12 +1271,12 @@ void update_smoke_vent(Moby *m) {
                     B.z -= D_L02_00162160_2F0458 * g_frame_time_r;
                     A.w = random_float_between_r2(D_L02_0016217C_2F0458, D_L02_00162180_2F0458);
                     B.w = random_float_between_r2(D_L02_00162184_2F0458, D_L02_00162188_2F0458);
-                    PartType02Spawn_r(
+                    PartType02Spawn(
                         &*(V_2F0458 *)&m->pos, &A, &B,
-                        FastTweenColor_r(D_L02_0016218C_2F0458, D_L02_00162190_2F0458,
-                                         random_float_between_r2(0.0f, 1.0f)),
-                        FastTweenColor_r(D_L02_00162194_2F0458, D_L02_00162198_2F0458,
-                                         random_float_between_r2(0.0f, 1.0f)),
+                        FastTweenColor(D_L02_0016218C_2F0458, D_L02_00162190_2F0458,
+                                       random_float_between_r2(0.0f, 1.0f)),
+                        FastTweenColor(D_L02_00162194_2F0458, D_L02_00162198_2F0458,
+                                       random_float_between_r2(0.0f, 1.0f)),
                         truncate_float_to_s32_r2(multiply_global_factor_r(
                             (float)D_L02_0016216C_2F0458 * random_float_between_r2(0.0f, 1.0f) + 1.0f)),
                         truncate_float_to_s32_r2(multiply_global_factor_r(
@@ -1312,10 +1311,10 @@ void update_smoke_vent(Moby *m) {
                 FastVecAdd_r2(&B, &B, &C);
                 A.w = random_float_between_r2(D_L02_00162138_2F0458, D_L02_0016213C_2F0458);
                 B.w = random_float_between_r2(D_L02_00162140_2F0458, D_L02_00162144_2F0458);
-                PartType02Spawn_r(
+                PartType02Spawn(
                     &*(V_2F0458 *)&m->pos, &A, &B,
-                    FastTweenColor_r(D_L02_00162148_2F0458, D_L02_0016214C_2F0458, random_float_between_r2(0.0f, 1.0f)),
-                    FastTweenColor_r(D_L02_00162150_2F0458, D_L02_00162154_2F0458, random_float_between_r2(0.0f, 1.0f)),
+                    FastTweenColor(D_L02_00162148_2F0458, D_L02_0016214C_2F0458, random_float_between_r2(0.0f, 1.0f)),
+                    FastTweenColor(D_L02_00162150_2F0458, D_L02_00162154_2F0458, random_float_between_r2(0.0f, 1.0f)),
                     truncate_float_to_s32_r2(multiply_global_factor_r(
                         (float)D_L02_00162128_2F0458 * random_float_between_r2(0.0f, 1.0f) + 1.0f)),
                     truncate_float_to_s32_r2(multiply_global_factor_r(
@@ -1337,7 +1336,7 @@ void update_smoke_vent(Moby *m) {
             }
             qcopy(&vec, &*(V_2F0458 *)&m->pos);
             vec.w = 6.0f;
-            if (FastBSphereCheck_r(&vec, 120.0f) == -1) {
+            if (FastBSphereCheck(&vec, 120.0f) == -1) {
                 if (random_integer_below_r(4))
                     break;
             }
@@ -1363,12 +1362,12 @@ void update_smoke_vent(Moby *m) {
                     B.z -= D_L02_001621B0_2F0458 * g_frame_time_r;
                     A.w = random_float_between_r2(D_L02_001621CC_2F0458, D_L02_001621D0_2F0458);
                     B.w = random_float_between_r2(D_L02_001621D4_2F0458, D_L02_001621D8_2F0458);
-                    PartType02Spawn_r(
+                    PartType02Spawn(
                         &*(V_2F0458 *)&m->pos, &A, &B,
-                        FastTweenColor_r(D_L02_001621DC_2F0458, D_L02_001621E0_2F0458,
-                                         random_float_between_r2(0.0f, 1.0f)),
-                        FastTweenColor_r(D_L02_001621E4_2F0458, D_L02_001621E8_2F0458,
-                                         random_float_between_r2(0.0f, 1.0f)),
+                        FastTweenColor(D_L02_001621DC_2F0458, D_L02_001621E0_2F0458,
+                                       random_float_between_r2(0.0f, 1.0f)),
+                        FastTweenColor(D_L02_001621E4_2F0458, D_L02_001621E8_2F0458,
+                                       random_float_between_r2(0.0f, 1.0f)),
                         truncate_float_to_s32_r2(multiply_global_factor_r(
                             (float)D_L02_001621BC_2F0458 * random_float_between_r2(0.0f, 1.0f) + 1.0f)),
                         truncate_float_to_s32_r2(multiply_global_factor_r(
@@ -1401,10 +1400,10 @@ void update_smoke_vent(Moby *m) {
                 FastVecAdd_r2(&B, &B, &C);
                 A.w = random_float_between_r2(D_L02_001620F8_2F0458, D_L02_001620FC_2F0458);
                 B.w = random_float_between_r2(D_L02_00162100_2F0458, D_L02_00162104_2F0458);
-                PartType02Spawn_r(
+                PartType02Spawn(
                     &*(V_2F0458 *)&m->pos, &A, &B,
-                    FastTweenColor_r(D_L02_00162108_2F0458, D_L02_0016210C_2F0458, random_float_between_r2(0.0f, 1.0f)),
-                    FastTweenColor_r(D_L02_00162110_2F0458, D_L02_00162114_2F0458, random_float_between_r2(0.0f, 1.0f)),
+                    FastTweenColor(D_L02_00162108_2F0458, D_L02_0016210C_2F0458, random_float_between_r2(0.0f, 1.0f)),
+                    FastTweenColor(D_L02_00162110_2F0458, D_L02_00162114_2F0458, random_float_between_r2(0.0f, 1.0f)),
                     truncate_float_to_s32_r2(
                         multiply_global_factor_r((float)d->fC8 * random_float_between_r2(0.0f, 1.0f) + 1.0f)),
                     truncate_float_to_s32_r2(multiply_global_factor_r(
@@ -1427,13 +1426,13 @@ extern struct Hero g_hero_r __asm__("D_0013F450");
 struct Manip_F9E50;
 struct GifEntry_F9E50;
 struct AnimSeq_F9E50;
-extern void compute_spherical_offset_from_positions_r(void *, void *, void *) __asm__("func_L00_001ED9B0");
-extern char aridia_player_camera_r[] __asm__("D_L02_00167300");
+extern void func_L00_001ED9B0(void *, void *, void *);
+extern char D_L02_00167300[];
 
 /* Sets the vendor camera mode; mode 3 also aims it from the hero's position.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l02/gameplay/vendor/002ebf20.c, FUN_L02_002f8a18. */
 void set_vendor_camera_mode(int mode, int arg) {
-    char *g = aridia_player_camera_r;
+    char *g = aridia_player_camera;
     char *cam = *(char **)(g + 0x180);
     char *d = *(char **)(cam + 0x70);
     char *e = d + 0xE0;
@@ -1442,7 +1441,7 @@ void set_vendor_camera_mode(int mode, int arg) {
     switch (mode) {
         case 3:
             qcopy(d + 0x110, &g_hero_r.motion.pos);
-            compute_spherical_offset_from_positions_r(d + 0xFC, g + 0x140, &g_hero_r.motion.pos);
+            compute_spherical_offset_from_positions(d + 0xFC, g + 0x140, &g_hero_r.motion.pos);
         case 2:
             *(int *)(e + 4) = arg;
             *(int *)(d + 0xE0) = arg;

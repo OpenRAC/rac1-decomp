@@ -150,7 +150,7 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 
 extern float multiply_global_factor(float);
-extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
+extern int func_001FA898(float);
 extern void update_float_countdown(float *);
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
@@ -180,7 +180,7 @@ void update_robot_dog_hit_reaction_and_target_detection(Moby *moby, int arg) {
         return;
     }
     if (d->i38 != 0) {
-        d->f1D4 = truncate_float_to_s32_r(multiply_global_factor(random_float_between(180.0f, 240.0f)));
+        d->f1D4 = truncate_float_to_s32(multiply_global_factor(random_float_between(180.0f, 240.0f)));
         d->i38 = 0;
     }
     update_float_countdown(&d->f1D4);
@@ -255,12 +255,12 @@ int move_robot_dog_toward_position(char *moby, float *target, float speed) {
 extern int scale_ticks(int);
 extern void MobyBlendAnimation(void *, int, int, int);
 
-extern int process_moby_suck_cannon_suction_pos(void *, void *, void *, float) __asm__("func_L00_002DCDA8");
+extern int func_L00_002DCDA8(void *, void *, void *, float);
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
    calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as
    they came (retail touches none of a1, a2 and $f12 before its call). */
 int enemy_stun_update(unsigned char *moby, void *pos, void *target, float h) {
-    int result = process_moby_suck_cannon_suction_pos(moby, pos, target, h);
+    int result = process_moby_suck_cannon_suction(moby, pos, target, h);
     if (result) {
         moby[0x20] = 12;
     } else if (moby[0x20] == 12) {
@@ -389,9 +389,9 @@ void update_robot_dog_glow_effects(unsigned char *moby) {
             FastSin(((float)(fleet_frame_count % glow_pulse_period_frames) / IntToFloat(glow_pulse_period_frames)) *
                         2.0f * 3.1415927f +
                     -3.1415927f);
-        x = truncate_float_to_s32_r(glow_pulse_sine * 20.0f);
-        y = truncate_float_to_s32_r(glow_pulse_sine * 70.0f);
-        z = truncate_float_to_s32_r(glow_pulse_sine * 10.0f);
+        x = truncate_float_to_s32(glow_pulse_sine * 20.0f);
+        y = truncate_float_to_s32(glow_pulse_sine * 70.0f);
+        z = truncate_float_to_s32(glow_pulse_sine * 10.0f);
         r += x;
         g += y;
         b += z;
@@ -952,18 +952,18 @@ int update_shuttle_travel_and_camera(char *moby, int idx) {
 
     ApproachValue(&d->fA4, 1.0f, 1.0f / (float)scale_ticks(0x384));
     t = d->fA4 * (float)(c1->n - 1);
-    i1 = truncate_float_to_s32_r(t);
+    i1 = truncate_float_to_s32(t);
     f = (float)i1;
     t1 = t - f;
     t2 = d->fA4 * 1.02f;
     if (t2 > 1.0f)
         t2 = 1.0f;
     t = t2 * (float)(c2->n - 1);
-    i2 = truncate_float_to_s32_r(t);
+    i2 = truncate_float_to_s32(t);
     t2 = t - (float)i2;
     t = d->fA4 * (float)(c3->n - 1);
     t3 = t - f;
-    i3 = truncate_float_to_s32_r(t);
+    i3 = truncate_float_to_s32(t);
     lerp_vector(pos, &c1->p[i1], &c1->p[i1 + 1], t1);
     lerp_vector(moby + 0x10, &c3->p[i3], &c3->p[i3 + 1], t3);
     set_camera_position(pos);
@@ -1402,7 +1402,7 @@ extern int is_point_inside_clip_volume(void *, int);
 extern void BuildSphericalOffset(void *, float, float, float);
 extern void draw_fleet_backdrop_quads(char *);
 
-extern float fleet_hero_fall_state_height_m __asm__("D_L17_0015F718") MACRO_ADDR;
+extern float D_L17_0015F718 MACRO_ADDR;
 typedef int u128 __attribute__((mode(TI)));
 extern short fleet_backdrop_bend_length;
 extern short fleet_backdrop_base_length;
@@ -1425,11 +1425,11 @@ void update_fleet_backdrop_animation(unsigned char *moby) {
             (hero_data->ship_moby)->oclass != MOBY_CLASS_FIGHTER_JET_1379) {
             if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
                                             moby_pvars->clip_volume)) {
-                fleet_hero_fall_state_height_m = 150.0f;
+                fleet_hero_fall_state_height = 150.0f;
                 goto done;
             }
         }
-        fleet_hero_fall_state_height_m = 10.0f;
+        fleet_hero_fall_state_height = 10.0f;
     }
 done:
     if (mby->state == 0) {

@@ -42,8 +42,8 @@ typedef struct Q_240398 {
 } Q_240398;
 extern G137C80_240398 disc_table_r __asm__("D_00137C80");
 extern char level_render_state_base_r[] __asm__("D_0013DE6E");
-extern char *level_archive_base_r __asm__("D_0015EF54") MACRO_ADDR;
-extern int depth_buffer_address_r[2] __asm__("D_0015EF88") MACRO_ADDR;
+extern char *D_0015EF54 MACRO_ADDR;
+extern int D_0015EF88[2] MACRO_ADDR;
 extern Q_240398 moby_texture_records_r[] __asm__("D_L00_001AEF40");
 extern int moby_texture_count_r __asm__("D_L00_00160088") MACRO_ADDR;
 extern Rec D_L00_0015FCC0_240398 SDATA(D_L00_0015FCC0);
@@ -54,15 +54,15 @@ extern unsigned char D_L00_0015FCE0_240398 SDATA(D_L00_0015FCE0);
 extern unsigned char g_class_slot_r[] __asm__("D_L00_00197F40");
 extern unsigned int moby_texture_addrs_r[] __asm__("D_L00_00199E00");
 extern int first_class_ids_r[] __asm__("D_L00_00160608");
-extern int second_class_ids_r[] __asm__("D_L00_00160618");
+extern int D_L00_00160618[];
 extern int D_L00_00160628_240398 __asm__("D_L00_00160628") MACRO_ADDR;
 extern int D_L00_00160624_240398 __asm__("D_L00_00160624") MACRO_ADDR;
 extern int D_L00_0016062C_240398 __asm__("D_L00_0016062C") MACRO_ADDR;
 extern void FastMemCopy_r(void *, void *, int) __asm__("func_001F9A98");
-extern int sceGsSetDefLoadImage_r(void *, short, short, short, short, short, short, short) __asm__("func_00122630");
+extern int func_00122630(void *, short, short, short, short, short, short, short);
 extern void flush_cache_r(int) __asm__("func_00118D80");
-extern int sceGsExecLoadImage_r(void *, void *) __asm__("func_00122958");
-extern int wait_for_graphics_pipeline_idle_r(int, unsigned short) __asm__("func_00120858");
+extern int func_00122958(void *, void *);
+extern int func_00120858(int, unsigned short);
 extern void register_moby_class_r(void *, void *, void *, int) __asm__("func_00203E78");
 
 /* Loads a level's four packed images through the GS loader and registers the image records and their data blocks. */
@@ -80,7 +80,7 @@ char *load_level_texture_bank(char *buf, int *tbl) {
     int idx;
     int idx2;
 
-    FastMemCopy_r(buf, level_archive_base_r,
+    FastMemCopy_r(buf, level_archive_base,
                   disc_table_r.e[((Lvl *)(level_render_state_base_r + 0x2C2))->f26 + 1].a << 11);
     a = ((Hdr *)buf)->a;
     off = ((Hdr *)buf)->off;
@@ -89,26 +89,26 @@ char *load_level_texture_bank(char *buf, int *tbl) {
     c = ((Hdr *)buf)->c;
     do {
         if (i == 0) {
-            sceGsSetDefLoadImage_r(img, (depth_buffer_address_r[1] + tbl[0x2B]) >> 8, 1, 0x13, 0, 0, 0x40, 0x40);
+            sceGsSetDefLoadImage(img, (depth_buffer_address[1] + tbl[0x2B]) >> 8, 1, 0x13, 0, 0, 0x40, 0x40);
             src = buf + off;
             dst = p + 0x14430;
         } else if (i == 1) {
-            sceGsSetDefLoadImage_r(img, (depth_buffer_address_r[1] + tbl[0x2C]) >> 8, 1, 0x13, 0, 0, 0x20, 0x20);
+            sceGsSetDefLoadImage(img, (depth_buffer_address[1] + tbl[0x2C]) >> 8, 1, 0x13, 0, 0, 0x20, 0x20);
             src = buf + off;
             dst = p + 0x15430;
         } else if (i == 2) {
-            sceGsSetDefLoadImage_r(img, (depth_buffer_address_r[1] + tbl[0x2D]) >> 8, 1, 0, 0, 0, 0x10, 0x10);
+            sceGsSetDefLoadImage(img, (depth_buffer_address[1] + tbl[0x2D]) >> 8, 1, 0, 0, 0, 0x10, 0x10);
             dst = p + 0x30;
             src = buf + off;
         } else {
-            sceGsSetDefLoadImage_r(img, (depth_buffer_address_r[1] + tbl[0x2E]) >> 8, 1, 0, 0, 0, 0x10, 0x10);
+            sceGsSetDefLoadImage(img, (depth_buffer_address[1] + tbl[0x2E]) >> 8, 1, 0, 0, 0, 0x10, 0x10);
             src = buf + off;
             dst = buf + c + 0x30;
         }
         flush_cache_r(0);
         i++;
-        sceGsExecLoadImage_r(img, dst);
-        wait_for_graphics_pipeline_idle_r(0, 0);
+        sceGsExecLoadImage(img, dst);
+        wait_for_graphics_pipeline_idle(0, 0);
     } while (i < 4);
     base = buf;
     buf = src;
@@ -133,9 +133,9 @@ char *load_level_texture_bank(char *buf, int *tbl) {
     FastMemCopy_r(buf, base + c + 0x430, 0x4000);
     buf += 0x4000;
     D_L00_0015FCE0_240398 = moby_texture_count_r;
-    if (g_class_slot_r[second_class_ids_r[((Lvl *)(level_render_state_base_r + 0x2C2))->f26]] == 0xFF) {
+    if (g_class_slot_r[second_class_ids[((Lvl *)(level_render_state_base_r + 0x2C2))->f26]] == 0xFF) {
         register_moby_class_r(base + b, &D_L00_0015FCD0_240398 - moby_texture_count_r, &D_L00_0015FCE0_240398,
-                              second_class_ids_r[((Lvl *)(level_render_state_base_r + 0x2C2))->f26]);
+                              second_class_ids[((Lvl *)(level_render_state_base_r + 0x2C2))->f26]);
     }
     D_L00_00160624_240398 = 1;
     D_L00_00160628_240398 = 1;
@@ -492,7 +492,7 @@ extern DiscTable disc_table_r2 __asm__("D_00137C80");
 /* The two pointers at 0x15EF4C and 0x15EF50, as one object. The assembly names the second sound_archive_base; under a
    name of its own its store lands in a branch delay slot where retail has a nop (8 bytes short), so it is
    reached as element 1 of the pair. Nothing else in the project names sound_archive_base. */
-extern char *level_root_r[2] __asm__("D_0015EF4C") MACRO_ADDR;
+extern char *D_0015EF4C[2] MACRO_ADDR;
 extern Hero g_hero;
 extern char player_camera[];
 extern char moby_animation_slots[];
@@ -620,10 +620,10 @@ char *load_level_gameplay(int arg0) {
         } else {
             Load_r(mem, disc_table_r2.sound_archive.sector, disc_table_r2.sound_archive.size);
         }
-        level_root_r[1] = mem; /* sound_archive_base */
+        level_root[1] = mem; /* sound_archive_base */
     }
     flush_cache(0);
-    fast_decompress(level_root_r[1], hdr);
+    fast_decompress(level_root[1], hdr);
     flush_cache(0);
     FastMemSet(&g_hero, 0, 0x2310);
     FastMemSet(player_camera, 0, 0x3A0);

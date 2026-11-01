@@ -90,7 +90,7 @@ extern void set_hero_condition_animation_timer_for_item(int id);
 extern void MobyBlendAnimation(void *, int, int, int);
 extern unsigned char gHaveMorphORay NOT_SDA;
 extern char help_stats_base[] NOT_SDA;
-extern int g_game_language_m[] __asm__("D_0015EE88") MACRO_ADDR;
+extern int D_0015EE88[] MACRO_ADDR;
 extern int hero_slot0_item_8_selected MACRO_ADDR;
 
 extern HeroItemDefView rilgar_item_defs[];
@@ -336,7 +336,7 @@ void apply_hero_item_slot_selection(int i) {
                 g->b[i] = *s;
                 v = ((int *)(help_stats_base + 0x45))[i];
                 ((int *)(help_stats_base + 0x45))[i] = *s;
-                g_game_language_m[1] = v;
+                g_game_language[1] = v;
             }
             ((Sel *)(hero_globals_base + 0xE1D))->a[i] = 0;
         }
@@ -358,7 +358,7 @@ void apply_hero_item_slot_selection(int i) {
                     Sel *h;
                     int u;
                     if (i == 0 && g->a[0] != 0x24 && *(int *)((char *)g + 0x10B8) != 8) {
-                        g_game_language_m[1] = *(int *)(help_stats_base + 0x45);
+                        g_game_language[1] = *(int *)(help_stats_base + 0x45);
                     }
                     h = (Sel *)(hero_globals_base + 0xE1D);
                     u = h->a[i];
@@ -453,24 +453,24 @@ typedef struct {
 extern struct Hero g_hero_r __asm__("D_0013F450");
 extern int rilgar_frame_count_r __asm__("D_L05_0015F6B0") MACRO_ADDR;
 extern CollisionHit_4C558 rilgar_coll_hit_r __asm__("D_L05_00174340") NOT_SDA;
-extern u8 rilgar_coll_hit_point_r[] __asm__("D_L05_00174360") NOT_SDA;
-extern u8 rilgar_hero_bob_attach_euler_r[] __asm__("D_L05_0017AC20") NOT_SDA;
-extern void integrate_hero_motion_with_collisions_r(void) __asm__("func_L05_00241AA0");
-extern int probe_hero_forward_collision_r(float, float, float *) __asm__("func_L00_0020A8B8");
+extern u8 D_L05_00174360[] NOT_SDA;
+extern u8 D_L05_0017AC20[] NOT_SDA;
+extern void func_L05_00241AA0(void);
+extern int func_L00_0020A8B8(float, float, float *);
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
-extern s32 is_moby_in_class_range_500_to_540_r(s32) __asm__("func_L00_0025F410");
+extern s32 func_L00_0025F410(s32);
 extern void transform_hero_local_offset_to_world_r(float *, float, float, float) __asm__("func_L00_00233EE0");
 extern int coll_line_r(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
 extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
-extern int coll_sphere_r(float, void *, int, int) __asm__("func_L00_001F10E0");
-extern void matrix_mul_vec3_r(void *, void *, void *) __asm__("func_001F9EC0");
-extern void euler_to_matrix_r(void *, void *) __asm__("func_001FA218");
+extern int func_L00_001F10E0(float, void *, int, int);
+extern void func_001F9EC0(void *, void *, void *);
+extern void func_001FA218(void *, void *);
 extern void transform_vector_r(void *, void *, void *) __asm__("func_001F9EE8");
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
-extern void copy_matrix_rotation_r(void *, void *) __asm__("func_001FA460");
+extern void func_001FA460(void *, void *);
 extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
-extern void matrix_copy_rows_r(void *, void *) __asm__("func_001FA480");
+extern void func_001FA480(void *, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/ui/help/00237488.c, FUN_L05_0024bdc0. */
 void update_hero_movement_and_collision_probes(void) {
@@ -480,19 +480,19 @@ void update_hero_movement_and_collision_probes(void) {
     float offset;
     int hit;
     if (g_hero_r.tilt_disabled == 0) {
-        integrate_hero_motion_with_collisions_r();
+        integrate_hero_motion_with_collisions();
     }
     if (rilgar_frame_count_r % 3 == 0) {
         g_hero_r.wall_probe_distance = 4.0f;
         g_hero_r.wall_probe_moby_in_class_range = 0;
         g_hero_r.wall_probe_hit_moby = 0;
-        if (probe_hero_forward_collision_r(0.7f, 4.0f, &g_hero_r.wall_probe_distance)) {
+        if (probe_hero_forward_collision(0.7f, 4.0f, &g_hero_r.wall_probe_distance)) {
             CollisionHit_4C558 *wall = &rilgar_coll_hit_r;
             float normal_xy = vec_length_xy_r(&wall->normal_x);
             g_hero_r.wall_normal_pitch = fast_atan2_r(wall->normal_z, normal_xy);
             if (wall->moby != 0) {
                 g_hero_r.wall_probe_hit_moby = 1;
-                if (is_moby_in_class_range_500_to_540_r(wall->moby))
+                if (is_moby_in_class_range_500_to_540(wall->moby))
                     g_hero_r.wall_probe_moby_in_class_range = 1;
             }
         }
@@ -508,11 +508,11 @@ void update_hero_movement_and_collision_probes(void) {
             distance = 20.0f;
             hit = coll_line_r(start, end, 2, g_hero_r.moby, 0);
             if (hit)
-                distance = FastVecDist_r(start, rilgar_coll_hit_point_r);
+                distance = FastVecDist_r(start, rilgar_coll_hit_point);
             if (!hit || distance > 3.0f) {
                 for (offset = -0.4f; offset < 0.5f; offset += 0.1f) {
                     transform_hero_local_offset_to_world_r(probe, 1.1f + offset, 0.0f, 0.0f);
-                    if (!coll_sphere_r(g_hero_r.capsule_radius, probe, 2, 0)) {
+                    if (!coll_sphere(g_hero_r.capsule_radius, probe, 2, 0)) {
                         g_hero_r.edge_ahead = 1;
                         if (!hit)
                             g_hero_r.edge_drop_depth = 20.0f;
@@ -531,13 +531,13 @@ void update_hero_movement_and_collision_probes(void) {
         qcopy(g_hero_r.hoverboard_moby + 0x10, (char *)&g_hero_r + 0x80);
         *(u128_4C558 *)start = 0;
         start[2] = 0.21f;
-        matrix_mul_vec3_r(start, start, (char *)g_hero_r.moby + 0xc0);
-        euler_to_matrix_r(rotation, rilgar_hero_bob_attach_euler_r);
+        matrix_mul_vec3(start, start, (char *)g_hero_r.moby + 0xc0);
+        euler_to_matrix(rotation, rilgar_hero_bob_attach_euler);
         transform_vector_r(start, start, rotation);
         FastVecAdd_r(g_hero_r.hoverboard_moby + 0x10, g_hero_r.hoverboard_moby + 0x10, start);
-        copy_matrix_rotation_r(moby_rotation, (char *)g_hero_r.moby + 0xc0);
+        copy_matrix_rotation(moby_rotation, (char *)g_hero_r.moby + 0xc0);
         sce_vu0_mul_matrix_r(combined, moby_rotation, rotation);
-        matrix_copy_rows_r(g_hero_r.hoverboard_moby + 0xc0, combined);
+        matrix_copy_rows(g_hero_r.hoverboard_moby + 0xc0, combined);
     }
 }
 extern short rilgar_frame_count;
@@ -653,10 +653,10 @@ typedef struct {
     char p14[0x18];
 } Rec2C;
 extern Hero g_hero_h2523C8 __asm__("D_0013F450");
-extern PadState g_controller_state_p2523C8 __asm__("D_0013CA40");
+extern PadState D_0013CA40;
 extern int last_weapon_id_r __asm__("D_00141760");
-extern unsigned char item_available_r[] __asm__("D_0013D5C8");
-extern Rec2C rilgar_attack_records_r[] __asm__("D_L05_0017C188");
+extern unsigned char D_0013D5C8[];
+extern Rec2C D_L05_0017C188[];
 extern int gadget_double_tap_timer SDATA(D_L05_0015F754);
 extern int pad_pressed_within(int, int, int *);
 extern int is_wrench_moby(void *);
@@ -666,7 +666,7 @@ extern int truncate_float_to_s32(float);
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound(int, int, int);
 extern int Hero_TryMoveStateL05_r(int, int) __asm__("func_L05_0024D680");
-extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
+extern int func_001F9908(int *);
 typedef struct {
     char p0[0xD8];
     unsigned short hD8;
@@ -731,7 +731,7 @@ int process_hero_primary_item_input(void) {
                 if (m->state != 0) {
                     break;
                 }
-                if ((g_controller_state_p2523C8.held & (PAD_R2 | PAD_R1)) ||
+                if ((g_controller_state.held & (PAD_R2 | PAD_R1)) ||
                     ((g_hero_h2523C8.state.current == HERO_STATE_LOOK ||
                       g_hero_h2523C8.state.current == HERO_STATE_LOOK_RELEASE_WAIT) &&
                      g_hero_h2523C8.state_timer > scale_ticks(0x14))) {
@@ -784,7 +784,7 @@ int process_hero_primary_item_input(void) {
                 }
             }
             if (g_hero_h2523C8.state.control_mode == 6) {
-                Rec2C *rec = &rilgar_attack_records_r[g_hero_h2523C8.attack_record];
+                Rec2C *rec = &rilgar_attack_records[g_hero_h2523C8.attack_record];
                 int t;
 
                 if (g_hero_h2523C8.state.current == HERO_STATE_CROUCH_SWING) {
@@ -793,7 +793,7 @@ int process_hero_primary_item_input(void) {
                             break;
                         }
                         if (g_hero_h2523C8.anim_frame >= (float)rec->f10 &&
-                            (g_controller_state_p2523C8.held & (PAD_R2 | PAD_R1)) &&
+                            (g_controller_state.held & (PAD_R2 | PAD_R1)) &&
                             pad_pressed_within(mask, scale_ticks(0xF), 0)) {
                             Hero_TryMoveStateL05_r(HERO_STATE_CROUCH_SWING, 1);
                             break;
@@ -819,7 +819,7 @@ int process_hero_primary_item_input(void) {
                 if (!pad_pressed_within(mask, t, 0)) {
                     break;
                 }
-                if (g_controller_state_p2523C8.held & (PAD_R2 | PAD_R1)) {
+                if (g_controller_state.held & (PAD_R2 | PAD_R1)) {
                     Hero_TryMoveStateL05_r(HERO_STATE_CROUCH_SWING, 1);
                     break;
                 }
@@ -843,8 +843,8 @@ int process_hero_primary_item_input(void) {
                 g_hero_h2523C8.state.control_mode == 2 || g_hero_h2523C8.state.control_mode == 0xF ||
                 g_hero_h2523C8.state.control_mode == 5 ||
                 g_hero_h2523C8.state.current == HERO_STATE_LOOK_RELEASE_WAIT) {
-                if (pad_pressed_within(mask, t, 0) || ((g_controller_state_p2523C8.held & mask) &&
-                                                       g_hero_h2523C8.items[0].ready_frames > scale_ticks(0xF))) {
+                if (pad_pressed_within(mask, t, 0) ||
+                    ((g_controller_state.held & mask) && g_hero_h2523C8.items[0].ready_frames > scale_ticks(0xF))) {
                     if (g_hero_h2523C8.swing_target_in_sight != 0) {
                         if (g_hero_h2523C8.grapple_target_in_sight != 0) {
                             if (g_hero_h2523C8.swing_target_dist < g_hero_h2523C8.unk984) {
@@ -907,9 +907,8 @@ int process_hero_primary_item_input(void) {
                     break;
                 }
                 pv = (PVar *)((Moby *)g_hero_h2523C8.items[0].moby)->pvars;
-                if (((g_controller_state_p2523C8.held & mask) &&
-                     g_hero_h2523C8.items[0].ready_frames > scale_ticks(5)) ||
-                    (g_controller_state_p2523C8.pressed & mask)) {
+                if (((g_controller_state.held & mask) && g_hero_h2523C8.items[0].ready_frames > scale_ticks(5)) ||
+                    (g_controller_state.pressed & mask)) {
                     if (get_ammo(-1)) {
                         if (g_hero_h2523C8.item_anim_active == 0) {
                             start_equipped_item_animation();
@@ -917,7 +916,7 @@ int process_hero_primary_item_input(void) {
                         break;
                     }
                 }
-                if (g_controller_state_p2523C8.held & mask) {
+                if (g_controller_state.held & mask) {
                     if (!get_ammo(-1)) {
                         if (!Sound_IsPlaying((Moby *)g_hero_h2523C8.items[0].moby, pv->fC)) {
                             pv->fC = Moby_PlaySound(0, 0, (int)((Moby *)g_hero_h2523C8.items[0].moby));
@@ -947,7 +946,7 @@ int process_hero_primary_item_input(void) {
                 t = scale_ticks(7);
                 n = g_hero_h2523C8.items[0].ready_frames;
                 if (pad_pressed_within(mask, t <= n ? t : n, &out1) ||
-                    ((g_controller_state_p2523C8.held & PAD_CIRCLE) && n > scale_ticks(8) && n < scale_ticks(0x11))) {
+                    ((g_controller_state.held & PAD_CIRCLE) && n > scale_ticks(8) && n < scale_ticks(0x11))) {
                     if (get_ammo(-1)) {
                         if (g_hero_h2523C8.state.control_mode == 0xC || g_hero_h2523C8.state.control_mode == 0 ||
                             g_hero_h2523C8.state.current == HERO_STATE_STOP ||
@@ -984,7 +983,7 @@ int process_hero_primary_item_input(void) {
             break;
         case 21:
             if (((Moby *)g_hero_h2523C8.items[0].moby) != 0) {
-                if (g_controller_state_p2523C8.pressed & mask) {
+                if (g_controller_state.pressed & mask) {
                     start_equipped_item_animation();
                 }
             }
@@ -1076,18 +1075,18 @@ int process_hero_primary_item_input(void) {
     if (g_hero_h2523C8.state_timer == start) {
         if (hero_slot_item_id(3) == 3 &&
             g_hero_h2523C8.state.current != HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT &&
-            (g_hero_h2523C8.unk308 == 0 || item_available_r[0x1C] == 0) && g_hero_h2523C8.pack_disabled == 0) {
-            fast_dec_timer_r(&gadget_double_tap_timer);
+            (g_hero_h2523C8.unk308 == 0 || item_available[0x1C] == 0) && g_hero_h2523C8.pack_disabled == 0) {
+            fast_dec_timer(&gadget_double_tap_timer);
             if (gadget_double_tap_timer != 0) {
                 if (g_hero_h2523C8.state.control_mode < 2U || g_hero_h2523C8.state.control_mode == 0xC ||
                     ((g_hero_h2523C8.state.control_mode == 2 || g_hero_h2523C8.state.control_mode == 4) &&
                      g_hero_h2523C8.grounded_frames != 0)) {
-                    if ((g_controller_state_p2523C8.held & PAD_R1) && (g_controller_state_p2523C8.pressed & PAD_R1)) {
+                    if ((g_controller_state.held & PAD_R1) && (g_controller_state.pressed & PAD_R1)) {
                         Hero_TryMoveStateL05_r(HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT, 1);
                     }
                 }
             }
-            if ((g_controller_state_p2523C8.pressed & PAD_R1) &&
+            if ((g_controller_state.pressed & PAD_R1) &&
                 g_hero_h2523C8.state.current != HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT) {
                 gadget_double_tap_timer = scale_ticks(0x1E);
             }

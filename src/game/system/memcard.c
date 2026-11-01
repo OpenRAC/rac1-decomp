@@ -136,7 +136,7 @@ extern int music_volume MACRO_ADDR;
 extern int sound_volume MACRO_ADDR;
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 
-extern int Load_i(int, int, int) __asm__("func_002176C8");
+extern int func_002176C8(int, int, int);
 
 /* Load returns int and takes three arguments (stream.c). */
 void load_and_initialize_level_chunk(void) {
@@ -148,7 +148,7 @@ void load_and_initialize_level_chunk(void) {
 
     calculate_ring_buffer_bounds(disc_table[5] << 11, &a, &b);
     update_audio_stream_until_idle(1);
-    Load_i(a, disc_table[4], disc_table[5]);
+    Load(a, disc_table[4], disc_table[5]);
     s2 = sound_volume;
     s1 = music_volume;
     s0 = playback_mode;
@@ -1648,7 +1648,7 @@ extern unsigned char level_visit_state[];
 extern int gBolts MACRO_ADDR;
 extern int game_clock_ticks MACRO_ADDR;
 extern int D_0015EF20 MACRO_ADDR;
-extern int mode_freeze_flags_m __asm__("D_0015EFB4") MACRO_ADDR;
+extern int D_0015EFB4 MACRO_ADDR;
 extern char memcard_game_data_buffer[];
 extern char memcard_level_data_buffer[];
 
@@ -1686,7 +1686,7 @@ int memcard_Save(int slot, int flags) {
             goto done;
         }
         if (slot == 0) {
-            mode_freeze_flags_m |= 0x200;
+            mode_freeze_flags |= 0x200;
         }
         if (*(int *)(p + 0xDC) >= 3) {
             goto done;

@@ -250,7 +250,7 @@ extern OtherMoby *D_L15_00160058_2A48B0 SDATA(D_L15_00160058);
 extern int quartu_alarm_on_r __asm__("D_L15_00161B48") MACRO_ADDR;
 extern char quartu_camera_pos_r[] __asm__("D_L15_00167440");
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
-extern int quartu_keyed_gate_open_r __asm__("D_L15_00184B28");
+extern int D_L15_00184B28;
 
 // Gate update: a six-state machine that opens, holds and closes the gate and drives its travel and the level-15 flags.
 void update_vertical_gate(GateMoby *m) {
@@ -273,7 +273,7 @@ void update_vertical_gate(GateMoby *m) {
         case 1:
             d->travel = 0;
             if (d->key != -1) {
-                quartu_keyed_gate_open_r = 0;
+                quartu_keyed_gate_open = 0;
             }
             if (d->trigger != -1) {
                 OtherMoby *p = (OtherMoby *)((char *)D_L15_00160058_2A48B0 + (d->trigger << 8));
@@ -329,7 +329,7 @@ void update_vertical_gate(GateMoby *m) {
             break;
         case 3:
             if (d->key != -1) {
-                quartu_keyed_gate_open_r = 1;
+                quartu_keyed_gate_open = 1;
             }
             if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
                                               d->vol_trigger) != 0 ||
@@ -362,7 +362,7 @@ void update_vertical_gate(GateMoby *m) {
                 m->state = 1;
                 if (d->key != -1) {
                     m->state = 5;
-                    quartu_keyed_gate_open_r = 0;
+                    quartu_keyed_gate_open = 0;
                 }
             }
             {
@@ -386,14 +386,14 @@ void update_vertical_gate(GateMoby *m) {
         case 5:
             if (gemlik_available_r[3] != 0) {
                 m->pos.z = d->home.z - D_L15_00161578_2A48B0;
-                quartu_keyed_gate_open_r = 1;
+                quartu_keyed_gate_open = 1;
             } else {
                 if (hero_globals_base_r[0x2EC1] == 2) {
                     break;
                 }
                 m->pos.z = d->home.z;
                 m->state = 1;
-                quartu_keyed_gate_open_r = 0;
+                quartu_keyed_gate_open = 0;
             }
             break;
     }
@@ -2000,7 +2000,7 @@ extern float SteerAngleWithVelocity(void *, float, void *, float, float, float);
 extern int fast_dec_timer(int *);
 extern int IsFrameWithinWindow(char *, float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern char *create_rocket_v(void *vel, float scale, void *pos, int a, int b, int c) __asm__("func_L10_002CD578");
+extern char *func_L10_002CD578(void *vel, float scale, void *pos, int a, int b, int c);
 extern void add_vectors(void *, void *, void *);
 
 extern float compute_ultramech_flocking_steering_point(void *, void *, float);
@@ -2261,7 +2261,7 @@ void ultramech_unlimited_update(UMoby *m) {
                         v20.f[2] = 0.0f;
                     if (v20.f[2] < 0.0f)
                         v20.f[2] = 0.0f;
-                    create_rocket_v(&v20, 3.0f, &v10, (int)m, (int)tgt, scale_ticks(*(int *)&ultramech_rocket_life));
+                    create_rocket(&v20, 3.0f, &v10, (int)m, (int)tgt, scale_ticks(*(int *)&ultramech_rocket_life));
                     vec_scale_to_length(&v20, &v20, 3.0f);
                     add_vectors(&v30, &v10, &v20);
                     emit_radial_particle_burst(m, &v10, 0);
@@ -2758,28 +2758,27 @@ typedef struct Tb {
     u128 v30;
     u128 v40;
 } Tb;
-extern char quartu_coll_hit_r[] __asm__("D_L15_001744C0");
+extern char D_L15_001744C0[];
 extern int quartu_coll_hit_moby_r __asm__("D_L15_001744D8");
-extern int g_hero_moby_r __asm__("D_001414D0");
+extern int D_001414D0;
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern float D_L15_0016203C_2E9358 SDATA(D_L15_0016203C);
-extern char *quartu_coll_sphere_moby_hits_r[] __asm__("D_L15_00178580");
-extern int coll_sphere_r(float, void *, int, void *) __asm__("func_L00_001F10E0");
+extern char *D_L15_00178580[];
+extern int func_L00_001F10E0(float, void *, int, void *);
 extern Res *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
-extern char *GetFlaggedPvarWord_r(int) __asm__("func_L00_00261448");
+extern char *func_L00_00261448(int);
 extern void add_vectors_r(void *, void *, void *) __asm__("func_L00_001FF240");
 extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
 extern void vec_reflect_r(void *, void *, void *) __asm__("func_L00_001FF610");
 extern void vec_scale_to_length_r2(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern float ProbeGroundHeight_r(void *, int, float) __asm__("func_00214358");
-extern int RotateWithMoby_r(void *, void *, void *, void *, void *, void *) __asm__("func_L00_00261478");
+extern int func_L00_00261478(void *, void *, void *, void *, void *, void *);
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern void spawn_explosion_r2(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern int Sound_PlayClassSound_r(int, int, void *, int) __asm__("func_L00_0028EF68");
 extern int coll_sphere_mobys_r(void *, int, void *, void *, float) __asm__("func_L00_001F2BE8");
-extern void SendRadialMessageToMobys_r(void *, void *, void *, int, int, int, int, int, float, float,
-                                       float) __asm__("func_L00_0025BA50");
+extern void func_L00_0025BA50(void *, void *, void *, int, int, int, int, int, float, float, float);
 extern void DeleteMoby_r2(void *) __asm__("func_0020D678");
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 
@@ -2796,8 +2795,8 @@ void PoisonVesselUpdate(Moby *moby) {
 
     s20.q = (*(u128 *)&moby->pos);
     clear_u64_value_r(&s30);
-    if (coll_sphere_r(0.5f, &moby->pos, 1, moby)) {
-        if (quartu_coll_hit_moby_r == 0 || GetFlaggedPvarWord_r(quartu_coll_hit_moby_r) == 0) {
+    if (coll_sphere(0.5f, &moby->pos, 1, moby)) {
+        if (quartu_coll_hit_moby_r == 0 || moby_get_ride_transform(quartu_coll_hit_moby_r) == 0) {
             moby->command = 1;
         }
     }
@@ -2813,15 +2812,15 @@ void PoisonVesselUpdate(Moby *moby) {
             data->f8 = data->f8 - D_L15_0016203C_2E9358 * g_frame_time_sq_r;
             add_vectors_r(&s40, &moby->pos, data);
             if (coll_line_r(&s20, &moby->pos, 0x10, moby, 0)) {
-                if (((Tb *)quartu_coll_hit_r)->f18 != 0 && GetFlaggedPvarWord_r(((Tb *)quartu_coll_hit_r)->f18) != 0) {
-                    data->target = (Moby *)((Tb *)quartu_coll_hit_r)->f18;
+                if (((Tb *)quartu_coll_hit)->f18 != 0 && moby_get_ride_transform(((Tb *)quartu_coll_hit)->f18) != 0) {
+                    data->target = (Moby *)((Tb *)quartu_coll_hit)->f18;
                     moby->state = 1;
                     data->f8 = 0.0f;
-                    (*(u128 *)&moby->pos) = ((Tb *)quartu_coll_hit_r)->v20;
-                } else if (((Tb *)quartu_coll_hit_r)->f18 == g_hero_moby_r || data->f8 < g_frame_time_r * -9.8f) {
+                    (*(u128 *)&moby->pos) = ((Tb *)quartu_coll_hit)->v20;
+                } else if (((Tb *)quartu_coll_hit)->f18 == g_hero_moby || data->f8 < g_frame_time_r * -9.8f) {
                     moby->command = 1;
-                    qcopy(&moby->pos, &((Tb *)quartu_coll_hit_r)->v20);
-                    vec_reflect_r(&s30, data, &((Tb *)quartu_coll_hit_r)->v40);
+                    qcopy(&moby->pos, &((Tb *)quartu_coll_hit)->v20);
+                    vec_reflect_r(&s30, data, &((Tb *)quartu_coll_hit)->v40);
                     vec_scale_to_length_r2(&s30, &s30, g_frame_time_r + g_frame_time_r);
                 }
             }
@@ -2835,9 +2834,9 @@ void PoisonVesselUpdate(Moby *moby) {
                     moby->command = state;
                     data->target = 0;
                 } else if (quartu_coll_hit_moby_r != 0) {
-                    p20 = GetFlaggedPvarWord_r(quartu_coll_hit_moby_r);
+                    p20 = moby_get_ride_transform(quartu_coll_hit_moby_r);
                     if (p20 != 0) {
-                        RotateWithMoby_r(moby, data->target, &moby->pos, &moby->rot, &moby->pos, &moby->rot);
+                        RotateWithMoby(moby, data->target, &moby->pos, &moby->rot, &moby->pos, &moby->rot);
                         FastVecSub_r(&s40, &moby->pos, &s20);
                         *(u128 *)data = s40.q;
                     }
@@ -2856,8 +2855,7 @@ void PoisonVesselUpdate(Moby *moby) {
         Sound_PlayClassSound_r(0, 0, moby, 0x79);
         ret = coll_sphere_mobys_r(&moby->pos, 0x10, moby, 0, 2.0f);
         s40.q = (*(u128 *)&moby->pos);
-        SendRadialMessageToMobys_r(moby, &s40, quartu_coll_sphere_moby_hits_r, ret, 0, 0x830001, 2, 1, 1.0f, 1.0f,
-                                   1.0f);
+        SendRadialMessageToMobys(moby, &s40, quartu_coll_sphere_moby_hits, ret, 0, 0x830001, 2, 1, 1.0f, 1.0f, 1.0f);
         DeleteMoby_r2(moby);
     }
 }

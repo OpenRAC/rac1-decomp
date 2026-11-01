@@ -835,8 +835,8 @@ typedef struct {
 } S_28b1a0;
 extern S_28b1a0 *sky_data_r3 __asm__("D_L00_001605DC") MACRO_ADDR;
 extern unsigned char sky_shell_matrix_r2[] __asm__("D_L00_001BDB70") NOT_SDA;
-extern short sky_shell_rotation_phase_step_r __asm__("D_L00_00160580");
-extern q_28b1a0 sky_shell_origin_r __asm__("D_L00_001605E0") MACRO_ADDR;
+extern short D_L00_00160580;
+extern q_28b1a0 D_L00_001605E0 MACRO_ADDR;
 void func_001FA190_28b1a0(void *) __asm__("func_001FA190");
 void func_001F9BC0_28b1a0(void *) __asm__("func_001F9BC0");
 void func_L00_001FFA40_28b1a0(void *, void *) __asm__("func_L00_001FFA40");
@@ -859,26 +859,26 @@ void SkyShellsEntryUpdate(void) {
             case 1:
                 v[1] = 0.02f;
                 k = 3.0f;
-                *p += (*(float *)&sky_shell_rotation_phase_step_r) * 0.55f;
+                *p += (*(float *)&sky_shell_rotation_phase_step) * 0.55f;
                 break;
             case 2:
                 v[1] = -0.02f;
                 k = 2.5f;
-                *p += (*(float *)&sky_shell_rotation_phase_step_r) * 0.6f;
+                *p += (*(float *)&sky_shell_rotation_phase_step) * 0.6f;
                 break;
             case 3:
                 v[1] = 0.01f;
                 k = 2.0f;
-                *p += (*(float *)&sky_shell_rotation_phase_step_r) * 0.7f;
+                *p += (*(float *)&sky_shell_rotation_phase_step) * 0.7f;
                 break;
             case 4:
                 v[1] = -0.01f;
                 k = 1.5f;
-                *p += (*(float *)&sky_shell_rotation_phase_step_r) * 0.75f;
+                *p += (*(float *)&sky_shell_rotation_phase_step) * 0.75f;
                 break;
             case 5:
                 k = 1.25f;
-                *p += (*(float *)&sky_shell_rotation_phase_step_r) * 0.8f;
+                *p += (*(float *)&sky_shell_rotation_phase_step) * 0.8f;
                 break;
             default:
                 func_001FA190_28b1a0(sky_shell_matrix_r2);
@@ -891,7 +891,7 @@ void SkyShellsEntryUpdate(void) {
             func_001F9C48_28b1a0(M, M, k);
             func_001F9C48_28b1a0(M + 0x10, M + 0x10, k);
             func_001F9C48_28b1a0(M + 0x20, M + 0x20, k);
-            qcopy(M + 0x30, &sky_shell_origin_r);
+            qcopy(M + 0x30, &sky_shell_origin);
         }
         func_0022C9A8_28b1a0(i);
     }

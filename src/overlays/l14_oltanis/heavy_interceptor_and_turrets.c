@@ -200,7 +200,7 @@ extern char hero_globals_base[];
 extern int *oltanis_paths[];
 extern LevelState oltanis_collected_flags_base;
 
-extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
+extern int D_0015EE84 MACRO_ADDR;
 
 extern float g_frame_time MACRO_ADDR;
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
@@ -318,9 +318,9 @@ void KeyframePlatformUpdate(unsigned char *moby) {
 
         if (vars->trigger == -1 || is_point_inside_clip_volume(&hero.motion.pos, vars->trigger) ||
             oltanis_collected_flags_base.collected[(s16)(id = m->save_id)] != 0 ||
-            (level_moby_killed[g_current_level_index_m][(s16)id >> 5] >> (id & 0x1F)) & 1) {
+            (level_moby_killed[g_current_level_index][(s16)id >> 5] >> (id & 0x1F)) & 1) {
             if (vars->trigger != -1) {
-                level_moby_killed[g_current_level_index_m][(s16)m->save_id >> 5] |= 1 << (m->save_id & 0x1F);
+                level_moby_killed[g_current_level_index][(s16)m->save_id >> 5] |= 1 << (m->save_id & 0x1F);
                 oltanis_moby_killed_bits[(s16)m->save_id >> 5] |= 1 << (m->save_id & 0x1F);
                 vars->trigger = -1;
             }
@@ -1783,10 +1783,10 @@ int count_moby_group_members(char *moby) {
 }
 INCLUDE_ASM("asm/overlays", func_L14_002B02B0);
 extern int STUB_printf_r() __asm__("func_001E9730");
-extern char machinegun_turret_unset_link_msg_r[] __asm__("D_L14_001FC0C0");
-extern char machinegun_turret_unset_link2_msg_r[] __asm__("D_L14_001FC0E8");
-extern int oltanis_frame_count_r __asm__("D_L14_0015F6B0") MACRO_ADDR;
-extern char *oltanis_clip_volumes_r __asm__("D_L14_001601AC") MACRO_ADDR;
+extern char D_L14_001FC0C0[];
+extern char D_L14_001FC0E8[];
+extern int D_L14_0015F6B0 MACRO_ADDR;
+extern char *D_L14_001601AC MACRO_ADDR;
 extern float D_L14_001615D0_2B4E40 SDATA(D_L14_001615D0);
 extern int D_L14_001615D4_2B4E40 SDATA(D_L14_001615D4);
 extern float D_L14_001615D8_2B4E40 SDATA(D_L14_001615D8);
@@ -1804,9 +1804,9 @@ extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
 extern void MobySetAnimation_r(void *, int, int) __asm__("func_00213D28");
 extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
-extern int FindNearestTargetMoby_r(void *, void *, float) __asm__("func_L00_00260D30");
-extern char *spawn_flying_bolt_r(void *, float *, int, int) __asm__("func_L14_002EE150");
-extern void set_moby_color_r(void *, int, int, int) __asm__("func_L00_00251328");
+extern int func_L00_00260D30(void *, void *, float);
+extern char *func_L14_002EE150(void *, float *, int, int);
+extern void func_L00_00251328(void *, int, int, int);
 extern void spawn_explosion_r2(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
                                float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
@@ -1849,12 +1849,12 @@ void machinegun_turret_update(char *moby) {
             *(int *)&data->sweep_angle = 0;
             data->timer = 0;
             if (data->sweep_volume == -1) {
-                STUB_printf_r(machinegun_turret_unset_link_msg_r, *(short *)&((Moby *)moby)->save_id);
+                STUB_printf_r(machinegun_turret_unset_link_msg, *(short *)&((Moby *)moby)->save_id);
                 DeleteMoby_r(moby);
                 return;
             }
             if (data->sight_volume == -1) {
-                STUB_printf_r(machinegun_turret_unset_link2_msg_r, *(short *)&((Moby *)moby)->save_id);
+                STUB_printf_r(machinegun_turret_unset_link2_msg, *(short *)&((Moby *)moby)->save_id);
                 DeleteMoby_r(moby);
                 return;
             }
@@ -1910,7 +1910,7 @@ void machinegun_turret_update(char *moby) {
             *(int *)&data->sweep_angle = 0;
             return;
         case 3:
-            r = FindNearestTargetMoby_r(moby, v20, 34.0f);
+            r = FindNearestTargetMoby(moby, v20, 34.0f);
             if (r != 2) {
                 if (is_point_inside_clip_volume_r(v20, data->sight_volume) != 0) {
                     ((Moby *)moby)->state = 4;
@@ -1938,16 +1938,16 @@ void machinegun_turret_update(char *moby) {
             data->sweep_angle = t1;
             t2 = FastAddRots_r(t1, data->base_yaw * 0.01745329238474369f);
             d80 = data->sweep_volume;
-            p16 = oltanis_clip_volumes_r + (d80 << 7) + 0x10;
+            p16 = oltanis_clip_volumes + (d80 << 7) + 0x10;
             t3 = FastSin_r(t2);
             FastVecScale_r(v20, p16, t3);
             d80 = data->sweep_volume;
-            p6 = oltanis_clip_volumes_r + (d80 << 7) + 0x30;
+            p6 = oltanis_clip_volumes + (d80 << 7) + 0x30;
             FastVecAdd_r(v20, v20, p6);
             t4 = fast_atan2_r(v20[0] - ((Moby *)moby)->pos.x, v20[1] - ((Moby *)moby)->pos.y);
             ((Moby *)moby)->rot.z = t4;
             FastDecTimer_r2(&data->fire_timer);
-            rem = oltanis_frame_count_r % D_L14_001615F8_2B4E40;
+            rem = oltanis_frame_count % D_L14_001615F8_2B4E40;
             if (rem == 0) {
                 sel = random_integer_below_r(3);
                 switch (sel) {
@@ -1970,10 +1970,10 @@ void machinegun_turret_update(char *moby) {
                 FastVecAdd_r(v30, v30, moby + 0x10);
                 vec_scale_to_length_r(v40, moby + 0xC0, D_L14_001615E4_2B4E40 * g_frame_time_r);
                 if (data->fire_timer == 0) {
-                    set_moby_color_r(spawn_flying_bolt_r(v30, v40, (int)moby, 1), 0xE0, 0xE0, 0xE0);
+                    set_moby_color(spawn_flying_bolt(v30, v40, (int)moby, 1), 0xE0, 0xE0, 0xE0);
                 }
             }
-            r = FindNearestTargetMoby_r(moby, v70, 34.0f);
+            r = FindNearestTargetMoby(moby, v70, 34.0f);
             c17 = (r == 2 || is_point_inside_clip_volume_r(v70, data->sight_volume) == 0);
             if (c17 == 0) {
                 return;
@@ -2277,7 +2277,7 @@ extern int advance_minibomber_along_path(char *moby, char *a1, int a2, int a3, f
 extern void clear_u64_value(void *);
 extern void initialize_minibomber_path_retrace(char *moby);
 extern int IsFrameWithinWindow(void *, float);
-extern char *create_bouncing_spark_r(int a0, float *a1, float *a2, float f, int a3) __asm__("func_L14_00302968");
+extern char *func_L14_00302968(int a0, float *a1, float *a2, float f, int a3);
 extern void emit_minibomber_bomb_release_effects(char *m, float *input, float angle);
 extern unsigned char *spawn_flying_debris(char *owner, float angle, char *posp);
 extern void func_L00_0025F4A8_2B5938(void *, void *, void *, float, float, int, int, int, float, float, float, float,
@@ -2540,7 +2540,7 @@ void minibomber_update(Moby *moby) {
                 g = minibomber_bomb_gravity * g_frame_time_sq;
                 q = oltanis_paths_r[d->fD8] + d->f100;
                 d->f48 = -((v[2] - q[1].v[2]) + -g * (n * n) * 0.5f) / n;
-                create_bouncing_spark_r((int)moby, v, v + 4, g, scale_ticks(minibomber_bomb_initial_fade_timer_frames));
+                create_bouncing_spark((int)moby, v, v + 4, g, scale_ticks(minibomber_bomb_initial_fade_timer_frames));
                 emit_minibomber_bomb_release_effects((char *)moby, v, d->f104);
                 d->f100++;
                 if (d->f100 >= oltanis_paths_r[d->fD8]->n) {
@@ -3042,7 +3042,7 @@ void update_flying_debris(struct Moby *m) {
 }
 typedef int u128_2BC560 __attribute__((mode(TI)));
 extern float frame_scale MACRO_ADDR;
-extern struct Moby *CreateMoby_m(int) __asm__("func_0020D348");
+extern struct Moby *func_0020D348(int);
 extern float random_float_between(float, float);
 
 extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
@@ -3057,7 +3057,7 @@ unsigned char *spawn_flying_debris(char *owner, float angle, char *posp) {
     float *v0 = vec;
     float *v1;
     *(u128_2BC560 *)v0 = *(u128_2BC560 *)posp;
-    m = (unsigned char *)CreateMoby_m(0x51);
+    m = (unsigned char *)CreateMoby(0x51);
     if (m != 0) {
         d = (struct FlyingDebrisVars *)((Moby *)m)->pvars;
         qcopy(m + 0x10, v0);
@@ -3680,7 +3680,7 @@ typedef struct {
 
 extern struct Hero g_hero_r2 __asm__("D_0013F450");
 extern char oltanis_camera_pos_r[] __asm__("D_L14_001675C0");
-extern float racer_glow_quad_corners_r[4][4] __asm__("D_L14_001DE840");
+extern float D_L14_001DE840[4][4];
 extern void FastVecScale_r3(void *, void *, float) __asm__("func_001F9C30");
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern void vec_scale_to_length_r2(void *, void *, float) __asm__("func_L00_001FF4B0");
@@ -3720,7 +3720,7 @@ void draw_racer_glow_quads(struct Moby *m) {
     pk.uv[6] = 1.0f;
     pk.uv[7] = 1.0f;
     for (i = 0; i < 4; i++) {
-        FastVecScale_r3(pk.m[i], racer_glow_quad_corners_r[i], 0.4f);
+        FastVecScale_r3(pk.m[i], racer_glow_quad_corners[i], 0.4f);
         transform_vector_r(pk.m[i], pk.m[i], mat);
     }
     draw_world_quad_r2(&pk, 0, 0);
@@ -3735,7 +3735,7 @@ void draw_racer_glow_quads(struct Moby *m) {
     pk.col[1] = 0x202020FF;
     pk.col[0] = 0x202020FF;
     for (j = 0; j < 4; j++) {
-        FastVecScale_r3(pk.m[j], racer_glow_quad_corners_r[j], 0.2f);
+        FastVecScale_r3(pk.m[j], racer_glow_quad_corners[j], 0.2f);
         transform_vector_r(pk.m[j], pk.m[j], mat);
     }
     draw_world_quad_r2(&pk, 0, 0);

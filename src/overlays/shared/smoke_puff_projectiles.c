@@ -25,8 +25,7 @@ extern struct Moby *CreateMoby_r(int oclass) __asm__("func_0020D348");
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
 extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
-extern void spawn_source_attached_fading_effect_particle_r(struct Moby *, int color, int life, int,
-                                                           float size) __asm__("func_L00_0026E940");
+extern void func_L00_0026E940(struct Moby *, int color, int life, int, float size);
 extern void moby_build_matrix_r(void *) __asm__("func_L00_00251E30");
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 
@@ -63,11 +62,11 @@ struct Moby *spawn_class_b8_projectile(struct Moby *owner, void *pos, void *dir,
         vars->unk24 = 0;
         vars->unk28 = 0;
         if (owner->oclass == 0xFF) {
-            spawn_source_attached_fading_effect_particle_r(m, 0x2F7F4F4F, life * 5 / 4, -1, 100000.0f);
-            spawn_source_attached_fading_effect_particle_r(m, 0x4F7F7F7F, life * 5 / 4, -1, 40000.0f);
+            spawn_source_attached_fading_effect_particle(m, 0x2F7F4F4F, life * 5 / 4, -1, 100000.0f);
+            spawn_source_attached_fading_effect_particle(m, 0x4F7F7F7F, life * 5 / 4, -1, 40000.0f);
         } else {
-            spawn_source_attached_fading_effect_particle_r(m, 0x2F4F7F7F, life * 5 / 4, -1, 100000.0f);
-            spawn_source_attached_fading_effect_particle_r(m, 0x4F6F7F7F, life * 5 / 4, -1, 40000.0f);
+            spawn_source_attached_fading_effect_particle(m, 0x2F4F7F7F, life * 5 / 4, -1, 100000.0f);
+            spawn_source_attached_fading_effect_particle(m, 0x4F6F7F7F, life * 5 / 4, -1, 40000.0f);
         }
         moby_build_matrix_r(m);
     }

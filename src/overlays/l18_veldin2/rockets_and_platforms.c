@@ -750,7 +750,7 @@ char *launch_mine_568_moby_from_list(float f, int a0, int idx, float *p6, float 
 }
 extern char g_hero_r[] __asm__("D_0013F450");
 extern float veldin2_zero_vec_r[] __asm__("D_L18_0015F660") MACRO_ADDR;
-extern int MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
+extern int func_L00_0025B478(void *, int, int);
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern void spawn_explosion_r(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
@@ -772,7 +772,7 @@ void func_L18_002D7310_r(unsigned char *m) {
         *(int *)&((Moby *)m)->collision = 0;
         return;
     }
-    hit = MobyGetHitMessage_r(m, 0x330000, 0);
+    hit = MobyGetHitMessage(m, 0x330000, 0);
     ((Moby *)m)->hit_slot = 0xFF;
     if (*(unsigned char **)(g + 0x23C) == m || *(unsigned char **)(g + 0x240) == m || d->landed != 0) {
         spawn_explosion_r(m, veldin2_zero_vec_r, 0, 1.5f, 1.0f, 0x14, 6, 0x20, 3.0f, 1.5f, 9.0f, 1.5f, 1, 0.0f, 1, 0,
@@ -797,11 +797,11 @@ struct Manip_D74F8;
 struct GifEntry_D74F8;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l18/gameplay/entities/002a7220.c, FUN_L18_002d6108. */
-extern int process_moby_suck_cannon_suction_D74F8_pos(void *, void *, void *) __asm__("func_L00_002DCDA8");
+extern int func_L00_002DCDA8(void *, void *, void *);
 /* Pauses the moby in state 4 while the path check fails, restores its state after; returns code. */
 int update_moby_state_pause(struct Moby *m, void *pos, void *target) {
     struct LaunchedMobyVars *d = (struct LaunchedMobyVars *)m->pvars;
-    int r = process_moby_suck_cannon_suction_D74F8_pos(m, pos, target);
+    int r = process_moby_suck_cannon_suction(m, pos, target);
     if (r != 0) {
         unsigned char s = m->state;
         if ((unsigned)(s - 3) < 2) {
@@ -823,13 +823,13 @@ int update_moby_state_pause(struct Moby *m, void *pos, void *target) {
     return r;
 }
 
-extern int store_moby_in_suck_cannon_h(Moby *, void *, void *, float) __asm__("func_L00_002DCFD0");
+extern int func_L00_002DCFD0(Moby *, void *, void *, float);
 /* Switch to state four while active, then restore the saved state. */
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
    calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as
    they came (retail touches none of a1, a2 and $f12 before its call). */
 int moby_hold_state_while_active(Moby *moby, void *arg, void *t, float h) {
-    int active = store_moby_in_suck_cannon_h(moby, arg, t, h);
+    int active = store_moby_in_suck_cannon(moby, arg, t, h);
     if (active != 0) {
         moby->state = 4;
     } else if (moby->state == 4) {
@@ -1927,7 +1927,7 @@ extern float D_L18_00161D00_CE10 SDATA(D_L18_00161D00);
 extern float D_L18_00161D04_CE10 SDATA(D_L18_00161D04);
 extern float D_L18_00161D08_CE10 SDATA(D_L18_00161D08);
 extern float D_L18_00161D0C_CE10 SDATA(D_L18_00161D0C);
-extern float projectile_ring_quad_uvs_r[] __asm__("D_L18_001D45E0");
+extern float D_L18_001D45E0[];
 extern void set_identity_matrix_r(void *) __asm__("func_001FA190");
 extern int GetEffectTex_r(int) __asm__("func_001F4868");
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
@@ -1982,8 +1982,8 @@ void draw_expanding_projectile_ring(void *moby_v) {
         fj = (float)j;
         for (k = 0; k < 4; k++) {
             float a;
-            q[j].uv[k].u = projectile_ring_quad_uvs_r[2 * k];
-            q[j].uv[k].v = projectile_ring_quad_uvs_r[2 * k + 1];
+            q[j].uv[k].u = projectile_ring_quad_uvs[2 * k];
+            q[j].uv[k].v = projectile_ring_quad_uvs[2 * k + 1];
             if (k & 1) {
                 q[j].corner[k].f[2] = t * D_L18_00161CFC_CE10;
             } else {
@@ -2181,7 +2181,7 @@ extern float D_L18_00161D54_D8A8 SDATA(D_L18_00161D54);
 extern float D_L18_00161D58_D8A8 SDATA(D_L18_00161D58);
 extern float D_L18_00161D5C_D8A8 SDATA(D_L18_00161D5C);
 extern float D_L18_00161D64_D8A8 SDATA(D_L18_00161D64);
-extern float class_274_ring_quad_uvs_r[] __asm__("D_L18_001D4600");
+extern float D_L18_001D4600[];
 extern void set_identity_matrix_r2(void *) __asm__("func_001FA190");
 extern int GetEffectTex_r2(int) __asm__("func_001F4868");
 extern void draw_world_quad_r2(void *, void *, int) __asm__("func_L00_001FD1D8");
@@ -2238,8 +2238,8 @@ void draw_class_274_ring_effect(void *moby_v) {
         c = FastTweenColor_r2(c & 0xFFFFFF, c, s);
         for (j = 0; j < 4; j++) {
             float a;
-            quad[i].uv[j].u = class_274_ring_quad_uvs_r[j * 2];
-            quad[i].uv[j].v = class_274_ring_quad_uvs_r[j * 2 + 1];
+            quad[i].uv[j].u = class_274_ring_quad_uvs[j * 2];
+            quad[i].uv[j].v = class_274_ring_quad_uvs[j * 2 + 1];
             quad[i].corner[j].f[2] = (j & 1) ? t * D_L18_00161D58_D8A8 : -t * D_L18_00161D58_D8A8;
             a = FastAddRots_r2((float)(j >> 1) * (D_L18_00161D50_D8A8 * 0.017453292f) - 3.14159f,
                                D_L18_00161D50_D8A8 * 0.25f * (float)i * 0.017453292f);
@@ -2495,7 +2495,7 @@ void update_moby_hit_response_burst_and_ballistic_flight(char *moby) {
             }
             break;
         case STATE_WAIT_FOR_HIT:
-            if (MobyGetHitMessage_r(moby, 0x80000, 0) != 0) {
+            if (MobyGetHitMessage(moby, 0x80000, 0) != 0) {
                 set_moby_group_state_two((char *)(int)((struct Moby *)moby)->group);
                 Sound_PlayClassSound(0, 0, (int)moby, 0x375);
             }
@@ -2937,23 +2937,23 @@ void spawn_explosion_burst(void *source_moby) {
         camera->shake_frames = scale_ticks(I(homing_spark_burst_shake_frames));
     }
 }
-extern short electric_bolt_initialization_requested_r __asm__("D_L18_0016207C");
-extern short electric_bolt_init_span_scale_r __asm__("D_L18_00162080");
+extern short D_L18_0016207C;
+extern short D_L18_00162080;
 extern short electric_bolt_wave_phase_r __asm__("D_L18_00162098");
 extern short electric_bolt_twist_phase_r __asm__("D_L18_001620A0");
 extern short electric_bolt_swell_phase_r __asm__("D_L18_001620B4");
 extern short electric_bolt_color_r __asm__("D_L18_001620E4");
-extern short D_L18_00162110_2EC0C8 __asm__("D_L18_00162110");
+extern short D_L18_00162110;
 extern short electric_bolt_branch_periods_r[] __asm__("D_L18_00162158") MACRO_ADDR;
-extern short D_L18_0016215A_2EC0C8[] __asm__("D_L18_0016215A") MACRO_ADDR;
-extern short D_L18_0016215C_2EC0C8[] __asm__("D_L18_0016215C") MACRO_ADDR;
-extern short D_L18_0016215E_2EC0C8[] __asm__("D_L18_0016215E") MACRO_ADDR;
+extern short D_L18_0016215A[] MACRO_ADDR;
+extern short D_L18_0016215C[] MACRO_ADDR;
+extern short D_L18_0016215E[] MACRO_ADDR;
 extern short electric_bolt_branch_peak_ticks_r[] __asm__("D_L18_00162160") MACRO_ADDR;
-extern short D_L18_00162162_2EC0C8[] __asm__("D_L18_00162162") MACRO_ADDR;
-extern short D_L18_00162164_2EC0C8[] __asm__("D_L18_00162164") MACRO_ADDR;
-extern short D_L18_00162166_2EC0C8[] __asm__("D_L18_00162166") MACRO_ADDR;
+extern short D_L18_00162162[] MACRO_ADDR;
+extern short D_L18_00162164[] MACRO_ADDR;
+extern short D_L18_00162166[] MACRO_ADDR;
 extern short electric_bolt_branch_timers_r[4] __asm__("D_L18_00162148") MACRO_ADDR;
-extern int D_L18_00162168_2EC0C8 __asm__("D_L18_00162168") MACRO_ADDR;
+extern int D_L18_00162168 MACRO_ADDR;
 extern short D_L18_0016216C_2EC0C8 __asm__("D_L18_0016216C");
 extern float electric_bolt_points_base_r[][4] __asm__("D_L18_001D9FC0");
 extern float electric_bolt_points_r[][4] __asm__("D_L18_001D9FD0");
@@ -2975,13 +2975,13 @@ void func_L18_002EC0C8_r(struct Moby *m) {
     float step[4];
     int i;
     int j;
-    if ((*(int *)&electric_bolt_initialization_requested_r) != 0) {
-        (*(int *)&electric_bolt_initialization_requested_r) = 0;
+    if ((*(int *)&electric_bolt_initialization_requested) != 0) {
+        (*(int *)&electric_bolt_initialization_requested) = 0;
         (*(int *)&D_L18_0016216C_2EC0C8) = 0;
-        D_L18_00162168_2EC0C8 = scale_ticks_r2((*(int *)&D_L18_00162110_2EC0C8));
+        electric_bolt_scaled_initial_frame_count = scale_ticks_r2((*(int *)&electric_bolt_initial_frame_count_gp));
         (*(int *)&electric_bolt_color_r) = 0x7F2020;
         FastVecSub_r(v, &d->target, &m->pos);
-        vec_scale_to_length_r(step, v, (*(float *)&electric_bolt_init_span_scale_r) / 20.0f);
+        vec_scale_to_length_r(step, v, (*(float *)&electric_bolt_initial_length_scale_gp) / 20.0f);
         qcopy(electric_bolt_points_r, &m->pos);
         for (i = 1; i < 20; i++) {
             FastVecAdd_r(electric_bolt_points_r[i], electric_bolt_points_base_r[i], step);
@@ -2993,12 +2993,12 @@ void func_L18_002EC0C8_r(struct Moby *m) {
             electric_bolt_branch_timers_r[j] = -1;
         *electric_bolt_branch_periods_r = 8;
         *electric_bolt_branch_peak_ticks_r = 4;
-        *D_L18_0016215A_2EC0C8 = 4;
-        *D_L18_00162162_2EC0C8 = 2;
-        *D_L18_00162164_2EC0C8 = 4;
-        *D_L18_0016215C_2EC0C8 = 8;
-        *D_L18_0016215E_2EC0C8 = 4;
-        *D_L18_00162166_2EC0C8 = 2;
+        *electric_bolt_branch_period_1_r = 4;
+        *electric_bolt_branch_peak_ticks_1_r = 2;
+        *electric_bolt_branch_peak_ticks_2_r = 4;
+        *electric_bolt_branch_period_2_r = 8;
+        *electric_bolt_branch_period_3_r = 4;
+        *electric_bolt_branch_peak_ticks_3_r = 2;
         (*(int *)&electric_bolt_wave_phase_r) = 0;
         (*(int *)&electric_bolt_twist_phase_r) = 0;
         (*(int *)&electric_bolt_swell_phase_r) = 0;

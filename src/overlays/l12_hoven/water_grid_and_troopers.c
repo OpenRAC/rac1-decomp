@@ -333,13 +333,13 @@ void initialize_level_12_slot_grid_neighbors(int arg) {
 
 extern void MobyGroup_SetByteBC(int, int);
 
-extern int process_moby_suck_cannon_suction_pos(void *, void *, void *) __asm__("func_L00_002DCDA8");
+extern int func_L00_002DCDA8(void *, void *, void *);
 /* Suck cannon suction for a group moby: marks its group and sets state 8 while held. */
 int GroupMoby_UpdateActiveState(Moby *moby, void *pos, void *target) {
     int active;
     if (moby->state == 9 || moby->state == 11 || moby->state == 13)
         return 0;
-    active = process_moby_suck_cannon_suction_pos(moby, pos, target);
+    active = process_moby_suck_cannon_suction(moby, pos, target);
     if (active) {
         if (moby->group != 0xFF)
             MobyGroup_SetByteBC(moby->group, 1);
@@ -350,12 +350,12 @@ int GroupMoby_UpdateActiveState(Moby *moby, void *pos, void *target) {
     return active;
 }
 
-extern int store_moby_in_suck_cannon_pos(void *, void *, void *, float) __asm__("func_L00_002DCFD0");
+extern int func_L00_002DCFD0(void *, void *, void *, float);
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
    calls its own one, the fire with (moby, velocity, target, height), so the arguments go on as
    they came (retail touches none of a1, a2 and $f12 before its call). */
 int carried_moby_place_and_set_state(Moby *a, void *pos, void *t, float h) {
-    int r = store_moby_in_suck_cannon_pos(a, pos, t, h);
+    int r = store_moby_in_suck_cannon(a, pos, t, h);
     if (r == 0) {
         if (a->state == 8)
             a->state = 1;
@@ -540,7 +540,7 @@ extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern float g_frame_scale_sq_r __asm__("D_0015EE64") MACRO_ADDR;
-extern int hoven_frame_count_r __asm__("D_L12_0015F6B0") MACRO_ADDR;
+extern int D_L12_0015F6B0 MACRO_ADDR;
 extern char *hoven_paths_r[] __asm__("D_L12_001B0C30");
 extern char hoven_camera_pos_r[] __asm__("D_L12_001672C0");
 extern float D_L12_00161958_2E2EF0 SDATA(D_L12_00161958);
@@ -566,14 +566,14 @@ extern void update_object_wander_movement_r(char *, char *, float, float) __asm_
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern float FastVecLength_r(void *) __asm__("func_001F9CB8");
-extern int get_first_moby_in_group_r(int *, int, int, int) __asm__("func_L00_0025A208");
-extern int get_next_moby_in_group_r(int *, int, int, int) __asm__("func_L00_0025A2F0");
+extern int func_L00_0025A208(int *, int, int, int);
+extern int func_L00_0025A2F0(int *, int, int, int);
 extern int FastDecTimer_r(void *) __asm__("func_001F9938");
 extern void MobyGroup_SetByteBC_r(int, int) __asm__("func_L01_0026F040");
 extern void spawn_spark_scatter_r(void *) __asm__("func_L12_002E2CB8");
 extern void MobySpringTurn_r(char *, float *, float, float, float, float) __asm__("func_L00_002592B0");
 extern void select_hoven_anklebiter_pursuit_animation_r(unsigned char *) __asm__("func_L12_002E2BF8");
-extern float jump_speed_4318_r(void *, void *, void *, float, float) __asm__("func_L00_0025BC48");
+extern float func_L00_0025BC48(void *, void *, void *, float, float);
 extern void setup_fall54(float, char *, float *, int, int, int) __asm__("func_L00_0025D5B0");
 extern int mine_fall_r(void *, void *) __asm__("func_L00_0025D6F0");
 extern int move_hoven_anklebiter_toward_heading_r(char *, float) __asm__("func_L12_002E41C8");
@@ -585,8 +585,8 @@ extern float FastCos_r(float) __asm__("func_001F9F90");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern void PostHitMessage_r(void *, int, int, void *, void *, float) __asm__("func_L00_0025AC00");
 extern int IsPointInPolygon_r(void *, void *, int) __asm__("func_L00_0025A778");
-extern int CarriedMobyUpdate_r(void *, void *) __asm__("func_L00_002DDEA0");
-extern float height54(void *) __asm__("func_0020D830");
+extern int func_L00_002DDEA0(void *, void *);
+extern float func_0020D830(void *);
 extern void SetDeathBits_r(void *, int, int) __asm__("func_L00_002584A8");
 extern void spawn_type_52_particle_near_moby_r(char *) __asm__("func_L10_002E51A8");
 extern void TrollSpawnBurst_r(void *) __asm__("func_L12_002E43A8");
@@ -704,14 +704,14 @@ void update_hoven_anklebiter(Moby *m) {
             if (d->group_enabled) {
                 if (vec_distance_xy_r(&m->pos, &target->pos) < 2.0f)
                     break;
-                if (d->group_check < hoven_frame_count_r) {
-                    d->group_check = hoven_frame_count_r;
+                if (d->group_check < hoven_frame_count) {
+                    d->group_check = hoven_frame_count;
                     n = 0;
-                    get_first_moby_in_group_r((int *)&iterator, m->group, 0, 0);
+                    get_first_moby_in_group((int *)&iterator, m->group, 0, 0);
                     while (iterator) {
                         if ((signed char)iterator->state >= 0 && iterator->state != 9)
                             n++;
-                        get_next_moby_in_group_r((int *)&iterator, (int)iterator, 0, 0);
+                        get_next_moby_in_group((int *)&iterator, (int)iterator, 0, 0);
                     }
                     *d->group_count = n;
                 }
@@ -763,7 +763,7 @@ void update_hoven_anklebiter(Moby *m) {
                 d->gravity = D_L12_0016195C_2E2EF0 * g_frame_time_sq_r;
                 d->launch_speed = D_L12_00161958_2E2EF0 * g_frame_time_r;
                 d->launch_time =
-                    jump_speed_4318_r(&m->pos, d->home, &trajectory, d->launch_speed, -D_L12_0016195C_2E2EF0);
+                    jump_speed_4318(&m->pos, d->home, &trajectory, d->launch_speed, -D_L12_0016195C_2E2EF0);
                 d->fall_mode = 5;
                 d->falling = 0;
                 setup_fall54(m->rot.z, (char *)m, d->fall, 8, 1, 0);
@@ -909,14 +909,14 @@ void update_hoven_anklebiter(Moby *m) {
             }
             break;
         case 8:
-            if (CarriedMobyUpdate_r(m, d->fall)) {
+            if (CarriedMobyUpdate(m, d->fall)) {
                 m->state = 6;
                 d->return_timer = 0;
                 d->stuck = 0;
             }
             break;
         case 10:
-            if (height54(m) > 29.0f) {
+            if (MobyGetFrameValue(m) > 29.0f) {
                 m->state = 4;
                 d->blocked = 0;
                 select_hoven_anklebiter_pursuit_animation_r((unsigned char *)m);
@@ -925,7 +925,7 @@ void update_hoven_anklebiter(Moby *m) {
             break;
         case 99:
             hit = mine_fall_r(m, d->fall);
-            if ((hit & 0x40) || (height54(m) > 37.0f && m->seq == m->prev_seq)) {
+            if ((hit & 0x40) || (MobyGetFrameValue(m) > 37.0f && m->seq == m->prev_seq)) {
                 m->anim_speed = 0.0f;
                 SetDeathBits_r(m, 0, -1);
                 m->state = 15;
@@ -1244,7 +1244,7 @@ void process_hoven_anklebiter_damage_and_alerts(struct Moby *moby) {
 }
 extern short platform_exhaust_local_offset;
 extern char *PartType21Spawn(void *pos, void *dir, int c, int d, int n, int k, float f);
-extern void *PartType23Spawn_x(void *, float, float, float, int, void *, float, int) __asm__("func_L00_0026DEA0");
+extern void *func_L00_0026DEA0(void *, float, float, float, int, void *, float, int);
 extern void matrix_mul_vec3(void *, void *, void *);
 
 /* Hoven engine exhaust: emits a flame and a smoke puff from each of the moby's two nozzles (the second one
@@ -1273,9 +1273,9 @@ void emit_platform_exhaust_effects(char *m) {
     matrix_mul_vec3(p2, p2, m + 0xC0);
     FastVecAdd(p2, p2, m + 0x10);
     PartType21Spawn(p1, a, 0x4F007FFF, 0x1FFFFFFF, rand_range(scale_ticks(8), scale_ticks(0x11)), 1, 10000.0f);
-    PartType23Spawn_x(p1, 0.05f, 1.01f, 1.03f, 6, b, 30000.0f, 0x404040);
+    PartType23Spawn(p1, 0.05f, 1.01f, 1.03f, 6, b, 30000.0f, 0x404040);
     PartType21Spawn(p2, a, 0x4F007FFF, 0x1FFFFFFF, rand_range(scale_ticks(8), scale_ticks(0x11)), 1, 10000.0f);
-    PartType23Spawn_x(p2, 0.05f, 1.01f, 1.03f, 6, b, 30000.0f, 0x404040);
+    PartType23Spawn(p2, 0.05f, 1.01f, 1.03f, 6, b, 30000.0f, 0x404040);
 }
 extern float g_frame_scale_sq MACRO_ADDR;
 extern short platform_tilt_approach_divisor;
@@ -1383,7 +1383,7 @@ typedef struct {
     int fFC;
 } Data_2E51E8;
 
-extern Moby *hoven_mobys_r __asm__("D_L12_00160058") MACRO_ADDR;
+extern Moby *D_L12_00160058 MACRO_ADDR;
 extern Path *hoven_paths_r2[] __asm__("D_L12_001B0C30");
 extern int count_active_moby_group_members(int, int);
 
@@ -1412,7 +1412,7 @@ void HovenPlatformUpdate(Moby *moby) {
     d = (*(Data_2E51E8 **)&moby->pvars);
     qcopy(oldPos, (*(float (*)[4]) & moby->pos));
     qcopy(oldRot, (*(float (*)[4]) & moby->rot));
-    if (moby->state != 0 && d->fFC != -1 && (signed char)hoven_mobys_r[d->fFC].state >= 0) {
+    if (moby->state != 0 && d->fFC != -1 && (signed char)hoven_mobys[d->fFC].state >= 0) {
         emit_platform_exhaust_effects((char *)moby);
         return;
     }
@@ -1610,7 +1610,7 @@ void HovenPlatformUpdate(Moby *moby) {
             }
             break;
         case 9: {
-            Moby *o = (Moby *)((char *)hoven_mobys_r + (d->fF0 << 8));
+            Moby *o = (Moby *)((char *)hoven_mobys + (d->fF0 << 8));
             qcopy(a, (*(float (*)[4]) & moby->pos));
             a[2] = (*(float (*)[4]) & o->pos)[2];
             clear_u64_value(b);
@@ -1686,7 +1686,7 @@ typedef struct {
 } Scratch;
 extern Moby *CreateMoby_r(int) __asm__("func_0020D348");
 extern Player hero_globals_base_r2 __asm__("D_0013E633");
-extern Flags special_items_base_r __asm__("D_0013D355");
+extern Flags D_0013D355;
 extern unsigned char gCheats[] MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;
 extern short hoven_cinematic_mode_r __asm__("D_L12_0015F6A8");
@@ -1703,7 +1703,7 @@ void miner_update(Moby *m) {
     apply_npc_big_head_cheat((char *)m);
     switch (m->state) {
         case 0:
-            if (((Flags *)((char *)&special_items_base_r + 0x13B))->f1 != 0) {
+            if (((Flags *)((char *)&special_items_base + 0x13B))->f1 != 0) {
                 DeleteMoby(m);
                 return;
             }
@@ -1712,7 +1712,7 @@ void miner_update(Moby *m) {
             initialize_moby_grounding(m);
             break;
         case 1:
-            if (((Flags *)((char *)&special_items_base_r + 0x13B))->f1 == 0 && Npc_TryStartDialog(m, d->activation)) {
+            if (((Flags *)((char *)&special_items_base + 0x13B))->f1 == 0 && Npc_TryStartDialog(m, d->activation)) {
                 PlaceMarkerAheadOfMoby(2.5f, m);
                 m->anim_speed = 0.0f;
                 m->state = 2;
@@ -1720,7 +1720,7 @@ void miner_update(Moby *m) {
             break;
         case 2:
             if (*(int *)&hoven_cinematic_mode_r != 2) {
-                Flags *flags = (Flags *)((char *)&special_items_base_r + 0x13B);
+                Flags *flags = (Flags *)((char *)&special_items_base + 0x13B);
                 m->anim_speed = 1.0f;
                 flags->f1 = 1;
                 ShowBanner(0x2EE7, scale_ticks(300));
@@ -3296,7 +3296,7 @@ extern void attach_shared_manipulator_to_matching_class_moby(char *);
 
 extern Helper *CreateMoby_r2(int) __asm__("func_0020D348");
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
-extern unsigned char race_gates_base_r[] __asm__("D_0013D605");
+extern unsigned char D_0013D605[];
 extern unsigned char gHaveHeliPack[] NOT_SDA;
 extern int hoven_cinematic_mode_r2 __asm__("D_L12_0015F6A8") MACRO_ADDR;
 
@@ -3348,7 +3348,7 @@ void edwina_update(char *m) {
     L12WatchData *moby_data = (L12WatchData *)moby->pvars;
     attach_shared_manipulator_to_matching_class_moby(moby);
     {
-        char *v = (char *)race_gates_base_r + 0xB3;
+        char *v = (char *)race_gates_base + 0xB3;
         if (*(int *)(v + 0x46C) == 0) {
             if (moby->prev_seq != 1)
                 MobyBlendAnimation(moby, 1, 0, 2);
@@ -3433,7 +3433,7 @@ void edwina_update(char *m) {
             }
         }
         {
-            char *v = (char *)race_gates_base_r + 0xB3;
+            char *v = (char *)race_gates_base + 0xB3;
             if (*(int *)(v + 0x46C) == 0) {
                 if (moby_data->turret == 0) {
                     moby_data->turret = CreateMoby_r2(0x4C1);

@@ -87,11 +87,11 @@ typedef struct {
 } LtObj40;
 
 extern LtObj20 *ties_o __asm__("D_00161050") MACRO_ADDR;
-extern LtObj20 *ties_end_o __asm__("D_00161054") MACRO_ADDR;
+extern LtObj20 *D_00161054 MACRO_ADDR;
 extern LtObj40 *tfrag_render_records_o __asm__("D_00160F8C") MACRO_ADDR;
 extern int tfrag_render_record_count MACRO_ADDR;
 extern LtObj20 *shrubs_o __asm__("D_001604D4") MACRO_ADDR;
-extern LtObj20 *shrubs_end_o __asm__("D_001604D8") MACRO_ADDR;
+extern LtObj20 *D_001604D8 MACRO_ADDR;
 extern int spheres_intersect(void *, void *);
 extern void scale_vector(void *, void *, float);
 
@@ -118,7 +118,7 @@ void CreatePointLight(int i) {
     if (p < end) {
         slot->n0 = 0;
         n = 0;
-        for (o = ties_o; o != ties_end_o; o++, n++) {
+        for (o = ties_o; o != ties_end; o++, n++) {
             if (spheres_intersect(&sphere, o)) {
                 *p++ = n;
                 v = o->lights;
@@ -167,7 +167,7 @@ void CreatePointLight(int i) {
             if (p < end) {
                 slot->n2 = p - slot->buf;
                 n3 = 0;
-                for (o = shrubs_o; o != shrubs_end_o; o++, n3++) {
+                for (o = shrubs_o; o != shrubs_end; o++, n3++) {
                     if (spheres_intersect(&sphere, o)) {
                         *p++ = n3;
                         v = o->lights;

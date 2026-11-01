@@ -1043,15 +1043,14 @@ extern float FastCos_r(float) __asm__("func_001F9F90");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
 extern s32 random_integer_below_r(s32) __asm__("func_002140B0");
-extern void set_moby_list_state_r(int, int) __asm__("func_L01_0026F090");
-extern void create_particle_with_velocity_and_randomized_parameters_r(float, float, float, void *, void *, int,
-                                                                      int) __asm__("func_L05_0029CCB8");
-extern void spawn_splash_r(float, float, void *, void *, void *) __asm__("func_L00_00272770");
+extern void func_L01_0026F090(int, int);
+extern void func_L05_0029CCB8(float, float, float, void *, void *, int, int);
+extern void func_L00_00272770(float, float, void *, void *, void *);
 extern unsigned char saved_mission_state_r[][16] __asm__("D_0014C150");
 extern short D_0015EE84_165B8 SDATA(D_0015EE84);
 extern short D_L05_00160098_165B8 SDATA(D_L05_00160098);
-extern struct FloorRow *rilgar_water_patches_r __asm__("D_L05_00161390") MACRO_ADDR;
-extern char rilgar_zero_vec_r[] __asm__("D_L05_0015F660") MACRO_ADDR;
+extern struct FloorRow *D_L05_00161390 MACRO_ADDR;
+extern char D_L05_0015F660[] MACRO_ADDR;
 extern short D_L05_00161F58_165B8 SDATA(D_L05_00161F58);
 extern short D_L05_00161F5C_165B8 SDATA(D_L05_00161F5C);
 extern short D_L05_00161F60_165B8 SDATA(D_L05_00161F60);
@@ -1091,7 +1090,7 @@ void update_triggered_particle_spray_emitter(struct Moby *m) {
             break;
         case 1:
             if (d->trigger >= 0 && (*(struct Moby **)&D_L05_00160098_165B8)[d->trigger].command != 0) {
-                set_moby_list_state_r(m->group, 2);
+                set_moby_list_state(m->group, 2);
             }
             break;
         case 2:
@@ -1114,7 +1113,7 @@ void update_triggered_particle_spray_emitter(struct Moby *m) {
                     }
                 }
             }
-            floor = rilgar_water_patches_r[d->floor].z;
+            floor = rilgar_water_patches[d->floor].z;
             if (m->pos.z < floor) {
                 m->state = 3;
             }
@@ -1151,7 +1150,7 @@ void update_triggered_particle_spray_emitter(struct Moby *m) {
                     kind = (*(int *)&D_L05_00161F5C_165B8);
                     v[2] += (*(float *)&D_L05_00161F74_165B8) - scale + 0.4f;
                 }
-                create_particle_with_velocity_and_randomized_parameters_r(
+                create_particle_with_velocity_and_randomized_parameters(
                     scale * random_float_between_r(0.8f, 1.2f), floor, g_frame_time_sq_r * 10.0f, v, w, kind, big);
                 if (random_integer_below_r(2)) {
                     /* fall time from the emitter to the floor */
@@ -1165,8 +1164,8 @@ void update_triggered_particle_spray_emitter(struct Moby *m) {
                         v[0] += FastCos_r(ang) * r;
                         v[1] += FastSin_r(ang) * r;
                         v[2] = floor + 0.05f;
-                        spawn_splash_r(random_float_between_r(1.0f, 1.5f), random_integer_below_r(2) ? 2.0f : -2.0f, v,
-                                       rilgar_zero_vec_r, &rilgar_water_patches_r[d->floor].z);
+                        spawn_splash(random_float_between_r(1.0f, 1.5f), random_integer_below_r(2) ? 2.0f : -2.0f, v,
+                                     rilgar_zero_vec, &rilgar_water_patches[d->floor].z);
                     }
                 }
             }
@@ -2373,8 +2372,8 @@ void shady_salesman_update(char *m) {
     EaseManipulatorOffsets(m, npc_data->head, 1, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
 }
 extern char hero_globals_base_r[] __asm__("D_0013E633");
-extern int hero_inside_clip_volume_r __asm__("D_L05_0016139C") MACRO_ADDR;
-extern float hero_clip_volume_bounds_r[4] __asm__("D_L05_001613A0") MACRO_ADDR;
+extern int D_L05_0016139C MACRO_ADDR;
+extern float D_L05_001613A0[4] MACRO_ADDR;
 extern int rilgar_frame_count_r __asm__("D_L05_0015F6B0") MACRO_ADDR;
 extern int find_319F78(void *, int) __asm__("func_00215570");
 extern float sin_319F78(float) __asm__("func_001F9FA8");
@@ -2397,14 +2396,14 @@ void update_hero_clip_volume_outputs(char *m) {
         case 1:
             t = &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos;
             if (find_319F78(t, *v) != 0) {
-                hero_inside_clip_volume_r = state;
-                qcopy(hero_clip_volume_bounds_r, t);
+                hero_inside_clip_volume = state;
+                qcopy(hero_clip_volume_bounds, t);
                 *(short *)(t + 0x15E) = 5;
-                hero_clip_volume_bounds_r[3] = 48.0f;
-                hero_clip_volume_bounds_r[2] =
+                hero_clip_volume_bounds[3] = 48.0f;
+                hero_clip_volume_bounds[2] =
                     sin_319F78((float)(rilgar_frame_count_r % 360) * 0.017444444f - 3.14f) * 0.25f + 59.5f;
             } else {
-                hero_inside_clip_volume_r = 0;
+                hero_inside_clip_volume = 0;
             }
             break;
     }

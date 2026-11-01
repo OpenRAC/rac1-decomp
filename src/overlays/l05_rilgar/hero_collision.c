@@ -407,8 +407,8 @@ d1:
     }
 }
 extern char hero_globals_base[];
-extern float g_frame_scale_sq_m __asm__("D_0015EE64") MACRO_ADDR;
-extern short frame_scale_s __asm__("D_0015EE60");
+extern float D_0015EE64 MACRO_ADDR;
+extern short D_0015EE60;
 extern char rilgar_coll_resolved_pos[];
 extern void clear_u64_value(void *);
 extern void FastVecSub(void *, void *, void *);
@@ -466,7 +466,7 @@ int Camera_MoveWithCollision(int mode) {
     for (i = 0; i < 8; i++) {
         a = (struct Hero *)(hero_globals_base + 0xE1D);
         if (a->gravity_mode != 0) {
-            if (coll_sphere(*(float *)&frame_scale_s * 0.4f, &a->motion.pos, r, *(void **)&a->moby) == 0)
+            if (coll_sphere(*(float *)&frame_scale * 0.4f, &a->motion.pos, r, *(void **)&a->moby) == 0)
                 break;
         } else {
             int hit;
@@ -476,7 +476,7 @@ int Camera_MoveWithCollision(int mode) {
                 if (hit == 0)
                     break;
             } else if (m == 0x16) {
-                hit = coll_sphere(*(float *)((char *)&g_frame_scale_sq_m - 4) * 0.5f, &a->motion.pos, r,
+                hit = coll_sphere(*(float *)((char *)&g_frame_scale_sq - 4) * 0.5f, &a->motion.pos, r,
                                   *(void **)&a->moby);
                 if (hit == 0)
                     break;

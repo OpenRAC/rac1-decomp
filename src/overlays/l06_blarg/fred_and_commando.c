@@ -937,7 +937,7 @@ extern float multiply_global_factor(float);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern void BuildSphericalOffset(void *, float, float, float);
 extern float vec_length_xy(void *);
-extern void EaseManipulatorOffsets_r(float, float, void *, void *, int) __asm__("func_L00_00263950");
+extern void func_L00_00263950(float, float, void *, void *, int);
 
 extern char blarg_camera_pos[];
 extern char fred_dialogue_name[];
@@ -1163,23 +1163,23 @@ void fred_update(Moby *moby) {
     }
     if (gCheats[0])
         fred_vars->fB0 = 2.75f;
-    EaseManipulatorOffsets_r(rate * g_frame_scale_sq, head_rate * g_frame_scale_sq, moby, fred_vars->f40, 0);
-    EaseManipulatorOffsets_r(rate * g_frame_scale_sq, head_rate * g_frame_scale_sq, moby, fred_vars->fC0, 2);
+    EaseManipulatorOffsets(rate * g_frame_scale_sq, head_rate * g_frame_scale_sq, moby, fred_vars->f40, 0);
+    EaseManipulatorOffsets(rate * g_frame_scale_sq, head_rate * g_frame_scale_sq, moby, fred_vars->fC0, 2);
 }
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
-extern void set_moby_list_state_4_r(int) __asm__("func_L06_002F5A20");
-extern void set_moby_list_state_18_r(int) __asm__("func_L06_002FAD78");
+extern void func_L06_002F5A20(int);
+extern void func_L06_002FAD78(int);
 extern int count_active_moby_group_members_r(int, int) __asm__("func_L01_0026EFB8");
 extern void begin_red_button_rotation_r(char *) __asm__("func_L06_00305BF8");
 extern int get_red_button_sequence_status_r(char *) __asm__("func_L06_00305C38");
 extern void queue_moby_dialogue_line_r(char *, int) __asm__("func_L06_00303858");
 extern void MusicRequestTrack_r(int, int) __asm__("func_L00_002664B0");
-extern int Music_ContinueStreamIfReady_r(void) __asm__("func_00216960");
+extern int func_00216960(void);
 extern void set_moby_list_state_17_r(int) __asm__("func_L06_00301068");
-extern void set_moby_list_state_15_r(int) __asm__("func_L06_002EB260");
-extern void clear_moby_list_state_4_r(int) __asm__("func_L06_002F59D0");
-extern void clear_moby_list_state_18_r(int) __asm__("func_L06_002FADE0");
-extern void set_moby_state_3_r(unsigned char *) __asm__("func_L06_002FDA60");
+extern void func_L06_002EB260(int);
+extern void func_L06_002F59D0(int);
+extern void func_L06_002FADE0(int);
+extern void func_L06_002FDA60(unsigned char *);
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
@@ -1198,13 +1198,13 @@ extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
 extern int allocate_voice_for_group_entry_r(int, int, int) __asm__("func_0022EEB8");
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
 extern void AddDrawCallback_r(void (*)(void), void *) __asm__("func_001F49B0");
-extern void draw_pulsing_timer_display_r(void) __asm__("func_L06_00303630");
+extern void func_L06_00303630(void);
 extern void set_moby_state_5_r(char *) __asm__("func_L06_003054C8");
 extern void Hero_OnKilled_r(void) __asm__("func_L00_00211908");
 extern float ApproachValue_r(float *, float, float) __asm__("func_00214D28");
 extern unsigned char saved_mission_state_r[] __asm__("D_0014C150");
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
-extern short dialogue_playback_phase_r __asm__("D_0015182A") NOT_SDA;
+extern short D_0015182A NOT_SDA;
 extern int *blarg_paths_r[] __asm__("D_L06_001B0FB0");
 extern char *blarg_scene_points_r __asm__("D_L06_0016016C") MACRO_ADDR;
 extern char referencePosition_r[] __asm__("D_L06_00167500");
@@ -1219,7 +1219,7 @@ extern short D_L06_00162138_302FE8 SDATA(D_L06_00162138);
 extern short D_L06_00162140_302FE8 SDATA(D_L06_00162140);
 extern short D_L06_00162154_302FE8 SDATA(D_L06_00162154);
 extern int scripted_camera_sequence_active_r __asm__("D_L06_0015F504") MACRO_ADDR;
-extern float linked_sequence_exit_ramp_progress_r __asm__("D_L06_0015F500") MACRO_ADDR;
+extern float D_L06_0015F500 MACRO_ADDR;
 
 typedef struct {
     char pad0[0x30];
@@ -1252,9 +1252,9 @@ void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
                 DeleteMoby_r(m);
                 return;
             }
-            set_moby_list_state_4_r(d->list_a);
-            set_moby_list_state_18_r(d->list_b);
-            set_moby_list_state_18_r(d->list_c);
+            set_moby_list_state_4(d->list_a);
+            set_moby_list_state_18(d->list_b);
+            set_moby_list_state_18(d->list_c);
             ((Moby *)m)->state = 1;
             ((Moby *)m)->update_dist = 0xFF;
             return;
@@ -1273,15 +1273,15 @@ void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
             ((Moby *)m)->state = 3;
             d->path_index = 1;
             MusicRequestTrack_r(6, 9);
-            if (dialogue_playback_phase_r == 3)
-                Music_ContinueStreamIfReady_r();
+            if (dialogue_playback_phase == 3)
+                Music_ContinueStreamIfReady();
             set_moby_list_state_17_r(d->list_d);
-            set_moby_list_state_15_r(d->list_e);
-            set_moby_list_state_15_r(d->list_f);
-            clear_moby_list_state_4_r(d->list_a);
-            clear_moby_list_state_18_r(d->list_b);
-            clear_moby_list_state_18_r(d->list_c);
-            set_moby_state_3_r(level_mobys_q_p + (d->moby_a << 8));
+            set_moby_list_state_15(d->list_e);
+            set_moby_list_state_15(d->list_f);
+            clear_moby_list_state_4(d->list_a);
+            clear_moby_list_state_18(d->list_b);
+            clear_moby_list_state_18(d->list_c);
+            set_moby_state_3(level_mobys_q_p + (d->moby_a << 8));
             ((Ent *)blarg_scene_points_r)[d->scene_point].f38 =
                 ((Ent *)blarg_scene_points_r)[d->scene_point].f38 + 10.0f;
             {
@@ -1340,16 +1340,16 @@ void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
         case 4: {
             int v = scale_ticks_r(0x708);
             if (d->timer == v) {
-                if (dialogue_playback_phase_r == 3)
-                    Music_ContinueStreamIfReady_r();
+                if (dialogue_playback_phase == 3)
+                    Music_ContinueStreamIfReady();
             } else {
                 v = scale_ticks_r(0x384);
                 if (d->timer == v) {
                     queue_moby_dialogue_line_r((char *)m, 2);
                 } else {
                     v = scale_ticks_r(0x12C);
-                    if (d->timer == v && dialogue_playback_phase_r == 3)
-                        Music_ContinueStreamIfReady_r();
+                    if (d->timer == v && dialogue_playback_phase == 3)
+                        Music_ContinueStreamIfReady();
                 }
             }
             if (fast_dec_timer_r(&d->spark_timer) != 0) {
@@ -1360,7 +1360,7 @@ void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
                 ((Snd *)referencePosition_r)->i168 = scale_ticks_r(0x3C);
             }
             if (level_game_mode_q_r == 0)
-                AddDrawCallback_r(draw_pulsing_timer_display_r, m);
+                AddDrawCallback_r(draw_pulsing_timer_display, m);
             if (((Hero *)(hero_globals_base_r2 + 0xE1D))->state.current == 0x72) {
                 ((Moby *)m)->state = 6;
                 return;
@@ -1379,13 +1379,13 @@ void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
         case 5:
             if (d->ramp == 1.0f) {
                 Hero_OnKilled_r();
-                linked_sequence_exit_ramp_progress_r = 0.0f;
+                linked_sequence_exit_ramp_progress = 0.0f;
                 return;
             }
             if (fast_dec_timer_r(&d->ramp_delay) == 0)
                 return;
             ApproachValue_r(&d->ramp, 1.0f, g_frame_time_r * 6.0f);
-            linked_sequence_exit_ramp_progress_r = d->ramp;
+            linked_sequence_exit_ramp_progress = d->ramp;
             return;
         default:
             return;
@@ -1481,8 +1481,8 @@ typedef struct {
     int f24;
 } Busy_3039B8;
 extern unsigned char saved_mission_state[];
-extern int gHelpDeskText_i __asm__("D_0015EF1D") MACRO_ADDR;
-extern int gHelpDeskVoice_i __asm__("D_0015EF1C") MACRO_ADDR;
+extern int D_0015EF1D MACRO_ADDR;
+extern int D_0015EF1C MACRO_ADDR;
 extern void update_shuttle_route_selection_and_prompt(char *m);
 extern void mark_shuttle_linked_mobys_for_removal(char *moby);
 extern void Moby_PlaySound(int, int, void *);
@@ -1502,10 +1502,10 @@ extern int update_shuttle_path_ride(char *, int);
 extern float FastAddRots(float, float);
 
 extern void update_entity_matrix(char *, void *, void *, void *);
-extern unsigned char menu_item_enabled_19_r[] __asm__("D_0013D4AF");
-extern unsigned char gHaveMorphORay_r[] __asm__("D_0013D5DD");
-extern unsigned char special_items_base_r[] __asm__("D_0013D355");
-extern char pad_globals_base_r[] __asm__("D_0013A5E0");
+extern unsigned char D_0013D4AF[];
+extern unsigned char D_0013D5DD[];
+extern unsigned char D_0013D355[];
+extern char D_0013A5E0[];
 extern char blarg_paths_r2[] __asm__("D_L06_001B0FB0");
 extern char *blarg_scene_points MACRO_ADDR;
 extern int blarg_shown_help_message MACRO_ADDR;
@@ -1547,7 +1547,7 @@ void ShuttleUpdate(Moby *moby) {
             if (*(unsigned char *)(d->fF8 + (g_current_level_index_r << 4) + (int)saved_mission_state) == 0xFF) {
                 mark_shuttle_linked_mobys_for_removal((char *)moby);
             } else {
-                menu_item_enabled_19_r[5] = 0;
+                menu_item_enabled_19[5] = 0;
             }
             moby->update_dist = 0xFF;
             moby->draw_dist = 0x80;
@@ -1562,7 +1562,7 @@ void ShuttleUpdate(Moby *moby) {
             break;
         case 1:
             busy = 0;
-            if (*(unsigned char *)&gHelpDeskText_i != 0 || *(unsigned char *)&gHelpDeskVoice_i != 0) {
+            if (*(unsigned char *)&gHelpDeskText != 0 || *(unsigned char *)&gHelpDeskVoice != 0) {
                 if (((Busy_3039B8 *)blarg_help_popup_state)->f0 != 0 ||
                     ((Busy_3039B8 *)blarg_help_popup_state)->f24 != -1) {
                     busy = 1;
@@ -1574,7 +1574,7 @@ void ShuttleUpdate(Moby *moby) {
                 update_shuttle_route_selection_and_prompt((char *)moby);
                 now = shuttle_forced_departure;
                 if (now != 0 ||
-                    ((*(int *)(pad_globals_base_r + 0x2604) & 0x10) && blarg_shown_help_message == 10 && d->f9C >= 0)) {
+                    ((*(int *)(pad_globals_base + 0x2604) & 0x10) && blarg_shown_help_message == 10 && d->f9C >= 0)) {
                     d->go = 1;
                     blarg_shuttle_at_second_stop = 0;
                     if (now != 0) {
@@ -1643,8 +1643,8 @@ void ShuttleUpdate(Moby *moby) {
                     qcopy(((float *)&moby->rot), (char *)(ofs + base + 0x70));
                     d->sel = 1;
                     blarg_shuttle_at_second_stop = 1;
-                    if (((Flags *)(special_items_base_r + 0x13B))->f21 == 0) {
-                        ((Flags *)(special_items_base_r + 0x13B))->f21 = 1;
+                    if (((Flags *)(special_items_base + 0x13B))->f21 == 0) {
+                        ((Flags *)(special_items_base + 0x13B))->f21 = 1;
                     }
                 }
             }
@@ -1686,8 +1686,8 @@ void ShuttleUpdate(Moby *moby) {
                 moby->scale = ((Cls *)moby->pclass)->f24;
                 if (d->sel == 1) {
                     blarg_shuttle_at_second_stop = 1;
-                    if (((Flags *)(special_items_base_r + 0x13B))->f21 == 0) {
-                        ((Flags *)(special_items_base_r + 0x13B))->f21 = 1;
+                    if (((Flags *)(special_items_base + 0x13B))->f21 == 0) {
+                        ((Flags *)(special_items_base + 0x13B))->f21 = 1;
                     }
                 } else {
                     blarg_shuttle_at_second_stop = 0;
@@ -1700,7 +1700,7 @@ void ShuttleUpdate(Moby *moby) {
                 rot[2] = FastAddRots(moby->rot.z, 3.1415927f);
                 Hero_ResetToPosition(b, rot, 0, 0);
                 if (d->f114 != 0) {
-                    menu_item_enabled_19_r[5] = 1;
+                    menu_item_enabled_19[5] = 1;
                     initialize_moby_particle_effect_state(level_mobys_q + (d->f10C << 8));
                     d->f114 = 0;
                     moby->state = 6;
@@ -1747,7 +1747,7 @@ void ShuttleUpdate(Moby *moby) {
             break;
         case 7:
             if (level_game_mode_q != 2) {
-                if (gHaveMorphORay_r[9] != 0) {
+                if (gHaveMorphORay[9] != 0) {
                     StartCutscene(5);
                     moby->state = 9;
                 } else {
@@ -1806,7 +1806,7 @@ void update_shuttle_route_selection_and_prompt(char *m) {
             break;
     }
     if (help_records_83_count == 0 && d->f9C == 0 &&
-        (*(unsigned char *)&gHelpDeskText_i != 0 || *(unsigned char *)&gHelpDeskVoice_i != 0)) {
+        (*(unsigned char *)&gHelpDeskText != 0 || *(unsigned char *)&gHelpDeskVoice != 0)) {
         Help_Request(0x177A, 0x53);
         d->f9C = -1;
         return;
@@ -2245,7 +2245,7 @@ extern void set_camera_position_r2(void *) __asm__("func_L00_002EBE88");
 extern void set_camera_rotation_r2(void *) __asm__("func_L00_002EBEE0");
 extern void Hero_ResetToPosition_r2(void *, void *, int, int) __asm__("func_L00_00217718");
 extern void CameraScript2_r2(int) __asm__("func_L00_002EC0C8");
-extern void set_moby_state_two_r(void *) __asm__("func_L06_00304590");
+extern void func_L06_00304590(void *);
 extern void emit_red_button_particle_burst_r(void *, void *) __asm__("func_L06_00305C58");
 extern int allocate_voice_for_group_entry_r2(int, int, void *) __asm__("func_0022EEB8");
 extern void clear_u64_value_r2(void *) __asm__("func_001F9BC0");
@@ -2290,7 +2290,7 @@ void red_button_update(Moby *m) {
             if (1.0f <= d->t) {
                 m->state = 3;
                 Moby_PlaySound_r(1, 0, m);
-                menu_item_enabled_19_r[3] = 1;
+                menu_item_enabled_19[3] = 1;
             }
             break;
         }
@@ -2298,7 +2298,7 @@ void red_button_update(Moby *m) {
             if (vec_distance_xy_r2(&((struct Hero *)(hero_globals_base_r2 + 0xE1D))->motion.pos,
                                    &*(V_3054D8 *)&m->pos) < 3.7f) {
                 nz = try_set_help_message_r(4, 0x1783) != 0;
-                if ((*(int *)(pad_globals_base_r + 0x2604) & 0x10) && nz) {
+                if ((*(int *)(pad_globals_base + 0x2604) & 0x10) && nz) {
                     Moby_PlaySound_r(2, 0, m);
                     remove_help_message_for_selector_r(4);
                     m->state = 4;
@@ -2386,7 +2386,7 @@ void red_button_update(Moby *m) {
                 d->timer2 = scale_ticks_r2(0xE10);
                 Hero_ResetToPosition_r2(&blarg_scene_points_r2[d->cut2].a, &blarg_scene_points_r2[d->cut2].b, 0, 0);
                 CameraScript2_r2(3);
-                set_moby_state_two_r(&level_mobys_q_r[d->moby3]);
+                set_moby_state_two(&level_mobys_q_r[d->moby3]);
             }
             break;
     }
@@ -2457,8 +2457,7 @@ extern void set_vec_to_origin_point(void *);
 extern void euler_to_matrix(float *, float *);
 extern void set_scale_matrix(float *, float);
 
-extern void spawn_moving_hero_relative_alpha_fade_particle_r(void *, void *, int, float, int, int,
-                                                             int) __asm__("func_L00_00273F80");
+extern void func_L00_00273F80(void *, void *, int, float, int, int, int);
 extern int vector_stream_fade_ticks MACRO_ADDR;
 extern int vector_stream_regen_ticks MACRO_ADDR;
 extern short vector_stream_uv_scroll;
@@ -2620,8 +2619,8 @@ void update_moby_vector_streams_and_particle_burst(char *moby) {
                     rand_vec(u.m.vel, *(float *)&vector_stream_burst_velocity_random_scale_bound_a_gp * g_frame_time,
                              *(float *)&vector_stream_burst_velocity_random_scale_bound_b_gp * g_frame_time);
                     life = scale_ticks(s);
-                    spawn_moving_hero_relative_alpha_fade_particle_r(u.m.pos, u.m.vel, color, scale, life,
-                                                                     (unsigned char)random_integer_below(0xFF), 0);
+                    spawn_moving_hero_relative_alpha_fade_particle(u.m.pos, u.m.vel, color, scale, life,
+                                                                   (unsigned char)random_integer_below(0xFF), 0);
                 }
             }
             moby[0x20] = 4;

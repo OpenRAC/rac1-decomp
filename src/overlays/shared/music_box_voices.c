@@ -32,19 +32,19 @@ typedef struct {
 } Moby_0031AD00;
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern void matrix_mul_vec3_r(void *, void *, void *) __asm__("func_001F9EC0");
-extern float FastVecLength_r(void *a) __asm__("func_001F9CB8");
+extern float func_001F9CB8(void *a);
 extern float FastAbsF_r(float) __asm__("func_001F9B88");
-extern int calculate_voice_distance_volume_r(void *, float, float, float) __asm__("func_0022DA10");
-extern int fast_dec_timer_r(int *arg0) __asm__("func_001F9908");
+extern int func_0022DA10(void *, float, float, float);
+extern int func_001F9908(int *arg0);
 extern int play_voice_r(int, int, void *, int) __asm__("func_L00_0028F0B0");
 extern int random_integer_below_r(int) __asm__("func_002140B0");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
-extern int Sound_SetPitchBend_r(int, int) __asm__("func_L00_0028F210");
-extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
+extern int func_L00_0028F210(int, int);
+extern void func_001F9BD8(void *, void *, void *);
 extern void Sound_StopSlot_r(int) __asm__("func_L00_0028EBF0");
 extern char camera_pos_r[] __asm__("D_L01_001672C0");
-extern Row_0031AD00 *novalis_level_sound_slots_r __asm__("D_L01_0015F6D4") MACRO_ADDR;
-extern char voice_pool_r[] __asm__("D_0013E650");
+extern Row_0031AD00 *D_L01_0015F6D4 MACRO_ADDR;
+extern char D_0013E650[];
 extern char voice_positions_r[] __asm__("D_0013E6E0");
 
 /* Sound box update: while the listener is inside the box's outer radius keeps the box's sound playing (restarting it
@@ -69,12 +69,12 @@ void update_box_positional_voice(Moby_0031AD00 *m) {
     d[3] = 0;
     matrix_mul_vec3_r(b, d, m->mtx);
     matrix_mul_vec3_r(c, r, m->mtx);
-    outer = FastVecLength_r(c);
-    inner = FastVecLength_r(b);
+    outer = FastVecLength(c);
+    inner = FastVecLength(b);
     if (inner < outer) {
         flags = 0x10;
         if (FastAbsF_r(b[0]) <= 1.0f && FastAbsF_r(b[1]) <= 1.0f && FastAbsF_r(b[2]) <= 1.0f) {
-            vol = novalis_level_sound_slots_r[p->cls].fC;
+            vol = novalis_level_sound_slots[p->cls].fC;
         } else {
             if (b[0] > 1.0f) {
                 b[0] = 1.0f;
@@ -91,16 +91,15 @@ void update_box_positional_voice(Moby_0031AD00 *m) {
             } else if (b[2] < -1.0f) {
                 b[2] = -1.0f;
             }
-            t = FastVecLength_r(b);
-            vol =
-                calculate_voice_distance_volume_r((char *)novalis_level_sound_slots_r + (p->cls << 5), inner, t, outer);
+            t = FastVecLength(b);
+            vol = calculate_voice_distance_volume((char *)novalis_level_sound_slots + (p->cls << 5), inner, t, outer);
         }
-        e = voice_pool_r + p->handle * 0x70;
-        if (novalis_level_sound_slots_r[p->cls].f18) {
+        e = voice_pool + p->handle * 0x70;
+        if (novalis_level_sound_slots[p->cls].f18) {
             flags = 0x14;
         }
         if (!(*(Moby_0031AD00 **)(e + 0x8C) == m && *(unsigned char *)(e + 0x74))) {
-            if (fast_dec_timer_r(&p->timer)) {
+            if (fast_dec_timer(&p->timer)) {
                 p->handle = play_voice_r(p->cls, flags, m, vol);
                 if (p->tmax > 0) {
                     p->timer = (float)scale_ticks_r(p->tmin + random_integer_below_r(p->tmax - p->tmin)) * 60.0f;
@@ -110,15 +109,15 @@ void update_box_positional_voice(Moby_0031AD00 *m) {
             }
         }
         if (p->handle != -1) {
-            Sound_SetPitchBend_r(p->handle, vol);
+            Sound_SetPitchBend(p->handle, vol);
             matrix_mul_vec3_r(d, b, m->f10);
-            FastVecAdd_r(d, d, m->pos);
+            FastVecAdd(d, d, m->pos);
             qcopy(voice_positions_r + p->handle * 0x70, d);
         }
     } else {
         idx = p->handle;
         if (idx != -1) {
-            char *e2 = voice_pool_r + idx * 0x70;
+            char *e2 = voice_pool + idx * 0x70;
             if (*(Moby_0031AD00 **)(e2 + 0x8C) == m && *(unsigned char *)(e2 + 0x74)) {
                 Sound_StopSlot_r(idx);
             }
@@ -130,7 +129,7 @@ extern void FastVecSub(void *, void *, void *);
 extern void matrix_mul_vec3(void *, void *, void *);
 
 extern float IntToFloat(int);
-extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
+extern int func_001FA898(float);
 extern void set_requested_state_and_mark_changes(int a, int b, int c, int d, int e);
 extern char hero_globals_base[];
 
@@ -144,7 +143,7 @@ void update_requested_state_from_box_position(char *moby) {
     matrix_mul_vec3(b, a, moby + 0x50);
     if (FastAbsF(b[0]) <= 1.0f && FastAbsF(b[1]) <= 1.0f && FastAbsF(b[2]) <= 1.0f) {
         float t = (b[0] + 1.0f) * 0.5f;
-        int v = truncate_float_to_s32_r(IntToFloat(*(int *)(data + 4)) * t);
+        int v = truncate_float_to_s32(IntToFloat(*(int *)(data + 4)) * t);
         int w = *(int *)(data + 4);
         if (!(w < v))
             w = v;

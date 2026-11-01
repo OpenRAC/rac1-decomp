@@ -232,12 +232,12 @@ typedef struct {
 } LevelRenderState;
 
 extern LevelRenderState level_render_state_2F4C8 __asm__("D_0013E130");
-extern f32 quad_uvs_2F4C8[4][2] __asm__("D_001D9C20") NOT_SDA;
-extern QuadOffset quad_positions_2F4C8[8] __asm__("D_001D9C40") NOT_SDA;
-extern QuadOffset quad_positions_variant1_2F4C8[2] __asm__("D_001D9CC0") NOT_SDA;
-extern QuadOffset quad_positions_variant2_2F4C8[2] __asm__("D_001D9CE0") NOT_SDA;
-extern QuadOffset quad_corners_2F4C8[10] __asm__("D_001D9D00") NOT_SDA;
-extern short resident_effect_quad_counts_r __asm__("D_001605C0");
+extern f32 D_001D9C20[4][2] NOT_SDA;
+extern QuadOffset D_001D9C40[8] NOT_SDA;
+extern QuadOffset D_001D9CC0[2] NOT_SDA;
+extern QuadOffset D_001D9CE0[2] NOT_SDA;
+extern QuadOffset D_001D9D00[10] NOT_SDA;
+extern short D_001605C0;
 
 void func_001F9C30_2F4C8(float, void *, void *) __asm__("func_001F9C30");
 void func_001F9BD8_2F4C8(void *, void *, void *) __asm__("func_001F9BD8");
@@ -259,21 +259,21 @@ void DrawResidentEffectQuads(unsigned char *m) {
     QuadOffset *tbl;
     int i, j, k;
 
-    tbl = quad_positions_2F4C8;
+    tbl = resident_effect_quad_offsets;
     if (level_render_state_2F4C8.content_variant == 1)
-        tbl = quad_positions_variant1_2F4C8;
+        tbl = resident_effect_quad_offsets_variant1;
     else if (level_render_state_2F4C8.content_variant == 2)
-        tbl = quad_positions_variant2_2F4C8;
+        tbl = resident_effect_quad_offsets_variant2;
     quad.texture = func_001F4868_2F4C8(5);
     quad.texture_state = 0xFF9000000260L;
     quad.primitive = 0x8000000048L;
     quad.reserved = 0;
     for (j = 0; j < 4; j++) {
-        quad.texture_coordinates[j][0] = quad_uvs_2F4C8[j][0];
-        quad.texture_coordinates[j][1] = quad_uvs_2F4C8[j][1];
+        quad.texture_coordinates[j][0] = resident_effect_quad_uvs[j][0];
+        quad.texture_coordinates[j][1] = resident_effect_quad_uvs[j][1];
     }
     func_001F9C30_2F4C8(0.0009765625f, &v, m);
-    for (i = 0; i < ((int *)&resident_effect_quad_counts_r)[level_render_state_2F4C8.content_variant]; i++) {
+    for (i = 0; i < ((int *)&resident_effect_quad_counts)[level_render_state_2F4C8.content_variant]; i++) {
         int c = m[0xBC];
         unsigned int col;
         float s;
@@ -285,7 +285,7 @@ void DrawResidentEffectQuads(unsigned char *m) {
             col = (c << 24) | 0x308000;
         for (k = 0; k < 4; k++) {
             quad.colors[k] = col;
-            func_001F9C30_2F4C8(s, &quad.positions[k], &quad_corners_2F4C8[k]);
+            func_001F9C30_2F4C8(s, &quad.positions[k], &resident_effect_quad_corners[k]);
             func_001F9BD8_2F4C8(&quad.positions[k], &quad.positions[k], &tbl[i]);
             func_001F9EC0_2F4C8(&quad.positions[k], &quad.positions[k], level_render_state_2F4C8.player + 0xC0);
             func_001F9BD8_2F4C8(&quad.positions[k], &quad.positions[k], &v);
@@ -306,11 +306,11 @@ typedef struct {
 } TrailState;
 extern TrailState trail_state_2F738 __asm__("D_0013E130");
 
-extern float trail_uv_2F738[4][2] __asm__("D_001D9DA0");
+extern float D_001D9DA0[4][2];
 extern unsigned int trail_color_a_2F738[][2] __asm__("D_001D9DC0");
 extern unsigned int trail_color_b_2F738[][2] __asm__("D_001D9DC4");
-extern short trail_width_2F738 __asm__("D_001605D0");
-extern unsigned int trail_lerp_2F738(unsigned int, unsigned int, float) __asm__("func_001FA8A8");
+extern short D_001605D0;
+extern unsigned int func_001FA8A8(unsigned int, unsigned int, float);
 extern float trail_float_2F738(int) __asm__("func_001FA888");
 extern void trail_scale_2F738(void *, void *, float) __asm__("func_001F9DC0");
 
@@ -349,7 +349,7 @@ void build_resident_indexed_texture_warp_meshes(int unused) {
         float *src;
         float *dst1;
         float *dst;
-        src = &trail_uv_2F738[0][0];
+        src = &warp_texture_coordinates[0][0];
         dst1 = &q.texture_coordinates[0][1];
         dst = &q.texture_coordinates[0][0];
         uv = 3;
@@ -398,11 +398,11 @@ void build_resident_indexed_texture_warp_meshes(int unused) {
                             age = step;
                             age--;
                             t = trail_float_2F738(segment - age) * 0.03125f;
-                            q.colors[vertex] = trail_lerp_2F738(trail_color_a_2F738[trail_state_2F738.ship][0],
-                                                                trail_color_b_2F738[trail_state_2F738.ship][0], t);
+                            q.colors[vertex] = FastTweenColor(trail_color_a_2F738[trail_state_2F738.ship][0],
+                                                              trail_color_b_2F738[trail_state_2F738.ship][0], t);
                             t = 1.0f - t * t;
                             trail_scale_2F738(position_first, &workspace.side[vertex],
-                                              t * ((float *)&trail_width_2F738)[trail_state_2F738.ship]);
+                                              t * ((float *)&warp_trail_widths)[trail_state_2F738.ship]);
                             func_001F9BD8_2F4C8(position_first, position_first,
                                                 trail_at_2F738(engine, (ring_index + step) & 31));
                             position_first++;
@@ -421,7 +421,7 @@ void build_resident_indexed_texture_warp_meshes(int unused) {
                             age--;
                             t = trail_float_2F738(segment - age) * 0.03125f;
                             trail_scale_2F738(position_second, normal_second,
-                                              (1.0f - t * t) * ((float *)&trail_width_2F738)[trail_state_2F738.ship]);
+                                              (1.0f - t * t) * ((float *)&warp_trail_widths)[trail_state_2F738.ship]);
                             func_001F9BD8_2F4C8(position_second, position_second,
                                                 trail_at_2F738(engine, (ring_index + step) & 31));
                             normal_second++;
@@ -840,7 +840,7 @@ extern void DoGifPaging();
 extern s64 GetEffectTex_r(s32) __asm__("func_001F4868");
 extern void emit_rgba_draw_packet(s32, s32, s32, s32);
 extern void DrawTexturedQuad(s32, s32, s32, s32, s32, s32, s32, s32, s64, s64);
-extern s32 truncate_float_to_s32_r(f32) __asm__("func_001FA898");
+extern s32 func_001FA898(f32);
 extern void append_gif_transfer_packet();
 extern void draw_rotated_sprite(f32, f32, f32, f32, s32, s32, s64, f32);
 extern void prune_moby_references(void);
@@ -919,7 +919,7 @@ void render_level_frame(void) {
         if (gFade > 1.0f) {
             gFade = 1.0f;
         }
-        emit_rgba_draw_packet(0, 0, 0, truncate_float_to_s32_r(gFade * 128.0f));
+        emit_rgba_draw_packet(0, 0, 0, truncate_float_to_s32(gFade * 128.0f));
     }
     VU1_syncChain(0x10);
     PatchMobyGifs();
@@ -2480,7 +2480,7 @@ typedef struct {
     int pad0[4];
     unsigned int f10;
 } Blk4200;
-extern Blk4200 coll_output_b __asm__("D_00194200");
+extern Blk4200 D_00194200;
 typedef struct {
     unsigned char pad0[8];
     unsigned char f8;
@@ -2522,7 +2522,7 @@ extern short D_0015EF48_m SDATA(D_0015EF48);
 extern int level_archive_load_busy_i __asm__("D_0015EF4A") MACRO_ADDR;
 extern char unloaded_sound_bank_format[];
 extern int sce_gs_sync_v_i(int) __asm__("func_00122598");
-extern int snd_StreamSafeCdSync_i(int) __asm__("func_0012EF48");
+extern int func_0012EF48(int);
 extern int sce_cd_sync_s_i(int) __asm__("func_00120F30");
 
 extern void snd_set_reverb_ex(int, int, int, int, int);
@@ -2552,7 +2552,7 @@ void DoSpaceTransition(void) {
     if (lvl < 0) {
         lvl = 0;
     }
-    coll_output_b.f10 |= 0x80000000;
+    coll_output.f10 |= 0x80000000;
     g_game_mode = 6;
     level_render_state.set = 0;
     if (level_available_b.f8 != 0 || space_load_level >= 8) {
@@ -2575,7 +2575,7 @@ void DoSpaceTransition(void) {
     }
     sound_bank_handle_m = 0;
     snd_StreamSafeCdCallback(0);
-    snd_StreamSafeCdSync_i(0);
+    snd_StreamSafeCdSync(0);
     view_context_b.f238 = 16;
     view_context_b.f21C = 524288.0f;
     view_context_b.f228 = 255.0f;

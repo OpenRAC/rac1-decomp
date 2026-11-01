@@ -366,8 +366,8 @@ extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern void FastVecScale_r(void *, void *, float) __asm__("func_001F9C30");
-extern void InitDirectionalHitQuery_r(void *, void *, int, float, void *) __asm__("func_L00_0025A8C0");
-extern int coll_sphere_mobys_r(float, void *, int, void *, void *) __asm__("func_L00_001F2BE8");
+extern void func_L00_0025A8C0(void *, void *, int, float, void *);
+extern int func_L00_001F2BE8(float, void *, int, void *, void *);
 extern int coll_sphere_r(void *, float, int, void *) __asm__("func_L00_001F10E0");
 extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
 extern char *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
@@ -449,10 +449,10 @@ void update_level_13_mine_83_projectile(char *moby_raw) {
     target = moby_data->target;
     if (target != 0 && target->state != 0xFE && target->state != 0xFD &&
         8.0f < FastVecDist_r(&moby->pos, &target->pos)) {
-        InitDirectionalHitQuery_r(hitpos, moby, 0x30000, 16.0f, &moby_data->velocity);
+        InitDirectionalHitQuery(hitpos, moby, 0x30000, 16.0f, &moby_data->velocity);
         qcopy(&steering_and_collision_vector, &moby->pos);
         steering_and_collision_vector.f[2] = steering_and_collision_vector.f[2] + 0.75f;
-        flags = coll_sphere_mobys_r(1.7f, &steering_and_collision_vector, 16, moby, hitpos);
+        flags = coll_sphere_mobys(1.7f, &steering_and_collision_vector, 16, moby, hitpos);
         flags |= coll_sphere_r(&steering_and_collision_vector, 1.7f, 4, moby);
         hit = (Moby *)MobyGetHitMessage_r(moby, -1, 0);
         if (hit != 0) {
@@ -794,9 +794,8 @@ void update_hovering_rocket_attacker(char *m) {
 typedef int u128x_2C3FB8 __attribute__((mode(TI)));
 extern int Sound_IsPlaying_r(void *, int) __asm__("func_L00_0028EB98");
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
-extern void update_moby_vertical_oscillation_r(float, float, char *, float *, float *) __asm__("func_L00_00263B78");
-extern void update_moby_rotation_oscillation_r(void *, char *, char *, float, float,
-                                               float) __asm__("func_L00_00263BF8");
+extern void func_L00_00263B78(float, float, char *, float *, float *);
+extern void func_L00_00263BF8(void *, char *, char *, float, float, float);
 extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
 extern void Moby_GetJointWorldPos_r(void *, int, void *) __asm__("func_L00_00250800");
@@ -809,7 +808,7 @@ extern void MobyBlendAnimation_r2(void *, int, int, int) __asm__("func_00213DE0"
 extern void SetDeathBits_r(void *, int, int) __asm__("func_L00_002584A8");
 extern void RerollEffectCounter_r(void *m, short *p) __asm__("func_L00_0025E4B0");
 extern void StepColorFade_r(void *, void *) __asm__("func_L00_0025E590");
-extern int FindNearestEligibleMoby_r(float, char *, void *, int, int, void *, int) __asm__("func_L00_00260FB0");
+extern int func_L00_00260FB0(float, char *, void *, int, int, void *, int);
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern float FastAbsF_r(float) __asm__("func_001F9B88");
 extern int coll_line_r(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
@@ -881,10 +880,9 @@ void update_hovering_rocket_attacker_common(unsigned char *moby) {
         moby_data->link_id = -1;
         moby_data->link_id = Moby_PlaySound_r(1, 4, m);
     }
-    update_moby_vertical_oscillation_r(0.5f, g_frame_time_r * 1.39626336f, m, &moby_data->wobble_x,
-                                       &moby_data->wobble_y);
-    update_moby_rotation_oscillation_r(m, &moby_data->sway_x, &moby_data->sway_y, 0.104719758f,
-                                       g_frame_time_r * 0.314159274f, g_frame_time_r * 0.366519153f);
+    update_moby_vertical_oscillation(0.5f, g_frame_time_r * 1.39626336f, m, &moby_data->wobble_x, &moby_data->wobble_y);
+    update_moby_rotation_oscillation(m, &moby_data->sway_x, &moby_data->sway_y, 0.104719758f,
+                                     g_frame_time_r * 0.314159274f, g_frame_time_r * 0.366519153f);
     m->pos.x = moby_data->base_x + FastSin_r(moby_data->sway_x);
     m->pos.y = moby_data->base_y + FastSin_r(moby_data->sway_y);
     *(u128x_2C3FB8 *)z = 0;
@@ -971,8 +969,8 @@ void update_hovering_rocket_attacker_common(unsigned char *moby) {
     {
         char *target_selection_point_table = walker_paths_r[moby_data->table_index];
         target_selection_status =
-            FindNearestEligibleMoby_r(moby_data->search_range, m, &moby_data->target, 0, 0,
-                                      target_selection_point_table + 0x10, *(int *)target_selection_point_table);
+            FindNearestEligibleMoby(moby_data->search_range, m, &moby_data->target, 0, 0,
+                                    target_selection_point_table + 0x10, *(int *)target_selection_point_table);
     }
     if (target_selection_status != 2) {
         if (moby_data->search_range < vec_distance_xy_r(&m->pos, &moby_data->target) ||
@@ -1678,7 +1676,7 @@ extern unsigned char help_stats_base_r[] __asm__("D_0014171B");
 extern RotMoby *gemlik_moby_array_start_r __asm__("D_L13_00160058") MACRO_ADDR;
 extern void Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 extern float FastAddRots_r(float, float) __asm__("func_001FA748");
-extern float FastSubRots_r(float, float) __asm__("func_001FA790");
+extern float func_001FA790(float, float);
 
 /* Level 13 moby update (classes 127, 128, 159): six-state machine that turns the moby open and shut with its link. */
 void update_linked_moby_rotation(RotMoby *m) {
@@ -1769,9 +1767,9 @@ void update_linked_moby_rotation(RotMoby *m) {
                 float radians = 0.017453292f;
                 step = step / (data->seconds * 60.0f);
                 data->t = data->t - step;
-                moby->rot.x = FastSubRots_r(moby->rot.x, data->speed[0] * radians * step);
-                moby->rot.y = FastSubRots_r(moby->rot.y, data->speed[1] * radians * step);
-                moby->rot.z = FastSubRots_r(moby->rot.z, data->speed[2] * radians * step);
+                moby->rot.x = FastSubRots(moby->rot.x, data->speed[0] * radians * step);
+                moby->rot.y = FastSubRots(moby->rot.y, data->speed[1] * radians * step);
+                moby->rot.z = FastSubRots(moby->rot.z, data->speed[2] * radians * step);
                 if (data->t <= 0.0f) {
                     moby->rot.x = data->home[0];
                     moby->rot.y = data->home[1];
@@ -2967,9 +2965,9 @@ int queue_starfighter_voice_line(void *unused, unsigned char *p, int base, int n
     return 0;
 }
 typedef int OvlQuad_E9D58 __attribute__((mode(TI)));
-extern int gemlik_stage_part_slot_r[] __asm__("D_L13_001D3748");
-extern int gemlik_joint_effect_part_slot_r[] __asm__("D_L13_001D37D8");
-extern int gemlik_joint_effect_bone_r[] __asm__("D_L13_001D37F0");
+extern int D_L13_001D3748[];
+extern int D_L13_001D37D8[];
+extern int D_L13_001D37F0[];
 extern int rand_range_r2(int, int) __asm__("func_L00_00258BC8");
 extern int random_integer_below_r(int) __asm__("func_002140B0");
 extern int scale_ticks_r3(int) __asm__("func_001F9850");
@@ -2988,17 +2986,16 @@ void emit_gated_moby_joint_effects(struct Moby *m, char *d) {
     float a[4];
     int i;
     for (i = 0; i < 6; i++) {
-        if (((Vd_v *)d)->on[gemlik_joint_effect_part_slot_r[i]] != 0) {
+        if (((Vd_v *)d)->on[gemlik_joint_effect_part_slot[i]] != 0) {
             float s;
             int r, k;
             zv = 0;
             s = m->scale / (m->pclass->scale * 4.0f);
-            Moby_GetJointWorldPos_r2(m, gemlik_joint_effect_bone_r[i], a);
+            Moby_GetJointWorldPos_r2(m, gemlik_joint_effect_bone[i], a);
             if (gemlik_frame_count_r & 1) {
                 r = scale_ticks_r3(rand_range_r2(0xF, 0x14));
                 PartType04Spawn_r2(a, &zv, 0xCF0000FF, 0xCF, r, truncate_float_to_s32_r2(s * 350.0f), -100, 1);
-            } else if (m->command == 0 ||
-                       gemlik_stage_part_slot_r[m->command - 1] != gemlik_joint_effect_part_slot_r[i] ||
+            } else if (m->command == 0 || gemlik_stage_part_slot[m->command - 1] != gemlik_joint_effect_part_slot[i] ||
                        random_integer_below_r(9) == 0) {
                 r = scale_ticks_r3(rand_range_r2(0xF, 0x16));
                 PartType04Spawn_r2(a, &zv, 0x6000FFFF, 0x80, r, truncate_float_to_s32_r2(s * 600.0f), -100, 1);
@@ -3514,7 +3511,7 @@ void process_moby_attachment_damage(Moby *m, Data_2EAE80 *d) {
                         v->f118 = 0;
                     }
                 } else if (dd->f0 < hi) {
-                    int tv = gemlik_stage_part_slot_r[m->command - 1];
+                    int tv = gemlik_stage_part_slot[m->command - 1];
 
                     if (tv != -1) {
                         Moby_PlaySound_r4(7, 0, m);
@@ -3547,7 +3544,7 @@ void process_moby_attachment_damage(Moby *m, Data_2EAE80 *d) {
                     mode = 2;
                     if (m->command == 7) {
                         for (j = m->command - 1; j < 10; j++) {
-                            detach_moby_joint_attachment_r(m, d, gemlik_stage_part_slot_r[j]);
+                            detach_moby_joint_attachment_r(m, d, gemlik_stage_part_slot[j]);
                         }
                         Moby_PlaySound_r4(7, 0, m);
                     }
@@ -3609,7 +3606,7 @@ void process_moby_attachment_damage(Moby *m, Data_2EAE80 *d) {
                     v->f118 = 0;
                 }
             } else if (dd->f0 < hi) {
-                int tv = gemlik_stage_part_slot_r[m->command - 1];
+                int tv = gemlik_stage_part_slot[m->command - 1];
 
                 if (tv != -1) {
                     detach_moby_joint_attachment_r(m, d, tv);
@@ -3640,7 +3637,7 @@ void process_moby_attachment_damage(Moby *m, Data_2EAE80 *d) {
                 mode = 2;
                 if (m->command == 7) {
                     for (k = m->command - 1; k < 10; k++) {
-                        detach_moby_joint_attachment_r(m, d, gemlik_stage_part_slot_r[k]);
+                        detach_moby_joint_attachment_r(m, d, gemlik_stage_part_slot[k]);
                     }
                     Moby_PlaySound_r4(7, 0, m);
                 }

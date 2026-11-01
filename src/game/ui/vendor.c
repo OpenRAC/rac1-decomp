@@ -133,7 +133,7 @@ void render_capture_scrolling_text(char *text, s32 start_x, s32 start_y, f32 sca
     }
 }
 
-extern int libc_strlen_s(char *) __asm__("func_00116810");
+extern int func_00116810(char *);
 
 extern int status_message_text_ids[];
 extern void set_scrolling_status_message(void *);
@@ -147,7 +147,7 @@ void update_scrolling_status_message(void) {
     char *w;
     draw_framebuffer_rect(0, 0, 0x200, 0x80, 0x200, 0x80, 0);
     v = vendor_state;
-    if (libc_strlen_s(*(char **)(v + 0x2C)) - *(int *)(v + 0x44) / 20 > 0) {
+    if (libc_strlen(*(char **)(v + 0x2C)) - *(int *)(v + 0x44) / 20 > 0) {
         *(int *)(v + 0x44) += 2;
     } else {
         set_scrolling_status_message(msg_string_id(status_message_text_ids[random_integer_below(0x18)]));
@@ -455,7 +455,7 @@ void render_vendor_buy_label_pass(char *unused, int x, int y) {
 extern int weapon_ammo_counts[];
 extern int gBolts MACRO_ADDR;
 extern char vendor_item_prices[];
-extern int FontPrintCenterSmall_c(int, int, long, void *, int) __asm__("func_001F6F40");
+extern int func_001F6F40(int, int, long, void *, int);
 
 typedef struct {
     int type; /* +0x0 */
@@ -512,11 +512,11 @@ void VendorDrawAmmoPrompt(void) {
                 price = ((WeaponInfo *)(vendor_item_prices + v->slots[idx].type * 0x18))->price;
             }
             if (gBolts >= price) {
-                FontPrintCenterSmall_c(0x28, 0x14, 0x80F0F0F0L, msg_string_id(0x4EE0), -1);
+                FontPrintCenterSmall(0x28, 0x14, 0x80F0F0F0L, msg_string_id(0x4EE0), -1);
             }
         }
     } else {
-        FontPrintCenterSmall_c(0x28, 0x14, 0x80F0F0F0L, msg_string_id(0x4EE0), -1);
+        FontPrintCenterSmall(0x28, 0x14, 0x80F0F0F0L, msg_string_id(0x4EE0), -1);
     }
 }
 
@@ -530,7 +530,7 @@ extern s32 vendor_scroll_timers[];
 extern void VU1_addGSregister_r(s32, u64) __asm__("func_00234C98");
 
 extern s32 subtract_integer_with_clamp(s32);
-extern s64 GetEffectTex_r(s32) __asm__("func_001F4868");
+extern s64 func_001F4868(s32);
 extern f32 IntToFloat(s32);
 extern void append_subpixel_textured_screen_quad(f32, f32, f32, f32, s32, s32, s32, s32, u64, s64);
 
@@ -569,7 +569,7 @@ void render_vendor_capture_texture_overlays_pass(s32 pass_index, f32 capture_wid
         VU1_addGSregister_r(0x42, ((u64)flash_opacity << 32) | 0x68);
         append_subpixel_textured_screen_quad(0.0f, 0.0f, capture_width, capture_height, random_u + zero_offset,
                                              random_v + zero_offset, capture_width + random_u,
-                                             capture_height + random_v, 0x808080, GetEffectTex_r(0x1A));
+                                             capture_height + random_v, 0x808080, GetEffectTex(0x1A));
         if (vendor_flash_timers[pass_index] >= 0x100) {
             vendor_flash_timers[pass_index] = 0;
         }
@@ -591,7 +591,7 @@ void render_vendor_capture_texture_overlays_pass(s32 pass_index, f32 capture_wid
             overlay_height = capture_height + 16.0f;
             append_subpixel_textured_screen_quad(0.0f, scroll_offset, capture_width, overlay_height, 0, 0,
                                                  overlay_width, (s32)(overlay_height * 1.5f),
-                                                 (scroll_opacity << 24) | 0x505050, GetEffectTex_r(0x1C));
+                                                 (scroll_opacity << 24) | 0x505050, GetEffectTex(0x1C));
             if (vendor_scroll_timers[pass_index] >= 0x200) {
                 vendor_scroll_timers[pass_index] = 0;
             }
@@ -602,7 +602,7 @@ void render_vendor_capture_texture_overlays_pass(s32 pass_index, f32 capture_wid
     if (pass_index == 6) {
         /* The known capture coordinator supplies only passes zero through five. */
         append_subpixel_textured_screen_quad(0.0f, 0.0f, capture_width, capture_height, 0, 0, 0x40, 0x40, 0x80808080,
-                                             GetEffectTex_r(0x19));
+                                             GetEffectTex(0x19));
     }
 }
 

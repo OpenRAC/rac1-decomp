@@ -35,7 +35,7 @@ extern MoveUsageTable usage_stats;
 extern unsigned char item_available[];
 extern int gBolts MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
-extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
+extern int D_0015EE84 MACRO_ADDR;
 extern int quick_swap_item MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;
@@ -57,7 +57,7 @@ extern int HeroL06_TryApplyHitKnockback(int);
 
 extern int scale_ticks(int);
 extern int queue_animation_update(int, int, int, int, int, int, int);
-extern int show_health_hud_r(void) __asm__("func_L00_00235790");
+extern int func_L00_00235790(void);
 extern void hud_keep_visible(int, int);
 extern int FastDecTimer(void *);
 
@@ -69,7 +69,7 @@ extern void MobyBlendAnimation(void *, int, int, int);
 extern float multiply_global_factor(float);
 extern int HeroL06_TrySetMoveState(int a, int b);
 
-extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
+extern int func_001F9908(int *);
 extern int rand_range(int, int);
 
 extern void stick_target(int, float);
@@ -174,7 +174,7 @@ void HeroL06_UpdateStateTransitions(void) {
                             queue_animation_update(3, 0, (int)initialize_eight_slot_hud_selector,
                                                    (int)update_hud_item_selector_selection_and_visibility,
                                                    (int)draw_hud_item_selector_panel, 0, 0);
-                            id = show_health_hud_r();
+                            id = show_health_hud();
                             hud_keep_visible(id, scale_ticks(0xB4));
                             id = queue_animation_update(2, 0x754E, (int)initialize_bolt_counter_hud,
                                                         (int)update_bolt_counter_hud_animation_and_visibility,
@@ -211,7 +211,7 @@ void HeroL06_UpdateStateTransitions(void) {
                             usage_stats.e[31].best_minutes = scale_ticks(gameplay_event_frame_count) / 600;
                         }
                         usage_stats.e[31].level_mask =
-                            usage_stats.e[31].level_mask | (1 << g_current_level_index_m) | 0x80000000;
+                            usage_stats.e[31].level_mask | (1 << g_current_level_index) | 0x80000000;
                         g_hero.pending_item[0] = next;
                         g_hero.quick_swap_tap_timer = 0;
                         g_hero.quick_swap_tap_window = 0;
@@ -303,7 +303,7 @@ void HeroL06_UpdateStateTransitions(void) {
                         if (scale_ticks(0xA) < g_hero.state_timer) {
                             if (((unsigned char *)g_hero.items[3].moby2) != 0 &&
                                 ((unsigned char *)g_hero.items[3].moby2)[0x53] == 1) {
-                                if (fast_dec_timer_r(&g_hero.slot3_anim_timer)) {
+                                if (fast_dec_timer(&g_hero.slot3_anim_timer)) {
                                     if (0.55850536f > blarg_hero_bones.f258 && blarg_hero_bones.f254 < 0.34906584f &&
                                         g_hero.items[3].state == 2) {
                                         g_hero.slot3_anim_timer = rand_range(scale_ticks(0x6E), scale_ticks(0x10E));
@@ -397,7 +397,7 @@ void HeroL06_UpdateStateTransitions(void) {
                                 }
                             }
                             if (ok && 0.22f < g_hero.stick_magnitude) {
-                                if (g_current_level_index_m == LEVEL_HOVEN) {
+                                if (g_current_level_index == LEVEL_HOVEN) {
                                     int slot = g_hero.ground_sound_class;
                                     request_hero_voice_if_enabled(slot, 0, 0);
                                     request_hero_voice_if_enabled(slot, 1, 0);
@@ -949,7 +949,7 @@ void HeroL06_UpdateStateTransitions(void) {
                         } else {
                             int ice = 0;
 
-                            if (g_current_level_index_m == LEVEL_KALEBO3 && g_hero.wall_hit != 0 &&
+                            if (g_current_level_index == LEVEL_KALEBO3 && g_hero.wall_hit != 0 &&
                                 g_hero.coll_hit_moby != 0 && *(short *)(g_hero.coll_hit_moby + 0xA6) == 0x101) {
                                 ice = 1;
                                 g_hero.coll_hit_moby[0xBC] = 1;
@@ -959,7 +959,7 @@ void HeroL06_UpdateStateTransitions(void) {
                                 ice || g_hero.unk5BE != 0) {
                                 int ok = 1;
 
-                                if (g_current_level_index_m != LEVEL_KALEBO3) {
+                                if (g_current_level_index != LEVEL_KALEBO3) {
                                     qcopy(v0, g_hero.rail_point.f);
                                     v0[2] += 2.0f;
                                     v1[0] = FastCos(g_hero.rail_dir_yaw) * 5.0f;
@@ -1006,7 +1006,7 @@ void HeroL06_UpdateStateTransitions(void) {
                         if (g_hero.state.current == HERO_STATE_GRIND) {
                             int can = 1;
 
-                            if (g_current_level_index_m == LEVEL_BATALIA) {
+                            if (g_current_level_index == LEVEL_BATALIA) {
                                 *(u128 *)v0 = 0;
                                 v0[0] = 342.0f;
                                 v0[1] = 111.1f;
@@ -1452,9 +1452,9 @@ void HeroL06_UpdateStateTransitions(void) {
                         }
                         break;
                     case HERO_STATE_FATAL_FALL:
-                        if ((g_current_level_index_m == LEVEL_KERWAN && 5.0f > g_hero.motion.pos.f[2]) ||
-                            (g_current_level_index_m == LEVEL_BLARG && 50.0f > g_hero.motion.pos.f[2]) ||
-                            (g_current_level_index_m == LEVEL_KALEBO3 &&
+                        if ((g_current_level_index == LEVEL_KERWAN && 5.0f > g_hero.motion.pos.f[2]) ||
+                            (g_current_level_index == LEVEL_BLARG && 50.0f > g_hero.motion.pos.f[2]) ||
+                            (g_current_level_index == LEVEL_KALEBO3 &&
                              (77.0f > g_hero.motion.pos.f[2] || (g_hero.state_timer > 0x14 && g_hero.wall_hit != 0 &&
                                                                  g_hero.motion.displacement.f[2] >= 0.0f))) ||
                             g_hero.state_timer > scale_ticks(0x78)) {
@@ -1471,7 +1471,7 @@ void HeroL06_UpdateStateTransitions(void) {
                         {
                             int both = 0;
 
-                            fast_dec_timer_r((int *)&blarg_hero_double_tap_timer);
+                            fast_dec_timer((int *)&blarg_hero_double_tap_timer);
                             if (*(int *)&blarg_hero_double_tap_timer != 0) {
                                 both = 1;
                                 if (!((g_controller_state.held & PAD_R1) && (g_controller_state.pressed & PAD_R1))) {
@@ -1928,7 +1928,7 @@ void HeroL06_UpdateStateTransitions(void) {
                             HeroL06_TrySetMoveState(HERO_STATE_FALL, 1);
                             break;
                         }
-                        if (g_current_level_index_m == LEVEL_KALEBO3 && 0.0f > g_hero.motion.velocity.f[2] &&
+                        if (g_current_level_index == LEVEL_KALEBO3 && 0.0f > g_hero.motion.velocity.f[2] &&
                             g_hero.health.hp == 0 && g_hero.state.prev_control_mode == 0xF) {
                             HeroL06_TrySetMoveState(HERO_STATE_FATAL_FALL, 1);
                             break;
@@ -2146,7 +2146,7 @@ void HeroL06_UpdateStateTransitions(void) {
                         }
                         break;
                     case HERO_STATE_VEHICLE_MODE_1_FALL:
-                        if (g_current_level_index_m == LEVEL_BLARG && 115.0f > g_hero.motion.pos.f[2]) {
+                        if (g_current_level_index == LEVEL_BLARG && 115.0f > g_hero.motion.pos.f[2]) {
                             goto respawn;
                         }
                         if (g_hero.air_frames.s == 0) {
@@ -2542,7 +2542,7 @@ extern int depth_buffer_address MACRO_ADDR;
 /* Draw the Blarg sky: three shells with particles in level 6, static shells otherwise. */
 void render_sky_with_gif_paging(void) {
     SetupSkyGifPaging();
-    if (g_current_level_index_m == LEVEL_BLARG) {
+    if (g_current_level_index == LEVEL_BLARG) {
         draw_three_sky_shells_with_three_particle_types();
     } else {
         update_sky_shells_static();

@@ -1054,22 +1054,21 @@ int advance_moby_along_rail_path(char *moby, int pathIndex, int *sound) {
 extern void update_moby_vertical_oscillation(float, float, char *, float *, float *);
 extern void update_moby_rotation_oscillation(void *, char *, char *, float, float, float);
 extern float g_frame_time MACRO_ADDR;
-extern short taxi_bobbing_amplitude_g __asm__("D_L03_00161B70");
-extern short taxi_bobbing_phase_rate_degrees_g __asm__("D_L03_00161B74");
-extern short taxi_rocking_amplitude_g __asm__("D_L03_00161B78");
-extern short taxi_rocking_first_phase_rate_degrees_g __asm__("D_L03_00161B7C");
-extern short taxi_rocking_second_phase_rate_degrees_g __asm__("D_L03_00161B80");
+extern short D_L03_00161B70;
+extern short D_L03_00161B74;
+extern short D_L03_00161B78;
+extern short D_L03_00161B7C;
+extern short D_L03_00161B80;
 
 /* Sets two speed pairs on a moby's data from level constants scaled by degrees-to-radians and the frame scale. */
 void update_taxi_bobbing_and_rocking(char *m) {
     struct RailTaxiVars *d = (struct RailTaxiVars *)((Moby *)m)->pvars;
-    update_moby_vertical_oscillation(*(float *)&taxi_bobbing_amplitude_g,
-                                     *(float *)&taxi_bobbing_phase_rate_degrees_g * 0.0174532925f * g_frame_time, m,
+    update_moby_vertical_oscillation(*(float *)&taxi_bobbing_amplitude,
+                                     *(float *)&taxi_bobbing_phase_rate_degrees * 0.0174532925f * g_frame_time, m,
                                      &d->bob_amount, &d->bob_phase);
-    update_moby_rotation_oscillation(m, (char *)&d->sway_a, (char *)&d->sway_b, *(float *)&taxi_rocking_amplitude_g,
-                                     *(float *)&taxi_rocking_first_phase_rate_degrees_g * 0.0174532925f * g_frame_time,
-                                     *(float *)&taxi_rocking_second_phase_rate_degrees_g * 0.0174532925f *
-                                         g_frame_time);
+    update_moby_rotation_oscillation(m, (char *)&d->sway_a, (char *)&d->sway_b, *(float *)&taxi_rocking_amplitude,
+                                     *(float *)&taxi_rocking_first_phase_rate_degrees * 0.0174532925f * g_frame_time,
+                                     *(float *)&taxi_rocking_second_phase_rate_degrees * 0.0174532925f * g_frame_time);
 }
 typedef u32 u128_D5220 __attribute__((mode(TI), aligned(16)));
 struct Manip_D5220;
@@ -1180,16 +1179,15 @@ extern float FastCos_r(float) __asm__("func_001F9F90");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern int rand_range_r(int, int) __asm__("func_L00_00258BC8");
 extern void PartType04Spawn_r(void *, void *, int, int, int, int, int, int) __asm__("func_L00_0026A7F8");
-extern float SpringTurn_r(float *vel, float cur, float target, float k, float d,
-                          float max) __asm__("func_L00_00259148");
-extern int coll_sphere_r(float, void *, int, void *) __asm__("func_L00_001F10E0");
-extern void InitDirectionalHitQuery_r(void *, void *, int, float, void *) __asm__("func_L00_0025A8C0");
-extern void record_moby_hit_r(void *, void *) __asm__("func_L00_0025AAC0");
-extern void SpawnExplosionFx_r(void *, void *, int, float, float) __asm__("func_L00_00260108");
+extern float func_L00_00259148(float *vel, float cur, float target, float k, float d, float max);
+extern int func_L00_001F10E0(float, void *, int, void *);
+extern void func_L00_0025A8C0(void *, void *, int, float, void *);
+extern void func_L00_0025AAC0(void *, void *);
+extern void func_L00_00260108(void *, void *, int, float, float);
 extern void DeleteMoby_r4(void *) __asm__("func_0020D678");
-extern Vec4 g_hero_platform_carry_r __asm__("D_0013F590");
+extern Vec4 D_0013F590;
 extern short D_L03_00161BA8_D5790 SDATA(D_L03_00161BA8);
-extern char kerwan_coll_hit_r[] __asm__("D_L03_00173FC0");
+extern char D_L03_00173FC0[];
 extern int fast_dec_timer_r3(s32 *) __asm__("func_001F9908");
 
 /* Homing rocket update: flies on, trails smoke, steers up or down toward a target, explodes on impact or timeout.
@@ -1216,7 +1214,7 @@ void update_homing_rocket(struct Moby *m) {
             FindNearestTargetMoby_r(m, &target, range);
             qcopy(&old, pos);
             FastVecAdd_r(pos, pos, v);
-            cam.q = g_hero_platform_carry_r.q;
+            cam.q = g_hero_platform_carry.q;
             cam.f[2] *= (*(float *)&D_L03_00161BA8_D5790);
             add_vectors_r(&trail, pos, &cam);
             m->rot.z = v->heading;
@@ -1236,14 +1234,14 @@ void update_homing_rocket(struct Moby *m) {
                               rand_range_r(0x32, 0x4B), 0);
             if (target.found != 0) {
                 pitch = -fast_atan2_r(vec_distance_xy_r(pos, &target.pos), target.pos.f[2] - m->pos.z);
-                m->rot.y = SpringTurn_r(&v->turn_vel, m->rot.y, pitch, g_frame_time_sq_r * 0.7853982f,
-                                        g_frame_time_sq_r * 3.1415927f, g_frame_time_r * 0.5235988f);
+                m->rot.y = SpringTurn(&v->turn_vel, m->rot.y, pitch, g_frame_time_sq_r * 0.7853982f,
+                                      g_frame_time_sq_r * 3.1415927f, g_frame_time_r * 0.5235988f);
                 m->pos.z += FastSin_r(-m->rot.y) * v->speed;
             }
-            if (coll_line_r(pos, &old, 0, v->ignore, 0) != 0 || coll_sphere_r(0.2f, pos, 0, v->ignore) != 0) {
-                level = (void **)kerwan_coll_hit_r;
+            if (coll_line_r(pos, &old, 0, v->ignore, 0) != 0 || coll_sphere(0.2f, pos, 0, v->ignore) != 0) {
+                level = (void **)kerwan_coll_hit;
                 if (level[6] != 0) {
-                    InitDirectionalHitQuery_r(&hit, m, 0x10001, 1.0f, v);
+                    InitDirectionalHitQuery(&hit, m, 0x10001, 1.0f, v);
                     hit.dir.f[0] = FastCos_r(v->heading);
                     hit.dir.f[1] = FastSin_r(v->heading);
                     hit.dir.f[2] = 1.0f;
@@ -1251,7 +1249,7 @@ void update_homing_rocket(struct Moby *m) {
                     hit.kind = state;
                     hit.source = state;
                     hit.oclass = m->oclass;
-                    record_moby_hit_r(level[6], &hit);
+                    record_moby_hit(level[6], &hit);
                 }
                 m->state = 2;
             }
@@ -1260,7 +1258,7 @@ void update_homing_rocket(struct Moby *m) {
             }
             break;
         case 2:
-            SpawnExplosionFx_r(m, &m->pos, 0, 0.25f, 13.0f);
+            SpawnExplosionFx(m, &m->pos, 0, 0.25f, 13.0f);
             DeleteMoby_r4(m);
             break;
     }

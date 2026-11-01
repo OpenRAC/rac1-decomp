@@ -34,23 +34,23 @@ typedef struct {
     int off;
 } B_234fd0;
 extern G_234fd0 texture_group_header_r __asm__("D_L00_0017E5D8") __attribute__((section(".data")));
-extern B_234fd0 level_menu_system_r __asm__("D_L00_001BA070") __attribute__((section(".data")));
-extern int texture_group1_upload_size_r __asm__("D_L00_0017E610") __attribute__((section(".data")));
-extern int texture_group3_upload_size_r __asm__("D_L00_0017E618") __attribute__((section(".data")));
-extern int texture_group4_upload_size_r __asm__("D_L00_0017E61C") __attribute__((section(".data")));
-extern int texture_group5_upload_size_r __asm__("D_L00_0017E620") __attribute__((section(".data")));
+extern B_234fd0 D_L00_001BA070 __attribute__((section(".data")));
+extern int D_L00_0017E610 __attribute__((section(".data")));
+extern int D_L00_0017E618 __attribute__((section(".data")));
+extern int D_L00_0017E61C __attribute__((section(".data")));
+extern int D_L00_0017E620 __attribute__((section(".data")));
 void func_00234238_234fd0(void *, void *, int, int, int) __asm__("func_00234238");
 void func_0020C468_234fd0(void *, int) __asm__("func_0020C468");
 void func_001FF7F0_234fd0(int, int) __asm__("func_001FF7F0");
 /* HUD update. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_hud_00234fd0.c, FUN_L00_00234fd0. */
 void decompress_and_relocate_selected_groups(int mode) {
     G_234fd0 *g = &texture_group_header_r;
-    int off = level_menu_system_r.off;
-    void *h = level_menu_system_r.h;
+    int off = level_menu_system.off;
+    void *h = level_menu_system.h;
     {
         int n1;
         if ((n1 = g->t->sz[1])) {
-            func_00234238_234fd0(h, g->t->p[1], 0, texture_group1_upload_size_r / 16, 0);
+            func_00234238_234fd0(h, g->t->p[1], 0, texture_group1_upload_size / 16, 0);
             func_0020C468_234fd0(h, off);
             func_001FF7F0_234fd0(0, off);
             off += n1;
@@ -59,7 +59,7 @@ void decompress_and_relocate_selected_groups(int mode) {
     {
         int n3;
         if ((n3 = g->t->sz[3])) {
-            func_00234238_234fd0(h, g->t->p[3], 0, texture_group3_upload_size_r / 16, 0);
+            func_00234238_234fd0(h, g->t->p[3], 0, texture_group3_upload_size / 16, 0);
             func_0020C468_234fd0(h, off);
             func_001FF7F0_234fd0(2, off);
             off += n3;
@@ -69,7 +69,7 @@ void decompress_and_relocate_selected_groups(int mode) {
         {
             int n4;
             if ((n4 = g->t->sz[4])) {
-                func_00234238_234fd0(h, g->t->p[4], 0, texture_group4_upload_size_r / 16, 0);
+                func_00234238_234fd0(h, g->t->p[4], 0, texture_group4_upload_size / 16, 0);
                 func_0020C468_234fd0(h, off);
                 func_001FF7F0_234fd0(3, off);
                 off += n4;
@@ -79,7 +79,7 @@ void decompress_and_relocate_selected_groups(int mode) {
     if ((unsigned)(mode - 1) < 2) {
         G_234fd0 *g2 = &texture_group_header_r;
         if (g2->t->sz[5]) {
-            func_00234238_234fd0(h, g2->t->p[5], 0, texture_group5_upload_size_r / 16, 0);
+            func_00234238_234fd0(h, g2->t->p[5], 0, texture_group5_upload_size / 16, 0);
             func_0020C468_234fd0(h, off);
             func_001FF7F0_234fd0(4, off);
         }
@@ -1656,7 +1656,7 @@ extern float D_L00_0015F8A4_239918 SDATA(D_L00_0015F8A4);
 extern int D_L00_0015F8B4_239918 SDATA(D_L00_0015F8B4);
 extern int D_L00_0015F8B8_239918 SDATA(D_L00_0015F8B8);
 extern int D_L00_0015F8BC_239918 SDATA(D_L00_0015F8BC);
-extern Ids quick_select_label_msg_ids_r __asm__("D_L00_0015F8C0");
+extern Ids D_L00_0015F8C0;
 extern char texture_group_header_r3[] __asm__("D_L00_0017E5D8");
 extern float IntToFloat_r(int) __asm__("func_001FA888");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
@@ -1752,7 +1752,7 @@ int draw_hud_radial_selector_panel(Elem *e) {
     }
     k = e->sel;
     if (k >= 0 && hud_selector_slot_tables_r3[D_L00_0015F80C_239918][k].f0 != 0) {
-        tmp = quick_select_label_msg_ids_r;
+        tmp = quick_select_label_msg_ids;
         if (hud_selector_slot_tables_r3[D_L00_0015F80C_239918][k].f0 != 0) {
             str = msg_string_r(tmp.v[k]);
             if (str != 0 && libc_strlen_r(str) != 0) {

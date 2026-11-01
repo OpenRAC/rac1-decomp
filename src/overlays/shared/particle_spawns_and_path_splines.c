@@ -137,7 +137,7 @@ extern int func_001160D8(void);
 extern void FastVecSub(void *, void *, void *);
 extern void matrix_from_basis_rows(void *, void *);
 extern void transform_vector(void *, void *, void *);
-extern unsigned char novalis_part_type74_textures_b[] __asm__("D_L01_001B2928");
+extern unsigned char D_L01_001B2928[];
 /* spawns a type-74 particle with transformed offset and velocity */
 unsigned char *spawn_type_74_particle(char *m, char *pos, float *vel, char *cfg, int flag) {
     float v[4];
@@ -152,7 +152,7 @@ unsigned char *spawn_type_74_particle(char *m, char *pos, float *vel, char *cfg,
             p[3] = 0x44;
         p[1] = 0;
         q = (char *)p + 0x20;
-        p[2] = **(unsigned char **)novalis_part_type74_textures_b;
+        p[2] = **(unsigned char **)novalis_part_type74_textures;
         p[8] = func_001160D8();
         *(int *)(p + 0xc) = 0;
         qcopy(p + 0x10, pos);
@@ -315,7 +315,7 @@ int advance_path_node_index(char *p) {
     *(int *)p = next;
     return next;
 }
-extern void *libc_memset_c(void *, int, unsigned int) __asm__("func_001153FC");
+extern void *func_001153FC(void *, int, unsigned int);
 extern void *get_path_node(void *, int);
 extern void FastVecSub(void *, void *, void *);
 extern void FastVecScale(void *, void *, float);
@@ -332,7 +332,7 @@ void compute_path_node_tangent(void *out, int *l, int idx, float a, float b) {
     float v3[4];
     float d1, d2, m, len;
     float wa, wb;
-    libc_memset_c(p, 0, 12);
+    libc_memset(p, 0, 12);
     p[0] = get_path_node(l, *l + idx - 1);
     p[1] = get_path_node(l, *l + idx);
     p[2] = get_path_node(l, *l + idx + 1);

@@ -103,7 +103,7 @@ extern void Moby_GetJointWorldPos(void *, int, void *);
 extern float random_float_between(float, float);
 extern int rand_range(int, int);
 extern int scale_ticks(int);
-extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
+extern int func_001F9908(int *);
 
 /* while the countdown value is ready, scatter a spawn by the camera's offset and reroll the delay */
 void emit_hydrodisplacer_effect(Moby *m) {
@@ -112,7 +112,7 @@ void emit_hydrodisplacer_effect(Moby *m) {
     float b[4];
     struct Hero *pad;
     float f;
-    if (fast_dec_timer_r(&d->spawn_timer)) {
+    if (fast_dec_timer(&d->spawn_timer)) {
         Moby_GetJointWorldPos(m, 0, a);
         f = random_float_between(g_frame_time, g_frame_time * 3.0f);
         vec_scale_to_length(b, &m->rot_row1, -f);
@@ -303,7 +303,7 @@ extern void FastVecAdd(void *, void *, void *);
 extern float IntToFloat(int);
 
 extern int FastTweenColor(int, int, float);
-extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
+extern int func_001FA898(float);
 extern unsigned char *PartType59Spawn(float f, void *pos, int a1, unsigned char a2, int idx, int flag, int s, int mode);
 
 typedef struct {
@@ -338,14 +338,14 @@ void emit_moby_color_cycling_particles(char *p) {
         } else if (f <= 0.0f) {
             *a = f + 255.0f;
         }
-        if (fast_dec_timer_r(t)) {
+        if (fast_dec_timer(t)) {
             m->t[j] = scale_ticks(255);
         }
         t++;
         g = IntToFloat(scale_ticks(255) - m->t[j]);
         g = g / (float)scale_ticks(255);
         c = FastTweenColor(0x4040FFFF, 0x1040FFFF, FastAbsF(0.5f - g));
-        k = truncate_float_to_s32_r(*a++);
+        k = truncate_float_to_s32(*a++);
         PartType59Spawn(m->c[j], v, c, k, 0x35, 1, 2, 0);
         j++;
         FastVecAdd(v, v, &v[4]);
@@ -495,7 +495,7 @@ extern End beam_origin_transforms_translation_r[] __asm__("D_L00_001E70A0");
 extern Q_2E3700 beam_endpoints_r[] __asm__("D_L00_001E7130");
 extern Q_2E3700 beam_tip_positions_r[] __asm__("D_L00_001E7160");
 extern Pt beam_strand_points_r[][20] __asm__("D_L00_001E7190");
-extern Snd level_point_lights_r[] __asm__("D_L00_001803C0");
+extern Snd D_L00_001803C0[];
 extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern char veldin1_zero_vec_r[] __asm__("D_L00_0015F660") MACRO_ADDR;
 extern int beam_slot_states_r[] __asm__("D_L00_00161CC8") MACRO_ADDR;
@@ -529,7 +529,7 @@ extern void FastVecScale_r(void *, void *, float) __asm__("func_001F9C30");
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern void random_spherical_offset_r(void *, float, float) __asm__("func_002141A8");
-extern int allocate_colored_effect_slot_r(float *, float, float, float, float, float) __asm__("func_L00_0023F0D0");
+extern int func_L00_0023F0D0(float *, float, float, float, float, float);
 
 /* Per-frame update of one beam slot: lays out the two 20-point strips between the slot's ends
    (a sine wave and a noisy one), spawns sparks at both ends and keeps the two looping sounds
@@ -673,10 +673,10 @@ void update_slot_panes_and_effects(int unused, int idx) {
             pos[2] -= 0.25f;
             if (beam_origin_light_slots_r[idx] == -1) {
                 beam_origin_light_slots_r[idx] =
-                    allocate_colored_effect_slot_r(pos, D_L00_00161CC0_2E3700, 0.0f, 1.0f, 1.0f, 2.0f);
+                    allocate_colored_effect_slot(pos, D_L00_00161CC0_2E3700, 0.0f, 1.0f, 1.0f, 2.0f);
             }
             if (beam_origin_light_slots_r[idx] >= 0) {
-                Snd *s = &level_point_lights_r[beam_origin_light_slots_r[idx]];
+                Snd *s = &level_point_lights[beam_origin_light_slots_r[idx]];
 
                 qcopy(s->v10, pos);
                 s->f1C = D_L00_00161CC0_2E3700;
@@ -686,10 +686,10 @@ void update_slot_panes_and_effects(int unused, int idx) {
             tip[2] += 0.5f;
             if (beam_tip_light_slots_r[idx] == -1) {
                 beam_tip_light_slots_r[idx] =
-                    allocate_colored_effect_slot_r(tip, D_L00_00161CC0_2E3700, 0.0f, 1.0f, 1.0f, 2.0f);
+                    allocate_colored_effect_slot(tip, D_L00_00161CC0_2E3700, 0.0f, 1.0f, 1.0f, 2.0f);
             }
             if (beam_tip_light_slots_r[idx] >= 0) {
-                Snd *s = &level_point_lights_r[beam_tip_light_slots_r[idx]];
+                Snd *s = &level_point_lights[beam_tip_light_slots_r[idx]];
 
                 qcopy(s->v10, tip);
                 s->f1C = D_L00_00161CC0_2E3700;
@@ -1116,9 +1116,9 @@ void robot_arm_update(Moby *m) {
             DeleteMoby(m);
             return;
         case 1:
-            if (fast_dec_timer_r(&d->timer)) {
+            if (fast_dec_timer(&d->timer)) {
                 m->state = (d->flags & 1) ? 3 : 2;
-                d->timer = truncate_float_to_s32_r(multiply_global_factor(10.0f));
+                d->timer = truncate_float_to_s32(multiply_global_factor(10.0f));
                 return;
             }
             break;
@@ -1135,11 +1135,11 @@ void robot_arm_update(Moby *m) {
             DeleteMoby(m);
             return;
         case 3:
-            if (fast_dec_timer_r(&d->timer)) {
+            if (fast_dec_timer(&d->timer)) {
                 DeleteMoby(m);
                 return;
             }
-            m->alpha = truncate_float_to_s32_r((float)d->timer / multiply_global_factor(10.0f) * 128.0f);
+            m->alpha = truncate_float_to_s32((float)d->timer / multiply_global_factor(10.0f) * 128.0f);
             break;
     }
     s23 = (char *)&d->spin;
@@ -2748,7 +2748,7 @@ extern int D_L00_00161DF4_2E8210 SDATA(D_L00_00161DF4);
 extern float follow_cam_turn_blend_weight_r __asm__("D_L00_0015F040") MACRO_ADDR;
 extern float follow_cam_setting_value_r2 __asm__("D_L00_0015F044") MACRO_ADDR;
 extern int gCamSphereMaskBaseLvl_r2 __asm__("D_L00_0015F060") MACRO_ADDR;
-extern Ctl *camera_cross_axis_ptr_r __asm__("D_L00_00166F04");
+extern Ctl *D_L00_00166F04;
 extern int scale_ticks_r3(int) __asm__("func_001F9850");
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 extern void FastVecSub_r4(void *, void *, void *) __asm__("func_001F9BF0");
@@ -2883,7 +2883,7 @@ void follow_camera_setup(Camera *m) {
     if (m->handoff_state == 2) {
         reset_follow_camera_state_from_position_r(m);
         qcopy(m->type_data, m->basis);
-        if (camera_cross_axis_ptr_r->h86 == 7 && g_hero_r.frames_off_ground.s == 0) {
+        if (camera_cross_axis_ptr->h86 == 7 && g_hero_r.frames_off_ground.s == 0) {
             e->e.h0 = 0;
         } else {
             f->h0 = scale_ticks_r3(D_L00_00161DF4_2E8210);
@@ -3081,7 +3081,7 @@ typedef struct Mdata {
 } Mdata;
 extern void clear_u64_value_r2(void *) __asm__("func_001F9BC0");
 extern void FastVecAdd_r3(void *, void *, void *) __asm__("func_001F9BD8");
-extern float resolve_level_path_segment_point_r(void *, void *, void *, void *, float) __asm__("func_L00_0025ED30");
+extern float func_L00_0025ED30(void *, void *, void *, void *, float);
 extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
 extern int coll_sphere_r2(void *, int, void *, float) __asm__("func_L00_001F10E0");
 extern void func_001F9BF0_2E8AC8(void *, void *, void *) __asm__("func_001F9BF0");
@@ -3119,7 +3119,7 @@ int func_L00_002E8AC8_r(Camera *m, float *pos, int unused, float sa, float sb) {
     qcopy(a, collision_hit_point_a);
     qcopy(b, coll_resolved_pos_r2);
     FastVecAdd_r3(e, d->v90, c);
-    dist = resolve_level_path_segment_point_r(w, a, d->v90, e, 0.0f);
+    dist = resolve_level_path_segment_point(w, a, d->v90, e, 0.0f);
     lim = FastVecDist_r(d->v90, w) / (c[11] - q[12]);
     lim = (D_L00_00161DA8_2E8AC8 + (f21 - D_L00_00161DA8_2E8AC8) * lim) * 0.75f;
     if (dist < lim) {
@@ -3129,7 +3129,7 @@ int func_L00_002E8AC8_r(Camera *m, float *pos, int unused, float sa, float sb) {
         if (coll_sphere_r2(pos, gCamSphereMaskLvl_r, (void *)((Hero *)g_hero_r3)->moby, sb)) {
             func_001F9BF0_2E8AC8(t, o, pos);
             FastVecAdd_r3(a, collision_hit_point_a, t);
-            dist = resolve_level_path_segment_point_r(w, a, d->v90, e, 0.0f);
+            dist = resolve_level_path_segment_point(w, a, d->v90, e, 0.0f);
             lim = FastVecDist_r(d->v90, w) / (c[11] - q[12]);
             lim = (D_L00_00161DA8_2E8AC8 + (f21 - D_L00_00161DA8_2E8AC8) * lim) * 0.75f;
             if (dist < lim) {
@@ -3139,7 +3139,7 @@ int func_L00_002E8AC8_r(Camera *m, float *pos, int unused, float sa, float sb) {
                 if (coll_sphere_r2(pos, gCamSphereMaskLvl_r, (void *)((Hero *)g_hero_r3)->moby, sb)) {
                     func_001F9BF0_2E8AC8(t, o, pos);
                     FastVecAdd_r3(a, collision_hit_point_a, t);
-                    dist = resolve_level_path_segment_point_r(w, a, d->v90, e, 0.0f);
+                    dist = resolve_level_path_segment_point(w, a, d->v90, e, 0.0f);
                     lim = FastVecDist_r(d->v90, w) / (c[11] - q[12]);
                     lim = (D_L00_00161DA8_2E8AC8 + (f21 - D_L00_00161DA8_2E8AC8) * lim) * 0.75f;
                     if (dist < lim) {
@@ -3203,7 +3203,7 @@ int resolve_follow_camera_orbit_path_collisions(char *m) {
     f20 = *(float *)&follow_cam_min_distance_gp;
     vec_scale_to_length(x, v0, 1.0f);
     i = 0;
-    while (i < truncate_float_to_s32_r(*(float *)(s18 + 0x40) - 1.0f)) {
+    while (i < truncate_float_to_s32(*(float *)(s18 + 0x40) - 1.0f)) {
         if (i > 0 && test_follow_camera_point_in_collision_volume((VS *)v1) == 0) {
             struct Hero *base = (struct Hero *)(hero_globals_base + 0xE1D);
             if (coll_sphere_b(v1, gCamSphereMaskLvl, *(void **)&base->moby, f20) != 0 &&
@@ -3744,9 +3744,9 @@ typedef struct {
     float f24;
 } S_2E9E60;
 extern float g_controller_state_analog_r[] __asm__("D_0013CB40");
-extern int opt_cam_invert_r __asm__("D_0015EEE0") MACRO_ADDR;
-extern int invert52_r __asm__("D_0015EEDC") MACRO_ADDR;
-extern int gameplay_event_frame_count_r __asm__("D_0015EFA4") MACRO_ADDR;
+extern int D_0015EEE0 MACRO_ADDR;
+extern int D_0015EEDC MACRO_ADDR;
+extern int D_0015EFA4 MACRO_ADDR;
 extern f32 D_L00_0015F044_2E9E60 SDATA(D_L00_0015F044);
 extern s32 D_L00_00161E5C_2E9E60 SDATA(D_L00_00161E5C);
 extern s32 D_L00_00161E60_2E9E60 SDATA(D_L00_00161E60);
@@ -3764,7 +3764,7 @@ void func_L00_002E9E60_r(char *o, float *a, float *b) {
         *a = 0.0f;
     } else {
         *a = g_controller_state_analog_r[0];
-        if (opt_cam_invert_r == 0) {
+        if (opt_cam_invert == 0) {
             *a = -*a;
         }
     }
@@ -3783,8 +3783,8 @@ void func_L00_002E9E60_r(char *o, float *a, float *b) {
                 if (g->e[8].count <= 0xFFFE) {
                     g->e[8].count++;
                 }
-                if (scale_ticks_r4(gameplay_event_frame_count_r) / 600 > g->e[8].best_minutes) {
-                    g->e[8].best_minutes = scale_ticks_r4(gameplay_event_frame_count_r) / 600;
+                if (scale_ticks_r4(gameplay_event_frame_count) / 600 > g->e[8].best_minutes) {
+                    g->e[8].best_minutes = scale_ticks_r4(gameplay_event_frame_count) / 600;
                 }
                 D_L00_00161E60_2E9E60 = 1;
                 g->e[8].level_mask = g->e[8].level_mask | (1 << g_current_level_index_r) | 0x80000000;
@@ -3797,7 +3797,7 @@ void func_L00_002E9E60_r(char *o, float *a, float *b) {
     } else {
         float t = g_controller_state_analog_r[1];
         *b = -t;
-        if (invert52_r == 0) {
+        if (invert52 == 0) {
             *b = t;
         }
         if (*b == 0.0f) {

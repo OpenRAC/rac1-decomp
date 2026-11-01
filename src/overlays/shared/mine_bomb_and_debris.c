@@ -2490,9 +2490,9 @@ extern Vec4 devastator_default_normal MACRO_ADDR;
 extern Vec4 devastator_default_surface_motion MACRO_ADDR;
 
 extern float dot1688(void *) __asm__("func_L00_001FF3E0");
-extern void cross1688(void *, void *, void *) __asm__("func_L00_001FF270");
+extern void func_L00_001FF270(void *, void *, void *);
 extern float horizontal1688(void *) __asm__("func_001F9CE8");
-extern float chase1688(void *, float, float, float, float, float) __asm__("func_L00_00259148");
+extern float func_L00_00259148(void *, float, float, float, float, float);
 extern unsigned char *smoke1688(void *, void *, int, int, int, int, float, float, float, float,
                                 float) __asm__("func_L00_00272158");
 extern void rotate1688(void *, void *, void *) __asm__("func_001F9EC0");
@@ -2504,8 +2504,8 @@ extern int collision1688(void *, void *, int, void *, void *) __asm__("func_L00_
 extern void reflect1688(void *, void *, void *) __asm__("func_L00_001FF610");
 extern void matrix_scale1688(void *, void *, float) __asm__("func_L00_001FFCF8");
 extern void matrix_add1688(void *, void *, void *) __asm__("func_L00_001FFDD0");
-extern void identity1688(void *) __asm__("func_001FA190");
-extern void transform1688(void *, void *, void *) __asm__("func_001F9EE8");
+extern void func_001FA190(void *);
+extern void func_001F9EE8(void *, void *, void *);
 extern void rings1688(void *, void *, int, int, float, int, int, int, int, float) __asm__("func_L00_0026B890");
 extern void debris1688(void *, void *, int, int, float, int) __asm__("func_L00_0026B368");
 
@@ -2560,7 +2560,7 @@ void gold_devastator_missile_update(M910 *m) {
         if (d->track_velocity) {
             float b, a, root, t1, t2, denominator, negative_b;
             FastVecSub(&phase.vectors.relative, &phase.vectors.target, &d->previous_target);
-            cross1688(&predicted, &phase.vectors.relative, &hero_vel);
+            vec3_sub_in_place_second_arg(&predicted, &phase.vectors.relative, &hero_vel);
             qcopy(&d->previous_target, &phase.vectors.target);
             a = dot1688(&phase.vectors.relative);
             b = (phase.vectors.relative.f[0] * phase.collision.dir[0] +
@@ -2607,15 +2607,15 @@ void gold_devastator_missile_update(M910 *m) {
         }
     }
     if (target) {
-        m->rz = chase1688(&d->yaw_velocity, m->rz, yaw, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f,
-                          g_frame_time * 6.2831855f);
-        m->ry = chase1688(&d->pitch_velocity, m->ry, pitch, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f,
-                          g_frame_time * 6.2831855f);
+        m->rz = SpringTurn(&d->yaw_velocity, m->rz, yaw, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f,
+                           g_frame_time * 6.2831855f);
+        m->ry = SpringTurn(&d->pitch_velocity, m->ry, pitch, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f,
+                           g_frame_time * 6.2831855f);
     } else {
-        m->rz = chase1688(&d->yaw_velocity, m->rz, yaw, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f,
-                          g_frame_time * 4.71238899f);
-        m->ry = chase1688(&d->pitch_velocity, m->ry, pitch, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f,
-                          g_frame_time * 4.71238899f);
+        m->rz = SpringTurn(&d->yaw_velocity, m->rz, yaw, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f,
+                           g_frame_time * 4.71238899f);
+        m->ry = SpringTurn(&d->pitch_velocity, m->ry, pitch, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f,
+                           g_frame_time * 4.71238899f);
     }
     BuildSphericalOffset(&motion, d->speed, m->rz, -m->ry);
     vec_scale_to_length(&impact1688.normal, &motion, 1.0f);
@@ -2747,9 +2747,9 @@ void gold_devastator_missile_update(M910 *m) {
                     matrix_scale1688(rotation_part, basis_squared, 1.0f - FastCos(a));
                     matrix_scale1688(diagonal, basis, FastSin(a));
                     matrix_add1688(diagonal, diagonal, rotation_part);
-                    identity1688(rotation_part);
+                    set_identity_matrix(rotation_part);
                     matrix_add1688(rotation, diagonal, rotation_part);
-                    transform1688(&predicted, &surface_motion, rotation);
+                    transform_vector(&predicted, &surface_motion, rotation);
                     vec_scale_to_length(&predicted, &predicted,
                                         random_float_between(8.5f, 16.5f) * g_frame_time * size);
                 } else {
@@ -2903,7 +2903,7 @@ typedef struct {
     char pad[0x30];
     V_2b1af0 b;
 } P_2b1af0;
-extern P_2b1af0 hero_displacement_r __asm__("D_0013F550");
+extern P_2b1af0 D_0013F550;
 void fefc8_2b1af0(void *) __asm__("func_L00_001FEF78");
 void rot_2b1af0(void *, void *, void *) __asm__("func_001F9EC0");
 void add_2b1af0(void *, void *, void *) __asm__("func_001F9BD8");
@@ -2939,10 +2939,10 @@ void emit_object_offset_particles(unsigned char *o) {
     rot_2b1af0(&b, &b, o + 0xC0);
     for (i = 1; i >= 0; i--) {
         ff500_2b1af0(&d, &b, rndf_2b1af0(0.01f, 0.06f));
-        scale_2b1af0(&b, &hero_displacement_r.a, 0.7f);
+        scale_2b1af0(&b, &hero_displacement.a, 0.7f);
         b.f[2] = 0.0f;
         add_2b1af0(&d, &d, &b);
-        scale_2b1af0(&b, &hero_displacement_r.b, 0.7f);
+        scale_2b1af0(&b, &hero_displacement.b, 0.7f);
         b.f[2] = 0.0f;
         add_2b1af0(&d, &d, &b);
         t = trunc_2b1af0(rnd_2b1af0(0.0f, 6.0f));
@@ -2950,10 +2950,10 @@ void emit_object_offset_particles(unsigned char *o) {
     }
     for (j = 0; j >= 0; j--) {
         ff500_2b1af0(&d, &b, rndf_2b1af0(0.01f, 0.06f));
-        scale_2b1af0(&b, &hero_displacement_r.a, 0.55f);
+        scale_2b1af0(&b, &hero_displacement.a, 0.55f);
         b.f[2] = 0.0f;
         add_2b1af0(&d, &d, &b);
-        scale_2b1af0(&b, &hero_displacement_r.b, 0.55f);
+        scale_2b1af0(&b, &hero_displacement.b, 0.55f);
         b.f[2] = 0.0f;
         add_2b1af0(&d, &d, &b);
         t = fr_2b1af0(0x14);

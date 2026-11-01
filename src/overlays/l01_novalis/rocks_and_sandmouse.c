@@ -371,15 +371,15 @@ typedef struct {
     f32 b;
 } BurstLight;
 
-extern BurstPalette novalis_explosion_inner_colors_r __asm__("D_L01_0020B7E0");
-extern BurstPalette novalis_explosion_outer_colors_r __asm__("D_L01_0020B7F8");
-extern char novalis_explosion_light_r[] __asm__("D_L01_001E3720");
+extern BurstPalette D_L01_0020B7E0;
+extern BurstPalette D_L01_0020B7F8;
+extern char D_L01_001E3720[];
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 extern int rand_range_r2(int lo, int hi) __asm__("func_L00_00258BC8");
-extern void PartType11Spawn_r(void *, void *, u32, u32, f32, s32, s32, f32, s32, s32) __asm__("func_L00_0026B890");
-extern s32 spawn_glow_particle_r(void *, void *, void *, f32, s32, s32, s32, s32, s32) __asm__("func_L00_002ADBB0");
+extern void func_L00_0026B890(void *, void *, u32, u32, f32, s32, s32, f32, s32, s32);
+extern s32 func_L00_002ADBB0(void *, void *, void *, f32, s32, s32, s32, s32, s32);
 extern s32 Moby_PlaySound_r(s32, s32, void *) __asm__("func_0022ED80");
-extern void mine_camera_blast_r(void *, void *, s32, s32) __asm__("func_L00_002D4CE8");
+extern void func_L00_002D4CE8(void *, void *, s32, s32);
 extern f32 random_float_between_r2(f32, f32) __asm__("func_002140F8");
 extern s32 random_integer_below_r(s32) __asm__("func_002140B0");
 extern s32 scale_ticks_r(s32) __asm__("func_001F9850");
@@ -409,16 +409,16 @@ void func_L01_002FB588_r(struct Moby *moby, u128_2FB588 *where, s32 sound, f32 s
     for (i = 2; i >= 0; i--) {
         speed = random_float_between_r2(8.0f, 10.0f) * g_frame_time_r;
         size = scale * 400000.0f;
-        inner = novalis_explosion_inner_colors_r;
-        outer = novalis_explosion_outer_colors_r;
-        PartType11Spawn_r(pos_p, &vel, inner_p->c[random_integer_below_r(6)], outer.c[random_integer_below_r(6)], size,
-                          rand_range_r2(scale_ticks_r(0xF), scale_ticks_r(0x14)),
-                          rand_range_r2(scale_ticks_r(0x19), scale_ticks_r(0x1E)), speed * scale, 0, 0);
+        inner = novalis_explosion_inner_colors;
+        outer = novalis_explosion_outer_colors;
+        PartType11Spawn(pos_p, &vel, inner_p->c[random_integer_below_r(6)], outer.c[random_integer_below_r(6)], size,
+                        rand_range_r2(scale_ticks_r(0xF), scale_ticks_r(0x14)),
+                        rand_range_r2(scale_ticks_r(0x19), scale_ticks_r(0x1E)), speed * scale, 0, 0);
     }
 
     if (moby != 0) {
-        spawn_glow_particle_r(moby, pos_p, &vel, scale + scale, scale_ticks_r(0x14), 0x7F, 0, 0x40, 0x30);
-        spawn_glow_particle_r(moby, pos_p, &vel, scale * 1.5f, scale_ticks_r(0x1D), 0x20, 0, 0x20, 0);
+        spawn_glow_particle(moby, pos_p, &vel, scale + scale, scale_ticks_r(0x14), 0x7F, 0, 0x40, 0x30);
+        spawn_glow_particle(moby, pos_p, &vel, scale * 1.5f, scale_ticks_r(0x1D), 0x20, 0, 0x20, 0);
         if (moby->state != 0xFE) {
             if (moby->state != 0xFD && sound != -1) {
                 Moby_PlaySound_r(sound, 0, moby);
@@ -428,15 +428,15 @@ void func_L01_002FB588_r(struct Moby *moby, u128_2FB588 *where, s32 sound, f32 s
 
     if (light != 0.0f) {
         if (light > 0.0f) {
-            ((BurstLight *)novalis_explosion_light_r)->g = light;
-            ((BurstLight *)novalis_explosion_light_r)->b = light;
-            ((BurstLight *)novalis_explosion_light_r)->r = light;
+            ((BurstLight *)novalis_explosion_light)->g = light;
+            ((BurstLight *)novalis_explosion_light)->b = light;
+            ((BurstLight *)novalis_explosion_light)->r = light;
         } else {
-            ((BurstLight *)novalis_explosion_light_r)->g = 13.0f;
-            ((BurstLight *)novalis_explosion_light_r)->b = 13.0f;
-            ((BurstLight *)novalis_explosion_light_r)->r = 13.0f;
+            ((BurstLight *)novalis_explosion_light)->g = 13.0f;
+            ((BurstLight *)novalis_explosion_light)->b = 13.0f;
+            ((BurstLight *)novalis_explosion_light)->r = 13.0f;
         }
-        mine_camera_blast_r(((BurstLight *)novalis_explosion_light_r), pos_p, 0, 0);
+        mine_camera_blast(((BurstLight *)novalis_explosion_light), pos_p, 0, 0);
     }
 }
 typedef struct {
@@ -563,8 +563,8 @@ extern unsigned char help_stats_base_r[] __asm__("D_0014171B");
 extern int moby_killed_r[] __asm__("D_L01_001BAC60");
 extern int g_current_level_index_r2 __asm__("D_0015EE84") MACRO_ADDR;
 extern float g_frame_time_r2 __asm__("D_0015EE6C") MACRO_ADDR;
-extern unsigned char special_items_base_r[] __asm__("D_0013D355");
-extern V3_2FBBD8 cave_wall_debris_colors_r __asm__("D_L01_00161D00");
+extern unsigned char D_0013D355[];
+extern V3_2FBBD8 D_L01_00161D00;
 extern LvState novalis_checkpoint_level_state_r __asm__("D_L01_001BB9C0");
 
 /* destroyable_cave_wall_update: update for the cave wall moby (Destroyable Cave Wall) on level 01; a wall already
@@ -624,7 +624,7 @@ void destroyable_cave_wall_update(char *moby) {
     }
 
     for (m = 0; m < 100; m++) {
-        *(V3_2FBBD8 *)&tab = cave_wall_debris_colors_r;
+        *(V3_2FBBD8 *)&tab = cave_wall_debris_colors;
         b.q = 0;
         b.f[0] = random_float_between_r3(-1.0f, 1.0f);
         b.f[1] = random_float_between_r3(-1.0f, 1.0f);
@@ -653,7 +653,7 @@ void destroyable_cave_wall_update(char *moby) {
              ((((short)cave_wall_moby->save_id) >> 5) * 4 + (g_current_level_index_r2 << 8))) |=
         1 << (cave_wall_moby->save_id & 0x1F);
     moby_killed_r[((short)cave_wall_moby->save_id) >> 5] |= 1 << (cave_wall_moby->save_id & 0x1F);
-    p = (unsigned char *)special_items_base_r + 0x13B;
+    p = (unsigned char *)special_items_base + 0x13B;
     p[0xE] = 1;
     DeleteMoby_r(cave_wall_moby);
 }
@@ -722,33 +722,33 @@ typedef struct {
     unsigned char pad0[0x454];
     unsigned char collected[1];
 } Lv;
-extern Moby *novalis_mobys_r __asm__("D_L01_00160058") MACRO_ADDR;
-extern Rec *camera_points_r __asm__("D_L01_0016016C") MACRO_ADDR;
+extern Moby *D_L01_00160058 MACRO_ADDR;
+extern Rec *D_L01_0016016C MACRO_ADDR;
 extern int novalis_game_mode_r __asm__("D_L01_0015F6A8") MACRO_ADDR;
-extern char novalis_current_level_state_r[] __asm__("D_L01_001BAD60");
+extern char D_L01_001BAD60[];
 extern Lv novalis_checkpoint_level_state_r2 __asm__("D_L01_001BB9C0");
-extern unsigned char novalis_mission_group_state_r[] __asm__("D_L01_0015FD08") MACRO_ADDR;
+extern unsigned char D_L01_0015FD08[] MACRO_ADDR;
 extern char novalis_saved_moby_bytes_r[] __asm__("D_L01_001BADB0");
 extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern void apply_cutscene_big_head_cheat_r(void) __asm__("func_L01_002FC058");
-extern int FastDecTimer_r(void *) __asm__("func_001F9938");
+extern int func_001F9938(void *);
 extern int scale_ticks_r3(int) __asm__("func_001F9850");
-extern void MobyBlendAnimation_r(void *, int, int, int) __asm__("func_00213DE0");
+extern void func_00213DE0(void *, int, int, int);
 extern void StartCutscene_r(int) __asm__("func_L00_00299B68");
 extern void deactivate_recorded_moby_r(void) __asm__("func_L00_0028FC68");
 extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
 extern void clear_u64_value_r2(void *) __asm__("func_001F9BC0");
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
-extern void MobySetAnimation_r(void *, int, int) __asm__("func_00213D28");
+extern void func_00213D28(void *, int, int);
 extern void PlayMovieEntryIfIdle_r(int) __asm__("func_L00_0029A7D0");
 extern void unlock_planet_r(int) __asm__("func_L00_00261848");
 extern void queue_planet_unlock_message_r(int) __asm__("func_L00_00263DB0");
-extern void record_moby_context_bytes_r(void *, int, void *, int, void *) __asm__("func_L01_0029C2A0");
+extern void func_L01_0029C2A0(void *, int, void *, int, void *);
 extern void jet_clear_persistent_r(int) __asm__("func_L00_002512D8");
 extern void jet_reset_camera_r(void *, void *) __asm__("func_L00_00286128");
-extern int memcard_Save_r(int, int) __asm__("func_0020BFC8");
-extern void ShowTrackedMoby_r(void) __asm__("func_L01_002A3680");
+extern int func_0020BFC8(int, int);
+extern void func_L01_002A3680(void);
 
 /* Agnogg ship update (moby classes 730, 731, 790 on level 01): state machine on moby->state. */
 void agnogg_ship_front_update(Moby *moby) {
@@ -764,7 +764,7 @@ void agnogg_ship_front_update(Moby *moby) {
 
     data = (void *)moby->pvars;
     apply_cutscene_big_head_cheat_r();
-    FastDecTimer_r(&data->timer);
+    FastDecTimer(&data->timer);
     switch (moby->state) {
         case 0:
             fz = moby->pos.z - 0.75f;
@@ -781,7 +781,7 @@ void agnogg_ship_front_update(Moby *moby) {
             r16 = *(unsigned char *)(moby->mission + (g_current_level_index_r2 << 4) + (help_stats_base_r + 0xAA35));
             if (r16 == 0xFF) {
                 if (moby->prev_seq != 2) {
-                    MobyBlendAnimation_r(moby, 2, 0, scale_ticks_r3(0x14));
+                    MobyBlendAnimation(moby, 2, 0, scale_ticks_r3(0x14));
                 }
                 moby->state = 10;
                 moby->flags = moby->flags & 0xFFBE;
@@ -789,7 +789,7 @@ void agnogg_ship_front_update(Moby *moby) {
                 moby->collision = ((Class_2FC140 *)moby->pclass)->f10;
             } else {
                 if (novalis_game_mode_r == 0) {
-                    unsigned char *pp = special_items_base_r + 0x13B;
+                    unsigned char *pp = special_items_base + 0x13B;
                     if (pp[0xF] == 0) {
                         StartCutscene_r(5);
                         pp[0xF] = 1;
@@ -801,16 +801,16 @@ void agnogg_ship_front_update(Moby *moby) {
                     moby->flags = moby->flags & 0xFFBE;
                     moby->collision = ((Class_2FC140 *)moby->pclass)->f10;
                     if (data->link != -1) {
-                        q = (void *)novalis_mobys_r[data->link].pvars;
+                        q = (void *)novalis_mobys[data->link].pvars;
                         q->timer = scale_ticks_r3(0x1A4);
-                        novalis_mobys_r[data->link].command = 1;
-                        clear_u64_value_r2(&camera_points_r[q->rec].b);
+                        novalis_mobys[data->link].command = 1;
+                        clear_u64_value_r2(&camera_points[q->rec].b);
                         clear_u64_value_r2(&q->v);
-                        camera_points_r[q->rec].b.y =
-                            -fast_atan2_r(vec_distance_xy_r(&camera_points_r[q->rec].a, &moby->pos),
-                                          moby->pos.z - camera_points_r[q->rec].a.z);
-                        camera_points_r[q->rec].b.z = fast_atan2_r(moby->pos.x - camera_points_r[q->rec].a.x,
-                                                                   moby->pos.y - camera_points_r[q->rec].a.y);
+                        camera_points[q->rec].b.y =
+                            -fast_atan2_r(vec_distance_xy_r(&camera_points[q->rec].a, &moby->pos),
+                                          moby->pos.z - camera_points[q->rec].a.z);
+                        camera_points[q->rec].b.z = fast_atan2_r(moby->pos.x - camera_points[q->rec].a.x,
+                                                                 moby->pos.y - camera_points[q->rec].a.y);
                     }
                     moby->state = 2;
                 }
@@ -819,15 +819,14 @@ void agnogg_ship_front_update(Moby *moby) {
         case 2:
             moby->pos.z = moby->pos.z - g_frame_time_r2 * 5.0f;
             if (data->link != -1) {
-                q = (void *)novalis_mobys_r[data->link].pvars;
-                q->v.y = -fast_atan2_r(vec_distance_xy_r(&camera_points_r[q->rec].a, &moby->pos),
-                                       moby->pos.z - camera_points_r[q->rec].a.z);
-                q->v.z =
-                    fast_atan2_r(moby->pos.x - camera_points_r[q->rec].a.x, moby->pos.y - camera_points_r[q->rec].a.y);
+                q = (void *)novalis_mobys[data->link].pvars;
+                q->v.y = -fast_atan2_r(vec_distance_xy_r(&camera_points[q->rec].a, &moby->pos),
+                                       moby->pos.z - camera_points[q->rec].a.z);
+                q->v.z = fast_atan2_r(moby->pos.x - camera_points[q->rec].a.x, moby->pos.y - camera_points[q->rec].a.y);
             }
             if (moby->prev_seq == 0) {
                 if (moby->pos.z - data->fC <= 0.0f) {
-                    MobySetAnimation_r(moby, 1, 0);
+                    MobySetAnimation(moby, 1, 0);
                 }
             }
             if (moby->pos.z <= data->fC) {
@@ -843,7 +842,7 @@ void agnogg_ship_front_update(Moby *moby) {
                 break;
             }
             if (moby->prev_seq != 2) {
-                MobyBlendAnimation_r(moby, 2, 0, scale_ticks_r3(0x14));
+                MobyBlendAnimation(moby, 2, 0, scale_ticks_r3(0x14));
             }
             if (moby->oclass == MOBY_CLASS_AGNOGG_SHIP_FRONT) {
                 moby->state = 10;
@@ -856,9 +855,9 @@ void agnogg_ship_front_update(Moby *moby) {
             cnt = 0;
             i = 0;
             do {
-                if (data->list[i] != -1 && (char *)novalis_mobys_r + (data->list[i] << 8) != 0 &&
-                    ((Moby *)((char *)novalis_mobys_r + (data->list[i] << 8)))->state != 0xFE &&
-                    ((Moby *)((char *)novalis_mobys_r + (data->list[i] << 8)))->state != 0xFD) {
+                if (data->list[i] != -1 && (char *)novalis_mobys + (data->list[i] << 8) != 0 &&
+                    ((Moby *)((char *)novalis_mobys + (data->list[i] << 8)))->state != 0xFE &&
+                    ((Moby *)((char *)novalis_mobys + (data->list[i] << 8)))->state != 0xFD) {
                     flag = 0;
                     break;
                 }
@@ -909,35 +908,35 @@ void agnogg_ship_front_update(Moby *moby) {
             queue_planet_unlock_message_r(3);
             moby->flags = moby->flags & 0xFFBE;
             if (data->link != -1) {
-                ((Lv *)novalis_current_level_state_r)->collected[(*(short *)&novalis_mobys_r[data->link].save_id)] =
-                    novalis_mobys_r[data->link].mission + 2;
-                if (novalis_mobys_r[data->link].mission == 0xFF ||
-                    (novalis_mission_group_state_r[novalis_mobys_r[data->link].mission] != 0xFF &&
+                ((Lv *)novalis_current_level_state)->collected[(*(short *)&novalis_mobys[data->link].save_id)] =
+                    novalis_mobys[data->link].mission + 2;
+                if (novalis_mobys[data->link].mission == 0xFF ||
+                    (novalis_mission_group_state[novalis_mobys[data->link].mission] != 0xFF &&
                      (help_stats_base_r +
-                      0xAA35)[novalis_mobys_r[data->link].mission + (g_current_level_index_r2 << 4)] == 0xFF)) {
-                    novalis_checkpoint_level_state_r2.collected[(*(short *)&novalis_mobys_r[data->link].save_id)] =
-                        novalis_mobys_r[data->link].mission + 2;
+                      0xAA35)[novalis_mobys[data->link].mission + (g_current_level_index_r2 << 4)] == 0xFF)) {
+                    novalis_checkpoint_level_state_r2.collected[(*(short *)&novalis_mobys[data->link].save_id)] =
+                        novalis_mobys[data->link].mission + 2;
                 }
             }
             if (data->f3C != -1) {
-                q = (void *)novalis_mobys_r[data->f3C].pvars;
+                q = (void *)novalis_mobys[data->f3C].pvars;
                 q->timer = scale_ticks_r3(0xB4);
-                novalis_mobys_r[data->f3C].command = 1;
+                novalis_mobys[data->f3C].command = 1;
                 if (data->f34 != -1 && data->f38 != -1) {
-                    novalis_mobys_r[data->f34].command = 2;
-                    novalis_mobys_r[data->f38].command = 2;
-                    record_moby_context_bytes_r(&novalis_mobys_r[data->f34].command, 1, &novalis_mobys_r[data->f34], 1,
-                                                novalis_saved_moby_bytes_r);
-                    record_moby_context_bytes_r(&novalis_mobys_r[data->f38].command, 1, &novalis_mobys_r[data->f38], 1,
-                                                novalis_saved_moby_bytes_r);
+                    novalis_mobys[data->f34].command = 2;
+                    novalis_mobys[data->f38].command = 2;
+                    record_moby_context_bytes(&novalis_mobys[data->f34].command, 1, &novalis_mobys[data->f34], 1,
+                                              novalis_saved_moby_bytes_r);
+                    record_moby_context_bytes(&novalis_mobys[data->f38].command, 1, &novalis_mobys[data->f38], 1,
+                                              novalis_saved_moby_bytes_r);
                 }
             }
             jet_clear_persistent_r(moby->mission);
             if (data->rec != -1) {
-                jet_reset_camera_r(&camera_points_r[data->rec].a, &camera_points_r[data->rec].b);
+                jet_reset_camera_r(&camera_points[data->rec].a, &camera_points[data->rec].b);
             }
-            memcard_Save_r(0, -1);
-            ShowTrackedMoby_r();
+            memcard_Save(0, -1);
+            show_tracked_moby();
             moby->state = 10;
             break;
         case 10:
@@ -1602,7 +1601,7 @@ char *pool_drip(void *position, float scale) {
 }
 extern int pool_draw_tiles_s __asm__("D_L01_00161350") MACRO_ADDR;
 extern int pool_draw_count_s __asm__("D_L01_00161358") MACRO_ADDR;
-extern float novalis_coll_hit_point_z_s __asm__("D_L01_00174368") NOT_SDA;
+extern float D_L01_00174368 NOT_SDA;
 
 extern void RippleDisturb(int, int, int, float, float, float, float);
 extern char *spawn_burst_moby(void *, float);
@@ -1637,7 +1636,7 @@ void update_falling_splash_moby(char *m) {
             }
             at[0] = ((Moby *)m)->pos.x;
             at[1] = ((Moby *)m)->pos.y;
-            at[2] = novalis_coll_hit_point_z_s;
+            at[2] = novalis_coll_hit_point_z;
             o = spawn_burst_moby(at, 2.0f);
             if (o != 0) {
                 o[0x23] = 0x70;
@@ -1720,8 +1719,8 @@ extern s32 count_active_moby_group_members_r(s32, s32) __asm__("func_L01_0026EFB
 extern ClonedMoby *initialize_beehive_spawn_moby_r(ClonedMoby *) __asm__("func_L01_00303700");
 extern f32 fast_atan2_r2(f32, f32) __asm__("func_L00_001FF860");
 extern f32 FastAddRots_r(f32, f32) __asm__("func_001FA748");
-extern void InitKnockback_r(void *, void *, s32, s32, s32, f32) __asm__("func_L00_0025D5B0");
-extern short beehive_max_spawns_r __asm__("D_L01_00161F20");
+extern void func_L00_0025D5B0(void *, void *, s32, s32, s32, f32);
+extern short D_L01_00161F20;
 extern Hero g_hero_r __asm__("D_0013F450");
 /* Enemy-spawner update: state 0 arms it, state 1 spawns one child toward the player while under the count limit and aims its AI path. InitKnockback takes the angle as its last argument. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l01/unclassified_002f9810.c, FUN_L01_003021b8. */
 void beehive_update(SpawnerMoby *m) {
@@ -1741,7 +1740,7 @@ void beehive_update(SpawnerMoby *m) {
             if (count_active_moby_group_members_r(v->src_id, 0xC) != 0) {
                 break;
             }
-            if (v->count >= *(int *)&beehive_max_spawns_r) {
+            if (v->count >= *(int *)&beehive_max_spawns) {
                 break;
             }
             v->count++;
@@ -1756,7 +1755,7 @@ void beehive_update(SpawnerMoby *m) {
                 nv->fB4 = 13.0f;
                 nv->w78 = 0;
                 nv->w7C = 0;
-                InitKnockback_r(
+                InitKnockback(
                     n, nv->path, 5, 8, 0,
                     FastAddRots_r(fast_atan2_r2(g_hero_r.motion.pos.f[0] - m->x, g_hero_r.motion.pos.f[1] - m->y),
                                   3.1415927f));

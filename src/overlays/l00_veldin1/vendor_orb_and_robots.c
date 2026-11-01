@@ -249,8 +249,8 @@ typedef struct {
     float pos[4];
 } VendHit;
 
-extern unsigned char draw_map51_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
-extern short g_frame_scale_sq_s __asm__("D_0015EE64");
+extern unsigned char D_0015EEB4[4] MACRO_ADDR;
+extern short D_0015EE64;
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern short veldin1_robot_beam_origin_offset;
@@ -266,7 +266,7 @@ extern void update_veldin_robot_damage_and_targeting(void *);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern float FastVecDist(void *, void *);
 extern void set_ground_height_band(void *);
-extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
+extern int func_001FA898(float);
 extern int random_integer_below(int);
 extern void MobyBlendAnimation(void *, int, int, int);
 extern int scale_ticks(int);
@@ -297,7 +297,7 @@ extern void update_veldin_robot_effects(char *);
 
 /* Vendor (level 0) update: walks a path, turns toward the player, attacks and self-destructs.
    Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l00/gameplay_vendor_002e0988.c, FUN_L00_002e0b88. */
-extern Hero hero __asm__("D_0013F450");
+extern Hero D_0013F450;
 
 void veldin_robot_enemy_update(Moby *moby) {
     enum {
@@ -326,9 +326,9 @@ void veldin_robot_enemy_update(Moby *moby) {
     update_veldin_robot_damage_and_targeting(moby);
     target = vars->target;
     manipulator_set_scale(vars->unk120, 2.5f);
-    if (draw_map51_m[3] != 0) {
-        EaseManipulatorOffsets((char *)moby, (char *)vars->unk120, 2, *(float *)&g_frame_scale_sq_s * 0.03f,
-                               *(float *)&g_frame_scale_sq_s * 0.3f);
+    if (draw_map51[3] != 0) {
+        EaseManipulatorOffsets((char *)moby, (char *)vars->unk120, 2, *(float *)&g_frame_scale_sq * 0.03f,
+                               *(float *)&g_frame_scale_sq * 0.3f);
     }
     if (moby->visible != 0 && FastVecDist(&moby->pos, g_debug_camera) < 27.0f) {
         set_ground_height_band(moby);
@@ -341,8 +341,8 @@ void veldin_robot_enemy_update(Moby *moby) {
             vars->unk20 = 2.0f;
             vars->unk28 = 1;
             vars->unk24 = 2;
-            vars->unk58 = truncate_float_to_s32_r(14.0f);
-            vars->unk5A = truncate_float_to_s32_r(8.0f);
+            vars->unk58 = truncate_float_to_s32(14.0f);
+            vars->unk5A = truncate_float_to_s32(8.0f);
             vars->pathPt = 1;
             if (random_integer_below(2) != 0) {
                 moby->flags |= 0x8000;
@@ -404,7 +404,7 @@ void veldin_robot_enemy_update(Moby *moby) {
                                    fast_atan2(target->pos.f[0] - moby->pos.x, target->pos.f[1] - moby->pos.y),
                                    &vars->turnVel, g_frame_time_sq * (12.566371f), g_frame_time_sq * (12.566371f),
                                    g_frame_time * 12.566371f);
-            if (vec_distance_xy(&moby->pos, &hero.motion.pos) < 20.0f) {
+            if (vec_distance_xy(&moby->pos, &g_hero.motion.pos) < 20.0f) {
                 if (moby->prev_seq != 4)
                     MobyBlendAnimation(moby, 4, 0, scale_ticks(20));
             } else if (moby->anim_flags & 2) {
@@ -465,7 +465,7 @@ void veldin_robot_enemy_update(Moby *moby) {
             qcopy(&probe, &moby->pos);
             probe.f[2] += 0.5f;
             if (coll_line(&mtx[3], &probe, 0, (int)moby, (int)&query) != 0 && hit != 0 &&
-                g_coll_hit_moby.moby == hero.moby) {
+                g_coll_hit_moby.moby == g_hero.moby) {
                 release_beam_slot_by_id(moby);
                 moby->state = VELDIN_ROBOT_STATE_WAIT_TO_RETURN_TO_FACE_TARGET;
                 if (moby->prev_seq != 7)
@@ -473,7 +473,7 @@ void veldin_robot_enemy_update(Moby *moby) {
             }
             if (coll_line(&mtx[3], &dir, 0, (int)moby, (int)&query) != 0) {
                 qcopy(&dir, g_coll_hit_moby.pos);
-                if (hit != 0 && g_coll_hit_moby.moby == hero.moby) {
+                if (hit != 0 && g_coll_hit_moby.moby == g_hero.moby) {
                     release_beam_slot_by_id(moby);
                     moby->state = VELDIN_ROBOT_STATE_WAIT_TO_RETURN_TO_FACE_TARGET;
                     if (moby->prev_seq != 7)

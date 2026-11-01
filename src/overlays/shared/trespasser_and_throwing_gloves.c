@@ -2609,7 +2609,7 @@ extern float frame_scale_r __asm__("D_0015EE60") MACRO_ADDR;
 
 extern int HeroEnterMoveState_r(int, int) __asm__("func_L00_00222B80");
 extern Moby *spawn_swingshot_hook_r(void *, float) __asm__("func_L00_002C82E8");
-extern void EffectQueue_Add_r(int, int, float, void *, int, float, int, float, int) __asm__("func_L00_001EE2E0");
+extern void func_L00_001EE2E0(int, int, float, void *, int, float, int, float, int);
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern void MobyBlendAnimation_r(void *, int, int, int) __asm__("func_00213DE0");
 extern void Moby_GetJointWorldPos_r(void *, int, void *) __asm__("func_L00_00250800");
@@ -2621,8 +2621,8 @@ extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern float FastVecLength_r(void *) __asm__("func_001F9CB8");
 extern int coll_line_r4(void *, void *, int, int, int) __asm__("func_L00_001EFFF0");
-extern int hero_idle_sequence_r(int) __asm__("func_L00_00205618");
-extern void set_hero_animation_r(int, int, float) __asm__("func_L00_00232C10");
+extern int func_L00_00205618(int);
+extern void func_L00_00232C10(int, int, float);
 extern void draw_swingshot_cable_r(char *) __asm__("func_L00_002C7128");
 
 /* Swingshot update: keeps the hook at the glove, shows the targets, fires the hook to the swing target
@@ -2652,13 +2652,13 @@ void func_L00_002C74B8_r(Moby *m) {
     if ((((Hero *)g_hero_r5)->state.current == HERO_STATE_LOOK ||
          ((Hero *)g_hero_r5)->state.current == HERO_STATE_LOOK_RELEASE_WAIT) &&
         ((Hero *)g_hero_r5)->state_timer >= 2) {
-        EffectQueue_Add_r((int)m, 0xFF0000FF, 1.0f, 0, 0x24, 0.0f, -1, 90.0f, 4);
+        EffectQueue_Add((int)m, 0xFF0000FF, 1.0f, 0, 0x24, 0.0f, -1, 90.0f, 4);
         if (((Hero *)g_hero_r5)->grapple_target_in_sight && ((Hero *)g_hero_r5)->grapple_target)
-            EffectQueue_Add_r((int)m, 0xFF00FF00, 0.5f, &((Hero *)g_hero_r5)->grapple_target->pos, 0x24, 0.0f, -1,
-                              90.0f, 4);
+            EffectQueue_Add((int)m, 0xFF00FF00, 0.5f, &((Hero *)g_hero_r5)->grapple_target->pos, 0x24, 0.0f, -1, 90.0f,
+                            4);
         else if (((Hero *)g_hero_r5)->swing_target)
-            EffectQueue_Add_r((int)m, 0xFF00FF00, 0.5f, &((Hero *)g_hero_r5)->swing_target->pos, 0x24, 0.0f, -1, 90.0f,
-                              4);
+            EffectQueue_Add((int)m, 0xFF00FF00, 0.5f, &((Hero *)g_hero_r5)->swing_target->pos, 0x24, 0.0f, -1, 90.0f,
+                            4);
     }
     switch (m->state) {
         case 0:
@@ -2722,7 +2722,7 @@ void func_L00_002C74B8_r(Moby *m) {
                     HeroEnterMoveState_r(HERO_STATE_FALL, 1);
                 } else {
                     HeroEnterMoveState_r(HERO_STATE_IDLE, 0);
-                    set_hero_animation_r(hero_idle_sequence_r(0), 0, (float)scale_ticks_r(14));
+                    set_hero_animation(hero_idle_sequence(0), 0, (float)scale_ticks_r(14));
                 }
                 m->state = 6;
             } else if (speed < FastVecDist_r(&d->hook->pos, &((Hero *)g_hero_r5)->grapple_target->pos)) {
@@ -2764,7 +2764,7 @@ void func_L00_002C74B8_r(Moby *m) {
                     if (!(pad_2C74B8.held & ((Hero *)g_hero_r5)->items[0].button_mask)) {
                         ((Hero *)g_hero_r5)->unk988 = 1;
                         HeroEnterMoveState_r(HERO_STATE_IDLE, 0);
-                        set_hero_animation_r(hero_idle_sequence_r(0), 0, (float)scale_ticks_r(14));
+                        set_hero_animation(hero_idle_sequence(0), 0, (float)scale_ticks_r(14));
                         m->state = 6;
                     } else {
                         Moby_PlaySound_r(2, 0, m);
@@ -2901,7 +2901,7 @@ void func_L00_002C74B8_r(Moby *m) {
 }
 typedef unsigned int u128_pt __attribute__((mode(TI)));
 extern unsigned char *CreateMoby_r(int) __asm__("func_0020D348");
-extern void set_moby_color_r(unsigned char *, int, int, int) __asm__("func_L00_00251328");
+extern void func_L00_00251328(unsigned char *, int, int, int);
 extern void Moby_GetJointWorldPos_r2(unsigned char *, int, void *) __asm__("func_L00_00250800");
 extern int scale_ticks_r2(int) __asm__("func_001F9850");
 extern void MobyBlendAnimation_r2(unsigned char *, int, int, int) __asm__("func_00213DE0");
@@ -2916,7 +2916,7 @@ unsigned char *spawn_swingshot_hook(unsigned char *src, float f) {
         ((Moby *)m)->update_dist = 0xff;
         ((Moby *)m)->draw_dist = 0xff;
         ((Moby *)m)->visible = 1;
-        set_moby_color_r(m, 0x80, 0x80, 0x80);
+        set_moby_color(m, 0x80, 0x80, 0x80);
         Moby_GetJointWorldPos_r2(src, 0, m + 0x10);
         *(u128_pt *)(m + 0xc0) = *(u128_pt *)(src + 0xc0);
         *(u128_pt *)(m + 0xd0) = *(u128_pt *)(src + 0xd0);
@@ -3210,7 +3210,7 @@ typedef struct {
 } DeliveryStats_2C8DB8;
 /* The hero block g_hero, cut down to what this function reads. */
 
-extern char help_stats_base_r[] __asm__("D_0014171B");
+extern char D_0014171B[];
 extern u32 pad0_pressed_r __asm__("D_0013CBE4");
 extern s32 gameplay_event_frame_count_r2 __asm__("D_0015EFA4") MACRO_ADDR;
 extern s32 g_current_level_index_r2 __asm__("D_0015EE84") MACRO_ADDR;
@@ -3228,7 +3228,7 @@ extern void compute_glove_of_doom_throw_velocity_r(struct Moby *, CarrierVars_2C
                                                    Vec4 *) __asm__("func_L00_002C88A8");
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 extern unsigned char *spawn_glove_of_doom_held_moby_r(int, u128_2C8DB8 *, u128_2C8DB8 *) __asm__("func_L00_002C9578");
-extern void release_glove_of_doom_held_moby_r(Vec4 *, u8 *, void *) __asm__("func_L00_002C96D0");
+extern void func_L00_002C96D0(Vec4 *, u8 *, void *);
 
 /* Carrier: keeps its grip point in front of it, hands the held moby over when the hero asks, and
  * picks a new one up when get_ammo allows.
@@ -3288,18 +3288,18 @@ void glove_of_doom_update(struct Moby *moby) {
             break;
         case 3:
             if (vars->held != 0) {
-                if (((DeliveryStats_2C8DB8 *)(help_stats_base_r + 0x65))->deliveries < 0xFFFF) {
-                    ((DeliveryStats_2C8DB8 *)(help_stats_base_r + 0x65))->deliveries++;
+                if (((DeliveryStats_2C8DB8 *)(help_stats_base + 0x65))->deliveries < 0xFFFF) {
+                    ((DeliveryStats_2C8DB8 *)(help_stats_base + 0x65))->deliveries++;
                 }
                 if (scale_ticks_r3(gameplay_event_frame_count_r2) / 600 >
-                    ((DeliveryStats_2C8DB8 *)(help_stats_base_r + 0x65))->unkA2) {
-                    ((DeliveryStats_2C8DB8 *)(help_stats_base_r + 0x65))->unkA2 =
+                    ((DeliveryStats_2C8DB8 *)(help_stats_base + 0x65))->unkA2) {
+                    ((DeliveryStats_2C8DB8 *)(help_stats_base + 0x65))->unkA2 =
                         scale_ticks_r3(gameplay_event_frame_count_r2) / 600;
                 }
-                ((DeliveryStats_2C8DB8 *)(help_stats_base_r + 0x65))->levels =
-                    ((DeliveryStats_2C8DB8 *)(help_stats_base_r + 0x65))->levels | (1 << g_current_level_index_r2) |
+                ((DeliveryStats_2C8DB8 *)(help_stats_base + 0x65))->levels =
+                    ((DeliveryStats_2C8DB8 *)(help_stats_base + 0x65))->levels | (1 << g_current_level_index_r2) |
                     0x80000000;
-                release_glove_of_doom_held_moby_r((void *)&vars->grip, (u8 *)vars->held, vars->held->pvars);
+                release_glove_of_doom_held_moby((void *)&vars->grip, (u8 *)vars->held, vars->held->pvars);
                 vars->held = 0;
             } else {
                 Moby_PlaySound_r2(0, 0, moby);

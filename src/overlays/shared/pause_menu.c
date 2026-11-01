@@ -539,7 +539,7 @@ extern char map_menu_state[];
 extern char cd_read_state[];
 extern char memory_card_state[];
 extern int decode_mode MACRO_ADDR;
-extern int mode_freeze_flags_m __asm__("D_0015EFB4") MACRO_ADDR;
+extern int D_0015EFB4 MACRO_ADDR;
 extern int level_game_clock_paused MACRO_ADDR;
 extern short level_vu1_chain_reserved_bytes;
 extern short loaded_swap_moby_class_set;
@@ -686,7 +686,7 @@ void update_pause_menu(void) {
     if (v == 0 || v == 0xA || v == 0xE || v == 0x11 || v == 0x21 || v == 0x2D || v == 0x23) {
         initialize_pause_menu();
     }
-    if ((mode_freeze_flags_m & 1) && !(*(int *)&cinematic_mode_frames < 8)) {
+    if ((mode_freeze_flags & 1) && !(*(int *)&cinematic_mode_frames < 8)) {
         mode_freeze_init(3, GS.owner, 0);
         return;
     }
@@ -1138,12 +1138,12 @@ struct MenuSystem_280708 {
 };
 extern struct MenuSystem_280708 level_menu_system_r2 __asm__("D_L00_001BA070");
 extern struct PadState g_controller_state_r2 __asm__("D_0013CA40");
-extern int mode_freeze_state_r __asm__("D_0015EFB0") MACRO_ADDR;
+extern int D_0015EFB0 MACRO_ADDR;
 
 /* goes back a page, but in menu state 0x10 or 1 only on button 0x20 (setting the page flag at
    +0x84 and clearing +0xD4) or 0x10 (clearing the page flag) */
 int Menu_GoBackWithFlag(void) {
-    int state = mode_freeze_state_r;
+    int state = mode_freeze_state;
     unsigned int pressed;
 
     if (state != 0x10 && state != 1) {

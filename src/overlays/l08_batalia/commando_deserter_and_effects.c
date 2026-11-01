@@ -95,15 +95,15 @@ extern s32 D_L08_00161DD0_2EAF48 SDATA(D_L08_00161DD0);
 extern f32 D_L08_00161DC4_2EAF48 SDATA(D_L08_00161DC4);
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern s32 g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
-extern u8 saved_mission_state_r[] __asm__("D_0014C150");
-extern SwarmPath_2EAF48 *batalia_path_table_r[] __asm__("D_L08_001B0FB0");
+extern u8 D_0014C150[];
+extern SwarmPath_2EAF48 *D_L08_001B0FB0[];
 extern struct Moby *batalia_mobys_r __asm__("D_L08_00160058") MACRO_ADDR;
 
 extern s32 Sound_IsPlaying_r(struct Moby *, s32) __asm__("func_L00_0028EB98");
 extern s32 Moby_PlaySound_r(s32, s32, struct Moby *) __asm__("func_0022ED80");
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 extern f32 random_float_between_r(f32, f32) __asm__("func_002140F8");
-extern f32 random_angle_radians_r(void) __asm__("func_00214158");
+extern f32 func_00214158(void);
 extern f32 multiply_global_factor_r(f32) __asm__("func_001F9878");
 extern s32 truncate_float_to_s32_r(f32) __asm__("func_001FA898");
 extern f32 fast_atan2_r(f32, f32) __asm__("func_L00_001FF860");
@@ -115,13 +115,13 @@ extern float FastVecLength_r(void *) __asm__("func_001F9CB8");
 extern void vec_scale_to_length_r(void *, void *, f32) __asm__("func_L00_001FF4B0");
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
-extern void Moby_GetJointWorldPos_r(void *, s32, void *) __asm__("func_L00_00250800");
+extern void func_L00_00250800(void *, s32, void *);
 extern void MobySpringTurn_r(struct Moby *, f32, f32 *, f32, f32, f32) __asm__("func_L00_002592B0");
-extern void SpawnExplosionFx_r(void *, void *, s32, f32, f32) __asm__("func_L00_00260108");
-extern struct Moby *spawn_rocket_435_projectile_r(void *, struct Moby *, void *, f32, f32) __asm__("func_L08_002DF758");
-extern void spawn_joint_linked_moby_parts_r(struct Moby *) __asm__("func_L08_002EA930");
-extern void process_linked_moby_part_hits_r(struct Moby *) __asm__("func_L08_002EAB30");
-extern void update_commando_parts_r(struct Moby *) __asm__("func_L08_002EADF0");
+extern void func_L00_00260108(void *, void *, s32, f32, f32);
+extern struct Moby *func_L08_002DF758(void *, struct Moby *, void *, f32, f32);
+extern void func_L08_002EA930(struct Moby *);
+extern void func_L08_002EAB30(struct Moby *);
+extern void func_L08_002EADF0(struct Moby *);
 
 /* Swarm leader: cruises or circles along its waypoint path with its parts in tow, fires at its target, and in
  * state 0x63 scatters the parts and removes itself.
@@ -157,17 +157,17 @@ void update_path_following_moby_swarm(struct Moby *moby) {
     }
     switch (moby->state) {
         case 0:
-            if (saved_mission_state_r[moby->mission + g_current_level_index_r * 16] == 0xFF) {
+            if (saved_mission_state[moby->mission + g_current_level_index_r * 16] == 0xFF) {
                 DeleteMoby_r(moby);
                 return;
             }
-            vars->follow[0].path = batalia_path_table_r[vars->follow[0].path_id];
-            vars->follow[1].path = batalia_path_table_r[vars->follow[1].path_id];
+            vars->follow[0].path = batalia_path_table[vars->follow[0].path_id];
+            vars->follow[1].path = batalia_path_table[vars->follow[1].path_id];
             vars->fire_timer =
                 truncate_float_to_s32_r(multiply_global_factor_r(random_float_between_r(300.0f, 600.0f)));
             moby->flags |= 0x4000;
             qcopy(&moby->pos, &vars->follow[1].path->points[0]);
-            spawn_joint_linked_moby_parts_r(moby);
+            spawn_joint_linked_moby_parts(moby);
             moby->state = 2;
             moby->rot.z = fast_atan2_r(vars->follow[1].path->points[1].f[0] - moby->pos.x,
                                        vars->follow[1].path->points[1].f[1] - moby->pos.y);
@@ -189,13 +189,13 @@ void update_path_following_moby_swarm(struct Moby *moby) {
                 vec_scale_to_length_r(&step, &step, D_L08_00161DC4_2EAF48 * g_frame_time_r);
             }
             FastVecAdd_r(&moby->pos, &moby->pos, &step);
-            process_linked_moby_part_hits_r(moby);
-            update_commando_parts_r(moby);
+            process_linked_moby_part_hits(moby);
+            update_commando_parts(moby);
             if (moby->command == 0) {
                 break;
             }
             moby->command = 0;
-            Moby_GetJointWorldPos_r(vars->parts[3].moby, 1, &muzzle);
+            Moby_GetJointWorldPos(vars->parts[3].moby, 1, &muzzle);
             pitch = random_float_between_r(0.17453292f, 0.5235988f);
             yaw = FastAddRots_r(fast_atan2_r(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y), 3.1415927f);
             yaw = FastAddRots_r(yaw, random_float_between_r(-0.2617994f, 0.7853982f));
@@ -205,7 +205,7 @@ void update_path_following_moby_swarm(struct Moby *moby) {
                 yaw = -0.34f;
             }
             vec_scale_to_length_r(&velocity, &step, (D_L08_00161DC4_2EAF48 + D_L08_00161DC4_2EAF48) * g_frame_time_r);
-            shot = spawn_rocket_435_projectile_r(&muzzle, target, &velocity, pitch, yaw);
+            shot = spawn_rocket_435_projectile(&muzzle, target, &velocity, pitch, yaw);
             shot->scale = shot->pclass->scale / 5.0f;
             target_vars = (SwarmTargetVars *)target->pvars;
             for (slot = 0; slot < 8; slot++) {
@@ -237,17 +237,17 @@ void update_path_following_moby_swarm(struct Moby *moby) {
                 vec_scale_to_length_r(&step, &step, D_L08_00161DC4_2EAF48 * g_frame_time_r);
             }
             FastVecAdd_r(&moby->pos, &moby->pos, &step);
-            update_commando_parts_r(moby);
+            update_commando_parts(moby);
             if (!fast_dec_timer_r(&vars->fire_timer)) {
                 break;
             }
             vars->fire_timer =
                 truncate_float_to_s32_r(multiply_global_factor_r(random_float_between_r(300.0f, 600.0f)));
-            Moby_GetJointWorldPos_r(vars->parts[3].moby, 1, &muzzle);
+            Moby_GetJointWorldPos(vars->parts[3].moby, 1, &muzzle);
             pitch = random_float_between_r(-0.5235988f, -0.2617994f);
-            yaw = random_angle_radians_r();
+            yaw = random_angle_radians();
             vec_scale_to_length_r(&velocity, &step, (D_L08_00161DC4_2EAF48 + D_L08_00161DC4_2EAF48) * g_frame_time_r);
-            bolt = spawn_rocket_435_projectile_r(&muzzle, 0, &velocity, pitch, yaw);
+            bolt = spawn_rocket_435_projectile(&muzzle, 0, &velocity, pitch, yaw);
             if (bolt != 0) {
                 bolt->rot.z = vars->parts[3].moby->rot.z;
                 bolt->state = 5;
@@ -261,7 +261,7 @@ void update_path_following_moby_swarm(struct Moby *moby) {
             path = vars->follow[0].path;
             qcopy(&moby->pos, &path->points[0]);
             moby->rot.z = fast_atan2_r(path->points[1].f[0] - moby->pos.x, path->points[1].f[1] - moby->pos.y);
-            update_commando_parts_r(moby);
+            update_commando_parts(moby);
             break;
         }
         case 0x63:
@@ -269,14 +269,14 @@ void update_path_following_moby_swarm(struct Moby *moby) {
                 struct Moby *part = vars->parts[i].moby;
                 if (part != 0) {
                     Vec4 *drift = (Vec4 *)part->pvars;
-                    SpawnExplosionFx_r(moby, &part->pos, -1, 3.0f, 13.0f);
+                    SpawnExplosionFx(moby, &part->pos, -1, 3.0f, 13.0f);
                     FastVecSub_r(drift, &part->pos, &moby->pos);
                     vec_scale_to_length_r(drift, drift, g_frame_time_r * 5.0f);
                     part->state = 1;
                     vars->parts[i].moby = 0;
                 }
             }
-            SpawnExplosionFx_r(moby, &moby->pos, -1, 5.0f, 13.0f);
+            SpawnExplosionFx(moby, &moby->pos, -1, 5.0f, 13.0f);
             DeleteMoby_r(moby);
             break;
     }
@@ -493,7 +493,7 @@ extern void AddDrawCallback(void (*)(void), void *);
 extern void draw_layered_mesh_effect(void);
 
 extern PairA batalia_uv_scroll[];
-extern PairA layered_mesh_sine_phase_p[] __asm__("D_L08_00161EB8") MACRO_ADDR;
+extern PairA D_L08_00161EB8[] MACRO_ADDR;
 extern float scroll_pos_y[] MACRO_ADDR;
 extern IntPair scroll_pos_x[] MACRO_ADDR;
 
@@ -527,8 +527,8 @@ void update_layered_mesh_effect(unsigned char *moby) {
             for (i = 0; i < 3; i++) {
                 batalia_uv_scroll[i].a = 0;
                 batalia_uv_scroll[i].b = 0;
-                layered_mesh_sine_phase_p[0].a = 0;
-                layered_mesh_sine_phase_p[0].b = 0;
+                layered_mesh_sine_phase[0].a = 0;
+                layered_mesh_sine_phase[0].b = 0;
             }
             for (i = 0; i < 2; i++) {
                 scroll_pos_x[i].a = 0;
@@ -553,7 +553,7 @@ void update_layered_mesh_effect(unsigned char *moby) {
                 d = FastVecLength(w);
                 if (d <= 84.0f) {
                     advance_scroll_offsets(0);
-                    advance_wrapped_sine_pair(batalia_uv_scroll_1, 0.52f, 0.62f, 0.06f, layered_mesh_sine_phase_p);
+                    advance_wrapped_sine_pair(batalia_uv_scroll_1, 0.52f, 0.62f, 0.06f, layered_mesh_sine_phase);
                     advance_scroll_offsets(2);
                     if (d < 20.0f) {
                         *(unsigned char *)&layered_mesh_effect_fade_alpha = 0xFF;
@@ -1102,12 +1102,12 @@ typedef struct {
 
 extern PointLight batalia_lights_r[] __asm__("D_L08_00180B40");
 extern char batalia_hero_pos_r[] __asm__("D_L08_00167640");
-extern char flicker_light_period_a_zero_fmt_r[] __asm__("D_L08_001FC510");
-extern char flicker_light_period_b_high_fmt_r[] __asm__("D_L08_001FC540");
-extern char flicker_light_period_b_zero_fmt_r[] __asm__("D_L08_001FC590");
-extern char flicker_light_period_a_high_fmt_r[] __asm__("D_L08_001FC5C0");
-extern s32 STUB_printf_r() __asm__("func_001E9730");
-extern int allocate_colored_effect_slot_r(float *, float, float, float, float, float) __asm__("func_L00_0023F0D0");
+extern char D_L08_001FC510[];
+extern char D_L08_001FC540[];
+extern char D_L08_001FC590[];
+extern char D_L08_001FC5C0[];
+extern s32 func_001E9730();
+extern int func_L00_0023F0D0(float *, float, float, float, float, float);
 extern void release_point_light_slot_r(int) __asm__("func_L00_0023F1D0");
 extern void draw_flickering_mesh_effect_r(void) __asm__("func_L08_002F7318");
 extern f32 random_float_between_r2(f32, f32) __asm__("func_002140F8");
@@ -1140,16 +1140,16 @@ void update_flickering_mesh_effect(struct Moby *m) {
         d->unkF8 = d->unkF3;
         qcopy(&d->light_pos, at);
         if (d->period_a == 0.0f) {
-            STUB_printf_r(flicker_light_period_a_zero_fmt_r);
+            STUB_printf(flicker_light_period_a_zero_fmt);
             d->period_a = 1.0f;
         } else if (8.0f < d->period_b) {
-            STUB_printf_r(flicker_light_period_b_high_fmt_r, d->period_b);
+            STUB_printf(flicker_light_period_b_high_fmt, d->period_b);
         }
         if (d->period_b == 0.0f) {
-            STUB_printf_r(flicker_light_period_b_zero_fmt_r);
+            STUB_printf(flicker_light_period_b_zero_fmt);
             d->period_b = 1.0f;
         } else if (8.0f < d->period_a) {
-            STUB_printf_r(flicker_light_period_a_high_fmt_r, d->period_a);
+            STUB_printf(flicker_light_period_a_high_fmt, d->period_a);
         }
         for (i = 0; i < 8; i++) {
             d->levels_a[i] = random_float_between_r2(d->jitter, 1.0f);
@@ -1181,7 +1181,7 @@ void update_flickering_mesh_effect(struct Moby *m) {
         AddDrawCallback_r(draw_flickering_mesh_effect_r, m);
         if (d->flags & 4) {
             if (d->light == -1) {
-                d->light = allocate_colored_effect_slot_r(
+                d->light = allocate_colored_effect_slot(
                     d->light_pos.f, (f32)d->radius, IntToFloat_r(d->falloff) / 100.0f,
                     d->intensity * IntToFloat_r(d->red) / 100.0f, d->intensity * IntToFloat_r(d->green) / 100.0f,
                     d->intensity * IntToFloat_r(d->blue) / 100.0f);
@@ -1230,7 +1230,7 @@ extern float g_frame_scale_sq MACRO_ADDR;
 extern s32 g_current_level_index MACRO_ADDR;
 extern unsigned char level_available_base[] NOT_SDA;
 extern unsigned char menu_item_enabled_25[] NOT_SDA;
-extern unsigned char help_stats_base_q[] __asm__("D_0014171B") NOT_SDA;
+extern unsigned char D_0014171B[] NOT_SDA;
 extern char hero_globals_base[] NOT_SDA;
 
 typedef struct WD8 {
@@ -1292,7 +1292,7 @@ void commando_update(char *m) {
             if (moby->prev_seq != 1)
                 MobyBlendAnimation(m, 1, 0, scale_ticks(10));
             if (level_available_base[7] != 0 &&
-                (help_stats_base_q + 0xAA35)[moby->mission + (g_current_level_index << 4)] == 0xFF) {
+                (help_stats_base + 0xAA35)[moby->mission + (g_current_level_index << 4)] == 0xFF) {
                 DeleteMoby(m);
                 return;
             }
@@ -1499,7 +1499,7 @@ void batalia_deserter_update(char *m) {
             if (moby->prev_seq != 1)
                 MobyBlendAnimation(m, 1, 0, scale_ticks(20));
             if (level_available_base[6] != 0 &&
-                (help_stats_base_q + 0xAA35)[moby->mission + (g_current_level_index << 4)] == 0xFF) {
+                (help_stats_base + 0xAA35)[moby->mission + (g_current_level_index << 4)] == 0xFF) {
                 DeleteMoby(m);
                 return;
             }
@@ -1698,7 +1698,7 @@ void the_plumber_batalia_update(char *m) {
     switch (((struct Moby *)m)->state) {
         case 0:
             ((struct Moby *)m)->update_dist = 0xFF;
-            if ((help_stats_base_q + 0xAA35)[((struct Moby *)m)->mission + (g_current_level_index << 4)] == 0xFF)
+            if ((help_stats_base + 0xAA35)[((struct Moby *)m)->mission + (g_current_level_index << 4)] == 0xFF)
                 goto del;
             d->p20 = batalia_plumber_dialogue_name;
             ((struct Moby *)m)->state = 1;

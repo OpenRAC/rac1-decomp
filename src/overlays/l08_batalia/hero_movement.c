@@ -28,7 +28,7 @@
 #include "enums/hero_state.h"
 
 extern unsigned char hero_globals_base[];
-extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
+extern int D_0015EE84 MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
 
 extern void Hero_TryMoveStateL08(int, int);
@@ -73,7 +73,7 @@ void HeroL08_ResetActionState(void) {
         q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         q->base_condition = 1;
     }
-    if (g_current_level_index_m == LEVEL_GEMLIK) {
+    if (g_current_level_index == LEVEL_GEMLIK) {
         struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         if (q->state.current != HERO_STATE_HEIGHT_OR_TIMEOUT_RESPAWN_WAIT) {
             if (coll_sphere(q->capsule_radius + 0.03f, &q->motion.body_center, 2, 0)) {
@@ -327,7 +327,7 @@ void HeroL08_UpdateStatePhysics(void) {
                                 usage_stats.e[18].best_minutes = scale_ticks(gameplay_event_frame_count) / 600;
                             }
                             usage_stats.e[18].level_mask =
-                                usage_stats.e[18].level_mask | (1 << g_current_level_index_m) | 0x80000000;
+                                usage_stats.e[18].level_mask | (1 << g_current_level_index) | 0x80000000;
                             *(int *)&batalia_usage_event_timer = -1;
                             (*(int *)&batalia_usage_event_count)++;
                         }
@@ -606,7 +606,7 @@ void HeroL08_UpdateStatePhysics(void) {
                         usage_stats.e[11].best_minutes = scale_ticks(gameplay_event_frame_count) / 600;
                     }
                     usage_stats.e[11].level_mask =
-                        usage_stats.e[11].level_mask | (1 << g_current_level_index_m) | 0x80000000;
+                        usage_stats.e[11].level_mask | (1 << g_current_level_index) | 0x80000000;
                 } else {
                     g_hero.swim_hard_press_frames = 0;
                 }
@@ -1722,12 +1722,12 @@ void HeroL08_UpdateStatePhysics(void) {
             }
         } break;
         case HERO_STATE_VOICE_SLOT_CLEANUP_IDLE_EXIT:
-            if (g_current_level_index_m == LEVEL_QUARTU) {
+            if (g_current_level_index == LEVEL_QUARTU) {
                 release_voice_slot_cf(2, (int)g_hero.moby, 0x1D);
             } else {
                 release_voice_slot_cf(2, (int)g_hero.moby, 6);
             }
-            if (g_current_level_index_m != LEVEL_QUARTU) {
+            if (g_current_level_index != LEVEL_QUARTU) {
 
                 emit_hero_randomized_motion_effects(4, 2);
                 vec[0][0] = g_hero.motion.pos.f[0] + random_float_between(-0.25f, 0.25f);

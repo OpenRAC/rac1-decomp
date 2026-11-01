@@ -5,7 +5,7 @@
 #include "game/moby/mobyutil.h"
 
 extern unsigned char *create_part(int);
-extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
+extern int func_001FA898(float);
 
 extern float IntToFloat(int);
 extern unsigned char *rilgar_velocity_particle_texture_ptr;
@@ -23,7 +23,7 @@ unsigned char *create_particle_with_velocity_and_lifetime(void *pos, void *vel, 
         m = a4 & 0xFFFFFF;
         two = 2.0f;
         *(int *)(p + 4) = m;
-        p[9] = truncate_float_to_s32_r(two) + 0x10;
+        p[9] = truncate_float_to_s32(two) + 0x10;
         p[3] = 0x44;
         p[1] = 0;
         p[2] = *rilgar_velocity_particle_texture_ptr;
@@ -50,7 +50,7 @@ unsigned char *create_particle_with_velocity_and_randomized_parameters(void *pos
     if (p != 0) {
         q = p + 0x20;
         qcopy(p + 0x10, pos);
-        p[9] = truncate_float_to_s32_r(1.0f) + 0x40;
+        p[9] = truncate_float_to_s32(1.0f) + 0x40;
         p[3] = 0x44;
         p[1] = 0;
         p[2] = rilgar_random_particle_textures_ptr[arg3];
@@ -60,7 +60,7 @@ unsigned char *create_particle_with_velocity_and_randomized_parameters(void *pos
         *(short *)(p + 0xA) = scale_ticks(0xF);
         qcopy(q, vel);
         *(float *)(q + 0x10) = b;
-        *(int *)(q + 0x14) = truncate_float_to_s32_r(random_float_between(-3.0f, 3.0f));
+        *(int *)(q + 0x14) = truncate_float_to_s32(random_float_between(-3.0f, 3.0f));
         *(float *)(q + 0x18) = c;
     }
     return p;
