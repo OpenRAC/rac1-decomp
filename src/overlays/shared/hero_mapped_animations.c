@@ -462,7 +462,7 @@ typedef struct {
     s16 sound; /* 0x7E */
     u8 pad80[8];
     Moby *owner; /* 0x88 */
-} VoiceSlot_32EF0;
+} VoiceSlot;
 extern f32 hero_anim_blend_curves[][25];
 extern int cinematic_mode MACRO_ADDR;
 extern int Moby_PlaySound(int, int, Moby *);
@@ -553,7 +553,7 @@ void advance_hero_animation(void) {
         }
     }
     if (m->sound_slot != 0xFF) {
-        VoiceSlot_32EF0 *v = (VoiceSlot_32EF0 *)(hero_globals_base + 0x1D + m->sound_slot * 0x70);
+        VoiceSlot *v = (VoiceSlot *)(hero_globals_base + 0x1D + m->sound_slot * 0x70);
         if (v->owner != m) {
             m->sound_slot = 0xFF;
         } else if (v->sound != m->unk7C) {
@@ -1281,10 +1281,10 @@ int shared_return_two(void) {
 typedef struct {
     char p0[0x3C];
     int i3C;
-} Plat_234800_34800;
+} Plat;
 extern void scale_ticks_r2(int) __asm__("func_001F9850");
 
-extern Plat_234800_34800 *moby_get_ride_transform(void *);
+extern Plat *moby_get_ride_transform(void *);
 extern float FastVecLength(void *);
 extern float FastAddRots(float, float);
 extern void RotateWithMoby(int, void *, void *, void *, void *, void *);
@@ -1303,7 +1303,7 @@ void update_hero_attachment(void) {
     float sB0, sB4;
     float amt, ang;
     int mode;
-    Plat_234800_34800 *plat;
+    Plat *plat;
 
     mode = 0;
     amt = 0.0f;

@@ -813,7 +813,7 @@ void DefaultVtbl_DeleteMoby(void *e) {
 }
 typedef struct {
     float x, y, z, w;
-} __attribute__((aligned(16))) HudPoint_237B90;
+} __attribute__((aligned(16))) HudPoint;
 extern int measure_text_width_regular(const char *, int);
 extern void HudSprite(int, int, int, int, int, int);
 extern void draw_hud_sprite_flipped(int, int, int, int, int, int);
@@ -837,8 +837,8 @@ int draw_hud_text_panel(char *e) {
     int w1, tex, l1, y, i, width, left, w2, l2, alpha, color, c, level, elapsed, score, interval, per, seconds, minutes,
         rem, idx;
     float fade;
-    HudPoint_237B90 points[2];
-    HudPoint_237B90 point;
+    HudPoint points[2];
+    HudPoint point;
     char text[64];
     int text_y;
     void *pt;
@@ -1625,11 +1625,11 @@ typedef struct {
 } Ent_239918;
 typedef struct {
     int v[4];
-} Ids_239918;
+} Ids;
 typedef struct {
     char pad0[0x2C];
     int f2C;
-} Arena_239918;
+} Arena;
 typedef struct {
     char pad0[0x50];
     int x;
@@ -1638,7 +1638,7 @@ typedef struct {
     char pad5C[0x14];
     unsigned char cnt[4];
     int sel;
-} Elem_239918;
+} Elem;
 
 extern int level_frame_counter_r __asm__("D_L00_0015F6B0") MACRO_ADDR;
 extern int quick_select_slot_count_r2 __asm__("D_L00_0015FB48") MACRO_ADDR;
@@ -1656,7 +1656,7 @@ extern float D_L00_0015F8A4_239918 SDATA(D_L00_0015F8A4);
 extern int D_L00_0015F8B4_239918 SDATA(D_L00_0015F8B4);
 extern int D_L00_0015F8B8_239918 SDATA(D_L00_0015F8B8);
 extern int D_L00_0015F8BC_239918 SDATA(D_L00_0015F8BC);
-extern Ids_239918 quick_select_label_msg_ids_r __asm__("D_L00_0015F8C0");
+extern Ids quick_select_label_msg_ids_r __asm__("D_L00_0015F8C0");
 extern char texture_group_header_r3[] __asm__("D_L00_0017E5D8");
 extern float IntToFloat_r(int) __asm__("func_001FA888");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
@@ -1674,8 +1674,8 @@ extern int hud_screen_position_r(void *, int *, int *) __asm__("func_L00_0023640
 
 /* Draws the radial selection HUD element: the four mirrored corners of its ring, one icon per entry on a circle
  * (the selected one with a glow), then the selected entry's name; returns the element's word at 0x58. */
-int draw_hud_radial_selector_panel(Elem_239918 *e) {
-    Ids_239918 tmp;
+int draw_hud_radial_selector_panel(Elem *e) {
+    Ids tmp;
     int x, y;
     int a, b, hw, hh, i, alpha, k, yy, col, shadow, str;
     float f22, f23;
@@ -1737,7 +1737,7 @@ int draw_hud_radial_selector_panel(Elem_239918 *e) {
             } else {
                 alpha = a;
             }
-            if (((Arena_239918 *)texture_group_header_r3)->f2C != 0) {
+            if (((Arena *)texture_group_header_r3)->f2C != 0) {
                 HudFrame_r(e,
                            GetIconFrame_r(hud_selector_slot_tables_r3[D_L00_0015F80C_239918][i].f0,
                                           hud_selector_slot_tables_r3[D_L00_0015F80C_239918][i].f4),

@@ -49,7 +49,7 @@ extern void spawn_color_decaying_effect_particle(void *, void *, int);
 typedef struct {
     char *p[7];
     short timer;
-} Slots_265E88;
+} Slots;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00264e40.c, FUN_L02_00264e70. */
 void effect_slots_fire(char *slots, float *position, float *direction, float distance) {
@@ -108,8 +108,8 @@ void effect_slots_fire(char *slots, float *position, float *direction, float dis
         if (i == 2 && save_shot) {
             int j;
             for (j = 0; j < 7; j++) {
-                if (((Slots_265E88 *)slots)->p[j] == 0) {
-                    ((Slots_265E88 *)slots)->p[j] = shot;
+                if (((Slots *)slots)->p[j] == 0) {
+                    ((Slots *)slots)->p[j] = shot;
                     break;
                 }
             }
@@ -118,7 +118,7 @@ void effect_slots_fire(char *slots, float *position, float *direction, float dis
     if (FastDecTimer(slots + 0x1c)) {
         float sp2 = random_float_between(10.0f, 30.0f);
         sp2 = multiply_global_factor(sp2);
-        ((Slots_265E88 *)slots)->timer = truncate_float_to_s32(sp2);
+        ((Slots *)slots)->timer = truncate_float_to_s32(sp2);
         rand_vec(offset, 0.0f, g_frame_time + g_frame_time);
         FastVecScale(velocity, adjusted, random_float_between(0.5f, 0.1f));
         FastVecAdd(velocity, velocity, offset);

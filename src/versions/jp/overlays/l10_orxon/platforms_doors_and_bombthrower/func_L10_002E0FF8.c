@@ -10,7 +10,7 @@ void update_screamer_hit_reactions_and_targeting(struct Moby *moby) {
     extern void matrix_mul_vec3(void *, void *, void *);
     extern void PlayBankSound(int, int, int);
     extern void ShowBanner(int, int);
-    MobyData_2E0FF8 *data = (MobyData_2E0FF8 *)moby->pvars;
+    MobyData *data = (MobyData *)moby->pvars;
     Hit_2E0FF8 *r;
     float v[4];
     float w[4];
@@ -75,7 +75,7 @@ void update_screamer_hit_reactions_and_targeting(struct Moby *moby) {
     if (data->f174 == 2) {
         r19 = FindNearestTargetMoby(data->f180, moby, data->fC0);
         if (r19 != 2) {
-            Anim_2E0FF8 *bp = &((Anim_2E0FF8 *)orxon_scene_points)[data->f194];
+            Anim *bp = &((Anim *)orxon_scene_points)[data->f194];
             FastVecSub(v, hero_globals_base + 0xE9D, bp->f30);
             v[3] = 0.0f;
             matrix_mul_vec3(w, v, bp->f40);

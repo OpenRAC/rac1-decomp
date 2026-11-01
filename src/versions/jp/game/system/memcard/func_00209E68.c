@@ -6,7 +6,7 @@ void memcard_update_state(void) {
             char name[0x40] __attribute__((aligned(16)));
         } directory;
     } workspace;
-    McState_209E68 *finished_card;
+    McState *finished_card;
 
     if (mc_data_0013D390.busy) {
         mc_data_0013D390.busy = mc_call_00123F30(1, &mc_data_0013D390.cmd, &mc_data_0013D390.result) == 0;
@@ -147,7 +147,7 @@ void memcard_update_state(void) {
                         icon2 = 0;
                         blocks = 0;
                         for (i = 0; i < mc_data_0013D390.result; i++) {
-                            McDirEntry_209E68 *entry = &mc_directory[i];
+                            McDirEntry *entry = &mc_directory[i];
                             char *filename = (char *)((s32)mc_directory + i * 64 + 32);
                             s32 slot;
                             blocks += (entry->size + 1023U) >> 10;
@@ -334,7 +334,7 @@ void memcard_update_state(void) {
                     mc_data_0013D390.busy = 0;
                     break;
                 case 3: {
-                    McChunk_209E68 *chunk;
+                    McChunk *chunk;
                     s32 size;
 
                     mc_call_001FDF10(mc_data_00137C80.x14 << 11, &chunk, &size);
@@ -379,7 +379,7 @@ void memcard_update_state(void) {
                 case 10:
                 case 14:
                 case 19: {
-                    McChunk_209E68 *chunk;
+                    McChunk *chunk;
                     s32 size;
 
                     if (mc_data_0013D390.result >= 0) {
@@ -964,7 +964,7 @@ void memcard_update_state(void) {
             break;
 
         case 17: {
-            McChunk_209E68 *chunk;
+            McChunk *chunk;
             s32 size;
 
             mc_call_001FDF10(mc_data_00137C80.x14 << 11, &chunk, &size);
@@ -976,7 +976,7 @@ void memcard_update_state(void) {
 
         case 18:
             if (mc_data_001517D8[0] == 0) {
-                McChunk_209E68 *chunk;
+                McChunk *chunk;
                 s32 size;
 
                 mc_call_001FDF10(mc_data_00137C94[0] << 11, &chunk, &size);

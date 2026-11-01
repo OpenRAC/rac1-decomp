@@ -29,7 +29,7 @@ int find_nearest_point_index_xy(char *a, char *b, int n) {
 typedef union {
     Vec4A v;
     int n;
-} PathEl_1F3010;
+} PathEl;
 typedef struct {
     Vec4A vel;
     Vec4A pos;
@@ -48,7 +48,7 @@ typedef struct {
     short classes[8];
     float weight[8];
     float scale[8];
-} Steer_1F3010;
+} Steer;
 typedef struct {
     char pad0[0x1C];
     int hit;
@@ -56,10 +56,10 @@ typedef struct {
     float z;
     char pad2C[0x14];
     Vec4A normal;
-} Coll_1F3010;
+} Coll;
 
-extern PathEl_1F3010 *eudora_paths_r[] __asm__("D_L04_001B0930");
-extern Coll_1F3010 eudora_coll_hit_r __asm__("D_L04_00174040");
+extern PathEl *eudora_paths_r[] __asm__("D_L04_001B0930");
+extern Coll eudora_coll_hit_r __asm__("D_L04_00174040");
 extern char eudora_coll_resolved_pos_r[] __asm__("D_L04_00174070");
 extern char g_hero_r[] __asm__("D_0013F450");
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
@@ -82,14 +82,14 @@ extern int find_closest_polygon_edge_point_r(void *, void *, void *, int) __asm_
 
 /* Steering for a moby: pulls it along its path (c->path) and toward its target, pushes it away from the
  * listed mobys (and the hero's), and keeps it off the ground; f holds the gains. */
-void steer_child_moby(Moby **list, int n, Moby *m, Steer_1F3010 *c, float *f) {
+void steer_child_moby(Moby **list, int n, Moby *m, Steer *c, float *f) {
     Vec4A o;
     Vec4A w;
     Vec4A t;
     Vec4A a;
     Vec4A e;
     Vec4A x;
-    PathEl_1F3010 *path;
+    PathEl *path;
     Moby *obj;
     int flag;
     Moby *mob;

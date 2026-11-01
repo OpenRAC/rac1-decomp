@@ -142,19 +142,19 @@ pass. A cast into a `pad_` field means the field should be named in the header
 
 | View | File | Why |
 |---|---|---|
-| `Moby_26ff10` | `src/overlays/shared/effect_particle_updates.c` | not a moby: a particle record (passed to `KillPart`, `func_L00_002688A8`) with its own vector and pvar layouts |
-| `Moby_2E8210`, `Moby_2E8AC8` | `src/overlays/shared/follow_camera.c` | camera-side records (`cam` at 0x70 points to a `Cam_2E8210`), not a moby past the header |
-| `HeroPos_2E9978` | `src/overlays/l10_orxon/toxic_crabs_and_gates.c` | one field at `D_0013E633 + 0xE9D` (= `gHeroPos`, 0x13F4D0) + 0x200C: retail derives it from a register holding that base, which the `Hero` symbol would fold away |
+| `Moby` | `src/overlays/shared/effect_particle_updates.c` | not a moby: a particle record (passed to `KillPart`, `func_L00_002688A8`) with its own vector and pvar layouts |
+| `Moby`, `Moby` | `src/overlays/shared/follow_camera.c` | camera-side records (`cam` at 0x70 points to a `Cam_2E8210`), not a moby past the header |
+| `HeroPos` | `src/overlays/l10_orxon/toxic_crabs_and_gates.c` | one field at `D_0013E633 + 0xE9D` (= `gHeroPos`, 0x13F4D0) + 0x200C: retail derives it from a register holding that base, which the `Hero` symbol would fold away |
 | `HeroManip4_5FF0` | `src/overlays/shared/hero_idle_and_animation.c` | four more manipulators after `manipulators[7]` at hero+0xEF0, plus a random-delay timer; `struct Hero` lays this out differently |
-| `Pad_2D9F08` | `src/overlays/shared/trespasser_pad_and_background_ships.c` | reads `held` and `pressed` as one doubleword (`b1C0`); `PadState`'s separate `s32` fields would change the load |
+| `Pad` | `src/overlays/shared/trespasser_pad_and_background_ships.c` | reads `held` and `pressed` as one doubleword (`b1C0`); `PadState`'s separate `s32` fields would change the load |
 
 These hero views still change bytes or break a version's C when converted to `struct Hero`:
-`LevelObjectState_230A90` (`src/game/system/space.c`), `G_pp_t` (`bolts_and_wrench.c`), `G_2CF6A0`
+`LevelObjectState` (`src/game/system/space.c`), `G_pp_t` (`bolts_and_wrench.c`), `G_2CF6A0`
 (`morphoray_chicken_and_drones.c`), `Hero40` (`nanotech_ball_and_suck_cannon.c`) and `G_6570`
 (`heavy_interceptor_and_turrets.c`). So do these camera and pad views: `SceneG` (`draw.c`), `P` and `PadStateWords`
-(`cutscene_and_movie_playback.c`), `Input_1F4918` (`debug_menu_and_text.c`), `G` (`hero_steering_and_tilt.c`) and `PadD`
+(`cutscene_and_movie_playback.c`), `Input` (`debug_menu_and_text.c`), `G` (`hero_steering_and_tilt.c`) and `PadD`
 (`vendor_menu.c`, a JP version fragment depends on it). These `disc_table` views stay too: `Tab`
-(`alpha_fade_particle_updates.c`) and `Tab_245610` (`level_gameplay_loading.c`) index from a base pointer, and rewriting
+(`alpha_fade_particle_updates.c`) and `Tab` (`level_gameplay_loading.c`) index from a base pointer, and rewriting
 that as `[28 + i]` changes the code.
 
 Private moby views still left: converting them gives more `*(T *)&m->field` casts than plain fields, so they wait until
@@ -241,7 +241,7 @@ python3 tools/claims.py unlock <owner>                    # right after
 `src/overlays/shared/smoke_puff_projectiles.c`: a generated header ("Shared code
 following vendor", i.e. link position); includes (`common.h`,
 `include_asm.h`, `structs/hero.h`, `structs/moby.h`, often `structs/pad.h`, `callees.h`); then per
-landing its declarations (early ones aliases like `D_0013F450_B0068`, local
+landing its declarations (early ones aliases like `D`, local
 types like `ShotVars_B0068`; later ones often plain names) followed by its
 function; `INCLUDE_ASM` stubs for the rest. A symbol may appear under two C
 names. Functions stay in retail's address order.

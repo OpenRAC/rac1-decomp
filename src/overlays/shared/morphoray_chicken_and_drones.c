@@ -135,7 +135,7 @@ typedef struct {
     f32 normal_y; /* 0x44: FUN_001f9e90 (atan2) of normal_x, normal_y is stored in the hero */
     f32 normal_z; /* 0x48: ledge probes compare atan2(normal_z, xy length) with 20 degrees */
 } CollisionHit_2C9820;
-typedef struct ThrowVars_2c8440_2C9820 {
+typedef struct ThrowVars {
     Vec4 vel; /* 0x00: velocity per step */
     Vec4 landing; /* 0x10: predicted landing point */
     Vec4 normal; /* 0x20: surface normal there */
@@ -144,8 +144,8 @@ typedef struct ThrowVars_2c8440_2C9820 {
     s16 timer; /* 0x38 */
     s16 unk46; /* 0x3A */
     s32 unk_3C; /* 0x3C */
-} ThrowVars_2c8440_2C9820;
-typedef struct DroneVars_2CF808 {
+} ThrowVars;
+typedef struct DroneVars {
     Vec4 position; /* 0x00: movement this frame */
     Vec4 offset; /* 0x10: last target position */
     f32 strength; /* 0x20 */
@@ -165,7 +165,7 @@ typedef struct DroneVars_2CF808 {
     s16 health; /* 0x56 */
     f32 yaw_velocity; /* 0x58 */
     f32 pitch_velocity; /* 0x5C */
-} DroneVars_2CF808;
+} DroneVars;
 extern s32 cinematic_mode_r __asm__("D_L00_0015F6A8") MACRO_ADDR;
 extern f32 g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern f32 g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
@@ -193,7 +193,7 @@ extern s32 CollType_r(void) __asm__("func_L00_001F3958");
    normal in vars and pulls the point 5% toward D_L00_00166DC0_2c8440. mode 0 needs a live hit moby; mode 1 starts from
    the hero's hand. Returns 1 on a hit.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002c8440.c, FUN_L00_002c8440. */
-s32 predict_doom_bot_spawner_landing(ThrowVars_2c8440_2C9820 *v, struct Moby *m, s32 mode) {
+s32 predict_doom_bot_spawner_landing(ThrowVars *v, struct Moby *m, s32 mode) {
     Vec4 d, e, a, q, w;
     s32 t;
     s32 found = 0;
@@ -324,7 +324,7 @@ extern char *spawn_doom_bot(int, void *, void *);
 extern void DeleteMoby(void *);
 
 void update_doom_bot_spawner(Moby *m) {
-    struct ThrowVars_2c8440_2C9820 *s;
+    struct ThrowVars *s;
     float f0, f1, f2, f3, f20, f21, f22, f23;
     Q4 v0, v1, v2, v3;
     int r;
@@ -334,7 +334,7 @@ void update_doom_bot_spawner(Moby *m) {
 
     if (m == 0)
         return;
-    s = (struct ThrowVars_2c8440_2C9820 *)m->pvars;
+    s = (struct ThrowVars *)m->pvars;
     if (((char *)s) == 0)
         return;
     if (m->pos.x < 2.0f || 1021.0f < m->pos.x || m->pos.y < 2.0f || 1021.0f < m->pos.y || m->pos.z < 2.0f ||
@@ -777,7 +777,7 @@ typedef struct {
     int i74;
     float f78;
     int i7C;
-} Vars_2CABC0;
+} Vars;
 
 /* Update for moby Morphoray Chicken (morphoray chicken): wanders, pecks and flees from the hero, grows, and bursts
    into feathers when its health runs out. */
@@ -786,7 +786,7 @@ void update_morphoray_chicken(Moby *m) {
     Vec4A v;
     Vec4A W;
     Vec4A V;
-    Vars_2CABC0 *d;
+    Vars *d;
     Hero *h;
     float save58;
     float ang;
@@ -802,7 +802,7 @@ void update_morphoray_chicken(Moby *m) {
 
     hit = 0;
     h = (Hero *)g_hero_CB;
-    d = (Vars_2CABC0 *)m->pvars;
+    d = (Vars *)m->pvars;
     save58 = m->anim_speed;
     ang = atan2_CB(m->pos.x - h->motion.pos.f[0], m->pos.y - h->motion.pos.f[1]);
     if (m->state == 0) {
@@ -1337,7 +1337,7 @@ typedef struct {
     short oclass;
     float f1C;
     int i20;
-} Query_2CC868;
+} Query;
 
 extern char collision_hit_point_r[] __asm__("D_L00_00173F60");
 extern char g_debug_camera_r2[] __asm__("D_L00_00166EC0");
@@ -1385,7 +1385,7 @@ extern void DeleteMoby_r(Moby *) __asm__("func_0020D678");
 void update_homing_shot(Moby *m) {
     Vec4A start;
     Vec4A step;
-    Query_2CC868 q;
+    Query q;
     Vec4A a;
     Vec4A b;
     Vec4A c;
@@ -1828,18 +1828,18 @@ typedef struct {
     short count;
     float life;
     Moby *recent[7];
-} Ryno_2CDAB8;
+} Ryno;
 typedef struct {
     float radius;
     char pad4[0xC];
     float height;
-} Bounds_2CDAB8;
+} Bounds;
 typedef struct {
     char pad0[0xB8];
     unsigned short uses;
     unsigned short best;
     unsigned int levels;
-} Stats_2CDAB8;
+} Stats;
 
 extern char player_camera_r[] __asm__("D_L00_00166D80");
 extern Vec4 camera_rotation_r __asm__("D_L00_00166ED0");
@@ -1856,7 +1856,7 @@ extern int timer16_2CDAB8(short *) __asm__("func_001F9938");
 extern void muzzle_2CDAB8(Moby *, int, float *) __asm__("func_L00_00250800");
 extern Moby *find_target_2CDAB8(float *, float *, Moby **, float, float, float) __asm__("func_L00_002CD7B0");
 extern int ticks_2CDAB8(int) __asm__("func_001F9850");
-extern Bounds_2CDAB8 *bounds_2CDAB8(Moby *) __asm__("func_L00_0025D390");
+extern Bounds *bounds_2CDAB8(Moby *) __asm__("func_L00_0025D390");
 extern int has_ammo_2CDAB8(int) __asm__("func_L00_00234718");
 extern int use_ammo_2CDAB8(int, int) __asm__("func_L00_00234638");
 extern float distance_2CDAB8(void *, void *) __asm__("func_001F9D10");
@@ -1881,9 +1881,9 @@ void ryno_update(Moby *m) {
     Vec4 aim;
     Vec4 dir;
     Vec4 ofs;
-    Ryno_2CDAB8 *d = *(Ryno_2CDAB8 **)&m->pvars;
+    Ryno *d = *(Ryno **)&m->pvars;
     Moby *r;
-    Bounds_2CDAB8 *b;
+    Bounds *b;
     float yaw, pitch;
     int i;
 
@@ -1946,7 +1946,7 @@ void ryno_update(Moby *m) {
                 return;
             {
                 int per;
-                Stats_2CDAB8 *s = (Stats_2CDAB8 *)(help_stats_base_r + 0x65);
+                Stats *s = (Stats *)(help_stats_base_r + 0x65);
                 if (s->uses <= 0xFFFE)
                     s->uses++;
                 per = 600;
@@ -1982,7 +1982,7 @@ void ryno_update(Moby *m) {
                 return;
             {
                 int per;
-                Stats_2CDAB8 *s = (Stats_2CDAB8 *)(help_stats_base_r + 0x65);
+                Stats *s = (Stats *)(help_stats_base_r + 0x65);
                 if (s->uses <= 0xFFFE)
                     s->uses++;
                 per = 600;
@@ -2459,7 +2459,7 @@ extern int spawn_moby_point_attached_particle(void *, int, float, float, unsigne
 
 /* Spawn the drone's two joint-attached glow particles if they are missing. */
 void ensure_drone_attached_particles(char *m) {
-    struct DroneVars_2CF808 *p = (struct DroneVars_2CF808 *)((Moby *)m)->pvars;
+    struct DroneVars *p = (struct DroneVars *)((Moby *)m)->pvars;
     if (*(int *)&p->unused4c == 0) {
         *(int *)&p->unused4c = spawn_moby_point_attached_particle(m, 0, 0.05f, 0.01f, 0x80808080, 0x10808080);
     }
@@ -2572,7 +2572,7 @@ char *func_L00_002CF6A0_r(int a, void *pos) __asm__("func_L00_002CF6A0");
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002c8440.c, FUN_L00_002ce1f0. */
 char *func_L00_002CF6A0_r(int a, void *pos) {
     char *m = CreateMoby_r2(0x1DF);
-    struct DroneVars_2CF808 *v;
+    struct DroneVars *v;
     G_2CF6A0 *g;
 
     if (m != 0) {
@@ -2580,7 +2580,7 @@ char *func_L00_002CF6A0_r(int a, void *pos) {
         ((Moby *)m)->draw_dist = 0xFF;
         ((Moby *)m)->visible = 1;
         ((Moby *)m)->state = 2;
-        v = (struct DroneVars_2CF808 *)((Moby *)m)->pvars;
+        v = (struct DroneVars *)((Moby *)m)->pvars;
         ((Moby *)m)->command = 0;
         qcopy(m + 0x10, pos);
         *(int *)&v->unused44 = a;
@@ -2613,7 +2613,7 @@ typedef struct {
     f32 phase; /* 0x1FF8 */
     struct Moby *exclusions[9]; /* 0x1FFC */
     struct Moby *slots[6]; /* 0x2020 */
-} DroneSlots_2CF808;
+} DroneSlots;
 
 /* Hit record passed to record_moby_hit; the drone builds it over its direction and rotated vectors. */
 typedef struct {
@@ -2623,7 +2623,7 @@ typedef struct {
     u8 mode; /* 0x19 */
     u16 oclass; /* 0x1A */
     f32 amount; /* 0x1C: read back after the hit */
-} BombHit_2CF808;
+} BombHit;
 
 typedef int OvlQuad_2CF808 __attribute__((mode(TI)));
 
@@ -2674,7 +2674,7 @@ extern void ensure_drone_attached_particles_r(void *) __asm__("func_L00_002CF328
    (nonmatching/shared/func_L00_002CF808.c) to a match. D_L00_0015F6A8 is MACRO_ADDR: retail loads it with the
    lui into the same register. */
 void update_drone(struct Moby *updated_moby) {
-    DroneVars_2CF808 *v = (DroneVars_2CF808 *)updated_moby->pvars;
+    DroneVars *v = (DroneVars *)updated_moby->pvars;
     Vec4 collision_data[1], old_pos;
     Vec4 direction, rotated;
     Vec4 target_pos, matrix[4];
@@ -2694,40 +2694,39 @@ void update_drone(struct Moby *updated_moby) {
     }
     updated_moby->flags &= 0xFFBE;
     if (updated_moby->state < 5) {
-        ((DroneSlots_2CF808 *)&hero_2CF808)->counter++;
-        if (((DroneSlots_2CF808 *)&hero_2CF808)->ammo_used < ((DroneSlots_2CF808 *)&hero_2CF808)->counter) {
+        ((DroneSlots *)&hero_2CF808)->counter++;
+        if (((DroneSlots *)&hero_2CF808)->ammo_used < ((DroneSlots *)&hero_2CF808)->counter) {
             closest = 0;
             count = 0;
             distance = 1000000.0f;
-            ((DroneSlots_2CF808 *)&hero_2CF808)->counter = 1;
-            ((DroneSlots_2CF808 *)&hero_2CF808)->ammo_capacity = 0;
-            ((DroneSlots_2CF808 *)&hero_2CF808)->phase =
-                FastAddRots_2CF808(((DroneSlots_2CF808 *)&hero_2CF808)->phase, frame_scale_2CF808 * 0.05f);
+            ((DroneSlots *)&hero_2CF808)->counter = 1;
+            ((DroneSlots *)&hero_2CF808)->ammo_capacity = 0;
+            ((DroneSlots *)&hero_2CF808)->phase =
+                FastAddRots_2CF808(((DroneSlots *)&hero_2CF808)->phase, frame_scale_2CF808 * 0.05f);
             for (k = 0; k < 6; k++) {
-                drone = ((DroneSlots_2CF808 *)&hero_2CF808)->slots[k];
+                drone = ((DroneSlots *)&hero_2CF808)->slots[k];
                 if (drone != 0) {
                     if (drone->oclass == MOBY_CLASS_DRONE) {
                         if (drone->state == 0xFE) {
-                            ((DroneSlots_2CF808 *)&hero_2CF808)->slots[k] = 0;
+                            ((DroneSlots *)&hero_2CF808)->slots[k] = 0;
                         } else if (drone->state == 0xFD) {
-                            ((DroneSlots_2CF808 *)&hero_2CF808)->slots[k] = 0;
+                            ((DroneSlots *)&hero_2CF808)->slots[k] = 0;
                         } else {
-                            ((DroneSlots_2CF808 *)&hero_2CF808)->exclusions[count] =
-                                *(struct Moby **)(drone->pvars + 0x30);
+                            ((DroneSlots *)&hero_2CF808)->exclusions[count] = *(struct Moby **)(drone->pvars + 0x30);
                             count++;
                             if (drone->state < 4)
-                                ((DroneSlots_2CF808 *)&hero_2CF808)->ammo_capacity++;
+                                ((DroneSlots *)&hero_2CF808)->ammo_capacity++;
                             if (count > 8)
                                 break;
                         }
                     } else {
-                        ((DroneSlots_2CF808 *)&hero_2CF808)->slots[k] = 0;
+                        ((DroneSlots *)&hero_2CF808)->slots[k] = 0;
                     }
                 }
             }
             for (exclusion_clear_index = count; exclusion_clear_index < 9; exclusion_clear_index++)
-                ((DroneSlots_2CF808 *)&hero_2CF808)->exclusions[exclusion_clear_index] = 0;
-            other = select_nearest_drone_target_r(&hero_2CF808.motion, ((DroneSlots_2CF808 *)&hero_2CF808)->exclusions);
+                ((DroneSlots *)&hero_2CF808)->exclusions[exclusion_clear_index] = 0;
+            other = select_nearest_drone_target_r(&hero_2CF808.motion, ((DroneSlots *)&hero_2CF808)->exclusions);
             if (other != 0) {
                 char *h;
                 h = aim_height_2CF808(other);
@@ -2735,7 +2734,7 @@ void update_drone(struct Moby *updated_moby) {
                 if (h != 0)
                     old_pos.f[2] += *(f32 *)(h + 0x10);
                 for (i = 0; i < 6; i++) {
-                    drone = ((DroneSlots_2CF808 *)&hero_2CF808)->slots[i];
+                    drone = ((DroneSlots *)&hero_2CF808)->slots[i];
                     if (drone != 0) {
                         struct Moby *drone_target = *(struct Moby **)(drone->pvars + 0x30);
                         if (drone_target == 0 || drone_target->state == 0xFE || drone_target->state == 0xFD) {
@@ -2748,7 +2747,7 @@ void update_drone(struct Moby *updated_moby) {
                     }
                 }
                 if (closest != 0) {
-                    DroneVars_2CF808 *assigned = (DroneVars_2CF808 *)closest->pvars;
+                    DroneVars *assigned = (DroneVars *)closest->pvars;
                     char *h2;
                     assigned->target = other;
                     assigned->target_oclass = other->oclass;
@@ -2760,15 +2759,15 @@ void update_drone(struct Moby *updated_moby) {
                     closest->state = 3;
                     random = rand_2CF808() % 3;
                     play_sound_2CF808(random + (random > 0), 0, updated_moby);
-                    ((DroneSlots_2CF808 *)&hero_2CF808)->exclusions[count] = assigned->target;
+                    ((DroneSlots *)&hero_2CF808)->exclusions[count] = assigned->target;
                 }
             }
         }
         {
-            s32 capacity = ((DroneSlots_2CF808 *)&hero_2CF808)->ammo_used;
+            s32 capacity = ((DroneSlots *)&hero_2CF808)->ammo_used;
             s32 divisor = capacity ? capacity : 1;
             s32 next = capacity + 1;
-            s32 counter = ((DroneSlots_2CF808 *)&hero_2CF808)->counter;
+            s32 counter = ((DroneSlots *)&hero_2CF808)->counter;
             if (next == 0)
                 next = 1;
             v->desired_yaw = IntToFloat_2CF808(counter) / (f32)divisor * 6.2831855f - 3.1415927f;
@@ -2812,7 +2811,7 @@ state2: {
         updated_moby->scale += (updated_moby->pclass->scale - updated_moby->scale) * step;
         v->strength = v->strength + (1.0f - v->strength) * step;
     }
-    f = FastAddRots_2CF808(v->desired_yaw, ((DroneSlots_2CF808 *)&hero_2CF808)->phase);
+    f = FastAddRots_2CF808(v->desired_yaw, ((DroneSlots *)&hero_2CF808)->phase);
     distance = FastSubRots_2CF808(f, v->yaw);
     v->yaw = FastAddRots_2CF808(v->yaw, distance * (frame_scale_2CF808 * 0.05f));
     distance = FastSubRots_2CF808(v->pitch, v->elevation);
@@ -2852,20 +2851,20 @@ state2: {
                        : 0;
         if (((struct Moby *)coll_hit_2CF808.moby) && ((struct Moby *)coll_hit_2CF808.moby)->state != 0xFE &&
             ((struct Moby *)coll_hit_2CF808.moby)->state != 0xFD && (category == 5 || category == 7 || category == 8)) {
-            initialize_hit_descriptor_r(((BombHit_2CF808 *)&direction), updated_moby, 0x10000, 1.0f);
-            set_length_xy_2CF808(((BombHit_2CF808 *)&direction), &v->position, 1.0f);
-            ((BombHit_2CF808 *)&direction)->direction.f[2] = 1.0f;
-            ((BombHit_2CF808 *)&direction)->direction.f[3] = 5627.925f;
-            ((BombHit_2CF808 *)&direction)->kind = 1;
-            ((BombHit_2CF808 *)&direction)->mode = 2;
-            ((BombHit_2CF808 *)&direction)->oclass = updated_moby->oclass;
-            record_moby_hit_r((struct Moby *)coll_hit_2CF808.moby, ((BombHit_2CF808 *)&direction));
+            initialize_hit_descriptor_r(((BombHit *)&direction), updated_moby, 0x10000, 1.0f);
+            set_length_xy_2CF808(((BombHit *)&direction), &v->position, 1.0f);
+            ((BombHit *)&direction)->direction.f[2] = 1.0f;
+            ((BombHit *)&direction)->direction.f[3] = 5627.925f;
+            ((BombHit *)&direction)->kind = 1;
+            ((BombHit *)&direction)->mode = 2;
+            ((BombHit *)&direction)->oclass = updated_moby->oclass;
+            record_moby_hit_r((struct Moby *)coll_hit_2CF808.moby, ((BombHit *)&direction));
             if (category == 5) {
                 if (coll_hit_2CF808.moby && ((struct Moby *)coll_hit_2CF808.moby)->oclass == 0x4D6 &&
                     (health = v->health) > 0) {
-                    random = truncate_float_to_s32_2CF808(((BombHit_2CF808 *)&direction)->amount);
+                    random = truncate_float_to_s32_2CF808(((BombHit *)&direction)->amount);
                     if (random > 0)
-                        random = health - truncate_float_to_s32_2CF808(((BombHit_2CF808 *)&direction)->amount);
+                        random = health - truncate_float_to_s32_2CF808(((BombHit *)&direction)->amount);
                     else
                         random = health - 1;
                     v->health = random;
@@ -2919,20 +2918,20 @@ state3: {
                 qcopy(&updated_moby->pos, &coll_pos_2CF808);
             } else {
                 s32 cat2 = hm->pclass ? *(u8 *)((u8 *)hm->pclass + 0x46) : 0;
-                initialize_hit_descriptor_r(((BombHit_2CF808 *)&direction), updated_moby, 0x10000, 1.0f);
-                set_length_xy_2CF808(((BombHit_2CF808 *)&direction), &v->position, 1.0f);
-                ((BombHit_2CF808 *)&direction)->direction.f[2] = 1.0f;
-                ((BombHit_2CF808 *)&direction)->direction.f[3] = 5627.925f;
-                ((BombHit_2CF808 *)&direction)->kind = 1;
-                ((BombHit_2CF808 *)&direction)->mode = 2;
-                ((BombHit_2CF808 *)&direction)->oclass = updated_moby->oclass;
-                record_moby_hit_r((struct Moby *)coll_hit_2CF808.moby, ((BombHit_2CF808 *)&direction));
+                initialize_hit_descriptor_r(((BombHit *)&direction), updated_moby, 0x10000, 1.0f);
+                set_length_xy_2CF808(((BombHit *)&direction), &v->position, 1.0f);
+                ((BombHit *)&direction)->direction.f[2] = 1.0f;
+                ((BombHit *)&direction)->direction.f[3] = 5627.925f;
+                ((BombHit *)&direction)->kind = 1;
+                ((BombHit *)&direction)->mode = 2;
+                ((BombHit *)&direction)->oclass = updated_moby->oclass;
+                record_moby_hit_r((struct Moby *)coll_hit_2CF808.moby, ((BombHit *)&direction));
                 if (cat2 == 5) {
                     if (coll_hit_2CF808.moby && ((struct Moby *)coll_hit_2CF808.moby)->oclass == 0x4D6 &&
                         (health = v->health) > 0) {
-                        random = truncate_float_to_s32_2CF808(((BombHit_2CF808 *)&direction)->amount);
+                        random = truncate_float_to_s32_2CF808(((BombHit *)&direction)->amount);
                         if (random > 0)
-                            random = health - truncate_float_to_s32_2CF808(((BombHit_2CF808 *)&direction)->amount);
+                            random = health - truncate_float_to_s32_2CF808(((BombHit *)&direction)->amount);
                         else
                             random = health - 1;
                         v->health = random;
@@ -2984,8 +2983,8 @@ fade_alpha:
     goto update_effects;
 }
 state5: {
-    ((DroneSlots_2CF808 *)&hero_2CF808)->ammo_used--;
-    ((DroneSlots_2CF808 *)&hero_2CF808)->slots[v->slot] = 0;
+    ((DroneSlots *)&hero_2CF808)->ammo_used--;
+    ((DroneSlots *)&hero_2CF808)->slots[v->slot] = 0;
     delete_moby_2CF808(updated_moby);
     return;
 }

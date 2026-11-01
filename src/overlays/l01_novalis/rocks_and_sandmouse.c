@@ -362,17 +362,17 @@ char *spawn_colored_half_scale_moby(int owner, void *pos, void *target, int colo
 typedef int u128_2FB588 __attribute__((mode(TI)));
 typedef struct {
     u32 c[6];
-} BurstPalette_2FB588;
+} BurstPalette;
 /* Light used by the flash; mine_camera_blast places it at a position. */
 typedef struct {
     u8 pad_00[0x20];
     f32 r;
     f32 g;
     f32 b;
-} BurstLight_2FB588;
+} BurstLight;
 
-extern BurstPalette_2FB588 novalis_explosion_inner_colors_r __asm__("D_L01_0020B7E0");
-extern BurstPalette_2FB588 novalis_explosion_outer_colors_r __asm__("D_L01_0020B7F8");
+extern BurstPalette novalis_explosion_inner_colors_r __asm__("D_L01_0020B7E0");
+extern BurstPalette novalis_explosion_outer_colors_r __asm__("D_L01_0020B7F8");
 extern char novalis_explosion_light_r[] __asm__("D_L01_001E3720");
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 extern int rand_range_r2(int lo, int hi) __asm__("func_L00_00258BC8");
@@ -393,9 +393,9 @@ extern void func_L01_002FB588_r(struct Moby *moby, u128_2FB588 *where, s32 sound
 void func_L01_002FB588_r(struct Moby *moby, u128_2FB588 *where, s32 sound, f32 scale, f32 light) {
     Vec4 pos;
     Vec4 vel;
-    BurstPalette_2FB588 inner;
-    BurstPalette_2FB588 outer;
-    BurstPalette_2FB588 *inner_p;
+    BurstPalette inner;
+    BurstPalette outer;
+    BurstPalette *inner_p;
     Vec4 *pos_p;
     f32 size;
     f32 speed;
@@ -428,15 +428,15 @@ void func_L01_002FB588_r(struct Moby *moby, u128_2FB588 *where, s32 sound, f32 s
 
     if (light != 0.0f) {
         if (light > 0.0f) {
-            ((BurstLight_2FB588 *)novalis_explosion_light_r)->g = light;
-            ((BurstLight_2FB588 *)novalis_explosion_light_r)->b = light;
-            ((BurstLight_2FB588 *)novalis_explosion_light_r)->r = light;
+            ((BurstLight *)novalis_explosion_light_r)->g = light;
+            ((BurstLight *)novalis_explosion_light_r)->b = light;
+            ((BurstLight *)novalis_explosion_light_r)->r = light;
         } else {
-            ((BurstLight_2FB588 *)novalis_explosion_light_r)->g = 13.0f;
-            ((BurstLight_2FB588 *)novalis_explosion_light_r)->b = 13.0f;
-            ((BurstLight_2FB588 *)novalis_explosion_light_r)->r = 13.0f;
+            ((BurstLight *)novalis_explosion_light_r)->g = 13.0f;
+            ((BurstLight *)novalis_explosion_light_r)->b = 13.0f;
+            ((BurstLight *)novalis_explosion_light_r)->r = 13.0f;
         }
-        mine_camera_blast_r(((BurstLight_2FB588 *)novalis_explosion_light_r), pos_p, 0, 0);
+        mine_camera_blast_r(((BurstLight *)novalis_explosion_light_r), pos_p, 0, 0);
     }
 }
 typedef struct {
@@ -536,14 +536,14 @@ typedef union {
     QW128_2FBBD8 q;
     float f[4];
     int i[4];
-} QuadW_2FBBD8;
+} QuadW;
 typedef struct {
     float f[3];
 } V3_2FBBD8;
 typedef struct {
     unsigned char pad0[0x454];
     unsigned char collected[1];
-} LvState_2FBBD8;
+} LvState;
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 extern void *MobyGetHitMessage_r2(void *, int, int) __asm__("func_L00_0025B478");
 extern int Moby_PlaySound_r2(int, int, int) __asm__("func_0022ED80");
@@ -565,16 +565,16 @@ extern int g_current_level_index_r2 __asm__("D_0015EE84") MACRO_ADDR;
 extern float g_frame_time_r2 __asm__("D_0015EE6C") MACRO_ADDR;
 extern unsigned char special_items_base_r[] __asm__("D_0013D355");
 extern V3_2FBBD8 cave_wall_debris_colors_r __asm__("D_L01_00161D00");
-extern LvState_2FBBD8 novalis_checkpoint_level_state_r __asm__("D_L01_001BB9C0");
+extern LvState novalis_checkpoint_level_state_r __asm__("D_L01_001BB9C0");
 
 /* destroyable_cave_wall_update: update for the cave wall moby (Destroyable Cave Wall) on level 01; a wall already
    burst is deleted, else it spawns its debris. */
 void destroyable_cave_wall_update(char *moby) {
     struct Moby *cave_wall_moby = (struct Moby *)moby;
-    QuadW_2FBBD8 tab;
-    QuadW_2FBBD8 a;
-    QuadW_2FBBD8 b;
-    QuadW_2FBBD8 c;
+    QuadW tab;
+    QuadW a;
+    QuadW b;
+    QuadW c;
     unsigned char *p;
     int *pi;
     float x, t, u1;
@@ -717,16 +717,16 @@ typedef struct {
     /* 0x30 */ Vec4f a;
     /* 0x40 */ char pad40[0x30];
     /* 0x70 */ Vec4f b;
-} Rec_2FC140;
+} Rec;
 typedef struct {
     unsigned char pad0[0x454];
     unsigned char collected[1];
-} Lv_2FC140;
+} Lv;
 extern Moby *novalis_mobys_r __asm__("D_L01_00160058") MACRO_ADDR;
-extern Rec_2FC140 *camera_points_r __asm__("D_L01_0016016C") MACRO_ADDR;
+extern Rec *camera_points_r __asm__("D_L01_0016016C") MACRO_ADDR;
 extern int novalis_game_mode_r __asm__("D_L01_0015F6A8") MACRO_ADDR;
 extern char novalis_current_level_state_r[] __asm__("D_L01_001BAD60");
-extern Lv_2FC140 novalis_checkpoint_level_state_r2 __asm__("D_L01_001BB9C0");
+extern Lv novalis_checkpoint_level_state_r2 __asm__("D_L01_001BB9C0");
 extern unsigned char novalis_mission_group_state_r[] __asm__("D_L01_0015FD08") MACRO_ADDR;
 extern char novalis_saved_moby_bytes_r[] __asm__("D_L01_001BADB0");
 extern char hero_globals_base_r[] __asm__("D_0013E633");
@@ -909,8 +909,7 @@ void agnogg_ship_front_update(Moby *moby) {
             queue_planet_unlock_message_r(3);
             moby->flags = moby->flags & 0xFFBE;
             if (data->link != -1) {
-                ((Lv_2FC140 *)novalis_current_level_state_r)
-                    ->collected[(*(short *)&novalis_mobys_r[data->link].save_id)] =
+                ((Lv *)novalis_current_level_state_r)->collected[(*(short *)&novalis_mobys_r[data->link].save_id)] =
                     novalis_mobys_r[data->link].mission + 2;
                 if (novalis_mobys_r[data->link].mission == 0xFF ||
                     (novalis_mission_group_state_r[novalis_mobys_r[data->link].mission] != 0xFF &&
@@ -1853,21 +1852,21 @@ typedef struct {
     u16 count;
     u16 unk2;
     u32 level_mask;
-} UStat_30C090;
+} UStat;
 typedef struct {
     u16 id;
     u16 pad;
     s32 v;
-} HRec_30C090;
+} HRec;
 typedef struct {
     s32 state;
     u8 pad4[0x20];
     s32 cur;
-} HState_30C090;
+} HState;
 extern unsigned char level_available[];
-extern UStat_30C090 usage_stats[];
-extern HRec_30C090 help_records[];
-extern HState_30C090 help_state;
+extern UStat usage_stats[];
+extern HRec help_records[];
+extern HState help_state;
 extern int novalis_look_stat_timer MACRO_ADDR;
 extern int novalis_look_stat_count MACRO_ADDR;
 extern Moby *novalis_moby_list MACRO_ADDR;

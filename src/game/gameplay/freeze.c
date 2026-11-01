@@ -681,7 +681,7 @@ typedef struct {
     int x24;
     int x28;
     int x2C;
-} Freeze_FD3E8;
+} Freeze;
 
 extern int pad0_pressed[];
 extern int mode_freeze_flags MACRO_ADDR;
@@ -713,11 +713,11 @@ extern void Music_QueueTrack(int, int);
 
 extern int snd_FlushSoundCommands(void);
 
-#define R (*(Freeze_FD3E8 *)D_00193400)
+#define R (*(Freeze *)D_00193400)
 #define PAD (D_0013CBE4[0])
 void update_mode_freeze(void) {
-    Freeze_FD3E8 *q;
-    Freeze_FD3E8 *r5;
+    Freeze *q;
+    Freeze *r5;
     char *dp1, *dp2;
     char *h1, *h2, *h3, *h4;
     int t;

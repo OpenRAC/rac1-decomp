@@ -43,17 +43,17 @@ typedef struct {
     s32 y;
     s32 label_offset_x;
     s32 label_offset_y;
-} LevelMapMarker_FDF78;
+} LevelMapMarker;
 typedef struct {
     s32 label_text;
     s32 pad4[2];
-} LevelMapMarkerText_FDF78;
-extern LevelMapMarkerText_FDF78 level_map_labels[19];
-extern LevelMapMarker_FDF78 level_map_markers[20];
+} LevelMapMarkerText;
+extern LevelMapMarkerText level_map_labels[19];
+extern LevelMapMarker level_map_markers[20];
 struct MapIcon;
 struct MapMarker;
 struct MapHdr;
-struct MapState_FDF78 {
+struct MapState {
     u8 pad0[0x8];
     s32 unk8; /* 0x008: draw_map_overlay draft tests it with unk2C */
     u8 *mask; /* 0x00C: 512x512 1-bit explored mask of the current level */
@@ -96,7 +96,7 @@ struct MapState_FDF78 {
     s32 sel; /* 0x2A0: slot being filled, -1 none */
     s32 slot_size[5]; /* 0x2A4 */
 };
-extern struct MapState_FDF78 level_map_selection;
+extern struct MapState level_map_selection;
 extern u8 level_available[20];
 extern u8 level_visit_state[20];
 extern s32 pal_mode MACRO_ADDR;

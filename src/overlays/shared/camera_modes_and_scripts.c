@@ -703,7 +703,7 @@ void initialize_orbit_camera_state(void *arg) {
     initialize_orbit_camera_pose(p);
     p->transition_state = 0;
 }
-typedef struct OrbitCamState_2EC930 {
+typedef struct OrbitCamState {
     f32 pos[5]; /* 0x00: eased positions (first argument of Camera_SmoothAngle / Cam_InterpValues) */
     f32 target[5]; /* 0x14: targets, target[0] feeds the first FastAddRots */
     f32 rate_a[5]; /* 0x28 */
@@ -716,20 +716,20 @@ typedef struct OrbitCamState_2EC930 {
     s32 eye_flag; /* 0x9C: nonzero copies look_target into origin instead of easing */
     f32 offset[4]; /* 0xA0: offset[3] is copied to the camera object at 0x40 */
     f32 origin[12]; /* 0xB0: orbit origin; origin[6] is at 0xC8 */
-} OrbitCamState_2EC930;
+} OrbitCamState;
 
-typedef struct OrbitCamObj_2EC930 {
+typedef struct OrbitCamObj {
     u8 pad_00[0x30];
     f32 pos[4]; /* 0x30: written by compute_position_from_spherical_offset */
     f32 rot[4]; /* 0x40: rotation, rot[0..2] set below */
     f32 angles[5]; /* 0x50: angles eased toward the state targets */
-} OrbitCamObj_2EC930;
+} OrbitCamObj;
 
 /* smooths camera values toward targets and rebuilds the camera matrix */
 void update_orbit_camera_pose(char *camera_object) {
-    OrbitCamState_2EC930 *camera_state = *(OrbitCamState_2EC930 **)&((Camera *)camera_object)->state_buf;
+    OrbitCamState *camera_state = *(OrbitCamState **)&((Camera *)camera_object)->state_buf;
     f32 *orbit_origin = camera_state->origin;
-    OrbitCamObj_2EC930 *obj = (OrbitCamObj_2EC930 *)camera_object;
+    OrbitCamObj *obj = (OrbitCamObj *)camera_object;
     f32 rotation_matrix[16];
     f32 t;
     t = FastAddRots(orbit_origin[6], camera_state->target[0]);
@@ -990,11 +990,11 @@ typedef struct {
     char *current_follow_cam; /* 0x180 */
     u8 pad184[0x270 - 0x184];
     s16 s270;
-} CamGlobals_2ED320;
+} CamGlobals;
 typedef int OvlQuad_2ED320 __attribute__((mode(TI)));
 
 extern Hero hero_2ED320 __asm__("D_0013F450");
-extern CamGlobals_2ED320 cam_globals_2ED320 __asm__("D_L00_00166D80");
+extern CamGlobals cam_globals_2ED320 __asm__("D_L00_00166D80");
 extern s32 current_level_2ED320 __asm__("D_0015EE84") MACRO_ADDR;
 extern f32 frame_time_2ED320 __asm__("D_0015EE6C") MACRO_ADDR;
 extern void approach_2ED320(float, float, float *) __asm__("func_00214D28");
@@ -1187,28 +1187,28 @@ extern char player_camera_c[] __asm__("D_L00_00166D80");
 extern void initialize_target_tracking_camera(void *);
 extern int scale_ticks(int);
 
-typedef struct CameraTargetState_2EDB70 {
+typedef struct CameraTargetState {
     u8 pad_00[0x8];
     s32 target; /* 0x08 compared with the hero's target value */
-} CameraTargetState_2EDB70;
+} CameraTargetState;
 
-typedef struct CameraSavedState_2EDB70 {
+typedef struct CameraSavedState {
     u8 pad_00[0x80];
     s32 unk80; /* 0x80 zeroed at the end of the update */
     u8 pad_84[0x34];
-    CameraTargetState_2EDB70 target_state; /* 0xB8 */
-} CameraSavedState_2EDB70;
+    CameraTargetState target_state; /* 0xB8 */
+} CameraSavedState;
 
-typedef struct CameraObj_2EDB70 {
+typedef struct CameraObj {
     VecQuad basis[3]; /* 0x00 rotation rows */
     Vec4f pos; /* 0x30 position */
     u8 pad_40[0x30]; /* 0x40 */
-    CameraSavedState_2EDB70 *saved_state; /* 0x70 */
-} CameraObj_2EDB70;
+    CameraSavedState *saved_state; /* 0x70 */
+} CameraObj;
 
-typedef struct CameraSystemView_2EDB70 {
+typedef struct CameraSystemView {
     u8 pad_000[0x184];
-    CameraObj_2EDB70 *previous; /* 0x184 */
+    CameraObj *previous; /* 0x184 */
     u8 pad_188[0xE8];
     struct {
         u8 pad_00[0x70];
@@ -1217,7 +1217,7 @@ typedef struct CameraSystemView_2EDB70 {
             s32 frames; /* 0x2F4 */
         } orbit; /* 0x2E0 */
     } blend; /* 0x270 */
-} CameraSystemView_2EDB70;
+} CameraSystemView;
 
 /* camera update: copies the moby's matrix when the camera mode changes */
 extern Hero hero __asm__("D_0013F450");
@@ -1225,8 +1225,8 @@ extern Hero hero __asm__("D_0013F450");
 /* Camera that follows the hero's target while the hero is in state 0x2C or 0x24-0x26. */
 void update_target_tracking_camera(char *m) {
     Hero *b = &hero;
-    CameraObj_2EDB70 *cam = (CameraObj_2EDB70 *)m;
-    CameraTargetState_2EDB70 *camera_target_state = &cam->saved_state->target_state;
+    CameraObj *cam = (CameraObj *)m;
+    CameraTargetState *camera_target_state = &cam->saved_state->target_state;
     int hero_state = b->state.current;
     char *camera_position;
     int x, y;
@@ -1242,8 +1242,8 @@ void update_target_tracking_camera(char *m) {
         y = (int)((void *)b->grapple_target);
     }
     if (x != y) {
-        CameraSystemView_2EDB70 *g = (CameraSystemView_2EDB70 *)player_camera_c;
-        CameraObj_2EDB70 *r = g->previous;
+        CameraSystemView *g = (CameraSystemView *)player_camera_c;
+        CameraObj *r = g->previous;
         qcopy(&r->pos, camera_position);
         qcopy(r, m);
         qcopy(&r->basis[1], &cam->basis[1]);
@@ -1680,7 +1680,7 @@ extern void volume_camera_swing(char *);
 extern int g_current_level_index MACRO_ADDR;
 extern char *camera_descriptors MACRO_ADDR;
 
-typedef struct CamSwingParams_2EE6E0 {
+typedef struct CamSwingParams {
     u8 pad_00[0x2C];
     union {
         s16 s;
@@ -1690,23 +1690,23 @@ typedef struct CamSwingParams_2EE6E0 {
     u8 pad_30[0x18];
     s16 l_buttons_end; /* 0x48 */
     s16 done; /* 0x4A */
-} CamSwingParams_2EE6E0;
+} CamSwingParams;
 
-typedef struct CamDescriptorRow_2EE6E0 {
+typedef struct CamDescriptorRow {
     u8 pad_00[0x1C];
-    struct CamSwingParams_2EE6E0 *params; /* 0x1C */
-} CamDescriptorRow_2EE6E0;
+    struct CamSwingParams *params; /* 0x1C */
+} CamDescriptorRow;
 
-typedef struct UpdateCamSwing_2EE6E0 {
+typedef struct UpdateCamSwing {
     u8 pad_00[0x84];
     s16 descriptor_index; /* 0x84 */
-} UpdateCamSwing_2EE6E0;
+} UpdateCamSwing;
 
 // Per-frame check of a linked object's state; runs the handler or clears its flag.
 int volume_camera_swing_check(char *m) {
-    struct UpdateCamSwing_2EE6E0 *swing_camera_record = (struct UpdateCamSwing_2EE6E0 *)m;
-    struct CamSwingParams_2EE6E0 *params =
-        ((struct CamDescriptorRow_2EE6E0 *)camera_descriptors)[swing_camera_record->descriptor_index].params;
+    struct UpdateCamSwing *swing_camera_record = (struct UpdateCamSwing *)m;
+    struct CamSwingParams *params =
+        ((struct CamDescriptorRow *)camera_descriptors)[swing_camera_record->descriptor_index].params;
     short k;
     if (params->l_buttons_end == 1 && params->done != 0)
         return 0;
@@ -2172,23 +2172,23 @@ typedef struct {
 } S_2edad8;
 
 /* A sound emitter record (the char *m argument). */
-typedef struct SoundEmitter_2edad8 {
+typedef struct SoundEmitter {
     u8 pad_00[0x8];
     S_2edad8 *playback; /* 0x08 playback state */
     f32 range; /* 0x0C half-size of the random offset */
     f32 basis[3][4]; /* 0x10 rows that turn the random offset into world space */
     f32 pos[4]; /* 0x40 emitter position */
     f32 inv_basis[3][4]; /* 0x50 rows that turn the listener delta into emitter space */
-} SoundEmitter_2edad8;
+} SoundEmitter;
 
 /* One 0x70-byte entry of the sound slot table at hero_globals_base + 0x1D. */
-typedef struct SoundSlot_2edad8 {
+typedef struct SoundSlot {
     u8 pad_00[0x74];
     u8 flag74; /* 0x74 nonzero while the slot is active */
     u8 pad_75[0x8C - 0x75];
     char *owner; /* 0x8C emitter that started the sound */
     f32 pos[4]; /* 0x90 world position of the playing sound */
-} SoundSlot_2edad8;
+} SoundSlot;
 
 /* updates a one-shot sound box: checks the listener is inside, then starts the sound */
 void update_sound_emitter_playback_at_random_position(char *m) {
@@ -2197,27 +2197,26 @@ void update_sound_emitter_playback_at_random_position(char *m) {
     V_2edad8 transformed_reference_position_delta;
     V_2edad8 b;
     V_2edad8 r;
-    S_2edad8 *playback_state = ((SoundEmitter_2edad8 *)m)->playback;
-    SoundSlot_2edad8 *sound_slot_entry;
+    S_2edad8 *playback_state = ((SoundEmitter *)m)->playback;
+    SoundSlot *sound_slot_entry;
     float *p;
     {
-        f32 g = ((SoundEmitter_2edad8 *)m)->range;
+        f32 g = ((SoundEmitter *)m)->range;
         uniform_range_vector.f[0] = g;
         uniform_range_vector.f[1] = g;
         uniform_range_vector.f[2] = g;
     }
-    FastVecSub(reference_position_delta.f, g_debug_camera, ((SoundEmitter_2edad8 *)m)->pos);
+    FastVecSub(reference_position_delta.f, g_debug_camera, ((SoundEmitter *)m)->pos);
     reference_position_delta.f[3] = 0;
-    matrix_mul_vec3(transformed_reference_position_delta.f, reference_position_delta.f,
-                    ((SoundEmitter_2edad8 *)m)->inv_basis);
-    matrix_mul_vec3(b.f, uniform_range_vector.f, ((SoundEmitter_2edad8 *)m)->inv_basis);
+    matrix_mul_vec3(transformed_reference_position_delta.f, reference_position_delta.f, ((SoundEmitter *)m)->inv_basis);
+    matrix_mul_vec3(b.f, uniform_range_vector.f, ((SoundEmitter *)m)->inv_basis);
     if (!(FastAbsF(transformed_reference_position_delta.f[0]) <= FastAbsF(b.f[0]) + 1.0f))
         return;
     if (!(FastAbsF(transformed_reference_position_delta.f[1]) <= FastAbsF(b.f[1]) + 1.0f))
         return;
     if (!(FastAbsF(transformed_reference_position_delta.f[2]) <= FastAbsF(b.f[2]) + 1.0f))
         return;
-    sound_slot_entry = (SoundSlot_2edad8 *)((u8 *)hero_globals_base + 0x1D + playback_state->h * 0x70);
+    sound_slot_entry = (SoundSlot *)((u8 *)hero_globals_base + 0x1D + playback_state->h * 0x70);
     if (sound_slot_entry->owner == m && sound_slot_entry->flag74 != 0)
         return;
     if (fast_dec_timer(&playback_state->timer)) {
@@ -2227,9 +2226,9 @@ void update_sound_emitter_playback_at_random_position(char *m) {
             r.f[1] = random_float_between(-1.0f, 1.0f);
             r.f[2] = random_float_between(-1.0f, 1.0f);
             p = r.f;
-            matrix_mul_vec3(p, p, ((SoundEmitter_2edad8 *)m)->basis);
-            FastVecAdd(p, p, ((SoundEmitter_2edad8 *)m)->pos);
-            qcopy(((SoundSlot_2edad8 *)((u8 *)hero_globals_base + 0x1D + playback_state->h * 0x70))->pos, p);
+            matrix_mul_vec3(p, p, ((SoundEmitter *)m)->basis);
+            FastVecAdd(p, p, ((SoundEmitter *)m)->pos);
+            qcopy(((SoundSlot *)((u8 *)hero_globals_base + 0x1D + playback_state->h * 0x70))->pos, p);
         }
         if (playback_state->hi > 0) {
             int t = random_integer_below(playback_state->hi - playback_state->lo);

@@ -62,7 +62,7 @@ typedef struct {
     int color[4];
     float uv[4][2];
     long unk70, tex, unk80, unk88;
-} Packet_2fd1a0;
+} Packet;
 extern short dual_texture_mesh_blend_color_a_selector_gp;
 extern short dual_texture_mesh_blend_color_b_selector_gp;
 extern short dual_texture_mesh_blend_alpha_c_selector_gp;
@@ -92,7 +92,7 @@ extern void draw_world_quad(void *, void *, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l06/gameplay/entities/002fd1a0.c, FUN_L06_002fd1a0. */
 void draw_dual_texture_50_quad_mesh(void) {
-    Packet_2fd1a0 first, second;
+    Packet first, second;
     float matrix[4][4] __attribute__((aligned(16)));
     float vec2[4] __attribute__((aligned(16)));
     float vec1[4] __attribute__((aligned(16)));
@@ -900,11 +900,11 @@ typedef struct Obj_3024C8 {
     char pad00[0x86];
     short f86;
 } Obj_3024C8;
-typedef struct Busy_3024C8 {
+typedef struct Busy {
     int f0;
     char pad4[0x20];
     int f24;
-} Busy_3024C8;
+} Busy;
 
 extern void attach_shared_manipulator_to_matching_class_moby(char *);
 extern float FastVecDist(void *, void *);
@@ -1075,8 +1075,8 @@ void fred_update(Moby *moby) {
                 set_camera_position(pos);
                 set_camera_rotation(rot);
                 if (fred_vars->f178 >= 1.0f ||
-                    (((Busy_3024C8 *)blarg_help_popup_state)->f0 == 0 &&
-                     ((Busy_3024C8 *)blarg_help_popup_state)->f24 == -1 && fred_vars->f178 > 0.2f)) {
+                    (((Busy *)blarg_help_popup_state)->f0 == 0 && ((Busy *)blarg_help_popup_state)->f24 == -1 &&
+                     fred_vars->f178 > 0.2f)) {
                     ApproachValue(&blarg_fade_level, 1.0f, g_frame_time * 4.0f);
                 } else {
                     ApproachValue(&blarg_fade_level, 0.0f, g_frame_time * 4.0f);
@@ -1227,14 +1227,14 @@ typedef struct {
     float f38;
     char pad3C[0x70 - 0x3C];
     float v70[4];
-} Ent_302FE8;
+} Ent;
 
 typedef struct {
     char pad0[0x160];
     float f160;
     int i164;
     int i168;
-} Snd_302FE8;
+} Snd;
 
 /* Update for moby class 1108 on level 06: six-state machine that spawns, animates and retires the moby.
  * The three vectors are one set at function level (va, vc, vb: retail's sp+0, 0x10, 0x20). State 3 keeps the
@@ -1282,8 +1282,8 @@ void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
             clear_moby_list_state_18_r(d->list_b);
             clear_moby_list_state_18_r(d->list_c);
             set_moby_state_3_r(level_mobys_q_p + (d->moby_a << 8));
-            ((Ent_302FE8 *)blarg_scene_points_r)[d->scene_point].f38 =
-                ((Ent_302FE8 *)blarg_scene_points_r)[d->scene_point].f38 + 10.0f;
+            ((Ent *)blarg_scene_points_r)[d->scene_point].f38 =
+                ((Ent *)blarg_scene_points_r)[d->scene_point].f38 + 10.0f;
             {
                 int *p = (int *)blarg_paths_r[d->path_id];
                 float r2;
@@ -1356,8 +1356,8 @@ void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
                 allocate_voice_for_group_entry_r(0, 0, (int)((Hero *)(hero_globals_base_r2 + 0xE1D))->moby);
                 d->spark_timer =
                     truncate_float_to_s32_r2(multiply_global_factor_r(random_float_between_r(480.0f, 600.0f)));
-                ((Snd_302FE8 *)referencePosition_r)->f160 = 0.4f;
-                ((Snd_302FE8 *)referencePosition_r)->i168 = scale_ticks_r(0x3C);
+                ((Snd *)referencePosition_r)->f160 = 0.4f;
+                ((Snd *)referencePosition_r)->i168 = scale_ticks_r(0x3C);
             }
             if (level_game_mode_q_r == 0)
                 AddDrawCallback_r(draw_pulsing_timer_display_r, m);
@@ -1445,7 +1445,7 @@ typedef int u128_3039B8 __attribute__((mode(TI)));
 typedef struct {
     char pad0[0x24];
     float f24;
-} Cls_3039B8;
+} Cls;
 typedef struct Data_3039B8 {
     char pad0[0x20];
     char area[0x40];
@@ -1474,7 +1474,7 @@ typedef struct Data_3039B8 {
 typedef struct {
     char pad0[0x21];
     unsigned char f21;
-} Flags_3039B8;
+} Flags;
 typedef struct {
     int f0;
     char pad4[0x20];
@@ -1534,7 +1534,7 @@ void ShuttleUpdate(Moby *moby) {
 
     qcopy(old_pos, ((float *)&moby->pos));
     qcopy(old_rot, ((float *)&moby->rot));
-    moby->scale = ((Cls_3039B8 *)moby->pclass)->f24 * shuttle_scale;
+    moby->scale = ((Cls *)moby->pclass)->f24 * shuttle_scale;
     if (class_076a_moby_spawn_requested_gp != 0) {
         class_076a_moby_spawn_requested_gp = 0;
         *(u128_3039B8 *)b = *(u128_3039B8 *)&((struct Hero *)(hero_globals_base + 0xE1D))->motion.body_center.i[0];
@@ -1643,8 +1643,8 @@ void ShuttleUpdate(Moby *moby) {
                     qcopy(((float *)&moby->rot), (char *)(ofs + base + 0x70));
                     d->sel = 1;
                     blarg_shuttle_at_second_stop = 1;
-                    if (((Flags_3039B8 *)(special_items_base_r + 0x13B))->f21 == 0) {
-                        ((Flags_3039B8 *)(special_items_base_r + 0x13B))->f21 = 1;
+                    if (((Flags *)(special_items_base_r + 0x13B))->f21 == 0) {
+                        ((Flags *)(special_items_base_r + 0x13B))->f21 = 1;
                     }
                 }
             }
@@ -1683,11 +1683,11 @@ void ShuttleUpdate(Moby *moby) {
                 qcopy(((float *)&moby->pos), (char *)(ofs + base + 0x30));
                 qcopy(((float *)&moby->rot), (char *)(ofs + base + 0x70));
                 euler_rotation_basis(((float *)&moby->rot_row0), ((float *)&moby->rot));
-                moby->scale = ((Cls_3039B8 *)moby->pclass)->f24;
+                moby->scale = ((Cls *)moby->pclass)->f24;
                 if (d->sel == 1) {
                     blarg_shuttle_at_second_stop = 1;
-                    if (((Flags_3039B8 *)(special_items_base_r + 0x13B))->f21 == 0) {
-                        ((Flags_3039B8 *)(special_items_base_r + 0x13B))->f21 = 1;
+                    if (((Flags *)(special_items_base_r + 0x13B))->f21 == 0) {
+                        ((Flags *)(special_items_base_r + 0x13B))->f21 = 1;
                     }
                 } else {
                     blarg_shuttle_at_second_stop = 0;
@@ -1833,13 +1833,13 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 typedef struct {
     float x, y, z, w;
-} __attribute__((aligned(16))) PathPoint_303160;
+} __attribute__((aligned(16))) PathPoint;
 typedef struct {
     int n;
     int pad[3];
-    PathPoint_303160 p[1];
-} Path_303160;
-struct PathRide_303160 {
+    PathPoint p[1];
+} Path;
+struct PathRide {
     char pad0[0x60];
     int path_a[5];
     int path_b[5];
@@ -1865,10 +1865,10 @@ extern char *blarg_scene_points MACRO_ADDR;
 /* Moves the moby along three paths and plays the sound marked on the path points. */
 int update_shuttle_path_ride(char *moby, int path) {
     float rotation[4], position[4];
-    struct PathRide_303160 *ride = ((struct PathRide_303160 *)((Moby *)moby)->pvars);
-    Path_303160 *first_path = ((Path_303160 **)blarg_paths)[ride->path_a[path]];
-    Path_303160 *middle_path = ((Path_303160 **)blarg_paths)[ride->path_b[path]];
-    Path_303160 *third_path = ((Path_303160 **)blarg_paths)[ride->path_c[path]];
+    struct PathRide *ride = ((struct PathRide *)((Moby *)moby)->pvars);
+    Path *first_path = ((Path **)blarg_paths)[ride->path_a[path]];
+    Path *middle_path = ((Path **)blarg_paths)[ride->path_b[path]];
+    Path *third_path = ((Path **)blarg_paths)[ride->path_c[path]];
     float time, first_index_f, first_fraction, third_fraction, angle, rate;
     int first_index, middle_index, third_index, marker, prev_marker;
     char *sound;
@@ -2213,15 +2213,15 @@ typedef struct {
     /* 0x30 */ V_3054D8 a;
     /* 0x40 */ char pad40[0x30];
     /* 0x70 */ V_3054D8 b;
-} Cut_3054D8;
+} Cut;
 typedef struct {
     char pad0[0x160];
     float f160;
     int pad164;
     int f168;
-} Fx_3054D8;
+} Fx;
 extern Moby *level_mobys_q_r __asm__("D_L06_00160058") MACRO_ADDR;
-extern Cut_3054D8 *blarg_scene_points_r2 __asm__("D_L06_0016016C") MACRO_ADDR;
+extern Cut *blarg_scene_points_r2 __asm__("D_L06_0016016C") MACRO_ADDR;
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern float blarg_fade_level_r __asm__("D_L06_0015F4FC") MACRO_ADDR;
 extern float D_L06_00162228_3054D8 SDATA(D_L06_00162228);
@@ -2365,8 +2365,8 @@ void red_button_update(Moby *m) {
                 v10.y = -0.2617993878f;
                 v10.z = ((struct Hero *)(hero_globals_base_r2 + 0xE1D))->motion.rot.f[2];
                 CameraScript_r2(&v20, &v10, 2, scale_ticks_r2(0x12C), 0);
-                ((Fx_3054D8 *)referencePosition_r)->f160 = 0.3f;
-                ((Fx_3054D8 *)referencePosition_r)->f168 = scale_ticks_r2(0x2D);
+                ((Fx *)referencePosition_r)->f160 = 0.3f;
+                ((Fx *)referencePosition_r)->f168 = scale_ticks_r2(0x2D);
                 allocate_voice_for_group_entry_r2(0, 0, m);
             }
             break;

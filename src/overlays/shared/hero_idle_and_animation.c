@@ -3447,7 +3447,7 @@ typedef struct {
     unsigned short h1E;
     char p20[0x1C];
     int i3C;
-} Obj_20C568;
+} Obj;
 extern char D_0013F450_20C568[] __asm__("D_0013F450");
 extern char coll_hit_result_r[] __asm__("D_L00_00173F40");
 extern float g_frame_time_r3 __asm__("D_0015EE6C") MACRO_ADDR;
@@ -3460,8 +3460,8 @@ extern int coll_line_r2(void *, void *, int, int, int) __asm__("func_L00_001EFFF
 extern int CollType_r2(void) __asm__("func_L00_001F3958");
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
 extern float fast_atan2_r3(float, float) __asm__("func_L00_001FF860");
-extern Obj_20C568 *GetFlaggedPvarWord_r(char *) __asm__("func_L00_0025D390");
-extern Obj_20C568 *moby_get_ride_transform(char *);
+extern Obj *GetFlaggedPvarWord_r(char *) __asm__("func_L00_0025D390");
+extern Obj *moby_get_ride_transform(char *);
 extern int coll_capsule_r(float, float, void *, int, int) __asm__("func_L00_001F1D20");
 extern float FastAddRots_r2(float, float) __asm__("func_001FA748");
 extern float FastDiffRots_r2(float, float) __asm__("func_001FA850");
@@ -3473,8 +3473,8 @@ void check_ledge_grab(void) {
     float down, fwd, up, top, drop, rise, back;
     float speed, ang, d;
     int go, found, edge, i, j, hit, ok, r;
-    Obj_20C568 *a;
-    Obj_20C568 *b;
+    Obj *a;
+    Obj *b;
 
     if (((Hero *)D_0013F450_20C568)->unk308 == 2)
         return;

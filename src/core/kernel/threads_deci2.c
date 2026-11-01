@@ -111,7 +111,7 @@ typedef struct {
     int waitType;
     int waitId;
     int wakeupCount;
-} ThreadParam_1195A0;
+} ThreadParam;
 
 typedef struct {
     int currentCount;
@@ -120,11 +120,11 @@ typedef struct {
     int numWaitThreads;
     unsigned int attr;
     unsigned int option;
-} SemaParam_1195A0;
+} SemaParam;
 
 int InitThread(void) {
-    ThreadParam_1195A0 tp;
-    SemaParam_1195A0 sp;
+    ThreadParam tp;
+    SemaParam sp;
     int tid;
 
     if (top_thread_id > 0) {

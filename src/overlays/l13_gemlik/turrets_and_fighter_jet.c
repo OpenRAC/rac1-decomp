@@ -501,10 +501,10 @@ void compute_elevator_camera_pose(unsigned char *moby, float *v, float *w) {
     *(int *)(w + 1) = 0;
 }
 typedef int Q_2B5368 __attribute__((mode(TI)));
-typedef struct Cls_2B5368 {
+typedef struct Cls {
     char pad0[0x24];
     float scale;
-} Cls_2B5368;
+} Cls;
 typedef struct Data_2B5368 {
     char pad0[0x40];
     Moby *target;
@@ -556,7 +556,7 @@ void blarg_turret_update(Moby *m) {
     }
     switch ((unsigned char)m->state) {
         case 0:
-            m->scale = ((Cls_2B5368 *)m->pclass)->scale * 1.5f;
+            m->scale = ((Cls *)m->pclass)->scale * 1.5f;
             data->gun = spawn_blarg_turret_child_r(m);
             data->f54 = m->rot.z;
             if (m->prev_seq != 0) {

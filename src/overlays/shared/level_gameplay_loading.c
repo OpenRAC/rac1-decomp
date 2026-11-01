@@ -24,19 +24,19 @@ typedef struct G137C80_240398 {
         int b;
     } e[1];
 } G137C80_240398;
-typedef struct Lvl_240398 {
+typedef struct Lvl {
     char pad0[0x26];
     short f26;
-} Lvl_240398;
-typedef struct Hdr_240398 {
+} Lvl;
+typedef struct Hdr {
     int a; /* 0x00 */
     int off; /* 0x04 */
     int b; /* 0x08 */
     int c; /* 0x0C */
-} Hdr_240398;
-typedef struct Rec_240398 {
+} Hdr;
+typedef struct Rec {
     short h[8];
-} Rec_240398;
+} Rec;
 typedef struct Q_240398 {
     int w[4];
 } Q_240398;
@@ -46,10 +46,10 @@ extern char *level_archive_base_r __asm__("D_0015EF54") MACRO_ADDR;
 extern int depth_buffer_address_r[2] __asm__("D_0015EF88") MACRO_ADDR;
 extern Q_240398 moby_texture_records_r[] __asm__("D_L00_001AEF40");
 extern int moby_texture_count_r __asm__("D_L00_00160088") MACRO_ADDR;
-extern Rec_240398 D_L00_0015FCC0_240398 SDATA(D_L00_0015FCC0);
-extern Rec_240398 D_L00_0015FCD0_240398 SDATA(D_L00_0015FCD0);
-extern Rec_240398 first_record_m240398 __asm__("D_L00_0015FCC0") MACRO_ADDR;
-extern Rec_240398 second_record_m240398 __asm__("D_L00_0015FCD0") MACRO_ADDR;
+extern Rec D_L00_0015FCC0_240398 SDATA(D_L00_0015FCC0);
+extern Rec D_L00_0015FCD0_240398 SDATA(D_L00_0015FCD0);
+extern Rec first_record_m240398 __asm__("D_L00_0015FCC0") MACRO_ADDR;
+extern Rec second_record_m240398 __asm__("D_L00_0015FCD0") MACRO_ADDR;
 extern unsigned char D_L00_0015FCE0_240398 SDATA(D_L00_0015FCE0);
 extern unsigned char g_class_slot_r[] __asm__("D_L00_00197F40");
 extern unsigned int moby_texture_addrs_r[] __asm__("D_L00_00199E00");
@@ -81,12 +81,12 @@ char *load_level_texture_bank(char *buf, int *tbl) {
     int idx2;
 
     FastMemCopy_r(buf, level_archive_base_r,
-                  disc_table_r.e[((Lvl_240398 *)(level_render_state_base_r + 0x2C2))->f26 + 1].a << 11);
-    a = ((Hdr_240398 *)buf)->a;
-    off = ((Hdr_240398 *)buf)->off;
+                  disc_table_r.e[((Lvl *)(level_render_state_base_r + 0x2C2))->f26 + 1].a << 11);
+    a = ((Hdr *)buf)->a;
+    off = ((Hdr *)buf)->off;
     p = buf + off;
-    b = ((Hdr_240398 *)buf)->b;
-    c = ((Hdr_240398 *)buf)->c;
+    b = ((Hdr *)buf)->b;
+    c = ((Hdr *)buf)->c;
     do {
         if (i == 0) {
             sceGsSetDefLoadImage_r(img, (depth_buffer_address_r[1] + tbl[0x2B]) >> 8, 1, 0x13, 0, 0, 0x40, 0x40);
@@ -121,9 +121,9 @@ char *load_level_texture_bank(char *buf, int *tbl) {
     FastMemCopy_r(buf, base + off + 0x430, 0x14000);
     buf += 0x14000;
     D_L00_0015FCE0_240398 = moby_texture_count_r;
-    if (g_class_slot_r[first_class_ids_r[((Lvl_240398 *)(level_render_state_base_r + 0x2C2))->f26]] == 0xFF) {
+    if (g_class_slot_r[first_class_ids_r[((Lvl *)(level_render_state_base_r + 0x2C2))->f26]] == 0xFF) {
         register_moby_class_r(base + a, &D_L00_0015FCC0_240398 - moby_texture_count_r, &D_L00_0015FCE0_240398,
-                              first_class_ids_r[((Lvl_240398 *)(level_render_state_base_r + 0x2C2))->f26]);
+                              first_class_ids_r[((Lvl *)(level_render_state_base_r + 0x2C2))->f26]);
     }
     idx2 = moby_texture_count_r + 1;
     second_record_m240398.h[5] = tbl[0x2E] >> 8;
@@ -133,9 +133,9 @@ char *load_level_texture_bank(char *buf, int *tbl) {
     FastMemCopy_r(buf, base + c + 0x430, 0x4000);
     buf += 0x4000;
     D_L00_0015FCE0_240398 = moby_texture_count_r;
-    if (g_class_slot_r[second_class_ids_r[((Lvl_240398 *)(level_render_state_base_r + 0x2C2))->f26]] == 0xFF) {
+    if (g_class_slot_r[second_class_ids_r[((Lvl *)(level_render_state_base_r + 0x2C2))->f26]] == 0xFF) {
         register_moby_class_r(base + b, &D_L00_0015FCD0_240398 - moby_texture_count_r, &D_L00_0015FCE0_240398,
-                              second_class_ids_r[((Lvl_240398 *)(level_render_state_base_r + 0x2C2))->f26]);
+                              second_class_ids_r[((Lvl *)(level_render_state_base_r + 0x2C2))->f26]);
     }
     D_L00_00160624_240398 = 1;
     D_L00_00160628_240398 = 1;
@@ -323,9 +323,9 @@ typedef struct {
 typedef struct {
     int f0;
     int f4;
-} PvarEnt_422D8;
+} PvarEnt;
 typedef int u128_422D8 __attribute__((mode(TI)));
-typedef struct TieMtx_422D8 {
+typedef struct TieMtx {
     float m0[3];
     float fC;
     float m1[3];
@@ -336,28 +336,28 @@ typedef struct TieMtx_422D8 {
     float f3C;
     char pad40[0x100];
     char f140[0x80];
-} TieMtx_422D8;
-typedef struct TieInst_422D8 {
+} TieMtx;
+typedef struct TieInst {
     float f0[3];
     float fC;
-    TieMtx_422D8 *f10;
+    TieMtx *f10;
     float f14;
     unsigned short f18;
     unsigned char f1A;
     unsigned char f1B;
     unsigned short f1C;
     unsigned short f1E;
-} TieInst_422D8;
+} TieInst;
 typedef struct {
     char pad0[0x26];
     unsigned short f26;
-    TieInst_422D8 *f28;
+    TieInst *f28;
     char pad2C[4];
     float f30[3];
     float f3C;
     float f40;
-} TieClass_422D8;
-typedef struct ShrubMtx_422D8 {
+} TieClass;
+typedef struct ShrubMtx {
     float m0[3];
     int fC;
     float m1[3];
@@ -366,8 +366,8 @@ typedef struct ShrubMtx_422D8 {
     int f2C;
     float m3[3];
     float f3C;
-} ShrubMtx_422D8;
-typedef struct ShrubInst_422D8 {
+} ShrubMtx;
+typedef struct ShrubInst {
     float f0[3];
     float fC;
     float f10;
@@ -378,16 +378,16 @@ typedef struct ShrubInst_422D8 {
     unsigned char f1B;
     unsigned short f1C;
     unsigned short f1E;
-} ShrubInst_422D8;
+} ShrubInst;
 typedef struct {
     char pad0[0xC];
     float fC;
     char pad10[6];
     unsigned short f16;
-    ShrubInst_422D8 *f18;
+    ShrubInst *f18;
     float *f1C;
     float f20;
-} ShrubClass_422D8;
+} ShrubClass;
 typedef struct {
     char pad0[0x36];
     unsigned short f36;
@@ -396,21 +396,21 @@ typedef struct {
     char pad3C;
     unsigned char f3D;
     char pad3E[2];
-} Tfrag_422D8;
+} Tfrag;
 typedef struct {
     char pad0[0x48];
     int f48;
     int f4C;
     char pad50[0x30];
-} Light_422D8;
+} Light;
 typedef struct {
     int f0;
     int pad4[3];
-} Text_422D8;
+} Text;
 typedef struct {
     char pad0[0x2C];
     int f2C;
-} TextHdr_422D8;
+} TextHdr;
 typedef struct {
     float f0;
     float f4;
@@ -420,23 +420,23 @@ typedef struct {
     float f14;
     float f18;
     int f1C;
-} Cuboid_422D8;
+} Cuboid;
 typedef struct {
     char pad0[8];
     int f8;
     char padC[0x84];
-} SndInst_422D8;
+} SndInst;
 typedef struct {
     char pad0[0xD90];
     int fD90;
-    SndInst_422D8 *fD94;
-} SndGlob_422D8;
+    SndInst *fD94;
+} SndGlob;
 typedef struct {
     u128_422D8 f0;
     char *f10;
     int f14;
     char pad18[8];
-} Spline_422D8;
+} Spline;
 typedef struct {
     Moby *f0;
     char pad4[0x22];
@@ -445,7 +445,7 @@ typedef struct {
     int f30;
     int f34;
     int f38;
-} Ship_422D8;
+} Ship;
 
 extern void Load_r(void *, int, int) __asm__("func_002176C8");
 extern void flush_cache(int);
@@ -511,7 +511,7 @@ extern float level_fog_far_distance MACRO_ADDR;
 extern float level_fog_near_intensity MACRO_ADDR;
 extern float level_fog_far_intensity MACRO_ADDR;
 extern float veldin1_hero_fall_state_height MACRO_ADDR;
-extern Ship_422D8 level_render_state;
+extern Ship level_render_state;
 extern float level_tfrag_draw_distance MACRO_ADDR;
 extern float level_tie_draw_distance MACRO_ADDR;
 extern float shrub_draw_distance MACRO_ADDR;
@@ -524,29 +524,29 @@ extern char level_moby_lights[];
 extern char too_many_moby_lights_msg[];
 extern char env_zone_spheres[];
 extern int env_zone_count MACRO_ADDR;
-extern Light_422D8 env_zone_lights[];
+extern Light env_zone_lights[];
 extern int tfrag_count MACRO_ADDR;
-extern Tfrag_422D8 *tfrag_records MACRO_ADDR;
+extern Tfrag *tfrag_records MACRO_ADDR;
 extern int g_game_language MACRO_ADDR;
-extern TextHdr_422D8 help_popup_state;
-extern Text_422D8 *help_text_entries MACRO_ADDR;
-extern TieInst_422D8 *tie_instances MACRO_ADDR;
-extern TieInst_422D8 *tie_instances_end MACRO_ADDR;
-extern TieMtx_422D8 *level_tie_matrices MACRO_ADDR;
+extern TextHdr help_popup_state;
+extern Text *help_text_entries MACRO_ADDR;
+extern TieInst *tie_instances MACRO_ADDR;
+extern TieInst *tie_instances_end MACRO_ADDR;
+extern TieMtx *level_tie_matrices MACRO_ADDR;
 extern int tie_instance_count MACRO_ADDR;
 extern unsigned char tie_class_slot_by_id[];
-extern TieClass_422D8 *level_tie_classes[];
-extern ShrubInst_422D8 *shrub_instances MACRO_ADDR;
-extern ShrubInst_422D8 *shrub_instances_end MACRO_ADDR;
-extern ShrubMtx_422D8 *shrub_matrices MACRO_ADDR;
+extern TieClass *level_tie_classes[];
+extern ShrubInst *shrub_instances MACRO_ADDR;
+extern ShrubInst *shrub_instances_end MACRO_ADDR;
+extern ShrubMtx *shrub_matrices MACRO_ADDR;
 extern unsigned char *shrub_vertex_colors MACRO_ADDR;
 extern int level_shrub_count MACRO_ADDR;
 extern int shrub_vertex_color_dma_ref_tag[];
 extern unsigned char shrub_class_slot_by_id[];
-extern ShrubClass_422D8 *shrub_class_table[];
-extern Cuboid_422D8 *camera_descriptors MACRO_ADDR;
+extern ShrubClass *shrub_class_table[];
+extern Cuboid *camera_descriptors MACRO_ADDR;
 extern int gCameraDefCountLvl MACRO_ADDR;
-extern SndGlob_422D8 voice_pool;
+extern SndGlob voice_pool;
 extern Moby *moby_array_start MACRO_ADDR;
 extern Moby *level_mobys_end MACRO_ADDR;
 extern Moby *moby_array_last MACRO_ADDR;
@@ -563,7 +563,7 @@ extern int level_path_count MACRO_ADDR;
 extern char *level_path_data MACRO_ADDR;
 extern char *level_paths[];
 extern int level_rail_count MACRO_ADDR;
-extern Spline_422D8 *level_rails MACRO_ADDR;
+extern Spline *level_rails MACRO_ADDR;
 extern char *level_clip_volumes MACRO_ADDR;
 extern int level_clip_volume_count MACRO_ADDR;
 extern char *level_cuboids MACRO_ADDR;
@@ -697,7 +697,7 @@ char *load_level_gameplay(int arg0) {
         env_zone_count = *(int *)p;
         p += 0x10;
         if (env_zone_count != 0) {
-            Light_422D8 *l;
+            Light *l;
             int i;
 
             copy_memory_by_alignment(env_zone_spheres, p, env_zone_count << 4);
@@ -748,7 +748,7 @@ char *load_level_gameplay(int arg0) {
         p += 4;
         size = *(int *)p;
         p += 4;
-        help_text_entries = (Text_422D8 *)mem;
+        help_text_entries = (Text *)mem;
         size += 3;
         size &= ~3;
         size -= 8;
@@ -766,7 +766,7 @@ char *load_level_gameplay(int arg0) {
         int i;
         int last;
 
-        tie_instances = (TieInst_422D8 *)mem;
+        tie_instances = (TieInst *)mem;
         p += 0x10;
         tie_instance_count = n;
         mem += n << 5;
@@ -774,7 +774,7 @@ char *load_level_gameplay(int arg0) {
             FastMemSet(tie_instances, 0, n << 5);
         }
         mem = (char *)(((u32)mem + 0x3F) & 0xFFFFFFC0);
-        level_tie_matrices = (TieMtx_422D8 *)mem;
+        level_tie_matrices = (TieMtx *)mem;
         mem += tie_instance_count * 0x1C0;
         if (tie_instance_count != 0) {
             FastMemSet(level_tie_matrices, 0, tie_instance_count * 0x1C0);
@@ -782,8 +782,8 @@ char *load_level_gameplay(int arg0) {
         last = -1;
         tie_instances_end = tie_instances + tie_instance_count;
         for (i = 0; i < tie_instance_count; i++) {
-            TieInst_422D8 *inst = tie_instances + i;
-            TieMtx_422D8 *mtx = level_tie_matrices + i;
+            TieInst *inst = tie_instances + i;
+            TieMtx *mtx = level_tie_matrices + i;
             int id;
             float scale;
 
@@ -838,7 +838,7 @@ char *load_level_gameplay(int arg0) {
         int last;
         int i;
 
-        shrub_instances = (ShrubInst_422D8 *)mem;
+        shrub_instances = (ShrubInst *)mem;
         p += 0x10;
         level_shrub_count = n;
         mem += n << 5;
@@ -846,7 +846,7 @@ char *load_level_gameplay(int arg0) {
             FastMemSet(shrub_instances, 0, n << 5);
         }
         mem = (char *)(((u32)mem + 0x3F) & 0xFFFFFFC0);
-        shrub_matrices = (ShrubMtx_422D8 *)mem;
+        shrub_matrices = (ShrubMtx *)mem;
         mem += level_shrub_count << 6;
         if (level_shrub_count != 0) {
             FastMemSet(shrub_matrices, 0, level_shrub_count << 6);
@@ -861,8 +861,8 @@ char *load_level_gameplay(int arg0) {
         shrub_vertex_color_dma_ref_tag[1] = (int)shrub_vertex_colors;
         shrub_instances_end = shrub_instances + level_shrub_count;
         for (i = 0; i < level_shrub_count; i++) {
-            ShrubInst_422D8 *inst = shrub_instances + i;
-            ShrubMtx_422D8 *mtx = shrub_matrices + i;
+            ShrubInst *inst = shrub_instances + i;
+            ShrubMtx *mtx = shrub_matrices + i;
             int cls = shrub_class_slot_by_id[*(int *)p];
             float scale;
 
@@ -971,7 +971,7 @@ char *load_level_gameplay(int arg0) {
         int n = *(int *)p;
         int i;
 
-        camera_descriptors = (Cuboid_422D8 *)mem;
+        camera_descriptors = (Cuboid *)mem;
         p += 0x10;
         gCameraDefCountLvl = n;
         mem += n << 5;
@@ -1004,12 +1004,12 @@ char *load_level_gameplay(int arg0) {
             int size = n * 0x90;
             int i;
 
-            voice_pool.fD94 = (SndInst_422D8 *)mem;
+            voice_pool.fD94 = (SndInst *)mem;
             mem += size;
             mem = (char *)(((u32)mem + 0x3F) & 0xFFFFFFC0);
             FastMemSet(voice_pool.fD94, 0, size);
             for (i = 0; i < voice_pool.fD90; i++) {
-                SndInst_422D8 *e = voice_pool.fD94 + i;
+                SndInst *e = voice_pool.fD94 + i;
 
                 copy_memory_by_alignment(e, p, 0x90);
                 p += 0x90;
@@ -1193,7 +1193,7 @@ char *load_level_gameplay(int arg0) {
     }
     if (hdr->f58 != 0) {
         char *pv = (char *)hdr + hdr->f58;
-        PvarEnt_422D8 *tbl = (PvarEnt_422D8 *)((char *)hdr + hdr->f54);
+        PvarEnt *tbl = (PvarEnt *)((char *)hdr + hdr->f54);
         int i;
         Moby *m;
 
@@ -1246,7 +1246,7 @@ char *load_level_gameplay(int arg0) {
     }
     if (hdr->f50 != 0) {
         int *q = (int *)((char *)hdr + hdr->f50);
-        PvarEnt_422D8 *tbl = (PvarEnt_422D8 *)((char *)hdr + hdr->f54);
+        PvarEnt *tbl = (PvarEnt *)((char *)hdr + hdr->f54);
 
         while (q[0] >= 0) {
             int x = tbl[q[0]].f0;
@@ -1264,7 +1264,7 @@ char *load_level_gameplay(int arg0) {
     }
     if (hdr->f5C != 0) {
         int *q = (int *)((char *)hdr + hdr->f5C);
-        PvarEnt_422D8 *tbl = (PvarEnt_422D8 *)((char *)hdr + hdr->f54);
+        PvarEnt *tbl = (PvarEnt *)((char *)hdr + hdr->f54);
 
         while (q[0] >= 0) {
             int x = tbl[q[0]].f0;
@@ -1336,7 +1336,7 @@ char *load_level_gameplay(int arg0) {
     if (hdr->f4C != 0) {
         char *q = (char *)hdr + hdr->f4C;
         char *base = mem;
-        PvarEnt_422D8 *tbl;
+        PvarEnt *tbl;
         int size;
         int n;
         int i;
@@ -1351,7 +1351,7 @@ char *load_level_gameplay(int arg0) {
             FastMemCopy(base, q, size);
         }
         q += size;
-        tbl = (PvarEnt_422D8 *)((char *)hdr + hdr->f54);
+        tbl = (PvarEnt *)((char *)hdr + hdr->f54);
         for (i = 0; i < n; i++) {
             int w = *(int *)q;
             int hi = w >> 16;
@@ -1396,12 +1396,12 @@ char *load_level_gameplay(int arg0) {
         level_rail_count = n;
         src = q + *(int *)(q + 4);
         size = *(int *)(q + 8);
-        level_rails = (Spline_422D8 *)mem;
+        level_rails = (Spline *)mem;
         mem += n << 5;
         q += 0x10;
         mem = (char *)(((u32)mem + 0x3F) & 0xFFFFFFC0);
         if (n > 0) {
-            Spline_422D8 *e = level_rails;
+            Spline *e = level_rails;
 
             i = n;
             do {
@@ -1677,7 +1677,7 @@ char *load_level_gameplay(int arg0) {
             }
         }
         if (bad2) {
-            TieInst_422D8 *t;
+            TieInst *t;
             int cnt = 0;
             int k = 0;
 
@@ -1716,7 +1716,7 @@ char *load_level_gameplay(int arg0) {
         g_debug_menu[7] = 2;
     } else {
         Moby *m;
-        TieInst_422D8 *t;
+        TieInst *t;
         int i;
 
         STUB_printf(no_occlusion_data_msg);
@@ -2358,13 +2358,13 @@ typedef struct {
     u8 pad[0x12E8];
     P2_245610 x[10];
     P2_245610 y[1];
-} Tab_245610;
+} Tab;
 typedef struct {
     u8 pad[0x5C];
     u8 *buf;
     s32 ptr[70];
 } H_245610;
-extern Tab_245610 disc_table;
+extern Tab disc_table;
 extern H_245610 cutscene_state_r2 __asm__("D_L00_0016C960");
 void func_00217628_45FE0b(void *, s32, s32) __asm__("func_00217628");
 void func_00217748_45FE0b(s32) __asm__("func_00217748");

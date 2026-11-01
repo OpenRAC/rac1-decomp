@@ -5,7 +5,7 @@
 #include "structs/moby.h"
 #include "overlays/shared/moby_ground_collision.h"
 
-/* Ship rocket: homes in on a target. Same layout as Rocket_2E8040 below (defined after use). */
+/* Ship rocket: homes in on a target. Same layout as Rocket below (defined after use). */
 struct ShipRocketVars {
     Vec4A offset; /* 0x00: spherical offset from the source */
     Vec4A target_pos; /* 0x10: copy of the target position */
@@ -350,11 +350,11 @@ unsigned char *spawn_ship_rocket(char *src, char *pos, char *target, char *vec, 
     return moby;
 }
 typedef int Q_2E8040 __attribute__((mode(TI)));
-typedef struct Cls_2E8040 {
+typedef struct Cls {
     char pad0[0x24];
     float scale;
-} Cls_2E8040;
-typedef struct Rocket_2E8040 {
+} Cls;
+typedef struct Rocket {
     Vec4A vel;
     Vec4A tpos;
     Moby *owner;
@@ -365,11 +365,11 @@ typedef struct Rocket_2E8040 {
     float pitchv;
     float f38;
     int target_uid;
-} Rocket_2E8040;
-typedef struct Tex_2E8040 {
+} Rocket;
+typedef struct Tex {
     char pad0[0x5C];
     unsigned char *p5C;
-} Tex_2E8040;
+} Tex;
 
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
@@ -395,12 +395,12 @@ extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
-extern Tex_2E8040 gemlik_part_type_textures_r __asm__("D_L13_001B2680");
+extern Tex gemlik_part_type_textures_r __asm__("D_L13_001B2680");
 extern Vec4A gemlik_coll_hit_point_r __asm__("D_L13_001741E0");
 
 /* Update for the rocket: smoke trail, steering toward its target, collision and expiry. */
 void update_ship_rocket(Moby *m) {
-    Rocket_2E8040 *d = *(void **)&m->pvars;
+    Rocket *d = *(void **)&m->pvars;
     Vec4A old;
     Vec4A hitpos;
     Vec4A tmp;
@@ -410,7 +410,7 @@ void update_ship_rocket(Moby *m) {
     float t;
 
     qcopy(&old, &*(Vec4A *)&m->pos);
-    m->scale += (((Cls_2E8040 *)m->pclass)->scale - m->scale) * 0.1f;
+    m->scale += (((Cls *)m->pclass)->scale - m->scale) * 0.1f;
     *(Q_2E8040 *)&dir = 0;
     dir.x = random_float_between_r(-1.0f, 1.0f);
     dir.y = random_float_between_r(-1.0f, 1.0f);
@@ -430,7 +430,7 @@ void update_ship_rocket(Moby *m) {
         p = PartType44Spawn_r(&tmp, (float *)&vel, scale_ticks_r(0x3C), 0x7F, 0x606060, 3, 40000.0f, 1000.0f, 1.0f,
                               -0.0002f, 0.0f);
         if (p != 0) {
-            Tex_2E8040 *tex = &gemlik_part_type_textures_r;
+            Tex *tex = &gemlik_part_type_textures_r;
             p[2] = *tex->p5C;
             p[3] = 0x48;
         }

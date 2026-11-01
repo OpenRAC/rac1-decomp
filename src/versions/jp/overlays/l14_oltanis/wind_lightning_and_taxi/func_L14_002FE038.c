@@ -1,7 +1,7 @@
 void update_enemy_fighter_921(Moby *m) {
     Vec_2FE038 vt;
     Vec_2FE038 vb;
-    Jet_2FE038 *d = (struct Jet_2FE038 *)m->pvars;
+    Jet *d = (struct Jet *)m->pvars;
     unsigned short id;
 
     if (m->state == 0 &&
@@ -79,21 +79,20 @@ void update_enemy_fighter_921(Moby *m) {
                         is_point_inside_clip_volume_r3(
                             (*(Vec_2FE038 *)&((Hero *)(hero_globals_base_r + 0xE1D))->motion.pos), d->fA4) != 0) {
                         Moby *jet = (Moby *)(oltanis_mobys_r + (d->f8C << 8));
-                        Moby *seat = (Moby *)(oltanis_mobys_r + (((struct Jet_2FE038 *)jet->pvars)->f4 << 8));
+                        Moby *seat = (Moby *)(oltanis_mobys_r + (((struct Jet *)jet->pvars)->f4 << 8));
                         float pitch, yaw;
                         qcopy(vt, (*(Vec_2FE038 *)&seat->pos));
                         vt[2] = vt[2] + 4.0f;
-                        pitch = FastDiffRots_r(
-                            ((Cam_2FE038 *)oltanis_player_camera_r)->f154,
-                            -fast_atan2_r2(vec_distance_xy_r2(((Cam_2FE038 *)oltanis_player_camera_r)->pos, vt),
-                                           vt[2] - ((Cam_2FE038 *)oltanis_player_camera_r)->pos[2]));
+                        pitch =
+                            FastDiffRots_r(((Cam *)oltanis_player_camera_r)->f154,
+                                           -fast_atan2_r2(vec_distance_xy_r2(((Cam *)oltanis_player_camera_r)->pos, vt),
+                                                          vt[2] - ((Cam *)oltanis_player_camera_r)->pos[2]));
                         yaw = FastDiffRots_r(
-                            ((Cam_2FE038 *)oltanis_player_camera_r)->f158,
-                            fast_atan2_r2(
-                                (*(Vec_2FE038 *)&seat->pos)[0] - ((Cam_2FE038 *)oltanis_player_camera_r)->pos[0],
-                                (*(Vec_2FE038 *)&seat->pos)[1] - ((Cam_2FE038 *)oltanis_player_camera_r)->pos[1]));
+                            ((Cam *)oltanis_player_camera_r)->f158,
+                            fast_atan2_r2((*(Vec_2FE038 *)&seat->pos)[0] - ((Cam *)oltanis_player_camera_r)->pos[0],
+                                          (*(Vec_2FE038 *)&seat->pos)[1] - ((Cam *)oltanis_player_camera_r)->pos[1]));
                         if (yaw < 0.48869219f && pitch < 0.34906584f &&
-                            coll_line_r(((Cam_2FE038 *)oltanis_player_camera_r)->pos, vt, 0x12, seat, 0) == 0) {
+                            coll_line_r(((Cam *)oltanis_player_camera_r)->pos, vt, 0x12, seat, 0) == 0) {
                             *(int *)(level_moby_killed_r3 +
                                      (((short)m->save_id >> 5) * 4 + (g_current_level_index_m << 8))) |=
                                 1 << (m->save_id & 0x1F);

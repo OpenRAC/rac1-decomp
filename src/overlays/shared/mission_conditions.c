@@ -77,8 +77,8 @@ typedef struct {
     f32 y;
     f32 z;
     s32 flag;
-} MapPoint_24F170;
-extern MapPoint_24F170 race_gates_r[] __asm__("D_0013D6B8");
+} MapPoint;
+extern MapPoint race_gates_r[] __asm__("D_0013D6B8");
 extern unsigned char item_available[];
 
 /* mission status from the flags of map points 20, 22 and 24 and item flag 2: 1, 2 or 0 */

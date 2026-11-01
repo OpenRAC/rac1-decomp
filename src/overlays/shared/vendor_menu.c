@@ -69,18 +69,18 @@ typedef struct {
     s32 state;
     s32 unused;
     s32 sound;
-} VendorListEntry_29a400;
+} VendorListEntry;
 typedef struct {
     u8 pad[0xD0];
-    VendorListEntry_29a400 entries[16];
+    VendorListEntry entries[16];
     s32 count;
-} VendorList_29a400;
+} VendorList;
 typedef struct {
     s32 sound;
     s32 pad[4];
-} VendorSound_29a400;
-extern VendorList_29a400 vendor_menu_r2 __asm__("D_L00_001CA7C0");
-extern VendorSound_29a400 vendor_item_info[];
+} VendorSound;
+extern VendorList vendor_menu_r2 __asm__("D_L00_001CA7C0");
+extern VendorSound vendor_item_info[];
 extern u8 vendor_stock[] MACRO_ADDR;
 extern u8 item_available[];
 
@@ -487,7 +487,7 @@ typedef struct {
     s32 state;
     s32 unused;
     s32 sound;
-} VendorEntry_29a6b0;
+} VendorEntry;
 typedef struct {
     s32 f0;
     s32 f4;
@@ -511,7 +511,7 @@ typedef struct {
     Vec4 eye;
     Vec4 look;
     u8 pad80[0x50];
-    VendorEntry_29a6b0 entries[16];
+    VendorEntry entries[16];
     u8 pad210[0x210 - 0xD0 - 16 * 0x14];
     s32 count;
     u8 pad214[0xC];
@@ -836,7 +836,7 @@ typedef struct {
     s32 f8;
     s32 fC;
     s32 f10;
-} VBEnt_9CDE0;
+} VBEnt;
 typedef struct {
     u8 pad0[0x1C];
     char *cam;
@@ -851,22 +851,22 @@ typedef struct {
     s32 idx;
     s32 state;
     u8 pad60[0x70];
-    VBEnt_9CDE0 e[16];
+    VBEnt e[16];
     s32 count;
-} VBuy_9CDE0;
+} VBuy;
 typedef struct {
     u8 pad[0x10];
     u8 cnt;
-} VBSub_9CDE0;
+} VBSub;
 typedef struct {
     u8 pad[0x48];
-    VBSub_9CDE0 *sub;
-} VBCls_9CDE0;
+    VBSub *sub;
+} VBCls;
 typedef struct {
     u8 pad[0x424];
-    VBCls_9CDE0 *pc;
-} VBObj_9CDE0;
-extern VBuy_9CDE0 vendor_menu_r4 __asm__("D_L00_001CA7C0");
+    VBCls *pc;
+} VBObj;
+extern VBuy vendor_menu_r4 __asm__("D_L00_001CA7C0");
 extern struct {
     char pad[0x1C0];
     s32 held;
@@ -974,14 +974,14 @@ void update_vendor_purchase(void) {
             vendor_menu_r4.state = 3;
             m = vendor_menu_r4.obj;
             vendor_purchase_confirmed = 0;
-            MobyBlendAnimation(m + 0x400, 0, ((VBObj_9CDE0 *)m)->pc->sub->cnt - 1, 1);
+            MobyBlendAnimation(m + 0x400, 0, ((VBObj *)m)->pc->sub->cnt - 1, 1);
             moby_build_matrix(vendor_menu_r4.obj + 0x400);
         } else if (D_0013CA40_9CDE0.pressed & 0x40) {
             char *m;
             vendor_menu_r4.state = 3;
             m = vendor_menu_r4.obj;
             vendor_purchase_confirmed = 1;
-            MobyBlendAnimation(m + 0x400, 0, ((VBObj_9CDE0 *)m)->pc->sub->cnt - 1, 8);
+            MobyBlendAnimation(m + 0x400, 0, ((VBObj *)m)->pc->sub->cnt - 1, 8);
             moby_build_matrix(vendor_menu_r4.obj + 0x400);
         } else {
             MobyAnimAdvance(vendor_menu_r4.obj + 0x400);

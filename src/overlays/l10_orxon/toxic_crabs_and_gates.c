@@ -855,7 +855,7 @@ typedef struct {
     int count;
     char p4[0xC];
     V_2E52B0 nodes[1];
-} Path_2E52B0;
+} Path;
 typedef struct D_2E52B0 {
     char p0[0x10];
     struct Moby *f10;
@@ -909,7 +909,7 @@ typedef struct Hit_2E52B0 {
 typedef struct {
     char p0[0x11];
     unsigned char b11;
-} Flags_2E52B0;
+} Flags;
 extern void activate_waiting_moby_group_members_r(void *) __asm__("func_L10_002E14F8");
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
 extern float multiply_global_factor_r(float) __asm__("func_001F9878");
@@ -943,7 +943,7 @@ extern char menu_item_enabled_115_r[] __asm__("D_0013D50F");
 extern float D_L10_00161EC0_2E52B0 SDATA(D_L10_00161EC0);
 extern float D_L10_00161EAC_2E52B0 SDATA(D_L10_00161EAC);
 extern V_2E52B0 orxon_ground_hit_normal_r __asm__("D_L10_00174380");
-extern Path_2E52B0 *orxon_paths_r[] __asm__("D_L10_001B0C30");
+extern Path *orxon_paths_r[] __asm__("D_L10_001B0C30");
 
 /* Level 10 toxic crab: per-frame sight, target and state update. */
 void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
@@ -981,8 +981,8 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
     FastDecTimer_r(&d->h26);
     if ((unsigned int)A >= 2 && m->state != 0xB && m->state != 0xC) {
         if (g_current_level_index_m == LEVEL_ORXON && r != 0 && r->f20 != 0 && r->f20->oclass == 0x31A) {
-            if (d->f1AC != 0 && ((Flags_2E52B0 *)(menu_item_enabled_115_r + 1))->b11 == 0) {
-                ((Flags_2E52B0 *)(menu_item_enabled_115_r + 1))->b11 = 1;
+            if (d->f1AC != 0 && ((Flags *)(menu_item_enabled_115_r + 1))->b11 == 0) {
+                ((Flags *)(menu_item_enabled_115_r + 1))->b11 = 1;
                 PlayBankSound_r(1, 0, 0);
                 ShowBanner_r(0x53DB, -1);
             }
@@ -1808,7 +1808,7 @@ void nanotech_upgrade_vendor_update(char *m) {
     }
 }
 
-typedef struct EvData_2E9978 {
+typedef struct EvData {
     int f0;
     int f4;
     int f8;
@@ -1818,18 +1818,18 @@ typedef struct EvData_2E9978 {
     int f18;
     int f1C;
     int f20;
-} EvData_2E9978;
+} EvData;
 
-typedef struct HeroPos_2E9978 {
+typedef struct HeroPos {
     char pad0[0x200C];
     unsigned int f200C;
-} HeroPos_2E9978;
+} HeroPos;
 
-typedef struct Msg_2E9978 {
+typedef struct Msg {
     int f0;
     char pad4[0x20];
     int f24;
-} Msg_2E9978;
+} Msg;
 
 typedef struct Save_2E9978 {
     char pad0[0x358];
@@ -1861,7 +1861,7 @@ extern char special_items_base_r[] __asm__("D_0013D355");
 
 /* Level 10 moby update (class 1344): tracks nearby targets and fires the level's event messages. */
 void update_conditional_help_messages(Moby *m) {
-    EvData_2E9978 *d = (EvData_2E9978 *)((int *)m->pvars);
+    EvData *d = (EvData *)((int *)m->pvars);
     Moby *p;
     int flag;
     int sub;
@@ -1879,21 +1879,17 @@ void update_conditional_help_messages(Moby *m) {
         case 1:
             if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
                                               d->f0) != 0 &&
-                (((HeroPos_2E9978 *)(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos))->f200C <
-                     2 ||
-                 ((HeroPos_2E9978 *)(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos))->f200C ==
-                     9) &&
-                ((Msg_2E9978 *)orxon_help_state_r)->f0 == 0 && ((Msg_2E9978 *)orxon_help_state_r)->f24 == -1 &&
+                (((HeroPos *)(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos))->f200C < 2 ||
+                 ((HeroPos *)(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos))->f200C == 9) &&
+                ((Msg *)orxon_help_state_r)->f0 == 0 && ((Msg *)orxon_help_state_r)->f24 == -1 &&
                 *(unsigned short *)(help_stats_base_r + 0x4F5) == 0) {
                 Help_Request_r(0x2710, 0x35);
             }
             if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
                                               d->f4) != 0 &&
-                (((HeroPos_2E9978 *)(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos))->f200C <
-                     2 ||
-                 ((HeroPos_2E9978 *)(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos))->f200C ==
-                     9) &&
-                ((Msg_2E9978 *)orxon_help_state_r)->f0 == 0 && ((Msg_2E9978 *)orxon_help_state_r)->f24 == -1) {
+                (((HeroPos *)(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos))->f200C < 2 ||
+                 ((HeroPos *)(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos))->f200C == 9) &&
+                ((Msg *)orxon_help_state_r)->f0 == 0 && ((Msg *)orxon_help_state_r)->f24 == -1) {
                 if (((Flags_2E9978 *)(special_items_base_r + 0x13B))->f4 == 0) {
                     if (*(unsigned short *)(help_stats_base_r + 0x505) == 0) {
                         Help_Request_r(0x2712, 0x37);
@@ -1904,19 +1900,16 @@ void update_conditional_help_messages(Moby *m) {
                     }
                 }
             }
-            if (orxon_cinematic_mode_r == 0 && race_gates_base_r[7] != 0 &&
-                ((Msg_2E9978 *)orxon_help_state_r)->f0 == 0 && ((Msg_2E9978 *)orxon_help_state_r)->f24 == -1 &&
-                *(unsigned short *)(help_stats_base_r + 0x4FD) == 0) {
+            if (orxon_cinematic_mode_r == 0 && race_gates_base_r[7] != 0 && ((Msg *)orxon_help_state_r)->f0 == 0 &&
+                ((Msg *)orxon_help_state_r)->f24 == -1 && *(unsigned short *)(help_stats_base_r + 0x4FD) == 0) {
                 Help_Request_r(0x2711, 0x36);
             }
             if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
                                               d->f8) != 0 &&
-                (((HeroPos_2E9978 *)(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos))->f200C <
-                     2 ||
-                 ((HeroPos_2E9978 *)(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos))->f200C ==
-                     9) &&
-                gHaveHeliPack_r[9] == 0 && ((Msg_2E9978 *)orxon_help_state_r)->f0 == 0 &&
-                ((Msg_2E9978 *)orxon_help_state_r)->f24 == -1 && *(unsigned short *)(help_stats_base_r + 0x62D) == 0) {
+                (((HeroPos *)(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos))->f200C < 2 ||
+                 ((HeroPos *)(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos))->f200C == 9) &&
+                gHaveHeliPack_r[9] == 0 && ((Msg *)orxon_help_state_r)->f0 == 0 &&
+                ((Msg *)orxon_help_state_r)->f24 == -1 && *(unsigned short *)(help_stats_base_r + 0x62D) == 0) {
                 Help_Request_r(0x2715, 0x5C);
             }
             flag = 0;
@@ -1987,17 +1980,17 @@ extern int spawn_class_4ea_projectile(void *, void *, void *, int);
 #define GPT ((char *)D_L10_00160058)
 
 #define LIVE(o) ((o) != 0 && *(unsigned char *)((o) + 0x20) != 0xFE && *(unsigned char *)((o) + 0x20) != 0xFD)
-typedef struct Vars_2E8AB0 {
+typedef struct Vars {
     s32 linked; /* 0x00: moby set to command 1 when the turret stops */
     s32 targets[3]; /* 0x04: slots of the three candidate targets, -1 = none */
     f32 turn_velocity; /* 0x10: spring velocity of the turn (SpringTurn) */
     s32 wake; /* 0x14: moby set to state 1 when the turret goes idle */
-} Vars_2E8AB0;
+} Vars;
 
 /* Moby update for a turret-like object that aims at and fires on linked mobys. */
 void gun_update(char *m) {
     struct Moby *moby = (struct Moby *)m;
-    Vars_2E8AB0 *vars = (Vars_2E8AB0 *)moby->pvars;
+    Vars *vars = (Vars *)moby->pvars;
     int *bits;
     float rotation[4];
     float position[4];
@@ -2164,7 +2157,7 @@ typedef struct {
     int timer;
     int clip_volume;
     int sound;
-} DoorVars_e9648;
+} DoorVars;
 extern int level_moby_killed[][64];
 extern unsigned char hero_vehicle_mode[];
 extern unsigned char hoven_available[];
@@ -2177,7 +2170,7 @@ extern int fast_dec_timer_r2(int *) __asm__("func_001F9908");
    already set.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l10/gameplay/vendor/002df270.c, FUN_L10_002e9648. */
 void gate_1_update(struct Moby *moby) {
-    DoorVars_e9648 *vars = (DoorVars_e9648 *)moby->pvars;
+    DoorVars *vars = (DoorVars *)moby->pvars;
     unsigned short save_id;
 
     switch (moby->state) {
@@ -2244,7 +2237,7 @@ typedef struct {
     int timer; /* 0x14 */
     char pad18[0x4];
     int door; /* 0x1C: index of the linked moby */
-} GateVars_2EAD50;
+} GateVars;
 
 extern unsigned char level_available_base_r[] __asm__("D_0013DE4B");
 extern Moby *orxon_mobys_r2 __asm__("D_L10_00160058") MACRO_ADDR;
@@ -2262,7 +2255,7 @@ extern int fast_dec_timer_r3(int *) __asm__("func_001F9908");
 
 // Level 10 gate_2 update: four-state machine on m[0x20], moby Gate 2.
 void gate_2_update(Moby *m) {
-    GateVars_2EAD50 *d = (GateVars_2EAD50 *)m->pvars;
+    GateVars *d = (GateVars *)m->pvars;
     float v[3];
     Vec4A out;
     unsigned char st = m->state;

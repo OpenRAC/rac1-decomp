@@ -32,7 +32,7 @@ typedef struct {
     int b;
     int c;
     char pad[0x20];
-} T2C_22BE40;
+} T2C;
 extern void clear_moby_transform_history(char *o);
 
 extern int scale_ticks(int);
@@ -79,7 +79,7 @@ extern short aridia_hero_run_step_start_frames;
 extern short aridia_hero_state_f_jump_velocity_keys;
 extern char aridia_hero_state_d_jump_velocity_keys[];
 extern unsigned char aridia_hero_run_jump_land_anim_by_frame[];
-extern T2C_22BE40 aridia_attack_records[];
+extern T2C aridia_attack_records[];
 extern float aridia_hero_anim_time_curves[][25];
 
 /* Puts the hero into move state A (with its animation when B is set); returns 0 when the change is refused. */
@@ -1135,7 +1135,7 @@ int HeroL02_SetMoveState(int a, int b) {
                 case HERO_STATE_WRENCH_COMBO: {
                     char *h = help_stats_base + 0x65;
                     struct Hero *q;
-                    T2C_22BE40 *e;
+                    T2C *e;
                     int k;
                     if (*(unsigned short *)(h + 0x40) <= 0xFFFE) {
                         *(unsigned short *)(h + 0x40) = *(unsigned short *)(h + 0x40) + 1;
@@ -1234,7 +1234,7 @@ int HeroL02_SetMoveState(int a, int b) {
             p->ground_speed = g_frame_time * 9.0f;
             if (b) {
                 char *m;
-                T2C_22BE40 *e = &aridia_attack_records[p->attack_record];
+                T2C *e = &aridia_attack_records[p->attack_record];
                 int k = e->b;
                 int n;
                 if (e->a == 1)

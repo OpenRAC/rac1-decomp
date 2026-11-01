@@ -496,7 +496,7 @@ typedef struct {
     int func;
     int pad;
     long data;
-} SndCb_2E820;
+} SndCb;
 
 extern short snd_batch_index;
 extern short snd_batch_command_buffers;
@@ -566,8 +566,8 @@ void func_0012E820_r(int cmd, int size, unsigned char *data, int cb, long cb_dat
     }
     ((int *)&snd_batch_free_bytes)[*(int *)&snd_batch_index] -= need;
     slot = *(int *)&snd_batch_index;
-    ((SndCb_2E820 **)&snd_stream_buffers)[slot][*((int **)&snd_batch_command_buffers)[slot]].func = cb;
-    ((SndCb_2E820 **)&snd_stream_buffers)[slot][*((int **)&snd_batch_command_buffers)[slot]].data = cb_data;
+    ((SndCb **)&snd_stream_buffers)[slot][*((int **)&snd_batch_command_buffers)[slot]].func = cb;
+    ((SndCb **)&snd_stream_buffers)[slot][*((int **)&snd_batch_command_buffers)[slot]].data = cb_data;
     snd_PostMessage();
 }
 

@@ -709,58 +709,58 @@ typedef struct {
     u8 pad19;
     u16 source_value;
     s32 pad1C;
-} VoiceDefinition_2EB08;
+} VoiceDefinition;
 typedef struct {
     u8 pad0[0x10];
     Vec4 position;
     u8 pad20[0x86];
     s16 class_id;
-} VoiceMoby_2EB08;
+} VoiceMoby;
 typedef struct {
     u32 handle;
     u8 state;
     u8 flags;
     u8 pad6[2];
-    VoiceDefinition_2EB08 *definition;
+    VoiceDefinition *definition;
     u16 source_value;
     s16 linked_index;
     s32 volume;
     s32 pitch_bend;
-    VoiceMoby_2EB08 *owner;
+    VoiceMoby *owner;
     s32 reserved1C;
     Vec4 position;
     Vec4 position_offset;
     s32 history_position;
     u8 history[0x2C];
-} VoiceSlot_2EB08;
+} VoiceSlot;
 typedef struct {
     u8 header[0x70];
-    VoiceSlot_2EB08 voices[30];
-} VoicePool_2EB08;
+    VoiceSlot voices[30];
+} VoicePool;
 /* Each selected voice is reached relative to the pool base. */
 typedef struct {
     u8 header[0x70];
-    VoiceSlot_2EB08 voice;
-} VoicePoolWindow_2EB08;
+    VoiceSlot voice;
+} VoicePoolWindow;
 typedef struct {
     Vec4 value;
     u8 pad10[0x60];
-} VoicePositionRecord_2EB08;
-extern VoicePool_2EB08 voice_pool_r __asm__("D_0013E650");
+} VoicePositionRecord;
+extern VoicePool voice_pool_r __asm__("D_0013E650");
 extern Hero g_hero_r __asm__("D_0013F450");
-extern VoicePositionRecord_2EB08 voice_positions_r[] __asm__("D_0013E6E0");
+extern VoicePositionRecord voice_positions_r[] __asm__("D_0013E6E0");
 extern u8 D_0013E6C0_2EB08[] __asm__("D_0013E6C0");
 extern void clear_u64_value_r(Vec4 *) __asm__("func_001F9BC0");
 extern s32 random_integer_below_r(s32) __asm__("func_002140B0");
-extern s32 calculate_voice_volume_r(VoiceSlot_2EB08 *, Vec4 *) __asm__("func_0022DB00");
+extern s32 calculate_voice_volume_r(VoiceSlot *, Vec4 *) __asm__("func_0022DB00");
 
-s32 func_0022EB08_r(VoiceDefinition_2EB08 *, u32, VoiceMoby_2EB08 *, Vec4 *, s32) __asm__("func_0022EB08");
+s32 func_0022EB08_r(VoiceDefinition *, u32, VoiceMoby *, Vec4 *, s32) __asm__("func_0022EB08");
 
 /* Takes a free voice of the sound pool for a definition (26 voices, 30 for the hero, the
    held item and class 0x472), places it at the moby or the given position, drops it when
    it would be inaudible and picks its pitch bend. Returns the voice index or -1.
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/textbin/fun_0022d7f0.c, allocate_voice_slot. */
-s32 func_0022EB08_r(VoiceDefinition_2EB08 *definition, u32 flags, VoiceMoby_2EB08 *moby, Vec4 *position, s32 volume) {
+s32 func_0022EB08_r(VoiceDefinition *definition, u32 flags, VoiceMoby *moby, Vec4 *position, s32 volume) {
     s32 volume_offset;
     s32 pitch_bend_max;
     s32 pitch_bend_min;
@@ -769,10 +769,10 @@ s32 func_0022EB08_r(VoiceDefinition_2EB08 *definition, u32 flags, VoiceMoby_2EB0
     s32 slot_limit;
     s32 pitch_bend;
     s32 source_inactive;
-    VoicePoolWindow_2EB08 *committed_slot;
-    VoicePoolWindow_2EB08 *slot;
-    VoicePoolWindow_2EB08 *pitch_slot;
-    VoicePoolWindow_2EB08 *position_slot;
+    VoicePoolWindow *committed_slot;
+    VoicePoolWindow *slot;
+    VoicePoolWindow *pitch_slot;
+    VoicePoolWindow *position_slot;
 
     source_inactive = definition->source_state == 0;
     if ((flags & 4) == 0) {
@@ -793,10 +793,10 @@ check_moby:
     if (moby == 0) {
         goto find_free_slot;
     }
-    if (((VoiceMoby_2EB08 *)g_hero_r.moby) == moby) {
+    if (((VoiceMoby *)g_hero_r.moby) == moby) {
         goto use_extended_pool;
     }
-    if (((VoiceMoby_2EB08 *)g_hero_r.items[0].moby) == moby) {
+    if (((VoiceMoby *)g_hero_r.items[0].moby) == moby) {
         goto use_extended_pool;
     }
     if (moby->class_id != 0x472) {
@@ -813,7 +813,7 @@ find_free_slot:
     if (slot_index >= slot_limit) {
         goto allocation_failed;
     }
-    slot = (VoicePoolWindow_2EB08 *)((u8 *)&voice_pool_r + slot_index * 0x70);
+    slot = (VoicePoolWindow *)((u8 *)&voice_pool_r + slot_index * 0x70);
     slot->voice.definition = definition;
     slot->voice.source_value = (u16)definition->source_value;
     slot->voice.linked_index = -1;
@@ -832,7 +832,7 @@ set_position:
         goto copy_explicit_position;
     }
     qcopy(&voice_positions_r[slot_index].value, &moby->position);
-    position_slot = (VoicePoolWindow_2EB08 *)((u8 *)voice_positions_r + slot_index * 0x70 - 0x90);
+    position_slot = (VoicePoolWindow *)((u8 *)voice_positions_r + slot_index * 0x70 - 0x90);
     position_slot->voice.position.f[2] += 1.0f;
     goto calculate_volume;
 copy_explicit_position:
@@ -846,7 +846,7 @@ calculate_volume:
         goto commit_if_audible;
     }
     volume_offset = slot_index * 0x70;
-    result = calculate_voice_volume_r((VoiceSlot_2EB08 *)(D_0013E6C0_2EB08 + volume_offset),
+    result = calculate_voice_volume_r((VoiceSlot *)(D_0013E6C0_2EB08 + volume_offset),
                                       (Vec4 *)(D_0013E6C0_2EB08 + volume_offset + 0x20));
     goto check_calculated_volume;
 commit_if_audible:
@@ -856,7 +856,7 @@ check_calculated_volume:
         result = -1;
         goto return_result;
     }
-    committed_slot = (VoicePoolWindow_2EB08 *)((u8 *)&voice_pool_r + slot_index * 0x70);
+    committed_slot = (VoicePoolWindow *)((u8 *)&voice_pool_r + slot_index * 0x70);
     committed_slot->voice.flags = flags;
     committed_slot->voice.state = 7;
     committed_slot->voice.history_position = 0;
@@ -867,7 +867,7 @@ check_calculated_volume:
     } else {
         pitch_bend = pitch_bend_max;
     }
-    pitch_slot = (VoicePoolWindow_2EB08 *)((u8 *)&voice_pool_r + slot_index * 0x70);
+    pitch_slot = (VoicePoolWindow *)((u8 *)&voice_pool_r + slot_index * 0x70);
     pitch_slot->voice.pitch_bend = pitch_bend;
     pitch_slot->voice.handle = 0xFFFFFFFF;
     goto return_index;

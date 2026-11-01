@@ -2,7 +2,7 @@ void update_hero_hoverboard_race_progress(void) {
     float v0[4] __attribute__((aligned(16)));
     float v1[4] __attribute__((aligned(16)));
     Data_254DE8 *d;
-    Path_254DE8 *path;
+    Path *path;
     int near;
     int j;
     int k;
@@ -98,10 +98,10 @@ void update_hero_hoverboard_race_progress(void) {
                 ((Hero *)(hero_globals_base + 0xE1D))->off_course_frames = 0;
                 ((Hero *)(hero_globals_base + 0xE1D))->board_air_yaw = v1[2];
                 Hero_ResetToPosition_r(v0, v1, 0x6B, 1);
-                if (((Path_254DE8 *)((Hero *)(hero_globals_base + 0xE1D))->race_path) != 0) {
-                    int r = select_point_index_by_distance_r(
-                        ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f,
-                        (Path_254DE8 *)((Hero *)(hero_globals_base + 0xE1D))->race_path, 0.0f);
+                if (((Path *)((Hero *)(hero_globals_base + 0xE1D))->race_path) != 0) {
+                    int r = select_point_index_by_distance_r(((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f,
+                                                             (Path *)((Hero *)(hero_globals_base + 0xE1D))->race_path,
+                                                             0.0f);
 
                     if (r < ((Hero *)(hero_globals_base + 0xE1D))->race_path_node) {
                         ((Hero *)(hero_globals_base + 0xE1D))->race_path_node = r;
@@ -177,8 +177,8 @@ void update_hero_hoverboard_race_progress(void) {
             t = scale_ticks(0x1644);
         }
         if (t >= ((Hero *)(hero_globals_base + 0xE1D))->race_time_frames) {
-            if (((Flags_254DE8 *)(menu_item_enabled_115_r + 1))->f9 == 0) {
-                ((Flags_254DE8 *)(menu_item_enabled_115_r + 1))->f9 = 1;
+            if (((Flags *)(menu_item_enabled_115_r + 1))->f9 == 0) {
+                ((Flags *)(menu_item_enabled_115_r + 1))->f9 = 1;
                 PlayBankSound_r(1, 0, 0);
                 ShowBanner_r(0x542D, -1);
             }

@@ -124,7 +124,7 @@ void prepare_scaled_float_table_with_target_byte(char *arg, int val, float scale
 void prepare_scaled_table_with_byte_128(char *arg, float scale) {
     prepare_scaled_float_table_with_target_byte(arg, 0x80, scale);
 }
-typedef struct Arg_2A52D0 {
+typedef struct Arg {
     char pad0[0x1C];
     char *dst;
     float f20, f24, f28, f2C;
@@ -133,8 +133,8 @@ typedef struct Arg_2A52D0 {
     unsigned short first;
     unsigned char count;
     unsigned char alpha;
-} Arg_2A52D0;
-typedef struct Cam_2A52D0 {
+} Arg;
+typedef struct Cam {
     char pad0[0x190];
     float v190[4];
     float v1A0[4];
@@ -147,13 +147,13 @@ typedef struct Cam_2A52D0 {
     float f228;
     float f22C;
     int c230, c234, c238;
-} Cam_2A52D0;
-typedef struct Frame_2A52D0 {
+} Cam;
+typedef struct Frame {
     char pad0[8];
     unsigned short a;
     unsigned short b;
     char padC[4];
-} Frame_2A52D0;
+} Frame;
 
 extern void UpdateViewContext_r(void) __asm__("func_001F3140");
 extern void BuildViewMatrices_r(void) __asm__("func_001F2608");
@@ -174,7 +174,7 @@ extern unsigned short font_vu_program_tag_r __asm__("D_0010E800") NOT_SDA;
 extern char font_vu_program_r[] __asm__("D_0010E810");
 extern int *l02_packet_r __asm__("D_L02_00161240") MACRO_ADDR;
 extern char aridia_interp_dma_ref_block_r[] __asm__("D_L02_001CBB70");
-extern Frame_2A52D0 aridia_interp_anim_frames_r[] __asm__("D_L02_0016D800");
+extern Frame aridia_interp_anim_frames_r[] __asm__("D_L02_0016D800");
 extern int frame_counter_ref_r __asm__("D_L02_0015F6B0") MACRO_ADDR;
 extern char *aridia_interp_vertex_tables_r __asm__("D_L02_0015F520") MACRO_ADDR;
 extern int g_gs_texture_allocation_cursor_r __asm__("D_0015EF74") MACRO_ADDR;
@@ -182,7 +182,7 @@ extern long quad_texture_state_r __asm__("D_L02_00161370") MACRO_ADDR;
 
 /* Builds one moby's VU1 draw packet: camera matrices and screen setup, the two interpolated vertex tables of
  * its animation frame, then the GS register block for its texture. */
-void build_interpolated_dma_packet(Arg_2A52D0 *arg) {
+void build_interpolated_dma_packet(Arg *arg) {
     float m[16];
     int *base;
     int *p;
@@ -191,15 +191,15 @@ void build_interpolated_dma_packet(Arg_2A52D0 *arg) {
     long sel;
     unsigned int lim;
 
-    textured_grid_saved_fog_near_distance_r = ((Cam_2A52D0 *)aridia_view_params_r)->f218;
-    textured_grid_saved_fog_far_distance_r = ((Cam_2A52D0 *)aridia_view_params_r)->f21C;
-    textured_grid_saved_fog_near_intensity_r = ((Cam_2A52D0 *)aridia_view_params_r)->f228;
-    textured_grid_saved_fog_far_intensity_r = ((Cam_2A52D0 *)aridia_view_params_r)->f22C;
+    textured_grid_saved_fog_near_distance_r = ((Cam *)aridia_view_params_r)->f218;
+    textured_grid_saved_fog_far_distance_r = ((Cam *)aridia_view_params_r)->f21C;
+    textured_grid_saved_fog_near_intensity_r = ((Cam *)aridia_view_params_r)->f228;
+    textured_grid_saved_fog_far_intensity_r = ((Cam *)aridia_view_params_r)->f22C;
     if (textured_grid_fog_source_mode_r != 1) {
-        ((Cam_2A52D0 *)aridia_view_params_r)->f218 = arg->f20;
-        ((Cam_2A52D0 *)aridia_view_params_r)->f21C = arg->f24;
-        ((Cam_2A52D0 *)aridia_view_params_r)->f228 = arg->f28;
-        ((Cam_2A52D0 *)aridia_view_params_r)->f22C = arg->f2C;
+        ((Cam *)aridia_view_params_r)->f218 = arg->f20;
+        ((Cam *)aridia_view_params_r)->f21C = arg->f24;
+        ((Cam *)aridia_view_params_r)->f228 = arg->f28;
+        ((Cam *)aridia_view_params_r)->f22C = arg->f2C;
     }
     UpdateViewContext_r();
     BuildViewMatrices_r();
@@ -223,13 +223,13 @@ void build_interpolated_dma_packet(Arg_2A52D0 *arg) {
     base[0x28] = 0x8000;
     base[0x29] = 0x303EC000;
     base[0x2A] = 0x412;
-    *(float *)(base + 0x2B) = ((Cam_2A52D0 *)aridia_view_params_r)->f210;
+    *(float *)(base + 0x2B) = ((Cam *)aridia_view_params_r)->f210;
     p = base + 0x2C;
-    qcopy(p, ((Cam_2A52D0 *)aridia_view_params_r)->v190);
+    qcopy(p, ((Cam *)aridia_view_params_r)->v190);
     p = base + 0x30;
-    qcopy(p, ((Cam_2A52D0 *)aridia_view_params_r)->v1A0);
-    *(float *)(base + 0x34) = ((Cam_2A52D0 *)aridia_view_params_r)->f22C;
-    *(float *)(base + 0x35) = ((Cam_2A52D0 *)aridia_view_params_r)->f228;
+    qcopy(p, ((Cam *)aridia_view_params_r)->v1A0);
+    *(float *)(base + 0x34) = ((Cam *)aridia_view_params_r)->f22C;
+    *(float *)(base + 0x35) = ((Cam *)aridia_view_params_r)->f228;
     base[0x36] = 0;
     base[0x37] = 0;
     base[0x38] = 0x03000000;
@@ -254,8 +254,8 @@ void build_interpolated_dma_packet(Arg_2A52D0 *arg) {
         int q;
         float frac;
         char *dst;
-        Frame_2A52D0 *e1;
-        Frame_2A52D0 *e2;
+        Frame *e1;
+        Frame *e2;
         char *pa, *pb, *pc, *pd;
         t = frame_counter_ref_r;
         q = t / arg->frames;
@@ -274,8 +274,8 @@ void build_interpolated_dma_packet(Arg_2A52D0 *arg) {
     quad_texture_state_r = (g_gs_texture_allocation_cursor_r >> 8) | 0x18100000 | 0x580000000;
     w = arg->c30 | arg->c31 << 8 | arg->c32 << 16;
     if (textured_grid_fog_source_mode_r == 1) {
-        w = ((Cam_2A52D0 *)aridia_view_params_r)->c230 | ((Cam_2A52D0 *)aridia_view_params_r)->c234 << 8 |
-            ((Cam_2A52D0 *)aridia_view_params_r)->c238 << 16;
+        w = ((Cam *)aridia_view_params_r)->c230 | ((Cam *)aridia_view_params_r)->c234 << 8 |
+            ((Cam *)aridia_view_params_r)->c238 << 16;
     }
     c = (long *)l02_packet_r;
     lim = 0x60;
@@ -446,7 +446,7 @@ typedef struct {
     int i0;
     char p4[0x20];
     int i24;
-} Idle_2D9F08;
+} Idle;
 extern int Moby_PlaySound_r(int, int, Moby *) __asm__("func_0022ED80");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern int HeroL02_SetMoveState_r(int, int) __asm__("func_L02_0022BE40");
@@ -472,8 +472,8 @@ extern float trespasser_arrow_corners_r[4][4] __asm__("D_L02_001D3680");
 typedef struct {
     char pad0[0x454];
     unsigned char collected[1];
-} Lvl_2D9F08;
-extern Lvl_2D9F08 aridia_moby_collected_r __asm__("D_L02_001BBB40");
+} Lvl;
+extern Lvl aridia_moby_collected_r __asm__("D_L02_001BBB40");
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 extern char level_moby_killed_r[] __asm__("D_0014C290");
 extern Vec4A aridia_camera_pos_r2[] __asm__("D_L02_00167440");
@@ -481,7 +481,7 @@ extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern int aridia_tresspasser_pad_camera_set_r __asm__("D_L02_0017EB88");
 extern Cam_2D9F08 aridia_player_camera_r2 __asm__("D_L02_00167300");
-extern Idle_2D9F08 aridia_help_popup_state_r __asm__("D_L02_00179A90");
+extern Idle aridia_help_popup_state_r __asm__("D_L02_00179A90");
 extern int aridia_moby_killed_r[] __asm__("D_L02_001BADE0");
 extern int D_L02_00161BAC_2D9F08 SDATA(D_L02_00161BAC);
 extern int D_L02_00161B38_2D9F08 SDATA(D_L02_00161B38);

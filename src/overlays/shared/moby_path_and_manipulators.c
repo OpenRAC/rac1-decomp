@@ -27,8 +27,8 @@ typedef struct {
     s32 count;
     u8 pad[12];
     Vec4 points[1];
-} SegmentPath_261d78;
-extern SegmentPath_261d78 *level_paths[];
+} SegmentPath;
+extern SegmentPath *level_paths[];
 extern void clear_u64_value(void *);
 extern int random_integer_below(int);
 extern int scale_ticks(int);
@@ -518,7 +518,7 @@ s32 resolve_point_path_segment_xy_clearance(f32 distance, s32 path_index, Vec4 *
     Vec4 scaled_segment;
     Vec4 cross;
     Vec4 scaled_cross;
-    SegmentPath_261d78 **entry;
+    SegmentPath **entry;
     s32 i;
     s32 found;
 
@@ -1130,20 +1130,20 @@ typedef struct {
     u8 pad28[2];
     u8 b2A;
     u8 b2B;
-} EffectTail_2637f8;
+} EffectTail;
 typedef struct {
     u8 pad[8];
     u8 b8;
     u8 b9;
     s16 hA;
     u8 padC[0x14];
-    EffectTail_2637f8 tail;
-} Effect_2637f8;
+    EffectTail tail;
+} Effect;
 extern void MobyTransformScaledVertex(void *, s32, void *);
 extern f32 FastVecLength(void *);
 extern s32 random_integer_below(s32);
 extern s32 scale_ticks(s32);
-extern Effect_2637f8 *PartType23Spawn(void *, f32, f32, f32, s32, void *, f32, u32);
+extern Effect *PartType23Spawn(void *, f32, f32, f32, s32, void *, f32, u32);
 extern u8 veldin1_zero_vec_r[] __asm__("D_L00_0015F660") MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002630b8.c, FUN_L00_002637f8. */
@@ -1154,7 +1154,7 @@ void cutscene_set_camera_target(u8 *m) {
     f32 fraction, size, lifetime, scale;
     s32 count;
     s32 w24;
-    Effect_2637f8 *effect;
+    Effect *effect;
     if (*(s16 *)(m + 0xa6) == 0x2ee && m != 0) {
         MobyTransformScaledVertex(m, 0, vectors);
         fraction = FastVecLength(vectors) / 1.026f;
@@ -1177,7 +1177,7 @@ void cutscene_set_camera_target(u8 *m) {
                     n = -n;
                 effect = PartType23Spawn(&pos, size, 1.0f, 0.75f, n, veldin1_zero_vec_r, lifetime, 0x503030ff);
                 if (effect) {
-                    EffectTail_2637f8 *tail = &effect->tail;
+                    EffectTail *tail = &effect->tail;
                     effect->hA = scale_ticks(6);
                     tail->w24 = w24;
                     tail->b2A = b2A;
@@ -1199,7 +1199,7 @@ void cutscene_set_camera_target(u8 *m) {
             do {
                 effect = PartType23Spawn(&pos, size, 1.0f, 1.0f, 0x10, veldin1_zero_vec_r, lifetime, 0x7fffffff);
                 if (effect) {
-                    EffectTail_2637f8 *tail = &effect->tail;
+                    EffectTail *tail = &effect->tail;
                     effect->hA = scale_ticks(2);
                     effect->b8 = random_integer_below(0xff);
                     tail->w24 = w24;

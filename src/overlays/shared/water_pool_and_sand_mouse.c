@@ -1300,7 +1300,7 @@ typedef struct {
     u8 pad_00[0x14];
     u16 bolts; /* 0x14 */
     u8 pad_16[2];
-} ItemPrice_2e1ac0;
+} ItemPrice;
 typedef struct {
     u8 pad_00[4];
     s16 result; /* 0x04: 2 once the scene finished with a sale */
@@ -1308,25 +1308,25 @@ typedef struct {
     f32 radius; /* 0x0C */
     u8 pad_10[0x30];
     s32 slot; /* 0x40: -1 none, else index into D_L01_001DEB10 */
-} SaleVars_2e1ac0;
+} SaleVars;
 extern short D_0015EF20;
 extern s32 novalis_game_mode_r __asm__("D_L01_0015F6A8") MACRO_ADDR;
 extern s32 gBolts MACRO_ADDR;
 extern s32 gold_weapon_case_items[];
 extern u8 gold_weapon_purchased[];
-extern ItemPrice_2e1ac0 novalis_item_price_table[];
+extern ItemPrice novalis_item_price_table[];
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
-extern s32 DialogRequest_Init(struct Moby *, SaleVars_2e1ac0 *);
-extern s32 Npc_TryStartDialog(struct Moby *, SaleVars_2e1ac0 *);
-extern void initialize_vendor_screen(struct Moby *, s32, ItemPrice_2e1ac0 *);
+extern s32 DialogRequest_Init(struct Moby *, SaleVars *);
+extern s32 Npc_TryStartDialog(struct Moby *, SaleVars *);
+extern void initialize_vendor_screen(struct Moby *, s32, ItemPrice *);
 extern s32 memcard_Save(s32, s32);
 struct Moby;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002e1ac0. */
 void gold_weapon_case_update(struct Moby *m) {
-    SaleVars_2e1ac0 *v = (SaleVars_2e1ac0 *)m->pvars;
+    SaleVars *v = (SaleVars *)m->pvars;
     s32 item;
-    ItemPrice_2e1ac0 *price;
+    ItemPrice *price;
 
     if (v != 0 && v->slot != -1 && ((v->slot ^ 1) & 1) && (*(s32 *)&D_0015EF20) == 0) {
         DeleteMoby_r(m);
@@ -1406,12 +1406,12 @@ void sand_mouse_compute_target(char *a, char *m) {
 struct Manip_E4580;
 struct GifEntry_E4580;
 struct AnimSeq_E4580;
-struct DriftEmitter_E4580 {
+struct DriftEmitter {
     s32 count; /* 0x00 */
     u8 pad4[0x2C];
     f32 spread; /* 0x30 */
 };
-extern struct DriftEmitter_E4580 sand_mouse_move_ctl_r __asm__("D_L01_001DEE08");
+extern struct DriftEmitter sand_mouse_move_ctl_r __asm__("D_L01_001DEE08");
 extern float frame_scale_r __asm__("D_0015EE60") MACRO_ADDR;
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern s32 move_moby_with_collision_integer_radius_r(void *, void *, s32, s32, f32, f32) __asm__("func_L00_00259B08");
@@ -1720,7 +1720,7 @@ typedef struct {
     /* 0x48 */ int i48;
     /* 0x4C */ int i4C;
     /* 0x50 */ void *p50;
-} Mover_E5298;
+} Mover;
 typedef struct {
     /* 0x00 */ float target[4];
     /* 0x10 */ float vel[4];
@@ -1745,7 +1745,7 @@ typedef struct {
 } Class_E5298;
 
 extern Moby *novalis_mobys_r __asm__("D_L01_00160058") MACRO_ADDR;
-extern Mover_E5298 sand_mouse_move_ctl;
+extern Mover sand_mouse_move_ctl;
 extern char sand_mouse_collected_msg[];
 extern char sand_mouse_no_parent_msg[];
 extern unsigned char gHaveHeliPack_r[] __asm__("D_0013D5CA") NOT_SDA;
@@ -3203,7 +3203,7 @@ typedef struct {
         s64 both; /* -1 when neither is set */
     } area;
     s32 count; /* spawn budget; the moby is deleted when it runs out */
-} AreaVars_2f2eb8_F4290;
+} AreaVars;
 extern short D_L01_00161B80_F4290 SDATA(D_L01_00161B80);
 extern s32 g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 extern u8 metal_detector_dig_counts_r[] __asm__("D_0014C010");
@@ -3215,7 +3215,7 @@ extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002f2eb8. */
 void update_nearest_area_moby_selection(struct Moby *m) {
-    AreaVars_2f2eb8_F4290 *v = (AreaVars_2f2eb8_F4290 *)m->pvars;
+    AreaVars *v = (AreaVars *)m->pvars;
     Vec4 target;
     s32 k;
     s32 *path;

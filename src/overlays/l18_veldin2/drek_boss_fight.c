@@ -2363,13 +2363,13 @@ typedef struct {
     s32 node;
     u8 pad348[0x78];
     Vec4 pos;
-} BossCircleVars_2F7F00;
+} BossCircleVars;
 /* One 0x80-byte arena node. */
 typedef struct {
     u8 pad0[0x30];
     Vec4 center;
     u8 pad40[0x40];
-} ArenaNode_2F7F00;
+} ArenaNode;
 /* The hero block g_hero, cut down to what this function reads. */
 
 extern char g_hero_r[] __asm__("D_0013F450");
@@ -2397,7 +2397,7 @@ extern f32 ApproachValue_r(f32 *, f32, f32) __asm__("func_00214D28");
  * Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l18/gameplay/vendor/002efb88.c, FUN_L18_002f6aa0. */
 void func_L18_002F7F00_r(Moby *moby) __asm__("func_L18_002F7F00");
 void func_L18_002F7F00_r(Moby *moby) {
-    BossCircleVars_2F7F00 *v = (BossCircleVars_2F7F00 *)moby->pvars;
+    BossCircleVars *v = (BossCircleVars *)moby->pvars;
     Vec4 goal;
     f32 ang;
     f32 self_ang;
@@ -2405,11 +2405,10 @@ void func_L18_002F7F00_r(Moby *moby) {
     f32 speed;
     f32 dist;
 
-    ang = fast_atan2_r(
-        ((Hero *)g_hero_r)->motion.pos.f[0] - ((ArenaNode_2F7F00 *)veldin2_arena_nodes_r)[v->node].center.f[0],
-        ((Hero *)g_hero_r)->motion.pos.f[1] - ((ArenaNode_2F7F00 *)veldin2_arena_nodes_r)[v->node].center.f[1]);
-    self_ang = fast_atan2_r(v->pos.f[0] - ((ArenaNode_2F7F00 *)veldin2_arena_nodes_r)[v->node].center.f[0],
-                            v->pos.f[1] - ((ArenaNode_2F7F00 *)veldin2_arena_nodes_r)[v->node].center.f[1]);
+    ang = fast_atan2_r(((Hero *)g_hero_r)->motion.pos.f[0] - ((ArenaNode *)veldin2_arena_nodes_r)[v->node].center.f[0],
+                       ((Hero *)g_hero_r)->motion.pos.f[1] - ((ArenaNode *)veldin2_arena_nodes_r)[v->node].center.f[1]);
+    self_ang = fast_atan2_r(v->pos.f[0] - ((ArenaNode *)veldin2_arena_nodes_r)[v->node].center.f[0],
+                            v->pos.f[1] - ((ArenaNode *)veldin2_arena_nodes_r)[v->node].center.f[1]);
     if (FastSubRots_r(self_ang, ang) < 0.0f)
         ang = FastAddRots_r(ang, -2.3561945f);
     else
@@ -2429,8 +2428,8 @@ void func_L18_002F7F00_r(Moby *moby) {
         goal.f[1] = FastSin_r(ang) * D_L18_00162404_2F7F00;
         goal.f[2] = 0.0f;
     }
-    FastVecAdd_r(&goal, &goal, &((ArenaNode_2F7F00 *)veldin2_arena_nodes_r)[v->node].center);
-    if (vec_distance_xy_r(&v->pos, &((ArenaNode_2F7F00 *)veldin2_arena_nodes_r)[v->node].center) >
+    FastVecAdd_r(&goal, &goal, &((ArenaNode *)veldin2_arena_nodes_r)[v->node].center);
+    if (vec_distance_xy_r(&v->pos, &((ArenaNode *)veldin2_arena_nodes_r)[v->node].center) >
         D_L18_00162404_2F7F00 + 1.0f) {
         speed = 10.0f;
     } else if (((Hero *)g_hero_r)->state.control_mode != 0xF) {
@@ -2460,8 +2459,7 @@ void func_L18_002F7F00_r(Moby *moby) {
         speed = 20.0f;
     }
     advance_drek_boss_planar_position_toward_target_r((char *)moby, speed * g_frame_time_r, &goal);
-    ApproachValue_r(&v->pos.f[2], ((ArenaNode_2F7F00 *)veldin2_arena_nodes_r)[v->node].center.f[2],
-                    g_frame_time_r * 4.0f);
+    ApproachValue_r(&v->pos.f[2], ((ArenaNode *)veldin2_arena_nodes_r)[v->node].center.f[2], g_frame_time_r * 4.0f);
 }
 extern int request_floating_platform_sink(void *obj);
 extern void request_floating_platform_tilt(void *, int, int);

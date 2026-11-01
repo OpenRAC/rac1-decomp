@@ -213,30 +213,30 @@ LINKER_REMNANT("asm/remnants/text", func_0022F4C0);
 
 typedef struct {
     float f[4];
-} __attribute__((aligned(16))) QuadOffset_2F4C8;
+} __attribute__((aligned(16))) QuadOffset;
 
 typedef struct {
-    QuadOffset_2F4C8 positions[4];   /* 0x00 */
+    QuadOffset positions[4];   /* 0x00 */
     u32 colors[4];                   /* 0x40 */
     f32 texture_coordinates[4][2];   /* 0x50 */
     u64 reserved;                    /* 0x70 */
     u64 texture;                     /* 0x78 */
     u64 texture_state;               /* 0x80 */
     u64 primitive;                   /* 0x88 */
-} GeometryQuad_2F4C8;
+} GeometryQuad;
 
 typedef struct {
     char *player;                    /* 0x00 */
     u8 pad4[0x22];
     s16 content_variant;             /* 0x26 */
-} LevelRenderState_2F4C8;
+} LevelRenderState;
 
-extern LevelRenderState_2F4C8 level_render_state_2F4C8 __asm__("D_0013E130");
+extern LevelRenderState level_render_state_2F4C8 __asm__("D_0013E130");
 extern f32 quad_uvs_2F4C8[4][2] __asm__("D_001D9C20") NOT_SDA;
-extern QuadOffset_2F4C8 quad_positions_2F4C8[8] __asm__("D_001D9C40") NOT_SDA;
-extern QuadOffset_2F4C8 quad_positions_variant1_2F4C8[2] __asm__("D_001D9CC0") NOT_SDA;
-extern QuadOffset_2F4C8 quad_positions_variant2_2F4C8[2] __asm__("D_001D9CE0") NOT_SDA;
-extern QuadOffset_2F4C8 quad_corners_2F4C8[10] __asm__("D_001D9D00") NOT_SDA;
+extern QuadOffset quad_positions_2F4C8[8] __asm__("D_001D9C40") NOT_SDA;
+extern QuadOffset quad_positions_variant1_2F4C8[2] __asm__("D_001D9CC0") NOT_SDA;
+extern QuadOffset quad_positions_variant2_2F4C8[2] __asm__("D_001D9CE0") NOT_SDA;
+extern QuadOffset quad_corners_2F4C8[10] __asm__("D_001D9D00") NOT_SDA;
 extern short resident_effect_quad_counts_r __asm__("D_001605C0");
 
 void func_001F9C30_2F4C8(float, void *, void *) __asm__("func_001F9C30");
@@ -254,9 +254,9 @@ void func_001F7EF8_2F4C8(void *, int, int) __asm__("func_001F7EF8");
    object position, and draws the quad.
    Adapted from Lombyte's project (GPL-3.0): src/gameplay/fun_0022e1b0.c, FUN_0022e1b0. */
 void DrawResidentEffectQuads(unsigned char *m) {
-    GeometryQuad_2F4C8 quad;
-    QuadOffset_2F4C8 v;
-    QuadOffset_2F4C8 *tbl;
+    GeometryQuad quad;
+    QuadOffset v;
+    QuadOffset *tbl;
     int i, j, k;
 
     tbl = quad_positions_2F4C8;
@@ -303,8 +303,8 @@ typedef struct {
     int newest, count;
     char pad58[0x68];
     Vec4 ring[2][32];
-} TrailState_2F738;
-extern TrailState_2F738 trail_state_2F738 __asm__("D_0013E130");
+} TrailState;
+extern TrailState trail_state_2F738 __asm__("D_0013E130");
 
 extern float trail_uv_2F738[4][2] __asm__("D_001D9DA0");
 extern unsigned int trail_color_a_2F738[][2] __asm__("D_001D9DC0");
@@ -321,7 +321,7 @@ static __inline__ Vec4 *trail_at_2F738(int t, int n) {
 
 /* Builds and draws the two engine trail ribbons from the ring of recent trail points. */
 void build_resident_indexed_texture_warp_meshes(int unused) {
-    GeometryQuad_2F4C8 q;
+    GeometryQuad q;
     struct {
         Vec4 across[4];
         Vec4 side[4];
@@ -333,8 +333,8 @@ void build_resident_indexed_texture_warp_meshes(int unused) {
     Vec4 *secondary_next;
     Vec4 *primary_next;
     Vec4 *primary_after_next;
-    QuadOffset_2F4C8 *position_first;
-    QuadOffset_2F4C8 *position_second;
+    QuadOffset *position_first;
+    QuadOffset *position_second;
     Vec4 *normal_second;
 
     if (g_game_mode == 6 && trail_state_2F738.mode == 4) {
@@ -598,7 +598,7 @@ extern s32 D_001605E0_gp SDATA(D_001605E0);
 extern s32 D_001605F0_gp SDATA(D_001605F0);
 extern s32 D_00160600_gp SDATA(D_00160600);
 extern s32 render_sequence_slots[];
-extern struct LevelProjectionState_305A0 view_context;
+extern struct LevelProjectionState view_context;
 extern struct CommonArchiveMemory level_resource_buffers;
 extern LevelFrame_CP warp_trail_colors[] NOT_SDA;
 extern LevelFrame_u128 sky_shell_scroll_dirs[] NOT_SDA;
@@ -813,11 +813,11 @@ struct LevelRenderState_305A0 {
     u8 pad_0[0x58];
     s32 mode;
 };
-struct LevelDisplayState_305A0 {
+struct LevelDisplayState {
     u8 pad_0[0x4];
     s32 screen_height;
 };
-struct LevelProjectionState_305A0 {
+struct LevelProjectionState {
     u8 pad_0[0xB0];
     f32 projection_scale;
 };
@@ -830,7 +830,7 @@ extern f32 gFade MACRO_ADDR;
 extern s32 D_0015F704_305A0 SDATA(D_0015F704);
 extern s32 render_sequence_time[];
 extern s32 render_sequence_slots[];
-extern struct LevelProjectionState_305A0 view_context;
+extern struct LevelProjectionState view_context;
 extern void append_dma_tag(u32);
 extern void BuildViewMatrices();
 extern void UpdateViewContext();
@@ -853,7 +853,7 @@ extern void draw_resident_textured_banner(s32);
 extern void render_environment_mapped_object_r(s32) __asm__("func_00233AB8");
 extern void VU1_syncChain(s32);
 extern void VU1_addGSregister_r(s32, s64) __asm__("func_00234C98");
-extern struct LevelDisplayState_305A0 g_screen_extent_r __asm__("D_0013E600");
+extern struct LevelDisplayState g_screen_extent_r __asm__("D_0013E600");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/render_level_frame.c, render_level_frame. */
 void render_level_frame(void) {
@@ -862,7 +862,7 @@ void render_level_frame(void) {
     f32 quad_extent;
     s32 overlay_alpha;
     f32 saved_projection_scale;
-    struct LevelDisplayState_305A0 *display_state;
+    struct LevelDisplayState *display_state;
     s64 texture;
     append_gif_transfer_packet();
     BuildViewMatrices();
@@ -974,14 +974,14 @@ typedef struct {
     u8 count; /* 0x0C */
     u8 padD[0x48 - 0xD];
     s32 frames[1]; /* 0x48 */
-} RenderModel_230A90;
+} RenderModel;
 
-typedef struct ResidentRenderObject_230A90 {
+typedef struct ResidentRenderObject {
     u8 pad0[0x10];
     Vector4_230A90 position; /* 0x10 */
     u8 state; /* 0x20 */
     u8 pad21[3];
-    RenderModel_230A90 *model; /* 0x24 */
+    RenderModel *model; /* 0x24 */
     u8 pad28[0xA];
     s16 selected_index; /* 0x32 */
     u16 flags; /* 0x34 */
@@ -1012,12 +1012,12 @@ typedef struct ResidentRenderObject_230A90 {
     u8 unkBC; /* 0xBC */
     u8 padBD[3];
     Vector4_230A90 transform[4]; /* 0xC0 */
-} ResidentRenderObject_230A90;
+} ResidentRenderObject;
 
 typedef struct {
     Vector4_230A90 position;
     f32 rotation[4];
-} CameraKeyframe_230A90;
+} CameraKeyframe;
 
 typedef struct {
     u8 pad0[0x34];
@@ -1028,18 +1028,18 @@ typedef struct {
     u8 pad42[2];
     s16 count; /* 0x44 */
     u8 pad46[0x54 - 0x46];
-    CameraKeyframe_230A90 *frames; /* 0x54 */
+    CameraKeyframe *frames; /* 0x54 */
     u8 pad58[0x178 - 0x58];
-    ResidentRenderObject_230A90 *objects[1]; /* 0x178 */
-} ResidentPlaybackState_230A90;
+    ResidentRenderObject *objects[1]; /* 0x178 */
+} ResidentPlaybackState;
 
 typedef struct {
-    ResidentRenderObject_230A90 *player; /* 0x00 */
+    ResidentRenderObject *player; /* 0x00 */
     u8 pad4[4];
-    ResidentRenderObject_230A90 *attachment; /* 0x08 */
+    ResidentRenderObject *attachment; /* 0x08 */
     u8 padC[4];
-    ResidentRenderObject_230A90 *companion_a; /* 0x10 */
-    ResidentRenderObject_230A90 *companion_b; /* 0x14 */
+    ResidentRenderObject *companion_a; /* 0x10 */
+    ResidentRenderObject *companion_b; /* 0x14 */
     u8 pad18[8];
     s32 state; /* 0x20 */
     s16 timer; /* 0x24 */
@@ -1070,13 +1070,13 @@ typedef struct {
     f32 unkBC;
     Vector4_230A90 trailA[32]; /* 0xC0 */
     Vector4_230A90 trailB[32]; /* 0x2C0 */
-} ResidentCinematicState_230A90;
+} ResidentCinematicState;
 
 typedef struct {
     s32 point_count;
     s32 pad[3];
     Vector4_230A90 p[1]; /* 0x10: x, y, z, angle */
-} ScriptedPath_230A90;
+} ScriptedPath;
 
 typedef struct {
     u8 pad0[0x30];
@@ -1085,7 +1085,7 @@ typedef struct {
     f32 rotY; /* 0x74 */
     f32 rotZ; /* 0x78 */
     u8 pad7C[4];
-} CameraBlendNode_230A90;
+} CameraBlendNode;
 
 typedef struct {
     u8 pad0[0x140];
@@ -1095,31 +1095,31 @@ typedef struct {
     Vector4_230A90 forward; /* 0x350 */
     Vector4_230A90 right; /* 0x360 */
     Vector4_230A90 up; /* 0x370 */
-} ResidentCameraState_230A90;
+} ResidentCameraState;
 
 typedef struct {
     u8 pad0[0x1C];
     s32 unk1C;
     u8 pad20[0x3A];
     u16 unk5A;
-} DialoguePlaybackState_230A90;
+} DialoguePlaybackState;
 
 typedef struct {
     u8 pad0[0x2080];
-    ResidentRenderObject_230A90 *reference_object;
-} LevelObjectState_230A90;
+    ResidentRenderObject *reference_object;
+} LevelObjectState;
 
 typedef struct {
     Vector4_230A90 a;
     Vector4_230A90 b;
-} PositionPair_230A90;
+} PositionPair;
 
 extern s32 resident_data_0013CBE4[] __asm__("D_0013CBE4");
 extern u8 resident_data_0013D5C8[] __asm__("D_0013D5C8");
-extern ResidentCinematicState_230A90 resident_data_0013E130 __asm__("D_0013E130");
-extern LevelObjectState_230A90 resident_data_0013F450 __asm__("D_0013F450");
+extern ResidentCinematicState resident_data_0013E130 __asm__("D_0013E130");
+extern LevelObjectState resident_data_0013F450 __asm__("D_0013F450");
 extern u8 resident_data_001414F5[] __asm__("D_001414F5");
-extern DialoguePlaybackState_230A90 resident_data_001517D0 __asm__("D_001517D0");
+extern DialoguePlaybackState resident_data_001517D0 __asm__("D_001517D0");
 extern f32 resident_data_0015EE60 __asm__("D_0015EE60") MACRO_ADDR;
 extern f32 resident_data_0015EE6C __asm__("D_0015EE6C") MACRO_ADDR;
 extern f32 resident_data_0015EE70 __asm__("D_0015EE70") MACRO_ADDR;
@@ -1130,15 +1130,15 @@ extern f32 resident_data_0015F540 __asm__("D_0015F540") MACRO_ADDR;
 extern s16 resident_data_0015F690 __asm__("D_0015F690");
 extern s32 resident_data_0015F6E8 __asm__("D_0015F6E8") MACRO_ADDR;
 extern s32 resident_data_0015F6FC[1] __asm__("D_0015F6FC") MACRO_ADDR;
-extern ResidentRenderObject_230A90 *resident_data_0016001C __asm__("D_0016001C") MACRO_ADDR;
-extern CameraBlendNode_230A90 *resident_data_00160134 __asm__("D_00160134") MACRO_ADDR;
+extern ResidentRenderObject *resident_data_0016001C __asm__("D_0016001C") MACRO_ADDR;
+extern CameraBlendNode *resident_data_00160134 __asm__("D_00160134") MACRO_ADDR;
 extern s16 resident_duration_base SDATA(D_00160610);
-extern ResidentCameraState_230A90 resident_data_00187040 __asm__("D_00187040");
-extern ResidentPlaybackState_230A90 resident_data_0018CC20 __asm__("D_0018CC20");
+extern ResidentCameraState resident_data_00187040 __asm__("D_00187040");
+extern ResidentPlaybackState resident_data_0018CC20 __asm__("D_0018CC20");
 extern f32 resident_data_0018CEB0[4] __asm__("D_0018CEB0");
-extern ScriptedPath_230A90 *resident_data_001CC730[] __asm__("D_001CC730");
+extern ScriptedPath *resident_data_001CC730[] __asm__("D_001CC730");
 extern s32 resident_data_001D5F70 __asm__("D_001D5F70") NOT_SDA;
-extern PositionPair_230A90 resident_data_001D9D40[] __asm__("D_001D9D40");
+extern PositionPair resident_data_001D9D40[] __asm__("D_001D9D40");
 extern Vector4_230A90 resident_data_001DA010[] __asm__("D_001DA010");
 extern Vector4_230A90 resident_data_001DA040[] __asm__("D_001DA040");
 extern u8 resident_effect_entry[] __asm__("func_0022F4C0");
@@ -1155,19 +1155,18 @@ extern void resident_call_001E9770(void *, void *, s32, s32, s32) __asm__("func_
 extern void resident_call_001E9778(void *) __asm__("func_001E9778");
 extern void resident_call_001E9780(void *) __asm__("func_001E9780");
 extern void resident_call_001E9788(void) __asm__("func_001E9788");
-extern void resident_call_001E9790(ResidentRenderObject_230A90 *) __asm__("func_001E9790");
-extern void resident_call_001E9798(ResidentRenderObject_230A90 *) __asm__("func_001E9798");
+extern void resident_call_001E9790(ResidentRenderObject *) __asm__("func_001E9790");
+extern void resident_call_001E9798(ResidentRenderObject *) __asm__("func_001E9798");
 extern void resident_call_001E97A0(void) __asm__("func_001E97A0");
 extern void resident_call_001E97A8(void) __asm__("func_001E97A8");
 extern void resident_call_001E97B0(void) __asm__("func_001E97B0");
 extern void resident_call_001E97B8(void) __asm__("func_001E97B8");
 extern void resident_call_001E97C0(void *, void *, s32, s32) __asm__("func_001E97C0");
-extern void resident_call_001E97D0(ResidentRenderObject_230A90 *,
-                                   ResidentRenderObject_230A90 *) __asm__("func_001E97D0");
+extern void resident_call_001E97D0(ResidentRenderObject *, ResidentRenderObject *) __asm__("func_001E97D0");
 extern void resident_call_001EDE50(void) __asm__("func_001EDE50");
 extern void resident_call_001F3140(void) __asm__("func_001F3140");
-extern void resident_call_001F49B0(void *, ResidentRenderObject_230A90 *) __asm__("func_001F49B0");
-extern void resident_call_001F4B68(void *, ResidentRenderObject_230A90 *) __asm__("func_001F4B68");
+extern void resident_call_001F49B0(void *, ResidentRenderObject *) __asm__("func_001F49B0");
+extern void resident_call_001F4B68(void *, ResidentRenderObject *) __asm__("func_001F4B68");
 extern void resident_call_001F4E08(s32) __asm__("func_001F4E08");
 extern f32 resident_call_001F98B0(f32) __asm__("func_001F98B0");
 extern s32 resident_call_001F98C0(s32) __asm__("func_001F98C0");
@@ -1187,15 +1186,15 @@ extern f32 resident_call_001FA790(f32, f32) __asm__("func_001FA790");
 extern f32 resident_call_001FA888(s32) __asm__("func_001FA888");
 extern void resident_call_00202260(void) __asm__("func_00202260");
 extern void resident_call_00205220(s32) __asm__("func_00205220");
-extern ResidentRenderObject_230A90 *resident_call_0020D348(s32) __asm__("func_0020D348");
-extern void resident_call_0020D678(ResidentRenderObject_230A90 *) __asm__("func_0020D678");
-extern void resident_call_0020D6D0(ResidentRenderObject_230A90 *) __asm__("func_0020D6D0");
+extern ResidentRenderObject *resident_call_0020D348(s32) __asm__("func_0020D348");
+extern void resident_call_0020D678(ResidentRenderObject *) __asm__("func_0020D678");
+extern void resident_call_0020D6D0(ResidentRenderObject *) __asm__("func_0020D6D0");
 extern void resident_call_0020DE20(void) __asm__("func_0020DE20");
-extern void resident_call_0020ED48(ResidentRenderObject_230A90 *) __asm__("func_0020ED48");
+extern void resident_call_0020ED48(ResidentRenderObject *) __asm__("func_0020ED48");
 extern void resident_call_00213C78(void) __asm__("func_00213C78");
-extern void resident_call_00214550(ResidentRenderObject_230A90 *) __asm__("func_00214550");
+extern void resident_call_00214550(ResidentRenderObject *) __asm__("func_00214550");
 extern f32 resident_call_00214D88(f32 *, f32 *, f32, f32, f32, f32) __asm__("func_00214D88");
-extern void resident_call_00215CA8(ScriptedPath_230A90 *, s32, void *, void *, s32, f32) __asm__("func_00215CA8");
+extern void resident_call_00215CA8(ScriptedPath *, s32, void *, void *, s32, f32) __asm__("func_00215CA8");
 extern void resident_call_00216960(void) __asm__("func_00216960");
 extern void resident_call_00217748(s32) __asm__("func_00217748");
 extern void resident_call_00218A80(void) __asm__("func_00218A80");
@@ -1203,7 +1202,7 @@ extern void resident_call_00219C70(s32) __asm__("func_00219C70");
 extern void resident_call_0022DD68(void) __asm__("func_0022DD68");
 extern void resident_call_0022EF68(void) __asm__("func_0022EF68");
 extern void resident_call_0022FDC0(void) __asm__("func_0022FDC0");
-extern void resident_call_002308C8(ResidentRenderObject_230A90 *, f32) __asm__("func_002308C8");
+extern void resident_call_002308C8(ResidentRenderObject *, f32) __asm__("func_002308C8");
 extern void resident_call_0022F258() __asm__("func_0022F258");
 extern void resident_call_0022F738() __asm__("func_0022F738");
 extern void resident_call_00233AB8() __asm__("func_00233AB8");
@@ -1216,19 +1215,19 @@ void update_resident_gameplay_state(void) {
     s32 skip;
     s32 object_index;
     s32 point_index;
-    ResidentRenderObject_230A90 *object;
-    ResidentRenderObject_230A90 *object_cursor;
-    ResidentRenderObject_230A90 *expired_object;
+    ResidentRenderObject *object;
+    ResidentRenderObject *object_cursor;
+    ResidentRenderObject *expired_object;
     s32 release_index;
     s32 bank_tick_limit;
-    ResidentRenderObject_230A90 *player;
+    ResidentRenderObject *player;
     s32 path_point_index;
     f32 camera_blend_step;
-    CameraKeyframe_230A90 *keyframe;
+    CameraKeyframe *keyframe;
     f32 *keyframe_angles;
     u8 *animation_positions;
     s32 current_frame;
-    ScriptedPath_230A90 *path;
+    ScriptedPath *path;
     f32 segment_angle;
     f32 maximum_turn;
     f32 turn_scale;
@@ -1685,7 +1684,7 @@ void update_resident_gameplay_state(void) {
                         resident_call_002308C8(resident_data_0013E130.player, resident_data_0015EE6C * -3.75f);
                     }
                 } else {
-                    ScriptedPath_230A90 *active_path;
+                    ScriptedPath *active_path;
                     resident_data_0013E130.speed += 0.8f;
                     active_path = resident_data_001CC730[resident_data_0013E130.path];
                     if (resident_data_0013E130.speed > 100.0f) {
@@ -1743,8 +1742,8 @@ void update_resident_gameplay_state(void) {
                     }
                 }
                 {
-                    ResidentRenderObject_230A90 *p = resident_data_0013E130.player;
-                    ResidentRenderObject_230A90 *scratch_vectors = resident_data_0013E130.companion_a;
+                    ResidentRenderObject *p = resident_data_0013E130.player;
+                    ResidentRenderObject *scratch_vectors = resident_data_0013E130.companion_a;
                     qcopy(&scratch_vectors->rotation, &p->rotation);
                     resident_call_001F9EC0(&scratch_vectors->position,
                                            &resident_data_001DA010[resident_data_0013E130.content_variant],
@@ -1755,8 +1754,8 @@ void update_resident_gameplay_state(void) {
                                        &resident_data_0013E130.player->position);
                 resident_call_0020ED48(resident_data_0013E130.companion_a);
                 {
-                    ResidentRenderObject_230A90 *scratch_vectors = resident_data_0013E130.companion_b;
-                    ResidentRenderObject_230A90 *p = resident_data_0013E130.player;
+                    ResidentRenderObject *scratch_vectors = resident_data_0013E130.companion_b;
+                    ResidentRenderObject *p = resident_data_0013E130.player;
                     qcopy(&scratch_vectors->rotation, &p->rotation);
                     resident_call_001F9EC0(&scratch_vectors->position,
                                            &resident_data_001DA040[resident_data_0013E130.content_variant],
@@ -2353,24 +2352,24 @@ void prepare_loading_slide_textures(s32 language_index, s32 first_slide, s32 sec
 typedef struct {
     u8 pad_0[0xC];
     s32 half_height;
-} ScreenOfs_32EF0;
+} ScreenOfs;
 extern u8 second_clear_packet[];
-struct DmaTag_32EF0 {
+struct DmaTag {
     u32 tag;
     u32 addr;
     u32 vif0;
     u32 vif1;
 };
 struct GifTag_32EF0;
-union PacketCursor_32EF0 {
-    struct DmaTag_32EF0 *tag;
+union PacketCursor {
+    struct DmaTag *tag;
     struct GifTag_32EF0 *gif;
     s32 *words;
     u8 *bytes;
     s32 addr;
 };
-extern union PacketCursor_32EF0 g_render_packet_cursor_r __asm__("D_00161000") MACRO_ADDR;
-extern ScreenOfs_32EF0 g_screen_extent_r2 __asm__("D_0013E600");
+extern union PacketCursor g_render_packet_cursor_r __asm__("D_00161000") MACRO_ADDR;
+extern ScreenOfs g_screen_extent_r2 __asm__("D_0013E600");
 /* Retail stores both with `lui $at`: unsized, or the two-byte size makes them small data. */
 extern s16 level_archive_load_state_r[] __asm__("D_0015EF48") MACRO_ADDR;
 extern s16 level_archive_load_busy_r[] __asm__("D_0015EF4A") MACRO_ADDR;

@@ -621,13 +621,13 @@ typedef struct {
     s32 x7C;
     s32 x80;
     s32 x84;
-} WadHeader_EABE8;
+} WadHeader;
 typedef struct {
     s32 offset;
     u16 x4;
     u16 pad6;
     s32 pad8[2];
-} WadTex_EABE8;
+} WadTex;
 typedef struct {
     s32 offset;
     s32 x4;
@@ -644,23 +644,23 @@ typedef struct {
 typedef struct {
     s32 offset;
     s32 size;
-} WadSound_EABE8;
+} WadSound;
 typedef struct {
     u8 pad0[0x14];
     u8 *hdr;
     s32 x18;
     s32 x1C;
-} LoadState_EABE8;
+} LoadState;
 typedef struct {
     u8 pad0[0x58];
     s32 x58;
     s32 x5C;
     s32 x60[0x46];
-} SoundBanks_EABE8;
+} SoundBanks;
 typedef struct {
     s32 offset;
     s32 pad[3];
-} TextEntry_EABE8;
+} TextEntry;
 extern s32 g_gs_texture_allocation_cursor_r __asm__("D_0015EF74") MACRO_ADDR;
 extern s32 g_gs_texture_allocation_start_r __asm__("D_0015EF78") MACRO_ADDR;
 extern s32 g_gs_texture_allocation_base_r __asm__("D_0015EF8C") MACRO_ADDR;
@@ -669,7 +669,7 @@ extern s32 intro_overlay_timer_r __asm__("D_0015F058") MACRO_ADDR;
 extern s32 help_msg_data_r __asm__("D_0015F060") MACRO_ADDR;
 extern s32 help_offset_table_r __asm__("D_0015F064") MACRO_ADDR;
 extern s32 level_texture_payload_address_r __asm__("D_0015F560") MACRO_ADDR;
-extern TextEntry_EABE8 *help_msgs_r __asm__("D_0015F780") MACRO_ADDR;
+extern TextEntry *help_msgs_r __asm__("D_0015F780") MACRO_ADDR;
 extern s32 resident_moby_class_count_r __asm__("D_00160000") MACRO_ADDR;
 extern s32 resident_indexed_texture_count_r __asm__("D_00160008") MACRO_ADDR;
 extern s32 registered_shrub_render_class_count_r __asm__("D_001604CC") MACRO_ADDR;
@@ -680,8 +680,8 @@ extern s32 registered_object_render_class_count_r __asm__("D_0016104C") MACRO_AD
 extern s32 object_render_texture_definition_count_r __asm__("D_00161064") MACRO_ADDR;
 extern u8 moby_class_472_sound_defs_r[] __asm__("D_001862E0");
 extern u8 level_init_cleared_block_r[] __asm__("D_00186410");
-extern SoundBanks_EABE8 render_sequence_r __asm__("D_0018CC20");
-extern LoadState_EABE8 level_resource_buffers_r __asm__("D_001941C0");
+extern SoundBanks render_sequence_r __asm__("D_0018CC20");
+extern LoadState level_resource_buffers_r __asm__("D_001941C0");
 extern u8 coll_output_aux_buffer_r[] __asm__("D_00194280");
 extern HelpState g_help_state_r __asm__("D_001997D0");
 extern u64 special_material_template_r[] __asm__("D_0019E7C0");
@@ -726,7 +726,7 @@ extern s32 sceGsExecLoadImage_r(void *, u8 *) __asm__("func_00122958");
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/gameplay/state/transition_load_wad.c, transition_load_wad. */
 void transition_load_wad(void) {
     u8 li[0x60];
-    WadHeader_EABE8 *hdr;
+    WadHeader *hdr;
     u8 *data;
     u8 *base;
     s32 size;
@@ -737,14 +737,14 @@ void transition_load_wad(void) {
     s32 v;
     s32 *out;
     int new_var;
-    WadTex_EABE8 *tex;
+    WadTex *tex;
     s32 new_var4;
     WadClass20_EABE8 *c20;
     u8 *new_var3;
     WadClass30_EABE8 *c30;
-    WadSound_EABE8 *snd;
-    TextEntry_EABE8 *te;
-    WadTex_EABE8 *new_var2;
+    WadSound *snd;
+    TextEntry *te;
+    WadTex *new_var2;
     s32 k_800 = 0x800;
     s32 adj;
     s64 t;
@@ -769,7 +769,7 @@ void transition_load_wad(void) {
     flush_cache_r(0);
     size = fast_decompress_r((u8 *)0x1400000, level_resource_buffers_r.hdr);
     flush_cache_r(0);
-    hdr = (WadHeader_EABE8 *)level_resource_buffers_r.hdr;
+    hdr = (WadHeader *)level_resource_buffers_r.hdr;
     upload_texture_images_r(((u8 *)hdr) + hdr->x0, hdr->x8, ((u8 *)hdr) + hdr->xC);
     t = ((s64)((g_gs_texture_allocation_base_r + hdr->x70) >> 8)) | 0x1D308000;
     u = (((s64)((g_gs_texture_allocation_base_r + hdr->x74) >> 8)) << 37) | (((s64)0xB800) << 19);
@@ -778,7 +778,7 @@ void transition_load_wad(void) {
     special_material_template_r[0] = (t | u) | (((s64)(-1)) << 63);
     special_material_template_r[1] = 0xFFA0000000E0;
     special_material_template_r[2] = 0x0040000400004000;
-    tex = (WadTex_EABE8 *)(((u8 *)hdr) + hdr->x34);
+    tex = (WadTex *)(((u8 *)hdr) + hdr->x34);
     if ((tfrag_texture_definition_count_r = hdr->n30) > 0) {
         do {
             tfrag_texture_size_table_r[i] = (((s32)base) + tex[i].offset) + (log2dim_r(tex[i].x4) << 28);
@@ -786,7 +786,7 @@ void transition_load_wad(void) {
         } while (i < tfrag_texture_definition_count_r);
     }
     k = 0;
-    tex = (new_var2 = (WadTex_EABE8 *)(((u8 *)hdr) + hdr->x3C));
+    tex = (new_var2 = (WadTex *)(((u8 *)hdr) + hdr->x3C));
     if ((resident_indexed_texture_count_r = hdr->n38) > 0) {
         do {
             resident_indexed_texture_addrs_r[k] = (((s32)base) + tex[k].offset) + (log2dim_r(tex[k].x4) << 28);
@@ -794,7 +794,7 @@ void transition_load_wad(void) {
         } while (k < resident_indexed_texture_count_r);
     }
     k = 0;
-    tex = (new_var2 = (WadTex_EABE8 *)(((u8 *)hdr) + hdr->x44));
+    tex = (new_var2 = (WadTex *)(((u8 *)hdr) + hdr->x44));
     if ((object_render_texture_definition_count_r = hdr->n40) > 0) {
         do {
             object_render_texture_addrs_r[k] = (((s32)base) + tex[k].offset) + (log2dim_r(tex[k].x4) << 28);
@@ -802,7 +802,7 @@ void transition_load_wad(void) {
         } while (k < object_render_texture_definition_count_r);
     }
     k = 0;
-    tex = (new_var2 = (WadTex_EABE8 *)(((u8 *)hdr) + hdr->x4C));
+    tex = (new_var2 = (WadTex *)(((u8 *)hdr) + hdr->x4C));
     if ((shrub_render_texture_definition_count_r = hdr->n48) > 0) {
         do {
             shrub_render_texture_addrs_r[k] = (((s32)base) + tex[k].offset) + (log2dim_r(tex[k].x4) << 28);
@@ -853,7 +853,7 @@ void transition_load_wad(void) {
     render_sequence_r.x58 = level_resource_buffers_r.x1C;
     render_sequence_r.x5C = (level_resource_buffers_r.x1C += 0x40000);
     level_resource_buffers_r.x1C += 0x40000;
-    snd = (WadSound_EABE8 *)(data + hdr->x80);
+    snd = (WadSound *)(data + hdr->x80);
     cnt = 0;
     if (snd->size != 0) {
         out = render_sequence_r.x60;
@@ -965,12 +965,12 @@ typedef struct {
     u8 update_enabled;
     u8 pad80[0x26];
     s16 class_id;
-} RenderSequenceActor_EB458;
+} RenderSequenceActor;
 
 typedef struct {
     u8 pad0[0x78];
     Vec4A *animation_positions;
-} RenderSequenceSidecar_EB458;
+} RenderSequenceSidecar;
 
 typedef struct {
     u8 pad0[0x34];
@@ -981,17 +981,17 @@ typedef struct {
     u8 pad42[2];
     s16 count;
     u8 pad46[0x132];
-    RenderSequenceActor_EB458 *actors[1];
-} RenderSequenceState_EB458;
+    RenderSequenceActor *actors[1];
+} RenderSequenceState;
 
-extern RenderSequenceState_EB458 render_sequence_r2 __asm__("D_0018CC20");
+extern RenderSequenceState render_sequence_r2 __asm__("D_0018CC20");
 extern f32 gFade_r __asm__("D_0015F53C") MACRO_ADDR;
 extern s32 intro_overlay_alpha_r __asm__("D_0015F050") MACRO_ADDR;
 extern s32 language_intro_overlay_alpha_r __asm__("D_0015F054") MACRO_ADDR;
 extern s32 g_game_mode_r __asm__("D_0015F6E8") MACRO_ADDR;
 extern s32 pad0_pressed_r[] __asm__("D_0013CBE4");
 extern void initialize_transfer_command_r(void) __asm__("func_00219E60");
-extern void noop_callback_e_r(RenderSequenceActor_EB458 *) __asm__("func_001E9790");
+extern void noop_callback_e_r(RenderSequenceActor *) __asm__("func_001E9790");
 extern void noop_callback_h_r(void) __asm__("func_001E97A8");
 extern void noop_callback_i_r(void) __asm__("func_001E97B0");
 extern void Transition_UpdateMovieCamera_r(void) __asm__("func_001EB338");
@@ -1002,8 +1002,8 @@ extern f32 FastCos_r(f32) __asm__("func_001F9F90");
 extern f32 IntToFloat_r(s32) __asm__("func_001FA888");
 extern void update_mode_freeze_r(void) __asm__("func_001FD3E8");
 extern void parse_space_scene_chunk_r2(s32) __asm__("func_00205220");
-extern void update_moby_animation_state_r(RenderSequenceActor_EB458 *) __asm__("func_0020D6D0");
-extern void refresh_moby_spatial_bounds_r(RenderSequenceActor_EB458 *) __asm__("func_0020ED48");
+extern void update_moby_animation_state_r(RenderSequenceActor *) __asm__("func_0020D6D0");
+extern void refresh_moby_spatial_bounds_r(RenderSequenceActor *) __asm__("func_0020ED48");
 extern void update_menu_system_r(void) __asm__("func_0021A1A0");
 extern void sound_update_r(void) __asm__("func_0022DD68");
 
@@ -1014,7 +1014,7 @@ extern void sound_update_r(void) __asm__("func_0022DD68");
 void update_gameplay_frame(void) {
     Vec4A first_position;
     Vec4A next_position;
-    RenderSequenceActor_EB458 *actor;
+    RenderSequenceActor *actor;
     Vec4A *animation_positions;
     s32 actor_index;
     f32 fade;
@@ -1043,7 +1043,7 @@ void update_gameplay_frame(void) {
         actor->next_frame = frame_index + 1;
         update_moby_animation_state_r(actor);
         actor->frame_fraction = IntToFloat_r(render_sequence_r2.frame & 1) * 0.5f;
-        animation_positions = ((RenderSequenceSidecar_EB458 *)actor)->animation_positions;
+        animation_positions = ((RenderSequenceSidecar *)actor)->animation_positions;
         FastVecScale_r(&first_position, &animation_positions[actor->current_frame], 1.0f - actor->frame_fraction);
         FastVecScale_r(&next_position, &animation_positions[actor->next_frame], actor->frame_fraction);
         FastVecAdd_r(&actor->position, &first_position, &next_position);

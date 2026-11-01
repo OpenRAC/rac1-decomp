@@ -1139,24 +1139,24 @@ typedef struct {
     u8 pad19;
     u16 source_value;
     s32 pad1C;
-} VoiceDefinition_2C2F00;
+} VoiceDefinition;
 typedef struct {
     u8 pad0[0x10];
     Vec4 position;
     u8 pad20[0x86];
     s16 class_id;
-} VoiceMoby_2C2F00;
+} VoiceMoby;
 typedef struct {
     u32 handle;
     u8 state;
     u8 flags;
     u8 pad6[2];
-    VoiceDefinition_2C2F00 *definition;
+    VoiceDefinition *definition;
     u16 source_value;
     s16 linked_index;
     s32 volume;
     s32 pitch_bend;
-    VoiceMoby_2C2F00 *owner;
+    VoiceMoby *owner;
     s32 reserved1C;
     Vec4 position;
     Vec4 position_offset;
@@ -1166,19 +1166,19 @@ typedef struct {
 typedef struct {
     u8 header[0x70];
     VoiceSlot_2C2F00 voices[30];
-} VoicePool_2C2F00;
+} VoicePool;
 typedef struct {
     u8 header[0x70];
     VoiceSlot_2C2F00 voice;
 } VoicePoolWindow_2C2F00;
-extern VoicePool_2C2F00 voice_pool_r __asm__("D_0013E650");
+extern VoicePool voice_pool_r __asm__("D_0013E650");
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 typedef struct {
     /* 0x000 */ u8 pad0[0x230];
     /* 0x230 */ f32 volume;
     /* 0x234 */ f32 pitch;
     /* 0x238 */ s32 voice;
-} EngineSoundVars_2C2F00;
+} EngineSoundVars;
 extern s32 Sound_IsPlaying_r(long moby, s32 voice) __asm__("func_L00_0028EB98");
 extern s32 Moby_PlaySound_r(s32, s32, struct Moby *m) __asm__("func_0022ED80");
 extern void Sound_StopSlot_r(s32 voice) __asm__("func_L00_0028EBF0");
@@ -1193,7 +1193,7 @@ struct Moby;
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l04/gameplay/entities/0029eb20.c, FUN_L04_002c1b80. */
 void func_L04_002C2F00_r(struct Moby *m) __asm__("func_L04_002C2F00");
 void func_L04_002C2F00_r(struct Moby *m) {
-    EngineSoundVars_2C2F00 *v = (EngineSoundVars_2C2F00 *)m->pvars;
+    EngineSoundVars *v = (EngineSoundVars *)m->pvars;
     f32 volume;
     f32 pitch;
 
@@ -1234,7 +1234,7 @@ void func_L04_002C2F00_r(struct Moby *m) {
     release:
         if (v->voice != -1) {
             VoicePoolWindow_2C2F00 *w = (VoicePoolWindow_2C2F00 *)((u8 *)&voice_pool_r + v->voice * 0x70);
-            if (w->voice.owner == (VoiceMoby_2C2F00 *)m && w->voice.state != 0)
+            if (w->voice.owner == (VoiceMoby *)m && w->voice.state != 0)
                 Sound_StopSlot_r(v->voice);
         }
         v->voice = -1;
@@ -2888,7 +2888,7 @@ extern void Sound_StopSlot_r2(s32) __asm__("func_L00_0028EBF0");
 typedef struct {
     s32 link; /* index of the linked moby in the moby array, -1 for none */
     s32 voice; /* playing loop sound, -1 for none */
-} SwitchFollowerVars_C7BD8;
+} SwitchFollowerVars;
 typedef struct {
     u8 pad0[0xE];
     u8 unkE;
@@ -2896,7 +2896,7 @@ typedef struct {
     u32 unk10;
     u8 pad14[0x10];
     f32 scale; /* 0x24 */
-} MobyClassHeader_C7BD8;
+} MobyClassHeader;
 extern char *eudora_mobys_r __asm__("D_L04_00160058") MACRO_ADDR;
 extern u8 eudora_class_slot_by_id_r[] __asm__("D_L04_00198040");
 extern struct MobyClass *eudora_moby_class_headers_r[] __asm__("D_L04_00197780");
@@ -2911,7 +2911,7 @@ struct Moby;
    at either end and swaps Bridge back to 0x1B0 when it reaches 1.0.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l04/gameplay/entities/0029eb20.c, FUN_L04_002c6858. */
 void eudora_bridge_update(struct Moby *m) {
-    SwitchFollowerVars_C7BD8 *v = (SwitchFollowerVars_C7BD8 *)m->pvars;
+    SwitchFollowerVars *v = (SwitchFollowerVars *)m->pvars;
     f32 last = m->anim_time;
     struct Moby *other;
     f32 *pos;
@@ -2932,10 +2932,10 @@ void eudora_bridge_update(struct Moby *m) {
                 m->class_slot = eudora_class_slot_by_id_r[0x41C];
                 m->pclass = eudora_moby_class_headers_r[m->class_slot];
                 m->unk71 = 0xFF;
-                m->scale = ((MobyClassHeader_C7BD8 *)m->pclass)->scale;
+                m->scale = ((MobyClassHeader *)m->pclass)->scale;
                 update_moby_animation_state_r(m);
-                m->unk72 = ((MobyClassHeader_C7BD8 *)m->pclass)->unkE;
-                m->collision = ((MobyClassHeader_C7BD8 *)m->pclass)->unk10;
+                m->unk72 = ((MobyClassHeader *)m->pclass)->unkE;
+                m->collision = ((MobyClassHeader *)m->pclass)->unk10;
                 moby_anim_sphere_lerp_r(m);
             }
             break;
@@ -2965,10 +2965,10 @@ void eudora_bridge_update(struct Moby *m) {
                         m->class_slot = eudora_class_slot_by_id_r[0x1B0];
                         m->pclass = eudora_moby_class_headers_r[m->class_slot];
                         m->unk71 = 0xFF;
-                        m->scale = ((MobyClassHeader_C7BD8 *)m->pclass)->scale;
+                        m->scale = ((MobyClassHeader *)m->pclass)->scale;
                         update_moby_animation_state_r(m);
-                        m->unk72 = ((MobyClassHeader_C7BD8 *)m->pclass)->unkE;
-                        m->collision = ((MobyClassHeader_C7BD8 *)m->pclass)->unk10;
+                        m->unk72 = ((MobyClassHeader *)m->pclass)->unkE;
+                        m->collision = ((MobyClassHeader *)m->pclass)->unk10;
                         moby_anim_sphere_lerp_r(m);
                         m->state = 2;
                     }

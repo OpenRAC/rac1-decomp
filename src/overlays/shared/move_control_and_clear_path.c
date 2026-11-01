@@ -168,8 +168,8 @@ typedef struct {
     s32 count;
     u8 pad04[0xC];
     Vec4 pts[1];
-} Path_276a48;
-extern Path_276a48 *novalis_paths_r[] __asm__("D_L01_001B0C30");
+} Path;
+extern Path *novalis_paths_r[] __asm__("D_L01_001B0C30");
 extern void FastVecSub_r(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BF0");
 extern void FastVecAdd_r(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BD8");
 extern void vec_scale_to_length_r(Vec4 *, Vec4 *, f32) __asm__("func_L00_001FF4B0");
@@ -182,7 +182,7 @@ s32 follow_path(s32 *ids, s32 n, s32 path_index, f32 radius, Vec4 *pos, Vec4 *ta
     Vec4 side;
     Vec4 left;
     Vec4 right;
-    Path_276a48 *path;
+    Path *path;
     s32 hit = 0;
     s32 mask;
     s32 best;

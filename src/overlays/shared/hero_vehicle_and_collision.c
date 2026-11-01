@@ -547,7 +547,7 @@ typedef struct {
     int b;
     int c;
     char pad[0x20];
-} T2C_222B80;
+} T2C;
 extern void clear_moby_transform_history(char *o);
 
 extern void create_missing_hero_item_slot_animations(int a, int b);
@@ -607,7 +607,7 @@ extern short hero_state_f_jump_velocity_keys;
 extern char hero_state_d_jump_velocity_keys[];
 extern char hero_state_12_jump_velocity_keys[];
 extern unsigned char hero_run_jump_anim_ids[];
-extern T2C_222B80 attack_records[];
+extern T2C attack_records[];
 extern float hero_anim_blend_curves[][25];
 
 /* Puts the hero into move state A (with its animation when B is set); returns 0 when the change is refused (shared
@@ -2193,7 +2193,7 @@ int HeroEnterMoveState(int a, int b) {
                 case 0x13: {
                     char *h = help_stats_base + 0x65;
                     struct Hero *q;
-                    T2C_222B80 *e;
+                    T2C *e;
                     int k;
                     if (*(unsigned short *)(h + 0x40) <= 0xFFFE) {
                         *(unsigned short *)(h + 0x40) = *(unsigned short *)(h + 0x40) + 1;
@@ -2245,7 +2245,7 @@ int HeroEnterMoveState(int a, int b) {
                 }
                 case 0x51: {
                     struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
-                    T2C_222B80 *e = &attack_records[q->attack_record];
+                    T2C *e = &attack_records[q->attack_record];
                     int k = 0;
                     if ((q->state.prev_control_mode == 6 ||
                          (q->state.prev2_control_mode == 6 && (unsigned int)(q->moby->prev_seq - 0xF) < 2)) &&
@@ -2337,7 +2337,7 @@ int HeroEnterMoveState(int a, int b) {
             ((struct Hero *)p)->ground_speed = g_frame_time * 9.0f;
             if (b) {
                 char *m;
-                T2C_222B80 *e = &attack_records[((struct Hero *)p)->attack_record];
+                T2C *e = &attack_records[((struct Hero *)p)->attack_record];
                 int k = e->b;
                 int n;
                 if (e->a == 1)
@@ -3174,18 +3174,18 @@ void update_hero_water_height_and_bobbing(void) {
 typedef struct {
     char p0[0xC];
     int fC;
-} PVar_228770;
+} PVar;
 typedef struct {
     char p0[0xC];
     int fC;
     int f10;
     char p14[0x18];
-} Rec2C_228770;
+} Rec2C;
 extern Hero g_hero_h228770 __asm__("D_0013F450");
 extern PadState g_controller_state_p228770 __asm__("D_0013CA40");
 extern int last_weapon_id_r __asm__("D_00141760");
 extern unsigned char item_available_r[] __asm__("D_0013D5C8");
-extern Rec2C_228770 attack_records_r[] __asm__("D_L00_0017BD28");
+extern Rec2C attack_records_r[] __asm__("D_L00_0017BD28");
 extern int hero_repeat_press_window_frames SDATA(D_L00_0015F754);
 extern int pad_pressed_within_r2(int, int, int *) __asm__("func_L00_00267BA8");
 extern void launch_hero_wrench(void);
@@ -3294,7 +3294,7 @@ int process_hero_equipped_item_input(void) {
                 }
             }
             if (g_hero_h228770.state.control_mode == 6) {
-                Rec2C_228770 *rec = &attack_records_r[g_hero_h228770.attack_record];
+                Rec2C *rec = &attack_records_r[g_hero_h228770.attack_record];
                 int t;
 
                 if (g_hero_h228770.state.current == HERO_STATE_CROUCH_SWING) {
@@ -3411,12 +3411,12 @@ int process_hero_equipped_item_input(void) {
                 g_hero_h228770.state.control_mode == 2 || g_hero_h228770.state.control_mode == 4 ||
                 g_hero_h228770.state.control_mode == 5 || g_hero_h228770.state.control_mode == 0xF ||
                 g_hero_h228770.state.current == HERO_STATE_LOOK_RELEASE_WAIT) {
-                PVar_228770 *pv;
+                PVar *pv;
 
                 if (g_hero_h228770.items[0].moby == 0) {
                     break;
                 }
-                pv = *(PVar_228770 **)&g_hero_h228770.items[0].moby->pvars;
+                pv = *(PVar **)&g_hero_h228770.items[0].moby->pvars;
                 if (((g_controller_state_p228770.held & mask) &&
                      g_hero_h228770.items[0].ready_frames > scale_ticks(5)) ||
                     (g_controller_state_p228770.pressed & mask)) {

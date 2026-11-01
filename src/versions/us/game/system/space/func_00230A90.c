@@ -5,19 +5,19 @@ void update_resident_gameplay_state(void) {
     s32 skip;
     s32 object_index;
     s32 point_index;
-    ResidentRenderObject_230A90 *object;
-    ResidentRenderObject_230A90 *object_cursor;
-    ResidentRenderObject_230A90 *expired_object;
+    ResidentRenderObject *object;
+    ResidentRenderObject *object_cursor;
+    ResidentRenderObject *expired_object;
     s32 release_index;
     s32 bank_tick_limit;
-    ResidentRenderObject_230A90 *player;
+    ResidentRenderObject *player;
     s32 path_point_index;
     f32 camera_blend_step;
-    CameraKeyframe_230A90 *keyframe;
+    CameraKeyframe *keyframe;
     f32 *keyframe_angles;
     u8 *animation_positions;
     s32 current_frame;
-    ScriptedPath_230A90 *path;
+    ScriptedPath *path;
     f32 segment_angle;
     f32 maximum_turn;
     f32 turn_scale;
@@ -474,7 +474,7 @@ void update_resident_gameplay_state(void) {
                         resident_call_002308C8(resident_data_0013E130.player, resident_data_0015EE6C * -3.75f);
                     }
                 } else {
-                    ScriptedPath_230A90 *active_path;
+                    ScriptedPath *active_path;
                     resident_data_0013E130.speed += 0.8f;
                     active_path = resident_data_001CC730[resident_data_0013E130.path];
                     if (resident_data_0013E130.speed > 100.0f) {
@@ -532,8 +532,8 @@ void update_resident_gameplay_state(void) {
                     }
                 }
                 {
-                    ResidentRenderObject_230A90 *p = resident_data_0013E130.player;
-                    ResidentRenderObject_230A90 *scratch_vectors = resident_data_0013E130.companion_a;
+                    ResidentRenderObject *p = resident_data_0013E130.player;
+                    ResidentRenderObject *scratch_vectors = resident_data_0013E130.companion_a;
                     qcopy(&scratch_vectors->rotation, &p->rotation);
                     resident_call_001F9EC0(&scratch_vectors->position,
                                            &resident_data_001DA010[resident_data_0013E130.content_variant],
@@ -544,8 +544,8 @@ void update_resident_gameplay_state(void) {
                                        &resident_data_0013E130.player->position);
                 resident_call_0020ED48(resident_data_0013E130.companion_a);
                 {
-                    ResidentRenderObject_230A90 *scratch_vectors = resident_data_0013E130.companion_b;
-                    ResidentRenderObject_230A90 *p = resident_data_0013E130.player;
+                    ResidentRenderObject *scratch_vectors = resident_data_0013E130.companion_b;
+                    ResidentRenderObject *p = resident_data_0013E130.player;
                     qcopy(&scratch_vectors->rotation, &p->rotation);
                     resident_call_001F9EC0(&scratch_vectors->position,
                                            &resident_data_001DA040[resident_data_0013E130.content_variant],

@@ -2,8 +2,8 @@ int draw_hud_text_panel(char *e) {
     int w1, tex, l1, y, i, width, left, w2, l2, alpha, color, c, level, elapsed, score, interval, per, seconds, minutes,
         rem, idx;
     float fade;
-    HudPoint_237B90 points[2];
-    HudPoint_237B90 point;
+    HudPoint points[2];
+    HudPoint point;
     char text[64];
     int text_y;
     void *pt;

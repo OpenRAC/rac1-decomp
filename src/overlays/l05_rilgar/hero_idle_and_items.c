@@ -25,7 +25,7 @@ typedef struct {
     int b;
     int c;
     char pad[0x20];
-} T2C_24D680;
+} T2C;
 extern void clear_moby_transform_history(char *o);
 
 extern int scale_ticks(int);
@@ -86,7 +86,7 @@ extern short rilgar_hero_run_step_start_frames;
 extern short rilgar_hero_state_f_jump_velocity_keys;
 extern char rilgar_hero_state_d_jump_velocity_keys[];
 extern unsigned char rilgar_hero_run_jump_anim_ids[];
-extern T2C_24D680 rilgar_attack_records[];
+extern T2C rilgar_attack_records[];
 extern float rilgar_hero_anim_blend_curves[][25];
 extern char rilgar_hero_state_12_jump_velocity_keys[];
 extern void *rilgar_water_patches MACRO_ADDR;
@@ -1614,7 +1614,7 @@ int Hero_TryMoveStateL05(int a, int b) {
                 case HERO_STATE_WRENCH_COMBO: {
                     struct MoveUsageTable *h = (struct MoveUsageTable *)(help_stats_base + 0x65);
                     struct Hero *q;
-                    T2C_24D680 *e;
+                    T2C *e;
                     int k;
                     if (h->e[8].count <= 0xFFFE) {
                         h->e[8].count = h->e[8].count + 1;
@@ -1685,7 +1685,7 @@ int Hero_TryMoveStateL05(int a, int b) {
             p->ground_speed = g_frame_time * 9.0f;
             if (b) {
                 char *m;
-                T2C_24D680 *e = &rilgar_attack_records[p->attack_record];
+                T2C *e = &rilgar_attack_records[p->attack_record];
                 int k = e->b;
                 int n;
                 if (e->a == 1)

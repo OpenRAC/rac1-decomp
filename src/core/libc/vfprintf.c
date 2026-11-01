@@ -18,11 +18,11 @@ extern void *_impure_ptr NOT_SDA;
 extern int __sfvwrite(int, void *);
 
 /* newlib's stdio types (sys/reent.h, 1999-2000), under local names. */
-struct __sbuf_16FA0 {
+struct __sbuf {
     unsigned char *_base;
     int _size;
 };
-struct _reent_16FA0 {
+struct _reent {
     char _pad[0x38];
     int __sdidinit;             /* 0x38 */
 };
@@ -32,36 +32,36 @@ typedef struct {
     int _w;
     short _flags;               /* 0x0C */
     short _file;
-    struct __sbuf_16FA0 _bf;    /* 0x10 */
+    struct __sbuf _bf;    /* 0x10 */
     int _lbfsize;
     void *_cookie;              /* 0x1C */
     int (*_read)(void *, char *, int);
     int (*_write)(void *, const char *, int);
     long (*_seek)(void *, long, int);
     int (*_close)(void *);
-    struct __sbuf_16FA0 _ub;    /* 0x30 */
+    struct __sbuf _ub;    /* 0x30 */
     unsigned char *_up;
     int _ur;
     unsigned char _ubuf[3];
     unsigned char _nbuf[1];
-    struct __sbuf_16FA0 _lb;    /* 0x44 */
+    struct __sbuf _lb;    /* 0x44 */
     int _blksize;
     int _offset;
-    struct _reent_16FA0 *_data; /* 0x54 */
-} FILE_16FA0;
-struct __siov_16FA0 {
+    struct _reent *_data; /* 0x54 */
+} FILE;
+struct __siov {
     void *iov_base;
     int iov_len;
 };
-struct __suio_16FA0 {
-    struct __siov_16FA0 *uio_iov;
+struct __suio {
+    struct __siov *uio_iov;
     int uio_iovcnt;
     int uio_resid;
 };
 
 /* __sprint, newlib's text: flush the uio through __sfvwrite
    (__sfvwrite) if it holds anything. */
-int vfprintf_sprint(FILE_16FA0 *fp, struct __suio_16FA0 *uio) {
+int vfprintf_sprint(FILE *fp, struct __suio *uio) {
     register int err;
 
     if (uio->uio_resid == 0) {
@@ -76,14 +76,14 @@ int vfprintf_sprint(FILE_16FA0 *fp, struct __suio_16FA0 *uio) {
 
 /* vfprintf and fflush return int; the declarations in scope above say
    void. */
-extern int vfprintf_f(FILE_16FA0 *, const char *, void *) __asm__("func_001170A0");
-extern int libc_fflush_f(FILE_16FA0 *) __asm__("func_00113968");
+extern int vfprintf_f(FILE *, const char *, void *) __asm__("func_001170A0");
+extern int libc_fflush_f(FILE *) __asm__("func_00113968");
 
 /* __sbprintf, newlib's text: printf to an unbuffered file through a
    temporary 1 KB buffer (BUFSIZ), then copy the error status back. */
-int vfprintf_sbprintf(FILE_16FA0 *fp, const char *fmt, void *ap) {
+int vfprintf_sbprintf(FILE *fp, const char *fmt, void *ap) {
     int ret;
-    FILE_16FA0 fake;
+    FILE fake;
     unsigned char buf[1024];
 
     /* copy the important variables */
@@ -108,7 +108,7 @@ int vfprintf_sbprintf(FILE_16FA0 *fp, const char *fmt, void *ap) {
 }
 
 extern void __sinit(void *);
-extern int func_00117118_i(struct _reent_16FA0 *, FILE_16FA0 *, const char *, void *) __asm__("func_00117118");
+extern int func_00117118_i(struct _reent *, FILE *, const char *, void *) __asm__("func_00117118");
 
 /*
  * vfprintf, newlib's text: CHECK_INIT (fault in the reent from
@@ -122,28 +122,28 @@ extern int func_00117118_i(struct _reent_16FA0 *, FILE_16FA0 *, const char *, vo
  * spelling was the right size but 20/120, with $17/$18 swapped.) It
  * returns the callee's value, so 2.9-ee keeps the call.
  */
-int vfprintf(FILE_16FA0 *fp, const char *fmt0, void *ap) {
+int vfprintf(FILE *fp, const char *fmt0, void *ap) {
     do {
         if ((fp)->_data == 0)
-            (fp)->_data = (struct _reent_16FA0 *)_impure_ptr;
+            (fp)->_data = (struct _reent *)_impure_ptr;
         if (!(fp)->_data->__sdidinit)
             __sinit((fp)->_data);
     } while (0);
     return func_00117118_i(fp->_data, fp, fmt0, ap);
 }
 
-extern struct _reent_16FA0 *vfprintf_reent_117118[] __asm__("D_0012F86C") __attribute__((section(".data")));
+extern struct _reent *vfprintf_reent_117118[] __asm__("D_0012F86C") __attribute__((section(".data")));
 extern s32 vfprintf_mbmax_117118[] __asm__("D_0012F870") __attribute__((section(".data")));
 extern const char vfprintf_blanks_117118[] __asm__("D_001525E0");
 extern const char vfprintf_zeroes_117118[] __asm__("D_001525F0");
 extern char **localeconv(void) __asm__("func_001144F0");
-extern s32 _mbtowc_r(struct _reent_16FA0 *, s32 *, const char *, s32, s32 *) __asm__("func_00115098");
-extern s32 __swsetup(FILE_16FA0 *) __asm__("func_00118928");
-extern s32 __sbprintf(FILE_16FA0 *, const char *, char *) __asm__("func_00116FE8");
-extern s32 __sprint(FILE_16FA0 *, struct __suio_16FA0 *) __asm__("func_00116FA0");
+extern s32 _mbtowc_r(struct _reent *, s32 *, const char *, s32, s32 *) __asm__("func_00115098");
+extern s32 __swsetup(FILE *) __asm__("func_00118928");
+extern s32 __sbprintf(FILE *, const char *, char *) __asm__("func_00116FE8");
+extern s32 __sprint(FILE *, struct __suio *) __asm__("func_00116FA0");
 extern s32 isinf(f64) __asm__("func_00116168");
 extern s32 isnan(f64) __asm__("func_001161B0");
-extern char *cvt(struct _reent_16FA0 *, f64, s32, s32, char *, s32 *, s32, s32 *) __asm__("func_00118630");
+extern char *cvt(struct _reent *, f64, s32, s32, char *, s32 *, s32, s32 *) __asm__("func_00118630");
 extern s32 exponent(char *, s32, s32) __asm__("func_001187E0");
 extern void *memchr(const void *, s32, u32) __asm__("func_001150D4");
 extern u32 strlen(const char *) __asm__("func_00116810");
@@ -161,12 +161,12 @@ typedef char *va_list;
  * PRINT/PAD/FLUSH are expanded here to keep their scope local; the build
  * compiles this C directly. See THIRD_PARTY_NOTICES.md.
  */
-s32 _vfprintf_r(struct _reent_16FA0 *data, FILE_16FA0 *fp, const char *fmt0, va_list ap) {
+s32 _vfprintf_r(struct _reent *data, FILE *fp, const char *fmt0, va_list ap) {
     register char *fmt;
     register int ch;
     register int n, m;
     register char *cp;
-    register struct __siov_16FA0 *iovp;
+    register struct __siov *iovp;
     register int flags;
     int ret;
     int width;
@@ -186,8 +186,8 @@ s32 _vfprintf_r(struct _reent_16FA0 *data, FILE_16FA0 *fp, const char *fmt0, va_
     int realsz;
     int size;
     char *xdigs;
-    struct __suio_16FA0 uio;
-    struct __siov_16FA0 iov[8];
+    struct __suio uio;
+    struct __siov iov[8];
     char buf[348];
     char ox[2];
     int state = 0;
@@ -948,7 +948,7 @@ error:
 
 /* newlib's `union double_union` over the little-endian word order:
    word0 (the sign/exponent word) is i[1]. */
-union double_union_16FA0 {
+union double_union {
     double d;
     unsigned int i[2];
 };
@@ -960,7 +960,7 @@ extern char *func_001126D8_d(void *, double, int, int, int *, int *, char **) __
 char *vfprintf_cvt(void *data, double value, int ndigits, int flags, char *sign, int *decpt, int ch, int *length) {
     int mode, dsgn;
     char *digits, *bp, *rve;
-    union double_union_16FA0 tmp;
+    union double_union tmp;
 
     if (ch == 'f') {
         mode = 3;               /* ndigits after the decimal point */

@@ -45,14 +45,14 @@ typedef struct {
     u8 pad30[0x10];
     s32 found; /* 0x40 */
     u8 pad44[0xC];
-} RocketTarget_CB280;
+} RocketTarget;
 typedef struct {
     s32 idx; /* 0x00: path point it is walking to */
     s8 dir; /* 0x04: +1 or -1 */
     u8 pad5[0xB];
     struct RailPath_CB280 *path; /* 0x10 */
     s32 path_index; /* 0x14: index into D_L03_001B05B0 */
-} TrooperPatrol_CB280;
+} TrooperPatrol;
 typedef struct {
     u8 pad0[0x20];
     f32 health; /* 0x20 */
@@ -94,7 +94,7 @@ typedef struct {
     f32 unk110;
     f32 unk114;
     u8 pad118[8];
-    TrooperPatrol_CB280 patrol; /* 0x120 */
+    TrooperPatrol patrol; /* 0x120 */
     u8 pad138[0x18];
     u8 turn[4]; /* 0x150: turn driver (FUN_L00_00258278) */
     s16 fire_timer; /* 0x154 */
@@ -102,7 +102,7 @@ typedef struct {
     u8 pad158[4];
     s32 alert_timer; /* 0x15C */
     u8 unk160[0x10]; /* 0x160: FUN_L00_00263ac8 record */
-} TrooperVars_CB280;
+} TrooperVars;
 extern struct RailPath_CB280 *kerwan_paths_r[] __asm__("D_L03_001B08B0");
 extern float g_frame_time_sq MACRO_ADDR;
 extern s32 D_L03_00161998_CB280 SDATA(D_L03_00161998);
@@ -144,11 +144,11 @@ extern void set_ground_height_band(struct Moby *);
    under gravity and blows up when shot down or when it drops into a pit.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002c9eb8. */
 void mine_layer_update(struct Moby *m) {
-    TrooperVars_CB280 *v = (TrooperVars_CB280 *)m->pvars;
-    TrooperPatrol_CB280 *pt;
+    TrooperVars *v = (TrooperVars *)m->pvars;
+    TrooperPatrol *pt;
     struct RailPath_CB280 *path;
     float sight;
-    RocketTarget_CB280 target;
+    RocketTarget target;
     float muzzle[4];
     float vel[4];
     float spread[4];
@@ -379,15 +379,15 @@ typedef struct {
     u8 pad0[0x10];
     Vec4 pos; /* 0x10: where the hit landed */
     struct Moby *source; /* 0x20: moby that dealt it */
-} TrooperHit_CBBD0;
+} TrooperHit;
 extern f32 D_L03_00161978_CBBD0 SDATA(D_L03_00161978);
 extern f32 D_L03_0016197C_CBBD0 SDATA(D_L03_0016197C);
 extern f32 D_L03_00161980_CBBD0 SDATA(D_L03_00161980);
 extern f32 D_L03_00161984_CBBD0 SDATA(D_L03_00161984);
 extern f32 D_L03_00161988_CBBD0 SDATA(D_L03_00161988);
 extern f32 D_L03_0016198C_CBBD0 SDATA(D_L03_0016198C);
-extern TrooperHit_CBBD0 *MobyGetHitMessage_r(struct Moby *, s32, s32) __asm__("func_L00_0025B478");
-extern s32 ComputeHitResponse(struct Moby *, TrooperHit_CBBD0 *, f32 *, s32, s32 *, f32 *, s32, s32);
+extern TrooperHit *MobyGetHitMessage_r(struct Moby *, s32, s32) __asm__("func_L00_0025B478");
+extern s32 ComputeHitResponse(struct Moby *, TrooperHit *, f32 *, s32, s32 *, f32 *, s32, s32);
 
 extern void trooper_set_knockback(void *, f32, f32);
 extern void HeadingFromVector(Vec4 *, f32 *, f32 *, f32 *);
@@ -399,7 +399,7 @@ extern void StepColorFade(struct Moby *, void *);
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002ca808. */
 void handle_mine_layer_damage(struct Moby *m) {
     TrooperVars_CBBD0 *v = (TrooperVars_CBBD0 *)m->pvars;
-    TrooperHit_CBBD0 *h;
+    TrooperHit *h;
     Vec4 at;
     s32 hit;
     f32 dmg;
@@ -775,7 +775,7 @@ struct RailPath_D4560 {
 extern struct RailPath_D4560 *kerwan_paths_r2[] __asm__("D_L03_001B08B0");
 extern float g_frame_time_sq MACRO_ADDR;
 s32 is_taxi_in_round_trip_phase(u8 *object);
-struct RailTaxiVars_D4560 {
+struct RailTaxiVars {
     u8 pad0[0x20];
     u8 coll[0x40]; /* 0x20: collision record moved with the taxi */
     f32 speed; /* 0x60: FUN_L03_002d3918 state (RailFlyerVars) */
@@ -800,14 +800,14 @@ struct RailTaxiVars_D4560 {
 typedef struct {
     u8 pad0[0x454];
     u8 collected[1];
-} L03LevelState_D4560;
+} L03LevelState;
 extern s32 D_L03_00161B84_D4560 SDATA(D_L03_00161B84);
 extern f32 D_L03_00161B88_D4560 SDATA(D_L03_00161B88);
 extern f32 D_L03_00161B90_D4560 SDATA(D_L03_00161B90);
 extern f32 D_L03_00161B98_D4560 SDATA(D_L03_00161B98);
 extern s32 level_moby_killed[][64];
 extern s32 D_0015EE84_D4560 SDATA(D_0015EE84);
-extern L03LevelState_D4560 kerwan_checkpoint_level_state;
+extern L03LevelState kerwan_checkpoint_level_state;
 extern u32 pad0_pressed;
 extern s32 D_L03_0015F674_D4560 SDATA(D_L03_0015F674);
 extern void set_moby_dialogue_record_value(void *, int);
@@ -829,7 +829,7 @@ s32 func_L03_002D4CE0_D4560(struct Moby *m, s32 path, s32 *snd) __asm__("func_L0
    off, flies back (or onward) and returns to waiting. With the debug flag set it draws its first route's paths.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002d3198. */
 void update_rail_taxi(struct Moby *m) {
-    struct RailTaxiVars_D4560 *v = (struct RailTaxiVars_D4560 *)m->pvars;
+    struct RailTaxiVars *v = (struct RailTaxiVars *)m->pvars;
     Vec4 oldPos, oldRot, move;
     struct RailPath_D4560 *p;
     s32 i;
@@ -1062,7 +1062,7 @@ extern short taxi_rocking_second_phase_rate_degrees_g __asm__("D_L03_00161B80");
 
 /* Sets two speed pairs on a moby's data from level constants scaled by degrees-to-radians and the frame scale. */
 void update_taxi_bobbing_and_rocking(char *m) {
-    struct RailTaxiVars_D4560 *d = (struct RailTaxiVars_D4560 *)((Moby *)m)->pvars;
+    struct RailTaxiVars *d = (struct RailTaxiVars *)((Moby *)m)->pvars;
     update_moby_vertical_oscillation(*(float *)&taxi_bobbing_amplitude_g,
                                      *(float *)&taxi_bobbing_phase_rate_degrees_g * 0.0174532925f * g_frame_time, m,
                                      &d->bob_amount, &d->bob_phase);
@@ -1078,7 +1078,7 @@ struct AnimSeq_D5220;
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 struct Moby;
 extern void update_entity_matrix_r(void *, void *, void *, void *) __asm__("func_L00_002617B0");
-struct SpinnerVars_D5220 {
+struct SpinnerVars {
     u8 pad0[0x20];
     u8 coll[0x10]; /* 0x20: collision record moved with the rotation */
 };
@@ -1088,10 +1088,10 @@ extern float FastAddRots_r(float, float) __asm__("func_001FA748");
 void robo_shack_sign_update(struct Moby *m) {
     Vec4 move;
     Vec4 oldRot;
-    struct SpinnerVars_D5220 *v;
+    struct SpinnerVars *v;
     move.q = 0;
     oldRot.q = *(u128_D5220 *)&m->rot;
-    v = (struct SpinnerVars_D5220 *)m->pvars;
+    v = (struct SpinnerVars *)m->pvars;
     m->draw_dist = 0xFF;
     m->update_dist = 0xFF;
     m->rot.z = FastAddRots_r(m->rot.z, g_frame_time_r * 0.47996554f);
@@ -1161,7 +1161,7 @@ typedef struct {
     f32 heading; /* 0x1C */
     f32 turn_vel; /* 0x20 */
     f32 speed; /* 0x24 */
-} RocketVars_D5790;
+} RocketVars;
 typedef struct {
     Vec4 dir; /* 0x00: w is the force */
     u8 pad10[8];
@@ -1169,7 +1169,7 @@ typedef struct {
     u8 source; /* 0x19 */
     s16 oclass; /* 0x1A */
     u8 pad1C[0x14];
-} RocketHit_D5790;
+} RocketHit;
 extern f32 IntToFloat_r(s32) __asm__("func_001FA888");
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern void vec_scale_to_length_r(void *, void *, f32) __asm__("func_L00_001FF4B0");
@@ -1201,8 +1201,8 @@ void update_homing_rocket(struct Moby *m) {
     Vec4 cam;
     RocketTarget_D5790 target;
     Vec4 trail;
-    RocketHit_D5790 hit;
-    RocketVars_D5790 *v = (RocketVars_D5790 *)m->pvars;
+    RocketHit hit;
+    RocketVars *v = (RocketVars *)m->pvars;
     Vec4f *pos;
     u8 state = m->state;
     void **level;
@@ -1945,8 +1945,8 @@ extern unsigned char menu_item_enabled_9[];
 typedef struct {
     unsigned char pad[0x454];
     unsigned char collected[1];
-} SaveFlags_DD158;
-#define SAVEFLAGS ((SaveFlags_DD158 *)&D_L03_001BB640)
+} SaveFlags;
+#define SAVEFLAGS ((SaveFlags *)&D_L03_001BB640)
 extern int kerwan_moby_killed_bits[];
 extern int g_current_level_index MACRO_ADDR;
 extern char *g_hero_moby[];
@@ -1967,11 +1967,11 @@ typedef struct {
     short unk36;
     unsigned char pad3[0x14];
     int warp;
-} Vars_DD158;
+} Vars;
 
 /* Robot Qwark statue update: ground shadow near the camera, goes to state 3 once hit or saved. */
 void robot_qwark_update(unsigned char *m) {
-    Vars_DD158 *d = ((Vars_DD158 *)((Moby *)m)->pvars);
+    Vars *d = ((Vars *)((Moby *)m)->pvars);
     Hit_DD158 *hit;
     unsigned char type;
     char *w;
@@ -2143,7 +2143,7 @@ extern float vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
 extern int fast_dec_timer_r5(s32 *) __asm__("func_001F9908");
 int func_L03_002DDEF8_DE088(struct Moby *moby) __asm__("func_L03_002DDEF8");
 void func_L03_002DDF90_DE088(struct Moby *m, int mode) __asm__("func_L03_002DDF90");
-struct RailLiftVars_DE088 {
+struct RailLiftVars {
     u8 pad0[0x20];
     u8 coll[0x44]; /* 0x20: collision record moved with the lift */
     s32 unk64; /* 0x64: set to 1 when a ride starts */
@@ -2164,7 +2164,7 @@ void func_L03_002DE4B8_DE088(struct Moby *m) __asm__("func_L03_002DE4B8");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/entities/002c9eb8.c, FUN_L03_002dccc0. */
 void update_rail_lift(struct Moby *m) {
-    struct RailLiftVars_DE088 *d = (struct RailLiftVars_DE088 *)m->pvars;
+    struct RailLiftVars *d = (struct RailLiftVars *)m->pvars;
     Vec4 oldPos, oldRot, move;
     s32 hero_end, lift_end;
 
@@ -2259,16 +2259,16 @@ void update_moby_oscillation(char *moby) {
                                      *(float *)&kerwan_moby_sway_rate_a_deg * 0.017453292f * g_frame_time,
                                      *(float *)&kerwan_moby_sway_rate_b_deg * 0.017453292f * g_frame_time);
 }
-typedef struct Sub_2E08E8 {
+typedef struct Sub {
     char pad0[0x46];
     short f46;
-} Sub_2E08E8;
+} Sub;
 
 typedef struct Node_2E08E8 {
     char pad0[0x10];
     float pos[4];
     char pad20[4];
-    Sub_2E08E8 *f24;
+    Sub *f24;
     struct Node_2E08E8 *next;
 } Node_2E08E8;
 

@@ -27,10 +27,10 @@ typedef unsigned int Q_277208 __attribute__((mode(TI), aligned(16)));
 typedef struct {
     unsigned char pad0[0x10];
     unsigned char b10;
-} AnimInfo_277208;
+} AnimInfo;
 typedef struct {
     unsigned char pad0[0x48];
-    AnimInfo_277208 *anims[1];
+    AnimInfo *anims[1];
 } Class_277208;
 typedef struct {
     unsigned char pad0[0x10];
@@ -75,12 +75,12 @@ typedef struct {
     int unk124;
     unsigned char pad128[0x130 - 0x128];
     int unk130;
-} Menu_277208;
+} Menu;
 typedef struct {
     unsigned char pad0[4];
     int f4;
     int f8;
-} Vram_277208;
+} Vram;
 typedef struct {
     unsigned char padA[0xB0];
     float fB0;
@@ -90,7 +90,7 @@ typedef struct {
     unsigned char padC[0x228 - 0x220];
     float f228;
     int i22C;
-} Cam_277208;
+} Cam;
 
 typedef struct {
     unsigned char pad0[0x224];
@@ -99,7 +99,7 @@ typedef struct {
     int unk240;
     int unk244;
     int bufs[4];
-} Snd_277208;
+} Snd;
 
 extern char level_menu_system[] NOT_SDA;
 extern int coll_hit_result[];
@@ -118,7 +118,7 @@ extern short pause_menu_light_color;
 extern float g_debug_camera[];
 extern char render_view_params[];
 extern int rendered_frame_count MACRO_ADDR;
-extern Vram_277208 lvl_resource_buffers;
+extern Vram lvl_resource_buffers;
 extern int lvl_vu_chain_buffer_size MACRO_ADDR;
 extern short level_vu1_chain_reserved_bytes;
 extern int screen_globals_base[];
@@ -149,7 +149,7 @@ extern void quad_moby_update(void);
 
 /* Open the pause menu: pick its page from the menu state, then set up the menu camera and view. */
 void initialize_pause_menu(void) {
-    Menu_277208 *m = &(*(Menu_277208 *)level_menu_system);
+    Menu *m = &(*(Menu *)level_menu_system);
     int *page;
     int queued = 0;
     int s, i, j, n, k, t, u;
@@ -160,19 +160,19 @@ void initialize_pause_menu(void) {
     m->unk124 = 0;
     m->unkD0 = 0;
     if (s == 10) {
-        (*(Menu_277208 *)level_menu_system).state = 11;
+        (*(Menu *)level_menu_system).state = 11;
         page = pause_menu_state_0a_page;
         m->page = page;
         m->next = page;
         queued = 1;
     } else if (s == 14) {
-        (*(Menu_277208 *)level_menu_system).state = 15;
+        (*(Menu *)level_menu_system).state = 15;
         page = pause_menu_state_0e_page;
         m->page = page;
         m->next = page;
         queued = 1;
     } else if (s == 0x21) {
-        (*(Menu_277208 *)level_menu_system).state = 0x22;
+        (*(Menu *)level_menu_system).state = 0x22;
         page = (int *)&pause_menu_state_21_page;
         m->page = page;
         m->next = page;
@@ -184,30 +184,30 @@ void initialize_pause_menu(void) {
         m->next = page;
     } else if (s == 0x2D) {
         page = pause_menu_state_2d_page;
-        (*(Menu_277208 *)level_menu_system).state = 2;
+        (*(Menu *)level_menu_system).state = 2;
         m->page = page;
         m->next = page;
     } else {
         page = pause_menu_default_page;
-        (*(Menu_277208 *)level_menu_system).state = 2;
+        (*(Menu *)level_menu_system).state = 2;
         m->page = page;
         m->next = page;
     }
 
-    if ((*(Menu_277208 *)level_menu_system).queued != 0) {
+    if ((*(Menu *)level_menu_system).queued != 0) {
         int st;
-        decode_mode = (*(Menu_277208 *)level_menu_system).unk130;
-        (*(Menu_277208 *)level_menu_system).page = (*(Menu_277208 *)level_menu_system).queued;
-        (*(Menu_277208 *)level_menu_system).next = (*(Menu_277208 *)level_menu_system).queued;
-        st = (*(Menu_277208 *)level_menu_system).queuedState;
-        (*(Menu_277208 *)level_menu_system).state = st;
+        decode_mode = (*(Menu *)level_menu_system).unk130;
+        (*(Menu *)level_menu_system).page = (*(Menu *)level_menu_system).queued;
+        (*(Menu *)level_menu_system).next = (*(Menu *)level_menu_system).queued;
+        st = (*(Menu *)level_menu_system).queuedState;
+        (*(Menu *)level_menu_system).state = st;
         if (st == 11 || st == 15) {
             queued = 1;
-            (*(Snd_277208 *)map_menu_state).unk224 = (*(Menu_277208 *)level_menu_system).unkE4;
+            (*(Snd *)map_menu_state).unk224 = (*(Menu *)level_menu_system).unkE4;
             update_mission_list();
         }
-        (*(Menu_277208 *)level_menu_system).queued = 0;
-        (*(Menu_277208 *)level_menu_system).queuedState = 0;
+        (*(Menu *)level_menu_system).queued = 0;
+        (*(Menu *)level_menu_system).queuedState = 0;
     }
 
     {
@@ -218,18 +218,18 @@ void initialize_pause_menu(void) {
         qzero(r);
     }
     qzero((char *)level_moby_lights_14_direction + 0x10);
-    qcopy(&(*(Menu_277208 *)level_menu_system).v40, &g_debug_camera[0]);
-    qcopy(&(*(Menu_277208 *)level_menu_system).v50, &g_debug_camera[4]);
+    qcopy(&(*(Menu *)level_menu_system).v40, &g_debug_camera[0]);
+    qcopy(&(*(Menu *)level_menu_system).v50, &g_debug_camera[4]);
     {
         float zfar = 524288.0f;
         float fog = 255.0f;
         float scale = 0.63f;
-        (*(Menu_277208 *)level_menu_system).unkE8 = ((Cam_277208 *)render_view_params)->fB0;
-        ((Cam_277208 *)render_view_params)->fB0 = scale;
-        ((Cam_277208 *)render_view_params)->f21C = zfar;
-        ((Cam_277208 *)render_view_params)->f228 = fog;
-        ((Cam_277208 *)render_view_params)->i22C = 0;
-        ((Cam_277208 *)render_view_params)->i218 = 0;
+        (*(Menu *)level_menu_system).unkE8 = ((Cam *)render_view_params)->fB0;
+        ((Cam *)render_view_params)->fB0 = scale;
+        ((Cam *)render_view_params)->f21C = zfar;
+        ((Cam *)render_view_params)->f228 = fog;
+        ((Cam *)render_view_params)->i22C = 0;
+        ((Cam *)render_view_params)->i218 = 0;
     }
     UpdateViewContext();
     reset_active_camera_position_and_basis();
@@ -244,13 +244,13 @@ void initialize_pause_menu(void) {
         b = lvl_resource_buffers.f8 + 0x30000;
         c = a + 0x3C000;
         d = b + 0xE0000;
-        (*(Menu_277208 *)level_menu_system).unkFC = c + 0x11800;
+        (*(Menu *)level_menu_system).unkFC = c + 0x11800;
         lvl_vu_chain_buffer_size = 0x30000;
-        (*(Menu_277208 *)level_menu_system).unk104 = a;
-        (*(Menu_277208 *)level_menu_system).unk10 = b;
-        (*(Menu_277208 *)level_menu_system).unk108 = c;
-        (*(Menu_277208 *)level_menu_system).unk10C = d;
-        (*(Menu_277208 *)level_menu_system).unk100 = d;
+        (*(Menu *)level_menu_system).unk104 = a;
+        (*(Menu *)level_menu_system).unk10 = b;
+        (*(Menu *)level_menu_system).unk108 = c;
+        (*(Menu *)level_menu_system).unk10C = d;
+        (*(Menu *)level_menu_system).unk100 = d;
         initialize_menu_stream_buffers(0);
     } else {
         int a, b, c, d, e, f;
@@ -262,60 +262,60 @@ void initialize_pause_menu(void) {
         d = b + 0xE0000;
         e = c + 0xC1000;
         f = d + 0x11800;
-        (*(Menu_277208 *)level_menu_system).unkFC = e;
+        (*(Menu *)level_menu_system).unkFC = e;
         lvl_vu_chain_buffer_size = 0x60000;
-        (*(Menu_277208 *)level_menu_system).unk104 = a;
-        (*(Menu_277208 *)level_menu_system).unk10 = b;
-        (*(Menu_277208 *)level_menu_system).unk108 = c;
-        (*(Menu_277208 *)level_menu_system).unk10C = d;
-        (*(Menu_277208 *)level_menu_system).unk100 = f;
+        (*(Menu *)level_menu_system).unk104 = a;
+        (*(Menu *)level_menu_system).unk10 = b;
+        (*(Menu *)level_menu_system).unk108 = c;
+        (*(Menu *)level_menu_system).unk10C = d;
+        (*(Menu *)level_menu_system).unk100 = f;
         initialize_menu_stream_buffers(1);
     }
     *(int *)&level_vu1_chain_reserved_bytes = 0x2000;
     VU1_initChain();
 
-    if ((*(Menu_277208 *)level_menu_system).state == 11 || (*(Menu_277208 *)level_menu_system).state == 15) {
+    if ((*(Menu *)level_menu_system).state == 11 || (*(Menu *)level_menu_system).state == 15) {
         initialize_render_archive_transfer();
     }
     apply_group_entry_adjustment(0);
-    if ((*(Menu_277208 *)level_menu_system).state == 11 || (*(Menu_277208 *)level_menu_system).state == 15 ||
-        (*(Menu_277208 *)level_menu_system).state == 0x12) {
+    if ((*(Menu *)level_menu_system).state == 11 || (*(Menu *)level_menu_system).state == 15 ||
+        (*(Menu *)level_menu_system).state == 0x12) {
         decompress_and_relocate_selected_groups(1);
     } else {
         decompress_and_relocate_selected_groups(0);
     }
-    transfer_draw_buffer_chunks((*(Menu_277208 *)level_menu_system).unk10, draw_buffer_address,
+    transfer_draw_buffer_chunks((*(Menu *)level_menu_system).unk10, draw_buffer_address,
                                 *(int *)((char *)screen_globals_base + 0x4AA) << 11);
     t = g_gs_texture_allocation_start;
-    (*(Menu_277208 *)level_menu_system).unk18 = t;
-    if ((*(Menu_277208 *)level_menu_system).state == 11 || (*(Menu_277208 *)level_menu_system).state == 15) {
-        (*(Snd_277208 *)map_menu_state).unk240 = t;
+    (*(Menu *)level_menu_system).unk18 = t;
+    if ((*(Menu *)level_menu_system).state == 11 || (*(Menu *)level_menu_system).state == 15) {
+        (*(Snd *)map_menu_state).unk240 = t;
         u = t + 0x40000;
-        (*(Snd_277208 *)map_menu_state).unk244 = u;
+        (*(Snd *)map_menu_state).unk244 = u;
         g_gs_texture_allocation_start = u + 0x400;
         for (j = 0; j < 4; j++) {
             int v = g_gs_texture_allocation_start;
-            (*(Snd_277208 *)map_menu_state).bufs[j] = v;
+            (*(Snd *)map_menu_state).bufs[j] = v;
             g_gs_texture_allocation_start = v + 0x4000;
         }
     } else {
         int z;
-        (*(Snd_277208 *)map_menu_state).unk240 = 0;
-        (*(Snd_277208 *)map_menu_state).unk244 = 0;
-        p = &(*(Snd_277208 *)map_menu_state).bufs[3];
+        (*(Snd *)map_menu_state).unk240 = 0;
+        (*(Snd *)map_menu_state).unk244 = 0;
+        p = &(*(Snd *)map_menu_state).bufs[3];
         for (z = 0; z < 4; z++) {
             *p = 0;
             p--;
         }
     }
     select_moby_context(1);
-    (*(Menu_277208 *)level_menu_system).unkCC = moby_class_headers[0]->seq_count;
+    (*(Menu *)level_menu_system).unkCC = moby_class_headers[0]->seq_count;
     moby_class_headers[0]->seq_count += 0x1C;
     for (n = 0; n < 4; n++) {
-        (*(Menu_277208 *)level_menu_system).unk30[n] = ((int *)(&help_stats_base + 0x45))[n];
+        (*(Menu *)level_menu_system).unk30[n] = ((int *)(&help_stats_base + 0x45))[n];
     }
 
-    if ((*(Menu_277208 *)level_menu_system).page != 0) {
+    if ((*(Menu *)level_menu_system).page != 0) {
         for (i = 0; i < 14; i++) {
             Moby_277208 *o = create_menu_preview_moby(0x472);
             ((Moby_277208 **)menu_preview_mobys)[i] = o;
@@ -330,7 +330,7 @@ void initialize_pause_menu(void) {
                 ((Moby_277208 **)menu_preview_mobys)[i]->r40 = 0;
                 ((Moby_277208 **)menu_preview_mobys)[i]->r44 = 0;
                 ((Moby_277208 **)menu_preview_mobys)[i]->r48 = 0;
-                k = ((struct { int ids[14]; } *)(*(Menu_277208 *)level_menu_system).page)->ids[i];
+                k = ((struct { int ids[14]; } *)(*(Menu *)level_menu_system).page)->ids[i];
                 MobySetAnimation(((Moby_277208 **)menu_preview_mobys)[i], k,
                                  ((Moby_277208 **)menu_preview_mobys)[i]->cls->anims[k]->b10 - 1);
             }
@@ -1374,8 +1374,8 @@ int QueueRecord(int a0, int a1, int a2, int a3, int a4, int a5, int a6, int a7, 
 typedef struct {
     short uid;
     short bolts;
-} BoltSource_286068;
-extern BoltSource_286068 bolt_source_stats[][64];
+} BoltSource;
+extern BoltSource bolt_source_stats[][64];
 
 /* the bolt tally slot of moby uid in level lvl: scanning down from slot 63, the first slot that
    holds uid (stored as uid + 1) or is free, which it claims; -1 when there is none or uid < 0 */

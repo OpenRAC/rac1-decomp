@@ -74,22 +74,22 @@ typedef struct {
     struct Moby *parent;
     s32 joint;
     s32 parent_joint;
-} SwarmPart_2EAF48;
+} SwarmPart;
 typedef struct {
     SwarmPathFollower_2EAF48 follow[2];
-    SwarmPart_2EAF48 root;
-    SwarmPart_2EAF48 parts[16];
+    SwarmPart root;
+    SwarmPart parts[16];
     s32 target_index;
     f32 turn_speed;
     s32 fire_timer;
     s16 pad17C;
     s16 sound;
-} SwarmVars_2EAF48;
+} SwarmVars;
 /* pvars of the target: the projectiles fired at it. */
 typedef struct {
     u8 pad0[0x60];
     struct Moby *shots[8];
-} SwarmTargetVars_2EAF48;
+} SwarmTargetVars;
 
 extern s32 D_L08_00161DD0_2EAF48 SDATA(D_L08_00161DD0);
 extern f32 D_L08_00161DC4_2EAF48 SDATA(D_L08_00161DC4);
@@ -127,12 +127,12 @@ extern void update_commando_parts_r(struct Moby *) __asm__("func_L08_002EADF0");
  * state 0x63 scatters the parts and removes itself.
  * Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l08/gameplay/entities/002e9b70.c, FUN_L08_002e9b70. */
 void update_path_following_moby_swarm(struct Moby *moby) {
-    SwarmVars_2EAF48 *vars = (SwarmVars_2EAF48 *)moby->pvars;
+    SwarmVars *vars = (SwarmVars *)moby->pvars;
     SwarmPathFollower_2EAF48 *follower;
     struct Moby *target;
     struct Moby *shot;
     struct Moby *bolt;
-    SwarmTargetVars_2EAF48 *target_vars;
+    SwarmTargetVars *target_vars;
     Vec4 point;
     Vec4 step;
     Vec4 muzzle;
@@ -207,7 +207,7 @@ void update_path_following_moby_swarm(struct Moby *moby) {
             vec_scale_to_length_r(&velocity, &step, (D_L08_00161DC4_2EAF48 + D_L08_00161DC4_2EAF48) * g_frame_time_r);
             shot = spawn_rocket_435_projectile_r(&muzzle, target, &velocity, pitch, yaw);
             shot->scale = shot->pclass->scale / 5.0f;
-            target_vars = (SwarmTargetVars_2EAF48 *)target->pvars;
+            target_vars = (SwarmTargetVars *)target->pvars;
             for (slot = 0; slot < 8; slot++) {
                 if (target_vars->shots[slot] == 0) {
                     target_vars->shots[slot] = shot;
@@ -1091,16 +1091,16 @@ typedef struct {
     Vec4 light_pos;
     f32 fade_range;
     f32 intensity;
-} FlickerLightVars_2F8560;
+} FlickerLightVars;
 /* A point light slot, 0x20 bytes apart. */
 typedef struct {
     f32 red;
     f32 green;
     f32 blue;
     u8 padC[0x14];
-} PointLight_2F8560;
+} PointLight;
 
-extern PointLight_2F8560 batalia_lights_r[] __asm__("D_L08_00180B40");
+extern PointLight batalia_lights_r[] __asm__("D_L08_00180B40");
 extern char batalia_hero_pos_r[] __asm__("D_L08_00167640");
 extern char flicker_light_period_a_zero_fmt_r[] __asm__("D_L08_001FC510");
 extern char flicker_light_period_b_high_fmt_r[] __asm__("D_L08_001FC540");
@@ -1120,17 +1120,17 @@ extern f32 IntToFloat_r(s32) __asm__("func_001FA888");
  * fades the intensity with the distance to the camera and creates, updates or frees its point light.
  * Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l08/gameplay/entities/002e9b70.c, FUN_L08_002f70a0. */
 void update_flickering_mesh_effect(struct Moby *m) {
-    FlickerLightVars_2F8560 *d;
+    FlickerLightVars *d;
     Vec4 pos;
     f32 view, dist, fade;
     s32 hidden;
-    PointLight_2F8560 *l;
+    PointLight *l;
     Vec4f *at;
     int i;
 
     if (m == 0)
         return;
-    d = (FlickerLightVars_2F8560 *)m->pvars;
+    d = (FlickerLightVars *)m->pvars;
     if (d == 0)
         return;
     hidden = 0;
@@ -1456,7 +1456,7 @@ extern char batalia_deserter_dialogue_name[];
 
 /* Deserter (moby Batalia Deserter) update: a state machine on the byte at +0x20 (states 0 to 2; state 2 deletes the
  * moby when its path ends), then the commando's aiming tail on the countdowns at data + 0x194 and 0x198. */
-typedef struct DeserterData_2EAF48 {
+typedef struct DeserterData {
     u8 pad_00[0x24]; /* 0x00: dialog block at +0x20, passed as a pointer */
     s16 h24; /* 0x24 */
     u8 pad_26[0x6];
@@ -1481,12 +1481,12 @@ typedef struct DeserterData_2EAF48 {
     u8 pad_190[0x4];
     s32 moving_timer; /* 0x194 */
     s32 target_timer; /* 0x198 */
-} DeserterData_2EAF48;
+} DeserterData;
 
 /* Batalia deserter: run his dialog when the hero comes close, then play his scene animation. */
 void batalia_deserter_update(char *m) {
     struct Moby *moby = (struct Moby *)m;
-    DeserterData_2EAF48 *deserter_data = (DeserterData_2EAF48 *)moby->pvars;
+    DeserterData *deserter_data = (DeserterData *)moby->pvars;
     attach_batalia_deserter_class_manipulator(m);
     if (moby->visible != 0) {
         if (FastVecDist(&moby->pos, batalia_hero_pos) < 30.0f) {

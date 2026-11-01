@@ -133,19 +133,19 @@ typedef struct Data_2E21F8 {
     Moby *f178;
     float f17C, f180, f184;
 } Data_2E21F8;
-typedef struct Stats_2E21F8 {
+typedef struct Stats {
     char pad00[0x70];
     unsigned short f70;
     unsigned short f72;
     int f74;
-} Stats_2E21F8;
-typedef struct Warp_2E21F8 {
+} Stats;
+typedef struct Warp {
     char pad00[0x10];
     float pos[4];
     float rot[4];
     char pad30[0x1A];
     unsigned char f4A;
-} Warp_2E21F8;
+} Warp;
 typedef struct Node_2E21F8 {
     char pad00[0x30];
     float f30[4];
@@ -162,7 +162,7 @@ extern short skids_agent_prop_offset;
 extern int g_current_level_index MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int aridia_cinematic_mode MACRO_ADDR;
-extern Warp_2E21F8 talk_camera_r __asm__("D_L02_0016CEE0");
+extern Warp talk_camera_r __asm__("D_L02_0016CEE0");
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;
@@ -209,7 +209,7 @@ void skids_agent_update(Moby *m) {
             } else if (gHaveHeliPack[3] == 0 &&
                        vec_distance_xy(((float *)&m->pos),
                                        &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos) < 3.0f) {
-                Stats_2E21F8 *stats = (Stats_2E21F8 *)(help_stats_base + 0x34D);
+                Stats *stats = (Stats *)(help_stats_base + 0x34D);
                 if (stats->f70 != 0) {
                     int elapsed, period;
                     elapsed = scale_ticks(gameplay_event_frame_count);
@@ -261,7 +261,7 @@ void skids_agent_update(Moby *m) {
                     m->state = 5;
                 }
             } else {
-                Warp_2E21F8 *w = &talk_camera_r;
+                Warp *w = &talk_camera_r;
                 if (w->f4A == 0) {
                     vec_scale_to_length(w->pos, ((char *)&m->rot_row0), 2.5f);
                     FastVecAdd(w->pos, w->pos, ((float *)&m->pos));
@@ -816,16 +816,16 @@ struct AnimSeq_ED358;
 typedef struct {
     Vec4f vel;
     s32 timer;
-} ShardVars_ED358;
+} ShardVars;
 typedef struct {
     u8 pad0[0x5C];
     u8 *tint;
-} LevelFx_ED358;
+} LevelFx;
 extern short D_L02_00161FE8_ED358 SDATA(D_L02_00161FE8);
 extern short D_L02_00161FEC_ED358 SDATA(D_L02_00161FEC);
 extern s32 shard_debris_head_color_r __asm__("D_L02_00161FF0") MACRO_ADDR;
 extern f32 g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
-extern LevelFx_ED358 D_L02_001B2980_ED358 __asm__("D_L02_001B2980");
+extern LevelFx D_L02_001B2980_ED358 __asm__("D_L02_001B2980");
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern void FastVecScale_r(void *, void *, f32) __asm__("func_001F9C30");
@@ -842,7 +842,7 @@ extern void rand_vec_r(void *, f32, f32) __asm__("func_L00_00258DB0");
 /* Shard debris update: drifts along its velocity, sheds particle trails and expires when its timer runs out.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l02/gameplay/vendor/002ebf20.c, FUN_L02_002ebf20. */
 void update_shard_debris(struct Moby *m) {
-    ShardVars_ED358 *v = (ShardVars_ED358 *)m->pvars;
+    ShardVars *v = (ShardVars *)m->pvars;
     Vec4f p, back, half, jit;
     u8 *q;
     s32 i;

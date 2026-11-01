@@ -12,7 +12,7 @@ typedef struct {
     unsigned short count;
     unsigned short minutes;
     unsigned int flags;
-} Planet_2465F8;
+} Planet;
 typedef struct {
     char pad0[0x8];
     int f8;
@@ -25,15 +25,15 @@ typedef struct {
     int f38;
     char pad3C[0xB8];
     int fF4;
-} Cam_2465F8;
+} Cam;
 typedef struct {
     char pad0[0x38];
     short track;
-} Music_2465F8;
+} Music;
 typedef struct {
     char pad0[0x13C];
     int f13C;
-} Gs_2465F8;
+} Gs;
 extern char level_bss_end_r[] __asm__("D_L00_001660B0");
 extern char level_bss_start_r[] __asm__("D_L00_00161F00");
 extern char level_bss_unaligned_msg_r[] __asm__("D_L00_0015FD70");
@@ -45,7 +45,7 @@ extern char g_hero_r[] __asm__("D_0013F450");
 extern unsigned char level_available_base_r[] __asm__("D_0013DE4B");
 extern unsigned char D_0013D498_2465F8[] __asm__("D_0013D498");
 extern unsigned char level_visit_state_r[] __asm__("D_0013DE60");
-extern Planet_2465F8 item_usage_r[] __asm__("D_00141780");
+extern Planet item_usage_r[] __asm__("D_00141780");
 extern short D_L00_0016C9B0_2465F8 __asm__("D_L00_0016C9B0") NOT_SDA;
 extern int D_0013D46C_2465F8 __asm__("D_0013D46C") MACRO_ADDR;
 extern int pal_mode_r __asm__("D_0015EE80") MACRO_ADDR;
@@ -154,13 +154,13 @@ void run_level_main_loop(void) {
     cinematic_mode_r = 6;
     one = 1;
     init_level_runtime_state_r();
-    ((Music_2465F8 *)cd_read_state_r)->track = 0;
+    ((Music *)cd_read_state_r)->track = 0;
     load_level_archive_resources_r(1, 0);
-    ((Cam_2465F8 *)g_debug_menu_r)->f8 = 15;
-    ((Cam_2465F8 *)g_debug_menu_r)->f30 = pal_mode_r;
-    ((Cam_2465F8 *)g_debug_menu_r)->f38 = -1;
-    ((Cam_2465F8 *)g_debug_menu_r)->fC = one;
-    ((Cam_2465F8 *)g_debug_menu_r)->fF4 = one;
+    ((Cam *)g_debug_menu_r)->f8 = 15;
+    ((Cam *)g_debug_menu_r)->f30 = pal_mode_r;
+    ((Cam *)g_debug_menu_r)->f38 = -1;
+    ((Cam *)g_debug_menu_r)->fC = one;
+    ((Cam *)g_debug_menu_r)->fF4 = one;
     clear_dma_queue_entry_r();
     initialize_level_map_archive_r();
     init_hud_r();
@@ -169,7 +169,7 @@ void run_level_main_loop(void) {
     rendered_frame_count_r = 0;
     sce_gs_sync_v_r(0);
     PutDispBuffer_r();
-    music_StartTrack_r(((Music_2465F8 *)cd_read_state_r)->track, 1, 0x400);
+    music_StartTrack_r(((Music *)cd_read_state_r)->track, 1, 0x400);
     if ((g_current_level_index_r == one && level_available_base_r[0] == 0) ||
         (g_current_level_index_r == LEVEL_VELDIN1 && D_0013D498_2465F8[0] != 0)) {
         music_Unpause_r();
@@ -264,7 +264,7 @@ void run_level_main_loop(void) {
         sel = D_0013D46C_2465F8;
         if ((unsigned int)(sel - 3) < 4 || sel == 9 || sel == 10 || sel == 11 || sel == 12 || sel == 15 || sel == 16 ||
             sel == 17 || sel == 18 || sel == 19 || sel == 20) {
-            if (((Gs_2465F8 *)level_menu_system_r)->f13C == 0) {
+            if (((Gs *)level_menu_system_r)->f13C == 0) {
                 int n = 55;
                 float size;
                 float ang;
@@ -281,7 +281,7 @@ void run_level_main_loop(void) {
                 DoGifPaging_r();
             }
         }
-        ((Gs_2465F8 *)level_menu_system_r)->f13C = 0;
+        ((Gs *)level_menu_system_r)->f13C = 0;
         flush_debug_text_queue_r();
         func_001E9768_2465F8(level_main_loop_profile_label_r, 0x10);
         func_001E9768_b_2465F8(level_main_loop_profile_label_r, 0x10);
@@ -289,7 +289,7 @@ void run_level_main_loop(void) {
         {
             cpu_frame_load_r = IntToFloat_r(*(volatile int *)0x10000800) / (pal_mode_r != 0 ? 11520.0f : 9600.0f);
         }
-        if (cinematic_mode_r == 0 && ((Cam_2465F8 *)g_debug_menu_r)->f18 != 0) {
+        if (cinematic_mode_r == 0 && ((Cam *)g_debug_menu_r)->f18 != 0) {
             func_001E9768_v_2465F8();
         }
         if (((Hero *)g_hero_r)->fall_fade_pending == 0) {
@@ -334,7 +334,7 @@ void run_level_main_loop(void) {
             music_Stop_r();
             load_level_archive_resources_r(0, full);
             cinematic_mode_r = 0;
-            music_StartTrack_r(((Music_2465F8 *)cd_read_state_r)->track, 1, 0x400);
+            music_StartTrack_r(((Music *)cd_read_state_r)->track, 1, 0x400);
             init_hud_r();
         }
         per = 600;
@@ -620,8 +620,8 @@ typedef struct {
     char pad0[0x278];
     int active[5];
     int key[5];
-} ArchiveSlots_247620;
-extern ArchiveSlots_247620 map_menu_state_r __asm__("D_L00_001842F0");
+} ArchiveSlots;
+extern ArchiveSlots map_menu_state_r __asm__("D_L00_001842F0");
 
 /* returns the first active slot whose key is id, or -1 */
 int FindMapSlotById(int id) {

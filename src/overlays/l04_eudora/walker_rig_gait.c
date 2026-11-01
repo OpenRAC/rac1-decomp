@@ -205,12 +205,12 @@ typedef struct {
     float ground; /* 0xE4 */
     char padE8[0x6];
     unsigned short flags; /* 0xEE */
-} Steer_2939E8;
+} Steer;
 
 typedef struct {
     char pad00[0x40];
     Vec4f v40; /* 0x40 */
-} StTab_2939E8;
+} StTab;
 
 extern float ProbeGroundHeight_r(void *, int, float) __asm__("func_00214358");
 extern void clear_u64_value_r(float *) __asm__("func_001F9BC0");
@@ -224,7 +224,7 @@ extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
 extern char eudora_coll_hit_r[] __asm__("D_L04_00174040");
 
 /* Steers a moby from the arg block: height and push terms, returns 2 when the tilt is past pi/4. */
-int update_leg_rig_height_and_tilt(Moby *m, Steer_2939E8 *a) {
+int update_leg_rig_height_and_tilt(Moby *m, Steer *a) {
     float push[4];
     float dir[4];
     int ret = 0;
@@ -260,10 +260,10 @@ int update_leg_rig_height_and_tilt(Moby *m, Steer_2939E8 *a) {
                 h = probe_leg_rig_ground_height((float *)e);
                 sum += h;
                 if (0.0f < h) {
-                    t = FastAbsF_r(((StTab_2939E8 *)eudora_coll_hit_r)->v40.x);
-                    t = t + FastAbsF_r(((StTab_2939E8 *)eudora_coll_hit_r)->v40.y);
-                    if (t < FastAbsF_r(((StTab_2939E8 *)eudora_coll_hit_r)->v40.z)) {
-                        FastVecAdd_r(push, push, &((StTab_2939E8 *)eudora_coll_hit_r)->v40);
+                    t = FastAbsF_r(((StTab *)eudora_coll_hit_r)->v40.x);
+                    t = t + FastAbsF_r(((StTab *)eudora_coll_hit_r)->v40.y);
+                    if (t < FastAbsF_r(((StTab *)eudora_coll_hit_r)->v40.z)) {
+                        FastVecAdd_r(push, push, &((StTab *)eudora_coll_hit_r)->v40);
                         n += 4.0f;
                         dz += h - e->z;
                     }

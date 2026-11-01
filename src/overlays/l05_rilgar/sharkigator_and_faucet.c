@@ -23,7 +23,7 @@
 #include "enums/hero_state.h"
 
 /* Extermibot: wakes from its dormant pose, wanders around its home, walks
-   its path toward the target and strikes it; Wing_3047E8 is the same block
+   its path toward the target and strikes it; Wing is the same block
    as handle_extermibot_hits_and_update_targeting reads it. */
 struct ExtermibotVars {
     u8 pad_00[0x20];
@@ -635,7 +635,7 @@ extern float D_L05_001614AC_2D8388 SDATA(D_L05_001614AC);
 typedef union {
     u128_2D8388 q;
     float f[4];
-} Buf_2D8388;
+} Buf;
 typedef struct {
     /* 0x000 */ int path;
     /* 0x004 */ float f4;
@@ -668,9 +668,9 @@ void scenery_ship_update(char *moby) {
     int k;
     int v;
     int flag;
-    Buf_2D8388 buf;
-    Buf_2D8388 buf2;
-    Buf_2D8388 buf3;
+    Buf buf;
+    Buf buf2;
+    Buf buf3;
     float ang;
     float a2;
     float v2;
@@ -1556,12 +1556,12 @@ typedef struct Hit_3047E8 {
     u128_3047E8 dir;
     Moby *who;
 } Hit_3047E8;
-typedef struct Path_3047E8 {
+typedef struct Path {
     int n;
     char p0[0xC];
     int pts[1];
-} Path_3047E8;
-typedef struct Wing_3047E8 {
+} Path;
+typedef struct Wing {
     char pad0[0x20];
     float hp;
     char pad1[0x14];
@@ -1612,7 +1612,7 @@ typedef struct Wing_3047E8 {
     char pad18[0x4];
     int f2D4;
     float f2D8;
-} Wing_3047E8;
+} Wing;
 
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
 extern Hit_3047E8 *MobyGetHitMessage_r2(void *, int, int) __asm__("func_L00_0025B478");
@@ -1640,7 +1640,7 @@ extern float FastSubRots_r2(float, float) __asm__("func_001FA790");
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
 extern void EaseManipulatorOffsets_r(void *, void *, int, float, float) __asm__("func_L00_00263950");
 extern float g_frame_scale_sq_r __asm__("D_0015EE64") MACRO_ADDR;
-extern Path_3047E8 *rilgar_paths_r2[] __asm__("D_L05_001B0CB0");
+extern Path *rilgar_paths_r2[] __asm__("D_L05_001B0CB0");
 extern float D_L05_00161B58_3047E8 SDATA(D_L05_00161B58);
 extern float D_L05_00161B90_3047E8 SDATA(D_L05_00161B90);
 extern float D_L05_00161B94_3047E8 SDATA(D_L05_00161B94);
@@ -1661,12 +1661,12 @@ void handle_extermibot_hits_and_update_targeting(Moby *m) {
     float dmg;
     float ang;
     float ang2;
-    Wing_3047E8 *d;
+    Wing *d;
     Hit_3047E8 *r;
     int res;
     int k;
 
-    d = *(struct Wing_3047E8 **)&m->pvars;
+    d = *(struct Wing **)&m->pvars;
     fast_dec_timer_r(&d->f2D4);
     dmg = 0.0f;
     r = MobyGetHitMessage_r2(m, 0x330000, 0);
@@ -1948,8 +1948,8 @@ typedef struct {
     s32 count;
     u8 pad[12];
     Vec4 points[1];
-} SegmentPath_3054B0;
-extern SegmentPath_3054B0 *rilgar_paths_r3[] __asm__("D_L05_001B0CB0");
+} SegmentPath;
+extern SegmentPath *rilgar_paths_r3[] __asm__("D_L05_001B0CB0");
 extern f32 abs_3054B0(f32) __asm__("func_001F9B88");
 extern void FastVecAdd_r3(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BD8");
 extern void FastVecSub_r3(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BF0");
@@ -1971,7 +1971,7 @@ f32 push_point_from_path(s32 path_index, void *input, void *output, f32 distance
     Vec4 scaled_segment;
     Vec4 cross;
     Vec4 scaled_cross;
-    SegmentPath_3054B0 **entry;
+    SegmentPath **entry;
     s32 i;
     s32 found;
     f32 best = 512.0f;
@@ -2841,7 +2841,7 @@ typedef struct {
 typedef struct {
     char p00[0x50];
     int f50;
-} ChildData_308D68;
+} ChildData;
 
 /* Update function of moby Skid McMarx (skid_mcmarx): a hoverboard racer that follows its path, jumps, and steers. */
 void SkidMcMarxUpdate(Moby *moby) {
@@ -2904,7 +2904,7 @@ void SkidMcMarxUpdate(Moby *moby) {
 
                     d->child = c;
                     if (c != 0) {
-                        ((ChildData_308D68 *)*(void **)&c->pvars)->f50 = 1;
+                        ((ChildData *)*(void **)&c->pvars)->f50 = 1;
                     }
                 }
                 if (d->f250 % 2 == 1) {

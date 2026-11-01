@@ -30,7 +30,7 @@ struct BlargShip1805Vars {
     u8 flash; /* 0x67: hit flash strength */
 };
 
-typedef struct MobyData_30CAE0 {
+typedef struct MobyData {
     int f0;
     int f4;
     int f8;
@@ -42,34 +42,34 @@ typedef struct MobyData_30CAE0 {
     int f20;
     char pad24[0x58];
     float f7C;
-} MobyData_30CAE0;
+} MobyData;
 
-typedef struct Anim_30CAE0 {
+typedef struct Anim {
     char pad0[0x30];
     float f30[4];
     char pad40[0x30];
     float f70[4];
-} Anim_30CAE0;
+} Anim;
 
-typedef struct Flags_30CAE0 {
+typedef struct Flags {
     char pad0[0x64];
     unsigned char f64;
     unsigned char f65;
     unsigned char f66;
-} Flags_30CAE0;
+} Flags;
 
-typedef struct Cam_30CAE0 {
+typedef struct Cam {
     char pad0[0x60];
     float f60;
     float f64;
     float f68;
     char pad6C[0xC];
     float f78;
-} Cam_30CAE0;
+} Cam;
 
 extern int gemlik_game_mode_r __asm__("D_L13_0015F6A8") MACRO_ADDR;
 extern Moby *gemlik_moby_array_start_r __asm__("D_L13_00160058") MACRO_ADDR;
-extern Anim_30CAE0 *gemlik_scene_points_r __asm__("D_L13_0016016C") MACRO_ADDR;
+extern Anim *gemlik_scene_points_r __asm__("D_L13_0016016C") MACRO_ADDR;
 extern float gemlik_fade_level_r __asm__("D_L13_0015F4FC") MACRO_ADDR;
 extern int gemlik_scripted_camera_active_r __asm__("D_L13_0015F504") MACRO_ADDR;
 extern unsigned char gemlik_mission_group_state_r[] __asm__("D_L13_0015FD08") MACRO_ADDR;
@@ -89,7 +89,7 @@ extern int memcard_Save_r(int, int) __asm__("func_0020BFC8");
 
 /* Update function for moby class 1353 on level 13: runs the state machine in moby->state. */
 void update_gemlik_scene_controller(Moby *moby) {
-    MobyData_30CAE0 *data = (MobyData_30CAE0 *)moby->pvars;
+    MobyData *data = (MobyData *)moby->pvars;
 
     switch (moby->state) {
         case 0:
@@ -97,8 +97,8 @@ void update_gemlik_scene_controller(Moby *moby) {
                 moby->state = 1;
             break;
         case 1:
-            if (((Flags_30CAE0 *)(special_items_base_r + 0x13B))->f64 == 0) {
-                ((Flags_30CAE0 *)(special_items_base_r + 0x13B))->f64 = 1;
+            if (((Flags *)(special_items_base_r + 0x13B))->f64 == 0) {
+                ((Flags *)(special_items_base_r + 0x13B))->f64 = 1;
                 moby->state = 2;
                 StartCutscene_r(0);
             } else {
@@ -113,11 +113,11 @@ void update_gemlik_scene_controller(Moby *moby) {
             moby->state = 4;
             break;
         case 4:
-            if (((Flags_30CAE0 *)(special_items_base_r + 0x13B))->f65 == 0) {
+            if (((Flags *)(special_items_base_r + 0x13B))->f65 == 0) {
                 if (data->f0 != -1) {
                     if (is_point_inside_clip_volume_r(
                             &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, data->f0) != 0) {
-                        ((Flags_30CAE0 *)(special_items_base_r + 0x13B))->f65 = 1;
+                        ((Flags *)(special_items_base_r + 0x13B))->f65 = 1;
                         if (data->f14 != -1) {
                             Moby *e = &gemlik_moby_array_start_r[data->f14];
                             e->flags |= 0x41;
@@ -147,7 +147,7 @@ void update_gemlik_scene_controller(Moby *moby) {
                 qcopy_nc(&e->pos, gemlik_scene_points_r[data->f8].f30);
                 Hero_ResetToPosition_r(gemlik_scene_points_r[data->f8].f30, gemlik_scene_points_r[data->f8].f70, 0, 1);
                 g_hero_field_20a5_r[0] = 1;
-                ((MobyData_30CAE0 *)e->pvars)->f7C = 0.99f;
+                ((MobyData *)e->pvars)->f7C = 0.99f;
                 gemlik_fade_level_r = 0.99f;
                 e->state = 2;
             }
@@ -157,7 +157,7 @@ void update_gemlik_scene_controller(Moby *moby) {
             moby->state = 7;
             break;
         case 7:
-            if (((Flags_30CAE0 *)(special_items_base_r + 0x13B))->f66 != 0)
+            if (((Flags *)(special_items_base_r + 0x13B))->f66 != 0)
                 goto s12;
             if (data->f14 == -1)
                 goto s13;
@@ -171,7 +171,7 @@ void update_gemlik_scene_controller(Moby *moby) {
                 e->flags |= 2;
             }
             Hero_ResetToPosition_r(gemlik_scene_points_r[data->f8].f30, gemlik_scene_points_r[data->f8].f70, 0x72, 1);
-            ((Flags_30CAE0 *)(special_items_base_r + 0x13B))->f66 = 1;
+            ((Flags *)(special_items_base_r + 0x13B))->f66 = 1;
             if (data->f20 != -1) {
                 Moby *e = &gemlik_moby_array_start_r[data->f20];
                 e->flags |= 0x41;
@@ -204,10 +204,10 @@ void update_gemlik_scene_controller(Moby *moby) {
                 Moby *e = &gemlik_moby_array_start_r[data->f20];
                 e->flags &= 0xFFBE;
                 initialize_moby_state_record_r(e);
-                ((Cam_30CAE0 *)(level_render_state_base_r + 0x2C2))->f60 = 464.66f;
-                ((Cam_30CAE0 *)(level_render_state_base_r + 0x2C2))->f64 = 580.68f;
-                ((Cam_30CAE0 *)(level_render_state_base_r + 0x2C2))->f68 = 316.72f;
-                ((Cam_30CAE0 *)(level_render_state_base_r + 0x2C2))->f78 = 2.77f;
+                ((Cam *)(level_render_state_base_r + 0x2C2))->f60 = 464.66f;
+                ((Cam *)(level_render_state_base_r + 0x2C2))->f64 = 580.68f;
+                ((Cam *)(level_render_state_base_r + 0x2C2))->f68 = 316.72f;
+                ((Cam *)(level_render_state_base_r + 0x2C2))->f78 = 2.77f;
             }
             gemlik_scripted_camera_active_r = 0;
             moby->state = 11;
@@ -509,7 +509,7 @@ extern float IntToFloat(int);
 extern int FastDecTimer(void *);
 extern int coll_line(void *, void *, int, int, int);
 
-typedef struct SparkData_30D880 {
+typedef struct SparkData {
     f32 dir_x; /* 0x00 */
     f32 dir_y; /* 0x04 */
     f32 vz; /* 0x08 decreases each frame */
@@ -519,11 +519,11 @@ typedef struct SparkData_30D880 {
     s16 life; /* 0x18 */
     s16 duration; /* 0x1A */
     f32 scale_max; /* 0x1C */
-} SparkData_30D880;
+} SparkData;
 
 /* Gemlik moby update (class 1634): two particle bursts around the moby, then movement and expiry. */
 void update_moby_motion_and_emit_sparks(char *moby) {
-    SparkData_30D880 *data = (SparkData_30D880 *)((struct Moby *)moby)->pvars;
+    SparkData *data = (SparkData *)((struct Moby *)moby)->pvars;
     Vec4 old_pos, position, velocity, acceleration, second_pos;
     float f20, deg;
     float r, t;

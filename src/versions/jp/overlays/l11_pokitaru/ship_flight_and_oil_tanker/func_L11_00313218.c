@@ -102,7 +102,7 @@ void draw_ship_hud(char *moby) {
     {
         unsigned char *b = (unsigned char *)hero_globals_base + 0xE1D;
         if (*(float *)(b + 0x15FC) < *(float *)(b + 0x1600) * 0.25f) {
-            int cnt = ((HelpTab_313218 *)(help_stats_base + 0x34D))->r[0x58].count;
+            int cnt = ((HelpTab *)(help_stats_base + 0x34D))->r[0x58].count;
             if (cnt == 0) {
                 Help_Request(0x2AFF, 0x58);
             } else if (cnt < 2) {
@@ -112,32 +112,29 @@ void draw_ship_hud(char *moby) {
                 }
             }
         } else if (*(int *)(d + 0x11C) != 0) {
-            if (((HelpTab_313218 *)(help_stats_base + 0x34D))->r[0x58].count < 0xFFFF) {
-                ((HelpTab_313218 *)(help_stats_base + 0x34D))->r[0x58].count++;
+            if (((HelpTab *)(help_stats_base + 0x34D))->r[0x58].count < 0xFFFF) {
+                ((HelpTab *)(help_stats_base + 0x34D))->r[0x58].count++;
             }
             per = 600;
-            if (scale_ticks(gameplay_event_frame_count) / per >
-                ((HelpTab_313218 *)(help_stats_base + 0x34D))->r[0x58].best) {
-                ((HelpTab_313218 *)(help_stats_base + 0x34D))->r[0x58].best =
-                    scale_ticks(gameplay_event_frame_count) / 600;
+            if (scale_ticks(gameplay_event_frame_count) / per > ((HelpTab *)(help_stats_base + 0x34D))->r[0x58].best) {
+                ((HelpTab *)(help_stats_base + 0x34D))->r[0x58].best = scale_ticks(gameplay_event_frame_count) / 600;
             }
-            ((HelpTab_313218 *)(help_stats_base + 0x34D))->r[0x58].flags =
-                ((HelpTab_313218 *)(help_stats_base + 0x34D))->r[0x58].flags | (1 << g_current_level_index) |
-                0x80000000;
+            ((HelpTab *)(help_stats_base + 0x34D))->r[0x58].flags =
+                ((HelpTab *)(help_stats_base + 0x34D))->r[0x58].flags | (1 << g_current_level_index) | 0x80000000;
             *(int *)(d + 0x11C) = 0;
         }
     }
     fast_dec_timer_i(d + 0x120);
     {
         unsigned char *g2 = (unsigned char *)hero_globals_base + 0xE1D;
-        if ((g2[0x15F6] < 5 && ((HelpTab_313218 *)(help_stats_base + 0x34D))->r[0x57].count == 0) ||
-            (g2[0x15F6] == 0 && ((HelpTab_313218 *)(help_stats_base + 0x34D))->r[0x57].count < 2 &&
+        if ((g2[0x15F6] < 5 && ((HelpTab *)(help_stats_base + 0x34D))->r[0x57].count == 0) ||
+            (g2[0x15F6] == 0 && ((HelpTab *)(help_stats_base + 0x34D))->r[0x57].count < 2 &&
              *(int *)(d + 0x120) == 0)) {
             Help_Request(0x2AFE, 0x57);
             *(int *)(d + 0x120) = scale_ticks(0x4B0);
         }
     }
-    if (((HelpTab_313218 *)(help_stats_base + 0x34D))->r[0x56].count == 0) {
+    if (((HelpTab *)(help_stats_base + 0x34D))->r[0x56].count == 0) {
         if ((*(int *)(d + 0x128))++ > scale_ticks(0xE10)) {
             Help_Request(0x2AFD, 0x56);
         }

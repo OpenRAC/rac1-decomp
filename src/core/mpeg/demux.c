@@ -25,12 +25,12 @@ extern void ipu_set_mpeg1(int arg0);
 extern int sysbit_get(void *arg0, int arg1);
 
 /* {base id, field mask} per type; the mask selects the shift of value. */
-struct TypeEntry_12AC80 {
+struct TypeEntry {
     u64 id;
     u64 type;
 };
 
-extern struct TypeEntry_12AC80 mpeg_stream_type_keys_r[] __asm__("D_00132FD8");
+extern struct TypeEntry mpeg_stream_type_keys_r[] __asm__("D_00132FD8");
 
 /* _type2id (libmpeg): for a type below 10, the 64-bit stream key
    mpeg_stream_type_keys[type].id with value shifted into the field its mask selects
@@ -1083,15 +1083,15 @@ typedef struct {
     s32 picture_structure; /* 0x174 */
     u8 pad178[0x40];
     void *ref_images[10]; /* 0x1B8 */
-} MpegDecoder_12C278;
+} MpegDecoder;
 
-extern s32 _Error_lf(MpegDecoder_12C278 *, u8 *, s32) __asm__("func_0012C468");
-extern s32 _dispRefImage_lf(MpegDecoder_12C278 *, void *, s32) __asm__("func_00129E30");
-extern s32 _dispRefImageField_lf(MpegDecoder_12C278 *, void *, void *, s32) __asm__("func_00129F40");
+extern s32 _Error_lf(MpegDecoder *, u8 *, s32) __asm__("func_0012C468");
+extern s32 _dispRefImage_lf(MpegDecoder *, void *, s32) __asm__("func_00129E30");
+extern s32 _dispRefImageField_lf(MpegDecoder *, void *, void *, s32) __asm__("func_00129F40");
 extern u8 mpeg_second_field_missing_msg_lf[] __asm__("D_00153BB8");
 
 void mpeg_last_frame(void *arg0) {
-    MpegDecoder_12C278 *decoder = (MpegDecoder_12C278 *)arg0;
+    MpegDecoder *decoder = (MpegDecoder *)arg0;
     s32 count;
     count = decoder->frame_count;
     if (decoder->second_field != 0) {

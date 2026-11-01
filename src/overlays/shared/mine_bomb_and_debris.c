@@ -1309,12 +1309,12 @@ typedef struct {
     char pad58[8];
     char *last_hit;
     int hit_count;
-} Land_AE6B0;
+} Land;
 extern void AddDrawCallback(void *, void *);
 extern unsigned char screen_globals_base[];
 extern void draw_bomb_landing_marker(char *moby);
 
-#define v ((Land_AE6B0 *)vp)
+#define v ((Land *)vp)
 /* Simulate a throw's arc from the hero or holder to find where it lands; 0 when blocked. */
 int predict_throw_landing(void *vp, void *m, int mode) {
     V_AE6B0 position, velocity, previous, hero_position, offset, start;

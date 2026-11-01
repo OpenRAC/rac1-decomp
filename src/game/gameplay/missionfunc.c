@@ -311,14 +311,14 @@ typedef struct {
     u8 pad0[0x24];
     s16 active;
     u8 pad26[2];
-} MapIconLink_0CDE0;
+} MapIconLink;
 
 typedef struct {
     f32 x;
     f32 y;
     f32 z;
     s32 flag;
-} MapPoint_0CDE0;
+} MapPoint;
 
 typedef struct {
     u8 pad0[0x10];
@@ -326,9 +326,9 @@ typedef struct {
     f32 y;
     u8 pad18[0x30];
     f32 z;
-} MapWorldObject_0CDE0;
+} MapWorldObject;
 
-struct TextRegion_0CDE0 {
+struct TextRegion {
     s16 top;
     s16 bottom;
     s16 left;
@@ -343,7 +343,7 @@ struct TextRegion_0CDE0 {
     s16 subpixel_y_sixteenths;
 };
 /* One entry of a level's map icon list; the list ends at the first entry with flags bit 4. */
-struct MapIcon_0CDE0 {
+struct MapIcon {
     s16 id;             /* 0x00: moby index (current level) or race_gates index; -1..-9 are fixed positions */
     s16 link;           /* 0x02: -1 always active, else the link's active word decides */
     u16 flags;          /* 0x04: 0x4 ends the list, 0x10 label shown */
@@ -362,31 +362,31 @@ struct MapIcon_0CDE0 {
     s32 active;         /* 0x24 */
 };
 /* Map screen state at level_map_selection, as far as this function reads it. */
-struct MapState_0CDE0 {
+struct MapState {
     u8 pad0[0x20];
-    struct MapIcon_0CDE0 *icons; /* 0x020: icon list of the shown level */
+    struct MapIcon *icons; /* 0x020: icon list of the shown level */
     u8 pad24[0xE0];
     s32 pan_x[20];               /* 0x104 */
     s32 pan_y[20];               /* 0x154 */
 };
-extern struct MapState_0CDE0 level_map_selection_r __asm__("D_001A01F0");
+extern struct MapState level_map_selection_r __asm__("D_001A01F0");
 extern struct Hero g_hero_r __asm__("D_0013F450");
 extern s32 g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 extern u8 level_visit_state_r[] __asm__("D_0013DE60");
-extern struct MapIcon_0CDE0 *map_icon_lists_r[] __asm__("D_001A2F40");
+extern struct MapIcon *map_icon_lists_r[] __asm__("D_001A2F40");
 extern s32 D_001A02F4_0CDE0[] __asm__("D_001A02F4");
 extern s32 map_use_alt_level_layout_r __asm__("D_0015FE20") MACRO_ADDR;
-extern MapWorldObject_0CDE0 *menu_action_messages_r[] __asm__("D_00199578");
-extern MapPoint_0CDE0 race_gates_r2[] __asm__("D_0013D6B8");
+extern MapWorldObject *menu_action_messages_r[] __asm__("D_00199578");
+extern MapPoint race_gates_r2[] __asm__("D_0013D6B8");
 extern s32 D_0013D6C4_0CDE0[] __asm__("D_0013D6C4");
 extern struct {
     u8 pad0[0x10];
-    MapIconLink_0CDE0 *links;
+    MapIconLink *links;
 } D_001A2F90_0CDE0 __asm__("D_001A2F90");
 
 extern void func_00208C38_0CDE0(f32 *outx, f32 *outy, s32 view, f32 x, f32 y) __asm__("func_00208C38");
 extern void FormatMenuItemText_r(s32 idx, char *dst) __asm__("func_00208AB0");
-extern void func_001F75D0_0CDE0(struct TextRegion_0CDE0 *, long, char *, int) __asm__("func_001F75D0");
+extern void func_001F75D0_0CDE0(struct TextRegion *, long, char *, int) __asm__("func_001F75D0");
 
 /* Map screen icon refresh: picks the level's icon list, centres the map on the hero when
    it is the current level, places the fixed icons (-1..-9) and projects the others to map
@@ -396,7 +396,7 @@ void update_map_icons(s32 level, s32 flag) {
     char label_text[128];
     f32 map_x;
     f32 map_y;
-    struct MapIcon_0CDE0 *icon;
+    struct MapIcon *icon;
     s32 icon_index;
 
     if (level < 19 && level_visit_state_r[level] != 0) {
@@ -488,7 +488,7 @@ void update_map_icons(s32 level, s32 flag) {
             level_map_selection_r.icons[icon_index].flags |= 0x10;
             FormatMenuItemText_r(icon_index, label_text);
             {
-                struct TextRegion_0CDE0 text_window = {0, icon->label_height, 0, icon->label_width, 4, 4, 0, 0, 0xF, 4};
+                struct TextRegion text_window = {0, icon->label_height, 0, icon->label_width, 4, 4, 0, 0, 0xF, 4};
                 func_001F75D0_0CDE0(&text_window, 0x80FFA888L, label_text, -1);
                 icon->label_height = text_window.rendered_height + 8;
                 previous_label_height = text_window.rendered_height;

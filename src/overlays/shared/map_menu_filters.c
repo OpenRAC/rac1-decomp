@@ -253,8 +253,8 @@ typedef struct {
     float xs;
     float y0;
     float ys;
-} MapScale_182B70;
-extern MapScale_182B70 map_coefficients[];
+} MapScale;
+extern MapScale map_coefficients[];
 
 /* Converts world X/Y to map texture UVs for planet k. */
 void map_world_to_uv(float *p1, float *p2, int k, float t, float u) {

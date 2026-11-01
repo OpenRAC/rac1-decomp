@@ -612,7 +612,7 @@ int GetIconFrame(int iconId, int sub) {
 __asm__(".section .text\n\tnop\n");
 
 extern s32 g_gs_texture_allocation_cursor_r __asm__("D_0015EF74") MACRO_ADDR;
-struct TextureUpload_00248 {
+struct TextureUpload {
     s32 clut_data; /* 0x00: EE address of the CLUT (fun_00204cf0: texture CLUT pointer) */
     s16 unk4; /* 0x04: every writer stores 0 */
     s16 cbp; /* 0x06: GS block of the CLUT, TEX0.CBP */
@@ -621,15 +621,15 @@ struct TextureUpload_00248 {
     u8 th; /* 0x0D: log2 height, TEX0.TH */
     s16 tbp; /* 0x0E: GS block of the pixels, TEX0.TBP0 */
 };
-struct FrameTextureRef_00248 {
+struct FrameTextureRef {
     s16 palette_index;
     s16 image_index;
 };
-struct FramePalettePage_00248 {
+struct FramePalettePage {
     s32 source_address;
     u16 gs_block_offset;
 };
-struct FrameImagePage_00248 {
+struct FrameImagePage {
     s32 source_address;
     u16 gs_block_offset;
     u8 width_log2;
@@ -637,14 +637,14 @@ struct FrameImagePage_00248 {
 };
 extern s32 g_gs_texture_allocation_base_r __asm__("D_0015EF8C") MACRO_ADDR;
 extern s32 pending_texture_upload_count_r __asm__("D_0015F558") MACRO_ADDR;
-extern struct TextureUpload_00248 pending_texture_uploads_r[] __asm__("D_0018D140");
-struct FrameTextureTables_00248 {
+extern struct TextureUpload pending_texture_uploads_r[] __asm__("D_0018D140");
+struct FrameTextureTables {
     u8 pad00[0x20];
     s32 frame_references_address;
     s32 image_pages_address;
     s32 palette_pages_address;
 };
-extern struct FrameTextureTables_00248 hud_state_r2 __asm__("D_0019A4E8");
+extern struct FrameTextureTables hud_state_r2 __asm__("D_0019A4E8");
 
 /* GetFrameTex: returns the TEX0 word of a HUD frame, allocating GS blocks for its palette and image pages
    and queueing their uploads the first time.
@@ -652,12 +652,12 @@ extern struct FrameTextureTables_00248 hud_state_r2 __asm__("D_0019A4E8");
 u64 func_00200248_r(s32 frame_id) __asm__("func_00200248");
 /* GetFrameTex(int) */
 u64 func_00200248_r(s32 frame_id) {
-    struct FrameTextureRef_00248 *frame;
-    struct FramePalettePage_00248 *palette_page;
-    struct FrameImagePage_00248 *image_page;
-    struct TextureUpload_00248 *packet;
-    struct TextureUpload_00248 *initial_packet;
-    struct TextureUpload_00248 *palette_packet;
+    struct FrameTextureRef *frame;
+    struct FramePalettePage *palette_page;
+    struct FrameImagePage *image_page;
+    struct TextureUpload *packet;
+    struct TextureUpload *initial_packet;
+    struct TextureUpload *palette_packet;
     u32 packet_offset;
     u32 queued_transfer;
     s32 image_upload_count;
@@ -670,9 +670,9 @@ u64 func_00200248_r(s32 frame_id) {
     u64 tex0_word;
     u64 palette_word;
 
-    frame = (struct FrameTextureRef_00248 *)(frame_id * 4 + hud_state_r2.frame_references_address);
-    palette_page = (struct FramePalettePage_00248 *)(hud_state_r2.palette_pages_address + frame->palette_index * 8);
-    image_page = (struct FrameImagePage_00248 *)(hud_state_r2.image_pages_address + frame->image_index * 8);
+    frame = (struct FrameTextureRef *)(frame_id * 4 + hud_state_r2.frame_references_address);
+    palette_page = (struct FramePalettePage *)(hud_state_r2.palette_pages_address + frame->palette_index * 8);
+    image_page = (struct FrameImagePage *)(hud_state_r2.image_pages_address + frame->image_index * 8);
     queued_transfer = 0;
 
     if (palette_page->gs_block_offset == 0 || image_page->gs_block_offset == 0) {

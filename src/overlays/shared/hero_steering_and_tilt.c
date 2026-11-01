@@ -1226,7 +1226,7 @@ typedef struct {
     s16 unk76;
     u8 pad78[6];
     s16 unk7E;
-} ThrowPvars_217658;
+} ThrowPvars;
 extern f32 player_camera[];
 extern char g_hero_transform_history[];
 extern int is_wrench_moby(void *);
@@ -1250,8 +1250,8 @@ void launch_hero_wrench(void) {
     f32 out_mat[16];
     struct Moby *target;
     struct Moby *item;
-    ThrowPvars_217658 *tpv;
-    ThrowPvars_217658 *pv;
+    ThrowPvars *tpv;
+    ThrowPvars *pv;
     s32 aimed;
     s32 has_target;
     s32 state;
@@ -1262,7 +1262,7 @@ void launch_hero_wrench(void) {
         target = g_hero_r2.items[0].moby;
         has_target = 0;
         if (target != 0 && is_wrench_moby(target)) {
-            tpv = (ThrowPvars_217658 *)target->pvars;
+            tpv = (ThrowPvars *)target->pvars;
             if (tpv->unk7E) {
                 has_target = 1;
                 transform_hero_local_offset_to_world(dir, 0.5f, 0.0f, 0.5f);
@@ -1285,7 +1285,7 @@ void launch_hero_wrench(void) {
         allocate_hero_voice_for_entry(0x1B, 0);
     }
     item->state = 10;
-    pv = (ThrowPvars_217658 *)item->pvars;
+    pv = (ThrowPvars *)item->pvars;
     if (g_hero_r2.wall_probe_distance < 1.2f && 0.6632251f < g_hero_r2.wall_normal_pitch &&
         !g_hero_r2.wall_probe_moby_in_class_range) {
         pv->unk76 = 1;

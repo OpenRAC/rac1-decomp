@@ -7,7 +7,7 @@
 #include "structs/moby.h"
 #include "data/level_14.h"
 
-typedef struct Pkt_03430 {
+typedef struct Pkt {
     float corner[4][4];
     unsigned int color[4];
     float uv[4][2];
@@ -15,7 +15,7 @@ typedef struct Pkt_03430 {
     long tex;
     long state;
     long flags;
-} Pkt_03430;
+} Pkt;
 
 extern void euler_to_matrix(void *, void *);
 extern void matrix_from_basis_rows(void *, void *);
@@ -30,7 +30,7 @@ u64 GetEffectTex(s32);
 extern void draw_world_quad(void *, void *, int);
 typedef struct {
     float v[8][4];
-} Frame_03430;
+} Frame;
 extern char *oltanis_clip_volumes MACRO_ADDR;
 
 extern float oltanis_vendor_beam_quad_uvs[][2];
@@ -53,7 +53,7 @@ typedef struct {
 /* Draws the vendor's beam effect. */
 void draw_vendor_beam(char *m) {
     D_03430 *d = ((D_03430 *)((Moby *)m)->pvars);
-    Pkt_03430 P[3];
+    Pkt P[3];
     float M1[16] __attribute__((aligned(16)));
     float M2[16] __attribute__((aligned(16)));
     float v230[4] __attribute__((aligned(16)));
@@ -67,10 +67,10 @@ void draw_vendor_beam(char *m) {
     int c;
     int t;
 
-    euler_to_matrix(M1, ((Frame_03430 *)oltanis_clip_volumes)[d->idx].v[7]);
+    euler_to_matrix(M1, ((Frame *)oltanis_clip_volumes)[d->idx].v[7]);
     matrix_from_basis_rows(M2, M1);
-    qcopy_nc(&M1[12], ((Frame_03430 *)oltanis_clip_volumes)[d->idx].v[3]);
-    FastVecSub(v230, oltanis_camera_pos, ((Frame_03430 *)oltanis_clip_volumes)[d->idx].v[3]);
+    qcopy_nc(&M1[12], ((Frame *)oltanis_clip_volumes)[d->idx].v[3]);
+    FastVecSub(v230, oltanis_camera_pos, ((Frame *)oltanis_clip_volumes)[d->idx].v[3]);
     matrix_mul_vec3(v230, v230, M2);
     tex = GetEffectTex(*(int *)&oltanis_vendor_beam_tex_index);
     flags = (long)*(int *)&vendor_beam_blend_minuend_selector_gp |

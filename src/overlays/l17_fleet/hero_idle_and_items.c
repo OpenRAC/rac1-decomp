@@ -25,7 +25,7 @@ typedef struct {
     int b;
     int c;
     char pad[0x20];
-} T2C_21ED38;
+} T2C;
 extern void clear_moby_transform_history(char *o);
 
 extern int scale_ticks(int);
@@ -86,7 +86,7 @@ extern short fleet_hero_state_f_jump_velocity_keys;
 extern char fleet_hero_state_d_jump_velocity_keys[];
 extern char fleet_hero_state_12_jump_velocity_keys[];
 extern unsigned char fleet_hero_run_jump_land_anim_by_frame[];
-extern T2C_21ED38 fleet_attack_records[];
+extern T2C fleet_attack_records[];
 extern float fleet_hero_anim_time_curves[][25];
 
 /* Puts the hero into move state A (with its animation when B is set); returns 0 when the change is refused (level 17's
@@ -1649,7 +1649,7 @@ int HeroL17_SetMoveState(int a, int b) {
                 case HERO_STATE_WRENCH_COMBO: {
                     char *h = help_stats_base + 0x65;
                     struct Hero *q;
-                    T2C_21ED38 *e;
+                    T2C *e;
                     int k;
                     if (*(unsigned short *)(h + 0x40) <= 0xFFFE) {
                         *(unsigned short *)(h + 0x40) = *(unsigned short *)(h + 0x40) + 1;
@@ -1701,7 +1701,7 @@ int HeroL17_SetMoveState(int a, int b) {
                 }
                 case 0x51: {
                     struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
-                    T2C_21ED38 *e = &fleet_attack_records[q->attack_record];
+                    T2C *e = &fleet_attack_records[q->attack_record];
                     int k = 0;
                     if ((q->state.prev_control_mode == 6 ||
                          (q->state.prev2_control_mode == 6 &&
@@ -1794,7 +1794,7 @@ int HeroL17_SetMoveState(int a, int b) {
             p->ground_speed = g_frame_time * 9.0f;
             if (b) {
                 char *m;
-                T2C_21ED38 *e = &fleet_attack_records[p->attack_record];
+                T2C *e = &fleet_attack_records[p->attack_record];
                 int k = e->b;
                 int n;
                 if (e->a == 1)

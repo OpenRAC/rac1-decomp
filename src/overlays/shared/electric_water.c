@@ -66,7 +66,7 @@ typedef struct {
     int iC;
     Q_2D7C00 pos;
     unsigned char pad20[0x1C - 0x20 + 0x20];
-} Light_2D7C00;
+} Light;
 
 extern Hero g_hero;
 extern char gHeroPos[];
@@ -289,7 +289,7 @@ void electric_water_update(unsigned char *m) {
                         if (vars->light == -1) {
                             vars->light = allocate_colored_effect_slot(&vars->bolt_start, 8.0f, 0.0f, 1.0f, 1.0f, 0.5f);
                         } else {
-                            Light_2D7C00 *l = (Light_2D7C00 *)(quartu_lights + (vars->light << 5));
+                            Light *l = (Light *)(quartu_lights + (vars->light << 5));
                             qcopy(&l->pos, &vars->bolt_start);
                             *(float *)((char *)l + 0x1C) = 8.0f;
                             l->f0 = 1.0f;
@@ -1274,7 +1274,7 @@ extern unsigned char special_items_base[];
 typedef struct {
     u8 pad_0[0x2084];
     s32 current;
-} HeroStateWord_2D7C00;
+} HeroStateWord;
 
 /* Update for moby Codebot: a four-state trigger that spins and then deletes itself. */
 void codebot_update(unsigned char *moby) {
@@ -1302,7 +1302,7 @@ void codebot_update(unsigned char *moby) {
             case CODEBOT_CHECK_HERO_PROXIMITY:
                 update_collectible_sprite_effect(moby);
                 if (FastVecDist(&m->pos, &((Hero *)&g_hero)->motion.pos.q) < 3.0f) {
-                    if (((HeroStateWord_2D7C00 *)&g_hero)->current != 0x32) {
+                    if (((HeroStateWord *)&g_hero)->current != 0x32) {
                         m->flags |= 0x41;
                         StartCutscene(1);
                         m->state = 2;

@@ -306,7 +306,7 @@ typedef struct {
     int timer;
     float unk18;
     float yaw;
-} ShotVars_ece00;
+} ShotVars;
 typedef struct {
     float dir[4];
     float unk10[2];
@@ -315,12 +315,12 @@ typedef struct {
     short oclass;
     int pad1C;
     int pad20[4];
-} ShotHit_ece00;
+} ShotHit;
 typedef struct {
     char pad0[0x18];
     int moby;
-} ShotColl_ece00;
-extern ShotColl_ece00 hoven_coll_hit;
+} ShotColl;
+extern ShotColl hoven_coll_hit;
 
 extern int fast_dec_timer(int *);
 extern float FastAddRots(float, float);
@@ -348,12 +348,12 @@ extern void SpawnExplosionFx(void *, void *, int, float, float);
 extern int g_current_level_index_e __asm__("D_0015EE84") MACRO_ADDR;
 /* Update of the level 12 shot. */
 void HovenShotUpdate(struct Moby *moby) {
-    ShotVars_ece00 *vars = (ShotVars_ece00 *)moby->pvars;
+    ShotVars *vars = (ShotVars *)moby->pvars;
     float old_pos[4];
     float side[4];
     float back[4];
     float trail[4];
-    ShotHit_ece00 hit;
+    ShotHit hit;
     float f20;
     switch (moby->state) {
         case 1: {
@@ -711,11 +711,11 @@ typedef struct Data_304310 {
     int f232C;
     int f2330;
 } Data_304310;
-typedef struct Row_304310 {
+typedef struct Row {
     u128 v0;
     u128 v10;
     u128 v20;
-} Row_304310;
+} Row;
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
 extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
 extern float FastAddRots_r2(float, float) __asm__("func_001FA748");
@@ -730,7 +730,7 @@ extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
 extern void update_oscillating_target_link_strips_r(void *) __asm__("func_L12_00304038");
 extern void InitDirectionalHitQuery_r(void *, void *, int, float, void *) __asm__("func_L00_0025A8C0");
 extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
-extern Row_304310 *hoven_paths_r[] __asm__("D_L12_001B0C30");
+extern Row *hoven_paths_r[] __asm__("D_L12_001B0C30");
 extern char hoven_camera_pos_r[] __asm__("D_L12_001672C0");
 extern float hoven_zero_vec_r[] __asm__("D_L12_0015F660") MACRO_ADDR;
 extern float gHeroPos_r[] __asm__("D_0013F4D0");
@@ -741,7 +741,7 @@ void update_oscillating_target_link(Moby *moby) {
     Vec4 tmp1;
     char tmp2[0x30];
     Data_304310 *data = *(Data_304310 **)&moby->pvars;
-    Row_304310 *row;
+    Row *row;
     float a;
     float half;
     int idx;
@@ -844,8 +844,8 @@ typedef struct {
     f32 unk150;
     f32 pitch;
     f32 yaw;
-} View_303370;
-extern View_303370 hoven_player_camera;
+} View;
+extern View hoven_player_camera;
 typedef struct {
     u8 pad0[0x40];
     s32 targets[10];
@@ -937,12 +937,12 @@ typedef struct {
     float f170;
     char pad174[4];
     int f178;
-} Cam_304920;
+} Cam;
 
 typedef struct {
     char pad0[0x6C];
     Moby *f6C;
-} Snd_304920;
+} Snd;
 
 typedef struct {
     char pad0[0x2C];
@@ -1015,7 +1015,7 @@ extern void draw_hoven_turret_destruction_fade();
 void hoven_turret_update(Moby *moby) {
     Data_304920 *d = *(Data_304920 **)&moby->pvars;
 
-    ((Snd_304920 *)(hero_globals_base_e + 0x1D))->f6C = moby;
+    ((Snd *)(hero_globals_base_e + 0x1D))->f6C = moby;
     switch (moby->state) {
         case 0:
             hoven_turret_manned = 0;
@@ -1034,7 +1034,7 @@ void hoven_turret_update(Moby *moby) {
                 d->fA0 = moby->pos.z;
                 d->f98 = -1;
                 moby->rot.z = 3.1415927f;
-                ((Snd_304920 *)(hero_globals_base_e + 0x1D))->f6C = moby;
+                ((Snd *)(hero_globals_base_e + 0x1D))->f6C = moby;
             }
             break;
         case 3: {
@@ -1202,10 +1202,10 @@ void hoven_turret_update(Moby *moby) {
                     FastVecAdd(muz, muz, dir);
                     create_moby_with_particles(moby, muz, dir, 0);
                     Moby_PlaySound(0, 0, (int)moby);
-                    ((Cam_304920 *)hoven_player_camera_r)->f160 = 0.03f;
-                    ((Cam_304920 *)hoven_player_camera_r)->f168 = scale_ticks(0xA);
-                    ((Cam_304920 *)hoven_player_camera_r)->f170 = 0.03f;
-                    ((Cam_304920 *)hoven_player_camera_r)->f178 = scale_ticks(7);
+                    ((Cam *)hoven_player_camera_r)->f160 = 0.03f;
+                    ((Cam *)hoven_player_camera_r)->f168 = scale_ticks(0xA);
+                    ((Cam *)hoven_player_camera_r)->f170 = 0.03f;
+                    ((Cam *)hoven_player_camera_r)->f178 = scale_ticks(7);
                     d->f70 = scale_ticks(0x14);
                     for (i = 0; i < 5; i++) {
                         Vec_304920 vel;
@@ -1240,9 +1240,9 @@ void hoven_turret_update(Moby *moby) {
 
                 a = random_float_between(hoven_turret_destruction_view_offset_distance_min,
                                          hoven_turret_destruction_view_offset_distance_max);
-                b = FastAddRots(((Cam_304920 *)hoven_player_camera_r)->f158, randf_sym(0.0f, 0.5235988f));
-                c = FastAddRots(((Cam_304920 *)hoven_player_camera_r)->f154, randf_sym(0.0f, 0.5235988f));
-                qcopy(v, ((Cam_304920 *)hoven_player_camera_r)->f140);
+                b = FastAddRots(((Cam *)hoven_player_camera_r)->f158, randf_sym(0.0f, 0.5235988f));
+                c = FastAddRots(((Cam *)hoven_player_camera_r)->f154, randf_sym(0.0f, 0.5235988f));
+                qcopy(v, ((Cam *)hoven_player_camera_r)->f140);
                 fast_add_rotations_cf(v, v, a, b, c);
                 t = random_float_between(0.5f, 1.3f);
                 spawn_explosion(moby, hoven_zero_vec, v, 0.0f, 0.0f, 7, 0xF, 0x19, t, t * 0.57f, 10.0f, 3, 0.7f, 0.0f,
@@ -1535,7 +1535,7 @@ typedef struct {
 typedef struct {
     u8 pad0[0x20];
     struct Moby *moby;
-} HitSource_304e00;
+} HitSource;
 extern struct Moby *hit_moby;
 
 /* A homing mine: rises, then steers toward the point ahead and blows up near it or on contact.
@@ -1549,7 +1549,7 @@ void update_homing_mine(struct Moby *moby) {
     Vec4 direction;
     Vec4 probe;
     int hits;
-    HitSource_304e00 *source;
+    HitSource *source;
     float angle;
     float turn;
     float height;
@@ -1675,7 +1675,7 @@ typedef struct {
     short h9A;
     short h9C;
     short h9E;
-} Gun_306890;
+} Gun;
 
 /* Hoven turret battery update: aims each manned gun at the hero, fires, takes hits and smokes when damaged. */
 void update_planetbuster_maximus_guns(char *moby) {
@@ -1692,7 +1692,7 @@ void update_planetbuster_maximus_guns(char *moby) {
         int idx;
         char *ent;
         char *m;
-        Gun_306890 *md;
+        Gun *md;
         float yaw;
         float dist;
         float dz;
@@ -1704,7 +1704,7 @@ void update_planetbuster_maximus_guns(char *moby) {
             idx = *(int *)(d - -(i * 4) + 0x5D0);
             ent = d + idx * 0x30;
             m = (char *)(hoven_mobys_m + (*(int *)(ent + 0x20) << 8));
-            md = ((Gun_306890 *)((Moby *)m)->pvars);
+            md = ((Gun *)((Moby *)m)->pvars);
             qcopy(v0, hoven_camera_pos_r);
             pv1 = v1;
             v0[2] -= 0.7f;

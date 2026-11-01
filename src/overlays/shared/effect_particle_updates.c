@@ -1691,7 +1691,7 @@ void update_moving_spinning_fade_in_out_effect_particle(struct PartBase *m) {
         m->color = (x << 24) | p->color;
     }
 }
-typedef struct Src_26d470 {
+typedef struct Src {
     u8 pad_00[1];
     u8 b1; /* 0x01: bit 7 set when the source is dying */
     u8 pad_02[5];
@@ -1700,37 +1700,37 @@ typedef struct Src_26d470 {
     u8 pad_09[3];
     f32 fC; /* 0x0C */
     Vec4 pos; /* 0x10 */
-} Src_26d470;
+} Src;
 
-typedef struct Body_26d470 {
-    Src_26d470 *e; /* 0x00: the source this particle follows */
+typedef struct Body {
+    Src *e; /* 0x00: the source this particle follows */
     f32 f4; /* 0x04 */
     f32 f8; /* 0x08 */
     f32 fC; /* 0x0C: alpha offset, clamped to 0..1 */
     f32 f10; /* 0x10 */
     f32 f14; /* 0x14 */
-} Body_26d470;
+} Body;
 
-typedef struct Part_26d470 {
+typedef struct Part {
     u8 pad_00[4];
     u32 w4; /* 0x04: colour, alpha in the top byte */
     u8 b8; /* 0x08 */
     u8 pad_09[3];
     f32 fC; /* 0x0C */
     Vec4 pos; /* 0x10 */
-    Body_26d470 body; /* 0x20 */
-} Part_26d470;
+    Body body; /* 0x20 */
+} Part;
 
 /* Particle update: follow a parent, fade by a clamped ramp. */
 void update_source_bound_effect_particle(char *m) {
-    Part_26d470 *particle;
-    Body_26d470 *particle_data;
-    Src_26d470 *e;
+    Part *particle;
+    Body *particle_data;
+    Src *e;
     float updated_alpha_offset;
     u32 packed_rgb;
     if (m == 0)
         return;
-    particle = (Part_26d470 *)m;
+    particle = (Part *)m;
     e = particle->body.e;
     particle_data = &particle->body;
     if (e == 0 || (e->b1 & 0x80)) {
@@ -2846,9 +2846,9 @@ typedef unsigned int U128 __attribute__((mode(TI)));
 typedef union {
     U128 q_26ff10;
     f32 f[4];
-} VV_26ff10;
+} VV;
 typedef struct {
-    VV_26ff10 v_26ff10;
+    VV v_26ff10;
     void *f10;
     s32 f14;
     s32 f18;
@@ -2875,8 +2875,8 @@ extern s32 truncate_float_to_s32(f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering_00269290.c, FUN_L00_0026ff10. */
 void update_splitting_effect_particle_with_collision_response_and_fade(struct PartBase *p) {
-    VV_26ff10 v0u;
-    VV_26ff10 v1u;
+    VV v0u;
+    VV v1u;
     S_26ff10 c;
     f32 v2[4];
     PartType40Data *pv;

@@ -165,8 +165,8 @@ typedef struct {
     u32 size;
     u8 pad14[12];
     char name[32];
-} McDirEntry_209E68;
-extern McDirEntry_209E68 mc_directory[] __asm__("D_001A0980");
+} McDirEntry;
+extern McDirEntry mc_directory[] __asm__("D_001A0980");
 extern char memcard_icon_path_a_filename[], memcard_icon_path_b_filename[], special_items_base[],
     memcard_slot_file_prefix[], memcard_slot_file_suffix[];
 extern void mc_memset(void *, s32, s32) __asm__("func_001153FC");
@@ -206,7 +206,7 @@ typedef struct {
     s32 errCard;
     void *buf;
     s32 size;
-} McState_209E68;
+} McState;
 
 typedef struct {
     s32 x0;
@@ -214,16 +214,16 @@ typedef struct {
     s32 x8;
     s32 xC;
     s32 x10;
-} McChunk_209E68;
+} McChunk;
 
 typedef struct {
     u8 pad_0[0x10];
     s32 x10;
     s32 x14;
-} McLevel_209E68;
+} McLevel;
 
-extern McState_209E68 mc_data_0013D390 __asm__("D_0013D390");
-extern McLevel_209E68 mc_data_00137C80 __asm__("D_00137C80");
+extern McState mc_data_0013D390 __asm__("D_0013D390");
+extern McLevel mc_data_00137C80 __asm__("D_00137C80");
 extern s32 mc_data_00137C94[] __asm__("D_00137C94");
 extern char mc_data_0013D2D0[] __asm__("D_0013D2D0");
 extern char mc_data_0013D2E8[] __asm__("D_0013D2E8");
@@ -249,10 +249,10 @@ extern s32 mc_call_0020BAD8(const u32 *packet) __asm__("func_0020BAD8");
 extern void mc_call_001F9978() __asm__("func_001F9978");
 extern s32 mc_call_00124340(s32 port, s32 slot) __asm__("func_00124340");
 extern s32 mc_call_00124528(s32 port, s32 slot) __asm__("func_00124528");
-extern void mc_call_001FDF10(s32, McChunk_209E68 **, s32 *) __asm__("func_001FDF10");
+extern void mc_call_001FDF10(s32, McChunk **, s32 *) __asm__("func_001FDF10");
 extern void mc_call_0020BCB0(u8 *, s32, s32) __asm__("func_0020BCB0");
 extern s32 mc_call_0020BD70(u8 *, s32, u32 *) __asm__("func_0020BD70");
-extern s32 mc_call_00217628(McChunk_209E68 *, s32, s32) __asm__("func_00217628");
+extern s32 mc_call_00217628(McChunk *, s32, s32) __asm__("func_00217628");
 extern s32 mc_call_00123A10(s32 fd) __asm__("func_00123A10");
 extern s32 mc_call_00124410(s32 port, s32 slot, char *name) __asm__("func_00124410");
 extern s32 mc_call_001241F0(s32, s32, char *, s32, s32, void *) __asm__("func_001241F0");
@@ -275,7 +275,7 @@ void memcard_update_state(void) {
             char name[0x40] __attribute__((aligned(16)));
         } directory;
     } workspace;
-    McState_209E68 *finished_card;
+    McState *finished_card;
 
     if (mc_data_0013D390.busy) {
         mc_data_0013D390.busy = mc_call_00123F30(1, &mc_data_0013D390.cmd, &mc_data_0013D390.result) == 0;
@@ -416,7 +416,7 @@ void memcard_update_state(void) {
                         icon2 = 0;
                         blocks = 0;
                         for (i = 0; i < mc_data_0013D390.result; i++) {
-                            McDirEntry_209E68 *entry = &mc_directory[i];
+                            McDirEntry *entry = &mc_directory[i];
                             char *filename = (char *)((s32)mc_directory + i * 64 + 32);
                             s32 slot;
                             blocks += (entry->size + 1023U) >> 10;
@@ -603,7 +603,7 @@ void memcard_update_state(void) {
                     mc_data_0013D390.busy = 0;
                     break;
                 case 3: {
-                    McChunk_209E68 *chunk;
+                    McChunk *chunk;
                     s32 size;
 
                     mc_call_001FDF10(mc_data_00137C80.x14 << 11, &chunk, &size);
@@ -648,7 +648,7 @@ void memcard_update_state(void) {
                 case 10:
                 case 14:
                 case 19: {
-                    McChunk_209E68 *chunk;
+                    McChunk *chunk;
                     s32 size;
 
                     if (mc_data_0013D390.result >= 0) {
@@ -1233,7 +1233,7 @@ void memcard_update_state(void) {
             break;
 
         case 17: {
-            McChunk_209E68 *chunk;
+            McChunk *chunk;
             s32 size;
 
             mc_call_001FDF10(mc_data_00137C80.x14 << 11, &chunk, &size);
@@ -1245,7 +1245,7 @@ void memcard_update_state(void) {
 
         case 18:
             if (mc_data_001517D8[0] == 0) {
-                McChunk_209E68 *chunk;
+                McChunk *chunk;
                 s32 size;
 
                 mc_call_001FDF10(mc_data_00137C94[0] << 11, &chunk, &size);

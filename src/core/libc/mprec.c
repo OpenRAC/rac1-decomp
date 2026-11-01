@@ -37,10 +37,10 @@ extern void *_calloc_r(void *, int, int);
 typedef struct {
     char pad[0x4C];
     Bigint_1154D0 **freelist;
-} Reent_1154D0;
+} Reent;
 
 void *_Balloc(void *arg0, int k) {
-    Reent_1154D0 *ptr = arg0;
+    Reent *ptr = arg0;
     Bigint_1154D0 **fl;
     int x;
     Bigint_1154D0 *rv;
@@ -467,13 +467,13 @@ LINKER_REMNANT("asm/remnants/core_text", func_00115EE0);
 typedef union {
     double d;
     unsigned int w[2];
-} DUnion_115EE8;
+} DUnion;
 
 extern void *_Balloc(void *ptr, int k);  /* Balloc */
 extern int __lo0bits(unsigned int *y);     /* lo0bits */
 
 Bigint_1154D0 *__d2b(void *ptr, double _d, int *e, int *bits) {
-    DUnion_115EE8 d;
+    DUnion d;
     Bigint_1154D0 *b;
     int de, i, k;
     unsigned int *x, y, z;

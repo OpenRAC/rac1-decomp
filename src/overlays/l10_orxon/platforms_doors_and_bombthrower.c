@@ -1288,7 +1288,7 @@ typedef int u128_2D9988 __attribute__((mode(TI)));
 typedef struct {
     char pad0[0x10];
     u128_2D9988 q10;
-} Obj_2D9988;
+} Obj;
 
 typedef struct {
     float v[4];
@@ -1299,7 +1299,7 @@ typedef struct {
     short s3a;
     float f3c;
     int i40;
-} Shot_2D9988;
+} Shot;
 
 /* Moby 938 pvars. */
 struct Bomb938Vars {
@@ -1321,7 +1321,7 @@ void bomb_938_update(char *m) {
     int flag21;
     float v0[4];
     float v10[4];
-    Shot_2D9988 sb;
+    Shot sb;
     float s50, s54, s58;
     int i5c, i60, i64;
     float s68, s6c, s70;
@@ -1347,7 +1347,7 @@ void bomb_938_update(char *m) {
                 if (*(unsigned char *)(r16 + 0x28) == 0) {
                     s50 = fast_atan2_r(((Moby *)m)->pos.x - ((Hero *)(hero_globals_base_r + 0xE1D))->motion.pos.f[0],
                                        ((Moby *)m)->pos.y - ((Hero *)(hero_globals_base_r + 0xE1D))->motion.pos.f[1]);
-                    *(u128_2D9988 *)v10 = ((Obj_2D9988 *)r16)->q10;
+                    *(u128_2D9988 *)v10 = ((Obj *)r16)->q10;
                     s58 = s54 = g_frame_time_x * 10.0f;
                     HeadingFromVector_r(v10, &s50, &s54, &s58);
                     data->unk_00 = FastCos_r(s50) * s54;
@@ -1385,7 +1385,7 @@ void bomb_938_update(char *m) {
                 if (*(unsigned char *)(r16 + 0x28) == 0) {
                     s68 = fast_atan2_r(((Moby *)m)->pos.x - ((Hero *)(hero_globals_base_r + 0xE1D))->motion.pos.f[0],
                                        ((Moby *)m)->pos.y - ((Hero *)(hero_globals_base_r + 0xE1D))->motion.pos.f[1]);
-                    *(u128_2D9988 *)v10 = ((Obj_2D9988 *)r16)->q10;
+                    *(u128_2D9988 *)v10 = ((Obj *)r16)->q10;
                     s70 = s6c = g_frame_time_x * 10.0f;
                     HeadingFromVector_r(v10, &s68, &s6c, &s70);
                     data->unk_00 = FastCos_r(s68) * s6c;
@@ -2123,7 +2123,7 @@ typedef struct {
     Vec4 vel[4][30][20];
     int timers[4][30];
     float phase;
-} PlatformWave_DE018;
+} PlatformWave;
 
 /* UpdateMoby_1073: a rippling grid of 4 groups x 10 columns x 20 rows. State 0
    sets each column's timer (unless on level 10 with the flag at hero_vehicle_mode set:
@@ -2132,7 +2132,7 @@ typedef struct {
    jitter into the velocities, otherwise moves the rows by their velocities.
    Adapted from Lombyte's draft of FUN_L10_002dcc58 (GPL-3.0), with PAL symbols. */
 void update_jitter_strand_grid_moby(unsigned char *moby) {
-    PlatformWave_DE018 *vars = ((PlatformWave_DE018 *)((Moby *)moby)->pvars);
+    PlatformWave *vars = ((PlatformWave *)((Moby *)moby)->pvars);
     Vec4 jitter[20][10];
 
     switch (((Moby *)moby)->state) {
@@ -2355,7 +2355,7 @@ typedef struct {
     int count;
     char p4[0xC];
     V_2E0630 nodes[1];
-} Path_2E0630;
+} Path;
 typedef struct D_2E0630 {
     char p0[0x20];
     float f20;
@@ -2421,7 +2421,7 @@ extern int mine_fall_r(void *, void *) __asm__("func_L00_0025D6F0");
 extern void SetDeathBits_r(void *, int, int) __asm__("func_L00_002584A8");
 extern void spawn_color_swapped_explosion_burst_r(void *, void *, int, float, float) __asm__("func_L00_00260460");
 extern V_2E0630 orxon_camera_pos_r __asm__("D_L10_001672C0");
-extern Path_2E0630 *orxon_paths_r[] __asm__("D_L10_001B0C30");
+extern Path *orxon_paths_r[] __asm__("D_L10_001B0C30");
 extern V_2E0630 orxon_coll_hit_point_r __asm__("D_L10_00174360");
 
 /* Update function for moby Screamer (screamer) on level 10: follows its path, turns to its target, wanders. */
@@ -2617,7 +2617,7 @@ typedef struct Hit_2E0FF8 {
     float f2C;
     int f30;
 } Hit_2E0FF8;
-typedef struct MobyData_2E0FF8 {
+typedef struct MobyData {
     char pad0[0x20];
     float f20;
     char pad24[2];
@@ -2648,12 +2648,12 @@ typedef struct MobyData_2E0FF8 {
     int f18C;
     char pad190[4];
     int f194;
-} MobyData_2E0FF8;
-typedef struct Anim_2E0FF8 {
+} MobyData;
+typedef struct Anim {
     char pad0[0x30];
     float f30[4], f40[4];
     char pad50[0x30];
-} Anim_2E0FF8;
+} Anim;
 typedef struct Path_2E0FF8 {
     int count;
     char pad4[0xC];
@@ -2673,7 +2673,7 @@ void update_screamer_hit_reactions_and_targeting(struct Moby *moby) {
     extern void matrix_mul_vec3(void *, void *, void *);
     extern void PlayBankSound(int, int, int);
     extern void ShowBanner(int, int);
-    MobyData_2E0FF8 *data = (MobyData_2E0FF8 *)moby->pvars;
+    MobyData *data = (MobyData *)moby->pvars;
     Hit_2E0FF8 *r;
     float v[4];
     float w[4];
@@ -2738,7 +2738,7 @@ void update_screamer_hit_reactions_and_targeting(struct Moby *moby) {
     if (data->f174 == 2) {
         r19 = FindNearestTargetMoby(data->f180, moby, data->fC0);
         if (r19 != 2) {
-            Anim_2E0FF8 *bp = &((Anim_2E0FF8 *)orxon_scene_points)[data->f194];
+            Anim *bp = &((Anim *)orxon_scene_points)[data->f194];
             FastVecSub(v, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, bp->f30);
             v[3] = 0.0f;
             matrix_mul_vec3(w, v, bp->f40);
