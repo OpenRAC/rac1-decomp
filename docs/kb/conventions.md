@@ -150,7 +150,9 @@ pass. A cast into a `pad_` field means the field should be named in the header
 These hero views still change bytes or break a version's C when converted to `struct Hero`:
 `LevelObjectState_230A90` (`src/game/space.c`), `G_pp_t` (`bolts_and_wrench.c`), `G_2CF6A0`
 (`morphoray_chicken_and_drones.c`), `Hero40` (`nanotech_ball_and_suck_cannon.c`) and `G_6570`
-(`heavy_interceptor_and_turrets.c`).
+(`heavy_interceptor_and_turrets.c`). So do these camera and pad views: `SceneG` (`draw.c`), `P` and `PadStateWords`
+(`cutscene_and_movie_playback.c`), `Input_1F4918` (`debug_menu_and_text.c`), `G` (`hero_steering_and_tilt.c`) and `PadD`
+(`vendor_menu.c`, a JP version fragment depends on it).
 
 *(inferred from the definitions and uses; the pad reason is from the
 header-tidy notes.)* Small `fNN` data views in `help_*.c` (`S141948`,

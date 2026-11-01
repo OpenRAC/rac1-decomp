@@ -125,12 +125,7 @@ typedef struct {
 } Dbg1088;
 extern Dbg1088 occl_cam_state;
 
-typedef struct {
-    char pad0[0x140];
-    float pos[4];    /* 0x140 */
-    float rot[4];    /* 0x150 */
-} Cam1088;
-extern Cam1088 gCamera;
+extern CameraSystem gCamera;
 
 extern Hero g_hero;
 
@@ -205,9 +200,9 @@ void update_render_debug_menu(void) {
         SetBackgroundColor(view_context[0x8F], view_context[0x90], view_context[0x91]);
         occl_cam_state.bF8 = 0x6E;
         occl_cam_state.bF9 = 0x6E;
-        occl_cam_state.x94 = (int)gCamera.pos[0] >> 2;
-        occl_cam_state.y98 = (int)gCamera.pos[1] >> 2;
-        occl_cam_state.z9C = (int)gCamera.pos[2] >> 2;
+        occl_cam_state.x94 = (int)gCamera.pos.f[0] >> 2;
+        occl_cam_state.y98 = (int)gCamera.pos.f[1] >> 2;
+        occl_cam_state.z9C = (int)gCamera.pos.f[2] >> 2;
         return;
     } else {
         t = render_debug_menu_row_counts;
@@ -285,11 +280,11 @@ void update_render_debug_menu(void) {
                             case 2: {
                                 float v[4];
                                 occl_cam_state.flags8 = 0;
-                                FastVecSub(v, g_hero.motion.pos.f, gCamera.pos);
+                                FastVecSub(v, g_hero.motion.pos.f, gCamera.pos.f);
                                 occl_cam_state.f8C = vec_length_xy(v);
-                                occl_cam_state.f88 = FastSubRots(fast_arc_tan(v[0], v[1]), gCamera.rot[2]);
-                                occl_cam_state.f90 = g_hero.motion.pos.f[2] - gCamera.pos[2];
-                                occl_cam_state.f84 = FastSubRots(g_hero.motion.rot.f[2], gCamera.rot[2]);
+                                occl_cam_state.f88 = FastSubRots(fast_arc_tan(v[0], v[1]), gCamera.rot.f[2]);
+                                occl_cam_state.f90 = g_hero.motion.pos.f[2] - gCamera.pos.f[2];
+                                occl_cam_state.f84 = FastSubRots(g_hero.motion.rot.f[2], gCamera.rot.f[2]);
                                 break;
                             }
                             case 3:
@@ -594,8 +589,9 @@ void update_render_debug_menu(void) {
                 found = 0;
                 for (i = 0; i < camera_sample_point_count; i++) {
                     float *p = camera_sample_points + i;
-                    if (p[0] < gCamera.pos[0] + 0.5f && gCamera.pos[0] - 0.5f < p[0] && p[1] < gCamera.pos[1] + 0.5f &&
-                        gCamera.pos[1] - 0.5f < p[1] && p[2] < gCamera.pos[2] + 0.5f && gCamera.pos[2] - 0.5f < p[2]) {
+                    if (p[0] < gCamera.pos.f[0] + 0.5f && gCamera.pos.f[0] - 0.5f < p[0] &&
+                        p[1] < gCamera.pos.f[1] + 0.5f && gCamera.pos.f[1] - 0.5f < p[1] &&
+                        p[2] < gCamera.pos.f[2] + 0.5f && gCamera.pos.f[2] - 0.5f < p[2]) {
                         found = 1;
                         break;
                     }
@@ -610,8 +606,8 @@ void update_render_debug_menu(void) {
                     int fd, size;
 
                     sprintf(path, dev, fmt, g_current_level_index, camera_sample_text_name, camera_sample_path_suffix);
-                    sprintf(line, camera_sample_line_format, func_00120778(gCamera.pos[0]),
-                            func_00120778(gCamera.pos[1]), func_00120778(gCamera.pos[2]));
+                    sprintf(line, camera_sample_line_format, func_00120778(gCamera.pos.f[0]),
+                            func_00120778(gCamera.pos.f[1]), func_00120778(gCamera.pos.f[2]));
                     fd = sceOpen(path, 0x303);
                     if (fd >= 0) {
                         sceLseek(fd, 0, 2);
@@ -624,9 +620,9 @@ void update_render_debug_menu(void) {
                     fd = sceOpen(path, 0x303);
                     if (fd >= 0) {
                         sceLseek(fd, 0, 2);
-                        sceWrite(fd, &gCamera.pos[0], 4);
-                        sceWrite(fd, &gCamera.pos[1], 4);
-                        sceWrite(fd, &gCamera.pos[2], 4);
+                        sceWrite(fd, &gCamera.pos.f[0], 4);
+                        sceWrite(fd, &gCamera.pos.f[1], 4);
+                        sceWrite(fd, &gCamera.pos.f[2], 4);
                         sceLseek(fd, 0, 0);
                         size = sceLseek(fd, 0, 2);
                         if (size <= 0x100000) {
@@ -648,8 +644,8 @@ void update_render_debug_menu(void) {
 
                 sprintf(path, camera_sample_path_format, camera_sample_dir, g_current_level_index,
                         camera_sample_text_name, camera_sample_path_suffix);
-                sprintf(line, camera_sample_alt_line_format, func_00120778(gCamera.pos[0]),
-                        func_00120778(gCamera.pos[1]), func_00120778(gCamera.pos[2]));
+                sprintf(line, camera_sample_alt_line_format, func_00120778(gCamera.pos.f[0]),
+                        func_00120778(gCamera.pos.f[1]), func_00120778(gCamera.pos.f[2]));
                 fd = sceOpen(path, 0x303);
                 if (fd >= 0) {
                     sceLseek(fd, 0, 2);

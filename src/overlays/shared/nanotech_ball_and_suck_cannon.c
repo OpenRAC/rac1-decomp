@@ -1309,12 +1309,6 @@ typedef struct Hero40 {
     u8 pad20A8[0x4];
     u8 disabled;
 } Hero40;
-typedef struct Input40 {
-    u8 pad0[0x1A0];
-    s32 held;
-    u8 pad1A4[0x4];
-    s32 used;
-} Input40;
 typedef struct Sound40 {
     u8 pad0[0x4];
     u8 active;
@@ -1340,7 +1334,7 @@ typedef struct {
     u8 gold;
 } Order40;
 extern Order40 order40 __asm__("D_0013E620");
-extern Input40 input40 __asm__("D_0013CA40");
+extern PadState input40 __asm__("D_0013CA40");
 extern u8 help_stats_base[];
 extern M40 *moby_head40 __asm__("D_L00_001600A4") MACRO_ADDR;
 extern s32 g_current_level_index MACRO_ADDR;
@@ -1714,7 +1708,7 @@ done:
         }
         data->sound = -1;
         if (input40.held & 5)
-            input40.used |= 5;
+            input40.released |= 5;
     }
 }
 /* From Lombyte's project (GPL-3.0), FUN_L00_002db890 (PR #66), adapted to PAL. */
