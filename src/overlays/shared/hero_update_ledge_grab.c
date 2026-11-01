@@ -658,7 +658,7 @@ void update_hero_timers_and_spatial_state(void) {
     FastDecTimer(&g_hero_r3.unk1F6);
     FastDecTimer(&g_hero_r3.unk1DA);
     FastDecTimer(&g_hero_r3.unk1F8);
-    if (!(g_controller_state.held & 5)) {
+    if (!(g_controller_state.held & (PAD_L2 | PAD_L1))) {
         g_hero_r3.unk1EC = 0;
     }
     if (g_hero_r3.item_anim_active != 0) {

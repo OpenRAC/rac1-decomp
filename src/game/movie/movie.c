@@ -104,9 +104,10 @@ int read_mpeg(char *vd, char *rb, int *file) {
             if (decode_mode == 2 && g_controller_state.pressed != 0) {
                 hit = 1;
             } else if ((challenge_mode || D_0015EF20 || decode_mode || g_current_level_index <= 0) &&
-                       (g_controller_state.pressed & 0x800)) {
+                       (g_controller_state.pressed & PAD_START)) {
                 hit = 1;
-            } else if ((g_controller_state.held & 0xF) == 0xF && (g_controller_state.pressed & 0x800)) {
+            } else if ((g_controller_state.held & (PAD_L2 | PAD_R2 | PAD_L1 | PAD_R1)) == 0xF &&
+                       (g_controller_state.pressed & PAD_START)) {
                 hit = 1;
             } else {
                 hit = 0;

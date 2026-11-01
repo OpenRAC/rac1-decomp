@@ -14,6 +14,7 @@
 #include "core/00119D88.h"
 #include "data/executable.h"
 #include "structs/level_records.h"
+#include "structs/pad.h"
 
 /*
  * draw.cpp in the original source; text 0x1F0F30-0x1F7C60.
@@ -191,7 +192,7 @@ void update_render_debug_menu(void) {
     Tbl1088 t;
 
     ((int (*)(void))sound_update)();
-    if (g_controller_state.pressed & 0x500) {
+    if (g_controller_state.pressed & (PAD_SELECT | PAD_R3)) {
         g_game_mode = occl_cam_state.uA4;
         SetBackgroundColor(view_context[0x8F], view_context[0x90], view_context[0x91]);
         occl_cam_state.bF8 = 0x6E;
@@ -203,14 +204,14 @@ void update_render_debug_menu(void) {
     } else {
         t = render_debug_menu_row_counts;
 
-        if (g_controller_state.pressed & 0x2000) {
+        if (g_controller_state.pressed & PAD_RIGHT) {
             int p = ++occl_cam_state.page;
             if (p == 3) {
                 occl_cam_state.page = 0;
             } else if (p == 6) {
                 occl_cam_state.page = 3;
             }
-        } else if (g_controller_state.pressed & 0x8000) {
+        } else if (g_controller_state.pressed & PAD_LEFT) {
             int p = --occl_cam_state.page;
             if (p < 0) {
                 occl_cam_state.page = 2;
@@ -219,12 +220,12 @@ void update_render_debug_menu(void) {
             }
         }
 
-        if ((g_controller_state.pressed & 0x1000) && --occl_cam_state.cursor < 0) {
+        if ((g_controller_state.pressed & PAD_UP) && --occl_cam_state.cursor < 0) {
             if (occl_cam_state.page >= 3) {
                 occl_cam_state.page = (occl_cam_state.page + 3) % 6;
             }
             occl_cam_state.cursor = t.v[occl_cam_state.page] - 1;
-        } else if (g_controller_state.pressed & 0x4000) {
+        } else if (g_controller_state.pressed & PAD_DOWN) {
             if (++occl_cam_state.cursor >= t.v[occl_cam_state.page]) {
                 if (occl_cam_state.page < 3) {
                     occl_cam_state.page = (occl_cam_state.page + 9) % 6;
@@ -240,7 +241,7 @@ void update_render_debug_menu(void) {
 
     switch (occl_cam_state.page) {
         case 0:
-            if (g_controller_state.pressed & 0x40) {
+            if (g_controller_state.pressed & PAD_CROSS) {
                 int bit = 1 << occl_cam_state.cursor;
                 occl_cam_state.flags8 ^= bit;
                 if (bit == 0x10) {
@@ -255,13 +256,13 @@ void update_render_debug_menu(void) {
         case 1:
             switch (occl_cam_state.cursor) {
                 case 0:
-                    if (g_controller_state.pressed & 0x50) {
-                        if (g_controller_state.pressed & 0x40) {
+                    if (g_controller_state.pressed & (PAD_TRIANGLE | PAD_CROSS)) {
+                        if (g_controller_state.pressed & PAD_CROSS) {
                             if (++occl_cam_state.a14 >= 4) {
                                 occl_cam_state.a14 = 0;
                             }
                         }
-                        if (g_controller_state.pressed & 0x10) {
+                        if (g_controller_state.pressed & PAD_TRIANGLE) {
                             if (--occl_cam_state.a14 < 0) {
                                 occl_cam_state.a14 = 3;
                             }
@@ -290,12 +291,12 @@ void update_render_debug_menu(void) {
                     }
                     break;
                 case 1:
-                    if (g_controller_state.pressed & 0x40) {
+                    if (g_controller_state.pressed & PAD_CROSS) {
                         if (++occl_cam_state.a18 >= 8) {
                             occl_cam_state.a18 = 0;
                         }
                     }
-                    if (g_controller_state.pressed & 0x10) {
+                    if (g_controller_state.pressed & PAD_TRIANGLE) {
                         if (--occl_cam_state.a18 < 0) {
                             occl_cam_state.a18 = 7;
                         }
@@ -306,29 +307,29 @@ void update_render_debug_menu(void) {
                         occl_cam_state.a1C = 0;
                         break;
                     }
-                    if (g_controller_state.pressed & 0x40) {
+                    if (g_controller_state.pressed & PAD_CROSS) {
                         if (++occl_cam_state.a1C >= 3) {
                             occl_cam_state.a1C = 0;
                         }
                     }
-                    if (g_controller_state.pressed & 0x10) {
+                    if (g_controller_state.pressed & PAD_TRIANGLE) {
                         if (--occl_cam_state.a1C < 0) {
                             occl_cam_state.a1C = 2;
                         }
                     }
                     break;
                 case 3:
-                    if (g_controller_state.pressed & 0x50) {
+                    if (g_controller_state.pressed & (PAD_TRIANGLE | PAD_CROSS)) {
                         occl_cam_state.a20 = !occl_cam_state.a20;
                     }
                     break;
                 case 4:
-                    if (g_controller_state.pressed & 0x50) {
+                    if (g_controller_state.pressed & (PAD_TRIANGLE | PAD_CROSS)) {
                         occl_cam_state.a24 = !occl_cam_state.a24;
                     }
                     break;
                 case 5:
-                    if (g_controller_state.pressed & 0x50) {
+                    if (g_controller_state.pressed & (PAD_TRIANGLE | PAD_CROSS)) {
                         if ((occl_cam_state.a28 = !occl_cam_state.a28) != 0) {
                             tfrag_draw_distance = 65536.0f;
                             tie_draw_distance = 64.0f;
@@ -345,24 +346,24 @@ void update_render_debug_menu(void) {
                     }
                     break;
                 case 6:
-                    if (g_controller_state.pressed & 0x40) {
+                    if (g_controller_state.pressed & PAD_CROSS) {
                         if (++occl_cam_state.a2C >= 3) {
                             occl_cam_state.a2C = 0;
                         }
                     }
-                    if (g_controller_state.pressed & 0x10) {
+                    if (g_controller_state.pressed & PAD_TRIANGLE) {
                         if (--occl_cam_state.a2C < 0) {
                             occl_cam_state.a2C = 2;
                         }
                     }
                     break;
                 case 7:
-                    if (g_controller_state.pressed & 0x50) {
+                    if (g_controller_state.pressed & (PAD_TRIANGLE | PAD_CROSS)) {
                         occl_cam_state.a30 = !occl_cam_state.a30;
                     }
                     break;
                 case 8:
-                    if (g_controller_state.pressed & 0x50) {
+                    if (g_controller_state.pressed & (PAD_TRIANGLE | PAD_CROSS)) {
                         if ((occl_cam_state.a34 = !occl_cam_state.a34) != 0) {
                             float *ctx = (float *)view_context;
                             ctx[0x80] = IntToFloat(fs_aa_buffer[0xA8]) * 0.125f;
@@ -381,8 +382,8 @@ void update_render_debug_menu(void) {
                     }
                     break;
                 case 9:
-                    if (g_controller_state.pressed & 0x50) {
-                        if (g_controller_state.pressed & 0x40) {
+                    if (g_controller_state.pressed & (PAD_TRIANGLE | PAD_CROSS)) {
+                        if (g_controller_state.pressed & PAD_CROSS) {
                             occl_cam_state.a38++;
                             while (occl_cam_state.a38 == 0x24) {
                                 occl_cam_state.a38 = -1;
@@ -401,8 +402,8 @@ void update_render_debug_menu(void) {
                     }
                     break;
                 case 10:
-                    if (g_controller_state.pressed & 0x50) {
-                        if (g_controller_state.pressed & 0x40) {
+                    if (g_controller_state.pressed & (PAD_TRIANGLE | PAD_CROSS)) {
+                        if (g_controller_state.pressed & PAD_CROSS) {
                             occl_cam_state.a3C++;
                             while (occl_cam_state.a3C == 0x10) {
                                 occl_cam_state.a3C = 0;
@@ -413,7 +414,7 @@ void update_render_debug_menu(void) {
                                 occl_cam_state.a3C = 0xF;
                             }
                         }
-                    } else if (g_controller_state.pressed & 0x20) {
+                    } else if (g_controller_state.pressed & PAD_CIRCLE) {
                         int i = occl_cam_state.a3C;
                         unsigned char *e = &saved_mission_state[i + g_current_level_index * 16];
                         *e = (*e == 0) ? 0xFF : 0;
@@ -423,7 +424,7 @@ void update_render_debug_menu(void) {
             }
             break;
         case 2:
-            if (g_controller_state.pressed & 0x40) {
+            if (g_controller_state.pressed & PAD_CROSS) {
                 occl_cam_state.flags4 ^= 1 << occl_cam_state.cursor;
             }
             break;
@@ -437,22 +438,22 @@ void update_render_debug_menu(void) {
             } else {
                 val = &gBolts;
             }
-            if (g_controller_state.held & 8) {
-                if (g_controller_state.pressed & 0x40) {
+            if (g_controller_state.held & PAD_R1) {
+                if (g_controller_state.pressed & PAD_CROSS) {
                     *val += 60;
                 }
-                if (g_controller_state.pressed & 0x20) {
+                if (g_controller_state.pressed & PAD_CIRCLE) {
                     if (*val > 60) {
                         *val -= 60;
                     } else {
                         *val = 0;
                     }
                 }
-            } else if (g_controller_state.held & 2) {
-                if (g_controller_state.pressed & 0x40) {
+            } else if (g_controller_state.held & PAD_R2) {
+                if (g_controller_state.pressed & PAD_CROSS) {
                     *val += 600;
                 }
-                if (g_controller_state.pressed & 0x20) {
+                if (g_controller_state.pressed & PAD_CIRCLE) {
                     if (*val > 600) {
                         *val -= 600;
                     } else {
@@ -460,10 +461,10 @@ void update_render_debug_menu(void) {
                     }
                 }
             } else {
-                if (g_controller_state.pressed & 0x40) {
+                if (g_controller_state.pressed & PAD_CROSS) {
                     *val += 1;
                 }
-                if (g_controller_state.pressed & 0x20) {
+                if (g_controller_state.pressed & PAD_CIRCLE) {
                     if (*val > 0) {
                         *val -= 1;
                     }
@@ -472,10 +473,10 @@ void update_render_debug_menu(void) {
             if (*val > max) {
                 *val = max;
             }
-            if (g_controller_state.pressed & 0x10) {
+            if (g_controller_state.pressed & PAD_TRIANGLE) {
                 gold_weapon_purchased[((unsigned char *)&debug_weapon_item_ids)[occl_cam_state.cursor]]++;
             }
-            if (g_controller_state.pressed & 0x80) {
+            if (g_controller_state.pressed & PAD_SQUARE) {
                 gold_weapon_purchased[((unsigned char *)&debug_weapon_item_ids)[occl_cam_state.cursor]]--;
             }
             {
@@ -490,10 +491,10 @@ void update_render_debug_menu(void) {
         }
         case 4:
             if (occl_cam_state.cursor == 0) {
-                if ((g_controller_state.held & 0x40) || (g_controller_state.pressed & 8)) {
+                if ((g_controller_state.held & PAD_CROSS) || (g_controller_state.pressed & PAD_R1)) {
                     fog_near_distance += 1024.0f;
                 }
-                if ((g_controller_state.held & 0x10) || (g_controller_state.pressed & 4)) {
+                if ((g_controller_state.held & PAD_TRIANGLE) || (g_controller_state.pressed & PAD_L1)) {
                     fog_near_distance -= 1024.0f;
                 }
                 if (fog_near_distance > fog_far_distance) {
@@ -503,10 +504,10 @@ void update_render_debug_menu(void) {
                 }
             }
             if (occl_cam_state.cursor == 2) {
-                if ((g_controller_state.held & 0x40) || (g_controller_state.pressed & 8)) {
+                if ((g_controller_state.held & PAD_CROSS) || (g_controller_state.pressed & PAD_R1)) {
                     fog_far_distance += 1024.0f;
                 }
-                if ((g_controller_state.held & 0x10) || (g_controller_state.pressed & 4)) {
+                if ((g_controller_state.held & PAD_TRIANGLE) || (g_controller_state.pressed & PAD_L1)) {
                     fog_far_distance -= 1024.0f;
                 }
                 if (524288.0f < fog_far_distance) {
@@ -516,10 +517,10 @@ void update_render_debug_menu(void) {
                 }
             }
             if (occl_cam_state.cursor == 1) {
-                if ((g_controller_state.held & 0x40) || (g_controller_state.pressed & 8)) {
+                if ((g_controller_state.held & PAD_CROSS) || (g_controller_state.pressed & PAD_R1)) {
                     fog_near_intensity -= 2.55f;
                 }
-                if ((g_controller_state.held & 0x10) || (g_controller_state.pressed & 4)) {
+                if ((g_controller_state.held & PAD_TRIANGLE) || (g_controller_state.pressed & PAD_L1)) {
                     fog_near_intensity += 2.55f;
                 }
                 if (255.0f < fog_near_intensity) {
@@ -529,10 +530,10 @@ void update_render_debug_menu(void) {
                 }
             }
             if (occl_cam_state.cursor == 3) {
-                if ((g_controller_state.held & 0x40) || (g_controller_state.pressed & 8)) {
+                if ((g_controller_state.held & PAD_CROSS) || (g_controller_state.pressed & PAD_R1)) {
                     fog_far_intensity -= 2.55f;
                 }
-                if ((g_controller_state.held & 0x10) || (g_controller_state.pressed & 4)) {
+                if ((g_controller_state.held & PAD_TRIANGLE) || (g_controller_state.pressed & PAD_L1)) {
                     fog_far_intensity += 2.55f;
                 }
                 if (255.0f < fog_far_intensity) {
@@ -542,41 +543,46 @@ void update_render_debug_menu(void) {
                 }
             }
             if (occl_cam_state.cursor == 4) {
-                if (fog_color_red.r < 0xFF && ((g_controller_state.held & 0x40) || (g_controller_state.pressed & 8))) {
+                if (fog_color_red.r < 0xFF &&
+                    ((g_controller_state.held & PAD_CROSS) || (g_controller_state.pressed & PAD_R1))) {
                     fog_color_red.r++;
                 }
-                if (fog_color_red.r != 0 && ((g_controller_state.held & 0x10) || (g_controller_state.pressed & 4))) {
+                if (fog_color_red.r != 0 &&
+                    ((g_controller_state.held & PAD_TRIANGLE) || (g_controller_state.pressed & PAD_L1))) {
                     fog_color_red.r--;
                 }
             }
             if (occl_cam_state.cursor == 5) {
                 if (fog_color_green[0] < 0xFF &&
-                    ((g_controller_state.held & 0x40) || (g_controller_state.pressed & 8))) {
+                    ((g_controller_state.held & PAD_CROSS) || (g_controller_state.pressed & PAD_R1))) {
                     fog_color_green[0]++;
                 }
-                if (fog_color_green[0] != 0 && ((g_controller_state.held & 0x10) || (g_controller_state.pressed & 4))) {
+                if (fog_color_green[0] != 0 &&
+                    ((g_controller_state.held & PAD_TRIANGLE) || (g_controller_state.pressed & PAD_L1))) {
                     fog_color_green[0]--;
                 }
             }
             if (occl_cam_state.cursor == 6) {
                 if (fog_color_blue[0] < 0xFF &&
-                    ((g_controller_state.held & 0x40) || (g_controller_state.pressed & 8))) {
+                    ((g_controller_state.held & PAD_CROSS) || (g_controller_state.pressed & PAD_R1))) {
                     fog_color_blue[0]++;
                 }
-                if (fog_color_blue[0] != 0 && ((g_controller_state.held & 0x10) || (g_controller_state.pressed & 4))) {
+                if (fog_color_blue[0] != 0 &&
+                    ((g_controller_state.held & PAD_TRIANGLE) || (g_controller_state.pressed & PAD_L1))) {
                     fog_color_blue[0]--;
                 }
             }
             ((void (*)(void))UpdateFog)();
             return;
         case 5:
-            if (occl_cam_state.cursor == 0 && (g_controller_state.pressed & 0x50)) {
+            if (occl_cam_state.cursor == 0 && (g_controller_state.pressed & (PAD_TRIANGLE | PAD_CROSS))) {
                 occl_cam_state.aF0 = !occl_cam_state.aF0;
             }
-            if (occl_cam_state.cursor == 1 && (g_controller_state.pressed & 0x50)) {
+            if (occl_cam_state.cursor == 1 && (g_controller_state.pressed & (PAD_TRIANGLE | PAD_CROSS))) {
                 occl_cam_state.aF4 = !occl_cam_state.aF4;
             }
-            if (occl_cam_state.cursor == 2 && (g_controller_state.pressed & 0xF0)) {
+            if (occl_cam_state.cursor == 2 &&
+                (g_controller_state.pressed & (PAD_TRIANGLE | PAD_CIRCLE | PAD_CROSS | PAD_SQUARE))) {
                 extern char camera_sample_path_format;
                 char *fmt = camera_sample_dir;
                 char *dev = &camera_sample_path_format;
@@ -632,7 +638,8 @@ void update_render_debug_menu(void) {
                     }
                 }
             }
-            if (occl_cam_state.cursor == 3 && (g_controller_state.pressed & 0xF0)) {
+            if (occl_cam_state.cursor == 3 &&
+                (g_controller_state.pressed & (PAD_TRIANGLE | PAD_CIRCLE | PAD_CROSS | PAD_SQUARE))) {
                 extern char camera_sample_path_format[];
                 char path[64];
                 char line[64];

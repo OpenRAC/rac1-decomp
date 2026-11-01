@@ -16,6 +16,7 @@
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
+#include "structs/pad.h"
 
 /* Path mover (class 0x382): rides a rail path, turning its matrix with it. */
 struct PathMoverVars {
@@ -906,7 +907,7 @@ void update_rail_taxi(struct Moby *m) {
                                    D_L03_00161B98_D4560 * 0.017453292f * g_frame_time_sq, g_frame_time * 12.566371f);
             if (g_hero_r.ground_moby == m && g_hero_r.air_frames.s == 0) {
                 request_taxi_return_help_message(m, v->help[m->command]);
-                if ((pad0_pressed & 0x10) && D_L03_0015F674_D4560 == 8) {
+                if ((pad0_pressed & PAD_TRIANGLE) && D_L03_0015F674_D4560 == 8) {
                     request_hero_target_pose(&m->pos, m->rot.z, 0);
                     m->state = 4;
                     v->idx = 1;
@@ -2197,7 +2198,7 @@ void update_rail_lift(struct Moby *m) {
                 m->flags |= 0x41;
             } else if (d->ready && is_hero_on_moby_r(m)) {
                 func_L03_002DDF90_DE088((char *)m, d->help[m->command ^ 1]);
-                if ((pad0_pressed_r & 0x10) && (*(s32 *)&D_L03_0015F674_DE088) == 8) {
+                if ((pad0_pressed_r & PAD_TRIANGLE) && (*(s32 *)&D_L03_0015F674_DE088) == 8) {
                     request_hero_target_pose_r(&m->pos, m->rot.z, 0);
                     m->command ^= 1;
                     d->unk64 = 1;

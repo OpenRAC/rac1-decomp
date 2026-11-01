@@ -438,7 +438,8 @@ void Hero_UpdateStatePhysics(void) {
             ka = g_frame_scale_sq * 0.2f;
             kb = g_frame_scale_sq * 0.015f;
             lim = lim + (g_frame_time * 1.2217305f - lim) * trig;
-            if (((g_controller_state.held & 0x80) && !(g_controller_state.held & 0x40)) || g_hero.state.step == 1) {
+            if (((g_controller_state.held & PAD_SQUARE) && !(g_controller_state.held & PAD_CROSS)) ||
+                g_hero.state.step == 1) {
                 float t;
 
                 t = g_controller_state.analog[11] * 1.5f;
@@ -460,7 +461,7 @@ void Hero_UpdateStatePhysics(void) {
                     t = 0.35f;
                 }
                 turn = t * 1.3613569f;
-            } else if (g_controller_state.held & 0x40) {
+            } else if (g_controller_state.held & PAD_CROSS) {
                 float t;
 
                 t = g_controller_state.analog[10] * 1.5f;
@@ -486,7 +487,7 @@ void Hero_UpdateStatePhysics(void) {
                 g_hero.cw_turn_frames = 0;
                 g_hero.swim_square_hold_frames = 0;
             }
-            if (g_controller_state.held & 0x40) {
+            if (g_controller_state.held & PAD_CROSS) {
                 g_hero.jump_button_frames++;
                 if (g_controller_state.analog[10] > 0.75f) {
                     if (++g_hero.swim_hard_press_frames > scale_ticks(0x5A)) {
@@ -506,7 +507,7 @@ void Hero_UpdateStatePhysics(void) {
                 g_hero.jump_button_frames = 0;
                 g_hero.swim_hard_press_frames = 0;
             }
-            if (g_controller_state.pressed & 0x40) {
+            if (g_controller_state.pressed & PAD_CROSS) {
                 if (kalebo3_frame_count - g_hero.last_cross_press_frame < scale_ticks(0x46)) {
                     g_hero.swim_cross_tap_count++;
                 }
@@ -515,7 +516,7 @@ void Hero_UpdateStatePhysics(void) {
             if (g_hero.jump_button_frames > scale_ticks(0x46)) {
                 g_hero.swim_cross_tap_count = 0;
             }
-            if (g_controller_state.held & 0x80) {
+            if (g_controller_state.held & PAD_SQUARE) {
                 g_hero.swim_cross_tap_count = 0;
             }
             if (g_hero.state.current == 0x34) {
@@ -531,7 +532,7 @@ void Hero_UpdateStatePhysics(void) {
             if (g_hero.state.step == 1) {
                 g_hero.target_speed = g_frame_time * 6.0f;
             } else if (g_hero.state.current == 0x35) {
-                if (g_controller_state.held & 0xA) {
+                if (g_controller_state.held & (PAD_R2 | PAD_R1)) {
                     g_hero.target_speed = g_frame_time * 7.0f;
                 } else {
                     g_hero.target_speed = g_frame_time * 7.0f * 0.4f;
@@ -543,7 +544,7 @@ void Hero_UpdateStatePhysics(void) {
                 float s;
 
                 s = g_hero.stick_magnitude;
-                if ((g_controller_state.held & 0xC0) || g_hero.state.step == 1) {
+                if ((g_controller_state.held & (PAD_CROSS | PAD_SQUARE)) || g_hero.state.step == 1) {
                     if (s < 1.0f) {
                         s = 1.0f;
                     }
@@ -559,7 +560,7 @@ void Hero_UpdateStatePhysics(void) {
                         s = m;
                     }
                 }
-                if (g_hero.state.current != 0x35 || !(g_controller_state.held & 0xA)) {
+                if (g_hero.state.current != 0x35 || !(g_controller_state.held & (PAD_R2 | PAD_R1))) {
                     g_hero.target_speed *= s;
                 }
             }
@@ -1021,8 +1022,10 @@ void Hero_UpdateStatePhysics(void) {
                     g_hero.voice_slot6 = -1;
                 }
             }
-            g_hero.trick_input = g_hero.board_jump_frames != 0 && (g_controller_state.held & 0xF) != 0;
-            if ((((g_controller_state.held & 0x80) || g_hero.boost_min_frames != 0) && g_hero.boost_frames != 0) ||
+            g_hero.trick_input =
+                g_hero.board_jump_frames != 0 && (g_controller_state.held & (PAD_L2 | PAD_R2 | PAD_L1 | PAD_R1)) != 0;
+            if ((((g_controller_state.held & PAD_SQUARE) || g_hero.boost_min_frames != 0) &&
+                 g_hero.boost_frames != 0) ||
                 g_hero.boost_pad_timer != 0) {
                 FastDecTimer(&g_hero.boost_min_frames);
                 if (g_hero.board_boost_active == 0) {
@@ -2599,11 +2602,11 @@ void Hero_UpdateStatePhysics(void) {
                 b = a;
             }
             stick_target(g_hero.stick_magnitude * b, 0);
-            if (g_hero.stick_magnitude > 0.2f && !(g_controller_state.held & 3)) {
+            if (g_hero.stick_magnitude > 0.2f && !(g_controller_state.held & (PAD_L2 | PAD_R2))) {
                 turn_to(g_frame_scale_sq * 0.027f, g_frame_scale_sq * 0.3f,
                         g_frame_time * 5.934119f * g_hero.stick_magnitude, 0);
             }
-            if (g_controller_state.held & 3) {
+            if (g_controller_state.held & (PAD_L2 | PAD_R2)) {
                 float keep;
 
                 keep = g_hero.motion.move_yaw;

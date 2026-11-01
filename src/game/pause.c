@@ -5546,7 +5546,7 @@ extern char *pause_current_action_list NOT_SDA;
 
 /* Map screen tick: on pad bit 0x40 switches back to the default action list. */
 int update_level_selection_map_screen(void) {
-    if (pad0_pressed_unmasked & 0x40) {
+    if (pad0_pressed_unmasked & PAD_CROSS) {
         pause_current_action_list = pause_default_action_list;
     }
     return 0;
