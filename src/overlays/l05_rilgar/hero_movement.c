@@ -24,6 +24,7 @@
 #include "game/mobyutil.h"
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/moby_class.h"
 
 /* Level 05 (Rilgar) code following help: candidate for func_L05_00245208. */
 
@@ -996,7 +997,7 @@ void Hero_UpdateMovement(void) {
                 FastVecScale(vec[1], g_hero.motion.displacement.f, 7.0f);
                 for (i = 0; i < n; i++) {
                     if (is_moby_in_class_range_500_to_540((int)rilgar_nearby_mobys[i]) ||
-                        rilgar_nearby_mobys[i]->oclass == 0x85) {
+                        rilgar_nearby_mobys[i]->oclass == MOBY_CLASS_AMOEBOID) {
                         PostHitMessage(rilgar_nearby_mobys[i], (int)g_hero.moby, 0x10000, g_hero.motion.pos.f, vec[1],
                                        1.0f);
                     }
@@ -1057,7 +1058,7 @@ void Hero_UpdateMovement(void) {
         case 0x38:
         case 0x39:
         case 0x3A:
-            if (g_hero.ground_moby != 0 && g_hero.ground_moby->oclass == 0x155) {
+            if (g_hero.ground_moby != 0 && g_hero.ground_moby->oclass == MOBY_CLASS_HYDRODISPLACER_FAUCET) {
                 float d;
                 float lim;
 

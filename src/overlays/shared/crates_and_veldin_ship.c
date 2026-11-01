@@ -15,6 +15,7 @@
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/pause_menu.h"
+#include "enums/moby_class.h"
 
 /* Crate: falls, stacks on other crates and rides moving platforms. */
 struct CrateVars {
@@ -197,10 +198,12 @@ void ground_attached_update(M_2cfcb8 *moby) {
     group = moby->group;
     vars->flags |= 4;
     if (group == 0xFF) {
-        if (moby->oclass == 0x1F4 && random_integer_below(2) != 0 && moby->rot_x == 0.0f && moby->rot_y == 0.0f) {
+        if (moby->oclass == MOBY_CLASS_BOLT_CRATE && random_integer_below(2) != 0 && moby->rot_x == 0.0f &&
+            moby->rot_y == 0.0f) {
             moby->rot_z = FastAddRots(moby->rot_z, 1.5707964f);
         }
-        if (moby->oclass == 0x1F5 && moby->mission != 0xFF && mission_death_counts[moby->mission] < vars->iF8) {
+        if (moby->oclass == MOBY_CLASS_NANOTECH_CRATE && moby->mission != 0xFF &&
+            mission_death_counts[moby->mission] < vars->iF8) {
             DeleteMoby_r(moby);
             return;
         }
@@ -241,10 +244,12 @@ void ground_attached_update(M_2cfcb8 *moby) {
     while (moby != 0) {
         vars = moby->vars;
         if (is_moby_in_class_range_500_to_540_r(moby) != 0) {
-            if (moby->oclass == 0x1F4 && random_integer_below(2) != 0 && moby->rot_x == 0.0f && moby->rot_y == 0.0f) {
+            if (moby->oclass == MOBY_CLASS_BOLT_CRATE && random_integer_below(2) != 0 && moby->rot_x == 0.0f &&
+                moby->rot_y == 0.0f) {
                 moby->rot_z = FastAddRots(moby->rot_z, 1.5707964f);
             }
-            if (moby->oclass == 0x1F5 && moby->mission != 0xFF && mission_death_counts[moby->mission] < vars->iF8) {
+            if (moby->oclass == MOBY_CLASS_NANOTECH_CRATE && moby->mission != 0xFF &&
+                mission_death_counts[moby->mission] < vars->iF8) {
                 DeleteMoby_r(moby);
             } else {
                 member_flags = vars->flags;
@@ -332,7 +337,8 @@ void ground_attached_update(M_2cfcb8 *moby) {
                         vars->stack_level = below_vars->stack_level + 1.0f;
                     }
                 }
-                if ((vars->hC6 != 0 || moby->oclass == 0x1F5) && vars->next_member != 0 && vars->route_index != -1) {
+                if ((vars->hC6 != 0 || moby->oclass == MOBY_CLASS_NANOTECH_CRATE) && vars->next_member != 0 &&
+                    vars->route_index != -1) {
                     route = level_paths_r[vars->route_index];
                     if (route->count == 0) {
                         vars->route_index = -1;
@@ -880,7 +886,7 @@ void update_crate_stack_motion(Moby *a) {
             if (FastAbsF(v3[0]) < 0.55f && FastAbsF(v3[1]) < 0.55f && v3[2] < 0 &&
                 (b = g - 0x80, -(*(float *)(b + 0x220) + *(float *)(b + 0x234)) < v3[2]) &&
                 (a->state == 1 || a->state == 5)) {
-                break_crate(a, a->oclass == 0x1F9, 0);
+                break_crate(a, a->oclass == MOBY_CLASS_OOM_OOM_BOX, 0);
                 crate_drop_bolts(a);
             }
             dt = g_frame_time_sq;
@@ -941,7 +947,7 @@ void update_crate_stack_motion(Moby *a) {
                 if (r != 0) {
                     len = FastVecLength(&o->motion);
                     if (g_frame_time * 0.5f < len) {
-                        if (a->oclass == 0x1F9 && a->state == 1) {
+                        if (a->oclass == MOBY_CLASS_OOM_OOM_BOX && a->state == 1) {
                             *(char *)&a->command = 0;
                             a->state = 5;
                         } else {
@@ -2554,7 +2560,7 @@ void horny_toad_update(Moby *moby) {
     if (data->f1F0 != -1) {
         Moby *o = (Moby *)(moby_array_start + (data->f1F0 << 8));
         if (vec_distance_xy_r((*(Vec_5AC0 *)&moby->pos), (*(Vec_5AC0 *)&o->pos)) < 1.0f) {
-            if (o->oclass == 0x33E) {
+            if (o->oclass == MOBY_CLASS_FLOOR_BUTTON) {
                 collect_moby_and_clear_path_keys(o);
                 data->f1F0 = -1;
             }
@@ -3190,7 +3196,7 @@ void infobot_update(struct Moby *moby) {
             if (infobot->carrier == -1) {
                 break;
             }
-            if (((struct Moby *)moby_array_start)[infobot->carrier].oclass != 0x336) {
+            if (((struct Moby *)moby_array_start)[infobot->carrier].oclass != MOBY_CLASS_METROPOLIS_TRAIN_LOCOMOTIVE) {
                 break;
             }
             if (((struct Moby *)moby_array_start)[infobot->carrier].command != 6) {
@@ -3332,7 +3338,7 @@ void infobot_update(struct Moby *moby) {
     }
     if (infobot->attach != -1 && infobot->carrier != -1) {
         carrier = &((struct Moby *)moby_array_start)[infobot->carrier];
-        if (carrier->oclass == 0x336) {
+        if (carrier->oclass == MOBY_CLASS_METROPOLIS_TRAIN_LOCOMOTIVE) {
             step.q = 0;
             RotateWithMoby(moby, carrier, &CUTS[infobot->attach].pos, &step, &CUTS[infobot->attach].pos, &step);
             FastVecAdd(&point, &offset, &CUTS[infobot->attach].pos);

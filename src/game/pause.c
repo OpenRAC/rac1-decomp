@@ -25,6 +25,7 @@
 #include "game/loaders.h"
 #include "game/music.h"
 #include "game/space.h"
+#include "enums/moby_class.h"
 
 /*
  * pause.cpp in the original source; text 0x219C08-0x228A58.
@@ -3670,7 +3671,7 @@ struct RotatingPreviewOwner {
     struct Moby *preview_moby; /* 0x44 */
 };
 
-/* Spawns the rotating preview moby (class 0x46E) in front of the menu camera. */
+/* Spawns the rotating preview moby (Gold Bolt) in front of the menu camera. */
 int create_rotating_preview_moby(void *owner) {
     struct Moby *moby = (struct Moby *)create_menu_preview_moby_a(0x46E);
     struct RotatingPreviewCamera *preview_camera;
@@ -7364,7 +7365,7 @@ s32 LoadHandGadget(HandGadgetState *hand) {
                 *((void **)moby->pvars) = hand;
                 (*(void **)&moby->update) = update_menu_preview_animation_pose;
                 moby->flags = 4;
-                if (moby->oclass == 0x25F) {
+                if (moby->oclass == MOBY_CLASS_HELIPACK) {
                     if (moby->prev_seq != 6) {
                         MobyBlendAnimation(moby, 6, 0, 10);
                     }
@@ -7579,7 +7580,7 @@ void update_menu_preview_class_pose(void *arg0) {
 
 /* Moby update: refresh its matrix from bone 4 of its class (+0x44),
    copying the translation row to the position, re-register it, start
-   its idle sound (6 for class 0x1B1, else 0) on the D_001864D0 table
+   its idle sound (6 for Sonic Summoner, else 0) on the D_001864D0 table
    and reset the sound fields. */
 void update_menu_preview_animation_transform(PauseMoby *m) {
     float mtx[16];
@@ -7592,7 +7593,7 @@ void update_menu_preview_animation_transform(PauseMoby *m) {
     matrix_copy_rows(m->mtx, mtx);
     normalize_vector_triplet(m->mtx);
     moby_anim_sphere_lerp(m);
-    if (m->oclass == 0x1B1) {
+    if (m->oclass == MOBY_CLASS_SONIC_SUMMONER) {
         noop_callback_s(item_info_table_a, item_info_table, m->sound, 6, id);
     } else {
         noop_callback_s(item_info_table_a, item_info_table, m->sound, 0, id);
@@ -7677,7 +7678,7 @@ void update_menu_preview_pose_and_attachments(void *preview) {
 }
 
 /* Moby 0x259 update: while flag 0x02 is set, keep its animation on 1 (or,
-   for class 0x25F in state 6, run the 6 animation until its timer +0x20
+   for Helipack in state 6, run the 6 animation until its timer +0x20
    runs out and then blend back to 1), then refresh its matrix from bone 5
    as func_00225FB8 does. */
 void update_menu_preview_animation_pose(void *arg0) {
@@ -7687,7 +7688,7 @@ void update_menu_preview_animation_pose(void *arg0) {
     int id = *(int *)(*m->cls + 0x44);
 
     if (b[0x70] & 2) {
-        if (m->oclass == 0x25F) {
+        if (m->oclass == MOBY_CLASS_HELIPACK) {
             if (b[0x52] == 6) {
                 if (--b[0x20] == 0) {
                     if (b[0x53] != 1) {

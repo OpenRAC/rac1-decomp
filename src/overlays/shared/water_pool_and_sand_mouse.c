@@ -22,6 +22,7 @@
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/sound_playback.h"
 #include "structs/collision.h"
+#include "enums/moby_class.h"
 /* Novalis elevator: rides its path while the hero stands on it. */
 struct NovalisElevatorVars {
     u8 pad_00[0x20];
@@ -942,12 +943,12 @@ void set_novalis_bolt_crank_completion_flags(char *moby) {
     int level = g_current_level_index_m;
     if (level != 1)
         return;
-    if (*(short *)&((Moby *)moby)->save_id == 0x34 && ((Moby *)moby)->oclass == 0x118 &&
+    if (*(short *)&((Moby *)moby)->save_id == 0x34 && ((Moby *)moby)->oclass == MOBY_CLASS_BOLT_CRANK &&
         (unsigned char)*(char *)&((Moby *)moby)->state == 5) {
         *(unsigned char *)&menu_item_enabled_0 = level;
     }
     level = g_current_level_index_m;
-    if (level == 1 && *(short *)&((Moby *)moby)->save_id == 0x35 && ((Moby *)moby)->oclass == 0x118 &&
+    if (level == 1 && *(short *)&((Moby *)moby)->save_id == 0x35 && ((Moby *)moby)->oclass == MOBY_CLASS_BOLT_CRANK &&
         (unsigned char)*(char *)&((Moby *)moby)->state == 5) {
         *(unsigned char *)&g_menu_item_enabled_1 = level;
     }
@@ -1329,7 +1330,7 @@ void gold_weapon_case_update(struct Moby *m) {
     }
     switch (m->state) {
         case 0:
-            if (m->oclass != 0x130) {
+            if (m->oclass != MOBY_CLASS_GOLD_WEAPON_CASE) {
                 m->state = 2;
             } else if (gold_weapon_purchased[gold_weapon_case_items[v->slot]] != 0 || DialogRequest_Init(m, v) == -1) {
                 m->state = 3;
@@ -1775,7 +1776,7 @@ extern void PartType53Spawn_r(float *pos, int a, int col, int mode, int b, float
                               float f2) __asm__("func_L00_00272F00");
 extern void jet_animate_r(void *, float) __asm__("func_L00_0025B040");
 
-/* Update of moby class 437 (sand mouse): follows its parent moby, runs out at the hero, attacks, and fades back home. */
+/* Update of moby Sand Mouse (sand mouse): follows its parent moby, runs out at the hero, attacks, and fades back home. */
 void sand_mouse_update(Moby *moby) {
     Data_E5298 *d;
     float va[4];
@@ -1888,7 +1889,8 @@ void sand_mouse_update(Moby *moby) {
                             novalis_coll_hit_moby_r == ((void *)((Hero *)(hero_globals_base + 0xE1D))->moby)) {
                             compute_sand_mouse_approach_target((int)moby, d);
                             if (((Hero *)(hero_globals_base + 0xE1D))->items[2].moby != 0 &&
-                                ((Hero *)(hero_globals_base + 0xE1D))->items[2].moby->oclass == 0x1B1 &&
+                                ((Hero *)(hero_globals_base + 0xE1D))->items[2].moby->oclass ==
+                                    MOBY_CLASS_SONIC_SUMMONER &&
                                 ((Hero *)(hero_globals_base + 0xE1D))->items[2].moby->state != 0xFE &&
                                 ((Hero *)(hero_globals_base + 0xE1D))->items[2].moby->state != 0xFD) {
                                 ((Hero *)(hero_globals_base + 0xE1D))->items[2].moby->state = 1;
@@ -1947,7 +1949,7 @@ void sand_mouse_update(Moby *moby) {
             }
             moby->state = 5;
             if (((Hero *)(hero_globals_base + 0xE1D))->items[2].moby != 0 &&
-                ((Hero *)(hero_globals_base + 0xE1D))->items[2].moby->oclass == 0x1B1 &&
+                ((Hero *)(hero_globals_base + 0xE1D))->items[2].moby->oclass == MOBY_CLASS_SONIC_SUMMONER &&
                 ((Hero *)(hero_globals_base + 0xE1D))->items[2].moby->state != 0xFE &&
                 ((Hero *)(hero_globals_base + 0xE1D))->items[2].moby->state != 0xFD) {
                 d->b48 = 0xFF;
@@ -2215,7 +2217,7 @@ void large_amoeboid_update(unsigned char *moby) {
             }
             data->unk_30 = data->size;
             data->wobble_angle = random_angle_radians();
-            if (((Moby *)moby)->oclass == 0x362)
+            if (((Moby *)moby)->oclass == MOBY_CLASS_SMALL_AMOEBOID)
                 data->pvar130_data = &small_amoeboid_pvar130_data;
             else
                 data->pvar130_data = &amoeboid_pvar130_data;
@@ -2739,9 +2741,9 @@ char *activate_smaller_amoeboid(void *arg) {
     Moby *entities;
     int entry;
     int type = -1;
-    if (self->oclass == 0x23C) {
+    if (self->oclass == MOBY_CLASS_LARGE_AMOEBOID) {
         type = 0x361;
-    } else if (self->oclass == 0x361) {
+    } else if (self->oclass == MOBY_CLASS_MEDIUM_AMOEBOID) {
         type = 0x362;
     }
     list = *(short **)(lists_2F0728 + self->group);
@@ -2966,7 +2968,7 @@ extern int process_moby_suck_cannon_suction_pt(void *, void *, void *) __asm__("
 int process_amoeboid_suck_cannon_suction(Moby *moby, void *pos, void *target) {
     int value = process_moby_suck_cannon_suction_pt(moby, pos, target);
     if (value != 0) {
-        if (moby->oclass != 0x362) {
+        if (moby->oclass != MOBY_CLASS_SMALL_AMOEBOID) {
             return 0;
         } else if (moby->state == 8) {
             return 0;
@@ -3420,7 +3422,7 @@ void gunship_follow_path(struct Moby *moby) {
     zero.q = 0;
     frozen = 0;
     v = (Vars *)moby->pvars;
-    if (moby->oclass != 0x336) {
+    if (moby->oclass != MOBY_CLASS_METROPOLIS_TRAIN_LOCOMOTIVE) {
         frozen = check_scaled_vector_bsphere(moby, IntToFloat(moby->draw_dist)) == -1;
     }
     if (v == 0 || gunship_path_updates_disabled != 0) {
@@ -3452,7 +3454,8 @@ void gunship_follow_path(struct Moby *moby) {
             }
         }
     }
-    if ((moby->oclass == 0x33 || moby->oclass == 0x46A || moby->oclass == 0x473 || moby->oclass == 0x474) &&
+    if ((moby->oclass == 0x33 || moby->oclass == MOBY_CLASS_COMMANDO || moby->oclass == MOBY_CLASS_HOVERBOARD_RING ||
+         moby->oclass == MOBY_CLASS_HOVERBOARD_BOOST_PAD) &&
         (novalis_frame_count & 7) == (((s32)moby >> 8) & 7) && v->unk13A <= 0 && moby->state != 0 &&
         Sound_IsPlaying(moby, v->unk11E) == 0) {
         v->unk11E = ((int (*)(int, int, void *))Moby_PlaySound)(0, 4, moby);

@@ -12,6 +12,7 @@
 #include "game/fastfunc.h"
 #include "game/mobyutil.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/moby_class.h"
 
 /* Effect that follows its parent moby, fades between two colours and drifts along the parent's axis. */
 struct ParentFollowEffectVars {
@@ -290,7 +291,7 @@ char *revive_spawner_pooled_child(char *m, float *at, int cls) {
         }
     }
     for (current_moby = (struct Moby *)kerwan_moby_list_p; current_moby != 0; current_moby = current_moby->next) {
-        if (current_moby->oclass == 0x221 && current_moby->state != 0xFE && current_moby->state != 0xFD) {
+        if (current_moby->oclass == MOBY_CLASS_BOMB_545 && current_moby->state != 0xFE && current_moby->state != 0xFD) {
             spawner_data->live++;
         }
     }
@@ -375,7 +376,7 @@ extern char hero_globals_base[];
 extern float kerwan_zero_vec[] MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 
-/* Update of moby class 455 (spawner): counts its living children, takes hits, runs its state machine and spawns class 0x221 children at a point picked by its mode. */
+/* Update of moby Spawner (spawner): counts its living children, takes hits, runs its state machine and spawns Bomb children at a point picked by its mode. */
 void ChildSpawnerUpdate(Moby *moby) {
     int used[4];
     Vec4A v30;
@@ -423,7 +424,7 @@ void ChildSpawnerUpdate(Moby *moby) {
     {
         Moby *o;
         for (o = (Moby *)kerwan_moby_list_p; o != 0; o = o->next) {
-            if (o->oclass == 0x221 && o->state != 0xFE && o->state != 0xFD) {
+            if (o->oclass == MOBY_CLASS_BOMB_545 && o->state != 0xFE && o->state != 0xFD) {
                 d->count++;
             }
         }
@@ -722,7 +723,7 @@ extern char *CreateMoby_m_2C59A0(int) __asm__("func_0020D348");
 extern int scale_ticks(int);
 extern void moby_build_matrix(void *);
 
-// Spawns the class 0x221 moby for an owner at pos with dir, random angles and a size, copying the owner's colour.
+// Spawns the Bomb moby for an owner at pos with dir, random angles and a size, copying the owner's colour.
 char *spawn_class_221_moby(char *owner, float *pos, float *dir, short ang, int arg) {
     Moby *m;
     struct BouncingBombVars *d;
@@ -1721,9 +1722,9 @@ void update_homing_spark_projectile(Moby *moby) {
     float dist;
 
     FindNearestTargetMoby(moby, &tgt, 20.0f);
-    if (d->target->oclass == 0x277) {
+    if (d->target->oclass == MOBY_CLASS_BLARG_HELICOPTER_631) {
         snd = (int *)(((char *)d->target->pvars) + 0x250);
-    } else if (d->target->oclass == 0xE9) {
+    } else if (d->target->oclass == MOBY_CLASS_HELICOPTER_233) {
         snd = (int *)(((char *)d->target->pvars) + 0x1B8);
         if (d->target->state == 0x40 || d->target->state == 1) {
             moby->state = 2;
@@ -1830,19 +1831,19 @@ void update_homing_spark_projectile(Moby *moby) {
                         FastVecAdd(&vC0, &vA0, &vB0);
                         if (coll_line(&vA0, &vC0, 0x10, d->target, &hit) != 0 && kerwan_coll_hit_moby != 0 &&
                             (kerwan_coll_hit_moby == ((Hero *)(hero_globals_base + 0xE1D))->moby ||
-                             kerwan_coll_hit_moby->oclass == 0x1DF)) {
+                             kerwan_coll_hit_moby->oclass == MOBY_CLASS_DRONE)) {
                             moby->state = 2;
                         }
                         qcopy(&vC0, &vA0);
                         vC0.z += 2.0f;
                         if (coll_line(&vA0, &vC0, 0x10, d->target, &hit) != 0 && kerwan_coll_hit_moby != 0 &&
                             (kerwan_coll_hit_moby == ((Hero *)(hero_globals_base + 0xE1D))->moby ||
-                             kerwan_coll_hit_moby->oclass == 0x1DF)) {
+                             kerwan_coll_hit_moby->oclass == MOBY_CLASS_DRONE)) {
                             moby->state = 2;
                         }
                         if (coll_sphere_mobys(0.5f, &moby->pos, 0x10, moby, &hit) != 0 && kerwan_coll_hit_moby != 0 &&
                             (kerwan_coll_hit_moby == ((Hero *)(hero_globals_base + 0xE1D))->moby ||
-                             kerwan_coll_hit_moby->oclass == 0x1DF)) {
+                             kerwan_coll_hit_moby->oclass == MOBY_CLASS_DRONE)) {
                             moby->state = 2;
                         }
                     }

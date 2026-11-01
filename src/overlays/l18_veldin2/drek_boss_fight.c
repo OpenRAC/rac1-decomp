@@ -23,6 +23,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/moby_class.h"
 
 /* Class 0x565 trigger: index of the transform whose xy bounds mark block entries. */
 struct Class565Vars {
@@ -335,7 +336,7 @@ void update_glow_moby_state_and_voice(unsigned char *m) {
             }
             if (moby_vars[0] != -1) {
                 struct Moby *linked_moby = (struct Moby *)(veldin2_moby_table + (moby_vars[0] << 8));
-                if (linked_moby->oclass == 0x267 && linked_moby->state >= 3) {
+                if (linked_moby->oclass == MOBY_CLASS_TRESSPASSER_PAD && linked_moby->state >= 3) {
                     moby->collision = 0;
                     moby->state = 2;
                     if (Sound_IsPlaying(m, moby_vars[1]) != 0) {
@@ -741,7 +742,7 @@ extern char veldin2_big_head_manipulator[];
 extern short veldin2_big_head_scale;
 extern void AttachManipulator(char *, int, void *);
 
-/* Re-initialize the class 0x4E1 effect block for each listed moby that has no active effect. */
+/* Re-initialize the Drek effect block for each listed moby that has no active effect. */
 void attach_drek_boss_big_head_manipulator(char *moby) {
     if (veldin2_cinematic_mode == 2 && gCheats[0] != 0) {
         int i;
@@ -854,7 +855,7 @@ typedef struct BossData {
     float f3E0;
     int platform_event_done; /* 0x3E4: latched once the hero lands on a platform */
     int ground_platform; /* 0x3E8: the moby the hero last stood on */
-    int stood_on_platform; /* 0x3EC: set once the hero stood on a class 0x24B platform */
+    int stood_on_platform; /* 0x3EC: set once the hero stood on a Floating Platform platform */
 } BossData;
 typedef struct BossShared {
     char p0[0x10];
@@ -953,7 +954,7 @@ extern int count_group_class_0772_mobys_not_in_state_8(int idx);
 extern char *create_rocket_moby(float *pos, float *dir, float *target, float a, float b, int frames, int kind);
 extern char *launch_class_238_moby_from_list(int owner, int idx, float *from, float *to, float speed, int frames);
 
-/* Update of the final boss robot (class 1422): one step of its state machine, then its bob, aim and tint. */
+/* Update of the final boss robot (Drek Final Boss Robot): one step of its state machine, then its bob, aim and tint. */
 void drek_final_boss_robot_update(Moby *moby) {
     BossData *d = (BossData *)(*(char **)&moby->pvars);
     Moby *tgt;
@@ -1297,7 +1298,7 @@ void drek_final_boss_robot_update(Moby *moby) {
                 break;
             }
             if (vec_distance_xy(((f32 *)&moby->pos), g_hero.motion.pos.f) < 50.0f && g_hero.air_frames.s == 0 &&
-                (g_hero.ground_moby == 0 || g_hero.ground_moby->oclass != 0x24B)) {
+                (g_hero.ground_moby == 0 || g_hero.ground_moby->oclass != MOBY_CLASS_FLOATING_PLATFORM_587)) {
                 int *p = d->f340;
 
                 d->f374 = 0.0f;
@@ -1317,7 +1318,8 @@ void drek_final_boss_robot_update(Moby *moby) {
             }
             break;
         case 4:
-            if (g_hero.air_frames.s == 0 && (g_hero.ground_moby == 0 || g_hero.ground_moby->oclass != 0x24B)) {
+            if (g_hero.air_frames.s == 0 &&
+                (g_hero.ground_moby == 0 || g_hero.ground_moby->oclass != MOBY_CLASS_FLOATING_PLATFORM_587)) {
                 int i;
 
                 *(int *)&drek_boss_intro_started = 1;
@@ -1896,8 +1898,8 @@ void drek_final_boss_robot_update(Moby *moby) {
                 moby->state = 7;
                 d->f39C = 0x1B;
             } else if (d->f34C == 7) {
-                if (g_hero.ground_moby != 0 && g_hero.air_frames.s == 0 && g_hero.ground_moby->oclass == 0x247 &&
-                    g_hero.state.current == 0x22) {
+                if (g_hero.ground_moby != 0 && g_hero.air_frames.s == 0 &&
+                    g_hero.ground_moby->oclass == MOBY_CLASS_THRUSTER_PACK_LOCK_GREEN && g_hero.state.current == 0x22) {
                     if (d->f3AC == 0) {
                         d->f3AC = 1;
                     }
@@ -1985,7 +1987,7 @@ void drek_final_boss_robot_update(Moby *moby) {
     }
 }
 
-/* Latches the target from the global block once, and counts a class 0x24B hit. */
+/* Latches the target from the global block once, and counts a Floating Platform hit. */
 void count_drek_boss_platform_event_once(char *moby) {
     struct BossData *d = (struct BossData *)((Moby *)moby)->pvars;
     if (d->platform_event_done == 0) {
@@ -2462,7 +2464,7 @@ extern float FastVecDot(void *, void *);
 extern short drek_boss_platform_target_radius;
 extern short drek_boss_platform_tilt_ticks;
 
-/* Returns the nearest sinkable platform (class 0x24B) in range for the Drek boss to fire at. */
+/* Returns the nearest sinkable platform (Floating Platform) in range for the Drek boss to fire at. */
 unsigned char *select_drek_boss_platform_firing_target(char *self) {
     struct BossData *data = (struct BossData *)((Moby *)self)->pvars;
     short *p = veldin2_moby_groups[data->f398];

@@ -21,6 +21,7 @@
 #include "game/fastfunc.h"
 #include "game/mobyutil.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/moby_class.h"
 
 typedef int u128 __attribute__((mode(TI)));
 typedef float FVec4[4] __attribute__((aligned(16)));
@@ -798,7 +799,7 @@ void hero_update_movement(void) {
         case 0x38:
         case 0x39:
         case 0x3A:
-            if (g_hero.ground_moby != 0 && g_hero.ground_moby->oclass == 0x155) {
+            if (g_hero.ground_moby != 0 && g_hero.ground_moby->oclass == MOBY_CLASS_HYDRODISPLACER_FAUCET) {
                 float d;
                 float lim;
 

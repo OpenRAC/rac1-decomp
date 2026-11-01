@@ -2,6 +2,7 @@
 #include "common.h"
 #include "include_asm.h"
 #include "structs/moby.h"
+#include "enums/moby_class.h"
 
 
 typedef struct {
@@ -14,13 +15,13 @@ typedef struct {
 extern int g_current_level_index MACRO_ADDR;
 extern Level02MobyList talk_camera;
 
-/* Mark every moby of class 0x1B1 in the active level. */
+/* Mark every Sonic Summoner moby in the active level. */
 void set_level02_class_1b1_moby_flag_0800(void) {
     int i;
     if (g_current_level_index == 2) {
         for (i = 0; i < talk_camera.count; i++) {
             Moby *moby = talk_camera.mobys[i];
-            if (moby->oclass == 0x1B1) {
+            if (moby->oclass == MOBY_CLASS_SONIC_SUMMONER) {
                 moby->flags |= 0x800;
             }
         }

@@ -14,6 +14,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "structs/small_records.h"
+#include "enums/moby_class.h"
 
 /* Class 0x3F1 shot: flies along vel for ticks, owned by the firing moby. */
 struct ShotVars {
@@ -1000,7 +1001,7 @@ void thruster_pack_lock_update(Lock_3102C8 *moby) {
 }
 /* Recognize the active vendor object state. */
 int test_linked_moby_turn_trigger(Moby *moby) {
-    if (moby->oclass == 0x49B && moby->state == 2) {
+    if (moby->oclass == MOBY_CLASS_THRUSTER_PACK_LOCK && moby->state == 2) {
         return 1;
     }
     return 0;

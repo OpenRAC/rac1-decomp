@@ -17,8 +17,9 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/sound_playback.h"
 #include "structs/small_records.h"
+#include "enums/moby_class.h"
 
-/* Seeker bolt (class 0x29): flies along vel, optionally turning to the hero, bursts on a hit or when the timer ends. */
+/* Seeker bolt (Rocket): flies along vel, optionally turning to the hero, bursts on a hit or when the timer ends. */
 struct SeekerBoltVars {
     f32 vel_x; /* 0x00 */
     f32 vel_y; /* 0x04 */
@@ -29,7 +30,7 @@ struct SeekerBoltVars {
     char *owner; /* 0x14 */
 };
 
-/* Rocket (class 0x234): flies along vel towards target. */
+/* Rocket: flies along vel towards target. */
 struct RocketVars {
     Vec4A vel; /* 0x00 */
     Vec4A target; /* 0x10 */
@@ -42,7 +43,7 @@ struct RocketVars {
     s32 kind; /* 0x38: bit 0 big blast, bit 2 no damage */
 };
 
-/* Launched moby (class 0x238): jumps from its list slot to a landing point, then rolls out. */
+/* Launched moby (Mine): jumps from its list slot to a landing point, then rolls out. */
 struct LaunchedMobyVars {
     u8 pad_00[0x30];
     f32 unk_30; /* 0x30 */
@@ -138,7 +139,7 @@ struct TransitionVars {
     s32 mode; /* 0x78 */
 };
 
-/* Path junction node (class 0x326): remembers its own moby. */
+/* Path junction node (Nanotech Ball): remembers its own moby. */
 struct Class326Vars {
     u8 pad_00[0xC];
     char *self; /* 0x0C */
@@ -285,7 +286,7 @@ void update_projectile_motion_collision_and_trail(char *moby) {
 }
 extern int scale_ticks(int);
 
-/* Spawns a projectile moby (class 0x29) at pos travelling along vec. */
+/* Spawns a projectile moby (Rocket) at pos travelling along vec. */
 char *create_class_29_moby(char *owner, float *pos, float *vec, int arg3) {
     char *moby = CreateMoby(0x29);
     if (moby != 0) {
@@ -570,7 +571,7 @@ extern short class238_landing_roll_distance;
 extern short class238_move_params;
 extern int g_hero_moby NOT_SDA;
 
-/* Moby update for a launchable object (class 0x238) fired by func_L18_002D70E8. */
+/* Moby update for a launchable object (Mine) fired by func_L18_002D70E8. */
 void update_class_238_moby(unsigned char *raw) {
     struct Moby *moby = (struct Moby *)raw;
     struct LaunchedMobyVars *data = (struct LaunchedMobyVars *)moby->pvars;
@@ -679,7 +680,7 @@ extern void FastVecSub(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern void Moby_PlaySound(int, int, int);
-/* Launches a dormant class 0x238 moby from list idx toward p7; returns it or 0. */
+/* Launches a dormant Mine moby from list idx toward p7; returns it or 0. */
 char *launch_class_238_moby_from_list(float f, int a0, int idx, float *p6, float *p7, int a8) {
     float v[4];
     float r;
@@ -1110,7 +1111,7 @@ typedef struct {
     float y;
 } L18Pos;
 
-/* Returns the class 0x247 moby in list idx whose bearing from a differs most from b's, or 0. */
+/* Returns the Thruster Pack Lock Green moby in list idx whose bearing from a differs most from b's, or 0. */
 void *find_class_247_moby_with_largest_xy_angle_in_list(float *a, float *b, int idx) {
     short *p = (short *)veldin2_moby_groups[idx];
     char *best = 0;
@@ -1133,7 +1134,7 @@ void *find_class_247_moby_with_largest_xy_angle_in_list(float *a, float *b, int 
     }
 }
 
-/* Of the mobys of class 0x247 in list idx, the one nearest to pos (within
+/* Of the Thruster Pack Lock Green mobys in list idx, the one nearest to pos (within
    255 units), or 0. The second spelling of the table base keeps the
    address out of the loop's $gp-relative reload in the bc1f delay slot. */
 char *find_nearest_class_247_moby_in_list(void *pos, int idx) {
@@ -1165,7 +1166,7 @@ void set_class_247_list_data_fields(int idx) {
         do {
             int off = (*p & 0x7FFF) << 8;
             char *moby = (char *)off + (int)base;
-            if (((Moby *)moby)->oclass == 0x247) {
+            if (((Moby *)moby)->oclass == MOBY_CLASS_THRUSTER_PACK_LOCK_GREEN) {
                 char *data = ((char *)((Moby *)moby)->pvars);
                 *(int *)(data + 0x30) = 1;
                 *(float *)(data + 0x24) = 1.5f;
@@ -2416,7 +2417,7 @@ int classify_moby_state_two_or_three(u8 *p) {
 }
 extern void clear_u64_value(void *);
 
-/* Spawns a dormant class 0x326 moby at vector for the path junction nodes. */
+/* Spawns a dormant Nanotech Ball moby at vector for the path junction nodes. */
 char *create_class_326_moby(void *vector) {
     char *moby = CreateMoby(0x326);
     if (moby != 0) {
@@ -3313,7 +3314,7 @@ extern int update_drek_fight_missile_wander_movement(char *moby, float *vec);
 extern void select_drek_fight_missile_wander_target(char *moby, void *out);
 extern void update_drek_fight_missile_trail_and_queue_effects(char *moby);
 
-/* State machine for the class 1355 moby: dispatches on moby state (0 init, 2 wander, 3 dive, 4 land). */
+/* State machine for the Drek Fight Missile moby: dispatches on moby state (0 init, 2 wander, 3 dive, 4 land). */
 void drek_fight_missile_update(char *moby) {
     struct Moby *m = (struct Moby *)moby;
     struct DrekMissileVars *missile_vars = (struct DrekMissileVars *)m->pvars;
@@ -3410,7 +3411,7 @@ void drek_fight_missile_update(char *moby) {
         }
     }
 }
-/* Hands pos to every class 0x54B moby of the group that waits in state 1 and points it at moby: 0 if one took it, 1 if none.
+/* Hands pos to every Drek Fight Missile moby of the group that waits in state 1 and points it at moby: 0 if one took it, 1 if none.
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l18/gameplay/vendor/002efb88.c, FUN_L18_002f0030. */
 int activate_drek_fight_missiles_in_group(char *moby, int group, float *pos) {
     short *p = (short *)veldin2_moby_groups[group];
@@ -3421,7 +3422,7 @@ int activate_drek_fight_missiles_in_group(char *moby, int group, float *pos) {
     idle = 1;
     while (1) {
         unsigned char *m = (unsigned char *)(((*p & 0x7FFF) << 8) + (int)veldin2_moby_table_m);
-        if (((Moby *)m)->oclass == 0x54B && ((Moby *)m)->state == 1) {
+        if (((Moby *)m)->oclass == MOBY_CLASS_DREK_FIGHT_MISSILE && ((Moby *)m)->state == 1) {
             unsigned char *d = ((unsigned char *)((Moby *)m)->pvars);
             idle = 0;
             qcopy(m + 0x10, pos);
@@ -3444,7 +3445,7 @@ INCLUDE_ASM("asm/overlays", func_L18_002F1444);
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 extern short drek_missile_climb_pitch;
 
-/* Steering step for a class 0x54B moby; returns 1 when it has reached the target. */
+/* Steering step for a Drek Fight Missile moby; returns 1 when it has reached the target. */
 int update_drek_fight_missile_wander_movement(char *moby, float *vec) {
     float buf[4];
     float v[4];
@@ -3521,7 +3522,7 @@ extern short drek_missile_trail_color_tail;
 extern void libc_memset(void *, int, int);
 extern float drek_missile_trail_uvs[4][2];
 extern char *veldin2_moby_table MACRO_ADDR;
-/* Draw callback that renders the trails of the class 0x54B mobys in the group. */
+/* Draw callback that renders the trails of the Drek Fight Missile mobys in the group. */
 void draw_drek_fight_missile_group_trails(struct Moby *moby) {
     struct GeometryQuad_1780 quads[16];
     float extra[8];
@@ -3568,7 +3569,7 @@ void draw_drek_fight_missile_group_trails(struct Moby *moby) {
     do {
     again:
         m = (struct Moby *)(((*p & 0x7FFF) << 8) + (int)veldin2_moby_table);
-        if (m->oclass != 0x54B) {
+        if (m->oclass != MOBY_CLASS_DREK_FIGHT_MISSILE) {
             goto again;
         }
         data = (char *)m->pvars;
@@ -3596,7 +3597,7 @@ extern short drek_missile_glow_color_b;
 extern short drek_missile_glow_size;
 extern short drek_missile_glow_offset;
 
-/* Draws the pulsing glows of every Drek fight missile (class 0x54B) in this moby's group. */
+/* Draws the pulsing glows of every Drek fight missile in this moby's group. */
 void render_drek_fight_missile_group_effects(char *moby) {
     short *p;
     float a, b;
@@ -3608,7 +3609,7 @@ void render_drek_fight_missile_group_effects(char *moby) {
     b = *(float *)&drek_missile_dive_glow_pulse_speed * 0.017453292f * g_frame_time;
     do {
         char *o = veldin2_moby_table + (*(unsigned short *)p & 0x7FFF) * 256;
-        if (((Moby *)o)->oclass == 0x54B) {
+        if (((Moby *)o)->oclass == MOBY_CLASS_DREK_FIGHT_MISSILE) {
             struct DrekMissileVars *data = (struct DrekMissileVars *)((Moby *)o)->pvars;
             int t = FastTweenColor(*(int *)&drek_missile_glow_color_a, *(int *)&drek_missile_glow_color_b,
                                    FastSin(data->phase) * 0.5f + 0.5f);

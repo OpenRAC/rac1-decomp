@@ -15,6 +15,7 @@
 #include "game/fastfunc.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/moby_class.h"
 /* Blarg trooper: walks an Eudora path, swings its weapon at the hero. */
 struct BlargTrooperVars {
     u8 pad_00[0x20];
@@ -243,7 +244,7 @@ void update_class_55_swarm_controller(struct PMoby *moby) {
         data->angle = 0.0f;
     } else if (data->child_count == 0) {
         for (other = (struct PMoby *)eudora_moby_list; other != 0; other = other->next) {
-            if ((s8)other->state >= 0 && other->oclass == 0x55) {
+            if ((s8)other->state >= 0 && other->oclass == MOBY_CLASS_BUTTERFLY) {
                 data->child_count++;
             }
         }
@@ -1293,7 +1294,7 @@ void spawn_circular_saw_destruction_effects(char *moby) {
 extern void FindNearestTargetMoby(char *, float *, float);
 extern char *eudora_moby_list MACRO_ADDR;
 
-/* Check that a moby's spot is clear of the other mobys of class 0x154. */
+/* Check that a moby's spot is clear of the other Circular Saw Enemy mobys. */
 int check_circular_saw_melee_attack_spacing(char *moby) {
     struct CircularSawVars *data = (struct CircularSawVars *)((Moby *)moby)->pvars;
     float vec[20];
@@ -2904,7 +2905,7 @@ extern s32 Sound_IsPlaying_r2(struct Moby *, s32) __asm__("func_L00_0028EB98");
 extern s32 Moby_PlaySound_r2(s32, s32, struct Moby *) __asm__("func_0022ED80");
 struct Moby;
 
-/* Follows a linked switch moby (class 0x118): mirrors its position value, loops a sound while it moves, plays a click at either end and swaps class 0x41C back to 0x1B0 when it reaches 1.0.
+/* Follows a linked switch moby (Bolt Crank): mirrors its position value, loops a sound while it moves, plays a click at either end and swaps Bridge back to 0x1B0 when it reaches 1.0.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l04/gameplay/entities/0029eb20.c, FUN_L04_002c6858. */
 void eudora_bridge_update(struct Moby *m) {
     SwitchFollowerVars_C7BD8 *v = (SwitchFollowerVars_C7BD8 *)m->pvars;
@@ -2923,7 +2924,7 @@ void eudora_bridge_update(struct Moby *m) {
             m->state = 1;
             m->anim_speed = 0;
             v->voice = -1;
-            if (m->oclass == 0x1B0) {
+            if (m->oclass == MOBY_CLASS_EUDORA_BRIDGE) {
                 m->oclass = 0x41C;
                 m->class_slot = eudora_class_slot_by_id_r[0x41C];
                 m->pclass = eudora_moby_class_headers_r[m->class_slot];
@@ -2939,7 +2940,7 @@ void eudora_bridge_update(struct Moby *m) {
             if (v->link == -1)
                 break;
             other = (struct Moby *)(eudora_mobys_r + (v->link << 8));
-            if (other->oclass != 0x118)
+            if (other->oclass != MOBY_CLASS_BOLT_CRANK)
                 break;
             pos = (f32 *)other->pvars;
             cur = *pos;
@@ -2956,7 +2957,7 @@ void eudora_bridge_update(struct Moby *m) {
                         v->voice = -1;
                     }
                     Moby_PlaySound_r2(1, 0, m);
-                    if (m->oclass == 0x41C && *pos == 1.0f) {
+                    if (m->oclass == MOBY_CLASS_BRIDGE_1052 && *pos == 1.0f) {
                         m->oclass = 0x1B0;
                         m->class_slot = eudora_class_slot_by_id_r[0x1B0];
                         m->pclass = eudora_moby_class_headers_r[m->class_slot];
@@ -3049,7 +3050,7 @@ void platform_booster_update(struct Moby *m) {
                 break;
             }
             lever = &eudora_mobys_r2[v->lever];
-            if (lever->oclass != 0x118) {
+            if (lever->oclass != MOBY_CLASS_BOLT_CRANK) {
                 break;
             }
             lv = (LeverVars *)lever->pvars;
@@ -3100,7 +3101,7 @@ void platform_booster_update(struct Moby *m) {
                 break;
             }
             link = &eudora_mobys_r2[v->lever];
-            if (link->oclass != 0x118) {
+            if (link->oclass != MOBY_CLASS_BOLT_CRANK) {
                 break;
             }
             link_vars = (LeverVars *)link->pvars;

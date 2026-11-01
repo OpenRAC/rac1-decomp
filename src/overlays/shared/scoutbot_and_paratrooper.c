@@ -12,6 +12,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/sound_playback.h"
 #include "structs/small_records.h"
+#include "enums/moby_class.h"
 
 /* Paratrooper fire bolt (class 0x50C): flies along its velocity until it hits something or its time runs out. */
 struct FireBoltVars {
@@ -878,7 +879,7 @@ void Moby458Update(char *moby) {
             goto clear_target;
         if ((unsigned char)target[0x20] == 0xfd)
             goto clear_target;
-        if (((Moby *)target)->oclass != 0x1b3)
+        if (((Moby *)target)->oclass != MOBY_CLASS_ROCKET_435)
             goto clear_target;
         {
             char *target_data = ((char *)((Moby *)target)->pvars);

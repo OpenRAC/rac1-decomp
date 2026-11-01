@@ -16,6 +16,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/moby_class.h"
 
 /* Electric gate: its trigger and the sound voice slot it claims. */
 struct ElectricGateWatchVars {
@@ -2960,8 +2961,8 @@ void update_moby_gameplay_events(unsigned char *moby) {
     value = data[21];
     if (value != -1 && saved_mission_state[D_L05_0015ED84][data[22]] == 0xff &&
         saved_mission_state[D_L05_0015ED84][data[8]] == 0xff &&
-        (frame_number < 5 || (D_0013F64C && (((struct Moby *)D_0013F64C)->oclass == 0x3e6 ||
-                                             ((struct Moby *)D_0013F64C)->oclass == 0x33e)))) {
+        (frame_number < 5 || (D_0013F64C && (((struct Moby *)D_0013F64C)->oclass == MOBY_CLASS_TAXI_998 ||
+                                             ((struct Moby *)D_0013F64C)->oclass == MOBY_CLASS_FLOOR_BUTTON)))) {
         FUN_L00_002d5830((void *)(D_L05_0015FFD8 + value * 256));
         data[21] = -1;
     }

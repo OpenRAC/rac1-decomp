@@ -17,6 +17,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "structs/collision.h"
 #include "structs/hero_views.h"
+#include "enums/moby_class.h"
 
 struct Moby;
 extern struct Hero g_hero_r __asm__("D_0013F450");
@@ -2465,7 +2466,8 @@ s32 hero_check_damage(s32 arg) {
                 }
                 if (g_current_level_index == 0xF || g_current_level_index == 0x11) {
                     mob = (Moby *)g_hero_r4.damage_source_moby;
-                    if (mob != 0 && (mob->oclass == 0x28F || mob->oclass == 0x7B || mob->oclass == 0x29D)) {
+                    if (mob != 0 &&
+                        (mob->oclass == 0x28F || mob->oclass == MOBY_CLASS_SPIDERBOT || mob->oclass == 0x29D)) {
                         func_L00_00217570_113A0(0x1C, 0);
                     }
                 }
@@ -2546,11 +2548,11 @@ void Hero_OnKilled(void) {
     FadeToBlack(scale_ticks(0x10));
     g_hero_r5.fall_fade_pending = 1;
 }
-/* whether the moby is of class 0x47 (0 for none) */
+/* whether the moby Wrench is (0 for none) */
 int is_wrench_moby(Moby *m) {
     if (m == 0)
         return 0;
-    return m->oclass == 0x47;
+    return m->oclass == MOBY_CLASS_WRENCH;
 }
 extern float g_frame_scale_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;

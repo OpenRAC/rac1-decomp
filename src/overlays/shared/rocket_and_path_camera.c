@@ -86,7 +86,7 @@ extern float vec_length_xy(void *);
 extern void moby_build_matrix(void *);
 extern char hero_globals_base[];
 
-/* spawn a moby of class 0x333 with position, velocity vector and aim angles */
+/* spawn a Rocket moby with position, velocity vector and aim angles */
 char *create_rocket(float scale, void *vel, void *pos, int a, int b, int c) {
     Moby *m = (Moby *)((char *)CreateMoby_m(0x333));
     struct RocketVars *d;

@@ -10,6 +10,7 @@
 #include "overlays/shared/weapon_hud_and_counters.h"
 #include "asm_functions/shared_levels.h"
 #include "game/fastfunc.h"
+#include "enums/moby_class.h"
 /* Break fragment: velocity, spin, life and gravity. */
 struct BreakFragmentVars {
     u8 pad_00[0x10];
@@ -741,7 +742,7 @@ void create_moby_transform_history_entry(struct TransformHistory *o, int a, int 
                 m->flags = 0x80A;
                 m->update_dist = 0;
                 m->collision = 0;
-                if (m->oclass == 0)
+                if (m->oclass == MOBY_CLASS_RATCHET)
                     m->unk72 = 0;
                 m->alpha = a;
                 o->delay[o->n] = b;

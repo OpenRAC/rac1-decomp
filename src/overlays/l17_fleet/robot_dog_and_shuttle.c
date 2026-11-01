@@ -21,6 +21,7 @@
 #include "overlays/shared/camera_modes_and_scripts.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "structs/small_records.h"
+#include "enums/moby_class.h"
 
 /* Robot dog: speed and turn state, plus the three glow points (also AimData_1BB0 below). */
 struct RobotDogVars {
@@ -82,7 +83,7 @@ struct FleetBackdropVars {
     s32 clip_volume; /* 0x4C: -1 when none */
 };
 
-/* Flying fleet craft (class 1843): follows a path, circles and strafes the hero. */
+/* Flying fleet craft (Blarg Ship): follows a path, circles and strafes the hero. */
 struct FleetCraftVars {
     u8 pad_00[0x60];
     s32 path; /* 0x60: index into fleet_paths */
@@ -1415,7 +1416,8 @@ void update_fleet_backdrop_animation(unsigned char *moby) {
     int i;
     if (moby_pvars->clip_volume != -1) {
         struct Hero *hero_data = (struct Hero *)(hero_globals_base + 0xE1D);
-        if (hero_data->state.current != 0x32 || hero_data->ship_moby == 0 || (hero_data->ship_moby)->oclass != 0x563) {
+        if (hero_data->state.current != 0x32 || hero_data->ship_moby == 0 ||
+            (hero_data->ship_moby)->oclass != MOBY_CLASS_FIGHTER_JET_1379) {
             if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
                                             moby_pvars->clip_volume)) {
                 fleet_hero_fall_state_height_m = 150.0f;

@@ -9,6 +9,7 @@
 #include "asm_functions/shared_levels.h"
 #include "game/mobyutil.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "enums/moby_class.h"
 
 extern void VU1_addGSregister(int, long);
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
@@ -138,7 +139,7 @@ void apply_level_specific_cutscene_moby_effects(void) {
 
     if (g_current_level_index_m == 0) {
         for (i = 0; i < cutscene_state.count; i++) {
-            if (cutscene_state.mobys[i]->oclass == 0x212) {
+            if (cutscene_state.mobys[i]->oclass == MOBY_CLASS_VELDIN_SHIP) {
                 AddDrawCallback((void *)render_environment_mapped_object, (void *)cutscene_state.mobys[i]);
             }
         }
@@ -146,7 +147,7 @@ void apply_level_specific_cutscene_moby_effects(void) {
     if (g_current_level_index_m == 2) {
         for (j = 0; j < cutscene_state.count; j++) {
             mb = cutscene_state.mobys[j];
-            if (mb->oclass == 0x1B1) {
+            if (mb->oclass == MOBY_CLASS_SONIC_SUMMONER) {
                 mb->flags |= 0x800;
             }
         }
@@ -168,7 +169,7 @@ void apply_level_specific_cutscene_moby_effects(void) {
         }
     }
     if (g_current_level_index_m == 7 && cutscene_state.state == 4 && cutscene_state.unk188 != 0 &&
-        cutscene_state.unk188->oclass == 0x214) {
+        cutscene_state.unk188->oclass == MOBY_CLASS_RED_SHIP) {
         AddDrawCallback((void *)render_environment_mapped_object, (void *)cutscene_state.unk188);
     }
     if (g_current_level_index_m == 14 && cutscene_state.state == 0) {

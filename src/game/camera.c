@@ -11,6 +11,7 @@
 #include "game/mobyutil.h"
 #include "data/executable.h"
 #include "game/fastfunc.h"
+#include "enums/moby_class.h"
 
 /*
  * camera.cpp in the original source; text 0x1EC038-0x1EDFF8.
@@ -918,7 +919,8 @@ void update_camera_tracking_state(void) {
     f->yaw_hist[i] = g_hero_r.motion.rot.f[2];
 
     m = g_hero_r.ground_moby;
-    if (m != 0 && m->oclass != 0x4BA && m->oclass != 0x336) {
+    if (m != 0 && m->oclass != MOBY_CLASS_METROPOLIS_TRAIN_CARRIAGE &&
+        m->oclass != MOBY_CLASS_METROPOLIS_TRAIN_LOCOMOTIVE) {
         if (m == f->ground_moby) {
             f->ground_dz = m->pos.z - f->ground_z;
             if (FastAbsF(f->ground_dz) < 0.001f) {

@@ -59,7 +59,7 @@ extern int g_current_level_index MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;
 extern unsigned char gCheats[] MACRO_ADDR;
 
-/* Update function of moby class 1446 (ultramech scientist): state switch, then the head look-at block shaped like func_L11_002D18D0's (doit flag guards the vector part). */
+/* Update function of moby Ultramech Scientist (ultramech scientist): state switch, then the head look-at block shaped like func_L11_002D18D0's (doit flag guards the vector part). */
 struct UltramechScientistVars {
     u8 pad_00[0x4];
     s16 unk_04;

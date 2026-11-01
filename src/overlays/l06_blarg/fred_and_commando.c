@@ -948,7 +948,7 @@ extern unsigned char gCheats[] MACRO_ADDR;
 extern unsigned char race_gates_base[];
 extern int race_gates_47_flag;
 
-/* Update of moby class 1105 (fred): steps the conversation and camera states, then turns the head toward the hero. */
+/* Update of moby Fred (fred): steps the conversation and camera states, then turns the head toward the hero. */
 extern Hero g_hero;
 
 void fred_update(Moby *moby) {
@@ -1515,7 +1515,7 @@ extern int class_076a_moby_rate_input_frames_gp SDATA(D_L06_00162198);
 extern int blarg_explosion_flash_color_a SDATA(D_L06_0016219C);
 extern int blarg_explosion_flash_color_b SDATA(D_L06_001621A0);
 
-/* Update of moby class 1109 (shuttle): waits at one of three camera points, takes the hero's choice of destination, flies there through a cutscene and hands over to the level's travel sequence. */
+/* Update of moby Shuttle (shuttle): waits at one of three camera points, takes the hero's choice of destination, flies there through a cutscene and hands over to the level's travel sequence. */
 void ShuttleUpdate(Moby *moby) {
     Data_3039B8 *d = *(Data_3039B8 **)&moby->pvars;
     float old_pos[4];
@@ -2248,7 +2248,7 @@ extern int scale_ticks_r2(int) __asm__("func_001F9850");
 extern float IntToFloat_r(int) __asm__("func_001FA888");
 extern void moby_build_matrix_r(void *) __asm__("func_L00_00251E30");
 
-/* Red button (moby class 1118) update on level 06: turns its two levers, waits for the hero to press it, then
+/* Red button (moby Red Button) update on level 06: turns its two levers, waits for the hero to press it, then
  * runs the cutscene camera along the cutscene records and fires the listed events as the camera passes them. */
 void red_button_update(Moby *m) {
     Data_3054D8 *d = *(struct Data_3054D8 **)&m->pvars;

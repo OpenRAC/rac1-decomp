@@ -397,7 +397,7 @@ extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern Tex_2E8040 gemlik_part_type_textures_r __asm__("D_L13_001B2680");
 extern Vec4A gemlik_coll_hit_point_r __asm__("D_L13_001741E0");
 
-/* Update for the rocket (class 295): smoke trail, steering toward its target, collision and expiry. */
+/* Update for the rocket: smoke trail, steering toward its target, collision and expiry. */
 void update_ship_rocket(Moby *m) {
     Rocket_2E8040 *d = *(void **)&m->pvars;
     Vec4A old;

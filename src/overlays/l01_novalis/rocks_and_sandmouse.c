@@ -14,6 +14,7 @@
 #include "game/mobyutil.h"
 #include "overlays/shared/ripple_patches.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/moby_class.h"
 
 /* Colored half-scale moby: owner and fading-particle color. */
 struct HalfScaleMobyVars {
@@ -564,7 +565,7 @@ extern unsigned char special_items_base_r[] __asm__("D_0013D355");
 extern V3_2FBBD8 cave_wall_debris_colors_r __asm__("D_L01_00161D00");
 extern LvState_2FBBD8 novalis_checkpoint_level_state_r __asm__("D_L01_001BB9C0");
 
-/* destroyable_cave_wall_update: update for the cave wall moby (class 729) on level 01; a wall already burst is deleted, else it spawns its debris. */
+/* destroyable_cave_wall_update: update for the cave wall moby (Destroyable Cave Wall) on level 01; a wall already burst is deleted, else it spawns its debris. */
 void destroyable_cave_wall_update(char *moby) {
     struct Moby *cave_wall_moby = (struct Moby *)moby;
     QuadW_2FBBD8 tab;
@@ -841,7 +842,7 @@ void agnogg_ship_front_update(Moby *moby) {
             if (moby->prev_seq != 2) {
                 MobyBlendAnimation_r(moby, 2, 0, scale_ticks_r3(0x14));
             }
-            if (moby->oclass == 0x2DA) {
+            if (moby->oclass == MOBY_CLASS_AGNOGG_SHIP_FRONT) {
                 moby->state = 10;
             } else {
                 moby->state = 4;
@@ -1419,7 +1420,7 @@ void door_left_update(Moby *m) {
             player = (V *)(&((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos);
             if (vec_distance_xy(v, player) < v->radius && FastAbsF(m->pos.z - player->f[2]) < 2.0f) {
                 m->state = 2;
-                if (m->oclass == 0x300) {
+                if (m->oclass == MOBY_CLASS_DOOR_LEFT) {
                     Moby_PlaySound(0, 0, (int)m);
                 }
             }
@@ -1436,7 +1437,7 @@ void door_left_update(Moby *m) {
             if (vec_distance_xy(v, &((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos) > v->radius * k &&
                 vec_distance_xy(v, camera_pos) > v->radius * k) {
                 m->state = 4;
-                if (m->oclass == 0x300) {
+                if (m->oclass == MOBY_CLASS_DOOR_LEFT) {
                     Moby_PlaySound(0, 0, (int)m);
                 }
             }
@@ -1454,8 +1455,8 @@ void door_left_update(Moby *m) {
             }
             break;
     }
-    off.f[0] = FastCos(m->rot.z) * v->t * (m->oclass == 0x300 ? 2.0f : -2.0f);
-    off.f[1] = FastSin(m->rot.z) * v->t * (m->oclass == 0x300 ? 2.0f : -2.0f);
+    off.f[0] = FastCos(m->rot.z) * v->t * (m->oclass == MOBY_CLASS_DOOR_LEFT ? 2.0f : -2.0f);
+    off.f[1] = FastSin(m->rot.z) * v->t * (m->oclass == MOBY_CLASS_DOOR_LEFT ? 2.0f : -2.0f);
     off.f[2] = 0.0f;
     m->pos.x = v->home.f[0] + off.f[0];
     m->pos.y = v->home.f[1] + off.f[1];
@@ -1938,7 +1939,7 @@ void update_level01_tutorial_hints(Moby *moby) {
             if (help_records[0x42].id < 2 && is_point_inside_clip_volume(&g_hero.motion.pos, data[12]) &&
                 g_hero.state.prev == 0x3B && g_hero.state_timer == 0) {
                 for (m = novalis_moby_list; m != 0; m = m->next) {
-                    if (m->oclass == 0x118 && FastVecDist(&m->pos, &g_hero.motion.pos) < 3.0f &&
+                    if (m->oclass == MOBY_CLASS_BOLT_CRANK && FastVecDist(&m->pos, &g_hero.motion.pos) < 3.0f &&
                         *(f32 *)m->pvars != 1.0f) {
                         data[13]++;
                         if (data[13] == 3 || data[13] == 6) {
@@ -1982,9 +1983,9 @@ void update_level01_tutorial_hints(Moby *moby) {
                 data[11] = 0;
             }
             for (m2 = novalis_moby_list; m2 != 0; m2 = m2->next) {
-                if (m2->oclass == 0x326 && FastVecDist(&m2->pos, &g_hero.motion.pos) < 10.0f && help_state.state == 0 &&
-                    help_state.cur == -1 && help_records[1].id == 0 && help_records[2].id == 0 &&
-                    usage_stats[13].count == 0 && is_moby_in_state_one(m2) == 0) {
+                if (m2->oclass == MOBY_CLASS_NANOTECH_BALL && FastVecDist(&m2->pos, &g_hero.motion.pos) < 10.0f &&
+                    help_state.state == 0 && help_state.cur == -1 && help_records[1].id == 0 &&
+                    help_records[2].id == 0 && usage_stats[13].count == 0 && is_moby_in_state_one(m2) == 0) {
                     if (g_hero.health.hp < hero_max_health) {
                         if (usage_stats[13].count < 0xFFFF) {
                             usage_stats[13].count++;
@@ -2252,7 +2253,7 @@ void update_level01_cutscene_effects(struct Moby *moby) {
                 }
                 if (fx_cutscene_D568.scene == 4) {
                     cutscene_moby = fx_cutscene_D568.slot[4];
-                    if (cutscene_moby != 0 && cutscene_moby->oclass == 0x213) {
+                    if (cutscene_moby != 0 && cutscene_moby->oclass == MOBY_CLASS_GREEN_SHIP_531) {
                         AddDrawCallback(render_environment_mapped_object, cutscene_moby);
                         if (fx_cutscene_D568.frame >= scale_ticks(850) && fx_cutscene_D568.frame <= scale_ticks(1160)) {
                             color = 0x7F204080;

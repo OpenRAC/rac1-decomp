@@ -12,6 +12,7 @@
 #include "data/shared_levels.h"
 #include "game/fastfunc.h"
 #include "structs/collision.h"
+#include "enums/moby_class.h"
 /* Trespasser: set once the pickup was collected. */
 struct TrespasserVars {
     u8 pad_00[0x4];
@@ -808,7 +809,7 @@ typedef struct {
     s32 delay;
 } GloveVars_2DD8;
 
-/* update function of moby class 190 (mine_glove): aims the glove, throws a mine at the target */
+/* update function of moby Mine Glove (mine_glove): aims the glove, throws a mine at the target */
 void mine_glove_update(struct Moby *moby) {
     GloveVars_2DD8 *vars;
     Vec4 saved, offset, rotatedOffset;
@@ -1469,7 +1470,8 @@ u8 *spawn_decoy(s32 value, u128_C48C8 *position, u128_C48C8 *other_position) {
             best_value = 0;
             for (i = 1; i <= decoy_list_r[0]; i++) {
                 u8 *entry = (u8 *)(moby_array_start + (decoy_list_r[i] << 8));
-                if (entry != 0 && (((Moby *)entry)->oclass == 0xcb || ((Moby *)entry)->oclass == 0x76c) &&
+                if (entry != 0 &&
+                    (((Moby *)entry)->oclass == MOBY_CLASS_DECOY || ((Moby *)entry)->oclass == MOBY_CLASS_GOLD_DECOY) &&
                     ((Moby *)entry)->state < 5) {
                     current_value = ((struct DecoyVars *)((Moby *)entry)->pvars)->counter;
                     if (best_value <= current_value) {
@@ -1830,7 +1832,7 @@ void decoy_update(Moby *moby) {
     int i, ok, h5;
     short *ids;
 
-    if (moby->oclass == 0xCB)
+    if (moby->oclass == MOBY_CLASS_DECOY)
         active = 0;
     effect = IntToFloat(active);
     if (moby->pos.x < 2.0f || 1021.0f < moby->pos.x || moby->pos.y < 2.0f || 1021.0f < moby->pos.y ||
@@ -2604,7 +2606,7 @@ extern int hero_idle_sequence_r(int) __asm__("func_L00_00205618");
 extern void set_hero_animation_r(int, int, float) __asm__("func_L00_00232C10");
 extern void draw_swingshot_cable_r(char *) __asm__("func_L00_002C7128");
 
-/* Swingshot (class 208) update: keeps the hook at the glove, shows the targets, fires the hook to the swing target
+/* Swingshot update: keeps the hook at the glove, shows the targets, fires the hook to the swing target
    or the grind target, swings the hero, and reels the hook back. */
 void func_L00_002C74B8_r(Moby *m) __asm__("func_L00_002C74B8");
 /* Swingshot update body. */
@@ -2923,8 +2925,8 @@ void swingshot_hook_update(unsigned char *m) {
     if (p == 0)
         return;
     o = *(unsigned char **)p;
-    if (o == 0 || ((Moby *)o)->oclass != 0xD0 || ((Moby *)o)->state == 0xFE || ((Moby *)o)->state == 0xFD ||
-        *(unsigned char **)(((unsigned char *)((Moby *)o)->pvars) + 0x14) != m) {
+    if (o == 0 || ((Moby *)o)->oclass != MOBY_CLASS_SWINGSHOT || ((Moby *)o)->state == 0xFE ||
+        ((Moby *)o)->state == 0xFD || *(unsigned char **)(((unsigned char *)((Moby *)o)->pvars) + 0x14) != m) {
         DeleteMoby(m);
         return;
     }
@@ -3343,7 +3345,7 @@ extern char *CreateMoby_m(int) __asm__("func_0020D348");
 
 extern short glove_of_doom_ring_index;
 
-// Spawns a moby of class 0xE6 at a position, registers it in a 20-entry ring.
+// Spawns a Bomb moby at a position, registers it in a 20-entry ring.
 char *spawn_glove_of_doom_held_moby(int a0, char *pos, char *vec) {
     char *m = CreateMoby_m(0xE6);
     struct GloveHeldVars *d;

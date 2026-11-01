@@ -26,6 +26,7 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/ripple_patches.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/moby_class.h"
 
 /* Part attached to a joint of a source moby (spawn_moby_joint_attachment). */
 struct JointAttachVars {
@@ -35,7 +36,7 @@ struct JointAttachVars {
     s32 joint; /* 0x44 */
 };
 
-/* Force field (class 404): waits for its link, fades out, scrolls its texture. */
+/* Force field (Forcefield): waits for its link, fades out, scrolls its texture. */
 struct ForcefieldVars {
     s32 link; /* 0x00: index of the moby that opens it, -1 when none */
     f32 alpha; /* 0x04: 1 solid, fades to 0 */
@@ -79,7 +80,7 @@ struct LinkedGateVars {
     s32 spin_disabled; /* 0x18: nonzero keeps it closed and still */
 };
 
-/* Rocket attached to a joint of its source moby (class 0x4D1). */
+/* Rocket attached to a joint of its source moby (Rocket). */
 struct AttachedRocketVars {
     Vec4A target_pos; /* 0x00 */
     Vec4A launch_pos; /* 0x10 */
@@ -1310,7 +1311,8 @@ void update_qwarks_starfighter_part(char *m) {
     char *coll;
     unsigned int s;
 
-    if (parent == 0 || parent->oclass != 0x184 || parent->state == 0xFE || parent->state == 0xFD) {
+    if (parent == 0 || parent->oclass != MOBY_CLASS_UNMARKED_COUNTED_TARGET || parent->state == 0xFE ||
+        parent->state == 0xFD) {
         DeleteMoby(moby);
         return;
     }
@@ -1335,10 +1337,18 @@ void update_qwarks_starfighter_part(char *m) {
                 if (coll_sphere(2.0f, &moby->pos, 0, moby)) {
                     coll = gemlik_coll_hit_result;
                     hit = *(struct Moby **)(coll + 0x18);
-                    if (hit == 0 || !(hit->oclass == 0x191 || hit->oclass == 0x184 || hit->oclass == 0x185 ||
-                                      hit->oclass == 0x186 || hit->oclass == 0x187 || hit->oclass == 0x188 ||
-                                      hit->oclass == 0x189 || hit->oclass == 0x18A || hit->oclass == 0x18B ||
-                                      hit->oclass == 0x18C || hit->oclass == 0x18F || hit->oclass == 0x190)) {
+                    if (hit == 0 || !(hit->oclass == MOBY_CLASS_UNCOUNTED_MARKED_TARGET ||
+                                      hit->oclass == MOBY_CLASS_UNMARKED_COUNTED_TARGET ||
+                                      hit->oclass == MOBY_CLASS_EXCLUDED_FROM_RADAR ||
+                                      hit->oclass == MOBY_CLASS_RADAR_RENDER_BYPASS ||
+                                      hit->oclass == MOBY_CLASS_RADAR_ICON_SUPPRESSED ||
+                                      hit->oclass == MOBY_CLASS_QWARKS_STARFIGHTER_PART_392 ||
+                                      hit->oclass == MOBY_CLASS_QWARKS_STARFIGHTER_PART_393 ||
+                                      hit->oclass == MOBY_CLASS_QWARKS_STARFIGHTER_PART_394 ||
+                                      hit->oclass == MOBY_CLASS_QWARKS_STARFIGHTER_PART_395 ||
+                                      hit->oclass == MOBY_CLASS_QWARKS_STARFIGHTER_PART_396 ||
+                                      hit->oclass == MOBY_CLASS_QWARKS_STARFIGHTER_PART_399 ||
+                                      hit->oclass == MOBY_CLASS_QWARKS_STARFIGHTER_PART_400)) {
                         vec_reflect(&vars->vel, &vars->vel, coll + 0x40);
                         moby->state = 4;
                     }
@@ -1880,7 +1890,8 @@ void func_L13_00306EF0_r(struct Moby *moby) {
     qcopy(&work.old_pos, &moby->pos);
     if (moby->state == 1) {
         source = *(struct Moby **)(data + 0x20);
-        if (source == 0 || source->oclass != 0x65 || source->state == 0xfe || source->state == 0xfd)
+        if (source == 0 || source->oclass != MOBY_CLASS_BLARG_SPACE_FIGHTER_101 || source->state == 0xfe ||
+            source->state == 0xfd)
             goto remove;
         qcopy(&moby->rot, &source->rot);
         *(OvlQuad_p *)&moby->rot_row0 = *(OvlQuad_p *)&source->rot_row0;
@@ -1900,7 +1911,8 @@ void func_L13_00306EF0_r(struct Moby *moby) {
 
     {
         char *target = hit_lookup_p(moby, 0x230000, 0);
-        if (target != 0 && *(struct Moby **)(target + 0x20) != 0 && (*(struct Moby **)(target + 0x20))->oclass == 0x1df)
+        if (target != 0 && *(struct Moby **)(target + 0x20) != 0 &&
+            (*(struct Moby **)(target + 0x20))->oclass == MOBY_CLASS_DRONE)
             goto special;
     }
     add_p(&moby->pos, &moby->pos, data);
@@ -1966,7 +1978,7 @@ void func_L13_00306EF0_r(struct Moby *moby) {
     }
     {
         struct Moby *target = D_L13_00174140_p.moby;
-        if (target != 0 && target->oclass == 0x1df) {
+        if (target != 0 && target->oclass == MOBY_CLASS_DRONE) {
         special:
             boom2_p(moby);
         } else {
@@ -2580,7 +2592,7 @@ extern int D_L13_00161F00_309330 SDATA(D_L13_00161F00);
 extern float D_L13_00161F04_309330 SDATA(D_L13_00161F04);
 extern float D_L13_00161F08_309330 SDATA(D_L13_00161F08);
 extern void MobySpringTurn_r(struct Moby *, float, float *, float, float, float) __asm__("func_L00_002592B0");
-/* Update function of moby class 1262 (blarg space commando): turn, walk its path, shoot, die. */
+/* Update function of moby Blarg Space Commando (blarg space commando): turn, walk its path, shoot, die. */
 void BlargSpaceCommandoUpdate(struct Moby *moby) {
     Vars_309330 *vars = (Vars_309330 *)moby->pvars;
     struct Moby *target;
@@ -2953,7 +2965,8 @@ void update_blarg_space_commando_damage_targeting_and_ground_motion(Moby *moby) 
     hit = MobyGetHitMessage(moby, 0x330000, 0);
     code = ComputeHitResponse(moby, hit, &vars->health, 0, &kind, &damage, 0, 4);
     if (kind != 1 && moby->state != 0x10) {
-        if (hit != 0 && *(Moby **)(hit + 0x20) != 0 && (*(Moby **)(hit + 0x20))->oclass == 0x4EE) {
+        if (hit != 0 && *(Moby **)(hit + 0x20) != 0 &&
+            (*(Moby **)(hit + 0x20))->oclass == MOBY_CLASS_BLARG_SPACE_COMMANDO_1262) {
             damage = 0.0f;
         }
         vars->health -= damage;

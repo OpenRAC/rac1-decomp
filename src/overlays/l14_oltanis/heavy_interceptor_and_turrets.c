@@ -17,6 +17,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/sound_playback.h"
 #include "structs/anim.h"
+#include "enums/moby_class.h"
 
 /* Blarg heavy interceptor: flies a patrol path while its light beam sweeps an
    aim path, calls the turrets of its group when the beam finds the hero. */
@@ -127,7 +128,7 @@ struct TurretVars {
     s16 sweep_dir; /* 0x9E */
 };
 
-/* Minibomber (moby class 31), for the helpers still on raw offsets;
+/* Minibomber (moby Minibomber), for the helpers still on raw offsets;
    minibomber_update reads the same block as Data_2B5938, the path reset
    as Mover_2B6E80. */
 struct MinibomberVars {
@@ -742,7 +743,8 @@ void update_blarg_heavy_interceptor(struct Moby *m) {
                     coll_sphere_mobys(d->glow_size * 0.9f, w, 0, 0, 0)) {
                     struct Moby *t = oltanis_coll_hit.target;
 
-                    if ((char *)t == g_hero_moby || (t != 0 && (t->oclass == 0xCB || t->oclass == 0x10E))) {
+                    if ((char *)t == g_hero_moby ||
+                        (t != 0 && (t->oclass == MOBY_CLASS_DECOY || t->oclass == MOBY_CLASS_MORPHORAY_CHICKEN))) {
                         found = 1;
                         d->target = oltanis_coll_hit.target;
                     }
@@ -1818,7 +1820,7 @@ extern int random_integer_below_r(int) __asm__("func_002140B0");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 
-/* Update for the machine-gun turret (moby class 30) on level 14: a seven-state machine on moby+0x20.
+/* Update for the machine-gun turret (moby Machinegun Turret) on level 14: a seven-state machine on moby+0x20.
  * Retail's frame keeps 0x50 bytes of locals that no instruction touches (sp+0x60 and sp+0x80..0xBF):
  * v60 and m80 stand for them. The aim vector v30 is written out at every use; retail's second
  * register for it is the compiler's own copy. */
@@ -2280,7 +2282,7 @@ extern unsigned char *spawn_flying_debris(char *owner, float angle, char *posp);
 extern void func_L00_0025F4A8_2B5938(void *, void *, void *, float, float, int, int, int, float, float, float, float,
                                      int, float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
-/* Update of the minibomber (moby class 31): flies along its paths, turns at the ends, dives and drops bombs. */
+/* Update of the minibomber (moby Minibomber): flies along its paths, turns at the ends, dives and drops bombs. */
 void minibomber_update(Moby *moby) {
     Data_2B5938 *d = (struct Data_2B5938 *)moby->pvars;
     float v[12];

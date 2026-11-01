@@ -9,7 +9,7 @@ extern void FastVecSub(void *, void *, void *);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern unsigned char *fleet_trail_texture_ptr;
 
-// Spawns a class 0x4F particle at a position with a direction, optionally relative to a parent.
+// Spawns a Scenery Ship particle at a position with a direction, optionally relative to a parent.
 unsigned char *spawn_trail_particle(char *parent, void *pos, float *vec) {
     int r = random_integer_below(5);
     unsigned char a = scale_ticks(r + 2);

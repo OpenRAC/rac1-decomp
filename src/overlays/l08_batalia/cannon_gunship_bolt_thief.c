@@ -9,6 +9,7 @@
 #include "game/fastfunc.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "structs/swarm.h"
+#include "enums/moby_class.h"
 
 /* Bolt thief: scans a fixed list of mobys for its targets. */
 struct BoltThiefVars {
@@ -1974,13 +1975,13 @@ void update_batalia_bolt_pickup(Moby *m) {
             int linked;
 
             switch (m->oclass) {
-                case 0x279:
+                case MOBY_CLASS_ONE_BOLT_PICKUP:
                     m->scale = m->pclass->scale * *(float *)&batalia_bolt_scale;
                     break;
-                case 0x3DC:
+                case MOBY_CLASS_FIVE_BOLT_PICKUP:
                     m->scale = m->pclass->scale * *(float *)&batalia_bolt5_scale;
                     break;
-                case 0x3DD:
+                case MOBY_CLASS_TEN_BOLT_PICKUP:
                     m->scale = m->pclass->scale * *(float *)&batalia_bolt10_scale;
                     break;
             }
@@ -2049,12 +2050,12 @@ void update_batalia_bolt_pickup(Moby *m) {
                 break;
             }
             switch (m->oclass) {
-                case 0x3DD:
+                case MOBY_CLASS_TEN_BOLT_PICKUP:
                     d->f60 = FastAddRots(d->f60, batalia_bolt10_idle_yaw_speed * 0.017453292f * g_frame_time);
                     d->f64 =
                         FastAddRots(d->f64, ten_bolt_pickup_surface_roll_speed_degrees * 0.017453292f * g_frame_time);
                     break;
-                case 0x3DC:
+                case MOBY_CLASS_FIVE_BOLT_PICKUP:
                     d->f60 = FastAddRots(d->f60, batalia_bolt5_idle_yaw_speed * 0.017453292f * g_frame_time);
                     d->f64 =
                         FastAddRots(d->f64, five_bolt_pickup_surface_roll_speed_degrees * 0.017453292f * g_frame_time);
@@ -2160,7 +2161,7 @@ void update_batalia_bolt_pickup(Moby *m) {
             FastVecAdd(&m->pos, &m->pos, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.platform_carry);
             FastVecSub(c, &m->pos, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->ground_point);
             transform_vector(c, c, ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->inv_rot_matrix);
-            if (((Moby *)d->u78.p)->oclass != 0 || c[2] > 0.0f) {
+            if (((Moby *)d->u78.p)->oclass != MOBY_CLASS_RATCHET || c[2] > 0.0f) {
                 ApproachValue_r(&d->u70.f, 0.0f, batalia_bolt_attract_accel * g_frame_time_sq);
                 ApproachValue_r(&d->f74, batalia_bolt_attract_speed * g_frame_time,
                                 batalia_bolt_attract_accel * g_frame_time_sq);
@@ -2192,7 +2193,7 @@ void update_batalia_bolt_pickup(Moby *m) {
                     BoltSource_4BE8 *src;
 
                     switch (m->oclass) {
-                        case 0x305: {
+                        case MOBY_CLASS_COLLECTED_COUNT_BOLT_BONUS_PICKUP: {
                             int i;
                             int j;
                             int n;
@@ -2209,10 +2210,10 @@ void update_batalia_bolt_pickup(Moby *m) {
                             value = n * 100;
                             break;
                         }
-                        case 0x3DD:
+                        case MOBY_CLASS_TEN_BOLT_PICKUP:
                             value = 10;
                             break;
-                        case 0x3DC:
+                        case MOBY_CLASS_FIVE_BOLT_PICKUP:
                             value = 5;
                             break;
                         default:
@@ -2265,10 +2266,10 @@ void update_batalia_bolt_pickup(Moby *m) {
                 BoltSource_4BE8 *src;
 
                 switch (m->oclass) {
-                    case 0x3DD:
+                    case MOBY_CLASS_TEN_BOLT_PICKUP:
                         value = 10;
                         break;
-                    case 0x3DC:
+                    case MOBY_CLASS_FIVE_BOLT_PICKUP:
                         value = 5;
                         break;
                     default:

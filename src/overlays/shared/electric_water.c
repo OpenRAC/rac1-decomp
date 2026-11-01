@@ -15,6 +15,7 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/moby_class.h"
 /* Electric water countdown timer display. */
 struct ElectricWaterCountdownVars {
     u8 pad_00[0x12];
@@ -200,7 +201,7 @@ void electric_water_update(unsigned char *m) {
                 if (vars->switches[reset_sw] == -1) {
                     continue;
                 }
-                if (((struct Moby *)MOBY_2D7C00(vars->switches[reset_sw]))->oclass == 0x33E) {
+                if (((struct Moby *)MOBY_2D7C00(vars->switches[reset_sw]))->oclass == MOBY_CLASS_FLOOR_BUTTON) {
                     quartu_current_level_state_moby_flags
                         [*(short *)&((struct Moby *)MOBY_2D7C00(vars->switches[reset_sw]))->save_id] = 0;
                     quartu_checkpoint_level_state_moby_flags
@@ -394,7 +395,8 @@ void electric_water_update(unsigned char *m) {
                 moby->state = ELECTRIC_WATER_ON;
             }
             for (sw = 0; sw < 4; sw++) {
-                if (vars->switches[sw] != -1 && ((struct Moby *)MOBY_2D7C00(vars->switches[sw]))->oclass == 0x33E &&
+                if (vars->switches[sw] != -1 &&
+                    ((struct Moby *)MOBY_2D7C00(vars->switches[sw]))->oclass == MOBY_CLASS_FLOOR_BUTTON &&
                     ((struct Moby *)MOBY_2D7C00(vars->switches[sw]))->state == 2) {
                     vars->off_timer = SECS_2D7C00(vars->off_seconds);
                     moby->state = ELECTRIC_WATER_SWITCH_DISABLED;
@@ -432,7 +434,8 @@ void electric_water_update(unsigned char *m) {
                     continue;
                 }
                 if (((unsigned char *)g_hero.ground_moby) != MOBYP_2D7C00(vars->switches[i]) ||
-                    ((struct Moby *)g_hero.ground_moby)->oclass != 0x33E || g_hero.air_frames.s != 0) {
+                    ((struct Moby *)g_hero.ground_moby)->oclass != MOBY_CLASS_FLOOR_BUTTON ||
+                    g_hero.air_frames.s != 0) {
                     continue;
                 }
                 if (vars->armed != 0) {
@@ -457,7 +460,7 @@ void electric_water_update(unsigned char *m) {
                 if (vars->switches[i] == -1) {
                     continue;
                 }
-                if (((struct Moby *)MOBY_2D7C00(vars->switches[i]))->oclass == 0x33E) {
+                if (((struct Moby *)MOBY_2D7C00(vars->switches[i]))->oclass == MOBY_CLASS_FLOOR_BUTTON) {
                     ((struct Moby *)MOBY_2D7C00(vars->switches[i]))->state = ELECTRIC_WATER_ON;
                 } else {
                     reset_electric_water_switch(MOBY_2D7C00(vars->switches[i]));
@@ -1068,7 +1071,7 @@ char *spawn_class_3a6_moby(char *src, float *v, char *pos) {
  * Not built into anything: the retail assembly stays in the source file
  * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
  * What the last attempts found:
- *   Underwater ring update (moby class 1209): an approach test, then a five-state switch on moby[0x20] with a jump
+ *   Underwater ring update (moby Underwater Ring): an approach test, then a five-state switch on moby[0x20] with a jump
  *   Remaining differences are scheduling and argument placement: a `daddu $a0,$s1` before the func_L00_00251328 ca
  */
 extern float FastVecLength(void *a);
@@ -1269,7 +1272,7 @@ typedef struct {
     s32 current;
 } HeroStateWord_2D7C00;
 
-/* Update for moby class 1428: a four-state trigger that spins and then deletes itself. */
+/* Update for moby Codebot: a four-state trigger that spins and then deletes itself. */
 void codebot_update(unsigned char *moby) {
     enum {
         CODEBOT_INITIALIZE = 0,

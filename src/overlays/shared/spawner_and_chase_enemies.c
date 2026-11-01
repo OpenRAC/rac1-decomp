@@ -6,8 +6,9 @@
 #include "structs/moby.h"
 #include "game/fastfunc.h"
 #include "structs/collision.h"
+#include "enums/moby_class.h"
 
-/* Spawner (class 0x75D): picks a target, then throws eggs (class 0x75E) towards it, up to max_eggs alive. */
+/* Spawner: picks a target, then throws eggs (Spawner Egg) towards it, up to max_eggs alive. */
 struct SpawnerVars {
     u8 pad_00[0x70];
     u8 explosion_pos[0x10]; /* 0x70: explosion origin */
@@ -30,7 +31,7 @@ struct SpawnerVars {
     s32 target_state; /* 0x144: 2 when there is none */
 };
 
-/* Spawner egg (class 0x75E): flies on vel, remembers its spawner and slot. */
+/* Spawner egg: flies on vel, remembers its spawner and slot. */
 struct SpawnerEggVars {
     Vec4A vel; /* 0x00 */
     char *owner; /* 0x10: the spawner */
@@ -1045,7 +1046,7 @@ void update_ground_melee_enemy(Moby *m) {
             step.z = 0.0f;
             vec_add_2E39E0(&goal, &m->pos, &step);
             for (o = gaspar_moby_list_r; o != 0; o = o->next) {
-                if (o != m && (signed char)o->state >= 0 && (o->oclass == 0 || o->oclass == 193)) {
+                if (o != m && (signed char)o->state >= 0 && (o->oclass == MOBY_CLASS_RATCHET || o->oclass == 193)) {
                     if (fast_distance_2E39E0(&goal, &o->pos) < 2.0f) {
                         float z = m->pos.z;
                         float a = angle_2E39E0(o->pos.x - m->pos.x, o->pos.y - m->pos.y);
@@ -1435,13 +1436,13 @@ extern float D_L09_0015F6B4_30BF88 SDATA(D_L09_0015F6B4);
 extern char *D_L09_0016016C_30BF88 SDATA(D_L09_0016016C);
 extern float gaspar_zero_vec_r[] __asm__("D_L09_0015F660") MACRO_ADDR;
 
-/* spawner update (moby class 1885): picks a slot target, spawns a 0x75E moby, and steers the slot */
+/* spawner update (moby Spawner): picks a slot target, spawns a 0x75E moby, and steers the slot */
 typedef struct {
     char pad0[0xB0];
     char *slots[4];
 } Sp_30BF88;
 
-/* Spawner update (moby class 1885): state 0 clears the slot list, state 1 picks a target slot and spawns a
+/* Spawner update (moby Spawner): state 0 clears the slot list, state 1 picks a target slot and spawns a
  * moby towards it, state 2 is the explosion. The slot index `last` is declared in a block opened at its call,
  * and d[0x91] is read at each use: both only decide the order GCSE creates its hoisted registers in (its table
  * has 201 buckets here and hashes by register number), which is the order of the four spill slots 0x64..0x70. */
@@ -1602,7 +1603,7 @@ extern float random_float_between(float, float);
 extern int scale_ticks(int);
 extern void moby_build_matrix(void *);
 
-/* Spawns a moby of class 0x75E and initialises its data. */
+/* Spawns a Spawner Egg moby and initialises its data. */
 char *spawn_spawner_egg(int owner, void *pos, void *rot, unsigned char a, unsigned char b) {
     char *m = (char *)CreateMoby(0x75E);
     if (m) {
@@ -1628,10 +1629,10 @@ char *spawn_spawner_egg(int owner, void *pos, void *rot, unsigned char a, unsign
 }
 extern void DeleteMoby(void *);
 
-/* Clear the egg's slot in its live spawner (class 0x75D), then delete the egg moby. */
+/* Clear the egg's slot in its live spawner, then delete the egg moby. */
 void remove_spawner_egg(void *moby, char *data) {
     char *other = *(char **)(data + 0x10);
-    if (other != 0 && ((Moby *)other)->oclass == 0x75D && (unsigned char)other[0x20] != 0xFE &&
+    if (other != 0 && ((Moby *)other)->oclass == MOBY_CLASS_SPAWNER_1885 && (unsigned char)other[0x20] != 0xFE &&
         (unsigned char)other[0x20] != 0xFD) {
         int index = (unsigned char)data[0x1C];
         char *base = ((char *)((Moby *)other)->pvars);
@@ -1647,7 +1648,7 @@ void remove_spawner_egg(void *moby, char *data);
 
 typedef struct {
     Vec4 vel; /* 0x00 */
-    struct Moby *owner; /* 0x10: class 0x75D spawner; its pvars hold the bubble list at 0xB0 */
+    struct Moby *owner; /* 0x10: Spawner spawner; its pvars hold the bubble list at 0xB0 */
     struct Moby *held; /* 0x14: from FUN_L09_0030a778 when the bubble settles */
     s16 life; /* 0x18 */
     u8 unk1A;
@@ -1691,7 +1692,7 @@ static inline void bubble_bounce(struct Moby *moby, BubbleVars *vars) {
                 moby->state = 1;
             }
         }
-    } else if (((struct Moby *)hit->moby)->oclass != 0x75E) {
+    } else if (((struct Moby *)hit->moby)->oclass != MOBY_CLASS_SPAWNER_EGG) {
         vec_reflect(&vars->vel, &vars->vel, &hit->normal.f[0]);
         if (fast_atan2(hit->normal.f[2], vec_length_xy(&hit->normal.f[0])) < 0.6981317f && CollType() == -1) {
             FastVecScale(&vars->vel, &vars->vel, 1.2f);
@@ -1743,7 +1744,7 @@ void spawner_egg_update(struct Moby *moby) {
             owner = (BubbleOwnerVars *)vars->owner->pvars;
             for (i = 0; i < 20; i++) {
                 other = owner->bubbles[i];
-                if (other != moby && other != 0 && other->oclass == 0x75E && other->state != 0xFE &&
+                if (other != moby && other != 0 && other->oclass == MOBY_CLASS_SPAWNER_EGG && other->state != 0xFE &&
                     other->state != 0xFD) {
                     FastVecSub(&away, &moby->pos, &other->pos);
                     away.f[2] = 0.0f;

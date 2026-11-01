@@ -13,6 +13,7 @@
 #include "data/shared_levels.h"
 #include "game/fastfunc.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "enums/moby_class.h"
 
 extern int func_001160D8(void);
 /* Returns a random integer in the inclusive range lo..hi. */
@@ -2596,7 +2597,7 @@ f32 normalize_angle(f32 a) {
     return x - pi;
 }
 extern int is_moby_in_class_range_500_to_540(void *);
-/* True for a moby outside classes 500..540 or of class 502; false for null. */
+/* True for a moby outside classes 500..540 Metal Crate or; false for null. */
 int is_nonnull_moby_outside_table_or_class_range_500_to_540_or_class_502(char *a) {
     int r;
     if (a == 0) {
@@ -3162,7 +3163,7 @@ int FindNearestTargetMoby(Moby *a, struct TargetLock *o, float best) {
         p = (Moby *)(moby_array_start_r + (decoy_list[i] << 8));
         if (p == 0)
             continue;
-        if (p->oclass != 0xCB && p->oclass != 0x76C)
+        if (p->oclass != MOBY_CLASS_DECOY && p->oclass != MOBY_CLASS_GOLD_DECOY)
             continue;
         if (p->state == 0xFE)
             continue;
@@ -3181,7 +3182,7 @@ int FindNearestTargetMoby(Moby *a, struct TargetLock *o, float best) {
         p = (Moby *)morphoray_chicken_slots[j];
         if (p == 0)
             continue;
-        if (p->oclass != 0x10E)
+        if (p->oclass != MOBY_CLASS_MORPHORAY_CHICKEN)
             continue;
         if (p->state == 0xFE)
             continue;
@@ -3258,7 +3259,7 @@ int FindNearestEligibleMoby(Moby *a, struct TargetLock *o, float best, int *list
         p = (Moby *)(moby_array_start_r + (decoy_list[i] << 8));
         if (p == 0)
             continue;
-        if (p->oclass != 0xCB && p->oclass != 0x76C)
+        if (p->oclass != MOBY_CLASS_DECOY && p->oclass != MOBY_CLASS_GOLD_DECOY)
             continue;
         if (p->state == 0xFE)
             continue;
@@ -3291,7 +3292,7 @@ int FindNearestEligibleMoby(Moby *a, struct TargetLock *o, float best, int *list
         q = (Moby *)morphoray_chicken_slots[j];
         if (q == 0)
             continue;
-        if (q->oclass != 0x10E)
+        if (q->oclass != MOBY_CLASS_MORPHORAY_CHICKEN)
             continue;
         if (q->state == 0xFE)
             continue;

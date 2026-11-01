@@ -19,6 +19,7 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/ripple_patches.h"
+#include "enums/moby_class.h"
 
 /* Resort owner (boss): path pointers, rail table, walk target and speeds. */
 struct ResortOwnerVars {
@@ -67,7 +68,7 @@ struct TeleporterVars {
     f32 glow; /* 0x3C */
 };
 
-/* Ship projectile (class 0x40A): aimed from src at target, spherical launch offset. */
+/* Ship projectile (Rocket): aimed from src at target, spherical launch offset. */
 struct ShipProjectileVars {
     u8 pad_00[0x10];
     Vec4A target_pos; /* 0x10 */
@@ -253,7 +254,7 @@ typedef struct WD11 {
     s32 target_timer; /* 0x188 */
 } WD11;
 
-/* Update function of moby class 90 (bob): calls func_L05_003188A8, then a switch on the state byte at +0x20
+/* Update function of moby Bob (bob): calls func_L05_003188A8, then a switch on the state byte at +0x20
  * (states 0, 1 and 2). Then, when the byte at +0x53 is zero, updates the countdowns at data + 0x184 and 0x188
  * and the vector at data + 0x170 from the moby's distance (8.0) and heading to the block at D_0013E633 + 0xE9D. */
 void bob_update(char *m) {
@@ -996,8 +997,8 @@ int classify_resort_owner_target_proximity(char *moby) {
                 do {
                     unsigned int offset = (*(unsigned short *)group_moby_entry & 0x7FFF) * 256;
                     struct Moby *other = (struct Moby *)(offset + pokitaru_mobys_d);
-                    if ((signed char)other->state >= 0 &&
-                        (other->oclass != 0x4DE || !is_moby_in_bob_target_exclusion_state((char *)other))) {
+                    if ((signed char)other->state >= 0 && (other->oclass != MOBY_CLASS_PUFFOID ||
+                                                           !is_moby_in_bob_target_exclusion_state((char *)other))) {
                         found = 1;
                         if (FastVecDist(&((struct Moby *)moby)->pos,
                                         &((struct Moby *)(pokitaru_mobys_d + offset))->pos) < 10.0f)
@@ -1634,7 +1635,7 @@ extern void *GetFlaggedPvarWord_r(char *) __asm__("func_L00_0025D390");
 extern void BuildSphericalOffset_r2(void *, float, float, float) __asm__("func_00215C00");
 extern void MobyBlendAnimation(void *, int, int, int);
 extern void moby_build_matrix(void *);
-/* Spawns an effect moby (class 0x40A) attached to a target and positioned from a source. */
+/* Spawns an effect moby (Rocket) attached to a target and positioned from a source. */
 unsigned char *spawn_ship_projectile(char *src, char *pos, char *target, char *vec, int arg, float scale) {
     unsigned char *moby = CreateMoby_r(0x40A);
     if (moby != 0) {
@@ -2975,7 +2976,7 @@ void populate_water_tile_neighbor_indices(int arg) {
 /* UpdateMoby_1159 (names.tsv role). Data block fields (+0x08 slot, +0x0C scale, +0x10, +0x14).
  * State 0: raises the moby by scale * 1.9, spawns a class 0x487 child that copies its position,
  * heading (func_001FA748 with pi), +0x34/+0x38 and the data block fields, and goes to state 1.
- * State 1: watches moby slot d[2]; when it is class 0x267 in state 4, or class 0x33E with byte
+ * State 1: watches moby slot d[2]; when it is Tresspasser Pad in state 4, or Floor Button with byte
  * +0xBC set, marks a byte in the D_0013D355 + 0x13B table and goes to state 2. State 2: steps
  * the data block with func_00214D88 and moves the moby by the resulting vector.
  * The index-first sums (`idx + base`) and the Rec57 member are what keep retail's addressing. */
@@ -3026,10 +3027,10 @@ void update_link_triggered_moby_motion(unsigned char *m) {
             break;
         case 1:
             linked_moby = (struct Moby *)((private_data->link << 8) + (int)pokitaru_mobys_t);
-            if (linked_moby->oclass == 0x267 && linked_moby->state == 4) {
+            if (linked_moby->oclass == MOBY_CLASS_TRESSPASSER_PAD && linked_moby->state == 4) {
                 goto go;
             }
-            if (linked_moby->oclass == 0x33E && linked_moby->command != 0) {
+            if (linked_moby->oclass == MOBY_CLASS_FLOOR_BUTTON && linked_moby->command != 0) {
             go:
                 moving_moby->state = 2;
                 ((Rec57 *)(private_data->item_index + (int)(special_items_base_t + 0x13B)))->f57 = 1;
@@ -3247,7 +3248,8 @@ void ShipCollider_Update(struct Moby *pickup) {
     if (coll_sphere(0.55f, &pickup_vector_scratch, 0, pickup)) {
         struct Moby *collision_moby = pokitaru_coll_hit_moby;
         if (collision_moby != 0 &&
-            (collision_moby->oclass == 0x4DA || collision_moby->oclass == 0x45 || collision_moby->oclass == 0x563)) {
+            (collision_moby->oclass == MOBY_CLASS_JET_FIGHTER || collision_moby->oclass == MOBY_CLASS_FIGHTER_JET_69 ||
+             collision_moby->oclass == MOBY_CLASS_FIGHTER_JET_1379)) {
             taken = 1;
         } else {
             spawn_explosion(pickup, &pv->vel, &pickup_vector_scratch, 0.0f, 0.0f, 3, 2, 5, 0.0f, 0.0f, 9.0f, 1.0f, -1,
@@ -3257,7 +3259,8 @@ void ShipCollider_Update(struct Moby *pickup) {
     }
     if (pickup->state < 4) {
         if (hero_f728.state.current == 0x32 && ship != 0 && ship->state != 0xFE && ship->state != 0xFD &&
-            (ship->oclass == 0x4DA || ship->oclass == 0x45 || ship->oclass == 0x563)) {
+            (ship->oclass == MOBY_CLASS_JET_FIGHTER || ship->oclass == MOBY_CLASS_FIGHTER_JET_69 ||
+             ship->oclass == MOBY_CLASS_FIGHTER_JET_1379)) {
             dist = FastVecDist(&ship->pos, &pickup->pos);
             mid = vec_distance_xy(&ship->pos, &pickup->pos);
             FastVecAdd(&pickup_vector_scratch, &pickup->pos, &pv->drift);
@@ -3563,7 +3566,7 @@ extern Moby *g_hero_moby_r __asm__("D_001414D0");
 extern float D_L11_00162058_311648 SDATA(D_L11_00162058);
 extern float D_L11_0016205C_311648 SDATA(D_L11_0016205C);
 
-/* Pokitaru psytcopus (class 1231) update: a state machine on moby->state. */
+/* Pokitaru psytcopus update: a state machine on moby->state. */
 void psytcopus_update(Moby *moby) {
     PsyData_311648 *data = (PsyData_311648 *)moby->pvars;
     Moby *target;

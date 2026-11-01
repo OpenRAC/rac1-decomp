@@ -19,6 +19,7 @@
 #include "game/mobyutil.h"
 #include "overlays/shared/sound_playback.h"
 #include "structs/level_records.h"
+#include "enums/moby_class.h"
 
 /* Class 0x53 shot: flies along velocity until the timer ends. */
 typedef struct ProjectileVars_2C32D0 {
@@ -36,7 +37,7 @@ typedef struct ProjectileVars_2C32D0 {
     Moby *target; /* 0x74: owner */
 } ProjectileVars_2C32D0;
 
-/* Forcefield tower (class 0xAA): hit response block, sound voice and the linked-state slot. */
+/* Forcefield tower: hit response block, sound voice and the linked-state slot. */
 struct ForcefieldTowerVars {
     u8 pad_00[0x20];
     u8 hit_block[0x10]; /* 0x20: process_forcefield_tower_damage state */
@@ -45,7 +46,7 @@ struct ForcefieldTowerVars {
     s32 linked_slot; /* 0x74: index into linked_state_flags, -1 none */
 };
 
-/* Asteroid fragment (class 0x584): tumbles on spin_x/y/z, splits while splits_left > 0. */
+/* Asteroid fragment (Asteroid): tumbles on spin_x/y/z, splits while splits_left > 0. */
 struct AsteroidFragmentVars {
     Vec4A vel; /* 0x00 */
     u8 pad_10[0x20];
@@ -182,7 +183,7 @@ extern char hero_globals_base[];
 extern Moby *gemlik_coll_hit_moby;
 extern Tex_2C27B0 gemlik_part_type_textures;
 
-/* Update for the homing rocket (class 82): smoke trail, steering toward its target, collision and expiry. */
+/* Update for the homing rocket: smoke trail, steering toward its target, collision and expiry. */
 void update_level_13_homing_rocket(Moby *m) {
     Rocket_2C27B0 *d = (void *)m->pvars;
     Vec4A old;
@@ -198,7 +199,7 @@ void update_level_13_homing_rocket(Moby *m) {
     qcopy(&old, &m->pos);
     m->scale += (((Cls_2C27B0 *)m->pclass)->scale - m->scale) * 0.1f;
     hit = (Hit_2C27B0 *)MobyGetHitMessage(m, 0xA30000, 0);
-    if (hit != 0 && hit->owner != 0 && hit->owner->oclass != 0x52) {
+    if (hit != 0 && hit->owner != 0 && hit->owner->oclass != MOBY_CLASS_ORANGE_RADAR_CONTACT) {
         spawn_explosion_alt(m, d, 0, 0.0f, 0.0f, 5, 2, 7, 0.0f, 0.0f, 0.0f, 1.0f, 1, 0.0f, 0, 1, -1, 0);
         DeleteMoby(m);
         return;
@@ -232,7 +233,7 @@ void update_level_13_homing_rocket(Moby *m) {
     if (d->target != 0 && d->target->state != 0xFE && d->target->state != 0xFD &&
         FastVecDist(&d->tpos, &d->target->pos) < 3.0f) {
         Hero *h = (Hero *)(hero_globals_base + 0xE1D);
-        if (h->ship_moby != 0 && h->ship_moby->oclass == 0x45 && d->owner->state != 5) {
+        if (h->ship_moby != 0 && h->ship_moby->oclass == MOBY_CLASS_FIGHTER_JET_69 && d->owner->state != 5) {
             Veh_2C27B0 *vd = (void *)h->ship_moby->pvars;
             float a = FastAddRots(h->ship_moby->rot.z, vd->f90);
             float b = FastAddRots(h->ship_moby->rot.y, vd->f94);
@@ -282,24 +283,40 @@ void update_level_13_homing_rocket(Moby *m) {
     Moby_GetJointWorldPos(m, 1, &hitpos);
     if (coll_line(&old, &hitpos, 0, m, 0) != 0) {
         Moby *o = gemlik_coll_hit_moby;
-        if (o == 0 || (o != d->owner && o->oclass != 0x504 && o->oclass != 0x534 && o->oclass != 0x535 &&
-                       o->oclass != 0x536 && o->oclass != 0x537 && o->oclass != 0x538 && o->oclass != 0x539 &&
-                       o->oclass != 0x53A && o->oclass != 0x52 && o->oclass != 0x53 && o->oclass != 0x191 &&
-                       o->oclass != 0x184 && o->oclass != 0x185 && o->oclass != 0x186 && o->oclass != 0x187 &&
-                       o->oclass != 0x188 && o->oclass != 0x189 && o->oclass != 0x18A && o->oclass != 0x18B &&
-                       o->oclass != 0x18C && o->oclass != 0x18F && o->oclass != 0x190)) {
+        if (o == 0 ||
+            (o != d->owner && o->oclass != MOBY_CLASS_MARKED_COUNTED_TARGET &&
+             o->oclass != MOBY_CLASS_RADAR_DRAW_SUPPRESSED && o->oclass != 0x535 && o->oclass != 0x536 &&
+             o->oclass != 0x537 && o->oclass != 0x538 && o->oclass != 0x539 && o->oclass != 0x53A &&
+             o->oclass != MOBY_CLASS_ORANGE_RADAR_CONTACT && o->oclass != MOBY_CLASS_YELLOW_RADAR_CONTACT &&
+             o->oclass != MOBY_CLASS_UNCOUNTED_MARKED_TARGET && o->oclass != MOBY_CLASS_UNMARKED_COUNTED_TARGET &&
+             o->oclass != MOBY_CLASS_EXCLUDED_FROM_RADAR && o->oclass != MOBY_CLASS_RADAR_RENDER_BYPASS &&
+             o->oclass != MOBY_CLASS_RADAR_ICON_SUPPRESSED && o->oclass != MOBY_CLASS_QWARKS_STARFIGHTER_PART_392 &&
+             o->oclass != MOBY_CLASS_QWARKS_STARFIGHTER_PART_393 &&
+             o->oclass != MOBY_CLASS_QWARKS_STARFIGHTER_PART_394 &&
+             o->oclass != MOBY_CLASS_QWARKS_STARFIGHTER_PART_395 &&
+             o->oclass != MOBY_CLASS_QWARKS_STARFIGHTER_PART_396 &&
+             o->oclass != MOBY_CLASS_QWARKS_STARFIGHTER_PART_399 &&
+             o->oclass != MOBY_CLASS_QWARKS_STARFIGHTER_PART_400)) {
             spawn_explosion_alt(m, d, 0, 5.0f, 10.0f, 0x14, 5, 0x10, 7.0f, 4.0f, 1.0f, 1.0f, 0, 15.0f, 1, 1, -1, 0);
             DeleteMoby(m);
             return;
         }
     } else if (coll_sphere(1.5f, &m->pos, 0, m) != 0) {
         Moby *o = gemlik_coll_hit_moby;
-        if (o == 0 || (o != d->owner && o->oclass != 0x504 && o->oclass != 0x534 && o->oclass != 0x535 &&
-                       o->oclass != 0x536 && o->oclass != 0x537 && o->oclass != 0x538 && o->oclass != 0x539 &&
-                       o->oclass != 0x53A && o->oclass != 0x52 && o->oclass != 0x53 && o->oclass != 0x191 &&
-                       o->oclass != 0x184 && o->oclass != 0x185 && o->oclass != 0x186 && o->oclass != 0x187 &&
-                       o->oclass != 0x188 && o->oclass != 0x189 && o->oclass != 0x18A && o->oclass != 0x18B &&
-                       o->oclass != 0x18C && o->oclass != 0x18F && o->oclass != 0x190)) {
+        if (o == 0 ||
+            (o != d->owner && o->oclass != MOBY_CLASS_MARKED_COUNTED_TARGET &&
+             o->oclass != MOBY_CLASS_RADAR_DRAW_SUPPRESSED && o->oclass != 0x535 && o->oclass != 0x536 &&
+             o->oclass != 0x537 && o->oclass != 0x538 && o->oclass != 0x539 && o->oclass != 0x53A &&
+             o->oclass != MOBY_CLASS_ORANGE_RADAR_CONTACT && o->oclass != MOBY_CLASS_YELLOW_RADAR_CONTACT &&
+             o->oclass != MOBY_CLASS_UNCOUNTED_MARKED_TARGET && o->oclass != MOBY_CLASS_UNMARKED_COUNTED_TARGET &&
+             o->oclass != MOBY_CLASS_EXCLUDED_FROM_RADAR && o->oclass != MOBY_CLASS_RADAR_RENDER_BYPASS &&
+             o->oclass != MOBY_CLASS_RADAR_ICON_SUPPRESSED && o->oclass != MOBY_CLASS_QWARKS_STARFIGHTER_PART_392 &&
+             o->oclass != MOBY_CLASS_QWARKS_STARFIGHTER_PART_393 &&
+             o->oclass != MOBY_CLASS_QWARKS_STARFIGHTER_PART_394 &&
+             o->oclass != MOBY_CLASS_QWARKS_STARFIGHTER_PART_395 &&
+             o->oclass != MOBY_CLASS_QWARKS_STARFIGHTER_PART_396 &&
+             o->oclass != MOBY_CLASS_QWARKS_STARFIGHTER_PART_399 &&
+             o->oclass != MOBY_CLASS_QWARKS_STARFIGHTER_PART_400)) {
             spawn_explosion_alt(m, d, 0, 5.0f, 10.0f, 0x14, 5, 0x10, 7.0f, 4.0f, 1.0f, 1.0f, 0, 15.0f, 1, 1, -1, 0);
             DeleteMoby(m);
             return;
@@ -312,7 +329,7 @@ void update_level_13_homing_rocket(Moby *m) {
 extern int scale_ticks(int);
 extern void MobyBlendAnimation(void *, int, int, int);
 
-/* Spawns a moby of class 0x53 at a position, with its data block filled in. */
+/* Spawns a Mine moby at a position, with its data block filled in. */
 unsigned char *spawn_class_53_projectile(char *owner, char *pos, char *vec) {
     unsigned char *moby = (unsigned char *)CreateMoby(0x53);
     if (moby != 0) {
@@ -367,7 +384,7 @@ typedef struct {
     Moby *moby; /* 0x18: moby the collision hit; 0 when none */
 } CollisionHit;
 
-/* Moby update for class 83 on level 13: drifts toward its target and steers, calling the shared helpers.
+/* Moby update for Mine on level 13: drifts toward its target and steers, calling the shared helpers.
  * The block at D_L13_001741C0 is read through a struct cast at each use, so the base stays in a register. */
 void update_level_13_class_53_projectile(char *moby_raw) {
     Vec4 steering_and_collision_vector;
@@ -482,7 +499,7 @@ void update_level_13_class_53_projectile(char *moby_raw) {
  * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
  * No longer builds in its file (COMPILE failed, 2026-10-09): match its declarations to the file's first.
  * What the last attempts found:
- *   Blarg space fighter moby update (class 101, level 13): state machine on moby+0x20 (9 cases, jtbl_L13_001F4920)
+ *   Blarg space fighter moby update (Blarg Space Fighter, level 13): state machine on moby+0x20 (9 cases, jtbl_L13_001F4920)
  *   Still differs: retail rematerialises -1 for the D4 compare and the store (ours keeps one li $16,-1), and case 
  */
 extern void update_hovering_rocket_attacker_common(unsigned char *);
@@ -528,8 +545,8 @@ typedef struct HoveringRocketVars {
     s32 link_id; /* 0x110 */
 } HoveringRocketVars;
 
-/* Moby update for class 101 (blarg space fighter) on level 13: a state machine on moby+0x20, with a second switch on moby+0xBC. */
-/* Update for the blarg space fighter (class 101) on level 13: hovering rocket attacker state machine. */
+/* Moby update for Blarg Space Fighter (blarg space fighter) on level 13: a state machine on moby+0x20, with a second switch on moby+0xBC. */
+/* Update for the blarg space fighter on level 13: hovering rocket attacker state machine. */
 
 void update_hovering_rocket_attacker(char *m) {
     Moby *moby = (Moby *)m;
@@ -1354,7 +1371,7 @@ extern float blarg_space_fighter_fire_suppression_level MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
 extern float gemlik_camera_pos[];
 
-/* Update for the blarg space fighter (class 111): joins its path, follows it while its carrier lives, fires at the hero's ship, and explodes. */
+/* Update for the blarg space fighter: joins its path, follows it while its carrier lives, fires at the hero's ship, and explodes. */
 void update_blarg_space_fighter(Moby *moby) {
     Data_2C56B0 *d;
     Moby *veh;
@@ -1429,7 +1446,7 @@ void update_blarg_space_fighter(Moby *moby) {
                 close = 0;
                 dist = FastVecDist(&moby->pos, hpos);
                 if (((Hero *)(hero_globals_base + 0xE1D))->state.current == 0x32 &&
-                    (veh->oclass == 0x45 || veh->oclass == 0x4DA)) {
+                    (veh->oclass == MOBY_CLASS_FIGHTER_JET_69 || veh->oclass == MOBY_CLASS_JET_FIGHTER)) {
                     if (dist < 110.0f) {
                         close = 1;
                     }
@@ -2006,7 +2023,7 @@ end:
  * Not built into anything: the retail assembly stays in the source file
  * until a candidate is EXACT (docs/reference/NONMATCHING.md). Start from this one.
  * What the last attempts found:
- *   Forcefield tower update (moby class 170): a switch on moby[0x20] (0 = start, 1 = wait/linger, 2 = active), wit
+ *   Forcefield tower update (moby Forcefield Tower): a switch on moby[0x20] (0 = start, 1 = wait/linger, 2 = active), wit
  *   Differences left: the state-1 "v != 0" block gets a movz (`run448` flag) and an extra `addiu $s1,1` where reta
  *   Unblock: a way to get the zero store and the 16-byte copy through `por`/`sq $v0` without a typedef clash (the 
  */
@@ -2026,7 +2043,7 @@ extern void spawn_explosion(void *, void *, void *, float, float, int, int, int,
                             int, int, int, int);
 #define spawn_explosion_s func_L00_0025F4A8
 
-/* Forcefield tower update (moby class 170): state machine over its pieces. */
+/* Forcefield tower update (moby Forcefield Tower): state machine over its pieces. */
 void forcefield_tower_update(char *moby) {
     struct ForcefieldTowerVars *d = (struct ForcefieldTowerVars *)((Moby *)moby)->pvars;
     float vec[4];
@@ -2156,7 +2173,7 @@ void forcefield_tower_update(char *moby) {
 
 extern int func_001160D8(void);
 
-// spawns a spinning moby of class 0x584 with randomized angular rates
+// spawns a spinning Asteroid moby with randomized angular rates
 char *spawn_asteroid_fragment(char *owner, char *pos, char *vec, int a3, float f) {
     Moby *moby = (Moby *)CreateMoby(0x584);
     if (moby != 0) {
@@ -2405,7 +2422,8 @@ void DriftingBlobUpdate(struct MobyP *moby) {
             break;
         case ASTEROID_WAIT_TO_LAUNCH:
             if (((struct Hero *)&hero_p)->state.current == 0x32 && ((struct Hero *)&hero_p)->ship_moby != 0 &&
-                ((struct Hero *)&hero_p)->ship_moby->oclass == 0x45 && (moby->visible != 0 || distance < 40.0f)) {
+                ((struct Hero *)&hero_p)->ship_moby->oclass == MOBY_CLASS_FIGHTER_JET_69 &&
+                (moby->visible != 0 || distance < 40.0f)) {
                 normalize_p(vars, vars->dir, random_float_p(1.0f, 10.0f) * frame_time_p);
                 moby->state = 2;
             }
@@ -2427,13 +2445,14 @@ void DriftingBlobUpdate(struct MobyP *moby) {
                         if ((struct MobyP *)coll_hit_p.moby != vars->owner) {
                             reflect_p(vars, vars, &coll_hit_p.normal_x);
                             qcopy(&moby->pos, coll_hit_p.pad30);
-                            if (coll_hit_p.moby == 0 || ((struct MobyP *)coll_hit_p.moby)->oclass != 0xD4) {
+                            if (coll_hit_p.moby == 0 ||
+                                ((struct MobyP *)coll_hit_p.moby)->oclass != MOBY_CLASS_ASTEROID_212) {
                                 hit_blob_p(moby, vars, size);
                             }
                         }
                     } else {
                         hit = find_hit_p(moby, 0x330000, 0);
-                        if (hit != 0 && ((MobyHitRecP *)hit)->moby->oclass != 0xD4) {
+                        if (hit != 0 && ((MobyHitRecP *)hit)->moby->oclass != MOBY_CLASS_ASTEROID_212) {
                             hit += 0x10;
                             size = moby->scale;
                             size /= moby->pclass->scale;
@@ -3448,7 +3467,9 @@ void process_moby_attachment_damage(Moby *m, Data_2EAE80 *d) {
             r = MobyGetHitMessage_r3(d->first, 0x230000, 0);
             ComputeHitResponse_r2(m, r, dd, 0, &hit, 0, 0, 4);
             if (r != 0 && r->target != 0 &&
-                (r->target->oclass == 0x52 || r->target->oclass == 0x53 || r->target->oclass == 0xD4)) {
+                (r->target->oclass == MOBY_CLASS_ORANGE_RADAR_CONTACT ||
+                 r->target->oclass == MOBY_CLASS_YELLOW_RADAR_CONTACT ||
+                 r->target->oclass == MOBY_CLASS_ASTEROID_212)) {
                 d->first->hit_slot = 0xFF;
             } else if (hit >= 2) {
                 if (0.0f < r->f2C && r->h2A == 0x3F1) {
@@ -3534,7 +3555,9 @@ void process_moby_attachment_damage(Moby *m, Data_2EAE80 *d) {
             r = MobyGetHitMessage_r3(d->list[i], 0x230000, 0);
             ComputeHitResponse_r2(m, r, dd, 0, &hit, 0, 0, 4);
             if (r != 0 && r->target != 0 &&
-                (r->target->oclass == 0x52 || r->target->oclass == 0x53 || r->target->oclass == 0xD4)) {
+                (r->target->oclass == MOBY_CLASS_ORANGE_RADAR_CONTACT ||
+                 r->target->oclass == MOBY_CLASS_YELLOW_RADAR_CONTACT ||
+                 r->target->oclass == MOBY_CLASS_ASTEROID_212)) {
                 d->list[i]->hit_slot = 0xFF;
                 continue;
             }

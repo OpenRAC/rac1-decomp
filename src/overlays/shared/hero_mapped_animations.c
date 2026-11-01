@@ -1638,7 +1638,7 @@ extern char source_bone4_joints_default[];
 
 /* Places moby MOBY from matrix ID (func_0020DAF8: translation row to +0x10,
    func_001FA480 of the matrix to +0xC0), updates it (func_0020EEE8), starts its sequence
-   table for func_L00_00209940 (class 0x1B1: D_L00_0017A708 with 6,
+   table for func_L00_00209940 (Sonic Summoner: D_L00_0017A708 with 6,
    others D_L00_0015F788 with 0), then clears +0x50 / +0x54 and points
    +0x68 / +0x6C at D_L00_0017C780. The four tail stores are in the order
    decomp-permuter found for retail's schedule. */

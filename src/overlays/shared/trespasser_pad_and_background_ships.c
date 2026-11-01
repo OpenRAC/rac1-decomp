@@ -14,6 +14,7 @@
 #include "overlays/shared/camera_modes_and_scripts.h"
 #include "overlays/shared/cutscene_and_movie_playback.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "enums/moby_class.h"
 
 /* Trespasser puzzle: three rings of 12 slots, marker ring and the rotation state. */
 struct TrespasserPuzzleVars {
@@ -1521,7 +1522,7 @@ struct VersatargetPvars {
     s32 unk3C; /* 0x3C: moby index into D_L02_00160058 (<< 8), -1 when none */
 };
 
-/* Hideable flower: appears when its slot is free, faces and sparkles at the hero (class 0x323), hides again
+/* Hideable flower: appears when its slot is free, faces and sparkles at the hero (Swingshot Swinging Versatarget), hides again
  * when its slot is used. */
 void swingshot_versatarget_update(char *m) {
     enum { VERSATARGET_STATE_INITIALIZE = 0, VERSATARGET_STATE_ACTIVE = 1, VERSATARGET_STATE_INACTIVE = 2 };
@@ -1545,7 +1546,7 @@ void swingshot_versatarget_update(char *m) {
             }
             break;
         case VERSATARGET_STATE_ACTIVE:
-            if (((struct Moby *)m)->oclass == 0x323) {
+            if (((struct Moby *)m)->oclass == MOBY_CLASS_SWINGSHOT_SWINGING_VERSATARGET) {
                 struct Hero *hero_ptr = (struct Hero *)(hero_globals_base + 0xE1D);
                 float *rz = &((struct Moby *)m)->rot.z;
                 float yaw = fast_atan2(hero_ptr->motion.pos.f[0] - ((struct Moby *)m)->pos.x,
@@ -1646,7 +1647,7 @@ extern float ApproachValue(float *, float, float);
 
 typedef int u128_002EB648 __attribute__((mode(TI)));
 
-/* Update function of moby class 1005 (tresspasser) on level 02, class 1016 (hydrodisplacer) on level 06: state machine. */
+/* Update function of moby Tresspasser (tresspasser) on level 02, Hydrodisplacer (hydrodisplacer) on level 06: state machine. */
 void tresspasser_update(char *moby) {
     char *d;
     char *g;
@@ -1663,7 +1664,7 @@ void tresspasser_update(char *moby) {
     sel = 0x16;
     d = *(char **)(moby + 0x78);
     r = 3.1415927f / (float)scale_ticks(0x3C);
-    if (((Moby *)moby)->oclass == 0x3ED) {
+    if (((Moby *)moby)->oclass == MOBY_CLASS_TRESSPASSER) {
         sel = 0x1A;
     }
 
@@ -1700,7 +1701,7 @@ void tresspasser_update(char *moby) {
             ((Moby *)moby)->flags |= 1;
             moby[0x31] = 0;
             *(int *)(moby + 0x94) = 0;
-            if (((Moby *)moby)->oclass == 0x3ED) {
+            if (((Moby *)moby)->oclass == MOBY_CLASS_TRESSPASSER) {
                 StartCutscene(4);
             } else {
                 StartCutscene(2);
@@ -1722,7 +1723,7 @@ void tresspasser_update(char *moby) {
             } else {
                 grant_inventory_item(sel, 1);
             }
-            if (((Moby *)moby)->oclass == 0x3ED) {
+            if (((Moby *)moby)->oclass == MOBY_CLASS_TRESSPASSER) {
                 ShowBanner(0x7DF, -1);
                 clear_active_help_record();
                 Help_Request(0x7D9, 0x13);

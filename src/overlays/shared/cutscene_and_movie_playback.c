@@ -23,6 +23,7 @@
 #include "game/draw.h"
 #include "game/fastfunc.h"
 #include "game/pause.h"
+#include "enums/moby_class.h"
 
 extern int level_reset_counter_524 MACRO_ADDR;
 extern int radial_select_auto_close_flag[];
@@ -866,10 +867,10 @@ void update_cutscene_playback(void) {
             if (m->shadow_range) {
                 update_moby_shadow_range(m);
             }
-            if (m->oclass == 0) {
+            if (m->oclass == MOBY_CLASS_RATCHET) {
                 HeroAttachManipulators(m);
             }
-            if (m->oclass == 10 || m->oclass == 0x1A3 || m->oclass == 0x555) {
+            if (m->oclass == 10 || m->oclass == MOBY_CLASS_GIANT_CLANK || m->oclass == 0x555) {
                 update_moby_pulsing_glow_effects(m);
             }
         }

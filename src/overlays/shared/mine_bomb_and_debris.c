@@ -43,7 +43,7 @@ struct BombSpawnVars {
     f32 hero_heading; /* 0x6C: hero facing angle at launch */
 };
 
-/* Devastator missile (class 0x99): homes on a target for a limited time. */
+/* Devastator missile (Gold Devastator Missile): homes on a target for a limited time. */
 struct DevastatorMissileVars {
     Vec4A aim_pos; /* 0x00: target position, z raised by height_offset */
     u8 *owner; /* 0x10 */
@@ -251,7 +251,7 @@ extern void BuildSphericalOffset(void *, f32, f32, f32);
 extern char *mine_camera_blast(char *a, char *b, int c, char *d);
 extern void jet_animate(unsigned char *, float);
 
-/* Mine (moby class 74) update: falls and bounces, sticks to what it hits, homes on a nearby target and explodes. */
+/* Mine (moby Mine) update: falls and bounces, sticks to what it hits, homes on a nearby target and explodes. */
 void mine_update(M910 *m) {
     B910 a = mine_blast_fx;
     B910 b = mine_gold_blast_fx;
@@ -2218,7 +2218,7 @@ extern void append_unique_moby_index(int, short *, short);
 extern unsigned char hero_globals_base_u[] __asm__("D_0013E633") NOT_SDA;
 extern char collision_hit_point[];
 
-// spawns an effect moby (class 0x99) at pos, tied to an owner and a target, and aims its starting state
+// spawns an effect moby (Gold Devastator Missile) at pos, tied to an owner and a target, and aims its starting state
 // Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002aa670.c, FUN_L00_002afc70.
 unsigned char *spawn_devastator_missile(unsigned char *a, Vec4 *pos, unsigned char *tgt, float f12, float f13,
                                         float f14, float f15, float f16) {

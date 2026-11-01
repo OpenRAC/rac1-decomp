@@ -17,6 +17,7 @@
 #include "overlays/shared/candidate_adjacency_masks.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/moby_class.h"
 
 /* Blarg frog: hops along its path, chases the hero or a gadgebot and respawns after it is destroyed. */
 struct FrogVars {
@@ -163,7 +164,7 @@ void destroy_gadgebot_spawn_container(void *moby_ptr, void *target_ptr) {
 extern char *CreateMoby_m(int) __asm__("func_0020D348");
 extern void moby_build_matrix(void *);
 
-/* Spawns moby class 0x12E at the owner's position, copying its fields. */
+/* Spawns moby Gadgebot Spawn Container at the owner's position, copying its fields. */
 char *spawn_gadgebot_spawn_container(char *owner) {
     Moby *moby = (Moby *)CreateMoby_m(0x12E);
     if (moby != 0) {
@@ -440,7 +441,7 @@ extern float MobyGetFrameValue(void *);
 extern void collect_mobies_in_sphere_at_moby_point(void *, int, int, float, float, float, int, int, int);
 extern int CarriedMobyUpdate(void *, void *);
 
-/* Frog (class 827) update: hops along a path, wanders near home, and chases or flees its target. */
+/* Frog update: hops along a path, wanders near home, and chases or flees its target. */
 void frog_update(unsigned char *m) {
     float A[4] __attribute__((aligned(16)));
     float B[4] __attribute__((aligned(16)));
@@ -818,7 +819,7 @@ void update_frog_health_respawn_and_target(struct Moby *moby) {
     vars->spin = moby->rot_row2.z * 0.25f;
     if (vars->carried != 0) {
         hit = MobyGetHitMessage_r2(vars->carried, 0x330000, 0);
-        if (hit != 0 && (hit->source == 0 || hit->source->oclass != 0xAF)) {
+        if (hit != 0 && (hit->source == 0 || hit->source->oclass != MOBY_CLASS_TAUNTER)) {
             spawn_moby_directional_spark_bursts_r(moby, (Vec4 *)blarg_zero_vec);
             destroy_frog_child_moby_r(moby);
             SetDeathBits(moby, 0, -1);
@@ -892,7 +893,8 @@ void update_frog_health_respawn_and_target(struct Moby *moby) {
             } else {
                 int *path = blarg_paths[vars->path];
                 if (IsPointInPolygon(&vars->target->pos, path + 4, *path) == 0 ||
-                    (vars->target->oclass == 0x359 && 2.0f < vec_distance_xy(&moby->pos, &vars->target->pos))) {
+                    (vars->target->oclass == MOBY_CLASS_GADGEBOT_857 &&
+                     2.0f < vec_distance_xy(&moby->pos, &vars->target->pos))) {
                     vars->target = 0;
                     vars->target_mode = 2;
                 } else {
@@ -1412,7 +1414,7 @@ extern float vec_length_xy(void *);
 extern int is_moby_in_class_range_500_to_540(void *);
 extern void set_ground_height_band(void *);
 
-/* Update function of the gadgebot (moby class 857): waits by its dispenser, then follows, attacks and returns to the hero along the level's paths. */
+/* Update function of the gadgebot (moby Gadgebot): waits by its dispenser, then follows, attacks and returns to the hero along the level's paths. */
 void GadgebotUpdate(Moby *moby) {
     float out[4];
     float v10[4];
@@ -1620,7 +1622,7 @@ void GadgebotUpdate(Moby *moby) {
                 ta = &d->f2A0[j];
                 tb = &d->f2C0[j];
                 m = &level_mobys_q[*ta];
-                if (m->oclass == 0x3F7 && m->state != 4 &&
+                if (m->oclass == MOBY_CLASS_LAB_DOOR && m->state != 4 &&
                     is_point_inside_clip_volume((*(float (*)[4]) & g_hero.moby->pos), *tb) != 0 &&
                     is_point_inside_clip_volume((*(float (*)[4]) & moby->pos), *tb) == 0) {
                     moby->state = 4;
@@ -1690,7 +1692,8 @@ void GadgebotUpdate(Moby *moby) {
                         dist = vec_distance_xy((*(float (*)[4]) & moby->pos), g_hero.motion.pos.f);
                         dz = FastAbsF((*(float (*)[4]) & moby->pos)[2] - g_hero.ground_point.f[2]);
                         ProbeGroundHeight((*(float (*)[4]) & moby->pos), 0, 0.5f);
-                        if (blarg_coll_hit_moby != 0 && blarg_coll_hit_moby->oclass == 0x3B1) {
+                        if (blarg_coll_hit_moby != 0 &&
+                            blarg_coll_hit_moby->oclass == MOBY_CLASS_OFFSET_RELOCATION_TRIGGER) {
                             *(u128 *)(*(float (*)[4]) & moby->pos) = *(u128 *)v60;
                         }
                         hit = 0;
@@ -1903,7 +1906,8 @@ void GadgebotUpdate(Moby *moby) {
                         if (moby->prev_seq != 1) {
                             MobyBlendAnimation(moby, 1, 0, scale_ticks(7));
                         }
-                        if (d->f174->oclass != 0x515 && d->f174->oclass != 0x15F) {
+                        if (d->f174->oclass != MOBY_CLASS_RELOCATION_TRIGGER_WITH_SOUND &&
+                            d->f174->oclass != MOBY_CLASS_RELOCATION_TRIGGER) {
                             FastVecAdd(v40, (*(float (*)[4]) & d->f174->pos), (*(float (*)[4]) & d->f174->rot_row0));
                         } else {
                             *(u128 *)v40 = *(u128 *)(*(float (*)[4]) & d->f174->pos);
@@ -2110,7 +2114,8 @@ void GadgebotUpdate(Moby *moby) {
     *(u128 *)v50 = *(u128 *)(*(float (*)[4]) & moby->pos);
     v50[2] += 1.0f;
     if (coll_line(v50, v40, 0, (int)moby, 0) != 0 && blarg_coll_hit.f18 != 0 &&
-        (blarg_coll_hit.f18->oclass == 0x409 || blarg_coll_hit.f18->oclass == 0x359 ||
+        (blarg_coll_hit.f18->oclass == MOBY_CLASS_PLATFORM_1033 ||
+         blarg_coll_hit.f18->oclass == MOBY_CLASS_GADGEBOT_857 ||
          is_moby_in_class_range_500_to_540(blarg_coll_hit.f18) != 0)) {
         *(u128 *)(*(float (*)[4]) & moby->pos) = *(u128 *)save0;
     }
@@ -2192,7 +2197,8 @@ void assign_gadgebot_attack_targets(void) {
     {
         char *pp;
         for (i = 0; (pp = blarg_moby_list[i]) != 0; i++) {
-            if (((Moby *)pp)->oclass == 0x359 && ((Moby *)pp)->state == 5 && ((Moby *)pp)->command != 2 && n != 0x32) {
+            if (((Moby *)pp)->oclass == MOBY_CLASS_GADGEBOT_857 && ((Moby *)pp)->state == 5 &&
+                ((Moby *)pp)->command != 2 && n != 0x32) {
                 char *o = *(char **)(V78(pp) + 0x174);
                 if (o == 0 || ((unsigned char *)o)[0x20] == 0xFE || ((unsigned char *)o)[0x20] == 0xFD) {
                     outv[n++] = pp;
@@ -2384,14 +2390,18 @@ void select_nearest_gadgebot_interaction_target(void *moby_arg) {
     if (d->target_group != -1) {
         get_first_moby_in_group_r(&list, d->target_group, 0, 0);
         while (list != 0) {
-            if (((Moby *)list)->oclass == 0x3b1 || ((Moby *)list)->oclass == 0x400 || ((Moby *)list)->oclass == 0x515 ||
-                ((Moby *)list)->oclass == 0x516) {
+            if (((Moby *)list)->oclass == MOBY_CLASS_OFFSET_RELOCATION_TRIGGER ||
+                ((Moby *)list)->oclass == MOBY_CLASS_GADGEBOT_ABSORPTION_TRIGGER ||
+                ((Moby *)list)->oclass == MOBY_CLASS_RELOCATION_TRIGGER_WITH_SOUND ||
+                ((Moby *)list)->oclass == MOBY_CLASS_GADGEBOT_ABSORPTION_TARGET) {
                 if (!(best < vec_distance_xy_r(&moby->pos, &((Moby *)list)->pos)) &&
                     !(0.2f < FastAbsF_r(moby->pos.z - ((Moby *)list)->pos.z)) &&
                     !(1.5f < FastAbsF_r(moby->pos.z - ((Moby *)list)->pos.z))) {
-                    if ((((Moby *)list)->oclass != 0x400 && ((Moby *)list)->oclass != 0x516) ||
+                    if ((((Moby *)list)->oclass != MOBY_CLASS_GADGEBOT_ABSORPTION_TRIGGER &&
+                         ((Moby *)list)->oclass != MOBY_CLASS_GADGEBOT_ABSORPTION_TARGET) ||
                         ((Moby *)list)->state != 2) {
-                        if (((Moby *)list)->oclass != 0x515 || *(int *)((void *)((Moby *)list)->pvars) != -1) {
+                        if (((Moby *)list)->oclass != MOBY_CLASS_RELOCATION_TRIGGER_WITH_SOUND ||
+                            *(int *)((void *)((Moby *)list)->pvars) != -1) {
                             best = vec_distance_xy_r(&moby->pos, &((Moby *)list)->pos);
                             d->target = (Moby *)list;
                         }
@@ -2403,13 +2413,18 @@ void select_nearest_gadgebot_interaction_target(void *moby_arg) {
     } else {
         cursor = blarg_moby_list_r;
         while ((candidate = (Moby *)*cursor) != 0) {
-            if (candidate->oclass == 0x3b1 || candidate->oclass == 0x400 || candidate->oclass == 0x515 ||
-                candidate->oclass == 0x516) {
+            if (candidate->oclass == MOBY_CLASS_OFFSET_RELOCATION_TRIGGER ||
+                candidate->oclass == MOBY_CLASS_GADGEBOT_ABSORPTION_TRIGGER ||
+                candidate->oclass == MOBY_CLASS_RELOCATION_TRIGGER_WITH_SOUND ||
+                candidate->oclass == MOBY_CLASS_GADGEBOT_ABSORPTION_TARGET) {
                 if (!(best < vec_distance_xy_r(&moby->pos, &candidate->pos)) &&
                     !(0.2f < FastAbsF_r(moby->pos.z - candidate->pos.z)) &&
                     !(1.5f < FastAbsF_r(moby->pos.z - candidate->pos.z))) {
-                    if ((candidate->oclass != 0x400 && candidate->oclass != 0x516) || candidate->state != 2) {
-                        if (candidate->oclass != 0x515 || *(int *)((void *)candidate->pvars) != -1) {
+                    if ((candidate->oclass != MOBY_CLASS_GADGEBOT_ABSORPTION_TRIGGER &&
+                         candidate->oclass != MOBY_CLASS_GADGEBOT_ABSORPTION_TARGET) ||
+                        candidate->state != 2) {
+                        if (candidate->oclass != MOBY_CLASS_RELOCATION_TRIGGER_WITH_SOUND ||
+                            *(int *)((void *)candidate->pvars) != -1) {
                             best = vec_distance_xy_r(&moby->pos, &candidate->pos);
                             d->target = candidate;
                         }
@@ -2439,30 +2454,31 @@ int process_gadgebot_interaction_candidate(char *ctx, char *ow, Moby *moby, int 
     char *g;
     float f20;
 
-    if (moby->oclass != 0x515 && moby->oclass != 0x15F) {
+    if (moby->oclass != MOBY_CLASS_RELOCATION_TRIGGER_WITH_SOUND && moby->oclass != MOBY_CLASS_RELOCATION_TRIGGER) {
         FastVecAdd(v0, &moby->pos, &moby->rot_row0);
     } else {
         *(u128_F4058 *)v0 = *(u128_F4058 *)&moby->pos;
     }
 
     switch (moby->oclass) {
-        case 0x15F:
-        case 0x3B1:
-        case 0x515:
+        case MOBY_CLASS_RELOCATION_TRIGGER:
+        case MOBY_CLASS_OFFSET_RELOCATION_TRIGGER:
+        case MOBY_CLASS_RELOCATION_TRIGGER_WITH_SOUND:
             if (!(vec_distance_xy(ctx + 0x10, v0) < 1.0f))
                 return 0;
             st = *(char **)&moby->pvars;
             if (*(int *)st < 0)
                 return 0;
             v58 = 0;
-            if (moby->oclass == 0x3B1) {
+            if (moby->oclass == MOBY_CLASS_OFFSET_RELOCATION_TRIGGER) {
                 v58 = *(int *)(st + 4);
                 *(int *)(st + 4) = v58 + 1;
-            } else if (moby->oclass == 0x515 || moby->oclass == 0x15F) {
+            } else if (moby->oclass == MOBY_CLASS_RELOCATION_TRIGGER_WITH_SOUND ||
+                       moby->oclass == MOBY_CLASS_RELOCATION_TRIGGER) {
                 v58 = *(int *)(st + 4);
                 *(int *)(st + 4) = v58 + 1;
             }
-            if (moby->oclass == 0x515) {
+            if (moby->oclass == MOBY_CLASS_RELOCATION_TRIGGER_WITH_SOUND) {
                 Sound_PlayClassSound(0, 0, (int)moby, 0x515);
             }
 
@@ -2542,8 +2558,8 @@ int process_gadgebot_interaction_candidate(char *ctx, char *ow, Moby *moby, int 
                 }
             }
             return 0;
-        case 0x400:
-        case 0x516:
+        case MOBY_CLASS_GADGEBOT_ABSORPTION_TRIGGER:
+        case MOBY_CLASS_GADGEBOT_ABSORPTION_TARGET:
             if (a3 != 0)
                 return 0;
             if (moby->state == 2)
@@ -2640,7 +2656,7 @@ void select_hero_or_gadgebot_target(char *moby, char **current, f32 range) {
         (*(s32 *)&D_L06_00161D78_F4908) = blarg_frame_count_r;
         (*(s32 *)&D_L06_00161D74_F4908) = 0;
         for (i = 0; (m = blarg_moby_list_r3[i]) != 0; i++) {
-            if (((Moby *)m)->oclass == 0x359 && (u8) * (char *)&((Moby *)m)->state >= 2 &&
+            if (((Moby *)m)->oclass == MOBY_CLASS_GADGEBOT_857 && (u8) * (char *)&((Moby *)m)->state >= 2 &&
                 (u8) * (char *)&((Moby *)m)->state != 9) {
                 s32 n = (*(s32 *)&D_L06_00161D74_F4908);
                 (*(s32 *)&D_L06_00161D74_F4908) = n + 1;
@@ -2861,12 +2877,12 @@ void update_moby_rotation_group(Moby *m) {
             if (m->command == 0) {
                 flag = 0;
                 if (d->idx >= 0) {
-                    if (level_mobys_q_r3[d->idx].oclass == 0x5A8) {
+                    if (level_mobys_q_r3[d->idx].oclass == MOBY_CLASS_SHUTTLE_1448) {
                         if (vec_distance_xy(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
                                             (*(float (*)[4]) & level_mobys_q_r3[d->idx].pos)) < 20.0f) {
                             flag = 1;
                         }
-                    } else if (level_mobys_q_r3[d->idx].oclass == 0x24A) {
+                    } else if (level_mobys_q_r3[d->idx].oclass == MOBY_CLASS_THRUSTER_PACK_LOCK_RED) {
                         flag = level_mobys_q_r3[d->idx].command != 0;
                     } else {
                         flag = level_mobys_q_r3[d->idx].state >= 3;

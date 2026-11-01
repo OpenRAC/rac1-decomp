@@ -55,7 +55,7 @@ struct LiftcarVars {
     s32 voice; /* 0xA4: sound slot of the loop sound, -1 when none */
 };
 
-/* Projectile (class 0x4B8): heading and lifetime. */
+/* Projectile (Constructorbot): heading and lifetime. */
 struct ProjectileVars {
     Vec4A dir; /* 0x00 */
     s32 life; /* 0x10 */

@@ -22,6 +22,7 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/sound_playback.h"
+#include "enums/moby_class.h"
 
 /* Ribbon effect: two ribbon paths (0x00 and 0xA0) and the texture scroll. */
 struct RibbonVars {
@@ -42,7 +43,7 @@ struct PathLightningVars {
     s32 path; /* 0x00: row of oltanis_paths_ee */
 };
 
-/* Elevator (class 685): rides a path out and back, springs towards the spline point. */
+/* Elevator: rides a path out and back, springs towards the spline point. */
 struct ElevatorVars {
     u8 pad_00[0x60];
     u8 entity[0x40]; /* 0x60: update_entity_matrix block */
@@ -985,7 +986,8 @@ void update_looping_path_moby(struct Moby *m) {
             Spring(&m->pos.z, &d->vel[2], v[2], 0.02f, 0.2f, 0.0f);
             hit = MobyGetHitMessage(m, 0x230000, 0);
             ComputeHitResponse(m, hit, d->health, 0, &count, 0, 0, 4);
-            if ((count >= 2 && hit != 0 && hit->moby->oclass != 0x283) || g_hero.coll_hit_moby == (u8 *)m) {
+            if ((count >= 2 && hit != 0 && hit->moby->oclass != MOBY_CLASS_MINE_643) ||
+                g_hero.coll_hit_moby == (u8 *)m) {
                 clear_u64_value(&vel);
                 Moby_PlaySound(0, 0, m);
                 if (g_hero.coll_hit_moby == (u8 *)m)
@@ -1119,7 +1121,7 @@ void update_flying_bolt(struct Moby *m) {
     while (tries < 3 && coll_line(&old, &target, pass, ignore, 0) != 0) {
         hit = oltanis_coll_hit.moby;
         tries++;
-        if (hit != 0 && hit->oclass == 0xFC) {
+        if (hit != 0 && hit->oclass == MOBY_CLASS_SCOUTBOT) {
             qcopy(&old, &oltanis_coll_hit.pos);
             ignore = hit;
             continue;
@@ -1735,7 +1737,7 @@ typedef struct {
 } Slot_2EFD38;
 extern char voice_pool_r[] __asm__("D_0013E650");
 
-/* Elevator update (moby class 685): runs its five-state switch, the lift-height test and the table lookups, then the shared follow-up.
+/* Elevator update (moby Elevator): runs its five-state switch, the lift-height test and the table lookups, then the shared follow-up.
  * Hero, hero position, voice slots and the flag tables are separate symbols (D_0013F450, D_0013F4D0, D_0013E650,
  * D_0014C150, D_0014C290, ...), not offsets of D_0013E633. The read of data+0x130 in state 3 is a struct member:
  * a member load may be scheduled above the store to the stack float t30, a cast load may not. */
@@ -2640,7 +2642,7 @@ extern unsigned char gCheats[] MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;
 extern unsigned char help_stats_base_r[] __asm__("D_0014171B") NOT_SDA;
 
-/* Update function of moby class 851: claims the moby when close to D_L14_001675C0, then a state machine on the
+/* Update function of moby Qwark Oltanis: claims the moby when close to D_L14_001675C0, then a state machine on the
  * byte at +0x20 (state 0 waits until the moby may start, state 1 tracks the hero, state 2 marks the moby done and
  * deletes it, as state 3 does), then the aiming tail on the countdowns at data + 0x194 and 0x198. */
 void qwark_oltanis_update(char *m) {

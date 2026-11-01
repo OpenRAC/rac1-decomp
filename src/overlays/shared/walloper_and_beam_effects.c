@@ -11,6 +11,7 @@
 #include "game/fastfunc.h"
 #include "structs/small_records.h"
 #include "structs/level_records.h"
+#include "enums/moby_class.h"
 
 /* Tesla beam: draw state read by the beam and arc effects. */
 struct BeamArcVars {
@@ -1378,8 +1379,9 @@ char *select_morphoray_target_and_adjust_aim(char *self, float *position, float 
     i = 0;
     if ((candidate = active_mobies[i]) != 0)
         do {
-            if (*(signed char *)&((Moby *)candidate)->state < 0 || ((Moby *)candidate)->oclass == 0x58E ||
-                ((Moby *)candidate)->oclass == 0x452)
+            if (*(signed char *)&((Moby *)candidate)->state < 0 ||
+                ((Moby *)candidate)->oclass == MOBY_CLASS_DREK_FINAL_BOSS_ROBOT ||
+                ((Moby *)candidate)->oclass == MOBY_CLASS_SNAGGLEBEAST)
                 continue;
             qcopy(target, &((Moby *)candidate)->pos);
             data = (char *)GetFlaggedPvarWord(candidate);
@@ -1542,7 +1544,7 @@ extern void Hud_InitParticles_r(void) __asm__("func_L00_00236BF8");
 extern void Hud_UpdateParticles_r(void) __asm__("func_L00_00236DE8");
 extern void draw_uniform_size_hud_stars_r(void) __asm__("func_L00_002377E0");
 
-// Morphoray (moby class 185) update: aims the hero's morph-o-ray, transforms what it hits over time,
+// Morphoray (moby Morphoray) update: aims the hero's morph-o-ray, transforms what it hits over time,
 // and keeps its glow light and sound going while the gadget is held.
 void MorphorayUpdate(Moby *m) {
     Vq_2BDAF0 v0;
@@ -1648,7 +1650,7 @@ void MorphorayUpdate(Moby *m) {
             D_L00_001617BC_2BDAF0 = 10000 - truncate_float_to_s32_r2(p->left * 10000.0f / p->total);
         }
         if (p->target != 0 && p->left <= 0.0f) {
-            if (g_current_level_index_r == 5 && p->target->oclass == 0x271 &&
+            if (g_current_level_index_r == 5 && p->target->oclass == MOBY_CLASS_EXTERMITANK &&
                 ((Skill_2BDAF0 *)gSkillPoints_r)->f8 == 0) {
                 ((Skill_2BDAF0 *)gSkillPoints_r)->f8 = 1;
                 PlayBankSound_r(1, 0, 0);
@@ -2995,7 +2997,7 @@ int try_start_moby_hop(Mob_2C0CF8 *m, Blk_2C0CF8 *p, void *q, int flag) {
 }
 extern void copy_hero_moby_field_38(void *);
 
-/* Spawn a doom bot (class 0xBA) for owner at pos with rot; returns the moby or 0. */
+/* Spawn a doom bot for owner at pos with rot; returns the moby or 0. */
 char *spawn_doom_bot(int owner, void *pos, void *rot) {
     Moby *m = (Moby *)CreateMoby(0xBA);
     if (m != 0) {
