@@ -53,6 +53,13 @@ class PlanTest(unittest.TestCase):
         _, takes = self.plan(sources)
         self.assertNotIn("src/game/c.c", takes)
 
+    def test_a_name_already_in_the_header_counts_too(self):
+        clash = "extern void f(int a);\nint old(void) { return 1; }\n"
+        sources = {"src/game/d.c": HOME, "src/game/a.c": USER, "src/game/b.c": USER, "src/game/c.c": clash}
+        _, takes = mp.plan(sources, {}, {}, {"game/d.h": {"old"}})
+        self.assertNotIn("src/game/c.c", takes)
+        self.assertIn("src/game/a.c", takes)
+
     def test_a_version_fragment_counts_as_using_a_name(self):
         sources = {"src/game/d.c": HOME, "src/game/a.c": USER, "src/game/b.c": USER, "src/game/c.c": USER,
                    "src/game/x.c": "extern void g(void);\n", "src/game/y.c": "extern void g(void);\n"}

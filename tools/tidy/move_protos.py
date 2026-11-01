@@ -105,9 +105,10 @@ def home_of(name, text, homes, aliases):
     return f"{folder}/{part_of({name} | aliases.get(name, set()))}.h"
 
 
-def plan(sources, fragments, aliases):
+def plan(sources, fragments, aliases, existing=None):
     """
-    sources: {file: text}, fragments: {file: version fragment text}, aliases: {name: {other names}}.
+    sources: {file: text}, fragments: {file: version fragment text}, aliases: {name: {other names}},
+    existing: {header: names it already declares}.
     Returns {header: {name: declaration}} and {file: {header: {name}}}: what to write and who takes what.
     """
     # One symbol can be spelled two ways (readable and address name), so group by the symbol.
@@ -153,7 +154,7 @@ def plan(sources, fragments, aliases):
         for rel in sorted({f for n in names for f in users[n]}):
             mine = {n for n in names if rel in users[n]}
             words = set(pe.WORD.findall(pe.without_comments(sources[rel] + "\n" + fragments.get(rel, ""))))
-            others = set(names) - mine
+            others = (set(names) | (existing or {}).get(header, set())) - mine
             for other in list(others):
                 others |= aliases.get(other, set())
             if not others & words:
@@ -228,7 +229,12 @@ def main():
     files = pe.sources(["src"])
     sources = {rel: (ROOT / rel).read_text(errors="surrogateescape") for rel in files}
     fragments = {rel: pe.fragments_text(rel) for rel in files}
-    headers, takes = plan(sources, fragments, aliases)
+    existing = {}
+    for path in (ROOT / "include").rglob("*.h"):
+        found = {n for _, _, s in pe.find_externs(path.read_text(errors="replace")) for n in pe.declared_names(s) or []}
+        if found:
+            existing[path.relative_to(ROOT / "include").as_posix()] = found
+    headers, takes = plan(sources, fragments, aliases, existing)
     moved = sum(len(names) for names in headers.values())
     lines = sum(len(mine) for per_file in takes.values() for mine in per_file.values())
     print(f"{moved} prototypes into {len(headers)} headers, used by {len(takes)} files: {lines} declarations replaced")
