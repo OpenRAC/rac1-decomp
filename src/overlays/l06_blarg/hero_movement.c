@@ -22,6 +22,7 @@
 #include "game/mobyutil.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/level.h"
+#include "enums/hero_state.h"
 
 extern char hero_globals_base[];
 
@@ -86,7 +87,7 @@ void apply_hero_ground_material_response(void) {
                     if (g2->health.hp != 0) {
                         HeroL06_TrySetMoveState(0x3C, 1);
                     } else {
-                        HeroL06_TrySetMoveState(0x7C, 1);
+                        HeroL06_TrySetMoveState(HERO_STATE_DEATH_DESCENT, 1);
                     }
                     return;
                 }
@@ -96,7 +97,7 @@ void apply_hero_ground_material_response(void) {
     g3 = (Hero *)(hero_globals_base + 0xE1D);
     if (g3->selector_13 == 0)
         return;
-    if (g3->state.current == 0x7F)
+    if (g3->state.current == HERO_STATE_SINK)
         return;
     if (!(FastAbsF(g3->water_surface_z - (g3->motion.pos.f[2] + 0.25f)) < 1.0f))
         return;
@@ -105,7 +106,7 @@ void apply_hero_ground_material_response(void) {
     if (!(g3->motion.displacement.f[2] < 0.0f))
         return;
     exit_hero_vehicle_mode_if_mode_three();
-    HeroL06_TrySetMoveState(0x7F, 1);
+    HeroL06_TrySetMoveState(HERO_STATE_SINK, 1);
 }
 typedef int Q_8 __attribute__((mode(TI)));
 typedef struct {
@@ -212,7 +213,7 @@ s32 HeroL06_TryApplyHitKnockback(s32 arg) {
                 g_hero_r.motion.resolved_velocity_z.f[2] = g_frame_time * 7.0f;
                 return 1;
             }
-            HeroL06_TrySetMoveState(0x16, 1);
+            HeroL06_TrySetMoveState(HERO_STATE_HURT, 1);
             e = g_frame_time;
             a = e * 5.7f;
             b = e * 2.4f;
@@ -226,11 +227,11 @@ s32 HeroL06_TryApplyHitKnockback(s32 arg) {
             }
             break;
         case 1:
-            HeroL06_TrySetMoveState(0x46, 1);
+            HeroL06_TrySetMoveState(HERO_STATE_VEHICLE_MODE_1_HURT, 1);
             hero_knockback(&v, flag, g_frame_time * 5.0f, g_frame_time * 3.0f);
             break;
         case 3:
-            HeroL06_TrySetMoveState(0x56, 1);
+            HeroL06_TrySetMoveState(HERO_STATE_VEHICLE_MODE_3_HURT, 1);
             hero_knockback(&v, flag, g_frame_time * 5.0f, g_frame_time * 2.4f);
             break;
     }
@@ -610,7 +611,7 @@ void update_hero_airborne_planar_velocity(void) {
         } else {
             g_hero_s.ground_speed = 0.0f;
         }
-        if (g_hero_s.state.current == 11) {
+        if (g_hero_s.state.current == HERO_STATE_HIGH_JUMP) {
             if (g_hero_s.past_jump_apex != 0 && g_hero_s.frames_to_land < scale_ticks(0xC)) {
                 ApproachValue(&g_hero_s.high_jump_drift_speed, 0.0f, g_frame_time_sq * 8.0f);
             } else {
@@ -805,7 +806,8 @@ void HeroL06_UpdateMovement(void) {
             build_scaled_hero_move_impulse(0.5f, g_frame_time * 2.0f);
             stop_hero_motion_without_forward_support(3.7f, 0.0f);
             stick_target(1.0f, 0);
-            if (((Hero *)&g_hero)->state.current == 1 || ((Hero *)&g_hero)->state.current == 0x1E) {
+            if (((Hero *)&g_hero)->state.current == HERO_STATE_LOOK ||
+                ((Hero *)&g_hero)->state.current == HERO_STATE_LOOK_RELEASE_WAIT) {
                 if (((Hero *)&g_hero)->unk20A5 != 0) {
 
                     *(u128 *)vec[0] = 0;
@@ -829,17 +831,18 @@ void HeroL06_UpdateMovement(void) {
                     }
                 }
             }
-            if (((Hero *)&g_hero)->state.current == 3) {
+            if (((Hero *)&g_hero)->state.current == HERO_STATE_STOP) {
                 if (try_start_hero_item_idle_animation() != 0) {
                     break;
                 }
             }
-            if (((Hero *)&g_hero)->state.current == 4 || ((Hero *)&g_hero)->state.current == 0x17) {
+            if (((Hero *)&g_hero)->state.current == HERO_STATE_CROUCH ||
+                ((Hero *)&g_hero)->state.current == HERO_STATE_ITEM_BUTTON_RELEASE_WAIT) {
                 if (((Hero *)&g_hero)->stick_magnitude > 0.2f || ((Hero *)&g_hero)->moby->prev_seq == 0xE ||
                     ((Hero *)&g_hero)->moby->prev_seq == 0xF) {
-                    if (((Hero *)&g_hero)->state.current == 4) {
+                    if (((Hero *)&g_hero)->state.current == HERO_STATE_CROUCH) {
                         turn_to(0, g_frame_scale_sq * 0.002f, g_frame_scale_sq * 0.07f, g_frame_time * 6.981317f);
-                    } else if (((Hero *)&g_hero)->state.current == 0x17) {
+                    } else if (((Hero *)&g_hero)->state.current == HERO_STATE_ITEM_BUTTON_RELEASE_WAIT) {
                         turn_hero_toward_move_direction_for_item();
                     }
                     if (FastAbsF(((Hero *)&g_hero)->motion.yaw_rate) > g_frame_time * 0.34906584f) {
@@ -866,7 +869,7 @@ void HeroL06_UpdateMovement(void) {
                         int anim;
 
                         anim = 0xD;
-                        if (((Hero *)&g_hero)->state.current == 0x17) {
+                        if (((Hero *)&g_hero)->state.current == HERO_STATE_ITEM_BUTTON_RELEASE_WAIT) {
                             anim = get_hero_help_value(0);
                         }
                         if (((Hero *)&g_hero)->moby->prev_seq != anim) {
@@ -876,7 +879,7 @@ void HeroL06_UpdateMovement(void) {
                 }
             }
             ((Hero *)&g_hero)->target_speed = 0.0f;
-            if (((Hero *)&g_hero)->state.current == 3) {
+            if (((Hero *)&g_hero)->state.current == HERO_STATE_STOP) {
                 float t;
 
                 t = ((Hero *)&g_hero)->motion.move_slope + 1.0f;
@@ -900,7 +903,7 @@ void HeroL06_UpdateMovement(void) {
                     }
                 }
             } else {
-                if (((Hero *)&g_hero)->state.current == 4) {
+                if (((Hero *)&g_hero)->state.current == HERO_STATE_CROUCH) {
                     speed = g_frame_time_sq * 6.48f;
                 } else {
                     speed = g_frame_time_sq * 12.6f;
@@ -1406,7 +1409,8 @@ void HeroL06_UpdateMovement(void) {
                 ((Hero *)&g_hero)->items[0].timer = 2;
             }
             skip = 0;
-            if (((Hero *)&g_hero)->state.prev == 1 && scale_ticks(0x14) < ((Hero *)&g_hero)->state.prev_timer) {
+            if (((Hero *)&g_hero)->state.prev == HERO_STATE_LOOK &&
+                scale_ticks(0x14) < ((Hero *)&g_hero)->state.prev_timer) {
                 skip = 1;
             }
             if (!skip) {
@@ -1620,7 +1624,8 @@ void HeroL06_UpdateMovement(void) {
             } else {
                 set_planar_vel(99999.0f);
             }
-            if (((Hero *)&g_hero)->state.current == 0x20 && ((Hero *)&g_hero)->state_timer > t0) {
+            if (((Hero *)&g_hero)->state.current == HERO_STATE_HELD_ITEM_ATTACK &&
+                ((Hero *)&g_hero)->state_timer > t0) {
                 if (((Hero *)&g_hero)->state_timer < t1 + scale_ticks(4)) {
                     Moby *w;
 
@@ -1794,7 +1799,7 @@ void HeroL06_UpdateMovement(void) {
             int late;
 
             if (!(((Hero *)&g_hero)->state.current >= 0x29 && ((Hero *)&g_hero)->state.current <= 0x2A) &&
-                ((Hero *)&g_hero)->state.current != 0x42) {
+                ((Hero *)&g_hero)->state.current != HERO_STATE_GRIND_COLLISION_RECOVERY) {
                 release_voice_slot_cf(0, (int)((Hero *)&g_hero)->moby, 0);
             } else {
                 if (((Hero *)&g_hero)->grind_voice != -1) {
@@ -1808,7 +1813,8 @@ void HeroL06_UpdateMovement(void) {
                 }
                 ((Hero *)&g_hero)->grind_voice = -1;
             }
-            if (((Hero *)&g_hero)->state.current == 0x28 || ((Hero *)&g_hero)->state.current == 0x2B) {
+            if (((Hero *)&g_hero)->state.current == HERO_STATE_GRIND ||
+                ((Hero *)&g_hero)->state.current == HERO_STATE_GRIND_ATTACK) {
                 float a;
                 float s;
 
@@ -1847,8 +1853,10 @@ void HeroL06_UpdateMovement(void) {
                                         ((Hero *)&g_hero)->unk5A0, 999.0f, 2.0f, 2.5f);
             }
             late = 0;
-            if (((Hero *)&g_hero)->ground_distance > 0.87f && ((Hero *)&g_hero)->state.current != 0x29 &&
-                ((Hero *)&g_hero)->state.current != 0x42 && ((Hero *)&g_hero)->rail_switching == 0) {
+            if (((Hero *)&g_hero)->ground_distance > 0.87f &&
+                ((Hero *)&g_hero)->state.current != HERO_STATE_GRIND_JUMP &&
+                ((Hero *)&g_hero)->state.current != HERO_STATE_GRIND_COLLISION_RECOVERY &&
+                ((Hero *)&g_hero)->rail_switching == 0) {
                 late = ((Hero *)&g_hero)->control_mode_timer > scale_ticks(0x1E);
             }
             if (((Hero *)&g_hero)->rail_off_frames != 0 || late) {
@@ -1863,7 +1871,7 @@ void HeroL06_UpdateMovement(void) {
                 float step;
 
                 step = ((Hero *)&g_hero)->unk574 * ((Hero *)&g_hero)->grind_direction;
-                if (((Hero *)&g_hero)->state.current == 0x42) {
+                if (((Hero *)&g_hero)->state.current == HERO_STATE_GRIND_COLLISION_RECOVERY) {
                     step = ((Hero *)&g_hero)->unk5CC * ((Hero *)&g_hero)->grind_direction;
                 }
                 Spline_AdvanceByDistance((unsigned char *)((Hero *)&g_hero)->rail_spline, vec[0],
@@ -1912,8 +1920,9 @@ void HeroL06_UpdateMovement(void) {
                         }
                     }
                 }
-                if (((Hero *)&g_hero)->state.current != 0x29 && ((Hero *)&g_hero)->state.current != 0x42 &&
-                    ((Hero *)&g_hero)->state.current != 0x2A) {
+                if (((Hero *)&g_hero)->state.current != HERO_STATE_GRIND_JUMP &&
+                    ((Hero *)&g_hero)->state.current != HERO_STATE_GRIND_COLLISION_RECOVERY &&
+                    ((Hero *)&g_hero)->state.current != HERO_STATE_GRIND_RAIL_TRANSFER) {
                     blarg_hero_lean_angles[0] = fast_atan2(vec_length_xy(((Hero *)&g_hero)->motion.displacement.f),
                                                            ((Hero *)&g_hero)->motion.displacement.f[2]);
                 }
@@ -1971,7 +1980,7 @@ void HeroL06_UpdateMovement(void) {
                     turn_to(0, g_frame_scale_sq * 0.015f, g_frame_scale_sq * 0.15f, g_frame_time * 6.2831855f);
                     if ((((Hero *)&g_hero)->state.current >= 0x29 && ((Hero *)&g_hero)->state.current <= 0x2A &&
                          ((Hero *)&g_hero)->rail_land_frames == 0) ||
-                        ((Hero *)&g_hero)->state.current == 0x42) {
+                        ((Hero *)&g_hero)->state.current == HERO_STATE_GRIND_COLLISION_RECOVERY) {
                         if (((Hero *)&g_hero)->rail_gap_jump != 0) {
                             float a;
 
@@ -2023,7 +2032,7 @@ void HeroL06_UpdateMovement(void) {
                             ((Hero *)&g_hero)->motion.pos.f[0] += vec[3][0];
                             ((Hero *)&g_hero)->motion.pos.f[1] += vec[3][1];
                         }
-                        if (((Hero *)&g_hero)->state.current == 0x42) {
+                        if (((Hero *)&g_hero)->state.current == HERO_STATE_GRIND_COLLISION_RECOVERY) {
                             ((Hero *)&g_hero)->motion.velocity.f[2] -= g_frame_time_sq * 23.0f;
                         } else {
                             hero_integrate_velocity();
@@ -2138,7 +2147,8 @@ void HeroL06_UpdateMovement(void) {
                         }
                     }
                 }
-                if (((Hero *)&g_hero)->state.current == 0x2B && ((Hero *)&g_hero)->state_timer < scale_ticks(0x14)) {
+                if (((Hero *)&g_hero)->state.current == HERO_STATE_GRIND_ATTACK &&
+                    ((Hero *)&g_hero)->state_timer < scale_ticks(0x14)) {
                     float a;
 
                     a = FastAddRots(((Hero *)&g_hero)->rail_dir_yaw, randf_sym(0.34906584f, 0.61086524f));
@@ -2180,7 +2190,7 @@ void HeroL06_UpdateMovement(void) {
             ((Hero *)&g_hero)->motion.velocity.f[1] = 0.0f;
             ((Hero *)&g_hero)->motion.velocity.f[2] = 0.0f;
             qcopy(vec[2], ((Hero *)&g_hero)->motion.pos.f);
-            if (((Hero *)&g_hero)->state.current == 0x1A) {
+            if (((Hero *)&g_hero)->state.current == HERO_STATE_LEDGE_SHIMMY_POSITIVE_YAW) {
                 vec[4][0] = FastCos(FastAddRots(((Hero *)&g_hero)->motion.rot.f[2], 1.5707964f)) * 0.3f;
                 vec[4][1] = FastSin(FastAddRots(((Hero *)&g_hero)->motion.rot.f[2], 1.5707964f)) * 0.3f;
                 vec[4][2] = 0.0f;
@@ -2229,7 +2239,7 @@ void HeroL06_UpdateMovement(void) {
             break;
         case 0x6:
         case 0x2D:
-            if (((Hero *)&g_hero)->state.current == 0x2D) {
+            if (((Hero *)&g_hero)->state.current == HERO_STATE_ITEM_RELEASE_FALL) {
                 float t;
 
                 t = 0.0f;
@@ -2387,7 +2397,7 @@ void HeroL06_UpdateMovement(void) {
         case 0x4C:
         case 0x5E:
         case 0x69:
-            if (((Hero *)&g_hero)->state.current == 0x1C && ((Hero *)&g_hero)->pack_disabled == 0 &&
+            if (((Hero *)&g_hero)->state.current == HERO_STATE_LEDGE_JUMP && ((Hero *)&g_hero)->pack_disabled == 0 &&
                 ((Hero *)&g_hero)->items[3].item_id == 3) {
                 if (test_hero_animation_frame_window(10.0f)) {
                     allocate_hero_voice_for_entry(4, 0);
@@ -2411,9 +2421,11 @@ void HeroL06_UpdateMovement(void) {
                     qcopy(((Hero *)&g_hero)->takeoff_pos.f, ((Hero *)&g_hero)->motion.pos.f);
                 }
                 if (((Hero *)&g_hero)->rail_land_frames != 0 ||
-                    (t < lim && ((Hero *)&g_hero)->state.current != 0xB && ((Hero *)&g_hero)->state.current != 0x10 &&
+                    (t < lim && ((Hero *)&g_hero)->state.current != HERO_STATE_HIGH_JUMP &&
+                     ((Hero *)&g_hero)->state.current != HERO_STATE_PACK_LONG_JUMP &&
                      ((Hero *)&g_hero)->state.current != 0xC && ((Hero *)&g_hero)->state.current != 0x11 &&
-                     ((Hero *)&g_hero)->state.current != 0x1C && ((Hero *)&g_hero)->state.current != 0x4C)) {
+                     ((Hero *)&g_hero)->state.current != HERO_STATE_LEDGE_JUMP &&
+                     ((Hero *)&g_hero)->state.current != 0x4C)) {
                     float keep;
 
                     turn_to(0, g_frame_scale_sq * 0.015f, g_frame_scale_sq * 0.2f, g_frame_time * 15.009831f);
@@ -2440,13 +2452,13 @@ void HeroL06_UpdateMovement(void) {
                         reduce_and_apply_hero_planar_velocity_addend(((Hero *)&g_hero)->jump_decel);
                     }
                     build_scaled_hero_move_impulse(0.5f, g_frame_time * 2.0f);
-                    if (((Hero *)&g_hero)->state.current == 9 &&
+                    if (((Hero *)&g_hero)->state.current == HERO_STATE_RUN_JUMP &&
                         ((Hero *)&g_hero)->state_timer < ((Hero *)&g_hero)->takeoff_frame + scale_ticks(4)) {
                         add_hero_forward_offset(((Hero *)&g_hero)->motion.velocity.f,
                                                 ((Hero *)&g_hero)->motion.velocity.f,
                                                 g_frame_time_sq * 16.0f * ((Hero *)&g_hero)->state_timer);
                     }
-                    if (((Hero *)&g_hero)->state.current == 0xA) {
+                    if (((Hero *)&g_hero)->state.current == HERO_STATE_PACK_JUMP) {
                         if (((Hero *)&g_hero)->state_timer < scale_ticks(0x22)) {
                             add_hero_forward_offset(((Hero *)&g_hero)->motion.velocity.f,
                                                     ((Hero *)&g_hero)->motion.velocity.f,
@@ -2493,13 +2505,15 @@ void HeroL06_UpdateMovement(void) {
             if (((Hero *)&g_hero)->vehicle_mode == 1) {
                 update_hero_motion_response_parameters();
             }
-            if (((Hero *)&g_hero)->state.current == 0x10 || ((Hero *)&g_hero)->state.current == 0xD) {
+            if (((Hero *)&g_hero)->state.current == HERO_STATE_PACK_LONG_JUMP ||
+                ((Hero *)&g_hero)->state.current == 0xD) {
                 int late;
 
                 late = ((Hero *)&g_hero)->state_timer > scale_ticks(0xC);
                 update_moby_transform_history(((Hero *)&g_hero)->trail.pos[0].f, late * 2);
             }
-            if (((Hero *)&g_hero)->state.current == 0x10 && ((Hero *)&g_hero)->state_timer > scale_ticks(8)) {
+            if (((Hero *)&g_hero)->state.current == HERO_STATE_PACK_LONG_JUMP &&
+                ((Hero *)&g_hero)->state_timer > scale_ticks(8)) {
                 if (((Hero *)&g_hero)->anim_frame < 28.0f) {
                     int n;
 
@@ -2809,7 +2823,7 @@ void HeroL06_UpdateMovement(void) {
             ((Hero *)&g_hero)->motion.velocity.f[1] = 0.0f;
             ((Hero *)&g_hero)->motion.velocity.f[2] = 0.0f;
             qcopy(vec[2], ((Hero *)&g_hero)->motion.pos.f);
-            if (((Hero *)&g_hero)->state.current == 0x4D) {
+            if (((Hero *)&g_hero)->state.current == HERO_STATE_ALT_LEDGE_SHIMMY_YAW_PLUS_90) {
                 vec[4][0] = FastCos(FastAddRots(((Hero *)&g_hero)->motion.rot.f[2], 1.5707964f)) * 0.3f;
                 vec[4][1] = FastSin(FastAddRots(((Hero *)&g_hero)->motion.rot.f[2], 1.5707964f)) * 0.3f;
                 vec[4][2] = 0.0f;

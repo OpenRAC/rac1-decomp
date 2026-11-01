@@ -14,6 +14,7 @@
 #include "game/mobyutil.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
+#include "enums/hero_state.h"
 
 /* Umbris taxi platform: slides along a path between its two ends when the hero rides it. */
 struct TaxiPlatformVars {
@@ -2880,7 +2881,7 @@ void SharkigatorUpdate(unsigned char *moby) {
             if (one <= ((struct SharkigatorVars *)data)->jump_blend) {
                 struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
                 g->health.hp = 0;
-                HeroEnterMoveState(0x3D, 1);
+                HeroEnterMoveState(HERO_STATE_DYING, 1);
                 *(int *)(*(char **)&g->moby + 0x98) = -1;
                 *(char *)&g->unk20A5 = 1;
                 ((Moby *)moby)->state = 6;

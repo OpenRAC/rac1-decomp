@@ -19,6 +19,7 @@
 #include "structs/hero_views.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+#include "enums/hero_state.h"
 
 struct Moby;
 extern struct Hero g_hero_r __asm__("D_0013F450");
@@ -286,7 +287,7 @@ void find_grind_rail(void) {
     *(Q_cf58 *)&v1 = *(Q_cf58 *)((V_cf58 *)&g_hero_r2.motion.pos);
     if (!func_L00_0020D3A0_0D5F0((Q_cf58 *)&v1, &a, &v0, &b, &c, &e, 0, 0))
         return;
-    if (g_hero_r2.state.current == 41 && g_hero_r2.rail_gap_jump != 0 && a == g_hero_r2.rail_spline)
+    if (g_hero_r2.state.current == HERO_STATE_GRIND_JUMP && g_hero_r2.rail_gap_jump != 0 && a == g_hero_r2.rail_spline)
         return;
     d = g_hero_r2.motion.pos.f[2] - v0.z;
     if (!(-0.5f < d))
@@ -404,8 +405,9 @@ int is_hero_slot_item_id_28_or_29(int arg) {
 int hero_is_in_special_state(void) {
     struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
 
-    if ((h->state.control_mode >= 0x11 && h->state.control_mode <= 0x12) || h->state.current == 0x6A ||
-        h->state.current == 0x82 || h->state.current == 0x76 || h->state.current == 0x75) {
+    if ((h->state.control_mode >= 0x11 && h->state.control_mode <= 0x12) || h->state.current == HERO_STATE_DROWN ||
+        h->state.current == HERO_STATE_DYING_ZERO_HEALTH || h->state.current == 0x76 ||
+        h->state.current == HERO_STATE_WATER_SURFACE_HURT) {
         return 1;
     }
     return 0;
@@ -483,7 +485,7 @@ float score_hero_target_candidate(void *o_v, float yaw, float range, float ylim,
     *out = 0;
     qcopy(v, q);
     g = (Hero *)(q - 0x80);
-    if (g->state.current == 0x14) {
+    if (g->state.current == HERO_STATE_WRENCH_SLAM) {
         v[2] = g->ground_z.f;
     }
     d = FastVecDist(v, o + 0x10);
@@ -493,7 +495,7 @@ float score_hero_target_candidate(void *o_v, float yaw, float range, float ylim,
     s = a;
     m = a;
     p = FastDiffRots(fast_atan2(vec_distance_xy(v, o + 0x10), *(float *)(o + 0x18) - v[2]), 0.0f);
-    if (g->state.current == 1 || g->state.current == 0x1E) {
+    if (g->state.current == HERO_STATE_LOOK || g->state.current == HERO_STATE_LOOK_RELEASE_WAIT) {
         char *c = player_camera;
         float b = FastDiffRots(
             fast_atan2(*(float *)(o + 0x10) - *(float *)(c + 0x140), *(float *)(o + 0x14) - *(float *)(c + 0x144)),
@@ -1397,7 +1399,7 @@ void update_hero_item_rotation_from_history(char *arg, void *mat) {
         struct Hero *b = (struct Hero *)(hero_globals_base + 0xE1D);
         if (b->state.control_mode == 0x16) {
             *(int *)&hero_item_history_delay_target = 14;
-        } else if (b->state.current == 2) {
+        } else if (b->state.current == HERO_STATE_RUN) {
             *(int *)&hero_item_history_delay_target = 5;
         } else {
             *(int *)&hero_item_history_delay_target = 11;
@@ -2315,7 +2317,7 @@ void exit_hero_vehicle_mode(void) {
     g->anim_frame_rate = 1.0f;
     clear_hero_queued_animation();
     if (g->state.current != 100 || (cinematic_mode != 2 && cinematic_mode != 6)) {
-        HeroEnterMoveState(0, 1);
+        HeroEnterMoveState(HERO_STATE_IDLE, 1);
     }
 }
 extern void vec_set_length_xy(float *, float *, float);
@@ -2458,7 +2460,7 @@ s32 hero_check_damage(s32 arg) {
                     id = 0x82;
                     goto call_ret;
                 }
-                HeroEnterMoveState(0x75, 1);
+                HeroEnterMoveState(HERO_STATE_WATER_SURFACE_HURT, 1);
             } else if (g_hero_r4.state.control_mode == 0x11) {
                 mob = (Moby *)g_hero_r4.damage_source_moby;
                 if (mob != 0 && mob->oclass == 0x28F) {
@@ -2481,9 +2483,9 @@ s32 hero_check_damage(s32 arg) {
                         goto call_ret;
                     }
                 }
-                HeroEnterMoveState(0x16, 1);
+                HeroEnterMoveState(HERO_STATE_HURT, 1);
             } else {
-                HeroEnterMoveState(0x16, 1);
+                HeroEnterMoveState(HERO_STATE_HURT, 1);
             }
             e = g_frame_time;
             a = e * 5.7f;
@@ -2498,7 +2500,7 @@ s32 hero_check_damage(s32 arg) {
             }
             break;
         case 1:
-            HeroEnterMoveState(0x46, 1);
+            HeroEnterMoveState(HERO_STATE_VEHICLE_MODE_1_HURT, 1);
             func_L00_00211338_113A0(&v, flag, g_frame_time * 5.0f, g_frame_time * 3.0f);
             break;
         case 2:
@@ -2513,7 +2515,7 @@ s32 hero_check_damage(s32 arg) {
             clear_u64_value(&v);
             break;
         case 3:
-            HeroEnterMoveState(0x56, 1);
+            HeroEnterMoveState(HERO_STATE_VEHICLE_MODE_3_HURT, 1);
             func_L00_00211338_113A0(&v, flag, g_frame_time * 5.0f, g_frame_time * 2.4f);
             break;
     }
@@ -3636,7 +3638,8 @@ void apply_hero_motion_and_resolve_collisions(void) {
     qcopy(previous.f, base);
     position = (float *)((char *)base - 0x80);
     update_hero_attachment(((Hero *)position)->ledge_moby, (char *)base + 0x70, (char *)base + 0x10);
-    if (((Hero *)position)->state.current == 34 || ((Hero *)position)->state.current == 20) {
+    if (((Hero *)position)->state.current == HERO_STATE_RISE_THEN_FALL_WITH_AIRBORNE_HIT_QUERY ||
+        ((Hero *)position)->state.current == HERO_STATE_WRENCH_SLAM) {
         float limit;
 
         if (!((Hero *)position)->collision_off_frames) {
@@ -3809,7 +3812,7 @@ void steer_hero_planar_velocity(float step) {
             {
                 if (*(short *)(hero_14520() + 0x30A) != 0) {
                     struct Hero *h2 = (struct Hero *)((char *)hero_globals_base + 0xE1D);
-                    if (h2->state.current == 0xE && g_frame_time < s)
+                    if (h2->state.current == HERO_STATE_DOUBLE_JUMP && g_frame_time < s)
                         s = g_frame_time;
                 }
             }
@@ -3834,7 +3837,7 @@ void steer_hero_planar_velocity(float step) {
                 struct Hero *h4 = (struct Hero *)((char *)hero_globals_base + 0xE1D);
                 t = t + 1.0f;
                 t *= 1.5f;
-                if (h4->state.current == 0x81) {
+                if (h4->state.current == HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT) {
                     if (1.7f < t)
                         t = 1.7f;
                     if (t < 1.0f)
@@ -3903,7 +3906,7 @@ void hero_integrate_velocity(void) {
     char *k;
     int z;
 
-    if (((struct Hero *)g)->state.current == 14) {
+    if (((struct Hero *)g)->state.current == HERO_STATE_DOUBLE_JUMP) {
         near = 0;
         s = g_frame_time * 7.0f;
         if (gHaveHeliPack[0] != 0) {

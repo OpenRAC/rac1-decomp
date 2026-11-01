@@ -15,6 +15,7 @@
 #include "game/fastfunc.h"
 #include "overlays/shared/hero_move_impulse.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "enums/hero_state.h"
 
 typedef struct {
     int a;
@@ -154,13 +155,13 @@ int HeroL12_SetMoveState(int a, int b) {
             }
             qcopy(&p->motion.momentum, &p->motion.resolved_velocity);
             if (p->on_ice_ground != 0 && vec_length_xy(&p->motion.momentum) > g_frame_time * 0.5f) {
-                HeroL12_SetMoveState(0x2F, 1);
+                HeroL12_SetMoveState(HERO_STATE_RUN_CLEAR_VELOCITY_Z, 1);
                 return 0;
             }
             {
                 struct Hero *r = (struct Hero *)(hero_globals_base + 0xE1D);
                 if (r->on_slip_ground != 0 && r->frames_off_ground.s == 0) {
-                    HeroL12_SetMoveState(0x79, 1);
+                    HeroL12_SetMoveState(HERO_STATE_SLIP, 1);
                     return 0;
                 }
             }
@@ -276,7 +277,7 @@ int HeroL12_SetMoveState(int a, int b) {
             p->unk8E0 = 0;
             p->rand_timer.range = 0x68;
             n = scale_ticks(0xB);
-            if (p->state.prev == 0x33)
+            if (p->state.prev == HERO_STATE_SWIM)
                 n = scale_ticks(0xF);
             if (b)
                 set_hero_animation(0x3D, 0, (float)n);
@@ -376,7 +377,7 @@ int HeroL12_SetMoveState(int a, int b) {
                 struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
                 q->invulnerable_frames = t;
                 if (b) {
-                    if (q->state.current == 0x75) {
+                    if (q->state.current == HERO_STATE_WATER_SURFACE_HURT) {
                         set_hero_animation(0x70, 3, -3.0f);
                     } else {
                         set_hero_animation(0x6F, 3, -3.0f);
@@ -539,7 +540,8 @@ int HeroL12_SetMoveState(int a, int b) {
                 q->unk3BE = 0;
                 stick_target(1.0f, 0);
                 if (1.5707964f < FastDiffRots(q->motion.rot.f[2], q->motion.move_yaw)) {
-                    if (q->state.prev_control_mode == 7 || q->state.prev == 3 || q->state.prev2 == 3) {
+                    if (q->state.prev_control_mode == 7 || q->state.prev == HERO_STATE_STOP ||
+                        q->state.prev2 == HERO_STATE_STOP) {
                         struct Hero *r = (struct Hero *)(hero_globals_base + 0xE1D);
                         r->ground_speed = 0.0f;
                     }
@@ -549,19 +551,20 @@ int HeroL12_SetMoveState(int a, int b) {
                 struct Hero *s = (struct Hero *)(hero_globals_base + 0xE1D);
                 s->rand_timer.range = 0x68;
                 if (s->on_slip_ground != 0 && s->frames_off_ground.s == 0) {
-                    HeroL12_SetMoveState(0x79, 1);
+                    HeroL12_SetMoveState(HERO_STATE_SLIP, 1);
                     return 0;
                 }
             }
             {
                 char *t = hero_globals_base + 0xE1D;
-                if (((struct Hero *)t)->on_ice_ground != 0 || ((struct Hero *)t)->state.current == 0x2F) {
+                if (((struct Hero *)t)->on_ice_ground != 0 ||
+                    ((struct Hero *)t)->state.current == HERO_STATE_RUN_CLEAR_VELOCITY_Z) {
                     if (g_frame_time * 7.7f < ((struct Hero *)t)->ground_speed)
                         ((struct Hero *)t)->ground_speed = g_frame_time * 7.7f;
                     ((struct Hero *)t)->motion.velocity.f[2] = 0.0f;
                     ClampVectorLength(&((struct Hero *)t)->motion.velocity, g_frame_time * 7.7f);
                     ((struct Hero *)t)->unk3B4.i = 0;
-                    ((struct Hero *)t)->state.current = 0x2F;
+                    ((struct Hero *)t)->state.current = HERO_STATE_RUN_CLEAR_VELOCITY_Z;
                     set_hero_animation(0x37, 0, (float)scale_ticks(8));
                 } else if (((struct Hero *)t)->wading != 0 || ((struct Hero *)t)->state.current == 0x73) {
                     ((struct Hero *)t)->state.current = 0x73;
@@ -577,9 +580,10 @@ int HeroL12_SetMoveState(int a, int b) {
                     n = scale_ticks(8);
                     if (((struct Hero *)t)->health.hp == 1)
                         n = scale_ticks(0xC);
-                    if (((struct Hero *)t)->state.prev2 == 0x23)
+                    if (((struct Hero *)t)->state.prev2 == HERO_STATE_ANIMATION_RECOVERY_WITH_JUMP_CANCEL)
                         n = scale_ticks(0xF);
-                    if (((struct Hero *)t)->state.prev2 == 6 || ((struct Hero *)t)->state.prev2 == 0x2D)
+                    if (((struct Hero *)t)->state.prev2 == HERO_STATE_FALL ||
+                        ((struct Hero *)t)->state.prev2 == HERO_STATE_ITEM_RELEASE_FALL)
                         n = scale_ticks(0x12);
                     {
                         struct Hero *u = (struct Hero *)(hero_globals_base + 0xE1D);
@@ -600,7 +604,7 @@ int HeroL12_SetMoveState(int a, int b) {
             p->state.control_mode = 1;
             p->unk2284 = 0;
             if (b) {
-                if (p->state.prev == 4) {
+                if (p->state.prev == HERO_STATE_CROUCH) {
                     set_hero_animation(0x5E, 2, (float)scale_ticks(5));
                 } else {
                     set_hero_animation(0x5E, 1, (float)scale_ticks(8));
@@ -634,17 +638,17 @@ int HeroL12_SetMoveState(int a, int b) {
             p->unk2284 = 0;
             qcopy(&p->motion.momentum, &p->motion.resolved_velocity);
             if (p->on_ice_ground != 0) {
-                HeroL12_SetMoveState(0x2F, 1);
+                HeroL12_SetMoveState(HERO_STATE_RUN_CLEAR_VELOCITY_Z, 1);
                 return 0;
             }
             if (p->on_slip_ground != 0 && p->frames_off_ground.s == 0) {
-                HeroL12_SetMoveState(0x79, 1);
+                HeroL12_SetMoveState(HERO_STATE_SLIP, 1);
                 return 0;
             }
             if (try_start_hero_item_idle_animation())
                 return 0;
             if (hero_get_gadget_anim_id(0) == 0x54) {
-                if (HeroL12_SetMoveState(0, 0)) {
+                if (HeroL12_SetMoveState(HERO_STATE_IDLE, 0)) {
                     set_hero_animation(hero_get_gadget_anim_id(0), 0, (float)scale_ticks(0x12));
                 }
                 return 0;
@@ -683,7 +687,7 @@ int HeroL12_SetMoveState(int a, int b) {
             if (g_frame_time * 7.0f < p->ground_speed)
                 p->ground_speed = g_frame_time * 7.0f;
             if (p->on_slip_ground != 0 && p->frames_off_ground.s == 0) {
-                HeroL12_SetMoveState(0x79, 1);
+                HeroL12_SetMoveState(HERO_STATE_SLIP, 1);
                 return 0;
             }
             {
@@ -897,7 +901,7 @@ int HeroL12_SetMoveState(int a, int b) {
             p->unk2284 = 0;
             p->fall_state_gravity = g_frame_time_sq * 24.0f;
             p->stickless_decel = g_frame_time_sq * 7.0f;
-            if (p->state.current == 0x77) {
+            if (p->state.current == HERO_STATE_FATAL_FALL) {
                 if (p->vehicle_mode == 0) {
                     p->health.unk22B2 = allocate_hero_voice_for_entry(0x17, 0x20);
                 }
@@ -1024,7 +1028,7 @@ int HeroL12_SetMoveState(int a, int b) {
                 u->air_turn_rate = g_frame_time * 15.0098314f;
                 u->fall_gravity = 0.0f;
                 u->unk22B4 = 0;
-                if (u->state.current == 7) {
+                if (u->state.current == HERO_STATE_JUMP) {
                     u->unk430 = 1.47f;
                     u->takeoff_frame = scale_ticks(5);
                     u->unk434 = 0.6f;
@@ -1067,7 +1071,7 @@ int HeroL12_SetMoveState(int a, int b) {
                         struct Hero *w = (struct Hero *)(hero_globals_base + 0xE1D);
                         w->item_select_blocked = 1;
                     }
-                } else if (u->state.current == 9) {
+                } else if (u->state.current == HERO_STATE_RUN_JUMP) {
                     u->unk430 = 1.0f;
                     u->takeoff_frame = scale_ticks(5);
                     u->unk434 = 0.6f;
@@ -1081,7 +1085,7 @@ int HeroL12_SetMoveState(int a, int b) {
                     u->unk4AC = 1;
                     u->can_chain_high_jump = 1;
                     u->can_double_jump = 1;
-                } else if (u->state.current == 0xA) {
+                } else if (u->state.current == HERO_STATE_PACK_JUMP) {
                     u->unk430 = 1.9f;
                     u->takeoff_frame = scale_ticks(5);
                     u->unk434 = 0.6f;
@@ -1096,7 +1100,7 @@ int HeroL12_SetMoveState(int a, int b) {
                     u->jump_max_frames = scale_ticks(0x78);
                     u->fall_delay_frames = scale_ticks(0x5A);
                     u->unk4A6 = scale_ticks(0x46);
-                } else if (u->state.current == 0x10) {
+                } else if (u->state.current == HERO_STATE_PACK_LONG_JUMP) {
                     char *x = (char *)&u->trail;
                     u->unk430 = 1.5f;
                     u->takeoff_frame = scale_ticks(5);
@@ -1121,7 +1125,7 @@ int HeroL12_SetMoveState(int a, int b) {
                     u->jump_gravity = g_frame_time_sq * 8.5f;
                     u->air_speed_step_up = g_frame_time_sq * 44.0f;
                     u->jump_decel = g_frame_time_sq * 50.0f;
-                } else if (u->state.current == 0x1C) {
+                } else if (u->state.current == HERO_STATE_LEDGE_JUMP) {
                     u->unk430 = 2.0f;
                     u->takeoff_frame = scale_ticks(0xA);
                     u->unk434 = 0.85f;
@@ -1207,7 +1211,7 @@ int HeroL12_SetMoveState(int a, int b) {
                         *(char **)&w->unk3E4 = (char *)&hoven_hero_state_f_jump_velocity_keys;
                         w->can_chain_high_jump = 1;
                     }
-                } else if (u->state.current == 0xE) {
+                } else if (u->state.current == HERO_STATE_DOUBLE_JUMP) {
                     float v = 0.7f;
                     if (u->ground_distance < 2.0f)
                         v = (2.5f - u->ground_distance) * 0.5f + 0.7f;
@@ -1223,7 +1227,7 @@ int HeroL12_SetMoveState(int a, int b) {
                     u->jump_anim_retime_scale = 1.0f;
                     u->air_stick_speed = g_frame_time * 3.5f;
                     u->unk4A6 = scale_ticks(0x1E);
-                } else if (u->state.current == 0xB) {
+                } else if (u->state.current == HERO_STATE_HIGH_JUMP) {
                     u->unk430 = 3.2f;
                     u->takeoff_frame = scale_ticks(5);
                     u->unk434 = 0.6f;
@@ -1272,7 +1276,7 @@ int HeroL12_SetMoveState(int a, int b) {
                         set_hero_animation(0x12, 0, (float)scale_ticks(5));
                     } else if (s == 0x10) {
                         if (q->state.prev_control_mode == 4 ||
-                            (q->state.prev == 4 && scale_ticks(7) > q->state_timer)) {
+                            (q->state.prev == HERO_STATE_CROUCH && scale_ticks(7) > q->state_timer)) {
                             set_hero_animation(0x26, 0, (float)scale_ticks(8));
                             q->takeoff_frame += scale_ticks(3);
                         } else {
@@ -1329,7 +1333,7 @@ int HeroL12_SetMoveState(int a, int b) {
             *(int *)&p->melee_target = 0;
             p->unkA64 = 0;
             switch (p->state.current) {
-                case 0x14: {
+                case HERO_STATE_WRENCH_SLAM: {
                     struct MoveUsageTable *h = (struct MoveUsageTable *)(help_stats_base + 0x22D);
                     struct Hero *q;
                     if (h->e[0].count <= 0xFFFE) {
@@ -1349,7 +1353,7 @@ int HeroL12_SetMoveState(int a, int b) {
                     if (b) {
                         char *m;
                         int n = scale_ticks(0xB);
-                        if (q->state.prev == 0xB && scale_ticks(0x2A) > q->state.prev_timer)
+                        if (q->state.prev == HERO_STATE_HIGH_JUMP && scale_ticks(0x2A) > q->state.prev_timer)
                             n = scale_ticks(0x11);
                         set_hero_animation(0x2B, 4, (float)n);
                         m = hero_slot_moby(0);
@@ -1358,7 +1362,7 @@ int HeroL12_SetMoveState(int a, int b) {
                     }
                     break;
                 }
-                case 0x15: {
+                case HERO_STATE_CROUCH_SWING: {
                     struct MoveUsageTable *h = (struct MoveUsageTable *)(help_stats_base + 0x22D);
                     struct MoveUsageTable *h2;
                     struct Hero *q;
@@ -1386,14 +1390,14 @@ int HeroL12_SetMoveState(int a, int b) {
                         int n = scale_ticks(0xA);
                         if (*(unsigned char *)(*(char **)&q->moby + 0x53) == 0x1A)
                             n = scale_ticks(3);
-                        if (q->state.prev == 1)
+                        if (q->state.prev == HERO_STATE_LOOK)
                             n = scale_ticks(0x11);
                         set_hero_animation(0x1A, 0, (float)n);
                         hero_queue_sequence(6, 0x15);
                     }
                     break;
                 }
-                case 0x20: {
+                case HERO_STATE_HELD_ITEM_ATTACK: {
                     struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
                     if (*(void **)&q->items[0].moby == 0)
                         break;
@@ -1404,7 +1408,7 @@ int HeroL12_SetMoveState(int a, int b) {
                     update_hero_target_heading(11.0f, 0.87266463f, -1.0f);
                     break;
                 }
-                case 0x13: {
+                case HERO_STATE_WRENCH_COMBO: {
                     struct MoveUsageTable *h = (struct MoveUsageTable *)(help_stats_base + 0x65);
                     struct Hero *q;
                     T2C_2407C0 *e;
@@ -1456,7 +1460,7 @@ int HeroL12_SetMoveState(int a, int b) {
                     }
                     break;
                 }
-                case 0x23: {
+                case HERO_STATE_ANIMATION_RECOVERY_WITH_JUMP_CANCEL: {
                     struct Hero *q;
                     if (b)
                         set_hero_animation(0x2C, 7, (float)scale_ticks(9));
@@ -1475,7 +1479,7 @@ int HeroL12_SetMoveState(int a, int b) {
             struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
             p->state.control_mode = 6;
             p->unkA64 = 0;
-            if (p->state.prev == 0x70) {
+            if (p->state.prev == HERO_STATE_ATTACK_RECORD_FRAME_EXIT_WAIT) {
                 int v = 5;
                 if (hoven_attack_records[p->attack_record].b == 0)
                     v = 6;
@@ -1559,7 +1563,7 @@ int HeroL12_SetMoveState(int a, int b) {
             p->state.control_mode = 0;
             p->unk2284 = 0;
             if (p->on_slip_ground != 0 && p->frames_off_ground.s == 0) {
-                HeroL12_SetMoveState(0x58, 1);
+                HeroL12_SetMoveState(HERO_STATE_VEHICLE_MODE_3_SLIP, 1);
                 return 0;
             }
             if (b)
@@ -1601,7 +1605,7 @@ int HeroL12_SetMoveState(int a, int b) {
             p->state.control_mode = 1;
             p->unk2284 = 0;
             if (p->on_slip_ground != 0 && p->frames_off_ground.s == 0) {
-                HeroL12_SetMoveState(0x58, 1);
+                HeroL12_SetMoveState(HERO_STATE_VEHICLE_MODE_3_SLIP, 1);
                 return 0;
             }
             {

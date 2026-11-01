@@ -12,6 +12,7 @@
 #include "game/fastfunc.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/level.h"
+#include "enums/hero_state.h"
 
 extern int vendor_stock[] MACRO_ADDR;
 extern short follow_cam_setting_values;
@@ -178,7 +179,7 @@ void update_hero_aligned_camera_from_input(Camera *o) {
         t = IntToFloat((g_controller_state.held >> 12) & 1);
     if (t == 0.0f)
         t = -IntToFloat((g_controller_state.held >> 14) & 1);
-    if (player_camera_r.blend.phase != 0 && g_hero_r.state.prev == 2)
+    if (player_camera_r.blend.phase != 0 && g_hero_r.state.prev == HERO_STATE_RUN)
         t = 0.0f;
     if (invert52 == 0)
         t = -t;
@@ -1032,7 +1033,7 @@ void update_target_tracking_camera_position(Camera *cam) {
     unsigned short *neighbours;
     int i;
 
-    if (hero_2ED320.swing_target_moby != 0 && hero_2ED320.state.current == 0x2c) {
+    if (hero_2ED320.swing_target_moby != 0 && hero_2ED320.state.current == HERO_STATE_GRAPPLE_SWING_ENTRY) {
         fraction = ((float *)hero_2ED320.swing_target_moby)[6] - hero_2ED320.motion.pos.f[2];
         if (fraction > hero_2ED320.unk9A0)
             fraction = hero_2ED320.unk9A0;
@@ -1049,14 +1050,14 @@ void update_target_tracking_camera_position(Camera *cam) {
                     (float *)(*(char **)(cam_globals_2ED320.current_follow_cam + 0x70) + 0xa0));
     approach_2ED320(rate, frame_time_2ED320 * 4.0f,
                     (float *)(*(char **)(cam_globals_2ED320.current_follow_cam + 0x70) + 0xb0));
-    if (current_level_2ED320 == 14 && hero_2ED320.state.current == 0x2c)
+    if (current_level_2ED320 == 14 && hero_2ED320.state.current == HERO_STATE_GRAPPLE_SWING_ENTRY)
         approach_2ED320(rate + 0.25f, frame_time_2ED320 * 8.0f,
                         (float *)(*(char **)(cam_globals_2ED320.current_follow_cam + 0x70) + 0x8c));
     else
         approach_2ED320(rate - 0.5f, frame_time_2ED320 * 8.0f,
                         (float *)(*(char **)(cam_globals_2ED320.current_follow_cam + 0x70) + 0x8c));
 
-    if (hero_2ED320.state.current == 0x2c) {
+    if (hero_2ED320.state.current == HERO_STATE_GRAPPLE_SWING_ENTRY) {
         if ((current_level_2ED320 != 14 && current_level_2ED320 != 7 && current_level_2ED320 != 9) ||
             (hero_2ED320.swing_target_moby != 0 &&
              *(unsigned char *)((char *)hero_2ED320.swing_target_moby + 0x21) == 255)) {
@@ -1102,7 +1103,7 @@ void update_target_tracking_camera_position(Camera *cam) {
             else
                 *angle = rope_spring_turn_2ED320(turn, *angle, hero_2ED320.motion.rot.f[2], 0.00125f, 0.175f, 0.0f);
         }
-    } else if (hero_2ED320.state.current == 0x25) {
+    } else if (hero_2ED320.state.current == HERO_STATE_APPROACH_TARGET_MOBY) {
         if (*(int *)(follow + 0x40) == 1)
             *angle = rope_spring_turn_2ED320(angle + 1, *angle, *(float *)(*(char **)(follow + 0x44) + 0x48),
                                              rope_turn_k_2ED320, 0.175f, 0.0f);

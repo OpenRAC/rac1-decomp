@@ -5,6 +5,7 @@
 #include "structs/vector.h"
 #include "data/executable.h"
 #include "enums/level.h"
+#include "enums/hero_state.h"
 
 typedef int Q_8 __attribute__((mode(TI)));
 typedef struct {
@@ -118,7 +119,7 @@ s32 handle_hero_hit(s32 arg) {
                     id = 0x82;
                     goto call_ret;
                 }
-                Hero_TryMoveStateL08(0x75, 1);
+                Hero_TryMoveStateL08(HERO_STATE_WATER_SURFACE_HURT, 1);
             } else if (g_hero.state.control_mode == 0x11) {
                 mob = (u8 *)g_hero.damage_source_moby;
                 if (mob != 0 && *(s16 *)(mob + 0xA6) == 0x28F) {
@@ -141,9 +142,9 @@ s32 handle_hero_hit(s32 arg) {
                         goto call_ret;
                     }
                 }
-                Hero_TryMoveStateL08(0x16, 1);
+                Hero_TryMoveStateL08(HERO_STATE_HURT, 1);
             } else {
-                Hero_TryMoveStateL08(0x16, 1);
+                Hero_TryMoveStateL08(HERO_STATE_HURT, 1);
             }
             e = g_frame_time;
             a = e * 5.7f;
@@ -158,7 +159,7 @@ s32 handle_hero_hit(s32 arg) {
             }
             break;
         case 3:
-            Hero_TryMoveStateL08(0x56, 1);
+            Hero_TryMoveStateL08(HERO_STATE_VEHICLE_MODE_3_HURT, 1);
             hero_knockback(&v, flag, g_frame_time * 5.0f, g_frame_time * 2.4f);
             break;
     }

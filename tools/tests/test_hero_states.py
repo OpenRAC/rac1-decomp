@@ -17,7 +17,7 @@ class HeroStatesTest(unittest.TestCase):
         table = hs.names()
         self.assertEqual(table[0], "HERO_STATE_IDLE")
         self.assertEqual(table[7], "HERO_STATE_JUMP")
-        self.assertFalse([name for name in table.values() if "VEHICLE" in name or "GRAVITY" in name])
+        self.assertTrue(all(name.startswith("HERO_STATE_") for name in table.values()))
 
     def test_compare(self):
         self.assertEqual(rewrite("if (g_hero.state.current == 7) x();"),

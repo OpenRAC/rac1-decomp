@@ -112,7 +112,7 @@ void bomber_jet_update(Moby *m) {
             } else if (d->timer != -1) {
                 if (FastDecTimer(&d->timer)) {
                     CameraScript2(0);
-                    Hero_SetMoveState(0, 1);
+                    Hero_SetMoveState(HERO_STATE_IDLE, 1);
                     cutscene_active = 0;
                     level_moby_killed[g_current_level_index][(short)m->save_id >> 5] |= 1 << (m->save_id & 0x1F);
                     moby_killed[(short)m->save_id >> 5] |= 1 << (m->save_id & 0x1F);

@@ -16,6 +16,7 @@
 #include "game/mobyutil.h"
 #include "overlays/shared/sound_playback.h"
 #include "structs/level_records.h"
+#include "enums/hero_state.h"
 
 /* Glow particle (class 0x70): spinning shard that shrinks and fades out. */
 struct GlowParticleVars {
@@ -1286,7 +1287,7 @@ void launch_bomb(float *pos, unsigned char *moby, float *velocity) {
         qcopy(mp, collision_hit_point);
     }
     ge = (char *)&D_E910;
-    if (*(unsigned char *)(ge + 0xa) != 0 && gc->state.current == 1) {
+    if (*(unsigned char *)(ge + 0xa) != 0 && gc->state.current == HERO_STATE_LOOK) {
         float z = vars->vel.f[2];
         FastVecScale(&vars->vel, &vars->vel, 1.5f);
         vars->vel.f[2] = z / 1.5f;
@@ -1385,7 +1386,7 @@ int predict_throw_landing(void *vp, void *m, int mode) {
     }
     if (screen_globals_base[0x4D0] != 0) {
         struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
-        if (g->state.current == 1) {
+        if (g->state.current == HERO_STATE_LOOK) {
             float z = velocity.f[2];
             FastVecScale(&velocity, &velocity, 1.5f);
             velocity.f[2] = z / 1.5f;

@@ -19,6 +19,7 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
+#include "enums/hero_state.h"
 
 /* Elevator with a rotating ring: volume, speed and lift offset. */
 struct ElevatorRingVars {
@@ -2841,7 +2842,7 @@ void transport_pod_update(unsigned char *moby) {
                 }
                 moby[0x20] = 0xD;
                 CameraScript2(2);
-                HeroL02_SetMoveState(0, 1);
+                HeroL02_SetMoveState(HERO_STATE_IDLE, 1);
             }
             break;
         case TRANSPORT_POD_RAISE_TO_STOP_HEIGHT:

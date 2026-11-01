@@ -24,6 +24,7 @@
 #include "structs/collision.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+#include "enums/hero_state.h"
 /* Novalis elevator: rides its path while the hero stands on it. */
 struct NovalisElevatorVars {
     u8 pad_00[0x20];
@@ -1079,7 +1080,7 @@ void bolt_crank_update(char *m) {
                                     if (ok == 0) {
                                         goto done;
                                     }
-                                    Hero_SetMoveState(0x3B, 1);
+                                    Hero_SetMoveState(HERO_STATE_CRANK, 1);
                                     CameraScript(camera_pos, camera_pos + 0x10, 3, scale_ticks(0xB4), 0);
                                     set_camera_rotation(camera_points + (I(s, 0x20) << 7) + 0x70);
                                     set_camera_position(camera_points + (I(s, 0x20) << 7) + 0x30);
@@ -1138,7 +1139,7 @@ void bolt_crank_update(char *m) {
             {
                 if ((pad_pressed_within(0x80, scale_ticks(7), 0) != 0 && scale_ticks(0x3C) < I(H, 0x198)) ||
                     F(s, 0x0) == 1.0f) {
-                    Hero_SetMoveState(0, 1);
+                    Hero_SetMoveState(HERO_STATE_IDLE, 1);
                     if (I(s, 0x38) != 0) {
                         ((Moby *)m)->state = 1;
                     } else if (F(s, 0x0) == 1.0f) {
@@ -1943,7 +1944,7 @@ void sand_mouse_update(Moby *moby) {
             }
             break;
         case 4:
-            Hero_SetMoveState(0, 1);
+            Hero_SetMoveState(HERO_STATE_IDLE, 1);
             moby->flags &= 0xFFBE;
             if (d->parent != -1) {
                 novalis_mobys_r[d->parent].flags &= 0xFFBE;

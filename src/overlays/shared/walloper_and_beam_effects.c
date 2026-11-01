@@ -13,6 +13,7 @@
 #include "structs/level_records.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+#include "enums/hero_state.h"
 
 /* Tesla beam: draw state read by the beam and arc effects. */
 struct BeamArcVars {
@@ -1007,7 +1008,7 @@ void walloper_update(Moby *m) {
             walloper_effect_fade_out_countdown = scale_ticks(*(int *)&walloper_fade_out_ticks);
             break;
         case 2:
-            if (g->state.current == 0x20) {
+            if (g->state.current == HERO_STATE_HELD_ITEM_ATTACK) {
                 float f = MobyGetFrameValue(m);
                 if (6.0f <= f) {
                     flag = 1;
@@ -1595,11 +1596,11 @@ void MorphorayUpdate(Moby *m) {
             p->timer = scale_ticks_r(15);
         }
         Moby_GetJointWorldPos_r(m, 0, p);
-        if (((Hero *)g_hero_r)->state.current == 1) {
-            HeroEnterMoveState_r(30, 1);
+        if (((Hero *)g_hero_r)->state.current == HERO_STATE_LOOK) {
+            HeroEnterMoveState_r(HERO_STATE_LOOK_RELEASE_WAIT, 1);
         }
         *(u128_2BDAF0 *)&v0 = 0;
-        if (((Hero *)g_hero_r)->state.current == 30 &&
+        if (((Hero *)g_hero_r)->state.current == HERO_STATE_LOOK_RELEASE_WAIT &&
             (*(unsigned short *)((char *)((Hero *)g_hero_r)->moby + 0x34) & 1)) {
             matrix_copy_rows_r(v, player_camera_r);
             matrix_from_basis_rows_r(mt, v);

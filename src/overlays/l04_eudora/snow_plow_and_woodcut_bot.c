@@ -16,6 +16,7 @@
 #include "game/mobyutil.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "enums/moby_class.h"
+#include "enums/hero_state.h"
 
 typedef int w128 __attribute__((mode(TI)));
 typedef struct {
@@ -2036,7 +2037,7 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
                         is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
                                                     data->f38) != 0) {
                         Hero *h = (Hero *)(hero_globals_base + 0xE1D);
-                        if (h->state.prev == 0x3B && h->state_timer == 0) {
+                        if (h->state.prev == HERO_STATE_CRANK && h->state_timer == 0) {
                             Moby *m;
                             for (m = eudora_moby_list_r; m != 0; m = m->next) {
                                 if (m->oclass == MOBY_CLASS_BOLT_CRANK &&

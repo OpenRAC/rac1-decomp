@@ -43,7 +43,7 @@ void FighterJetUpdate(FighterJet1379 *moby) {
                     d->t62 = scale_ticks(0x1E);
                     g->f88 = g->f88 + 0.2f;
                     g->p2080->i98 = 0;
-                    HeroL17_SetMoveState(0, 1);
+                    HeroL17_SetMoveState(HERO_STATE_IDLE, 1);
                     g->cur = 0;
                     g->id = -1;
                     spawn_explosion(moby, v, 0, 0.0f, 0.0f, 0xA, 3, 0x10, 4.0f, 2.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1,
@@ -215,7 +215,7 @@ void FighterJetUpdate(FighterJet1379 *moby) {
                 char *e;
                 g->b20A5 = 0;
                 g->p2080->i98 = 0;
-                HeroL17_SetMoveState(0, 1);
+                HeroL17_SetMoveState(HERO_STATE_IDLE, 1);
                 CameraScript2(0);
                 Hud_SetBarValueById(g->h160C, 0);
                 qcopy(moby->pos, d->v40);
@@ -289,7 +289,7 @@ void FighterJetUpdate(FighterJet1379 *moby) {
                     int i;
                     g->b20A5 = 0;
                     g->p2080->i98 = 0;
-                    HeroL17_SetMoveState(0, 1);
+                    HeroL17_SetMoveState(HERO_STATE_IDLE, 1);
                     CameraScript2(0);
                     MusicRequestTrack(0, 5);
                     i = d->i100;

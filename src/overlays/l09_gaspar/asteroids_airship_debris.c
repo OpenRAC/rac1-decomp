@@ -19,6 +19,7 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
+#include "enums/hero_state.h"
 
 /* Airship part: placed at its source's position. */
 struct AirshipPartVars {
@@ -2048,7 +2049,7 @@ void PathPlatformL09_Update(unsigned char *moby) {
                 if (0.5f < FastAbsF(data->unkA4 - 0.5f)) {
                     int r;
                     if (data->unkC8 == 0 && is_hero_on_moby(moby)) {
-                        HeroEnterMoveState(0, 1);
+                        HeroEnterMoveState(HERO_STATE_IDLE, 1);
                     }
                     if (0.0f < data->unkAC) {
                         m->command = 0;
@@ -2641,7 +2642,7 @@ void turret_update(struct Moby *moby) {
     seat.f[2] += 0.4f;
     if (moby->state >= 4) {
         if (FastDecTimer(&vars->mount_delay) != 0 && moby->command == 1 && hero.state.control_mode != 0x14 &&
-            hero.state.control_mode != 7 && hero.state.current != 0x3D) {
+            hero.state.control_mode != 7 && hero.state.current != HERO_STATE_DYING) {
             qcopy(&hero.motion.pos, &seat);
             qcopy(&hero.motion.rot, &moby->rot);
             hero.motion.rot.f[2] = FastAddRots(1.5707964f, hero.motion.rot.f[2]);
@@ -2671,8 +2672,9 @@ void turret_update(struct Moby *moby) {
                 moby->command = 0;
                 vars->mount_delay = scale_ticks(60);
             }
-        } else if (hero.state.control_mode != 0x14 && hero.state.control_mode != 7 && hero.state.current != 0x3D &&
-                   hero.ground_moby == moby && FastVecDist(&seat, &hero.moby->pos) < 1.2f && vars->mount_delay == 0) {
+        } else if (hero.state.control_mode != 0x14 && hero.state.control_mode != 7 &&
+                   hero.state.current != HERO_STATE_DYING && hero.ground_moby == moby &&
+                   FastVecDist(&seat, &hero.moby->pos) < 1.2f && vars->mount_delay == 0) {
             moby->command = 1;
             a_222B80(0x32, 1);
         }

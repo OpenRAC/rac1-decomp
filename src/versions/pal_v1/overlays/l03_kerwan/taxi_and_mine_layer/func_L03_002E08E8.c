@@ -113,11 +113,12 @@ void update_kerwan_tutorial_hints(Moby *moby) {
                 if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->f3C) != 0 && count == 0 &&
                     (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 ||
                      ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9) &&
-                    ((Hero *)(hero_globals_base + 0xE1D))->state.current != 0x1E && (gHaveHeliPack + 0xD)[0] != 0 &&
-                    get_ammo(0xF) >= 0x15 && kerwan_help_popup_state[0] == 0 && kerwan_help_popup_state[9] == -1 &&
-                    (help_records_r)[0x4A].count == 0 && usage_stats_r[0x13].count == 0) {
+                    ((Hero *)(hero_globals_base + 0xE1D))->state.current != HERO_STATE_LOOK_RELEASE_WAIT &&
+                    (gHaveHeliPack + 0xD)[0] != 0 && get_ammo(0xF) >= 0x15 && kerwan_help_popup_state[0] == 0 &&
+                    kerwan_help_popup_state[9] == -1 && (help_records_r)[0x4A].count == 0 &&
+                    usage_stats_r[0x13].count == 0) {
                     Help_Request(0x4E20, 0x4A);
-                } else if (((Hero *)(hero_globals_base + 0xE1D))->state.current == 0x1E) {
+                } else if (((Hero *)(hero_globals_base + 0xE1D))->state.current == HERO_STATE_LOOK_RELEASE_WAIT) {
                     Help_2E08E8 *h = usage_stats_r;
                     unsigned int c = h[0x13].count;
                     if (c <= 0xFFFE) {
@@ -143,8 +144,8 @@ void update_kerwan_tutorial_hints(Moby *moby) {
             if (is_point_inside_clip_volume(hero_globals_base + 0xE9D, data->f38) != 0 &&
                 (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 ||
                  ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9) &&
-                ((Hero *)(hero_globals_base + 0xE1D))->state.current == 1 && kerwan_usage_event_timer == -1 &&
-                kerwan_help_popup_state[0] == 0 && kerwan_help_popup_state[9] == -1) {
+                ((Hero *)(hero_globals_base + 0xE1D))->state.current == HERO_STATE_LOOK &&
+                kerwan_usage_event_timer == -1 && kerwan_help_popup_state[0] == 0 && kerwan_help_popup_state[9] == -1) {
                 Help_2E08E8 *b = help_records_r;
                 if (b[0x40].count != 0 && b[0x41].count == 0) {
                     Help_Request(0x3ED, 0x41);
@@ -198,7 +199,7 @@ void update_kerwan_tutorial_hints(Moby *moby) {
                 }
             }
 
-            if (((Hero *)(hero_globals_base + 0xE1D))->state.current == 0x74) {
+            if (((Hero *)(hero_globals_base + 0xE1D))->state.current == HERO_STATE_FOLLOW_PATH) {
                 Help_2E08E8 *h = usage_stats_r;
                 if (h[0x10].count == 0) {
                     int n;

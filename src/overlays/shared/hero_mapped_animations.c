@@ -12,6 +12,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/level.h"
+#include "enums/hero_state.h"
 
 extern char g_hero[];
 extern int select_hero_slot3_animation_pair(int, int *, int *);
@@ -1255,7 +1256,7 @@ void request_hero_target_pose(float *pos, int arg, float t) {
     *(int *)(base + 0x1650) = arg;
     *(float *)(base + 0x164C) = t;
     if (state < 0x65 || state > 0x67) {
-        HeroEnterMoveState(0x65, 1);
+        HeroEnterMoveState(HERO_STATE_APPROACH_TARGET_POSE, 1);
     }
 }
 
@@ -1316,7 +1317,7 @@ void update_hero_attachment(void) {
             ((Hero *)g_hero)->attach_flags &= ~1;
             ((Hero *)g_hero)->attach_flags &= ~2;
         }
-    } else if (((Hero *)g_hero)->state.current == 0x1C && ((Hero *)g_hero)->ledge_moby != 0) {
+    } else if (((Hero *)g_hero)->state.current == HERO_STATE_LEDGE_JUMP && ((Hero *)g_hero)->ledge_moby != 0) {
         ((Hero *)g_hero)->platform_moby = (void *)((Hero *)g_hero)->ledge_moby;
         mode = 1;
     } else if (((Hero *)g_hero)->state.control_mode == 3 && ((Hero *)g_hero)->ledge_moby != 0) {
@@ -1417,7 +1418,8 @@ void update_hero_attachment(void) {
         transform_attachment_pose((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby,
                                   &((Hero *)g_hero)->attach_anchor_alt_pos, &((Hero *)g_hero)->attach_anchor_rot, &v80,
                                   &v90);
-        if ((((Hero *)g_hero)->state.current == 1 || ((Hero *)g_hero)->state.current == 0x1E) &&
+        if ((((Hero *)g_hero)->state.current == HERO_STATE_LOOK ||
+             ((Hero *)g_hero)->state.current == HERO_STATE_LOOK_RELEASE_WAIT) &&
             ((Hero *)g_hero)->unk20A5 != 0) {
             ((Hero *)g_hero)->motion.rot.f[2] = v50.z;
         } else if (((Hero *)g_hero)->attach_flags & 2) {

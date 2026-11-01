@@ -17,6 +17,7 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
+#include "enums/hero_state.h"
 
 /* Electric gate: its trigger and the sound voice slot it claims. */
 struct ElectricGateWatchVars {
@@ -1979,14 +1980,16 @@ void update_hoverboard_girl(Moby *moby) {
                     moby->pos.x,
                 (*(Hero *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->rot_matrix[0]).motion.pos.f[1] -
                     moby->pos.y)) < 1.2217305f) {
-        if ((*(Hero *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->rot_matrix[0]).state.current == 11 &&
+        if ((*(Hero *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->rot_matrix[0]).state.current ==
+                HERO_STATE_HIGH_JUMP &&
             (*(Hero *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->rot_matrix[0]).state_timer == 15) {
             state->breast_growth_count_gp++;
             if (state->breast_growth_count_gp > 20)
                 state->breast_growth_count_gp = 20;
             breast_growth_count_gp_q = state->breast_growth_count_gp;
         }
-        if ((*(Hero *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->rot_matrix[0]).state.current == 4 &&
+        if ((*(Hero *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->rot_matrix[0]).state.current ==
+                HERO_STATE_CROUCH &&
             scale_frame_count(20) <
                 (*(Hero *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->rot_matrix[0]).state_timer &&
             frame_number % 10 == 0) {
@@ -2937,8 +2940,8 @@ void update_moby_gameplay_events(unsigned char *moby) {
     if (D_0013D388 && D_00141A78 == 0 && D_001413DC == 0x16)
         FUN_L00_00203908(0x1389, 0x22);
     if (D_00141C58 == 0) {
-        if (hero.state.current == 10 && (is_point_inside_clip_volume(&hero.motion.pos, data[13]) ||
-                                         is_point_inside_clip_volume(&hero.motion.pos, data[14]))) {
+        if (hero.state.current == HERO_STATE_PACK_JUMP && (is_point_inside_clip_volume(&hero.motion.pos, data[13]) ||
+                                                           is_point_inside_clip_volume(&hero.motion.pos, data[14]))) {
             if (D_00141C58 < 0xffff)
                 D_00141C58 = D_00141C58 + 1;
             value = scale_game_frames(D_L05_0015EEA4) / 600;

@@ -5,6 +5,7 @@
 #include "structs/hero.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "data/level_01.h"
+#include "enums/hero_state.h"
 
 // Fills a jump pattern record with its default constants.
 void MoveCtl_Init(char *p) {
@@ -243,7 +244,7 @@ extern char hero_globals_base[];
 int is_hero_on_moby(char *m) {
     struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
 
-    if (h->state.control_mode == 3 || h->state.current == 0x1C) {
+    if (h->state.control_mode == 3 || h->state.current == HERO_STATE_LEDGE_JUMP) {
         if (*(char **)&h->ledge_moby == m) {
             return 1;
         }

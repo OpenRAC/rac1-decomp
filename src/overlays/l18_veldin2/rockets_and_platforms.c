@@ -19,6 +19,7 @@
 #include "structs/small_records.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+#include "enums/hero_state.h"
 
 /* Seeker bolt (Rocket): flies along vel, optionally turning to the hero, bursts on a hit or when the timer ends. */
 struct SeekerBoltVars {
@@ -1055,7 +1056,8 @@ void thruster_pack_lock_green_update(char *moby) {
                 }
                 {
                     Hero *hero_ptr = (Hero *)(hero_globals_base + 0xE1D);
-                    if (hero_ptr->air_frames.s == 0 && hero_ptr->state.current == 0x22) {
+                    if (hero_ptr->air_frames.s == 0 &&
+                        hero_ptr->state.current == HERO_STATE_RISE_THEN_FALL_WITH_AIRBORNE_HIT_QUERY) {
                         Moby_PlaySound(0, 0, (int)moby);
                         moby_vars->f24 = 0;
                     }
@@ -1237,7 +1239,8 @@ void thruster_pack_lock_red_update(struct Moby *moby) {
         case 2:
             ApproachWithVelocity(&moby->pos.z, &data->z_vel, data->base_z + (*(float *)&red_thruster_lock_wait_height),
                                  g_frame_time_sq * 5.0f, g_frame_time_sq * 10.0f, g_frame_time * 20.0f);
-            if (g_hero_r2.air_frames.s == 0 && g_hero_r2.ground_moby == moby && g_hero_r2.state.current == 0x22) {
+            if (g_hero_r2.air_frames.s == 0 && g_hero_r2.ground_moby == moby &&
+                g_hero_r2.state.current == HERO_STATE_RISE_THEN_FALL_WITH_AIRBORNE_HIT_QUERY) {
                 moby->state = 3;
                 Moby_PlaySound_r(0, 0, (int)moby);
                 index = data->voice;
@@ -1254,7 +1257,8 @@ void thruster_pack_lock_red_update(struct Moby *moby) {
             }
             break;
         case 4:
-            if (g_hero_r2.air_frames.s == 0 && g_hero_r2.ground_moby == moby && g_hero_r2.state.current == 0x22) {
+            if (g_hero_r2.air_frames.s == 0 && g_hero_r2.ground_moby == moby &&
+                g_hero_r2.state.current == HERO_STATE_RISE_THEN_FALL_WITH_AIRBORNE_HIT_QUERY) {
                 moby->state = 5;
                 moby->command = 1;
                 moby->pos.z -= 1.5f;
@@ -1531,8 +1535,8 @@ void SinkingPlatformUpdate(struct Moby *moby) {
             if (moby->pos.z < data->base_z - 10.0f) {
                 if (g_hero_r3.ground_moby == moby && g_hero_r3.air_frames.s == 0) {
                     if (g_hero_r3.motion.pos.f[2] < (*(float *)&veldin2_hero_fall_state_height) &&
-                        g_hero_r3.state.current != 0x77) {
-                        HeroL18_SetMoveState(0x77, 1);
+                        g_hero_r3.state.current != HERO_STATE_FATAL_FALL) {
+                        HeroL18_SetMoveState(HERO_STATE_FATAL_FALL, 1);
                     }
                 }
                 data->sink_vel -= g_frame_time_sq * 13.7f;

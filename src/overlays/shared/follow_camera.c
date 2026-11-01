@@ -16,6 +16,7 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "enums/moby_class.h"
+#include "enums/hero_state.h"
 
 /* Hydrodisplacer effect emitter: only a spawn countdown. */
 struct HydroEffectVars {
@@ -161,7 +162,7 @@ void end_hydrodisplacer_interaction(char *a) {
         CameraScript2(3);
     }
     if (*(int *)(g_hero + 0x208C) == 0x13) {
-        HeroEnterMoveState(0, 1);
+        HeroEnterMoveState(HERO_STATE_IDLE, 1);
     }
 }
 typedef struct {
@@ -1468,7 +1469,7 @@ void follow_cam_update_mode(char *m) {
                     e->invTimer = 1.0f / IntToFloat(e->timer);
                 } else {
                     struct Hero *p3 = (struct Hero *)(hero_globals_base + 0xE1D);
-                    if (p3->state.current == 0xB && camera_view_field_dc == 0.0f) {
+                    if (p3->state.current == HERO_STATE_HIGH_JUMP && camera_view_field_dc == 0.0f) {
                         e->prev = e->state;
                         e->state = 6;
                         e->moveTimer = scale_ticks(*(int *)&follow_cam_high_jump_move_time);
@@ -1483,7 +1484,8 @@ void follow_cam_update_mode(char *m) {
                         qcopy(e->v20, e->v10);
                     } else {
                         struct Hero *p4 = (struct Hero *)(hero_globals_base + 0xE1D);
-                        if ((p4->state.current == 0xD || p4->state.current == 0xE) && camera_view_field_dc == 0.0f) {
+                        if ((p4->state.current == 0xD || p4->state.current == HERO_STATE_DOUBLE_JUMP) &&
+                            camera_view_field_dc == 0.0f) {
                             e->prev = e->state;
                             e->state = 5;
                             e->moveTimer = scale_ticks(*(int *)&follow_cam_double_jump_move_time);
@@ -1689,7 +1691,7 @@ void follow_cam_focus_velocity(char *m, float *v2) {
     Cam_GetHeroPosition(m, cam);
     pad = (struct Hero *)(hero_globals_base + 0xE1D);
     e = (struct FollowCamTarget *)(d + 0x40);
-    if (pad->state.current == 0x77) {
+    if (pad->state.current == HERO_STATE_FATAL_FALL) {
         x = FastVecDot(e, &g->up_target);
         FastVecScale(v2, &g->up_target, x);
         FastVecSub((char *)e, (char *)e, v2);
@@ -2383,7 +2385,7 @@ void follow_camera_apply_overrides(O_y *o) {
             }
         }
     }
-    if (hero74.state.current == 0x81 && (D_0013CAE0_y[0] & 3)) {
+    if (hero74.state.current == HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT && (D_0013CAE0_y[0] & 3)) {
         set_follow_camera_orbit_clamp_mode(0);
         follow_camera_start_slide();
         follow_camera_set_lateral_spring(0.04f, 0.2f);

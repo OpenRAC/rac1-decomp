@@ -9,6 +9,7 @@
 #include "asm_functions/shared_levels.h"
 #include "game/mobyutil.h"
 #include "enums/level.h"
+#include "enums/hero_state.h"
 
 extern Hero g_hero;
 typedef struct {
@@ -137,12 +138,12 @@ void update_hero_locomotion_state(void) {
     ((struct Hero *)b)->unk2284 = 0;
     if (((struct Hero *)b)->on_ice_ground != 0 &&
         *(float *)&g_frame_time_r * 0.5f < ((struct Hero *)b)->motion.flat_speed) {
-        HeroEnterMoveState(0x2F, 1);
+        HeroEnterMoveState(HERO_STATE_RUN_CLEAR_VELOCITY_Z, 1);
         return;
     }
     stick_target(0, 1.0f);
     if (*(int *)(pad_globals_base_r + 0x2600) & 0xA) {
-        HeroEnterMoveState(4, 0);
+        HeroEnterMoveState(HERO_STATE_CROUCH, 0);
         set_hero_animation(0xD, 2, -2.0f);
         hero_queue_sequence(3, 0x12);
         return;
@@ -150,10 +151,10 @@ void update_hero_locomotion_state(void) {
     c = hero_globals_base + 0xE1D;
     if (0.3f < *(float *)(c + 0x229C) && *(int *)(c + 0x1C4) == 0) {
         if (*(unsigned char *)(c + 0x12E2) != 0 || *(unsigned char *)(c + 0x20A9) != 0) {
-            HeroEnterMoveState(2, 1);
+            HeroEnterMoveState(HERO_STATE_RUN, 1);
             return;
         }
-        if (HeroEnterMoveState(2, 0)) {
+        if (HeroEnterMoveState(HERO_STATE_RUN, 0)) {
             *(int *)(c + 0x2088) = 1;
             n = scale_ticks(8);
             if (scale_ticks(5) < *(int *)(c + 0x418))
@@ -166,7 +167,7 @@ void update_hero_locomotion_state(void) {
     d = hero_globals_base + 0xE1D;
     if ((*(float *)&g_frame_time_r * 3.0f < *(float *)(d + 0x168) && scale_ticks(3) < *(int *)(d + 0x418)) ||
         *(int *)(d + 0x2084) == 0x10) {
-        if (HeroEnterMoveState(3, 0)) {
+        if (HeroEnterMoveState(HERO_STATE_STOP, 0)) {
             set_hero_animation(5, 0, -1.0f);
             ClampVectorLength(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.momentum,
                               *(float *)((char *)&g_frame_scale_sq + 8) * 5.0f);
@@ -174,7 +175,7 @@ void update_hero_locomotion_state(void) {
         return;
     }
     if (scale_ticks(12) < *(int *)(d + 0x418) || (*(int *)(d + 0xA98) & 2)) {
-        if (HeroEnterMoveState(0, 0)) {
+        if (HeroEnterMoveState(HERO_STATE_IDLE, 0)) {
             if (hero_idle_sequence(0) == 0x54) {
                 n = hero_idle_sequence(0);
                 set_hero_animation(n, 0, (float)scale_ticks(15));
@@ -200,7 +201,7 @@ int hero_handle_jump_press(void) {
     int n, t, k;
     int m;
     struct Hero *p;
-    if (g->state.current == 0xE) {
+    if (g->state.current == HERO_STATE_DOUBLE_JUMP) {
         return 0;
     }
     n = get_hero_high_jump_input_window_frames();
@@ -250,7 +251,7 @@ int hero_handle_jump_press(void) {
                 goto found;
             }
         }
-        HeroEnterMoveState_b(7, 1);
+        HeroEnterMoveState_b(HERO_STATE_JUMP, 1);
         return 1;
     }
     return 0;
@@ -306,7 +307,7 @@ int try_start_hero_item_idle_animation(void) {
             return 0;
         }
         v = item_defs[i].v;
-        if (HeroEnterMoveState(0, 0) == 0)
+        if (HeroEnterMoveState(HERO_STATE_IDLE, 0) == 0)
             return 0;
         set_hero_animation(v, 0, (float)scale_ticks(11));
         if (*(int *)&p->held_item_anim_blend[0] != 0)

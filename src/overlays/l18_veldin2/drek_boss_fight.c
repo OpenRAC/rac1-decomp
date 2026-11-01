@@ -24,6 +24,7 @@
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
+#include "enums/hero_state.h"
 
 /* Class 0x565 trigger: index of the transform whose xy bounds mark block entries. */
 struct Class565Vars {
@@ -1752,7 +1753,8 @@ void drek_final_boss_robot_update(Moby *moby) {
                     fire = 1;
                 }
             }
-            if (g_hero.state.current == 0x16 && vec_distance_xy(((f32 *)&moby->pos), g_hero.motion.pos.f) < 12.0f) {
+            if (g_hero.state.current == HERO_STATE_HURT &&
+                vec_distance_xy(((f32 *)&moby->pos), g_hero.motion.pos.f) < 12.0f) {
                 fire = 1;
             }
             if (vec_distance_xy(g_hero.motion.pos.f, veldin2_arena_nodes + d->f250[2] * 0x80 + 0x30) >
@@ -1899,7 +1901,8 @@ void drek_final_boss_robot_update(Moby *moby) {
                 d->f39C = 0x1B;
             } else if (d->f34C == 7) {
                 if (g_hero.ground_moby != 0 && g_hero.air_frames.s == 0 &&
-                    g_hero.ground_moby->oclass == MOBY_CLASS_THRUSTER_PACK_LOCK_GREEN && g_hero.state.current == 0x22) {
+                    g_hero.ground_moby->oclass == MOBY_CLASS_THRUSTER_PACK_LOCK_GREEN &&
+                    g_hero.state.current == HERO_STATE_RISE_THEN_FALL_WITH_AIRBORNE_HIT_QUERY) {
                     if (d->f3AC == 0) {
                         d->f3AC = 1;
                     }
@@ -1995,7 +1998,7 @@ void count_drek_boss_platform_event_once(char *moby) {
         if (a->grounded_frames != 0) {
             d->ground_platform = *(int *)&a->ground_moby;
         }
-        if (a->state.current == 0x77) {
+        if (a->state.current == HERO_STATE_FATAL_FALL) {
             char *t = *(char **)&d->ground_platform;
             d->platform_event_done = 1;
             if (t != 0) {
@@ -2674,8 +2677,8 @@ void update_drek_boss_state_dependent_scalars(char *moby) {
     st = ((Moby *)moby)->state;
     if (st == 0x13) {
         struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
-        if ((g->state.control_mode == 0xF || g->state.current == 0x42) && d->f364 == 0 && d->f390 <= 25.0f &&
-            d->f360 == 0) {
+        if ((g->state.control_mode == 0xF || g->state.current == HERO_STATE_GRIND_COLLISION_RECOVERY) && d->f364 == 0 &&
+            d->f390 <= 25.0f && d->f360 == 0) {
             x = *(float *)&drek_boss_first_scalar_gated_follow_target_gp;
             y = *(float *)&drek_boss_second_scalar_gated_follow_target_gp;
             p0 = (float *)(t + 0x34);

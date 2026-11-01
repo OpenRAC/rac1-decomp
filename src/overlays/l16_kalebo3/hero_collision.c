@@ -8,6 +8,7 @@
 #include "data/level_16.h"
 #include "game/fastfunc.h"
 #include "enums/level.h"
+#include "enums/hero_state.h"
 
 extern char hero_globals_base[];
 extern int g_current_level_index MACRO_ADDR;
@@ -516,7 +517,8 @@ void integrate_hero_motion(void) {
     player = (Hero *)((char *)position - 0x80);
     update_hero_attachment(player->ledge_moby, (char *)&player->motion.platform_delta, (char *)&player->motion.rot);
     /* Limit the velocity by state and mode. Inside an arm `position` moves on to the velocity; it is formed again below. */
-    if (player->state.current == 34 || player->state.current == 20) {
+    if (player->state.current == HERO_STATE_RISE_THEN_FALL_WITH_AIRBORNE_HIT_QUERY ||
+        player->state.current == HERO_STATE_WRENCH_SLAM) {
         float limit;
         float *limited_velocity;
 

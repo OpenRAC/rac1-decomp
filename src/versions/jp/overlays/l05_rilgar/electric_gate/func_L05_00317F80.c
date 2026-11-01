@@ -163,14 +163,14 @@ void update_hoverboard_girl(Moby *moby) {
                                   angle_from_xy((*(Hero *)(hero_globals_base + 0xE1D)).motion.pos.f[0] - moby->pos.x,
                                                 (*(Hero *)(hero_globals_base + 0xE1D)).motion.pos.f[1] - moby->pos.y)) <
             1.2217305f) {
-        if ((*(Hero *)(hero_globals_base + 0xE1D)).state.current == 11 &&
+        if ((*(Hero *)(hero_globals_base + 0xE1D)).state.current == HERO_STATE_HIGH_JUMP &&
             (*(Hero *)(hero_globals_base + 0xE1D)).state_timer == 15) {
             state->breast_growth_count_gp++;
             if (state->breast_growth_count_gp > 20)
                 state->breast_growth_count_gp = 20;
             breast_growth_count_gp_q = state->breast_growth_count_gp;
         }
-        if ((*(Hero *)(hero_globals_base + 0xE1D)).state.current == 4 &&
+        if ((*(Hero *)(hero_globals_base + 0xE1D)).state.current == HERO_STATE_CROUCH &&
             scale_frame_count(20) < (*(Hero *)(hero_globals_base + 0xE1D)).state_timer && frame_number % 10 == 0) {
             state->breast_growth_count_gp--;
             if (state->breast_growth_count_gp < 0)

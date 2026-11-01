@@ -5,6 +5,7 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "data/shared_levels.h"
 #include "game/mobyutil.h"
+#include "enums/hero_state.h"
 
 ASM_FUNC("asm/overlays", func_L00_00251A78);
 ASM_FUNC("asm/overlays", func_L00_00251B58);
@@ -191,7 +192,7 @@ void SetDeathBits(unsigned char *m, int flags, int arg) {
     if (g_hero.unk20B2 || (flags & 0x200)) {
         f |= 2;
     }
-    if (g_hero.state.current == 0x10 && FastVecDist(&g_hero.motion, m + 0x10) < 4.0f) {
+    if (g_hero.state.current == HERO_STATE_PACK_LONG_JUMP && FastVecDist(&g_hero.motion, m + 0x10) < 4.0f) {
         f |= 2;
     }
     cnt = free_moby_slot_count;

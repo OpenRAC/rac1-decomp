@@ -44,8 +44,8 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
             if (B < 3.0f)
                 B = 0.0f;
         }
-        if (((Hero *)(hero_globals_base_r + 0xE1D))->state.current == 32 ||
-            (((Hero *)(hero_globals_base_r + 0xE1D))->state.prev == 32 &&
+        if (((Hero *)(hero_globals_base_r + 0xE1D))->state.current == HERO_STATE_HELD_ITEM_ATTACK ||
+            (((Hero *)(hero_globals_base_r + 0xE1D))->state.prev == HERO_STATE_HELD_ITEM_ATTACK &&
              ((Hero *)(hero_globals_base_r + 0xE1D))->state_timer < scale_ticks_r(30))) {
             if (2.0f < B)
                 B = 2.0f;

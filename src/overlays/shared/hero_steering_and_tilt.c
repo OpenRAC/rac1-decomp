@@ -15,6 +15,7 @@
 #include "data/executable.h"
 #include "game/fastfunc.h"
 #include "enums/level.h"
+#include "enums/hero_state.h"
 
 extern Hero g_hero_s __asm__("D_0013F450");
 extern float g_frame_scale_sq MACRO_ADDR;
@@ -109,7 +110,7 @@ void hero_move_state_velocity(void) {
         } else {
             g_hero_s.ground_speed = 0.0f;
         }
-        if (g_hero_s.state.current == 11) {
+        if (g_hero_s.state.current == HERO_STATE_HIGH_JUMP) {
             if (g_hero_s.past_jump_apex != 0 && g_hero_s.frames_to_land < scale_ticks(0xC)) {
                 ApproachValue(&g_hero_s.high_jump_drift_speed, 0.0f, g_frame_time_sq * 8.0f);
             } else {
@@ -240,9 +241,9 @@ void update_hero_transformed_negative_z_angle_parameters(void) {
     limit = 0.43633232f;
     if (state->state.current == 0x3f)
         limit = 0.29670596f;
-    else if (state->state.current == 0x70)
+    else if (state->state.current == HERO_STATE_ATTACK_RECORD_FRAME_EXIT_WAIT)
         limit = 0.08726646f;
-    else if (state->state.current == 0x71 || state->state.current == 4)
+    else if (state->state.current == HERO_STATE_ANIMATION_FRAME_EXIT_WAIT || state->state.current == HERO_STATE_CROUCH)
         limit = 0.19198622f;
     if (g_hero_r.ground_moby != 0 && 0.15707964f < limit)
         limit = 0.15707964f;
@@ -314,7 +315,7 @@ void adjust_hero_pose_targets_from_motion(void) {
     f32 b, c1, c2, c3;
     f32 x;
 
-    if (g_hero_r2.state.current == 0x02) {
+    if (g_hero_r2.state.current == HERO_STATE_RUN) {
         Hero_SetTiltSpringParams(0.04f, 0.2f);
         set_first_hero_easing_parameters_r(0.04f, 0.2f);
         set_first_hero_easing_parameters_r2(0.04f, 0.2f);
@@ -361,7 +362,8 @@ void adjust_hero_pose_targets_from_motion(void) {
             (lean_state_r.f[(0xAB8) / 4]) = nw * 0.3f;
             (lean_state_r.f[(0xB68) / 4]) = nw * 0.3f;
         }
-    } else if (g_hero_r2.state.current == 0x08 || g_hero_r2.state.current == 0x81) {
+    } else if (g_hero_r2.state.current == HERO_STATE_LAND ||
+               g_hero_r2.state.current == HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT) {
         Hero_SetTiltSpringParams(0.008f, 0.08f);
         set_first_hero_easing_parameters_r(0.015f, 0.08f);
         set_first_hero_easing_parameters_r2(0.015f, 0.08f);
@@ -371,7 +373,7 @@ void adjust_hero_pose_targets_from_motion(void) {
             b = 1.25f;
         else if (b < -1.25f)
             b = -1.25f;
-        if (g_hero_r2.state.current == 0x81) {
+        if (g_hero_r2.state.current == HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT) {
             b = g_hero_r2.motion.yaw_error * 0.8f;
             if (1.1f < b)
                 b = 1.1f;
@@ -399,7 +401,7 @@ void adjust_hero_pose_targets_from_motion(void) {
         else if (c3 < -0.2f)
             (lean_state_r.f[(0x274) / 4]) = -0.2f;
         (lean_state_r.f[(0x270) / 4]) = FastAbsF(b) * 0.16f;
-        if (g_hero_r2.state.current == 0x81) {
+        if (g_hero_r2.state.current == HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT) {
             if (g_frame_time * 0.5f < g_hero_r2.motion.flat_speed) {
                 ang = FastSubRots(fast_atan2(g_hero_r2.motion.displacement.f[0], g_hero_r2.motion.displacement.f[1]),
                                   g_hero_r2.motion.rot.f[2]);
@@ -566,7 +568,7 @@ void update_hero_lean_and_sway_parameters(void) {
     if (gCheats_r[3] != 0)
         lean_state_18_scale[0] = (*(f32 *)&sound_volume_10);
     scale = 1024.0f / h->items[3].moby2->scale;
-    if (h->state.current == 2) {
+    if (h->state.current == HERO_STATE_RUN) {
         a = h->motion.yaw_error;
         lean_state_r2.fD04 = 0.02f;
         lean_state_r2.fD08 = 0.35f;
@@ -752,15 +754,18 @@ void update_hero_tilt(void) {
         r = 1;
     }
     if (r == 0) {
-        if (((struct Hero *)g)->state.current == 0x25 || ((struct Hero *)g)->state.current == 0x26) {
+        if (((struct Hero *)g)->state.current == HERO_STATE_APPROACH_TARGET_MOBY ||
+            ((struct Hero *)g)->state.current == HERO_STATE_CONSTRAIN_TO_TARGET_RADIUS) {
             return;
         }
         if (((struct Hero *)g)->state.control_mode == 0x11 || ((struct Hero *)g)->state.control_mode == 0x15 ||
             ((struct Hero *)g)->state.control_mode == 0x16) {
             return;
         }
-        if (((struct Hero *)g)->state.current == 0x77 || ((struct Hero *)g)->state.current == 0x31 ||
-            ((struct Hero *)g)->state.current == 0x2D || ((struct Hero *)g)->state.current == 0x2C) {
+        if (((struct Hero *)g)->state.current == HERO_STATE_FATAL_FALL ||
+            ((struct Hero *)g)->state.current == HERO_STATE_VOICE_SLOT_CLEANUP_IDLE_EXIT ||
+            ((struct Hero *)g)->state.current == HERO_STATE_ITEM_RELEASE_FALL ||
+            ((struct Hero *)g)->state.current == HERO_STATE_GRAPPLE_SWING_ENTRY) {
             return;
         }
         t[0] = 0.0f;
@@ -842,12 +847,12 @@ void update_hero_planar_movement_velocity(void) {
     stick_target(0, 1.0f);
     f20 = 0.2f;
     turn_to(0, g_frame_scale_sq * 0.02f, g_frame_scale_sq * f20, g_frame_time * 3.66519141f);
-    if (g_hero_r3.state.current == 0x13) {
+    if (g_hero_r3.state.current == HERO_STATE_WRENCH_COMBO) {
         if (g_hero_r3.stick_magnitude < f20) {
             g_hero_r3.motion.move_yaw = g_hero_r3.motion.rot.f[2];
         }
         g_hero_r3.target_speed = 0.4f;
-    } else if (g_hero_r3.state.current == 0x15) {
+    } else if (g_hero_r3.state.current == HERO_STATE_CROUCH_SWING) {
         g_hero_r3.target_speed = 0.0f;
     }
     f20 = 5.9f;
@@ -881,7 +886,7 @@ void update_hero_planar_movement_velocity(void) {
     if (g_controller_state_no_direction[0]) {
         f21 = g_frame_time_sq * 1.1f;
     }
-    if (g_hero_r3.state.current == 0x13 && g_hero_r3.state_timer < scale_ticks(0xF) &&
+    if (g_hero_r3.state.current == HERO_STATE_WRENCH_COMBO && g_hero_r3.state_timer < scale_ticks(0xF) &&
         g_hero_r3.motion.speed_xy < g_frame_time * 3.0f) {
         f21 = g_frame_time_sq * 11.0f;
     }

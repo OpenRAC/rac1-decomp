@@ -22,6 +22,7 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
+#include "enums/hero_state.h"
 
 /* Player ship: steering, lock-on target, reticle and hit-point bar. */
 struct ShipVars {
@@ -1109,7 +1110,7 @@ void jet_fighter_update(Moby *moby) {
                     d->t62 = 0xB4;
                     g->f88 = g->f88 + 0.2f;
                     g->p2080->motion.rot.i[2] = 0;
-                    Hero_TrySetMoveStateL11(0, 1);
+                    Hero_TrySetMoveStateL11(HERO_STATE_IDLE, 1);
                     g->cur = 0;
                     g->id = -1;
                     spawn_explosion(moby, v, 0, 0.0f, 0.0f, 0xA, 3, 0x10, 4.0f, 2.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1,
@@ -1275,7 +1276,7 @@ void jet_fighter_update(Moby *moby) {
                 char *e;
                 g->b20A5 = 0;
                 g->p2080->motion.rot.i[2] = 0;
-                Hero_TrySetMoveStateL11(0, 1);
+                Hero_TrySetMoveStateL11(HERO_STATE_IDLE, 1);
                 CameraScript2(0);
                 Hud_SetBarValueById(g->h160C, 0);
                 MusicRequestTrack(0, 8);
@@ -1323,7 +1324,7 @@ void jet_fighter_update(Moby *moby) {
                         int i;
                         g->b20A5 = 0;
                         g->p2080->motion.rot.i[2] = 0;
-                        Hero_TrySetMoveStateL11(0, 1);
+                        Hero_TrySetMoveStateL11(HERO_STATE_IDLE, 1);
                         CameraScript2(0);
                         MusicRequestTrack(0, 8);
                         moby->visible = 0;

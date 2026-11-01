@@ -17,6 +17,7 @@
 #include "game/fastfunc.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/level.h"
+#include "enums/hero_state.h"
 
 typedef struct {
     int a;
@@ -170,7 +171,7 @@ int Hero_TryMoveStateL05(int a, int b) {
             }
             qcopy(&p->motion.momentum, &p->motion.resolved_velocity);
             if (p->on_slip_ground != 0 && p->frames_off_ground.s == 0) {
-                Hero_TryMoveStateL05(0x79, 1);
+                Hero_TryMoveStateL05(HERO_STATE_SLIP, 1);
                 return 0;
             }
             {
@@ -285,7 +286,7 @@ int Hero_TryMoveStateL05(int a, int b) {
             p->unk8E0 = 0;
             p->rand_timer.range = 0x68;
             n = scale_ticks(0xB);
-            if (p->state.prev == 0x33)
+            if (p->state.prev == HERO_STATE_SWIM)
                 n = scale_ticks(0xF);
             if (b)
                 set_hero_animation(0x3D, 0, (float)n);
@@ -392,7 +393,7 @@ int Hero_TryMoveStateL05(int a, int b) {
                 struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
                 q->invulnerable_frames = t;
                 if (b) {
-                    if (q->state.current == 0x75) {
+                    if (q->state.current == HERO_STATE_WATER_SURFACE_HURT) {
                         set_hero_animation(0x70, 3, -3.0f);
                     } else {
                         set_hero_animation(0x6F, 3, -3.0f);
@@ -697,7 +698,8 @@ int Hero_TryMoveStateL05(int a, int b) {
                 q->unk3BE = 0;
                 stick_target(1.0f, 0);
                 if (1.5707964f < FastDiffRots(q->motion.rot.f[2], q->motion.move_yaw)) {
-                    if (q->state.prev_control_mode == 7 || q->state.prev == 3 || q->state.prev2 == 3) {
+                    if (q->state.prev_control_mode == 7 || q->state.prev == HERO_STATE_STOP ||
+                        q->state.prev2 == HERO_STATE_STOP) {
                         struct Hero *r = (struct Hero *)(hero_globals_base + 0xE1D);
                         r->ground_speed = 0.0f;
                     }
@@ -707,7 +709,7 @@ int Hero_TryMoveStateL05(int a, int b) {
                 struct Hero *s = (struct Hero *)(hero_globals_base + 0xE1D);
                 s->rand_timer.range = 0x68;
                 if (s->on_slip_ground != 0 && s->frames_off_ground.s == 0) {
-                    Hero_TryMoveStateL05(0x79, 1);
+                    Hero_TryMoveStateL05(HERO_STATE_SLIP, 1);
                     return 0;
                 }
             }
@@ -724,9 +726,9 @@ int Hero_TryMoveStateL05(int a, int b) {
                     n = scale_ticks(8);
                     if (t->health.hp == 1)
                         n = scale_ticks(0xC);
-                    if (t->state.prev2 == 0x23)
+                    if (t->state.prev2 == HERO_STATE_ANIMATION_RECOVERY_WITH_JUMP_CANCEL)
                         n = scale_ticks(0xF);
-                    if (t->state.prev2 == 6 || t->state.prev2 == 0x2D)
+                    if (t->state.prev2 == HERO_STATE_FALL || t->state.prev2 == HERO_STATE_ITEM_RELEASE_FALL)
                         n = scale_ticks(0x12);
                     {
                         struct Hero *u = (struct Hero *)(hero_globals_base + 0xE1D);
@@ -779,13 +781,13 @@ int Hero_TryMoveStateL05(int a, int b) {
             p->unk2284 = 0;
             qcopy(&p->motion.momentum, &p->motion.resolved_velocity);
             if (p->on_slip_ground != 0 && p->frames_off_ground.s == 0) {
-                Hero_TryMoveStateL05(0x79, 1);
+                Hero_TryMoveStateL05(HERO_STATE_SLIP, 1);
                 return 0;
             }
             if (try_start_hero_item_idle_animation())
                 return 0;
             if (get_hero_idle_animation_index(0) == 0x54) {
-                if (Hero_TryMoveStateL05(0, 0)) {
+                if (Hero_TryMoveStateL05(HERO_STATE_IDLE, 0)) {
                     set_hero_animation(get_hero_idle_animation_index(0), 0, (float)scale_ticks(0x12));
                 }
                 return 0;
@@ -824,7 +826,7 @@ int Hero_TryMoveStateL05(int a, int b) {
             if (g_frame_time * 7.0f < p->ground_speed)
                 p->ground_speed = g_frame_time * 7.0f;
             if (p->on_slip_ground != 0 && p->frames_off_ground.s == 0) {
-                Hero_TryMoveStateL05(0x79, 1);
+                Hero_TryMoveStateL05(HERO_STATE_SLIP, 1);
                 return 0;
             }
             {
@@ -1038,7 +1040,7 @@ int Hero_TryMoveStateL05(int a, int b) {
             p->unk2284 = 0;
             p->fall_state_gravity = g_frame_time_sq * 24.0f;
             p->stickless_decel = g_frame_time_sq * 7.0f;
-            if (p->state.current == 0x77) {
+            if (p->state.current == HERO_STATE_FATAL_FALL) {
                 if (p->vehicle_mode == 0) {
                     p->health.unk22B2 = allocate_hero_voice_for_entry(0x17, 0x20);
                 }
@@ -1141,7 +1143,7 @@ int Hero_TryMoveStateL05(int a, int b) {
             }
             {
                 struct Hero *u = (struct Hero *)(hero_globals_base + 0xE1D);
-                if (u->state.current == 0x69)
+                if (u->state.current == HERO_STATE_JUMP_FROM_RESPAWN_WAIT)
                     allocate_hero_voice_for_entry(0xA, 0);
                 u->smoothed_ground_z = u->motion.pos.f[2];
                 u->jump_gravity = g_frame_time_sq * 29.7f;
@@ -1167,7 +1169,7 @@ int Hero_TryMoveStateL05(int a, int b) {
                 u->air_turn_rate = g_frame_time * 15.0098314f;
                 u->fall_gravity = 0.0f;
                 u->unk22B4 = 0;
-                if (u->state.current == 7) {
+                if (u->state.current == HERO_STATE_JUMP) {
                     u->unk430 = 1.47f;
                     u->takeoff_frame = scale_ticks(5);
                     u->unk434 = 0.6f;
@@ -1223,7 +1225,7 @@ int Hero_TryMoveStateL05(int a, int b) {
                     u->jump_max_frames = scale_ticks(0x78);
                     hero_change_health(1);
                     if (g_current_level_index == LEVEL_ORXON) {
-                        Hero_TryMoveStateL05(0x7C, 1);
+                        Hero_TryMoveStateL05(HERO_STATE_DEATH_DESCENT, 1);
                         return 0;
                     }
                     if (g_current_level_index != LEVEL_BLARG) {
@@ -1231,7 +1233,7 @@ int Hero_TryMoveStateL05(int a, int b) {
                             struct Hero *w = (struct Hero *)(hero_globals_base + 0xE1D);
                             w->sink_jump_count = w->sink_jump_count + 1;
                             if (w->sink_jump_count >= 2 || w->health.hp == 0) {
-                                Hero_TryMoveStateL05(0x7C, 1);
+                                Hero_TryMoveStateL05(HERO_STATE_DEATH_DESCENT, 1);
                                 return 0;
                             }
                         } else {
@@ -1245,7 +1247,7 @@ int Hero_TryMoveStateL05(int a, int b) {
                         w->unk49C = scale_ticks(5);
                         w->unk49E = scale_ticks(4);
                     }
-                } else if (u->state.current == 0x69) {
+                } else if (u->state.current == HERO_STATE_JUMP_FROM_RESPAWN_WAIT) {
                     float v;
                     u->state.control_mode = 0x19;
                     if (u->motion.pos.f[2] < u->sink_surface_z) {
@@ -1265,7 +1267,7 @@ int Hero_TryMoveStateL05(int a, int b) {
                         w->jump_height_start = v + 1.7f;
                         w->unk498 = scale_ticks(0x13);
                     }
-                } else if (u->state.current == 9) {
+                } else if (u->state.current == HERO_STATE_RUN_JUMP) {
                     u->unk430 = 1.0f;
                     u->takeoff_frame = scale_ticks(5);
                     u->unk434 = 0.6f;
@@ -1279,7 +1281,7 @@ int Hero_TryMoveStateL05(int a, int b) {
                     u->unk4AC = 1;
                     u->can_chain_high_jump = 1;
                     u->can_double_jump = 1;
-                } else if (u->state.current == 0xA) {
+                } else if (u->state.current == HERO_STATE_PACK_JUMP) {
                     u->unk430 = 1.9f;
                     u->takeoff_frame = scale_ticks(5);
                     u->unk434 = 0.6f;
@@ -1294,7 +1296,7 @@ int Hero_TryMoveStateL05(int a, int b) {
                     u->jump_max_frames = scale_ticks(0x78);
                     u->fall_delay_frames = scale_ticks(0x5A);
                     u->unk4A6 = scale_ticks(0x46);
-                } else if (u->state.current == 0x10) {
+                } else if (u->state.current == HERO_STATE_PACK_LONG_JUMP) {
                     char *x = (char *)&u->trail;
                     u->unk430 = 1.5f;
                     u->takeoff_frame = scale_ticks(5);
@@ -1319,7 +1321,7 @@ int Hero_TryMoveStateL05(int a, int b) {
                     u->jump_gravity = g_frame_time_sq * 8.5f;
                     u->air_speed_step_up = g_frame_time_sq * 44.0f;
                     u->jump_decel = g_frame_time_sq * 50.0f;
-                } else if (u->state.current == 0x1C) {
+                } else if (u->state.current == HERO_STATE_LEDGE_JUMP) {
                     u->unk430 = 2.0f;
                     u->takeoff_frame = scale_ticks(0xA);
                     u->unk434 = 0.85f;
@@ -1405,7 +1407,7 @@ int Hero_TryMoveStateL05(int a, int b) {
                         *(char **)&w->unk3E4 = (char *)&rilgar_hero_state_f_jump_velocity_keys;
                         w->can_chain_high_jump = 1;
                     }
-                } else if (u->state.current == 0xE) {
+                } else if (u->state.current == HERO_STATE_DOUBLE_JUMP) {
                     float v = 0.7f;
                     if (u->ground_distance < 2.0f)
                         v = (2.5f - u->ground_distance) * 0.5f + 0.7f;
@@ -1421,7 +1423,7 @@ int Hero_TryMoveStateL05(int a, int b) {
                     u->jump_anim_retime_scale = 1.0f;
                     u->air_stick_speed = g_frame_time * 3.5f;
                     u->unk4A6 = scale_ticks(0x1E);
-                } else if (u->state.current == 0xB) {
+                } else if (u->state.current == HERO_STATE_HIGH_JUMP) {
                     u->unk430 = 3.2f;
                     u->takeoff_frame = scale_ticks(5);
                     u->unk434 = 0.6f;
@@ -1474,7 +1476,7 @@ int Hero_TryMoveStateL05(int a, int b) {
                         set_hero_animation(0x12, 0, (float)scale_ticks(5));
                     } else if (s == 0x10) {
                         if (q->state.prev_control_mode == 4 ||
-                            (q->state.prev == 4 && scale_ticks(7) > q->state_timer)) {
+                            (q->state.prev == HERO_STATE_CROUCH && scale_ticks(7) > q->state_timer)) {
                             set_hero_animation(0x26, 0, (float)scale_ticks(8));
                             q->takeoff_frame += scale_ticks(3);
                         } else {
@@ -1531,7 +1533,7 @@ int Hero_TryMoveStateL05(int a, int b) {
             *(int *)&p->melee_target = 0;
             p->unkA64 = 0;
             switch (p->state.current) {
-                case 0x14: {
+                case HERO_STATE_WRENCH_SLAM: {
                     struct MoveUsageTable *h = (struct MoveUsageTable *)(help_stats_base + 0x22D);
                     struct Hero *q;
                     if (h->e[0].count <= 0xFFFE) {
@@ -1551,7 +1553,7 @@ int Hero_TryMoveStateL05(int a, int b) {
                     if (b) {
                         char *m;
                         int n = scale_ticks(0xB);
-                        if (q->state.prev == 0xB && scale_ticks(0x2A) > q->state.prev_timer)
+                        if (q->state.prev == HERO_STATE_HIGH_JUMP && scale_ticks(0x2A) > q->state.prev_timer)
                             n = scale_ticks(0x11);
                         set_hero_animation(0x2B, 4, (float)n);
                         m = hero_slot_moby(0);
@@ -1560,7 +1562,7 @@ int Hero_TryMoveStateL05(int a, int b) {
                     }
                     break;
                 }
-                case 0x15: {
+                case HERO_STATE_CROUCH_SWING: {
                     struct MoveUsageTable *h = (struct MoveUsageTable *)(help_stats_base + 0x22D);
                     struct MoveUsageTable *h2;
                     struct Hero *q;
@@ -1588,14 +1590,14 @@ int Hero_TryMoveStateL05(int a, int b) {
                         int n = scale_ticks(0xA);
                         if (*(unsigned char *)(*(char **)&q->moby + 0x53) == 0x1A)
                             n = scale_ticks(3);
-                        if (q->state.prev == 1)
+                        if (q->state.prev == HERO_STATE_LOOK)
                             n = scale_ticks(0x11);
                         set_hero_animation(0x1A, 0, (float)n);
                         hero_queue_sequence(6, 0x15);
                     }
                     break;
                 }
-                case 0x20: {
+                case HERO_STATE_HELD_ITEM_ATTACK: {
                     struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
                     if (*(void **)&q->items[0].moby == 0)
                         break;
@@ -1606,7 +1608,7 @@ int Hero_TryMoveStateL05(int a, int b) {
                     update_hero_target_heading(11.0f, 0.87266463f, -1.0f);
                     break;
                 }
-                case 0x13: {
+                case HERO_STATE_WRENCH_COMBO: {
                     struct MoveUsageTable *h = (struct MoveUsageTable *)(help_stats_base + 0x65);
                     struct Hero *q;
                     T2C_24D680 *e;
@@ -1658,7 +1660,7 @@ int Hero_TryMoveStateL05(int a, int b) {
                     }
                     break;
                 }
-                case 0x23: {
+                case HERO_STATE_ANIMATION_RECOVERY_WITH_JUMP_CANCEL: {
                     struct Hero *q;
                     if (b)
                         set_hero_animation(0x2C, 7, (float)scale_ticks(9));
@@ -1731,8 +1733,9 @@ int Hero_TryMoveStateL05(int a, int b) {
         }
         case 0x68: {
             struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
-            if (p->state.prev == 0x69 ||
-                (p->state.prev2 == 0x69 && p->state.prev_control_mode != 0 && p->state.prev != 7)) {
+            if (p->state.prev == HERO_STATE_JUMP_FROM_RESPAWN_WAIT ||
+                (p->state.prev2 == HERO_STATE_JUMP_FROM_RESPAWN_WAIT && p->state.prev_control_mode != 0 &&
+                 p->state.prev != HERO_STATE_JUMP)) {
                 p->sink_jump_count = p->sink_jump_count + 1;
             } else {
                 struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
@@ -1769,7 +1772,7 @@ int Hero_TryMoveStateL05(int a, int b) {
                 int c0;
                 int c1;
                 int c2;
-                Hero_TryMoveStateL05(0x3D, 1);
+                Hero_TryMoveStateL05(HERO_STATE_DYING, 1);
                 {
                     struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
                     q->color_fade_active = 1;
@@ -1796,7 +1799,7 @@ int Hero_TryMoveStateL05(int a, int b) {
             p->state.control_mode = 0;
             p->unk2284 = 0;
             if (p->on_slip_ground != 0 && p->frames_off_ground.s == 0) {
-                Hero_TryMoveStateL05(0x58, 1);
+                Hero_TryMoveStateL05(HERO_STATE_VEHICLE_MODE_3_SLIP, 1);
                 return 0;
             }
             if (b)
@@ -1838,7 +1841,7 @@ int Hero_TryMoveStateL05(int a, int b) {
             p->state.control_mode = 1;
             p->unk2284 = 0;
             if (p->on_slip_ground != 0 && p->frames_off_ground.s == 0) {
-                Hero_TryMoveStateL05(0x58, 1);
+                Hero_TryMoveStateL05(HERO_STATE_VEHICLE_MODE_3_SLIP, 1);
                 return 0;
             }
             {

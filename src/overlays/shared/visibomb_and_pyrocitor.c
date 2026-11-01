@@ -15,6 +15,7 @@
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/sound_playback.h"
 #include "structs/small_records.h"
+#include "enums/hero_state.h"
 /* Saved fog settings, restored when the effect ends. */
 struct FogSaveVars {
     u8 pad_00[0x30];
@@ -210,9 +211,10 @@ void func_L00_002B33E8_r(Moby *m) {
     fast_dec_timer_r(&data->cooldown);
     if (fast_dec_timer_r(&data->target_timer) || (data->target && ((unsigned char)data->target->state & 0x80)))
         data->target = 0;
-    if (hero_2B33E8.state.current == 1)
-        HeroEnterMoveState_r(30, 1);
-    if (hero_2B33E8.state.current == 30 && (hero_2B33E8.moby->flags & 1) && !hero_2B33E8.item_use_locked) {
+    if (hero_2B33E8.state.current == HERO_STATE_LOOK)
+        HeroEnterMoveState_r(HERO_STATE_LOOK_RELEASE_WAIT, 1);
+    if (hero_2B33E8.state.current == HERO_STATE_LOOK_RELEASE_WAIT && (hero_2B33E8.moby->flags & 1) &&
+        !hero_2B33E8.item_use_locked) {
         velocity.q = 0;
         velocity.f.z = 70.0f;
         transform_vector_r(&velocity, &velocity, &inverse);
@@ -251,7 +253,7 @@ void func_L00_002B33E8_r(Moby *m) {
         velocity.q = 0;
         if (m->prev_seq == 0)
             MobyBlendAnimation_r(m, 1, 0, scale_ticks_r(4));
-        if (hero_2B33E8.state.current == 30 && (hero_2B33E8.moby->flags & 1)) {
+        if (hero_2B33E8.state.current == HERO_STATE_LOOK_RELEASE_WAIT && (hero_2B33E8.moby->flags & 1)) {
             velocity.f.z = g_frame_time_r * 10.0f;
             transform_vector_r(&velocity, &velocity, &inverse);
         } else {
@@ -267,7 +269,7 @@ void func_L00_002B33E8_r(Moby *m) {
             pitch = -fast_atan2_r(vec_length_xy_r(&velocity), velocity.f.z);
             yaw0 = yaw;
             pitch0 = pitch;
-            if (hero_2B33E8.state.current == 30 && (hero_2B33E8.moby->flags & 1)) {
+            if (hero_2B33E8.state.current == HERO_STATE_LOOK_RELEASE_WAIT && (hero_2B33E8.moby->flags & 1)) {
                 clear_u64_value_r(&launch);
                 launch.f.x += 0.15f;
                 launch.f.z += 0.75f;
@@ -346,7 +348,7 @@ void func_L00_002B33E8_r(Moby *m) {
             }
             Moby_PlaySound_r(0, 0, (int)m);
             data->glow = scale_ticks_r(5) + scale_ticks_r(10);
-            if (hero_2B33E8.state.current != 30)
+            if (hero_2B33E8.state.current != HERO_STATE_LOOK_RELEASE_WAIT)
                 emit_object_offset_particle_burst_r(m);
             stats = (Stats_2B33E8 *)(help_stats_base_r + 0x65);
             if (stats->uses < 65535)
@@ -354,7 +356,7 @@ void func_L00_002B33E8_r(Moby *m) {
             if (scale_ticks_r(gameplay_event_frame_count_r) / 600 > stats->longest)
                 stats->longest = scale_ticks_r(gameplay_event_frame_count_r) / 600;
             stats->levels = (stats->levels | (1 << g_current_level_index_r)) | 0x80000000;
-            if (hero_2B33E8.unk22C8 == 1 && hero_2B33E8.state.current != 30) {
+            if (hero_2B33E8.unk22C8 == 1 && hero_2B33E8.state.current != HERO_STATE_LOOK_RELEASE_WAIT) {
                 pitch = weapon_aim_mode1_launch_pitch_r;
                 yaw = m->rot.z;
                 r = GetFlaggedPvarWord_r(data->target);
@@ -381,7 +383,7 @@ void func_L00_002B33E8_r(Moby *m) {
                         FastVecAdd_r(&tmp, &tmp, &launch);
                         yaw = fast_atan2_r(point.f.x - tmp.f.x, point.f.y - tmp.f.y);
                         pitch = -fast_atan2_r(vec_distance_xy_r(&tmp, &point), point.f.z - tmp.f.z);
-                    } else if (hero_2B33E8.state.current != 30) {
+                    } else if (hero_2B33E8.state.current != HERO_STATE_LOOK_RELEASE_WAIT) {
                         pitch -= hero_2B33E8.ground_pitch.f * 0.5f;
                         pitch0 -= hero_2B33E8.ground_pitch.f * 0.5f;
                     }
@@ -389,7 +391,7 @@ void func_L00_002B33E8_r(Moby *m) {
                 spawn_devastator_missile_r(m, &launch, data->target, yaw, pitch, height, yaw0, pitch0);
             }
             if (hero_2B33E8.state.control_mode == 0 ||
-                (hero_2B33E8.state.current == 2 && hero_2B33E8.stick_magnitude < 0.7f)) {
+                (hero_2B33E8.state.current == HERO_STATE_RUN && hero_2B33E8.stick_magnitude < 0.7f)) {
                 set_hero_animation_r(0x36, 1, (float)scale_ticks_r(10));
             } else {
                 start_equipped_item_animation_r();
@@ -484,7 +486,8 @@ void visibomb_update(char *m) {
                             if (use_ammo(-1, 1) != 0) {
                                 f21 = 0;
                                 f20 = g->held_pose_yaw;
-                                if (g->state.current == 1 && (*(unsigned short *)(*(int *)&g->moby + 0x34) & 1)) {
+                                if (g->state.current == HERO_STATE_LOOK &&
+                                    (*(unsigned short *)(*(int *)&g->moby + 0x34) & 1)) {
                                     char *v = g2 + 0x350;
                                     f20 = fast_atan2(*(float *)(g2 + 0x350), *(float *)(g2 + 0x354));
                                     f21 = -fast_atan2(vec_length_xy(v), *(float *)(g2 + 0x358));
@@ -822,7 +825,7 @@ void emit_beam_trail_particles(X *x) {
     l0.f[2] = -random_float_between(0.01f, 0.03f);
     matrix_mul_vec3(&l0, &l0, &x->vC0);
     qcopy(&a, &x->v10);
-    if (g_hero.state.current == 0x81) {
+    if (g_hero.state.current == HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT) {
         if ((*(s32 *)&D_L00_0015F6B0_B4F40b) % 3 == 0) {
             PartType21Spawn(&a, &l0, 0x4F007FFF, 0x1FFFFFFF, scale_ticks(10), 1, 10000.0f);
         }
@@ -853,12 +856,12 @@ void emit_beam_trail_particles(X *x) {
     l0.f[1] = 0.0f;
     matrix_mul_vec3(&l0, &l0, &x->vC0);
     l0.f[2] = 0.025f;
-    if (g_hero.state.current == 8) {
+    if (g_hero.state.current == HERO_STATE_LAND) {
         col = 0xA0A0A0;
         q = 1.0165f;
         l0.f[2] -= g_frame_time * 5.0f;
     }
-    if (g_hero.state.current == 0x81) {
+    if (g_hero.state.current == HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT) {
         col = 0xA0A0A0;
         q = 1.037f;
         l0.f[2] -= g_frame_time * 3.0f;
@@ -955,18 +958,19 @@ void update_beam_effect_lifecycle(void *p) {
                 if (!(&g_hero_r)->past_jump_apex)
                     flag = 1;
             }
-            if ((&g_hero_r)->state.current == 0x10) {
+            if ((&g_hero_r)->state.current == HERO_STATE_PACK_LONG_JUMP) {
                 if ((&g_hero_r)->state_timer < scale_ticks_r2(0x2C)) {
                     flag = 1;
                 }
             }
-            if ((&g_hero_r)->state.current == 0x22) {
+            if ((&g_hero_r)->state.current == HERO_STATE_RISE_THEN_FALL_WITH_AIRBORNE_HIT_QUERY) {
                 if ((&g_hero_r)->state_timer < scale_ticks_r2(0xF) ||
                     (scale_ticks_r2(0x21) < (&g_hero_r)->state_timer && (&g_hero_r)->air_frames.s != 0)) {
                     flag = 1;
                 }
             }
-            if ((&g_hero_r)->state.current == 8 || (&g_hero_r)->state.current == 0x81) {
+            if ((&g_hero_r)->state.current == HERO_STATE_LAND ||
+                (&g_hero_r)->state.current == HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT) {
                 flag = 1;
             }
         }
@@ -1266,11 +1270,11 @@ void func_L00_002B5C98_r(Moby *m) {
     }
     FastDecTimer_r2(&data->lock);
     fast_dec_timer_r3(&data->cooldown);
-    if (hero_2B33E8.state.current == 1)
-        HeroEnterMoveState_r2(30, 1);
+    if (hero_2B33E8.state.current == HERO_STATE_LOOK)
+        HeroEnterMoveState_r2(HERO_STATE_LOOK_RELEASE_WAIT, 1);
     if (m->prev_seq == 0 && m->prev_frame < 3)
         data->cooldown = scale_ticks_r3(7);
-    if (hero_2B33E8.state.current == 30 && (hero_2B33E8.moby->flags & 1)) {
+    if (hero_2B33E8.state.current == HERO_STATE_LOOK_RELEASE_WAIT && (hero_2B33E8.moby->flags & 1)) {
         matrix_copy_rows_r2(&w.rotation, player_camera_r);
         matrix_from_basis_rows_r2(&inverse, &w.rotation);
         velocity.f.z = g_frame_time_r * 40.0f;
@@ -1281,7 +1285,8 @@ void func_L00_002B5C98_r(Moby *m) {
         launch.f.y += 0.15f;
         transform_vector_r3(&launch, &launch, &inverse);
         FastVecAdd_r4(&launch, &launch, player_camera_r + 0x140);
-        if (hero_2B33E8.state.current == 30 && (hero_2B33E8.moby->flags & 1) && !hero_2B33E8.item_use_locked) {
+        if (hero_2B33E8.state.current == HERO_STATE_LOOK_RELEASE_WAIT && (hero_2B33E8.moby->flags & 1) &&
+            !hero_2B33E8.item_use_locked) {
             EffectQueue_Add_r2((int)m, 0xFF0F0FFF, 1.0f, 0, 0.0f, 0x26, -1, 90.0f, 4);
             vec_scale_to_length_r3(&reach, &velocity, 20.0f);
             FastVecAdd_r4(&end, &reach, &launch);
@@ -1303,7 +1308,7 @@ void func_L00_002B5C98_r(Moby *m) {
     pitch = -fast_atan2_r2(vec_length_xy_r2(&velocity), velocity.f.z);
     yaw0 = yaw;
     pitch0 = pitch;
-    if (hero_2B33E8.state.current != 30) {
+    if (hero_2B33E8.state.current != HERO_STATE_LOOK_RELEASE_WAIT) {
         if (hero_2B33E8.unk22C8 == 1) {
             yaw = m->rot.z;
             yaw0 = yaw;
@@ -1351,7 +1356,7 @@ void func_L00_002B5C98_r(Moby *m) {
                     FastVecAdd_r4(&w.point, &w.point, &launch);
                     yaw = fast_atan2_r2(tpoint.f.x - w.point.f.x, tpoint.f.y - w.point.f.y);
                     pitch = -fast_atan2_r2(vec_distance_xy_r2(&w.point, &tpoint), tpoint.f.z - w.point.f.z);
-                } else if (hero_2B33E8.state.current != 30) {
+                } else if (hero_2B33E8.state.current != HERO_STATE_LOOK_RELEASE_WAIT) {
                     pitch -= hero_2B33E8.ground_pitch.f * 0.5f;
                     pitch0 -= hero_2B33E8.ground_pitch.f * 0.5f;
                 }
@@ -1625,7 +1630,7 @@ void terminate_visibomb_missile(int a, int *b) {
     *(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->unk1FE0 = 0;
     select_camera_mode_by_hero_alignment_and_distance(b[5]);
     b[5] = 0;
-    HeroEnterMoveState(0, 1);
+    HeroEnterMoveState(HERO_STATE_IDLE, 1);
     moby_restore_globals_state(a, 1);
     clear_jet_camera_mode_latch();
     DeleteMoby(a);
@@ -1865,14 +1870,14 @@ void visibomb_missile_update(Moby *m) {
     visibomb_view_active_flag_r2 = 1;
     force_help_message_r(6, 0);
     d->f10--;
-    if (!(-scale_ticks_r4(100) < d->f10) || ((Hero *)g_hero_r3)->state.current == 0x16 ||
-        ((Hero *)g_hero_r3)->state.current == 0x3D || ((Hero *)g_hero_r3)->state.current == 0x72 ||
+    if (!(-scale_ticks_r4(100) < d->f10) || ((Hero *)g_hero_r3)->state.current == HERO_STATE_HURT ||
+        ((Hero *)g_hero_r3)->state.current == HERO_STATE_DYING || ((Hero *)g_hero_r3)->state.current == 0x72 ||
         ((Hero *)g_hero_r3)->state.control_mode == 2 || ((Hero *)g_hero_r3)->state.control_mode == 4 ||
         ((Hero *)g_hero_r3)->state.control_mode == 3 || ((Hero *)g_hero_r3)->state.control_mode > 12 ||
         ((Hero *)g_hero_r3)->state.control_mode == 7 || ((Hero *)g_hero_r3)->state.control_mode == 10 ||
         ((Hero *)g_hero_r3)->state.control_mode == 16 || ((Hero *)g_hero_r3)->state.control_mode == 5 ||
-        ((Hero *)g_hero_r3)->state.current == 0x65 || ((Hero *)g_hero_r3)->state.current == 0x32 ||
-        ((Hero *)g_hero_r3)->grounded_frames == 0 ||
+        ((Hero *)g_hero_r3)->state.current == HERO_STATE_APPROACH_TARGET_POSE ||
+        ((Hero *)g_hero_r3)->state.current == 0x32 || ((Hero *)g_hero_r3)->grounded_frames == 0 ||
         (((Tgt_2B7430 *)((Hero *)g_hero_r3)->ground_moby) != 0 &&
          (((Tgt_2B7430 *)((Hero *)g_hero_r3)->ground_moby)->hA6 == 0x13E ||
           ((Tgt_2B7430 *)((Hero *)g_hero_r3)->ground_moby)->hA6 == 0x46F))) {
@@ -3066,7 +3071,7 @@ void func_L00_002B9AD8_r(Moby *m) {
                 }
                 s->reach +=
                     (IntToFloat_r3(hero_globals_base_r2[0]) * 6.0f + 12.0f - s->reach) * (frame_scale_r * 0.07f);
-                if (((Hero *)g_hero_r3)->state.current == 1) {
+                if (((Hero *)g_hero_r3)->state.current == HERO_STATE_LOOK) {
                     t.f.x = 1.2f;
                     t.f.y = 0.0f;
                     t.f.z = 0.0f;

@@ -14,6 +14,7 @@
 #include "structs/small_records.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+#include "enums/hero_state.h"
 
 /* Paratrooper fire bolt (class 0x50C): flies along its velocity until it hits something or its time runs out. */
 struct FireBoltVars {
@@ -1325,7 +1326,7 @@ void blarg_paratrooper_update(char *m) {
     if (d->f1FC != -1)
         path = batalia_path_table[d->f1FC];
     hero = (Hero *)(hero_globals_base + 0xE1D);
-    if (hero->state.current == 61 && hero->state_timer < scale302618(30) &&
+    if (hero->state.current == HERO_STATE_DYING && hero->state_timer < scale302618(30) &&
         (*(unsigned char *)((char *)(m) + 0x20)) != 8 && (*(unsigned char *)((char *)(m) + 0x20)) != 10 &&
         (*(unsigned char *)((char *)(m) + 0x20)) != 4 && (*(unsigned char *)((char *)(m) + 0x20)) != 11 &&
         fast_distance302618(m + 0x10, hero->motion.pos.f) < 25.0f && !hero_anim302618(49)) {
