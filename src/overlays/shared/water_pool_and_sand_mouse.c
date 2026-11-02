@@ -173,7 +173,7 @@ void step_pool_wave_simulation(char *base, int n) {
 extern void step_pool_wave_simulation_r(char *, int) __asm__("func_L01_002B90E8");
 extern void ripple_lerp_buffers(char *, char *, char *, float);
 extern float pool_light[];
-extern short ripple_draw_buffer;
+extern int ripple_draw_buffer SDATA(ripple_draw_buffer);
 extern float ripple_sim_phase SDATA(ripple_sim_phase);
 
 // Advance the ripple simulation clock, stepping each active entry's ripple buffers.
@@ -181,15 +181,15 @@ void RippleSimClock(char *p, int n) {
     if (1.0f - pool_light[8] <= ripple_sim_phase) {
         ripple_sim_phase = pool_light[8];
         step_pool_wave_simulation_r(p, n);
-        *(int *)&ripple_draw_buffer = ripple_prev_buffer;
+        ripple_draw_buffer = ripple_prev_buffer;
     } else {
-        *(int *)&ripple_draw_buffer = 2;
+        ripple_draw_buffer = 2;
         if (n > 0) {
             char *q = p;
             int k = n;
             do {
                 if (*(unsigned short *)(q + 0x1E) != 0) {
-                    ripple_lerp_buffers(q + (*(int *)&ripple_draw_buffer * 0x5C0 + 0x50),
+                    ripple_lerp_buffers(q + (ripple_draw_buffer * 0x5C0 + 0x50),
                                         q + (ripple_prev_buffer * 0x5C0 + 0x50), q + (ripple_cur_buffer * 0x5C0 + 0x50),
                                         ripple_sim_phase);
                 }
@@ -204,7 +204,6 @@ extern float FastAddRots(float, float);
 extern float FastCos(float);
 extern float FastSin(float);
 extern int ripple_uv_layer_flags[];
-extern float ripple_uv_table[];
 extern float ripple_base_uv_table[];
 
 // Scrolls a ripple's UV offsets and phases, then rebuilds the 46 ripple UV pairs from them.
@@ -253,7 +252,6 @@ extern void func_L00_002A5158(float, float, float, float, void *, int, int);
 void pool_ripple(float x, float y, float z, float w, void *a, int b) {
     RippleDisturb(x, y, z, w, a, b, 0);
 }
-extern float pool_light[];
 
 /* Fills the ripple grid vertices in scratchpad from a base position. */
 void build_height_grid_positions(float *pos) {
@@ -400,10 +398,10 @@ extern unsigned short font_vu_program_tag NOT_SDA;
 extern char font_vu_program[];
 extern char novalis_view_params[];
 extern char water_setup_dma_block[];
-extern short water_last_alpha1;
-extern short water_last_tex0;
-extern short water_last_tex1;
-extern short water_last_alpha2;
+extern unsigned water_last_alpha1 SDATA(water_last_alpha1);
+extern unsigned water_last_tex0 SDATA(water_last_tex0);
+extern unsigned water_last_tex1 SDATA(water_last_tex1);
+extern unsigned water_last_alpha2 SDATA(water_last_alpha2);
 
 typedef struct L01Camera {
     u8 pad000[0x190];
@@ -466,10 +464,10 @@ void build_water_render_setup_packet(void) {
     l01_packet.tag->addr = (u32)water_setup_dma_block;
     l01_packet.tag->vif0 = 0;
     l01_packet.tag->vif1 = 0x50000007;
-    *(unsigned *)&water_last_tex0 = 0xFFFFFFFFu;
-    *(unsigned *)&water_last_tex1 = 0xFFFFFFFFu;
-    *(unsigned *)&water_last_alpha2 = 0xFFFFFFFFu;
-    *(unsigned *)&water_last_alpha1 = 0xFFFFFFFFu;
+    water_last_tex0 = 0xFFFFFFFFu;
+    water_last_tex1 = 0xFFFFFFFFu;
+    water_last_alpha2 = 0xFFFFFFFFu;
+    water_last_alpha1 = 0xFFFFFFFFu;
     l01_packet.tag++;
 }
 #define DmaTag DmaTag_x
@@ -477,10 +475,10 @@ void build_water_render_setup_packet(void) {
 
 void build_height_grid_positions(f32 *pos);
 void cull_and_submit_water_grid_tile(f32 *pos, s32 index, s32 mode);
-extern short water_last_tex0;
-extern short water_last_tex1;
-extern short water_last_alpha2;
-extern short water_last_alpha1;
+extern unsigned water_last_tex0 SDATA(water_last_tex0);
+extern unsigned water_last_tex1 SDATA(water_last_tex1);
+extern unsigned water_last_alpha2 SDATA(water_last_alpha2);
+extern unsigned water_last_alpha1 SDATA(water_last_alpha1);
 void build_water_render_setup_packet(void);
 extern void ripple_heights_to_scratchpad_r(void *, void *) __asm__("func_L01_00262BC0");
 extern void ripple_shade_vertices(f32 *);
@@ -552,8 +550,7 @@ void render_water_grids(f32 *pos, s32 count) {
             if ((near_bits & 0x20202020) == 0x20202020)
                 goto next_entity;
 
-            ripple_heights_to_scratchpad_r((void *)0x70000000,
-                                           (u8 *)pos + ((*(s32 *)&ripple_draw_buffer) * 0x5c0 + 0x50));
+            ripple_heights_to_scratchpad_r((void *)0x70000000, (u8 *)pos + ((ripple_draw_buffer) * 0x5c0 + 0x50));
             ripple_shade_vertices(pos);
             build_height_grid_positions(pos);
             update_animated_offset_pairs(pos);
@@ -584,9 +581,8 @@ void render_water_grids(f32 *pos, s32 count) {
                     mode = 0;
             }
             mask = *(u16 *)((u8 *)pos + 0x1e);
-            if (*(u32 *)(pos + 5) != (*(u32 *)&water_last_tex0) || *(u32 *)(pos + 6) != (*(u32 *)&water_last_tex1) ||
-                *(u8 *)(pos + 7) != (*(u32 *)&water_last_alpha2) ||
-                *(u8 *)((u8 *)pos + 0x1d) != (*(u32 *)&water_last_alpha1)) {
+            if (*(u32 *)(pos + 5) != (water_last_tex0) || *(u32 *)(pos + 6) != (water_last_tex1) ||
+                *(u8 *)(pos + 7) != (water_last_alpha2) || *(u8 *)((u8 *)pos + 0x1d) != (water_last_alpha1)) {
                 l01_packet.words[0] = 0x10000005;
                 l01_packet.words[1] = 0;
                 l01_packet.words[2] = 0x11000000;
@@ -608,11 +604,11 @@ void render_water_grids(f32 *pos, s32 count) {
                 {
                     u32 texture_id = *(u32 *)(pos + 5);
                     u32 second_texture_id = *(u32 *)(pos + 6);
-                    (*(u32 *)&water_last_tex0) = texture_id;
-                    (*(u32 *)&water_last_tex1) = second_texture_id;
+                    (water_last_tex0) = texture_id;
+                    (water_last_tex1) = second_texture_id;
                 }
-                (*(u32 *)&water_last_alpha2) = *(u8 *)(pos + 7);
-                (*(u32 *)&water_last_alpha1) = *(u8 *)((u8 *)pos + 0x1d);
+                (water_last_alpha2) = *(u8 *)(pos + 7);
+                (water_last_alpha1) = *(u8 *)((u8 *)pos + 0x1d);
             }
             for (index = 0; index < 16; index++, mask = (s32)mask >> 1) {
                 if (mask & 1)
@@ -970,7 +966,7 @@ extern char *novalis_moby_list MACRO_ADDR;
 extern char *camera_points MACRO_ADDR;
 
 extern unsigned char saved_mission_state[][16];
-extern short bolt_crank_pull_spring_vel;
+extern float bolt_crank_pull_spring_vel SDATA(bolt_crank_pull_spring_vel);
 
 extern float FastSubRots(float, float);
 extern float FastDiffRots(float, float);
@@ -1063,7 +1059,7 @@ void bolt_crank_update(char *m) {
                                         int timer;
                                     } *)s)
                                         ->timer = 0;
-                                    *(float *)&bolt_crank_pull_spring_vel = 0.0f;
+                                    bolt_crank_pull_spring_vel = 0.0f;
                                     for (p = novalis_moby_list; p != 0; p = *(char **)(p + 0x28)) {
                                         if (*(unsigned short *)(p + 0x34) & 0x1000) {
                                             if (vec_distance_xy(&((Moby *)m)->pos, p + 0x10) < 3.25f) {
@@ -1228,9 +1224,9 @@ void bolt_crank_update(char *m) {
                 V90[2] = 0.0f;
                 d = vec_length_xy(V90);
                 VA0 = -d;
-                Spring(&VA0, (float *)&bolt_crank_pull_spring_vel, 0.0f, g_frame_scale_sq * 0.015f,
-                       g_frame_scale_sq * 0.3f, g_frame_time * 7.0f);
-                vec_scale_to_length(V90, V90, *(float *)&bolt_crank_pull_spring_vel);
+                Spring(&VA0, &bolt_crank_pull_spring_vel, 0.0f, g_frame_scale_sq * 0.015f, g_frame_scale_sq * 0.3f,
+                       g_frame_time * 7.0f);
+                vec_scale_to_length(V90, V90, bolt_crank_pull_spring_vel);
                 FastVecAdd(h + 0x80, h + 0x80, V90);
                 F(h, 0x88) = hy;
                 if (draw_map51[1]) {
@@ -1376,7 +1372,6 @@ typedef struct {
 } Vs __attribute__((aligned(16)));
 extern int probe_vertical_ground_collision(Vs *p, int x, int y, float f, float g);
 extern float novalis_coll_hit_point_z;
-extern char g_hero[];
 extern float sand_mouse_move_ctl_probe_height;
 
 /* Builds a camera-relative transform for a moby and steps its height. */
@@ -1422,7 +1417,6 @@ s32 update_sand_mouse_fall_motion(void *ctx, struct Moby *m) {
     return move_moby_with_collision_integer_radius_r(ctx, &m->pos, sand_mouse_move_ctl_r.count, 0, 0.3f,
                                                      sand_mouse_move_ctl_r.spread);
 }
-extern char *novalis_moby_list MACRO_ADDR;
 extern char novalis_coll_hit_h[] __asm__("D_L01_00174340");
 extern float *GetFlaggedPvarWord_t(void *) __asm__("func_L00_0025D390");
 extern float FastDiffRots(float, float);
@@ -1563,8 +1557,6 @@ typedef struct {
 
 extern char sand_mouse_move_ctl_turn_vel[];
 extern float frame_scale MACRO_ADDR;
-extern float g_frame_scale_sq MACRO_ADDR;
-extern float g_frame_time_sq MACRO_ADDR;
 extern float hover_target_yaw_spring_strength_degrees_gp SDATA(hover_target_yaw_spring_strength_degrees_gp);
 extern float hover_target_yaw_damping_degrees_gp SDATA(hover_target_yaw_damping_degrees_gp);
 extern float hover_target_yaw_turn_rate_limit_degrees_gp SDATA(hover_target_yaw_turn_rate_limit_degrees_gp);
@@ -1742,8 +1734,6 @@ extern char sand_mouse_collected_msg[];
 extern char sand_mouse_no_parent_msg[];
 extern unsigned char D_0013D5CA[] NOT_SDA;
 extern void *D_L01_00174358;
-extern float frame_scale MACRO_ADDR;
-extern float g_frame_time_sq MACRO_ADDR;
 extern int sand_mouse_follow_duration_frames_gp SDATA(sand_mouse_follow_duration_frames_gp);
 extern int sand_mouse_follow_projectile_count_limit_gp SDATA(sand_mouse_follow_projectile_count_limit_gp);
 extern int sand_mouse_fade_duration_frames_gp SDATA(sand_mouse_fade_duration_frames_gp);
@@ -2049,7 +2039,6 @@ void sand_mouse_update(Moby *moby) {
         *(int *)&novalis_mobys_r[d->parent].collision = ((Class_E5298 *)novalis_mobys_r[d->parent].pclass)->i10;
     }
 }
-extern float g_frame_time_sq MACRO_ADDR;
 extern void clear_u64_value(void *);
 
 extern float ProbeGroundHeight(void *, int, float);
@@ -3075,7 +3064,6 @@ u8 *get_moby_data_plus_0x60(struct Moby *m) {
     return 0;
 }
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
-extern float g_frame_time_sq MACRO_ADDR;
 extern int g_hero_items_2_item_id;
 extern unsigned char item_available_5 NOT_SDA;
 
@@ -3376,7 +3364,6 @@ extern s32 gunship_path_updates_disabled SDATA(gunship_path_updates_disabled);
 extern char *novalis_mobys MACRO_ADDR;
 extern char gunship_missing_path_message_fmt[];
 extern void *gunship_follow_path_fn_ptr MACRO_ADDR;
-extern char voice_pool[];
 
 extern s32 check_scaled_vector_bsphere(struct Moby *, f32);
 extern s32 get_first_moby_in_group(struct Moby **, s32, s32, s32);

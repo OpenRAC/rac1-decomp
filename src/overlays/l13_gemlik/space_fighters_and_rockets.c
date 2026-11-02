@@ -27,7 +27,6 @@ extern Hero g_hero;
 extern char voice_pool[];
 extern struct Hero g_hero;
 extern char level_moby_killed[];
-extern char voice_pool[];
 
 /* Class 0x53 shot: flies along velocity until the timer ends. */
 typedef struct ProjectileVars {
@@ -1038,7 +1037,6 @@ extern void MobySpringTurn(char *moby, float *vel, float target, float k, float 
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
 
 extern float normalize_angle(float);
-extern float g_frame_time MACRO_ADDR;
 
 /* steers a moby's pitch toward a target with a spring, then damps and clamps it */
 void steer_blarg_space_fighter(char *moby, char *d, float p2, float p3) {
@@ -1086,7 +1084,6 @@ int select_blarg_space_fighter_path_point_by_distance(char *pt, int *tbl, int st
     return best;
 }
 
-extern char hero_globals_base[];
 extern void FastVecScale(void *, void *, float);
 extern void FastVecSub(void *, void *, void *);
 extern float vec_distance_xy(void *, void *);
@@ -1159,7 +1156,6 @@ int advance_blarg_space_fighter_along_path(char *m, char *d, int aim) {
     }
     return wrapped;
 }
-extern char hero_globals_base[];
 extern float FastAddRots(float, float);
 extern void FastVecAdd(void *, void *, void *);
 
@@ -1354,10 +1350,8 @@ extern void add_random_offset_to_vector_xyz(float *v, float s);
 extern int func_001160D8(void);
 
 extern char blarg_space_fighter_no_path_format[];
-extern char *gemlik_moby_array_start MACRO_ADDR;
 extern float optional_glow_suppression_level MACRO_ADDR;
 extern float blarg_space_fighter_fire_suppression_level MACRO_ADDR;
-extern float frame_scale MACRO_ADDR;
 extern float gemlik_camera_pos[];
 
 /* Update for the blarg space fighter: joins its path, follows it while its carrier lives, fires at the hero's ship,
@@ -2356,7 +2350,6 @@ extern s32 FastBSphereCheck(f32, void *);
 #define find_hit_p ((char *(*)(struct MobyP *, s32, s32))(func_L00_0025B478))
 #define remove_p ((void (*)(struct MobyP *))(func_0020D678))
 #define hit_blob_p ((void (*)(struct MobyP *, struct BlobVarsP *, f32))(func_L13_002E2690))
-extern struct Hero g_hero;
 #define hero_p D_0013F450
 #define hero_base_p D_0013E633
 extern CollisionHitP gemlik_coll_hit_result;
@@ -2982,7 +2975,6 @@ void emit_gated_moby_joint_effects(struct Moby *m, char *d) {
     }
 }
 extern int gemlik_effect_joint_list[];
-extern int gemlik_frame_count MACRO_ADDR;
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern int rand_range(int, int);
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
@@ -3279,10 +3271,8 @@ typedef struct {
 } AnimSeq_EAC18;
 extern void SetDeathBits_r2(struct Moby *, int, int) __asm__("func_L00_002584A8");
 extern void RerollEffectCounter(void *, short *);
-extern char *gemlik_moby_array_start MACRO_ADDR;
 int queue_starfighter_voice_line(void *unused, unsigned char *p, int base, int n);
 
-extern char *gemlik_scene_points MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l13/gameplay/entities/002c13b0.c, FUN_L13_002e97e0. */
 void begin_starfighter_death_sequence(struct Moby *moby, char *vars, int *result) {

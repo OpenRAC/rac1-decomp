@@ -21,8 +21,6 @@
 #include "structs/hit_message.h"
 extern Hero g_hero;
 extern char g_hero_moby[];
-extern Hero g_hero;
-extern char g_hero_moby[];
 extern int pad_held;
 
 extern unsigned char hero_globals_base[];
@@ -50,7 +48,6 @@ int get_hero_idle_animation_index(int a) {
     r = novalis_item_defs - (-(n * 0x4C));
     return *(int *)(r + 0x24);
 }
-extern unsigned char hero_globals_base[];
 extern int request_grouped_voice(int a0, int a1, int a2, int a3, int a4);
 
 // Plays the hero footstep sound, flagging whether the hero's current moby has type 0xAD.
@@ -207,7 +204,6 @@ void hero_frame_update(void) {
     update_hero_moby_probed_height_bounds();
     apply_env_zone_lighting(GG->p2080);
 }
-extern unsigned char hero_globals_base[];
 extern int scale_ticks(int);
 extern void FadeToBlack(int);
 extern void hero_frame_update(void);
@@ -1076,7 +1072,6 @@ extern void FastVecScale(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern int coll_line(void *, void *, int, int, int);
 
-extern float g_frame_time MACRO_ADDR;
 extern int novalis_coll_hit_type;
 extern char novalis_coll_hit[];
 
@@ -1163,7 +1158,6 @@ void clip_hero_horizontal_velocity(int flag) {
 }
 typedef int Q __attribute__((mode(TI)));
 extern u8 novalis_coll_hit_point[];
-extern s32 g_current_level_index MACRO_ADDR;
 void func_001F9BC0_333D8(void *) __asm__("func_001F9BC0");
 void hero_get_collision_ray_endpoints(void *, void *, s32, f32, f32);
 s32 coll_line(void *, void *, s32, s32, s32);
@@ -1183,7 +1177,6 @@ void vec_scale_to_length(void *, void *, f32);
 void compute_rotated_vector_angles(void *, void *);
 void transform_hero_polar_offset_to_world(void *, f32, f32, f32);
 f32 FastAbsF(f32);
-extern Hero g_hero;
 extern struct CollisionHit novalis_coll_hit_r3 __asm__("D_L01_00174340");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00226f10.c, FUN_L01_00232dc0. */

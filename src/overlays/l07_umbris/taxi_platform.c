@@ -20,8 +20,6 @@
 extern Hero g_hero;
 extern char saved_mission_state[];
 extern char gSpecialItems[];
-extern Hero g_hero;
-extern char saved_mission_state[];
 extern char voice_pool[];
 
 /* Umbris taxi platform: slides along a path between its two ends when the hero rides it. */
@@ -299,7 +297,6 @@ enum TaxiPlatformCommand {
 };
 
 /* Moves a moby along a path between its two ends, hidden while its gate byte is set. */
-extern Hero g_hero;
 
 void update_mission_gated_taxi_platform(unsigned char *moby) {
     struct Moby *m = (struct Moby *)moby;
@@ -2108,8 +2105,6 @@ char *spawn_moby_class_1049(char *pos, char *vec, int arg) {
     }
     return m;
 }
-extern float g_frame_time_sq MACRO_ADDR;
-extern int umbris_frame_count MACRO_ADDR;
 extern char *debris_target_p __asm__("D_L07_00173F58");
 extern void spawn_moby_point_offset_particle(char *, int, float, float);
 extern int coll_line(void *, void *, int, int, int);
@@ -2392,7 +2387,6 @@ extern int classify_sharkigator_water_height_gap(char *moby, char *data);
 extern void set_sharkigator_idle_state_from_water_height_gap(char *arg);
 extern int func_001160D8(void);
 extern int STUB_printf();
-extern char *level_mobys MACRO_ADDR;
 extern int scene_points_addr __asm__("D_L07_0016016C") MACRO_ADDR;
 extern char umbris_sharkigator_no_path_msg[];
 extern char umbris_sharkigator_no_other_path_msg[];
@@ -2512,7 +2506,6 @@ void select_sharkigator_navigation_heading(struct Moby *moby, struct WalkerData 
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern int move_moby_with_collision_integer_radius(int a, int b, int g, int e, float c, float d);
 extern void FastVecScale(void *, void *, float);
-extern float g_frame_time MACRO_ADDR;
 
 /* Step a moby's velocity toward a target: gravity when above a height, then ease and clamp. */
 void advance_sharkigator_swim_movement(char *a, char *b, float f12, float f13, float f14) {
@@ -2555,7 +2548,6 @@ int update_sharkigator_horizontal_velocity_by_heading(char *moby, char *obj, flo
 }
 extern int debris_target;
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern float frame_scale MACRO_ADDR;
 extern float MobyGetFrameValue(void *);
 extern int coll_sphere_mobys(void *, float, int, void *, void *);
 
@@ -2604,7 +2596,6 @@ void handle_sharkigator_contact_attack(char *moby, char *obj, int state, int ani
 }
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern int coll_sphere(float, void *, int, void *);
-extern int debris_target;
 
 /* True when the sharkigator's joint sphere hits something and the hit target is id. */
 int test_sharkigator_target_sphere_collision(void *moby, int id, float scale) {
@@ -3600,7 +3591,6 @@ void rumble_by_distance(char *moby) {
 }
 
 extern int FastTweenColor(int, int, float);
-extern char umbris_lights[];
 
 // fades a colour entry in a level table, or frees it once the timer is done
 void update_timed_point_light_color(struct TimedLightObj *a) {

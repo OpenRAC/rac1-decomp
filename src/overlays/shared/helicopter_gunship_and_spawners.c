@@ -1605,7 +1605,6 @@ void handle_blarg_helicopter_hits(char *m) {
     ((Moby *)m)->hit_slot = 0xFF;
     StepColorFade(m, &d->color_fade);
 }
-extern float kerwan_zero_vec[] MACRO_ADDR;
 extern void spawn_proximity_gated_bolts(void *);
 extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
 /* Statue update: wait for a hit, then play a sound, drop bolts, break into three pieces and delete. */
@@ -1915,7 +1914,6 @@ void attach_shared_manipulator_to_matching_class_moby(char *a) {
     }
 }
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
-extern struct Hero g_hero;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00291918.c, FUN_L03_002dc310. */
 void fred_1_update(Moby *m) {
@@ -2121,7 +2119,6 @@ void garage_door_update(struct Moby *m) {
 }
 INCLUDE_ASM("asm/overlays", func_L03_002DDE28);
 INCLUDE_ASM("asm/overlays", func_L03_002DDED8);
-extern float g_frame_time_sq MACRO_ADDR;
 
 extern float FastAddRots(float, float);
 extern float IntToFloat(int);
@@ -2233,8 +2230,6 @@ void smooth_transform_orientation_toward_hero(char *m) {
     FastVecCross(m + 0x20, m + 0x10, m);
 }
 
-extern int kerwan_camera_descriptors MACRO_ADDR;
-extern char kerwan_camera_pos[];
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern int kerwan_camera_descriptors_r __asm__("D_L03_0015F050") MACRO_ADDR;
 extern int is_point_inside_clip_volume_r2(void *arg0, int arg1) __asm__("func_00215570");
@@ -2262,7 +2257,6 @@ int evaluate_clip_volume_candidate(char *a0, char *a1) {
     }
     return 0;
 }
-extern int kerwan_camera_descriptors MACRO_ADDR;
 
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
 

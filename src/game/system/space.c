@@ -828,11 +828,8 @@ extern MemoryCardState memory_card_state_r __asm__("D_0013D390");
 extern u8 level_available_base[];
 extern struct LevelRenderState_305A0 level_render_state_r2 __asm__("D_0013E130");
 extern s32 game_frame_counter MACRO_ADDR;
-extern f32 gFade MACRO_ADDR;
 extern s32 D_0015F704_305A0 SDATA(D_0015F704);
 extern s32 render_sequence_time[];
-extern s32 render_sequence_slots[];
-extern struct LevelProjectionState view_context;
 extern void append_dma_tag(u32);
 extern void BuildViewMatrices();
 extern void UpdateViewContext();
@@ -1902,7 +1899,6 @@ extern u8 coll_output_aux_buffer[];
 extern u8 resident_class_material_maps[0xE00];
 
 struct CommonArchiveMemory;
-extern struct CommonArchiveMemory level_resource_buffers;
 extern struct DiscTable disc_table;
 extern u64 special_material_template[3];
 extern s32 resident_indexed_texture_count MACRO_ADDR;
@@ -1926,10 +1922,8 @@ extern u8 part_slot_bitmap[];
 extern s32 occl_fog_count MACRO_ADDR;
 extern s32 part_clip_dist MACRO_ADDR;
 extern short resident_quad_start_pos;
-extern u8 level_available[20] NOT_SDA;
 extern u8 level_init_cleared_block[];
 extern u8 level_init_cleared_block2[];
-extern u32 sound_bank_handle MACRO_ADDR;
 
 extern s32 Stream_SubmitRead(void *buf, u32 lsn, u32 sectors);
 extern void FadeToBlack(s32 n);
@@ -2250,19 +2244,14 @@ void append_scrolling_textured_quad(int x, int y, int w, int h, unsigned long rg
     g_render_packet_cursor = (int *)((char *)g_render_packet_cursor + 0x60);
 }
 
-extern s32 g_gs_texture_allocation_cursor MACRO_ADDR;
-extern s32 g_gs_texture_allocation_start MACRO_ADDR;
 typedef struct {
     u64 q[12];
 } sceGsLoadImage __attribute__((aligned(16)));
 
-extern struct DiscTable disc_table;
 struct CommonArchiveMemory {
     u8 pad_0[0x14];
     s32 archive_base;
 };
-extern s32 g_gs_texture_allocation_base MACRO_ADDR;
-extern struct CommonArchiveMemory level_resource_buffers;
 extern void flush_cache(s32 a0);
 extern s32 sce_cd_sync_s_r(s32 a0) __asm__("func_00120F30");
 extern s32 sceGsExecLoadImage(sceGsLoadImage *load_image, s32 image_address);
@@ -2724,12 +2713,12 @@ extern s32 g_game_mode MACRO_ADDR;
 extern s32 environment_mapping_uv_refresh_state SDATA(environment_mapping_uv_refresh_state);
 extern s32 env_map_was_active SDATA(env_map_was_active);
 extern s32 env_map_blend_timer SDATA(env_map_blend_timer);
-extern short environment_mesh_colors;
-extern short environment_mesh_vertex_counts;
-extern short environment_mesh_quad_counts;
-extern short environment_mesh_normals;
-extern short environment_mesh_positions;
-extern short environment_mesh_quads;
+extern s32 environment_mesh_colors SDATA(environment_mesh_colors);
+extern s32 environment_mesh_vertex_counts SDATA(environment_mesh_vertex_counts);
+extern s32 environment_mesh_quad_counts SDATA(environment_mesh_quad_counts);
+extern Vec4 *environment_mesh_normals SDATA(environment_mesh_normals);
+extern Vec4 *environment_mesh_positions SDATA(environment_mesh_positions);
+extern IndexedQuad *environment_mesh_quads SDATA(environment_mesh_quads);
 extern CameraSystem gCamera_r __asm__("D_00187040");
 extern FloatVector4 camera_position_r __asm__("D_00187180");
 extern Vec4 env_map_world_positions[];
@@ -2767,18 +2756,18 @@ void render_environment_mapped_object(EnvironmentMappedObject *object) {
     int corner_index;
 
     class_index = object->class_id - 0x212;
-    positions = (((Vec4 **)&environment_mesh_positions))[class_index];
-    normals = (((Vec4 **)&environment_mesh_normals))[class_index];
-    indexed_quads = (((IndexedQuad **)&environment_mesh_quads))[class_index];
-    quad_count = (((s32 *)&environment_mesh_quad_counts))[class_index];
-    vertex_count = (((s32 *)&environment_mesh_vertex_counts))[class_index];
+    positions = ((&environment_mesh_positions))[class_index];
+    normals = ((&environment_mesh_normals))[class_index];
+    indexed_quads = ((&environment_mesh_quads))[class_index];
+    quad_count = ((&environment_mesh_quad_counts))[class_index];
+    vertex_count = ((&environment_mesh_vertex_counts))[class_index];
     if (g_game_mode == 6 && ship_substate_r[0] == 4) {
         quad_state[1] = GetEffectTex_r2(1);
     } else {
         quad_state[1] = GetEffectTex_r2(0x15);
     }
     mapping_enabled = 0;
-    color = (((s32 *)&environment_mesh_colors))[class_index];
+    color = ((&environment_mesh_colors))[class_index];
     quad_state[2] = 0xFF9000000260;
     quad_state[3] = 0x8000000044;
     quad_state[0] = 0;

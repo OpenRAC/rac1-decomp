@@ -47,7 +47,7 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern float fleet_hero_fall_state_height MACRO_ADDR;
 extern int fleet_shown_help_message MACRO_ADDR;
 extern int fleet_hero_run_start_anim_mode MACRO_ADDR;
-extern short fleet_hero_double_tap_timer;
+extern int fleet_hero_double_tap_timer SDATA(fleet_hero_double_tap_timer);
 
 extern int fleet_look_release_reset_word;
 extern HeroBoneScalars fleet_lean_state;
@@ -1825,15 +1825,15 @@ void HeroL17_UpdateStateTransitions(void) {
                         {
                             int both = 0;
 
-                            fast_dec_timer((int *)&fleet_hero_double_tap_timer);
-                            if (*(int *)&fleet_hero_double_tap_timer != 0) {
+                            fast_dec_timer(&fleet_hero_double_tap_timer);
+                            if (fleet_hero_double_tap_timer != 0) {
                                 both = 1;
                                 if (!((g_controller_state.held & PAD_R1) && (g_controller_state.pressed & PAD_R1))) {
                                     both = 0;
                                 }
                             }
                             if (g_controller_state.pressed & PAD_R1) {
-                                *(int *)&fleet_hero_double_tap_timer = scale_ticks(0x1E);
+                                fleet_hero_double_tap_timer = scale_ticks(0x1E);
                             }
                             if (!(g_hero.state_timer > scale_ticks(0x14))) {
                                 break;

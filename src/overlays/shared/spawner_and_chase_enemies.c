@@ -12,7 +12,6 @@
 #include "enums/level.h"
 #include "structs/voice.h"
 extern Hero g_hero;
-extern Hero g_hero;
 
 /* Spawner: picks a target, then throws eggs (Spawner Egg) towards it, up to max_eggs alive. */
 struct SpawnerVars {

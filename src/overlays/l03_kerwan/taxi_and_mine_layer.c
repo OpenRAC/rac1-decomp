@@ -382,7 +382,6 @@ typedef struct {
     s32 alert_timer; /* 0x15C */
     u8 unk160[0x10]; /* 0x160: FUN_L00_00263ac8 record */
 } TrooperVars_CBBD0;
-extern float g_frame_time_sq MACRO_ADDR;
 typedef struct {
     u8 pad0[0x10];
     Vec4 pos; /* 0x10: where the hit landed */
@@ -483,7 +482,6 @@ struct Manip;
 struct GifEntry;
 struct AnimSeq;
 void handle_mine_hit(unsigned char *arg);
-extern float g_frame_time MACRO_ADDR;
 struct Moby;
 extern struct Hero g_hero;
 typedef int OvlQuad __attribute__((mode(TI)));
@@ -772,7 +770,6 @@ struct Manip;
 struct GifEntry;
 struct AnimSeq;
 void request_taxi_return_help_message(void *arg, int mode);
-extern float g_frame_time MACRO_ADDR;
 void func_L03_002D5008_D4560(struct Moby *m) __asm__("func_L03_002D5008");
 struct Moby;
 struct RailPath_D4560 {
@@ -781,7 +778,6 @@ struct RailPath_D4560 {
     Vec4 pts[1]; /* 0x10: xyz point, w length of the segment to the next */
 };
 extern struct RailPath_D4560 *kerwan_paths_r2[] __asm__("D_L03_001B08B0");
-extern float g_frame_time_sq MACRO_ADDR;
 s32 is_taxi_in_round_trip_phase(u8 *object);
 struct RailTaxiVars {
     u8 pad0[0x20];
@@ -966,13 +962,11 @@ void update_rail_taxi(struct Moby *m) {
     FastVecSub(&move, &m->pos, &oldPos);
     update_entity_matrix(v->coll, &move, &oldRot, &m->rot);
 }
-extern float g_frame_time MACRO_ADDR;
 extern char hero_globals_base[];
 extern void FastVecSub(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
 
-extern float g_frame_time_sq MACRO_ADDR;
 extern float kerwan_rail_taxi_max_speed SDATA(kerwan_rail_taxi_max_speed);
 extern float kerwan_rail_taxi_speed_accel SDATA(kerwan_rail_taxi_speed_accel);
 extern float kerwan_rail_taxi_pitch_accel_deg SDATA(kerwan_rail_taxi_pitch_accel_deg);
@@ -1055,7 +1049,6 @@ int advance_moby_along_rail_path(char *moby, int pathIndex, int *sound) {
 }
 extern void update_moby_vertical_oscillation(float, float, char *, float *, float *);
 extern void update_moby_rotation_oscillation(void *, char *, char *, float, float, float);
-extern float g_frame_time MACRO_ADDR;
 extern short D_L03_00161B70;
 extern short D_L03_00161B74;
 extern short D_L03_00161B78;
@@ -1361,7 +1354,7 @@ extern u8 kerwan_saved_moby_bytes[];
 extern char kerwan_helga_dialogue_script[];
 extern LevelState_hg kerwan_current_level_state;
 extern u8 kerwan_mission_group_state[];
-extern short kerwan_camera_points;
+extern char *kerwan_camera_points SDATA(kerwan_camera_points);
 extern void record_moby_context_bytes(void *, int, struct Moby *, int, void *);
 extern int DialogRequest_Init(void *, unsigned char *);
 extern int Npc_TryStartDialog(struct Moby *, struct TalkState_hg *);
@@ -1443,8 +1436,8 @@ void helga_update(struct Moby *m) {
                         LINK_HELPER(m, v)
                     }
                     if (v->talk.warp != -1) {
-                        jet_reset_camera((*(char **)&kerwan_camera_points) + v->talk.warp * 128 + 0x30,
-                                         (*(char **)&kerwan_camera_points) + v->talk.warp * 128 + 0x70);
+                        jet_reset_camera((kerwan_camera_points) + v->talk.warp * 128 + 0x30,
+                                         (kerwan_camera_points) + v->talk.warp * 128 + 0x70);
                     }
                 }
                 m->state = 1;
@@ -1969,9 +1962,8 @@ typedef struct {
 } SaveFlags;
 #define SAVEFLAGS ((SaveFlags *)&D_L03_001BB640)
 extern int kerwan_moby_killed_bits[];
-extern int g_current_level_index MACRO_ADDR;
 extern char *g_hero_moby[];
-extern short kerwan_camera_points;
+extern char *kerwan_camera_points SDATA(kerwan_camera_points);
 extern int kerwan_game_mode;
 #define WARPTAB (*(char **)&D_L03_0016016C)
 
@@ -2360,16 +2352,12 @@ extern void ShowBanner(int, int);
 extern Help_2E08E8 usage_stats_r[] __asm__("D_00141948");
 extern Help_2E08E8 help_records_r[] __asm__("D_00141A68");
 extern unsigned char special_items_base[];
-extern unsigned char menu_item_enabled_115[];
-extern unsigned char gHaveHeliPack[];
 extern unsigned char discount_purchase_pricing[];
 extern int gameplay_event_frame_count MACRO_ADDR;
-extern int g_current_level_index MACRO_ADDR;
 extern int kerwan_help_popup_state[] NOT_SDA;
 extern Node_2E08E8 *kerwan_moby_list_r __asm__("D_L03_00160064") MACRO_ADDR;
 extern int kerwan_usage_event_count MACRO_ADDR;
 extern int kerwan_usage_event_timer MACRO_ADDR;
-extern int kerwan_game_mode MACRO_ADDR;
 extern Entry_2E08E8 kerwan_item_defs[];
 
 /* UpdateMoby_1342: tutorial hint and statistic triggers around the player on Kerwan. */

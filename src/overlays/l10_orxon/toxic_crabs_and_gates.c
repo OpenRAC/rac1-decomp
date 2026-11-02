@@ -20,11 +20,12 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+extern char gHeroPos[];
+
 extern char gSkillPoints[];
 extern char gSpecialItems[];
 extern Hero g_hero;
 extern char help_records[];
-extern char gSpecialItems[];
 extern struct Hero g_hero;
 extern int level_moby_killed[][64];
 extern int pad0_pressed;
@@ -1137,7 +1138,6 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
     if (d->f160 == 0)
         d->f160 = g_hero.moby;
 }
-extern unsigned char hero_globals_base[];
 extern float toxic_crab_group_spread_deg SDATA(toxic_crab_group_spread_deg);
 
 typedef struct {
@@ -2113,7 +2113,6 @@ remove_candidate:
 }
 }
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
-extern struct Hero g_hero;
 typedef struct {
     int unk0;
     float home_yaw;
@@ -2121,7 +2120,6 @@ typedef struct {
     int clip_volume;
     int sound;
 } DoorVars;
-extern int level_moby_killed[][64];
 extern unsigned char hero_vehicle_mode[];
 extern unsigned char hoven_available[];
 extern int is_point_inside_clip_volume(void *, int);
@@ -2578,7 +2576,6 @@ struct L10Data {
     char pad1[0x178 - 0x34];
     int slot[4];
 };
-extern int orxon_cinematic_mode MACRO_ADDR;
 extern struct L10Data orxon_cutscene_state;
 extern void cutscene_set_camera_target(int);
 

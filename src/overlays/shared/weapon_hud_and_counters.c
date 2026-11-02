@@ -514,7 +514,6 @@ void hud_init_particles(HudElem *e) {
 }
 extern void Hud_UpdateCounter_v(HudElem *) __asm__("func_L00_00236830");
 extern int rendered_frame_count MACRO_ADDR;
-extern float hud_star_particles[][4];
 extern float star_init_limit0_gp SDATA(star_init_limit0_gp);
 extern float star_init_limit1_gp SDATA(star_init_limit1_gp);
 extern float star_init_limit2_gp SDATA(star_init_limit2_gp);
@@ -580,7 +579,7 @@ extern void FastVecAdd(void *, void *, void *);
 extern void draw_hud_sprite_subpixel(int, int, int, int, int, int);
 extern void draw_rotated_hud_sprite(int tex, int x, int y, int w, int h, int alpha);
 extern int hud_stars_width SDATA(hud_stars_width);
-extern short hud_star_height;
+extern int hud_star_height SDATA(hud_star_height);
 extern float hud_stars_scale_x SDATA(hud_stars_scale_x);
 extern float hud_stars_scale_y SDATA(hud_stars_scale_y);
 
@@ -597,7 +596,7 @@ int draw_hud_stars(HudElem *rec) {
         y = rec->unk54;
         rec->w = ww;
         {
-            int *src = (int *)&hud_star_height;
+            int *src = &hud_star_height;
             int *dst = &rec->h;
             __builtin_memcpy(dst, src, 4);
         }
@@ -607,9 +606,9 @@ int draw_hud_stars(HudElem *rec) {
 
     {
         int w = hud_stars_width * 0xD0;
-        int h = *(int *)&hud_star_height * 0xA0;
+        int h = hud_star_height * 0xA0;
         int bh = hud_stars_width * 0x260;
-        int bottom = *(int *)&hud_star_height * 0xEA0;
+        int bottom = hud_star_height * 0xEA0;
         int left = (x + rec->unk48) << 4;
         int top = (y + rec->unk4A) << 4;
         int right;
@@ -643,18 +642,18 @@ int draw_hud_stars(HudElem *rec) {
     tex = GetIconFrame(*(int *)r, flagB);
     f20 = 16.0f;
     f22 = 32.0f;
-    draw_rotated_hud_sprite(tex, x + rec->unk48, y + rec->unk4A, (hud_stars_width), (*(int *)&hud_star_height), 0x80);
+    draw_rotated_hud_sprite(tex, x + rec->unk48, y + rec->unk4A, (hud_stars_width), (hud_star_height), 0x80);
 
     {
         float cx, cy, ox, oy;
         ox = (hud_stars_width * hud_stars_scale_x * 0.5f) / 17.0f;
-        oy = -(*(int *)&hud_star_height * hud_stars_scale_y * 0.5f) / 116.0f;
+        oy = -(hud_star_height * hud_stars_scale_y * 0.5f) / 116.0f;
         v0[2] = 1.0f;
         v0[3] = 1.0f;
         cx = hud_stars_width * hud_stars_scale_x * 0.5f + (x + rec->unk48);
-        cy = *(int *)&hud_star_height * hud_stars_scale_y * 0.5f + (y + rec->unk4A);
+        cy = hud_star_height * hud_stars_scale_y * 0.5f + (y + rec->unk4A);
         v10[0] = (cx + (1.0f - hud_stars_scale_x) * 0.5f * hud_stars_width) * f20;
-        v10[1] = (cy + (1.0f - hud_stars_scale_y) * 0.5f * *(int *)&hud_star_height) * f20;
+        v10[1] = (cy + (1.0f - hud_stars_scale_y) * 0.5f * hud_star_height) * f20;
         v10[2] = 0.0f;
         v10[3] = 0.0f;
         v0[0] = ox * f20;
@@ -734,7 +733,7 @@ extern void vec_mul_components(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern void draw_hud_sprite_subpixel(int, int, int, int, int, int);
 extern int hud_stars_width SDATA(hud_stars_width);
-extern short hud_star_height;
+extern int hud_star_height SDATA(hud_star_height);
 extern float hud_stars_scale_x SDATA(hud_stars_scale_x);
 extern float hud_stars_scale_y SDATA(hud_stars_scale_y);
 
@@ -751,7 +750,7 @@ int draw_uniform_size_hud_stars(HudElem *e) {
         y = e->unk54;
         e->w = ww;
         {
-            int *src = (int *)&hud_star_height;
+            int *src = &hud_star_height;
             int *dst = &e->h;
             __builtin_memcpy(dst, src, 4);
         }
@@ -759,17 +758,17 @@ int draw_uniform_size_hud_stars(HudElem *e) {
     hud_screen_position(e, &x, &y);
     apply_hud_slide_offset(e, &x, &y, e->unk6C, 0);
     tex = GetIconFrame(*(int *)e, 0);
-    draw_rotated_hud_sprite(tex, x + e->unk48, y + e->unk4A, hud_stars_width, *(int *)&hud_star_height, 0x80);
+    draw_rotated_hud_sprite(tex, x + e->unk48, y + e->unk4A, hud_stars_width, hud_star_height, 0x80);
     {
         float cx, cy, ox, oy;
         ox = (hud_stars_width * hud_stars_scale_x * 0.5f) / 17.0f;
-        oy = -(*(int *)&hud_star_height * hud_stars_scale_y * 0.5f) / 116.0f;
+        oy = -(hud_star_height * hud_stars_scale_y * 0.5f) / 116.0f;
         v0[2] = 1.0f;
         v0[3] = 1.0f;
         cx = hud_stars_width * hud_stars_scale_x * 0.5f + (x + e->unk48);
-        cy = *(int *)&hud_star_height * hud_stars_scale_y * 0.5f + (y + e->unk4A);
+        cy = hud_star_height * hud_stars_scale_y * 0.5f + (y + e->unk4A);
         v1[0] = (cx + (1.0f - hud_stars_scale_x) * 0.5f * hud_stars_width) * 16.0f;
-        v1[1] = (cy + (1.0f - hud_stars_scale_y) * 0.5f * *(int *)&hud_star_height) * 16.0f;
+        v1[1] = (cy + (1.0f - hud_stars_scale_y) * 0.5f * hud_star_height) * 16.0f;
         v1[2] = 0.0f;
         v1[3] = 0.0f;
         v0[0] = ox * 16.0f;
@@ -940,7 +939,6 @@ int draw_hud_text_panel(char *e) {
     }
     return *(int *)(e + 0x58);
 }
-extern char g_hero[];
 extern unsigned char gGoldSuckCannon NOT_SDA;
 extern void Hud_UpdateCounter(HudElem *);
 
@@ -970,7 +968,7 @@ void update_hud_counter_cap_and_visibility(HudElem *e) {
  * stores), which moves it later in sched1 and gives it $a3 in local-alloc.
  */
 extern int hud_stars_width SDATA(hud_stars_width);
-extern short hud_star_height;
+extern int hud_star_height SDATA(hud_star_height);
 extern void draw_hud_rect_blended(int, int, int, int, long, long);
 extern int GetIconFrame(int, int);
 extern void apply_hud_slide_offset(HudElem *, int *, int *, int, int);
@@ -986,7 +984,7 @@ int hud_draw_gauge_frame(HudElem *e) {
         pos[1] = e->unk54;
         e->w = ww;
         {
-            int *src = (int *)&hud_star_height;
+            int *src = &hud_star_height;
             int *dst = &e->h;
             __builtin_memcpy(dst, src, 4);
         }
@@ -994,9 +992,9 @@ int hud_draw_gauge_frame(HudElem *e) {
     hud_screen_position(e, &pos[0], &pos[1]);
     apply_hud_slide_offset(e, &pos[0], &pos[1], e->unk6C, 0);
     w = hud_stars_width * 0xD0;
-    h = *(int *)&hud_star_height * 0xA0;
+    h = hud_star_height * 0xA0;
     bh = hud_stars_width * 0x260;
-    bottom = *(int *)&hud_star_height * 0xEA0;
+    bottom = hud_star_height * 0xEA0;
     left = (pos[0] + e->unk48) << 4;
     top = (pos[1] + e->unk4A) << 4;
     left += w / 64;
@@ -1005,8 +1003,8 @@ int hud_draw_gauge_frame(HudElem *e) {
     bottom = top + bottom / 256;
     draw_hud_rect_blended(left, top, right, bottom, 0x80000000, 1);
     {
-        int st = *(int *)&hud_star_height * 0xEA0;
-        h = *(int *)&hud_star_height;
+        int st = hud_star_height * 0xEA0;
+        h = hud_star_height;
         top = (pos[1] + e->unk4A) << 4;
         top += (h * 0xF40) / 256;
         bh = (e->unk74 * st) / (e->unk08 << 8);
@@ -1015,10 +1013,10 @@ int hud_draw_gauge_frame(HudElem *e) {
     i = 1;
     if (i < e->unk74)
         do {
-            int hh = *(int *)&hud_star_height;
+            int hh = hud_star_height;
             top = (pos[1] + e->unk4A) << 4;
             top += (hh * 0xF40) / 256;
-            step = *(int *)&hud_star_height * 0xEA0;
+            step = hud_star_height * 0xEA0;
             step = i * step / (e->unk08 << 8);
             i++;
             top -= step;
@@ -1026,7 +1024,7 @@ int hud_draw_gauge_frame(HudElem *e) {
             draw_hud_rect_blended(left, top, right, top + 32, 0x80000000, 1);
         } while (i < e->unk74);
     w = GetIconFrame(*(int *)e, 0);
-    draw_rotated_hud_sprite(w, pos[0] + e->unk48, pos[1] + e->unk4A, hud_stars_width, *(int *)&hud_star_height, 0x80);
+    draw_rotated_hud_sprite(w, pos[0] + e->unk48, pos[1] + e->unk4A, hud_stars_width, hud_star_height, 0x80);
     return e->w;
 }
 typedef struct {
@@ -1124,7 +1122,6 @@ typedef struct {
 extern Hero g_hero_r __asm__("D_0013F450");
 extern MoveUsageTable usage_stats;
 extern Route item_price_table_r[] __asm__("D_L00_001C43B0");
-extern int weapon_ammo_counts[];
 extern u8 hud_item_selector_close_timer[];
 extern float quick_select_snap_margin SDATA(quick_select_snap_margin);
 extern float quick_select_slot_angle_offset SDATA(quick_select_slot_angle_offset);
@@ -1133,7 +1130,6 @@ extern int quick_select_default_right_slot;
 extern int quick_select_default_up_slot;
 extern int quick_select_default_down_slot;
 extern int gameplay_event_frame_count MACRO_ADDR;
-extern int g_current_level_index MACRO_ADDR;
 extern int FastDecTimer(void *);
 extern float FastSubRots(float, float);
 extern float FastDiffRots(float, float);
@@ -1484,10 +1480,7 @@ int draw_hud_item_selector_panel(HudElem *rec) {
     }
     return rec->w;
 }
-extern int quick_select_slot_count MACRO_ADDR;
-extern void *hud_selector_slot_tables MACRO_ADDR;
 extern short radial_select_slot_tables;
-extern short quick_select_page;
 /* Set up the HUD selector for four slots: slot tables, size, timer and first page. */
 void initialize_four_slot_hud_selector(HudElem *a) {
     int x = *(int *)&quick_select_width;
@@ -2007,8 +2000,8 @@ void initialize_bolt_counter_hud(HudElem *e) {
 }
 /* Words reached through $gp: under -G2 that takes declarations of at
    most two bytes. */
-extern short bolt_panel_open_steps_gp;
-extern short bolt_text_fade_steps_gp;
+extern int bolt_panel_open_steps_gp SDATA(bolt_panel_open_steps_gp);
+extern int bolt_text_fade_steps_gp SDATA(bolt_text_fade_steps_gp);
 extern int gBolts MACRO_ADDR;
 
 /* Steps the element's tick (the short at +0x80) modulo 60; when the value
@@ -2030,9 +2023,9 @@ void update_bolt_counter_hud_animation_and_visibility(HudElem *e) {
         e->unk7C = scale_ticks(0x5A);
     }
     if (e->unk7C >= scale_ticks(5)) {
-        if (e->cnt[0] < *(int *)&bolt_panel_open_steps_gp) {
+        if (e->cnt[0] < bolt_panel_open_steps_gp) {
             e->cnt[0]++;
-        } else if (c[1] < *(int *)&bolt_text_fade_steps_gp) {
+        } else if (c[1] < bolt_text_fade_steps_gp) {
             c[1]++;
         }
     } else {
@@ -2113,12 +2106,12 @@ int draw_bolt_counter_hud_panel(HudElem_3A788 *m) {
     y = pal_mode_r ? 10 : 18;
     x = m->unk50;
 
-    open = IntToFloat(m->cnt[0]) / IntToFloat((*(s32 *)&bolt_panel_open_steps_gp));
+    open = IntToFloat(m->cnt[0]) / IntToFloat((bolt_panel_open_steps_gp));
     if (1.0f < open)
         open = 1.0f;
     else if (open < 0.0f)
         open = 0.0f;
-    text = IntToFloat(fade[1]) / IntToFloat((*(s32 *)&bolt_text_fade_steps_gp));
+    text = IntToFloat(fade[1]) / IntToFloat((bolt_text_fade_steps_gp));
     if (1.0f < text)
         text = 1.0f;
     else if (text < 0.0f)
@@ -2201,8 +2194,6 @@ void update_hud_panel_visibility(HudElem *e) {
     }
 }
 extern int g_screen_extent[];
-extern int pal_mode MACRO_ADDR;
-extern int level_frame_counter MACRO_ADDR;
 extern int bolt_exclamation_panel_alpha SDATA(bolt_exclamation_panel_alpha);
 extern int bolt_exclamation_panel_width SDATA(bolt_exclamation_panel_width);
 extern int bolt_exclamation_panel_right_x SDATA(bolt_exclamation_panel_right_x);
@@ -2315,7 +2306,6 @@ void initialize_numeric_hud_timer_and_base_dimensions(HudElem *e) {
     e->h = 0x20;
     initialize_numeric_hud_values_and_dimensions(e);
 }
-extern int pal_mode MACRO_ADDR;
 extern int weapon_hud_open_steps SDATA(weapon_hud_open_steps);
 extern int weapon_hud_text_fade_steps SDATA(weapon_hud_text_fade_steps);
 extern int weapon_hud_panel_width SDATA(weapon_hud_panel_width);
@@ -2326,7 +2316,6 @@ extern int weapon_hud_empty_color_from SDATA(weapon_hud_empty_color_from);
 extern int weapon_hud_empty_color_to SDATA(weapon_hud_empty_color_to);
 extern int weapon_hud_text_x SDATA(weapon_hud_text_x);
 extern int weapon_hud_text_y SDATA(weapon_hud_text_y);
-extern char hud_ammo_format[];
 extern void draw_hud_sprite_flipped(int, int, int, int, int, int);
 extern void HudFrame(char *, int, int, int, int, int);
 extern int sprintf(char *, const char *, ...);
@@ -2387,7 +2376,6 @@ int draw_weapon_ammo_hud_panel(char *m) {
 LINKER_REMNANT("asm/overlays", func_L00_0023B430);
 
 extern char *hud_anim_sequences;
-extern int level_frame_counter MACRO_ADDR;
 
 /* Evaluates an animated counter: picks a frame index from a table entry by mode (hold, loop, ping-pong, random pause)
    and stores it at +4. */
@@ -2493,7 +2481,6 @@ int update_hud_elements(int call) {
     return n;
 }
 
-extern char menu_item_enabled_115[];
 extern int weapon_hud_suspended SDATA(weapon_hud_suspended);
 extern int D_hud_pair[2] __asm__("D_L00_0015FA44") MACRO_ADDR;
 extern void Hud_SetBarValueById(int, int);
@@ -2587,9 +2574,7 @@ void HudFrame(char *e, int id, int x, int y, int flags, int alpha) {
         HudSprite(id, x, y, w, h, alpha);
     }
 }
-extern char texture_group_header[];
 extern int *dma_packet_cursor MACRO_ADDR;
-extern int g_screen_extent[];
 extern long GetFrameTex(int);
 
 /* The level's HudSprite (src/game/ui/hud.c) with the UV given: draws
@@ -2842,7 +2827,6 @@ void init_level_item_inventory(void) {
     }
 }
 
-extern unsigned char vendor_stock[] MACRO_ADDR;
 
 /* Adds the id level_item_ids[IDX] to the 0xFF-terminated byte list at
    vendor_stock (ids in the low six bits) unless it is already there. The

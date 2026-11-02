@@ -390,7 +390,6 @@ void restore_gadgetron_ceo_non_challenge_environment(char *moby) {
     challenge_set_layout_param(100.0f);
     MusicRequestTrack(0, 8);
 }
-extern char hero_globals_base[];
 
 extern int is_point_inside_clip_volume(void *, int);
 
@@ -704,7 +703,6 @@ typedef struct {
     float speed;
     int particle;
 } L16PlatformData;
-extern Hero g_hero;
 extern char *kalebo3_level_cylinders MACRO_ADDR;
 extern float elevator_height_offset SDATA(elevator_height_offset);
 extern float elevator_height_acceleration SDATA(elevator_height_acceleration);
@@ -1095,9 +1093,9 @@ void compute_level16_reflection_map_coordinates(int n, Vec3f *p1, Vec3f *p2, int
 }
 extern short envmap_a_vertex_counts;
 extern short envmap_a_vertex_bufs;
-extern short envmap_a_unused_bufs;
-extern short envmap_a_normal_bufs;
-extern short envmap_a_color_bufs;
+extern int envmap_a_unused_bufs SDATA(envmap_a_unused_bufs);
+extern int envmap_a_normal_bufs SDATA(envmap_a_normal_bufs);
+extern int envmap_a_color_bufs SDATA(envmap_a_color_bufs);
 extern char envmap_a_bounding_spheres[][16];
 extern char envmap_a_uvs[];
 extern int GetEffectTex(int);
@@ -1109,9 +1107,9 @@ extern void draw_env_overlay_mesh(int, int, int, char *, int);
 void env_map_a_draw(void) {
     int *a = (int *)&envmap_a_vertex_counts;
     int *b = (int *)&envmap_a_vertex_bufs;
-    int *c = (int *)&envmap_a_unused_bufs;
-    int *d = (int *)&envmap_a_normal_bufs;
-    int *e = (int *)&envmap_a_color_bufs;
+    int *c = &envmap_a_unused_bufs;
+    int *d = &envmap_a_normal_bufs;
+    int *e = &envmap_a_color_bufs;
     int i;
 
     VU1_addGSregister(6, GetEffectTex(0x29));
@@ -1195,21 +1193,21 @@ void update_level16_three_mesh_render_state(unsigned char *m) {
             break;
     }
 }
-extern short envmap_b_vertex_counts;
-extern short envmap_b_vertex_bufs;
-extern short envmap_b_unused_bufs;
-extern short envmap_b_normal_bufs;
-extern short envmap_b_color_bufs;
+extern int envmap_b_vertex_counts SDATA(envmap_b_vertex_counts);
+extern int envmap_b_vertex_bufs SDATA(envmap_b_vertex_bufs);
+extern int envmap_b_unused_bufs SDATA(envmap_b_unused_bufs);
+extern int envmap_b_normal_bufs SDATA(envmap_b_normal_bufs);
+extern int envmap_b_color_bufs SDATA(envmap_b_color_bufs);
 extern char envmap_b_bound_spheres_draw[][16] __asm__("D_L16_00162040") MACRO_ADDR;
 extern char envmap_b_uvs[];
 
 /* Sets up the draw state, then draws the one entry of the level's table. */
 void draw_level16_visible_single_reflection_mesh(void) {
-    int *a = (int *)&envmap_b_vertex_counts;
-    int *b = (int *)&envmap_b_vertex_bufs;
-    int *c = (int *)&envmap_b_unused_bufs;
-    int *d = (int *)&envmap_b_normal_bufs;
-    int *e = (int *)&envmap_b_color_bufs;
+    int *a = &envmap_b_vertex_counts;
+    int *b = &envmap_b_vertex_bufs;
+    int *c = &envmap_b_unused_bufs;
+    int *d = &envmap_b_normal_bufs;
+    int *e = &envmap_b_color_bufs;
     int i;
     char (*p)[16] = envmap_b_bound_spheres_draw;
 
@@ -1299,17 +1297,17 @@ extern char envmap_c_bounding_spheres[][16];
 extern char envmap_c_uvs[];
 extern short envmap_c_vertex_counts;
 extern short envmap_c_vertex_bufs;
-extern short envmap_c_unused_bufs;
-extern short envmap_c_normal_bufs;
-extern short envmap_c_color_bufs;
+extern int envmap_c_unused_bufs SDATA(envmap_c_unused_bufs);
+extern int envmap_c_normal_bufs SDATA(envmap_c_normal_bufs);
+extern int envmap_c_color_bufs SDATA(envmap_c_color_bufs);
 
 // Sets up the draw state, then draws the two entries of the level's table.
 void draw_level16_visible_textured_batches(void) {
     int *a = (int *)&envmap_c_vertex_counts;
     int *b = (int *)&envmap_c_vertex_bufs;
-    int *c = (int *)&envmap_c_unused_bufs;
-    int *d = (int *)&envmap_c_normal_bufs;
-    int *e = (int *)&envmap_c_color_bufs;
+    int *c = &envmap_c_unused_bufs;
+    int *d = &envmap_c_normal_bufs;
+    int *e = &envmap_c_color_bufs;
     int i;
 
     VU1_addGSregister(6, GetEffectTex(0x29));

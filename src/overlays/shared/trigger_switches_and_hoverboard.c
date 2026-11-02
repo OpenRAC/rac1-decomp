@@ -18,7 +18,6 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 extern char g_hero[];
-extern char g_hero[];
 /* Hydrodisplacer faucet: pulse phase and strength. */
 struct FaucetPulseVars {
     u8 pad_00[0x18];
@@ -236,7 +235,6 @@ void update_moby_spatial_trigger(struct Moby *m) {
 }
 extern void MobyBlendAnimation(void *, int, int, int);
 extern void update_hydrodisplacer_faucet_pulse_color(void *);
-extern char g_hero[];
 extern int moby_pool_4f60 SDATA(moby_pool_4f60);
 
 /* Moby update: plays an animation when its state and a flag allow, then calls the next stage. */
@@ -834,7 +832,6 @@ void attach_big_head_cheat_manipulator(char *a) {
     }
 }
 extern float random_float_between(float, float);
-extern float g_frame_time MACRO_ADDR;
 
 typedef struct {
     int id;
@@ -935,7 +932,6 @@ void blarg_gun_update(Moby *moby) {
 }
 extern char *FindMobyByDataId(void *, int);
 extern void PickNearestTargetSlot(void *);
-extern char *rilgar_level_cuboids MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002b3840.c, FUN_L05_00319510. */
 void reset_selected_moby_to_current_placement(void *moby_v) {
@@ -1019,7 +1015,6 @@ void request_moby_variant_help_message(char *moby) {
             break;
     }
 }
-extern float g_frame_time MACRO_ADDR;
 /* Wobbles a moby's position and rotation from its sine-driven state. */
 void apply_moby_position_and_rotation_wobble(Moby *moby) {
     struct RilgarRideVars *d = (struct RilgarRideVars *)moby->pvars;
@@ -1051,7 +1046,6 @@ void apply_moby_position_and_rotation_wobble(Moby *moby) {
 extern void FastVecAdd(void *, void *, void *);
 
 extern char rilgar_path_local_points[];
-extern char g_hero[];
 
 /* Transforms the 7 vectors of a level table entry into the moby's space and records its index. */
 void transform_moby_vector_table_to_world_space(Moby *a) {
@@ -1133,7 +1127,7 @@ struct Spark_c8e0 {
     } draw;
 };
 
-extern short rilgar_glow_tip_offset;
+extern f32 rilgar_glow_tip_offset SDATA(rilgar_glow_tip_offset);
 extern f32 rilgar_glow_debris_forward_speed SDATA(rilgar_glow_debris_forward_speed);
 extern f32 rilgar_glow_debris_up_speed SDATA(rilgar_glow_debris_up_speed);
 extern f32 frame_scale MACRO_ADDR;
@@ -1209,7 +1203,7 @@ void update_moby_glow_and_contact_explosion(struct Moby *moby) {
     if (hit == 0) {
         return;
     }
-    FastVecScale(&tip, &moby->rot_row2, (*(f32 *)&rilgar_glow_tip_offset));
+    FastVecScale(&tip, &moby->rot_row2, (rilgar_glow_tip_offset));
     FastVecAdd(&tip, &moby->pos, &tip);
     if (!(hit->flags & 0x800000) && !(FastVecDist(&tip, &hit->unk_00) <= 0.8f)) {
         if ((*(struct Moby **)&hit->source)->oclass != MOBY_CLASS_WRENCH) {
@@ -1289,7 +1283,7 @@ typedef struct {
 } Pk;
 
 extern float rilgar_glow_quad_corners[4][4];
-extern short rilgar_glow_tip_offset;
+extern f32 rilgar_glow_tip_offset SDATA(rilgar_glow_tip_offset);
 extern float rilgar_glow_camera_pull SDATA(rilgar_glow_camera_pull);
 u64 GetEffectTex(s32);
 extern void FastVecScale(void *, void *, float);
@@ -1323,7 +1317,7 @@ void draw_moby_glow_sprite(char *m) {
     pk.uv[5] = 0.0f;
     pk.uv[6] = 1.0f;
     pk.uv[7] = 1.0f;
-    FastVecScale(t, &((Moby *)m)->rot_row2, *(float *)&rilgar_glow_tip_offset);
+    FastVecScale(t, &((Moby *)m)->rot_row2, rilgar_glow_tip_offset);
     FastVecAdd(M[3], &((Moby *)m)->pos, t);
     FastVecSub(M[0], rilgar_camera_pos, M[3]);
     vec_scale_to_length(M[0], M[0], 1.0f);
@@ -1369,7 +1363,6 @@ typedef int u128 __attribute__((mode(TI)));
 extern float vec_distance_xy(float *, float *);
 extern void vec_scale_to_length(void *, void *, float);
 extern char hero_gravity_dir[];
-extern int g_current_level_index MACRO_ADDR;
 
 /* Sets up a moby's vector from the level table and clamps its height for the current state. */
 void update_hero_follow_camera_focus(char *moby) {

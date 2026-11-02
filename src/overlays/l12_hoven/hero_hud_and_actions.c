@@ -43,7 +43,7 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern float hoven_hero_fall_state_height MACRO_ADDR;
 extern int hoven_help_message_selector MACRO_ADDR;
 extern int hoven_hero_run_step1_start_frame MACRO_ADDR;
-extern short hoven_hero_double_tap_timer;
+extern int hoven_hero_double_tap_timer SDATA(hoven_hero_double_tap_timer);
 
 extern int hoven_look_release_reset_word;
 extern HeroBoneScalars hoven_hero_bones;
@@ -1388,15 +1388,15 @@ void HeroL12_UpdateStateTransitions(void) {
                         {
                             int both = 0;
 
-                            fast_dec_timer((int *)&hoven_hero_double_tap_timer);
-                            if (*(int *)&hoven_hero_double_tap_timer != 0) {
+                            fast_dec_timer(&hoven_hero_double_tap_timer);
+                            if (hoven_hero_double_tap_timer != 0) {
                                 both = 1;
                                 if (!((g_controller_state.held & PAD_R1) && (g_controller_state.pressed & PAD_R1))) {
                                     both = 0;
                                 }
                             }
                             if (g_controller_state.pressed & PAD_R1) {
-                                *(int *)&hoven_hero_double_tap_timer = scale_ticks(0x1E);
+                                hoven_hero_double_tap_timer = scale_ticks(0x1E);
                             }
                             if (!(g_hero.state_timer > scale_ticks(0x14))) {
                                 break;

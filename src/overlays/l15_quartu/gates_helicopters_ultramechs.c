@@ -404,7 +404,6 @@ void update_vertical_gate(GateMoby *m) {
             break;
     }
 }
-extern float g_frame_time MACRO_ADDR;
 extern float FastAddRots(float, float);
 typedef struct {
     f32 closed_yaw; /* 0x00: yaw when shut */
@@ -418,8 +417,6 @@ typedef struct {
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern int Moby_PlaySound(int, int, int);
 extern void *GetFlaggedPvarWord(struct Moby *);
-extern char gHeroPos[];
-extern char quartu_camera_pos[];
 extern char *quartu_moby_list MACRO_ADDR;
 extern struct Moby *quartu_moby_array_r __asm__("D_L15_00160058") MACRO_ADDR;
 extern f32 D_L15_0016157C_A4D88 SDATA(D_L15_0016157C);
@@ -527,7 +524,6 @@ void update_swinging_door(struct Moby *moby) {
 typedef u32 u128_A8AA8 __attribute__((mode(TI), aligned(16)));
 extern s32 g_current_level_index MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
-extern char level_moby_killed[];
 extern unsigned char hero_vehicle_mode[];
 extern unsigned char kalebo3_available NOT_SDA;
 extern char quartu_moby_hits[];
@@ -702,13 +698,10 @@ no_hit:
             DeleteMoby_r(moby);
     }
 }
-extern char quartu_moby_hits[];
 extern char quartu_hit_debris_colors[];
 extern u32 quartu_hit_effect_colors[3];
-extern unsigned char hero_globals_base[];
 extern unsigned char gemlik_available[];
 
-extern int g_current_level_index MACRO_ADDR;
 extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecScale(void *, void *, float);
 extern float FastVecLength(void *);
@@ -1102,7 +1095,6 @@ typedef struct {
     char pad180[0x28];
     float height;
 } SteeringVars_4f88;
-extern float g_frame_time_sq MACRO_ADDR;
 extern float FastVecDist(void *, void *);
 extern float fast_atan2(float, float);
 extern float FastSubRots(float, float);
@@ -1202,7 +1194,6 @@ typedef struct {
     } pos;
     OvlQuad rest[4];
 } Goal_52b8;
-extern char *quartu_moby_list MACRO_ADDR;
 extern float vec_distance_xy(void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern void clear_u64_value(void *);
@@ -1788,7 +1779,6 @@ void helicopter_update(HMoby_6950 *m) {
         axis_rotation_2d48(d->anim1 + 0x10, 2, d->pitch);
     }
 }
-extern float g_frame_time MACRO_ADDR;
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, void *, void *, int, int);
 extern void RerollEffectCounter(void *m, short *p);
@@ -1843,7 +1833,6 @@ void process_helicopter_hits(char *m) {
     ((struct Moby *)m)->hit_slot = 0xFF;
     StepColorFade(m, &helicopter_vars->color_fade);
 }
-extern char *quartu_moby_list MACRO_ADDR;
 extern void FindNearestTargetMoby_t(void *, float *, float) __asm__("func_L00_00260D30");
 extern void clear_u64_value_t(void *) __asm__("func_001F9BC0");
 extern void FastVecSub(void *, void *, void *);
@@ -2027,16 +2016,9 @@ extern int rand_range(int, int);
 extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
 extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
 
-extern unsigned char hero_globals_base[];
-extern unsigned char hero_vehicle_mode[];
 
-extern float g_frame_time_sq MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
-extern int g_current_level_index MACRO_ADDR;
-extern float quartu_zero_vec[] MACRO_ADDR;
 extern ULevelState quartu_moby_state_bytes_base;
-extern ULevelState quartu_collected_flags_base;
-extern int quartu_moby_killed[];
 extern float ultramech_jump_speed SDATA(ultramech_jump_speed);
 extern float ultramech_gravity SDATA(ultramech_gravity);
 extern int ultramech_rocket_life SDATA(ultramech_rocket_life);
@@ -2693,7 +2675,6 @@ void process_ultramech_hits_and_update_target(void *mobyp) {
     if (data->unk_160 == 0)
         data->unk_160 = *(int *)&g_hero.moby;
 }
-extern float g_frame_time MACRO_ADDR;
 extern short D_L15_00160058_g SDATA(D_L15_00160058);
 extern float quartu_linked_spin_rate SDATA(quartu_linked_spin_rate);
 
@@ -2985,7 +2966,7 @@ extern short quartu_ripple_strip_counts;
 extern short quartu_ripple_position_bufs;
 extern short quartu_ripple_uv_bufs;
 extern short quartu_ripple_color_bufs;
-extern short quartu_ripple_template_verts;
+extern int quartu_ripple_template_verts SDATA(quartu_ripple_template_verts);
 extern short quartu_ripple_base_uvs;
 extern int quartu_ripple_alpha_fix SDATA(quartu_ripple_alpha_fix);
 extern int quartu_ripple_texture SDATA(quartu_ripple_texture);
@@ -3029,7 +3010,7 @@ void draw_moby_radial_ripple_mesh_buffers(char *moby) {
     color = (quartu_ripple_alpha << 24) | (b << 16) | (g << 8) | r;
     for (i = 0; i < 3; i++) {
         for (j = 0; j < ((int *)&quartu_ripple_strip_counts)[i]; j++) {
-            int *template_vertex_buffer_entry = (int *)&quartu_ripple_template_verts + i;
+            int *template_vertex_buffer_entry = &quartu_ripple_template_verts + i;
             float *p = (float *)(*template_vertex_buffer_entry + j * 12);
             float t = quartu_ripple_wave_height *
                       FastSin(FastAddRots(FastNormalizeAngle(fast_fmod(vec_length(p[0] * p[0] + p[1] * p[1]),
@@ -3280,7 +3261,6 @@ void draw_quartu_cutscene_messages(void) {
                               (void *)quartu_cutscene_msg_color, buf, (void *)n);
 }
 extern void PartType34Spawn(float, float, char *, float *);
-extern float g_frame_time MACRO_ADDR;
 extern int quartu_rising_puff_chance SDATA(quartu_rising_puff_chance);
 extern float quartu_rising_puff_speed SDATA(quartu_rising_puff_speed);
 
@@ -3319,7 +3299,6 @@ char *spawn_codebot_slot_effect(char *pos, char *vec) {
     }
     return m;
 }
-extern int quartu_moby_groups[];
 extern int quartu_moby_array_r2 __asm__("D_L15_00160058") MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l15/gameplay/vendor/002e73c0.c, FUN_L15_002ebf28. */
@@ -3342,7 +3321,6 @@ void set_moby_list_visibility(int idx, int show) {
             return;
     }
 }
-extern int quartu_moby_array MACRO_ADDR;
 /* Counts the mobys in group idx that are dead or missing. */
 int count_missing_or_dying_mobys_in_list(int idx) {
     unsigned short *p = (unsigned short *)quartu_moby_groups[idx];

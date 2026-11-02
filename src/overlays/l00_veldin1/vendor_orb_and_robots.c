@@ -713,7 +713,6 @@ extern float random_float_between(float, float);
 extern float IntToFloat(int);
 extern void AddDrawCallback(void (*)(void), void *);
 extern void draw_veldin_robot_effect_quad_r(void) __asm__("func_L00_002E3128");
-extern float veldin1_zero_vec[] MACRO_ADDR;
 
 // spawns a spark: steps the moby's position and emits one fast particle and three slow tails
 // Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l00/gameplay_vendor_002e0988.c, FUN_L00_002e1aa8.

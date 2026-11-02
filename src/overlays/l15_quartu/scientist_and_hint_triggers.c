@@ -20,7 +20,6 @@
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/pause_menu.h"
 extern Hero g_hero;
-extern Hero g_hero;
 extern char saved_mission_state[];
 
 extern void initialize_moby_grounding(char *);
@@ -614,7 +613,6 @@ void update_quartu_hint_triggers(Moby *m) {
             break;
     }
 }
-extern int quartu_game_mode MACRO_ADDR;
 struct L15MissionState {
     char pad0[0x30];
     int mode;
@@ -854,7 +852,6 @@ extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern int test_point_in_transformed_unit_sphere(float *p, int idx);
 extern int IsPointInPolygon(float *p, float *v, int n);
 
-extern char *quartu_camera_descriptors MACRO_ADDR;
 extern int *quartu_paths[];
 /* tests several indexed conditions of a moby's entry in the table */
 int is_hero_in_moby_follow_camera_region(char *moby) {
@@ -892,8 +889,6 @@ extern float FastVecLength(void *a);
 extern float FastDiffRots(float, float);
 extern float FastArcSin(float x);
 
-extern char *quartu_camera_descriptors MACRO_ADDR;
-extern char *quartu_cuboids MACRO_ADDR;
 extern char quartu_player_camera_field_190[];
 extern char quartu_player_camera[];
 /* tests whether the target lies within a cone of the player's axis */
@@ -1030,4 +1025,3 @@ void func_L15_002F9D38_r(char *m) {
     if (*(float *)(s + 0x44) != 0.0f)
         Cam_SetEyeOffset(0, *(float *)(s + 0x44), 0.005f);
 }
-extern char *quartu_camera_moby;

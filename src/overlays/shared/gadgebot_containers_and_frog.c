@@ -414,7 +414,6 @@ extern int blarg_frog_spawn_counter SDATA(blarg_frog_spawn_counter);
 extern short blarg_frog_pvars_d0_table;
 extern int level_game_mode_q MACRO_ADDR;
 extern int blarg_shuttle_at_second_stop MACRO_ADDR;
-extern char blarg_camera_pos[];
 extern float g_frame_time_sq MACRO_ADDR;
 extern char blarg_coll_hit_normal[];
 extern int *blarg_paths[];
@@ -793,7 +792,6 @@ extern int frog_glow_color_start_gp SDATA(frog_glow_color_start_gp);
 extern int frog_glow_color_end_gp SDATA(frog_glow_color_end_gp);
 extern short level_mobys_q_r __asm__("D_L06_00160058");
 extern u8 hero_vehicle_mode[];
-extern int *blarg_paths[];
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
 extern void SetDeathBits(void *, int, int);
 extern void spawn_moby_directional_spark_bursts_r(struct Moby *, Vec4 *) __asm__("func_L06_002EB5C8");
@@ -1001,11 +999,9 @@ void move_frog_with_collision_resolution(void *moby, void *out, int use_path, fl
 }
 typedef u32 u128_EB360 __attribute__((mode(TI), aligned(16)));
 extern int Moby_PlaySound(int, int, int);
-extern float g_frame_time MACRO_ADDR;
 extern float random_float_between(float, float);
 extern int random_integer_below(int);
 extern void spawn_crate_debris(void *, void *, void *, void *, int, int, float, float);
-extern f32 blarg_zero_vec[] MACRO_ADDR;
 
 /* Bursts 4 then 8 particles up from the moby, then removes the moby stored at vars+0x20C.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00297d10.c, FUN_L06_002e9f30. */
@@ -1143,7 +1139,6 @@ extern void rand_vec(float *, float, float);
 
 extern int scale_ticks(int);
 
-extern float g_frame_time MACRO_ADDR;
 
 /* burst of 20 sparks around a point with random velocity and colour */
 void spawn_moby_death_effect_burst(char *m) {
@@ -1356,22 +1351,17 @@ typedef struct {
     int f2C;
 } GbStats;
 
-extern Hero g_hero;
 extern unsigned char hero_vehicle_mode[];
 
-extern unsigned char saved_mission_state[];
 extern unsigned char gCheats[] MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;
-extern float g_frame_time_sq MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern Moby *level_mobys_q MACRO_ADDR;
 extern float gadgebot_position_snapshot_z_offset_gp SDATA(gadgebot_position_snapshot_z_offset_gp);
-extern char blarg_camera_pos[];
 extern GbHit blarg_coll_hit;
 extern Moby *blarg_coll_hit_moby;
 extern GbStats blarg_gadgebot_command_count_base;
-extern int *blarg_paths[];
 
 extern float vec_distance_xy(void *, void *);
 
@@ -2141,7 +2131,6 @@ void GadgebotUpdate(Moby *moby) {
 }
 
 extern float FastDiffRots(float, float);
-extern char referencePosition[];
 /* scores a target moby by distance, heading differences and flags */
 float score_gadgebot_target_candidate(char *a, char *b, int c) {
     float r = vec_distance_xy(&((Moby *)a)->pos, &((Moby *)b)->pos);
@@ -3259,7 +3248,6 @@ void energy_sphere_update(char *m) {
 }
 extern float random_float_between(float, float);
 extern void spawn_moving_hero_relative_alpha_fade_particle(void *, float, void *, int, int, int, int);
-extern float g_frame_time MACRO_ADDR;
 extern float blarg_energy_sphere_debris_speed_min SDATA(blarg_energy_sphere_debris_speed_min);
 extern float blarg_energy_sphere_debris_speed_max SDATA(blarg_energy_sphere_debris_speed_max);
 extern float blarg_energy_sphere_debris_scale_min SDATA(blarg_energy_sphere_debris_scale_min);

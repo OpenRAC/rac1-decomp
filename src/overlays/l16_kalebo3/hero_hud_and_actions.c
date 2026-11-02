@@ -47,7 +47,7 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern float kalebo3_hero_fall_state_height MACRO_ADDR;
 extern int kalebo3_help_message_selector MACRO_ADDR;
 extern int run_animation_start_frame_after_landing MACRO_ADDR;
-extern short kalebo3_hero_double_tap_timer;
+extern int kalebo3_hero_double_tap_timer SDATA(kalebo3_hero_double_tap_timer);
 
 extern int kalebo3_look_release_reset_word;
 extern HeroBoneScalars kalebo3_hero_bones;
@@ -1682,15 +1682,15 @@ void Hero_ChooseStateTransition(void) {
                         {
                             int both = 0;
 
-                            fast_dec_timer((int *)&kalebo3_hero_double_tap_timer);
-                            if (*(int *)&kalebo3_hero_double_tap_timer != 0) {
+                            fast_dec_timer(&kalebo3_hero_double_tap_timer);
+                            if (kalebo3_hero_double_tap_timer != 0) {
                                 both = 1;
                                 if (!((g_controller_state.held & PAD_R1) && (g_controller_state.pressed & PAD_R1))) {
                                     both = 0;
                                 }
                             }
                             if (g_controller_state.pressed & PAD_R1) {
-                                *(int *)&kalebo3_hero_double_tap_timer = scale_ticks(0x1E);
+                                kalebo3_hero_double_tap_timer = scale_ticks(0x1E);
                             }
                             if (!(g_hero.state_timer > scale_ticks(0x14))) {
                                 break;

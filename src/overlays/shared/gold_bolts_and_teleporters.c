@@ -27,7 +27,6 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 extern Hero g_hero;
-extern Hero g_hero;
 extern int pad0_pressed;
 extern unsigned char saved_mission_state[];
 extern char voice_pool[];
@@ -688,7 +687,6 @@ extern char cutscene_trigger_error_fmt[];
 extern LevelState novalis_checkpoint_level_state_s __asm__("D_L01_001BB9C0");
 extern char camera_pos_c[] __asm__("D_L01_001672C0");
 extern char *camera_points_c __asm__("D_L01_0016016C") MACRO_ADDR;
-extern int cutscene_active MACRO_ADDR;
 extern int g_current_level_index_c __asm__("D_0015EE84") MACRO_ADDR;
 extern char help_stats_base_c[] __asm__("D_0014171B");
 extern int STUB_printf_c(void *, int, int) __asm__("func_001E9730");
@@ -834,7 +832,6 @@ extern char plumber_novalis_dialogue_name[];
 extern char plumber_batalia_dialogue_name[];
 extern char plumber_default_dialogue_name[];
 
-extern unsigned char saved_mission_state[];
 extern float g_frame_scale_sq MACRO_ADDR;
 extern unsigned char race_gates_base[];
 
@@ -1435,7 +1432,6 @@ extern float FastAddRots(float, float);
 extern void update_gold_bolt_glow_rings(char *);
 
 extern void spawn_gold_bolt_particles(char *);
-extern float g_frame_time MACRO_ADDR;
 extern float gold_bolt_scale_factor SDATA(gold_bolt_scale_factor);
 extern float gold_bolt_hover_height SDATA(gold_bolt_hover_height);
 extern float gold_bolt_bob_height SDATA(gold_bolt_bob_height);
@@ -3677,7 +3673,6 @@ void update_camera_mode_from_preset(Camera *o) {
     }
 }
 extern char *find_camera_record_by_id(int);
-extern char *novalis_camera_moby;
 
 // Stores two floats into the record at 0xE0 of the data of the moby a global points at, or of moby 5.
 void set_camera_5_track_acceleration_yz(float a, float b) {

@@ -18,7 +18,6 @@
 extern char g_hero[];
 extern u8 gHeroPos[];
 extern PadState g_controller_state;
-extern char g_hero[];
 extern char g_hero_rot[];
 extern s32 hero_control_mode[];
 extern unsigned char hero_vehicle_mode NOT_SDA;
@@ -77,7 +76,6 @@ void update_hero_aligned_camera_position(char *p) {
 }
 extern void FastVecScale(void *, void *, float);
 extern void FastVecCross(void *, void *, void *);
-extern char g_hero[];
 extern void *camera_cross_axis_ptr;
 
 /* builds the camera-relative matrix rows of a moby from the camera state */
@@ -134,7 +132,6 @@ typedef struct {
     float a, va, b, vb, ang, z, vz;
 } S_9f38;
 extern Hero g_hero_r __asm__("D_0013F450");
-extern PadState g_controller_state;
 extern CameraSystem player_camera_r __asm__("D_L00_00166D80");
 extern int invert52 MACRO_ADDR;
 extern float hero_aligned_cam_gain_at_rest SDATA(hero_aligned_cam_gain_at_rest);
@@ -771,7 +768,6 @@ extern void initialize_orbit_camera_from_parameters(char *, void *, void *, floa
 
 extern float FastDiffRots(float, float);
 extern float vec_distance_xy(void *, void *);
-extern char hero_globals_base[] NOT_SDA;
 extern float orbit_cam_target_offset_x;
 extern char player_camera_c[] __asm__("D_L00_00166D80") NOT_SDA;
 
@@ -874,7 +870,6 @@ char *initialize_mode6_orbit_camera(char *a) {
     zero_five_words(p + 0x50);
     return m;
 }
-extern char hero_globals_base[];
 extern float FastVecDist(void *, void *);
 
 /* Sets the moby's state to 2 (and arms the camera-side fields) when the target is nearly in front and close, else to
@@ -895,7 +890,6 @@ void select_camera_mode_by_hero_alignment_and_distance(char *m) {
     }
     m[0x7D] = 0;
 }
-extern char g_hero[];
 /* Camera setup from the global block at g_hero+0x80. */
 void initialize_orbit_camera_from_hero(void *arg) {
     char *a = arg;
@@ -1152,7 +1146,6 @@ extern void FastVecSub(void *, void *, void *);
 extern float FastVecDot(void *, void *);
 extern float FastArcSin(float);
 extern void build_look_at_matrix(void *, void *, void *, float);
-extern char hero_globals_base[] NOT_SDA;
 extern char camera_view_up_axis[] NOT_SDA;
 /* orients a moby to face the camera, blending by the turn angle */
 void turn_camera_view_toward_hero(Camera *m) {
@@ -1262,7 +1255,6 @@ done:
     resolve_camera_movement_collisions(camera_position, 0.5f);
     cam->saved_state->unk80 = 0;
 }
-extern char g_hero[];
 /* Update check that sets state 3 when a global value no longer matches the moby's. */
 void conditionally_set_camera_state_three(char *a) {
     struct Hero *g = (struct Hero *)g_hero;
@@ -1271,7 +1263,6 @@ void conditionally_set_camera_state_three(char *a) {
         *(short *)(a + 0x7E) = 3;
     }
 }
-extern u8 gHeroPos[];
 typedef struct {
     char pad84[0x84];
     s16 f84;
@@ -1291,7 +1282,6 @@ typedef struct {
 extern u8 *g_current_follow_cam_r2[] __asm__("D_L00_00166F00");
 extern u8 *camera_descriptors_r2 __asm__("D_L00_0015F050") MACRO_ADDR;
 extern u8 *level_paths[];
-extern s32 hero_control_mode[];
 extern s32 g_hero_field_2284[];
 extern s32 is_point_inside_clip_volume(void *, s32);
 
@@ -1683,8 +1673,6 @@ void volume_camera_swing(char *arg) {
     }
 }
 extern void volume_camera_swing(char *);
-extern int g_current_level_index MACRO_ADDR;
-extern char *camera_descriptors MACRO_ADDR;
 
 typedef struct CamSwingParams {
     u8 pad_00[0x2C];
@@ -1827,7 +1815,6 @@ int volume_camera_aim_active(void *arg) {
     params->done = 1;
     return 0;
 }
-extern int pad_held NOT_SDA;
 extern int volume_camera_aim_active(void *);
 typedef float CameraVec_ee[4] __attribute__((aligned(16)));
 typedef struct {
@@ -2062,7 +2049,6 @@ run:
         set_follow_camera_orbit_clamp_mode(0);
     }
 }
-extern char *camera_descriptors MACRO_ADDR;
 extern int cinematic_mode MACRO_ADDR;
 extern int volume_camera_aim_active(void *);
 extern void volume_camera_aim(void *);

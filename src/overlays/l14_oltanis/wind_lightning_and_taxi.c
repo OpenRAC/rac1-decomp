@@ -26,11 +26,12 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "structs/voice.h"
+extern char level_moby_killed[];
+
 extern Hero g_hero;
 extern char saved_mission_state[];
 extern char gHeroPos[];
 extern char g_hero_body_center[];
-extern Hero g_hero;
 extern char gSpecialItems[];
 extern char voice_pool[];
 
@@ -396,7 +397,6 @@ typedef struct {
     s32 collision;
 } LiftClass;
 
-extern Hero g_hero;
 extern char *oltanis_paths[];
 extern char path_lift_no_rider_msg[];
 extern struct Moby *oltanis_mobys MACRO_ADDR;
@@ -664,7 +664,6 @@ extern int D_L14_00161D00_EC7E8 SDATA(D_L14_00161D00);
 extern int D_L14_00161D04_EC7E8 SDATA(D_L14_00161D04);
 extern float D_L14_00161D08_EC7E8 SDATA(D_L14_00161D08);
 extern float D_L14_00161D0C_EC7E8 SDATA(D_L14_00161D0C);
-extern float g_frame_time MACRO_ADDR;
 extern void FastVecCross(void *, void *, void *);
 extern float randf_sym(float, float);
 extern void FastVecScale(void *, void *, float);
@@ -1434,10 +1433,8 @@ extern void draw_world_quad(void *, void *, int);
 extern float CubicInterpolate(float, float, float, float, float);
 /* KEPT: signed and unsigned give lh and lhu. */
 extern short lightning_arc_point_timers[];
-extern unsigned char lightning_arc_fade_alpha[] MACRO_ADDR;
 /* KEPT: signed and unsigned give lh and lhu. */
 extern short lightning_branch_point_timers[];
-extern int lightning_branch_starts[] MACRO_ADDR;
 /* KEPT: short and SDATA select how each function addresses this global. */
 extern int lightning_grow_ticks SDATA(lightning_grow_ticks);
 extern int lightning_arc_outer_base_color_gp SDATA(lightning_arc_outer_base_color_gp);
@@ -1928,7 +1925,6 @@ void elevator_685_update(char *moby) {
         }
     }
 }
-extern char *oltanis_paths[];
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002eef60. */
 void initialize_elevator_path_state(struct Moby *m) {
@@ -1976,11 +1972,9 @@ void initialize_elevator_path_state(struct Moby *m) {
     *(int *)&d->point_dist = 0;
     d->point = 0;
 }
-extern char *oltanis_paths[];
 extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
 extern int Spline_AdvanceByDistance_r2(void *, void *, void *, void *, int, float) __asm__("func_L00_0025E860");
 
-extern float g_frame_time MACRO_ADDR;
 extern float elevator_path_speed SDATA(elevator_path_speed);
 
 /* Moves the moby along its current path, easing its rotation; returns 1 when the path end is reached. */
@@ -2045,7 +2039,6 @@ int advance_elevator_along_path(char *m) {
     }
     return 0;
 }
-extern char *oltanis_paths[];
 extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
 
 /* Springs the moby's position (and, while moving, its rotation) toward its current path point. */
@@ -2110,7 +2103,6 @@ void func_L14_002F0A30_r(Moby *m) {
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern char elevator_local_path_points[];
-extern char *oltanis_paths[];
 
 /* Rebuild the 11 vectors of a table entry from the moby's matrix and position. */
 void rebuild_elevator_world_path(char *moby) {
@@ -3052,7 +3044,6 @@ extern void Spline_AdvanceByDistance(int a, char *pos, char *b, char *c, int d, 
 extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
 extern void FastVecSub(void *dst, void *a, void *b);
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
-extern float g_frame_time MACRO_ADDR;
 extern float enemy_fighter_path_speed SDATA(enemy_fighter_path_speed);
 extern float enemy_fighter_spring_stiffness SDATA(enemy_fighter_spring_stiffness);
 extern float enemy_fighter_spring_damping SDATA(enemy_fighter_spring_damping);

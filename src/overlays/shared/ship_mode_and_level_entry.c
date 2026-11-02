@@ -49,7 +49,6 @@ void initialize_moby_state_record(char *m) {
     *(int *)(g + 0x34) = src[1];
     *(int *)(g + 0x38) = src[2];
 }
-extern char *level_render_state;
 /* Hides and deactivates the recorded moby, if any. */
 void deactivate_recorded_moby(void) {
     char *m = level_render_state;
@@ -216,7 +215,6 @@ void prepare_level_transition_with_help_cleanup(void) {
 
 extern int level_draw_frame_load[] MACRO_ADDR;
 extern int lvl_vu_chain_buffer_size_base[] MACRO_ADDR;
-extern int lvl_vu_chain_buffer_size MACRO_ADDR;
 extern char lvl_resource_buffers[];
 extern char cutscene_state[];
 extern int pal_mode MACRO_ADDR;
@@ -339,7 +337,7 @@ extern V_28efc8 variant_effect_quad_offsets_1[];
 extern V_28efc8 variant_effect_quad_offsets_2[];
 extern float variant_effect_quad_uvs[];
 extern V_28efc8 variant_effect_quad_corners[];
-extern short variant_effect_quad_counts;
+extern int variant_effect_quad_counts SDATA(variant_effect_quad_counts);
 void FastVecScale(float, void *, void *);
 void FastVecAdd(void *, void *, void *);
 void matrix_mul_vec3(void *, void *, void *);
@@ -382,7 +380,7 @@ void build_variant_effect_quads(unsigned char *quad_source) {
         quad.texture_coordinates[j][1] = ((float (*)[2])variant_effect_quad_uvs)[j][1];
     }
     FastVecScale(0.0009765625f, &quad_source_translation, quad_source);
-    for (i = 0; i < (((int *)&variant_effect_quad_counts))[level_render_state_r2.h26]; i++) {
+    for (i = 0; i < ((&variant_effect_quad_counts))[level_render_state_r2.h26]; i++) {
         int quad_alpha = quad_source[0xBC];
         u32 col;
         float quad_scale;

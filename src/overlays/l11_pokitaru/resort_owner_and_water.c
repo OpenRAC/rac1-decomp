@@ -27,7 +27,6 @@
 #include "structs/voice.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
-extern Hero g_hero;
 extern char help_records[];
 extern int pad0_pressed;
 
@@ -1313,7 +1312,6 @@ void fred_pokitaru_update(char *m) {
 }
 extern char g_hero_r[] __asm__("D_0013F450");
 extern float g_hero_pos_z;
-extern int pad0_pressed;
 extern int pokitaru_shown_help_message MACRO_ADDR;
 extern char *pokitaru_mobys MACRO_ADDR;
 extern unsigned char g_hero_field_20a5 NOT_SDA;
@@ -1596,7 +1594,6 @@ void restore_teleporter_visibility_and_collision(char *moby) {
     } while (count >= 0);
 }
 extern void DeleteMoby(void *);
-extern Hero g_hero;
 
 /* Deletes itself if its pvar is -1; later copies the pvar into the hero's index field. */
 void copy_pokitaru_pvar_to_hero(unsigned char *moby) {
@@ -1932,7 +1929,6 @@ int try_activate_pokitaru_gate(unsigned char *moby) {
     }
     return 1;
 }
-extern f32 g_frame_time MACRO_ADDR;
 
 extern void AttachManipulator(struct Moby *, int, void *);
 extern void axis_rotation_2d48(void *, int, float);

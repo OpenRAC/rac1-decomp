@@ -20,7 +20,6 @@
 #include "structs/level_records.h"
 #include "enums/hero_state.h"
 extern Hero g_hero;
-extern Hero g_hero;
 extern int pad_held;
 extern char voice_pool[];
 
@@ -2215,7 +2214,6 @@ void nanotech_crate_fragment_update(char *moby) {
 extern unsigned char *GetFlaggedPvarWord(unsigned char *);
 extern int coll_line(void *, void *, int, int, int);
 extern void append_unique_moby_index(int, short *, short);
-extern char collision_hit_point[];
 
 // spawns an effect moby (Gold Devastator Missile) at pos, tied to an owner and a target, and aims its starting state
 // Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002aa670.c, FUN_L00_002afc70.
@@ -2324,7 +2322,6 @@ typedef struct {
     char p0[0xB];
     u8 bB;
 } E;
-extern Hero g_hero;
 extern E gold_weapon_purchased;
 extern s32 coll_hit_result[0x1C];
 extern f32 fast_atan2(f32, f32);

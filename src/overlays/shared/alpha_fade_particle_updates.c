@@ -867,7 +867,6 @@ void update_color_tween_emitter_particle(struct PartBase *p) {
     }
 }
 extern void FastVecSub(void *, void *, void *);
-extern char gHeroPos[];
 extern unsigned char *part_type_textures[];
 
 /* spawns particle type 0x3B from a position, colour index and flags */
@@ -1878,10 +1877,10 @@ void update_gravity_damped_resizing_particle(struct PartBase *m) {
 }
 extern void decrement_packed_countdown(void *, void *);
 extern int FastDecTimer(void *);
-extern short timed_fade_particle_alpha_step;
+extern void *timed_fade_particle_alpha_step SDATA(timed_fade_particle_alpha_step);
 /* Particle update: fade the packed alpha by a fixed step; kill when the timer ends. */
 void update_timed_alpha_fade_particle(struct PartBase *a) {
-    decrement_packed_countdown(&a->color, *(void **)&timed_fade_particle_alpha_step);
+    decrement_packed_countdown(&a->color, timed_fade_particle_alpha_step);
     if (FastDecTimer(&a->timer) != 0) {
         KillPart(a);
     }

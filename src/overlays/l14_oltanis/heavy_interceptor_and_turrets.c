@@ -475,7 +475,6 @@ void KeyframePlatformUpdate(unsigned char *moby) {
     }
 }
 extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
-extern int *oltanis_paths[];
 
 // Pick a keyframe vector from the moby's table and ease the moby position toward it per axis.
 void ease_path_mover_to_endpoint(char *moby) {
@@ -547,7 +546,6 @@ typedef struct {
     u8 pad4[0xC];
     Vec4 points[1];
 } MoverPath;
-extern int *oltanis_paths[];
 extern s32 truncate_float_to_s32(f32 f);
 extern s32 FastDecTimer_r(s16 *) __asm__("func_001F9938");
 
@@ -604,7 +602,7 @@ typedef struct {
 } LockOn_c618;
 extern LockOn_c618 oltanis_coll_hit;
 
-extern short interceptor_cull_radius;
+extern f32 interceptor_cull_radius SDATA(interceptor_cull_radius);
 extern Vec4 oltanis_collision_hit_point;
 extern char *g_hero_moby;
 extern char oltanis_zero_vector_r[] __asm__("D_L14_0015F660") MACRO_ADDR;
@@ -640,8 +638,8 @@ extern s32 blarg_heavy_interceptor_tracking_and_group_wait_glow_green_gp
     SDATA(blarg_heavy_interceptor_tracking_and_group_wait_glow_green_gp);
 extern s32 blarg_heavy_interceptor_tracking_and_group_wait_glow_blue_gp
     SDATA(blarg_heavy_interceptor_tracking_and_group_wait_glow_blue_gp);
-extern short interceptor_spring_stiffness;
-extern short interceptor_spring_damping;
+extern f32 interceptor_spring_stiffness SDATA(interceptor_spring_stiffness);
+extern f32 interceptor_spring_damping SDATA(interceptor_spring_damping);
 extern s32 scale_ticks(s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002460f8.c, FUN_L14_002ac618. */
@@ -825,7 +823,7 @@ void update_blarg_heavy_interceptor(struct Moby *m) {
                             ((blarg_heavy_interceptor_tracking_and_group_wait_glow_green_gp) << 8) |
                             (blarg_heavy_interceptor_tracking_and_group_wait_glow_red_gp);
             qcopy(v, &m->pos);
-            v[3] = (*(f32 *)&interceptor_cull_radius);
+            v[3] = (interceptor_cull_radius);
             if (FastBSphereCheck_r((u8 *)v, IntToFloat_r(m->draw_dist)) >= 0) {
                 float *p;
 
@@ -906,20 +904,20 @@ void update_blarg_heavy_interceptor(struct Moby *m) {
             path_seg = 0;
             path_t = 0.0f;
             Spline_AdvanceByDistance_r(tab, v, &path_seg, &path_t, dir, t);
-            Spring_r(&m->pos.x, v[0], &d->pos_vel.x, 0.005f, (*(f32 *)&interceptor_spring_damping), 0.0f);
-            Spring_r(&m->pos.y, v[1], &d->pos_vel.y, 0.005f, (*(f32 *)&interceptor_spring_damping), 0.0f);
-            Spring_r(&m->pos.z, v[2], &d->pos_vel.z, 0.005f, (*(f32 *)&interceptor_spring_damping), 0.0f);
+            Spring_r(&m->pos.x, v[0], &d->pos_vel.x, 0.005f, (interceptor_spring_damping), 0.0f);
+            Spring_r(&m->pos.y, v[1], &d->pos_vel.y, 0.005f, (interceptor_spring_damping), 0.0f);
+            Spring_r(&m->pos.z, v[2], &d->pos_vel.z, 0.005f, (interceptor_spring_damping), 0.0f);
             update_blarg_heavy_interceptor_aim_transforms_r(m, 0);
             if (FastVecDist(&m->pos, v) < 0.5f) {
                 m->state = 1;
             }
             Spline_AdvanceByDistance_r(oltanis_paths[d->aim_path], v, &d->aim_seg, &d->aim_seg_t, d->path_dir, 0.0f);
-            Spring_r(&d->aim_point.x, v[0], &d->aim_vel.x, (*(f32 *)&interceptor_spring_stiffness),
-                     (*(f32 *)&interceptor_spring_damping), 0.0f);
-            Spring_r(&d->aim_point.y, v[1], &d->aim_vel.y, (*(f32 *)&interceptor_spring_stiffness),
-                     (*(f32 *)&interceptor_spring_damping), 0.0f);
-            Spring_r(&d->aim_point.z, v[2], &d->aim_vel.z, (*(f32 *)&interceptor_spring_stiffness),
-                     (*(f32 *)&interceptor_spring_damping), 0.0f);
+            Spring_r(&d->aim_point.x, v[0], &d->aim_vel.x, (interceptor_spring_stiffness), (interceptor_spring_damping),
+                     0.0f);
+            Spring_r(&d->aim_point.y, v[1], &d->aim_vel.y, (interceptor_spring_stiffness), (interceptor_spring_damping),
+                     0.0f);
+            Spring_r(&d->aim_point.z, v[2], &d->aim_vel.z, (interceptor_spring_stiffness), (interceptor_spring_damping),
+                     0.0f);
             break;
         }
         case 7: {
@@ -1097,7 +1095,7 @@ void process_blarg_heavy_interceptor_hit_reactions(char *moby) {
     StepColorFade(moby, &data->color_fade);
 }
 struct AnimSeq;
-extern short interceptor_ring_vertex_count;
+extern s32 interceptor_ring_vertex_count SDATA(interceptor_ring_vertex_count);
 extern float interceptor_ring_vertices[][3];
 extern s32 interceptor_ring_vertex_colors[];
 extern char interceptor_ring_uvs[];
@@ -1134,7 +1132,7 @@ void draw_blarg_heavy_interceptor_light_ring(char *moby) {
     VU1_addGSregister(0x47, 0x50000);
     VU1_addGSregister(0x4A, 0);
     font_queue_vu_state();
-    for (i = 0; i < (*(s32 *)&interceptor_ring_vertex_count); i++) {
+    for (i = 0; i < (interceptor_ring_vertex_count); i++) {
         float *s = interceptor_ring_vertices[i];
         float *o = f.verts[i];
         v[0] = s[0];
@@ -1150,14 +1148,14 @@ void draw_blarg_heavy_interceptor_light_ring(char *moby) {
         }
     }
     if (d->locked_on != 0) {
-        draw_env_overlay_mesh((*(s32 *)&interceptor_ring_vertex_count), f.verts, cols, interceptor_ring_uvs, 1);
+        draw_env_overlay_mesh((interceptor_ring_vertex_count), f.verts, cols, interceptor_ring_uvs, 1);
     } else {
-        draw_env_overlay_mesh((*(s32 *)&interceptor_ring_vertex_count), f.verts, interceptor_ring_vertex_colors,
+        draw_env_overlay_mesh((interceptor_ring_vertex_count), f.verts, interceptor_ring_vertex_colors,
                               interceptor_ring_uvs, 1);
     }
     FastVecScale(f.mat[1], f.mat[1], -1.0f);
     FastVecScale(f.mat[2], f.mat[2], -1.0f);
-    for (j = 0; j < (*(s32 *)&interceptor_ring_vertex_count); j++) {
+    for (j = 0; j < (interceptor_ring_vertex_count); j++) {
         float *o = f.verts[j];
         float *s = interceptor_ring_vertices[j];
         v[0] = s[0];
@@ -1170,9 +1168,9 @@ void draw_blarg_heavy_interceptor_light_ring(char *moby) {
         o[2] = v[2];
     }
     if (d->locked_on != 0) {
-        draw_env_overlay_mesh((*(s32 *)&interceptor_ring_vertex_count), f.verts, cols, interceptor_ring_uvs, 1);
+        draw_env_overlay_mesh((interceptor_ring_vertex_count), f.verts, cols, interceptor_ring_uvs, 1);
     } else {
-        draw_env_overlay_mesh((*(s32 *)&interceptor_ring_vertex_count), f.verts, interceptor_ring_vertex_colors,
+        draw_env_overlay_mesh((interceptor_ring_vertex_count), f.verts, interceptor_ring_vertex_colors,
                               interceptor_ring_uvs, 1);
     }
 }
@@ -1453,7 +1451,6 @@ void draw_blarg_heavy_interceptor_camera_pulled_glow(char *m) {
     }
     draw_world_quad(&pk, 0, 0);
 }
-extern int *oltanis_paths[];
 extern int Spline_AdvanceByDistance_r2(void *, void *, void *, void *, int, float) __asm__("func_L00_0025E860");
 
 /* Measures the segments of the moby's three paths, sums two of them and places it on the first two. */
@@ -1505,7 +1502,6 @@ void initialize_blarg_heavy_interceptor_paths(char *m) {
 extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
 extern int Spline_AdvanceByDistance_r3(int *tab, float *out, int *a, float *b, int c,
                                        float d) __asm__("func_L00_0025E860");
-extern int *oltanis_paths[];
 
 // Run the lookup for the moby's track, ease three axes, and on a wrap-around reset and flip the direction.
 void update_blarg_heavy_interceptor_patrol_aim_point(char *moby) {
@@ -1515,12 +1511,9 @@ void update_blarg_heavy_interceptor_patrol_aim_point(char *moby) {
     int save2 = data->aim_seg;
     int r = Spline_AdvanceByDistance_r3(oltanis_paths[data->aim_path], v, &data->aim_seg, &data->aim_seg_t,
                                         data->path_dir, data->aim_speed);
-    Spring(&data->aim_point.x, &data->aim_vel.x, v[0], *(float *)&interceptor_spring_stiffness,
-           *(float *)&interceptor_spring_damping, 0.0f);
-    Spring(&data->aim_point.y, &data->aim_vel.y, v[1], *(float *)&interceptor_spring_stiffness,
-           *(float *)&interceptor_spring_damping, 0.0f);
-    Spring(&data->aim_point.z, &data->aim_vel.z, v[2], *(float *)&interceptor_spring_stiffness,
-           *(float *)&interceptor_spring_damping, 0.0f);
+    Spring(&data->aim_point.x, &data->aim_vel.x, v[0], interceptor_spring_stiffness, interceptor_spring_damping, 0.0f);
+    Spring(&data->aim_point.y, &data->aim_vel.y, v[1], interceptor_spring_stiffness, interceptor_spring_damping, 0.0f);
+    Spring(&data->aim_point.z, &data->aim_vel.z, v[2], interceptor_spring_stiffness, interceptor_spring_damping, 0.0f);
     if (data->path_dir == 0) {
         if (r != 0) {
             data->aim_seg_t = save;
@@ -1529,7 +1522,6 @@ void update_blarg_heavy_interceptor_patrol_aim_point(char *moby) {
         }
     }
 }
-extern int *oltanis_paths[];
 extern int Spline_AdvanceByDistance_r4(int *tab, float *out, int *a, float *b, int c,
                                        float d) __asm__("func_L00_0025E860");
 
@@ -1558,15 +1550,11 @@ void update_blarg_heavy_interceptor_patrol_path_position(struct Moby *moby) {
     idx = 0;
     frac = 0.0f;
     Spline_AdvanceByDistance_r4(tab, out, &idx, &frac, dir, t);
-    Spring(&moby->pos.x, &data->pos_vel.x, out[0], *(float *)&interceptor_spring_stiffness,
-           *(float *)&interceptor_spring_damping, 0.0f);
-    Spring(&moby->pos.y, &data->pos_vel.y, out[1], *(float *)&interceptor_spring_stiffness,
-           *(float *)&interceptor_spring_damping, 0.0f);
-    Spring(&moby->pos.z, &data->pos_vel.z, out[2], *(float *)&interceptor_spring_stiffness,
-           *(float *)&interceptor_spring_damping, 0.0f);
+    Spring(&moby->pos.x, &data->pos_vel.x, out[0], interceptor_spring_stiffness, interceptor_spring_damping, 0.0f);
+    Spring(&moby->pos.y, &data->pos_vel.y, out[1], interceptor_spring_stiffness, interceptor_spring_damping, 0.0f);
+    Spring(&moby->pos.z, &data->pos_vel.z, out[2], interceptor_spring_stiffness, interceptor_spring_damping, 0.0f);
 }
 extern int Spline_AdvanceByDistance_r5(void *, void *, void *, void *, int, float) __asm__("func_L00_0025E860");
-extern float g_frame_time MACRO_ADDR;
 extern float interceptor_return_spring_damping SDATA(interceptor_return_spring_damping);
 
 /* Picks a target point from a list or searches for one, then eases the moby's position toward it per axis. */
@@ -1637,7 +1625,7 @@ void prepare_blarg_heavy_interceptor_light_ring_transform(char *moby) {
     float v[4];
     if (random_integer_below(5)) {
         qcopy(v, moby + 0x10);
-        v[3] = *(float *)&interceptor_cull_radius;
+        v[3] = interceptor_cull_radius;
         if (FastBSphereCheck((char *)v, IntToFloat(((Moby *)moby)->draw_dist)) >= 0) {
             p = (char *)data->ring_basis;
             MobyTransformScaledVertex(moby, 1, p);
@@ -1702,7 +1690,7 @@ void update_blarg_heavy_interceptor_light_ring_alpha(char *moby) {
     step = truncate_float_to_s32_r(f);
     if (data->ring_blink >= 1.0f)
         *(int *)&data->ring_blink = 0;
-    for (i = 0; i < *(int *)&interceptor_ring_vertex_count; i++) {
+    for (i = 0; i < interceptor_ring_vertex_count; i++) {
         int v = interceptor_ring_alpha_phases[i];
         if (v != 0) {
             v += step;
@@ -2674,7 +2662,6 @@ void update_minibomber_oscillation(char *moby) {
     update_moby_rotation_oscillation(moby, (char *)&data->wobble_a, (char *)&data->wobble_b, data->tilt,
                                      minibomber_wobble_rate_a, minibomber_wobble_rate_b);
 }
-extern int *oltanis_paths[];
 extern int FindNearestEligibleMoby(float a, char *m, char *b, int c, int d, int *e, int f);
 
 // Updates a moby's effect from its table entry and latches a default word.
@@ -2797,7 +2784,6 @@ void emit_minibomber_bomb_release_effects(char *m, float *input, float angle) {
     }
     mine_camera_blast(minibomber_drop_blast_params, saved, 0, 0);
 }
-extern int *oltanis_paths[];
 typedef struct {
     char pad00[0xD0];
     int pathA;
@@ -2844,7 +2830,6 @@ void hide_minibomber_and_release_voice(char *moby) {
     }
     data->voice = -1;
 }
-extern int *oltanis_paths[];
 
 extern void FastVecSub(void *, void *, void *);
 void func_L14_002B6F68_r(Moby *moby) __asm__("func_L14_002B6F68");
@@ -3053,7 +3038,6 @@ void update_flying_debris(struct Moby *m) {
     }
 }
 typedef int u128_2BC560 __attribute__((mode(TI)));
-extern float frame_scale MACRO_ADDR;
 extern struct Moby *func_0020D348(int);
 extern float random_float_between(float, float);
 
@@ -3445,7 +3429,6 @@ extern short muzzle_light_color_component_z;
 #define D_L14_00161A50 (*(float *)&D_L14_00161B20)
 #define D_L14_00161A54 (*(float *)&D_L14_00161B24)
 #define D_L14_00161A58 (*(float *)&D_L14_00161B28)
-extern char oltanis_lights[];
 extern void Spline_AdvanceByDistance(int a, char *pos, char *b, char *c, int d, float f);
 extern void matrix_from_basis_rows(void *, void *);
 extern void sce_vu0_mul_matrix(void *, void *, void *);
@@ -3672,9 +3655,7 @@ void update_racer_path_and_weapon(struct Moby *m) {
     }
     axis_rotation_2d48(&d->manips[0].rot, 2, a);
 }
-extern int race_paths MACRO_ADDR;
 extern float oltanis_racer_path_speed SDATA(oltanis_racer_path_speed);
-extern float g_frame_time MACRO_ADDR;
 extern void Spline_AdvanceByDistance(int a, char *pos, char *b, char *c, int d, float f);
 
 // Calls Spline_AdvanceByDistance with a table entry, the moby position and two data fields, scaled.
@@ -3753,9 +3734,7 @@ void draw_racer_glow_quads(struct Moby *m) {
     }
     draw_world_quad_r2(&pk, 0, 0);
 }
-extern char oltanis_lights[];
 extern float joint_effect_light_range SDATA(joint_effect_light_range);
-extern float oltanis_zero_vector[] MACRO_ADDR;
 extern int allocate_colored_effect_slot(float *, float, float, float, float, float);
 
 extern void draw_racer_glow_quads(struct Moby *);

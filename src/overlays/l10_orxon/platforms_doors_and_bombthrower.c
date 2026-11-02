@@ -21,7 +21,6 @@
 extern Hero g_hero;
 extern Moby *g_hero_moby;
 extern char gSkillPoints[];
-extern Hero g_hero;
 extern unsigned char level_moby_killed[];
 extern char usage_stats[];
 extern char voice_pool[];
@@ -736,7 +735,6 @@ void gate_update(Moby *m) {
             break;
     }
 }
-extern char hero_globals_base[];
 extern int fast_dec_timer(int *arg0);
 extern void euler_to_matrix(float *, float *);
 extern void clear_u64_value(float *);
@@ -747,7 +745,6 @@ extern void FastVecAdd(void *, void *, void *);
 extern int Sound_IsPlaying(void *, int);
 extern int Sound_PlayClassSound(int i, int a1, int v, int k);
 
-extern float g_frame_time MACRO_ADDR;
 
 // Update for a swirling effect moby: spawns particles along an axis and manages a sound slot.
 void update_timed_effect_emitter(unsigned char *moby) {
@@ -898,9 +895,6 @@ void func_L10_002CAD18_CB030(struct Moby *moby, HitBox *box) __asm__("func_L10_0
 extern struct Moby *orxon_mobys_r3 __asm__("D_L10_00160058") MACRO_ADDR;
 extern float IntToFloat(int);
 extern int truncate_float_to_s32(float);
-extern int g_current_level_index MACRO_ADDR;
-extern unsigned char level_moby_killed[];
-extern unsigned char saved_mission_state[];
 extern char linked_hitbox_no_target_msg[];
 extern char linked_moby_present_message[];
 extern char linked_moby_missing_message[];
@@ -1144,7 +1138,6 @@ extern char *CreateMoby(int);
 
 extern int scale_ticks(int);
 extern void moby_build_matrix(void *);
-extern float g_frame_time MACRO_ADDR;
 extern float bombthrower_grass_spawn_height SDATA(bombthrower_grass_spawn_height);
 
 // Spawns a moby with a swirl/particle data block.
@@ -1169,7 +1162,6 @@ char *spawn_bombthrower_grass_projectile(int owner, char *pos, char *vec) {
     return (char *)moby;
 }
 
-extern char orxon_ground_hit_normal[];
 extern int coll_line(void *, void *, int, int, int);
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -1488,7 +1480,6 @@ typedef int Q_2da0f0 __attribute__((mode(TI)));
 extern int *orxon_paths[];
 extern char path_spark_no_path_fmt[];
 extern char orxon_point_light_slots[];
-extern int orxon_frame_count MACRO_ADDR;
 extern int STUB_printf_r(void *, int) __asm__("func_001E9730");
 
 extern int fast_dec_timer_v(void *) __asm__("func_001F9908");
@@ -1677,7 +1668,6 @@ extern float ProbeGroundHeight(void *, int, float);
 
 extern char nearby_mobys[];
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
-extern unsigned char saved_mission_state[];
 
 typedef struct FloorPlateVars {
     s32 door; /* 0x00: index of the door moby, -1 none */
@@ -2243,7 +2233,6 @@ extern f32 IntToFloat(s32);
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern void SendRadialMessageToMobys(void *, void *, void *, int, int, int, int, int, float, float, float);
 extern float frame_scale MACRO_ADDR;
-extern char nearby_mobys[];
 
 /* Advances an effect, scales its size over its lifetime and emits hits. */
 void update_path_spark_effect(Moby *m) {

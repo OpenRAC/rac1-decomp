@@ -13,9 +13,7 @@
 #include "enums/hero_state.h"
 extern int pad_held;
 extern Hero g_hero;
-extern int pad_held;
 
-extern Hero g_hero;
 typedef struct {
     char pad0[0x44];
     int use_state_40;

@@ -819,7 +819,6 @@ char *create_moby_with_particles(int owner, float *position, float *rotation, in
     }
     return moby;
 }
-extern f32 g_frame_time MACRO_ADDR;
 extern f32 FastAddRots(f32 a, f32 b);
 extern f32 FastVecLength(void *a);
 extern void FastVecSub(void *out, void *a, void *b);
@@ -1083,7 +1082,7 @@ void advance_scroll_offsets(int a) {
     if (*(float *)&batalia_uv_scroll[a].b < -1.0f)
         *(float *)&batalia_uv_scroll[a].b = *(float *)&batalia_uv_scroll[a].b + 1.0f;
 }
-extern short scroll_speed_x;
+extern float scroll_speed_x SDATA(scroll_speed_x);
 extern float scroll_speed_y[] MACRO_ADDR;
 extern float scroll_pos_x_r[] __asm__("D_L08_00161EA0") MACRO_ADDR;
 extern float scroll_pos_y[] MACRO_ADDR;
@@ -1093,7 +1092,7 @@ extern float scroll_pos_y[] MACRO_ADDR;
 void advance_scroll_entry(int i) {
     float *p;
     p = &scroll_pos_x_r[i * 2];
-    *p += (((float *)&scroll_speed_x))[i * 2] * frame_delta_time;
+    *p += ((&scroll_speed_x))[i * 2] * frame_delta_time;
     if (*p > 1.0f)
         *p -= 1.0f;
     if (*p < -1.0f)
@@ -1197,7 +1196,6 @@ void Moby648Update(char *m) {
         PartType02Spawn(c, v0, v1, v->particle_type, v->particle_arg, s0, s16, s2, -1);
     }
 }
-extern char batalia_hero_pos[];
 extern int D_L08_0015F6A8 MACRO_ADDR;
 extern char paratrooper_no_path1_msg[], paratrooper_no_path2_msg[];
 extern char *D_L08_001746D8 NOT_SDA;
@@ -1968,7 +1966,6 @@ void update_fire_bolt(char *m) {
 }
 
 extern float multiply_global_factor(float);
-extern float g_frame_time MACRO_ADDR;
 extern float ground_particle_scatter_spawn_vector_x_bias[2] MACRO_ADDR;
 extern float ground_particle_scatter_refresh_countdown MACRO_ADDR;
 extern int ground_particle_scatter_base_attempt_count MACRO_ADDR;
@@ -2248,7 +2245,6 @@ void scatter_ground_particles(Moby *m) {
     qcopy(&obj->v30, batalia_hero_pos);
 }
 typedef int u128 __attribute__((mode(TI)));
-extern char batalia_hero_pos[];
 extern float ground_particle_scatter_spawn_vector_y_bias MACRO_ADDR;
 extern void FastVecSub(void *, void *, void *);
 extern float FastVecDot(void *, void *);

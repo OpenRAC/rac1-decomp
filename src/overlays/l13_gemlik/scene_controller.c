@@ -15,7 +15,6 @@ extern Hero g_hero;
 extern char level_render_state[];
 extern char gSkillPoints[];
 extern char gSpecialItems[];
-extern Hero g_hero;
 
 /* Hit proxy (moby 0x660): forwards the hits it takes to the moby that owns it. */
 struct HitProxyVars {

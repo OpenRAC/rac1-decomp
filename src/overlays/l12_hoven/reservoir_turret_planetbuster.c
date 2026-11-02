@@ -27,6 +27,7 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+
 extern char gSkillPoints[];
 extern Hero g_hero;
 extern char help_records[];
@@ -639,8 +640,6 @@ extern float electric_arc_tex_scroll SDATA(electric_arc_tex_scroll);
 extern float electric_arc_tex_scroll_speed SDATA(electric_arc_tex_scroll_speed);
 extern float electric_arc_jitter SDATA(electric_arc_jitter);
 extern int oscillating_link_strip_reset_ticks MACRO_ADDR;
-extern float g_frame_time MACRO_ADDR;
-extern char hoven_camera_pos[];
 
 /* Moby update for an animated electric-arc effect. */
 void update_oscillating_target_link_strips(struct Moby *moby) {
@@ -963,12 +962,10 @@ typedef struct {
 } Hit_304920;
 
 extern int D_0015EED0[] MACRO_ADDR;
-extern float g_frame_time MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern int hoven_cinematic_mode MACRO_ADDR;
 extern int planetbuster_death_cam_active MACRO_ADDR;
-extern int hoven_turret_attempts MACRO_ADDR;
 extern int planetbuster_defeated MACRO_ADDR;
 extern int hoven_mobys_m __asm__("D_L12_00160058") MACRO_ADDR;
 extern int hoven_turret_manned SDATA(hoven_turret_manned);
@@ -985,7 +982,6 @@ extern float hoven_turret_firing_offset_rate SDATA(hoven_turret_firing_offset_ra
 extern float hoven_turret_destruction_view_offset_distance_min SDATA(hoven_turret_destruction_view_offset_distance_min);
 extern float hoven_turret_destruction_view_offset_distance_max SDATA(hoven_turret_destruction_view_offset_distance_max);
 extern char hoven_player_camera_r[] __asm__("D_L12_00167180");
-extern float hoven_zero_vec[] MACRO_ADDR;
 
 extern void AttachManipulator(void *, int, void *);
 extern void Moby_GetJointWorldPos(void *, int, void *);
@@ -1501,7 +1497,6 @@ void draw_hoven_turret_destruction_fade(Moby *moby) {
     }
 }
 typedef u32 u128_061E0 __attribute__((mode(TI), aligned(16)));
-extern struct Hero g_hero;
 extern float g_frame_scale_sq MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
 extern short g_frame_time_sq_r __asm__("D_0015EE70");
@@ -1947,10 +1942,8 @@ void update_planetbuster_maximus_guns(char *moby) {
         moby[0xBC] = 0;
     }
 }
-extern f32 g_frame_time MACRO_ADDR;
 extern f32 g_frame_time_sq MACRO_ADDR;
 extern char *hoven_mobys_r3 __asm__("D_L12_00160058") MACRO_ADDR;
-extern int planetbuster_detached_part_ids[];
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l12/gameplay/vendor/003028c8.c, FUN_L12_00306350. */
 void initialize_planetbuster_maximus_detached_part_motion(struct Moby *moby, int slot) {
@@ -1997,13 +1990,11 @@ extern void DeleteMoby(void *);
 extern float FastAddRots(float, float);
 extern float SpringAngle(void *, float, void *, int, float, float, float);
 extern void moby_build_matrix(void *);
-extern int planetbuster_detached_part_ids[];
 extern int hoven_mobys_m __asm__("D_L12_00160058") MACRO_ADDR;
 extern float planetbuster_fall_pos MACRO_ADDR;
 extern float planetbuster_maximus_detached_owner_rotation MACRO_ADDR;
 extern float planetbuster_path_pos MACRO_ADDR;
 extern float planetbuster_path_rot MACRO_ADDR;
-extern float g_frame_time MACRO_ADDR;
 
 // Level 12 vendor: updates each of the 18 slot objects for one frame.
 void update_planetbuster_maximus_detached_parts(char *moby) {
@@ -2406,7 +2397,6 @@ void planetbuster_maximus_part_update(char *moby) {
 
 extern void spawn_jittered_effect_particle_with_optional_basis(float, void *, int);
 extern int GetFlaggedPvarWord(char *);
-extern float g_frame_time MACRO_ADDR;
 
 struct SpawnNextLinkedMobyVars {
     u8 pad_00[0xF0];
@@ -2552,8 +2542,6 @@ void update_homing_mine_spawner_target(char *m) {
 }
 void DeleteMoby(void *obj);
 extern s32 g_current_level_index SDATA(g_current_level_index);
-extern unsigned char saved_mission_state[];
-extern char voice_pool[];
 extern int check_scaled_vector_bsphere(void *, float);
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 extern unsigned char *hoven_mobys MACRO_ADDR;
@@ -2610,7 +2598,6 @@ void update_moby_draw_and_monitor_linked_state(struct Moby *m) {
     }
 }
 
-extern int hoven_frame_count MACRO_ADDR;
 extern char hoven_cutscene_hero_pos[];
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
 
@@ -2716,7 +2703,6 @@ extern int is_point_inside_clip_volume(void *, int);
 
 extern void draw_env_overlay_mesh(int, int, int, void *, int);
 
-extern char hoven_camera_pos[];
 extern char hoven_overlay_uv_buffer[];
 extern char hoven_overlay_uv_scroll[] MACRO_ADDR;
 extern int hoven_overlay_piece_uvs[];

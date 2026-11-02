@@ -53,7 +53,7 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern float quartu_hero_fall_state_height MACRO_ADDR;
 extern int quartu_help_message_selector MACRO_ADDR;
 extern int quartu_hero_run_step1_start_frame MACRO_ADDR;
-extern short quartu_hero_double_tap_timer;
+extern int quartu_hero_double_tap_timer SDATA(quartu_hero_double_tap_timer);
 extern S167300 quartu_player_camera;
 
 extern int quartu_look_release_reset_word;
@@ -1316,15 +1316,15 @@ void HeroL15_UpdateStateTransitions(void) {
                         {
                             int both = 0;
 
-                            fast_dec_timer((int *)&quartu_hero_double_tap_timer);
-                            if (*(int *)&quartu_hero_double_tap_timer != 0) {
+                            fast_dec_timer(&quartu_hero_double_tap_timer);
+                            if (quartu_hero_double_tap_timer != 0) {
                                 both = 1;
                                 if (!((g_controller_state.held & PAD_R1) && (g_controller_state.pressed & PAD_R1))) {
                                     both = 0;
                                 }
                             }
                             if (g_controller_state.pressed & PAD_R1) {
-                                *(int *)&quartu_hero_double_tap_timer = scale_ticks(0x1E);
+                                quartu_hero_double_tap_timer = scale_ticks(0x1E);
                             }
                             if (!(g_hero.state_timer > scale_ticks(0x14))) {
                                 break;

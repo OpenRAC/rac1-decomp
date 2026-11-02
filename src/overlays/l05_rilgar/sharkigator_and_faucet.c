@@ -258,7 +258,6 @@ static inline short pick_2D28D0(int c) {
         return 600;
     return 180;
 }
-extern struct Hero g_hero;
 
 struct RilgarSharkigatorUpdateVars {};
 
@@ -510,8 +509,6 @@ extern void FastVecAdd(void *, void *, void *);
 extern float multiply_global_factor(float);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern char rilgar_water_surface_z[];
-extern float g_frame_time MACRO_ADDR;
-extern char rilgar_zero_vec[] MACRO_ADDR;
 
 /* Spawns a burst of particles and a ring of sparks around a position. */
 void spawn_sharkigator_splash_effects(int unused, char *p) {
@@ -809,7 +806,6 @@ void scenery_ship_update(char *moby) {
     if (D_L05_001614A4_2D8388)
         update_moby_glow_and_queue_draw_r(moby);
 }
-extern float g_frame_time MACRO_ADDR;
 extern float rilgar_scenery_ship_speed SDATA(rilgar_scenery_ship_speed);
 extern void SamplePathAt(int *, int, void *, float *, int, float);
 
@@ -928,7 +924,6 @@ void draw_group_scenery_ship_trails(char *moby) {
     } while (*list++ >= 0);
 }
 extern char hero_globals_base[];
-extern float g_frame_time_sq MACRO_ADDR;
 extern void handle_amoeboid_hits(unsigned char *m);
 extern void spawn_amoeboid_particles(unsigned char *moby);
 extern void MobyBlendAnimation(void *, int, int, int);
@@ -998,7 +993,6 @@ void amoeboid_update(unsigned char *m) {
             break;
     }
 }
-extern char hero_globals_base[];
 extern char *MobyGetHitMessage(void *, int, int);
 extern void spawn_amoeboid_hit_sparks(void *, void *);
 extern void Moby_PlaySound(int, int, int);
@@ -1143,7 +1137,7 @@ extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, voi
 extern void SpawnExplosionFx(void *, void *, int, float, float);
 extern int rilgar_cinematic_mode MACRO_ADDR;
 
-extern short sharkigator_scale;
+extern float sharkigator_scale SDATA(sharkigator_scale);
 extern int extermibot_pre_strike_delay_frames_gp SDATA(extermibot_pre_strike_delay_frames_gp);
 extern float extermibot_spark_facing_xy_scale_gp SDATA(extermibot_spark_facing_xy_scale_gp);
 extern float extermibot_spark_facing_vector_w_gp SDATA(extermibot_spark_facing_vector_w_gp);
@@ -1188,7 +1182,7 @@ void extermibot_update(unsigned char *m) {
     }
     handle_extermibot_hits_and_update_targeting((Moby *)m);
     t = d->target;
-    ((Moby *)m)->scale = *(float *)(*(char **)&((struct Moby *)m)->pclass + 0x24) * (*(float *)&sharkigator_scale);
+    ((Moby *)m)->scale = *(float *)(*(char **)&((struct Moby *)m)->pclass + 0x24) * (sharkigator_scale);
     switch (((Moby *)m)->state) {
         case 0:
             ((Moby *)m)->flags |= 0x1000;
@@ -1203,7 +1197,7 @@ void extermibot_update(unsigned char *m) {
             d->unk_5A = truncate_float_to_s32(11.2f);
             MoveCtl_Init((char *)&d->move_ctl);
             {
-                float q = *(float *)&sharkigator_scale;
+                float q = sharkigator_scale;
                 d->mc_unk_DC = 2.0f;
                 d->mc_unk_D8 = 2.0f;
                 {
@@ -1241,7 +1235,7 @@ void extermibot_update(unsigned char *m) {
         case 1:
             if (d->target_mode != 2 && random_integer_below(9) == 0) {
                 if (follow_path(&d->polyline, 1, d->polyline_count, &((struct Moby *)m)->pos, (s32)(t + 0x10), dir,
-                                (*(float *)&sharkigator_scale) * 0.4f) != 0) {
+                                (sharkigator_scale) * 0.4f) != 0) {
                     if (random_integer_below(0x100) & 1) {
                         d->path_turn_deg = -d->path_turn_deg;
                     }
@@ -1285,7 +1279,7 @@ void extermibot_update(unsigned char *m) {
                 dir[1] = FastSin(((Moby *)m)->rot.z) * 2.0f;
                 dir[2] = 0.0f;
                 move_w(m, &d->move_ctl, dir, out, 1.0f);
-                resolve_point_path_segment_xy_clearance(d->polyline, pos0, pos0, (*(float *)&sharkigator_scale) * 0.4f);
+                resolve_point_path_segment_xy_clearance(d->polyline, pos0, pos0, (sharkigator_scale) * 0.4f);
             }
             (d->wander_frames)++;
             if ((vec_distance_xy(pos0, &d->wander_point) < 1.0f && d->wander_frames > scale_ticks(0x3C)) ||
@@ -1309,7 +1303,7 @@ void extermibot_update(unsigned char *m) {
                 dir[1] = FastSin(((Moby *)m)->rot.z) * 2.0f;
                 dir[2] = 0.0f;
                 move_w(m, &d->move_ctl, dir, out, 1.0f);
-                resolve_point_path_segment_xy_clearance(d->polyline, pos0, pos0, (*(float *)&sharkigator_scale) * 0.4f);
+                resolve_point_path_segment_xy_clearance(d->polyline, pos0, pos0, (sharkigator_scale) * 0.4f);
             }
             near = 0;
             if (SegmentCrossPolyline(d->polyline, pos0, t + 0x10, hit) != 0 && FastVecDist((float *)pos0, hit) < 1.5f) {
@@ -1505,7 +1499,7 @@ void extermibot_update(unsigned char *m) {
         case 11:
             if (mine_fall(m, d->knockback) & 0x60) {
                 if (follow_path(&d->polyline, 1, d->polyline_count, &((struct Moby *)m)->pos, (s32)&d->home_pos, dir,
-                                (*(float *)&sharkigator_scale) * 0.4f) != 0) {
+                                (sharkigator_scale) * 0.4f) != 0) {
                     ((Moby *)m)->state = 4;
                     if (((Moby *)m)->prev_seq != 1)
                         MobyBlendAnimation(m, 1, 0, scale_ticks(10));
@@ -1826,7 +1820,7 @@ typedef struct {
     u8 pad2C8[0x2D4 - 0x2C8];
     s32 stuck_timer; /* 0x2D4 */
 } PathWalkerVars;
-extern short sharkigator_scale;
+extern float sharkigator_scale SDATA(sharkigator_scale);
 extern s32 follow_path(void *, s32, s32, void *, s32, void *, f32);
 extern f32 FastDiffRots(f32, f32);
 extern f32 ApproachValue(f32 *, f32, f32);
@@ -1844,13 +1838,13 @@ void move_extermibot_along_path(struct Moby *m, s32 node, f32 side) {
     f32 dist;
 
     if ((((s32)m >> 8) & 3) == (rilgar_frame_count & 3)) {
-        if (follow_path(&v->path, 1, v->path_pos, &m->pos, node, &v->goal, (*(f32 *)&sharkigator_scale) * 0.4f) == 0)
+        if (follow_path(&v->path, 1, v->path_pos, &m->pos, node, &v->goal, (sharkigator_scale) * 0.4f) == 0)
             v->mode = 2;
     }
     qcopy(&goal, &v->goal);
     dist = vec_distance_xy(&m->pos, &goal);
     if (dist > 5.0f && side != 0.0f &&
-        test_extermibot_offset_path_clearance((char *)m, (float *)&goal, (*(f32 *)&sharkigator_scale) * 0.4f)) {
+        test_extermibot_offset_path_clearance((char *)m, (float *)&goal, (sharkigator_scale) * 0.4f)) {
         a = FastAddRots(fast_atan2(goal.x - m->pos.x, goal.y - m->pos.y), side);
         SteerAngleWithVelocity_r(&m->rot.z, a, &v->yaw_vel, g_frame_time_sq * 12.566371f, g_frame_time_sq * 12.566371f,
                                  g_frame_time * 25.132742f);
@@ -1867,7 +1861,7 @@ void move_extermibot_along_path(struct Moby *m, s32 node, f32 side) {
     dir.z = 0.0f;
     move_w(m, v->move, &dir, &out, 1.0f);
     if (v->stuck_timer == 0) {
-        if (push_point_from_path(v->path, &m->pos, &m->pos, (*(f32 *)&sharkigator_scale) * 0.4f) > 2.0f)
+        if (push_point_from_path(v->path, &m->pos, &m->pos, (sharkigator_scale) * 0.4f) > 2.0f)
             v->stuck_timer = scale_ticks(5);
     }
 }
@@ -1903,8 +1897,6 @@ typedef struct {
     unsigned short flags;
     char p2[0xCA];
 } Ent;
-extern short *rilgar_moby_groups[];
-extern int moby_pool_4f60 MACRO_ADDR;
 extern Ent *moby_pool_4f60_m __asm__("D_L05_00160098") MACRO_ADDR;
 extern float FastVecDist(void *, void *);
 
@@ -3173,7 +3165,6 @@ typedef struct {
     float f14;
 } Cam_0030DED8;
 
-extern int rilgar_cinematic_mode MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern unsigned char D_0014171B[];
 extern Rec_0030DED8 water_records_r[] __asm__("D_L05_001D6BC0");
@@ -3511,7 +3502,6 @@ void synchronize_group_water_heights(char *moby) {
     } while (*p++ >= 0);
 }
 
-extern char water_records[];
 /* Draws the level's ripple patches. */
 void DrawRipplePatches(void) {
     render_water_grids(water_records, 0x30);

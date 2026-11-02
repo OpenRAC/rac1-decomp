@@ -18,7 +18,6 @@
 #include "enums/hero_state.h"
 extern Hero g_hero;
 extern char g_controller_state[];
-extern Hero g_hero;
 
 /* Morphoray chicken: AI blocks, a life timer and the color index of the slot it replaced. */
 struct ChickenVars {
@@ -594,7 +593,6 @@ extern void DeleteMoby(void *);
 extern void PartType05Spawn(void *, float, int, int, int, int, float);
 extern void FastMemSet(void *, int, int);
 extern void moby_build_matrix(void *);
-extern int coll_hit_result[];
 extern int morphoray_chicken_slots[];
 extern char morphoray_chicken_slot_state_blocks[];
 extern char morphoray_chicken_slot_aux_blocks[];
@@ -1553,8 +1551,6 @@ extern s32 rand_range(s32, s32);
 extern void *PartType27Spawn(void *, void *, u32, s32, f32);
 
 extern u8 *PartType23Spawn(void *, s32, f32, f32, void *, u32, f32, f32);
-extern float g_frame_time MACRO_ADDR;
-extern float frame_scale MACRO_ADDR;
 
 /* Kill the homing shot's 17 trail particles, and if enabled spawn its end burst effects. */
 void clear_homing_shot_trail_and_spawn_end_effects(u8 *m, s32 enabled) {
@@ -1626,7 +1622,6 @@ extern int rand_range(int, int);
 extern int scale_ticks(int);
 extern void moby_build_matrix(void *);
 extern void copy_hero_moby_field_38(void *);
-extern float g_frame_time MACRO_ADDR;
 extern int feather_base_lifetime SDATA(feather_base_lifetime);
 extern float feather_scale_multiplier SDATA(feather_scale_multiplier);
 extern unsigned char hero_globals_base_r[] __asm__("D_0013E633");
@@ -1702,7 +1697,6 @@ extern int fast_dec_timer(int *);
 extern void DeleteMoby(void *);
 extern int scale_ticks(int);
 extern int fast_subtract_rotations_cf(void *);
-extern float g_frame_time_sq MACRO_ADDR;
 extern float falling_moby_horizontal_velocity_scale SDATA(falling_moby_horizontal_velocity_scale);
 
 // UpdateMoby_428: apply gravity and drag to the moby's velocity, then test for despawn.
@@ -2083,8 +2077,6 @@ extern void moby_build_matrix(void *);
 extern void BuildSphericalOffset(void *, float, float, float);
 extern void spawn_explosion_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                 float, int, int, int, int) __asm__("func_L00_0025F4A8");
-extern float frame_scale MACRO_ADDR;
-extern float g_frame_time MACRO_ADDR;
 
 /* Spawns a type-0x1C9 projectile moby at a position, aimed at an optional target; returns it, or 0 if it was launched at once. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002c8440.c, FUN_L00_002ccee0. */
 unsigned char *spawn_ryno_rocket(int a, V4 *pos, unsigned char *tgt, float f12, float f13, float f14) {
@@ -2407,7 +2399,6 @@ typedef struct {
     unsigned short hC2;
     unsigned int wC4;
 } S_2cdcc0;
-extern Hero g_hero;
 extern S_2cdcc0 item_usage;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
@@ -2466,7 +2457,6 @@ void ensure_drone_attached_particles(char *m) {
         *(int *)&p->unused50 = spawn_moby_point_attached_particle(m, 1, 0.05f, 0.01f, 0x80808080, 0x10808080);
     }
 }
-extern int suck_moby_list MACRO_ADDR;
 extern float FastVecDist(void *, void *);
 
 /* finds the nearest eligible moby to a point, skipping a list of nine */

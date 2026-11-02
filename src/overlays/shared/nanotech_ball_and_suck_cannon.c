@@ -18,7 +18,6 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 extern Hero g_hero NOT_SDA;
-extern Hero g_hero NOT_SDA;
 extern char item_usage[];
 extern int pad_held;
 extern char voice_pool[];
@@ -203,7 +202,6 @@ typedef struct {
 } Vx __attribute__((aligned(16)));
 extern char g_debug_camera[] NOT_SDA;
 
-extern float g_frame_time MACRO_ADDR;
 extern float nanotech_spark_speed_min SDATA(nanotech_spark_speed_min);
 extern float nanotech_spark_speed_max SDATA(nanotech_spark_speed_max);
 extern unsigned char nanotech_spark_life;
@@ -264,9 +262,9 @@ extern s32 nanotech_ball_collection_second_particle_mode_selector
     SDATA(nanotech_ball_collection_second_particle_mode_selector);
 extern s32 nanotech_ball_collection_particle_byte_source_index
     SDATA(nanotech_ball_collection_particle_byte_source_index);
-extern short nanotech_ring_spin_speeds;
-extern short nanotech_ring_sizes;
-extern short nanotech_ring_heights;
+extern f32 nanotech_ring_spin_speeds SDATA(nanotech_ring_spin_speeds);
+extern f32 nanotech_ring_sizes SDATA(nanotech_ring_sizes);
+extern f32 nanotech_ring_heights SDATA(nanotech_ring_heights);
 void FastVecSub(void *, void *, void *);
 void vec_scale_to_length(void *, void *, f32);
 void FastVecAdd(void *, void *, void *);
@@ -297,7 +295,7 @@ s32 update_nanotech_ball_collection_effects(M_2d8510 *m) {
             continue;
         if (o->h58[i] > scale_ticks(0x30))
             ret = 1;
-        f = o->f60[i] += (((f32 *)&nanotech_ring_spin_speeds))[i];
+        f = o->f60[i] += ((&nanotech_ring_spin_speeds))[i];
         if (255.0f <= f)
             o->f60[i] = f - 255.0f;
         else if (f <= 0.0f)
@@ -309,16 +307,15 @@ s32 update_nanotech_ball_collection_effects(M_2d8510 *m) {
         t = 1.0f - o->h58[i] / IntToFloat(scale_ticks((nanotech_ring_fade_ticks)));
         al = truncate_float_to_s32(IntToFloat(hi) * (1.0f - t)) << 24;
         c = al | (c & 0xFFFFFF);
-        a.z = z + (((f32 *)&nanotech_ring_heights))[i];
+        a.z = z + ((&nanotech_ring_heights))[i];
         p = PartType59Spawn(&a, c, truncate_float_to_s32(o->f60[i]),
                             (nanotech_ball_collection_particle_byte_source_index), 0, 2, 1,
-                            (((f32 *)&nanotech_ring_sizes))[i] * t);
+                            ((&nanotech_ring_sizes))[i] * t);
         if (p)
             p[2] = *part_type_textures.pF8;
-        p = PartType59Spawn(&a, al | 0xFFFFFF, truncate_float_to_s32(o->f60[i]),
-                            (nanotech_ball_collection_particle_byte_source_index),
-                            (nanotech_ball_collection_second_particle_mode_selector), 2, 1,
-                            (((f32 *)&nanotech_ring_sizes))[i] * (t * 0.7f));
+        p = PartType59Spawn(
+            &a, al | 0xFFFFFF, truncate_float_to_s32(o->f60[i]), (nanotech_ball_collection_particle_byte_source_index),
+            (nanotech_ball_collection_second_particle_mode_selector), 2, 1, ((&nanotech_ring_sizes))[i] * (t * 0.7f));
         if (p)
             p[2] = *part_type_textures.pF8;
         FastVecAdd(&a, &a, &b);
@@ -973,7 +970,6 @@ void draw_nanotech_ball(Moby *moby) {
     }
     vu1_add_g_sregister_2DACC0(0x47, 0x5360b);
 }
-extern Hero g_hero NOT_SDA;
 
 /* tests a state value against a set of cases */
 int is_suck_cannon_suction_blocked_by_hero_state(void) {
@@ -2708,7 +2704,6 @@ void suck_beam_draw_mesh(void) {
     }
     VU1_addGSregister(0x47, 0x5360B);
 }
-extern short suck_beam_segment_alpha[];
 extern int suck_beam_clear_particles SDATA(suck_beam_clear_particles);
 extern int suck_beam_rebuild SDATA(suck_beam_rebuild);
 // sets two flags and clears a short
@@ -3132,8 +3127,6 @@ void suck_beam_queue_draw(int arg0) {
         AddDrawCallback(suck_beam_draw_mesh, arg0);
     }
 }
-extern char suck_beam_points[];
-extern char suck_beam_points_base[];
 extern float suck_beam_scroll_speed SDATA(suck_beam_scroll_speed);
 extern float FastVecLength(void *);
 typedef float VQ[4] __attribute__((aligned(16)));
@@ -3205,7 +3198,6 @@ void scatter_moby_from_hazards(Moby *m) {
         }
     }
 }
-extern s32 g_current_level_index MACRO_ADDR;
 int get_first_moby_in_group(void *, s32, s32, s32);
 int get_next_moby_in_group(void *, s32, s32, s32);
 void draw_offset_textured_effect_quad(void *, void *, f32, f32);
@@ -3304,7 +3296,6 @@ void quad_moby_update(Moby *a) {
 extern void AttachManipulator(char *, int, void *);
 extern float FastAddRots(float, float);
 extern void axis_rotation_2d48(void *, int, float);
-extern float g_frame_time MACRO_ADDR;
 extern float vendor_orb_spin_speed_deg SDATA(vendor_orb_spin_speed_deg);
 
 /* UpdateMoby for Vendor Orb: init then slowly spin/ease its value */

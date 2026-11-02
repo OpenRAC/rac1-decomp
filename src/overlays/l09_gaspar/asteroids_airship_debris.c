@@ -28,14 +28,11 @@ extern u8 saved_mission_state[];
 extern char voice_pool[];
 extern char gHeroPos[];
 extern char gSkillPoints[];
-extern char gSpecialItems[];
 extern char g_controller_state[];
-extern Hero g_hero;
 extern char help_records[];
 extern char level_moby_killed[];
 extern u32 pad0_pressed;
 extern char sound_probe_ignore[];
-extern char voice_pool[];
 
 /* Airship part: placed at its source's position. */
 struct AirshipPartVars {
@@ -602,9 +599,7 @@ void update_airship_part(Moby *moby) {
             break;
     }
 }
-extern float g_frame_time MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
-extern float gaspar_camera_pos[];
 
 extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecScale(void *, void *, float);
@@ -803,8 +798,6 @@ extern void FastVecSub(void *, void *, void *);
 extern float FastVecLength(void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern float FastAddRots(float, float);
-extern float g_frame_time_sq MACRO_ADDR;
-extern float gaspar_camera_pos[];
 
 /* ticks a fading drifting moby: decays its velocity, follows it and eases its rotation */
 void update_fading_asteroid_debris(unsigned char *m) {
@@ -1260,7 +1253,6 @@ char *spawn_breakable_stack_replacement(char *src, int cls) {
 typedef u32 u128_EEF80 __attribute__((mode(TI), aligned(16)));
 extern short g_current_level_index_r __asm__("D_0015EE84");
 char *spawn_breakable_stack_replacement(char *src, int cls);
-extern u8 saved_mission_state[];
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
 extern char *MobyGetHitMessage_r(struct Moby *, int, int) __asm__("func_L00_0025B478");
 extern int fast_subtract_rotations_cf(u8 *);
@@ -2564,7 +2556,6 @@ void airship_chain_link_update(Moby *m) {
             break;
     }
 }
-extern Hero g_hero;
 
 typedef struct {
     u8 pad[0x1A0];

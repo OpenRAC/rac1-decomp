@@ -2087,7 +2087,6 @@ typedef struct HitSphereState {
 } HitSphereState;
 
 /* update: scale and fade a moby, spawn an effect, delete it when done */
-extern struct Hero g_hero;
 /* update: scale and fade a moby, spawn an effect, delete it when done */
 
 /* Hit sphere moby: grows its scale each frame, fades in its alpha, damages what it touches around
@@ -2175,7 +2174,6 @@ extern Fade29FF90 quartu_secondary_screen_overlay MACRO_ADDR;
 extern Fade29FF90 quartu_screen_overlay MACRO_ADDR;
 extern Light29FF90 quartu_lights[];
 extern float frame_scale MACRO_ADDR;
-extern char *quartu_coll_sphere_moby_hits[];
 extern unsigned char *quartu_charged_blast_texture_ptr;
 extern void *charged_blast_removal_target SDATA(charged_blast_removal_target);
 
@@ -2370,7 +2368,6 @@ typedef struct GroupMobyData {
 } GroupMobyData;
 
 /* Shared level 15/17 moby update (Mine): steers the moby toward its target and runs its state machine. */
-extern struct Hero g_hero;
 
 /* Group moby state machine: emits sparks, then homes in on the hero; explodes when it is hit,
    reaches the hero or its timer ends, and goes back to idle (state 1). */
@@ -2869,7 +2866,7 @@ void draw_spark_emitter_effect_quads(unsigned char *moby) {
         }
     }
 }
-extern short g_current_level_index;
+extern s32 g_current_level_index SDATA(g_current_level_index);
 typedef struct {
     u8 pad[0x454];
     u8 killed[1]; /* per spawn id: spawn slot + 2 */
@@ -2888,7 +2885,7 @@ void mark_moby_killed_and_release_owned_voice(int addr) {
     m->collision = 0;
     quartu_moby_state_bytes_base.killed[(s16)m->save_id] = m->mission + 2;
     if (m->mission == 0xFF || (quartu_mission_group_state[m->mission] != 0xFF &&
-                               saved_mission_state[(*(s32 *)&g_current_level_index)][m->mission] == 0xFF)) {
+                               saved_mission_state[(g_current_level_index)][m->mission] == 0xFF)) {
         quartu_collected_flags_base.killed[(s16)m->save_id] = m->mission + 2;
     }
     if (m->command != 0xFF) {
@@ -3132,7 +3129,6 @@ void draw_spiderbot_effect_quad(char *moby) {
     draw_world_quad(&q, 0, 0);
 }
 typedef u32 u128_BEFF8 __attribute__((mode(TI), aligned(16)));
-extern struct Hero g_hero;
 extern f32 g_frame_time MACRO_ADDR;
 struct AnimSeq_BEFF8;
 typedef struct {
@@ -3481,7 +3477,7 @@ extern int Moby_PlaySound(int, int, int);
 extern void AddDrawCallback(void (*)(void), void *);
 
 extern void emit_sine_modulated_rgba_draw_packet(void);
-extern short g_current_level_index;
+extern s32 g_current_level_index SDATA(g_current_level_index);
 extern int quartu_alarm_raised SDATA(quartu_alarm_raised);
 extern int quartu_alarm_on SDATA(quartu_alarm_on);
 extern int quartu_alarm_sound_handle SDATA(quartu_alarm_sound_handle);
@@ -3493,8 +3489,7 @@ void update_sentrybot_alarm_effect(void *moby) {
     if (base->state.current == HERO_STATE_APPROACH_TARGET_POSE) {
         ApproachValue(&quartu_alarm_intensity, 0.0f, g_frame_time * 2);
         set_sentrybot_alarm_duration(moby, 0);
-    } else if (quartu_alarm_raised != 0 &&
-               (*(int *)&g_current_level_index != LEVEL_QUARTU || 240.0f < base->motion.pos.f[1])) {
+    } else if (quartu_alarm_raised != 0 && (g_current_level_index != LEVEL_QUARTU || 240.0f < base->motion.pos.f[1])) {
         ApproachValue(&quartu_alarm_intensity, 1.0f, g_frame_time * 2);
     } else {
         ApproachValue(&quartu_alarm_intensity, 0.0f, g_frame_time * 2);

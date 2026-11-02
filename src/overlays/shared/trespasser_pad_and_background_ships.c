@@ -396,7 +396,6 @@ typedef struct {
 } H2d8910;
 extern H2d8910 aridia_player_camera_r __asm__("D_L02_00167300");
 extern char *aridia_scene_points MACRO_ADDR;
-extern char gHeroPos[];
 extern float FastAddRots(float, float);
 extern float FastDiffRots(float, float);
 
@@ -1196,16 +1195,15 @@ void draw_tresspasser_puzzle_arrow(int p0, int p1, int sel, float a, float s) {
     draw_geometry_quad_5188(xy, uv, col, tex, 1);
     draw_geometry_quad_5188(xy, uv, col, tex, 1);
 }
-extern s32 frame_counter_ref MACRO_ADDR;
 extern f32 trespasser_beam_scroll_speed SDATA(trespasser_beam_scroll_speed);
-extern short trespasser_beam_uv_0;
-extern short trespasser_beam_uv_1;
-extern short trespasser_beam_uv_2;
-extern short trespasser_beam_uv_3;
-extern short trespasser_beam_glow_uv_0;
-extern short trespasser_beam_glow_uv_1;
-extern short trespasser_beam_glow_uv_2;
-extern short trespasser_beam_glow_uv_3;
+extern char *trespasser_beam_uv_0 SDATA(trespasser_beam_uv_0);
+extern char *trespasser_beam_uv_1 SDATA(trespasser_beam_uv_1);
+extern char *trespasser_beam_uv_2 SDATA(trespasser_beam_uv_2);
+extern char *trespasser_beam_uv_3 SDATA(trespasser_beam_uv_3);
+extern char *trespasser_beam_glow_uv_0 SDATA(trespasser_beam_glow_uv_0);
+extern char *trespasser_beam_glow_uv_1 SDATA(trespasser_beam_glow_uv_1);
+extern char *trespasser_beam_glow_uv_2 SDATA(trespasser_beam_glow_uv_2);
+extern char *trespasser_beam_glow_uv_3 SDATA(trespasser_beam_glow_uv_3);
 extern s32 tresspasser_radial_strip_texture_index_gp SDATA(tresspasser_radial_strip_texture_index_gp);
 extern f32 FastSin(f32);
 extern f32 FastCos(f32);
@@ -1229,10 +1227,10 @@ void draw_tresspasser_puzzle_radial_strip(void *unused, f32 a, f32 b, f32 c, s32
     a4[2] = d;
     a4[1] = d;
     a4[0] = d;
-    p4[0] = (s32)((*(char **)&trespasser_beam_uv_0) + off);
-    p4[1] = (s32)((*(char **)&trespasser_beam_uv_1) + off);
-    p4[2] = (s32)((*(char **)&trespasser_beam_uv_2) + off);
-    p4[3] = (s32)((*(char **)&trespasser_beam_uv_3) + off);
+    p4[0] = (s32)((trespasser_beam_uv_0) + off);
+    p4[1] = (s32)((trespasser_beam_uv_1) + off);
+    p4[2] = (s32)((trespasser_beam_uv_2) + off);
+    p4[3] = (s32)((trespasser_beam_uv_3) + off);
 
     f25 = FastSin(a) * b;
     f24 = FastCos(a) * b;
@@ -1304,10 +1302,10 @@ void draw_tresspasser_puzzle_radial_strip(void *unused, f32 a, f32 b, f32 c, s32
     tex = GetEffectTex((tresspasser_radial_strip_texture_index_gp));
     draw_geometry_quad_5188(m, p4, a4, tex, 0);
 
-    p4[0] = (s32)(*(char **)&trespasser_beam_glow_uv_0);
-    p4[1] = (s32)(*(char **)&trespasser_beam_glow_uv_1);
-    p4[2] = (s32)(*(char **)&trespasser_beam_glow_uv_2);
-    p4[3] = (s32)(*(char **)&trespasser_beam_glow_uv_3);
+    p4[0] = (s32)(trespasser_beam_glow_uv_0);
+    p4[1] = (s32)(trespasser_beam_glow_uv_1);
+    p4[2] = (s32)(trespasser_beam_glow_uv_2);
+    p4[3] = (s32)(trespasser_beam_glow_uv_3);
 
     f25 = FastSin(a) * b;
     f24 = FastCos(a) * b;
@@ -1512,7 +1510,6 @@ move:
 }
 extern int D_L02_00160058 MACRO_ADDR;
 extern unsigned char D_0014171B[];
-extern float g_frame_time_sq MACRO_ADDR;
 extern float versatarget_sparkle_lifetime SDATA(versatarget_sparkle_lifetime);
 extern int versatarget_sparkle_color SDATA(versatarget_sparkle_color);
 extern float versatarget_sparkle_size SDATA(versatarget_sparkle_size);
@@ -1902,7 +1899,6 @@ void draw_background_ship_1_joint_billboards(char *self) {
         get_next_moby_in_group((int *)&cur, (int)cur, 0, 0);
     }
 }
-extern int frame_counter_ref MACRO_ADDR;
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void AddDrawCallback(void (*)(void), void *);
 
@@ -2111,7 +2107,6 @@ extern float random_float_between(float, float);
 extern int FastTweenColor(int, int, float);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
-extern float g_frame_time MACRO_ADDR;
 extern float background_ship_1_spark_start_vel_scale SDATA(background_ship_1_spark_start_vel_scale);
 extern float background_ship_1_spark_end_vel_scale SDATA(background_ship_1_spark_end_vel_scale);
 extern float background_ship_1_spark_jitter SDATA(background_ship_1_spark_jitter);
@@ -2494,7 +2489,6 @@ void white_flower_update(char *m) {
             break;
     }
 }
-extern char *aridia_camera_moby;
 
 /* Store the selected value only while this level object is inactive. */
 void set_follow_camera_control_word(int value) {
@@ -2640,7 +2634,6 @@ void try_select_camera_offset_effect_moby(char *m) {
 }
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 struct Moby;
-extern struct Hero g_hero;
 
 extern char *aridia_camera_descriptors MACRO_ADDR;
 extern char *aridia_camera_follow_override_moby;
@@ -2699,9 +2692,7 @@ int test_moby_camera_control_activation(char *moby) {
 rejected:
     return 0;
 }
-extern char *aridia_camera_descriptors MACRO_ADDR;
 extern char aridia_player_camera_follow[];
-extern char aridia_player_camera[];
 extern float FastDiffRots(float, float);
 
 /* Checks whether the target's direction is within a and b degrees of the reference axis. */

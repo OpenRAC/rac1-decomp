@@ -21,7 +21,6 @@
 extern Hero g_hero;
 extern unsigned char usage_stats[];
 extern u32 g_controller_state[];
-extern Hero g_hero;
 /* Saved fog settings, restored when the effect ends. */
 struct FogSaveVars {
     u8 pad_00[0x30];
@@ -788,7 +787,6 @@ typedef struct X {
     u8 p7C[0x44];
     V4 vC0;
 } X;
-extern Hero g_hero;
 extern short level_frame_counter;
 extern f32 g_frame_time MACRO_ADDR;
 extern f32 random_angle_radians(void);
@@ -1686,7 +1684,6 @@ extern int random_integer_below(int);
 extern int rand_range(int, int);
 extern void PartType11Spawn(void *, void *, int, int, int, int, int, int, float, float);
 extern void spawn_glow_particle(void *, void *, void *, int, int, int, int, int, float);
-extern char g_debug_camera[];
 extern float g_frame_time MACRO_ADDR;
 
 extern IntVec6 glow_burst_spark_colors_a;
@@ -2059,7 +2056,6 @@ extern int scale_ticks(int);
 
 extern char *active_mobies[];
 extern short thrown_mine_list[];
-extern int moby_array_start MACRO_ADDR;
 typedef struct {
     float x, y, z, w;
 } __attribute__((aligned(16))) Vx;
@@ -2174,7 +2170,6 @@ extern void apply_taunter_to_nearby_mobies(Moby *, f32);
 
 extern void update_taunter_effect_slots(Moby *);
 extern Hero g_hero_r4 __asm__("D_0013F450");
-extern u32 g_controller_state[];
 extern u32 pad_held[];
 extern u8 voice_pool[];
 extern Ring item_usage;
@@ -2711,7 +2706,6 @@ void pyrocitor_update(Moby *moby) {
 extern unsigned char voice_pool[];
 extern unsigned char g_hero_r5[] __asm__("D_0013F450");
 extern unsigned short pyrocitor_help_shown_count NOT_SDA;
-extern unsigned char usage_stats[];
 void func_0020D678_B9528(void *) __asm__("func_0020D678");
 void release_point_light_slot(int);
 void Sound_StopSlot(int);

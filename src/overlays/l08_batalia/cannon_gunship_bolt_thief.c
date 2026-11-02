@@ -12,7 +12,6 @@
 #include "structs/swarm.h"
 #include "enums/moby_class.h"
 extern Hero g_hero;
-extern Hero g_hero;
 
 /* Bolt thief: scans a fixed list of mobys for its targets. */
 struct BoltThiefVars {
@@ -1334,8 +1333,6 @@ extern s32 gunship_update_disabled SDATA(gunship_update_disabled);
 extern f32 gunship_fly_speed SDATA(gunship_fly_speed);
 extern f32 gunship_turn_accel SDATA(gunship_turn_accel);
 extern f32 gunship_max_turn_speed SDATA(gunship_max_turn_speed);
-extern float g_frame_time MACRO_ADDR;
-extern float g_frame_time_sq MACRO_ADDR;
 extern s32 g_current_level_index MACRO_ADDR;
 extern u8 saved_mission_state[];
 extern SwarmPath *batalia_path_table[];
@@ -2425,7 +2422,6 @@ void set_batalia_bolt_pickup_surface_rotation(char *a, float *v) {
 extern short batalia_bolt_tilt_deg, batalia_bolt5_tilt_deg, batalia_bolt10_tilt_deg;
 extern short batalia_bolt_lift, batalia_bolt5_lift, batalia_bolt10_lift;
 extern short batalia_bolt_forward_offset, batalia_bolt5_forward_offset, batalia_bolt10_forward_offset;
-extern short batalia_bolt_scale, batalia_bolt5_scale, batalia_bolt10_scale;
 extern float FastSin(float);
 extern void FastVecAdd(void *, void *, void *);
 
@@ -2619,7 +2615,6 @@ void spawn_shrub_parts(char *moby) {
 extern void SpawnExplosionFx(void *, void *, int, float, float);
 extern float random_float_between(float, float);
 extern void Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
-extern float g_frame_time MACRO_ADDR;
 
 /* Checks the 13 object slots at data + 0x60 (stride 16) with MobyGetHitMessage(slot, 0x10000, 0). Each hit adds to a
  * counter by slot index (1, 2, or 4 for slots 5 and up) and sets the slot's byte at +0xA4 to 0xFF. The counter is added
@@ -2702,7 +2697,6 @@ extern void FastVecSub(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern float FastAddRots(float, float);
 extern void moby_build_matrix(void *);
-extern float g_frame_time MACRO_ADDR;
 extern float shrub_part_spin_speed SDATA(shrub_part_spin_speed);
 
 /* Re-aims the twelve child mobys of a parent, adjusts the parent's spin, then runs the children's follow-up. */

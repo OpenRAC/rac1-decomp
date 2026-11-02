@@ -41,7 +41,7 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern float pokitaru_hero_fall_state_height MACRO_ADDR;
 extern int pokitaru_shown_help_message MACRO_ADDR;
 extern int pokitaru_hero_run_step1_start_frame MACRO_ADDR;
-extern short pokitaru_hero_double_tap_timer;
+extern int pokitaru_hero_double_tap_timer SDATA(pokitaru_hero_double_tap_timer);
 
 extern HeroBoneScalars pokitaru_hero_bones;
 extern HeroIdleFidget pokitaru_idle_fidgets[];
@@ -1274,15 +1274,15 @@ void HeroL11_UpdateStateTransitions(void) {
                         {
                             int both = 0;
 
-                            fast_dec_timer((int *)&pokitaru_hero_double_tap_timer);
-                            if (*(int *)&pokitaru_hero_double_tap_timer != 0) {
+                            fast_dec_timer(&pokitaru_hero_double_tap_timer);
+                            if (pokitaru_hero_double_tap_timer != 0) {
                                 both = 1;
                                 if (!((g_controller_state.held & PAD_R1) && (g_controller_state.pressed & PAD_R1))) {
                                     both = 0;
                                 }
                             }
                             if (g_controller_state.pressed & PAD_R1) {
-                                *(int *)&pokitaru_hero_double_tap_timer = scale_ticks(0x1E);
+                                pokitaru_hero_double_tap_timer = scale_ticks(0x1E);
                             }
                             if (!(g_hero.state_timer > scale_ticks(0x14))) {
                                 break;

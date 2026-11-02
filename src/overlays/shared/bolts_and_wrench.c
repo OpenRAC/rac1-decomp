@@ -22,7 +22,6 @@
 #include "enums/hero_state.h"
 extern char g_hero[];
 extern char gHeroPos[];
-extern char g_hero[];
 extern char pad0_pressed[];
 extern int pad_held;
 
@@ -413,8 +412,6 @@ typedef struct {
     float f1;
 } S;
 extern S player_camera;
-extern char g_hero[];
-extern float g_frame_time MACRO_ADDR;
 extern void FastVecSub(void *, void *, void *);
 extern float FastVecDot(void *, void *);
 extern void FastVecScale(void *, void *, float);
@@ -1206,7 +1203,7 @@ extern s32 g_current_level_index_r2 __asm__("D_0015EE84") MACRO_ADDR;
 extern BoltSourceStats bolt_source_stats[][64];
 
 extern s32 current_moby_mission_complete MACRO_ADDR;
-extern short level_mobys_end;
+extern void *level_mobys_end SDATA(level_mobys_end);
 
 extern void queue_animation_update(s32, s32, void *, void *, void *, void *, s32);
 extern void rand_vec(void *, f32, f32);
@@ -1248,7 +1245,7 @@ void collect_bolt(struct Moby *bolt) {
     if (src && !(src->id & 0x80))
         bolt_source_stats[g_current_level_index][src->id].bolts += value;
     gBolts += value;
-    if (bolt->pvars[0x40] || (current_moby_mission_complete && (void *)bolt < (*(void **)&level_mobys_end)))
+    if (bolt->pvars[0x40] || (current_moby_mission_complete && (void *)bolt < (level_mobys_end)))
         counted_bolts_total += value;
     level_bolts[g_current_level_index_r2] += value;
 
@@ -1696,7 +1693,6 @@ void draw_wrench_swing_effect(void *op) {
         FUN_001f7d30_2a7780(&v, r, 0);
     }
 }
-extern char hero_globals_base[];
 extern int scale_ticks(int);
 extern void func_0020D6D0(void *);
 
@@ -2738,7 +2734,6 @@ unsigned char *spawn_mine(int owner, q128_2a9ed0 *pos) {
 }
 extern int coll_line(void *, void *, int, int, int);
 
-extern float g_frame_time_sq MACRO_ADDR;
 
 typedef int ti_t __attribute__((mode(TI)));
 typedef struct {
@@ -2831,7 +2826,6 @@ void initialize_moby_motion_at_position(Vec4 *pos, N2 *self, void *arg) {
 }
 extern int fast_dec_timer(int *arg0);
 extern void draw_mine_predicted_impact_marker(void);
-extern int cinematic_mode MACRO_ADDR;
 extern float coll_hit_normal[];
 
 // Traces a projectile path from a0 step by step and resolves where it lands.

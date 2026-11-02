@@ -23,10 +23,10 @@
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
 #include "structs/voice.h"
+
 extern char gSkillPoints[];
 extern Hero g_hero;
 extern char pad0_pressed[];
-extern Hero g_hero;
 extern char gSpecialItems[];
 extern char help_records[];
 extern int pad_held;
@@ -260,7 +260,6 @@ void hangar_door_update(char *m) {
 extern void vec_scale_to_length(void *, void *, float);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void lerp_vector(void *, void *, void *, float);
-extern float g_frame_time MACRO_ADDR;
 
 // A bridge panel: when switched it slides 11 units along its own axis, easing in and out.
 void update_moby_position_interpolation(unsigned char *moby) {
@@ -320,8 +319,6 @@ void set_listed_class_16f_state_2_and_clear_data_28(int idx) {
 extern void clear_u64_value(void *);
 extern float random_angle_radians(void);
 extern void InitKnockback_r(void *, void *, int, int, int, float) __asm__("func_L00_0025D5B0");
-extern float g_frame_time_sq MACRO_ADDR;
-extern float g_frame_time MACRO_ADDR;
 
 /* starts a moby in state 0xF at pos: state 6, fresh random spin, motion setup; 0 if not in state 0xF */
 int activate_state_15_moby_at_position(void *m_, void *pos) {
@@ -569,7 +566,6 @@ extern float FastSin(float);
 extern float FastCos(float);
 extern float FastAddRots(float, float);
 extern int coll_line(void *, void *, int, void *, void *);
-extern float g_frame_time MACRO_ADDR;
 extern float toxic_gas_vent_reach SDATA(toxic_gas_vent_reach);
 
 typedef struct {
@@ -634,7 +630,6 @@ void check_oscillating_toxic_gas_vent_collisions(char *m) {
     }
 }
 
-extern float g_frame_time MACRO_ADDR;
 extern void vec_scale_to_length(void *, void *, float);
 extern float FastCos(float);
 extern float FastSin(float);
@@ -1420,11 +1415,6 @@ extern int beam_barrier_strand_color SDATA(beam_barrier_strand_color);
 extern int beam_barrier_strand_end_color SDATA(beam_barrier_strand_end_color);
 extern float beam_barrier_strand_u_step SDATA(beam_barrier_strand_u_step);
 extern float beam_barrier_uv_phase SDATA(beam_barrier_uv_phase);
-extern int beam_barrier_strand_life MACRO_ADDR;
-extern int beam_barrier_strand_fade_ticks MACRO_ADDR;
-extern int beam_barrier_strand_timers[] MACRO_ADDR;
-extern float beam_barrier_segment_offsets[];
-extern float beam_barrier_segment_rotations[];
 extern Vec4 beam_barrier_strand_points_r[4][30] __asm__("D_L06_001DB440");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l06/gameplay/entities/002b4770.c, FUN_L06_002f6dd0. */
@@ -1507,7 +1497,6 @@ extern f32 D_L06_00161EA4_F8430 SDATA(D_L06_00161EA4);
 extern f32 D_L06_00161E98_F8430 SDATA(D_L06_00161E98);
 extern f32 D_L06_00161E94_F8430 SDATA(D_L06_00161E94);
 extern int beam_barrier_strand_timers[4] MACRO_ADDR;
-extern int beam_barrier_strand_life MACRO_ADDR;
 extern Vec4 beam_barrier_strand_points[4][30];
 extern Vec4 beam_barrier_strand_drift[4][30];
 extern void set_vec_to_origin_point(void *);
@@ -2399,7 +2388,7 @@ extern char blarg_camera_slots[];
 extern int level_game_mode_q_q __asm__("D_L06_0015F6A8") MACRO_ADDR;
 extern int alien_queen_scale_manip_flag SDATA(alien_queen_scale_manip_flag);
 extern float alien_queen_walk_speed SDATA(alien_queen_walk_speed);
-extern short alien_queen_walk_accel;
+extern float alien_queen_walk_accel SDATA(alien_queen_walk_accel);
 extern float alien_queen_attack_range SDATA(alien_queen_attack_range);
 extern float alien_queen_back_off_range SDATA(alien_queen_back_off_range);
 extern float alien_queen_attack_arc SDATA(alien_queen_attack_arc);
@@ -2573,10 +2562,10 @@ void alien_queen_update(unsigned char *moby) {
                 g_frame_time_q * 3.1415927f);
             if (turn < 0.7853982f && alien_queen_attack_range < dist) {
                 ApproachValue_q(&data->unk_E8, alien_queen_walk_speed * g_frame_time_q,
-                                *(float *)&alien_queen_walk_accel * g_frame_time_sq_q);
+                                alien_queen_walk_accel * g_frame_time_sq_q);
             } else if (dist < alien_queen_back_off_range) {
                 ApproachValue_q(&data->unk_E8, -(alien_queen_walk_speed * g_frame_time_q),
-                                *(float *)&alien_queen_walk_accel * g_frame_time_sq_q);
+                                alien_queen_walk_accel * g_frame_time_sq_q);
             } else {
                 ApproachValue_q(&data->unk_E8, 0.0f, g_frame_time_sq_q * 8.0f);
             }
@@ -2769,7 +2758,6 @@ void alien_queen_update(unsigned char *moby) {
         }
     }
 }
-extern Hero g_hero;
 
 extern short active_marker_id NOT_SDA;
 extern int *blarg_paths[];
@@ -2970,8 +2958,6 @@ extern float vec_distance_xy(void *, void *);
 
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
-extern char *blarg_scene_points MACRO_ADDR;
-extern int *blarg_paths[];
 
 // sets up a camera-like aim from a moby toward its orbit point and releases the slot
 void start_alien_queen_intro(char *moby) {
@@ -2999,9 +2985,7 @@ extern void lerp_vector(void *, void *, void *, float);
 extern float vec_distance_xy(void *, void *);
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
-extern char blarg_camera_pos[];
 
-extern float g_frame_time MACRO_ADDR;
 extern short g_frame_time_sq_s __asm__("D_0015EE70");
 /* Aims the camera at a moby, blending toward its orbit; returns nonzero when finished. */
 int update_alien_queen_intro_camera(char *moby) {
@@ -3039,7 +3023,6 @@ int update_alien_queen_intro_camera(char *moby) {
 }
 extern void HeroL06_TrySetMoveState(int, int);
 
-extern int *blarg_paths[];
 
 /* Ends the moby's script. */
 void finish_alien_queen_intro(char *arg) {
@@ -3096,7 +3079,7 @@ typedef struct {
     s32 ground; /* 0xEC */
 } CirclerVars;
 extern f32 circler_max_speed SDATA(circler_max_speed);
-extern short alien_queen_walk_accel;
+extern float alien_queen_walk_accel SDATA(alien_queen_walk_accel);
 
 extern f32 FastAddRots(f32, f32);
 extern f32 FastSubRots(f32, f32);
@@ -3138,9 +3121,9 @@ void update_alien_queen_orbit_movement(struct Moby *m) {
     SteerAngleWithVelocity_r2(&m->rot.z, fast_atan2(focus->pos.x - m->pos.x, focus->pos.y - m->pos.y), &v->yaw_vel,
                               g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f, g_frame_time * 3.1415927f);
     if (FastVecDist(&m->pos, &goal) > 1.0f && vec_distance_xy(&m->pos, &g_hero.motion.pos) < 16.0f)
-        ApproachValue(&v->speed, (circler_max_speed)*g_frame_time, (*(f32 *)&alien_queen_walk_accel) * g_frame_time_sq);
+        ApproachValue(&v->speed, (circler_max_speed)*g_frame_time, (alien_queen_walk_accel)*g_frame_time_sq);
     else
-        ApproachValue(&v->speed, 0.0f, (*(f32 *)&alien_queen_walk_accel) * g_frame_time_sq);
+        ApproachValue(&v->speed, 0.0f, (alien_queen_walk_accel)*g_frame_time_sq);
     if (v->speed == 0.0f) {
         if (m->prev_seq != 1)
             MobyBlendAnimation(m, 1, 0, scale_ticks(20));

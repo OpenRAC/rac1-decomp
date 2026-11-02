@@ -52,6 +52,27 @@ class GpScalarTest(unittest.TestCase):
         text = "extern short x;\nvoid f(void) { (*(int *)&x)++; }\n"
         self.assertIn("{ x++; }", gp.apply(text, {"x": "int"}, {"x": {"D_00161CA0"}}))
 
+    def test_two_spellings_of_one_type_count(self):
+        text = "extern short x;\nint f(void) { return *(int *)&x + *(s32 *)&x; }\n"
+        self.assertEqual(gp.candidates(text), {"x": "int"})
+        self.assertIn("return x + x;", gp.apply(text, {"x": "int"}, {"x": {"D_00161CA0"}}))
+
+    def test_an_address_counts(self):
+        text = "extern short x;\nvoid f(void) { g((int *)&x); h(*(int *)&x); }\n"
+        self.assertEqual(gp.candidates(text), {"x": "int"})
+        self.assertIn("g(&x); h(x);", gp.apply(text, {"x": "int"}, {"x": {"D_00161CA0"}}))
+
+    def test_an_indexed_address_stays(self):
+        self.assertEqual(gp.candidates("extern short x;\nint f(void) { return ((int *)&x)[1]; }\n"), {})
+
+    def test_a_byte_address_alone_stays(self):
+        self.assertEqual(gp.candidates("extern short x;\nvoid f(void) { g((char *)&x); }\n"), {})
+
+    def test_a_pointer_global(self):
+        text = "extern short x;\nchar *f(void) { return *(char **)&x; }\n"
+        self.assertEqual(gp.candidates(text), {"x": "char *"})
+        self.assertIn("extern char *x SDATA(D_00161CA0);", gp.apply(text, {"x": "char *"}, {"x": {"D_00161CA0"}}))
+
     def test_no_address_name_means_no_change(self):
         text = "extern short speed;\nfloat f(void) { return *(float *)&speed; }\n"
         self.assertEqual(gp.apply(text, {"speed": "float"}, {}), text)

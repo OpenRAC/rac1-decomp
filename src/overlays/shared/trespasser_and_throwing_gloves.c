@@ -17,7 +17,6 @@
 #include "enums/hero_state.h"
 extern PadState g_controller_state;
 extern char g_hero[];
-extern char g_hero[];
 extern int pad_held;
 extern char weapon_ammo_counts[];
 /* Trespasser: set once the pickup was collected. */
@@ -643,7 +642,6 @@ void doom_bot_update(M44 *moby) {
     return;
 }
 
-extern unsigned char hero_globals_base[] NOT_SDA;
 extern void update_trespasser_pickup(void *);
 /* Moby update that runs update_trespasser_pickup or sets byte +0xBC from the pad input mask. */
 void trespasser_update(Moby *m) {
@@ -978,7 +976,6 @@ void mine_glove_update(struct Moby *moby) {
         vars->held = spawn_mine(moby, &vars->grip, &launch);
     }
 }
-extern float g_frame_time MACRO_ADDR;
 extern float FastDiffRots(float, float);
 extern float jump_speed_4318(float *a, float *b, float speed, float g, float *out);
 extern float IntToFloat(int);
@@ -1068,9 +1065,7 @@ extern u8 *GetFlaggedPvarWord_r(struct Moby *) __asm__("func_L00_0025D390");
 extern struct PadState g_controller_state;
 extern struct Moby *spawn_bomb(struct Moby *, void *);
 extern void launch_bomb(void *, struct Moby *, void *);
-extern f32 g_frame_time_sq MACRO_ADDR;
 extern s32 gameplay_event_frame_count MACRO_ADDR;
-extern u32 pad0_pressed;
 extern CollisionHit_C39D0 coll_hit_result_r2 __asm__("D_L00_00173F40");
 extern Vec4 g_debug_camera_r2 __asm__("D_L00_00166EC0");
 extern Vec4 player_camera[3];
@@ -1422,10 +1417,8 @@ void destroy_decoy_with_particles(unsigned char *m) {
     moby_index_list_remove(m, decoy_list);
     DeleteMoby(m);
 }
-extern u8 gold_weapon_purchased[40];
 typedef u32 u128_C48C8 __attribute__((mode(TI), aligned(16)));
 extern struct Hero g_hero_r4 __asm__("D_0013F450");
-extern float frame_scale MACRO_ADDR;
 unsigned char *func_0020D348_C48C8(int) __asm__("func_0020D348");
 int scale_ticks(int);
 void func_00213DE0_C48C8(unsigned char *, int, int, int) __asm__("func_00213DE0");
@@ -1517,15 +1510,12 @@ extern float FastCos(float), FastSin(float), vec_length(float);
 extern float fast_atan2(float, float);
 extern float FastSubRots(float, float), FastAddRots(float, float);
 extern char D_00173F60_alias[] __asm__("D_L00_00173F60");
-extern int coll_hit_result[];
 extern struct {
     float pad[10];
     float height;
     float gap[5];
     float vector[4];
 } D_L00_00173F40_v __asm__("D_L00_00173F40");
-extern float frame_scale MACRO_ADDR;
-extern char g_hero[];
 typedef struct {
     u8 pad_00[0x10];
     Vec4 vel; /* 0x10: velocity the moby is released with */
@@ -1605,7 +1595,6 @@ typedef struct {
     s16 unk46;
 } ThrowVars;
 extern s32 cinematic_mode MACRO_ADDR;
-extern f32 g_frame_time_sq MACRO_ADDR;
 extern CollisionHit coll_hit_result_r3 __asm__("D_L00_00173F40");
 extern Vec4 coll_hit_normal;
 extern Vec4 g_debug_camera_r3 __asm__("D_L00_00166EC0");
@@ -2447,8 +2436,6 @@ typedef struct {
 } Rec_2C6F48;
 
 extern Rec_2C6F48 item_defs_r2[] __asm__("D_L00_00179BC0");
-extern float frame_scale MACRO_ADDR;
-extern int ammo_pickup_sound_frame MACRO_ADDR;
 
 /* per-frame step of a counter moby: advances, plays sound and finishes */
 /* Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002bffa8.c, FUN_L00_002c5be8. */

@@ -16,10 +16,10 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "structs/voice.h"
+
 extern char g_hero[];
 extern char item_usage[];
 extern char pad_held[];
-extern char g_hero[];
 
 /* Tesla beam: draw state read by the beam and arc effects. */
 struct BeamArcVars {
@@ -617,7 +617,6 @@ void build_beam_and_arc_points(u8 *o) {
     PartType53Spawn(&v->tip, scale_ticks(12), amplitude * 0.1f, amplitude, (beam_arc_outer_color) | 0x7f000000, 0, spin,
                     (float *)veldin1_zero_vec, 0.0f);
 }
-extern float frame_scale MACRO_ADDR;
 extern float beam_arc_tex_scroll SDATA(beam_arc_tex_scroll);
 extern float beam_arc_tex_scroll_speed SDATA(beam_arc_tex_scroll_speed);
 extern int beam_arc_main_inner_alpha SDATA(beam_arc_main_inner_alpha);
@@ -630,12 +629,9 @@ extern int beam_arc_second_outer_alpha SDATA(beam_arc_second_outer_alpha);
 extern float beam_arc_bolt_half_width SDATA(beam_arc_bolt_half_width);
 extern float beam_arc_bolt_outer_half_width SDATA(beam_arc_bolt_outer_half_width);
 extern float beam_arc_second_end_extension SDATA(beam_arc_second_end_extension);
-extern int beam_arc_bolt0_alpha MACRO_ADDR;
 extern int beam_arc_second_row_alpha MACRO_ADDR;
 extern int beam_arc_third_row_alpha MACRO_ADDR;
 extern int beam_arc_fourth_row_alpha MACRO_ADDR;
-extern char tesla_beam_points[];
-extern char arc_points[];
 extern void draw_beam_and_arc_two_pass_quads(void *, int, int, int, float, float, float);
 extern void draw_beam_anchor_camera_facing_quads(void *);
 
@@ -674,7 +670,6 @@ extern void FastVecScale(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern void draw_world_quad(void *, void *, int);
 extern void VU1_addGSregister(int, long);
-extern float g_debug_camera[];
 extern int beam_and_arc_first_pass_texture_index_gp SDATA(beam_and_arc_first_pass_texture_index_gp);
 extern int beam_and_arc_first_pass_base_vertex_color_gp SDATA(beam_and_arc_first_pass_base_vertex_color_gp);
 extern int beam_and_arc_second_pass_texture_index_gp SDATA(beam_and_arc_second_pass_texture_index_gp);
@@ -829,13 +824,11 @@ extern void FastVecCross(void *, void *, void *);
 extern float randf_sym(float lo, float hi);
 extern void FastVecScale(void *, void *, float);
 extern void transform_vector(void *, void *, void *);
-extern float g_debug_camera[];
 extern V_2bb0b0 beam_anchor_quad_corners[];
 extern QuadUv beam_anchor_quad_uvs[];
 extern int beam_anchor_quad_color SDATA(beam_anchor_quad_color);
 extern float beam_anchor_quad_size SDATA(beam_anchor_quad_size);
 extern float beam_anchor_outer_quad_size SDATA(beam_anchor_outer_quad_size);
-extern char hero_globals_base[];
 
 // Builds and draws two layered glow quads around a moby. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002b94d0.c, FUN_L00_002bb0b0.
 void draw_beam_anchor_camera_facing_quads(void *mv) {
@@ -913,7 +906,6 @@ char *spawn_linked_moby_from_basis(char *src) {
     }
     return (char *)m;
 }
-extern char hero_globals_base[];
 extern void DeleteMoby(void *);
 extern int scale_ticks(int);
 
@@ -1124,7 +1116,6 @@ extern void FastVecCross(void *, void *, void *);
 extern float FastVecLength(void *);
 extern void FastVecScale(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
-extern float g_debug_camera[];
 extern int walloper_arc_inner_tex SDATA(walloper_arc_inner_tex);
 extern int walloper_arc_inner_color SDATA(walloper_arc_inner_color);
 extern int walloper_arc_outer_tex SDATA(walloper_arc_outer_tex);
@@ -1270,7 +1261,6 @@ extern float walloper_glow_forward_offset SDATA(walloper_glow_forward_offset);
 extern int walloper_glow_color SDATA(walloper_glow_color);
 extern int walloper_glow_flicker_color SDATA(walloper_glow_flicker_color);
 extern int walloper_glow_tex SDATA(walloper_glow_tex);
-extern float g_debug_camera[];
 extern float walloper_glow_quad_corners[][4];
 typedef float W[4] __attribute__((aligned(16)));
 typedef struct {
@@ -1335,10 +1325,8 @@ void draw_walloper_camera_facing_quad(int arg) {
     }
     draw_world_quad(q, 0, 0);
 }
-extern char *active_mobies[];
 extern float tesla_arc_range SDATA(tesla_arc_range);
 extern float morphoray_target_angle_threshold_degrees_gp SDATA(morphoray_target_angle_threshold_degrees_gp);
-extern Vec4 collision_hit_point;
 extern int coll_hit_result[];
 
 extern float vec_distance_xy(void *, void *);
@@ -2073,10 +2061,7 @@ typedef struct {
 extern u8 gGoldMorphORay NOT_SDA;
 extern float beam_ring_band_texture_u_step_gp SDATA(beam_ring_band_texture_u_step_gp);
 extern float beam_ring_face_texture_v_step_gp SDATA(beam_ring_face_texture_v_step_gp);
-extern short tesla_ring_tex_v_scroll;
 extern float beam_ring_texture_u_scroll_speed_gp SDATA(beam_ring_texture_u_scroll_speed_gp);
-extern short tesla_ring_tex_u_scroll_a;
-extern short tesla_ring_tex_u_scroll_b;
 extern float beam_ring_texture_v_scroll_speed_gp SDATA(beam_ring_texture_v_scroll_speed_gp);
 extern int beam_rail_first_pass_alpha_gp SDATA(beam_rail_first_pass_alpha_gp);
 extern int beam_rail_second_pass_alpha_gp SDATA(beam_rail_second_pass_alpha_gp);
@@ -2333,7 +2318,6 @@ extern int tesla_pulse_active[3] MACRO_ADDR;
 extern float tesla_pulse_alpha[3] MACRO_ADDR;
 extern float tesla_pulse_size[3] MACRO_ADDR;
 extern Vec4A tesla_pulse_pos[];
-extern Vec4A tesla_pulse_dir[];
 extern int tesla_pulse_alt_color SDATA(tesla_pulse_alt_color);
 extern int tesla_pulse_color SDATA(tesla_pulse_color);
 
@@ -2452,7 +2436,6 @@ typedef struct {
 } Vx __attribute__((aligned(16)));
 extern char hero_globals_base[] NOT_SDA;
 extern int coll_sphere(float, void *, int, void *);
-extern int coll_hit_result[];
 
 /* Nudge a position and ask the level helper about it, lowering a global on success. */
 int probe_moby_raised_sphere_collision(Moby *a, int b, Vx *c) {
@@ -2475,7 +2458,6 @@ int probe_moby_raised_sphere_collision(Moby *a, int b, Vx *c) {
     }
     return r;
 }
-extern char g_hero[];
 /* Copy five state fields from a into their hero slots. */
 void save_state_fields_to_hero(char *a) {
     Hero *g = (Hero *)g_hero;
@@ -2557,7 +2539,6 @@ float probe_moby_landing_height(Vx *a, void *b) {
     }
     return 0.0f;
 }
-extern char *active_mobies[];
 extern char gHeroPos[];
 extern float FastVecDist(void *, void *);
 extern float vec_distance_xy(void *, void *);
@@ -2648,7 +2629,6 @@ typedef struct {
 } Mob;
 extern Hit *g_coll_hit_moby_r __asm__("D_L00_00173F58");
 extern CollisionHit coll_hit_result_r __asm__("D_L00_00173F40");
-extern Vec4 collision_hit_point;
 extern s32 truncate_float_to_s32(f32);
 
 extern f32 FastAddRots(f32, f32);

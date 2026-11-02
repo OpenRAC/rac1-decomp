@@ -757,7 +757,6 @@ extern void FastVecAdd(void *, void *, void *);
 extern int scale_ticks(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern void create_particle_with_velocity_and_lifetime(float, void *, void *, int, int, int);
-extern float g_frame_time MACRO_ADDR;
 extern float drain_cover_spray_spacing SDATA(drain_cover_spray_spacing);
 extern float drain_cover_spray_size_min SDATA(drain_cover_spray_size_min);
 extern float drain_cover_spray_size_max SDATA(drain_cover_spray_size_max);
@@ -798,7 +797,6 @@ void emit_drain_cover_particles(char *obj, float a, float b) {
 extern float FastVecDot(void *a, void *b);
 extern float FastAddRots(float, float);
 extern float SteerAngleWithVelocity_r(float *, float, float *, float, float, float) __asm__("func_L00_0025CE58");
-extern float g_frame_time_sq MACRO_ADDR;
 extern float drain_cover_wobble_amount SDATA(drain_cover_wobble_amount);
 extern float drain_cover_tilt_accel SDATA(drain_cover_tilt_accel);
 extern float drain_cover_tilt_decel SDATA(drain_cover_tilt_decel);
@@ -1166,7 +1164,6 @@ void update_triggered_particle_spray_emitter(struct Moby *m) {
     }
 }
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
-extern struct Hero g_hero;
 extern int Moby_PlaySound();
 extern s32 scale_ticks(s32);
 extern s32 truncate_float_to_s32(f32);
@@ -1450,9 +1447,7 @@ void draw_ocean_grid_outside_clip_volumes(char *moby) {
 }
 extern void prepare_scaled_table_with_byte_128(void *, float);
 extern void draw_ocean_grid_outside_clip_volumes_r(void) __asm__("func_L05_00317538");
-extern char hero_globals_base[];
 extern float rilgar_ocean_grid_r[] __asm__("D_L05_00211E60");
-extern int rilgar_frame_count MACRO_ADDR;
 
 /* updates the pulsing marker: spawns it, then each frame animates its scale and queues the draw */
 void ocean_rilgar_update(char *moby) {
@@ -1653,7 +1648,6 @@ typedef struct {
     char pad1[0x132];
     char *m[1];
 } G;
-extern int rilgar_cinematic_mode MACRO_ADDR;
 extern unsigned char gCheats[] MACRO_ADDR;
 extern G rilgar_cutscene_state;
 
@@ -2035,7 +2029,6 @@ extern float FastSubRots(float, float);
 extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern char qwarks_bouncer_dialogue_name[];
-extern float g_frame_scale_sq MACRO_ADDR;
 extern unsigned char level_available_base[];
 
 enum QwarksBouncerState { QWARKS_BOUNCER_INITIALIZE = 0, QWARKS_BOUNCER_UPDATE_DIALOGUE = 1 };
@@ -2197,7 +2190,6 @@ extern float ProbeGroundHeight(void *, int, float);
 extern float FastVecLength(void *);
 extern float FastSubRots(float, float);
 extern char shady_salesman_dialogue_name[];
-extern unsigned char race_gates_base[];
 
 typedef struct ShadySalesmanNpc {
     u8 pad_00[0x4];
@@ -2376,7 +2368,6 @@ void update_hero_clip_volume_outputs(char *m) {
 }
 extern float random_angle_radians(void);
 extern int rilgar_cinematic_mode;
-extern float g_frame_time MACRO_ADDR;
 extern float television_scale SDATA(television_scale);
 
 // Per-frame update: spin a value in the data block and bob the moby's Y with it.
@@ -2431,7 +2422,6 @@ typedef struct {
     float direction[4];
 } L05PickupPose;
 extern L05PickupPose *rilgar_level_cuboids MACRO_ADDR;
-extern float g_frame_time_sq MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 
 extern char help_stats_base[];
@@ -2584,7 +2574,6 @@ void PickupL05_Update(char *moby) {
     FastVecSub(position_delta, &((struct Moby *)moby)->pos, old_position);
     update_entity_matrix(taxi_data->entity_matrix, position_delta, old_rotation, &((struct Moby *)moby)->rot);
 }
-extern unsigned char saved_mission_state[][16];
 
 /* picks the nearest target slot and sets the moby's state */
 void PickNearestTargetSlot(char *moby) {
@@ -2636,7 +2625,6 @@ void PickNearestTargetSlot(char *moby) {
     qcopy(&data->blend_rot, (void *)(idx + (int)g + 0x70));
 }
 
-extern unsigned char saved_mission_state[][16];
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l05/unclassified_0030d6a0.c, FUN_L05_003193a8. */
 void select_taxi_route(char *moby) {
