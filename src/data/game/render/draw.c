@@ -24,7 +24,15 @@ u32 view_context_field_c0[48] DATA_SECTION(D_0018CEC0) = {0};
 
 float screen_projection_focal[4] DATA_SECTION(D_0018D010) = {0};
 
-u32 sky_view_mtx[16] DATA_SECTION(D_0018D080) = {0};
+u32 sky_view_mtx[4] DATA_SECTION(D_0018D080) = {0};
+
+u32 D_0018D090[4] DATA_SECTION(D_0018D090) = {0};
+
+u32 D_0018D0A0[4] DATA_SECTION(D_0018D0A0) = {0};
+
+u32 D_0018D0B0[3] DATA_SECTION(D_0018D0B0) = {0};
+
+u32 D_0018D0BC DATA_SECTION(D_0018D0BC) = 0;
 
 Vec4f view_clip_constants[8] DATA_SECTION(D_0018D0C0) = {0};
 
@@ -44,13 +52,17 @@ u32 draw_callback3_args[64] DATA_SECTION(D_0018E140) = {0};
 
 u32 draw_callback4_funcs[64] DATA_SECTION(D_0018E240) = {0};
 
-u32 draw_callback4_args[68] DATA_SECTION(D_0018E340) = {0};
+u32 draw_callback4_args[64] DATA_SECTION(D_0018E340) = {0};
+
+u32 effect_quad_entries[4] DATA_SECTION(D_0018E440) = {0};
 
 int bit_swap_lut[] DATA_SECTION(D_0018E840) = {
 #include "data_inc/D_0018E840.inc"
 };
 
-u32 occl_visibility_merged[32] DATA_SECTION(D_00194140) = {0};
+u32 occl_visibility_merged[16] DATA_SECTION(D_00194140) = {0};
+
+u32 D_00194180[16] DATA_SECTION(D_00194180) = {0};
 
 u32 camera_sample_points[8] DATA_SECTION(D_001941E0) = {0};
 

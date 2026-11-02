@@ -97,9 +97,12 @@ def raw_blocks():
     one from its address. Each line keeps its place with a marker: the .align lines between them are gone.
     """
     out = []
+    heads = {row[0] for row in rows()}
     for path in BLOBS.values():
-        for label, body in BLOCK.findall(path.read_text()):
-            out.append((label, body))
+        for label, whole in BLOCK.findall(path.read_text()):
+            pieces = split_at_heads(label, whole, heads)
+            out.extend(pieces)
+            body = pieces[-1][1] if len(pieces) == 1 else whole
             if label.startswith("jtbl_"):
                 rest = split_data_s.table_rest(body.splitlines(keepends=True))
                 if rest:
@@ -110,6 +113,24 @@ def raw_blocks():
 
 def address(label):
     return int(label.rsplit("_", 1)[1], 16)
+
+
+def split_at_heads(label, body, heads):
+    """[(label, body)]: a block of the disassembly, cut where a row of the table starts inside it.
+
+    The disassembly only has a label where it saw a reference, and level code reaches into this data through fake bases. So
+    a variable can have no label of its own.
+    """
+    pieces, current, name = [], [], label
+    for line in body.splitlines(keepends=True):
+        at = split_data_s.first_address([line])
+        here = f"D_{at:08X}" if at is not None else None
+        if here and here != name and here in heads and current:
+            pieces.append((name, "".join(current)))
+            current, name = [], here
+        current.append(line)
+    pieces.append((name, "".join(current)))
+    return pieces
 
 
 def group_labels(labels, heads, owned=frozenset()):
@@ -213,6 +234,8 @@ def parse_mixed(body):
             data += decoded + (b"\0" if kind == ".asciz" else b"")
         else:
             return None
+    if len(data) % 4 and not symbols and data:
+        return "u8", [f"0x{byte:02X}" for byte in data]     # padding it to a word could run into the next label
     data += bytes(-len(data) % 4)
     if any(at % 4 for at in symbols):
         return None
@@ -440,6 +463,8 @@ def complete():
             continue
         if element in ("u32", "u16", "u8", "char") and parsed[0] != element:
             element = parsed[0]
+        if parsed[0] != "u32" and element not in ("u32", "u16", "u8", "char"):
+            element = parsed[0]                     # a real type is written from words: this block is not words
         if element == "table" and not is_table(parsed[1]):
             element = parsed[0]
         if element == "float" and not all(float_literal(word) for word in parsed[1]):
@@ -638,7 +663,7 @@ def write_source(source, entries, names, blocks=None):
             parts.append(f'#include "data_inc/{label}.refs"\n')
         if element == "char":
             parts.append(f"char {name}[] DATA_SECTION({label}) =\n{include};\n\n")
-        elif count == 1:
+        elif count == 1 and not typed:
             parts.append(f"{element} {name} DATA_SECTION({label}) =\n{include};\n\n")
         else:
             parts.append(f"{element} {name}[] DATA_SECTION({label}) = {{\n{include}}};\n\n")

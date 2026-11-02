@@ -36,7 +36,7 @@ bash rac1.ld.sh >/dev/null
 # (tools/list_undefined.py), then equate. Not from the linker's
 # complaints: this ld can crash on a long run of undefined references
 # ("Unhandled illegal instruction"), sometimes before printing any.
-# The list only ever grows. Returns nonzero when nothing new was found.
+# Returns nonzero when nothing new was found.
 update_bss_equs() {
   touch build-sn/undefined_syms.txt
   local new
@@ -48,7 +48,9 @@ update_bss_equs() {
   sn "$TC/ee-as.exe" -o build-sn/bss_equs.o build-sn/bss_equs.s
 }
 
-[ -f build-sn/bss_equs.o ] || update_bss_equs || true
+# Start the list again: data moved into C defines symbols that used to have no definition.
+rm -f build-sn/undefined_syms.txt build-sn/bss_equs.o
+update_bss_equs || true
 
 # The equates are cached, so C that newly references a bss symbol fails to
 # link. Add the missing symbols and retry, a few passes at most, rather than

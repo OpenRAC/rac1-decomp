@@ -11,7 +11,9 @@ int moby_render_slots[16] DATA_SECTION(D_001B2F40) = {0};
 
 u32 moby_backup_buffer[224] DATA_SECTION(D_001B3200) = {0};
 
-u16 moby_gs_loc_stash[512] DATA_SECTION(D_001B6100) = {0};
+u16 moby_gs_loc_stash[64] DATA_SECTION(D_001B6100) = {0};
+
+u16 D_001B6180[448] DATA_SECTION(D_001B6180) = {0};
 
 int moby_class_rectify[224] DATA_SECTION(D_001B6880) = {0};
 
