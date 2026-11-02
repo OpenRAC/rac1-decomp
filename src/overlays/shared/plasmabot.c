@@ -1163,7 +1163,7 @@ INCLUDE_ASM("asm/overlays", func_L14_002B4B84);
 /* Returns 0 if the group holds a Plasmabot moby in state 2, else 1. */
 int check_listed_plasmabots_not_starting_path_traversal(unsigned char *m) {
     unsigned short *p;
-    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
+    /* FAKEMATCH: volatile: this byte loads before the table address (15/128 bytes differ without it). */
     if (*(volatile unsigned char *)&((Moby *)m)->group == 0xFF ||
         (p = (unsigned short *)oltanis_moby_groups[((Moby *)m)->group]) == 0)
         return 1;

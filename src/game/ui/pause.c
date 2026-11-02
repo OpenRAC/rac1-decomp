@@ -3533,7 +3533,7 @@ void update_item_preview_transform(struct Moby *moby) {
     struct CameraSystem *camera;
 
     moby->rot.z = preview->rotation_angle;
-    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
+    /* FAKEMATCH: volatile: this store keeps its place (one function differs without it). */
     (*(volatile f32 *)&moby->pos.x) = gCamera_r4.pos.f[0] + ((flags & 1) ? preview_placements[item_index].alternate_x
                                                                          : preview_placements[item_index].normal_x);
     camera = &gCamera_r4;
@@ -3881,7 +3881,7 @@ int DrawGBsShipMenu__maybe(char *arg0) {
     font_print_right_c(screen->width - 0x10, (g_screen_extent[1] >> 1) - 8, 0x80000000L, buf, -1);
     font_print_right_c(screen->width - 0x11, (g_screen_extent[1] >> 1) - 9, 0x80FFA888L, buf, -1);
     DoGifPaging();
-    /* FAKEMATCH: a dead if (0) block changes the code around it. */
+    /* FAKEMATCH: if (0): the 2-byte view is the last use, so $gp reaches it (one function differs without it). */
     if (0) {
         /* no code: registers the 2-byte view last (see above) */
         (void)gold_bolt_marker_y_offset_s;
@@ -5510,7 +5510,7 @@ int BuildGalaxyMenu(MenuObj40 *arg0) {
             break;
         }
     }
-    /* FAKEMATCH: a dead if (0) block changes the code around it. */
+    /* FAKEMATCH: if (0): the 2-byte view is the last use, so $gp reaches it (89 functions differ without it). */
     if (0) {
         /* no code: registers the 2-byte view last, so the file ends with
            `.extern menu_level_indices, 2` and the assembler uses $gp */

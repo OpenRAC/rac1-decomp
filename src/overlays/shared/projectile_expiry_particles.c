@@ -58,13 +58,13 @@ unsigned char *spawn_moby_point_offset_particle(void *m, short index, float amou
         }
         ((struct PartBase *)p)->spin = func_001160D8();
         ((struct PartBase *)p)->color = 0x7f7f7f;
-        /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
+        /* FAKEMATCH: volatile: store order unk_09, blend, unk_01, size (10/376 bytes differ without it). */
         *(volatile unsigned char *)&((struct PartBase *)p)->unk_09 = truncate_float_to_s32(4.0f) + 0x40;
-        /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
+        /* FAKEMATCH: volatile: store order unk_09, blend, unk_01, size (4/376 bytes differ without it). */
         *(volatile unsigned char *)&((struct PartBase *)p)->blend = 0x48;
-        /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
+        /* FAKEMATCH: volatile: store order unk_09, blend, unk_01, size (6/376 bytes differ without it). */
         *(volatile unsigned char *)&((struct PartBase *)p)->unk_01 = 0;
-        /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
+        /* FAKEMATCH: volatile: store order unk_09, blend, unk_01, size (6/376 bytes differ without it). */
         *(volatile float *)&((struct PartBase *)p)->size = amount;
         ((struct PartBase *)p)->texture = umbris_part_type61_textures[*(short *)(q + 0xc)];
         *(float *)(q + 0x10) = frame_scale * 0.015f;

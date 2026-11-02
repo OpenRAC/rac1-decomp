@@ -2763,9 +2763,9 @@ none:
         if (other->state != 12 || other->oclass != type)
             goto advance;
         {
-            /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
+            /* FAKEMATCH: volatile: nops stay in the delay slots (28/296 bytes differ without it). */
             u8 *other_data = *(u8 *volatile *)&other->pvars;
-            /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
+            /* FAKEMATCH: volatile: nops stay in the delay slots (28/296 bytes differ without it). */
             u8 unk30 = ((volatile Moby *)self)->update_dist;
             struct AmoeboidVars *self_data = (struct AmoeboidVars *)self->pvars;
             other->update_dist = unk30;

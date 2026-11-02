@@ -1170,12 +1170,12 @@ void steer_helicopter(struct Moby *moby, Vec4 *goal, Vec4 *look) {
     move_moby_with_sphere_collision(1.0f, 2.0f, moby, &vars->delta, 0);
     height = *(float *)&vars->height;
     pos_x = *(float *)&moby->pos.x;
-    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
+    /* FAKEMATCH: volatile: this store stays before the next load (22/816 bytes differ without it). */
     *(volatile float *)&moby->pos.z = height;
     pos_y = *(float *)&moby->pos.y;
-    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
+    /* FAKEMATCH: volatile: a nop stays, and so does the size (10/816 bytes differ without it). */
     dy = *(volatile float *)&look_at->f[1];
-    /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
+    /* FAKEMATCH: volatile: a nop stays, and so does the size (14/816 bytes differ without it). */
     dx = *(volatile float *)&look_at->f[0];
     dy = dy - pos_y;
     dx = dx - pos_x;

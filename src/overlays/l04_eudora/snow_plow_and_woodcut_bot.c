@@ -1638,9 +1638,9 @@ void leaf_update(struct MobyP *moby) {
             qcopy(&moby->pos, &data->home_pos);
             timer = random_int_between(120, 2400);
             /* Preserve the retail ordering of the timer reload stores. */
-            /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
+            /* FAKEMATCH: volatile: a nop stays in this delay slot (7/1572 bytes differ without it). */
             *(volatile int *)&data->life = timer;
-            /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
+            /* FAKEMATCH: volatile: a nop stays in this delay slot (7/1572 bytes differ without it). */
             *(volatile int *)&data->timer = timer;
             moby->state = 1;
             break;
