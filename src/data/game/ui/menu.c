@@ -9,33 +9,19 @@ u32 level_map_transforms[] DATA_SECTION(D_0019EA70) = {
 #include "data_inc/D_0019EA70.inc"
 };
 
-u32 map_coverage_active[] DATA_SECTION(D_001A0218) = {
-#include "data_inc/D_001A0218.inc"
-};
+u32 map_coverage_active[35] DATA_SECTION(D_001A0218) = {0};
 
-u32 map_region_enabled_0 DATA_SECTION(D_001A04A8) =
-#include "data_inc/D_001A04A8.inc"
-    ;
+u32 map_region_enabled_0 DATA_SECTION(D_001A04A8) = 0;
 
-u32 map_region_enabled_1 DATA_SECTION(D_001A04AC) =
-#include "data_inc/D_001A04AC.inc"
-    ;
+u32 map_region_enabled_1 DATA_SECTION(D_001A04AC) = 0;
 
-u32 region_enabled DATA_SECTION(D_001A04B0) =
-#include "data_inc/D_001A04B0.inc"
-    ;
+u32 region_enabled DATA_SECTION(D_001A04B0) = 0;
 
-u32 map_region_enabled_3 DATA_SECTION(D_001A04B4) =
-#include "data_inc/D_001A04B4.inc"
-    ;
+u32 map_region_enabled_3 DATA_SECTION(D_001A04B4) = 0;
 
-u32 map_region_enabled_4 DATA_SECTION(D_001A04B8) =
-#include "data_inc/D_001A04B8.inc"
-    ;
+u32 map_region_enabled_4 DATA_SECTION(D_001A04B8) = 0;
 
-u32 map_region_enabled_5 DATA_SECTION(D_001A04BC) =
-#include "data_inc/D_001A04BC.inc"
-    ;
+u32 map_region_enabled_5 DATA_SECTION(D_001A04BC) = 0;
 
 #include "data_inc/D_001A04C0.refs"
 u32 map_region_enabled_6[] DATA_SECTION(D_001A04C0) = {

@@ -1,6 +1,8 @@
 /* Data owned by src/game/render/draw.c. Its values come from your own baserom (tools/data_in_c.py). */
 #include "common.h"
 
+#include "structs/vector.h"
+
 u32 font_char_widths[] DATA_SECTION(D_00189EC0) = {
 #include "data_inc/D_00189EC0.inc"
 };
@@ -17,73 +19,41 @@ u32 font_palette_colors[] DATA_SECTION(D_0018CBF8) = {
 #include "data_inc/D_0018CBF8.inc"
 };
 
-u32 view_context_field_c0[] DATA_SECTION(D_0018CEC0) = {
-#include "data_inc/D_0018CEC0.inc"
-};
+u32 view_context_field_c0[48] DATA_SECTION(D_0018CEC0) = {0};
 
-u32 screen_projection_focal[] DATA_SECTION(D_0018D010) = {
-#include "data_inc/D_0018D010.inc"
-};
+float screen_projection_focal[4] DATA_SECTION(D_0018D010) = {0};
 
-u32 sky_view_mtx[] DATA_SECTION(D_0018D080) = {
-#include "data_inc/D_0018D080.inc"
-};
+u32 sky_view_mtx[16] DATA_SECTION(D_0018D080) = {0};
 
-u32 view_clip_constants[] DATA_SECTION(D_0018D0C0) = {
-#include "data_inc/D_0018D0C0.inc"
-};
+Vec4f view_clip_constants[8] DATA_SECTION(D_0018D0C0) = {0};
 
-u32 effect_texture_definitions[] DATA_SECTION(D_0018D540) = {
-#include "data_inc/D_0018D540.inc"
-};
+u32 effect_texture_definitions[448] DATA_SECTION(D_0018D540) = {0};
 
-u32 draw_callback_funcs[] DATA_SECTION(D_0018DC40) = {
-#include "data_inc/D_0018DC40.inc"
-};
+u32 draw_callback_funcs[64] DATA_SECTION(D_0018DC40) = {0};
 
-u32 draw_callback_args[] DATA_SECTION(D_0018DD40) = {
-#include "data_inc/D_0018DD40.inc"
-};
+u32 draw_callback_args[64] DATA_SECTION(D_0018DD40) = {0};
 
-u32 draw_callback2_funcs[] DATA_SECTION(D_0018DE40) = {
-#include "data_inc/D_0018DE40.inc"
-};
+u32 draw_callback2_funcs[64] DATA_SECTION(D_0018DE40) = {0};
 
-u32 draw_callback2_args[] DATA_SECTION(D_0018DF40) = {
-#include "data_inc/D_0018DF40.inc"
-};
+u32 draw_callback2_args[64] DATA_SECTION(D_0018DF40) = {0};
 
-u32 draw_callback3_funcs[] DATA_SECTION(D_0018E040) = {
-#include "data_inc/D_0018E040.inc"
-};
+u32 draw_callback3_funcs[64] DATA_SECTION(D_0018E040) = {0};
 
-u32 draw_callback3_args[] DATA_SECTION(D_0018E140) = {
-#include "data_inc/D_0018E140.inc"
-};
+u32 draw_callback3_args[64] DATA_SECTION(D_0018E140) = {0};
 
-u32 draw_callback4_funcs[] DATA_SECTION(D_0018E240) = {
-#include "data_inc/D_0018E240.inc"
-};
+u32 draw_callback4_funcs[64] DATA_SECTION(D_0018E240) = {0};
 
-u32 draw_callback4_args[] DATA_SECTION(D_0018E340) = {
-#include "data_inc/D_0018E340.inc"
-};
+u32 draw_callback4_args[68] DATA_SECTION(D_0018E340) = {0};
 
 u32 bit_swap_lut[] DATA_SECTION(D_0018E840) = {
 #include "data_inc/D_0018E840.inc"
 };
 
-u32 occl_visibility_merged[] DATA_SECTION(D_00194140) = {
-#include "data_inc/D_00194140.inc"
-};
+u32 occl_visibility_merged[32] DATA_SECTION(D_00194140) = {0};
 
-u32 camera_sample_points[] DATA_SECTION(D_001941E0) = {
-#include "data_inc/D_001941E0.inc"
-};
+u32 camera_sample_points[8] DATA_SECTION(D_001941E0) = {0};
 
-u32 vu1_view_screen_consts[] DATA_SECTION(D_001DEA90) = {
-#include "data_inc/D_001DEA90.inc"
-};
+Vec4f vu1_view_screen_consts[3] DATA_SECTION(D_001DEA90) = {0};
 
 u32 tfrag_vu_const_block[] DATA_SECTION(D_001DEAC0) = {
 #include "data_inc/D_001DEAC0.inc"
@@ -101,7 +71,7 @@ u32 shrub_vu1_constants_alt_screen[] DATA_SECTION(D_001DEDC0) = {
 #include "data_inc/D_001DEDC0.inc"
 };
 
-u32 view_fog_multiplier_copy[] DATA_SECTION(D_001E0250) = {
+float view_fog_multiplier_copy[] DATA_SECTION(D_001E0250) = {
 #include "data_inc/D_001E0250.inc"
 };
 

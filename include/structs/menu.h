@@ -1,6 +1,8 @@
 #ifndef MENU_H
 #define MENU_H
 
+#include "structs/vector.h"
+
 /*
  * The pause menu's page, system and item grid cell records, laid out as the
  * NTSC decomp's ui/menus/menu_system.h and menu_screen.h have them.

@@ -103,5 +103,72 @@ class SourceTest(unittest.TestCase):
         self.assertEqual(d.segment_of("D_00165580"), "data")
 
 
+class TypedTest(unittest.TestCase):
+    FIELDS = [(0, "i", 4), (4, "f", 4), (8, "p", 4)]
+
+    def test_each_field_gets_its_form(self):
+        out = d.render_typed(["0x7", "0x3F800000", "(u32)ref_D_1"], self.FIELDS, 12)
+        self.assertEqual(out[0], "0x7")
+        self.assertEqual(float(out[1][:-1]), 1.0)
+        self.assertEqual(out[2], "(void *)ref_D_1")
+
+    def test_records_repeat(self):
+        self.assertEqual(len(d.render_typed(["0"] * 6, self.FIELDS, 12)), 6)
+
+    def test_narrow_fields_split_a_word(self):
+        self.assertEqual(d.render_typed(["0x00020001"], [(0, "i", 2), (2, "i", 2)], 4), ["0x1", "0x2"])
+
+    def test_a_wrong_size_is_refused(self):
+        with self.assertRaises(ValueError):
+            d.render_typed(["0"] * 4, self.FIELDS, 12)
+
+    def test_a_symbol_in_a_float_is_refused(self):
+        with self.assertRaises(ValueError):
+            d.render_typed(["0", "(u32)ref_D_1", "0"], self.FIELDS, 12)
+
+    def test_non_zero_padding_is_refused(self):
+        with self.assertRaises(ValueError):
+            d.render_typed(["0x7", "0x9"], [(0, "i", 4)], 8)
+
+    def test_is_zero(self):
+        self.assertTrue(d.is_zero(["0", "0x0"]))
+        self.assertFalse(d.is_zero(["0", "0x1"]))
+        self.assertFalse(d.is_zero(["(u32)ref_D_1"]))
+
+
+class WriteOutTest(unittest.TestCase):
+    NAMES = {"func_1": "handler", "D_2": "next_table"}
+
+    def test_a_table_is_only_symbols_and_zeros(self):
+        self.assertTrue(d.is_table(["(u32)ref_func_1", "0", "0x0"]))
+        self.assertFalse(d.is_table(["(u32)ref_func_1", "7"]))
+        self.assertFalse(d.is_table(["0", "0"]))
+
+    def test_table_text(self):
+        text = d.table_text("D_9", ["(u32)ref_func_1", "0"], self.NAMES, {})
+        self.assertEqual(text, "void *D_9[] DATA_SECTION(D_9) = {\n    handler,\n    0,\n};\n\n")
+
+    def test_one_value_is_a_scalar(self):
+        self.assertEqual(d.table_text("D_9", ["(u32)ref_D_2"], self.NAMES, {}), "void *D_9 DATA_SECTION(D_9) = next_table;\n\n")
+
+    def test_an_offset_is_kept(self):
+        self.assertEqual(d.table_values(["(u32)ref_D_2 + 0x10"], self.NAMES, {}), ["(char *)next_table + 0x10"])
+
+    def test_declarations(self):
+        self.assertEqual(d.table_declarations(["(u32)ref_func_1", "(u32)ref_D_2"], self.NAMES, {}),
+                         ["extern char next_table[];\n", "extern void handler();\n"])
+
+    def test_a_block_in_the_same_file_keeps_its_type(self):
+        here = {"next_table": ("u32", 4)}
+        self.assertEqual(d.table_declarations(["(u32)ref_D_2"], self.NAMES, here), ["extern u32 next_table[];\n"])
+        self.assertEqual(d.table_values(["(u32)ref_D_2"], self.NAMES, {"next_table": ("u32", 1)}), ["&next_table"])
+
+    def test_float_literals_read_back(self):
+        self.assertEqual(float(d.float_literal("0x3F800000")[:-1]), 1.0)
+        self.assertIsNone(d.float_literal("0x7F800000"))
+        self.assertIsNone(d.float_literal("0x00000001"))
+        self.assertIsNone(d.float_literal("0x80000000"))
+
+
 if __name__ == "__main__":
     unittest.main()

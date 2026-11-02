@@ -17,9 +17,7 @@ u32 capture_bounds_adjustments[] DATA_SECTION(D_001E6518) = {
 #include "data_inc/D_001E6518.inc"
 };
 
-u32 vendor_flash_timers[] DATA_SECTION(D_001E6920) = {
-#include "data_inc/D_001E6920.inc"
-};
+u32 vendor_flash_timers[8] DATA_SECTION(D_001E6920) = {0};
 
 u32 vendor_scroll_timers[] DATA_SECTION(D_001E6940) = {
 #include "data_inc/D_001E6940.inc"

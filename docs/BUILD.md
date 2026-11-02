@@ -56,8 +56,16 @@ python3 -m unittest discover -s tools/tests -p 'test_*.py'
 
 ## Data in C
 
-A file in `src/data/` names a block of retail's data and says which source file owns it. It holds no values: those
-are generated from your own baserom into `build-sn/data_inc/`, and are never committed.
+A file in `src/data/` names a block of retail's data and says which source file owns it. It holds no numbers: those
+are generated from your own baserom into `build-sn/data_inc/`, and are never committed. A table of only symbols and
+zeros, or a block of only zeros, is written out in the file, since it holds none of retail's numbers.
+
+To give a block a struct type, record the layout, then set it. A block that does not fit stays as it is, and says why:
+
+```sh
+python3 tools/data_types.py learn "Camera:structs/camera.h"     # needs clang
+python3 tools/data_in_c.py set-type D_00187510=Camera
+```
 
 ```sh
 python3 tools/data_in_c.py add D_00165600:src/game/ui/pause.c
