@@ -388,9 +388,9 @@ void *create_camera_collision_moby(void *arg0) {
     void *m = CreateMoby(0x3EF);
 
     if (m != 0) {
-        *(unsigned char *)((char *)m + 0x30) = 0xFF;
-        *(unsigned short *)((char *)m + 0x34) |= 0x41;
-        qcopy((char *)m + 0x10, arg0);
+        ((struct Moby *)m)->update_dist = 0xFF;
+        ((struct Moby *)m)->flags |= 0x41;
+        qcopy(&((struct Moby *)m)->pos, arg0);
         moby_build_matrix(m);
     }
     return m;
@@ -502,7 +502,7 @@ typedef struct {
     float x, y, z, w;
 } __attribute__((aligned(16))) VendorGlowCorner;
 void draw_vendor_effects(char *m) {
-    char *p = *(char **)(m + 0x78);
+    char *p = *(char **)&((struct Moby *)m)->pvars;
     Quad qd;
     long pk[4];
     float q[4][4];
@@ -647,8 +647,8 @@ void draw_vendor_effects(char *m) {
         S.f[0] = FastCos(ang) * 1.1f;
         S.f[1] = FastSin(ang) * 1.1f;
         S.f[2] = 0.59f;
-        matrix_mul_vec3(S.f, S.f, m + 0xC0);
-        FastVecAdd(S.f, S.f, m + 0x10);
+        matrix_mul_vec3(S.f, S.f, &((struct Moby *)m)->rot_row0);
+        FastVecAdd(S.f, S.f, &((struct Moby *)m)->pos);
         draw_offset_textured_effect_quad(S.f, ((Moby *)m)->glow_color & 0xFFFF0000, 0.1333f, zero);
     }
 }
@@ -690,7 +690,7 @@ void vendor_update(char *moby) {
     float f;
     float t2;
     float t3;
-    char *m;
+    struct Moby *m;
 
     *(float *)&vendor_glow_pulse_phase += 0.05f;
     if (3.14f < *(float *)&vendor_glow_pulse_phase)
@@ -739,10 +739,10 @@ void vendor_update(char *moby) {
             axis_rotation_2d48(p->ring_b_rot, 2, *(float *)&vendor_ring_b_angle);
             *(float *)&vendor_ring_a_angle = FastAddRots(*(float *)&vendor_ring_a_angle, 0.01f);
             t2 = FastAddRots(*(float *)&vendor_ring_b_angle, -0.02f);
-            m = p->ring;
-            t3 = p->glow * *(float *)(*(char **)(m + 0x24) + 0x24) * 2.5f;
+            m = (struct Moby *)p->ring;
+            t3 = p->glow * *(float *)(*(char **)&m->pclass + 0x24) * 2.5f;
             *(float *)&vendor_ring_b_angle = t2;
-            *(float *)(m + 0x2C) = t3;
+            m->scale = t3;
             moby_build_matrix(p->ring);
             break;
         case 2: {
@@ -772,10 +772,10 @@ void vendor_update(char *moby) {
             axis_rotation_2d48(p->ring_b_rot, 2, *(float *)&vendor_ring_b_angle);
             *(float *)&vendor_ring_a_angle = FastAddRots(*(float *)&vendor_ring_a_angle, 0.01f);
             t2 = FastAddRots(*(float *)&vendor_ring_b_angle, -0.02f);
-            m = p->ring;
-            t3 = p->glow * *(float *)(*(char **)(m + 0x24) + 0x24) * 2.5f;
+            m = (struct Moby *)p->ring;
+            t3 = p->glow * *(float *)(*(char **)&m->pclass + 0x24) * 2.5f;
             *(float *)&vendor_ring_b_angle = t2;
-            *(float *)(m + 0x2C) = t3;
+            m->scale = t3;
             moby_build_matrix(p->ring);
             if (G_pp.i208C != 0 && G_pp.i2084 != 3 && G_pp.i208C != 1) {
                 a = 0;
@@ -812,10 +812,10 @@ void vendor_update(char *moby) {
             break;
         }
         case 3:
-            m = p->ring;
+            m = (struct Moby *)p->ring;
             if (m != 0) {
                 *(int *)&p->glow = 0;
-                *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24) * p->glow * 2.5f;
+                m->scale = *(float *)(*(char **)&m->pclass + 0x24) * p->glow * 2.5f;
                 moby_build_matrix(p->ring);
             }
             break;
@@ -1714,13 +1714,13 @@ void update_wrench_animation_from_hero_state(char *m) {
         if (t == 0x41)
             r = 0x12;
         if (r >= 0x12 && r <= 0x13) {
-            *(unsigned char *)(m + 0x52) = r;
-            *(unsigned char *)(m + 0x53) = r;
-            *(float *)(m + 0x54) = *(float *)(*(char **)&g->moby + 0x54);
-            *(unsigned char *)(m + 0x50) = *(unsigned char *)(*(char **)&g->moby + 0x50);
-            *(unsigned char *)(m + 0x51) = *(unsigned char *)(*(char **)&g->moby + 0x51);
+            ((struct Moby *)m)->seq = r;
+            ((struct Moby *)m)->prev_seq = r;
+            ((struct Moby *)m)->anim_time = *(float *)(*(char **)&g->moby + 0x54);
+            ((struct Moby *)m)->frame = *(unsigned char *)(*(char **)&g->moby + 0x50);
+            ((struct Moby *)m)->prev_frame = *(unsigned char *)(*(char **)&g->moby + 0x51);
             if (*(unsigned char *)(*(char **)&g->moby + 0x52) != *(unsigned char *)(*(char **)&g->moby + 0x53)) {
-                *(unsigned char *)(m + 0x50) = *(unsigned char *)(m + 0x51);
+                ((struct Moby *)m)->frame = ((struct Moby *)m)->prev_frame;
             }
             update_moby_animation_state(m);
         } else {
@@ -1844,26 +1844,27 @@ void process_mobies_near_returning_wrench(char *a) {
     if (m != 0) {
         struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
         do {
-            int st = *(unsigned char *)(m + 0x20);
+            int st = ((struct Moby *)m)->state;
             if (st == 0xFE)
                 return;
             if (st == 0xFD)
                 return;
-            if (m != 0 && *(char **)(m + 0x24) != 0 && *(short *)(*(char **)(m + 0x24) + 0x46) == 0x13) {
-                if (FastVecDist(m + 0x10, a + 0x10) < 2.7f) {
+            if (m != 0 && *(char **)&((struct Moby *)m)->pclass != 0 &&
+                *(short *)(*(char **)&((struct Moby *)m)->pclass + 0x46) == 0x13) {
+                if (FastVecDist(&((struct Moby *)m)->pos, a + 0x10) < 2.7f) {
                     float f = random_float_between(-30.0f, 30.0f);
                     if (begin_bolt_attraction(m, *(int *)&g->moby, f * 0.017453292f, 0.0f))
                         return;
                 }
             } else {
                 if (is_bomb_glove_ammo_cc_de_3ee_d6_e1_d5_or_df(m) != 0) {
-                    if (FastVecDist(m + 0x10, a + 0x10) < 2.7f) {
+                    if (FastVecDist(&((struct Moby *)m)->pos, a + 0x10) < 2.7f) {
                         if (try_collect_ammo_pickup(m))
                             return;
                     }
                 }
             }
-            m = *(char **)(m + 0x28);
+            m = *(char **)&((struct Moby *)m)->next;
         } while (m != 0);
     }
 }
@@ -2491,13 +2492,13 @@ void *spawn_class_593_moby(int unused, void *pos, int c, float scale, float a, f
     if (m != 0) {
         char *d;
         float s;
-        qcopy(m + 0x10, pos);
+        qcopy(&((struct Moby *)m)->pos, pos);
         set_moby_color(m, 0x80, 0x80, 0x70);
         d = ((char *)((Moby *)m)->pvars);
         s = scale + scale;
         *(float *)d = a;
         ((Moby *)m)->scale = s;
-        ((Moby *)m)->scale = s * *(float *)(*(char **)(m + 0x24) + 0x24);
+        ((Moby *)m)->scale = s * *(float *)(*(char **)&((struct Moby *)m)->pclass + 0x24);
         *(int *)(d + 4) = c;
         *(int *)(d + 8) = c;
         *(float *)(d + 0xC) = b;

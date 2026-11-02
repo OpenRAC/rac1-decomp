@@ -1147,7 +1147,7 @@ extern Effect *PartType23Spawn(void *, f32, f32, f32, s32, void *, f32, u32);
 extern u8 veldin1_zero_vec_r[] __asm__("D_L00_0015F660") MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002630b8.c, FUN_L00_002637f8. */
-void cutscene_set_camera_target(u8 *m) {
+void cutscene_set_camera_target(struct Moby *m) {
     Vec4 vectors[4];
     Vec4 pos;
     Vec4 scaled;
@@ -1155,7 +1155,7 @@ void cutscene_set_camera_target(u8 *m) {
     s32 count;
     s32 w24;
     Effect *effect;
-    if (*(s16 *)(m + 0xa6) == 0x2ee && m != 0) {
+    if (m->oclass == MOBY_CLASS_INFOBOT && m != 0) {
         MobyTransformScaledVertex(m, 0, vectors);
         fraction = FastVecLength(vectors) / 1.026f;
         if (1.0f < fraction)

@@ -16,6 +16,7 @@
 #include "game/math/fastfunc.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+#include "enums/moby_class.h"
 
 extern unsigned char hero_globals_base[];
 extern char novalis_item_defs[];
@@ -49,10 +50,10 @@ extern int request_grouped_voice(int a0, int a1, int a2, int a3, int a4);
 void request_hero_voice_if_enabled(int a0, int a1, int a2) {
     if (a2 != 0) {
         struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
-        char *m = *(char **)&g->items[1].moby;
+        struct Moby *m = (struct Moby *)(*(char **)&g->items[1].moby);
         int flag = 0;
         if (m != 0) {
-            flag = *(short *)(m + 0xA6) == 0xAD;
+            flag = m->oclass == 0xAD;
         }
         request_grouped_voice(a0, a1, flag, 0, *(int *)&g->moby);
     }
@@ -876,7 +877,7 @@ void hero_knockback(void *, s32, f32, f32);
 s32 HeroL01_TryTakeHit(s32 arg) {
     u8 *m;
     T_8 *tbl;
-    u8 *mob;
+    struct Moby *mob;
     s32 flag;
     s32 id;
     f32 a, b, e;
@@ -931,8 +932,8 @@ s32 HeroL01_TryTakeHit(s32 arg) {
     }
     switch (g_hero_r3.vehicle_mode) {
         case 0:
-            mob = (u8 *)g_hero_r3.damage_source_moby;
-            if (mob != 0 && (*(s16 *)(mob + 0xA6) == 0x4EB || *(s16 *)(mob + 0xA6) == 0x558)) {
+            mob = (struct Moby *)((u8 *)g_hero_r3.damage_source_moby);
+            if (mob != 0 && (mob->oclass == 0x4EB || mob->oclass == 0x558)) {
                 id = 0x80;
             call_ret:
                 Hero_SetMoveState(id, 1);
@@ -944,31 +945,31 @@ s32 HeroL01_TryTakeHit(s32 arg) {
                 return 1;
             }
             if (g_hero_r3.state.control_mode == 0x12) {
-                mob = (u8 *)g_hero_r3.damage_source_moby;
-                if (mob != 0 && *(s16 *)(mob + 0xA6) == 0x28F) {
+                mob = (struct Moby *)((u8 *)g_hero_r3.damage_source_moby);
+                if (mob != 0 && mob->oclass == 0x28F) {
                     id = 0x82;
                     goto call_ret;
                 }
                 Hero_SetMoveState(HERO_STATE_WATER_SURFACE_HURT, 1);
             } else if (g_hero_r3.state.control_mode == 0x11) {
-                mob = (u8 *)g_hero_r3.damage_source_moby;
-                if (mob != 0 && *(s16 *)(mob + 0xA6) == 0x28F) {
+                mob = (struct Moby *)((u8 *)g_hero_r3.damage_source_moby);
+                if (mob != 0 && mob->oclass == 0x28F) {
                     id = 0x82;
                     goto call_ret;
                 }
                 if (g_current_level_index == LEVEL_QUARTU || g_current_level_index == LEVEL_FLEET) {
-                    mob = (u8 *)g_hero_r3.damage_source_moby;
-                    if (mob != 0 && (*(s16 *)(mob + 0xA6) == 0x28F || *(s16 *)(mob + 0xA6) == 0x7B ||
-                                     *(s16 *)(mob + 0xA6) == 0x29D)) {
+                    mob = (struct Moby *)((u8 *)g_hero_r3.damage_source_moby);
+                    if (mob != 0 &&
+                        (mob->oclass == 0x28F || mob->oclass == MOBY_CLASS_SPIDERBOT || mob->oclass == 0x29D)) {
                         allocate_hero_voice_for_entry(0x1C, 0);
                     }
                 }
                 Hero_SetMoveState(0x76, 1);
             } else if (g_hero_r3.state.control_mode == 3) {
-                mob = (u8 *)g_hero_r3.damage_source_moby;
+                mob = (struct Moby *)((u8 *)g_hero_r3.damage_source_moby);
                 if (mob != 0) {
                     id = 0x82;
-                    if (*(s16 *)(mob + 0xA6) == 0x28F) {
+                    if (mob->oclass == 0x28F) {
                         goto call_ret;
                     }
                 }

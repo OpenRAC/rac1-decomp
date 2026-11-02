@@ -546,11 +546,11 @@ void draw_group_moby_glow_quads(unsigned char *moby) {
     int i;
     struct GroupGlowVars *data;
     char *q;
-    get_first_moby_in_group((int *)&it, moby[0x21], 0, 0);
+    get_first_moby_in_group((int *)&it, ((struct Moby *)moby)->group, 0, 0);
     while (it != 0) {
         if (((Moby *)it)->visible != 0) {
             data = (struct GroupGlowVars *)((Moby *)it)->pvars;
-            if (((Moby *)it)->oclass == *(short *)(moby + 0xA6)) {
+            if (((Moby *)it)->oclass == ((struct Moby *)moby)->oclass) {
                 q = (char *)data->glow_pos;
                 for (i = 2; i >= 0; i--) {
                     draw_offset_textured_effect_quad(q, data->glow_color, 0.45f, 0.4f);
@@ -685,7 +685,7 @@ void scenery_ship_update(char *moby) {
         case 0: {
             ((Moby *)moby)->update_dist = 0xFF;
             ((Moby *)moby)->draw_dist = 0xFF;
-            ((Moby *)moby)->scale = *(float *)(*(char **)(moby + 0x24) + 0x24) * D_L05_00161494_2D8388;
+            ((Moby *)moby)->scale = *(float *)(*(char **)&((struct Moby *)moby)->pclass + 0x24) * D_L05_00161494_2D8388;
             d->f1C = random_angle_radians_r();
             d->f328 = -1;
             d->f368 = random_angle_radians_r();
@@ -750,21 +750,21 @@ void scenery_ship_update(char *moby) {
             buf.f[0] = -1.2f;
             buf.f[1] = 0.4f;
             buf.f[2] = 0.45f;
-            matrix_mul_vec3(&buf, &buf, moby + 0xC0);
-            FastVecAdd_r((float *)&d->trail[0][(short)d->f322], buf.f, (float *)(moby + 0x10));
+            matrix_mul_vec3(&buf, &buf, &((struct Moby *)moby)->rot_row0);
+            FastVecAdd_r((float *)&d->trail[0][(short)d->f322], buf.f, &((struct Moby *)moby)->pos.x);
             d->trail[0][(short)d->f322].w = 1.0f;
             buf2.q = 0;
             buf2.f[0] = -1.5f;
             buf2.f[2] = -0.3f;
-            matrix_mul_vec3(&buf2, &buf2, moby + 0xC0);
-            FastVecAdd_r((float *)&d->trail[1][(short)d->f322], buf2.f, (float *)(moby + 0x10));
+            matrix_mul_vec3(&buf2, &buf2, &((struct Moby *)moby)->rot_row0);
+            FastVecAdd_r((float *)&d->trail[1][(short)d->f322], buf2.f, &((struct Moby *)moby)->pos.x);
             d->trail[1][(short)d->f322].w = 1.0f;
             buf3.q = 0;
             buf3.f[0] = -1.2f;
             buf3.f[1] = -0.4f;
             buf3.f[2] = 0.45f;
-            matrix_mul_vec3(&buf3, &buf3, moby + 0xC0);
-            FastVecAdd_r((float *)&d->trail[2][(short)d->f322], buf3.f, (float *)(moby + 0x10));
+            matrix_mul_vec3(&buf3, &buf3, &((struct Moby *)moby)->rot_row0);
+            FastVecAdd_r((float *)&d->trail[2][(short)d->f322], buf3.f, &((struct Moby *)moby)->pos.x);
             d->trail[2][(short)d->f322].w = 1.0f;
             if (rilgar_frame_count_r != *d->f324) {
                 *d->f324 = rilgar_frame_count_r;
@@ -775,7 +775,7 @@ void scenery_ship_update(char *moby) {
             } else if (((Moby *)moby)->pos.y < 8.0f) {
                 *(int *)&((Moby *)moby)->collision = 0;
             } else {
-                *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)(moby + 0x24) + 0x10);
+                *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)&((struct Moby *)moby)->pclass + 0x10);
             }
             if (r != 0 && 0.0f < *(float *)(r + 0x2C))
                 flag = 1;
@@ -785,16 +785,16 @@ void scenery_ship_update(char *moby) {
         }
         case 2: {
             Moby_PlaySound_r(0, 0, (int)moby);
-            FastVecScale_r(&buf, moby + 0xC0, D_L05_001614A8_2D8388 * frame_scale);
+            FastVecScale_r(&buf, &((struct Moby *)moby)->rot_row0, D_L05_001614A8_2D8388 * frame_scale);
             buf.f[2] = buf.f[2] + D_L05_001614AC_2D8388 * frame_scale;
             v = scale_ticks_r(0x5A);
-            SpawnBreakFragment_r(moby, 0x72E, (float *)(moby + 0x10), (float *)(moby + 0x40), v, 0, buf.f,
+            SpawnBreakFragment_r(moby, 0x72E, &((struct Moby *)moby)->pos.x, &((struct Moby *)moby)->rot.x, v, 0, buf.f,
                                  (float *)rilgar_zero_vec_r, g_frame_time_sq_r * 12.0f, (float *)rilgar_zero_vec_r);
             v = scale_ticks_r(0x5A);
-            SpawnBreakFragment_r(moby, 0x72E, (float *)(moby + 0x10), (float *)(moby + 0x40), v, 0, buf.f,
+            SpawnBreakFragment_r(moby, 0x72E, &((struct Moby *)moby)->pos.x, &((struct Moby *)moby)->rot.x, v, 0, buf.f,
                                  (float *)rilgar_zero_vec_r, g_frame_time_sq_r * 12.0f, (float *)rilgar_zero_vec_r);
             v = scale_ticks_r(0x5A);
-            SpawnBreakFragment_r(moby, 0x72E, (float *)(moby + 0x10), (float *)(moby + 0x40), v, 0, buf.f,
+            SpawnBreakFragment_r(moby, 0x72E, &((struct Moby *)moby)->pos.x, &((struct Moby *)moby)->rot.x, v, 0, buf.f,
                                  (float *)rilgar_zero_vec_r, g_frame_time_sq_r * 12.0f, (float *)rilgar_zero_vec_r);
             DeleteMoby_r(moby);
             return;
@@ -966,14 +966,15 @@ void amoeboid_update(unsigned char *m) {
             char *p = rilgar_paths_r[d->path] + d->path_point * 16;
             float yaw =
                 fast_atan2(*(float *)(p + 0x10) - ((Moby *)m)->pos.x, *(float *)(p + 0x14) - ((Moby *)m)->pos.y);
-            SteerAngleWithVelocity((float *)(m + 0x48), &d->turn_vel, yaw, g_frame_time_sq * 1.0471976f,
+            SteerAngleWithVelocity(&((struct Moby *)m)->rot.z, &d->turn_vel, yaw, g_frame_time_sq * 1.0471976f,
                                    g_frame_time_sq * 1.0471976f, g_frame_time * 3.1415927f);
             dir[0] = FastCos(((Moby *)m)->rot.z);
             dir[1] = FastSin(((Moby *)m)->rot.z);
             dir[2] = 0.0f;
             move_w(m, &d->move_ctl, dir, &d->move_out, 1.0f);
             if (fast_dec_timer_v(&d->wander_timer) != 0 ||
-                vec_distance_xy(m + 0x10, rilgar_paths_r[d->path] + (d->path_point * 16 + 0x10)) < 1.0f) {
+                vec_distance_xy(&((struct Moby *)m)->pos, rilgar_paths_r[d->path] + (d->path_point * 16 + 0x10)) <
+                    1.0f) {
                 int r = random_integer_below(*(int *)rilgar_paths_r[d->path]);
                 d->path_point = (d->path_point + r) % *(int *)rilgar_paths_r[d->path];
                 d->wander_timer = scale_ticks(600);
@@ -982,11 +983,12 @@ void amoeboid_update(unsigned char *m) {
             break;
         }
         case 2:
-            if (48.0f < vec_distance_xy(m + 0x10, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos)) {
+            if (48.0f < vec_distance_xy(&((struct Moby *)m)->pos,
+                                        &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos)) {
                 ((Moby *)m)->state = 1;
                 ((Moby *)m)->visible = 1;
                 ((Moby *)m)->flags &= 0xFFFE;
-                *(int *)&((Moby *)m)->collision = *(int *)(*(char **)(m + 0x24) + 0x10);
+                *(int *)&((Moby *)m)->collision = *(int *)(*(char **)&((struct Moby *)m)->pclass + 0x10);
             }
             break;
     }
@@ -1175,17 +1177,17 @@ void extermibot_update(unsigned char *m) {
         d->cinematic_hidden = 0;
         ((Moby *)m)->flags &= 0xFFBE;
     }
-    if (((Moby *)m)->visible != 0 && FastVecDist((float *)(m + 0x10), (float *)rilgar_camera_pos) < 28.0f) {
+    if (((Moby *)m)->visible != 0 && FastVecDist(&((struct Moby *)m)->pos.x, (float *)rilgar_camera_pos) < 28.0f) {
         set_ground_height_band(m);
         ((Moby *)m)->shadow_range = 0x16;
     }
     handle_extermibot_hits_and_update_targeting((Moby *)m);
     t = d->target;
-    ((Moby *)m)->scale = *(float *)(*(char **)(m + 0x24) + 0x24) * (*(float *)&sharkigator_scale);
+    ((Moby *)m)->scale = *(float *)(*(char **)&((struct Moby *)m)->pclass + 0x24) * (*(float *)&sharkigator_scale);
     switch (((Moby *)m)->state) {
         case 0:
             ((Moby *)m)->flags |= 0x1000;
-            qcopy(&d->home_pos, m + 0x10);
+            qcopy(&d->home_pos, &((struct Moby *)m)->pos);
             d->health = 2.0f;
             d->unk_29 = 0;
             d->has_target = 0;
@@ -1233,7 +1235,7 @@ void extermibot_update(unsigned char *m) {
             break;
         case 1:
             if (d->target_mode != 2 && random_integer_below(9) == 0) {
-                if (follow_path(&d->polyline, 1, d->polyline_count, m + 0x10, (s32)(t + 0x10), dir,
+                if (follow_path(&d->polyline, 1, d->polyline_count, &((struct Moby *)m)->pos, (s32)(t + 0x10), dir,
                                 (*(float *)&sharkigator_scale) * 0.4f) != 0) {
                     if (random_integer_below(0x100) & 1) {
                         d->path_turn_deg = -d->path_turn_deg;
@@ -1267,8 +1269,8 @@ void extermibot_update(unsigned char *m) {
             }
             break;
         case 2:
-            rot = (float *)(m + 0x48);
-            pos0 = m + 0x10;
+            rot = &((struct Moby *)m)->rot.z;
+            pos0 = (unsigned char *)&((struct Moby *)m)->pos;
             yaw = fast_atan2(d->wander_point.x - ((Moby *)m)->pos.x, d->wander_point.y - ((Moby *)m)->pos.y);
             SteerAngleWithVelocity(rot, &d->turn_vel, yaw, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f,
                                    g_frame_time * 6.2831855f);
@@ -1290,8 +1292,8 @@ void extermibot_update(unsigned char *m) {
             break;
         case 6: {
             int near;
-            rot = (float *)(m + 0x48);
-            pos0 = m + 0x10;
+            rot = &((struct Moby *)m)->rot.z;
+            pos0 = (unsigned char *)&((struct Moby *)m)->pos;
             ApproachValue(&d->walk_speed, g_frame_time * 6.0f, g_frame_time_sq * 6.0f);
             yaw = fast_atan2(*(float *)(t + 0x10) - ((Moby *)m)->pos.x, *(float *)(t + 0x14) - ((Moby *)m)->pos.y);
             SteerAngleWithVelocity(rot, &d->turn_vel, yaw, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f,
@@ -1330,7 +1332,7 @@ void extermibot_update(unsigned char *m) {
                 ((Moby *)m)->state = 10;
                 if (((Moby *)m)->prev_seq != 1)
                     MobyBlendAnimation(m, 1, 0, scale_ticks(20));
-            } else if (vec_distance_xy(m + 0x10, t + 0x10) < 3.0f) {
+            } else if (vec_distance_xy(&((struct Moby *)m)->pos, t + 0x10) < 3.0f) {
                 ((Moby *)m)->state = 7;
                 d->strike_timer = scale_ticks(*(int *)&extermibot_pre_strike_delay_frames_gp);
                 if (((Moby *)m)->prev_seq != 2)
@@ -1361,7 +1363,7 @@ void extermibot_update(unsigned char *m) {
             }
             break;
         case 4: {
-            float dist = vec_distance_xy(m + 0x10, t + 0x10);
+            float dist = vec_distance_xy(&((struct Moby *)m)->pos, t + 0x10);
             move_extermibot_along_path((struct Moby *)m, (s32)(t + 0x10), d->path_turn);
             if (dist < 3.0f &&
                 FastDiffRots(((Moby *)m)->rot.z, fast_atan2(*(float *)(t + 0x10) - ((Moby *)m)->pos.x,
@@ -1377,7 +1379,7 @@ void extermibot_update(unsigned char *m) {
             break;
         }
         case 7:
-            rot = (float *)(m + 0x48);
+            rot = &((struct Moby *)m)->rot.z;
             yaw = fast_atan2(*(float *)(t + 0x10) - ((Moby *)m)->pos.x, *(float *)(t + 0x14) - ((Moby *)m)->pos.y);
             SteerAngleWithVelocity(rot, &d->turn_vel, yaw, g_frame_time_sq * 12.566371f, g_frame_time_sq * 12.566371f,
                                    g_frame_time * 25.132742f);
@@ -1452,7 +1454,7 @@ void extermibot_update(unsigned char *m) {
             if (MobyGetFrameValue(m) < 1.5f &&
                 FastDiffRots(a, fast_atan2(*(float *)(t + 0x10) - ((Moby *)m)->pos.x,
                                            *(float *)(t + 0x14) - ((Moby *)m)->pos.y)) < 0.2617994f &&
-                vec_distance_xy(m + 0x10, t + 0x10) < 3.0f &&
+                vec_distance_xy(&((struct Moby *)m)->pos, t + 0x10) < 3.0f &&
                 FastAbsF(*(float *)(t + 0x18) - ((Moby *)m)->pos.z) < 2.0f) {
                 dir[0] = FastCos(((Moby *)m)->rot.z);
                 dir[1] = FastSin(((Moby *)m)->rot.z);
@@ -1474,7 +1476,7 @@ void extermibot_update(unsigned char *m) {
         }
         case 9:
             if (((Moby *)m)->anim_flags & 2) {
-                if (vec_distance_xy(m + 0x10, t + 0x10) < 3.0f &&
+                if (vec_distance_xy(&((struct Moby *)m)->pos, t + 0x10) < 3.0f &&
                     FastDiffRots(((Moby *)m)->rot.z, fast_atan2(*(float *)(t + 0x10) - ((Moby *)m)->pos.x,
                                                                 *(float *)(t + 0x14) - ((Moby *)m)->pos.y)) <
                         0.2617994f) {
@@ -1492,7 +1494,7 @@ void extermibot_update(unsigned char *m) {
             break;
         case 10:
             move_extermibot_along_path((struct Moby *)m, (s32)&d->home_pos, 0.0f);
-            if (vec_distance_xy(m + 0x10, &d->home_pos) < 1.0f) {
+            if (vec_distance_xy(&((struct Moby *)m)->pos, &d->home_pos) < 1.0f) {
                 ((Moby *)m)->state = 1;
                 if (((Moby *)m)->prev_seq != 0)
                     MobyBlendAnimation(m, 0, 0, scale_ticks(3));
@@ -1506,14 +1508,14 @@ void extermibot_update(unsigned char *m) {
             break;
         case 11:
             if (mine_fall(m, d->knockback) & 0x60) {
-                if (follow_path(&d->polyline, 1, d->polyline_count, m + 0x10, (s32)&d->home_pos, dir,
+                if (follow_path(&d->polyline, 1, d->polyline_count, &((struct Moby *)m)->pos, (s32)&d->home_pos, dir,
                                 (*(float *)&sharkigator_scale) * 0.4f) != 0) {
                     ((Moby *)m)->state = 4;
                     if (((Moby *)m)->prev_seq != 1)
                         MobyBlendAnimation(m, 1, 0, scale_ticks(10));
                     break;
                 }
-                SpawnExplosionFx(m, m + 0x10, -1, 0.5f, 13.0f);
+                SpawnExplosionFx(m, &((struct Moby *)m)->pos, -1, 0.5f, 13.0f);
                 DeleteMoby(m);
                 return;
             }
@@ -1531,13 +1533,13 @@ void extermibot_update(unsigned char *m) {
             break;
         case 14:
             if (mine_fall(m, d->knockback) & 0x60) {
-                SpawnExplosionFx(m, m + 0x10, -1, 0.5f, 13.0f);
-                SpawnBreakFragment(m, 0x6DA, m + 0x10, m + 0x40, 0, 0, 0.0f, rilgar_zero_vec, rilgar_zero_vec,
-                                   rilgar_zero_vec);
-                SpawnBreakFragment(m, 0x6DB, m + 0x10, m + 0x40, 0, 0, 0.0f, rilgar_zero_vec, rilgar_zero_vec,
-                                   rilgar_zero_vec);
-                SpawnBreakFragment(m, 0x6DC, m + 0x10, m + 0x40, 0, 0, 0.0f, rilgar_zero_vec, rilgar_zero_vec,
-                                   rilgar_zero_vec);
+                SpawnExplosionFx(m, &((struct Moby *)m)->pos, -1, 0.5f, 13.0f);
+                SpawnBreakFragment(m, 0x6DA, &((struct Moby *)m)->pos, &((struct Moby *)m)->rot, 0, 0, 0.0f,
+                                   rilgar_zero_vec, rilgar_zero_vec, rilgar_zero_vec);
+                SpawnBreakFragment(m, 0x6DB, &((struct Moby *)m)->pos, &((struct Moby *)m)->rot, 0, 0, 0.0f,
+                                   rilgar_zero_vec, rilgar_zero_vec, rilgar_zero_vec);
+                SpawnBreakFragment(m, 0x6DC, &((struct Moby *)m)->pos, &((struct Moby *)m)->rot, 0, 0, 0.0f,
+                                   rilgar_zero_vec, rilgar_zero_vec, rilgar_zero_vec);
                 DeleteMoby(m);
                 return;
             }

@@ -675,7 +675,7 @@ void apply_cutscene_big_head_cheat(void) {
         int i;
         for (i = 0; i < fx_cutscene.n; i++) {
             char *moby = fx_cutscene.m[i];
-            if (*(short *)(moby + 0xA6) == 0x32B) {
+            if (((struct Moby *)moby)->oclass == 0x32B) {
                 unsigned char *q = novalis_big_head_cheat_manipulator;
                 if (q[1] == 0) {
                     AttachManipulator(moby, 0, q);

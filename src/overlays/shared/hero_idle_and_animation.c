@@ -612,7 +612,7 @@ void update_hero_glow_and_extra_manipulators(void) {
     if (moby == 0)
         return;
     g = (u8 *)&g_hero_r3;
-    *(u16 *)(moby + 0x34) |= 0x10;
+    ((struct Moby *)moby)->flags |= 0x10;
     alpha = 0x80;
     gc = 0x88;
     r = 0x38;
@@ -653,11 +653,11 @@ void update_hero_glow_and_extra_manipulators(void) {
         r = r + truncate_float_to_s32(kk * 112.0f);
         gc = gc - truncate_float_to_s32(kk * 72.0f);
     }
-    *(int *)(moby + 0x90) = (alpha << 24) | (b << 16) | (gc << 8) | r;
+    ((struct Moby *)moby)->glow_color = (alpha << 24) | (b << 16) | (gc << 8) | r;
     g2 = (u8 *)&g_hero_r3;
     if (g2[0x20A4] != 0)
         return;
-    if (FastDecTimer(g2 + 0xFFC) && moby[0x53] == 1) {
+    if (FastDecTimer(g2 + 0xFFC) && ((struct Moby *)moby)->prev_seq == 1) {
         low = scale_ticks(50);
         a = rand_range(low, scale_ticks(200));
         *(s16 *)(g2 + 0xFFC) = a;
@@ -684,7 +684,7 @@ void update_hero_glow_and_extra_manipulators(void) {
                 qcopy(&HM[i].quat, &hero_extra_manip_quats[i]);
                 qcopy(&HM[i].scale3, &hero_extra_manip_scales[i]);
                 qcopy(&HM[i].translation, &hero_extra_manip_offsets[i]);
-                FastVecScale(&HM[i].translation, &HM[i].translation, *(f32 *)(moby + 0x2C));
+                FastVecScale(&HM[i].translation, &HM[i].translation, ((struct Moby *)moby)->scale);
             }
         }
         for (j = 0; j < 4; j++)
@@ -1484,7 +1484,7 @@ void update_moby_pulsing_glow_effects(char *m) {
     float a, s, s2;
     char *p;
     float f;
-    *(unsigned short *)(m + 0x34) |= 0x10;
+    ((struct Moby *)m)->flags |= 0x10;
     r = scale_ticks(0x64);
     a = (float)(level_frame_counter % r) / IntToFloat(r);
     a = a + a;
@@ -1498,11 +1498,11 @@ void update_moby_pulsing_glow_effects(char *m) {
     col |= 0x80000000;
     col |= (c2 + 0xA2) << 8;
     col |= c1 + 0x44;
-    *(int *)(m + 0x90) = col;
-    if (*(short *)(m + 0xA6) == 0x1A3) {
+    ((struct Moby *)m)->glow_color = col;
+    if (((struct Moby *)m)->oclass == MOBY_CLASS_GIANT_CLANK) {
         Moby_GetJointWorldPos(m, 6, v);
         v[2] = v[2] - 0.07f;
-        if (FastAbsF(*(float *)(m + 0x18) - v[2]) > 2.0f) {
+        if (FastAbsF(((struct Moby *)m)->pos.z - v[2]) > 2.0f) {
             HeroDrawQueue_Add(v, 0x200000C0, 0.25f, 0.15f);
         }
     } else {
@@ -1511,14 +1511,14 @@ void update_moby_pulsing_glow_effects(char *m) {
         HeroDrawQueue_Add(v, 0x200000C0, 0.047f, 0.15f);
     }
     p = cheat_scale_manipulator;
-    if (*(short *)(m + 0xA6) == 0x1A3) {
+    if (((struct Moby *)m)->oclass == MOBY_CLASS_GIANT_CLANK) {
         p = cheat_scale_manipulator_giant_clank;
-    } else if (*(short *)(m + 0xA6) == 0x555) {
+    } else if (((struct Moby *)m)->oclass == 0x555) {
         p = cheat_scale_manipulator_class_555;
     }
     if (gCheats[3] != 0) {
         if (*(unsigned char *)(p + 1) == 0) {
-            if (*(short *)(m + 0xA6) == 0x1A3) {
+            if (((struct Moby *)m)->oclass == MOBY_CLASS_GIANT_CLANK) {
                 AttachManipulator(m, 1, p);
                 f = *(float *)&sound_volume_10;
             } else {
@@ -2005,7 +2005,7 @@ void update_hero_moby(void) {
     struct Hero *g0 = (struct Hero *)((char *)hero_globals_base + 0xE1D);
     char *g;
     struct Hero *g3;
-    char *m;
+    struct Moby *m;
     float f20, f13;
     Vq4 v;
     *(unsigned char *)(*(char **)&g0->moby + 0xA4) = 0xFF;
@@ -2043,12 +2043,12 @@ void update_hero_moby(void) {
                                      &v);
     }
     g3 = (struct Hero *)((char *)hero_globals_base + 0xE1D);
-    m = *(char **)&g3->moby;
-    if (*(short *)(m + 0xA6) == 0) {
+    m = (struct Moby *)(*(char **)&g3->moby);
+    if (m->oclass == MOBY_CLASS_RATCHET) {
         if (draw_map51_m[1] != 0) {
-            *(unsigned short *)(m + 0x34) |= 0x8000;
+            m->flags |= 0x8000;
         } else {
-            *(unsigned short *)(m + 0x34) &= 0x7FFF;
+            m->flags &= 0x7FFF;
         }
     }
 }

@@ -836,11 +836,11 @@ void update_moby_transform_and_child(char *moby) {
     char *child;
     switch (((Moby *)moby)->state) {
         case 0:
-            moby[0x20] = 1;
+            ((struct Moby *)moby)->state = 1;
             break;
         case 1:
-            FastVecSub(tmp, moby + 0x10, &data->last_pos);
-            update_entity_matrix(data->matrix, tmp, &data->last_rot, moby + 0x40);
+            FastVecSub(tmp, &((struct Moby *)moby)->pos, &data->last_pos);
+            update_entity_matrix(data->matrix, tmp, &data->last_rot, &((struct Moby *)moby)->rot);
             break;
     }
     if (((Moby *)moby)->command != 0 && data->has_child_class != 0 && *(int *)&data->child == 0) {
@@ -849,16 +849,17 @@ void update_moby_transform_and_child(char *moby) {
         if (c != 0) {
             *(unsigned short *)(c + 0x32) = *(unsigned short *)&((Moby *)moby)->draw_dist;
             data->child[0x31] = 1;
-            *(long *)(data->child + 0x38) = *(long *)(moby + 0x38);
-            *(float *)(data->child + 0x2C) *= ((Moby *)moby)->scale / *(float *)(*(char **)(moby + 0x24) + 0x24);
+            *(long *)(data->child + 0x38) = *(long *)&((struct Moby *)moby)->spawn_frame;
+            *(float *)(data->child + 0x2C) *=
+                ((Moby *)moby)->scale / *(float *)(*(char **)&((struct Moby *)moby)->pclass + 0x24);
         }
     }
-    qcopy(&data->last_pos, moby + 0x10);
-    qcopy(&data->last_rot, moby + 0x40);
+    qcopy(&data->last_pos, &((struct Moby *)moby)->pos);
+    qcopy(&data->last_rot, &((struct Moby *)moby)->rot);
     child = data->child;
     if (child != 0) {
-        qcopy(child + 0x10, moby + 0x10);
-        qcopy(child + 0x40, moby + 0x40);
+        qcopy(child + 0x10, &((struct Moby *)moby)->pos);
+        qcopy(child + 0x40, &((struct Moby *)moby)->rot);
         moby_build_matrix(child);
     }
 }
@@ -871,9 +872,9 @@ void set_group_class_0630_moby_byte_bc(int idx, int value) {
     if (table != 0) {
         unsigned short *p = table;
         do {
-            unsigned char *moby = (unsigned char *)(((p[0] & 0x7FFF) << 8) + (int)veldin2_moby_table_m);
-            if (*(short *)(moby + 0xA6) == 0x630) {
-                moby[0xBC] = value;
+            struct Moby *moby = (struct Moby *)((unsigned char *)(((p[0] & 0x7FFF) << 8) + (int)veldin2_moby_table_m));
+            if (moby->oclass == 0x630) {
+                moby->command = value;
             }
         } while ((short)*p++ >= 0);
     }
@@ -1365,8 +1366,8 @@ short count_group_gadgebot_1906_mobys_not_in_state_8(int idx) {
         return 0;
     base = (int)veldin2_moby_table;
     while (1) {
-        unsigned char *moby = (unsigned char *)(base + ((p[0] & 0x7FFF) << 8));
-        if (*(short *)(moby + 0xA6) == 0x772 && moby[0x20] != 8)
+        struct Moby *moby = (struct Moby *)((unsigned char *)(base + ((p[0] & 0x7FFF) << 8)));
+        if (moby->oclass == MOBY_CLASS_GADGEBOT_1906 && moby->state != 8)
             n++;
         if ((short)*p++ < 0)
             return n;

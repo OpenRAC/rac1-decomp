@@ -3542,7 +3542,7 @@ void process_helicopter_hits_and_reactivation(char *m, int flag) {
                 }
             }
         }
-        qcopy(a, m + 0x10);
+        qcopy(a, &((struct Moby *)m)->pos);
         clear_u64_value(b);
         spawn_randomized_bolt_drop(m, 0x1F, 0x4A, 2, -1);
         d->hit_timer = scale_ticks(500);
@@ -3556,7 +3556,7 @@ void process_helicopter_hits_and_reactivation(char *m, int flag) {
     if (d->hit_timer == 0 && (((Moby *)m)->flags & 1) == 0)
         return;
     if (fast_dec_timer(&d->hit_timer) != 0 && flag != 0 && *(int *)&planetbuster_engaged == 0) {
-        *(int *)&((Moby *)m)->collision = *(int *)(*(char **)(m + 0x24) + 0x10);
+        *(int *)&((Moby *)m)->collision = *(int *)(*(char **)&((struct Moby *)m)->pclass + 0x10);
         ((Moby *)m)->flags = (((Moby *)m)->flags & 0xFFBE) | 0x1000;
     } else {
         *(int *)&((Moby *)m)->collision = 0;

@@ -1559,11 +1559,11 @@ void update_linked_moby_statistics_and_hero_volume_flag(char *moby) {
         unsigned int v = *(unsigned int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.control_mode;
         if ((v < 2 || v == 9) ? gemlik_game_mode == 0 : 0) {
             int idx = data->link;
-            char *m;
+            struct Moby *m;
             if (idx != -1) {
-                m = gemlik_moby_array_start + (idx << 8);
-                if (m != 0 && *(short *)(m + 0xA6) == 0xAA) {
-                    int s = (unsigned char)m[0x20];
+                m = (struct Moby *)(gemlik_moby_array_start + (idx << 8));
+                if (m != 0 && m->oclass == MOBY_CLASS_FORCEFIELD_TOWER) {
+                    int s = (unsigned char)*(char *)&m->state;
                     if (s == 0xFE)
                         goto join;
                     if (s != 0xFD)

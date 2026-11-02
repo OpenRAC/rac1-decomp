@@ -290,9 +290,9 @@ char *find_nearest_moby_by_class(void *pos, int type, float *dist) {
     char *best = 0;
     float bestd = 100000.0f;
     char *m;
-    for (m = gaspar_moby_list; m != 0; m = *(char **)(m + 0x28)) {
-        if (*(short *)(m + 0xA6) == type) {
-            float d = FastVecDist(pos, m + 0x10);
+    for (m = gaspar_moby_list; m != 0; m = *(char **)&((struct Moby *)m)->next) {
+        if (((struct Moby *)m)->oclass == type) {
+            float d = FastVecDist(pos, &((struct Moby *)m)->pos);
             if (d < bestd) {
                 bestd = d;
                 best = m;
@@ -1414,14 +1414,14 @@ char *spawn_class_11c_moby(char *owner, void *position, float angle) {
     moby = CreateMoby(0x11C);
     if (moby != 0) {
         unsigned char state;
-        ((unsigned char *)moby)[0x30] = ((unsigned char *)owner)[0x30];
+        ((struct Moby *)moby)->update_dist = ((unsigned char *)owner)[0x30];
         state = ((unsigned char *)owner)[0x30];
-        moby[0x31] = 1;
-        *(short *)(moby + 0x32) = state;
-        qcopy(moby + 0x10, copy);
-        qcopy(moby + 0x40, owner + 0x40);
-        *(float *)(moby + 0x48) = angle;
-        *(long *)(moby + 0x38) = *(long *)(owner + 0x38);
+        ((struct Moby *)moby)->visible = 1;
+        ((struct Moby *)moby)->draw_dist = state;
+        qcopy(&((struct Moby *)moby)->pos, copy);
+        qcopy(&((struct Moby *)moby)->rot, owner + 0x40);
+        ((struct Moby *)moby)->rot.z = angle;
+        *(long *)&((struct Moby *)moby)->spawn_frame = *(long *)(owner + 0x38);
         moby_build_matrix(moby);
     }
     return moby;
@@ -2348,17 +2348,19 @@ char *find_nearby_chain_attachment(char *self, char *pos, int bone) {
     char *m;
     char *tp = tmp;
     *(u128 *)tmp = *(u128 *)pos;
-    for (m = gaspar_moby_list; m != 0; m = *(char **)(m + 0x28)) {
+    for (m = gaspar_moby_list; m != 0; m = *(char **)&((struct Moby *)m)->next) {
         if (m == self)
             continue;
-        if (m != 0 && *(unsigned char *)(m + 0x20) != 0xFE && *(unsigned char *)(m + 0x20) != 0xFD) {
-            if (*(short *)(m + 0xA6) == 0x49D || *(short *)(m + 0xA6) == 0x494 || *(short *)(m + 0xA6) == 0x4A0) {
+        if (m != 0 && ((struct Moby *)m)->state != 0xFE && ((struct Moby *)m)->state != 0xFD) {
+            if (((struct Moby *)m)->oclass == MOBY_CLASS_AIRSHIP_PART_1181 ||
+                ((struct Moby *)m)->oclass == MOBY_CLASS_REFUELING_STATION ||
+                ((struct Moby *)m)->oclass == MOBY_CLASS_AIRSHIP_PART_1184) {
                 float d;
                 if (bone != -1) {
                     Moby_GetJointWorldPos(m, bone, vec);
                     d = FastVecDist(tp, vec);
                 } else {
-                    d = FastVecDist(tp, m + 0x10);
+                    d = FastVecDist(tp, &((struct Moby *)m)->pos);
                 }
                 if (d < bestd) {
                     bestd = d;
@@ -2931,19 +2933,19 @@ char *spawn_barrier_replacement(char *owner, int cls) {
     char *moby = CreateMoby(cls);
     if (moby != 0) {
         unsigned char state;
-        ((unsigned char *)moby)[0x30] = 0xFF;
+        ((struct Moby *)moby)->update_dist = 0xFF;
         state = 0xFF;
         ((Moby *)moby)->draw_dist = state;
-        moby[0x31] = 1;
-        moby[0x20] = 0;
-        qcopy(moby + 0x10, owner + 0x10);
-        qcopy(moby + 0x40, owner + 0x40);
-        moby[0xBC] = scale_ticks(10);
+        ((struct Moby *)moby)->visible = 1;
+        ((struct Moby *)moby)->state = 0;
+        qcopy(&((struct Moby *)moby)->pos, owner + 0x10);
+        qcopy(&((struct Moby *)moby)->rot, owner + 0x40);
+        ((struct Moby *)moby)->command = scale_ticks(10);
         moby_build_matrix(moby);
         copy_hero_moby_field_38(moby);
         ((Moby *)moby)->scale = ((Moby *)owner)->scale;
         ((Moby *)moby)->flags = ((Moby *)owner)->flags;
-        **(int **)(moby + 0x78) = *((int *)((Moby *)owner)->pvars);
+        **(int **)&((struct Moby *)moby)->pvars = *((int *)((Moby *)owner)->pvars);
     }
     return moby;
 }

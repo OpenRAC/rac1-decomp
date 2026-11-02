@@ -360,19 +360,19 @@ void update_moby_shadow_range(char *m) {
 
     qcopy(dir, shadow_light_dir);
     vec_scale_xy_to_length(dir, dir, 1.0f);
-    FastVecScale(p, m, 0.0009765625f);
+    FastVecScale(p, &((struct Moby *)m)->bsphere, 0.0009765625f);
     qcopy(a, p);
-    a[0] -= dir[0] * *(float *)(m + 0xC) * 0.000732421875f;
-    a[1] -= dir[1] * *(float *)(m + 0xC) * 0.000732421875f;
+    a[0] -= dir[0] * ((struct Moby *)m)->bsphere.w * 0.000732421875f;
+    a[1] -= dir[1] * ((struct Moby *)m)->bsphere.w * 0.000732421875f;
     qcopy(b, a);
     b[2] -= 8.0f;
     if (coll_line_fix(a, b, 0x22, 0, 0) != 0) {
         qcopy(a, p);
         hit = coll_output;
         h1 = *(float *)(hit + 0x28);
-        a[2] = a[2] + *(float *)(m + 0xC) * 0.00048828125f;
-        a[0] = a[0] + dir[0] * *(float *)(m + 0xC) * 0.000732421875f;
-        a[1] = a[1] + dir[1] * *(float *)(m + 0xC) * 0.000732421875f;
+        a[2] = a[2] + ((struct Moby *)m)->bsphere.w * 0.00048828125f;
+        a[0] = a[0] + dir[0] * ((struct Moby *)m)->bsphere.w * 0.000732421875f;
+        a[1] = a[1] + dir[1] * ((struct Moby *)m)->bsphere.w * 0.000732421875f;
         fast_vec_normalize(dir, dir, (a[2] - h1) / -dir[2]);
         FastVecAdd(b, a, dir);
         h2 = h1;

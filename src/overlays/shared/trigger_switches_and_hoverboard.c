@@ -812,7 +812,7 @@ void attach_big_head_cheat_manipulator(char *a) {
         int i;
         for (i = 0; i < rilgar_cutscene_state.n; i++) {
             char *moby = rilgar_cutscene_state.m[i];
-            if (*(short *)(moby + 0xA6) == *(short *)(a + 0xA6)) {
+            if (((struct Moby *)moby)->oclass == *(short *)(a + 0xA6)) {
                 unsigned char *q = rilgar_big_head_manipulator;
                 if (q[1] == 0) {
                     AttachManipulator(moby, 0, q);

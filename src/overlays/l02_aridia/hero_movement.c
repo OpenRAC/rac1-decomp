@@ -180,7 +180,7 @@ void hero_knockback(void *, s32, f32, f32);
 s32 HeroL02_TryKnockback(s32 arg) {
     u8 *m;
     T_8 *tbl;
-    u8 *mob;
+    struct Moby *mob;
     s32 flag;
     s32 id;
     f32 a, b, e;
@@ -235,8 +235,8 @@ s32 HeroL02_TryKnockback(s32 arg) {
     }
     switch (g_hero_r.vehicle_mode) {
         case 0:
-            mob = (u8 *)g_hero_r.damage_source_moby;
-            if (mob != 0 && (*(s16 *)(mob + 0xA6) == 0x4EB || *(s16 *)(mob + 0xA6) == 0x558)) {
+            mob = (struct Moby *)((u8 *)g_hero_r.damage_source_moby);
+            if (mob != 0 && (mob->oclass == 0x4EB || mob->oclass == 0x558)) {
                 id = 0x80;
             call_ret:
                 HeroL02_SetMoveState(id, 1);

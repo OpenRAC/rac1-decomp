@@ -1609,7 +1609,7 @@ char *spawn_spawner_egg(int owner, void *pos, void *rot, unsigned char a, unsign
     if (m) {
         struct SpawnerEggVars *d = (struct SpawnerEggVars *)((Moby *)m)->pvars;
         *(int *)&d->owner = owner;
-        qcopy(m + 0x10, pos);
+        qcopy(&((struct Moby *)m)->pos, pos);
         qcopy(&d->vel, rot);
         ((Moby *)m)->rot.x = random_float_between(-3.1415927f, 3.1415927f);
         ((Moby *)m)->rot.y = random_float_between(-3.1415927f, 3.1415927f);
@@ -1617,9 +1617,9 @@ char *spawn_spawner_egg(int owner, void *pos, void *rot, unsigned char a, unsign
         d->timer = scale_ticks(500);
         ((Moby *)m)->update_dist = 0xFF;
         ((Moby *)m)->draw_dist = 0x40;
-        m[0x31] = 1;
-        m[0x20] = 0;
-        ((Moby *)m)->scale = *(float *)(*(char **)(m + 0x24) + 0x24) * 0.3f;
+        ((struct Moby *)m)->visible = 1;
+        ((struct Moby *)m)->state = 0;
+        ((Moby *)m)->scale = *(float *)(*(char **)&((struct Moby *)m)->pclass + 0x24) * 0.3f;
         d->slot = b;
         d->kind = a;
         d->unk_1B = 0;

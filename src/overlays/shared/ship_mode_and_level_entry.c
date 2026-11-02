@@ -39,7 +39,7 @@ void initialize_moby_state_record(char *m) {
     *(char **)g = m;
     *(void **)(m + 0x74) = update_moby_proximity_interaction;
     ((Moby *)m)->flags &= 0xFFFC;
-    *(int *)&((Moby *)m)->collision = *(int *)(*(int *)(m + 0x24) + 0x10);
+    *(int *)&((Moby *)m)->collision = *(int *)(*(int *)&((struct Moby *)m)->pclass + 0x10);
     MobySetAnimation(m, 1, 0);
     src = ((int *)((Moby *)m)->pvars);
     *(int *)(g + 0x30) = src[0];

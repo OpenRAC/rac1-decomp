@@ -1755,13 +1755,13 @@ char *select_farthest_unselected_group_moby(int index) {
         int found = 0;
         int i;
         for (i = 0; i < 20; i++) {
-            if (*(short *)(moby + 0xB2) == group_moby_excluded_uids[i]) {
+            if (*(short *)&((struct Moby *)moby)->save_id == group_moby_excluded_uids[i]) {
                 found = 1;
                 break;
             }
         }
         if (!found) {
-            float d = vec_distance_xy(oltanis_camera_pos, moby + 0x10);
+            float d = vec_distance_xy(oltanis_camera_pos, &((struct Moby *)moby)->pos);
             if (bestd < d) {
                 bestd = d;
                 best = moby;
@@ -1897,7 +1897,7 @@ void machinegun_turret_update(char *moby) {
                 }
             }
             if (data->timer < scale_ticks_r(D_L14_001615D4_2B4E40 >> 1)) {
-                *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)(moby + 0x24) + 0x10);
+                *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)&((struct Moby *)moby)->pclass + 0x10);
                 ((Moby *)moby)->flags = ((Moby *)moby)->flags | 0x1000;
             }
             if (FastDecTimer_r2(&data->timer) == 0) {
@@ -1952,23 +1952,23 @@ void machinegun_turret_update(char *moby) {
                 sel = random_integer_below_r(3);
                 switch (sel) {
                     case 0:
-                        vec_scale_to_length_r(v30, moby + 0xE0, D_L14_001615E8_2B4E40);
+                        vec_scale_to_length_r(v30, &((struct Moby *)moby)->rot_row2, D_L14_001615E8_2B4E40);
                         break;
                     case 1:
-                        vec_scale_to_length_r(v30, moby + 0xE0, D_L14_001615EC_2B4E40);
-                        vec_scale_to_length_r(v50, moby + 0xD0, D_L14_001615F4_2B4E40);
+                        vec_scale_to_length_r(v30, &((struct Moby *)moby)->rot_row2, D_L14_001615EC_2B4E40);
+                        vec_scale_to_length_r(v50, &((struct Moby *)moby)->rot_row1, D_L14_001615F4_2B4E40);
                         FastVecAdd_r(v30, v30, v50);
                         break;
                     default:
-                        vec_scale_to_length_r(v30, moby + 0xE0, D_L14_001615EC_2B4E40);
-                        vec_scale_to_length_r(v50, moby + 0xD0, -D_L14_001615F4_2B4E40);
+                        vec_scale_to_length_r(v30, &((struct Moby *)moby)->rot_row2, D_L14_001615EC_2B4E40);
+                        vec_scale_to_length_r(v50, &((struct Moby *)moby)->rot_row1, -D_L14_001615F4_2B4E40);
                         FastVecAdd_r(v30, v30, v50);
                         break;
                 }
-                vec_scale_to_length_r(v40, moby + 0xC0, D_L14_001615F0_2B4E40);
+                vec_scale_to_length_r(v40, &((struct Moby *)moby)->rot_row0, D_L14_001615F0_2B4E40);
                 FastVecAdd_r(v30, v30, v40);
-                FastVecAdd_r(v30, v30, moby + 0x10);
-                vec_scale_to_length_r(v40, moby + 0xC0, D_L14_001615E4_2B4E40 * g_frame_time_r);
+                FastVecAdd_r(v30, v30, &((struct Moby *)moby)->pos);
+                vec_scale_to_length_r(v40, &((struct Moby *)moby)->rot_row0, D_L14_001615E4_2B4E40 * g_frame_time_r);
                 if (data->fire_timer == 0) {
                     set_moby_color(spawn_flying_bolt(v30, v40, (int)moby, 1), 0xE0, 0xE0, 0xE0);
                 }
@@ -2019,8 +2019,8 @@ void machinegun_turret_update(char *moby) {
             ((Moby *)moby)->flags = ((Moby *)moby)->flags & 0xEFFF;
             return;
         case 6:
-            spawn_explosion_r2(moby, data->explosion, moby + 0x10, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 0, 1.0f,
-                               15.0f, 1, 1, -1, 0);
+            spawn_explosion_r2(moby, data->explosion, &((struct Moby *)moby)->pos, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f,
+                               9.0f, 0, 1.0f, 15.0f, 1, 1, -1, 0);
             DeleteMoby_r(moby);
             return;
         default:
@@ -2592,7 +2592,7 @@ void process_minibomber_hit_reactions(unsigned char *m) {
     if (((Moby *)m)->state == 0 || ((Moby *)m)->state == 9) {
         return;
     }
-    ((Moby *)m)->scale = *(float *)(*(char **)(m + 0x24) + 0x24);
+    ((Moby *)m)->scale = *(float *)(*(char **)&((struct Moby *)m)->pclass + 0x24);
     f4 = 0.0f;
     q = MobyGetHitMessage(m, 0x330000, 0);
     if (q != 0) {
@@ -2717,12 +2717,12 @@ extern void MobySpringTurn_r(char *moby, float target, float *vel, float k, floa
 void ease_minibomber_position_and_heading(char *moby, float *target, float a, float b, float c, float d, float e,
                                           float f, float g) {
     int data;
-    int s = moby[0x20] & 0xFF;
+    int s = *(char *)&((struct Moby *)moby)->state & 0xFF;
     if ((s >= 4 && s <= 6) || s == 8) {
-        data = *(int *)(moby + 0x78);
-        Spring((float *)(moby + 0x10), (float *)(data + 0xF0), target[0], b, c, d);
-        Spring((float *)(moby + 0x14), (float *)(data + 0xF4), target[1], b, c, d);
-        Spring((float *)(moby + 0x18), (float *)(data + 0xF8), target[2], b, c, d);
+        data = *(int *)&((struct Moby *)moby)->pvars;
+        Spring(&((struct Moby *)moby)->pos.x, (float *)(data + 0xF0), target[0], b, c, d);
+        Spring(&((struct Moby *)moby)->pos.y, (float *)(data + 0xF4), target[1], b, c, d);
+        Spring(&((struct Moby *)moby)->pos.z, (float *)(data + 0xF8), target[2], b, c, d);
         MobySpringTurn_r(moby, a, (float *)(data + 0xE4), e, f, g);
     }
 }
@@ -3856,7 +3856,8 @@ void update_platform_tilt_basis(char *moby) {
             FastAbsF(p->motion.pos.f[1] - ((Moby *)moby)->pos.y) < 0.1f) {
             qcopy(v, up);
         } else {
-            FastVecSub(d, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, moby + 0x10);
+            FastVecSub(d, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
+                       &((struct Moby *)moby)->pos);
             d[2] = d[2] + *(float *)&platform_tilt_direction_z_offset;
             len = FastVecLength(d);
             if (len == 0.0f) {
@@ -3883,22 +3884,23 @@ void update_platform_tilt_basis(char *moby) {
             0.1f < FastAbsF(((Moby *)moby)->rot_row2.z - v[2])) {
             data->settle_timer = scale_ticks(60);
             ((Moby *)moby)->pos.z = ((Moby *)moby)->pos.z + 2.0f;
-            allocate_voice_slot(*(void **)(*(char **)(moby + 0x24) + 0x28), 8, (int)moby, (int)(moby + 0x10), 0x400);
+            allocate_voice_slot(*(void **)(*(char **)&((struct Moby *)moby)->pclass + 0x28), 8, (int)moby,
+                                (int)&((struct Moby *)moby)->pos, 0x400);
             ((Moby *)moby)->pos.z = ((Moby *)moby)->pos.z - 2.0f;
         }
     }
 
-    Spring((float *)(moby + 0xE0), &data->tilt_vel.x, v[0], 0.005f, 0.2f, 0.0f);
-    Spring((float *)(moby + 0xE4), &data->tilt_vel.y, v[1], 0.005f, 0.2f, 0.0f);
-    Spring((float *)(moby + 0xE8), &data->tilt_vel.z, v[2], 0.005f, 0.2f, 0.0f);
+    Spring(&((struct Moby *)moby)->rot_row2.x, &data->tilt_vel.x, v[0], 0.005f, 0.2f, 0.0f);
+    Spring(&((struct Moby *)moby)->rot_row2.y, &data->tilt_vel.y, v[1], 0.005f, 0.2f, 0.0f);
+    Spring(&((struct Moby *)moby)->rot_row2.z, &data->tilt_vel.z, v[2], 0.005f, 0.2f, 0.0f);
 
-    vec_scale_to_length(moby + 0xE0, moby + 0xE0, 1.0f);
+    vec_scale_to_length(&((struct Moby *)moby)->rot_row2, &((struct Moby *)moby)->rot_row2, 1.0f);
     *(u128_s07 *)d = 0;
     d[0] = 1.0f;
     d[3] = 1.0f;
-    FastVecCross(moby + 0xD0, d, moby + 0xE0);
-    vec_scale_to_length(moby + 0xD0, moby + 0xD0, 1.0f);
-    FastVecCross(moby + 0xC0, moby + 0xE0, moby + 0xD0);
+    FastVecCross(&((struct Moby *)moby)->rot_row1, d, &((struct Moby *)moby)->rot_row2);
+    vec_scale_to_length(&((struct Moby *)moby)->rot_row1, &((struct Moby *)moby)->rot_row1, 1.0f);
+    FastVecCross(&((struct Moby *)moby)->rot_row0, &((struct Moby *)moby)->rot_row2, &((struct Moby *)moby)->rot_row1);
     ((Moby *)moby)->rot_row0.w = 0.0f;
     ((Moby *)moby)->rot_row1.w = 0.0f;
     ((Moby *)moby)->rot_row2.w = 0.0f;

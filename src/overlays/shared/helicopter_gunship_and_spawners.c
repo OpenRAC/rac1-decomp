@@ -945,8 +945,8 @@ void bomb_545_update(char *moby) {
         ((Moby *)moby)->pos.z = 1018.0f;
 }
 /* moby state predicate: true when field 0xA6 is 0x23E and the state byte is 0xE */
-int is_moby_class_23e_in_state_14(char *moby) {
-    if (*(short *)(moby + 0xA6) == 0x23E && ((unsigned char *)moby)[0x20] == 0xE) {
+int is_moby_class_23e_in_state_14(struct Moby *moby) {
+    if (moby->oclass == 0x23E && moby->state == 0xE) {
         return 1;
     }
     return 0;
@@ -1905,7 +1905,7 @@ void attach_shared_manipulator_to_matching_class_moby(char *a) {
         int i;
         for (i = 0; i < kerwan_cutscene_state.n; i++) {
             char *moby = kerwan_cutscene_state.m[i];
-            if (*(short *)(moby + 0xA6) == *(short *)(a + 0xA6)) {
+            if (((struct Moby *)moby)->oclass == *(short *)(a + 0xA6)) {
                 unsigned char *q = kerwan_big_head_manipulator;
                 if (q[1] == 0) {
                     AttachManipulator(moby, 1, q);

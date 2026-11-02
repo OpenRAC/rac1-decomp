@@ -1691,7 +1691,8 @@ void update_blarg_paratrooper_damage_and_state(char *m) {
         return;
     {
         float t = *(float *)&paratrooper_move_speed * g_frame_time;
-        ((MS_ *)m)->f2C = *(float *)(*(char **)(m + 0x24) + 0x24) * *(float *)&paratrooper_scale;
+        ((struct Moby *)m)->scale =
+            *(float *)(*(char **)&((struct Moby *)m)->pclass + 0x24) * *(float *)&paratrooper_scale;
         ((struct Paratrooper302618 *)d)->unk_F4 = t;
     }
 
@@ -1782,7 +1783,7 @@ void update_blarg_paratrooper_damage_and_state(char *m) {
                     float x2 = *(float *)&paratrooper_hit_knock_speed;
                     float x1 = *(float *)&paratrooper_hit_knock_lift;
                     float a3, a4, a2, a1;
-                    ((MF_ *)m)->f34 &= 0xEFFF;
+                    ((struct Moby *)m)->flags &= 0xEFFF;
                     a3 = g_frame_time;
                     a4 = x4 * g_frame_time_sq;
                     a2 = x2 * a3;
@@ -1838,7 +1839,7 @@ void update_blarg_paratrooper_damage_and_state(char *m) {
                                         ((struct Paratrooper302618 *)d)->sight_range, 0, 0, w + 0x10, *(int *)w);
         }
         if (r != 2) {
-            f0 = vec_distance_xy(m + 0x10, ((struct Paratrooper302618 *)d)->target_pos);
+            f0 = vec_distance_xy(&((struct Moby *)m)->pos, ((struct Paratrooper302618 *)d)->target_pos);
             if (((struct Paratrooper302618 *)d)->sight_range < f0 ||
                 3.0f < FastAbsF(((Moby *)m)->pos.z - ((struct Paratrooper302618 *)d)->target_pos[2]))
                 ((struct Paratrooper302618 *)d)->f164 = 2;
@@ -1858,7 +1859,7 @@ void update_blarg_paratrooper_damage_and_state(char *m) {
 
     st = ((Moby *)m)->state;
     if (st == 0 || st == 5 || st == 7 || st == 4) {
-        f1 = ProbeGroundHeight(m + 0x10, 0, 0.5f);
+        f1 = ProbeGroundHeight(&((struct Moby *)m)->pos, 0, 0.5f);
         if (f1 < ((Moby *)m)->pos.z)
             ((Moby *)m)->pos.z = f1;
     }

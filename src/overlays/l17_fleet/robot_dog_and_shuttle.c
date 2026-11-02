@@ -965,7 +965,7 @@ int update_shuttle_travel_and_camera(char *moby, int idx) {
     t3 = t - f;
     i3 = truncate_float_to_s32(t);
     lerp_vector(pos, &c1->p[i1], &c1->p[i1 + 1], t1);
-    lerp_vector(moby + 0x10, &c3->p[i3], &c3->p[i3 + 1], t3);
+    lerp_vector(&((struct Moby *)moby)->pos, &c3->p[i3], &c3->p[i3 + 1], t3);
     set_camera_position(pos);
     {
         char *base = fleet_camera_points + (d->e84 << 7);
@@ -995,7 +995,8 @@ int update_shuttle_travel_and_camera(char *moby, int idx) {
             FastSubRots(-fast_atan2(vec_distance_xy(pos, &c2->p[i2 + 1]), c2->p[i2 + 1].z - pos[2]), ang) * t2, ang);
         set_camera_rotation(m);
     }
-    ((Moby *)moby)->scale = *(float *)(*(char **)(moby + 0x24) + 0x24) * (d->f9C - (d->f9C - d->fA0) * d->fA4);
+    ((Moby *)moby)->scale =
+        *(float *)(*(char **)&((struct Moby *)moby)->pclass + 0x24) * (d->f9C - (d->f9C - d->fA0) * d->fA4);
     if (d->fA4 > 0.8f) {
         turn = g_frame_time_sq * 12.566371f;
         SteerAngleWithVelocity(&d->f88, &d->f8C, 3.1415927f, turn, turn, g_frame_time * 6.2831855f);
@@ -1036,7 +1037,7 @@ void update_fleet_camera_box_watcher(char *moby) {
     int found;
     int tgt;
     int idx;
-    char *m;
+    struct Moby *m;
     int *p;
     int *q;
     float f;
@@ -1131,16 +1132,16 @@ void update_fleet_camera_box_watcher(char *moby) {
                 d->last_target = -1;
             }
             if (idx != -1) {
-                m = fleet_mobys + (idx << 8);
+                m = (struct Moby *)(fleet_mobys + (idx << 8));
                 if (m == 0)
                     goto skip1;
-                if (*(short *)(m + 0xA6) != 0x4E)
+                if (m->oclass != 0x4E)
                     goto skip1;
-                if (*(unsigned char *)(m + 0x20) == 0xFE)
+                if (m->state == 0xFE)
                     goto skip1;
-                if (*(unsigned char *)(m + 0x20) == 0xFD)
+                if (m->state == 0xFD)
                     goto skip1;
-                if (*(unsigned char *)(m + 0x20) == 3)
+                if (m->state == 3)
                     goto skip1;
             }
             if (d->dwell_a > d->cooldown && tgt != -1 &&
@@ -1741,15 +1742,15 @@ char *try_activate_blarg_ship_from_list(int list) {
         vec_scale_to_length(A, D, 6.0f);
         FastVecAdd(B, B, A);
         qcopy(d + 0xB0, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
-        qcopy(m + 0x10, B);
-        m[0x20] = 5;
-        m[0xBC] = 1;
+        qcopy(&((struct Moby *)m)->pos, B);
+        ((struct Moby *)m)->state = 5;
+        ((struct Moby *)m)->command = 1;
         *(float *)(d + 0x6C) = g_frame_time * 20.0f;
         *(float *)(d + 0x94) = 5.0f;
         if (((Moby *)m)->prev_seq)
             MobyBlendAnimation(m, 0, 0, scale_ticks(10));
         ((Moby *)m)->flags &= 0xFFFE;
-        *(int *)&((Moby *)m)->collision = *(int *)(*(char **)(m + 0x24) + 0x10);
+        *(int *)&((Moby *)m)->collision = *(int *)(*(char **)&((struct Moby *)m)->pclass + 0x10);
         return m;
     } while (*s++ >= 0);
     return 0;

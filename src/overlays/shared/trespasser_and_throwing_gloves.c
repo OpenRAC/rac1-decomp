@@ -1452,13 +1452,13 @@ u8 *spawn_decoy(s32 value, u128_C48C8 *position, u128_C48C8 *other_position) {
         ((Moby *)m)->visible = 1;
         data = ((u8 *)((Moby *)m)->pvars);
         ((Moby *)m)->state = 0;
-        qcopy(m + 0x10, position);
+        qcopy(&((struct Moby *)m)->pos, position);
         qcopy(data + 0x10, other_position);
         speed = frame_scale * -0.5f;
         *(s32 *)(data + 0x40) = value;
         *(u16 *)(data + 0x44) = 0;
         *(s32 *)(data + 0x54) = 0;
-        ((Moby *)m)->scale = *(f32 *)(*(u8 **)(m + 0x24) + 0x24) * (speed + 1.0f);
+        ((Moby *)m)->scale = *(f32 *)(*(u8 **)&((struct Moby *)m)->pclass + 0x24) * (speed + 1.0f);
         *(f32 *)(data + 0x48) = (IntToFloat(flags[0x19]) + 1.0f) * 4.0f;
         if (((Moby *)m)->prev_seq != 0)
             func_00213DE0_C48C8(m, 0, 0, scale_ticks(0));
@@ -3365,14 +3365,14 @@ char *spawn_glove_of_doom_held_moby(int a0, char *pos, char *vec) {
         d = (struct GloveHeldVars *)((Moby *)m)->pvars;
         ((Moby *)m)->update_dist = 0xFF;
         ((Moby *)m)->draw_dist = 0xFF;
-        m[0x31] = 1;
-        m[0x20] = 0;
-        qcopy(m + 0x10, pos);
+        ((struct Moby *)m)->visible = 1;
+        ((struct Moby *)m)->state = 0;
+        qcopy(&((struct Moby *)m)->pos, pos);
         qcopy(&d->velocity, vec);
         d->owner = a0;
         d->state = 0;
         d->timer = 0;
-        ((Moby *)m)->scale = *(float *)(*(char **)(m + 0x24) + 0x24) * 0.01f;
+        ((Moby *)m)->scale = *(float *)(*(char **)&((struct Moby *)m)->pclass + 0x24) * 0.01f;
         g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         if (g->unk20A5 != 0 || g->unk20AF != 0) {
             ((Moby *)m)->flags |= 0x41;

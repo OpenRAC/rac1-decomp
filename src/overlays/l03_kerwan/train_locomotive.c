@@ -1273,7 +1273,7 @@ void update_spline_moby_destruction_and_respawn(char *moby, void *vel_in, int fl
         }
         *(Quad_0029E498 *)vel = *(Quad_0029E498 *)vel_in;
         FastVecScale(vel, vel, 0.5f);
-        FastVecAdd(spot, spot, moby + 0x10);
+        FastVecAdd(spot, spot, &((struct Moby *)moby)->pos);
         if (*(int *)(hit + 0x24) & 0x800000) {
             spawn_randomized_bolt_drop_r(moby, 10, 20, 2, -1);
         } else {
@@ -1281,64 +1281,85 @@ void update_spline_moby_destruction_and_respawn(char *moby, void *vel_in, int fl
         }
         data->respawn_timer = scale_ticks(600);
         spawn_explosion(moby, vel, spot, 0.0f, 0.0f, 20, 3, 4, 4.0f, 2.0f, 100000.0f, -1, 3.0f, 15.0f, 1, 1, -1, 0);
-        FastVecScale(push, moby + 0xC0, frame_scale * 0.075f);
+        FastVecScale(push, &((struct Moby *)moby)->rot_row0, frame_scale * 0.075f);
         push[2] += frame_scale * 0.08f;
         switch (((Moby *)moby)->oclass) {
             case 0x73:
-                spawn_debris_0029E498(moby, 0x6A9, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0,
-                                      g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
-                spawn_debris_0029E498(moby, 0x6AA, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0,
-                                      g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
-                spawn_debris_0029E498(moby, 0x6AB, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0,
-                                      g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
+                spawn_debris_0029E498(moby, 0x6A9, &((struct Moby *)moby)->pos.x, &((struct Moby *)moby)->rot,
+                                      scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec,
+                                      kerwan_zero_vec);
+                spawn_debris_0029E498(moby, 0x6AA, &((struct Moby *)moby)->pos.x, &((struct Moby *)moby)->rot,
+                                      scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec,
+                                      kerwan_zero_vec);
+                spawn_debris_0029E498(moby, 0x6AB, &((struct Moby *)moby)->pos.x, &((struct Moby *)moby)->rot,
+                                      scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec,
+                                      kerwan_zero_vec);
                 break;
             case 0x74:
-                spawn_debris_0029E498(moby, 0x6AC, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0,
-                                      g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
-                spawn_debris_0029E498(moby, 0x6AD, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0,
-                                      g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
-                spawn_debris_0029E498(moby, 0x6AE, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0,
-                                      g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
+                spawn_debris_0029E498(moby, 0x6AC, &((struct Moby *)moby)->pos.x, &((struct Moby *)moby)->rot,
+                                      scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec,
+                                      kerwan_zero_vec);
+                spawn_debris_0029E498(moby, 0x6AD, &((struct Moby *)moby)->pos.x, &((struct Moby *)moby)->rot,
+                                      scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec,
+                                      kerwan_zero_vec);
+                spawn_debris_0029E498(moby, 0x6AE, &((struct Moby *)moby)->pos.x, &((struct Moby *)moby)->rot,
+                                      scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec,
+                                      kerwan_zero_vec);
                 break;
             case 0x75:
-                spawn_debris_0029E498(moby, 0x6AF, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0,
-                                      g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
-                spawn_debris_0029E498(moby, 0x6B0, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0,
-                                      g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
-                spawn_debris_0029E498(moby, 0x6B1, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0,
-                                      g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
+                spawn_debris_0029E498(moby, 0x6AF, &((struct Moby *)moby)->pos.x, &((struct Moby *)moby)->rot,
+                                      scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec,
+                                      kerwan_zero_vec);
+                spawn_debris_0029E498(moby, 0x6B0, &((struct Moby *)moby)->pos.x, &((struct Moby *)moby)->rot,
+                                      scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec,
+                                      kerwan_zero_vec);
+                spawn_debris_0029E498(moby, 0x6B1, &((struct Moby *)moby)->pos.x, &((struct Moby *)moby)->rot,
+                                      scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec,
+                                      kerwan_zero_vec);
                 break;
             case 0x76:
-                spawn_debris_0029E498(moby, 0x6B2, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0,
-                                      g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
-                spawn_debris_0029E498(moby, 0x6B3, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0,
-                                      g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
-                spawn_debris_0029E498(moby, 0x6B4, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0,
-                                      g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
+                spawn_debris_0029E498(moby, 0x6B2, &((struct Moby *)moby)->pos.x, &((struct Moby *)moby)->rot,
+                                      scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec,
+                                      kerwan_zero_vec);
+                spawn_debris_0029E498(moby, 0x6B3, &((struct Moby *)moby)->pos.x, &((struct Moby *)moby)->rot,
+                                      scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec,
+                                      kerwan_zero_vec);
+                spawn_debris_0029E498(moby, 0x6B4, &((struct Moby *)moby)->pos.x, &((struct Moby *)moby)->rot,
+                                      scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec,
+                                      kerwan_zero_vec);
                 break;
             case 0x77:
-                spawn_debris_0029E498(moby, 0x6B5, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0,
-                                      g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
-                spawn_debris_0029E498(moby, 0x6B6, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0,
-                                      g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
-                spawn_debris_0029E498(moby, 0x6B7, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0,
-                                      g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
+                spawn_debris_0029E498(moby, 0x6B5, &((struct Moby *)moby)->pos.x, &((struct Moby *)moby)->rot,
+                                      scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec,
+                                      kerwan_zero_vec);
+                spawn_debris_0029E498(moby, 0x6B6, &((struct Moby *)moby)->pos.x, &((struct Moby *)moby)->rot,
+                                      scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec,
+                                      kerwan_zero_vec);
+                spawn_debris_0029E498(moby, 0x6B7, &((struct Moby *)moby)->pos.x, &((struct Moby *)moby)->rot,
+                                      scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec,
+                                      kerwan_zero_vec);
                 break;
             case 0x78:
-                spawn_debris_0029E498(moby, 0x6B8, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0,
-                                      g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
-                spawn_debris_0029E498(moby, 0x6B9, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0,
-                                      g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
-                spawn_debris_0029E498(moby, 0x6BA, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0,
-                                      g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
+                spawn_debris_0029E498(moby, 0x6B8, &((struct Moby *)moby)->pos.x, &((struct Moby *)moby)->rot,
+                                      scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec,
+                                      kerwan_zero_vec);
+                spawn_debris_0029E498(moby, 0x6B9, &((struct Moby *)moby)->pos.x, &((struct Moby *)moby)->rot,
+                                      scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec,
+                                      kerwan_zero_vec);
+                spawn_debris_0029E498(moby, 0x6BA, &((struct Moby *)moby)->pos.x, &((struct Moby *)moby)->rot,
+                                      scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec,
+                                      kerwan_zero_vec);
                 break;
             case 0x84:
-                spawn_debris_0029E498(moby, 0x6BC, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0,
-                                      g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
-                spawn_debris_0029E498(moby, 0x6BE, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0,
-                                      g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
-                spawn_debris_0029E498(moby, 0x6BF, (float *)(moby + 0x10), moby + 0x40, scale_ticks(90), 0,
-                                      g_frame_time_sq * 12.0f, push, kerwan_zero_vec, kerwan_zero_vec);
+                spawn_debris_0029E498(moby, 0x6BC, &((struct Moby *)moby)->pos.x, &((struct Moby *)moby)->rot,
+                                      scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec,
+                                      kerwan_zero_vec);
+                spawn_debris_0029E498(moby, 0x6BE, &((struct Moby *)moby)->pos.x, &((struct Moby *)moby)->rot,
+                                      scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec,
+                                      kerwan_zero_vec);
+                spawn_debris_0029E498(moby, 0x6BF, &((struct Moby *)moby)->pos.x, &((struct Moby *)moby)->rot,
+                                      scale_ticks(90), 0, g_frame_time_sq * 12.0f, push, kerwan_zero_vec,
+                                      kerwan_zero_vec);
                 break;
         }
         if (((Moby *)moby)->oclass == MOBY_CLASS_BLIMP && gSkillPoints_r[4] == 0) {
@@ -1349,10 +1370,10 @@ void update_spline_moby_destruction_and_respawn(char *moby, void *vel_in, int fl
         allocate_voice_for_group_entry_r(0, 0, moby);
     }
     kerwan_red_ship_update_slot = (void *)red_ship_1_update;
-    ((unsigned char *)moby)[0xA4] = 0xFF;
+    ((struct Moby *)moby)->hit_slot = 0xFF;
     if (data->respawn_timer != 0) {
         if (FastDecTimer(&data->respawn_timer) && flag) {
-            *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)(moby + 0x24) + 0x10);
+            *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)&((struct Moby *)moby)->pclass + 0x10);
             ((Moby *)moby)->flags = (((Moby *)moby)->flags & 0xFFBE) | 0x1000;
         } else {
             *(int *)&((Moby *)moby)->collision = 0;
@@ -1634,7 +1655,8 @@ char *func_L03_002BC038_r(Moby *parent, int unused, int color, int a3, int a4, f
 }
 /* Return 1 when moby is a live Robot Dog moby in state 5. */
 int is_robot_dog_573_in_state_5(unsigned char *moby) {
-    if (moby && moby[0x20] != 0xFE && moby[0x20] != 0xFD && *(short *)(moby + 0xA6) == 0x23D && moby[0x20] == 5) {
+    if (moby && ((struct Moby *)moby)->state != 0xFE && ((struct Moby *)moby)->state != 0xFD &&
+        ((struct Moby *)moby)->oclass == MOBY_CLASS_ROBOT_DOG_573 && ((struct Moby *)moby)->state == 5) {
         return 1;
     }
     return 0;
@@ -2095,7 +2117,8 @@ int can_release_linked_robot_dog(unsigned char *moby) {
 }
 /* Return 1 when moby is a live class 0x23E moby in state 9. */
 int is_moby_class_23e_in_state_9(unsigned char *moby) {
-    if (moby && moby[0x20] != 0xFE && moby[0x20] != 0xFD && *(short *)(moby + 0xA6) == 0x23E && moby[0x20] == 9) {
+    if (moby && ((struct Moby *)moby)->state != 0xFE && ((struct Moby *)moby)->state != 0xFD &&
+        ((struct Moby *)moby)->oclass == 0x23E && ((struct Moby *)moby)->state == 9) {
         return 1;
     }
     return 0;
@@ -2124,7 +2147,7 @@ extern void MobyBlendAnimation(void *, int, int, int);
 
 // Checks whether a moby can start an attack on a target and switches its state.
 int try_start_kerwan_path_enemy_heading_turn(float ang, unsigned char *moby, char *target) {
-    char *data = *(char **)(moby + 0x78);
+    char *data = *(char **)&((struct Moby *)moby)->pvars;
     int idx;
     float f20;
     unsigned char st;
@@ -2137,23 +2160,24 @@ int try_start_kerwan_path_enemy_heading_turn(float ang, unsigned char *moby, cha
                     return 0;
             }
         }
-        f20 = FastSubRots(ang, *(float *)(moby + 0x48));
-        if (FastAbsF(f20) >= 0.7853982f && *(unsigned char *)(data + 0x263) == 0 && moby[0x53] != 1) {
+        f20 = FastSubRots(ang, ((struct Moby *)moby)->rot.z);
+        if (FastAbsF(f20) >= 0.7853982f && *(unsigned char *)(data + 0x263) == 0 &&
+            ((struct Moby *)moby)->prev_seq != 1) {
             goto go;
         }
         if (FastAbsF(f20) > 1.5707964f) {
         go:
-            if (vec_distance_xy(moby + 0x10, target) < 20.0f) {
+            if (vec_distance_xy(&((struct Moby *)moby)->pos, target) < 20.0f) {
                 if (FastAbsF(f20) > 1.1780972f) {
                     MobyBlendAnimation(moby, 1, 0, scale_ticks(10));
-                    *(float *)(moby + 0x58) = 1.0f;
+                    ((struct Moby *)moby)->anim_speed = 1.0f;
                 } else {
                     MobyBlendAnimation(moby, 9, 0, scale_ticks(10));
                 }
                 *(float *)(data + 0x28C) = ang;
-                st = moby[0x20];
-                moby[0x20] = 0xC;
-                moby[0xBC] = st;
+                st = ((struct Moby *)moby)->state;
+                ((struct Moby *)moby)->state = 0xC;
+                ((struct Moby *)moby)->command = st;
                 return 1;
             }
         }

@@ -1205,25 +1205,25 @@ void scatter_bomber_tank_linked_debris(char *moby) {
     index = *list & 0x7FFF;
     other = (char *)((Blk_7010 *)batalia_mobys + index);
     for (i = 0; i < 40 && available_moby_slot_count >= 50; i++) {
-        char *m;
+        struct Moby *m;
         if (random_integer_below(0xFF) & 1)
-            m = CreateMoby(0x310);
+            m = (struct Moby *)CreateMoby(0x310);
         else
-            m = CreateMoby(0x311);
+            m = (struct Moby *)CreateMoby(0x311);
         if (m != 0) {
             float ang;
-            *(short *)(m + 0x32) = 0x40;
-            *(unsigned char *)(m + 0x30) = 0xFF;
-            m[0x31] = 1;
-            *(float *)(m + 0x40) = random_angle_radians_r();
-            *(float *)(m + 0x44) = random_angle_radians_r();
-            *(float *)(m + 0x48) = random_angle_radians_r();
+            m->draw_dist = 0x40;
+            m->update_dist = 0xFF;
+            m->visible = 1;
+            m->rot.x = random_angle_radians_r();
+            m->rot.y = random_angle_radians_r();
+            m->rot.z = random_angle_radians_r();
             a[0] = random_float_between(-1.0f, 1.0f);
             a[1] = random_float_between(-1.0f, 1.0f);
             a[2] = random_float_between(-1.0f, 1.0f);
             a[3] = 1.0f;
             transform_vector(a, a, batalia_scene_points + (d->unk_148 << 7));
-            qcopy(m + 0x10, a);
+            qcopy(&m->pos, a);
             ang = random_float_between(-0.2617994f, 0.2617994f);
             clear_u64_value(b);
             c[0] = FastCos(ang) * (g_frame_time * 15.0f);
@@ -2922,31 +2922,31 @@ void func_L08_002DF8A0_r(char *moby, int a, int n, int flag) {
     }
     for (i = 0; i < n; i++) {
         {
-            char *m;
+            struct Moby *m;
             if (flag) {
                 if (random_integer_below(0xFF) & 1)
-                    m = CreateMoby(0x30E);
+                    m = (struct Moby *)CreateMoby(0x30E);
                 else
-                    m = CreateMoby(0x30F);
+                    m = (struct Moby *)CreateMoby(0x30F);
             } else {
                 if (random_integer_below(0xFF) & 1)
-                    m = CreateMoby(0x310);
+                    m = (struct Moby *)CreateMoby(0x310);
                 else
-                    m = CreateMoby(0x311);
+                    m = (struct Moby *)CreateMoby(0x311);
             }
-            *(short *)(m + 0x32) = 0x40;
-            m[0x31] = 1;
-            m[0x30] = 0x40;
-            *(long *)(m + 0x38) = *(long *)(moby + 0x38);
-            *(float *)(m + 0x40) = random_angle_radians();
-            *(float *)(m + 0x44) = random_angle_radians();
-            *(float *)(m + 0x48) = random_angle_radians();
+            m->draw_dist = 0x40;
+            m->visible = 1;
+            m->update_dist = 0x40;
+            *(long *)&m->spawn_frame = *(long *)(moby + 0x38);
+            m->rot.x = random_angle_radians();
+            m->rot.y = random_angle_radians();
+            m->rot.z = random_angle_radians();
             vec[0] = random_float_between(-1.0f, 1.0f);
             vec[1] = random_float_between(-1.0f, 1.0f);
             vec[2] = random_float_between(-1.0f, 1.0f);
             vec[3] = 1.0f;
             transform_vector(vec, vec, batalia_scene_points + (a << 7));
-            qcopy(m + 0x10, vec);
+            qcopy(&m->pos, vec);
             clear_u64_value(vec2);
             FastVecSub(vec3, vec, moby + 0x10);
             vec_set_length_xy(vec3, vec3, random_float_between(g_frame_time * 12.0f, g_frame_time * 15.0f));
@@ -2977,7 +2977,7 @@ void update_path_following_moby(char *m) {
     float a[4];
     float b[4];
     struct PathMoverFallVars *d = (struct PathMoverFallVars *)((Moby *)m)->pvars;
-    char *pos = m + 0x10;
+    char *pos = (char *)&((struct Moby *)m)->pos;
     int *t;
     qcopy(a, pos);
     t = (int *)batalia_path_table[d->path];
@@ -2994,11 +2994,11 @@ void update_path_following_moby(char *m) {
                 d->path_pos = d->path_pos * (float)*t;
                 d->bob = randf_sym(0.0f, 5.0f);
             }
-            m[0x20] = 1;
+            ((struct Moby *)m)->state = 1;
             ((Moby *)m)->update_dist = 0xFF;
         case 1: {
             float f;
-            SamplePathAt(t, 1, m + 0x10, (float *)(m + 0x40), 0, d->path_pos);
+            SamplePathAt(t, 1, &((struct Moby *)m)->pos, &((struct Moby *)m)->rot.x, 0, d->path_pos);
             ((Moby *)m)->rot.y = ((Moby *)m)->rot.y * 0.5f;
             ((Moby *)m)->pos.z = ((Moby *)m)->pos.z + d->bob;
             d->path_pos = d->path_pos + d->path_step;
@@ -3037,7 +3037,7 @@ void update_path_following_moby(char *m) {
     if (((Moby *)m)->pos.x < 4.0f || ((Moby *)m)->pos.y < 4.0f || ((Moby *)m)->pos.z < 4.0f) {
         *(int *)&((Moby *)m)->collision = 0;
     } else {
-        *(int *)&((Moby *)m)->collision = *(int *)(*(char **)(m + 0x24) + 0x10);
+        *(int *)&((Moby *)m)->collision = *(int *)(*(char **)&((struct Moby *)m)->pclass + 0x10);
     }
     if (MobyGetHitMessage(m, 0x10000, 0) != 0 && ((Moby *)m)->state != 2) {
         if (hero_current_state == 0x32 && gSkillPoints[0xC] == 0) {
@@ -3045,11 +3045,12 @@ void update_path_following_moby(char *m) {
             PlayBankSound(1, 0, 0);
             ShowBanner(0x53DB, -1);
         }
-        FastVecSub(b, m + 0x10, a);
+        FastVecSub(b, &((struct Moby *)m)->pos, a);
         qcopy(&d->velocity, b);
         d->velocity.z = d->velocity.z + (g_frame_time + g_frame_time);
-        spawn_explosion(m, b, m + 0x10, 0.0f, 0.0f, 0x14, 0x28, 0x10, 10.0f, 5.0f, 9.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
-        m[0x20] = 2;
+        spawn_explosion(m, b, &((struct Moby *)m)->pos, 0.0f, 0.0f, 0x14, 0x28, 0x10, 10.0f, 5.0f, 9.0f, 1.0f, -1,
+                        15.0f, 1, 1, -1, 0);
+        ((struct Moby *)m)->state = 2;
     }
     ((Moby *)m)->hit_slot = 0xFF;
     if (((Moby *)m)->visible != 0) {

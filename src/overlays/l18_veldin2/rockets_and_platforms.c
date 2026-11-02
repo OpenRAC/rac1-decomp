@@ -703,8 +703,8 @@ char *launch_mine_568_moby_from_list(float f, int a0, int idx, float *p6, float 
             s = *p;
             {
                 char *m = base + ((s & 0x7FFF) << 8);
-                if (*(short *)(m + 0xA6) == 0x238) {
-                    if (((unsigned char *)m)[0x20] == 5) {
+                if (((struct Moby *)m)->oclass == MOBY_CLASS_MINE_568) {
+                    if (((struct Moby *)m)->state == 5) {
                         found = m;
                     }
                 }
@@ -714,17 +714,17 @@ char *launch_mine_568_moby_from_list(float f, int a0, int idx, float *p6, float 
     }
     moby = found;
     if (moby != 0) {
-        ((unsigned char *)moby)[0x30] = 0xFF;
+        ((struct Moby *)moby)->update_dist = 0xFF;
         ((Moby *)moby)->draw_dist = 0xFF;
-        moby[0x31] = 1;
-        moby[0x20] = 1;
+        ((struct Moby *)moby)->visible = 1;
+        ((struct Moby *)moby)->state = 1;
         ((Moby *)moby)->flags = (((Moby *)moby)->flags & 0xFFBE) | 0x1000;
-        moby[0xBC] = 0;
-        *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)(moby + 0x24) + 0x10);
-        if (((unsigned char *)moby)[0x53] != 0) {
+        ((struct Moby *)moby)->command = 0;
+        *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)&((struct Moby *)moby)->pclass + 0x10);
+        if (((struct Moby *)moby)->prev_seq != 0) {
             MobyBlendAnimation(moby, 0, 0, 1);
         }
-        qcopy(moby + 0x10, p6);
+        qcopy(&((struct Moby *)moby)->pos, p6);
         r = *(float *)&class238_landing_roll_distance;
         *(int *)&((Moby *)moby)->rot.x = 0;
         ((Moby *)moby)->rot.y = -r;
@@ -1149,9 +1149,9 @@ char *find_nearest_thruster_pack_lock_green_moby_in_list(void *pos, int idx) {
         return 0;
     while (1) {
         int off = (*p & 0x7FFF) << 8;
-        char *m = (char *)(off + (int)veldin2_moby_table_m);
-        if (*(short *)(m + 0xA6) == 0x247) {
-            float d = FastVecDist(pos, m + 0x10);
+        struct Moby *m = (struct Moby *)((char *)(off + (int)veldin2_moby_table_m));
+        if (m->oclass == MOBY_CLASS_THRUSTER_PACK_LOCK_GREEN) {
+            float d = FastVecDist(pos, &m->pos);
             if (d < bestd) {
                 bestd = d;
                 best = veldin2_moby_table_m + off;
@@ -3434,16 +3434,16 @@ int activate_drek_fight_missiles_in_group(char *moby, int group, float *pos) {
         if (((Moby *)m)->oclass == MOBY_CLASS_DREK_FIGHT_MISSILE && ((Moby *)m)->state == 1) {
             unsigned char *d = ((unsigned char *)((Moby *)m)->pvars);
             idle = 0;
-            qcopy(m + 0x10, pos);
+            qcopy(&((struct Moby *)m)->pos, pos);
             i = 0;
             do {
-                qcopy(d + 0x10 + i * 16, m + 0x10);
+                qcopy(d + 0x10 + i * 16, &((struct Moby *)m)->pos);
                 i++;
             } while ((float)i < 4.0f);
             *(char **)&((struct DrekMissileVars *)d)->owner = moby;
             ((Moby *)m)->visible = 1;
             ((Moby *)m)->flags &= 0xFFFE;
-            *(int *)&((Moby *)m)->collision = *(int *)(*(char **)(m + 0x24) + 0x10);
+            *(int *)&((Moby *)m)->collision = *(int *)(*(char **)&((struct Moby *)m)->pclass + 0x10);
             ((Moby *)m)->state = 2;
         }
         if (*p++ < 0)

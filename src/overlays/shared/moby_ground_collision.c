@@ -1302,7 +1302,7 @@ void SendRadialMessageToMobys(char *self, Q4 *pos, char **list, int n, char *ski
         if (e == skip)
             continue;
         l.m.self = self;
-        l.m.h2A = *(unsigned short *)(self + 0xA6);
+        l.m.h2A = *(unsigned short *)&((struct Moby *)self)->oclass;
         l.m.i24 = k;
         l.m.f2C = f;
         l.m.i30 = k;
@@ -2624,7 +2624,7 @@ int is_moby_in_class_range_500_to_540(void *moby) {
     if ((unsigned int)moby < (unsigned int)moby_array_start || (unsigned int)moby_array_last < (unsigned int)moby) {
         return 0;
     }
-    return (unsigned int)*(unsigned short *)((char *)moby + 0xA6) - 0x1F4 < 0x29;
+    return (unsigned int)*(unsigned short *)&((struct Moby *)moby)->oclass - 0x1F4 < 0x29;
 }
 INCLUDE_ASM("asm/overlays", func_L00_0025F420);
 /* True when the moby is one of eight specific classes. */
@@ -2694,8 +2694,8 @@ extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 extern void mine_camera_blast_r(void *, void *, int, int) __asm__("func_L00_002D4CE8");
 
 /* Beam explosion at moby m: a spark burst from a spawn event, optional glow sparks and a flash, with a cam tint. */
-void spawn_explosion(char *m, void *unused, char *pos, float fA, float fB, int n, int k8, int k9, float fC, float fD,
-                     float fE, float fF, int k10, float fG, int k11, int s16, int s18, unsigned char flag) {
+void spawn_explosion(struct Moby *m, void *unused, char *pos, float fA, float fB, int n, int k8, int k9, float fC,
+                     float fD, float fE, float fF, int k10, float fG, int k11, int s16, int s18, unsigned char flag) {
     Q_25F4A8 vb;
     Q_25F4A8 v0;
     float dist;
@@ -2716,7 +2716,7 @@ void spawn_explosion(char *m, void *unused, char *pos, float fA, float fB, int n
     if (pos == 0) {
         if (m == 0)
             return;
-        pos = m + 0x10;
+        pos = (char *)&m->pos;
     }
     {
         if (fA > 0.0f) {
@@ -2724,7 +2724,7 @@ void spawn_explosion(char *m, void *unused, char *pos, float fA, float fB, int n
             initialize_hit_descriptor_r(&ev, m, 0x810001, fB);
             ev.b18 = 2;
             ev.b19 = 1;
-            ev.h1A = *(unsigned short *)(m + 0xA6);
+            ev.h1A = *(unsigned short *)&m->oclass;
             coll_sphere_mobys_r2(fA, pos, 0x10, m, &ev);
         }
     }
@@ -3354,7 +3354,7 @@ int moby_get_ride_transform(char *m) {
         return 0;
     if (!(((Moby *)m)->flags & 0x20))
         return 0;
-    return *(int *)(*(char **)(m + 0x78) + 8);
+    return *(int *)(*(char **)&((struct Moby *)m)->pvars + 8);
 }
 extern void euler_to_matrix(void *, void *);
 

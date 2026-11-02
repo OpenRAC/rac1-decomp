@@ -3324,10 +3324,10 @@ void tresspasser_door2_update(char *moby) {
         case 1: {
             int id = data->partner;
             if (id >= 0) {
-                char *m = (char *)((id << 8) + D_L02_00160058_g);
-                int t = *(short *)(m + 0xA6);
+                struct Moby *m = (struct Moby *)((char *)((id << 8) + D_L02_00160058_g));
+                int t = m->oclass;
                 if (t == 0x267 || t == 0x23F) {
-                    if (((unsigned char *)m)[0x20] == 4)
+                    if (m->state == 4)
                         moby[0x20] = 2;
                 }
             }

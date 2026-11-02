@@ -3084,12 +3084,12 @@ void energy_sphere_1297_update(unsigned char *moby) {
     switch (((Moby *)moby)->state) {
         case 1:
             if (fast_dec_timer_i(&data->timer)) {
-                float *p = *(float **)(moby + 0x24);
+                float *p = *(float **)&((struct Moby *)moby)->pclass;
                 float n = (float)scale_ticks(0x14);
                 float a = p[9];
-                float b = (*(float **)(moby + 0x24))[9] / n;
+                float b = (*(float **)&((struct Moby *)moby)->pclass)[9] / n;
                 p = &data->glow;
-                ApproachValue((float *)(moby + 0x2C), a, b);
+                ApproachValue(&((struct Moby *)moby)->scale, a, b);
                 ApproachValue(p, *(float *)&energy_sphere_glow_size,
                               *(float *)&energy_sphere_glow_size / (float)scale_ticks(0x14));
             }
@@ -3098,15 +3098,15 @@ void energy_sphere_1297_update(unsigned char *moby) {
             }
             break;
         case 2: {
-            char *pos = (char *)moby + 0x10;
+            char *pos = (unsigned char *)&((struct Moby *)moby)->pos;
             spawn_energy_sphere_spark((char *)moby);
             vp = v;
             qcopy(vp, pos);
             FastVecAdd(pos, pos, &data->vel);
-            if (fast_dec_timer_i(&data->timer) || coll_line(vp, (char *)moby + 0x10, 0, moby, 0) ||
-                coll_sphere_mobys(0.333f, (char *)moby + 0x10, 0, *(void **)&data->owner, 0)) {
-                spawn_explosion(moby, ((char *)data), (char *)moby + 0x10, 1.5f, 2.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, -1,
-                                1.0f, 15.0f, 1, 1, -1, 0);
+            if (fast_dec_timer_i(&data->timer) || coll_line(vp, &((struct Moby *)moby)->pos, 0, moby, 0) ||
+                coll_sphere_mobys(0.333f, &((struct Moby *)moby)->pos, 0, *(void **)&data->owner, 0)) {
+                spawn_explosion(moby, ((char *)data), &((struct Moby *)moby)->pos, 1.5f, 2.0f, 10, 3, 16, 4.0f, 2.0f,
+                                9.0f, -1, 1.0f, 15.0f, 1, 1, -1, 0);
                 DeleteMoby(moby);
             }
             break;
@@ -3514,8 +3514,8 @@ short func_L11_0031BBC8_r(int idx) {
     short n = 0;
     char *base = pokitaru_mobys_r2;
     do {
-        unsigned char *moby = (unsigned char *)(((p[0] & 0x7FFF) << 8) + (int)base);
-        if (*(short *)(moby + 0xA6) == 0x527 && moby[0x20] == 5) {
+        struct Moby *moby = (struct Moby *)((unsigned char *)(((p[0] & 0x7FFF) << 8) + (int)base));
+        if (moby->oclass == MOBY_CLASS_BLARG_SHIP_1319 && moby->state == 5) {
             found = ++n;
         }
     } while (*p++ >= 0);

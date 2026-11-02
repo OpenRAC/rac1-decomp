@@ -2354,8 +2354,8 @@ void select_gold_devastator_missile_target(char *self, O *out, char *skip) {
 
     i = 0;
     best = 10000.0f;
-    yaw = *(f32 *)(self + 0x48);
-    pitch = *(f32 *)(self + 0x44);
+    yaw = ((struct Moby *)self)->rot.z;
+    pitch = ((struct Moby *)self)->rot.y;
     o = active_mobies[i];
     if (o == 0)
         return;
@@ -2366,7 +2366,7 @@ void select_gold_devastator_missile_target(char *self, O *out, char *skip) {
         if (o == skip)
             goto next;
         qcopy(&v, o + 0x10);
-        spos = self + 0x10;
+        spos = (char *)&((struct Moby *)self)->pos;
         opos = o + 0x10;
         if (40.0f < FastVecDist(&v, spos))
             goto next;
@@ -2393,8 +2393,8 @@ void select_gold_devastator_missile_target(char *self, O *out, char *skip) {
             goto next;
         if (*(s16 *)(*(char **)(o + 0x24) + 0x46) != 5)
             goto next;
-        angh = fast_atan2(v.f[0] - *(f32 *)(self + 0x10), v.f[1] - *(f32 *)(self + 0x14));
-        angv = fast_atan2(vec_distance_xy(spos, &v), v.f[2] - *(f32 *)(self + 0x18));
+        angh = fast_atan2(v.f[0] - ((struct Moby *)self)->pos.x, v.f[1] - ((struct Moby *)self)->pos.y);
+        angv = fast_atan2(vec_distance_xy(spos, &v), v.f[2] - ((struct Moby *)self)->pos.z);
         dist = FastVecDist(spos, &v);
         if (dist < 2.5f) {
             char *cam = (char *)g->moby;

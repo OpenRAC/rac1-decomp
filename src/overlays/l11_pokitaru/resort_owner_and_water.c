@@ -1594,9 +1594,9 @@ void restore_teleporter_visibility_and_collision(char *moby) {
     char **child = &data->rings[0];
     int count;
     int on;
-    moby[0x31] = 1;
+    ((struct Moby *)moby)->visible = 1;
     ((Moby *)moby)->flags &= 0xFFFE;
-    *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)(moby + 0x24) + 0x10);
+    *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)&((struct Moby *)moby)->pclass + 0x10);
     on = 1;
     count = 2;
     do {
@@ -1645,8 +1645,8 @@ unsigned char *spawn_ship_projectile(char *src, char *pos, char *target, char *v
         ((Moby *)moby)->state = 0;
         data->src = src;
         data->target = target;
-        qcopy(moby + 0x10, pos);
-        qcopy(moby + 0x40, vec);
+        qcopy(&((struct Moby *)moby)->pos, pos);
+        qcopy(&((struct Moby *)moby)->rot, vec);
         if (target != 0) {
             char *e;
             e = GetFlaggedPvarWord(target);
@@ -1662,11 +1662,11 @@ unsigned char *spawn_ship_projectile(char *src, char *pos, char *target, char *v
         if (((Moby *)moby)->prev_seq != 1) {
             MobyBlendAnimation(moby, 1, 0, 10);
         }
-        FastVecAdd(moby + 0x10, moby + 0x10, ((char *)data));
+        FastVecAdd(&((struct Moby *)moby)->pos, &((struct Moby *)moby)->pos, ((char *)data));
         if (data->target != 0) {
             qcopy(&data->target_pos, data->target + 0x10);
         }
-        ((Moby *)moby)->scale = *(float *)(*(char **)(moby + 0x24) + 0x24) *
+        ((Moby *)moby)->scale = *(float *)(*(char **)&((struct Moby *)moby)->pclass + 0x24) *
                                 (*(float *)(src + 0x2C) / *(float *)(*(char **)(src + 0x24) + 0x24));
         moby_build_matrix(moby);
     }

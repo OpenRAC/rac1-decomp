@@ -13,6 +13,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/level.h"
+#include "enums/moby_class.h"
 
 /* One aimed joint of the elite commando: manipulator block plus the eased pitch and yaw. */
 struct EliteJointAim {
@@ -641,7 +642,7 @@ void update_blarg_elite_commando_damage_and_pursuit(char *m) {
     unsigned int response;
     float range;
     float time_scale;
-    ((Moby *)m)->scale = *(float *)(*(char **)(m + 0x24) + 0x24);
+    ((Moby *)m)->scale = *(float *)(*(char **)&((struct Moby *)m)->pclass + 0x24);
     scratch.amount = 0.0f;
     hit = MobyGetHitMessage(m, 0x330000, 0);
     if (hit) {
@@ -651,7 +652,7 @@ void update_blarg_elite_commando_damage_and_pursuit(char *m) {
         }
     }
     response = ComputeHitResponse(m, hit, &d->health, 0, &scratch.status, &scratch.amount, 0, 4);
-    if (scratch.status != 1 && ((unsigned char *)m)[0x20] != 9) {
+    if (scratch.status != 1 && ((struct Moby *)m)->state != 9) {
         randomize_blarg_elite_commando_group_pursuit_timers(m, 0x12C, 0x168);
         if (hit && *(char **)(hit + 0x20) && *(short *)(*(char **)(hit + 0x20) + 0xA6) != 0x47) {
             d->reward_hits = 0;
@@ -691,7 +692,7 @@ void update_blarg_elite_commando_damage_and_pursuit(char *m) {
                 }
                 HeadingFromVector(&scratch.vector, &scratch.angle, &d->forward_impulse, &d->lateral_impulse);
                 InitKnockback(scratch.angle, m, d->knockback, 6, 1, 0);
-                m[0x20] = 8;
+                ((struct Moby *)m)->state = 8;
                 d->animation = 0x78;
                 break;
             }
@@ -732,7 +733,7 @@ void update_blarg_elite_commando_damage_and_pursuit(char *m) {
                 }
                 HeadingFromVector(&scratch.vector, &scratch.fatal_angle, &d->forward_impulse, &d->lateral_impulse);
                 InitKnockback(scratch.fatal_angle, m, d->knockback, 7, 1, 0);
-                m[0x20] = 9;
+                ((struct Moby *)m)->state = 9;
                 d->animation = 0xF0;
                 SetDeathBits(m, 0, -1);
                 break;
@@ -744,7 +745,7 @@ void update_blarg_elite_commando_damage_and_pursuit(char *m) {
         }
         RerollEffectCounter(m, d->damage);
     }
-    ((unsigned char *)m)[0xA4] = 0xFF;
+    ((struct Moby *)m)->hit_slot = 0xFF;
     StepColorFade(m, d->damage);
     fast_dec_timer(&d->pursuit_timer);
     if (d->reset_timer) {
@@ -762,7 +763,7 @@ void update_blarg_elite_commando_damage_and_pursuit(char *m) {
     } else {
         FindNearestTargetMoby(24.0f, m, d->target);
     }
-    if (range < vec_distance_xy(m + 0x10, d->target))
+    if (range < vec_distance_xy(&((struct Moby *)m)->pos, d->target))
         d->pursuit_mode = 2;
     if (d->owner == 0)
         d->owner = ((L16DamageResident *)((char *)&D_L16DamageState + 0xE1D))->owner;
@@ -778,18 +779,18 @@ void set_blarg_elite_commando_parent_transform(char *moby, void *owner, void *po
 // Starts the moby's state-10 setup: sets its animation, flags, and copies position and timing into its data block.
 void start_blarg_elite_commando_return_to_initial_position(char *moby, int arg) {
     struct EliteCommandoVars *d = (struct EliteCommandoVars *)((Moby *)moby)->pvars;
-    if (((unsigned char *)moby)[0x20] == 10) {
-        moby[0x20] = 1;
-        if (((unsigned char *)moby)[0x53] != 1) {
+    if (((struct Moby *)moby)->state == 10) {
+        ((struct Moby *)moby)->state = 1;
+        if (((struct Moby *)moby)->prev_seq != 1) {
             MobyBlendAnimation(moby, 1, 0, scale_ticks(0x14));
         }
-        moby[0x31] = 1;
+        ((struct Moby *)moby)->visible = 1;
         ((Moby *)moby)->flags &= 0xFFFE;
-        *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)(moby + 0x24) + 0x10);
+        *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)&((struct Moby *)moby)->pclass + 0x10);
         ((Moby *)moby)->flags |= 0x1000;
         d->timer = arg;
         d->target_pos.w = ((Moby *)moby)->pos.z;
-        qcopy(&d->home_pos, moby + 0x10);
+        qcopy(&d->home_pos, &((struct Moby *)moby)->pos);
         d->path_speed = g_frame_time * 5.0f;
     }
 }
@@ -1095,14 +1096,14 @@ void armed_transport_update(char *m) {
             d->speed = speed;
             d->base_z = ((Moby *)m)->pos.z;
             if (d->path_a == -1) {
-                m[0x20] = 6;
+                ((struct Moby *)m)->state = 6;
                 break;
             }
             path = kalebo3_path_table[d->path_a];
             d->node_length = FastVecDist_update(path + 0x10, path + 0x20);
-            qcopy(m + 0x10, path + 0x10);
-            m[0x20] = 1;
-            m[0x31] = 0;
+            qcopy(&((struct Moby *)m)->pos, path + 0x10);
+            ((struct Moby *)m)->state = 1;
+            ((struct Moby *)m)->visible = 0;
             *(int *)&((Moby *)m)->collision = 0;
             ((Moby *)m)->flags = (((Moby *)m)->flags | 1) & 0xEFFF;
             break;
@@ -1113,10 +1114,10 @@ void armed_transport_update(char *m) {
             if (kalebo3_game_mode == 0 &&
                 (d->unk_D4 == -1 || IsPointInPolygon(gHeroPos, kalebo3_path_table[d->unk_D4] + 0x10,
                                                      *(int *)kalebo3_path_table[d->unk_D4]))) {
-                m[0x20] = 2;
+                ((struct Moby *)m)->state = 2;
                 ((Moby *)m)->flags &= 0xFFFE;
-                m[0x31] = 1;
-                *(int *)&((Moby *)m)->collision = *(int *)(*(char **)(m + 0x24) + 0x10);
+                ((struct Moby *)m)->visible = 1;
+                *(int *)&((Moby *)m)->collision = *(int *)(*(char **)&((struct Moby *)m)->pclass + 0x10);
                 ((Moby *)m)->flags |= 0x1000;
                 vector.q = 0;
                 vector.f[2] = 3.14159f;
@@ -1144,11 +1145,11 @@ void armed_transport_update(char *m) {
             }
             if (advance_armed_transport_along_path(m, path)) {
                 if (loaded) {
-                    m[0x20] = 3;
+                    ((struct Moby *)m)->state = 3;
                 } else if (d->path_b == -1) {
-                    m[0x20] = 6;
+                    ((struct Moby *)m)->state = 6;
                 } else {
-                    m[0x20] = 4;
+                    ((struct Moby *)m)->state = 4;
                 }
             }
             break;
@@ -1165,8 +1166,8 @@ void armed_transport_update(char *m) {
 
                     clear_u64_value(rotation.f);
                     rotation.f[2] = FastAddRots(((Moby *)m)->rot.z, 3.14159f);
-                    matrix_mul_vec3(vector.f, armed_transport_rider_matrix, m + 0xC0);
-                    FastVecAdd(vector.f, vector.f, m + 0x10);
+                    matrix_mul_vec3(vector.f, armed_transport_rider_matrix, &((struct Moby *)m)->rot_row0);
+                    FastVecAdd(vector.f, vector.f, &((struct Moby *)m)->pos);
                     start_blarg_elite_commando_return_to_initial_position(passenger, scale_ticks(90));
                     *slot = -1;
                     d->timer_c = scale_ticks(30);
@@ -1174,9 +1175,9 @@ void armed_transport_update(char *m) {
                 }
                 if (i == 3) {
                     if (d->path_b != -1) {
-                        m[0x20] = 4;
+                        ((struct Moby *)m)->state = 4;
                     } else {
-                        m[0x20] = 6;
+                        ((struct Moby *)m)->state = 6;
                     }
                 }
             }
@@ -1185,10 +1186,10 @@ void armed_transport_update(char *m) {
         case 4: {
             float heading = *(float *)(kalebo3_path_table[d->path_b] + 0x1C);
 
-            ApproachWithVelocity((float *)(m + 0x48), &d->yaw_vel, heading, g_frame_time_sq * 6.2831855f,
+            ApproachWithVelocity(&((struct Moby *)m)->rot.z, &d->yaw_vel, heading, g_frame_time_sq * 6.2831855f,
                                  g_frame_time_sq * 6.2831855f, g_frame_time * 6.2831855f);
             if (FastDiffRots(((Moby *)m)->rot.z, heading) < 0.01f) {
-                m[0x20] = 5;
+                ((struct Moby *)m)->state = 5;
                 d->path_node = 0;
                 *(int *)&d->node_t = 0;
             }
@@ -1202,11 +1203,11 @@ void armed_transport_update(char *m) {
                     DeleteMoby(m);
                     return;
                 }
-                m[0x20] = 6;
+                ((struct Moby *)m)->state = 6;
             }
             break;
         case 6: {
-            float *yaw = (float *)(m + 0x48);
+            float *yaw = &((struct Moby *)m)->rot.z;
             float bearing;
 
             ApproachWithVelocity(&d->unk_17C, &d->unk_180, 0.0f, g_frame_time_sq * 12.566371f,
@@ -1214,10 +1215,10 @@ void armed_transport_update(char *m) {
             bearing = fast_atan2(d->target.x - ((Moby *)m)->pos.x, d->target.y - ((Moby *)m)->pos.y);
             ApproachWithVelocity(yaw, &d->yaw_vel, bearing, g_frame_time_sq * 3.1415927f, g_frame_time_sq * 3.1415927f,
                                  g_frame_time * 6.2831855f);
-            ApproachWithVelocity((float *)(m + 0x40), &d->unk_188, 0.0f, g_frame_time_sq * 1.5707964f,
+            ApproachWithVelocity(&((struct Moby *)m)->rot.x, &d->unk_188, 0.0f, g_frame_time_sq * 1.5707964f,
                                  g_frame_time_sq * 1.5707964f, g_frame_time * 6.2831855f);
             if (fast_dec_timer(&d->timer_b) && d->mode != 2)
-                m[0x20] = 7;
+                ((struct Moby *)m)->state = 7;
             break;
         }
         case 7:
@@ -1226,7 +1227,7 @@ void armed_transport_update(char *m) {
             vec_scale_to_length(rotation.f, rotation.f, *(float *)&armed_transport_shot_speed * g_frame_time);
             Moby_PlaySound_update(1, 0, m);
             spawn_rocket_50_moby(m, (char *)rotation.f, vector.f, &d->target, scale_ticks(45));
-            m[0x20] = 6;
+            ((struct Moby *)m)->state = 6;
             d->timer_b = scale_ticks(180);
             break;
         case 8: {
@@ -1235,14 +1236,14 @@ void armed_transport_update(char *m) {
             d->base_z -= dt + dt;
             ((Moby *)m)->rot.x += dt * 0.2617994f;
             if (fast_dec_timer(&d->timer_a) || hero_vehicle_mode[0] == 2) {
-                spawn_explosion(m, kalebo3_zero_vec, m + 0x10, 0.0f, 0.0f, 20, 12, 8, 4.0f, 2.5f, 9.0f, -1, 2.0f, 0.0f,
-                                0, 0, -1, 0);
-                SpawnBreakFragment(m, 0x634, (float *)(m + 0x10), m + 0x40, 0, 0, 0.0f, kalebo3_zero_vec,
-                                   kalebo3_zero_vec, kalebo3_zero_vec);
-                SpawnBreakFragment(m, 0x635, (float *)(m + 0x10), m + 0x40, 0, 0, 0.0f, kalebo3_zero_vec,
-                                   kalebo3_zero_vec, kalebo3_zero_vec);
-                SpawnBreakFragment(m, 0x636, (float *)(m + 0x10), m + 0x40, 0, 0, 0.0f, kalebo3_zero_vec,
-                                   kalebo3_zero_vec, kalebo3_zero_vec);
+                spawn_explosion(m, kalebo3_zero_vec, &((struct Moby *)m)->pos, 0.0f, 0.0f, 20, 12, 8, 4.0f, 2.5f, 9.0f,
+                                -1, 2.0f, 0.0f, 0, 0, -1, 0);
+                SpawnBreakFragment(m, 0x634, &((struct Moby *)m)->pos.x, &((struct Moby *)m)->rot, 0, 0, 0.0f,
+                                   kalebo3_zero_vec, kalebo3_zero_vec, kalebo3_zero_vec);
+                SpawnBreakFragment(m, 0x635, &((struct Moby *)m)->pos.x, &((struct Moby *)m)->rot, 0, 0, 0.0f,
+                                   kalebo3_zero_vec, kalebo3_zero_vec, kalebo3_zero_vec);
+                SpawnBreakFragment(m, 0x636, &((struct Moby *)m)->pos.x, &((struct Moby *)m)->rot, 0, 0, 0.0f,
+                                   kalebo3_zero_vec, kalebo3_zero_vec, kalebo3_zero_vec);
                 SetDeathBits(m, 0, -1);
                 DeleteMoby(m);
                 return;
@@ -1287,8 +1288,8 @@ void update_armed_transport_damage_and_targeting(char *m) {
     float zero;
     char *record;
     int response;
-    (*(float *)((char *)(m) + (0x2C))) =
-        (*(float *)((char *)(*(char **)(m + 0x24)) + (0x24))) * (*(float *)&armed_transport_bounds_scale);
+    (*(float *)((char *)(m) + (0x2C))) = (*(float *)((char *)(*(char **)&((struct Moby *)m)->pclass) + (0x24))) *
+                                         (*(float *)&armed_transport_bounds_scale);
     if ((unsigned int)((*(unsigned char *)((char *)(m) + (0x20))) - 2) < 4) {
         if (!Sound_IsPlaying(m, (d->sound_slot)))
             (d->sound_slot) = Moby_PlaySound_r(0, 4, m);
@@ -1500,14 +1501,14 @@ void draw_grindrail_barrier_effect(char *m) {
     RingQuad quad;
     float transform[4][4], rotation[4];
     RingData *data = ((RingData *)((Moby *)m)->pvars);
-    float scale = ((Moby *)m)->scale / *(float *)(*(char **)(m + 0x24) + 0x24);
+    float scale = ((Moby *)m)->scale / *(float *)(*(char **)&((struct Moby *)m)->pclass + 0x24);
     float *u, *v;
     float *angles;
     int *color_base;
     float phase, angle_step, phase_step;
     int i;
-    qcopy(rotation, m + 0x40);
-    qcopy(transform[3], m + 0x10);
+    qcopy(rotation, &((struct Moby *)m)->rot);
+    qcopy(transform[3], &((struct Moby *)m)->pos);
     quad.texture = GetEffectTex(*(int *)&grindrail_barrier_ring_texture_id);
     u = &quad.uv[0][0];
     v = &quad.uv[0][1];
@@ -1600,8 +1601,9 @@ void group_trigger_nearest(int idx) {
     if (p != 0) {
         do {
             char *m = kalebo3_moby_array + ((*(unsigned short *)p & 0x7FFF) << 8);
-            if (*(short *)(m + 0xA6) != 0x5A3) {
-                float d = FastVecDist_r(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, m + 0x10);
+            if (((struct Moby *)m)->oclass != MOBY_CLASS_GRINDRAIL_BARRIER) {
+                float d = FastVecDist_r(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
+                                        &((struct Moby *)m)->pos);
                 if (d < bestd) {
                     bestd = d;
                     best = m;
