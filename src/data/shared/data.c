@@ -1,11 +1,8 @@
 /* Data with no one owner: several files use it, or no C file does yet. Its values come from your own baserom (tools/data_in_c.py). */
 #include "common.h"
 
-#include "structs/menu.h"
-
 extern u32 D_0012F580[];
-extern char __malloc_av_last_remainder[];
-extern void *D_0012F898[];
+extern char D_0012F898[];
 extern void *D_0012F8A0[];
 extern void *D_0012F8A8[];
 extern void *D_0012F8B0[];
@@ -128,8 +125,7 @@ extern void *D_0012FC50[];
 extern void *D_0012FC58[];
 extern void *D_0012FC60[];
 extern void *D_0012FC68[];
-extern void *D_0012FC70[];
-extern void *D_0012FC78[];
+extern char D_0012FC78[];
 extern void *D_0012FC80[];
 extern char D_1FF8000[];
 extern void map_filter_l04_0();
@@ -177,25 +173,6 @@ extern void map_filter_l16_1();
 extern void map_filter_l16_2();
 extern void map_filter_l16_3();
 extern void map_filter_l18_0();
-extern u32 D_001A0C90[];
-extern u32 D_001A0DA8[];
-extern u32 D_001A0F60[];
-extern u32 D_001A11E0[];
-extern u32 D_001A1460[];
-extern u32 D_001A15F0[];
-extern u32 D_001A1848[];
-extern u32 D_001A1A00[];
-extern u32 D_001A1BE0[];
-extern u32 D_001A1D98[];
-extern u32 D_001A1FA0[];
-extern u32 D_001A2248[];
-extern u32 D_001A24C8[];
-extern u32 D_001A2630[];
-extern u32 D_001A2810[];
-extern u32 D_001A2A40[];
-extern u32 D_001A2C48[];
-extern u32 D_001A2D88[];
-extern u32 D_001A2E78[];
 extern u32 D_001CE6F8[];
 extern char D_4000[];
 extern void render_localized_ui_entry_list();
@@ -272,16 +249,7 @@ u32 D_0012F580[] DATA_SECTION(D_0012F580) = {
 
 void *_impure_ptr DATA_SECTION(D_0012F86C) = D_0012F580;
 
-u32 vfprintf_mb_cur_max[] DATA_SECTION(D_0012F870) = {
-#include "data_inc/D_0012F870.inc"
-};
-
 u32 __malloc_av_[2] DATA_SECTION(D_0012F888) = {0};
-
-void *D_0012F898[] DATA_SECTION(D_0012F898) = {
-    __malloc_av_last_remainder,
-    __malloc_av_last_remainder,
-};
 
 void *D_0012F8A0[] DATA_SECTION(D_0012F8A0) = {
     D_0012F898,
@@ -900,11 +868,6 @@ void *D_0012FC70[] DATA_SECTION(D_0012FC70) = {
     D_0012FC68,
 };
 
-void *D_0012FC78[] DATA_SECTION(D_0012FC78) = {
-    D_0012FC70,
-    D_0012FC70,
-};
-
 void *D_0012FC80[] DATA_SECTION(D_0012FC80) = {
     D_0012FC78,
     D_0012FC78,
@@ -964,8 +927,6 @@ int cd_read_mode_flags DATA_SECTION(D_001313F4) = {0};
 
 int cd_callback_num DATA_SECTION(D_00131414) = {0};
 
-u32 cd_last_callback_num[10] DATA_SECTION(D_00131418) = {0};
-
 u32 cd_ncmd_rpc_client[12] DATA_SECTION(D_00132590) = {0};
 
 int cd_scmd_recv_buffer[272] DATA_SECTION(D_001325C0) = {0};
@@ -980,21 +941,7 @@ u32 D_00132F00[] DATA_SECTION(D_00132F00) = {
 
 u32 snd_sync_buffer[16] DATA_SECTION(D_00133200) = {0};
 
-u8 snd_sync_send_buffer[320] DATA_SECTION(D_00133240) = {0};
-
 u8 disc_table[2080] DATA_SECTION(D_00137C80) = {0};
-
-u8 map_screen_disc_entries[152] DATA_SECTION(D_001384A0) = {0};
-
-u8 map_screen_disc_entries_alt[3904] DATA_SECTION(D_00138538) = {0};
-
-u8 intro_movie_disc_entry_ntsc[8] DATA_SECTION(D_00139478) = {0};
-
-u8 intro_movie_disc_entry_pal[4296] DATA_SECTION(D_00139480) = {0};
-
-u8 pad_globals_base[] DATA_SECTION(D_0013A5E0) = {
-#include "data_inc/D_0013A5E0.inc"
-};
 
 u8 g_controller_state[256] DATA_SECTION(D_0013CA40) = {0};
 
@@ -1004,10 +951,6 @@ u8 pad_held[16] DATA_SECTION(D_0013CBE0) = {0};
 
 u8 D_0013CBF0[416] DATA_SECTION(D_0013CBF0) = {0};
 
-u8 first_clear_packet[] DATA_SECTION(D_0013CD90) = {
-#include "data_inc/D_0013CD90.inc"
-};
-
 u8 second_clear_packet[] DATA_SECTION(D_0013CED0) = {
 #include "data_inc/D_0013CED0.inc"
 };
@@ -1016,48 +959,16 @@ u8 draw_environment[] DATA_SECTION(D_0013D010) = {
 #include "data_inc/D_0013D010.inc"
 };
 
-u8 reset_gs_regs_fixed[] DATA_SECTION(D_0013D0C0) = {
-#include "data_inc/D_0013D0C0.inc"
-};
-
 u8 sky_gouraud_gs_block[] DATA_SECTION(D_0013D1F0) = {
 #include "data_inc/D_0013D1F0.inc"
-};
-
-u8 depth_buffer_register[] DATA_SECTION(D_0013D200) = {
-#include "data_inc/D_0013D200.inc"
 };
 
 u8 sky_textured_gs_block[] DATA_SECTION(D_0013D260) = {
 #include "data_inc/D_0013D260.inc"
 };
 
-u8 masked_depth_buffer_register[] DATA_SECTION(D_0013D270) = {
-#include "data_inc/D_0013D270.inc"
-};
-
-u8 memcard_save_dir_name[] DATA_SECTION(D_0013D2D0) = {
-#include "data_inc/D_0013D2D0.inc"
-};
-
-u8 memcard_dir_search_path[] DATA_SECTION(D_0013D2E8) = {
-#include "data_inc/D_0013D2E8.inc"
-};
-
-u32 memcard_icon_path_a[] DATA_SECTION(D_0013D300) = {
-#include "data_inc/D_0013D300.inc"
-};
-
-u32 memcard_icon_path_b[] DATA_SECTION(D_0013D320) = {
-#include "data_inc/D_0013D320.inc"
-};
-
 u32 memcard_icon_path_c[] DATA_SECTION(D_0013D340) = {
 #include "data_inc/D_0013D340.inc"
-};
-
-u8 memcard_slot_path_format[] DATA_SECTION(D_0013D370) = {
-#include "data_inc/D_0013D370.inc"
 };
 
 u8 D_0013D388[] DATA_SECTION(D_0013D388) = {
@@ -1122,10 +1033,6 @@ u32 items_acquired[10] DATA_SECTION(D_0013D5F0) = {0};
 
 u8 gGalaxyList[80] DATA_SECTION(D_0013D618) = {0};
 
-u8 max_map_coverage_size[80] DATA_SECTION(D_0013D668) = {0};
-
-u8 race_gates[1936] DATA_SECTION(D_0013D6B8) = {0};
-
 u32 level_available[3] DATA_SECTION(D_0013DE48) = {0};
 
 u32 hoven_available DATA_SECTION(D_0013DE54) = 0;
@@ -1145,12 +1052,6 @@ u8 level_bolts[80] DATA_SECTION(D_0013E040) = {0};
 u8 level_hero_hit_counts[80] DATA_SECTION(D_0013E090) = {0};
 
 u8 level_hero_death_counts[80] DATA_SECTION(D_0013E0E0) = {0};
-
-u8 level_render_state[32] DATA_SECTION(D_0013E130) = {0};
-
-int ship_substate[16] DATA_SECTION(D_0013E150) = {0};
-
-u8 hero_spawn_pose[960] DATA_SECTION(D_0013E190) = {0};
 
 u8 D_0013E550[176] DATA_SECTION(D_0013E550) = {0};
 
@@ -1194,8 +1095,6 @@ u8 D_0013F560[32] DATA_SECTION(D_0013F560) = {0};
 
 u8 g_hero_resolved_velocity_xy[16] DATA_SECTION(D_0013F580) = {0};
 
-u8 g_hero_platform_carry[16] DATA_SECTION(D_0013F590) = {0};
-
 u8 D_0013F5A0[32] DATA_SECTION(D_0013F5A0) = {0};
 
 u8 D_0013F5C0[176] DATA_SECTION(D_0013F5C0) = {0};
@@ -1205,8 +1104,6 @@ u8 g_hero_capsule_top[80] DATA_SECTION(D_0013F670) = {0};
 u8 D_0013F6C0[16] DATA_SECTION(D_0013F6C0) = {0};
 
 u8 D_0013F6D0[16] DATA_SECTION(D_0013F6D0) = {0};
-
-u8 hero_gravity_dir[16] DATA_SECTION(D_0013F6E0) = {0};
 
 u8 D_0013F6F0[16] DATA_SECTION(D_0013F6F0) = {0};
 
@@ -1244,17 +1141,11 @@ u8 g_hero_item_slot0_moby[24] DATA_SECTION(D_001404E0) = {0};
 
 u8 D_001404F8[16] DATA_SECTION(D_001404F8) = {0};
 
-u8 g_hero_equipped_item_id[160] DATA_SECTION(D_00140508) = {0};
-
 u8 g_hero_items_2_item_id[1256] DATA_SECTION(D_001405A8) = {0};
 
 u8 D_00140A90[368] DATA_SECTION(D_00140A90) = {0};
 
 u8 g_hero_transform_history[1360] DATA_SECTION(D_00140C00) = {0};
-
-u8 D_00141150[16] DATA_SECTION(D_00141150) = {0};
-
-u8 D_00141160[16] DATA_SECTION(D_00141160) = {0};
 
 u8 D_00141170[16] DATA_SECTION(D_00141170) = {0};
 
@@ -1280,8 +1171,6 @@ int radial_select_choice[6] DATA_SECTION(D_00141710) = {0};
 
 u8 D_00141728[56] DATA_SECTION(D_00141728) = {0};
 
-u8 last_weapon_id[8] DATA_SECTION(D_00141760) = {0};
-
 u8 D_00141768[24] DATA_SECTION(D_00141768) = {0};
 
 u8 item_usage[160] DATA_SECTION(D_00141780) = {0};
@@ -1306,8 +1195,6 @@ u8 usage_stats_entry17_count[24] DATA_SECTION(D_001419D0) = {0};
 
 u8 usage_stats_entry20_count[8] DATA_SECTION(D_001419E8) = {0};
 
-u8 usage_stats_entry21_count[24] DATA_SECTION(D_001419F0) = {0};
-
 u8 usage_stats_entry24_count[8] DATA_SECTION(D_00141A08) = {0};
 
 u8 usage_stats_entry25_count[8] DATA_SECTION(D_00141A10) = {0};
@@ -1321,8 +1208,6 @@ u8 D_00141A38[8] DATA_SECTION(D_00141A38) = {0};
 u8 usage_stats_entry31_count[8] DATA_SECTION(D_00141A40) = {0};
 
 u8 D_00141A48[32] DATA_SECTION(D_00141A48) = {0};
-
-u8 help_records[16] DATA_SECTION(D_00141A68) = {0};
 
 u8 D_00141A78[16] DATA_SECTION(D_00141A78) = {0};
 
@@ -1358,12 +1243,6 @@ u8 tesla_claw_help_shown_count[16] DATA_SECTION(D_00141E70) = {0};
 
 u8 help_records_131_count[136] DATA_SECTION(D_00141E80) = {0};
 
-u8 active_message_records[152] DATA_SECTION(D_00141F08) = {0};
-
-u8 pause_iop_sprite_lists[8] DATA_SECTION(D_00141FA0) = {0};
-
-u8 D_00141FA8[8] DATA_SECTION(D_00141FA8) = {0};
-
 u8 D_00141FB0[8] DATA_SECTION(D_00141FB0) = {0};
 
 u8 D_00141FB8[8] DATA_SECTION(D_00141FB8) = {0};
@@ -1371,8 +1250,6 @@ u8 D_00141FB8[8] DATA_SECTION(D_00141FB8) = {0};
 u8 level_map_coverage[40960] DATA_SECTION(D_00141FC0) = {0};
 
 u8 gold_bolts_collected[72] DATA_SECTION(D_0014BFC0) = {0};
-
-u8 gold_bolts_collected_18[8] DATA_SECTION(D_0014C008) = {0};
 
 u8 metal_detector_dig_counts[64] DATA_SECTION(D_0014C010) = {0};
 
@@ -1392,15 +1269,7 @@ u8 D_0014EE90[256] DATA_SECTION(D_0014EE90) = {0};
 
 u8 mission_death_counts[64] DATA_SECTION(D_0014EF90) = {0};
 
-u8 memcard_game_data_buffer[6144] DATA_SECTION(D_0014EFD0) = {0};
-
-u8 memcard_level_data_buffer[4096] DATA_SECTION(D_001507D0) = {0};
-
-u8 cd_read_state[8] DATA_SECTION(D_001517D0) = {0};
-
 u8 cd_read_active[24] DATA_SECTION(D_001517D8) = {0};
-
-u8 music_flagged_track_started[16] DATA_SECTION(D_001517F0) = {0};
 
 u8 stream_read_mode_template[8] DATA_SECTION(D_00151800) = {0};
 
@@ -1408,73 +1277,24 @@ u8 D_00151808[24] DATA_SECTION(D_00151808) = {0};
 
 u32 music_player_dialogue[24] DATA_SECTION(D_00151820) = {0};
 
-u8 fs_aa_buffer[8] DATA_SECTION(D_00151880) = {0};
-
-u32 gs_display_settings[94] DATA_SECTION(D_00151888) = {0};
-
-u8 fs_aa_draw_packet[608] DATA_SECTION(D_00151A00) = {0};
-
-u8 fs_aa_transfer_packet[656] DATA_SECTION(D_00151C60) = {0};
-
 u8 fs_aa_resample_packet[592] DATA_SECTION(D_00151EF0) = {0};
-
-u8 fs_aa_clear_packet[56] DATA_SECTION(D_00152140) = {0};
-
-u8 background_rgbaq[392] DATA_SECTION(D_00152178) = {0};
 
 u32 D_00152300[] DATA_SECTION(D_00152300) = {
 #include "data_inc/D_00152300.inc"
-};
-
-u8 dtoa_infinity_string[] DATA_SECTION(D_00152410) = {
-#include "data_inc/D_00152410.inc"
 };
 
 u8 dtoa_nan_string[] DATA_SECTION(D_00152420) = {
 #include "data_inc/D_00152420.inc"
 };
 
-u32 dtoa_zero_string[] DATA_SECTION(D_00152428) = {
-#include "data_inc/D_00152428.inc"
-};
-
 u32 D_00152468[] DATA_SECTION(D_00152468) = {
 #include "data_inc/D_00152468.inc"
-};
-
-#include "data_inc/D_00152470.refs"
-u32 locale_lconv[] DATA_SECTION(D_00152470) = {
-#include "data_inc/D_00152470.inc"
 };
 
 u32 D_001524A0[2] DATA_SECTION(D_001524A0) = {0};
 
 u32 D_001524A8[] DATA_SECTION(D_001524A8) = {
 #include "data_inc/D_001524A8.inc"
-};
-
-int pow5mult_p05[] DATA_SECTION(D_001524B8) = {
-#include "data_inc/D_001524B8.inc"
-};
-
-u32 __mprec_tens[] DATA_SECTION(D_001524C8) = {
-#include "data_inc/D_001524C8.inc"
-};
-
-u32 __mprec_bigtens[] DATA_SECTION(D_00152590) = {
-#include "data_inc/D_00152590.inc"
-};
-
-u32 __mprec_bigtens_4[] DATA_SECTION(D_001525B0) = {
-#include "data_inc/D_001525B0.inc"
-};
-
-u32 vfprintf_blanks_pad[] DATA_SECTION(D_001525E0) = {
-#include "data_inc/D_001525E0.inc"
-};
-
-u32 vfprintf_zeroes_pad[] DATA_SECTION(D_001525F0) = {
-#include "data_inc/D_001525F0.inc"
 };
 
 u32 vfprintf_inf_str[] DATA_SECTION(D_00152600) = {
@@ -1485,69 +1305,9 @@ u32 vfprintf_nan_str[] DATA_SECTION(D_00152608) = {
 #include "data_inc/D_00152608.inc"
 };
 
-u32 vfprintf_hex_digits_lower[] DATA_SECTION(D_00152610) = {
-#include "data_inc/D_00152610.inc"
-};
-
-char vfprintf_null_str[] DATA_SECTION(D_00152628) =
-#include "data_inc/D_00152628.inc"
-    ;
-
-u32 vfprintf_hex_digits_upper[] DATA_SECTION(D_00152630) = {
-#include "data_inc/D_00152630.inc"
-};
-
-u32 vfprintf_bad_base_msg[] DATA_SECTION(D_00152648) = {
-#include "data_inc/D_00152648.inc"
-};
-
-u32 vfprintf_zero_char[] DATA_SECTION(D_00152668) = {
-#include "data_inc/D_00152668.inc"
-};
-
-u32 vfprintf_dot_char[] DATA_SECTION(D_00152670) = {
-#include "data_inc/D_00152670.inc"
-};
-
 u32 D_001527E4 DATA_SECTION(D_001527E4) =
 #include "data_inc/D_001527E4.inc"
     ;
-
-u32 top_thread_bad_request_message[] DATA_SECTION(D_001527E8) = {
-#include "data_inc/D_001527E8.inc"
-};
-
-char tty_packet_too_large_msg[] DATA_SECTION(D_00152810) =
-#include "data_inc/D_00152810.inc"
-    ;
-
-u32 tty_receive_error_msg[] DATA_SECTION(D_00152838) = {
-#include "data_inc/D_00152838.inc"
-};
-
-u32 tty_send_error_msg[] DATA_SECTION(D_00152850) = {
-#include "data_inc/D_00152850.inc"
-};
-
-char tty_wlen_error_msg[] DATA_SECTION(D_00152868) =
-#include "data_inc/D_00152868.inc"
-    ;
-
-u32 D_00152A48[] DATA_SECTION(D_00152A48) = {
-#include "data_inc/D_00152A48.inc"
-};
-
-u32 D_00152A50[] DATA_SECTION(D_00152A50) = {
-#include "data_inc/D_00152A50.inc"
-};
-
-u32 iop_reboot_udnl_prefix[] DATA_SECTION(D_00152A60) = {
-#include "data_inc/D_00152A60.inc"
-};
-
-u32 iop_reboot_param_too_long_msg[] DATA_SECTION(D_00152A70) = {
-#include "data_inc/D_00152A70.inc"
-};
 
 char D_00152A90[] DATA_SECTION(D_00152A90) =
 #include "data_inc/D_00152A90.inc"
@@ -1569,89 +1329,9 @@ u32 D_00152F18[] DATA_SECTION(D_00152F18) = {
 #include "data_inc/D_00152F18.inc"
 };
 
-char cd_ncmd_sema_fail_msg[] DATA_SECTION(D_00152FB0) =
-#include "data_inc/D_00152FB0.inc"
-    ;
-
-char cd_ncmd_bind_error_msg[] DATA_SECTION(D_00152FD8) =
-#include "data_inc/D_00152FD8.inc"
-    ;
-
-u32 cd_ncmd_wait_msg[] DATA_SECTION(D_00152FF0) = {
-#include "data_inc/D_00152FF0.inc"
-};
-
-u32 cd_scmd_wait_msg[] DATA_SECTION(D_00153000) = {
-#include "data_inc/D_00153000.inc"
-};
-
-char cd_scmd_sema_fail_msg[] DATA_SECTION(D_00153010) =
-#include "data_inc/D_00153010.inc"
-    ;
-
-char cd_scmd_bind_error_msg[] DATA_SECTION(D_00153038) =
-#include "data_inc/D_00153038.inc"
-    ;
-
-char cd_bind_error_fmt[] DATA_SECTION(D_00153050) =
-#include "data_inc/D_00153050.inc"
-    ;
-
-char cd_exit_message[] DATA_SECTION(D_00153070) =
-#include "data_inc/D_00153070.inc"
-    ;
-
-char cd_disk_ready_start_msg[] DATA_SECTION(D_00153080) =
-#include "data_inc/D_00153080.inc"
-    ;
-
-char cd_disk_ready_bind_error_msg[] DATA_SECTION(D_00153090) =
-#include "data_inc/D_00153090.inc"
-    ;
-
-u32 cd_disk_ready_end_msg[] DATA_SECTION(D_001530B0) = {
-#include "data_inc/D_001530B0.inc"
-};
-
-u32 cd_read_call_msg[] DATA_SECTION(D_001530C8) = {
-#include "data_inc/D_001530C8.inc"
-};
-
-u32 cd_read_end_msg[] DATA_SECTION(D_001530E0) = {
-#include "data_inc/D_001530E0.inc"
-};
-
-u32 cd_read_clock_msg_1[] DATA_SECTION(D_001530F0) = {
-#include "data_inc/D_001530F0.inc"
-};
-
-u32 cd_read_clock_msg_2[] DATA_SECTION(D_00153110) = {
-#include "data_inc/D_00153110.inc"
-};
-
-u32 romver_path[] DATA_SECTION(D_00153130) = {
-#include "data_inc/D_00153130.inc"
-};
-
-u32 gs_def_disp_env_mode_error_msg[] DATA_SECTION(D_00153140) = {
-#include "data_inc/D_00153140.inc"
-};
-
-u32 gs_put_draw_env_dma_timeout_msg[] DATA_SECTION(D_00153178) = {
-#include "data_inc/D_00153178.inc"
-};
-
-u32 gs_load_image_too_big_msg[] DATA_SECTION(D_001531B0) = {
-#include "data_inc/D_001531B0.inc"
-};
-
 u32 D_001532CC DATA_SECTION(D_001532CC) =
 #include "data_inc/D_001532CC.inc"
     ;
-
-u32 gs_exec_load_image_dma_timeout_msg[] DATA_SECTION(D_001532D0) = {
-#include "data_inc/D_001532D0.inc"
-};
 
 u32 gs_store_image_dma1_timeout_msg[] DATA_SECTION(D_00153310) = {
 #include "data_inc/D_00153310.inc"
@@ -1673,70 +1353,6 @@ u32 D_001534DC DATA_SECTION(D_001534DC) =
 #include "data_inc/D_001534DC.inc"
     ;
 
-char dma_sync_timeout_msg[] DATA_SECTION(D_001534E0) =
-#include "data_inc/D_001534E0.inc"
-    ;
-
-int DmaChannelsUsed[] DATA_SECTION(D_001534F8) = {
-#include "data_inc/D_001534F8.inc"
-};
-
-u8 dma_sts_channel_codes[] DATA_SECTION(D_00153520) = {
-#include "data_inc/D_00153520.inc"
-};
-
-u8 dma_std_channel_codes[] DATA_SECTION(D_00153530) = {
-#include "data_inc/D_00153530.inc"
-};
-
-u8 dma_mfd_channel_codes[] DATA_SECTION(D_00153540) = {
-#include "data_inc/D_00153540.inc"
-};
-
-u32 str_mc_bind_error[] DATA_SECTION(D_00153550) = {
-#include "data_inc/D_00153550.inc"
-};
-
-char str_mc_old_mcserv[] DATA_SECTION(D_00153568) =
-#include "data_inc/D_00153568.inc"
-    ;
-
-u32 str_mc_old_mcman[] DATA_SECTION(D_00153590) = {
-#include "data_inc/D_00153590.inc"
-};
-
-u32 str_dbc_bind_failed[] DATA_SECTION(D_001535D8) = {
-#include "data_inc/D_001535D8.inc"
-};
-
-u32 str_dbc_version_mismatch[] DATA_SECTION(D_001535F0) = {
-#include "data_inc/D_001535F0.inc"
-};
-
-char str_dbc_version_pair_fmt[] DATA_SECTION(D_00153618) =
-#include "data_inc/D_00153618.inc"
-    ;
-
-u32 str_dbc_sif_dma_addr_fmt[] DATA_SECTION(D_00153640) = {
-#include "data_inc/D_00153640.inc"
-};
-
-char str_dbc_set_work_addr_error[] DATA_SECTION(D_00153658) =
-#include "data_inc/D_00153658.inc"
-    ;
-
-u32 str_dbc_create_socket_error[] DATA_SECTION(D_00153678) = {
-#include "data_inc/D_00153678.inc"
-};
-
-u32 str_dbc_get_dep_number_error[] DATA_SECTION(D_001536B8) = {
-#include "data_inc/D_001536B8.inc"
-};
-
-u32 str_dbc_receive_data_error[] DATA_SECTION(D_001537A0) = {
-#include "data_inc/D_001537A0.inc"
-};
-
 char D_001537C0[] DATA_SECTION(D_001537C0) =
 #include "data_inc/D_001537C0.inc"
     ;
@@ -1753,125 +1369,13 @@ u32 D_001537D8[] DATA_SECTION(D_001537D8) = {
 #include "data_inc/D_001537D8.inc"
 };
 
-u32 str_mpeg_invalid_motion_type[] DATA_SECTION(D_001537E8) = {
-#include "data_inc/D_001537E8.inc"
-};
-
-char str_mpeg_invalid_motion_type_a[] DATA_SECTION(D_00153810) =
-#include "data_inc/D_00153810.inc"
-    ;
-
-char str_mpeg_invalid_motion_type_b[] DATA_SECTION(D_00153830) =
-#include "data_inc/D_00153830.inc"
-    ;
-
-char str_mpeg_invalid_motion_type_c[] DATA_SECTION(D_00153850) =
-#include "data_inc/D_00153850.inc"
-    ;
-
 u32 str_mpeg_intra_skip_mb[] DATA_SECTION(D_00153870) = {
 #include "data_inc/D_00153870.inc"
-};
-
-u32 str_mpeg_bdec_error[] DATA_SECTION(D_00153888) = {
-#include "data_inc/D_00153888.inc"
-};
-
-u32 str_mpeg_invalid_mb_addr_inc[] DATA_SECTION(D_001538A8) = {
-#include "data_inc/D_001538A8.inc"
-};
-
-char str_mpeg_skip_to_next_picture[] DATA_SECTION(D_001538E0) =
-#include "data_inc/D_001538E0.inc"
-    ;
-
-char str_mpeg_slice_start_code_range[] DATA_SECTION(D_00153900) =
-#include "data_inc/D_00153900.inc"
-    ;
-
-u32 str_mpeg_slice_a0_error[] DATA_SECTION(D_00153928) = {
-#include "data_inc/D_00153928.inc"
-};
-
-char str_mpeg_too_many_macroblocks[] DATA_SECTION(D_00153948) =
-#include "data_inc/D_00153948.inc"
-    ;
-
-char str_mpeg_skipped_mb_in_i_picture[] DATA_SECTION(D_00153968) =
-#include "data_inc/D_00153968.inc"
-    ;
-
-char str_mpeg_invalid_mb_type[] DATA_SECTION(D_00153998) =
-#include "data_inc/D_00153998.inc"
-    ;
-
-char str_mpeg_load_chroma_intra_qm[] DATA_SECTION(D_001539E8) =
-#include "data_inc/D_001539E8.inc"
-    ;
-
-u32 str_mpeg_load_chroma_non_intra_qm[] DATA_SECTION(D_00153A10) = {
-#include "data_inc/D_00153A10.inc"
-};
-
-char str_mpeg_odd_field_pictures[] DATA_SECTION(D_00153A40) =
-#include "data_inc/D_00153A40.inc"
-    ;
-
-u32 str_mpeg_unknown_picture_structure[] DATA_SECTION(D_00153A60) = {
-#include "data_inc/D_00153A60.inc"
-};
-
-u32 str_mpeg_buffer_too_small_fmt[] DATA_SECTION(D_00153A80) = {
-#include "data_inc/D_00153A80.inc"
-};
-
-u32 csc_handler_error_msg[] DATA_SECTION(D_00153AB0) = {
-#include "data_inc/D_00153AB0.inc"
-};
-
-u32 pes_optional_field_bits[] DATA_SECTION(D_00153AC8) = {
-#include "data_inc/D_00153AC8.inc"
-};
-
-u32 pes_pack_header_field_flag_msg[] DATA_SECTION(D_00153AD8) = {
-#include "data_inc/D_00153AD8.inc"
-};
-
-u32 mpeg_create_work_area_too_small_msg[] DATA_SECTION(D_00153B10) = {
-#include "data_inc/D_00153B10.inc"
-};
-
-u32 mpeg_work_area_size_too_small_msg[] DATA_SECTION(D_00153B38) = {
-#include "data_inc/D_00153B38.inc"
-};
-
-u32 mpeg_image_buffer_unaligned_msg[] DATA_SECTION(D_00153B58) = {
-#include "data_inc/D_00153B58.inc"
 };
 
 u32 D_00153BB4 DATA_SECTION(D_00153BB4) =
 #include "data_inc/D_00153BB4.inc"
     ;
-
-u32 mpeg_second_field_missing_msg[] DATA_SECTION(D_00153BB8) = {
-#include "data_inc/D_00153BB8.inc"
-};
-
-char mpeg_error_format[] DATA_SECTION(D_00153BD8) =
-#include "data_inc/D_00153BD8.inc"
-    ;
-
-char mpeg_vertical_size_too_large_msg[] DATA_SECTION(D_00153BE8) =
-#include "data_inc/D_00153BE8.inc"
-    ;
-
-u32 mpeg_chroma_format_not_420_msg[] DATA_SECTION(D_00153C00) = {
-#include "data_inc/D_00153C00.inc"
-};
-
-u32 mpeg_unsupported_profile_level_msg[] DATA_SECTION(D_00153C28) = {
-#include "data_inc/D_00153C28.inc"
-};
 
 char mpeg_sequence_scalable_ext_msg[] DATA_SECTION(D_00153C48) =
 #include "data_inc/D_00153C48.inc"
@@ -1889,56 +1393,8 @@ u32 mpeg_picture_temporal_scalable_ext_msg[] DATA_SECTION(D_00153CC8) = {
 #include "data_inc/D_00153CC8.inc"
 };
 
-u32 scf_romver_path[] DATA_SECTION(D_00153D00) = {
-#include "data_inc/D_00153D00.inc"
-};
-
-char scf_romver_open_failed_msg[] DATA_SECTION(D_00153D10) =
-#include "data_inc/D_00153D10.inc"
-    ;
-
-char scf_romver_read_failed_msg[] DATA_SECTION(D_00153D28) =
-#include "data_inc/D_00153D28.inc"
-    ;
-
-u32 MonthLengths[] DATA_SECTION(D_00153D40) = {
-#include "data_inc/D_00153D40.inc"
-};
-
-u32 snd_sif_bind_rpc_error_string[] DATA_SECTION(D_00153D50) = {
-#include "data_inc/D_00153D50.inc"
-};
-
-u32 snd_989_snd_source_file[] DATA_SECTION(D_00153D78) = {
-#include "data_inc/D_00153D78.inc"
-};
-
-u32 snd_no_return_error_string[] DATA_SECTION(D_00153D98) = {
-#include "data_inc/D_00153D98.inc"
-};
-
 u32 snd_non_idle_error_string[] DATA_SECTION(D_00153E20) = {
 #include "data_inc/D_00153E20.inc"
-};
-
-char snd_bank_load_by_loc_progress_string[] DATA_SECTION(D_00153EA8) =
-#include "data_inc/D_00153EA8.inc"
-    ;
-
-char snd_bank_load_by_loc_cd_busy_string[] DATA_SECTION(D_00153ED8) =
-#include "data_inc/D_00153ED8.inc"
-    ;
-
-u32 snd_bank_load_by_loc_rpc_error_string[] DATA_SECTION(D_00153EF8) = {
-#include "data_inc/D_00153EF8.inc"
-};
-
-u32 snd_bank_load_from_ee_progress_string[] DATA_SECTION(D_00153FC0) = {
-#include "data_inc/D_00153FC0.inc"
-};
-
-u32 snd_bank_load_from_ee_cd_busy_string[] DATA_SECTION(D_00153FF8) = {
-#include "data_inc/D_00153FF8.inc"
 };
 
 char snd_send_iop_command_buffer_full_string[] DATA_SECTION(D_00154110) =
@@ -1948,76 +1404,6 @@ char snd_send_iop_command_buffer_full_string[] DATA_SECTION(D_00154110) =
 u32 snd_no_wait_continuing_string[] DATA_SECTION(D_00154170) = {
 #include "data_inc/D_00154170.inc"
 };
-
-short snd_current_buffer[2] DATA_SECTION(D_0015ED80) = {0};
-
-u32 snd_current_buffer_index DATA_SECTION(D_0015ED84) = 0;
-
-short snd_cd_load_error[2] DATA_SECTION(D_0015ED88) = {0};
-
-u32 snd_cd_stream_active DATA_SECTION(D_0015ED8C) = 0;
-
-short snd_cd_status_callback[2] DATA_SECTION(D_0015ED90) = {0};
-
-u32 snd_cd_sync_pending DATA_SECTION(D_0015ED94) = 0;
-
-short snd_cd_stream_end_pending[2] DATA_SECTION(D_0015ED98) = {0};
-
-u32 snd_return_callback_pending DATA_SECTION(D_0015ED9C) = 0;
-
-#include "data_inc/D_0015EDA0.refs"
-u32 snd_batch_command_buffers DATA_SECTION(D_0015EDA0) =
-#include "data_inc/D_0015EDA0.inc"
-    ;
-
-#include "data_inc/D_0015EDA4.refs"
-u32 D_0015EDA4 DATA_SECTION(D_0015EDA4) =
-#include "data_inc/D_0015EDA4.inc"
-    ;
-
-short snd_batch_free_bytes[] DATA_SECTION(D_0015EDA8) = {
-#include "data_inc/D_0015EDA8.inc"
-};
-
-s32 snd_batch_free_bytes_1 DATA_SECTION(D_0015EDAC) = {
-#include "data_inc/D_0015EDAC.inc"
-};
-
-#include "data_inc/D_0015EDB0.refs"
-u32 snd_stream_buffers DATA_SECTION(D_0015EDB0) =
-#include "data_inc/D_0015EDB0.inc"
-    ;
-
-#include "data_inc/D_0015EDB4.refs"
-u32 D_0015EDB4 DATA_SECTION(D_0015EDB4) =
-#include "data_inc/D_0015EDB4.inc"
-    ;
-
-#include "data_inc/D_0015EDB8.refs"
-u32 snd_batch_return_buffers DATA_SECTION(D_0015EDB8) =
-#include "data_inc/D_0015EDB8.inc"
-    ;
-
-#include "data_inc/D_0015EDBC.refs"
-u32 snd_batch_return_buffers_1 DATA_SECTION(D_0015EDBC) =
-#include "data_inc/D_0015EDBC.inc"
-    ;
-
-short snd_batch_index[2] DATA_SECTION(D_0015EDC0) = {0};
-
-u32 GlobalTableStatus DATA_SECTION(D_0015EDC4) = 0;
-
-short snd_cd_callback_pending[4] DATA_SECTION(D_0015EDC8) = {0};
-
-short snd_cd_callback_fn[4] DATA_SECTION(D_0015EDD0) = {0};
-
-u32 snd_cd_callback_data[2] DATA_SECTION(D_0015EDD8) = {0};
-
-short snd_return_callback[4] DATA_SECTION(D_0015EDE0) = {0};
-
-short snd_return_callback_data[12] DATA_SECTION(D_0015EDE8) = {0};
-
-unsigned int snd_cd_callback_arg[16] DATA_SECTION(D_0015EE00) = {0};
 
 u32 frm_clock_time[2] DATA_SECTION(D_0015EE40) = {0};
 
@@ -2035,10 +1421,6 @@ float frame_scale DATA_SECTION(D_0015EE60) = {
 #include "data_inc/D_0015EE60.inc"
 };
 
-float g_frame_scale_sq DATA_SECTION(D_0015EE64) = {
-#include "data_inc/D_0015EE64.inc"
-};
-
 float inv_frame_scale DATA_SECTION(D_0015EE68) = {
 #include "data_inc/D_0015EE68.inc"
 };
@@ -2049,18 +1431,6 @@ float g_frame_time DATA_SECTION(D_0015EE6C) = {
 
 float g_frame_time_sq DATA_SECTION(D_0015EE70) = {
 #include "data_inc/D_0015EE70.inc"
-};
-
-float g_frame_time_cube DATA_SECTION(D_0015EE74) = {
-#include "data_inc/D_0015EE74.inc"
-};
-
-int frame_scale_fifths DATA_SECTION(D_0015EE78) = {
-#include "data_inc/D_0015EE78.inc"
-};
-
-float frame_delta_time DATA_SECTION(D_0015EE7C) = {
-#include "data_inc/D_0015EE7C.inc"
 };
 
 u32 pal_mode DATA_SECTION(D_0015EE80) = 0;
@@ -2079,17 +1449,7 @@ int hero_slot3_mode_3_selected DATA_SECTION(D_0015EE94) = {0};
 
 u32 gBolts[2] DATA_SECTION(D_0015EE98) = {0};
 
-u32 hero_max_health[] DATA_SECTION(D_0015EEA0) = {
-#include "data_inc/D_0015EEA0.inc"
-};
-
 u32 gCheats[4] DATA_SECTION(D_0015EEB0) = {0};
-
-u8 selector_available[16] DATA_SECTION(D_0015EEC0) = {0};
-
-int vendor_stock[] DATA_SECTION(D_0015EED0) = {
-#include "data_inc/D_0015EED0.inc"
-};
 
 u32 invert52 DATA_SECTION(D_0015EEDC) =
 #include "data_inc/D_0015EEDC.inc"
@@ -2145,27 +1505,11 @@ int active_play_frame_count DATA_SECTION(D_0015EF28) = {0};
 
 s32 counted_bolts_total DATA_SECTION(D_0015EF2C) = {0};
 
-int active_message_record_count DATA_SECTION(D_0015EF30) = {
-#include "data_inc/D_0015EF30.inc"
-};
-
-int memcard_selected_slot DATA_SECTION(D_0015EF34) = {0};
-
-int rilgar_hoverboard_races_finished DATA_SECTION(D_0015EF38) = {0};
-
-int kalebo3_hoverboard_races_finished DATA_SECTION(D_0015EF3C) = {0};
-
-u8 subtitles_enabled[8] DATA_SECTION(D_0015EF40) = {0};
-
 u16 level_archive_load_state DATA_SECTION(D_0015EF48) = 0;
 
 u16 level_archive_load_busy DATA_SECTION(D_0015EF4A) = 0;
 
 u32 level_root DATA_SECTION(D_0015EF4C) = 0;
-
-u32 sound_archive_base DATA_SECTION(D_0015EF50) = 0;
-
-u32 level_archive_base DATA_SECTION(D_0015EF54) = 0;
 
 u32 race_best_times[4] DATA_SECTION(D_0015EF58) = {0};
 
@@ -2205,8 +1549,6 @@ u32 cd_read_wait_frames DATA_SECTION(D_0015EFBC) = 0;
 
 u32 cd_read_slowdown_applied[2] DATA_SECTION(D_0015EFC0) = {0};
 
-u32 debug_font_pif_header[2] DATA_SECTION(D_0015EFC8) = {0};
-
 u32 capture_texture_tex0[2] DATA_SECTION(D_0015EFD0) = {0};
 
 u32 decode_mode[4] DATA_SECTION(D_0015EFD8) = {0};
@@ -2217,49 +1559,8 @@ u32 D_0015F000[] DATA_SECTION(D_0015F000) = {
 #include "data_inc/D_0015F000.inc"
 };
 
-int texture_alloc_counter[] DATA_SECTION(D_0015F020) = {
-#include "data_inc/D_0015F020.inc"
-};
-
-u32 cam_activation_rule7_table[2] DATA_SECTION(D_0015F040) = {0};
-
-short intro_overlay_tex0[4] DATA_SECTION(D_0015F048) = {0};
-
-s32 intro_overlay_alpha DATA_SECTION(D_0015F050) = {0};
-
-s32 language_intro_overlay_alpha DATA_SECTION(D_0015F054) = {0};
-
-u32 intro_overlay_timer DATA_SECTION(D_0015F058) = 0;
-
-s32 startlevel_code_addr DATA_SECTION(D_0015F05C) = {0};
-
-int help_msg_data[] DATA_SECTION(D_0015F060) = {
-#include "data_inc/D_0015F060.inc"
-};
-
 u32 D_0015F078[] DATA_SECTION(D_0015F078) = {
 #include "data_inc/D_0015F078.inc"
-};
-
-int cam_post_upd_routine_cnt DATA_SECTION(D_0015F08C) = {0};
-
-u32 gCameraDefs[2] DATA_SECTION(D_0015F090) = {0};
-
-int cam_coll_mode DATA_SECTION(D_0015F098) = {0};
-
-int cam_coll_flag DATA_SECTION(D_0015F09C) = {0};
-
-int cam_coll_flag_prev[24] DATA_SECTION(D_0015F0A0) = {0};
-
-#include "data_inc/D_0015F100.refs"
-u32 font_text_cursor DATA_SECTION(D_0015F100) =
-#include "data_inc/D_0015F100.inc"
-    ;
-
-u32 font_text_slot_index DATA_SECTION(D_0015F104) = 0;
-
-u32 font_text_format[] DATA_SECTION(D_0015F108) = {
-#include "data_inc/D_0015F108.inc"
 };
 
 short debug_weapon_item_ids[] DATA_SECTION(D_0015F110) = {
@@ -2278,72 +1579,7 @@ u32 camera_sample_bin_name[] DATA_SECTION(D_0015F138) = {
 #include "data_inc/D_0015F138.inc"
 };
 
-int screen_tint_quad_enabled[4] DATA_SECTION(D_0015F430) = {0};
-
 u32 D_0015F440[2] DATA_SECTION(D_0015F440) = {0};
-
-short font_depth_bias[2] DATA_SECTION(D_0015F448) = {0};
-
-u32 screen_overlay_enabled DATA_SECTION(D_0015F44C) = 0;
-
-#include "data_inc/D_0015F450.refs"
-u32 screen_color_effect_now[] DATA_SECTION(D_0015F450) = {
-#include "data_inc/D_0015F450.inc"
-};
-
-short draw_unused_reset_flag[8] DATA_SECTION(D_0015F460) = {0};
-
-short occl_debug_overlay_enabled[8] DATA_SECTION(D_0015F470) = {0};
-
-char profile_mark_frame_start[] DATA_SECTION(D_0015F480) =
-#include "data_inc/D_0015F480.inc"
-    ;
-
-u32 profile_mark_after_sky[] DATA_SECTION(D_0015F490) = {
-#include "data_inc/D_0015F490.inc"
-};
-
-u32 profile_mark_after_ties[] DATA_SECTION(D_0015F4A0) = {
-#include "data_inc/D_0015F4A0.inc"
-};
-
-u32 profile_mark_after_mobys[] DATA_SECTION(D_0015F4B0) = {
-#include "data_inc/D_0015F4B0.inc"
-};
-
-char profile_mark_after_lights[] DATA_SECTION(D_0015F4C0) =
-#include "data_inc/D_0015F4C0.inc"
-    ;
-
-u32 profile_mark_after_particles[] DATA_SECTION(D_0015F4D0) = {
-#include "data_inc/D_0015F4D0.inc"
-};
-
-char profile_mark_after_sprites[] DATA_SECTION(D_0015F4E0) =
-#include "data_inc/D_0015F4E0.inc"
-    ;
-
-char profile_mark_after_blur[] DATA_SECTION(D_0015F4F0) =
-#include "data_inc/D_0015F4F0.inc"
-    ;
-
-u32 profile_mark_after_hud[] DATA_SECTION(D_0015F4F8) = {
-#include "data_inc/D_0015F4F8.inc"
-};
-
-char profile_mark_after_fades[] DATA_SECTION(D_0015F500) =
-#include "data_inc/D_0015F500.inc"
-    ;
-
-u32 profile_mark_vu1_sync[2] DATA_SECTION(D_0015F510) = {0};
-
-char profile_mark_tie_lighting[] DATA_SECTION(D_0015F518) =
-#include "data_inc/D_0015F518.inc"
-    ;
-
-char profile_mark_moby_patch[] DATA_SECTION(D_0015F528) =
-#include "data_inc/D_0015F528.inc"
-    ;
 
 u32 draw_enable_mask DATA_SECTION(D_0015F534) = 0;
 
@@ -2355,12 +1591,6 @@ float white_fade_level DATA_SECTION(D_0015F540) = {0};
 
 int letterbox_enabled DATA_SECTION(D_0015F544) = {0};
 
-int letterbox_bar_height[2] DATA_SECTION(D_0015F548) = {0};
-
-u32 gif_paging_head_tag DATA_SECTION(D_0015F550) = 0;
-
-u32 gif_paging_tail_tag DATA_SECTION(D_0015F554) = 0;
-
 u32 pending_texture_upload_count DATA_SECTION(D_0015F558) = 0;
 
 int effect_tex_cnt DATA_SECTION(D_0015F55C) = {0};
@@ -2368,14 +1598,6 @@ int effect_tex_cnt DATA_SECTION(D_0015F55C) = {0};
 s32 level_texture_payload_address DATA_SECTION(D_0015F560) = {0};
 
 u32 draw_callback_count DATA_SECTION(D_0015F564) = 0;
-
-int draw_callback2_count DATA_SECTION(D_0015F568) = {0};
-
-int draw_callback3_count DATA_SECTION(D_0015F56C) = {0};
-
-int draw_callback4_count DATA_SECTION(D_0015F570) = {0};
-
-int effect_quad_count DATA_SECTION(D_0015F574) = {0};
 
 int font_quad_count DATA_SECTION(D_0015F578) = {0};
 
@@ -2393,129 +1615,15 @@ float fog_near_intensity DATA_SECTION(D_0015F590) = {0};
 
 float fog_far_intensity DATA_SECTION(D_0015F594) = {0};
 
-int level_fog_mode DATA_SECTION(D_0015F598) = {0};
-
 int GlobalStateFlag DATA_SECTION(D_0015F59C) = {0};
 
 s32 font_window_active[] DATA_SECTION(D_0015F5A0) = {
 #include "data_inc/D_0015F5A0.inc"
 };
 
-short freeze_box_line1_y[] DATA_SECTION(D_0015F5E8) = {
-#include "data_inc/D_0015F5E8.inc"
-};
-
-u32 freeze_box_line2_y DATA_SECTION(D_0015F5EC) =
-#include "data_inc/D_0015F5EC.inc"
-    ;
-
-short freeze_text_fade_color_start[] DATA_SECTION(D_0015F5F0) = {
-#include "data_inc/D_0015F5F0.inc"
-};
-
-u32 freeze_text_fade_color_end DATA_SECTION(D_0015F5F4) =
-#include "data_inc/D_0015F5F4.inc"
-    ;
-
-short freeze_short_box_center_x[] DATA_SECTION(D_0015F5F8) = {
-#include "data_inc/D_0015F5F8.inc"
-};
-
-u32 freeze_short_box_center_y DATA_SECTION(D_0015F5FC) =
-#include "data_inc/D_0015F5FC.inc"
-    ;
-
-short freeze_short_box_half_width[] DATA_SECTION(D_0015F600) = {
-#include "data_inc/D_0015F600.inc"
-};
-
-u32 freeze_short_box_half_height DATA_SECTION(D_0015F604) =
-#include "data_inc/D_0015F604.inc"
-    ;
-
-short freeze_short_box_text_y[] DATA_SECTION(D_0015F608) = {
-#include "data_inc/D_0015F608.inc"
-};
-
-u32 freeze_long_box_center_x DATA_SECTION(D_0015F60C) =
-#include "data_inc/D_0015F60C.inc"
-    ;
-
-short freeze_long_box_center_y[] DATA_SECTION(D_0015F610) = {
-#include "data_inc/D_0015F610.inc"
-};
-
-u32 freeze_long_box_half_width DATA_SECTION(D_0015F614) =
-#include "data_inc/D_0015F614.inc"
-    ;
-
-short freeze_long_box_half_height[] DATA_SECTION(D_0015F618) = {
-#include "data_inc/D_0015F618.inc"
-};
-
-u32 freeze_long_box_text_y DATA_SECTION(D_0015F61C) =
-#include "data_inc/D_0015F61C.inc"
-    ;
-
-short freeze_box_pulse_period[] DATA_SECTION(D_0015F620) = {
-#include "data_inc/D_0015F620.inc"
-};
-
-u32 freeze_box_pulse_color_a DATA_SECTION(D_0015F624) =
-#include "data_inc/D_0015F624.inc"
-    ;
-
-short freeze_box_pulse_color_b[] DATA_SECTION(D_0015F628) = {
-#include "data_inc/D_0015F628.inc"
-};
-
-u32 freeze_box_text_color DATA_SECTION(D_0015F62C) =
-#include "data_inc/D_0015F62C.inc"
-    ;
-
-short freeze_box_text_flash_color[] DATA_SECTION(D_0015F630) = {
-#include "data_inc/D_0015F630.inc"
-};
-
-u32 freeze_box_record_color DATA_SECTION(D_0015F634) =
-#include "data_inc/D_0015F634.inc"
-    ;
-
-short freeze_box_record_flash_color[] DATA_SECTION(D_0015F638) = {
-#include "data_inc/D_0015F638.inc"
-};
-
-u32 freeze_box_no_record_color DATA_SECTION(D_0015F63C) =
-#include "data_inc/D_0015F63C.inc"
-    ;
-
-short freeze_box_no_record_flash_color[] DATA_SECTION(D_0015F640) = {
-#include "data_inc/D_0015F640.inc"
-};
-
 u32 freeze_prompt_default_text DATA_SECTION(D_0015F648) = 0;
 
 u32 D_0015F64C DATA_SECTION(D_0015F64C) = 0;
-
-u32 freeze_prompt_number_format[] DATA_SECTION(D_0015F650) = {
-#include "data_inc/D_0015F650.inc"
-};
-
-char freeze_rank_line_format[] DATA_SECTION(D_0015F660) =
-#include "data_inc/D_0015F660.inc"
-    ;
-
-u32 freeze_text_line_format[] DATA_SECTION(D_0015F668) = {
-#include "data_inc/D_0015F668.inc"
-};
-
-char freeze_race_time_format[] DATA_SECTION(D_0015F670) =
-#include "data_inc/D_0015F670.inc"
-    ;
-
-u32 freeze_record_value_format[] DATA_SECTION(D_0015F680) = {
-#include "data_inc/D_0015F680.inc"
-};
 
 u32 space_load_pending DATA_SECTION(D_0015F690) = 0;
 
@@ -2529,25 +1637,17 @@ u32 vu1_chain_reserved_bytes[] DATA_SECTION(D_0015F698) = {
 
 u32 D_0015F6AC DATA_SECTION(D_0015F6AC) = 0;
 
-int help_message_keepalive[] DATA_SECTION(D_0015F6B0) = {
-#include "data_inc/D_0015F6B0.inc"
-};
-
 u32 D_0015F6C4 DATA_SECTION(D_0015F6C4) = 0;
 
 u32 boot_level_active DATA_SECTION(D_0015F6C8) = 0;
 
 u32 pause_restart_reset_flag DATA_SECTION(D_0015F6CC) = 0;
 
-int counter_advance_disabled[5] DATA_SECTION(D_0015F6D0) = {0};
-
 u32 space_load_level DATA_SECTION(D_0015F6E4) = 0;
 
 u32 g_game_mode[2] DATA_SECTION(D_0015F6E8) = {0};
 
 u32 world_update_time[2] DATA_SECTION(D_0015F6F0) = {0};
-
-float draw_frame_time_ratio[6] DATA_SECTION(D_0015F6F8) = {0};
 
 u32 level_sound_def_count DATA_SECTION(D_0015F710) = 0;
 
@@ -2557,71 +1657,15 @@ int render_packet_end DATA_SECTION(D_0015F718) = {0};
 
 int vu1_chain_safe_end DATA_SECTION(D_0015F71C) = {0};
 
-u32 occl_grid_data DATA_SECTION(D_0015F720) = 0;
-
-u32 occl_oct DATA_SECTION(D_0015F724) = 0;
-
 int occl_fallback_mode DATA_SECTION(D_0015F728) = {0};
-
-int occl_invalid_grid DATA_SECTION(D_0015F72C) = {0};
-
-u32 occl_previous_grid[12] DATA_SECTION(D_0015F730) = {0};
-
-int hud_msg_count DATA_SECTION(D_0015F760) = {0};
-
-int hud_msg_alpha DATA_SECTION(D_0015F764) = {0};
-
-int hud_msg_y[2] DATA_SECTION(D_0015F768) = {0};
-
-short map_label_text_y_offset[] DATA_SECTION(D_0015F770) = {
-#include "data_inc/D_0015F770.inc"
-};
 
 #include "data_inc/D_0015F780.refs"
 u32 help_msgs[] DATA_SECTION(D_0015F780) = {
 #include "data_inc/D_0015F780.inc"
 };
 
-u32 hud_file_str[] DATA_SECTION(D_0015F7B8) = {
-#include "data_inc/D_0015F7B8.inc"
-};
-
-short ResourceCounter[] DATA_SECTION(D_0015F9D0) = {
-#include "data_inc/D_0015F9D0.inc"
-};
-
-u32 hud_bank_main DATA_SECTION(D_0015FAB8) = 0;
-
-u32 hud_bank_cursor DATA_SECTION(D_0015FABC) = 0;
-
-u32 hud_bank_end[32] DATA_SECTION(D_0015FAC0) = {0};
-
-u32 rebooted_iop_message[] DATA_SECTION(D_0015FB40) = {
-#include "data_inc/D_0015FB40.inc"
-};
-
 u32 D_0015FB80[] DATA_SECTION(D_0015FB80) = {
 #include "data_inc/D_0015FB80.inc"
-};
-
-u32 hud_bank_alloc_file[] DATA_SECTION(D_0015FC70) = {
-#include "data_inc/D_0015FC70.inc"
-};
-
-u32 hud_bank1_stash_comment[] DATA_SECTION(D_0015FC80) = {
-#include "data_inc/D_0015FC80.inc"
-};
-
-u32 hud_bank3_stash_comment[] DATA_SECTION(D_0015FC90) = {
-#include "data_inc/D_0015FC90.inc"
-};
-
-u32 hud_bank4_stash_comment[] DATA_SECTION(D_0015FCA0) = {
-#include "data_inc/D_0015FCA0.inc"
-};
-
-u32 hud_bank5_stash_comment[] DATA_SECTION(D_0015FCB0) = {
-#include "data_inc/D_0015FCB0.inc"
 };
 
 u8 debug_mission_state_mirror[] DATA_SECTION(D_0015FCC8) = {
@@ -2632,85 +1676,21 @@ u8 map_use_alt_level_layout[] DATA_SECTION(D_0015FE20) = {
 #include "data_inc/D_0015FE20.inc"
 };
 
-u8 map_icon_flag800_width[] DATA_SECTION(D_0015FE40) = {
-#include "data_inc/D_0015FE40.inc"
-};
-
-u8 map_icon_flag400_width[] DATA_SECTION(D_0015FE48) = {
-#include "data_inc/D_0015FE48.inc"
-};
-
-u8 map_icon_flag1000_width[] DATA_SECTION(D_0015FE50) = {
-#include "data_inc/D_0015FE50.inc"
-};
-
-u32 menu_item_price_fmt[] DATA_SECTION(D_0015FE60) = {
-#include "data_inc/D_0015FE60.inc"
-};
-
-char menu_token_error_text[] DATA_SECTION(D_0015FE68) =
-#include "data_inc/D_0015FE68.inc"
-    ;
-
-int marker_half_size[] DATA_SECTION(D_0015FE70) = {
-#include "data_inc/D_0015FE70.inc"
-};
-
 u32 D_0015FF00[] DATA_SECTION(D_0015FF00) = {
 #include "data_inc/D_0015FF00.inc"
 };
 
 int memory_card_error_latch DATA_SECTION(D_0015FF4C) = {0};
 
-short memcard_restore_mismatch_count[4] DATA_SECTION(D_0015FF50) = {0};
-
-char memcard_slot_file_prefix[] DATA_SECTION(D_0015FF58) =
-#include "data_inc/D_0015FF58.inc"
-    ;
-
-char memcard_slot_file_suffix[] DATA_SECTION(D_0015FF60) =
-#include "data_inc/D_0015FF60.inc"
-    ;
-
-char fmt_memcard_path[] DATA_SECTION(D_0015FF68) =
-#include "data_inc/D_0015FF68.inc"
-    ;
-
-u32 str_memcard_deleting_file[] DATA_SECTION(D_0015FF70) = {
-#include "data_inc/D_0015FF70.inc"
-};
-
-u32 graphics_setup_profile_label[] DATA_SECTION(D_0015FFC0) = {
-#include "data_inc/D_0015FFC0.inc"
-};
-
-u32 draw_mobys_profile_label[] DATA_SECTION(D_0015FFD0) = {
-#include "data_inc/D_0015FFD0.inc"
-};
-
-u32 moby_texture_dma_profile_label[] DATA_SECTION(D_0015FFE0) = {
-#include "data_inc/D_0015FFE0.inc"
-};
-
-char draw_mobys_cleanup_profile_label[] DATA_SECTION(D_0015FFF0) =
-#include "data_inc/D_0015FFF0.inc"
-    ;
-
-int num_spawnable_mobys DATA_SECTION(D_0015FFFC) = {0};
-
 u32 resident_moby_class_count[2] DATA_SECTION(D_00160000) = {0};
 
 s32 resident_indexed_texture_count[3] DATA_SECTION(D_00160008) = {0};
-
-int moby_anim_head DATA_SECTION(D_00160014) = {0};
 
 int resident_object_pool DATA_SECTION(D_00160018) = {0};
 
 u32 moby_instance_end DATA_SECTION(D_0016001C) = 0;
 
 u32 moby_instance_perm_end DATA_SECTION(D_00160020) = 0;
-
-u32 visible_moby_list DATA_SECTION(D_00160024) = 0;
 
 u32 g_moby_vars[2] DATA_SECTION(D_00160028) = {0};
 
@@ -2721,10 +1701,6 @@ int moby_word_fill_table_bytes DATA_SECTION(D_00160038) = {0};
 int graphics_setup_dma_chain_enabled DATA_SECTION(D_0016003C) = {0};
 
 int graphics_setup_tag_slot DATA_SECTION(D_00160040) = {0};
-
-int runtime_resource_tag DATA_SECTION(D_00160044) = {0};
-
-int class_resource_count DATA_SECTION(D_00160048) = {0};
 
 int active_class_resource_index DATA_SECTION(D_0016004C) = {0};
 
@@ -2744,26 +1720,6 @@ short damage_class_131_a8_float_table[] DATA_SECTION(D_001600C8) = {
 #include "data_inc/D_001600C8.inc"
 };
 
-u32 quat_next_axis_table[] DATA_SECTION(D_001600D8) = {
-#include "data_inc/D_001600D8.inc"
-};
-
-char sound_handle_in_use_message[] DATA_SECTION(D_00160168) =
-#include "data_inc/D_00160168.inc"
-    ;
-
-s32 menu_help_hud_item[] DATA_SECTION(D_00160170) = {
-#include "data_inc/D_00160170.inc"
-};
-
-u32 menu_entry_find_token[] DATA_SECTION(D_00160188) = {
-#include "data_inc/D_00160188.inc"
-};
-
-u32 menu_time_value_format[] DATA_SECTION(D_00160190) = {
-#include "data_inc/D_00160190.inc"
-};
-
 u32 part_instance_pool DATA_SECTION(D_001601AC) = 0;
 
 u32 part_slot_search_start DATA_SECTION(D_001601B0) = 0;
@@ -2774,45 +1730,9 @@ u32 part_active_count DATA_SECTION(D_001601B8) = 0;
 
 u32 part_clip_dist DATA_SECTION(D_001601BC) = 0;
 
-int particle_texture_range_count[] DATA_SECTION(D_001601C0) = {
-#include "data_inc/D_001601C0.inc"
-};
-
-short panel_clear_color[] DATA_SECTION(D_001602B0) = {
-#include "data_inc/D_001602B0.inc"
-};
-
-u32 menu_fade_duration DATA_SECTION(D_001602B4) =
-#include "data_inc/D_001602B4.inc"
-    ;
-
-short text_shadow_x[] DATA_SECTION(D_001602B8) = {
-#include "data_inc/D_001602B8.inc"
-};
-
-u32 text_shadow_y DATA_SECTION(D_001602BC) =
-#include "data_inc/D_001602BC.inc"
-    ;
-
-u32 menu_light_direction_init[] DATA_SECTION(D_001602C0) = {
-#include "data_inc/D_001602C0.inc"
-};
-
-u32 menu_light_color_init[] DATA_SECTION(D_001602D0) = {
-#include "data_inc/D_001602D0.inc"
-};
-
 #include "data_inc/D_001602E0.refs"
 u32 menu_level_indices[] DATA_SECTION(D_001602E0) = {
 #include "data_inc/D_001602E0.inc"
-};
-
-short menu_label_text_inset[] DATA_SECTION(D_00160358) = {
-#include "data_inc/D_00160358.inc"
-};
-
-short menu_label_marquee_gap[] DATA_SECTION(D_00160368) = {
-#include "data_inc/D_00160368.inc"
 };
 
 char str_default[] DATA_SECTION(D_00160370) =
@@ -2821,113 +1741,23 @@ char str_default[] DATA_SECTION(D_00160370) =
 
 u32 str_empty_menu_label[2] DATA_SECTION(D_00160378) = {0};
 
-char fmt_two_strings[] DATA_SECTION(D_00160380) =
-#include "data_inc/D_00160380.inc"
-    ;
-
-char str_null_text[] DATA_SECTION(D_00160388) =
-#include "data_inc/D_00160388.inc"
-    ;
-
-short menu_grid_icon_width[] DATA_SECTION(D_00160390) = {
-#include "data_inc/D_00160390.inc"
-};
-
-u32 fmt_decimal DATA_SECTION(D_001603A0) =
-#include "data_inc/D_001603A0.inc"
-    ;
-
-u32 gold_bolt_marker_y_offset DATA_SECTION(D_001603A4) =
-#include "data_inc/D_001603A4.inc"
-    ;
-
-u32 fmt_gold_bolt_count_line[] DATA_SECTION(D_001603A8) = {
-#include "data_inc/D_001603A8.inc"
-};
-
-u32 fmt_ammo_have[] DATA_SECTION(D_001603B8) = {
-#include "data_inc/D_001603B8.inc"
-};
-
-u32 fmt_ammo_have_thousands[] DATA_SECTION(D_001603C0) = {
-#include "data_inc/D_001603C0.inc"
-};
-
-u32 fmt_number_thousands[] DATA_SECTION(D_001603D0) = {
-#include "data_inc/D_001603D0.inc"
-};
-
-u32 pause_ring_left_glyph[] DATA_SECTION(D_001603D8) = {
-#include "data_inc/D_001603D8.inc"
-};
-
-u32 pause_ring_right_glyph[] DATA_SECTION(D_001603E0) = {
-#include "data_inc/D_001603E0.inc"
-};
-
 char str_error_text[] DATA_SECTION(D_001603E8) =
 #include "data_inc/D_001603E8.inc"
     ;
 
-u8 menu_side_indicator_left_glyph[] DATA_SECTION(D_001603F0) = {
-#include "data_inc/D_001603F0.inc"
-};
-
-u8 menu_side_indicator_right_glyph[] DATA_SECTION(D_001603F8) = {
-#include "data_inc/D_001603F8.inc"
-};
-
-u32 fmt_save_play_time[] DATA_SECTION(D_00160400) = {
-#include "data_inc/D_00160400.inc"
-};
-
-char fmt_save_bolt_count[] DATA_SECTION(D_00160410) =
-#include "data_inc/D_00160410.inc"
-    ;
-
-u32 fmt_save_date[] DATA_SECTION(D_00160420) = {
-#include "data_inc/D_00160420.inc"
-};
-
 int preview_animation_request_count[4] DATA_SECTION(D_00160450) = {0};
-
-short setup_strip_pass_words[] DATA_SECTION(D_00160460) = {
-#include "data_inc/D_00160460.inc"
-};
 
 float direction_unit DATA_SECTION(D_00160470) = {0};
 
-float direction_unit_y DATA_SECTION(D_00160474) = {0};
-
-float direction_unit_z[2] DATA_SECTION(D_00160478) = {0};
-
 float direction_perpendicular DATA_SECTION(D_00160480) = {0};
 
-float direction_perpendicular_y DATA_SECTION(D_00160484) = {0};
-
-float direction_perpendicular_z[2] DATA_SECTION(D_00160488) = {0};
-
 float direction_scaled DATA_SECTION(D_00160490) = {0};
-
-float direction_scaled_y DATA_SECTION(D_00160494) = {0};
-
-float direction_scaled_z[2] DATA_SECTION(D_00160498) = {0};
 
 s32 graphics_setup_word[2] DATA_SECTION(D_001604A0) = {0};
 
 u32 D_001604A8[2] DATA_SECTION(D_001604A8) = {0};
 
-u32 str_shrub_texs[] DATA_SECTION(D_001604B0) = {
-#include "data_inc/D_001604B0.inc"
-};
-
-char str_shrub_draw[] DATA_SECTION(D_001604C0) =
-#include "data_inc/D_001604C0.inc"
-    ;
-
 s32 registered_shrub_render_class_count DATA_SECTION(D_001604CC) = {0};
-
-int shrub_count DATA_SECTION(D_001604D0) = {0};
 
 u32 shrubs DATA_SECTION(D_001604D4) = 0;
 
@@ -2938,10 +1768,6 @@ u32 shrub_data_table DATA_SECTION(D_001604DC) = 0;
 u32 shrub_colors[3] DATA_SECTION(D_001604E0) = {0};
 
 s32 shrub_render_texture_definition_count DATA_SECTION(D_001604EC) = {0};
-
-int shrub_tex_dma_tag[2] DATA_SECTION(D_001604F0) = {0};
-
-int max_shrub_texture_dma_size[2] DATA_SECTION(D_001604F8) = {0};
 
 u32 sky_shell_scroll_step DATA_SECTION(D_00160500) = 0;
 
@@ -2955,113 +1781,18 @@ u32 sky_tile_buffer_index[] DATA_SECTION(D_00160510) = {
 #include "data_inc/D_00160510.inc"
 };
 
-char str_sky_texs[] DATA_SECTION(D_00160550) =
-#include "data_inc/D_00160550.inc"
-    ;
-
 u32 level_sky_effect_data DATA_SECTION(D_0016055C) = 0;
 
 u32 sky_shell_translation[4] DATA_SECTION(D_00160560) = {0};
 
-int sky_gif_paging_tag[4] DATA_SECTION(D_00160570) = {0};
-
 u32 D_00160580[2] DATA_SECTION(D_00160580) = {0};
-
-int D_00160588[] DATA_SECTION(D_00160588) = {
-#include "data_inc/D_00160588.inc"
-};
-
-u32 environment_mapping_uv_refresh_state DATA_SECTION(D_001605A4) =
-#include "data_inc/D_001605A4.inc"
-    ;
-
-short env_map_was_active[] DATA_SECTION(D_001605A8) = {
-#include "data_inc/D_001605A8.inc"
-};
 
 short resident_effect_quad_counts[] DATA_SECTION(D_001605C0) = {
 #include "data_inc/D_001605C0.inc"
 };
 
-short warp_trail_widths[] DATA_SECTION(D_001605D0) = {
-#include "data_inc/D_001605D0.inc"
-};
-
-short resident_quad_start_pos[] DATA_SECTION(D_001605E0) = {
-#include "data_inc/D_001605E0.inc"
-};
-
-short resident_quad_pos[8] DATA_SECTION(D_001605F0) = {0};
-
-u32 D_00160600[] DATA_SECTION(D_00160600) = {
-#include "data_inc/D_00160600.inc"
-};
-
-u32 scene_variant_durations[] DATA_SECTION(D_00160610) = {
-#include "data_inc/D_00160610.inc"
-};
-
-short environment_mesh_colors[] DATA_SECTION(D_00160620) = {
-#include "data_inc/D_00160620.inc"
-};
-
-short environment_mesh_vertex_counts[] DATA_SECTION(D_00160630) = {
-#include "data_inc/D_00160630.inc"
-};
-
-short environment_mesh_quad_counts[] DATA_SECTION(D_00160640) = {
-#include "data_inc/D_00160640.inc"
-};
-
-#include "data_inc/D_00160650.refs"
-u32 environment_mesh_normals[] DATA_SECTION(D_00160650) = {
-#include "data_inc/D_00160650.inc"
-};
-
-#include "data_inc/D_00160660.refs"
-u32 environment_mesh_positions[] DATA_SECTION(D_00160660) = {
-#include "data_inc/D_00160660.inc"
-};
-
-#include "data_inc/D_00160670.refs"
-u32 environment_mesh_quads[] DATA_SECTION(D_00160670) = {
-#include "data_inc/D_00160670.inc"
-};
-
-u32 resident_quad_texture[2] DATA_SECTION(D_00160680) = {0};
-
-#include "data_inc/D_00160688.refs"
-u32 resident_banner_texture[] DATA_SECTION(D_00160688) = {
-#include "data_inc/D_00160688.inc"
-};
-
 u32 view_depth_constants[] DATA_SECTION(D_00160820) = {
 #include "data_inc/D_00160820.inc"
-};
-
-u32 rect_overlay_gif_regs_a[] DATA_SECTION(D_00160920) = {
-#include "data_inc/D_00160920.inc"
-};
-
-u32 rect_overlay_gif_regs_b[] DATA_SECTION(D_00160930) = {
-#include "data_inc/D_00160930.inc"
-};
-
-u32 textured_quad_header[] DATA_SECTION(D_00160940) = {
-#include "data_inc/D_00160940.inc"
-};
-
-u32 textured_quad_giftag[] DATA_SECTION(D_00160950) = {
-#include "data_inc/D_00160950.inc"
-};
-
-u32 textured_rect_gif_regs[] DATA_SECTION(D_00160960) = {
-#include "data_inc/D_00160960.inc"
-};
-
-#include "data_inc/D_001609E0.refs"
-u32 billboard_quad_header[] DATA_SECTION(D_001609E0) = {
-#include "data_inc/D_001609E0.inc"
 };
 
 u32 shrub_color_dma_ref_tag[] DATA_SECTION(D_00160BB0) = {
@@ -3084,14 +1815,6 @@ u32 D_00160F40[] DATA_SECTION(D_00160F40) = {
 #include "data_inc/D_00160F40.inc"
 };
 
-u32 str_tfrag_texs[] DATA_SECTION(D_00160F70) = {
-#include "data_inc/D_00160F70.inc"
-};
-
-char str_tfrag_draw[] DATA_SECTION(D_00160F80) =
-#include "data_inc/D_00160F80.inc"
-    ;
-
 u32 tfrag_render_records DATA_SECTION(D_00160F8C) = 0;
 
 int tfrag_render_record_count[4] DATA_SECTION(D_00160F90) = {0};
@@ -3106,42 +1829,18 @@ float tfrag_draw_distance[3] DATA_SECTION(D_00160FC0) = {0};
 
 u32 D_00160FCC DATA_SECTION(D_00160FCC) = 0;
 
-u32 attachment_vertex_indices[] DATA_SECTION(D_00160FD0) = {
-#include "data_inc/D_00160FD0.inc"
-};
-
 u32 vif_chain_flags[] DATA_SECTION(D_00160FE0) = {
 #include "data_inc/D_00160FE0.inc"
 };
 
-int vu1_chain_buffers[2] DATA_SECTION(D_00160FF8) = {0};
-
 u32 g_render_packet_cursor DATA_SECTION(D_00161000) = 0;
-
-int previous_render_packet_cursor DATA_SECTION(D_00161004) = {0};
 
 int vu1_chain_limit DATA_SECTION(D_00161008) = {0};
 
 u32 current_vu_chain DATA_SECTION(D_0016100C) = 0;
 
-int vu1_chain_buffer_index DATA_SECTION(D_00161010) = {0};
-
-int vu1_chain_peak_bytes DATA_SECTION(D_00161014) = {0};
-
-int vif1_dma_handler_id DATA_SECTION(D_00161018) = {0};
-
-int vu1_halt_handler_id DATA_SECTION(D_0016101C) = {0};
-
 u32 D_00161020[] DATA_SECTION(D_00161020) = {
 #include "data_inc/D_00161020.inc"
-};
-
-u32 str_tie_texs[] DATA_SECTION(D_00161030) = {
-#include "data_inc/D_00161030.inc"
-};
-
-u32 str_tie_draw[] DATA_SECTION(D_00161040) = {
-#include "data_inc/D_00161040.inc"
 };
 
 u32 registered_object_render_class_count DATA_SECTION(D_0016104C) = 0;
@@ -3152,79 +1851,21 @@ u32 ties_end DATA_SECTION(D_00161054) = 0;
 
 u32 tie_data_table DATA_SECTION(D_00161058) = 0;
 
-int tie_count DATA_SECTION(D_0016105C) = {0};
-
 u32 D_00161060 DATA_SECTION(D_00161060) = 0;
 
 s32 object_render_texture_definition_count DATA_SECTION(D_00161064) = {0};
 
-int tie_tex_dma_tag_slot[2] DATA_SECTION(D_00161068) = {0};
-
 float tie_draw_distance DATA_SECTION(D_00161070) = {0};
-
-int max_tie_texture_dma_size DATA_SECTION(D_00161074) = {0};
 
 u32 D_00161078[] DATA_SECTION(D_00161078) = {
 #include "data_inc/D_00161078.inc"
 };
 
-short resident_stream_resume_frames_s4[] DATA_SECTION(D_00161130) = {
-#include "data_inc/D_00161130.inc"
-};
-
-short resident_stream_resume_frames_s5[] DATA_SECTION(D_00161138) = {
-#include "data_inc/D_00161138.inc"
-};
-
-short resident_stream_resume_frames_s6[] DATA_SECTION(D_00161140) = {
-#include "data_inc/D_00161140.inc"
-};
-
-char fmt_thousands_grouped_int[] DATA_SECTION(D_00161178) =
-#include "data_inc/D_00161178.inc"
-    ;
-
-u32 fmt_plain_int[] DATA_SECTION(D_00161180) = {
-#include "data_inc/D_00161180.inc"
-};
-
-int capture_moby_pass_enabled[2] DATA_SECTION(D_001611A8) = {0};
-
-s32 resident_dialogue_started[4] DATA_SECTION(D_001611B0) = {0};
-
-u32 underwater_screen_tint_r DATA_SECTION(D_001611C0) =
-#include "data_inc/D_001611C0.inc"
-    ;
-
-u32 water_fog_color_red DATA_SECTION(D_001611C4) =
-#include "data_inc/D_001611C4.inc"
-    ;
-
-float water_fog_near_dist DATA_SECTION(D_001611C8) = {0};
-
-float water_fog_far_dist DATA_SECTION(D_001611CC) = {
-#include "data_inc/D_001611CC.inc"
-};
-
-u32 water_fog_near_intensity[] DATA_SECTION(D_001611D0) = {
-#include "data_inc/D_001611D0.inc"
-};
-
-short surface_height_layer[] DATA_SECTION(D_001611E0) = {
-#include "data_inc/D_001611E0.inc"
-};
-
 int surface_height_tiles DATA_SECTION(D_00161290) = {0};
-
-int occl_cell_table DATA_SECTION(D_00161294) = {0};
 
 int occl_cell_count DATA_SECTION(D_00161298) = {0};
 
 int local_surface_region_enabled DATA_SECTION(D_0016129C) = {0};
-
-float local_surface_region_center_x[2] DATA_SECTION(D_001612A0) = {0};
-
-float D_001612A8[14] DATA_SECTION(D_001612A8) = {0};
 
 int movie_display_active DATA_SECTION(D_001612E0) = {0};
 
@@ -3236,27 +1877,7 @@ u32 D_001612EC DATA_SECTION(D_001612EC) = 0;
 
 u32 D_001612F0[2] DATA_SECTION(D_001612F0) = {0};
 
-char movie_error_message[] DATA_SECTION(D_001612F8) =
-#include "data_inc/D_001612F8.inc"
-    ;
-
-int decoder_buffer_address DATA_SECTION(D_00161308) = {0};
-
 u32 decoder_state DATA_SECTION(D_0016130C) = 0;
-
-int movie_decoder_thread_id DATA_SECTION(D_00161310) = {0};
-
-int movie_play_step DATA_SECTION(D_00161314) = {0};
-
-int movie_frame_count[2] DATA_SECTION(D_00161318) = {0};
-
-u32 mpeg_sequence_end_code[] DATA_SECTION(D_00161320) = {
-#include "data_inc/D_00161320.inc"
-};
-
-u32 video_error_message[] DATA_SECTION(D_00161328) = {
-#include "data_inc/D_00161328.inc"
-};
 
 u32 D_00165E00[] DATA_SECTION(D_00165E00) = {
 #include "data_inc/D_00165E00.inc"
@@ -3272,14 +1893,6 @@ u32 D_00180008[4] DATA_SECTION(D_00180008) = {0};
 
 u32 D_00180018[6266] DATA_SECTION(D_00180018) = {0};
 
-u32 startlevel_sound_defs[] DATA_SECTION(D_00186200) = {
-#include "data_inc/D_00186200.inc"
-};
-
-u32 moby_class_472_sound_defs[] DATA_SECTION(D_001862E0) = {
-#include "data_inc/D_001862E0.inc"
-};
-
 u32 D_00186310[] DATA_SECTION(D_00186310) = {
 #include "data_inc/D_00186310.inc"
 };
@@ -3288,42 +1901,20 @@ u32 D_00186350[] DATA_SECTION(D_00186350) = {
 #include "data_inc/D_00186350.inc"
 };
 
-u32 transition_sound_cues[] DATA_SECTION(D_001863B0) = {
-#include "data_inc/D_001863B0.inc"
-};
-
 u32 level_init_cleared_block[16] DATA_SECTION(D_00186410) = {0};
-
-u32 item_info_table[2] DATA_SECTION(D_001864D0) = {0};
 
 float gCamera[80] DATA_SECTION(D_00187040) = {0};
 
 u32 camera_position[6] DATA_SECTION(D_00187180) = {0};
 
-u32 D_001871A0[8] DATA_SECTION(D_001871A0) = {0};
-
-u32 cur_cam[4] DATA_SECTION(D_001871C0) = {0};
-
-u32 cam_coll_state[56] DATA_SECTION(D_001871D0) = {0};
-
-short cam_trans_state[112] DATA_SECTION(D_001872B0) = {0};
-
 u32 camera_rows[4] DATA_SECTION(D_00187390) = {0};
 
-u32 effect_ribbon[68] DATA_SECTION(D_00187400) = {0};
-
 int draw_config[6] DATA_SECTION(D_0018A3B0) = {0};
-
-u32 D_0018A400[512] DATA_SECTION(D_0018A400) = {0};
 
 u32 occl_cam_state[450] DATA_SECTION(D_0018C418) = {0};
 
 u32 D_0018CB20[] DATA_SECTION(D_0018CB20) = {
 #include "data_inc/D_0018CB20.inc"
-};
-
-u32 D_0018CB40[] DATA_SECTION(D_0018CB40) = {
-#include "data_inc/D_0018CB40.inc"
 };
 
 u32 render_sequence[94] DATA_SECTION(D_0018CC20) = {0};
@@ -3334,13 +1925,9 @@ float view_tan_half_fov[4] DATA_SECTION(D_0018CEB0) = {0};
 
 u32 clip_transform[36] DATA_SECTION(D_0018CF80) = {0};
 
-u32 D_0018E450[252] DATA_SECTION(D_0018E450) = {0};
-
 u32 D_00190000[3328] DATA_SECTION(D_00190000) = {0};
 
 u32 occl_visibility[32] DATA_SECTION(D_001940C0) = {0};
-
-u32 level_resource_buffers[2] DATA_SECTION(D_001941C0) = {0};
 
 u32 coll_output[8] DATA_SECTION(D_00194200) = {0};
 
@@ -3360,16 +1947,6 @@ u32 g_help_state[] DATA_SECTION(D_001997D0) = {
 
 int help_msg_count DATA_SECTION(D_001997FC) = {0};
 
-u32 D_00199800[4] DATA_SECTION(D_00199800) = {0};
-
-short message_id_code_table[] DATA_SECTION(D_00199810) = {
-#include "data_inc/D_00199810.inc"
-};
-
-u32 s_paradox_this_message_does_not[] DATA_SECTION(D_00199A68) = {
-#include "data_inc/D_00199A68.inc"
-};
-
 u32 D_00199AD0[] DATA_SECTION(D_00199AD0) = {
 #include "data_inc/D_00199AD0.inc"
 };
@@ -3378,17 +1955,9 @@ u32 D_00199BB0[] DATA_SECTION(D_00199BB0) = {
 #include "data_inc/D_00199BB0.inc"
 };
 
-u32 hud_state[6] DATA_SECTION(D_0019A4E8) = {0};
-
 u32 D_0019ACC0[128] DATA_SECTION(D_0019ACC0) = {0};
 
 u32 dir_lights[228] DATA_SECTION(D_0019BEC0) = {0};
-
-u32 menu_light_direction[4] DATA_SECTION(D_0019C250) = {0};
-
-u32 D_0019C260[4] DATA_SECTION(D_0019C260) = {0};
-
-u32 D_0019C270[20] DATA_SECTION(D_0019C270) = {0};
 
 u32 point_lights[128] DATA_SECTION(D_0019C2C0) = {0};
 
@@ -3524,10 +2093,6 @@ void *D_001A0000[] DATA_SECTION(D_001A0000) = {
 };
 
 u32 level_map_selection[10] DATA_SECTION(D_001A01F0) = {0};
-
-u32 memcard_dir_entries[8] DATA_SECTION(D_001A0980) = {0};
-
-u32 memcard_save_file_name_buffer[168] DATA_SECTION(D_001A09A0) = {0};
 
 u32 D_001A0C40[] DATA_SECTION(D_001A0C40) = {
 #include "data_inc/D_001A0C40.inc"
@@ -3692,14 +2257,6 @@ u32 D_001A2E78[] DATA_SECTION(D_001A2E78) = {
 #include "data_inc/D_001A2E78.inc"
 };
 
-void *map_icon_lists[] DATA_SECTION(D_001A2F40) = {
-    D_001A0C90, D_001A0DA8, D_001A0F60, D_001A11E0, D_001A1460, D_001A15F0, D_001A1848,
-    D_001A1A00, D_001A1BE0, D_001A1D98, D_001A1FA0, D_001A2248, D_001A24C8, D_001A2630,
-    D_001A2810, D_001A2A40, D_001A2C48, D_001A2D88, D_001A2E78, 0,
-};
-
-u32 debug_font_buffer[5168] DATA_SECTION(D_001AAF40) = {0};
-
 u32 D_001B0000[8] DATA_SECTION(D_001B0000) = {0};
 
 u32 D_001B0020[3016] DATA_SECTION(D_001B0020) = {0};
@@ -3733,8 +2290,6 @@ u32 D_001C8880[96] DATA_SECTION(D_001C8880) = {0};
 float shadow_light_dir[16] DATA_SECTION(D_001CAE00) = {0};
 
 u32 resident_indexed_textures[1024] DATA_SECTION(D_001CAE40) = {0};
-
-u32 space_flight_paths[240] DATA_SECTION(D_001CC730) = {0};
 
 u32 D_001CCAF0[] DATA_SECTION(D_001CCAF0) = {
 #include "data_inc/D_001CCAF0.inc"
@@ -4101,11 +2656,6 @@ u32 D_001CF6E8[] DATA_SECTION(D_001CF6E8) = {
 #include "data_inc/D_001CF6E8.inc"
 };
 
-#include "data_inc/D_001CF798.refs"
-u32 map_menu_page[] DATA_SECTION(D_001CF798) = {
-#include "data_inc/D_001CF798.inc"
-};
-
 #include "data_inc/D_001CF820.refs"
 u32 D_001CF820[] DATA_SECTION(D_001CF820) = {
 #include "data_inc/D_001CF820.inc"
@@ -4176,11 +2726,6 @@ void *D_001CF938[] DATA_SECTION(D_001CF938) = {
 
 void *D_001CF9A0[] DATA_SECTION(D_001CF9A0) = {
     Pause_PageInput, DrawMissionsMenu, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-};
-
-#include "data_inc/D_001CF9F8.refs"
-u32 mission_menu_page[] DATA_SECTION(D_001CF9F8) = {
-#include "data_inc/D_001CF9F8.inc"
 };
 
 #include "data_inc/D_001CFA80.refs"
@@ -5276,11 +3821,6 @@ u32 D_001D48F8[] DATA_SECTION(D_001D48F8) = {
 #include "data_inc/D_001D48F8.inc"
 };
 
-#include "data_inc/D_001D4948.refs"
-struct MenuPage pause_menu_start_page DATA_SECTION(D_001D4948) = {
-#include "data_inc/D_001D4948.inc"
-};
-
 #include "data_inc/D_001D49D0.refs"
 u32 D_001D49D0[] DATA_SECTION(D_001D49D0) = {
 #include "data_inc/D_001D49D0.inc"
@@ -5433,32 +3973,7 @@ u32 D_001D52C8[] DATA_SECTION(D_001D52C8) = {
 #include "data_inc/D_001D52C8.inc"
 };
 
-u32 timed_sequence_page3[] DATA_SECTION(D_001D5588) = {
-#include "data_inc/D_001D5588.inc"
-};
-
-u32 timed_sequence_page4[] DATA_SECTION(D_001D5618) = {
-#include "data_inc/D_001D5618.inc"
-};
-
-u32 timed_sequence_page5[] DATA_SECTION(D_001D5630) = {
-#include "data_inc/D_001D5630.inc"
-};
-
-#include "data_inc/D_001D5D58.refs"
-u32 preview_resource_bindings[] DATA_SECTION(D_001D5D58) = {
-#include "data_inc/D_001D5D58.inc"
-};
-
-s32 preserved_item_available_indices[] DATA_SECTION(D_001D5F20) = {
-#include "data_inc/D_001D5F20.inc"
-};
-
 int pause_current_action_list[42] DATA_SECTION(D_001D5F78) = {0};
-
-u32 D_001D6020[22] DATA_SECTION(D_001D6020) = {0};
-
-u32 preview_resource_ids[22] DATA_SECTION(D_001D60C8) = {0};
 
 u32 preview_request_address_base[2] DATA_SECTION(D_001D6218) = {0};
 
@@ -5494,10 +4009,6 @@ u32 resident_effect_quad_corners[] DATA_SECTION(D_001D9D00) = {
 
 u32 space_ship_trail_emitter_offsets[] DATA_SECTION(D_001D9D40) = {
 #include "data_inc/D_001D9D40.inc"
-};
-
-float warp_texture_coordinates[] DATA_SECTION(D_001D9DA0) = {
-#include "data_inc/D_001D9DA0.inc"
 };
 
 u32 space_ship_companion_a_offset[] DATA_SECTION(D_001DA010) = {
@@ -5587,10 +4098,6 @@ u32 D_001DE990[] DATA_SECTION(D_001DE990) = {
 
 u32 D_001DEA20[] DATA_SECTION(D_001DEA20) = {
 #include "data_inc/D_001DEA20.inc"
-};
-
-u32 D_001DEB20[] DATA_SECTION(D_001DEB20) = {
-#include "data_inc/D_001DEB20.inc"
 };
 
 u32 D_001DEC00[] DATA_SECTION(D_001DEC00) = {
@@ -5692,14 +4199,6 @@ u32 D_001E7958[] DATA_SECTION(D_001E7958) = {
 #include "data_inc/D_001E7958.inc"
 };
 
-char str_loading_sound_bank[] DATA_SECTION(D_001E79C0) =
-#include "data_inc/D_001E79C0.inc"
-    ;
-
-u32 str_too_many_dir_lights[] DATA_SECTION(D_001E79D8) = {
-#include "data_inc/D_001E79D8.inc"
-};
-
 u32 D_001E7A50[] DATA_SECTION(D_001E7A50) = {
 #include "data_inc/D_001E7A50.inc"
 };
@@ -5718,40 +4217,8 @@ u32 camera_sample_alt_line_format[] DATA_SECTION(D_001E7B30) = {
 
 u32 D_001E7B68[2] DATA_SECTION(D_001E7B68) = {0};
 
-u32 profile_mark_tfrag_lighting[] DATA_SECTION(D_001E7BA0) = {
-#include "data_inc/D_001E7BA0.inc"
-};
-
-u32 profile_mark_shrub_lighting[] DATA_SECTION(D_001E7BB8) = {
-#include "data_inc/D_001E7BB8.inc"
-};
-
-u32 message_too_long_label[] DATA_SECTION(D_001E7DD8) = {
-#include "data_inc/D_001E7DD8.inc"
-};
-
-u32 loaded_irx_modules_message[] DATA_SECTION(D_001E7E28) = {
-#include "data_inc/D_001E7E28.inc"
-};
-
-u32 unsupported_lang_message[] DATA_SECTION(D_001E7E40) = {
-#include "data_inc/D_001E7E40.inc"
-};
-
-u32 str_bad_point_light_tfrag[] DATA_SECTION(D_001E7EA0) = {
-#include "data_inc/D_001E7EA0.inc"
-};
-
-u32 str_bad_point_light_shrub[] DATA_SECTION(D_001E7EC8) = {
-#include "data_inc/D_001E7EC8.inc"
-};
-
 u32 D_001E8030[] DATA_SECTION(D_001E8030) = {
 #include "data_inc/D_001E8030.inc"
-};
-
-u32 str_no_map_available[] DATA_SECTION(D_001E8398) = {
-#include "data_inc/D_001E8398.inc"
 };
 
 u32 D_001E83F0[] DATA_SECTION(D_001E83F0) = {
@@ -5798,91 +4265,23 @@ char D_001E84E8[] DATA_SECTION(D_001E84E8) =
 #include "data_inc/D_001E84E8.inc"
     ;
 
-u32 memcard_restore_size_mismatch_msg[] DATA_SECTION(D_001E8500) = {
-#include "data_inc/D_001E8500.inc"
-};
-
-u32 str_memcard_deleting_folder[] DATA_SECTION(D_001E8518) = {
-#include "data_inc/D_001E8518.inc"
-};
-
 u32 D_001E85A8[2] DATA_SECTION(D_001E85A8) = {0};
 
 u32 D_001E8608[2] DATA_SECTION(D_001E8608) = {0};
 
-u32 memcard_error_message[] DATA_SECTION(D_001E8690) = {
-#include "data_inc/D_001E8690.inc"
-};
-
 u32 D_001E86E8[2] DATA_SECTION(D_001E86E8) = {0};
-
-u32 s_tried_to_create_moby[] DATA_SECTION(D_001E86F0) = {
-#include "data_inc/D_001E86F0.inc"
-};
-
-u32 vu_chain_overflow_message[] DATA_SECTION(D_001E8730) = {
-#include "data_inc/D_001E8730.inc"
-};
 
 u32 D_001E8890[] DATA_SECTION(D_001E8890) = {
 #include "data_inc/D_001E8890.inc"
-};
-
-u32 load_file_start_failed_string[] DATA_SECTION(D_001E8980) = {
-#include "data_inc/D_001E8980.inc"
 };
 
 u32 D_001E89E8[] DATA_SECTION(D_001E89E8) = {
 #include "data_inc/D_001E89E8.inc"
 };
 
-u32 cheat_menu_text_ids_init[] DATA_SECTION(D_001E8A78) = {
-#include "data_inc/D_001E8A78.inc"
-};
-
-u32 language_resource_offsets[] DATA_SECTION(D_001E8B00) = {
-#include "data_inc/D_001E8B00.inc"
-};
-
-u32 str_shrub_texture_overflow[] DATA_SECTION(D_001E8C00) = {
-#include "data_inc/D_001E8C00.inc"
-};
-
 u32 D_001E8C58[2] DATA_SECTION(D_001E8C58) = {0};
 
-u32 unloaded_sound_bank_format[] DATA_SECTION(D_001E8CB8) = {
-#include "data_inc/D_001E8CB8.inc"
-};
-
-u32 vu1_chain_overflow_msg[] DATA_SECTION(D_001E8CF8) = {
-#include "data_inc/D_001E8CF8.inc"
-};
-
-u32 str_tie_texture_overflow[] DATA_SECTION(D_001E8D80) = {
-#include "data_inc/D_001E8D80.inc"
-};
-
-u32 str_scrolling_status_fmt[] DATA_SECTION(D_001E8DA0) = {
-#include "data_inc/D_001E8DA0.inc"
-};
-
 u32 D_001E8E18[2] DATA_SECTION(D_001E8E18) = {0};
-
-u32 movie_open_error_text[] DATA_SECTION(D_001E8E20) = {
-#include "data_inc/D_001E8E20.inc"
-};
-
-u32 vibuf_dma_not_active_msg[] DATA_SECTION(D_001E8E50) = {
-#include "data_inc/D_001E8E50.inc"
-};
-
-u32 str_mpeg_get_picture_error[] DATA_SECTION(D_001E8E80) = {
-#include "data_inc/D_001E8E80.inc"
-};
-
-u32 moby_class_data_table[] DATA_SECTION(D_001E8F00) = {
-#include "data_inc/D_001E8F00.inc"
-};
 
 u32 camera_types[] DATA_SECTION(D_001E8F80) = {
 #include "data_inc/D_001E8F80.inc"
