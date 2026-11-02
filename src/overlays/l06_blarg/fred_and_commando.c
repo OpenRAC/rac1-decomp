@@ -1015,7 +1015,7 @@ void fred_update(Moby *moby) {
                     PlaceMarkerAheadOfMoby(2.2f, moby);
                 }
             }
-            if (g_hero.state.control_mode == 15) {
+            if (g_hero.state.control_mode == HERO_MODE_GRIND) {
                 set_moby_and_links_to_states_4_and_5(level_mobys_q + (fred_vars->f160 << 8));
             }
             break;
@@ -1096,7 +1096,7 @@ void fred_update(Moby *moby) {
             }
             break;
         case WAIT_FOR_FRED_REMOVAL_TRIGGER:
-            if (g_hero.state.control_mode == 15) {
+            if (g_hero.state.control_mode == HERO_MODE_GRIND) {
                 set_moby_and_links_to_states_4_and_5(level_mobys_q + (fred_vars->f164 << 8));
             del:
                 DeleteMoby(moby);

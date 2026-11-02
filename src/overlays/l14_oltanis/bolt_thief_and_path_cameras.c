@@ -1694,9 +1694,9 @@ void update_flying_car(Moby *m) {
                     FastVecAdd_r4(&o->pos, &o->pos, &vec);
                     FastVecScale_r4(&vec, &m->rot_row2, d->fAC);
                     FastVecAdd_r4(&o->pos, &o->pos, &vec);
-                    if ((((Hero *)(hero_globals_base_r + 0xE1D))->state.control_mode == 13 &&
+                    if ((((Hero *)(hero_globals_base_r + 0xE1D))->state.control_mode == HERO_MODE_GRAPPLE &&
                          ((Hero *)(hero_globals_base_r + 0xE1D))->grapple_target == o) ||
-                        (((Hero *)(hero_globals_base_r + 0xE1D))->state.control_mode == 14 &&
+                        (((Hero *)(hero_globals_base_r + 0xE1D))->state.control_mode == HERO_MODE_GRAPPLE_SWING &&
                          ((Hero *)(hero_globals_base_r + 0xE1D))->swing_target_moby == o)) {
                         seed_linked_record_for_flying_car_r(m);
                         d->fCC = scale_ticks_r3(0x1E);
@@ -1877,7 +1877,7 @@ int update_flying_car_path_motion(struct Moby *moby) {
     }
     if (((unsigned)(g_hero_r3.state.current - 0x25) < 2 && d->rider_moby >= 0 &&
          g_hero_r3.grapple_target == (struct Moby *)((*(char **)&oltanis_mobys_r2) + d->rider_moby * 256)) ||
-        (g_hero_r3.state.control_mode == 0xE && d->rider_moby >= 0 &&
+        (g_hero_r3.state.control_mode == HERO_MODE_GRAPPLE_SWING && d->rider_moby >= 0 &&
          g_hero_r3.swing_target_moby == (struct Moby *)((*(char **)&oltanis_mobys_r2) + d->rider_moby * 256))) {
         float lim;
         float s;
@@ -2363,7 +2363,7 @@ int check_camera_hero_requirements(char *camera, char *control_mode_gate_object)
     if (rec->disabled != 0)
         return -1;
     if (control_mode_gate_object != 0 && ((CameraRecord *)control_mode_gate_object)->transition_state == 0) {
-        if (hero.state.control_mode != 15)
+        if (hero.state.control_mode != HERO_MODE_GRIND)
             return 0;
     }
     if (check_descriptor_hero_trigger(camera) == 0)
@@ -2846,7 +2846,7 @@ INCLUDE_ASM("asm/overlays", func_L14_00317C4C);
 extern char hero_globals_base[];
 // Sets the exit camera's state field to 3 unless the global is 0xF.
 void exit_camera_set_state(char *moby) {
-    if (g_hero.state.control_mode != 0xF) {
+    if (g_hero.state.control_mode != HERO_MODE_GRIND) {
         *(short *)(moby + 0x7E) = 3;
     }
 }

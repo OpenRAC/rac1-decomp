@@ -492,10 +492,11 @@ void update_hero_ledge_probe(void) {
         return;
     go = 0;
     if (((Hero *)g_hero_r2)->vehicle_mode == 0) {
-        if ((((Hero *)g_hero_r2)->state.control_mode == 4 &&
+        if ((((Hero *)g_hero_r2)->state.control_mode == HERO_MODE_JUMP &&
              (((Hero *)g_hero_r2)->past_jump_apex != 0 ||
               ((Hero *)g_hero_r2)->motion.velocity.f[2] < g_frame_time_r * 3.5f)) ||
-            ((Hero *)g_hero_r2)->state.control_mode == 2 || ((Hero *)g_hero_r2)->state.current == HERO_STATE_LAND ||
+            ((Hero *)g_hero_r2)->state.control_mode == HERO_MODE_FALL ||
+            ((Hero *)g_hero_r2)->state.current == HERO_STATE_LAND ||
             ((Hero *)g_hero_r2)->state.current == HERO_STATE_LEDGE_SHIMMY_POSITIVE_YAW ||
             ((Hero *)g_hero_r2)->state.current == HERO_STATE_LEDGE_SHIMMY_NEGATIVE_YAW)
             go = 1;
@@ -513,7 +514,7 @@ void update_hero_ledge_probe(void) {
     rise = 1.8f;
     back = 0.45f;
     speed = ((Hero *)g_hero_r2)->fall_state_gravity;
-    if (((Hero *)g_hero_r2)->state.control_mode == 4)
+    if (((Hero *)g_hero_r2)->state.control_mode == HERO_MODE_JUMP)
         speed = ((Hero *)g_hero_r2)->jump_gravity;
     r = scale_ticks_r2(2);
     predict_position_with_vertical_drop(v0, ((Hero *)g_hero_r2)->motion.pos.f,
@@ -886,10 +887,10 @@ s32 HeroL01_TryTakeHit(s32 arg) {
     f32 a, b, e;
     Vec4 v;
 
-    if (g_hero_r3.state.control_mode == 0x14) {
+    if (g_hero_r3.state.control_mode == HERO_MODE_DYING) {
         return 0;
     }
-    if (g_hero_r3.state.control_mode == 7) {
+    if (g_hero_r3.state.control_mode == HERO_MODE_HURT) {
         return 0;
     }
     if (g_hero_r3.state.current == 0x32) {
@@ -947,14 +948,14 @@ s32 HeroL01_TryTakeHit(s32 arg) {
                 g_hero_r3.motion.resolved_velocity_z.f[2] = g_frame_time * 7.0f;
                 return 1;
             }
-            if (g_hero_r3.state.control_mode == 0x12) {
+            if (g_hero_r3.state.control_mode == HERO_MODE_WATER_SURFACE) {
                 mob = (struct Moby *)((u8 *)g_hero_r3.damage_source_moby);
                 if (mob != 0 && mob->oclass == 0x28F) {
                     id = 0x82;
                     goto call_ret;
                 }
                 Hero_SetMoveState(HERO_STATE_WATER_SURFACE_HURT, 1);
-            } else if (g_hero_r3.state.control_mode == 0x11) {
+            } else if (g_hero_r3.state.control_mode == HERO_MODE_SWIM) {
                 mob = (struct Moby *)((u8 *)g_hero_r3.damage_source_moby);
                 if (mob != 0 && mob->oclass == 0x28F) {
                     id = 0x82;
@@ -968,7 +969,7 @@ s32 HeroL01_TryTakeHit(s32 arg) {
                     }
                 }
                 Hero_SetMoveState(0x76, 1);
-            } else if (g_hero_r3.state.control_mode == 3) {
+            } else if (g_hero_r3.state.control_mode == HERO_MODE_LEDGE) {
                 mob = (struct Moby *)((u8 *)g_hero_r3.damage_source_moby);
                 if (mob != 0) {
                     id = 0x82;
@@ -1023,7 +1024,7 @@ void HeroSetCollisionSize(void) {
             g_hero_r4.capsule_radius_target = 0.45f;
             break;
     }
-    if (g_hero_r4.state.control_mode == 4) {
+    if (g_hero_r4.state.control_mode == HERO_MODE_JUMP) {
         if (g_hero_r4.state_timer > g_hero_r4.takeoff_frame && g_hero_r4.past_jump_apex == 0)
             g_hero_r4.capsule_bottom_target = g_hero_r4.unk434;
     } else if (g_hero_r4.state.current == HERO_STATE_FALL) {
@@ -1036,8 +1037,8 @@ void HeroSetCollisionSize(void) {
     } else if (g_hero_r4.state.current == HERO_STATE_SINK) {
         g_hero_r4.capsule_radius_target = 0.8f;
     }
-    if (!g_hero_r4.wall_hit || g_hero_r4.state.prev_control_mode == 0x12 || g_hero_r4.state.control_mode == 0x11 ||
-        g_hero_r4.base_condition ||
+    if (!g_hero_r4.wall_hit || g_hero_r4.state.prev_control_mode == HERO_MODE_WATER_SURFACE ||
+        g_hero_r4.state.control_mode == HERO_MODE_SWIM || g_hero_r4.base_condition ||
         vec_distance_xy(g_hero_r4.wall_contact_point.f, g_hero_r4.motion.pos.f) > g_hero_r4.capsule_radius * 0.5f) {
         f32 *q = g_hero_capsule_top;
         Hero *b = (Hero *)((u8 *)q - 0x220);
@@ -1236,7 +1237,7 @@ void HeroGroundProbe(void) {
     if (g_hero.gravity_mode)
         k = 1;
     g = g_hero.capsule_radius * 2.2f;
-    if (g_hero.state.control_mode == 2) {
+    if (g_hero.state.control_mode == HERO_MODE_FALL) {
         g = g_hero.capsule_radius * 2.9f;
     }
     hero_get_collision_ray_endpoints(&v10, &v0, k, g, -48.0f);
@@ -1336,8 +1337,9 @@ d1:
     g_hero.unk2C8.i[1] = 0;
     g_hero.unk2C0.i[0] = 0;
     g_hero.unk2C0.i[1] = 0;
-    if (g_hero.state.control_mode == 0xF || g_hero.state.control_mode == 0x15 || g_hero.state.control_mode == 6 ||
-        g_hero.state.control_mode == 4 || g_hero.state.control_mode == 5 || g_hero.state.control_mode == 3) {
+    if (g_hero.state.control_mode == HERO_MODE_GRIND || g_hero.state.control_mode == 0x15 ||
+        g_hero.state.control_mode == HERO_MODE_ATTACK || g_hero.state.control_mode == HERO_MODE_JUMP ||
+        g_hero.state.control_mode == HERO_MODE_LAND || g_hero.state.control_mode == HERO_MODE_LEDGE) {
         return;
     }
     if (!(g_hero.ground_distance < 0.25f)) {
@@ -1405,7 +1407,7 @@ int resolve_hero_position_with_collision_queries(int a0) {
         Hero_ConstrainToPath();
         g->path_constrain_pending = 0;
     }
-    if (g->state.control_mode != 0x11) {
+    if (g->state.control_mode != HERO_MODE_SWIM) {
         unsigned char t = g->gravity_mode;
         if (t != 0 || g->unk1F8 != 0) {
             if (t == 1 || g->unk1F8 != 0) {
@@ -1426,7 +1428,7 @@ int resolve_hero_position_with_collision_queries(int a0) {
         if (g->gravity_mode != 0) {
             if (!coll_sphere(frame_scale * 0.4f, &g->motion.pos, r, *(void **)&g->moby))
                 break;
-        } else if (g->state.control_mode == 0x11) {
+        } else if (g->state.control_mode == HERO_MODE_SWIM) {
             if (!coll_sphere(0.6f, &g->motion.pos, r, *(void **)&g->moby))
                 break;
         } else {
@@ -1490,7 +1492,7 @@ void air_accel(float step) {
             float spd = g->target_speed;
             float d, l1, l2;
             char *h;
-            if (g->state.control_mode == 4) {
+            if (g->state.control_mode == HERO_MODE_JUMP) {
                 if (g->on_flagged_ground_moby != 0)
                     goto heavy;
                 if (g->jump_blocked_ahead != 0 && g->wall_hit != 0)

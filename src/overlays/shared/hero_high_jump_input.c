@@ -87,7 +87,7 @@ int pick_idle_fidget(int *index) {
                 continue;
         }
         if (i == 4) {
-            if (g_hero.state.prev_control_mode != 1)
+            if (g_hero.state.prev_control_mode != HERO_MODE_RUN)
                 continue;
             if (scale_ticks(50) < g_hero.state_timer)
                 continue;

@@ -87,16 +87,16 @@ int Hero_SetMoveState(int a, int b) {
     int old20A7;
     {
         struct Hero *p = &g_hero;
-        if (p->state.control_mode == 0x14 && (a != 0x64 || b != 2))
+        if (p->state.control_mode == HERO_MODE_DYING && (a != 0x64 || b != 2))
             return 0;
     }
     if ((novalis_game_mode == 2 || novalis_game_mode == 6) && b != 2)
         return 0;
     {
         struct Hero *p = &g_hero;
-        if (p->health.hp == 0 && (p->state.control_mode == 2 || p->state.control_mode == 7) && a != 6 && a != 0x3D &&
-            a != 0x47 && a != 0x57 && a != 0x62 && a != 0x77 && a != 0x7B && a != 0x7C && a != 0x7F && a != 0x6A &&
-            a != 0x80 && a != 0x82)
+        if (p->health.hp == 0 && (p->state.control_mode == HERO_MODE_FALL || p->state.control_mode == HERO_MODE_HURT) &&
+            a != 6 && a != 0x3D && a != 0x47 && a != 0x57 && a != 0x62 && a != 0x77 && a != 0x7B && a != 0x7C &&
+            a != 0x7F && a != 0x6A && a != 0x80 && a != 0x82)
             return 0;
     }
     {
@@ -138,7 +138,7 @@ int Hero_SetMoveState(int a, int b) {
     switch (a) {
         case 0x0: {
             struct Hero *p = &g_hero;
-            p->state.control_mode = 0;
+            p->state.control_mode = HERO_MODE_IDLE;
             p->unk2284 = 0;
             p->unk1010 = rand_range(scale_ticks(0x32), scale_ticks(0x64));
             clear_hero_idle_rotation_targets();
@@ -166,7 +166,7 @@ int Hero_SetMoveState(int a, int b) {
         }
         case 0x67: {
             struct Hero *p = &g_hero;
-            p->state.control_mode = 0;
+            p->state.control_mode = HERO_MODE_IDLE;
             p->unk2284 = 0;
             clear_u64_value(&p->motion.momentum);
             p->rand_timer.range = 0x68;
@@ -192,7 +192,7 @@ int Hero_SetMoveState(int a, int b) {
         }
         case 0x3D: {
             struct Hero *p = &g_hero;
-            p->state.control_mode = 0x14;
+            p->state.control_mode = HERO_MODE_DYING;
             p->unk2284 = 0;
             qcopy(&p->motion.momentum, &p->motion.resolved_velocity);
             if (b)
@@ -201,7 +201,7 @@ int Hero_SetMoveState(int a, int b) {
         }
         case 0x80: {
             struct Hero *p = &g_hero;
-            p->state.control_mode = 0x14;
+            p->state.control_mode = HERO_MODE_DYING;
             p->unk2284 = 0;
             p->health.hp = 0;
             qcopy(&p->motion.momentum, &p->motion.resolved_velocity);
@@ -212,7 +212,7 @@ int Hero_SetMoveState(int a, int b) {
         }
         case 0x7F: {
             char *p = (char *)&g_hero;
-            ((struct Hero *)p)->state.control_mode = 0x14;
+            ((struct Hero *)p)->state.control_mode = HERO_MODE_DYING;
             ((struct Hero *)p)->unk2284 = 0;
             ((struct Hero *)p)->health.hp = 0;
             ((struct Hero *)p)->unk694 = ((struct Hero *)p)->motion.displacement.f[2] * 0.2f;
@@ -228,11 +228,11 @@ int Hero_SetMoveState(int a, int b) {
         }
         case 0x33: {
             struct Hero *p = &g_hero;
-            p->state.control_mode = 0x11;
+            p->state.control_mode = HERO_MODE_SWIM;
             p->unk2284 = 0xB;
             p->item_select_blocked = 1;
             *(int *)&p->drown_sink_speed = 0;
-            if (p->state.prev_control_mode == 0x12) {
+            if (p->state.prev_control_mode == HERO_MODE_WATER_SURFACE) {
                 allocate_hero_voice_for_entry(3, 0);
                 p->state.step = 1;
             } else {
@@ -252,11 +252,11 @@ int Hero_SetMoveState(int a, int b) {
         case 0x35: {
             struct Hero *p = &g_hero;
             int n;
-            p->state.control_mode = 0x11;
+            p->state.control_mode = HERO_MODE_SWIM;
             p->unk2284 = 0xB;
             p->item_select_blocked = 1;
             p->unk8F4 = scale_ticks(0x3C);
-            if (p->state.prev_control_mode == 0x12) {
+            if (p->state.prev_control_mode == HERO_MODE_WATER_SURFACE) {
                 allocate_hero_voice_for_entry(3, 0);
                 p->state.step = 1;
             }
@@ -272,7 +272,7 @@ int Hero_SetMoveState(int a, int b) {
         case 0x34: {
             struct Hero *p = &g_hero;
             int n;
-            p->state.control_mode = 0x11;
+            p->state.control_mode = HERO_MODE_SWIM;
             p->unk2284 = 0xB;
             p->item_select_blocked = 1;
             qcopy(&p->motion.momentum, &p->motion.resolved_velocity);
@@ -286,11 +286,11 @@ int Hero_SetMoveState(int a, int b) {
         }
         case 0x37: {
             struct Hero *p = &g_hero;
-            p->state.control_mode = 0x12;
+            p->state.control_mode = HERO_MODE_WATER_SURFACE;
             p->item_select_blocked = 1;
             p->unk2284 = 0;
             p->splash_effect_timer = 0;
-            if (p->state.prev_control_mode == 0x11) {
+            if (p->state.prev_control_mode == HERO_MODE_SWIM) {
                 emit_hero_surface_effect_burst(3, 0xA, 0);
                 if (pool_draw_tiles != 0) {
                     RippleDisturb(pool_draw_tiles, pool_draw_count, 0, p->motion.pos.f[0], p->motion.pos.f[1], 0.4f,
@@ -308,7 +308,7 @@ int Hero_SetMoveState(int a, int b) {
             {
                 struct Hero *q = &g_hero;
                 q->unk698 = 0;
-                if (q->state.prev_control_mode == 0x11) {
+                if (q->state.prev_control_mode == HERO_MODE_SWIM) {
                     if ((float)q->underwater_air < 2500.0f) {
                         help_queue_add(8, scale_ticks(0x1E), 0);
                     } else if ((float)q->underwater_air < 7500.0f) {
@@ -316,7 +316,7 @@ int Hero_SetMoveState(int a, int b) {
                     }
                     {
                         struct Hero *r = &g_hero;
-                        if (r->state.prev_control_mode == 0x11) {
+                        if (r->state.prev_control_mode == HERO_MODE_SWIM) {
                             if ((float)r->underwater_air < 2500.0f) {
                                 help_queue_add(8, scale_ticks(0x1E), 0);
                             } else if ((float)r->underwater_air < 7500.0f) {
@@ -347,7 +347,7 @@ int Hero_SetMoveState(int a, int b) {
         case 0x76: {
             struct Hero *p = &g_hero;
             char *r;
-            p->state.control_mode = 7;
+            p->state.control_mode = HERO_MODE_HURT;
             p->unk2284 = 0;
             scale_hero_motion(0.5f);
             p->item_select_blocked = 1;
@@ -379,7 +379,7 @@ int Hero_SetMoveState(int a, int b) {
         }
         case 0x36: {
             struct Hero *p = &g_hero;
-            p->state.control_mode = 0x12;
+            p->state.control_mode = HERO_MODE_WATER_SURFACE;
             p->item_select_blocked = 1;
             p->unk2284 = 0;
             *(int *)&p->drown_sink_speed = 0;
@@ -391,7 +391,7 @@ int Hero_SetMoveState(int a, int b) {
         }
         case 0x6A: {
             struct Hero *p = &g_hero;
-            p->state.control_mode = 0x14;
+            p->state.control_mode = HERO_MODE_DYING;
             p->item_select_blocked = 1;
             p->unk2284 = 0;
             p->health.hp = 0;
@@ -434,7 +434,7 @@ int Hero_SetMoveState(int a, int b) {
         }
         case 0x82: {
             struct Hero *p = &g_hero;
-            p->state.control_mode = 0x14;
+            p->state.control_mode = HERO_MODE_DYING;
             p->item_select_blocked = 1;
             p->unk2284 = 0;
             p->health.hp = 0;
@@ -446,7 +446,7 @@ int Hero_SetMoveState(int a, int b) {
         case 0x1: {
             struct Hero *p = &g_hero;
             int t;
-            p->state.control_mode = 0;
+            p->state.control_mode = HERO_MODE_IDLE;
             p->unk2284 = 4;
             novalis_look_stat_timer = scale_ticks(0x3C);
             if (p->unk20AA == 0) {
@@ -459,7 +459,7 @@ int Hero_SetMoveState(int a, int b) {
         }
         case 0x17: {
             struct Hero *p = &g_hero;
-            p->state.control_mode = 8;
+            p->state.control_mode = HERO_MODE_ITEM_RELEASE_WAIT;
             p->unk2284 = 0;
             qcopy(&p->motion.momentum, &p->motion.displacement);
             set_hero_animation(get_hero_idle_animation_index(0), 0, (float)scale_ticks(0xA));
@@ -468,7 +468,7 @@ int Hero_SetMoveState(int a, int b) {
         }
         case 0x30: {
             struct Hero *p = &g_hero;
-            p->state.control_mode = 8;
+            p->state.control_mode = HERO_MODE_ITEM_RELEASE_WAIT;
             p->unk2284 = 0;
             qcopy(&p->motion.momentum, &p->motion.displacement);
             set_hero_animation(get_hero_idle_animation_index(0), 0, (float)scale_ticks(5));
@@ -477,7 +477,7 @@ int Hero_SetMoveState(int a, int b) {
         }
         case 0x2E: {
             struct Hero *p = &g_hero;
-            p->state.control_mode = 1;
+            p->state.control_mode = HERO_MODE_RUN;
             p->unk2284 = 0;
             p->ground_speed = vec_length_xy(&p->motion.displacement);
             p->state.step = 0;
@@ -490,9 +490,9 @@ int Hero_SetMoveState(int a, int b) {
         case 0x3F:
         case 0x73: {
             struct Hero *p = &g_hero;
-            p->state.control_mode = 1;
+            p->state.control_mode = HERO_MODE_RUN;
             p->unk2284 = 0;
-            if (p->state.prev_control_mode != 4 && p->state.prev2_control_mode != 4) {
+            if (p->state.prev_control_mode != HERO_MODE_JUMP && p->state.prev2_control_mode != HERO_MODE_JUMP) {
                 p->ground_speed = vec_length_xy(&p->motion.resolved_velocity);
             }
             {
@@ -502,7 +502,7 @@ int Hero_SetMoveState(int a, int b) {
                 q->unk3BE = 0;
                 stick_target(1.0f, 0);
                 if (1.5707964f < FastDiffRots(q->motion.rot.f[2], q->motion.move_yaw)) {
-                    if (q->state.prev_control_mode == 7 || q->state.prev == HERO_STATE_STOP ||
+                    if (q->state.prev_control_mode == HERO_MODE_HURT || q->state.prev == HERO_STATE_STOP ||
                         q->state.prev2 == HERO_STATE_STOP) {
                         struct Hero *r = &g_hero;
                         r->ground_speed = 0.0f;
@@ -536,7 +536,7 @@ int Hero_SetMoveState(int a, int b) {
                         n = scale_ticks(0x12);
                     {
                         struct Hero *u = &g_hero;
-                        if (u->state.prev2_control_mode == 4 && scale_ticks(5) < u->rail_land_frames)
+                        if (u->state.prev2_control_mode == HERO_MODE_JUMP && scale_ticks(5) < u->rail_land_frames)
                             n = scale_ticks(0xD);
                     }
                     if (b) {
@@ -550,7 +550,7 @@ int Hero_SetMoveState(int a, int b) {
         }
         case 0x65: {
             struct Hero *p = &g_hero;
-            p->state.control_mode = 1;
+            p->state.control_mode = HERO_MODE_RUN;
             p->unk2284 = 0;
             p->ground_speed = vec_length_xy(&p->motion.resolved_velocity);
             p->item_use_locked = 1;
@@ -581,7 +581,7 @@ int Hero_SetMoveState(int a, int b) {
         }
         case 0x3: {
             struct Hero *p = &g_hero;
-            p->state.control_mode = 1;
+            p->state.control_mode = HERO_MODE_RUN;
             p->unk2284 = 0;
             qcopy(&p->motion.momentum, &p->motion.resolved_velocity);
             if (p->on_slip_ground != 0 && p->frames_off_ground.s == 0) {
@@ -609,7 +609,7 @@ int Hero_SetMoveState(int a, int b) {
         case 0x66: {
             struct Hero *p = &g_hero;
             char *v = (char *)&p->motion.resolved_velocity;
-            p->state.control_mode = 1;
+            p->state.control_mode = HERO_MODE_RUN;
             p->unk2284 = 0;
             p->ground_speed = gravity_length_xy((float *)v);
             qcopy(&p->motion.momentum, v);
@@ -624,7 +624,7 @@ int Hero_SetMoveState(int a, int b) {
         }
         case 0x4: {
             struct Hero *p = &g_hero;
-            p->state.control_mode = 0xC;
+            p->state.control_mode = HERO_MODE_CROUCH;
             p->unk2284 = 0;
             p->ground_speed = vec_length_xy(&p->motion.resolved_velocity);
             if (g_frame_time * 7.0f < p->ground_speed)
@@ -665,11 +665,11 @@ int Hero_SetMoveState(int a, int b) {
         }
         case 0x18: {
             struct Hero *p = &g_hero;
-            p->state.control_mode = 3;
+            p->state.control_mode = HERO_MODE_LEDGE;
             p->unk2284 = 0xD;
             p->unk4EC = g_frame_time_sq * 24.0f;
             p->unk4F0 = p->motion.pos.f[2];
-            if (p->state.prev_control_mode == 4) {
+            if (p->state.prev_control_mode == HERO_MODE_JUMP) {
                 p->unk4EC = p->jump_gravity;
                 p->unk4F0 = p->smoothed_ground_z;
             }
@@ -685,7 +685,7 @@ int Hero_SetMoveState(int a, int b) {
         }
         case 0x19: {
             struct Hero *p = &g_hero;
-            p->state.control_mode = 3;
+            p->state.control_mode = HERO_MODE_LEDGE;
             p->unk2284 = 0xD;
             p->item_select_blocked = 1;
             p->rand_timer.range = 0x68;
@@ -695,7 +695,7 @@ int Hero_SetMoveState(int a, int b) {
         }
         case 0x1A: {
             struct Hero *p = &g_hero;
-            p->state.control_mode = 3;
+            p->state.control_mode = HERO_MODE_LEDGE;
             p->unk2284 = 0xD;
             p->item_select_blocked = 1;
             if (b)
@@ -704,7 +704,7 @@ int Hero_SetMoveState(int a, int b) {
         }
         case 0x1B: {
             struct Hero *p = &g_hero;
-            p->state.control_mode = 3;
+            p->state.control_mode = HERO_MODE_LEDGE;
             p->unk2284 = 0xD;
             p->item_select_blocked = 1;
             if (b)
@@ -713,7 +713,7 @@ int Hero_SetMoveState(int a, int b) {
         }
         case 0x79: {
             struct Hero *p = &g_hero;
-            p->state.control_mode = 2;
+            p->state.control_mode = HERO_MODE_FALL;
             p->unk2284 = 0;
             qcopy(&p->motion.velocity, &p->motion.resolved_velocity);
             if (b)
@@ -723,7 +723,7 @@ int Hero_SetMoveState(int a, int b) {
         case 0x6:
         case 0x77: {
             struct Hero *p = &g_hero;
-            p->state.control_mode = 2;
+            p->state.control_mode = HERO_MODE_FALL;
             p->unk2284 = 0;
             p->fall_state_gravity = g_frame_time_sq * 24.0f;
             p->stickless_decel = g_frame_time_sq * 7.0f;
@@ -757,7 +757,7 @@ int Hero_SetMoveState(int a, int b) {
         case 0x81: {
             struct Hero *p = &g_hero;
             int t81 = -2;
-            p->state.control_mode = 1;
+            p->state.control_mode = HERO_MODE_RUN;
             p->unk22CA = 1;
             p->rand_timer.range = 0x68;
             p->unk2284 = 0;
@@ -773,7 +773,7 @@ int Hero_SetMoveState(int a, int b) {
         case 0x8: {
             struct Hero *p = &g_hero;
             int t8 = -2;
-            p->state.control_mode = 5;
+            p->state.control_mode = HERO_MODE_LAND;
             p->rand_timer.range = 0x68;
             p->unk2284 = 0;
             if (g_frame_time * 4.5f < p->motion.speed_xy) {
@@ -811,7 +811,7 @@ int Hero_SetMoveState(int a, int b) {
                 p->state_timer = p->state.prev_timer;
                 return 0;
             }
-            p->state.control_mode = 4;
+            p->state.control_mode = HERO_MODE_JUMP;
             if (a >= 0x29 && a <= 0x2A) {
                 p->unk2284 = 3;
             } else {
@@ -1101,7 +1101,7 @@ int Hero_SetMoveState(int a, int b) {
                     } else if (s == 0xA) {
                         set_hero_animation(0x12, 0, (float)scale_ticks(5));
                     } else if (s == 0x10) {
-                        if (q->state.prev_control_mode == 4 ||
+                        if (q->state.prev_control_mode == HERO_MODE_JUMP ||
                             (q->state.prev == HERO_STATE_CROUCH && scale_ticks(7) > q->state_timer)) {
                             set_hero_animation(0x26, 0, (float)scale_ticks(8));
                             q->takeoff_frame += scale_ticks(3);
@@ -1133,7 +1133,7 @@ int Hero_SetMoveState(int a, int b) {
                         }
                         {
                             struct Hero *w = &g_hero;
-                            if (w->state.prev_control_mode == 4) {
+                            if (w->state.prev_control_mode == HERO_MODE_JUMP) {
                                 set_hero_animation(id, 1, (float)scale_ticks(4));
                                 w->takeoff_frame = scale_ticks(1);
                             } else {
@@ -1152,7 +1152,7 @@ int Hero_SetMoveState(int a, int b) {
         case 0x23:
         case 0x51: {
             struct Hero *p = &g_hero;
-            p->state.control_mode = 6;
+            p->state.control_mode = HERO_MODE_ATTACK;
             p->speed_scale = 1.0f;
             p->unk2284 = 0;
             p->heading_locked = 0;
@@ -1252,7 +1252,7 @@ int Hero_SetMoveState(int a, int b) {
                     e = &novalis_attack_records[q->attack_record];
                     q->saved_item[0] = 0;
                     k = 0;
-                    if (q->state.prev_control_mode == 6 && e->a == 0 && q->anim_frame < (float)e->c) {
+                    if (q->state.prev_control_mode == HERO_MODE_ATTACK && e->a == 0 && q->anim_frame < (float)e->c) {
                         k = (e->b + 1) % 3;
                     }
                     {
@@ -1336,7 +1336,7 @@ int Hero_SetMoveState(int a, int b) {
         case 0x16: {
             struct Hero *p = &g_hero;
             char *r;
-            p->state.control_mode = 7;
+            p->state.control_mode = HERO_MODE_HURT;
             p->unk2284 = 0;
             scale_hero_motion(0.5f);
             p->unk1EE = scale_ticks(0x2D);
@@ -1361,7 +1361,7 @@ int Hero_SetMoveState(int a, int b) {
         }
         case 0x53: {
             struct Hero *p = &g_hero;
-            p->state.control_mode = 0;
+            p->state.control_mode = HERO_MODE_IDLE;
             p->unk2284 = 0;
             if (p->on_slip_ground != 0 && p->frames_off_ground.s == 0) {
                 Hero_SetMoveState(HERO_STATE_VEHICLE_MODE_3_SLIP, 1);
@@ -1373,7 +1373,7 @@ int Hero_SetMoveState(int a, int b) {
         }
         case 0x59: {
             struct Hero *p = &g_hero;
-            p->state.control_mode = 0;
+            p->state.control_mode = HERO_MODE_IDLE;
             p->unk2284 = 0;
             if (b) {
                 set_hero_animation(4, 0, (float)scale_ticks(7));
@@ -1383,7 +1383,7 @@ int Hero_SetMoveState(int a, int b) {
         }
         case 0x58: {
             struct Hero *p = &g_hero;
-            p->state.control_mode = 2;
+            p->state.control_mode = HERO_MODE_FALL;
             p->unk2284 = 0;
             qcopy(&p->motion.velocity, &p->motion.resolved_velocity);
             if (b)
@@ -1392,7 +1392,7 @@ int Hero_SetMoveState(int a, int b) {
         }
         case 0x55: {
             struct Hero *p = &g_hero;
-            p->state.control_mode = 2;
+            p->state.control_mode = HERO_MODE_FALL;
             p->unk2284 = 0;
             p->fall_state_gravity = g_frame_time_sq * 24.0f;
             p->stickless_decel = g_frame_time_sq * 7.0f;
@@ -1403,7 +1403,7 @@ int Hero_SetMoveState(int a, int b) {
         }
         case 0x54: {
             struct Hero *p = &g_hero;
-            p->state.control_mode = 1;
+            p->state.control_mode = HERO_MODE_RUN;
             p->unk2284 = 0;
             if (p->on_slip_ground != 0 && p->frames_off_ground.s == 0) {
                 Hero_SetMoveState(HERO_STATE_VEHICLE_MODE_3_SLIP, 1);
@@ -1425,7 +1425,7 @@ int Hero_SetMoveState(int a, int b) {
         }
         case 0x57: {
             struct Hero *p = &g_hero;
-            p->state.control_mode = 0x14;
+            p->state.control_mode = HERO_MODE_DYING;
             p->unk2284 = 0;
             qcopy(&p->motion.momentum, &p->motion.resolved_velocity);
             if (b)
@@ -1434,7 +1434,7 @@ int Hero_SetMoveState(int a, int b) {
         }
         case 0x56: {
             struct Hero *p = &g_hero;
-            p->state.control_mode = 7;
+            p->state.control_mode = HERO_MODE_HURT;
             p->unk2284 = 0;
             scale_hero_motion(0.5f);
             qcopy(&p->motion.velocity, &p->motion.resolved_velocity);
@@ -1450,7 +1450,7 @@ int Hero_SetMoveState(int a, int b) {
         }
         case 0x42: {
             struct Hero *p = &g_hero;
-            p->state.control_mode = 0xF;
+            p->state.control_mode = HERO_MODE_GRIND;
             p->unk2284 = 0;
             if (p->rail_off_frames == 0)
                 hero_change_health(1);
@@ -1477,7 +1477,7 @@ int Hero_SetMoveState(int a, int b) {
         case 0x1E: {
             struct Hero *p = &g_hero;
             p->unk2284 = 0x51;
-            p->state.control_mode = 0;
+            p->state.control_mode = HERO_MODE_IDLE;
             if (return_hero_animation_id_unchanged(*(unsigned char *)(*(char **)&p->moby + 0x53)) !=
                 get_hero_idle_animation_index(1)) {
                 set_hero_animation(get_hero_idle_animation_index(1), 0, (float)scale_ticks(5));
@@ -1502,7 +1502,7 @@ int Hero_SetMoveState(int a, int b) {
         }
         case 0x27: {
             struct Hero *p = &g_hero;
-            p->state.control_mode = 8;
+            p->state.control_mode = HERO_MODE_ITEM_RELEASE_WAIT;
             p->unk2284 = 0;
             set_hero_animation(get_hero_idle_animation_index(0), 0, (float)scale_ticks(0xA));
             break;
@@ -1568,7 +1568,7 @@ int Hero_SetMoveState(int a, int b) {
     }
     {
         struct Hero *t = &g_hero;
-        if (t->state.control_mode != 0xF && t->items[1].item_id == 0x1D && t->saved_item[1] != 0) {
+        if (t->state.control_mode != HERO_MODE_GRIND && t->items[1].item_id == 0x1D && t->saved_item[1] != 0) {
             t->restore_item[1] = 1;
         }
     }
@@ -1580,7 +1580,7 @@ int Hero_SetMoveState(int a, int b) {
     }
     {
         struct Hero *t = &g_hero;
-        if (t->state.control_mode == 0x14) {
+        if (t->state.control_mode == HERO_MODE_DYING) {
             cancel_hero_item_animation();
             t->item_use_locked = 1;
         }
@@ -1641,7 +1641,8 @@ int handle_hero_gadget_button(void) {
     mask = g_hero.items[0].button_mask;
     switch (g_hero.items[0].item_id) {
         case 8:
-            if (g_hero.state.control_mode < 2U || (g_hero.state.control_mode == 4 && g_hero.rail_land_frames != 0)) {
+            if (g_hero.state.control_mode < 2U ||
+                (g_hero.state.control_mode == HERO_MODE_JUMP && g_hero.rail_land_frames != 0)) {
                 Moby *m;
 
                 if (g_hero.on_slip_ground != 0) {
@@ -1709,7 +1710,7 @@ int handle_hero_gadget_button(void) {
                     break;
                 }
             }
-            if (g_hero.state.control_mode == 6) {
+            if (g_hero.state.control_mode == HERO_MODE_ATTACK) {
                 Rec2C *rec = &novalis_attack_records_r[g_hero.attack_record];
                 int t;
 
@@ -1779,15 +1780,17 @@ int handle_hero_gadget_button(void) {
             g_hero.unk22DC = 1;
             break;
         case 32:
-            if (g_hero.state.control_mode < 3U || g_hero.state.control_mode == 4 || g_hero.state.control_mode == 5) {
+            if (g_hero.state.control_mode < 3U || g_hero.state.control_mode == HERO_MODE_JUMP ||
+                g_hero.state.control_mode == HERO_MODE_LAND) {
                 if (pad_pressed_within(mask, scale_ticks(8), 0)) {
                     open_vendor_menu(0);
                 }
             }
             break;
         case 15:
-            if (g_hero.state.control_mode < 2U || g_hero.state.control_mode == 0xC || g_hero.state.control_mode == 2 ||
-                g_hero.state.control_mode == 4 || g_hero.state.control_mode == 5 || g_hero.state.control_mode == 0xF ||
+            if (g_hero.state.control_mode < 2U || g_hero.state.control_mode == HERO_MODE_CROUCH ||
+                g_hero.state.control_mode == HERO_MODE_FALL || g_hero.state.control_mode == HERO_MODE_JUMP ||
+                g_hero.state.control_mode == HERO_MODE_LAND || g_hero.state.control_mode == HERO_MODE_GRIND ||
                 g_hero.state.current == HERO_STATE_LOOK_RELEASE_WAIT) {
                 PVar *pv;
 
@@ -1818,9 +1821,10 @@ int handle_hero_gadget_button(void) {
         case 20:
         case 24:
         case 25:
-            if ((g_hero.state.control_mode == 0 && g_hero.state.current != HERO_STATE_LOOK_RELEASE_WAIT) ||
-                g_hero.state.control_mode == 1 || g_hero.state.control_mode == 0xC || g_hero.state.control_mode == 5 ||
-                g_hero.state.control_mode == 0xF || (g_hero.state.control_mode == 4 && g_hero.unk4AC != 0) ||
+            if ((g_hero.state.control_mode == HERO_MODE_IDLE && g_hero.state.current != HERO_STATE_LOOK_RELEASE_WAIT) ||
+                g_hero.state.control_mode == HERO_MODE_RUN || g_hero.state.control_mode == HERO_MODE_CROUCH ||
+                g_hero.state.control_mode == HERO_MODE_LAND || g_hero.state.control_mode == HERO_MODE_GRIND ||
+                (g_hero.state.control_mode == HERO_MODE_JUMP && g_hero.unk4AC != 0) ||
                 (g_hero.state.current == HERO_STATE_ANIMATION_RECOVERY_WITH_JUMP_CANCEL && g_hero.anim_frame > 25.0f)) {
                 int t;
                 int n;
@@ -1833,9 +1837,9 @@ int handle_hero_gadget_button(void) {
                 if (pad_pressed_within(mask, t <= n ? t : n, &out[1]) ||
                     ((g_controller_state.held & PAD_CIRCLE) && n > scale_ticks(8) && n < scale_ticks(0x11))) {
                     if (get_ammo(-1)) {
-                        if (g_hero.state.control_mode == 0xC || g_hero.state.control_mode == 0 ||
-                            g_hero.state.current == HERO_STATE_STOP ||
-                            (g_hero.state.control_mode == 1 && g_hero.stick_magnitude < 0.7f)) {
+                        if (g_hero.state.control_mode == HERO_MODE_CROUCH ||
+                            g_hero.state.control_mode == HERO_MODE_IDLE || g_hero.state.current == HERO_STATE_STOP ||
+                            (g_hero.state.control_mode == HERO_MODE_RUN && g_hero.stick_magnitude < 0.7f)) {
                             Hero_SetMoveState(HERO_STATE_ANIMATION_RECOVERY_WITH_JUMP_CANCEL, 1);
                         } else {
                             start_equipped_item_animation();
@@ -1849,7 +1853,8 @@ int handle_hero_gadget_button(void) {
             }
             break;
         case 18:
-            if (g_hero.state.control_mode < 2U || (g_hero.state.control_mode == 4 && g_hero.rail_land_frames != 0)) {
+            if (g_hero.state.control_mode < 2U ||
+                (g_hero.state.control_mode == HERO_MODE_JUMP && g_hero.rail_land_frames != 0)) {
                 if (g_hero.state.current != HERO_STATE_LOOK) {
                     int t = scale_ticks(0xA);
                     int n = g_hero.items[0].ready_frames;
@@ -1878,8 +1883,8 @@ int handle_hero_gadget_button(void) {
             (g_hero.unk308 == 0 || item_available[0x1C] == 0) && g_hero.pack_disabled == 0) {
             fast_dec_timer(&r1_double_tap_timer);
             if (r1_double_tap_timer != 0) {
-                if (g_hero.state.control_mode < 2U || g_hero.state.control_mode == 0xC ||
-                    ((g_hero.state.control_mode == 2 || g_hero.state.control_mode == 4) &&
+                if (g_hero.state.control_mode < 2U || g_hero.state.control_mode == HERO_MODE_CROUCH ||
+                    ((g_hero.state.control_mode == HERO_MODE_FALL || g_hero.state.control_mode == HERO_MODE_JUMP) &&
                      g_hero.grounded_frames != 0)) {
                     if ((g_controller_state.held & PAD_R1) && (g_controller_state.pressed & PAD_R1)) {
                         Hero_SetMoveState(HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT, 1);

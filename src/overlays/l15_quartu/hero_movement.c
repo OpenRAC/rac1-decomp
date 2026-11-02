@@ -213,10 +213,10 @@ s32 process_hero_incoming_hit(s32 arg) {
     f32 a, b, e;
     Vec4 v;
 
-    if (g_hero.state.control_mode == 0x14) {
+    if (g_hero.state.control_mode == HERO_MODE_DYING) {
         return 0;
     }
-    if (g_hero.state.control_mode == 7) {
+    if (g_hero.state.control_mode == HERO_MODE_HURT) {
         return 0;
     }
     if (g_hero.state.current == 0x32) {
@@ -284,14 +284,14 @@ s32 process_hero_incoming_hit(s32 arg) {
                 g_hero.motion.resolved_velocity_z.f[2] = g_frame_time * 7.0f;
                 return 1;
             }
-            if (g_hero.state.control_mode == 0x12) {
+            if (g_hero.state.control_mode == HERO_MODE_WATER_SURFACE) {
                 mob = (struct Moby *)((unsigned char *)g_hero.damage_source_moby);
                 if (mob != 0 && mob->oclass == 0x28F) {
                     id = 0x82;
                     goto call_ret;
                 }
                 HeroQuartu_TrySetMoveState(HERO_STATE_WATER_SURFACE_HURT, 1);
-            } else if (g_hero.state.control_mode == 0x11) {
+            } else if (g_hero.state.control_mode == HERO_MODE_SWIM) {
                 mob = (struct Moby *)((unsigned char *)g_hero.damage_source_moby);
                 if (mob != 0 && mob->oclass == 0x28F) {
                     id = 0x82;
@@ -305,7 +305,7 @@ s32 process_hero_incoming_hit(s32 arg) {
                     }
                 }
                 HeroQuartu_TrySetMoveState(0x76, 1);
-            } else if (g_hero.state.control_mode == 3) {
+            } else if (g_hero.state.control_mode == HERO_MODE_LEDGE) {
                 mob = (struct Moby *)((unsigned char *)g_hero.damage_source_moby);
                 if (mob != 0) {
                     id = 0x82;

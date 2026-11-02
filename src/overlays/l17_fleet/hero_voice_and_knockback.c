@@ -95,10 +95,10 @@ s32 HeroL17_TryTakeHit(s32 arg) {
     f32 a, b, e;
     Vec4 v;
 
-    if (g_hero.state.control_mode == 0x14) {
+    if (g_hero.state.control_mode == HERO_MODE_DYING) {
         return 0;
     }
-    if (g_hero.state.control_mode == 7) {
+    if (g_hero.state.control_mode == HERO_MODE_HURT) {
         return 0;
     }
     if (g_hero.state.current == 0x32) {
@@ -125,7 +125,7 @@ s32 HeroL17_TryTakeHit(s32 arg) {
     level_hero_hit_counts[g_current_level_index]++;
     g_hero.damage_source_moby = (struct Moby *)tbl->p20;
     hero_hit_count++;
-    if (g_hero.state.control_mode == 0xF) {
+    if (g_hero.state.control_mode == HERO_MODE_GRIND) {
         g_hero.unk5BE = 1;
         return 0;
     }
@@ -160,14 +160,14 @@ s32 HeroL17_TryTakeHit(s32 arg) {
                 g_hero.motion.resolved_velocity_z.f[2] = g_frame_time * 7.0f;
                 return 1;
             }
-            if (g_hero.state.control_mode == 0x12) {
+            if (g_hero.state.control_mode == HERO_MODE_WATER_SURFACE) {
                 mob = (struct Moby *)((u8 *)g_hero.damage_source_moby);
                 if (mob != 0 && mob->oclass == 0x28F) {
                     id = 0x82;
                     goto call_ret;
                 }
                 HeroL17_SetMoveState(HERO_STATE_WATER_SURFACE_HURT, 1);
-            } else if (g_hero.state.control_mode == 0x11) {
+            } else if (g_hero.state.control_mode == HERO_MODE_SWIM) {
                 mob = (struct Moby *)((u8 *)g_hero.damage_source_moby);
                 if (mob != 0 && mob->oclass == 0x28F) {
                     id = 0x82;
@@ -181,7 +181,7 @@ s32 HeroL17_TryTakeHit(s32 arg) {
                     }
                 }
                 HeroL17_SetMoveState(0x76, 1);
-            } else if (g_hero.state.control_mode == 3) {
+            } else if (g_hero.state.control_mode == HERO_MODE_LEDGE) {
                 mob = (struct Moby *)((u8 *)g_hero.damage_source_moby);
                 if (mob != 0) {
                     id = 0x82;
@@ -251,7 +251,7 @@ void update_hero_smoothing(void) {
             break;
     }
     b = &g_hero;
-    if (b->state.control_mode == 4) {
+    if (b->state.control_mode == HERO_MODE_JUMP) {
         if (b->state_timer > b->takeoff_frame) {
             if (b->past_jump_apex == 0) {
                 b->capsule_bottom_target = b->unk434;
@@ -274,8 +274,8 @@ void update_hero_smoothing(void) {
         }
     }
     c = &g_hero;
-    if (c->wall_hit != 0 && c->state.prev_control_mode != 0x12 && c->state.control_mode != 0x11 &&
-        c->base_condition == 0) {
+    if (c->wall_hit != 0 && c->state.prev_control_mode != HERO_MODE_WATER_SURFACE &&
+        c->state.control_mode != HERO_MODE_SWIM && c->base_condition == 0) {
         float d = vec_distance_xy(&c->wall_contact_point, &c->motion.pos);
         if (!(c->capsule_radius * 0.5f < d)) {
             return;

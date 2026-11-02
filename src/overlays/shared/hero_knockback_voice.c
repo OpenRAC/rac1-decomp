@@ -51,10 +51,10 @@ s32 handle_hero_hit(s32 arg) {
     f32 a, b, e;
     Vec4 v;
 
-    if (g_hero.state.control_mode == 0x14) {
+    if (g_hero.state.control_mode == HERO_MODE_DYING) {
         return 0;
     }
-    if (g_hero.state.control_mode == 7) {
+    if (g_hero.state.control_mode == HERO_MODE_HURT) {
         return 0;
     }
     if (g_hero.state.current == 0x32) {
@@ -81,7 +81,7 @@ s32 handle_hero_hit(s32 arg) {
     level_hero_hit_counts[g_current_level_index]++;
     g_hero.damage_source_moby = (struct Moby *)tbl->p20;
     hero_hit_count++;
-    if (g_hero.state.control_mode == 0xF) {
+    if (g_hero.state.control_mode == HERO_MODE_GRIND) {
         g_hero.unk5BE = 1;
         return 0;
     }
@@ -116,14 +116,14 @@ s32 handle_hero_hit(s32 arg) {
                 g_hero.motion.resolved_velocity_z.f[2] = g_frame_time * 7.0f;
                 return 1;
             }
-            if (g_hero.state.control_mode == 0x12) {
+            if (g_hero.state.control_mode == HERO_MODE_WATER_SURFACE) {
                 mob = (struct Moby *)((u8 *)g_hero.damage_source_moby);
                 if (mob != 0 && mob->oclass == 0x28F) {
                     id = 0x82;
                     goto call_ret;
                 }
                 Hero_TryMoveStateL08(HERO_STATE_WATER_SURFACE_HURT, 1);
-            } else if (g_hero.state.control_mode == 0x11) {
+            } else if (g_hero.state.control_mode == HERO_MODE_SWIM) {
                 mob = (struct Moby *)((u8 *)g_hero.damage_source_moby);
                 if (mob != 0 && mob->oclass == 0x28F) {
                     id = 0x82;
@@ -137,7 +137,7 @@ s32 handle_hero_hit(s32 arg) {
                     }
                 }
                 Hero_TryMoveStateL08(0x76, 1);
-            } else if (g_hero.state.control_mode == 3) {
+            } else if (g_hero.state.control_mode == HERO_MODE_LEDGE) {
                 mob = (struct Moby *)((u8 *)g_hero.damage_source_moby);
                 if (mob != 0) {
                     id = 0x82;

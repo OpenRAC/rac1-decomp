@@ -214,7 +214,7 @@ void HeroL16_UpdateGroundCollision(void) {
     if (g_hero.gravity_mode)
         k = 1;
     g = g_hero.capsule_radius * 2.2f;
-    if (g_hero.state.control_mode == 2) {
+    if (g_hero.state.control_mode == HERO_MODE_FALL) {
         g = g_hero.capsule_radius * 2.9f;
     }
     hero_get_collision_ray_endpoints(&v10, &v0, k, g, -48.0f);
@@ -317,8 +317,9 @@ d1:
     g_hero.unk2C8.i[1] = 0;
     g_hero.unk2C0.i[0] = 0;
     g_hero.unk2C0.i[1] = 0;
-    if (g_hero.state.control_mode == 0xF || g_hero.state.control_mode == 0x15 || g_hero.state.control_mode == 6 ||
-        g_hero.state.control_mode == 4 || g_hero.state.control_mode == 5 || g_hero.state.control_mode == 3) {
+    if (g_hero.state.control_mode == HERO_MODE_GRIND || g_hero.state.control_mode == 0x15 ||
+        g_hero.state.control_mode == HERO_MODE_ATTACK || g_hero.state.control_mode == HERO_MODE_JUMP ||
+        g_hero.state.control_mode == HERO_MODE_LAND || g_hero.state.control_mode == HERO_MODE_LEDGE) {
         return;
     }
     if (!(g_hero.ground_distance < 0.25f)) {
@@ -541,7 +542,7 @@ void integrate_hero_motion(void) {
                 limit = 0.0f;
             gravity_set_z(limited_velocity, limited_velocity, limit);
         }
-    } else if (player->state.control_mode == 15) {
+    } else if (player->state.control_mode == HERO_MODE_GRIND) {
         /* The same vertical clamp as in mode 22 below, written out in both places: the compiler merges the two. */
         if (!player->collision_off_frames) {
             float length;
@@ -583,8 +584,8 @@ void integrate_hero_motion(void) {
                 }
             }
         }
-    } else if (player->state.control_mode != 13) {
-        if (player->state.control_mode != 14) {
+    } else if (player->state.control_mode != HERO_MODE_GRAPPLE) {
+        if (player->state.control_mode != HERO_MODE_GRAPPLE_SWING) {
             if (!player->collision_off_frames) {
                 float length;
                 float limit;

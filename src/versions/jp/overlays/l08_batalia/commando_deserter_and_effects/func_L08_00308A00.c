@@ -6,7 +6,8 @@ void update_batalia_item_triggers_and_help(char *m) {
 
     switch (data->state) {
         case 0:
-            if (is_point_inside_clip_volume(&hero_p.motion.pos, data->third) && hero_p.state.control_mode == 15)
+            if (is_point_inside_clip_volume(&hero_p.motion.pos, data->third) &&
+                hero_p.state.control_mode == HERO_MODE_GRIND)
                 data->state = 1;
             break;
         case 1:
@@ -89,6 +90,6 @@ sample_volume:
     volume[2] = -1.0f;
     if (FastVecDot((char *)&hero_p + 0x290, volume) < 0.1f)
         HR[112].count = -1;
-    if (alt_p[0x2F] == 0 && hero_p.state.control_mode == 15)
+    if (alt_p[0x2F] == 0 && hero_p.state.control_mode == HERO_MODE_GRIND)
         alt_p[0x2F] = 1;
 }

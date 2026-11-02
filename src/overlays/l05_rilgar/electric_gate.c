@@ -2922,7 +2922,7 @@ void update_moby_gameplay_events(unsigned char *moby) {
                 D_00141C5A = scale_game_frames(D_L05_0015EEA4) / 600;
             D_00141C5C = D_00141C5C | (1 << D_L05_0015ED84) | 0x80000000;
         }
-        if (hero.state.control_mode == 0x12) {
+        if (hero.state.control_mode == HERO_MODE_WATER_SURFACE) {
             if (is_point_inside_clip_volume(data + 4, data[13]) || is_point_inside_clip_volume(data + 4, data[14])) {
                 FUN_001f99f8(data + 4);
                 data[24]++;

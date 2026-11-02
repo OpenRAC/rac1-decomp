@@ -1054,7 +1054,7 @@ void update_fleet_camera_box_watcher(char *moby) {
         case 0:
             if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
                                             d->skill_box_a)) {
-                if (((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.control_mode == 0x11) {
+                if (((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.control_mode == HERO_MODE_SWIM) {
                     d->phase = 1;
                 }
             }

@@ -187,10 +187,10 @@ s32 HeroL02_TryKnockback(s32 arg) {
     f32 a, b, e;
     Vec4 v;
 
-    if (g_hero_r.state.control_mode == 0x14) {
+    if (g_hero_r.state.control_mode == HERO_MODE_DYING) {
         return 0;
     }
-    if (g_hero_r.state.control_mode == 7) {
+    if (g_hero_r.state.control_mode == HERO_MODE_HURT) {
         return 0;
     }
     if (g_hero_r.state.current == 0x32) {
@@ -293,7 +293,7 @@ void Camera_UpdateFollowOffsets(void) {
             g_hero_r2.capsule_radius_target = 0.45f;
             break;
     }
-    if (g_hero_r2.state.control_mode == 4) {
+    if (g_hero_r2.state.control_mode == HERO_MODE_JUMP) {
         if (g_hero_r2.state_timer > g_hero_r2.takeoff_frame && g_hero_r2.past_jump_apex == 0)
             g_hero_r2.capsule_bottom_target = g_hero_r2.unk434;
     } else if (g_hero_r2.state.current == HERO_STATE_FALL) {
@@ -303,8 +303,8 @@ void Camera_UpdateFollowOffsets(void) {
     } else if (g_hero_r2.state.current == HERO_STATE_SINK) {
         g_hero_r2.capsule_radius_target = 0.8f;
     }
-    if (!g_hero_r2.wall_hit || g_hero_r2.state.prev_control_mode == 0x12 || g_hero_r2.state.control_mode == 0x11 ||
-        g_hero_r2.base_condition ||
+    if (!g_hero_r2.wall_hit || g_hero_r2.state.prev_control_mode == HERO_MODE_WATER_SURFACE ||
+        g_hero_r2.state.control_mode == HERO_MODE_SWIM || g_hero_r2.base_condition ||
         vec_distance_xy(g_hero_r2.wall_contact_point.f, g_hero_r2.motion.pos.f) > g_hero_r2.capsule_radius * 0.5f) {
         f32 *q = g_hero_capsule_top;
         Hero *b = (Hero *)((u8 *)q - 0x220);
@@ -382,7 +382,7 @@ void Hero_UpdateGroundContact(void) {
     if (g_hero.gravity_mode)
         k = 1;
     collision_ray_start_offset = g_hero.capsule_radius * 2.2f;
-    if (g_hero.state.control_mode == 2) {
+    if (g_hero.state.control_mode == HERO_MODE_FALL) {
         collision_ray_start_offset = g_hero.capsule_radius * 2.9f;
     }
     hero_get_collision_ray_endpoints(&collision_ray_start, &collision_ray_end, k, collision_ray_start_offset, -48.0f);
@@ -490,8 +490,9 @@ d1:
     g_hero.unk2C8.f[1] = 0.0f;
     g_hero.unk2C0.f[0] = 0.0f;
     g_hero.unk2C0.f[1] = 0.0f;
-    if (g_hero.state.control_mode == 0xF || g_hero.state.control_mode == 0x15 || g_hero.state.control_mode == 6 ||
-        g_hero.state.control_mode == 4 || g_hero.state.control_mode == 5 || g_hero.state.control_mode == 3) {
+    if (g_hero.state.control_mode == HERO_MODE_GRIND || g_hero.state.control_mode == 0x15 ||
+        g_hero.state.control_mode == HERO_MODE_ATTACK || g_hero.state.control_mode == HERO_MODE_JUMP ||
+        g_hero.state.control_mode == HERO_MODE_LAND || g_hero.state.control_mode == HERO_MODE_LEDGE) {
         return;
     }
     if (!(g_hero.ground_distance < 0.25f)) {
@@ -564,7 +565,7 @@ int Camera_ResolveBlockedView(int arg) {
         Hero_ConstrainToPath();
         hero.path_constrain_pending = 0;
     }
-    if (hero.state.control_mode != 0x11) {
+    if (hero.state.control_mode != HERO_MODE_SWIM) {
         unsigned char t = hero.gravity_mode;
         if (t != 0 || hero.unk1F8 != 0) {
             if (t == 1 || hero.unk1F8 != 0) {

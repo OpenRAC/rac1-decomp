@@ -149,10 +149,10 @@ s32 HeroL06_TryApplyHitKnockback(s32 arg) {
     f32 a, b, e;
     Vec4 v;
 
-    if (g_hero_r.state.control_mode == 0x14) {
+    if (g_hero_r.state.control_mode == HERO_MODE_DYING) {
         return 0;
     }
-    if (g_hero_r.state.control_mode == 7) {
+    if (g_hero_r.state.control_mode == HERO_MODE_HURT) {
         return 0;
     }
     if (g_hero_r.state.current == 0x32) {
@@ -179,7 +179,7 @@ s32 HeroL06_TryApplyHitKnockback(s32 arg) {
     level_hero_hit_counts[g_current_level_index]++;
     g_hero_r.damage_source_moby = (struct Moby *)tbl->p20;
     hero_hit_count++;
-    if (g_hero_r.state.control_mode == 0xF) {
+    if (g_hero_r.state.control_mode == HERO_MODE_GRIND) {
         g_hero_r.unk5BE = 1;
         return 0;
     }
@@ -270,7 +270,7 @@ void CameraL06_UpdateFollowOffsets(void) {
             heroBlock.capsule_radius_target = 0.45f;
             break;
     }
-    if (heroBlock.state.control_mode == 4) {
+    if (heroBlock.state.control_mode == HERO_MODE_JUMP) {
         if (heroBlock.state_timer > heroBlock.takeoff_frame) {
             if (heroBlock.past_jump_apex == 0)
                 heroBlock.capsule_bottom_target = heroBlock.unk434;
@@ -282,8 +282,8 @@ void CameraL06_UpdateFollowOffsets(void) {
     } else if (heroBlock.state.current == HERO_STATE_SINK) {
         heroBlock.capsule_radius_target = 0.8f;
     }
-    if (heroBlock.wall_hit != 0 && heroBlock.state.prev_control_mode != 0x12 && heroBlock.state.control_mode != 0x11 &&
-        heroBlock.base_condition == 0) {
+    if (heroBlock.wall_hit != 0 && heroBlock.state.prev_control_mode != HERO_MODE_WATER_SURFACE &&
+        heroBlock.state.control_mode != HERO_MODE_SWIM && heroBlock.base_condition == 0) {
         float dist = vec_distance_xy(heroBlock.wall_contact_point.f, heroBlock.motion.pos.f);
         if (!(heroBlock.capsule_radius * 0.5f < dist))
             return;
@@ -381,7 +381,7 @@ void HeroL06_ResetMotionState(void) {
     if (g_hero.gravity_mode)
         k = 1;
     g = g_hero.capsule_radius * 2.2f;
-    if (g_hero.state.control_mode == 2) {
+    if (g_hero.state.control_mode == HERO_MODE_FALL) {
         g = g_hero.capsule_radius * 2.9f;
     }
     hero_get_collision_ray_endpoints(&v10, &v0, k, g, -48.0f);
@@ -480,8 +480,9 @@ d1:
     g_hero.unk2C8.i[1] = 0;
     g_hero.unk2C0.i[0] = 0;
     g_hero.unk2C0.i[1] = 0;
-    if (g_hero.state.control_mode == 0xF || g_hero.state.control_mode == 0x15 || g_hero.state.control_mode == 6 ||
-        g_hero.state.control_mode == 4 || g_hero.state.control_mode == 5 || g_hero.state.control_mode == 3) {
+    if (g_hero.state.control_mode == HERO_MODE_GRIND || g_hero.state.control_mode == 0x15 ||
+        g_hero.state.control_mode == HERO_MODE_ATTACK || g_hero.state.control_mode == HERO_MODE_JUMP ||
+        g_hero.state.control_mode == HERO_MODE_LAND || g_hero.state.control_mode == HERO_MODE_LEDGE) {
         return;
     }
     if (!(g_hero.ground_distance < 0.25f)) {
@@ -658,7 +659,7 @@ void update_hero_airborne_planar_velocity(void) {
         qcopy(&g_hero_s.motion.momentum, &g_hero_s.move_impulse);
         arg = g_frame_time_sq * 20.0f;
         if (g_hero_s.target_speed < blarg_hero_speed_bands_6[0] * g_frame_time * 0.2f) {
-            if (g_hero_s.state.control_mode == 2) {
+            if (g_hero_s.state.control_mode == HERO_MODE_FALL) {
                 d = g_hero_s.stickless_decel;
                 speed = vec_length_xy(&g_hero_s.motion.velocity);
                 ApproachValue(&speed, 0.0f, d);

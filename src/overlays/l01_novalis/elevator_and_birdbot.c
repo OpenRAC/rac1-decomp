@@ -2066,8 +2066,9 @@ void water_current_update(Moby *self) {
         self->update_dist = 0xFF;
     }
 
-    if ((u32)(g_hero.state.control_mode - 0x11) >= 2 && g_hero.state.prev_control_mode != 0x11 &&
-        g_hero.state.prev_control_mode != 0x12 && g_hero.state.current != 0x12 && g_hero.state.prev != 0x12) {
+    if ((u32)(g_hero.state.control_mode - 0x11) >= 2 && g_hero.state.prev_control_mode != HERO_MODE_SWIM &&
+        g_hero.state.prev_control_mode != HERO_MODE_WATER_SURFACE && g_hero.state.current != 0x12 &&
+        g_hero.state.prev != 0x12) {
         return;
     }
     find_nearest_path_point(path, &g_hero.motion.pos, &nearest, &t, &seg, 0, 999.0f, 5.0f, 0.0f);
@@ -2106,7 +2107,7 @@ void water_current_update(Moby *self) {
             vec_scale_to_length(v, v, frame_scale * -0.004999995231628418f * len + len);
             qcopy(&g_hero.motion.platform_delta, v);
         }
-        if (g_hero.state.control_mode == 0x12 && g_hero.state.prev == g_hero.state.control_mode) {
+        if (g_hero.state.control_mode == HERO_MODE_WATER_SURFACE && g_hero.state.prev == g_hero.state.control_mode) {
             if (g_hero.state_timer < scale_ticks(3)) {
                 cap = (*(f32 *)&g_frame_time_r) * 1.5f;
                 if (cap < g_hero.ground_speed) {
@@ -2115,7 +2116,8 @@ void water_current_update(Moby *self) {
                 clear_u64_value(&g_hero.motion.momentum);
             }
         }
-    } else if ((g_hero.state.prev_control_mode == 0x12 || g_hero.state.prev2_control_mode == 0x12) &&
+    } else if ((g_hero.state.prev_control_mode == HERO_MODE_WATER_SURFACE ||
+                g_hero.state.prev2_control_mode == HERO_MODE_WATER_SURFACE) &&
                (u32)(g_hero.state.control_mode - 4) < 2) {
         len = FastVecLength(v);
         vec_scale_to_length(v, v, frame_scale * -0.014999985694885254f * len + len);

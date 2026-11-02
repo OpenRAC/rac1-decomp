@@ -217,7 +217,7 @@ s32 predict_doom_bot_spawner_landing(ThrowVars *v, struct Moby *m, s32 mode) {
         FastVecAdd_r(&d, &d, &g_hero_r.motion.pos);
         d.f[2] += 0.39081999659538269043f;
         qcopy(&e, &v->vel);
-        if (g_hero_r.state.control_mode == 15)
+        if (g_hero_r.state.control_mode == HERO_MODE_GRIND)
             FastVecAdd_r(&e, &e, &g_hero_r.motion.displacement);
         if (g_hero_r.ground_moby && GetFlaggedPvarWord_r((int)g_hero_r.ground_moby) && mode)
             FastVecAdd_r(&e, &e, &g_hero_r.motion.displacement);

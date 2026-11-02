@@ -3179,7 +3179,7 @@ void Moby1199Update(Moby *m) {
             Moby_GetJointWorldPos(m, 0, v);
             coll_sphere_mobys(0.2f, v, 0, m, &v[4]);
             if (FastVecDist_r(&m->pos, &P->pos) < one ||
-                ((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->state.control_mode == 7 ||
+                ((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->state.control_mode == HERO_MODE_HURT ||
                 (m->anim_flags & 2)) {
                 m->state = 12;
                 if (m->prev_seq != 3)

@@ -1642,7 +1642,7 @@ s32 predict_thrown_moby_landing(ThrowVars *v, struct Moby *m, s32 mode) {
         FastVecAdd(&d, &d, &g_hero_r4.motion.pos);
         d.f[2] += 0.39081999659538269043f;
         qcopy(&e, &v->vel);
-        if (g_hero_r4.state.control_mode == 15)
+        if (g_hero_r4.state.control_mode == HERO_MODE_GRIND)
             FastVecAdd(&e, &e, &g_hero_r4.motion.displacement);
         if (g_hero_r4.ground_moby && moby_get_ride_transform((int)g_hero_r4.ground_moby) && mode)
             FastVecAdd(&e, &e, &g_hero_r4.motion.displacement);
@@ -2657,7 +2657,7 @@ void func_L00_002C74B8_r(Moby *m) {
                 (*(M3_2C74B8 *)&d->hook->rot_row0) = (*(M3_2C74B8 *)&m->rot_row0);
             }
             if (((Hero *)g_hero_r5)->state.current == HERO_STATE_GRAPPLE_TARGET_ENTRY ||
-                (((Hero *)g_hero_r5)->state.control_mode == 0xF && ((Hero *)g_hero_r5)->unk5B4)) {
+                (((Hero *)g_hero_r5)->state.control_mode == HERO_MODE_GRIND && ((Hero *)g_hero_r5)->unk5B4)) {
                 if (hd) {
                     d->size = 0.280000001f;
                     d->scale = 1.0f;
@@ -2692,10 +2692,10 @@ void func_L00_002C74B8_r(Moby *m) {
             }
             FastVecSub_r(&v0, &((Hero *)g_hero_r5)->grapple_target->pos, &d->hook->pos);
             speed = hd->speed;
-            if (((Hero *)g_hero_r5)->state.control_mode == 0xF) {
+            if (((Hero *)g_hero_r5)->state.control_mode == HERO_MODE_GRIND) {
                 speed = speed + ((Hero *)g_hero_r5)->unk574;
-            } else if (((Hero *)g_hero_r5)->state.prev_control_mode == 4 ||
-                       ((Hero *)g_hero_r5)->state.prev_control_mode == 2) {
+            } else if (((Hero *)g_hero_r5)->state.prev_control_mode == HERO_MODE_JUMP ||
+                       ((Hero *)g_hero_r5)->state.prev_control_mode == HERO_MODE_FALL) {
                 if (2.0f < ((Hero *)g_hero_r5)->ground_distance)
                     speed = g_frame_time_r * 48.0f;
             }

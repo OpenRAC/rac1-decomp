@@ -103,8 +103,8 @@ void Hero_ApplyMotionCollisionL02(void) {
                 limit = 0.0f;
             gravity_set_z(position, position, limit);
         }
-    } else if (((Hero *)position)->state.control_mode != 13) {
-        if (((Hero *)position)->state.control_mode != 14) {
+    } else if (((Hero *)position)->state.control_mode != HERO_MODE_GRAPPLE) {
+        if (((Hero *)position)->state.control_mode != HERO_MODE_GRAPPLE_SWING) {
             if (!((Hero *)position)->collision_off_frames) {
                 float length;
                 float limit;
@@ -330,7 +330,7 @@ void hero_update_hop_velocity(void) {
         qcopy(&g_hero.motion.momentum, &g_hero.move_impulse);
         arg = g_frame_time_sq * 20.0f;
         if (g_hero.target_speed < aridia_hero_speed_bands_field_18[0] * g_frame_time * 0.2f) {
-            if (g_hero.state.control_mode == 2) {
+            if (g_hero.state.control_mode == HERO_MODE_FALL) {
                 d = g_hero.stickless_decel;
                 speed = vec_length_xy(&g_hero.motion.velocity);
                 ApproachValue(&speed, 0.0f, d);
@@ -395,7 +395,7 @@ int process_hero_item_action_input(void) {
     switch (g_hero_h22F568.items[0].item_id) {
         case 8:
             if (g_hero_h22F568.state.control_mode < 2U ||
-                (g_hero_h22F568.state.control_mode == 4 && g_hero_h22F568.rail_land_frames != 0)) {
+                (g_hero_h22F568.state.control_mode == HERO_MODE_JUMP && g_hero_h22F568.rail_land_frames != 0)) {
                 Moby *m;
 
                 if (g_hero_h22F568.on_slip_ground != 0) {
@@ -466,7 +466,7 @@ int process_hero_item_action_input(void) {
                     break;
                 }
             }
-            if (g_hero_h22F568.state.control_mode == 6) {
+            if (g_hero_h22F568.state.control_mode == HERO_MODE_ATTACK) {
                 Rec2C *rec = &aridia_attack_records[g_hero_h22F568.attack_record];
                 int t;
 
@@ -522,9 +522,10 @@ int process_hero_item_action_input(void) {
             if (g_hero_h22F568.air_frames.s != 0) {
                 t = scale_ticks(8);
             }
-            if (g_hero_h22F568.state.control_mode < 2U || g_hero_h22F568.state.control_mode == 4 ||
-                g_hero_h22F568.state.control_mode == 2 || g_hero_h22F568.state.control_mode == 0xF ||
-                g_hero_h22F568.state.control_mode == 5 ||
+            if (g_hero_h22F568.state.control_mode < 2U || g_hero_h22F568.state.control_mode == HERO_MODE_JUMP ||
+                g_hero_h22F568.state.control_mode == HERO_MODE_FALL ||
+                g_hero_h22F568.state.control_mode == HERO_MODE_GRIND ||
+                g_hero_h22F568.state.control_mode == HERO_MODE_LAND ||
                 g_hero_h22F568.state.current == HERO_STATE_LOOK_RELEASE_WAIT) {
                 if (pad_pressed_within(mask, t, 0) ||
                     ((g_controller_state.held & mask) && g_hero_h22F568.items[0].ready_frames > scale_ticks(0xF))) {
@@ -572,17 +573,19 @@ int process_hero_item_action_input(void) {
             g_hero_h22F568.unk22DC = 1;
             break;
         case 32:
-            if (g_hero_h22F568.state.control_mode < 3U || g_hero_h22F568.state.control_mode == 4 ||
-                g_hero_h22F568.state.control_mode == 5) {
+            if (g_hero_h22F568.state.control_mode < 3U || g_hero_h22F568.state.control_mode == HERO_MODE_JUMP ||
+                g_hero_h22F568.state.control_mode == HERO_MODE_LAND) {
                 if (pad_pressed_within(mask, scale_ticks(8), 0)) {
                     open_vendor_menu(0);
                 }
             }
             break;
         case 15:
-            if (g_hero_h22F568.state.control_mode < 2U || g_hero_h22F568.state.control_mode == 0xC ||
-                g_hero_h22F568.state.control_mode == 2 || g_hero_h22F568.state.control_mode == 4 ||
-                g_hero_h22F568.state.control_mode == 5 || g_hero_h22F568.state.control_mode == 0xF ||
+            if (g_hero_h22F568.state.control_mode < 2U || g_hero_h22F568.state.control_mode == HERO_MODE_CROUCH ||
+                g_hero_h22F568.state.control_mode == HERO_MODE_FALL ||
+                g_hero_h22F568.state.control_mode == HERO_MODE_JUMP ||
+                g_hero_h22F568.state.control_mode == HERO_MODE_LAND ||
+                g_hero_h22F568.state.control_mode == HERO_MODE_GRIND ||
                 g_hero_h22F568.state.current == HERO_STATE_LOOK_RELEASE_WAIT) {
                 PVar *pv;
 
@@ -613,11 +616,13 @@ int process_hero_item_action_input(void) {
         case 20:
         case 24:
         case 25:
-            if ((g_hero_h22F568.state.control_mode == 0 &&
+            if ((g_hero_h22F568.state.control_mode == HERO_MODE_IDLE &&
                  g_hero_h22F568.state.current != HERO_STATE_LOOK_RELEASE_WAIT) ||
-                g_hero_h22F568.state.control_mode == 1 || g_hero_h22F568.state.control_mode == 0xC ||
-                g_hero_h22F568.state.control_mode == 5 || g_hero_h22F568.state.control_mode == 0xF ||
-                (g_hero_h22F568.state.control_mode == 4 && g_hero_h22F568.unk4AC != 0) ||
+                g_hero_h22F568.state.control_mode == HERO_MODE_RUN ||
+                g_hero_h22F568.state.control_mode == HERO_MODE_CROUCH ||
+                g_hero_h22F568.state.control_mode == HERO_MODE_LAND ||
+                g_hero_h22F568.state.control_mode == HERO_MODE_GRIND ||
+                (g_hero_h22F568.state.control_mode == HERO_MODE_JUMP && g_hero_h22F568.unk4AC != 0) ||
                 (g_hero_h22F568.state.current == HERO_STATE_ANIMATION_RECOVERY_WITH_JUMP_CANCEL &&
                  g_hero_h22F568.anim_frame > 25.0f)) {
                 int t;
@@ -631,9 +636,11 @@ int process_hero_item_action_input(void) {
                 if (pad_pressed_within(mask, t <= n ? t : n, &out[1]) ||
                     ((g_controller_state.held & PAD_CIRCLE) && n > scale_ticks(8) && n < scale_ticks(0x11))) {
                     if (get_ammo(-1)) {
-                        if (g_hero_h22F568.state.control_mode == 0xC || g_hero_h22F568.state.control_mode == 0 ||
+                        if (g_hero_h22F568.state.control_mode == HERO_MODE_CROUCH ||
+                            g_hero_h22F568.state.control_mode == HERO_MODE_IDLE ||
                             g_hero_h22F568.state.current == HERO_STATE_STOP ||
-                            (g_hero_h22F568.state.control_mode == 1 && g_hero_h22F568.stick_magnitude < 0.7f)) {
+                            (g_hero_h22F568.state.control_mode == HERO_MODE_RUN &&
+                             g_hero_h22F568.stick_magnitude < 0.7f)) {
                             HeroL02_SetMoveState(HERO_STATE_ANIMATION_RECOVERY_WITH_JUMP_CANCEL, 1);
                         } else {
                             start_equipped_item_animation();
@@ -648,7 +655,7 @@ int process_hero_item_action_input(void) {
             break;
         case 18:
             if (g_hero_h22F568.state.control_mode < 2U ||
-                (g_hero_h22F568.state.control_mode == 4 && g_hero_h22F568.rail_land_frames != 0)) {
+                (g_hero_h22F568.state.control_mode == HERO_MODE_JUMP && g_hero_h22F568.rail_land_frames != 0)) {
                 if (g_hero_h22F568.state.current != HERO_STATE_LOOK) {
                     int t = scale_ticks(0xA);
                     int n = g_hero_h22F568.items[0].ready_frames;
@@ -678,8 +685,9 @@ int process_hero_item_action_input(void) {
             (g_hero_h22F568.unk308 == 0 || item_available[0x1C] == 0) && g_hero_h22F568.pack_disabled == 0) {
             fast_dec_timer(&D_L02_0015F754);
             if (D_L02_0015F754 != 0) {
-                if (g_hero_h22F568.state.control_mode < 2U || g_hero_h22F568.state.control_mode == 0xC ||
-                    ((g_hero_h22F568.state.control_mode == 2 || g_hero_h22F568.state.control_mode == 4) &&
+                if (g_hero_h22F568.state.control_mode < 2U || g_hero_h22F568.state.control_mode == HERO_MODE_CROUCH ||
+                    ((g_hero_h22F568.state.control_mode == HERO_MODE_FALL ||
+                      g_hero_h22F568.state.control_mode == HERO_MODE_JUMP) &&
                      g_hero_h22F568.grounded_frames != 0)) {
                     if ((g_controller_state.held & PAD_R1) && (g_controller_state.pressed & PAD_R1)) {
                         HeroL02_SetMoveState(HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT, 1);

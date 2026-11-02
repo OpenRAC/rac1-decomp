@@ -446,7 +446,7 @@ void update_path_following_rocket(unsigned char *moby) {
             break;
         case 1: {
             struct Hero *player = (struct Hero *)g_hero;
-            if (player->state.control_mode != 15)
+            if (player->state.control_mode != HERO_MODE_GRIND)
                 break;
             if (is_point_inside_clip_volume(&player->motion.body_center, data->clip_volume)) {
                 m->state = 2;
@@ -478,7 +478,7 @@ void update_path_following_rocket(unsigned char *moby) {
                 m->collision = 0;
                 m->flags |= 1;
             }
-            if (((struct Hero *)g_hero)->state.control_mode != 15) {
+            if (((struct Hero *)g_hero)->state.control_mode != HERO_MODE_GRIND) {
                 float pos[4];
                 qcopy(pos, path + 0x10);
                 pos[3] = 3.0f;

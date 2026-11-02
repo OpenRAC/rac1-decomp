@@ -1249,7 +1249,7 @@ void scan_hero_input_sequences(void) {
     g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
     s = 0;
     if (g->state_timer == scale_ticks(0xF)) {
-        if (g->state.control_mode == 4) {
+        if (g->state.control_mode == HERO_MODE_JUMP) {
             int b = g->state.current;
             if (b == 0xB) {
                 int c = g->unk450;
@@ -1271,7 +1271,7 @@ void scan_hero_input_sequences(void) {
             } else if (b == 0xE) {
                 s = 5;
             }
-        } else if (g->state.control_mode == 6) {
+        } else if (g->state.control_mode == HERO_MODE_ATTACK) {
             int b = g->state.current;
             if (b == 0x14) {
                 s = 6;
@@ -2031,7 +2031,7 @@ void update_hero_moby(void) {
         set_moby_local_table_entry_r(*(void **)&((struct Hero *)g)->moby, 0, ((struct Hero *)g)->capsule_radius, f13,
                                      &v);
         f20 = ((struct Hero *)g)->capsule_radius + 0.05f;
-        if (((struct Hero *)g)->state.control_mode == 4)
+        if (((struct Hero *)g)->state.control_mode == HERO_MODE_JUMP)
             f20 += 0.15f;
         if (hero_is_in_special_state() != 0)
             f20 = ((struct Hero *)g)->capsule_bottom;
@@ -2118,7 +2118,7 @@ void update_hero_moby_probed_height_bounds(void) {
     CollisionHit *collision;
     Vec4 *pw, *px;
     s32 i;
-    if (D_0013F450_091D8.state.control_mode == 0x12 || D_0013F450_091D8.state.control_mode == 0x15 ||
+    if (D_0013F450_091D8.state.control_mode == HERO_MODE_WATER_SURFACE || D_0013F450_091D8.state.control_mode == 0x15 ||
         D_0013F450_091D8.state.current == 0x7D || D_0013F450_091D8.state.control_mode == 0x16) {
         D_0013F450_091D8.moby->flags &= ~0x400;
         return;
@@ -2126,7 +2126,7 @@ void update_hero_moby_probed_height_bounds(void) {
     D_0013F450_091D8.moby->flags |= 0x400;
     D_0013F450_091D8.moby->unkBD = 1;
     k = 0.97f;
-    if (D_0013F450_091D8.air_frames.s != 0 || D_0013F450_091D8.state.control_mode == 4)
+    if (D_0013F450_091D8.air_frames.s != 0 || D_0013F450_091D8.state.control_mode == HERO_MODE_JUMP)
         k = 1.5f;
     d = FastSubRots(k, D_0013F450_091D8.unkD20);
     if (0.052f < d)
@@ -3085,7 +3085,7 @@ void update_hero_easing_targets_and_point_effects(void) {
     if (!(D_0013F450_20b1d8.items[6].unk3E & 0x80)) {
         if (D_0013F450_20b1d8.state.current == HERO_STATE_STOP)
             configure_hero_point_effect_emission_r(1, 2, 1, 0, 0.021f, 0.002f);
-        if (D_0013F450_20b1d8.state.control_mode == 4 && D_0013F450_20b1d8.rail_land_frames > 0 &&
+        if (D_0013F450_20b1d8.state.control_mode == HERO_MODE_JUMP && D_0013F450_20b1d8.rail_land_frames > 0 &&
             D_0013F450_20b1d8.rail_land_frames < scale_ticks_c(12))
             configure_hero_point_effect_emission_r(1, 2, 0, 1, 0.016f, 0.002f);
         if (D_0013F450_20b1d8.items[6].unk38 <= 0)
@@ -3217,7 +3217,8 @@ void probe_hero_airborne_wall_contact(void) {
         f = fast_atan2_r2(q2->normal.f[0], q2->normal.f[1]);
     }
     k2->unk460.f[3] = f;
-    if (k2->state.control_mode != 4 && k2->state.prev_control_mode != 4 && k2->state.prev2_control_mode != 4) {
+    if (k2->state.control_mode != HERO_MODE_JUMP && k2->state.prev_control_mode != HERO_MODE_JUMP &&
+        k2->state.prev2_control_mode != HERO_MODE_JUMP) {
         return;
     }
     h = (Hero *)D_0013F450_20b5b8;
@@ -3465,10 +3466,10 @@ void check_ledge_grab(void) {
         return;
     go = 0;
     if (((Hero *)D_0013F450_20C568)->vehicle_mode == 0) {
-        if ((((Hero *)D_0013F450_20C568)->state.control_mode == 4 &&
+        if ((((Hero *)D_0013F450_20C568)->state.control_mode == HERO_MODE_JUMP &&
              (((Hero *)D_0013F450_20C568)->past_jump_apex != 0 ||
               ((Hero *)D_0013F450_20C568)->motion.velocity.f[2] < g_frame_time_r3 * 3.5f)) ||
-            ((Hero *)D_0013F450_20C568)->state.control_mode == 2 ||
+            ((Hero *)D_0013F450_20C568)->state.control_mode == HERO_MODE_FALL ||
             ((Hero *)D_0013F450_20C568)->state.current == HERO_STATE_LAND ||
             ((Hero *)D_0013F450_20C568)->state.current == HERO_STATE_LEDGE_SHIMMY_POSITIVE_YAW ||
             ((Hero *)D_0013F450_20C568)->state.current == HERO_STATE_LEDGE_SHIMMY_NEGATIVE_YAW)
@@ -3478,10 +3479,10 @@ void check_ledge_grab(void) {
             go = 0;
     }
     if (((Hero *)D_0013F450_20C568)->vehicle_mode == 1) {
-        if ((((Hero *)D_0013F450_20C568)->state.control_mode == 4 &&
+        if ((((Hero *)D_0013F450_20C568)->state.control_mode == HERO_MODE_JUMP &&
              (((Hero *)D_0013F450_20C568)->past_jump_apex != 0 ||
               ((Hero *)D_0013F450_20C568)->motion.velocity.f[2] < g_frame_time_r3 * 2.5f)) ||
-            ((Hero *)D_0013F450_20C568)->state.control_mode == 2 ||
+            ((Hero *)D_0013F450_20C568)->state.control_mode == HERO_MODE_FALL ||
             ((Hero *)D_0013F450_20C568)->state.current == 0x4F ||
             ((Hero *)D_0013F450_20C568)->state.current == HERO_STATE_ALT_LEDGE_SHIMMY_YAW_PLUS_90 ||
             ((Hero *)D_0013F450_20C568)->state.current == HERO_STATE_ALT_LEDGE_SHIMMY_YAW_MINUS_90)
@@ -3507,7 +3508,7 @@ void check_ledge_grab(void) {
         back = 0.32f;
     }
     speed = ((Hero *)D_0013F450_20C568)->fall_state_gravity;
-    if (((Hero *)D_0013F450_20C568)->state.control_mode == 4)
+    if (((Hero *)D_0013F450_20C568)->state.control_mode == HERO_MODE_JUMP)
         speed = ((Hero *)D_0013F450_20C568)->jump_gravity;
     r = scale_ticks_r3(2);
     predict_position_with_vertical_drop(v0, ((Hero *)D_0013F450_20C568)->motion.pos.f,

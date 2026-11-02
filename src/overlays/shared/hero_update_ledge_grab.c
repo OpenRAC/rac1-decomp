@@ -530,7 +530,7 @@ s32 HeroL06_ResolveCollisionStep(s32 mode) {
         Hero_ConstrainToPath();
         g_hero_r2.path_constrain_pending = 0;
     }
-    if (g_hero_r2.state.control_mode != 0x11) {
+    if (g_hero_r2.state.control_mode != HERO_MODE_SWIM) {
         if (g_hero_r2.gravity_mode != 0 || g_hero_r2.unk1F8 != 0) {
             if (g_hero_r2.gravity_mode == 1 || g_hero_r2.unk1F8 != 0) {
                 HeroOffsetAlongViewZ(&v, &v, 0.6f);
@@ -549,7 +549,7 @@ s32 HeroL06_ResolveCollisionStep(s32 mode) {
         if (g_hero_r2.gravity_mode != 0) {
             if (!coll_sphere(&g_hero_r2.motion.pos.q, mask, (s32)g_hero_r2.moby, frame_scale * 0.4f))
                 break;
-        } else if (g_hero_r2.state.control_mode == 0xF) {
+        } else if (g_hero_r2.state.control_mode == HERO_MODE_GRIND) {
             if (!coll_sphere(&g_hero_r2.motion.pos.q, mask, (s32)g_hero_r2.moby, frame_scale * 0.45f))
                 break;
         } else {

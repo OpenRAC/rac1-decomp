@@ -3022,7 +3022,7 @@ void sandmouse_update(Moby *m) {
             {
                 struct Hero *h = &g_hero;
                 if (*(int *)&h->items[2].moby != 0 && h->items[2].item_id == 5 && h->state.control_mode != 0x16 &&
-                    h->state.control_mode != 0x14 && h->vehicle_mode == 0 &&
+                    h->state.control_mode != HERO_MODE_DYING && h->vehicle_mode == 0 &&
                     *(s16 *)(novalis_camera_moby + 0x86) != 0x14 && fast_dec_timer(&p->k58) == 0 &&
                     p->k5C < sandmouse_max_shots) {
                     compute_sandmouse_follow_goal(m, p);

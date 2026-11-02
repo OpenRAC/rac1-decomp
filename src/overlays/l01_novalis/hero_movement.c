@@ -305,7 +305,7 @@ void update_hero_airborne_planar_motion(void) {
         qcopy(&g_hero.motion.momentum, &g_hero.move_impulse);
         arg = g_frame_time_sq * 20.0f;
         if (g_hero.target_speed < novalis_hero_speed_bands_6[0] * g_frame_time * 0.2f) {
-            if (g_hero.state.control_mode == 2) {
+            if (g_hero.state.control_mode == HERO_MODE_FALL) {
                 d = g_hero.stickless_decel;
                 speed = vec_length_xy(g_hero.motion.velocity.f);
                 ApproachValue(&speed, 0.0f, d);

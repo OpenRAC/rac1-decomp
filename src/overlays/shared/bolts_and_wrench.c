@@ -453,7 +453,7 @@ void camera_object_update(char *camera_object) {
                 FastVecScale(b, &P->moby->rot_row2, d);
                 FastVecSub(a, object_position, b);
                 d = FastVecDot(pos, &P->moby->rot_row2);
-                if (P->state.control_mode != 0x11) {
+                if (P->state.control_mode != HERO_MODE_SWIM) {
                     FastVecScale(b, &P->moby->rot_row2, d);
                     FastVecAdd(object_position, a, b);
                 }

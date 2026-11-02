@@ -3355,7 +3355,7 @@ void WaterSurfaceUpdate(Moby *moby) {
                                      rilgar_water_gate_max_speed * g_frame_time);
                 if (FastAbsF(moby->pos.z - d->f0) > 0.1f) {
                     Hero *h = (Hero *)(hero_globals_base + 0xE1D);
-                    if (h->state.control_mode == 0x11 || h->state.control_mode == 0x12) {
+                    if (h->state.control_mode == HERO_MODE_SWIM || h->state.control_mode == HERO_MODE_WATER_SURFACE) {
                         if (moby->pos.z > h->water_surface_z) {
                             h->water_surface_z = moby->pos.z;
                         }
@@ -3374,7 +3374,7 @@ void WaterSurfaceUpdate(Moby *moby) {
             if (vec_distance_xy(((float *)&moby->pos), ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f) < 16.0f) {
                 Hero *h = (Hero *)(hero_globals_base + 0xE1D);
                 if (h->motion.pos.f[2] < moby->pos.z) {
-                    if (h->state.control_mode == 0x11) {
+                    if (h->state.control_mode == HERO_MODE_SWIM) {
                         if (h->water_surface_z < moby->pos.z) {
                             h->water_surface_z = moby->pos.z;
                         }

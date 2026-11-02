@@ -276,7 +276,7 @@ sizeof = 0x110
 |---|---|---|---|
 | 0x000 | `s32` | `current` | state id; hero_set_state sets it |
 | 0x004 | `s32` | `step` | sub-step, 0 on state change |
-| 0x008 | `s32` | `control_mode` |  |
+| 0x008 | `s32` | `control_mode` | `enum HeroControlMode`, in `include/enums/hero_state.h` |
 | 0x00C | `s32` | `prev` | state before the last change |
 | 0x010 | `s32` | `prev_control_mode` | control_mode before the last change |
 | 0x014 | `s32` | `prev_timer` | state_timer before the last change |

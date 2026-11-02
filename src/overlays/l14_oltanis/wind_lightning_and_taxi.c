@@ -486,7 +486,7 @@ void PathLiftUpdate(struct Moby *m) {
     axis_rotation_2d48(d->wobble, 0, d->angle);
     FastVecSub(&delta, &m->pos, &old);
     update_entity_matrix((char *)d->spring, &delta, &rot, &m->rot);
-    if (g_hero.state.control_mode == 13 && g_hero.grapple_target == rider) {
+    if (g_hero.state.control_mode == HERO_MODE_GRAPPLE && g_hero.grapple_target == rider) {
         if (d->riding == 0) {
             d->riding = 1;
             d->timer = scale_ticks(path_lift_board_time);

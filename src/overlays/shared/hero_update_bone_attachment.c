@@ -271,7 +271,7 @@ void update_hero_smoothing_parameters(void) {
             g_hero.capsule_radius_target = 0.45f;
             break;
     }
-    if (g_hero.state.control_mode == 4) {
+    if (g_hero.state.control_mode == HERO_MODE_JUMP) {
         if (g_hero.state_timer > g_hero.takeoff_frame && g_hero.past_jump_apex == 0)
             g_hero.capsule_bottom_target = g_hero.unk434;
     } else if (g_hero.state.current == HERO_STATE_FALL) {
@@ -284,8 +284,8 @@ void update_hero_smoothing_parameters(void) {
     } else if (g_hero.state.current == HERO_STATE_SINK) {
         g_hero.capsule_radius_target = 0.8f;
     }
-    if (!g_hero.wall_hit || g_hero.state.prev_control_mode == 0x12 || g_hero.state.control_mode == 0x11 ||
-        g_hero.base_condition ||
+    if (!g_hero.wall_hit || g_hero.state.prev_control_mode == HERO_MODE_WATER_SURFACE ||
+        g_hero.state.control_mode == HERO_MODE_SWIM || g_hero.base_condition ||
         vec_distance_xy(g_hero.wall_contact_point.f, g_hero.motion.pos.f) > g_hero.capsule_radius * 0.5f) {
         f32 *q = g_hero_capsule_top;
         Hero *b = (Hero *)((u8 *)q - 0x220);
@@ -444,7 +444,7 @@ void HeroL15_ResetMotionState(void) {
     if (g_hero_r.gravity_mode)
         k = 1;
     g = g_hero_r.capsule_radius * 2.2f;
-    if (g_hero_r.state.control_mode == 2) {
+    if (g_hero_r.state.control_mode == HERO_MODE_FALL) {
         g = g_hero_r.capsule_radius * 2.9f;
     }
     hero_get_collision_ray_endpoints(&v10, &v0, k, g, -48.0f);
@@ -545,8 +545,9 @@ d1:
     g_hero_r.unk2C8.i[1] = 0;
     g_hero_r.unk2C0.i[0] = 0;
     g_hero_r.unk2C0.i[1] = 0;
-    if (g_hero_r.state.control_mode == 0xF || g_hero_r.state.control_mode == 0x15 || g_hero_r.state.control_mode == 6 ||
-        g_hero_r.state.control_mode == 4 || g_hero_r.state.control_mode == 5 || g_hero_r.state.control_mode == 3) {
+    if (g_hero_r.state.control_mode == HERO_MODE_GRIND || g_hero_r.state.control_mode == 0x15 ||
+        g_hero_r.state.control_mode == HERO_MODE_ATTACK || g_hero_r.state.control_mode == HERO_MODE_JUMP ||
+        g_hero_r.state.control_mode == HERO_MODE_LAND || g_hero_r.state.control_mode == HERO_MODE_LEDGE) {
         return;
     }
     if (!(g_hero_r.ground_distance < 0.25f)) {
