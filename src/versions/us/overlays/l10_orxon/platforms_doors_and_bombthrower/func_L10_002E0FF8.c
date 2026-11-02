@@ -29,7 +29,7 @@ void update_screamer_hit_reactions_and_targeting(struct Moby *moby) {
         ComputeHitResponse(moby, r, &data->f20, 5, &st, 0, 0, 4);
         if (r != 0) {
             if (data->f20 <= r->f2C) {
-                if (hero_inside_conditional_help_volume != 0 && (f = menu_item_enabled_115 + 1, f[0x10]) == 0) {
+                if (hero_inside_conditional_help_volume != 0 && (f = gSkillPoints, f[0x10]) == 0) {
                     f[0x10] = 1;
                     PlayBankSound(1, 0, 0);
                     ShowBanner(0x53D6, -1);
@@ -76,7 +76,7 @@ void update_screamer_hit_reactions_and_targeting(struct Moby *moby) {
         r19 = FindNearestTargetMoby(data->f180, moby, data->fC0);
         if (r19 != 2) {
             Anim *bp = &((Anim *)orxon_scene_points)[data->f194];
-            FastVecSub(v, hero_globals_base + 0xE9D, bp->f30);
+            FastVecSub(v, (char *)&gHeroPos, bp->f30);
             v[3] = 0.0f;
             matrix_mul_vec3(w, v, bp->f40);
             if (w[0] <= -1.0f || 0.0f <= w[0] || w[1] <= -1.0f || 1.0f <= w[1] || w[2] <= -1.0f || 1.0f <= w[2])
@@ -98,5 +98,5 @@ void update_screamer_hit_reactions_and_targeting(struct Moby *moby) {
             data->f104 = 2;
     }
     if (data->f100 == 0)
-        data->f100 = *(int *)(hero_globals_base + 0x2E9D);
+        data->f100 = *(int *)(&g_hero_moby);
 }

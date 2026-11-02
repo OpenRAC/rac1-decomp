@@ -131,7 +131,7 @@ extern CfgS g_debug_menu;
 extern char pad_globals_base[];
 
 extern char special_items_base_b[] __asm__("D_0013D355");
-extern unsigned char help_stats_base[] NOT_SDA;
+
 extern int cinematic_mode MACRO_ADDR;
 extern int D_0015EFB4 MACRO_ADDR;
 extern int cinematic_mode_frames MACRO_ADDR;

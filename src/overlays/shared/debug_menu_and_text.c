@@ -11,7 +11,7 @@
 #include "core/kernel/kprintf.h"
 #include "game/render/framebuf.h"
 #include "game/ui/hud.h"
-extern char frame_size[];
+extern int frame_size;
 extern Hero g_hero;
 extern char gold_weapon_purchased[];
 extern char weapon_ammo_counts[];
@@ -1462,7 +1462,7 @@ void capture_draw_buffer(void *a) {
     sce_gs_sync_v(0);
     rendered_frame_count = rendered_frame_count + 1;
     VU1_initChain();
-    transfer_draw_buffer_chunks(a, draw_buffer_address, *(int *)frame_size << 11);
+    transfer_draw_buffer_chunks(a, draw_buffer_address, frame_size << 11);
 }
 extern int GetEffectTex(int);
 extern void FontPrint(void *, void *, void *, void *, void *, int, unsigned char *);

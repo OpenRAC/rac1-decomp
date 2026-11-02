@@ -31,12 +31,12 @@ void gadgetron_ceo_update(Moby *m) {
                 PlaceMarkerAheadOfMoby(3.5f, m);
                 m->state = 2;
             }
-            if (!gHaveMorphORay[9] && vec_distance_xy(hero_globals_base + 0xE9D, &m->pos) < 3.5f) {
+            if (!gHaveMorphORay[9] && vec_distance_xy(gHeroPos, &m->pos) < 3.5f) {
                 int elapsed, period;
                 char *statistics;
                 elapsed = scale_ticks(gameplay_event_frame_count);
                 period = 600;
-                statistics = help_stats_base + 0x34D;
+                statistics = help_records;
                 elapsed -= *(unsigned short *)(statistics + 0x43A) * period;
                 if (elapsed > (int)((float)scale_ticks(18) * 60.0f) ||
                     *(unsigned short *)(statistics + 0x43A) * period == 0) {
@@ -92,7 +92,7 @@ void gadgetron_ceo_update(Moby *m) {
             L16ChallengePlayer *player = (L16ChallengePlayer *)((char *)&hero_globals_base_challenge + 0xE1D);
             unsigned char event;
             if (player->points >= 4500) {
-                unsigned char *flags = (unsigned char *)menu_item_enabled_115 + 1;
+                unsigned char *flags = gSkillPoints;
                 if (!flags[0x1A]) {
                     flags[0x1A] = 1;
                     PlayBankSound(1, 0, 0);

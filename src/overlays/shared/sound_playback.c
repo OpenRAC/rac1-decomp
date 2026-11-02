@@ -10,6 +10,8 @@
 #include "overlays/shared/cutscene_and_movie_playback.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+extern char gHeroPos[];
+extern char hero_vehicle_mode[];
 extern char gSpecialItems[];
 extern Hero g_hero;
 extern char pad0_pressed[];
@@ -21,7 +23,6 @@ struct ShipPickupVars {
     s16 near_entry; /* 0x0C: 1 while hero is within 4 units of the entry point */
 };
 
-extern char hero_globals_base[];
 /* Returns 1 if sound slot i belongs to owner a and is starting or playing. */
 int Sound_IsPlaying(int a, int i) {
     if (i >= 0) {
@@ -51,7 +52,7 @@ void Sound_StopSlot(int i) {
     }
 }
 INCLUDE_ASM("asm/overlays", func_L00_0028EC28);
-extern char hero_globals_base[] NOT_SDA;
+
 extern unsigned char g_class_slot[] NOT_SDA;
 extern char *moby_class_headers[] NOT_SDA;
 
@@ -150,8 +151,7 @@ void Sound_SetEntryValue(int value, long long address) {
     }
 }
 INCLUDE_ASM("asm/overlays", func_L00_0028F410);
-extern char pad_globals_base[] NOT_SDA;
-extern unsigned char special_items_base[] NOT_SDA;
+
 extern unsigned char gHaveMorphORay[] NOT_SDA;
 extern unsigned char level_available_base[] NOT_SDA;
 extern short ship_index[] NOT_SDA;

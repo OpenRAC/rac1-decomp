@@ -656,7 +656,7 @@ extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float *,
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
 extern int g_current_level_index MACRO_ADDR;
-extern char menu_item_enabled_115[];
+
 extern int level_moby_killed[][64] NOT_SDA;
 extern int gemlik_moby_killed_bits[];
 extern float gemlik_zero_vec[] MACRO_ADDR;

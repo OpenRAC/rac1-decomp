@@ -22,6 +22,7 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+extern char gHeroPos[];
 extern struct Hero g_hero;
 extern int level_moby_killed[][64];
 
@@ -588,7 +589,6 @@ typedef struct {
     struct Moby *src;
 } PeHit;
 
-extern char hero_globals_base[];
 extern float g_frame_time_sq MACRO_ADDR;
 extern char *camera_points MACRO_ADDR;
 extern int cutscene_active MACRO_ADDR;

@@ -19,7 +19,7 @@ extern PadState g_controller_state;
 extern char g_hero[];
 extern char g_hero_rot[];
 extern s32 hero_control_mode[];
-extern char hero_vehicle_mode[];
+extern unsigned char hero_vehicle_mode NOT_SDA;
 extern int pad_held NOT_SDA;
 
 extern int vendor_stock[] MACRO_ADDR;
@@ -1719,7 +1719,7 @@ int volume_camera_swing_check(char *m) {
     short k;
     if (params->l_buttons_end == 1 && params->done != 0)
         return 0;
-    if (params->type.s == 11 && *(unsigned char *)hero_vehicle_mode != 2)
+    if (params->type.s == 11 && hero_vehicle_mode != 2)
         return 0;
     k = params->type.u;
     if (k == 1 || k == 10) {

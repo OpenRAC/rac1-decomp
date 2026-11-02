@@ -534,7 +534,7 @@ extern void FastVecSub(void *, void *, void *);
 extern float IntToFloat(int);
 extern void draw_env_overlay_mesh_r(int, void *, void *, void *, int) __asm__("func_L00_001FDE48");
 extern void draw_world_quad(void *, void *, int);
-extern char hero_globals_base[];
+
 extern char pokitaru_render_view_params[];
 
 extern char pokitaru_camera_matrix[];
@@ -1428,8 +1428,7 @@ void update_moby_trail_points(Moby *moby) {
         }
     }
 }
-extern char hero_globals_base[];
-extern unsigned char help_stats_base[] NOT_SDA;
+
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int skill_point_18_kill_count MACRO_ADDR;
 extern unsigned char gSkillPoints[] NOT_SDA;

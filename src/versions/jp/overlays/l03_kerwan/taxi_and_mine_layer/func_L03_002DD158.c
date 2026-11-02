@@ -27,7 +27,7 @@ void robot_qwark_update(unsigned char *m) {
            (*(unsigned short *)(m + 0xB2) & 0x1F)) ^
           1) &
          1)) {
-        unsigned char *p5 = menu_item_enabled_115 + 1;
+        unsigned char *p5 = gSkillPoints;
         if (p5[5] == 0) {
             p5[5] = 1;
             PlayBankSound(1, 0, 0);

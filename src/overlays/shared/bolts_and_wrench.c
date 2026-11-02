@@ -20,9 +20,10 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+extern char gHeroPos[];
 extern char g_hero[];
 extern char pad0_pressed[];
-extern char pad_held[];
+extern int pad_held;
 
 /* Gadget vendor: a ring moby that glows and spins while the hero is near. */
 struct VendorVars {
@@ -670,7 +671,7 @@ extern short vendor_glow_pulse_phase;
 extern short vendor_ring_a_angle;
 extern short vendor_ring_b_angle;
 extern char hero_globals_base[];
-extern char pad_globals_base[];
+
 typedef struct {
     unsigned char p0[0x80];
     float f80, f84;
@@ -2073,7 +2074,7 @@ void wrench_update(Wrench48 *m) {
             m->parent = initial_player->moby;
             player_state = initial_player->state;
             if (player_state == 1) {
-                if (*(int *)pad_held & 0xA)
+                if (pad_held & 0xA)
                     EffectQueue_Add((int)m, 0xFF917267, 1.0f, 0.0f, 0, 0x25, -1, 90.0f, 4);
                 d->aim_hit = 0;
                 BuildSphericalOffset(work.v[0], 10.0f, wrench_camera48.yaw, -wrench_camera48.pitch);

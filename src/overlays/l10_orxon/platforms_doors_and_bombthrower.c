@@ -18,6 +18,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+extern Moby *g_hero_moby;
 extern char gSkillPoints[];
 extern Hero g_hero;
 extern unsigned char level_moby_killed[];

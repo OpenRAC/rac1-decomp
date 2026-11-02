@@ -18,6 +18,10 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+extern char gHeroPos[];
+extern char gSpecialItems[];
+extern int level_moby_killed[];
+extern char saved_mission_state[];
 /* Electric water countdown timer display. */
 struct ElectricWaterCountdownVars {
     u8 pad_00[0x12];
@@ -1081,7 +1085,6 @@ extern void set_moby_list_state(int list, int state);
 extern char quartu_collected_flags_base[];
 extern int g_current_level_index MACRO_ADDR;
 extern int quartu_moby_killed[];
-extern char help_stats_base[];
 
 typedef struct {
     short timer;
@@ -1114,7 +1117,7 @@ void underwater_ring_update(unsigned char *moby) {
     int near_parent = 0;
 
     if ((unsigned char)(((Moby *)moby)->state - 1) < 2) {
-        FastVecSub(delta, moby + 0x10, hero_globals_base + 0xE9D);
+        FastVecSub(delta, moby + 0x10, gHeroPos);
         if (FastVecLength(delta) < vars->distance) {
             matrix_from_basis_rows(matrix, moby + 0xC0);
             transform_vector(delta, delta, matrix);
@@ -1156,7 +1159,7 @@ void underwater_ring_update(unsigned char *moby) {
             save_byte -= -(short)save_id;
             if (save_byte[0x454] != 0 ||
                 ((((int)*(unsigned int *)(((((short)save_id >> 5) << 2) + (g_current_level_index << 8)) +
-                                          (unsigned char *)(help_stats_base + 0xAB75))) >>
+                                          (unsigned char *)(&level_moby_killed))) >>
                   (save_id & 31)) &
                  1) != 0) {
                 if (vars->enabled != 0) {
@@ -1230,7 +1233,7 @@ void underwater_ring_update(unsigned char *moby) {
             }
             save_id = ((Moby *)moby)->save_id;
             bits = (unsigned int *)(((((short)save_id >> 5) << 2) + (g_current_level_index << 8)) +
-                                    (unsigned char *)(help_stats_base + 0xAB75));
+                                    (unsigned char *)(&level_moby_killed));
             *bits |= 1U << (save_id & 31);
             save_id = ((Moby *)moby)->save_id;
             quartu_moby_killed[(short)save_id >> 5] |= 1U << (save_id & 31);
@@ -1305,7 +1308,7 @@ void codebot_update(unsigned char *moby) {
                 if (quartu_game_mode != 2) {
                     ShowBanner(0x426A, -1);
                     quartu_dialogue_message_duration = scale_ticks(0xB4);
-                    collection_flags = special_items_base + 0x13B;
+                    collection_flags = gSpecialItems;
                     collection_flags[2] = 1;
                     collection_flags[0x78] = 1;
                     m->state = 3;
@@ -1331,7 +1334,7 @@ extern void enter_hero_vehicle_mode(int, int, char *);
 extern void MusicRequestTrack(int, int);
 extern Moby *quartu_moby_array_m __asm__("D_L15_00160058") MACRO_ADDR;
 extern int quartu_help_message_selector MACRO_ADDR;
-extern char help_stats_base[] NOT_SDA;
+
 typedef int u128_2EE458 __attribute__((mode(TI)));
 
 // Update for the giant Clank pad moby: a small state machine that sets up its effect block and its timers.
@@ -1365,7 +1368,7 @@ void giant_clank_pad_update(char *m) {
             p0->collision = 0;
             p0->visible = 0;
             if (g_current_level_index != LEVEL_VELDIN2 ||
-                (b = (unsigned char *)help_stats_base + 0xAA35, x = b + ((unsigned char *)m)[0xB0], x[0x120] != 0xFF)) {
+                (b = saved_mission_state, x = b + ((unsigned char *)m)[0xB0], x[0x120] != 0xFF)) {
                 ns = 1;
             } else {
                 ns = 3;

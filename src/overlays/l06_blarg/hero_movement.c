@@ -24,7 +24,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
-extern char g_controller_state_no_direction[];
+extern int g_controller_state_no_direction;
 extern Hero g_hero;
 
 extern void HeroL06_TrySetMoveState(int, int);
@@ -2442,7 +2442,7 @@ void HeroL06_UpdateMovement(void) {
                         ((Hero *)&g_hero)->ground_speed = 0.0f;
                     }
                     if (((Hero *)&g_hero)->rail_land_frames != 0) {
-                        if (*(int *)g_controller_state_no_direction != 0) {
+                        if (g_controller_state_no_direction != 0) {
                             if (((Hero *)&g_hero)->on_flagged_ground_moby != 0) {
                                 ((Hero *)&g_hero)->ground_speed = 0.0f;
                             }

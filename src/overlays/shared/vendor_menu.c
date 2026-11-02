@@ -23,11 +23,12 @@
 #include "enums/moby_class.h"
 #include "structs/pad.h"
 #include "enums/hero_state.h"
+extern Hero g_hero;
 extern char cd_read_active[];
 extern struct S16_29ad08 cd_read_state;
 extern struct Hero g_hero;
 extern char pad0_pressed[];
-extern char queued_dialogue_id[];
+extern int queued_dialogue_id;
 extern s32 weapon_ammo_counts[];
 
 extern int vendor_menu[];
@@ -400,7 +401,7 @@ extern int snd_FlushSoundCommands(void);
 extern int skip_frame MACRO_ADDR;
 extern short cinematic_mode;
 extern unsigned char g_hero_field_20a5[] NOT_SDA;
-extern unsigned char help_stats_base[] NOT_SDA;
+
 extern char vendor_close_hero_local_offset;
 
 /* Leaves the vendor screen: releases two handles, resets state, repositions the hero and restores the game state.
@@ -678,7 +679,7 @@ void handle_vendor_auxiliary_moby_event(int a) {
                         *(int *)(b + 0x3C) = r0;
                         vendor_auxiliary_reaction_started = 1;
                         vendor_auxiliary_reaction_reset_flag = 0;
-                        *(int *)queued_dialogue_id = (r0 * 3 + 2) * 6 + *(int *)(b + 0x38) + 10000;
+                        queued_dialogue_id = (r0 * 3 + 2) * 6 + *(int *)(b + 0x38) + 10000;
                         m[0x20] = 0xB;
                     }
                 }
@@ -689,7 +690,7 @@ void handle_vendor_auxiliary_moby_event(int a) {
             *(int *)(b + 0x3C) = r1;
             vendor_auxiliary_reaction_started = a;
             vendor_auxiliary_reaction_reset_flag = 0;
-            *(int *)queued_dialogue_id = r1 * 0x12 + *(int *)(b + 0x38) + 10000;
+            queued_dialogue_id = r1 * 0x12 + *(int *)(b + 0x38) + 10000;
             if (m[0x53] != a)
                 MobyBlendAnimation(m, 1, 0, 10);
             m[0x20] = 10;
@@ -1236,8 +1237,7 @@ extern Vec4 vendor_saved_camera_basis[3];
 extern u8 vendor_profile_mark_after_mobys[];
 extern u8 vendor_profile_mark_after_hero[];
 extern u8 vendor_profile_mark_after_parts[];
-extern unsigned char menu_item_enabled_115[];
-extern unsigned char pad_globals_base[];
+
 extern short vendor_auxiliary_moby_local_offset;
 extern short vendor_item_display_local_offset;
 extern short vendor_spin_moby0_local_offset;

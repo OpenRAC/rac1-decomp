@@ -37,7 +37,6 @@ void initialize_trick_combo_hud(HudElemX *e) {
 extern float ApproachValue(float *p, float target, float maxstep);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
-extern char hero_globals_base[];
 extern Hero hero_002670A0 __asm__("D_0013F450");
 extern int trick_combo_spins MACRO_ADDR;
 extern int trick_combo_trick_flag3 MACRO_ADDR;
@@ -375,7 +374,6 @@ void initialize_hud_element_defaults(HudElem *e) {
     e->h = 0x80;
     e->unk4A = 0;
 }
-extern char hero_globals_base[];
 
 /* Fades the progress HUD in when the hero is in mode 0x16, else fades it out. */
 void set_progress_hud_fade_from_hero_mode(char *moby) {
@@ -389,7 +387,7 @@ void set_progress_hud_fade_from_hero_mode(char *moby) {
 extern int pal_mode MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern int g_screen_extent[];
-extern char special_items_base[];
+
 extern short rilgar_progress_frame_x;
 extern short rilgar_progress_frame_bottom;
 extern short rilgar_progress_frame_width;

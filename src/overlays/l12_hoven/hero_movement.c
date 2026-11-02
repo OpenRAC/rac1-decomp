@@ -26,9 +26,9 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
-extern char g_controller_state_no_direction[];
+extern int g_controller_state_no_direction;
 extern Hero g_hero;
-extern char pad_held[];
+extern int pad_held;
 
 /* Level 12 pickup/ability state update. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l12/ui_help_0022de30.c, FUN_L12_0022de30. */
 void update_hero_ground_material_flags(void) {
@@ -1637,7 +1637,7 @@ void Hero_UpdateStatePhysicsL12(void) {
 
                     a = FastAddRots(g_hero.motion.rot.f[2], 3.1415927f);
                     s = g_frame_time * 2.5f;
-                    if (*(int *)pad_held & 0xA) {
+                    if (pad_held & 0xA) {
                         s = g_frame_time * 3.0f;
                     }
                     g_hero.motion.velocity.f[0] += FastCos(a) * s;
@@ -2374,7 +2374,7 @@ void Hero_UpdateStatePhysicsL12(void) {
                             g_hero.ground_speed = 0.0f;
                         }
                         if (g_hero.rail_land_frames != 0) {
-                            if (*(int *)g_controller_state_no_direction != 0) {
+                            if (g_controller_state_no_direction != 0) {
                                 if (g_hero.on_flagged_ground_moby != 0) {
                                     g_hero.ground_speed = 0.0f;
                                 }

@@ -23,7 +23,7 @@
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
 extern struct Hero g_hero;
-extern char hero_control_mode[];
+extern int hero_control_mode;
 
 /* Extermibot: wakes from its dormant pose, wanders around its home, walks
    its path toward the target and strikes it; Wing is the same block
@@ -2881,7 +2881,7 @@ void SkidMcMarxUpdate(Moby *moby) {
             break;
         }
         case 1:
-            if (*(int *)hero_control_mode == 0x16) {
+            if (hero_control_mode == 0x16) {
                 moby->update_dist = 0xFF;
                 moby->flags &= ~0x41;
                 d->f258 = 0;

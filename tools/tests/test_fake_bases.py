@@ -47,6 +47,11 @@ class RewriteTest(unittest.TestCase):
         text = "void f(void) {\n    int a = *(int *)(hero_globals_base + 0x100);\n}\n"
         self.assertEqual(fb.rewrite(text, BASES, TARGETS, (), {"D_00001100"}), (text, 0))
 
+    def test_a_struct_keyword_is_not_a_disagreement(self):
+        text = ("extern Hero g_hero;\nextern struct Hero g_hero;\n"
+                "void f(void) {\n    Hero *p = (Hero *)(hero_globals_base + 0xE1D);\n}\n")
+        self.assertEqual(new(text)[1], 1)
+
     def test_declarations_that_disagree_block_it(self):
         text = ("extern int hero_control_mode;\nextern short hero_control_mode;\n"
                 "void f(void) {\n    int a = *(int *)(hero_globals_base + 0x100);\n}\n")
@@ -56,6 +61,49 @@ class RewriteTest(unittest.TestCase):
         text = ('extern int hero_control_mode __asm__("D_1");\n'
                 "void f(void) {\n    int a = *(int *)(hero_globals_base + 0x100);\n}\n")
         self.assertEqual(new(text)[1], 0)
+
+
+class BisectTest(unittest.TestCase):
+    def test_it_keeps_all_but_the_bad_one(self):
+        owners = {"a", "b", "c", "d", "e"}
+        self.assertEqual(fb.accepted_functions(owners, lambda chosen: "c" not in chosen), {"a", "b", "d", "e"})
+
+    def test_two_that_only_fail_together(self):
+        owners = {"a", "b", "c"}
+        out = fb.accepted_functions(owners, lambda chosen: not {"a", "c"} <= chosen)
+        self.assertNotEqual(out & {"a", "c"}, {"a", "c"})
+        self.assertIn("b", out)
+
+    def test_nothing_passes(self):
+        self.assertEqual(fb.accepted_functions({"a", "b"}, lambda chosen: False), set())
+
+
+class ScalarTest(unittest.TestCase):
+    def test_one_type_becomes_real(self):
+        text = "extern char mode[];\nint f(void) { return *(int *)mode; }\n"
+        self.assertEqual(fb.scalar_type(text, "mode"), "int")
+        self.assertEqual(fb.give_type(text, "mode", "int"), "extern int mode;\nint f(void) { return mode; }\n")
+
+    def test_a_small_type_stays_out_of_small_data(self):
+        self.assertIn("extern short mode NOT_SDA;", fb.give_type("extern char mode[];\n", "mode", "short"))
+
+    def test_mixed_uses_stay(self):
+        self.assertIsNone(fb.scalar_type("extern char mode[];\nint a = *(int *)mode;\nshort b = *(short *)mode;\n", "mode"))
+        self.assertIsNone(fb.scalar_type("extern char mode[];\nint a = *(int *)mode;\nchar *p = mode;\n", "mode"))
+
+    def test_another_declaration_stays(self):
+        self.assertIsNone(fb.scalar_type("extern int mode;\nint a = *(int *)mode;\n", "mode"))
+
+
+class PlaceTest(unittest.TestCase):
+    def test_declarations_go_after_the_top_includes(self):
+        text = '#include "a.h"\n#include "b.h"\n\nint x;\n#include "late.h"\n'
+        self.assertEqual(text[fb.after_first_includes(text):], '\nint x;\n#include "late.h"\n')
+
+    def test_fragment_uses_the_shared_view(self):
+        out = fb.rewrite("int f(void) { return *(int *)(hero_globals_base + 0x100); }\n", BASES, TARGETS,
+                         scope="extern char hero_control_mode[];\n", declare=False)
+        self.assertEqual(out[0], "int f(void) { return *(int *)hero_control_mode; }\n")
 
 
 if __name__ == "__main__":

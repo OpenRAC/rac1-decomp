@@ -29,8 +29,8 @@ void draw_ship_hud(char *moby) {
     float q;
 
     VU1_addGSregister(0x42, 0x8000000044L);
-    DrawTexturedQuad(0x170, (s = (char *)screen_globals_base + 0x4A6, *(int *)(s + 4)) - 0x90, 0x80, 0x80, 0, 0, 0x80,
-                     0x80, 0x70808080, GetEffectTex_l(0x3C));
+    DrawTexturedQuad(0x170, (s = g_screen_extent, *(int *)(s + 4)) - 0x90, 0x80, 0x80, 0, 0, 0x80, 0x80, 0x70808080,
+                     GetEffectTex_l(0x3C));
     DrawTexturedQuad(0x170, *(int *)(s + 4) - 0x90, 0x80, 0x80, 0, 0, 0x80, 0x80, 0x70808080, GetEffectTex_l(0x3D));
     VU1_addGSregister(0x42, 0x8000000048L);
     GetEffectTex(0x3E);
@@ -50,11 +50,11 @@ void draw_ship_hud(char *moby) {
     }
     y = 0x40;
     x = 0x18;
-    base = (unsigned char *)hero_globals_base + 0xE1D;
+    base = g_hero;
     i = 0;
     if (base[0x15F7] != 0) {
         do {
-            g = (unsigned char *)hero_globals_base + 0xE1D;
+            g = g_hero;
             if (i < g[0x15F6]) {
                 append_scaled_screen_triangle_strip(x, y, 0.5f, ship_hud_missile_pip, 0x19, 0xFFFFF3, 0x50008F00);
             } else {
@@ -100,9 +100,9 @@ void draw_ship_hud(char *moby) {
         }
     }
     {
-        unsigned char *b = (unsigned char *)hero_globals_base + 0xE1D;
+        unsigned char *b = g_hero;
         if (*(float *)(b + 0x15FC) < *(float *)(b + 0x1600) * 0.25f) {
-            int cnt = ((HelpTab *)(help_stats_base + 0x34D))->r[0x58].count;
+            int cnt = ((HelpTab *)help_records)->r[0x58].count;
             if (cnt == 0) {
                 Help_Request(0x2AFF, 0x58);
             } else if (cnt < 2) {
@@ -112,29 +112,28 @@ void draw_ship_hud(char *moby) {
                 }
             }
         } else if (*(int *)(d + 0x11C) != 0) {
-            if (((HelpTab *)(help_stats_base + 0x34D))->r[0x58].count < 0xFFFF) {
-                ((HelpTab *)(help_stats_base + 0x34D))->r[0x58].count++;
+            if (((HelpTab *)help_records)->r[0x58].count < 0xFFFF) {
+                ((HelpTab *)help_records)->r[0x58].count++;
             }
             per = 600;
-            if (scale_ticks(gameplay_event_frame_count) / per > ((HelpTab *)(help_stats_base + 0x34D))->r[0x58].best) {
-                ((HelpTab *)(help_stats_base + 0x34D))->r[0x58].best = scale_ticks(gameplay_event_frame_count) / 600;
+            if (scale_ticks(gameplay_event_frame_count) / per > ((HelpTab *)help_records)->r[0x58].best) {
+                ((HelpTab *)help_records)->r[0x58].best = scale_ticks(gameplay_event_frame_count) / 600;
             }
-            ((HelpTab *)(help_stats_base + 0x34D))->r[0x58].flags =
-                ((HelpTab *)(help_stats_base + 0x34D))->r[0x58].flags | (1 << g_current_level_index) | 0x80000000;
+            ((HelpTab *)help_records)->r[0x58].flags =
+                ((HelpTab *)help_records)->r[0x58].flags | (1 << g_current_level_index) | 0x80000000;
             *(int *)(d + 0x11C) = 0;
         }
     }
     fast_dec_timer_i(d + 0x120);
     {
-        unsigned char *g2 = (unsigned char *)hero_globals_base + 0xE1D;
-        if ((g2[0x15F6] < 5 && ((HelpTab *)(help_stats_base + 0x34D))->r[0x57].count == 0) ||
-            (g2[0x15F6] == 0 && ((HelpTab *)(help_stats_base + 0x34D))->r[0x57].count < 2 &&
-             *(int *)(d + 0x120) == 0)) {
+        unsigned char *g2 = g_hero;
+        if ((g2[0x15F6] < 5 && ((HelpTab *)help_records)->r[0x57].count == 0) ||
+            (g2[0x15F6] == 0 && ((HelpTab *)help_records)->r[0x57].count < 2 && *(int *)(d + 0x120) == 0)) {
             Help_Request(0x2AFE, 0x57);
             *(int *)(d + 0x120) = scale_ticks(0x4B0);
         }
     }
-    if (((HelpTab *)(help_stats_base + 0x34D))->r[0x56].count == 0) {
+    if (((HelpTab *)help_records)->r[0x56].count == 0) {
         if ((*(int *)(d + 0x128))++ > scale_ticks(0xE10)) {
             Help_Request(0x2AFD, 0x56);
         }
@@ -143,7 +142,7 @@ void draw_ship_hud(char *moby) {
         FontPrintCenterLarge_c(0x100, 0xC8, 0x80005080L, msg_string_id(0x523E), 0x11);
     }
     {
-        unsigned char *h = (unsigned char *)hero_globals_base + 0xE1D;
+        unsigned char *h = g_hero;
         f = *(float *)(h + 0x15FC) - *(float *)(d + 0xF0);
         f *= 0.2f;
         q = FastAbsF(f);

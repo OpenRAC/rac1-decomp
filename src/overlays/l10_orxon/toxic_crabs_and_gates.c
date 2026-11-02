@@ -23,7 +23,7 @@
 extern char gSpecialItems[];
 extern struct Hero g_hero;
 extern int level_moby_killed[][64];
-extern char pad0_pressed[];
+extern int pad0_pressed;
 
 /* Configurable spark emitter: one burst source at the moby, or one per point of a path. */
 struct ParticleEmitterVars {
@@ -1746,7 +1746,7 @@ void nanotech_upgrade_vendor_update(char *m) {
                             if (alternate_item_available[4] == 0) {
                                 if (gBolts > 4000) {
                                     int accepted = try_set_help_message(1, 0x271E) != 0;
-                                    if ((*(int *)pad0_pressed & 0x10) && accepted) {
+                                    if ((pad0_pressed & 0x10) && accepted) {
                                         d = (u8 *)1;
                                         alternate_item_available[4] = (int)d;
                                         g->health.hp = 5;
@@ -1762,7 +1762,7 @@ void nanotech_upgrade_vendor_update(char *m) {
                                 if (*(int *)(d + 4) == 0) {
                                     if (gBolts > 30000) {
                                         int accepted = try_set_help_message(1, 0x271F) != 0;
-                                        if ((*(int *)pad0_pressed & 0x10) && accepted) {
+                                        if ((pad0_pressed & 0x10) && accepted) {
                                             d = (u8 *)1;
                                             alternate_item_available[5] = (int)d;
                                             g->health.hp = 8;

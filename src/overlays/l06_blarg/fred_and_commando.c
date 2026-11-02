@@ -25,9 +25,10 @@
 #include "overlays/shared/sound_playback.h"
 #include "structs/small_records.h"
 #include "enums/hero_state.h"
+extern Hero g_hero;
 extern u8 gSpecialItems[];
-extern char pad0_pressed[];
-extern char queued_dialogue_id[];
+extern int pad0_pressed;
+extern int queued_dialogue_id;
 extern char voice_pool[];
 
 /* Red button sequence controller: switches linked mobys on and off through the scripted cut scene. */
@@ -372,8 +373,7 @@ void update_clip_volume_moby_activation_trigger(char *m) {
     int *d = ((int *)((Moby *)m)->pvars);
     switch (((unsigned char *)m)[0x20]) {
         case 0:
-            if (d[1] >= 0 &&
-                is_point_inside_clip_volume(&((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos, d[1])) {
+            if (d[1] >= 0 && is_point_inside_clip_volume(&g_hero.motion.pos, d[1])) {
                 m[0x20] = 1;
                 if (((unsigned char *)m)[0x53] != 1) {
                     MobyBlendAnimation(m, 1, 0, 5);
@@ -848,7 +848,7 @@ void update_moby_bobbing_and_motion(char *moby) {
             moby[0x20] = 1;
             break;
         case 1:
-            if (((struct Hero *)(hero_globals_base + 0xE1D))->state.current == 0x72) {
+            if (g_hero.state.current == 0x72) {
                 ((Moby *)moby)->pos.z = data->vel.w;
             } else {
                 float f = IntToFloat(blarg_frame_count % 600) / 600.0f;
@@ -861,7 +861,7 @@ void update_moby_bobbing_and_motion(char *moby) {
                 FastVecScale(&data->vel, &data->vel, 0.985f);
             FastVecAdd(moby + 0x10, moby + 0x10, &data->vel);
             FastVecAdd(moby + 0x40, moby + 0x40, &data->spin);
-            if (((struct Hero *)(hero_globals_base + 0xE1D))->state.current != 0x72)
+            if (g_hero.state.current != 0x72)
                 DeleteMoby(moby);
             break;
     }
@@ -1444,7 +1444,7 @@ void queue_moby_dialogue_line(char *moby, int mode) {
             break;
     }
     if (id != -1)
-        *(int *)queued_dialogue_id = id + 0x4E20;
+        queued_dialogue_id = id + 0x4E20;
 }
 typedef int u128_3039B8 __attribute__((mode(TI)));
 typedef struct {
@@ -1541,7 +1541,7 @@ void ShuttleUpdate(Moby *moby) {
     moby->scale = ((Cls *)moby->pclass)->f24 * shuttle_scale;
     if (class_076a_moby_spawn_requested_gp != 0) {
         class_076a_moby_spawn_requested_gp = 0;
-        *(u128_3039B8 *)b = *(u128_3039B8 *)&((struct Hero *)(hero_globals_base + 0xE1D))->motion.body_center.i[0];
+        *(u128_3039B8 *)b = *(u128_3039B8 *)&g_hero.motion.body_center.i[0];
         spawn_timed_projected_sprite_effect((char *)b, scale_ticks(class_076a_moby_rate_input_frames_gp),
                                             blarg_explosion_flash_color_a, blarg_explosion_flash_color_b);
     }
@@ -1555,8 +1555,7 @@ void ShuttleUpdate(Moby *moby) {
             }
             moby->update_dist = 0xFF;
             moby->draw_dist = 0x80;
-            *(long *)&moby->spawn_frame =
-                *(long *)&(*(Moby **)&((struct Hero *)(hero_globals_base + 0xE1D))->moby)->spawn_frame;
+            *(long *)&moby->spawn_frame = *(long *)&(*(Moby **)&g_hero.moby)->spawn_frame;
             moby->state = 1;
             if (moby->prev_seq != 2) {
                 MobyBlendAnimation(moby, 2, 0, 0);
@@ -1572,12 +1571,11 @@ void ShuttleUpdate(Moby *moby) {
                     busy = 1;
                 }
             }
-            if ((busy == 0 && ((Hero *)(hero_globals_base + 0xE1D))->ground_moby == moby &&
-                 ((Hero *)(hero_globals_base + 0xE1D))->air_frames.s == 0) ||
+            if ((busy == 0 && g_hero.ground_moby == moby && g_hero.air_frames.s == 0) ||
                 shuttle_forced_departure != 0) {
                 update_shuttle_route_selection_and_prompt((char *)moby);
                 now = shuttle_forced_departure;
-                if (now != 0 || ((*(int *)pad0_pressed & 0x10) && blarg_shown_help_message == 10 && d->f9C >= 0)) {
+                if (now != 0 || ((pad0_pressed & 0x10) && blarg_shown_help_message == 10 && d->f9C >= 0)) {
                     d->go = 1;
                     blarg_shuttle_at_second_stop = 0;
                     if (now != 0) {
@@ -1620,26 +1618,21 @@ void ShuttleUpdate(Moby *moby) {
                     }
                 }
             } else if (d->go == 0) {
-                if (d->sel == 0 && is_point_inside_clip_volume(
-                                       &((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos, d->zone[0]) != 0) {
+                if (d->sel == 0 && is_point_inside_clip_volume(&g_hero.motion.pos, d->zone[0]) != 0) {
                     int base = (int)blarg_scene_points;
                     int ofs = d->cam[2] << 7;
                     qcopy(((float *)&moby->pos), (char *)(ofs + base + 0x30));
                     qcopy(((float *)&moby->rot), (char *)(ofs + base + 0x70));
                     d->sel = 2;
                     blarg_shuttle_at_second_stop = 0;
-                } else if (d->sel == 2 &&
-                           is_point_inside_clip_volume(&((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos,
-                                                       d->zone[1]) != 0) {
+                } else if (d->sel == 2 && is_point_inside_clip_volume(&g_hero.motion.pos, d->zone[1]) != 0) {
                     int ofs = d->cam[0] << 7;
                     int base = (int)blarg_scene_points;
                     qcopy(((float *)&moby->pos), (char *)(ofs + base + 0x30));
                     qcopy(((float *)&moby->rot), (char *)(ofs + base + 0x70));
                     d->sel = 0;
                     blarg_shuttle_at_second_stop = 0;
-                } else if (d->sel != 1 &&
-                           is_point_inside_clip_volume(&((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos,
-                                                       d->zone[2]) != 0) {
+                } else if (d->sel != 1 && is_point_inside_clip_volume(&g_hero.motion.pos, d->zone[2]) != 0) {
                     int base = (int)blarg_scene_points;
                     int ofs = d->cam[1] << 7;
                     qcopy(((float *)&moby->pos), (char *)(ofs + base + 0x30));
@@ -1715,8 +1708,7 @@ void ShuttleUpdate(Moby *moby) {
             }
             break;
         case 6:
-            if (vec_distance_xy(&((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos,
-                                level_mobys_q + (d->f10C << 8) + 0x10) < 3.5f) {
+            if (vec_distance_xy(&g_hero.motion.pos, level_mobys_q + (d->f10C << 8) + 0x10) < 3.5f) {
                 char *o = level_mobys_q + (d->f10C << 8);
                 qcopy(b, o + 0x10);
                 qcopy(rot, o + 0x40);
@@ -1732,7 +1724,7 @@ void ShuttleUpdate(Moby *moby) {
             }
             break;
         case 2:
-            if (is_point_inside_clip_volume(&((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos, d->fF0) != 0) {
+            if (is_point_inside_clip_volume(&g_hero.motion.pos, d->fF0) != 0) {
                 d->side = 2;
                 d->fC4 = shuttle_second_stop_ride_scale_multiplier_gp;
                 d->fC8 = shuttle_scale;
@@ -2313,7 +2305,7 @@ void red_button_update(Moby *m) {
             if (vec_distance_xy_r2(&((struct Hero *)(hero_globals_base_r2 + 0xE1D))->motion.pos,
                                    &*(V_3054D8 *)&m->pos) < 3.7f) {
                 nz = try_set_help_message_r(4, 0x1783) != 0;
-                if ((*(int *)pad0_pressed & 0x10) && nz) {
+                if ((pad0_pressed & 0x10) && nz) {
                     Moby_PlaySound_r(2, 0, m);
                     remove_help_message_for_selector_r(4);
                     m->state = 4;

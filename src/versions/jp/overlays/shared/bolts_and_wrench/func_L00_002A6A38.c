@@ -39,7 +39,7 @@ void vendor_update(char *moby) {
             if (*(float *)(p + 0x90) <= 0.0f)
                 *(unsigned short *)(*(char **)(p + 0xC) + 0x34) |= 1;
             if ((level_frame_counter & 7) == 0) {
-                char *g = hero_globals_base + 0xE9D;
+                char *g = gHeroPos;
                 if (vec_distance_xy(moby + 0x10, g) <= 16.0f) {
                     if (FastAbsF(*(float *)(moby + 0x18) - *(float *)(g + 8)) <= 8.0f) {
                         *(unsigned char *)(moby + 0x20) = 2;
@@ -69,7 +69,7 @@ void vendor_update(char *moby) {
             int r;
             if (*(float *)(p + 0x90) < 1.0f)
                 *(float *)(p + 0x90) += 0.1f;
-            g = hero_globals_base + 0xE9D;
+            g = gHeroPos;
             dist = vec_distance_xy(moby + 0x10, g);
             dz = FastAbsF(*(float *)(moby + 0x18) - *(float *)(g + 8));
             if ((level_frame_counter & 7) == 0) {
@@ -118,7 +118,7 @@ void vendor_update(char *moby) {
             r = 0;
             if (b != 0)
                 r = try_set_help_message(1, 0x543A) != 0;
-            if (*(int *)(pad_globals_base + 0x2604) & 0x10) {
+            if (*(int *)pad0_pressed & 0x10) {
                 if (a != 0 && r != 0) {
                     open_vendor_menu(moby);
                     *(unsigned char *)(moby + 0x20) = 3;

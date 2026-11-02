@@ -7,7 +7,7 @@
 #include "game/ui/map.h"
 #include "data/shared_levels.h"
 extern int memory_card_state[];
-extern char memory_card_status[];
+extern int memory_card_status;
 
 extern int hero_control_mode;
 extern unsigned char menu_item_enabled_2[];
@@ -330,14 +330,13 @@ void CardMenu_AdvanceOnStatus(void) {
 }
 INCLUDE_ASM("asm/overlays", func_L00_0024B8F0);
 INCLUDE_ASM("asm/overlays", func_L00_0024B908);
-extern char special_items_base[];
 
 // Sets the menu memory card state.
 void CardMenu_AdvanceOnCardStatus(void) {
     /* The card status word at 0x13D3AC, reached the way the assembly names it (special_items_base + 0x57). Its
        neighbours in this file read the same word as memory_card_state[7]; that spelling does not give retail's
        bytes here. Accepted as a last resort. */
-    if (*(int *)memory_card_status != -2) {
+    if (memory_card_status != -2) {
         mode_freeze_state = 3;
         return;
     }
@@ -350,7 +349,7 @@ extern int memcard_menu_alt_route MACRO_ADDR;
 /* Advances the card menu state from its ready flags. */
 void card_menu_advance_on_ready_flags(void) {
     int flags;
-    if (*(int *)memory_card_status != -2) {
+    if (memory_card_status != -2) {
         mode_freeze_state = 3;
         return;
     }

@@ -19,13 +19,18 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "enums/moby_class.h"
+extern char gHeroPos[];
+extern char gSkillPoints[];
+extern Hero g_hero;
+extern char last_weapon_id[];
+extern char usage_stats[];
 
 extern float ApproachValue(float *p, float target, float maxstep);
 extern unsigned char hero_globals_base[] NOT_SDA;
 
 /* Steps two floats of arg toward a target and clamps them to [-1, 1]. */
 void smooth_and_clamp_value_pair(float *out, float *p, float step) {
-    struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    struct Hero *g = &g_hero;
     float v[2];
     v[0] = -g->stick_x;
     v[1] = g->stick_y;
@@ -46,7 +51,7 @@ void smooth_and_clamp_value_pair(float *out, float *p, float step) {
 int hero_anim_tilt_lookup(int id, float *out) {
     struct Hero *g;
     *out = 0.0f;
-    g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    g = &g_hero;
     if (g->state.control_mode == 0x16 && g->race_ammo != 0 &&
         (unsigned int)(*(unsigned char *)(*(char **)&g->moby + 0x53) - 0x69) < 4)
         return 1;
@@ -57,7 +62,7 @@ int hero_anim_tilt_lookup(int id, float *out) {
         case 0x1C:
         case 0x1D:
         case 0x1F: {
-            struct Hero *h = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+            struct Hero *h = &g_hero;
             if (h->anim_frame > 25.0f)
                 *out = -1.3089969158172607f;
             return 1;
@@ -133,14 +138,14 @@ void apply_hero_item_slot_selection(int i) {
 
     if (i == 0) {
         int v;
-        struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *g = &g_hero;
         v = g->items[0].item_id;
         if (v != 8 && v != 0x17 && v != 9 && g->items[0].switch_lock == 2) {
             g->items[0].switch_lock = 0;
         }
     }
     if (i == 0) {
-        Sel *g = (Sel *)(hero_globals_base + 0xE1D);
+        Sel *g = (Sel *)(&g_hero);
         if (g->f20A7 != 0 && *(int *)((char *)g + 0x10B8) != 8) {
             if (g->f208C != 0x16 || *(unsigned char *)((char *)g + 0x8CE) == 0) {
                 g->f20A6 = 1;
@@ -148,13 +153,13 @@ void apply_hero_item_slot_selection(int i) {
         }
     }
     {
-        Sel *g = (Sel *)(hero_globals_base + 0xE1D);
+        Sel *g = (Sel *)(&g_hero);
         if (*(int *)((char *)g + 0x10B8) == 0x24 && g->f208C != 0x16) {
             g->f20A6 = 1;
         }
     }
     if (i == 0) {
-        Sel *g = (Sel *)(hero_globals_base + 0xE1D);
+        Sel *g = (Sel *)(&g_hero);
         if (g->f20A7 != 0 && *(int *)((char *)g + 0x10B8) == 8) {
             if (g->a[0] == 0x1F) {
                 g->a[0] = 0;
@@ -165,7 +170,7 @@ void apply_hero_item_slot_selection(int i) {
         }
     }
     {
-        Sel *g = (Sel *)(hero_globals_base + 0xE1D);
+        Sel *g = (Sel *)(&g_hero);
         if (g->f20AC != 0 && i == 0) {
             if (g->f20A6 == 0 || *(int *)((char *)g + 0x10B8) == 8) {
                 g->f20A6 = 0;
@@ -176,16 +181,16 @@ void apply_hero_item_slot_selection(int i) {
     changed = 0;
     {
         char *pad = pad_globals_base + 0x2460;
-        if ((*(int *)(pad + 0x1A4) & 0x80) || ((Sel *)(hero_globals_base + 0xE1D))->f20A6 != 0) {
+        if ((*(int *)(pad + 0x1A4) & 0x80) || ((Sel *)(&g_hero))->f20A6 != 0) {
             if (i == 0) {
                 int v;
-                Sel *g = (Sel *)(hero_globals_base + 0xE1D);
+                Sel *g = (Sel *)(&g_hero);
                 v = *(int *)((char *)g + 0x10B8);
                 if (v != 8) {
                     if (g->f20A6 != 0 && v != 0 && v != 0x1F) {
                         g->c[0] = v;
                     }
-                    ((Sel *)(hero_globals_base + 0xE1D))->b[i] = 8;
+                    ((Sel *)(&g_hero))->b[i] = 8;
                     changed = 1;
                 }
             }
@@ -194,10 +199,10 @@ void apply_hero_item_slot_selection(int i) {
     if (i == 0) {
         char *pad = pad_globals_base + 0x2460;
         if (*(int *)(pad + 0x1A4) & 0x20) {
-            Sel *g = (Sel *)(hero_globals_base + 0xE1D);
+            Sel *g = (Sel *)(&g_hero);
             if (g->f20A7 == 0) {
-                if (g->f10B8 != *(int *)(help_stats_base + 0x45) && *(int *)(help_stats_base + 0x45) != 0) {
-                    g->b[0] = *(int *)(help_stats_base + 0x45);
+                if (g->f10B8 != *(int *)last_weapon_id && *(int *)last_weapon_id != 0) {
+                    g->b[0] = *(int *)last_weapon_id;
                     changed = 1;
                 }
             }
@@ -205,16 +210,16 @@ void apply_hero_item_slot_selection(int i) {
     }
     if (i == 1) {
         Sel *g;
-        if (hero_is_in_special_state() || ((Sel *)(hero_globals_base + 0xE1D))->f2084 == 0x12) {
+        if (hero_is_in_special_state() || ((Sel *)(&g_hero))->f2084 == 0x12) {
             int v;
-            g = (Sel *)(hero_globals_base + 0xE1D);
+            g = (Sel *)(&g_hero);
             v = *(int *)((char *)g + 0x1108);
             if (v != 0) {
                 g->c[1] = v;
                 g->a[1] = 0x26;
             }
         }
-        g = (Sel *)(hero_globals_base + 0xE1D);
+        g = (Sel *)(&g_hero);
         if (g->f208C == 0xF && (&gHaveMorphORay)[8] != 0) {
             if (*(int *)(help_stats_base + 0x49) != 0x1D || *(int *)((char *)g + i * 0x50 + 0x10B8) == 0) {
                 int v;
@@ -227,7 +232,7 @@ void apply_hero_item_slot_selection(int i) {
                 }
             }
         }
-        g = (Sel *)(hero_globals_base + 0xE1D);
+        g = (Sel *)(&g_hero);
         if (*(unsigned char *)((char *)g + 0x12E7) != 0 && (&gHaveMorphORay)[7] != 0) {
             if (*(int *)(help_stats_base + 0x49) != 0x1C || *(int *)((char *)g + i * 0x50 + 0x10B8) == 0) {
                 int v;
@@ -243,14 +248,14 @@ void apply_hero_item_slot_selection(int i) {
     }
     flag6 = 0;
     if (i == 2) {
-        Sel *g = (Sel *)(hero_globals_base + 0xE1D);
+        Sel *g = (Sel *)(&g_hero);
         Sel *h;
         Sel *h2;
         if (g->f208C == 0x11 || g->f2084 == 0x76 || g->f2084 == 0x6A || g->f2084 == 0x82 ||
             *(unsigned char *)((char *)g + 0x22CB) != 0) {
-            if (((int *)(help_stats_base + 0x45))[i] != 6 ||
-                (h2 = (Sel *)(hero_globals_base + 0xE1D), *(int *)((char *)h2 + i * 0x50 + 0x10B8) == 0)) {
-                h = (Sel *)(hero_globals_base + 0xE1D);
+            if (((int *)last_weapon_id)[i] != 6 ||
+                (h2 = (Sel *)(&g_hero), *(int *)((char *)h2 + i * 0x50 + 0x10B8) == 0)) {
+                h = (Sel *)(&g_hero);
                 if (*(int *)((char *)h + i * 0x50 + 0x10B8) != 6 && h->b[i] != 6 && gHaveHeliPack[4] != 0) {
                     int v;
                     h->a[i] = 6;
@@ -270,10 +275,10 @@ void apply_hero_item_slot_selection(int i) {
     flag4 = 0;
     if (i == 3) {
         Sel *g;
-        if (hero_is_in_special_state() || ((Sel *)(hero_globals_base + 0xE1D))->f2084 == 0x12) {
+        if (hero_is_in_special_state() || ((Sel *)(&g_hero))->f2084 == 0x12) {
             if (*(int *)(help_stats_base + 0x51) != 4) {
                 int v;
-                g = (Sel *)(hero_globals_base + 0xE1D);
+                g = (Sel *)(&g_hero);
                 v = *(int *)((char *)g + 0x11A8);
                 if (v != 4 && gHaveHeliPack[2] != 0) {
                     g->c[3] = v;
@@ -281,16 +286,15 @@ void apply_hero_item_slot_selection(int i) {
                     g->a[3] = 4;
                 }
             }
-        } else if (((Sel *)(hero_globals_base + 0xE1D))->f11A8 == 4 &&
-                   ((Sel *)(hero_globals_base + 0xE1D))->c[3] != 0) {
-            ((Sel *)(hero_globals_base + 0xE1D))->d[3] = 1;
+        } else if (((Sel *)(&g_hero))->f11A8 == 4 && ((Sel *)(&g_hero))->c[3] != 0) {
+            ((Sel *)(&g_hero))->d[3] = 1;
         }
-        if (((Sel *)(hero_globals_base + 0xE1D))->f2084 == 8 && ((int *)(help_stats_base + 0x45))[i] == 4) {
-            ((Sel *)(hero_globals_base + 0xE1D))->a[i] = 2;
+        if (((Sel *)(&g_hero))->f2084 == 8 && ((int *)last_weapon_id)[i] == 4) {
+            ((Sel *)(&g_hero))->a[i] = 2;
         }
     }
     {
-        Sel *g = (Sel *)(hero_globals_base + 0xE1D);
+        Sel *g = (Sel *)(&g_hero);
         int *qb = g->d;
         int *q = qb + i;
         if (*q != 0) {
@@ -306,7 +310,7 @@ void apply_hero_item_slot_selection(int i) {
                     w = 0;
                 }
                 *r = 0;
-                ((int *)(help_stats_base + 0x45))[i] = w;
+                ((int *)last_weapon_id)[i] = w;
                 g->b[i] = w;
                 if (i == 0) {
                     rilgar_item_defs[g->b[0]].f20 = 0x20;
@@ -316,7 +320,7 @@ void apply_hero_item_slot_selection(int i) {
         }
     }
     {
-        Sel *g = (Sel *)(hero_globals_base + 0xE1D);
+        Sel *g = (Sel *)(&g_hero);
         int *s;
         int *sb;
         if (*(unsigned char *)((char *)g + 0x1FF5) != 0) {
@@ -335,16 +339,16 @@ void apply_hero_item_slot_selection(int i) {
                 }
                 changed = 1;
                 g->b[i] = *s;
-                v = ((int *)(help_stats_base + 0x45))[i];
-                ((int *)(help_stats_base + 0x45))[i] = *s;
+                v = ((int *)last_weapon_id)[i];
+                ((int *)last_weapon_id)[i] = *s;
                 g_game_language[1] = v;
             }
-            ((Sel *)(hero_globals_base + 0xE1D))->a[i] = 0;
+            ((Sel *)(&g_hero))->a[i] = 0;
         }
     }
     {
         int v;
-        Sel *g = (Sel *)(hero_globals_base + 0xE1D);
+        Sel *g = (Sel *)(&g_hero);
         int *ab = g->a;
         int *a = ab + i;
         v = *a;
@@ -354,21 +358,21 @@ void apply_hero_item_slot_selection(int i) {
             if (v != *b) {
                 if (v == 0x26) {
                     *b = 0;
-                    ((int *)(help_stats_base + 0x45))[i] = 0;
+                    ((int *)last_weapon_id)[i] = 0;
                 } else {
                     Sel *h;
                     int u;
                     if (i == 0 && g->a[0] != 0x24 && *(int *)((char *)g + 0x10B8) != 8) {
-                        g_game_language[1] = *(int *)(help_stats_base + 0x45);
+                        g_game_language[1] = *(int *)last_weapon_id;
                     }
-                    h = (Sel *)(hero_globals_base + 0xE1D);
+                    h = (Sel *)(&g_hero);
                     u = h->a[i];
                     h->b[i] = u;
                     if (u != 0x24 && (flag6 == 0 || u != 6) && (flag4 == 0 || u != 4)) {
-                        ((int *)(help_stats_base + 0x45))[i] = u;
+                        ((int *)last_weapon_id)[i] = u;
                     }
                     if (i == 0) {
-                        Sel *k = (Sel *)(hero_globals_base + 0xE1D);
+                        Sel *k = (Sel *)(&g_hero);
                         rilgar_item_defs[k->b[0]].f20 = 0x20;
                     }
                 }
@@ -379,7 +383,7 @@ void apply_hero_item_slot_selection(int i) {
         }
     }
     {
-        char *s = (char *)hero_globals_base + 0xE1D + i * 0x50;
+        char *s = (char *)&g_hero + i * 0x50;
         st = *(unsigned char *)(s + 0x10AC);
         if (st == 2) {
             changed = 0;
@@ -388,35 +392,35 @@ void apply_hero_item_slot_selection(int i) {
             *(short *)(s + 0x10A8) = *(unsigned char *)(s + 0x10AD);
         }
     }
-    if (FastDecTimer(hero_globals_base + 0xE1D + 0x10A8 + i * 0x50) == 0) {
+    if (FastDecTimer((char *)&g_hero + 0x10A8 + i * 0x50) == 0) {
         changed = 0;
     }
     if (changed) {
-        Sel *g = (Sel *)(hero_globals_base + 0xE1D);
+        Sel *g = (Sel *)(&g_hero);
         *(int *)((char *)g + i * 0x50 + 0x10B0) = 3;
         clear_hero_idle_rotation_targets();
         *(int *)((char *)g + 0x1010) = rand_range(scale_ticks(0x32), scale_ticks(0x5A));
-        set_hero_item_switch_timer_for_item(*((int *)(hero_globals_base + 0xE1D + 0x20D4) + i));
-        set_hero_condition_animation_timer_for_item(*((int *)(hero_globals_base + 0xE1D + 0x20D4) + i));
+        set_hero_item_switch_timer_for_item(*((int *)((char *)&g_hero + 0x20D4) + i));
+        set_hero_condition_animation_timer_for_item(*((int *)((char *)&g_hero + 0x20D4) + i));
         if (g->f20A8 != 0) {
             cancel_hero_item_animation();
         }
         if (i == 0) {
-            if (*(int *)(hero_globals_base + 0xE1D + 0x20D4) == 8) {
+            if (*(int *)((char *)&g_hero + 0x20D4) == 8) {
                 hero_slot0_item_8_selected = 1;
             } else {
                 hero_slot0_item_8_selected = 0;
             }
         }
         if (i == 3) {
-            if (((Sel *)(hero_globals_base + 0xE1D))->f11A8 == 3) {
+            if (((Sel *)(&g_hero))->f11A8 == 3) {
                 hero_slot3_mode_3_selected = 1;
             } else {
                 hero_slot3_mode_3_selected = 0;
             }
         }
         {
-            Sel *k = (Sel *)(hero_globals_base + 0xE1D);
+            Sel *k = (Sel *)(&g_hero);
             char *s = (char *)k + i * 0x50;
             *(unsigned char *)(s + 0x10AA) = 0;
             k->a[i] = 0;
@@ -435,7 +439,7 @@ void apply_hero_item_slot_selection(int i) {
             }
         }
         {
-            char *e = (char *)hero_globals_base + 0xE1D;
+            char *e = (char *)&g_hero;
             *(int *)(e + i * 0x50 + 0x10B4) = 3;
         }
     }
@@ -551,7 +555,7 @@ extern void Hero_TryMoveStateL05(int, int);
 
 /* Decides whether the hero's current motion warrants the swing effect, running a probe when the conditions line up. */
 int try_apply_hero_water_and_ground_transitions(void) {
-    struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    struct Hero *g = &g_hero;
     int ret;
     int k = g->state.control_mode;
     int s;
@@ -587,7 +591,7 @@ int try_apply_hero_water_and_ground_transitions(void) {
                 }
             }
             {
-                struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+                struct Hero *q = &g_hero;
                 if (q->motion.pos.f[2] < q->water_surface_z - 0.8f) {
                     if (q->state.control_mode != 4 || q->past_jump_apex != 0)
                         ret = 1;
@@ -596,7 +600,7 @@ int try_apply_hero_water_and_ground_transitions(void) {
         }
     }
     {
-        struct Hero *h = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *h = &g_hero;
         float lim2 = 0.27f;
         if (lim2 < FastAbsF(h->motion.velocity.f[2]) + 0.07f)
             lim2 = FastAbsF(h->motion.velocity.f[2]) + 0.07f;
@@ -608,7 +612,7 @@ int try_apply_hero_water_and_ground_transitions(void) {
         }
     }
     {
-        struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *p = &g_hero;
         int kk = p->state.control_mode;
         int t;
         float f12v;
@@ -1056,7 +1060,7 @@ int process_hero_primary_item_input(void) {
                     i++;
                 }
             }
-            stats = (Stats *)(help_stats_base + 0x22D);
+            stats = (Stats *)usage_stats;
             m->command = scale_ticks(7);
             g_hero_h2523C8.shot_cooldown = scale_ticks(0x32);
             if (stats->hD8 < 0xFFFF) {
@@ -1377,7 +1381,7 @@ extern void clear_u64_value(void *);
 
 /* Finds the nearest path node ahead of the hero (behind the facing test) and returns its position and heading. */
 void compute_hero_hoverboard_respawn_transform(float *out, float *rot) {
-    struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    struct Hero *g = &g_hero;
     char *m = *(char **)&g->hoverboard_moby;
     char *path;
     float distance;
@@ -1393,7 +1397,7 @@ void compute_hero_hoverboard_respawn_transform(float *out, float *rot) {
     distance = 9999999.0f;
     best = 0;
     for (i = 0; i < *(int *)path; i += 2) {
-        struct Hero *h = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *h = &g_hero;
         char *p = path + i * 16;
         float limit = 4.0f;
         float angle = fast_atan2(*(float *)(p + 0x10) - h->motion.pos.f[0], *(float *)(p + 0x14) - h->motion.pos.f[1]);
@@ -1417,7 +1421,7 @@ void compute_hero_hoverboard_respawn_transform(float *out, float *rot) {
                         goto next_point;
                 }
             }
-            d = vec_distance_xy(hero_globals_base + 0xE9D, path + i * 16 + 0x10);
+            d = vec_distance_xy(gHeroPos, path + i * 16 + 0x10);
             if (d < distance) {
                 distance = d;
                 best = i;
@@ -1509,37 +1513,36 @@ void update_hero_hoverboard_race_progress(void) {
     float ang;
     float dir;
 
-    ((Hero *)(hero_globals_base + 0xE1D))->race_time_frames++;
-    if (((Moby *)((Hero *)(hero_globals_base + 0xE1D))->hoverboard_moby) == 0) {
+    g_hero.race_time_frames++;
+    if (((Moby *)g_hero.hoverboard_moby) == 0) {
         return;
     }
-    d = (Data_254DE8 *)((Moby *)((Hero *)(hero_globals_base + 0xE1D))->hoverboard_moby)->pvars;
+    d = (Data_254DE8 *)((Moby *)g_hero.hoverboard_moby)->pvars;
     if (d->f20 == -1) {
         return;
     }
     path = rilgar_paths_r2[d->f20];
-    ((Hero *)(hero_globals_base + 0xE1D))->race_path = (void *)path;
+    g_hero.race_path = (void *)path;
     if (g_current_level_index_r == LEVEL_KALEBO3) {
         *(u128_254DE8 *)v0 = 0;
         v0[0] = 163.0f;
         v0[1] = 119.0f;
         v0[2] = 80.0f;
-        if (FastVecDist_r2(((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f, v0) < 11.0f) {
-            if (((Hero *)(hero_globals_base + 0xE1D))->race_path_node < 3 ||
-                ((Hero *)(hero_globals_base + 0xE1D))->race_path_node > 0x46) {
-                if (((Hero *)(hero_globals_base + 0xE1D))->race_path_node >= 3) {
-                    ((Hero *)(hero_globals_base + 0xE1D))->race_lap++;
+        if (FastVecDist_r2(g_hero.motion.pos.f, v0) < 11.0f) {
+            if (g_hero.race_path_node < 3 || g_hero.race_path_node > 0x46) {
+                if (g_hero.race_path_node >= 3) {
+                    g_hero.race_lap++;
                 }
-                ((Hero *)(hero_globals_base + 0xE1D))->race_path_node = 0xD;
+                g_hero.race_path_node = 0xD;
             }
         }
         *(u128_254DE8 *)v1 = 0;
         v1[0] = 223.0f;
         v1[1] = 281.0f;
         v1[2] = 93.0f;
-        if (FastVecDist_r2(((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f, v1) < 7.0f) {
-            if (((Hero *)(hero_globals_base + 0xE1D))->race_path_node < 0x3B) {
-                ((Hero *)(hero_globals_base + 0xE1D))->race_path_node = 0x3B;
+        if (FastVecDist_r2(g_hero.motion.pos.f, v1) < 7.0f) {
+            if (g_hero.race_path_node < 0x3B) {
+                g_hero.race_path_node = 0x3B;
             }
         }
     }
@@ -1548,26 +1551,24 @@ void update_hero_hoverboard_race_progress(void) {
         int n1;
         int next;
 
-        i = ((Hero *)(hero_globals_base + 0xE1D))->race_path_node;
+        i = g_hero.race_path_node;
         n1 = path->n + 1;
         next = (i + n1) % path->n;
         ang = fast_atan2_r2(path->p[next].x - path->p[i].x, path->p[next].y - path->p[i].y);
-        if (FastDiffRots_r(ang, fast_atan2_r2(((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[0] - path->p[i].x,
-                                              ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[1] - path->p[i].y)) <
-            1.5707964f) {
-            ((Hero *)(hero_globals_base + 0xE1D))->race_path_node = next;
+        if (FastDiffRots_r(ang, fast_atan2_r2(g_hero.motion.pos.f[0] - path->p[i].x,
+                                              g_hero.motion.pos.f[1] - path->p[i].y)) < 1.5707964f) {
+            g_hero.race_path_node = next;
             if (next == 0) {
-                ((Hero *)(hero_globals_base + 0xE1D))->race_lap++;
+                g_hero.race_lap++;
             }
         }
     }
     near = 0;
     if (g_current_level_index_r == LEVEL_KALEBO3) {
-        if (((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[2] <
-            path->p[((Hero *)(hero_globals_base + 0xE1D))->race_path_node].z - 2.0f) {
+        if (g_hero.motion.pos.f[2] < path->p[g_hero.race_path_node].z - 2.0f) {
             near = 1;
-            if (((Hero *)(hero_globals_base + 0xE1D))->off_course_frames < scale_ticks(0x46)) {
-                ((Hero *)(hero_globals_base + 0xE1D))->off_course_frames = scale_ticks(0x46);
+            if (g_hero.off_course_frames < scale_ticks(0x46)) {
+                g_hero.off_course_frames = scale_ticks(0x46);
             }
         }
     }
@@ -1576,87 +1577,77 @@ void update_hero_hoverboard_race_progress(void) {
         int n1;
         int next;
 
-        i = ((Hero *)(hero_globals_base + 0xE1D))->wrong_way_path_point;
+        i = g_hero.wrong_way_path_point;
         n1 = path->n + 1;
         next = (i + n1) % path->n;
         dir = fast_atan2_r2(path->p[next].x - path->p[i].x, path->p[next].y - path->p[i].y);
     }
-    if (near != 0 || (FastDiffRots_r(((Hero *)(hero_globals_base + 0xE1D))->motion.rot.f[2], dir) > 1.5707964f &&
-                      ((Hero *)(hero_globals_base + 0xE1D))->trick_input == 0)) {
-        ((Hero *)(hero_globals_base + 0xE1D))->off_course_frames++;
-        if (((Hero *)(hero_globals_base + 0xE1D))->off_course_frames > scale_ticks(0xB4)) {
+    if (near != 0 || (FastDiffRots_r(g_hero.motion.rot.f[2], dir) > 1.5707964f && g_hero.trick_input == 0)) {
+        g_hero.off_course_frames++;
+        if (g_hero.off_course_frames > scale_ticks(0xB4)) {
             if (race_respawn_request_active == 0) {
                 race_respawn_request_active = 1;
                 race_respawn_gate_state = 0;
                 rilgar_off_course_reset_rate = frame_scale_r * 0.08f;
             }
-            ((Hero *)(hero_globals_base + 0xE1D))->off_course_reset_pending = 1;
+            g_hero.off_course_reset_pending = 1;
             if (race_respawn_gate_state == 1) {
-                ((Hero *)(hero_globals_base + 0xE1D))->off_course_reset_pending = 0;
+                g_hero.off_course_reset_pending = 0;
                 compute_hero_hoverboard_respawn_transform_r(v0, v1);
-                ((Hero *)(hero_globals_base + 0xE1D))->off_course_frames = 0;
-                ((Hero *)(hero_globals_base + 0xE1D))->board_air_yaw = v1[2];
+                g_hero.off_course_frames = 0;
+                g_hero.board_air_yaw = v1[2];
                 Hero_ResetToPosition_r(v0, v1, 0x6B, 1);
-                if (((Path *)((Hero *)(hero_globals_base + 0xE1D))->race_path) != 0) {
-                    int r = select_point_index_by_distance_r(((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f,
-                                                             (Path *)((Hero *)(hero_globals_base + 0xE1D))->race_path,
-                                                             0.0f);
+                if (((Path *)g_hero.race_path) != 0) {
+                    int r = select_point_index_by_distance_r(g_hero.motion.pos.f, (Path *)g_hero.race_path, 0.0f);
 
-                    if (r < ((Hero *)(hero_globals_base + 0xE1D))->race_path_node) {
-                        ((Hero *)(hero_globals_base + 0xE1D))->race_path_node = r;
+                    if (r < g_hero.race_path_node) {
+                        g_hero.race_path_node = r;
                     }
                 }
             }
         }
-    } else if (((Hero *)(hero_globals_base + 0xE1D))->off_course_reset_pending == 0) {
-        ((Hero *)(hero_globals_base + 0xE1D))->off_course_frames = 0;
+    } else if (g_hero.off_course_reset_pending == 0) {
+        g_hero.off_course_frames = 0;
     }
     for (j = 0; j < d->f40; j++) {
         int i;
         int n1;
         int next;
 
-        i = ((Hero *)(hero_globals_base + 0xE1D))->racer_path_point[j];
+        i = g_hero.racer_path_point[j];
         n1 = path->n + 1;
         next = (i + n1) % path->n;
         ang = fast_atan2_r2(path->p[next].x - path->p[i].x, path->p[next].y - path->p[i].y);
         qcopy(v0, moby_pool_4f60_r2[d->f2C[j]].pos);
         if (FastDiffRots_r(ang, fast_atan2_r2(v0[0] - path->p[i].x, v0[1] - path->p[i].y)) < 1.5707964f) {
-            ((Hero *)(hero_globals_base + 0xE1D))->racer_path_point[j] = next;
+            g_hero.racer_path_point[j] = next;
             if (next == 0) {
-                ((Hero *)(hero_globals_base + 0xE1D))->racer_laps[j]++;
+                g_hero.racer_laps[j]++;
             }
         }
     }
-    ((Hero *)(hero_globals_base + 0xE1D))->race_position = 1;
+    g_hero.race_position = 1;
     for (j = 0; j < d->f40; j++) {
-        if (((Hero *)(hero_globals_base + 0xE1D))->race_lap < ((Hero *)(hero_globals_base + 0xE1D))->racer_laps[j] ||
-            (((Hero *)(hero_globals_base + 0xE1D))->racer_laps[j] == ((Hero *)(hero_globals_base + 0xE1D))->race_lap &&
-             ((Hero *)(hero_globals_base + 0xE1D))->racer_path_point[j] >=
-                 ((Hero *)(hero_globals_base + 0xE1D))->race_path_node)) {
-            ((Hero *)(hero_globals_base + 0xE1D))->race_position++;
+        if (g_hero.race_lap < g_hero.racer_laps[j] ||
+            (g_hero.racer_laps[j] == g_hero.race_lap && g_hero.racer_path_point[j] >= g_hero.race_path_node)) {
+            g_hero.race_position++;
         }
     }
     for (k = 0; k < d->f40; k++) {
-        ((Hero *)(hero_globals_base + 0xE1D))->race_rank[k] = 1;
-        if (((Hero *)(hero_globals_base + 0xE1D))->race_lap > ((Hero *)(hero_globals_base + 0xE1D))->racer_laps[k] ||
-            (((Hero *)(hero_globals_base + 0xE1D))->racer_laps[k] == ((Hero *)(hero_globals_base + 0xE1D))->race_lap &&
-             ((Hero *)(hero_globals_base + 0xE1D))->race_path_node >
-                 ((Hero *)(hero_globals_base + 0xE1D))->racer_path_point[k])) {
-            ((Hero *)(hero_globals_base + 0xE1D))->race_rank[k] = 2;
+        g_hero.race_rank[k] = 1;
+        if (g_hero.race_lap > g_hero.racer_laps[k] ||
+            (g_hero.racer_laps[k] == g_hero.race_lap && g_hero.race_path_node > g_hero.racer_path_point[k])) {
+            g_hero.race_rank[k] = 2;
         }
         for (m = 0; m < d->f40; m++) {
-            if (((Hero *)(hero_globals_base + 0xE1D))->racer_laps[k] <
-                    ((Hero *)(hero_globals_base + 0xE1D))->racer_laps[m] ||
-                (((Hero *)(hero_globals_base + 0xE1D))->racer_laps[k] ==
-                     ((Hero *)(hero_globals_base + 0xE1D))->racer_laps[m] &&
-                 ((Hero *)(hero_globals_base + 0xE1D))->racer_path_point[k] <
-                     ((Hero *)(hero_globals_base + 0xE1D))->racer_path_point[m])) {
-                ((Hero *)(hero_globals_base + 0xE1D))->race_rank[k]++;
+            if (g_hero.racer_laps[k] < g_hero.racer_laps[m] ||
+                (g_hero.racer_laps[k] == g_hero.racer_laps[m] &&
+                 g_hero.racer_path_point[k] < g_hero.racer_path_point[m])) {
+                g_hero.race_rank[k]++;
             }
         }
     }
-    if (((Hero *)(hero_globals_base + 0xE1D))->race_lap < 3) {
+    if (g_hero.race_lap < 3) {
         return;
     }
     if (*(special_items_base_r + 0x13B) != 0) {
@@ -1675,7 +1666,7 @@ void update_hero_hoverboard_race_progress(void) {
         } else {
             t = scale_ticks(0x1644);
         }
-        if (t >= ((Hero *)(hero_globals_base + 0xE1D))->race_time_frames) {
+        if (t >= g_hero.race_time_frames) {
             if (((Flags *)(menu_item_enabled_115_r + 1))->f9 == 0) {
                 ((Flags *)(menu_item_enabled_115_r + 1))->f9 = 1;
                 PlayBankSound_r(1, 0, 0);
@@ -1685,54 +1676,54 @@ void update_hero_hoverboard_race_progress(void) {
         if (d->f28 == -1) {
             return;
         }
-        if (*(special_items_base_r + 0x13B) == 0 && ((Hero *)(hero_globals_base + 0xE1D))->race_position == 1) {
+        if (*(special_items_base_r + 0x13B) == 0 && g_hero.race_position == 1) {
             moby_pool_4f60_r2[d->f28].fBC = 1;
         } else {
-            ((Hero *)(hero_globals_base + 0xE1D))->unk890 = (u8 *)(&moby_pool_4f60_r2[d->f28]);
+            g_hero.unk890 = (u8 *)(&moby_pool_4f60_r2[d->f28]);
             mode_freeze_init_r(0, 0, 0);
         }
         if (race_best_times_r[0] == 0) {
-            race_best_times_r[0] = ((Hero *)(hero_globals_base + 0xE1D))->race_time_frames;
+            race_best_times_r[0] = g_hero.race_time_frames;
             gBolts_r += 0x3E8;
-        } else if (((Hero *)(hero_globals_base + 0xE1D))->race_time_frames < race_best_times_r[0]) {
-            race_best_times_r[0] = ((Hero *)(hero_globals_base + 0xE1D))->race_time_frames;
+        } else if (g_hero.race_time_frames < race_best_times_r[0]) {
+            race_best_times_r[0] = g_hero.race_time_frames;
             gBolts_r += 0x3E8;
         }
-        if (race_best_records_r[0] < ((Hero *)(hero_globals_base + 0xE1D))->race_score) {
-            race_best_records_r[0] = ((Hero *)(hero_globals_base + 0xE1D))->race_score;
+        if (race_best_records_r[0] < g_hero.race_score) {
+            race_best_records_r[0] = g_hero.race_score;
             gBolts_r += 0x3E8;
         }
         moby_pool_4f60_r2[d->f28].f30 = 0xFF;
-        if (((Hero *)(hero_globals_base + 0xE1D))->trick_hud_handle != -1) {
-            Hud_SetBarValueById_r(((Hero *)(hero_globals_base + 0xE1D))->trick_hud_handle, 0);
-            ((Hero *)(hero_globals_base + 0xE1D))->trick_hud_handle = -1;
+        if (g_hero.trick_hud_handle != -1) {
+            Hud_SetBarValueById_r(g_hero.trick_hud_handle, 0);
+            g_hero.trick_hud_handle = -1;
         }
         update_resource_counter_r();
     } else if (g_current_level_index_r == LEVEL_KALEBO3) {
         if (d->f28 == -1) {
             return;
         }
-        if (gHaveHologuise_r == 0 && ((Hero *)(hero_globals_base + 0xE1D))->race_position == 1) {
+        if (gHaveHologuise_r == 0 && g_hero.race_position == 1) {
             moby_pool_4f60_r2[d->f28].fBC = 1;
         } else {
-            ((Hero *)(hero_globals_base + 0xE1D))->unk890 = (u8 *)(&moby_pool_4f60_r2[d->f28]);
+            g_hero.unk890 = (u8 *)(&moby_pool_4f60_r2[d->f28]);
             mode_freeze_init_r(0, 0, 0);
         }
         if (race_best_times_r[1] == 0) {
-            race_best_times_r[1] = ((Hero *)(hero_globals_base + 0xE1D))->race_time_frames;
+            race_best_times_r[1] = g_hero.race_time_frames;
             gBolts_r += 0x3E8;
-        } else if (((Hero *)(hero_globals_base + 0xE1D))->race_time_frames < race_best_times_r[1]) {
-            race_best_times_r[1] = ((Hero *)(hero_globals_base + 0xE1D))->race_time_frames;
+        } else if (g_hero.race_time_frames < race_best_times_r[1]) {
+            race_best_times_r[1] = g_hero.race_time_frames;
             gBolts_r += 0x3E8;
         }
-        if (race_best_records_r[1] < ((Hero *)(hero_globals_base + 0xE1D))->race_score) {
-            race_best_records_r[1] = ((Hero *)(hero_globals_base + 0xE1D))->race_score;
+        if (race_best_records_r[1] < g_hero.race_score) {
+            race_best_records_r[1] = g_hero.race_score;
             gBolts_r += 0x3E8;
         }
         moby_pool_4f60_r2[d->f28].f30 = 0xFF;
-        if (((Hero *)(hero_globals_base + 0xE1D))->trick_hud_handle != -1) {
-            Hud_SetBarValueById_r(((Hero *)(hero_globals_base + 0xE1D))->trick_hud_handle, 0);
-            ((Hero *)(hero_globals_base + 0xE1D))->trick_hud_handle = -1;
+        if (g_hero.trick_hud_handle != -1) {
+            Hud_SetBarValueById_r(g_hero.trick_hud_handle, 0);
+            g_hero.trick_hud_handle = -1;
         }
         update_resource_counter_r();
     }
@@ -1852,7 +1843,7 @@ int hero_pick_help_mode(void) {
     int ee;
     unsigned char c;
 
-    g = ((H_9F0 *)(hero_globals_base + 0xE1D));
+    g = ((H_9F0 *)(&g_hero));
     if (!(g_frame_time * 12.0f < g->f164))
         goto L_BAC;
     f20 = 0.0f;
@@ -1884,46 +1875,46 @@ int hero_pick_help_mode(void) {
     return 1;
 
 L_BAC:
-    if (((H_9F0 *)(hero_globals_base + 0xE1D))->b257 != 0) {
-        f20 = vec_length_xy_r(((H_9F0 *)(hero_globals_base + 0xE1D))->f100);
-        if (f20 < vec_length_xy_r(((H_9F0 *)(hero_globals_base + 0xE1D))->fE0) * 0.25f) {
+    if (((H_9F0 *)(&g_hero))->b257 != 0) {
+        f20 = vec_length_xy_r(((H_9F0 *)(&g_hero))->f100);
+        if (f20 < vec_length_xy_r(((H_9F0 *)(&g_hero))->fE0) * 0.25f) {
             Hero_TryMoveStateL05(0x6D, 1);
             return 1;
         }
     }
     ee = g_current_level_index_r;
     if (ee == 5) {
-        if (((H_9F0 *)(hero_globals_base + 0xE1D))->f80[2] < 61.4f) {
-            ((H_9F0 *)(hero_globals_base + 0xE1D))->f8A0 = 61.4f;
+        if (((H_9F0 *)(&g_hero))->f80[2] < 61.4f) {
+            ((H_9F0 *)(&g_hero))->f8A0 = 61.4f;
             Hero_TryMoveStateL05(0x6E, 1);
             return 1;
         }
     }
     if (ee == 0x10) {
-        if (((H_9F0 *)(hero_globals_base + 0xE1D))->f80[2] < 76.0f) {
-            ((H_9F0 *)(hero_globals_base + 0xE1D))->f8A0 = 76.0f;
+        if (((H_9F0 *)(&g_hero))->f80[2] < 76.0f) {
+            ((H_9F0 *)(&g_hero))->f8A0 = 76.0f;
             Hero_TryMoveStateL05(0x6E, 1);
             return 1;
         }
-        if (((H_9F0 *)(hero_globals_base + 0xE1D))->b12EA != 0) {
-            if (((H_9F0 *)(hero_globals_base + 0xE1D))->f2DC < 0.1f) {
+        if (((H_9F0 *)(&g_hero))->b12EA != 0) {
+            if (((H_9F0 *)(&g_hero))->f2DC < 0.1f) {
                 Hero_TryMoveStateL05(0x6D, 1);
                 return 1;
             }
         }
     }
-    if (((H_9F0 *)(hero_globals_base + 0xE1D))->s30C != 0)
+    if (((H_9F0 *)(&g_hero))->s30C != 0)
         goto L_DEC;
-    pp = ((H_9F0 *)(hero_globals_base + 0xE1D))->p8B4;
+    pp = ((H_9F0 *)(&g_hero))->p8B4;
     if (pp == 0)
         goto L_D68;
-    vp = ((H_9F0 *)(hero_globals_base + 0xE1D))->f80;
+    vp = ((H_9F0 *)(&g_hero))->f80;
     r16 = select_point_index_by_distance(vp, pp, 0.0f);
-    r4 = offset_path_index(((H_9F0 *)(hero_globals_base + 0xE1D))->p8B4, r16, -1, 1);
-    ((H_9F0 *)(hero_globals_base + 0xE1D))->s8C8 = r16;
+    r4 = offset_path_index(((H_9F0 *)(&g_hero))->p8B4, r16, -1, 1);
+    ((H_9F0 *)(&g_hero))->s8C8 = r16;
     if (g_current_level_index_r != LEVEL_RILGAR)
         goto L_D68;
-    pts = (float (*)[4])((H_9F0 *)(hero_globals_base + 0xE1D))->p8B4;
+    pts = (float (*)[4])((H_9F0 *)(&g_hero))->p8B4;
     f1 = *(float *)((char *)pts + (r16 << 4) + 0x18);
     f0 = *(float *)((char *)pts + (r4 << 4) + 0x18);
     if (f1 < f0)
@@ -1931,7 +1922,7 @@ L_BAC:
     else
         f20 = f0;
     f2 = vec_distance_xy(vp, pts[r16 + 1]);
-    if (0.5f < f20 - ((H_9F0 *)(hero_globals_base + 0xE1D))->f80[2]) {
+    if (0.5f < f20 - ((H_9F0 *)(&g_hero))->f80[2]) {
         if (4.0f < f2) {
             Hero_TryMoveStateL05(0x6D, 1);
             return 1;
@@ -1939,13 +1930,13 @@ L_BAC:
     }
 
 L_D68:
-    if (((H_9F0 *)(hero_globals_base + 0xE1D))->s30C != 0)
+    if (((H_9F0 *)(&g_hero))->s30C != 0)
         goto L_DEC;
-    if (((H_9F0 *)(hero_globals_base + 0xE1D))->s8BC == 0)
+    if (((H_9F0 *)(&g_hero))->s8BC == 0)
         goto L_DEC;
-    if (((H_9F0 *)(hero_globals_base + 0xE1D))->s89C != 0)
+    if (((H_9F0 *)(&g_hero))->s89C != 0)
         goto L_DEC;
-    m = ((H_9F0 *)(hero_globals_base + 0xE1D))->p2080;
+    m = ((H_9F0 *)(&g_hero))->p2080;
     if (m[0x53] != 0x55 && m[0x53] != 0x7F)
         goto L_DEC;
     if (m[0x51] < 0xD) {
@@ -1955,57 +1946,53 @@ L_D68:
     }
 
 L_DEC:
-    ok = (((H_9F0 *)(hero_globals_base + 0xE1D))->s30C == 0);
-    if (((H_9F0 *)(hero_globals_base + 0xE1D))->b257 != 0) {
-        if (FastAbsF(((H_9F0 *)(hero_globals_base + 0xE1D))->f218 - ((H_9F0 *)(hero_globals_base + 0xE1D))->f2D8) <
-            0.05f)
+    ok = (((H_9F0 *)(&g_hero))->s30C == 0);
+    if (((H_9F0 *)(&g_hero))->b257 != 0) {
+        if (FastAbsF(((H_9F0 *)(&g_hero))->f218 - ((H_9F0 *)(&g_hero))->f2D8) < 0.05f)
             ok = 1;
     }
     if (ok == 0)
         return 0;
-    if (((H_9F0 *)(hero_globals_base + 0xE1D))->s89C == 0)
+    if (((H_9F0 *)(&g_hero))->s89C == 0)
         return 0;
-    if (!(((H_9F0 *)(hero_globals_base + 0xE1D))->fE0[2] < 0.0f))
+    if (!(((H_9F0 *)(&g_hero))->fE0[2] < 0.0f))
         return 0;
     f20 = 1.0471976f;
-    if (f20 < FastAbsF(((H_9F0 *)(hero_globals_base + 0xE1D))->f94)) {
+    if (f20 < FastAbsF(((H_9F0 *)(&g_hero))->f94)) {
         Hero_TryMoveStateL05(0x6D, 1);
         return 1;
     }
-    if (f20 < FastAbsF(((H_9F0 *)(hero_globals_base + 0xE1D))->f90)) {
+    if (f20 < FastAbsF(((H_9F0 *)(&g_hero))->f90)) {
         Hero_TryMoveStateL05(0x6D, 1);
         return 1;
     }
-    if (1.3962634f <
-        FastDiffRots(((H_9F0 *)(hero_globals_base + 0xE1D))->f98, ((H_9F0 *)(hero_globals_base + 0xE1D))->f874)) {
+    if (1.3962634f < FastDiffRots(((H_9F0 *)(&g_hero))->f98, ((H_9F0 *)(&g_hero))->f874)) {
         Hero_TryMoveStateL05(0x6D, 1);
         return 1;
     }
-    if (((H_9F0 *)(hero_globals_base + 0xE1D))->p2080[0x53] >= 0x69 &&
-        ((H_9F0 *)(hero_globals_base + 0xE1D))->p2080[0x53] <= 0x6C) {
-        if (((H_9F0 *)(hero_globals_base + 0xE1D))->fAA8 <
-            (float)((int *)&hoverboard_trick_min_frames)[((H_9F0 *)(hero_globals_base + 0xE1D))->b88F]) {
+    if (((H_9F0 *)(&g_hero))->p2080[0x53] >= 0x69 && ((H_9F0 *)(&g_hero))->p2080[0x53] <= 0x6C) {
+        if (((H_9F0 *)(&g_hero))->fAA8 < (float)((int *)&hoverboard_trick_min_frames)[((H_9F0 *)(&g_hero))->b88F]) {
             Hero_TryMoveStateL05(0x6D, 1);
             return 1;
         }
     }
 
     if (special_items_base_r[0x13B] != 0) {
-        if (g_current_level_index_r == LEVEL_RILGAR && ((H_9F0 *)(hero_globals_base + 0xE1D))->i6F0 == 4 &&
-            ((H_9F0 *)(hero_globals_base + 0xE1D))->i70C >= 4) {
-            Flags_9F0 *fl = (Flags_9F0 *)(menu_item_enabled_115 + 1);
+        if (g_current_level_index_r == LEVEL_RILGAR && ((H_9F0 *)(&g_hero))->i6F0 == 4 &&
+            ((H_9F0 *)(&g_hero))->i70C >= 4) {
+            Flags_9F0 *fl = (Flags_9F0 *)gSkillPoints;
             if (fl->f7 == 0) {
                 fl->f7 = 1;
                 PlayBankSound_r(1, 0, 0);
                 ShowBanner_r(0x53DB, -1);
             }
         }
-        ((H_9F0 *)(hero_globals_base + 0xE1D))->i714 = 0;
+        ((H_9F0 *)(&g_hero))->i714 = 0;
     }
 
-    if (((H_9F0 *)(hero_globals_base + 0xE1D))->i2084 == 0x6C) {
+    if (((H_9F0 *)(&g_hero))->i2084 == 0x6C) {
         Hero_TryMoveStateL05(0x6B, 0);
-        ee = (int)((H_9F0 *)(hero_globals_base + 0xE1D))->p2080;
+        ee = (int)((H_9F0 *)(&g_hero))->p2080;
         if (((unsigned char *)ee)[0x53] != 0x55 && ((unsigned char *)ee)[0x53] != 0x7F) {
             int r = select_hero_hoverboard_animation_variant();
             int t = scale_ticks(7);
@@ -2013,7 +2000,7 @@ L_DEC:
         }
         return 1;
     }
-    c = ((H_9F0 *)(hero_globals_base + 0xE1D))->p2080[0x53];
+    c = ((H_9F0 *)(&g_hero))->p2080[0x53];
     if (c != 0x55 && c != 0x7F) {
         int r = select_hero_hoverboard_animation_variant();
         int t = scale_ticks(7);
@@ -2025,7 +2012,7 @@ extern char rilgar_hoverboard_link_table[];
 
 // Clears two slots in the game state block and refills them when the flag is set and the mode is 0x15 or 0x16.
 void hero_update_linked_target(void) {
-    struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    struct Hero *g = &g_hero;
     int v = *(int *)&g->hoverboard_moby;
 
     *(int *)&g->unk2278 = 0;

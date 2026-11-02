@@ -19,6 +19,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/hero_state.h"
 #include "enums/moby_class.h"
+extern char gHeroPos[];
 extern char gSkillPoints[];
 extern Hero g_hero;
 extern char help_records[];
@@ -86,7 +87,7 @@ extern void BuildSphericalOffset(void *, float, float, float);
 extern void EaseManipulatorOffsets(float, float, void *, void *, int);
 
 extern unsigned char race_gates_base[], gHaveMorphORay[];
-extern char menu_item_enabled_115[], help_stats_base[];
+
 extern int race_best_records_challenge[2] __asm__("D_0015EF68") MACRO_ADDR;
 extern char hero_globals_base[];
 extern char gadgetron_ceo_hero_and_camera_pose[], gadgetron_ceo_hero_return_pose[];
@@ -390,7 +391,7 @@ void restore_gadgetron_ceo_non_challenge_environment(char *moby) {
     MusicRequestTrack(0, 8);
 }
 extern char hero_globals_base[];
-extern char menu_item_enabled_115[];
+
 extern int is_point_inside_clip_volume(void *, int);
 
 /* update: a two-state trigger on the player's state */

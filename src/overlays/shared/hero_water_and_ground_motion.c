@@ -25,8 +25,8 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
-extern char g_controller_state_no_direction[];
-extern char pad_held[];
+extern int g_controller_state_no_direction;
+extern int pad_held;
 
 typedef int u128 __attribute__((mode(TI)));
 typedef float FVec4[4] __attribute__((aligned(16)));
@@ -1312,7 +1312,7 @@ void hero_update_movement(void) {
 
                     a = FastAddRots(g_hero.motion.rot.f[2], 3.1415927f);
                     s = g_frame_time * 2.5f;
-                    if (*(int *)pad_held & 0xA) {
+                    if (pad_held & 0xA) {
                         s = g_frame_time * 3.0f;
                     }
                     g_hero.motion.velocity.f[0] += FastCos(a) * s;
@@ -2539,7 +2539,7 @@ void hero_update_movement(void) {
                             g_hero.ground_speed = 0.0f;
                         }
                         if (g_hero.rail_land_frames != 0) {
-                            if (*(int *)g_controller_state_no_direction != 0) {
+                            if (g_controller_state_no_direction != 0) {
                                 if (g_hero.on_flagged_ground_moby != 0) {
                                     g_hero.ground_speed = 0.0f;
                                 }

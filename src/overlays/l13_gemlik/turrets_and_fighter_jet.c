@@ -27,10 +27,15 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+extern char cd_read_state[];
+extern char gHeroPos[];
+extern char g_hero_rot[];
+extern char pad0_pressed[];
+extern char saved_mission_state[];
 extern char g_controller_state[];
 extern Hero g_hero;
 extern char g_screen_extent[];
-extern char pad_held[];
+extern int pad_held;
 extern char voice_pool[];
 
 /* Volume trigger: while the hero is inside the clip volume it sets the *_in states, outside the *_out states. */
@@ -2020,7 +2025,7 @@ extern void draw_fighter_jet_radar_icon(char *rot, char *from, char *moby, int i
 extern float normalize_angle(float);
 
 extern void matrix_from_basis_rows(void *, void *);
-extern unsigned char screen_globals_base[];
+
 extern float gemlik_view_basis_row1[];
 extern char jet_target_marker_shape[];
 extern char gemlik_view_basis[];
@@ -2615,7 +2620,7 @@ void PlayerFighterFlight(void *a0, void *a1) {
         kb = frame_scale * 0.25f;
         a = h->stick_x;
         b = h->stick_y;
-        if (*(int *)pad_held & 0x200) {
+        if (pad_held & 0x200) {
             a = a / (frame_scale * 0.012271847f);
             a = a * (frame_scale * 0.015707964f);
             b = b / (frame_scale * 0.012271847f);

@@ -24,9 +24,13 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "structs/small_records.h"
 #include "enums/moby_class.h"
+extern char gHeroPos[];
+extern char hero_control_mode[];
+extern char hero_current_state[];
+extern char saved_mission_state[];
 extern Hero g_hero;
 extern char level_moby_killed[];
-extern char pad0_pressed[];
+extern int pad0_pressed;
 
 /* Robot dog: speed and turn state, plus the three glow points (also AimData_1BB0 below). */
 struct RobotDogVars {
@@ -773,7 +777,7 @@ void shuttle_1448_update(unsigned char *m) {
             pl = &g_hero;
             if (*(unsigned char **)&pl->ground_moby == m && pl->air_frames.s == 0 && scale_ticks(30) < v->timer) {
                 update_shuttle_help_message(m);
-                if ((*(int *)pad0_pressed & 0x10) && *(int *)&fleet_shown_help_message == 10) {
+                if ((pad0_pressed & 0x10) && *(int *)&fleet_shown_help_message == 10) {
                     int s = v->dir;
                     if (s >= 0) {
                         v->go = 1;

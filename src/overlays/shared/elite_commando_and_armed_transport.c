@@ -577,7 +577,6 @@ extern int FindNearestTargetMoby(float, char *, void *);
 extern float vec_distance_xy(void *, void *);
 extern short elite_commando_reward_hit_count;
 extern char hero_globals_base[];
-extern char menu_item_enabled_115[];
 
 typedef struct {
     char pad00[0x20];

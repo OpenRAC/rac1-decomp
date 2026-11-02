@@ -25,12 +25,12 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
-extern char frame_size[];
+extern int frame_size;
 extern char gSkillPoints[];
 extern unsigned char g_hero[];
 extern char g_screen_extent[];
 extern char help_records[];
-extern char pad0_pressed[];
+extern int pad0_pressed;
 extern unsigned char saved_mission_state[][16] NOT_SDA;
 
 /* Player ship: steering, lock-on target, reticle and hit-point bar. */
@@ -135,7 +135,6 @@ extern float IntToFloat(int);
 extern int GetEffectTex(int);
 extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
 extern unsigned char D_0015EEB4[4] MACRO_ADDR;
-extern unsigned char screen_globals_base[];
 
 /* One radar icon: its texture, its rectangle in that texture and its hot spot. */
 typedef struct {
@@ -189,7 +188,7 @@ void draw_ship_radar_moby_icon(char *rot, char *from, char *moby, int icon, long
         }
         t = &ship_radar_icons[icon];
         y -= 0x50;
-        y += *(int *)frame_size;
+        y += frame_size;
         x += 0x1B0;
         DrawTexturedQuad(x - t->x, y - t->y, t->w, t->h, t->u, t->v, t->w, t->h, color, GetEffectTex(t->tex));
     }
@@ -283,7 +282,7 @@ void count_active_and_visible_listed_mobys(void *a0, void *a1, void *a2) {
         }
     } while (*p++ >= 0);
 }
-extern char hero_globals_base[];
+
 extern float pokitaru_camera_rot[];
 extern short lock_hold_frames;
 extern short lock_fade_frames;
@@ -574,7 +573,7 @@ extern int spawn_ship_projectile(void *, void *, int, void *, float, int);
 extern int Moby_PlaySound_i(int, int, int) __asm__("func_0022ED80");
 extern int fast_dec_timer_i(void *) __asm__("func_001F9908");
 extern unsigned char pad_globals_base[];
-extern char hero_globals_base[];
+
 extern short ship_missile_speed;
 extern short ship_speed_scale;
 extern short ship_missile_cooldown;
@@ -1181,7 +1180,7 @@ void jet_fighter_update(Moby *moby) {
                             statistics->r[0x3C].best = scale_ticks(gameplay_event_frame_count) / 600;
                         }
                     }
-                    if (item_available[7] != 0 && (*(int *)pad0_pressed & 0x10)) {
+                    if (item_available[7] != 0 && (pad0_pressed & 0x10)) {
                         moby->state = 2;
                         Hero_TrySetMoveStateL11(0x32, 1);
                         d->i118 = -1;
@@ -3534,7 +3533,6 @@ extern void FastVecAdd(void *, void *, void *);
 extern float FastCos(float);
 extern void MobyBlendAnimation(void *, int, int, int);
 extern float g_frame_time MACRO_ADDR;
-extern char hero_globals_base[];
 
 /* finds the idle moby of type 0x527 in a list and launches it at the hero */
 char *activate_listed_blarg_ship(int idx) {
@@ -3582,7 +3580,6 @@ char *activate_listed_blarg_ship(int idx) {
 extern int count_active_moby_group_members(int, int);
 extern void PlayBankSound(int, int, int);
 extern void ShowBanner(int, int);
-extern unsigned char menu_item_enabled_115[];
 
 /* Moby update that deletes itself or shows a banner depending on its data. */
 void update_moby_list_empty_dialogue_trigger(char *moby) {

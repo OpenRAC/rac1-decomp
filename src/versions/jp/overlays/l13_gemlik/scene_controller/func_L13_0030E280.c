@@ -40,7 +40,7 @@ void blarg_ship_1805_update(void *moby) {
             if (((unsigned char *)m)[0x21] != 0xFF) {
                 int r = count_active_moby_group_members(((unsigned char *)m)[0x21], -1);
                 if (r == 1) {
-                    unsigned char *t = (unsigned char *)(menu_item_enabled_115 + 1);
+                    unsigned char *t = (unsigned char *)gSkillPoints;
                     if (t[0x16] == 0) {
                         t[0x16] = r;
                         PlayBankSound(1, 0, 0);
