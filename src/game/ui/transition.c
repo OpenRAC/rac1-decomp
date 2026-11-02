@@ -1095,8 +1095,8 @@ struct M2c_D_0016045C {
 };
 extern u8 frame_vu0_micro_program[];
 extern s32 frame_size[];
-extern short g_game_language;
-extern short intro_overlay_tex0;
+extern s32 g_game_language SDATA(g_game_language);
+extern s64 intro_overlay_tex0 SDATA(intro_overlay_tex0);
 extern s32 intro_overlay_alpha MACRO_ADDR;
 extern s32 language_intro_overlay_alpha MACRO_ADDR;
 extern f32 gFade MACRO_ADDR;
@@ -1192,10 +1192,10 @@ void Transition_DefaultDraw(s32 *arg0) {
     ResetGsRegisters();
     if (intro_overlay_alpha != 0) {
         DrawTexturedQuad(0xEC, 0x10, 0x100, 0x80, 0, 0, 0x100, 0x80, (long)(intro_overlay_alpha << 24 | 0x808080),
-                         (*(s64 *)&intro_overlay_tex0));
+                         (intro_overlay_tex0));
     }
     if (language_intro_overlay_alpha != 0) {
-        n = (*(s32 *)&g_game_language) - 1;
+        n = (g_game_language)-1;
         if (n < 0) {
             n = 0;
         }

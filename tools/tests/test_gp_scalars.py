@@ -34,6 +34,24 @@ class GpScalarTest(unittest.TestCase):
         self.assertEqual(gp.candidates("extern short x;\nfloat f(void) { return (*(float *)&x)[1]; }\n"), {"x": "float"})
         self.assertEqual(gp.candidates("extern short x;\nint a = *(int *)&x[1];\n"), {})
 
+    def test_a_trailing_comment_does_not_hide_the_declaration(self):
+        text = "extern short speed; /* SDA, gp -0x78B4 */\nfloat f(void) { return *(float *)&speed; }\n"
+        self.assertEqual(gp.apply(text, {"speed": "float"}, {"speed": {"D_00161CA0"}}),
+                         "extern float speed SDATA(D_00161CA0);\nfloat f(void) { return speed; }\n")
+
+    def test_the_useful_part_of_a_note_stays(self):
+        self.assertEqual(gp.live_note(" /* SDA, gp -0x6DB0: mismatch count */"), " /* mismatch count */")
+        self.assertEqual(gp.live_note(" /* declared small so -G2 puts it in SDA */"), "")
+        self.assertEqual(gp.live_note(" /* the frame timer */"), " /* the frame timer */")
+
+    def test_every_declaration_converts(self):
+        text = "extern short x;\nextern short x;\nfloat f(void) { return *(float *)&x; }\n"
+        self.assertEqual(gp.candidates(text), {"x": "float"})
+
+    def test_brackets_go_from_an_increment(self):
+        text = "extern short x;\nvoid f(void) { (*(int *)&x)++; }\n"
+        self.assertIn("{ x++; }", gp.apply(text, {"x": "int"}, {"x": {"D_00161CA0"}}))
+
     def test_no_address_name_means_no_change(self):
         text = "extern short speed;\nfloat f(void) { return *(float *)&speed; }\n"
         self.assertEqual(gp.apply(text, {"speed": "float"}, {}), text)

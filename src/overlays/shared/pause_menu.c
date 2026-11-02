@@ -129,7 +129,7 @@ extern char render_view_params[];
 extern int rendered_frame_count MACRO_ADDR;
 extern Vram lvl_resource_buffers;
 extern int lvl_vu_chain_buffer_size MACRO_ADDR;
-extern short level_vu1_chain_reserved_bytes;
+extern int level_vu1_chain_reserved_bytes SDATA(level_vu1_chain_reserved_bytes);
 
 extern int draw_buffer_address MACRO_ADDR;
 extern int g_gs_texture_allocation_start MACRO_ADDR;
@@ -280,7 +280,7 @@ void initialize_pause_menu(void) {
         (*(Menu *)level_menu_system).unk100 = f;
         initialize_menu_stream_buffers(1);
     }
-    *(int *)&level_vu1_chain_reserved_bytes = 0x2000;
+    level_vu1_chain_reserved_bytes = 0x2000;
     VU1_initChain();
 
     if ((*(Menu *)level_menu_system).state == 11 || (*(Menu *)level_menu_system).state == 15) {
@@ -549,7 +549,7 @@ extern char memory_card_state[];
 extern int decode_mode MACRO_ADDR;
 extern int D_0015EFB4 MACRO_ADDR;
 extern int level_game_clock_paused MACRO_ADDR;
-extern short level_vu1_chain_reserved_bytes;
+extern int level_vu1_chain_reserved_bytes SDATA(level_vu1_chain_reserved_bytes);
 extern int loaded_swap_moby_class_set SDATA(loaded_swap_moby_class_set);
 extern int cinematic_mode_frames SDATA(cinematic_mode_frames);
 extern int skip_frame MACRO_ADDR;
@@ -625,7 +625,7 @@ void update_pause_menu(void) {
         if (*(short *)(cd_read_state + 8) != 0) {
             return;
         }
-        *(int *)&level_vu1_chain_reserved_bytes = 0x1E000;
+        level_vu1_chain_reserved_bytes = 0x1E000;
         calculate_dma_transfer_address();
         qcopy(g_debug_camera, &GS.v40);
         qcopy(g_debug_camera + 4, &GS.v50);

@@ -131,7 +131,7 @@ extern float tesla_beam_phase_c_speed SDATA(tesla_beam_phase_c_speed);
 extern float tesla_beam_side_amplitude_phase_step SDATA(tesla_beam_side_amplitude_phase_step);
 extern float tesla_beam_wave_jitter_min SDATA(tesla_beam_wave_jitter_min);
 extern float tesla_beam_wave_jitter_max SDATA(tesla_beam_wave_jitter_max);
-extern short beam_arc_outer_color;
+extern int beam_arc_outer_color SDATA(beam_arc_outer_color);
 extern float D_L00_001616F8 SDATA(D_L00_001616F8);
 extern float tesla_target_angle_score_weight SDATA(tesla_target_angle_score_weight);
 extern short beam_arc_bolt_slots[] MACRO_ADDR;
@@ -326,9 +326,9 @@ void build_beam_and_arc_points(u8 *o) {
         spacing = (FastVecDist(&target0, &target1) + primary_distance) * 0.05f;
     }
     if (enabled)
-        (*(int *)&beam_arc_outer_color) = 0x207f20;
+        (beam_arc_outer_color) = 0x207f20;
     else
-        (*(int *)&beam_arc_outer_color) = 0x7f2020;
+        (beam_arc_outer_color) = 0x7f2020;
     clear_u64_value(&camera_direction);
     InitDirectionalHitQuery(&hit, o, 0x210000, &camera_direction, enabled + 2.0f);
     hit.kind = 5;
@@ -588,8 +588,8 @@ void build_beam_and_arc_points(u8 *o) {
     if (random_integer_below(2))
         spin = -spin;
     amplitude = random_float_between(0.2f, 0.6f);
-    PartType53Spawn(v, scale_ticks(15), amplitude * 0.3f, amplitude, (*(int *)&beam_arc_outer_color) | 0x7f000000, 0,
-                    spin, (float *)&target_delta, 0.0f);
+    PartType53Spawn(v, scale_ticks(15), amplitude * 0.3f, amplitude, (beam_arc_outer_color) | 0x7f000000, 0, spin,
+                    (float *)&target_delta, 0.0f);
     spin = -spin + (*(unsigned char *)v >> 8) + (((unsigned char *)v)[1] >> 8);
     PartType53Spawn(v, scale_ticks(15), amplitude * 0.15f, amplitude * 0.5f, 0x307f7f7f, 0, spin,
                     (float *)&target_delta, 0.0f);
@@ -610,8 +610,8 @@ void build_beam_and_arc_points(u8 *o) {
             PartType53Spawn(v, scale_ticks(15), amplitude, amplitude, 0, 0, spin, (float *)&target_delta, 0.0f);
         }
     }
-    PartType53Spawn(&v->tip, scale_ticks(12), amplitude * 0.1f, amplitude, (*(int *)&beam_arc_outer_color) | 0x7f000000,
-                    0, spin, (float *)veldin1_zero_vec, 0.0f);
+    PartType53Spawn(&v->tip, scale_ticks(12), amplitude * 0.1f, amplitude, (beam_arc_outer_color) | 0x7f000000, 0, spin,
+                    (float *)veldin1_zero_vec, 0.0f);
 }
 extern float frame_scale MACRO_ADDR;
 extern float beam_arc_tex_scroll SDATA(beam_arc_tex_scroll);
@@ -674,7 +674,7 @@ extern float g_debug_camera[];
 extern int beam_and_arc_first_pass_texture_index_gp SDATA(beam_and_arc_first_pass_texture_index_gp);
 extern int beam_and_arc_first_pass_base_vertex_color_gp SDATA(beam_and_arc_first_pass_base_vertex_color_gp);
 extern int beam_and_arc_second_pass_texture_index_gp SDATA(beam_and_arc_second_pass_texture_index_gp);
-extern short beam_arc_outer_color;
+extern int beam_arc_outer_color SDATA(beam_arc_outer_color);
 typedef float RW_2BBDE8[4] __attribute__((aligned(16)));
 typedef struct {
     float v[4];
@@ -705,7 +705,7 @@ void draw_beam_and_arc_two_pass_quads(void *m, int a, int b, int n, float sx, fl
     t.c[1] = col0;
     t.c[0] = col0;
     u.q0 = GetEffectTex(beam_and_arc_second_pass_texture_index_gp);
-    col1 = *(int *)&beam_arc_outer_color | (b << 24);
+    col1 = beam_arc_outer_color | (b << 24);
     u.q2 = t.q2;
     u.q1 = t.q1;
     u.z4 = t.z4;
@@ -795,11 +795,11 @@ void draw_beam_and_arc_two_pass_quads(void *m, int a, int b, int n, float sx, fl
         FastVecAdd(q2[2], r170, w130);
         FastVecSub(q2[3], r170, w130);
         if (i == 0) {
-            u.c[1] = *(int *)&beam_arc_outer_color;
-            u.c[0] = *(int *)&beam_arc_outer_color;
+            u.c[1] = beam_arc_outer_color;
+            u.c[0] = beam_arc_outer_color;
         } else if (i == n - 2) {
-            u.c[3] = *(int *)&beam_arc_outer_color;
-            u.c[2] = *(int *)&beam_arc_outer_color;
+            u.c[3] = beam_arc_outer_color;
+            u.c[2] = beam_arc_outer_color;
         } else if (i == 1) {
             u.c[1] = col1;
             u.c[0] = col1;
@@ -867,7 +867,7 @@ void draw_beam_anchor_camera_facing_quads(void *mv) {
         quad.uv[i].v = beam_anchor_quad_uvs[i].v;
     }
     draw_world_quad(&quad, 0, 0);
-    c = *(int *)&beam_arc_outer_color;
+    c = beam_arc_outer_color;
     quad.color[3] = c;
     quad.color[2] = c;
     quad.color[1] = c;

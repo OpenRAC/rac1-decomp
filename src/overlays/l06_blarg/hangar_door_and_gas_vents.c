@@ -1149,7 +1149,7 @@ extern void DeleteMoby(void *);
 extern int beam_barrier_strand_life MACRO_ADDR;
 extern int beam_barrier_strand_fade_ticks MACRO_ADDR;
 extern float beam_barrier_strand_length SDATA(beam_barrier_strand_length);
-extern short beam_barrier_draw_scale;
+extern float beam_barrier_draw_scale SDATA(beam_barrier_draw_scale);
 extern float beam_barrier_hit_line_drop SDATA(beam_barrier_hit_line_drop);
 extern int beam_barrier_spark_color_a SDATA(beam_barrier_spark_color_a);
 extern int beam_barrier_spark_color_b SDATA(beam_barrier_spark_color_b);
@@ -1362,7 +1362,7 @@ void update_beam_barrier(char *m) {
             int kk;
             int ib;
             euler_to_matrix(V.matrix, m + 0x40);
-            set_scale_matrix(V.sh.local, *(float *)&beam_barrier_draw_scale);
+            set_scale_matrix(V.sh.local, beam_barrier_draw_scale);
             i = 0;
             pos = (float *)(m + 0x10);
             sce_vu0_mul_matrix(V.matrix, V.matrix, V.sh.local);
@@ -1414,7 +1414,7 @@ extern void VU1_addGSregister(int, long);
 
 extern unsigned int FastTweenColor_r(unsigned int, unsigned int, float) __asm__("func_001FA8A8");
 extern void blarg_draw_strand_strip(int *, float *);
-extern short beam_barrier_draw_scale;
+extern float beam_barrier_draw_scale SDATA(beam_barrier_draw_scale);
 extern int beam_barrier_blend_a SDATA(beam_barrier_blend_a);
 extern int beam_barrier_blend_b SDATA(beam_barrier_blend_b);
 extern int beam_barrier_blend_c SDATA(beam_barrier_blend_c);
@@ -1452,7 +1452,7 @@ void draw_beam_barrier_segments(char *moby) {
     int j;
 
     euler_to_matrix(base_matrix, moby + 0x40);
-    set_scale_matrix(yaw_matrix, (*(float *)&beam_barrier_draw_scale));
+    set_scale_matrix(yaw_matrix, (beam_barrier_draw_scale));
     sce_vu0_mul_matrix(base_matrix, base_matrix, yaw_matrix);
     VU1_addGSregister(6, GetEffectTex(14));
     VU1_addGSregister(0x14, 0xFF9000000260L);

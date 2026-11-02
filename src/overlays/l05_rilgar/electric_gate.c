@@ -1614,7 +1614,7 @@ void update_triggered_moby_motion_and_manipulator_angle(char *moby) {
 }
 /* Rotor update: vendor_00317B68.c. */
 extern float g_frame_scale_sq MACRO_ADDR;
-extern short g_breast_growth_count;
+extern int g_breast_growth_count SDATA(g_breast_growth_count);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 
 typedef struct TrailEffect {
@@ -1636,8 +1636,8 @@ void update_hoverboard_girl_boobs_animation(char *moby, int data_addr) {
     int i;
     for (i = 0; i < 2; i++) {
         TrailFields *e = (TrailFields *)(t + i * 0x80);
-        if (*(int *)&g_breast_growth_count != 0) {
-            float value = *(int *)&g_breast_growth_count * 0.15f + 1.0f;
+        if (g_breast_growth_count != 0) {
+            float value = g_breast_growth_count * 0.15f + 1.0f;
             int frame;
             if (3.7f < value)
                 value = 3.7f;
@@ -1661,13 +1661,13 @@ extern int rilgar_cinematic_mode MACRO_ADDR;
 extern unsigned char gCheats[] MACRO_ADDR;
 extern G rilgar_cutscene_state;
 
-extern short g_breast_growth_count;
+extern int g_breast_growth_count SDATA(g_breast_growth_count);
 extern void AttachManipulator(char *, int, void *);
 extern void update_hoverboard_girl_boobs_animation(char *, int);
 
 /* For every moby sharing this one's class: arms the marker record, and notifies it while the level flag is set. */
 void update_hoverboard_girl_cutscene_instances(char *arg) {
-    if (rilgar_cinematic_mode == 2 && (gCheats[0] != 0 || *(int *)&g_breast_growth_count != 0)) {
+    if (rilgar_cinematic_mode == 2 && (gCheats[0] != 0 || g_breast_growth_count != 0)) {
         int i;
         for (i = 0; i < rilgar_cutscene_state.n; i++) {
             char *moby = rilgar_cutscene_state.m[i];
@@ -1681,7 +1681,7 @@ void update_hoverboard_girl_cutscene_instances(char *arg) {
                         *(float *)(q + 0x28) = 2.75f;
                     }
                 }
-                if (*(int *)&g_breast_growth_count != 0) {
+                if (g_breast_growth_count != 0) {
                     update_hoverboard_girl_boobs_animation(moby, *(int *)&((Moby *)arg)->pvars);
                 }
             }

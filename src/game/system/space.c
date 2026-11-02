@@ -202,12 +202,12 @@ LINKER_REMNANT("asm/remnants/text", func_0022F498);
 
 extern int space_load_level MACRO_ADDR;
 extern int space_load_in_progress_m __asm__("D_0015F6FC") MACRO_ADDR;
-extern short space_load_pending; /* SDA, gp -0x7670 */
+extern int space_load_pending SDATA(space_load_pending);
 
 /* Requests a switch to level arg0 and flags the load as pending. */
 void initialize_global_state_entry(int arg0) {
     space_load_level = arg0;
-    *(int *)&space_load_pending = 1;
+    space_load_pending = 1;
     space_load_in_progress_m = 1;
 }
 
@@ -2721,9 +2721,9 @@ typedef struct {
 } EnvironmentMappedObject;
 extern s32 ship_substate_r[] __asm__("D_0013E150");
 extern s32 g_game_mode MACRO_ADDR;
-extern short environment_mapping_uv_refresh_state;
-extern short env_map_was_active;
-extern short env_map_blend_timer;
+extern s32 environment_mapping_uv_refresh_state SDATA(environment_mapping_uv_refresh_state);
+extern s32 env_map_was_active SDATA(env_map_was_active);
+extern s32 env_map_blend_timer SDATA(env_map_blend_timer);
 extern short environment_mesh_colors;
 extern short environment_mesh_vertex_counts;
 extern short environment_mesh_quad_counts;
@@ -2794,10 +2794,10 @@ void render_environment_mapped_object(EnvironmentMappedObject *object) {
     if (g_game_mode == 6 && ship_substate_r[0] == 4) {
         mapping_enabled = 0;
     }
-    if (mapping_enabled != 0 || (*(s32 *)&environment_mapping_uv_refresh_state) == 1) {
-        (*(s32 *)&env_map_was_active) = 1;
-        fast_dec_timer(&(*(s32 *)&env_map_blend_timer));
-        transition_fraction = IntToFloat((*(s32 *)&env_map_blend_timer)) / IntToFloat(scale_game_frame_count(0x3C));
+    if (mapping_enabled != 0 || (environment_mapping_uv_refresh_state) == 1) {
+        (env_map_was_active) = 1;
+        fast_dec_timer(&(env_map_blend_timer));
+        transition_fraction = IntToFloat((env_map_blend_timer)) / IntToFloat(scale_game_frame_count(0x3C));
         for (element_index = 0; element_index < vertex_count; element_index++) {
             transform_vector(&env_map_world_positions[element_index], &positions[element_index], object_transform);
             FastVecSub(view_direction, &env_map_world_positions[element_index], camera_position_r);
@@ -2809,7 +2809,7 @@ void render_environment_mapped_object(EnvironmentMappedObject *object) {
             fast_vec_normalize(reflection, reflection, 1.0f);
             reflection[2] += 1.0f;
             sphere_denominator = vec_length(reflection[2] * 2.0f) * 2.0f;
-            if ((*(s32 *)&environment_mapping_uv_refresh_state) == 1 || (*(s32 *)&env_map_blend_timer) == 0) {
+            if ((environment_mapping_uv_refresh_state) == 1 || (env_map_blend_timer) == 0) {
                 env_map_uvs[element_index][0] = reflection[0] / sphere_denominator + 0.5f;
                 env_map_uvs[element_index][1] = reflection[1] / sphere_denominator + 0.5f;
             } else {
@@ -2821,12 +2821,12 @@ void render_environment_mapped_object(EnvironmentMappedObject *object) {
                     coordinate + (env_map_saved_uvs[element_index][1] - coordinate) * transition_fraction;
             }
         }
-        if ((*(s32 *)&environment_mapping_uv_refresh_state) == 1) {
-            (*(s32 *)&environment_mapping_uv_refresh_state) = 2;
+        if ((environment_mapping_uv_refresh_state) == 1) {
+            (environment_mapping_uv_refresh_state) = 2;
         }
     } else {
-        if ((*(s32 *)&env_map_was_active) == 1) {
-            (*(s32 *)&env_map_was_active) = 0;
+        if ((env_map_was_active) == 1) {
+            (env_map_was_active) = 0;
             for (element_index = 0; element_index < vertex_count; element_index++) {
                 env_map_saved_uvs[element_index][0] = env_map_uvs[element_index][0];
                 env_map_saved_uvs[element_index][1] = env_map_uvs[element_index][1];
@@ -2837,7 +2837,7 @@ void render_environment_mapped_object(EnvironmentMappedObject *object) {
                 transform_vector(&env_map_world_positions[element_index], &positions[element_index], object_transform);
             }
         }
-        (*(s32 *)&env_map_blend_timer) = scale_game_frame_count(0x3C);
+        (env_map_blend_timer) = scale_game_frame_count(0x3C);
     }
     for (element_index = 0; element_index < quad_count; element_index++) {
         for (corner_index = 0; corner_index < 4; corner_index++) {

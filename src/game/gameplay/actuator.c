@@ -130,12 +130,12 @@ LINKER_REMNANT("asm/remnants/text", func_001E94A0);
 
 extern int g_gs_texture_allocation_base MACRO_ADDR;
 extern int texture_alloc_counter MACRO_ADDR;
-extern short g_gs_texture_allocation_cursor;
+extern int g_gs_texture_allocation_cursor SDATA(g_gs_texture_allocation_cursor);
 
 /* Reset the texture allocation count and the GS texture allocation cursor. */
 void initialize_streaming_state(void) {
     texture_alloc_counter = 0;
-    *(int *)&g_gs_texture_allocation_cursor = g_gs_texture_allocation_base;
+    g_gs_texture_allocation_cursor = g_gs_texture_allocation_base;
 }
 __asm__(".section .text\n"
         "\tnop\n"

@@ -2614,7 +2614,7 @@ int CarriedMobyUpdate(Moby *self, char *q) {
 extern short suck_beam_segment_alpha[];
 extern float suction_effect_texture_u_offset SDATA(suction_effect_texture_u_offset);
 extern float suction_effect_texture_v_offset SDATA(suction_effect_texture_v_offset);
-extern short suck_beam_scroll_speed;
+extern float suck_beam_scroll_speed SDATA(suck_beam_scroll_speed);
 extern char suck_beam_ring_vertices[];
 extern char suck_beam_ring_vertices_base[];
 extern int GetEffectTex(int);
@@ -2655,7 +2655,7 @@ void suck_beam_draw_mesh(void) {
     a += step;
     for (i = 1; i < 10; i++) {
         b = suction_effect_texture_v_offset;
-        suction_effect_texture_v_offset = b + *(float *)&suck_beam_scroll_speed;
+        suction_effect_texture_v_offset = b + suck_beam_scroll_speed;
         if (suction_effect_texture_v_offset > 7.0f)
             suction_effect_texture_v_offset -= 7.0f;
         a2 = a + step;
@@ -2785,7 +2785,7 @@ void suck_beam_build(char *a, char *b) {
         build_look_at_matrix(suck_beam_wobble_to, (char *)s + 0x50, f, (char *)s + 0x60);
         suck_beam_wobble_angle = f;
     }
-    *(float *)&suck_beam_scroll_speed = 0.006f;
+    suck_beam_scroll_speed = 0.006f;
     suck_beam_init_zero_0 = 0;
     *(int *)&suck_beam_init_zero_1 = 0;
     if (suck_beam_clear_particles != 0) {
@@ -3136,7 +3136,7 @@ void suck_beam_queue_draw(int arg0) {
 }
 extern char suck_beam_points[];
 extern char suck_beam_points_base[];
-extern short suck_beam_scroll_speed;
+extern float suck_beam_scroll_speed SDATA(suck_beam_scroll_speed);
 extern float FastVecLength(void *);
 typedef float VQ[4] __attribute__((aligned(16)));
 
@@ -3148,7 +3148,7 @@ void stop_suck_cannon_suction_effect(int arg0) {
     char *p;
 
     suck_beam_rebuild = 1;
-    *(float *)&suck_beam_scroll_speed = *(float *)&suck_beam_scroll_speed * 0.5f;
+    suck_beam_scroll_speed = suck_beam_scroll_speed * 0.5f;
     suck_beam_clear_particles = 1;
     for (i = 0; i < 200; i++) {
         p = suck_beam_particles[i].p;

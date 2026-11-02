@@ -1281,7 +1281,7 @@ void emit_type_74_particles_from_moby_joints(void *m, char *t) {
     }
 }
 extern unsigned char gCheats[] MACRO_ADDR;
-extern short moby_trail_length;
+extern float moby_trail_length SDATA(moby_trail_length);
 extern float moby_trail_quad_uvs[][2];
 extern void libc_memset(void *, int, int);
 
@@ -1306,9 +1306,9 @@ void draw_linked_moby_trails(Moby *m) {
         return;
     }
     if (gCheats[2] != 0) {
-        *(float *)&moby_trail_length = 16.0f;
+        moby_trail_length = 16.0f;
     } else {
-        *(float *)&moby_trail_length = 5.0f;
+        moby_trail_length = 5.0f;
     }
 
     for (i = 0; i < 16; i++) {
@@ -1318,12 +1318,12 @@ void draw_linked_moby_trails(Moby *m) {
         e->pk[2] = 0xFF9000000260L;
         e->pk[0] = 0;
         e->pk[3] = 0x8000000048L;
-        base = IntToFloat((level_frame + 3) & 3) / (*(float *)&moby_trail_length * 4.0f);
+        base = IntToFloat((level_frame + 3) & 3) / (moby_trail_length * 4.0f);
         for (j = 0; j < 4; j++) {
             jj = (j >> 1) - 1;
             q[i].uv[j][0] = moby_trail_quad_uvs[j][0];
             q[i].uv[j][1] = moby_trail_quad_uvs[j][1];
-            a = IntToFloat(i - jj) / *(float *)&moby_trail_length + base;
+            a = IntToFloat(i - jj) / moby_trail_length + base;
             if (1.0f < a) {
                 a = 1.0f;
             } else if (a < 0.0f) {
@@ -1381,7 +1381,7 @@ extern void FastVecAdd(void *, void *, void *);
 extern void f49(void *, void *) __asm__("func_001F49B0");
 extern void cb(void) __asm__("func_L11_0031A738");
 extern int level_frame MACRO_ADDR;
-extern short moby_trail_length;
+extern float moby_trail_length SDATA(moby_trail_length);
 
 struct UpdateMobyTrailPointsVars {
     u8 pad_00[0x2C0];
@@ -1398,7 +1398,7 @@ void update_moby_trail_points(Moby *moby) {
     int t;
     if ((level_frame & 3) == 0) {
         int cnt;
-        float lim = *(float *)&moby_trail_length;
+        float lim = moby_trail_length;
         cnt = ((struct UpdateMobyTrailPointsVars *)d)->unk_2C0;
         ((struct UpdateMobyTrailPointsVars *)d)->unk_2C4 = (((struct UpdateMobyTrailPointsVars *)d)->unk_2C4 + 1) % 16;
         if ((float)cnt < lim) {

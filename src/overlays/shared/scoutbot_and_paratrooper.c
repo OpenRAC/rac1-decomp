@@ -727,9 +727,9 @@ extern int homing_shot_launch_upper SDATA(homing_shot_launch_upper);
 extern int homing_shot_flash_color_a SDATA(homing_shot_flash_color_a);
 extern int homing_shot_flash_color_b SDATA(homing_shot_flash_color_b);
 extern float homing_shot_launch_spread SDATA(homing_shot_launch_spread);
-extern short homing_shot_spark_time_a;
-extern short homing_shot_spark_time_b;
-extern short homing_shot_spark_time_c;
+extern int homing_shot_spark_time_a SDATA(homing_shot_spark_time_a);
+extern int homing_shot_spark_time_b SDATA(homing_shot_spark_time_b);
+extern int homing_shot_spark_time_c SDATA(homing_shot_spark_time_c);
 extern float moby_creation_particle_primary_motion_w_gp SDATA(moby_creation_particle_primary_motion_w_gp);
 extern float moby_creation_particle_secondary_motion_w_gp SDATA(moby_creation_particle_secondary_motion_w_gp);
 
@@ -800,12 +800,12 @@ char *create_moby_with_particles(int owner, float *position, float *rotation, in
                 i++;
                 PartType21Spawn(&((struct Moby *)moby)->pos, velocity_ptr, (homing_shot_flash_color_a),
                                 (homing_shot_flash_color_b), rand_range(scale_ticks(10), scale_ticks(20)), 1, 20000.0f);
-                a = truncate_float_to_s32(multiply_global_factor(random_float_between(
-                    (float)(*(int *)&homing_shot_spark_time_a), (float)(*(int *)&homing_shot_spark_time_a) * 1.2f)));
-                b = truncate_float_to_s32(multiply_global_factor(random_float_between(
-                    (float)(*(int *)&homing_shot_spark_time_b), (float)(*(int *)&homing_shot_spark_time_b) * 1.2f)));
-                c = truncate_float_to_s32(multiply_global_factor(random_float_between(
-                    (float)(*(int *)&homing_shot_spark_time_c), (float)(*(int *)&homing_shot_spark_time_c) * 1.5f)));
+                a = truncate_float_to_s32(multiply_global_factor(
+                    random_float_between((float)(homing_shot_spark_time_a), (float)(homing_shot_spark_time_a) * 1.2f)));
+                b = truncate_float_to_s32(multiply_global_factor(
+                    random_float_between((float)(homing_shot_spark_time_b), (float)(homing_shot_spark_time_b) * 1.2f)));
+                c = truncate_float_to_s32(multiply_global_factor(
+                    random_float_between((float)(homing_shot_spark_time_c), (float)(homing_shot_spark_time_c) * 1.5f)));
                 PartType02Spawn(&((struct Moby *)moby)->pos, velocity_ptr, offset_ptr, (homing_shot_launch_lower),
                                 (homing_shot_launch_upper), a, b, c, -1);
             } while ((float)i < (homing_shot_launch_puffs));
@@ -842,9 +842,9 @@ extern float homing_shot_spin_rate SDATA(homing_shot_spin_rate);
 extern int homing_shot_trail_lower SDATA(homing_shot_trail_lower);
 extern int homing_shot_trail_upper SDATA(homing_shot_trail_upper);
 extern float homing_shot_trail_spread SDATA(homing_shot_trail_spread);
-extern short homing_shot_spark_time_a;
-extern short homing_shot_spark_time_b;
-extern short homing_shot_spark_time_c;
+extern int homing_shot_spark_time_a SDATA(homing_shot_spark_time_a);
+extern int homing_shot_spark_time_b SDATA(homing_shot_spark_time_b);
+extern int homing_shot_spark_time_c SDATA(homing_shot_spark_time_c);
 extern float homing_projectile_trail_primary_motion_w_gp SDATA(homing_projectile_trail_primary_motion_w_gp);
 extern float homing_projectile_trail_secondary_motion_w_gp SDATA(homing_projectile_trail_secondary_motion_w_gp);
 extern float batalia_coll_hit_point[4];
@@ -895,12 +895,12 @@ void rocket_458_update(char *moby) {
         velocity[3] = (homing_projectile_trail_primary_motion_w_gp);
         offset[3] = (homing_projectile_trail_secondary_motion_w_gp);
         i++;
-        a = truncate_float_to_s32(multiply_global_factor(random_float_between(
-            (float)(*(int *)&homing_shot_spark_time_a), (float)(*(int *)&homing_shot_spark_time_a) * 1.2f)));
-        b = truncate_float_to_s32(multiply_global_factor(random_float_between(
-            (float)(*(int *)&homing_shot_spark_time_b), (float)(*(int *)&homing_shot_spark_time_b) * 1.2f)));
-        c = truncate_float_to_s32(multiply_global_factor(random_float_between(
-            (float)(*(int *)&homing_shot_spark_time_c), (float)(*(int *)&homing_shot_spark_time_c) * 1.5f)));
+        a = truncate_float_to_s32(multiply_global_factor(
+            random_float_between((float)(homing_shot_spark_time_a), (float)(homing_shot_spark_time_a) * 1.2f)));
+        b = truncate_float_to_s32(multiply_global_factor(
+            random_float_between((float)(homing_shot_spark_time_b), (float)(homing_shot_spark_time_b) * 1.2f)));
+        c = truncate_float_to_s32(multiply_global_factor(
+            random_float_between((float)(homing_shot_spark_time_c), (float)(homing_shot_spark_time_c) * 1.5f)));
         PartType02Spawn(position, velocity, offset, (homing_shot_trail_lower), (homing_shot_trail_upper), a, b, c, -1);
     }
     ((Moby *)moby)->rot.x = FastAddRots(((Moby *)moby)->rot.x, (homing_shot_spin_rate) * 0.017453292f * g_frame_time *

@@ -15,9 +15,9 @@ void update_electric_bolt_geometry_and_particles(void *moby) {
     electric_bolt_swell_phase = FastAddRots(electric_bolt_swell_phase, electric_bolt_swell_phase_speed);
     scale = FastVecDist((char *)moby + 0x10, data + 0x10) * 0.05f;
     if (flag) {
-        *(int *)&electric_bolt_color = 0x7F2040;
+        electric_bolt_color = 0x7F2040;
     } else {
-        *(int *)&electric_bolt_color = 0x7F2020;
+        electric_bolt_color = 0x7F2020;
     }
     FastVecSub(&s[0], data + 0x10, (char *)moby + 0x10);
     vec_scale_to_length(&s[0], &s[0], 1.0f);
@@ -166,14 +166,14 @@ void update_electric_bolt_geometry_and_particles(void *moby) {
     if (random_integer_below(2))
         r = -r;
     f20 = random_float_between(0.2f, 0.6f);
-    spawn_ec290((char *)moby + 0x10, scale_ticks(15), f20 * 0.3f, f20, *(int *)&electric_bolt_color | 0x7F000000, 0, r,
-                &s[5], 0.0f);
+    spawn_ec290((char *)moby + 0x10, scale_ticks(15), f20 * 0.3f, f20, electric_bolt_color | 0x7F000000, 0, r, &s[5],
+                0.0f);
     r = -r;
     spawn_ec290((char *)moby + 0x10, scale_ticks(15), f20 * 0.15f, f20 * 0.5f, 0x307F7F7F, 0, r, &s[5], 0.0f);
     r = rand_range(1, 8);
     if (random_integer_below(2))
         r = -r;
     f20 = random_float_between(0.15f, 3.0f);
-    spawn_ec290(data + 0x10, scale_ticks(12), f20 * 0.1f, f20, *(int *)&electric_bolt_color | 0x7F000000, 0, r,
+    spawn_ec290(data + 0x10, scale_ticks(12), f20 * 0.1f, f20, electric_bolt_color | 0x7F000000, 0, r,
                 veldin2_zero_vec_r, 0.0f);
 }

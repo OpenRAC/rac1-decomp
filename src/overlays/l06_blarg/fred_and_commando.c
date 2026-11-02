@@ -69,17 +69,17 @@ typedef struct {
     float uv[4][2];
     long unk70, tex, unk80, unk88;
 } Packet;
-extern short dual_texture_mesh_blend_color_a_selector_gp;
-extern short dual_texture_mesh_blend_color_b_selector_gp;
-extern short dual_texture_mesh_blend_alpha_c_selector_gp;
-extern short dual_texture_mesh_blend_color_d_selector_gp;
-extern short dual_texture_mesh_blend_fixed_alpha_gp;
-extern short dual_texture_mesh_texture;
-extern short dual_texture_mesh_color;
-extern short blarg_quad_mesh_second_color;
-extern short dual_texture_mesh_scale;
-extern short dual_texture_mesh_u_scroll_scale;
-extern short dual_texture_mesh_v_scroll_scale;
+extern int dual_texture_mesh_blend_color_a_selector_gp SDATA(dual_texture_mesh_blend_color_a_selector_gp);
+extern int dual_texture_mesh_blend_color_b_selector_gp SDATA(dual_texture_mesh_blend_color_b_selector_gp);
+extern int dual_texture_mesh_blend_alpha_c_selector_gp SDATA(dual_texture_mesh_blend_alpha_c_selector_gp);
+extern int dual_texture_mesh_blend_color_d_selector_gp SDATA(dual_texture_mesh_blend_color_d_selector_gp);
+extern int dual_texture_mesh_blend_fixed_alpha_gp SDATA(dual_texture_mesh_blend_fixed_alpha_gp);
+extern int dual_texture_mesh_texture SDATA(dual_texture_mesh_texture);
+extern unsigned int dual_texture_mesh_color SDATA(dual_texture_mesh_color);
+extern int blarg_quad_mesh_second_color SDATA(blarg_quad_mesh_second_color);
+extern float dual_texture_mesh_scale SDATA(dual_texture_mesh_scale);
+extern float dual_texture_mesh_u_scroll_scale SDATA(dual_texture_mesh_u_scroll_scale);
+extern float dual_texture_mesh_v_scroll_scale SDATA(dual_texture_mesh_v_scroll_scale);
 extern float blarg_camera_pos_r[] __asm__("D_L06_00167640");
 extern float dual_mesh50_uvs[][2];
 extern short dual_mesh50_corner_indices[][4][2];
@@ -102,33 +102,33 @@ void draw_dual_texture_50_quad_mesh(void) {
     float matrix[4][4] __attribute__((aligned(16)));
     float vec2[4] __attribute__((aligned(16)));
     float vec1[4] __attribute__((aligned(16)));
-    float y_offset = (*(float *)&dual_texture_mesh_u_scroll_scale) * referencePosition[86];
-    float x_offset = (*(float *)&dual_texture_mesh_v_scroll_scale) * referencePosition[85];
+    float y_offset = (dual_texture_mesh_u_scroll_scale)*referencePosition[86];
+    float x_offset = (dual_texture_mesh_v_scroll_scale)*referencePosition[85];
     void *matrix_ptr;
     long flags;
     int i, j;
 
-    long tex = GetEffectTex_r((*(int *)&dual_texture_mesh_texture));
+    long tex = GetEffectTex_r((dual_texture_mesh_texture));
     first.tex = tex;
     second.tex = GetEffectTex_r(0x2a);
     second.unk80 = 0xFF9000000260L;
     first.unk80 = 0xFF9000000260L;
-    flags = (long)(*(int *)&dual_texture_mesh_blend_color_a_selector_gp);
-    flags |= (long)(*(int *)&dual_texture_mesh_blend_color_b_selector_gp) << 2;
-    flags |= (long)(*(int *)&dual_texture_mesh_blend_alpha_c_selector_gp) << 4;
-    flags |= (long)(*(int *)&dual_texture_mesh_blend_color_d_selector_gp) << 6;
-    flags |= (long)(*(int *)&dual_texture_mesh_blend_fixed_alpha_gp) << 32;
+    flags = (long)(dual_texture_mesh_blend_color_a_selector_gp);
+    flags |= (long)(dual_texture_mesh_blend_color_b_selector_gp) << 2;
+    flags |= (long)(dual_texture_mesh_blend_alpha_c_selector_gp) << 4;
+    flags |= (long)(dual_texture_mesh_blend_color_d_selector_gp) << 6;
+    flags |= (long)(dual_texture_mesh_blend_fixed_alpha_gp) << 32;
     second.unk88 = flags;
     first.unk88 = flags;
     second.unk70 = 0;
     first.unk70 = 0;
     matrix_ptr = matrix;
     set_identity_matrix(matrix);
-    first.color[0] = first.color[1] = first.color[2] = first.color[3] = (*(unsigned int *)&dual_texture_mesh_color);
-    second.color[0] = second.color[1] = second.color[2] = second.color[3] = (*(int *)&blarg_quad_mesh_second_color);
+    first.color[0] = first.color[1] = first.color[2] = first.color[3] = (dual_texture_mesh_color);
+    second.color[0] = second.color[1] = second.color[2] = second.color[3] = (blarg_quad_mesh_second_color);
     i = 0;
     do {
-        FastVecScale(vec1, dual_mesh50_centers[i], (*(float *)&dual_texture_mesh_scale));
+        FastVecScale(vec1, dual_mesh50_centers[i], (dual_texture_mesh_scale));
         transform_vector(vec1, vec1, matrix);
         FastVecSub(vec2, vec1, blarg_camera_pos_r);
         vec_scale_to_length(vec2, vec2, 1.0f);
@@ -162,17 +162,17 @@ typedef struct {
     float uv[4][2];
     long unk70, tex, unk80, unk88;
 } Packet_2fd460;
-extern short dual_texture_mesh_blend_color_a_selector_gp;
-extern short dual_texture_mesh_blend_color_b_selector_gp;
-extern short dual_texture_mesh_blend_alpha_c_selector_gp;
-extern short dual_texture_mesh_blend_color_d_selector_gp;
-extern short dual_texture_mesh_blend_fixed_alpha_gp;
-extern short dual_texture_mesh_texture;
-extern short dual_texture_mesh_color;
-extern short blarg_quad_mesh_second_color;
-extern short dual_texture_mesh_scale;
-extern short dual_texture_mesh_u_scroll_scale;
-extern short dual_texture_mesh_v_scroll_scale;
+extern int dual_texture_mesh_blend_color_a_selector_gp SDATA(dual_texture_mesh_blend_color_a_selector_gp);
+extern int dual_texture_mesh_blend_color_b_selector_gp SDATA(dual_texture_mesh_blend_color_b_selector_gp);
+extern int dual_texture_mesh_blend_alpha_c_selector_gp SDATA(dual_texture_mesh_blend_alpha_c_selector_gp);
+extern int dual_texture_mesh_blend_color_d_selector_gp SDATA(dual_texture_mesh_blend_color_d_selector_gp);
+extern int dual_texture_mesh_blend_fixed_alpha_gp SDATA(dual_texture_mesh_blend_fixed_alpha_gp);
+extern int dual_texture_mesh_texture SDATA(dual_texture_mesh_texture);
+extern unsigned int dual_texture_mesh_color SDATA(dual_texture_mesh_color);
+extern int blarg_quad_mesh_second_color SDATA(blarg_quad_mesh_second_color);
+extern float dual_texture_mesh_scale SDATA(dual_texture_mesh_scale);
+extern float dual_texture_mesh_u_scroll_scale SDATA(dual_texture_mesh_u_scroll_scale);
+extern float dual_texture_mesh_v_scroll_scale SDATA(dual_texture_mesh_v_scroll_scale);
 extern float blarg_camera_pos_r2[] __asm__("D_L06_00167640");
 extern short dual_mesh58_corner_indices[][4][2];
 extern float dual_mesh58_uvs[][2];
@@ -196,20 +196,19 @@ void draw_dual_texture_58_quad_mesh(void) {
     float vec2[4] __attribute__((aligned(16)));
     float vec1[4] __attribute__((aligned(16)));
     void *matrix_ptr;
-    float y_offset = (*(float *)&dual_texture_mesh_u_scroll_scale) * referencePosition[86];
-    float x_offset = (*(float *)&dual_texture_mesh_v_scroll_scale) * referencePosition[85];
+    float y_offset = (dual_texture_mesh_u_scroll_scale)*referencePosition[86];
+    float x_offset = (dual_texture_mesh_v_scroll_scale)*referencePosition[85];
     long flags;
     int i, j;
     float facing;
 
-    first.tex = GetEffectTex_r2((*(int *)&dual_texture_mesh_texture));
+    first.tex = GetEffectTex_r2((dual_texture_mesh_texture));
     second.tex = GetEffectTex_r2(0x2a);
     matrix_ptr = matrix;
-    flags = (long)(*(int *)&dual_texture_mesh_blend_color_a_selector_gp) |
-            (long)(*(int *)&dual_texture_mesh_blend_color_b_selector_gp) << 2 |
-            (long)(*(int *)&dual_texture_mesh_blend_alpha_c_selector_gp) << 4 |
-            (long)(*(int *)&dual_texture_mesh_blend_color_d_selector_gp) << 6 |
-            (long)(*(int *)&dual_texture_mesh_blend_fixed_alpha_gp) << 32;
+    flags =
+        (long)(dual_texture_mesh_blend_color_a_selector_gp) | (long)(dual_texture_mesh_blend_color_b_selector_gp) << 2 |
+        (long)(dual_texture_mesh_blend_alpha_c_selector_gp) << 4 |
+        (long)(dual_texture_mesh_blend_color_d_selector_gp) << 6 | (long)(dual_texture_mesh_blend_fixed_alpha_gp) << 32;
     second.unk88 = flags;
     first.unk88 = flags;
     second.unk80 = 0xFF9000000260L;
@@ -217,17 +216,17 @@ void draw_dual_texture_58_quad_mesh(void) {
     second.unk70 = 0;
     first.unk70 = 0;
     set_identity_matrix(matrix_ptr);
-    first.color[3] = (*(unsigned int *)&dual_texture_mesh_color);
-    first.color[2] = (*(unsigned int *)&dual_texture_mesh_color);
-    first.color[1] = (*(unsigned int *)&dual_texture_mesh_color);
-    first.color[0] = (*(unsigned int *)&dual_texture_mesh_color);
-    second.color[3] = (*(int *)&blarg_quad_mesh_second_color);
-    second.color[2] = (*(int *)&blarg_quad_mesh_second_color);
-    second.color[1] = (*(int *)&blarg_quad_mesh_second_color);
-    second.color[0] = (*(int *)&blarg_quad_mesh_second_color);
+    first.color[3] = (dual_texture_mesh_color);
+    first.color[2] = (dual_texture_mesh_color);
+    first.color[1] = (dual_texture_mesh_color);
+    first.color[0] = (dual_texture_mesh_color);
+    second.color[3] = (blarg_quad_mesh_second_color);
+    second.color[2] = (blarg_quad_mesh_second_color);
+    second.color[1] = (blarg_quad_mesh_second_color);
+    second.color[0] = (blarg_quad_mesh_second_color);
     i = 0;
     do {
-        FastVecScale(vec1, dual_mesh58_centers[i], (*(float *)&dual_texture_mesh_scale));
+        FastVecScale(vec1, dual_mesh58_centers[i], (dual_texture_mesh_scale));
         transform_vector(vec1, vec1, matrix);
         FastVecSub(vec2, vec1, blarg_camera_pos_r2);
         vec_scale_to_length(vec2, vec2, 1.0f);
@@ -241,7 +240,7 @@ void draw_dual_texture_58_quad_mesh(void) {
                 int a = dual_mesh58_corner_indices[i][j][0];
                 int b = dual_mesh58_corner_indices[i][j][1];
                 float u, v;
-                FastVecScale(&first.v[j], dual_mesh58_verts[a], (*(float *)&dual_texture_mesh_scale));
+                FastVecScale(&first.v[j], dual_mesh58_verts[a], (dual_texture_mesh_scale));
                 qcopy(&second.v[j], &first.v[j]);
                 u = dual_mesh58_uvs[b][0];
                 v = dual_mesh58_uvs[b][1];
@@ -266,17 +265,17 @@ typedef struct {
     float uv[4][2];
     long unk70, tex, unk80, unk88;
 } Packet_2fd748;
-extern short dual_texture_mesh_blend_color_a_selector_gp;
-extern short dual_texture_mesh_blend_color_b_selector_gp;
-extern short dual_texture_mesh_blend_alpha_c_selector_gp;
-extern short dual_texture_mesh_blend_color_d_selector_gp;
-extern short dual_texture_mesh_blend_fixed_alpha_gp;
-extern short dual_texture_mesh_texture;
-extern short dual_texture_mesh_color;
-extern short blarg_quad_mesh_second_color;
-extern short dual_texture_mesh_scale;
-extern short dual_texture_mesh_u_scroll_scale;
-extern short dual_texture_mesh_v_scroll_scale;
+extern int dual_texture_mesh_blend_color_a_selector_gp SDATA(dual_texture_mesh_blend_color_a_selector_gp);
+extern int dual_texture_mesh_blend_color_b_selector_gp SDATA(dual_texture_mesh_blend_color_b_selector_gp);
+extern int dual_texture_mesh_blend_alpha_c_selector_gp SDATA(dual_texture_mesh_blend_alpha_c_selector_gp);
+extern int dual_texture_mesh_blend_color_d_selector_gp SDATA(dual_texture_mesh_blend_color_d_selector_gp);
+extern int dual_texture_mesh_blend_fixed_alpha_gp SDATA(dual_texture_mesh_blend_fixed_alpha_gp);
+extern int dual_texture_mesh_texture SDATA(dual_texture_mesh_texture);
+extern unsigned int dual_texture_mesh_color SDATA(dual_texture_mesh_color);
+extern int blarg_quad_mesh_second_color SDATA(blarg_quad_mesh_second_color);
+extern float dual_texture_mesh_scale SDATA(dual_texture_mesh_scale);
+extern float dual_texture_mesh_u_scroll_scale SDATA(dual_texture_mesh_u_scroll_scale);
+extern float dual_texture_mesh_v_scroll_scale SDATA(dual_texture_mesh_v_scroll_scale);
 extern float blarg_camera_pos_r3[] __asm__("D_L06_00167640");
 extern short dual_mesh864_corner_indices[][4][2];
 extern float dual_mesh864_uvs[][2];
@@ -300,20 +299,19 @@ void draw_dual_texture_864_quad_mesh(void) {
     float vec2[4] __attribute__((aligned(16)));
     float vec1[4] __attribute__((aligned(16)));
     void *matrix_ptr;
-    float y_offset = (*(float *)&dual_texture_mesh_u_scroll_scale) * referencePosition[86];
-    float x_offset = (*(float *)&dual_texture_mesh_v_scroll_scale) * referencePosition[85];
+    float y_offset = (dual_texture_mesh_u_scroll_scale)*referencePosition[86];
+    float x_offset = (dual_texture_mesh_v_scroll_scale)*referencePosition[85];
     long flags;
     int i, j;
     float facing;
 
-    first.tex = GetEffectTex_r3((*(int *)&dual_texture_mesh_texture));
+    first.tex = GetEffectTex_r3((dual_texture_mesh_texture));
     second.tex = GetEffectTex_r3(0x2a);
     matrix_ptr = matrix;
-    flags = (long)(*(int *)&dual_texture_mesh_blend_color_a_selector_gp) |
-            (long)(*(int *)&dual_texture_mesh_blend_color_b_selector_gp) << 2 |
-            (long)(*(int *)&dual_texture_mesh_blend_alpha_c_selector_gp) << 4 |
-            (long)(*(int *)&dual_texture_mesh_blend_color_d_selector_gp) << 6 |
-            (long)(*(int *)&dual_texture_mesh_blend_fixed_alpha_gp) << 32;
+    flags =
+        (long)(dual_texture_mesh_blend_color_a_selector_gp) | (long)(dual_texture_mesh_blend_color_b_selector_gp) << 2 |
+        (long)(dual_texture_mesh_blend_alpha_c_selector_gp) << 4 |
+        (long)(dual_texture_mesh_blend_color_d_selector_gp) << 6 | (long)(dual_texture_mesh_blend_fixed_alpha_gp) << 32;
     second.unk88 = flags;
     first.unk88 = flags;
     second.unk80 = 0xFF9000000260L;
@@ -321,17 +319,17 @@ void draw_dual_texture_864_quad_mesh(void) {
     second.unk70 = 0;
     first.unk70 = 0;
     set_identity_matrix(matrix_ptr);
-    first.color[3] = (*(unsigned int *)&dual_texture_mesh_color);
-    first.color[2] = (*(unsigned int *)&dual_texture_mesh_color);
-    first.color[1] = (*(unsigned int *)&dual_texture_mesh_color);
-    first.color[0] = (*(unsigned int *)&dual_texture_mesh_color);
-    second.color[3] = (*(int *)&blarg_quad_mesh_second_color);
-    second.color[2] = (*(int *)&blarg_quad_mesh_second_color);
-    second.color[1] = (*(int *)&blarg_quad_mesh_second_color);
-    second.color[0] = (*(int *)&blarg_quad_mesh_second_color);
+    first.color[3] = (dual_texture_mesh_color);
+    first.color[2] = (dual_texture_mesh_color);
+    first.color[1] = (dual_texture_mesh_color);
+    first.color[0] = (dual_texture_mesh_color);
+    second.color[3] = (blarg_quad_mesh_second_color);
+    second.color[2] = (blarg_quad_mesh_second_color);
+    second.color[1] = (blarg_quad_mesh_second_color);
+    second.color[0] = (blarg_quad_mesh_second_color);
     i = 0;
     do {
-        FastVecScale(vec1, dual_mesh864_centers[i], (*(float *)&dual_texture_mesh_scale));
+        FastVecScale(vec1, dual_mesh864_centers[i], (dual_texture_mesh_scale));
         transform_vector(vec1, vec1, matrix);
         FastVecSub(vec2, vec1, blarg_camera_pos_r3);
         vec_scale_to_length(vec2, vec2, 1.0f);
@@ -343,7 +341,7 @@ void draw_dual_texture_864_quad_mesh(void) {
                 int a = dual_mesh864_corner_indices[i][j][0];
                 int b = dual_mesh864_corner_indices[i][j][1];
                 float u, v;
-                FastVecScale(&first.v[j], dual_mesh864_verts[a], (*(float *)&dual_texture_mesh_scale));
+                FastVecScale(&first.v[j], dual_mesh864_verts[a], (dual_texture_mesh_scale));
                 qcopy(&second.v[j], &first.v[j]);
                 u = dual_mesh864_uvs[b][0];
                 v = dual_mesh864_uvs[b][1];
@@ -2456,8 +2454,8 @@ extern void set_scale_matrix(float *, float);
 extern void func_L00_00273F80(void *, void *, int, float, int, int, int);
 extern int vector_stream_fade_ticks MACRO_ADDR;
 extern int vector_stream_regen_ticks MACRO_ADDR;
-extern short vector_stream_uv_scroll;
-extern short vector_stream_matrix_scale;
+extern float vector_stream_uv_scroll SDATA(vector_stream_uv_scroll);
+extern float vector_stream_matrix_scale SDATA(vector_stream_matrix_scale);
 extern float vector_stream_phase_rate_gp SDATA(vector_stream_phase_rate_gp);
 extern float vector_stream_increment_random_scale_bound_gp SDATA(vector_stream_increment_random_scale_bound_gp);
 extern float vector_stream_x_extent_gp SDATA(vector_stream_x_extent_gp);
@@ -2539,10 +2537,10 @@ void update_moby_vector_streams_and_particle_burst(char *moby) {
                 d->f18 = Moby_PlaySound_r2(0, 4, moby);
             }
             test_moby_vector_stream_collision_lines((char *)&((struct Moby *)moby)->bsphere);
-            v = *(float *)&vector_stream_uv_scroll + vector_stream_phase_rate_gp * g_frame_time;
-            *(float *)&vector_stream_uv_scroll = v;
+            v = vector_stream_uv_scroll + vector_stream_phase_rate_gp * g_frame_time;
+            vector_stream_uv_scroll = v;
             if (1.0f < v) {
-                *(float *)&vector_stream_uv_scroll = v - 1.0f;
+                vector_stream_uv_scroll = v - 1.0f;
             }
             f21 = vector_stream_x_extent_gp / 30.0f;
             f20 = -(vector_stream_x_extent_gp * 0.5f);
@@ -2591,7 +2589,7 @@ void update_moby_vector_streams_and_particle_burst(char *moby) {
             int j;
 
             euler_to_matrix(u.m.a, &((struct Moby *)moby)->rot.x);
-            set_scale_matrix(u.m.b, *(float *)&vector_stream_matrix_scale);
+            set_scale_matrix(u.m.b, vector_stream_matrix_scale);
             sce_vu0_mul_matrix(u.m.a, u.m.a, u.m.b);
             for (i = 0; i < 4; i++) {
                 euler_to_matrix(u.m.b, &vector_stream_rotations[i * 4]);
@@ -2668,7 +2666,7 @@ extern void blarg_draw_strand_strip(int *, float *);
 extern float vector_stream_rotations[];
 extern int vector_stream_regen_ticks MACRO_ADDR;
 extern int vector_stream_fade_ticks MACRO_ADDR;
-extern short vector_stream_matrix_scale;
+extern float vector_stream_matrix_scale SDATA(vector_stream_matrix_scale);
 extern int vector_stream_alpha_b SDATA(vector_stream_alpha_b);
 extern int vector_stream_alpha_a SDATA(vector_stream_alpha_a);
 extern int vector_stream_alpha_c SDATA(vector_stream_alpha_c);
@@ -2676,7 +2674,7 @@ extern int vector_stream_alpha_d SDATA(vector_stream_alpha_d);
 extern int vector_stream_color_a SDATA(vector_stream_color_a);
 extern int vector_stream_color_b SDATA(vector_stream_color_b);
 extern float vector_stream_texture_u_step SDATA(vector_stream_texture_u_step);
-extern short vector_stream_uv_scroll;
+extern float vector_stream_uv_scroll SDATA(vector_stream_uv_scroll);
 
 /* draws four copies of a model transformed by a table, then spawns a part for each */
 void draw_moby_vector_streams(char *m) {
@@ -2694,7 +2692,7 @@ void draw_moby_vector_streams(char *m) {
     int j;
     data = ((char *)((Moby *)m)->pvars);
     euler_to_matrix(a, (float *)(m + 0x40));
-    set_scale_matrix(b, *(float *)&vector_stream_matrix_scale);
+    set_scale_matrix(b, vector_stream_matrix_scale);
     sce_vu0_mul_matrix(a, a, b);
     VU1_addGSregister(6, GetEffectTex(0xE));
     VU1_addGSregister(0x14, 0xFF9000000260L);
@@ -2724,7 +2722,7 @@ void draw_moby_vector_streams(char *m) {
     s[3] = vector_stream_color_a;
     s[4] = vector_stream_color_b;
     *(float *)&s[7] = vector_stream_texture_u_step;
-    *(float *)&s[8] = *(float *)&vector_stream_uv_scroll;
+    *(float *)&s[8] = vector_stream_uv_scroll;
     s[5] = 0x1E;
     s[6] = (int)data;
     pp = m0;

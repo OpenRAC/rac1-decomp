@@ -2497,8 +2497,8 @@ void RotatePlatformUpdate(char *moby) {
     ((struct Moby *)moby)->rot.z = FastAddRots(((struct Moby *)moby)->rot.z, g_frame_time * 0.08726646f);
     update_entity_matrix(data + 0x20, zero, previous_rotation, &((struct Moby *)moby)->rot);
 }
-extern short transport_pod_max_speed;
-extern short transport_pod_accel;
+extern float transport_pod_max_speed SDATA(transport_pod_max_speed);
+extern float transport_pod_accel SDATA(transport_pod_accel);
 extern s32 g_current_level_index MACRO_ADDR;
 extern float g_frame_time;
 extern float g_frame_time_sq;
@@ -2662,10 +2662,9 @@ void transport_pod_update(unsigned char *moby) {
             }
             break;
         case TRANSPORT_POD_RAISE_FOR_BOARDING:
-            ApproachWithVelocity(
-                &((struct Moby *)moby)->pos.z, &transport_pod_vars->speed, NODE(transport_pod_vars->node_a)[0].pos[2],
-                (*(float *)&transport_pod_accel) * g_frame_time_sq, (*(float *)&transport_pod_accel) * g_frame_time_sq,
-                (*(float *)&transport_pod_max_speed) * g_frame_time);
+            ApproachWithVelocity(&((struct Moby *)moby)->pos.z, &transport_pod_vars->speed,
+                                 NODE(transport_pod_vars->node_a)[0].pos[2], (transport_pod_accel)*g_frame_time_sq,
+                                 (transport_pod_accel)*g_frame_time_sq, (transport_pod_max_speed)*g_frame_time);
             snap_transport_pod_rails_to_offsets((char *)moby);
             if (NODE(transport_pod_vars->node_a)[0].pos[2] - 0.0001f <= ((struct Moby *)moby)->pos.z) {
                 moby[0x20] = 4;
@@ -2777,9 +2776,8 @@ void transport_pod_update(unsigned char *moby) {
         case TRANSPORT_POD_LOWER_AND_TRANSFER_TO_OTHER_STOP:
             ApproachWithVelocity(&((struct Moby *)moby)->pos.z, &transport_pod_vars->speed,
                                  NODE(transport_pod_vars->node_a)[0].pos[2] - 6.0f,
-                                 (*(float *)&transport_pod_accel) * g_frame_time_sq,
-                                 (*(float *)&transport_pod_accel) * g_frame_time_sq,
-                                 (*(float *)&transport_pod_max_speed) * g_frame_time);
+                                 (transport_pod_accel)*g_frame_time_sq, (transport_pod_accel)*g_frame_time_sq,
+                                 (transport_pod_max_speed)*g_frame_time);
             snap_transport_pod_rails_to_offsets((char *)moby);
             if (((struct Moby *)moby)->pos.z < NODE(transport_pod_vars->node_a)[0].pos[2] - 5.999f) {
                 if (((struct Moby *)moby)->command == 0) {
@@ -2824,10 +2822,9 @@ void transport_pod_update(unsigned char *moby) {
             set_camera_rotation(b);
             break;
         case TRANSPORT_POD_RAISE_FOR_DISEMBARKING:
-            ApproachWithVelocity(
-                &((struct Moby *)moby)->pos.z, &transport_pod_vars->speed, NODE(transport_pod_vars->node_a)[0].pos[2],
-                (*(float *)&transport_pod_accel) * g_frame_time_sq, (*(float *)&transport_pod_accel) * g_frame_time_sq,
-                (*(float *)&transport_pod_max_speed) * g_frame_time);
+            ApproachWithVelocity(&((struct Moby *)moby)->pos.z, &transport_pod_vars->speed,
+                                 NODE(transport_pod_vars->node_a)[0].pos[2], (transport_pod_accel)*g_frame_time_sq,
+                                 (transport_pod_accel)*g_frame_time_sq, (transport_pod_max_speed)*g_frame_time);
             snap_transport_pod_rails_to_offsets((char *)moby);
             if (NODE(transport_pod_vars->node_a)[0].pos[2] <= ((struct Moby *)moby)->pos.z) {
                 moby[0x20] = 0xB;
@@ -2930,8 +2927,8 @@ void transport_pod_update(unsigned char *moby) {
     update_entity_matrix(transport_pod_vars->riders, delta, rot, moby + 0x40);
 }
 extern float g_frame_time MACRO_ADDR;
-extern short transport_pod_max_speed;
-extern short transport_pod_accel;
+extern float transport_pod_max_speed SDATA(transport_pod_max_speed);
+extern float transport_pod_accel SDATA(transport_pod_accel);
 extern float transport_pod_rail_decel SDATA(transport_pod_rail_decel);
 extern float transport_pod_rail_twist SDATA(transport_pod_rail_twist);
 
@@ -2947,13 +2944,11 @@ void advance_transport_pod_rails_to_offsets(char *moby) {
     struct Moby *m = (struct Moby *)moby;
     TransportPodVars *transport_pod_vars = (TransportPodVars *)m->pvars;
     ApproachWithVelocity((float *)&transport_pod_vars->rail[0]->pos.z, &transport_pod_vars->vel[0],
-                         m->pos.z + transport_pod_vars->height_offset[0],
-                         *(float *)&transport_pod_accel * g_frame_time_sq, transport_pod_rail_decel * g_frame_time_sq,
-                         *(float *)&transport_pod_max_speed * g_frame_time);
+                         m->pos.z + transport_pod_vars->height_offset[0], transport_pod_accel * g_frame_time_sq,
+                         transport_pod_rail_decel * g_frame_time_sq, transport_pod_max_speed * g_frame_time);
     ApproachWithVelocity((float *)&transport_pod_vars->rail[1]->pos.z, &transport_pod_vars->vel[1],
-                         m->pos.z + transport_pod_vars->height_offset[1],
-                         *(float *)&transport_pod_accel * g_frame_time_sq, transport_pod_rail_decel * g_frame_time_sq,
-                         *(float *)&transport_pod_max_speed * g_frame_time);
+                         m->pos.z + transport_pod_vars->height_offset[1], transport_pod_accel * g_frame_time_sq,
+                         transport_pod_rail_decel * g_frame_time_sq, transport_pod_max_speed * g_frame_time);
     {
         float r0 = FastAddRots(m->rot.z, (transport_pod_vars->rail[0]->pos.z - m->pos.z) * transport_pod_rail_twist *
                                              0.017453292f);
