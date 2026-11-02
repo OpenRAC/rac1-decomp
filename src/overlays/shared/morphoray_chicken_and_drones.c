@@ -16,8 +16,8 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
-extern char g_controller_state[];
 extern Hero g_hero;
+extern char g_controller_state[];
 
 /* Morphoray chicken: AI blocks, a life timer and the color index of the slot it replaced. */
 struct ChickenVars {
@@ -593,7 +593,6 @@ extern void DeleteMoby(void *);
 extern void PartType05Spawn(void *, float, int, int, int, int, float);
 extern void FastMemSet(void *, int, int);
 extern void moby_build_matrix(void *);
-extern int coll_hit_result[];
 extern int morphoray_chicken_slots[];
 extern char morphoray_chicken_slot_state_blocks[];
 extern char morphoray_chicken_slot_aux_blocks[];
@@ -1552,8 +1551,6 @@ extern s32 rand_range(s32, s32);
 extern void *PartType27Spawn(void *, void *, u32, s32, f32);
 
 extern u8 *PartType23Spawn(void *, s32, f32, f32, void *, u32, f32, f32);
-extern float g_frame_time MACRO_ADDR;
-extern float frame_scale MACRO_ADDR;
 
 /* Kill the homing shot's 17 trail particles, and if enabled spawn its end burst effects. */
 void clear_homing_shot_trail_and_spawn_end_effects(u8 *m, s32 enabled) {
@@ -1625,7 +1622,6 @@ extern int rand_range(int, int);
 extern int scale_ticks(int);
 extern void moby_build_matrix(void *);
 extern void copy_hero_moby_field_38(void *);
-extern float g_frame_time MACRO_ADDR;
 extern int feather_base_lifetime SDATA(feather_base_lifetime);
 extern float feather_scale_multiplier SDATA(feather_scale_multiplier);
 extern unsigned char hero_globals_base_r[] __asm__("D_0013E633");
@@ -1701,7 +1697,6 @@ extern int fast_dec_timer(int *);
 extern void DeleteMoby(void *);
 extern int scale_ticks(int);
 extern int fast_subtract_rotations_cf(void *);
-extern float g_frame_time_sq MACRO_ADDR;
 extern float falling_moby_horizontal_velocity_scale SDATA(falling_moby_horizontal_velocity_scale);
 
 // UpdateMoby_428: apply gravity and drag to the moby's velocity, then test for despawn.
@@ -1938,12 +1933,11 @@ void ryno_update(Moby *m) {
                 m->state = 2;
             break;
         case 2:
-            if (((Hero *)(hero_globals_base_r2 + 0xE1D))->state.current == HERO_STATE_LOOK)
+            if (g_hero.state.current == HERO_STATE_LOOK)
                 HeroEnterMoveState(0x1E, 1);
-            if ((((PadState *)g_controller_state)->pressed &
-                 ((Hero *)(hero_globals_base_r2 + 0xE1D))->items[0].button_mask) == 0)
+            if ((((PadState *)g_controller_state)->pressed & g_hero.items[0].button_mask) == 0)
                 return;
-            if (((Hero *)(hero_globals_base_r2 + 0xE1D))->item_use_locked != 0)
+            if (g_hero.item_use_locked != 0)
                 return;
             if (use_ammo_2CDAB8(-1, 1) == 0)
                 return;
@@ -1957,7 +1951,7 @@ void ryno_update(Moby *m) {
                     s->best = ticks_2CDAB8(gameplay_event_frame_count_r) / 600;
                 s->levels = s->levels | (1 << g_current_level_index_r) | 0x80000000;
             }
-            ((Hero *)(hero_globals_base_r2 + 0xE1D))->items[0].switch_lock = 2;
+            g_hero.items[0].switch_lock = 2;
             m->state = 4;
             d->shot_timer = 0;
             d->slot = 0;
@@ -1976,10 +1970,9 @@ void ryno_update(Moby *m) {
                 m->state = 2;
                 return;
             }
-            if ((((PadState *)g_controller_state)->pressed &
-                 ((Hero *)(hero_globals_base_r2 + 0xE1D))->items[0].button_mask) == 0)
+            if ((((PadState *)g_controller_state)->pressed & g_hero.items[0].button_mask) == 0)
                 return;
-            if (((Hero *)(hero_globals_base_r2 + 0xE1D))->item_use_locked != 0)
+            if (g_hero.item_use_locked != 0)
                 return;
             if (use_ammo_2CDAB8(-1, 1) == 0)
                 return;
@@ -1993,7 +1986,7 @@ void ryno_update(Moby *m) {
                     s->best = ticks_2CDAB8(gameplay_event_frame_count_r) / 600;
                 s->levels = s->levels | (1 << g_current_level_index_r) | 0x80000000;
             }
-            ((Hero *)(hero_globals_base_r2 + 0xE1D))->items[0].switch_lock = 2;
+            g_hero.items[0].switch_lock = 2;
             m->state = 4;
             d->shot_timer = 0;
             d->slot = 0;
@@ -2014,19 +2007,18 @@ void ryno_update(Moby *m) {
             d->slot = d->slot % 9;
             d->shots++;
             dir.q = 0;
-            if (((Hero *)(hero_globals_base_r2 + 0xE1D))->state.current == HERO_STATE_LOOK_RELEASE_WAIT) {
+            if (g_hero.state.current == HERO_STATE_LOOK_RELEASE_WAIT) {
                 dir.f[2] = 1.0f;
                 apply_mat4_2CDAB8(dir.f, dir.f, &view);
             } else {
                 dir.f[0] = 1.0f;
-                matrix_mul_vec3(dir.f, dir.f, ((Hero *)(hero_globals_base_r2 + 0xE1D))->basis[0].f);
+                matrix_mul_vec3(dir.f, dir.f, g_hero.basis[0].f);
             }
-            add_2CDAB8(ofs.f, &((struct Hero *)((char *)&hero_globals_base_r2 + 0xE1D))->motion.displacement,
-                       &((struct Hero *)((char *)&hero_globals_base_r2 + 0xE1D))->motion.platform_carry);
+            add_2CDAB8(ofs.f, &g_hero.motion.displacement, &g_hero.motion.platform_carry);
             scale_2CDAB8(ofs.f, ofs.f, 3.0f);
             add_2CDAB8(dir.f, dir.f, ofs.f);
-            if (((Hero *)(hero_globals_base_r2 + 0xE1D))->items[6].locked_on != 0) {
-                yaw = ((Hero *)(hero_globals_base_r2 + 0xE1D))->items[6].lock_yaw;
+            if (g_hero.items[6].locked_on != 0) {
+                yaw = g_hero.items[6].lock_yaw;
             } else {
                 yaw = angle_2CDAB8(dir.f[0], dir.f[1]);
             }
@@ -2035,7 +2027,7 @@ void ryno_update(Moby *m) {
             fire_start_2CDAB8();
             missile_2CDAB8(m, aim.f, d->target, d->height, yaw, pitch);
             if (d->shots >= 7) {
-                ((Hero *)(hero_globals_base_r2 + 0xE1D))->items[0].switch_lock = 0;
+                g_hero.items[0].switch_lock = 0;
                 fire_end_2CDAB8();
                 m->state = 5;
                 d->shot_timer = ticks_2CDAB8(60);
@@ -2085,8 +2077,6 @@ extern void moby_build_matrix(void *);
 extern void BuildSphericalOffset(void *, float, float, float);
 extern void spawn_explosion_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                 float, int, int, int, int) __asm__("func_L00_0025F4A8");
-extern float frame_scale MACRO_ADDR;
-extern float g_frame_time MACRO_ADDR;
 
 /* Spawns a type-0x1C9 projectile moby at a position, aimed at an optional target; returns it, or 0 if it was launched at once. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002c8440.c, FUN_L00_002ccee0. */
 unsigned char *spawn_ryno_rocket(int a, V4 *pos, unsigned char *tgt, float f12, float f13, float f14) {
@@ -2409,7 +2399,6 @@ typedef struct {
     unsigned short hC2;
     unsigned int wC4;
 } S_2cdcc0;
-extern Hero g_hero;
 extern S_2cdcc0 item_usage;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
@@ -2468,7 +2457,6 @@ void ensure_drone_attached_particles(char *m) {
         *(int *)&p->unused50 = spawn_moby_point_attached_particle(m, 1, 0.05f, 0.01f, 0x80808080, 0x10808080);
     }
 }
-extern int suck_moby_list MACRO_ADDR;
 extern float FastVecDist(void *, void *);
 
 /* finds the nearest eligible moby to a point, skipping a list of nine */

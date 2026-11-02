@@ -15,6 +15,7 @@
 #include "structs/collision.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+extern PadState g_controller_state;
 extern char g_hero[];
 extern int pad_held;
 extern char weapon_ammo_counts[];
@@ -641,7 +642,6 @@ void doom_bot_update(M44 *moby) {
     return;
 }
 
-extern unsigned char hero_globals_base[] NOT_SDA;
 extern void update_trespasser_pickup(void *);
 /* Moby update that runs update_trespasser_pickup or sets byte +0xBC from the pad input mask. */
 void trespasser_update(Moby *m) {
@@ -976,7 +976,6 @@ void mine_glove_update(struct Moby *moby) {
         vars->held = spawn_mine(moby, &vars->grip, &launch);
     }
 }
-extern float g_frame_time MACRO_ADDR;
 extern float FastDiffRots(float, float);
 extern float jump_speed_4318(float *a, float *b, float speed, float g, float *out);
 extern float IntToFloat(int);
@@ -1066,9 +1065,7 @@ extern u8 *GetFlaggedPvarWord_r(struct Moby *) __asm__("func_L00_0025D390");
 extern struct PadState g_controller_state;
 extern struct Moby *spawn_bomb(struct Moby *, void *);
 extern void launch_bomb(void *, struct Moby *, void *);
-extern f32 g_frame_time_sq MACRO_ADDR;
 extern s32 gameplay_event_frame_count MACRO_ADDR;
-extern u32 pad0_pressed;
 extern CollisionHit_C39D0 coll_hit_result_r2 __asm__("D_L00_00173F40");
 extern Vec4 g_debug_camera_r2 __asm__("D_L00_00166EC0");
 extern Vec4 player_camera[3];
@@ -1420,10 +1417,8 @@ void destroy_decoy_with_particles(unsigned char *m) {
     moby_index_list_remove(m, decoy_list);
     DeleteMoby(m);
 }
-extern u8 gold_weapon_purchased[40];
 typedef u32 u128_C48C8 __attribute__((mode(TI), aligned(16)));
 extern struct Hero g_hero_r4 __asm__("D_0013F450");
-extern float frame_scale MACRO_ADDR;
 unsigned char *func_0020D348_C48C8(int) __asm__("func_0020D348");
 int scale_ticks(int);
 void func_00213DE0_C48C8(unsigned char *, int, int, int) __asm__("func_00213DE0");
@@ -1515,15 +1510,12 @@ extern float FastCos(float), FastSin(float), vec_length(float);
 extern float fast_atan2(float, float);
 extern float FastSubRots(float, float), FastAddRots(float, float);
 extern char D_00173F60_alias[] __asm__("D_L00_00173F60");
-extern int coll_hit_result[];
 extern struct {
     float pad[10];
     float height;
     float gap[5];
     float vector[4];
 } D_L00_00173F40_v __asm__("D_L00_00173F40");
-extern float frame_scale MACRO_ADDR;
-extern char g_hero[];
 typedef struct {
     u8 pad_00[0x10];
     Vec4 vel; /* 0x10: velocity the moby is released with */
@@ -1603,7 +1595,6 @@ typedef struct {
     s16 unk46;
 } ThrowVars;
 extern s32 cinematic_mode MACRO_ADDR;
-extern f32 g_frame_time_sq MACRO_ADDR;
 extern CollisionHit coll_hit_result_r3 __asm__("D_L00_00173F40");
 extern Vec4 coll_hit_normal;
 extern Vec4 g_debug_camera_r3 __asm__("D_L00_00166EC0");
@@ -2445,8 +2436,6 @@ typedef struct {
 } Rec_2C6F48;
 
 extern Rec_2C6F48 item_defs_r2[] __asm__("D_L00_00179BC0");
-extern float frame_scale MACRO_ADDR;
-extern int ammo_pickup_sound_frame MACRO_ADDR;
 
 /* per-frame step of a counter moby: advances, plays sound and finishes */
 /* Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002bffa8.c, FUN_L00_002c5be8. */
@@ -3069,8 +3058,6 @@ typedef float Mat3_2C88A8[3][4] __attribute__((aligned(16)));
 extern char player_camera_r2[] __asm__("D_L00_00166D80");
 extern char g_debug_camera_r4[] __asm__("D_L00_00166EC0");
 extern char coll_hit_result_r4[] __asm__("D_L00_00173F40");
-extern char hero_globals_base_r[] __asm__("D_0013E633");
-extern char pad_globals_base_r[] __asm__("D_0013A5E0");
 extern float g_frame_time_sq_r2 __asm__("D_0015EE70") MACRO_ADDR;
 extern void matrix_copy_rows_r(void *, void *) __asm__("func_001FA480");
 extern void matrix_from_basis_rows_r(void *, void *) __asm__("func_001FA4A0");
@@ -3112,19 +3099,19 @@ void compute_glove_of_doom_throw_velocity(int a0, Moby *m, float *a2) {
     out = (float *)P->pvars;
     *(u128 *)v80 = 0;
     v80[0] = 1.0f;
-    matrix_mul_vec3_r(v80, v80, ((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->basis);
+    matrix_mul_vec3_r(v80, v80, ((struct Hero *)g_hero)->basis);
     {
-        Hero *h = (Hero *)(hero_globals_base_r + 0xE1D);
+        Hero *h = (Hero *)g_hero;
         q0[0] = FastCos_r(FastAddRots_r(-0.361968011f, fast_atan2_r(h->facing_x, h->facing_y))) * 0.859039009f;
         q0[1] = FastSin_r(FastAddRots_r(-0.361968011f, fast_atan2_r(h->facing_x, h->facing_y))) * 0.859039009f;
         q0[2] = 0.0f;
-        FastVecAdd_r2(q0, q0, &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos);
+        FastVecAdd_r2(q0, q0, &((struct Hero *)g_hero)->motion.pos);
         q0[2] = q0[2] + 0.390819997f;
         fast_atan2_r(v80[0], v80[1]);
-        s = (((PadState *)(pad_globals_base_r + 0x2460))->held & 5) ? 3.5f : 2.5f;
+        s = (((PadState *)(&g_controller_state))->held & 5) ? 3.5f : 2.5f;
         FastVecScale_r(v90, v80, s);
         FastVecAdd_r2(v90, v90, q0);
-        if ((((PadState *)(pad_globals_base_r + 0x2460))->held & 5) && h->item_use_locked == 0) {
+        if ((((PadState *)(&g_controller_state))->held & 5) && h->item_use_locked == 0) {
             *(u128 *)va0 = 0;
             va0[2] = 1.0f;
             transform_vector_r(va0, va0, m40);
@@ -3136,7 +3123,7 @@ void compute_glove_of_doom_throw_velocity(int a0, Moby *m, float *a2) {
                 w = 0.593411922f;
             if (w < -1.39626336f)
                 w = -1.39626336f;
-            BuildSphericalOffset_r(va0, (((PadState *)(pad_globals_base_r + 0x2460))->held & 5) ? 3.5f : 2.5f, f22, w);
+            BuildSphericalOffset_r(va0, (((PadState *)(&g_controller_state))->held & 5) ? 3.5f : 2.5f, f22, w);
             qcopy(vb0, player_camera_r2 + 0x140);
             y = vec_length_xy_r(va0);
             {
@@ -3148,7 +3135,7 @@ void compute_glove_of_doom_throw_velocity(int a0, Moby *m, float *a2) {
                 }
             }
             t = vec_length_r(g_frame_time_sq_r2 * 9.0f *
-                             ((((PadState *)(pad_globals_base_r + 0x2460))->held & 5) ? 3.5f : 2.5f) * 0.5f);
+                             ((((PadState *)(&g_controller_state))->held & 5) ? 3.5f : 2.5f) * 0.5f);
             f21 = (t + t) * t * (1.0f - f20) / (g_frame_time_sq_r2 * 9.0f);
             f23 = f20 * f21;
             if (0.0f < f21) {
@@ -3157,8 +3144,7 @@ void compute_glove_of_doom_throw_velocity(int a0, Moby *m, float *a2) {
                 va0[2] = f23;
                 FastVecAdd_r2(vc0, g_debug_camera_r4, va0);
                 if (coll_line_r5(g_debug_camera_r4, vc0, 2, a0, 0) &&
-                    ((Hit_2C88A8 *)coll_hit_result_r4)->moby !=
-                        *(void **)&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->moby) {
+                    ((Hit_2C88A8 *)coll_hit_result_r4)->moby != *(void **)&((struct Hero *)g_hero)->moby) {
                     qcopy(v90, ((Hit_2C88A8 *)coll_hit_result_r4)->point);
                     flag = 1;
                     f22 = fast_atan2_r(v90[0] - q0[0], v90[1] - q0[1]);
@@ -3172,11 +3158,11 @@ void compute_glove_of_doom_throw_velocity(int a0, Moby *m, float *a2) {
                 }
             }
         } else {
-            ((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->throw_target = 0;
+            ((struct Hero *)g_hero)->throw_target = 0;
         }
     }
     compute_glove_of_doom_launch_velocity_r(q0, v90, out, g_frame_time_sq_r2 * 9.0f, 0.00000999999975f,
-                                            (((PadState *)(pad_globals_base_r + 0x2460))->held & 5) ? 3.5f : 2.5f);
+                                            (((PadState *)(&g_controller_state))->held & 5) ? 3.5f : 2.5f);
 }
 typedef int u128_2C8DB8 __attribute__((mode(TI)));
 /* Vars of the carrier moby that picks up and holds another moby. */

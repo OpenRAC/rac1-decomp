@@ -105,6 +105,20 @@ class PlaceTest(unittest.TestCase):
                          scope="extern char hero_control_mode[];\n", declare=False)
         self.assertEqual(out[0], "int f(void) { return *(int *)hero_control_mode; }\n")
 
+    def test_a_local_alias_of_a_base_counts(self):
+        text = 'extern char base_r[] __asm__("D_0013E633");\nextern short other[] __asm__("D_0013E633");\n'
+        self.assertEqual(fb.with_local_aliases(text, {"D_0013E633": 1}), {"D_0013E633": 1, "base_r": 1})
+
+    def test_a_fragment_keeps_an_alias(self):
+        text = 'extern char base_r[] __asm__("D_0013E633");\nint x;\n'
+        self.assertEqual(fb.drop_unused_aliases(text, {"D_0013E633": 1}, "char *p = base_r;\n"), text)
+
+    def test_an_unused_alias_goes_and_a_used_one_stays(self):
+        text = 'extern char base_r[] __asm__("D_0013E633");\nint x;\n'
+        self.assertEqual(fb.drop_unused_aliases(text, {"D_0013E633": 1}), "int x;\n")
+        used = text + "char *p = base_r;\n"
+        self.assertEqual(fb.drop_unused_aliases(used, {"D_0013E633": 1}), used)
+
 
 if __name__ == "__main__":
     unittest.main()

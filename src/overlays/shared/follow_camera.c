@@ -18,14 +18,14 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+extern char g_hero[];
+extern u8 hero_gravity_dir[];
 extern char gHeroPos[];
 extern char g_controller_state[];
 extern float g_controller_state_analog;
-extern char g_hero[];
 extern char g_hero_moby[];
 extern int hero_control_mode;
 extern int hero_current_state;
-extern u8 hero_gravity_dir[];
 extern unsigned char hero_vehicle_mode NOT_SDA;
 extern char pad_held[];
 
@@ -134,7 +134,6 @@ void emit_hydrodisplacer_effect(Moby *m) {
         d->spawn_timer = rand_range(scale_ticks(5), scale_ticks(0xF));
     }
 }
-extern char g_hero[];
 extern u8 *moby_array_start_r __asm__("D_L00_00160098") MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/002df730.c, FUN_L00_002e02e0. */
@@ -159,7 +158,6 @@ s32 test_hydrodisplacer_activation_flag(void) {
     return 0;
 }
 INCLUDE_ASM("asm/overlays", func_L00_002E17D4);
-extern char g_hero[];
 extern int scripted_camera_move_active MACRO_ADDR;
 extern int gFadeLvl SDATA(gFadeLvl);
 
@@ -209,11 +207,10 @@ extern u8 pilots_helmet_no_cutscene_msg[];
 extern u8 pilots_helmet_already_owned_msg[];
 extern u8 pilots_helmet_no_moby_msg[];
 extern u8 pilots_helmet_collected_msg[];
-extern char gHeroPos[];
 extern s32 cinematic_mode MACRO_ADDR;
 extern s32 banner_display_ticks MACRO_ADDR;
 extern u16 help_records_52_count[];
-extern short moby_array_start;
+extern E_2e03a0_2e03a0 *moby_array_start SDATA(moby_array_start);
 typedef struct {
     u8 pad[0x454];
     u8 arr[1];
@@ -284,14 +281,12 @@ void pilots_helmet_update(M_2e03a0_2e03a0 *m) {
             if (help_records_52_count[0] == 0)
                 Help_Request(0x2328, 0x34);
             if (p->b != -1) {
-                current_level_state.arr[(*(E_2e03a0_2e03a0 **)&moby_array_start)[p->b].h] =
-                    (*(E_2e03a0_2e03a0 **)&moby_array_start)[p->b].b0 + 2;
-                if ((*(E_2e03a0_2e03a0 **)&moby_array_start)[p->b].b0 == 0xFF ||
-                    (mission_state[(*(E_2e03a0_2e03a0 **)&moby_array_start)[p->b].b0] != 0xFF &&
-                     saved_mission_state[(*(E_2e03a0_2e03a0 **)&moby_array_start)[p->b].b0 +
-                                         (*(s32 *)&g_current_level_index) * 16] == 0xFF)) {
-                    checkpoint_level_state.arr[(*(E_2e03a0_2e03a0 **)&moby_array_start)[p->b].h] =
-                        (*(E_2e03a0_2e03a0 **)&moby_array_start)[p->b].b0 + 2;
+                current_level_state.arr[(moby_array_start)[p->b].h] = (moby_array_start)[p->b].b0 + 2;
+                if ((moby_array_start)[p->b].b0 == 0xFF ||
+                    (mission_state[(moby_array_start)[p->b].b0] != 0xFF &&
+                     saved_mission_state[(moby_array_start)[p->b].b0 + (*(s32 *)&g_current_level_index) * 16] ==
+                         0xFF)) {
+                    checkpoint_level_state.arr[(moby_array_start)[p->b].h] = (moby_array_start)[p->b].b0 + 2;
                 }
             } else {
                 STUB_printf(pilots_helmet_no_moby_msg, m->h);
@@ -506,7 +501,6 @@ extern Q_2E3700 beam_endpoints_r[] __asm__("D_L00_001E7130");
 extern Q_2E3700 beam_tip_positions_r[] __asm__("D_L00_001E7160");
 extern Pt beam_strand_points_r[][20] __asm__("D_L00_001E7190");
 extern Snd D_L00_001803C0[];
-extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern char veldin1_zero_vec_r[] __asm__("D_L00_0015F660") MACRO_ADDR;
 extern int beam_slot_states_r[] __asm__("D_L00_00161CC8") MACRO_ADDR;
 extern float beam_strand_wave_phase_r[] __asm__("D_L00_00161CD8") MACRO_ADDR;
@@ -599,7 +593,7 @@ void update_slot_panes_and_effects(int unused, int idx) {
     one = 1.0f;
     FastVecSub_r(d2, &beam_endpoints_r[idx], from);
     vec_scale_to_length_r(dir, d2, one);
-    FastVecCross_r(side, dir, hero_globals_base_r + 0x10AD);
+    FastVecCross_r(side, dir, hero_gravity_dir);
     vec_scale_to_length_r(side, side, -1.0f);
     FastVecCross_r(up, side, dir);
     transform_vector_r(tip, &beam_strand_points_r[k][18], dir);
@@ -918,7 +912,6 @@ extern T_e3388 beam_origin_transforms_translation[];
 extern f32 beam_tip_positions[][4];
 extern f32 beam_glow_quad_corners[4][4];
 extern u8 g_debug_camera_r[] __asm__("D_L00_00166EC0");
-extern u8 hero_gravity_dir[];
 void func_001F9BF0_E4838(void *, void *, void *) __asm__("func_001F9BF0");
 void vec_scale_to_length(void *, void *, f32);
 void FastVecCross(void *, void *, void *);
@@ -1184,7 +1177,6 @@ void robot_arm_update(Moby *m) {
         }
     }
 }
-extern char hero_globals_base[];
 // copies a vector out of the game block into the second argument
 void Cam_GetHeroPosition(char *a, void *out) {
     qcopy(out, gHeroPos);
@@ -1277,7 +1269,6 @@ extern void FastVecScale(void *, void *, float);
 extern void FastVecSub(float *, float *, float *);
 extern void FastVecAdd(void *, void *, void *);
 extern void clear_u64_value(void *);
-extern char camera_view[];
 
 /* initialises a moby's matrix block from the global camera frame */
 void follow_camera_reset(Camera *m) {
@@ -1320,7 +1311,6 @@ extern void FastVecSub(float *, float *, float *);
 extern float FastVecDot(void *, void *);
 extern float FastVecLength(void *);
 extern float FastArcSin(float);
-extern char camera_view[];
 
 /* angle between a direction and an axis, signed */
 float compute_follow_camera_signed_target_angle(char *a, float f) {
@@ -1999,9 +1989,9 @@ void follow_camera_springs(char *m) {
         FastVecAdd_r2(p + 0x80, f, g);
     }
     Cam_UpdateOffsetBlend_r(m, f);
-    if (((Hero *)(hero_globals_base_r + 0xE1D))->vehicle_mode == 2) {
+    if (((Hero *)g_hero)->vehicle_mode == 2) {
         FastVecScale_r2(f, &gl->up, 3.0f);
-    } else if (((Hero *)(hero_globals_base_r + 0xE1D))->vehicle_mode == 1) {
+    } else if (((Hero *)g_hero)->vehicle_mode == 1) {
         FastVecScale_r2(f, &gl->up, 0.4f);
     } else {
         FastVecScale_r2(f, &gl->up, 0.5f);
@@ -2013,14 +2003,14 @@ void follow_camera_springs(char *m) {
           g_current_follow_cam_r->d->f214 * g_current_follow_cam_r->d->f20C * (g_current_follow_cam_r->d->f210 - 1.0f);
     FastVecScale_r2(h, &gl->up, 20.0f);
     FastVecAdd_r2(h, g, h);
-    if (coll_line_r(g, h, camera_collision_mask_r, (int)((Hero *)(hero_globals_base_r + 0xE1D))->moby, 0)) {
+    if (coll_line_r(g, h, camera_collision_mask_r, (int)((Hero *)g_hero)->moby, 0)) {
         qcopy(w, collision_hit_point_a);
     } else {
         qcopy(w, h);
     }
     FastVecScale_r2(h, &gl->up, 20.0f);
     FastVecSub_r2(h, g, h);
-    if (coll_line_r(g, h, camera_collision_mask_r, (int)((Hero *)(hero_globals_base_r + 0xE1D))->moby, 0)) {
+    if (coll_line_r(g, h, camera_collision_mask_r, (int)((Hero *)g_hero)->moby, 0)) {
         qcopy(h, collision_hit_point_a);
     }
     FastVecSub_r2(u, h, w);
@@ -2462,7 +2452,6 @@ void follow_camera_apply_overrides(O_y *o) {
         g40 = 0.75f;
     }
 }
-extern char player_camera[];
 extern float camera_view_vertical_axis[];
 extern float follow_cam_min_eye_distance SDATA(follow_cam_min_eye_distance);
 extern void matrix_copy_rows(void *, void *);
@@ -2918,7 +2907,6 @@ void follow_camera_setup(Camera *m) {
     m->transition_state = 0;
 }
 extern Hero g_hero_r2 __asm__("D_0013F450");
-extern float g_controller_state_analog;
 extern float follow_cam_collision_pull_in_speed SDATA(follow_cam_collision_pull_in_speed);
 float FastVecLength(void *);
 void func_001F9BF0_E85E8(void *, void *, void *) __asm__("func_001F9BF0");
@@ -3552,7 +3540,6 @@ int try_select_follow_camera_volume(int arg1) {
 INCLUDE_ASM("asm/overlays", func_L00_002E988C);
 INCLUDE_ASM("asm/overlays", func_L00_002E98A8);
 INCLUDE_ASM("asm/overlays", func_L00_002E98B8);
-extern char *g_current_follow_cam;
 /* Requests orbit distance X for the hero camera (g_current_follow_cam, only while its id is 0): sets the request flag
    at
    +0x3C of the orbit block (+0x130), the goal at +0x40, the rate Y at +0x48 and, when FLAG, the default at +0x58. */
@@ -3638,7 +3625,6 @@ void follow_camera_set_lateral_spring(float a, float b) {
             *(float *)(q + 0xE0) = b;
     }
 }
-extern char *g_current_follow_cam;
 /* Sets the short flag at +0x226 of the hero camera's state buffer while the current camera's id is 0. */
 void set_follow_camera_flag_226(void) {
     char *p = g_current_follow_cam;
@@ -3933,7 +3919,6 @@ void follow_camera_turn_and_pitch(int mi, float a, float b) {
     }
     build_look_at_matrix(turn_pitch_vector->vec.f, turn_pitch_vector->vec.f, axis, turn_pitch_vector->step.f);
 }
-extern float follow_cam_turn_blend_weight MACRO_ADDR;
 extern void lerp_vector(float, void *, void *, void *);
 extern float FastVecLength(void *);
 extern void vec_scale_to_length(void *, void *, float);
@@ -4072,7 +4057,6 @@ void follow_camera_build_view(int a_) {
 }
 
 extern void Cam_SetDistanceGoal(float, float, int);
-extern char hero_globals_base[] NOT_SDA;
 extern float follow_cam_distance_stiffness SDATA(follow_cam_distance_stiffness);
 extern float follow_cam_distance_damping SDATA(follow_cam_distance_damping);
 extern float follow_cam_pull_back_stiffness SDATA(follow_cam_pull_back_stiffness);

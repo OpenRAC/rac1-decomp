@@ -56,7 +56,7 @@ extern SeqEntry hero_slot3_item2_seq_table[];
 extern SeqEntry hero_slot3_item3_seq_table[];
 /* A table like the others, but retail reaches it through $gp, which
    under -G2 takes a declaration of at most two bytes. */
-extern short hero_slot3_item4_seq_table;
+extern SeqEntry hero_slot3_item4_seq_table SDATA(hero_slot3_item4_seq_table);
 
 /* Looks KEY up in the sequence table for the mode hero_slot_item_id(3)
    reports (2, 3 or 4; any other mode has none); the table ends at a seq
@@ -73,7 +73,7 @@ int lookup_hero_slot3_animation_key(int key, int *out) {
         tbl = hero_slot3_item3_seq_table;
     } else {
         int mode = hero_slot_item_id(3);
-        tbl = (SeqEntry *)&hero_slot3_item4_seq_table;
+        tbl = &hero_slot3_item4_seq_table;
         if (mode != 4) {
             tbl = 0;
         }
@@ -171,7 +171,7 @@ int select_hero_slot3_animation_pair(int id, int *key, int *arg) {
         tbl = hero_slot3_item3_seq_table;
     } else {
         int mode = hero_slot_item_id(3);
-        tbl = (SeqEntry *)&hero_slot3_item4_seq_table;
+        tbl = &hero_slot3_item4_seq_table;
         if (mode != 4) {
             tbl = 0;
         }
@@ -192,7 +192,6 @@ int select_hero_slot3_animation_pair(int id, int *key, int *arg) {
     *key = 1;
     return 0;
 }
-extern char g_hero[];
 
 /* Unless the flag at g_hero + 0x20A4 is set, and only while state
    +0x11A4 is 2: asks select_hero_slot3_animation_pair for a pair of values for the
@@ -243,7 +242,6 @@ missing:
 }
 INCLUDE_ASM("asm/overlays", func_L00_00232A30);
 INCLUDE_ASM("asm/overlays", func_L00_00232A3C);
-extern char g_hero[];
 extern int lookup_s16_pair_value(int, int *);
 extern int scale_ticks(int);
 
@@ -451,7 +449,6 @@ void hero_set_attack_ticks(int id) {
 }
 #include "structs/moby.h"
 #include "structs/voice.h"
-extern char g_hero[];
 extern char voice_pool[];
 typedef struct {
     u8 pad0[0x10];
@@ -665,7 +662,6 @@ f32 predict_hero_trajectory_intercept_time(f32 a, f32 b, f32 c) {
     }
     return a;
 }
-extern int cinematic_mode MACRO_ADDR;
 
 typedef struct {
     char *a;
@@ -1699,7 +1695,6 @@ void show_health_hud(void) {
                            draw_health_hud_panel, health_hud_bank_data, 8);
 }
 
-extern char g_hero[];
 /* Clears the secondary animation object pointers, not the movement speed targets. */
 void clear_hero_mapped_moby_animation_state(void) {
     Hero *base = (Hero *)g_hero;

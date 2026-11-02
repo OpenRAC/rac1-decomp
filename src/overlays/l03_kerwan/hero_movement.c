@@ -103,7 +103,7 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int kerwan_frame_count MACRO_ADDR;
-extern short kerwan_usage_event_timer;
+extern int kerwan_usage_event_timer SDATA(kerwan_usage_event_timer);
 extern int kerwan_usage_event_count SDATA(kerwan_usage_event_count);
 extern unsigned char *kerwan_water_patches MACRO_ADDR;
 extern int kerwan_water_patch_count MACRO_ADDR;
@@ -247,8 +247,8 @@ void HeroL03_UpdateStatePhysics(void) {
                     matrix_mul_vec3(g_hero.motion.move_dir.f, vec[0], kerwan_player_camera.f350);
                     g_hero.motion.move_yaw = kerwan_player_camera.f158;
                     turn_to(0, g_frame_scale_sq, g_frame_scale_sq * 0.0f, g_frame_time * 174.53293f);
-                    if (*(int *)&kerwan_usage_event_timer > 0) {
-                        if (fast_dec_timer((int *)&kerwan_usage_event_timer)) {
+                    if (kerwan_usage_event_timer > 0) {
+                        if (fast_dec_timer(&kerwan_usage_event_timer)) {
                             if (usage_stats.e[18].count < 0xFFFF) {
                                 usage_stats.e[18].count++;
                             }
@@ -257,7 +257,7 @@ void HeroL03_UpdateStatePhysics(void) {
                             }
                             usage_stats.e[18].level_mask =
                                 usage_stats.e[18].level_mask | (1 << g_current_level_index) | 0x80000000;
-                            *(int *)&kerwan_usage_event_timer = -1;
+                            kerwan_usage_event_timer = -1;
                             (kerwan_usage_event_count)++;
                         }
                     }

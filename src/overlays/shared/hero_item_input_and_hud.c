@@ -48,7 +48,7 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern float veldin1_hero_fall_state_height MACRO_ADDR;
 extern int timed_hud_visible MACRO_ADDR;
 extern int hero_run_step_start_frames_1 MACRO_ADDR;
-extern short veldin1_hero_double_tap_timer;
+extern int veldin1_hero_double_tap_timer SDATA(veldin1_hero_double_tap_timer);
 extern S166D80 player_camera;
 extern float camera_yaw;
 extern int level_render_setup_packet_default;
@@ -1829,15 +1829,15 @@ void hero_update_transitions(void) {
                         {
                             int both = 0;
 
-                            fast_dec_timer((int *)&veldin1_hero_double_tap_timer);
-                            if (*(int *)&veldin1_hero_double_tap_timer != 0) {
+                            fast_dec_timer(&veldin1_hero_double_tap_timer);
+                            if (veldin1_hero_double_tap_timer != 0) {
                                 both = 1;
                                 if (!((g_controller_state.held & PAD_R1) && (g_controller_state.pressed & PAD_R1))) {
                                     both = 0;
                                 }
                             }
                             if (g_controller_state.pressed & PAD_R1) {
-                                *(int *)&veldin1_hero_double_tap_timer = scale_ticks(0x1E);
+                                veldin1_hero_double_tap_timer = scale_ticks(0x1E);
                             }
                             if (!(g_hero.state_timer > scale_ticks(0x14))) {
                                 break;

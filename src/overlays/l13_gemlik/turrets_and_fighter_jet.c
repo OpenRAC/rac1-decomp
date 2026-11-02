@@ -32,8 +32,9 @@ extern char gHeroPos[];
 extern char g_hero_rot[];
 extern char pad0_pressed[];
 extern char saved_mission_state[];
-extern char g_controller_state[];
 extern Hero g_hero;
+
+extern char g_controller_state[];
 extern char g_screen_extent[];
 extern int pad_held;
 extern char voice_pool[];
@@ -484,7 +485,6 @@ extern float FastAddRots(float, float);
 extern float FastCos(float);
 extern void clear_u64_value(void *);
 
-extern unsigned char hero_globals_base[];
 
 // Places the point v at a radius around the moby for the facing angle and sets w to the direction toward the target.
 void compute_elevator_camera_pose(unsigned char *moby, float *v, float *w) {
@@ -550,7 +550,6 @@ extern void spawn_explosion_r(void *, void *, void *, float, float, int, int, in
                               float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 extern void func_L00_00258DB0(float *, float, float);
-extern unsigned char hero_globals_base_r[] __asm__("D_0013E633");
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 
 /* Update for moby Blarg Turret (blarg_turret) on level 13: turns toward its target and fires its gun moby. */
@@ -578,9 +577,7 @@ void blarg_turret_update(Moby *m) {
         case 1:
             r = FastDiffRots_r(fast_atan2_r(t->pos.x - m->pos.x, t->pos.y - m->pos.y), data->f54);
             if (r < 1.5707964f && vec_distance_xy_r(&m->pos, &t->pos) < 20.0f &&
-                (data->volume == -1 || is_point_inside_clip_volume_r(
-                                           &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.body_center,
-                                           data->volume) != 0)) {
+                (data->volume == -1 || is_point_inside_clip_volume_r(&g_hero.motion.body_center, data->volume) != 0)) {
                 data->f68 = 8.0f;
                 if (m->prev_seq != 1) {
                     int a = rand_range_r(0, 3);
@@ -603,9 +600,7 @@ void blarg_turret_update(Moby *m) {
         case 3:
             r = FastDiffRots_r(fast_atan2_r(t->pos.x - m->pos.x, t->pos.y - m->pos.y), data->f54);
             if (r >= 1.5707964f || vec_distance_xy_r(&m->pos, &t->pos) > 22.0f ||
-                (data->volume != -1 && is_point_inside_clip_volume_r(
-                                           &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.body_center,
-                                           data->volume) == 0)) {
+                (data->volume != -1 && is_point_inside_clip_volume_r(&g_hero.motion.body_center, data->volume) == 0)) {
                 if (m->prev_seq != 0) {
                     MobyBlendAnimation_r(m, 0, 0, rand_range_r(7, 13));
                 }
@@ -669,7 +664,6 @@ extern float vec_distance_xy(void *, void *);
 extern float FastAddRots(float, float);
 extern char *spawn_gemlik_projectile(float, float *, float *, void *);
 extern int gemlik_frame_count MACRO_ADDR;
-extern float g_frame_time MACRO_ADDR;
 extern int gemlik_turret_fire_interval SDATA(gemlik_turret_fire_interval);
 extern float gemlik_turret_shot_speed SDATA(gemlik_turret_shot_speed);
 
@@ -2226,7 +2220,6 @@ int select_fighter_jet_target_and_draw_indicators(int a, char *p, char *a2, void
     return (int)ret;
 }
 extern unsigned char pad_globals_base[];
-extern unsigned char hero_globals_base[];
 extern char gemlik_camera_rot[];
 extern void fast_dec_timer(int *arg0);
 extern int select_fighter_jet_target_and_draw_indicators(int, char *, char *, void *, float, float, float, char *,
@@ -2308,7 +2301,7 @@ extern void *msg_string_id(int) __asm__("func_001FE540");
 extern int FontPrintCenterSmall_c(int, int, long, void *, int) __asm__("func_001F6F40");
 extern char gemlik_turret_hud_pip_strip[];
 extern int jet_hud_palette_backup[];
-extern short jet_hud_palette;
+extern int *jet_hud_palette SDATA(jet_hud_palette);
 
 /* Draws the Gemlik turret HUD: target marker, ammo icons, gauge sprites and warning, refreshes the gauge colour table,
    then the two frame halves. */
@@ -2411,9 +2404,9 @@ void DrawGemlikTurretHud(char *moby) {
     for (j = lo; j <= hi; j++) {
         idx = (j & 0xE7) | ((j & 0x10) >> 1) | ((j & 8) << 1);
         if (j < v) {
-            (*(int **)&jet_hud_palette)[idx] = jet_hud_palette_backup[idx];
+            (jet_hud_palette)[idx] = jet_hud_palette_backup[idx];
         } else {
-            (*(int **)&jet_hud_palette)[idx] = 0x80000000;
+            (jet_hud_palette)[idx] = 0x80000000;
         }
     }
     s = g_screen_extent;
@@ -2423,7 +2416,6 @@ void DrawGemlikTurretHud(char *moby) {
                      GetEffectTex_l(d->tex_index + 0x29));
     d->hp_bar = v;
 }
-extern float g_frame_time MACRO_ADDR;
 extern void BuildSphericalOffset(void *, float, float, float);
 
 extern int fast_dec_timer_i(void *) __asm__("func_001F9908");
@@ -2879,11 +2871,9 @@ typedef struct {
     float damage;
     int flags;
 } JetHit47;
-extern float frame_scale MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern unsigned char help_stats_base[];
 extern JetCamera47 jet_camera47_r __asm__("D_L13_00167000");
-extern float gemlik_view_tan_half_fov;
 extern JetTexture47 gemlik_texture_table[];
 extern unsigned int gemlik_palette_data_base MACRO_ADDR;
 extern short jet_boarding_group_ids[];

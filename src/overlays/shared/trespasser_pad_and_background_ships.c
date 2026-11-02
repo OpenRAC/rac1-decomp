@@ -19,6 +19,7 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+extern Hero g_hero;
 extern char gHeroPos[];
 extern char gSkillPoints[];
 extern struct Hero g_hero;
@@ -395,7 +396,6 @@ typedef struct {
 } H2d8910;
 extern H2d8910 aridia_player_camera_r __asm__("D_L02_00167300");
 extern char *aridia_scene_points MACRO_ADDR;
-extern char gHeroPos[];
 extern float FastAddRots(float, float);
 extern float FastDiffRots(float, float);
 
@@ -492,7 +492,6 @@ extern int D_L02_00161BAC_2D9F08 SDATA(D_L02_00161BAC);
 extern int D_L02_00161B38_2D9F08 SDATA(D_L02_00161B38);
 extern int D_L02_00161B34_2D9F08 SDATA(D_L02_00161B34);
 extern int D_L02_00161B30_2D9F08 SDATA(D_L02_00161B30);
-extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern Hero g_hero_r __asm__("D_0013F450");
 extern char pad_globals_base_r[] __asm__("D_0013A5E0");
 
@@ -529,23 +528,21 @@ void tresspasser_pad_update(Moby *moby) {
             }
             break;
         case 1:
-            if (((Hero *)(hero_globals_base_r + 0xE1D))->ground_moby == moby &&
-                ((Hero *)(hero_globals_base_r + 0xE1D))->air_frames.s == 0) {
+            if (g_hero.ground_moby == moby && g_hero.air_frames.s == 0) {
                 int holding_tool;
 
                 if (data->active == 0) {
                     data->active = 1;
                     Moby_PlaySound_r(3, 0, moby);
                 }
-                if (((Hero *)(hero_globals_base_r + 0xE1D))->items[0].moby != 0 &&
-                    ((Hero *)(hero_globals_base_r + 0xE1D))->items[0].item_id == 0x1A) {
+                if (g_hero.items[0].moby != 0 && g_hero.items[0].item_id == 0x1A) {
                     moby->glow_color = D_L02_00161B30_2D9F08;
                     holding_tool = 1;
                 } else {
                     moby->glow_color = D_L02_00161B34_2D9F08;
                     holding_tool = 0;
                 }
-                if (holding_tool && ((Hero *)(hero_globals_base_r + 0xE1D))->items[0].moby->command != 0) {
+                if (holding_tool && g_hero.items[0].moby->command != 0) {
                     data->timer = scale_ticks_r(0x12C);
                     data->unk_11C = 0;
                     data->input_flags = 0;
@@ -654,8 +651,7 @@ void tresspasser_pad_update(Moby *moby) {
             if (i != 12) {
                 if (((((PadState *)(pad_globals_base_r + 0x2460))->pressed & 0x10) &&
                      aridia_help_popup_state_r.i0 == 0 && aridia_help_popup_state_r.i24 == -1) ||
-                    ((Hero *)(hero_globals_base_r + 0xE1D))->state.current != 0x72 ||
-                    ((Hero *)(hero_globals_base_r + 0xE1D))->items[0].item_id != 0x1A) {
+                    g_hero.state.current != 0x72 || g_hero.items[0].item_id != 0x1A) {
                     moby->state = 1;
                     CameraScript2_r(1);
                     request_hero_idle_state_for_vehicle_mode_r();
@@ -1199,16 +1195,15 @@ void draw_tresspasser_puzzle_arrow(int p0, int p1, int sel, float a, float s) {
     draw_geometry_quad_5188(xy, uv, col, tex, 1);
     draw_geometry_quad_5188(xy, uv, col, tex, 1);
 }
-extern s32 frame_counter_ref MACRO_ADDR;
 extern f32 trespasser_beam_scroll_speed SDATA(trespasser_beam_scroll_speed);
-extern short trespasser_beam_uv_0;
-extern short trespasser_beam_uv_1;
-extern short trespasser_beam_uv_2;
-extern short trespasser_beam_uv_3;
-extern short trespasser_beam_glow_uv_0;
-extern short trespasser_beam_glow_uv_1;
-extern short trespasser_beam_glow_uv_2;
-extern short trespasser_beam_glow_uv_3;
+extern char *trespasser_beam_uv_0 SDATA(trespasser_beam_uv_0);
+extern char *trespasser_beam_uv_1 SDATA(trespasser_beam_uv_1);
+extern char *trespasser_beam_uv_2 SDATA(trespasser_beam_uv_2);
+extern char *trespasser_beam_uv_3 SDATA(trespasser_beam_uv_3);
+extern char *trespasser_beam_glow_uv_0 SDATA(trespasser_beam_glow_uv_0);
+extern char *trespasser_beam_glow_uv_1 SDATA(trespasser_beam_glow_uv_1);
+extern char *trespasser_beam_glow_uv_2 SDATA(trespasser_beam_glow_uv_2);
+extern char *trespasser_beam_glow_uv_3 SDATA(trespasser_beam_glow_uv_3);
 extern s32 tresspasser_radial_strip_texture_index_gp SDATA(tresspasser_radial_strip_texture_index_gp);
 extern f32 FastSin(f32);
 extern f32 FastCos(f32);
@@ -1232,10 +1227,10 @@ void draw_tresspasser_puzzle_radial_strip(void *unused, f32 a, f32 b, f32 c, s32
     a4[2] = d;
     a4[1] = d;
     a4[0] = d;
-    p4[0] = (s32)((*(char **)&trespasser_beam_uv_0) + off);
-    p4[1] = (s32)((*(char **)&trespasser_beam_uv_1) + off);
-    p4[2] = (s32)((*(char **)&trespasser_beam_uv_2) + off);
-    p4[3] = (s32)((*(char **)&trespasser_beam_uv_3) + off);
+    p4[0] = (s32)((trespasser_beam_uv_0) + off);
+    p4[1] = (s32)((trespasser_beam_uv_1) + off);
+    p4[2] = (s32)((trespasser_beam_uv_2) + off);
+    p4[3] = (s32)((trespasser_beam_uv_3) + off);
 
     f25 = FastSin(a) * b;
     f24 = FastCos(a) * b;
@@ -1307,10 +1302,10 @@ void draw_tresspasser_puzzle_radial_strip(void *unused, f32 a, f32 b, f32 c, s32
     tex = GetEffectTex((tresspasser_radial_strip_texture_index_gp));
     draw_geometry_quad_5188(m, p4, a4, tex, 0);
 
-    p4[0] = (s32)(*(char **)&trespasser_beam_glow_uv_0);
-    p4[1] = (s32)(*(char **)&trespasser_beam_glow_uv_1);
-    p4[2] = (s32)(*(char **)&trespasser_beam_glow_uv_2);
-    p4[3] = (s32)(*(char **)&trespasser_beam_glow_uv_3);
+    p4[0] = (s32)(trespasser_beam_glow_uv_0);
+    p4[1] = (s32)(trespasser_beam_glow_uv_1);
+    p4[2] = (s32)(trespasser_beam_glow_uv_2);
+    p4[3] = (s32)(trespasser_beam_glow_uv_3);
 
     f25 = FastSin(a) * b;
     f24 = FastCos(a) * b;
@@ -1515,7 +1510,6 @@ move:
 }
 extern int D_L02_00160058 MACRO_ADDR;
 extern unsigned char D_0014171B[];
-extern float g_frame_time_sq MACRO_ADDR;
 extern float versatarget_sparkle_lifetime SDATA(versatarget_sparkle_lifetime);
 extern int versatarget_sparkle_color SDATA(versatarget_sparkle_color);
 extern float versatarget_sparkle_size SDATA(versatarget_sparkle_size);
@@ -1905,7 +1899,6 @@ void draw_background_ship_1_joint_billboards(char *self) {
         get_next_moby_in_group((int *)&cur, (int)cur, 0, 0);
     }
 }
-extern int frame_counter_ref MACRO_ADDR;
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void AddDrawCallback(void (*)(void), void *);
 
@@ -2114,7 +2107,6 @@ extern float random_float_between(float, float);
 extern int FastTweenColor(int, int, float);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
-extern float g_frame_time MACRO_ADDR;
 extern float background_ship_1_spark_start_vel_scale SDATA(background_ship_1_spark_start_vel_scale);
 extern float background_ship_1_spark_end_vel_scale SDATA(background_ship_1_spark_end_vel_scale);
 extern float background_ship_1_spark_jitter SDATA(background_ship_1_spark_jitter);
@@ -2497,7 +2489,6 @@ void white_flower_update(char *m) {
             break;
     }
 }
-extern char *aridia_camera_moby;
 
 /* Store the selected value only while this level object is inactive. */
 void set_follow_camera_control_word(int value) {
@@ -2643,7 +2634,6 @@ void try_select_camera_offset_effect_moby(char *m) {
 }
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 struct Moby;
-extern struct Hero g_hero;
 
 extern char *aridia_camera_descriptors MACRO_ADDR;
 extern char *aridia_camera_follow_override_moby;
@@ -2702,9 +2692,7 @@ int test_moby_camera_control_activation(char *moby) {
 rejected:
     return 0;
 }
-extern char *aridia_camera_descriptors MACRO_ADDR;
 extern char aridia_player_camera_follow[];
-extern char aridia_player_camera[];
 extern float FastDiffRots(float, float);
 
 /* Checks whether the target's direction is within a and b degrees of the reference axis. */

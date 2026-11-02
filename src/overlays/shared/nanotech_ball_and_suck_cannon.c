@@ -202,7 +202,6 @@ typedef struct {
 } Vx __attribute__((aligned(16)));
 extern char g_debug_camera[] NOT_SDA;
 
-extern float g_frame_time MACRO_ADDR;
 extern float nanotech_spark_speed_min SDATA(nanotech_spark_speed_min);
 extern float nanotech_spark_speed_max SDATA(nanotech_spark_speed_max);
 extern unsigned char nanotech_spark_life;
@@ -263,9 +262,9 @@ extern s32 nanotech_ball_collection_second_particle_mode_selector
     SDATA(nanotech_ball_collection_second_particle_mode_selector);
 extern s32 nanotech_ball_collection_particle_byte_source_index
     SDATA(nanotech_ball_collection_particle_byte_source_index);
-extern short nanotech_ring_spin_speeds;
-extern short nanotech_ring_sizes;
-extern short nanotech_ring_heights;
+extern f32 nanotech_ring_spin_speeds SDATA(nanotech_ring_spin_speeds);
+extern f32 nanotech_ring_sizes SDATA(nanotech_ring_sizes);
+extern f32 nanotech_ring_heights SDATA(nanotech_ring_heights);
 void FastVecSub(void *, void *, void *);
 void vec_scale_to_length(void *, void *, f32);
 void FastVecAdd(void *, void *, void *);
@@ -296,7 +295,7 @@ s32 update_nanotech_ball_collection_effects(M_2d8510 *m) {
             continue;
         if (o->h58[i] > scale_ticks(0x30))
             ret = 1;
-        f = o->f60[i] += (((f32 *)&nanotech_ring_spin_speeds))[i];
+        f = o->f60[i] += ((&nanotech_ring_spin_speeds))[i];
         if (255.0f <= f)
             o->f60[i] = f - 255.0f;
         else if (f <= 0.0f)
@@ -308,16 +307,15 @@ s32 update_nanotech_ball_collection_effects(M_2d8510 *m) {
         t = 1.0f - o->h58[i] / IntToFloat(scale_ticks((nanotech_ring_fade_ticks)));
         al = truncate_float_to_s32(IntToFloat(hi) * (1.0f - t)) << 24;
         c = al | (c & 0xFFFFFF);
-        a.z = z + (((f32 *)&nanotech_ring_heights))[i];
+        a.z = z + ((&nanotech_ring_heights))[i];
         p = PartType59Spawn(&a, c, truncate_float_to_s32(o->f60[i]),
                             (nanotech_ball_collection_particle_byte_source_index), 0, 2, 1,
-                            (((f32 *)&nanotech_ring_sizes))[i] * t);
+                            ((&nanotech_ring_sizes))[i] * t);
         if (p)
             p[2] = *part_type_textures.pF8;
-        p = PartType59Spawn(&a, al | 0xFFFFFF, truncate_float_to_s32(o->f60[i]),
-                            (nanotech_ball_collection_particle_byte_source_index),
-                            (nanotech_ball_collection_second_particle_mode_selector), 2, 1,
-                            (((f32 *)&nanotech_ring_sizes))[i] * (t * 0.7f));
+        p = PartType59Spawn(
+            &a, al | 0xFFFFFF, truncate_float_to_s32(o->f60[i]), (nanotech_ball_collection_particle_byte_source_index),
+            (nanotech_ball_collection_second_particle_mode_selector), 2, 1, ((&nanotech_ring_sizes))[i] * (t * 0.7f));
         if (p)
             p[2] = *part_type_textures.pF8;
         FastVecAdd(&a, &a, &b);
@@ -416,7 +414,6 @@ typedef struct D_2D9EA0 {
     char p70[0xC];
     int f7C;
 } D_2D9EA0;
-extern char hero_globals_base_r[] __asm__("D_0013E633") NOT_SDA;
 extern V_2D9EA0 nanotech_slot_offsets_r[] __asm__("D_L00_001E3FF0") NOT_SDA;
 extern V_2D9EA0 nanotech_slot_spin_axes_r[] __asm__("D_L00_001E4070");
 extern float D_L00_001E17F0[];
@@ -562,7 +559,7 @@ void nanotech_ball_update(Moby *m) {
                 }
             }
             {
-                Hero *g = (Hero *)(hero_globals_base_r + 0xE1D);
+                Hero *g = &g_hero;
                 int lim = hero_max_health;
                 if (g->vehicle_mode == 1)
                     lim = 4;
@@ -663,15 +660,14 @@ void nanotech_ball_update(Moby *m) {
             if (primary_nanotech_ball_moby == m)
                 update_nanotech_ball_slot_offsets_r();
             if (d->h56 != 0) {
-                FastVecScale_r(&m->pos, &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->gravity_dir,
-                               -D_L00_00161B24_2D9EA0);
-                FastVecAdd_r(&m->pos, &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, &m->pos);
+                FastVecScale_r(&m->pos, &g_hero.gravity_dir, -D_L00_00161B24_2D9EA0);
+                FastVecAdd_r(&m->pos, &g_hero.motion.pos, &m->pos);
                 m->rot.w = 0.52359879f;
                 if (update_nanotech_ball_collection_effects_r(m) != 0 && random_integer_below_r(5) == 0)
                     spawn_nanotech_ball_collection_effect_pair_r(m);
             }
             {
-                Hero *g = (Hero *)(hero_globals_base_r + 0xE1D);
+                Hero *g = &g_hero;
                 int lim = hero_max_health;
                 if (g->vehicle_mode == 1)
                     lim = 4;
@@ -699,9 +695,8 @@ void nanotech_ball_update(Moby *m) {
                     DeleteMoby_r(m);
             } else {
                 int i;
-                FastVecScale_r(&v20, &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->gravity_dir,
-                               -D_L00_00161B24_2D9EA0);
-                FastVecAdd_r(&v20, &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, &v20);
+                FastVecScale_r(&v20, &g_hero.gravity_dir, -D_L00_00161B24_2D9EA0);
+                FastVecAdd_r(&v20, &g_hero.motion.pos, &v20);
                 for (i = 0; i < 8; i++) {
                     Part *e = d->slots[i];
                     Ext *x;
@@ -710,7 +705,7 @@ void nanotech_ball_update(Moby *m) {
                     x = (Ext *)(e + 1);
                     if (FastDecTimer_r(&x->h1E)) {
                         if (d->h56 == 0) {
-                            Hero *g = (Hero *)(hero_globals_base_r + 0xE1D);
+                            Hero *g = &g_hero;
                             int lim = hero_max_health;
                             if (g->vehicle_mode == 1)
                                 lim = 4;
@@ -975,7 +970,6 @@ void draw_nanotech_ball(Moby *moby) {
     }
     vu1_add_g_sregister_2DACC0(0x47, 0x5360b);
 }
-extern Hero g_hero NOT_SDA;
 
 /* tests a state value against a set of cases */
 int is_suck_cannon_suction_blocked_by_hero_state(void) {
@@ -2710,7 +2704,6 @@ void suck_beam_draw_mesh(void) {
     }
     VU1_addGSregister(0x47, 0x5360B);
 }
-extern short suck_beam_segment_alpha[];
 extern int suck_beam_clear_particles SDATA(suck_beam_clear_particles);
 extern int suck_beam_rebuild SDATA(suck_beam_rebuild);
 // sets two flags and clears a short
@@ -3134,8 +3127,6 @@ void suck_beam_queue_draw(int arg0) {
         AddDrawCallback(suck_beam_draw_mesh, arg0);
     }
 }
-extern char suck_beam_points[];
-extern char suck_beam_points_base[];
 extern float suck_beam_scroll_speed SDATA(suck_beam_scroll_speed);
 extern float FastVecLength(void *);
 typedef float VQ[4] __attribute__((aligned(16)));
@@ -3207,7 +3198,6 @@ void scatter_moby_from_hazards(Moby *m) {
         }
     }
 }
-extern s32 g_current_level_index MACRO_ADDR;
 int get_first_moby_in_group(void *, s32, s32, s32);
 int get_next_moby_in_group(void *, s32, s32, s32);
 void draw_offset_textured_effect_quad(void *, void *, f32, f32);
@@ -3306,7 +3296,6 @@ void quad_moby_update(Moby *a) {
 extern void AttachManipulator(char *, int, void *);
 extern float FastAddRots(float, float);
 extern void axis_rotation_2d48(void *, int, float);
-extern float g_frame_time MACRO_ADDR;
 extern float vendor_orb_spin_speed_deg SDATA(vendor_orb_spin_speed_deg);
 
 /* UpdateMoby for Vendor Orb: init then slowly spin/ease its value */
@@ -3380,7 +3369,6 @@ typedef struct {
     char p40[0x30];
     Vec v70;
 } Node_2E0E50;
-extern char hero_globals_base_r2[] __asm__("D_0013E633");
 
 extern int D_L00_0015F6A8 MACRO_ADDR;
 extern int D_L00_0015F504 MACRO_ADDR;
@@ -3419,34 +3407,33 @@ void hydrodisplacer_update(Moby *m) {
     Vec v0, v10;
     Data_2E0E50 *d = (void *)m->pvars;
 
-    if (((Hero *)(hero_globals_base_r2 + 0xE1D))->items[0].state == 3) {
+    if (g_hero.items[0].state == 3) {
         end_hydrodisplacer_interaction(m);
         return;
     }
-    if (((Hero *)(hero_globals_base_r2 + 0xE1D))->hydro_tank_full != 0) {
-        if (cinematic_mode == 0 &&
-            !((unsigned int)(((Hero *)(hero_globals_base_r2 + 0xE1D))->state.current - 0x38) < 2)) {
+    if (g_hero.hydro_tank_full != 0) {
+        if (cinematic_mode == 0 && !((unsigned int)(g_hero.state.current - 0x38) < 2)) {
             emit_hydrodisplacer_effect(m);
         }
-        if (((Hero *)(hero_globals_base_r2 + 0xE1D))->hydro_tank_full != 0) {
+        if (g_hero.hydro_tank_full != 0) {
             float a = g_frame_scale_sq * 0.02f;
             float b = g_frame_scale_sq * 0.3f;
 
-            ((Hero *)(hero_globals_base_r2 + 0xE1D))->item_eases[0].attach_joint = 1;
-            ((Hero *)(hero_globals_base_r2 + 0xE1D))->item_eases[0].scale = 2.3f;
-            ((Hero *)(hero_globals_base_r2 + 0xE1D))->item_eases[0].accel = a;
-            ((Hero *)(hero_globals_base_r2 + 0xE1D))->item_eases[0].max_speed = b;
-            if (!((unsigned int)(((Hero *)(hero_globals_base_r2 + 0xE1D))->state.current - 0x38) < 2)) {
+            g_hero.item_eases[0].attach_joint = 1;
+            g_hero.item_eases[0].scale = 2.3f;
+            g_hero.item_eases[0].accel = a;
+            g_hero.item_eases[0].max_speed = b;
+            if (!((unsigned int)(g_hero.state.current - 0x38) < 2)) {
                 float c = 1024.0f / m->scale * -0.2f;
 
-                ((Hero *)(hero_globals_base_r2 + 0xE1D))->item_eases[1].accel = a;
-                ((Hero *)(hero_globals_base_r2 + 0xE1D))->item_eases[1].max_speed = b;
-                ((Hero *)(hero_globals_base_r2 + 0xE1D))->item_eases[2].max_speed = b;
-                ((Hero *)(hero_globals_base_r2 + 0xE1D))->item_eases[1].attach_joint = 2;
-                ((Hero *)(hero_globals_base_r2 + 0xE1D))->item_eases[2].attach_joint = 3;
-                ((Hero *)(hero_globals_base_r2 + 0xE1D))->item_eases[2].accel = a;
-                ((Hero *)(hero_globals_base_r2 + 0xE1D))->item_eases[1].pos_target.f[1] = c;
-                ((Hero *)(hero_globals_base_r2 + 0xE1D))->item_eases[2].pos_target.f[1] = c;
+                g_hero.item_eases[1].accel = a;
+                g_hero.item_eases[1].max_speed = b;
+                g_hero.item_eases[2].max_speed = b;
+                g_hero.item_eases[1].attach_joint = 2;
+                g_hero.item_eases[2].attach_joint = 3;
+                g_hero.item_eases[2].accel = a;
+                g_hero.item_eases[1].pos_target.f[1] = c;
+                g_hero.item_eases[2].pos_target.f[1] = c;
             }
         }
     }
@@ -3461,25 +3448,22 @@ void hydrodisplacer_update(Moby *m) {
             }
             break;
         case 2:
-            if (pad_pressed_within(((Hero *)(hero_globals_base_r2 + 0xE1D))->items[0].button_mask, scale_ticks_r3(8),
-                                   0) == 0) {
+            if (pad_pressed_within(g_hero.items[0].button_mask, scale_ticks_r3(8), 0) == 0) {
                 break;
             }
-            if ((pad_held & ((Hero *)(hero_globals_base_r2 + 0xE1D))->items[0].button_mask) == 0) {
+            if ((pad_held & g_hero.items[0].button_mask) == 0) {
                 break;
             }
-            if (((Hero *)(hero_globals_base_r2 + 0xE1D))->ground_moby == 0 ||
-                ((Hero *)(hero_globals_base_r2 + 0xE1D))->air_frames.s != 0 ||
-                ((Hero *)(hero_globals_base_r2 + 0xE1D))->ground_moby->oclass != MOBY_CLASS_HYDRODISPLACER_FAUCET) {
+            if (g_hero.ground_moby == 0 || g_hero.air_frames.s != 0 ||
+                g_hero.ground_moby->oclass != MOBY_CLASS_HYDRODISPLACER_FAUCET) {
                 break;
             }
-            if (test_hydrodisplacer_activation_flag(m) == 0 ||
-                (unsigned int)((Hero *)(hero_globals_base_r2 + 0xE1D))->state.control_mode >= 2) {
+            if (test_hydrodisplacer_activation_flag(m) == 0 || (unsigned int)g_hero.state.control_mode >= 2) {
                 break;
             }
             m->state = 3;
             HeroEnterMoveState_r(0x38, 0);
-            if (((Hero *)(hero_globals_base_r2 + 0xE1D))->hydro_tank_full != 0) {
+            if (g_hero.hydro_tank_full != 0) {
                 set_hero_animation(0x83, 0, scale_ticks_r3(6));
             } else {
                 set_hero_animation(0x46, 0, scale_ticks_r3(6));
@@ -3489,33 +3473,32 @@ void hydrodisplacer_update(Moby *m) {
             PadState *e;
             char *q;
 
-            if (((Hero *)(hero_globals_base_r2 + 0xE1D))->ground_moby == 0 ||
-                ((Hero *)(hero_globals_base_r2 + 0xE1D))->ground_moby->oclass != MOBY_CLASS_HYDRODISPLACER_FAUCET) {
+            if (g_hero.ground_moby == 0 || g_hero.ground_moby->oclass != MOBY_CLASS_HYDRODISPLACER_FAUCET) {
                 end_hydrodisplacer_interaction(m);
                 return;
             }
-            if (!(((Hero *)(hero_globals_base_r2 + 0xE1D))->anim_flags & 2)) {
+            if (!(g_hero.anim_flags & 2)) {
                 break;
             }
-            e = (void *)((Hero *)(hero_globals_base_r2 + 0xE1D))->ground_moby->pvars;
+            e = (void *)g_hero.ground_moby->pvars;
             q = moby_array_start + ((*(int *)&e->pad_0) << 8);
             HeroEnterMoveState_r(0x39, 0);
-            if (((Hero *)(hero_globals_base_r2 + 0xE1D))->hydro_tank_full != 0) {
+            if (g_hero.hydro_tank_full != 0) {
                 set_hero_animation(0x84, 0, scale_ticks_r3(6));
             } else {
                 set_hero_animation(0x47, 0, scale_ticks_r3(6));
             }
-            if (((Hero *)(hero_globals_base_r2 + 0xE1D))->hydro_tank_full == 0) {
-                Moby_PlaySound_r2(0x14, 0, ((Hero *)(hero_globals_base_r2 + 0xE1D))->moby);
+            if (g_hero.hydro_tank_full == 0) {
+                Moby_PlaySound_r2(0x14, 0, g_hero.moby);
             } else {
-                Moby_PlaySound_r2(0x15, 0, ((Hero *)(hero_globals_base_r2 + 0xE1D))->moby);
+                Moby_PlaySound_r2(0x15, 0, g_hero.moby);
             }
             if ((*(int *)&e->pad_0[4]) != -1 && (*(int *)&e->pad_0[8]) != -1) {
                 m->command = 0;
                 m->state = 4;
                 d->f10 = 0.0f;
                 CameraScript_r(g_debug_camera_r3, g_debug_camera_r3 + 0x10, 1, 0, 0);
-                if (((Hero *)(hero_globals_base_r2 + 0xE1D))->hydro_tank_full != 0) {
+                if (g_hero.hydro_tank_full != 0) {
                     d->i8 = (*(int *)&e->pad_0[4]);
                     d->iC = (*(int *)&e->pad_0[8]);
                 } else {
@@ -3526,18 +3509,17 @@ void hydrodisplacer_update(Moby *m) {
             }
             m->state = 5;
             d->i0 = truncate_float_to_s32_r3(multiply_global_factor(hydrodisplacer_pad_wait_time));
-            if (((Hero *)(hero_globals_base_r2 + 0xE1D))->hydro_tank_full == 0) {
+            if (g_hero.hydro_tank_full == 0) {
                 ((Moby *)q)->command = 8;
-                ((Hero *)(hero_globals_base_r2 + 0xE1D))->hydro_tank_full = 1;
+                g_hero.hydro_tank_full = 1;
             } else {
                 ((Moby *)q)->command = 4;
-                ((Hero *)(hero_globals_base_r2 + 0xE1D))->hydro_tank_full = 0;
+                g_hero.hydro_tank_full = 0;
             }
             break;
         }
         case 4:
-            if (((Hero *)(hero_globals_base_r2 + 0xE1D))->ground_moby == 0 ||
-                ((Hero *)(hero_globals_base_r2 + 0xE1D))->ground_moby->oclass != MOBY_CLASS_HYDRODISPLACER_FAUCET) {
+            if (g_hero.ground_moby == 0 || g_hero.ground_moby->oclass != MOBY_CLASS_HYDRODISPLACER_FAUCET) {
                 end_hydrodisplacer_interaction(m);
                 return;
             }
@@ -3549,20 +3531,17 @@ void hydrodisplacer_update(Moby *m) {
                     if (!(1.0f <= gFadeLvl)) {
                         break;
                     }
-                    q = moby_array_start +
-                        ((*(int *)&((PadState *)((void *)((Hero *)(hero_globals_base_r2 + 0xE1D))->ground_moby->pvars))
-                               ->pad_0)
-                         << 8);
+                    q = moby_array_start + ((*(int *)&((PadState *)((void *)g_hero.ground_moby->pvars))->pad_0) << 8);
                     m->command = 1;
                     set_camera_position(level_cuboids + (d->i8 << 7) + 0x30);
                     set_camera_rotation(level_cuboids + (d->i8 << 7) + 0x70);
                     scripted_camera_move_active = 1;
-                    if (((Hero *)(hero_globals_base_r2 + 0xE1D))->hydro_tank_full == 0) {
+                    if (g_hero.hydro_tank_full == 0) {
                         ((Moby *)q)->command = 8;
-                        ((Hero *)(hero_globals_base_r2 + 0xE1D))->hydro_tank_full = 1;
+                        g_hero.hydro_tank_full = 1;
                     } else {
                         ((Moby *)q)->command = 4;
-                        ((Hero *)(hero_globals_base_r2 + 0xE1D))->hydro_tank_full = 0;
+                        g_hero.hydro_tank_full = 0;
                     }
                     break;
                 }
@@ -3604,7 +3583,7 @@ void hydrodisplacer_update(Moby *m) {
                     }
                     m->state = 2;
                     HeroEnterMoveState_r(HERO_STATE_ANIMATION_WAIT_TO_IDLE, 0);
-                    if (((Hero *)(hero_globals_base_r2 + 0xE1D))->hydro_tank_full != 0) {
+                    if (g_hero.hydro_tank_full != 0) {
                         set_hero_animation(0x48, 0, scale_ticks_r3(6));
                     } else {
                         set_hero_animation(0x85, 0, scale_ticks_r3(6));
@@ -3613,8 +3592,7 @@ void hydrodisplacer_update(Moby *m) {
             }
             break;
         case 5:
-            if (((Hero *)(hero_globals_base_r2 + 0xE1D))->ground_moby != 0 &&
-                ((Hero *)(hero_globals_base_r2 + 0xE1D))->ground_moby->oclass == MOBY_CLASS_HYDRODISPLACER_FAUCET &&
+            if (g_hero.ground_moby != 0 && g_hero.ground_moby->oclass == MOBY_CLASS_HYDRODISPLACER_FAUCET &&
                 fast_dec_timer_r3(d) == 0) {
                 break;
             }

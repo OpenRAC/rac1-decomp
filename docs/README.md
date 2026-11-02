@@ -45,9 +45,13 @@ The match is finished. This is what could still read better:
   `config/ratchets.json`.
 - **Fakematch sites.** `config/fakematch.tsv` lists each one and what it does. Each has had one reasoned try at a natural
   form, and those that are left changed the code. Only a new idea is worth another try.
-- **Fake bases.** About 900 sites in shared C and 400 in version fragments still spell a global as
-  `hero_globals_base + 0xE1D`. `tools/tidy/fake_bases.py` tested the 389 it can place: they change the code or clash with
-  another view. It does not look at local aliases such as `hero_globals_base_r`, so those are untested.
+- **Fake bases.** About 600 sites in shared C and 340 in version fragments still spell a global as
+  `hero_globals_base + 0xE1D`. `tools/tidy/fake_bases.py` tests each function it can place, local aliases included: these
+  change the code or clash with another view.
+- **Small-data globals.** `tools/tidy/gp_scalars.py` converts `extern short x` read through one type. Those left are real
+  shorts, or are read as two types, or fail the match.
+- **Moby class numbers.** `oclass_literals` rose when raw offsets became real `oclass` fields. The classes left, like
+  0x28F, are in no name source, so they stay numbers.
 - **Control modes.** `enum HeroControlMode` names what the code proves. 0x09, 0x0A, 0x0B, 0x10, 0x13, 0x15, 0x16 and 0x18
   are still numbers.
 - **Sound and animation IDs.** No name data exists for them.

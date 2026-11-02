@@ -22,6 +22,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+extern Hero g_hero;
 extern char gHeroPos[];
 extern struct Hero g_hero;
 
@@ -507,10 +508,8 @@ void BoltThiefUpdate(L14Moby *m) {
     }
     StepColorFade(m, d->effect);
 }
-extern float g_frame_time MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern float oltanis_bolt_thief_path_speed SDATA(oltanis_bolt_thief_path_speed);
-extern char *oltanis_paths[];
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
 extern void FastVecSub(void *dst, void *a, void *b);
 
@@ -914,7 +913,6 @@ void update_bouncing_spark(Moby *m) {
 extern char *CreateMoby(int);
 
 extern void moby_build_matrix(void *);
-extern short oltanis_spark_trail_ticks;
 extern float oltanis_spark_start_scale SDATA(oltanis_spark_start_scale);
 
 /* Spawns a moby with its data block filled from the arguments. */
@@ -969,7 +967,6 @@ typedef struct {
     u8 pad0[0x454];
     u8 collected[1];
 } L14LevelState;
-extern char *oltanis_mobys MACRO_ADDR;
 extern L14LevelState oltanis_collected_flags_base;
 extern s32 level_moby_killed[][64];
 extern float IntToFloat(int);
@@ -1042,8 +1039,6 @@ void save_and_lower_unlock_sequence_mobys(char *moby) {
         } while (*(short *)p++ >= 0);
     }
 }
-extern char *oltanis_mobys MACRO_ADDR;
-extern unsigned short *oltanis_moby_groups[];
 extern float IntToFloat(int);
 extern float CubicInterpolate(float, float, float, float, float);
 
@@ -1427,7 +1422,6 @@ extern u8 saved_mission_state[];
 extern f32 FastAddRots(f32, f32);
 extern s32 truncate_float_to_s32(f32);
 extern s32 Moby_PlaySound();
-extern char *oltanis_paths[];
 extern f32 random_angle_radians(void);
 extern f32 FastSin(f32);
 
@@ -1669,8 +1663,7 @@ void update_flying_car(Moby *m) {
             }
             break;
         case 1:
-            if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
-                                              d->trigger)) {
+            if (is_point_inside_clip_volume_r(&g_hero.motion.pos, d->trigger)) {
                 m->flags &= 0xFFBE;
                 m->collision = ((Model *)m->pclass)->bounds;
                 if (d->part >= 0) {
@@ -1694,10 +1687,8 @@ void update_flying_car(Moby *m) {
                     FastVecAdd_r4(&o->pos, &o->pos, &vec);
                     FastVecScale_r4(&vec, &m->rot_row2, d->fAC);
                     FastVecAdd_r4(&o->pos, &o->pos, &vec);
-                    if ((((Hero *)(hero_globals_base_r + 0xE1D))->state.control_mode == HERO_MODE_GRAPPLE &&
-                         ((Hero *)(hero_globals_base_r + 0xE1D))->grapple_target == o) ||
-                        (((Hero *)(hero_globals_base_r + 0xE1D))->state.control_mode == HERO_MODE_GRAPPLE_SWING &&
-                         ((Hero *)(hero_globals_base_r + 0xE1D))->swing_target_moby == o)) {
+                    if ((g_hero.state.control_mode == HERO_MODE_GRAPPLE && g_hero.grapple_target == o) ||
+                        (g_hero.state.control_mode == HERO_MODE_GRAPPLE_SWING && g_hero.swing_target_moby == o)) {
                         seed_linked_record_for_flying_car_r(m);
                         d->fCC = scale_ticks_r3(0x1E);
                     } else {
@@ -1759,7 +1750,6 @@ void update_flying_car(Moby *m) {
 }
 extern float FastVecDist(void *, void *);
 
-extern char *oltanis_paths[];
 
 /* Precomputes per-point segment values of a path and snaps the moby to its first point. */
 void initialize_flying_car_path(Moby *moby) {
@@ -1780,7 +1770,6 @@ void initialize_flying_car_path(Moby *moby) {
 typedef u32 u128_08AA8 __attribute__((mode(TI), aligned(16)));
 extern struct Hero g_hero_r3 __asm__("D_0013F450");
 extern f32 g_frame_scale_sq MACRO_ADDR;
-extern f32 g_frame_time MACRO_ADDR;
 extern void FastVecSub(void *out, void *a, void *b);
 
 typedef struct {
@@ -1824,7 +1813,6 @@ typedef struct {
     VoiceSlot voice;
 } VoicePoolWindow;
 extern VoicePool voice_pool;
-extern char *oltanis_paths[];
 extern short oltanis_mobys_r2 __asm__("D_L14_00160098");
 extern float flying_car_tracking_spring_gain_gp SDATA(flying_car_tracking_spring_gain_gp);
 extern float flying_car_motion_spring_damping_gp SDATA(flying_car_motion_spring_damping_gp);
@@ -2144,8 +2132,6 @@ void Camera20Activate(Camera *cam) {
     Hero_ResetToPosition(p, v, 0x72, 0);
 }
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
-extern struct Hero g_hero;
-extern f32 g_frame_time MACRO_ADDR;
 struct UpdateCam {
     u128 m0;
     u128 m1;
@@ -2182,8 +2168,6 @@ typedef struct {
     s16 started; /* 0x54 */
     s16 timer; /* 0x56 */
 } VendorCamRun_5290;
-extern char *oltanis_camera_descriptors MACRO_ADDR;
-extern char *oltanis_paths[];
 extern s32 path_camera_active MACRO_ADDR;
 extern char oltanis_camera_matrix[];
 extern float oltanis_player_camera_field_258;
@@ -2328,8 +2312,6 @@ void update_path_camera(struct UpdateCam *cam) {
     FastVecCross(&cam->m2, &cam->m1, &cam->m0);
 }
 extern int check_descriptor_hero_trigger(void *);
-extern char *oltanis_camera_descriptors MACRO_ADDR;
-extern char hero_globals_base[];
 
 typedef struct CameraRule {
     u8 pad00[0x38];
@@ -2843,7 +2825,6 @@ done:
     return 0;
 }
 INCLUDE_ASM("asm/overlays", func_L14_00317C4C);
-extern char hero_globals_base[];
 // Sets the exit camera's state field to 3 unless the global is 0xF.
 void exit_camera_set_state(char *moby) {
     if (g_hero.state.control_mode != HERO_MODE_GRIND) {

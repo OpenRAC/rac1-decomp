@@ -74,7 +74,6 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern int pal_mode MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
 
-extern char item_usage[];
 extern unsigned char D_0015EEB4[4] MACRO_ADDR;
 
 extern short aridia_hero_run_step_start_frames;
@@ -1545,9 +1544,7 @@ int HeroL02_SetMoveState(int a, int b) {
     return 1;
 }
 
-extern Hero g_hero;
 extern PadState g_controller_state;
-extern MoveUsageTable usage_stats;
 
 extern unsigned char item_available[];
 extern int gBolts MACRO_ADDR;
@@ -1556,7 +1553,7 @@ extern int quick_swap_item MACRO_ADDR;
 extern float aridia_hero_fall_state_height MACRO_ADDR;
 extern int item_selector_hud_inhibit MACRO_ADDR;
 extern int aridia_hero_run_step1_start_frame MACRO_ADDR;
-extern short aridia_hero_double_tap_timer;
+extern int aridia_hero_double_tap_timer SDATA(aridia_hero_double_tap_timer);
 
 extern int aridia_hero_state_1e_clear_word;
 extern HeroBoneScalars aridia_lean_state;
@@ -2675,15 +2672,15 @@ void HeroL02_UpdateStateTransitions(void) {
                         {
                             int both = 0;
 
-                            fast_dec_timer((int *)&aridia_hero_double_tap_timer);
-                            if (*(int *)&aridia_hero_double_tap_timer != 0) {
+                            fast_dec_timer(&aridia_hero_double_tap_timer);
+                            if (aridia_hero_double_tap_timer != 0) {
                                 both = 1;
                                 if (!((g_controller_state.held & PAD_R1) && (g_controller_state.pressed & PAD_R1))) {
                                     both = 0;
                                 }
                             }
                             if (g_controller_state.pressed & PAD_R1) {
-                                *(int *)&aridia_hero_double_tap_timer = scale_ticks(0x1E);
+                                aridia_hero_double_tap_timer = scale_ticks(0x1E);
                             }
                             if (!(g_hero.state_timer > scale_ticks(0x14))) {
                                 break;

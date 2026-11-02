@@ -25,6 +25,7 @@
 #include "structs/pad.h"
 #include "enums/hero_state.h"
 #include "structs/voice.h"
+extern char gSpecialItems[];
 extern Hero g_hero;
 extern char help_records[];
 extern int pad0_pressed;
@@ -1311,7 +1312,6 @@ void fred_pokitaru_update(char *m) {
 }
 extern char g_hero_r[] __asm__("D_0013F450");
 extern float g_hero_pos_z;
-extern int pad0_pressed;
 extern int pokitaru_shown_help_message MACRO_ADDR;
 extern char *pokitaru_mobys MACRO_ADDR;
 extern unsigned char g_hero_field_20a5 NOT_SDA;
@@ -1594,7 +1594,6 @@ void restore_teleporter_visibility_and_collision(char *moby) {
     } while (count >= 0);
 }
 extern void DeleteMoby(void *);
-extern Hero g_hero;
 
 /* Deletes itself if its pvar is -1; later copies the pvar into the hero's index field. */
 void copy_pokitaru_pvar_to_hero(unsigned char *moby) {
@@ -1723,7 +1722,6 @@ extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern void func_L00_00263BF8(void *, float *, float *, float, float, float);
 extern void update_entity_matrix_r(void *, void *, void *, void *) __asm__("func_L00_002617B0");
 extern Path *path_table_r[] __asm__("D_L11_001B11B0");
-extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern char D_0013E650[];
 extern float D_L11_00161E64_30AE90 SDATA(D_L11_00161E64);
 extern float D_L11_00161E68_30AE90 SDATA(D_L11_00161E68);
@@ -1792,7 +1790,7 @@ void pokitaru_boat_update(Moby *m) {
             Path *b;
             int i;
             qcopy(&W.v.d, &d->fC4->nodes[d->fD4]);
-            if (*(Moby **)&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->ground_moby == m) {
+            if (*(Moby **)&g_hero.ground_moby == m) {
                 if (!Sound_IsPlaying(m, d->fCC))
                     d->fCC = Moby_PlaySound_r2(1, 4, m);
                 if (Sound_IsPlaying(m, d->fC8)) {
@@ -1889,7 +1887,7 @@ void pokitaru_boat_update(Moby *m) {
         case 5:
             qcopy(&W.v.d, &d->fC4->nodes[d->fD4]);
             if (d->fB0 != 0) {
-                if (((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos.f[2] < m->pos.z) {
+                if (g_hero.motion.pos.f[2] < m->pos.z) {
                     ApproachWithVelocity_r(&m->pos.z, &d->fD0, W.v.d.z + 1.0f, g_frame_time_sq_d, g_frame_time_sq_d,
                                            g_frame_time_d);
                 } else {
@@ -1931,7 +1929,6 @@ int try_activate_pokitaru_gate(unsigned char *moby) {
     }
     return 1;
 }
-extern f32 g_frame_time MACRO_ADDR;
 
 extern void AttachManipulator(struct Moby *, int, void *);
 extern void axis_rotation_2d48(void *, int, float);
@@ -2244,7 +2241,7 @@ void update_child_sets_controller(Moby *moby) {
                                        g_frame_time_sq * 2.0f, g_frame_time_sq * 4.0f, g_frame_time * 2.0f);
             }
             update_child_set_poses(moby);
-            if (((Flags *)(special_items_base_r + 0x13B))->f56 != 0 && *(int *)(&pad0_pressed) != 0) {
+            if (((Flags *)gSpecialItems)->f56 != 0 && *(int *)(&pad0_pressed) != 0) {
                 moby->command = 1;
             }
             if (child_sets_slide_progress < 1.0f && moby->command == 0) {
@@ -2272,7 +2269,7 @@ void update_child_sets_controller(Moby *moby) {
                 moby->state = 4;
                 CameraScript2(3);
                 Hero_ResetToPosition(g_hero.motion.pos.f, g_hero.motion.rot.f, 0, 1);
-                ((Flags *)(special_items_base_r + 0x13B))->f56 = 1;
+                ((Flags *)gSpecialItems)->f56 = 1;
             }
             break;
         case 4:
@@ -2965,7 +2962,6 @@ extern float ApproachWithVelocity_f(float *, float *, float, float, float, float
 extern void vec_scale_to_length_u(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void FastVecAdd_u(void *, void *, void *) __asm__("func_001F9BD8");
 extern unsigned char *pokitaru_mobys_t __asm__("D_L11_00160058") MACRO_ADDR;
-extern char special_items_base_t[] __asm__("D_0013D355");
 typedef struct {
     char pad[0x57];
     char f57;
@@ -3010,7 +3006,7 @@ void update_link_triggered_moby_motion(unsigned char *m) {
             if (linked_moby->oclass == MOBY_CLASS_FLOOR_BUTTON && linked_moby->command != 0) {
             go:
                 moving_moby->state = 2;
-                ((Rec57 *)(private_data->item_index + (int)(special_items_base_t + 0x13B)))->f57 = 1;
+                ((Rec57 *)(private_data->item_index + (int)(gSpecialItems)))->f57 = 1;
                 Moby_PlaySound_u(0, 0, moving_moby);
             }
             break;

@@ -26,9 +26,12 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "structs/voice.h"
+extern char level_moby_killed[];
+
+extern Hero g_hero;
+extern char saved_mission_state[];
 extern char gHeroPos[];
 extern char g_hero_body_center[];
-extern Hero g_hero;
 extern char gSpecialItems[];
 extern char voice_pool[];
 
@@ -394,7 +397,6 @@ typedef struct {
     s32 collision;
 } LiftClass;
 
-extern Hero g_hero;
 extern char *oltanis_paths[];
 extern char path_lift_no_rider_msg[];
 extern struct Moby *oltanis_mobys MACRO_ADDR;
@@ -570,7 +572,6 @@ extern char D_L14_001FCDA8[];
 extern char *oltanis_clip_volumes_r __asm__("D_L14_001601AC") MACRO_ADDR;
 extern int D_L14_00161CD4_2EC3E8 SDATA(D_L14_00161CD4);
 extern float D_L14_00161CD8_2EC3E8 SDATA(D_L14_00161CD8);
-extern char hero_globals_base_r[] __asm__("D_0013E633");
 
 /* Update for moby class 610: checks its volumes and path node on the first call and seeds 48 entries, then pushes
  * the hero along the moby's heading while he stands in the volume. */
@@ -609,18 +610,16 @@ void update_wind_control(Moby *m) {
             initialize_wind_spark_r(m, i, sv);
         }
     }
-    if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
-                                      d->vol500)) {
+    if (is_point_inside_clip_volume_r(&g_hero.motion.pos, d->vol500)) {
         Hero *h;
         wind_push_vector.x = FastCos_r(m->rot.z) * (D_L14_00161CD8_2EC3E8 * g_frame_time_r);
         wind_push_vector.y = FastSin_r(m->rot.z) * (D_L14_00161CD8_2EC3E8 * g_frame_time_r);
         wind_push_vector.z = 0.0f;
         wind_push_vector.f10 = 1.0f;
         update_wind_sparks_r(m);
-        h = (Hero *)(hero_globals_base_r + 0xE1D);
+        h = &g_hero;
         if (h->unk308 == 0 && h->unk2284 != 0xD && (h->on_ice_ground != 0 || h->frames_off_ground.s != 0) &&
-            is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
-                                          d->vol0)) {
+            is_point_inside_clip_volume_r(&g_hero.motion.pos, d->vol0)) {
             float t;
             FastDecTimer_r(&d->timer2);
             t = (1.0f - IntToFloat_r(d->timer2) * d->rate2) * (d->speed * g_frame_time_r);
@@ -628,8 +627,7 @@ void update_wind_control(Moby *m) {
             sv[0] = FastCos_r(m->rot.z) * t;
             sv[1] = FastSin_r(m->rot.z) * t;
             sv[2] = 0.0f;
-            FastVecAdd_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.platform_delta,
-                         &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.platform_delta, sv);
+            FastVecAdd_r(&g_hero.motion.platform_delta, &g_hero.motion.platform_delta, sv);
             d->timer = scale_ticks_r(D_L14_00161CD4_2EC3E8);
             d->rate = 1.0f / IntToFloat_r(d->timer);
             return;
@@ -643,8 +641,7 @@ void update_wind_control(Moby *m) {
             d->timer2 = scale_ticks_r(d->ticks);
             d->rate2 = 1.0f / IntToFloat_r(d->timer2);
         }
-        if (((Hero *)(hero_globals_base_r + 0xE1D))->unk308 != 0 ||
-            ((Hero *)(hero_globals_base_r + 0xE1D))->on_ice_ground == 0) {
+        if (g_hero.unk308 != 0 || g_hero.on_ice_ground == 0) {
             if (d->timer > scale_ticks_r(15)) {
                 d->timer = scale_ticks_r(15);
                 d->rate = 1.0f / (float)d->timer;
@@ -655,8 +652,7 @@ void update_wind_control(Moby *m) {
         sv[0] = FastCos_r(m->rot.z) * t;
         sv[1] = FastSin_r(m->rot.z) * t;
         sv[2] = 0.0f;
-        FastVecAdd_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.platform_delta,
-                     &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.platform_delta, sv);
+        FastVecAdd_r(&g_hero.motion.platform_delta, &g_hero.motion.platform_delta, sv);
     }
 }
 extern struct {
@@ -668,7 +664,6 @@ extern int D_L14_00161D00_EC7E8 SDATA(D_L14_00161D00);
 extern int D_L14_00161D04_EC7E8 SDATA(D_L14_00161D04);
 extern float D_L14_00161D08_EC7E8 SDATA(D_L14_00161D08);
 extern float D_L14_00161D0C_EC7E8 SDATA(D_L14_00161D0C);
-extern float g_frame_time MACRO_ADDR;
 extern void FastVecCross(void *, void *, void *);
 extern float randf_sym(float, float);
 extern void FastVecScale(void *, void *, float);
@@ -1438,10 +1433,8 @@ extern void draw_world_quad(void *, void *, int);
 extern float CubicInterpolate(float, float, float, float, float);
 /* KEPT: signed and unsigned give lh and lhu. */
 extern short lightning_arc_point_timers[];
-extern unsigned char lightning_arc_fade_alpha[] MACRO_ADDR;
 /* KEPT: signed and unsigned give lh and lhu. */
 extern short lightning_branch_point_timers[];
-extern int lightning_branch_starts[] MACRO_ADDR;
 /* KEPT: short and SDATA select how each function addresses this global. */
 extern int lightning_grow_ticks SDATA(lightning_grow_ticks);
 extern int lightning_arc_outer_base_color_gp SDATA(lightning_arc_outer_base_color_gp);
@@ -1932,7 +1925,6 @@ void elevator_685_update(char *moby) {
         }
     }
 }
-extern char *oltanis_paths[];
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002eef60. */
 void initialize_elevator_path_state(struct Moby *m) {
@@ -1980,11 +1972,9 @@ void initialize_elevator_path_state(struct Moby *m) {
     *(int *)&d->point_dist = 0;
     d->point = 0;
 }
-extern char *oltanis_paths[];
 extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
 extern int Spline_AdvanceByDistance_r2(void *, void *, void *, void *, int, float) __asm__("func_L00_0025E860");
 
-extern float g_frame_time MACRO_ADDR;
 extern float elevator_path_speed SDATA(elevator_path_speed);
 
 /* Moves the moby along its current path, easing its rotation; returns 1 when the path end is reached. */
@@ -2049,7 +2039,6 @@ int advance_elevator_along_path(char *m) {
     }
     return 0;
 }
-extern char *oltanis_paths[];
 extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
 
 /* Springs the moby's position (and, while moving, its rotation) toward its current path point. */
@@ -2114,7 +2103,6 @@ void func_L14_002F0A30_r(Moby *m) {
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern char elevator_local_path_points[];
-extern char *oltanis_paths[];
 
 /* Rebuild the 11 vectors of a table entry from the moby's matrix and position. */
 void rebuild_elevator_world_path(char *moby) {
@@ -2441,7 +2429,7 @@ void TaxiUpdate(Moby *moby) {
             break;
         }
         case TAXI_STATE_WAIT_FOR_ITEM_GATE: {
-            unsigned char *t = (unsigned char *)help_stats_base_c + 0xAA35;
+            unsigned char *t = saved_mission_state;
             int k = g_current_level_index_m * 16;
             if (t[taxi_vars->fB8 + k] == 0xFF || t[taxi_vars->fBC + k] == 0xFF) {
                 struct MobyClass *model = moby->pclass;
@@ -3056,7 +3044,6 @@ extern void Spline_AdvanceByDistance(int a, char *pos, char *b, char *c, int d, 
 extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
 extern void FastVecSub(void *dst, void *a, void *b);
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
-extern float g_frame_time MACRO_ADDR;
 extern float enemy_fighter_path_speed SDATA(enemy_fighter_path_speed);
 extern float enemy_fighter_spring_stiffness SDATA(enemy_fighter_spring_stiffness);
 extern float enemy_fighter_spring_damping SDATA(enemy_fighter_spring_damping);
@@ -3253,10 +3240,8 @@ void update_enemy_fighter_921(Moby *m) {
                 b = saved_mission_state_r[d->f9C + (g_current_level_index_m << 4)];
                 if (b == a) {
                     c = saved_mission_state_r[d->fA0 + (g_current_level_index_m << 4)];
-                    if (c == b && ((Hero *)(hero_globals_base_r + 0xE1D))->frames_off_ground.s == 0 &&
-                        ((int)((Hero *)(hero_globals_base_r + 0xE1D))->ground_moby) == 0 &&
-                        is_point_inside_clip_volume_r3(
-                            (*(Vec_2FE038 *)&((Hero *)(hero_globals_base_r + 0xE1D))->motion.pos), d->fA4) != 0) {
+                    if (c == b && g_hero.frames_off_ground.s == 0 && ((int)g_hero.ground_moby) == 0 &&
+                        is_point_inside_clip_volume_r3((*(Vec_2FE038 *)&g_hero.motion.pos), d->fA4) != 0) {
                         Moby *jet = (Moby *)(oltanis_mobys_r + (d->f8C << 8));
                         Moby *seat = (Moby *)(oltanis_mobys_r + (((struct Jet *)jet->pvars)->f4 << 8));
                         float pitch, yaw;

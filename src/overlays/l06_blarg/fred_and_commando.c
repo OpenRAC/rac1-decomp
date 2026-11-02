@@ -154,7 +154,6 @@ void draw_dual_texture_50_quad_mesh(void) {
         i++;
     } while (i < 50);
 }
-extern f32 referencePosition[];
 typedef u32 u128_FE890 __attribute__((mode(TI), aligned(16)));
 typedef struct {
     u128_FE890 v[4];
@@ -257,7 +256,6 @@ void draw_dual_texture_58_quad_mesh(void) {
         i++;
     } while (i < 58);
 }
-extern f32 referencePosition[];
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 typedef struct {
     u128 v[4];
@@ -658,7 +656,6 @@ extern float FastSin(float);
 extern void FastVecAdd(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern void spawn_spinning_moby_fragment(void *, void *, void *);
-extern float g_frame_time MACRO_ADDR;
 extern float blarg_tube_base_z SDATA(blarg_tube_base_z);
 
 /* Replaces the moby with a broken copy (type 0x43C); with burst set, also throws 50 pieces around it. */
@@ -942,8 +939,6 @@ extern void func_L00_00263950(float, float, void *, void *, int);
 extern char blarg_camera_pos[];
 extern char fred_dialogue_name[];
 extern int level_game_mode_q MACRO_ADDR;
-extern float blarg_fade_level MACRO_ADDR;
-extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;
 extern Obj_3024C8 *blarg_camera_moby;
 extern char blarg_help_popup_state[];
@@ -952,7 +947,6 @@ extern unsigned char race_gates_base[];
 extern int race_gates_47_flag;
 
 /* Update of moby Fred (fred): steps the conversation and camera states, then turns the head toward the hero. */
-extern Hero g_hero;
 
 void fred_update(Moby *moby) {
     enum {
@@ -1209,7 +1203,6 @@ extern int *blarg_paths_r[] __asm__("D_L06_001B0FB0");
 extern char *blarg_scene_points_r __asm__("D_L06_0016016C") MACRO_ADDR;
 extern char referencePosition_r[] __asm__("D_L06_00167500");
 extern int level_game_mode_q_r __asm__("D_L06_0015F6A8") MACRO_ADDR;
-extern char hero_globals_base_r2[] __asm__("D_0013E633");
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern short D_L06_00162128_302FE8 SDATA(D_L06_00162128);
 extern short D_L06_0016212C_302FE8 SDATA(D_L06_0016212C);
@@ -1353,7 +1346,7 @@ void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
                 }
             }
             if (fast_dec_timer_r(&d->spark_timer) != 0) {
-                allocate_voice_for_group_entry_r(0, 0, (int)((Hero *)(hero_globals_base_r2 + 0xE1D))->moby);
+                allocate_voice_for_group_entry_r(0, 0, (int)g_hero.moby);
                 d->spark_timer =
                     truncate_float_to_s32_r2(multiply_global_factor_r(random_float_between_r(480.0f, 600.0f)));
                 ((Snd *)referencePosition_r)->f160 = 0.4f;
@@ -1361,7 +1354,7 @@ void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
             }
             if (level_game_mode_q_r == 0)
                 AddDrawCallback_r(draw_pulsing_timer_display, m);
-            if (((Hero *)(hero_globals_base_r2 + 0xE1D))->state.current == 0x72) {
+            if (g_hero.state.current == 0x72) {
                 ((Moby *)m)->state = 6;
                 return;
             }
@@ -1373,7 +1366,7 @@ void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
             d->ramp_delay = scale_ticks_r(0xF);
             d->ramp = 0.0f;
             set_moby_state_5_r(level_mobys_q_p + (d->moby_b << 8));
-            allocate_voice_for_group_entry_r(1, 0, (int)((Hero *)(hero_globals_base_r2 + 0xE1D))->moby);
+            allocate_voice_for_group_entry_r(1, 0, (int)g_hero.moby);
             return;
         }
         case 5:
@@ -1487,7 +1480,6 @@ extern void update_shuttle_route_selection_and_prompt(char *m);
 extern void mark_shuttle_linked_mobys_for_removal(char *moby);
 extern void Moby_PlaySound(int, int, void *);
 extern void clear_u64_value(void *);
-extern int level_game_mode_q MACRO_ADDR;
 extern void spawn_timed_projected_sprite_effect(char *, int, int, int);
 extern void MusicRequestTrack(int, int);
 
@@ -1506,7 +1498,6 @@ extern unsigned char D_0013D4AF[];
 extern unsigned char D_0013D5DD[];
 
 extern char blarg_paths_r2[] __asm__("D_L06_001B0FB0");
-extern char *blarg_scene_points MACRO_ADDR;
 extern int blarg_shown_help_message MACRO_ADDR;
 extern int blarg_shuttle_at_second_stop MACRO_ADDR;
 extern float shuttle_second_stop_ride_scale_multiplier_gp SDATA(shuttle_second_stop_ride_scale_multiplier_gp);
@@ -1766,7 +1757,6 @@ void ShuttleUpdate(Moby *moby) {
     update_entity_matrix(d->area, delta, old_rot, ((float *)&moby->rot));
 }
 extern unsigned short help_records_83_count NOT_SDA;
-extern unsigned char saved_mission_state[];
 extern void try_set_help_message(int, int);
 
 /* Picks the next selection state from the menu mode, then queues the matching sound. */
@@ -1819,8 +1809,6 @@ void update_shuttle_route_selection_and_prompt(char *m) {
 }
 struct Moby;
 struct Moby;
-extern float g_frame_time_sq MACRO_ADDR;
-extern float g_frame_time MACRO_ADDR;
 typedef struct {
     float x, y, z, w;
 } __attribute__((aligned(16))) PathPoint;
@@ -1851,7 +1839,6 @@ extern int allocate_voice_for_group_entry(int, int, void *);
 extern void ScatterPiecesExplode(float, struct Moby *, void *, void *, int);
 extern void break_apart_shuttle_linked_mobys(struct Moby *);
 extern char blarg_paths[];
-extern char *blarg_scene_points MACRO_ADDR;
 /* Moves the moby along three paths and plays the sound marked on the path points. */
 int update_shuttle_path_ride(char *moby, int path) {
     float rotation[4], position[4];
@@ -2038,7 +2025,6 @@ void ScatterPiecesExplode(float f, struct Moby *a0, void *a1, void *a2, int n) {
 }
 typedef u32 u128_04FA8 __attribute__((mode(TI), aligned(16)));
 void begin_moby_linear_and_angular_motion(char *arg, void *a, void *b);
-extern char *level_mobys_q MACRO_ADDR;
 
 extern short blarg_explosion_flash_ticks_r __asm__("D_L06_00162198");
 extern short blarg_explosion_flash_color_a_r __asm__("D_L06_0016219C");
@@ -2165,7 +2151,6 @@ void break_apart_shuttle_linked_mobys(struct Moby *moby) {
     } while (*list++ >= 0);
     ((struct Moby *)((id << 8) + (int)level_mobys_q))->command = 30;
 }
-extern char *level_mobys_q MACRO_ADDR;
 extern void DeleteMoby(void *);
 
 struct MarkShuttleLinkedMobysForRemovalVars {
@@ -2289,8 +2274,7 @@ void red_button_update(Moby *m) {
             break;
         }
         case 3:
-            if (vec_distance_xy_r2(&((struct Hero *)(hero_globals_base_r2 + 0xE1D))->motion.pos,
-                                   &*(V_3054D8 *)&m->pos) < 3.7f) {
+            if (vec_distance_xy_r2(&g_hero.motion.pos, &*(V_3054D8 *)&m->pos) < 3.7f) {
                 nz = try_set_help_message_r(4, 0x1783) != 0;
                 if ((pad0_pressed & 0x10) && nz) {
                     Moby_PlaySound_r(2, 0, m);
@@ -2357,7 +2341,7 @@ void red_button_update(Moby *m) {
                 v20.y = v20.y - 2.5f;
                 clear_u64_value_r2(&v10);
                 v10.y = -0.2617993878f;
-                v10.z = ((struct Hero *)(hero_globals_base_r2 + 0xE1D))->motion.rot.f[2];
+                v10.z = g_hero.motion.rot.f[2];
                 CameraScript_r2(&v20, &v10, 2, scale_ticks_r2(0x12C), 0);
                 ((Fx *)referencePosition_r)->f160 = 0.3f;
                 ((Fx *)referencePosition_r)->f168 = scale_ticks_r2(0x2D);
@@ -2372,7 +2356,7 @@ void red_button_update(Moby *m) {
             v10.y = v10.y - 2.5f;
             clear_u64_value_r2(&v0);
             v0.y = -0.2617993878f;
-            v0.z = ((struct Hero *)(hero_globals_base_r2 + 0xE1D))->motion.rot.f[2];
+            v0.z = g_hero.motion.rot.f[2];
             set_camera_position_r2(&v10);
             set_camera_rotation_r2(&v0);
             if (2.0f <= d->t) {
@@ -2663,9 +2647,6 @@ extern int GetEffectTex(int);
 extern void VU1_addGSregister(int, long);
 
 extern void blarg_draw_strand_strip(int *, float *);
-extern float vector_stream_rotations[];
-extern int vector_stream_regen_ticks MACRO_ADDR;
-extern int vector_stream_fade_ticks MACRO_ADDR;
 extern float vector_stream_matrix_scale SDATA(vector_stream_matrix_scale);
 extern int vector_stream_alpha_b SDATA(vector_stream_alpha_b);
 extern int vector_stream_alpha_a SDATA(vector_stream_alpha_a);
@@ -2742,7 +2723,6 @@ struct UsageStat {
 extern struct UsageStat help_records[];
 extern s32 gameplay_event_frame_count MACRO_ADDR;
 extern u8 item_available_14[];
-extern u8 gSpecialItems[];
 extern int Help_Request(int, int);
 extern int count_active_moby_group_members(int, int);
 
@@ -3008,7 +2988,6 @@ extern int FastBSphereCheck(char *, float);
 
 extern float multiply_global_factor(float);
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
-extern char *level_mobys_q MACRO_ADDR;
 struct ActivateListedClass5e8MobysVars {
     u8 pad_00[0x28];
     s32 unk_28;
@@ -3039,7 +3018,6 @@ void activate_listed_class_5e8_mobys(int idx) {
 }
 extern int scale_ticks(int);
 extern void cutscene_set_camera_target(int);
-extern int level_game_mode_q MACRO_ADDR;
 extern char blarg_cutscene_state[];
 
 // Moby update: arms on first frame, then triggers a random event while the level is in phase 2.

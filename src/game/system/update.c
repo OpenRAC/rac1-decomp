@@ -39,7 +39,6 @@ typedef struct {
 } ScreenExt;
 extern ViewCtx view_context;
 extern ScreenExt g_screen_extent;
-extern char camera_position[];
 extern void FastVecSub(void *, void *, void *);
 extern void FastVecScale(void *, void *, float);
 extern void transform_vector(void *, void *, void *);
@@ -149,9 +148,9 @@ typedef struct {
 extern s32 queued_dialogue_id;
 extern s16 dialogue_playback_phase NOT_SDA;
 extern u8 D_0015EEB0[] MACRO_ADDR;
-extern short resident_stream_resume_frames_s4;
-extern short resident_stream_resume_frames_s5;
-extern short resident_stream_resume_frames_s6;
+extern s32 resident_stream_resume_frames_s4 SDATA(resident_stream_resume_frames_s4);
+extern s32 resident_stream_resume_frames_s5 SDATA(resident_stream_resume_frames_s5);
+extern s32 resident_stream_resume_frames_s6 SDATA(resident_stream_resume_frames_s6);
 extern s32 resident_dialogue_started MACRO_ADDR;
 extern s32 resident_stream_pending MACRO_ADDR;
 extern BossVars vendor_state_r __asm__("D_001E66C0");
@@ -217,7 +216,7 @@ void update_resident_dialogue_animation_state(Moby *m) {
             }
             break;
         case 4:
-            if (IsFrameWithinWindow(m, (((s32 *)&resident_stream_resume_frames_s4))[vendor_state_r.pick]) != 0 &&
+            if (IsFrameWithinWindow(m, ((&resident_stream_resume_frames_s4))[vendor_state_r.pick]) != 0 &&
                 resident_stream_pending != 0) {
                 resident_stream_pending = 0;
                 Music_ContinueStreamIfReady();
@@ -231,7 +230,7 @@ void update_resident_dialogue_animation_state(Moby *m) {
             }
             break;
         case 5:
-            if (IsFrameWithinWindow(m, (((s32 *)&resident_stream_resume_frames_s5))[vendor_state_r.pick]) != 0 &&
+            if (IsFrameWithinWindow(m, ((&resident_stream_resume_frames_s5))[vendor_state_r.pick]) != 0 &&
                 resident_stream_pending != 0) {
                 resident_stream_pending = 0;
                 Music_ContinueStreamIfReady();
@@ -245,7 +244,7 @@ void update_resident_dialogue_animation_state(Moby *m) {
             }
             break;
         case 6:
-            if (IsFrameWithinWindow(m, (((s32 *)&resident_stream_resume_frames_s6))[vendor_state_r.pick]) != 0 &&
+            if (IsFrameWithinWindow(m, ((&resident_stream_resume_frames_s6))[vendor_state_r.pick]) != 0 &&
                 resident_stream_pending != 0) {
                 resident_stream_pending = 0;
                 Music_ContinueStreamIfReady();

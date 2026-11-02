@@ -25,9 +25,11 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+extern char g_controller_state[];
+extern unsigned char g_hero[];
+extern char usage_stats[];
 extern int frame_size;
 extern char gSkillPoints[];
-extern unsigned char g_hero[];
 extern char g_screen_extent[];
 extern char help_records[];
 extern int pad0_pressed;
@@ -647,9 +649,7 @@ extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern int gameplay_event_frame_count_r __asm__("D_0015EFA4") MACRO_ADDR;
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 extern float pokitaru_zero_vec_r[] __asm__("D_L11_0015F660") MACRO_ADDR;
-extern char pad_globals_base_r2[] __asm__("D_0013A5E0");
 extern char help_stats_base_r[] __asm__("D_0014171B");
-extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern Target D_L11_001748C0;
 extern float pokitaru_view_cot_half_fov_r __asm__("D_L11_0016D570");
 extern int D_L11_00162080_313D00 SDATA(D_L11_00162080);
@@ -773,9 +773,9 @@ void update_player_ship_flight(void *a0, void *a1) {
     up.f[2] = 1.0f;
     moby->flags &= 0xFEFF;
     if (D_L11_00162080_313D00 < o->h68) {
-        if (((PadState *)(pad_globals_base_r2 + 0x2460))->raw_held & boost) {
+        if (((PadState *)g_controller_state)->raw_held & boost) {
             int per;
-            Stats *s = (Stats *)(help_stats_base_r + 0x22D);
+            Stats *s = (Stats *)usage_stats;
             if (s->uses <= 0xFFFE)
                 s->uses++;
             per = 600;
@@ -808,9 +808,9 @@ void update_player_ship_flight(void *a0, void *a1) {
     }
     if (D_L11_00162094_313D00 < o->h68) {
         float h20, h21;
-        int bits = ((PadState *)(pad_globals_base_r2 + 0x2460))->held;
-        float sx = ((Hero *)(hero_globals_base_r + 0xE1D))->stick_x;
-        float sy = ((Hero *)(hero_globals_base_r + 0xE1D))->stick_y;
+        int bits = ((PadState *)g_controller_state)->held;
+        float sx = ((Hero *)g_hero)->stick_x;
+        float sy = ((Hero *)g_hero)->stick_y;
         h20 = D_L11_00162134_313D00;
         h21 = D_L11_00162144_313D00;
         pv[0] = sx;
@@ -878,8 +878,7 @@ void update_player_ship_flight(void *a0, void *a1) {
     rot.f[2] = angle_delta_313D00(o->f28, o->fD4);
     rot.f[1] = angle_delta_313D00(o->f24, o->fD8);
     set_camera_rotation(rot.f);
-    rate = (((PadState *)(pad_globals_base_r2 + 0x2460))->raw_held & boost) ? D_L11_001621C8_313D00
-                                                                            : D_L11_001621C4_313D00;
+    rate = (((PadState *)g_controller_state)->raw_held & boost) ? D_L11_001621C8_313D00 : D_L11_001621C4_313D00;
     approach_313D00(&o->fB0, &o->fC0, rate, g_frame_time_sq_r + g_frame_time_sq_r,
                     g_frame_time_sq_r + g_frame_time_sq_r, g_frame_time_r + g_frame_time_r);
     {
@@ -911,9 +910,8 @@ void update_player_ship_flight(void *a0, void *a1) {
                 o->f34 = angle_add_313D00(o->f34, f * D_L11_0016209C_313D00);
                 o->f64 = o->f64 * D_L11_001620DC_313D00;
                 if (o->tDC == 0) {
-                    ((Hero *)(hero_globals_base_r + 0xE1D))->ship_hp =
-                        ((Hero *)(hero_globals_base_r + 0xE1D))->ship_hp - D_L11_001620E0_313D00;
-                    if (((Hero *)(hero_globals_base_r + 0xE1D))->ship_hp < 0.0f) {
+                    ((Hero *)g_hero)->ship_hp = ((Hero *)g_hero)->ship_hp - D_L11_001620E0_313D00;
+                    if (((Hero *)g_hero)->ship_hp < 0.0f) {
                         vec_sub_313D00(dir.f, pokitaru_coll_hit.a.f, pokitaru_coll_hit.b.f);
                         vec_scale_313D00(dir.f, dir.f, 1.0f);
                         reflect_313D00(back.f, ofs.f, pokitaru_coll_hit.dir.f);
@@ -962,13 +960,9 @@ extern float vec_length_xy(void *);
 
 extern float FastAddRots(float, float);
 extern float FastSubRots(float, float);
-extern char help_stats_base[];
 extern unsigned char item_available[];
-extern unsigned char saved_mission_state[][16] NOT_SDA;
 extern char voice_pool[];
 extern char gHeroPos[];
-extern int g_current_level_index MACRO_ADDR;
-extern int gameplay_event_frame_count MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern char *path_points_14b0 MACRO_ADDR;
 
@@ -1407,7 +1401,6 @@ extern float vec_length_xy(void *);
 
 extern float FastAddRots(float, float);
 extern float FastSubRots(float, float);
-extern unsigned char g_hero[];
 
 // Clamps and blends camera inputs near the edges of the movement bounds. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l11/gameplay_vendor_0030c788.c, FUN_L11_00313f60.
 void adjust_ship_steering_for_flight_bounds(char *moby, float *a, float *b) {
@@ -2268,8 +2261,8 @@ void update_puffoid_damage_and_path_goal(Moby *m) {
         }
     }
     if (d->f210 == 0) {
-        d->f210 = (int)((Hero *)(hero_globals_base_r + 0xE1D))->moby;
-        qcopy(&d->f1D0, &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos);
+        d->f210 = (int)((Hero *)g_hero)->moby;
+        qcopy(&d->f1D0, &((struct Hero *)g_hero)->motion.pos);
     }
 }
 extern float SteerAngleWithVelocity(float *p, float *v, float a, float b, float c, float d);
@@ -2302,7 +2295,6 @@ void update_moby_target_heading_and_conditional_movement(char *m, float *p) {
         }
     }
 }
-extern char *pokitaru_mobys MACRO_ADDR;
 /* Counts the Puffoid mobys in this moby's group that are in states 13..17. */
 short count_group_puffoid_mobys_in_states_13_to_17(struct Moby *self_) {
     struct Moby *self = (struct Moby *)self_;
@@ -2561,10 +2553,7 @@ extern void DeleteMoby(void *);
 extern char *CreateMoby(int);
 extern void Moby_PlaySound(int, int, int);
 extern s32 map_data_0015EE84 __asm__("D_0015EE84") MACRO_ADDR;
-extern char path_table[];
-extern float g_frame_time MACRO_ADDR;
 extern float oil_tanker_path_step SDATA(oil_tanker_path_step);
-extern char help_stats_base[];
 
 /* UpdateMoby_1264: switch on the state byte at +0x20. State 0 deletes the moby if its entry is 0xFF in the table at
  * help_stats_base + 0xAA35; otherwise it creates eight objects of type 0x4F1 (CreateMoby), kept at data + 0x70, copies
@@ -3003,8 +2992,6 @@ extern int pokitaru_available_moby_slot_count SDATA(pokitaru_available_moby_slot
 extern char pokitaru_ocean_height[] MACRO_ADDR;
 extern float pokitaru_zero_vec[] MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
-extern float g_frame_time MACRO_ADDR;
-extern float g_frame_time_sq MACRO_ADDR;
 
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void FastVecSub(void *, void *, void *);
@@ -3056,7 +3043,6 @@ void update_oil_tanker_link_effects_and_destruction(Moby *m) {
 }
 extern void FastVecSub(void *, void *, void *);
 
-extern float g_frame_time MACRO_ADDR;
 
 // Resets the moby state and sets two random speeds scaled by the frame time.
 void start_oil_tanker_link_destruction(char *m) {
@@ -3272,10 +3258,6 @@ extern void ClampVectorLength(void *a, float x);
 extern float vec_length_xy(void *);
 extern void matrix_mul_vec3(void *, void *, void *);
 extern char *spawn_class_3f9_moby(int owner, float *dir, float *pos, float size, float len, float z);
-extern float g_frame_time_sq MACRO_ADDR;
-extern char help_stats_base[];
-extern char path_table[];
-extern float pokitaru_zero_vec[] MACRO_ADDR;
 extern char flying_craft_gun_offset_a[];
 extern char flying_craft_gun_offset_b[];
 extern float flying_craft_shot_speed SDATA(flying_craft_shot_speed);
@@ -3519,7 +3501,6 @@ extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern float FastCos(float);
 extern void MobyBlendAnimation(void *, int, int, int);
-extern float g_frame_time MACRO_ADDR;
 
 /* finds the idle moby of type 0x527 in a list and launches it at the hero */
 char *activate_listed_blarg_ship(int idx) {
@@ -3778,14 +3759,14 @@ extern void draw_env_overlay_mesh(int, int, int, void *, int);
 extern int pokitaru_layered_scrolled_uvs[];
 extern int pokitaru_layered_uv_scroll[];
 
-extern short pokitaru_layered_mesh_positions;
-extern short pokitaru_layered_uv_sources;
+extern int pokitaru_layered_mesh_positions SDATA(pokitaru_layered_mesh_positions);
+extern int pokitaru_layered_uv_sources SDATA(pokitaru_layered_uv_sources);
 
 // Runs four setup calls over parallel tables, offset by the argument.
 void emit_level11_layered_effect_batches_with_pair_offset(int arg) {
     int *a = (int *)&pokitaru_layered_mesh_vertex_counts;
-    int *b = (int *)&pokitaru_layered_mesh_positions;
-    int *c = (int *)&pokitaru_layered_uv_sources;
+    int *b = &pokitaru_layered_mesh_positions;
+    int *c = &pokitaru_layered_uv_sources;
     int *d = (int *)&pokitaru_layered_mesh_colors;
     int i;
     for (i = 0; i < 4; i++) {

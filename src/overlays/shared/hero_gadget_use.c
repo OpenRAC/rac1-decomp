@@ -19,6 +19,7 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "enums/moby_class.h"
+extern char gSpecialItems[];
 extern char gHeroPos[];
 extern char gSkillPoints[];
 extern Hero g_hero;

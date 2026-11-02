@@ -18,8 +18,9 @@
 #include "structs/small_records.h"
 #include "enums/hero_state.h"
 #include "structs/voice.h"
-extern u32 g_controller_state[];
 extern Hero g_hero;
+extern unsigned char usage_stats[];
+extern u32 g_controller_state[];
 /* Saved fog settings, restored when the effect ends. */
 struct FogSaveVars {
     u8 pad_00[0x30];
@@ -640,7 +641,6 @@ extern UV D_L00_001DA3B0[];
 extern float D_L00_001D9770[][4];
 extern P3_2B4918 D_L00_001DAD80[];
 extern int D_L00_001DA9D0[];
-extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern void func_0020DB98(void *, int, void *, void *);
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
@@ -740,7 +740,7 @@ void draw_joint_aligned_beam_effect(Moby *m) {
     FastVecAdd_r2(&d, &d, &mtx[3]);
     FastVecSub_r(&a, g_debug_camera_r2, &d);
     vec_scale_to_length_r(&a, &a, 1.0f);
-    FastVecCross_r(&b, &a, &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->gravity_dir);
+    FastVecCross_r(&b, &a, &g_hero.gravity_dir);
     vec_scale_to_length_r(&b, &b, -1.0f);
     FastVecCross_r(&c, &b, &a);
     pk.col[0] = pk.col[1] = pk.col[2] = pk.col[3] = 0x7F2020FF;
@@ -787,7 +787,6 @@ typedef struct X {
     u8 p7C[0x44];
     V4 vC0;
 } X;
-extern Hero g_hero;
 extern short level_frame_counter;
 extern f32 g_frame_time MACRO_ADDR;
 extern f32 random_angle_radians(void);
@@ -1685,7 +1684,6 @@ extern int random_integer_below(int);
 extern int rand_range(int, int);
 extern void PartType11Spawn(void *, void *, int, int, int, int, int, int, float, float);
 extern void spawn_glow_particle(void *, void *, void *, int, int, int, int, int, float);
-extern char g_debug_camera[];
 extern float g_frame_time MACRO_ADDR;
 
 extern IntVec6 glow_burst_spark_colors_a;
@@ -2058,7 +2056,6 @@ extern int scale_ticks(int);
 
 extern char *active_mobies[];
 extern short thrown_mine_list[];
-extern int moby_array_start MACRO_ADDR;
 typedef struct {
     float x, y, z, w;
 } __attribute__((aligned(16))) Vx;
@@ -2173,7 +2170,6 @@ extern void apply_taunter_to_nearby_mobies(Moby *, f32);
 
 extern void update_taunter_effect_slots(Moby *);
 extern Hero g_hero_r4 __asm__("D_0013F450");
-extern u32 g_controller_state[];
 extern u32 pad_held[];
 extern u8 voice_pool[];
 extern Ring item_usage;
@@ -2710,7 +2706,6 @@ void pyrocitor_update(Moby *moby) {
 extern unsigned char voice_pool[];
 extern unsigned char g_hero_r5[] __asm__("D_0013F450");
 extern unsigned short pyrocitor_help_shown_count NOT_SDA;
-extern unsigned char usage_stats[];
 void func_0020D678_B9528(void *) __asm__("func_0020D678");
 void release_point_light_slot(int);
 void Sound_StopSlot(int);
@@ -3171,16 +3166,13 @@ void func_L00_002B9AD8_r(Moby *m) {
                 ((Hero *)g_hero_r3)->item_use_locked) {
                 h = (Hero *)g_hero_r3;
                 if (scale_ticks_r5(70) < h->item_anim_frames) {
-                    if (((Stats2_2B9AD8 *)(help_stats_base_r + 0x22D))->uses < 65535)
-                        ((Stats2_2B9AD8 *)(help_stats_base_r + 0x22D))->uses++;
+                    if (((Stats2_2B9AD8 *)usage_stats)->uses < 65535)
+                        ((Stats2_2B9AD8 *)usage_stats)->uses++;
                 }
-                if (scale_ticks_r5(gameplay_event_frame_count_r) / 600 >
-                    ((Stats2_2B9AD8 *)(help_stats_base_r + 0x22D))->longest)
-                    ((Stats2_2B9AD8 *)(help_stats_base_r + 0x22D))->longest =
-                        scale_ticks_r5(gameplay_event_frame_count_r) / 600;
-                ((Stats2_2B9AD8 *)(help_stats_base_r + 0x22D))->levels =
-                    (((Stats2_2B9AD8 *)(help_stats_base_r + 0x22D))->levels | (1 << g_current_level_index_r)) |
-                    0x80000000;
+                if (scale_ticks_r5(gameplay_event_frame_count_r) / 600 > ((Stats2_2B9AD8 *)usage_stats)->longest)
+                    ((Stats2_2B9AD8 *)usage_stats)->longest = scale_ticks_r5(gameplay_event_frame_count_r) / 600;
+                ((Stats2_2B9AD8 *)usage_stats)->levels =
+                    (((Stats2_2B9AD8 *)usage_stats)->levels | (1 << g_current_level_index_r)) | 0x80000000;
                 if (((Hero *)g_hero_r3)->item_anim_frames < scale_ticks_r5(30))
                     ((Hero *)g_hero_r3)->wrench_combo_step++;
                 else

@@ -44,7 +44,7 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern float rilgar_hero_fall_state_height MACRO_ADDR;
 extern int item_selector_hud_open_blocker MACRO_ADDR;
 extern int landing_run_entry_animation_frame MACRO_ADDR;
-extern short rilgar_hero_double_tap_timer;
+extern int rilgar_hero_double_tap_timer SDATA(rilgar_hero_double_tap_timer);
 
 extern int rilgar_hero_state_1e_clear_word;
 extern HeroBoneScalars rilgar_lean_state;
@@ -1330,15 +1330,15 @@ void HeroL05_UpdateStateTransitions(void) {
                         {
                             int both = 0;
 
-                            fast_dec_timer((int *)&rilgar_hero_double_tap_timer);
-                            if (*(int *)&rilgar_hero_double_tap_timer != 0) {
+                            fast_dec_timer(&rilgar_hero_double_tap_timer);
+                            if (rilgar_hero_double_tap_timer != 0) {
                                 both = 1;
                                 if (!((g_controller_state.held & PAD_R1) && (g_controller_state.pressed & PAD_R1))) {
                                     both = 0;
                                 }
                             }
                             if (g_controller_state.pressed & PAD_R1) {
-                                *(int *)&rilgar_hero_double_tap_timer = scale_ticks(0x1E);
+                                rilgar_hero_double_tap_timer = scale_ticks(0x1E);
                             }
                             if (!(g_hero.state_timer > scale_ticks(0x14))) {
                                 break;

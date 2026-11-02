@@ -48,7 +48,6 @@ int get_hero_idle_animation_index(int a) {
     r = novalis_item_defs - (-(n * 0x4C));
     return *(int *)(r + 0x24);
 }
-extern unsigned char hero_globals_base[];
 extern int request_grouped_voice(int a0, int a1, int a2, int a3, int a4);
 
 // Plays the hero footstep sound, flagging whether the hero's current moby has type 0xAD.
@@ -205,7 +204,6 @@ void hero_frame_update(void) {
     update_hero_moby_probed_height_bounds();
     apply_env_zone_lighting(GG->p2080);
 }
-extern unsigned char hero_globals_base[];
 extern int scale_ticks(int);
 extern void FadeToBlack(int);
 extern void hero_frame_update(void);
@@ -1038,7 +1036,6 @@ void HeroSetCollisionSize(void) {
                g_frame_time * 4.0f);
     }
 }
-extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern float g_frame_time MACRO_ADDR;
 extern float novalis_hero_speed_bands[];
 extern void stick_target(int, float);
@@ -1047,7 +1044,7 @@ extern void stick_target(int, float);
 void hero_speed_from_table(void) {
     Hero *x;
     stick_target(0, 1.0f);
-    x = (Hero *)(hero_globals_base_r + 0xE1D);
+    x = &g_hero;
     if (0.0f < x->target_speed) {
         if (x->target_speed < novalis_hero_speed_bands[3]) {
             x->target_speed = novalis_hero_speed_bands[2] * g_frame_time;
@@ -1056,7 +1053,7 @@ void hero_speed_from_table(void) {
         }
     }
     {
-        char *y = hero_globals_base_r + 0xE1D;
+        char *y = (char *)&g_hero;
         if (*(int *)(y + 0x2084) == 0x73) {
             float v = *(float *)(y + 0x190) * 0.8f;
             float m = g_frame_time * 2.5f;
@@ -1075,7 +1072,6 @@ extern void FastVecScale(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern int coll_line(void *, void *, int, int, int);
 
-extern float g_frame_time MACRO_ADDR;
 extern int novalis_coll_hit_type;
 extern char novalis_coll_hit[];
 
@@ -1162,7 +1158,6 @@ void clip_hero_horizontal_velocity(int flag) {
 }
 typedef int Q __attribute__((mode(TI)));
 extern u8 novalis_coll_hit_point[];
-extern s32 g_current_level_index MACRO_ADDR;
 void func_001F9BC0_333D8(void *) __asm__("func_001F9BC0");
 void hero_get_collision_ray_endpoints(void *, void *, s32, f32, f32);
 s32 coll_line(void *, void *, s32, s32, s32);
@@ -1182,7 +1177,6 @@ void vec_scale_to_length(void *, void *, f32);
 void compute_rotated_vector_angles(void *, void *);
 void transform_hero_polar_offset_to_world(void *, f32, f32, f32);
 f32 FastAbsF(f32);
-extern Hero g_hero;
 extern struct CollisionHit novalis_coll_hit_r3 __asm__("D_L01_00174340");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00226f10.c, FUN_L01_00232dc0. */
@@ -1770,9 +1764,8 @@ void select_hero_locomotion_state(void) {
 void set_hero_moby_flag_bit_zero(void) {
     *(unsigned short *)((char *)(*(char **)g_hero_moby) + 0x34) |= 1;
 }
-extern unsigned char hero_globals_base_r2[] __asm__("D_0013E633");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00226f10.c, FUN_L01_00248900. */
 void clear_hero_moby_flag_bit_zero(void) {
-    *(unsigned short *)((char *)(*(char **)(hero_globals_base_r2 + 0x2E9D)) + 0x34) &= ~1;
+    *(unsigned short *)((char *)(*(char **)g_hero_moby) + 0x34) &= ~1;
 }

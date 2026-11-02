@@ -45,7 +45,7 @@ typedef struct {
     char *str;
 } DrawTextRec;
 extern DrawTextRec font_text_slots[];
-extern short font_text_cursor;
+extern char *font_text_cursor SDATA(font_text_cursor);
 extern int font_text_slot_index SDATA(font_text_slot_index);
 extern char font_text_format[];
 extern int sprintf();
@@ -61,9 +61,9 @@ void print_debug_text(int x, int y, int color, char *str) {
     font_text_slots[n].x = x;
     font_text_slots[n].y = y;
     font_text_slots[n].color = color;
-    font_text_slots[n].str = *(char **)&font_text_cursor;
+    font_text_slots[n].str = font_text_cursor;
     font_text_slot_index = n + 1;
-    *(char **)&font_text_cursor += sprintf(*(char **)&font_text_cursor, font_text_format, str) + 1;
+    font_text_cursor += sprintf(font_text_cursor, font_text_format, str) + 1;
 }
 
 LINKER_REMNANT("asm/remnants/text", func_001F0FF0);
@@ -832,9 +832,6 @@ void BuildViewMatrices(void) {
 
 extern int use_alt_fog;
 extern FogPreset water_fog_color_red MACRO_ADDR;
-extern FogPreset fog_color_red MACRO_ADDR;
-extern int view_context[];
-extern int part_clip_dist MACRO_ADDR;
 extern int level_fog_mode MACRO_ADDR;
 extern void UpdateViewContext(void);
 
@@ -870,7 +867,6 @@ void UpdateFog(void) {
 }
 __asm__(".section .text\n\tnop\n");
 
-extern char *occl_grid_data MACRO_ADDR;
 
 /* ParseOcclGrid(x, y, z): walks the three-level occlusion grid at
    occl_grid_data. Each level is {u16 start, u16 count, u16 entry[count]};
@@ -1046,7 +1042,6 @@ void UpdateOcclusion(void) {
     }
 }
 
-extern short fs_aa_buffer[];
 extern int g_screen_extent[];
 extern float IntToFloat(int);
 
@@ -1342,7 +1337,6 @@ void UpdateViewContext(void) {
 #undef fast_cos
 #undef set_tfrag_dists
 
-extern int g_screen_extent[];
 extern float IntToFloat(int);
 
 /* Sets the screen size: the GS viewport record at g_screen_extent gets width,
@@ -1557,7 +1551,6 @@ void ResetDrawGlobals(void) {
     local_surface_region_enabled = 0;
 }
 
-extern int *g_render_packet_cursor MACRO_ADDR;
 extern void VU1_addGSregister(int, long);
 extern char reset_gs_regs_fixed[];
 
@@ -1599,7 +1592,6 @@ extern char *level_sky_effect_data MACRO_ADDR;
 extern int draw_force_gif_transfer[];
 extern int draw_enable_mask_f __asm__("D_0015F534") MACRO_ADDR;
 extern int font_state MACRO_ADDR;
-extern int g_game_mode MACRO_ADDR;
 extern unsigned char D_0015EF40[] MACRO_ADDR;
 extern float gFade MACRO_ADDR;
 extern float white_fade_level MACRO_ADDR;
@@ -1896,11 +1888,8 @@ void prepare_debug_profiler_render(void) {
 
 LINKER_REMNANT("asm/remnants/text", func_001F4628);
 
-extern int *g_render_packet_cursor MACRO_ADDR;
 extern int *gif_paging_head_tag MACRO_ADDR;
-extern int g_gs_texture_allocation_cursor MACRO_ADDR;
 extern int effect_tex_cnt MACRO_ADDR;
-extern int g_gs_texture_allocation_base MACRO_ADDR;
 extern int pending_texture_upload_count MACRO_ADDR;
 extern PageSlot effect_texture_definitions[];
 extern char hud_state[];
@@ -1960,7 +1949,6 @@ void SetupGifPaging(int arg0) {
 /* Retail carries 4 bytes of inter-function padding after this endlabel. */
 __asm__(".section .text\n\tnop\n");
 
-extern int *g_render_packet_cursor MACRO_ADDR;
 extern int *gif_paging_tail_tag MACRO_ADDR;
 extern int gif_paging_texture_flush_enabled;
 extern void flush_pending_texture_uploads(void);
@@ -2212,7 +2200,6 @@ void draw_light_quads(void) {
 
 extern int func_00122598(int);
 
-extern int *g_render_packet_cursor MACRO_ADDR;
 extern int game_frame_counter MACRO_ADDR;
 extern char second_clear_packet[];
 
@@ -2280,7 +2267,6 @@ typedef struct {
 } SubState;
 extern SubState D_0018CC20;
 extern int g_game_language MACRO_ADDR;
-extern int g_screen_extent[];
 extern void FontSetWindow(void *arg0, int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8);
 extern void font_print_window_regular_l(void *, long, char *, int) __asm__("func_001F7560");
 extern void DrawUIFrame(int, int, int, int, int);
@@ -2473,7 +2459,6 @@ void draw_screen_effect(void) {
 
 #undef STRIPES
 
-extern int depth_buffer_address MACRO_ADDR;
 
 /* GS register writes around an overlay: blend register 0x42 from the
    64-bit word at +8 while it is set, and when the colour at +4 has an
@@ -2500,7 +2485,6 @@ void draw_fogged_fullscreen_sprite(char *arg0) {
    restores the default register set. The parameters are int, widened in
    the expression: with long parameters the scheduler hoists the last
    dsll one slot early. */
-extern int *g_render_packet_cursor MACRO_ADDR;
 
 /* Appends a GIF packet that sets GS register 1 from the four bytes a, b, c, d. */
 void emit_rgba_draw_packet(int a, int b, int c, int d) {
@@ -3348,7 +3332,6 @@ void FontSetWindow(void *arg0, int a1, int a2, int a3, int a4, int a5, int a6, i
     s[11] = 0;
 }
 
-extern int draw_buffer_address MACRO_ADDR;
 extern int frame_size[];
 #define PK ((unsigned char *)D_00161000)
 

@@ -1649,7 +1649,6 @@ extern float multiply_global_factor(float);
 extern float FastAddRots(float, float);
 extern void FastVecAdd(void *, void *, void *);
 extern float FastSubRots(float, float);
-extern s32 g_current_level_index MACRO_ADDR;
 extern char batalia_plumber_dialogue_name[];
 /* KEPT: short and MACRO_ADDR select how each function addresses this global. */
 extern char *batalia_mobys MACRO_ADDR;
@@ -1837,7 +1836,6 @@ typedef struct {
     int fourth;
     int state;
 } VData;
-extern char g_hero[] NOT_SDA;
 #define hero_p (*(struct Hero *)D_0013F450)
 extern unsigned char gSkillPoints[] NOT_SDA;
 extern unsigned char item_available[] NOT_SDA;
@@ -2043,19 +2041,18 @@ void queue_batalia_six_textured_batches(int x) {
     }
 }
 
-extern char batalia_textured_scrolled_uvs[];
 extern IntPair batalia_textured_mesh2_scroll_offset[] MACRO_ADDR;
 extern short batalia_textured_mesh2_counts;
-extern short batalia_textured_mesh2_positions;
-extern short batalia_textured_mesh2_uv_sources;
+extern int batalia_textured_mesh2_positions SDATA(batalia_textured_mesh2_positions);
+extern int batalia_textured_mesh2_uv_sources SDATA(batalia_textured_mesh2_uv_sources);
 extern short batalia_textured_mesh2_colors;
 
 /* Runs the two-entry setup loop for slot `x`: one call fills from the tables, the second applies them. */
 void queue_batalia_offset_textured_batches(int x) {
     int i;
     int *a = (int *)&batalia_textured_mesh2_counts;
-    int *b = (int *)&batalia_textured_mesh2_uv_sources;
-    int *c = (int *)&batalia_textured_mesh2_positions;
+    int *b = &batalia_textured_mesh2_uv_sources;
+    int *c = &batalia_textured_mesh2_positions;
     int *e = (int *)&batalia_textured_mesh2_colors;
 
     for (i = 0; i < 2; i++) {
@@ -2124,7 +2121,6 @@ extern float batalia_effect_reference_position_y MACRO_ADDR;
 extern float batalia_effect_reference_position_z MACRO_ADDR;
 extern float batalia_effect_culling_radius MACRO_ADDR;
 extern int batalia_textured_effect_colors_scaled SDATA(batalia_textured_effect_colors_scaled);
-extern char batalia_hero_pos[];
 
 // UpdateMoby for a pulsing light effect: init on state 0, draw when close enough on state 1
 void update_batalia_textured_effect(unsigned char *moby) {

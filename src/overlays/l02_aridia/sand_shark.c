@@ -23,9 +23,9 @@
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
 #include "structs/voice.h"
+extern Hero g_hero;
 extern char bolt_source_stats[];
 extern char gHeroPos[];
-extern Hero g_hero;
 extern char mission_death_counts[];
 extern char voice_pool[];
 
@@ -993,7 +993,6 @@ extern void clear_u64_value(void *);
 extern float FastCos(float);
 extern float FastSin(float);
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
-extern float g_frame_time MACRO_ADDR;
 extern int sand_shark_particle_emission_throttle_input MACRO_ADDR;
 extern short sand_shark_burst_rise_min, sand_shark_burst_rise_max, sand_shark_burst_end_rise_min,
     sand_shark_burst_end_rise_max;
@@ -1163,8 +1162,6 @@ extern float sand_shark_death_knockback_gravity_gp SDATA(sand_shark_death_knockb
 extern float sand_shark_death_knockback_horizontal_speed_approach_rate_gp
     SDATA(sand_shark_death_knockback_horizontal_speed_approach_rate_gp);
 extern int *aridia_paths_r[] __asm__("D_L02_001B0DB0");
-extern char hero_globals_base_r[] __asm__("D_0013E633");
-extern float g_frame_time_sq MACRO_ADDR;
 extern int FastDecTimer(void *);
 extern float vec_distance_xy(void *, void *);
 
@@ -1211,8 +1208,7 @@ void handle_sand_shark_damage_and_targeting(unsigned char *moby) {
         *(int *)&((Moby *)moby)->collision = 0;
         ((Moby *)moby)->pos.z -= 10.0f;
     }
-    if (d->i38 != 0 || (!FastDecTimer(&d->t25C) &&
-                        vec_distance_xy(moby + 0x10, &((Hero *)(hero_globals_base_r + 0xE1D))->motion.pos) < 10.0f)) {
+    if (d->i38 != 0 || (!FastDecTimer(&d->t25C) && vec_distance_xy(moby + 0x10, &g_hero.motion.pos) < 10.0f)) {
         d->t25E = truncate_float_to_s32_r(multiply_global_factor(random_float_between(180.0f, 240.0f)));
     }
     d->i38 = 0;
@@ -1273,7 +1269,7 @@ void handle_sand_shark_damage_and_targeting(unsigned char *moby) {
         d->i214 = 2;
     }
     if (d->i210 == 0) {
-        Hero *hero = (Hero *)(hero_globals_base_r + 0xE1D);
+        Hero *hero = &g_hero;
         d->i210 = (int)((void *)hero->moby);
         qcopy(d->tgt, hero->motion.pos.f);
     }
@@ -1391,10 +1387,7 @@ extern void spawn_explosion(void *, void *, void *, float, float, int, int, int,
 extern void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float scale, float *v10,
                                 float *v11, float *v12);
 
-extern char hero_globals_base[];
-extern float g_frame_time MACRO_ADDR;
 extern char *aridia_scene_points MACRO_ADDR;
-extern int frame_counter_ref MACRO_ADDR;
 extern float aridia_zero_vec[] MACRO_ADDR;
 extern float level02_bot_attack_shot_nominal_length_gp SDATA(level02_bot_attack_shot_nominal_length_gp);
 extern float level02_bot_gravity_gp SDATA(level02_bot_gravity_gp);
@@ -1898,7 +1891,6 @@ typedef struct {
     float speed;
     int particle;
 } Data_2DD170;
-extern Hero g_hero;
 extern unsigned char item_available_26 NOT_SDA;
 extern char *aridia_elevator_volumes_r __asm__("D_L02_0016017C") MACRO_ADDR;
 extern float aridia_elevator_stop_offset SDATA(aridia_elevator_stop_offset);
@@ -2352,7 +2344,6 @@ void sand_shark_nest_update(char *m) {
     }
 }
 typedef int Q_2de418 __attribute__((mode(TI)));
-extern float g_frame_time MACRO_ADDR;
 extern char *MobyGetHitMessage(void *, int, int);
 
 /* Enemy hit reaction: on a hit takes damage and is knocked back; when its health runs out it is flung and dies. */
@@ -2485,7 +2476,6 @@ void grab_crane_update(char *moby) {
             break;
     }
 }
-extern float g_frame_time MACRO_ADDR;
 extern float FastAddRots(float, float);
 
 /* Rotates a platform and updates its transform. */
@@ -2927,7 +2917,6 @@ void transport_pod_update(unsigned char *moby) {
     }
     update_entity_matrix(transport_pod_vars->riders, delta, rot, moby + 0x40);
 }
-extern float g_frame_time MACRO_ADDR;
 extern float transport_pod_max_speed SDATA(transport_pod_max_speed);
 extern float transport_pod_accel SDATA(transport_pod_accel);
 extern float transport_pod_rail_decel SDATA(transport_pod_rail_decel);
@@ -2983,7 +2972,6 @@ void snap_transport_pod_rails_to_offsets(char *moby) {
     moby_build_matrix(d->rail_a);
     moby_build_matrix(d->rail_b);
 }
-extern char hero_globals_base[];
 extern float aridia_crane_anim_speed SDATA(aridia_crane_anim_speed);
 extern int Moby_PlaySound(int, int, int);
 
@@ -3205,7 +3193,6 @@ typedef struct {
     f32 t; /* 0x24: 0..1 along the turn */
 } TurnerVars;
 extern s32 aridia_cinematic_mode MACRO_ADDR;
-extern s32 g_current_level_index MACRO_ADDR;
 extern u8 saved_mission_state[][16];
 extern void axis_rotation_2d48(void *, int, float);
 
@@ -3267,7 +3254,6 @@ void rocket_door1_update(struct Moby *m) {
 }
 extern void vec_scale_to_length(void *, void *, float);
 extern float FastVecLength(void *);
-extern float g_frame_time MACRO_ADDR;
 
 // Moby update: copy position, then wait for a partner moby and slide toward it.
 void tresspasser_door1_update(unsigned char *moby) {

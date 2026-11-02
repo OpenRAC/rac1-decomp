@@ -16,7 +16,10 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "structs/voice.h"
+
 extern char g_hero[];
+extern char item_usage[];
+extern char pad_held[];
 
 /* Tesla beam: draw state read by the beam and arc effects. */
 struct BeamArcVars {
@@ -614,7 +617,6 @@ void build_beam_and_arc_points(u8 *o) {
     PartType53Spawn(&v->tip, scale_ticks(12), amplitude * 0.1f, amplitude, (beam_arc_outer_color) | 0x7f000000, 0, spin,
                     (float *)veldin1_zero_vec, 0.0f);
 }
-extern float frame_scale MACRO_ADDR;
 extern float beam_arc_tex_scroll SDATA(beam_arc_tex_scroll);
 extern float beam_arc_tex_scroll_speed SDATA(beam_arc_tex_scroll_speed);
 extern int beam_arc_main_inner_alpha SDATA(beam_arc_main_inner_alpha);
@@ -627,12 +629,9 @@ extern int beam_arc_second_outer_alpha SDATA(beam_arc_second_outer_alpha);
 extern float beam_arc_bolt_half_width SDATA(beam_arc_bolt_half_width);
 extern float beam_arc_bolt_outer_half_width SDATA(beam_arc_bolt_outer_half_width);
 extern float beam_arc_second_end_extension SDATA(beam_arc_second_end_extension);
-extern int beam_arc_bolt0_alpha MACRO_ADDR;
 extern int beam_arc_second_row_alpha MACRO_ADDR;
 extern int beam_arc_third_row_alpha MACRO_ADDR;
 extern int beam_arc_fourth_row_alpha MACRO_ADDR;
-extern char tesla_beam_points[];
-extern char arc_points[];
 extern void draw_beam_and_arc_two_pass_quads(void *, int, int, int, float, float, float);
 extern void draw_beam_anchor_camera_facing_quads(void *);
 
@@ -671,7 +670,6 @@ extern void FastVecScale(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern void draw_world_quad(void *, void *, int);
 extern void VU1_addGSregister(int, long);
-extern float g_debug_camera[];
 extern int beam_and_arc_first_pass_texture_index_gp SDATA(beam_and_arc_first_pass_texture_index_gp);
 extern int beam_and_arc_first_pass_base_vertex_color_gp SDATA(beam_and_arc_first_pass_base_vertex_color_gp);
 extern int beam_and_arc_second_pass_texture_index_gp SDATA(beam_and_arc_second_pass_texture_index_gp);
@@ -826,13 +824,11 @@ extern void FastVecCross(void *, void *, void *);
 extern float randf_sym(float lo, float hi);
 extern void FastVecScale(void *, void *, float);
 extern void transform_vector(void *, void *, void *);
-extern float g_debug_camera[];
 extern V_2bb0b0 beam_anchor_quad_corners[];
 extern QuadUv beam_anchor_quad_uvs[];
 extern int beam_anchor_quad_color SDATA(beam_anchor_quad_color);
 extern float beam_anchor_quad_size SDATA(beam_anchor_quad_size);
 extern float beam_anchor_outer_quad_size SDATA(beam_anchor_outer_quad_size);
-extern char hero_globals_base[];
 
 // Builds and draws two layered glow quads around a moby. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002b94d0.c, FUN_L00_002bb0b0.
 void draw_beam_anchor_camera_facing_quads(void *mv) {
@@ -910,7 +906,6 @@ char *spawn_linked_moby_from_basis(char *src) {
     }
     return (char *)m;
 }
-extern char hero_globals_base[];
 extern void DeleteMoby(void *);
 extern int scale_ticks(int);
 
@@ -1121,7 +1116,6 @@ extern void FastVecCross(void *, void *, void *);
 extern float FastVecLength(void *);
 extern void FastVecScale(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
-extern float g_debug_camera[];
 extern int walloper_arc_inner_tex SDATA(walloper_arc_inner_tex);
 extern int walloper_arc_inner_color SDATA(walloper_arc_inner_color);
 extern int walloper_arc_outer_tex SDATA(walloper_arc_outer_tex);
@@ -1267,7 +1261,6 @@ extern float walloper_glow_forward_offset SDATA(walloper_glow_forward_offset);
 extern int walloper_glow_color SDATA(walloper_glow_color);
 extern int walloper_glow_flicker_color SDATA(walloper_glow_flicker_color);
 extern int walloper_glow_tex SDATA(walloper_glow_tex);
-extern float g_debug_camera[];
 extern float walloper_glow_quad_corners[][4];
 typedef float W[4] __attribute__((aligned(16)));
 typedef struct {
@@ -1332,10 +1325,8 @@ void draw_walloper_camera_facing_quad(int arg) {
     }
     draw_world_quad(q, 0, 0);
 }
-extern char *active_mobies[];
 extern float tesla_arc_range SDATA(tesla_arc_range);
 extern float morphoray_target_angle_threshold_degrees_gp SDATA(morphoray_target_angle_threshold_degrees_gp);
-extern Vec4 collision_hit_point;
 extern int coll_hit_result[];
 
 extern float vec_distance_xy(void *, void *);
@@ -1487,8 +1478,6 @@ typedef struct Light {
 } Light;
 
 extern char g_hero_r[] __asm__("D_0013F450");
-extern char pad_globals_base_r[] __asm__("D_0013A5E0");
-extern char help_stats_base_r[] __asm__("D_0014171B");
 extern char gSkillPoints_r[] __asm__("D_0013D510");
 extern unsigned char hero_globals_base_r[] __asm__("D_0013E633");
 extern char voice_pool_r[] __asm__("D_0013E650");
@@ -1572,21 +1561,20 @@ void MorphorayUpdate(Moby *m) {
           ((Hero *)g_hero_r)->state.control_mode == HERO_MODE_CROUCH ||
           ((Hero *)g_hero_r)->state.control_mode == HERO_MODE_JUMP ||
           ((Hero *)g_hero_r)->state.control_mode == HERO_MODE_LAND)) &&
-        (*(int *)(pad_globals_base_r + 0x2600) & ((Hero *)g_hero_r)->items[0].button_mask) != 0 && !flag && near) {
+        (*(int *)pad_held & ((Hero *)g_hero_r)->items[0].button_mask) != 0 && !flag && near) {
         if (((Hero *)g_hero_r)->item_anim_active == 0) {
             start_equipped_item_animation_r();
         }
         if (p->seen == 0) {
             p->seen = 1;
-            if (((Stats *)(help_stats_base_r + 0x65))->kills <= 0xFFFE) {
-                ((Stats *)(help_stats_base_r + 0x65))->kills++;
+            if (((Stats *)item_usage)->kills <= 0xFFFE) {
+                ((Stats *)item_usage)->kills++;
             }
             r = scale_ticks_r(gameplay_event_frame_count_r) / 600;
-            if (((Stats *)(help_stats_base_r + 0x65))->best < r) {
-                ((Stats *)(help_stats_base_r + 0x65))->best = scale_ticks_r(gameplay_event_frame_count_r) / 600;
+            if (((Stats *)item_usage)->best < r) {
+                ((Stats *)item_usage)->best = scale_ticks_r(gameplay_event_frame_count_r) / 600;
             }
-            ((Stats *)(help_stats_base_r + 0x65))->levels =
-                ((Stats *)(help_stats_base_r + 0x65))->levels | (1 << g_current_level_index_r) | 0x80000000;
+            ((Stats *)item_usage)->levels = ((Stats *)item_usage)->levels | (1 << g_current_level_index_r) | 0x80000000;
         }
         if (p->timer == 0) {
             p->timer = scale_ticks_r(15);
@@ -1884,8 +1872,7 @@ void update_beam_ring_rail_and_pulse_effects(Moby *m) {
     }
     len = D_L00_001617AC_2BE3A8;
     if (p->target == 0) {
-        if (coll_line_r(p, &end, 20, *(void **)&((struct Hero *)((char *)&hero_globals_base_r2 + 0xE1D))->moby, 0) !=
-            0) {
+        if (coll_line_r(p, &end, 20, *(void **)&((struct Hero *)g_hero)->moby, 0) != 0) {
             len = vec_distance_xy_r(&collision_hit_point_r, p);
         }
     } else {
@@ -1918,7 +1905,7 @@ void update_beam_ring_rail_and_pulse_effects(Moby *m) {
                 FastVecAdd_r2(&tesla_chain_points_r[i], &tesla_chain_points_r[i - 1], &tmp);
             }
             FastVecSub_r(&dir, &tesla_chain_points_r[i], &tesla_chain_points_r[i - 1]);
-            FastVecCross_r(&side, &dir, &((struct Hero *)((char *)&hero_globals_base_r2 + 0xE1D))->gravity_dir);
+            FastVecCross_r(&side, &dir, &((struct Hero *)g_hero)->gravity_dir);
             vec_scale_to_length_r2(&side, &side,
                                    D_L00_001617D8_2BE3A8 + (D_L00_001617DC_2BE3A8 - D_L00_001617D8_2BE3A8) * t);
             {
@@ -1981,9 +1968,9 @@ void update_beam_ring_rail_and_pulse_effects(Moby *m) {
             cols = tesla_spark_colors;
             col = cols.c[random_integer_below_r(5)];
             w = randf_sym_r(0.0f, D_L00_0016180C_2BE3A8);
-            build_look_at_matrix_r(&out, &dir, &((struct Hero *)((char *)&hero_globals_base_r2 + 0xE1D))->gravity_dir,
+            build_look_at_matrix_r(&out, &dir, &((struct Hero *)g_hero)->gravity_dir,
                                    randf_sym_r(0.0f, D_L00_0016180C_2BE3A8));
-            FastVecCross_r(&up, &dir, &((struct Hero *)((char *)&hero_globals_base_r2 + 0xE1D))->gravity_dir);
+            FastVecCross_r(&up, &dir, &((struct Hero *)g_hero)->gravity_dir);
             build_look_at_matrix_r(&out, &out, &up, w);
             n = truncate_float_to_s32_r3(len * 1.2f / (D_L00_00161804_2BE3A8 * frame_scale_r));
             if (p->target != 0) {
@@ -2074,10 +2061,7 @@ typedef struct {
 extern u8 gGoldMorphORay NOT_SDA;
 extern float beam_ring_band_texture_u_step_gp SDATA(beam_ring_band_texture_u_step_gp);
 extern float beam_ring_face_texture_v_step_gp SDATA(beam_ring_face_texture_v_step_gp);
-extern short tesla_ring_tex_v_scroll;
 extern float beam_ring_texture_u_scroll_speed_gp SDATA(beam_ring_texture_u_scroll_speed_gp);
-extern short tesla_ring_tex_u_scroll_a;
-extern short tesla_ring_tex_u_scroll_b;
 extern float beam_ring_texture_v_scroll_speed_gp SDATA(beam_ring_texture_v_scroll_speed_gp);
 extern int beam_rail_first_pass_alpha_gp SDATA(beam_rail_first_pass_alpha_gp);
 extern int beam_rail_second_pass_alpha_gp SDATA(beam_rail_second_pass_alpha_gp);
@@ -2334,7 +2318,6 @@ extern int tesla_pulse_active[3] MACRO_ADDR;
 extern float tesla_pulse_alpha[3] MACRO_ADDR;
 extern float tesla_pulse_size[3] MACRO_ADDR;
 extern Vec4A tesla_pulse_pos[];
-extern Vec4A tesla_pulse_dir[];
 extern int tesla_pulse_alt_color SDATA(tesla_pulse_alt_color);
 extern int tesla_pulse_color SDATA(tesla_pulse_color);
 
@@ -2453,7 +2436,6 @@ typedef struct {
 } Vx __attribute__((aligned(16)));
 extern char hero_globals_base[] NOT_SDA;
 extern int coll_sphere(float, void *, int, void *);
-extern int coll_hit_result[];
 
 /* Nudge a position and ask the level helper about it, lowering a global on success. */
 int probe_moby_raised_sphere_collision(Moby *a, int b, Vx *c) {
@@ -2476,7 +2458,6 @@ int probe_moby_raised_sphere_collision(Moby *a, int b, Vx *c) {
     }
     return r;
 }
-extern char g_hero[];
 /* Copy five state fields from a into their hero slots. */
 void save_state_fields_to_hero(char *a) {
     Hero *g = (Hero *)g_hero;
@@ -2558,7 +2539,6 @@ float probe_moby_landing_height(Vx *a, void *b) {
     }
     return 0.0f;
 }
-extern char *active_mobies[];
 extern char gHeroPos[];
 extern float FastVecDist(void *, void *);
 extern float vec_distance_xy(void *, void *);
@@ -2649,7 +2629,6 @@ typedef struct {
 } Mob;
 extern Hit *g_coll_hit_moby_r __asm__("D_L00_00173F58");
 extern CollisionHit coll_hit_result_r __asm__("D_L00_00173F40");
-extern Vec4 collision_hit_point;
 extern s32 truncate_float_to_s32(f32);
 
 extern f32 FastAddRots(f32, f32);
@@ -2965,7 +2944,7 @@ int try_start_moby_hop(Mob_2C0CF8 *m, Blk *p, void *q, int flag) {
         }
     }
     save_state_vector_and_fields_to_hero_r(p);
-    initialize_moby_hop_trajectory_r(m, &((struct Hero *)((char *)&hero_globals_base_r2 + 0xE1D))->unk1F10, land);
+    initialize_moby_hop_trajectory_r(m, &((struct Hero *)g_hero)->unk1F10, land);
     restore_saved_state_fields_from_hero_r(p);
     FastVecScale_r3(mid, d, 0.5f);
     FastVecAdd_r3(mid, mid, m->pos);

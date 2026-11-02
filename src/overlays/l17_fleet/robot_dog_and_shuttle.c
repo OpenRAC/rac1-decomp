@@ -446,7 +446,7 @@ extern short fleet_ripple_pair_vertex_counts;
 extern short fleet_ripple_pair_vertex_bufs;
 extern short fleet_ripple_pair_uv_bufs;
 extern short fleet_ripple_pair_color_bufs;
-extern short fleet_ripple_pair_template_verts;
+extern int fleet_ripple_pair_template_verts SDATA(fleet_ripple_pair_template_verts);
 extern short fleet_ripple_pair_template_uvs;
 extern int fleet_ripple_pair_alpha_fix SDATA(fleet_ripple_pair_alpha_fix);
 extern int fleet_ripple_pair_texture SDATA(fleet_ripple_pair_texture);
@@ -489,7 +489,7 @@ void draw_moby_radial_ripple_mesh_pair(char *moby) {
     color = (fleet_ripple_pair_alpha << 24) | (b << 16) | (g << 8) | r;
     for (i = 0; i < 2; i++) {
         for (j = 0; j < ((int *)&fleet_ripple_pair_vertex_counts)[i]; j++) {
-            int *template_vertex_array_slot = (int *)&fleet_ripple_pair_template_verts + i;
+            int *template_vertex_array_slot = &fleet_ripple_pair_template_verts + i;
             float *p = (float *)(*template_vertex_array_slot + j * 12);
             float t = fleet_ripple_pair_wave_height *
                       FastSin(FastAddRots(FastNormalizeAngle(fast_fmod(vec_length(p[0] * p[0] + p[1] * p[1]),

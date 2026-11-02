@@ -55,7 +55,7 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int level_frame_counter MACRO_ADDR;
-extern short veldin1_look_stat_timer;
+extern int veldin1_look_stat_timer SDATA(veldin1_look_stat_timer);
 extern int look_usage_stat_update_count SDATA(look_usage_stat_update_count);
 extern unsigned char *water_patches MACRO_ADDR;
 extern int water_patch_count MACRO_ADDR;
@@ -217,8 +217,8 @@ void hero_update_movement(void) {
                     matrix_mul_vec3(g_hero.motion.move_dir.f, vec[0], player_camera.f350);
                     g_hero.motion.move_yaw = player_camera.f158;
                     turn_to(0, g_frame_scale_sq, g_frame_scale_sq * 0.0f, g_frame_time * 174.53293f);
-                    if (*(int *)&veldin1_look_stat_timer > 0) {
-                        if (fast_dec_timer((int *)&veldin1_look_stat_timer)) {
+                    if (veldin1_look_stat_timer > 0) {
+                        if (fast_dec_timer(&veldin1_look_stat_timer)) {
                             if (usage_stats.e[18].count < 0xFFFF) {
                                 usage_stats.e[18].count++;
                             }
@@ -227,7 +227,7 @@ void hero_update_movement(void) {
                             }
                             usage_stats.e[18].level_mask =
                                 usage_stats.e[18].level_mask | (1 << g_current_level_index) | 0x80000000;
-                            *(int *)&veldin1_look_stat_timer = -1;
+                            veldin1_look_stat_timer = -1;
                             (look_usage_stat_update_count)++;
                         }
                     }

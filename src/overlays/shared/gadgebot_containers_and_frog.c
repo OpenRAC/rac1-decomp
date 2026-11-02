@@ -23,6 +23,8 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "structs/voice.h"
+extern char level_moby_killed[];
+extern unsigned char saved_mission_state[];
 extern Hero g_hero;
 extern char voice_pool[];
 
@@ -412,7 +414,6 @@ extern int blarg_frog_spawn_counter SDATA(blarg_frog_spawn_counter);
 extern short blarg_frog_pvars_d0_table;
 extern int level_game_mode_q MACRO_ADDR;
 extern int blarg_shuttle_at_second_stop MACRO_ADDR;
-extern char blarg_camera_pos[];
 extern float g_frame_time_sq MACRO_ADDR;
 extern char blarg_coll_hit_normal[];
 extern int *blarg_paths[];
@@ -791,7 +792,6 @@ extern int frog_glow_color_start_gp SDATA(frog_glow_color_start_gp);
 extern int frog_glow_color_end_gp SDATA(frog_glow_color_end_gp);
 extern short level_mobys_q_r __asm__("D_L06_00160058");
 extern u8 hero_vehicle_mode[];
-extern int *blarg_paths[];
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
 extern void SetDeathBits(void *, int, int);
 extern void spawn_moby_directional_spark_bursts_r(struct Moby *, Vec4 *) __asm__("func_L06_002EB5C8");
@@ -999,11 +999,9 @@ void move_frog_with_collision_resolution(void *moby, void *out, int use_path, fl
 }
 typedef u32 u128_EB360 __attribute__((mode(TI), aligned(16)));
 extern int Moby_PlaySound(int, int, int);
-extern float g_frame_time MACRO_ADDR;
 extern float random_float_between(float, float);
 extern int random_integer_below(int);
 extern void spawn_crate_debris(void *, void *, void *, void *, int, int, float, float);
-extern f32 blarg_zero_vec[] MACRO_ADDR;
 
 /* Bursts 4 then 8 particles up from the moby, then removes the moby stored at vars+0x20C.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00297d10.c, FUN_L06_002e9f30. */
@@ -1141,7 +1139,6 @@ extern void rand_vec(float *, float, float);
 
 extern int scale_ticks(int);
 
-extern float g_frame_time MACRO_ADDR;
 
 /* burst of 20 sparks around a point with random velocity and colour */
 void spawn_moby_death_effect_burst(char *m) {
@@ -1354,22 +1351,17 @@ typedef struct {
     int f2C;
 } GbStats;
 
-extern Hero g_hero;
 extern unsigned char hero_vehicle_mode[];
 
-extern unsigned char saved_mission_state[];
 extern unsigned char gCheats[] MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;
-extern float g_frame_time_sq MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern Moby *level_mobys_q MACRO_ADDR;
 extern float gadgebot_position_snapshot_z_offset_gp SDATA(gadgebot_position_snapshot_z_offset_gp);
-extern char blarg_camera_pos[];
 extern GbHit blarg_coll_hit;
 extern Moby *blarg_coll_hit_moby;
 extern GbStats blarg_gadgebot_command_count_base;
-extern int *blarg_paths[];
 
 extern float vec_distance_xy(void *, void *);
 
@@ -2139,7 +2131,6 @@ void GadgebotUpdate(Moby *moby) {
 }
 
 extern float FastDiffRots(float, float);
-extern char referencePosition[];
 /* scores a target moby by distance, heading differences and flags */
 float score_gadgebot_target_candidate(char *a, char *b, int c) {
     float r = vec_distance_xy(&((Moby *)a)->pos, &((Moby *)b)->pos);
@@ -2982,8 +2973,6 @@ void update_moby_rotation_group(Moby *m) {
             break;
     }
 }
-extern char help_stats_base_r[] __asm__("D_0014171B");
-extern char help_stats_base_r2[] __asm__("D_0014171B");
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 extern int blarg_session_moby_bit_flags[];
 extern void initialize_energy_sphere_holder_vars(char *);
@@ -3002,12 +2991,11 @@ void energy_sphere_holder_update(Moby *m) {
     unsigned char *q;
     switch (m->state) {
         case 0:
-            if ((*(int *)(g_current_level_index_r * 256 + ((short)m->save_id >> 5) * 4 +
-                          (help_stats_base_r + 0xAB75)) >>
+            if ((*(int *)(g_current_level_index_r * 256 + ((short)m->save_id >> 5) * 4 + (level_moby_killed)) >>
                      (m->save_id & 0x1F) &
                  1) &&
                 (g_current_level_index_r != LEVEL_ORXON ||
-                 (q = (unsigned char *)(help_stats_base_r2 + 0xAA35), (q + m->mission))[0xA0] == 0xFF)) {
+                 (q = (unsigned char *)saved_mission_state, (q + m->mission))[0xA0] == 0xFF)) {
                 m->state = 2;
                 m->command = 1;
                 break;
@@ -3026,7 +3014,7 @@ void energy_sphere_holder_update(Moby *m) {
             ((struct EnergySphereHolderUpdateVars *)d)->unk_40 = o;
             m->state = 1;
             initialize_energy_sphere_holder_vars((char *)m);
-            *(int *)(g_current_level_index_r * 256 + ((short)m->save_id >> 5) * 4 + (help_stats_base_r + 0xAB75)) &=
+            *(int *)(g_current_level_index_r * 256 + ((short)m->save_id >> 5) * 4 + (level_moby_killed)) &=
                 ~(1 << (m->save_id & 0x1F));
             blarg_session_moby_bit_flags[(short)m->save_id >> 5] &= ~(1 << (m->save_id & 0x1F));
             break;
@@ -3040,7 +3028,7 @@ void energy_sphere_holder_update(Moby *m) {
             if (((struct EnergySphereHolderUpdateVars *)d)->unk_40[0x20] < 0) {
                 m->command = 1;
                 m->state = 2;
-                *(int *)(g_current_level_index_r * 256 + ((short)m->save_id >> 5) * 4 + (help_stats_base_r + 0xAB75)) |=
+                *(int *)(g_current_level_index_r * 256 + ((short)m->save_id >> 5) * 4 + (level_moby_killed)) |=
                     1 << (m->save_id & 0x1F);
                 blarg_session_moby_bit_flags[(short)m->save_id >> 5] |= 1 << (m->save_id & 0x1F);
             } else {
@@ -3260,7 +3248,6 @@ void energy_sphere_update(char *m) {
 }
 extern float random_float_between(float, float);
 extern void spawn_moving_hero_relative_alpha_fade_particle(void *, float, void *, int, int, int, int);
-extern float g_frame_time MACRO_ADDR;
 extern float blarg_energy_sphere_debris_speed_min SDATA(blarg_energy_sphere_debris_speed_min);
 extern float blarg_energy_sphere_debris_speed_max SDATA(blarg_energy_sphere_debris_speed_max);
 extern float blarg_energy_sphere_debris_scale_min SDATA(blarg_energy_sphere_debris_scale_min);

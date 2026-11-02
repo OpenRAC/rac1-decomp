@@ -489,7 +489,7 @@ struct Shell {
     u8 pad4[0xC];
     struct SkyTile tiles[1];
 };
-extern short sky_tile_spr_buffers;
+extern s32 sky_tile_spr_buffers SDATA(sky_tile_spr_buffers);
 extern s32 D_00160510_2CA00 SDATA(D_00160510);
 extern u8 sky_textured_gs_block[];
 extern void sky_bsphere_check_r(struct SkyTile *tiles, s32 count, u8 *visibility) __asm__("func_0022D7E0");
@@ -523,8 +523,7 @@ void func_0022CA00_r(struct Shell *shell) {
 
     D_00160510_2CA00 = 1 - D_00160510_2CA00;
     if (visibility[0] == 1) {
-        DmaToSpr_r(shell->tiles[0].address, shell->tiles[0].unkE >> 4,
-                   (((s32 *)&sky_tile_spr_buffers))[D_00160510_2CA00]);
+        DmaToSpr_r(shell->tiles[0].address, shell->tiles[0].unkE >> 4, ((&sky_tile_spr_buffers))[D_00160510_2CA00]);
     }
 
     for (i = 0; i < shell->count; i++) {
@@ -536,11 +535,11 @@ void func_0022CA00_r(struct Shell *shell) {
         D_00160510_2CA00 = 1 - D_00160510_2CA00;
         if (next < shell->count && visibility[next] == 1) {
             DmaToSpr_r(shell->tiles[next].address, shell->tiles[next].unkE >> 4,
-                       (((s32 *)&sky_tile_spr_buffers))[D_00160510_2CA00]);
+                       ((&sky_tile_spr_buffers))[D_00160510_2CA00]);
         }
 
         if (visibility[i] == 1) {
-            dest = (((s32 *)&sky_tile_spr_buffers))[1 - D_00160510_2CA00];
+            dest = ((&sky_tile_spr_buffers))[1 - D_00160510_2CA00];
             c_dest = dest + shell->tiles[i].unkC;
             a_dest = dest + shell->tiles[i].unkA;
             if (sky_transform_vertices_r(dest + shell->tiles[i].unk8, 0x70002000, shell->tiles[i].unk4,
@@ -616,8 +615,7 @@ void func_0022CC40_r(struct Shell_2CC40 *shell) {
 
     D_00160510_2CC40 = 1 - D_00160510_2CC40;
     if (visibility[0] == 1) {
-        DmaToSpr_r2(shell->tiles[0].address, shell->tiles[0].unkE >> 4,
-                    (((s32 *)&sky_tile_spr_buffers))[D_00160510_2CC40]);
+        DmaToSpr_r2(shell->tiles[0].address, shell->tiles[0].unkE >> 4, ((&sky_tile_spr_buffers))[D_00160510_2CC40]);
     }
 
     for (i = 0; i < shell->count; i++) {
@@ -629,11 +627,11 @@ void func_0022CC40_r(struct Shell_2CC40 *shell) {
         D_00160510_2CC40 = 1 - D_00160510_2CC40;
         if (next < shell->count && visibility[next] == 1) {
             DmaToSpr_r2(shell->tiles[next].address, shell->tiles[next].unkE >> 4,
-                        (((s32 *)&sky_tile_spr_buffers))[D_00160510_2CC40]);
+                        ((&sky_tile_spr_buffers))[D_00160510_2CC40]);
         }
 
         if (visibility[i] == 1) {
-            dest = (((s32 *)&sky_tile_spr_buffers))[1 - D_00160510_2CC40];
+            dest = ((&sky_tile_spr_buffers))[1 - D_00160510_2CC40];
             c_dest = dest + shell->tiles[i].unkC;
             a_dest = dest + shell->tiles[i].unkA;
             if (sky_transform_vertices_r2(dest + shell->tiles[i].unk8, 0x70002000, shell->tiles[i].unk4,

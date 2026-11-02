@@ -404,7 +404,6 @@ extern float D_L09_00161480_2C73D0 SDATA(D_L09_00161480);
 extern float D_L09_00161488_2C73D0 SDATA(D_L09_00161488);
 extern float D_L09_00161490_2C73D0 SDATA(D_L09_00161490);
 extern float D_L09_0016148C_2C73D0 SDATA(D_L09_0016148C);
-extern char hero_globals_base_r[] __asm__("D_0013E633");
 
 /* Enemy update while it chases: takes hits (the result of ComputeHitResponse picks the reaction),
  * re-rolls its retreat timer and steers along its path or straight at the target.
@@ -540,7 +539,7 @@ void update_seeker_damage_and_target(Moby *m) {
         }
     }
     if (d->f160 == 0) {
-        d->f160 = *(Moby **)&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->moby;
+        d->f160 = *(Moby **)&g_hero.moby;
     }
 }
 typedef struct {
@@ -730,7 +729,7 @@ void update_ground_melee_enemy(Moby *m) {
                     knock_2E39E0(m, d->motion, angle_2E39E0(m->pos.x - query.x, m->pos.y - query.y), 5, 1, 0);
                     d->f170 = 11.0f;
                     d->f174 = 18.0f;
-                    if (((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->vehicle_mode == 2)
+                    if (g_hero.vehicle_mode == 2)
                         explode_2E39E0(m, 0x200, -1);
                     else
                         explode_2E39E0(m, 0, -1);
@@ -759,11 +758,10 @@ void update_ground_melee_enemy(Moby *m) {
             wake_2E39E0(m);
             m->shadow_range = 30;
         }
-        if (fast_distance_2E39E0(&m->pos, &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos) > 40.0f)
+        if (fast_distance_2E39E0(&m->pos, &g_hero.motion.pos) > 40.0f)
             return;
         if (d->hidden != 0) {
-            if ((*(unsigned char *)&((Hero *)(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos))
-                      ->unk2020[1]) != 2) {
+            if ((*(unsigned char *)&((Hero *)(&g_hero.motion.pos))->unk2020[1]) != 2) {
                 m->update_dist = 0xFF;
                 m->collision = 0;
                 m->flags = (m->flags | 0x41) & 0xEFFF;
@@ -1517,8 +1515,7 @@ void spawner_1885_update(char *moby) {
                         int idx = *(int *)(((char *)d) + 0xA0 + i * 4);
                         if (idx != -1) {
                             char *q = D_L09_0016016C_30BF88 + (idx << 7);
-                            float f = FastVecDist_r4(
-                                &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, q + 0x30);
+                            float f = FastVecDist_r4(&g_hero.motion.pos, q + 0x30);
                             if (f < best) {
                                 sel = q;
                                 best = f;

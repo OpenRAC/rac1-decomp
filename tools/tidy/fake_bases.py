@@ -43,6 +43,28 @@ def symbols():
     return bases, targets
 
 
+def with_local_aliases(text, bases):
+    """bases, plus this file's byte-array aliases of them: `extern char hero_globals_base_r[] __asm__("D_0013E633");`."""
+    found = dict(bases)
+    pattern = r'^\s*extern\s+(?:(?:unsigned\s+)?char|u8)\s+(\w+)\s*\[\s*\]\s*__asm__\s*\(\s*"(\w+)"\s*\)[^;\n]*;'
+    for name, symbol in re.findall(pattern, pe.without_comments(text), re.M):
+        if symbol in bases:
+            found[name] = bases[symbol]
+    return found
+
+
+def drop_unused_aliases(text, bases, fragments=""):
+    """Remove the declaration of a local alias that nothing uses any more, here or in a version fragment."""
+    code = pe.without_comments(text)
+    extra = pe.without_comments(fragments)
+    for name in set(with_local_aliases(text, bases)) - set(bases):
+        declaration = rf'^[ \t]*extern\s[^;\n]*\b{name}\s*\[\s*\]\s*__asm__[^;\n]*;[ \t]*\n'
+        declared = len(re.findall(declaration, code, re.M))
+        if len(re.findall(rf"\b{name}\b", code)) == declared and not re.search(rf"\b{name}\b", extra):
+            text = re.sub(declaration, "", text, flags=re.M)
+    return text
+
+
 def base_sites(masked, bases):
     """(start, end, global address) of each `base + constant`, in code. The constant must stand alone."""
     names = "|".join(sorted(map(re.escape, bases), key=len, reverse=True))
@@ -50,7 +72,7 @@ def base_sites(masked, bases):
         yield m.start(), m.end(), bases[m.group(1)] + int(m.group(2), 0)
 
 
-CHAR_CAST = r"\(\s*(?:unsigned\s+)?char\s*\*\s*\)\s*"
+CHAR_CAST = r"\(\s*(?:(?:unsigned\s+)?char|u8)\s*\*\s*\)\s*"
 
 
 def spell(text, start, end, name, view):
@@ -91,7 +113,7 @@ def view_of(text, name):
         decl = found.pop()
         if "__asm__" in decl:
             return None
-        return ("array" if re.search(rf"\b(?:un)?(?:signed\s+)?char\s+{name}\s*\[", decl) else "object"), decl
+        return ("array" if re.search(rf"\b{name}\s*\[", decl) else "object"), decl
     if name == "g_hero":
         return "object", "extern Hero g_hero;"
     return "array", f"extern char {name}[];"
@@ -116,6 +138,7 @@ def rewrite(text, bases, targets, keep=(), blocked=(), scope=None, declare=True,
     scope is the text whose declarations decide each view: a fragment has none of its own, so it uses its shared file.
     declare=False adds no declarations, and declared collects the ones the text needs.
     """
+    bases = with_local_aliases(scope if scope is not None else text, bases)
     masked = pe.COMMENT_OR_STRING.sub(lambda m: re.sub(r"[^\n]", " ", m.group(0)), text)
     spans = [(m.start(), m.group(1)) for m in mv.FUNC.finditer(masked)]
     sites = []
@@ -165,6 +188,7 @@ def check(rel):
 
 def site_owners(text, bases, targets):
     """Names of the functions that hold a site. None stands for a site outside any function."""
+    bases = with_local_aliases(text, bases)
     masked = pe.COMMENT_OR_STRING.sub(lambda m: re.sub(r"[^\n]", " ", m.group(0)), text)
     spans = [(m.start(), m.group(1)) for m in mv.FUNC.finditer(masked)]
     return {next((n for at, n in reversed(spans) if at <= start), None)
@@ -213,7 +237,8 @@ def land(rel, bases, targets, _aliases=None):
 
     accepted = accepted_functions(owners, passes)
     new, count = rewrite(original, bases, targets, owners - accepted, blocked)
-    path.write_text(new, errors="surrogateescape")
+    fragments = "\n".join(f.read_text(errors="replace") for f in fragments_of(rel))
+    path.write_text(drop_unused_aliases(new, bases, fragments), errors="surrogateescape")
     bad, _, failed = check(rel) if count else (set(), set(), False)
     if bad or failed:
         path.write_text(original, errors="surrogateescape")

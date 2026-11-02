@@ -827,11 +827,8 @@ typedef struct {
     float x, y, z, w;
 } Vx __attribute__((aligned(16)));
 typedef float V[4] __attribute__((aligned(16)));
-extern int level_frame_counter MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
-extern float g_frame_time MACRO_ADDR;
 extern V collision_hit_point;
-extern char hero_globals_base[];
 extern int is_moby_in_class_range_500_to_540(void *);
 extern void FastVecSub(void *, void *, void *);
 extern void matrix_mul_vec3(void *, void *, void *);
@@ -1001,8 +998,6 @@ extern short veldin_ship_glow_color;
 #define G_EC (*(s32 *)&D_L00_001619BC)
 #define G_F0 (*(s32 *)&D_L00_001619C0)
 #define G_F4 (*(s32 *)&D_L00_001619C4)
-extern f32 player_camera[];
-extern char g_debug_camera[];
 extern Vec_2d19b0 ship_vertices[];
 extern s16 ship_quad_indices[][4][3];
 extern Vec_2d19b0 ship_normals[];
@@ -1146,7 +1141,6 @@ typedef float Mat3_2D3608[3][4] __attribute__((aligned(16)));
 extern char player_camera_r[] __asm__("D_L00_00166D80");
 extern char g_debug_camera_r[] __asm__("D_L00_00166EC0");
 extern char coll_hit_result_r[] __asm__("D_L00_00173F40");
-extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern char pad_globals_base_r[] __asm__("D_0013A5E0");
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern void func_001FA480(void *, void *);
@@ -1188,13 +1182,13 @@ void decoy_glove_aim_throw(int collision_arg, Moby *carrier, float *position) {
     output = (float *)target->pvars;
     *(u128_2D3608 *)direction = 0;
     direction[0] = 1.0f;
-    matrix_mul_vec3_r(direction, direction, ((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->basis);
+    matrix_mul_vec3_r(direction, direction, ((struct Hero *)g_hero)->basis);
     {
-        Hero *h = (Hero *)(hero_globals_base_r + 0xE1D);
+        Hero *h = (Hero *)g_hero;
         anchor_ptr[0] = FastCos_r(FastAddRots_r(-0.361968011f, fast_atan2_r(h->facing_x, h->facing_y))) * 0.859039009f;
         anchor_ptr[1] = FastSin_r(FastAddRots_r(-0.361968011f, fast_atan2_r(h->facing_x, h->facing_y))) * 0.859039009f;
         anchor_ptr[2] = 0.0f;
-        FastVecAdd_r2(anchor_ptr, anchor_ptr, &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos);
+        FastVecAdd_r2(anchor_ptr, anchor_ptr, &((struct Hero *)g_hero)->motion.pos);
         anchor_ptr[2] = anchor_ptr[2] + 0.390819997f;
         fast_atan2_r(direction[0], direction[1]);
         range = (((PadState *)(pad_globals_base_r + 0x2460))->held & 5) ? 3.5f : 2.5f;
@@ -1234,8 +1228,7 @@ void decoy_glove_aim_throw(int collision_arg, Moby *carrier, float *position) {
                 launch[2] = vertical;
                 FastVecAdd_r2(endpoint, g_debug_camera_r, launch);
                 if (coll_line_r2(g_debug_camera_r, endpoint, 2, collision_arg, 0) &&
-                    ((Hit_2D3608 *)coll_hit_result_r)->moby !=
-                        *(void **)&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->moby) {
+                    ((Hit_2D3608 *)coll_hit_result_r)->moby != *(void **)&((struct Hero *)g_hero)->moby) {
                     qcopy(aim, ((Hit_2D3608 *)coll_hit_result_r)->point);
                     hit = 1;
                     heading = fast_atan2_r(aim[0] - anchor_ptr[0], aim[1] - anchor_ptr[1]);
@@ -1249,7 +1242,7 @@ void decoy_glove_aim_throw(int collision_arg, Moby *carrier, float *position) {
                 }
             }
         } else {
-            ((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->throw_target = 0;
+            ((struct Hero *)g_hero)->throw_target = 0;
         }
     }
     compute_glove_of_doom_launch_velocity(anchor_ptr, aim, output + 4, g_frame_time_sq_r * 9.0f, 0.00000999999975f,
@@ -1501,7 +1494,6 @@ void draw_metal_detector_trail(Moby *moby) {
         }
     }
 }
-extern int g_current_level_index MACRO_ADDR;
 extern unsigned char metal_detector_dig_counts[];
 /* increments the selected packed nibble, saturating at fifteen */
 void increment_metal_detector_collection_counter(Moby *moby) {
@@ -2302,8 +2294,6 @@ extern float horny_toad_scale SDATA(horny_toad_scale);
 extern float horny_toad_arrive_distance SDATA(horny_toad_arrive_distance);
 extern float horny_toad_attack_anim_start_frame SDATA(horny_toad_attack_anim_start_frame);
 extern short horny_toad_move_params;
-extern char g_debug_camera[];
-extern char *moby_array_start MACRO_ADDR;
 extern Path_5AC0 *level_paths_r3[] __asm__("D_L00_001B0830");
 
 extern void process_horny_toad_hit_reaction(void *);
@@ -2709,7 +2699,7 @@ void process_horny_toad_hit_reaction(void *a0) {
     v = *(int *)(d + 0x1C0);
 
     if (v == 0) {
-        char *h = hero_globals_base_r + 0xE1D;
+        char *h = g_hero;
         *(int *)(d + 0x1C0) = *(int *)(h + 0x2080);
         qcopy(q, h + 0x80);
     }
@@ -2737,7 +2727,6 @@ extern float ApproachWithVelocity(float *, float, float, float, float, float *);
 extern float FastCos(float);
 extern float FastSin(float);
 extern void move_4318(int, int, float, float, float, int);
-extern float g_frame_time MACRO_ADDR;
 
 /* Walks a moby toward a target point: turn to face it, ease its speed, step it along its heading; returns the distance (or 37.0 when a flag is set). Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002cfcb8.c, FUN_L00_002d54c8. */
 float move_horny_toad_toward_position(unsigned char *m, float *t, float vel) {
@@ -3029,7 +3018,6 @@ typedef struct {
     u8 pad40[0x30];
     Vec dir; /* 0x70 */
 } Cutscene; /* 0x80 */
-extern char g_hero[];
 #define CUTS ((Cutscene *)D_L00_001601AC)
 typedef struct {
     Vec4f v0, v1, v2;
@@ -3401,7 +3389,6 @@ typedef struct {
     int c[4];
     float d[4];
 } P_p;
-extern char g_debug_camera[];
 extern int cinematic_mode MACRO_ADDR;
 extern void FastVecSub(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
@@ -3866,11 +3853,6 @@ void func_L00_002D90A0_r(P_2D90A0 *m, int i) {
 extern float randf_sym(float, float);
 extern float random_float_between(float, float);
 extern float smoke_particle_unit_positions[][4];
-extern float smoke_particle_speed_a[];
-extern float smoke_particle_speed_b[];
-extern float smoke_particle_scroll[];
-extern float smoke_particle_scroll_speed[];
-extern char smoke_particle_is_mesh[];
 
 struct InitializeSmokeFireSpawnerMeshParticleVars {
     u8 pad_00[0x44];

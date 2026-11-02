@@ -21,10 +21,10 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+extern Hero g_hero;
 extern char hero_current_state[];
 extern char gSkillPoints[];
 extern char gSpecialItems[];
-extern Hero g_hero;
 extern char race_gates[];
 
 /* Hoven troll walker (same class as TrollVars below, which is defined after these functions). */
@@ -277,7 +277,6 @@ void update_level_12_water_tile(char *moby) {
     }
 }
 
-extern char hoven_ripple_patches[];
 /* Draws Hoven's water ripple grids. */
 void render_level_12_water_grids(void) {
     render_water_grids(hoven_ripple_patches, 0x11);
@@ -385,7 +384,6 @@ typedef union {
     long long quad;
     float f[4];
 } L12Vector;
-extern float g_frame_time_sq MACRO_ADDR;
 extern float ProbeGroundHeight_order(float, void *, int) __asm__("func_00214358");
 extern void ApproachValue_order(float, float, void *) __asm__("func_00214D28");
 
@@ -420,7 +418,6 @@ void select_hoven_anklebiter_pursuit_animation(Moby *moby) {
     }
 }
 typedef int u128 __attribute__((mode(TI)));
-extern float g_frame_time MACRO_ADDR;
 extern float spark_scatter_vertical_z_range_start SDATA(spark_scatter_vertical_z_range_start);
 extern float spark_scatter_vertical_z_range_end SDATA(spark_scatter_vertical_z_range_end);
 extern float spark_scatter_radial_z_range_start SDATA(spark_scatter_radial_z_range_start);
@@ -538,7 +535,6 @@ typedef struct TargetReport54_2E2EF0 {
     int mode;
     char pad48[8];
 } TargetReport54_2E2EF0;
-extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern float g_frame_scale_sq_r __asm__("D_0015EE64") MACRO_ADDR;
@@ -610,7 +606,7 @@ void update_hoven_anklebiter(Moby *m) {
     select54((char *)m, (char *)&work, d->range);
     target = work.moby;
     if (!target)
-        target = *(Moby **)&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->moby;
+        target = *(Moby **)&g_hero.moby;
     if (m->pos.z < 26.0f) {
         DeleteMoby_r(m);
         return;
@@ -841,7 +837,7 @@ void update_hoven_anklebiter(Moby *m) {
             break;
         }
         case 5:
-            (*(Moby **)&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->moby)->anim_speed = 1.3f;
+            (*(Moby **)&g_hero.moby)->anim_speed = 1.3f;
             angle = fast_atan2_r(target->pos.x - m->pos.x, target->pos.y - m->pos.y);
             MobySpringTurn_r((char *)m, &d->turn_velocity, angle, 0.05f, 0.3f, 0.2f);
             if (m->seq == m->prev_seq && IsFrameWithinWindow_r((char *)m, 13.0f) &&
@@ -875,8 +871,7 @@ void update_hoven_anklebiter(Moby *m) {
             blocked = 0;
             if (d->path != -1) {
                 char *path = hoven_paths_r[d->path];
-                blocked = IsPointInPolygon_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
-                                             path + 0x10, *(int *)path) == 0;
+                blocked = IsPointInPolygon_r(&g_hero.motion.pos, path + 0x10, *(int *)path) == 0;
             }
             if (!blocked) {
                 if (return_distance < d->range) {
@@ -1316,7 +1311,6 @@ void steer_platform_toward_target(Moby *m, float *ang, void *target, int unused,
                 g_frame_time * lim);
     FastVecAdd(&m->pos, &m->pos, &d->vel);
 }
-extern char hero_globals_base[];
 extern float platform_tilt_offset_divisor SDATA(platform_tilt_offset_divisor);
 extern void FastVecSub(void *, void *, void *);
 extern void euler_to_matrix(void *, void *);
@@ -1688,7 +1682,6 @@ extern Moby *CreateMoby_r(int) __asm__("func_0020D348");
 extern Player hero_globals_base_r2 __asm__("D_0013E633");
 
 extern unsigned char gCheats[] MACRO_ADDR;
-extern float g_frame_scale_sq MACRO_ADDR;
 extern short hoven_cinematic_mode_r __asm__("D_L12_0015F6A8");
 extern char *hoven_camera_points MACRO_ADDR;
 
@@ -1807,7 +1800,6 @@ void miner_update(Moby *m) {
         update_moby_bone_attachment(m, d->helper, 2);
     }
 }
-extern char hoven_camera_pos[];
 extern void draw_level_12_effects(void);
 extern int is_point_inside_clip_volume(void *, int);
 extern void AddDrawCallback(void *, void *);
@@ -2561,7 +2553,6 @@ void update_blarg_trooper_attachment(unsigned char *moby) {
         *(void **)&data->attachment = spawn_moby_attachment(moby, vector);
     }
 }
-extern float g_frame_time_sq MACRO_ADDR;
 extern float ProbeGroundHeight(void *, int, float);
 extern void ApproachValue(void *, float, float);
 
@@ -3134,7 +3125,6 @@ void blarg_helicopter_326_update(char *moby) {
 extern float FastCos(float);
 extern float FastSin(float);
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
-extern float g_frame_time MACRO_ADDR;
 
 struct UpdateBlargHelicopterMotionTiltVars {
     u8 pad_00[0x70];

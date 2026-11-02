@@ -28,6 +28,7 @@
 #include "enums/moby_class.h"
 #include "structs/pad.h"
 #include "enums/hero_state.h"
+extern char gSpecialItems[];
 extern char cd_read_active[];
 extern char cd_read_state[];
 extern struct P g_controller_state;
@@ -62,7 +63,6 @@ struct P {
     char pad2[0x1A0 - 0x110];
     int busy;
 };
-extern struct P g_controller_state;
 extern int controller_idle_frames SDATA(controller_idle_frames);
 extern int level_frame_counter MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
@@ -130,7 +130,6 @@ typedef struct {
 extern CfgS g_debug_menu;
 extern char pad_globals_base[];
 
-extern char special_items_base_b[] __asm__("D_0013D355");
 
 extern int cinematic_mode MACRO_ADDR;
 extern int D_0015EFB4 MACRO_ADDR;
@@ -238,7 +237,7 @@ void handle_pause_input(void) {
         PauseAllSounds(10);
         return;
     }
-    if (((AreaS *)memory_card_state)->wFC && !(r = (unsigned char *)(special_items_base_b + 0x13B))[0x10] &&
+    if (((AreaS *)memory_card_state)->wFC && !(r = (unsigned char *)gSpecialItems)[0x10] &&
         cinematic_mode_frames >= 8 && !D_0015EF20 && !g_hero.fall_fade_pending && g_hero.health.hp &&
         scale_ticks(0x1E) < level_frame_counter && g_current_level_index) {
         mode_freeze_init(5, 0, 0);
@@ -558,10 +557,8 @@ void finish_cutscene(void) {
 extern void FastVecCross(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecSub(void *, void *, void *);
-extern char cutscene_state[];
 extern char render_view_params[];
 extern unsigned char gCheats[] MACRO_ADDR;
-extern float big_head_cutscene_fov_scale MACRO_ADDR;
 extern char g_debug_camera[];
 extern unsigned char D_0015EEB4[4] MACRO_ADDR;
 extern float big_head_cutscene_camera_pullback SDATA(big_head_cutscene_camera_pullback);
@@ -758,7 +755,6 @@ typedef struct {
     char pad58[0x120];
     Moby *f178[1];
 } VendorCutscene;
-extern u32 pad0_pressed;
 extern f32 gFadeLvl_r __asm__("D_L00_0015F4FC") MACRO_ADDR;
 extern VendorCutscene cutscene_state_r __asm__("D_L00_0016C960");
 extern s32 challenge_mode SDATA(challenge_mode);
@@ -942,7 +938,6 @@ void queue_movie_with_game_language(int i) {
     }
     prepare_movie_playback(b, a, g_game_language);
 }
-extern char voice_pool[];
 extern void flush_cache(int);
 
 extern int sceGsSetDefLoadImage(void *, short, short, short, short, short, short, short);
@@ -1071,7 +1066,6 @@ void movie_exit_to_gameplay(void) {
         q[0x6B] |= 0x10;
     }
 }
-extern char memory_card_state[];
 extern void flush_cache(int);
 
 extern int snd_StreamSafeCdSync(int);
@@ -1079,7 +1073,6 @@ extern int snd_StreamSafeCdSync(int);
 extern void Movie_Play(int, int, int, int, int);
 extern int sce_cd_sync_s(int);
 extern void movie_exit_to_gameplay(void);
-extern int movie_request_decoder_state MACRO_ADDR;
 extern int movie_request_source_mode MACRO_ADDR;
 extern int movie_request_audio_context MACRO_ADDR;
 extern int queued_movie_request MACRO_ADDR;
@@ -1106,8 +1099,6 @@ void play_queued_movie(void) {
 extern void FastMemSet(void *, int, int);
 extern int start_audio_stream_read(int, int, int);
 extern int slideshow[4] MACRO_ADDR;
-extern int lvl_resource_buffers[];
-extern int lvl_vu_chain_buffer_size MACRO_ADDR;
 typedef struct {
     int a;
     int b;
@@ -1151,7 +1142,6 @@ void start_slideshow(void) {
 }
 extern void VU1_syncChain(int);
 
-extern int gFadeLvl MACRO_ADDR;
 /* Ends the slideshow: syncs VU1, fades to black, stops the audio stream and leaves cinematic mode. */
 void end_slideshow(void) {
     VU1_syncChain(1);

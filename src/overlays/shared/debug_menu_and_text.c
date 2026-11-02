@@ -11,8 +11,8 @@
 #include "core/kernel/kprintf.h"
 #include "game/render/framebuf.h"
 #include "game/ui/hud.h"
-extern int frame_size;
 extern Hero g_hero;
+extern int frame_size;
 extern char gold_weapon_purchased[];
 extern char weapon_ammo_counts[];
 
@@ -20,7 +20,7 @@ typedef struct {
     s32 a, b, c, d;
 } E001f36f8;
 extern s32 debug_text_queue_count SDATA(debug_text_queue_count);
-extern short debug_text_queue_cursor;
+extern void *debug_text_queue_cursor SDATA(debug_text_queue_cursor);
 extern E001f36f8 debug_text_queue[];
 extern u8 debug_text_queue_buffer[];
 void draw_debug_text(s32, s32, s32, s32);
@@ -34,7 +34,7 @@ void flush_debug_text_queue(void) {
         draw_debug_text(debug_text_queue[i].a, debug_text_queue[i].b, debug_text_queue[i].c, debug_text_queue[i].d);
     }
     (debug_text_queue_count) = 0;
-    (*(void **)&debug_text_queue_cursor) = debug_text_queue_buffer;
+    (debug_text_queue_cursor) = debug_text_queue_buffer;
 }
 extern void VU1_addGSregister(int, long);
 extern int *dma_packet_cursor MACRO_ADDR;
@@ -129,7 +129,6 @@ extern char player_camera_matrix_r[] __asm__("D_L00_001670D0");
 extern char D_L00_001670E0[];
 extern char D_L00_001670F0[];
 extern char D_L00_00166ED0[];
-extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern void func_L00_001EBDA0(void);
 extern void func_L00_001FF4B0(void *, void *, float);
 extern void func_001F9BD8(void *, void *, void *);
@@ -164,7 +163,7 @@ void update_debug_camera(void) {
     if (((PadState *)g_controller_state_r)->stick_moved != 0) {
         return;
     }
-    k = ((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->unk308 == 2;
+    k = g_hero.unk308 == 2;
     if ((((PadDwords *)g_controller_state_r)->held_pressed.l & 3) != 3) {
         if (((PadDwords *)g_controller_state_r)->held_pressed.i & 0x1000) {
             if (k) {
@@ -454,7 +453,6 @@ typedef struct {
     s32 a, b, c;
 } Context;
 extern Context render_view_params;
-extern Hero g_hero;
 extern char menu_item_enabled_115[];
 extern int screen_globals_base[];
 extern u8 level_fog_color_red[] MACRO_ADDR;
@@ -959,11 +957,7 @@ typedef struct {
     s32 ammo28, ammo2C, unused30, ammo34, unused38, ammo3C, ammo40, ammo44;
     s32 unused48, ammo4C, ammo50, unused54, unused58, ammo5C, ammo60;
 } AmmoDisplay60;
-extern char menu_item_enabled_115[];
-extern int screen_globals_base[];
 extern u8 help_stats_base[];
-extern s32 g_current_level_index MACRO_ADDR;
-extern s32 gBolts MACRO_ADDR;
 extern s32 skip_frame MACRO_ADDR;
 extern volatile s32 debug_text_flush_wait_flag MACRO_ADDR;
 extern void append_gif_transfer_packet(void);
@@ -1046,13 +1040,6 @@ extern char *debug_tv_mode_names[];
 extern char *debug_screen_names[];
 extern char *debug_occlusion_mode_names[];
 extern char *debug_display_mode_names[];
-extern float level_fog_near_distance MACRO_ADDR;
-extern float level_fog_far_distance MACRO_ADDR;
-extern float level_fog_near_intensity MACRO_ADDR;
-extern float level_fog_far_intensity MACRO_ADDR;
-extern u8 level_fog_color_red[] MACRO_ADDR;
-extern u8 level_fog_color_green[] MACRO_ADDR;
-extern u8 level_fog_color_blue[] MACRO_ADDR;
 
 /* Row-stride helper for draw_debug_menu: 0 when FLAGS is clear, else one pointer width (the next string slot). */
 static __inline__ int flag_offset60(int flags) {
@@ -1292,7 +1279,6 @@ void frame_roll_counter(void) {
    start must fall in [0, count). Retail's function is 0xD4 bytes: this stub's
    0x84 bytes, the occl_grid_lookup_tail piece (0x48) and the shared return
    (noop_callback_l, 8 bytes) are one C function (config/overlays/joined.tsv). */
-extern char *occlusion_grid MACRO_ADDR;
 
 /* Looks cell (X, Y, Z) up in the three-level occlusion grid at occlusion_grid: 0 when the coordinate falls
    outside a level or the cell is empty, else the address of the cell's 128-byte occlusion record. */

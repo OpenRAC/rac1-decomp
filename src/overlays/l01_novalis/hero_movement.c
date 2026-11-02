@@ -335,7 +335,6 @@ typedef struct {
     char p1C[0x14];
 } Hit __attribute__((aligned(16)));
 
-extern Hero g_hero;
 extern PadState g_controller_state;
 
 extern unsigned char item_available[];
@@ -344,7 +343,7 @@ extern MoveUsageTable usage_stats;
 extern float frame_scale MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int novalis_frame_count MACRO_ADDR;
-extern short novalis_look_stat_timer;
+extern int novalis_look_stat_timer SDATA(novalis_look_stat_timer);
 extern int novalis_look_stat_count SDATA(novalis_look_stat_count);
 extern unsigned char *pool_draw_tiles MACRO_ADDR;
 extern int pool_draw_count MACRO_ADDR;
@@ -452,8 +451,8 @@ void HeroStatePhysics(void) {
                     matrix_mul_vec3(g_hero.motion.move_dir.f, vec[0], novalis_player_camera.f350);
                     g_hero.motion.move_yaw = novalis_player_camera.f158;
                     turn_to(0, g_frame_scale_sq, g_frame_scale_sq * 0.0f, g_frame_time * 174.53293f);
-                    if (*(int *)&novalis_look_stat_timer > 0) {
-                        if (fast_dec_timer((int *)&novalis_look_stat_timer)) {
+                    if (novalis_look_stat_timer > 0) {
+                        if (fast_dec_timer(&novalis_look_stat_timer)) {
                             if (usage_stats.e[18].count < 0xFFFF) {
                                 usage_stats.e[18].count++;
                             }
@@ -462,7 +461,7 @@ void HeroStatePhysics(void) {
                             }
                             usage_stats.e[18].level_mask =
                                 usage_stats.e[18].level_mask | (1 << g_current_level_index) | 0x80000000;
-                            *(int *)&novalis_look_stat_timer = -1;
+                            novalis_look_stat_timer = -1;
                             (novalis_look_stat_count)++;
                         }
                     }

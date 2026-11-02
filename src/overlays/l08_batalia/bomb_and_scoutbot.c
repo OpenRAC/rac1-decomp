@@ -15,8 +15,13 @@
 #include "enums/level.h"
 #include "enums/moby_class.h"
 #include "structs/voice.h"
-extern char gSpecialItems[];
+extern char g_hero_moby[];
+
+extern unsigned char gSkillPoints[];
 extern Hero g_hero;
+extern char level_bolts[];
+extern char saved_mission_state[];
+extern char gSpecialItems[];
 
 /* Bomb: thrown or dropped, bounces, fuse timer, explodes. */
 struct BombVars {
@@ -178,7 +183,6 @@ extern float D_L08_001614EC_2B94B0 SDATA(D_L08_001614EC);
 extern int D_L08_001614F0_2B94B0 SDATA(D_L08_001614F0);
 extern float D_L08_001614F4_2B94B0 SDATA(D_L08_001614F4);
 extern char g_hero_r[] __asm__("D_0013F450");
-extern char level_render_state_base_r[] __asm__("D_0013DE6E");
 
 /* Level 8 moby update (class 152): state machine that steers the moby toward the hero and fires its event. */
 void update_bolt_pickup(Moby *m) {
@@ -263,8 +267,7 @@ void update_bolt_pickup(Moby *m) {
             if (d->target != 0)
                 d->target->fA = 0;
             gBolts = gBolts + d->f20;
-            ((int *)(level_render_state_base_r + 0x1D2))[g_current_level_index_r] =
-                ((int *)(level_render_state_base_r + 0x1D2))[g_current_level_index_r] + d->f20;
+            ((int *)level_bolts)[g_current_level_index_r] = ((int *)level_bolts)[g_current_level_index_r] + d->f20;
             Moby_PlaySound_r(0, 0, m);
             queue_animation_update(2, 0x754E, initialize_bolt_counter_hud_r,
                                    update_bolt_counter_hud_animation_and_visibility_r, draw_bolt_counter_hud_panel_r,
@@ -791,8 +794,6 @@ extern int bomber_tank_part3_destroyed_r __asm__("D_L08_0015F69C") MACRO_ADDR;
 extern int bomber_tank_part4_destroyed_r __asm__("D_L08_0015F6A0") MACRO_ADDR;
 extern float batalia_zero_vec_r2[] __asm__("D_L08_0015F660") MACRO_ADDR;
 extern Path *batalia_path_table_r[] __asm__("D_L08_001B0FB0");
-extern char hero_globals_base_r[] __asm__("D_0013E633") NOT_SDA;
-extern unsigned char menu_item_enabled_115_r[] __asm__("D_0013D50F") NOT_SDA;
 extern Hit_2D5FA8 *find_2D5FA8(Moby *, int, int) __asm__("func_L00_0025B478");
 extern Hit_2D5FA8 *pick_2D5FA8(Hit_2D5FA8 *, Hit_2D5FA8 *, Hit_2D5FA8 *, int) __asm__("func_L05_0028AA68");
 extern int damage_2D5FA8(Moby *, Hit_2D5FA8 *, float *, int, int *, float *, int, int) __asm__("func_L00_0025B4D0");
@@ -907,7 +908,7 @@ void update_bomber_tank_damage_and_aim(Moby *m) {
                         if (k == 4)
                             bomber_tank_part4_destroyed_r = one;
                         if (bomber_tank_part1_destroyed_r != 0 && bomber_tank_part2_destroyed_r != 0) {
-                            unsigned char *flags = menu_item_enabled_115_r + 1;
+                            unsigned char *flags = gSkillPoints;
                             if (flags[0xD] == 0) {
                                 flags[0xD] = one;
                                 sound_2D5FA8(1, 0, 0);
@@ -951,7 +952,7 @@ void update_bomber_tank_damage_and_aim(Moby *m) {
     follow_2D5FA8(100.0f, m, d->target, 0, 0, batalia_path_table_r[d->path]->list,
                   batalia_path_table_r[d->path]->count);
     if (d->fF0 == 0)
-        d->fF0 = *(int *)&((struct Hero *)(hero_globals_base_r + 0xE1D))->moby;
+        d->fF0 = *(int *)&g_hero.moby;
     if (d->mode != 2) {
         float yaw, len, pitch;
         subtract_2D5FA8(vec, d->target, (float *)&m->pos);
@@ -996,7 +997,6 @@ void update_bomber_tank_damage_and_aim(Moby *m) {
 }
 extern f32 g_frame_time MACRO_ADDR;
 extern f32 g_frame_time_sq MACRO_ADDR;
-extern int batalia_path_table[];
 extern char voice_pool[];
 extern float batalia_bomber_tank_anim_ref_speed SDATA(batalia_bomber_tank_anim_ref_speed);
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
@@ -1347,9 +1347,7 @@ void scatter_bomber_tank_linked_debris(char *moby) {
         other = (char *)((Blk_7010 *)batalia_mobys + index);
     }
 }
-extern char *batalia_mobys MACRO_ADDR;
 extern void DeleteMoby(void *);
-extern short *batalia_moby_groups[];
 
 /* Remove active mobys of the selected classes from this moby's linked group.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l08/gameplay/entities/002b8228.c, FUN_L08_002d6450. */
@@ -1529,8 +1527,6 @@ void spawn_particle_line_effect(struct Moby *moby, void *from, void *to, int cou
 }
 extern float FastDiffRots(float, float);
 extern float FastVecDist(void *, void *);
-extern short *batalia_moby_groups[];
-extern char *batalia_mobys MACRO_ADDR;
 
 /* Picks the best candidate moby from the moby's list by heading and distance.
  * Exact since tools/ps2eeas_nops.py puts the hazard nop after the shared bc1fl's label. */
@@ -2086,7 +2082,6 @@ void RoutePlatformUpdate(char *m) {
     FastVecSub(delta, &moby->pos, old_pos);
     update_entity_matrix(vars->motion, delta, rp, &moby->rot);
 }
-extern int batalia_path_table[];
 extern char batalia_shuttle_stop_local_points[];
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
@@ -2097,7 +2092,6 @@ typedef struct {
     float e[1][4];
 } Route;
 extern Route *batalia_path_table_r_r[] __asm__("D_L08_001B0FB0");
-extern char help_stats_base_r_r[] __asm__("D_0014171B") NOT_SDA;
 extern float vec_distance_xy(void *, void *);
 
 typedef struct ShuttleVars {
@@ -2201,7 +2195,7 @@ void select_shuttle_route_for_hero(char *m) {
             y = fast_atan2(*(float *)((char *)route + ((route_point_count - 2) << 4) + 0x10) - data->pos[0],
                            *(float *)((char *)route + ((route_point_count - 2) << 4) + 0x14) - data->pos[1]);
             fr = g_current_level_index_r << 4;
-            visited_table = (unsigned char *)(help_stats_base_r_r + 0xAA35);
+            visited_table = (unsigned char *)saved_mission_state;
             data->angle = y;
             data->unkE4.f = 1.0f;
             data->unk104.i = 0;
@@ -2300,7 +2294,6 @@ int advance_shuttle_path_travel(char *m) {
     return d->unkE4.f == d->unk104.f;
 }
 extern void try_set_help_message(int, int);
-extern int batalia_path_table[];
 
 /* Moby update that shows a help message chosen from its data values. */
 void try_set_shuttle_departure_help_message(char *moby) {
@@ -2341,7 +2334,6 @@ char *spawn_bomber_tank_projectile(char *src, char *pos, char *vec) {
     return moby;
 }
 typedef u32 u128_DDD20 __attribute__((mode(TI), aligned(16)));
-extern f32 g_frame_time MACRO_ADDR;
 typedef int OvlQuad __attribute__((mode(TI)));
 extern int coll_sphere_mobys(void *, float, int, void *, void *);
 extern int coll_line(void *, void *, int, void *, int);
@@ -2537,7 +2529,6 @@ typedef struct {
     char pad0[0x2C];
     unsigned char active;
 } Persistent46;
-extern char special_items_base[] NOT_SDA;
 typedef struct {
     char pad0[0x140];
     float x, y, z, w;
@@ -2858,7 +2849,6 @@ void update_rocket(M46 *m) {
 }
 LINKER_REMNANT("asm/overlays", func_L08_002DF750);
 extern Moby *CreateMoby_mb(s32) __asm__("func_0020D348");
-extern float batalia_hero_pos[];
 extern float vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
 extern void set_moby_color(void *, int, int, int);
 extern int batalia_1b3_projectile_red SDATA(batalia_1b3_projectile_red);
@@ -2965,7 +2955,6 @@ extern void ShowBanner(int, int);
 extern void spawn_moby_motion_spark(char *m, char *pos);
 extern float batalia_path_mover_speed SDATA(batalia_path_mover_speed);
 extern int hero_current_state;
-extern unsigned char gSkillPoints[];
 
 /* Update function: switch on the state byte at +0x20. State 0 reads the table batalia_path_table[*data] (deleting
  * the moby if the index is -1), 1 steps along it, 2 falls under gravity and deletes the moby below z = 10.0

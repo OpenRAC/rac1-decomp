@@ -1,10 +1,10 @@
 {
-  "address_names_in_code": 11237,
+  "address_names_in_code": 11179,
   "address_names_in_comments": 849,
-  "asm_aliases": 5895,
-  "extern_lines": 31664,
+  "asm_aliases": 5837,
+  "extern_lines": 31133,
   "fakematch_tags": 29,
-  "float_int_casts": 636,
+  "float_int_casts": 596,
   "hex_compares": 3827,
   "ids_in_comments": 110,
   "include_asm": 206,
@@ -13,7 +13,7 @@
   "numbered_names": 270,
   "oclass_literals": 175,
   "offsets_in_comments": 1007,
-  "raw_offset_casts": 5810,
+  "raw_offset_casts": 5805,
   "tab_lines": 0,
   "worker_notes_in_comments": 0
 }

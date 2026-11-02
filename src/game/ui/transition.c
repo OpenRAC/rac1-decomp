@@ -896,7 +896,7 @@ extern int help_msg_data MACRO_ADDR;
 extern int help_msg_count;
 /* gp-relative, no retail symbol: gp 0x166D00 - 0x7580 = 0x15F780
    (cursor into the table walked below). */
-extern short help_msgs;
+extern char *help_msgs SDATA(help_msgs);
 
 /* Points the help_msgs cursor at entry arg0 of the table help_offset_table
    indexes into help_msg_data, past its 8-byte header, and keeps the
@@ -909,7 +909,7 @@ void queue_dma_transfer(int arg0) {
 
     help_msg_count = *(int *)p;
     p += 8;
-    *(char **)&help_msgs = p;
+    help_msgs = p;
 }
 
 extern char render_sequence[];

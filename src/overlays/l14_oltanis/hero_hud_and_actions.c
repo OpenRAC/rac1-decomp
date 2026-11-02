@@ -45,7 +45,7 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern float oltanis_hero_fall_state_height MACRO_ADDR;
 extern int oltanis_shown_help_message MACRO_ADDR;
 extern int oltanis_hero_run_step1_start_frame MACRO_ADDR;
-extern short oltanis_hero_double_tap_timer;
+extern int oltanis_hero_double_tap_timer SDATA(oltanis_hero_double_tap_timer);
 
 extern int oltanis_look_release_reset_word;
 extern HeroBoneScalars oltanis_lean_state;
@@ -1555,15 +1555,15 @@ void HeroOltanis_UpdateStateTransitions(void) {
                         {
                             int both = 0;
 
-                            fast_dec_timer((int *)&oltanis_hero_double_tap_timer);
-                            if (*(int *)&oltanis_hero_double_tap_timer != 0) {
+                            fast_dec_timer(&oltanis_hero_double_tap_timer);
+                            if (oltanis_hero_double_tap_timer != 0) {
                                 both = 1;
                                 if (!((g_controller_state.held & PAD_R1) && (g_controller_state.pressed & PAD_R1))) {
                                     both = 0;
                                 }
                             }
                             if (g_controller_state.pressed & PAD_R1) {
-                                *(int *)&oltanis_hero_double_tap_timer = scale_ticks(0x1E);
+                                oltanis_hero_double_tap_timer = scale_ticks(0x1E);
                             }
                             if (!(g_hero.state_timer > scale_ticks(0x14))) {
                                 break;
