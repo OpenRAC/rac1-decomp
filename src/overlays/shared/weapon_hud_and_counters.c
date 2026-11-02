@@ -144,7 +144,7 @@ extern volatile int alt_moby_spawn_pvar_pool MACRO_ADDR;
 extern int moby_array_start MACRO_ADDR;
 extern volatile int moby_array_last MACRO_ADDR;
 extern volatile int moby_spawn_pvar_pool MACRO_ADDR;
-extern short moby_context_index;
+extern volatile int moby_context_index SDATA(moby_context_index);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/hud/00234fd0.c, FUN_L00_00235668. */
 void select_moby_context(int state) {
@@ -161,8 +161,7 @@ void select_moby_context(int state) {
         old78 = alt_moby_array_last;
         oldE8 = moby_spawn_pvar_pool;
         old7C = alt_moby_spawn_pvar_pool;
-        /* KEPT: the short declaration is for $gp, so volatile has to be in the cast. */
-        (*(volatile int *)&moby_context_index) = oldState ^ 1;
+        moby_context_index = oldState ^ 1;
         /* FAKEMATCH: without volatile, only this store moves, from here to near the end. */
         *(volatile int *)&moby_array_start = old70;
         level_mobys_end = old74;

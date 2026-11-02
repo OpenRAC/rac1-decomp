@@ -27,7 +27,7 @@ src/game/render/framebuf.c	-	padding	retail's padding between functions
 src/game/render/skyfunc.c	-	padding	retail's padding between functions
 src/game/render/vuchain.c	-	padding	retail's padding between functions
 src/game/render/vuchain.c	VU1_sendChain	kept	volatile, as above
-src/game/render/vuchain.c	VU1_sendChain	kept	volatile: the store stays out of the delay slot. The short declaration is for $gp
+src/game/render/vuchain.c	VU1_sendChain	kept	volatile: the store stays out of the delay slot
 src/game/system/loaders.c	-	padding	retail's padding between functions
 src/game/system/loaders.c	-	padding	retail's padding between functions
 src/game/system/memcard.c	-	padding	retail's padding between functions
@@ -50,8 +50,6 @@ src/game/ui/pause.c	-	padding	retail's padding between functions
 src/game/ui/pause.c	-	padding	retail's padding between functions
 src/game/ui/pause.c	-	padding	retail's padding between functions
 src/game/ui/pause.c	-	padding	retail's padding between functions
-src/game/ui/pause.c	BuildGalaxyMenu	marked	if (0): the 2-byte view is the last use, so $gp reaches it (89 functions differ without it)
-src/game/ui/pause.c	DrawGBsShipMenu__maybe	marked	if (0): the 2-byte view is the last use, so $gp reaches it (one function differs without it)
 src/game/ui/pause.c	update_item_preview_transform	marked	volatile: this store keeps its place (one function differs without it)
 src/game/ui/vendor.c	-	padding	retail's padding between functions
 src/game/ui/vendor.c	-	padding	retail's padding between functions
@@ -76,9 +74,9 @@ src/overlays/l15_quartu/scientist_and_hint_triggers.c	ultramech_scientist_update
 src/overlays/l18_veldin2/deplanetizer_and_gadgebots.c	-	kept	the views place n at 0x30 and 0x34: this record is not understood yet
 src/overlays/shared/camera_modes_and_scripts.c	update_target_tracking_camera_position	marked	a dead compare with 10.0f loads that constant early, which fixes the
 src/overlays/shared/debug_menu_and_text.c	update_debug_menu	kept	char and char[] are addressed differently at -G2
-src/overlays/shared/electric_water.c	-	marked	second views of these globals; hero_gravity_dir_r above is another view of one
+src/overlays/shared/electric_water.c	-	marked	second views of these globals
 src/overlays/shared/follow_camera.c	cam_set_eye_offset_tail	kept	swc1, jr, nop: probably a volatile field of a record not known yet
-src/overlays/shared/level_runtime_and_menus.c	-	marked	a second view of map_menu_state, as a RenderArchiveState
+src/overlays/shared/level_runtime_and_menus.c	-	marked	a second view of map_menu_state. One view with casts matches, but reads worse
 src/overlays/shared/moby_drops_and_death.c	-	kept	short and MACRO_ADDR select how each function addresses this global
 src/overlays/shared/npc_dialog_and_pad_history.c	get_dialogue_entry	kept	the callers pass one argument, the definition takes two
 src/overlays/shared/npc_dialog_and_pad_history.c	stream_slot_clear_state	kept	sh, jr, nop: probably a volatile field of a record not known yet
@@ -93,6 +91,4 @@ src/overlays/shared/water_pool_and_sand_mouse.c	activate_smaller_amoeboid	marked
 src/overlays/shared/water_pool_and_sand_mouse.c	activate_smaller_amoeboid	marked	volatile: nops stay in the delay slots (28/296 bytes differ without it)
 src/overlays/shared/water_pool_and_sand_mouse.c	gunship_follow_path	marked	duplicating the reset preserves retail's voice-call argument scheduling
 src/overlays/shared/water_pool_and_sand_mouse.c	gunship_follow_path	marked	the never-taken call keeps gcse from propagating &off[1] into the call, so dir
-src/overlays/shared/weapon_hud_and_counters.c	select_moby_context	kept	the short declaration is for $gp, so volatile has to be in the cast
 src/overlays/shared/weapon_hud_and_counters.c	select_moby_context	marked	without volatile, only this store moves, from here to near the end
-src/versions/jp/game/ui/pause/func_0021FF80.c	DrawGBsShipMenu__maybe	marked	if (0): the 2-byte view is the last use, as in the shared file

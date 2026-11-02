@@ -922,9 +922,8 @@ typedef struct {
 extern short D_L15_00161D2C;
 extern short D_L15_00161D34;
 extern short D_L15_00161D38;
-/* FAKEMATCH: second views of these globals; hero_gravity_dir_r above is another view of one. */
+/* FAKEMATCH: second views of these globals. */
 extern V2d8e48 D_L15_00167440 __asm__("D_L15_00167440") NOT_SDA;
-extern V2d8e48 D_0013F6E0 __asm__("D_0013F6E0");
 extern V2d8e48 D_L15_001D39C0[] __asm__("D_L15_001D39C0") NOT_SDA;
 extern UV2d8e48 D_L15_001D3A00[] __asm__("D_L15_001D3A00") NOT_SDA;
 extern void vsub_2d8e48(void *, void *, void *) __asm__("func_001F9BF0");
@@ -956,7 +955,7 @@ void draw_electric_water_bolt_start_quads(char *mv) {
     mat[3].f[3] = 1.0f;
     vsub_2d8e48(&mat[0], &quartu_camera_pos, &mat[3]);
     vscl_2d8e48(&mat[0], &mat[0], 1.0f);
-    cross_2d8e48(&mat[1], &mat[0], &hero_gravity_dir);
+    cross_2d8e48(&mat[1], &mat[0], hero_gravity_dir_r);
     vscl_2d8e48(&mat[1], &mat[1], -1.0f);
     cross_2d8e48(&mat[2], &mat[1], &mat[0]);
     c = *(unsigned int *)&electric_water_glow_core_color;
