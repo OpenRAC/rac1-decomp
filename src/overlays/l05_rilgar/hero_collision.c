@@ -9,6 +9,7 @@
 #include "game/math/fastfunc.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+#include "structs/collision.h"
 extern char gHeroPos[];
 extern unsigned char g_hero[] NOT_SDA;
 
@@ -208,19 +209,7 @@ void transform_hero_polar_offset_to_world(void *, f32, f32, f32);
 void func_L00_00233D50_40968(void *, void *, f32) __asm__("func_L00_00233D50");
 f32 FastAbsF(f32);
 extern Hero g_hero_r __asm__("D_0013F450");
-typedef struct {
-    u8 pad0[0x18];
-    s32 i18;
-    s32 i1C;
-    union {
-        Q q;
-        f32 f[4];
-    } v20;
-    u8 pad30[0x10];
-    f32 f40;
-    f32 f44;
-} HS;
-extern HS rilgar_coll_hit;
+extern struct CollisionHit rilgar_coll_hit;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l05/ui_help_00239fc0.c, FUN_L05_002402a8. */
 void HeroL05_GroundProbe(void) {
@@ -300,26 +289,26 @@ void HeroL05_GroundProbe(void) {
     if (g_hero_r.ground_type == 1 && (u32)(g_hero_r.state.current - 0x7C) < 2) {
         goto d1;
     }
-    if (rilgar_coll_hit.i18 != 0) {
-        if (is_moby_in_class_range_500_to_540(rilgar_coll_hit.i18)) {
+    if (rilgar_coll_hit.moby != 0) {
+        if (is_moby_in_class_range_500_to_540(rilgar_coll_hit.moby)) {
             g_hero_r.on_flagged_ground_moby = 1;
             if ((u32)(g_hero_r.state.control_mode - 0x15) < 2) {
-                func_L00_00233D50_40968((u8 *)&rilgar_coll_hit.v20, (u8 *)&rilgar_coll_hit.v20, 1.0f);
+                func_L00_00233D50_40968((u8 *)&rilgar_coll_hit.point, (u8 *)&rilgar_coll_hit.point, 1.0f);
             }
         }
-        p = GetFlaggedPvarWord(rilgar_coll_hit.i18);
+        p = GetFlaggedPvarWord(rilgar_coll_hit.moby);
         if (p != 0 && (*(u16 *)(p + 0x1E) & 8)) {
             g_hero_r.on_flagged_ground_moby = 1;
         }
     }
-    if (rilgar_coll_hit.i1C > 0) {
-        qcopy((u8 *)&g_hero_r + 0x2A0, &rilgar_coll_hit.v20);
-        g_hero_r.ground_z.f = rilgar_coll_hit.v20.f[2];
+    if (rilgar_coll_hit.unk1C > 0) {
+        qcopy((u8 *)&g_hero_r + 0x2A0, &rilgar_coll_hit.point);
+        g_hero_r.ground_z.f = rilgar_coll_hit.point.f[2];
         g_hero_r.ground_distance = FastVecDist((u8 *)&g_hero_r + 0x80, ((u8 *)&g_hero_r + 0x2A0));
-        g_hero_r.ground_moby = (struct Moby *)rilgar_coll_hit.i18;
-        sceVu0Normalize((u8 *)&g_hero_r + 0x270, (u8 *)&rilgar_coll_hit.f40);
-        g_hero_r.ground_slope.f = compute_gravity_relative_vector_inclination((u8 *)&rilgar_coll_hit.f40);
-        g_hero_r.downhill_yaw = fast_atan2(rilgar_coll_hit.f40, rilgar_coll_hit.f44);
+        g_hero_r.ground_moby = (struct Moby *)rilgar_coll_hit.moby;
+        sceVu0Normalize((u8 *)&g_hero_r + 0x270, (u8 *)&rilgar_coll_hit.normal.f[0]);
+        g_hero_r.ground_slope.f = compute_gravity_relative_vector_inclination((u8 *)&rilgar_coll_hit.normal.f[0]);
+        g_hero_r.downhill_yaw = fast_atan2(rilgar_coll_hit.normal.f[0], rilgar_coll_hit.normal.f[1]);
         FastVecSub(&v20, ((u8 *)&g_hero_r + 0x2A0), (u8 *)&g_hero_r + 0x80);
         if (0.0f < FastVecDot(&v20, (u8 *)&g_hero_r + 0x270)) {
             g_hero_r.ground_distance = -g_hero_r.ground_distance;
@@ -329,7 +318,7 @@ void HeroL05_GroundProbe(void) {
             if (g_hero_r.ground_slope.f <= 0.87266463f || g_hero_r.gravity_mode == 1 ||
                 g_hero_r.state.control_mode == 0x16) {
                 g_hero_r.air_frames.s = 0;
-                g_hero_r.last_landed_moby = rilgar_coll_hit.i18;
+                g_hero_r.last_landed_moby = rilgar_coll_hit.moby;
             }
         }
     }
@@ -389,12 +378,12 @@ d1:
         transform_hero_polar_offset_to_world(&v30, 0.2f, a, 0.45f);
         transform_hero_polar_offset_to_world(&v40, 0.2f, a, -0.45f);
         if (coll_line(&v30, &v0, 0x22, (s32)g_hero_r.moby, 0)) {
-            f = rilgar_coll_hit.v20.f[2] - g_hero_r.ground_z.f;
+            f = rilgar_coll_hit.point.f[2] - g_hero_r.ground_z.f;
             g_hero_r.unk2C0.f[i] = f;
             if (0.4f < FastAbsF(f)) {
                 g_hero_r.unk2C0.f[i] = 0.0f;
             }
-            sceVu0Normalize(&v60, (u8 *)&rilgar_coll_hit.f40);
+            sceVu0Normalize(&v60, (u8 *)&rilgar_coll_hit.normal.f[0]);
             compute_rotated_vector_angles(&v60, &v50);
             if (-0.78539819f < v50.f[1] && v50.f[1] < 0.78539819f) {
                 g_hero_r.unk2C8.f[i] = v50.f[1];

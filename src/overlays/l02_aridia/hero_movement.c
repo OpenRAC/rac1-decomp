@@ -24,6 +24,8 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "structs/voice.h"
+#include "structs/collision.h"
+#include "structs/hit_message.h"
 extern int g_controller_state_no_direction;
 extern Hero g_hero;
 
@@ -149,21 +151,9 @@ void process_hero_ground_material_effects(void) {
     }
 }
 typedef int Q_8 __attribute__((mode(TI)));
-typedef struct {
-    u8 pad0[0x10];
-    Q_8 v10;
-    u8 *p20;
-    s32 i24;
-    u8 b28;
-    u8 pad29[3];
-    f32 f2C;
-    s32 i30;
-    u8 *p34;
-    u8 pad38[8];
-} T_8;
 extern Hero g_hero_r __asm__("D_0013F450");
 extern s32 aridia_cinematic_mode MACRO_ADDR;
-extern T_8 aridia_moby_hits[];
+extern struct HitMessage aridia_moby_hits[];
 extern s32 g_current_level_index MACRO_ADDR;
 
 extern s32 hero_hit_count MACRO_ADDR;
@@ -181,7 +171,7 @@ void hero_knockback(void *, s32, f32, f32);
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l02/ui_help_0021b698.c, FUN_L02_0021ff70. */
 s32 HeroL02_TryKnockback(s32 arg) {
     u8 *m;
-    T_8 *tbl;
+    struct HitMessage *tbl;
     struct Moby *mob;
     s32 flag;
     s32 id;
@@ -209,27 +199,27 @@ s32 HeroL02_TryKnockback(s32 arg) {
         return 0;
     }
     tbl = &aridia_moby_hits[m[0xA4]];
-    if (tbl->p34 != m) {
+    if (tbl->target != m) {
         return 0;
     }
-    if ((tbl->i24 ^ 1) & 1) {
+    if ((tbl->flags ^ 1) & 1) {
         return 0;
     }
     level_hero_hit_counts[g_current_level_index]++;
-    g_hero_r.damage_source_moby = (struct Moby *)tbl->p20;
+    g_hero_r.damage_source_moby = (struct Moby *)tbl->source;
     hero_hit_count++;
     if (arg == 0) {
         return 1;
     }
     release_and_clear_hero_voice_slots();
     flag = 0;
-    if (tbl->i30 & 1) {
-        qcopy(&v, &tbl->v10);
+    if (tbl->unk_30 & 1) {
+        qcopy(&v, &tbl->unk_10);
         if (*(f32 *)((u8 *)tbl + 0x1C) == 5627.9248046875f) {
             flag = 1;
         }
-    } else if (tbl->p20 != 0) {
-        FastVecSub(&v, (u8 *)&g_hero_r + 0x80, tbl->p20 + 0x10);
+    } else if (tbl->source != 0) {
+        FastVecSub(&v, (u8 *)&g_hero_r + 0x80, tbl->source + 0x10);
     } else {
         v.f[0] = FastCos(FastAddRots(g_hero_r.motion.rot.f[2], 3.1415927f));
         v.f[1] = FastSin(FastAddRots(g_hero_r.motion.rot.f[2], 3.1415927f));
@@ -258,7 +248,7 @@ s32 HeroL02_TryKnockback(s32 arg) {
                 b = e * 1.7f;
             }
             hero_knockback(&v, flag, a, b);
-            if (flag != 0 && tbl->b28 == 4) {
+            if (flag != 0 && tbl->unk_28 == 4) {
                 v.f[2] += v.f[2];
             }
             break;
@@ -338,19 +328,7 @@ void compute_rotated_vector_angles(void *, void *);
 void transform_hero_polar_offset_to_world(void *, f32, f32, f32);
 f32 FastAbsF(f32);
 extern Hero g_hero;
-typedef struct {
-    u8 pad0[0x18];
-    s32 i18;
-    s32 i1C;
-    union {
-        Q q;
-        f32 f[4];
-    } v20;
-    u8 pad30[0x10];
-    f32 f40;
-    f32 f44;
-} HS;
-extern HS aridia_coll_hit;
+extern struct CollisionHit aridia_coll_hit;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l02/ui_help_0021b698.c, FUN_L02_002216a0. */
 void Hero_UpdateGroundContact(void) {
@@ -412,40 +390,40 @@ void Hero_UpdateGroundContact(void) {
         g_hero.ground_sound_class = collision_sound_class;
     }
     if (g_hero.ground_type == 0xD) {
-        g_hero.water_surface_z = aridia_coll_hit.v20.f[2];
-        collision_ray_start.f[2] = aridia_coll_hit.v20.f[2] - 0.01f;
+        g_hero.water_surface_z = aridia_coll_hit.point.f[2];
+        collision_ray_start.f[2] = aridia_coll_hit.point.f[2] - 0.01f;
         if (coll_line(&collision_ray_start, &collision_ray_end, 4, (s32)g_hero.moby, 0) == 0) {
             goto d1;
         }
     }
     if (g_hero.ground_type == 3) {
-        g_hero.sink_surface_z = aridia_coll_hit.v20.f[2];
-        collision_ray_start.f[2] = aridia_coll_hit.v20.f[2] - 0.01f;
+        g_hero.sink_surface_z = aridia_coll_hit.point.f[2];
+        collision_ray_start.f[2] = aridia_coll_hit.point.f[2] - 0.01f;
         if (coll_line(&collision_ray_start, &collision_ray_end, 4, (s32)g_hero.moby, 0) == 0) {
             goto d1;
         }
     }
     if (g_hero.ground_type == 0xB) {
-        g_hero.sink_surface_z = aridia_coll_hit.v20.f[2];
+        g_hero.sink_surface_z = aridia_coll_hit.point.f[2];
         goto d1;
     }
-    if (aridia_coll_hit.i18 != 0) {
-        if (is_moby_in_class_range_500_to_540(aridia_coll_hit.i18)) {
+    if (aridia_coll_hit.moby != 0) {
+        if (is_moby_in_class_range_500_to_540(aridia_coll_hit.moby)) {
             g_hero.on_flagged_ground_moby = 1;
         }
-        hit_moby_flag_data = GetFlaggedPvarWord(aridia_coll_hit.i18);
+        hit_moby_flag_data = GetFlaggedPvarWord(aridia_coll_hit.moby);
         if (hit_moby_flag_data != 0 && (*(u16 *)(hit_moby_flag_data + 0x1E) & 8)) {
             g_hero.on_flagged_ground_moby = 1;
         }
     }
-    if (aridia_coll_hit.i1C > 0) {
-        qcopy((u8 *)&g_hero.ground_point, &aridia_coll_hit.v20);
-        g_hero.ground_z.f = aridia_coll_hit.v20.f[2];
+    if (aridia_coll_hit.unk1C > 0) {
+        qcopy((u8 *)&g_hero.ground_point, &aridia_coll_hit.point);
+        g_hero.ground_z.f = aridia_coll_hit.point.f[2];
         g_hero.ground_distance = FastVecDist((u8 *)&g_hero.motion.pos, (u8 *)&g_hero.ground_point);
-        g_hero.ground_moby = (struct Moby *)aridia_coll_hit.i18;
-        sceVu0Normalize((u8 *)&g_hero.ground_normal, (u8 *)&aridia_coll_hit.f40);
-        g_hero.ground_slope.f = compute_gravity_relative_vector_inclination((u8 *)&aridia_coll_hit.f40);
-        g_hero.downhill_yaw = fast_atan2(aridia_coll_hit.f40, aridia_coll_hit.f44);
+        g_hero.ground_moby = (struct Moby *)aridia_coll_hit.moby;
+        sceVu0Normalize((u8 *)&g_hero.ground_normal, (u8 *)&aridia_coll_hit.normal.f[0]);
+        g_hero.ground_slope.f = compute_gravity_relative_vector_inclination((u8 *)&aridia_coll_hit.normal.f[0]);
+        g_hero.downhill_yaw = fast_atan2(aridia_coll_hit.normal.f[0], aridia_coll_hit.normal.f[1]);
         FastVecSub(&ground_geometry_scratch, (u8 *)&g_hero.ground_point, (u8 *)&g_hero.motion.pos);
         if (0.0f < FastVecDot(&ground_geometry_scratch, (u8 *)&g_hero.ground_normal)) {
             g_hero.ground_distance = -g_hero.ground_distance;
@@ -454,7 +432,7 @@ void Hero_UpdateGroundContact(void) {
             g_hero.frames_off_ground.s = 0;
             if (g_hero.ground_slope.f <= 0.87266463f || g_hero.gravity_mode == 1 || g_hero.state.control_mode == 0x16) {
                 g_hero.air_frames.s = 0;
-                g_hero.last_landed_moby = aridia_coll_hit.i18;
+                g_hero.last_landed_moby = aridia_coll_hit.moby;
             }
         }
     }
@@ -514,12 +492,12 @@ d1:
         transform_hero_polar_offset_to_world(&probe_ray_start, 0.2f, probe_angle, 0.45f);
         transform_hero_polar_offset_to_world(&unused_probe_point, 0.2f, probe_angle, -0.45f);
         if (coll_line(&probe_ray_start, &collision_ray_end, 0x22, (s32)g_hero.moby, 0)) {
-            f = aridia_coll_hit.v20.f[2] - g_hero.ground_z.f;
+            f = aridia_coll_hit.point.f[2] - g_hero.ground_z.f;
             g_hero.unk2C0.f[i] = f;
             if (0.4f < FastAbsF(f)) {
                 g_hero.unk2C0.f[i] = 0.0f;
             }
-            sceVu0Normalize(&normalized_probe_hit_normal, (u8 *)&aridia_coll_hit.f40);
+            sceVu0Normalize(&normalized_probe_hit_normal, (u8 *)&aridia_coll_hit.normal.f[0]);
             compute_rotated_vector_angles(&normalized_probe_hit_normal, &probe_surface_angles);
             if (-0.78539819f < probe_surface_angles.f[1] && probe_surface_angles.f[1] < 0.78539819f) {
                 g_hero.unk2C8.f[i] = probe_surface_angles.f[1];

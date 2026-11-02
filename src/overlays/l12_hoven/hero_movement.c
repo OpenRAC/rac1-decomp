@@ -27,6 +27,7 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "structs/voice.h"
+#include "structs/collision.h"
 extern int g_controller_state_no_direction;
 extern Hero g_hero;
 extern int pad_held;
@@ -188,19 +189,7 @@ void compute_rotated_vector_angles(void *, void *);
 void transform_hero_polar_offset_to_world(void *, f32, f32, f32);
 f32 FastAbsF(f32);
 extern Hero g_hero;
-typedef struct {
-    u8 pad0[0x18];
-    s32 i18;
-    s32 i1C;
-    union {
-        Q q;
-        f32 f[4];
-    } v20;
-    u8 pad30[0x10];
-    f32 f40;
-    f32 f44;
-} HS;
-extern HS hoven_coll_hit;
+extern struct CollisionHit hoven_coll_hit;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l12/ui_help_0022de30.c, FUN_L12_00233e80. */
 void Hero_ProbeGround(void) {
@@ -263,29 +252,29 @@ void Hero_ProbeGround(void) {
         g_hero.ground_sound_class = collision_sound_class;
     }
     if (g_hero.ground_type == 0xD) {
-        g_hero.water_surface_z = hoven_coll_hit.v20.f[2];
-        ground_ray_first_endpoint.f[2] = hoven_coll_hit.v20.f[2] - 0.01f;
+        g_hero.water_surface_z = hoven_coll_hit.point.f[2];
+        ground_ray_first_endpoint.f[2] = hoven_coll_hit.point.f[2] - 0.01f;
         if (coll_line(&ground_ray_first_endpoint, &collision_ray_second_endpoint, 4, (s32)g_hero.moby, 0) == 0) {
             goto d1;
         }
     }
-    if (hoven_coll_hit.i18 != 0) {
-        if (is_moby_in_class_range_500_to_540(hoven_coll_hit.i18)) {
+    if (hoven_coll_hit.moby != 0) {
+        if (is_moby_in_class_range_500_to_540(hoven_coll_hit.moby)) {
             g_hero.on_flagged_ground_moby = 1;
         }
-        hit_moby_flag_data = GetFlaggedPvarWord(hoven_coll_hit.i18);
+        hit_moby_flag_data = GetFlaggedPvarWord(hoven_coll_hit.moby);
         if (hit_moby_flag_data != 0 && (*(u16 *)(hit_moby_flag_data + 0x1E) & 8)) {
             g_hero.on_flagged_ground_moby = 1;
         }
     }
-    if (hoven_coll_hit.i1C > 0) {
-        qcopy((u8 *)&g_hero.ground_point, &hoven_coll_hit.v20);
-        g_hero.ground_z.f = hoven_coll_hit.v20.f[2];
+    if (hoven_coll_hit.unk1C > 0) {
+        qcopy((u8 *)&g_hero.ground_point, &hoven_coll_hit.point);
+        g_hero.ground_z.f = hoven_coll_hit.point.f[2];
         g_hero.ground_distance = FastVecDist((u8 *)&g_hero.motion.pos, (u8 *)&g_hero.ground_point);
-        g_hero.ground_moby = (Moby *)hoven_coll_hit.i18;
-        sceVu0Normalize(&g_hero.ground_normal, (u8 *)&hoven_coll_hit.f40);
-        g_hero.ground_slope.f = compute_gravity_relative_vector_inclination((u8 *)&hoven_coll_hit.f40);
-        g_hero.downhill_yaw = fast_atan2(hoven_coll_hit.f40, hoven_coll_hit.f44);
+        g_hero.ground_moby = (Moby *)hoven_coll_hit.moby;
+        sceVu0Normalize(&g_hero.ground_normal, (u8 *)&hoven_coll_hit.normal.f[0]);
+        g_hero.ground_slope.f = compute_gravity_relative_vector_inclination((u8 *)&hoven_coll_hit.normal.f[0]);
+        g_hero.downhill_yaw = fast_atan2(hoven_coll_hit.normal.f[0], hoven_coll_hit.normal.f[1]);
         FastVecSub(&ground_geometry_scratch, (u8 *)&g_hero.ground_point, (u8 *)&g_hero.motion.pos);
         if (0.0f < FastVecDot(&ground_geometry_scratch, (u8 *)&g_hero.ground_normal)) {
             g_hero.ground_distance = -g_hero.ground_distance;
@@ -294,7 +283,7 @@ void Hero_ProbeGround(void) {
             g_hero.frames_off_ground.s = 0;
             if (g_hero.ground_slope.f <= 0.87266463f || g_hero.gravity_mode == 1 || g_hero.state.control_mode == 0x16) {
                 g_hero.air_frames.s = 0;
-                g_hero.last_landed_moby = hoven_coll_hit.i18;
+                g_hero.last_landed_moby = hoven_coll_hit.moby;
             }
         }
     }
@@ -355,12 +344,12 @@ d1:
         transform_hero_polar_offset_to_world(&ground_probe_first_endpoint, 0.2f, ground_probe_angle, 0.45f);
         transform_hero_polar_offset_to_world(&unused_ground_probe_output, 0.2f, ground_probe_angle, -0.45f);
         if (coll_line(&ground_probe_first_endpoint, &collision_ray_second_endpoint, 0x22, (s32)g_hero.moby, 0)) {
-            f = hoven_coll_hit.v20.f[2] - g_hero.ground_z.f;
+            f = hoven_coll_hit.point.f[2] - g_hero.ground_z.f;
             g_hero.unk2C0.f[i] = f;
             if (0.4f < FastAbsF(f)) {
                 g_hero.unk2C0.f[i] = 0.0f;
             }
-            sceVu0Normalize(&normalized_hit_normal, (u8 *)&hoven_coll_hit.f40);
+            sceVu0Normalize(&normalized_hit_normal, (u8 *)&hoven_coll_hit.normal.f[0]);
             compute_rotated_vector_angles(&normalized_hit_normal, &hit_surface_angles);
             if (-0.78539819f < hit_surface_angles.f[1] && hit_surface_angles.f[1] < 0.78539819f) {
                 g_hero.unk2C8.f[i] = hit_surface_angles.f[1];

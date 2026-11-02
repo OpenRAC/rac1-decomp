@@ -1132,7 +1132,7 @@ void stop_hero_motion_without_forward_support(float a, float b) {
     HeroOffsetAlongViewZ(t, t, 0.3f);
     g_hero_r5 = gHeroPos_r - 0x80;
     k = -0.2f;
-    if (*(int *)(g_hero_r5 + 0x2084) == 0x20)
+    if (((struct Hero *)g_hero_r5)->state.current == 0x20)
         k = -0.35f;
     if (g_hero_r5[0x20A4] == 2)
         k = -0.7f;
