@@ -65,7 +65,7 @@ extern int g_current_level_index MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int veldin2_frame_count MACRO_ADDR;
 
-extern int veldin2_look_stat_count SDATA(D_L18_0015F76C);
+extern int veldin2_look_stat_count SDATA(veldin2_look_stat_count);
 extern unsigned char *veldin2_water_patches MACRO_ADDR;
 extern int veldin2_water_patch_count MACRO_ADDR;
 extern HeroPlayerCameraView veldin2_player_camera;

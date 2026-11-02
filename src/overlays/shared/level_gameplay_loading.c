@@ -194,7 +194,7 @@ void SetupVisGifViewer(char *out, int a, int b, u64 c, int d, int idx) {
 INCLUDE_ASM("asm/overlays", func_L00_00240D80);
 INCLUDE_ASM("asm/overlays", func_L00_00240DE0);
 extern int coll_hit_result_a[] __asm__("D_L00_00173F40");
-extern const int *collision_header_entry_table SDATA(D_L00_0015F6F8);
+extern const int *collision_header_entry_table SDATA(collision_header_entry_table);
 
 // Relocates the collision header's offsets into pointers.
 void resolve_level_asset_block_pointers(char *p) {

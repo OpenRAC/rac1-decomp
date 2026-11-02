@@ -46,7 +46,7 @@
 /*
  * A scalar in the file's own small data, declared with its real type:
  *
- *     extern float D_L17_00162108 SDATA(D_L17_00162108);
+ *     extern float jump_speed SDATA(jump_speed);
  *
  * Retail reaches a level file's own tuning floats and ints through $gp at
  * every access, in one instruction. The older way to get that here is
@@ -58,13 +58,15 @@
  * reproduces it (func_L17_002EEB08, func_L17_002EDE50), with the stores
  * written as struct members.
  *
+ * A readable name expands to its address first (names.h), so the label is the address's.
  * The declaration gives the symbol the assembler label `sym__gp`;
  * tools/check_macro_slots.py makes every such label a 1-byte .extern equated
  * to the symbol, so the assembler emits the $gp-relative form. A file that
  * also declares the same symbol `extern short` for an older function needs
  * two C names for it; keep the real name for this declaration.
  */
-#define SDATA(sym) __asm__(#sym "__gp") MACRO_ADDR
+#define SDATA(sym) SDATA_LABEL(sym)
+#define SDATA_LABEL(sym) __asm__(#sym "__gp") MACRO_ADDR
 
 /* Puts a block of data in a section of its own, so the linker can place it in retail's hole (tools/data_in_c.py). */
 #define DATA_SECTION(label) __attribute__((section(".data." #label)))

@@ -34,11 +34,11 @@ typedef struct {
 extern char *oltanis_clip_volumes MACRO_ADDR;
 
 extern float oltanis_vendor_beam_quad_uvs[][2];
-extern int oltanis_vendor_beam_tex_index SDATA(D_L14_001621AC);
-extern int vendor_beam_blend_minuend_selector_gp SDATA(D_L14_001621B0);
-extern int vendor_beam_blend_subtrahend_selector_gp SDATA(D_L14_001621B4);
-extern int vendor_beam_blend_alpha_factor_selector_gp SDATA(D_L14_001621B8);
-extern int vendor_beam_blend_addend_selector_gp SDATA(D_L14_001621BC);
+extern int oltanis_vendor_beam_tex_index SDATA(oltanis_vendor_beam_tex_index);
+extern int vendor_beam_blend_minuend_selector_gp SDATA(vendor_beam_blend_minuend_selector_gp);
+extern int vendor_beam_blend_subtrahend_selector_gp SDATA(vendor_beam_blend_subtrahend_selector_gp);
+extern int vendor_beam_blend_alpha_factor_selector_gp SDATA(vendor_beam_blend_alpha_factor_selector_gp);
+extern int vendor_beam_blend_addend_selector_gp SDATA(vendor_beam_blend_addend_selector_gp);
 
 typedef struct {
     int idx;

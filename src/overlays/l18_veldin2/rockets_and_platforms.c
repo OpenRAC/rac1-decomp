@@ -324,7 +324,7 @@ extern void AddDrawCallback(void (*)(void), void *);
 extern void draw_rocket_target_pulse_quad();
 extern int veldin2_cinematic_mode MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
-extern float rocket_target_pulse_lead_time SDATA(D_L18_001619F4);
+extern float rocket_target_pulse_lead_time SDATA(rocket_target_pulse_lead_time);
 extern char *veldin2_coll_hit_moby;
 
 typedef struct {
@@ -406,7 +406,7 @@ void update_rocket_moby(char *moby) {
     }
 }
 extern void *CreateMoby_r() __asm__("func_0020D348");
-extern float rocket_scale SDATA(D_L18_001619F0);
+extern float rocket_scale SDATA(rocket_scale);
 extern void set_moby_color(void *, int, int, int);
 extern void Moby_PlaySound(int, int, int);
 
@@ -462,7 +462,7 @@ void spawn_rocket_trail_effects(void *mobyp, void *vec) {
 typedef struct {
     float v[4];
 } __attribute__((aligned(16))) QVec;
-extern float rocket_explosion_damage SDATA(D_L18_001619FC);
+extern float rocket_explosion_damage SDATA(rocket_explosion_damage);
 extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
 extern void spawn_explosion_x(void *, void *, void *, float, float, int, int, int, int, int, float, float, float, float,
                               float, int, int, int) __asm__("func_L00_0025F4A8");
@@ -569,7 +569,7 @@ extern void move_4318(int, int, float, float, float, int);
 extern int CarriedMobyUpdate(void *, void *);
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time_sq_b __asm__("D_0015EE70") MACRO_ADDR;
-extern float class238_landing_roll_distance SDATA(D_L18_00161A24);
+extern float class238_landing_roll_distance SDATA(class238_landing_roll_distance);
 extern short class238_move_params;
 extern int g_hero_moby NOT_SDA;
 
@@ -947,9 +947,9 @@ extern void moby_build_matrix(void *);
 extern int fast_dec_timer(int *);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 
-extern float green_thruster_lock_scale SDATA(D_L18_00161A28);
-extern float green_thruster_lock_active_height SDATA(D_L18_00161A2C);
-extern float green_thruster_lock_idle_height SDATA(D_L18_00161A30);
+extern float green_thruster_lock_scale SDATA(green_thruster_lock_scale);
+extern float green_thruster_lock_active_height SDATA(green_thruster_lock_active_height);
+extern float green_thruster_lock_idle_height SDATA(green_thruster_lock_idle_height);
 
 typedef struct {
     char pad0[0x10];
@@ -1208,11 +1208,11 @@ struct UsageStat {
     s32 level_mask; /* bit per level seen; bit 31 = ever used */
 };
 extern f32 ApproachValue(f32 *, f32, f32);
-extern float red_thruster_lock_scale SDATA(D_L18_00161AA0);
-extern float red_thruster_lock_wait_height SDATA(D_L18_00161AA4);
-extern float red_thruster_lock_raised_height SDATA(D_L18_00161AA8);
+extern float red_thruster_lock_scale SDATA(red_thruster_lock_scale);
+extern float red_thruster_lock_wait_height SDATA(red_thruster_lock_wait_height);
+extern float red_thruster_lock_raised_height SDATA(red_thruster_lock_raised_height);
 
-extern unsigned int gameplay_event_frame_count SDATA(D_0015EFA4);
+extern unsigned int gameplay_event_frame_count SDATA(gameplay_event_frame_count);
 extern unsigned char menu_item_enabled_115 NOT_SDA;
 extern struct UsageStat help_records[];
 extern void draw_pulsing_timer_hud_r(void) __asm__("func_L18_002D9488");
@@ -1427,14 +1427,18 @@ typedef struct {
 } Obj_D96B0;
 extern void FastVecScale(void *out, void *a, f32 s);
 extern f32 IntToFloat(s32);
-extern float veldin2_hero_fall_state_height SDATA(D_L18_0015F718);
-extern float floating_platform_sink_acceleration_config_84_nonzero_gp SDATA(D_L18_00161AD0);
-extern float floating_platform_sink_acceleration_config_84_zero_gp SDATA(D_L18_00161AD4);
-extern float floating_platform_tilt_rate_degrees_config_84_nonzero_gp SDATA(D_L18_00161AE0);
-extern float floating_platform_tilt_rate_degrees_config_84_zero_gp SDATA(D_L18_00161AE8);
-extern float sinking_platform_trigger_radius SDATA(D_L18_00161AEC);
-extern float floating_platform_motion_scale_input_start_gp SDATA(D_L18_00161AF0);
-extern float floating_platform_motion_scale_input_end_gp SDATA(D_L18_00161AF4);
+extern float veldin2_hero_fall_state_height SDATA(veldin2_hero_fall_state_height);
+extern float floating_platform_sink_acceleration_config_84_nonzero_gp
+    SDATA(floating_platform_sink_acceleration_config_84_nonzero_gp);
+extern float floating_platform_sink_acceleration_config_84_zero_gp
+    SDATA(floating_platform_sink_acceleration_config_84_zero_gp);
+extern float floating_platform_tilt_rate_degrees_config_84_nonzero_gp
+    SDATA(floating_platform_tilt_rate_degrees_config_84_nonzero_gp);
+extern float floating_platform_tilt_rate_degrees_config_84_zero_gp
+    SDATA(floating_platform_tilt_rate_degrees_config_84_zero_gp);
+extern float sinking_platform_trigger_radius SDATA(sinking_platform_trigger_radius);
+extern float floating_platform_motion_scale_input_start_gp SDATA(floating_platform_motion_scale_input_start_gp);
+extern float floating_platform_motion_scale_input_end_gp SDATA(floating_platform_motion_scale_input_end_gp);
 
 extern void spawn_floating_platform_sparks_r(struct Moby *) __asm__("func_L18_002D9CA8");
 extern void HeroL18_SetMoveState(int, int);
@@ -1558,8 +1562,8 @@ void SinkingPlatformUpdate(struct Moby *moby) {
     update_entity_matrix(data->entity, delta, old_rot, &moby->rot);
 }
 extern float g_frame_time MACRO_ADDR;
-extern float floating_platform_bob_speed SDATA(D_L18_00161ADC);
-extern float floating_platform_bob_height SDATA(D_L18_00161AD8);
+extern float floating_platform_bob_speed SDATA(floating_platform_bob_speed);
+extern float floating_platform_bob_height SDATA(floating_platform_bob_height);
 
 /* turns the moby's heading toward a target, clamped per state, and updates its hover offset */
 void update_floating_platform_tilt_and_bob(char *moby) {
@@ -1706,25 +1710,28 @@ extern void jet_animate(unsigned char *m, float s);
 extern int Sound_PlayClassSound(int i, int a1, int v, int k);
 extern void process_expanding_ring_collisions(char *moby);
 extern void draw_expanding_projectile_ring(void *);
-extern int ring_projectile_glow_color_a SDATA(D_L18_00161C8C);
-extern int ring_projectile_glow_color_b SDATA(D_L18_00161C90);
-extern float ring_projectile_spark_gravity SDATA(D_L18_00161C94);
-extern float ring_projectile_spark_speed_scale SDATA(D_L18_00161C98);
-extern float ballistic_ring_trail_vector_offset_rate_gp SDATA(D_L18_00161C9C);
-extern int ring_projectile_spark_life SDATA(D_L18_00161CA0);
-extern int ballistic_ring_trail_spark_gravity_multiplier_base_gp SDATA(D_L18_00161CA4);
-extern int ring_projectile_spark_time3 SDATA(D_L18_00161CA8);
-extern float ballistic_ring_trail_spark_relative_variation_limit_gp SDATA(D_L18_00161CAC);
-extern float ballistic_ring_trail_first_spark_w_range_start_gp SDATA(D_L18_00161CB0);
-extern float ballistic_ring_trail_first_spark_w_range_end SDATA(D_L18_00161CB4);
-extern float ballistic_ring_trail_second_spark_w_range_start_gp SDATA(D_L18_00161CB8);
-extern float ballistic_ring_trail_second_spark_w_range_end_gp SDATA(D_L18_00161CBC);
-extern int ring_projectile_spark_start_color_a SDATA(D_L18_00161CC0);
-extern int ballistic_ring_trail_initial_color_end SDATA(D_L18_00161CC4);
-extern int ring_projectile_spark_end_color_a SDATA(D_L18_00161CC8);
-extern int ring_projectile_spark_end_color_b SDATA(D_L18_00161CCC);
-extern int ring_projectile_spark_count SDATA(D_L18_00161CD0);
-extern int ballistic_ring_trail_spark_resource_selector_gp SDATA(D_L18_00161CD4);
+extern int ring_projectile_glow_color_a SDATA(ring_projectile_glow_color_a);
+extern int ring_projectile_glow_color_b SDATA(ring_projectile_glow_color_b);
+extern float ring_projectile_spark_gravity SDATA(ring_projectile_spark_gravity);
+extern float ring_projectile_spark_speed_scale SDATA(ring_projectile_spark_speed_scale);
+extern float ballistic_ring_trail_vector_offset_rate_gp SDATA(ballistic_ring_trail_vector_offset_rate_gp);
+extern int ring_projectile_spark_life SDATA(ring_projectile_spark_life);
+extern int ballistic_ring_trail_spark_gravity_multiplier_base_gp
+    SDATA(ballistic_ring_trail_spark_gravity_multiplier_base_gp);
+extern int ring_projectile_spark_time3 SDATA(ring_projectile_spark_time3);
+extern float ballistic_ring_trail_spark_relative_variation_limit_gp
+    SDATA(ballistic_ring_trail_spark_relative_variation_limit_gp);
+extern float ballistic_ring_trail_first_spark_w_range_start_gp SDATA(ballistic_ring_trail_first_spark_w_range_start_gp);
+extern float ballistic_ring_trail_first_spark_w_range_end SDATA(ballistic_ring_trail_first_spark_w_range_end);
+extern float ballistic_ring_trail_second_spark_w_range_start_gp
+    SDATA(ballistic_ring_trail_second_spark_w_range_start_gp);
+extern float ballistic_ring_trail_second_spark_w_range_end_gp SDATA(ballistic_ring_trail_second_spark_w_range_end_gp);
+extern int ring_projectile_spark_start_color_a SDATA(ring_projectile_spark_start_color_a);
+extern int ballistic_ring_trail_initial_color_end SDATA(ballistic_ring_trail_initial_color_end);
+extern int ring_projectile_spark_end_color_a SDATA(ring_projectile_spark_end_color_a);
+extern int ring_projectile_spark_end_color_b SDATA(ring_projectile_spark_end_color_b);
+extern int ring_projectile_spark_count SDATA(ring_projectile_spark_count);
+extern int ballistic_ring_trail_spark_resource_selector_gp SDATA(ballistic_ring_trail_spark_resource_selector_gp);
 
 /* Moby update for a falling fireball (class 0x270) created by spawn_class_270_moby. */
 extern Hero hero __asm__("D_0013F450");
@@ -1831,7 +1838,7 @@ void update_ballistic_ring_projectile(char *moby) {
             break;
     }
 }
-extern float ring_projectile_scale SDATA(D_L18_00161C88);
+extern float ring_projectile_scale SDATA(ring_projectile_scale);
 
 typedef struct {
     char v[16];
@@ -2049,13 +2056,13 @@ extern int FastBSphereCheck(char *, float);
 extern void FastVecSub(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern void spawn_moving_hero_relative_alpha_fade_particle(void *, void *, int, int, int, int, float);
-extern float expanding_ring_cull_margin SDATA(D_L18_00161C84);
-extern float expanding_ring_particle_chance SDATA(D_L18_00161D28);
-extern int expanding_ring_particle_color_b SDATA(D_L18_00161D14);
-extern int expanding_ring_particle_color_a SDATA(D_L18_00161D10);
-extern int expanding_ring_particle_life SDATA(D_L18_00161D1C);
-extern float expanding_ring_particle_scale SDATA(D_L18_00161D18);
-extern int expanding_ring_flat_particle_life SDATA(D_L18_00161D20);
+extern float expanding_ring_cull_margin SDATA(expanding_ring_cull_margin);
+extern float expanding_ring_particle_chance SDATA(expanding_ring_particle_chance);
+extern int expanding_ring_particle_color_b SDATA(expanding_ring_particle_color_b);
+extern int expanding_ring_particle_color_a SDATA(expanding_ring_particle_color_a);
+extern int expanding_ring_particle_life SDATA(expanding_ring_particle_life);
+extern float expanding_ring_particle_scale SDATA(expanding_ring_particle_scale);
+extern int expanding_ring_flat_particle_life SDATA(expanding_ring_flat_particle_life);
 
 /* Spawns sparks along the segment a1-a2 of the damage ring. */
 void spawn_expanding_ring_segment_particles(char *moby, void *a1, void *a2) {
@@ -2092,7 +2099,7 @@ extern void vec_scale_to_length(void *, void *, float);
 extern void record_moby_hit(int, void *);
 extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
 extern void draw_class_274_ring_effect(void *);
-extern float ring_effect_color_scroll_speed SDATA(D_L18_00161D30);
+extern float ring_effect_color_scroll_speed SDATA(ring_effect_color_scroll_speed);
 
 /* UpdateMoby_628 */
 void update_class_274_ring_effect(char *moby) {
@@ -2137,7 +2144,7 @@ char *create_class_274_ring_effect(void *owner, void *vector, float value) {
     }
     return moby;
 }
-extern int ring_effect_max_timer SDATA(D_L18_00161D2C);
+extern int ring_effect_max_timer SDATA(ring_effect_max_timer);
 
 // Resets a moby's position and advances its counter, wrapping at a limit.
 void refresh_ring_effect(char *moby, void *pos, float f) {
@@ -2580,10 +2587,10 @@ void set_moby_group_state_two(char *arg) {
 }
 extern void spawn_sparks_along_target_direction();
 
-extern float target_effect_first_rotation_rate_degrees_gp SDATA(D_L18_00161F60);
-extern float target_effect_second_rotation_rate_degrees_gp SDATA(D_L18_00161F64);
-extern float homing_spark_bolt_jitter SDATA(D_L18_00161F68);
-extern float homing_spark_travel_speed SDATA(D_L18_00161F70);
+extern float target_effect_first_rotation_rate_degrees_gp SDATA(target_effect_first_rotation_rate_degrees_gp);
+extern float target_effect_second_rotation_rate_degrees_gp SDATA(target_effect_second_rotation_rate_degrees_gp);
+extern float homing_spark_bolt_jitter SDATA(homing_spark_bolt_jitter);
+extern float homing_spark_travel_speed SDATA(homing_spark_travel_speed);
 extern void spawn_explosion_burst(void *);
 extern void initialize_electric_bolt_effect_if_requested(void *);
 extern void update_electric_bolt_geometry_and_particles(void *);
@@ -2675,10 +2682,10 @@ extern void euler_to_matrix(float *, float *);
 extern float veldin2_player_camera[];
 extern float homing_spark_quad_uvs[][2];
 extern float homing_spark_quad_vertices[][4][4];
-extern int homing_spark_alpha_a SDATA(D_L18_00161F74);
-extern int homing_spark_alpha_b SDATA(D_L18_00161F78);
-extern int homing_spark_alpha_c SDATA(D_L18_00161F7C);
-extern int homing_spark_alpha_d SDATA(D_L18_00161F80);
+extern int homing_spark_alpha_a SDATA(homing_spark_alpha_a);
+extern int homing_spark_alpha_b SDATA(homing_spark_alpha_b);
+extern int homing_spark_alpha_c SDATA(homing_spark_alpha_c);
+extern int homing_spark_alpha_d SDATA(homing_spark_alpha_d);
 extern short homing_spark_quad_colors;
 extern short homing_spark_quad_textures;
 
@@ -3011,24 +3018,24 @@ extern void BuildSphericalOffset(void *, float, float, float);
 
 extern void spawn_ec290(void *, int, float, float, int, int, int, void *, float) __asm__("func_L00_00272F00");
 extern char hero_gravity_dir[];
-extern float electric_bolt_wave_phase SDATA(D_L18_00162098);
-extern float electric_bolt_wave_phase_speed SDATA(D_L18_0016209C);
-extern float electric_bolt_twist_phase SDATA(D_L18_001620A0);
-extern float electric_bolt_twist_phase_speed SDATA(D_L18_001620A4);
-extern float electric_bolt_twist_phase_step SDATA(D_L18_001620A8);
-extern float electric_bolt_twist_height SDATA(D_L18_001620AC);
-extern float electric_bolt_twist_width SDATA(D_L18_001620B0);
-extern float electric_bolt_swell_phase SDATA(D_L18_001620B4);
-extern float electric_bolt_swell_phase_speed SDATA(D_L18_001620B8);
-extern float electric_bolt_swell_phase_step SDATA(D_L18_001620BC);
-extern float electric_bolt_wave_phase_step SDATA(D_L18_0016208C);
-extern float electric_bolt_wave_height_start SDATA(D_L18_00162090);
-extern float electric_bolt_wave_height_end SDATA(D_L18_00162094);
-extern float primary_bolt_z_jitter_range_start_gp SDATA(D_L18_001620D0);
-extern float primary_bolt_z_jitter_range_end_gp SDATA(D_L18_001620D4);
+extern float electric_bolt_wave_phase SDATA(electric_bolt_wave_phase);
+extern float electric_bolt_wave_phase_speed SDATA(electric_bolt_wave_phase_speed);
+extern float electric_bolt_twist_phase SDATA(electric_bolt_twist_phase);
+extern float electric_bolt_twist_phase_speed SDATA(electric_bolt_twist_phase_speed);
+extern float electric_bolt_twist_phase_step SDATA(electric_bolt_twist_phase_step);
+extern float electric_bolt_twist_height SDATA(electric_bolt_twist_height);
+extern float electric_bolt_twist_width SDATA(electric_bolt_twist_width);
+extern float electric_bolt_swell_phase SDATA(electric_bolt_swell_phase);
+extern float electric_bolt_swell_phase_speed SDATA(electric_bolt_swell_phase_speed);
+extern float electric_bolt_swell_phase_step SDATA(electric_bolt_swell_phase_step);
+extern float electric_bolt_wave_phase_step SDATA(electric_bolt_wave_phase_step);
+extern float electric_bolt_wave_height_start SDATA(electric_bolt_wave_height_start);
+extern float electric_bolt_wave_height_end SDATA(electric_bolt_wave_height_end);
+extern float primary_bolt_z_jitter_range_start_gp SDATA(primary_bolt_z_jitter_range_start_gp);
+extern float primary_bolt_z_jitter_range_end_gp SDATA(primary_bolt_z_jitter_range_end_gp);
 extern short electric_bolt_color;
-extern float electric_bolt_particle_direction_scale_gp SDATA(D_L18_00162114);
-extern float electric_bolt_wander_blend SDATA(D_L18_0016211C);
+extern float electric_bolt_particle_direction_scale_gp SDATA(electric_bolt_particle_direction_scale_gp);
+extern float electric_bolt_wander_blend SDATA(electric_bolt_wander_blend);
 extern float frame_scale MACRO_ADDR;
 extern V_ec290 electric_bolt_points_base[];
 extern V_ec290 electric_bolt_points[2][20];
@@ -3240,10 +3247,10 @@ typedef struct {
 extern void transform_vector(void *, void *, void *);
 extern V_2bb0b0 electric_bolt_glow_quad_corners[];
 extern QuadUv electric_bolt_glow_quad_uvs[];
-extern int electric_bolt_glow_core_color SDATA(D_L18_00162130);
-extern float electric_bolt_glow_core_size SDATA(D_L18_00162138);
+extern int electric_bolt_glow_core_color SDATA(electric_bolt_glow_core_color);
+extern float electric_bolt_glow_core_size SDATA(electric_bolt_glow_core_size);
 extern short electric_bolt_color;
-extern float electric_bolt_glow_halo_size SDATA(D_L18_0016213C);
+extern float electric_bolt_glow_halo_size SDATA(electric_bolt_glow_halo_size);
 
 /* Draws two additive glow quads facing the camera at pos[1]. */
 void draw_moby_billboard_quad_pair(V_2bb0b0 *pos) {
@@ -3299,10 +3306,10 @@ extern float step_angle_toward_target(float *p, int n, float x, float y);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
                             int, int, int, int);
 extern int veldin2_zero_vec MACRO_ADDR;
-extern float drek_missile_spin_speed SDATA(D_L18_001622A0);
-extern float drek_missile_wander_speed SDATA(D_L18_001622A4);
-extern float drek_missile_dive_speed SDATA(D_L18_001622A8);
-extern int drek_missile_dive_odds SDATA(D_L18_001622C4);
+extern float drek_missile_spin_speed SDATA(drek_missile_spin_speed);
+extern float drek_missile_wander_speed SDATA(drek_missile_wander_speed);
+extern float drek_missile_dive_speed SDATA(drek_missile_dive_speed);
+extern int drek_missile_dive_odds SDATA(drek_missile_dive_odds);
 extern int update_drek_fight_missile_wander_movement(char *moby, float *vec);
 extern void select_drek_fight_missile_wander_target(char *moby, void *out);
 extern void update_drek_fight_missile_trail_and_queue_effects(char *moby);
@@ -3437,7 +3444,7 @@ int activate_drek_fight_missiles_in_group(char *moby, int group, float *pos) {
 }
 INCLUDE_ASM("asm/overlays", func_L18_002F1444);
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
-extern float drek_missile_climb_pitch SDATA(D_L18_001622BC);
+extern float drek_missile_climb_pitch SDATA(drek_missile_climb_pitch);
 
 /* Steering step for a Drek Fight Missile moby; returns 1 when it has reached the target. */
 int update_drek_fight_missile_wander_movement(char *moby, float *vec) {
@@ -3474,10 +3481,10 @@ int update_drek_fight_missile_wander_movement(char *moby, float *vec) {
     return 0;
 }
 extern void FastVecAdd(void *, void *, void *);
-extern float drek_missile_wander_radius_max SDATA(D_L18_001622B8);
-extern float drek_missile_wander_radius_min SDATA(D_L18_001622B4);
-extern float drek_missile_wander_height_min SDATA(D_L18_001622AC);
-extern float drek_missile_wander_height_max SDATA(D_L18_001622B0);
+extern float drek_missile_wander_radius_max SDATA(drek_missile_wander_radius_max);
+extern float drek_missile_wander_radius_min SDATA(drek_missile_wander_radius_min);
+extern float drek_missile_wander_height_min SDATA(drek_missile_wander_height_min);
+extern float drek_missile_wander_height_max SDATA(drek_missile_wander_height_max);
 
 // Builds a direction vector from a random angle and stores it plus a timer.
 void select_drek_fight_missile_wander_target(char *moby, void *out) {
@@ -3505,13 +3512,13 @@ struct GeometryQuad_1780 {
     u64 texture_state;
     u64 primitive;
 };
-extern int drek_missile_trails_hidden SDATA(D_L18_001622CC);
-extern int drek_missile_trail_alpha_a SDATA(D_L18_001622D0);
-extern int drek_missile_trail_alpha_b SDATA(D_L18_001622D4);
-extern int drek_missile_trail_alpha_c SDATA(D_L18_001622D8);
-extern int drek_missile_trail_alpha_d SDATA(D_L18_001622DC);
-extern int drek_missile_trail_color_head SDATA(D_L18_001622E0);
-extern int drek_missile_trail_color_tail SDATA(D_L18_001622E4);
+extern int drek_missile_trails_hidden SDATA(drek_missile_trails_hidden);
+extern int drek_missile_trail_alpha_a SDATA(drek_missile_trail_alpha_a);
+extern int drek_missile_trail_alpha_b SDATA(drek_missile_trail_alpha_b);
+extern int drek_missile_trail_alpha_c SDATA(drek_missile_trail_alpha_c);
+extern int drek_missile_trail_alpha_d SDATA(drek_missile_trail_alpha_d);
+extern int drek_missile_trail_color_head SDATA(drek_missile_trail_color_head);
+extern int drek_missile_trail_color_tail SDATA(drek_missile_trail_color_tail);
 extern void libc_memset(void *, int, int);
 extern float drek_missile_trail_uvs[4][2];
 extern char *veldin2_moby_table MACRO_ADDR;
@@ -3581,12 +3588,12 @@ extern void FastVecAdd(void *, void *, void *);
 
 extern float g_frame_time MACRO_ADDR;
 extern short drek_missile_effects_disabled;
-extern float drek_missile_glow_pulse_speed SDATA(D_L18_001622E8);
-extern float drek_missile_dive_glow_pulse_speed SDATA(D_L18_001622EC);
-extern int drek_missile_glow_color_a SDATA(D_L18_001622F0);
-extern int drek_missile_glow_color_b SDATA(D_L18_001622F4);
-extern float drek_missile_glow_size SDATA(D_L18_001622F8);
-extern float drek_missile_glow_offset SDATA(D_L18_001622FC);
+extern float drek_missile_glow_pulse_speed SDATA(drek_missile_glow_pulse_speed);
+extern float drek_missile_dive_glow_pulse_speed SDATA(drek_missile_dive_glow_pulse_speed);
+extern int drek_missile_glow_color_a SDATA(drek_missile_glow_color_a);
+extern int drek_missile_glow_color_b SDATA(drek_missile_glow_color_b);
+extern float drek_missile_glow_size SDATA(drek_missile_glow_size);
+extern float drek_missile_glow_offset SDATA(drek_missile_glow_offset);
 
 /* Draws the pulsing glows of every Drek fight missile in this moby's group. */
 void render_drek_fight_missile_group_effects(char *moby) {
@@ -3623,7 +3630,7 @@ void render_drek_fight_missile_group_effects(char *moby) {
         }
     } while (*(p++) >= 0);
 }
-extern int drek_missile_last_draw_frame SDATA(D_L18_001622C0);
+extern int drek_missile_last_draw_frame SDATA(drek_missile_last_draw_frame);
 extern void draw_drek_fight_missile_group_trails(struct Moby *);
 extern void render_drek_fight_missile_group_effects();
 

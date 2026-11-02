@@ -48,7 +48,7 @@ typedef struct {
     u8 padC4[8];
     f32 lag; /* 0xCC: eases to 0, slowing the turn while high */
 } PathFlyerVars;
-extern f32 gaspar_shuttle_climb_scale SDATA(D_L09_00161E78);
+extern f32 gaspar_shuttle_climb_scale SDATA(gaspar_shuttle_climb_scale);
 extern f32 g_frame_time_sq MACRO_ADDR;
 extern void vec_scale_to_length(void *, void *, f32);
 

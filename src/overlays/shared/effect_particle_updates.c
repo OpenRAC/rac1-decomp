@@ -559,7 +559,7 @@ void update_animated_fading_effect_particle(struct PartBase *m) {
     }
     m->texture = part_type08_textures[(p->max_life - m->timer) * 10 / p->max_life];
 }
-extern int rotating_gray_particle_fade_ticks SDATA(D_L00_00160264);
+extern int rotating_gray_particle_fade_ticks SDATA(rotating_gray_particle_fade_ticks);
 
 typedef struct PartType09Data {
     int timer; /* 0x00 */
@@ -798,20 +798,20 @@ extern float randf_sym(float, float);
 extern float multiply_global_factor(float);
 extern int truncate_float_to_s32(float);
 extern unsigned swap_packed_color_channels(unsigned, int);
-extern int spin_particle_start_color_from SDATA(D_L00_00160268);
-extern int spin_particle_start_color_to SDATA(D_L00_0016026C);
-extern int spin_particle_end_color_from SDATA(D_L00_00160270);
-extern int spin_particle_end_color_to SDATA(D_L00_00160274);
-extern float spin_particle_start_size SDATA(D_L00_00160278);
-extern int spin_particle_life_min SDATA(D_L00_00160280);
-extern int spin_particle_life_max SDATA(D_L00_00160284);
-extern int spin_particle_alt_start_color_from SDATA(D_L00_00160288);
-extern int spin_particle_alt_start_color_to SDATA(D_L00_0016028C);
-extern int spin_particle_alt_end_color_from SDATA(D_L00_00160290);
-extern int spin_particle_alt_end_color_to SDATA(D_L00_00160294);
-extern float spin_particle_alt_start_size SDATA(D_L00_00160298);
-extern int spin_particle_alt_life_min SDATA(D_L00_001602A0);
-extern int spin_particle_alt_life_max SDATA(D_L00_001602A4);
+extern int spin_particle_start_color_from SDATA(spin_particle_start_color_from);
+extern int spin_particle_start_color_to SDATA(spin_particle_start_color_to);
+extern int spin_particle_end_color_from SDATA(spin_particle_end_color_from);
+extern int spin_particle_end_color_to SDATA(spin_particle_end_color_to);
+extern float spin_particle_start_size SDATA(spin_particle_start_size);
+extern int spin_particle_life_min SDATA(spin_particle_life_min);
+extern int spin_particle_life_max SDATA(spin_particle_life_max);
+extern int spin_particle_alt_start_color_from SDATA(spin_particle_alt_start_color_from);
+extern int spin_particle_alt_start_color_to SDATA(spin_particle_alt_start_color_to);
+extern int spin_particle_alt_end_color_from SDATA(spin_particle_alt_end_color_from);
+extern int spin_particle_alt_end_color_to SDATA(spin_particle_alt_end_color_to);
+extern float spin_particle_alt_start_size SDATA(spin_particle_alt_start_size);
+extern int spin_particle_alt_life_min SDATA(spin_particle_alt_life_min);
+extern int spin_particle_alt_life_max SDATA(spin_particle_alt_life_max);
 extern unsigned char *part_type12_textures;
 extern unsigned char *part_type24_textures;
 extern unsigned char gold_weapon_purchased[];
@@ -895,10 +895,10 @@ unsigned char *spawn_spinning_and_fading_effect_particle(void *pos, void *vel, u
 }
 extern unsigned char screen_globals_base[];
 extern float g_frame_time MACRO_ADDR;
-extern float spin_particle_speed_decay SDATA(D_L00_001602A8);
-extern float spin_particle_rise_speed SDATA(D_L00_001602AC);
-extern float spin_particle_alt_end_size SDATA(D_L00_0016029C);
-extern float spin_particle_end_size SDATA(D_L00_0016027C);
+extern float spin_particle_speed_decay SDATA(spin_particle_speed_decay);
+extern float spin_particle_rise_speed SDATA(spin_particle_rise_speed);
+extern float spin_particle_alt_end_size SDATA(spin_particle_alt_end_size);
+extern float spin_particle_end_size SDATA(spin_particle_end_size);
 extern float FastVecLength(void *);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 
@@ -1297,7 +1297,7 @@ void spawn_effect_particle_with_transformed_random_offset(void *pos, u128_6D270 
     }
 }
 extern float frame_scale_far __asm__("D_0015EE60") MACRO_ADDR;
-extern float frame_scale_alias SDATA(D_L00_0015EE60);
+extern float frame_scale_alias SDATA(frame_scale_alias);
 
 typedef struct PartType18Data {
     f32 f0;
@@ -2294,8 +2294,8 @@ void update_linked_effect_particle_with_collision_and_fade(O_26e670_26e670 *o) {
 typedef struct {
     int a[4];
 } V31 __attribute__((aligned(16)));
-extern float two_point_particle_head_pull SDATA(D_L00_001602B4);
-extern float two_point_particle_tail_pull SDATA(D_L00_001602B8);
+extern float two_point_particle_head_pull SDATA(two_point_particle_head_pull);
+extern float two_point_particle_tail_pull SDATA(two_point_particle_tail_pull);
 
 /* Part type 31 update: eases two trailing points toward its parent's position and dies when they converge. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/rendering_00269290.c, FUN_L00_0026eb88. */
 void update_target_relative_two_point_effect_particle(unsigned char *p) {
@@ -2734,9 +2734,9 @@ void update_damped_and_fading_effect_particle(struct PartBase *p) {
     FastVecAdd(&p->pos, &p->pos, &q->vel);
     FastVecScale(&q->vel, &q->vel, frame_scale * -0.019999981f + 1.0f);
 }
-extern float offset_particle_size SDATA(D_L00_001602C0);
-extern int offset_particle_color SDATA(D_L00_001602C4);
-extern float offset_particle_camera_offset SDATA(D_L00_001602C8);
+extern float offset_particle_size SDATA(offset_particle_size);
+extern int offset_particle_color SDATA(offset_particle_color);
+extern float offset_particle_camera_offset SDATA(offset_particle_camera_offset);
 extern char offset_particle_spin_step;
 extern unsigned char *part_type39_textures;
 

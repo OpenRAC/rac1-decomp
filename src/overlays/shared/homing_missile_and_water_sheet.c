@@ -1224,7 +1224,7 @@ extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void add_random_offset_to_vector_xyz(float *v, float s);
 extern void spawn_type_74_particle(void *, float *, float *, void *, int);
 extern float g_frame_time MACRO_ADDR;
-extern float joint_trail_reference_speed SDATA(D_L11_00162084);
+extern float joint_trail_reference_speed SDATA(joint_trail_reference_speed);
 extern short joint_trail_particle_cfg_a;
 extern short joint_trail_particle_cfg_b;
 extern short joint_trail_particle_cfg_c;

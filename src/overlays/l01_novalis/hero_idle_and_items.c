@@ -70,7 +70,7 @@ extern float frame_scale MACRO_ADDR;
 
 extern char item_usage[];
 extern unsigned char D_0015EEB4[4] MACRO_ADDR;
-extern int novalis_look_stat_timer SDATA(D_L01_0015F768);
+extern int novalis_look_stat_timer SDATA(novalis_look_stat_timer);
 extern short novalis_hero_step_anim_modes;
 extern short novalis_hero_state_f_jump_velocity_keys;
 extern char novalis_hero_state_d_jump_velocity_keys[];
@@ -1611,7 +1611,7 @@ extern PadState D_0013CA40;
 extern int last_weapon_id_r __asm__("D_00141760");
 extern unsigned char D_0013D5C8[];
 extern Rec2C novalis_attack_records_r[] __asm__("D_L01_0017C128");
-extern int r1_double_tap_timer SDATA(D_L01_0015F754);
+extern int r1_double_tap_timer SDATA(r1_double_tap_timer);
 extern int func_L00_00267BA8(int, int, int *);
 
 extern int Sound_IsPlaying(void *, int);

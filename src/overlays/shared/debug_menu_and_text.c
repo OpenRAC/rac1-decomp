@@ -19,7 +19,7 @@ extern char weapon_ammo_counts[];
 typedef struct {
     s32 a, b, c, d;
 } E001f36f8;
-extern s32 debug_text_queue_count SDATA(D_L00_0015F0C4);
+extern s32 debug_text_queue_count SDATA(debug_text_queue_count);
 extern short debug_text_queue_cursor;
 extern E001f36f8 debug_text_queue[];
 extern u8 debug_text_queue_buffer[];

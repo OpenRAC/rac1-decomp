@@ -404,7 +404,7 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int hoven_frame_count MACRO_ADDR;
 
-extern int hoven_look_stat_count SDATA(D_L12_0015F76C);
+extern int hoven_look_stat_count SDATA(hoven_look_stat_count);
 extern unsigned char *hoven_water_patches MACRO_ADDR;
 extern int hoven_water_patch_count MACRO_ADDR;
 extern HeroPlayerCameraView hoven_player_camera;

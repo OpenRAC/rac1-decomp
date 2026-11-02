@@ -63,7 +63,7 @@ extern int g_current_level_index MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int kalebo3_frame_count MACRO_ADDR;
 
-extern int kalebo3_look_stat_count SDATA(D_L16_0015F76C);
+extern int kalebo3_look_stat_count SDATA(kalebo3_look_stat_count);
 extern unsigned char *kalebo3_water_patches MACRO_ADDR;
 extern int kalebo3_water_patch_count MACRO_ADDR;
 extern HeroPlayerCameraView kalebo3_player_camera;

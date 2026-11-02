@@ -610,8 +610,8 @@ extern char jet_camera47[];
 extern float starfighter_light_offset[] MACRO_ADDR;
 extern char gemlik_point_light_slots[];
 extern short dialogue_playback_phase NOT_SDA;
-extern int starfighter_voice_line_index SDATA(D_L13_001619E0);
-extern int starfighter_start_frame SDATA(D_L13_001619E4);
+extern int starfighter_voice_line_index SDATA(starfighter_voice_line_index);
+extern int starfighter_start_frame SDATA(starfighter_start_frame);
 
 typedef struct SoundVoice {
     u8 pad_00[0x74];
@@ -2424,10 +2424,10 @@ extern void SendRadialMessageToMobys(void *, void *, void *, int, int, int, int,
 extern float multiply_global_factor(float);
 extern char poison_vessel_hit_fmt[];
 extern char sphere_hits_ed158[];
-extern int poison_vessel_blast_ticks SDATA(D_L13_00161EBC);
-extern float poison_vessel_blast_radius_start SDATA(D_L13_00161EC0);
-extern float poison_vessel_blast_radius_end SDATA(D_L13_00161EC4);
-extern float poison_vessel_blast_damage SDATA(D_L13_00161EC8);
+extern int poison_vessel_blast_ticks SDATA(poison_vessel_blast_ticks);
+extern float poison_vessel_blast_radius_start SDATA(poison_vessel_blast_radius_start);
+extern float poison_vessel_blast_radius_end SDATA(poison_vessel_blast_radius_end);
+extern float poison_vessel_blast_damage SDATA(poison_vessel_blast_damage);
 
 /* UpdateMoby_1261: switch on the state byte at +0x20. State 0 damps the values at +0x40 and +0x44, queries a hit with
  * MobyGetHitMessage(moby, 0x330001, 0) and takes the hit's value (at +0x2C) off the float at data + 0x20; once that is
@@ -2934,11 +2934,15 @@ extern float ProbeGroundHeight(void *, int, float);
 
 extern char gemlik_reference_axis[] MACRO_ADDR;
 extern char gemlik_coll_hit_result[] MACRO_ADDR;
-extern float blarg_commando_scale SDATA(D_L13_00161EE8);
-extern float blarg_space_commando_stun_horizontal_knockback_speed SDATA(D_L13_00161EF0);
-extern float blarg_space_commando_stun_vertical_knockback_speed SDATA(D_L13_00161EF4);
-extern float blarg_space_commando_dying_horizontal_knockback_speed SDATA(D_L13_00161EF8);
-extern float blarg_space_commando_dying_vertical_knockback_speed SDATA(D_L13_00161EFC);
+extern float blarg_commando_scale SDATA(blarg_commando_scale);
+extern float blarg_space_commando_stun_horizontal_knockback_speed
+    SDATA(blarg_space_commando_stun_horizontal_knockback_speed);
+extern float blarg_space_commando_stun_vertical_knockback_speed
+    SDATA(blarg_space_commando_stun_vertical_knockback_speed);
+extern float blarg_space_commando_dying_horizontal_knockback_speed
+    SDATA(blarg_space_commando_dying_horizontal_knockback_speed);
+extern float blarg_space_commando_dying_vertical_knockback_speed
+    SDATA(blarg_space_commando_dying_vertical_knockback_speed);
 
 struct WalkerVars_a1c8 {
     u8 pad0[0x20];
@@ -3268,22 +3272,22 @@ extern float FastCos(float);
 extern float FastSin(float);
 extern void lerp_vector(void *, void *, void *, float);
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
-extern int gemlik_trail_spark_lower SDATA(D_L13_00161F40);
-extern int gemlik_trail_spark_upper SDATA(D_L13_00161F44);
-extern float gemlik_trail_spark_start_size SDATA(D_L13_00161F48);
-extern float gemlik_trail_spark_end_size SDATA(D_L13_00161F4C);
-extern float gemlik_trail_spark_time1_min SDATA(D_L13_00161F50);
-extern float gemlik_trail_spark_time1_max SDATA(D_L13_00161F54);
-extern float gemlik_trail_spark_time2_min SDATA(D_L13_00161F58);
-extern float gemlik_trail_spark_time2_max SDATA(D_L13_00161F5C);
-extern float gemlik_trail_spark_time3_min SDATA(D_L13_00161F60);
-extern float gemlik_trail_spark_time3_max SDATA(D_L13_00161F64);
-extern float gemlik_trail_spark_spread_min SDATA(D_L13_00161F68);
-extern float gemlik_trail_spark_spread_max SDATA(D_L13_00161F6C);
-extern float gemlik_trail_spark_lift_min SDATA(D_L13_00161F70);
-extern float gemlik_trail_spark_lift_max SDATA(D_L13_00161F74);
-extern float gemlik_trail_spark_chance SDATA(D_L13_00161F78);
-extern int gemlik_trail_spark_texture SDATA(D_L13_00161F7C);
+extern int gemlik_trail_spark_lower SDATA(gemlik_trail_spark_lower);
+extern int gemlik_trail_spark_upper SDATA(gemlik_trail_spark_upper);
+extern float gemlik_trail_spark_start_size SDATA(gemlik_trail_spark_start_size);
+extern float gemlik_trail_spark_end_size SDATA(gemlik_trail_spark_end_size);
+extern float gemlik_trail_spark_time1_min SDATA(gemlik_trail_spark_time1_min);
+extern float gemlik_trail_spark_time1_max SDATA(gemlik_trail_spark_time1_max);
+extern float gemlik_trail_spark_time2_min SDATA(gemlik_trail_spark_time2_min);
+extern float gemlik_trail_spark_time2_max SDATA(gemlik_trail_spark_time2_max);
+extern float gemlik_trail_spark_time3_min SDATA(gemlik_trail_spark_time3_min);
+extern float gemlik_trail_spark_time3_max SDATA(gemlik_trail_spark_time3_max);
+extern float gemlik_trail_spark_spread_min SDATA(gemlik_trail_spark_spread_min);
+extern float gemlik_trail_spark_spread_max SDATA(gemlik_trail_spark_spread_max);
+extern float gemlik_trail_spark_lift_min SDATA(gemlik_trail_spark_lift_min);
+extern float gemlik_trail_spark_lift_max SDATA(gemlik_trail_spark_lift_max);
+extern float gemlik_trail_spark_chance SDATA(gemlik_trail_spark_chance);
+extern int gemlik_trail_spark_texture SDATA(gemlik_trail_spark_texture);
 
 /* spawns particles for each active entry of the moby's 16-slot table */
 void spawn_point_table_sparks(char *moby) {
@@ -3365,7 +3369,7 @@ extern float gemlik_pool_draw_param_48 MACRO_ADDR;
 extern void *gemlik_pool_draw_tiles MACRO_ADDR;
 extern void *gemlik_pool_draw_tex MACRO_ADDR;
 extern int gemlik_pool_tile_count MACRO_ADDR;
-extern int gemlik_pool_override_tile SDATA(D_L13_00161F80);
+extern int gemlik_pool_override_tile SDATA(gemlik_pool_override_tile);
 extern unsigned short gemlik_pool_override_color;
 
 extern void RipplePatch_ToFixedPoint(void *, void *);

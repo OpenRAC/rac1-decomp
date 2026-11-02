@@ -610,23 +610,36 @@ extern char *g_hero_moby;
 extern char oltanis_zero_vector_r[] __asm__("D_L14_0015F660") MACRO_ADDR;
 extern f32 frame_scale MACRO_ADDR;
 extern f32 g_frame_scale_sq MACRO_ADDR;
-extern s32 blarg_heavy_interceptor_target_tracking_duration_frames_gp SDATA(D_L14_00161498);
-extern s32 blarg_heavy_interceptor_death_fall_duration_frames_gp SDATA(D_L14_0016149C);
-extern f32 blarg_heavy_interceptor_death_launch_vector_magnitude_range_start_gp SDATA(D_L14_001614A0);
-extern f32 blarg_heavy_interceptor_death_launch_vector_magnitude_range_end_gp SDATA(D_L14_001614A4);
-extern f32 blarg_heavy_interceptor_death_launch_vertical_velocity_range_start_gp SDATA(D_L14_001614A8);
-extern f32 blarg_heavy_interceptor_death_launch_vertical_velocity_range_end_gp SDATA(D_L14_001614AC);
-extern f32 blarg_heavy_interceptor_death_fall_gravity_gp SDATA(D_L14_001614B0);
-extern f32 blarg_heavy_interceptor_death_fall_velocity_retention_factor_gp SDATA(D_L14_001614B4);
-extern f32 blarg_heavy_interceptor_death_fall_horizontal_drag_speed_threshold_gp SDATA(D_L14_001614B8);
-extern f32 blarg_heavy_interceptor_group_wait_return_path_traversal_speed_gp SDATA(D_L14_001614BC);
-extern f32 blarg_heavy_interceptor_group_wait_return_path_position_easing_factor_gp SDATA(D_L14_001614C0);
-extern s32 blarg_heavy_interceptor_patrol_glow_red_gp SDATA(D_L14_001614C8);
-extern s32 blarg_heavy_interceptor_patrol_glow_green_gp SDATA(D_L14_001614CC);
-extern s32 blarg_heavy_interceptor_patrol_glow_blue_gp SDATA(D_L14_001614D0);
-extern s32 blarg_heavy_interceptor_tracking_and_group_wait_glow_red_gp SDATA(D_L14_001614D4);
-extern s32 blarg_heavy_interceptor_tracking_and_group_wait_glow_green_gp SDATA(D_L14_001614D8);
-extern s32 blarg_heavy_interceptor_tracking_and_group_wait_glow_blue_gp SDATA(D_L14_001614DC);
+extern s32 blarg_heavy_interceptor_target_tracking_duration_frames_gp
+    SDATA(blarg_heavy_interceptor_target_tracking_duration_frames_gp);
+extern s32 blarg_heavy_interceptor_death_fall_duration_frames_gp
+    SDATA(blarg_heavy_interceptor_death_fall_duration_frames_gp);
+extern f32 blarg_heavy_interceptor_death_launch_vector_magnitude_range_start_gp
+    SDATA(blarg_heavy_interceptor_death_launch_vector_magnitude_range_start_gp);
+extern f32 blarg_heavy_interceptor_death_launch_vector_magnitude_range_end_gp
+    SDATA(blarg_heavy_interceptor_death_launch_vector_magnitude_range_end_gp);
+extern f32 blarg_heavy_interceptor_death_launch_vertical_velocity_range_start_gp
+    SDATA(blarg_heavy_interceptor_death_launch_vertical_velocity_range_start_gp);
+extern f32 blarg_heavy_interceptor_death_launch_vertical_velocity_range_end_gp
+    SDATA(blarg_heavy_interceptor_death_launch_vertical_velocity_range_end_gp);
+extern f32 blarg_heavy_interceptor_death_fall_gravity_gp SDATA(blarg_heavy_interceptor_death_fall_gravity_gp);
+extern f32 blarg_heavy_interceptor_death_fall_velocity_retention_factor_gp
+    SDATA(blarg_heavy_interceptor_death_fall_velocity_retention_factor_gp);
+extern f32 blarg_heavy_interceptor_death_fall_horizontal_drag_speed_threshold_gp
+    SDATA(blarg_heavy_interceptor_death_fall_horizontal_drag_speed_threshold_gp);
+extern f32 blarg_heavy_interceptor_group_wait_return_path_traversal_speed_gp
+    SDATA(blarg_heavy_interceptor_group_wait_return_path_traversal_speed_gp);
+extern f32 blarg_heavy_interceptor_group_wait_return_path_position_easing_factor_gp
+    SDATA(blarg_heavy_interceptor_group_wait_return_path_position_easing_factor_gp);
+extern s32 blarg_heavy_interceptor_patrol_glow_red_gp SDATA(blarg_heavy_interceptor_patrol_glow_red_gp);
+extern s32 blarg_heavy_interceptor_patrol_glow_green_gp SDATA(blarg_heavy_interceptor_patrol_glow_green_gp);
+extern s32 blarg_heavy_interceptor_patrol_glow_blue_gp SDATA(blarg_heavy_interceptor_patrol_glow_blue_gp);
+extern s32 blarg_heavy_interceptor_tracking_and_group_wait_glow_red_gp
+    SDATA(blarg_heavy_interceptor_tracking_and_group_wait_glow_red_gp);
+extern s32 blarg_heavy_interceptor_tracking_and_group_wait_glow_green_gp
+    SDATA(blarg_heavy_interceptor_tracking_and_group_wait_glow_green_gp);
+extern s32 blarg_heavy_interceptor_tracking_and_group_wait_glow_blue_gp
+    SDATA(blarg_heavy_interceptor_tracking_and_group_wait_glow_blue_gp);
 extern short interceptor_spring_stiffness;
 extern short interceptor_spring_damping;
 extern s32 scale_ticks(s32);
@@ -1169,18 +1182,18 @@ typedef struct {
     float uv[8];
     unsigned long a, b, c, d;
 } Pk;
-extern float interceptor_beam_offset SDATA(D_L14_001614FC);
-extern float interceptor_beam_offset_step SDATA(D_L14_00161500);
-extern float interceptor_beam_quad_size SDATA(D_L14_00161504);
-extern float interceptor_beam_quad_size_step SDATA(D_L14_00161508);
-extern int interceptor_beam_r SDATA(D_L14_0016150C);
-extern int interceptor_beam_g SDATA(D_L14_00161510);
-extern int interceptor_beam_b SDATA(D_L14_00161514);
-extern int interceptor_beam_a SDATA(D_L14_00161518);
-extern int interceptor_beam_r_fade SDATA(D_L14_0016151C);
-extern int interceptor_beam_g_fade SDATA(D_L14_00161520);
-extern int interceptor_beam_b_fade SDATA(D_L14_00161524);
-extern int interceptor_beam_a_fade SDATA(D_L14_00161528);
+extern float interceptor_beam_offset SDATA(interceptor_beam_offset);
+extern float interceptor_beam_offset_step SDATA(interceptor_beam_offset_step);
+extern float interceptor_beam_quad_size SDATA(interceptor_beam_quad_size);
+extern float interceptor_beam_quad_size_step SDATA(interceptor_beam_quad_size_step);
+extern int interceptor_beam_r SDATA(interceptor_beam_r);
+extern int interceptor_beam_g SDATA(interceptor_beam_g);
+extern int interceptor_beam_b SDATA(interceptor_beam_b);
+extern int interceptor_beam_a SDATA(interceptor_beam_a);
+extern int interceptor_beam_r_fade SDATA(interceptor_beam_r_fade);
+extern int interceptor_beam_g_fade SDATA(interceptor_beam_g_fade);
+extern int interceptor_beam_b_fade SDATA(interceptor_beam_b_fade);
+extern int interceptor_beam_a_fade SDATA(interceptor_beam_a_fade);
 extern float interceptor_quad_corners_r[4][4] __asm__("D_L14_001D8900");
 extern float FastCos(float);
 extern float FastSin(float);
@@ -1289,8 +1302,8 @@ extern void FastVecSub(void *dst, void *a, void *b);
 
 extern void draw_world_quad(void *, void *, int);
 extern char interceptor_quad_corners[];
-extern float interceptor_glow_forward_offset SDATA(D_L14_00161540);
-extern float interceptor_glow_size SDATA(D_L14_0016153C);
+extern float interceptor_glow_forward_offset SDATA(interceptor_glow_forward_offset);
+extern float interceptor_glow_size SDATA(interceptor_glow_size);
 
 typedef struct {
     float m[4][4]; /* 0x00 transform rows built by the loop */
@@ -1370,8 +1383,8 @@ typedef struct {
     u64 a, b, c, d;
 } Pk_2af4a0;
 extern float oltanis_glow_quad_corners[4][4];
-extern float oltanis_glow_camera_margin SDATA(D_L14_00161544);
-extern u32 oltanis_glow_idle_color SDATA(D_L14_00161548);
+extern float oltanis_glow_camera_margin SDATA(oltanis_glow_camera_margin);
+extern u32 oltanis_glow_idle_color SDATA(oltanis_glow_idle_color);
 u64 GetEffectTex(s32);
 extern void VU1_addGSregister(int, long);
 extern void FastVecSub(void *, void *, void *);
@@ -1554,7 +1567,7 @@ void update_blarg_heavy_interceptor_patrol_path_position(struct Moby *moby) {
 }
 extern int Spline_AdvanceByDistance_r5(void *, void *, void *, void *, int, float) __asm__("func_L00_0025E860");
 extern float g_frame_time MACRO_ADDR;
-extern float interceptor_return_spring_damping SDATA(D_L14_001614C4);
+extern float interceptor_return_spring_damping SDATA(interceptor_return_spring_damping);
 
 /* Picks a target point from a list or searches for one, then eases the moby's position toward it per axis. */
 void update_blarg_heavy_interceptor_return_path_position(char *moby, float a, float b, float c) {
@@ -1580,16 +1593,16 @@ extern int scale_ticks(int);
 extern int random_integer_below(int);
 extern float FastAddRots(float, float);
 extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
-extern float interceptor_bob_height SDATA(D_L14_00161470);
-extern float interceptor_bob_rate SDATA(D_L14_00161474);
-extern float interceptor_wobble_amount SDATA(D_L14_00161478);
-extern float interceptor_wobble_rate_a SDATA(D_L14_0016147C);
-extern float interceptor_wobble_rate_b SDATA(D_L14_00161480);
-extern int interceptor_heading_change_interval SDATA(D_L14_00161484);
-extern float interceptor_heading_change_angle SDATA(D_L14_00161488);
-extern float interceptor_heading_stiffness SDATA(D_L14_0016148C);
-extern float interceptor_heading_damping SDATA(D_L14_00161490);
-extern float interceptor_heading_max_rate SDATA(D_L14_00161494);
+extern float interceptor_bob_height SDATA(interceptor_bob_height);
+extern float interceptor_bob_rate SDATA(interceptor_bob_rate);
+extern float interceptor_wobble_amount SDATA(interceptor_wobble_amount);
+extern float interceptor_wobble_rate_a SDATA(interceptor_wobble_rate_a);
+extern float interceptor_wobble_rate_b SDATA(interceptor_wobble_rate_b);
+extern int interceptor_heading_change_interval SDATA(interceptor_heading_change_interval);
+extern float interceptor_heading_change_angle SDATA(interceptor_heading_change_angle);
+extern float interceptor_heading_stiffness SDATA(interceptor_heading_stiffness);
+extern float interceptor_heading_damping SDATA(interceptor_heading_damping);
+extern float interceptor_heading_max_rate SDATA(interceptor_heading_max_rate);
 
 // Per-frame update of a moby's aim and turn state from level tuning constants.
 void update_blarg_heavy_interceptor_oscillation_and_patrol_heading(char *moby) {
@@ -2235,24 +2248,26 @@ extern char minibomber_err_no_alt_entry_path[];
 extern char minibomber_err_empty_alt_entry_path[];
 extern float frame_scale MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
-extern float minibomber_tilt_amount SDATA(D_L14_00161608);
-extern float minibomber_intro_exit_path_step_distance_gp SDATA(D_L14_00161614);
-extern float minibomber_traversal_path_step_distance_gp SDATA(D_L14_00161618);
-extern float minibomber_retrace_path_step_distance_gp SDATA(D_L14_0016161C);
-extern int minibomber_bomb_aim_duration_frames SDATA(D_L14_00161624);
-extern int minibomber_aim_return_duration_frames SDATA(D_L14_00161628);
-extern int minibomber_bomb_flight_duration_frames SDATA(D_L14_0016162C);
-extern float minibomber_bomb_gravity SDATA(D_L14_00161630);
-extern int minibomber_bomb_initial_fade_timer_frames SDATA(D_L14_00161634);
-extern float minibomber_path_traversal_trigger_distance SDATA(D_L14_00161638);
-extern float minibomber_intro_exit_position_error_gain_gp SDATA(D_L14_0016163C);
-extern float minibomber_position_velocity_damping_gp SDATA(D_L14_00161640);
-extern float minibomber_position_snap_threshold_scale_gp SDATA(D_L14_00161644);
-extern float minibomber_intro_exit_heading_error_gain_gp SDATA(D_L14_00161648);
-extern float minibomber_heading_velocity_damping_gp SDATA(D_L14_0016164C);
-extern float minibomber_heading_velocity_limit_gp SDATA(D_L14_00161650);
-extern float minibomber_retrace_and_traversal_position_error_gain_gp SDATA(D_L14_00161654);
-extern float minibomber_retrace_and_traversal_heading_error_gain_gp SDATA(D_L14_00161658);
+extern float minibomber_tilt_amount SDATA(minibomber_tilt_amount);
+extern float minibomber_intro_exit_path_step_distance_gp SDATA(minibomber_intro_exit_path_step_distance_gp);
+extern float minibomber_traversal_path_step_distance_gp SDATA(minibomber_traversal_path_step_distance_gp);
+extern float minibomber_retrace_path_step_distance_gp SDATA(minibomber_retrace_path_step_distance_gp);
+extern int minibomber_bomb_aim_duration_frames SDATA(minibomber_bomb_aim_duration_frames);
+extern int minibomber_aim_return_duration_frames SDATA(minibomber_aim_return_duration_frames);
+extern int minibomber_bomb_flight_duration_frames SDATA(minibomber_bomb_flight_duration_frames);
+extern float minibomber_bomb_gravity SDATA(minibomber_bomb_gravity);
+extern int minibomber_bomb_initial_fade_timer_frames SDATA(minibomber_bomb_initial_fade_timer_frames);
+extern float minibomber_path_traversal_trigger_distance SDATA(minibomber_path_traversal_trigger_distance);
+extern float minibomber_intro_exit_position_error_gain_gp SDATA(minibomber_intro_exit_position_error_gain_gp);
+extern float minibomber_position_velocity_damping_gp SDATA(minibomber_position_velocity_damping_gp);
+extern float minibomber_position_snap_threshold_scale_gp SDATA(minibomber_position_snap_threshold_scale_gp);
+extern float minibomber_intro_exit_heading_error_gain_gp SDATA(minibomber_intro_exit_heading_error_gain_gp);
+extern float minibomber_heading_velocity_damping_gp SDATA(minibomber_heading_velocity_damping_gp);
+extern float minibomber_heading_velocity_limit_gp SDATA(minibomber_heading_velocity_limit_gp);
+extern float minibomber_retrace_and_traversal_position_error_gain_gp
+    SDATA(minibomber_retrace_and_traversal_position_error_gain_gp);
+extern float minibomber_retrace_and_traversal_heading_error_gain_gp
+    SDATA(minibomber_retrace_and_traversal_heading_error_gain_gp);
 
 extern void MobySetAnimation(void *, int, int);
 extern void process_minibomber_hit_reactions(unsigned char *m);
@@ -2634,10 +2649,10 @@ void process_minibomber_hit_reactions(unsigned char *m) {
     ((Moby *)m)->hit_slot = 0xFF;
     StepColorFade(m, &d->color_fade);
 }
-extern float minibomber_bob_height SDATA(D_L14_00161600);
-extern float minibomber_bob_rate SDATA(D_L14_00161604);
-extern float minibomber_wobble_rate_a SDATA(D_L14_0016160C);
-extern float minibomber_wobble_rate_b SDATA(D_L14_00161610);
+extern float minibomber_bob_height SDATA(minibomber_bob_height);
+extern float minibomber_bob_rate SDATA(minibomber_bob_rate);
+extern float minibomber_wobble_rate_a SDATA(minibomber_wobble_rate_a);
+extern float minibomber_wobble_rate_b SDATA(minibomber_wobble_rate_b);
 
 // Steers a moby's two smoothed angles toward their targets, unless it is in a dormant state.
 void update_minibomber_oscillation(char *moby) {
@@ -2932,9 +2947,9 @@ void func_L14_002B7028_r(struct Moby *m) {
     }
 }
 #define NULL ((void *)0)
-extern float flying_debris_gravity SDATA(D_L14_001616A0);
-extern float flying_debris_drag SDATA(D_L14_001616A4);
-extern float flying_debris_min_speed SDATA(D_L14_001616A8);
+extern float flying_debris_gravity SDATA(flying_debris_gravity);
+extern float flying_debris_drag SDATA(flying_debris_drag);
+extern float flying_debris_min_speed SDATA(flying_debris_min_speed);
 extern char oltanis_lights[];
 extern int Sound_PlayClassSound();
 extern int allocate_colored_effect_slot(float *, float, float, float, float, float);
@@ -3156,8 +3171,9 @@ struct L14RaceState {
 extern short race_paths_r __asm__("D_L14_0015F7EC");
 extern struct L14RaceState *race_state;
 extern s32 D_L14_00161AFC_D7250 SDATA(D_L14_00161AFC);
-extern s32 level14_racer_path_follow_initial_timer_frames_gp SDATA(D_L14_00161B04);
-extern s32 level14_racer_exit_debris_path_initialization_scale_gp SDATA(D_L14_00161B2C);
+extern s32 level14_racer_path_follow_initial_timer_frames_gp SDATA(level14_racer_path_follow_initial_timer_frames_gp);
+extern s32 level14_racer_exit_debris_path_initialization_scale_gp
+    SDATA(level14_racer_exit_debris_path_initialization_scale_gp);
 extern void AttachManipulator(void *arg0, s32 arg1, void *arg2);
 extern int fast_dec_timer_r2(s32 *) __asm__("func_001F9908");
 extern void MobySetAnimation_r3(struct Moby *, s32, s32) __asm__("func_00213D28");
@@ -3260,7 +3276,7 @@ void update_level14_racer(struct Moby *m) {
     func_L14_002D87A0_D7250(m);
 }
 extern char *race_paths_p __asm__("D_L14_0015F7EC") MACRO_ADDR;
-extern float oltanis_racer_path_step SDATA(D_L14_00161B08);
+extern float oltanis_racer_path_step SDATA(oltanis_racer_path_step);
 extern int find_nearest_path_point(void *, void *, float *, int *, float *, int, float, float, float);
 
 typedef struct {
@@ -3657,7 +3673,7 @@ void update_racer_path_and_weapon(struct Moby *m) {
     axis_rotation_2d48(&d->manips[0].rot, 2, a);
 }
 extern int race_paths MACRO_ADDR;
-extern float oltanis_racer_path_speed SDATA(D_L14_00161B00);
+extern float oltanis_racer_path_speed SDATA(oltanis_racer_path_speed);
 extern float g_frame_time MACRO_ADDR;
 extern void Spline_AdvanceByDistance(int a, char *pos, char *b, char *c, int d, float f);
 
@@ -3738,7 +3754,7 @@ void draw_racer_glow_quads(struct Moby *m) {
     draw_world_quad_r2(&pk, 0, 0);
 }
 extern char oltanis_lights[];
-extern float joint_effect_light_range SDATA(D_L14_00161B30);
+extern float joint_effect_light_range SDATA(joint_effect_light_range);
 extern float oltanis_zero_vector[] MACRO_ADDR;
 extern int allocate_colored_effect_slot(float *, float, float, float, float, float);
 
@@ -3795,7 +3811,7 @@ void update_moby_joint_visual_effects(char *m) {
     AddDrawCallback(draw_racer_glow_quads, m);
 }
 extern void update_platform_tilt_basis_m(Moby *, f32, f32) __asm__("func_L14_002DF6B8");
-extern float unused_platform_tilt_argument SDATA(D_L14_00161BCC);
+extern float unused_platform_tilt_argument SDATA(unused_platform_tilt_argument);
 
 /* Adapted from Lombyte's project (the US decompilation): FUN_L14_002de1f8. */
 void update_tilting_platform(Moby *moby) {
@@ -3821,8 +3837,8 @@ void update_tilting_platform(Moby *moby) {
     update_entity_matrix(data->carry, oltanis_zero_vector, &old_rotation, rotation);
 }
 typedef int u128_s07 __attribute__((mode(TI)));
-extern float platform_tilt_direction_z_offset SDATA(D_L14_00161BD4);
-extern float platform_max_tilt_degrees SDATA(D_L14_00161BD0);
+extern float platform_tilt_direction_z_offset SDATA(platform_tilt_direction_z_offset);
+extern float platform_max_tilt_degrees SDATA(platform_max_tilt_degrees);
 extern float FastVecDot(void *a, void *b);
 extern float FastArcSin(float x);
 

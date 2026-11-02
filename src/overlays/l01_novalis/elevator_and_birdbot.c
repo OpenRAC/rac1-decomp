@@ -595,9 +595,9 @@ extern int cutscene_active MACRO_ADDR;
 extern float novalis_zero_vec[] MACRO_ADDR;
 extern char novalis_birdbot_no_path_msg[];
 
-extern float novalis_birdbot_drift_speed SDATA(D_L01_001619E0);
-extern float novalis_birdbot_fly_speed SDATA(D_L01_001619E4);
-extern float novalis_birdbot_anim8_speed SDATA(D_L01_001619EC);
+extern float novalis_birdbot_drift_speed SDATA(novalis_birdbot_drift_speed);
+extern float novalis_birdbot_fly_speed SDATA(novalis_birdbot_fly_speed);
+extern float novalis_birdbot_anim8_speed SDATA(novalis_birdbot_anim8_speed);
 
 extern float MobyGetFrameValue(void *);
 extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
@@ -1354,10 +1354,10 @@ typedef struct {
 extern int novalis_game_mode MACRO_ADDR;
 extern char *novalis_moby_list MACRO_ADDR;
 extern int novalis_peckbot_explosion_slots[] MACRO_ADDR;
-extern float peckbot_nonfatal_knockback_vertical_speed_gp SDATA(D_L01_00161AF0);
-extern float peckbot_nonfatal_knockback_horizontal_speed_gp SDATA(D_L01_00161AF4);
-extern float peckbot_home_knockback_speed_gp SDATA(D_L01_00161AF8);
-extern float peckbot_home_knockback_acceleration_gp SDATA(D_L01_00161AFC);
+extern float peckbot_nonfatal_knockback_vertical_speed_gp SDATA(peckbot_nonfatal_knockback_vertical_speed_gp);
+extern float peckbot_nonfatal_knockback_horizontal_speed_gp SDATA(peckbot_nonfatal_knockback_horizontal_speed_gp);
+extern float peckbot_home_knockback_speed_gp SDATA(peckbot_home_knockback_speed_gp);
+extern float peckbot_home_knockback_acceleration_gp SDATA(peckbot_home_knockback_acceleration_gp);
 extern short novalis_peckbot_spawn_d0_record;
 
 extern int func_001160D8(void);
@@ -2558,7 +2558,7 @@ typedef struct {
     s32 count;
     u8 pad10[0x50];
 } BoundGroup;
-extern s32 novalis_scroll_bounds_initialized SDATA(D_L01_00161C30);
+extern s32 novalis_scroll_bounds_initialized SDATA(novalis_scroll_bounds_initialized);
 extern BoundGroup novalis_bounded_scroll_layers_r[] __asm__("D_L01_001E3660");
 extern void FastVecScale(void *, void *, float);
 extern f32 FastVecLength(void *);
@@ -2729,9 +2729,9 @@ typedef struct {
     Moby *moby;
 } Hit_F8B00;
 
-extern float novalis_bomber_jet_min_scale SDATA(D_L01_00161C60);
-extern float novalis_bomber_jet_far_distance SDATA(D_L01_00161C64);
-extern float novalis_bomber_jet_near_distance SDATA(D_L01_00161C68);
+extern float novalis_bomber_jet_min_scale SDATA(novalis_bomber_jet_min_scale);
+extern float novalis_bomber_jet_far_distance SDATA(novalis_bomber_jet_far_distance);
+extern float novalis_bomber_jet_near_distance SDATA(novalis_bomber_jet_near_distance);
 extern Quad novalis_bomber_jet_quad_template;
 extern char novalis_bomber_jet_no_path_msg[];
 extern unsigned char novalis_checkpoint_level_state_killed[];
@@ -3188,11 +3188,11 @@ void update_rising_particle_and_debris_emitter(SteamMoby *m) {
     }
 }
 extern char *camera_points MACRO_ADDR;
-extern float novalis_falling_rock_cam_angle SDATA(D_L01_00161CB8);
-extern float novalis_falling_rock_cam_distance SDATA(D_L01_00161CBC);
-extern float novalis_falling_rock_cam_height SDATA(D_L01_00161CC0);
-extern float novalis_falling_rock_cam_eye_offset SDATA(D_L01_00161CC4);
-extern float novalis_falling_rock_cam_blend_speed SDATA(D_L01_00161CC8);
+extern float novalis_falling_rock_cam_angle SDATA(novalis_falling_rock_cam_angle);
+extern float novalis_falling_rock_cam_distance SDATA(novalis_falling_rock_cam_distance);
+extern float novalis_falling_rock_cam_height SDATA(novalis_falling_rock_cam_height);
+extern float novalis_falling_rock_cam_eye_offset SDATA(novalis_falling_rock_cam_eye_offset);
+extern float novalis_falling_rock_cam_blend_speed SDATA(novalis_falling_rock_cam_blend_speed);
 extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
 extern void set_follow_camera_angle_blend_from_direction(void *a, float x, float y);
 extern void Cam_SetDistanceGoal(float x, float y, int flag);

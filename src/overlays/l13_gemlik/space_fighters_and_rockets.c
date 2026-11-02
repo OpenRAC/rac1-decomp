@@ -505,7 +505,7 @@ extern void FastVecSub(void *, void *, void *);
 extern float ApproachWithVelocity(float *, float, float *, float, float, float);
 extern void Moby_PlaySound(int, int, int);
 extern void clear_u64_value(void *);
-extern float hovering_rocket_attacker_launch_vector_speed SDATA(D_L13_0016152C);
+extern float hovering_rocket_attacker_launch_vector_speed SDATA(hovering_rocket_attacker_launch_vector_speed);
 extern char *gemlik_scene_points MACRO_ADDR;
 
 typedef struct HoveringRocketVars {

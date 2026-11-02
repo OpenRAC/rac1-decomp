@@ -350,7 +350,7 @@ extern float frame_scale MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int novalis_frame_count MACRO_ADDR;
 extern short novalis_look_stat_timer;
-extern int novalis_look_stat_count SDATA(D_L01_0015F76C);
+extern int novalis_look_stat_count SDATA(novalis_look_stat_count);
 extern unsigned char *pool_draw_tiles MACRO_ADDR;
 extern int pool_draw_count MACRO_ADDR;
 extern HeroPlayerCameraView novalis_player_camera;

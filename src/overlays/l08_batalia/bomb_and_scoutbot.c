@@ -110,8 +110,8 @@ struct PathMoverFallVars {
 };
 
 extern int spawn_moby_offset_effect(char *);
-extern float batalia_bolt_spin_min SDATA(D_L08_001614F8);
-extern float batalia_bolt_spin_max SDATA(D_L08_001614FC);
+extern float batalia_bolt_spin_min SDATA(batalia_bolt_spin_min);
+extern float batalia_bolt_spin_max SDATA(batalia_bolt_spin_max);
 
 typedef struct Target {
     char pad0[0xA];
@@ -357,7 +357,7 @@ extern char batalia_coll_hit_r[] __asm__("D_L08_001746C0");
 extern float batalia_zero_vec_r[] __asm__("D_L08_0015F660") MACRO_ADDR;
 extern char D_L08_001746E0[];
 extern blk16 batalia_bomb_spark_colors;
-extern float batalia_bomb_gravity SDATA(D_L08_001618F0);
+extern float batalia_bomb_gravity SDATA(batalia_bomb_gravity);
 
 /* Bomb update: fuse, bounce and blast state machine on the moby's state byte */
 void update_bomb(char *moby) {
@@ -519,9 +519,9 @@ extern unsigned char menu_item_enabled_25[] NOT_SDA;
 extern unsigned char gHaveHeliPack[] NOT_SDA;
 extern char help_stats_base_r[] __asm__("D_0014171B") NOT_SDA;
 extern int batalia_path_table[];
-extern const float bomber_tank_vars_b58_init SDATA(D_L08_0016195C);
-extern float bomber_tank_vars_b5a_init SDATA(D_L08_00161960);
-extern float batalia_bomber_tank_shot_speed SDATA(D_L08_00161938);
+extern const float bomber_tank_vars_b58_init SDATA(bomber_tank_vars_b58_init);
+extern float bomber_tank_vars_b5a_init SDATA(bomber_tank_vars_b5a_init);
+extern float batalia_bomber_tank_shot_speed SDATA(batalia_bomber_tank_shot_speed);
 extern void AttachManipulator(void *, int, void *);
 extern void MobyBlendAnimation_r(void *, int, int, int) __asm__("func_00213DE0");
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
@@ -997,7 +997,7 @@ extern f32 g_frame_time MACRO_ADDR;
 extern f32 g_frame_time_sq MACRO_ADDR;
 extern int batalia_path_table[];
 extern char voice_pool[];
-extern float batalia_bomber_tank_anim_ref_speed SDATA(D_L08_00161930);
+extern float batalia_bomber_tank_anim_ref_speed SDATA(batalia_bomber_tank_anim_ref_speed);
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 extern void ApproachValue_r(float *, float, float) __asm__("func_00214D28");
 extern float FastCos(float);
@@ -1463,8 +1463,8 @@ extern float FastSin(float);
 extern int rand_range(int, int);
 
 extern void FastVecAdd(void *, void *, void *);
-extern float batalia_line_puff_rise_speed_max SDATA(D_L08_00161A28);
-extern float batalia_line_puff_size SDATA(D_L08_00161A30);
+extern float batalia_line_puff_rise_speed_max SDATA(batalia_line_puff_rise_speed_max);
+extern float batalia_line_puff_size SDATA(batalia_line_puff_size);
 extern u16 batalia_line_puff_life_frames;
 extern void FastVecSub(void *, void *, void *);
 extern void FastVecScale(void *, void *, f32);
@@ -1602,13 +1602,13 @@ typedef struct {
     float f158;
 } Cam;
 extern Cam batalia_player_camera_c __asm__("D_L08_00167500");
-extern int batalia_bombthrower_scale SDATA(D_L08_00161A3C);
-extern int batalia_bombthrower_fade_ticks SDATA(D_L08_00161A60);
-extern float batalia_bombthrower_knockback_speed SDATA(D_L08_00161A1C);
-extern float batalia_bombthrower_knockback_lift SDATA(D_L08_00161A20);
-extern float batalia_bombthrower_walk_speed_max SDATA(D_L08_00161A08);
-extern float batalia_bombthrower_throw_speed SDATA(D_L08_00161A0C);
-extern float batalia_bombthrower_throw_short_rate SDATA(D_L08_00161A18);
+extern int batalia_bombthrower_scale SDATA(batalia_bombthrower_scale);
+extern int batalia_bombthrower_fade_ticks SDATA(batalia_bombthrower_fade_ticks);
+extern float batalia_bombthrower_knockback_speed SDATA(batalia_bombthrower_knockback_speed);
+extern float batalia_bombthrower_knockback_lift SDATA(batalia_bombthrower_knockback_lift);
+extern float batalia_bombthrower_walk_speed_max SDATA(batalia_bombthrower_walk_speed_max);
+extern float batalia_bombthrower_throw_speed SDATA(batalia_bombthrower_throw_speed);
+extern float batalia_bombthrower_throw_short_rate SDATA(batalia_bombthrower_throw_short_rate);
 typedef struct {
     char pad0[0x40];
     Moby *target;
@@ -2547,16 +2547,16 @@ typedef struct {
 } Camera46;
 extern Camera46 batalia_player_camera;
 extern unsigned int batalia_mobys_last MACRO_ADDR;
-extern float rocket_configured_heading_speed_base_gp SDATA(D_L08_00161A90);
-extern float batalia_rocket_steer_accel_max SDATA(D_L08_00161A94);
-extern float batalia_rocket_route_speed SDATA(D_L08_00161A98);
-extern float batalia_rocket_hit_distance SDATA(D_L08_00161A9C);
-extern float batalia_rocket_exhaust_spread_max SDATA(D_L08_00161AA4);
-extern int rocket_guidance_effect_frame_count_gp SDATA(D_L08_00161AB0);
-extern float rocket_guidance_effect_velocity_w_gp SDATA(D_L08_00161AB4);
-extern float rocket_guidance_effect_auxiliary_vector_w_gp SDATA(D_L08_00161AB8);
-extern int rocket_guidance_effect_initial_color_gp SDATA(D_L08_00161ABC);
-extern int rocket_guidance_effect_second_color_gp SDATA(D_L08_00161AC0);
+extern float rocket_configured_heading_speed_base_gp SDATA(rocket_configured_heading_speed_base_gp);
+extern float batalia_rocket_steer_accel_max SDATA(batalia_rocket_steer_accel_max);
+extern float batalia_rocket_route_speed SDATA(batalia_rocket_route_speed);
+extern float batalia_rocket_hit_distance SDATA(batalia_rocket_hit_distance);
+extern float batalia_rocket_exhaust_spread_max SDATA(batalia_rocket_exhaust_spread_max);
+extern int rocket_guidance_effect_frame_count_gp SDATA(rocket_guidance_effect_frame_count_gp);
+extern float rocket_guidance_effect_velocity_w_gp SDATA(rocket_guidance_effect_velocity_w_gp);
+extern float rocket_guidance_effect_auxiliary_vector_w_gp SDATA(rocket_guidance_effect_auxiliary_vector_w_gp);
+extern int rocket_guidance_effect_initial_color_gp SDATA(rocket_guidance_effect_initial_color_gp);
+extern int rocket_guidance_effect_second_color_gp SDATA(rocket_guidance_effect_second_color_gp);
 extern void *MobyGetHitMessage(void *, int, int);
 extern void DeleteMoby(void *);
 extern float vec_length_xy(void *);
@@ -2864,10 +2864,10 @@ extern Moby *CreateMoby_mb(s32) __asm__("func_0020D348");
 extern float batalia_hero_pos[];
 extern float vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
 extern void set_moby_color(void *, int, int, int);
-extern int batalia_1b3_projectile_red SDATA(D_L08_00161AC4);
-extern int batalia_1b3_projectile_green SDATA(D_L08_00161AC8);
-extern int batalia_1b3_projectile_blue SDATA(D_L08_00161ACC);
-extern float batalia_1b3_projectile_scale SDATA(D_L08_00161AD0);
+extern int batalia_1b3_projectile_red SDATA(batalia_1b3_projectile_red);
+extern int batalia_1b3_projectile_green SDATA(batalia_1b3_projectile_green);
+extern int batalia_1b3_projectile_blue SDATA(batalia_1b3_projectile_blue);
+extern float batalia_1b3_projectile_scale SDATA(batalia_1b3_projectile_scale);
 
 /* Adapted from Lombyte's project (the US decompilation): FUN_L08_002de3e0. */
 Moby *spawn_rocket_435_projectile(void *pos, Moby *target, void *velocity, float pitch, float yaw) {
@@ -2966,7 +2966,7 @@ extern void *MobyGetHitMessage(void *, int, int);
 extern int PlayBankSound(int, int, int);
 extern void ShowBanner(int, int);
 extern void spawn_moby_motion_spark(char *m, char *pos);
-extern float batalia_path_mover_speed SDATA(D_L08_00161AD4);
+extern float batalia_path_mover_speed SDATA(batalia_path_mover_speed);
 extern int hero_current_state;
 extern unsigned char gSkillPoints[];
 
@@ -3066,21 +3066,21 @@ extern int FastTweenColor(int, int, float);
 extern float multiply_global_factor(float);
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
-extern float batalia_motion_spark_vel_scale SDATA(D_L08_00161AD8);
-extern float batalia_motion_spark_accel_scale SDATA(D_L08_00161ADC);
-extern float batalia_motion_spark_accel_jitter SDATA(D_L08_00161AE0);
-extern int batalia_motion_spark_time1_range SDATA(D_L08_00161AE4);
-extern int batalia_motion_spark_time2_base SDATA(D_L08_00161AE8);
-extern int batalia_motion_spark_time3_base SDATA(D_L08_00161AEC);
-extern float batalia_motion_spark_time_jitter SDATA(D_L08_00161AF0);
-extern float batalia_motion_spark_vel_w_min SDATA(D_L08_00161AF4);
-extern float batalia_motion_spark_vel_w_max SDATA(D_L08_00161AF8);
-extern float batalia_motion_spark_accel_w_min SDATA(D_L08_00161AFC);
-extern float batalia_motion_spark_accel_w_max SDATA(D_L08_00161B00);
-extern int batalia_motion_spark_color1_from SDATA(D_L08_00161B04);
-extern int batalia_motion_spark_color1_to SDATA(D_L08_00161B08);
-extern int batalia_motion_spark_color2_from SDATA(D_L08_00161B0C);
-extern int batalia_motion_spark_color2_to SDATA(D_L08_00161B10);
+extern float batalia_motion_spark_vel_scale SDATA(batalia_motion_spark_vel_scale);
+extern float batalia_motion_spark_accel_scale SDATA(batalia_motion_spark_accel_scale);
+extern float batalia_motion_spark_accel_jitter SDATA(batalia_motion_spark_accel_jitter);
+extern int batalia_motion_spark_time1_range SDATA(batalia_motion_spark_time1_range);
+extern int batalia_motion_spark_time2_base SDATA(batalia_motion_spark_time2_base);
+extern int batalia_motion_spark_time3_base SDATA(batalia_motion_spark_time3_base);
+extern float batalia_motion_spark_time_jitter SDATA(batalia_motion_spark_time_jitter);
+extern float batalia_motion_spark_vel_w_min SDATA(batalia_motion_spark_vel_w_min);
+extern float batalia_motion_spark_vel_w_max SDATA(batalia_motion_spark_vel_w_max);
+extern float batalia_motion_spark_accel_w_min SDATA(batalia_motion_spark_accel_w_min);
+extern float batalia_motion_spark_accel_w_max SDATA(batalia_motion_spark_accel_w_max);
+extern int batalia_motion_spark_color1_from SDATA(batalia_motion_spark_color1_from);
+extern int batalia_motion_spark_color1_to SDATA(batalia_motion_spark_color1_to);
+extern int batalia_motion_spark_color2_from SDATA(batalia_motion_spark_color2_from);
+extern int batalia_motion_spark_color2_to SDATA(batalia_motion_spark_color2_to);
 
 // Spawns a debris moby: builds position/velocity vectors with random ranges and creates it.
 void spawn_moby_motion_spark(char *m, char *pos) {

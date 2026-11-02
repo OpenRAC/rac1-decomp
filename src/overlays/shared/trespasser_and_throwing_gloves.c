@@ -654,7 +654,7 @@ void trespasser_update(Moby *m) {
     }
 }
 extern float D_L00_001618F8_C2A80 SDATA(D_L00_001618F8);
-extern float trespasser_pickup_spin_step SDATA(D_L00_00161900);
+extern float trespasser_pickup_spin_step SDATA(trespasser_pickup_spin_step);
 
 extern int level_frame_counter_r __asm__("D_L00_0015F6B0") MACRO_ADDR;
 extern unsigned char g_hero_r[] __asm__("D_0013F450");
@@ -3352,7 +3352,7 @@ void spawn_moby_collision_particles(void *mm) {
 }
 extern char *CreateMoby_m(int) __asm__("func_0020D348");
 
-extern int glove_of_doom_ring_index SDATA(D_L00_0016190C);
+extern int glove_of_doom_ring_index SDATA(glove_of_doom_ring_index);
 
 // Spawns a Bomb moby at a position, registers it in a 20-entry ring.
 char *spawn_glove_of_doom_held_moby(int a0, char *pos, char *vec) {

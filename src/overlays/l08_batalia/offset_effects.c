@@ -13,9 +13,9 @@ extern int func_001FA898(float);
 
 extern char batalia_hero_pos[];
 extern unsigned char *batalia_part_type39_textures;
-extern float batalia_offset_effect_push_dist SDATA(D_L08_00160288);
-extern int batalia_offset_effect_color SDATA(D_L08_00160284);
-extern float batalia_offset_effect_size SDATA(D_L08_00160280);
+extern float batalia_offset_effect_push_dist SDATA(batalia_offset_effect_push_dist);
+extern int batalia_offset_effect_color SDATA(batalia_offset_effect_color);
+extern float batalia_offset_effect_size SDATA(batalia_offset_effect_size);
 
 /* Spawns an effect moby at the position of moby a. */
 unsigned char *spawn_moby_offset_effect(char *a) {

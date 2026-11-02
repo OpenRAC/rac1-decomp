@@ -379,7 +379,7 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int quartu_frame_count MACRO_ADDR;
 
-extern int quartu_usage_event_count SDATA(D_L15_0015F76C);
+extern int quartu_usage_event_count SDATA(quartu_usage_event_count);
 extern unsigned char *quartu_pool_draw_tiles MACRO_ADDR;
 extern int quartu_pool_draw_count MACRO_ADDR;
 extern HeroPlayerCameraView quartu_player_camera;

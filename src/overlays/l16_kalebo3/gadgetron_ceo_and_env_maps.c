@@ -434,15 +434,15 @@ extern int FastBSphereCheck(char *, float);
 
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
-extern float path_walker_gap_range_start SDATA(D_L16_00161F28);
-extern float path_walker_gap_range_end SDATA(D_L16_00161F2C);
-extern float path_walker_speed_range_start SDATA(D_L16_00161F30);
-extern float path_walker_speed_range_end SDATA(D_L16_00161F34);
-extern float path_walker_speed_approach_acceleration SDATA(D_L16_00161F38);
-extern float path_walker_height_range_start SDATA(D_L16_00161F3C);
-extern float path_walker_height_range_end SDATA(D_L16_00161F40);
-extern float path_walker_reposition_advance_rate SDATA(D_L16_00161F4C);
-extern int path_walker_draw_distance SDATA(D_L16_00161F50);
+extern float path_walker_gap_range_start SDATA(path_walker_gap_range_start);
+extern float path_walker_gap_range_end SDATA(path_walker_gap_range_end);
+extern float path_walker_speed_range_start SDATA(path_walker_speed_range_start);
+extern float path_walker_speed_range_end SDATA(path_walker_speed_range_end);
+extern float path_walker_speed_approach_acceleration SDATA(path_walker_speed_approach_acceleration);
+extern float path_walker_height_range_start SDATA(path_walker_height_range_start);
+extern float path_walker_height_range_end SDATA(path_walker_height_range_end);
+extern float path_walker_reposition_advance_rate SDATA(path_walker_reposition_advance_rate);
+extern int path_walker_draw_distance SDATA(path_walker_draw_distance);
 typedef struct {
     int path_index;
     float parameter;
@@ -551,11 +551,11 @@ void update_path_walker(unsigned char *m) {
     }
 }
 typedef int u128 __attribute__((mode(TI)));
-extern int path_walker_particle_color_start SDATA(D_L16_00161F58);
-extern int path_walker_particle_color_end SDATA(D_L16_00161F5C);
-extern float path_walker_particle_movement_velocity_scale SDATA(D_L16_00161F60);
-extern float path_walker_particle_random_velocity_scale SDATA(D_L16_00161F64);
-extern float path_walker_particle_target_scalar_scale SDATA(D_L16_00161F68);
+extern int path_walker_particle_color_start SDATA(path_walker_particle_color_start);
+extern int path_walker_particle_color_end SDATA(path_walker_particle_color_end);
+extern float path_walker_particle_movement_velocity_scale SDATA(path_walker_particle_movement_velocity_scale);
+extern float path_walker_particle_random_velocity_scale SDATA(path_walker_particle_random_velocity_scale);
+extern float path_walker_particle_target_scalar_scale SDATA(path_walker_particle_target_scalar_scale);
 extern void FastVecScale(void *, void *, float);
 extern void vec_scale_to_length(void *, void *, float);
 extern float random_angle_radians(void);
@@ -594,7 +594,7 @@ void emit_path_walker_particle(unsigned char *m, void *v) {
 extern float IntToFloat(int);
 extern short *kalebo3_moby_groups[];
 extern char *kalebo3_moby_array MACRO_ADDR;
-extern float path_walker_initial_scale_multiplier SDATA(D_L16_00161F54);
+extern float path_walker_initial_scale_multiplier SDATA(path_walker_initial_scale_multiplier);
 
 /* Start of a walker group: lists the group's mobys and spaces them along the path in random order. */
 void initialize_path_walker_group(unsigned char *m) {
@@ -706,8 +706,8 @@ typedef struct {
 } L16PlatformData;
 extern Hero g_hero;
 extern char *kalebo3_level_cylinders MACRO_ADDR;
-extern float elevator_height_offset SDATA(D_L16_00161F6C);
-extern float elevator_height_acceleration SDATA(D_L16_00161F7C);
+extern float elevator_height_offset SDATA(elevator_height_offset);
+extern float elevator_height_acceleration SDATA(elevator_height_acceleration);
 extern short elevator_max_speed;
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void transform_vector(void *, void *, void *);

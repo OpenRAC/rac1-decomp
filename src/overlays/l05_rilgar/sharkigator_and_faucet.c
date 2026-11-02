@@ -809,7 +809,7 @@ void scenery_ship_update(char *moby) {
         update_moby_glow_and_queue_draw_r(moby);
 }
 extern float g_frame_time MACRO_ADDR;
-extern float rilgar_scenery_ship_speed SDATA(D_L05_00161490);
+extern float rilgar_scenery_ship_speed SDATA(rilgar_scenery_ship_speed);
 extern void SamplePathAt(int *, int, void *, float *, int, float);
 
 // Advances the moby's path parameter by a scaled step, wraps it, and samples the path.
@@ -840,7 +840,7 @@ extern void draw_world_quad(void *, int, int);
 extern unsigned char gCheats[] MACRO_ADDR;
 extern short rilgar_ship_trail_length;
 extern short rilgar_ship_trails_disabled;
-extern int rilgar_ship_trail_quads_hidden SDATA(D_L05_001614B4);
+extern int rilgar_ship_trail_quads_hidden SDATA(rilgar_ship_trail_quads_hidden);
 extern short rilgar_ship_trail_blend_a;
 extern short rilgar_ship_trail_blend_b;
 extern short rilgar_ship_trail_blend_c;
@@ -1143,19 +1143,19 @@ extern void SpawnExplosionFx(void *, void *, int, float, float);
 extern int rilgar_cinematic_mode MACRO_ADDR;
 
 extern short sharkigator_scale;
-extern int extermibot_pre_strike_delay_frames_gp SDATA(D_L05_00161B88);
-extern float extermibot_spark_facing_xy_scale_gp SDATA(D_L05_00161B78);
-extern float extermibot_spark_facing_vector_w_gp SDATA(D_L05_00161B80);
-extern float extermibot_spark_random_vector_w_gp SDATA(D_L05_00161B84);
-extern float extermibot_spark_random_z_scale_gp SDATA(D_L05_00161B7C);
-extern float extermibot_spark_lifetime_min_frames_gp SDATA(D_L05_00161B6C);
-extern float extermibot_spark_time_b SDATA(D_L05_00161B70);
-extern float extermibot_spark_time_c SDATA(D_L05_00161B74);
-extern int extermibot_primary_spark_initial_color_gp SDATA(D_L05_00161B5C);
-extern int extermibot_primary_spark_paired_color_gp SDATA(D_L05_00161B60);
-extern int extermibot_secondary_spark_initial_color_gp SDATA(D_L05_00161B64);
-extern int extermibot_secondary_spark_paired_color_gp SDATA(D_L05_00161B68);
-extern int extermibot_timer0_stamp SDATA(D_L05_00161B44);
+extern int extermibot_pre_strike_delay_frames_gp SDATA(extermibot_pre_strike_delay_frames_gp);
+extern float extermibot_spark_facing_xy_scale_gp SDATA(extermibot_spark_facing_xy_scale_gp);
+extern float extermibot_spark_facing_vector_w_gp SDATA(extermibot_spark_facing_vector_w_gp);
+extern float extermibot_spark_random_vector_w_gp SDATA(extermibot_spark_random_vector_w_gp);
+extern float extermibot_spark_random_z_scale_gp SDATA(extermibot_spark_random_z_scale_gp);
+extern float extermibot_spark_lifetime_min_frames_gp SDATA(extermibot_spark_lifetime_min_frames_gp);
+extern float extermibot_spark_time_b SDATA(extermibot_spark_time_b);
+extern float extermibot_spark_time_c SDATA(extermibot_spark_time_c);
+extern int extermibot_primary_spark_initial_color_gp SDATA(extermibot_primary_spark_initial_color_gp);
+extern int extermibot_primary_spark_paired_color_gp SDATA(extermibot_primary_spark_paired_color_gp);
+extern int extermibot_secondary_spark_initial_color_gp SDATA(extermibot_secondary_spark_initial_color_gp);
+extern int extermibot_secondary_spark_paired_color_gp SDATA(extermibot_secondary_spark_paired_color_gp);
+extern int extermibot_timer0_stamp SDATA(extermibot_timer0_stamp);
 
 /* Extermibot update: wakes from its dormant pose, walks its path, closes in on the target and strikes it, bursts into
    sparks between strikes, and dies on a hit. */
@@ -2018,34 +2018,38 @@ extern int IsPointInPolygon(void *, void *, int);
 extern float step_angle_toward_target(float *, int, float, float);
 extern void axis_rotation_2d48(void *, int, float);
 
-extern float extermitank_move_speed SDATA(D_L05_00161BB8);
+extern float extermitank_move_speed SDATA(extermitank_move_speed);
 extern short extermitank_vars_b58_init;
-extern float extermitank_vars_b5a_init SDATA(D_L05_00161C3C);
-extern float extermitank_tracked_particle_vector_a_w_gp SDATA(D_L05_00161BF0);
-extern float extermitank_tracked_particle_vector_b_w_gp SDATA(D_L05_00161BF4);
-extern float extermitank_spray_speed SDATA(D_L05_00161BE0);
-extern float extermitank_tracked_particle_vector_a_z_scale_gp SDATA(D_L05_00161BE4);
-extern float extermitank_spray_end_spread_deg SDATA(D_L05_00161BF8);
-extern float extermitank_spray_end_speed SDATA(D_L05_00161BE8);
-extern float extermitank_tracked_particle_vector_b_z_scale_gp SDATA(D_L05_00161BEC);
-extern float extermitank_tracked_particle_lifetime_base_frames_gp SDATA(D_L05_00161BD4);
-extern float extermitank_spray_time_b SDATA(D_L05_00161BD8);
-extern float extermitank_spray_time_c SDATA(D_L05_00161BDC);
-extern int extermitank_tracked_particle_color_a_gp SDATA(D_L05_00161BCC);
-extern int extermitank_tracked_particle_color_b_gp SDATA(D_L05_00161BD0);
-extern float extermitank_secondary_particle_vector_a_w_gp SDATA(D_L05_00161C20);
-extern float extermitank_secondary_particle_vector_b_w_gp SDATA(D_L05_00161C24);
-extern float extermitank_spray2_spread_deg SDATA(D_L05_00161C2C);
-extern float extermitank_spray2_speed SDATA(D_L05_00161C10);
-extern float extermitank_secondary_particle_vector_a_z_scale_gp SDATA(D_L05_00161C14);
-extern float extermitank_spray2_end_spread_deg SDATA(D_L05_00161C28);
-extern float extermitank_spray2_end_speed SDATA(D_L05_00161C18);
-extern float extermitank_secondary_particle_vector_b_z_scale_gp SDATA(D_L05_00161C1C);
-extern float extermitank_secondary_particle_lifetime_base_frames_gp SDATA(D_L05_00161C04);
-extern float extermitank_spray2_time_b SDATA(D_L05_00161C08);
-extern float extermitank_spray2_time_c SDATA(D_L05_00161C0C);
-extern int extermitank_secondary_particle_color_a_gp SDATA(D_L05_00161BFC);
-extern int extermitank_secondary_particle_color_b_gp SDATA(D_L05_00161C00);
+extern float extermitank_vars_b5a_init SDATA(extermitank_vars_b5a_init);
+extern float extermitank_tracked_particle_vector_a_w_gp SDATA(extermitank_tracked_particle_vector_a_w_gp);
+extern float extermitank_tracked_particle_vector_b_w_gp SDATA(extermitank_tracked_particle_vector_b_w_gp);
+extern float extermitank_spray_speed SDATA(extermitank_spray_speed);
+extern float extermitank_tracked_particle_vector_a_z_scale_gp SDATA(extermitank_tracked_particle_vector_a_z_scale_gp);
+extern float extermitank_spray_end_spread_deg SDATA(extermitank_spray_end_spread_deg);
+extern float extermitank_spray_end_speed SDATA(extermitank_spray_end_speed);
+extern float extermitank_tracked_particle_vector_b_z_scale_gp SDATA(extermitank_tracked_particle_vector_b_z_scale_gp);
+extern float extermitank_tracked_particle_lifetime_base_frames_gp
+    SDATA(extermitank_tracked_particle_lifetime_base_frames_gp);
+extern float extermitank_spray_time_b SDATA(extermitank_spray_time_b);
+extern float extermitank_spray_time_c SDATA(extermitank_spray_time_c);
+extern int extermitank_tracked_particle_color_a_gp SDATA(extermitank_tracked_particle_color_a_gp);
+extern int extermitank_tracked_particle_color_b_gp SDATA(extermitank_tracked_particle_color_b_gp);
+extern float extermitank_secondary_particle_vector_a_w_gp SDATA(extermitank_secondary_particle_vector_a_w_gp);
+extern float extermitank_secondary_particle_vector_b_w_gp SDATA(extermitank_secondary_particle_vector_b_w_gp);
+extern float extermitank_spray2_spread_deg SDATA(extermitank_spray2_spread_deg);
+extern float extermitank_spray2_speed SDATA(extermitank_spray2_speed);
+extern float extermitank_secondary_particle_vector_a_z_scale_gp
+    SDATA(extermitank_secondary_particle_vector_a_z_scale_gp);
+extern float extermitank_spray2_end_spread_deg SDATA(extermitank_spray2_end_spread_deg);
+extern float extermitank_spray2_end_speed SDATA(extermitank_spray2_end_speed);
+extern float extermitank_secondary_particle_vector_b_z_scale_gp
+    SDATA(extermitank_secondary_particle_vector_b_z_scale_gp);
+extern float extermitank_secondary_particle_lifetime_base_frames_gp
+    SDATA(extermitank_secondary_particle_lifetime_base_frames_gp);
+extern float extermitank_spray2_time_b SDATA(extermitank_spray2_time_b);
+extern float extermitank_spray2_time_c SDATA(extermitank_spray2_time_c);
+extern int extermitank_secondary_particle_color_a_gp SDATA(extermitank_secondary_particle_color_a_gp);
+extern int extermitank_secondary_particle_color_b_gp SDATA(extermitank_secondary_particle_color_b_gp);
 
 extern int coll_line(void *, void *, int, void *, void *);
 extern float FastSubRots(float, float);
@@ -2354,9 +2358,9 @@ extern float FastDiffRots(float, float);
 extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
 extern float FastVecLength(void *);
 extern void StepColorFade(void *, void *);
-extern int extermitank_death_ticks SDATA(D_L05_00161C34);
-extern float extermitank_tread_speed_ref SDATA(D_L05_00161BB0);
-extern float extermitank_tread_turn_scale SDATA(D_L05_00161BB4);
+extern int extermitank_death_ticks SDATA(extermitank_death_ticks);
+extern float extermitank_tread_speed_ref SDATA(extermitank_tread_speed_ref);
+extern float extermitank_tread_turn_scale SDATA(extermitank_tread_turn_scale);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l05/gameplay/entities/002d1688.c, FUN_L05_00305178. */
 void handle_extermitank_hits_and_sync_children(char *moby) {
@@ -3037,12 +3041,12 @@ void SkidMcMarxUpdate(Moby *moby) {
 extern int fast_dec_timer(int *arg0);
 extern void FastVecSub(void *dst, void *a, void *b);
 extern void update_entity_matrix(char *, void *, void *, void *);
-extern float rilgar_floating_platform_pitch_rate SDATA(D_L05_00161D94);
-extern float rilgar_floating_platform_roll_rate SDATA(D_L05_00161D98);
-extern float rilgar_floating_platform_pitch_amp SDATA(D_L05_00161D9C);
-extern float rilgar_floating_platform_roll_amp SDATA(D_L05_00161DA0);
-extern int rilgar_floating_platform_sound_min SDATA(D_L05_00161DA4);
-extern int rilgar_floating_platform_sound_max SDATA(D_L05_00161DA8);
+extern float rilgar_floating_platform_pitch_rate SDATA(rilgar_floating_platform_pitch_rate);
+extern float rilgar_floating_platform_roll_rate SDATA(rilgar_floating_platform_roll_rate);
+extern float rilgar_floating_platform_pitch_amp SDATA(rilgar_floating_platform_pitch_amp);
+extern float rilgar_floating_platform_roll_amp SDATA(rilgar_floating_platform_roll_amp);
+extern int rilgar_floating_platform_sound_min SDATA(rilgar_floating_platform_sound_min);
+extern int rilgar_floating_platform_sound_max SDATA(rilgar_floating_platform_sound_max);
 
 // Update function for a swaying moby: picks a random angle, then eases and rotates it.
 void floating_platform_update(unsigned char *moby) {
@@ -3190,15 +3194,15 @@ extern int rilgar_water_ripple_params_0 MACRO_ADDR;
 extern float rilgar_water_ripple_params_1 MACRO_ADDR;
 extern float rilgar_water_ripple_params_2 MACRO_ADDR;
 extern float rilgar_water_ripple_params_3 MACRO_ADDR;
-extern int rilgar_water_override_patch SDATA(D_L05_00161DD0);
-extern unsigned short rilgar_water_override_value SDATA(D_L05_00161DD4);
-extern int rilgar_flood_slowdown_count SDATA(D_L05_00161DDC);
-extern int rilgar_flood_stage SDATA(D_L05_00161DE0);
-extern float rilgar_flood_skip_height SDATA(D_L05_00161DE4);
-extern float rilgar_flood_water_z SDATA(D_L05_00161DE8);
-extern int rilgar_flood_checkpoint_reached SDATA(D_L05_00161DEC);
-extern float rilgar_water_gate_accel SDATA(D_L05_00161DF0);
-extern float rilgar_water_gate_max_speed SDATA(D_L05_00161DF4);
+extern int rilgar_water_override_patch SDATA(rilgar_water_override_patch);
+extern unsigned short rilgar_water_override_value SDATA(rilgar_water_override_value);
+extern int rilgar_flood_slowdown_count SDATA(rilgar_flood_slowdown_count);
+extern int rilgar_flood_stage SDATA(rilgar_flood_stage);
+extern float rilgar_flood_skip_height SDATA(rilgar_flood_skip_height);
+extern float rilgar_flood_water_z SDATA(rilgar_flood_water_z);
+extern int rilgar_flood_checkpoint_reached SDATA(rilgar_flood_checkpoint_reached);
+extern float rilgar_water_gate_accel SDATA(rilgar_water_gate_accel);
+extern float rilgar_water_gate_max_speed SDATA(rilgar_water_gate_max_speed);
 
 extern void RescaleFloatTable(float);
 extern void RipplePatch_ToFixedPoint(float *, int *);

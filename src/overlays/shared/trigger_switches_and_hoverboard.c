@@ -236,7 +236,7 @@ void update_moby_spatial_trigger(struct Moby *m) {
 extern void MobyBlendAnimation(void *, int, int, int);
 extern void update_hydrodisplacer_faucet_pulse_color(void *);
 extern char g_hero[];
-extern int moby_pool_4f60 SDATA(D_L05_00160098);
+extern int moby_pool_4f60 SDATA(moby_pool_4f60);
 
 /* Moby update: plays an animation when its state and a flag allow, then calls the next stage. */
 void hydrodisplacer_faucet_update(char *faucet_moby) {
@@ -280,11 +280,11 @@ extern float FastSin(float);
 extern int FastTweenColor(int, int, float);
 extern short g_frame_time_s __asm__("D_0015EE6C");
 
-extern int rilgar_faucet_rest_color SDATA(D_L05_00161980);
-extern int rilgar_faucet_pulse_color_a1 SDATA(D_L05_00161984);
-extern int rilgar_faucet_pulse_color_b1 SDATA(D_L05_00161988);
-extern int rilgar_faucet_pulse_color_a2 SDATA(D_L05_0016198C);
-extern int rilgar_faucet_pulse_color_b2 SDATA(D_L05_00161990);
+extern int rilgar_faucet_rest_color SDATA(rilgar_faucet_rest_color);
+extern int rilgar_faucet_pulse_color_a1 SDATA(rilgar_faucet_pulse_color_a1);
+extern int rilgar_faucet_pulse_color_b1 SDATA(rilgar_faucet_pulse_color_b1);
+extern int rilgar_faucet_pulse_color_a2 SDATA(rilgar_faucet_pulse_color_a2);
+extern int rilgar_faucet_pulse_color_b2 SDATA(rilgar_faucet_pulse_color_b2);
 
 /* eases the pulse level of the moby that holds the focus and mixes its colour from two palettes */
 void update_hydrodisplacer_faucet_pulse_color(void *mv) {
@@ -331,11 +331,11 @@ extern void FastVecAdd(void *, void *, void *);
 
 extern void FastVecScale(void *, void *, float);
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
-extern int rilgar_frame_count SDATA(D_L05_0015F6B0);
+extern int rilgar_frame_count SDATA(rilgar_frame_count);
 extern int hoverboard_race_finished MACRO_ADDR;
-extern int hoverboard_effect_displacement_w_gp SDATA(D_L05_001619E8);
-extern int rilgar_hoverboard_trail_start_color SDATA(D_L05_001619CC);
-extern int rilgar_hoverboard_trail_end_color SDATA(D_L05_001619D0);
+extern int hoverboard_effect_displacement_w_gp SDATA(hoverboard_effect_displacement_w_gp);
+extern int rilgar_hoverboard_trail_start_color SDATA(rilgar_hoverboard_trail_start_color);
+extern int rilgar_hoverboard_trail_end_color SDATA(rilgar_hoverboard_trail_end_color);
 extern unsigned char special_items_base[];
 extern unsigned char help_stats_base[];
 
@@ -615,13 +615,13 @@ extern float rilgar_camera_pos_r2[] __asm__("D_L05_001672C0");
 extern float D_L05_001D6B00[][2];
 extern float D_L05_001D6B20[][4];
 extern float D_L05_001D6B60[][4];
-extern int rilgar_wobble_quad_blend_a SDATA(D_L05_00161DB4);
-extern int rilgar_wobble_quad_blend_b SDATA(D_L05_00161DB8);
-extern int rilgar_wobble_quad_blend_c SDATA(D_L05_00161DBC);
-extern int rilgar_wobble_quad_blend_d SDATA(D_L05_00161DC0);
-extern int rilgar_wobble_quad_start_color SDATA(D_L05_00161DC4);
-extern int rilgar_wobble_quad_end_color SDATA(D_L05_00161DC8);
-extern int rilgar_wobble_quad_texture SDATA(D_L05_00161DCC);
+extern int rilgar_wobble_quad_blend_a SDATA(rilgar_wobble_quad_blend_a);
+extern int rilgar_wobble_quad_blend_b SDATA(rilgar_wobble_quad_blend_b);
+extern int rilgar_wobble_quad_blend_c SDATA(rilgar_wobble_quad_blend_c);
+extern int rilgar_wobble_quad_blend_d SDATA(rilgar_wobble_quad_blend_d);
+extern int rilgar_wobble_quad_start_color SDATA(rilgar_wobble_quad_start_color);
+extern int rilgar_wobble_quad_end_color SDATA(rilgar_wobble_quad_end_color);
+extern int rilgar_wobble_quad_texture SDATA(rilgar_wobble_quad_texture);
 
 /* Draw callback of the Lamp wobbling effect (update_moby_wobble above):
    builds a basis from the moby (rotation from its pvars phase, direction toward
@@ -812,7 +812,7 @@ extern int rilgar_cinematic_mode MACRO_ADDR;
 extern unsigned char gCheats[] MACRO_ADDR;
 extern G rilgar_cutscene_state;
 
-extern float rilgar_big_head_scale SDATA(D_L05_00161FA8);
+extern float rilgar_big_head_scale SDATA(rilgar_big_head_scale);
 
 /* Resets the marker record's scale once for every moby sharing this one's class, while the level flag is 2. */
 void attach_big_head_cheat_manipulator(char *a) {
@@ -1133,8 +1133,8 @@ struct Spark_c8e0 {
 };
 
 extern short rilgar_glow_tip_offset;
-extern f32 rilgar_glow_debris_forward_speed SDATA(D_L05_00162090);
-extern f32 rilgar_glow_debris_up_speed SDATA(D_L05_00162094);
+extern f32 rilgar_glow_debris_forward_speed SDATA(rilgar_glow_debris_forward_speed);
+extern f32 rilgar_glow_debris_up_speed SDATA(rilgar_glow_debris_up_speed);
 extern f32 frame_scale MACRO_ADDR;
 extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern f32 IntToFloat(s32);
@@ -1289,7 +1289,7 @@ typedef struct {
 
 extern float rilgar_glow_quad_corners[4][4];
 extern short rilgar_glow_tip_offset;
-extern float rilgar_glow_camera_pull SDATA(D_L05_0016208C);
+extern float rilgar_glow_camera_pull SDATA(rilgar_glow_camera_pull);
 u64 GetEffectTex(s32);
 extern void FastVecScale(void *, void *, float);
 extern void vec_scale_to_length(void *, void *, float);

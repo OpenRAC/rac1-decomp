@@ -180,7 +180,7 @@ extern void moby_build_matrix(void *);
 extern void update_moby_movement_with_sphere_collision(f32, struct PMoby *, void *, void *);
 extern struct Path5BD0 *eudora_paths[];
 extern f32 eudora_swarm_steer_params[8];
-extern int eudora_swarm_initialized SDATA(D_L04_00161450);
+extern int eudora_swarm_initialized SDATA(eudora_swarm_initialized);
 extern char *eudora_moby_list MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;
@@ -1325,7 +1325,7 @@ int check_circular_saw_melee_attack_spacing(char *moby) {
     }
     return 1;
 }
-extern float eudora_circular_saw_separation_weight SDATA(D_L04_00161914);
+extern float eudora_circular_saw_separation_weight SDATA(eudora_circular_saw_separation_weight);
 extern void FindNearestTargetMoby_k(void *, void *, float) __asm__("func_L00_00260D30");
 extern void FastVecSub(void *, void *, void *);
 extern void FastVecScale(void *, void *, float);
@@ -2188,8 +2188,8 @@ typedef struct {
 extern f32 random_angle_radians(void);
 extern Puff *PartType23Spawn(void *, f32, f32, f32, int, void *, f32, int);
 extern void PartType21Spawn(void *, void *, int, int, int, int, f32);
-extern f32 eudora_smoke_puff_rise_speed SDATA(D_L04_00161944);
-extern f32 smoke_trail_puff_position_jitter_scale_gp SDATA(D_L04_0016194C);
+extern f32 eudora_smoke_puff_rise_speed SDATA(eudora_smoke_puff_rise_speed);
+extern f32 smoke_trail_puff_position_jitter_scale_gp SDATA(smoke_trail_puff_position_jitter_scale_gp);
 
 /* Lays a trail of smoke puffs from FROM to TO with a burst at each end.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l04/gameplay/entities/0029eb20.c, FUN_L04_002c41e0. */

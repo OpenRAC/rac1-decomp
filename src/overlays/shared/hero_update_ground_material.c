@@ -1379,7 +1379,7 @@ d1:
     }
 }
 extern char novalis_coll_resolved_pos[];
-extern float frame_scale SDATA(D_0015EE60);
+extern float frame_scale SDATA(frame_scale);
 extern void clear_u64_value(float *);
 extern void Hero_ConstrainToPath(void);
 extern void HeroOffsetAlongViewZ(float *dst, float *src, float dz);

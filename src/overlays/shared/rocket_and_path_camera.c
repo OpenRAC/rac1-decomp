@@ -261,13 +261,13 @@ extern float FastCos(float);
 extern float FastSin(float);
 extern void FastVecAdd(float *, float *, float *);
 
-extern float orxon_type52_particle_spawn_radius SDATA(D_L10_00161EF0);
-extern float orxon_type52_particle_start_size_max SDATA(D_L10_00161EE0);
-extern float orxon_type52_particle_end_size_max SDATA(D_L10_00161EE4);
-extern int orxon_type52_particle_life_min SDATA(D_L10_00161EE8);
-extern int orxon_type52_particle_life_max SDATA(D_L10_00161EEC);
-extern int orxon_type52_particle_color_start SDATA(D_L10_00161ED8);
-extern int orxon_type52_particle_color_end SDATA(D_L10_00161EDC);
+extern float orxon_type52_particle_spawn_radius SDATA(orxon_type52_particle_spawn_radius);
+extern float orxon_type52_particle_start_size_max SDATA(orxon_type52_particle_start_size_max);
+extern float orxon_type52_particle_end_size_max SDATA(orxon_type52_particle_end_size_max);
+extern int orxon_type52_particle_life_min SDATA(orxon_type52_particle_life_min);
+extern int orxon_type52_particle_life_max SDATA(orxon_type52_particle_life_max);
+extern int orxon_type52_particle_color_start SDATA(orxon_type52_particle_color_start);
+extern int orxon_type52_particle_color_end SDATA(orxon_type52_particle_color_end);
 
 // spawns an effect at a jittered position around the moby
 void spawn_type_52_particle_near_moby(char *moby) {
@@ -338,7 +338,7 @@ typedef struct {
     float uv[4][2];
     long unk70, tex, unk80, unk88;
 } Quad;
-extern int quad_layer_count SDATA(D_L10_00161FC0);
+extern int quad_layer_count SDATA(quad_layer_count);
 extern short orxon_quad_layer_alpha_a;
 extern short orxon_quad_layer_alpha_b;
 extern short orxon_quad_layer_alpha_c;

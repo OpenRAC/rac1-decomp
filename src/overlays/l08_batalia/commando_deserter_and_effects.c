@@ -443,9 +443,9 @@ extern void VU1_addGSregister(int, long);
 extern int GetEffectTex(int);
 extern void draw_scrolled_mesh_batch(int);
 
-extern int scrolled_mesh_unscaled_fixed_alpha SDATA(D_L08_00161E60);
-extern int offset_mesh_first_pass_fixed_alpha SDATA(D_L08_00161E80);
-extern int pair_offset_mesh_fixed_alpha SDATA(D_L08_00161E90);
+extern int scrolled_mesh_unscaled_fixed_alpha SDATA(scrolled_mesh_unscaled_fixed_alpha);
+extern int offset_mesh_first_pass_fixed_alpha SDATA(offset_mesh_first_pass_fixed_alpha);
+extern int pair_offset_mesh_fixed_alpha SDATA(pair_offset_mesh_fixed_alpha);
 extern int scrolled_mesh_subtractive_base_fixed_alpha MACRO_ADDR;
 extern int scrolled_mesh_additive_base_fixed_alpha MACRO_ADDR;
 extern int offset_mesh_second_pass_fixed_alpha MACRO_ADDR;
@@ -505,8 +505,8 @@ extern float layered_mesh_effect_center_z MACRO_ADDR;
 extern float layered_mesh_effect_culling_radius MACRO_ADDR;
 extern char batalia_hero_pos[];
 extern int batalia_uv_scroll_1[];
-extern int layered_mesh_effect_colors_scaled SDATA(D_L08_00161E94);
-extern float layered_mesh_effect_center_x SDATA(D_L08_00161E50);
+extern int layered_mesh_effect_colors_scaled SDATA(layered_mesh_effect_colors_scaled);
+extern float layered_mesh_effect_center_x SDATA(layered_mesh_effect_center_x);
 
 /* Update function: state 0 sets up some global tables (running scale_rgba_tables once), state 1 tests a point
  * and its distance to batalia_hero_pos and sets layered_mesh_effect_fade_alpha to a 0 to 255 value that fades between
@@ -592,7 +592,7 @@ extern void Moby_PlaySound_r3(s32, s32, struct Moby *) __asm__("func_0022ED80");
 extern void MobySpringTurn(struct Moby *, f32, f32 *, f32, f32, f32);
 extern void spawn_explosion(char *, void *, char *, f32, f32, s32, s32, s32, f32, f32, f32, f32, s32, f32, s32, s32,
                             s32, u8);
-extern f32 path_follower_y_rotation_rate_degrees SDATA(D_L08_00162000);
+extern f32 path_follower_y_rotation_rate_degrees SDATA(path_follower_y_rotation_rate_degrees);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l08/gameplay/entities/002e9b70.c, FUN_L08_002f44c0. */
 void update_path_following_moby_with_fade(struct Moby *moby) {
@@ -1225,7 +1225,7 @@ extern float FastSubRots(float, float);
 extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern char batalia_commando_dialogue_name[];
-extern int commando_height_probe_distance_limit SDATA(D_L08_00162268);
+extern int commando_height_probe_distance_limit SDATA(commando_height_probe_distance_limit);
 extern char *batalia_scene_points MACRO_ADDR;
 extern unsigned char gCheats[] MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;
@@ -1606,7 +1606,7 @@ void batalia_deserter_update(char *m) {
         EaseManipulatorOffsets(m, deserter_data->head, 1, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
     }
 }
-extern float batalia_deserter_manipulator_scale SDATA(D_L08_00162390);
+extern float batalia_deserter_manipulator_scale SDATA(batalia_deserter_manipulator_scale);
 
 /* triggers objects matching the moby's class, with per-segment settings */
 void attach_batalia_plumber_class_manipulator(char *moby) {
@@ -2068,9 +2068,9 @@ void queue_batalia_offset_textured_batches(int x) {
 extern void queue_batalia_eight_textured_batches(int);
 extern void queue_batalia_six_textured_batches(int);
 extern void queue_batalia_offset_textured_batches(int);
-extern int batalia_texture_3a_blend_factor SDATA(D_L08_00162420);
-extern int batalia_texture_3c_pair_zero_blend_factor SDATA(D_L08_00162440);
-extern int batalia_texture_3d_blend_factor SDATA(D_L08_00162450);
+extern int batalia_texture_3a_blend_factor SDATA(batalia_texture_3a_blend_factor);
+extern int batalia_texture_3c_pair_zero_blend_factor SDATA(batalia_texture_3c_pair_zero_blend_factor);
+extern int batalia_texture_3d_blend_factor SDATA(batalia_texture_3d_blend_factor);
 extern int batalia_texture_3b_pair_one_blend_factor_base MACRO_ADDR;
 extern int batalia_texture_3b_pair_two_blend_factor_base MACRO_ADDR;
 extern int batalia_texture_3c_pair_one_blend_factor MACRO_ADDR;
@@ -2121,11 +2121,11 @@ extern char batalia_textured_mesh6_counts[];
 extern IntPair batalia_textured_mesh8_scroll_offset[];
 extern char batalia_textured_mesh8_scroll_offset_1[];
 extern IntPair batalia_textured_mesh6_scroll_offset[] MACRO_ADDR;
-extern float batalia_effect_reference_position_x SDATA(D_L08_00162410);
+extern float batalia_effect_reference_position_x SDATA(batalia_effect_reference_position_x);
 extern float batalia_effect_reference_position_y MACRO_ADDR;
 extern float batalia_effect_reference_position_z MACRO_ADDR;
 extern float batalia_effect_culling_radius MACRO_ADDR;
-extern int batalia_textured_effect_colors_scaled SDATA(D_L08_00162454);
+extern int batalia_textured_effect_colors_scaled SDATA(batalia_textured_effect_colors_scaled);
 extern char batalia_hero_pos[];
 
 // UpdateMoby for a pulsing light effect: init on state 0, draw when close enough on state 1

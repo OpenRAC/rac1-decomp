@@ -92,7 +92,7 @@ extern char active_scene_trigger[];
 extern char item_price_table[];
 extern int gBolts MACRO_ADDR;
 
-extern int bolt_hud_item SDATA(D_L00_001601F0);
+extern int bolt_hud_item SDATA(bolt_hud_item);
 extern s32 DialogRequest_Init(void *p, u8 *out_p);
 
 extern int hud_keep_visible(int, int);

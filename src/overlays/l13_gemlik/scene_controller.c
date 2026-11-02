@@ -486,29 +486,37 @@ char *spawn_poison_vessel_effect_moby(void *a, void *b, int c, int d) {
     }
     return (char *)m;
 }
-extern float moby_spark_first_batch_vertical_velocity_base_gp SDATA(D_L13_00161FC0);
-extern float moby_spark_second_batch_frame_count_base_gp SDATA(D_L13_00161FC4);
-extern float moby_spark_second_batch_second_frame_count_base_gp SDATA(D_L13_00161FC8);
-extern float moby_spark_second_batch_third_frame_count_base_gp SDATA(D_L13_00161FCC);
-extern float moby_spark_second_batch_vertical_velocity_base_gp SDATA(D_L13_00161FD4);
-extern float moby_spark_second_batch_horizontal_acceleration_gp SDATA(D_L13_00161FD8);
-extern float moby_spark_second_batch_vertical_acceleration_base_gp SDATA(D_L13_00161FDC);
-extern float gemlik_spark1_spread_deg SDATA(D_L13_00161FE0);
-extern float gemlik_spark2_spread_deg SDATA(D_L13_00161FE4);
-extern float moby_spark_second_batch_discarded_random_bound_gp SDATA(D_L13_00161FE8);
-extern float moby_spark_first_batch_discarded_velocity_w_initializer_gp SDATA(D_L13_00161FEC);
-extern float moby_spark_first_batch_acceleration_w_initializer_gp SDATA(D_L13_00161FF0);
-extern float moby_spark_second_batch_discarded_velocity_w_initializer_gp SDATA(D_L13_00161FF4);
-extern float moby_spark_second_batch_acceleration_w_initializer_gp SDATA(D_L13_00161FF8);
-extern int gemlik_spark1_start_color SDATA(D_L13_00161F98);
-extern int gemlik_spark1_end_color SDATA(D_L13_00161F9C);
-extern int gemlik_spark2_start_color SDATA(D_L13_00161FA0);
-extern int gemlik_spark2_end_color SDATA(D_L13_00161FA4);
-extern float moby_spark_first_batch_frame_count_base_gp SDATA(D_L13_00161FA8);
-extern float moby_spark_first_batch_second_frame_count_base_gp SDATA(D_L13_00161FAC);
-extern float moby_spark_first_batch_third_frame_count_base_gp SDATA(D_L13_00161FB0);
-extern float moby_spark_first_batch_horizontal_acceleration_gp SDATA(D_L13_00161FB4);
-extern float moby_spark_first_batch_vertical_acceleration_base_gp SDATA(D_L13_00161FB8);
+extern float moby_spark_first_batch_vertical_velocity_base_gp SDATA(moby_spark_first_batch_vertical_velocity_base_gp);
+extern float moby_spark_second_batch_frame_count_base_gp SDATA(moby_spark_second_batch_frame_count_base_gp);
+extern float moby_spark_second_batch_second_frame_count_base_gp
+    SDATA(moby_spark_second_batch_second_frame_count_base_gp);
+extern float moby_spark_second_batch_third_frame_count_base_gp SDATA(moby_spark_second_batch_third_frame_count_base_gp);
+extern float moby_spark_second_batch_vertical_velocity_base_gp SDATA(moby_spark_second_batch_vertical_velocity_base_gp);
+extern float moby_spark_second_batch_horizontal_acceleration_gp
+    SDATA(moby_spark_second_batch_horizontal_acceleration_gp);
+extern float moby_spark_second_batch_vertical_acceleration_base_gp
+    SDATA(moby_spark_second_batch_vertical_acceleration_base_gp);
+extern float gemlik_spark1_spread_deg SDATA(gemlik_spark1_spread_deg);
+extern float gemlik_spark2_spread_deg SDATA(gemlik_spark2_spread_deg);
+extern float moby_spark_second_batch_discarded_random_bound_gp SDATA(moby_spark_second_batch_discarded_random_bound_gp);
+extern float moby_spark_first_batch_discarded_velocity_w_initializer_gp
+    SDATA(moby_spark_first_batch_discarded_velocity_w_initializer_gp);
+extern float moby_spark_first_batch_acceleration_w_initializer_gp
+    SDATA(moby_spark_first_batch_acceleration_w_initializer_gp);
+extern float moby_spark_second_batch_discarded_velocity_w_initializer_gp
+    SDATA(moby_spark_second_batch_discarded_velocity_w_initializer_gp);
+extern float moby_spark_second_batch_acceleration_w_initializer_gp
+    SDATA(moby_spark_second_batch_acceleration_w_initializer_gp);
+extern int gemlik_spark1_start_color SDATA(gemlik_spark1_start_color);
+extern int gemlik_spark1_end_color SDATA(gemlik_spark1_end_color);
+extern int gemlik_spark2_start_color SDATA(gemlik_spark2_start_color);
+extern int gemlik_spark2_end_color SDATA(gemlik_spark2_end_color);
+extern float moby_spark_first_batch_frame_count_base_gp SDATA(moby_spark_first_batch_frame_count_base_gp);
+extern float moby_spark_first_batch_second_frame_count_base_gp SDATA(moby_spark_first_batch_second_frame_count_base_gp);
+extern float moby_spark_first_batch_third_frame_count_base_gp SDATA(moby_spark_first_batch_third_frame_count_base_gp);
+extern float moby_spark_first_batch_horizontal_acceleration_gp SDATA(moby_spark_first_batch_horizontal_acceleration_gp);
+extern float moby_spark_first_batch_vertical_acceleration_base_gp
+    SDATA(moby_spark_first_batch_vertical_acceleration_base_gp);
 
 extern float g_frame_time_sq MACRO_ADDR;
 

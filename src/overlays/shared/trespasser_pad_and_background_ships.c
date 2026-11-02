@@ -100,7 +100,7 @@ struct BackgroundShip2Vars {
 LINKER_REMNANT("asm/overlays", func_L02_002A5218);
 extern u8 aridia_scaled_float_table[];
 extern float aridia_scaled_float_table_source[];
-extern s32 scaled_table_header_first_word SDATA(D_L02_00161320);
+extern s32 scaled_table_header_first_word SDATA(scaled_table_header_first_word);
 extern s32 scaled_table_header_second_word MACRO_ADDR;
 extern s32 scaled_table_header_third_word MACRO_ADDR;
 extern s32 scaled_table_header_final_word MACRO_ADDR;
@@ -717,27 +717,35 @@ extern void draw_tresspasser_puzzle_arrow(int, int, int, float, float);
 extern void draw_tresspasser_puzzle_radial_strip(void *, f32, f32, f32, s32);
 extern void VU1_addGSregister(int, u64);
 extern int FastTweenColor(int, int, float);
-extern int tresspasser_third_ring_arc_second_boundary_radius_gp SDATA(D_L02_00161BC0);
-extern int tresspasser_third_ring_arc_first_boundary_radius_gp SDATA(D_L02_00161BC4);
-extern int tresspasser_third_ring_arrow_distance_gp SDATA(D_L02_00161BC8);
-extern int tresspasser_second_ring_arc_second_boundary_radius_gp SDATA(D_L02_00161BCC);
-extern int tresspasser_second_ring_arc_first_boundary_radius_gp SDATA(D_L02_00161BD0);
-extern int tresspasser_second_ring_arrow_distance_gp SDATA(D_L02_00161BD4);
-extern int tresspasser_first_ring_arc_second_boundary_radius_gp SDATA(D_L02_00161BD8);
-extern int tresspasser_first_ring_arc_first_boundary_radius_gp SDATA(D_L02_00161BDC);
-extern int tresspasser_first_ring_arrow_distance_gp SDATA(D_L02_00161BE0);
-extern int tresspasser_marker_arc_second_boundary_radius_gp SDATA(D_L02_00161BE4);
-extern int tresspasser_marker_arc_first_boundary_radius_gp SDATA(D_L02_00161BE8);
-extern int tresspasser_unintercepted_strip_endpoint_distance_gp SDATA(D_L02_00161BEC);
-extern int tresspasser_selected_ring_base_color_gp SDATA(D_L02_00161C30);
-extern int tresspasser_unselected_ring_color_gp SDATA(D_L02_00161C34);
-extern int tresspasser_arrow_unused_argument_gp SDATA(D_L02_00161C38);
-extern int tresspasser_default_radial_strip_color_gp SDATA(D_L02_00161C3C);
-extern int tresspasser_reached_marker_strip_color_gp SDATA(D_L02_00161C40);
-extern int tresspasser_reverse_radial_strip_color_gp SDATA(D_L02_00161C44);
-extern int tresspasser_unreached_marker_arc_flag_clear_color_gp SDATA(D_L02_00161C4C);
-extern int tresspasser_unreached_marker_arc_flag_set_color_gp SDATA(D_L02_00161C50);
-extern int tresspasser_reached_marker_arc_color_gp SDATA(D_L02_00161C54);
+extern int tresspasser_third_ring_arc_second_boundary_radius_gp
+    SDATA(tresspasser_third_ring_arc_second_boundary_radius_gp);
+extern int tresspasser_third_ring_arc_first_boundary_radius_gp
+    SDATA(tresspasser_third_ring_arc_first_boundary_radius_gp);
+extern int tresspasser_third_ring_arrow_distance_gp SDATA(tresspasser_third_ring_arrow_distance_gp);
+extern int tresspasser_second_ring_arc_second_boundary_radius_gp
+    SDATA(tresspasser_second_ring_arc_second_boundary_radius_gp);
+extern int tresspasser_second_ring_arc_first_boundary_radius_gp
+    SDATA(tresspasser_second_ring_arc_first_boundary_radius_gp);
+extern int tresspasser_second_ring_arrow_distance_gp SDATA(tresspasser_second_ring_arrow_distance_gp);
+extern int tresspasser_first_ring_arc_second_boundary_radius_gp
+    SDATA(tresspasser_first_ring_arc_second_boundary_radius_gp);
+extern int tresspasser_first_ring_arc_first_boundary_radius_gp
+    SDATA(tresspasser_first_ring_arc_first_boundary_radius_gp);
+extern int tresspasser_first_ring_arrow_distance_gp SDATA(tresspasser_first_ring_arrow_distance_gp);
+extern int tresspasser_marker_arc_second_boundary_radius_gp SDATA(tresspasser_marker_arc_second_boundary_radius_gp);
+extern int tresspasser_marker_arc_first_boundary_radius_gp SDATA(tresspasser_marker_arc_first_boundary_radius_gp);
+extern int tresspasser_unintercepted_strip_endpoint_distance_gp
+    SDATA(tresspasser_unintercepted_strip_endpoint_distance_gp);
+extern int tresspasser_selected_ring_base_color_gp SDATA(tresspasser_selected_ring_base_color_gp);
+extern int tresspasser_unselected_ring_color_gp SDATA(tresspasser_unselected_ring_color_gp);
+extern int tresspasser_arrow_unused_argument_gp SDATA(tresspasser_arrow_unused_argument_gp);
+extern int tresspasser_default_radial_strip_color_gp SDATA(tresspasser_default_radial_strip_color_gp);
+extern int tresspasser_reached_marker_strip_color_gp SDATA(tresspasser_reached_marker_strip_color_gp);
+extern int tresspasser_reverse_radial_strip_color_gp SDATA(tresspasser_reverse_radial_strip_color_gp);
+extern int tresspasser_unreached_marker_arc_flag_clear_color_gp
+    SDATA(tresspasser_unreached_marker_arc_flag_clear_color_gp);
+extern int tresspasser_unreached_marker_arc_flag_set_color_gp SDATA(tresspasser_unreached_marker_arc_flag_set_color_gp);
+extern int tresspasser_reached_marker_arc_color_gp SDATA(tresspasser_reached_marker_arc_color_gp);
 extern void draw_tresspasser_puzzle_textured_quads(void);
 extern s32 frame_counter_ref MACRO_ADDR;
 
@@ -1109,20 +1117,20 @@ void draw_tresspasser_puzzle_ring_arc(int tex, u32 col, float a, float b, float 
         draw_geometry_quad_5188(xy, uv, cols, tex, 1);
     }
 }
-extern int trespasser_arrow_hit_uv_0 SDATA(D_L02_00161B4C);
-extern int trespasser_arrow_hit_uv_1 SDATA(D_L02_00161B50);
-extern int trespasser_arrow_hit_uv_2 SDATA(D_L02_00161B54);
-extern int trespasser_arrow_hit_uv_3 SDATA(D_L02_00161B58);
-extern int trespasser_arrow_active_uv_0 SDATA(D_L02_00161B5C);
-extern int trespasser_arrow_active_uv_1 SDATA(D_L02_00161B60);
-extern int trespasser_arrow_active_uv_2 SDATA(D_L02_00161B64);
-extern int trespasser_arrow_active_uv_3 SDATA(D_L02_00161B68);
-extern int trespasser_arrow_idle_uv_0 SDATA(D_L02_00161B6C);
-extern int trespasser_arrow_idle_uv_1 SDATA(D_L02_00161B70);
-extern int trespasser_arrow_idle_uv_2 SDATA(D_L02_00161B74);
-extern int trespasser_arrow_idle_uv_3 SDATA(D_L02_00161B78);
-extern u32 trespasser_arrow_color SDATA(D_L02_00161C2C);
-extern int trespasser_effect_tex_base SDATA(D_L02_00161BAC);
+extern int trespasser_arrow_hit_uv_0 SDATA(trespasser_arrow_hit_uv_0);
+extern int trespasser_arrow_hit_uv_1 SDATA(trespasser_arrow_hit_uv_1);
+extern int trespasser_arrow_hit_uv_2 SDATA(trespasser_arrow_hit_uv_2);
+extern int trespasser_arrow_hit_uv_3 SDATA(trespasser_arrow_hit_uv_3);
+extern int trespasser_arrow_active_uv_0 SDATA(trespasser_arrow_active_uv_0);
+extern int trespasser_arrow_active_uv_1 SDATA(trespasser_arrow_active_uv_1);
+extern int trespasser_arrow_active_uv_2 SDATA(trespasser_arrow_active_uv_2);
+extern int trespasser_arrow_active_uv_3 SDATA(trespasser_arrow_active_uv_3);
+extern int trespasser_arrow_idle_uv_0 SDATA(trespasser_arrow_idle_uv_0);
+extern int trespasser_arrow_idle_uv_1 SDATA(trespasser_arrow_idle_uv_1);
+extern int trespasser_arrow_idle_uv_2 SDATA(trespasser_arrow_idle_uv_2);
+extern int trespasser_arrow_idle_uv_3 SDATA(trespasser_arrow_idle_uv_3);
+extern u32 trespasser_arrow_color SDATA(trespasser_arrow_color);
+extern int trespasser_effect_tex_base SDATA(trespasser_effect_tex_base);
 extern float trespasser_arrow_corners[4][4];
 extern float FastSin(float);
 extern float FastCos(float);
@@ -1192,7 +1200,7 @@ void draw_tresspasser_puzzle_arrow(int p0, int p1, int sel, float a, float s) {
     draw_geometry_quad_5188(xy, uv, col, tex, 1);
 }
 extern s32 frame_counter_ref MACRO_ADDR;
-extern f32 trespasser_beam_scroll_speed SDATA(D_L02_00161BF0);
+extern f32 trespasser_beam_scroll_speed SDATA(trespasser_beam_scroll_speed);
 extern short trespasser_beam_uv_0;
 extern short trespasser_beam_uv_1;
 extern short trespasser_beam_uv_2;
@@ -1201,7 +1209,7 @@ extern short trespasser_beam_glow_uv_0;
 extern short trespasser_beam_glow_uv_1;
 extern short trespasser_beam_glow_uv_2;
 extern short trespasser_beam_glow_uv_3;
-extern s32 tresspasser_radial_strip_texture_index_gp SDATA(D_L02_00161BF4);
+extern s32 tresspasser_radial_strip_texture_index_gp SDATA(tresspasser_radial_strip_texture_index_gp);
 extern f32 FastSin(f32);
 extern f32 FastCos(f32);
 extern s32 truncate_float_to_s32(f32);
@@ -1377,11 +1385,11 @@ typedef struct {
     long a, b, c, d;
 } Q_2dae88;
 extern Q_2dae88 trespasser_backdrop_quads[];
-extern int trespasser_backdrop_color SDATA(D_L02_00161C24);
-extern int trespasser_backdrop_uv_0 SDATA(D_L02_00161B3C);
-extern int trespasser_backdrop_uv_1 SDATA(D_L02_00161B40);
-extern int trespasser_backdrop_uv_2 SDATA(D_L02_00161B44);
-extern int trespasser_backdrop_uv_3 SDATA(D_L02_00161B48);
+extern int trespasser_backdrop_color SDATA(trespasser_backdrop_color);
+extern int trespasser_backdrop_uv_0 SDATA(trespasser_backdrop_uv_0);
+extern int trespasser_backdrop_uv_1 SDATA(trespasser_backdrop_uv_1);
+extern int trespasser_backdrop_uv_2 SDATA(trespasser_backdrop_uv_2);
+extern int trespasser_backdrop_uv_3 SDATA(trespasser_backdrop_uv_3);
 int GetEffectTex(int);
 void func_L02_0020BF88_DC2C0(Q_2dae88 *, int *, int *, u64, int) __asm__("func_L02_0020BF88");
 
@@ -1410,9 +1418,9 @@ extern float FastVecLength(void *);
 
 extern void update_entity_matrix(void *, void *, void *, void *);
 extern float g_frame_time_sq MACRO_ADDR;
-extern int escalator_reverse_delay SDATA(D_L02_00161CA8);
-extern float escalator_accel SDATA(D_L02_00161CAC);
-extern float escalator_max_speed SDATA(D_L02_00161CA4);
+extern int escalator_reverse_delay SDATA(escalator_reverse_delay);
+extern float escalator_accel SDATA(escalator_accel);
+extern float escalator_max_speed SDATA(escalator_max_speed);
 /* Moby update for a pusher that slides back and forth along its heading. */
 void escalator_update(Moby *moby) {
     struct EscalatorVars *data = (struct EscalatorVars *)moby->pvars;
@@ -1508,10 +1516,10 @@ move:
 extern int D_L02_00160058 MACRO_ADDR;
 extern unsigned char D_0014171B[];
 extern float g_frame_time_sq MACRO_ADDR;
-extern float versatarget_sparkle_lifetime SDATA(D_L02_00161D40);
-extern int versatarget_sparkle_color SDATA(D_L02_00161D44);
-extern float versatarget_sparkle_size SDATA(D_L02_00161D48);
-extern float versatarget_sparkle_offset SDATA(D_L02_00161D4C);
+extern float versatarget_sparkle_lifetime SDATA(versatarget_sparkle_lifetime);
+extern int versatarget_sparkle_color SDATA(versatarget_sparkle_color);
+extern float versatarget_sparkle_size SDATA(versatarget_sparkle_size);
+extern float versatarget_sparkle_offset SDATA(versatarget_sparkle_offset);
 extern void set_moby_color(void *, int, int, int);
 extern void initialize_camera_offset_effect_state_c(char *) __asm__("func_L02_002FBB10");
 extern void try_select_camera_offset_effect_moby_c(char *) __asm__("func_L02_002FBC00");
@@ -1954,12 +1962,12 @@ extern float frame_scale MACRO_ADDR;
 extern float aridia_zero_vec[] MACRO_ADDR;
 extern char background_ship_1_no_path_msg[];
 extern char background_ship_1_empty_path_msg[];
-extern float background_ship_1_speed SDATA(D_L02_00161FF4);
-extern float background_ship_1_light_spin_rate SDATA(D_L02_00162000);
-extern int background_ship_1_light_color_off SDATA(D_L02_00162004);
-extern int background_ship_1_light_color_on SDATA(D_L02_00162008);
-extern float background_ship_1_debris_speed SDATA(D_L02_0016200C);
-extern float background_ship_1_debris_lift SDATA(D_L02_00162010);
+extern float background_ship_1_speed SDATA(background_ship_1_speed);
+extern float background_ship_1_light_spin_rate SDATA(background_ship_1_light_spin_rate);
+extern int background_ship_1_light_color_off SDATA(background_ship_1_light_color_off);
+extern int background_ship_1_light_color_on SDATA(background_ship_1_light_color_on);
+extern float background_ship_1_debris_speed SDATA(background_ship_1_debris_speed);
+extern float background_ship_1_debris_lift SDATA(background_ship_1_debris_lift);
 extern int aridia_skill_ship_kills MACRO_ADDR;
 extern int gaspar_skill_ship_kills MACRO_ADDR;
 
@@ -2107,21 +2115,21 @@ extern int FastTweenColor(int, int, float);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 extern float g_frame_time MACRO_ADDR;
-extern float background_ship_1_spark_start_vel_scale SDATA(D_L02_00162014);
-extern float background_ship_1_spark_end_vel_scale SDATA(D_L02_00162018);
-extern float background_ship_1_spark_jitter SDATA(D_L02_0016201C);
-extern int background_ship_1_spark_lifetime SDATA(D_L02_00162020);
-extern int background_ship_1_spark_time2 SDATA(D_L02_00162024);
-extern int background_ship_1_spark_time3 SDATA(D_L02_00162028);
-extern float background_ship_1_spark_time_jitter SDATA(D_L02_0016202C);
-extern float background_ship_1_spark_start_size_min SDATA(D_L02_00162030);
-extern float background_ship_1_spark_start_size_max SDATA(D_L02_00162034);
-extern float background_ship_1_spark_end_size_min SDATA(D_L02_00162038);
-extern float background_ship_1_spark_end_size_max SDATA(D_L02_0016203C);
-extern int background_ship_1_spark_start_color_a SDATA(D_L02_00162040);
-extern int background_ship_1_spark_start_color_b SDATA(D_L02_00162044);
-extern int background_ship_1_spark_end_color_a SDATA(D_L02_00162048);
-extern int background_ship_1_spark_end_color_b SDATA(D_L02_0016204C);
+extern float background_ship_1_spark_start_vel_scale SDATA(background_ship_1_spark_start_vel_scale);
+extern float background_ship_1_spark_end_vel_scale SDATA(background_ship_1_spark_end_vel_scale);
+extern float background_ship_1_spark_jitter SDATA(background_ship_1_spark_jitter);
+extern int background_ship_1_spark_lifetime SDATA(background_ship_1_spark_lifetime);
+extern int background_ship_1_spark_time2 SDATA(background_ship_1_spark_time2);
+extern int background_ship_1_spark_time3 SDATA(background_ship_1_spark_time3);
+extern float background_ship_1_spark_time_jitter SDATA(background_ship_1_spark_time_jitter);
+extern float background_ship_1_spark_start_size_min SDATA(background_ship_1_spark_start_size_min);
+extern float background_ship_1_spark_start_size_max SDATA(background_ship_1_spark_start_size_max);
+extern float background_ship_1_spark_end_size_min SDATA(background_ship_1_spark_end_size_min);
+extern float background_ship_1_spark_end_size_max SDATA(background_ship_1_spark_end_size_max);
+extern int background_ship_1_spark_start_color_a SDATA(background_ship_1_spark_start_color_a);
+extern int background_ship_1_spark_start_color_b SDATA(background_ship_1_spark_start_color_b);
+extern int background_ship_1_spark_end_color_a SDATA(background_ship_1_spark_end_color_a);
+extern int background_ship_1_spark_end_color_b SDATA(background_ship_1_spark_end_color_b);
 
 /* Spawns three particles around a moby with randomized direction, speed and colour. */
 void spawn_background_ship_1_joint_sparks(char *m, void *arg1) {
@@ -2213,12 +2221,12 @@ extern void spawn_background_ship_2_level_10_joint_sparks(char *moby, void *arg)
 extern void prepare_background_ship_2_joint_draw_data(char *m);
 extern char background_ship_2_no_path_msg[];
 extern char background_ship_2_empty_path_msg[];
-extern float background_ship_2_speed SDATA(D_L02_00162050);
-extern float background_ship_2_light_spin_rate SDATA(D_L02_00162054);
-extern int background_ship_2_light_color_off SDATA(D_L02_00162058);
-extern int background_ship_2_light_color_on SDATA(D_L02_0016205C);
-extern float background_ship_2_debris_speed SDATA(D_L02_00162060);
-extern float background_ship_2_debris_lift SDATA(D_L02_00162064);
+extern float background_ship_2_speed SDATA(background_ship_2_speed);
+extern float background_ship_2_light_spin_rate SDATA(background_ship_2_light_spin_rate);
+extern int background_ship_2_light_color_off SDATA(background_ship_2_light_color_off);
+extern int background_ship_2_light_color_on SDATA(background_ship_2_light_color_on);
+extern float background_ship_2_debris_speed SDATA(background_ship_2_debris_speed);
+extern float background_ship_2_debris_lift SDATA(background_ship_2_debris_lift);
 
 /* Update for a ship moby: eases its attach point along a path, spawns effects and drives its state machine. */
 void background_ship_2_update(char *moby) {
@@ -2370,21 +2378,21 @@ void background_ship_2_update(char *moby) {
         prepare_background_ship_2_joint_draw_data(moby);
     }
 }
-extern float background_ship_2_spark_start_vel_scale SDATA(D_L02_00162068);
-extern float background_ship_2_spark_end_vel_scale SDATA(D_L02_0016206C);
-extern float background_ship_2_spark_jitter SDATA(D_L02_00162070);
-extern int background_ship_2_spark_lifetime SDATA(D_L02_00162074);
-extern int background_ship_2_spark_time2 SDATA(D_L02_00162078);
-extern int background_ship_2_spark_time3 SDATA(D_L02_0016207C);
-extern float background_ship_2_spark_time_jitter SDATA(D_L02_00162080);
-extern float background_ship_2_spark_start_size_min SDATA(D_L02_00162084);
-extern float background_ship_2_spark_start_size_max SDATA(D_L02_00162088);
-extern float background_ship_2_spark_end_size_min SDATA(D_L02_0016208C);
-extern float background_ship_2_spark_end_size_max SDATA(D_L02_00162090);
-extern int background_ship_2_spark_start_color_a SDATA(D_L02_00162094);
-extern int background_ship_2_spark_start_color_b SDATA(D_L02_00162098);
-extern int background_ship_2_spark_end_color_a SDATA(D_L02_0016209C);
-extern int background_ship_2_spark_end_color_b SDATA(D_L02_001620A0);
+extern float background_ship_2_spark_start_vel_scale SDATA(background_ship_2_spark_start_vel_scale);
+extern float background_ship_2_spark_end_vel_scale SDATA(background_ship_2_spark_end_vel_scale);
+extern float background_ship_2_spark_jitter SDATA(background_ship_2_spark_jitter);
+extern int background_ship_2_spark_lifetime SDATA(background_ship_2_spark_lifetime);
+extern int background_ship_2_spark_time2 SDATA(background_ship_2_spark_time2);
+extern int background_ship_2_spark_time3 SDATA(background_ship_2_spark_time3);
+extern float background_ship_2_spark_time_jitter SDATA(background_ship_2_spark_time_jitter);
+extern float background_ship_2_spark_start_size_min SDATA(background_ship_2_spark_start_size_min);
+extern float background_ship_2_spark_start_size_max SDATA(background_ship_2_spark_start_size_max);
+extern float background_ship_2_spark_end_size_min SDATA(background_ship_2_spark_end_size_min);
+extern float background_ship_2_spark_end_size_max SDATA(background_ship_2_spark_end_size_max);
+extern int background_ship_2_spark_start_color_a SDATA(background_ship_2_spark_start_color_a);
+extern int background_ship_2_spark_start_color_b SDATA(background_ship_2_spark_start_color_b);
+extern int background_ship_2_spark_end_color_a SDATA(background_ship_2_spark_end_color_a);
+extern int background_ship_2_spark_end_color_b SDATA(background_ship_2_spark_end_color_b);
 // Spawns two particles at a moby, scattered away from a point.
 void spawn_background_ship_2_joint_sparks(char *m, void *arg1) {
     float v10[4], v20[4], v30[4], v40[4], v50[4];
@@ -2417,13 +2425,13 @@ void spawn_background_ship_2_joint_sparks(char *m, void *arg1) {
             p[9] = truncate_float_to_s32_r(8.0f) + 0x60;
     }
 }
-extern float background_ship_2_orxon_spark_start_vel_scale SDATA(D_L02_001620A4);
-extern float background_ship_2_orxon_spark_end_vel_scale SDATA(D_L02_001620A8);
-extern float background_ship_2_orxon_spark_jitter SDATA(D_L02_001620AC);
-extern int background_ship_2_orxon_spark_start_color_a SDATA(D_L02_001620B0);
-extern int background_ship_2_orxon_spark_start_color_b SDATA(D_L02_001620B4);
-extern int background_ship_2_orxon_spark_end_color_a SDATA(D_L02_001620B8);
-extern int background_ship_2_orxon_spark_end_color_b SDATA(D_L02_001620BC);
+extern float background_ship_2_orxon_spark_start_vel_scale SDATA(background_ship_2_orxon_spark_start_vel_scale);
+extern float background_ship_2_orxon_spark_end_vel_scale SDATA(background_ship_2_orxon_spark_end_vel_scale);
+extern float background_ship_2_orxon_spark_jitter SDATA(background_ship_2_orxon_spark_jitter);
+extern int background_ship_2_orxon_spark_start_color_a SDATA(background_ship_2_orxon_spark_start_color_a);
+extern int background_ship_2_orxon_spark_start_color_b SDATA(background_ship_2_orxon_spark_start_color_b);
+extern int background_ship_2_orxon_spark_end_color_a SDATA(background_ship_2_orxon_spark_end_color_a);
+extern int background_ship_2_orxon_spark_end_color_b SDATA(background_ship_2_orxon_spark_end_color_b);
 
 /* spawns two particles around a moby with randomized parameters */
 void spawn_background_ship_2_level_10_joint_sparks(char *moby, void *arg) {
@@ -2567,7 +2575,7 @@ typedef struct {
     float d;
 } S;
 extern S camera_offset_effect_state;
-extern float camera_offset_effect_step SDATA(D_L02_0016241C);
+extern float camera_offset_effect_step SDATA(camera_offset_effect_step);
 // Resets a timer block: sets a large value and decays a countdown toward zero.
 void update_camera_offset_effect_state(void) {
     S *s = &camera_offset_effect_state;

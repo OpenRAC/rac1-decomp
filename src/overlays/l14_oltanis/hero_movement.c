@@ -319,7 +319,7 @@ extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 
-extern int oltanis_look_stat_count SDATA(D_L14_0015F76C);
+extern int oltanis_look_stat_count SDATA(oltanis_look_stat_count);
 extern HeroPlayerCameraView oltanis_player_camera;
 
 extern int *oltanis_coll_sphere_moby_hits[];

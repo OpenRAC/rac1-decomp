@@ -583,9 +583,9 @@ extern Cuboid *path_points_14b0_r __asm__("D_L11_0016016C") MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern unsigned char saved_mission_state[];
 extern unsigned char menu_item_enabled_69[];
-extern float resort_owner_approach_offset_forward SDATA(D_L11_001614A8);
-extern float resort_owner_approach_offset_side SDATA(D_L11_001614A4);
-extern float resort_owner_approach_offset_up SDATA(D_L11_001614A0);
+extern float resort_owner_approach_offset_forward SDATA(resort_owner_approach_offset_forward);
+extern float resort_owner_approach_offset_side SDATA(resort_owner_approach_offset_side);
+extern float resort_owner_approach_offset_up SDATA(resort_owner_approach_offset_up);
 extern Shared pokitaru_cutscene_pose_request;
 
 /* State machine of the Pokitaru guide moby: waits for the hero, walks between stations along cuboids, opens the helper
@@ -821,9 +821,9 @@ void update_resort_owner_state_transitions(void *mp) {
 }
 extern f32 g_frame_time MACRO_ADDR;
 extern void matrix_mul_vec3(void *, void *, void *);
-extern float resort_owner_walk_speed SDATA(D_L11_00161460);
-extern float resort_owner_run_speed SDATA(D_L11_00161464);
-extern float resort_owner_dismount_offset SDATA(D_L11_00161490);
+extern float resort_owner_walk_speed SDATA(resort_owner_walk_speed);
+extern float resort_owner_run_speed SDATA(resort_owner_run_speed);
+extern float resort_owner_dismount_offset SDATA(resort_owner_dismount_offset);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l11/gameplay/entities/002cb668.c, FUN_L11_002d2088. */
 void set_resort_owner_state(struct Moby *moby, unsigned char state) {
@@ -1315,9 +1315,9 @@ extern int pokitaru_shown_help_message MACRO_ADDR;
 extern char *pokitaru_mobys MACRO_ADDR;
 extern unsigned char g_hero_field_20a5 NOT_SDA;
 extern unsigned char menu_item_enabled_73 NOT_SDA;
-extern float pokitaru_teleporter_accel SDATA(D_L11_001619A0);
-extern float pokitaru_teleporter_decel SDATA(D_L11_001619A4);
-extern float pokitaru_teleporter_max_speed SDATA(D_L11_001619A8);
+extern float pokitaru_teleporter_accel SDATA(pokitaru_teleporter_accel);
+extern float pokitaru_teleporter_decel SDATA(pokitaru_teleporter_decel);
+extern float pokitaru_teleporter_max_speed SDATA(pokitaru_teleporter_max_speed);
 extern void restore_teleporter_visibility_and_collision(char *);
 extern void request_teleporter_help_message(char *);
 extern void draw_teleporter_ring(char *);
@@ -1503,7 +1503,7 @@ typedef struct {
 } Quad;
 extern short pokitaru_teleporter_ring_alpha_a, pokitaru_teleporter_ring_alpha_b, pokitaru_teleporter_ring_alpha_c,
     pokitaru_teleporter_ring_alpha_d, pokitaru_teleporter_ring_texture, pokitaru_teleporter_ring_color;
-extern float pokitaru_teleporter_ring_height SDATA(D_L11_001619C8);
+extern float pokitaru_teleporter_ring_height SDATA(pokitaru_teleporter_ring_height);
 extern float pokitaru_teleporter_ring_uvs[];
 extern unsigned char g_hero_field_20a5_r __asm__("D_001414F5") NOT_SDA;
 extern void copy_matrix_rotation(void *, void *);
@@ -2078,20 +2078,20 @@ extern char *pokitaru_mobys_r __asm__("D_L11_00160058") MACRO_ADDR;
 extern char *path_points_14b0 MACRO_ADDR;
 extern float pokitaru_fade_level MACRO_ADDR;
 
-extern float child_sets_open_progress SDATA(D_L11_00161F54);
-extern float child_sets_left_swing_progress SDATA(D_L11_00161F58);
-extern float child_sets_right_swing_progress SDATA(D_L11_00161F5C);
-extern float child_sets_odd_turn_progress SDATA(D_L11_00161F60);
-extern float child_sets_even_turn_progress SDATA(D_L11_00161F64);
-extern float child_sets_slide_progress SDATA(D_L11_00161F68);
-extern float child_sets_camera_blend SDATA(D_L11_00161F6C);
-extern float child_sets_open_velocity SDATA(D_L11_00161F70);
-extern float child_sets_left_swing_velocity SDATA(D_L11_00161F74);
-extern float child_sets_right_swing_velocity SDATA(D_L11_00161F78);
-extern float child_sets_odd_turn_velocity SDATA(D_L11_00161F7C);
-extern float child_sets_even_turn_velocity SDATA(D_L11_00161F80);
-extern float child_sets_slide_velocity SDATA(D_L11_00161F84);
-extern float child_sets_camera_blend_velocity SDATA(D_L11_00161F88);
+extern float child_sets_open_progress SDATA(child_sets_open_progress);
+extern float child_sets_left_swing_progress SDATA(child_sets_left_swing_progress);
+extern float child_sets_right_swing_progress SDATA(child_sets_right_swing_progress);
+extern float child_sets_odd_turn_progress SDATA(child_sets_odd_turn_progress);
+extern float child_sets_even_turn_progress SDATA(child_sets_even_turn_progress);
+extern float child_sets_slide_progress SDATA(child_sets_slide_progress);
+extern float child_sets_camera_blend SDATA(child_sets_camera_blend);
+extern float child_sets_open_velocity SDATA(child_sets_open_velocity);
+extern float child_sets_left_swing_velocity SDATA(child_sets_left_swing_velocity);
+extern float child_sets_right_swing_velocity SDATA(child_sets_right_swing_velocity);
+extern float child_sets_odd_turn_velocity SDATA(child_sets_odd_turn_velocity);
+extern float child_sets_even_turn_velocity SDATA(child_sets_even_turn_velocity);
+extern float child_sets_slide_velocity SDATA(child_sets_slide_velocity);
+extern float child_sets_camera_blend_velocity SDATA(child_sets_camera_blend_velocity);
 
 /* UpdateMoby_1156 (names.tsv role): cutscene controller. State 0 spawns its helper mobys (classes 0x480-0x483), state
    1 waits for a moby, state 2 fades in and starts the camera, state 3 runs the chained eases and the camera lerp,
@@ -2449,10 +2449,10 @@ void update_child_set_poses(void *mv) {
 #undef refresh_p
 extern void Moby_PlaySound(int, int, int);
 extern void update_child_grid_poses(struct Moby *);
-extern int child_grid_fade_start_word SDATA(D_L11_00161FE4);
-extern float child_grid_camera_accel SDATA(D_L11_00161FE8);
-extern float child_grid_camera_decel SDATA(D_L11_00161FEC);
-extern float child_grid_camera_max_speed SDATA(D_L11_00161FF0);
+extern int child_grid_fade_start_word SDATA(child_grid_fade_start_word);
+extern float child_grid_camera_accel SDATA(child_grid_camera_accel);
+extern float child_grid_camera_decel SDATA(child_grid_camera_decel);
+extern float child_grid_camera_max_speed SDATA(child_grid_camera_max_speed);
 typedef struct {
     char *slot[4][6];
     int w60;
@@ -2609,9 +2609,9 @@ void update_child_grid_controller(char *m) {
 #undef D_L11_00160058_m
 #undef D_L11_0016016C_i
 extern void vec_scale_to_length(void *out, void *a, f32 len);
-extern float child_grid_row_offset SDATA(D_L11_00161FD0);
-extern float child_grid_side_offset SDATA(D_L11_00161FD4);
-extern float child_grid_child_offset SDATA(D_L11_00161FD8);
+extern float child_grid_row_offset SDATA(child_grid_row_offset);
+extern float child_grid_side_offset SDATA(child_grid_side_offset);
+extern float child_grid_child_offset SDATA(child_grid_child_offset);
 
 struct UpdateChildGridPosesVars {
     u8 pad_00[0x6C];
@@ -3097,7 +3097,7 @@ void seesaw_platform_update(struct Moby *m) {
 }
 extern void Moby_PlaySound(int, int, int);
 extern unsigned char menu_item_enabled_79 NOT_SDA;
-extern int level_frame SDATA(D_L11_0015F6B0);
+extern int level_frame SDATA(level_frame);
 
 // Update for a moby that waits, then animates toward its target and changes state.
 void update_link_triggered_moby_turn(char *moby) {

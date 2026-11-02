@@ -790,7 +790,7 @@ extern char pool_tiles[];
 void Moby751Draw(void) {
     render_water_grids(pool_tiles, 0x15);
 }
-extern float cutscene_big_head_scale SDATA(D_L01_00161DC0);
+extern float cutscene_big_head_scale SDATA(cutscene_big_head_scale);
 
 /* Resets the marker record's scale once, for mobys of the caller's class or class 0x32B. */
 void attach_cutscene_big_head_manipulator(char *a) {
@@ -1158,7 +1158,7 @@ void draw_visibomb_outside_zone_overlay(char *moby) {
 
 extern char *novalis_moby_list MACRO_ADDR;
 
-extern int visibomb_outside_zone_overlay_enabled SDATA(D_L01_0015F40C);
+extern int visibomb_outside_zone_overlay_enabled SDATA(visibomb_outside_zone_overlay_enabled);
 extern void draw_visibomb_outside_zone_overlay(char *);
 extern int IsPointInPolygon(void *, void *, int);
 extern void AddDrawCallback(void (*)(char *), char *);
@@ -1436,11 +1436,11 @@ extern void update_gold_bolt_glow_rings(char *);
 
 extern void spawn_gold_bolt_particles(char *);
 extern float g_frame_time MACRO_ADDR;
-extern float gold_bolt_scale_factor SDATA(D_L01_00161FA0);
-extern float gold_bolt_hover_height SDATA(D_L01_00161FA4);
-extern float gold_bolt_bob_height SDATA(D_L01_00161FA8);
-extern float gold_bolt_bob_speed_deg SDATA(D_L01_00161FBC);
-extern int gold_bolt_sparkle_chance SDATA(D_L01_00161FE0);
+extern float gold_bolt_scale_factor SDATA(gold_bolt_scale_factor);
+extern float gold_bolt_hover_height SDATA(gold_bolt_hover_height);
+extern float gold_bolt_bob_height SDATA(gold_bolt_bob_height);
+extern float gold_bolt_bob_speed_deg SDATA(gold_bolt_bob_speed_deg);
+extern int gold_bolt_sparkle_chance SDATA(gold_bolt_sparkle_chance);
 
 // Per-frame update of a moby: scale, orbit position and angle easing.
 void update_gold_bolt_visuals(char *moby) {
@@ -1505,10 +1505,10 @@ void initialize_gold_bolt_data(char *moby) {
     m->x48 = 3.0f;
 }
 
-extern int gold_bolt_ring_color_a SDATA(D_L01_00161FCC);
-extern int gold_bolt_ring_color_b SDATA(D_L01_00161FD0);
-extern int gold_bolt_ring_blend_flag SDATA(D_L01_00161FD8);
-extern int gold_bolt_ring_texture SDATA(D_L01_00161FDC);
+extern int gold_bolt_ring_color_a SDATA(gold_bolt_ring_color_a);
+extern int gold_bolt_ring_color_b SDATA(gold_bolt_ring_color_b);
+extern int gold_bolt_ring_blend_flag SDATA(gold_bolt_ring_blend_flag);
+extern int gold_bolt_ring_texture SDATA(gold_bolt_ring_texture);
 extern void FastVecScale(void *, void *, float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern float MobyGetFrameValue_m(void *) __asm__("func_0020D830");
@@ -1622,15 +1622,15 @@ void update_gold_bolt_pickup_camera(char *m) {
     set_camera_position(out);
     set_camera_rotation(v);
 }
-extern float gold_bolt_sparkle_speed_min SDATA(D_L01_00161FE4);
-extern float gold_bolt_sparkle_speed_max SDATA(D_L01_00161FE8);
-extern unsigned char gold_bolt_sparkle_life SDATA(D_L01_00161FF4);
-extern int gold_bolt_sparkle_color SDATA(D_L01_00161FF8);
-extern float gold_bolt_sparkle_size SDATA(D_L01_00162000);
-extern float gold_bolt_trail_spread_min SDATA(D_L01_00161FEC);
-extern float gold_bolt_trail_spread_max SDATA(D_L01_00161FF0);
-extern int gold_bolt_trail_color SDATA(D_L01_00161FFC);
-extern float gold_bolt_trail_size SDATA(D_L01_00162004);
+extern float gold_bolt_sparkle_speed_min SDATA(gold_bolt_sparkle_speed_min);
+extern float gold_bolt_sparkle_speed_max SDATA(gold_bolt_sparkle_speed_max);
+extern unsigned char gold_bolt_sparkle_life SDATA(gold_bolt_sparkle_life);
+extern int gold_bolt_sparkle_color SDATA(gold_bolt_sparkle_color);
+extern float gold_bolt_sparkle_size SDATA(gold_bolt_sparkle_size);
+extern float gold_bolt_trail_spread_min SDATA(gold_bolt_trail_spread_min);
+extern float gold_bolt_trail_spread_max SDATA(gold_bolt_trail_spread_max);
+extern int gold_bolt_trail_color SDATA(gold_bolt_trail_color);
+extern float gold_bolt_trail_size SDATA(gold_bolt_trail_size);
 extern void FastVecScale(void *, void *, float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void rand_vec(float *, float, float);
@@ -1686,10 +1686,10 @@ extern LevelState novalis_checkpoint_level_state;
 extern float g_frame_time_sq MACRO_ADDR;
 extern int D_0015EF20 MACRO_ADDR;
 extern unsigned char g_hero_field_20a5[] NOT_SDA;
-extern float teleporter_pad_open_accel SDATA(D_L01_00162018);
-extern float teleporter_pad_open_brake SDATA(D_L01_0016201C);
-extern float teleporter_pad_open_max_speed SDATA(D_L01_00162020);
-extern int novalis_help_message_selector SDATA(D_L01_0015F674);
+extern float teleporter_pad_open_accel SDATA(teleporter_pad_open_accel);
+extern float teleporter_pad_open_brake SDATA(teleporter_pad_open_brake);
+extern float teleporter_pad_open_max_speed SDATA(teleporter_pad_open_max_speed);
+extern int novalis_help_message_selector SDATA(novalis_help_message_selector);
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern void show_teleporter_and_children(char *);
 extern char *CreateMoby(int);
@@ -1885,8 +1885,8 @@ void TeleporterPadUpdate(char *moby) {
 }
 extern void vec_scale_to_length(void *, void *, float);
 extern void moby_build_matrix(void *);
-extern float teleporter_child_height_offset SDATA(D_L01_00162008);
-extern float teleporter_child_base_pitch_deg SDATA(D_L01_00162010);
+extern float teleporter_child_height_offset SDATA(teleporter_child_height_offset);
+extern float teleporter_child_base_pitch_deg SDATA(teleporter_child_base_pitch_deg);
 
 /* Places the three child mobys at this moby's position and orients each from its data. */
 void update_teleporter_child_transforms(char *m) {
@@ -1954,7 +1954,7 @@ typedef struct {
 } Quad;
 extern short teleporter_ring_alpha_a, teleporter_ring_alpha_b, teleporter_ring_alpha_c, teleporter_ring_alpha_d,
     teleporter_ring_texture, teleporter_ring_color;
-extern float teleporter_ring_height SDATA(D_L01_00162060);
+extern float teleporter_ring_height SDATA(teleporter_ring_height);
 extern float teleporter_ring_uvs[];
 extern unsigned char g_hero_field_20a5_q __asm__("D_001414F5") NOT_SDA;
 extern void copy_matrix_rotation(void *, void *);
@@ -2197,8 +2197,8 @@ typedef struct {
 } GlowQuad_bfa8;
 extern Vec4 offset_quad_corners[4];
 extern Vec4 hero_gravity_dir[];
-extern f32 offset_quad_row0_offset SDATA(D_L01_001620F4);
-extern f32 offset_quad_row2_offset SDATA(D_L01_001620FC);
+extern f32 offset_quad_row0_offset SDATA(offset_quad_row0_offset);
+extern f32 offset_quad_row2_offset SDATA(offset_quad_row2_offset);
 extern s64 GetEffectTex(s32);
 extern void FastVecCross(void *, void *, void *);
 extern void transform_vector(void *, void *, void *);
@@ -2489,12 +2489,12 @@ extern void *GetFlaggedPvarWord(void *);
 extern void Moby_PlaySound_r(int, int, char *) __asm__("func_0022ED80");
 extern void *select_sandmouse_projectile_target(void *, void *, void *, float, float, float, float, float, float);
 extern void spawn_sandmouse_projectile_r(void *, void *, float, float, float, float) __asm__("func_L01_0030DC70");
-extern float sandmouse_fire_range SDATA(D_L01_00162114);
-extern float sandmouse_fire_yaw_max_deg SDATA(D_L01_00162118);
-extern float sandmouse_fire_pitch_max_deg SDATA(D_L01_0016211C);
-extern float sandmouse_muzzle_offset SDATA(D_L01_00162120);
-extern float sandmouse_aim_height SDATA(D_L01_00162124);
-extern int sandmouse_fire_interval SDATA(D_L01_00162110);
+extern float sandmouse_fire_range SDATA(sandmouse_fire_range);
+extern float sandmouse_fire_yaw_max_deg SDATA(sandmouse_fire_yaw_max_deg);
+extern float sandmouse_fire_pitch_max_deg SDATA(sandmouse_fire_pitch_max_deg);
+extern float sandmouse_muzzle_offset SDATA(sandmouse_muzzle_offset);
+extern float sandmouse_aim_height SDATA(sandmouse_aim_height);
+extern int sandmouse_fire_interval SDATA(sandmouse_fire_interval);
 extern short novalis_game_mode_r __asm__("D_L01_0015F6A8");
 extern Vec4 gHeroPos;
 
@@ -2747,16 +2747,16 @@ extern f32 sand_mouse_move_ctl_turn_vel;
 extern char sandmouse_collected_msg[];
 extern char sandmouse_no_link_msg[];
 extern unsigned char gHaveHeliPack[];
-extern int sandmouse_attack_delay SDATA(D_L01_00162128);
-extern int sandmouse_max_shots SDATA(D_L01_0016212C);
-extern int sandmouse_vanish_time SDATA(D_L01_00162134);
-extern int sandmouse_dust_life_min SDATA(D_L01_00162138);
-extern int sandmouse_dust_life_max SDATA(D_L01_0016213C);
-extern f32 sandmouse_dust_spread SDATA(D_L01_00162140);
-extern f32 sandmouse_dust_size_min SDATA(D_L01_00162144);
-extern f32 sandmouse_dust_size_max SDATA(D_L01_00162148);
-extern int sandmouse_dust_alpha SDATA(D_L01_0016214C);
-extern f32 sandmouse_dust_accel SDATA(D_L01_00162150);
+extern int sandmouse_attack_delay SDATA(sandmouse_attack_delay);
+extern int sandmouse_max_shots SDATA(sandmouse_max_shots);
+extern int sandmouse_vanish_time SDATA(sandmouse_vanish_time);
+extern int sandmouse_dust_life_min SDATA(sandmouse_dust_life_min);
+extern int sandmouse_dust_life_max SDATA(sandmouse_dust_life_max);
+extern f32 sandmouse_dust_spread SDATA(sandmouse_dust_spread);
+extern f32 sandmouse_dust_size_min SDATA(sandmouse_dust_size_min);
+extern f32 sandmouse_dust_size_max SDATA(sandmouse_dust_size_max);
+extern int sandmouse_dust_alpha SDATA(sandmouse_dust_alpha);
+extern f32 sandmouse_dust_accel SDATA(sandmouse_dust_accel);
 extern void DetachManipulator(void *, void *);
 extern void MoveCtl_Init(void *);
 extern void MobyBlendAnimation(void *, int, int, int);

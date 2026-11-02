@@ -616,9 +616,9 @@ extern void FastVecSub(void *dst, void *a, void *b);
 extern void vec_scale_to_length(void *, void *, float);
 
 extern char umbris_cutscene_state[];
-extern float umbris_scene_trail_speed SDATA(D_L07_00161D68);
-extern float umbris_scene_trail_core_size SDATA(D_L07_00161D70);
-extern float umbris_scene_trail_glow_size SDATA(D_L07_00161D6C);
+extern float umbris_scene_trail_speed SDATA(umbris_scene_trail_speed);
+extern float umbris_scene_trail_core_size SDATA(umbris_scene_trail_core_size);
+extern float umbris_scene_trail_glow_size SDATA(umbris_scene_trail_glow_size);
 
 /* Level moby state machine: UpdateMoby_1789: spawn state then position three points.
  * Matched using lever: g - (-(idx * 4)) + 0x178 fixes addu operand order. */

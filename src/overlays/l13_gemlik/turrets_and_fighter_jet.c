@@ -670,8 +670,8 @@ extern float FastAddRots(float, float);
 extern char *spawn_gemlik_projectile(float, float *, float *, void *);
 extern int gemlik_frame_count MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
-extern int gemlik_turret_fire_interval SDATA(D_L13_00161414);
-extern float gemlik_turret_shot_speed SDATA(D_L13_00161410);
+extern int gemlik_turret_fire_interval SDATA(gemlik_turret_fire_interval);
+extern float gemlik_turret_shot_speed SDATA(gemlik_turret_shot_speed);
 
 // Every few ticks spawns a projectile moby aimed from the moby's position using its target.
 void fire_blarg_turret_projectile(char *moby) {
@@ -908,7 +908,7 @@ void release_robosquawker_particle(Level13VendorMoby *moby) {
     }
 }
 extern float ProbeGroundHeight(void *, int, float);
-extern float g_frame_time_sq SDATA(D_0015EE70);
+extern float g_frame_time_sq SDATA(g_frame_time_sq);
 typedef struct {
     u8 pad_000[0x120]; /* 0x000 */
     u8 pad_120[0x8]; /* 0x120 cleared by qzero */
@@ -973,10 +973,10 @@ extern int robosquawker_explosion_slots[] MACRO_ADDR;
 extern char *gemlik_moby_list MACRO_ADDR;
 extern float blarg_space_fighter_fire_suppression_level MACRO_ADDR;
 extern float optional_glow_suppression_level MACRO_ADDR;
-extern float robosquawker_knockback_lift SDATA(D_L13_00161418);
-extern float robosquawker_knockback_speed SDATA(D_L13_0016141C);
-extern float robosquawker_jump_speed SDATA(D_L13_00161420);
-extern float robosquawker_jump_gravity SDATA(D_L13_00161424);
+extern float robosquawker_knockback_lift SDATA(robosquawker_knockback_lift);
+extern float robosquawker_knockback_speed SDATA(robosquawker_knockback_speed);
+extern float robosquawker_jump_speed SDATA(robosquawker_jump_speed);
+extern float robosquawker_jump_gravity SDATA(robosquawker_jump_gravity);
 extern short robosquawker_move_params;
 /* g_frame_time_sq is a 4-byte float read through lui/lwc1 here (the file's `extern short g_frame_time_sq;` at the
    top makes the assembler emit the $gp form); for the try harness read it as the word after g_frame_time. */

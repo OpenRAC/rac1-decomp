@@ -386,7 +386,7 @@ extern unsigned char gHaveHeliPack[];
 extern int orxon_cinematic_mode MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern char *orxon_scene_points MACRO_ADDR;
-extern int orxon_relocation_reset_flag SDATA(D_L10_00161410);
+extern int orxon_relocation_reset_flag SDATA(orxon_relocation_reset_flag);
 extern int try_set_help_message(int, int);
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern void enter_hero_vehicle_mode(int, int, char *);
@@ -1144,7 +1144,7 @@ extern char *CreateMoby(int);
 extern int scale_ticks(int);
 extern void moby_build_matrix(void *);
 extern float g_frame_time MACRO_ADDR;
-extern float bombthrower_grass_spawn_height SDATA(D_L10_00161C6C);
+extern float bombthrower_grass_spawn_height SDATA(bombthrower_grass_spawn_height);
 
 // Spawns a moby with a swirl/particle data block.
 char *spawn_bombthrower_grass_projectile(int owner, char *pos, char *vec) {
@@ -1452,13 +1452,13 @@ extern float FastAddRots(float, float);
 extern void BuildSphericalOffset(void *, float, float, float);
 extern void FastVecAdd(void *, void *, void *);
 extern int Moby_PlaySound(int, int, int);
-extern int bombthrower_grass_fire_ticks_min SDATA(D_L10_00161C70);
-extern int bombthrower_grass_fire_ticks_max SDATA(D_L10_00161C74);
-extern float bombthrower_grass_yaw_spread SDATA(D_L10_00161C78);
-extern float bombthrower_grass_pitch_min SDATA(D_L10_00161C7C);
-extern float bombthrower_grass_pitch_max SDATA(D_L10_00161C80);
-extern float bombthrower_grass_speed_min SDATA(D_L10_00161C84);
-extern float bombthrower_grass_speed_max SDATA(D_L10_00161C88);
+extern int bombthrower_grass_fire_ticks_min SDATA(bombthrower_grass_fire_ticks_min);
+extern int bombthrower_grass_fire_ticks_max SDATA(bombthrower_grass_fire_ticks_max);
+extern float bombthrower_grass_yaw_spread SDATA(bombthrower_grass_yaw_spread);
+extern float bombthrower_grass_pitch_min SDATA(bombthrower_grass_pitch_min);
+extern float bombthrower_grass_pitch_max SDATA(bombthrower_grass_pitch_max);
+extern float bombthrower_grass_speed_min SDATA(bombthrower_grass_speed_min);
+extern float bombthrower_grass_speed_max SDATA(bombthrower_grass_speed_max);
 
 /* update: on a timer, fire a projectile from the moby's angle, then rearm the timer */
 void bombthrower_grass_update(char *moby) {
@@ -1572,8 +1572,8 @@ typedef int u128_2DA3C0 __attribute__((mode(TI)));
 extern void matrix_from_basis_rows(void *, void *);
 extern void FastVecSub(void *, void *, void *);
 
-extern float lab_door_half_width SDATA(D_L10_00161C90);
-extern float lab_door_half_depth SDATA(D_L10_00161C8C);
+extern float lab_door_half_width SDATA(lab_door_half_width);
+extern float lab_door_half_depth SDATA(lab_door_half_depth);
 
 /* Test whether a point lies within a box around a moby, in the moby's local frame. */
 int test_point_in_lab_door_local_xy_bounds(char *m, float *p) {
@@ -1833,7 +1833,7 @@ extern char data_processor_no_link_msg[];
 extern char data_processor_no_link_fmt[];
 extern char data_processor_strand_order[];
 extern void render_data_processor_linked_effect(unsigned char *);
-extern float data_processor_fade_seconds SDATA(D_L10_00161D18);
+extern float data_processor_fade_seconds SDATA(data_processor_fade_seconds);
 extern float vec_length(float);
 extern int FastBSphereCheck(void *, float);
 extern void AddDrawCallback(void *, void *);
@@ -2114,9 +2114,9 @@ extern int g_current_level_index_r2 __asm__("D_0015EE84") MACRO_ADDR;
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern int data_strand_life_ticks_r __asm__("D_L10_00161DE4") MACRO_ADDR;
 extern int data_strand_fade_in_ticks_r __asm__("D_L10_00161DE8") MACRO_ADDR;
-extern float data_strand_jitter SDATA(D_L10_00161DD4);
-extern float data_strand_length SDATA(D_L10_00161DD8);
-extern float data_strand_phase_speed SDATA(D_L10_00161DDC);
+extern float data_strand_jitter SDATA(data_strand_jitter);
+extern float data_strand_length SDATA(data_strand_length);
+extern float data_strand_phase_speed SDATA(data_strand_phase_speed);
 
 typedef struct {
     Vec4 pos[4][30][20];
@@ -2827,15 +2827,15 @@ typedef struct Anim_2E1568 {
     char pad3C[0x44];
 } Anim_2E1568;
 extern Anim_2E1568 *orxon_scene_points_r __asm__("D_L10_0016016C") MACRO_ADDR;
-extern float class1199_attack_range SDATA(D_L10_00161E7C);
-extern float class1199_hop_lift_min SDATA(D_L10_00161E84);
-extern float class1199_hop_lift_max SDATA(D_L10_00161E88);
-extern float class1199_bob_height SDATA(D_L10_00161E8C);
-extern float class1199_bob_period_seconds SDATA(D_L10_00161E90);
-extern float class1199_height_jitter_max SDATA(D_L10_00161E94);
-extern float class1199_height_jitter_seconds SDATA(D_L10_00161E98);
-extern float class1199_start_b58 SDATA(D_L10_00161E9C);
-extern float class1199_start_b5a SDATA(D_L10_00161EA0);
+extern float class1199_attack_range SDATA(class1199_attack_range);
+extern float class1199_hop_lift_min SDATA(class1199_hop_lift_min);
+extern float class1199_hop_lift_max SDATA(class1199_hop_lift_max);
+extern float class1199_bob_height SDATA(class1199_bob_height);
+extern float class1199_bob_period_seconds SDATA(class1199_bob_period_seconds);
+extern float class1199_height_jitter_max SDATA(class1199_height_jitter_max);
+extern float class1199_height_jitter_seconds SDATA(class1199_height_jitter_seconds);
+extern float class1199_start_b58 SDATA(class1199_start_b58);
+extern float class1199_start_b5a SDATA(class1199_start_b5a);
 void update_class_1199_hit_reactions_and_targeting(Moby *moby);
 void set_moby_group_command_frames(unsigned char *moby);
 extern float vec_length_xy(void *);
@@ -3423,7 +3423,7 @@ typedef struct {
     char p2[0xDF];
 } Ent_2E3070;
 extern Ent_2E3070 *orxon_mobys_r4 __asm__("D_L10_00160058") MACRO_ADDR;
-extern int orxon_group_command_ticks SDATA(D_L10_00161E80);
+extern int orxon_group_command_ticks SDATA(orxon_group_command_ticks);
 
 /* Stores a value into each table entry listed for this moby's index. */
 void set_moby_group_command_frames(unsigned char *moby) {

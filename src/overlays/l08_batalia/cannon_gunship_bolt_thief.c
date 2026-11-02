@@ -946,18 +946,20 @@ extern char *func_00219780(void *, void *, void *, int, int, int, int, int, int)
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern Pair falling_debris_smoke_choices;
-extern int falling_debris_burst_particle_count SDATA(D_L08_00161C90);
-extern int falling_debris_burst_lower SDATA(D_L08_00161C94);
-extern int falling_debris_burst_upper SDATA(D_L08_00161C98);
-extern float falling_debris_burst_primary_vertical_scale SDATA(D_L08_00161C9C);
-extern float falling_debris_burst_secondary_vertical_scale SDATA(D_L08_00161CA0);
-extern float falling_debris_burst_primary_planar_scale SDATA(D_L08_00161CA4);
-extern float falling_debris_burst_secondary_planar_scale SDATA(D_L08_00161CA8);
-extern int falling_debris_burst_frame_count_random_min SDATA(D_L08_00161CAC);
-extern int falling_debris_burst_secondary_frame_count_random_min SDATA(D_L08_00161CB0);
-extern int falling_debris_burst_tertiary_frame_count_random_min SDATA(D_L08_00161CB4);
-extern float falling_debris_burst_primary_vector_w SDATA(D_L08_00161CB8);
-extern float falling_debris_burst_secondary_vector_w SDATA(D_L08_00161CBC);
+extern int falling_debris_burst_particle_count SDATA(falling_debris_burst_particle_count);
+extern int falling_debris_burst_lower SDATA(falling_debris_burst_lower);
+extern int falling_debris_burst_upper SDATA(falling_debris_burst_upper);
+extern float falling_debris_burst_primary_vertical_scale SDATA(falling_debris_burst_primary_vertical_scale);
+extern float falling_debris_burst_secondary_vertical_scale SDATA(falling_debris_burst_secondary_vertical_scale);
+extern float falling_debris_burst_primary_planar_scale SDATA(falling_debris_burst_primary_planar_scale);
+extern float falling_debris_burst_secondary_planar_scale SDATA(falling_debris_burst_secondary_planar_scale);
+extern int falling_debris_burst_frame_count_random_min SDATA(falling_debris_burst_frame_count_random_min);
+extern int falling_debris_burst_secondary_frame_count_random_min
+    SDATA(falling_debris_burst_secondary_frame_count_random_min);
+extern int falling_debris_burst_tertiary_frame_count_random_min
+    SDATA(falling_debris_burst_tertiary_frame_count_random_min);
+extern float falling_debris_burst_primary_vector_w SDATA(falling_debris_burst_primary_vector_w);
+extern float falling_debris_burst_secondary_vector_w SDATA(falling_debris_burst_secondary_vector_w);
 
 /* Update function for moby classes 441-443 on level 08 (falling debris): picks its spin, falls with a smoke trail,
    bursts into particles near the ground, then falls on until out of bounds. */
@@ -1165,7 +1167,7 @@ extern void FastVecAdd(void *, void *, void *);
 extern float FastAddRots(float, float);
 
 extern short g_frame_time_g __asm__("D_0015EE6C");
-extern float gunship_rotor_spin_speed SDATA(D_L08_00161CCC);
+extern float gunship_rotor_spin_speed SDATA(gunship_rotor_spin_speed);
 
 typedef struct {
     struct Moby *part; /* moved along with the anchor's joint */
@@ -1329,10 +1331,10 @@ typedef struct {
     s16 pad28C;
     s16 sound; /* 0x28E */
 } GunshipVars;
-extern s32 gunship_update_disabled SDATA(D_L08_00161CDC);
-extern f32 gunship_fly_speed SDATA(D_L08_00161CC8);
-extern f32 gunship_turn_accel SDATA(D_L08_00161CD4);
-extern f32 gunship_max_turn_speed SDATA(D_L08_00161CD8);
+extern s32 gunship_update_disabled SDATA(gunship_update_disabled);
+extern f32 gunship_fly_speed SDATA(gunship_fly_speed);
+extern f32 gunship_turn_accel SDATA(gunship_turn_accel);
+extern f32 gunship_max_turn_speed SDATA(gunship_max_turn_speed);
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern s32 g_current_level_index MACRO_ADDR;
@@ -1590,7 +1592,7 @@ typedef struct {
     unsigned char x260[1];
 } Data_2E4168;
 
-extern float bolt_thief_move_speed SDATA(D_L08_00161CE0);
+extern float bolt_thief_move_speed SDATA(bolt_thief_move_speed);
 extern Path *batalia_path_table_r[] __asm__("D_L08_001B0FB0");
 
 extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
@@ -1933,23 +1935,23 @@ extern void FastVecCross(void *, void *, void *);
 extern void FastVecScale(void *, void *, float);
 extern void transform_vector(void *, void *, void *);
 
-extern int batalia_bolt_sound_frame SDATA(D_L08_00161D64);
+extern int batalia_bolt_sound_frame SDATA(batalia_bolt_sound_frame);
 extern short batalia_bolt_scale, batalia_bolt5_scale, batalia_bolt10_scale;
-extern float batalia_bolt_attract_speed SDATA(D_L08_00161D18);
-extern float batalia_bolt_attract_accel SDATA(D_L08_00161D1C);
-extern float batalia_bolt_collect_spin_speed SDATA(D_L08_00161D24);
-extern float batalia_bolt_drop_spin_speed SDATA(D_L08_00161D28);
-extern float bolt_pickup_default_surface_orbit_speed_degrees SDATA(D_L08_00161D2C);
-extern float batalia_bolt_idle_tilt_speed SDATA(D_L08_00161D30);
-extern float batalia_bolt5_idle_yaw_speed SDATA(D_L08_00161D34);
-extern float five_bolt_pickup_surface_roll_speed_degrees SDATA(D_L08_00161D38);
-extern float batalia_bolt10_idle_yaw_speed SDATA(D_L08_00161D3C);
-extern float ten_bolt_pickup_surface_roll_speed_degrees SDATA(D_L08_00161D40);
-extern int bolt_pickup_collection_alpha_fade_enabled SDATA(D_L08_00161D50);
-extern int batalia_bolt_collect_shrink_enabled SDATA(D_L08_00161D54);
-extern int bolt_pickup_rotating_quad_enabled SDATA(D_L08_00161D58);
-extern int batalia_bolt_glint_color SDATA(D_L08_00161D5C);
-extern float batalia_bolt_bounce_ticks SDATA(D_L08_00161D60);
+extern float batalia_bolt_attract_speed SDATA(batalia_bolt_attract_speed);
+extern float batalia_bolt_attract_accel SDATA(batalia_bolt_attract_accel);
+extern float batalia_bolt_collect_spin_speed SDATA(batalia_bolt_collect_spin_speed);
+extern float batalia_bolt_drop_spin_speed SDATA(batalia_bolt_drop_spin_speed);
+extern float bolt_pickup_default_surface_orbit_speed_degrees SDATA(bolt_pickup_default_surface_orbit_speed_degrees);
+extern float batalia_bolt_idle_tilt_speed SDATA(batalia_bolt_idle_tilt_speed);
+extern float batalia_bolt5_idle_yaw_speed SDATA(batalia_bolt5_idle_yaw_speed);
+extern float five_bolt_pickup_surface_roll_speed_degrees SDATA(five_bolt_pickup_surface_roll_speed_degrees);
+extern float batalia_bolt10_idle_yaw_speed SDATA(batalia_bolt10_idle_yaw_speed);
+extern float ten_bolt_pickup_surface_roll_speed_degrees SDATA(ten_bolt_pickup_surface_roll_speed_degrees);
+extern int bolt_pickup_collection_alpha_fade_enabled SDATA(bolt_pickup_collection_alpha_fade_enabled);
+extern int batalia_bolt_collect_shrink_enabled SDATA(batalia_bolt_collect_shrink_enabled);
+extern int bolt_pickup_rotating_quad_enabled SDATA(bolt_pickup_rotating_quad_enabled);
+extern int batalia_bolt_glint_color SDATA(batalia_bolt_glint_color);
+extern float batalia_bolt_bounce_ticks SDATA(batalia_bolt_bounce_ticks);
 extern Coll_4BE8 batalia_coll_hit;
 extern s32 gBolts MACRO_ADDR;
 extern Moby *batalia_mobys_last MACRO_ADDR;
@@ -2499,8 +2501,8 @@ extern void VU1_addGSregister(int, long);
 extern int GetEffectTex(int);
 extern void draw_geometry_quad_5188(void *, void *, void *, s32, s32);
 extern char batalia_screen_projection_base[];
-extern float bolt_pickup_quad_center_offset_along_moby_e0 SDATA(D_L08_00161CEC);
-extern float bolt_pickup_quad_center_offset_along_moby_c0 SDATA(D_L08_00161CF0);
+extern float bolt_pickup_quad_center_offset_along_moby_e0 SDATA(bolt_pickup_quad_center_offset_along_moby_e0);
+extern float bolt_pickup_quad_center_offset_along_moby_c0 SDATA(bolt_pickup_quad_center_offset_along_moby_c0);
 
 /* When the short at data + 0x6C is nonzero, projects the moby's offset position to screen space and draws a
  * four-corner quad there, its corners rotated in 90-degree steps by the angle at data + 0x74 and scaled by distance. */
@@ -2702,7 +2704,7 @@ extern void FastVecAdd(void *, void *, void *);
 extern float FastAddRots(float, float);
 extern void moby_build_matrix(void *);
 extern float g_frame_time MACRO_ADDR;
-extern float shrub_part_spin_speed SDATA(D_L08_00161DB8);
+extern float shrub_part_spin_speed SDATA(shrub_part_spin_speed);
 
 /* Re-aims the twelve child mobys of a parent, adjusts the parent's spin, then runs the children's follow-up. */
 void update_shrub_parts(char *a) {
@@ -3117,7 +3119,7 @@ void process_linked_moby_part_hits(struct Moby *moby) {
         Moby_PlaySound_r3(sound, 0, moby);
 }
 extern void moby_build_matrix();
-extern float commando_part_spin_speed SDATA(D_L08_00161DC8);
+extern float commando_part_spin_speed SDATA(commando_part_spin_speed);
 
 // Updates the moby's attached parts: pose each one, scale one value, then run the flagged ones.
 void update_commando_parts(char *arg) {

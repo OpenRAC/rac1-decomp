@@ -15,9 +15,9 @@ extern void VU1_addGSregister(int, long);
 extern int GetEffectTex(int);
 
 extern void emit_level11_layered_effect_batches_with_pair_offset(int);
-extern int layered_effect_texture_2c_fixed_alpha SDATA(D_L11_00162588);
-extern int layered_effect_texture_2a_pair_zero_fixed_alpha SDATA(D_L11_001625A8);
-extern int layered_effect_texture_2b_fixed_alpha SDATA(D_L11_001625B8);
+extern int layered_effect_texture_2c_fixed_alpha SDATA(layered_effect_texture_2c_fixed_alpha);
+extern int layered_effect_texture_2a_pair_zero_fixed_alpha SDATA(layered_effect_texture_2a_pair_zero_fixed_alpha);
+extern int layered_effect_texture_2b_fixed_alpha SDATA(layered_effect_texture_2b_fixed_alpha);
 extern int layered_effect_texture_29_fixed_alpha_scale MACRO_ADDR;
 extern int layered_effect_texture_2a_pair_one_fixed_alpha MACRO_ADDR;
 extern int pokitaru_layered_fade_alpha MACRO_ADDR;
@@ -86,8 +86,8 @@ extern float layered_effect_pos_y MACRO_ADDR;
 extern float layered_effect_position_z MACRO_ADDR;
 extern float layered_effect_bounds_radius MACRO_ADDR;
 extern int pokitaru_layered_uv_wobble[];
-extern int layered_effect_color_tables_initialized SDATA(D_L11_001625BC);
-extern float layered_effect_position_x SDATA(D_L11_00162578);
+extern int layered_effect_color_tables_initialized SDATA(layered_effect_color_tables_initialized);
+extern float layered_effect_position_x SDATA(layered_effect_position_x);
 
 /* Update function: state 0 sets up some global tables (running scale_rgba_tables once), state 1 tests a point
  * and its distance to the hero and sets pokitaru_layered_fade_alpha to a 0 to 255 value that fades between 15.0 and
@@ -209,9 +209,10 @@ extern void emit_oil_tanker_render_batches_with_pair_offset(int);
 extern int D_L11_001626A0 MACRO_ADDR;
 extern int distance_faded_effect_texture_29_fixed_alpha_scale MACRO_ADDR;
 extern int distance_faded_effect_texture_2a_pair_one_fixed_alpha MACRO_ADDR;
-extern int distance_faded_effect_texture_2c_fixed_alpha SDATA(D_L11_00162658);
-extern int distance_faded_effect_texture_2a_pair_zero_fixed_alpha SDATA(D_L11_00162678);
-extern int distance_faded_effect_texture_2b_fixed_alpha SDATA(D_L11_00162688);
+extern int distance_faded_effect_texture_2c_fixed_alpha SDATA(distance_faded_effect_texture_2c_fixed_alpha);
+extern int distance_faded_effect_texture_2a_pair_zero_fixed_alpha
+    SDATA(distance_faded_effect_texture_2a_pair_zero_fixed_alpha);
+extern int distance_faded_effect_texture_2b_fixed_alpha SDATA(distance_faded_effect_texture_2b_fixed_alpha);
 
 // Draws the level 11 HUD gauges: sets up the gfx packets and per-gauge draws.
 void draw_level11_distance_faded_effect_batches(char *m) {
@@ -271,8 +272,8 @@ extern float distance_faded_effect_position_y MACRO_ADDR;
 extern float distance_faded_effect_position_z MACRO_ADDR;
 extern float distance_faded_effect_bounds_radius MACRO_ADDR;
 extern int pokitaru_faded_uv_wobble[];
-extern int distance_faded_effect_color_tables_initialized SDATA(D_L11_0016268C);
-extern float distance_faded_effect_position_x SDATA(D_L11_00162648);
+extern int distance_faded_effect_color_tables_initialized SDATA(distance_faded_effect_color_tables_initialized);
+extern float distance_faded_effect_position_x SDATA(distance_faded_effect_position_x);
 
 struct Level11Reference {
     u8 pad_000[0x140];

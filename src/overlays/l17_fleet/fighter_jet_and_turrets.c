@@ -147,7 +147,7 @@ extern char (*fleet_mobys_t)[256] __asm__("D_L17_00160058") MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern unsigned char hero_globals_base[];
 extern char fleet_coll_hit_point[];
-extern float fleet_beam_peer_inset SDATA(D_L17_00161518);
+extern float fleet_beam_peer_inset SDATA(fleet_beam_peer_inset);
 
 typedef struct FleetBeamVars {
     u8 pad_00[0x10];
@@ -721,14 +721,14 @@ extern float multiply_global_factor(float);
 extern unsigned char *spawn_moving_hero_relative_alpha_fade_particle(float *pos, char *vel, int color,
                                                                      unsigned char life, unsigned char b, int mode,
                                                                      float scale);
-extern float fleet_ring_spin_rate_deg SDATA(D_L17_00161BF8);
-extern float fleet_ring_angle_offset_deg SDATA(D_L17_00161BFC);
-extern float fleet_ring_arc_deg SDATA(D_L17_00161C00);
-extern float fleet_ring_radius SDATA(D_L17_00161C04);
-extern int fleet_ring_spark_count SDATA(D_L17_00161C08);
-extern float fleet_ring_spark_scale SDATA(D_L17_00161C0C);
-extern float fleet_ring_spark_life SDATA(D_L17_00161C10);
-extern int fleet_ring_spark_color SDATA(D_L17_00161C14);
+extern float fleet_ring_spin_rate_deg SDATA(fleet_ring_spin_rate_deg);
+extern float fleet_ring_angle_offset_deg SDATA(fleet_ring_angle_offset_deg);
+extern float fleet_ring_arc_deg SDATA(fleet_ring_arc_deg);
+extern float fleet_ring_radius SDATA(fleet_ring_radius);
+extern int fleet_ring_spark_count SDATA(fleet_ring_spark_count);
+extern float fleet_ring_spark_scale SDATA(fleet_ring_spark_scale);
+extern float fleet_ring_spark_life SDATA(fleet_ring_spark_life);
+extern int fleet_ring_spark_color SDATA(fleet_ring_spark_color);
 extern void draw_fleet_scrolling_radial_quads(char *);
 
 struct Blk {
@@ -879,12 +879,12 @@ extern struct {
 } fleet_ring_quad_uvs[4];
 extern RingStep fleet_ring_v_scroll_scale;
 extern RingStep fleet_ring_u_scroll_scale;
-extern int fleet_ring_alpha_a SDATA(D_L17_00161C18);
-extern int fleet_radial_blend_subtract_color_selector SDATA(D_L17_00161C1C);
-extern int fleet_radial_blend_alpha_factor_selector SDATA(D_L17_00161C20);
-extern int fleet_radial_blend_add_color_selector SDATA(D_L17_00161C24);
-extern int fleet_ring_quad_color SDATA(D_L17_00161C38);
-extern float fleet_ring_scroll_rate SDATA(D_L17_00161C3C);
+extern int fleet_ring_alpha_a SDATA(fleet_ring_alpha_a);
+extern int fleet_radial_blend_subtract_color_selector SDATA(fleet_radial_blend_subtract_color_selector);
+extern int fleet_radial_blend_alpha_factor_selector SDATA(fleet_radial_blend_alpha_factor_selector);
+extern int fleet_radial_blend_add_color_selector SDATA(fleet_radial_blend_add_color_selector);
+extern int fleet_ring_quad_color SDATA(fleet_ring_quad_color);
+extern float fleet_ring_scroll_rate SDATA(fleet_ring_scroll_rate);
 
 typedef struct FleetMoby {
     u8 pad_00[0x10];
@@ -959,8 +959,8 @@ extern void update_moby_vertical_oscillation(float, float, char *, float *, floa
 extern int func_L00_001F2BE8(float, void *, int, void *, void *);
 extern float resolve_camera_surface_height(float *, void *);
 extern char *PartType34Spawn(char *vec, float *pos, float sc, float vy);
-extern float fleet_bobber_height SDATA(D_L17_00161DAC);
-extern float fleet_bobber_rate_deg SDATA(D_L17_00161DB0);
+extern float fleet_bobber_height SDATA(fleet_bobber_height);
+extern float fleet_bobber_rate_deg SDATA(fleet_bobber_rate_deg);
 extern char *fleet_coll_hit_moby;
 
 /* Updates moby 835: a timed effect that spawns a spray of particles and deletes itself. */
@@ -1683,7 +1683,7 @@ int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *
 }
 extern unsigned char pad_globals_base[];
 
-extern int fleet_jet_lock_time SDATA(D_L17_001621EC);
+extern int fleet_jet_lock_time SDATA(fleet_jet_lock_time);
 extern int select_fighter_jet_target_and_draw_contacts(int, char *, char *, char *, float, float, float, char *,
                                                        char *);
 #define W(p, o) (*(int *)((char *)(p) + (o)))
@@ -1766,8 +1766,8 @@ extern void *msg_string_id(int) __asm__("func_001FE540");
 extern int FontPrintCenterSmall_c(int, int, long, void *, int) __asm__("func_001F6F40");
 extern char fleet_hud_ammo_pip_shape[];
 extern int fleet_hud_health_clut_backup[];
-extern int fleet_jet_lock_anim_start SDATA(D_L17_001621F0);
-extern int fleet_jet_lock_anim_frames SDATA(D_L17_001621F4);
+extern int fleet_jet_lock_anim_start SDATA(fleet_jet_lock_anim_start);
+extern int fleet_jet_lock_anim_frames SDATA(fleet_jet_lock_anim_frames);
 extern short fleet_hud_health_clut;
 
 /* Draws the fleet HUD: target marker, ammo icons, gauge sprites and warnings, and refreshes the gauge colour table. */
@@ -1890,9 +1890,9 @@ void DrawFleetHud(char *moby) {
 }
 extern void Moby_GetJointWorldPos(void *, int, void *);
 
-extern float fleet_jet_gun_aim_distance SDATA(D_L17_001620EC);
-extern int fleet_jet_gun_fire_delay SDATA(D_L17_001620F0);
-extern float fleet_frame_scale SDATA(D_L17_00162120);
+extern float fleet_jet_gun_aim_distance SDATA(fleet_jet_gun_aim_distance);
+extern int fleet_jet_gun_fire_delay SDATA(fleet_jet_gun_fire_delay);
+extern float fleet_frame_scale SDATA(fleet_frame_scale);
 
 /* Builds a rotated offset vector from the moby, flips a facing flag on a pad press, and updates the aim. */
 void update_fighter_jet_aim_and_fire_projectile(char *moby, char *obj, float p2, float p3) {
@@ -1916,8 +1916,8 @@ void update_fighter_jet_aim_and_fire_projectile(char *moby, char *obj, float p2,
     project_world_point_to_screen_pixels(d, obj + 0xE0, obj + 0xE4, 0);
 }
 extern int spawn_ship_rocket(void *, void *, int, void *, float, int);
-extern float fleet_jet_rocket_speed SDATA(D_L17_001620F4);
-extern int fleet_jet_rocket_fire_delay SDATA(D_L17_001620F8);
+extern float fleet_jet_rocket_speed SDATA(fleet_jet_rocket_speed);
+extern int fleet_jet_rocket_fire_delay SDATA(fleet_jet_rocket_fire_delay);
 
 typedef struct HeroShipAmmo {
     u8 pad_0000[0x15F6];
@@ -1969,73 +1969,82 @@ extern void UpdateViewContext(void);
 
 extern void DrawFleetHud();
 extern float fleet_view_tan_half_fov;
-extern float fighter_jet_startup_speed_step_gp SDATA(D_L17_00162078);
-extern float fighter_jet_cruise_speed_step_gp SDATA(D_L17_0016207C);
-extern int fleet_jet_launch_frames SDATA(D_L17_00162080);
-extern float fighter_jet_cruise_speed_gp SDATA(D_L17_00162084);
-extern float fighter_jet_boost_speed_limit_gp SDATA(D_L17_00162088);
-extern float fighter_jet_boost_speed_step_gp SDATA(D_L17_0016208C);
-extern float fighter_jet_cruise_speed_return_factor_gp SDATA(D_L17_00162090);
-extern int fleet_jet_steer_start_frame SDATA(D_L17_00162094);
-extern float fighter_jet_impact_yaw_response_scale_gp SDATA(D_L17_00162098);
-extern float fighter_jet_impact_pitch_response_scale_gp SDATA(D_L17_0016209C);
-extern float fleet_jet_pitch_rate SDATA(D_L17_001620A4);
-extern float fleet_jet_yaw_rate SDATA(D_L17_001620A8);
-extern float fleet_jet_sharp_pitch_rate SDATA(D_L17_001620AC);
-extern float fleet_jet_sharp_yaw_rate SDATA(D_L17_001620B0);
-extern float fighter_jet_camera_base_offset_x_gp SDATA(D_L17_001620B4);
-extern float fighter_jet_camera_base_offset_z_gp SDATA(D_L17_001620B8);
-extern float fleet_jet_near_cam_x SDATA(D_L17_001620BC);
-extern float fighter_jet_camera_secondary_offset_z_gp SDATA(D_L17_001620C0);
-extern float fleet_jet_cam_roll_per_yaw_steer SDATA(D_L17_001620C4);
-extern float fleet_jet_cam_roll_follow SDATA(D_L17_001620C8);
-extern float fighter_jet_camera_pitch_bias_gp SDATA(D_L17_001620CC);
-extern float fleet_jet_bounce_speed_scale SDATA(D_L17_001620DC);
-extern float fighter_jet_collision_damage_gp SDATA(D_L17_001620E0);
-extern float fleet_jet_roll_per_yaw_steer SDATA(D_L17_0016210C);
-extern float fleet_jet_cam_y_per_yaw_steer SDATA(D_L17_00162110);
-extern float fighter_jet_scale SDATA(D_L17_0016211C);
-extern float fighter_jet_horizontal_steering_error_gain_gp SDATA(D_L17_0016212C);
-extern float fighter_jet_horizontal_steering_velocity_damping_gp SDATA(D_L17_00162130);
-extern float fighter_jet_horizontal_steering_settle_threshold_scale_gp SDATA(D_L17_00162134);
-extern float fighter_jet_rescaled_horizontal_steering_settle_threshold_scale_gp SDATA(D_L17_00162138);
-extern float fighter_jet_vertical_steering_error_gain_gp SDATA(D_L17_0016213C);
-extern float fighter_jet_vertical_steering_velocity_damping_gp SDATA(D_L17_00162140);
-extern float fighter_jet_vertical_steering_settle_threshold_scale_gp SDATA(D_L17_00162144);
-extern float fighter_jet_rescaled_vertical_steering_settle_threshold_scale_gp SDATA(D_L17_00162148);
-extern float fighter_jet_roll_error_gain_gp SDATA(D_L17_0016214C);
-extern float fighter_jet_roll_velocity_damping_gp SDATA(D_L17_00162150);
-extern float fighter_jet_roll_settle_threshold_scale_gp SDATA(D_L17_00162154);
-extern float fighter_jet_camera_roll_error_gain_gp SDATA(D_L17_00162170);
-extern float fighter_jet_camera_roll_velocity_damping_gp SDATA(D_L17_00162174);
-extern float fighter_jet_camera_roll_settle_threshold_scale_gp SDATA(D_L17_00162178);
-extern float fighter_jet_camera_pitch_error_gain_gp SDATA(D_L17_0016217C);
-extern float fighter_jet_camera_pitch_velocity_damping_gp SDATA(D_L17_00162180);
-extern float fighter_jet_camera_pitch_settle_threshold_scale_gp SDATA(D_L17_00162184);
-extern float fighter_jet_camera_yaw_error_gain_gp SDATA(D_L17_00162188);
-extern float fighter_jet_camera_yaw_velocity_damping_gp SDATA(D_L17_0016218C);
-extern float fighter_jet_camera_yaw_settle_threshold_scale_gp SDATA(D_L17_00162190);
-extern float fighter_jet_camera_offset_x_error_gain_gp SDATA(D_L17_00162194);
-extern float fighter_jet_camera_offset_x_velocity_damping_gp SDATA(D_L17_00162198);
-extern float fighter_jet_camera_offset_x_settle_threshold_scale_gp SDATA(D_L17_0016219C);
-extern float fighter_jet_camera_offset_y_error_gain_gp SDATA(D_L17_001621A0);
-extern float fighter_jet_camera_offset_y_velocity_damping_gp SDATA(D_L17_001621A4);
-extern float fighter_jet_camera_offset_y_settle_threshold_scale_gp SDATA(D_L17_001621A8);
-extern float fighter_jet_camera_offset_z_error_gain_gp SDATA(D_L17_001621AC);
-extern float fighter_jet_camera_offset_z_velocity_damping_gp SDATA(D_L17_001621B0);
-extern float fighter_jet_camera_offset_z_settle_threshold_scale_gp SDATA(D_L17_001621B4);
-extern float fleet_jet_cam_x_per_pitch_steer SDATA(D_L17_001621B8);
-extern float fleet_jet_cam_z_per_pitch_steer SDATA(D_L17_001621BC);
-extern float fleet_jet_cam_x_per_speed SDATA(D_L17_001621C0);
-extern float fighter_jet_cruise_fov_gp SDATA(D_L17_001621C4);
-extern float fighter_jet_boost_fov_gp SDATA(D_L17_001621C8);
-extern float fighter_jet_fov_error_gain_gp SDATA(D_L17_001621CC);
-extern float fighter_jet_fov_velocity_damping_gp SDATA(D_L17_001621D0);
-extern float fighter_jet_fov_settle_threshold_scale_gp SDATA(D_L17_001621D4);
-extern int fleet_jet_wall_hit_cooldown SDATA(D_L17_001621DC);
-extern float fleet_jet_model_roll_per_yaw_steer SDATA(D_L17_001621E0);
-extern float fleet_jet_model_pitch_per_pitch_steer SDATA(D_L17_001621E4);
-extern float fleet_jet_model_yaw_per_yaw_steer SDATA(D_L17_001621E8);
+extern float fighter_jet_startup_speed_step_gp SDATA(fighter_jet_startup_speed_step_gp);
+extern float fighter_jet_cruise_speed_step_gp SDATA(fighter_jet_cruise_speed_step_gp);
+extern int fleet_jet_launch_frames SDATA(fleet_jet_launch_frames);
+extern float fighter_jet_cruise_speed_gp SDATA(fighter_jet_cruise_speed_gp);
+extern float fighter_jet_boost_speed_limit_gp SDATA(fighter_jet_boost_speed_limit_gp);
+extern float fighter_jet_boost_speed_step_gp SDATA(fighter_jet_boost_speed_step_gp);
+extern float fighter_jet_cruise_speed_return_factor_gp SDATA(fighter_jet_cruise_speed_return_factor_gp);
+extern int fleet_jet_steer_start_frame SDATA(fleet_jet_steer_start_frame);
+extern float fighter_jet_impact_yaw_response_scale_gp SDATA(fighter_jet_impact_yaw_response_scale_gp);
+extern float fighter_jet_impact_pitch_response_scale_gp SDATA(fighter_jet_impact_pitch_response_scale_gp);
+extern float fleet_jet_pitch_rate SDATA(fleet_jet_pitch_rate);
+extern float fleet_jet_yaw_rate SDATA(fleet_jet_yaw_rate);
+extern float fleet_jet_sharp_pitch_rate SDATA(fleet_jet_sharp_pitch_rate);
+extern float fleet_jet_sharp_yaw_rate SDATA(fleet_jet_sharp_yaw_rate);
+extern float fighter_jet_camera_base_offset_x_gp SDATA(fighter_jet_camera_base_offset_x_gp);
+extern float fighter_jet_camera_base_offset_z_gp SDATA(fighter_jet_camera_base_offset_z_gp);
+extern float fleet_jet_near_cam_x SDATA(fleet_jet_near_cam_x);
+extern float fighter_jet_camera_secondary_offset_z_gp SDATA(fighter_jet_camera_secondary_offset_z_gp);
+extern float fleet_jet_cam_roll_per_yaw_steer SDATA(fleet_jet_cam_roll_per_yaw_steer);
+extern float fleet_jet_cam_roll_follow SDATA(fleet_jet_cam_roll_follow);
+extern float fighter_jet_camera_pitch_bias_gp SDATA(fighter_jet_camera_pitch_bias_gp);
+extern float fleet_jet_bounce_speed_scale SDATA(fleet_jet_bounce_speed_scale);
+extern float fighter_jet_collision_damage_gp SDATA(fighter_jet_collision_damage_gp);
+extern float fleet_jet_roll_per_yaw_steer SDATA(fleet_jet_roll_per_yaw_steer);
+extern float fleet_jet_cam_y_per_yaw_steer SDATA(fleet_jet_cam_y_per_yaw_steer);
+extern float fighter_jet_scale SDATA(fighter_jet_scale);
+extern float fighter_jet_horizontal_steering_error_gain_gp SDATA(fighter_jet_horizontal_steering_error_gain_gp);
+extern float fighter_jet_horizontal_steering_velocity_damping_gp
+    SDATA(fighter_jet_horizontal_steering_velocity_damping_gp);
+extern float fighter_jet_horizontal_steering_settle_threshold_scale_gp
+    SDATA(fighter_jet_horizontal_steering_settle_threshold_scale_gp);
+extern float fighter_jet_rescaled_horizontal_steering_settle_threshold_scale_gp
+    SDATA(fighter_jet_rescaled_horizontal_steering_settle_threshold_scale_gp);
+extern float fighter_jet_vertical_steering_error_gain_gp SDATA(fighter_jet_vertical_steering_error_gain_gp);
+extern float fighter_jet_vertical_steering_velocity_damping_gp SDATA(fighter_jet_vertical_steering_velocity_damping_gp);
+extern float fighter_jet_vertical_steering_settle_threshold_scale_gp
+    SDATA(fighter_jet_vertical_steering_settle_threshold_scale_gp);
+extern float fighter_jet_rescaled_vertical_steering_settle_threshold_scale_gp
+    SDATA(fighter_jet_rescaled_vertical_steering_settle_threshold_scale_gp);
+extern float fighter_jet_roll_error_gain_gp SDATA(fighter_jet_roll_error_gain_gp);
+extern float fighter_jet_roll_velocity_damping_gp SDATA(fighter_jet_roll_velocity_damping_gp);
+extern float fighter_jet_roll_settle_threshold_scale_gp SDATA(fighter_jet_roll_settle_threshold_scale_gp);
+extern float fighter_jet_camera_roll_error_gain_gp SDATA(fighter_jet_camera_roll_error_gain_gp);
+extern float fighter_jet_camera_roll_velocity_damping_gp SDATA(fighter_jet_camera_roll_velocity_damping_gp);
+extern float fighter_jet_camera_roll_settle_threshold_scale_gp SDATA(fighter_jet_camera_roll_settle_threshold_scale_gp);
+extern float fighter_jet_camera_pitch_error_gain_gp SDATA(fighter_jet_camera_pitch_error_gain_gp);
+extern float fighter_jet_camera_pitch_velocity_damping_gp SDATA(fighter_jet_camera_pitch_velocity_damping_gp);
+extern float fighter_jet_camera_pitch_settle_threshold_scale_gp
+    SDATA(fighter_jet_camera_pitch_settle_threshold_scale_gp);
+extern float fighter_jet_camera_yaw_error_gain_gp SDATA(fighter_jet_camera_yaw_error_gain_gp);
+extern float fighter_jet_camera_yaw_velocity_damping_gp SDATA(fighter_jet_camera_yaw_velocity_damping_gp);
+extern float fighter_jet_camera_yaw_settle_threshold_scale_gp SDATA(fighter_jet_camera_yaw_settle_threshold_scale_gp);
+extern float fighter_jet_camera_offset_x_error_gain_gp SDATA(fighter_jet_camera_offset_x_error_gain_gp);
+extern float fighter_jet_camera_offset_x_velocity_damping_gp SDATA(fighter_jet_camera_offset_x_velocity_damping_gp);
+extern float fighter_jet_camera_offset_x_settle_threshold_scale_gp
+    SDATA(fighter_jet_camera_offset_x_settle_threshold_scale_gp);
+extern float fighter_jet_camera_offset_y_error_gain_gp SDATA(fighter_jet_camera_offset_y_error_gain_gp);
+extern float fighter_jet_camera_offset_y_velocity_damping_gp SDATA(fighter_jet_camera_offset_y_velocity_damping_gp);
+extern float fighter_jet_camera_offset_y_settle_threshold_scale_gp
+    SDATA(fighter_jet_camera_offset_y_settle_threshold_scale_gp);
+extern float fighter_jet_camera_offset_z_error_gain_gp SDATA(fighter_jet_camera_offset_z_error_gain_gp);
+extern float fighter_jet_camera_offset_z_velocity_damping_gp SDATA(fighter_jet_camera_offset_z_velocity_damping_gp);
+extern float fighter_jet_camera_offset_z_settle_threshold_scale_gp
+    SDATA(fighter_jet_camera_offset_z_settle_threshold_scale_gp);
+extern float fleet_jet_cam_x_per_pitch_steer SDATA(fleet_jet_cam_x_per_pitch_steer);
+extern float fleet_jet_cam_z_per_pitch_steer SDATA(fleet_jet_cam_z_per_pitch_steer);
+extern float fleet_jet_cam_x_per_speed SDATA(fleet_jet_cam_x_per_speed);
+extern float fighter_jet_cruise_fov_gp SDATA(fighter_jet_cruise_fov_gp);
+extern float fighter_jet_boost_fov_gp SDATA(fighter_jet_boost_fov_gp);
+extern float fighter_jet_fov_error_gain_gp SDATA(fighter_jet_fov_error_gain_gp);
+extern float fighter_jet_fov_velocity_damping_gp SDATA(fighter_jet_fov_velocity_damping_gp);
+extern float fighter_jet_fov_settle_threshold_scale_gp SDATA(fighter_jet_fov_settle_threshold_scale_gp);
+extern int fleet_jet_wall_hit_cooldown SDATA(fleet_jet_wall_hit_cooldown);
+extern float fleet_jet_model_roll_per_yaw_steer SDATA(fleet_jet_model_roll_per_yaw_steer);
+extern float fleet_jet_model_pitch_per_pitch_steer SDATA(fleet_jet_model_pitch_per_pitch_steer);
+extern float fleet_jet_model_yaw_per_yaw_steer SDATA(fleet_jet_model_yaw_per_yaw_steer);
 extern short fleet_jet_crash_time;
 extern short fleet_jet_default_heading_target;
 
@@ -2360,18 +2369,18 @@ extern char fleet_jet_err_no_exit_point[];
 /* Seven of the level's tuning floats are read below as the scalar variables they are in retail: a
  * typed read lets the scheduler and CSE treat them as retail's compile did (a store through a struct
  * pointer does not disturb them), which a cast read through `extern short` cannot (SDATA, common.h). */
-extern float fleet_jet_hit_deflect_per_damage SDATA(D_L17_00162108);
+extern float fleet_jet_hit_deflect_per_damage SDATA(fleet_jet_hit_deflect_per_damage);
 extern short fleet_jet_bounce_yaw_blend_s __asm__("D_L17_00162098");
 extern short fleet_jet_bounce_pitch_blend_s __asm__("D_L17_0016209C");
-extern float fleet_jet_max_health SDATA(D_L17_00162104);
-extern int fleet_hud_health_clut_saved SDATA(D_L17_00162204);
-extern float fleet_jet_board_radius SDATA(D_L17_00162060);
-extern float fleet_jet_idle_anim_speed SDATA(D_L17_001620D4);
+extern float fleet_jet_max_health SDATA(fleet_jet_max_health);
+extern int fleet_hud_health_clut_saved SDATA(fleet_hud_health_clut_saved);
+extern float fleet_jet_board_radius SDATA(fleet_jet_board_radius);
+extern float fleet_jet_idle_anim_speed SDATA(fleet_jet_idle_anim_speed);
 extern unsigned char fleet_jet_max_ammo;
 extern unsigned char fleet_jet_start_ammo;
-extern float fleet_jet_start_health SDATA(D_L17_001620D8);
-extern float fleet_jet_launch_speed SDATA(D_L17_00162064);
-extern int fleet_jet_exit_fade_delay SDATA(D_L17_001621F8);
+extern float fleet_jet_start_health SDATA(fleet_jet_start_health);
+extern float fleet_jet_launch_speed SDATA(fleet_jet_launch_speed);
+extern int fleet_jet_exit_fade_delay SDATA(fleet_jet_exit_fade_delay);
 typedef struct {
     char pad[0xA];
     unsigned short h;

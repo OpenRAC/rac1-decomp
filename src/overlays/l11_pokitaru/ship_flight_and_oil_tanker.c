@@ -284,8 +284,8 @@ void count_active_and_visible_listed_mobys(void *a0, void *a1, void *a2) {
 }
 
 extern float pokitaru_camera_rot[];
-extern int lock_hold_frames SDATA(D_L11_001621F0);
-extern int lock_fade_frames SDATA(D_L11_001621F4);
+extern int lock_hold_frames SDATA(lock_hold_frames);
+extern int lock_fade_frames SDATA(lock_fade_frames);
 extern void fast_dec_timer(int *arg0);
 extern char *f12e10(float, int, char *, float *, float *, float, float, char *, int) __asm__("func_L11_00312E10");
 
@@ -574,9 +574,9 @@ extern int Moby_PlaySound_i(int, int, int) __asm__("func_0022ED80");
 extern int fast_dec_timer_i(void *) __asm__("func_001F9908");
 extern unsigned char pad_globals_base[];
 
-extern float ship_missile_speed SDATA(D_L11_001620F4);
-extern float ship_speed_scale SDATA(D_L11_00162120);
-extern int ship_missile_cooldown SDATA(D_L11_001620F8);
+extern float ship_missile_speed SDATA(ship_missile_speed);
+extern float ship_speed_scale SDATA(ship_speed_scale);
+extern int ship_missile_cooldown SDATA(ship_missile_cooldown);
 
 /* on a pad press, fires the aimed shot and resets the cooldown */
 void try_fire_ship_projectile(char *moby, struct ShipVars *d) {
@@ -978,20 +978,20 @@ extern float pokitaru_fade_level MACRO_ADDR;
 extern int pokitaru_play_mode MACRO_ADDR;
 extern char jet_fighter_missing_park_point_format[];
 extern char jet_fighter_missing_hero_point_format[];
-extern float ship_hit_deflect_scale SDATA(D_L11_00162108);
+extern float ship_hit_deflect_scale SDATA(ship_hit_deflect_scale);
 extern short ship_bounce_yaw_scale_s __asm__("D_L11_00162098");
 extern short ship_bounce_pitch_scale_s __asm__("D_L11_0016209C");
-extern float ship_max_hp SDATA(D_L11_00162104);
-extern int ship_hud_clut_saved SDATA(D_L11_00162200);
-extern float ship_board_radius SDATA(D_L11_00162060);
-extern float ship_camera_offset_scale SDATA(D_L11_0016211C);
+extern float ship_max_hp SDATA(ship_max_hp);
+extern int ship_hud_clut_saved SDATA(ship_hud_clut_saved);
+extern float ship_board_radius SDATA(ship_board_radius);
+extern float ship_camera_offset_scale SDATA(ship_camera_offset_scale);
 extern unsigned char ship_max_missiles;
 extern unsigned char ship_start_missiles;
-extern float ship_start_hp SDATA(D_L11_001620D8);
-extern float ship_start_speed SDATA(D_L11_00162064);
-extern float ship_camera_back_offset SDATA(D_L11_001620B4);
-extern float ship_camera_up_offset SDATA(D_L11_001620B8);
-extern int ship_mission_end_ticks SDATA(D_L11_001621F8);
+extern float ship_start_hp SDATA(ship_start_hp);
+extern float ship_start_speed SDATA(ship_start_speed);
+extern float ship_camera_back_offset SDATA(ship_camera_back_offset);
+extern float ship_camera_up_offset SDATA(ship_camera_up_offset);
+extern int ship_mission_end_ticks SDATA(ship_mission_end_ticks);
 typedef struct {
     char pad[0xA];
     unsigned short h;
@@ -1541,12 +1541,12 @@ typedef struct {
 } CreatureVars_4318;
 extern char path_table[];
 extern char *pokitaru_mobys MACRO_ADDR;
-extern float puffoid_move_params SDATA(D_L11_00162350);
-extern float puffoid_scale SDATA(D_L11_0016235C);
-extern float puffoid_spray_target_distance_metric_threshold_gp SDATA(D_L11_00162374);
-extern float puffoid_chase_heading_offset_limit_degrees_gp SDATA(D_L11_00162378);
-extern float puffoid_jump_horizontal_speed_gp SDATA(D_L11_0016237C);
-extern float puffoid_jump_gravity SDATA(D_L11_00162380);
+extern float puffoid_move_params SDATA(puffoid_move_params);
+extern float puffoid_scale SDATA(puffoid_scale);
+extern float puffoid_spray_target_distance_metric_threshold_gp SDATA(puffoid_spray_target_distance_metric_threshold_gp);
+extern float puffoid_chase_heading_offset_limit_degrees_gp SDATA(puffoid_chase_heading_offset_limit_degrees_gp);
+extern float puffoid_jump_horizontal_speed_gp SDATA(puffoid_jump_horizontal_speed_gp);
+extern float puffoid_jump_gravity SDATA(puffoid_jump_gravity);
 extern void update_puffoid_damage_and_path_goal();
 extern void update_moby_target_heading_and_conditional_movement(char *a0, float *a1);
 extern short count_group_puffoid_mobys_in_states_13_to_17(struct Moby *self);
@@ -2279,7 +2279,7 @@ extern float FastSin(float);
 extern int move_w(char *, char *, float *, char *, float);
 extern float g_frame_time_sq MACRO_ADDR;
 extern short g_frame_time_s __asm__("D_0015EE6C");
-extern float puffoid_walk_speed SDATA(D_L11_0016238C);
+extern float puffoid_walk_speed SDATA(puffoid_walk_speed);
 
 /* turns a moby toward a point and, while in range, spawns a puff */
 void update_moby_target_heading_and_conditional_movement(char *m, float *p) {
@@ -2381,9 +2381,9 @@ void *moby_park_state_on_find(Moby *arg, void *pos, void *t, float h) {
     return found;
 }
 #define hero_x (*(Hero *)D_0013F450)
-extern float two_door_gate_door_height SDATA(D_L11_00162398);
-extern float two_door_gate_tilt_deg SDATA(D_L11_0016239C);
-extern float two_door_gate_open_angle_deg SDATA(D_L11_001623A0);
+extern float two_door_gate_door_height SDATA(two_door_gate_door_height);
+extern float two_door_gate_tilt_deg SDATA(two_door_gate_tilt_deg);
+extern float two_door_gate_open_angle_deg SDATA(two_door_gate_open_angle_deg);
 
 struct PMoby {
     Vec4f bsphere;
@@ -2563,7 +2563,7 @@ extern void Moby_PlaySound(int, int, int);
 extern s32 map_data_0015EE84 __asm__("D_0015EE84") MACRO_ADDR;
 extern char path_table[];
 extern float g_frame_time MACRO_ADDR;
-extern float oil_tanker_path_step SDATA(D_L11_001623B0);
+extern float oil_tanker_path_step SDATA(oil_tanker_path_step);
 extern char help_stats_base[];
 
 /* UpdateMoby_1264: switch on the state byte at +0x20. State 0 deletes the moby if its entry is 0xFF in the table at
@@ -2731,9 +2731,9 @@ void update_oil_tanker_front_path_pose(char *moby) {
 extern float FastVecDist(void *, void *);
 extern int truncate_float_to_s32(float);
 extern void moby_build_matrix(void *);
-extern float oil_tanker_spacing_reference_offset_gp SDATA(D_L11_001623B8);
-extern float oil_tanker_link_spacing_threshold_gp SDATA(D_L11_001623B4);
-extern int oil_tanker_link_marker_cooldown_frames_gp SDATA(D_L11_001623BC);
+extern float oil_tanker_spacing_reference_offset_gp SDATA(oil_tanker_spacing_reference_offset_gp);
+extern float oil_tanker_link_spacing_threshold_gp SDATA(oil_tanker_link_spacing_threshold_gp);
+extern int oil_tanker_link_marker_cooldown_frames_gp SDATA(oil_tanker_link_marker_cooldown_frames_gp);
 extern int pokitaru_cinematic_mode MACRO_ADDR;
 
 typedef struct {
@@ -2993,13 +2993,13 @@ void distribute_group_blarg_ship_1319_mobys_along_path(void *mp, int table_index
         }
     } while (*(short *)list++ >= 0);
 }
-extern int oil_tanker_link_bubble_chance SDATA(D_L11_001623D0);
+extern int oil_tanker_link_bubble_chance SDATA(oil_tanker_link_bubble_chance);
 extern short oil_tanker_link_bubble_offset;
-extern float oil_tanker_link_bubble_scale_min SDATA(D_L11_001623F0);
-extern float oil_tanker_link_bubble_scale_max SDATA(D_L11_001623F4);
-extern float oil_tanker_link_bubble_jitter SDATA(D_L11_001623F8);
-extern float oil_tanker_link_debris_speed SDATA(D_L11_001623FC);
-extern int pokitaru_available_moby_slot_count SDATA(D_L11_0016003C);
+extern float oil_tanker_link_bubble_scale_min SDATA(oil_tanker_link_bubble_scale_min);
+extern float oil_tanker_link_bubble_scale_max SDATA(oil_tanker_link_bubble_scale_max);
+extern float oil_tanker_link_bubble_jitter SDATA(oil_tanker_link_bubble_jitter);
+extern float oil_tanker_link_debris_speed SDATA(oil_tanker_link_debris_speed);
+extern int pokitaru_available_moby_slot_count SDATA(pokitaru_available_moby_slot_count);
 extern char pokitaru_ocean_height[] MACRO_ADDR;
 extern float pokitaru_zero_vec[] MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
@@ -3075,7 +3075,7 @@ extern int coll_line(void *, void *, int, void *, void *);
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
-extern float energy_sphere_glow_size SDATA(D_L11_00162418);
+extern float energy_sphere_glow_size SDATA(energy_sphere_glow_size);
 
 // Update function for a moby that eases values, then flies to a target and bursts.
 void energy_sphere_1297_update(unsigned char *moby) {
@@ -3172,14 +3172,14 @@ extern float random_angle_radians(void);
 extern float FastSin(float);
 extern float FastCos(float);
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
-extern int energy_sphere_spawn_spark_start_color SDATA(D_L11_0016241C);
-extern int energy_sphere_spawn_spark_end_color SDATA(D_L11_00162420);
-extern int energy_sphere_spawn_spark_time1 SDATA(D_L11_00162424);
-extern int energy_sphere_spawn_spark_time2 SDATA(D_L11_00162428);
-extern int energy_sphere_spawn_spark_time3 SDATA(D_L11_0016242C);
-extern float energy_sphere_spawn_spark_start_size SDATA(D_L11_00162430);
-extern float energy_sphere_spawn_spark_end_size SDATA(D_L11_00162434);
-extern int energy_sphere_spark_texture SDATA(D_L11_00162438);
+extern int energy_sphere_spawn_spark_start_color SDATA(energy_sphere_spawn_spark_start_color);
+extern int energy_sphere_spawn_spark_end_color SDATA(energy_sphere_spawn_spark_end_color);
+extern int energy_sphere_spawn_spark_time1 SDATA(energy_sphere_spawn_spark_time1);
+extern int energy_sphere_spawn_spark_time2 SDATA(energy_sphere_spawn_spark_time2);
+extern int energy_sphere_spawn_spark_time3 SDATA(energy_sphere_spawn_spark_time3);
+extern float energy_sphere_spawn_spark_start_size SDATA(energy_sphere_spawn_spark_start_size);
+extern float energy_sphere_spawn_spark_end_size SDATA(energy_sphere_spawn_spark_end_size);
+extern int energy_sphere_spark_texture SDATA(energy_sphere_spark_texture);
 
 /* Builds a few direction vectors from a moby's axes and calls the 0x219780 spawner. */
 void spawn_moby_radial_spark(char *m) {
@@ -3233,15 +3233,15 @@ void spawn_energy_sphere_particles(char *moby) {
         FastVecAdd(v0, v0, v1);
     }
 }
-extern float energy_sphere_spark_speed_min SDATA(D_L11_0016243C);
-extern float energy_sphere_spark_speed_max SDATA(D_L11_00162440);
-extern float energy_sphere_spark_start_size SDATA(D_L11_00162444);
-extern float energy_sphere_spark_end_size SDATA(D_L11_00162448);
-extern int energy_sphere_spark_color_a SDATA(D_L11_0016244C);
-extern int energy_sphere_spark_color_b SDATA(D_L11_00162450);
-extern int energy_sphere_spark_time1 SDATA(D_L11_00162454);
-extern int energy_sphere_spark_time2 SDATA(D_L11_00162458);
-extern int energy_sphere_spark_time3 SDATA(D_L11_0016245C);
+extern float energy_sphere_spark_speed_min SDATA(energy_sphere_spark_speed_min);
+extern float energy_sphere_spark_speed_max SDATA(energy_sphere_spark_speed_max);
+extern float energy_sphere_spark_start_size SDATA(energy_sphere_spark_start_size);
+extern float energy_sphere_spark_end_size SDATA(energy_sphere_spark_end_size);
+extern int energy_sphere_spark_color_a SDATA(energy_sphere_spark_color_a);
+extern int energy_sphere_spark_color_b SDATA(energy_sphere_spark_color_b);
+extern int energy_sphere_spark_time1 SDATA(energy_sphere_spark_time1);
+extern int energy_sphere_spark_time2 SDATA(energy_sphere_spark_time2);
+extern int energy_sphere_spark_time3 SDATA(energy_sphere_spark_time3);
 
 // Spawns a two-tone effect at a moby's position using level tuning constants.
 void spawn_energy_sphere_spark(char *moby) {
@@ -3278,7 +3278,7 @@ extern char path_table[];
 extern float pokitaru_zero_vec[] MACRO_ADDR;
 extern char flying_craft_gun_offset_a[];
 extern char flying_craft_gun_offset_b[];
-extern float flying_craft_shot_speed SDATA(D_L11_00162460);
+extern float flying_craft_shot_speed SDATA(flying_craft_shot_speed);
 
 typedef struct FlyingCraftVars {
     u8 pad00[0x60];
@@ -3582,14 +3582,14 @@ void update_moby_list_empty_dialogue_trigger(char *moby) {
         }
     }
 }
-extern float bubble_gravity SDATA(D_L11_00162490);
-extern float bubble_surface_gravity SDATA(D_L11_00162494);
-extern float bubble_drag SDATA(D_L11_00162498);
-extern float bubble_surface_speed_scale SDATA(D_L11_0016249C);
-extern int bubble_trail_chance SDATA(D_L11_001624A0);
-extern float bubble_foam_size SDATA(D_L11_001624A4);
-extern int bubble_foam_color_a SDATA(D_L11_001624A8);
-extern int bubble_foam_color_b SDATA(D_L11_001624AC);
+extern float bubble_gravity SDATA(bubble_gravity);
+extern float bubble_surface_gravity SDATA(bubble_surface_gravity);
+extern float bubble_drag SDATA(bubble_drag);
+extern float bubble_surface_speed_scale SDATA(bubble_surface_speed_scale);
+extern int bubble_trail_chance SDATA(bubble_trail_chance);
+extern float bubble_foam_size SDATA(bubble_foam_size);
+extern int bubble_foam_color_a SDATA(bubble_foam_color_a);
+extern int bubble_foam_color_b SDATA(bubble_foam_color_b);
 extern void spawn_bubble_spark(char *);
 extern void spawn_bubble_surface_effects(char *, float *, int, int);
 extern char *PartType34Spawn_p(void *, float *, float, float) __asm__("func_L00_0026FF20");
@@ -3673,8 +3673,8 @@ char *spawn_class_5f4_moby_with_random_rotation(void *position, void *vector, vo
     }
     return (char *)moby;
 }
-extern int bubble_splash_color_a SDATA(D_L11_001624B0);
-extern int bubble_splash_color_b SDATA(D_L11_001624B4);
+extern int bubble_splash_color_a SDATA(bubble_splash_color_a);
+extern int bubble_splash_color_b SDATA(bubble_splash_color_b);
 extern int rand_range(int, int);
 
 extern char *func_L00_00272770(void *, void *, void *, float, float);
@@ -3709,18 +3709,18 @@ void spawn_bubble_surface_effects(char *m, float *ground, int n1, int n2) {
     }
 }
 extern float multiply_global_factor(float);
-extern float bubble_trail_jitter SDATA(D_L11_001624B8);
-extern float bubble_trail_rise_min SDATA(D_L11_001624BC);
-extern float bubble_trail_rise_max SDATA(D_L11_001624C0);
-extern float bubble_trail_start_size SDATA(D_L11_001624C4);
-extern float bubble_trail_end_size SDATA(D_L11_001624C8);
-extern int bubble_trail_start_color_a SDATA(D_L11_001624CC);
-extern int bubble_trail_start_color_b SDATA(D_L11_001624D0);
-extern int bubble_trail_end_color_a SDATA(D_L11_001624D4);
-extern int bubble_trail_end_color_b SDATA(D_L11_001624D8);
-extern int bubble_trail_time1 SDATA(D_L11_001624DC);
-extern int bubble_trail_time2 SDATA(D_L11_001624E0);
-extern int bubble_trail_time3 SDATA(D_L11_001624E4);
+extern float bubble_trail_jitter SDATA(bubble_trail_jitter);
+extern float bubble_trail_rise_min SDATA(bubble_trail_rise_min);
+extern float bubble_trail_rise_max SDATA(bubble_trail_rise_max);
+extern float bubble_trail_start_size SDATA(bubble_trail_start_size);
+extern float bubble_trail_end_size SDATA(bubble_trail_end_size);
+extern int bubble_trail_start_color_a SDATA(bubble_trail_start_color_a);
+extern int bubble_trail_start_color_b SDATA(bubble_trail_start_color_b);
+extern int bubble_trail_end_color_a SDATA(bubble_trail_end_color_a);
+extern int bubble_trail_end_color_b SDATA(bubble_trail_end_color_b);
+extern int bubble_trail_time1 SDATA(bubble_trail_time1);
+extern int bubble_trail_time2 SDATA(bubble_trail_time2);
+extern int bubble_trail_time3 SDATA(bubble_trail_time3);
 
 // Builds a lit, coloured four-corner effect for a moby and spawns it.
 void spawn_bubble_spark(char *m) {

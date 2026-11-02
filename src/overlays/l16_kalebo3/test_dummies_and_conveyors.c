@@ -504,12 +504,12 @@ extern void FastVecAdd(void *, void *, void *);
 extern void *spawn_feather_moby(void *, void *, void *);
 extern int Moby_PlaySound_57(int, int, void *) __asm__("func_0022ED80");
 extern void MobyBlendAnimation(void *, int, int, int);
-extern float reposition_effect_velocity_elevation_degrees SDATA(D_L16_001619A8);
-extern float reposition_effect_velocity_scale_range_start SDATA(D_L16_001619AC);
-extern float reposition_effect_velocity_scale_range_end SDATA(D_L16_001619B0);
-extern float reposition_effect_spawn_z_offset SDATA(D_L16_001619B4);
-extern float reposition_effect_radius_range_start SDATA(D_L16_001619B8);
-extern float reposition_effect_radius_range_end SDATA(D_L16_001619BC);
+extern float reposition_effect_velocity_elevation_degrees SDATA(reposition_effect_velocity_elevation_degrees);
+extern float reposition_effect_velocity_scale_range_start SDATA(reposition_effect_velocity_scale_range_start);
+extern float reposition_effect_velocity_scale_range_end SDATA(reposition_effect_velocity_scale_range_end);
+extern float reposition_effect_spawn_z_offset SDATA(reposition_effect_spawn_z_offset);
+extern float reposition_effect_radius_range_start SDATA(reposition_effect_radius_range_start);
+extern float reposition_effect_radius_range_end SDATA(reposition_effect_radius_range_end);
 
 /* Spawns effects around a moby when a nearby position is valid. */
 void reposition_moby_with_collision_check(Moby *m, void *p) {
@@ -780,7 +780,7 @@ void emit_moby_sprite_effect_particles(char *m) {
         FastVecAdd(d, d, e);
     }
 }
-extern float conveyor_belt_base_speed SDATA(D_L16_00161A4C);
+extern float conveyor_belt_base_speed SDATA(conveyor_belt_base_speed);
 extern float g_frame_time_sq MACRO_ADDR;
 extern float ApproachValue(float *, float, float);
 extern void AddDrawCallback(void (*)(void), void *);
@@ -1044,10 +1044,10 @@ typedef struct {
     char block140[1];
 } L16DummyData;
 
-extern int test_dummy_hold_joint SDATA(D_L16_00161A88);
-extern float test_dummy_bomb_horizontal_launch_speed SDATA(D_L16_00161A8C);
-extern float test_dummy_path_movement_speed_limit_gp SDATA(D_L16_00161A90);
-extern float test_dummy_spray_range_gp SDATA(D_L16_00161A94);
+extern int test_dummy_hold_joint SDATA(test_dummy_hold_joint);
+extern float test_dummy_bomb_horizontal_launch_speed SDATA(test_dummy_bomb_horizontal_launch_speed);
+extern float test_dummy_path_movement_speed_limit_gp SDATA(test_dummy_path_movement_speed_limit_gp);
+extern float test_dummy_spray_range_gp SDATA(test_dummy_spray_range_gp);
 extern void update_test_dummy_damage_and_respawn(void *);
 extern void *find_nearest_test_dummy_door(int, void *);
 extern void refresh_test_dummy_door_timer(char *);
@@ -1560,7 +1560,7 @@ int move_test_dummy_toward_position_and_heading(char *moby, void *vec, float ang
 }
 extern int kalebo3_frame_count MACRO_ADDR;
 extern void draw_test_dummy_group_glows();
-extern float test_dummy_glow_phase_rate_degrees SDATA(D_L16_00161A9C);
+extern float test_dummy_glow_phase_rate_degrees SDATA(test_dummy_glow_phase_rate_degrees);
 /* spins the level's rotating parts by the current angle and queues the draw callback */
 void update_test_dummy_group_glow_phases(char *moby) {
     short *p;
@@ -1584,8 +1584,8 @@ void update_test_dummy_group_glow_phases(char *moby) {
 }
 extern void FastVecCross(void *, void *, void *);
 extern float test_dummy_glow_quad_points[][4];
-extern int test_dummy_glow_pulse_color_start SDATA(D_L16_00161AA0);
-extern int test_dummy_glow_pulse_color_end SDATA(D_L16_00161AA4);
+extern int test_dummy_glow_pulse_color_start SDATA(test_dummy_glow_pulse_color_start);
+extern int test_dummy_glow_pulse_color_end SDATA(test_dummy_glow_pulse_color_end);
 /* A test dummy as its beam's draw callback reads it. */
 typedef struct {
     char pad00[0x10];
@@ -1850,14 +1850,14 @@ void draw_linked_pair_group_ribbons(char *arg) {
 }
 extern float linked_pair_ribbon_uvs[][2];
 extern float linked_pair_ribbon_points[][4];
-extern float linked_pair_ribbon_origin_z_offset SDATA(D_L16_00161AB8);
-extern float linked_pair_ribbon_pass_z_step SDATA(D_L16_00161ABC);
-extern int linked_pair_ribbon_texture_id SDATA(D_L16_00161AC0);
-extern int linked_pair_ribbon_vertex_color SDATA(D_L16_00161AC4);
-extern int linked_pair_ribbon_alpha_blend_a_selector SDATA(D_L16_00161AA8);
-extern int linked_pair_ribbon_alpha_blend_b_selector SDATA(D_L16_00161AAC);
-extern int linked_pair_ribbon_alpha_blend_c_selector SDATA(D_L16_00161AB0);
-extern int linked_pair_ribbon_alpha_blend_d_selector SDATA(D_L16_00161AB4);
+extern float linked_pair_ribbon_origin_z_offset SDATA(linked_pair_ribbon_origin_z_offset);
+extern float linked_pair_ribbon_pass_z_step SDATA(linked_pair_ribbon_pass_z_step);
+extern int linked_pair_ribbon_texture_id SDATA(linked_pair_ribbon_texture_id);
+extern int linked_pair_ribbon_vertex_color SDATA(linked_pair_ribbon_vertex_color);
+extern int linked_pair_ribbon_alpha_blend_a_selector SDATA(linked_pair_ribbon_alpha_blend_a_selector);
+extern int linked_pair_ribbon_alpha_blend_b_selector SDATA(linked_pair_ribbon_alpha_blend_b_selector);
+extern int linked_pair_ribbon_alpha_blend_c_selector SDATA(linked_pair_ribbon_alpha_blend_c_selector);
+extern int linked_pair_ribbon_alpha_blend_d_selector SDATA(linked_pair_ribbon_alpha_blend_d_selector);
 extern void clear_u64_value(void *);
 
 /* Draws the textured quad that links a moby to its partner, four times, each one a step higher than the last. */
@@ -2196,9 +2196,9 @@ typedef struct {
 } L16RacePlayer;
 extern L16RacePlayer kalebo3_player_camera;
 
-extern int kalebo3_hoverboard_races_finished SDATA(D_0015EF3C);
-extern int hoverboard_dummy_spray_initial_color SDATA(D_L16_00161AC8);
-extern int hoverboard_dummy_spray_final_color SDATA(D_L16_00161ACC);
+extern int kalebo3_hoverboard_races_finished SDATA(kalebo3_hoverboard_races_finished);
+extern int hoverboard_dummy_spray_initial_color SDATA(hoverboard_dummy_spray_initial_color);
+extern int hoverboard_dummy_spray_final_color SDATA(hoverboard_dummy_spray_final_color);
 
 /* Update the hoverboard race competitor: wait for the race, follow the path, leap, and emit spray. */
 void test_dummy_on_hoverboard_update(unsigned char *m) {
@@ -2496,7 +2496,7 @@ void door_647_update(Moby *moby) {
             break;
     }
 }
-extern float door_647_group_activation_value SDATA(D_L16_00161B40);
+extern float door_647_group_activation_value SDATA(door_647_group_activation_value);
 /* Activate the linked mobys and return the one nearest the challenge target. */
 void *set_door_647_group_activation_and_find_nearest(int index, int secondary) {
     short *p = (short *)kalebo3_moby_groups[index];
@@ -2558,8 +2558,8 @@ void *activate_door_647_group_and_find_nearest(int index, int secondary) {
 extern int subtract_integer_with_clamp(int);
 extern void Moby_PlaySound(int, int, void *);
 extern int kalebo3_frame_count MACRO_ADDR;
-extern int last_test_dummy_door_sound_request_frame SDATA(D_L16_00161B48);
-extern float test_dummy_door_height_offset SDATA(D_L16_00161B44);
+extern int last_test_dummy_door_sound_request_frame SDATA(last_test_dummy_door_sound_request_frame);
+extern float test_dummy_door_height_offset SDATA(test_dummy_door_height_offset);
 
 // State machine for a moby that eases its position toward a target.
 void test_dummy_door_update(char *moby) {
@@ -2752,7 +2752,7 @@ void update_triggered_group_objective(char *m) {
     }
 }
 
-extern float triggered_scene_rotation_y SDATA(D_L16_00161B4C);
+extern float triggered_scene_rotation_y SDATA(triggered_scene_rotation_y);
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void lerp_vector(void *, void *, void *, float);
 
@@ -2800,7 +2800,7 @@ void update_moby_hit_triggered_removal(char *moby) {
             break;
     }
 }
-extern float kalebo3_challenge_layout_value SDATA(D_L16_00161D34);
+extern float kalebo3_challenge_layout_value SDATA(kalebo3_challenge_layout_value);
 
 // Store float to global (gp-relative)
 void challenge_set_layout_param(float f) {
@@ -2843,7 +2843,7 @@ extern int truncate_float_to_s32(float);
 extern float vec_length_xy(void *);
 extern void BuildSphericalOffset(void *, float, float, float);
 extern unsigned char gCheats[] MACRO_ADDR;
-extern int kalebo3_game_mode SDATA(D_L16_0015F6A8);
+extern int kalebo3_game_mode SDATA(kalebo3_game_mode);
 extern float help_desk_hero_reset_pose[8];
 typedef struct {
     char pad00[0xC];
@@ -3324,7 +3324,7 @@ typedef struct {
 } L16PickupPose;
 extern L16PickupPose *kalebo3_level_cuboids MACRO_ADDR;
 extern unsigned char gHaveMapOMatic NOT_SDA;
-extern int kalebo3_help_message_selector SDATA(D_L16_0015F674);
+extern int kalebo3_help_message_selector SDATA(kalebo3_help_message_selector);
 extern char g_hero[];
 
 /* Update the moving pickup, interpolate its path transitions, and manage its sound handle. */
@@ -3638,9 +3638,9 @@ void transform_moby_table_entry_vectors(char *a) {
     }
 }
 extern float grindrail_gate_trigger_box[];
-extern int grindrail_gate_command_ticks SDATA(D_L16_00161E98);
-extern int grindrail_gate_glow_color_start SDATA(D_L16_00161E9C);
-extern int grindrail_gate_glow_color_end SDATA(D_L16_00161EA0);
+extern int grindrail_gate_command_ticks SDATA(grindrail_gate_command_ticks);
+extern int grindrail_gate_glow_color_start SDATA(grindrail_gate_glow_color_start);
+extern int grindrail_gate_glow_color_end SDATA(grindrail_gate_glow_color_end);
 extern int FastTweenColor(float, int, int);
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 
@@ -3695,9 +3695,9 @@ void update_grindrail_gate(unsigned char *m) {
     }
 }
 extern float bounds_trigger_box[];
-extern int bounds_trigger_command_ticks SDATA(D_L16_00161EA4);
-extern int bounds_trigger_glow_color_start SDATA(D_L16_00161EA8);
-extern int bounds_trigger_glow_color_end SDATA(D_L16_00161EAC);
+extern int bounds_trigger_command_ticks SDATA(bounds_trigger_command_ticks);
+extern int bounds_trigger_glow_color_start SDATA(bounds_trigger_glow_color_start);
+extern int bounds_trigger_glow_color_end SDATA(bounds_trigger_glow_color_end);
 extern int FastTweenColor(float, int, int);
 extern int Moby_PlaySound_r3(int, int, void *) __asm__("func_0022ED80");
 
@@ -3928,10 +3928,10 @@ void chomper_update(char *m) {
             break;
     }
 }
-extern float chomper_knockback_gravity SDATA(D_L16_00161F14);
-extern float chomper_knockback_horizontal_speed_approach_rate SDATA(D_L16_00161F18);
-extern float chomper_knockback_vertical_speed SDATA(D_L16_00161F1C);
-extern float chomper_knockback_horizontal_speed SDATA(D_L16_00161F20);
+extern float chomper_knockback_gravity SDATA(chomper_knockback_gravity);
+extern float chomper_knockback_horizontal_speed_approach_rate SDATA(chomper_knockback_horizontal_speed_approach_rate);
+extern float chomper_knockback_vertical_speed SDATA(chomper_knockback_vertical_speed);
+extern float chomper_knockback_horizontal_speed SDATA(chomper_knockback_horizontal_speed);
 extern void HeadingFromVector(void *, float *, void *, void *);
 
 typedef struct {

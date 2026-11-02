@@ -63,7 +63,7 @@ extern int g_current_level_index MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int fleet_frame_count MACRO_ADDR;
 
-extern int fleet_look_stat_count SDATA(D_L17_0015F76C);
+extern int fleet_look_stat_count SDATA(fleet_look_stat_count);
 extern unsigned char *fleet_water_patches MACRO_ADDR;
 extern int fleet_water_patch_count MACRO_ADDR;
 extern HeroPlayerCameraView fleet_player_camera;

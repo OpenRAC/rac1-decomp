@@ -1573,7 +1573,7 @@ void update_hero_slot4_and_slot5_mobys(int a0) {
         }
     }
 }
-extern float hero_scale SDATA(D_0015EF14);
+extern float hero_scale SDATA(hero_scale);
 extern int g_current_level_index MACRO_ADDR;
 
 extern float FastAddRots(float, float);

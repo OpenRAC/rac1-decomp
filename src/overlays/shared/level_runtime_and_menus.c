@@ -669,7 +669,7 @@ typedef struct {
 } MapBitGrid;
 
 extern s32 map_menu_cache_active NOT_SDA;
-extern s32 map_reveal_alt_projection_flag SDATA(D_L00_0015FEB8);
+extern s32 map_reveal_alt_projection_flag SDATA(map_reveal_alt_projection_flag);
 extern MapFilter map_filter_range_table[19][16] NOT_SDA;
 extern MapFilterCallback map_filter_callback_table[19][8] NOT_SDA;
 extern s32 map_filter_unlocked_flags[] NOT_SDA;

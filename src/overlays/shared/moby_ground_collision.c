@@ -375,7 +375,7 @@ typedef struct {
     f32 f48;
 } Obj;
 extern CollisionHit coll_hit_result_r __asm__("D_L00_00173F40");
-extern f32 g_frame_time_sq SDATA(D_0015EE70);
+extern f32 g_frame_time_sq SDATA(g_frame_time_sq);
 extern int frame_scale MACRO_ADDR;
 extern f32 vec_length_xy(void *);
 extern f32 FastCos(f32);

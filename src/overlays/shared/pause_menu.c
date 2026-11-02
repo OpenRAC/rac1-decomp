@@ -550,8 +550,8 @@ extern int decode_mode MACRO_ADDR;
 extern int D_0015EFB4 MACRO_ADDR;
 extern int level_game_clock_paused MACRO_ADDR;
 extern short level_vu1_chain_reserved_bytes;
-extern int loaded_swap_moby_class_set SDATA(D_L00_001600CC);
-extern int cinematic_mode_frames SDATA(D_L00_0015F6AC);
+extern int loaded_swap_moby_class_set SDATA(loaded_swap_moby_class_set);
+extern int cinematic_mode_frames SDATA(cinematic_mode_frames);
 extern int skip_frame MACRO_ADDR;
 extern int cinematic_mode MACRO_ADDR;
 extern float render_view_tan_half_fov;
@@ -816,7 +816,7 @@ extern int draw_buffer_address MACRO_ADDR;
 
 extern int pause_menu_panel_enabled[];
 extern long capture_texture_tex0 MACRO_ADDR;
-extern int pause_menu_panel_bg_color SDATA(D_L00_00160330);
+extern int pause_menu_panel_bg_color SDATA(pause_menu_panel_bg_color);
 typedef struct PageMobyData {
     u128 row[4];
     char pad40[0x10];
@@ -1193,7 +1193,7 @@ extern int PlayBankSound(int, int, int);
 
 extern short unlock_code_input[];
 extern unsigned char unlock_code_key_table[];
-extern int unlock_code_input_count SDATA(D_L00_001604B8);
+extern int unlock_code_input_count SDATA(unlock_code_input_count);
 extern char discount_purchase_pricing[];
 
 /* Cheat-code entry on the pause screen. */

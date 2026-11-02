@@ -17,7 +17,7 @@
 extern char cd_read_state[];
 extern char *level_render_state;
 
-extern int ship_level_entry_active SDATA(D_L00_00160600);
+extern int ship_level_entry_active SDATA(ship_level_entry_active);
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern char level_render_state_a[] __asm__("D_0013E130") NOT_SDA;
 extern void update_moby_proximity_interaction(void);
@@ -190,7 +190,7 @@ void initialize_level_transition_with_audio(int a) {
     Music_ContinueStreamIfReady();
 }
 extern char g_hero[] NOT_SDA;
-extern int skip_frame SDATA(D_L00_0015F6BC);
+extern int skip_frame SDATA(skip_frame);
 extern unsigned char screen_globals_base[] NOT_SDA;
 
 extern void initialize_level_transition_with_audio(int);

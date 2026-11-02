@@ -342,7 +342,7 @@ void Camera_CaptureTransform(Camera *from) {
    function written out; try_func only compares the first 192 bytes, so it reports SIZE
    until config/overlays/joined.tsv joins the pieces. Each block takes its own base
    pointer to the hero state, as retail re-derives it per block. */
-extern int camera_collision_mask SDATA(D_L00_0015F058);
+extern int camera_collision_mask SDATA(camera_collision_mask);
 extern int gCamSphereMaskBaseLvl MACRO_ADDR;
 extern int gCamSphereMaskLvl_w __asm__("D_L00_0015F05C") MACRO_ADDR;
 extern int D_L00_0015F05C_g SDATA(D_L00_0015F05C);
@@ -563,7 +563,7 @@ extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern void divide_vector_xyz(float *, float *, float);
 extern int func_L00_001F10E0(void *, int, void *, float);
 extern W coll_resolved_pos;
-extern int gCamSphereMaskLvl SDATA(D_L00_0015F05C);
+extern int gCamSphereMaskLvl SDATA(gCamSphereMaskLvl);
 
 /* moves the camera position a toward a target in steps, stopping each step on collision. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay_camera_001eb188.c, FUN_L00_001ed6a8. */
 void resolve_camera_movement_collisions(float *pos, float r) {

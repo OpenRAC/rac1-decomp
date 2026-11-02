@@ -378,7 +378,7 @@ void update_timed_line_collision_particle(O00271d20 *o) {
     }
 }
 extern unsigned char *part_type50_textures;
-extern float height_culled_particle_growth SDATA(D_L00_001602D0);
+extern float height_culled_particle_growth SDATA(height_culled_particle_growth);
 extern float g_frame_time MACRO_ADDR;
 
 // particle update: advance position, tick colour, spawn-time drift, kill when done
@@ -1174,7 +1174,7 @@ extern unsigned char *spawn_shrinking_effect_particle_with_gravity_and_secondary
                                                                                         int h);
 extern unsigned char *mine_debris(void *a, void *b, int c, int d, float f, int n, int k);
 extern int DefaultVtbl_DeleteMoby_r(int, int, float) __asm__("func_L00_00237B70");
-extern u32 floor_burst_bounce_chance SDATA(D_L00_001602E8);
+extern u32 floor_burst_bounce_chance SDATA(floor_burst_bounce_chance);
 extern f32 g_frame_time MACRO_ADDR;
 extern s32 g_current_level_index MACRO_ADDR;
 
@@ -1961,7 +1961,7 @@ unsigned char *spawn_proximity_corrected_size_alpha_tween_particle(void *pos, in
     return m;
 }
 extern void FastVecCross(void *, void *, void *);
-extern float proximity_particle_side_offset SDATA(D_L00_0016030C);
+extern float proximity_particle_side_offset SDATA(proximity_particle_side_offset);
 
 /* Copy an xyz vector and clear the w word. */
 static __inline__ void vcopy_276940(float *d, float *s) {

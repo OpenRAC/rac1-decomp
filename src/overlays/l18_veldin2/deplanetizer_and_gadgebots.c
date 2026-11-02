@@ -91,25 +91,29 @@ extern float veldin2_zero_vec[] MACRO_ADDR;
 extern float deplanetizer_trail_prev_tip_a[] MACRO_ADDR;
 extern float deplanetizer_trail_prev_tip_b[] MACRO_ADDR;
 extern char veldin2_camera_matrix[];
-extern float deplanetizer_camera_quad_scale_from SDATA(D_L18_00162520);
-extern float deplanetizer_camera_quad_scale_to SDATA(D_L18_00162524);
+extern float deplanetizer_camera_quad_scale_from SDATA(deplanetizer_camera_quad_scale_from);
+extern float deplanetizer_camera_quad_scale_to SDATA(deplanetizer_camera_quad_scale_to);
 extern short deplanetizer_quads_start_tick;
-extern int deplanetizer_camera_quad_ramp_end_tick SDATA(D_L18_0016252C);
-extern int deplanetizer_quads_end_tick SDATA(D_L18_00162530);
-extern int deplanetizer_state_7_glow_alpha_ramp_start_frame_gp SDATA(D_L18_00162534);
-extern int deplanetizer_state_7_glow_alpha_ramp_end_frame_gp SDATA(D_L18_00162538);
-extern int deplanetizer_state_7_three_quad_scale_ramp_start_frame_gp SDATA(D_L18_0016253C);
-extern int deplanetizer_state_7_three_quad_scale_ramp_end_frame_gp SDATA(D_L18_00162540);
-extern int deplanetizer_state_7_camera_quad_start_frame_gp SDATA(D_L18_00162544);
-extern int deplanetizer_state_7_camera_quad_scale_ramp_end_frame_gp SDATA(D_L18_00162548);
+extern int deplanetizer_camera_quad_ramp_end_tick SDATA(deplanetizer_camera_quad_ramp_end_tick);
+extern int deplanetizer_quads_end_tick SDATA(deplanetizer_quads_end_tick);
+extern int deplanetizer_state_7_glow_alpha_ramp_start_frame_gp
+    SDATA(deplanetizer_state_7_glow_alpha_ramp_start_frame_gp);
+extern int deplanetizer_state_7_glow_alpha_ramp_end_frame_gp SDATA(deplanetizer_state_7_glow_alpha_ramp_end_frame_gp);
+extern int deplanetizer_state_7_three_quad_scale_ramp_start_frame_gp
+    SDATA(deplanetizer_state_7_three_quad_scale_ramp_start_frame_gp);
+extern int deplanetizer_state_7_three_quad_scale_ramp_end_frame_gp
+    SDATA(deplanetizer_state_7_three_quad_scale_ramp_end_frame_gp);
+extern int deplanetizer_state_7_camera_quad_start_frame_gp SDATA(deplanetizer_state_7_camera_quad_start_frame_gp);
+extern int deplanetizer_state_7_camera_quad_scale_ramp_end_frame_gp
+    SDATA(deplanetizer_state_7_camera_quad_scale_ramp_end_frame_gp);
 extern short deplanetizer_glow_start_tick;
-extern int deplanetizer_glow_end_tick SDATA(D_L18_00162550);
-extern int deplanetizer_streak_start_tick SDATA(D_L18_00162554);
-extern int deplanetizer_streak_end_tick SDATA(D_L18_00162558);
-extern float deplanetizer_joint_trail_base_size_gp SDATA(D_L18_00162560);
+extern int deplanetizer_glow_end_tick SDATA(deplanetizer_glow_end_tick);
+extern int deplanetizer_streak_start_tick SDATA(deplanetizer_streak_start_tick);
+extern int deplanetizer_streak_end_tick SDATA(deplanetizer_streak_end_tick);
+extern float deplanetizer_joint_trail_base_size_gp SDATA(deplanetizer_joint_trail_base_size_gp);
 extern short deplanetizer_burst_local_spawn_offset_x_gp;
-extern float deplanetizer_burst_velocity_scale_gp SDATA(D_L18_00162580);
-extern float deplanetizer_burst_particle_size_gp SDATA(D_L18_00162584);
+extern float deplanetizer_burst_velocity_scale_gp SDATA(deplanetizer_burst_velocity_scale_gp);
+extern float deplanetizer_burst_particle_size_gp SDATA(deplanetizer_burst_particle_size_gp);
 extern int scale_ticks(int);
 extern float IntToFloat(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
@@ -558,10 +562,10 @@ extern int deplanetizer_glow_local_offset_y MACRO_ADDR;
 extern float deplanetizer_glow_local_offset_z MACRO_ADDR;
 extern float deplanetizer_glow_local_offset_w MACRO_ADDR;
 extern int deplanetizer_glow_quad_alpha MACRO_ADDR;
-extern int deplanetizer_glow_tint_a SDATA(D_L18_00162594);
-extern float deplanetizer_glow_quad_a_scale SDATA(D_L18_00162598);
-extern float deplanetizer_glow_quad_b_scale SDATA(D_L18_0016259C);
-extern int deplanetizer_glow_tint_b SDATA(D_L18_001625A0);
+extern int deplanetizer_glow_tint_a SDATA(deplanetizer_glow_tint_a);
+extern float deplanetizer_glow_quad_a_scale SDATA(deplanetizer_glow_quad_a_scale);
+extern float deplanetizer_glow_quad_b_scale SDATA(deplanetizer_glow_quad_b_scale);
+extern int deplanetizer_glow_tint_b SDATA(deplanetizer_glow_tint_b);
 extern float veldin2_deplanetizer_quad_corners[4][4];
 extern char veldin2_camera_pos[];
 extern unsigned long GetEffectTex(int);
@@ -642,9 +646,9 @@ typedef struct {
     unsigned long a, b, c, d;
 } Pk_9c20_FB318;
 extern int deplanetizer_glow_local_offset_x;
-extern float deplanetizer_streak1_z_scale SDATA(D_L18_001625A4);
-extern float deplanetizer_streak2_z_scale SDATA(D_L18_001625A8);
-extern float deplanetizer_streak3_z_scale SDATA(D_L18_001625AC);
+extern float deplanetizer_streak1_z_scale SDATA(deplanetizer_streak1_z_scale);
+extern float deplanetizer_streak2_z_scale SDATA(deplanetizer_streak2_z_scale);
+extern float deplanetizer_streak3_z_scale SDATA(deplanetizer_streak3_z_scale);
 extern float veldin2_streak_quad_corners[4][4];
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l18/gameplay/vendor/002f88e8.c, FUN_L18_002f9eb8. */
@@ -888,9 +892,9 @@ void mark_class_0630_moby_and_child_for_removal(Moby *moby) {
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void vec_scale_to_length(void *, void *, float);
 
-extern float veldin2_joint_trail_offset SDATA(D_L18_00162608);
-extern float veldin2_joint_trail_size_a SDATA(D_L18_0016260C);
-extern float veldin2_joint_trail_size_b SDATA(D_L18_00162610);
+extern float veldin2_joint_trail_offset SDATA(veldin2_joint_trail_offset);
+extern float veldin2_joint_trail_size_a SDATA(veldin2_joint_trail_size_a);
+extern float veldin2_joint_trail_size_b SDATA(veldin2_joint_trail_size_b);
 typedef struct {
     char pad[0x30];
     unsigned int n;
@@ -962,7 +966,7 @@ extern void draw_gadgebot_launch_glow_quad(void);
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern char gadgebot_params_block;
-extern float gadgebot_sequence_2_start_frame_gp SDATA(D_L18_00162690);
+extern float gadgebot_sequence_2_start_frame_gp SDATA(gadgebot_sequence_2_start_frame_gp);
 extern char gadgebot_start_moby_byte73;
 
 /* Moby update for the Gadgebot enemy. */
@@ -1137,11 +1141,11 @@ typedef struct {
     float spin;
 } SentryVars_5C0;
 
-extern int gadgebot_glows_queued_frame SDATA(D_L18_00162694);
+extern int gadgebot_glows_queued_frame SDATA(gadgebot_glows_queued_frame);
 extern short gadgebot_glow_spin_rate;
 extern short gadgebot_glow_spin_rate_attack;
-extern int gadgebot_glow_color_from SDATA(D_L18_0016269C);
-extern int gadgebot_glow_color_to SDATA(D_L18_001626A0);
+extern int gadgebot_glow_color_from SDATA(gadgebot_glow_color_from);
+extern int gadgebot_glow_color_to SDATA(gadgebot_glow_color_to);
 extern short gadgebot_scale;
 extern short gadgebot_death_fall_gravity_gp;
 extern short gadgebot_death_fall_horizontal_speed_approach_rate_gp;
@@ -1440,7 +1444,7 @@ void func_L18_002FDD20_r(struct Moby *m) {
     draw_world_quad_r(&pk, mat, 0);
 }
 extern unsigned short *veldin2_moby_groups[];
-extern int gadgebot_joint_glow_alpha SDATA(D_L18_001626E4);
+extern int gadgebot_joint_glow_alpha SDATA(gadgebot_joint_glow_alpha);
 
 /* For each listed moby of matching type, spawns effects at five points. */
 void draw_group_gadgebot_1906_joint_glows(unsigned char *moby) {

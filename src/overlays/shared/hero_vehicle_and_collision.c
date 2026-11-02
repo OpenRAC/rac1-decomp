@@ -605,7 +605,7 @@ extern float frame_scale MACRO_ADDR;
 
 extern char item_usage[];
 extern unsigned char D_0015EEB4[4] MACRO_ADDR;
-extern int veldin1_look_stat_timer SDATA(D_L00_0015F768);
+extern int veldin1_look_stat_timer SDATA(veldin1_look_stat_timer);
 extern short hero_run_step_start_frames;
 extern short hero_state_f_jump_velocity_keys;
 extern char hero_state_d_jump_velocity_keys[];
@@ -3190,7 +3190,7 @@ extern PadState g_controller_state_p228770 __asm__("D_0013CA40");
 extern int last_weapon_id_r __asm__("D_00141760");
 extern unsigned char item_available_r[] __asm__("D_0013D5C8");
 extern Rec2C attack_records_r[] __asm__("D_L00_0017BD28");
-extern int hero_repeat_press_window_frames SDATA(D_L00_0015F754);
+extern int hero_repeat_press_window_frames SDATA(hero_repeat_press_window_frames);
 extern int pad_pressed_within_r2(int, int, int *) __asm__("func_L00_00267BA8");
 extern void launch_hero_wrench(void);
 extern int Hero_CanUseGadget(void);

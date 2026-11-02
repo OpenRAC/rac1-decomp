@@ -399,7 +399,7 @@ extern void DeleteMoby(void *);
 
 extern int snd_FlushSoundCommands(void);
 extern int skip_frame MACRO_ADDR;
-extern int cinematic_mode SDATA(D_L00_0015F6A8);
+extern int cinematic_mode SDATA(cinematic_mode);
 extern unsigned char g_hero_field_20a5[] NOT_SDA;
 
 extern char vendor_close_hero_local_offset;
@@ -526,7 +526,7 @@ typedef struct {
 extern s32 vendor_item_cutscene_index[];
 extern Vendor_29a6b0 vendor_menu_r3 __asm__("D_L00_001CA7C0");
 extern short level_white_fade_level;
-extern s32 vendor_exit_cutscene_local_offset SDATA(D_L00_001611B0);
+extern s32 vendor_exit_cutscene_local_offset SDATA(vendor_exit_cutscene_local_offset);
 struct S16_29ad08 {
     char pad[0x5A];
     s16 mode;
@@ -879,8 +879,8 @@ extern struct {
     s32 held;
     s32 pressed;
 } D_0013CA40_9CDE0 __asm__("D_0013CA40");
-extern int vendor_purchase_confirmed SDATA(D_L00_00161F0C);
-extern int vendor_quantity_adjustable SDATA(D_L00_00161F10);
+extern int vendor_purchase_confirmed SDATA(vendor_purchase_confirmed);
+extern int vendor_quantity_adjustable SDATA(vendor_quantity_adjustable);
 extern s32 vendor_quantity_decrease_hold_frames MACRO_ADDR;
 extern s32 vendor_quantity_increase_hold_frames MACRO_ADDR;
 extern char level_render_state_base[];
