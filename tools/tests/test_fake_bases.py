@@ -109,6 +109,10 @@ class PlaceTest(unittest.TestCase):
         text = 'extern char base_r[] __asm__("D_0013E633");\nextern short other[] __asm__("D_0013E633");\n'
         self.assertEqual(fb.with_local_aliases(text, {"D_0013E633": 1}), {"D_0013E633": 1, "base_r": 1})
 
+    def test_a_fragment_keeps_an_alias(self):
+        text = 'extern char base_r[] __asm__("D_0013E633");\nint x;\n'
+        self.assertEqual(fb.drop_unused_aliases(text, {"D_0013E633": 1}, "char *p = base_r;\n"), text)
+
     def test_an_unused_alias_goes_and_a_used_one_stays(self):
         text = 'extern char base_r[] __asm__("D_0013E633");\nint x;\n'
         self.assertEqual(fb.drop_unused_aliases(text, {"D_0013E633": 1}), "int x;\n")

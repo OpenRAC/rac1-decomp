@@ -53,13 +53,14 @@ def with_local_aliases(text, bases):
     return found
 
 
-def drop_unused_aliases(text, bases):
-    """Remove the declaration of a local alias that nothing uses any more."""
+def drop_unused_aliases(text, bases, fragments=""):
+    """Remove the declaration of a local alias that nothing uses any more, here or in a version fragment."""
     code = pe.without_comments(text)
+    extra = pe.without_comments(fragments)
     for name in set(with_local_aliases(text, bases)) - set(bases):
         declaration = rf'^[ \t]*extern\s[^;\n]*\b{name}\s*\[\s*\]\s*__asm__[^;\n]*;[ \t]*\n'
         declared = len(re.findall(declaration, code, re.M))
-        if len(re.findall(rf"\b{name}\b", code)) == declared:
+        if len(re.findall(rf"\b{name}\b", code)) == declared and not re.search(rf"\b{name}\b", extra):
             text = re.sub(declaration, "", text, flags=re.M)
     return text
 
@@ -236,7 +237,8 @@ def land(rel, bases, targets, _aliases=None):
 
     accepted = accepted_functions(owners, passes)
     new, count = rewrite(original, bases, targets, owners - accepted, blocked)
-    path.write_text(drop_unused_aliases(new, bases), errors="surrogateescape")
+    fragments = "\n".join(f.read_text(errors="replace") for f in fragments_of(rel))
+    path.write_text(drop_unused_aliases(new, bases, fragments), errors="surrogateescape")
     bad, _, failed = check(rel) if count else (set(), set(), False)
     if bad or failed:
         path.write_text(original, errors="surrogateescape")
