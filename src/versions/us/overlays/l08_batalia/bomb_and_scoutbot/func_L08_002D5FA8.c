@@ -85,7 +85,7 @@ void update_bomber_tank_damage_and_aim(Moby *m) {
                         if (k == 4)
                             bomber_tank_part4_destroyed_r = one;
                         if (bomber_tank_part1_destroyed_r != 0 && bomber_tank_part2_destroyed_r != 0) {
-                            unsigned char *flags = menu_item_enabled_115_r + 1;
+                            unsigned char *flags = gSkillPoints;
                             if (flags[0xD] == 0) {
                                 flags[0xD] = one;
                                 sound_2D5FA8(1, 0, 0);
@@ -129,7 +129,7 @@ void update_bomber_tank_damage_and_aim(Moby *m) {
     follow_2D5FA8(100.0f, m, d->target, 0, 0, batalia_path_table_r[d->path]->list,
                   batalia_path_table_r[d->path]->count);
     if (d->fF0 == 0)
-        d->fF0 = *(int *)(hero_globals_base_r + 0x2E9D);
+        d->fF0 = *(int *)g_hero_moby;
     if (d->mode != 2) {
         float yaw, len, pitch;
         subtract_2D5FA8(vec, d->target, (float *)&m->pos);

@@ -74,10 +74,8 @@ void update_enemy_fighter_921(Moby *m) {
                 b = saved_mission_state_r[d->f9C + (g_current_level_index_m << 4)];
                 if (b == a) {
                     c = saved_mission_state_r[d->fA0 + (g_current_level_index_m << 4)];
-                    if (c == b && ((Hero *)(hero_globals_base_r + 0xE1D))->frames_off_ground.s == 0 &&
-                        ((int)((Hero *)(hero_globals_base_r + 0xE1D))->ground_moby) == 0 &&
-                        is_point_inside_clip_volume_r3(
-                            (*(Vec_2FE038 *)&((Hero *)(hero_globals_base_r + 0xE1D))->motion.pos), d->fA4) != 0) {
+                    if (c == b && g_hero.frames_off_ground.s == 0 && ((int)g_hero.ground_moby) == 0 &&
+                        is_point_inside_clip_volume_r3((*(Vec_2FE038 *)&g_hero.motion.pos), d->fA4) != 0) {
                         Moby *jet = (Moby *)(oltanis_mobys_r + (d->f8C << 8));
                         Moby *seat = (Moby *)(oltanis_mobys_r + (((struct Jet *)jet->pvars)->f4 << 8));
                         float pitch, yaw;

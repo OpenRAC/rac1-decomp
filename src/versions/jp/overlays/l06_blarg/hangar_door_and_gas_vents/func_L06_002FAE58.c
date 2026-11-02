@@ -153,10 +153,10 @@ void alien_queen_update(unsigned char *moby) {
                                      g_frame_time_sq_q * 6.2831855f, g_frame_time_q * 3.1415927f);
             if (turn < 0.7853982f && alien_queen_attack_range < dist) {
                 ApproachValue_q((float *)(data + 0xE8), alien_queen_walk_speed * g_frame_time_q,
-                                *(float *)&alien_queen_walk_accel * g_frame_time_sq_q);
+                                alien_queen_walk_accel * g_frame_time_sq_q);
             } else if (dist < alien_queen_back_off_range) {
                 ApproachValue_q((float *)(data + 0xE8), -(alien_queen_walk_speed * g_frame_time_q),
-                                *(float *)&alien_queen_walk_accel * g_frame_time_sq_q);
+                                alien_queen_walk_accel * g_frame_time_sq_q);
             } else {
                 ApproachValue_q((float *)(data + 0xE8), 0.0f, g_frame_time_sq_q * 8.0f);
             }
@@ -322,7 +322,7 @@ void alien_queen_update(unsigned char *moby) {
             *(unsigned short *)(moby + 0x34) |= 1;
             if (*(int *)(data + 0x178) != 0)
                 return;
-            flag = menu_item_enabled_115_q + 1;
+            flag = gSkillPoints;
             if (flag[0xA] != 0)
                 return;
             flag[0xA] = 1;

@@ -28,21 +28,20 @@ void MorphorayUpdate(Moby *m) {
           ((Hero *)g_hero_r)->state.control_mode == HERO_MODE_CROUCH ||
           ((Hero *)g_hero_r)->state.control_mode == HERO_MODE_JUMP ||
           ((Hero *)g_hero_r)->state.control_mode == HERO_MODE_LAND)) &&
-        (*(int *)(pad_globals_base_r + 0x2600) & ((Hero *)g_hero_r)->items[0].button_mask) != 0 && !flag && near) {
+        (*(int *)pad_held & ((Hero *)g_hero_r)->items[0].button_mask) != 0 && !flag && near) {
         if (((Hero *)g_hero_r)->item_anim_active == 0) {
             start_equipped_item_animation_r();
         }
         if (p->seen == 0) {
             p->seen = 1;
-            if (((Stats *)(help_stats_base_r + 0x65))->kills <= 0xFFFE) {
-                ((Stats *)(help_stats_base_r + 0x65))->kills++;
+            if (((Stats *)item_usage)->kills <= 0xFFFE) {
+                ((Stats *)item_usage)->kills++;
             }
             r = scale_ticks_r(gameplay_event_frame_count_r) / 600;
-            if (((Stats *)(help_stats_base_r + 0x65))->best < r) {
-                ((Stats *)(help_stats_base_r + 0x65))->best = scale_ticks_r(gameplay_event_frame_count_r) / 600;
+            if (((Stats *)item_usage)->best < r) {
+                ((Stats *)item_usage)->best = scale_ticks_r(gameplay_event_frame_count_r) / 600;
             }
-            ((Stats *)(help_stats_base_r + 0x65))->levels =
-                ((Stats *)(help_stats_base_r + 0x65))->levels | (1 << g_current_level_index_r) | 0x80000000;
+            ((Stats *)item_usage)->levels = ((Stats *)item_usage)->levels | (1 << g_current_level_index_r) | 0x80000000;
         }
         if (p->timer == 0) {
             p->timer = scale_ticks_r(15);

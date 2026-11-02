@@ -97,9 +97,9 @@ void DrawGemlikTurretHud(char *moby) {
     for (j = lo; j <= hi; j++) {
         idx = (j & 0xE7) | ((j & 0x10) >> 1) | ((j & 8) << 1);
         if (j < v) {
-            (*(int **)&jet_hud_palette)[idx] = jet_hud_palette_backup[idx];
+            (jet_hud_palette)[idx] = jet_hud_palette_backup[idx];
         } else {
-            (*(int **)&jet_hud_palette)[idx] = 0x80000000;
+            (jet_hud_palette)[idx] = 0x80000000;
         }
     }
     s = g_screen_extent;
