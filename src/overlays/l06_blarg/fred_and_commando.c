@@ -661,7 +661,7 @@ extern void FastVecAdd(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern void spawn_spinning_moby_fragment(void *, void *, void *);
 extern float g_frame_time MACRO_ADDR;
-extern short blarg_tube_base_z;
+extern float blarg_tube_base_z SDATA(D_L06_001620DC);
 
 /* Replaces the moby with a broken copy (type 0x43C); with burst set, also throws 50 pieces around it. */
 void spawn_moby_breakup_effect(char *m, int burst) {
@@ -691,7 +691,7 @@ void spawn_moby_breakup_effect(char *m, int burst) {
             v[1] = s + s;
             v[2] = 0.0f;
             FastVecAdd(w, m + 0x10, v);
-            w[2] += random_float_between(*(float *)&blarg_tube_base_z + 0.5f, *(float *)&blarg_tube_base_z + 4.5f);
+            w[2] += random_float_between(blarg_tube_base_z + 0.5f, blarg_tube_base_z + 4.5f);
             vec_scale_to_length(v, v, spd);
             spawn_spinning_moby_fragment(m, w, v);
         }
@@ -717,14 +717,14 @@ typedef struct {
 typedef struct {
     short v, uv;
 } I3003f0;
-extern short backdrop_mesh_blend_color_a_selector_gp;
-extern short backdrop_mesh_blend_color_b_selector_gp;
-extern short backdrop_mesh_blend_alpha_c_selector_gp;
-extern short backdrop_mesh_blend_color_d_selector_gp;
-extern short backdrop_mesh_effect_texture_index_gp;
-extern short backdrop_mesh_blend_fixed_alpha_gp;
-extern short blarg_tube_color;
-extern short backdrop_mesh_vertex_position_scale_gp;
+extern int backdrop_mesh_blend_color_a_selector_gp SDATA(D_L06_001620E4);
+extern int backdrop_mesh_blend_color_b_selector_gp SDATA(D_L06_001620E8);
+extern int backdrop_mesh_blend_alpha_c_selector_gp SDATA(D_L06_001620EC);
+extern int backdrop_mesh_blend_color_d_selector_gp SDATA(D_L06_001620F0);
+extern int backdrop_mesh_effect_texture_index_gp SDATA(D_L06_001620F4);
+extern int backdrop_mesh_blend_fixed_alpha_gp SDATA(D_L06_001620F8);
+extern unsigned int blarg_tube_color SDATA(D_L06_001620FC);
+extern float backdrop_mesh_vertex_position_scale_gp SDATA(D_L06_00162104);
 extern V3003f0 blarg_tube_mesh64_verts[];
 extern I3003f0 blarg_tube_mesh64_corner_indices[];
 extern UV3003f0 blarg_tube_mesh64_uvs[];
@@ -739,17 +739,16 @@ void draw_backdrop_mesh(void) {
     int i, j, k;
     I3003f0 *e;
 
-    quad.tex = GetEffectTex_r4((*(int *)&backdrop_mesh_effect_texture_index_gp));
-    quad.unk88 = (long)(*(int *)&backdrop_mesh_blend_color_a_selector_gp) |
-                 ((long)(*(int *)&backdrop_mesh_blend_color_b_selector_gp) << 2) |
-                 ((long)(*(int *)&backdrop_mesh_blend_alpha_c_selector_gp) << 4) |
-                 ((long)(*(int *)&backdrop_mesh_blend_color_d_selector_gp) << 6) |
-                 ((long)(*(int *)&backdrop_mesh_blend_fixed_alpha_gp) << 32);
+    quad.tex = GetEffectTex_r4((backdrop_mesh_effect_texture_index_gp));
+    quad.unk88 =
+        (long)(backdrop_mesh_blend_color_a_selector_gp) | ((long)(backdrop_mesh_blend_color_b_selector_gp) << 2) |
+        ((long)(backdrop_mesh_blend_alpha_c_selector_gp) << 4) |
+        ((long)(backdrop_mesh_blend_color_d_selector_gp) << 6) | ((long)(backdrop_mesh_blend_fixed_alpha_gp) << 32);
     quad.unk80 = 0xFF9000000260L;
     quad.unk70 = 0;
     set_identity_matrix(&buf);
-    c = (*(unsigned int *)&blarg_tube_color);
-    buf.f38 = (*(float *)&blarg_tube_base_z);
+    c = (blarg_tube_color);
+    buf.f38 = (blarg_tube_base_z);
     quad.color[3] = c;
     quad.color[2] = c;
     quad.color[1] = c;
@@ -758,8 +757,7 @@ void draw_backdrop_mesh(void) {
         e = &blarg_tube_mesh64_corner_indices[i * 4];
         for (j = 0; j < 4; j++) {
             k = e->uv;
-            FastVecScale(&quad.corner[j], &blarg_tube_mesh64_verts[e->v],
-                         (*(float *)&backdrop_mesh_vertex_position_scale_gp));
+            FastVecScale(&quad.corner[j], &blarg_tube_mesh64_verts[e->v], (backdrop_mesh_vertex_position_scale_gp));
             e++;
             quad.uv[j].u = blarg_tube_mesh64_uvs[k].u;
             quad.uv[j].v = blarg_tube_mesh64_uvs[k].v;
@@ -791,23 +789,22 @@ void effect_quad_draw_single(void) {
     int i;
     int j;
 
-    pkt[1] = GetEffectTex_r5((*(int *)&backdrop_mesh_effect_texture_index_gp));
+    pkt[1] = GetEffectTex_r5((backdrop_mesh_effect_texture_index_gp));
     mp = mat[0];
     pkt[2] = 0xFF9000000260;
-    pkt[3] = (*(int *)&backdrop_mesh_blend_color_a_selector_gp) |
-             (long)(*(int *)&backdrop_mesh_blend_color_b_selector_gp) << 2;
-    pkt[3] |= (long)(*(int *)&backdrop_mesh_blend_alpha_c_selector_gp) << 4;
-    pkt[3] |= (long)(*(int *)&backdrop_mesh_blend_color_d_selector_gp) << 6;
-    pkt[3] |= (long)(*(int *)&backdrop_mesh_blend_fixed_alpha_gp) << 32;
+    pkt[3] = (backdrop_mesh_blend_color_a_selector_gp) | (long)(backdrop_mesh_blend_color_b_selector_gp) << 2;
+    pkt[3] |= (long)(backdrop_mesh_blend_alpha_c_selector_gp) << 4;
+    pkt[3] |= (long)(backdrop_mesh_blend_color_d_selector_gp) << 6;
+    pkt[3] |= (long)(backdrop_mesh_blend_fixed_alpha_gp) << 32;
     pkt[0] = 0;
     set_identity_matrix(mp);
-    mat[3][2] = (*(float *)&blarg_tube_base_z);
-    colors[3] = (*(unsigned int *)&blarg_tube_color);
-    colors[2] = (*(unsigned int *)&blarg_tube_color);
-    colors[1] = (*(unsigned int *)&blarg_tube_color);
-    colors[0] = (*(unsigned int *)&blarg_tube_color);
+    mat[3][2] = (blarg_tube_base_z);
+    colors[3] = (blarg_tube_color);
+    colors[2] = (blarg_tube_color);
+    colors[1] = (blarg_tube_color);
+    colors[0] = (blarg_tube_color);
     for (i = 0; i < 96; i++) {
-        FastVecScale(center, &blarg_tube_mesh96_centers[i], (*(float *)&backdrop_mesh_vertex_position_scale_gp));
+        FastVecScale(center, &blarg_tube_mesh96_centers[i], (backdrop_mesh_vertex_position_scale_gp));
         transform_vector(center, center, mat);
         FastVecSub(dir, center, blarg_camera_pos_r3);
         vec_scale_to_length(dir, dir, 1.0f);
@@ -817,7 +814,7 @@ void effect_quad_draw_single(void) {
         for (j = 0; j < 4; j++) {
             int a = blarg_tube_mesh96_corner_indices[i][j][0];
             int b = blarg_tube_mesh96_corner_indices[i][j][1];
-            FastVecScale(&m[j], &blarg_tube_mesh96_verts[a], (*(float *)&backdrop_mesh_vertex_position_scale_gp));
+            FastVecScale(&m[j], &blarg_tube_mesh96_verts[a], (backdrop_mesh_vertex_position_scale_gp));
             uv[j][0] = blarg_tube_mesh96_uvs[b][0];
             uv[j][1] = blarg_tube_mesh96_uvs[b][1];
         }
@@ -829,7 +826,7 @@ extern float IntToFloat(int);
 extern void FastVecAdd(void *, void *, void *);
 extern int blarg_frame_count MACRO_ADDR;
 extern char hero_globals_base[] NOT_SDA;
-extern short blarg_bobbing_moby_amplitude;
+extern float blarg_bobbing_moby_amplitude SDATA(D_L06_00162120);
 
 // Update for a bobbing moby: waits, then follows a sine offset, then drifts and deletes itself.
 void update_moby_bobbing_and_motion(char *moby) {
@@ -853,7 +850,7 @@ void update_moby_bobbing_and_motion(char *moby) {
             } else {
                 float f = IntToFloat(blarg_frame_count % 600) / 600.0f;
                 float g = FastSin(f * 6.28318f);
-                ((Moby *)moby)->pos.z = data->vel.w + *(float *)&blarg_bobbing_moby_amplitude * g;
+                ((Moby *)moby)->pos.z = data->vel.w + blarg_bobbing_moby_amplitude * g;
             }
             break;
         case 2:
@@ -1956,24 +1953,24 @@ extern unsigned char *PartType02Spawn(void *, void *, void *, int, int, int, int
 extern int FastTweenColor(int, int, float);
 extern char scatter_explode_spark_colors_start[];
 extern char scatter_explode_spark_colors_end[];
-extern short scatter_explode_speed_min;
-extern short scatter_explode_speed_max;
-extern short scatter_explode_start_size_min;
-extern short scatter_explode_start_size_max;
-extern short scatter_explode_accel_min;
-extern short scatter_explode_accel_max;
-extern short scatter_explode_end_size_min;
-extern short scatter_explode_end_size_max;
-extern short scatter_explode_color_a_from;
-extern short scatter_explode_color_a_to;
-extern short scatter_explode_color_b_from;
-extern short scatter_explode_color_b_to;
-extern short scatter_explode_life_ticks;
-extern short scatter_explode_phase2_ticks;
-extern short scatter_explode_phase3_ticks;
-extern short scatter_explode_particles_per_piece;
-extern short scatter_explode_sprite;
-extern short scatter_explode_sprite_flags;
+extern float scatter_explode_speed_min SDATA(D_L06_001621A4);
+extern float scatter_explode_speed_max SDATA(D_L06_001621A8);
+extern float scatter_explode_start_size_min SDATA(D_L06_001621AC);
+extern float scatter_explode_start_size_max SDATA(D_L06_001621B0);
+extern float scatter_explode_accel_min SDATA(D_L06_001621B4);
+extern float scatter_explode_accel_max SDATA(D_L06_001621B8);
+extern float scatter_explode_end_size_min SDATA(D_L06_001621BC);
+extern float scatter_explode_end_size_max SDATA(D_L06_001621C0);
+extern int scatter_explode_color_a_from SDATA(D_L06_001621C4);
+extern int scatter_explode_color_a_to SDATA(D_L06_001621C8);
+extern int scatter_explode_color_b_from SDATA(D_L06_001621CC);
+extern int scatter_explode_color_b_to SDATA(D_L06_001621D0);
+extern int scatter_explode_life_ticks SDATA(D_L06_001621D4);
+extern int scatter_explode_phase2_ticks SDATA(D_L06_001621D8);
+extern int scatter_explode_phase3_ticks SDATA(D_L06_001621DC);
+extern int scatter_explode_particles_per_piece SDATA(D_L06_001621E0);
+extern int scatter_explode_sprite SDATA(D_L06_001621E4);
+extern int scatter_explode_sprite_flags SDATA(D_L06_001621E8);
 
 typedef struct {
     char b[24];
@@ -2011,44 +2008,33 @@ void ScatterPiecesExplode(float f, struct Moby *a0, void *a1, void *a2, int n) {
     }
 
     {
-        for (i = 0; i < n * *(int *)&scatter_explode_particles_per_piece; i++) {
+        for (i = 0; i < n * scatter_explode_particles_per_piece; i++) {
             rand_vec(v4, 0.0f, 1.0f);
             FastVecAdd(v4, v4, a1);
             rand_vec(v1, 0.0f, 0.9f);
             FastVecAdd(v1, v1, a2);
-            FastVecScale(
-                v2, v1,
-                random_float_between(*(float *)&scatter_explode_speed_min, *(float *)&scatter_explode_speed_max) *
-                    g_frame_time);
+            FastVecScale(v2, v1,
+                         random_float_between(scatter_explode_speed_min, scatter_explode_speed_max) * g_frame_time);
             rand_vec(v1, 0.0f, 0.9f);
             FastVecAdd(v1, v1, a2);
-            FastVecScale(
-                v3, v1,
-                random_float_between(*(float *)&scatter_explode_accel_min, *(float *)&scatter_explode_accel_max) *
-                    g_frame_time);
-            t1 = random_float_between(*(float *)&scatter_explode_start_size_min,
-                                      *(float *)&scatter_explode_start_size_max) *
-                 f;
+            FastVecScale(v3, v1,
+                         random_float_between(scatter_explode_accel_min, scatter_explode_accel_max) * g_frame_time);
+            t1 = random_float_between(scatter_explode_start_size_min, scatter_explode_start_size_max) * f;
             v2[3] = t1;
-            t2 =
-                random_float_between(*(float *)&scatter_explode_end_size_min, *(float *)&scatter_explode_end_size_max) *
-                f;
+            t2 = random_float_between(scatter_explode_end_size_min, scatter_explode_end_size_max) * f;
             v3[3] = t2;
             q3 = random_float_between(0.0f, 1.0f);
-            g1 = FastTweenColor(*(int *)&scatter_explode_color_a_from, *(int *)&scatter_explode_color_a_to, q3);
+            g1 = FastTweenColor(scatter_explode_color_a_from, scatter_explode_color_a_to, q3);
             q5 = random_float_between(0.0f, 1.0f);
-            g2 = FastTweenColor(*(int *)&scatter_explode_color_b_from, *(int *)&scatter_explode_color_b_to, q5);
-            q7 = random_float_between((float)*(int *)&scatter_explode_life_ticks,
-                                      (float)(*(int *)&scatter_explode_life_ticks * 2));
+            g2 = FastTweenColor(scatter_explode_color_b_from, scatter_explode_color_b_to, q5);
+            q7 = random_float_between((float)scatter_explode_life_ticks, (float)(scatter_explode_life_ticks * 2));
             x1 = truncate_float_to_s32(multiply_global_factor(q7));
-            q8 = random_float_between((float)*(int *)&scatter_explode_phase2_ticks,
-                                      (float)*(int *)&scatter_explode_phase2_ticks * 1.2f);
+            q8 = random_float_between((float)scatter_explode_phase2_ticks, (float)scatter_explode_phase2_ticks * 1.2f);
             x2 = truncate_float_to_s32(multiply_global_factor(q8));
-            q3 = random_float_between((float)*(int *)&scatter_explode_phase3_ticks * 0.8f,
-                                      (float)*(int *)&scatter_explode_phase3_ticks);
+            q3 = random_float_between((float)scatter_explode_phase3_ticks * 0.8f, (float)scatter_explode_phase3_ticks);
             x3 = truncate_float_to_s32(multiply_global_factor(q3));
             PartType02Spawn(v4, v2, v3, g1, g2, x1, x2, x3,
-                            *(int *)&scatter_explode_sprite + (*(int *)&scatter_explode_sprite_flags << 16));
+                            scatter_explode_sprite + (scatter_explode_sprite_flags << 16));
         }
     }
 }
@@ -2059,21 +2045,21 @@ extern char *level_mobys_q MACRO_ADDR;
 extern short blarg_explosion_flash_ticks_r __asm__("D_L06_00162198");
 extern short blarg_explosion_flash_color_a_r __asm__("D_L06_0016219C");
 extern short blarg_explosion_flash_color_b_r __asm__("D_L06_001621A0");
-extern short shuttle_debris_particle_speed;
-extern short shuttle_breakup_particle_timing_random_span_frames_gp;
-extern short shuttle_breakup_particle_timing_base_a_frames_gp;
-extern short shuttle_breakup_particle_timing_base_b_frames_gp;
-extern short shuttle_breakup_particle_timing_variation_fraction_gp;
-extern short shuttle_breakup_particle_velocity_w_random_bound_a_gp;
-extern short shuttle_breakup_particle_velocity_w_random_bound_b_gp;
-extern short shuttle_breakup_particle_acceleration_w_random_bound_a_gp;
-extern short shuttle_breakup_particle_acceleration_w_random_bound_b_gp;
-extern short shuttle_breakup_particle_first_color_blend_a_gp;
-extern short shuttle_breakup_particle_first_color_blend_b_gp;
-extern short shuttle_breakup_particle_second_color_blend_a_gp;
-extern short shuttle_breakup_particle_second_color_blend_b_gp;
-extern short shuttle_debris_particles_per_piece;
-extern short shuttle_breakup_particle_table_index_and_flags_gp;
+extern float shuttle_debris_particle_speed SDATA(D_L06_001621EC);
+extern int shuttle_breakup_particle_timing_random_span_frames_gp SDATA(D_L06_001621F0);
+extern int shuttle_breakup_particle_timing_base_a_frames_gp SDATA(D_L06_001621F4);
+extern int shuttle_breakup_particle_timing_base_b_frames_gp SDATA(D_L06_001621F8);
+extern float shuttle_breakup_particle_timing_variation_fraction_gp SDATA(D_L06_001621FC);
+extern float shuttle_breakup_particle_velocity_w_random_bound_a_gp SDATA(D_L06_00162200);
+extern float shuttle_breakup_particle_velocity_w_random_bound_b_gp SDATA(D_L06_00162204);
+extern float shuttle_breakup_particle_acceleration_w_random_bound_a_gp SDATA(D_L06_00162208);
+extern float shuttle_breakup_particle_acceleration_w_random_bound_b_gp SDATA(D_L06_0016220C);
+extern int shuttle_breakup_particle_first_color_blend_a_gp SDATA(D_L06_00162210);
+extern int shuttle_breakup_particle_first_color_blend_b_gp SDATA(D_L06_00162214);
+extern int shuttle_breakup_particle_second_color_blend_a_gp SDATA(D_L06_00162218);
+extern int shuttle_breakup_particle_second_color_blend_b_gp SDATA(D_L06_0016221C);
+extern int shuttle_debris_particles_per_piece SDATA(D_L06_00162220);
+extern int shuttle_breakup_particle_table_index_and_flags_gp SDATA(D_L06_00162224);
 extern void spawn_timed_projected_sprite_effect_r(void *, int, int, int) __asm__("func_L06_0030D338");
 extern void rand_vec(void *, float, float);
 extern void ScatterPiecesExplode(float, struct Moby *, void *, void *, int);
@@ -2138,39 +2124,36 @@ void break_apart_shuttle_linked_mobys(struct Moby *moby) {
         push[3] = 6.0f;
         rand_vec(spin, g_frame_time * 0.2617994f, g_frame_time * 0.08726646f);
         begin_moby_linear_and_angular_motion((char *)(level_mobys_q + (id << 8)), push, spin);
-        for (i = 0; i < (*(int *)&shuttle_debris_particles_per_piece); i++) {
+        for (i = 0; i < (shuttle_debris_particles_per_piece); i++) {
             piece = (struct Moby *)((id << 8) + (int)level_mobys_q);
             rand_vec(pos, 0.0f, piece->bsphere.w * 0.00048828125f);
             FastVecAdd(pos, pos, &((struct Moby *)(level_mobys_q + (id << 8)))->pos);
-            rand_vec(vel, 0.0f, (*(float *)&shuttle_debris_particle_speed) * g_frame_time);
+            rand_vec(vel, 0.0f, (shuttle_debris_particle_speed)*g_frame_time);
             clear_u64_value(accel);
-            vel[3] = random_float_between((*(float *)&shuttle_breakup_particle_velocity_w_random_bound_a_gp),
-                                          (*(float *)&shuttle_breakup_particle_velocity_w_random_bound_b_gp));
-            accel[3] = random_float_between((*(float *)&shuttle_breakup_particle_acceleration_w_random_bound_a_gp),
-                                            (*(float *)&shuttle_breakup_particle_acceleration_w_random_bound_b_gp));
+            vel[3] = random_float_between((shuttle_breakup_particle_velocity_w_random_bound_a_gp),
+                                          (shuttle_breakup_particle_velocity_w_random_bound_b_gp));
+            accel[3] = random_float_between((shuttle_breakup_particle_acceleration_w_random_bound_a_gp),
+                                            (shuttle_breakup_particle_acceleration_w_random_bound_b_gp));
             particle = PartType02Spawn(
                 pos, vel, accel,
-                FastTweenColor((*(int *)&shuttle_breakup_particle_first_color_blend_a_gp),
-                               (*(int *)&shuttle_breakup_particle_first_color_blend_b_gp),
-                               random_float_between(0.0f, 1.0f)),
-                FastTweenColor((*(int *)&shuttle_breakup_particle_second_color_blend_a_gp),
-                               (*(int *)&shuttle_breakup_particle_second_color_blend_b_gp),
-                               random_float_between(0.0f, 1.0f)),
-                truncate_float_to_s32(
-                    multiply_global_factor((float)(*(int *)&shuttle_breakup_particle_timing_random_span_frames_gp) *
-                                               random_float_between(0.0f, 1.0f) +
-                                           1.0f)),
+                FastTweenColor((shuttle_breakup_particle_first_color_blend_a_gp),
+                               (shuttle_breakup_particle_first_color_blend_b_gp), random_float_between(0.0f, 1.0f)),
+                FastTweenColor((shuttle_breakup_particle_second_color_blend_a_gp),
+                               (shuttle_breakup_particle_second_color_blend_b_gp), random_float_between(0.0f, 1.0f)),
                 truncate_float_to_s32(multiply_global_factor(
-                    (float)(*(int *)&shuttle_breakup_particle_timing_base_a_frames_gp) *
-                    (random_float_between(-(*(float *)&shuttle_breakup_particle_timing_variation_fraction_gp),
-                                          (*(float *)&shuttle_breakup_particle_timing_variation_fraction_gp)) +
+                    (float)(shuttle_breakup_particle_timing_random_span_frames_gp)*random_float_between(0.0f, 1.0f) +
+                    1.0f)),
+                truncate_float_to_s32(multiply_global_factor(
+                    (float)(shuttle_breakup_particle_timing_base_a_frames_gp) *
+                    (random_float_between(-(shuttle_breakup_particle_timing_variation_fraction_gp),
+                                          (shuttle_breakup_particle_timing_variation_fraction_gp)) +
                      1.0f))),
                 truncate_float_to_s32(multiply_global_factor(
-                    (float)(*(int *)&shuttle_breakup_particle_timing_base_b_frames_gp) *
-                    (random_float_between(-(*(float *)&shuttle_breakup_particle_timing_variation_fraction_gp),
-                                          (*(float *)&shuttle_breakup_particle_timing_variation_fraction_gp)) +
+                    (float)(shuttle_breakup_particle_timing_base_b_frames_gp) *
+                    (random_float_between(-(shuttle_breakup_particle_timing_variation_fraction_gp),
+                                          (shuttle_breakup_particle_timing_variation_fraction_gp)) +
                      1.0f))),
-                (*(int *)&shuttle_breakup_particle_table_index_and_flags_gp));
+                (shuttle_breakup_particle_table_index_and_flags_gp));
             if (particle != 0) {
                 particle[9] = truncate_float_to_s32(4.0f) - 0x20;
             }
@@ -2425,8 +2408,8 @@ extern void clear_u64_value(void *);
 extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
 extern IntVec6 red_button_burst_colors_end;
 extern IntVec6 red_button_burst_colors_start;
-extern short red_button_burst_count;
-extern short red_button_burst_scale;
+extern int red_button_burst_count SDATA(D_L06_00162248);
+extern float red_button_burst_scale SDATA(D_L06_00162244);
 
 // Spawns a burst of particles around an object, count from a level global.
 void emit_red_button_particle_burst(int unused, void *obj) {
@@ -2435,7 +2418,7 @@ void emit_red_button_particle_burst(int unused, void *obj) {
     IntVec6 b;
     int i = 0;
     clear_u64_value(pos);
-    if (*(int *)&red_button_burst_count > 0) {
+    if (red_button_burst_count > 0) {
         do {
             float s;
             float f;
@@ -2450,11 +2433,11 @@ void emit_red_button_particle_burst(int unused, void *obj) {
             s = s * g_frame_time;
             pa = a.v + random_integer_below(6);
             pb = b.v + random_integer_below(6);
-            f = *(float *)&red_button_burst_scale * 400000.0f;
+            f = red_button_burst_scale * 400000.0f;
             r1 = rand_range(scale_ticks(0xF), scale_ticks(0x14));
             PartType11Spawn(obj, pos, *pa, *pb, f, r1, rand_range(scale_ticks(0x19), scale_ticks(0x1E)), 0, 0,
-                            s * *(float *)&red_button_burst_scale);
-        } while (i < *(int *)&red_button_burst_count);
+                            s * red_button_burst_scale);
+        } while (i < red_button_burst_count);
     }
 }
 
@@ -2469,18 +2452,18 @@ extern int vector_stream_fade_ticks MACRO_ADDR;
 extern int vector_stream_regen_ticks MACRO_ADDR;
 extern short vector_stream_uv_scroll;
 extern short vector_stream_matrix_scale;
-extern short vector_stream_phase_rate_gp;
+extern float vector_stream_phase_rate_gp SDATA(D_L06_0016228C);
 extern float vector_stream_increment_random_scale_bound_gp SDATA(D_L06_00162290);
-extern short vector_stream_x_extent_gp;
-extern short vector_stream_moby_scale_multiplier_gp;
-extern short vector_stream_burst_color_blend_a_gp;
-extern short vector_stream_burst_color_blend_b_gp;
-extern short vector_stream_burst_min_particle_scale_gp;
-extern short vector_stream_burst_max_particle_scale_gp;
-extern short vector_stream_burst_min_lifetime_frames_gp;
-extern short vector_stream_burst_max_lifetime_frames_gp;
-extern short vector_stream_burst_velocity_random_scale_bound_a_gp;
-extern short vector_stream_burst_velocity_random_scale_bound_b_gp;
+extern float vector_stream_x_extent_gp SDATA(D_L06_00162294);
+extern float vector_stream_moby_scale_multiplier_gp SDATA(D_L06_001622A0);
+extern int vector_stream_burst_color_blend_a_gp SDATA(D_L06_001622A4);
+extern int vector_stream_burst_color_blend_b_gp SDATA(D_L06_001622A8);
+extern float vector_stream_burst_min_particle_scale_gp SDATA(D_L06_001622AC);
+extern float vector_stream_burst_max_particle_scale_gp SDATA(D_L06_001622B0);
+extern int vector_stream_burst_min_lifetime_frames_gp SDATA(D_L06_001622B4);
+extern int vector_stream_burst_max_lifetime_frames_gp SDATA(D_L06_001622B8);
+extern float vector_stream_burst_velocity_random_scale_bound_a_gp SDATA(D_L06_001622BC);
+extern float vector_stream_burst_velocity_random_scale_bound_b_gp SDATA(D_L06_001622C0);
 void draw_moby_vector_streams(char *m);
 void test_moby_vector_stream_collision_lines(char *m);
 extern float vector_stream_rotations[];
@@ -2510,8 +2493,8 @@ void update_moby_vector_streams_and_particle_burst(char *moby) {
 
     switch ((unsigned char)*(char *)&((struct Moby *)moby)->state) {
         case 0:
-            ((Moby *)moby)->scale = *(float *)(*(char **)&((struct Moby *)moby)->pclass + 0x24) *
-                                    *(float *)&vector_stream_moby_scale_multiplier_gp;
+            ((Moby *)moby)->scale =
+                *(float *)(*(char **)&((struct Moby *)moby)->pclass + 0x24) * vector_stream_moby_scale_multiplier_gp;
             vector_stream_fade_ticks = 0x16;
             vector_stream_regen_ticks = 0x2D;
             d->timer[1] = 0xB;
@@ -2548,13 +2531,13 @@ void update_moby_vector_streams_and_particle_burst(char *moby) {
                 d->f18 = Moby_PlaySound_r2(0, 4, moby);
             }
             test_moby_vector_stream_collision_lines((char *)&((struct Moby *)moby)->bsphere);
-            v = *(float *)&vector_stream_uv_scroll + *(float *)&vector_stream_phase_rate_gp * g_frame_time;
+            v = *(float *)&vector_stream_uv_scroll + vector_stream_phase_rate_gp * g_frame_time;
             *(float *)&vector_stream_uv_scroll = v;
             if (1.0f < v) {
                 *(float *)&vector_stream_uv_scroll = v - 1.0f;
             }
-            f21 = *(float *)&vector_stream_x_extent_gp / 30.0f;
-            f20 = -(*(float *)&vector_stream_x_extent_gp * 0.5f);
+            f21 = vector_stream_x_extent_gp / 30.0f;
+            f20 = -(vector_stream_x_extent_gp * 0.5f);
             for (i = 0; i < 4; i++) {
                 if (d->timer[i] == 0) {
                     for (j = 0; j < 30; j++) {
@@ -2613,18 +2596,16 @@ void update_moby_vector_streams_and_particle_burst(char *moby) {
                     float scale;
                     int s;
                     unsigned char life;
-                    vec_scale_to_length(u.m.pos, u.m.b, randf_sym(0.0f, *(float *)&vector_stream_x_extent_gp * 0.75f));
+                    vec_scale_to_length(u.m.pos, u.m.b, randf_sym(0.0f, vector_stream_x_extent_gp * 0.75f));
                     FastVecAdd(u.m.pos, u.m.pos, u.m.b + 12);
-                    color =
-                        FastTweenColor(*(int *)&vector_stream_burst_color_blend_a_gp,
-                                       *(int *)&vector_stream_burst_color_blend_b_gp, random_float_between(0.0f, 1.0f));
-                    scale = random_float_between(*(float *)&vector_stream_burst_min_particle_scale_gp,
-                                                 *(float *)&vector_stream_burst_max_particle_scale_gp);
-                    s = truncate_float_to_s32(
-                        random_float_between((float)*(int *)&vector_stream_burst_min_lifetime_frames_gp,
-                                             (float)*(int *)&vector_stream_burst_max_lifetime_frames_gp));
-                    rand_vec(u.m.vel, *(float *)&vector_stream_burst_velocity_random_scale_bound_a_gp * g_frame_time,
-                             *(float *)&vector_stream_burst_velocity_random_scale_bound_b_gp * g_frame_time);
+                    color = FastTweenColor(vector_stream_burst_color_blend_a_gp, vector_stream_burst_color_blend_b_gp,
+                                           random_float_between(0.0f, 1.0f));
+                    scale = random_float_between(vector_stream_burst_min_particle_scale_gp,
+                                                 vector_stream_burst_max_particle_scale_gp);
+                    s = truncate_float_to_s32(random_float_between((float)vector_stream_burst_min_lifetime_frames_gp,
+                                                                   (float)vector_stream_burst_max_lifetime_frames_gp));
+                    rand_vec(u.m.vel, vector_stream_burst_velocity_random_scale_bound_a_gp * g_frame_time,
+                             vector_stream_burst_velocity_random_scale_bound_b_gp * g_frame_time);
                     life = scale_ticks(s);
                     spawn_moving_hero_relative_alpha_fade_particle(u.m.pos, u.m.vel, color, scale, life,
                                                                    (unsigned char)random_integer_below(0xFF), 0);
@@ -2637,9 +2618,9 @@ void update_moby_vector_streams_and_particle_burst(char *moby) {
 }
 extern void initialize_hit_descriptor(char *a, int b, int c, float d);
 extern int coll_line(void *, void *, int, int, int);
-extern short vector_stream_hit_line_half_length;
-extern short vector_stream_hit_line_y;
-extern short vector_stream_hit_line_z;
+extern float vector_stream_hit_line_half_length SDATA(D_L06_00162278);
+extern float vector_stream_hit_line_y SDATA(D_L06_0016227C);
+extern float vector_stream_hit_line_z SDATA(D_L06_00162280);
 
 // builds two rotated corner points of a box around the moby and runs a line test between them
 void test_moby_vector_stream_collision_lines(char *m) {
@@ -2647,23 +2628,23 @@ void test_moby_vector_stream_collision_lines(char *m) {
     float Q[4];
     float A[12];
     initialize_hit_descriptor((char *)A, (int)m, 0x10000, 6.0f);
-    P[0] = *(float *)&vector_stream_hit_line_half_length;
-    P[1] = *(float *)&vector_stream_hit_line_y;
-    P[2] = *(float *)&vector_stream_hit_line_z;
-    Q[0] = -*(float *)&vector_stream_hit_line_half_length;
-    Q[1] = *(float *)&vector_stream_hit_line_y;
-    Q[2] = *(float *)&vector_stream_hit_line_z;
+    P[0] = vector_stream_hit_line_half_length;
+    P[1] = vector_stream_hit_line_y;
+    P[2] = vector_stream_hit_line_z;
+    Q[0] = -vector_stream_hit_line_half_length;
+    Q[1] = vector_stream_hit_line_y;
+    Q[2] = vector_stream_hit_line_z;
     matrix_mul_vec3(P, P, m + 0xC0);
     FastVecAdd(P, P, m + 0x10);
     matrix_mul_vec3(Q, Q, m + 0xC0);
     FastVecAdd(Q, Q, m + 0x10);
     coll_line(P, Q, 0, (int)m, (int)A);
-    P[0] = *(float *)&vector_stream_hit_line_half_length;
-    P[1] = -*(float *)&vector_stream_hit_line_y;
-    P[2] = *(float *)&vector_stream_hit_line_z;
-    Q[0] = -*(float *)&vector_stream_hit_line_half_length;
-    Q[1] = -*(float *)&vector_stream_hit_line_y;
-    Q[2] = *(float *)&vector_stream_hit_line_z;
+    P[0] = vector_stream_hit_line_half_length;
+    P[1] = -vector_stream_hit_line_y;
+    P[2] = vector_stream_hit_line_z;
+    Q[0] = -vector_stream_hit_line_half_length;
+    Q[1] = -vector_stream_hit_line_y;
+    Q[2] = vector_stream_hit_line_z;
     matrix_mul_vec3(P, P, m + 0xC0);
     FastVecAdd(P, P, m + 0x10);
     matrix_mul_vec3(Q, Q, m + 0xC0);
@@ -2680,13 +2661,13 @@ extern float vector_stream_rotations[];
 extern int vector_stream_regen_ticks MACRO_ADDR;
 extern int vector_stream_fade_ticks MACRO_ADDR;
 extern short vector_stream_matrix_scale;
-extern short vector_stream_alpha_b;
-extern short vector_stream_alpha_a;
-extern short vector_stream_alpha_c;
-extern short vector_stream_alpha_d;
-extern short vector_stream_color_a;
-extern short vector_stream_color_b;
-extern short vector_stream_texture_u_step;
+extern int vector_stream_alpha_b SDATA(D_L06_00162254);
+extern int vector_stream_alpha_a SDATA(D_L06_00162250);
+extern int vector_stream_alpha_c SDATA(D_L06_00162258);
+extern int vector_stream_alpha_d SDATA(D_L06_0016225C);
+extern int vector_stream_color_a SDATA(D_L06_00162270);
+extern int vector_stream_color_b SDATA(D_L06_00162274);
+extern float vector_stream_texture_u_step SDATA(D_L06_00162284);
 extern short vector_stream_uv_scroll;
 
 /* draws four copies of a model transformed by a table, then spawns a part for each */
@@ -2710,9 +2691,9 @@ void draw_moby_vector_streams(char *m) {
     VU1_addGSregister(6, GetEffectTex(0xE));
     VU1_addGSregister(0x14, 0xFF9000000260L);
     VU1_addGSregister(8, 0);
-    VU1_addGSregister(0x42, (long)*(int *)&vector_stream_alpha_a | ((long)*(int *)&vector_stream_alpha_b << 2) |
-                                ((long)*(int *)&vector_stream_alpha_c << 4) |
-                                ((long)*(int *)&vector_stream_alpha_d << 6) | 0x8000000000L);
+    VU1_addGSregister(0x42, (long)vector_stream_alpha_a | ((long)vector_stream_alpha_b << 2) |
+                                ((long)vector_stream_alpha_c << 4) | ((long)vector_stream_alpha_d << 6) |
+                                0x8000000000L);
     font_queue_vu_state();
     m0 = mat[0];
     sp = s;
@@ -2732,9 +2713,9 @@ void draw_moby_vector_streams(char *m) {
     s[0] = vector_stream_regen_ticks;
     s[2] = (int)(data + 0xF00);
     s[1] = vector_stream_fade_ticks;
-    s[3] = *(int *)&vector_stream_color_a;
-    s[4] = *(int *)&vector_stream_color_b;
-    *(float *)&s[7] = *(float *)&vector_stream_texture_u_step;
+    s[3] = vector_stream_color_a;
+    s[4] = vector_stream_color_b;
+    *(float *)&s[7] = vector_stream_texture_u_step;
     *(float *)&s[8] = *(float *)&vector_stream_uv_scroll;
     s[5] = 0x1E;
     s[6] = (int)data;

@@ -337,16 +337,16 @@ void update_ambience_target_cycle(void) {
 }
 extern int scale_ticks(int);
 extern float frame_scale MACRO_ADDR;
-extern short smoke_particle_stagger_ticks_base;
-extern short smoke_particle_timer_ticks_base;
-extern short configured_reciprocal_denominator_frames;
-extern short smoke_scroll_offset;
-extern short smoke_scroll_speed;
-extern short smoke_particle_stagger_ticks;
-extern short smoke_particle_timer_ticks;
-extern short smoke_particle_timer_ticks_inv;
+extern int smoke_particle_stagger_ticks_base SDATA(D_L00_00161430);
+extern int smoke_particle_timer_ticks_base SDATA(D_L00_00161434);
+extern int configured_reciprocal_denominator_frames SDATA(D_L00_00161438);
+extern float smoke_scroll_offset SDATA(D_L00_0016143C);
+extern float smoke_scroll_speed SDATA(D_L00_00161440);
+extern int smoke_particle_stagger_ticks SDATA(D_L00_00161444);
+extern int smoke_particle_timer_ticks SDATA(D_L00_00161448);
+extern float smoke_particle_timer_ticks_inv SDATA(D_L00_0016144C);
 extern int smoke_particle_aux_ticks MACRO_ADDR;
-extern short smoke_particle_aux_ticks_inv;
+extern float smoke_particle_aux_ticks_inv SDATA(D_L00_00161454);
 extern int fetch_add_accumulator MACRO_ADDR;
 
 // Texture scroll moby update: init the scroll constants, then scroll and wrap.
@@ -358,18 +358,18 @@ void update_frame_timing_and_wrapped_value(char *m) {
             m[0x20] = 1;
             *(unsigned char *)(m + 0x30) = 0xFF;
             one = 1.0f;
-            *(int *)&smoke_particle_stagger_ticks = scale_ticks(*(int *)&smoke_particle_stagger_ticks_base);
-            *(int *)&smoke_particle_timer_ticks = scale_ticks(*(int *)&smoke_particle_timer_ticks_base);
-            *(float *)&smoke_particle_timer_ticks_inv = one / IntToFloat(*(int *)&smoke_particle_timer_ticks);
-            smoke_particle_aux_ticks = scale_ticks(*(int *)&configured_reciprocal_denominator_frames);
-            *(float *)&smoke_particle_aux_ticks_inv = one / (float)smoke_particle_aux_ticks;
+            smoke_particle_stagger_ticks = scale_ticks(smoke_particle_stagger_ticks_base);
+            smoke_particle_timer_ticks = scale_ticks(smoke_particle_timer_ticks_base);
+            smoke_particle_timer_ticks_inv = one / IntToFloat(smoke_particle_timer_ticks);
+            smoke_particle_aux_ticks = scale_ticks(configured_reciprocal_denominator_frames);
+            smoke_particle_aux_ticks_inv = one / (float)smoke_particle_aux_ticks;
             break;
         }
         case 1: {
-            float t = *(float *)&smoke_scroll_offset - *(float *)&smoke_scroll_speed * frame_scale;
-            *(float *)&smoke_scroll_offset = t;
+            float t = smoke_scroll_offset - smoke_scroll_speed * frame_scale;
+            smoke_scroll_offset = t;
             if (t <= -8.0f) {
-                *(float *)&smoke_scroll_offset = t + 8.0f;
+                smoke_scroll_offset = t + 8.0f;
             }
             break;
         }
@@ -486,8 +486,8 @@ typedef struct {
     float uv[4][2];
 } Quad;
 
-extern short light_beam_texture_scroll;
-extern short light_beam_glow_phase;
+extern float light_beam_texture_scroll SDATA(D_L00_0016145C);
+extern float light_beam_glow_phase SDATA(D_L00_00161460);
 extern float light_beam_corner_table[][4];
 extern float light_beam_corner_uvs[][2];
 
@@ -530,9 +530,9 @@ void draw_vendor_effects(char *m) {
     d0[1] = 0.0f;
     euler_rotation_basis(mtx, d0);
 
-    (*(float *)&light_beam_texture_scroll) = (*(float *)&light_beam_texture_scroll) + 0.01f;
-    if (1.0f < (*(float *)&light_beam_texture_scroll)) {
-        (*(float *)&light_beam_texture_scroll) = (*(float *)&light_beam_texture_scroll) - 1.0f;
+    (light_beam_texture_scroll) = (light_beam_texture_scroll) + 0.01f;
+    if (1.0f < (light_beam_texture_scroll)) {
+        (light_beam_texture_scroll) = (light_beam_texture_scroll)-1.0f;
     }
 
     pk[2] = 1;
@@ -563,7 +563,7 @@ void draw_vendor_effects(char *m) {
         i1 = light_beam_quad_corner_indices[k][1];
         i2 = light_beam_quad_corner_indices[k][2];
         i3 = light_beam_quad_corner_indices[k][3];
-        off = (*(float *)&light_beam_texture_scroll);
+        off = (light_beam_texture_scroll);
         qd.col[0] = light_beam_corner_colors[i0];
         qd.col[1] = light_beam_corner_colors[i1];
         qd.col[2] = light_beam_corner_colors[i2];
@@ -583,13 +583,13 @@ void draw_vendor_effects(char *m) {
 
     pk[1] = GetEffectTex(0x1B);
 
-    (*(float *)&light_beam_glow_phase) = (*(float *)&light_beam_glow_phase) + 0.01f;
-    if (1.0f < (*(float *)&light_beam_glow_phase)) {
-        (*(float *)&light_beam_glow_phase) = 0.0f;
+    (light_beam_glow_phase) = (light_beam_glow_phase) + 0.01f;
+    if (1.0f < (light_beam_glow_phase)) {
+        (light_beam_glow_phase) = 0.0f;
     }
 
     {
-        float ph = (*(float *)&light_beam_glow_phase);
+        float ph = (light_beam_glow_phase);
         float n = -ph * 1.2f;
         float pp = ph * 1.2f;
         float z = ph * 1.4f + 1.1f;
@@ -613,7 +613,7 @@ void draw_vendor_effects(char *m) {
         matrix_mul_vec3(q[3], &c[3], mtx);
     }
 
-    col = ((int)((1.0f - (*(float *)&light_beam_glow_phase)) * 128.0f) << 24) | 0x808080;
+    col = ((int)((1.0f - (light_beam_glow_phase)) * 128.0f) << 24) | 0x808080;
     qd.v[0][0] = ((Moby *)m)->pos.x + q[0][0];
     qd.v[0][1] = ((Moby *)m)->pos.y + q[0][1];
     qd.v[0][2] = ((Moby *)m)->pos.z + q[0][2];
@@ -667,9 +667,9 @@ extern int try_set_help_message(int, int);
 
 extern void draw_vendor_effects();
 extern int level_frame_counter MACRO_ADDR;
-extern short vendor_glow_pulse_phase;
-extern short vendor_ring_a_angle;
-extern short vendor_ring_b_angle;
+extern float vendor_glow_pulse_phase SDATA(D_L00_0016146C);
+extern float vendor_ring_a_angle SDATA(D_L00_00161464);
+extern float vendor_ring_b_angle SDATA(D_L00_00161468);
 extern char hero_globals_base[];
 
 typedef struct {
@@ -696,10 +696,10 @@ void vendor_update(char *moby) {
     float t3;
     struct Moby *m;
 
-    *(float *)&vendor_glow_pulse_phase += 0.05f;
-    if (3.14f < *(float *)&vendor_glow_pulse_phase)
-        *(float *)&vendor_glow_pulse_phase = -3.14f;
-    f = FastSin(*(float *)&vendor_glow_pulse_phase);
+    vendor_glow_pulse_phase += 0.05f;
+    if (3.14f < vendor_glow_pulse_phase)
+        vendor_glow_pulse_phase = -3.14f;
+    f = FastSin(vendor_glow_pulse_phase);
     ((Moby *)moby)->glow_color = (((int)(f * 48.0f) + 0x60) * 0x10101) | 0x80000000;
 
     switch (((Moby *)moby)->state) {
@@ -739,13 +739,13 @@ void vendor_update(char *moby) {
                 }
             }
             AddDrawCallback(draw_vendor_effects, moby);
-            axis_rotation_2d48(p->ring_a_rot, 2, *(float *)&vendor_ring_a_angle);
-            axis_rotation_2d48(p->ring_b_rot, 2, *(float *)&vendor_ring_b_angle);
-            *(float *)&vendor_ring_a_angle = FastAddRots(*(float *)&vendor_ring_a_angle, 0.01f);
-            t2 = FastAddRots(*(float *)&vendor_ring_b_angle, -0.02f);
+            axis_rotation_2d48(p->ring_a_rot, 2, vendor_ring_a_angle);
+            axis_rotation_2d48(p->ring_b_rot, 2, vendor_ring_b_angle);
+            vendor_ring_a_angle = FastAddRots(vendor_ring_a_angle, 0.01f);
+            t2 = FastAddRots(vendor_ring_b_angle, -0.02f);
             m = (struct Moby *)p->ring;
             t3 = p->glow * *(float *)(*(char **)&m->pclass + 0x24) * 2.5f;
-            *(float *)&vendor_ring_b_angle = t2;
+            vendor_ring_b_angle = t2;
             m->scale = t3;
             moby_build_matrix(p->ring);
             break;
@@ -772,13 +772,13 @@ void vendor_update(char *moby) {
             AddDrawCallback(draw_vendor_effects, moby);
             a = 1;
             b = 1;
-            axis_rotation_2d48(p->ring_a_rot, 2, *(float *)&vendor_ring_a_angle);
-            axis_rotation_2d48(p->ring_b_rot, 2, *(float *)&vendor_ring_b_angle);
-            *(float *)&vendor_ring_a_angle = FastAddRots(*(float *)&vendor_ring_a_angle, 0.01f);
-            t2 = FastAddRots(*(float *)&vendor_ring_b_angle, -0.02f);
+            axis_rotation_2d48(p->ring_a_rot, 2, vendor_ring_a_angle);
+            axis_rotation_2d48(p->ring_b_rot, 2, vendor_ring_b_angle);
+            vendor_ring_a_angle = FastAddRots(vendor_ring_a_angle, 0.01f);
+            t2 = FastAddRots(vendor_ring_b_angle, -0.02f);
             m = (struct Moby *)p->ring;
             t3 = p->glow * *(float *)(*(char **)&m->pclass + 0x24) * 2.5f;
-            *(float *)&vendor_ring_b_angle = t2;
+            vendor_ring_b_angle = t2;
             m->scale = t3;
             moby_build_matrix(p->ring);
             if (G_pp.i208C != 0 && G_pp.i2084 != 3 && G_pp.i208C != 1) {
@@ -2411,7 +2411,7 @@ typedef struct {
     char pad[0x10];
     Vec4 position;
 } BoltOwner;
-extern short homing_bolt_bounds_scale;
+extern float homing_bolt_bounds_scale SDATA(D_L00_0016148C);
 extern short active_homing_missiles[];
 extern char *select_auto_aim_target_moby(void *, void *, void *, float *, float *, float *, float);
 extern int coll_line(void *, void *, int, int, int);
@@ -2428,7 +2428,7 @@ char *spawn_homing_bolt(void *owner, void *pos, float a, float b, float c, char 
         ((unsigned char *)m)[0x30] = 0xFF;
         m[0x31] = 1;
         m[0x20] = 0;
-        ((Moby *)m)->scale *= *(float *)&homing_bolt_bounds_scale;
+        ((Moby *)m)->scale *= homing_bolt_bounds_scale;
         ((Moby *)m)->draw_dist = 0xFF;
         d = (struct HomingBoltVars *)((Moby *)m)->pvars;
         ((Moby *)m)->rot.z = rz;

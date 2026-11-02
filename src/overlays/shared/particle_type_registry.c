@@ -185,7 +185,7 @@ typedef struct {
     Vec4 probe; /* 0x20: point tested against the ground */
     Vec4 vel; /* 0x30: w = ground height + clearance */
 } FallingParticle;
-extern short g_frame_time_sq;
+extern f32 g_frame_time_sq SDATA(D_0015EE70);
 extern Vec4 particle_drift MACRO_ADDR;
 typedef struct {
     f32 value;
@@ -232,7 +232,7 @@ void update_falling_effect_particle(FallingParticle *p) {
             }
         }
     }
-    vel->f[2] -= (*(f32 *)&g_frame_time_sq) * 9.8f;
+    vel->f[2] -= (g_frame_time_sq) * 9.8f;
     vel->f[3] = ground + particle_clearance.value;
 }
 extern void *create_part(int);

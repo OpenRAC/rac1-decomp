@@ -505,7 +505,7 @@ extern void FastVecSub(void *, void *, void *);
 extern float ApproachWithVelocity(float *, float, float *, float, float, float);
 extern void Moby_PlaySound(int, int, int);
 extern void clear_u64_value(void *);
-extern short hovering_rocket_attacker_launch_vector_speed;
+extern float hovering_rocket_attacker_launch_vector_speed SDATA(D_L13_0016152C);
 extern char *gemlik_scene_points MACRO_ADDR;
 
 typedef struct HoveringRocketVars {
@@ -678,8 +678,7 @@ void update_hovering_rocket_attacker(char *m) {
                         }
                         pv = shot_direction_vector;
                         FastVecSub(pv, &target->pos, scratch_vector);
-                        vec_scale_to_length(pv, pv,
-                                            *(float *)&hovering_rocket_attacker_launch_vector_speed * g_frame_time);
+                        vec_scale_to_length(pv, pv, hovering_rocket_attacker_launch_vector_speed * g_frame_time);
                         if (d->fire_side != 0) {
                             if (d->rocket_1) {
                                 launch_attached_rocket(d->rocket_1, pv, (int)target, d->shot_range);

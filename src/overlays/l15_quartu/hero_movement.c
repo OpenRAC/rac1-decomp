@@ -379,7 +379,7 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int quartu_frame_count MACRO_ADDR;
 
-extern short quartu_usage_event_count;
+extern int quartu_usage_event_count SDATA(D_L15_0015F76C);
 extern unsigned char *quartu_pool_draw_tiles MACRO_ADDR;
 extern int quartu_pool_draw_count MACRO_ADDR;
 extern HeroPlayerCameraView quartu_player_camera;
@@ -521,7 +521,7 @@ void Hero_UpdateStatePhysicsL15(void) {
                             usage_stats.e[18].level_mask =
                                 usage_stats.e[18].level_mask | (1 << g_current_level_index) | 0x80000000;
                             *(int *)&quartu_usage_event_timer = -1;
-                            (*(int *)&quartu_usage_event_count)++;
+                            (quartu_usage_event_count)++;
                         }
                     }
                 }

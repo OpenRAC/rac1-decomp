@@ -17,7 +17,7 @@
 extern char cd_read_state[];
 extern char *level_render_state;
 
-extern short ship_level_entry_active;
+extern int ship_level_entry_active SDATA(D_L00_00160600);
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern char level_render_state_a[] __asm__("D_0013E130") NOT_SDA;
 extern void update_moby_proximity_interaction(void);
@@ -28,7 +28,7 @@ extern void MobySetAnimation(void *, int, int);
 void initialize_moby_state_record(char *m) {
     char *g;
     int *src;
-    *(int *)&ship_level_entry_active = 1;
+    ship_level_entry_active = 1;
     deactivate_recorded_moby();
     if (g_current_level_index_m == LEVEL_GEMLIK) {
         char *q = level_render_state_a;
@@ -190,7 +190,7 @@ void initialize_level_transition_with_audio(int a) {
     Music_ContinueStreamIfReady();
 }
 extern char g_hero[] NOT_SDA;
-extern short skip_frame;
+extern int skip_frame SDATA(D_L00_0015F6BC);
 extern unsigned char screen_globals_base[] NOT_SDA;
 
 extern void initialize_level_transition_with_audio(int);
@@ -200,7 +200,7 @@ void prepare_level_transition_with_help_cleanup(void) {
 
     if (g->health.hp <= 0)
         g->health.hp = 1;
-    *(int *)&skip_frame = 1;
+    skip_frame = 1;
     music_Pause(0);
     {
         char *p = cd_read_state;

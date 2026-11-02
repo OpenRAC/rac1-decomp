@@ -655,7 +655,7 @@ extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 
-extern short aridia_usage_event_count;
+extern int aridia_usage_event_count SDATA(D_L02_0015F76C);
 extern HeroPlayerCameraView aridia_player_camera;
 
 extern Moby *aridia_coll_sphere_moby_hits[];
@@ -780,7 +780,7 @@ void update_hero_state_motion(void) {
                             usage_stats.e[18].level_mask =
                                 usage_stats.e[18].level_mask | (1 << g_current_level_index) | 0x80000000;
                             *(int *)&aridia_usage_event_timer = -1;
-                            (*(int *)&aridia_usage_event_count)++;
+                            (aridia_usage_event_count)++;
                         }
                     }
                 }

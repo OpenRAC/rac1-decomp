@@ -605,7 +605,7 @@ extern float frame_scale MACRO_ADDR;
 
 extern char item_usage[];
 extern unsigned char D_0015EEB4[4] MACRO_ADDR;
-extern short veldin1_look_stat_timer;
+extern int veldin1_look_stat_timer SDATA(D_L00_0015F768);
 extern short hero_run_step_start_frames;
 extern short hero_state_f_jump_velocity_keys;
 extern char hero_state_d_jump_velocity_keys[];
@@ -1017,7 +1017,7 @@ int HeroEnterMoveState(int a, int b) {
             int t;
             ((struct Hero *)p)->state.control_mode = 0;
             ((struct Hero *)p)->unk2284 = 4;
-            *(int *)&veldin1_look_stat_timer = scale_ticks(0x3C);
+            veldin1_look_stat_timer = scale_ticks(0x3C);
             if (((struct Hero *)p)->unk20AA == 0) {
                 t = hero_idle_sequence(1);
                 if (((struct Hero *)p)->moby->prev_seq != t && b) {

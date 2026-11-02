@@ -177,10 +177,10 @@ extern float frame_scale MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern int level_frame_counter MACRO_ADDR;
-extern short water_patches;
-extern short water_patch_count;
-extern short mine_force_detonate;
-extern short mine_bob_ramp_ticks;
+extern int water_patches SDATA(D_L00_00161390);
+extern int water_patch_count SDATA(D_L00_00161398);
+extern int mine_force_detonate SDATA(D_L00_001614A0);
+extern float mine_bob_ramp_ticks SDATA(D_L00_001614A4);
 extern s32 g_debug_camera[];
 extern int *coll_sphere_moby_hits[];
 extern char *active_mobies[];
@@ -354,7 +354,7 @@ void mine_update(M910 *m) {
             m->pos.f[2] -= 0.4f;
             q.dir[2] = 1.0f;
             k = IntToFloat(level_frame_counter - v->i74);
-            k = k / multiply_global_factor(*(float *)&mine_bob_ramp_ticks);
+            k = k / multiply_global_factor(mine_bob_ramp_ticks);
             if (1.0f < k) {
                 k = 1.0f;
             } else if (k < 0.0f) {
@@ -369,8 +369,7 @@ void mine_update(M910 *m) {
                         int i;
                         char *p;
 
-                        RippleDisturb(*(int *)&water_patches, *(int *)&water_patch_count, 1, m->pos.f[0], m->pos.f[1],
-                                      0.5f, -0.35f);
+                        RippleDisturb(water_patches, water_patch_count, 1, m->pos.f[0], m->pos.f[1], 0.5f, -0.35f);
                         v->h50 = 1;
                         clear_u64_value((float *)v);
                         v->vel.f[2] = g_frame_time * -1.5f;
@@ -729,7 +728,7 @@ void mine_update(M910 *m) {
                 }
             }
             v->i78 = 0;
-            if (v->i5C < 0 || *(int *)&mine_force_detonate != 0) {
+            if (v->i5C < 0 || mine_force_detonate != 0) {
                 SpawnExplosionFx(m, &m->pos, -1, 0.33f, 13.0f);
                 moby_index_list_remove(m, thrown_mine_list);
                 DeleteMoby(m);
@@ -747,7 +746,7 @@ void mine_update(M910 *m) {
                 }
             }
             k = IntToFloat(level_frame_counter - v->i74);
-            k = k / multiply_global_factor(*(float *)&mine_bob_ramp_ticks);
+            k = k / multiply_global_factor(mine_bob_ramp_ticks);
             if (1.0f < k) {
                 k = 1.0f;
             } else if (k < 0.0f) {
@@ -1520,23 +1519,23 @@ extern C6_2aedd0 bomb_blast_colors;
 extern C6_2aedd0 bomb_blast_fade_colors;
 extern int bomb_hit_skip_update_fn MACRO_ADDR;
 extern int free_moby_slot_count MACRO_ADDR;
-extern short bomb_trail_spark_gravity;
-extern short bomb_trail_spark_speed_scale;
-extern short bomb_trail_spark_jitter;
-extern short bomb_trail_spark_ticks1;
-extern short bomb_trail_spark_ticks2;
-extern short bomb_trail_spark_ticks3;
-extern short bomb_trail_spark_time_jitter;
-extern short bomb_trail_spark_start_size_min;
-extern short bomb_trail_spark_start_size_max;
-extern short bomb_trail_spark_end_size_min;
-extern short bomb_trail_spark_end_size_max;
-extern short bomb_trail_spark_lower_color_a;
-extern short bomb_trail_spark_lower_color_b;
-extern short bomb_trail_spark_upper_color_a;
-extern short bomb_trail_spark_upper_color_b;
-extern short bomb_trail_spark_count;
-extern short bomb_trail_spark_texture;
+extern float bomb_trail_spark_gravity SDATA(D_L00_001614C0);
+extern float bomb_trail_spark_speed_scale SDATA(D_L00_001614C4);
+extern float bomb_trail_spark_jitter SDATA(D_L00_001614C8);
+extern int bomb_trail_spark_ticks1 SDATA(D_L00_001614CC);
+extern int bomb_trail_spark_ticks2 SDATA(D_L00_001614D0);
+extern int bomb_trail_spark_ticks3 SDATA(D_L00_001614D4);
+extern float bomb_trail_spark_time_jitter SDATA(D_L00_001614D8);
+extern float bomb_trail_spark_start_size_min SDATA(D_L00_001614DC);
+extern float bomb_trail_spark_start_size_max SDATA(D_L00_001614E0);
+extern float bomb_trail_spark_end_size_min SDATA(D_L00_001614E4);
+extern float bomb_trail_spark_end_size_max SDATA(D_L00_001614E8);
+extern int bomb_trail_spark_lower_color_a SDATA(D_L00_001614EC);
+extern int bomb_trail_spark_lower_color_b SDATA(D_L00_001614F0);
+extern int bomb_trail_spark_upper_color_a SDATA(D_L00_001614F4);
+extern int bomb_trail_spark_upper_color_b SDATA(D_L00_001614F8);
+extern int bomb_trail_spark_count SDATA(D_L00_001614FC);
+extern int bomb_trail_spark_texture SDATA(D_L00_00161500);
 extern int predict_throw_landing(void *, void *, int);
 extern void rand_vec(float *, float, float);
 extern int FastTweenColor(int, int, float);
@@ -1608,7 +1607,7 @@ void bomb_update(M_2aedd0 *m) {
             if ((level_frame_counter & 7) == 0) {
                 int i;
 
-                for (i = 0; i < *(int *)&bomb_trail_spark_count; i++) {
+                for (i = 0; i < bomb_trail_spark_count; i++) {
                     V2AE110 v1;
                     V2AE110 v2;
                     V2AE110 v3;
@@ -1618,32 +1617,26 @@ void bomb_update(M_2aedd0 *m) {
                     int n1;
                     int n2;
 
-                    FastVecScale(&v1, d, *(float *)&bomb_trail_spark_speed_scale);
-                    rand_vec(v3.f, 0.0f, *(float *)&bomb_trail_spark_jitter * g_frame_time);
+                    FastVecScale(&v1, d, bomb_trail_spark_speed_scale);
+                    rand_vec(v3.f, 0.0f, bomb_trail_spark_jitter * g_frame_time);
                     FastVecAdd(&v1, &v3, &v1);
                     clear_u64_value(v2.f);
-                    v1.f[3] = random_float_between(*(float *)&bomb_trail_spark_start_size_min,
-                                                   *(float *)&bomb_trail_spark_start_size_max);
-                    v2.f[3] = random_float_between(*(float *)&bomb_trail_spark_end_size_min,
-                                                   *(float *)&bomb_trail_spark_end_size_max);
-                    p0 = FastTweenColor(*(int *)&bomb_trail_spark_lower_color_a,
-                                        *(int *)&bomb_trail_spark_lower_color_b, random_float_between(0.0f, 1.0f));
-                    p1 = FastTweenColor(*(int *)&bomb_trail_spark_upper_color_a,
-                                        *(int *)&bomb_trail_spark_upper_color_b, random_float_between(0.0f, 1.0f));
+                    v1.f[3] = random_float_between(bomb_trail_spark_start_size_min, bomb_trail_spark_start_size_max);
+                    v2.f[3] = random_float_between(bomb_trail_spark_end_size_min, bomb_trail_spark_end_size_max);
+                    p0 = FastTweenColor(bomb_trail_spark_lower_color_a, bomb_trail_spark_lower_color_b,
+                                        random_float_between(0.0f, 1.0f));
+                    p1 = FastTweenColor(bomb_trail_spark_upper_color_a, bomb_trail_spark_upper_color_b,
+                                        random_float_between(0.0f, 1.0f));
                     n0 = truncate_float_to_s32(multiply_global_factor(
-                        (float)*(int *)&bomb_trail_spark_ticks1 * random_float_between(0.0f, 1.0f) + 1.0f));
-                    n1 = truncate_float_to_s32(
-                        multiply_global_factor((float)*(int *)&bomb_trail_spark_ticks2 *
-                                               (random_float_between(-*(float *)&bomb_trail_spark_time_jitter,
-                                                                     *(float *)&bomb_trail_spark_time_jitter) +
-                                                1.0f)));
-                    n2 = truncate_float_to_s32(
-                        multiply_global_factor((float)*(int *)&bomb_trail_spark_ticks3 *
-                                               (random_float_between(-*(float *)&bomb_trail_spark_time_jitter,
-                                                                     *(float *)&bomb_trail_spark_time_jitter) +
-                                                1.0f)));
-                    v2.f[2] -= *(float *)&bomb_trail_spark_gravity * g_frame_time_sq * (float)n1;
-                    PartType02Spawn(&m->pos, &v1, &v2, p0, p1, n0, n1, n2, *(int *)&bomb_trail_spark_texture);
+                        (float)bomb_trail_spark_ticks1 * random_float_between(0.0f, 1.0f) + 1.0f));
+                    n1 = truncate_float_to_s32(multiply_global_factor(
+                        (float)bomb_trail_spark_ticks2 *
+                        (random_float_between(-bomb_trail_spark_time_jitter, bomb_trail_spark_time_jitter) + 1.0f)));
+                    n2 = truncate_float_to_s32(multiply_global_factor(
+                        (float)bomb_trail_spark_ticks3 *
+                        (random_float_between(-bomb_trail_spark_time_jitter, bomb_trail_spark_time_jitter) + 1.0f)));
+                    v2.f[2] -= bomb_trail_spark_gravity * g_frame_time_sq * (float)n1;
+                    PartType02Spawn(&m->pos, &v1, &v2, p0, p1, n0, n1, n2, bomb_trail_spark_texture);
                 }
             }
         }
@@ -1689,8 +1682,7 @@ void bomb_update(M_2aedd0 *m) {
                     char *s;
                     int i;
 
-                    RippleDisturb(*(int *)&water_patches, *(int *)&water_patch_count, 1, m->pos.f[0], m->pos.f[1], 0.5f,
-                                  -0.35f);
+                    RippleDisturb(water_patches, water_patch_count, 1, m->pos.f[0], m->pos.f[1], 0.5f, -0.35f);
                     d->h68 = 1;
                     clear_u64_value(d->v.f);
                     d->v.f[2] = g_frame_time * -1.5f;
@@ -2092,8 +2084,8 @@ void debris_update(unsigned char *m) {
     if (FastDecTimer(&w->x18))
         DeleteMoby(m);
 }
-extern short crate_debris_spin_min;
-extern short crate_debris_spin_max;
+extern float crate_debris_spin_min SDATA(D_L00_00161518);
+extern float crate_debris_spin_max SDATA(D_L00_0016151C);
 extern char *CreateMoby(int);
 extern float random_angle_radians(void);
 extern float randf_sym(float, float);
@@ -2133,14 +2125,14 @@ unsigned char *spawn_crate_debris(unsigned char *owner, void *vel, void *pos, vo
         v->f4 = ((Moby *)m)->pos.z;
         {
             short t = scale_ticks(0x14);
-            float l1 = *(float *)&crate_debris_spin_min;
-            float l2 = *(float *)&crate_debris_spin_max;
+            float l1 = crate_debris_spin_min;
+            float l2 = crate_debris_spin_max;
             float r;
             v->i20 = 0;
             v->he = t;
             r = randf_sym(l1, l2) * 0.017453292f * g_frame_time;
-            l1 = *(float *)&crate_debris_spin_min;
-            l2 = *(float *)&crate_debris_spin_max;
+            l1 = crate_debris_spin_min;
+            l2 = crate_debris_spin_max;
             v->f24 = r;
             v->f28 = randf_sym(l1, l2) * 0.017453292f * g_frame_time;
         }

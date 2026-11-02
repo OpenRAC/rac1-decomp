@@ -171,7 +171,7 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int batalia_frame_count MACRO_ADDR;
 
-extern short batalia_usage_event_count;
+extern int batalia_usage_event_count SDATA(D_L08_0015F76C);
 extern unsigned char *batalia_pool_draw_tiles MACRO_ADDR;
 extern int batalia_pool_draw_count MACRO_ADDR;
 extern HeroPlayerCameraView batalia_player_camera;
@@ -331,7 +331,7 @@ void HeroL08_UpdateStatePhysics(void) {
                             usage_stats.e[18].level_mask =
                                 usage_stats.e[18].level_mask | (1 << g_current_level_index) | 0x80000000;
                             *(int *)&batalia_usage_event_timer = -1;
-                            (*(int *)&batalia_usage_event_count)++;
+                            (batalia_usage_event_count)++;
                         }
                     }
                 }

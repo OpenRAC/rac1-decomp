@@ -654,7 +654,7 @@ void trespasser_update(Moby *m) {
     }
 }
 extern float D_L00_001618F8_C2A80 SDATA(D_L00_001618F8);
-extern short trespasser_pickup_spin_step;
+extern float trespasser_pickup_spin_step SDATA(D_L00_00161900);
 
 extern int level_frame_counter_r __asm__("D_L00_0015F6B0") MACRO_ADDR;
 extern unsigned char g_hero_r[] __asm__("D_0013F450");
@@ -680,7 +680,7 @@ void update_trespasser_pickup(void *mv) {
             m->state = 1;
             break;
         case 1: {
-            float r = FastAddRots(m->rot.z, (*(float *)&trespasser_pickup_spin_step));
+            float r = FastAddRots(m->rot.z, (trespasser_pickup_spin_step));
             int t = level_frame_counter_r;
             m->rot.z = r;
             if (t % 10 == 0) {
@@ -3348,7 +3348,7 @@ void spawn_moby_collision_particles(void *mm) {
 }
 extern char *CreateMoby_m(int) __asm__("func_0020D348");
 
-extern short glove_of_doom_ring_index;
+extern int glove_of_doom_ring_index SDATA(D_L00_0016190C);
 
 // Spawns a Bomb moby at a position, registers it in a 20-entry ring.
 char *spawn_glove_of_doom_held_moby(int a0, char *pos, char *vec) {
@@ -3373,15 +3373,15 @@ char *spawn_glove_of_doom_held_moby(int a0, char *pos, char *vec) {
         if (g->unk20A5 != 0 || g->unk20AF != 0) {
             ((Moby *)m)->flags |= 0x41;
         }
-        old = (char *)glove_of_doom_ring[*(int *)&glove_of_doom_ring_index];
+        old = (char *)glove_of_doom_ring[glove_of_doom_ring_index];
         if (old != 0) {
             if (*(short *)(old + 0xA6) == 0xE6 && (unsigned char)old[0x20] != 0xFE &&
                 (unsigned char)old[0x20] != 0xFD) {
                 old[0x20] = 4;
             }
         }
-        glove_of_doom_ring[(*(int *)&glove_of_doom_ring_index)++] = (int)m;
-        *(int *)&glove_of_doom_ring_index = *(int *)&glove_of_doom_ring_index % 20;
+        glove_of_doom_ring[(glove_of_doom_ring_index)++] = (int)m;
+        glove_of_doom_ring_index = glove_of_doom_ring_index % 20;
     }
     return m;
 }

@@ -550,8 +550,8 @@ extern int decode_mode MACRO_ADDR;
 extern int D_0015EFB4 MACRO_ADDR;
 extern int level_game_clock_paused MACRO_ADDR;
 extern short level_vu1_chain_reserved_bytes;
-extern short loaded_swap_moby_class_set;
-extern short cinematic_mode_frames;
+extern int loaded_swap_moby_class_set SDATA(D_L00_001600CC);
+extern int cinematic_mode_frames SDATA(D_L00_0015F6AC);
 extern int skip_frame MACRO_ADDR;
 extern int cinematic_mode MACRO_ADDR;
 extern float render_view_tan_half_fov;
@@ -632,7 +632,7 @@ void update_pause_menu(void) {
         render_view_tan_half_fov = GS.unkE8;
         select_moby_context(0);
         if (GS.unk140 != 0) {
-            *(int *)&loaded_swap_moby_class_set = -1;
+            loaded_swap_moby_class_set = -1;
             select_world_object_resource_tables(GS.unk140, GS.unk144);
         }
         UpdateFog();
@@ -694,7 +694,7 @@ void update_pause_menu(void) {
     if (v == 0 || v == 0xA || v == 0xE || v == 0x11 || v == 0x21 || v == 0x2D || v == 0x23) {
         initialize_pause_menu();
     }
-    if ((mode_freeze_flags & 1) && !(*(int *)&cinematic_mode_frames < 8)) {
+    if ((mode_freeze_flags & 1) && !(cinematic_mode_frames < 8)) {
         mode_freeze_init(3, GS.owner, 0);
         return;
     }
@@ -1193,7 +1193,7 @@ extern int PlayBankSound(int, int, int);
 
 extern short unlock_code_input[];
 extern unsigned char unlock_code_key_table[];
-extern short unlock_code_input_count;
+extern int unlock_code_input_count SDATA(D_L00_001604B8);
 extern char discount_purchase_pricing[];
 
 /* Cheat-code entry on the pause screen. */
@@ -1207,7 +1207,7 @@ void process_unlock_code_input(void) {
         if (!(pressed & 0xF0A0))
             return;
 
-        if (*(int *)&unlock_code_input_count >= 20)
+        if (unlock_code_input_count >= 20)
             return;
         if (pressed & 0x1000)
             direction = 0;
@@ -1219,9 +1219,9 @@ void process_unlock_code_input(void) {
             direction = 3;
         else
             direction = (pressed & 0x80) ? 4 : 5;
-        count = *(int *)&unlock_code_input_count;
+        count = unlock_code_input_count;
         unlock_code_input[count++] = direction;
-        *(int *)&unlock_code_input_count = count;
+        unlock_code_input_count = count;
         if (count != 20)
             return;
         code = -1;
@@ -1263,7 +1263,7 @@ void process_unlock_code_input(void) {
             }
         }
     } else {
-        *(int *)&unlock_code_input_count = 0;
+        unlock_code_input_count = 0;
     }
 }
 extern void *create_menu_preview_moby_a(int) __asm__("func_00226720");

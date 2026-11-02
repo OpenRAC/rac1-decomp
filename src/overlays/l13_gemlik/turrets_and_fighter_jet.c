@@ -670,8 +670,8 @@ extern float FastAddRots(float, float);
 extern char *spawn_gemlik_projectile(float, float *, float *, void *);
 extern int gemlik_frame_count MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
-extern short gemlik_turret_fire_interval;
-extern short gemlik_turret_shot_speed;
+extern int gemlik_turret_fire_interval SDATA(D_L13_00161414);
+extern float gemlik_turret_shot_speed SDATA(D_L13_00161410);
 
 // Every few ticks spawns a projectile moby aimed from the moby's position using its target.
 void fire_blarg_turret_projectile(char *moby) {
@@ -680,13 +680,13 @@ void fire_blarg_turret_projectile(char *moby) {
     struct BlargTurretVars *data;
     float d, x, ang;
     data = (struct BlargTurretVars *)((Moby *)moby)->pvars;
-    if (gemlik_frame_count % *(int *)&gemlik_turret_fire_interval == 0) {
+    if (gemlik_frame_count % gemlik_turret_fire_interval == 0) {
         Moby_GetJointWorldPos(moby, 0, v);
         d = vec_distance_xy(moby + 0x10, data->target + 0x10);
         x = (20.0f - d) / 20.0f * 5.0f + 2.5f;
         ang = FastAddRots(random_float_between(-x, x) * 0.017453292f, ((Moby *)moby)->rot.z);
-        v2[0] = FastCos(ang) * (*(float *)&gemlik_turret_shot_speed * g_frame_time);
-        v2[1] = FastSin(ang) * (*(float *)&gemlik_turret_shot_speed * g_frame_time);
+        v2[0] = FastCos(ang) * (gemlik_turret_shot_speed * g_frame_time);
+        v2[1] = FastSin(ang) * (gemlik_turret_shot_speed * g_frame_time);
         v2[2] = 0;
         FastVecAdd(v, v, v2);
         spawn_gemlik_projectile(data->shot_time, v, v2, moby);
@@ -908,7 +908,7 @@ void release_robosquawker_particle(Level13VendorMoby *moby) {
     }
 }
 extern float ProbeGroundHeight(void *, int, float);
-extern short g_frame_time_sq;
+extern float g_frame_time_sq SDATA(D_0015EE70);
 typedef struct {
     u8 pad_000[0x120]; /* 0x000 */
     u8 pad_120[0x8]; /* 0x120 cleared by qzero */
@@ -924,13 +924,13 @@ void update_robosquawker_ground_height(char *m, char *d) {
     float ground = ProbeGroundHeight(&moby->pos, 0, 0.5f);
     float z = moby->pos.z;
     if (ground < z + 0.3f) {
-        float vertical_step = moby_vars->vertical_step - *(float *)&g_frame_time_sq * 9.8f;
+        float vertical_step = moby_vars->vertical_step - g_frame_time_sq * 9.8f;
         moby_vars->vertical_step = vertical_step;
         moby->pos.z = moby->pos.z + vertical_step;
         if (moby->pos.z < ground)
             moby->pos.z = ground;
     } else if (z < ground) {
-        moby->pos.z = z + *(float *)&g_frame_time_sq * 9.8f;
+        moby->pos.z = z + g_frame_time_sq * 9.8f;
         qzero(&moby_vars->pad_120);
     } else {
         qzero(&moby_vars->pad_120);

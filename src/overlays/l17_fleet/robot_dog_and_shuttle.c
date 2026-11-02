@@ -697,9 +697,9 @@ typedef int u128_2F3450 __attribute__((mode(TI)));
 extern int fleet_moby_killed_bits[];
 extern char *fleet_camera_points MACRO_ADDR;
 
-extern short shuttle_scale_near;
-extern short shuttle_scale_far;
-extern short fleet_shown_help_message;
+extern float shuttle_scale_near SDATA(D_L17_0016242C);
+extern float shuttle_scale_far SDATA(D_L17_00162428);
+extern int fleet_shown_help_message SDATA(D_L17_0015F674);
 
 typedef struct {
     char pad0[0x20];
@@ -739,7 +739,7 @@ void shuttle_1448_update(unsigned char *m) {
 
     qcopy(old_pos, m + 0x10);
     qcopy(old_rot, m + 0x40);
-    ((Moby *)m)->scale = *(float *)(*(char **)(m + 0x24) + 0x24) * *(float *)&shuttle_scale_near;
+    ((Moby *)m)->scale = *(float *)(*(char **)(m + 0x24) + 0x24) * shuttle_scale_near;
     v->timer += 1;
     switch (((Moby *)m)->state) {
         case 0:
@@ -777,14 +777,14 @@ void shuttle_1448_update(unsigned char *m) {
             pl = &g_hero;
             if (*(unsigned char **)&pl->ground_moby == m && pl->air_frames.s == 0 && scale_ticks(30) < v->timer) {
                 update_shuttle_help_message(m);
-                if ((pad0_pressed & 0x10) && *(int *)&fleet_shown_help_message == 10) {
+                if ((pad0_pressed & 0x10) && fleet_shown_help_message == 10) {
                     int s = v->dir;
                     if (s >= 0) {
                         v->go = 1;
                         switch (s) {
                             case 0: {
-                                float x = *(float *)&shuttle_scale_near;
-                                float y = *(float *)&shuttle_scale_far;
+                                float x = shuttle_scale_near;
+                                float y = shuttle_scale_far;
                                 v->sel = 1;
                                 v->f9C = x;
                                 v->fA0 = y;
@@ -792,8 +792,8 @@ void shuttle_1448_update(unsigned char *m) {
                                 break;
                             }
                             case 1: {
-                                float x = *(float *)&shuttle_scale_far;
-                                float y = *(float *)&shuttle_scale_near;
+                                float x = shuttle_scale_far;
+                                float y = shuttle_scale_near;
                                 v->side = s;
                                 v->f9C = x;
                                 v->fA0 = y;
@@ -1290,7 +1290,7 @@ extern float fleet_backdrop_glow_angles[];
 extern int fleet_backdrop_glow_colors_from[];
 extern int fleet_backdrop_glow_colors_to[];
 extern float fleet_backdrop_glow_color_blend[];
-extern short fleet_backdrop_beam_color;
+extern int fleet_backdrop_beam_color SDATA(D_L17_00162438);
 extern short fleet_backdrop_beam_scroll_speeds;
 
 typedef struct {
@@ -1330,10 +1330,10 @@ void draw_fleet_backdrop_quads(char *moby) {
         *(long *)&pkt.q[4] = 0x0000FF9000000260LL;
         *(long *)&pkt.q[6] = 0x0000008000000048LL;
         *(long *)&pkt.q[0] = 0;
-        pkt.col[3] = *(int *)&fleet_backdrop_beam_color;
-        pkt.col[2] = *(int *)&fleet_backdrop_beam_color;
-        pkt.col[1] = *(int *)&fleet_backdrop_beam_color;
-        pkt.col[0] = *(int *)&fleet_backdrop_beam_color;
+        pkt.col[3] = fleet_backdrop_beam_color;
+        pkt.col[2] = fleet_backdrop_beam_color;
+        pkt.col[1] = fleet_backdrop_beam_color;
+        pkt.col[0] = fleet_backdrop_beam_color;
         {
             float *qu = &pkt.uv[0];
             float *qv = &pkt.uv[1];
@@ -1408,9 +1408,9 @@ extern void draw_fleet_backdrop_quads(char *);
 
 extern float D_L17_0015F718 MACRO_ADDR;
 typedef int u128 __attribute__((mode(TI)));
-extern short fleet_backdrop_bend_length;
-extern short fleet_backdrop_base_length;
-extern short fleet_backdrop_length_divisor;
+extern float fleet_backdrop_bend_length SDATA(D_L17_00162450);
+extern float fleet_backdrop_base_length SDATA(D_L17_00162454);
+extern float fleet_backdrop_length_divisor SDATA(D_L17_00162458);
 extern float fleet_backdrop_glow_spin_speeds[];
 extern float fleet_backdrop_glow_blend_dir[];
 extern float fleet_backdrop_glow_blend_speeds[];
@@ -1442,11 +1442,9 @@ done:
         }
         qcopy(&moby_pvars->anchor, &mby->pos);
         BuildSphericalOffset(offset_accumulator,
-                             (*(float *)&fleet_backdrop_base_length + *(float *)&fleet_backdrop_bend_length) /
-                                 *(float *)&fleet_backdrop_length_divisor,
+                             (fleet_backdrop_base_length + fleet_backdrop_bend_length) / fleet_backdrop_length_divisor,
                              mby->rot.z, 0.0f);
-        BuildSphericalOffset(pvar_angle_offset,
-                             *(float *)&fleet_backdrop_bend_length / *(float *)&fleet_backdrop_length_divisor,
+        BuildSphericalOffset(pvar_angle_offset, fleet_backdrop_bend_length / fleet_backdrop_length_divisor,
                              moby_pvars->bend_angle, 0.0f);
         FastVecAdd(vector_sum, offset_accumulator, pvar_angle_offset);
         *(u128 *)offset_accumulator = *(u128 *)vector_sum;
@@ -1498,7 +1496,7 @@ extern void matrix_mul_vec3(void *, void *, void *);
 
 extern char fleet_blarg_ship_gun_offset_alt[];
 extern char fleet_blarg_ship_gun_offset[];
-extern short fleet_blarg_ship_shot_speed;
+extern float fleet_blarg_ship_shot_speed SDATA(D_L17_00162468);
 
 /* UpdateMoby 1843: a flying fleet craft that circles, follows a path, strafes the player and fires. */
 void blarg_ship_1843_update(unsigned char *moby) {
@@ -1673,7 +1671,7 @@ void blarg_ship_1843_update(unsigned char *moby) {
                     FastVecAdd(sA0, sA0, (float *)&((Moby *)moby)->pos);
                     FastVecSub(firing_target_delta, sB0, sA0);
                     vec_scale_to_length(firing_direction, firing_target_delta,
-                                        *(float *)&fleet_blarg_ship_shot_speed * g_frame_time);
+                                        fleet_blarg_ship_shot_speed * g_frame_time);
                     FastVecAdd(firing_direction, firing_direction, hero_position_delta);
                     firing_moby = spawn_class_3f9_moby((int)moby, firing_direction, sA0, 128.0f, -1.0f, 10.0f);
                     if (firing_moby) {

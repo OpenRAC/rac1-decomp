@@ -399,7 +399,7 @@ extern void DeleteMoby(void *);
 
 extern int snd_FlushSoundCommands(void);
 extern int skip_frame MACRO_ADDR;
-extern short cinematic_mode;
+extern int cinematic_mode SDATA(D_L00_0015F6A8);
 extern unsigned char g_hero_field_20a5[] NOT_SDA;
 
 extern char vendor_close_hero_local_offset;
@@ -436,7 +436,7 @@ void close_vendor_menu(int exit_cutscene_completed) {
     vendor_state_base->hud_bar_50 = -1;
     update_resource_counter();
     skip_frame = 1;
-    *(int *)&cinematic_mode = 0;
+    cinematic_mode = 0;
     HeroEnterMoveState(HERO_STATE_IDLE, 1);
     g_hero_field_20a5[0] = 0;
     HeroClearObjectFlags();
@@ -526,7 +526,7 @@ typedef struct {
 extern s32 vendor_item_cutscene_index[];
 extern Vendor_29a6b0 vendor_menu_r3 __asm__("D_L00_001CA7C0");
 extern short level_white_fade_level;
-extern short vendor_exit_cutscene_local_offset;
+extern s32 vendor_exit_cutscene_local_offset SDATA(D_L00_001611B0);
 struct S16_29ad08 {
     char pad[0x5A];
     s16 mode;
@@ -566,7 +566,7 @@ void start_vendor_exit_cutscene(void) {
     g->f0 = 3;
     g->f4 = 0;
     vec = (f32 *)((char *)g + 0xC0);
-    matrix_mul_vec3(vec, &(*(s32 *)&vendor_exit_cutscene_local_offset), g->moby + 0xC0);
+    matrix_mul_vec3(vec, &(vendor_exit_cutscene_local_offset), g->moby + 0xC0);
     moby = (Moby *)g->moby;
     FastVecAdd(vec, vec, (char *)moby + 0x10);
     *(f32 *)((char *)g + 0xC8) += 2.0f;
@@ -629,7 +629,7 @@ void restore_hero_after_vendor_exit_cutscene(void) {
     VendorExitState *vendor_state_base;
     MusicModeBlock *mode_block;
     skip_frame = 1;
-    *(int *)&cinematic_mode = 0;
+    cinematic_mode = 0;
     HeroEnterMoveState(HERO_STATE_IDLE, 1);
     g_hero_field_20a5[0] = 0;
     HeroClearObjectFlags();

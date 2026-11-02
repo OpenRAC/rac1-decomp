@@ -115,7 +115,7 @@ void update_moby_scene_visibility_and_height_reflection(M *moby) {
             break;
     }
 }
-extern short rocket_tank_shot_speed;
+extern float rocket_tank_shot_speed SDATA(D_L18_0016250C);
 extern short rocket_tank_shot_speed_b __asm__("D_L18_0016250C");
 extern void update_rocket_tank_damage_and_aim(void *);
 extern char *func_0020D348(int);
@@ -233,7 +233,7 @@ void rocket_tank_update(M1454 *m) {
                 float s;
                 if (MobyGetFrameValue(m) < 7.0f) {
                     Moby_GetJointWorldPos(m, 1, w);
-                    s = *(float *)&rocket_tank_shot_speed;
+                    s = rocket_tank_shot_speed;
                 } else {
                     Moby_GetJointWorldPos(m, 2, w);
                     s = *(float *)&rocket_tank_shot_speed_b;
@@ -363,8 +363,8 @@ void update_rocket_tank_damage_and_aim(void *mv) {
     StepColorFade(m, &d->color_fade);
 }
 extern int *veldin2_paths[];
-extern short rocket_tank_path_speed;
-extern short rocket_tank_child_anim_ref_speed;
+extern float rocket_tank_path_speed SDATA(D_L18_00162508);
+extern float rocket_tank_child_anim_ref_speed SDATA(D_L18_00162510);
 extern float g_frame_time_g __asm__("D_0015EE6C") MACRO_ADDR;
 extern float FastDiffRots(float, float);
 extern void move_4318(int, int, float, float, float, int);
@@ -381,7 +381,7 @@ void update_rocket_tank_path_movement(char *m) {
     ang = fast_atan2(t[0] - ((Moby *)m)->pos.x, t[1] - ((Moby *)m)->pos.y);
     SteerAngleWithVelocity((float *)(m + 0x48), &d->turn_vel, ang, g_frame_time_sq * 3.1415927f,
                            g_frame_time_sq * 3.1415927f, g_frame_time * 6.2831855f);
-    f = *(float *)&rocket_tank_path_speed * g_frame_time;
+    f = rocket_tank_path_speed * g_frame_time;
     if (FastDiffRots(ang, ((Moby *)m)->rot.z) > 0.2617994f) {
         f = g_frame_time_g;
     }
@@ -393,7 +393,7 @@ void update_rocket_tank_path_movement(char *m) {
         int k = random_integer_below(*veldin2_paths[d->path_id] - 1) + 1;
         d->path_index = (d->path_index + k) % *veldin2_paths[d->path_id];
     }
-    sc = d->speed / (*(float *)&rocket_tank_child_anim_ref_speed * g_frame_time);
+    sc = d->speed / (rocket_tank_child_anim_ref_speed * g_frame_time);
     if (sc > 2.0f)
         sc = 2.0f;
     else if (sc < z)

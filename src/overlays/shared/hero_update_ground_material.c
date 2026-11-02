@@ -1379,7 +1379,7 @@ d1:
     }
 }
 extern char novalis_coll_resolved_pos[];
-extern short frame_scale;
+extern float frame_scale SDATA(D_0015EE60);
 extern void clear_u64_value(float *);
 extern void Hero_ConstrainToPath(void);
 extern void HeroOffsetAlongViewZ(float *dst, float *src, float dz);
@@ -1424,7 +1424,7 @@ int resolve_hero_position_with_collision_queries(int a0) {
     for (i = 0; i < 8; i++) {
         g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         if (g->gravity_mode != 0) {
-            if (!coll_sphere(*(float *)&frame_scale * 0.4f, &g->motion.pos, r, *(void **)&g->moby))
+            if (!coll_sphere(frame_scale * 0.4f, &g->motion.pos, r, *(void **)&g->moby))
                 break;
         } else if (g->state.control_mode == 0x11) {
             if (!coll_sphere(0.6f, &g->motion.pos, r, *(void **)&g->moby))

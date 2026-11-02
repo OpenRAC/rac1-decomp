@@ -19,7 +19,7 @@ extern char weapon_ammo_counts[];
 typedef struct {
     s32 a, b, c, d;
 } E001f36f8;
-extern short debug_text_queue_count;
+extern s32 debug_text_queue_count SDATA(D_L00_0015F0C4);
 extern short debug_text_queue_cursor;
 extern E001f36f8 debug_text_queue[];
 extern u8 debug_text_queue_buffer[];
@@ -30,10 +30,10 @@ void flush_debug_text_queue(void) {
     s32 i;
     E001f36f8 *p;
 
-    for (i = 0; i < (*(s32 *)&debug_text_queue_count); i++) {
+    for (i = 0; i < (debug_text_queue_count); i++) {
         draw_debug_text(debug_text_queue[i].a, debug_text_queue[i].b, debug_text_queue[i].c, debug_text_queue[i].d);
     }
-    (*(s32 *)&debug_text_queue_count) = 0;
+    (debug_text_queue_count) = 0;
     (*(void **)&debug_text_queue_cursor) = debug_text_queue_buffer;
 }
 extern void VU1_addGSregister(int, long);

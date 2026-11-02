@@ -24,7 +24,7 @@ extern int pad_held NOT_SDA;
 
 extern int vendor_stock[] MACRO_ADDR;
 extern short follow_cam_setting_values;
-extern short follow_cam_setting_value;
+extern float follow_cam_setting_value SDATA(D_L00_0015F044);
 extern void apply_follow_camera_translation();
 extern void follow_camera_apply_overrides(void *);
 extern void Profile_Mark();
@@ -34,7 +34,7 @@ extern void follow_camera_approach(void *);
 /* Update for the camera moby. */
 void follow_camera_update(char *m) {
     char *p = *(char **)&((Camera *)m)->state_buf + 0x1D0;
-    *(float *)&follow_cam_setting_value = ((float *)&follow_cam_setting_values)[vendor_stock[5]];
+    follow_cam_setting_value = ((float *)&follow_cam_setting_values)[vendor_stock[5]];
     apply_follow_camera_translation(m);
     follow_camera_apply_overrides(m);
     Profile_Mark(m);
@@ -135,11 +135,11 @@ extern Hero g_hero_r __asm__("D_0013F450");
 extern PadState g_controller_state;
 extern CameraSystem player_camera_r __asm__("D_L00_00166D80");
 extern int invert52 MACRO_ADDR;
-extern short hero_aligned_cam_gain_at_rest;
-extern short hero_aligned_cam_gain_at_full;
-extern short hero_aligned_cam_input_stiffness;
-extern short hero_aligned_cam_input_damping;
-extern short hero_aligned_cam_input_max_step;
+extern float hero_aligned_cam_gain_at_rest SDATA(D_L00_00161E90);
+extern float hero_aligned_cam_gain_at_full SDATA(D_L00_00161E94);
+extern float hero_aligned_cam_input_stiffness SDATA(D_L00_00161E98);
+extern float hero_aligned_cam_input_damping SDATA(D_L00_00161E9C);
+extern float hero_aligned_cam_input_max_step SDATA(D_L00_00161EA0);
 void func_L00_002EB170_EB3E8(void *) __asm__("func_L00_002EB170");
 void vec_scale_to_length(void *, void *, float);
 void FastVecCross(void *, void *, void *);
@@ -172,11 +172,9 @@ void update_hero_aligned_camera_from_input(Camera *o) {
     if (t == 0.0f)
         t = -IntToFloat((g_controller_state.held >> 13) & 1);
     r = FastAbsF(st->a);
-    k = (*(float *)&hero_aligned_cam_gain_at_rest) +
-        ((*(float *)&hero_aligned_cam_gain_at_full) - (*(float *)&hero_aligned_cam_gain_at_rest)) * r;
-    st->a = r = func_001EC120_EB3E8(st->a, t, (*(float *)&hero_aligned_cam_input_stiffness),
-                                    (*(float *)&hero_aligned_cam_input_damping),
-                                    (*(float *)&hero_aligned_cam_input_max_step), &st->va);
+    k = (hero_aligned_cam_gain_at_rest) + ((hero_aligned_cam_gain_at_full) - (hero_aligned_cam_gain_at_rest)) * r;
+    st->a = r = func_001EC120_EB3E8(st->a, t, (hero_aligned_cam_input_stiffness), (hero_aligned_cam_input_damping),
+                                    (hero_aligned_cam_input_max_step), &st->va);
     if (r != 0.0f)
         build_look_at_matrix(o->basis, o->basis, &up, k * r);
     if (g_hero_r.motion.platform_carry.f[3] != 0.0f && g_hero_r.unk308 == 0)
@@ -193,11 +191,9 @@ void update_hero_aligned_camera_from_input(Camera *o) {
     if (invert52 == 0)
         t = -t;
     r = FastAbsF(st->b);
-    k = (*(float *)&hero_aligned_cam_gain_at_rest) +
-        ((*(float *)&hero_aligned_cam_gain_at_full) - (*(float *)&hero_aligned_cam_gain_at_rest)) * r;
-    st->b = func_001EC120_EB3E8(st->b, t, (*(float *)&hero_aligned_cam_input_stiffness),
-                                (*(float *)&hero_aligned_cam_input_damping),
-                                (*(float *)&hero_aligned_cam_input_max_step), &st->vb);
+    k = (hero_aligned_cam_gain_at_rest) + ((hero_aligned_cam_gain_at_full) - (hero_aligned_cam_gain_at_rest)) * r;
+    st->b = func_001EC120_EB3E8(st->b, t, (hero_aligned_cam_input_stiffness), (hero_aligned_cam_input_damping),
+                                (hero_aligned_cam_input_max_step), &st->vb);
     if (st->b != 0.0f) {
         float a, n, z;
         FastVecCross(&side, o->basis, &up);

@@ -147,7 +147,7 @@ extern char (*fleet_mobys_t)[256] __asm__("D_L17_00160058") MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern unsigned char hero_globals_base[];
 extern char fleet_coll_hit_point[];
-extern short fleet_beam_peer_inset;
+extern float fleet_beam_peer_inset SDATA(D_L17_00161518);
 
 typedef struct FleetBeamVars {
     u8 pad_00[0x10];
@@ -277,8 +277,8 @@ void update_fleet_beam(char *m) {
     FastVecAdd(b, &beam_moby->pos, beam_vars->p30);
     *(v128 *)c = *(v128 *)b;
     if (beam_vars->peer != 0) {
-        vec_scale_to_length(beam_vars->p20, beam_vector_scratch, -(*(float *)&fleet_beam_peer_inset - 0.2f));
-        vec_scale_to_length(beam_vars->peer->p10, beam_vector_scratch, -*(float *)&fleet_beam_peer_inset);
+        vec_scale_to_length(beam_vars->p20, beam_vector_scratch, -(fleet_beam_peer_inset - 0.2f));
+        vec_scale_to_length(beam_vars->peer->p10, beam_vector_scratch, -fleet_beam_peer_inset);
         FastVecAdd(b, beam_vars->p20, c);
         e = beam_vars->peer;
         *(v128 *)beam_vars->p20 = *(v128 *)b;
@@ -721,14 +721,14 @@ extern float multiply_global_factor(float);
 extern unsigned char *spawn_moving_hero_relative_alpha_fade_particle(float *pos, char *vel, int color,
                                                                      unsigned char life, unsigned char b, int mode,
                                                                      float scale);
-extern short fleet_ring_spin_rate_deg;
-extern short fleet_ring_angle_offset_deg;
-extern short fleet_ring_arc_deg;
-extern short fleet_ring_radius;
-extern short fleet_ring_spark_count;
-extern short fleet_ring_spark_scale;
-extern short fleet_ring_spark_life;
-extern short fleet_ring_spark_color;
+extern float fleet_ring_spin_rate_deg SDATA(D_L17_00161BF8);
+extern float fleet_ring_angle_offset_deg SDATA(D_L17_00161BFC);
+extern float fleet_ring_arc_deg SDATA(D_L17_00161C00);
+extern float fleet_ring_radius SDATA(D_L17_00161C04);
+extern int fleet_ring_spark_count SDATA(D_L17_00161C08);
+extern float fleet_ring_spark_scale SDATA(D_L17_00161C0C);
+extern float fleet_ring_spark_life SDATA(D_L17_00161C10);
+extern int fleet_ring_spark_color SDATA(D_L17_00161C14);
 extern void draw_fleet_scrolling_radial_quads(char *);
 
 struct Blk {
@@ -774,7 +774,7 @@ void update_fleet_rotating_radial_effect(Moby *m) {
             case 0:
                 m->update_dist = 0xFF;
                 m->state = 1;
-                d[1] = d[0] * *(float *)&fleet_ring_spin_rate_deg * 0.017453292f * g_frame_time;
+                d[1] = d[0] * fleet_ring_spin_rate_deg * 0.017453292f * g_frame_time;
                 break;
             case 1:
                 m->rot.x = FastAddRots(m->rot.x, d[1]);
@@ -805,11 +805,11 @@ void update_fleet_rotating_radial_effect(Moby *m) {
             do {
                 j = 0;
                 do {
-                    f21 = FastNormalizeAngle(*(float *)&fleet_ring_arc_deg * 0.017453292f * IntToFloat(j) * 0.5f) -
-                          *(float *)&fleet_ring_arc_deg * 0.017453292f;
-                    g = *(float *)&fleet_ring_angle_offset_deg * 0.017453292f;
+                    f21 = FastNormalizeAngle(fleet_ring_arc_deg * 0.017453292f * IntToFloat(j) * 0.5f) -
+                          fleet_ring_arc_deg * 0.017453292f;
+                    g = fleet_ring_angle_offset_deg * 0.017453292f;
                     BuildSphericalOffset(
-                        spC0, *(float *)&fleet_ring_radius, 1.5707964f,
+                        spC0, fleet_ring_radius, 1.5707964f,
                         FastAddRots(FastAddRots(g, FastNormalizeAngle(IntToFloat(i) * 2.0943952f)), f21));
                     transform_vector(spC0, spC0, mat2);
                     add_vectors(spD0, spC0, ((char *)&m->pos));
@@ -817,18 +817,18 @@ void update_fleet_rotating_radial_effect(Moby *m) {
                         coll_line(((char *)&m->pos), spC0, 9, m, &blk);
                     }
                     spD0[0] = *(u128_2D8CC8 *)&m->pos;
-                    *(float *)((char *)spD0 + 0xC) = *(float *)&fleet_ring_radius;
+                    *(float *)((char *)spD0 + 0xC) = fleet_ring_radius;
                     if (FastBSphereCheck((char *)spD0, 20.0f) != -1 && (j == 0 || j == 4)) {
                         spF0[0] = 0;
                         *(float *)((char *)spF0 + 8) = 12.0f;
                         matrix_mul_vec3(spF0, spF0, ((char *)&m->rot_row0));
                         {
-                            for (k = 0; k < *(int *)&fleet_ring_spark_count; k++) {
+                            for (k = 0; k < fleet_ring_spark_count; k++) {
                                 f20 = -1.0f;
                                 if (func_001160D8() & 1)
                                     f20 = 1.0f;
-                                c = truncate_float_to_s32_r(multiply_global_factor(random_float_between(
-                                    *(float *)&fleet_ring_spark_life * 0.5f, *(float *)&fleet_ring_spark_life)));
+                                c = truncate_float_to_s32_r(multiply_global_factor(
+                                    random_float_between(fleet_ring_spark_life * 0.5f, fleet_ring_spark_life)));
                                 if (c <= 0)
                                     c = 1;
                                 FastVecSub(sp100, spC0, ((char *)&m->pos));
@@ -846,8 +846,8 @@ void update_fleet_rotating_radial_effect(Moby *m) {
                                 f20 *= 10.0f;
                                 vec_scale_to_length(spF0, spF0, random_float_between(f20, len / IntToFloat(c * 4)));
                                 spawn_moving_hero_relative_alpha_fade_particle(
-                                    (float *)spE0, (char *)spF0, *(int *)&fleet_ring_spark_color, c & 0xFF,
-                                    random_integer_below(0xFF) & 0xFF, 0, *(float *)&fleet_ring_spark_scale);
+                                    (float *)spE0, (char *)spF0, fleet_ring_spark_color, c & 0xFF,
+                                    random_integer_below(0xFF) & 0xFF, 0, fleet_ring_spark_scale);
                             }
                         }
                     }
@@ -928,19 +928,18 @@ void draw_fleet_scrolling_radial_quads(char *moby) {
         for (i = 0; i < 3; i++) {
             for (j = 0; j < 4; j++) {
                 RingStep step = fleet_ring_u_scroll_scale;
-                float spread[4] = {0.0f, -*(float *)&fleet_ring_arc_deg * 0.017453292f,
-                                   *(float *)&fleet_ring_arc_deg * 0.017453292f, 0.0f};
+                float spread[4] = {0.0f, -fleet_ring_arc_deg * 0.017453292f, fleet_ring_arc_deg * 0.017453292f, 0.0f};
                 float *vj;
                 float radius;
 
                 quad_primitive.uv[j].x = fleet_ring_quad_uvs[j].x + scroll * step.v[pass];
                 radius = 0.0f;
                 if (j != 0) {
-                    radius = *(float *)&fleet_ring_radius;
+                    radius = fleet_ring_radius;
                 }
                 vj = quad_primitive.v[j];
                 BuildSphericalOffset(vj, radius, 1.5707964f,
-                                     FastNormalizeAngle(*(float *)&fleet_ring_angle_offset_deg * 0.017453292f +
+                                     FastNormalizeAngle(fleet_ring_angle_offset_deg * 0.017453292f +
                                                         IntToFloat(i) * 2.0943952f + spread[j]));
                 vj[3] = 1.0f;
             }
@@ -960,8 +959,8 @@ extern void update_moby_vertical_oscillation(float, float, char *, float *, floa
 extern int func_L00_001F2BE8(float, void *, int, void *, void *);
 extern float resolve_camera_surface_height(float *, void *);
 extern char *PartType34Spawn(char *vec, float *pos, float sc, float vy);
-extern short fleet_bobber_height;
-extern short fleet_bobber_rate_deg;
+extern float fleet_bobber_height SDATA(D_L17_00161DAC);
+extern float fleet_bobber_rate_deg SDATA(D_L17_00161DB0);
 extern char *fleet_coll_hit_moby;
 
 /* Updates moby 835: a timed effect that spawns a spray of particles and deletes itself. */
@@ -993,9 +992,8 @@ void update_fleet_bobbing_moby(char *m) {
             ((Moby *)m)->state = 1;
             break;
         case 1:
-            update_moby_vertical_oscillation(*(float *)&fleet_bobber_height,
-                                             *(float *)&fleet_bobber_rate_deg * 0.017453292f * g_frame_time, m,
-                                             &data->osc_phase, &data->osc_vel);
+            update_moby_vertical_oscillation(fleet_bobber_height, fleet_bobber_rate_deg * 0.017453292f * g_frame_time,
+                                             m, &data->osc_phase, &data->osc_vel);
             InitDirectionalHitQuery(w, (int)m, 0x10001, 1.0f, v);
             qcopy(pos, m + 0x10);
             pos[2] = pos[2] + 0.75f;
@@ -1685,7 +1683,7 @@ int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *
 }
 extern unsigned char pad_globals_base[];
 
-extern short fleet_jet_lock_time;
+extern int fleet_jet_lock_time SDATA(D_L17_001621EC);
 extern int select_fighter_jet_target_and_draw_contacts(int, char *, char *, char *, float, float, float, char *,
                                                        char *);
 #define W(p, o) (*(int *)((char *)(p) + (o)))
@@ -1736,7 +1734,7 @@ skip:
     }
     if (r != 0 && (P(p, 0x88) == 0 || (H(P(p, 0x88), 0xA6) != 0x3EB && H(r, 0xA6) == 0x3EB)) && FLAG != 0) {
         P(p, 0x88) = r;
-        h = *(int *)&fleet_jet_lock_time;
+        h = fleet_jet_lock_time;
         W(p, 0x128) = H(r, 0xA6);
         W(p, 0x8C) = h;
     }
@@ -1768,8 +1766,8 @@ extern void *msg_string_id(int) __asm__("func_001FE540");
 extern int FontPrintCenterSmall_c(int, int, long, void *, int) __asm__("func_001F6F40");
 extern char fleet_hud_ammo_pip_shape[];
 extern int fleet_hud_health_clut_backup[];
-extern short fleet_jet_lock_anim_start;
-extern short fleet_jet_lock_anim_frames;
+extern int fleet_jet_lock_anim_start SDATA(D_L17_001621F0);
+extern int fleet_jet_lock_anim_frames SDATA(D_L17_001621F4);
 extern short fleet_hud_health_clut;
 
 /* Draws the fleet HUD: target marker, ammo icons, gauge sprites and warnings, and refreshes the gauge colour table. */
@@ -1813,9 +1811,9 @@ void DrawFleetHud(char *moby) {
     update_fighter_jet_target_lock((int)moby, ((char *)d));
     if (*(int *)&d->lock_target != 0) {
         project_world_point_to_screen_pixels(d->lock_target + 0x10, &sp10, &sp14, 0);
-        if (d->lock_frames > *(int *)&fleet_jet_lock_anim_start) {
-            t = IntToFloat(d->lock_frames - *(int *)&fleet_jet_lock_anim_start);
-            t = t / IntToFloat(*(int *)&fleet_jet_lock_anim_frames);
+        if (d->lock_frames > fleet_jet_lock_anim_start) {
+            t = IntToFloat(d->lock_frames - fleet_jet_lock_anim_start);
+            t = t / IntToFloat(fleet_jet_lock_anim_frames);
             m = 2.0f * (1.0f - t);
             k = t * 5.0f + 1.0f;
             if (m > 1.0f)
@@ -1892,9 +1890,9 @@ void DrawFleetHud(char *moby) {
 }
 extern void Moby_GetJointWorldPos(void *, int, void *);
 
-extern short fleet_jet_gun_aim_distance;
-extern short fleet_jet_gun_fire_delay;
-extern short fleet_frame_scale;
+extern float fleet_jet_gun_aim_distance SDATA(D_L17_001620EC);
+extern int fleet_jet_gun_fire_delay SDATA(D_L17_001620F0);
+extern float fleet_frame_scale SDATA(D_L17_00162120);
 
 /* Builds a rotated offset vector from the moby, flips a facing flag on a pad press, and updates the aim. */
 void update_fighter_jet_aim_and_fire_projectile(char *moby, char *obj, float p2, float p3) {
@@ -1902,7 +1900,7 @@ void update_fighter_jet_aim_and_fire_projectile(char *moby, char *obj, float p2,
     char b[16];
     char c[16];
     char d[16];
-    BuildSphericalOffset(a, *(float *)&fleet_jet_gun_aim_distance * *(float *)&fleet_frame_scale, p2, p3);
+    BuildSphericalOffset(a, fleet_jet_gun_aim_distance * fleet_frame_scale, p2, p3);
     FastVecAdd(a, a, obj);
     if (fast_dec_timer(obj + 0x80) && (*(int *)(pad_globals_base + 0x2610) & 0x84)) {
         Moby_PlaySound(3, 0, (int)moby);
@@ -1910,7 +1908,7 @@ void update_fighter_jet_aim_and_fire_projectile(char *moby, char *obj, float p2,
         Moby_GetJointWorldPos(moby, 3 + (obj[0x61] & 1), b);
         FastVecAdd(b, b, c);
         spawn_class_3f1_moby(moby, a, b, 200.0f, -1.0f);
-        *(int *)(obj + 0x80) = *(int *)&fleet_jet_gun_fire_delay;
+        *(int *)(obj + 0x80) = fleet_jet_gun_fire_delay;
         obj[0x61] ^= 1;
     }
     vec_scale_to_length(a, a, 23.0f);
@@ -1918,8 +1916,8 @@ void update_fighter_jet_aim_and_fire_projectile(char *moby, char *obj, float p2,
     project_world_point_to_screen_pixels(d, obj + 0xE0, obj + 0xE4, 0);
 }
 extern int spawn_ship_rocket(void *, void *, int, void *, float, int);
-extern short fleet_jet_rocket_speed;
-extern short fleet_jet_rocket_fire_delay;
+extern float fleet_jet_rocket_speed SDATA(D_L17_001620F4);
+extern int fleet_jet_rocket_fire_delay SDATA(D_L17_001620F8);
 
 typedef struct HeroShipAmmo {
     u8 pad_0000[0x15F6];
@@ -1950,13 +1948,13 @@ void try_fire_fighter_jet_rocket(char *moby, char *ship_vars) {
             Moby_GetJointWorldPos(moby, t + 7, projectile_spawn_position);
             vec_scale_to_length(projectile_spawn_offset, ship_vars, 0.3f);
             FastVecAdd(projectile_spawn_position, projectile_spawn_position, projectile_spawn_offset);
-            projectile_scale = *(float *)&fleet_jet_rocket_speed * *(float *)&fleet_frame_scale;
+            projectile_scale = fleet_jet_rocket_speed * fleet_frame_scale;
             scaled_frame_count = scale_ticks(300);
             if (spawn_ship_rocket(moby, projectile_spawn_position, ((FighterJetVars *)ship_vars)->rocket_target,
                                   projectile_initial_rotation, projectile_scale, scaled_frame_count)) {
                 Moby_PlaySound(2, 0, (int)moby);
                 hero->ship_ammo -= 1;
-                ((FighterJetVars *)ship_vars)->fire_timer = *(int *)&fleet_jet_rocket_fire_delay;
+                ((FighterJetVars *)ship_vars)->fire_timer = fleet_jet_rocket_fire_delay;
             }
         }
     }
@@ -2366,14 +2364,14 @@ extern float fleet_jet_hit_deflect_per_damage SDATA(D_L17_00162108);
 extern short fleet_jet_bounce_yaw_blend_s __asm__("D_L17_00162098");
 extern short fleet_jet_bounce_pitch_blend_s __asm__("D_L17_0016209C");
 extern float fleet_jet_max_health SDATA(D_L17_00162104);
-extern short fleet_hud_health_clut_saved;
-extern short fleet_jet_board_radius;
-extern short fleet_jet_idle_anim_speed;
+extern int fleet_hud_health_clut_saved SDATA(D_L17_00162204);
+extern float fleet_jet_board_radius SDATA(D_L17_00162060);
+extern float fleet_jet_idle_anim_speed SDATA(D_L17_001620D4);
 extern unsigned char fleet_jet_max_ammo;
 extern unsigned char fleet_jet_start_ammo;
 extern float fleet_jet_start_health SDATA(D_L17_001620D8);
 extern float fleet_jet_launch_speed SDATA(D_L17_00162064);
-extern short fleet_jet_exit_fade_delay;
+extern int fleet_jet_exit_fade_delay SDATA(D_L17_001621F8);
 typedef struct {
     char pad[0xA];
     unsigned short h;
@@ -2570,10 +2568,10 @@ void FighterJetUpdate(FighterJet1379 *moby) {
                     int i = d->i104 + 0x28;
                     *(char **)&fleet_hud_health_clut = fleet_palette_data_base + (fleet_texture_table + i)->h * 16;
                 }
-                if (*(int *)&fleet_hud_health_clut_saved == 0) {
+                if (fleet_hud_health_clut_saved == 0) {
                     *(Blk400 *)fleet_hud_health_clut_backup = **(Blk400 **)&fleet_hud_health_clut;
                 }
-                *(int *)&fleet_hud_health_clut_saved = 1;
+                fleet_hud_health_clut_saved = 1;
                 d->tF8 = 1;
                 d->iE8 = 1;
                 if (moby->b0 != 0xFF && saved_mission_state[g_current_level_index][moby->b0] == 0xFF) {
@@ -2588,7 +2586,7 @@ void FighterJetUpdate(FighterJet1379 *moby) {
             case 1: {
                 Glob1379 *g = (Glob1379 *)(&g_hero);
                 int ok = 0;
-                if (jet_distance(moby, g->p2080) < *(float *)&fleet_jet_board_radius) {
+                if (jet_distance(moby, g->p2080) < fleet_jet_board_radius) {
                     int t = g->i2084;
                     if (t != 0x32 && t != 0x1D && g->b20A4 == 0 && try_set_help_message(7, 0x53E9) != 0) {
                         int m = *(int *)pad0_pressed & 0x10;
@@ -2604,7 +2602,7 @@ void FighterJetUpdate(FighterJet1379 *moby) {
                     ApproachValue(&d->f130, 0.0f, g_frame_time * 4.0f);
                     fighter_jet_transition_fade_value = d->f130;
                 }
-                jet_animate((unsigned char *)moby, *(float *)&fleet_jet_idle_anim_speed * fighter_jet_scale);
+                jet_animate((unsigned char *)moby, fleet_jet_idle_anim_speed * fighter_jet_scale);
                 break;
             }
             case 2: {
@@ -2685,7 +2683,7 @@ void FighterJetUpdate(FighterJet1379 *moby) {
                 }
                 PlayerShipUpdate(moby, d);
                 if (d->iE8 <= 0) {
-                    d->tF8 = *(int *)&fleet_jet_exit_fade_delay;
+                    d->tF8 = fleet_jet_exit_fade_delay;
                     moby->state = 8;
                 }
                 if (d->f130 != 0.0f) {

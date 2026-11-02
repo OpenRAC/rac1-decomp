@@ -319,7 +319,7 @@ extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 
-extern short oltanis_look_stat_count;
+extern int oltanis_look_stat_count SDATA(D_L14_0015F76C);
 extern HeroPlayerCameraView oltanis_player_camera;
 
 extern int *oltanis_coll_sphere_moby_hits[];
@@ -467,7 +467,7 @@ void HeroL14_UpdateStatePhysics(void) {
                             usage_stats.e[18].level_mask =
                                 usage_stats.e[18].level_mask | (1 << g_current_level_index_m) | 0x80000000;
                             *(int *)&oltanis_look_stat_timer = -1;
-                            (*(int *)&oltanis_look_stat_count)++;
+                            (oltanis_look_stat_count)++;
                         }
                     }
                 }

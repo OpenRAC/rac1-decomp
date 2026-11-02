@@ -389,8 +389,8 @@ int check_all_listed_frog_states_fe_fd_or_10(int index) {
 INCLUDE_ASM("asm/overlays", func_L06_002EB2F8);
 INCLUDE_ASM("asm/overlays", func_L06_002EB348);
 
-extern short toxic_gas_vent_near_d50_value;
-extern short toxic_gas_vent_near_anim_time;
+extern float toxic_gas_vent_near_d50_value SDATA(D_L06_00161DB4);
+extern float toxic_gas_vent_near_anim_time SDATA(D_L06_00161DB8);
 extern int is_point_inside_clip_volume(void *, int);
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
@@ -410,8 +410,8 @@ void toxic_gas_vent_update(char *m) {
     float s;
     if (d->clip_volume >= 0) {
         if (is_point_inside_clip_volume(&g_hero.motion.pos, d->clip_volume) != 0) {
-            float x = *(float *)&toxic_gas_vent_near_d50_value;
-            float y = *(float *)&toxic_gas_vent_near_anim_time;
+            float x = toxic_gas_vent_near_d50_value;
+            float y = toxic_gas_vent_near_anim_time;
             d->near_value = x;
             d->near_anim_time = y;
         } else {
@@ -468,19 +468,19 @@ void toxic_gas_vent_update(char *m) {
             break;
     }
 }
-extern short spark_speed_gp;
-extern short spark_dir;
-extern short spark_vel;
-extern short spark_color0;
-extern short spark_color1;
-extern short spark_life_min;
-extern short spark_life_max;
-extern short spark_fade_min;
-extern short spark_fade_max;
-extern short spark_frames;
-extern short spark_drift;
-extern short spark_drift_scale;
-extern short spark_spread;
+extern float spark_speed_gp SDATA(D_L06_00161D7C);
+extern float spark_dir SDATA(D_L06_00161D84);
+extern float spark_vel SDATA(D_L06_00161D88);
+extern int spark_color0 SDATA(D_L06_00161D8C);
+extern int spark_color1 SDATA(D_L06_00161D90);
+extern int spark_life_min SDATA(D_L06_00161D94);
+extern int spark_life_max SDATA(D_L06_00161D98);
+extern int spark_fade_min SDATA(D_L06_00161D9C);
+extern int spark_fade_max SDATA(D_L06_00161DA0);
+extern int spark_frames SDATA(D_L06_00161DA4);
+extern float spark_drift SDATA(D_L06_00161DA8);
+extern float spark_drift_scale SDATA(D_L06_00161DAC);
+extern float spark_spread SDATA(D_L06_00161DB0);
 extern float FastVecDist(void *, void *);
 extern int FastBSphereCheck(char *, float);
 extern void euler_to_matrix(void *, void *);
@@ -523,41 +523,41 @@ void emit_toxic_gas_vent_sparks(char *moby) {
     qcopy(v50, pos);
     euler_to_matrix(v10, moby + 0x40);
     clear_u64_value(v60);
-    v60[0] = *(float *)&spark_speed_gp * g_frame_time;
+    v60[0] = spark_speed_gp * g_frame_time;
     transform_vector(v60, v60, v10);
-    v60[3] = *(float *)&spark_dir;
-    FastVecScale(v70, v60, *(float *)&spark_drift_scale);
-    v70[2] = *(float *)&spark_drift * g_frame_time;
-    v90[3] = *(float *)&spark_vel;
+    v60[3] = spark_dir;
+    FastVecScale(v70, v60, spark_drift_scale);
+    v70[2] = spark_drift * g_frame_time;
+    v90[3] = spark_vel;
     i30 = truncate_float_to_s32(
-        multiply_global_factor(random_float_between((float)*(int *)&spark_life_min, (float)*(int *)&spark_life_max)));
+        multiply_global_factor(random_float_between((float)spark_life_min, (float)spark_life_max)));
     i23 = truncate_float_to_s32(
-        multiply_global_factor(random_float_between((float)*(int *)&spark_fade_min, (float)*(int *)&spark_fade_max)));
+        multiply_global_factor(random_float_between((float)spark_fade_min, (float)spark_fade_max)));
     n = truncate_float_to_s32(
-        multiply_global_factor(random_float_between((float)*(int *)&spark_life_min, (float)*(int *)&spark_life_max)));
+        multiply_global_factor(random_float_between((float)spark_life_min, (float)spark_life_max)));
     if (i30 < n)
         i30 = n;
     n = truncate_float_to_s32(
-        multiply_global_factor(random_float_between((float)*(int *)&spark_fade_min, (float)*(int *)&spark_life_max)));
+        multiply_global_factor(random_float_between((float)spark_fade_min, (float)spark_life_max)));
     if (i23 < n)
         i23 = n;
-    r = scale_ticks(*(int *)&spark_frames);
+    r = scale_ticks(spark_frames);
     i21 = truncate_float_to_s32((float)r);
     FastVecScale(v80, v60, random_float_between(0.0f, 1.0f));
     FastVecAdd(v50, pos, v80);
-    rand_vec(v90, 0.0f, *(float *)&spark_spread * g_frame_time);
+    rand_vec(v90, 0.0f, spark_spread * g_frame_time);
     FastVecAdd(v90, v90, v70);
-    PartType02Spawn(v50, v60, v90, *(int *)&spark_color0, *(int *)&spark_color1, i30, i23, i21, 0x30);
+    PartType02Spawn(v50, v60, v90, spark_color0, spark_color1, i30, i23, i21, 0x30);
 
     i30 = truncate_float_to_s32(
-        multiply_global_factor(random_float_between((float)*(int *)&spark_life_min, (float)*(int *)&spark_life_max)));
+        multiply_global_factor(random_float_between((float)spark_life_min, (float)spark_life_max)));
     i23 = truncate_float_to_s32(
-        multiply_global_factor(random_float_between((float)*(int *)&spark_fade_min, (float)*(int *)&spark_fade_max)));
+        multiply_global_factor(random_float_between((float)spark_fade_min, (float)spark_fade_max)));
     FastVecScale(v80, v60, random_float_between(0.0f, 1.0f));
     FastVecAdd(v50, pos, v80);
-    rand_vec(v90, 0.0f, *(float *)&spark_spread * g_frame_time);
+    rand_vec(v90, 0.0f, spark_spread * g_frame_time);
     FastVecAdd(v90, v90, v70);
-    PartType02Spawn(v50, v60, v90, *(int *)&spark_color0, *(int *)&spark_color1, i30, i23, i21, 0x30);
+    PartType02Spawn(v50, v60, v90, spark_color0, spark_color1, i30, i23, i21, 0x30);
 }
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float FastSubRots(float, float);
@@ -566,7 +566,7 @@ extern float FastCos(float);
 extern float FastAddRots(float, float);
 extern int coll_line(void *, void *, int, void *, void *);
 extern float g_frame_time MACRO_ADDR;
-extern short toxic_gas_vent_reach;
+extern float toxic_gas_vent_reach SDATA(D_L06_00161D80);
 
 typedef struct {
     int pad0;
@@ -597,10 +597,10 @@ void check_oscillating_toxic_gas_vent_collisions(char *m) {
     int n;
     float f25, f27, cur, prev, ang, ra, rb;
     d = (struct GasVentVars *)((Moby *)m)->pvars;
-    n = truncate_float_to_s32_r(*(float *)&toxic_gas_vent_reach / (*(float *)&spark_speed_gp * g_frame_time) * 0.25f);
+    n = truncate_float_to_s32_r(toxic_gas_vent_reach / (spark_speed_gp * g_frame_time) * 0.25f);
     f25 = d->phase_speed * (float)n;
-    f27 = *(float *)&toxic_gas_vent_reach * 0.25f;
-    cur = *(float *)&toxic_gas_vent_reach;
+    f27 = toxic_gas_vent_reach * 0.25f;
+    cur = toxic_gas_vent_reach;
     ang = FastSubRots(d->phase, f25 * 4.0f);
     s.m = m;
     s.f1C = 1.0f;
@@ -669,9 +669,9 @@ void check_timed_toxic_gas_vent_collisions(char *m) {
     q.b18 = 3;
     q.b19 = 1;
     q.s1A = *(unsigned short *)&((Moby *)m)->oclass;
-    sp = (d->off_time * 60.0f - (float)d->timer) * (*(float *)&spark_speed_gp * g_frame_time);
-    if (*(float *)&toxic_gas_vent_reach < sp)
-        sp = *(float *)&toxic_gas_vent_reach;
+    sp = (d->off_time * 60.0f - (float)d->timer) * (spark_speed_gp * g_frame_time);
+    if (toxic_gas_vent_reach < sp)
+        sp = toxic_gas_vent_reach;
     vec_scale_to_length(v, m + 0xD0, 0.125f);
     FastVecAdd(v, v, m + 0x10);
     v[2] = v[2] + 0.125f;
@@ -1148,17 +1148,17 @@ extern void DeleteMoby(void *);
 
 extern int beam_barrier_strand_life MACRO_ADDR;
 extern int beam_barrier_strand_fade_ticks MACRO_ADDR;
-extern short beam_barrier_strand_length;
+extern float beam_barrier_strand_length SDATA(D_L06_00161E98);
 extern short beam_barrier_draw_scale;
-extern short beam_barrier_hit_line_drop;
-extern short beam_barrier_spark_color_a;
-extern short beam_barrier_spark_color_b;
-extern short beam_barrier_spark_size_min;
-extern short beam_barrier_spark_size_max;
-extern short beam_barrier_spark_ticks_min;
-extern short beam_barrier_spark_ticks_max;
-extern short beam_barrier_spark_speed_min;
-extern short beam_barrier_spark_speed_max;
+extern float beam_barrier_hit_line_drop SDATA(D_L06_00161EA8);
+extern int beam_barrier_spark_color_a SDATA(D_L06_00161EAC);
+extern int beam_barrier_spark_color_b SDATA(D_L06_00161EB0);
+extern float beam_barrier_spark_size_min SDATA(D_L06_00161EB4);
+extern float beam_barrier_spark_size_max SDATA(D_L06_00161EB8);
+extern int beam_barrier_spark_ticks_min SDATA(D_L06_00161EBC);
+extern int beam_barrier_spark_ticks_max SDATA(D_L06_00161EC0);
+extern float beam_barrier_spark_speed_min SDATA(D_L06_00161EC4);
+extern float beam_barrier_spark_speed_max SDATA(D_L06_00161EC8);
 extern char blarg_camera_pos[];
 extern char *blarg_coll_hit_moby;
 extern int gameplay_event_frame_count MACRO_ADDR;
@@ -1235,7 +1235,7 @@ void update_beam_barrier(char *m) {
                 V.matrix[3][1] = FastSin(q2) * 3.0f;
                 V.matrix[3][2] = 0.0f;
                 qcopy(V.matrix[0], pos);
-                V.matrix[0][2] = V.matrix[0][2] - *(float *)&beam_barrier_hit_line_drop;
+                V.matrix[0][2] = V.matrix[0][2] - beam_barrier_hit_line_drop;
                 qcopy(V.matrix[1], V.matrix[0]);
                 FastVecAdd(V.matrix[0], V.matrix[0], V.matrix[2]);
                 FastVecAdd(V.matrix[1], V.matrix[1], V.matrix[2]);
@@ -1261,7 +1261,7 @@ void update_beam_barrier(char *m) {
                 V.matrix[3][1] = FastSin(qd) * 3.0f;
                 V.matrix[3][2] = 0.0f;
                 qcopy(V.matrix[0], pos);
-                V.matrix[0][2] = V.matrix[0][2] - *(float *)&beam_barrier_hit_line_drop;
+                V.matrix[0][2] = V.matrix[0][2] - beam_barrier_hit_line_drop;
                 qcopy(V.matrix[1], V.matrix[0]);
                 FastVecAdd(V.matrix[0], V.matrix[0], V.matrix[2]);
                 FastVecAdd(V.matrix[1], V.matrix[1], V.matrix[2]);
@@ -1377,19 +1377,16 @@ void update_beam_barrier(char *m) {
                 FastVecAdd(V.sh.c.delta, V.at, pos);
                 V.sh.c.delta[3] = 1.0f;
                 do {
-                    t = randf_sym(0.0f, *(float *)&beam_barrier_strand_length * 0.5f);
+                    t = randf_sym(0.0f, beam_barrier_strand_length * 0.5f);
                     vec_scale_to_length(V.offset, column, t);
                     FastVecAdd(V.offset, V.offset, V.sh.c.delta);
                     x = random_float_between(0.0f, 1.0f);
-                    c = FastTweenColor(*(int *)&beam_barrier_spark_color_a, *(int *)&beam_barrier_spark_color_b, x);
-                    y1 = random_float_between(*(float *)&beam_barrier_spark_size_min,
-                                              *(float *)&beam_barrier_spark_size_max);
-                    y2 = random_float_between((float)*(int *)&beam_barrier_spark_ticks_min,
-                                              (float)*(int *)&beam_barrier_spark_ticks_max);
+                    c = FastTweenColor(beam_barrier_spark_color_a, beam_barrier_spark_color_b, x);
+                    y1 = random_float_between(beam_barrier_spark_size_min, beam_barrier_spark_size_max);
+                    y2 = random_float_between((float)beam_barrier_spark_ticks_min, (float)beam_barrier_spark_ticks_max);
                     w = truncate_float_to_s32(y2);
                     kf = g_frame_time;
-                    rand_vec(V.effect, *(float *)&beam_barrier_spark_speed_min * kf,
-                             *(float *)&beam_barrier_spark_speed_max * kf);
+                    rand_vec(V.effect, beam_barrier_spark_speed_min * kf, beam_barrier_spark_speed_max * kf);
                     life = (unsigned char)scale_ticks(w);
                     bb = (unsigned char)random_integer_below(0xFF);
                     ((void (*)(float *, char *, int, float, unsigned char, unsigned char,
@@ -1418,14 +1415,14 @@ extern void VU1_addGSregister(int, long);
 extern unsigned int FastTweenColor_r(unsigned int, unsigned int, float) __asm__("func_001FA8A8");
 extern void blarg_draw_strand_strip(int *, float *);
 extern short beam_barrier_draw_scale;
-extern short beam_barrier_blend_a;
-extern short beam_barrier_blend_b;
-extern short beam_barrier_blend_c;
-extern short beam_barrier_blend_d;
-extern short beam_barrier_strand_color;
-extern short beam_barrier_strand_end_color;
-extern short beam_barrier_strand_u_step;
-extern short beam_barrier_uv_phase;
+extern int beam_barrier_blend_a SDATA(D_L06_00161E60);
+extern int beam_barrier_blend_b SDATA(D_L06_00161E64);
+extern int beam_barrier_blend_c SDATA(D_L06_00161E68);
+extern int beam_barrier_blend_d SDATA(D_L06_00161E6C);
+extern int beam_barrier_strand_color SDATA(D_L06_00161E80);
+extern int beam_barrier_strand_end_color SDATA(D_L06_00161E84);
+extern float beam_barrier_strand_u_step SDATA(D_L06_00161E88);
+extern float beam_barrier_uv_phase SDATA(D_L06_00161E8C);
 extern int beam_barrier_strand_life MACRO_ADDR;
 extern int beam_barrier_strand_fade_ticks MACRO_ADDR;
 extern int beam_barrier_strand_timers[] MACRO_ADDR;
@@ -1460,9 +1457,9 @@ void draw_beam_barrier_segments(char *moby) {
     VU1_addGSregister(6, GetEffectTex(14));
     VU1_addGSregister(0x14, 0xFF9000000260L);
     VU1_addGSregister(8, 0);
-    VU1_addGSregister(0x42, (long)(*(int *)&beam_barrier_blend_a) | ((long)(*(int *)&beam_barrier_blend_b) << 2) |
-                                ((long)(*(int *)&beam_barrier_blend_c) << 4) |
-                                ((long)(*(int *)&beam_barrier_blend_d) << 6) | 0x8000000000L);
+    VU1_addGSregister(0x42, (long)(beam_barrier_blend_a) | ((long)(beam_barrier_blend_b) << 2) |
+                                ((long)(beam_barrier_blend_c) << 4) | ((long)(beam_barrier_blend_d) << 6) |
+                                0x8000000000L);
     font_queue_vu_state();
     first_matrix = segment_matrix[0];
     segment_params = params;
@@ -1481,14 +1478,13 @@ void draw_beam_barrier_segments(char *moby) {
         matrix += 16;
         translation += 16;
     }
-    color = FastTweenColor_r((*(int *)&beam_barrier_strand_color) & 0xFFFFFF, (*(int *)&beam_barrier_strand_color),
-                             data->level);
+    color = FastTweenColor_r((beam_barrier_strand_color) & 0xFFFFFF, (beam_barrier_strand_color), data->level);
     first = beam_barrier_strand_life;
     points = (int *)beam_barrier_strand_points_r;
     second = beam_barrier_strand_fade_ticks;
-    fourth = (*(int *)&beam_barrier_strand_end_color);
-    seventh = (*(float *)&beam_barrier_strand_u_step);
-    eighth = (*(float *)&beam_barrier_uv_phase);
+    fourth = (beam_barrier_strand_end_color);
+    seventh = (beam_barrier_strand_u_step);
+    eighth = (beam_barrier_uv_phase);
     sequence = beam_barrier_strand_timers;
     params[0] = first;
     params[2] = (int)sequence;
@@ -2274,7 +2270,7 @@ extern float FastSubRots(float, float);
 extern float FastDiffRots(float, float);
 extern float FastAddRots(float, float);
 
-extern short alien_snapper_steer_half_arc;
+extern float alien_snapper_steer_half_arc SDATA(D_L06_00161F68);
 /* angle from a moby to its owner, clamped to the gaps between obstacles in its list */
 float compute_alien_snapper_target_gap_angle(char *self) {
     char *owner = *(char **)(((char *)((Moby *)self)->pvars) + 0x160);
@@ -2284,8 +2280,8 @@ float compute_alien_snapper_target_gap_angle(char *self) {
         return fast_atan2(((Moby *)self)->pos.x - *(float *)(owner + 0x10),
                           ((Moby *)self)->pos.y - *(float *)(owner + 0x14));
     }
-    lo = -(*(float *)&alien_snapper_steer_half_arc * 0.017453292f);
-    hi = *(float *)&alien_snapper_steer_half_arc * 0.017453292f;
+    lo = -(alien_snapper_steer_half_arc * 0.017453292f);
+    hi = alien_snapper_steer_half_arc * 0.017453292f;
     ang =
         fast_atan2(((Moby *)self)->pos.x - *(float *)(owner + 0x10), ((Moby *)self)->pos.y - *(float *)(owner + 0x14));
     dist = FastVecDist(owner + 0x10, self + 0x10);
@@ -2405,12 +2401,12 @@ extern float g_frame_time_q __asm__("D_0015EE6C") MACRO_ADDR;
 extern int blarg_camera_slot_used[];
 extern char blarg_camera_slots[];
 extern int level_game_mode_q_q __asm__("D_L06_0015F6A8") MACRO_ADDR;
-extern short alien_queen_scale_manip_flag;
-extern short alien_queen_walk_speed;
+extern int alien_queen_scale_manip_flag SDATA(D_L06_00161F80);
+extern float alien_queen_walk_speed SDATA(D_L06_00161F84);
 extern short alien_queen_walk_accel;
-extern short alien_queen_attack_range;
-extern short alien_queen_back_off_range;
-extern short alien_queen_attack_arc;
+extern float alien_queen_attack_range SDATA(D_L06_00161F90);
+extern float alien_queen_back_off_range SDATA(D_L06_00161F94);
+extern float alien_queen_attack_arc SDATA(D_L06_00161F98);
 extern unsigned char menu_item_enabled_19_q[] __asm__("D_0013D4AF");
 extern unsigned char race_gates_base_q[] __asm__("D_0013D605");
 extern unsigned char menu_item_enabled_115_q[] __asm__("D_0013D50F");
@@ -2432,7 +2428,7 @@ void alien_queen_update(unsigned char *moby) {
 
     update_alien_queen_hit_response_and_recovery(moby);
     target = (struct Moby *)(*(char **)&data->target);
-    Manipulator_ApplyScale_q(moby, *(int *)&alien_queen_scale_manip_flag, 1.9f, &data->manip);
+    Manipulator_ApplyScale_q(moby, alien_queen_scale_manip_flag, 1.9f, &data->manip);
     if ((unsigned char)((Moby *)moby)->visible != 0 &&
         FastVecDist_q(&((struct Moby *)moby)->pos, blarg_camera_pos_q) < 45.0f) {
         set_ground_height_band_q(moby);
@@ -2579,11 +2575,11 @@ void alien_queen_update(unsigned char *moby) {
                 fast_atan2_q(target->pos.x - ((Moby *)moby)->pos.x, target->pos.y - ((Moby *)moby)->pos.y),
                 &data->unk_E0, g_frame_time_sq_q * 6.2831855f, g_frame_time_sq_q * 6.2831855f,
                 g_frame_time_q * 3.1415927f);
-            if (turn < 0.7853982f && *(float *)&alien_queen_attack_range < dist) {
-                ApproachValue_q(&data->unk_E8, *(float *)&alien_queen_walk_speed * g_frame_time_q,
+            if (turn < 0.7853982f && alien_queen_attack_range < dist) {
+                ApproachValue_q(&data->unk_E8, alien_queen_walk_speed * g_frame_time_q,
                                 *(float *)&alien_queen_walk_accel * g_frame_time_sq_q);
-            } else if (dist < *(float *)&alien_queen_back_off_range) {
-                ApproachValue_q(&data->unk_E8, -(*(float *)&alien_queen_walk_speed * g_frame_time_q),
+            } else if (dist < alien_queen_back_off_range) {
+                ApproachValue_q(&data->unk_E8, -(alien_queen_walk_speed * g_frame_time_q),
                                 *(float *)&alien_queen_walk_accel * g_frame_time_sq_q);
             } else {
                 ApproachValue_q(&data->unk_E8, 0.0f, g_frame_time_sq_q * 8.0f);
@@ -2603,7 +2599,7 @@ void alien_queen_update(unsigned char *moby) {
                 ((Moby *)moby)->state = 0xC;
                 break;
             }
-            if (dist < *(float *)&alien_queen_attack_range && turn < *(float *)&alien_queen_attack_arc * 0.017453292f) {
+            if (dist < alien_queen_attack_range && turn < alien_queen_attack_arc * 0.017453292f) {
                 ((Moby *)moby)->state = 9;
                 ((Moby *)moby)->command = 7;
                 if ((unsigned char)((Moby *)moby)->prev_seq != 4) {
@@ -2697,7 +2693,7 @@ void alien_queen_update(unsigned char *moby) {
             if (turn < 0.7853982f) {
                 FastVecSub_q(v, home, pos);
                 v[2] = 0.0f;
-                vec_scale_to_length_q(v, v, *(float *)&alien_queen_walk_speed * g_frame_time_q);
+                vec_scale_to_length_q(v, v, alien_queen_walk_speed * g_frame_time_q);
                 FastVecAdd_q(pos, pos, v);
                 resolve_point_path_segment_xy_clearance_q(data->path, pos, 1.0f, pos);
             }
@@ -2781,9 +2777,9 @@ extern Hero g_hero;
 
 extern short active_marker_id NOT_SDA;
 extern int *blarg_paths[];
-extern short alien_queen_glow_phase_speed_degrees_gp;
-extern short alien_queen_glow_color_a;
-extern short alien_queen_glow_color_b;
+extern float alien_queen_glow_phase_speed_degrees_gp SDATA(D_L06_00161F9C);
+extern int alien_queen_glow_color_a SDATA(D_L06_00161FA0);
+extern int alien_queen_glow_color_b SDATA(D_L06_00161FA4);
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
 
@@ -2947,10 +2943,9 @@ void update_alien_queen_hit_response_and_recovery(void *moby_) {
             blarg_fade_level = 1.0f - IntToFloat(++data->timer2) / 10.0f;
         }
     }
-    data->angle =
-        FastAddRots(data->angle, *(float *)&alien_queen_glow_phase_speed_degrees_gp * 0.017453292f * g_frame_time);
-    ((Moby *)moby)->glow_color = FastTweenColor(*(int *)&alien_queen_glow_color_a, *(int *)&alien_queen_glow_color_b,
-                                                (FastSin(data->angle) + 1.0f) * 0.5f);
+    data->angle = FastAddRots(data->angle, alien_queen_glow_phase_speed_degrees_gp * 0.017453292f * g_frame_time);
+    ((Moby *)moby)->glow_color =
+        FastTweenColor(alien_queen_glow_color_a, alien_queen_glow_color_b, (FastSin(data->angle) + 1.0f) * 0.5f);
     path = blarg_paths[data->path];
     FindNearestEligibleMoby(255.0f, moby, &data->unk_70, 0, 0, path + 4, *path);
     if (data->target == 0)
@@ -3104,7 +3099,7 @@ typedef struct {
     f32 speed; /* 0xE8 */
     s32 ground; /* 0xEC */
 } CirclerVars;
-extern short circler_max_speed;
+extern f32 circler_max_speed SDATA(D_L06_00161F88);
 extern short alien_queen_walk_accel;
 
 extern f32 FastAddRots(f32, f32);
@@ -3147,8 +3142,7 @@ void update_alien_queen_orbit_movement(struct Moby *m) {
     SteerAngleWithVelocity_r2(&m->rot.z, fast_atan2(focus->pos.x - m->pos.x, focus->pos.y - m->pos.y), &v->yaw_vel,
                               g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f, g_frame_time * 3.1415927f);
     if (FastVecDist(&m->pos, &goal) > 1.0f && vec_distance_xy(&m->pos, &g_hero.motion.pos) < 16.0f)
-        ApproachValue(&v->speed, (*(f32 *)&circler_max_speed) * g_frame_time,
-                      (*(f32 *)&alien_queen_walk_accel) * g_frame_time_sq);
+        ApproachValue(&v->speed, (circler_max_speed)*g_frame_time, (*(f32 *)&alien_queen_walk_accel) * g_frame_time_sq);
     else
         ApproachValue(&v->speed, 0.0f, (*(f32 *)&alien_queen_walk_accel) * g_frame_time_sq);
     if (v->speed == 0.0f) {
@@ -3170,23 +3164,23 @@ extern f32 g_frame_time_sq MACRO_ADDR;
 extern struct Moby *CreateMoby(s32);
 extern void set_moby_list_state(int, int);
 
-extern short blarg_slide_pair_open_a;
-extern short blarg_slide_pair_open_b;
-extern short blarg_slide_pair_stutter_a;
-extern short blarg_slide_pair_stutter_b;
-extern short blarg_slide_pair_stutter_rot_a;
-extern short blarg_slide_pair_stutter_rot_b;
-extern short moby_pair_phase_distance_acceleration_gp;
-extern short moby_pair_phase_distance_deceleration_gp;
-extern short blarg_slide_pair_max_speed;
-extern short moby_pair_phase_rotation_y_acceleration_degrees_gp;
-extern short moby_pair_phase_rotation_y_deceleration_degrees_gp;
-extern short blarg_slide_pair_rot_max_speed;
-extern short blarg_slide_pair_hold_ticks_min;
-extern short blarg_slide_pair_hold_ticks_max;
-extern short blarg_slide_pair_move_ticks_min;
-extern short blarg_slide_pair_move_ticks_max;
-extern short blarg_slide_pair_reset;
+extern float blarg_slide_pair_open_a SDATA(D_L06_00161FAC);
+extern float blarg_slide_pair_open_b SDATA(D_L06_00161FB0);
+extern float blarg_slide_pair_stutter_a SDATA(D_L06_00161FB4);
+extern float blarg_slide_pair_stutter_b SDATA(D_L06_00161FB8);
+extern float blarg_slide_pair_stutter_rot_a SDATA(D_L06_00161FBC);
+extern float blarg_slide_pair_stutter_rot_b SDATA(D_L06_00161FC0);
+extern float moby_pair_phase_distance_acceleration_gp SDATA(D_L06_00161FC4);
+extern float moby_pair_phase_distance_deceleration_gp SDATA(D_L06_00161FC8);
+extern float blarg_slide_pair_max_speed SDATA(D_L06_00161FCC);
+extern float moby_pair_phase_rotation_y_acceleration_degrees_gp SDATA(D_L06_00161FD0);
+extern float moby_pair_phase_rotation_y_deceleration_degrees_gp SDATA(D_L06_00161FD4);
+extern float blarg_slide_pair_rot_max_speed SDATA(D_L06_00161FD8);
+extern int blarg_slide_pair_hold_ticks_min SDATA(D_L06_00161FDC);
+extern int blarg_slide_pair_hold_ticks_max SDATA(D_L06_00161FE0);
+extern int blarg_slide_pair_move_ticks_min SDATA(D_L06_00161FE4);
+extern int blarg_slide_pair_move_ticks_max SDATA(D_L06_00161FE8);
+extern float blarg_slide_pair_reset SDATA(D_L06_00161FEC);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l06/gameplay/entities/002b4770.c, FUN_L06_002fbfb0. */
 void update_moby_pair_transforms(char *moby) {
@@ -3223,9 +3217,9 @@ void update_moby_pair_transforms(char *moby) {
                 moby[0x20] = 2;
                 return;
             }
-            vec_scale_to_length(v, &data->axis, (*(float *)&blarg_slide_pair_open_a));
+            vec_scale_to_length(v, &data->axis, (blarg_slide_pair_open_a));
             FastVecAdd(moby + 0x10, &data->closed_pos, v);
-            vec_scale_to_length(v, &data->axis, -(*(float *)&blarg_slide_pair_open_b));
+            vec_scale_to_length(v, &data->axis, -(blarg_slide_pair_open_b));
             FastVecAdd(data->child + 0x10, &data->closed_pos, v);
             moby_build_matrix(data->child);
             moby[0x20] = 5;
@@ -3248,17 +3242,16 @@ void update_moby_pair_transforms(char *moby) {
             child = data->child;
             a = target_delta;
             b = FastVecDist(child + 0x10, &data->closed_pos);
-            ApproachWithVelocity(&a, &data->unk_08, (*(float *)&blarg_slide_pair_open_a), g_frame_time_sq * 10.0f,
+            ApproachWithVelocity(&a, &data->unk_08, (blarg_slide_pair_open_a), g_frame_time_sq * 10.0f,
                                  g_frame_time_sq * 20.0f, g_frame_time * 5.0f);
-            ApproachWithVelocity(&b, &data->unk_44, (*(float *)&blarg_slide_pair_open_b), g_frame_time_sq * 10.0f,
+            ApproachWithVelocity(&b, &data->unk_44, (blarg_slide_pair_open_b), g_frame_time_sq * 10.0f,
                                  g_frame_time_sq * 20.0f, g_frame_time * 5.0f);
             vec_scale_to_length(v, &data->axis, a);
             FastVecAdd(moby + 0x10, &data->closed_pos, v);
             vec_scale_to_length(v, &data->axis, -b);
             FastVecAdd(data->child + 0x10, &data->closed_pos, v);
             moby_build_matrix(data->child);
-            if (FastAbsF(a - (*(float *)&blarg_slide_pair_open_a)) < 0.01f &&
-                FastAbsF(b - (*(float *)&blarg_slide_pair_open_b)) < 0.01f)
+            if (FastAbsF(a - (blarg_slide_pair_open_a)) < 0.01f && FastAbsF(b - (blarg_slide_pair_open_b)) < 0.01f)
                 moby[0x20] = 5;
             return;
         case 4:
@@ -3275,10 +3268,10 @@ void update_moby_pair_transforms(char *moby) {
                 goto phase_two;
 
         phase_default:
-            target_a = (*(float *)&blarg_slide_pair_stutter_a);
+            target_a = (blarg_slide_pair_stutter_a);
             target_rot_a = ((Moby *)moby)->rot.y;
             target_rot_b = target_rot_a;
-            target_b = (*(float *)&blarg_slide_pair_stutter_b);
+            target_b = (blarg_slide_pair_stutter_b);
             acceleration = 10.0f;
             max_speed = 20.0f;
             damping = 5.0f;
@@ -3293,30 +3286,30 @@ void update_moby_pair_transforms(char *moby) {
             target_rot_b = *(float *)(data->child + 0x44);
             target_a = phase_a;
             target_b = phase_b;
-            acceleration = (*(float *)&moby_pair_phase_distance_acceleration_gp);
-            max_speed = (*(float *)&moby_pair_phase_distance_deceleration_gp);
-            damping = (*(float *)&blarg_slide_pair_max_speed);
-            rotation_acceleration = (*(float *)&moby_pair_phase_rotation_y_acceleration_degrees_gp);
-            rotation_speed = (*(float *)&moby_pair_phase_rotation_y_deceleration_degrees_gp);
-            rotation_damping = (*(float *)&blarg_slide_pair_rot_max_speed);
+            acceleration = (moby_pair_phase_distance_acceleration_gp);
+            max_speed = (moby_pair_phase_distance_deceleration_gp);
+            damping = (blarg_slide_pair_max_speed);
+            rotation_acceleration = (moby_pair_phase_rotation_y_acceleration_degrees_gp);
+            rotation_speed = (moby_pair_phase_rotation_y_deceleration_degrees_gp);
+            rotation_damping = (blarg_slide_pair_rot_max_speed);
             next_phase = 2;
-            next_timer = truncate_float_to_s32(random_float_between((float)(*(int *)&blarg_slide_pair_move_ticks_min),
-                                                                    (float)(*(int *)&blarg_slide_pair_move_ticks_max)));
+            next_timer = truncate_float_to_s32(random_float_between((float)(blarg_slide_pair_move_ticks_min),
+                                                                    (float)(blarg_slide_pair_move_ticks_max)));
             goto phase_join;
         phase_two:
-            target_a = (*(float *)&blarg_slide_pair_stutter_a);
-            target_b = (*(float *)&blarg_slide_pair_stutter_b);
-            target_rot_a = (*(float *)&blarg_slide_pair_stutter_rot_a);
-            target_rot_b = (*(float *)&blarg_slide_pair_stutter_rot_b);
-            acceleration = (*(float *)&moby_pair_phase_distance_acceleration_gp);
-            max_speed = (*(float *)&moby_pair_phase_distance_deceleration_gp);
-            damping = (*(float *)&blarg_slide_pair_max_speed);
-            rotation_acceleration = (*(float *)&moby_pair_phase_rotation_y_acceleration_degrees_gp);
-            rotation_speed = (*(float *)&moby_pair_phase_rotation_y_deceleration_degrees_gp);
-            rotation_damping = (*(float *)&blarg_slide_pair_rot_max_speed);
+            target_a = (blarg_slide_pair_stutter_a);
+            target_b = (blarg_slide_pair_stutter_b);
+            target_rot_a = (blarg_slide_pair_stutter_rot_a);
+            target_rot_b = (blarg_slide_pair_stutter_rot_b);
+            acceleration = (moby_pair_phase_distance_acceleration_gp);
+            max_speed = (moby_pair_phase_distance_deceleration_gp);
+            damping = (blarg_slide_pair_max_speed);
+            rotation_acceleration = (moby_pair_phase_rotation_y_acceleration_degrees_gp);
+            rotation_speed = (moby_pair_phase_rotation_y_deceleration_degrees_gp);
+            rotation_damping = (blarg_slide_pair_rot_max_speed);
             next_phase = 1;
-            next_timer = truncate_float_to_s32(random_float_between((float)(*(int *)&blarg_slide_pair_hold_ticks_min),
-                                                                    (float)(*(int *)&blarg_slide_pair_hold_ticks_max)));
+            next_timer = truncate_float_to_s32(random_float_between((float)(blarg_slide_pair_hold_ticks_min),
+                                                                    (float)(blarg_slide_pair_hold_ticks_max)));
         phase_join:
             ApproachWithVelocity(&phase_a, &data->unk_08, target_a, acceleration * g_frame_time_sq,
                                  max_speed * g_frame_time_sq, damping * g_frame_time);
@@ -3339,14 +3332,14 @@ void update_moby_pair_transforms(char *moby) {
                 return;
             moby[0xbc] = next_phase;
             data->timer = scale_ticks(next_timer);
-            target_delta = (*(float *)&blarg_slide_pair_stutter_a);
+            target_delta = (blarg_slide_pair_stutter_a);
             if (FastAbsF(phase_a - target_delta) < 0.01f) {
-                if (FastAbsF(phase_b - (*(float *)&blarg_slide_pair_stutter_b)) < 0.01f)
+                if (FastAbsF(phase_b - (blarg_slide_pair_stutter_b)) < 0.01f)
                     moby[0x20] = 5;
             }
             return;
         case 5:
-            if ((*(float *)&blarg_slide_pair_reset) == 0.0f)
+            if ((blarg_slide_pair_reset) == 0.0f)
                 return;
             moby[0xbc] = 0;
             moby[0x20] = 1;

@@ -1224,7 +1224,7 @@ extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void add_random_offset_to_vector_xyz(float *v, float s);
 extern void spawn_type_74_particle(void *, float *, float *, void *, int);
 extern float g_frame_time MACRO_ADDR;
-extern short joint_trail_reference_speed;
+extern float joint_trail_reference_speed SDATA(D_L11_00162084);
 extern short joint_trail_particle_cfg_a;
 extern short joint_trail_particle_cfg_b;
 extern short joint_trail_particle_cfg_c;
@@ -1243,7 +1243,7 @@ void emit_type_74_particles_from_moby_joints(void *m, char *t) {
         float scale;
 
         *(u128_312780 *)vel = 0;
-        scale = *(float *)(t + 0x64) / *(float *)&joint_trail_reference_speed;
+        scale = *(float *)(t + 0x64) / joint_trail_reference_speed;
         if (scale > 1.0f) {
             scale = 1.0f;
         } else if (scale < 0.35f) {

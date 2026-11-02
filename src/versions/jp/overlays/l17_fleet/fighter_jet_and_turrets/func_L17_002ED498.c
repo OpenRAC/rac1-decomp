@@ -38,9 +38,9 @@ void DrawFleetHud(char *moby) {
     update_fighter_jet_target_lock((int)moby, d);
     if (*(int *)(d + 0x88) != 0) {
         project_world_point_to_screen_pixels(*(char **)(d + 0x88) + 0x10, &sp10, &sp14, 0);
-        if (*(int *)(d + 0x8C) > *(int *)&fleet_jet_lock_anim_start) {
-            t = IntToFloat(*(int *)(d + 0x8C) - *(int *)&fleet_jet_lock_anim_start);
-            t = t / IntToFloat(*(int *)&fleet_jet_lock_anim_frames);
+        if (*(int *)(d + 0x8C) > fleet_jet_lock_anim_start) {
+            t = IntToFloat(*(int *)(d + 0x8C) - fleet_jet_lock_anim_start);
+            t = t / IntToFloat(fleet_jet_lock_anim_frames);
             m = 2.0f * (1.0f - t);
             k = t * 5.0f + 1.0f;
             if (m > 1.0f)

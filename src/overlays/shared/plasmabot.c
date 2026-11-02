@@ -108,11 +108,11 @@ extern char plasmabot_no_link_msg[];
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern u8 oltanis_collision_hit_point[];
-extern short plasmabot_path_traversal_delay_frames;
-extern short plasmabot_beam_sweep_ticks;
-extern short plasmabot_beam_sweep_half_angle;
-extern short plasmabot_beam_length;
-extern short plasmabot_beam_origin_offset;
+extern int plasmabot_path_traversal_delay_frames SDATA(D_L14_001615B8);
+extern int plasmabot_beam_sweep_ticks SDATA(D_L14_001615B4);
+extern float plasmabot_beam_sweep_half_angle SDATA(D_L14_001615B0);
+extern float plasmabot_beam_length SDATA(D_L14_001615AC);
+extern float plasmabot_beam_origin_offset SDATA(D_L14_001615BC);
 
 extern void Manipulator_ApplyScale(float, char *, int, char *);
 extern int release_beam_slot_by_id(char *);
@@ -329,7 +329,7 @@ void update_plasmabot(char *m) {
                 return;
             if (call_4BF0(m) == 0)
                 return;
-            data->wait_timer = scale_ticks(*(int *)&plasmabot_path_traversal_delay_frames);
+            data->wait_timer = scale_ticks(plasmabot_path_traversal_delay_frames);
             activate_plasmabot(m);
             ((Moby *)m)->state = 2;
             MobySetAnimation(m, 1, 0);
@@ -406,7 +406,7 @@ void update_plasmabot(char *m) {
                     MobyBlendAnimation(m, 2, 0, scale_ticks(10));
                     ((Moby *)m)->state = 9;
                 } else {
-                    data->wait_timer = scale_ticks(*(int *)&plasmabot_path_traversal_delay_frames);
+                    data->wait_timer = scale_ticks(plasmabot_path_traversal_delay_frames);
                     ((Moby *)m)->state = 0xD;
                 }
             }
@@ -458,13 +458,13 @@ void update_plasmabot(char *m) {
             data->sweep_angle = ang;
             ((Moby *)m)->state = 5;
             MobyBlendAnimation(m, 4, 0, scale_ticks(5));
-            data->beam_sweep = scale_ticks(*(int *)&plasmabot_beam_sweep_ticks);
+            data->beam_sweep = scale_ticks(plasmabot_beam_sweep_ticks);
             break;
         }
         case 5: {
             float ang;
             ang = fast_atan2(owner->pos.x - ((Moby *)m)->pos.x, owner->pos.y - ((Moby *)m)->pos.y);
-            update_plasmabot_aim_quaternion(m, 0, FastSubRots(ang, *(float *)&plasmabot_beam_sweep_half_angle));
+            update_plasmabot_aim_quaternion(m, 0, FastSubRots(ang, plasmabot_beam_sweep_half_angle));
             update_plasmabot_aim_joint_rotation(m, ang);
             if ((*(char *)&((Moby *)m)->anim_flags & 2) && ((Moby *)m)->seq == ((Moby *)m)->prev_seq) {
                 MobyBlendAnimation(m, 5, 0, scale_ticks(10));
@@ -481,8 +481,8 @@ void update_plasmabot(char *m) {
             flag = 0;
             ang = fast_atan2(owner->pos.x - ((Moby *)m)->pos.x, owner->pos.y - ((Moby *)m)->pos.y);
             t = IntToFloat(data->beam_sweep);
-            t = t / IntToFloat(scale_ticks(*(int *)&plasmabot_beam_sweep_ticks));
-            c = *(float *)&plasmabot_beam_sweep_half_angle;
+            t = t / IntToFloat(scale_ticks(plasmabot_beam_sweep_ticks));
+            c = plasmabot_beam_sweep_half_angle;
             f = FastSubRots(data->sweep_angle, -c + (c + c) * t);
             if (data->unk_24B != 0) {
                 if (owner->pos.z + 0.1f - ((Moby *)m)->pos.z < 0.0f) {
@@ -496,9 +496,9 @@ void update_plasmabot(char *m) {
             if (flag == 0) {
                 v[2] = 0.0f;
             }
-            vec_scale_to_length(v, v, *(float *)&plasmabot_beam_length);
+            vec_scale_to_length(v, v, plasmabot_beam_length);
             FastVecAdd(hit, mat[3], v);
-            vec_scale_to_length(v, v, *(float *)&plasmabot_beam_origin_offset);
+            vec_scale_to_length(v, v, plasmabot_beam_origin_offset);
             FastVecAdd(mat[3], mat[3], v);
             ray.moby = m;
             ray.flags = 0x10001;
@@ -829,7 +829,7 @@ typedef struct {
     f32 unk234; /* 0x234 */
     s32 delay; /* 0x238: frames, counted down */
 } DelayVars;
-extern short plasmabot_target_range;
+extern f32 plasmabot_target_range SDATA(D_L14_0016158C);
 extern f32 random_float_between(f32, f32);
 extern f32 multiply_global_factor(f32);
 extern s32 truncate_float_to_s32(f32);
@@ -845,14 +845,14 @@ void update_plasmabot_target_range(struct Moby *m) {
     }
     fast_dec_timer_r(&pv->delay);
     if (pv->delay != 0) {
-        pv->unk234 = (*(f32 *)&plasmabot_target_range) + 6.0f;
+        pv->unk234 = (plasmabot_target_range) + 6.0f;
     } else {
-        pv->unk234 = (*(f32 *)&plasmabot_target_range);
+        pv->unk234 = (plasmabot_target_range);
     }
 }
 extern char hero_globals_base_x[] __asm__("D_0013E633");
 extern float g_frame_time_x __asm__("D_0015EE6C") MACRO_ADDR;
-extern short plasmabot_knockback_lift_factor;
+extern float plasmabot_knockback_lift_factor SDATA(D_L14_00161590);
 extern void StepColorFade(void *, void *);
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
@@ -906,7 +906,7 @@ void process_plasmabot_hit_reaction(char *m) {
                 ((Moby *)m)->state = 0xA;
                 t = scale_ticks(0x3C);
                 e = g_frame_time_x;
-                g = *(float *)&plasmabot_knockback_lift_factor * e;
+                g = plasmabot_knockback_lift_factor * e;
                 k = e * 8.0f;
                 d->unk_26 = t;
                 d->unk_78 = k;
@@ -1016,7 +1016,7 @@ extern float SteerAngleWithVelocity_r(float *p, float a, float *v, float b, floa
                                       float d) __asm__("func_L00_0025CE58");
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
-extern short plasmabot_path_speed;
+extern float plasmabot_path_speed SDATA(D_L14_001615A0);
 
 /* steers the moby toward its target: queries the path, eases x/y, then turns to face the heading */
 int follow_plasmabot_path(char *moby) {
@@ -1025,7 +1025,7 @@ int follow_plasmabot_path(char *moby) {
     float c[4];
     struct PlasmabotVars *data = (struct PlasmabotVars *)((Moby *)moby)->pvars;
     int r = Spline_AdvanceByDistance(oltanis_paths[data->path_a], a, &data->path_step, &data->path_t, 0,
-                                     *(float *)&plasmabot_path_speed * g_frame_time * data->scale);
+                                     plasmabot_path_speed * g_frame_time * data->scale);
     float ang;
     float k;
     float m;
@@ -1040,11 +1040,11 @@ int follow_plasmabot_path(char *moby) {
     return r != 0;
 }
 extern float frame_scale MACRO_ADDR;
-extern short plasmabot_planar_drag;
+extern float plasmabot_planar_drag SDATA(D_L14_001615A4);
 
 // Scales the moby's velocity by a damping factor and advances its x/y position.
 void scale_and_apply_plasmabot_planar_velocity(char *moby) {
-    float f = (*(float *)&plasmabot_planar_drag - 1.0f) * frame_scale + 1.0f;
+    float f = (plasmabot_planar_drag - 1.0f) * frame_scale + 1.0f;
     struct PlasmabotVars *d = (struct PlasmabotVars *)((Moby *)moby)->pvars;
     d->spring_x = d->spring_x * f;
     d->spring_y = d->spring_y * f;
@@ -1116,7 +1116,7 @@ void update_plasmabot_aim_joint_rotation(char *a, float x) {
     }
     axis_rotation_2d48(&d->unk_130, 2, *(float *)&d->unk_270);
 }
-extern short plasmabot_beam_cooldown_frames;
+extern int plasmabot_beam_cooldown_frames SDATA(D_L14_001615A8);
 extern short *oltanis_moby_groups[];
 extern char *oltanis_mobys MACRO_ADDR;
 extern int scale_ticks(int);
@@ -1131,7 +1131,7 @@ void Group_ResetClass28Timers(int idx) {
                 char *moby = oltanis_mobys + ((*(unsigned short *)p & 0x7FFF) << 8);
                 struct PlasmabotVars *data = (struct PlasmabotVars *)((Moby *)moby)->pvars;
                 if (((Moby *)moby)->oclass == MOBY_CLASS_PLASMABOT_28) {
-                    data->beam_timer = scale_ticks(*(int *)&plasmabot_beam_cooldown_frames);
+                    data->beam_timer = scale_ticks(plasmabot_beam_cooldown_frames);
                 }
             } while (*p++ >= 0);
         }
@@ -1183,10 +1183,10 @@ typedef struct {
 } Pk;
 
 extern float plasmabot_glow_quad_corners[4][4];
-extern short plasmabot_glow_quad_size;
-extern short plasmabot_glow_camera_pull;
-extern short plasmabot_glow_camera_margin;
-extern short plasmabot_glow_color;
+extern float plasmabot_glow_quad_size SDATA(D_L14_001615C0);
+extern float plasmabot_glow_camera_pull SDATA(D_L14_001615C4);
+extern float plasmabot_glow_camera_margin SDATA(D_L14_001615C8);
+extern u32 plasmabot_glow_color SDATA(D_L14_001615CC);
 u64 GetEffectTex(s32);
 extern void VU1_addGSregister(int, long);
 extern float FastVecLength(void *);
@@ -1216,8 +1216,8 @@ void draw_plasmabot_glow_quad(Moby *m) {
     FastVecSub(v, oltanis_camera_pos, pos);
     len = FastVecLength(v);
     if (0.0f < len) {
-        float s = *(float *)&plasmabot_glow_camera_pull;
-        float f = len - *(float *)&plasmabot_glow_camera_margin;
+        float s = plasmabot_glow_camera_pull;
+        float f = len - plasmabot_glow_camera_margin;
         if (f < s) {
             s = f;
             if (f < 0.0f)
@@ -1234,13 +1234,13 @@ void draw_plasmabot_glow_quad(Moby *m) {
     pk.uv[5] = 0.0f;
     pk.uv[6] = 0.0f;
     pk.uv[7] = 0.0f;
-    col = *(u32 *)&plasmabot_glow_color;
+    col = plasmabot_glow_color;
     pk.col[3] = col;
     pk.col[2] = col;
     pk.col[1] = col;
     pk.col[0] = col;
     for (j = 0; j < 4; j++) {
-        FastVecScale(pk.m[j], plasmabot_glow_quad_corners[j], *(float *)&plasmabot_glow_quad_size);
+        FastVecScale(pk.m[j], plasmabot_glow_quad_corners[j], plasmabot_glow_quad_size);
         FastVecAdd(pk.m[j], pk.m[j], pos);
     }
     draw_world_quad(&pk, 0, 0);
@@ -1348,9 +1348,9 @@ struct MobyDf {
     unsigned char *pvars;
 };
 extern f32 g_frame_scale_sq MACRO_ADDR;
-extern short spinning_debris_drag_min_speed;
-extern short spinning_debris_drag;
-extern short spinning_debris_gravity;
+extern float spinning_debris_drag_min_speed SDATA(D_L14_00161BF0);
+extern float spinning_debris_drag SDATA(D_L14_00161BEC);
+extern float spinning_debris_gravity SDATA(D_L14_00161BE8);
 extern void draw_spinning_debris(struct MobyDf *);
 extern void AddDrawCallback(void (*)(void), void *);
 
@@ -1383,17 +1383,17 @@ void update_spinning_moby_with_particle_trail(struct MobyDf *moby) {
     }
     FastVecAdd(&moby->pos, &moby->pos, velocity);
     absolute_velocity = FastAbsF(velocity[0]);
-    if ((*(float *)&spinning_debris_drag_min_speed) * frame_scale < absolute_velocity) {
-        velocity[0] *= ((*(float *)&spinning_debris_drag) - 1.0f) * frame_scale + 1.0f;
+    if ((spinning_debris_drag_min_speed)*frame_scale < absolute_velocity) {
+        velocity[0] *= ((spinning_debris_drag)-1.0f) * frame_scale + 1.0f;
     }
     absolute_velocity = FastAbsF(velocity[1]);
-    if ((*(float *)&spinning_debris_drag_min_speed) * frame_scale < absolute_velocity) {
-        velocity[1] *= ((*(float *)&spinning_debris_drag) - 1.0f) * frame_scale + 1.0f;
+    if ((spinning_debris_drag_min_speed)*frame_scale < absolute_velocity) {
+        velocity[1] *= ((spinning_debris_drag)-1.0f) * frame_scale + 1.0f;
     }
     if (velocity[2] > 0.0f) {
-        velocity[2] *= ((*(float *)&spinning_debris_drag) - 1.0f) * frame_scale + 1.0f;
+        velocity[2] *= ((spinning_debris_drag)-1.0f) * frame_scale + 1.0f;
     }
-    velocity[2] -= (*(float *)&spinning_debris_gravity) * g_frame_scale_sq;
+    velocity[2] -= (spinning_debris_gravity)*g_frame_scale_sq;
     moby->rot.x = FastAddRots(moby->rot.x, velocity[4]);
     moby->rot.y = FastAddRots(moby->rot.y, velocity[5]);
     moby->rot.z = FastAddRots(moby->rot.z, velocity[6]);
@@ -1431,10 +1431,10 @@ void update_spinning_moby_with_particle_trail(struct MobyDf *moby) {
         }
     }
 }
-extern short plasmabot_debris_min_speed;
-extern short plasmabot_debris_max_speed;
-extern short plasmabot_debris_min_spin;
-extern short plasmabot_debris_max_spin;
+extern float plasmabot_debris_min_speed SDATA(D_L14_00161BD8);
+extern float plasmabot_debris_max_speed SDATA(D_L14_00161BDC);
+extern float plasmabot_debris_min_spin SDATA(D_L14_00161BE0);
+extern float plasmabot_debris_max_spin SDATA(D_L14_00161BE4);
 extern unsigned char *CreateMoby(int);
 extern float random_float_between(float, float);
 extern void FastVecSub(void *dst, void *a, void *b);
@@ -1463,13 +1463,13 @@ unsigned char *spawn_plasmabot_death_debris(char *owner, char *pos) {
         FastVecSub(vec, &((Moby *)m)->pos, g);
         g = g + 0x210;
         vec[2] = 0.0f;
-        vec_scale_to_length(vec, vec,
-                            random_float_between(*(float *)&plasmabot_debris_min_speed * frame_scale,
-                                                 *(float *)&plasmabot_debris_max_speed * frame_scale));
+        vec_scale_to_length(
+            vec, vec,
+            random_float_between(plasmabot_debris_min_speed * frame_scale, plasmabot_debris_max_speed * frame_scale));
         FastVecCross(vec + 4, g, vec);
         build_look_at_matrix(&d->bsphere, vec, g, randf_sym(0.34906584f, 1.0471976f));
-        d->bsphere.z = random_float_between(*(float *)&plasmabot_debris_min_spin * frame_scale,
-                                            *(float *)&plasmabot_debris_max_spin * frame_scale);
+        d->bsphere.z =
+            random_float_between(plasmabot_debris_min_spin * frame_scale, plasmabot_debris_max_spin * frame_scale);
         d->pos.x = randf_sym(0.0f, 0.008726646f);
         d->pos.y = randf_sym(0.05235988f, 0.13962634f);
         d->pos.z = randf_sym(0.0f, 0.017453292f);
@@ -1514,9 +1514,9 @@ typedef struct {
     u8 pad2C[4];
     f32 velocity[3];
 } Data_dfd10;
-extern short path_debris_gravity;
-extern short path_debris_drag;
-extern short path_debris_drag_min_speed;
+extern f32 path_debris_gravity SDATA(D_L14_00161C10);
+extern f32 path_debris_drag SDATA(D_L14_00161C14);
+extern f32 path_debris_drag_min_speed SDATA(D_L14_00161C18);
 
 /* A piece of debris: follows its race path until its timer runs out, then flies, spins and falls until it hits
    something or leaves the map.
@@ -1551,14 +1551,14 @@ void update_path_or_ballistic_debris(struct Moby *moby) {
     velocity = data->velocity;
     FastVecAdd(&moby->pos, &moby->pos, velocity);
     speed = FastAbsF(data->velocity[0]);
-    if ((*(f32 *)&path_debris_drag_min_speed) * frame_scale < speed)
-        data->velocity[0] *= ((*(f32 *)&path_debris_drag) - 1.0f) * frame_scale + 1.0f;
+    if ((path_debris_drag_min_speed)*frame_scale < speed)
+        data->velocity[0] *= ((path_debris_drag)-1.0f) * frame_scale + 1.0f;
     speed = FastAbsF(data->velocity[1]);
-    if ((*(f32 *)&path_debris_drag_min_speed) * frame_scale < speed)
-        data->velocity[1] *= ((*(f32 *)&path_debris_drag) - 1.0f) * frame_scale + 1.0f;
+    if ((path_debris_drag_min_speed)*frame_scale < speed)
+        data->velocity[1] *= ((path_debris_drag)-1.0f) * frame_scale + 1.0f;
     if (data->velocity[2] > 0.0f)
-        data->velocity[2] *= ((*(f32 *)&path_debris_drag) - 1.0f) * frame_scale + 1.0f;
-    data->velocity[2] -= (*(f32 *)&path_debris_gravity) * g_frame_scale_sq;
+        data->velocity[2] *= ((path_debris_drag)-1.0f) * frame_scale + 1.0f;
+    data->velocity[2] -= (path_debris_gravity)*g_frame_scale_sq;
     moby->rot.x = FastAddRots(moby->rot.x, data->spin_x);
     moby->rot.y = FastAddRots(moby->rot.y, data->spin_y);
     moby->rot.z = FastAddRots(moby->rot.z, data->spin_z);
@@ -1583,10 +1583,10 @@ void update_path_or_ballistic_debris(struct Moby *moby) {
 extern void build_look_at_matrix(void *, void *, void *, float);
 
 extern void find_nearest_path_point(void *, void *, void *, void *, void *, int, float, float, float);
-extern short path_debris_min_speed;
-extern short path_debris_max_speed;
-extern short path_debris_min_spin;
-extern short path_debris_max_spin;
+extern float path_debris_min_speed SDATA(D_L14_00161C00);
+extern float path_debris_max_speed SDATA(D_L14_00161C04);
+extern float path_debris_min_spin SDATA(D_L14_00161C08);
+extern float path_debris_max_spin SDATA(D_L14_00161C0C);
 
 /* Spawns a class 0x193 moby on owner; mode 0 makes a spline mover, other modes a delayed projectile. */
 unsigned char *spawn_path_or_ballistic_debris(char *owner, float *scale, int mode) {
@@ -1621,14 +1621,14 @@ unsigned char *spawn_path_or_ballistic_debris(char *owner, float *scale, int mod
             *(int *)(d + 4) = scale_ticks(200);
             FastVecSub(vec, pos, gHeroPos);
             vec[2] = 0.0f;
-            vec_scale_to_length(vec, vec,
-                                random_float_between(*(float *)&path_debris_min_speed * frame_scale,
-                                                     *(float *)&path_debris_max_speed * frame_scale));
+            vec_scale_to_length(
+                vec, vec,
+                random_float_between(path_debris_min_speed * frame_scale, path_debris_max_speed * frame_scale));
             FastVecCross(vec + 4, gHeroPos + 0x210, vec);
             angle = randf_sym(0.5759586691856384f, 1.3962633609771729f);
             build_look_at_matrix(d + 0x30, vec, gHeroPos + 0x210, angle);
-            *(float *)(d + 0x38) = random_float_between(*(float *)&path_debris_min_spin * frame_scale,
-                                                        *(float *)&path_debris_max_spin * frame_scale);
+            *(float *)(d + 0x38) =
+                random_float_between(path_debris_min_spin * frame_scale, path_debris_max_spin * frame_scale);
             *(float *)(d + 0x20) = randf_sym(0.0f, 0.008726646f);
             *(float *)(d + 0x24) = randf_sym(0.05235988f, 0.13962634f);
             *(float *)(d + 0x28) = randf_sym(0.0f, 0.017453293f);
@@ -1804,8 +1804,8 @@ void initialize_moby_path_state(Moby *moby) {
         }
     }
 }
-extern short linked_moby_offset_x;
-extern short linked_moby_offset_y;
+extern float linked_moby_offset_x SDATA(D_L14_00162094);
+extern float linked_moby_offset_y SDATA(D_L14_00162098);
 extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 
@@ -1820,9 +1820,9 @@ void update_linked_moby_position(Moby *moby) {
     float tmp[4];
     if (data->unk_F4 != 0) {
         char *p;
-        vec_scale_to_length(tmp, &moby->rot_row0, *(float *)&linked_moby_offset_x);
+        vec_scale_to_length(tmp, &moby->rot_row0, linked_moby_offset_x);
         FastVecAdd(data->unk_F4 + 0x10, &moby->pos, tmp);
-        vec_scale_to_length(tmp, &moby->rot_row2, *(float *)&linked_moby_offset_y);
+        vec_scale_to_length(tmp, &moby->rot_row2, linked_moby_offset_y);
         p = data->unk_F4 + 0x10;
         FastVecAdd(p, p, tmp);
     }
@@ -1845,11 +1845,11 @@ typedef struct {
 extern int random_integer_below(int);
 extern void *PartType23Spawn(void *, float, float, float, int, void *, float, int);
 extern float oltanis_zero_vector[] MACRO_ADDR;
-extern short offset_particles_first_offset_x;
-extern short offset_particles_first_offset_y;
-extern short offset_particles_second_offset_x;
-extern short offset_particles_second_offset_y;
-extern short offset_particles_color;
+extern float offset_particles_first_offset_x SDATA(D_L14_0016209C);
+extern float offset_particles_first_offset_y SDATA(D_L14_001620A0);
+extern float offset_particles_second_offset_x SDATA(D_L14_001620A4);
+extern float offset_particles_second_offset_y SDATA(D_L14_001620A8);
+extern int offset_particles_color SDATA(D_L14_001620B4);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b17d8.c, FUN_L14_002feca8. */
 void emit_moby_offset_particles(Moby *m) {
@@ -1860,16 +1860,16 @@ void emit_moby_offset_particles(Moby *m) {
     int n;
     int life;
     float size;
-    FastVecScale(off, &m->rot_row0, (*(float *)&offset_particles_first_offset_x));
+    FastVecScale(off, &m->rot_row0, (offset_particles_first_offset_x));
     FastVecAdd(pos, &m->pos, off);
-    FastVecScale(off, &m->rot_row2, (*(float *)&offset_particles_first_offset_y));
+    FastVecScale(off, &m->rot_row2, (offset_particles_first_offset_y));
     FastVecAdd(pos, pos, off);
     for (i = 0; i < 2; i++) {
         P_eca8 *part;
         T_eca8 *tail;
         n = random_integer_below(0x10);
         part = PartType23Spawn(pos, 0.2f, 1.0f, 0.9f, random_integer_below(2) == 0 ? n : -n, oltanis_zero_vector,
-                               100000.0f, (*(int *)&offset_particles_color));
+                               100000.0f, (offset_particles_color));
         if (part) {
             tail = &part->tail;
             part->hA = scale_ticks(0xC);
@@ -1878,9 +1878,9 @@ void emit_moby_offset_particles(Moby *m) {
             tail->bB = part->hA;
         }
     }
-    FastVecScale(off, &m->rot_row0, (*(float *)&offset_particles_second_offset_x));
+    FastVecScale(off, &m->rot_row0, (offset_particles_second_offset_x));
     FastVecAdd(pos, &m->pos, off);
-    FastVecScale(off, &m->rot_row2, (*(float *)&offset_particles_second_offset_y));
+    FastVecScale(off, &m->rot_row2, (offset_particles_second_offset_y));
     FastVecAdd(pos, pos, off);
     n = 0x10;
     life = scale_ticks(2);
@@ -1928,7 +1928,7 @@ typedef struct {
     struct Moby *moby;
 } MobyHit;
 extern char *oltanis_mobys_end MACRO_ADDR;
-extern short floating_mine_glow_phase_step_gp;
+extern float floating_mine_glow_phase_step_gp SDATA(D_L14_001620D0);
 extern float ProbeGroundHeight(float, void *, int);
 extern void Spring_r(float *, float *, float, float, float, float) __asm__("func_L00_0025C918");
 extern MobyHit *MobyGetHitMessage_r(struct Moby *, int, int) __asm__("func_L00_0025B478");
@@ -2023,7 +2023,7 @@ void update_floating_mine(struct Moby *moby) {
             break;
         }
     }
-    vars->phase = FastAddRots(vars->phase, (*(float *)&floating_mine_glow_phase_step_gp));
+    vars->phase = FastAddRots(vars->phase, (floating_mine_glow_phase_step_gp));
     s = FastSin(vars->phase);
     r = truncate_float_to_s32(s * 48.0f) + 0xCF;
     g = truncate_float_to_s32(s * 32.0f) + 0x30;
@@ -2190,15 +2190,15 @@ extern int random_integer_below(int);
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 extern char *oltanis_clip_volumes MACRO_ADDR;
 extern float g_frame_time;
-extern short vendor_beam_min_ticks;
-extern short vendor_beam_max_ticks;
-extern short vendor_beam_jitter_radius;
-extern short vendor_beam_jitter_speed;
-extern short vendor_beam_spark_color_start;
-extern short vendor_beam_spark_color_end;
-extern short vendor_beam_spark_step_w_gp;
-extern short vendor_beam_spark_tex_a;
-extern short vendor_beam_branch_end_spark_color_gp;
+extern int vendor_beam_min_ticks SDATA(D_L14_0016218C);
+extern int vendor_beam_max_ticks SDATA(D_L14_00162190);
+extern float vendor_beam_jitter_radius SDATA(D_L14_001621CC);
+extern float vendor_beam_jitter_speed SDATA(D_L14_001621D0);
+extern int vendor_beam_spark_color_start SDATA(D_L14_001621D8);
+extern int vendor_beam_spark_color_end SDATA(D_L14_001621DC);
+extern float vendor_beam_spark_step_w_gp SDATA(D_L14_001621E4);
+extern int vendor_beam_spark_tex_a SDATA(D_L14_001621EC);
+extern int vendor_beam_branch_end_spark_color_gp SDATA(D_L14_001621F0);
 
 typedef struct {
     int idx;
@@ -2235,11 +2235,11 @@ void start_vendor_beam_pulse(char *moby) {
 
     frame = (VendorBeamFrame *)((beam->idx << 7) + (int)oltanis_clip_volumes);
     {
-        int ticks = (*(int *)&vendor_beam_min_ticks);
+        int ticks = (vendor_beam_min_ticks);
         frame->origin.f[3] = 1.0f;
         low = scale_ticks(ticks);
     }
-    high = scale_ticks((*(int *)&vendor_beam_max_ticks));
+    high = scale_ticks((vendor_beam_max_ticks));
     duration = rand_range(low, high);
     beam->s12 = (short)duration;
     beam->r620 = (short)duration;
@@ -2256,8 +2256,8 @@ void start_vendor_beam_pulse(char *moby) {
             clear_u64_value(&path[i]);
             clear_u64_value(&path_steps[i]);
         } else {
-            rand_vec(&path[i], 0.0f, *(float *)&vendor_beam_jitter_radius);
-            rand_vec(&path_steps[i], 0.0f, *(float *)&vendor_beam_jitter_speed * g_frame_time);
+            rand_vec(&path[i], 0.0f, vendor_beam_jitter_radius);
+            rand_vec(&path_steps[i], 0.0f, vendor_beam_jitter_speed * g_frame_time);
         }
         y = path[i].y;
         path[i].w = 1.0f;
@@ -2280,7 +2280,7 @@ void start_vendor_beam_pulse(char *moby) {
 
     for (branch = 0; branch < 4; branch++) {
         int start;
-        float spread = (*(float *)&vendor_beam_jitter_radius);
+        float spread = (vendor_beam_jitter_radius);
         rand_vec(&work, spread, spread);
         start = truncate_float_to_s32(random_float_between((float)branch * 6.0f, (float)(branch + 1) * 6.0f)) + 4;
         beam->cnt[branch] = (unsigned char)start;
@@ -2288,7 +2288,7 @@ void start_vendor_beam_pulse(char *moby) {
         qcopy(&beam->b[0][branch], &beam->off[start]);
         for (k = 1; k < 4; k++) {
             rand_vec(&delta, 0.1f, 0.1f);
-            rand_vec(&beam->b[k][branch], 0.0f, (*(float *)&vendor_beam_jitter_speed) * g_frame_time);
+            rand_vec(&beam->b[k][branch], 0.0f, (vendor_beam_jitter_speed)*g_frame_time);
             FastVecAdd(&beam->a[k][branch], &beam->a[k - 1][branch], &work);
             FastVecAdd(&beam->a[k][branch], &beam->a[k][branch], &delta);
         }
@@ -2304,33 +2304,31 @@ void start_vendor_beam_pulse(char *moby) {
             Vq *p = &beam->pts[l];
             transform_vector(&work, p, matrix);
             qcopy(&delta, &p[32]);
-            delta.w = (*(float *)&vendor_beam_spark_step_w_gp);
-            s17 = random_integer_below(2) ? (*(int *)&vendor_beam_spark_tex_a)
-                                          : (*(int *)&vendor_beam_branch_end_spark_color_gp);
+            delta.w = (vendor_beam_spark_step_w_gp);
+            s17 = random_integer_below(2) ? (vendor_beam_spark_tex_a) : (vendor_beam_branch_end_spark_color_gp);
             n = scale_ticks(random_integer_below(10) + 20);
-            PartType02Spawn(&work, &delta, &delta, (*(int *)&vendor_beam_spark_color_start),
-                            (*(int *)&vendor_beam_spark_color_end), l >> 1, 15, n, s17);
+            PartType02Spawn(&work, &delta, &delta, (vendor_beam_spark_color_start), (vendor_beam_spark_color_end),
+                            l >> 1, 15, n, s17);
         }
         for (k = 0; k < 2; k++) {
             int n, unused_color;
             transform_vector(&work, &beam->a[3][k], matrix);
             qcopy(&delta, &beam->b[3][k]);
-            delta.w = (*(float *)&vendor_beam_spark_step_w_gp);
-            unused_color = random_integer_below(2) ? (*(int *)&vendor_beam_spark_tex_a)
-                                                   : (*(int *)&vendor_beam_branch_end_spark_color_gp);
+            delta.w = (vendor_beam_spark_step_w_gp);
+            unused_color =
+                random_integer_below(2) ? (vendor_beam_spark_tex_a) : (vendor_beam_branch_end_spark_color_gp);
             n = scale_ticks(random_integer_below(10) + 20);
-            PartType02Spawn(&work, &delta, &delta, (*(int *)&vendor_beam_spark_color_start),
-                            (*(int *)&vendor_beam_spark_color_end), beam->cnt[k] >> 1, 15, n,
-                            (*(int *)&vendor_beam_branch_end_spark_color_gp));
+            PartType02Spawn(&work, &delta, &delta, (vendor_beam_spark_color_start), (vendor_beam_spark_color_end),
+                            beam->cnt[k] >> 1, 15, n, (vendor_beam_branch_end_spark_color_gp));
         }
     }
 }
 extern int FastTweenColor(int, int, float);
-extern short vendor_beam_fade_mid_ticks;
-extern short vendor_beam_fade_end_ticks;
-extern short vendor_beam_color_mid;
-extern short vendor_beam_color_start;
-extern short vendor_beam_color_end;
+extern int vendor_beam_fade_mid_ticks SDATA(D_L14_00162194);
+extern int vendor_beam_fade_end_ticks SDATA(D_L14_00162198);
+extern int vendor_beam_color_mid SDATA(D_L14_001621C4);
+extern int vendor_beam_color_start SDATA(D_L14_001621C0);
+extern int vendor_beam_color_end SDATA(D_L14_001621C8);
 
 // advances a timed chain of vectors and picks an interpolation value
 void update_vendor_beam_animation(char *moby) {
@@ -2355,16 +2353,13 @@ void update_vendor_beam_animation(char *moby) {
     }
     {
         int h = d->s12;
-        if (*(int *)&vendor_beam_fade_mid_ticks < h) {
-            float f = IntToFloat(h - *(int *)&vendor_beam_fade_mid_ticks) /
-                      IntToFloat(d->r620 - *(int *)&vendor_beam_fade_mid_ticks);
-            *(int *)((char *)d + 0x14) =
-                FastTweenColor(*(int *)&vendor_beam_color_mid, *(int *)&vendor_beam_color_start, f);
-        } else if (*(int *)&vendor_beam_fade_end_ticks < h) {
-            float f = IntToFloat(h - *(int *)&vendor_beam_fade_end_ticks) /
-                      IntToFloat(*(int *)&vendor_beam_fade_mid_ticks - *(int *)&vendor_beam_fade_end_ticks);
-            *(int *)((char *)d + 0x14) =
-                FastTweenColor(*(int *)&vendor_beam_color_end, *(int *)&vendor_beam_color_mid, f);
+        if (vendor_beam_fade_mid_ticks < h) {
+            float f = IntToFloat(h - vendor_beam_fade_mid_ticks) / IntToFloat(d->r620 - vendor_beam_fade_mid_ticks);
+            *(int *)((char *)d + 0x14) = FastTweenColor(vendor_beam_color_mid, vendor_beam_color_start, f);
+        } else if (vendor_beam_fade_end_ticks < h) {
+            float f = IntToFloat(h - vendor_beam_fade_end_ticks) /
+                      IntToFloat(vendor_beam_fade_mid_ticks - vendor_beam_fade_end_ticks);
+            *(int *)((char *)d + 0x14) = FastTweenColor(vendor_beam_color_end, vendor_beam_color_mid, f);
         } else {
             *(int *)((char *)d + 0x14) = 0;
         }

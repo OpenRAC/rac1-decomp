@@ -443,9 +443,9 @@ extern void VU1_addGSregister(int, long);
 extern int GetEffectTex(int);
 extern void draw_scrolled_mesh_batch(int);
 
-extern short scrolled_mesh_unscaled_fixed_alpha;
-extern short offset_mesh_first_pass_fixed_alpha;
-extern short pair_offset_mesh_fixed_alpha;
+extern int scrolled_mesh_unscaled_fixed_alpha SDATA(D_L08_00161E60);
+extern int offset_mesh_first_pass_fixed_alpha SDATA(D_L08_00161E80);
+extern int pair_offset_mesh_fixed_alpha SDATA(D_L08_00161E90);
 extern int scrolled_mesh_subtractive_base_fixed_alpha MACRO_ADDR;
 extern int scrolled_mesh_additive_base_fixed_alpha MACRO_ADDR;
 extern int offset_mesh_second_pass_fixed_alpha MACRO_ADDR;
@@ -458,7 +458,7 @@ void draw_layered_mesh_effect(void) {
     VU1_addGSregister(0x47, 0x513F1);
     font_queue_vu_state();
     VU1_addGSregister(6, GetEffectTex(0x3A));
-    VU1_addGSregister(0x42, (long)*(int *)&scrolled_mesh_unscaled_fixed_alpha << 32 | 0x44);
+    VU1_addGSregister(0x42, (long)scrolled_mesh_unscaled_fixed_alpha << 32 | 0x44);
     draw_scrolled_mesh_batch(0);
     VU1_addGSregister(6, GetEffectTex(0x3B));
     VU1_addGSregister(
@@ -473,12 +473,12 @@ void draw_layered_mesh_effect(void) {
                   0x68);
     draw_scrolled_mesh_batch(2);
     VU1_addGSregister(6, GetEffectTex(0x3C));
-    VU1_addGSregister(0x42, (long)*(int *)&offset_mesh_first_pass_fixed_alpha << 32 | 0x48);
+    VU1_addGSregister(0x42, (long)offset_mesh_first_pass_fixed_alpha << 32 | 0x48);
     Moby600_DrawQuads11(0);
     VU1_addGSregister(0x42, (long)offset_mesh_second_pass_fixed_alpha << 32 | 0x48);
     Moby600_DrawQuads11(1);
     VU1_addGSregister(6, GetEffectTex(0x3D));
-    VU1_addGSregister(0x42, (long)*(int *)&pair_offset_mesh_fixed_alpha << 32 | 0x48);
+    VU1_addGSregister(0x42, (long)pair_offset_mesh_fixed_alpha << 32 | 0x48);
     emit_pair_offset_render_batch(0);
 }
 typedef struct {
@@ -505,8 +505,8 @@ extern float layered_mesh_effect_center_z MACRO_ADDR;
 extern float layered_mesh_effect_culling_radius MACRO_ADDR;
 extern char batalia_hero_pos[];
 extern int batalia_uv_scroll_1[];
-extern short layered_mesh_effect_colors_scaled;
-extern short layered_mesh_effect_center_x;
+extern int layered_mesh_effect_colors_scaled SDATA(D_L08_00161E94);
+extern float layered_mesh_effect_center_x SDATA(D_L08_00161E50);
 
 /* Update function: state 0 sets up some global tables (running scale_rgba_tables once), state 1 tests a point
  * and its distance to batalia_hero_pos and sets layered_mesh_effect_fade_alpha to a 0 to 255 value that fades between
@@ -519,11 +519,11 @@ void update_layered_mesh_effect(unsigned char *moby) {
 
     switch (moby[0x20]) {
         case 0:
-            if (*(int *)&layered_mesh_effect_colors_scaled == 0) {
+            if (layered_mesh_effect_colors_scaled == 0) {
                 scale_rgba_tables(batalia_mesh13_colors, 13, batalia_mesh13_counts, 0.5f, 0.5f, 0.65f, 0.5f, 1);
                 scale_rgba_tables(batalia_mesh8_colors, 8, batalia_mesh8_counts, 0.5f, 0.5f, 0.5f, 1.0f, 1);
                 scale_rgba_tables(batalia_mesh11_colors, 11, batalia_mesh11_counts, 0.25f, 0.25f, 0.25f, 1.0f, 1);
-                *(int *)&layered_mesh_effect_colors_scaled = 1;
+                layered_mesh_effect_colors_scaled = 1;
             }
             moby[0x20] = 1;
             for (i = 0; i < 3; i++) {
@@ -542,12 +542,12 @@ void update_layered_mesh_effect(unsigned char *moby) {
             }
             break;
         case 1:
-            v[0] = *(float *)&layered_mesh_effect_center_x;
+            v[0] = layered_mesh_effect_center_x;
             v[1] = layered_mesh_effect_center_y;
             v[2] = layered_mesh_effect_center_z;
             v[3] = layered_mesh_effect_culling_radius;
             if (FastBSphereCheck((char *)v, 1000.0f) >= 0) {
-                w[0] = *(float *)&layered_mesh_effect_center_x;
+                w[0] = layered_mesh_effect_center_x;
                 w[1] = layered_mesh_effect_center_y;
                 w[2] = layered_mesh_effect_center_z;
                 w[3] = 1.0f;
@@ -592,7 +592,7 @@ extern void Moby_PlaySound_r3(s32, s32, struct Moby *) __asm__("func_0022ED80");
 extern void MobySpringTurn(struct Moby *, f32, f32 *, f32, f32, f32);
 extern void spawn_explosion(char *, void *, char *, f32, f32, s32, s32, s32, f32, f32, f32, f32, s32, f32, s32, s32,
                             s32, u8);
-extern short path_follower_y_rotation_rate_degrees;
+extern f32 path_follower_y_rotation_rate_degrees SDATA(D_L08_00162000);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l08/gameplay/entities/002e9b70.c, FUN_L08_002f44c0. */
 void update_path_following_moby_with_fade(struct Moby *moby) {
@@ -636,8 +636,8 @@ void update_path_following_moby_with_fade(struct Moby *moby) {
                 DeleteMoby_r2(moby);
                 return;
             }
-            moby->rot.y = FastAddRots(moby->rot.y,
-                                      (*(f32 *)&path_follower_y_rotation_rate_degrees) * 0.017453292f * g_frame_time);
+            moby->rot.y =
+                FastAddRots(moby->rot.y, (path_follower_y_rotation_rate_degrees) * 0.017453292f * g_frame_time);
             distance = vec_distance_xy(&moby->pos, gHeroPos);
             if (distance < 2.0f && *(s32 *)(gHeroPos + 0x2004) == 0x42) {
                 clear_u64_value(&velocity);
@@ -1225,7 +1225,7 @@ extern float FastSubRots(float, float);
 extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern char batalia_commando_dialogue_name[];
-extern short commando_height_probe_distance_limit;
+extern int commando_height_probe_distance_limit SDATA(D_L08_00162268);
 extern char *batalia_scene_points MACRO_ADDR;
 extern unsigned char gCheats[] MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;
@@ -1282,9 +1282,9 @@ void commando_update(char *m) {
     WD8 *commando_vars = (WD8 *)moby->pvars;
     attach_big_head_cheat_manipulator_to_matching_moby(m);
     if (moby->visible != 0) {
-        if (FastVecDist(&moby->pos, batalia_hero_pos) < (float)*(int *)&commando_height_probe_distance_limit) {
+        if (FastVecDist(&moby->pos, batalia_hero_pos) < (float)commando_height_probe_distance_limit) {
             set_ground_height_band(m);
-            moby->shadow_range = (*(int *)&commando_height_probe_distance_limit * 13) >> 4;
+            moby->shadow_range = (commando_height_probe_distance_limit * 13) >> 4;
         }
     }
     switch (moby->state) {
@@ -1606,7 +1606,7 @@ void batalia_deserter_update(char *m) {
         EaseManipulatorOffsets(m, deserter_data->head, 1, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
     }
 }
-extern short batalia_deserter_manipulator_scale;
+extern float batalia_deserter_manipulator_scale SDATA(D_L08_00162390);
 
 /* triggers objects matching the moby's class, with per-segment settings */
 void attach_batalia_plumber_class_manipulator(char *moby) {
@@ -1630,7 +1630,7 @@ void attach_batalia_plumber_class_manipulator(char *moby) {
                 if (deserter_scale_manipulator[1] == 0) {
                     float f;
                     AttachManipulator(o, 0, deserter_scale_manipulator);
-                    f = *(float *)&batalia_deserter_manipulator_scale;
+                    f = batalia_deserter_manipulator_scale;
                     *(float *)(deserter_scale_manipulator + 0x20) = f;
                     *(float *)(deserter_scale_manipulator + 0x24) = f;
                     *(float *)(deserter_scale_manipulator + 0x28) = f;
@@ -2068,9 +2068,9 @@ void queue_batalia_offset_textured_batches(int x) {
 extern void queue_batalia_eight_textured_batches(int);
 extern void queue_batalia_six_textured_batches(int);
 extern void queue_batalia_offset_textured_batches(int);
-extern short batalia_texture_3a_blend_factor;
-extern short batalia_texture_3c_pair_zero_blend_factor;
-extern short batalia_texture_3d_blend_factor;
+extern int batalia_texture_3a_blend_factor SDATA(D_L08_00162420);
+extern int batalia_texture_3c_pair_zero_blend_factor SDATA(D_L08_00162440);
+extern int batalia_texture_3d_blend_factor SDATA(D_L08_00162450);
 extern int batalia_texture_3b_pair_one_blend_factor_base MACRO_ADDR;
 extern int batalia_texture_3b_pair_two_blend_factor_base MACRO_ADDR;
 extern int batalia_texture_3c_pair_one_blend_factor MACRO_ADDR;
@@ -2084,7 +2084,7 @@ void queue_batalia_textured_batch_passes(void) {
     VU1_addGSregister(0x47, 0x513F1);
     font_queue_vu_state();
     VU1_addGSregister(6, GetEffectTex(0x3A));
-    VU1_addGSregister(0x42, (long)*(int *)&batalia_texture_3a_blend_factor << 32 | 0x64);
+    VU1_addGSregister(0x42, (long)batalia_texture_3a_blend_factor << 32 | 0x64);
     queue_batalia_eight_textured_batches(0);
     VU1_addGSregister(6, GetEffectTex(0x3B));
     VU1_addGSregister(0x42, (long)((batalia_texture_3b_pair_one_blend_factor_base *
@@ -2100,12 +2100,12 @@ void queue_batalia_textured_batch_passes(void) {
                                 0x68);
     queue_batalia_eight_textured_batches(2);
     VU1_addGSregister(6, GetEffectTex(0x3C));
-    VU1_addGSregister(0x42, (long)*(int *)&batalia_texture_3c_pair_zero_blend_factor << 32 | 0x48);
+    VU1_addGSregister(0x42, (long)batalia_texture_3c_pair_zero_blend_factor << 32 | 0x48);
     queue_batalia_six_textured_batches(0);
     VU1_addGSregister(0x42, (long)batalia_texture_3c_pair_one_blend_factor << 32 | 0x48);
     queue_batalia_six_textured_batches(1);
     VU1_addGSregister(6, GetEffectTex(0x3D));
-    VU1_addGSregister(0x42, (long)*(int *)&batalia_texture_3d_blend_factor << 32 | 0x48);
+    VU1_addGSregister(0x42, (long)batalia_texture_3d_blend_factor << 32 | 0x48);
     queue_batalia_offset_textured_batches(0);
 }
 extern int FastBSphereCheck(char *, float);
@@ -2121,11 +2121,11 @@ extern char batalia_textured_mesh6_counts[];
 extern IntPair batalia_textured_mesh8_scroll_offset[];
 extern char batalia_textured_mesh8_scroll_offset_1[];
 extern IntPair batalia_textured_mesh6_scroll_offset[] MACRO_ADDR;
-extern short batalia_effect_reference_position_x;
+extern float batalia_effect_reference_position_x SDATA(D_L08_00162410);
 extern float batalia_effect_reference_position_y MACRO_ADDR;
 extern float batalia_effect_reference_position_z MACRO_ADDR;
 extern float batalia_effect_culling_radius MACRO_ADDR;
-extern short batalia_textured_effect_colors_scaled;
+extern int batalia_textured_effect_colors_scaled SDATA(D_L08_00162454);
 extern char batalia_hero_pos[];
 
 // UpdateMoby for a pulsing light effect: init on state 0, draw when close enough on state 1
@@ -2137,14 +2137,14 @@ void update_batalia_textured_effect(unsigned char *moby) {
 
     switch (moby[0x20]) {
         case 0:
-            if (*(int *)&batalia_textured_effect_colors_scaled == 0) {
+            if (batalia_textured_effect_colors_scaled == 0) {
                 scale_rgba_tables(batalia_textured_mesh8_colors, 8, batalia_textured_mesh8_counts, 0.5f, 0.5f, 0.65f,
                                   0.5f, 1);
                 scale_rgba_tables(&batalia_textured_mesh2_colors, 2, &batalia_textured_mesh2_counts, 0.5f, 0.5f, 0.5f,
                                   1.0f, 1);
                 scale_rgba_tables(batalia_textured_mesh6_colors, 6, batalia_textured_mesh6_counts, 0.25f, 0.25f, 0.25f,
                                   1.0f, 1);
-                *(int *)&batalia_textured_effect_colors_scaled = 1;
+                batalia_textured_effect_colors_scaled = 1;
             }
             moby[0x20] = 1;
             for (i = 0; i < 3; i++) {
@@ -2163,12 +2163,12 @@ void update_batalia_textured_effect(unsigned char *moby) {
             }
             break;
         case 1:
-            v[0] = *(float *)&batalia_effect_reference_position_x;
+            v[0] = batalia_effect_reference_position_x;
             v[1] = batalia_effect_reference_position_y;
             v[2] = batalia_effect_reference_position_z;
             v[3] = batalia_effect_culling_radius;
             if (FastBSphereCheck((char *)v, 1000.0f) >= 0) {
-                w[0] = *(float *)&batalia_effect_reference_position_x;
+                w[0] = batalia_effect_reference_position_x;
                 w[1] = batalia_effect_reference_position_y;
                 w[2] = batalia_effect_reference_position_z;
                 w[3] = 1.0f;

@@ -8,7 +8,7 @@ void process_unlock_code_input(void) {
         if (!(pressed & 0xF0A0))
             return;
 
-        if (*(int *)&unlock_code_input_count >= 20)
+        if (unlock_code_input_count >= 20)
             return;
         if (pressed & 0x1000)
             direction = 0;
@@ -20,9 +20,9 @@ void process_unlock_code_input(void) {
             direction = 3;
         else
             direction = (pressed & 0x80) ? 4 : 5;
-        count = *(int *)&unlock_code_input_count;
+        count = unlock_code_input_count;
         unlock_code_input[count++] = direction;
-        *(int *)&unlock_code_input_count = count;
+        unlock_code_input_count = count;
         if (count != 20)
             return;
         code = -1;
@@ -64,6 +64,6 @@ void process_unlock_code_input(void) {
             }
         }
     } else {
-        *(int *)&unlock_code_input_count = 0;
+        unlock_code_input_count = 0;
     }
 }

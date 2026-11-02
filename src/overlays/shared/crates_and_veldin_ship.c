@@ -2587,8 +2587,8 @@ extern int FindNearestEligibleMoby(float, void *, void *, int, int, void *, int)
 extern int FastDecTimer(void *);
 extern float multiply_global_factor(float);
 
-extern short D_L00_00161A58;
-extern short D_L00_00161A5C;
+extern float D_L00_00161A58 SDATA(D_L00_00161A58);
+extern float D_L00_00161A5C SDATA(D_L00_00161A5C);
 
 /* Veldin level code: per-frame step of a moby's state 0x20 (retail process_horny_toad_hit_reaction, 0x364 bytes).
  * Runs a sub-state machine on a[0x20] (3, 5, 8, 10, 12); when a[0x20] is 12 or the sweep finds
@@ -2684,8 +2684,8 @@ void process_horny_toad_hit_reaction(void *a0) {
         r2 = random_integer_below(2);
         InitKnockback(a, q1, r2 + 6, 1, 0, f20);
         {
-            float c0 = *(float *)&D_L00_00161A5C;
-            float c4 = *(float *)&D_L00_00161A58;
+            float c0 = D_L00_00161A5C;
+            float c4 = D_L00_00161A58;
             *(float *)(d + 0xC0) = c0;
             *(float *)(d + 0xC4) = c4;
         }
@@ -2894,7 +2894,7 @@ extern void FastVecScale(void *, void *, float);
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
 extern void vec_scale_to_length(void *, void *, float);
 extern float FastSubRots(float, float);
-extern short infobot_slot_path_minimum_speed_gp;
+extern float infobot_slot_path_minimum_speed_gp SDATA(D_L00_00161A60);
 
 /* Steers an object along a path with speed limits. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/unclassified_002cfcb8.c, FUN_L00_002d5988. */
 void update_infobot_slot_path_motion(Obj_6e38 *o, Path_6e38 *path, s32 p) {
@@ -2919,7 +2919,7 @@ void update_infobot_slot_path_motion(Obj_6e38 *o, Path_6e38 *path, s32 p) {
     c = st->v60;
     if (l <= (c * c) / (s + s)) {
         f32 a1 = c - s;
-        f32 b1 = *(float *)&infobot_slot_path_minimum_speed_gp * g_frame_time;
+        f32 b1 = infobot_slot_path_minimum_speed_gp * g_frame_time;
         st->v60 = a1;
         if (a1 < b1)
             st->v60 = b1;
@@ -2941,7 +2941,7 @@ void update_infobot_slot_path_motion(Obj_6e38 *o, Path_6e38 *path, s32 p) {
     FastVecAdd(&w, &w, &path->a[idx]);
     l = vec_distance_xy_r((void *)((char *)path + path->n * 16), &o->v[0]);
     if (l < 1.0f) {
-        if (st->v60 <= *(float *)&infobot_slot_path_minimum_speed_gp * g_frame_time) {
+        if (st->v60 <= infobot_slot_path_minimum_speed_gp * g_frame_time) {
             o->flag = p;
         }
     }
@@ -3502,13 +3502,13 @@ typedef struct {
 extern Vec4f smoke_particle_unit_positions_r[] __asm__("D_L00_001CBAE0");
 extern u8 smoke_particle_matrix_select[];
 extern s16 smoke_particle_timer[];
-extern short smoke_fire_emitted_particle_position_spread_gp;
-extern short smoke_fire_emitted_particle_random_scalar_upper_bound_gp;
-extern short smoke_fire_particles_per_frame;
-extern short smoke_fire_emitted_particle_sign_randomized_sample_min_gp;
-extern short smoke_fire_emitted_particle_sign_randomized_sample_max_gp;
-extern short smoke_fire_emitted_particle_base_color_gp;
-extern short smoke_fire_far_culling_distance_gp;
+extern float smoke_fire_emitted_particle_position_spread_gp SDATA(D_L00_00161A84);
+extern float smoke_fire_emitted_particle_random_scalar_upper_bound_gp SDATA(D_L00_00161A88);
+extern int smoke_fire_particles_per_frame SDATA(D_L00_00161A8C);
+extern int smoke_fire_emitted_particle_sign_randomized_sample_min_gp SDATA(D_L00_00161A90);
+extern int smoke_fire_emitted_particle_sign_randomized_sample_max_gp SDATA(D_L00_00161A94);
+extern int smoke_fire_emitted_particle_base_color_gp SDATA(D_L00_00161A98);
+extern float smoke_fire_far_culling_distance_gp SDATA(D_L00_00161AB0);
 extern Vec4f g_debug_camera_r2 __asm__("D_L00_00166EC0");
 void func_0020D678_D83D8(P *) __asm__("func_0020D678");
 float FastVecLength(void *);
@@ -3579,10 +3579,10 @@ void particle_spawner_smoke_fire_update(P *p) {
             qcopy(&v, tbl + 0x30);
             v.z += 9.0f;
             v.w = 10.0f;
-            if (FastBSphereCheck(&v, (*(float *)&smoke_fire_far_culling_distance_gp)) < 0)
+            if (FastBSphereCheck(&v, (smoke_fire_far_culling_distance_gp)) < 0)
                 return;
             if (q->flag42 && vec_distance_xy(&g_debug_camera_r2, &p->pos) < 128.0f) {
-                for (e = 0; e < (*(int *)&smoke_fire_particles_per_frame); e++) {
+                for (e = 0; e < (smoke_fire_particles_per_frame); e++) {
                     a.x = randf_sym(0.0f, 1.0f);
                     a.y = randf_sym(0.0f, 1.0f);
                     a.z = 1.0f;
@@ -3593,12 +3593,11 @@ void particle_spawner_smoke_fire_update(P *p) {
                     a.y = randf_sym(0.0f, g_frame_time * 0.25f);
                     a.z = q->f20 * g_frame_time;
                     f = random_float_between(q->f24, q->f28);
-                    col = rand_range(q->h2C, q->h2E) << 24 | (*(int *)&smoke_fire_emitted_particle_base_color_gp);
-                    r = rand_range((*(int *)&smoke_fire_emitted_particle_sign_randomized_sample_min_gp),
-                                   (*(int *)&smoke_fire_emitted_particle_sign_randomized_sample_max_gp));
-                    ent =
-                        PartType23Spawn(&b, r, (*(float *)&smoke_fire_emitted_particle_position_spread_gp), 1.0f, &a,
-                                        (*(float *)&smoke_fire_emitted_particle_random_scalar_upper_bound_gp), col, f);
+                    col = rand_range(q->h2C, q->h2E) << 24 | (smoke_fire_emitted_particle_base_color_gp);
+                    r = rand_range((smoke_fire_emitted_particle_sign_randomized_sample_min_gp),
+                                   (smoke_fire_emitted_particle_sign_randomized_sample_max_gp));
+                    ent = PartType23Spawn(&b, r, (smoke_fire_emitted_particle_position_spread_gp), 1.0f, &a,
+                                          (smoke_fire_emitted_particle_random_scalar_upper_bound_gp), col, f);
                     if (ent) {
                         sub = &ent->sub;
                         ent->h0A = scale_ticks_r(rand_range(q->x30, q->x34));

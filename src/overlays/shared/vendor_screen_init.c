@@ -30,7 +30,7 @@ extern int novalis_skip_frame MACRO_ADDR;
 extern int novalis_game_mode MACRO_ADDR;
 extern float novalis_fade_level MACRO_ADDR;
 extern int relocated_address_base MACRO_ADDR;
-extern short novalis_white_fade_level;
+extern int novalis_white_fade_level SDATA(D_L01_0015F500);
 extern char novalis_vendor_screen_anchor_offset;
 
 extern void snd_FlushSoundCommands(void);
@@ -93,7 +93,7 @@ void initialize_vendor_screen(char *m, int lvl) {
     *(int *)(c + 0x5C) = novalis_scene_buffer_offsets[2] + n;
     novalis_fade_level = 1.0f;
     relocated_address_base = n;
-    *(int *)&novalis_white_fade_level = 0;
+    novalis_white_fade_level = 0;
     clear_hero_item_slot(0, 0);
     g->pending_item[0] = lvl;
     select_world_object_resource_tables(novalis_item_defs[lvl].f10, -1);

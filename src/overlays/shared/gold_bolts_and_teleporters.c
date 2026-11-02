@@ -790,7 +790,7 @@ extern char pool_tiles[];
 void Moby751Draw(void) {
     render_water_grids(pool_tiles, 0x15);
 }
-extern short cutscene_big_head_scale;
+extern float cutscene_big_head_scale SDATA(D_L01_00161DC0);
 
 /* Resets the marker record's scale once, for mobys of the caller's class or class 0x32B. */
 void attach_cutscene_big_head_manipulator(char *a) {
@@ -803,9 +803,9 @@ void attach_cutscene_big_head_manipulator(char *a) {
                 unsigned char *q = novalis_big_head_cheat_manipulator;
                 if (q[1] == 0) {
                     AttachManipulator(moby, 0, q);
-                    *(float *)(q + 0x20) = *(float *)&cutscene_big_head_scale;
-                    *(float *)(q + 0x24) = *(float *)&cutscene_big_head_scale;
-                    *(float *)(q + 0x28) = *(float *)&cutscene_big_head_scale;
+                    *(float *)(q + 0x20) = cutscene_big_head_scale;
+                    *(float *)(q + 0x24) = cutscene_big_head_scale;
+                    *(float *)(q + 0x28) = cutscene_big_head_scale;
                 }
             }
         }
@@ -1158,7 +1158,7 @@ void draw_visibomb_outside_zone_overlay(char *moby) {
 
 extern char *novalis_moby_list MACRO_ADDR;
 
-extern short visibomb_outside_zone_overlay_enabled;
+extern int visibomb_outside_zone_overlay_enabled SDATA(D_L01_0015F40C);
 extern void draw_visibomb_outside_zone_overlay(char *);
 extern int IsPointInPolygon(void *, void *, int);
 extern void AddDrawCallback(void (*)(char *), char *);
@@ -1223,7 +1223,7 @@ void update_target_outside_zone_timeout(char *m) {
         } while ((int)e < (int)(zone_vars->zones + 20));
     }
     if (zone_vars->count > 0) {
-        if (*(int *)&visibomb_outside_zone_overlay_enabled != 0) {
+        if (visibomb_outside_zone_overlay_enabled != 0) {
             AddDrawCallback(draw_visibomb_outside_zone_overlay, m);
         }
         if (scale_ticks(0x5A) < zone_vars->count) {
@@ -1436,11 +1436,11 @@ extern void update_gold_bolt_glow_rings(char *);
 
 extern void spawn_gold_bolt_particles(char *);
 extern float g_frame_time MACRO_ADDR;
-extern short gold_bolt_scale_factor;
-extern short gold_bolt_hover_height;
-extern short gold_bolt_bob_height;
-extern short gold_bolt_bob_speed_deg;
-extern short gold_bolt_sparkle_chance;
+extern float gold_bolt_scale_factor SDATA(D_L01_00161FA0);
+extern float gold_bolt_hover_height SDATA(D_L01_00161FA4);
+extern float gold_bolt_bob_height SDATA(D_L01_00161FA8);
+extern float gold_bolt_bob_speed_deg SDATA(D_L01_00161FBC);
+extern int gold_bolt_sparkle_chance SDATA(D_L01_00161FE0);
 
 // Per-frame update of a moby: scale, orbit position and angle easing.
 void update_gold_bolt_visuals(char *moby) {
@@ -1448,19 +1448,19 @@ void update_gold_bolt_visuals(char *moby) {
     float r;
     float s;
     float k;
-    ((Moby *)moby)->scale = *(float *)(*(char **)&((Moby *)moby)->pclass + 0x24) * *(float *)&gold_bolt_scale_factor;
+    ((Moby *)moby)->scale = *(float *)(*(char **)&((Moby *)moby)->pclass + 0x24) * gold_bolt_scale_factor;
     if (((Moby *)moby)->state == 1) {
         s = FastSin(((Moby *)moby)->rot.w);
-        ((Moby *)moby)->pos.z = data->base_z + *(float *)&gold_bolt_hover_height + *(float *)&gold_bolt_bob_height * s;
+        ((Moby *)moby)->pos.z = data->base_z + gold_bolt_hover_height + gold_bolt_bob_height * s;
         ((Moby *)moby)->rot.x = FastAddRots(((Moby *)moby)->rot.x, data->spin_x);
         ((Moby *)moby)->rot.y = FastAddRots(((Moby *)moby)->rot.y, data->spin_y);
         r = FastAddRots(((Moby *)moby)->rot.z, data->spin_z);
-        k = *(float *)&gold_bolt_bob_speed_deg * 0.017453292f * g_frame_time;
+        k = gold_bolt_bob_speed_deg * 0.017453292f * g_frame_time;
         ((Moby *)moby)->rot.z = r;
         ((Moby *)moby)->rot.w = FastAddRots(((Moby *)moby)->rot.w, k);
     }
     update_gold_bolt_glow_rings(moby);
-    if (random_integer_below(*(int *)&gold_bolt_sparkle_chance) == 0) {
+    if (random_integer_below(gold_bolt_sparkle_chance) == 0) {
         spawn_gold_bolt_particles(moby);
     }
 }
@@ -1505,10 +1505,10 @@ void initialize_gold_bolt_data(char *moby) {
     m->x48 = 3.0f;
 }
 
-extern short gold_bolt_ring_color_a;
-extern short gold_bolt_ring_color_b;
-extern short gold_bolt_ring_blend_flag;
-extern short gold_bolt_ring_texture;
+extern int gold_bolt_ring_color_a SDATA(D_L01_00161FCC);
+extern int gold_bolt_ring_color_b SDATA(D_L01_00161FD0);
+extern int gold_bolt_ring_blend_flag SDATA(D_L01_00161FD8);
+extern int gold_bolt_ring_texture SDATA(D_L01_00161FDC);
 extern void FastVecScale(void *, void *, float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern float MobyGetFrameValue_m(void *) __asm__("func_0020D830");
@@ -1563,9 +1563,9 @@ void update_gold_bolt_glow_rings(char *m) {
             tm[i] = scale_ticks(0xFF);
         }
         t = IntToFloat(scale_ticks(0xFF) - tm[i]) / (float)scale_ticks(0xFF);
-        c = FastTweenColor(*(int *)&gold_bolt_ring_color_a, *(int *)&gold_bolt_ring_color_b, FastAbsF(0.5f - t));
-        PartType59Spawn(dir, c, truncate_float_to_s32_r(ang[i]), *(int *)&gold_bolt_ring_texture,
-                        *(int *)&gold_bolt_ring_blend_flag, 2, 0, sz[i] * scale);
+        c = FastTweenColor(gold_bolt_ring_color_a, gold_bolt_ring_color_b, FastAbsF(0.5f - t));
+        PartType59Spawn(dir, c, truncate_float_to_s32_r(ang[i]), gold_bolt_ring_texture, gold_bolt_ring_blend_flag, 2,
+                        0, sz[i] * scale);
         FastVecAdd(dir, dir, step);
     }
 }
@@ -1622,15 +1622,15 @@ void update_gold_bolt_pickup_camera(char *m) {
     set_camera_position(out);
     set_camera_rotation(v);
 }
-extern short gold_bolt_sparkle_speed_min;
-extern short gold_bolt_sparkle_speed_max;
-extern short gold_bolt_sparkle_life;
-extern short gold_bolt_sparkle_color;
-extern short gold_bolt_sparkle_size;
-extern short gold_bolt_trail_spread_min;
-extern short gold_bolt_trail_spread_max;
-extern short gold_bolt_trail_color;
-extern short gold_bolt_trail_size;
+extern float gold_bolt_sparkle_speed_min SDATA(D_L01_00161FE4);
+extern float gold_bolt_sparkle_speed_max SDATA(D_L01_00161FE8);
+extern unsigned char gold_bolt_sparkle_life SDATA(D_L01_00161FF4);
+extern int gold_bolt_sparkle_color SDATA(D_L01_00161FF8);
+extern float gold_bolt_sparkle_size SDATA(D_L01_00162000);
+extern float gold_bolt_trail_spread_min SDATA(D_L01_00161FEC);
+extern float gold_bolt_trail_spread_max SDATA(D_L01_00161FF0);
+extern int gold_bolt_trail_color SDATA(D_L01_00161FFC);
+extern float gold_bolt_trail_size SDATA(D_L01_00162004);
 extern void FastVecScale(void *, void *, float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void rand_vec(float *, float, float);
@@ -1652,19 +1652,17 @@ void spawn_gold_bolt_particles(char *m) {
         Moby_GetJointWorldPos(m, 0, v);
     }
     t = g_frame_time;
-    rand_vec(w, *(float *)&gold_bolt_sparkle_speed_min * t, *(float *)&gold_bolt_sparkle_speed_max * t);
-    c = *(unsigned char *)&gold_bolt_sparkle_life;
-    spawn_moving_hero_relative_alpha_fade_particle(v, w, *(int *)&gold_bolt_sparkle_color, c,
-                                                   random_integer_below(0xFF) & 0xFF, 0,
-                                                   *(float *)&gold_bolt_sparkle_size);
+    rand_vec(w, gold_bolt_sparkle_speed_min * t, gold_bolt_sparkle_speed_max * t);
+    c = gold_bolt_sparkle_life;
+    spawn_moving_hero_relative_alpha_fade_particle(v, w, gold_bolt_sparkle_color, c, random_integer_below(0xFF) & 0xFF,
+                                                   0, gold_bolt_sparkle_size);
     for (i = 2; i >= 0; i--) {
         t = g_frame_time;
-        rand_vec(u, *(float *)&gold_bolt_trail_spread_min * t, *(float *)&gold_bolt_trail_spread_max * t);
+        rand_vec(u, gold_bolt_trail_spread_min * t, gold_bolt_trail_spread_max * t);
         FastVecAdd(w, w, u);
-        c2 = *(unsigned char *)&gold_bolt_sparkle_life;
-        spawn_moving_hero_relative_alpha_fade_particle(v, w, *(int *)&gold_bolt_trail_color, c2,
-                                                       random_integer_below(0xFF) & 0xFF, 0,
-                                                       *(float *)&gold_bolt_trail_size);
+        c2 = gold_bolt_sparkle_life;
+        spawn_moving_hero_relative_alpha_fade_particle(v, w, gold_bolt_trail_color, c2,
+                                                       random_integer_below(0xFF) & 0xFF, 0, gold_bolt_trail_size);
     }
 }
 extern void set_moby_list_state(char *arg, int val);
@@ -1688,10 +1686,10 @@ extern LevelState novalis_checkpoint_level_state;
 extern float g_frame_time_sq MACRO_ADDR;
 extern int D_0015EF20 MACRO_ADDR;
 extern unsigned char g_hero_field_20a5[] NOT_SDA;
-extern short teleporter_pad_open_accel;
-extern short teleporter_pad_open_brake;
-extern short teleporter_pad_open_max_speed;
-extern short novalis_help_message_selector;
+extern float teleporter_pad_open_accel SDATA(D_L01_00162018);
+extern float teleporter_pad_open_brake SDATA(D_L01_0016201C);
+extern float teleporter_pad_open_max_speed SDATA(D_L01_00162020);
+extern int novalis_help_message_selector SDATA(D_L01_0015F674);
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern void show_teleporter_and_children(char *);
 extern char *CreateMoby(int);
@@ -1798,15 +1796,13 @@ void TeleporterPadUpdate(char *moby) {
         }
         case 7:
             if (data->open_a < 1.0f) {
-                ApproachWithVelocity(&data->open_a, &data->open_a_vel, 1.0f,
-                                     *(float *)&teleporter_pad_open_accel * g_frame_time_sq,
-                                     *(float *)&teleporter_pad_open_brake * g_frame_time_sq,
-                                     *(float *)&teleporter_pad_open_max_speed * g_frame_time);
+                ApproachWithVelocity(
+                    &data->open_a, &data->open_a_vel, 1.0f, teleporter_pad_open_accel * g_frame_time_sq,
+                    teleporter_pad_open_brake * g_frame_time_sq, teleporter_pad_open_max_speed * g_frame_time);
             } else if (data->open_b < 1.0f) {
-                ApproachWithVelocity(&data->open_b, &data->open_b_vel, 1.0f,
-                                     *(float *)&teleporter_pad_open_accel * g_frame_time_sq,
-                                     *(float *)&teleporter_pad_open_brake * g_frame_time_sq,
-                                     *(float *)&teleporter_pad_open_max_speed * g_frame_time);
+                ApproachWithVelocity(
+                    &data->open_b, &data->open_b_vel, 1.0f, teleporter_pad_open_accel * g_frame_time_sq,
+                    teleporter_pad_open_brake * g_frame_time_sq, teleporter_pad_open_max_speed * g_frame_time);
             } else {
                 Moby_PlaySound(1, 0, (int)moby);
                 ((Moby *)moby)->state = 8;
@@ -1817,16 +1813,14 @@ void TeleporterPadUpdate(char *moby) {
         case 2: {
             int r = get_hero_target_pose_status();
             if (data->open_a < 1.0f) {
-                ApproachWithVelocity(&data->open_a, &data->open_a_vel, 1.0f,
-                                     *(float *)&teleporter_pad_open_accel * g_frame_time_sq,
-                                     *(float *)&teleporter_pad_open_brake * g_frame_time_sq,
-                                     *(float *)&teleporter_pad_open_max_speed * g_frame_time);
+                ApproachWithVelocity(
+                    &data->open_a, &data->open_a_vel, 1.0f, teleporter_pad_open_accel * g_frame_time_sq,
+                    teleporter_pad_open_brake * g_frame_time_sq, teleporter_pad_open_max_speed * g_frame_time);
             } else if (data->open_b < 1.0f) {
-                ApproachWithVelocity(&data->open_b, &data->open_b_vel, 1.0f,
-                                     *(float *)&teleporter_pad_open_accel * g_frame_time_sq,
-                                     *(float *)&teleporter_pad_open_brake * g_frame_time_sq,
-                                     *(float *)&teleporter_pad_open_max_speed * g_frame_time);
-            } else if (*(int *)&novalis_help_message_selector != 4 || !(data->open_a > 0.25f)) {
+                ApproachWithVelocity(
+                    &data->open_b, &data->open_b_vel, 1.0f, teleporter_pad_open_accel * g_frame_time_sq,
+                    teleporter_pad_open_brake * g_frame_time_sq, teleporter_pad_open_max_speed * g_frame_time);
+            } else if (novalis_help_message_selector != 4 || !(data->open_a > 0.25f)) {
                 if (r == 2) {
                     data->ring_radius = 1.95f;
                     ((Moby *)moby)->state = 3;
@@ -1874,15 +1868,13 @@ void TeleporterPadUpdate(char *moby) {
                 AddDrawCallback(draw_moby_radius_ring, moby);
                 ApproachValue(&data->ring_radius, 1.95f, g_frame_time * 4.0f);
             } else if (0.0f < data->open_b) {
-                ApproachWithVelocity(&data->open_b, &data->open_a_vel, 0.0f,
-                                     *(float *)&teleporter_pad_open_accel * g_frame_time_sq,
-                                     *(float *)&teleporter_pad_open_brake * g_frame_time_sq,
-                                     *(float *)&teleporter_pad_open_max_speed * g_frame_time);
+                ApproachWithVelocity(
+                    &data->open_b, &data->open_a_vel, 0.0f, teleporter_pad_open_accel * g_frame_time_sq,
+                    teleporter_pad_open_brake * g_frame_time_sq, teleporter_pad_open_max_speed * g_frame_time);
             } else if (0.0f < data->open_a) {
-                ApproachWithVelocity(&data->open_a, &data->open_b_vel, 0.0f,
-                                     *(float *)&teleporter_pad_open_accel * g_frame_time_sq,
-                                     *(float *)&teleporter_pad_open_brake * g_frame_time_sq,
-                                     *(float *)&teleporter_pad_open_max_speed * g_frame_time);
+                ApproachWithVelocity(
+                    &data->open_a, &data->open_b_vel, 0.0f, teleporter_pad_open_accel * g_frame_time_sq,
+                    teleporter_pad_open_brake * g_frame_time_sq, teleporter_pad_open_max_speed * g_frame_time);
             } else {
                 ((Moby *)moby)->state = 1;
             }
@@ -1892,8 +1884,8 @@ void TeleporterPadUpdate(char *moby) {
 }
 extern void vec_scale_to_length(void *, void *, float);
 extern void moby_build_matrix(void *);
-extern short teleporter_child_height_offset;
-extern short teleporter_child_base_pitch_deg;
+extern float teleporter_child_height_offset SDATA(D_L01_00162008);
+extern float teleporter_child_base_pitch_deg SDATA(D_L01_00162010);
 
 /* Places the three child mobys at this moby's position and orients each from its data. */
 void update_teleporter_child_transforms(char *m) {
@@ -1906,8 +1898,8 @@ void update_teleporter_child_transforms(char *m) {
         float u;
         Moby *o = (Moby *)(*p);
         qcopy(&o->pos, &((Moby *)m)->pos);
-        u = *(float *)&teleporter_child_base_pitch_deg * 0.017453292f;
-        o->pos.z += *(float *)&teleporter_child_height_offset;
+        u = teleporter_child_base_pitch_deg * 0.017453292f;
+        o->pos.z += teleporter_child_height_offset;
         *(float *)(*p + 0x44) = u;
         t = d->open_a * 2.4f - 1.2f;
         euler_rotation_basis(*p + 0xC0, *p + 0x40);
@@ -1961,7 +1953,7 @@ typedef struct {
 } Quad;
 extern short teleporter_ring_alpha_a, teleporter_ring_alpha_b, teleporter_ring_alpha_c, teleporter_ring_alpha_d,
     teleporter_ring_texture, teleporter_ring_color;
-extern short teleporter_ring_height;
+extern float teleporter_ring_height SDATA(D_L01_00162060);
 extern float teleporter_ring_uvs[];
 extern unsigned char g_hero_field_20a5_q __asm__("D_001414F5") NOT_SDA;
 extern void copy_matrix_rotation(void *, void *);
@@ -2021,9 +2013,9 @@ void draw_moby_radius_ring(char *moby) {
             p[1] = FastSin(a) * d->ring_radius;
             p[2] = 0.0f;
             if (k++ & 1) {
-                p[2] = *(float *)&teleporter_ring_height + h + p[2];
+                p[2] = teleporter_ring_height + h + p[2];
             } else {
-                p[2] = *(float *)&teleporter_ring_height - h + p[2];
+                p[2] = teleporter_ring_height - h + p[2];
             }
             p[3] = 1.0f;
             p += 4;
@@ -2204,8 +2196,8 @@ typedef struct {
 } GlowQuad_bfa8;
 extern Vec4 offset_quad_corners[4];
 extern Vec4 hero_gravity_dir[];
-extern short offset_quad_row0_offset;
-extern short offset_quad_row2_offset;
+extern f32 offset_quad_row0_offset SDATA(D_L01_001620F4);
+extern f32 offset_quad_row2_offset SDATA(D_L01_001620FC);
 extern s64 GetEffectTex(s32);
 extern void FastVecCross(void *, void *, void *);
 extern void transform_vector(void *, void *, void *);
@@ -2250,8 +2242,8 @@ void draw_moby_offset_textured_quad(Moby *m) {
     local.quad.unk68 = one;
     local.quad.unk6C = one;
 
-    FastVecScale(&local.basis.offset, &m->rot_row0, (*(f32 *)&offset_quad_row0_offset));
-    FastVecScale(&local.basis.partial, &m->rot_row2, (*(f32 *)&offset_quad_row2_offset));
+    FastVecScale(&local.basis.offset, &m->rot_row0, (offset_quad_row0_offset));
+    FastVecScale(&local.basis.partial, &m->rot_row2, (offset_quad_row2_offset));
     FastVecAdd(&local.basis.offset, &local.basis.offset, &local.basis.partial);
     src = &local.basis.mat0;
     FastVecAdd(&local.basis.point, &local.basis.offset, &m->pos);
@@ -2496,12 +2488,12 @@ extern void *GetFlaggedPvarWord(void *);
 extern void Moby_PlaySound_r(int, int, char *) __asm__("func_0022ED80");
 extern void *select_sandmouse_projectile_target(void *, void *, void *, float, float, float, float, float, float);
 extern void spawn_sandmouse_projectile_r(void *, void *, float, float, float, float) __asm__("func_L01_0030DC70");
-extern short sandmouse_fire_range;
-extern short sandmouse_fire_yaw_max_deg;
-extern short sandmouse_fire_pitch_max_deg;
-extern short sandmouse_muzzle_offset;
-extern short sandmouse_aim_height;
-extern short sandmouse_fire_interval;
+extern float sandmouse_fire_range SDATA(D_L01_00162114);
+extern float sandmouse_fire_yaw_max_deg SDATA(D_L01_00162118);
+extern float sandmouse_fire_pitch_max_deg SDATA(D_L01_0016211C);
+extern float sandmouse_muzzle_offset SDATA(D_L01_00162120);
+extern float sandmouse_aim_height SDATA(D_L01_00162124);
+extern int sandmouse_fire_interval SDATA(D_L01_00162110);
 extern short novalis_game_mode_r __asm__("D_L01_0015F6A8");
 extern Vec4 gHeroPos;
 
@@ -2519,10 +2511,9 @@ void try_fire_sandmouse_projectile(char *moby, char *state) {
         return;
     Moby_GetJointWorldPos_r2(moby, (state[0x56] & 1) + 1, &v);
     state[0x56] = state[0x56] ^ 1;
-    e = select_sandmouse_projectile_target(moby, &v, &((Moby *)moby)->rot,
-                                           (*(float *)&sandmouse_fire_yaw_max_deg) * 0.017453292f,
-                                           (*(float *)&sandmouse_fire_pitch_max_deg) * 0.017453292f,
-                                           (*(float *)&sandmouse_fire_range), 2.0f, 3.1415927f, 3.1415927f);
+    e = select_sandmouse_projectile_target(moby, &v, &((Moby *)moby)->rot, (sandmouse_fire_yaw_max_deg) * 0.017453292f,
+                                           (sandmouse_fire_pitch_max_deg) * 0.017453292f, (sandmouse_fire_range), 2.0f,
+                                           3.1415927f, 3.1415927f);
     if (e != 0) {
         *(char **)(state + 0x60) = e;
         if (gHeroPos.f[2] + 1.1f < ((Moby *)moby)->pos.z) {
@@ -2535,9 +2526,9 @@ void try_fire_sandmouse_projectile(char *moby, char *state) {
                     if (r != 0)
                         q.f[2] = q.f[2] + *(float *)(r + 0x10);
                     else
-                        q.f[2] = q.f[2] + (*(float *)&sandmouse_aim_height);
+                        q.f[2] = q.f[2] + (sandmouse_aim_height);
                     FastVecSub(&p, &q, &v);
-                    vec_scale_to_length(&p, &p, (*(float *)&sandmouse_muzzle_offset));
+                    vec_scale_to_length(&p, &p, (sandmouse_muzzle_offset));
                     FastVecAdd(&v, &v, &p);
                     a = fast_atan2(q.f[0] - v.f[0], q.f[1] - v.f[1]);
                     dist = vec_distance_xy(&v, &q);
@@ -2547,7 +2538,7 @@ void try_fire_sandmouse_projectile(char *moby, char *state) {
                     d = -fast_atan2(dist, q.f[2] - v.f[2]);
                     spawn_sandmouse_projectile_r(moby, &v, a, b, c, d);
                     Moby_PlaySound_r(0, 0, moby);
-                    *(short *)(state + 0x54) = scale_ticks((*(int *)&sandmouse_fire_interval));
+                    *(short *)(state + 0x54) = scale_ticks((sandmouse_fire_interval));
                     *(int *)(state + 0x5C) = *(int *)(state + 0x5C) + 1;
                 }
             }
@@ -2755,16 +2746,16 @@ extern f32 sand_mouse_move_ctl_turn_vel;
 extern char sandmouse_collected_msg[];
 extern char sandmouse_no_link_msg[];
 extern unsigned char gHaveHeliPack[];
-extern short sandmouse_attack_delay;
-extern short sandmouse_max_shots;
-extern short sandmouse_vanish_time;
-extern short sandmouse_dust_life_min;
-extern short sandmouse_dust_life_max;
-extern short sandmouse_dust_spread;
-extern short sandmouse_dust_size_min;
-extern short sandmouse_dust_size_max;
-extern short sandmouse_dust_alpha;
-extern short sandmouse_dust_accel;
+extern int sandmouse_attack_delay SDATA(D_L01_00162128);
+extern int sandmouse_max_shots SDATA(D_L01_0016212C);
+extern int sandmouse_vanish_time SDATA(D_L01_00162134);
+extern int sandmouse_dust_life_min SDATA(D_L01_00162138);
+extern int sandmouse_dust_life_max SDATA(D_L01_0016213C);
+extern f32 sandmouse_dust_spread SDATA(D_L01_00162140);
+extern f32 sandmouse_dust_size_min SDATA(D_L01_00162144);
+extern f32 sandmouse_dust_size_max SDATA(D_L01_00162148);
+extern int sandmouse_dust_alpha SDATA(D_L01_0016214C);
+extern f32 sandmouse_dust_accel SDATA(D_L01_00162150);
 extern void DetachManipulator(void *, void *);
 extern void MoveCtl_Init(void *);
 extern void MobyBlendAnimation(void *, int, int, int);
@@ -2880,7 +2871,7 @@ void sandmouse_update(Moby *m) {
                         break;
                 }
                 p->k5C = 0;
-                p->k58 = scale_ticks(*(int *)&sandmouse_attack_delay);
+                p->k58 = scale_ticks(sandmouse_attack_delay);
                 if (m->visible != 0) {
                     if ((m->anim_flags & 2) && m->prev_seq != 2) {
                         MobyBlendAnimation(m, 2, 0, scale_ticks(10));
@@ -3017,7 +3008,7 @@ void sandmouse_update(Moby *m) {
                 p->slot = Moby_PlaySound(1, 4, (int)m);
             }
         }
-            if (p->timer == scale_ticks(20) || *(int *)&sandmouse_max_shots - 5 < p->k5C) {
+            if (p->timer == scale_ticks(20) || sandmouse_max_shots - 5 < p->k5C) {
                 if (m->prev_seq != 2) {
                     MobyBlendAnimation(m, 2, 0, scale_ticks(5));
                 }
@@ -3032,12 +3023,12 @@ void sandmouse_update(Moby *m) {
                 if (*(int *)&h->items[2].moby != 0 && h->items[2].item_id == 5 && h->state.control_mode != 0x16 &&
                     h->state.control_mode != 0x14 && h->vehicle_mode == 0 &&
                     *(s16 *)(novalis_camera_moby + 0x86) != 0x14 && fast_dec_timer(&p->k58) == 0 &&
-                    p->k5C < *(int *)&sandmouse_max_shots) {
+                    p->k5C < sandmouse_max_shots) {
                     compute_sandmouse_follow_goal(m, p);
                     update_sandmouse_hover_movement(m, p);
                 } else {
                     qzero(&p->vel);
-                    p->timer = *(int *)&sandmouse_vanish_time;
+                    p->timer = sandmouse_vanish_time;
                     if (p->slot != -1) {
                         char *v = VOICE(p->slot);
                         if (*(Moby **)(v + 0x88) == m && *(u8 *)(v + 0x74) != 0) {
@@ -3075,19 +3066,18 @@ void sandmouse_update(Moby *m) {
                 int c0, c1, c2, color, life, spin;
                 f32 size;
                 qcopy(&pos, &m->pos);
-                add_random_offset_to_vector_xyz(&pos, *(f32 *)&sandmouse_dust_spread);
+                add_random_offset_to_vector_xyz(&pos, sandmouse_dust_spread);
                 c0 = (func_001160D8() + 0x30) & 0x3F;
                 c1 = (func_001160D8() + 0x20) & 0x3F;
                 c2 = func_001160D8() & 0x2F;
-                color = c0 | (c1 << 8) | (c2 << 16) | (*(int *)&sandmouse_dust_alpha << 24);
+                color = c0 | (c1 << 8) | (c2 << 16) | (sandmouse_dust_alpha << 24);
                 spin = func_001160D8() % 2;
                 if (p->timer & 1)
                     spin = -spin;
-                life = rand_range(*(int *)&sandmouse_dust_life_min, *(int *)&sandmouse_dust_life_max);
-                size = random_float_between(*(f32 *)&sandmouse_dust_size_min, *(f32 *)&sandmouse_dust_size_max);
-                PartType53Spawn(&pos, life, size, 0.001f, color, 2, spin, &vel,
-                                *(f32 *)&sandmouse_dust_accel * g_frame_time_sq);
-                dv = *(int *)&sandmouse_vanish_time;
+                life = rand_range(sandmouse_dust_life_min, sandmouse_dust_life_max);
+                size = random_float_between(sandmouse_dust_size_min, sandmouse_dust_size_max);
+                PartType53Spawn(&pos, life, size, 0.001f, color, 2, spin, &vel, sandmouse_dust_accel * g_frame_time_sq);
+                dv = sandmouse_vanish_time;
                 m->flags |= 0x200;
                 m->alpha -= 0x80 / dv;
                 m->rot.z = FastAddRots(m->rot.z, g_frame_time * 25.132742f);

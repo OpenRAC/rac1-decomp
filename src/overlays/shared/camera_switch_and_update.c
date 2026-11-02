@@ -563,7 +563,7 @@ extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern void divide_vector_xyz(float *, float *, float);
 extern int func_L00_001F10E0(void *, int, void *, float);
 extern W coll_resolved_pos;
-extern short gCamSphereMaskLvl;
+extern int gCamSphereMaskLvl SDATA(D_L00_0015F05C);
 
 /* moves the camera position a toward a target in steps, stopping each step on collision. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay_camera_001eb188.c, FUN_L00_001ed6a8. */
 void resolve_camera_movement_collisions(float *pos, float r) {
@@ -594,7 +594,7 @@ void resolve_camera_movement_collisions(float *pos, float r) {
         q = coll_resolved_pos;
         FastVecAdd(pos, pos, d);
         base = &g_hero;
-        for (j = 0; j < 6 && coll_sphere(pos, *(int *)&gCamSphereMaskLvl, *(void **)&base->moby, r); j++) {
+        for (j = 0; j < 6 && coll_sphere(pos, gCamSphereMaskLvl, *(void **)&base->moby, r); j++) {
             qcopy(pos, q);
             {
                 Camera *t = player_camera.current;

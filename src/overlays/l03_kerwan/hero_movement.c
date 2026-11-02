@@ -109,7 +109,7 @@ extern int g_current_level_index MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int kerwan_frame_count MACRO_ADDR;
 extern short kerwan_usage_event_timer;
-extern short kerwan_usage_event_count;
+extern int kerwan_usage_event_count SDATA(D_L03_0015F76C);
 extern unsigned char *kerwan_water_patches MACRO_ADDR;
 extern int kerwan_water_patch_count MACRO_ADDR;
 extern HeroPlayerCameraView kerwan_player_camera;
@@ -263,7 +263,7 @@ void HeroL03_UpdateStatePhysics(void) {
                             usage_stats.e[18].level_mask =
                                 usage_stats.e[18].level_mask | (1 << g_current_level_index) | 0x80000000;
                             *(int *)&kerwan_usage_event_timer = -1;
-                            (*(int *)&kerwan_usage_event_count)++;
+                            (kerwan_usage_event_count)++;
                         }
                     }
                 }

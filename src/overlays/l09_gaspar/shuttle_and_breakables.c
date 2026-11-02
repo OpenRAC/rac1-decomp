@@ -48,7 +48,7 @@ typedef struct {
     u8 padC4[8];
     f32 lag; /* 0xCC: eases to 0, slowing the turn while high */
 } PathFlyerVars;
-extern short gaspar_shuttle_climb_scale;
+extern f32 gaspar_shuttle_climb_scale SDATA(D_L09_00161E78);
 extern f32 g_frame_time_sq MACRO_ADDR;
 extern void vec_scale_to_length(void *, void *, f32);
 
@@ -74,7 +74,7 @@ int advance_shuttle_along_path(struct Moby *moby) {
     path = (PathNodes *)gaspar_paths[vars->path];
     vars->lag += (0.0f - vars->lag) * 0.005f;
     qcopy(&target, &path->node[vars->node]);
-    target.f[2] += vars->speed * (*(f32 *)&gaspar_shuttle_climb_scale);
+    target.f[2] += vars->speed * (gaspar_shuttle_climb_scale);
     FastVecSub(&step, &target, &moby->pos);
     vec_scale_to_length(&step, &step, vars->speed);
     FastVecAdd(&moby->pos, &moby->pos, &step);

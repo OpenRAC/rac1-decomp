@@ -87,7 +87,7 @@ typedef struct {
 } L12Slot;
 extern char hero_globals_base[];
 extern char hoven_water_tile_overflow_message[];
-extern short hoven_water_tile_slot_count;
+extern int hoven_water_tile_slot_count SDATA(D_L12_00161410);
 extern char hoven_ripple_patch_fixed[];
 extern char hoven_water_render_params[];
 extern char hoven_lights[];
@@ -159,9 +159,9 @@ void update_level_12_water_tile(char *moby) {
     data = (L12WaterTileData *)((struct Moby *)moby)->pvars;
     switch (state) {
         case 0: {
-            n = *(int *)&hoven_water_tile_slot_count;
+            n = hoven_water_tile_slot_count;
             data->slot = n;
-            *(int *)&hoven_water_tile_slot_count = n + 1;
+            hoven_water_tile_slot_count = n + 1;
             if (n + 1 > 0x7f) {
                 STUB_printf(hoven_water_tile_overflow_message);
             }
@@ -218,7 +218,7 @@ void update_level_12_water_tile(char *moby) {
         }
         case 1: {
             int slot = data->slot;
-            *(int *)&hoven_water_tile_slot_count = 0;
+            hoven_water_tile_slot_count = 0;
             initialize_level_12_slot_grid_neighbors(slot);
         }
             ((struct Moby *)moby)->state = 2;
@@ -421,23 +421,23 @@ void select_hoven_anklebiter_pursuit_animation(Moby *moby) {
 }
 typedef int u128 __attribute__((mode(TI)));
 extern float g_frame_time MACRO_ADDR;
-extern short spark_scatter_vertical_z_range_start;
-extern short spark_scatter_vertical_z_range_end;
-extern short spark_scatter_radial_z_range_start;
-extern short spark_scatter_radial_z_range_end;
-extern short spark_scatter_radial_xy_scale_range_start;
-extern short spark_scatter_radial_xy_scale_range_end;
-extern short spark_scatter_vertical_vector_w;
-extern short spark_scatter_radial_vector_w;
-extern short spark_scatter_frame_count_range_start;
-extern short spark_scatter_frame_count_range_end;
-extern short spark_scatter_second_frame_count_range_start;
-extern short spark_scatter_second_frame_count_range_end;
-extern short spark_scatter_third_frame_count_range_start;
-extern short spark_scatter_third_frame_count_range_end;
-extern short spark_scatter_color_a;
-extern short spark_scatter_color_b;
-extern short spark_scatter_sprite;
+extern float spark_scatter_vertical_z_range_start SDATA(D_L12_00161908);
+extern float spark_scatter_vertical_z_range_end SDATA(D_L12_0016190C);
+extern float spark_scatter_radial_z_range_start SDATA(D_L12_00161910);
+extern float spark_scatter_radial_z_range_end SDATA(D_L12_00161914);
+extern float spark_scatter_radial_xy_scale_range_start SDATA(D_L12_00161918);
+extern float spark_scatter_radial_xy_scale_range_end SDATA(D_L12_0016191C);
+extern float spark_scatter_vertical_vector_w SDATA(D_L12_00161920);
+extern float spark_scatter_radial_vector_w SDATA(D_L12_00161924);
+extern int spark_scatter_frame_count_range_start SDATA(D_L12_0016192C);
+extern int spark_scatter_frame_count_range_end SDATA(D_L12_00161930);
+extern int spark_scatter_second_frame_count_range_start SDATA(D_L12_00161934);
+extern int spark_scatter_second_frame_count_range_end SDATA(D_L12_00161938);
+extern int spark_scatter_third_frame_count_range_start SDATA(D_L12_0016193C);
+extern int spark_scatter_third_frame_count_range_end SDATA(D_L12_00161940);
+extern int spark_scatter_color_a SDATA(D_L12_00161944);
+extern int spark_scatter_color_b SDATA(D_L12_00161948);
+extern int spark_scatter_sprite SDATA(D_L12_0016194C);
 extern float random_angle_radians(void);
 extern float random_float_between(float, float);
 extern void clear_u64_value(void *);
@@ -464,29 +464,26 @@ void spawn_spark_scatter(void *pos) {
         w[0] = w[0] + random_float_between(-0.25f, 0.25f);
         w[1] = w[1] + random_float_between(-0.25f, 0.25f);
         clear_u64_value(v3);
-        v4[0] = FastCos(r) * (random_float_between(*(float *)&spark_scatter_radial_xy_scale_range_start,
-                                                   *(float *)&spark_scatter_radial_xy_scale_range_end) *
+        v4[0] = FastCos(r) * (random_float_between(spark_scatter_radial_xy_scale_range_start,
+                                                   spark_scatter_radial_xy_scale_range_end) *
                               g_frame_time);
-        v4[1] = FastSin(r) * (random_float_between(*(float *)&spark_scatter_radial_xy_scale_range_start,
-                                                   *(float *)&spark_scatter_radial_xy_scale_range_end) *
+        v4[1] = FastSin(r) * (random_float_between(spark_scatter_radial_xy_scale_range_start,
+                                                   spark_scatter_radial_xy_scale_range_end) *
                               g_frame_time);
         *(int *)&v4[2] = 0;
-        v3[2] = random_float_between(*(float *)&spark_scatter_vertical_z_range_start,
-                                     *(float *)&spark_scatter_vertical_z_range_end) *
+        v3[2] = random_float_between(spark_scatter_vertical_z_range_start, spark_scatter_vertical_z_range_end) *
                 g_frame_time;
-        v4[2] = random_float_between(*(float *)&spark_scatter_radial_z_range_start,
-                                     *(float *)&spark_scatter_radial_z_range_end) *
-                g_frame_time;
-        v3[3] = *(float *)&spark_scatter_vertical_vector_w;
-        v4[3] = *(float *)&spark_scatter_radial_vector_w;
-        a = truncate_float_to_s32_r(random_float_between((float)*(int *)&spark_scatter_frame_count_range_start,
-                                                         (float)*(int *)&spark_scatter_frame_count_range_end));
-        b = truncate_float_to_s32_r(random_float_between((float)*(int *)&spark_scatter_second_frame_count_range_start,
-                                                         (float)*(int *)&spark_scatter_second_frame_count_range_end));
-        c = truncate_float_to_s32_r(random_float_between((float)*(int *)&spark_scatter_third_frame_count_range_start,
-                                                         (float)*(int *)&spark_scatter_third_frame_count_range_end));
-        PartType02Spawn(w, v3, v4, *(int *)&spark_scatter_color_a, *(int *)&spark_scatter_color_b, a, b, c,
-                        *(int *)&spark_scatter_sprite);
+        v4[2] =
+            random_float_between(spark_scatter_radial_z_range_start, spark_scatter_radial_z_range_end) * g_frame_time;
+        v3[3] = spark_scatter_vertical_vector_w;
+        v4[3] = spark_scatter_radial_vector_w;
+        a = truncate_float_to_s32_r(random_float_between((float)spark_scatter_frame_count_range_start,
+                                                         (float)spark_scatter_frame_count_range_end));
+        b = truncate_float_to_s32_r(random_float_between((float)spark_scatter_second_frame_count_range_start,
+                                                         (float)spark_scatter_second_frame_count_range_end));
+        c = truncate_float_to_s32_r(random_float_between((float)spark_scatter_third_frame_count_range_start,
+                                                         (float)spark_scatter_third_frame_count_range_end));
+        PartType02Spawn(w, v3, v4, spark_scatter_color_a, spark_scatter_color_b, a, b, c, spark_scatter_sprite);
     } while (--i >= 0);
 }
 typedef struct TrollData54_2E2EF0 TrollData54_2E2EF0;
@@ -1012,25 +1009,25 @@ int move_hoven_anklebiter_toward_heading(char *moby, float target) {
     }
     return r;
 }
-extern short hoven_troll_burst_count;
-extern short hoven_troll_burst_particles_per_point;
-extern short hoven_troll_burst_origin_jitter;
-extern short hoven_troll_burst_particle_jitter;
-extern short hoven_troll_burst_accel_jitter;
-extern short hoven_troll_burst_xy_speed_min;
-extern short hoven_troll_burst_xy_speed_max;
-extern short hoven_troll_burst_z_speed_min;
-extern short hoven_troll_burst_z_speed_max;
-extern short hoven_troll_burst_gravity;
-extern short hoven_troll_burst_start_size;
-extern short hoven_troll_burst_end_size;
-extern short hoven_troll_burst_color_a_from;
-extern short hoven_troll_burst_color_b_from;
-extern short hoven_troll_burst_color_a_to;
-extern short hoven_troll_burst_color_b_to;
-extern short hoven_troll_burst_life_ticks;
-extern short hoven_troll_burst_phase2_ticks;
-extern short hoven_troll_burst_phase3_ticks;
+extern int hoven_troll_burst_count SDATA(D_L12_001618BC);
+extern int hoven_troll_burst_particles_per_point SDATA(D_L12_001618C0);
+extern float hoven_troll_burst_origin_jitter SDATA(D_L12_001618C4);
+extern float hoven_troll_burst_particle_jitter SDATA(D_L12_001618C8);
+extern float hoven_troll_burst_accel_jitter SDATA(D_L12_001618CC);
+extern float hoven_troll_burst_xy_speed_min SDATA(D_L12_001618D0);
+extern float hoven_troll_burst_xy_speed_max SDATA(D_L12_001618D4);
+extern float hoven_troll_burst_z_speed_min SDATA(D_L12_001618D8);
+extern float hoven_troll_burst_z_speed_max SDATA(D_L12_001618DC);
+extern float hoven_troll_burst_gravity SDATA(D_L12_001618E0);
+extern float hoven_troll_burst_start_size SDATA(D_L12_001618E4);
+extern float hoven_troll_burst_end_size SDATA(D_L12_001618E8);
+extern int hoven_troll_burst_color_a_from SDATA(D_L12_001618EC);
+extern int hoven_troll_burst_color_b_from SDATA(D_L12_001618F0);
+extern int hoven_troll_burst_color_a_to SDATA(D_L12_001618F4);
+extern int hoven_troll_burst_color_b_to SDATA(D_L12_001618F8);
+extern int hoven_troll_burst_life_ticks SDATA(D_L12_001618FC);
+extern int hoven_troll_burst_phase2_ticks SDATA(D_L12_00161900);
+extern int hoven_troll_burst_phase3_ticks SDATA(D_L12_00161904);
 extern void add_random_offset_to_vector_xyz(float *v, float s);
 extern void FastVecScale(void *, void *, float);
 extern int FastTweenColor(int, int, float);
@@ -1048,7 +1045,7 @@ void TrollSpawnBurst(struct Moby *mp) {
     float f21;
     float f22;
     float r;
-    int n = *(int *)&hoven_troll_burst_count;
+    int n = hoven_troll_burst_count;
     int i;
     int j;
     int k;
@@ -1064,13 +1061,11 @@ void TrollSpawnBurst(struct Moby *mp) {
             float *d2 = dst;
             qcopy_nc(d2, src);
         }
-        add_random_offset_to_vector_xyz(v, (*(float *)&hoven_troll_burst_origin_jitter));
+        add_random_offset_to_vector_xyz(v, (hoven_troll_burst_origin_jitter));
         v[2] = v[2] + 0.55f;
         f22 = random_angle_radians();
-        f20 = random_float_between((*(float *)&hoven_troll_burst_xy_speed_min),
-                                   (*(float *)&hoven_troll_burst_xy_speed_max));
-        f21 = random_float_between((*(float *)&hoven_troll_burst_z_speed_min),
-                                   (*(float *)&hoven_troll_burst_z_speed_max));
+        f20 = random_float_between((hoven_troll_burst_xy_speed_min), (hoven_troll_burst_xy_speed_max));
+        f21 = random_float_between((hoven_troll_burst_z_speed_min), (hoven_troll_burst_z_speed_max));
         if (((unsigned char)arg0[0x20]) == 0xF) {
             f20 = f20 * 0.55f;
             f21 = f21 * 0.55f;
@@ -1085,22 +1080,22 @@ void TrollSpawnBurst(struct Moby *mp) {
         o[2] = 0.0f;
         FastVecAdd(a, a, o);
         qcopy(b, a);
-        k = scale_ticks((*(int *)&hoven_troll_burst_phase2_ticks));
-        b[2] = b[2] - ((*(float *)&hoven_troll_burst_gravity) * g_frame_time_sq) * (float)k;
-        for (j = 0; j < (*(int *)&hoven_troll_burst_particles_per_point); j++) {
+        k = scale_ticks((hoven_troll_burst_phase2_ticks));
+        b[2] = b[2] - ((hoven_troll_burst_gravity)*g_frame_time_sq) * (float)k;
+        for (j = 0; j < (hoven_troll_burst_particles_per_point); j++) {
             r = random_float_between(0.5f, 1.5f);
-            a[3] = r * *(float *)&hoven_troll_burst_start_size;
-            b[3] = r * *(float *)&hoven_troll_burst_end_size;
-            add_random_offset_to_vector_xyz(v, (*(float *)&hoven_troll_burst_particle_jitter));
-            add_random_offset_to_vector_xyz(b, (*(float *)&hoven_troll_burst_accel_jitter) * g_frame_time);
+            a[3] = r * hoven_troll_burst_start_size;
+            b[3] = r * hoven_troll_burst_end_size;
+            add_random_offset_to_vector_xyz(v, (hoven_troll_burst_particle_jitter));
+            add_random_offset_to_vector_xyz(b, (hoven_troll_burst_accel_jitter)*g_frame_time);
             r = random_float_between(0.0f, 1.0f);
-            x19 = FastTweenColor((*(int *)&hoven_troll_burst_color_a_from), (*(int *)&hoven_troll_burst_color_a_to), r);
+            x19 = FastTweenColor((hoven_troll_burst_color_a_from), (hoven_troll_burst_color_a_to), r);
             r = random_float_between(0.0f, 1.0f);
-            x18 = FastTweenColor((*(int *)&hoven_troll_burst_color_b_from), (*(int *)&hoven_troll_burst_color_b_to), r);
-            x17 = scale_ticks((*(int *)&hoven_troll_burst_life_ticks));
-            x16 = scale_ticks((*(int *)&hoven_troll_burst_phase2_ticks));
-            r = random_float_between((float)(*(int *)&hoven_troll_burst_phase3_ticks) * 0.5f,
-                                     (float)(*(int *)&hoven_troll_burst_phase3_ticks) * 2.5f);
+            x18 = FastTweenColor((hoven_troll_burst_color_b_from), (hoven_troll_burst_color_b_to), r);
+            x17 = scale_ticks((hoven_troll_burst_life_ticks));
+            x16 = scale_ticks((hoven_troll_burst_phase2_ticks));
+            r = random_float_between((float)(hoven_troll_burst_phase3_ticks) * 0.5f,
+                                     (float)(hoven_troll_burst_phase3_ticks) * 2.5f);
             r = multiply_global_factor(r);
             r7 = truncate_float_to_s32_r(r);
             PartType02Spawn(v, a, b, x19, x18, x17, x16, r7, -1);
@@ -1283,7 +1278,7 @@ void emit_platform_exhaust_effects(char *m) {
     PartType23Spawn(p2, 0.05f, 1.01f, 1.03f, 6, b, 30000.0f, 0x404040);
 }
 extern float g_frame_scale_sq MACRO_ADDR;
-extern short platform_tilt_approach_divisor;
+extern float platform_tilt_approach_divisor SDATA(D_L12_00161998);
 extern float FastVecLength(void *);
 extern float FastDiffRots(float, float);
 extern void ApproachValue(void *, float, float);
@@ -1315,14 +1310,14 @@ void steer_platform_toward_target(Moby *m, float *ang, void *target, int unused,
             speed -= d->accel * g_frame_time_sq;
     }
     vec_scale_to_length(&d->vel, v, speed);
-    ApproachValue(&m->rot, ang[0], FastDiffRots(ang[0], m->rot.x) / (*(float *)&platform_tilt_approach_divisor));
-    ApproachValue(&m->rot.y, ang[1], FastDiffRots(ang[1], m->rot.y) / (*(float *)&platform_tilt_approach_divisor));
+    ApproachValue(&m->rot, ang[0], FastDiffRots(ang[0], m->rot.x) / (platform_tilt_approach_divisor));
+    ApproachValue(&m->rot.y, ang[1], FastDiffRots(ang[1], m->rot.y) / (platform_tilt_approach_divisor));
     SpringAngle(&m->rot.z, ang[2], &d->yaw_vel, 0, g_frame_scale_sq * 0.005f, g_frame_scale_sq * 0.3f,
                 g_frame_time * lim);
     FastVecAdd(&m->pos, &m->pos, &d->vel);
 }
 extern char hero_globals_base[];
-extern short platform_tilt_offset_divisor;
+extern float platform_tilt_offset_divisor SDATA(D_L12_00161994);
 extern void FastVecSub(void *, void *, void *);
 extern void euler_to_matrix(void *, void *);
 extern void transform_vector(void *, void *, void *);
@@ -1340,7 +1335,7 @@ void compute_platform_target_tilt(char *moby, float *out, int on) {
         m[2] = -*(float *)(moby + 0x48);
         euler_to_matrix(b, m);
         transform_vector(a, a, b);
-        g = *(float *)&platform_tilt_offset_divisor;
+        g = platform_tilt_offset_divisor;
         out[1] = a[0] / g;
         out[0] = -a[1] / g;
     } else {
@@ -3550,8 +3545,8 @@ extern int PlayBankSound(int, int, int);
 extern void spawn_randomized_bolt_drop(void *, int, int, int, int);
 extern int fast_dec_timer(int *arg0);
 
-extern short helicopter_hit_count;
-extern short planetbuster_engaged;
+extern int helicopter_hit_count SDATA(D_0015EF04);
+extern int planetbuster_engaged SDATA(D_L12_00161A34);
 
 // Spawns the effect for a moby and updates its state flags from the effect timer.
 void process_helicopter_hits_and_reactivation(char *m, int flag) {
@@ -3561,8 +3556,8 @@ void process_helicopter_hits_and_reactivation(char *m, int flag) {
     unsigned char *q;
     if (MobyGetHitMessage(m, 0xA30000, 0) != 0) {
         if (g_hero.state.current != 0x32) {
-            *(int *)&helicopter_hit_count += 1;
-            if (*(int *)&helicopter_hit_count >= 5) {
+            helicopter_hit_count += 1;
+            if (helicopter_hit_count >= 5) {
                 q = (unsigned char *)gSkillPoints;
                 if (q[0x15] == 0) {
                     q[0x15] = 1;
@@ -3578,13 +3573,13 @@ void process_helicopter_hits_and_reactivation(char *m, int flag) {
         spawn_explosion(m, b, a, 0.0f, 0.0f, 0x14, 3, 4, 4.0f, 2.0f, 100000.0f, -1, 3.0f, 15.0f, 1, 1, -1, 0);
     }
     ((Moby *)m)->hit_slot = 0xFF;
-    if (*(int *)&planetbuster_engaged != 0 && flag != 0) {
+    if (planetbuster_engaged != 0 && flag != 0) {
         *(int *)&((Moby *)m)->collision = 0;
         ((Moby *)m)->flags = (((Moby *)m)->flags | 0x41) & 0xEFFF;
     }
     if (d->hit_timer == 0 && (((Moby *)m)->flags & 1) == 0)
         return;
-    if (fast_dec_timer(&d->hit_timer) != 0 && flag != 0 && *(int *)&planetbuster_engaged == 0) {
+    if (fast_dec_timer(&d->hit_timer) != 0 && flag != 0 && planetbuster_engaged == 0) {
         *(int *)&((Moby *)m)->collision = *(int *)(*(char **)&((struct Moby *)m)->pclass + 0x10);
         ((Moby *)m)->flags = (((Moby *)m)->flags & 0xFFBE) | 0x1000;
     } else {
@@ -3598,9 +3593,9 @@ extern void process_helicopter_hits_and_reactivation(char *m, int flag);
 extern void initialize_path_descriptor(char *p);
 extern float FastVecLength(void *a);
 extern float FastAddRots(float, float);
-extern short helicopter_path_speed;
-extern short helicopter_path_bank_scale;
-extern short helicopter_rotation_smoothing_divisor;
+extern float helicopter_path_speed SDATA(D_L12_00161A28);
+extern float helicopter_path_bank_scale SDATA(D_L12_00161A2C);
+extern float helicopter_rotation_smoothing_divisor SDATA(D_L12_00161A30);
 
 /* UpdateMoby_336: does nothing without a data block. State 0 picks a table from hoven_paths[data + 0x74] and
  * places the moby at one of its points; state 1 walks the table's points (index at data + 0x60), easing the angles at
@@ -3657,9 +3652,9 @@ void helicopter_336_update(Moby *m) {
                 h = fast_atan2(A[0], A[1]);
                 h = FastSubRots(h, fast_atan2(B[0], B[1]));
                 ang = h / FastVecLength(A);
-                m->rot.x = FastAddRots(m->rot.x, FastSubRots(ang * *(float *)&helicopter_path_bank_scale, m->rot.x) /
-                                                     *(float *)&helicopter_rotation_smoothing_divisor);
-                if (FastVecDist(&m->pos, C) < *(float *)&helicopter_path_speed * g_frame_time) {
+                m->rot.x = FastAddRots(m->rot.x, FastSubRots(ang * helicopter_path_bank_scale, m->rot.x) /
+                                                     helicopter_rotation_smoothing_divisor);
+                if (FastVecDist(&m->pos, C) < helicopter_path_speed * g_frame_time) {
                     char *t3;
                     d->path_pos = next;
                     t3 = *(char **)(p + 0x10);
@@ -3668,10 +3663,10 @@ void helicopter_336_update(Moby *m) {
                     }
                 }
                 FastVecSub(E, C, &m->pos);
-                vec_scale_to_length(E, E, *(float *)&helicopter_path_speed * g_frame_time);
+                vec_scale_to_length(E, E, helicopter_path_speed * g_frame_time);
                 FastVecAdd(&m->pos, &m->pos, E);
                 m->rot.z = FastAddRots(m->rot.z, FastSubRots(fast_atan2(E[0], E[1]), m->rot.z) /
-                                                     *(float *)&helicopter_rotation_smoothing_divisor);
+                                                     helicopter_rotation_smoothing_divisor);
                 m->rot.y = 0.52359879f;
                 break;
             }

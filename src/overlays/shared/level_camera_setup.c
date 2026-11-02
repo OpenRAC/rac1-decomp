@@ -19,7 +19,7 @@ extern Camera gCameraSlotsLvl[];
 
 extern int gCamPostUpdCountLvl MACRO_ADDR;
 extern int gCameraDefCountLvl MACRO_ADDR;
-extern short follow_cam_turn_blend_weight;
+extern float follow_cam_turn_blend_weight SDATA(D_L00_0015F040);
 extern CameraDef *camera_descriptors MACRO_ADDR;
 extern void clear_u64_value(void *);
 
@@ -35,7 +35,7 @@ void setup_level_cameras(void) {
 
     g->underwater = 0;
     g->frames = 0;
-    *(float *)&follow_cam_turn_blend_weight = 0.75f;
+    follow_cam_turn_blend_weight = 0.75f;
     gCamPostUpdCountLvl = 0;
     for (k = 0; k < 48; k++) {
         gCameraSlotsLvl[k].hard_cut = 0;

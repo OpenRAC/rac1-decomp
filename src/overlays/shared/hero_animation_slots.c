@@ -1369,7 +1369,7 @@ float sum_basis_absolute_differences(float *a, float *b) {
     }
     return s;
 }
-extern short hero_item_history_delay_target;
+extern int hero_item_history_delay_target SDATA(D_L00_0015F774);
 extern void matrix_copy_rows(void *, void *);
 
 extern void clear_u64_value(void *);
@@ -1411,19 +1411,19 @@ void update_hero_item_rotation_from_history(char *arg, void *mat) {
     {
         struct Hero *b = (struct Hero *)(hero_globals_base + 0xE1D);
         if (b->state.control_mode == 0x16) {
-            *(int *)&hero_item_history_delay_target = 14;
+            hero_item_history_delay_target = 14;
         } else if (b->state.current == HERO_STATE_RUN) {
-            *(int *)&hero_item_history_delay_target = 5;
+            hero_item_history_delay_target = 5;
         } else {
-            *(int *)&hero_item_history_delay_target = 11;
+            hero_item_history_delay_target = 11;
         }
     }
 
     {
         char *b = hero_globals_base + 0xE1D;
-        if (*(int *)(b + 0x21C0) < *(int *)&hero_item_history_delay_target) {
+        if (*(int *)(b + 0x21C0) < hero_item_history_delay_target) {
             *(int *)(b + 0x21C0) = *(int *)(b + 0x21C0) + 1;
-        } else if (*(int *)&hero_item_history_delay_target < *(int *)(b + 0x21C0)) {
+        } else if (hero_item_history_delay_target < *(int *)(b + 0x21C0)) {
             *(int *)(b + 0x21C0) = *(int *)(b + 0x21C0) - 1;
         }
     }

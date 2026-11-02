@@ -10,9 +10,9 @@ int draw_hud_text_panel(char *e) {
     unsigned char *opacity = (unsigned char *)e + 0x70;
 
     if (pal_mode != 0) {
-        y = *(int *)&hud_text_panel_y + 0xa;
+        y = hud_text_panel_y + 0xa;
     } else {
-        y = *(int *)&hud_text_panel_y + 0x12;
+        y = hud_text_panel_y + 0x12;
     }
     fade = IntToFloat(*opacity);
     fade /= multiply_global_factor(8.0f);

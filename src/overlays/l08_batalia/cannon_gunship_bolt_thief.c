@@ -1164,7 +1164,7 @@ extern void FastVecAdd(void *, void *, void *);
 extern float FastAddRots(float, float);
 
 extern short g_frame_time_g __asm__("D_0015EE6C");
-extern short gunship_rotor_spin_speed;
+extern float gunship_rotor_spin_speed SDATA(D_L08_00161CCC);
 
 typedef struct {
     struct Moby *part; /* moved along with the anchor's joint */
@@ -1203,17 +1203,17 @@ void update_linked_moby_parts(char *moby) {
     if (linked_parts_vars->links[7].part != 0) {
         linked_parts_vars->links[7].part->rot.x =
             FastAddRots(linked_parts_vars->links[7].part->rot.x,
-                        *(float *)&gunship_rotor_spin_speed * 0.017453293f * *(float *)&g_frame_time_g);
+                        gunship_rotor_spin_speed * 0.017453293f * *(float *)&g_frame_time_g);
     }
     if (linked_parts_vars->links[8].part != 0) {
         linked_parts_vars->links[8].part->rot.x =
             FastAddRots(linked_parts_vars->links[8].part->rot.x,
-                        -(*(float *)&gunship_rotor_spin_speed * 0.017453293f * *(float *)&g_frame_time_g));
+                        -(gunship_rotor_spin_speed * 0.017453293f * *(float *)&g_frame_time_g));
     }
     if (linked_parts_vars->links[9].part != 0) {
         linked_parts_vars->links[9].part->rot.x =
             FastAddRots(linked_parts_vars->links[9].part->rot.x,
-                        *(float *)&gunship_rotor_spin_speed * 0.017453293f * *(float *)&g_frame_time_g);
+                        gunship_rotor_spin_speed * 0.017453293f * *(float *)&g_frame_time_g);
     }
     aim_part = linked_parts_vars->links[3].part;
     if (aim_part != 0) {
@@ -1328,10 +1328,10 @@ typedef struct {
     s16 pad28C;
     s16 sound; /* 0x28E */
 } GunshipVars;
-extern short gunship_update_disabled;
-extern short gunship_fly_speed;
-extern short gunship_turn_accel;
-extern short gunship_max_turn_speed;
+extern s32 gunship_update_disabled SDATA(D_L08_00161CDC);
+extern f32 gunship_fly_speed SDATA(D_L08_00161CC8);
+extern f32 gunship_turn_accel SDATA(D_L08_00161CD4);
+extern f32 gunship_max_turn_speed SDATA(D_L08_00161CD8);
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern s32 g_current_level_index MACRO_ADDR;
@@ -1380,7 +1380,7 @@ void update_gunship(struct Moby *moby) {
     f32 pitch;
     f32 yaw;
 
-    if ((*(s32 *)&gunship_update_disabled) != 0) {
+    if ((gunship_update_disabled) != 0) {
         return;
     }
     if (!Sound_IsPlaying(moby, vars->sound)) {
@@ -1417,8 +1417,8 @@ void update_gunship(struct Moby *moby) {
                 vars->follow[0].point = waypoint;
             }
             FastVecSub(&step, &point, &moby->pos);
-            if (FastVecLength(&step) > (*(f32 *)&gunship_fly_speed) * g_frame_time) {
-                vec_scale_to_length(&step, &step, (*(f32 *)&gunship_fly_speed) * g_frame_time);
+            if (FastVecLength(&step) > (gunship_fly_speed)*g_frame_time) {
+                vec_scale_to_length(&step, &step, (gunship_fly_speed)*g_frame_time);
             }
             FastVecAdd(&moby->pos, &moby->pos, &step);
             if (moby->command == 0) {
@@ -1438,8 +1438,7 @@ void update_gunship(struct Moby *moby) {
             } else if (yaw <= 0.0f && yaw > -0.34f) {
                 yaw = -0.34f;
             }
-            vec_scale_to_length(&velocity, &step,
-                                ((*(f32 *)&gunship_fly_speed) + (*(f32 *)&gunship_fly_speed)) * g_frame_time);
+            vec_scale_to_length(&velocity, &step, ((gunship_fly_speed) + (gunship_fly_speed)) * g_frame_time);
             shot = spawn_rocket_435_projectile(&muzzle, target, &velocity, pitch, yaw);
             shot->scale = shot->pclass->scale / 5.0f;
             target_vars = (SwarmTargetVars *)target->pvars;
@@ -1466,16 +1465,16 @@ void update_gunship(struct Moby *moby) {
             heading = fast_atan2(follower->path->points[next].f[0] - moby->pos.x,
                                  follower->path->points[next].f[1] - moby->pos.y);
             SteerAngleWithVelocity(&moby->rot.z, &vars->turn_speed, heading,
-                                   (*(f32 *)&gunship_turn_accel) * 0.017453292f * g_frame_time_sq,
-                                   (*(f32 *)&gunship_turn_accel) * 0.017453292f * g_frame_time_sq,
-                                   (*(f32 *)&gunship_max_turn_speed) * 0.017453292f * g_frame_time);
+                                   (gunship_turn_accel) * 0.017453292f * g_frame_time_sq,
+                                   (gunship_turn_accel) * 0.017453292f * g_frame_time_sq,
+                                   (gunship_max_turn_speed) * 0.017453292f * g_frame_time);
             qcopy(&point, &follower->path->points[next]);
             if (FastVecDist(&moby->pos, &point) < 0.5f) {
                 follower->point = next;
             }
             FastVecSub(&step, &point, &moby->pos);
-            if (FastVecLength(&step) > (*(f32 *)&gunship_fly_speed) * g_frame_time) {
-                vec_scale_to_length(&step, &step, (*(f32 *)&gunship_fly_speed) * g_frame_time);
+            if (FastVecLength(&step) > (gunship_fly_speed)*g_frame_time) {
+                vec_scale_to_length(&step, &step, (gunship_fly_speed)*g_frame_time);
             }
             FastVecAdd(&moby->pos, &moby->pos, &step);
             func_L08_002E33F0_E3860(moby);
@@ -1486,8 +1485,7 @@ void update_gunship(struct Moby *moby) {
             Moby_GetJointWorldPos(vars->links[4].part, 1, &muzzle);
             pitch = random_float_between(-0.5235988f, -0.2617994f);
             yaw = random_angle_radians();
-            vec_scale_to_length(&velocity, &step,
-                                ((*(f32 *)&gunship_fly_speed) + (*(f32 *)&gunship_fly_speed)) * g_frame_time);
+            vec_scale_to_length(&velocity, &step, ((gunship_fly_speed) + (gunship_fly_speed)) * g_frame_time);
             bolt = spawn_rocket_435_projectile(&muzzle, 0, &velocity, pitch, yaw);
             if (bolt != 0) {
                 bolt->rot.z = vars->links[4].part->rot.z;
@@ -2500,8 +2498,8 @@ extern void VU1_addGSregister(int, long);
 extern int GetEffectTex(int);
 extern void draw_geometry_quad_5188(void *, void *, void *, s32, s32);
 extern char batalia_screen_projection_base[];
-extern short bolt_pickup_quad_center_offset_along_moby_e0;
-extern short bolt_pickup_quad_center_offset_along_moby_c0;
+extern float bolt_pickup_quad_center_offset_along_moby_e0 SDATA(D_L08_00161CEC);
+extern float bolt_pickup_quad_center_offset_along_moby_c0 SDATA(D_L08_00161CF0);
 
 /* When the short at data + 0x6C is nonzero, projects the moby's offset position to screen space and draws a
  * four-corner quad there, its corners rotated in 90-degree steps by the angle at data + 0x74 and scaled by distance. */
@@ -2519,9 +2517,9 @@ void draw_batalia_bolt_pickup_rotating_quad(char *m) {
         long r16;
         int dv;
         qcopy(a, m + 0x10);
-        vec_scale_to_length(b, m + 0xE0, *(float *)&bolt_pickup_quad_center_offset_along_moby_e0);
+        vec_scale_to_length(b, m + 0xE0, bolt_pickup_quad_center_offset_along_moby_e0);
         FastVecAdd(a, a, b);
-        vec_scale_to_length(b, m + 0xC0, *(float *)&bolt_pickup_quad_center_offset_along_moby_c0);
+        vec_scale_to_length(b, m + 0xC0, bolt_pickup_quad_center_offset_along_moby_c0);
         FastVecAdd(a, a, b);
         FastVecSub(a, a, batalia_hero_pos);
         len = FastVecLength(a);
@@ -2703,7 +2701,7 @@ extern void FastVecAdd(void *, void *, void *);
 extern float FastAddRots(float, float);
 extern void moby_build_matrix(void *);
 extern float g_frame_time MACRO_ADDR;
-extern short shrub_part_spin_speed;
+extern float shrub_part_spin_speed SDATA(D_L08_00161DB8);
 
 /* Re-aims the twelve child mobys of a parent, adjusts the parent's spin, then runs the children's follow-up. */
 void update_shrub_parts(char *a) {
@@ -2725,9 +2723,8 @@ void update_shrub_parts(char *a) {
     }
     if (*(int *)&data->slots[3].part != 0) {
         struct Moby *spinning_part_moby = *(struct Moby **)&data->slots[3].part;
-        (*(struct Moby **)&data->slots[3].part)->rot.x =
-            FastAddRots(spinning_part_moby->rot.x,
-                        *(float *)&shrub_part_spin_speed * 0.01745329238474369049072265625f * g_frame_time);
+        (*(struct Moby **)&data->slots[3].part)->rot.x = FastAddRots(
+            spinning_part_moby->rot.x, shrub_part_spin_speed * 0.01745329238474369049072265625f * g_frame_time);
     }
     for (i = 0; i < 12; i++) {
         struct Moby *m = ((PartLink *)(base + 0x10 + i * 16))->part;
@@ -3119,7 +3116,7 @@ void process_linked_moby_part_hits(struct Moby *moby) {
         Moby_PlaySound_r3(sound, 0, moby);
 }
 extern void moby_build_matrix();
-extern short commando_part_spin_speed;
+extern float commando_part_spin_speed SDATA(D_L08_00161DC8);
 
 // Updates the moby's attached parts: pose each one, scale one value, then run the flagged ones.
 void update_commando_parts(char *arg) {
@@ -3143,9 +3140,8 @@ void update_commando_parts(char *arg) {
         }
     }
     if (*(struct Moby **)&data->slots[3].part != 0) {
-        (*(struct Moby **)&data->slots[3].part)->rot.x =
-            FastAddRots((*(struct Moby **)&data->slots[3].part)->rot.x,
-                        *(float *)&commando_part_spin_speed * 0.0174532925f * g_frame_time);
+        (*(struct Moby **)&data->slots[3].part)->rot.x = FastAddRots(
+            (*(struct Moby **)&data->slots[3].part)->rot.x, commando_part_spin_speed * 0.0174532925f * g_frame_time);
     }
     part_entry_cursor = parts + 0x10;
     for (i = 0; i < 16; i++) {

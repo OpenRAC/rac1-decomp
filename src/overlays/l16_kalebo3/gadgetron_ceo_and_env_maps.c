@@ -551,11 +551,11 @@ void update_path_walker(unsigned char *m) {
     }
 }
 typedef int u128 __attribute__((mode(TI)));
-extern short path_walker_particle_color_start;
-extern short path_walker_particle_color_end;
-extern short path_walker_particle_movement_velocity_scale;
-extern short path_walker_particle_random_velocity_scale;
-extern short path_walker_particle_target_scalar_scale;
+extern int path_walker_particle_color_start SDATA(D_L16_00161F58);
+extern int path_walker_particle_color_end SDATA(D_L16_00161F5C);
+extern float path_walker_particle_movement_velocity_scale SDATA(D_L16_00161F60);
+extern float path_walker_particle_random_velocity_scale SDATA(D_L16_00161F64);
+extern float path_walker_particle_target_scalar_scale SDATA(D_L16_00161F68);
 extern void FastVecScale(void *, void *, float);
 extern void vec_scale_to_length(void *, void *, float);
 extern float random_angle_radians(void);
@@ -576,8 +576,8 @@ void emit_path_walker_particle(unsigned char *m, void *v) {
     if (!(FastVecDist(m + 0x10, kalebo3_camera_pos) < 75.0f))
         return;
     r = FastVecDist(m + 0x10, input);
-    FastVecScale(out, m + 0xC0, *(float *)&path_walker_particle_movement_velocity_scale * r);
-    size = *(float *)&path_walker_particle_random_velocity_scale;
+    FastVecScale(out, m + 0xC0, path_walker_particle_movement_velocity_scale * r);
+    size = path_walker_particle_random_velocity_scale;
     size *= g_frame_time;
     vec_scale_to_length(offset, m + 0xC0, -0.5f);
     FastVecAdd(offset, offset, m + 0x10);
@@ -585,10 +585,10 @@ void emit_path_walker_particle(unsigned char *m, void *v) {
     b = random_angle_radians();
     BuildSphericalOffset(velocity, size, a, b);
     FastVecAdd(velocity, velocity, out);
-    final_size = *(float *)&path_walker_particle_target_scalar_scale;
+    final_size = path_walker_particle_target_scalar_scale;
     final_size *= 210000.0f;
-    spawn_effect_particle_with_target_scalar(offset, velocity, *(int *)&path_walker_particle_color_start,
-                                             *(int *)&path_walker_particle_color_end, final_size, scale_ticks(0x23));
+    spawn_effect_particle_with_target_scalar(offset, velocity, path_walker_particle_color_start,
+                                             path_walker_particle_color_end, final_size, scale_ticks(0x23));
 }
 
 extern float IntToFloat(int);

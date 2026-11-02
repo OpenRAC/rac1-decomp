@@ -255,14 +255,14 @@ extern float blarg_gadgebot_container_face_centers[][4];
 extern float blarg_gadgebot_container_face_normals[][4];
 extern short blarg_gadgebot_container_face_indices[][8];
 extern float blarg_gadgebot_container_face_uvs[][2];
-extern short blarg_gadgebot_container_alpha_a;
-extern short blarg_gadgebot_container_alpha_b;
-extern short blarg_gadgebot_container_alpha_c;
-extern short blarg_gadgebot_container_alpha_d;
-extern short blarg_gadgebot_container_alpha_fix;
-extern short blarg_gadgebot_container_texture;
-extern short blarg_gadgebot_container_color;
-extern short blarg_gadgebot_container_normal_scale;
+extern int blarg_gadgebot_container_alpha_a SDATA(D_L06_00161900);
+extern int blarg_gadgebot_container_alpha_b SDATA(D_L06_00161904);
+extern int blarg_gadgebot_container_alpha_c SDATA(D_L06_00161908);
+extern int blarg_gadgebot_container_alpha_d SDATA(D_L06_0016190C);
+extern int blarg_gadgebot_container_alpha_fix SDATA(D_L06_00161910);
+extern int blarg_gadgebot_container_texture SDATA(D_L06_00161914);
+extern int blarg_gadgebot_container_color SDATA(D_L06_00161918);
+extern float blarg_gadgebot_container_normal_scale SDATA(D_L06_0016191C);
 
 extern float vec_length(float);
 extern void transform_vector(void *, void *, void *);
@@ -310,7 +310,7 @@ void draw_gadgebot_spawn_container(char *moby) {
             FastVecSub(direction, blarg_gadgebot_container_world_verts[i], blarg_camera_pos);
             vec_scale_to_length(direction, direction, 1.0f);
             transform_vector(normal, blarg_gadgebot_container_vert_normals[i], matrix);
-            vec_scale_to_length(normal, normal, *(float *)&blarg_gadgebot_container_normal_scale);
+            vec_scale_to_length(normal, normal, blarg_gadgebot_container_normal_scale);
             scale = FastVecDot(normal, direction);
             FastVecScale(projected, normal, scale + scale);
             FastVecSub(projected, direction, projected);
@@ -326,17 +326,16 @@ void draw_gadgebot_spawn_container(char *moby) {
             transform_vector(blarg_gadgebot_container_world_verts[i], blarg_gadgebot_container_verts[i], matrix);
         }
     }
-    quad.tex = GetEffectTex(*(int *)&blarg_gadgebot_container_texture);
+    quad.tex = GetEffectTex(blarg_gadgebot_container_texture);
     quad.unk80 = 0xff9000000260L;
-    quad.unk88 =
-        (long)*(int *)&blarg_gadgebot_container_alpha_a | (long)*(int *)&blarg_gadgebot_container_alpha_b << 2 |
-        (long)*(int *)&blarg_gadgebot_container_alpha_c << 4 | (long)*(int *)&blarg_gadgebot_container_alpha_d << 6 |
-        (long)*(int *)&blarg_gadgebot_container_alpha_fix << 32;
+    quad.unk88 = (long)blarg_gadgebot_container_alpha_a | (long)blarg_gadgebot_container_alpha_b << 2 |
+                 (long)blarg_gadgebot_container_alpha_c << 4 | (long)blarg_gadgebot_container_alpha_d << 6 |
+                 (long)blarg_gadgebot_container_alpha_fix << 32;
     quad.unk70 = 0;
-    quad.color[3] = *(int *)&blarg_gadgebot_container_color;
-    quad.color[2] = *(int *)&blarg_gadgebot_container_color;
-    quad.color[1] = *(int *)&blarg_gadgebot_container_color;
-    quad.color[0] = *(int *)&blarg_gadgebot_container_color;
+    quad.color[3] = blarg_gadgebot_container_color;
+    quad.color[2] = blarg_gadgebot_container_color;
+    quad.color[1] = blarg_gadgebot_container_color;
+    quad.color[0] = blarg_gadgebot_container_color;
     i = 0;
     do {
         float *center = facePos;
@@ -407,8 +406,8 @@ void initialize_moby_particle_effect_state(char *moby) {
     initialize_moby_particle_effect(moby);
 }
 typedef int u128_9AA8 __attribute__((mode(TI)));
-extern short blarg_frog_update_disabled;
-extern short blarg_frog_spawn_counter;
+extern int blarg_frog_update_disabled SDATA(D_L06_00161CA0);
+extern int blarg_frog_spawn_counter SDATA(D_L06_00161CA4);
 extern short blarg_frog_pvars_d0_table;
 extern int level_game_mode_q MACRO_ADDR;
 extern int blarg_shuttle_at_second_stop MACRO_ADDR;
@@ -457,7 +456,7 @@ void frog_update(unsigned char *m) {
     int s;
 
     d = ((char *)((Moby *)m)->pvars);
-    if (*(int *)&blarg_frog_update_disabled != 0) {
+    if (blarg_frog_update_disabled != 0) {
         return;
     }
     s = level_game_mode_q;
@@ -487,10 +486,10 @@ void frog_update(unsigned char *m) {
     switch (((Moby *)m)->state) {
         case 0: {
             float f;
-            int c = *(int *)&blarg_frog_spawn_counter;
+            int c = blarg_frog_spawn_counter;
             int n = ((struct FrogVars *)d)->lives;
             ((struct FrogVars *)d)->frame_slot = c % 8;
-            *(int *)&blarg_frog_spawn_counter = c + 1;
+            blarg_frog_spawn_counter = c + 1;
             if (n != 0) {
                 ((Moby *)m)->unkB4 = ((Moby *)m)->unkB4 / n;
             }
@@ -786,9 +785,9 @@ struct MobyHit {
     struct Moby *source;
 };
 extern f32 blarg_zero_vec[] MACRO_ADDR;
-extern short frog_glow_phase_rate_degrees_gp;
-extern short frog_glow_color_start_gp;
-extern short frog_glow_color_end_gp;
+extern f32 frog_glow_phase_rate_degrees_gp SDATA(D_L06_00161C94);
+extern int frog_glow_color_start_gp SDATA(D_L06_00161C98);
+extern int frog_glow_color_end_gp SDATA(D_L06_00161C9C);
 extern short level_mobys_q_r __asm__("D_L06_00160058");
 extern u8 hero_vehicle_mode[];
 extern int *blarg_paths[];
@@ -869,10 +868,9 @@ void update_frog_health_respawn_and_target(struct Moby *moby) {
         }
     }
     moby->hit_slot = 0xFF;
-    vars->glow_phase =
-        FastAddRots(vars->glow_phase, (*(f32 *)&frog_glow_phase_rate_degrees_gp) * 0.017453292f * g_frame_time);
-    moby->glow_color = FastTweenColor((*(int *)&frog_glow_color_start_gp), (*(int *)&frog_glow_color_end_gp),
-                                      (FastSin(vars->glow_phase) + 1.0f) * 0.5f);
+    vars->glow_phase = FastAddRots(vars->glow_phase, (frog_glow_phase_rate_degrees_gp) * 0.017453292f * g_frame_time);
+    moby->glow_color =
+        FastTweenColor((frog_glow_color_start_gp), (frog_glow_color_end_gp), (FastSin(vars->glow_phase) + 1.0f) * 0.5f);
     if (vars->new_blink != 0) {
         vars->blink_timer = truncate_float_to_s32(multiply_global_factor(random_float_between(180.0f, 240.0f)));
         vars->new_blink = 0;
@@ -923,7 +921,7 @@ extern void vec_scale_to_length(void *, void *, float);
 extern float FastVecDot(void *, void *);
 extern void FastVecCross(void *, void *, void *);
 
-extern short blarg_frog_turn_blend;
+extern float blarg_frog_turn_blend SDATA(D_L06_00161C90);
 
 /* Build an orthogonal frame from two vectors and apply it to the matrix at moby+0xC0. */
 void blend_frog_rotation_to_facing_frame(char *m, float *a1, float *a2) {
@@ -940,7 +938,7 @@ void blend_frog_rotation_to_facing_frame(char *m, float *a1, float *a2) {
     m += 0xC0;
     extract_matrix_rotation_quaternion(A, m);
     extract_matrix_rotation_quaternion(B, F);
-    quat_nlerp(A, A, B, *(float *)&blarg_frog_turn_blend);
+    quat_nlerp(A, A, B, blarg_frog_turn_blend);
     quaternion_to_rotation_basis(A, m);
 }
 extern void FastVecAdd(void *, void *, void *);
@@ -1365,7 +1363,7 @@ extern float g_frame_scale_sq MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern Moby *level_mobys_q MACRO_ADDR;
-extern short gadgebot_position_snapshot_z_offset_gp;
+extern float gadgebot_position_snapshot_z_offset_gp SDATA(D_L06_00161D70);
 extern char blarg_camera_pos[];
 extern GbHit blarg_coll_hit;
 extern Moby *blarg_coll_hit_moby;
@@ -1553,11 +1551,11 @@ void GadgebotUpdate(Moby *moby) {
                     }
                 }
                 if (gCheats[3] != 0) {
-                    *(float *)&gadgebot_position_snapshot_z_offset_gp = 0.35f;
+                    gadgebot_position_snapshot_z_offset_gp = 0.35f;
                     d->ctl.i00 = 0x177;
                 } else {
                     d->ctl.i00 = 0x12C;
-                    *(float *)&gadgebot_position_snapshot_z_offset_gp = 0.27f;
+                    gadgebot_position_snapshot_z_offset_gp = 0.27f;
                 }
                 moby->flags = (moby->flags & 0xFFBE) | 0x1000;
                 (*(int *)&moby->collision) = (*(GbClass **)&moby->pclass)->f10;
@@ -2019,7 +2017,7 @@ void GadgebotUpdate(Moby *moby) {
         float s24;
 
         qcopy(v10, (*(float (*)[4]) & moby->pos));
-        v10[2] += *(float *)&gadgebot_position_snapshot_z_offset_gp + 0.02f;
+        v10[2] += gadgebot_position_snapshot_z_offset_gp + 0.02f;
         qcopy(v40, (*(float (*)[4]) & moby->pos));
         s10 = d->ctl.f10;
         s24 = d->ctl.f24;
@@ -3078,7 +3076,7 @@ void initialize_energy_sphere_holder_vars(char *moby) {
 }
 extern short blarg_holder_beam_color_a, blarg_holder_beam_color_b, energy_sphere_holder_beam_particle_variant_flag_gp,
     blarg_holder_beam_texture, blarg_holder_spark_color, blarg_holder_spark_scale;
-extern short blarg_holder_spark_life_ticks;
+extern int blarg_holder_spark_life_ticks SDATA(D_L06_00161F00);
 extern void clear_u64_value(void *);
 extern int truncate_float_to_s32_g(float) __asm__("func_001FA898");
 extern unsigned char *func_L00_00273E08(void *, int, unsigned char, int, int, int, int, float);
@@ -3130,12 +3128,12 @@ void update_energy_sphere_holder_beam_effects(char *m) {
             sgn = -1.0f;
         clear_u64_value(a);
         a[2] += sgn * 0.9f;
-        vec_scale_to_length(b, a, -2.0f / (float)scale_ticks(*(int *)&blarg_holder_spark_life_ticks));
+        vec_scale_to_length(b, a, -2.0f / (float)scale_ticks(blarg_holder_spark_life_ticks));
         FastVecAdd(a, a, m + 0x10);
         a[2] += 0.85f;
         spawn_moving_hero_relative_alpha_fade_particle_g(
             a, b, *(int *)&blarg_holder_spark_color,
-            (unsigned char)truncate_float_to_s32_g((float)scale_ticks(*(int *)&blarg_holder_spark_life_ticks)),
+            (unsigned char)truncate_float_to_s32_g((float)scale_ticks(blarg_holder_spark_life_ticks)),
             (unsigned char)random_integer_below(0xFF), 0, *(float *)&blarg_holder_spark_scale);
     }
 }
@@ -3264,14 +3262,14 @@ void energy_sphere_update(char *m) {
 extern float random_float_between(float, float);
 extern void spawn_moving_hero_relative_alpha_fade_particle(void *, float, void *, int, int, int, int);
 extern float g_frame_time MACRO_ADDR;
-extern short blarg_energy_sphere_debris_speed_min;
-extern short blarg_energy_sphere_debris_speed_max;
-extern short blarg_energy_sphere_debris_scale_min;
-extern short blarg_energy_sphere_debris_scale_max;
-extern short blarg_energy_sphere_debris_color1_a;
-extern short blarg_energy_sphere_debris_color1_b;
-extern short blarg_energy_sphere_debris_color2_a;
-extern short blarg_energy_sphere_debris_color2_b;
+extern float blarg_energy_sphere_debris_speed_min SDATA(D_L06_00161F14);
+extern float blarg_energy_sphere_debris_speed_max SDATA(D_L06_00161F18);
+extern float blarg_energy_sphere_debris_scale_min SDATA(D_L06_00161F38);
+extern float blarg_energy_sphere_debris_scale_max SDATA(D_L06_00161F3C);
+extern int blarg_energy_sphere_debris_color1_a SDATA(D_L06_00161F28);
+extern int blarg_energy_sphere_debris_color1_b SDATA(D_L06_00161F2C);
+extern int blarg_energy_sphere_debris_color2_a SDATA(D_L06_00161F30);
+extern int blarg_energy_sphere_debris_color2_b SDATA(D_L06_00161F34);
 extern unsigned char blarg_energy_sphere_debris_life;
 
 /* Spawn forty particles at the moby with randomised parameters. */
@@ -3283,16 +3281,15 @@ void spawn_energy_sphere_destruction_particles(char *m) {
         int r;
         int c;
         int v;
-        rand_vec(buf, *(float *)&blarg_energy_sphere_debris_speed_min * g_frame_time,
-                 *(float *)&blarg_energy_sphere_debris_speed_max * g_frame_time);
-        f = random_float_between(*(float *)&blarg_energy_sphere_debris_scale_min,
-                                 *(float *)&blarg_energy_sphere_debris_scale_max);
+        rand_vec(buf, blarg_energy_sphere_debris_speed_min * g_frame_time,
+                 blarg_energy_sphere_debris_speed_max * g_frame_time);
+        f = random_float_between(blarg_energy_sphere_debris_scale_min, blarg_energy_sphere_debris_scale_max);
         if (random_integer_below(2) != 0) {
-            r = FastTweenColor(*(int *)&blarg_energy_sphere_debris_color1_a,
-                               *(int *)&blarg_energy_sphere_debris_color1_b, random_float_between(0.0f, 1.0f));
+            r = FastTweenColor(blarg_energy_sphere_debris_color1_a, blarg_energy_sphere_debris_color1_b,
+                               random_float_between(0.0f, 1.0f));
         } else {
-            r = FastTweenColor(*(int *)&blarg_energy_sphere_debris_color2_a,
-                               *(int *)&blarg_energy_sphere_debris_color2_b, random_float_between(0.0f, 1.0f));
+            r = FastTweenColor(blarg_energy_sphere_debris_color2_a, blarg_energy_sphere_debris_color2_b,
+                               random_float_between(0.0f, 1.0f));
         }
         c = blarg_energy_sphere_debris_life;
         v = random_integer_below(0xFF);

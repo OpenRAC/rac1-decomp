@@ -1893,7 +1893,7 @@ extern int kerwan_game_mode MACRO_ADDR;
 extern unsigned char gCheats[] MACRO_ADDR;
 extern G_2DC848 kerwan_cutscene_state;
 extern unsigned char kerwan_big_head_manipulator[];
-extern short kerwan_cutscene_manipulator_scale;
+extern float kerwan_cutscene_manipulator_scale SDATA(D_L03_00161C44);
 
 /* Re-arms the matching entry of the level's moby list in mode 2 (attach_big_head_cheat_manipulator with argument 1). */
 void attach_shared_manipulator_to_matching_class_moby(char *a) {
@@ -1905,9 +1905,9 @@ void attach_shared_manipulator_to_matching_class_moby(char *a) {
                 unsigned char *q = kerwan_big_head_manipulator;
                 if (q[1] == 0) {
                     AttachManipulator(moby, 1, q);
-                    *(float *)(q + 0x20) = *(float *)&kerwan_cutscene_manipulator_scale;
-                    *(float *)(q + 0x24) = *(float *)&kerwan_cutscene_manipulator_scale;
-                    *(float *)(q + 0x28) = *(float *)&kerwan_cutscene_manipulator_scale;
+                    *(float *)(q + 0x20) = kerwan_cutscene_manipulator_scale;
+                    *(float *)(q + 0x24) = kerwan_cutscene_manipulator_scale;
+                    *(float *)(q + 0x28) = kerwan_cutscene_manipulator_scale;
                 }
             }
         }
