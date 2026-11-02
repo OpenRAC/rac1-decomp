@@ -10,6 +10,7 @@
 #include "game/math/fastfunc.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+#include "structs/collision.h"
 extern Hero g_hero;
 
 extern int g_current_level_index MACRO_ADDR;
@@ -170,19 +171,7 @@ void transform_hero_polar_offset_to_world(void *, f32, f32, f32);
 void func_L00_00233D50_105C8(void *, void *, f32) __asm__("func_L00_00233D50");
 f32 FastAbsF(f32);
 extern Hero g_hero;
-typedef struct {
-    u8 pad0[0x18];
-    s32 i18;
-    s32 i1C;
-    union {
-        Q q;
-        f32 f[4];
-    } v20;
-    u8 pad30[0x10];
-    f32 f40;
-    f32 f44;
-} HS;
-extern HS kalebo3_coll_hit;
+extern struct CollisionHit kalebo3_coll_hit;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l16/ui_help_002097a0.c, FUN_L16_0020ffb0. */
 void HeroL16_UpdateGroundCollision(void) {
@@ -242,36 +231,36 @@ void HeroL16_UpdateGroundCollision(void) {
         g_hero.ground_sound_class = r;
     }
     if (g_hero.ground_type == 0xD) {
-        g_hero.water_surface_z = kalebo3_coll_hit.v20.f[2];
-        v10.f[2] = kalebo3_coll_hit.v20.f[2] - 0.01f;
+        g_hero.water_surface_z = kalebo3_coll_hit.point.f[2];
+        v10.f[2] = kalebo3_coll_hit.point.f[2] - 0.01f;
         if (coll_line(&v10, &v0, 4, (s32)g_hero.moby, 0) == 0) {
             goto d1;
         }
     }
     if (g_hero.ground_type == 0xB) {
-        g_hero.sink_surface_z = kalebo3_coll_hit.v20.f[2];
+        g_hero.sink_surface_z = kalebo3_coll_hit.point.f[2];
         goto d1;
     }
-    if (kalebo3_coll_hit.i18 != 0) {
-        if (is_moby_in_class_range_500_to_540(kalebo3_coll_hit.i18)) {
+    if (kalebo3_coll_hit.moby != 0) {
+        if (is_moby_in_class_range_500_to_540(kalebo3_coll_hit.moby)) {
             g_hero.on_flagged_ground_moby = 1;
             if ((u32)(g_hero.state.control_mode - 0x15) < 2) {
-                func_L00_00233D50_105C8((u8 *)&kalebo3_coll_hit.v20, (u8 *)&kalebo3_coll_hit.v20, 1.0f);
+                func_L00_00233D50_105C8((u8 *)&kalebo3_coll_hit.point, (u8 *)&kalebo3_coll_hit.point, 1.0f);
             }
         }
-        p = GetFlaggedPvarWord(kalebo3_coll_hit.i18);
+        p = GetFlaggedPvarWord(kalebo3_coll_hit.moby);
         if (p != 0 && (*(u16 *)(p + 0x1E) & 8)) {
             g_hero.on_flagged_ground_moby = 1;
         }
     }
-    if (kalebo3_coll_hit.i1C > 0) {
-        qcopy((u8 *)&g_hero + 0x2A0, &kalebo3_coll_hit.v20);
-        g_hero.ground_z.f = kalebo3_coll_hit.v20.f[2];
+    if (kalebo3_coll_hit.unk1C > 0) {
+        qcopy((u8 *)&g_hero + 0x2A0, &kalebo3_coll_hit.point);
+        g_hero.ground_z.f = kalebo3_coll_hit.point.f[2];
         g_hero.ground_distance = FastVecDist((u8 *)&g_hero + 0x80, ((u8 *)&g_hero + 0x2A0));
-        g_hero.ground_moby = (struct Moby *)kalebo3_coll_hit.i18;
-        sceVu0Normalize((u8 *)&g_hero + 0x270, (u8 *)&kalebo3_coll_hit.f40);
-        g_hero.ground_slope.f = compute_gravity_relative_vector_inclination((u8 *)&kalebo3_coll_hit.f40);
-        g_hero.downhill_yaw = fast_atan2(kalebo3_coll_hit.f40, kalebo3_coll_hit.f44);
+        g_hero.ground_moby = (struct Moby *)kalebo3_coll_hit.moby;
+        sceVu0Normalize((u8 *)&g_hero + 0x270, (u8 *)&kalebo3_coll_hit.normal.f[0]);
+        g_hero.ground_slope.f = compute_gravity_relative_vector_inclination((u8 *)&kalebo3_coll_hit.normal.f[0]);
+        g_hero.downhill_yaw = fast_atan2(kalebo3_coll_hit.normal.f[0], kalebo3_coll_hit.normal.f[1]);
         FastVecSub(&v20, ((u8 *)&g_hero + 0x2A0), (u8 *)&g_hero + 0x80);
         if (0.0f < FastVecDot(&v20, (u8 *)&g_hero + 0x270)) {
             g_hero.ground_distance = -g_hero.ground_distance;
@@ -280,7 +269,7 @@ void HeroL16_UpdateGroundCollision(void) {
             g_hero.frames_off_ground.s = 0;
             if (g_hero.ground_slope.f <= 0.87266463f || g_hero.gravity_mode == 1 || g_hero.state.control_mode == 0x16) {
                 g_hero.air_frames.s = 0;
-                g_hero.last_landed_moby = kalebo3_coll_hit.i18;
+                g_hero.last_landed_moby = kalebo3_coll_hit.moby;
             }
         }
     }
@@ -340,12 +329,12 @@ d1:
         transform_hero_polar_offset_to_world(&v30, 0.2f, a, 0.45f);
         transform_hero_polar_offset_to_world(&v40, 0.2f, a, -0.45f);
         if (coll_line(&v30, &v0, 0x22, (s32)g_hero.moby, 0)) {
-            f = kalebo3_coll_hit.v20.f[2] - g_hero.ground_z.f;
+            f = kalebo3_coll_hit.point.f[2] - g_hero.ground_z.f;
             g_hero.unk2C0.f[i] = f;
             if (0.4f < FastAbsF(f)) {
                 g_hero.unk2C0.f[i] = 0.0f;
             }
-            sceVu0Normalize(&v60, (u8 *)&kalebo3_coll_hit.f40);
+            sceVu0Normalize(&v60, (u8 *)&kalebo3_coll_hit.normal.f[0]);
             compute_rotated_vector_angles(&v60, &v50);
             if (-0.78539819f < v50.f[1] && v50.f[1] < 0.78539819f) {
                 g_hero.unk2C8.f[i] = v50.f[1];

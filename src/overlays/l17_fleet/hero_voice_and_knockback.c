@@ -10,6 +10,7 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "enums/moby_class.h"
+#include "structs/hit_message.h"
 extern Hero g_hero;
 
 typedef struct {
@@ -55,21 +56,9 @@ int select_hero_help_value(int a) {
     }
 }
 typedef int Q_8 __attribute__((mode(TI)));
-typedef struct {
-    u8 pad0[0x10];
-    Q_8 v10;
-    u8 *p20;
-    s32 i24;
-    u8 b28;
-    u8 pad29[3];
-    f32 f2C;
-    s32 i30;
-    u8 *p34;
-    u8 pad38[8];
-} T_8;
 extern Hero g_hero;
 extern s32 fleet_game_mode MACRO_ADDR;
-extern T_8 fleet_moby_hits[];
+extern struct HitMessage fleet_moby_hits[];
 extern s32 g_current_level_index MACRO_ADDR;
 
 extern s32 hero_hit_count MACRO_ADDR;
@@ -88,7 +77,7 @@ void hero_knockback(void *, s32, f32, f32);
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l17/ui_help_002020a8.c, FUN_L17_0020dbe8. */
 s32 HeroL17_TryTakeHit(s32 arg) {
     u8 *m;
-    T_8 *tbl;
+    struct HitMessage *tbl;
     struct Moby *mob;
     s32 flag;
     s32 id;
@@ -116,14 +105,14 @@ s32 HeroL17_TryTakeHit(s32 arg) {
         return 0;
     }
     tbl = &fleet_moby_hits[m[0xA4]];
-    if (tbl->p34 != m) {
+    if (tbl->target != m) {
         return 0;
     }
-    if ((tbl->i24 ^ 1) & 1) {
+    if ((tbl->flags ^ 1) & 1) {
         return 0;
     }
     level_hero_hit_counts[g_current_level_index]++;
-    g_hero.damage_source_moby = (struct Moby *)tbl->p20;
+    g_hero.damage_source_moby = (struct Moby *)tbl->source;
     hero_hit_count++;
     if (g_hero.state.control_mode == HERO_MODE_GRIND) {
         g_hero.unk5BE = 1;
@@ -134,13 +123,13 @@ s32 HeroL17_TryTakeHit(s32 arg) {
     }
     release_and_clear_hero_voice_slots();
     flag = 0;
-    if (tbl->i30 & 1) {
-        qcopy(&v, &tbl->v10);
+    if (tbl->unk_30 & 1) {
+        qcopy(&v, &tbl->unk_10);
         if (*(f32 *)((u8 *)tbl + 0x1C) == 5627.9248046875f) {
             flag = 1;
         }
-    } else if (tbl->p20 != 0) {
-        FastVecSub(&v, (u8 *)&g_hero + 0x80, tbl->p20 + 0x10);
+    } else if (tbl->source != 0) {
+        FastVecSub(&v, (u8 *)&g_hero + 0x80, tbl->source + 0x10);
     } else {
         v.f[0] = FastCos(FastAddRots(g_hero.motion.rot.f[2], 3.1415927f));
         v.f[1] = FastSin(FastAddRots(g_hero.motion.rot.f[2], 3.1415927f));
@@ -201,7 +190,7 @@ s32 HeroL17_TryTakeHit(s32 arg) {
                 b = e * 1.7f;
             }
             hero_knockback(&v, flag, a, b);
-            if (flag != 0 && tbl->b28 == 4) {
+            if (flag != 0 && tbl->unk_28 == 4) {
                 v.f[2] += v.f[2];
             }
             break;

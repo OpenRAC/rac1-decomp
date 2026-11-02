@@ -8,12 +8,12 @@
   "hex_compares": 3827,
   "ids_in_comments": 110,
   "include_asm": 206,
-  "local_struct_typedefs": 2785,
+  "local_struct_typedefs": 2771,
   "long_lines": 686,
   "numbered_names": 270,
   "oclass_literals": 175,
   "offsets_in_comments": 1007,
-  "raw_offset_casts": 5811,
+  "raw_offset_casts": 5810,
   "tab_lines": 0,
   "worker_notes_in_comments": 0
 }

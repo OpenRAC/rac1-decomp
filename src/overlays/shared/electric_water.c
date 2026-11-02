@@ -1292,7 +1292,7 @@ void codebot_update(unsigned char *moby) {
                 break;
             case CODEBOT_CHECK_HERO_PROXIMITY:
                 update_collectible_sprite_effect(moby);
-                if (FastVecDist(&m->pos, &((Hero *)&g_hero)->motion.pos.q) < 3.0f) {
+                if (FastVecDist(&m->pos, &g_hero.motion.pos.q) < 3.0f) {
                     if (((HeroStateWord *)&g_hero)->current != 0x32) {
                         m->flags |= 0x41;
                         StartCutscene(1);

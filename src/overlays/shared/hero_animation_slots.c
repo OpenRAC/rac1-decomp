@@ -3170,19 +3170,7 @@ void compute_rotated_vector_angles(void *, void *);
 void transform_hero_polar_offset_to_world(void *, f32, f32, f32);
 f32 FastAbsF(f32);
 extern Hero D_0013F450_12E70 __asm__("D_0013F450");
-typedef struct {
-    u8 pad0[0x18];
-    s32 i18;
-    s32 i1C;
-    union {
-        Q q;
-        f32 f[4];
-    } v20;
-    u8 pad30[0x10];
-    f32 f40;
-    f32 f44;
-} HS;
-extern HS coll_hit_result_r2 __asm__("D_L00_00173F40");
+extern struct CollisionHit coll_hit_result_r2 __asm__("D_L00_00173F40");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_0020c758.c, FUN_L00_002127b8. */
 void update_hero_ground_contact_and_surface_slopes(void) {
@@ -3264,24 +3252,25 @@ void update_hero_ground_contact_and_surface_slopes(void) {
     if (D_0013F450_12E70.ground_type == 1 && (u32)(D_0013F450_12E70.state.current - 0x7C) < 2) {
         goto d1;
     }
-    if (coll_hit_result_r2.i18 != 0) {
-        if (func_L00_0025F410_12E70(coll_hit_result_r2.i18)) {
+    if (coll_hit_result_r2.moby != 0) {
+        if (func_L00_0025F410_12E70(coll_hit_result_r2.moby)) {
             D_0013F450_12E70.on_flagged_ground_moby = 1;
         }
-        p = func_L00_0025D390_12E70(coll_hit_result_r2.i18);
+        p = func_L00_0025D390_12E70(coll_hit_result_r2.moby);
         if (p != 0 && (*(u16 *)(p + 0x1E) & 8)) {
             D_0013F450_12E70.on_flagged_ground_moby = 1;
         }
     }
-    if (coll_hit_result_r2.i1C > 0) {
-        qcopy((u8 *)&D_0013F450_12E70 + 0x2A0, &coll_hit_result_r2.v20);
-        D_0013F450_12E70.ground_z.f = coll_hit_result_r2.v20.f[2];
+    if (coll_hit_result_r2.unk1C > 0) {
+        qcopy((u8 *)&D_0013F450_12E70 + 0x2A0, &coll_hit_result_r2.point);
+        D_0013F450_12E70.ground_z.f = coll_hit_result_r2.point.f[2];
         D_0013F450_12E70.ground_distance =
             FastVecDist((u8 *)&D_0013F450_12E70 + 0x80, ((u8 *)&D_0013F450_12E70 + 0x2A0));
-        D_0013F450_12E70.ground_moby = (struct Moby *)coll_hit_result_r2.i18;
-        sceVu0Normalize((u8 *)&D_0013F450_12E70 + 0x270, (u8 *)&coll_hit_result_r2.f40);
-        D_0013F450_12E70.ground_slope.f = compute_gravity_relative_vector_inclination((u8 *)&coll_hit_result_r2.f40);
-        D_0013F450_12E70.downhill_yaw = fast_atan2(coll_hit_result_r2.f40, coll_hit_result_r2.f44);
+        D_0013F450_12E70.ground_moby = (struct Moby *)coll_hit_result_r2.moby;
+        sceVu0Normalize((u8 *)&D_0013F450_12E70 + 0x270, (u8 *)&coll_hit_result_r2.normal.f[0]);
+        D_0013F450_12E70.ground_slope.f =
+            compute_gravity_relative_vector_inclination((u8 *)&coll_hit_result_r2.normal.f[0]);
+        D_0013F450_12E70.downhill_yaw = fast_atan2(coll_hit_result_r2.normal.f[0], coll_hit_result_r2.normal.f[1]);
         func_001F9BF0_12E70(&v20, ((u8 *)&D_0013F450_12E70 + 0x2A0), (u8 *)&D_0013F450_12E70 + 0x80);
         if (0.0f < FastVecDot(&v20, (u8 *)&D_0013F450_12E70 + 0x270)) {
             D_0013F450_12E70.ground_distance = -D_0013F450_12E70.ground_distance;
@@ -3291,7 +3280,7 @@ void update_hero_ground_contact_and_surface_slopes(void) {
             if (D_0013F450_12E70.ground_slope.f <= 0.87266463f || D_0013F450_12E70.gravity_mode == 1 ||
                 D_0013F450_12E70.state.control_mode == 0x16) {
                 D_0013F450_12E70.air_frames.s = 0;
-                D_0013F450_12E70.last_landed_moby = coll_hit_result_r2.i18;
+                D_0013F450_12E70.last_landed_moby = coll_hit_result_r2.moby;
             }
         }
     }
@@ -3354,12 +3343,12 @@ d1:
         transform_hero_polar_offset_to_world(&v30, 0.2f, a, 0.45f);
         transform_hero_polar_offset_to_world(&v40, 0.2f, a, -0.45f);
         if (coll_line(&v30, &v0, 0x22, (s32)D_0013F450_12E70.moby, 0)) {
-            f = coll_hit_result_r2.v20.f[2] - D_0013F450_12E70.ground_z.f;
+            f = coll_hit_result_r2.point.f[2] - D_0013F450_12E70.ground_z.f;
             D_0013F450_12E70.unk2C0.f[i] = f;
             if (0.4f < FastAbsF(f)) {
                 D_0013F450_12E70.unk2C0.f[i] = 0.0f;
             }
-            sceVu0Normalize(&v60, (u8 *)&coll_hit_result_r2.f40);
+            sceVu0Normalize(&v60, (u8 *)&coll_hit_result_r2.normal.f[0]);
             compute_rotated_vector_angles(&v60, &v50);
             if (-0.78539819f < v50.f[1] && v50.f[1] < 0.78539819f) {
                 D_0013F450_12E70.unk2C8.f[i] = v50.f[1];

@@ -173,7 +173,7 @@ void end_hydrodisplacer_interaction(char *a) {
         gFadeLvl = 0;
         CameraScript2(3);
     }
-    if (*(int *)(g_hero + 0x208C) == 0x13) {
+    if (((struct Hero *)g_hero)->state.control_mode == 0x13) {
         HeroEnterMoveState(HERO_STATE_IDLE, 1);
     }
 }
