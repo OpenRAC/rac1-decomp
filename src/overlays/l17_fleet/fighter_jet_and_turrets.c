@@ -26,6 +26,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/hero_state.h"
 #include "enums/moby_class.h"
+#include "structs/voice.h"
 extern int frame_size;
 extern char g_controller_state[];
 extern Hero g_hero;
@@ -56,12 +57,6 @@ struct FleetBobberVars {
 
 /* Stops platform: slides along its direction from its start position. */
 /* A looping-sound voice record (moby.sound_slot indexes them at stride 0x70). */
-struct VoiceRef {
-    u8 pad_00[0x74];
-    u8 on; /* 0x74 */
-    u8 pad_75[0x13];
-    void *owner; /* 0x88: moby that started it */
-};
 
 struct StopsPlatformVars {
     Vec4A start_pos; /* 0x00 */
@@ -1079,9 +1074,9 @@ void StopsPlatformUpdate(char *m) {
             if (FastAbsF((d->offset)) > 2.0f) {
                 idx = (d->sound_slot);
                 if (idx != -1) {
-                    struct VoiceRef *e = (struct VoiceRef *)(voice_pool + idx * 0x70);
+                    VoicePoolRow *e = (VoicePoolRow *)(voice_pool + idx * 0x70);
                     if (*(char **)&e->owner == m) {
-                        if (e->on != 0)
+                        if (e->state != 0)
                             Sound_StopSlot(idx);
                     }
                 }
@@ -1093,9 +1088,9 @@ void StopsPlatformUpdate(char *m) {
             (d->offset) = 0.0f;
             idx = (d->sound_slot);
             if (idx != -1) {
-                struct VoiceRef *e = (struct VoiceRef *)(voice_pool + idx * 0x70);
+                VoicePoolRow *e = (VoicePoolRow *)(voice_pool + idx * 0x70);
                 if (*(char **)&e->owner == m) {
-                    if (e->on != 0)
+                    if (e->state != 0)
                         Sound_StopSlot(idx);
                 }
             }
@@ -1118,9 +1113,9 @@ void StopsPlatformUpdate(char *m) {
         case 4:
             idx = (d->sound_slot);
             if (idx != -1) {
-                struct VoiceRef *e = (struct VoiceRef *)(voice_pool + idx * 0x70);
+                VoicePoolRow *e = (VoicePoolRow *)(voice_pool + idx * 0x70);
                 if (*(char **)&e->owner == m) {
-                    if (e->on != 0)
+                    if (e->state != 0)
                         Sound_StopSlot(idx);
                 }
             }
@@ -1179,9 +1174,9 @@ void StopsPlatformUpdate(char *m) {
             if ((d->offset) == 0.0f) {
                 idx = (d->sound_slot);
                 if (idx != -1) {
-                    struct VoiceRef *e = (struct VoiceRef *)(voice_pool + idx * 0x70);
+                    VoicePoolRow *e = (VoicePoolRow *)(voice_pool + idx * 0x70);
                     if (*(char **)&e->owner == m) {
-                        if (e->on != 0)
+                        if (e->state != 0)
                             Sound_StopSlot(idx);
                     }
                 }
@@ -2104,7 +2099,7 @@ void PlayerShipUpdate(Moby *m, Obj *o) {
     float k;
     char *pad;
     struct Hero *g;
-    struct VoiceRef *e;
+    VoicePoolRow *e;
     char *p;
     int idx;
     int hc;
@@ -2116,8 +2111,8 @@ void PlayerShipUpdate(Moby *m, Obj *o) {
             if (*(int *)(pad + 0x1B4) & 0x40) {
                 idx = o->i10C;
                 if (idx != -1) {
-                    e = (struct VoiceRef *)(voice_pool + idx * 0x70);
-                    if (*(char **)&e->owner == (char *)m && e->on != 0) {
+                    e = (VoicePoolRow *)(voice_pool + idx * 0x70);
+                    if (*(char **)&e->owner == (char *)m && e->state != 0) {
                         Sound_StopSlot(idx);
                     }
                 }
@@ -2126,8 +2121,8 @@ void PlayerShipUpdate(Moby *m, Obj *o) {
             } else if (*(int *)(pad + 0x1B8) & 0x40) {
                 idx = o->i10C;
                 if (idx != -1) {
-                    e = (struct VoiceRef *)(voice_pool + idx * 0x70);
-                    if (*(char **)&e->owner == (char *)m && e->on != 0) {
+                    e = (VoicePoolRow *)(voice_pool + idx * 0x70);
+                    if (*(char **)&e->owner == (char *)m && e->state != 0) {
                         Sound_StopSlot(idx);
                     }
                 }

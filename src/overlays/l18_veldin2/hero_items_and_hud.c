@@ -29,6 +29,7 @@
 #include "overlays/shared/variants.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+#include "structs/voice.h"
 
 typedef struct {
     char p0[0x160];
@@ -36,12 +37,6 @@ typedef struct {
     char p164[0x4];
     int f168;
 } S167700;
-typedef struct {
-    char p0[0x74];
-    unsigned char f74;
-    char p1[0x13];
-    unsigned char *f88;
-} Row13E650;
 typedef int u128 __attribute__((mode(TI)));
 extern Hero g_hero;
 extern PadState g_controller_state;
@@ -999,8 +994,8 @@ void HeroStateTransitions(void) {
                             break;
                         }
                         if (g_hero.voice_slot2 != -1) {
-                            Row13E650 *e = (Row13E650 *)(voice_pool + g_hero.voice_slot2 * 0x70);
-                            if (e->f88 == ((unsigned char *)g_hero.moby) && e->f74 != 0) {
+                            VoicePoolRow *e = (VoicePoolRow *)(voice_pool + g_hero.voice_slot2 * 0x70);
+                            if (e->owner == g_hero.moby && e->state != 0) {
                                 Sound_StopSlot(g_hero.voice_slot2);
                             }
                         }

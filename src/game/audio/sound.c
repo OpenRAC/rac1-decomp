@@ -5,6 +5,7 @@
 #include "structs/hero.h"
 #include "structs/misc.h"
 #include "game/moby/mobyutil.h"
+#include "structs/voice.h"
 
 /*
  * sound.cpp in the original source; text 0x22D8C0-0x22F128.
@@ -929,18 +930,12 @@ int PlayBankSound(int idx, int arg1, int arg2) {
 
 extern int level_sound_def_count MACRO_ADDR;
 
-struct VoiceGroupEntryWindow {
-    u8 pad_00[0x7E];
-    s16 linked_index;          /* 0x7E */
-    u8 pad_80[0x8];
-    s32 owner;                 /* 0x88 */
-};
 
 /* Play a level group sound (after the bank sounds) on a free voice; return the slot or -1. */
 int allocate_voice_for_group_entry(int group_entry_index, int flags, int owner) {
     int entry_index;
     int slot_index;
-    struct VoiceGroupEntryWindow *slot;
+    VoicePoolRow *slot;
 
     entry_index = group_entry_index + bank_sound_count;
     if (entry_index >= level_sound_def_count) {
@@ -948,7 +943,7 @@ int allocate_voice_for_group_entry(int group_entry_index, int flags, int owner) 
     }
     slot_index = allocate_voice_slot(level_sound_defs + entry_index * 32, flags, owner, 0, 0x400);
     if (slot_index >= 0) {
-        slot = (struct VoiceGroupEntryWindow *)(voice_pool + slot_index * 0x70);
+        slot = (VoicePoolRow *)(voice_pool + slot_index * 0x70);
         slot->owner = owner;
         slot->linked_index = entry_index;
     }

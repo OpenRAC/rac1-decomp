@@ -14,6 +14,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+#include "structs/voice.h"
 extern u8 gHeroPos[];
 extern PadState g_controller_state;
 extern char g_hero[];
@@ -2106,18 +2107,12 @@ typedef struct {
     s32 snd;
 } S_2ed950;
 typedef struct {
-    u8 p[0x74];
-    u8 b74;
-    u8 p2[0x8C - 0x75];
-    void *o;
-} E_2ed950;
-typedef struct {
     u8 p[0x18];
     u8 b18;
     u8 p2[7];
 } T_2ed950;
 extern u8 g_debug_camera_r2[] __asm__("D_L00_00166EC0");
-extern E_2ed950 voice_pool[];
+extern VoicePoolRow voice_pool[];
 extern T_2ed950 *level_sound_slots MACRO_ADDR;
 f32 FastVecDist(void *, void *);
 s32 fast_dec_timer(s32 *);
@@ -2135,12 +2130,12 @@ void update_sound_emitter_playback_by_distance(u8 *m) {
     d = FastVecDist(g_debug_camera_r2, m + 0x40);
     r = *(f32 *)(m + 0xC);
     if (d < r) {
-        E_2ed950 *e = ((E_2ed950 *)((u8 *)voice_pool + (s->snd) * 0x70));
+        VoicePoolRow *e = ((VoicePoolRow *)((u8 *)voice_pool + (s->snd) * 0x70));
         s32 fl = 0;
         s32 four = 4;
         if (level_sound_slots[s->id].b18)
             fl = four;
-        if (e->o == m && e->b74)
+        if (e->reserved8C == m && e->state)
             return;
         if (!fast_dec_timer(&s->wC))
             return;
@@ -2151,8 +2146,8 @@ void update_sound_emitter_playback_by_distance(u8 *m) {
     } else if (r + 1.0f < d) {
         s32 h = s->snd;
         if (h != -1) {
-            E_2ed950 *e = ((E_2ed950 *)((u8 *)voice_pool + (h) * 0x70));
-            if (e->o == m && e->b74)
+            VoicePoolRow *e = ((VoicePoolRow *)((u8 *)voice_pool + (h) * 0x70));
+            if (e->reserved8C == m && e->state)
                 Sound_StopSlot(h);
         }
         s->snd = -1;

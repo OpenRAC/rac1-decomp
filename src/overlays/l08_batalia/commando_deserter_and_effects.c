@@ -24,6 +24,7 @@
 #include "structs/swarm.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+#include "structs/voice.h"
 extern char g_hero[] NOT_SDA;
 
 /* Lift/gate moby that follows a driver moby's progress between a base and a top height. */
@@ -366,10 +367,6 @@ typedef struct {
     s32 voice; /* 0x20: creak voice slot, -1 if none */
 } SwingGateVars;
 extern int batalia_game_mode MACRO_ADDR;
-typedef struct {
-    u8 pad0[0x80];
-    s32 volume; /* 0x80 */
-} VoiceView;
 extern char voice_pool[];
 extern u8 gSpecialItems[];
 extern f32 FastDiffRots(f32, f32);
@@ -413,18 +410,18 @@ void update_swing_gate_from_driver(struct Moby *moby) {
             if (!Sound_IsPlaying(moby, vars->voice)) {
                 vars->voice = Moby_PlaySound_r2(0, 4, moby);
                 Sound_SetPitchBend(vars->voice, 1);
-            } else if (((VoiceView *)(voice_pool + vars->voice * 0x70))->volume < 0x400) {
-                Sound_SetPitchBend(vars->voice,
-                                   ((VoiceView *)(voice_pool + vars->voice * 0x70))->volume + 0x400 / scale_ticks(60));
+            } else if (((VoicePoolRow *)(voice_pool + vars->voice * 0x70))->volume < 0x400) {
+                Sound_SetPitchBend(vars->voice, ((VoicePoolRow *)(voice_pool + vars->voice * 0x70))->volume +
+                                                    0x400 / scale_ticks(60));
             }
         }
     } else if (moby->oclass == 0x1D4 && Sound_IsPlaying(moby, vars->voice)) {
-        if (((VoiceView *)(voice_pool + vars->voice * 0x70))->volume < 0x100) {
+        if (((VoicePoolRow *)(voice_pool + vars->voice * 0x70))->volume < 0x100) {
             Sound_StopSlot(vars->voice);
             vars->voice = -1;
         } else {
             Sound_SetPitchBend(vars->voice,
-                               ((VoiceView *)(voice_pool + vars->voice * 0x70))->volume - 0x400 / scale_ticks(60));
+                               ((VoicePoolRow *)(voice_pool + vars->voice * 0x70))->volume - 0x400 / scale_ticks(60));
         }
     }
     euler_to_matrix(mat, &moby->rot);

@@ -24,6 +24,7 @@
 #include "enums/moby_class.h"
 #include "structs/pad.h"
 #include "enums/hero_state.h"
+#include "structs/voice.h"
 extern Hero g_hero;
 extern char help_records[];
 extern int pad0_pressed;
@@ -1689,12 +1690,6 @@ typedef struct D_30AE90 {
     float fEC;
     float fF0[4];
 } D_30AE90;
-typedef struct {
-    char p0[0x74];
-    unsigned char f74;
-    char p1[0x13];
-    Moby *f88;
-} Row;
 typedef union {
     float mtx[4][4];
     struct {
@@ -1802,9 +1797,9 @@ void pokitaru_boat_update(Moby *m) {
                     d->fCC = Moby_PlaySound_r2(1, 4, m);
                 if (Sound_IsPlaying(m, d->fC8)) {
                     if (d->fC8 != -1) {
-                        Row *e = (Row *)(voice_pool + d->fC8 * 0x70);
-                        if (e->f88 == m) {
-                            if (e->f74 != 0)
+                        VoicePoolRow *e = (VoicePoolRow *)(voice_pool + d->fC8 * 0x70);
+                        if (e->owner == m) {
+                            if (e->state != 0)
                                 Sound_StopSlot_r(d->fC8);
                         }
                     }
@@ -1816,9 +1811,9 @@ void pokitaru_boat_update(Moby *m) {
                     d->fC8 = Moby_PlaySound_r2(0, 4, m);
                 if (Sound_IsPlaying(m, d->fCC)) {
                     if (d->fCC != -1) {
-                        Row *e = (Row *)(voice_pool + d->fCC * 0x70);
-                        if (e->f88 == m) {
-                            if (e->f74 != 0)
+                        VoicePoolRow *e = (VoicePoolRow *)(voice_pool + d->fCC * 0x70);
+                        if (e->owner == m) {
+                            if (e->state != 0)
                                 Sound_StopSlot_r(d->fCC);
                         }
                     }
@@ -1838,9 +1833,9 @@ void pokitaru_boat_update(Moby *m) {
             } else if (vec_length_xy_r3(&W.v.e) < 0.001f) {
                 if (Sound_IsPlaying(m, d->fCC)) {
                     if (d->fCC != -1) {
-                        Row *e = (Row *)(voice_pool + d->fCC * 0x70);
-                        if (e->f88 == m) {
-                            if (e->f74 != 0)
+                        VoicePoolRow *e = (VoicePoolRow *)(voice_pool + d->fCC * 0x70);
+                        if (e->owner == m) {
+                            if (e->state != 0)
                                 Sound_StopSlot_r(d->fCC);
                         }
                     }
@@ -1848,9 +1843,9 @@ void pokitaru_boat_update(Moby *m) {
                 }
                 if (Sound_IsPlaying(m, d->fC8)) {
                     if (d->fC8 != -1) {
-                        Row *e = (Row *)(voice_pool + d->fC8 * 0x70);
-                        if (e->f88 == m) {
-                            if (e->f74 != 0)
+                        VoicePoolRow *e = (VoicePoolRow *)(voice_pool + d->fC8 * 0x70);
+                        if (e->owner == m) {
+                            if (e->state != 0)
                                 Sound_StopSlot_r(d->fC8);
                         }
                     }

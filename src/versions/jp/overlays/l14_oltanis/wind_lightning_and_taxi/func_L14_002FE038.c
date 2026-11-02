@@ -28,8 +28,8 @@ void update_enemy_fighter_921(Moby *m) {
             SpawnExplosionFx_r2(m, (*(Vec_2FE038 *)&m->pos), -1, 5.0f, 13.0f);
             m->flags |= 0x41;
             m->collision = 0;
-            if (d->f6C != -1 && ((Voice_2FE038 *)(voice_pool_r + d->f6C * 0x70))->owner == m &&
-                ((Voice_2FE038 *)(voice_pool_r + d->f6C * 0x70))->on != 0) {
+            if (d->f6C != -1 && ((VoicePoolRow *)(voice_pool_r + d->f6C * 0x70))->owner == m &&
+                ((VoicePoolRow *)(voice_pool_r + d->f6C * 0x70))->state != 0) {
                 Sound_StopSlot_r3(d->f6C);
             }
             d->f6C = -1;

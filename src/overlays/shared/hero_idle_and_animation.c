@@ -22,6 +22,7 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+#include "structs/voice.h"
 extern char cd_read_state[];
 
 extern char help_popup_state[] NOT_SDA;
@@ -1136,12 +1137,6 @@ void update_hero_in_vehicle_mode(void) {
     update_hero_moby_probed_height_bounds();
     apply_env_zone_lighting(G_HERO->moby);
 }
-typedef struct {
-    char p0[0x74];
-    unsigned char on;
-    char p1[0x88 - 0x75];
-    Moby *owner;
-} SoundVoiceEntry;
 
 extern char D_0013E650[];
 extern void Sound_StopSlot_a(int) __asm__("func_L00_0028EBF0");
@@ -1168,20 +1163,20 @@ void release_and_clear_hero_voice_slots(void) {
         m = *(Moby **)(off + (int)mb);
         if (m != 0) {
             if (k != none) {
-                if (((SoundVoiceEntry *)(voice_pool + k * 0x70))->owner != m) {
+                if (((VoicePoolRow *)(voice_pool + k * 0x70))->owner != m) {
                     *p = none;
                     continue;
                 }
-                c = ((SoundVoiceEntry *)(voice_pool + k * 0x70))->on;
+                c = ((VoicePoolRow *)(voice_pool + k * 0x70))->state;
                 goto test;
             }
         } else {
             if (k != none) {
-                if (((SoundVoiceEntry *)(voice_pool + k * 0x70))->owner != hp->moby) {
+                if (((VoicePoolRow *)(voice_pool + k * 0x70))->owner != hp->moby) {
                     *p = none;
                     continue;
                 }
-                c = ((SoundVoiceEntry *)(voice_pool + k * 0x70))->on;
+                c = ((VoicePoolRow *)(voice_pool + k * 0x70))->state;
             test:
                 if (c != 0) {
                     Sound_StopSlot_a(k);

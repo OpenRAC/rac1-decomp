@@ -10,6 +10,7 @@
 #include "structs/collision.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+#include "structs/voice.h"
 extern Hero g_hero;
 
 /* Spawner: picks a target, then throws eggs (Spawner Egg) towards it, up to max_eggs alive. */
@@ -81,12 +82,6 @@ typedef struct {
     u8 unk280[1];
 } SeekerVars;
 
-typedef struct {
-    u8 pad0[0x74];
-    u8 active;
-    u8 pad75[0x13];
-    struct Moby *owner;
-} VoiceSlot;
 
 /* The hero block g_hero, cut down to the position this function reads. */
 
@@ -144,7 +139,7 @@ void seeker_update(struct Moby *moby) {
     f32 height;
     f32 limit;
     f32 diff;
-    VoiceSlot *slot;
+    VoicePoolRow *slot;
 
     update_seeker_damage_and_target_r(moby);
     target = vars->target;
@@ -304,8 +299,8 @@ void seeker_update(struct Moby *moby) {
         case 6:
             voice = vars->voice;
             if (voice != -1) {
-                slot = (VoiceSlot *)(voice_pool + voice * 0x70);
-                if (slot->owner == moby && slot->active != 0) {
+                slot = (VoicePoolRow *)(voice_pool + voice * 0x70);
+                if (slot->owner == moby && slot->state != 0) {
                     Sound_StopSlot_r(voice);
                 }
             }
@@ -319,8 +314,8 @@ void seeker_update(struct Moby *moby) {
             SetDeathBits_r(moby, 0, -1);
             voice = vars->voice;
             if (voice != -1) {
-                slot = (VoiceSlot *)(voice_pool + voice * 0x70);
-                if (slot->owner == moby && slot->active != 0) {
+                slot = (VoicePoolRow *)(voice_pool + voice * 0x70);
+                if (slot->owner == moby && slot->state != 0) {
                     Sound_StopSlot_r(voice);
                 }
             }

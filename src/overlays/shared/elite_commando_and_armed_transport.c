@@ -14,6 +14,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/level.h"
 #include "enums/moby_class.h"
+#include "structs/voice.h"
 extern char gSkillPoints[];
 extern Hero g_hero;
 extern char voice_pool[];
@@ -1267,12 +1268,6 @@ extern void StepColorFade(void *, void *);
 extern int FindNearestEligibleMoby(float, char *, void *, int, int, void *, int);
 extern float armed_transport_bounds_scale SDATA(armed_transport_bounds_scale);
 typedef struct {
-    char pad[0x74];
-    unsigned char active;
-    char pad75[0x13];
-    char *owner;
-} L16InteractionSlot;
-typedef struct {
     char pad[0x80];
     float position[4];
     char pad90[0x1FF0];
@@ -1297,8 +1292,8 @@ void update_armed_transport_damage_and_targeting(char *m) {
     } else if (Sound_IsPlaying(m, (d->sound_slot))) {
         int slot = (d->sound_slot);
         if (slot != -1) {
-            L16InteractionSlot *s = (L16InteractionSlot *)(voice_pool + slot * 0x70);
-            if (s->owner == m && s->active != 0)
+            VoicePoolRow *s = (VoicePoolRow *)(voice_pool + slot * 0x70);
+            if (s->owner == m && s->state != 0)
                 Sound_StopSlot(slot);
         }
         (d->sound_slot) = -1;

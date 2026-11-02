@@ -22,6 +22,7 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+#include "structs/voice.h"
 extern Hero g_hero;
 extern char voice_pool[];
 
@@ -3211,12 +3212,6 @@ struct EnergySphereVars {
     s32 voice_slot_index; /* 0x60: voice slot of the looping sound, -1 = none */
 };
 
-struct VoiceSlot {
-    u8 pad_00[0x74];
-    u8 looping; /* 0x74: nonzero while the sound loops */
-    u8 pad_75[0x13];
-    struct Moby *moby; /* 0x88: moby the sound plays on */
-};
 
 // UpdateMoby_1040: spins up, rotates and tracks a slot, deleting itself when its target is gone.
 void energy_sphere_update(char *m) {
@@ -3229,8 +3224,8 @@ void energy_sphere_update(char *m) {
         Moby_PlaySound(1, 0, (int)m);
         voice_slot_index = sphere_vars->voice_slot_index;
         if (voice_slot_index != -1) {
-            struct VoiceSlot *voice_slot = (struct VoiceSlot *)(voice_pool + voice_slot_index * 0x70);
-            if (voice_slot->moby == sphere_moby && voice_slot->looping != 0) {
+            VoicePoolRow *voice_slot = (VoicePoolRow *)(voice_pool + voice_slot_index * 0x70);
+            if (voice_slot->owner == sphere_moby && voice_slot->state != 0) {
                 Sound_StopSlot(voice_slot_index);
             }
         }

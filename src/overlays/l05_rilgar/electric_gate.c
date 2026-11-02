@@ -19,6 +19,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+#include "structs/voice.h"
 extern struct Hero g_hero;
 extern char pad0_pressed[];
 extern char race_gates[];
@@ -1024,12 +1025,6 @@ struct EmitterVars {
     s32 *voice; /* voice slot shared by the emitters, -1: none */
     s32 age; /* frames since it started spraying */
 };
-struct VoiceSlot {
-    u8 pad0[0x88];
-    struct Moby *owner;
-    u8 pad8C[4];
-    Vec4f pos;
-};
 struct FloorRow {
     u8 pad0[8];
     f32 z;
@@ -1094,19 +1089,19 @@ void update_triggered_particle_spray_emitter(struct Moby *m) {
             d->age++;
             if (FastVecDist_r(&m->pos, rilgar_camera_pos_r) < 64.0f) {
                 struct Moby *o;
-                if (*d->voice >= 0 && (o = ((struct VoiceSlot *)(voice_pool_r + *d->voice * 0x70))->owner) != 0 &&
+                if (*d->voice >= 0 && (o = ((VoicePoolRow *)(voice_pool_r + *d->voice * 0x70))->owner) != 0 &&
                     o->oclass == 0x357) {
                     if (o != m && (o->state != state || FastVecDist_r(&m->pos, rilgar_camera_pos_r) <
                                                             FastVecDist_r(&o->pos, rilgar_camera_pos_r))) {
                         vec_scale_to_length_r(v, &m->rot_row0, 2.5f);
-                        FastVecAdd_r(&((struct VoiceSlot *)(voice_pool_r + *d->voice * 0x70))->pos, v, &m->pos);
-                        ((struct VoiceSlot *)(voice_pool_r + *d->voice * 0x70))->owner = m;
+                        FastVecAdd_r(&((VoicePoolRow *)(voice_pool_r + *d->voice * 0x70))->position, v, &m->pos);
+                        ((VoicePoolRow *)(voice_pool_r + *d->voice * 0x70))->owner = m;
                     }
                 } else {
                     *d->voice = Moby_PlaySound_r(0, 0xD, m);
                     if (*d->voice >= 0) {
                         vec_scale_to_length_r(v, &m->rot_row0, 2.5f);
-                        FastVecAdd_r(&((struct VoiceSlot *)(voice_pool_r + *d->voice * 0x70))->pos, v, &m->pos);
+                        FastVecAdd_r(&((VoicePoolRow *)(voice_pool_r + *d->voice * 0x70))->position, v, &m->pos);
                     }
                 }
             }

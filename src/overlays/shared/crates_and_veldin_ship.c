@@ -20,6 +20,7 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+#include "structs/voice.h"
 extern char g_hero[];
 extern char item_usage[];
 extern int pad0_pressed;
@@ -1548,12 +1549,6 @@ typedef struct TargetVars {
     s32 count;
 } TargetVars;
 
-typedef struct VoiceSlot {
-    u8 pad0[0x74];
-    u8 active;
-    u8 pad75[0x13];
-    struct Moby *owner;
-} VoiceSlot;
 
 /* The hero block g_hero, cut down to what this function reads. */
 
@@ -1774,9 +1769,9 @@ void metal_detector_update(struct Moby *moby) {
                         vars->unk8 = 0x7FFF;
                         voice_2D4398(3, 0, moby);
                         if (vars->voice2 != -1) {
-                            VoiceSlot *e = (VoiceSlot *)(voice_pool + vars->voice2 * 0x70);
+                            VoicePoolRow *e = (VoicePoolRow *)(voice_pool + vars->voice2 * 0x70);
 
-                            if (e->owner == moby && e->active != 0) {
+                            if (e->owner == moby && e->state != 0) {
                                 release_2D4398(vars->voice2);
                             }
                         }
@@ -1785,25 +1780,25 @@ void metal_detector_update(struct Moby *moby) {
                 } else {
                     moby->glow_color = 0x80808080;
                     if (vars->voice0 != -1) {
-                        VoiceSlot *e = (VoiceSlot *)(voice_pool + vars->voice0 * 0x70);
+                        VoicePoolRow *e = (VoicePoolRow *)(voice_pool + vars->voice0 * 0x70);
 
-                        if (e->owner == moby && e->active != 0) {
+                        if (e->owner == moby && e->state != 0) {
                             release_2D4398(vars->voice0);
                         }
                     }
                     vars->voice0 = -1;
                     if (vars->voice1 != -1) {
-                        VoiceSlot *e = (VoiceSlot *)(voice_pool + vars->voice1 * 0x70);
+                        VoicePoolRow *e = (VoicePoolRow *)(voice_pool + vars->voice1 * 0x70);
 
-                        if (e->owner == moby && e->active != 0) {
+                        if (e->owner == moby && e->state != 0) {
                             release_2D4398(vars->voice1);
                         }
                     }
                     vars->voice1 = -1;
                     if (vars->voice2 != -1) {
-                        VoiceSlot *e = (VoiceSlot *)(voice_pool + vars->voice2 * 0x70);
+                        VoicePoolRow *e = (VoicePoolRow *)(voice_pool + vars->voice2 * 0x70);
 
-                        if (e->owner == moby && e->active != 0) {
+                        if (e->owner == moby && e->state != 0) {
                             release_2D4398(vars->voice2);
                         }
                     }
@@ -1814,25 +1809,25 @@ void metal_detector_update(struct Moby *moby) {
             }
             moby->glow_color = 0x80808080;
             if (vars->voice0 != -1) {
-                VoiceSlot *e = (VoiceSlot *)(voice_pool + vars->voice0 * 0x70);
+                VoicePoolRow *e = (VoicePoolRow *)(voice_pool + vars->voice0 * 0x70);
 
-                if (e->owner == moby && e->active != 0) {
+                if (e->owner == moby && e->state != 0) {
                     release_2D4398(vars->voice0);
                 }
             }
             vars->voice0 = -1;
             if (vars->voice1 != -1) {
-                VoiceSlot *e = (VoiceSlot *)(voice_pool + vars->voice1 * 0x70);
+                VoicePoolRow *e = (VoicePoolRow *)(voice_pool + vars->voice1 * 0x70);
 
-                if (e->owner == moby && e->active != 0) {
+                if (e->owner == moby && e->state != 0) {
                     release_2D4398(vars->voice1);
                 }
             }
             vars->voice1 = -1;
             if (vars->voice2 != -1) {
-                VoiceSlot *e = (VoiceSlot *)(voice_pool + vars->voice2 * 0x70);
+                VoicePoolRow *e = (VoicePoolRow *)(voice_pool + vars->voice2 * 0x70);
 
-                if (e->owner == moby && e->active != 0) {
+                if (e->owner == moby && e->state != 0) {
                     release_2D4398(vars->voice2);
                 }
             }
