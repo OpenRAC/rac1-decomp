@@ -922,7 +922,7 @@ typedef struct {
 extern short D_L15_00161D2C;
 extern short D_L15_00161D34;
 extern short D_L15_00161D38;
-/* FAKEMATCH: a redeclaration with another type can steer how the global is addressed. */
+/* FAKEMATCH: second views of these globals; hero_gravity_dir_r above is another view of one. */
 extern V2d8e48 D_L15_00167440 __asm__("D_L15_00167440") NOT_SDA;
 extern V2d8e48 D_0013F6E0 __asm__("D_0013F6E0");
 extern V2d8e48 D_L15_001D39C0[] __asm__("D_L15_001D39C0") NOT_SDA;

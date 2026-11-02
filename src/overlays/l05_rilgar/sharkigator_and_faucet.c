@@ -2147,7 +2147,7 @@ void extermitank_update(unsigned char *m) {
             {
                 /* KEPT: the short declaration is for $gp, so volatile has to be in the cast. */
                 float t = *(volatile float *)&extermitank_vars_b58_init;
-                /* FAKEMATCH: volatile on an ordinary variable forces a load or store order. */
+                /* FAKEMATCH: volatile: a nop stays in this delay slot (8/3672 bytes differ without it). */
                 d->turret_yaw = *(volatile float *)(m + 0x48);
                 d->unk_58 = truncate_float_to_s32(t);
             }
