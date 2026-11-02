@@ -1,4 +1,5 @@
 #include "common.h"
+#include "structs/data/game_render_draw.h"
 #include "structs/camera.h"
 #include "structs/hero.h"
 #include "structs/vector.h"
@@ -145,9 +146,6 @@ typedef struct {
 } Gadget1088;
 extern Gadget1088 item_info_table[];
 
-typedef struct {
-    int v[6];
-} Tbl1088;
 extern Tbl1088 render_debug_menu_row_counts;
 
 extern int view_context[];
@@ -1904,10 +1902,6 @@ extern int g_gs_texture_allocation_cursor MACRO_ADDR;
 extern int effect_tex_cnt MACRO_ADDR;
 extern int g_gs_texture_allocation_base MACRO_ADDR;
 extern int pending_texture_upload_count MACRO_ADDR;
-typedef struct {
-    long unk0;
-    long unk8;
-} PageSlot;
 extern PageSlot effect_texture_definitions[];
 extern char hud_state[];
 

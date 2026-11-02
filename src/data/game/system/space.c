@@ -25,9 +25,9 @@ u32 light_flare_corners[] DATA_SECTION(D_001D9B60) = {
 #include "data_inc/D_001D9B60.inc"
 };
 
-u32 warp_trail_colors DATA_SECTION(D_001D9DC0) =
+u32 warp_trail_colors[] DATA_SECTION(D_001D9DC0) = {
 #include "data_inc/D_001D9DC0.inc"
-    ;
+};
 
 u32 resident_quad_corners[] DATA_SECTION(D_001D9DE0) = {
 #include "data_inc/D_001D9DE0.inc"

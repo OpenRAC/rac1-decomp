@@ -1,4 +1,5 @@
 #include "common.h"
+#include "structs/data/game_gameplay_freeze.h"
 #include "structs/memcard.h"
 #include "structs/hero.h"
 #include "callees.h"
@@ -128,20 +129,6 @@ void mode_freeze_init(int arg0, int arg1, int arg2) {
 }
 __asm__(".section .text\n\tnop\n");
 
-struct TextRegionP {
-    s16 top;
-    s16 bottom;
-    s16 left;
-    s16 right;
-    s16 anchor_x;
-    s16 anchor_y;
-    s16 measured_width;
-    s16 rendered_height;
-    s16 line_advance;
-    u16 flags;
-    s16 subpixel_x_sixteenths;
-    s16 subpixel_y_sixteenths;
-};
 typedef struct {
     s32 state;
     s32 timer;

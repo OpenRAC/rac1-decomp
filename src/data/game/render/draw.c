@@ -1,6 +1,7 @@
 /* Data owned by src/game/render/draw.c. Its values come from your own baserom (tools/data_in_c.py). */
 #include "common.h"
 
+#include "structs/data/game_render_draw.h"
 #include "structs/vector.h"
 
 u32 font_char_widths[] DATA_SECTION(D_00189EC0) = {
@@ -27,7 +28,7 @@ u32 sky_view_mtx[16] DATA_SECTION(D_0018D080) = {0};
 
 Vec4f view_clip_constants[8] DATA_SECTION(D_0018D0C0) = {0};
 
-u32 effect_texture_definitions[448] DATA_SECTION(D_0018D540) = {0};
+PageSlot effect_texture_definitions[112] DATA_SECTION(D_0018D540) = {0};
 
 u32 draw_callback_funcs[64] DATA_SECTION(D_0018DC40) = {0};
 
@@ -79,7 +80,7 @@ u32 view_fog_multiplier_copy2[] DATA_SECTION(D_001E6E70) = {
 #include "data_inc/D_001E6E70.inc"
 };
 
-u32 render_debug_menu_row_counts[] DATA_SECTION(D_001E7AC0) = {
+Tbl1088 render_debug_menu_row_counts DATA_SECTION(D_001E7AC0) = {
 #include "data_inc/D_001E7AC0.inc"
 };
 

@@ -1,6 +1,8 @@
 /* Data owned by src/game/ui/menu.c. Its values come from your own baserom (tools/data_in_c.py). */
 #include "common.h"
 
+#include "structs/data/game_ui_menu.h"
+
 u32 menu_action_messages[] DATA_SECTION(D_00199578) = {
 #include "data_inc/D_00199578.inc"
 };
@@ -9,7 +11,7 @@ u32 level_map_transforms[] DATA_SECTION(D_0019EA70) = {
 #include "data_inc/D_0019EA70.inc"
 };
 
-u32 map_coverage_active[35] DATA_SECTION(D_001A0218) = {0};
+u32 map_coverage_active[127] DATA_SECTION(D_001A0218) = {0};
 
 u32 map_region_enabled_0 DATA_SECTION(D_001A04A8) = 0;
 
@@ -37,6 +39,6 @@ u32 level_object_index_ranges[] DATA_SECTION(D_001E06B8) = {
 #include "data_inc/D_001E06B8.inc"
 };
 
-u32 nibble_popcount_table[] DATA_SECTION(D_001E83B0) = {
+NibbleBits nibble_popcount_table DATA_SECTION(D_001E83B0) = {
 #include "data_inc/D_001E83B0.inc"
 };

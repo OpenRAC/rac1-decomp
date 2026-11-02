@@ -1,4 +1,5 @@
 #include "common.h"
+#include "structs/data/game_ui_help.h"
 #include "callees.h"
 #include "structs/records.h"
 #include "structs/misc.h"
@@ -38,12 +39,6 @@ int calculate_ring_buffer_bounds(unsigned int size, int *out1, int *out2) {
 
 /* The NTSC decomp's pending C for the same instructions (a draft it has not matched
    yet), carried to PAL's names by OpenRAC's tools/port.py. Never compared with retail's bytes here. */
-typedef struct {
-    s32 x;
-    s32 y;
-    s32 label_offset_x;
-    s32 label_offset_y;
-} LevelMapMarker;
 typedef struct {
     s32 label_text;
     s32 pad4[2];

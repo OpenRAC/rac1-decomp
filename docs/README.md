@@ -45,7 +45,8 @@ The match is finished. This is what could still read better:
   `config/ratchets.json`.
 - **Fakematch sites.** `config/fakematch.tsv` lists each one and what it does.
 - **Sound and animation IDs.** No name data exists for them.
-- **Data inside larger records.** About a quarter of the data is not in C yet. See `config/data_in_c.tsv`.
+- **Data shapes.** All of `.data` is in C, but many blocks are still plain words of an unknown record. See
+  `config/data_in_c.tsv`, and give a block a real type with `tools/data_in_c.py set-type`.
 
 ## Game knowledge
 

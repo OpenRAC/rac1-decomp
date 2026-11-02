@@ -22,8 +22,8 @@ class ValuesTest(unittest.TestCase):
         self.assertEqual(d.parse(WORDS), ("u32", ["0x00000001", "0x00000002"]))
 
     def test_a_mix_or_a_local_label_is_not_plain(self):
-        self.assertIsNone(d.parse(MIXED))
-        self.assertIsNone(d.parse(LABEL))
+        self.assertIsNone(d.parse_plain(MIXED))
+        self.assertIsNone(d.parse_plain(LABEL))
 
     def test_pointers(self):
         self.assertEqual(d.parse(POINTER), ("u32", ["(u32)ref_func_00112380"]))
@@ -43,7 +43,7 @@ class ValuesTest(unittest.TestCase):
         self.assertEqual(d.parse('/* 0 00165580 */ .asciz "Su"\n.align 2\n'), ("char", ['"Su"']))
 
     def test_two_strings_are_not_one_block(self):
-        self.assertIsNone(d.parse('.asciz "a"\n.asciz "b"\n'))
+        self.assertIsNone(d.parse_plain('.asciz "a"\n.asciz "b"\n'))
 
     def test_render(self):
         self.assertEqual(d.render(["0x1"]), "0x1\n")
@@ -120,7 +120,12 @@ class TypedTest(unittest.TestCase):
 
     def test_a_wrong_size_is_refused(self):
         with self.assertRaises(ValueError):
-            d.render_typed(["0"] * 4, self.FIELDS, 12)
+            d.render_typed(["0"] * 5, self.FIELDS, 12)
+
+    def test_zero_alignment_after_the_records_is_allowed(self):
+        self.assertEqual(len(d.render_typed(["0"] * 4, self.FIELDS, 12)), 3)
+        with self.assertRaises(ValueError):
+            d.render_typed(["0", "0", "0", "0x1"], self.FIELDS, 12)
 
     def test_a_symbol_in_a_float_is_refused(self):
         with self.assertRaises(ValueError):
@@ -134,6 +139,23 @@ class TypedTest(unittest.TestCase):
         self.assertTrue(d.is_zero(["0", "0x0"]))
         self.assertFalse(d.is_zero(["0", "0x1"]))
         self.assertFalse(d.is_zero(["(u32)ref_D_1"]))
+
+
+class WholeRecordTest(unittest.TestCase):
+    def test_a_label_not_on_8_is_inside_the_block_before_it(self):
+        labels = ["D_00000010", "D_00000014", "D_00000018", "jtbl_00000020", "D_00000024"]
+        self.assertEqual(d.group_labels(labels, {"D_00000010", "D_00000018"}),
+                         {"D_00000010": ["D_00000014"], "D_00000018": []})
+
+    def test_mixed_data_becomes_words(self):
+        body = ('.at 0x10\n.word 0x1\n.byte 2, 3\n.align 2\n.at 0x18\n.asciz "ab"\n.align 2\n.word D_00000001\n')
+        self.assertEqual(d.parse(body)[1], ["0x00000001", "0x00000302", "0x00006261", "(u32)ref_D_00000001"])
+
+    def test_a_symbol_off_a_word_is_refused(self):
+        self.assertIsNone(d.parse_mixed(".at 0x10\n.byte 1\n.word D_00000001\n"))
+
+    def test_a_line_it_does_not_know_is_refused(self):
+        self.assertIsNone(d.parse_mixed(".at 0x10\n.quad 1\n"))
 
 
 class WriteOutTest(unittest.TestCase):

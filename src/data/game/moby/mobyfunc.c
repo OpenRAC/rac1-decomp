@@ -5,7 +5,7 @@ u32 normal_lut[] DATA_SECTION(D_00165600) = {
 #include "data_inc/D_00165600.inc"
 };
 
-u32 moby_draw_enabled DATA_SECTION(D_0018A3D8) = 0;
+u32 moby_draw_enabled[4] DATA_SECTION(D_0018A3D8) = {0};
 
 u32 moby_render_slots[16] DATA_SECTION(D_001B2F40) = {0};
 
