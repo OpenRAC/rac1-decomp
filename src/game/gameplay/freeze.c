@@ -368,6 +368,7 @@ void draw_freeze_message_box(void) {
                         text = msg_string(0x4FA7);
                         break;
                     }
+                    /* fall through */
                 case 13:
                     left = 0x5254;
                     right = 0x5250;
@@ -1042,6 +1043,7 @@ void update_mode_freeze(void) {
                         }
                         break;
                     }
+                    /* fall through */
                 case 2:
                 case 4:
                     if (R.x24 == 0 && (PAD & 0x10)) {

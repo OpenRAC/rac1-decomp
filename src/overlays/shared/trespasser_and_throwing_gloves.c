@@ -929,6 +929,7 @@ void mine_glove_update(struct Moby *moby) {
                 moby->state = 1;
             else
                 moby->state = 2;
+            /* fall through */
         case 1:
             if (moby->anim_flags & 2)
                 moby->state = 2;
@@ -1251,6 +1252,7 @@ void bomb_glove_update(struct Moby *moby) {
                 moby->state = 1;
             else
                 moby->state = 2;
+            /* fall through */
         case 1:
             if (moby->anim_flags & 2)
                 moby->state = 2;
@@ -2995,6 +2997,7 @@ void swingshot_hook_update(unsigned char *m) {
         case 7:
             if (!(((Moby *)m)->anim_flags & 2))
                 break;
+            /* fall through */
         default:
             if (((Moby *)m)->prev_seq != 1)
                 MobyBlendAnimation(m, 1, 0, scale_ticks(10));
@@ -3261,6 +3264,7 @@ void glove_of_doom_update(struct Moby *moby) {
             } else {
                 moby->state = 1;
             }
+            /* fall through */
         case 1:
             if (moby->anim_flags & 2) {
                 moby->state = 2;

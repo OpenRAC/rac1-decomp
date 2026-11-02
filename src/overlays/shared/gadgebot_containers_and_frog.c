@@ -1642,6 +1642,7 @@ void GadgebotUpdate(Moby *moby) {
                         d->f190 = 0;
                         qcopy(d->fF0, (*(float (*)[4]) & moby->pos));
                         d->f17C = randf_sym(0.13962634f, 0.34906584f);
+                        /* fall through */
                     case 1: {
                         int hit;
 
@@ -3243,6 +3244,7 @@ void energy_sphere_update(char *m) {
             sphere_moby->state = ENERGY_SPHERE_UPDATE_ROTATION;
             sphere_moby->flags |= 0x20;
             sphere_vars->voice_slot_index = -1;
+            /* fall through */
         case ENERGY_SPHERE_UPDATE_ROTATION: {
             float rotation_delta_x = *(float *)&blarg_energy_sphere_spin_x_deg * 0.017453292f * g_frame_time;
             float rotation_delta_y, rotation_delta_z;

@@ -330,6 +330,7 @@ char *func_001126D8(struct _reent *ptr, f64 _d, s32 mode, s32 ndigits, s32 *decp
         case 2:
             leftright = 0;
             /* no break */
+            /* fall through */
         case 4:
             if (ndigits <= 0)
                 ndigits = 1;
@@ -338,6 +339,7 @@ char *func_001126D8(struct _reent *ptr, f64 _d, s32 mode, s32 ndigits, s32 *decp
         case 3:
             leftright = 0;
             /* no break */
+            /* fall through */
         case 5:
             i = ndigits + k + 1;
             ilim = i;

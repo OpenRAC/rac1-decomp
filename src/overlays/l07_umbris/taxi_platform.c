@@ -617,6 +617,7 @@ void update_umbris_scene_progression(Moby *moby) {
                 break;
             moby->state = 11;
             StartCutscene_r(4);
+            /* fall through */
         case 11:
             if (umbris_scene_state == 2)
                 break;

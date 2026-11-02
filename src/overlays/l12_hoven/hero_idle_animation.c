@@ -148,7 +148,7 @@ int HeroL12_SetMoveState(int a, int b) {
         p->rand_timer.range = 0;
     }
     switch (a) {
-        case 0: {
+        case 0x0: {
             struct Hero *p = &g_hero;
             p->state.control_mode = 0;
             p->unk2284 = 0;
@@ -485,7 +485,7 @@ int HeroL12_SetMoveState(int a, int b) {
                 set_hero_animation(0x48, 0, (float)scale_ticks(8));
             break;
         }
-        case 1: {
+        case 0x1: {
             struct Hero *p = &g_hero;
             int t;
             p->state.control_mode = 0;
@@ -528,7 +528,7 @@ int HeroL12_SetMoveState(int a, int b) {
             set_hero_animation(0x2E, 0, (float)scale_ticks(5));
             break;
         }
-        case 2:
+        case 0x2:
         case 0x2F:
         case 0x3F:
         case 0x73: {
@@ -637,7 +637,7 @@ int HeroL12_SetMoveState(int a, int b) {
             }
             break;
         }
-        case 3: {
+        case 0x3: {
             struct Hero *p = &g_hero;
             p->state.control_mode = 1;
             p->unk2284 = 0;
@@ -684,7 +684,7 @@ int HeroL12_SetMoveState(int a, int b) {
             }
             break;
         }
-        case 4: {
+        case 0x4: {
             struct Hero *p = &g_hero;
             p->state.control_mode = 0xC;
             p->unk2284 = 0;
@@ -899,7 +899,7 @@ int HeroL12_SetMoveState(int a, int b) {
                 set_hero_animation(0xB, 0, (float)scale_ticks(0xC));
             break;
         }
-        case 6:
+        case 0x6:
         case 0x77: {
             struct Hero *p = &g_hero;
             p->state.control_mode = 2;
@@ -949,7 +949,7 @@ int HeroL12_SetMoveState(int a, int b) {
             }
             break;
         }
-        case 8: {
+        case 0x8: {
             struct Hero *p = &g_hero;
             int t8 = -2;
             p->state.control_mode = 5;
@@ -964,8 +964,8 @@ int HeroL12_SetMoveState(int a, int b) {
             }
             break;
         }
-        case 7:
-        case 9:
+        case 0x7:
+        case 0x9:
         case 0xA:
         case 0xB:
         case 0xC:

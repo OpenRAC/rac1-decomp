@@ -2374,6 +2374,7 @@ void large_amoeboid_update(unsigned char *moby) {
                 return;
             }
         }
+            /* fall through */
         case 6: {
             char *target_position;
             float *rotation = &((Moby *)moby)->rot.z;

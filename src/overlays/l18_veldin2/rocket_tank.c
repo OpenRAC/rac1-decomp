@@ -93,6 +93,7 @@ void update_moby_scene_visibility_and_height_reflection(M *moby) {
     switch (moby->state) {
         case 0:
             moby->state = 1;
+            /* fall through */
         case 1:
             if ((veldin2_cinematic_mode == 2 && veldin2_cinematic_step == 3) ||
                 (veldin2_frame_count < 5 && drek_boss_camera_reset_done != 0 && moby->f40 == 0.0f)) {

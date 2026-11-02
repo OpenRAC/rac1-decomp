@@ -2545,6 +2545,7 @@ void alien_queen_update(unsigned char *moby) {
             break;
         case 4:
             activate_listed_state_15_mobys_at_raised_positions_q(moby);
+            /* fall through */
         case 6:
             update_alien_queen_orbit_movement_q(moby);
             if (((unsigned char)((Moby *)moby)->state == 4 &&

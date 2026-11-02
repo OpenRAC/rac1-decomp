@@ -697,6 +697,7 @@ void toxic_crab_update(Moby *m) {
                 }
             }
         }
+            /* fall through */
         case 11: {
             {
                 float p[4];

@@ -241,6 +241,7 @@ void update_bolt_pickup(Moby *m) {
                 qcopy(P, A);
             }
             qcopy(&m->pos, P);
+            /* fall through */
         case 2:
             hit = 0;
             m->rot.z = FastAddRots_r(m->rot.z, d->fC);
@@ -388,7 +389,7 @@ void update_bomb(char *moby) {
     st = ((Moby *)moby)->state;
     two = 2;
     switch (st) {
-        case 1: {
+        case 0x1: {
             float t;
             t = FastVecLength(((char *)&d->velocity));
             ((Moby *)moby)->rot.x = FastAddRots(((Moby *)moby)->rot.x, t * 0.5f);
@@ -473,7 +474,7 @@ void update_bomb(char *moby) {
             }
             break;
         }
-        case 2:
+        case 0x2:
             if (fast_dec_timer(&d->timer)) {
                 ((Moby *)moby)->state = 0x63;
             } else if (d->timer == scale_ticks(0x3C) || d->timer == scale_ticks(0x28) ||
@@ -1918,7 +1919,7 @@ void blarg_bombthrower_update(Moby *moby) {
                 d->i134 = scale_ticks(0xF0);
             }
             break;
-        case 0x5B:
+        case 91:
             if (moby->anim_flags & 2) {
                 if (moby->prev_seq != 7) {
                     animate_2D5FA8(moby, 7, 0, 3);
@@ -1926,9 +1927,9 @@ void blarg_bombthrower_update(Moby *moby) {
                 moby->state = 0x5D;
             }
             break;
-        case 0x5A:
-        case 0x5C:
-        case 0x5D:
+        case 90:
+        case 92:
+        case 93:
             if (mine_fall(moby, d->blk70) & 0x40) {
                 old = d->p120;
                 if ((d->p120 = (Moby *)select_blarg_bombthrower_waypoint((char *)moby)) == 0) {
@@ -1948,7 +1949,7 @@ void blarg_bombthrower_update(Moby *moby) {
                 return;
             }
             break;
-        case 0x63:
+        case 99:
             if (mine_fall(moby, d->blk70) & 0x40) {
                 moby->anim_speed = 0.0f;
                 moby->state = 100;
@@ -2995,6 +2996,7 @@ void update_path_following_moby(char *m) {
             }
             ((struct Moby *)m)->state = 1;
             ((Moby *)m)->update_dist = 0xFF;
+            /* fall through */
         case 1: {
             float f;
             SamplePathAt(t, 1, &((struct Moby *)m)->pos, &((struct Moby *)m)->rot.x, 0, d->path_pos);

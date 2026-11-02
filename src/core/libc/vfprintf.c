@@ -246,6 +246,7 @@ s32 _vfprintf_r(struct _reent *data, FILE *fp, const char *fmt0, va_list ap) {
                 if ((width = (*(int *)((ap += 8) - 8))) >= 0)
                     goto rflag;
                 width = -width;
+                /* fall through */
             case '-':
                 flags |= 0x004;
                 goto rflag;
@@ -308,6 +309,7 @@ s32 _vfprintf_r(struct _reent *data, FILE *fp, const char *fmt0, va_list ap) {
                 break;
             case 'D':
                 flags |= 0x010;
+                /* fall through */
             case 'd':
             case 'i':
                 _uquad = (flags & 0x010   ? (*(s64 *)((ap += 8) - 8))
@@ -386,6 +388,7 @@ s32 _vfprintf_r(struct _reent *data, FILE *fp, const char *fmt0, va_list ap) {
                 continue;
             case 'O':
                 flags |= 0x010;
+                /* fall through */
             case 'o':
                 _uquad = (flags & 0x010   ? (*(u64 *)((ap += 8) - 8))
                           : flags & 0x040 ? (unsigned long)(unsigned short)(*(int *)((ap += 8) - 8))
@@ -416,6 +419,7 @@ s32 _vfprintf_r(struct _reent *data, FILE *fp, const char *fmt0, va_list ap) {
                 break;
             case 'U':
                 flags |= 0x010;
+                /* fall through */
             case 'u':
                 _uquad = (flags & 0x010   ? (*(u64 *)((ap += 8) - 8))
                           : flags & 0x040 ? (unsigned long)(unsigned short)(*(int *)((ap += 8) - 8))
@@ -472,6 +476,7 @@ s32 _vfprintf_r(struct _reent *data, FILE *fp, const char *fmt0, va_list ap) {
                 size = buf + 348 - cp;
             skipsize:
                 break;
+                /* fall through */
             default:
                 if (ch == '\0')
                     goto done;

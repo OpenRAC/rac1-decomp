@@ -756,6 +756,7 @@ void update_blarg_heavy_interceptor(struct Moby *m) {
                 break;
             }
         }
+            /* fall through */
         case 2: {
             s32 voice = d->voice;
 
@@ -805,6 +806,7 @@ void update_blarg_heavy_interceptor(struct Moby *m) {
                 d->return_done = 0;
                 m->state = 4;
             }
+            /* fall through */
         case 4:
             m->glow_color = 0xFF000000 | ((blarg_heavy_interceptor_tracking_and_group_wait_glow_blue_gp) << 16) |
                             ((blarg_heavy_interceptor_tracking_and_group_wait_glow_green_gp) << 8) |
@@ -2614,6 +2616,7 @@ void process_minibomber_hit_reactions(unsigned char *m) {
             case 8:
                 MobyBlendAnimation(m, 2, 0, 5);
                 ((Moby *)m)->anim_speed = 1.75f;
+                /* fall through */
             case 9:
             case 10:
                 d->flash = 0xFA;
@@ -3214,6 +3217,7 @@ void update_level14_racer(struct Moby *m) {
             d->timer = scale_ticks(D_L14_00161AFC_D7250);
             d->inv_time = 1.0f / IntToFloat(d->timer);
             qcopy(&m->pos, (char *)oltanis_paths[d->end_point] + 0x10);
+            /* fall through */
         case 3:
             if (MobyGetFrameValue(m) >= 3.0f)
                 func_L14_002D77E0_D7250(m);

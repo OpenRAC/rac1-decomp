@@ -241,6 +241,7 @@ void WalkCycleStep(Moby *m, WalkData *d, int flags, float speed, float ang, floa
             if (flags & 5) {
                 d->uEE &= 0xFFF7;
             }
+            /* fall through */
         case 7:
         case 8:
         case 9:

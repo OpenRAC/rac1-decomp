@@ -451,6 +451,7 @@ void snow_plow_update(VehicleMoby *m) {
                     coll_sphere_mobys(&m->pos, 4.0f, 16, m, &query);
                 }
             }
+                /* fall through */
             case 0:
             case 14:
             case 22:

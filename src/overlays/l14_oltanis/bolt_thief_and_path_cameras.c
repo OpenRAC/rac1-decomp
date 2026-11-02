@@ -640,6 +640,7 @@ void sam_update(char *m) {
                 1 << (((Moby *)m)->save_id & 0x1F);
             oltanis_moby_killed_bits[(short)((Moby *)m)->save_id >> 5] |= 1 << (((Moby *)m)->save_id & 0x1F);
             memcard_Save(0, -1);
+            /* fall through */
         case 3:
             DeleteMoby(m);
             return;

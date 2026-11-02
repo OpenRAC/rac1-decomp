@@ -1462,7 +1462,7 @@ void peckbot_update(Moby *m) {
     }
     m->hit_slot = 0xFF;
     switch (m->state) {
-        case 0:
+        case 0x0:
             qcopy(&v->v1D0, &m->pos);
             v->b29 = 0;
             if (v->h20A != 0) {
@@ -1580,7 +1580,7 @@ void peckbot_update(Moby *m) {
             }
             break;
         }
-        case 1:
+        case 0x1:
             FastVecSub(&va, &tgt, &m->pos);
             if (FastVecLength(&va) < v->f1FC + 4.0f && FastAbsF(m->pos.z - tgt.pos.f[2]) < 8.0f &&
                 random_integer_below(0x13) == 0) {
@@ -1606,7 +1606,7 @@ void peckbot_update(Moby *m) {
                 }
             }
             break;
-        case 8:
+        case 0x8:
             FastVecSub(&va, &tgt, &m->pos);
             if (FastVecLength(&va) < v->f1FC - 4.0f && FastAbsF(m->pos.z - tgt.pos.f[2]) < 8.0f &&
                 random_integer_below(0x13) == 0) {
@@ -1662,7 +1662,7 @@ void peckbot_update(Moby *m) {
                 return;
             }
             break;
-        case 2: {
+        case 0x2: {
             float a;
 
             a = fast_atan2(m->pos.x - tgt.pos.f[0], m->pos.y - tgt.pos.f[1]);
@@ -1705,7 +1705,7 @@ void peckbot_update(Moby *m) {
             }
             break;
         }
-        case 3: {
+        case 0x3: {
             float r;
             int res;
             float a;
@@ -1757,7 +1757,7 @@ void peckbot_update(Moby *m) {
             m->command = 0;
             break;
         }
-        case 4: {
+        case 0x4: {
             float a;
             float g;
 
@@ -1790,7 +1790,7 @@ void peckbot_update(Moby *m) {
             }
             break;
         }
-        case 5: {
+        case 0x5: {
             int res;
             float a;
 
@@ -1843,7 +1843,7 @@ void peckbot_update(Moby *m) {
             m->command = 0;
             break;
         }
-        case 6:
+        case 0x6:
             if (mine_fall(m, v->x120) & 1) {
                 m->state = 3;
                 if (m->prev_seq != 2) {
@@ -1856,7 +1856,7 @@ void peckbot_update(Moby *m) {
                 return;
             }
             break;
-        case 7:
+        case 0x7:
             if (CarriedMobyUpdate(m, v->x120) != 0) {
                 m->state = 0xE;
                 v->w228 = scale_ticks(0xB4);

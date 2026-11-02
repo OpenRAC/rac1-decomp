@@ -295,6 +295,7 @@ void memcard_update_state(void) {
             mc_data_0013D390.state = 10;
             mc_data_0013D390.sub = 0;
             mc_data_0013D390.card[mc_data_0013D390.cur].x14 = 0;
+            /* fall through */
         case 10:
             switch (mc_data_0013D390.sub) {
                 case 0:
@@ -490,6 +491,7 @@ void memcard_update_state(void) {
             mc_data_0013D390.state = 12;
             mc_data_0013D390.sub = 0;
             mc_data_0013D390.card[mc_data_0013D390.cur].x14 = -2;
+            /* fall through */
         case 12:
             switch (mc_data_0013D390.sub) {
                 case 0:
@@ -594,6 +596,7 @@ void memcard_update_state(void) {
             mc_data_0013D390.xC8 = 0;
             mc_data_0013D390.sub = 0;
             mc_data_0013D390.state = 14;
+            /* fall through */
         case 14:
         case 23:
             switch (mc_data_0013D390.sub) {
@@ -813,6 +816,7 @@ void memcard_update_state(void) {
             }
             mc_data_0013D390.sub = 0;
             mc_data_0013D390.state = 16;
+            /* fall through */
         case 16:
             switch (mc_data_0013D390.sub) {
                 case 0:
@@ -1004,6 +1008,7 @@ void memcard_update_state(void) {
             mc_data_0013D390.xC8 = 0;
             mc_data_0013D390.sub = 0;
             mc_data_0013D390.state = 20;
+            /* fall through */
         case 20:
             switch (mc_data_0013D390.sub) {
                 case 0:

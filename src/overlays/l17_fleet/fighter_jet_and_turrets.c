@@ -2997,6 +2997,7 @@ void magnet_elevator_update(char *moby) {
         case 2:
         case 3:
             rebuild_magnet_elevator_world_path(moby);
+            /* fall through */
         case 4:
         case 5: {
             float target;

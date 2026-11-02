@@ -1614,6 +1614,7 @@ int update_arc_motion(char *m, char *p) {
                 MobyBlendAnimation(moving_object, arc_motion_state->b2D, 0, 10);
                 arc_motion_state->state = INTEGRATE_ARC_MOTION;
             }
+            /* fall through */
         case INTEGRATE_ARC_MOTION:
             MobySpringTurn(moving_object, &arc_motion_state->f30, arc_motion_state->f18, arc_motion_state->f34,
                            arc_motion_state->f38, arc_motion_state->f3C);
@@ -1647,6 +1648,7 @@ int update_arc_motion(char *m, char *p) {
                 motion_displacement[2] = 0.0f;
                 FastVecAdd(vec, vec, motion_displacement);
             }
+            /* fall through */
         case WAIT_AFTER_GROUND_CLAMP:
             if (moving_object->b70 & 2) {
                 arc_motion_state->state = 4;
