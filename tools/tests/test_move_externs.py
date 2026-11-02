@@ -66,6 +66,27 @@ class VariantTest(unittest.TestCase):
         self.assertIsNone(me.use_variant("extern int g(int);\n", type("F", (), {"aliases": {}}), "g"))
 
 
+class DeclarationsTest(unittest.TestCase):
+    def names(self, text):
+        return [statement for _, _, statement in me.declarations(text)]
+
+    def test_a_prototype_without_extern_counts(self):
+        self.assertEqual(self.names("void g(float, void *);\nextern int h(void);\n"),
+                         ["void g(float, void *);", "extern int h(void);"])
+        self.assertEqual(me.split_prototype("g", "void g(float, void *);"), ("void", ["float", "void *"]))
+
+    def test_a_macro_call_or_a_definition_does_not(self):
+        self.assertEqual(self.names('INCLUDE_ASM("asm/overlays", func_00100000);\nint g(void) {\n    return f(1);\n}\n'), [])
+
+    def test_a_static_or_inner_declaration_does_not(self):
+        self.assertEqual(self.names("static int g(int);\nint f(void) {\n    int h(int);\n    return 1;\n}\n"), [])
+
+    def test_the_alias_covers_it(self):
+        fake = type("F", (), {"aliases": {"g": {"func_00214D28"}, "func_00214D28": {"g"}}})
+        self.assertEqual(me.use_variant("void g(float);\nvoid f(void) { g(1.0f); }\n", fake, "g"),
+                         'void g_v(float) __asm__("func_00214D28");\nvoid f(void) { g_v(1.0f); }\n')
+
+
 class HeaderTest(unittest.TestCase):
     def test_names_leave_and_others_stay(self):
         text = "#ifndef A\nextern int a(int);\nextern int b(void *);\n#endif\n"

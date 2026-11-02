@@ -13,7 +13,7 @@ One symbol gets one prototype, and it moves only if every file accepts that prot
   - A symbol with `__asm__`, `SDATA`, `MACRO_ADDR` or `NOT_SDA` on its own name in any file stays: GCC keeps the first
     declaration of a name, so a plain one in a header would silently cancel that.
   - `()` goes if the file still matches. If not, the line stays: a later `()` keeps the call unprototyped.
-  - A declaration inside a function stays. It has its own scope.
+  - A declaration inside a function stays. It has its own scope. A prototype without `extern` counts like one with it.
 
 --write compiles every affected file against retail. A file that fails is bisected to the symbols it cannot accept.
 Those symbols leave the header and every file keeps its own line. Run tools/format.py and tools/gate_loop.py afterwards:
@@ -38,10 +38,26 @@ WORKERS = 6
 INCLUDE_LINE = re.compile(r'^#include\s+"([^"]+)"', re.M)
 
 
+PLAIN = re.compile(r"^(?!extern\b|static\b|typedef\b|return\b|else\b|goto\b)[A-Za-z_][\w \t*]*[ \t*]\w+\s*\([^;{}]*\)\s*;", re.M)
+
+
+def declarations(text):
+    """(start, end, statement) of each file-scope declaration: `extern` ones, and prototypes written without it."""
+    found = list(pe.find_externs(text))
+    masked = pe.mask(text)
+    depth, at = 0, 0
+    for m in PLAIN.finditer(masked):
+        depth += masked.count("{", at, m.start()) - masked.count("}", at, m.start())
+        at = m.start()
+        if depth == 0:
+            found.append((m.start(), m.end(), text[m.start():m.end()]))
+    return sorted(found)
+
+
 def split_prototype(name, statement):
     """(return type, [parameters]), or None if this is not a plain function declaration. No parameters is `()`."""
     text = mp.normal(statement)
-    m = re.fullmatch(rf"extern\s+(.*?)\b{re.escape(name)}\s*\((.*)\)\s*;", text)
+    m = re.fullmatch(rf"(?:extern\s+)?(.*?)\b{re.escape(name)}\s*\((.*)\)\s*;", text)
     if not m:
         return None
     return m.group(1).strip(), [p.strip() for p in pe.split_declarators(m.group(2))] if m.group(2).strip() else []
@@ -128,7 +144,7 @@ class Sources:
         for rel, text in self.text.items():
             for name in mp.DEFINITION.findall(pe.COMMENT_OR_STRING.sub(pe.blank, text)):
                 self.defined[self.symbol(name)].add(rel)
-            for start, _, statement in pe.find_externs(text):
+            for start, _, statement in declarations(text):
                 if not is_file_scope(text, start):
                     continue
                 names = pe.declared_names(statement) or []
@@ -212,7 +228,7 @@ def use_variant(text, sources, symbol):
         return None
     names = ({symbol} | sources.aliases.get(symbol, set()))
     edits = []
-    for start, end, statement in pe.find_externs(text):
+    for start, end, statement in declarations(text):
         found = pe.declared_names(statement) or []
         if len(found) == 1 and found[0] in names and not QUALIFIED.search(statement) and is_file_scope(text, start):
             edits.append((start, end, statement.rstrip(" ;\n\t") + f' __asm__("{label}");'))
@@ -231,7 +247,7 @@ def edit_file(text, sources, rel, symbols, header, keep=(), variants=()):
     for symbol in sorted(variants):
         text = use_variant(text, sources, symbol) or text
     spans = []
-    for start, end, statement in pe.find_externs(text):
+    for start, end, statement in declarations(text):
         if not is_file_scope(text, start):
             continue
         names = pe.declared_names(statement) or []
