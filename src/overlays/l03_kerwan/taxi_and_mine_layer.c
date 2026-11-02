@@ -22,6 +22,7 @@
 #include "enums/hero_state.h"
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
+#include "overlays/shared/moby_ground_collision.h"
 extern char gHeroPos[];
 extern char gSpecialItems[];
 extern char gSkillPoints[];
@@ -533,15 +534,13 @@ extern void vec_scale_to_length(void *, void *, f32);
 extern f32 vec_distance_xy(void *, void *);
 extern void Moby_PlaySound_r(int, int, struct Moby *) __asm__("func_0022ED80");
 extern int coll_sphere_mobys(void *, int, struct Moby *, void *, f32);
-extern void SendRadialMessageToMobys(struct Moby *, void *, void *, int, int, int, int, int, f32, f32, f32);
+
 extern s32 truncate_float_to_s32(f32);
 
-extern s32 rand_range(s32, s32);
 extern int DefaultVtbl_DeleteMoby_r(int, int, f32) __asm__("func_L00_00237B70");
 
 extern void mine_debris(void *, void *, int, int, f32, int, int);
 extern void mine_camera_blast(void *, void *, int, int);
-extern void moby_index_list_remove(struct Moby *, void *);
 
 /* l03 mine update: falls until it lands, sticks to or homes on its target, arms, and explodes on contact (debris,
    camera shake, blast) or shrinks away when old.
@@ -1176,9 +1175,7 @@ extern int rand_range_r(int, int) __asm__("func_L00_00258BC8");
 extern void PartType04Spawn_r(void *, void *, int, int, int, int, int, int) __asm__("func_L00_0026A7F8");
 extern float func_L00_00259148(float *vel, float cur, float target, float k, float d, float max);
 extern int func_L00_001F10E0(float, void *, int, void *);
-extern void func_L00_0025A8C0(void *, void *, int, float, void *);
-extern void func_L00_0025AAC0(void *, void *);
-extern void func_L00_00260108(void *, void *, int, float, float);
+
 extern void DeleteMoby_r4(void *) __asm__("func_0020D678");
 extern Vec4 D_0013F590;
 extern short D_L03_00161BA8_D5790 SDATA(D_L03_00161BA8);
@@ -1347,7 +1344,6 @@ extern int DialogRequest_Init(void *, unsigned char *);
 extern int Npc_TryStartDialog(struct Moby *, struct TalkState_hg *);
 extern void initialize_moby_grounding(struct Moby *);
 
-extern void grant_inventory_item(int, int);
 extern void ShowBanner(int, int);
 extern void memcard_Save(int, int);
 extern void DeleteMoby(void *);
@@ -2649,7 +2645,6 @@ struct L03Cutscene {
 extern struct L03Cutscene kerwan_cutscene_state_r __asm__("D_L03_0016C9E0");
 extern void cutscene_set_camera_target(void *);
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern int rand_range(int, int);
 
 extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
 

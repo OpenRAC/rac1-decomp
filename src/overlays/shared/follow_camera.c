@@ -20,6 +20,7 @@
 #include "enums/hero_state.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "overlays/shared/moby_ground_collision.h"
 extern char g_hero[];
 extern u8 hero_gravity_dir[];
 extern char gHeroPos[];
@@ -112,8 +113,6 @@ extern char hero_globals_base[];
 extern float g_frame_time MACRO_ADDR;
 extern void vec_scale_to_length(void *, void *, float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
-
-extern int rand_range(int, int);
 
 extern int func_001F9908(int *);
 
@@ -231,7 +230,6 @@ extern void DeleteMoby(void *);
 extern void emit_moby_color_cycling_particles_r(void *) __asm__("func_L00_002E1C38");
 extern f32 vec_distance_xy(void *, void *);
 
-extern void grant_inventory_item(s32, s32);
 extern void Help_Request(s32, s32);
 
 extern void memcard_Save(s32, s32);
@@ -744,7 +742,6 @@ extern long GetEffectTex(int);
 extern void FastVecScale(void *, void *, float);
 
 extern void draw_world_quad(void *, int, int);
-extern float CubicInterpolate(float, float, float, float, float);
 
 /* Builds the two blend quads from the slot tables and draws them along the
    19-step trail in a2. */
@@ -916,7 +913,7 @@ void vec_scale_to_length(void *, void *, f32);
 void FastVecCross(void *, void *, void *);
 s64 GetEffectTex(s32);
 f32 random_float_between(f32, f32);
-f32 randf_sym(f32, f32);
+
 void FastVecScale(void *, void *, f32);
 void transform_vector(void *, void *, void *);
 void FastVecAdd(void *, void *, void *);
@@ -3060,7 +3057,7 @@ typedef struct Mdata {
 } Mdata;
 extern void clear_u64_value_r2(void *) __asm__("func_001F9BC0");
 extern void FastVecAdd_r3(void *, void *, void *) __asm__("func_001F9BD8");
-extern float func_L00_0025ED30(void *, void *, void *, void *, float);
+
 extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
 extern int coll_sphere_r2(void *, int, void *, float) __asm__("func_L00_001F10E0");
 extern void func_001F9BF0_2E8AC8(void *, void *, void *) __asm__("func_001F9BF0");
@@ -3261,7 +3258,7 @@ typedef struct {
 #define D_L00_00173F60_x (*(E40_2e7d20_t *)((u8 *)&D_L00_00173F60 - 0x20))
 #define CAST_func_001F9C08 ((void (*)(void *, void *, void *, f32))func_001F9C08)
 #define CAST_func_L00_001F2BE8 ((s32 (*)(void *, s32, void *, s32, f32))func_L00_001F2BE8)
-s32 test_moby_linked_record_word8(void *);
+
 #define CAST_func_001F9BF0 ((void (*)(void *, void *, void *))func_001F9BF0)
 #define CAST_func_L00_002E8EE0 ((s32 (*)(void *))func_L00_002E8EE0)
 #define CAST_func_L00_002E89D0 ((s32 (*)(void *))func_L00_002E89D0)
@@ -3270,8 +3267,8 @@ f32 CosineInterpolate(f32, f32, f32);
 #define CAST_func_L00_001EFFF0 ((s32 (*)(void *, void *, s32, void *, s32))func_L00_001EFFF0)
 #define CAST_func_L00_002E5740 ((s32 (*)(void *))func_L00_002E5740)
 s32 is_moby_in_class_range_500_to_540(s32);
-void InitDirectionalHitQuery(void *, void *, s32, void *, f32);
-void record_moby_hit(s32, void *);
+void InitDirectionalHitQuery_v(void *, void *, s32, void *, f32) __asm__("func_L00_0025A8C0");
+
 void init_camera_system(void);
 void build_look_at_matrix(void *, void *, void *, f32);
 #define AF_2e7d20(o) (*(f32 *)(a + (o)))
@@ -3419,7 +3416,7 @@ move:
         v20.i[2] = 0;
         vec_scale_to_length(&v20, &v20, 1.0f);
         v20.f[3] = 5627.9248046875f;
-        InitDirectionalHitQuery(&hit_descriptor, D_0013F450_x.p2080, 0x800000, &v20, 20.0f);
+        InitDirectionalHitQuery_v(&hit_descriptor, D_0013F450_x.p2080, 0x800000, &v20, 20.0f);
         hit_descriptor.b18 = 3;
         hit_descriptor.b19 = 3;
         hit_descriptor.h1A = *(u16 *)(D_0013F450_x.p2080 + 0xA6);
@@ -3628,8 +3625,6 @@ void set_follow_camera_blend_output_flags(void) {
     }
 }
 extern float FastArcSin(float x);
-
-extern float CubicInterpolate(float a, float b, float c, float d, float t);
 
 /* Measures the signed angle between two offsets of an object's data relative to an axis, and (within the limit) stores
    a scaled blend in the object's data. */

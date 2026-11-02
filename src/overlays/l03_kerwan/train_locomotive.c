@@ -449,7 +449,7 @@ extern void set_moby_dialogue_record_value(void *, int);
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound(int, int, int);
 extern int fast_dec_timer(int *);
-extern int rand_range(int, int);
+
 extern int find_nearest_path_point_r(void *, void *, void *, int *, float *, int, float, float,
                                      float) __asm__("func_L00_0025EFC0");
 
@@ -1126,7 +1126,7 @@ void update_moby_emitter_effects(Moby *moby, float *a1, int a2) {
 }
 
 extern float vec_length_xy(void *);
-extern float normalize_angle(float);
+
 extern float frame_scale MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
@@ -1705,10 +1705,10 @@ extern int is_point_inside_clip_volume_cf(int id);
 
 extern void SetDeathBits(void *, int, int);
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
-extern void PostHitMessage(void *, void *, int, void *, void *, float);
+
 extern void set_ground_height_band(void *);
 extern void StepColorFade(void *, void *);
-extern void SpawnExplosionFx(void *, void *, int, float, float);
+
 extern void Manipulator_ApplyScale(void *, int, void *, float);
 extern void spawn_moby_break_fragments(void *, int, int, int, int, int, int);
 extern void MoveCtl_Init_r(char *p, void *) __asm__("func_L01_0026E8E0");
@@ -2259,9 +2259,9 @@ extern int IsFrameWithinWindow(char *, float);
 extern void vec_scale_to_length(void *, void *, float);
 
 extern void compute_interpolated_record_value_cf(void *, void *, void *, int, float, float, float);
-extern void record_moby_hit(void *, void *);
+
 extern int ClassifyTargetInCone(char *m, char *p, float *pos, char *v);
-extern void find_nearest_path_point(void *, void *, void *, int *, float *, int, float, float, float);
+
 extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
 
 extern float ApproachValue(float *p, float target, float maxstep);

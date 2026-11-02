@@ -1908,7 +1908,6 @@ int update_shuttle_path_ride(char *moby, int path) {
     return ride->progress == 1.0f;
 }
 extern void rand_vec(void *, float, float);
-extern void SpawnExplosionFx(void *, void *, int, float, float);
 
 extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
 extern unsigned char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);

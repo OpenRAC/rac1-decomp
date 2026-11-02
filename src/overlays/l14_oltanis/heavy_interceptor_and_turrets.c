@@ -581,7 +581,7 @@ extern int coll_sphere(float, void *, int, void *);
 extern char *PartType21Spawn(void *pos, void *dir, int c, int d, int n, int k, float f);
 extern unsigned char *PartType23Spawn_r(void *pos, float r, float lo, float hi, int n, void *vel, float size,
                                         int color) __asm__("func_L00_0026DEA0");
-extern void spawn_particles_at_shape_points(void *, void *, int);
+
 extern s32 Moby_PlaySound_r(s32, s32, void *) __asm__("func_0022ED80");
 
 extern f32 IntToFloat_r(s16) __asm__("func_001FA888");
@@ -3229,7 +3229,6 @@ void update_level14_racer(struct Moby *m) {
 }
 extern char *race_paths_p __asm__("D_L14_0015F7EC") MACRO_ADDR;
 extern float oltanis_racer_path_step SDATA(oltanis_racer_path_step);
-extern int find_nearest_path_point(void *, void *, float *, int *, float *, int, float, float, float);
 
 typedef struct {
     float v[4];

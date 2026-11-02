@@ -1353,10 +1353,8 @@ extern float ApproachValue(float *, float, float);
 extern float jump_speed_4318(void *, void *, void *, float, float);
 
 extern int move_w(void *, void *, void *, void *, float);
-extern void PostHitMessage(void *, int, int, void *, void *, float);
-extern int CarriedMobyUpdate(void *, void *);
 
-extern void SpawnExplosionFx(void *, void *, int, float, float);
+extern int CarriedMobyUpdate(void *, void *);
 
 extern float IntToFloat(int);
 extern void set_ground_height_band(void *);
@@ -2016,7 +2014,7 @@ typedef struct {
     s16 pull; /* 0x2C: nonzero pulls the hero onto the path */
     s16 ready; /* 0x2E: segment lengths computed */
 } PathCarrierVars;
-extern void find_nearest_path_point(PePath_F44F8 *, void *, void *, f32 *, s32 *, s32, f32, f32, f32);
+
 extern s32 Spline_AdvanceByDistance(PePath_F44F8 *, void *, f32 *, s32 *, s32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l01/gameplay/entities/002b96e0.c, FUN_L01_002f3120. */
@@ -3013,7 +3011,7 @@ extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern f32 FastAbsF_r(f32) __asm__("func_001F9B88");
 extern float FastCos_r(float) __asm__("func_001F9F90");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
-extern void func_L00_002594C8(void *, void *, void *, s32, f32, f32, f32, f32);
+
 extern f32 FastVecDist_r(void *, void *) __asm__("func_001F9D10");
 extern void vec_scale_to_length_r(void *, void *, f32) __asm__("func_L00_001FF4B0");
 extern f32 func_00214440(void *, s32);

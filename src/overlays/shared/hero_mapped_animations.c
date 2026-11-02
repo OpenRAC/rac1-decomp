@@ -574,7 +574,7 @@ extern u8 coll_hit_normal[];
 extern f32 collision_hit_point;
 
 extern void vec_scale_to_length(void *, void *, f32);
-extern void clip_negative_segment_endpoint_xyz(Vec4 *, void *);
+
 extern s32 coll_line(void *, void *, s32, s32, s32);
 extern f32 compute_gravity_relative_vector_inclination_r(void *) __asm__("func_L00_002345B0");
 extern f32 gravity_z_r(void *) __asm__("func_L00_002342F8");
@@ -1263,8 +1263,7 @@ extern void scale_ticks_r2(int) __asm__("func_001F9850");
 extern Plat *moby_get_ride_transform(void *);
 
 extern void RotateWithMoby(int, void *, void *, void *, void *, void *);
-extern int convert_pose_to_reference_local(int, void *, void *, void *, void *, void *);
-extern void transform_attachment_pose(int, void *, void *, void *, void *, void *);
+
 extern float ApproachValue(float *, float, float);
 extern void vec_set_length_xy_r2(void *, void *, float) __asm__("func_L00_001FF500");
 

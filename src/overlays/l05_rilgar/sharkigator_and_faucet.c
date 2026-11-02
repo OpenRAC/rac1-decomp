@@ -235,7 +235,7 @@ extern float vec_distance_xy(void *, void *);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 
 extern void euler_rotation_basis(void *, void *);
-extern int IsPointInPolygon(void *, void *, int);
+
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern void Moby_PlaySound(int, int, int);
 
@@ -1112,10 +1112,9 @@ extern f32 ApproachValue(f32 *, f32, f32);
 
 extern float MobyGetFrameValue(void *);
 
-extern void PostHitMessage(void *, int, int, void *, void *, float);
 extern int mine_fall(void *, void *);
 extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
-extern void SpawnExplosionFx(void *, void *, int, float, float);
+
 extern int rilgar_cinematic_mode MACRO_ADDR;
 
 extern float sharkigator_scale SDATA(sharkigator_scale);
@@ -1986,8 +1985,7 @@ extern void set_ground_height_band(void *);
 extern void AttachManipulator(char *, int, unsigned char *);
 
 extern int ClassifyTargetInCone(char *m, char *p, float *pos, char *v);
-extern int IsPointInPolygon(void *, void *, int);
-extern float step_angle_toward_target(float *, int, float, float);
+
 extern void axis_rotation_2d48(void *, int, float);
 
 extern float extermitank_move_speed SDATA(extermitank_move_speed);
@@ -2732,7 +2730,6 @@ extern float ApproachValue(float *, float, float);
 extern float SpringAngle(void *, float, void *, int, float, float, float);
 extern int coll_sphere_mobys_r(void *, int, void *, void *, float) __asm__("func_L00_001F2BE8");
 extern int is_moby_in_class_range_500_to_540(int);
-extern void PostHitMessage(void *, int, int, void *, void *, float);
 
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 
@@ -3055,8 +3052,7 @@ void floating_platform_update(unsigned char *moby) {
     }
 }
 extern char *moby_pool_4f60_r __asm__("D_L05_00160098") MACRO_ADDR;
-extern void convert_pose_to_reference_local(char *, char *, char *, char *, char *, char *);
-extern void transform_attachment_pose(char *, char *, char *, char *, char *, char *);
+
 extern void FastVecSub_r4(float *, char *, float *) __asm__("func_001F9BF0");
 extern void update_entity_matrix_r(char *, float *, float *, char *) __asm__("func_L00_002617B0");
 

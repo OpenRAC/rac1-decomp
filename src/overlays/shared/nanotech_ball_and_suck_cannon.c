@@ -462,7 +462,6 @@ extern void KillPart_r(void *) __asm__("func_L00_002688A8");
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 extern int func_L00_0028EF68(int, int, void *, int);
 extern float IntToFloat_r(int) __asm__("func_001FA888");
-extern float func_L00_00258E58(float, float, float, float, float);
 
 /* Nanotech ball update: spawns, homes in on its target, hits or fizzles; kills itself when its owner goes. */
 void nanotech_ball_update(Moby *m) {
@@ -1972,10 +1971,8 @@ extern I6_DD3D8 suck_cannon_explosion_colors_a;
 extern I6_DD3D8 suck_cannon_explosion_colors_b;
 extern int *coll_sphere_moby_hits[];
 
-extern int rand_range(int, int);
-
 extern void clamp_vec_length(void *, void *, float);
-extern unsigned swap_packed_color_channels(unsigned, int);
+
 extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
 extern char *spawn_randomly_rotated_colored_moby_r(float, void *, void *, void *, int, unsigned char, unsigned char,
                                                    unsigned char, unsigned char) __asm__("func_L00_002E0CB8");
@@ -1989,7 +1986,6 @@ extern Cam player_camera_r __asm__("D_L00_00166D80");
 
 extern char *mine_camera_blast(char *, char *, int, char *);
 extern int coll_sphere_mobys_r(float, void *, int, void *, void *) __asm__("func_L00_001F2BE8");
-extern void SendRadialMessageToMobys(void *, void *, void *, int, int, int, int, int, float, float, float);
 
 /* Explosion burst for a moby: debris sprays, sparks, coloured flashes, camera shake and an optional damage area. */
 void spawn_suck_cannon_projectile_explosion(char *self, char *q) {
@@ -2272,7 +2268,7 @@ extern float FastVecLength_r(void *) __asm__("func_001F9CB8");
 extern float lensq_cc2e8_r(void *) __asm__("func_L00_001FF3E0");
 extern float vec_length_r(float) __asm__("func_001F9B50");
 extern void FastVecScale_r2(void *, void *, float) __asm__("func_001F9C30");
-extern void func_L00_0025A8C0(void *, void *, int, float, void *);
+
 extern void vec_set_length_xy_r(void *, void *, float) __asm__("func_L00_001FF500");
 extern int coll_sphere_mobys_r2(float, void *, int, void *, void *) __asm__("func_L00_001F2BE8");
 extern int func_L00_001F10E0(float, void *, int, void *);
@@ -2286,7 +2282,7 @@ extern void vec_reflect_r(void *, void *, void *) __asm__("func_L00_001FF610");
 extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
 extern void func_L00_0026D270(void *, void *);
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
-extern int func_L00_00259B08(void *, void *, float, int, float, int);
+
 extern void STUB_printf_r(void *) __asm__("func_001E9730");
 
 /* Per-frame update of a thrown or carried child moby: aims at its owner, runs its state (1 to 8: turn, rise,

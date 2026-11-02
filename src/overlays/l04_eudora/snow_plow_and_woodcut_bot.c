@@ -249,7 +249,6 @@ extern void coll_sphere_mobys(void *, float, s32, void *, void *);
 extern void spawn_explosion(void *, void *, void *, float, float, s32, s32, s32, float, float, float, float, s32, float,
                             s32, s32, s32, s32);
 extern void Moby_GetJointWorldPos(void *, s32, void *);
-extern void SpawnExplosionFx(void *, void *, s32, float, float);
 
 extern void SpawnBreakFragment(void *, s32, void *, void *, s32, s32, float, void *, void *, void *);
 extern s32 fast_dec_timer(s32 *);
@@ -784,7 +783,6 @@ extern void AttachManipulator(void *, int, void *);
 extern void initialize_woodcut_bot_movement_data(void *);
 extern void *libc_memset(void *, int, int);
 
-extern int IsPointInPolygon(void *, void *, int);
 extern int IsFrameWithinWindow(void *, float);
 
 extern void spawn_crate_debris(void *, void *, void *, void *, int, int, float, float);
@@ -796,7 +794,7 @@ extern int mine_fall(void *, void *);
 extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
 extern void DeleteMoby(void *);
 extern void StepColorFade(void *, void *);
-extern void MoveKeepingOverGround(void *, void *, void *, int, float, float, float, float);
+
 extern void axis_rotation_2d48(void *, int, float);
 
 extern char eudora_camera_pos[];
@@ -1513,7 +1511,7 @@ struct MobyP {
 extern float vec_length_xy(void *);
 #define vector_length_xy func_001F9CE8
 extern int fast_dec_timer(s32 *);
-extern int rand_range(int, int);
+
 #define random_int_between func_L00_00258BC8
 #define collision_line ((int (*)(void *, void *, int, void *, void *))(func_L00_001EFFF0))
 
@@ -1881,7 +1879,6 @@ void update_suck_cannon_particles(char *m) {
 extern int DialogRequest_Init(void *, void *);
 
 extern int Npc_TryStartDialog(void *, void *);
-extern void unlock_planet(int);
 
 extern int memcard_Save(int, int);
 extern char eudora_lieutenant_respawn_point[];
@@ -2247,8 +2244,6 @@ extern float eudora_debris_spin_min_deg SDATA(eudora_debris_spin_min_deg);
 extern float eudora_debris_spin_max_deg SDATA(eudora_debris_spin_max_deg);
 extern int FastDecTimer_bounce(void *) __asm__("func_001F9938");
 extern int coll_sphere(float, void *, int, void *);
-
-extern float randf_sym(float lo, float hi);
 
 // Updates a bouncing moby: spins it, then in state 0 reflects its direction off a plane and in state 1 fades it out.
 typedef struct BounceData2E6558 {

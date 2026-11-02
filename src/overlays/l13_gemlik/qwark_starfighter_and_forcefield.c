@@ -232,7 +232,7 @@ extern int queue_starfighter_voice_line(void *, void *, int, int);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern int fast_subtract_rotations_cf(void *);
-extern int rand_range(int, int);
+
 extern unsigned char *fire_mine_83_projectile(char *, char *);
 extern int Moby_PlaySound(int, int, int);
 extern char hero_globals_base[];
@@ -562,8 +562,6 @@ extern int FastBSphereCheck(void *, float);
 extern float vec_distance_xy(void *, void *);
 extern void update_moby_spring_steering_and_banking(void *, void *, float, float);
 
-extern float normalize_angle(float);
-
 extern void AddDrawCallback(void *, void *);
 extern void draw_starfighter_tractor_beam();
 extern void detach_moby_joint_attachment(void *, void *, int);
@@ -571,7 +569,6 @@ extern int fast_dec_timer(void *);
 extern void MobySpringTurn(void *moby, float *vel, float target, float k, float d, float max);
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
 
-extern void SpawnExplosionFx(void *, void *, int, float, float);
 extern void func_L13_002E9F90(void *, void *);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
@@ -1858,7 +1855,7 @@ extern int truncate_float_to_s32(float);
 #define rndf_p func_002140F8
 extern int PartType44Spawn(void *, void *, int, int, int, int, float, float, float, float, float);
 #define trail_p func_L00_00272158
-extern void InitDirectionalHitQuery(void *, struct Moby *, int, float, void *);
+
 #define desc_p func_L00_0025A8C0
 #define mat_p func_L00_001FF610
 extern void PartType27Spawn(void *, void *, int, int, float);
@@ -2102,7 +2099,7 @@ char *spawn_gemlik_projectile(float speed, float *pos, float *dir, void *arg) {
     }
     return m;
 }
-extern void record_moby_hit(void *, void *);
+
 struct L13Ent00178480 {
     char pad0[0x24];
     int i24;
@@ -2413,7 +2410,6 @@ extern float IntToFloat(int);
 
 /* KEPT: the calls disagree on where the float goes: the argument order changes the moves. */
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
-extern void SendRadialMessageToMobys(void *, void *, void *, int, int, int, int, int, float, float, float);
 
 extern char poison_vessel_hit_fmt[];
 extern char sphere_hits_ed158[];
@@ -2617,7 +2613,7 @@ extern void set_ground_height_band(void *);
 extern void MoveCtl_Init(void *);
 extern void SteerAngleWithVelocity(float *, float, float *, float, float, float);
 extern float MobyGetFrameValue(struct Moby *);
-extern void sweep_hit_segment(void *, void *, void *, void *, struct Moby *, Shot *, int);
+
 extern int move_w(struct Moby *, void *, void *, void *, float);
 extern int func_001160D8(void);
 extern void resolve_point_path_segment_xy_clearance(int, void *, void *, float);

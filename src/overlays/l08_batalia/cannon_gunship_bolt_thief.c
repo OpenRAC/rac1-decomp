@@ -1218,7 +1218,7 @@ void update_linked_moby_parts(char *moby) {
     }
 }
 extern void *MobyGetHitMessage(void *, int, int);
-extern void SpawnExplosionFx(void *, void *, int, float, float);
+
 extern s32 Moby_PlaySound(s32, s32, struct Moby *);
 /* Selects a damaged child moby, launches it, and advances the parent's state. */
 void process_gunship_part_hits(struct Moby *moby) {
@@ -1336,7 +1336,7 @@ extern s32 fast_dec_timer(s32 *);
 extern void vec_scale_to_length(void *, void *, f32);
 extern void MobySpringTurn_r(struct Moby *, f32, f32 *, f32, f32, f32) __asm__("func_L00_002592B0");
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
-extern void SpawnExplosionFx(void *, void *, s32, f32, f32);
+
 extern struct Moby *spawn_rocket_435_projectile(void *, struct Moby *, void *, f32, f32);
 extern void process_gunship_part_hits(struct Moby *);
 
@@ -1589,9 +1589,9 @@ extern void ClampVectorLength(void *a, float x);
 extern float vec_distance_xy(void *, void *);
 
 extern int begin_bolt_attraction(void *, int, float, float);
-extern int find_listed_moby_by_data_id(void *);
+
 extern int mine_fall(void *, void *);
-extern void SpawnExplosionFx(void *, void *, int, float, float);
+
 extern void DeleteMoby(void *);
 extern void StepColorFade(void *, void *);
 
@@ -1893,11 +1893,10 @@ extern void draw_batalia_bolt_pickup_rotating_quad(char *m);
 extern int coll_line(void *, void *, int, int, int);
 
 extern unsigned char *moby_get_ride_transform(int);
-extern void convert_pose_to_reference_local(void *, int, void *, void *, void *, void *);
-extern int transform_attachment_pose(void *, int, void *, void *, void *, void *);
+
 extern void build_axis_roll_matrix(void *, void *, float);
 
-extern float step_angle_toward_target(float *, float, float, int);
+extern float step_angle_toward_target_v(float *, float, float, int) __asm__("func_L00_0025CC58");
 extern void rand_vec(void *, float, float);
 extern unsigned char *PartType53Spawn(float *pos, int a, float f0, float f1, int col, int mode, int b, float *vel,
                                       float f2);
@@ -2094,12 +2093,12 @@ void update_batalia_bolt_pickup(Moby *m) {
                 if (scale_ticks(10) < d->i68) {
                     float t = FastAddRots(d->f60, FastSin((float)(d->i68 % 8 - 4) * 0.7854f) * 0.17453292f);
 
-                    step_angle_toward_target(&d->f60, t, 0.5235988f, 0);
+                    step_angle_toward_target_v(&d->f60, t, 0.5235988f, 0);
                 } else {
                     float t = FastAddRots(
                         fast_atan2(g_hero.motion.pos.f[0] - m->pos.x, g_hero.motion.pos.f[1] - m->pos.y), 1.5707964f);
 
-                    step_angle_toward_target(&d->f60, t, 0.08726646f, 0);
+                    step_angle_toward_target_v(&d->f60, t, 0.08726646f, 0);
                     if (FastDiffRots_r(d->f60, t) < 0.08726646f) {
                         d->i68 = 0;
                     }
@@ -2583,7 +2582,6 @@ void spawn_shrub_parts(char *moby) {
         e += 0x10;
     } while (i < 8);
 }
-extern void SpawnExplosionFx(void *, void *, int, float, float);
 
 extern void Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
 

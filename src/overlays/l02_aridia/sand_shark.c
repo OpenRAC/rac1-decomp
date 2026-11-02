@@ -1329,8 +1329,6 @@ void prepare_sand_shark_for_relaunch_or_remove(unsigned char *moby) {
     }
 }
 
-extern int IsPointInPolygon(void *, void *, int);
-
 /* Sends a sand shark home when it leaves its path polygon. */
 void begin_sand_shark_return_home_if_outside_path(unsigned char *moby) {
     struct Vars *data = (struct Vars *)((Moby *)moby)->pvars;
@@ -1361,7 +1359,7 @@ extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 
-extern void InitDirectionalHitQuery(char *arg, int a, int b, void *src, float scale);
+extern void InitDirectionalHitQuery_v(char *arg, int a, int b, void *src, float scale) __asm__("func_L00_0025A8C0");
 extern void collect_mobies_around_tracked_objects(char **slots, int a, int b);
 extern int mine_fall(void *, void *);
 extern void SetDeathBits(void *, int, int);
@@ -1676,7 +1674,7 @@ void update_level02_bot(unsigned char *raw) {
             effect_slots_fire(data->shots, position, direction, level02_bot_attack_shot_nominal_length_gp);
             direction[3] = 5627.925f;
             direction[2] = 1.0f;
-            InitDirectionalHitQuery(shot, (int)moby, 0x10001, direction, 1.0f);
+            InitDirectionalHitQuery_v(shot, (int)moby, 0x10001, direction, 1.0f);
             shot[0x18] = 5;
             shot[0x19] = 1;
             *(short *)(shot + 0x1A) = *(u16 *)&moby->oclass;

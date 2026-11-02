@@ -26,6 +26,7 @@
 #include "enums/hero_state.h"
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
+#include "overlays/shared/moby_ground_collision.h"
 extern char g_hero[] NOT_SDA;
 
 /* Lift/gate moby that follows a driver moby's progress between a base and a top height. */
@@ -121,7 +122,7 @@ extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern void func_L00_00250800(void *, s32, void *);
 extern void MobySpringTurn_r(struct Moby *, f32, f32 *, f32, f32, f32) __asm__("func_L00_002592B0");
-extern void func_L00_00260108(void *, void *, s32, f32, f32);
+
 extern struct Moby *func_L08_002DF758(void *, struct Moby *, void *, f32, f32);
 extern void func_L08_002EA930(struct Moby *);
 extern void func_L08_002EAB30(struct Moby *);
@@ -752,8 +753,6 @@ extern float IntToFloat(int);
 
 extern float vec_length(float);
 
-extern float normalize_angle(float);
-
 extern int truncate_float_to_s32(float);
 extern int GetEffectTex(int);
 
@@ -765,7 +764,7 @@ extern float split_float_fraction(void *, float);
 extern void draw_world_quad(void *, void *, int);
 extern unsigned char *func_L08_0027C218(void *, float, void *, void *, short, unsigned char, unsigned char,
                                         unsigned char, unsigned char);
-extern int rand_range(int, int);
+
 extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
 
 /* Builds the animated grid, draws its quads, and updates attached effects. */
@@ -1200,7 +1199,6 @@ extern void set_ground_height_band(void *);
 extern int DialogRequest_Init(void *, void *);
 extern int Npc_TryStartDialog(void *, void *);
 
-extern void unlock_planet(int);
 extern void queue_planet_unlock_message(int);
 
 extern int memcard_Save(int, int);
@@ -1630,7 +1628,6 @@ void attach_batalia_plumber_class_manipulator(char *moby) {
 extern void attach_batalia_plumber_class_manipulator(char *moby);
 extern void request_batalia_cannon_mount(char *arg);
 
-extern void grant_inventory_item(int, int);
 extern void DeleteMoby(void *);
 extern float fast_atan2(float, float);
 

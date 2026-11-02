@@ -165,7 +165,6 @@ typedef struct {
 extern int GetEffectTex(int);
 
 extern float IntToFloat(int);
-extern float CubicInterpolate(float, float, float, float, float);
 
 extern void draw_world_quad(void *, void *, int);
 extern void vec_scale_to_length(void *, void *, float);
@@ -326,8 +325,6 @@ void draw_ribbon_effect_path(void *m, void *path, int outer_alpha, int inner_alp
     }
 }
 extern int is_point_inside_clip_volume(void *, int);
-
-extern void record_moby_hit(int, void *);
 
 typedef struct {
     float v[4];
@@ -657,8 +654,6 @@ extern int D_L14_00161D00_EC7E8 SDATA(D_L14_00161D00);
 extern int D_L14_00161D04_EC7E8 SDATA(D_L14_00161D04);
 extern float D_L14_00161D08_EC7E8 SDATA(D_L14_00161D08);
 extern float D_L14_00161D0C_EC7E8 SDATA(D_L14_00161D0C);
-
-extern float randf_sym(float, float);
 
 extern int truncate_float_to_s32(float);
 
@@ -1043,10 +1038,8 @@ extern float vec_distance_xy(void *, void *);
 extern void vec_scale_to_length(void *, void *, f32);
 extern void vec_set_length_xy(void *, void *, f32);
 
-extern int rand_range(int, int);
-
 extern int coll_line(void *, void *, int, void *, void *);
-extern void InitDirectionalHitQuery(void *, struct Moby *, s32, void *, f32);
+extern void InitDirectionalHitQuery_v(void *, struct Moby *, s32, void *, f32) __asm__("func_L00_0025A8C0");
 
 extern char *PartType27Spawn(char *, char *, int c, int d, float f);
 extern struct {
@@ -1082,7 +1075,7 @@ void update_flying_bolt(struct Moby *m) {
     vec_set_length_xy(&aim, &aim, 1.0f);
     tries = 0;
     aim.f[2] = 1.0f;
-    InitDirectionalHitQuery(&sweep, m, 0x10001, &aim, 1.0f);
+    InitDirectionalHitQuery_v(&sweep, m, 0x10001, &aim, 1.0f);
     sweep.flag18 = 1;
     sweep.flag19 = 1;
     pass = v->solid == 0;
@@ -1155,7 +1148,7 @@ extern float lightning_arc_end_pos[] MACRO_ADDR;
 extern void show_tracked_moby(void);
 extern int fast_dec_timer(void *);
 extern int FastBSphereCheck(void *, float);
-extern float randf_sym(float, float);
+
 extern void update_branched_lightning_arc(char *);
 
 /* Camera-intro controller: waits for the cutscene flag, then every few seconds moves the focus to a random
@@ -1411,7 +1404,7 @@ extern float IntToFloat(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern void draw_world_quad(void *, void *, int);
-extern float CubicInterpolate(float, float, float, float, float);
+
 /* KEPT: signed and unsigned give lh and lhu. */
 extern short lightning_arc_point_timers[];
 /* KEPT: signed and unsigned give lh and lhu. */
@@ -1630,7 +1623,7 @@ void draw_branched_lightning_arc(void) {
 }
 extern float random_angle_radians(void);
 extern void BuildSphericalOffset(void *, float, float, float);
-extern float randf_sym(float lo, float hi);
+
 extern unsigned char *PartType53Spawn(float *pos, int a, float f0, float f1, int col, int mode, int b, float *vel,
                                       float f2);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
@@ -2591,7 +2584,6 @@ extern int DialogRequest_Init(void *, void *);
 
 extern int Npc_TryStartDialog(void *, void *);
 
-extern void grant_inventory_item(int, int);
 extern void enable_elevator_alternate_route_r(void *) __asm__("func_L14_002F0A00");
 extern void mark_elevator_collected(void *);
 extern int memcard_Save(int, int);
@@ -3292,7 +3284,7 @@ void update_enemy_fighter_921(Moby *m) {
     }
 }
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
-extern int rand_range(int, int);
+
 typedef struct {
     u8 pad0[4];
     s32 mode; /* 0x04 */

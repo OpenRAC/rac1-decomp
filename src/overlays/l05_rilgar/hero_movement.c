@@ -103,22 +103,18 @@ extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern int PartType34Spawn(void *, void *, float, float);
 
-extern int rand_range(int, int);
-
 extern float ApproachValue(float *, float, float);
 
 extern void Hero_SetTiltSpringParams(float, float);
 
 extern void ClampVectorLength(void *, float);
 
-extern int solve_quadratic_equation(float *, float *, float, float, float);
-extern float step_angle_toward_target(float *, float, int, float);
+extern float step_angle_toward_target_v(float *, float, int, float) __asm__("func_L00_0025CC58");
 extern float vec_distance_xy(void *, void *);
 
 extern float gravity_z(float *);
 extern float Spring(float *, float *, float, float, float, float);
 
-extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern void update_hero_target_heading(float, float, float);
 
@@ -136,7 +132,6 @@ extern void HeroOffsetAlongViewZ(float *, float *, float);
 extern int coll_line(void *, void *, int, int, int);
 extern void transform_hero_local_offset_to_world(float *, float, float, float);
 extern int is_moby_in_class_range_500_to_540(int);
-extern void PostHitMessage(void *, int, int, void *, void *, float);
 
 extern void compute_hero_hoverboard_respawn_transform(void *, void *);
 
@@ -1024,8 +1019,8 @@ void Hero_UpdateMovement(void) {
             } else {
                 g_hero.anim_speed = 1.0f;
             }
-            step_angle_toward_target(&g_hero.motion.rot.f[1], 0.0f, 0, g_frame_time * 6.108652f);
-            step_angle_toward_target(&g_hero.motion.rot.f[0], 0.0f, 0, g_frame_time * 6.108652f);
+            step_angle_toward_target_v(&g_hero.motion.rot.f[1], 0.0f, 0, g_frame_time * 6.108652f);
+            step_angle_toward_target_v(&g_hero.motion.rot.f[0], 0.0f, 0, g_frame_time * 6.108652f);
         } break;
         case 0x6E:
             if (((Moby *)g_hero.hoverboard_moby) != 0) {
@@ -1034,14 +1029,14 @@ void Hero_UpdateMovement(void) {
             clear_u64_value(g_hero.motion.velocity.f);
             reduce_and_apply_hero_planar_velocity_addend(g_frame_time_sq * 4.5f);
             update_hero_water_height_and_bobbing();
-            step_angle_toward_target(&g_hero.motion.rot.f[1], 0.0f, 0, g_frame_time * 6.108652f);
-            step_angle_toward_target(&g_hero.motion.rot.f[0], 0.0f, 0, g_frame_time * 6.108652f);
+            step_angle_toward_target_v(&g_hero.motion.rot.f[1], 0.0f, 0, g_frame_time * 6.108652f);
+            step_angle_toward_target_v(&g_hero.motion.rot.f[0], 0.0f, 0, g_frame_time * 6.108652f);
             break;
         case 0x6F:
             clear_u64_value(g_hero.motion.velocity.f);
-            step_angle_toward_target(&g_hero.motion.rot.f[1], 0.0f, 0, g_frame_time * 6.108652f);
-            step_angle_toward_target(&g_hero.motion.rot.f[0], 0.0f, 0, g_frame_time * 6.108652f);
-            step_angle_toward_target(&g_hero.motion.rot.f[2], g_hero.unk8A4, 0, g_frame_time * 8.726646f);
+            step_angle_toward_target_v(&g_hero.motion.rot.f[1], 0.0f, 0, g_frame_time * 6.108652f);
+            step_angle_toward_target_v(&g_hero.motion.rot.f[0], 0.0f, 0, g_frame_time * 6.108652f);
+            step_angle_toward_target_v(&g_hero.motion.rot.f[2], g_hero.unk8A4, 0, g_frame_time * 8.726646f);
             break;
         case 0x38:
         case 0x39:
@@ -1144,14 +1139,14 @@ void Hero_UpdateMovement(void) {
                 g_hero.grapple_pull_ending = 1;
             }
             if (g_hero.grapple_pull_ending != 0) {
-                step_angle_toward_target(&g_hero.motion.rot.f[1], 0.0f, 0, g_frame_time * 3.8397243f);
+                step_angle_toward_target_v(&g_hero.motion.rot.f[1], 0.0f, 0, g_frame_time * 3.8397243f);
             } else {
                 float a;
 
                 a = FastAddRots(
                     -fast_atan2(vec_distance_xy(g_hero.motion.pos.f, vec[0]), vec[0][2] - g_hero.motion.pos.f[2]),
                     1.5707964f);
-                step_angle_toward_target(&g_hero.motion.rot.f[1], a, 0, g_frame_time * 6.4577184f);
+                step_angle_toward_target_v(&g_hero.motion.rot.f[1], a, 0, g_frame_time * 6.4577184f);
             }
             vec[2][0] = FastCos(FastAddRots(g_hero.motion.rot.f[2], -1.5707964f)) * -0.57f;
             vec[2][1] = FastSin(FastAddRots(g_hero.motion.rot.f[2], -1.5707964f)) * -0.57f;
@@ -1911,7 +1906,7 @@ void Hero_UpdateMovement(void) {
         case HERO_STATE_LEDGE_HANG:
             g_hero.motion.move_yaw = FastAddRots(g_hero.ledge_normal_yaw, 3.1415927f);
             turn_to(g_frame_scale_sq * 0.04f, g_frame_scale_sq * 0.2f, g_frame_time * 6.2831855f, 0);
-            step_angle_toward_target(&g_hero.motion.rot.f[1], 0.0f, 0, g_frame_time * 4.712389f);
+            step_angle_toward_target_v(&g_hero.motion.rot.f[1], 0.0f, 0, g_frame_time * 4.712389f);
             FastVecSub(g_hero.motion.velocity.f, g_hero.ledge_hang_pos.f, g_hero.motion.pos.f);
             ClampVectorLength(g_hero.motion.velocity.f, g_frame_time * 4.0f);
             ApproachValue(&g_hero.unk4F0, g_hero.motion.pos.f[2], g_frame_time * 3.0f);

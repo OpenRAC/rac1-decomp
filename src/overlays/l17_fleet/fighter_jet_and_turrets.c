@@ -126,8 +126,6 @@ extern float MobyGetFrameValue(void *);
 
 extern int FastBSphereCheck(char *, float);
 
-extern void func_L00_0025A8C0(char *arg, int a, int b, float scale, void *src);
-
 extern unsigned char *spawn_trail_particle(char *parent, void *pos, float *vec);
 extern void AddDrawCallback(void *, void *);
 extern void draw_fleet_beam_quad(char *moby);
@@ -404,7 +402,7 @@ extern int fast_dec_timer(void *);
 extern char *try_activate_blarg_ship_from_list(int list);
 extern void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float scale, float *v10,
                                 float *v11, float *v12);
-extern void SpawnExplosionFx(void *, void *, int, float, float);
+
 extern int g_current_level_index MACRO_ADDR;
 extern unsigned char help_stats_base[] NOT_SDA;
 extern float g_frame_time_sq MACRO_ADDR;
@@ -3174,10 +3172,10 @@ extern void update_robot_dog_glow_effects(void *);
 extern void set_ground_height_band(void *);
 
 extern int CarriedMobyUpdate(void *, void *);
-extern int IsPointInPolygon(void *, void *, int);
+
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
 extern int move_robot_dog_toward_position(char *moby, float *target, float speed);
-extern void PostHitMessage(int, int, int, void *, void *, float);
+
 extern int mine_fall(void *, void *);
 
 extern void SetDeathBits(void *, int, int);

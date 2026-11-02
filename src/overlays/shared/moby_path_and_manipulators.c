@@ -37,8 +37,6 @@ extern float IntToFloat(int);
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern int solve_quadratic_equation(float *, float *, float, float, float);
-
 extern int SegmentCrossPolyline(int, void *, void *, void *);
 
 extern void spawn_bolt_by_value(void *, void *, void *, int, int, int);
@@ -309,12 +307,6 @@ void SetUpdateModeTiming(int mode) {
 }
 INCLUDE_ASM("asm/overlays", func_L00_00262450);
 typedef int u128 __attribute__((mode(TI)));
-
-extern float randf_sym(float lo, float hi);
-extern int rand_range(int, int);
-extern float step_angle_toward_target(float *p, int n, float x, float y);
-
-extern int MoveKeepingOverGround(void *, void *, void *, int, float, float, float, float);
 
 extern float vec_distance_xy(void *, void *);
 
@@ -823,7 +815,6 @@ extern void DetachManipulator(int, void *);
 extern void AttachManipulator(int, int, void *);
 
 extern float SpringAngle(char *, char *, float, float, float, float, int);
-extern void build_quaternion_from_axis_rotations(void *a, float *v);
 
 /* A manipulator state: eased rotation offsets and scale applied to a held moby. */
 struct ManipState {

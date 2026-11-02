@@ -544,12 +544,9 @@ void initialize_camera_pose_springs(Camera *m) {
 }
 extern int fast_dec_timer(int *);
 extern float IntToFloat(int);
-extern void interpolate_vector_xyz_cosine_eased(void *, void *, void *, float);
-extern void interpolate_wrapped_rotations_cosine_eased(float *, float *, float *, float);
+
 extern void compute_spherical_offset_from_positions(void *, void *, void *);
 
-extern float interpolate_wrapped_angle_cosine_eased(float, float, float);
-extern float CubicInterpolate(float, float, float, float, float);
 extern void compute_position_from_spherical_offset(void *, void *, void *);
 extern float Cam_InterpValues(void *, float, float, float, float, float);
 extern float Camera_SmoothAngle(void *, float, float, float, float, float);
@@ -1268,7 +1265,6 @@ extern s32 g_hero_field_2284[];
 extern s32 is_point_inside_clip_volume(void *, s32);
 
 extern s32 test_point_in_transformed_unit_sphere_r(void *, s32) __asm__("func_L00_00260B68");
-extern s32 IsPointInPolygon(void *, void *, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002e9010.c, FUN_L00_002ec7e8. */
 s32 volume_camera_swing_active(A_2ec7e8 *a) {
@@ -1707,8 +1703,6 @@ int volume_camera_swing_check(char *m) {
 }
 
 extern int is_point_inside_clip_volume(void *, int);
-
-extern int test_point_in_transformed_unit_sphere(float *, int);
 
 struct VolAimParams {
     u8 pad_00[0x8];

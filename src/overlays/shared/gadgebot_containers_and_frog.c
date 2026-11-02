@@ -789,7 +789,7 @@ extern void spawn_moby_death_effect_burst(char *);
 extern int truncate_float_to_s32(float);
 
 extern void select_hero_or_gadgebot_target(char *, char **, f32);
-extern int IsPointInPolygon(void *, void *, int);
+
 extern float vec_distance_xy(void *, void *);
 extern int FindNearestEligibleMoby(void *, void *, float, int, int, void *, int);
 
@@ -1350,8 +1350,6 @@ extern void DetachManipulator(void *, void *);
 extern int compute_clear_path_point_mask(float, int *, int, int, void *);
 extern void update_gadgebot_glow_effects(char *);
 
-extern int IsPointInPolygon(void *, void *, int);
-
 extern int follow_path(int *, int, int, void *, void *, void *, float);
 extern void resolve_point_path_segment_xy_clearance(float, int, void *, void *);
 
@@ -1361,16 +1359,15 @@ extern void MobySphereHitDirectional(int, float, void *, int, float, float, int,
 extern void assign_gadgebot_attack_targets(void);
 
 extern int test_path_segment_strict_crossing(int, void *, void *);
-extern float step_angle_toward_target(float *, int, float, float);
+
 extern float MobyGetFrameValue(void *);
-extern void InitDirectionalHitQuery(void *, void *, int, void *, float);
-extern void record_moby_hit(void *, void *);
+extern void InitDirectionalHitQuery_v(void *, void *, int, void *, float) __asm__("func_L00_0025A8C0");
+
 extern int fast_dec_timer(int *);
 extern void select_nearest_gadgebot_interaction_target(void *);
 extern int Sound_PlayClassSound(int i, int a1, int v, int k);
 extern char *spawn_source_attached_fading_effect_particle(float, char *, int, int, int);
 extern int mine_fall(void *, void *);
-extern void SpawnExplosionFx(void *, void *, int, float, float);
 
 extern void PartType53Spawn(void *, int, float, float, int, int, int, float, void *);
 extern int process_gadgebot_interactions(void *, int);
@@ -1821,7 +1818,7 @@ void GadgebotUpdate(Moby *moby) {
                             v70[0] = FastCos(moby->rot.z);
                             v70[1] = FastSin(moby->rot.z);
                             v70[2] = 0.0f;
-                            InitDirectionalHitQuery(v40, moby, 0x10000, v70, 2.0f);
+                            InitDirectionalHitQuery_v(v40, moby, 0x10000, v70, 2.0f);
                             record_moby_hit(d->f174, v40);
                         }
                     }
@@ -2947,7 +2944,6 @@ extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 extern int blarg_session_moby_bit_flags[];
 extern void initialize_energy_sphere_holder_vars(char *);
 extern void update_energy_sphere_holder_beam_effects(char *);
-extern void PostHitMessage(void *, int, int, void *, void *, float);
 
 struct EnergySphereHolderUpdateVars {
     u8 pad_00[0x40];

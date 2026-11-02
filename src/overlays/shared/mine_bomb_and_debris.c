@@ -206,8 +206,6 @@ extern void RippleDisturb(int, int, int, float, float, float, float);
 
 extern char *spawn_burst_moby(void *, float);
 
-extern int rand_range(int, int);
-
 extern s32 is_moby_in_class_range_500_to_540(s32);
 
 extern void vec_reflect(void *, void *, void *);
@@ -220,7 +218,7 @@ extern int RotateWithMoby(void *, void *, void *, void *, void *, void *);
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound(int, int, int);
 extern int fast_dec_timer(int *);
-extern void InitDirectionalHitQuery(void *, void *, int, void *, float);
+extern void InitDirectionalHitQuery_v(void *, void *, int, void *, float) __asm__("func_L00_0025A8C0");
 extern int coll_sphere_mobys(void *, int, void *, void *, float);
 extern int coll_sphere(float, void *, int, void *);
 extern void update_moby_rotation_oscillation(void *, char *, char *, float, float, float);
@@ -228,16 +226,14 @@ extern void update_moby_rotation_oscillation(void *, char *, char *, float, floa
 extern void *MobyGetHitMessage(void *, int, int);
 extern f32 vec_distance_xy(void *, void *);
 
-extern int MoveKeepingOverGround(void *, void *, void *, float, float, float, float, int);
-extern void SpawnExplosionFx(void *, void *, int, float, float);
-extern void moby_index_list_remove(void *, void *);
-extern void DeleteMoby(void *);
+extern int MoveKeepingOverGround_v(void *, void *, void *, float, float, float, float,
+                                   int) __asm__("func_L00_002594C8");
 
-extern void SendRadialMessageToMobys(void *, void *, void *, int, int, int, int, int, float, float, float);
+extern void DeleteMoby(void *);
 
 extern void spawn_gravity_floor_burst_particle(void *, void *, int, float, float, float, int, int, int);
 extern int DefaultVtbl_DeleteMoby(int, int, float);
-extern unsigned swap_packed_color_channels(unsigned c, int mask);
+
 extern void *spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(void *, void *, int, int, float, int,
                                                                                int, int, int);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
@@ -597,7 +593,7 @@ void mine_update(M910 *m) {
                         FastVecSub(t, &v->p54->pos, &m->pos);
                         vec_scale_to_length(t, t, v->f40);
                         FastVecAdd(&m->pos, &m->pos, t);
-                        InitDirectionalHitQuery(&q2, m, 0x10000, t, 1.0f);
+                        InitDirectionalHitQuery_v(&q2, m, 0x10000, t, 1.0f);
                         qcopy(&probe, &m->pos);
                         probe.f[2] += 0.35f;
                         if (coll_sphere_mobys(&probe, 0x10, m, &q2, 0.35f) != 0 && g_coll_hit_moby != 0 &&
@@ -653,7 +649,7 @@ void mine_update(M910 *m) {
                         vec_scale_to_length(t, t, 0.75f);
                         FastVecAdd(r, &((M910 *)D_G910.moby)->pos, t);
                         *(Q910 *)n = *(Q910 *)r;
-                        MoveKeepingOverGround(m, &m->pos, n, 0.4f, 0.25f, 0.25f, 0.5235988f, 0);
+                        MoveKeepingOverGround_v(m, &m->pos, n, 0.4f, 0.25f, 0.25f, 0.5235988f, 0);
                     }
                 } else {
                     M910 *best = 0;
@@ -1536,7 +1532,6 @@ extern void clamp_vec_length(void *, void *, float);
 extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
 
 extern int Sound_PlayClassSound(int i, int a1, int v, int k);
-extern float normalize_angle(float);
 
 /* Update of moby class 121, a thrown bomb: it flies and spins, bounces once on the ground, explodes on a hit or when
    its timer runs out, then its blast ring grows for 15 frames. */
@@ -2079,8 +2074,6 @@ extern float crate_debris_spin_min SDATA(crate_debris_spin_min);
 extern float crate_debris_spin_max SDATA(crate_debris_spin_max);
 extern char *CreateMoby(int);
 
-extern float randf_sym(float, float);
-
 typedef struct {
     unsigned char *o;
     float f4;
@@ -2142,8 +2135,6 @@ extern char coll_hit_normal[];
 extern float D_L00_00161518_float SDATA(D_L00_00161518);
 extern float D_L00_0016151C_float SDATA(D_L00_0016151C);
 
-extern float randf_sym(float lo, float hi);
-
 // Updates a bouncing moby: spins it, then in state 0 reflects its direction off a plane and in state 1 fades it out.
 typedef struct DebrisData2B0D30 {
     char pad0[4];
@@ -2204,7 +2195,6 @@ void nanotech_crate_fragment_update(char *moby) {
 }
 extern unsigned char *GetFlaggedPvarWord(unsigned char *);
 extern int coll_line(void *, void *, int, int, int);
-extern void append_unique_moby_index(int, short *, short);
 
 // spawns an effect moby (Gold Devastator Missile) at pos, tied to an owner and a target, and aims its starting state
 // Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002aa670.c, FUN_L00_002afc70.
@@ -2320,7 +2310,6 @@ extern f32 fast_atan2(f32, f32);
 extern f32 IntToFloat(s32);
 extern s32 coll_line_r(void *, void *, s32, char *, void *) __asm__("func_L00_001EFFF0");
 extern s32 GetFlaggedPvarWord_r(char *) __asm__("func_L00_0025D390");
-extern s32 find_listed_moby_by_data_id(char *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002aa670.c, FUN_L00_002affa8. */
 void select_gold_devastator_missile_target(char *self, O *out, char *skip) {
@@ -2950,9 +2939,7 @@ typedef struct {
 
 float random_float_between(float, float);
 void vec_scale_to_length(void *, void *, float);
-float randf_sym(float, float);
 
-int rand_range(int, int);
 void PartType44Spawn(void *, void *, int, int, int, int, float, float, float, float, float);
 void PartType21Spawn(void *, void *, int, int, int, int, float);
 extern V_2b1af0_B30C8 hero_basis_2;

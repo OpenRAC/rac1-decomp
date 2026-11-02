@@ -1524,7 +1524,7 @@ extern void RerollEffectCounter(void *, short *);
 
 extern void StepColorFade(void *, void *);
 extern void select_hero_or_gadgebot_target(float, void *, void *);
-extern int IsPointInPolygon(void *, void *, int);
+
 extern int FindNearestEligibleMoby(float, char *, void *, int, int, void *, int);
 extern char *orxon_paths[];
 extern unsigned char hero_globals_base_e1d[] __asm__("D_0013E633");

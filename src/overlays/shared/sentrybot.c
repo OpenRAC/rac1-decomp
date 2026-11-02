@@ -182,7 +182,7 @@ extern char *spawn_class_3a6_moby(char *, float *, char *, char *);
 extern int mine_fall(void *, void *);
 
 extern int Moby_PlaySound(int, int, int);
-extern void SpawnExplosionFx(void *, void *, int, float, float);
+
 extern void SetDeathBits(void *, int, int);
 extern void DeleteMoby(void *);
 extern void update_sentrybot_joint_aim(void *);
@@ -1544,7 +1544,6 @@ extern char quartu_camera_pos_r[] __asm__("D_L15_00167440");
 extern unsigned char hero_vehicle_mode[];
 extern int Sound_PlayClassSound(int, int, void *, int);
 
-extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
 void spawn_rocket_trail_spark(char *moby);
 void spawn_rocket_detonation_glow(char *moby);
 
@@ -1716,9 +1715,8 @@ extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 
 extern void vec_set_length_xy(void *, void *, float);
 
-extern void moby_index_list_remove(void *, void *);
 extern int coll_sphere_mobys(void *, float, int, void *, void *);
-extern void SendRadialMessageToMobys(void *, void *, void *, int, int, int, int, int, float, float, float);
+
 extern void sce_vu0_mul_matrix(void *, void *, void *);
 
 extern void *spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(void *, void *, int, int, float, int,
@@ -2140,7 +2138,7 @@ extern void func_L00_0026AA10(void *, unsigned char, unsigned char, unsigned cha
 extern int allocate_packed_color_point_light_slot(float *pos, float radius, float intensity, int color);
 
 extern int coll_sphere_mobys_r(void *, float, int, void *, void *) __asm__("func_L00_001F2BE8");
-extern void SendRadialMessageToMobys(void *, void *, void *, int, int, int, int, int, float, float, float);
+
 extern char *func_L00_0026E940(float, char *, int, int, int);
 
 extern void *spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns_r(void *, void *, int, int, float, int,

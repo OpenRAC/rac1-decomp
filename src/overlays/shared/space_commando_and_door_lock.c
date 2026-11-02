@@ -155,8 +155,8 @@ extern f32 MobyGetFrameValue(struct Moby *);
 extern void Moby_GetJointWorldPos_r(struct Moby *, s32, void *) __asm__("func_L00_00250800");
 extern void MobySpringTurn(struct Moby *, f32, f32 *, f32, f32, f32);
 extern s32 move_w(struct Moby *, MoveCtl *, void *, void *, f32);
-extern void InitDirectionalHitQuery(ShotInfo *, struct Moby *, s32, void *, f32);
-extern void sweep_hit_segment(void *, void *, void *, void *, struct Moby *, ShotInfo *, s32);
+extern void InitDirectionalHitQuery_v(ShotInfo *, struct Moby *, s32, void *, f32) __asm__("func_L00_0025A8C0");
+
 extern void set_ground_height_band(struct Moby *);
 extern void SteerAngleWithVelocity(f32 *, f32, f32 *, f32, f32, f32);
 extern s32 mine_fall(struct Moby *, Vec4 *);
@@ -345,7 +345,7 @@ void blarg_space_commando_update(struct Moby *moby) {
                 c.f[1] = FastSin(moby->rot.z);
                 c.f[2] = 1.0f;
                 c.f[3] = 5627.925f;
-                InitDirectionalHitQuery(&shot, moby, 1, &c, 1.0f);
+                InitDirectionalHitQuery_v(&shot, moby, 1, &c, 1.0f);
                 shot.unk18 = 0;
                 shot.unk19 = 1;
                 shot.oclass = moby->oclass;
@@ -405,7 +405,7 @@ void blarg_space_commando_update(struct Moby *moby) {
                 c.f[1] = FastSin(moby->rot.z);
                 c.f[2] = 1.0f;
                 c.f[3] = 5627.925f;
-                InitDirectionalHitQuery(&shot, moby, 1, &c, 1.0f);
+                InitDirectionalHitQuery_v(&shot, moby, 1, &c, 1.0f);
                 shot.unk18 = 0;
                 shot.unk19 = 1;
                 shot.oclass = moby->oclass;
@@ -768,7 +768,7 @@ void update_blarg_space_commando_beam(void *arg) {
                 if (1.0f <= *(float *)(e + 0x23C) && 1.0f <= *(float *)(f + 0x23C)) {
                     m = 0x10001;
                 }
-                InitDirectionalHitQuery(&rec, (struct Moby *)moby, m, A, 1.0f);
+                InitDirectionalHitQuery_v(&rec, (struct Moby *)moby, m, A, 1.0f);
                 rec.oclass = ((Moby *)moby)->oclass;
                 rec.unk18 = 0;
                 rec.unk19 = 1;

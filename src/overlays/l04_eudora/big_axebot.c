@@ -544,12 +544,9 @@ extern void *libc_memset(void *, int, unsigned int);
 
 extern float SpringTurn(float cur, float target, float *vel, float k, float d, float max);
 
-extern int MoveKeepingOverGround(void *, void *, void *, int, float, float, float, float);
-
 extern void leg_walker_update(void *, void *, float, float, float);
-extern int IsPointInPolygon(void *, void *, int);
 
-extern void PostHitMessage(char *m, float t, int a, int b, void *pos, void *vel);
+extern void PostHitMessage_v(char *m, float t, int a, int b, void *pos, void *vel) __asm__("func_L00_0025AC00");
 
 extern int mine_fall(void *, void *);
 extern void DeleteMoby(void *);
@@ -958,7 +955,7 @@ void big_axebot_update(M_B7B0 *moby) {
                 qcopy(p, tg.pos);
                 p[2] += 0.75f;
                 if (tgt != 0) {
-                    PostHitMessage(tgt, 1.0f, (int)moby, 1, p, v);
+                    PostHitMessage_v(tgt, 1.0f, (int)moby, 1, p, v);
                 }
             }
             if (hd > 20.0f) {
@@ -1559,7 +1556,6 @@ extern void MobySpringTurn_b(char *moby, float target, float *vel, float k, floa
                              float max) __asm__("func_L00_002592B0");
 extern int CarriedMobyUpdate(void *, void *);
 
-extern int MoveKeepingOverGround(void *, void *, void *, int, float, float, float, float);
 extern float IntToFloat(int);
 
 extern int truncate_float_to_s32(float);
@@ -2279,7 +2275,7 @@ extern int MoveKeepingOverGround_o(void *, void *, void *, float, float, float, 
 extern float vec_length_xy(void *);
 extern void spawn_class_b8_projectile(void *, void *, void *, int);
 extern void vec_set_length_xy(void *, void *, float);
-extern void record_moby_hit(void *, void *);
+
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 
 extern float eudora_camera_pos[];

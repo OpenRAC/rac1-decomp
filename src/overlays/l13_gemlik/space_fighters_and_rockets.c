@@ -364,7 +364,7 @@ extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern void FastVecScale_r(void *, void *, float) __asm__("func_001F9C30");
-extern void func_L00_0025A8C0(void *, void *, int, float, void *);
+
 extern int func_L00_001F2BE8(float, void *, int, void *, void *);
 extern int coll_sphere_r(void *, float, int, void *) __asm__("func_L00_001F10E0");
 extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
@@ -1027,8 +1027,6 @@ void process_blarg_space_fighter_damage(unsigned char *moby, unsigned char *d, f
 }
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
-
-extern float normalize_angle(float);
 
 /* steers a moby's pitch toward a target with a spring, then damps and clamps it */
 void steer_blarg_space_fighter(char *moby, char *d, float p2, float p3) {
@@ -1759,7 +1757,7 @@ extern unsigned char *spawn_spinning_fade_in_out_effect_particle(void *pos, int 
 extern void spawn_crate_debris(void *, void *, void *, void *, int, int, float, float);
 
 extern int truncate_float_to_s32_s(float) __asm__("func_001FA898");
-extern int rand_range(int, int);
+
 extern void PartType11Spawn(void *, void *, int, int, int, int, int, float, int, float);
 extern int spawn_glow_particle(void *, void *, void *, float, int, int, int, int, int);
 extern float gemlik_zero_vec[] MACRO_ADDR;
@@ -2189,7 +2187,7 @@ extern int Moby_PlaySound_s(int, int, int) __asm__("func_0022ED80");
 extern int truncate_float_to_s32_s(float) __asm__("func_001FA898");
 extern void spawn_explosion_s(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                               float, int, int, int, int) __asm__("func_L00_0025F4A8");
-extern int rand_range(int, int);
+
 extern void DeleteMoby(void *);
 
 /* Blob hit: splashes (bigger when the player is near), then splits off one or two smaller blobs while
@@ -2304,7 +2302,7 @@ typedef struct {
 } CollisionHitP;
 
 #define distance_p func_001F9D10
-extern s32 rand_range(s32, s32);
+
 #define random_int_p func_L00_00258BC8
 
 #define random_float_p func_002140F8
@@ -2958,7 +2956,7 @@ void emit_gated_moby_joint_effects(struct Moby *m, char *d) {
 }
 extern int gemlik_effect_joint_list[];
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern int rand_range(int, int);
+
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
 
 typedef int u128 __attribute__((mode(TI)));
@@ -3211,7 +3209,6 @@ int update_moby_path_following_away_from_hero(struct Moby *m, char *d, int idx, 
     }
     return r;
 }
-extern void SpawnExplosionFx(void *, void *, int, float, float);
 
 /* Launches the child moby held in slot idx of p: spins it off with random-ish velocities and clears the slot. */
 void detach_moby_joint_attachment(void *unused, char *p, int idx) {

@@ -764,7 +764,6 @@ extern Hero g_hero_r4 __asm__("D_0013F450");
 extern u8 blarg_coll_hit_normal[];
 extern f32 blarg_collision_hit_point;
 
-extern void clip_negative_segment_endpoint_xyz(Vec4 *, void *);
 extern s32 coll_line(void *, void *, s32, s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00242950.c, FUN_L06_00242950. */

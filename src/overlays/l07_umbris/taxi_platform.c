@@ -17,6 +17,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+#include "overlays/shared/moby_ground_collision.h"
 extern Hero g_hero;
 extern char saved_mission_state[];
 extern char gSpecialItems[];
@@ -950,7 +951,7 @@ extern void *CreateMoby(int);
 extern float vec_length_xy(void *);
 extern float fast_atan2(float, float);
 extern void vec_set_length_xy(void *, void *, float);
-extern void InitDirectionalHitQuery(char *arg, int a, int b, void *src, float scale);
+extern void InitDirectionalHitQuery_v(char *arg, int a, int b, void *src, float scale) __asm__("func_L00_0025A8C0");
 
 extern void moby_build_matrix(void *);
 
@@ -985,7 +986,7 @@ unsigned char *spawn_machinegun_turret_projectile(void *pos, float *dir, int a, 
         V[2] = 0.0f;
         vec_set_length_xy(V, V, 1.0f);
         V[2] = 1.0f;
-        InitDirectionalHitQuery(d, (int)m, 0x10001, V, 1.0f);
+        InitDirectionalHitQuery_v(d, (int)m, 0x10001, V, 1.0f);
         ((struct SpawnMachinegunTurretProjectileVars *)d)->unk_18 = 1;
         ((struct SpawnMachinegunTurretProjectileVars *)d)->unk_19 = 1;
         MobyBlendAnimation(m, 1, 0, scale_ticks(5));
@@ -1008,7 +1009,6 @@ typedef struct {
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern int rand_range(int, int);
 extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
 extern void spawn_projectile_expiry_particle_r(void *, void *) __asm__("func_L07_0029B070");
 extern void vec_reflect(void *, void *, void *);
@@ -1077,7 +1077,6 @@ void update_linear_projectile(Moby *m) {
 }
 extern char *CreateMoby_m(int) __asm__("func_0020D348");
 
-extern float randf_sym(float lo, float hi);
 extern void moby_build_matrix(void *);
 
 struct SpawnBombomaticProjectileVars {
@@ -2010,7 +2009,7 @@ void draw_fading_ring_effect(unsigned char *moby) {
 }
 
 extern void vec_scale_to_length(void *, void *, float);
-extern void PostHitMessage(char *m, float t, int a, int b, void *pos, void *vel);
+extern void PostHitMessage_v(char *m, float t, int a, int b, void *pos, void *vel) __asm__("func_L00_0025AC00");
 
 /* Slows and steers a moby toward another when it is below and close in height. */
 void register_fading_ring_hit(char *a, char *b, char *c) {
@@ -2023,7 +2022,7 @@ void register_fading_ring_hit(char *a, char *b, char *c) {
             vec_scale_to_length(w, v, *(float *)(c + 8) - 0.05f);
             vec_scale_to_length(v, v, 1.0f);
             v[2] = 1.0f;
-            PostHitMessage(a, *(float *)(c + 0x1c), (int)b, 0x10001, w, v);
+            PostHitMessage_v(a, *(float *)(c + 0x1c), (int)b, 0x10001, w, v);
         }
     }
 }
@@ -2333,7 +2332,6 @@ void cache_path_segment_lengths(char *data) {
         }
     }
 }
-extern float probe_ground_height_flag20(void *);
 
 /* Classifies the gap between ground and water height for a sharkigator: 0 deep, 1 mid, 2 shallow. */
 int classify_sharkigator_water_height_gap(char *moby, char *data) {
@@ -2453,7 +2451,6 @@ struct WalkerData {
     f32 turnStep; /* 0x140 */
 };
 
-extern int IsPointInPolygon(void *, void *, int);
 extern int coll_line_r3(void *, void *, int, struct Moby *, int) __asm__("func_L00_001EFFF0");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l07/gameplay/entities/002cd2b0.c, FUN_L07_0030eee8. */
@@ -2493,7 +2490,8 @@ void select_sharkigator_navigation_heading(struct Moby *moby, struct WalkerData 
     data->heading = fast_atan2(data->goal.f[0] - moby->pos.x, data->goal.f[1] - moby->pos.y);
 }
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
-extern int move_moby_with_collision_integer_radius(int a, int b, int g, int e, float c, float d);
+extern int move_moby_with_collision_integer_radius_v(int a, int b, int g, int e, float c,
+                                                     float d) __asm__("func_L00_00259B08");
 
 /* Step a moby's velocity toward a target: gravity when above a height, then ease and clamp. */
 void advance_sharkigator_swim_movement(char *a, char *b, float f12, float f13, float f14) {
@@ -2506,7 +2504,7 @@ void advance_sharkigator_swim_movement(char *a, char *b, float f12, float f13, f
     ApproachWithVelocity(v + 2, &((struct SharkigatorVars *)b)->velocity.z, ((struct SharkigatorVars *)b)->unk_138, f12,
                          f13, f14);
     q = (char *)&((struct SharkigatorVars *)b)->velocity;
-    if (move_moby_with_collision_integer_radius((int)a, (int)q, 0x400, 0x10, 1.0f, 0.0f)) {
+    if (move_moby_with_collision_integer_radius_v((int)a, (int)q, 0x400, 0x10, 1.0f, 0.0f)) {
         FastVecScale(q, q, 0.5f);
     }
 }
@@ -2564,7 +2562,7 @@ void handle_sharkigator_contact_attack(char *moby, char *obj, int state, int ani
     vel = obj + 0xD0;
     vec_scale_to_length(v, vel, len);
     v[2] = 1.0f;
-    InitDirectionalHitQuery((char *)m, (int)moby, 1, v, scale);
+    InitDirectionalHitQuery_v((char *)m, (int)moby, 1, v, scale);
     Moby_GetJointWorldPos(moby, 0, p);
     if (coll_sphere_mobys(p, radius, 0x21, moby, m) == 0) {
         return;
@@ -2996,8 +2994,8 @@ void SharkigatorUpdate(unsigned char *moby) {
             FastVecScale(&((struct SharkigatorVars *)data)->velocity, &((struct SharkigatorVars *)data)->velocity,
                          frame_scale * (0.95f - 1.0f) + 1.0f);
             ((struct SharkigatorVars *)data)->velocity.z -= g_frame_time * 9.8f;
-            if (move_moby_with_collision_integer_radius((int)moby, (int)&((struct SharkigatorVars *)data)->velocity,
-                                                        0x400, 0x10, 1.0f, 0.0f)) {
+            if (move_moby_with_collision_integer_radius_v((int)moby, (int)&((struct SharkigatorVars *)data)->velocity,
+                                                          0x400, 0x10, 1.0f, 0.0f)) {
                 FastVecScale(&((struct SharkigatorVars *)data)->velocity, &((struct SharkigatorVars *)data)->velocity,
                              0.5f);
             }
@@ -3043,8 +3041,8 @@ void SharkigatorUpdate(unsigned char *moby) {
                 ((Moby *)moby)->state = 7;
             }
             ((struct SharkigatorVars *)data)->velocity.z -= g_frame_time * 9.8f;
-            if (move_moby_with_collision_integer_radius((int)moby, (int)&((struct SharkigatorVars *)data)->velocity,
-                                                        0x400, 0x10, 1.0f, 0.0f)) {
+            if (move_moby_with_collision_integer_radius_v((int)moby, (int)&((struct SharkigatorVars *)data)->velocity,
+                                                          0x400, 0x10, 1.0f, 0.0f)) {
                 FastVecScale(&((struct SharkigatorVars *)data)->velocity, &((struct SharkigatorVars *)data)->velocity,
                              0.5f);
             }
@@ -3073,8 +3071,8 @@ void SharkigatorUpdate(unsigned char *moby) {
                 ((Moby *)moby)->state = 10;
             }
             ((struct SharkigatorVars *)data)->velocity.z -= g_frame_time * 9.8f;
-            if (move_moby_with_collision_integer_radius((int)moby, (int)&((struct SharkigatorVars *)data)->velocity,
-                                                        0x400, 0x10, 1.0f, 0.0f)) {
+            if (move_moby_with_collision_integer_radius_v((int)moby, (int)&((struct SharkigatorVars *)data)->velocity,
+                                                          0x400, 0x10, 1.0f, 0.0f)) {
                 FastVecScale(&((struct SharkigatorVars *)data)->velocity, &((struct SharkigatorVars *)data)->velocity,
                              0.5f);
             }
@@ -3131,8 +3129,8 @@ void SharkigatorUpdate(unsigned char *moby) {
             FastVecScale(&((struct SharkigatorVars *)data)->velocity, &((struct SharkigatorVars *)data)->velocity,
                          frame_scale * (0.95f - 1.0f) + 1.0f);
             ((struct SharkigatorVars *)data)->velocity.z -= g_frame_time * 9.8f;
-            move_moby_with_collision_integer_radius((int)moby, (int)&((struct SharkigatorVars *)data)->velocity, 0x400,
-                                                    0x10, 1.0f, 0.0f);
+            move_moby_with_collision_integer_radius_v((int)moby, (int)&((struct SharkigatorVars *)data)->velocity,
+                                                      0x400, 0x10, 1.0f, 0.0f);
             if (((Moby *)moby)->anim_flags & 2) {
                 ((void (*)(char *, char *))set_sharkigator_idle_state_from_water_height_gap)((char *)moby, data);
             }
@@ -3141,8 +3139,8 @@ void SharkigatorUpdate(unsigned char *moby) {
             FastVecScale(&((struct SharkigatorVars *)data)->velocity, &((struct SharkigatorVars *)data)->velocity,
                          frame_scale * (0.95f - 1.0f) + 1.0f);
             ((struct SharkigatorVars *)data)->velocity.z -= g_frame_time * 9.8f;
-            move_moby_with_collision_integer_radius((int)moby, (int)&((struct SharkigatorVars *)data)->velocity, 0x400,
-                                                    0x10, 1.0f, 0.0f);
+            move_moby_with_collision_integer_radius_v((int)moby, (int)&((struct SharkigatorVars *)data)->velocity,
+                                                      0x400, 0x10, 1.0f, 0.0f);
             if (next != 0xFF) {
                 if (((Moby *)moby)->prev_seq != anim) {
                     MobyBlendAnimation(moby, anim, 0, 6);
@@ -3218,7 +3216,7 @@ extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern void FastVecSub_r2(void *, void *, void *) __asm__("func_001F9BF0");
 
 extern void func_L07_00289960(void *, void *, void *, void *, void *);
-extern float func_L00_0025CC58(float *, int, float, float);
+
 extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
 extern void update_entity_matrix_r(void *, void *, void *, void *) __asm__("func_L00_002617B0");
 extern char *level_mobys_r2 __asm__("D_L07_00160058") MACRO_ADDR;
@@ -3407,8 +3405,6 @@ void update_command_triggered_falling_platform(Moby *m) {
     update_entity_matrix_r(d->a60, &v1, &v2, &m->rot);
 }
 extern void set_moby_color(void *, int, int, int);
-
-extern float normalize_angle(float);
 
 /* Falling leaf: drops off its branch after a random delay, swaying, then falls faster and vanishes near the ground. */
 void update_hero_triggered_falling_platform(Moby *m) {

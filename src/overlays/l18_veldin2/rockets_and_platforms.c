@@ -202,7 +202,7 @@ extern float vec_length_xy(void *);
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern void InitDirectionalHitQuery(char *arg, int a, int b, void *src, float scale);
+extern void InitDirectionalHitQuery_v(char *arg, int a, int b, void *src, float scale) __asm__("func_L00_0025A8C0");
 extern int coll_line(void *, void *, int, void *, void *);
 extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                   float, int, int, int, int) __asm__("func_L00_0025F4A8");
@@ -258,7 +258,7 @@ void update_projectile_motion_collision_and_trail(char *moby) {
     } else {
         vec_scale_to_length(b, &data->vel_x, 2.0f);
     }
-    InitDirectionalHitQuery(c, (int)moby, 1, b, 2.0f);
+    InitDirectionalHitQuery_v(c, (int)moby, 1, b, 2.0f);
     *(short *)(c + 0x1A) = *(unsigned short *)&((Moby *)moby)->oclass;
     if (coll_line(moby + 0x10, a, 0, *(void **)&data->owner, c) != 0 || FastDecTimer(&data->timer) != 0) {
         func_L00_0025F4A8_alt(moby, ((char *)data), moby + 0x10, 1.5f, 1.0f, 10, 6, 4, 1.0f, 0.5f, 9.0f, 0.5f, 0, 0.0f,
@@ -2012,7 +2012,7 @@ void process_expanding_ring_collisions(char *moby) {
     v[2] = 0.0f;
     vec_scale_to_length(v, v, g_frame_time * 4.0f);
     v[2] = g_frame_time * 4.0f;
-    InitDirectionalHitQuery(hit, (int)moby, 0x10001, v, 3.0f);
+    InitDirectionalHitQuery_v(hit, (int)moby, 0x10001, v, 3.0f);
     step = 1.0f / IntToFloat(0x40) * 6.28318f;
     p = -3.14159f;
     q = FastAddRots(p, step);
@@ -2079,7 +2079,7 @@ extern int fast_dec_timer(int *);
 extern float vec_distance_xy(void *, void *);
 
 extern void vec_scale_to_length(void *, void *, float);
-extern void record_moby_hit(int, void *);
+
 extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
 extern void draw_class_274_ring_effect(void *);
 extern float ring_effect_color_scroll_speed SDATA(ring_effect_color_scroll_speed);
@@ -2104,7 +2104,7 @@ void update_class_274_ring_effect(char *moby) {
         v[2] = 0.0f;
         vec_scale_to_length(v, v, g_frame_time * 4.0f);
         v[2] = g_frame_time * 4.0f;
-        InitDirectionalHitQuery(buf, (int)moby, 0x10001, v, 1.0f);
+        InitDirectionalHitQuery_v(buf, (int)moby, 0x10001, v, 1.0f);
         record_moby_hit(*(int *)(tgt + 0x2000), buf);
     }
     flag = veldin2_frame_count & 4;
@@ -2431,7 +2431,6 @@ extern Blk24 hit_burst_end_colors;
 extern unsigned char help_stats_base[];
 
 extern int coll_sphere(float, void *, int, void *);
-extern void SpawnExplosionFx(void *, void *, int, float, float);
 
 extern void PartType11Spawn(void *, void *, u32, u32, f32, s32, s32, f32, s32, s32);
 
@@ -3278,7 +3277,7 @@ void draw_moby_billboard_quad_pair(V_2bb0b0 *pos) {
 }
 extern float ApproachValue(float *, float, float);
 extern int Moby_PlaySound_r3(int, int, int) __asm__("func_0022ED80");
-extern float step_angle_toward_target(float *p, int n, float x, float y);
+
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
                             int, int, int, int);
 extern int veldin2_zero_vec MACRO_ADDR;

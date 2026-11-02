@@ -286,7 +286,6 @@ extern int coll_line(void *, void *, int, int, int);
 extern int release_beam_slot_by_id(void *);
 extern int set_beam_origin_transform_and_endpoint(void *, void *, void *);
 extern int mine_fall(void *, void *);
-extern void SpawnExplosionFx(void *, void *, int, float, float);
 
 extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
 extern void DeleteMoby(void *);

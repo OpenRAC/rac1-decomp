@@ -1564,7 +1564,6 @@ void update_path_or_ballistic_debris(struct Moby *moby) {
         emit_debris_trail_particles_r(moby);
 }
 
-extern void find_nearest_path_point(void *, void *, void *, void *, void *, int, float, float, float);
 extern float path_debris_min_speed SDATA(path_debris_min_speed);
 extern float path_debris_max_speed SDATA(path_debris_max_speed);
 extern float path_debris_min_spin SDATA(path_debris_min_spin);

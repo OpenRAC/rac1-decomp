@@ -357,7 +357,6 @@ extern void spawn_explosion(void *, void *, void *, float, float, int, int, int,
 extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
 extern void libc_memset(void *, int, int);
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern float normalize_angle(float);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -1048,7 +1047,6 @@ extern void EaseManipulatorOffsets_r(char *, char *, int, float, float) __asm__(
 extern void handle_blarg_helicopter_hits_r(char *) __asm__("func_L03_002CF600");
 extern void AttachManipulator_r(char *, int, void *) __asm__("func_0020D960");
 
-extern int func_L00_0025EFC0(void *, void *, void *, int *, float *, int, float, float, float);
 extern float func_L00_00259148(float *, float, float, float, float, float);
 
 extern void func_L00_001FFED8(void *, int, float);
@@ -1063,7 +1061,7 @@ extern void Sound_StopSlot_r(int) __asm__("func_L00_0028EBF0");
 extern void raise_kernel_trap_r(void) __asm__("func_001F9978");
 
 extern char *spawn_homing_spark_projectile_r(char *, char *, int, int, float) __asm__("func_L03_002D65D0");
-extern void func_L00_0025AAC0(void *, void *);
+
 extern void func_0020D9D8(void *, void *);
 extern void func_L00_002514B8(void *);
 
@@ -1651,9 +1649,7 @@ typedef struct {
 } Tgt;
 extern void FindNearestTargetMoby(void *, void *, float);
 extern void vec_set_length_xy(void *, void *, float);
-extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
 
-extern float step_angle_toward_target(float *, int, float, float);
 extern float vec_length_xy(void *);
 extern float vec_distance_xy(void *, void *);
 extern int Sound_IsPlaying(void *, int);
@@ -1661,7 +1657,7 @@ extern int Sound_IsPlaying(void *, int);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern void vec_scale_to_length(void *, void *, float);
-extern int rand_range(int, int);
+
 extern char *PartType27Spawn(void *pos, void *vel, int c, int d, float f);
 
 extern void create_type_31_part(void *, void *, void *, void *, int);

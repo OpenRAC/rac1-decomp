@@ -26,6 +26,7 @@
 #include "enums/hero_state.h"
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
+#include "overlays/shared/moby_ground_collision.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 extern char help_records[];
@@ -219,7 +220,6 @@ extern void func_L05_003188A8(char *);
 extern int DialogRequest_Init(void *, void *);
 extern int Npc_TryStartDialog(void *, void *);
 
-extern void grant_inventory_item(int, int);
 extern void jet_reset_camera_r(void *, void *) __asm__("func_L00_00286128");
 extern void clear_active_help_record_r(void) __asm__("func_L00_00203FB8");
 
@@ -413,7 +413,6 @@ extern int IsFrameWithinWindow(char *, float);
 extern float vec_length_xy(void *);
 extern float jump_speed_4318(float *a, float *b, float *out, float speed, float g);
 
-extern int func_L00_00261568(char *, char *, void *, void *, void *, void *);
 extern int try_activate_pokitaru_gate(unsigned char *moby);
 
 extern void trigger_pokitaru_paired_rotation(char *moby);
@@ -900,7 +899,7 @@ void set_resort_owner_state(struct Moby *moby, unsigned char state) {
             break;
     }
 }
-extern int IsPointInPolygon(void *, void *, int);
+
 extern int follow_path(int *, int, int, void *, void *, void *, float);
 extern int *path_table[];
 
@@ -1923,7 +1922,7 @@ int try_activate_pokitaru_gate(unsigned char *moby) {
 extern void AttachManipulator(struct Moby *, int, void *);
 extern void axis_rotation_2d48(void *, int, float);
 extern void Moby_GetJointWorldPos_r(struct Moby *, int, float *) __asm__("func_L00_00250800");
-extern float randf_sym(float, float);
+
 extern void PartType34Spawn(float *, float *, float, float);
 extern int level_frame_r __asm__("D_L11_0015F6B0") MACRO_ADDR;
 struct PartA500 {
@@ -3120,7 +3119,6 @@ void update_link_triggered_moby_turn(char *moby) {
 extern char *CreateMoby(int);
 
 extern void moby_build_matrix(void *);
-extern void copy_hero_moby_field_38(void *);
 
 /* Spawns a moby of the given class at a position with a random yaw and stores its vector. */
 char *spawn_moby_with_random_yaw(void *position, void *vector, int id) {

@@ -951,8 +951,6 @@ extern int move_w(void *, void *, void *, void *, float);
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern int IsPointInPolygon(void *, void *, int);
-
 // steers a moby along a path using its velocity and returns a status code
 int move_hoven_anklebiter_toward_heading(char *moby, float target) {
     float pos[4];
@@ -1831,7 +1829,7 @@ extern void remove_blarg_trooper_and_attachment();
 extern void update_blarg_trooper_attachment(unsigned char *moby);
 extern int coll_sphere_mobys(void *, int, void *, int, float);
 extern int is_moby_in_class_range_500_to_540(void *);
-extern void PostHitMessage(void *, int, int, void *, void *, float);
+
 extern int IsFrameWithinWindow(void *, float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void Moby_PlaySound(int, int, int);
@@ -2290,7 +2288,6 @@ tail:
 
 extern int count_active_moby_group_members(int, int);
 
-extern void PostHitMessage(void *, int, int, void *, void *, float);
 extern void remove_blarg_trooper_and_attachment();
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);

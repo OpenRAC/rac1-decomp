@@ -112,7 +112,7 @@ extern void AddDrawCallback(void *, void *);
 extern int Sound_PlayClassSound(int, int, void *, int);
 
 extern void vec_set_length_xy(void *, void *, float);
-extern void record_moby_hit(void *, void *);
+
 extern float vec_distance_xy(void *, void *);
 extern int Sound_IsPlaying(void *, int);
 extern int test_linked_moby_turn_trigger(void *);
@@ -971,12 +971,12 @@ void reset_electric_water_switch(char *moby) {
 }
 
 extern float g_frame_time MACRO_ADDR;
-extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
+
 extern int coll_line(void *, void *, int, void *, void *);
 extern int coll_sphere(void *, int, void *, float);
 extern int fast_dec_timer(void *);
 extern void MobySphereHitDirectional(void *, float, void *, int, float, float, int, int, int);
-extern void SpawnExplosionFx(void *, void *, float, float, int);
+extern void SpawnExplosionFx_v(void *, void *, float, float, int) __asm__("func_L00_00260108");
 extern void Moby_PlaySound(int, int, void *);
 extern void DeleteMoby(void *);
 extern void spawn_moby_point_offset_particle(void *, float, int, float);
@@ -1003,7 +1003,7 @@ void update_spinning_projectile(unsigned char *m) {
         if (hit != 0 && (int)hit != *(int *)&((struct SpinningProjectileVars *)d)->last_hit) {
             if (*(short *)(hit + 0xA6) != 0x4E)
                 MobySphereHitDirectional(m, 0.5f, m + 0x10, 1, 2.0f, 0.0f, 0, 1, 0);
-            SpawnExplosionFx(m, m + 0x10, 0.5f, 13.0f, -1);
+            SpawnExplosionFx_v(m, m + 0x10, 0.5f, 13.0f, -1);
             Moby_PlaySound(0, 0, m);
             DeleteMoby(m);
             return;

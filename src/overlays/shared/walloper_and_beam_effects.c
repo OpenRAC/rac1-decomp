@@ -17,6 +17,7 @@
 #include "enums/hero_state.h"
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
+#include "overlays/shared/moby_ground_collision.h"
 
 extern char g_hero[];
 extern char item_usage[];
@@ -157,14 +158,9 @@ extern float IntToFloat(int);
 extern int truncate_float_to_s32(float);
 
 extern int GetFlaggedPvarWord();
-extern float randf_sym(float, float);
 
-extern float normalize_angle(float);
-extern int rand_range(int, int);
+extern void InitDirectionalHitQuery_v(void *, void *, int, void *, float) __asm__("func_L00_0025A8C0");
 
-extern void InitDirectionalHitQuery(void *, void *, int, void *, float);
-extern void record_moby_hit(void *, void *);
-extern int test_moby_linked_record_word8(void *);
 extern int coll_line(Vec4f *, Vec4f *, int, void *, int);
 extern void coll_sphere_mobys(void *, int, void *, void *, float);
 extern void Moby_PlaySound(int, int, void *);
@@ -333,7 +329,7 @@ void build_beam_and_arc_points(u8 *o) {
     else
         (beam_arc_outer_color) = 0x7f2020;
     clear_u64_value(&camera_direction);
-    InitDirectionalHitQuery(&hit, o, 0x210000, &camera_direction, enabled + 2.0f);
+    InitDirectionalHitQuery_v(&hit, o, 0x210000, &camera_direction, enabled + 2.0f);
     hit.kind = 5;
     hit.mode = 1;
     hit.id = ((Moby *)o)->oclass;
@@ -499,7 +495,7 @@ void build_beam_and_arc_points(u8 *o) {
         vec_scale_to_length(&target_delta, &target_delta, 1.0f);
         target_delta.f[2] = 1.0f;
         target_delta.f[3] = 5627.9248046875f;
-        InitDirectionalHitQuery(&effects.first.hit0, o, 0x210000, &target_delta, enabled + 2.0f);
+        InitDirectionalHitQuery_v(&effects.first.hit0, o, 0x210000, &target_delta, enabled + 2.0f);
         effects.first.hit0.kind = 5;
         effects.first.hit0.mode = 3;
         effects.first.hit0.id = ((Moby *)o)->oclass;
@@ -519,7 +515,7 @@ void build_beam_and_arc_points(u8 *o) {
         vec_scale_to_length(&target_delta, &target_delta, 1.0f);
         target_delta.f[2] = 1.0f;
         target_delta.f[3] = 5627.9248046875f;
-        InitDirectionalHitQuery(&effects.hit1, o, 0x210000, &target_delta, enabled + 2.0f);
+        InitDirectionalHitQuery_v(&effects.hit1, o, 0x210000, &target_delta, enabled + 2.0f);
         effects.hit1.kind = 5;
         effects.hit1.mode = 3;
         effects.hit1.id = ((Moby *)o)->oclass;
@@ -815,8 +811,6 @@ typedef struct {
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern float randf_sym(float lo, float hi);
-
 extern V_2bb0b0 beam_anchor_quad_corners[];
 extern QuadUv beam_anchor_quad_uvs[];
 extern int beam_anchor_quad_color SDATA(beam_anchor_quad_color);
@@ -899,8 +893,6 @@ char *spawn_linked_moby_from_basis(char *src) {
     return (char *)m;
 }
 extern void DeleteMoby(void *);
-
-extern float normalize_angle(float);
 
 /* Per-frame update of a moby that follows its parent's flag and spins. */
 void update_linked_moby_scale_and_rotation(Moby *m) {
@@ -2932,7 +2924,6 @@ int try_start_moby_hop(Mob_2C0CF8 *m, Blk *p, void *q, int flag) {
     m->bBC = 0xD;
     return 1;
 }
-extern void copy_hero_moby_field_38(void *);
 
 /* Spawn a doom bot for owner at pos with rot; returns the moby or 0. */
 char *spawn_doom_bot(int owner, void *pos, void *rot) {

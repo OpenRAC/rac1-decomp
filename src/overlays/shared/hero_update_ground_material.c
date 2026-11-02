@@ -20,6 +20,7 @@
 #include "structs/collision.h"
 #include "structs/hit_message.h"
 #include "asm_functions/executable.h"
+#include "overlays/shared/moby_ground_collision.h"
 extern Hero g_hero;
 extern char g_hero_moby[];
 extern int pad_held;
@@ -462,7 +463,7 @@ extern char g_hero_r2[] __asm__("D_0013F450");
 extern char novalis_coll_hit_r[] __asm__("D_L01_00174340");
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern int scale_ticks_r2(int) __asm__("func_001F9850");
-extern void func_L00_0025A540(void *a, void *b, void *c, int d, float f);
+
 extern float FastCos_r(float) __asm__("func_001F9F90");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern int coll_line_r(void *, void *, int, int, int) __asm__("func_L00_001EFFF0");

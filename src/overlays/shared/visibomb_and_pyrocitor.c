@@ -20,6 +20,7 @@
 #include "structs/voice.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "overlays/shared/moby_ground_collision.h"
 extern Hero g_hero;
 extern unsigned char usage_stats[];
 extern u32 g_controller_state[];
@@ -170,7 +171,7 @@ extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern float FastDiffRots_r(float, float) __asm__("func_001FA850");
 extern void BuildSphericalOffset_r(void *, float, float, float) __asm__("func_00215C00");
 extern float FastArcSin_r(float) __asm__("func_001F9FC0");
-extern int func_L00_002608F0(void *);
+
 extern int Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
 extern void func_L00_002B30C8(void *);
 extern void *func_L00_002B0F58(void *, void *, void *, float, float, float, float, float);
@@ -1665,7 +1666,6 @@ void update_attached_moby_transform(Moby *m, unsigned char *o) {
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
-extern int rand_range(int, int);
 extern void PartType11Spawn(void *, void *, int, int, int, int, int, int, float, float);
 extern void spawn_glow_particle(void *, void *, void *, int, int, int, int, int, float);
 extern float g_frame_time MACRO_ADDR;
@@ -1821,7 +1821,7 @@ extern void Sound_StopSlot_r(int) __asm__("func_L00_0028EBF0");
 extern void func_L00_0025F4A8(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                               float, int, int, int, int);
 extern int coll_sphere_mobys_r2(void *, float, int, void *, void *) __asm__("func_L00_001F2BE8");
-extern void func_L00_0025BA50(void *, void *, void *, int, int, int, int, int, float, float, float);
+
 extern void func_L00_00260958(void *, float);
 
 /* visibomb_missile update (moby Visibomb Missile): drift, homing toward the target, arming countdown. */
@@ -2033,8 +2033,6 @@ extern float vec_distance_xy(void *, void *);
 extern float fast_atan2(float, float);
 
 extern void vec_scale_to_length(void *, void *, float);
-extern void PostHitMessage(void *, int, int, void *, void *, float);
-extern int rand_range(int, int);
 
 extern char *active_mobies[];
 extern short thrown_mine_list[];
@@ -2144,7 +2142,7 @@ typedef struct {
     u32 flags;
 } Ring;
 extern s32 Sound_IsPlaying(Moby *, s32);
-extern s32 rand_range(s32, s32);
+
 extern void MobyBlendAnimation_r3(Moby *, s32, s32, s32) __asm__("func_00213DE0");
 extern s32 Moby_PlaySound_r2(s32, s32, Moby *) __asm__("func_0022ED80");
 extern s32 truncate_float_to_s32(f32);
@@ -2749,11 +2747,9 @@ extern int pyrocitor_flame_particle_time_min SDATA(pyrocitor_flame_particle_time
 extern int pyrocitor_flame_particle_time_max SDATA(pyrocitor_flame_particle_time_max);
 extern int pyrocitor_flame_particle_count SDATA(pyrocitor_flame_particle_count);
 extern void vec_set_length_xy(void *, void *, float);
-extern void InitDirectionalHitQuery(char *arg, int a, int b, void *src, float scale);
+extern void InitDirectionalHitQuery_v(char *arg, int a, int b, void *src, float scale) __asm__("func_L00_0025A8C0");
 extern void coll_sphere_mobys(void *, float, int, void *, void *);
 extern void rand_vec(float *, float, float);
-
-extern unsigned swap_packed_color_channels(unsigned c, int mask);
 
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 
@@ -2780,7 +2776,7 @@ void update_pyrocitor_flame_effect_slots(char *m) {
             vec_set_length_xy(vec, src, 1.0f);
             vec[2] = 1.0f;
             vec[3] = 5627.9248046875f;
-            InitDirectionalHitQuery(buf, (int)m, 0x10000, vec, IntToFloat(q[0x10]) + 1.0f);
+            InitDirectionalHitQuery_v(buf, (int)m, 0x10000, vec, IntToFloat(q[0x10]) + 1.0f);
             *(unsigned char *)(buf + 0x18) = 5;
             *(unsigned char *)(buf + 0x19) = 1;
             *(unsigned short *)(buf + 0x1A) = *(unsigned short *)&((Moby *)m)->oclass;

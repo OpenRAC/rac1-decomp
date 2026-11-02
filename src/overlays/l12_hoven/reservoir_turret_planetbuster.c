@@ -345,11 +345,9 @@ extern void add_vectors(void *, void *, void *);
 
 extern int coll_line(void *, void *, int, struct Moby *, int);
 extern int coll_sphere(void *, int, struct Moby *, float);
-extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
-extern void record_moby_hit(int, void *);
+
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
-extern void SpawnExplosionFx(void *, void *, int, float, float);
 
 /* Level 12 shot: flies with a smoke trail, damages the first moby it hits other than its owner, then pops.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l12/gameplay/entities/002ec720.c, FUN_L12_002ece00. */
@@ -1486,7 +1484,7 @@ typedef u32 u128_061E0 __attribute__((mode(TI), aligned(16)));
 extern float g_frame_scale_sq MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
 extern short g_frame_time_sq_r __asm__("D_0015EE70");
-extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
+
 extern void FindNearestTargetMoby_r(struct Moby *, void *, float) __asm__("func_L00_00260D30");
 extern void *MobyGetHitMessage_r(struct Moby *, int, int) __asm__("func_L00_0025B478");
 extern int ComputeHitResponse(struct Moby *, void *, void *, int, int *, int, int, int);
@@ -1627,7 +1625,7 @@ extern int planetbuster_aggro_timer SDATA(planetbuster_aggro_timer);
 extern int planetbuster_gun_part_index[];
 extern int planetbuster_detached_part_ids[];
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
-extern float step_angle_toward_target(float *, float, int, float);
+extern float step_angle_toward_target_v(float *, float, int, float) __asm__("func_L00_0025CC58");
 extern float SpringAngle(void *, float, void *, int, float, float, float);
 
 extern int fast_subtract_rotations_cf(void *);
@@ -1701,8 +1699,8 @@ void update_planetbuster_maximus_guns(char *moby) {
                                           -1.5707964f),
                               ((Moby *)moby)->rot.z);
             if (md->h90 == 0) {
-                if (step_angle_toward_target((float *)(ent + 0x18), yaw, 0,
-                                             g_frame_time * 0.5235988f + g_frame_time * 0.17453292f * (float)i) <
+                if (step_angle_toward_target_v((float *)(ent + 0x18), yaw, 0,
+                                               g_frame_time * 0.5235988f + g_frame_time * 0.17453292f * (float)i) <
                     0.08726646f) {
                     md->h90 = 1;
                     md->f8C = 1.0f;

@@ -834,9 +834,6 @@ int can_spawn_codebot_slot_effect(int index) {
 }
 INCLUDE_ASM("asm/overlays", func_L15_002F8D9C);
 
-extern int test_point_in_transformed_unit_sphere(float *p, int idx);
-extern int IsPointInPolygon(float *p, float *v, int n);
-
 extern int *quartu_paths[];
 /* tests several indexed conditions of a moby's entry in the table */
 int is_hero_in_moby_follow_camera_region(char *moby) {

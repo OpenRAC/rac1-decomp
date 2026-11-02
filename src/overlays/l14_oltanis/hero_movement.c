@@ -342,14 +342,11 @@ extern void Hero_SetTiltSpringParams(float, float);
 
 extern void ClampVectorLength(void *, float);
 
-extern int solve_quadratic_equation(float *, float *, float, float, float);
-extern float step_angle_toward_target(float *, int, float, float);
 extern float vec_distance_xy(void *, void *);
 
 extern float gravity_z(float *);
 extern float Spring(float *, float *, float, float, float, float);
 
-extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern void update_hero_target_heading(float, float, float);
 
@@ -358,9 +355,7 @@ extern int test_hero_animation_frame_window(float);
 extern void initialize_moby_transform_history(int, void *);
 extern void create_moby_transform_history_entry(void *, int, int);
 
-extern float randf_sym(float, float);
 extern void spawn_color_decaying_effect_particle(char *, char *, int);
-extern int find_nearest_path_point(void *, void *, void *, int *, float *, int, float, float, float);
 
 extern int offset_path_index(void *, int, int, int);
 
@@ -373,7 +368,6 @@ extern void HeroOffsetAlongViewZ(float *, float *, float);
 extern int coll_line(void *, void *, int, int, int);
 extern void transform_hero_local_offset_to_world(float *, float, float, float);
 extern int is_moby_in_class_range_500_to_540(int);
-extern void PostHitMessage(void *, int, int, void *, void *, float);
 
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
 

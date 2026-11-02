@@ -92,7 +92,7 @@ extern int coll_sphere(float, void *, int, void *);
 
 extern int coll_line(void *, void *, int, int, int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern int rand_range(int, int);
+
 extern float level_wind_state[];
 extern char g_debug_camera[];
 
@@ -283,7 +283,7 @@ void update_scalar_and_fade_effect_particle(struct PartBase *m) {
         m->color = (m->color & 0xFFFFFF) | ((p->timer * 127 / scale_ticks(6)) << 24);
     }
 }
-extern void subtract_homogeneous_scaled_vector_xyz(void *, void *, void *, float);
+
 extern void vec_scale_to_length(void *, void *, float);
 extern float IntToFloat(int);
 extern int truncate_float_to_s32(float);
@@ -781,10 +781,9 @@ void update_branching_and_fading_effect_particle(struct PartBase *m) {
     }
 }
 extern unsigned char *create_part2(int, int);
-extern float randf_sym(float, float);
 
 extern int truncate_float_to_s32(float);
-extern unsigned swap_packed_color_channels(unsigned, int);
+
 extern int spin_particle_start_color_from SDATA(spin_particle_start_color_from);
 extern int spin_particle_start_color_to SDATA(spin_particle_start_color_to);
 extern int spin_particle_end_color_from SDATA(spin_particle_end_color_from);
@@ -925,7 +924,6 @@ void update_spinning_and_fading_effect_particle(struct PartBase *m) {
         m->timer = m->timer - 1;
     }
 }
-extern float randf_sym(float lo, float hi);
 
 extern unsigned char *part_type13_textures;
 
@@ -1377,8 +1375,6 @@ extern f32 frame_scale MACRO_ADDR;
 void Moby_GetJointWorldPos(void *, s32, void *);
 void vec_scale_to_length(void *, void *, f32);
 
-f32 compute_transformed_delta_component(void *, void *, void *, s32);
-
 void KillPart(void *);
 s32 truncate_float_to_s32(f32);
 
@@ -1552,8 +1548,6 @@ void spawn_effect_particle_with_target_scalar(void *pos, void *vel, int c, int d
         p->gravity = g_frame_time_sq * 1.24f;
     }
 }
-
-extern float randf_sym(float, float);
 
 /* spawn a type-0x17 particle with a random jitter and a randomly signed speed */
 void *PartType23Spawn(void *pos, int spd, void *pos2, int col, float a, float b, float c, float d) {
@@ -2393,7 +2387,6 @@ void tick_effect_particle_lifetime(struct PartBase *a) {
         KillPart(a);
     }
 }
-extern int rand_range(int, int);
 
 extern char *part_type34_textures;
 extern float g_frame_time MACRO_ADDR;

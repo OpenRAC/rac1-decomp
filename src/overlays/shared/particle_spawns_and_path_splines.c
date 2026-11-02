@@ -35,7 +35,6 @@ void spawn_type_10_particle(char *pos, char *vel) {
         qcopy(q, vel);
     }
 }
-extern float randf_sym(float, float);
 
 extern unsigned char *novalis_part_type14_textures;
 

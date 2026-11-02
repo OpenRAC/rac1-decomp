@@ -181,7 +181,7 @@ extern void DeleteMoby_r(M_2cfcb8 *) __asm__("func_0020D678");
 extern s32 coll_line_r(V_2cfcb8 *, V_2cfcb8 *, s32, M_2cfcb8 *, s32) __asm__("func_L00_001EFFF0");
 extern s32 is_moby_in_class_range_500_to_540_r(M_2cfcb8 *) __asm__("func_L00_0025F410");
 extern s32 GetFlaggedPvarWord_r(M_2cfcb8 *) __asm__("func_L00_00261448");
-extern int convert_pose_to_reference_local(M_2cfcb8 *, M_2cfcb8 *, V_2cfcb8 *, f32 *, V_2cfcb8 *, V_2cfcb8 *);
+
 extern int get_first_moby_in_group(M_2cfcb8 **, s32, s32, s32);
 extern int get_next_moby_in_group(M_2cfcb8 **, M_2cfcb8 *, s32, s32);
 extern void FastVecAdd_r(V_2cfcb8 *, V_2cfcb8 *, void *) __asm__("func_001F9BD8");
@@ -561,7 +561,6 @@ extern unsigned char *spawn_crate_debris(unsigned char *owner, void *vel, void *
 extern void moby_build_matrix(void *);
 extern void rand_vec(float *, float, float);
 
-extern int rand_range(int, int);
 extern void PartType11Spawn(void *, void *, int, int, int, int, int, float, int, float);
 extern int spawn_glow_particle(void *, void *, void *, float, int, int, int, int, int);
 extern int level_frame_counter MACRO_ADDR;
@@ -826,7 +825,6 @@ extern int is_moby_in_class_range_500_to_540(void *);
 extern void break_crate(void *, int, int);
 extern void crate_drop_bolts(void *);
 extern float ApproachValue(float *p, float target, float maxstep);
-extern int transform_attachment_pose(int x, char *o, float *p, float *q, float *r, float *s);
 
 extern int moby_get_ride_transform(char *);
 extern void update_entity_matrix(char *a, Vx *b, void *c, void *d);
@@ -1235,7 +1233,7 @@ void decoy_glove_aim_throw(int collision_arg, Moby *carrier, float *position) {
                                           (((PadState *)(pad_globals_base_r + 0x2460))->held & 5) ? 3.5f : 2.5f);
 }
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void moby_index_list_remove(void *, void *);
+
 extern int spawn_decoy(void *, void *, void *);
 extern void HeroEnterMoveState(int, int);
 extern int fast_dec_timer(int *);
@@ -1560,7 +1558,6 @@ extern void MobyTransformScaledVertex_r2(void *, s32, void *) __asm__("func_0020
 extern void matrix_from_basis_rows_r2(void *, void *) __asm__("func_001FA4A0");
 extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
 
-extern void func_L00_0025AFA8(void *, void *);
 extern void quat_nlerp_r(void *, void *, void *, f32) __asm__("func_001FA5C8");
 extern s32 func_L00_0028EB98(struct Moby *, s32);
 extern s32 voice_2D4398(s32, s32, void *) __asm__("func_0022ED80");
@@ -2286,7 +2283,6 @@ extern int CarriedMobyUpdate(void *, void *);
 
 extern float SteerAngleWithVelocity_r(void *, float, void *, float, float, float) __asm__("func_L00_0025CE58");
 extern float move_horny_toad_toward_position(unsigned char *m, float *t, float vel);
-extern int rand_range(int, int);
 
 extern int IsFrameWithinWindow(void *, float);
 extern void collect_mobies_in_sphere_at_moby_point(void *, float, float, float, int, int, int, int, int);
@@ -2842,7 +2838,6 @@ typedef struct {
     Vec4 b[1];
 } Path_6e38;
 
-extern int find_nearest_path_point(void *, void *, void *, int *, float *, int, float, float, float);
 extern float IntToFloat(int);
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
@@ -3000,7 +2995,6 @@ extern T *level_cuboids MACRO_ADDR;
 extern void initialize_moby_particle_effect(char *);
 extern void update_infobot_particle_effect(char *);
 extern s32 RotateWithMoby(struct Moby *, struct Moby *, void *, void *, void *, void *);
-extern void unlock_planet(s32);
 
 extern void queue_planet_unlock_message(s32);
 extern void set_moby_dialogue_record_value(struct Moby *, s32);
@@ -3467,10 +3461,9 @@ void reset_smoke_fire_spawner_particle(P *, int);
 void func_L00_002D9208_D83D8(P *, int) __asm__("func_L00_002D9208");
 int FastBSphereCheck(Vec4f *, float);
 float vec_distance_xy(Vec4f *, Vec4f *);
-float randf_sym(float, float);
 
 float random_float_between(float, float);
-int rand_range(int, int);
+
 E *PartType23Spawn(Vec4f *, int, float, float, Vec4f *, float, int, float);
 s16 scale_ticks_r(int) __asm__("func_001F9850");
 void AddDrawCallback(void *, P *);
@@ -3813,7 +3806,6 @@ void func_L00_002D90A0_r(P_2D90A0 *m, int i) {
     smoke_particle_start_delay_r[i] = (t + 1) * smoke_particle_stagger_ticks;
     smoke_particle_is_mesh_r[i] = 0;
 }
-extern float randf_sym(float, float);
 
 extern float smoke_particle_unit_positions[][4];
 

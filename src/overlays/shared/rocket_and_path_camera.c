@@ -144,8 +144,8 @@ extern void BuildSphericalOffset_v(float, float, float, void *) __asm__("func_00
 
 extern int Moby_PlaySound(int, int, void *);
 extern int coll_line(void *, void *, int, int, int);
-extern void PostHitMessage(float, int, void *, int, void *, void *);
-extern void SpawnExplosionFx(void *, void *, int, float, float);
+extern void PostHitMessage_v(float, int, void *, int, void *, void *) __asm__("func_L00_0025AC00");
+
 extern void Sound_PlayClassSound(int, int, void *, int);
 extern void DeleteMoby(void *);
 
@@ -233,7 +233,7 @@ void rocket_819_update(Moby *m) {
                     if (*(int *)(tb + 0x18) != 0) {
                         vec_set_length_xy(diff, d, 1.0f);
                         d->vel[2] = 1.0f;
-                        PostHitMessage(1.0f, *(int *)(tb + 0x18), m, 0x10003, tb + 0x20, diff);
+                        PostHitMessage_v(1.0f, *(int *)(tb + 0x18), m, 0x10003, tb + 0x20, diff);
                     }
                     m->state = 2;
                 }
@@ -451,9 +451,6 @@ void activate_descriptor(int i) {
     q[0x39] = 0;
 }
 extern char *orxon_paths[];
-
-extern int test_point_in_transformed_unit_sphere(float *, int);
-extern int IsPointInPolygon(float *, float *, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002e3de8.c, FUN_L10_002f5a78. */
 int check_descriptor_hero_trigger(char *moby, char *unused) {

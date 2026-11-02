@@ -180,8 +180,6 @@ typedef struct {
 extern Vec4 rilgar_camera_pos_r __asm__("D_L05_001672C0");
 extern s32 *rilgar_paths_r[] __asm__("D_L05_001B0CB0");
 
-extern s32 IsPointInPolygon(void *, void *, s32);
-
 extern void apply_spatial_trigger_to_moby_list_r(struct Moby *, TriggerVars *, s32, s32) __asm__("func_L05_002F6518");
 extern void apply_spatial_trigger_to_moby_r(s32, TriggerVars *, s32) __asm__("func_L05_002F62E8");
 

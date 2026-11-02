@@ -23,6 +23,7 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "asm_functions/executable.h"
+#include "overlays/shared/moby_ground_collision.h"
 extern Hero g_hero;
 extern char gHeroPos[];
 extern struct Hero g_hero;
@@ -337,7 +338,7 @@ extern int update_bolt_thief_path_movement(char *);
 extern float Spring(float *, float *, float, float, float, float);
 
 extern int mine_fall(void *, void *);
-extern void SpawnExplosionFx(void *, void *, int, float, float);
+
 extern void StepColorFade(void *, void *);
 
 /* Bolt thief update (moby Bolt Thief, level 14): hit knockback, turn to the hero, walk a path, then fall back. */
@@ -548,8 +549,6 @@ int update_bolt_thief_path_movement(char *moby) {
 extern int DialogRequest_Init(void *, void *);
 
 extern int Npc_TryStartDialog(void *, void *);
-
-extern void unlock_planet(int);
 
 extern int memcard_Save(int, int);
 extern float vec_distance_xy(void *, void *);
@@ -1031,7 +1030,6 @@ void save_and_lower_unlock_sequence_mobys(char *moby) {
     }
 }
 extern float IntToFloat(int);
-extern float CubicInterpolate(float, float, float, float, float);
 
 /* Per-frame update: slides each listed part toward a rest height by a factor from the moby's animation value.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/vendor/00300e00.c, FUN_L14_00305680. */
@@ -2545,7 +2543,6 @@ extern float oltanis_key_cam_lean_step_progress[][3];
 extern float oltanis_key_cam_moby_step_progress[][3];
 extern CamKey171D0 oltanis_path_camera_keys[];
 extern char oltanis_lean_state[];
-extern float interpolate_angle(float, float, float);
 
 extern float Cam_InterpValues(void *, float, float, float, float, float);
 extern void compute_position_from_spherical_offset(void *, void *, void *);

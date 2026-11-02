@@ -3329,7 +3329,7 @@ extern u8 aridia_coll_hit_normal[];
 extern f32 aridia_coll_hit_point;
 
 extern void vec_scale_to_length(void *, void *, f32);
-extern void clip_negative_segment_endpoint_xyz(Vec4 *, void *);
+
 extern s32 coll_line(void *, void *, s32, s32, s32);
 
 extern f32 gravity_z_r(void *) __asm__("func_L00_002342F8");

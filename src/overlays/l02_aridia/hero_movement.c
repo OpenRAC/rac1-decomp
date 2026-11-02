@@ -656,8 +656,7 @@ extern float SpringAngle(void *, float, void *, int, float, float, float);
 extern float ApproachValue(float *, float, float);
 
 extern void ClampVectorLength(void *, float);
-extern int solve_quadratic_equation(float *, float *, float, float, float);
-extern float step_angle_toward_target(float *, int, float, float);
+
 extern float vec_distance_xy(void *, void *);
 
 extern float gravity_z(float *);
@@ -665,7 +664,7 @@ extern float Spring(float *, float *, float, float, float, float);
 extern float forward_component(void *);
 extern void set_gravity_relative_vector_length_xy(float *, float *, float);
 extern void gravity_set_z(float *, float *, float);
-extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
+
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern void update_hero_target_heading(float, float, float);
 extern void offset_hero_position_against_gravity(float *, float *, float);
@@ -684,7 +683,6 @@ extern int hero_slot_item_id(int);
 extern void allocate_hero_voice_for_entry(int, int);
 extern void add_hero_forward_offset(void *, void *, float);
 extern void transform_hero_local_offset_to_world(float *, float, float, float);
-extern void PostHitMessage(void *, int, int, void *, void *, float);
 
 extern void hero_integrate_velocity(void);
 

@@ -1047,7 +1047,6 @@ extern void update_armed_transport_damage_and_targeting(char *);
 extern void compute_armed_transport_path_headings(void *);
 extern int advance_armed_transport_along_path(char *, char *);
 extern void update_armed_transport_joint_animation(char *);
-extern int IsPointInPolygon(void *, void *, int);
 
 extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
 /* Stand-in: retail passes five arguments and no float; the file's definition (line 101) has a sixth, `float unused`. */

@@ -903,7 +903,6 @@ extern void func_L00_0025F4A8(void *, void *, void *, float, float, int, int, in
                               float, int, int, int, int);
 
 extern int IsFrameWithinWindow(char *, float);
-extern int IsPointInPolygon(void *, void *, int);
 
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 

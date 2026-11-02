@@ -68,7 +68,6 @@ extern void set_hero_animation(int, int, float);
 extern int Hero_TryMoveState(int, int);
 
 extern int func_001F9908(int *);
-extern int rand_range(int, int);
 
 extern void stick_target(int, float);
 
@@ -100,10 +99,8 @@ extern void release_and_clear_hero_voice_slots(void);
 
 extern int coll_line(void *, void *, int, int, int);
 
-extern float randf_sym(float lo, float hi);
 extern float jump_speed_4318(float *a, float *b, float *out, float speed, float g);
 
-extern int find_nearest_path_point(void *, void *, void *, int *, float *, int, float, float, float);
 extern int Spline_AdvanceByDistance(int *tab, float *out, int *a, float *b, int c, float d);
 extern int nearest_rail_point(void *, void *, void *, void *, void *, void *, int, int);
 

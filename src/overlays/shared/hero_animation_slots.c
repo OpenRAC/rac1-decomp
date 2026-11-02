@@ -165,7 +165,6 @@ int probe_hero_ledge_edge(Vec4 *pos, f32 *dir) {
 
 extern float vec_distance_xy(void *, void *);
 
-extern int find_nearest_path_point(void *, void *, void *, void *, void *, int, float, float, float);
 typedef struct {
     Vec4 sphere;
     s32 *owner;
@@ -3088,7 +3087,6 @@ void clip_hero_velocity_against_probed_surfaces(int arg) {
     }
 }
 extern void vec_scale_to_length(void *, void *, float);
-extern void clip_negative_segment_endpoint_xyz(void *, void *);
 
 typedef struct {
     float v[4];

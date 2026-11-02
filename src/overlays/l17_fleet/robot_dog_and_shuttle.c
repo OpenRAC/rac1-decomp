@@ -1474,7 +1474,6 @@ extern void update_moby_hit_stats_and_state(void *);
 
 extern void update_moby_trail_points(void *);
 extern void update_moby_path_transform(void *);
-extern void SpawnExplosionFx(void *, void *, int, float, float);
 
 extern int FastBSphereCheck(char *, float);
 

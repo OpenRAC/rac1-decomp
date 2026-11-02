@@ -552,7 +552,6 @@ extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, in
 extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
 extern float ApproachWithVelocity(float, float, float, float, float *, float *);
 
-extern void PostHitMessage(void *, int, int, void *, void *, float);
 extern void update_entity_matrix(char *a, void *b, void *c, void *d);
 extern Lid_0030FCC0 *CreateMoby_r(int) __asm__("func_0020D348");
 extern void moby_build_matrix(void *);

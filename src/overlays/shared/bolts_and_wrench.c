@@ -871,7 +871,7 @@ extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
 extern void *GetFlaggedPvarWord_r(void *) __asm__("func_L00_00261448");
-extern int func_L00_002616E0(void *, void *, void *, void *, void *, void *);
+
 extern float random_angle_radians_r(void) __asm__("func_00214158");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern int rand_range_r(int, int) __asm__("func_L00_00258BC8");
@@ -886,7 +886,7 @@ extern float FastAbsF_r(float) __asm__("func_001F9B88");
 extern float multiply_global_factor_r(float) __asm__("func_001F9878");
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 extern void matrix_to_euler_r(void *, void *) __asm__("func_002153E8");
-extern void func_L00_0025AFA8(void *, void *);
+
 extern void update_bolt_grounded_pose_r(void *, void *, void *) __asm__("func_L00_002A8088");
 extern float IntToFloat_r(int) __asm__("func_001FA888");
 extern void quat_nlerp_r(void *, void *, void *, float) __asm__("func_001FA5C8");
@@ -1252,7 +1252,7 @@ void collect_bolt(struct Moby *bolt) {
     spin = -spin;
     PartType53Spawn_r(&pos, scale_ticks(0x19), size * 0.14f, size * k, 0x7F7F7F7F, 1, spin, &vel, 0.0f);
 }
-extern int transform_attachment_pose(int x, char *o, float *p, float *q, float *r, float *s);
+
 extern int coll_sphere(float, void *, int, void *);
 
 extern char *GetFlaggedPvarWord(void *);
@@ -1430,7 +1430,6 @@ typedef struct {
 } BoltVars;
 extern void *g_hero_moby;
 
-extern int rand_range(int, int);
 extern void set_moby_color(void *, int, int, int);
 extern void vec_scale_to_length_r2(void *, void *, float) __asm__("func_L00_001FF4B0");
 
@@ -1734,7 +1733,6 @@ int should_trigger_wrench_hit_reaction(void) {
     return 0;
 }
 
-extern float randf_sym(float, float);
 extern void PartType53Spawn(void *, int, int, int, int, void *, float, float, float);
 
 /* Emits N pairs of particles at POS with a random velocity, jittering POS each time. */
@@ -1768,7 +1766,6 @@ extern V g_debug_camera;
 extern int coll_hit_result[];
 extern float vec_length_xy(void *);
 
-extern int rand_range(int, int);
 extern void spawn_two_point_effect_particle(void *, void *);
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 
@@ -1978,13 +1975,10 @@ extern void draw_wrench_swing_effect(void *);
 extern int coll_line(void *, void *, int, int, int);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 
-extern int is_nonnull_moby_outside_table_or_class_range_500_to_540_or_class_502(char *);
-extern void PostHitMessage(void *, int, int, void *, void *, float);
 extern int test_hero_animation_frame_window(float);
 
-extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
 extern void vec_set_length_xy(void *, void *, float);
-extern int sweep_hit_segment(void *, void *, void *, void *, void *, void *, int);
+
 extern int func_L00_001F2BE8(void *, float, int, void *, void *);
 extern int HeroEnterMoveState(int, int);
 
@@ -2382,7 +2376,6 @@ extern float homing_bolt_bounds_scale SDATA(homing_bolt_bounds_scale);
 extern short active_homing_missiles[];
 extern char *select_auto_aim_target_moby(void *, void *, void *, float *, float *, float *, float);
 extern int coll_line(void *, void *, int, int, int);
-extern void append_unique_moby_index(void *, short *, int);
 
 /* Spawns a homing bolt (class 0x100) from owner at pos, aimed at tgt or at whatever lies along its heading. */
 char *spawn_homing_bolt(void *owner, void *pos, float a, float b, float c, char *tgt, float rz, float ry) {

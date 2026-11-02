@@ -407,15 +407,11 @@ extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern int PartType34Spawn(void *, void *, float, float);
 
-extern int rand_range(int, int);
-
 extern float ApproachValue(float *, float, float);
 extern void Hero_SetTiltSpringParams(float, float);
 
 extern void ClampVectorLength(void *, float);
 
-extern int solve_quadratic_equation(float *, float *, float, float, float);
-extern float step_angle_toward_target(float *, int, float, float);
 extern float vec_distance_xy(void *, void *);
 
 extern float gravity_z(float *);
@@ -423,7 +419,7 @@ extern float Spring(float *, float *, float, float, float, float);
 
 extern void set_gravity_relative_vector_length_xy(float *, float *, float);
 extern void gravity_set_z(float *, float *, float);
-extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
+
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern void update_hero_target_heading(float, float, float);
 extern void offset_hero_position_against_gravity(float *, float *, float);
@@ -441,7 +437,6 @@ extern void HeroOffsetAlongViewZ(float *, float *, float);
 extern int coll_line(void *, void *, int, int, int);
 extern void transform_hero_local_offset_to_world(float *, float, float, float);
 extern int is_moby_in_class_range_500_to_540(int);
-extern void PostHitMessage(void *, int, int, void *, void *, float);
 
 extern int MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
 

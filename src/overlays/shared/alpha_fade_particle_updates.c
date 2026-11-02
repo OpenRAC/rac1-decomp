@@ -539,7 +539,7 @@ typedef struct {
 extern void path_sample_at_distance(int, float *, float *, void *, float, float);
 
 extern int coll_sphere_mobys(float, void *, int, void *, int);
-extern void SendRadialMessageToMobys(void *, void *, void *, int, int, int, int, int, float, float, float);
+
 extern int *coll_sphere_moby_hits[];
 
 /* Part type 54 update: advances a particle, fades its color near the end of life and spawns a light effect at its position. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/rendering_002712b8.c, FUN_L00_00272438. */
@@ -773,7 +773,7 @@ extern void add_random_offset_to_vector_xyz(float *v, float s);
 extern float vec_distance_xy(void *, void *);
 
 extern void vec_scale_to_length(void *, void *, float);
-extern void PostHitMessage(int, int, int, void *, void *, float);
+
 typedef float V_272bc0[4] __attribute__((aligned(16)));
 extern unsigned char *particle_pool MACRO_ADDR;
 
@@ -1152,7 +1152,6 @@ extern unsigned char *spawn_moving_resizing_height_snapped_alpha_fade_particle(v
 f32 random_float_between(f32, f32);
 void vec_scale_to_length(void *, void *, f32);
 s32 random_integer_below(s32 arg0);
-extern s32 rand_range(s32, s32);
 
 extern unsigned char *spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(void *a, void *b, int c, int d,
                                                                                         float f, int n, int e, int g,
@@ -1494,7 +1493,6 @@ void update_randomized_moby_point_attached_particle(char *m) {
     ((struct PartBase *)m)->pos.f[3] = a;
     *(float *)(m + 0x2C) = b;
 }
-extern int rand_range(int, int);
 
 extern unsigned char *part_type69_textures;
 
@@ -1535,7 +1533,6 @@ unsigned char *spawn_mode_controlled_rotating_alpha_fade_particle(void *a, void 
     }
     return (unsigned char *)r;
 }
-extern float randf_sym(float, float);
 
 /* Per-frame update of a particle that follows a moby's joint, kills itself when out of range or expired. */
 void update_mode_controlled_rotating_alpha_fade_particle(struct PartBase *p) {
@@ -1853,7 +1850,6 @@ void update_gravity_damped_resizing_particle(struct PartBase *m) {
         }
     }
 }
-extern void decrement_packed_countdown(void *, void *);
 
 extern void *timed_fade_particle_alpha_step SDATA(timed_fade_particle_alpha_step);
 /* Particle update: fade the packed alpha by a fixed step; kill when the timer ends. */

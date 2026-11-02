@@ -12,6 +12,7 @@
 #include "game/moby/mobyutil.h"
 #include "enums/moby_class.h"
 #include "asm_functions/executable.h"
+#include "overlays/shared/moby_ground_collision.h"
 extern Hero g_hero;
 extern char level_render_state[];
 extern char gSkillPoints[];
@@ -255,7 +256,7 @@ extern int gemlik_moby_array_start_m __asm__("D_L13_00160058") MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
 
 extern void DeleteMoby(void *);
-extern int find_nearest_path_point(void *, void *, float *, int *, float *, int, float, float, float);
+
 extern int compute_advanced_moby_path_position(void *, void *, void *, int, int, float);
 
 /* Follows its target moby along a path: snaps to the nearest path point, then walks the path segments. */
@@ -413,7 +414,6 @@ char *spawn_scaled_owned_moby(char *owner, void *position, float scale) {
 }
 extern void DeleteMoby(void *);
 extern char *MobyGetHitMessage(void *, int, int);
-extern void record_moby_hit(void *, void *);
 
 /* updates the moby: deletes it when its owner is gone, else copies the owner's effect data and marks it */
 void forward_moby_hits_to_owner(char *moby) {
@@ -440,7 +440,7 @@ void forward_moby_hits_to_owner(char *moby) {
     }
     ((unsigned char *)moby)[0xA4] = 0xFF;
 }
-extern int rand_range(int, int);
+
 extern void set_moby_color(void *, int, int, int);
 
 extern float g_frame_time MACRO_ADDR;

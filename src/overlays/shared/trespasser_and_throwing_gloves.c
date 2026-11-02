@@ -195,7 +195,8 @@ extern void DeleteMoby(void *);
 extern int fast_dec_timer(int *);
 extern void RotateWithMoby(void *, void *, void *, void *, void *, void *);
 extern u8 *GetFlaggedPvarWord_r(struct Moby *) __asm__("func_L00_0025D390");
-extern int move_moby_with_collision_integer_radius(void *, void *, int, int, float, float);
+extern int move_moby_with_collision_integer_radius_v(void *, void *, int, int, float,
+                                                     float) __asm__("func_L00_00259B08");
 extern void MobySpringTurn(void *, float *, float, float, float, float);
 extern int coll_sphere(float, void *, int, void *);
 extern void coll_sphere_mobys(float, void *, int, void *, void *);
@@ -206,11 +207,11 @@ extern float select_moby_heading_by_collision_probes(void *, void *, float, floa
 extern int try_start_moby_hop(void *, void *, void *, int);
 extern void initialize_moby_hop_trajectory(void *, void *, void *);
 extern int compute_moby_state_from_vertical_probe(void *);
-extern int update_arc_motion(void *, void *);
+
 extern int ClassifyTargetInCone(void *, void *, void *, void *);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
-extern void SendRadialMessageToMobys(void *, void *, void *, int, void *, int, int, int, float, float, float);
+
 extern void Moby_PlaySound(int, int, void *);
 
 /* Updates an Agent of Doom's movement, target selection and detonation. */
@@ -345,8 +346,8 @@ void doom_bot_update(M44 *moby) {
             data->velocity.v.z -= g_frame_time_sq * 9.0f;
             save_state_fields_to_hero((char *)data);
             hero = (Hero44 *)g_hero;
-            blocked = move_moby_with_collision_integer_radius(moby, &data->velocity, hero->damage, 0, scale * 0.7f,
-                                                              hero->f1EF0) &
+            blocked = move_moby_with_collision_integer_radius_v(moby, &data->velocity, hero->damage, 0, scale * 0.7f,
+                                                                hero->f1EF0) &
                       2;
             if (blocked) {
                 data->velocity.v.z = 0;
@@ -614,8 +615,8 @@ void doom_bot_update(M44 *moby) {
             data->velocity.v.z -= g_frame_time_sq * 9.0f;
             save_state_fields_to_hero((char *)data);
             hero = (Hero44 *)g_hero;
-            blocked = move_moby_with_collision_integer_radius(moby, &data->velocity, hero->damage, 0, scale * 0.7f,
-                                                              hero->f1EF0) &
+            blocked = move_moby_with_collision_integer_radius_v(moby, &data->velocity, hero->damage, 0, scale * 0.7f,
+                                                                hero->f1EF0) &
                       2;
             if (blocked) {
                 data->velocity.v.z = 0;
@@ -672,7 +673,7 @@ void func_00214358_C2A80(void *, int, float) __asm__("func_00214358");
 
 float vec_distance_xy(void *, void *);
 float FastAbsF(float);
-void grant_inventory_item(int, int);
+
 float ApproachValue(void *, float, float);
 void DeleteMoby(void *);
 
@@ -785,7 +786,7 @@ extern float vec_length_xy(void *);
 
 extern int coll_line_r(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
 extern void initialize_moby_motion_at_position(void *, void *, void *);
-extern void append_unique_moby_index(void *, void *, int);
+
 extern void DeleteMoby(void *);
 extern struct Moby *spawn_mine(void *, void *, void *);
 
@@ -1384,7 +1385,7 @@ int func_001160D8(void);
 
 extern void func_L00_0026AA10_C4748(float *, unsigned char, unsigned char, unsigned char, float, float,
                                     int) __asm__("func_L00_0026AA10");
-void moby_index_list_remove(void *, void *);
+
 void DeleteMoby(void *);
 extern char decoy_list[];
 
@@ -1418,10 +1419,6 @@ void func_L00_00251E30_C48C8(unsigned char *) __asm__("func_L00_00251E30");
 extern f32 IntToFloat(s32);
 extern s32 moby_array_start MACRO_ADDR;
 extern s16 decoy_list_r[] __asm__("D_L00_001B0BB0");
-
-extern void moby_index_list_remove(void *, void *);
-
-extern void append_unique_moby_index(void *, void *, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002bffa8.c, FUN_L00_002c35c0. */
 u8 *spawn_decoy(s32 value, u128_C48C8 *position, u128_C48C8 *other_position) {
@@ -1793,7 +1790,7 @@ extern void destroy_decoy_on_selected_materials(void *);
 extern int fast_subtract_rotations_cf(void *);
 extern void Moby_PlaySound(int, int, void *);
 extern void add_random_offset_to_vector_xyz(float, void *);
-extern void spawn_nearby_effect_without_direction(float, void *, void *, int, void *);
+
 extern char *MobyGetHitMessage(void *, int, int);
 
 extern void RerollEffectCounter(void *, void *);

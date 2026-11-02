@@ -348,7 +348,7 @@ extern void StepColorFade(void *, void *);
 extern int coll_sphere_mobys(void *, float, int, void *, void *);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
                             int, int, int, int);
-extern void SpawnExplosionFx(void *, void *, int, float, float);
+
 extern void DeleteMoby(void *);
 extern void jet_animate(void *, float);
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
@@ -1444,14 +1444,12 @@ void update_hero_water_entry_effects(struct Moby *moby) {
     }
 }
 
-extern int rand_range(int, int);
-
 extern float batalia_line_puff_rise_speed_max SDATA(batalia_line_puff_rise_speed_max);
 extern float batalia_line_puff_size SDATA(batalia_line_puff_size);
 extern u16 batalia_line_puff_life_frames;
 
 extern f32 IntToFloat(s32);
-extern float randf_sym(float, float);
+
 extern unsigned char *PartType23Spawn(void *, float, float, float, int, void *, float, int);
 extern char *PartType21Spawn(void *, void *, int, int, int, int, float);
 
@@ -1949,8 +1947,6 @@ extern int batalia_help_popup_state[];
 extern int batalia_help_message_selector MACRO_ADDR;
 extern int D_0013A5E0[] NOT_SDA;
 extern void AttachManipulator(void *, int, void *);
-
-extern void build_quaternion_from_axis_rotations(void *, void *);
 
 extern void func_L00_00262DF0(int, void *, float, void *);
 
@@ -2534,7 +2530,6 @@ extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
                             int, int, int, int);
 extern int Moby_PlaySound(int, int, void *);
-extern void SpawnExplosionFx(void *, void *, int, float, float);
 
 extern void ClampVectorLength(void *, float);
 
@@ -2543,10 +2538,9 @@ extern float ApproachValue(float *, float, float);
 extern void PartType04Spawn(void *, void *, int, int, int, int, int, int);
 extern int timer46(int *) __asm__("func_001F9908");
 extern void MobySpringTurn(void *, void *, float, float, float, float);
-extern int rand_range(int, int);
+
 extern void initialize_moby_launch_motion(void *, int, void *, void *, int);
 extern void spawn_rocket_explosion_and_debris(void *, int, int, int);
-extern float step_angle_toward_target(float *, int, float, float);
 
 /* Rocket guidance, route traversal, launch effects, and destruction. */
 void update_rocket(M46 *m) {
@@ -2924,7 +2918,7 @@ void func_L08_002DF8A0_r(char *moby, int a, int n, int flag) {
         }
     }
 }
-extern float randf_sym(float lo, float hi);
+
 extern float vec_length_xy(void *);
 extern int coll_sphere(float, void *, int, void *);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,

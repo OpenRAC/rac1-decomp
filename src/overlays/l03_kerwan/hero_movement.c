@@ -41,7 +41,6 @@ extern struct LedgeSpot *kerwan_rails MACRO_ADDR;
 extern s32 registered_path_count MACRO_ADDR;
 
 extern f32 vec_distance_xy(void *, void *);
-extern s32 find_nearest_path_point(void *, void *, void *, s32 *, f32 *, s32, f32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/hero/00205830.c, FUN_L03_00205830. */
 s32 find_first_nearby_registered_path(Vec4 *from, s32 **outOwner, Vec4 *to, s32 *outI, f32 *outF, s32 *outKind,
@@ -144,22 +143,17 @@ extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern int PartType34Spawn(void *, void *, float, float);
 
-extern int rand_range(int, int);
-
 extern float ApproachValue(float *, float, float);
 
 extern void Hero_SetTiltSpringParams(float, float);
 
 extern void ClampVectorLength(void *, float);
 
-extern int solve_quadratic_equation(float *, float *, float, float, float);
-extern float step_angle_toward_target(float *, int, float, float);
 extern float vec_distance_xy(void *, void *);
 
 extern float gravity_z(float *);
 extern float Spring(float *, float *, float, float, float, float);
 
-extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern void update_hero_target_heading(float, float, float);
 
@@ -177,12 +171,10 @@ extern void HeroOffsetAlongViewZ(float *, float *, float);
 extern int coll_line(void *, void *, int, int, int);
 extern void transform_hero_local_offset_to_world(float *, float, float, float);
 extern int is_moby_in_class_range_500_to_540(int);
-extern void PostHitMessage(void *, int, int, void *, void *, float);
 
-extern float randf_sym(float, float);
 extern int offset_path_index(void *, int, int, int);
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
-extern int find_nearest_path_point(void *, void *, void *, int *, float *, int, float, float, float);
+
 extern void spawn_color_decaying_effect_particle(char *, char *, int);
 
 struct HeroL03UpdateStatePhysicsVars {};
