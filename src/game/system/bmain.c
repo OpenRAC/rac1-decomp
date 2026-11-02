@@ -1,4 +1,5 @@
 #include "common.h"
+#include "structs/memcard.h"
 #include "structs/disc.h"
 #include "structs/pad.h"
 #include "structs/misc.h"
@@ -75,8 +76,8 @@ void start_level(int level) {
     music_Stop();
     snd_StreamSafeCdSync(0);
     for (;;) {
-        char *ld = memory_card_state;
-        if (*(int *)(ld + 0xDC) < 3 && *(int *)(ld + 0xE4) < 0) {
+        struct MemoryCardState *ld = (struct MemoryCardState *)memory_card_state;
+        if (ld->state < 3 && ld->err < 0) {
             break;
         }
         memcard_update_state();

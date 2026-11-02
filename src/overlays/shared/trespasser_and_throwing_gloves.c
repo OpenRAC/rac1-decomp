@@ -670,7 +670,7 @@ extern CollisionHit coll_hit_result_r __asm__("D_L00_00173F40");
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002bffa8.c, FUN_L00_002c1778. */
 void update_trespasser_pickup(void *mv) {
     Moby *m = (Moby *)mv;
-    unsigned char *P;
+    struct Hero *P;
     switch (m->state) {
         case 0:
             func_00214358_C2A80(&m->pos, 0, 0.5f);
@@ -684,10 +684,10 @@ void update_trespasser_pickup(void *mv) {
             int t = level_frame_counter_r;
             m->rot.z = r;
             if (t % 10 == 0) {
-                P = g_hero_r;
-                if (*(int *)(P + 0x22A8)) {
-                    if (vec_distance_xy(&m->pos, P + 0x80) < 1.0f) {
-                        if (FastAbsF(m->pos.z - *(float *)(P + 0x88)) < 2.0f) {
+                P = (struct Hero *)g_hero_r;
+                if (P->health.hp) {
+                    if (vec_distance_xy(&m->pos, &P->motion) < 1.0f) {
+                        if (FastAbsF(m->pos.z - P->motion.pos.f[2]) < 2.0f) {
                             grant_inventory_item(0x1A, 1);
                             m->state = 2;
                         }

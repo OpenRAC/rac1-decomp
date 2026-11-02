@@ -1215,6 +1215,8 @@ extern int random_integer_below(int);
 extern int scale_ticks(int);
 
 // Records a new target moby and rolls a timer, unless it is the same moby or a check blocks it.
+struct SetSentrybotAttentionTargetVars {};
+
 void set_sentrybot_attention_target(char *a, char *b) {
     char *d;
     if (a != b) {
@@ -2378,7 +2380,7 @@ void update_hero_seeking_group_moby(char *moby) {
     float pb[4];
     GroupMobyData *data;
     char *callback_frame_stamp;
-    char *hero_base;
+    struct Hero *hero_base;
     float fa;
     float fb;
     float yaw_cosine;
@@ -2449,11 +2451,11 @@ s2:
     return;
 
 s3:
-    hero_base = (char *)&g_hero;
-    fa = *(float *)(hero_base + 0x80) - ((struct Moby *)moby)->pos.x;
-    fb = *(float *)(hero_base + 0x84) - ((struct Moby *)moby)->pos.y;
+    hero_base = (struct Hero *)((char *)&g_hero);
+    fa = hero_base->motion.pos.f[0] - ((struct Moby *)moby)->pos.x;
+    fb = hero_base->motion.pos.f[1] - ((struct Moby *)moby)->pos.y;
     yaw = FastAddRots(data->yaw, fast_atan2(fa, fb));
-    target_z = *(float *)(hero_base + 0xC8);
+    target_z = hero_base->motion.near_ground_point.f[2];
     yaw_cosine = FastCos(yaw);
     va[0] = yaw_cosine * (*(float *)&quartu_hero_seeker_speed * g_frame_time);
     yaw_sine = FastSin(yaw);

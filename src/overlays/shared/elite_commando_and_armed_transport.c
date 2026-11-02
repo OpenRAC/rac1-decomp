@@ -151,13 +151,13 @@ char *spawn_blarg_elite_commando_rocket(char *owner, float *pos, char *vec) {
         struct EliteRocketVars *data;
         float a;
         float b;
-        ((unsigned char *)moby)[0x30] = 0xFF;
+        ((struct Moby *)moby)->update_dist = 0xFF;
         ((Moby *)moby)->draw_dist = 0xFF;
-        moby[0x31] = 1;
-        moby[0x20] = 0;
-        *(unsigned long *)(moby + 0x38) = *(unsigned long *)(owner + 0x38);
+        ((struct Moby *)moby)->visible = 1;
+        ((struct Moby *)moby)->state = 0;
+        *(unsigned long *)&((struct Moby *)moby)->spawn_frame = *(unsigned long *)(owner + 0x38);
         ((Moby *)moby)->scale = ((Moby *)moby)->scale * 3.0f;
-        qcopy(moby + 0x10, vec);
+        qcopy(&((struct Moby *)moby)->pos, vec);
         data = (struct EliteRocketVars *)((Moby *)moby)->pvars;
         qcopy(&data->pos, pos);
         data->timer = scale_ticks(0xF0);
@@ -167,7 +167,7 @@ char *spawn_blarg_elite_commando_rocket(char *owner, float *pos, char *vec) {
         a = vec_length_xy(pos);
         b = fast_atan2(a, pos[2]);
         ((Moby *)moby)->rot.y = -b;
-        moby[0x31] = 0;
+        ((struct Moby *)moby)->visible = 0;
         ((Moby *)moby)->flags |= 1;
     }
     return moby;

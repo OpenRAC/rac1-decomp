@@ -747,19 +747,19 @@ char *create_moby_with_particles(int owner, float *position, float *rotation, in
         *(int *)(data + 0x14) = owner;
         *(int *)(data + 0x10) = value;
         set_moby_color(moby, 0xa0, 0xa0, 0xa0);
-        *(int *)(moby + 0x40) = 0;
+        *(int *)&((struct Moby *)moby)->rot.x = 0;
         ((Moby *)moby)->update_dist = 0xff;
         ((Moby *)moby)->draw_dist = 0xff;
         ((Moby *)moby)->visible = 1;
         ((Moby *)moby)->rot.y = -fast_atan2(vec_length_xy(rotation_copy), rotation[2]);
         ((Moby *)moby)->rot.z = fast_atan2(rotation[0], rotation[1]);
-        qcopy(moby + 0x10, position_copy);
+        qcopy(&((struct Moby *)moby)->pos, position_copy);
         qcopy(data, rotation_copy);
         if (batalia_frame_count & 1)
             *(int *)(data + 0x1c) = 1;
         else
             *(int *)(data + 0x1c) = -1;
-        euler_to_matrix(matrix, moby + 0x40);
+        euler_to_matrix(matrix, &((struct Moby *)moby)->rot);
         i = 0;
         if ((float)i < (*(float *)&homing_shot_launch_puffs)) {
             /* Retail intentionally uses the matrix third row as the particle input. */
@@ -780,7 +780,7 @@ char *create_moby_with_particles(int owner, float *position, float *rotation, in
                 velocity[3] = (*(float *)&moby_creation_particle_primary_motion_w_gp);
                 offset[3] = (*(float *)&moby_creation_particle_secondary_motion_w_gp);
                 i++;
-                PartType21Spawn(moby + 0x10, velocity_ptr, (*(int *)&homing_shot_flash_color_a),
+                PartType21Spawn(&((struct Moby *)moby)->pos, velocity_ptr, (*(int *)&homing_shot_flash_color_a),
                                 (*(int *)&homing_shot_flash_color_b), rand_range(scale_ticks(10), scale_ticks(20)), 1,
                                 20000.0f);
                 a = truncate_float_to_s32(multiply_global_factor(random_float_between(
@@ -789,8 +789,8 @@ char *create_moby_with_particles(int owner, float *position, float *rotation, in
                     (float)(*(int *)&homing_shot_spark_time_b), (float)(*(int *)&homing_shot_spark_time_b) * 1.2f)));
                 c = truncate_float_to_s32(multiply_global_factor(random_float_between(
                     (float)(*(int *)&homing_shot_spark_time_c), (float)(*(int *)&homing_shot_spark_time_c) * 1.5f)));
-                PartType02Spawn(moby + 0x10, velocity_ptr, offset_ptr, (*(int *)&homing_shot_launch_lower),
-                                (*(int *)&homing_shot_launch_upper), a, b, c, -1);
+                PartType02Spawn(&((struct Moby *)moby)->pos, velocity_ptr, offset_ptr,
+                                (*(int *)&homing_shot_launch_lower), (*(int *)&homing_shot_launch_upper), a, b, c, -1);
             } while ((float)i < (*(float *)&homing_shot_launch_puffs));
         }
         if (g_current_level_index == LEVEL_HOVEN)

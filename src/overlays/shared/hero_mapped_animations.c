@@ -101,8 +101,8 @@ int lookup_hero_slot3_animation_key(int key, int *out) {
    the block pointer is re-formed for each stage, as retail does. */
 void blend_hero_slot3_mapped_animation_pair(int id, int arg, float t) {
     Hero *base = (Hero *)g_hero;
-    char *blk2;
-    char *blk3;
+    struct Hero *blk2;
+    struct Hero *blk3;
     char *a;
     char *b;
     int seq0;
@@ -126,9 +126,9 @@ void blend_hero_slot3_mapped_animation_pair(int id, int arg, float t) {
         MobyBlendAnimation(b, seq1, arg, (int)t);
         return;
     }
-    blk2 = g_hero;
+    blk2 = (struct Hero *)g_hero;
     ok = 1;
-    if (*(int *)(blk2 + 0x208C) == 0 && lookup_hero_slot3_animation_key(*(unsigned char *)(a + 0x53), &id) != 0) {
+    if (blk2->state.control_mode == 0 && lookup_hero_slot3_animation_key(*(unsigned char *)(a + 0x53), &id) != 0) {
         if (id == 0) {
             ok = 0;
         }
@@ -137,8 +137,8 @@ void blend_hero_slot3_mapped_animation_pair(int id, int arg, float t) {
         return;
     }
     seq = scale_ticks(7);
-    blk3 = g_hero;
-    if (*(int *)(blk3 + 0x2090) == 8 && hero_slot_item_id(3) == 2) {
+    blk3 = (struct Hero *)g_hero;
+    if (blk3->state.prev == 8 && hero_slot_item_id(3) == 2) {
         seq = scale_ticks(0x13);
     }
     if (*(unsigned char *)(a + 0x53) != 1) {
@@ -685,8 +685,8 @@ typedef struct {
    before the last test. */
 void HeroSetObjectFlags(void) {
     Hero *base = (Hero *)g_hero;
-    char *tail;
-    char *last;
+    struct Hero *tail;
+    struct Hero *last;
     char *obj;
     int i;
 
@@ -699,20 +699,20 @@ void HeroSetObjectFlags(void) {
             *(unsigned short *)(((ObjPair *)base->items)[i].b + 0x34) |= 1;
         }
     }
-    tail = g_hero;
-    obj = *(char **)(tail + 0x118C);
+    tail = (struct Hero *)g_hero;
+    obj = *(char **)&tail->items[3].unk0C;
     if (obj != 0) {
         *(unsigned short *)(obj + 0x34) |= 1;
     }
-    if (*(unsigned char *)(tail + 0x20A4) == 1) {
-        obj = *(char **)(tail + 0x1624);
+    if (tail->vehicle_mode == 1) {
+        obj = *(char **)&tail->unk1624;
         if (obj != 0) {
             *(unsigned short *)(obj + 0x34) |= 1;
         }
     }
-    last = g_hero;
-    if (*(int *)(last + 0x10B8) == 8) {
-        obj = ((ObjPair *)(last + 0x1090))[0].a;
+    last = (struct Hero *)g_hero;
+    if (last->items[0].item_id == 8) {
+        obj = ((ObjPair *)last->items)[0].a;
         if (obj != 0 && cinematic_mode == 0 && *(unsigned char *)(obj + 0x20) != 0) {
             *(unsigned short *)(obj + 0x34) &= ~0x41;
         }
@@ -727,9 +727,9 @@ void HeroSetObjectFlags(void) {
    block, as retail re-forms it from the saved %hi before each one. */
 void HeroClearObjectFlags(void) {
     Hero *base = (Hero *)g_hero;
-    char *blk2;
-    char *blk3;
-    char *blk4;
+    struct Hero *blk2;
+    struct Hero *blk3;
+    struct Hero *blk4;
     char *obj;
     int i;
 
@@ -742,35 +742,34 @@ void HeroClearObjectFlags(void) {
             *(unsigned short *)(((ObjPair *)base->items)[i].b + 0x34) &= ~1;
         }
     }
-    blk2 = g_hero;
-    obj = *(char **)(blk2 + 0x118C);
+    blk2 = (struct Hero *)g_hero;
+    obj = *(char **)&blk2->items[3].unk0C;
     if (obj != 0) {
         *(unsigned short *)(obj + 0x34) &= ~1;
     }
-    if (*(unsigned char *)(blk2 + 0x20A4) == 1) {
-        obj = *(char **)(blk2 + 0x1624);
+    if (blk2->vehicle_mode == 1) {
+        obj = *(char **)&blk2->unk1624;
         if (obj != 0) {
             *(unsigned short *)(obj + 0x34) &= ~1;
         }
     }
-    blk3 = g_hero;
-    if (*(short *)(blk3 + 0x22D8) != 0) {
-        obj = *(char **)(blk3 + 0x1180);
+    blk3 = (struct Hero *)g_hero;
+    if (blk3->pack_disabled != 0) {
+        obj = *(char **)&blk3->items[3].moby;
         if (obj != 0) {
             *(unsigned short *)(obj + 0x34) |= 0x41;
         }
-        obj = *(char **)(blk3 + 0x1184);
+        obj = *(char **)&blk3->items[3].moby2;
         if (obj != 0) {
             *(unsigned short *)(obj + 0x34) |= 0x41;
         }
-        obj = *(char **)(blk3 + 0x118C);
+        obj = *(char **)&blk3->items[3].unk0C;
         if (obj != 0) {
             *(unsigned short *)(obj + 0x34) |= 0x41;
         }
     }
-    blk4 = g_hero;
-    if ((*(unsigned char *)(blk4 + 0x20AE) != 0 && *(int *)(blk4 + 0x10B8) == 8) ||
-        *(unsigned char *)(blk4 + 0x20AF) != 0) {
+    blk4 = (struct Hero *)g_hero;
+    if ((blk4->unk20AE != 0 && blk4->items[0].item_id == 8) || blk4->unk20AF != 0) {
         Hero *blk5 = (Hero *)g_hero;
 
         obj = ((ObjPair *)blk5->items)[0].a;
@@ -833,7 +832,7 @@ typedef struct {
    the base after it, which gives retail's base derived from that
    address. */
 float compute_hero_ground_aligned_heading(void) {
-    char *base;
+    struct Hero *base;
     float m[16] __attribute__((aligned(16)));
     float dir[4] __attribute__((aligned(16)));
     float rz[4] __attribute__((aligned(16)));
@@ -846,13 +845,13 @@ float compute_hero_ground_aligned_heading(void) {
     dir[1] = FastSin(zero);
     dir[2] = zero;
     euler_to_matrix(m, g_hero + 0x90);
-    base = g_hero;
+    base = (struct Hero *)g_hero;
     transform_vector(dir, dir, m);
-    if (*(float *)(base + 0x270) != zero || *(float *)(base + 0x274) != zero) {
-        up = *(QVec *)(base + 0x270);
+    if (base->ground_normal.f[0] != zero || base->ground_normal.f[1] != zero) {
+        up = *(QVec *)&base->ground_normal;
         clear_u64_value(rz);
         clear_u64_value(ry);
-        rz[2] = -fast_atan2(*(float *)(base + 0x270), *(float *)(base + 0x274));
+        rz[2] = -fast_atan2(base->ground_normal.f[0], base->ground_normal.f[1]);
         euler_to_matrix(m, rz);
         transform_vector(dir, dir, m);
         transform_vector(&up, &up, m);
@@ -1249,14 +1248,14 @@ extern void HeroEnterMoveState(int, int);
    and the base is named after it, which gives retail's base derived back
    from the copy's address; the stores are in reverse. */
 void request_hero_target_pose(float *pos, int arg, float t) {
-    char *base;
+    struct Hero *base;
     int state;
 
     qcopy(g_hero + 0x1640, pos);
-    base = g_hero;
-    state = *(int *)(base + 0x2084);
-    *(int *)(base + 0x1650) = arg;
-    *(float *)(base + 0x164C) = t;
+    base = (struct Hero *)g_hero;
+    state = base->state.current;
+    base->unk1650 = arg;
+    base->target_pose.f[3] = t;
     if (state < 0x65 || state > 0x67) {
         HeroEnterMoveState(HERO_STATE_APPROACH_TARGET_POSE, 1);
     }
@@ -1542,7 +1541,7 @@ extern void animate_hero_slot4_and_slot5_visuals(void);
 /* in state 2 or 6: flag the matching mobys, update, then clear bit 0 of three mobys */
 void update_hero_slot4_and_slot5_mobys(int a0) {
     char *d;
-    char *base;
+    struct Hero *base;
     char *o;
     char *t;
     int i;
@@ -1557,16 +1556,16 @@ void update_hero_slot4_and_slot5_mobys(int a0) {
         update_hero_world_matrices(a0);
         update_hero_item_mobys();
         animate_hero_slot4_and_slot5_visuals();
-        base = g_hero;
-        t = *(char **)(base + 0x11D0);
+        base = (struct Hero *)g_hero;
+        t = *(char **)&base->items[4].moby;
         if (t != 0) {
             *(unsigned short *)(t + 0x34) &= 0xFFFE;
         }
-        t = *(char **)(base + 0x11D4);
+        t = *(char **)&base->items[4].moby2;
         if (t != 0) {
             *(unsigned short *)(t + 0x34) &= 0xFFFE;
         }
-        t = *(char **)(base + 0x1220);
+        t = *(char **)&base->items[5].moby;
         if (t != 0) {
             *(unsigned short *)(t + 0x34) &= 0xFFFE;
         }

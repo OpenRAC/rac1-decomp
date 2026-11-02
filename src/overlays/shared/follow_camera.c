@@ -129,15 +129,15 @@ extern u8 *moby_array_start_r __asm__("D_L00_00160098") MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/002df730.c, FUN_L00_002e02e0. */
 s32 test_hydrodisplacer_activation_flag(void) {
-    char *base;
+    struct Hero *base;
     u8 *tbl;
     s32 v;
     s32 idx;
     u8 flags;
-    base = g_hero;
+    base = (struct Hero *)g_hero;
     tbl = moby_array_start_r;
-    v = *(s32 *)(base + 0x2FC);
-    flags = (u8)base[0x20B0];
+    v = *(s32 *)&base->ground_moby;
+    flags = (u8) * (char *)&base->hydro_tank_full;
     tbl += *(s32 *)*(s32 *)((u8 *)v + 0x78) << 8;
     if (!flags) {
         if (tbl[0xBC] & 2)
@@ -2474,7 +2474,7 @@ void rebuild_follow_camera_pose(int snap) {
     if (snap) {
         float offset[4], part[4], basis[12], delta[4], start[4];
         float length;
-        char *hero = g_hero;
+        struct Hero *hero = (struct Hero *)g_hero;
         char *hero2, *hero3;
         part[0] = -orbit->distance;
         part[1] = 0.0f;
@@ -2486,12 +2486,12 @@ void rebuild_follow_camera_pose(int snap) {
         FastVecAdd(&cam->pos, target, offset);
         FastVecScale(rise, &target->moby->rot_row2, target->eye_height);
         FastVecAdd(eye, target, rise);
-        if (coll_line(eye, &cam->pos, mask, *(int *)(hero + 0x2080), 0)) {
+        if (coll_line(eye, &cam->pos, mask, *(int *)&hero->moby, 0)) {
             if (vec_distance_xy(collision_hit_point_a, eye) < 0.001f)
                 mask = 0x96;
         }
         hero2 = g_hero;
-        if (coll_line(eye, &cam->pos, mask, *(int *)(hero2 + 0x2080), 0)) {
+        if (coll_line(eye, &cam->pos, mask, *(int *)&((struct Hero *)hero2)->moby, 0)) {
             FastVecSub(delta, (float *)collision_hit_point_a, eye);
             length = FastVecLength(delta);
             if (length == 0.0f) {

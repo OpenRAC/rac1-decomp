@@ -1,4 +1,5 @@
 #include "common.h"
+#include "structs/memcard.h"
 #include "callees.h"
 #include "structs/records.h"
 #include "structs/misc.h"
@@ -1668,7 +1669,7 @@ int memcard_Save(int slot, int flags) {
     save_map_coverage(level_map_coverage + (g_current_level_index_m << 11));
     {
         char *p = memory_card_state;
-        int active = *(int *)(p + 0xC8);
+        int active = ((struct MemoryCardState *)p)->xC8;
         int mask;
 
         if (active == -1 || *(int *)(p + active * 0xC0 + 0x14) < 0) {
@@ -1682,13 +1683,13 @@ int memcard_Save(int slot, int flags) {
         if (slot == 0) {
             mode_freeze_flags |= 0x200;
         }
-        if (*(int *)(p + 0xDC) >= 3) {
+        if (((struct MemoryCardState *)p)->state >= 3) {
             goto done;
         }
-        if (*(int *)(p + 0xE4) >= 0) {
+        if (((struct MemoryCardState *)p)->err >= 0) {
             goto done;
         }
-        *(int *)(p + 0xD0) = g_current_level_index_m;
+        ((struct MemoryCardState *)p)->xD0 = g_current_level_index_m;
         saved = 0;
         if (flags >= 0) {
             g_current_level_index_m = flags;
@@ -1708,19 +1709,19 @@ int memcard_Save(int slot, int flags) {
         memcpy(names + *(int *)(q + 0x14) * 0x1C, save_clock_time, 8);
         *(int *)(q + *(int *)(q + 0x14) * 0x1C + 0x28) = D_0015EF20;
         memcard_PrepData(memcard_game_data_buffer, 0, mc_gamedata);
-        memcard_PrepData(memcard_level_data_buffer, *(int *)(q + 0xD0), mc_leveldata);
+        memcard_PrepData(memcard_level_data_buffer, ((struct MemoryCardState *)q)->xD0, mc_leveldata);
         if (flags >= 0) {
             level_visit_state[g_current_level_index_m] = saved;
-            g_current_level_index_m = *(int *)(q + 0xD0);
+            g_current_level_index_m = ((struct MemoryCardState *)q)->xD0;
         }
-        if (*(int *)(q + 0xE4) < 0) {
-            *(int *)(q + 0xE4) = 0xF;
-            *(int *)(q + 0xE8) = *(int *)(q + 0xC8);
+        if (((struct MemoryCardState *)q)->err < 0) {
+            ((struct MemoryCardState *)q)->err = 0xF;
+            ((struct MemoryCardState *)q)->errCard = ((struct MemoryCardState *)q)->xC8;
         }
     }
 done: {
-    char *r = memory_card_state;
-    return *(int *)(r + 0xE4) == 0xF;
+    struct MemoryCardState *r = (struct MemoryCardState *)memory_card_state;
+    return r->err == 0xF;
 }
 }
 __asm__(".section .text\n\tnop\n");

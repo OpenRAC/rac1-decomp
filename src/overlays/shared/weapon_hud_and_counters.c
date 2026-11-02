@@ -948,7 +948,7 @@ extern void Hud_UpdateCounter(HudElem *);
    it restarts the timer at 30 + scale_ticks(120); otherwise it caps it
    at 30. */
 void update_hud_counter_cap_and_visibility(HudElem *e) {
-    char *base;
+    struct Hero *base;
 
     Hud_UpdateCounter(e);
     if (gGoldSuckCannon != 0) {
@@ -956,8 +956,8 @@ void update_hud_counter_cap_and_visibility(HudElem *e) {
     } else {
         e->unk08 = 5;
     }
-    base = g_hero;
-    if (*(int *)(base + 0x10B8) == 9 && *(unsigned char *)(base + 0x20A4) == 0) {
+    base = (struct Hero *)g_hero;
+    if (base->items[0].item_id == 9 && base->vehicle_mode == 0) {
         e->unk7C = scale_ticks(0x78) + 0x1E;
     } else if (e->unk7C > 0x1E) {
         e->unk7C = 0x1E;
@@ -2227,7 +2227,7 @@ int draw_hud_bolt_exclamation_panel(HudElem *m) {
     int x, y, panel_right, panel_left, slide, alpha, text_alpha;
     int color, shadow, period, text_x, text_y;
     float open, text, pulse, scaled_text;
-    char *g = g_hero;
+    struct Hero *g = (struct Hero *)g_hero;
 
     {
         int panel_y = g_screen_extent[1] - 42;
@@ -2237,9 +2237,9 @@ int draw_hud_bolt_exclamation_panel(HudElem *m) {
             y = alternate_y;
     }
     x = m->unk50;
-    if (*(unsigned char *)(g + 0x20A4) == 2)
+    if (g->vehicle_mode == 2)
         return m->w;
-    if (*(int *)(g + 0x2084) == 50)
+    if (g->state.current == 50)
         return m->w;
     q = &m->cnt[0];
     if (q[0] == 0)

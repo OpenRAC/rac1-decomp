@@ -75,13 +75,13 @@ extern void *camera_cross_axis_ptr;
 void initialize_hero_aligned_camera_pose(char *m) {
     float a[4];
     float b[4];
-    char *g = g_hero;
+    struct Hero *g = (struct Hero *)g_hero;
     Camera *p;
     int c;
     void *q;
     char *d;
-    vec_scale_to_length(a, *(char **)(g + 0x2080) + 0xE0, 1.0f);
-    c = *(unsigned char *)(g + 0x20A4);
+    vec_scale_to_length(a, *(char **)&g->moby + 0xE0, 1.0f);
+    c = g->vehicle_mode;
     if (c == 2) {
         FastVecScale(b, a, 9.5f);
     } else if (c == 1) {
@@ -773,6 +773,8 @@ extern char player_camera_c[] __asm__("D_L00_00166D80") NOT_SDA;
 
 // steps a follow-camera object toward a target moby, easing its angle and position or snapping to a goal
 // Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay_vendor_002e9010.c, FUN_L00_002eb648.
+struct UpdateOrbitCameraFromTargetMobyVars {};
+
 int update_orbit_camera_from_target_moby(char *a, char *t) {
     u128 v[1];
     u128 w[1];
@@ -1259,8 +1261,8 @@ done:
 extern char g_hero[];
 /* Update check that sets state 3 when a global value no longer matches the moby's. */
 void conditionally_set_camera_state_three(char *a) {
-    char *g = g_hero;
-    if (*(int *)(g + 0x2284) != *(short *)(a + 0x86) && *(int *)(g + 0x2084) != 6) {
+    struct Hero *g = (struct Hero *)g_hero;
+    if (g->unk2284 != *(short *)(a + 0x86) && g->state.current != 6) {
         *(char *)(a + 0x7D) = 0;
         *(short *)(a + 0x7E) = 3;
     }

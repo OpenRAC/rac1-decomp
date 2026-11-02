@@ -7844,14 +7844,14 @@ void *create_menu_preview_moby(int arg0) {
     }
     o = (char *)CreateMoby(arg0);
     if (o != 0) {
-        *(unsigned char *)(o + 0x30) = 0xFF;
-        *(short *)(o + 0x32) = 0xFF;
-        *(char *)(o + 0x20) = 0;
-        *(char *)(o + 0x31) = 1;
+        ((struct Moby *)o)->update_dist = 0xFF;
+        ((struct Moby *)o)->draw_dist = 0xFF;
+        ((struct Moby *)o)->state = 0;
+        ((struct Moby *)o)->visible = 1;
         refresh_moby_spatial_bounds(o);
         pack_render_command_fields(o, 0x202020, 0xE, 0xE, 0);
-        if (*(unsigned char *)(*(int *)(o + 0x24) + 6) != 0) {
-            *(char *)(o + 0x73) = 0x18;
+        if (*(unsigned char *)(*(int *)&((struct Moby *)o)->pclass + 6) != 0) {
+            ((struct Moby *)o)->unk73 = 0x18;
         }
     }
     return o;

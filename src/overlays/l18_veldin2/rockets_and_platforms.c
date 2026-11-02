@@ -294,13 +294,13 @@ char *create_class_29_moby(char *owner, float *pos, float *vec, int arg3) {
     char *moby = CreateMoby(0x29);
     if (moby != 0) {
         struct SeekerBoltVars *data;
-        ((unsigned char *)moby)[0x30] = 0xFF;
+        ((struct Moby *)moby)->update_dist = 0xFF;
         ((Moby *)moby)->draw_dist = 0xFF;
-        moby[0x31] = 1;
-        moby[0x20] = 0;
-        *(long *)(moby + 0x38) = *(long *)(owner + 0x38);
+        ((struct Moby *)moby)->visible = 1;
+        ((struct Moby *)moby)->state = 0;
+        *(long *)&((struct Moby *)moby)->spawn_frame = *(long *)(owner + 0x38);
         ((Moby *)moby)->scale = ((Moby *)moby)->scale * 3.0f;
-        qcopy(moby + 0x10, pos);
+        qcopy(&((struct Moby *)moby)->pos, pos);
         data = (struct SeekerBoltVars *)((Moby *)moby)->pvars;
         qcopy(&data->vel_x, vec);
         data->timer = scale_ticks(0xF0);
@@ -761,12 +761,12 @@ void func_L18_002D7310_r(unsigned char *m) __asm__("func_L18_002D7310");
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l18/gameplay/entities/002a7220.c, FUN_L18_002d5f20. */
 void func_L18_002D7310_r(unsigned char *m) {
     struct LaunchedMobyVars *d = (struct LaunchedMobyVars *)((Moby *)m)->pvars;
-    char *g;
+    struct Hero *g;
     int hit;
     if (((Moby *)m)->state == 5 || ((Moby *)m)->state == 0 || ((Moby *)m)->state == 4)
         return;
-    g = g_hero_r;
-    if (*(int *)(g + 0x2084) == 0x72) {
+    g = (struct Hero *)g_hero_r;
+    if (g->state.current == 0x72) {
         ((Moby *)m)->state = 5;
         *(short *)&((Moby *)m)->flags = (*(short *)&((Moby *)m)->flags | 0x41) & ~0x1000;
         *(int *)&((Moby *)m)->collision = 0;
@@ -774,7 +774,7 @@ void func_L18_002D7310_r(unsigned char *m) {
     }
     hit = MobyGetHitMessage(m, 0x330000, 0);
     ((Moby *)m)->hit_slot = 0xFF;
-    if (*(unsigned char **)(g + 0x23C) == m || *(unsigned char **)(g + 0x240) == m || d->landed != 0) {
+    if (g->coll_hit_moby == m || *(unsigned char **)&g->unk240 == m || d->landed != 0) {
         spawn_explosion_r(m, veldin2_zero_vec_r, 0, 1.5f, 1.0f, 0x14, 6, 0x20, 3.0f, 1.5f, 9.0f, 1.5f, 1, 0.0f, 1, 0,
                           -1, 0);
         ((Moby *)m)->state = 5;
@@ -785,7 +785,7 @@ void func_L18_002D7310_r(unsigned char *m) {
     if (fast_dec_timer_r(&d->timer) == 0 && hit == 0) {
         if (((Moby *)m)->state != 1)
             return;
-        if (!(vec_distance_xy_r(m + 0x10, g + 0x80) < 2.0f))
+        if (!(vec_distance_xy_r(m + 0x10, &g->motion) < 2.0f))
             return;
     }
     spawn_explosion_r(m, veldin2_zero_vec_r, 0, 0.0f, 0.0f, 5, 2, 8, 1.0f, 0.5f, 9.0f, 0.5f, 1, 0.0f, 0, 0, -1, 0);

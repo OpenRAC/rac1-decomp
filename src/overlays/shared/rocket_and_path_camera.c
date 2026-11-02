@@ -164,7 +164,7 @@ void rocket_819_update(Moby *m) {
     float aim[4] __attribute__((aligned(16)));
     float speed, a, b, s, r1, r2, t, yaw, pitch, dist;
     char *p;
-    unsigned char *g;
+    struct Hero *g;
     char *tg;
     float h;
     char *tb;
@@ -175,15 +175,15 @@ void rocket_819_update(Moby *m) {
             if (d->target == 0 || (unsigned char)d->target[0x20] == 0xFE || (unsigned char)d->target[0x20] == 0xFD)
                 m->state = 2;
             p = (char *)&m->pos;
-            g = g_hero;
-            if ((unsigned char)(g[0x20A4] - 1) < 2 && (tg = d->target) == *(char **)(g + 0x2080)) {
+            g = (struct Hero *)g_hero;
+            if ((unsigned char)(g->vehicle_mode - 1) < 2 && (tg = d->target) == *(char **)&g->moby) {
                 speed = FastVecLength(d);
                 qcopy(tp, tg + 0x10);
                 h = ProbeGroundHeight(tp, 0, 0.5f) + 0.2f;
-                *(Q_cc2e8 *)hv = *(Q_cc2e8 *)(g + 0x100);
+                *(Q_cc2e8 *)hv = *(Q_cc2e8 *)&g->motion.displacement;
                 hv[2] = 0.0f;
                 tp[2] = h;
-                if (g[0x20A4] == 2)
+                if (g->vehicle_mode == 2)
                     tp[2] = h + 2.0f;
                 FastVecSub(diff, tp, p);
                 a = speed * speed - lensq_cc2e8(hv);

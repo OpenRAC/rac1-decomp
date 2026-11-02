@@ -1,4 +1,5 @@
 #include "common.h"
+#include "structs/memcard.h"
 #include "structs/hero.h"
 #include "callees.h"
 #include "structs/records.h"
@@ -781,12 +782,12 @@ void update_mode_freeze(void) {
             p1 = PAD;
             if (p1 & 0x10) {
                 h1 = g_hero;
-                m = *(char **)(h1 + 0x2080);
+                m = *(char **)&((struct Hero *)h1)->moby;
                 m[0x31] = 0;
                 *(int *)(m + 0x94) = 0;
                 *(unsigned short *)(m + 0x34) |= 1;
                 Profile_Mark();
-                noop_callback_k(h1 + 0x1D00, h1 + 0x1D10, 0, 1);
+                noop_callback_k(((struct Hero *)h1)->saved_pos_rot, h1 + 0x1D10, 0, 1);
                 g_game_mode = 0;
             } else if (p1 & 0x40) {
                 g_game_mode = 0;

@@ -2525,12 +2525,12 @@ void *spawn_tracked_class_5f3_moby(int unused, float *pos) {
     char *m = CreateMoby(0x5F3);
     if (m != 0 && *(int *)&tracked_class_5f3_moby == 0) {
         char *d;
-        m[0x20] = 0;
+        ((struct Moby *)m)->state = 0;
         ((Moby *)m)->update_dist = 0xFF;
         ((Moby *)m)->draw_dist = 0xFF;
-        m[0x31] = 1;
+        ((struct Moby *)m)->visible = 1;
         d = ((char *)((Moby *)m)->pvars);
-        *(u128 *)(m + 0x10) = *(u128 *)pos;
+        *(u128 *)&((struct Moby *)m)->pos = *(u128 *)pos;
         level_screen_fade_rgba = 0xFF;
         level_screen_overlay_rgba = 0xFFFFFF;
         level_screen_overlay_gs_reg = 0x1F00000042L;

@@ -1390,11 +1390,11 @@ extern float sand_mouse_move_ctl_probe_height;
 void sand_mouse_compute_target(char *a, char *m) {
     Vs t0;
     Vs t1;
-    char *g = g_hero;
-    vec_scale_to_length(&t0, *(char **)(g + 0x2080) + 0xD0, 1.1f);
-    vec_scale_to_length(&t1, *(char **)(g + 0x2080) + 0xE0, 1.0f);
+    struct Hero *g = (struct Hero *)g_hero;
+    vec_scale_to_length(&t0, *(char **)&g->moby + 0xD0, 1.1f);
+    vec_scale_to_length(&t1, *(char **)&g->moby + 0xE0, 1.0f);
     FastVecAdd(m, &t0, &t1);
-    FastVecAdd(m, m, g + 0x80);
+    FastVecAdd(m, m, &g->motion);
     if (*(int *)(m + 0x68) == 0) {
         if (probe_vertical_ground_collision((Vs *)m, (int)a, 0, sand_mouse_move_ctl_probe_height, 2.0f)) {
             *(float *)(m + 8) = novalis_coll_hit_point_z;
