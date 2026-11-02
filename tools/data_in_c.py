@@ -6,6 +6,9 @@ Data in C, with no retail bytes in the repository (LEGAL.md).
   python3 tools/data_in_c.py objects    # the data objects, for Makefile.sn
   python3 tools/data_in_c.py check      # every row has its source file, and its source names it
   python3 tools/data_in_c.py add D_00165580:src/game/ui/pause.c ...   # give blocks a file
+  python3 tools/data_in_c.py write-out  # write pointer tables out as C, and type float blocks
+  python3 tools/data_in_c.py set-type D_001DD568=StashBlock ...      # give blocks a type from config/data_types.tsv
+  python3 tools/data_in_c.py rewrite    # write every source file again from the table
 
 A file in src/data/ gives a block of retail's data its type, its name and the file that owns it. Its values come from
 an include file generated locally from your baserom, so they are never committed:
@@ -18,13 +21,19 @@ The file is compiled on its own, and code keeps its extern. So moving data here 
 The block's own section goes in the hole cut for it in the data blob (tools/jump_tables.py, tools/split_data_s.py), and
 tools/check_image.py proves the bytes are retail's.
 
-config/data_in_c.tsv lists the blocks: label, element type, source file.
+A table of only symbols and zeros is written out in its file, because symbol names are not retail's bytes.
+A block of only zeros needs no values at all, so it is plain C too.
+
+config/data_in_c.tsv lists the blocks: label, element type (`table` for one written out), source file.
 """
+import math
 import re
+import struct
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import data_types  # noqa: E402
 import names_header  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -136,14 +145,21 @@ def fits_retail(label, count, element="u32"):
 
 def generate():
     blocks = all_blocks()
+    types = data_types.load()
     OUT.mkdir(parents=True, exist_ok=True)
     for stale in [*OUT.glob("*.inc"), *OUT.glob("*.refs")]:
         stale.unlink()
     for label, element, _ in rows():
         parsed = parse(blocks[label]) if label in blocks else None
-        if parsed is None or parsed[0] != element:
+        if parsed is None or (parsed[0] != element and element not in ("table", "float") and element not in types):
             sys.exit(f"*** {label}: its block is not plain {element}")
-        (OUT / f"{label}.inc").write_text(render(parsed[1], element))
+        if element == "table" or (element != "char" and is_zero(parsed[1])):
+            continue
+        if element in types:
+            values = render_typed(parsed[1], types[element][2], types[element][1])
+        else:
+            values = [float_literal(word) for word in parsed[1]] if element == "float" else parsed[1]
+        (OUT / f"{label}.inc").write_text(render(values, element))
         (OUT / f"{label}.refs").write_text(references(parsed[1]))
     print(f"wrote {len(rows())} include files to {OUT.relative_to(ROOT)}")
 
@@ -178,6 +194,11 @@ def add(pairs):
             sys.exit(f"*** {label}: the block after it is not on a 4-byte boundary, so the blob cannot be cut here")
         source = "src/data/shared/data.c" if owner == "shared" else "src/data/" + owner[len("src/"):]
         table.append((label, parsed[0], source))
+    write_all(table, blocks, names)
+    print(f"{len(table)} blocks in {len({row[2] for row in table})} files")
+
+
+def write_all(table, blocks, names):
     TABLE.write_text(HEADER + "".join("\t".join(row) + "\n" for row in sorted(table)))
     for source in sorted({row[2] for row in table}):
         entries = []
@@ -185,26 +206,200 @@ def add(pairs):
             if row[2] == source:
                 found = parse(blocks[row[0]])[1]
                 entries.append((row[0], row[1], len(found), bool(references(found))))
-        write_source(source, sorted(entries), names)
-    print(f"{len(table)} blocks in {len({row[2] for row in table})} files")
+        write_source(source, sorted(entries), names, blocks)
+
+
+def set_types(pairs):
+    """LABEL=TYPE gives a block a type from config/data_types.tsv. One that does not fit stays as it is, and says why."""
+    blocks = all_blocks()
+    types = data_types.load()
+    wanted = dict(pair.split("=", 1) for pair in pairs)
+    table = []
+    for label, element, source in rows():
+        name = wanted.get(label)
+        if name and element == "u32":
+            try:
+                render_typed(parse(blocks[label])[1], types[name][2], types[name][1])
+                element = name
+            except ValueError as problem:
+                print(f"{label}: stays {element}: {problem}")
+        table.append((label, element, source))
+    write_all(table, blocks, readable_names())
+
+
+def write_out():
+    """Write pointer tables out as C, and give float blocks their type. Other values stay generated."""
+    blocks = all_blocks()
+    table = []
+    tables = floats = 0
+    for label, element, source in rows():
+        found = parse(blocks[label])[1]
+        if element == "u32" and is_table(found):
+            element, tables = "table", tables + 1
+        elif element == "u32" and is_float_block(blocks[label], found):
+            element, floats = "float", floats + 1
+        table.append((label, element, source))
+    write_all(table, blocks, readable_names())
+    print(f"{tables} tables written out, {floats} blocks are float")
 
 
 def readable_names():
     """{address name: readable name}, from the name table."""
-    return {address: name for name, address in re.findall(r"(?m)^#define\s+(\w+)\s+(D_\w+)\s*$",
+    return {address: name for name, address in re.findall(r"(?m)^#define\s+(\w+)\s+((?:D|func)_\w+)\s*$",
                                                           names_header.read(ROOT / "include/names.h"))}
 
 
-def write_source(source, entries, names):
+def is_table(found):
+    """True if a block is only symbols and zeros. Its names are not retail's bytes, so it can be written out."""
+    pointers = [value for value in found if "ref_" in value]
+    return bool(pointers) and all("ref_" in value or int(value, 0) == 0 for value in found)
+
+
+def float_literal(word):
+    """A C literal for a word holding a float, or None if the compiler cannot be trusted to read it back."""
+    value = struct.unpack("<f", int(word, 16).to_bytes(4, "little"))[0]
+    if not math.isfinite(value) or (value != 0 and abs(value) < sys.float_info.min) or abs(value) < 1.2e-38 and value:
+        return None
+    if value == 0 and word.upper() != "0X00000000" and word.upper() != "0":
+        return None
+    text = f"{value:.9e}f"
+    return text if struct.pack("<f", float(text[:-1])) == int(word, 16).to_bytes(4, "little") else None
+
+
+def is_float_block(body, found):
+    """True if a block is written with .float only, and each of its values can be a literal."""
+    kinds = set(re.findall(r"^\s*(?:/\*.*?\*/\s*)?\.(\w+)", body, re.M))
+    return kinds == {"float"} and all(float_literal(word) for word in found)
+
+
+def is_zero(found):
+    """True if a block is all zeros. It holds no retail numbers, so it needs no generated values."""
+    return all("ref_" not in value and int(value, 0) == 0 for value in found)
+
+
+def render_typed(found, fields, size):
+    """A flat initialiser for words of data, one value per field. Raises ValueError if the words cannot be that type."""
+    words = len(found) * 4
+    if not size or words % size:
+        raise ValueError(f"{words} bytes is not a whole number of {size}-byte records")
+    data, symbols = bytearray(), {}
+    for at, value in enumerate(found):
+        if "ref_" in value:
+            symbols[at * 4] = value[len("(u32)"):]
+            data += bytes(4)
+        else:
+            data += (int(value, 0) & 0xFFFFFFFF).to_bytes(4, "little")
+    out = []
+    for record in range(0, words, size):
+        covered = set()
+        for offset, kind, width in fields:
+            at = record + offset
+            covered.update(range(at, at + width))
+            raw = bytes(data[at:at + width])
+            if at in symbols:
+                if width != 4 or kind not in "ip":
+                    raise ValueError(f"a symbol at {at:#x} in a {kind}{width} field")
+                out.append(f"(void *){symbols[at]}" if kind == "p" else f"(u32){symbols[at]}")
+            elif any(at < s < at + width for s in symbols):
+                raise ValueError(f"a symbol inside the field at {at:#x}")
+            elif kind == "q":
+                if any(raw):
+                    raise ValueError(f"a non-zero quad at {at:#x}")
+                out.append("0")
+            elif kind == "f":
+                literal = float_literal(f"0x{int.from_bytes(raw, 'little'):08X}")
+                if literal is None:
+                    raise ValueError(f"no literal for the float at {at:#x}")
+                out.append(literal)
+            else:
+                out.append(f"0x{int.from_bytes(raw, 'little'):X}")
+        for at in range(record, record + size):
+            if at not in covered and (data[at] or at in symbols):
+                raise ValueError(f"padding at {at:#x} is not zero")
+    return out
+
+
+def table_declarations(found, names, here):
+    """Declarations for the symbols of a table. here: {name: (element, count)} of the blocks in the same file."""
+    lines = []
+    for symbol in sorted({m for value in found for m in re.findall(r"\bref_(\w+)", value)}):
+        name = names.get(symbol, symbol)
+        if name in here:
+            element, count = here[name]
+            element = "void *" if element == "table" else element + " "
+            lines.append(f"extern {element}{name}{'[]' if count > 1 or element.startswith('char') else ''};\n")
+        elif symbol.startswith("func_"):
+            lines.append(f"extern void {name}();\n")
+        else:
+            lines.append(f"extern char {name}[];\n")
+    return lines
+
+
+def table_values(found, names, here):
+    """Each value of a table, in C."""
+    out = []
+    for value in found:
+        m = re.fullmatch(r"\(u32\)ref_(\w+)(?: \+ (\w+))?", value)
+        if not m:
+            out.append("0")
+            continue
+        name = names.get(m.group(1), m.group(1))
+        scalar = name in here and here[name][1] == 1 and here[name][0] != "char"
+        text = f"&{name}" if scalar else name
+        out.append(f"(char *){text} + {m.group(2)}" if m.group(2) else text)
+    return out
+
+
+def table_text(label, found, names, here):
+    """A table's definition, written out: symbol names only."""
+    name = names.get(label, label)
+    values = table_values(found, names, here)
+    if len(values) == 1:
+        return f"void *{name} DATA_SECTION({label}) = {values[0]};\n\n"
+    return f"void *{name}[] DATA_SECTION({label}) = {{\n" + "".join(f"    {v},\n" for v in values) + "};\n\n"
+
+
+def write_source(source, entries, names, blocks=None):
     """entries: (label, element type, number of values, whether it points at symbols)."""
     if source == "src/data/shared/data.c":
         about = "Data with no one owner: several files use it, or no C file does yet."
     else:
         about = f"Data owned by {'src/' + source[len('src/data/'):]}."
     parts = [f"/* {about} Its values come from your own baserom (tools/data_in_c.py). */\n", '#include "common.h"\n\n']
+    types = data_types.load()
+    headers = sorted({types[e[1]][0] for e in entries if e[1] in types})
+    parts.extend(f'#include "{header}"\n' for header in headers)
+    if headers:
+        parts.append("\n")
+    here = {names.get(e[0], e[0]): (e[1], e[2]) for e in entries}
+    tables = [e for e in entries if e[1] == "table"]
+    declared = []
+    for label, *_ in tables:
+        for line in table_declarations(parse(blocks[label])[1], names, here):
+            if line not in declared:
+                declared.append(line)
+    # A forward declaration of a block in this file comes after its own definition's type is known: same text.
+    parts.extend(declared)
+    if declared:
+        parts.append("\n")
     for label, element, count, pointers in entries:
         include = f'#include "data_inc/{label}.inc"\n'
         name = names.get(label, label)
+        if element == "table":
+            parts.append(table_text(label, parse(blocks[label])[1], names, here))
+            continue
+        typed = types.get(element)
+        if element != "char" and blocks and is_zero(parse(blocks[label])[1]):
+            length = count * 4 // typed[1] if typed else count
+            shape = "" if length == 1 and (not typed or count * 4 == typed[1]) else f"[{length}]"
+            zero = "{0}" if shape or typed else "0"
+            parts.append(f"{element} {name}{shape} DATA_SECTION({label}) = {zero};\n\n")
+            continue
+        if typed and count * 4 == typed[1]:
+            if pointers:
+                parts.append(f'#include "data_inc/{label}.refs"\n')
+            parts.append(f"{element} {name} DATA_SECTION({label}) = {{\n{include}}};\n\n")
+            continue
         if pointers:
             parts.append(f'#include "data_inc/{label}.refs"\n')
         if element == "char":
@@ -220,12 +415,12 @@ def write_source(source, entries, names):
 
 def check():
     bad = []
-    for label, _, source in rows():
+    for label, element, source in rows():
         path = ROOT / source
         if not path.exists():
             bad.append(f"{source} is missing")
-        elif f'"data_inc/{label}.inc"' not in path.read_text():
-            bad.append(f"{source} does not include {label}")
+        elif f"DATA_SECTION({label})" not in path.read_text():
+            bad.append(f"{source} does not define {label}")
     if bad:
         sys.exit("*** " + "\n*** ".join(bad))
     print(f"{len(rows())} blocks of data in C")
@@ -239,6 +434,12 @@ def main():
         print(" ".join(sorted({object_of(source) for _, _, source in rows()})))
     elif command == "check":
         check()
+    elif command == "write-out":
+        write_out()
+    elif command == "set-type":
+        set_types(sys.argv[2:])
+    elif command == "rewrite":
+        write_all(rows(), all_blocks(), readable_names())
     elif command == "add":
         add(sys.argv[2:])
     elif command == "labels":

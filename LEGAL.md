@@ -32,8 +32,10 @@ Be deliberate about it:
   decompiled from the (locally generated) disassembly in `asm/` and cleaned up to compile back
   to matching (or `INCLUDE_ASM`-stubbed, not-yet-matching) object code.
 - Non-matching helper tooling under `tools/`.
-- Data files in `src/data/`, which give retail's data its type, name and owner but hold **no values**. The values are
-  generated into `build-sn/data_inc/` from the contributor's own baserom (`tools/data_in_c.py`) and never committed.
+- Data files in `src/data/`, which give retail's data its type, name and owner but hold **no numeric values**. The values
+  are generated into `build-sn/data_inc/` from the contributor's own baserom (`tools/data_in_c.py`) and never committed.
+  A table of only symbol names and zeros, or a block of only zeros, is written out in the file, because it holds none of
+  retail's numbers.
 
 ## What a contributor/user must supply themselves
 
