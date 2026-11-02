@@ -2187,10 +2187,16 @@ void break_apart_shuttle_linked_mobys(struct Moby *moby) {
 extern char *level_mobys_q MACRO_ADDR;
 extern void DeleteMoby(void *);
 
+struct MarkShuttleLinkedMobysForRemovalVars {
+    u8 pad_00[0xCC];
+    s32 unk_CC;
+};
+
 /* Deletes every moby in the group stored in the data block. */
 void mark_shuttle_linked_mobys_for_removal(char *moby) {
-    char *data = ((char *)((Moby *)moby)->pvars);
-    short *p = blarg_moby_groups[*(int *)(data + 0xCC)];
+    struct MarkShuttleLinkedMobysForRemovalVars *data =
+        (struct MarkShuttleLinkedMobysForRemovalVars *)((Moby *)moby)->pvars;
+    short *p = blarg_moby_groups[data->unk_CC];
     do {
         DeleteMoby(level_mobys_q + ((*p & 0x7FFF) << 8));
     } while (*p++ >= 0);
@@ -3022,11 +3028,16 @@ extern int FastBSphereCheck(char *, float);
 extern float multiply_global_factor(float);
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
 extern char *level_mobys_q MACRO_ADDR;
+struct ActivateListedClass5e8MobysVars {
+    u8 pad_00[0x28];
+    s32 unk_28;
+};
+
 /* finds the mobys of type 0x5E8 in state 1 in a level list and starts those within range */
 void activate_listed_class_5e8_mobys(int idx) {
     short *p;
     char *m;
-    char *data;
+    struct ActivateListedClass5e8MobysVars *data;
     float v[4];
     if (blarg_moby_groups[idx] != 0) {
         p = blarg_moby_groups[idx];
@@ -3036,9 +3047,9 @@ void activate_listed_class_5e8_mobys(int idx) {
                 qcopy(v, m + 0x10);
                 v[3] = 0.25f;
                 if (FastBSphereCheck((char *)v, 64.0f) >= 0) {
-                    data = ((char *)((Moby *)m)->pvars);
+                    data = (struct ActivateListedClass5e8MobysVars *)((Moby *)m)->pvars;
                     m[0x20] = 2;
-                    *(int *)(data + 0x28) =
+                    data->unk_28 =
                         truncate_float_to_s32_r_r(multiply_global_factor(random_float_between(30.0f, 60.0f)));
                 }
             }

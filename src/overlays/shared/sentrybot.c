@@ -2496,22 +2496,28 @@ extern char hero_globals_base[];
 extern float random_float_between(float, float);
 
 // wakes the first idle moby in a list and initialises it at a position
+struct ActivateFirstInactiveGroupMobyVars {
+    u8 pad_00[0x64];
+    f32 unk_64;
+    s32 unk_68;
+};
+
 int activate_first_inactive_group_moby(int idx, void *pos) {
     short *p = (short *)quartu_moby_groups[idx];
     struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
     do {
         unsigned char *m = (unsigned char *)quartu_moby_array_m + ((*(unsigned short *)p & 0x7FFF) << 8);
         if (((Moby *)m)->state == 1) {
-            char *data;
+            struct ActivateFirstInactiveGroupMobyVars *data;
             ((Moby *)m)->state = 2;
             if (((Moby *)m)->prev_seq != 0)
                 MobyBlendAnimation(m, 0, 0, 0);
             ((Moby *)m)->flags |= 1;
             ((Moby *)m)->visible = 0;
-            data = ((char *)((Moby *)m)->pvars);
+            data = (struct ActivateFirstInactiveGroupMobyVars *)((Moby *)m)->pvars;
             *(int *)&((Moby *)m)->collision = *(int *)(*(char **)&((struct Moby *)m)->pclass + 0x10);
-            *(float *)(data + 0x64) = random_float_between(-15.0f, 15.0f) * 0.017453292f;
-            *(int *)(data + 0x68) = scale_ticks(0x3C);
+            data->unk_64 = random_float_between(-15.0f, 15.0f) * 0.017453292f;
+            data->unk_68 = scale_ticks(0x3C);
             qcopy(&((struct Moby *)m)->pos, pos);
             ((Moby *)m)->pos.z -= 1.0f;
             ((Moby *)m)->rot.z =

@@ -1443,12 +1443,12 @@ extern void moby_build_matrix(void *);
 // Spawns moby 0x145 from an owner and a position, orienting its data vectors and randomising its parameters.
 unsigned char *spawn_plasmabot_death_debris(char *owner, char *pos) {
     unsigned char *m = CreateMoby(0x145);
-    char *d;
+    struct Moby *d;
     char *g;
     float vec[8];
     if (m != 0) {
-        d = ((char *)((Moby *)m)->pvars);
-        *(char **)(d + 0x24) = owner;
+        d = (struct Moby *)((char *)((Moby *)m)->pvars);
+        *(char **)&d->pclass = owner;
         qcopy(&((Moby *)m)->pos, pos);
         ((Moby *)m)->rot.z = ((Moby *)owner)->rot.z;
         ((Moby *)m)->state = 0;
@@ -1463,13 +1463,13 @@ unsigned char *spawn_plasmabot_death_debris(char *owner, char *pos) {
                             random_float_between(*(float *)&plasmabot_debris_min_speed * frame_scale,
                                                  *(float *)&plasmabot_debris_max_speed * frame_scale));
         FastVecCross(vec + 4, g, vec);
-        build_look_at_matrix(d, vec, g, randf_sym(0.34906584f, 1.0471976f));
-        *(float *)(d + 8) = random_float_between(*(float *)&plasmabot_debris_min_spin * frame_scale,
-                                                 *(float *)&plasmabot_debris_max_spin * frame_scale);
-        *(float *)(d + 0x10) = randf_sym(0.0f, 0.008726646f);
-        *(float *)(d + 0x14) = randf_sym(0.05235988f, 0.13962634f);
-        *(float *)(d + 0x18) = randf_sym(0.0f, 0.017453292f);
-        *(int *)(d + 0x20) = scale_ticks(200);
+        build_look_at_matrix(&d->bsphere, vec, g, randf_sym(0.34906584f, 1.0471976f));
+        d->bsphere.z = random_float_between(*(float *)&plasmabot_debris_min_spin * frame_scale,
+                                            *(float *)&plasmabot_debris_max_spin * frame_scale);
+        d->pos.x = randf_sym(0.0f, 0.008726646f);
+        d->pos.y = randf_sym(0.05235988f, 0.13962634f);
+        d->pos.z = randf_sym(0.0f, 0.017453292f);
+        *(int *)&d->state = scale_ticks(200);
         moby_build_matrix(m);
     }
     return m;
@@ -1764,22 +1764,37 @@ void emit_debris_trail_particles(Moby *m) {
     }
 }
 
+struct InitializeMobyPathStateVars {
+    u8 pad_00[0xD0];
+    s32 unk_D0;
+    s32 unk_D4;
+    s32 unk_D8;
+    s32 unk_DC;
+    u8 pad_E0[0x4];
+    f32 unk_E4;
+    f32 unk_E8;
+    f32 unk_EC;
+    f32 unk_F0;
+    u8 pad_F4[0x8];
+    s32 unk_FC;
+};
+
 /* Recomputes a path's segment lengths, aims the moby along its first segment, and recomputes a second path. */
 void initialize_moby_path_state(Moby *moby) {
-    char *data = ((char *)moby->pvars);
+    struct InitializeMobyPathStateVars *data = (struct InitializeMobyPathStateVars *)moby->pvars;
     char *p;
     int i;
-    p = oltanis_paths[*(int *)(data + 0xD8)];
+    p = oltanis_paths[data->unk_D8];
     for (i = 0; i < *(int *)p - 1; i++) {
         *(float *)(p + 0x1C + i * 0x10) = FastVecDist(p + 0x10 + i * 0x10, p + 0x20 + i * 0x10);
     }
-    *(int *)(data + 0xD0) = 0;
-    *(int *)(data + 0xD4) = 0;
+    data->unk_D0 = 0;
+    data->unk_D4 = 0;
     qcopy(&moby->pos, p + 0x10);
     moby->rot.z = fast_atan2(*(float *)(p + 0x20) - *(float *)(p + 0x10), *(float *)(p + 0x24) - *(float *)(p + 0x14));
-    *(float *)(data + 0xF0) = *(float *)(data + 0xE4) = *(float *)(data + 0xE8) = *(float *)(data + 0xEC) = 0.0f;
-    if (*(int *)(data + 0xFC) != 1) {
-        p = oltanis_paths[*(int *)(data + 0xDC)];
+    data->unk_F0 = data->unk_E4 = data->unk_E8 = data->unk_EC = 0.0f;
+    if (data->unk_FC != 1) {
+        p = oltanis_paths[data->unk_DC];
         for (i = 0; i < *(int *)p - 1; i++) {
             *(float *)(p + 0x1C + i * 0x10) = FastVecDist(p + 0x10 + i * 0x10, p + 0x20 + i * 0x10);
         }
@@ -1790,16 +1805,21 @@ extern short linked_moby_offset_y;
 extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 
+struct UpdateLinkedMobyPositionVars {
+    u8 pad_00[0xF4];
+    char *unk_F4;
+};
+
 /* rebuilds two vectors from the moby's transform and applies them to its linked object */
 void update_linked_moby_position(Moby *moby) {
-    char *data = ((char *)moby->pvars);
+    struct UpdateLinkedMobyPositionVars *data = (struct UpdateLinkedMobyPositionVars *)moby->pvars;
     float tmp[4];
-    if (*(char **)(data + 0xF4) != 0) {
+    if (data->unk_F4 != 0) {
         char *p;
         vec_scale_to_length(tmp, &moby->rot_row0, *(float *)&linked_moby_offset_x);
-        FastVecAdd(*(char **)(data + 0xF4) + 0x10, &moby->pos, tmp);
+        FastVecAdd(data->unk_F4 + 0x10, &moby->pos, tmp);
         vec_scale_to_length(tmp, &moby->rot_row2, *(float *)&linked_moby_offset_y);
-        p = *(char **)(data + 0xF4) + 0x10;
+        p = data->unk_F4 + 0x10;
         FastVecAdd(p, p, tmp);
     }
 }

@@ -2362,13 +2362,13 @@ void select_gold_devastator_missile_target(char *self, O *out, char *skip) {
         return;
     g = &g_hero;
     while (o != 0) {
-        if (*(s8 *)(o + 0x20) < 0)
+        if (*(s8 *)&((struct Moby *)o)->state < 0)
             goto next;
         if (o == skip)
             goto next;
-        qcopy(&v, o + 0x10);
+        qcopy(&v, &((struct Moby *)o)->pos);
         spos = (char *)&((struct Moby *)self)->pos;
-        opos = o + 0x10;
+        opos = (char *)&((struct Moby *)o)->pos;
         if (40.0f < FastVecDist(&v, spos))
             goto next;
         p = GetFlaggedPvarWord_r(o);
@@ -2390,17 +2390,18 @@ void select_gold_devastator_missile_target(char *self, O *out, char *skip) {
         v.f[2] = z;
         if (o == 0)
             goto next;
-        if (*(char **)(o + 0x24) == 0)
+        if (*(char **)&((struct Moby *)o)->pclass == 0)
             goto next;
-        if (*(s16 *)(*(char **)(o + 0x24) + 0x46) != 5)
+        if (*(s16 *)(*(char **)&((struct Moby *)o)->pclass + 0x46) != 5)
             goto next;
         angh = fast_atan2(v.f[0] - ((struct Moby *)self)->pos.x, v.f[1] - ((struct Moby *)self)->pos.y);
         angv = fast_atan2(vec_distance_xy(spos, &v), v.f[2] - ((struct Moby *)self)->pos.z);
         dist = FastVecDist(spos, &v);
         if (dist < 2.5f) {
             char *cam = (char *)g->moby;
-            if (FastDiffRots(*(f32 *)(cam + 0x48), fast_atan2(*(f32 *)(o + 0x10) - g->motion.pos.f[0],
-                                                              *(f32 *)(o + 0x14) - g->motion.pos.f[1])) < 1.0471976f) {
+            if (FastDiffRots(*(f32 *)(cam + 0x48), fast_atan2(((struct Moby *)o)->pos.x - g->motion.pos.f[0],
+                                                              ((struct Moby *)o)->pos.y - g->motion.pos.f[1])) <
+                1.0471976f) {
                 if (FastAbsF(angv) < 0.7853982f)
                     return;
             }

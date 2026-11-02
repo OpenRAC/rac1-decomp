@@ -1106,6 +1106,19 @@ extern void moby_build_matrix(void *);
 typedef int u128 __attribute__((mode(TI)));
 
 // Spawns a moby of class 0x341 at a position, initialises its data and registers it.
+struct ComputeInterpolatedRecordValueCfVars {
+    u8 pad_00[0x4];
+    f32 unk_04;
+    u8 pad_08[0x8];
+    char *unk_10;
+    s32 unk_14;
+    f32 unk_18;
+    f32 unk_1C;
+    u8 pad_20[0x4];
+    f32 unk_24; /* 0x24 also s32; 2 uses */
+    s32 unk_28;
+};
+
 char *compute_interpolated_record_value_cf(char *a, char *pos, char *parent, int n, float f0, float f1, float f2) {
     Moby *m = (Moby *)((char *)CreateMoby_m(0x341));
     char *d;
@@ -1118,19 +1131,19 @@ char *compute_interpolated_record_value_cf(char *a, char *pos, char *parent, int
         m->state = 1;
         qcopy(&m->pos, pos);
         qcopy(d, a);
-        m->rot.z = fast_atan2(*(float *)d, *(float *)(d + 4));
-        *(int *)(d + 0x14) = scale_ticks(n);
-        *(float *)(d + 0x18) = f2;
-        *(float *)(d + 0x1C) = f0;
-        *(float *)(d + 0x24) = f1;
-        *(char **)(d + 0x10) = parent;
-        *(int *)(d + 0x28) = 0;
+        m->rot.z = fast_atan2(*(float *)d, ((struct ComputeInterpolatedRecordValueCfVars *)d)->unk_04);
+        ((struct ComputeInterpolatedRecordValueCfVars *)d)->unk_14 = scale_ticks(n);
+        ((struct ComputeInterpolatedRecordValueCfVars *)d)->unk_18 = f2;
+        ((struct ComputeInterpolatedRecordValueCfVars *)d)->unk_1C = f0;
+        ((struct ComputeInterpolatedRecordValueCfVars *)d)->unk_24 = f1;
+        ((struct ComputeInterpolatedRecordValueCfVars *)d)->unk_10 = parent;
+        ((struct ComputeInterpolatedRecordValueCfVars *)d)->unk_28 = 0;
         *(u128 *)v = *(u128 *)(parent + 0x10);
         v[2] = *(float *)(pos + 8);
         if (coll_line(v, pos, 2, parent, 0) != 0) {
-            *(int *)(d + 0x14) = 0;
+            ((struct ComputeInterpolatedRecordValueCfVars *)d)->unk_14 = 0;
             *(u128 *)&m->pos = *(u128 *)kerwan_coll_hit_point;
-            *(int *)(d + 0x24) = 0;
+            *(int *)&((struct ComputeInterpolatedRecordValueCfVars *)d)->unk_24 = 0;
         }
         moby_build_matrix(m);
     }
@@ -2099,9 +2112,14 @@ extern void hud_keep_visible(int, int);
 
 extern void DefaultVtbl_DeleteMoby(void);
 
+struct UpdateRailLiftHelpAndHudVars {
+    u8 pad_00[0xA4];
+    s32 unk_A4;
+};
+
 /* Shows a help message for the mode, then keeps a hud queue entry alive. */
 void update_rail_lift_help_and_hud(char *m, int mode) {
-    char *d = ((char *)((Moby *)m)->pvars);
+    struct UpdateRailLiftHelpAndHudVars *d = (struct UpdateRailLiftHelpAndHudVars *)((Moby *)m)->pvars;
     int h;
     switch (mode) {
         case 1:
@@ -2120,10 +2138,10 @@ void update_rail_lift_help_and_hud(char *m, int mode) {
             try_set_help_message(8, -1);
             break;
     }
-    h = *(int *)(d + 0xA4);
+    h = d->unk_A4;
     if (h == -1) {
-        *(int *)(d + 0xA4) = queue_animation_update(0xC, 0, (int)initialize_numeric_hud_element,
-                                                    (int)DefaultVtbl_DeleteMoby, (int)draw_hud_text_panel, 0, 0);
+        d->unk_A4 = queue_animation_update(0xC, 0, (int)initialize_numeric_hud_element, (int)DefaultVtbl_DeleteMoby,
+                                           (int)draw_hud_text_panel, 0, 0);
     } else {
         hud_keep_visible(h, 0xA);
     }

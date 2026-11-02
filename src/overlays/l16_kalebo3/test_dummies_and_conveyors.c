@@ -1977,34 +1977,47 @@ extern void matrix_from_basis_rows(void *, void *);
 extern void transform_vector(void *, void *, void *);
 
 // Checks the nearby list entries of two classes against the moby and adds a timed delay when one is close.
+struct AccumulateMobyFramesInGroupBoundsVars {
+    u8 pad_00[0x44];
+    s32 unk_44;
+    s32 unk_48;
+    u8 pad_4C[0x214];
+    Vec4 unk_260;
+    u8 pad_270[0x6C];
+    s32 unk_2DC;
+    u8 pad_2E0[0x16];
+    u16 unk_2F6;
+};
+
 void accumulate_moby_frames_in_group_bounds(char *moby) {
-    char *data = ((char *)((Moby *)moby)->pvars);
+    struct AccumulateMobyFramesInGroupBoundsVars *data =
+        (struct AccumulateMobyFramesInGroupBoundsVars *)((Moby *)moby)->pvars;
     struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
     float v[4];
     char *l1;
     char *l2;
     char *other;
-    char *od;
+    struct AccumulateMobyFramesInGroupBoundsVars *od;
 
     if (g->race_time_frames < scale_ticks(0xB4)) {
         return;
     }
-    if (!fast_dec_timer((int *)(data + 0x2DC))) {
+    if (!fast_dec_timer(&data->unk_2DC)) {
         return;
     }
     other = *(char **)&g->hoverboard_moby;
     if (!other) {
         return;
     }
-    od = ((char *)((Moby *)other)->pvars);
-    if (*(int *)(od + 0x44) != -1) {
-        get_first_moby_in_group((int *)&l1, *(int *)(od + 0x44), 0, 0);
+    od = (struct AccumulateMobyFramesInGroupBoundsVars *)((Moby *)other)->pvars;
+    if (od->unk_44 != -1) {
+        get_first_moby_in_group((int *)&l1, od->unk_44, 0, 0);
         while (l1) {
             if (*(short *)(l1 + 0xA6) == 0x473) {
                 float a[4];
                 float m[16];
                 char *pos = l1;
-                qcopy(a, data + 0x260);
+                qcopy(a, &data->unk_260);
                 a[2] += 0.8f;
                 FastVecSub(v, pos + 0x10, a);
                 if (!(8.0f < FastVecLength(v))) {
@@ -2012,27 +2025,27 @@ void accumulate_moby_frames_in_group_bounds(char *moby) {
                     matrix_from_basis_rows(m, l1 + 0xC0);
                     transform_vector(v, v, m);
                     if (FastAbsF(v[0]) < 0.5f && FastAbsF(v[1]) < 2.5f && FastAbsF(v[2]) < 2.5f) {
-                        *(unsigned short *)(data + 0x2F6) += scale_ticks(0x78);
-                        *(int *)(data + 0x2DC) = scale_ticks(0x3C);
+                        data->unk_2F6 += scale_ticks(0x78);
+                        data->unk_2DC = scale_ticks(0x3C);
                     }
                 }
             }
             get_next_moby_in_group((int *)&l1, (int)l1, 0, 0);
         }
     }
-    if (*(int *)(od + 0x48) != -1) {
-        get_first_moby_in_group((int *)&l2, *(int *)(od + 0x48), 0, 0);
+    if (od->unk_48 != -1) {
+        get_first_moby_in_group((int *)&l2, od->unk_48, 0, 0);
         while (l2) {
             if (*(short *)(l2 + 0xA6) == 0x474) {
                 float m[16];
-                FastVecSub(v, l2 + 0x10, data + 0x260);
+                FastVecSub(v, l2 + 0x10, &data->unk_260);
                 if (!(8.0f < FastVecLength(v))) {
                     set_identity_matrix(m);
                     matrix_from_basis_rows(m, l2 + 0xC0);
                     transform_vector(v, v, m);
                     if (FastAbsF(v[0]) < 2.8f && FastAbsF(v[1]) < 1.4f && FastAbsF(v[2]) < 0.5f) {
-                        *(unsigned short *)(data + 0x2F6) += scale_ticks(0x78);
-                        *(int *)(data + 0x2DC) = scale_ticks(0x3C);
+                        data->unk_2F6 += scale_ticks(0x78);
+                        data->unk_2DC = scale_ticks(0x3C);
                     }
                 }
             }

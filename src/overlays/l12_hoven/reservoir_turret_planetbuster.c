@@ -216,6 +216,11 @@ typedef struct {
 } Quad;
 
 // Draws a ring of four-vertex strips around the moby with a lit colour.
+struct DrawWaterReservoirVars {
+    u8 pad_00[0x8];
+    f32 unk_08;
+};
+
 void draw_water_reservoir(Moby *moby) {
     char *data = ((char *)moby->pvars);
     Quad q;
@@ -225,7 +230,7 @@ void draw_water_reservoir(Moby *moby) {
     int i, col;
     copy_matrix_rotation(m, &moby->rot_row0);
     qcopy(pos, &moby->pos);
-    pos[2] = pos[2] + *(float *)(data + 8);
+    pos[2] = pos[2] + ((struct DrawWaterReservoirVars *)data)->unk_08;
     pos[3] = 1.0f;
     q.g[1] = GetEffectTex(0x10);
     q.g[0] = 0;
@@ -822,15 +827,20 @@ extern void set_camera_rotation(void *);
 extern char hoven_turret_camera_offset;
 
 // Builds a rotated/translated matrix from a moby and its data, then sets a rotation from an angle.
+struct UpdateHovenTurretCameraVars {
+    u8 pad_00[0x74];
+    f32 unk_74;
+};
+
 void update_hoven_turret_camera(char *moby) {
     float m[8];
-    char *data = ((char *)((Moby *)moby)->pvars);
+    struct UpdateHovenTurretCameraVars *data = (struct UpdateHovenTurretCameraVars *)((Moby *)moby)->pvars;
     set_level_state_flag_88(moby);
     matrix_mul_vec3(m, &hoven_turret_camera_offset, moby + 0xC0);
     FastVecAdd(m, m, moby + 0x10);
     set_camera_position(m);
     m[4] = 0;
-    m[5] = -*(float *)(data + 0x74);
+    m[5] = -data->unk_74;
     m[6] = FastAddRots(1.5707964f, ((Moby *)moby)->rot.z);
     set_camera_rotation(m + 4);
 }
@@ -1678,6 +1688,11 @@ typedef struct {
     short h9E;
 } Gun;
 
+struct UpdatePlanetbusterMaximusGunsVars {
+    u8 pad_00[0x5FC];
+    s16 unk_5FC;
+};
+
 /* Hoven turret battery update: aims each manned gun at the hero, fires, takes hits and smokes when damaged. */
 void update_planetbuster_maximus_guns(char *moby) {
     char *d = ((char *)((Moby *)moby)->pvars);
@@ -1849,12 +1864,12 @@ void update_planetbuster_maximus_guns(char *moby) {
                     if (md->f80 <= 0.0f) {
                         int j;
                         int k;
-                        *(short *)(d + 0x5FC) -= 0x14;
-                        if (*(short *)(d + 0x5FC) < 0) {
-                            *(short *)(d + 0x5FC) = 0;
+                        ((struct UpdatePlanetbusterMaximusGunsVars *)d)->unk_5FC -= 0x14;
+                        if (((struct UpdatePlanetbusterMaximusGunsVars *)d)->unk_5FC < 0) {
+                            ((struct UpdatePlanetbusterMaximusGunsVars *)d)->unk_5FC = 0;
                         }
                         Moby_PlaySound_r(1, 0, m);
-                        if (*(short *)(d + 0x5FC) > 0) {
+                        if (((struct UpdatePlanetbusterMaximusGunsVars *)d)->unk_5FC > 0) {
                             int k = planetbuster_gun_part_index[i];
                             if (k != 0x11) {
                                 planetbuster_detached_part_ids[k] = *(int *)(d + k * 0x30 + 0x20);
@@ -1940,7 +1955,7 @@ void update_planetbuster_maximus_guns(char *moby) {
         }
     }
     update_planetbuster_maximus_detached_parts(moby);
-    if (*(short *)(d + 0x5FC) <= 0 && hoven_turret_destroyed_m == 0) {
+    if (((struct UpdatePlanetbusterMaximusGunsVars *)d)->unk_5FC <= 0 && hoven_turret_destroyed_m == 0) {
         D_L12_00161FA4_s = 1;
         moby[0x20] = 4;
         moby[0xBC] = 0;
@@ -2616,6 +2631,12 @@ extern int hoven_frame_count MACRO_ADDR;
 extern char hoven_cutscene_hero_pos[];
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
 
+struct TriggerSceneOnceInClipVolumeVars {
+    u8 pad_00[0x4];
+    s32 unk_04;
+    s32 unk_08;
+};
+
 /* Vendor-counter moby update: once the shared block is ready, latch its data and copy two vectors. */
 void trigger_scene_once_in_clip_volume(char *moby) {
     char *data = ((char *)((Moby *)moby)->pvars);
@@ -2624,19 +2645,19 @@ void trigger_scene_once_in_clip_volume(char *moby) {
     char *q;
     if (hoven_frame_count != 0 && hoven_cinematic_mode == 0) {
         base = special_items_base + 0x13B;
-        if (*(unsigned char *)(*(int *)(data + 4) + base + 0x5C) != 0) {
+        if (*(unsigned char *)(((struct TriggerSceneOnceInClipVolumeVars *)data)->unk_04 + base + 0x5C) != 0) {
             DeleteMoby(moby);
             return;
         }
         p = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
         if (is_point_inside_clip_volume(p, *(int *)data) != 0) {
-            *(char *)(*(int *)(data + 4) + base + 0x5C) = 1;
+            *(char *)(((struct TriggerSceneOnceInClipVolumeVars *)data)->unk_04 + base + 0x5C) = 1;
             qcopy(hoven_cutscene_hero_pos, p);
             q = hoven_cutscene_hero_pos - 0x10;
             *(float *)(q + 0x18) = *(float *)(p + 0x258);
             qcopy(hoven_cutscene_hero_pos + 0x10, p + 0x10);
             q[0x4A] = 1;
-            StartCutscene(*(int *)(data + 8));
+            StartCutscene(((struct TriggerSceneOnceInClipVolumeVars *)data)->unk_08);
         }
     }
 }

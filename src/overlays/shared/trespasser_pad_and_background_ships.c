@@ -2162,11 +2162,11 @@ void spawn_background_ship_1_joint_sparks(char *m, void *arg1) {
 /* Walks the moby list matching this moby's id and pulses each match's six data slots while it is bright. */
 void draw_matching_moby_slot_quads(char *self) {
     char *cur;
-    get_first_moby_in_group((int *)&cur, *(unsigned char *)(self + 0x21), 0, 0);
+    get_first_moby_in_group((int *)&cur, ((struct Moby *)self)->group, 0, 0);
     while (cur != 0) {
         if (((Moby *)cur)->visible != 0) {
             char *data = *(char **)&((Moby *)cur)->pvars;
-            if (((Moby *)cur)->oclass == *(short *)(self + 0xA6)) {
+            if (((Moby *)cur)->oclass == ((struct Moby *)self)->oclass) {
                 if ((*(int *)(data + 0xE0) & 0xFF) > 0x80) {
                     char *q = data + 0x80;
                     int i;

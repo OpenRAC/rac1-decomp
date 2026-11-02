@@ -1163,6 +1163,13 @@ char *find_nearest_thruster_pack_lock_green_moby_in_list(void *pos, int idx) {
 }
 
 // Sets the data fields 0x30 and 0x24 of each listed moby whose class is 0x247.
+struct SetThrusterPackLockGreenListDataFieldsVars {
+    u8 pad_00[0x24];
+    f32 unk_24;
+    u8 pad_28[0x8];
+    s32 unk_30;
+};
+
 void set_thruster_pack_lock_green_list_data_fields(int idx) {
     short *p = (short *)veldin2_moby_groups[idx];
     if (p != 0) {
@@ -1171,9 +1178,10 @@ void set_thruster_pack_lock_green_list_data_fields(int idx) {
             int off = (*p & 0x7FFF) << 8;
             char *moby = (char *)off + (int)base;
             if (((Moby *)moby)->oclass == MOBY_CLASS_THRUSTER_PACK_LOCK_GREEN) {
-                char *data = ((char *)((Moby *)moby)->pvars);
-                *(int *)(data + 0x30) = 1;
-                *(float *)(data + 0x24) = 1.5f;
+                struct SetThrusterPackLockGreenListDataFieldsVars *data =
+                    (struct SetThrusterPackLockGreenListDataFieldsVars *)((Moby *)moby)->pvars;
+                data->unk_30 = 1;
+                data->unk_24 = 1.5f;
             }
         } while (*p++ >= 0);
     }

@@ -605,6 +605,22 @@ extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern void FastVecSub(void *, void *, void *);
 extern void update_entity_matrix(char *, void *, void *, void *);
 
+struct FloatingPlatformUpdateVars {
+    u8 pad_00[0x3E];
+    s16 unk_3E;
+    u8 pad_40[0x20];
+    Vec4 unk_60;
+    u8 pad_70[0x30];
+    Vec4 unk_A0;
+    u8 pad_B0[0x58];
+    u8 unk_108[0x10];
+    u8 pad_118[0x108];
+    f32 unk_220;
+    f32 unk_224;
+    u8 pad_228[0x8];
+    s32 unk_230;
+};
+
 /* Floating platform: bobs on a slow wave above its start height (or above the moby it rides), and spins
  * its three rings. */
 void FloatingPlatformUpdate(char *m) {
@@ -621,11 +637,11 @@ void FloatingPlatformUpdate(char *m) {
             int i;
             ((Moby *)m)->anim_speed = random_float_between(0.5f, 0.8f);
             m[0x20] = 1;
-            *(float *)(d + 0x220) = ((Moby *)m)->pos.z + 15.0f;
+            ((struct FloatingPlatformUpdateVars *)d)->unk_220 = ((Moby *)m)->pos.z + 15.0f;
             ((unsigned char *)m)[0x30] = 0xFF;
-            *(short *)(d + 0x3E) = 0xD;
+            ((struct FloatingPlatformUpdateVars *)d)->unk_3E = 0xD;
             for (i = 0; i < 3; i++) {
-                ((float *)(d + 0x224))[i] = random_angle_radians();
+                (&((struct FloatingPlatformUpdateVars *)d)->unk_224)[i] = random_angle_radians();
             }
             break;
         }
@@ -634,7 +650,7 @@ void FloatingPlatformUpdate(char *m) {
             float bob = FastCos(FastNormalizeAngle(MobyGetFrameValue(m) * 6.2831855f / 118.0f)) * 0.75f;
             int i;
             for (i = 0; i < 3; i++) {
-                float *p = (float *)(d + 0x224) + i;
+                float *p = &((struct FloatingPlatformUpdateVars *)d)->unk_224 + i;
                 float a =
                     FastAddRots(*p, *(float *)&eudora_floating_platform_spin_rate_deg * 0.017453292f * g_frame_time_b);
                 float g = g_frame_scale_sq;
@@ -642,20 +658,20 @@ void FloatingPlatformUpdate(char *m) {
                 *(float *)(d + 0x108 + i * 0x80) = a;
                 EaseManipulatorOffsets(m, d + 0xA0 + i * 0x80, i, g * 0.03f, g * 0.3f);
             }
-            if (*(int *)(d + 0x230) != -1) {
-                char *o = eudora_mobys_b + (*(int *)(d + 0x230) << 8);
+            if (((struct FloatingPlatformUpdateVars *)d)->unk_230 != -1) {
+                char *o = eudora_mobys_b + (((struct FloatingPlatformUpdateVars *)d)->unk_230 << 8);
                 if (((Moby *)o)->oclass == MOBY_CLASS_BOLT_CRANK) {
                     off = *((float *)((Moby *)o)->pvars) * 15.0f;
                 }
             } else {
                 off = 15.0f;
             }
-            ((Moby *)m)->pos.z = *(float *)(d + 0x220) + bob - off;
+            ((Moby *)m)->pos.z = ((struct FloatingPlatformUpdateVars *)d)->unk_220 + bob - off;
             break;
         }
     }
     FastVecSub(delta, m + 0x10, old);
-    update_entity_matrix(d + 0x60, delta, m + 0x40, m + 0x40);
+    update_entity_matrix((char *)&((struct FloatingPlatformUpdateVars *)d)->unk_60, delta, m + 0x40, m + 0x40);
 }
 /* Transport ship update: deletes the moby at once. */
 void transport_ship_update(void *m) {
@@ -1412,18 +1428,32 @@ void *spawn_axe_moby(char *src, char *pos) {
     return m;
 }
 
+struct UpdateMobyTranslationDeltaMatrixVars {
+    u8 pad_00[0x20];
+    s32 unk_20;
+    s16 unk_24;
+    u8 pad_26[0x2];
+    s8 unk_28;
+    u8 pad_29[0x15];
+    s16 unk_3E;
+    u8 pad_40[0x20];
+    Vec4 unk_60;
+    u8 pad_70[0x30];
+    Vec4 unk_A0;
+};
+
 /* UpdateMoby_584 */
 void update_moby_translation_delta_matrix(char *m) {
-    char *d = ((char *)((Moby *)m)->pvars);
+    struct UpdateMobyTranslationDeltaMatrixVars *d = (struct UpdateMobyTranslationDeltaMatrixVars *)((Moby *)m)->pvars;
     float v[4];
-    FastVecSub(v, m + 0x10, d + 0xA0);
-    update_entity_matrix(d + 0x60, v, m + 0x40, m + 0x40);
-    qcopy(d + 0xA0, m + 0x10);
+    FastVecSub(v, m + 0x10, &d->unk_A0);
+    update_entity_matrix((char *)&d->unk_60, v, m + 0x40, m + 0x40);
+    qcopy(&d->unk_A0, m + 0x10);
     if (((Moby *)m)->state == 0) {
-        *(int *)(d + 0x20) = 0;
-        *(short *)(d + 0x24) = 0;
-        d[0x28] = 4;
-        *(short *)(d + 0x3E) = 0xD;
+        d->unk_20 = 0;
+        d->unk_24 = 0;
+        d->unk_28 = 4;
+        d->unk_3E = 0xD;
         copy_hero_moby_field_38(m);
         m[0x20] = 1;
     }
@@ -1866,6 +1896,15 @@ extern char eudora_lieutenant_respawn_point[];
 extern unsigned char saved_mission_state[];
 
 // UpdateMoby_1190: Updates the gate moby: checks the player's distance, then steps its four states.
+struct LieutenantUpdateVars {
+    u8 pad_00[0x4];
+    s16 unk_04;
+    u8 pad_06[0x6];
+    f32 unk_0C;
+    u8 pad_10[0x130];
+    s32 unk_140;
+};
+
 void lieutenant_update(char *m) {
     char *data = ((char *)((Moby *)m)->pvars);
     float a[4];
@@ -1890,17 +1929,17 @@ void lieutenant_update(char *m) {
             break;
         case 1:
             if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                            *(int *)(data + 0x140)) != 0) {
-                *(float *)(data + 0xC) = 255.0f;
+                                            ((struct LieutenantUpdateVars *)data)->unk_140) != 0) {
+                ((struct LieutenantUpdateVars *)data)->unk_0C = 255.0f;
             } else {
-                *(float *)(data + 0xC) = 1.0f;
+                ((struct LieutenantUpdateVars *)data)->unk_0C = 1.0f;
             }
             if (Npc_TryStartDialog(m, data) != 0) {
                 ((Moby *)m)->state = 2;
             }
             break;
         case 2:
-            if (*(short *)(data + 4) == 2) {
+            if (((struct LieutenantUpdateVars *)data)->unk_04 == 2) {
                 unlock_planet(6);
                 jet_clear_persistent(((Moby *)m)->mission);
                 vec_scale_to_length(a, m + 0xC0, 2.0f);

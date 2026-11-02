@@ -2588,33 +2588,33 @@ char *select_class5_target_or_hero(char *self, float *position, float *angles, i
     int i;
     (void)unused;
     for (i = 0; (candidate = active_mobies[i]) != 0; i++) {
-        char *classData = *(char **)(candidate + 0x24);
+        char *classData = *(char **)&((struct Moby *)candidate)->pclass;
         short classId = classData ? *(short *)(classData + 0x46) : 0;
         if (classId != 5)
             continue;
-        distance = FastVecDist(position, candidate + 0x10);
+        distance = FastVecDist(position, &((struct Moby *)candidate)->pos);
         if (distance > 40.0f)
             continue;
         if (distance > 30.0f)
             checkCollision = 0;
-        qcopy(target, candidate + 0x10);
+        qcopy(target, &((struct Moby *)candidate)->pos);
         target[2] += 0.4f;
         angleError = FastDiffRots(angles[2], fast_atan2(target[0] - position[0], target[1] - position[1]));
         angleError *= angleError;
         heightError = FastDiffRots(angles[1], fast_atan2(distance, target[2] - position[2]));
         heightError *= heightError;
         if (checkCollision) {
-            if (8.0f < FastAbsF(*(float *)(candidate + 0x18) - *(float *)(self + 0x18)))
+            if (8.0f < FastAbsF(((struct Moby *)candidate)->pos.z - *(float *)(self + 0x18)))
                 valid = 1;
             else
                 valid = coll_line_r2(position, target, 6, candidate, 0) != 0;
         } else {
-            valid = *(unsigned char *)(candidate + 0x31) == 0;
+            valid = ((struct Moby *)candidate)->visible == 0;
         }
         if (mode != 0 || !valid) {
             bonus = 0.0f;
             score = FastVecDist(position, target);
-            if (*(float *)(candidate + 0x18) - *(float *)(self + 0x18) > 3.25f)
+            if (((struct Moby *)candidate)->pos.z - *(float *)(self + 0x18) > 3.25f)
                 score += 15.0f;
             if (valid)
                 bonus = 5.0f;

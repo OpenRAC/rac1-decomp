@@ -248,6 +248,8 @@ extern void PostHitMessage(void *, int, int, void *, void *, float);
 
 extern float FastVecDot(void *, void *);
 
+struct HeroL11UpdateMovementVars {};
+
 /* Hero state machine: per-frame movement and physics for the current hero state (level 11 build). */
 void HeroL11_UpdateMovement(void) {
     FVec4 vec[14];

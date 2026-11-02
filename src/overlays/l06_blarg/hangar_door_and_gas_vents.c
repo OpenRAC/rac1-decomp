@@ -2425,11 +2425,11 @@ typedef struct {
 /* Alien queen update: wakes, rises, circles and chases the hero, attacks with probes and dies through its states. */
 void alien_queen_update(unsigned char *moby) {
     struct AlienQueenVars *data = (struct AlienQueenVars *)((Moby *)moby)->pvars;
-    char *target;
+    struct Moby *target;
     float v[4];
 
     update_alien_queen_hit_response_and_recovery(moby);
-    target = *(char **)&data->target;
+    target = (struct Moby *)(*(char **)&data->target);
     Manipulator_ApplyScale_q(moby, *(int *)&alien_queen_scale_manip_flag, 1.9f, &data->manip);
     if ((unsigned char)((Moby *)moby)->visible != 0 &&
         FastVecDist_q(&((struct Moby *)moby)->pos, blarg_camera_pos_q) < 45.0f) {
@@ -2475,7 +2475,7 @@ void alien_queen_update(unsigned char *moby) {
             if (data->unk_170 == 0) {
                 if (data->phase == 2)
                     return;
-                if (*(short *)(target + 0xA6) != 0)
+                if (target->oclass != MOBY_CLASS_RATCHET)
                     return;
                 data->unk_170 = 1;
                 data->timer2 = scale_ticks_q(10);
@@ -2569,15 +2569,14 @@ void alien_queen_update(unsigned char *moby) {
             MobyBlendAnimation_q(moby, 3, 0, scale_ticks_q(0x14));
             return;
         case 8: {
-            float dist = vec_distance_xy_q(&((struct Moby *)moby)->pos, target + 0x10);
-            float turn =
-                FastDiffRots_q(((Moby *)moby)->rot.z, fast_atan2_q(*(float *)(target + 0x10) - ((Moby *)moby)->pos.x,
-                                                                   *(float *)(target + 0x14) - ((Moby *)moby)->pos.y));
-            SteerAngleWithVelocity_q(&((struct Moby *)moby)->rot.z,
-                                     fast_atan2_q(*(float *)(target + 0x10) - ((Moby *)moby)->pos.x,
-                                                  *(float *)(target + 0x14) - ((Moby *)moby)->pos.y),
-                                     &data->unk_E0, g_frame_time_sq_q * 6.2831855f, g_frame_time_sq_q * 6.2831855f,
-                                     g_frame_time_q * 3.1415927f);
+            float dist = vec_distance_xy_q(&((struct Moby *)moby)->pos, &target->pos);
+            float turn = FastDiffRots_q(((Moby *)moby)->rot.z, fast_atan2_q(target->pos.x - ((Moby *)moby)->pos.x,
+                                                                            target->pos.y - ((Moby *)moby)->pos.y));
+            SteerAngleWithVelocity_q(
+                &((struct Moby *)moby)->rot.z,
+                fast_atan2_q(target->pos.x - ((Moby *)moby)->pos.x, target->pos.y - ((Moby *)moby)->pos.y),
+                &data->unk_E0, g_frame_time_sq_q * 6.2831855f, g_frame_time_sq_q * 6.2831855f,
+                g_frame_time_q * 3.1415927f);
             if (turn < 0.7853982f && *(float *)&alien_queen_attack_range < dist) {
                 ApproachValue_q(&data->unk_E8, *(float *)&alien_queen_walk_speed * g_frame_time_q,
                                 *(float *)&alien_queen_walk_accel * g_frame_time_sq_q);
@@ -2587,7 +2586,7 @@ void alien_queen_update(unsigned char *moby) {
             } else {
                 ApproachValue_q(&data->unk_E8, 0.0f, g_frame_time_sq_q * 8.0f);
             }
-            FastVecSub_q(v, target + 0x10, &((struct Moby *)moby)->pos);
+            FastVecSub_q(v, &target->pos, &((struct Moby *)moby)->pos);
             v[2] = 0.0f;
             vec_scale_to_length_q(v, v, data->unk_E8);
             FastVecAdd_q(&((struct Moby *)moby)->pos, &((struct Moby *)moby)->pos, v);

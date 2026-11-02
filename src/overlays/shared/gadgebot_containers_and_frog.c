@@ -2594,6 +2594,11 @@ typedef struct {
 } Iter;
 int func_L06_002F4720_r(char *moby, int flag) __asm__("func_L06_002F4720");
 
+struct L06002F4720RVars {
+    u8 pad_00[0x30C];
+    s32 unk_30C;
+};
+
 /* Runs the candidate check process_gadgebot_interaction_candidate over the moby's candidate list (or the global
    default list when it has none); returns the output of the first accepted candidate.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00297d10.c, FUN_L06_002f32f0. */
@@ -2607,7 +2612,7 @@ int func_L06_002F4720_r(char *moby, int flag) {
 
     state = ((char *)((Moby *)moby)->pvars);
     iter.out = 0;
-    list_id = *(int *)(state + 0x30C);
+    list_id = ((struct L06002F4720RVars *)state)->unk_30C;
     if (list_id != -1) {
         get_first_moby_in_group(&iter.list, list_id, 0, 0);
         while (iter.list != 0) {
@@ -2767,6 +2772,15 @@ extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void AddDrawCallback_r(void *, void *) __asm__("func_001F49B0");
 extern void draw_gadgebot_group_glow_effects_r(void *) __asm__("func_L06_002F4C00");
 
+struct UpdateGadgebotGlowEffectsVars {
+    u8 pad_00[0x140];
+    Vec4 unk_140;
+    u8 pad_150[0x13C];
+    f32 unk_28C;
+    s32 unk_290;
+    int *unk_294;
+};
+
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_00297d10.c, FUN_L06_002f38c8. */
 void update_gadgebot_glow_effects(char *obj) {
     char *d;
@@ -2788,8 +2802,9 @@ void update_gadgebot_glow_effects(char *obj) {
         tint = 0x32AA2828;
     }
 
-    *(f32 *)(d + 0x28C) = FastAddRots(*(f32 *)(d + 0x28C), g_frame_time * 2.9670596f);
-    f20 = 0.5f * FastSin(*(f32 *)(d + 0x28C)) + 1.0f;
+    ((struct UpdateGadgebotGlowEffectsVars *)d)->unk_28C =
+        FastAddRots(((struct UpdateGadgebotGlowEffectsVars *)d)->unk_28C, g_frame_time * 2.9670596f);
+    f20 = 0.5f * FastSin(((struct UpdateGadgebotGlowEffectsVars *)d)->unk_28C) + 1.0f;
 
     r = tint & 0xFF;
     b = (tint >> 16) & 0xFF;
@@ -2819,9 +2834,9 @@ void update_gadgebot_glow_effects(char *obj) {
     }
     {
         int dv = blarg_frame_count;
-        *(int *)(d + 0x290) = ((Moby *)obj)->glow_color;
+        ((struct UpdateGadgebotGlowEffectsVars *)d)->unk_290 = ((Moby *)obj)->glow_color;
         if (dv != 0) {
-            int *p = *(int **)(d + 0x294);
+            int *p = ((struct UpdateGadgebotGlowEffectsVars *)d)->unk_294;
             if (dv != *p) {
                 *p = dv;
                 AddDrawCallback_r(draw_gadgebot_group_glow_effects_r, obj);
@@ -2975,6 +2990,11 @@ extern void initialize_energy_sphere_holder_vars(char *);
 extern void update_energy_sphere_holder_beam_effects(char *);
 extern void PostHitMessage(void *, int, int, void *, void *, float);
 
+struct EnergySphereHolderUpdateVars {
+    u8 pad_00[0x40];
+    char *unk_40; /* 0x40 also void *; 3 uses */
+};
+
 /* Collectible spawner: unless already collected (save bit), spawns the pickup moby; marks the bit once it is taken. */
 void energy_sphere_holder_update(Moby *m) {
     char *d = ((char *)m->pvars);
@@ -3003,7 +3023,7 @@ void energy_sphere_holder_update(Moby *m) {
             *(float *)(o + 0x44) = random_angle_radians();
             *(float *)(o + 0x48) = random_angle_radians();
             *(float *)(o + 0x18) += 0.85f;
-            *(char **)(d + 0x40) = o;
+            ((struct EnergySphereHolderUpdateVars *)d)->unk_40 = o;
             m->state = 1;
             initialize_energy_sphere_holder_vars((char *)m);
             *(int *)(g_current_level_index_r * 256 + ((short)m->save_id >> 5) * 4 + (help_stats_base_r + 0xAB75)) &=
@@ -3013,10 +3033,11 @@ void energy_sphere_holder_update(Moby *m) {
         case 1: {
             struct HitMessage *h = (struct HitMessage *)MobyGetHitMessage(m, 0x330000, 0);
             if (h != 0) {
-                PostHitMessage(*(void **)(d + 0x40), *(int *)&h->source, 0x10000, h, &h->unk_10, 1.0f);
+                PostHitMessage(*(void **)&((struct EnergySphereHolderUpdateVars *)d)->unk_40, *(int *)&h->source,
+                               0x10000, h, &h->unk_10, 1.0f);
                 m->hit_slot = 0xFF;
             }
-            if ((*(char **)(d + 0x40))[0x20] < 0) {
+            if (((struct EnergySphereHolderUpdateVars *)d)->unk_40[0x20] < 0) {
                 m->command = 1;
                 m->state = 2;
                 *(int *)(g_current_level_index_r * 256 + ((short)m->save_id >> 5) * 4 + (help_stats_base_r + 0xAB75)) |=

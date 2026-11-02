@@ -1638,6 +1638,8 @@ char *spawn_spawner_egg(int owner, void *pos, void *rot, unsigned char a, unsign
 }
 extern void DeleteMoby(void *);
 
+struct RemoveSpawnerEggVars {};
+
 /* Clear the egg's slot in its live spawner, then delete the egg moby. */
 void remove_spawner_egg(void *moby, char *data) {
     char *other = *(char **)(data + 0x10);

@@ -170,6 +170,8 @@ extern int MobySphereHitDirectional(int, float, void *, int, float, float, int, 
 
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
 
+struct HeroL18UpdateStatePhysicsVars {};
+
 /* Hero state machine: per-frame movement and physics for the current hero state. */
 void HeroL18_UpdateStatePhysics(void) {
     FVec4 vec[14];

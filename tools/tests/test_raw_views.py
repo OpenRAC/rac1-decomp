@@ -17,6 +17,13 @@ class PlanTest(unittest.TestCase):
         self.assertEqual(plan("char *r = MobyGetHitMessage(a, 1, 0);\n*(int *)(r + 4) = 1;"), [("hit", "f", "r")])
         self.assertEqual(plan("char *d = (char *)((Moby *)a)->pvars;\n*(int *)(d + 4) = 1;"), [("pvars", "f", "d")])
 
+    def test_every_spelling_of_pvars(self):
+        for value in ("((char *)((Moby *)a)->pvars)", "a->pvars", "*(char **)(a + 0x78)", "g_hero.target->pvars"):
+            self.assertEqual(plan(f"char *d = {value};\n*(int *)(d + 4) = 1;"), [("pvars", "f", "d")], value)
+
+    def test_a_field_of_pvars_is_not_pvars(self):
+        self.assertEqual(plan("char *d = *(char **)(a->pvars + 4);\n*(int *)(d + 4) = 1;"), [])
+
     def test_a_second_value_rules_it_out(self):
         self.assertEqual(plan("char *m = CreateMoby(1);\nm = other;\n*(int *)(m + 4) = 1;"), [])
 

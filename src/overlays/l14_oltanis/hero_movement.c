@@ -408,6 +408,8 @@ extern float FastVecDot(void *, void *);
 
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
 
+struct HeroL14UpdateStatePhysicsVars {};
+
 /* Hero state machine: per-frame movement and physics for the current hero state. */
 void HeroL14_UpdateStatePhysics(void) {
     FVec4 vec[14];

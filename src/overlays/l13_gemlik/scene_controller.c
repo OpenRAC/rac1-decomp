@@ -444,6 +444,15 @@ extern void set_moby_color(void *, int, int, int);
 extern float g_frame_time MACRO_ADDR;
 
 // Creates an effect moby at a position and seeds its random wobble data.
+struct SpawnPoisonVesselEffectMobyVars {
+    u8 pad_00[0x10];
+    f32 unk_10;
+    f32 unk_14;
+    s16 unk_18;
+    s16 unk_1A;
+    f32 unk_1C;
+};
+
 char *spawn_poison_vessel_effect_moby(void *a, void *b, int c, int d) {
     unsigned char *m = (unsigned char *)CreateMoby(0x662);
     if (m != 0) {
@@ -459,14 +468,15 @@ char *spawn_poison_vessel_effect_moby(void *a, void *b, int c, int d) {
         qcopy(data, b);
         r1 = random_float_between(g_frame_time * 6.2831855f, g_frame_time * 12.566371f);
         dd = g_frame_time;
-        *(float *)(data + 0x10) = r1;
-        *(float *)(data + 0x14) = random_float_between(dd * 6.2831855f, dd * 12.566371f);
-        *(short *)(data + 0x18) = c;
-        *(short *)(data + 0x1A) = c;
+        ((struct SpawnPoisonVesselEffectMobyVars *)data)->unk_10 = r1;
+        ((struct SpawnPoisonVesselEffectMobyVars *)data)->unk_14 =
+            random_float_between(dd * 6.2831855f, dd * 12.566371f);
+        ((struct SpawnPoisonVesselEffectMobyVars *)data)->unk_18 = c;
+        ((struct SpawnPoisonVesselEffectMobyVars *)data)->unk_1A = c;
         if (d == 0) {
             ((Moby *)m)->scale = ((Moby *)m)->scale * random_float_between(0.5f, 0.75f);
         }
-        *(float *)(data + 0x1C) = ((Moby *)m)->scale;
+        ((struct SpawnPoisonVesselEffectMobyVars *)data)->unk_1C = ((Moby *)m)->scale;
         ((Moby *)m)->scale = ((Moby *)m)->scale * random_float_between(2.0f, 5.0f);
         ((Moby *)m)->command = d;
         moby_build_matrix(m);

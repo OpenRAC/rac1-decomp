@@ -959,6 +959,17 @@ extern void InitDirectionalHitQuery(char *arg, int a, int b, void *src, float sc
 extern void MobyBlendAnimation(void *, int, int, int);
 extern void moby_build_matrix(void *);
 
+struct SpawnMachinegunTurretProjectileVars {
+    u8 pad_00[0x18];
+    s8 unk_18;
+    s8 unk_19;
+    u8 pad_1A[0x16];
+    Vec4 unk_30;
+    Vec4 unk_40;
+    s32 unk_50;
+    s32 unk_54;
+};
+
 /* spawns a moby of class 0x370 at a position moving along a direction */
 unsigned char *spawn_machinegun_turret_projectile(void *pos, float *dir, int a, int b) {
     unsigned char *m = CreateMoby(0x370);
@@ -973,19 +984,19 @@ unsigned char *spawn_machinegun_turret_projectile(void *pos, float *dir, int a, 
         ((Moby *)m)->rot.y = -fast_atan2(vec_length_xy(dir), dir[2]);
         ((Moby *)m)->rot.z = fast_atan2(dir[0], dir[1]);
         qcopy(&((Moby *)m)->pos, pos);
-        qcopy(d + 0x40, pos);
-        qcopy(d + 0x30, dir);
-        qcopy(V, d + 0x30);
+        qcopy(&((struct SpawnMachinegunTurretProjectileVars *)d)->unk_40, pos);
+        qcopy(&((struct SpawnMachinegunTurretProjectileVars *)d)->unk_30, dir);
+        qcopy(V, &((struct SpawnMachinegunTurretProjectileVars *)d)->unk_30);
         V[2] = 0.0f;
         vec_set_length_xy(V, V, 1.0f);
         V[2] = 1.0f;
         InitDirectionalHitQuery(d, (int)m, 0x10001, V, 1.0f);
-        d[0x18] = 1;
-        d[0x19] = 1;
+        ((struct SpawnMachinegunTurretProjectileVars *)d)->unk_18 = 1;
+        ((struct SpawnMachinegunTurretProjectileVars *)d)->unk_19 = 1;
         MobyBlendAnimation(m, 1, 0, scale_ticks(5));
         *(short *)&((Moby *)m)->flags = 0x208;
-        *(int *)(d + 0x50) = a;
-        *(int *)(d + 0x54) = b;
+        ((struct SpawnMachinegunTurretProjectileVars *)d)->unk_50 = a;
+        ((struct SpawnMachinegunTurretProjectileVars *)d)->unk_54 = b;
         ((Moby *)m)->alpha = 0x10;
         moby_build_matrix(m);
     }
@@ -1076,6 +1087,14 @@ extern float random_angle_radians(void);
 extern float randf_sym(float lo, float hi);
 extern void moby_build_matrix(void *);
 
+struct SpawnBombomaticProjectileVars {
+    u8 pad_00[0x10];
+    s32 unk_10;
+    s32 unk_14;
+    f32 unk_18;
+    f32 unk_1C;
+};
+
 /* spawns a moby with random velocity and copies position */
 char *spawn_bombomatic_projectile(char *pos, char *vec, int c, short d) {
     char *m = CreateMoby_m(0x372);
@@ -1088,12 +1107,12 @@ char *spawn_bombomatic_projectile(char *pos, char *vec, int c, short d) {
         ((Moby *)m)->rot.x = random_angle_radians();
         ((Moby *)m)->rot.y = random_angle_radians();
         ((Moby *)m)->rot.z = random_angle_radians();
-        *(float *)(p + 0x18) = randf_sym(100.0f, 300.0f) * 0.017453292f * g_frame_time;
-        *(float *)(p + 0x1C) = randf_sym(100.0f, 300.0f) * 0.017453292f * g_frame_time;
+        ((struct SpawnBombomaticProjectileVars *)p)->unk_18 = randf_sym(100.0f, 300.0f) * 0.017453292f * g_frame_time;
+        ((struct SpawnBombomaticProjectileVars *)p)->unk_1C = randf_sym(100.0f, 300.0f) * 0.017453292f * g_frame_time;
         qcopy(&((Moby *)m)->pos, pos);
         qcopy(p, vec);
-        *(int *)(p + 0x10) = c;
-        *(int *)(p + 0x14) = d;
+        ((struct SpawnBombomaticProjectileVars *)p)->unk_10 = c;
+        ((struct SpawnBombomaticProjectileVars *)p)->unk_14 = d;
         moby_build_matrix(m);
     }
     return m;
@@ -1904,6 +1923,15 @@ extern long GetEffectTex(int);
 extern float split_float_fraction(void *, float);
 extern void draw_world_quad(void *, int, int);
 
+struct DrawFadingRingEffectVars {
+    u8 pad_00[0x8];
+    f32 unk_08;
+    u8 pad_0C[0x4];
+    f32 unk_10;
+    u8 pad_14[0x4];
+    s32 unk_18;
+};
+
 /* Draws a ring of fading quad bands around the moby. */
 void draw_fading_ring_effect(unsigned char *moby) {
     char packet[0x90] __attribute__((aligned(16)));
@@ -1913,12 +1941,12 @@ void draw_fading_ring_effect(unsigned char *moby) {
     int index = 0;
     unsigned int green = 0x80;
     float band = 0.0f;
-    char *data = ((char *)((Moby *)moby)->pvars);
+    struct DrawFadingRingEffectVars *data = (struct DrawFadingRingEffectVars *)((Moby *)moby)->pvars;
     unsigned int green_step = (green / 11) & 0xFF;
     float radius_threshold = 0.9f;
     float inner_scale = 0.96f;
     float pi = 3.1415927f;
-    *(long *)(packet + 0x78) = GetEffectTex(*(int *)(data + 0x18));
+    *(long *)(packet + 0x78) = GetEffectTex(data->unk_18);
     *(long *)(packet + 0x80) = 0xFF9000000260L;
     *(long *)(packet + 0x70) = 4;
     *(long *)(packet + 0x88) = 0x8000000048L;
@@ -1930,11 +1958,11 @@ void draw_fading_ring_effect(unsigned char *moby) {
         *(int *)(packet + 0x48) = color;
         *(int *)(packet + 0x44) = color;
         *(int *)(packet + 0x40) = color;
-        if (*(float *)(data + 8) < radius_threshold)
-            radius = *(float *)(data + 8) * band;
+        if (data->unk_08 < radius_threshold)
+            radius = data->unk_08 * band;
         else
-            radius = *(float *)(data + 8) - band * radius_threshold;
-        side = (1.0f - band * 0.5f) * *(float *)(data + 0x10);
+            radius = data->unk_08 - band * radius_threshold;
+        side = (1.0f - band * 0.5f) * data->unk_10;
         ft = IntToFloat(umbris_frame_count);
         phase = split_float_fraction(phase_work, ft / (band * 40.0f + 40.0f));
         if ((index & 1) == 0)
@@ -2019,13 +2047,22 @@ extern void draw_fading_ring_effect(unsigned char *);
 extern char *umbris_moby_list MACRO_ADDR;
 
 // Fades a moby in and out by its progress, then runs its per-moby callbacks.
+struct UpdateFadingRingEffectVars {
+    u8 pad_00[0x4];
+    f32 unk_04;
+    f32 unk_08;
+    f32 unk_0C;
+};
+
 void update_fading_ring_effect(unsigned char *m) {
     char *d = ((char *)((Moby *)m)->pvars);
     float r;
     char *p;
-    *(float *)(d + 8) = *(float *)(d + 8) + *(float *)(d + 0xC);
-    ((Moby *)m)->scale = *(float *)(d + 8);
-    r = (*(float *)(d + 8) - *(float *)d) / (*(float *)(d + 4) - *(float *)d);
+    ((struct UpdateFadingRingEffectVars *)d)->unk_08 =
+        ((struct UpdateFadingRingEffectVars *)d)->unk_08 + ((struct UpdateFadingRingEffectVars *)d)->unk_0C;
+    ((Moby *)m)->scale = ((struct UpdateFadingRingEffectVars *)d)->unk_08;
+    r = (((struct UpdateFadingRingEffectVars *)d)->unk_08 - *(float *)d) /
+        (((struct UpdateFadingRingEffectVars *)d)->unk_04 - *(float *)d);
     if (r < 0.2f) {
         ((Moby *)m)->alpha = truncate_float_to_s32(r * 5.0f * 127.0f);
     } else if (r > 0.8f) {
@@ -2048,6 +2085,11 @@ extern float random_angle_radians(void);
 extern void moby_build_matrix(void *);
 extern char *spawn_source_attached_fading_effect_particle(char *src, int col, int w, int v, float x);
 
+struct SpawnMobyClass1049Vars {
+    u8 pad_00[0x10];
+    s32 unk_10;
+};
+
 /* Spawn the class 0x419 effect moby at a position with a data block, and start its particle. */
 char *spawn_moby_class_1049(char *pos, char *vec, int arg) {
     char *m = CreateMoby_m(0x419);
@@ -2061,7 +2103,7 @@ char *spawn_moby_class_1049(char *pos, char *vec, int arg) {
         ((Moby *)m)->rot.z = random_angle_radians();
         qcopy(&((Moby *)m)->pos, pos);
         qcopy(data, vec);
-        *(int *)(data + 0x10) = arg;
+        ((struct SpawnMobyClass1049Vars *)data)->unk_10 = arg;
         ((Moby *)m)->alpha = 0x30;
         ((Moby *)m)->flags |= 0x200;
         moby_build_matrix(m);

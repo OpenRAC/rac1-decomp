@@ -274,6 +274,8 @@ extern int Moby_PlaySound(int, int, int);
 
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
 
+struct HeroL08UpdateStatePhysicsVars {};
+
 /* Hero state machine: per-frame movement and physics for the current hero state. */
 void HeroL08_UpdateStatePhysics(void) {
     FVec4 vec[14];

@@ -2160,18 +2160,18 @@ void hero_update_items(void) {
                             }
                         }
                     }
-                    if ((*(unsigned char *)(obj + 0x70) & 2) && *(unsigned char *)(obj + 0x53) == 0) {
+                    if ((((struct Moby *)obj)->anim_flags & 2) && ((struct Moby *)obj)->prev_seq == 0) {
                         MobyBlendAnimation(obj, 1, 0, 2);
                     }
                     break;
                 case 3:
                     SLOT(i)->items[0].released_frames++;
-                    if ((*(unsigned char *)(obj + 0x70) & 2) || i == 1 || i == 0) {
+                    if ((((struct Moby *)obj)->anim_flags & 2) || i == 1 || i == 0) {
                         clear_hero_item_slot(i, rendered_frame_count + 2);
                     }
                     break;
             }
-            if (obj != 0 && *(unsigned char *)(obj + 0x20) != 0xFE && *(unsigned char *)(obj + 0x20) != 0xFD) {
+            if (obj != 0 && ((struct Moby *)obj)->state != 0xFE && ((struct Moby *)obj)->state != 0xFD) {
                 if (i != 6 && *(int *)(obj + 0x74) != 0) {
                     (*(void (**)(char *))(obj + 0x74))(obj);
                 }

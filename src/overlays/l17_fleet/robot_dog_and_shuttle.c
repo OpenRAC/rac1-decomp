@@ -1709,12 +1709,23 @@ void blarg_ship_1843_update(unsigned char *moby) {
 }
 LINKER_REMNANT("asm/overlays", func_L17_002F6AF0);
 
+struct TryActivateBlargShipFromListVars {
+    u8 pad_00[0x6C];
+    f32 unk_6C;
+    u8 pad_70[0x18];
+    s32 unk_88;
+    u8 pad_8C[0x8];
+    f32 unk_94;
+    u8 pad_98[0x18];
+    Vec4 unk_B0;
+};
+
 /* Finds the listed moby of type 0x733 in state 4 and launches it along a rotated vector. */
 char *try_activate_blarg_ship_from_list(int list) {
     short *s = fleet_moby_groups[list];
     float A[4], B[4], C[4], D[4], E[4], F[4];
     char *m;
-    char *d;
+    struct TryActivateBlargShipFromListVars *d;
     int idx;
     do {
         idx = (*s & 0x7FFF) << 8;
@@ -1725,7 +1736,7 @@ char *try_activate_blarg_ship_from_list(int list) {
         if (random_integer_below(10))
             continue;
         m = fleet_mobys + idx;
-        d = ((char *)((Moby *)m)->pvars);
+        d = (struct TryActivateBlargShipFromListVars *)((Moby *)m)->pvars;
         qcopy(C, fleet_camera_rot);
         C[0] = 0;
         if (C[1] > 0.17453292f)
@@ -1734,7 +1745,7 @@ char *try_activate_blarg_ship_from_list(int list) {
             C[1] = -0.17453292f;
         euler_rotation_basis(D, C);
         {
-            float f = FastAddRots(0.7853982f, (float)*(int *)(d + 0x88) * 1.5707964f);
+            float f = FastAddRots(0.7853982f, (float)d->unk_88 * 1.5707964f);
             vec_scale_to_length(A, E, FastSin(f) * 12.0f);
             FastVecAdd(B, fleet_camera_pos, A);
             vec_scale_to_length(A, F, FastCos(f) * 12.0f);
@@ -1742,12 +1753,12 @@ char *try_activate_blarg_ship_from_list(int list) {
         FastVecAdd(B, B, A);
         vec_scale_to_length(A, D, 6.0f);
         FastVecAdd(B, B, A);
-        qcopy(d + 0xB0, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
+        qcopy(&d->unk_B0, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
         qcopy(&((struct Moby *)m)->pos, B);
         ((struct Moby *)m)->state = 5;
         ((struct Moby *)m)->command = 1;
-        *(float *)(d + 0x6C) = g_frame_time * 20.0f;
-        *(float *)(d + 0x94) = 5.0f;
+        d->unk_6C = g_frame_time * 20.0f;
+        d->unk_94 = 5.0f;
         if (((Moby *)m)->prev_seq)
             MobyBlendAnimation(m, 0, 0, scale_ticks(10));
         ((Moby *)m)->flags &= 0xFFFE;

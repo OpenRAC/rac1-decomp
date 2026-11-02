@@ -185,17 +185,17 @@ extern void set_ground_height_band(void *);
 void toxic_crab_update(Moby *m) {
     int see = 0;
     Crab2E30F8 *d = (Crab2E30F8 *)m->pvars;
-    char *t;
+    struct Moby *t;
     float from[4];
     float to[4];
 
     update_toxic_crab_hit_reactions_and_targeting(m);
-    t = d->tgt;
+    t = (struct Moby *)d->tgt;
     m->scale = *(float *)(((char *)m->pclass) + 0x24) * *(float *)&toxic_crab_scale;
     Manipulator_ApplyScale(2.5f, (int)m, 2, d->q2B0);
     *(u128_2E30F8 *)from = *(u128_2E30F8 *)((float *)&m->pos);
     from[2] += 1.0f;
-    *(u128_2E30F8 *)to = *(u128_2E30F8 *)(t + 0x10);
+    *(u128_2E30F8 *)to = *(u128_2E30F8 *)&t->pos;
     to[2] += 1.0f;
     if (FastVecDist(from, to) < 15.0f &&
         !(from[0] < 2.0f || 1021.0f < from[0] || from[1] < 2.0f || 1021.0f < from[1] || from[2] < 2.0f ||
@@ -203,7 +203,7 @@ void toxic_crab_update(Moby *m) {
         !(to[0] < 2.0f || 1021.0f < to[0] || to[1] < 2.0f || 1021.0f < to[1] || to[2] < 2.0f || 1021.0f < to[2])) {
         see = coll_line(from, to, 2, m, 0) == 0;
     }
-    if (!see || (!(FastAbsF(*(float *)(t + 0x18) - m->pos.z) < 1.0f) &&
+    if (!see || (!(FastAbsF(t->pos.z - m->pos.z) < 1.0f) &&
                  is_moby_in_class_range_500_to_540(
                      *(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->ground_moby) == 0)) {
         see = 0;
@@ -352,19 +352,19 @@ void toxic_crab_update(Moby *m) {
                 float diff;
                 float aim;
 
-                dist = FastVecDist(&m->pos, t + 0x10);
-                if (dist > (*(short *)(t + 0xA6) == 0x359 ? 2.0f : 3.57f)) {
+                dist = FastVecDist(&m->pos, &t->pos);
+                if (dist > (t->oclass == MOBY_CLASS_GADGEBOT_857 ? 2.0f : 3.57f)) {
                     ApproachValue(&d->fF4, d->f1A4 * g_frame_time, g_frame_time_sq * 8.0f);
                 } else {
                     ApproachValue(&d->fF4, d->f1A4 * g_frame_time * 0.3f, g_frame_time_sq * 20.0f);
                 }
                 *(u128_2E30F8 *)old = *(u128_2E30F8 *)((float *)&m->pos);
-                if (see && FastAbsF(dist - (*(short *)(t + 0xA6) == 0x359 ? 2.0f : 3.57f)) < 0.35f) {
+                if (see && FastAbsF(dist - (t->oclass == MOBY_CLASS_GADGEBOT_857 ? 2.0f : 3.57f)) < 0.35f) {
                     ApproachValue(&d->fF4, 0.0f, g_frame_time_sq * 30.0f);
                 } else if (d->i1D8 != 0) {
                     ApproachValue(&d->fF4, 0.0f, g_frame_time_sq * 10.0f);
                 }
-                ang = fast_atan2(*(float *)(t + 0x10) - m->pos.x, *(float *)(t + 0x14) - m->pos.y);
+                ang = fast_atan2(t->pos.x - m->pos.x, t->pos.y - m->pos.y);
                 diff = FastDiffRots(ang, m->rot.z);
                 if (0.87266463f < diff) {
                     float lim = d->f1A4 * g_frame_time * 0.25f;
@@ -376,10 +376,10 @@ void toxic_crab_update(Moby *m) {
                     MobySpringTurn((char *)m, &d->f190, ang, 0.02f, 0.3f, g_frame_time * 6.2831855f);
                 }
                 aim = compute_toxic_crab_group_approach_angle((char *)m);
-                v[0] = FastCos(aim) * (*(short *)(t + 0xA6) == 0x359 ? 2.0f : 3.57f);
-                v[1] = FastSin(aim) * (*(short *)(t + 0xA6) == 0x359 ? 2.0f : 3.57f);
+                v[0] = FastCos(aim) * (t->oclass == MOBY_CLASS_GADGEBOT_857 ? 2.0f : 3.57f);
+                v[1] = FastSin(aim) * (t->oclass == MOBY_CLASS_GADGEBOT_857 ? 2.0f : 3.57f);
                 v[2] = 0.0f;
-                FastVecAdd(v, v, t + 0x10);
+                FastVecAdd(v, v, &t->pos);
                 if (((Hero2E30F8 *)(hero_globals_base + 0xE1D))->f20A4 != 1) {
                     float rot = m->rot.z;
                     int r;
@@ -393,7 +393,7 @@ void toxic_crab_update(Moby *m) {
                         float to2[4];
                         *(u128_2E30F8 *)from2 = *(u128_2E30F8 *)((float *)&m->pos);
                         from2[2] += 1.0f;
-                        *(u128_2E30F8 *)to2 = *(u128_2E30F8 *)(t + 0x10);
+                        *(u128_2E30F8 *)to2 = *(u128_2E30F8 *)&t->pos;
                         to2[2] += 1.0f;
                         if (coll_line(from2, to2, 2, m, 0)) {
                             char *h = ground_hit;
@@ -453,7 +453,8 @@ void toxic_crab_update(Moby *m) {
                         d->i164 == 2) {
                         m->state = 8;
                         MobyBlendAnimation(m, 4, 0, scale_ticks(0xC));
-                    } else if (vec_distance_xy(&m->pos, t + 0x10) < (*(short *)(t + 0xA6) == 0x359 ? 2.45f : 4.02f)) {
+                    } else if (vec_distance_xy(&m->pos, &t->pos) <
+                               (t->oclass == MOBY_CLASS_GADGEBOT_857 ? 2.45f : 4.02f)) {
                         if (((Hero2E30F8 *)(hero_globals_base + 0xE1D))->f1C0 < scale_ticks(10) && diff < 0.34906584f &&
                             see) {
                             int anim = 7;
@@ -471,7 +472,7 @@ void toxic_crab_update(Moby *m) {
         case 6: {
             float diff;
 
-            diff = FastDiffRots(fast_atan2(*(float *)(t + 0x10) - m->pos.x, *(float *)(t + 0x14) - m->pos.y), m->rot.z);
+            diff = FastDiffRots(fast_atan2(t->pos.x - m->pos.x, t->pos.y - m->pos.y), m->rot.z);
             if (0.87266463f < diff) {
                 float lim = d->f1A4 * g_frame_time * 0.25f;
                 if (lim < d->fF4) {
@@ -485,7 +486,7 @@ void toxic_crab_update(Moby *m) {
                 int ok = 1;
                 *(u128_2E30F8 *)from2 = *(u128_2E30F8 *)((float *)&m->pos);
                 from2[2] += 1.0f;
-                *(u128_2E30F8 *)to2 = *(u128_2E30F8 *)(t + 0x10);
+                *(u128_2E30F8 *)to2 = *(u128_2E30F8 *)&t->pos;
                 to2[2] += 1.0f;
                 if (coll_line(from2, to2, 2, m, 0)) {
                     char *h = ground_hit;
@@ -507,7 +508,7 @@ void toxic_crab_update(Moby *m) {
                 if ((((Hero2E30F8 *)(hero_globals_base + 0xE1D))->f20A4 == 1 ? 1.0f : 30.0f) < home || d->i164 == 2) {
                     m->state = 8;
                     MobyBlendAnimation(m, 4, 0, scale_ticks(0xC));
-                } else if (vec_distance_xy(&m->pos, t + 0x10) < (*(short *)(t + 0xA6) == 0x359 ? 2.45f : 4.02f)) {
+                } else if (vec_distance_xy(&m->pos, &t->pos) < (t->oclass == MOBY_CLASS_GADGEBOT_857 ? 2.45f : 4.02f)) {
                     if (((Hero2E30F8 *)(hero_globals_base + 0xE1D))->f1C0 < scale_ticks(10) &&
                         diff < *(float *)&toxic_crab_pursuit_heading_threshold_degrees_gp * 0.017453292f && see) {
                         int anim = 7;
@@ -525,7 +526,7 @@ void toxic_crab_update(Moby *m) {
             float ang;
 
             fr = MobyGetFrameValue(m);
-            ang = fast_atan2(*(float *)(t + 0x10) - m->pos.x, *(float *)(t + 0x14) - m->pos.y);
+            ang = fast_atan2(t->pos.x - m->pos.x, t->pos.y - m->pos.y);
             MobySpringTurn((char *)m, &d->f190, ang, 0.03f, 0.3f, g_frame_time * 6.2831855f);
             if (m->prev_seq >= 6 && m->prev_seq <= 7 && 4.0f <= fr && fr <= 7.0f) {
                 Hit2E30F8 hit;
@@ -582,11 +583,10 @@ void toxic_crab_update(Moby *m) {
                 float ang;
 
                 ApproachValue(&d->fF4, d->f1A4 * 3.0f * g_frame_time, g_frame_time_sq * 20.0f);
-                ang = fast_atan2(*(float *)(t + 0x10) - m->pos.x, *(float *)(t + 0x14) - m->pos.y);
+                ang = fast_atan2(t->pos.x - m->pos.x, t->pos.y - m->pos.y);
                 MobySpringTurn((char *)m, &d->f190, ang, 0.02f, 0.3f, g_frame_time * 6.2831855f);
                 rot = m->rot.z;
-                m->rot.z =
-                    FastAddRots(fast_atan2(*(float *)(t + 0x10) - m->pos.x, *(float *)(t + 0x14) - m->pos.y), 3.14159f);
+                m->rot.z = FastAddRots(fast_atan2(t->pos.x - m->pos.x, t->pos.y - m->pos.y), 3.14159f);
                 dir[0] = FastCos(m->rot.z) * 2.0f;
                 dir[1] = FastSin(m->rot.z) * 2.0f;
                 dir[2] = 0.0f;
@@ -594,7 +594,7 @@ void toxic_crab_update(Moby *m) {
                 m->rot.z = rot;
                 if (see) {
                     if (fast_dec_timer(&d->i1A8) ||
-                        *(float *)&toxic_crab_back_away_distance_limit_gp < FastVecDist(&m->pos, t + 0x10)) {
+                        *(float *)&toxic_crab_back_away_distance_limit_gp < FastVecDist(&m->pos, &t->pos)) {
                         int anim;
                         m->state = 7;
                         d->fF4 = g_frame_time * 5.0f;

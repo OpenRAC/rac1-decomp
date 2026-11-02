@@ -466,6 +466,8 @@ extern float FastVecDot(void *, void *);
 
 extern int MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
 
+struct HeroUpdateStatePhysicsL15Vars {};
+
 /* Hero state machine: per-frame movement and physics for the current hero state (level 15 build). */
 void Hero_UpdateStatePhysicsL15(void) {
     FVec4 vec[14];

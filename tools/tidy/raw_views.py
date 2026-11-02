@@ -32,7 +32,8 @@ RULES = {
     "memcard": (r"(?:\([^()]*\)\s*)?&?memory_card_state\s*;", "MemoryCardState", "structs/memcard.h"),
     "hit": (r"(?:\([^()]*\)\s*)?MobyGetHitMessage(?:_r)?\s*\(", "struct HitMessage", "structs/hit_message.h"),
 }
-PVARS = r"(?:\([^()]*\)\s*)?(?:\(\s*\([^()]*\)\s*\w+\s*\)->pvars|\w+->pvars|\*\s*\(\s*\w+\s*\*+\s*\)\s*\(\s*\w+\s*\+\s*0x78\s*\))"
+PVARS = (r"(?:(?:\(+\s*(?:unsigned\s+)?char\s*\*\s*\)\s*)?\(*\s*(?:\(\s*(?:struct\s+)?Moby\s*\*\s*\)\s*)?[\w.]+\s*\)*\s*->\s*pvars\s*\)*"
+         r"|\*\s*\(\s*(?:unsigned\s+)?char\s*\*\*\s*\)\s*\(\s*\w+\s*\+\s*0x78\s*\))\s*;")
 
 
 def sole_source(body, var, pattern):

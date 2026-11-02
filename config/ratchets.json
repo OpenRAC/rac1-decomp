@@ -5,7 +5,7 @@
   "extern_lines": 31497,
   "fakematch_tags": 31,
   "float_int_casts": 2408,
-  "hex_compares": 4121,
+  "hex_compares": 4113,
   "ids_in_comments": 110,
   "include_asm": 206,
   "local_struct_typedefs": 2847,
@@ -13,7 +13,7 @@
   "numbered_names": 269,
   "oclass_literals": 175,
   "offsets_in_comments": 1007,
-  "raw_offset_casts": 6185,
+  "raw_offset_casts": 5965,
   "tab_lines": 0,
   "worker_notes_in_comments": 0
 }

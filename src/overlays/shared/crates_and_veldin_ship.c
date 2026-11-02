@@ -3356,31 +3356,45 @@ void infobot_update(struct Moby *moby) {
     }
 }
 
+struct InitializeMobyParticleEffectVars {
+    u8 pad_00[0x10];
+    Vec4 unk_10;
+    f32 unk_20;
+    f32 unk_24;
+    f32 unk_28;
+    f32 unk_2C;
+    Vec4 unk_30;
+    f32 unk_40;
+    f32 unk_44;
+    f32 unk_48;
+    f32 unk_4C;
+};
+
 /* Fills the random float, constant and random int slots of a moby's data block. */
 void initialize_moby_particle_effect(char *a) {
-    char *d = ((char *)((Moby *)a)->pvars);
-    char *p = d + 0x10;
+    struct InitializeMobyParticleEffectVars *d = (struct InitializeMobyParticleEffectVars *)((Moby *)a)->pvars;
+    char *p = (char *)&d->unk_10;
     int i;
     int arg;
     for (i = 3; i >= 0; i--) {
         *(float *)p = random_integer_below(0xFF);
         p += 4;
     }
-    p = d + 0x30;
-    *(float *)(d + 0x20) = -1.0f;
-    *(float *)(d + 0x24) = -2.25f;
-    *(float *)(d + 0x28) = 1.25f;
-    *(float *)(d + 0x2C) = 2.5f;
+    p = (char *)&d->unk_30;
+    d->unk_20 = -1.0f;
+    d->unk_24 = -2.25f;
+    d->unk_28 = 1.25f;
+    d->unk_2C = 2.5f;
     arg = 0x3F;
     for (i = 3; i >= 0; i--) {
         *(int *)p = scale_ticks(arg);
         arg += 0x40;
         p += 4;
     }
-    *(float *)(d + 0x40) = 2.5f;
-    *(float *)(d + 0x44) = 3.0f;
-    *(float *)(d + 0x4C) = 2.5f;
-    *(float *)(d + 0x48) = 3.0f;
+    d->unk_40 = 2.5f;
+    d->unk_44 = 3.0f;
+    d->unk_4C = 2.5f;
+    d->unk_48 = 3.0f;
 }
 typedef int ti_p __attribute__((mode(TI)));
 typedef struct {
@@ -3859,9 +3873,17 @@ extern float smoke_particle_scroll[];
 extern float smoke_particle_scroll_speed[];
 extern char smoke_particle_is_mesh[];
 
+struct InitializeSmokeFireSpawnerMeshParticleVars {
+    u8 pad_00[0x44];
+    f32 unk_44;
+    u8 pad_48[0x4];
+    f32 unk_4C;
+};
+
 /* initialises the random wobble parameters of slot idx */
 void initialize_smoke_fire_spawner_mesh_particle(char *m, int idx) {
-    char *data = ((char *)((Moby *)m)->pvars);
+    struct InitializeSmokeFireSpawnerMeshParticleVars *data =
+        (struct InitializeSmokeFireSpawnerMeshParticleVars *)((Moby *)m)->pvars;
     float a, b, r;
     float *w;
     r = randf_sym(0.0f, 1.0f);
@@ -3869,8 +3891,8 @@ void initialize_smoke_fire_spawner_mesh_particle(char *m, int idx) {
     w[0] = r;
     w[1] = randf_sym(0.0f, 1.0f);
     w[2] = randf_sym(0.0f, 1.0f);
-    a = *(float *)(data + 0x44);
-    b = *(float *)(data + 0x4C);
+    a = data->unk_44;
+    b = data->unk_4C;
     smoke_particle_speed_a[idx] = random_float_between(a, a + 2.0f);
     smoke_particle_speed_b[idx] = random_float_between(b, b + 4.0f);
     smoke_particle_scroll[idx] = 0.0f;

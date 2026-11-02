@@ -25,6 +25,12 @@ class IsMobyTest(unittest.TestCase):
         self.assertIsNone(mv.is_moby(body, "m", "update_range"))
         self.assertTrue(mv.is_moby(body, "m", "update_moby_range"))
 
+    def test_another_name_needs_more(self):
+        one = "*(short *)(t + 0xA6);"
+        self.assertIsNone(mv.is_moby(one, "t"))
+        self.assertIsNone(mv.is_moby("*(float *)(t + 0x10); *(unsigned char *)(t + 0x20); *(unsigned short *)(t + 0x34);", "t"))
+        self.assertTrue(mv.is_moby("*(float *)(t + 0x10); *(float *)(t + 0x14); *(short *)(t + 0xA6);", "t"))
+
     def test_a_wrong_size_does_not_fit(self):
         self.assertFalse(mv.access_fits("int", "*", 0x34))
         self.assertTrue(mv.access_fits("short", "*", 0x34))

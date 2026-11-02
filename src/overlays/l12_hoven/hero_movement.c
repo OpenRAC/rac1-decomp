@@ -500,6 +500,8 @@ extern void update_hero_target_speed_from_stick(void);
 extern void hero_integrate_velocity(void);
 extern void steer_hero_planar_velocity(float);
 
+struct HeroUpdateStatePhysicsL12Vars {};
+
 /* Hero state machine: per-frame movement and physics for the current hero state (level 12 build). */
 void Hero_UpdateStatePhysicsL12(void) {
     FVec4 vec[14];

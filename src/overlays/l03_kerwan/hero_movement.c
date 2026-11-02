@@ -208,6 +208,8 @@ extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
 extern int find_nearest_path_point(void *, void *, void *, int *, float *, int, float, float, float);
 extern void spawn_color_decaying_effect_particle(char *, char *, int);
 
+struct HeroL03UpdateStatePhysicsVars {};
+
 /* Hero state machine: per-frame movement and physics for the current hero state (level 03 build). */
 void HeroL03_UpdateStatePhysics(void) {
     FVec4 vec[14];

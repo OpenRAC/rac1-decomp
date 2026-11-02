@@ -296,15 +296,15 @@ extern char *CreateMoby(int);
 extern void moby_build_matrix(void *);
 
 /* spawns a moby of a class copying the source moby's placement, scaled */
-void spawn_moby_from_placement(char *src, int oClass) {
+void spawn_moby_from_placement(struct Moby *src, int oClass) {
     struct Moby *m = (struct Moby *)CreateMoby(oClass);
     if (m != 0) {
         m->draw_dist = 0xFF;
         m->visible = 1;
-        m->scale = m->scale * (*(float *)(src + 0x2C) / *(float *)(*(char **)(src + 0x24) + 0x24));
-        qcopy(&m->pos, src + 0x10);
-        qcopy(&m->rot, src + 0x40);
-        *(long *)&m->spawn_frame = *(long *)(src + 0x38);
+        m->scale = m->scale * (src->scale / *(float *)(*(char **)&src->pclass + 0x24));
+        qcopy(&m->pos, &src->pos);
+        qcopy(&m->rot, &src->rot);
+        *(long *)&m->spawn_frame = *(long *)&src->spawn_frame;
         m->update_dist = 0;
         m->flags = 0;
         moby_build_matrix(m);

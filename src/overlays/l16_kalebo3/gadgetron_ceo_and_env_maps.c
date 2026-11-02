@@ -841,14 +841,24 @@ typedef struct {
     L16RingVector basis[3];
     L16RingVector position;
 } L16RingMatrix;
+struct DrawRingStackVars {
+    u8 pad_00[0xA0];
+    s32 unk_A0;
+    u8 pad_A4[0xC];
+    f32 unk_B0;
+    u8 pad_B4[0x4];
+    f32 unk_B8;
+    f32 unk_BC;
+};
+
 /* Draw stacked alternating rings with a rotating transformation and interpolated tint. */
 void DrawRingStack(char *m) {
     L16RingPacket packet;
     L16RingMatrix matrix;
-    char *d = ((char *)((Moby *)m)->pvars);
-    int bound_index = (((struct RingStackVars *)d)->bound_index) << 7;
+    struct DrawRingStackVars *d = (struct DrawRingStackVars *)((Moby *)m)->pvars;
+    int bound_index = (d->unk_A0) << 7;
     char *entry = (char *)(bound_index + (int)kalebo3_level_cylinders);
-    float translation = (((struct RingStackVars *)d)->translation);
+    float translation = (d->unk_B8);
     float lower = (*(float *)((char *)entry + 0x38));
     float half = (*(float *)((char *)entry + 0x28));
     float upper = lower + half + translation;
@@ -862,8 +872,7 @@ void DrawRingStack(char *m) {
     lower = lower - half;
     lower += translation;
     color = FastTweenColor((*(int *)&elevator_ring_color_start), (*(int *)&elevator_ring_color_end),
-                           FastAbsF((((struct RingStackVars *)d)->speed)) /
-                               ((*(float *)&elevator_max_speed) * g_frame_time));
+                           FastAbsF((d->unk_B0)) / ((*(float *)&elevator_max_speed) * g_frame_time));
     copy_matrix_rotation(&matrix, m + 0xC0);
     qcopy(matrix.position, m + 16);
     matrix.position[2] = lower;
@@ -927,7 +936,7 @@ void DrawRingStack(char *m) {
                 packet.color[0] = color;
                 draw_world_quad(&packet, transform, 0);
             }
-            matrix.position[2] += (*(float *)((char *)d + 0xBC));
+            matrix.position[2] += (d->unk_BC);
         } while (matrix.position[2] < upper);
     }
 }

@@ -3500,24 +3500,33 @@ void WaterSurfaceUpdate(Moby *moby) {
 extern char water_records[];
 
 // copies the moby's x position onto each linked moby of type 0x33F, following the parent's offset
+struct SynchronizeGroupWaterHeightsVars {
+    u8 pad_00[0x4];
+    f32 unk_04;
+    u8 pad_08[0x4];
+    s32 unk_0C;
+    u8 pad_10[0x4];
+    s32 unk_14;
+};
+
 void synchronize_group_water_heights(char *moby) {
-    char *data = ((char *)((Moby *)moby)->pvars);
+    struct SynchronizeGroupWaterHeightsVars *data = (struct SynchronizeGroupWaterHeightsVars *)((Moby *)moby)->pvars;
     short *p = rilgar_moby_groups[((Moby *)moby)->group];
     char (*base)[256] = (char (*)[256])moby_pool_4f60;
     do {
         int idx = *p & 0x7FFF;
         char *m = (char *)(idx * 256 + (int)base);
         if (((Moby *)m)->oclass == MOBY_CLASS_WATER_831) {
-            char *d2 = ((char *)((Moby *)m)->pvars);
+            struct SynchronizeGroupWaterHeightsVars *d2 = (struct SynchronizeGroupWaterHeightsVars *)((Moby *)m)->pvars;
             char *q;
             float f;
-            if (*(int *)(data + 0xC) != 0 || *(float *)(d2 + 4) == *(float *)(data + 4)) {
+            if (data->unk_0C != 0 || d2->unk_04 == data->unk_04) {
                 f = ((Moby *)moby)->pos.z;
             } else {
-                f = *(float *)(d2 + 4) + (((Moby *)moby)->pos.z - *(float *)(data + 4));
+                f = d2->unk_04 + (((Moby *)moby)->pos.z - data->unk_04);
             }
             ((Moby *)m)->pos.z = f;
-            q = water_records + *(int *)(d2 + 0x14) * 0x1190;
+            q = water_records + d2->unk_14 * 0x1190;
             *(float *)(q + 8) = *(float *)(base[idx] + 0x18);
         }
     } while (*p++ >= 0);
