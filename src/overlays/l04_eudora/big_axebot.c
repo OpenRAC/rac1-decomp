@@ -18,6 +18,8 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
+extern struct Hero g_hero;
+extern u8 voice_pool[];
 /* Blarg trooper: walks an Eudora path, swings its weapon at the hero. */
 struct BlargTrooperVars {
     u8 pad_00[0x20];
@@ -574,7 +576,6 @@ extern void matrix_copy_rows(void *, void *);
 
 extern void *spawn_axe_moby(void *, void *);
 
-extern unsigned char hero_globals_base[];
 extern float eudora_camera_pos[4];
 extern int eudora_game_mode MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
@@ -648,14 +649,14 @@ void big_axebot_update(M_B7B0 *moby) {
         r = ComputeHitResponse(moby, hit, &data->hp, 0, &tmp, &dmg, 0, 4);
         if (hit != 0 && dmg != 0.0f && moby->state != 0) {
             if (hit->att != 0) {
-                H_B7B0 *h = (H_B7B0 *)(hero_globals_base + 0xE1D);
+                H_B7B0 *h = (H_B7B0 *)(&g_hero);
                 if (hit->att != h->f1090) {
                     ang2 = fast_atan2(moby->pos[0] - hit->att->pos[0], moby->pos[1] - hit->att->pos[1]);
                 } else {
                     ang2 = fast_atan2(moby->pos[0] - h->pos[0], moby->pos[1] - h->pos[1]);
                 }
             } else {
-                H_B7B0 *h = (H_B7B0 *)(hero_globals_base + 0xE1D);
+                H_B7B0 *h = (H_B7B0 *)(&g_hero);
                 ang2 = fast_atan2(moby->pos[0] - h->pos[0], moby->pos[1] - h->pos[1]);
             }
             data->fD4 = g_frame_time_sq * 12.0f;
@@ -810,8 +811,7 @@ void big_axebot_update(M_B7B0 *moby) {
                 }
             }
             if (data->f430 != -1 && data->f434 != -1 && data->f43A == 0 &&
-                (flag || is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                                     data->f430) != 0)) {
+                (flag || is_point_inside_clip_volume(&g_hero.motion.pos, data->f430) != 0)) {
                 moby->state = 4;
                 moby->fBC |= 1;
                 data->f43A = 1;
@@ -1056,7 +1056,7 @@ void big_axebot_update(M_B7B0 *moby) {
     }
     StepColorFade(moby, data->fB0);
     if (data->f42C > 0.0f) {
-        H_B7B0 *h = (H_B7B0 *)(hero_globals_base + 0xE1D);
+        H_B7B0 *h = (H_B7B0 *)(&g_hero);
 
         v[0] = FastCos(fast_atan2(moby->pos[0] - h->pos[0], moby->pos[1] - h->pos[1])) * data->f42C;
         v[1] = FastSin(fast_atan2(moby->pos[0] - h->pos[0], moby->pos[1] - h->pos[1])) * data->f42C;
@@ -1279,8 +1279,7 @@ void spawn_circular_saw_destruction_effects(char *moby) {
     clear_u64_value(vec);
     engine_voice_index = data->engine_voice_index;
     if (engine_voice_index != -1) {
-        VoicePoolWindow *voice_slot_window =
-            (VoicePoolWindow *)((char *)hero_globals_base + 0x1D + engine_voice_index * 0x70);
+        VoicePoolWindow *voice_slot_window = (VoicePoolWindow *)((char *)&voice_pool + engine_voice_index * 0x70);
         if (voice_slot_window->voice.owner == (struct Moby *)moby) {
             if (voice_slot_window->voice.state != 0)
                 Sound_StopSlot(engine_voice_index);
@@ -1622,7 +1621,7 @@ void circular_saw_enemy_update(M_35F0 *moby) {
     moby->f30 = 0x20;
     update_circular_saw_engine_sound(moby);
     if (moby->state == 1 || moby->state == 3) {
-        H_35F0 *h = (H_35F0 *)(hero_globals_base + 0xE1D);
+        H_35F0 *h = (H_35F0 *)(&g_hero);
         if (h->f240 == moby || FastVecDist(moby->pos, h->pos) < 1.5f) {
             MobyBlendAnimation(moby, (void *)7, 0, (void *)scale_ticks(10));
             data->f146 = scale_ticks(0x3C);
@@ -1642,14 +1641,14 @@ void circular_saw_enemy_update(M_35F0 *moby) {
         r = ComputeHitResponse(moby, hit, &data->hp, 0, &tmp, &dmg, 0, 4);
         if (hit != 0 && moby->state != 0 && data->f14D == 0) {
             if (hit->att != 0) {
-                H_35F0 *h = (H_35F0 *)(hero_globals_base + 0xE1D);
+                H_35F0 *h = (H_35F0 *)(&g_hero);
                 if (hit->att != h->f1090) {
                     ang = fast_atan2(moby->pos[0] - hit->att->pos[0], moby->pos[1] - hit->att->pos[1]);
                 } else {
                     ang = fast_atan2(moby->pos[0] - h->pos[0], moby->pos[1] - h->pos[1]);
                 }
             } else {
-                H_35F0 *h = (H_35F0 *)(hero_globals_base + 0xE1D);
+                H_35F0 *h = (H_35F0 *)(&g_hero);
                 ang = fast_atan2(moby->pos[0] - h->pos[0], moby->pos[1] - h->pos[1]);
             }
             data->fD0 = 0.008f;
@@ -1719,7 +1718,7 @@ void circular_saw_enemy_update(M_35F0 *moby) {
                 p.moby = moby;
                 p.f14 = 0x10001;
                 p.f1C = 1.0f;
-                FastVecSub(p.v, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, moby->pos);
+                FastVecSub(p.v, &g_hero.motion.pos, moby->pos);
                 vec_scale_to_length(p.v, p.v, g_frame_time * 10.0f);
                 p.f20 = 1;
                 coll_sphere_mobys(jp, 0x10, moby, &p, 0.5f);
@@ -1732,7 +1731,7 @@ void circular_saw_enemy_update(M_35F0 *moby) {
     if (moby->state != 0 && data->f2E != 1) {
         int idx = data->f238;
         if (idx != -1) {
-            char *e = (char *)hero_globals_base + 0x1D + idx * 0x70;
+            char *e = (char *)&voice_pool + idx * 0x70;
             if (*(M_35F0 **)(e + 0x88) == moby) {
                 if (*(unsigned char *)(e + 0x74) != 0) {
                     Sound_StopSlot(idx);
@@ -2411,7 +2410,7 @@ void BlargTrooperUpdate(char *moby) {
         o = hit->source;
         one = 1.0f;
         if (o != 0) {
-            struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+            struct Hero *g = &g_hero;
             if (o != *(char **)&g->items[0].moby) {
                 ang2 = fast_atan2(((Moby *)moby)->pos.x - *(float *)(o + 0x10),
                                   ((Moby *)moby)->pos.y - *(float *)(o + 0x14));
@@ -2420,7 +2419,7 @@ void BlargTrooperUpdate(char *moby) {
                     fast_atan2(((Moby *)moby)->pos.x - g->motion.pos.f[0], ((Moby *)moby)->pos.y - g->motion.pos.f[1]);
             }
         } else {
-            struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+            struct Hero *g = &g_hero;
             ang2 = fast_atan2(((Moby *)moby)->pos.x - g->motion.pos.f[0], ((Moby *)moby)->pos.y - g->motion.pos.f[1]);
         }
         t = data->health - dmg;
@@ -2817,7 +2816,7 @@ void BlargTrooperUpdate(char *moby) {
         if (st == 1 || st == 3 || st == 4 || st == 5 || st == 6) {
             char *t = target;
             if (t == 0) {
-                t = *(char **)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby;
+                t = *(char **)&g_hero.moby;
             }
             if (vec_distance_xy(pos, (float *)(t + 0x10)) < 24.0f) {
                 float f = FastSubRots(fast_atan2(*(float *)(t + 0x10) - ((Moby *)moby)->pos.x,

@@ -20,6 +20,9 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+extern char g_hero[];
+extern char item_usage[];
+extern char pad0_pressed[];
 
 /* Crate: falls, stacks on other crates and rides moving platforms. */
 struct CrateVars {
@@ -653,8 +656,7 @@ void break_crate(void *mv, int a1, int av) {
     if (a2 != 0) {
         qcopy(v10, a2 + 0x10);
     } else {
-        FastVecSub(v10, &((Moby *)m)->pos,
-                   *(unsigned char **)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby + 0x10);
+        FastVecSub(v10, &((Moby *)m)->pos, *(unsigned char **)&((struct Hero *)g_hero)->moby + 0x10);
     }
 
     switch ((short)(*(unsigned short *)&((Moby *)m)->oclass - 0x1F4)) {
@@ -764,7 +766,7 @@ void break_crate(void *mv, int a1, int av) {
     c8 = 8.0f;
     if (a1 != 0) {
         int nn;
-        if (((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.control_mode == 0x16)
+        if (((struct Hero *)g_hero)->state.control_mode == 0x16)
             dat->unk_CA = scale_ticks(5);
         else
             dat->unk_CA = 1;
@@ -884,7 +886,7 @@ void update_crate_stack_motion(Moby *a) {
             return;
         o->last_frame = level_frame_counter;
         if (a->state != 0) {
-            g = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
+            g = &((struct Hero *)g_hero)->motion.pos;
             FastVecSub(v3, g, &a->pos);
             matrix_mul_vec3(v3, v3, &a->rot_row0);
             if (FastAbsF(v3[0]) < 0.55f && FastAbsF(v3[1]) < 0.55f && v3[2] < 0 &&
@@ -1265,8 +1267,7 @@ extern void release_moby_with_collision_check(float *, char *, void *);
 extern short decoy_list[];
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
-extern char pad_globals_base[];
-extern char help_stats_base[];
+
 typedef int u128_D3B20 __attribute__((mode(TI)));
 
 /* Decoy glove update: state machine on moby[0x20], per-object data block at moby[0x78]. Adapted from Lombyte's project (GPL-3.0) for PAL: none. */
@@ -1313,18 +1314,18 @@ void decoy_glove_update(unsigned char *moby) {
     }
     *(int *)&d->decoy = 0;
 target_valid:
-    g = (struct Hero *)(hero_globals_base + 0xE1D);
+    g = (struct Hero *)g_hero;
     if (g->state.current == HERO_STATE_LOOK)
         HeroEnterMoveState(HERO_STATE_LOOK_RELEASE_WAIT, 1);
     if (fast_dec_timer(&d->timer)) {
         if (g->item_use_locked == 0) {
             if (g->item_anim_active && g->item_anim_frames == scale_ticks(0x11))
                 goto L3D10;
-            if (*(int *)(pad_globals_base + 0x2604) & g->items[0].button_mask) {
+            if (*(int *)pad0_pressed & g->items[0].button_mask) {
                 if (g->state.current == HERO_STATE_LOOK_RELEASE_WAIT && get_ammo(-1))
                     goto L3D10;
             }
-            g = (struct Hero *)(hero_globals_base + 0xE1D);
+            g = (struct Hero *)g_hero;
             if (g->state.current == HERO_STATE_ANIMATION_RECOVERY_WITH_JUMP_CANCEL &&
                 g->state_timer == scale_ticks(0x10))
                 goto L3D10;
@@ -1354,7 +1355,7 @@ L3D34:
             break;
         case 3:
             if (d->decoy) {
-                char *P = help_stats_base + 0x65;
+                char *P = item_usage;
                 if (*(unsigned short *)(P + 0xC8) <= 0xFFFE)
                     *(unsigned short *)(P + 0xC8) = *(unsigned short *)(P + 0xC8) + 1;
                 if (scale_ticks(gameplay_event_frame_count) / 600 > (int)*(unsigned short *)(P + 0xCA))
@@ -1369,7 +1370,7 @@ L3D34:
             d->timer = scale_ticks(0x14);
             break;
         case 4: {
-            struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *h = (struct Hero *)g_hero;
             if (h->state.current != HERO_STATE_ANIMATION_RECOVERY_WITH_JUMP_CANCEL && h->item_anim_active == 0)
                 ((Moby *)moby)->state = 2;
             break;
@@ -1391,7 +1392,7 @@ L3D34:
         qzero(&loc);
         *(int *)&d->decoy = spawn_decoy(moby, &d->pos, &loc);
     } else {
-        struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *h = (struct Hero *)g_hero;
         if (h->item_anim_active) {
             qzero(&loc);
             *(int *)&d->decoy = spawn_decoy(moby, &d->pos, &loc);
@@ -1843,7 +1844,7 @@ extern int scale_ticks(int);
 extern void MobyBlendAnimation(void *, int, int, int);
 /* Starts animation 6 if the hero state is 8 and the moby is not already playing it. */
 void helipack_update(Moby *a) {
-    if (((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.current == HERO_STATE_LAND) {
+    if (((struct Hero *)g_hero)->state.current == HERO_STATE_LAND) {
         if (a->prev_seq != 6) {
             MobyBlendAnimation(a, 6, 0, scale_ticks(10));
         }
@@ -2948,7 +2949,7 @@ void update_infobot_slot_path_motion(Obj_6e38 *o, Path_6e38 *path, s32 p) {
         r = fast_atan2(path->a[idx + 1].f[0] - o->v[0], path->a[idx + 1].f[1] - o->v[1]);
         o->f48 = SpringTurn(&st->v6C, o->f48, r, 0.01f, 0.3f, 0.1f);
     } else {
-        struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *g = (struct Hero *)g_hero;
         r = fast_atan2(g->motion.pos.f[0] - o->v[0], g->motion.pos.f[1] - o->v[1]);
         o->f48 = SpringTurn(&st->v6C, o->f48, r, 0.01f, 0.3f, 0.1f);
     }

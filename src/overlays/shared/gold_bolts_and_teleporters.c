@@ -26,6 +26,10 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+extern Hero g_hero;
+extern char pad0_pressed[];
+extern unsigned char saved_mission_state[];
+extern char voice_pool[];
 
 /* Cutscene trigger: plays a camera sequence when the hero enters its volume. */
 struct CutsceneTriggerVars {
@@ -277,7 +281,6 @@ extern float g_frame_time MACRO_ADDR;
 extern float novalis_cpu_frame_load MACRO_ADDR;
 extern char *novalis_mobys MACRO_ADDR;
 
-extern char hero_globals_base[];
 extern Moby *novalis_coll_hit_moby;
 extern Cols explosive_spark_colors_a;
 extern Cols explosive_spark_colors_b;
@@ -372,8 +375,7 @@ void update_explosive_projectile(Moby *moby) {
                 dmg.scale = 0.0f;
                 clear_u64_value(&dmg);
                 dmg.count = 0;
-                coll_sphere_mobys(1.0f, &(*(Vec *)&moby->pos), 9, (void *)((Hero *)(hero_globals_base + 0xE1D))->moby,
-                                  &dmg);
+                coll_sphere_mobys(1.0f, &(*(Vec *)&moby->pos), 9, (void *)g_hero.moby, &dmg);
                 if (novalis_coll_hit_moby != 0 && novalis_coll_hit_moby->oclass >= 0x2C5 &&
                     novalis_coll_hit_moby->oclass < 0x2C8) {
                     Moby_PlaySound(2, 0, (int)moby);
@@ -463,9 +465,7 @@ void update_explosive_projectile(Moby *moby) {
             if (cutscene_active == 0 && d->ids[r] != -1) {
                 if (((Moby *)novalis_mobys)[d->ids[r]].oclass == 0x2BC) {
                     Tgt *e = (*(void **)&((Moby *)novalis_mobys)[d->ids[r]].pvars);
-                    if (e->h4 == 0 && e->timer == 0 &&
-                        is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                                    e->vol) != 0 &&
+                    if (e->h4 == 0 && e->timer == 0 && is_point_inside_clip_volume(&g_hero.motion.pos, e->vol) != 0 &&
                         is_point_inside_clip_volume(camera_pos, e->vol) != 0) {
                         e->timer = scale_ticks(rand_range(0x3C, 0xB4));
                     }
@@ -1155,7 +1155,7 @@ void draw_visibomb_outside_zone_overlay(char *moby) {
         }
     }
 }
-extern char hero_globals_base[];
+
 extern char *novalis_moby_list MACRO_ADDR;
 
 extern short visibomb_outside_zone_overlay_enabled;
@@ -1186,7 +1186,7 @@ void update_target_outside_zone_timeout(char *m) {
     Vec4f *tp;
 
     moby->update_dist = 0xFF;
-    if (((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.current != 0x1D)
+    if (g_hero.state.current != 0x1D)
         goto fail;
     {
         for (candidate_moby = (struct Moby *)novalis_moby_list; candidate_moby != 0;
@@ -1577,7 +1577,7 @@ extern void lerp_vector(void *, void *, void *, float);
 extern float FastSubRots(float, float);
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
-extern char hero_globals_base[];
+
 extern char *camera_points MACRO_ADDR;
 
 // Computes a rotation/blend for a moby from its data and passes it to two helpers.
@@ -1599,7 +1599,7 @@ void update_gold_bolt_pickup_camera(char *m) {
     k = f / 170.0f;
     if (d->camera_point_a == -1 || d->camera_point_b == -1) {
         float ang;
-        g = (struct Hero *)(hero_globals_base + 0xE1D);
+        g = &g_hero;
         ang = FastAddRots(k * 0.6981317f - 0.34906585f, g->motion.rot.f[2]);
         out[0] = FastCos(ang) * 5.0f;
         out[1] = FastSin(ang) * 5.0f;
@@ -1684,8 +1684,7 @@ void activate_teleporter_and_record_state(char *moby) {
         moby[0x20] = 1;
 }
 extern LevelState novalis_checkpoint_level_state;
-extern char hero_globals_base[];
-extern char pad_globals_base[];
+
 extern float g_frame_time_sq MACRO_ADDR;
 extern int D_0015EF20 MACRO_ADDR;
 extern unsigned char g_hero_field_20a5[] NOT_SDA;
@@ -1723,8 +1722,7 @@ void TeleporterPadUpdate(char *moby) {
     }
     active = active != 0;
     if (((Moby *)moby)->state != 0 && data->clip_volume != -1 && !active &&
-        is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                    data->clip_volume) != 0) {
+        is_point_inside_clip_volume(&g_hero.motion.pos, data->clip_volume) != 0) {
         active = 1;
         activate_teleporter_and_record_state(moby);
         show_teleporter_and_children(moby);
@@ -1746,7 +1744,7 @@ void TeleporterPadUpdate(char *moby) {
             int i;
             ((Moby *)moby)->update_dist = 0xFF;
             for (i = 0; i < 3; i++) {
-                struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+                struct Hero *g = &g_hero;
                 char *c;
                 slots[i] = CreateMoby(0x13B);
                 *(short *)(slots[i] + 0x32) = 0x40;
@@ -1775,11 +1773,11 @@ void TeleporterPadUpdate(char *moby) {
         case 1: {
             struct Hero *g;
             if (data->mission_slot >= 0 &&
-                *(help_stats_base + 0xAA35 + (data->mission_slot + (g_current_level_index_c << 4))) != 0xFF)
+                *(saved_mission_state + (data->mission_slot + (g_current_level_index_c << 4))) != 0xFF)
                 break;
             if (data->target == -1)
                 break;
-            g = (struct Hero *)(hero_globals_base + 0xE1D);
+            g = &g_hero;
             if (g->vehicle_mode == 2)
                 break;
             if (*(char **)&g->ground_moby != moby)
@@ -1787,7 +1785,7 @@ void TeleporterPadUpdate(char *moby) {
             if (g->air_frames.s != 0)
                 break;
             try_set_teleporter_help_message(moby);
-            if (!(*(int *)(pad_globals_base + 0x2604) & 0x10))
+            if (!(*(int *)pad0_pressed & 0x10))
                 break;
             Moby_PlaySound(0, 0, (int)moby);
             ((Moby *)moby)->state = 2;
@@ -2408,7 +2406,7 @@ void update_sandmouse_projectile(char *m) {
     }
     DeleteMoby(m);
 }
-extern char hero_globals_base[];
+
 extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 
@@ -2416,7 +2414,7 @@ extern void FastVecAdd(void *, void *, void *);
 void compute_sandmouse_follow_goal(void *unused, float *p) {
     float a[4];
     float b[4];
-    struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+    struct Hero *g = &g_hero;
     vec_scale_to_length(a, *(char **)&g->moby + 0xD0, 1.1f);
     vec_scale_to_length(b, *(char **)&g->moby + 0xE0, 1.0f);
     FastVecAdd(p, a, b);
@@ -2442,7 +2440,7 @@ void *select_sandmouse_projectile_target(void *moby, void *from, void *reference
 
     for (i = 0; (candidate_moby = (struct Moby *)novalis_moby_ptr_list[i]) != 0; i++) {
         CollisionHit *collision_hit = (CollisionHit *)novalis_coll_hit_r;
-        Hero *hero_ptr = (Hero *)(hero_globals_base + 0xE1D);
+        Hero *hero_ptr = &g_hero;
         f32 *hp;
         s32 candidate_target_kind;
         f32 candidate_distance, score, pitch_error_squared;
@@ -2786,7 +2784,7 @@ extern int g_current_level_index MACRO_ADDR;
 extern char *novalis_camera_moby;
 
 #define LNK(i) (((Moby *)D_L01_00160058) + (i))
-#define VOICE(i) (D_0013E633 + 0x1D + (i) * 0x70)
+#define VOICE(i) (voice_pool + (i) * 0x70)
 
 /* Sand mouse update: follows the hero, turns its linked moby, and runs its states. */
 void sandmouse_update(Moby *m) {
@@ -2803,7 +2801,7 @@ void sandmouse_update(Moby *m) {
         if (m->state >= 5) {
             *(f32 *)LNK(p->link)->pvars = fast_atan2(m->pos.x - LNK(p->link)->pos.x, m->pos.y - LNK(p->link)->pos.y);
         } else {
-            struct Hero *hero = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *hero = &g_hero;
             *(f32 *)LNK(p->link)->pvars =
                 fast_atan2(hero->motion.pos.f[0] - LNK(p->link)->pos.x, hero->motion.pos.f[1] - LNK(p->link)->pos.y);
         }
@@ -2877,7 +2875,7 @@ void sandmouse_update(Moby *m) {
             if (gHaveHeliPack[3] != 0) {
                 struct Hero *h;
                 {
-                    struct Hero *h1 = (struct Hero *)(hero_globals_base + 0xE1D);
+                    struct Hero *h1 = &g_hero;
                     if (h1->items[2].item_id != 5)
                         break;
                 }
@@ -2889,14 +2887,13 @@ void sandmouse_update(Moby *m) {
                     }
                 }
                 if (p->link != -1) {
-                    if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                                    p->radius)) {
+                    if (is_point_inside_clip_volume(&g_hero.motion.pos, p->radius)) {
                         LNK(p->link)->command = 3;
                     } else {
                         LNK(p->link)->command = 1;
                     }
                 }
-                h = (struct Hero *)(hero_globals_base + 0xE1D);
+                h = &g_hero;
                 if (*(int *)&h->items[2].moby != 0) {
                     Vec4 a;
                     Vec4 b;
@@ -3031,7 +3028,7 @@ void sandmouse_update(Moby *m) {
                 m->anim_speed = random_float_between(0.95f, 1.05f);
             }
             {
-                struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
+                struct Hero *h = &g_hero;
                 if (*(int *)&h->items[2].moby != 0 && h->items[2].item_id == 5 && h->state.control_mode != 0x16 &&
                     h->state.control_mode != 0x14 && h->vehicle_mode == 0 &&
                     *(s16 *)(novalis_camera_moby + 0x86) != 0x14 && fast_dec_timer(&p->k58) == 0 &&
@@ -3453,14 +3450,14 @@ void update_camera_position_and_orientation_from_paths(Cam *cam) {
         Path *path;
         float dist;
 
-        seg = ((Hero *)(hero_globals_base + 0xE1D))->rail_segment;
-        frac = ((Hero *)(hero_globals_base + 0xE1D))->rail_seg_frac;
+        seg = g_hero.rail_segment;
+        frac = g_hero.rail_seg_frac;
         c->t = frac;
         c->idx = seg;
         Spline_AdvanceByDistance(novalis_paths_r3[pi], v0, &c->idx, &c->t, 1.0f, 0);
         qcopy(b->pos, v0);
         path = novalis_paths_r3[pi];
-        dist = path->nodes[seg].w * (frac / ((Path *)((Hero *)(hero_globals_base + 0xE1D))->rail_spline)->nodes[seg].w);
+        dist = path->nodes[seg].w * (frac / ((Path *)g_hero.rail_spline)->nodes[seg].w);
         FastVecSub(v50, &path->nodes[seg + 1], &path->nodes[seg]);
         vec_scale_to_length(v40, v50, dist);
         FastVecAdd(v60, &path->nodes[seg], v40);
@@ -3492,13 +3489,11 @@ void update_camera_position_and_orientation_from_paths(Cam *cam) {
             lo = truncate_float_to_s32_r(pathB->nodes[prev].w);
             hi = truncate_float_to_s32_r(pathB->nodes[i].w);
             if (hi < lo) {
-                if (((Hero *)(hero_globals_base + 0xE1D))->rail_segment >= lo ||
-                    ((Hero *)(hero_globals_base + 0xE1D))->rail_segment < hi) {
+                if (g_hero.rail_segment >= lo || g_hero.rail_segment < hi) {
                     break;
                 }
             } else {
-                if (((Hero *)(hero_globals_base + 0xE1D))->rail_segment >= lo &&
-                    ((Hero *)(hero_globals_base + 0xE1D))->rail_segment < hi) {
+                if (g_hero.rail_segment >= lo && g_hero.rail_segment < hi) {
                     break;
                 }
             }
@@ -3513,14 +3508,14 @@ void update_camera_position_and_orientation_from_paths(Cam *cam) {
             spd = pathB->nodes[j].x;
         }
         base = truncate_float_to_s32_r(pathB->nodes[j].w);
-        cnt = ((Hero *)(hero_globals_base + 0xE1D))->rail_segment - base;
+        cnt = g_hero.rail_segment - base;
         if (cnt < 0) {
             cnt += pathD->n;
         }
         for (i = 0; i < cnt; i++) {
             sum += pathD->nodes[(base + i) % pathD->n].w;
         }
-        sum += ((Hero *)(hero_globals_base + 0xE1D))->rail_seg_frac;
+        sum += g_hero.rail_seg_frac;
         dist = lenC * (sum / lenB);
         ix = truncate_float_to_s32_r(pathC->nodes[j].w);
         fx = 0.0f;
@@ -3548,8 +3543,7 @@ void update_camera_position_and_orientation_from_paths(Cam *cam) {
         if (p->f24 < 0) {
             float off;
 
-            find_nearest_path_point(path, ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f, v30, &seg, &frac, 0,
-                                    20.0f, 1.0f, 0.0f);
+            find_nearest_path_point(path, g_hero.motion.pos.f, v30, &seg, &frac, 0, 20.0f, 1.0f, 0.0f);
             if (p->f36 == 1) {
                 off = -(p->f38 * 4.0f);
             } else {
@@ -3561,10 +3555,9 @@ void update_camera_position_and_orientation_from_paths(Cam *cam) {
             int hseg;
             float hfrac;
 
-            hseg = ((Hero *)(hero_globals_base + 0xE1D))->rail_segment;
-            hfrac = ((Hero *)(hero_globals_base + 0xE1D))->rail_seg_frac;
-            Spline_AdvanceByDistance((Path *)((Hero *)(hero_globals_base + 0xE1D))->rail_spline, v30, &hseg, &hfrac,
-                                     p->f38, 1);
+            hseg = g_hero.rail_segment;
+            hfrac = g_hero.rail_seg_frac;
+            Spline_AdvanceByDistance((Path *)g_hero.rail_spline, v30, &hseg, &hfrac, p->f38, 1);
             find_nearest_path_point(path, v30, v0, &seg, &frac, 0, 20.0f, 1.0f, 0.0f);
         }
         cam->pos[0] = Cam_InterpValues(cam->pos[0], v0[0], &d->vel[0], k, 0.175f, 0.0f);
@@ -3574,23 +3567,21 @@ void update_camera_position_and_orientation_from_paths(Cam *cam) {
     if (p->f24 < 0) {
         Path *path = novalis_paths_r3[p->f20];
 
-        find_nearest_path_point(path, ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f, v40, &seg, &frac, 0, 20.0f,
-                                1.0f, 0.0f);
+        find_nearest_path_point(path, g_hero.motion.pos.f, v40, &seg, &frac, 0, 20.0f, 1.0f, 0.0f);
         if (g_current_level_index_c == LEVEL_OLTANIS && p->f30 == 0) {
             Spline_AdvanceByDistance(path, v50, &seg, &frac, spd, 0);
         } else {
             Spline_AdvanceByDistance(path, v50, &seg, &frac, spd, 1);
         }
         FastVecSub(v50, v50, v40);
-        FastVecAdd(v40, ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f, v50);
+        FastVecAdd(v40, g_hero.motion.pos.f, v50);
     } else {
         int hseg;
         float hfrac;
 
-        hseg = ((Hero *)(hero_globals_base + 0xE1D))->rail_segment;
-        hfrac = ((Hero *)(hero_globals_base + 0xE1D))->rail_seg_frac;
-        Spline_AdvanceByDistance((Path *)((Hero *)(hero_globals_base + 0xE1D))->rail_spline, v40, &hseg, &hfrac, spd,
-                                 1);
+        hseg = g_hero.rail_segment;
+        hfrac = g_hero.rail_seg_frac;
+        Spline_AdvanceByDistance((Path *)g_hero.rail_spline, v40, &hseg, &hfrac, spd, 1);
     }
     vec_scale_to_length(v10, novalis_camera_up_axis, b->f4C);
     FastVecAdd(v30, v10, v40);

@@ -11,6 +11,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "structs/swarm.h"
 #include "enums/moby_class.h"
+extern Hero g_hero;
 
 /* Bolt thief: scans a fixed list of mobys for its targets. */
 struct BoltThiefVars {
@@ -1048,7 +1049,6 @@ extern void *CreateMoby(int);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void FastVecSub(void *, void *, void *);
 extern void moby_build_matrix(void *);
-extern char hero_globals_base[];
 
 // Spawns a moby of a class, copies the parent's position, and aims it at the parent's attach point.
 void *spawn_joint_aligned_moby_part(char *parent, int oClass, int joint, int pjoint) {
@@ -1059,8 +1059,7 @@ void *spawn_joint_aligned_moby_part(char *parent, int oClass, int joint, int pjo
         ((struct Moby *)m)->draw_dist = 0xFF;
         ((struct Moby *)m)->visible = 1;
         ((struct Moby *)m)->flags |= 0x4000;
-        *(long *)&((struct Moby *)m)->spawn_frame =
-            *(long *)(*(char **)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby + 0x38);
+        *(long *)&((struct Moby *)m)->spawn_frame = *(long *)(*(char **)&g_hero.moby + 0x38);
         qcopy(&((struct Moby *)m)->rot, parent + 0x40);
         Moby_GetJointWorldPos(m, joint, v0);
         Moby_GetJointWorldPos(parent, pjoint, v10);
@@ -1218,7 +1217,7 @@ void update_linked_moby_parts(char *moby) {
     }
     aim_part = linked_parts_vars->links[3].part;
     if (aim_part != 0) {
-        struct Hero *hero = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *hero = &g_hero;
         linked_parts_vars->links[3].part->rot.z =
             fast_atan2(hero->motion.pos.f[0] - aim_part->pos.x, hero->motion.pos.f[1] - aim_part->pos.y);
     }
@@ -1646,10 +1645,8 @@ void Batalia_BoltThiefUpdate(Moby *m) {
         d->w94 = 1;
         d->f8C = g_frame_time_r * 10.0f;
         d->bAD = 0;
-        InitKnockback(m, d->x70,
-                      fast_atan2(m->pos.x - ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[0],
-                                 m->pos.y - ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[1]),
-                      4, 1, 0);
+        InitKnockback(m, d->x70, fast_atan2(m->pos.x - g_hero.motion.pos.f[0], m->pos.y - g_hero.motion.pos.f[1]), 4, 1,
+                      0);
         d->b67 = 0x78;
         SetDeathBits(m, 0, -1);
         m->state = 8;
@@ -1666,8 +1663,7 @@ void Batalia_BoltThiefUpdate(Moby *m) {
             }
             m->flags |= 0x1000;
             d->b29 = 0;
-            m->spawn_frame =
-                (*(long *)&(*(Moby **)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby)->spawn_frame);
+            m->spawn_frame = (*(long *)&(*(Moby **)&g_hero.moby)->spawn_frame);
             clear_u64_value(&d->v40);
             m->state = 1;
             if (m->prev_seq != 1) {
@@ -1676,7 +1672,7 @@ void Batalia_BoltThiefUpdate(Moby *m) {
             break;
         case 1:
             qcopy(&va, &batalia_path_table_r[d->w220]->pts[0]);
-            if (FastVecDist(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, &va) < 24.0f) {
+            if (FastVecDist(&g_hero.motion.pos, &va) < 24.0f) {
                 build_bolt_thief_target_list((char *)m);
                 m->state = 5;
                 if (m->prev_seq != 3) {
@@ -1822,7 +1818,7 @@ void Batalia_BoltThiefUpdate(Moby *m) {
             if (FastVecDist(&m->pos, &va) < 0.5f) {
                 c->idx = next;
             }
-            if (FastVecDist(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, &m->pos) > 19.0f) {
+            if (FastVecDist(&g_hero.motion.pos, &m->pos) > 19.0f) {
                 m->state = 7;
             }
             break;
@@ -1832,7 +1828,7 @@ void Batalia_BoltThiefUpdate(Moby *m) {
             float dist;
             float a;
 
-            h = (Hero *)(hero_globals_base + 0xE1D);
+            h = &g_hero;
             a = fast_atan2(h->motion.pos.f[0] - m->pos.x, h->motion.pos.f[1] - m->pos.y);
             MobySpringTurn((char *)m, &d->f224, a, 0.01f, 0.3f, 0.1f);
             dist = FastVecDist(&h->motion.pos, &m->pos);
@@ -2039,17 +2035,13 @@ void update_batalia_bolt_pickup(Moby *m) {
                     break;
                 }
             }
-            if (FastAbsF(m->pos.z - ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[2]) <
-                    ((Hero *)(hero_globals_base + 0xE1D))->reach_distance &&
-                vec_distance_xy(&m->pos, ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f) <
-                    ((Hero *)(hero_globals_base + 0xE1D))->reach_height) {
+            if (FastAbsF(m->pos.z - g_hero.motion.pos.f[2]) < g_hero.reach_distance &&
+                vec_distance_xy(&m->pos, g_hero.motion.pos.f) < g_hero.reach_height) {
                 d->i68 = scale_ticks(1);
                 m->state = 2;
             }
             if (m->visible == 0) {
-                if (m > batalia_mobys_last &&
-                    vec_distance_xy(&m->pos, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) >
-                        24.0f) {
+                if (m > batalia_mobys_last && vec_distance_xy(&m->pos, &g_hero.motion.pos) > 24.0f) {
                     DeleteMoby(m);
                     return;
                 }
@@ -2104,7 +2096,7 @@ void update_batalia_bolt_pickup(Moby *m) {
                 Vars_4BE8 *e = (Vars_4BE8 *)m->pvars;
                 float k = 0.017453292f;
 
-                FastVecSub(b, &m->pos, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
+                FastVecSub(b, &m->pos, &g_hero.motion.pos);
                 vec_scale_to_length(b, b, 1.0f);
                 FastVecCross(b, a, b);
                 build_axis_roll_matrix(e, b, batalia_bolt_collect_spin_speed * k * g_frame_time);
@@ -2112,7 +2104,7 @@ void update_batalia_bolt_pickup(Moby *m) {
                 vec_scale_to_length(e->v40, a, g_frame_time * 8.0f);
                 e->f74 = 0.0f;
                 e->u70.f = g_frame_time * 8.0f;
-                e->u78.p = *(char **)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby;
+                e->u78.p = *(char **)&g_hero.moby;
                 e->u7C.f = 0.5f;
                 if (batalia_bolt_sound_frame + scale_ticks(3) < batalia_frame_count) {
                     batalia_bolt_sound_frame = batalia_frame_count;
@@ -2128,9 +2120,8 @@ void update_batalia_bolt_pickup(Moby *m) {
 
                     step_angle_toward_target(&d->f60, t, 0.5235988f, 0);
                 } else {
-                    float t = FastAddRots(fast_atan2(((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[0] - m->pos.x,
-                                                     ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[1] - m->pos.y),
-                                          1.5707964f);
+                    float t = FastAddRots(
+                        fast_atan2(g_hero.motion.pos.f[0] - m->pos.x, g_hero.motion.pos.f[1] - m->pos.y), 1.5707964f);
 
                     step_angle_toward_target(&d->f60, t, 0.08726646f, 0);
                     if (FastDiffRots_r(d->f60, t) < 0.08726646f) {
@@ -2164,16 +2155,15 @@ void update_batalia_bolt_pickup(Moby *m) {
             FastVecAdd(&m->pos, &m->pos, d->v40);
             vec_scale_to_length(a, a, d->f74);
             FastVecAdd(&m->pos, &m->pos, a);
-            FastVecAdd(&m->pos, &m->pos, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.platform_carry);
-            FastVecSub(c, &m->pos, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->ground_point);
-            transform_vector(c, c, ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->inv_rot_matrix);
+            FastVecAdd(&m->pos, &m->pos, &g_hero.motion.platform_carry);
+            FastVecSub(c, &m->pos, &g_hero.ground_point);
+            transform_vector(c, c, g_hero.inv_rot_matrix);
             if (((Moby *)d->u78.p)->oclass != MOBY_CLASS_RATCHET || c[2] > 0.0f) {
                 ApproachValue(&d->u70.f, 0.0f, batalia_bolt_attract_accel * g_frame_time_sq);
                 ApproachValue(&d->f74, batalia_bolt_attract_speed * g_frame_time,
                               batalia_bolt_attract_accel * g_frame_time_sq);
             } else {
-                vec_scale_to_length(mt, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->rot_matrix[8],
-                                    d->u70.f);
+                vec_scale_to_length(mt, &g_hero.rot_matrix[8], d->u70.f);
                 FastVecSub(mt + 4, mt, d->v40);
                 ClampVectorLength(mt + 4, batalia_bolt_attract_accel * g_frame_time_sq);
                 FastVecAdd(d->v40, d->v40, mt + 4);
@@ -2291,11 +2281,10 @@ void update_batalia_bolt_pickup(Moby *m) {
                 DeleteMoby(m);
                 return;
             }
-            if (m->pos.z < d->f60 - 4.0f && m->pos.z < ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[2] - 4.0f) {
+            if (m->pos.z < d->f60 - 4.0f && m->pos.z < g_hero.motion.pos.f[2] - 4.0f) {
                 Vars_4BE8 *e = (Vars_4BE8 *)m->pvars;
 
-                *(u128_4BE8 *)e->v10 =
-                    *(u128_4BE8 *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.rot.i[0];
+                *(u128_4BE8 *)e->v10 = *(u128_4BE8 *)&g_hero.motion.rot.i[0];
                 e->i68 = scale_ticks(1);
                 m->state = 2;
                 break;
@@ -2340,10 +2329,8 @@ void update_batalia_bolt_pickup(Moby *m) {
                     m->state = 5;
                     d->i68 = n;
                     d->u7C.i = batalia_coll_hit_moby;
-                    if (FastAbsF(m->pos.z - ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[2]) <
-                            ((Hero *)(hero_globals_base + 0xE1D))->reach_distance &&
-                        vec_distance_xy(&m->pos, ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f) <
-                            ((Hero *)(hero_globals_base + 0xE1D))->reach_height) {
+                    if (FastAbsF(m->pos.z - g_hero.motion.pos.f[2]) < g_hero.reach_distance &&
+                        vec_distance_xy(&m->pos, g_hero.motion.pos.f) < g_hero.reach_height) {
                         Vars_4BE8 *e = (Vars_4BE8 *)m->pvars;
 
                         e->i68 = scale_ticks(1);
@@ -2365,10 +2352,8 @@ void update_batalia_bolt_pickup(Moby *m) {
                 int n;
                 float inv;
 
-                if (FastAbsF(m->pos.z - ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[2]) <
-                        ((Hero *)(hero_globals_base + 0xE1D))->reach_distance &&
-                    vec_distance_xy(&m->pos, ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f) <
-                        ((Hero *)(hero_globals_base + 0xE1D))->reach_height) {
+                if (FastAbsF(m->pos.z - g_hero.motion.pos.f[2]) < g_hero.reach_distance &&
+                    vec_distance_xy(&m->pos, g_hero.motion.pos.f) < g_hero.reach_height) {
                     d->i68 = scale_ticks(1);
                     m->state = 2;
                     break;

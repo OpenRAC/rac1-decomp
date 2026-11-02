@@ -22,6 +22,8 @@
 #include "overlays/shared/ripple_patches.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+extern struct Hero g_hero;
+extern char hero_control_mode[];
 
 /* Extermibot: wakes from its dormant pose, wanders around its home, walks
    its path toward the target and strikes it; Wing is the same block
@@ -986,8 +988,7 @@ void amoeboid_update(unsigned char *m) {
             break;
         }
         case 2:
-            if (48.0f < vec_distance_xy(&((struct Moby *)m)->pos,
-                                        &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos)) {
+            if (48.0f < vec_distance_xy(&((struct Moby *)m)->pos, &g_hero.motion.pos)) {
                 ((Moby *)m)->state = 1;
                 ((Moby *)m)->visible = 1;
                 ((Moby *)m)->flags &= 0xFFFE;
@@ -1006,7 +1007,7 @@ extern int scale_ticks(int);
 void handle_amoeboid_hits(unsigned char *m) {
     struct HitMessage *r = (struct HitMessage *)MobyGetHitMessage(m, 0x330000, 0);
     if (r != 0) {
-        char *b = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.displacement;
+        char *b = &g_hero.motion.displacement;
         char *o;
         m[0x20] = 2;
         m[0x31] = 0;
@@ -1344,9 +1345,7 @@ void extermibot_update(unsigned char *m) {
             break;
         case 15:
             if ((d->wake_moby != -1 && ((unsigned char *)*(int *)&moby_pool_4f60)[d->wake_moby * 256 + 0xBC] != 0) ||
-                (d->wake_volume != -1 &&
-                 is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                             d->wake_volume) != 0)) {
+                (d->wake_volume != -1 && is_point_inside_clip_volume(&g_hero.motion.pos, d->wake_volume) != 0)) {
                 ((Moby *)m)->draw_dist = 0x40;
                 ((Moby *)m)->flags |= 0x1000;
                 ((Moby *)m)->state = 1;
@@ -1465,10 +1464,7 @@ void extermibot_update(unsigned char *m) {
                 dir[3] = 5627.9248f;
                 qcopy(out, t + 0x10);
                 out[2] += 0.75f;
-                PostHitMessage(t, (int)m,
-                               ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->items[2].item_id != 6 ? 0x10001
-                                                                                                            : 0x10000,
-                               out, dir, 1.0f);
+                PostHitMessage(t, (int)m, g_hero.items[2].item_id != 6 ? 0x10001 : 0x10000, out, dir, 1.0f);
             }
             if (((Moby *)m)->anim_flags & 2) {
                 ((Moby *)m)->state = 9;
@@ -2096,7 +2092,7 @@ void extermitank_update(unsigned char *m) {
                 *(short *)(d->turret + 0x32) = 0x40;
                 d->turret[0x31] = 1;
                 {
-                    struct Hero *g2 = (struct Hero *)(hero_globals_base + 0xE1D);
+                    struct Hero *g2 = &g_hero;
                     *(long *)(d->turret + 0x38) = *(long *)(*(char **)&g2->moby + 0x38);
                 }
                 *(short *)(d->turret + 0x34) = 0x4000;
@@ -2111,7 +2107,7 @@ void extermitank_update(unsigned char *m) {
                 *(short *)(d->barrel + 0x32) = 0x40;
                 d->barrel[0x31] = 1;
                 {
-                    struct Hero *g2 = (struct Hero *)(hero_globals_base + 0xE1D);
+                    struct Hero *g2 = &g_hero;
                     *(long *)(d->barrel + 0x38) = *(long *)(*(char **)&g2->moby + 0x38);
                 }
                 *(short *)(d->barrel + 0x34) = 0x4000;
@@ -2123,7 +2119,7 @@ void extermitank_update(unsigned char *m) {
             AttachManipulator((char *)m, 0, &d->yaw_manip[0]);
             AttachManipulator((char *)m, 1, &d->pitch_manip[0]);
             ((Moby *)m)->flags |= 0x1000;
-            g = (struct Hero *)(hero_globals_base + 0xE1D);
+            g = &g_hero;
             *(long *)(m + 0x38) = *(long *)(*(char **)&g->moby + 0x38);
             MoveCtl_Init((char *)&d->move_ctl);
             d->mc_unk_7C = 2.0f;
@@ -2180,7 +2176,7 @@ void extermitank_update(unsigned char *m) {
                 }
                 *(int *)pp = idx;
             }
-            h = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
+            h = &g_hero.motion.pos;
             if (vec_distance_xy(m + 0x10, h) < d->sight_range) {
                 if (FastAbsF(((Moby *)m)->pos.z - *(float *)(h + 8)) < 4.0f) {
                     if (d->zone == -1 ||
@@ -2195,8 +2191,8 @@ void extermitank_update(unsigned char *m) {
                     }
                 }
             }
-            if (vec_distance_xy(m + 0x10, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) < 16.0f) {
-                struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+            if (vec_distance_xy(m + 0x10, &g_hero.motion.pos) < 16.0f) {
+                struct Hero *g = &g_hero;
                 float a = fast_atan2(g->motion.pos.f[0] - ((Moby *)m)->pos.x, g->motion.pos.f[1] - ((Moby *)m)->pos.y);
                 step_angle_toward_target(&d->turret_yaw, 0, a, g_frame_time * 1.5707964f);
                 step_angle_toward_target(&d->turret_pitch, 0, 0.08726646f, g_frame_time * 1.5707964f);
@@ -2326,7 +2322,7 @@ void extermitank_update(unsigned char *m) {
             }
             qcopy(v40, m + 0x10);
             v40[2] = v40[2] + 3.0f;
-            h = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
+            h = &g_hero.motion.pos;
             if (d->sight_range < vec_distance_xy(m + 0x10, h) ||
                 4.0f <= FastAbsF(((Moby *)m)->pos.z - *(float *)(h + 8)) ||
                 (d->zone != -1 &&
@@ -2338,7 +2334,7 @@ void extermitank_update(unsigned char *m) {
                 ((Moby *)m)->state = 1;
             }
             {
-                struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+                struct Hero *g = &g_hero;
                 float a = fast_atan2(g->motion.pos.f[0] - ((Moby *)m)->pos.x, g->motion.pos.f[1] - ((Moby *)m)->pos.y);
                 step_angle_toward_target(&d->turret_yaw, 0, a, g_frame_time * 1.5707964f);
                 step_angle_toward_target(&d->turret_pitch, 0, 0.08726646f, g_frame_time * 1.5707964f);
@@ -2539,7 +2535,7 @@ void process_extermitank_particle_hits(char *m) {
             }
         }
     }
-    base = (struct Hero *)(hero_globals_base + 0xE1D);
+    base = &g_hero;
     if (base->items[2].item_id == 6)
         return;
     h.flags |= 1;
@@ -2885,7 +2881,7 @@ void SkidMcMarxUpdate(Moby *moby) {
             break;
         }
         case 1:
-            if (*(int *)(hero_globals_base + 0x2EA9) == 0x16) {
+            if (*(int *)hero_control_mode == 0x16) {
                 moby->update_dist = 0xFF;
                 moby->flags &= ~0x41;
                 d->f258 = 0;
@@ -2913,7 +2909,7 @@ void SkidMcMarxUpdate(Moby *moby) {
             }
             break;
         case 2: {
-            Hero *h = (Hero *)(hero_globals_base + 0xE1D);
+            Hero *h = &g_hero;
 
             if (h->state.control_mode != 0x16) {
                 moby->state = 0;
@@ -2989,7 +2985,7 @@ void SkidMcMarxUpdate(Moby *moby) {
                     if (ground < d->pos[2]) {
                         target = g_frame_time * 19.0f;
                     }
-                    h2 = (Hero *)(hero_globals_base + 0xE1D);
+                    h2 = &g_hero;
                     if (h2->race_time_frames < scale_ticks(0x2BC)) {
                         target += g_frame_time * 3.0f;
                     }

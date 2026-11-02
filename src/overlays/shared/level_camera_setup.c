@@ -10,9 +10,10 @@
 #include "structs/moby.h"
 #include "overlays/shared/camera_switch_and_update.h"
 #include "data/shared_levels.h"
+extern Hero g_hero;
 
 extern CameraSystem player_camera;
-extern char hero_globals_base[];
+
 extern void vec_scale_to_length(void *, void *, float);
 extern Camera gCameraSlotsLvl[];
 
@@ -41,7 +42,7 @@ void setup_level_cameras(void) {
         gCameraSlotUsedLvl[k] = 0;
     }
     g1 = &player_camera;
-    base = (struct Hero *)(hero_globals_base + 0xE1D);
+    base = &g_hero;
     q = &g1->follow;
     p1 = &g1->follow.up;
     g1->previous = 0;

@@ -19,6 +19,9 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+extern Hero g_hero;
+extern int g_screen_extent[];
+extern char help_records[];
 
 /* Class 0x3F1 shot: flies along vel for ticks, owned by the firing moby. */
 struct ShotVars {
@@ -570,7 +573,7 @@ void draw_pokitaru_ocean(Moby *moby) {
     float x;
     float y;
 
-    if (((Hero *)(hero_globals_base + 0xE1D))->state.current != 0x1D && pokitaru_render_setup_packet_default == 0) {
+    if (g_hero.state.current != 0x1D && pokitaru_render_setup_packet_default == 0) {
         ((Fog *)pokitaru_render_view_params)->f228 = 255.0f;
         ((Fog *)pokitaru_render_view_params)->f22C = 249.9f;
     }
@@ -637,8 +640,8 @@ void draw_pokitaru_ocean(Moby *moby) {
     q.q80 = 0xFF9000000260L;
     q.q88 = 0x8000000044L;
     q.z70 = 0;
-    if (d->f14 < ((Cam *)pokitaru_player_camera)->z - d->f24 &&
-        ((Hero *)(hero_globals_base + 0xE1D))->state.current != 0x1D && pokitaru_render_setup_packet_default == 0) {
+    if (d->f14 < ((Cam *)pokitaru_player_camera)->z - d->f24 && g_hero.state.current != 0x1D &&
+        pokitaru_render_setup_packet_default == 0) {
         q.uv[0].u = 0.0f;
         q.uv[0].v = 0.0f;
         q.uv[1].u = 0.0f;
@@ -1075,7 +1078,7 @@ extern float FastCos_r(float) __asm__("func_001F9F90");
 extern void FastVecAdd(void *, void *, void *);
 extern void FastVecSub(void *, void *, void *);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern unsigned char screen_globals_base[];
+
 extern int pokitaru_dma_packet_cursor MACRO_ADDR;
 
 /* Builds one GIF packet for a rotated textured sprite and advances the packet pointer. */
@@ -1158,7 +1161,7 @@ void append_rotated_textured_screen_quad(float fa, float fb, float fc, float fd,
     {
         int a = truncate_float_to_s32_r(w[0] * k);
         int b = truncate_float_to_s32_r(w[1] * k);
-        g = (int *)(screen_globals_base + 0x4A6);
+        g = (int *)(&g_screen_extent);
         n[6] = (unsigned long)(a + g[4] - 8) | ((unsigned long)(b + g[5] - 8) << 16) | hi;
         n[7] = u0;
     }
@@ -1205,14 +1208,13 @@ void draw_quarter_turn_textured_quads(unsigned char a, unsigned char b, unsigned
 }
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern unsigned char screen_globals_base[];
 
 /* Projects a world point to screen and stores its x and y in 1/16 units, y plus an offset. */
 void project_world_point_to_screen_pixels(void *pt, int *outx, int *outy, int yoff) {
     float p[4];
     int *g;
     project_to_screen(p, pt);
-    g = (int *)(screen_globals_base + 0x4A6);
+    g = (int *)(&g_screen_extent);
     *outx = truncate_float_to_s32_r((p[0] - (float)g[4]) * 0.0625f);
     *outy = truncate_float_to_s32_r((p[1] - (float)g[5]) * 0.0625f) + yoff;
 }
@@ -1448,14 +1450,14 @@ void update_moby_hit_stats_and_state(Moby *m) {
     struct HitMessage *info = (struct HitMessage *)MobyGetHitMessage(m, 0x330000, 0);
     struct Hero *g;
     m->hit_slot = 0xFF;
-    g = (struct Hero *)(hero_globals_base + 0xE1D);
+    g = &g_hero;
     if (g->state.current != 0x32) {
         m->flags &= 0xEFFF;
     } else {
         m->flags |= 0x1000;
     }
     if (info != 0) {
-        char *st = (char *)help_stats_base + 0x34D;
+        char *st = help_records;
         int st2;
         int cur;
         if (*(unsigned short *)(st + 0x157E8) < 0xFFFF) {
@@ -1486,7 +1488,7 @@ void update_moby_hit_stats_and_state(Moby *m) {
             }
         }
     } else if (m->state == 5) {
-        struct Hero *g2 = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *g2 = &g_hero;
         if (g2->state.current != 0x32) {
             m->state = 4;
             *(int *)&m->collision = 0;

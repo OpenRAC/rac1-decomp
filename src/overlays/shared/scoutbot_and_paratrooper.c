@@ -16,6 +16,7 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+extern Hero g_hero;
 
 /* Paratrooper fire bolt (class 0x50C): flies along its velocity until it hits something or its time runs out. */
 struct FireBoltVars {
@@ -383,7 +384,7 @@ void update_scoutbot_health_and_target(char *m) {
         }
     }
     if (*(int *)&d->f1B0 == 0) {
-        *(int *)&d->f1B0 = *(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby;
+        *(int *)&d->f1B0 = *(int *)&g_hero.moby;
     }
 }
 /* Draw callback of a Scoutbot's beam: builds a textured quad packet (colour from four sdata words, UVs of a unit
@@ -1356,7 +1357,7 @@ void blarg_paratrooper_update(char *m) {
     target = d->f160;
     if (d->f1FC != -1)
         path = batalia_path_table[d->f1FC];
-    hero = (Hero *)(hero_globals_base + 0xE1D);
+    hero = &g_hero;
     if (hero->state.current == HERO_STATE_DYING && hero->state_timer < scale302618(30) &&
         (*(unsigned char *)((char *)(m) + 0x20)) != 8 && (*(unsigned char *)((char *)(m) + 0x20)) != 10 &&
         (*(unsigned char *)((char *)(m) + 0x20)) != 4 && (*(unsigned char *)((char *)(m) + 0x20)) != 11 &&
@@ -1882,8 +1883,7 @@ void update_blarg_paratrooper_damage_and_state(char *m) {
         }
     }
     if (*(int *)&((struct Paratrooper302618 *)d)->f160 == 0)
-        *(int *)&((struct Paratrooper302618 *)d)->f160 =
-            *(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby;
+        *(int *)&((struct Paratrooper302618 *)d)->f160 = *(int *)&g_hero.moby;
 
     st = ((Moby *)m)->state;
     if (st == 0 || st == 5 || st == 7 || st == 4) {

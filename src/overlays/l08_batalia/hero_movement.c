@@ -26,8 +26,9 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+extern char g_controller_state_no_direction[];
+extern Hero g_hero;
 
-extern unsigned char hero_globals_base[];
 extern int D_0015EE84 MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
 
@@ -35,7 +36,7 @@ extern void Hero_TryMoveStateL08(int, int);
 
 // Handles a pending state change: clears the request and sets per-state flags.
 void HeroL08_ResetActionState(void) {
-    struct Hero *hero_ptr = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    struct Hero *hero_ptr = &g_hero;
     int v;
     int x;
     u8 saved = hero_ptr->ground_sound_class;
@@ -58,23 +59,23 @@ void HeroL08_ResetActionState(void) {
         }
     }
     if (v == 0xE) {
-        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *q = &g_hero;
         q->base_condition = 1;
         q->water_depth = 0.2f;
         q->water_surface_z = q->ground_z.f + 0.2f;
     }
     if (v == 0) {
-        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *q = &g_hero;
         q->water_depth = q->water_surface_z - q->ground_z.f;
         if (q->water_depth < 0.85f) {
             if (q->water_depth > 0.25f)
                 q->wading = 1;
         }
-        q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        q = &g_hero;
         q->base_condition = 1;
     }
     if (g_current_level_index == LEVEL_GEMLIK) {
-        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *q = &g_hero;
         if (q->state.current != HERO_STATE_HEIGHT_OR_TIMEOUT_RESPAWN_WAIT) {
             if (coll_sphere(q->capsule_radius + 0.03f, &q->motion.body_center, 2, 0)) {
                 if (CollType() == 0xB) {
@@ -85,35 +86,35 @@ void HeroL08_ResetActionState(void) {
         }
     }
     if (v == 0xB) {
-        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *q = &g_hero;
         q->selector_11 = 1;
     }
     if (v == 2) {
-        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *q = &g_hero;
         q->on_magnet_ground = 1;
     }
     if (v == 4) {
-        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *q = &g_hero;
         q->selector_4 = 1;
     }
     if (v == 0xD) {
-        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *q = &g_hero;
         q->selector_13 = 1;
     }
     if (v == 8) {
-        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *q = &g_hero;
         q->on_slip_ground = 1;
     }
     if (v == 9) {
-        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *q = &g_hero;
         q->unk12EE = 1;
     }
     if (v == 0xC) {
-        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *q = &g_hero;
         q->on_slip_ground = 1;
     }
     {
-        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *q = &g_hero;
         if (q->selector_4 != 0 && q->grounded_frames != 0) {
             x = q->state.control_mode;
             if (x != 0x10 && x != 0x14 && x != 7) {
@@ -123,7 +124,7 @@ void HeroL08_ResetActionState(void) {
         }
     }
     {
-        struct Hero *r = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *r = &g_hero;
         if (r->selector_13 != 0) {
             if (r->state.current == HERO_STATE_SINK)
                 return;
@@ -157,10 +158,9 @@ typedef struct {
     Moby *f88;
 } Row13E650;
 
-
 extern Hero g_hero;
 extern PadState g_controller_state;
-extern char pad_globals_base[];
+
 extern unsigned char item_available[];
 extern char voice_pool[];
 extern MoveUsageTable usage_stats;
@@ -2407,7 +2407,7 @@ void HeroL08_UpdateStatePhysics(void) {
                             g_hero.ground_speed = 0.0f;
                         }
                         if (g_hero.rail_land_frames != 0) {
-                            if (*(int *)(pad_globals_base + 0x2634) != 0) {
+                            if (*(int *)g_controller_state_no_direction != 0) {
                                 if (g_hero.on_flagged_ground_moby != 0) {
                                     g_hero.ground_speed = 0.0f;
                                 }

@@ -26,12 +26,13 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
-
-extern char hero_globals_base[];
+extern char g_controller_state_no_direction[];
+extern Hero g_hero;
+extern char pad_held[];
 
 /* Level 12 pickup/ability state update. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l12/ui_help_0022de30.c, FUN_L12_0022de30. */
 void update_hero_ground_material_flags(void) {
-    struct Hero *hero_for_ground_flags_update = (struct Hero *)(hero_globals_base + 0xE1D);
+    struct Hero *hero_for_ground_flags_update = &g_hero;
     unsigned char saved;
     int state;
     saved = hero_for_ground_flags_update->ground_sound_class;
@@ -55,48 +56,48 @@ void update_hero_ground_material_flags(void) {
         }
     }
     if (state == 0xE) {
-        struct Hero *hero_for_surface_update = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *hero_for_surface_update = &g_hero;
         hero_for_surface_update->base_condition = 1;
         hero_for_surface_update->water_depth = 0.2f;
         hero_for_surface_update->water_surface_z = hero_for_surface_update->ground_z.f + 0.2f;
     }
     if (state == 0) {
-        struct Hero *hero_for_water_height_check = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *hero_for_water_height_check = &g_hero;
         struct Hero *hero_for_base_condition_update;
         float water_surface_ground_z_delta =
             hero_for_water_height_check->water_surface_z - hero_for_water_height_check->ground_z.f;
         hero_for_water_height_check->water_depth = water_surface_ground_z_delta;
         if (water_surface_ground_z_delta < 0.85f && 0.25f < water_surface_ground_z_delta)
             hero_for_water_height_check->wading = 1;
-        hero_for_base_condition_update = (struct Hero *)(hero_globals_base + 0xE1D);
+        hero_for_base_condition_update = &g_hero;
         hero_for_base_condition_update->base_condition = 1;
     }
     if (state == 2) {
-        struct Hero *d = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *d = &g_hero;
         d->on_magnet_ground = 1;
     }
     if (state == 7) {
-        struct Hero *d = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *d = &g_hero;
         d->on_ice_ground = 1;
     }
     if (state == 0xD) {
-        struct Hero *d = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *d = &g_hero;
         d->selector_13 = 1;
     }
     if (state == 8) {
-        struct Hero *d = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *d = &g_hero;
         d->on_slip_ground = 1;
     }
     if (state == 9) {
-        struct Hero *d = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *d = &g_hero;
         d->unk12EE = 1;
     }
     if (state == 0xC) {
-        struct Hero *d = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *d = &g_hero;
         d->on_slip_ground = 1;
     }
     {
-        struct Hero *hero_for_sink_check = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *hero_for_sink_check = &g_hero;
         if (hero_for_sink_check->selector_13) {
             if (hero_for_sink_check->state.current != HERO_STATE_SINK) {
                 float water_surface_distance =
@@ -391,9 +392,8 @@ typedef struct {
     Moby *f88;
 } Row13E650;
 
-
 extern PadState g_controller_state;
-extern char pad_globals_base[];
+
 extern unsigned char item_available[];
 extern char voice_pool[];
 extern MoveUsageTable usage_stats;
@@ -1637,7 +1637,7 @@ void Hero_UpdateStatePhysicsL12(void) {
 
                     a = FastAddRots(g_hero.motion.rot.f[2], 3.1415927f);
                     s = g_frame_time * 2.5f;
-                    if (*(int *)(pad_globals_base + 0x2600) & 0xA) {
+                    if (*(int *)pad_held & 0xA) {
                         s = g_frame_time * 3.0f;
                     }
                     g_hero.motion.velocity.f[0] += FastCos(a) * s;
@@ -2374,7 +2374,7 @@ void Hero_UpdateStatePhysicsL12(void) {
                             g_hero.ground_speed = 0.0f;
                         }
                         if (g_hero.rail_land_frames != 0) {
-                            if (*(int *)(pad_globals_base + 0x2634) != 0) {
+                            if (*(int *)g_controller_state_no_direction != 0) {
                                 if (g_hero.on_flagged_ground_moby != 0) {
                                     g_hero.ground_speed = 0.0f;
                                 }

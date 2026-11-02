@@ -28,6 +28,7 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+extern char g_controller_state_no_direction[];
 
 typedef int u128 __attribute__((mode(TI)));
 typedef float FVec4[4] __attribute__((aligned(16)));
@@ -48,10 +49,9 @@ typedef struct {
     Moby *f88;
 } Row13E650;
 
-
 extern Hero g_hero;
 extern PadState g_controller_state;
-extern char pad_globals_base[];
+
 extern unsigned char item_available[];
 extern char voice_pool[];
 extern MoveUsageTable usage_stats;
@@ -2754,7 +2754,7 @@ void Hero_UpdateStatePhysics(void) {
                             g_hero.ground_speed = 0.0f;
                         }
                         if (g_hero.rail_land_frames != 0) {
-                            if (*(int *)(pad_globals_base + 0x2634) != 0) {
+                            if (*(int *)g_controller_state_no_direction != 0) {
                                 if (g_hero.on_flagged_ground_moby != 0) {
                                     g_hero.ground_speed = 0.0f;
                                 }

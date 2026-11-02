@@ -11,6 +11,8 @@
 #include "game/moby/mobyutil.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+extern Hero g_hero;
+extern char pad_held[];
 
 extern Hero g_hero;
 typedef struct {
@@ -27,7 +29,7 @@ typedef struct {
 extern Ent idle_fidgets[] NOT_SDA;
 extern int idle_fidgets_field_220 NOT_SDA;
 extern int g_current_level_index MACRO_ADDR;
-extern char hero_globals_base[];
+
 extern int hero_slot_item_id(int);
 
 extern int coll_line(void *, void *, int, int, int);
@@ -118,7 +120,7 @@ int pick_idle_fidget(int *index) {
     }
     return 0;
 }
-extern char hero_globals_base[];
+
 extern char pad_globals_base_r[] __asm__("D_0013A5E0");
 extern int HeroEnterMoveState(int, int);
 extern int scale_ticks(int);
@@ -135,7 +137,7 @@ extern int hero_run_step_start_frames_1 MACRO_ADDR;
 void update_hero_locomotion_state(void) {
     char *b, *c, *d;
     int n;
-    b = hero_globals_base + 0xE1D;
+    b = (char *)&g_hero;
     ((struct Hero *)b)->unk2284 = 0;
     if (((struct Hero *)b)->on_ice_ground != 0 &&
         *(float *)&g_frame_time_r * 0.5f < ((struct Hero *)b)->motion.flat_speed) {
@@ -149,7 +151,7 @@ void update_hero_locomotion_state(void) {
         hero_queue_sequence(3, 0x12);
         return;
     }
-    c = hero_globals_base + 0xE1D;
+    c = (char *)&g_hero;
     if (0.3f < *(float *)(c + 0x229C) && *(int *)(c + 0x1C4) == 0) {
         if (*(unsigned char *)(c + 0x12E2) != 0 || *(unsigned char *)(c + 0x20A9) != 0) {
             HeroEnterMoveState(HERO_STATE_RUN, 1);
@@ -165,13 +167,12 @@ void update_hero_locomotion_state(void) {
         }
         return;
     }
-    d = hero_globals_base + 0xE1D;
+    d = (char *)&g_hero;
     if ((*(float *)&g_frame_time_r * 3.0f < *(float *)(d + 0x168) && scale_ticks(3) < *(int *)(d + 0x418)) ||
         *(int *)(d + 0x2084) == 0x10) {
         if (HeroEnterMoveState(HERO_STATE_STOP, 0)) {
             set_hero_animation(5, 0, -1.0f);
-            ClampVectorLength(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.momentum,
-                              *(float *)((char *)&g_frame_scale_sq + 8) * 5.0f);
+            ClampVectorLength(&g_hero.motion.momentum, *(float *)((char *)&g_frame_scale_sq + 8) * 5.0f);
         }
         return;
     }
@@ -186,7 +187,7 @@ void update_hero_locomotion_state(void) {
         }
     }
 }
-extern unsigned char pad_globals_base[] NOT_SDA;
+
 extern unsigned char gHaveHeliPack NOT_SDA;
 extern float g_frame_time MACRO_ADDR;
 
@@ -198,7 +199,7 @@ extern int hero_slot_item_id(int);
 
 // Tries the crouch-jump style moves in priority order and starts the first whose conditions hold. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_00229010.c, FUN_L00_00229660.
 int hero_handle_jump_press(void) {
-    struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    struct Hero *g = &g_hero;
     int n, t, k;
     int m;
     struct Hero *p;
@@ -207,15 +208,14 @@ int hero_handle_jump_press(void) {
     }
     n = get_hero_high_jump_input_window_frames();
     t = scale_ticks(5);
-    if ((*(int *)(pad_globals_base + 0x2600) & 0xA) != 0 && n > 0 &&
-        check_pad_press_separation(0x40, 0x1F000, t + n, n) != 0) {
+    if ((*(int *)pad_held & 0xA) != 0 && n > 0 && check_pad_press_separation(0x40, 0x1F000, t + n, n) != 0) {
         m = 0xB;
     found:
         HeroEnterMoveState(m, 1);
         return 1;
     }
     k = scale_ticks(9);
-    p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    p = &g_hero;
     if (scale_ticks(6) < p->state_timer) {
         if (pad_pressed_within(0x40, k, 0) == 0) {
             return 0;
@@ -227,7 +227,7 @@ int hero_handle_jump_press(void) {
             goto found;
         }
         if (hero_slot_item_id(3) == 3) {
-            struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+            struct Hero *q = &g_hero;
             if (q->pack_disabled == 0 && 0.7f < q->stick_magnitude &&
                 (2.5f < q->wall_probe_distance || q->wall_probe_moby_in_class_range != 0) &&
                 g_frame_time * 0.9f < q->motion.forward_speed) {
@@ -239,14 +239,14 @@ int hero_handle_jump_press(void) {
             }
         }
         if (hero_slot_item_id(3) == 3) {
-            struct Hero *r = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+            struct Hero *r = &g_hero;
             if (r->pack_disabled == 0) {
                 m = 0xD;
                 goto found;
             }
         }
         if (hero_slot_item_id(3) == 2) {
-            struct Hero *s = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+            struct Hero *s = &g_hero;
             if (s->pack_disabled == 0 && gHaveHeliPack != 0) {
                 m = 0xF;
                 goto found;
@@ -266,7 +266,7 @@ extern float coll_hit_point_z;
 
 /* Test whether the player can reach the point in front of him. */
 int check_hero_forward_collision_height(void) {
-    struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    struct Hero *g = &g_hero;
     Vec4A a, b;
     float t, d;
     if (g->motion.flat_speed < g->capsule_radius / (float)scale_ticks(0x14))
@@ -299,7 +299,7 @@ extern int HeroEnterMoveState(int, int);
 
 /* starts the pending global action if conditions hold; returns 1 on success */
 int try_start_hero_item_idle_animation(void) {
-    struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+    struct Hero *p = &g_hero;
     if (p->item_anim_active != 0 && p->unk20AA != 0 && p->unk22C8 == 0) {
         int i = hero_slot_item_id(0);
         int v;

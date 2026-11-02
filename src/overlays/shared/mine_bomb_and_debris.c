@@ -19,6 +19,9 @@
 #include "overlays/shared/sound_playback.h"
 #include "structs/level_records.h"
 #include "enums/hero_state.h"
+extern Hero g_hero;
+extern char pad_held[];
+extern char voice_pool[];
 
 /* Glow particle (class 0x70): spinning shard that shrinks and fades out. */
 struct GlowParticleVars {
@@ -169,7 +172,7 @@ extern Cam910 player_camera;
 extern M910 *g_coll_hit_moby;
 extern float coll_hit_point_z[];
 extern char coll_resolved_pos[];
-extern char hero_globals_base[];
+
 extern float frame_scale MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
@@ -505,7 +508,7 @@ void mine_update(M910 *m) {
                         m->state = 1;
                         s = v->i68;
                         if (s != -1) {
-                            char *tab = hero_globals_base + 0x1D;
+                            char *tab = voice_pool;
                             char *e = tab + s * 0x70;
 
                             if (*(M910 **)(e + 0x88) == m && *(unsigned char *)(e + 0x74) != 0) {
@@ -530,7 +533,7 @@ void mine_update(M910 *m) {
                         m->state = 1;
                         s = v->i68;
                         if (s != -1) {
-                            char *tab = hero_globals_base + 0x1D;
+                            char *tab = voice_pool;
                             char *e = tab + s * 0x70;
 
                             if (*(M910 **)(e + 0x88) == m && *(unsigned char *)(e + 0x74) != 0) {
@@ -549,7 +552,7 @@ void mine_update(M910 *m) {
                     m->state = 1;
                     s = v->i68;
                     if (s != -1) {
-                        char *tab = hero_globals_base + 0x1D;
+                        char *tab = voice_pool;
                         char *e = tab + s * 0x70;
 
                         if (*(M910 **)(e + 0x88) == m && *(unsigned char *)(e + 0x74) != 0) {
@@ -1123,7 +1126,7 @@ void draw_bomb_landing_marker(char *moby) {
         draw_world_quad(&q, M, 1);
     }
 }
-extern char hero_globals_base[];
+
 extern char *spawn_79(int) __asm__("func_0020D348");
 
 typedef int u128 __attribute__((mode(TI)));
@@ -1153,7 +1156,7 @@ char *spawn_bomb(int owner, void *pos) {
         v->unk_56 = 0;
         v->unk_6A = 0;
         v->target = 0;
-        g = (struct Hero *)(hero_globals_base + 0xE1D);
+        g = &g_hero;
         v->hero_heading = fast_atan2(g->facing_x, g->facing_y);
         v->unk_64 = 0;
         qcopy(m + 0x10, pos);
@@ -1169,7 +1172,7 @@ char *spawn_bomb(int owner, void *pos) {
     }
     return m;
 }
-extern char pad_globals_base[];
+
 extern char collision_hit_point[];
 extern float vec_length_xy(void *);
 extern float vec_distance_xy(void *, void *);
@@ -1265,7 +1268,7 @@ void launch_bomb(float *pos, unsigned char *moby, float *velocity) {
             }
             total = g_frame_time_sq * 11.0f;
             rp = result;
-            if (*(int *)(pad_globals_base + 0x2600) & 5) {
+            if (*(int *)pad_held & 5) {
                 e = (char *)&D_E910;
                 height = IntToFloat(*(unsigned char *)(e + 0xa)) * 2.5f + 8.5f;
             } else {
@@ -1320,7 +1323,7 @@ extern void draw_bomb_landing_marker(char *moby);
 int predict_throw_landing(void *vp, void *m, int mode) {
     V_AE6B0 position, velocity, previous, hero_position, offset, start;
     int timer, found = 0, object_hit = 0, i;
-    struct Hero *hero = (struct Hero *)(hero_globals_base + 0xE1D);
+    struct Hero *hero = &g_hero;
     char *last;
     char *cam;
     struct Hero *h;
@@ -1352,7 +1355,7 @@ int predict_throw_landing(void *vp, void *m, int mode) {
         if (t50)
             v->holder_flag = 1;
     }
-    h = (struct Hero *)(hero_globals_base + 0xE1D);
+    h = &g_hero;
     cam = *(char **)&h->moby;
     hero_position = *(V_AE6B0 *)(cam + 0x10);
     hero_position.f[2] = position.f[2];
@@ -1387,7 +1390,7 @@ int predict_throw_landing(void *vp, void *m, int mode) {
         }
     }
     if (screen_globals_base[0x4D0] != 0) {
-        struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *g = &g_hero;
         if (g->state.current == HERO_STATE_LOOK) {
             float z = velocity.f[2];
             FastVecScale(&velocity, &velocity, 1.5f);
@@ -1409,7 +1412,7 @@ int predict_throw_landing(void *vp, void *m, int mode) {
             if (!(position.f[2] - hero_position.f[2] < 2.0f))
                 goto check_surface;
             {
-                struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+                struct Hero *g = &g_hero;
                 if (((char *)D_H910.moby == *(char **)&g->moby || (char *)D_H910.moby == v->holder) &&
                     timer >= scale_ticks(300) - scale_ticks(10))
                     continue;

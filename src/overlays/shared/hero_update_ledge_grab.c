@@ -16,6 +16,7 @@
 #include "asm_functions/shared_levels.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/hero_state.h"
+extern unsigned char g_hero[];
 
 typedef struct {
     char pad[0x24];
@@ -132,7 +133,7 @@ typedef struct {
     int unk2300;
 } GS_E7B8;
 
-#define G_HERO ((GS_E7B8 *)(hero_globals_base + 0xE1D))
+#define G_HERO ((GS_E7B8 *)g_hero)
 
 /* Hero frame update for the help/panel states: runs the update chain; in state 1 keeps two companion mobys (0x4B4 and
    0x47A) placed on the hero and tints them, in state 3 pulses the hero tint and drives the fade colour and sound
@@ -420,7 +421,7 @@ typedef struct {
 // Builds two view-offset vectors from a stored position and the camera angle, tests them against the level, and
 // possibly realigns the aim vector.
 void adjust_hero_velocity_from_collision_probes(int arg) {
-    struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    struct Hero *p = (struct Hero *)g_hero;
     Vec4f a0;
     Vec4f u;
     Vec4f a1;
@@ -443,7 +444,7 @@ void adjust_hero_velocity_from_collision_probes(int arg) {
         sa = 0.35f;
         sb = 0.27f;
     }
-    r = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
+    r = &((struct Hero *)g_hero)->motion.pos;
     qcopy(&a0, r);
     a0.z = a0.z + sa;
     qcopy(&a1, r);
@@ -467,14 +468,14 @@ void adjust_hero_velocity_from_collision_probes(int arg) {
     s = -1;
     FastVecAdd(&w, &w, &a1);
     {
-        struct Hero *g1 = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *g1 = (struct Hero *)g_hero;
         if (coll_line(&a1, &w, 4, *(int *)&g1->moby, 0) != 0 && blarg_coll_hit_type > 0) {
             s = CollType();
         }
     }
     f = 0.0f;
     {
-        struct Hero *g2 = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *g2 = (struct Hero *)g_hero;
         if (coll_line(&a0, &u, 4, *(int *)&g2->moby, 0) != 0) {
             char *q = blarg_coll_hit;
             if (*(int *)(q + 0x1C) > 0) {
@@ -483,7 +484,7 @@ void adjust_hero_velocity_from_collision_probes(int arg) {
         }
     }
     if (f >= 0.87266463f || s == 8 || s == 12) {
-        struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *g = (struct Hero *)g_hero;
         char *q = blarg_coll_hit;
         float d;
         g->unk240 = *(int *)(q + 0x18);

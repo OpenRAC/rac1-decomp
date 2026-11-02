@@ -14,6 +14,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+extern unsigned char g_hero[];
 /* Rocket: velocity, owner, life and start distance. */
 struct RocketVars {
     f32 vel_x; /* 0x00 */
@@ -87,7 +88,6 @@ extern float FastVecDist(void *, void *);
 
 extern float vec_length_xy(void *);
 extern void moby_build_matrix(void *);
-extern char hero_globals_base[];
 
 /* spawn a Rocket moby with position, velocity vector and aim angles */
 char *create_rocket(float scale, void *vel, void *pos, int a, int b, int c) {
@@ -106,7 +106,7 @@ char *create_rocket(float scale, void *vel, void *pos, int a, int b, int c) {
         d->owner_a = a;
         d->owner_b = b;
         d->hit_flag = 0;
-        d->start_dist = FastVecDist(&m->pos, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
+        d->start_dist = FastVecDist(&m->pos, &((struct Hero *)g_hero)->motion.pos);
         d->unk_30 = 0;
         d->unk_34 = 0;
         m->rot.z = fast_atan2(*(float *)((char *)d), d->vel_y);
@@ -311,7 +311,7 @@ void update_hero_flag_from_moby_local_box(unsigned char *m) {
             m[0x31] = 0;
             break;
         case 1:
-            hero = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
+            hero = &((struct Hero *)g_hero)->motion.pos;
             if (FastVecDist(m + 0x10, hero) < 8.0f) {
                 FastVecSub(v, hero + 0x50, m + 0x10);
                 matrix_from_basis_rows(mtx, m + 0xC0);
@@ -733,7 +733,7 @@ void Camera19_Update(char *moby) {
             } else {
                 FastVecSub(va, b + 0x10, pm);
             }
-            FastVecScale(v1, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->gravity_dir, -1.0f);
+            FastVecScale(v1, &((struct Hero *)g_hero)->gravity_dir, -1.0f);
             vec_scale_to_length(moby, va, 1.0f);
             FastVecCross(moby + 0x10, moby, v1);
             vec_scale_to_length(moby + 0x10, moby + 0x10, 1.0f);
@@ -856,7 +856,7 @@ void Camera19_Update(char *moby) {
             Profile_Mark(h + 0x10, h + (*(int *)h << 4));
             FastVecSub(v1, v2, (moby + 0x30));
         }
-        FastVecScale(v2, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->gravity_dir, -1.0f);
+        FastVecScale(v2, &((struct Hero *)g_hero)->gravity_dir, -1.0f);
         vec_scale_to_length(moby, v1, 1.0f);
         FastVecCross(moby + 0x10, moby, v2);
         vec_scale_to_length(moby + 0x10, moby + 0x10, 1.0f);
@@ -896,11 +896,11 @@ int evaluate_descriptor_eligibility(char *descriptor_owner, char *comparison_obj
         return 0;
     }
     x = *(int *)(descriptor_record + 0x48);
-    if (x >= 0 && ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.control_mode != x) {
+    if (x >= 0 && ((struct Hero *)g_hero)->state.control_mode != x) {
         return 0;
     }
     y = *(int *)(descriptor_record + 0x44);
-    if (y >= 0 && ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.current != y) {
+    if (y >= 0 && ((struct Hero *)g_hero)->state.current != y) {
         return 0;
     }
     return 1;

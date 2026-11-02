@@ -18,6 +18,12 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+extern char gSkillPoints[];
+extern Hero g_hero;
+extern unsigned char level_moby_killed[];
+extern char usage_stats[];
+extern char voice_pool[];
+extern char voice_positions[];
 /* Cycling platform: rises, waits, drops and waits again. */
 struct CyclingPlatformVars {
     u8 pad_00[0x20];
@@ -413,8 +419,8 @@ void update_hero_relocation_trigger(char *m) {
     }
     id = ((Moby *)m)->save_id;
     if (orxon_collected_flags_base.collected[(short)id] != 0 ||
-        ((*(int *)(help_stats_base + 0xAB75 + ((((short)id >> 5) * 4) + (g_current_level_index << 8))) >> (id & 0x1F)) &
-         1) != 0) {
+        ((*(int *)(level_moby_killed + ((((short)id >> 5) * 4) + (g_current_level_index << 8))) >> (id & 0x1F)) & 1) !=
+            0) {
         if (gHaveHeliPack[4] != 0) {
             char *bs = orxon_mobys_r;
             *(unsigned short *)((*(int *)d << 8) + (int)bs + 0x34) |= 1;
@@ -422,7 +428,7 @@ void update_hero_relocation_trigger(char *m) {
             *(int *)((*(int *)d << 8) + (int)bs + 0x94) = 0;
         } else {
             if (*(int *)&orxon_cinematic_mode == 0) {
-                unsigned char *T = help_stats_base + 0x22D;
+                unsigned char *T = usage_stats;
                 unsigned short t0 = *(unsigned short *)(T + 0x100);
                 int r = scale_ticks(0x12C);
                 if (t0 < r) {
@@ -453,7 +459,7 @@ void update_hero_relocation_trigger(char *m) {
             }
         }
     }
-    *(int *)(help_stats_base + 0xAB75 + ((((short)((Moby *)m)->save_id >> 5) * 4) + (g_current_level_index << 8))) |=
+    *(int *)(level_moby_killed + ((((short)((Moby *)m)->save_id >> 5) * 4) + (g_current_level_index << 8))) |=
         1 << (((Moby *)m)->save_id & 0x1F);
     orxon_moby_killed[(short)((Moby *)m)->save_id >> 5] |= 1 << (((Moby *)m)->save_id & 0x1F);
     if (((struct RelocationTriggerVars *)d)->unk_08 == -1 || *(int *)d == -1)
@@ -475,7 +481,7 @@ void update_hero_relocation_trigger(char *m) {
         enter_hero_vehicle_mode(1, 0x43, orxon_mobys_r + (*(int *)d << 8));
         MusicRequestTrack(2, 4);
     } else {
-        struct Hero *h = (struct Hero *)((unsigned char *)hero_globals_base + 0xE1D);
+        struct Hero *h = &g_hero;
         if (h->vehicle_mode == 1) {
             exit_hero_vehicle_mode();
             {
@@ -698,7 +704,7 @@ void gate_update(Moby *m) {
             *(u128 *)d = *(u128 *)&m->pos;
             id = m->save_id;
             if (orxon_collected_flags_base.collected[(short)id] != 0 ||
-                ((*(int *)(help_stats_base + 0xAB75 + ((((short)id >> 5) * 4) + (g_current_level_index << 8))) >>
+                ((*(int *)(level_moby_killed + ((((short)id >> 5) * 4) + (g_current_level_index << 8))) >>
                   (id & 0x1F)) &
                  1) != 0) {
                 m->state = 1;
@@ -776,7 +782,7 @@ void update_timed_effect_emitter(unsigned char *moby) {
                 ((Moby *)moby)->state = 0;
                 k = data->light_slot;
                 if (k != -1) {
-                    unsigned char *e = (unsigned char *)hero_globals_base + 0x1D + k * 0x70;
+                    unsigned char *e = voice_pool + k * 0x70;
                     if (*(unsigned char **)(e + 0x88) == moby && e[0x74] != 0) {
                         Sound_StopSlot(k);
                     }
@@ -1517,7 +1523,7 @@ void update_path_spark_emitter(char *m) {
                 d->light_slot = -1;
             }
             if (d->hero_idx != -1) {
-                char *e = hero_globals_base + 0x1D + d->hero_idx * 0x70;
+                char *e = voice_pool + d->hero_idx * 0x70;
                 if (*(char **)(e + 0x88) == m && ((unsigned char *)e)[0x74] != 0) {
                     Sound_StopSlot(d->hero_idx);
                 }
@@ -1552,10 +1558,10 @@ void update_path_spark_emitter(char *m) {
                 int r = Sound_PlayClassSound_v(0, 0xC, m, 0x442);
                 d->hero_idx = r;
                 if (r != -1) {
-                    *(Q_2da0f0 *)(hero_globals_base + 0xAD + r * 0x70) = *(Q_2da0f0 *)pos;
+                    *(Q_2da0f0 *)(voice_positions + r * 0x70) = *(Q_2da0f0 *)pos;
                 }
             } else {
-                *(Q_2da0f0 *)(hero_globals_base + 0xAD + d->hero_idx * 0x70) = *(Q_2da0f0 *)pos;
+                *(Q_2da0f0 *)(voice_positions + d->hero_idx * 0x70) = *(Q_2da0f0 *)pos;
             }
             if (seg == *path - 1) {
                 m[0x20] = 0;
@@ -1779,8 +1785,7 @@ void handle_moby_destruction(char *moby) {
     float f20, f21;
 
     if (orxon_collected_flags_base.collected[(short)id] != 0 ||
-        ((*(int *)(help_stats_base + 0xAB75 + (((short)id >> 5) * 4 + (g_current_level_index_r << 8))) >> (id & 0x1F)) &
-         1)) {
+        ((*(int *)(level_moby_killed + (((short)id >> 5) * 4 + (g_current_level_index_r << 8))) >> (id & 0x1F)) & 1)) {
         spawn_fixed_height_destruction_moby(moby);
         spawn_destruction_replacement_moby(moby);
         DeleteMoby(moby);
@@ -1820,9 +1825,8 @@ void handle_moby_destruction(char *moby) {
         spawn_explosion(moby, &v20, &v30, 0.0f, 0.0f, 5, 3, 4, 4.0f, 2.0f, 100000.0f, 3.0f, -1, 15.0f, 1, 1, -1, 0);
         spawn_fixed_height_destruction_moby(moby);
         spawn_destruction_replacement_moby(moby);
-        *(int *)(help_stats_base + 0xAB75 +
-                 (((short)((struct Moby *)moby)->save_id >> 5) * 4 + (g_current_level_index_r << 8))) |=
-            1 << (((struct Moby *)moby)->save_id & 0x1F);
+        *(int *)(level_moby_killed + (((short)((struct Moby *)moby)->save_id >> 5) * 4 +
+                                      (g_current_level_index_r << 8))) |= 1 << (((struct Moby *)moby)->save_id & 0x1F);
         orxon_moby_killed[(short)((struct Moby *)moby)->save_id >> 5] |= 1 << (((struct Moby *)moby)->save_id & 0x1F);
         DeleteMoby(moby);
     }
@@ -1915,7 +1919,7 @@ void update_data_processor_linked_effect(struct Moby *moby) {
             fast_dec_timer(&vars->countdown);
             voice = vars->voice;
             if (voice != -1) {
-                unsigned char *entry = (unsigned char *)hero_globals_base + 0x1D + voice * 0x70;
+                unsigned char *entry = voice_pool + voice * 0x70;
                 if (*(struct Moby **)(entry + 0x88) == moby && entry[0x74] != 0)
                     Sound_StopSlot(voice);
             }
@@ -2294,8 +2298,7 @@ void block_cave_update(char *m) {
     struct Moby *moby = (struct Moby *)m;
     unsigned short id = moby->save_id;
     if (orxon_collected_flags_base.collected[(short)id] != 0 ||
-        (*(int *)(help_stats_base + 0xAB75 + (((short)id >> 5) * 4 + (g_current_level_index_r << 8))) >> (id & 0x1F)) &
-            1) {
+        (*(int *)(level_moby_killed + (((short)id >> 5) * 4 + (g_current_level_index_r << 8))) >> (id & 0x1F)) & 1) {
         DeleteMoby(moby);
         return;
     }
@@ -2311,9 +2314,8 @@ void block_cave_update(char *m) {
                     matrix_from_basis_rows(transposed_rotation_matrix, &moby->rot_row0);
                     transform_vector(relative_position, relative_position, transposed_rotation_matrix);
                     if (relative_position[0] > 0.25f) {
-                        *(int *)(help_stats_base + 0xAB75 +
-                                 (((short)moby->save_id >> 5) * 4 + (g_current_level_index_r << 8))) |=
-                            1 << (moby->save_id & 0x1F);
+                        *(int *)(level_moby_killed + (((short)moby->save_id >> 5) * 4 +
+                                                      (g_current_level_index_r << 8))) |= 1 << (moby->save_id & 0x1F);
                         orxon_moby_killed[(short)moby->save_id >> 5] |= 1 << (moby->save_id & 0x1F);
                         DeleteMoby(moby);
                         return;
@@ -2688,7 +2690,7 @@ void update_screamer_hit_reactions_and_targeting(struct Moby *moby) {
         ComputeHitResponse(moby, r, &data->f20, 5, &st, 0, 0, 4);
         if (r != 0) {
             if (data->f20 <= r->f2C) {
-                if (hero_inside_conditional_help_volume != 0 && (f = menu_item_enabled_115 + 1, f[0x10]) == 0) {
+                if (hero_inside_conditional_help_volume != 0 && (f = gSkillPoints, f[0x10]) == 0) {
                     f[0x10] = 1;
                     PlayBankSound(1, 0, 0);
                     ShowBanner(0x53DB, -1);
@@ -2735,7 +2737,7 @@ void update_screamer_hit_reactions_and_targeting(struct Moby *moby) {
         r19 = FindNearestTargetMoby(data->f180, moby, data->fC0);
         if (r19 != 2) {
             Anim *bp = &((Anim *)orxon_scene_points)[data->f194];
-            FastVecSub(v, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, bp->f30);
+            FastVecSub(v, &g_hero.motion.pos, bp->f30);
             v[3] = 0.0f;
             matrix_mul_vec3(w, v, bp->f40);
             if (w[0] <= -1.0f || 0.0f <= w[0] || w[1] <= -1.0f || 1.0f <= w[1] || w[2] <= -1.0f || 1.0f <= w[2])
@@ -2757,7 +2759,7 @@ void update_screamer_hit_reactions_and_targeting(struct Moby *moby) {
             data->f104 = 2;
     }
     if (data->f100 == 0)
-        data->f100 = *(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby;
+        data->f100 = *(int *)&g_hero.moby;
 }
 
 typedef struct {

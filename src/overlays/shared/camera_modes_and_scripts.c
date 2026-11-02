@@ -14,6 +14,13 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+extern u8 gHeroPos[];
+extern PadState g_controller_state;
+extern char g_hero[];
+extern char g_hero_rot[];
+extern s32 hero_control_mode[];
+extern char hero_vehicle_mode[];
+extern int pad_held NOT_SDA;
 
 extern int vendor_stock[] MACRO_ADDR;
 extern short follow_cam_setting_values;
@@ -47,7 +54,7 @@ extern void FastVecAdd(void *, void *, void *);
 void update_hero_aligned_camera_position(char *p) {
     char a[16] __attribute__((aligned(16)));
     char b[16] __attribute__((aligned(16)));
-    struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+    struct Hero *g = (struct Hero *)g_hero;
     int m;
     vec_scale_to_length(a, *(char **)&g->moby + 0xE0, 1.0f);
     m = g->vehicle_mode;
@@ -63,8 +70,8 @@ void update_hero_aligned_camera_position(char *p) {
         FastVecScale(b, a, 1.6f);
     }
     p += 0x30;
-    FastVecAdd(p, hero_globals_base + 0xE9D, b);
-    FastVecAdd(p, hero_globals_base + 0xE9D + 0xC0, p);
+    FastVecAdd(p, (char *)&gHeroPos, b);
+    FastVecAdd(p, (char *)&gHeroPos + 0xC0, p);
 }
 extern void FastVecScale(void *, void *, float);
 extern void FastVecCross(void *, void *, void *);
@@ -503,7 +510,7 @@ void CameraScript2(int mode) {
     initialize_camera_record_handoff_defaults();
     if (mode == 0) {
         char *p = obj + 0x30;
-        char *t = hero_globals_base + 0xEAD;
+        char *t = g_hero_rot;
         euler_to_matrix(mx, t);
         matrix_copy_rows(obj, mx);
         vec_scale_to_length(b, mx, -1.0f);
@@ -593,7 +600,7 @@ void update_camera_pose_from_targets(void *arg) {
         } else {
             float t, x, y, diff, z;
             t = (float)(*(int *)(c + 4) - *(int *)(d + 0xE0)) / IntToFloat(*(int *)(c + 4));
-            compute_spherical_offset_from_positions(d + 0xE8, b, hero_globals_base + 0xE9D);
+            compute_spherical_offset_from_positions(d + 0xE8, b, (char *)&gHeroPos);
             x = FastSubRots(F(c, 8), F(c, 0x1C));
             y = FastSubRots(F(b, 0x18), camera_yaw);
             if ((x > 0.34906584f && y < -0.34906584f) || (x < -0.34906584f && y > 0.34906584f)) {
@@ -610,7 +617,7 @@ void update_camera_pose_from_targets(void *arg) {
             }
             F(c, 0x24) = F(c, 0x24) + (F(c, 0x10) - F(c, 0x24)) * CubicInterpolate(F(c, 0x44), 0, 1.0f, F(c, 0x48), t);
             F(c, 0x20) = interpolate_wrapped_angle_cosine_eased(F(c, 0x20), F(c, 0xC), t);
-            interpolate_vector_xyz_cosine_eased(c + 0x30, c + 0x30, hero_globals_base + 0xE9D, t);
+            interpolate_vector_xyz_cosine_eased(c + 0x30, c + 0x30, (char *)&gHeroPos, t);
             compute_position_from_spherical_offset(&((Camera *)m)->pos, c + 0x1C, c + 0x30);
             interpolate_wrapped_rotations_cosine_eased((float *)((Camera *)m)->type_data,
                                                        (float *)((Camera *)m)->type_data, (float *)(b + 0x10), t);
@@ -809,7 +816,7 @@ int update_orbit_camera_from_target_moby(char *a, char *t) {
         goto pos;
     *(float *)(m + 0xAC) = FastAddRots(*(float *)(m + 0xAC), *(float *)(n + 0x18));
     *(float *)(n + 0x18) *= 0.97f;
-    g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    g = (struct Hero *)g_hero;
     cam = (CameraSystem *)player_camera_c;
     pp = (char *)&g->motion.pos;
     cp = (char *)&cam->pos;
@@ -876,7 +883,7 @@ extern float FastVecDist(void *, void *);
 /* Sets the moby's state to 2 (and arms the camera-side fields) when the target is nearly in front and close, else to
    4. */
 void select_camera_mode_by_hero_alignment_and_distance(char *m) {
-    struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+    struct Hero *g = (struct Hero *)g_hero;
     CameraSystem *s = (CameraSystem *)((char *)&player_camera);
     char *t = *(char **)&g->moby;
     float a = fast_atan2(*(float *)(t + 0x10) - s->pos.f[0], *(float *)(t + 0x14) - s->pos.f[1]);
@@ -926,11 +933,11 @@ void initialize_target_tracking_camera(void *arg) {
     char *gg, *gg0, *h;
     *(int *)(p + 0x40) = 0;
     f = 1.5f;
-    if (lvl0 == 0xE && (h = hero_globals_base + 0xE1D, (unsigned)(*(int *)(h + 0x2084) - 0x2C) < 2))
+    if (lvl0 == 0xE && (h = g_hero, (unsigned)(*(int *)(h + 0x2084) - 0x2C) < 2))
         *(float *)(p + 0x4C) = 2.0f;
     else
         *(float *)(p + 0x4C) = 1.5f;
-    g = (struct Hero *)(hero_globals_base + 0xE1D);
+    g = (struct Hero *)g_hero;
     *(float *)(p + 0x48) = 0.20943951606750488f;
     *(float *)(p + 0x58) = 0.001745329238474369f;
     *(float *)(p + 0x5C) = -0.004363323096185923f;
@@ -1154,7 +1161,7 @@ extern char camera_view_up_axis[] NOT_SDA;
 void turn_camera_view_toward_hero(Camera *m) {
     char *p = *(char **)&m->state_buf;
     char *q = p + 0x40;
-    char *g = hero_globals_base + 0xE9D;
+    char *g = (char *)&gHeroPos;
     float a[4];
     float b[4];
     float c[4];
@@ -1451,9 +1458,9 @@ typedef struct {
 extern char *camera_descriptors MACRO_ADDR;
 extern float camera_yaw MACRO_ADDR;
 extern float camera_view_field_a4;
-extern unsigned char pad_globals_base[];
-#define pad_held_r ((s32 *)(D_0013A5E0 + 0x2600))
-#define controller_state (*(PadSt *)(D_0013A5E0 + 0x2460))
+
+#define pad_held_r ((s32 *)(&pad_held))
+#define controller_state (*(PadSt *)(&g_controller_state))
 
 extern int try_select_follow_camera_volume(void *);
 extern void clear_follow_camera_volume_if_current(void *);
@@ -1712,12 +1719,12 @@ int volume_camera_swing_check(char *m) {
     short k;
     if (params->l_buttons_end == 1 && params->done != 0)
         return 0;
-    if (params->type.s == 11 && *(unsigned char *)(hero_globals_base + 0x2EC1) != 2)
+    if (params->type.s == 11 && *(unsigned char *)hero_vehicle_mode != 2)
         return 0;
     k = params->type.u;
     if (k == 1 || k == 10) {
         if (params->timer == 0) {
-            struct Hero *hero_data = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *hero_data = (struct Hero *)g_hero;
             if (hero_data->frames_off_ground.s != 0) {
                 if (*(int *)&g_current_level_index != LEVEL_OLTANIS)
                     return 0;
@@ -1726,7 +1733,7 @@ int volume_camera_swing_check(char *m) {
             }
         }
     }
-    if ((short)params->type.u == 2 && *(int *)(hero_globals_base + 0x2EA9) != 0x1A) {
+    if ((short)params->type.u == 2 && *(int *)(&hero_control_mode) != 0x1A) {
         params->timer = 0;
     } else {
         volume_camera_swing(m);
@@ -1809,16 +1816,15 @@ int volume_camera_aim_active(void *arg) {
             return 0;
     }
     if (params->clip_volume >= 0) {
-        if (is_point_inside_clip_volume((char *)hero_globals_base + 0xE9D, params->clip_volume) != 0)
+        if (is_point_inside_clip_volume((char *)&gHeroPos, params->clip_volume) != 0)
             return 1;
     }
     if (params->volume_25fa38 >= 0) {
-        if (test_point_in_transformed_unit_cylinder((char *)hero_globals_base + 0xE9D, params->volume_25fa38) != 0)
+        if (test_point_in_transformed_unit_cylinder((char *)&gHeroPos, params->volume_25fa38) != 0)
             return 1;
     }
     if (params->volume_25faf0 >= 0) {
-        if (test_point_in_transformed_unit_sphere((float *)((char *)hero_globals_base + 0xE9D),
-                                                  params->volume_25faf0) != 0)
+        if (test_point_in_transformed_unit_sphere((float *)(&gHeroPos), params->volume_25faf0) != 0)
             return 1;
     }
     params->done = 1;

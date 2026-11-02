@@ -15,6 +15,9 @@
 #include "structs/collision.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+extern char g_hero[];
+extern char pad_held[];
+extern char weapon_ammo_counts[];
 /* Trespasser: set once the pickup was collected. */
 struct TrespasserVars {
     u8 pad_00[0x4];
@@ -235,7 +238,7 @@ void doom_bot_update(M44 *moby) {
     }
     if (moby->state != 11) {
         int damage = truncate_float_to_s32(scale * 183.296f) + 1;
-        Hero44 *hero = (Hero44 *)(hero_globals_base + 0xE1D);
+        Hero44 *hero = (Hero44 *)g_hero;
         hero->damage = damage;
         hero->f1EF0 = 0;
         hero->f1EC4 = scale * 0.198f + 0.02f;
@@ -330,7 +333,7 @@ void doom_bot_update(M44 *moby) {
             FastVecAdd(&scratch[0], &moby->position, &data->velocity);
             data->velocity.v.z -= g_frame_time_sq * 9.0f;
             save_state_fields_to_hero((char *)data);
-            hero = (Hero44 *)(hero_globals_base + 0xE1D);
+            hero = (Hero44 *)g_hero;
             blocked = move_moby_with_collision_integer_radius(moby, &data->velocity, hero->damage, 0, scale * 0.7f,
                                                               hero->f1EF0) &
                       2;
@@ -375,8 +378,7 @@ void doom_bot_update(M44 *moby) {
                 if (vec_distance_xy(&moby->position, &data->target_moby->position) < reach * 0.5f &&
                     FastAbsF(height - (moby->position.v.z + speed * 0.1f)) < reach * 0.5f) {
                     save_state_vector_and_fields_to_hero((char *)data);
-                    initialize_moby_hop_trajectory(moby, &((Hero44 *)(hero_globals_base + 0xE1D))->config,
-                                                   &data->target_moby->position);
+                    initialize_moby_hop_trajectory(moby, &((Hero44 *)g_hero)->config, &data->target_moby->position);
                     restore_saved_state_fields_from_hero((char *)data);
                     qcopy(data, &data->target_moby->position);
                     data->turn_rate = frame_scale * 0.066f * speed;
@@ -396,13 +398,13 @@ void doom_bot_update(M44 *moby) {
                 if (random_integer_below(4) == 0) {
                     float step_height = scale * 0.35f;
                     float range = 4.0f;
-                    float radius = IntToFloat(((Hero44 *)(hero_globals_base + 0xE1D))->damage) * 0.0009765625f;
+                    float radius = IntToFloat(((Hero44 *)g_hero)->damage) * 0.0009765625f;
                     data->angle = select_moby_heading_by_collision_probes(
                         moby, &moby->position, angle, 1.84799564f, range, step_height, 4.0f, 0, &clearance, radius);
                 } else
                     clearance = 5.0f;
             }
-            if (data->target_moby && data->target_moby != ((Hero44 *)(hero_globals_base + 0xE1D))->moby &&
+            if (data->target_moby && data->target_moby != ((Hero44 *)g_hero)->moby &&
                 (!data->target_moby || data->target_moby->state == 0xFE || data->target_moby->state == 0xFD ||
                  !data->target_moby->cls || data->target_moby->cls->category != 5 ||
                  !(data->target_moby->flags & 0x1000))) {
@@ -428,7 +430,7 @@ void doom_bot_update(M44 *moby) {
                 }
                 distance = vec_distance_xy(&moby->position, &data->target_moby->position);
                 {
-                    Hero44 *hero = (Hero44 *)(hero_globals_base + 0xE1D);
+                    Hero44 *hero = (Hero44 *)g_hero;
                     if (data->target_moby == hero->moby) {
                         moby->state = 5;
                         if ((moby->anim_flags & 2) && moby->anim_secondary != 6)
@@ -448,7 +450,7 @@ void doom_bot_update(M44 *moby) {
                     data->turn_rate = frame_scale * 0.1f * speed;
                 }
                 if (random_integer_below(4) == 0) {
-                    Hero44 *hero = (Hero44 *)(hero_globals_base + 0xE1D);
+                    Hero44 *hero = (Hero44 *)g_hero;
                     V44 *target_pos = &data->target_moby->position;
                     float range = 4.0f;
                     float radius = IntToFloat(hero->damage) * 0.0009765625f;
@@ -469,7 +471,7 @@ void doom_bot_update(M44 *moby) {
             data->target.v.z = moby->position.v.z + 1.0f;
             save_state_fields_to_hero((char *)data);
             {
-                Hero44 *hero = (Hero44 *)(hero_globals_base + 0xE1D);
+                Hero44 *hero = (Hero44 *)g_hero;
                 MobySpringTurn(moby, &data->movement_speed, data->angle, hero->move_k, hero->move_d, hero->move_max);
             }
             FastVecScale(&scratch[3], &data->velocity, 5.0f);
@@ -480,8 +482,7 @@ void doom_bot_update(M44 *moby) {
             if (!coll_line_r(&scratch[1], &scratch[2], 6, moby, 0) || g_coll_hit_moby == data->target_moby ||
                 (g_coll_hit_moby && g_coll_hit_moby->cls && g_coll_hit_moby->cls->category == 5)) {
                 z = moby->position.v.z;
-                move_flags =
-                    ClassifyTargetInCone(moby, &((Hero44 *)(hero_globals_base + 0xE1D))->damage, data, &data->velocity);
+                move_flags = ClassifyTargetInCone(moby, &((Hero44 *)g_hero)->damage, data, &data->velocity);
                 if (FastAbsF(moby->position.v.z - z) > 1.0f) {
                     moby->position.v.z = z;
                     if (probe_moby_raised_sphere_collision((char *)moby, 5, 0)) {
@@ -527,8 +528,8 @@ void doom_bot_update(M44 *moby) {
             float *velocity;
             Hero44 *hero;
             save_state_fields_to_hero((char *)data);
-            velocity = &((Hero44 *)(hero_globals_base + 0xE1D))->movement_velocity;
-            hero = (Hero44 *)(hero_globals_base + 0xE1D);
+            velocity = &((Hero44 *)g_hero)->movement_velocity;
+            hero = (Hero44 *)g_hero;
             MobySpringTurn(moby, velocity, heading, 2.0f * hero->move_k, 0.5f * hero->move_d, 2.0f * hero->move_max);
             restore_state_fields_from_hero((char *)data);
             if (FastDiffRots(moby->rotation.v.z, heading) < 0.08726646f) {
@@ -540,7 +541,7 @@ void doom_bot_update(M44 *moby) {
         case 7:
             z = moby->position.v.z;
             save_state_vector_and_fields_to_hero((char *)data);
-            result = update_arc_motion(moby, &((Hero44 *)(hero_globals_base + 0xE1D))->config);
+            result = update_arc_motion(moby, &((Hero44 *)g_hero)->config);
             if (result == 4) {
                 moby->state = result;
                 if (moby->anim_secondary != 7)
@@ -601,7 +602,7 @@ void doom_bot_update(M44 *moby) {
             }
             data->velocity.v.z -= g_frame_time_sq * 9.0f;
             save_state_fields_to_hero((char *)data);
-            hero = (Hero44 *)(hero_globals_base + 0xE1D);
+            hero = (Hero44 *)g_hero;
             blocked = move_moby_with_collision_integer_radius(moby, &data->velocity, hero->damage, 0, scale * 0.7f,
                                                               hero->f1EF0) &
                       2;
@@ -619,7 +620,7 @@ void doom_bot_update(M44 *moby) {
         Falling:
             do {
                 float direction = fast_atan2(data->velocity.v.x, data->velocity.v.y);
-                Hero44 *hero = (Hero44 *)(hero_globals_base + 0xE1D);
+                Hero44 *hero = (Hero44 *)g_hero;
                 MobySpringTurn(moby, &data->turn_velocity, direction, hero->turn_k, hero->turn_d, hero->turn_max);
                 data = (Doom44 *)((int)data | ((unsigned char)(int)data >> 8));
             } while (0);
@@ -639,15 +640,14 @@ void doom_bot_update(M44 *moby) {
         DeleteMoby(moby);
     return;
 }
-extern unsigned char pad_globals_base[] NOT_SDA;
+
 extern unsigned char hero_globals_base[] NOT_SDA;
 extern void update_trespasser_pickup(void *);
 /* Moby update that runs update_trespasser_pickup or sets byte +0xBC from the pad input mask. */
 void trespasser_update(Moby *m) {
     if (((struct TrespasserVars *)m->pvars)->picked_up != 0) {
         update_trespasser_pickup(m);
-    } else if (*(int *)(pad_globals_base + 0x2600) &
-               ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->items[0].button_mask) {
+    } else if (*(int *)pad_held & ((struct Hero *)g_hero)->items[0].button_mask) {
         m->command = 1;
     } else {
         m->command = 0;
@@ -997,7 +997,7 @@ void aim_throw_arc(float *a, float *b, float *out, float x, float y, float lim) 
         qcopy(&t, b);
     }
     r = fast_atan2(t.x - a[0], t.y - a[1]);
-    base = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    base = (struct Hero *)g_hero;
     if (0.87266463f < FastDiffRots(base->motion.rot.f[2], r) || vec_distance_xy(a, &t) < 1.5f) {
         r = base->motion.rot.f[2];
         u[0] = FastCos(r) * 1.5f;
@@ -1012,7 +1012,7 @@ void aim_throw_arc(float *a, float *b, float *out, float x, float y, float lim) 
     out[1] = FastSin(r) * e;
     out[2] = 0.0f;
     out[2] = jump_speed_4318(a, (float *)&t, e, -x, 0);
-    if (*(int *)(pad_globals_base + 0x2600) & 5) {
+    if (*(int *)pad_held & 5) {
         q = (IntToFloat(*(hero_globals_base - 9)) * 2.5f + 8.5f) / e;
     } else {
         q = 8.5f / e;
@@ -1743,7 +1743,7 @@ typedef struct {
 /* Steers a moby toward the player's follow distance, easing its height. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002bffa8.c, FUN_L00_002c40a0. */
 void update_decoy_proximity_motion(char *m) {
     O_2c40a0 *moby_vars = (O_2c40a0 *)((struct Moby *)m)->pvars;
-    Hero *P = (Hero *)(hero_globals_base + 0xE1D);
+    Hero *P = (Hero *)g_hero;
     s32 proximity_response_gate = P->still_frames;
     f32 horizontal_displacement[4];
     f32 horizontal_separation_error, horizontal_separation_distance, ground_height;
@@ -2195,7 +2195,6 @@ typedef struct {
     unsigned short max;
     char pad2[8];
 } FxWeaponInfo;
-extern char menu_item_enabled_115[];
 
 extern char item_defs_r[] __asm__("D_L00_00179BC0");
 extern FxVec coll_resolved_pos;
@@ -2294,7 +2293,7 @@ void devestator_ammo_update(Moby *m) {
                 return;
             if (FastVecLength(&p->velocity) != 0.0f)
                 return;
-            player = (Hero *)(hero_globals_base + 0xE1D);
+            player = (Hero *)g_hero;
             eligible = 1;
             height_delta = FastAbsF(m->pos.z - player->motion.pos.f[2]);
             if (player->reach_height < height_delta) {
@@ -2305,13 +2304,13 @@ void devestator_ammo_update(Moby *m) {
                     eligible = 0;
             }
             idx = p->weapon;
-            before = ((int *)(menu_item_enabled_115 + 0x21))[idx];
+            before = ((int *)weapon_ammo_counts)[idx];
             max_ammo = ((FxWeaponInfo *)item_price_table)[idx].max;
             if (before >= max_ammo)
                 eligible = 0;
             if (m->pos.z < p->resting_height - 2.0f)
                 eligible = 1;
-            if (((Hero *)(hero_globals_base + 0xE1D))->health.hp == 0)
+            if (((Hero *)g_hero)->health.hp == 0)
                 eligible = 0;
             if (!eligible)
                 goto pickup_failed;
@@ -2319,7 +2318,7 @@ void devestator_ammo_update(Moby *m) {
             {
                 add_ammo(idx, p->amount);
                 sound_idx = p->weapon;
-                after = ((int *)(menu_item_enabled_115 + 0x21))[sound_idx];
+                after = ((int *)weapon_ammo_counts)[sound_idx];
                 if (before < after) {
                     difference = after - before;
                     if (difference == 1) {
@@ -2331,7 +2330,7 @@ void devestator_ammo_update(Moby *m) {
                 }
                 account_idx = p->weapon;
                 ((int *)(level_render_state_base + 0xA2))[account_idx] +=
-                    ((int *)(menu_item_enabled_115 + 0x21))[account_idx] - before;
+                    ((int *)weapon_ammo_counts)[account_idx] - before;
                 m->state = 2;
                 m->scale *= frame_scale * 0.20000005f + 1.0f;
                 clear_u64_value(&p->velocity);
@@ -2347,7 +2346,7 @@ void devestator_ammo_update(Moby *m) {
         pickup_failed:
             if (m->alpha < 0xFF)
                 ++m->alpha;
-            if (jet_distance(m, ((Hero *)(hero_globals_base + 0xE1D))->moby) <= -0.2f) {
+            if (jet_distance(m, ((Hero *)g_hero)->moby) <= -0.2f) {
                 m->state = 3;
                 p->recovery_timer = scale_ticks(60);
             }
@@ -2362,15 +2361,14 @@ void devestator_ammo_update(Moby *m) {
             m->pos.z += p->rise_speed;
             limit = FastVecLength(&p->velocity);
             ApproachValue(&limit, g_frame_time * 64.0f, g_frame_time_sq * 24.0f);
-            FastVecSub(&p->velocity, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center,
-                       &m->pos);
+            FastVecSub(&p->velocity, &((struct Hero *)g_hero)->motion.body_center, &m->pos);
             if (m->scale == 0.0f || FastVecLength(&p->velocity) < limit) {
                 DeleteMoby(m);
                 return;
             }
             vec_scale_to_length(&p->velocity, &p->velocity, limit);
             FastVecAdd(&m->pos, &m->pos, &p->velocity);
-            distance = FastVecDist(&m->pos, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center);
+            distance = FastVecDist(&m->pos, &((struct Hero *)g_hero)->motion.body_center);
             factor = (float)scale_ticks(30);
             factor = factor * limit;
             factor = factor + 0.01f;
@@ -2410,7 +2408,7 @@ void devestator_ammo_update(Moby *m) {
                 return;
             }
             idx = p->weapon;
-            if (((int *)(menu_item_enabled_115 + 0x21))[idx] < ((FxWeaponInfo *)item_price_table)[idx].max) {
+            if (((int *)weapon_ammo_counts)[idx] < ((FxWeaponInfo *)item_price_table)[idx].max) {
                 m->state = 1;
             }
             return;
@@ -2443,7 +2441,6 @@ typedef struct {
     short b;
     char pad2[0x14];
 } Rec_2C6F48;
-extern char menu_item_enabled_115[];
 
 extern Rec_2C6F48 item_defs_r2[] __asm__("D_L00_00179BC0");
 extern float frame_scale MACRO_ADDR;
@@ -2459,9 +2456,9 @@ int try_collect_ammo_pickup(char *m) {
     fail:
         return 0;
     }
-    a = *(int *)(menu_item_enabled_115 + 0x21 + p->weapon * 4);
+    a = *(int *)(weapon_ammo_counts + p->weapon * 4);
     f = add_ammo(p->weapon, *(int *)((char *)p));
-    b = *(int *)(menu_item_enabled_115 + 0x21 + p->weapon * 4);
+    b = *(int *)(weapon_ammo_counts + p->weapon * 4);
     if (a >= b)
         goto fail;
     if (b - a == 1)
@@ -2470,8 +2467,7 @@ int try_collect_ammo_pickup(char *m) {
         r = ((Rec_2C6F48 *)((char *)item_defs_r2 + p->weapon * 0x4C))->a;
     queue_formatted_dialogue_message(r, b - a, -1);
     if (f < (float)*(int *)((char *)p)) {
-        *(int *)(level_render_state_base + 0xA2 + p->weapon * 4) +=
-            *(int *)(menu_item_enabled_115 + 0x21 + p->weapon * 4) - a;
+        *(int *)(level_render_state_base + 0xA2 + p->weapon * 4) += *(int *)(weapon_ammo_counts + p->weapon * 4) - a;
         m[0x20] = 2;
         ((Moby *)m)->scale *= frame_scale * 0.20000005f + 1.0f;
         clear_u64_value(&p->velocity);
@@ -3030,7 +3026,7 @@ void compute_glove_of_doom_launch_velocity(float *pos, float *tgt, float *out, f
         qcopy(&t, tgt);
     }
     ang = fast_atan2(t.x - pos[0], t.y - pos[1]);
-    P = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    P = (struct Hero *)g_hero;
     if (FastDiffRots(P->motion.rot.f[2], ang) > 0.87266463f || vec_distance_xy(pos, &t) < 1.5f) {
         ang = P->motion.rot.f[2];
         u.x = FastCos(ang) * 1.5f;
@@ -3045,7 +3041,7 @@ void compute_glove_of_doom_launch_velocity(float *pos, float *tgt, float *out, f
     out[1] = FastSin(ang) * s;
     *(int *)&out[2] = 0;
     out[2] = jump_speed_4318(pos, (float *)&t, s, -speed, 0);
-    if (*(int *)(pad_globals_base + 0x2600) & 5) {
+    if (*(int *)pad_held & 5) {
         k = 3.5f / s;
     } else {
         k = 2.5f / s;
@@ -3373,7 +3369,7 @@ char *spawn_glove_of_doom_held_moby(int a0, char *pos, char *vec) {
         d->state = 0;
         d->timer = 0;
         ((Moby *)m)->scale = *(float *)(*(char **)&((struct Moby *)m)->pclass + 0x24) * 0.01f;
-        g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        g = (struct Hero *)g_hero;
         if (g->unk20A5 != 0 || g->unk20AF != 0) {
             ((Moby *)m)->flags |= 0x41;
         }

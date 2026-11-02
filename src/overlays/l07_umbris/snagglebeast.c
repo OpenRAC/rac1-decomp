@@ -22,6 +22,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+extern char weapon_ammo_counts[];
 /* Snagglebeast: senses the target, chases along umbris paths and whips its rope. */
 struct SnagglebeastVars {
     u8 pad_00[0x20];
@@ -754,7 +755,7 @@ typedef struct {
 } SbRec4C;
 extern SbRec4C umbris_item_defs[];
 extern int snagglebeast_stage_item_slots[][4];
-extern char menu_item_enabled_115[];
+
 extern short snagglebeast_start_cleared_word;
 
 typedef struct {
@@ -1656,18 +1657,18 @@ void snagglebeast_update(unsigned char *m) {
                         int rem;
                         int pos;
                         if (d->unk_19E == 0) {
-                            d->unk_19E = *(int *)(menu_item_enabled_115 + 0x21 + slot * 4) / 8;
+                            d->unk_19E = *(int *)(weapon_ammo_counts + slot * 4) / 8;
                             if (d->unk_19E < cnt)
                                 d->unk_19E = cnt;
                             d->unk_1AC = random_float_between(d->unk_1AC + 20.0f, d->unk_1AC + 100.0f);
                         }
                         cnt = d->unk_19E;
-                        if (*(int *)(menu_item_enabled_115 + 0x21 + slot * 4) < cnt) {
-                            cnt = *(int *)(menu_item_enabled_115 + 0x21 + slot * 4);
+                        if (*(int *)(weapon_ammo_counts + slot * 4) < cnt) {
+                            cnt = *(int *)(weapon_ammo_counts + slot * 4);
                             d->unk_19E = 0;
                             d->phase += 1;
                         }
-                        rem = *(int *)(menu_item_enabled_115 + 0x21 + slot * 4) - cnt * 8;
+                        rem = *(int *)(weapon_ammo_counts + slot * 4) - cnt * 8;
                         pos = rem > 0;
                         cnt = cnt + pos * rem;
                         if (cnt > 0) {
@@ -1708,7 +1709,7 @@ void snagglebeast_update(unsigned char *m) {
                                 if (obj != 0) {
                                     qcopy_nc(((char *)((Moby *)obj)->pvars) + 0x10, &vb);
                                     ((struct SnagglebeastVars *)((Moby *)obj)->pvars)->unk_28 = zv;
-                                    *(int *)(menu_item_enabled_115 + 0x21 + slot * 4) -= cnt;
+                                    *(int *)(weapon_ammo_counts + slot * 4) -= cnt;
                                     d->phase_timer = scale_ticks(0);
                                 }
                             }
@@ -2391,7 +2392,6 @@ extern void FastVecSub(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern void suck_beam_queue_draw(int arg0);
-
 
 extern char rope_previous_points[];
 extern char snagglebeast_rope_centers_v[] __asm__("D_L07_0020DDC0");

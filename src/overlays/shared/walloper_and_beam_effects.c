@@ -15,6 +15,7 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+extern char g_hero[];
 
 /* Tesla beam: draw state read by the beam and arc effects. */
 struct BeamArcVars {
@@ -165,7 +166,7 @@ extern int coll_line(Vec4f *, Vec4f *, int, void *, int);
 extern void coll_sphere_mobys(void *, int, void *, void *, float);
 extern void Moby_PlaySound(int, int, void *);
 extern unsigned char *PartType53Spawn(void *, int, float, float, int, int, int, float *, float);
-#define hero43 (*(Hero43 *)(D_0013E633 + 0xE1D))
+#define hero43 (*(Hero43 *)g_hero)
 
 typedef struct {
     Vec4 direction;
@@ -853,7 +854,7 @@ void draw_beam_anchor_camera_facing_quads(void *mv) {
     mat[3].f[3] = 1.0f;
     FastVecSub(&mat[0], g_debug_camera, &mat[3]);
     vec_scale_to_length(&mat[0], &mat[0], 1.0f);
-    FastVecCross(&mat[1], &mat[0], &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->gravity_dir);
+    FastVecCross(&mat[1], &mat[0], &((struct Hero *)g_hero)->gravity_dir);
     vec_scale_to_length(&mat[1], &mat[1], -1.0f);
     FastVecCross(&mat[2], &mat[1], &mat[0]);
     c = *(int *)&beam_anchor_quad_color;
@@ -936,7 +937,7 @@ void update_linked_moby_scale_and_rotation(Moby *m) {
             m->flags |= *(unsigned short *)(p->parent + 0x34) & 1;
         }
     }
-    g = (struct Hero *)(hero_globals_base + 0xE1D);
+    g = (struct Hero *)g_hero;
     if (g->items[0].ready_frames < scale_ticks(0x19)) {
         m->flags |= 0x41;
     }
@@ -988,7 +989,7 @@ void walloper_update(Moby *m) {
     float vec1[4] __attribute__((aligned(16)));
     float t[4] __attribute__((aligned(16)));
     float w[5][4] __attribute__((aligned(16)));
-    struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+    struct Hero *g = (struct Hero *)g_hero;
     int i;
     int n;
     int j;
@@ -1319,7 +1320,7 @@ void draw_walloper_camera_facing_quad(int arg) {
     t.c[0] = col;
     FastVecSub(f, g_debug_camera, bb);
     vec_scale_to_length(cc, f, 1.0f);
-    FastVecCross(d, cc, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->gravity_dir);
+    FastVecCross(d, cc, &((struct Hero *)g_hero)->gravity_dir);
     vec_scale_to_length(d, d, -1.0f);
     FastVecCross(e, d, cc);
     FastVecScale(f, cc, 0.2f);
@@ -1369,7 +1370,7 @@ char *select_morphoray_target_and_adjust_aim(char *self, float *position, float 
     limit = *(float *)&tesla_arc_range;
     a0s[0] = (int)self;
     *(VecQuad *)start = *(VecQuad *)position;
-    g = (struct Hero *)(hero_globals_base + 0xE1D);
+    g = (struct Hero *)g_hero;
     m0 = *(char **)&g->moby;
     *(VecQuad *)end = *(VecQuad *)(m0 + 0x10);
     position = start;
@@ -1402,7 +1403,7 @@ char *select_morphoray_target_and_adjust_aim(char *self, float *position, float 
             distance = FastVecDist(position, target);
             if (distance < 2.5f) {
                 float toward;
-                struct Hero *g1 = (struct Hero *)(hero_globals_base + 0xE1D);
+                struct Hero *g1 = (struct Hero *)g_hero;
                 moby = *(char **)&g1->moby;
                 toward = fast_atan2(((Moby *)candidate)->pos.x - g1->motion.pos.f[0],
                                     ((Moby *)candidate)->pos.y - g1->motion.pos.f[1]);
@@ -1418,7 +1419,7 @@ char *select_morphoray_target_and_adjust_aim(char *self, float *position, float 
             if (distance > limit)
                 continue;
             {
-                struct Hero *g2 = (struct Hero *)(hero_globals_base + 0xE1D);
+                struct Hero *g2 = (struct Hero *)g_hero;
                 BuildSphericalOffset(offset, distance, *heading, *pitch + g2->ground_pitch.f * 0.5f);
             }
             FastVecAdd(offset, offset, position);
@@ -2382,7 +2383,7 @@ void draw_beam_pulse_quads(void *unused) {
             q.rgba[0] = col;
             qcopy(pd, &tesla_pulse_pos[i]);
             qcopy(&A, &tesla_pulse_dir[i]);
-            FastVecScale(&C, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->gravity_dir, -1.0f);
+            FastVecScale(&C, &((struct Hero *)g_hero)->gravity_dir, -1.0f);
             FastVecCross(&B, &A, &C);
             vec_scale_to_length(&B, &B, 1.0f);
             FastVecCross(&C, &B, &A);
@@ -2439,7 +2440,7 @@ void draw_beam_origin_camera_facing_quads(void *mv) {
     FastVecAdd(&mat[3], &tesla_chain_points, &e);
     FastVecSub(&e, g_debug_camera, &mat[3]);
     vec_scale_to_length(&mat[0], &e, 1.0f);
-    FastVecCross(&mat[1], &mat[0], &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->gravity_dir);
+    FastVecCross(&mat[1], &mat[0], &((struct Hero *)g_hero)->gravity_dir);
     vec_scale_to_length(&mat[1], &mat[1], -1.0f);
     FastVecCross(&mat[2], &mat[1], &mat[0]);
     for (i = 3; i >= 0; i--) {

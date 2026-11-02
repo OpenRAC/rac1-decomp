@@ -7,6 +7,8 @@
 #include "structs/disc.h"
 #include "overlays/shared/map_menu_filters.h"
 #include "enums/level.h"
+extern char item_available[];
+extern char level_map_coverage[];
 
 typedef struct {
     unsigned short count;
@@ -357,8 +359,6 @@ extern char render_archive_source_file[];
 extern int *lvl_load_scratch_buffer;
 extern char map_archive_stash_comment[];
 extern unsigned char map_menu_state_circle_mask[];
-extern unsigned char menu_item_enabled_115[] NOT_SDA;
-extern unsigned char help_stats_base[] NOT_SDA;
 
 /* Sets up the map's tables, loads its data from disc and builds the circular mask. */
 void initialize_level_map_archive(void) {
@@ -404,7 +404,7 @@ void initialize_level_map_archive(void) {
             map_coefficients[i * 4 + 2] = f - r * b;
         }
     }
-    pp = (unsigned char *)menu_item_enabled_115 + 0xB9;
+    pp = item_available;
     if (pp[0x21] != 0) {
         map_menu_state[0x8C] = 1;
         e = (int *)disc_table.render_archives + map_menu_state[0x89] * 2;
@@ -439,7 +439,7 @@ void initialize_level_map_archive(void) {
             map_menu_state[14 + i * 4] = map_menu_state[2] + i * 0x200;
         }
         w = Hud_HeapAlloc(0x8000, 0, render_archive_source_file, 0x2FC);
-        level_data = help_stats_base + 0x8A5 + map_menu_state[0x89] * 0x800;
+        level_data = level_map_coverage + map_menu_state[0x89] * 0x800;
         map_menu_state[3] = w;
         if (level_data[0] != 0) {
             load_map_chunk((void *)map_menu_state[3], level_data, map_menu_state[5]);

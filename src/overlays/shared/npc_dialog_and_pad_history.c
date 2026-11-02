@@ -11,6 +11,9 @@
 #include "data/shared_levels.h"
 #include "game/ui/hud.h"
 #include "overlays/shared/cutscene_and_movie_playback.h"
+extern char gSpecialItems[];
+extern Hero g_hero;
+extern char pad0_pressed[];
 
 typedef struct {
     int value;
@@ -88,9 +91,7 @@ extern int cinematic_mode MACRO_ADDR;
 extern char active_scene_trigger[];
 extern char item_price_table[];
 extern int gBolts MACRO_ADDR;
-extern unsigned char special_items_base[];
-extern char pad_globals_base[];
-extern char hero_globals_base[];
+
 extern short bolt_hud_item;
 extern s32 DialogRequest_Init(void *p, u8 *out_p);
 
@@ -105,7 +106,7 @@ extern s32 level_frame_counter MACRO_ADDR;
 int Npc_TryStartDialog(char *p, char *q) {
     extern float FastVecDist(void *, void *);
     extern s32 get_dialogue_entry(void *);
-    struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+    struct Hero *g = &g_hero;
     char *x;
     char *e;
     char *y;
@@ -146,7 +147,7 @@ int Npc_TryStartDialog(char *p, char *q) {
     x = active_scene_trigger;
     if (level_frame_counter < *(int *)(x + 0x10))
         return 0;
-    if (*(unsigned char *)(q + 8) != 0 || (*(int *)(pad_globals_base + 0x2604) & 0x10) != 0) {
+    if (*(unsigned char *)(q + 8) != 0 || (*(int *)pad0_pressed & 0x10) != 0) {
         i = get_dialogue_entry(p);
         tb = race_gates_base + 0xB3;
         tb = tb + 0xC;
@@ -160,7 +161,7 @@ int Npc_TryStartDialog(char *p, char *q) {
             if (*(short *)(e + 8) == 1)
                 gBolts = gBolts - *(int *)(item_price_table + *(short *)(e + 0xA) * 0x18);
             else if (*(short *)(e + 8) == 4) {
-                tb2 = special_items_base + 0x13B;
+                tb2 = gSpecialItems;
                 tb2[*(short *)(e + 0xA)] = 0;
             }
         }

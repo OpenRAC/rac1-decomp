@@ -10,6 +10,7 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "enums/moby_class.h"
+extern Hero g_hero;
 
 typedef struct {
     char pad[0x24];
@@ -17,11 +18,10 @@ typedef struct {
     char pad2[0x24];
 } Rec;
 extern Rec fleet_item_defs[];
-extern char hero_globals_base[];
 
 /* Returns the current help record's value, 0x54 or 0x6E in two special states, or 0 when no record applies. */
 int select_hero_help_value(int a) {
-    struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    struct Hero *g = &g_hero;
     switch (g->vehicle_mode) {
         case 1:
             return 0;
@@ -29,7 +29,7 @@ int select_hero_help_value(int a) {
             return 0;
     }
     {
-        struct Hero *g2 = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *g2 = &g_hero;
         if (g2->health.hp == 1) {
             return 0x54;
         }
@@ -227,7 +227,7 @@ extern float g_frame_time MACRO_ADDR;
 
 /* Per-frame easing of the camera blend parameters at the shared global block, by mode. */
 void update_hero_smoothing(void) {
-    struct Hero *a = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    struct Hero *a = &g_hero;
     struct Hero *b;
     struct Hero *c;
     char *g;
@@ -250,7 +250,7 @@ void update_hero_smoothing(void) {
             a->capsule_radius_target = 0.45f;
             break;
     }
-    b = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    b = &g_hero;
     if (b->state.control_mode == 4) {
         if (b->state_timer > b->takeoff_frame) {
             if (b->past_jump_apex == 0) {
@@ -268,12 +268,12 @@ void update_hero_smoothing(void) {
         b->capsule_top_target = 0.8f;
         b->capsule_bottom_target = 0.9f;
     } else {
-        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *q = &g_hero;
         if (q->state.current == HERO_STATE_SINK) {
             q->capsule_radius_target = 0.8f;
         }
     }
-    c = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    c = &g_hero;
     if (c->wall_hit != 0 && c->state.prev_control_mode != 0x12 && c->state.control_mode != 0x11 &&
         c->base_condition == 0) {
         float d = vec_distance_xy(&c->wall_contact_point, &c->motion.pos);
@@ -281,7 +281,7 @@ void update_hero_smoothing(void) {
             return;
         }
     }
-    p = (float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->capsule_top);
+    p = (float *)(&g_hero.capsule_top);
     g = (char *)p - 0x220;
     ApproachValue(p, *(float *)(g + 0x228), frame_scale * 0.02f);
     ApproachValue(p + 1, *(float *)(g + 0x22C), frame_scale * 0.02f);

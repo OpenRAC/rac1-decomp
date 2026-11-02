@@ -14,6 +14,8 @@
 #include "structs/collision.h"
 #include "enums/level.h"
 #include "enums/moby_class.h"
+extern char gSpecialItems[];
+extern Hero g_hero;
 
 /* Bomb: thrown or dropped, bounces, fuse timer, explodes. */
 struct BombVars {
@@ -510,7 +512,7 @@ void update_bomb(char *moby) {
     }
     jet_animate(moby, 0.2f);
 }
-extern char hero_globals_base[] NOT_SDA;
+
 extern char special_items_base[] NOT_SDA;
 extern unsigned char menu_item_enabled_25[] NOT_SDA;
 extern unsigned char gHaveHeliPack[] NOT_SDA;
@@ -567,7 +569,7 @@ void update_bomber_tank(Moby *moby) {
                 d->part_a->update_dist = 0x40;
                 d->part_a->draw_dist = 0x40;
                 d->part_a->visible = 1;
-                d->part_a->spawn_frame = (*(Moby **)&((struct Hero *)(hero_globals_base + 0xE1D))->moby)->spawn_frame;
+                d->part_a->spawn_frame = (*(Moby **)&g_hero.moby)->spawn_frame;
                 d->part_a->flags = 0x4000;
                 p = d->part_a;
                 qcopy(&p->pos, &moby->pos);
@@ -581,7 +583,7 @@ void update_bomber_tank(Moby *moby) {
                 d->part_b->update_dist = 0x40;
                 d->part_b->draw_dist = 0x40;
                 d->part_b->visible = 1;
-                d->part_b->spawn_frame = (*(Moby **)&((struct Hero *)(hero_globals_base + 0xE1D))->moby)->spawn_frame;
+                d->part_b->spawn_frame = (*(Moby **)&g_hero.moby)->spawn_frame;
                 d->part_b->flags = 0xC000;
                 p = d->part_b;
                 qcopy(&p->pos, &moby->pos);
@@ -699,7 +701,7 @@ void update_bomber_tank(Moby *moby) {
             if (d->target_mode != 2) {
                 unsigned char *pers;
                 scatter_bomber_tank_linked_debris_r(moby);
-                pers = (unsigned char *)special_items_base + 0x13B;
+                pers = gSpecialItems;
                 if (pers[0x2E] != 0)
                     Moby_PlaySound(6, 0, moby);
                 pers[0x2E] = 1;
@@ -1532,7 +1534,6 @@ extern float FastDiffRots(float, float);
 extern float FastVecDist(void *, void *);
 extern short *batalia_moby_groups[];
 extern char *batalia_mobys MACRO_ADDR;
-extern char hero_globals_base[] NOT_SDA;
 
 /* Picks the best candidate moby from the moby's list by heading and distance.
  * Exact since tools/ps2eeas_nops.py puts the hazard nop after the shared bc1fl's label. */
@@ -1555,7 +1556,7 @@ char *select_blarg_bombthrower_waypoint(char *moby) {
             float ang, d, a;
             a = fast_atan2(((struct Moby *)p)->pos.x - *(float *)(moby + 0x10),
                            ((struct Moby *)p)->pos.y - *(float *)(moby + 0x14));
-            base = (struct Hero *)(hero_globals_base + 0xE1D);
+            base = &g_hero;
             ang = FastDiffRots(a, fast_atan2(base->motion.pos.f[0] - *(float *)(moby + 0x10),
                                              base->motion.pos.f[1] - *(float *)(moby + 0x14)));
             d = FastVecDist(moby + 0x10, &((struct Moby *)p)->pos);
@@ -1707,7 +1708,7 @@ void blarg_bombthrower_update(Moby *moby) {
                 d->i94 = 9;
                 d->f84 = 0.0005f;
                 d->bAD = 0;
-                base = (struct Hero *)(hero_globals_base + 0xE1D);
+                base = &g_hero;
                 InitKnockback(moby, d->blk70,
                               fast_atan2(moby->pos.x - base->motion.pos.f[0], moby->pos.y - base->motion.pos.f[1]), 6,
                               1, 0);
@@ -1724,7 +1725,7 @@ void blarg_bombthrower_update(Moby *moby) {
             d->f88 = batalia_bombthrower_knockback_speed * g_frame_time;
             d->f8C = batalia_bombthrower_knockback_lift * g_frame_time;
             d->bAD = 0;
-            base = (struct Hero *)(hero_globals_base + 0xE1D);
+            base = &g_hero;
             InitKnockback(moby, d->blk70,
                           fast_atan2(moby->pos.x - base->motion.pos.f[0], moby->pos.y - base->motion.pos.f[1]), 9, 1,
                           0);
@@ -1741,7 +1742,7 @@ void blarg_bombthrower_update(Moby *moby) {
     moby->hit_slot = 0xFF;
     look.r44 = FindNearestTargetMoby(moby, 16.0f, &look);
     if (look.target == 0) {
-        look.target = *(Moby **)&((struct Hero *)(hero_globals_base + 0xE1D))->moby;
+        look.target = *(Moby **)&g_hero.moby;
     }
     target = look.target;
     switch (moby->state) {
@@ -2050,7 +2051,7 @@ void RoutePlatformUpdate(char *m) {
             }
             break;
         case 2: {
-            Hero *q = (Hero *)(hero_globals_base + 0xE1D);
+            Hero *q = &g_hero;
             if (q->ground_moby == moby) {
                 if (batalia_help_popup_state[0] == 0 && batalia_help_popup_state[9] == -1) {
                     qcopy(hero_position_probe, &q->motion.pos);
@@ -2070,7 +2071,7 @@ void RoutePlatformUpdate(char *m) {
             break;
         }
         case 3: {
-            Hero *q = (Hero *)(hero_globals_base + 0xE1D);
+            Hero *q = &g_hero;
             q->jump_lock_timer = 5;
             q->unk1F4 = 5;
             q->path_constrain_pending = vars->stop.u;
@@ -2169,7 +2170,7 @@ void select_shuttle_route_for_hero(char *m) {
     };
     Moby *moby = (Moby *)m;
     ShuttleVars *data = (ShuttleVars *)moby->pvars;
-    char *pl = &((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos;
+    char *pl = &g_hero.motion.pos;
     Route *route = batalia_path_table_r_r[data->route_index];
     Route *configured_path = batalia_path_table_r_r[data->configured_index];
     Route *alternate_path = batalia_path_table_r_r[data->alternate_index];
@@ -2590,7 +2591,7 @@ void update_rocket(M46 *m) {
     }
     switch (m->state) {
         case 0: {
-            char *persistence_base = special_items_base + 0x13B;
+            char *persistence_base = gSpecialItems;
             Persistent46 *state = (Persistent46 *)(persistence_base + d->persistent);
             if (state->active) {
                 short *p = batalia_moby_groups[m->group];
@@ -2685,8 +2686,7 @@ void update_rocket(M46 *m) {
         case 3:
             if (batalia_game_mode)
                 return;
-            if (FastVecDist(&((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos,
-                            (char *)d->path + (d->path->count << 4)) < d->activation_range &&
+            if (FastVecDist(&g_hero.motion.pos, (char *)d->path + (d->path->count << 4)) < d->activation_range &&
                 timer46(&d->timer)) {
                 m->flags = 0x40;
                 m->state = 4;
@@ -2846,8 +2846,7 @@ void update_rocket(M46 *m) {
             FastVecAdd(m->position, m->position, d->velocity);
             if (coll_point_query_stub(m->position, 0x400, 2, m, 0) || m->position[0] < 5.0f ||
                 m->position[0] > 500.0f || m->position[1] < 5.0f || m->position[1] > 500.0f || m->position[2] < 5.0f ||
-                m->position[2] > 500.0f ||
-                FastVecDist(&((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos, m->position) < 16.0f)
+                m->position[2] > 500.0f || FastVecDist(&g_hero.motion.pos, m->position) < 16.0f)
                 m->state = 6;
             return;
         case 6:

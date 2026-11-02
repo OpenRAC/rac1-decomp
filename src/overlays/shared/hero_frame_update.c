@@ -12,8 +12,7 @@
 #include "overlays/shared/level_runtime_and_menus.h"
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
-
-extern char hero_globals_base[];
+extern Hero g_hero;
 
 extern void FadeToBlack(int);
 extern void hero_frame_update(void);
@@ -44,12 +43,12 @@ extern void update_hero_blink_and_gold_weapon_tint(void);
 
 /* Per-frame driver: validates the cursor, then runs each update pass in order. */
 void HeroL03_FrameUpdate(void) {
-    struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    struct Hero *g = &g_hero;
     if (g->motion.pos.f[0] < 2.0f || g->motion.pos.f[1] < 2.0f || g->motion.pos.f[0] > 1022.0f ||
         g->motion.pos.f[1] > 1022.0f) {
         struct Hero *q;
         FadeToBlack(scale_ticks(0x10));
-        q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        q = &g_hero;
         *(char *)&q->fall_fade_pending = 1;
         return;
     }
@@ -93,7 +92,7 @@ void HeroL03_FrameUpdate(void) {
         reveal_map_around_position(&g->motion.pos);
     }
     {
-        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *q = &g_hero;
         apply_env_zone_lighting(*(void **)&q->moby);
     }
     update_hero_blink_and_gold_weapon_tint();

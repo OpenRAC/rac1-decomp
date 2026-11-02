@@ -12,6 +12,11 @@
 #include "game/math/fastfunc.h"
 #include "game/moby/mobyutil.h"
 #include "enums/level.h"
+extern char gHeroPos[];
+extern Hero g_hero;
+extern char g_hero_body_center[];
+extern char g_hero_platform_carry[];
+extern char hero_gravity_dir[];
 
 extern unsigned char *create_part(int);
 extern int truncate_float_to_s32(float);
@@ -79,7 +84,6 @@ extern void FastVecAdd(void *, void *, void *);
 extern void scale_vector_xyz_in_place(void *, void *, float);
 
 extern void FastVecScale(void *, void *, float);
-extern unsigned char hero_globals_base[] NOT_SDA;
 
 /* Per-frame update of a type 0x2C particle: fade colour, move and rotate its velocity.
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/rendering_002712b8.c, FUN_L00_00271450. */
@@ -108,10 +112,10 @@ void update_moving_rotating_resizing_alpha_fade_particle(struct PartBase *p) {
         v[2] = q->vel.z;
         *(int *)&v[3] = 0;
         FastVecAdd(r, r, v);
-        t[0] = *(Q *)(hero_globals_base + 0xF5D);
+        t[0] = *(Q *)g_hero_platform_carry;
         scale_vector_xyz_in_place(m, t, p->pos.f[3]);
         add_vectors(m, r, t);
-        FastVecScale(m, hero_globals_base + 0xF5D + 0x150, q->rot_scale);
+        FastVecScale(m, g_hero_platform_carry + 0x150, q->rot_scale);
         FastVecAdd(v, v, m);
         FastVecScale(v, v, q->vel_scale);
         q->vel.x = v[0];
@@ -828,7 +832,7 @@ void update_color_tween_emitter_particle(struct PartBase *p) {
             if (FastDecTimer(&p->timer)) {
                 KillPart(p);
             }
-            c = hero_globals_base + 0xE9D;
+            c = gHeroPos;
             if (vec_distance_xy(&p->pos, c) < 0.3f) {
                 g = (struct Hero *)(c - 0x80);
                 if (g->motion.pos.f[2] < p->pos.f[2] + 1.2f) {
@@ -896,7 +900,7 @@ unsigned char *PartType59Spawn(float f, void *pos, int a1, unsigned char a2, int
 void update_timed_hero_relative_particle(struct PartBase *m) {
     char *v = (char *)m->data;
     if (*(int *)(v + 0x10) == 1) {
-        FastVecAdd(&m->pos, hero_globals_base + 0xE9D, v);
+        FastVecAdd(&m->pos, gHeroPos, v);
     }
     if (FastDecTimer(&m->timer)) {
         KillPart(m);
@@ -925,7 +929,7 @@ unsigned char *spawn_moving_hero_relative_alpha_fade_particle(float *pos, char *
         qcopy(v, vel);
         v->mode = mode;
         if (mode == 1) {
-            struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+            struct Hero *g = &g_hero;
             v->hero_offset.x = ((struct PartBase *)m)->pos.f[0] - g->motion.pos.f[0];
             v->hero_offset.y = ((struct PartBase *)m)->pos.f[1] - g->motion.pos.f[1];
             v->hero_offset.z = ((struct PartBase *)m)->pos.f[2] - g->motion.pos.f[2];
@@ -949,7 +953,7 @@ void update_moving_hero_relative_alpha_fade_particle(struct PartBase *m) {
     int col;
     float a;
     if (v->mode == 1) {
-        struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *g = &g_hero;
         m->pos.f[0] = g->motion.pos.f[0] + v->hero_offset.x;
         m->pos.f[1] = g->motion.pos.f[1] + v->hero_offset.y;
         m->pos.f[2] = g->motion.pos.f[2] + v->hero_offset.z;
@@ -1139,7 +1143,7 @@ unsigned char *spawn_gravity_floor_burst_particle(void *pos, void *vel, float sc
     if (r != 0) {
         u = &r->m;
         qcopy(&r->pos, pos);
-        if (vec_distance_xy(hero_globals_base + 0xE9D, pos) < 80.0f) {
+        if (vec_distance_xy(gHeroPos, pos) < 80.0f) {
             r->unk9 = truncate_float_to_s32(1.0f) + 0x30;
         } else {
             r->unk9 = truncate_float_to_s32(1.0f) + 0x20;
@@ -1641,7 +1645,7 @@ void update_three_phase_motion_alpha_fade_particle(struct PartBase *m) {
     float f;
     if (level_frame_counter & 1)
         (*(char *)&m->spin)++;
-    f = FastVecDist(&m->pos, hero_globals_base + 0xEED);
+    f = FastVecDist(&m->pos, g_hero_body_center);
     if (f < 5.0f) {
         char *t = *(char **)(v + 0x18);
         if (0.0f < *(float *)(t + 8)) {
@@ -2001,7 +2005,7 @@ void update_proximity_corrected_size_alpha_tween_particle(char *m) {
     if (*(int *)(v + 0x18) != 0) {
         FastVecSub(d, *(char **)(v + 0x18) + 0x10, p);
         if (d[0] <= 2.0f && d[1] <= 2.0f) {
-            FastVecCross(e, d, hero_globals_base + 0x10AD);
+            FastVecCross(e, d, hero_gravity_dir);
             vec_scale_to_length(e, e, *(float *)&proximity_particle_side_offset);
             FastVecAdd(p, p, e);
             if (d[0] <= 0.5f && d[1] <= 0.5f) {

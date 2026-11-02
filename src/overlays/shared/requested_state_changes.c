@@ -2,12 +2,11 @@
    at 0x002A2C90 (was sound_002A2C90.c). */
 #include "common.h"
 #include "include_asm.h"
-
-extern char hero_globals_base[];
+extern char voice_pool[];
 
 /* Stores the requested values and sets change bits for each one that differs from before. */
 void set_requested_state_and_mark_changes(int a, int b, int c, int d, int e) {
-    char *p = hero_globals_base + 0x1D;
+    char *p = voice_pool;
     *(int *)(p + 0x60) = a;
     if ((unsigned char)p[0x68] != b) {
         p[0x68] = b;

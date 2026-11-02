@@ -9,14 +9,14 @@
 #include "overlays/shared/hero_mapped_animations.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+extern Hero g_hero;
 
-extern char hero_globals_base[];
 extern char hoven_item_defs[];
 extern int hero_slot_item_id(int);
 
 // Returns a value selected by game-state flags, or an entry field of a 0x4C-byte table.
 int hero_get_gadget_anim_id(int a) {
-    struct Hero *base = (struct Hero *)(hero_globals_base + 0xE1D);
+    struct Hero *base = &g_hero;
     int i;
     char *p;
     if (base->vehicle_mode == 3) {

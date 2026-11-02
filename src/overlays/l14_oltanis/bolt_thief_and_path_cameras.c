@@ -22,6 +22,8 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+extern char gHeroPos[];
+extern struct Hero g_hero;
 
 /* Moby that points at a linked moby by index. */
 struct LinkedRemovalVars {
@@ -345,11 +347,11 @@ void BoltThiefUpdate(L14Moby *m) {
 
     if ((m->status & 2) && m->frame == m->animation && m->frame == 1)
         MobyBlendAnimation(m, 4, 0, scale_ticks(5));
-    if (((L14Moby *)((Hero *)(hero_globals_base + 0xE1D))->coll_hit_moby) == m && m->animation != 1 && m->frame != 1)
+    if (((L14Moby *)g_hero.coll_hit_moby) == m && m->animation != 1 && m->frame != 1)
         MobyBlendAnimation(m, 1, 0, scale_ticks(5));
     hit = MobyGetHitMessage(m, 0x210000, 0);
     if (hit && m->state != 6) {
-        Hero *hero = (Hero *)(hero_globals_base + 0xE1D);
+        Hero *hero = &g_hero;
 
         d->knock_drag = 0.008f;
         d->knock_gravity = 0.0005f;
@@ -407,7 +409,7 @@ void BoltThiefUpdate(L14Moby *m) {
             d->child = 0;
             break;
         case 1: {
-            Hero *hero = (Hero *)(hero_globals_base + 0xE1D);
+            Hero *hero = &g_hero;
 
             MobySpringTurn((char *)m,
                            fast_atan2(hero->motion.pos.f[0] - m->position[0], hero->motion.pos.f[1] - m->position[1]),
@@ -416,8 +418,7 @@ void BoltThiefUpdate(L14Moby *m) {
             break;
         }
         case 2:
-            if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                            d->trigger)) {
+            if (is_point_inside_clip_volume(&g_hero.motion.pos, d->trigger)) {
                 if (d->mode == 1) {
                     MobySetAnimation(m, 0, 0);
                 } else {
@@ -2614,17 +2615,15 @@ void update_path_key_camera(char *cam) {
 
     oltanis_key_cam_key_count = data->st.count;
     oltanis_key_cam_key_index = st->idx;
-    if (((Hero *)(hero_globals_base + 0xE1D))->rail_spline == race_paths_z[rec->p34].id) {
+    if (g_hero.rail_spline == race_paths_z[rec->p34].id) {
         side = 0;
-    } else if (((Hero *)(hero_globals_base + 0xE1D))->rail_spline == race_paths_z[rec->p38].id) {
+    } else if (g_hero.rail_spline == race_paths_z[rec->p38].id) {
         side = 1;
     } else {
         side = 2;
     }
-    oltanis_key_cam_path_progress =
-        (oltanis_key_cam_path_distances[side][((Hero *)(hero_globals_base + 0xE1D))->rail_segment] +
-         ((Hero *)(hero_globals_base + 0xE1D))->rail_seg_frac) /
-        oltanis_key_cam_path_distances[side][999];
+    oltanis_key_cam_path_progress = (oltanis_key_cam_path_distances[side][g_hero.rail_segment] + g_hero.rail_seg_frac) /
+                                    oltanis_key_cam_path_distances[side][999];
     if (rec->n32 < 2 && oltanis_key_cam_lean_step_progress[rec->n32][side] <= oltanis_key_cam_path_progress) {
         rec->n32++;
     }
@@ -2637,7 +2636,7 @@ void update_path_key_camera(char *cam) {
         CamMoby171D0 *m1 = (CamMoby171D0 *)(oltanis_mobys + (rec->m28 << 8));
         CamMoby171D0 *m2 = (CamMoby171D0 *)(oltanis_mobys + (rec->m2C << 8));
 
-        if (((Hero *)(hero_globals_base + 0xE1D))->rail_spline == race_paths_z[m0->data->zone].id) {
+        if (g_hero.rail_spline == race_paths_z[m0->data->zone].id) {
             m0->state = 1;
             if (rec->n30 > 0) {
                 {
@@ -2658,7 +2657,7 @@ void update_path_key_camera(char *cam) {
                     }
                 }
             }
-        } else if (((Hero *)(hero_globals_base + 0xE1D))->rail_spline == race_paths_z[m1->data->zone].id) {
+        } else if (g_hero.rail_spline == race_paths_z[m1->data->zone].id) {
             m1->state = 1;
             if (rec->n30 > 0) {
                 if (random_integer_below(2)) {
@@ -2770,9 +2769,7 @@ void update_path_key_camera(char *cam) {
     x = interpolate_angle(oltanis_path_camera_keys[st->idx].a10 * 0.017453292f,
                           oltanis_path_camera_keys[st->idx + 1].a10 * 0.017453292f, t);
     cur->f10 = Camera_SmoothAngle(vel + 4, cur->f10, x, k, 0.2f, 0.0f);
-    ang = FastAddRots(fast_atan2(((float *)((Hero *)(hero_globals_base + 0xE1D))->moby)[0x34],
-                                 ((float *)((Hero *)(hero_globals_base + 0xE1D))->moby)[0x35]),
-                      cur->f0);
+    ang = FastAddRots(fast_atan2(((float *)g_hero.moby)[0x34], ((float *)g_hero.moby)[0x35]), cur->f0);
     oltanis_key_cam_yaw = ang;
     if (side == 0) {
         a = oltanis_path_camera_keys[st->idx].t18;
@@ -2804,9 +2801,9 @@ void update_path_key_camera(char *cam) {
     v0[1] = cur->f4;
     v0[0] = ang;
     v0[2] = cur->f8;
-    compute_position_from_spherical_offset(cam + 0x30, v0, hero_globals_base + 0xE9D);
-    FastVecSub(v2, hero_globals_base + 0xE9D, cam + 0x30);
-    FastVecScale(v3, hero_globals_base + 0xE9D + 0x210, -1.5f);
+    compute_position_from_spherical_offset(cam + 0x30, v0, gHeroPos);
+    FastVecSub(v2, gHeroPos, cam + 0x30);
+    FastVecScale(v3, gHeroPos + 0x210, -1.5f);
     FastVecAdd(v2, v2, v3);
     vec_scale_to_length(cam, v2, 1.0f);
     FastVecCross(cam + 0x10, cam, v3);
@@ -2850,7 +2847,7 @@ INCLUDE_ASM("asm/overlays", func_L14_00317C4C);
 extern char hero_globals_base[];
 // Sets the exit camera's state field to 3 unless the global is 0xF.
 void exit_camera_set_state(char *moby) {
-    if (((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.control_mode != 0xF) {
+    if (g_hero.state.control_mode != 0xF) {
         *(short *)(moby + 0x7E) = 3;
     }
 }

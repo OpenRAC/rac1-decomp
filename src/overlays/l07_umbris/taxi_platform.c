@@ -17,6 +17,10 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+extern char gSpecialItems[];
+extern Hero g_hero;
+extern char saved_mission_state[];
+extern char voice_pool[];
 
 /* Umbris taxi platform: slides along a path between its two ends when the hero rides it. */
 struct TaxiPlatformVars {
@@ -138,7 +142,6 @@ extern void FastVecAdd(void *, void *, void *);
 extern void update_entity_matrix(void *, void *, void *, void *);
 
 extern float g_frame_time MACRO_ADDR;
-extern char hero_globals_base[];
 
 #define F(p, o) (*(float *)((p) + (o)))
 
@@ -206,8 +209,7 @@ void update_taxi_platform(unsigned char *moby) {
         case 2:
             if (data->wait_timer != 0 ||
                 (data->rise < 0.0f &&
-                 vec_distance_xy(((unsigned char *)&((Moby *)moby)->pos),
-                                 hero = &((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos) < 2.0f &&
+                 vec_distance_xy(((unsigned char *)&((Moby *)moby)->pos), hero = &g_hero.motion.pos) < 2.0f &&
                  FastAbsF(F(hero -= 0x80, 0x88) - F(moby, 0x18)) < 4.0f && F(moby, 0x18) - F(hero, 0x88) > 1.0f)) {
                 int r;
                 if (data->wait_timer == 0) {
@@ -216,7 +218,7 @@ void update_taxi_platform(unsigned char *moby) {
                 r = data->voice;
                 *(int *)&data->speed = 0;
                 if (r != -1) {
-                    unsigned char *s = (unsigned char *)hero_globals_base + 0x1D + r * 0x70;
+                    unsigned char *s = voice_pool + r * 0x70;
                     if (*(unsigned char **)(s + 0x88) == moby && s[0x74] != 0) {
                         Sound_StopSlot(r);
                     }
@@ -250,7 +252,7 @@ void update_taxi_platform(unsigned char *moby) {
                     data->wait_timer = scale_ticks(15);
                     r = data->voice;
                     if (r != -1) {
-                        unsigned char *s = (unsigned char *)hero_globals_base + 0x1D + r * 0x70;
+                        unsigned char *s = voice_pool + r * 0x70;
                         if (*(unsigned char **)(s + 0x88) == moby && s[0x74] != 0) {
                             Sound_StopSlot(r);
                         }
@@ -278,8 +280,7 @@ void update_taxi_platform(unsigned char *moby) {
     FastVecSub(delta, ((unsigned char *)&((Moby *)moby)->pos), orig);
     update_entity_matrix(data->matrix, delta, &((Moby *)moby)->rot, &((Moby *)moby)->rot);
     if (!is_hero_on_moby(moby)) {
-        if (2.0f < vec_distance_xy(((unsigned char *)&((Moby *)moby)->pos),
-                                   &((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos)) {
+        if (2.0f < vec_distance_xy(((unsigned char *)&((Moby *)moby)->pos), &g_hero.motion.pos)) {
             if (data->wait_timer == 0) {
                 data->go_request = 1;
             }
@@ -376,7 +377,7 @@ void update_mission_gated_taxi_platform(unsigned char *moby) {
                 r = data->voice;
                 *(int *)&data->speed = 0;
                 if (r != -1) {
-                    unsigned char *s = (unsigned char *)hero_globals_base + 0x1D + r * 0x70;
+                    unsigned char *s = voice_pool + r * 0x70;
                     if (*(unsigned char **)(s + 0x88) == moby && s[0x74] != 0) {
                         Sound_StopSlot(r);
                     }
@@ -410,7 +411,7 @@ void update_mission_gated_taxi_platform(unsigned char *moby) {
                     data->wait_timer = scale_ticks(15);
                     r = data->voice;
                     if (r != -1) {
-                        unsigned char *s = (unsigned char *)hero_globals_base + 0x1D + r * 0x70;
+                        unsigned char *s = voice_pool + r * 0x70;
                         if (*(unsigned char **)(s + 0x88) == moby && s[0x74] != 0) {
                             Sound_StopSlot(r);
                         }
@@ -476,7 +477,7 @@ typedef struct Flags {
 } Flags;
 
 extern unsigned char D_0013D4B5[];
-extern unsigned char D_0013D355[];
+
 extern unsigned char hero_globals_base_r[] __asm__("D_0013E633");
 extern Moby *level_mobys_r __asm__("D_L07_00160058") MACRO_ADDR;
 extern int D_L07_0015F6A8 MACRO_ADDR;
@@ -509,8 +510,8 @@ void update_umbris_scene_progression(Moby *moby) {
                 moby->state = 1;
             break;
         case 1:
-            if (((Flags *)(special_items_base + 0x13B))->f28 == 0) {
-                ((Flags *)(special_items_base + 0x13B))->f28 = 1;
+            if (((Flags *)gSpecialItems)->f28 == 0) {
+                ((Flags *)gSpecialItems)->f28 = 1;
                 moby->state = 2;
                 StartCutscene_r(0);
             } else {
@@ -525,11 +526,11 @@ void update_umbris_scene_progression(Moby *moby) {
             moby->state = 4;
             break;
         case 4:
-            if (((Flags *)(special_items_base + 0x13B))->f29 == 0) {
+            if (((Flags *)gSpecialItems)->f29 == 0) {
                 if (data->f0 != -1) {
                     if (is_point_inside_clip_volume_r(&((struct Hero *)(hero_globals_base_r + 0xE1D))->motion.pos,
                                                       data->f0) != 0) {
-                        ((Flags *)(special_items_base + 0x13B))->f29 = 1;
+                        ((Flags *)gSpecialItems)->f29 = 1;
                         if (data->fC != -1) {
                             Moby *e = &level_mobys_r[data->fC];
                             e->flags |= 0x41;
@@ -582,14 +583,14 @@ void update_umbris_scene_progression(Moby *moby) {
             moby->state = 8;
             break;
         case 8:
-            if (((Flags *)(special_items_base + 0x13B))->f2A == 0) {
+            if (((Flags *)gSpecialItems)->f2A == 0) {
                 Moby *e;
                 if (data->fC == -1 || (e = &level_mobys_r[data->fC]) == 0 || e->state == 0xFE || e->state == 0xFD) {
                     if (data->f4 != -1) {
                         if (is_point_inside_clip_volume_r(&((struct Hero *)(hero_globals_base_r + 0xE1D))->motion.pos,
                                                           data->f4) != 0) {
                             Hero_ResetToPosition(scene_points_r[data->f1C].f30, scene_points_r[data->f1C].f70, 0x72, 1);
-                            ((Flags *)(special_items_base + 0x13B))->f2A = 1;
+                            ((Flags *)gSpecialItems)->f2A = 1;
                             moby->state = 9;
                             StartCutscene_r(3);
                         }
@@ -1054,8 +1055,7 @@ void update_linear_projectile(Moby *m) {
         DeleteMoby(m);
         return;
     }
-    if ((m->visible != 0 ||
-         vec_distance_xy(&m->pos, &((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos) < 30.0f) &&
+    if ((m->visible != 0 || vec_distance_xy(&m->pos, &g_hero.motion.pos) < 30.0f) &&
         coll_line_r(&old, &m->pos, pass, v->ignore, v) != 0) {
         qcopy(&m->pos, &umbris_coll_hit_point);
         if (m->visible != 0) {
@@ -1378,8 +1378,7 @@ void WaterPlateUpdate(Moby *m) {
             }
             break;
         case 3:
-            if (d->volume >= 0 &&
-                is_point_inside_clip_volume_r2(&((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos, d->volume)) {
+            if (d->volume >= 0 && is_point_inside_clip_volume_r2(&g_hero.motion.pos, d->volume)) {
                 d->f1C = 0;
                 set_moby_list_state_r(m->group, 4);
             }
@@ -1501,7 +1500,6 @@ void initialize_level07_water_grid_neighbors(int arg) {
 typedef int Q30E370 __attribute__((mode(TI)));
 extern void matrix_mul_vec3(void *, void *, void *);
 extern int g_current_level_index MACRO_ADDR;
-extern char help_stats_base[];
 
 extern char *level_mobys MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
@@ -1543,8 +1541,7 @@ void update_linked_state_sliding_platform(unsigned char *moby) {
     origin[1] = vars->origin_y;
     origin[2] = vars->origin_z;
     origin[3] = 0.0f;
-    if (m->mission != 0xff &&
-        ((unsigned char *)(help_stats_base + 0xAA35))[m->mission + (g_current_level_index << 4)] == 0xff)
+    if (m->mission != 0xff && ((unsigned char *)saved_mission_state)[m->mission + (g_current_level_index << 4)] == 0xff)
         vars->target_index = -1;
 
     switch (m->state) {
@@ -1624,7 +1621,7 @@ void update_linked_state_sliding_platform(unsigned char *moby) {
                 position->w = 0.0f;
                 voice = vars->sound_slot;
                 if (voice != -1) {
-                    u8 *slot = (u8 *)hero_globals_base + 0x1D + voice * 0x70;
+                    u8 *slot = (u8 *)voice_pool + voice * 0x70;
                     if (*(struct Moby **)(slot + 0x88) == m && slot[0x74] != 0)
                         Sound_StopSlot(voice);
                 }
@@ -2075,7 +2072,7 @@ void update_fading_ring_effect(unsigned char *m) {
         return;
     }
     AddDrawCallback((void *)draw_fading_ring_effect, m);
-    register_fading_ring_hit(*(void **)&((struct Hero *)(hero_globals_base + 0xE1D))->moby, m, d);
+    register_fading_ring_hit(*(void **)&g_hero.moby, m, d);
     for (p = umbris_moby_list; p; p = *(char **)(p + 0x28)) {
         register_fading_ring_hit(p, m, d);
     }
@@ -2712,7 +2709,7 @@ void SharkigatorUpdate(unsigned char *moby) {
         inside = IsPointInPolygon(&tgt, p + 0x10, *(int *)p) != 0;
     } else {
         char *p = ((struct SharkigatorVars *)data)->unk_148;
-        hero = &((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos;
+        hero = &g_hero.motion.pos;
         inside = IsPointInPolygon(hero, p + 0x10, *(int *)p) != 0;
         if (vec_distance_xy(&((Moby *)moby)->pos, hero) < 30.0f) {
             tgt.moby = *(int *)(hero + 0x2000);
@@ -2780,7 +2777,7 @@ void SharkigatorUpdate(unsigned char *moby) {
         }
     }
     if (1.0f <= ((struct SharkigatorVars *)data)->jump_blend) {
-        *(u128 *)&((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos.i[0] = *(u128 *)&((Moby *)moby)->pos;
+        *(u128 *)&g_hero.motion.pos.i[0] = *(u128 *)&((Moby *)moby)->pos;
     }
 
     switch (((Moby *)moby)->state) {
@@ -2791,14 +2788,14 @@ void SharkigatorUpdate(unsigned char *moby) {
             if ((((Moby *)moby)->anim_flags & 2) && ((Moby *)moby)->prev_seq != 0) {
                 MobyBlendAnimation(moby, 0, 0, 10);
             }
-            if (inside && tgt.moby != 0 && tgt.moby == *(int *)&((struct Hero *)(hero_globals_base + 0xE1D))->moby &&
+            if (inside && tgt.moby != 0 && tgt.moby == *(int *)&g_hero.moby &&
                 !test_other_group_moby_state_range(moby, 4, 6)) {
                 if (((Moby *)moby)->prev_seq != 1) {
                     MobyBlendAnimation(moby, 1, 0, 10);
                 }
                 ((Moby *)moby)->state = 4;
             }
-            if (tgt.moby != 0 && tgt.moby == *(int *)&((struct Hero *)(hero_globals_base + 0xE1D))->moby &&
+            if (tgt.moby != 0 && tgt.moby == *(int *)&g_hero.moby &&
                 test_sharkigator_target_sphere_collision(moby, tgt.moby, 1.5f)) {
                 if (((Moby *)moby)->prev_seq != 2) {
                     MobyBlendAnimation(moby, 2, 0, 2);
@@ -2827,7 +2824,7 @@ void SharkigatorUpdate(unsigned char *moby) {
             if ((((Moby *)moby)->anim_flags & 2) && ((Moby *)moby)->prev_seq != 1) {
                 MobyBlendAnimation(moby, 1, 0, 10);
             }
-            if (inside && tgt.moby != 0 && tgt.moby == *(int *)&((struct Hero *)(hero_globals_base + 0xE1D))->moby) {
+            if (inside && tgt.moby != 0 && tgt.moby == *(int *)&g_hero.moby) {
                 if (!test_other_group_moby_state_range(moby, 4, 6)) {
                     if (((Moby *)moby)->prev_seq != 1) {
                         MobyBlendAnimation(moby, 1, 0, 10);
@@ -2862,7 +2859,7 @@ void SharkigatorUpdate(unsigned char *moby) {
                 ((struct SharkigatorVars *)data)->wander_timer = func_001160D8() % 120 + 60;
                 ((Moby *)moby)->state = 1;
             }
-            if (tgt.moby != 0 && tgt.moby == *(int *)&((struct Hero *)(hero_globals_base + 0xE1D))->moby &&
+            if (tgt.moby != 0 && tgt.moby == *(int *)&g_hero.moby &&
                 test_sharkigator_target_sphere_collision(moby, tgt.moby, 1.5f)) {
                 if (((Moby *)moby)->prev_seq != 2) {
                     MobyBlendAnimation(moby, 2, 0, 2);
@@ -2892,8 +2889,7 @@ void SharkigatorUpdate(unsigned char *moby) {
             d = fast_atan2(d, tgt.pos[2] - F(moby, 0x18));
             F(moby, 0x44) = SpringTurn(&((struct SharkigatorVars *)data)->pitch_spring, F(moby, 0x44), -d,
                                        g_frame_time_sq * pi4, g_frame_time_sq * zero, g_frame_time * pi4);
-            if (!(vec_distance_xy(&((Moby *)moby)->pos, &((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos) <
-                  three)) {
+            if (!(vec_distance_xy(&((Moby *)moby)->pos, &g_hero.motion.pos) < three)) {
                 close = 0;
             }
             if (close) {
@@ -2919,7 +2915,7 @@ void SharkigatorUpdate(unsigned char *moby) {
                 ->f = tgt.pos[2] - 0.25f;
             advance_sharkigator_swim_movement((char *)moby, data, g_frame_time_sq * 38.0f, g_frame_time_sq * 0.0f,
                                               g_frame_time * 38.0f);
-            if (!inside || ((struct Hero *)(hero_globals_base + 0xE1D))->frames_off_ground.s == 0) {
+            if (!inside || g_hero.frames_off_ground.s == 0) {
                 if (((Moby *)moby)->prev_seq != 1) {
                     MobyBlendAnimation(moby, 1, 0, 10);
                 }
@@ -2961,7 +2957,7 @@ void SharkigatorUpdate(unsigned char *moby) {
             Profile_Mark(start, mpos);
             FastVecSub(&((struct SharkigatorVars *)data)->velocity, mpos, old);
             if (one <= ((struct SharkigatorVars *)data)->jump_blend) {
-                struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+                struct Hero *g = &g_hero;
                 g->health.hp = 0;
                 HeroEnterMoveState(HERO_STATE_DYING, 1);
                 *(int *)(*(char **)&g->moby + 0x98) = -1;
@@ -2970,7 +2966,7 @@ void SharkigatorUpdate(unsigned char *moby) {
             } else {
                 ((struct SharkigatorVars *)data)->heading = ang;
             }
-            if (inside || ((struct Hero *)(hero_globals_base + 0xE1D))->frames_off_ground.s != 0) {
+            if (inside || g_hero.frames_off_ground.s != 0) {
                 goto end;
             }
             *(int *)&((struct SharkigatorVars *)data)->jump_blend = 0;

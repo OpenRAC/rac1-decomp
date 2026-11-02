@@ -28,6 +28,8 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+extern char g_controller_state_no_direction[];
+extern char pad_held[];
 
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
@@ -305,10 +307,9 @@ typedef struct {
     Moby *f88;
 } Row13E650;
 
-
 extern Hero g_hero;
 extern PadState g_controller_state;
-extern char pad_globals_base[];
+
 extern unsigned char item_available[];
 extern char voice_pool[];
 extern MoveUsageTable usage_stats;
@@ -1103,7 +1104,7 @@ void HeroL14_UpdateStatePhysics(void) {
 
                     a = FastAddRots(g_hero.motion.rot.f[2], 3.1415927f);
                     s = g_frame_time * 2.5f;
-                    if (*(int *)(pad_globals_base + 0x2600) & 0xA) {
+                    if (*(int *)pad_held & 0xA) {
                         s = g_frame_time * 3.0f;
                     }
                     g_hero.motion.velocity.f[0] += FastCos(a) * s;
@@ -2171,7 +2172,7 @@ void HeroL14_UpdateStatePhysics(void) {
                             g_hero.ground_speed = 0.0f;
                         }
                         if (g_hero.rail_land_frames != 0) {
-                            if (*(int *)(pad_globals_base + 0x2634) != 0) {
+                            if (*(int *)g_controller_state_no_direction != 0) {
                                 if (g_hero.on_flagged_ground_moby != 0) {
                                     g_hero.ground_speed = 0.0f;
                                 }

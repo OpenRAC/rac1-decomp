@@ -26,6 +26,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+extern char g_controller_state_no_direction[];
 
 typedef u32 u128_05E28 __attribute__((mode(TI), aligned(16)));
 struct LedgeSpot {
@@ -94,10 +95,9 @@ typedef struct {
     Moby *f88;
 } Row13E650;
 
-
 extern Hero g_hero;
 extern PadState g_controller_state;
-extern char pad_globals_base[];
+
 extern unsigned char item_available[];
 extern char voice_pool[];
 extern MoveUsageTable usage_stats;
@@ -2005,7 +2005,7 @@ void HeroL03_UpdateStatePhysics(void) {
                         g_hero.ground_speed = 0.0f;
                     }
                     if (g_hero.rail_land_frames != 0) {
-                        if (*(int *)(pad_globals_base + 0x2634) != 0) {
+                        if (*(int *)g_controller_state_no_direction != 0) {
                             if (g_hero.on_flagged_ground_moby != 0) {
                                 g_hero.ground_speed = 0.0f;
                             }

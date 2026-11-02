@@ -23,6 +23,12 @@
 #include "enums/moby_class.h"
 #include "structs/pad.h"
 #include "enums/hero_state.h"
+extern char cd_read_active[];
+extern struct S16_29ad08 cd_read_state;
+extern struct Hero g_hero;
+extern char pad0_pressed[];
+extern char queued_dialogue_id[];
+extern s32 weapon_ammo_counts[];
 
 extern int vendor_menu[];
 extern unsigned char g_class_slot_12 NOT_SDA;
@@ -333,7 +339,7 @@ void open_vendor_menu(VendorMoby_pv *m) {
     *(s32 *)&level_white_fade_level = 0;
     HeroEnterMoveState(100, 1);
     {
-        u8 *hp = (u8 *)hero_globals_base + 0xE1D;
+        u8 *hp = (u8 *)(char *)&g_hero;
         hp[0x20AC] = 1;
         hp[0x20A5] = 1;
     }
@@ -448,7 +454,7 @@ void close_vendor_menu(int exit_cutscene_completed) {
     }
     {
         VendorMenuState *vendor_state = (VendorMenuState *)vendor_menu;
-        MusicModeBlock *music = (MusicModeBlock *)((char *)help_stats_base + 0x100B5);
+        MusicModeBlock *music = (MusicModeBlock *)(&cd_read_state);
         *((char *)vendor_state->moby + 0x20) = 1;
         if ((unsigned short)(music->mode - 6) >= 2)
             music->mode = 5;
@@ -634,7 +640,7 @@ void restore_hero_after_vendor_exit_cutscene(void) {
     euler_rotation.z = FastAddRots(vendor_state_base->actor->yaw, -1.5707964f);
     Hero_ResetToPosition(&world_position, &euler_rotation, 0, 1);
     update_resource_counter();
-    mode_block = (MusicModeBlock *)((char *)help_stats_base + 0x100B5);
+    mode_block = (MusicModeBlock *)(&cd_read_state);
     if (!(mode_block->mode >= 6 && mode_block->mode <= 7))
         mode_block->mode = 5;
     snd_ContinueAllSoundsInGroup(0x1D);
@@ -672,7 +678,7 @@ void handle_vendor_auxiliary_moby_event(int a) {
                         *(int *)(b + 0x3C) = r0;
                         vendor_auxiliary_reaction_started = 1;
                         vendor_auxiliary_reaction_reset_flag = 0;
-                        *(int *)(help_stats_base + 0x100D1) = (r0 * 3 + 2) * 6 + *(int *)(b + 0x38) + 10000;
+                        *(int *)queued_dialogue_id = (r0 * 3 + 2) * 6 + *(int *)(b + 0x38) + 10000;
                         m[0x20] = 0xB;
                     }
                 }
@@ -683,7 +689,7 @@ void handle_vendor_auxiliary_moby_event(int a) {
             *(int *)(b + 0x3C) = r1;
             vendor_auxiliary_reaction_started = a;
             vendor_auxiliary_reaction_reset_flag = 0;
-            *(int *)(help_stats_base + 0x100D1) = r1 * 0x12 + *(int *)(b + 0x38) + 10000;
+            *(int *)queued_dialogue_id = r1 * 0x12 + *(int *)(b + 0x38) + 10000;
             if (m[0x53] != a)
                 MobyBlendAnimation(m, 1, 0, 10);
             m[0x20] = 10;
@@ -1403,23 +1409,19 @@ void func_L00_0029D988_r(void) {
         case 0:
         case 2:
             if (vendor_menu_r.f40 == 0 || vendor_menu_r.state == 2) {
-                if ((((upd_d.flags & (2)) ||
-                      ((upd_d.flags & 0x10) && (*(s32 *)(pad_globals_base + 0x2604) & 0x200))))) {
+                if ((((upd_d.flags & (2)) || ((upd_d.flags & 0x10) && (*(s32 *)pad0_pressed & 0x200))))) {
                     d_00299108();
                 }
-                if ((((upd_d.flags & (2)) ||
-                      ((upd_d.flags & 0x10) && (*(s32 *)(pad_globals_base + 0x2604) & 0x200))))) {
+                if ((((upd_d.flags & (2)) || ((upd_d.flags & 0x10) && (*(s32 *)pad0_pressed & 0x200))))) {
                     d_update_visible();
                     d_0022dc50();
                 }
                 d_timing(t0_d, 3);
-                if ((((upd_d.flags & (1)) ||
-                      ((upd_d.flags & 0x10) && (*(s32 *)(pad_globals_base + 0x2604) & 0x200))))) {
+                if ((((upd_d.flags & (1)) || ((upd_d.flags & 0x10) && (*(s32 *)pad0_pressed & 0x200))))) {
                     d_002070d0();
                 }
                 d_timing(t1_d, 7);
-                if ((((upd_d.flags & (4)) ||
-                      ((upd_d.flags & 0x10) && (*(s32 *)(pad_globals_base + 0x2604) & 0x200))))) {
+                if ((((upd_d.flags & (4)) || ((upd_d.flags & 0x10) && (*(s32 *)pad0_pressed & 0x200))))) {
                     d_00217b88();
                 }
                 d_timing(t2_d, 5);
@@ -1476,12 +1478,12 @@ void func_L00_0029D988_r(void) {
                 d_eaa30(&vendor_menu_r.f70);
             }
             d_00201a28();
-            if ((((upd_d.flags & (2)) || ((upd_d.flags & 0x10) && (*(s32 *)(pad_globals_base + 0x2604) & 0x200))))) {
+            if ((((upd_d.flags & (2)) || ((upd_d.flags & 0x10) && (*(s32 *)pad0_pressed & 0x200))))) {
                 d_00297e70();
             }
             break;
         case 1:
-            if (G1248_d == 0 && *(s16 *)(help_stats_base + 0x100BD) == 0 && G124C_d != 0) {
+            if (G1248_d == 0 && *(s16 *)cd_read_active == 0 && G124C_d != 0) {
                 d_0029a330();
                 vendor_menu_r.f24 = vendor_menu_r.f14;
                 d_0020c5f0(vendor_menu_r.f24, 0xC);
@@ -1572,7 +1574,7 @@ void func_L00_0029D988_r(void) {
                             if ((vendor_menu_r.fD0[vendor_menu_r.f58]).fD4 == 1) {
                                 vendor_menu_r.f50 = d_meter(
                                     0x30, (vendor_menu_r.fD0[vendor_menu_r.f58]).fD0 + 0xEA60, d_cb1, d_cb2, d_cb3,
-                                    &((*(s32 *)(menu_item_enabled_115 + 0x21 +
+                                    &((*(s32 *)((char *)&weapon_ammo_counts +
                                                 ((vendor_menu_r.fD0[vendor_menu_r.f58]).fD0) * 4))),
                                     item_price_table[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].hE);
                             }
@@ -1592,7 +1594,7 @@ void func_L00_0029D988_r(void) {
                             if ((vendor_menu_r.fD0[vendor_menu_r.f58]).fD4 == 1) {
                                 vendor_menu_r.f50 = d_meter(
                                     0x30, (vendor_menu_r.fD0[vendor_menu_r.f58]).fD0 + 0xEA60, d_cb1, d_cb2, d_cb3,
-                                    &((*(s32 *)(menu_item_enabled_115 + 0x21 +
+                                    &((*(s32 *)((char *)&weapon_ammo_counts +
                                                 ((vendor_menu_r.fD0[vendor_menu_r.f58]).fD0) * 4))),
                                     item_price_table[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].hE);
                             }
@@ -1618,7 +1620,7 @@ void func_L00_0029D988_r(void) {
                             if ((vendor_menu_r.fD0[vendor_menu_r.f58]).fD4 == 1) {
                                 vendor_menu_r.f50 = d_meter(
                                     0x30, (vendor_menu_r.fD0[vendor_menu_r.f58]).fD0 + 0xEA60, d_cb1, d_cb2, d_cb3,
-                                    &((*(s32 *)(menu_item_enabled_115 + 0x21 +
+                                    &((*(s32 *)((char *)&weapon_ammo_counts +
                                                 ((vendor_menu_r.fD0[vendor_menu_r.f58]).fD0) * 4))),
                                     item_price_table[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].hE);
                             }
@@ -1643,7 +1645,7 @@ void func_L00_0029D988_r(void) {
                             if ((vendor_menu_r.fD0[vendor_menu_r.f58]).fD4 == 1) {
                                 vendor_menu_r.f50 = d_meter(
                                     0x30, (vendor_menu_r.fD0[vendor_menu_r.f58]).fD0 + 0xEA60, d_cb1, d_cb2, d_cb3,
-                                    &((*(s32 *)(menu_item_enabled_115 + 0x21 +
+                                    &((*(s32 *)((char *)&weapon_ammo_counts +
                                                 ((vendor_menu_r.fD0[vendor_menu_r.f58]).fD0) * 4))),
                                     item_price_table[(vendor_menu_r.fD0[vendor_menu_r.f58]).fD0].hE);
                             }
@@ -1683,11 +1685,10 @@ void func_L00_0029D988_r(void) {
                     vendor_menu_r.state = 2;
                     vendor_menu_r.f8 = 0;
                     vendor_menu_r.f4 = 0;
-                    if (((HeroD *)(hero_globals_base + 0xE1D))->moby != 0) {
-                        d_00204a40(((HeroD *)(hero_globals_base + 0xE1D))->moby->oclass, -1);
-                        ((HeroD *)(hero_globals_base + 0xE1D))->moby->pclass =
-                            cls_d[((HeroD *)(hero_globals_base + 0xE1D))->moby->class_id];
-                        d_0020c880(((HeroD *)(hero_globals_base + 0xE1D))->moby);
+                    if (((HeroD *)(&g_hero))->moby != 0) {
+                        d_00204a40(((HeroD *)(&g_hero))->moby->oclass, -1);
+                        ((HeroD *)(&g_hero))->moby->pclass = cls_d[((HeroD *)(&g_hero))->moby->class_id];
+                        d_0020c880(((HeroD *)(&g_hero))->moby);
                     }
                 }
             } else if (G1F34_d != 0) {

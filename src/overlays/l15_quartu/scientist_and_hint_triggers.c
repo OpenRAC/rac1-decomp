@@ -19,6 +19,8 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/pause_menu.h"
+extern Hero g_hero;
+extern char saved_mission_state[];
 
 extern void initialize_moby_grounding(char *);
 extern int DialogRequest_Init(void *, void *);
@@ -49,8 +51,7 @@ extern void FastVecSub(void *dst, void *a, void *b);
 extern float FastSubRots(float, float);
 extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
-extern char hero_globals_base[];
-extern char help_stats_base[];
+
 extern char gemlik_available[];
 extern int quartu_moby_array MACRO_ADDR;
 extern int quartu_game_mode MACRO_ADDR;
@@ -123,7 +124,7 @@ void ultramech_scientist_update(char *moby) {
         return;
     }
     {
-        struct Hero *player = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *player = &g_hero;
         if (player->vehicle_mode != 2) {
             int mobys = quartu_moby_array;
             *(int *)((data->scientist_slot << 8) + mobys + 0x94) = 0;
@@ -151,7 +152,7 @@ void ultramech_scientist_update(char *moby) {
             ((struct Moby *)moby)->update_dist = 0xFF;
             data->unk_0C = 20.0f;
             DialogRequest_Init(moby, data);
-            if (((unsigned char *)(help_stats_base + 0xAA35))[data->jet_group + (g_current_level_index << 4)] != 0xFF) {
+            if (((unsigned char *)saved_mission_state)[data->jet_group + (g_current_level_index << 4)] != 0xFF) {
                 break;
             }
             if (*(unsigned char *)(gemlik_available + 3) != 0) {
@@ -187,7 +188,7 @@ void ultramech_scientist_update(char *moby) {
             }
             break;
         case ULTRAMECH_SCIENTIST_WAIT_FOR_DIALOGUE:
-            hero_pos = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
+            hero_pos = &g_hero.motion.pos;
             if (is_point_inside_clip_volume(hero_pos, data->clip_volume) == 0) {
                 break;
             }
@@ -244,7 +245,7 @@ void ultramech_scientist_update(char *moby) {
             }
             break;
         case ULTRAMECH_SCIENTIST_WAIT_FOR_PRE_SCENE_CONDITIONS: {
-            struct Hero *player = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *player = &g_hero;
             if (player->vehicle_mode != 2) {
                 break;
             }
@@ -338,10 +339,9 @@ void ultramech_scientist_update(char *moby) {
         ease_rate = 0.02f;
         ease_limit = 0.3f;
         aim = 1;
-        value = vec_distance_xy((float *)&((struct Moby *)moby)->pos,
-                                (float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos));
+        value = vec_distance_xy((float *)&((struct Moby *)moby)->pos, (float *)(&g_hero.motion.pos));
         if (value < 8.0f) {
-            player = (struct Hero *)(hero_globals_base + 0xE1D);
+            player = &g_hero;
             value = fast_atan2(player->motion.body_center.f[0] - ((struct Moby *)moby)->pos.x,
                                player->motion.body_center.f[1] - ((struct Moby *)moby)->pos.y);
             value = FastDiffRots(((struct Moby *)moby)->rot.z, value);
@@ -357,7 +357,7 @@ void ultramech_scientist_update(char *moby) {
         }
         if (data->look_timer != 0) {
             data->look_timer = 0;
-            qcopy(&data->look_target, hero_globals_base + 0xE1D + 0xD0);
+            qcopy(&data->look_target, (char *)&g_hero + 0xD0);
         }
     wander:
         if (fast_dec_timer(&data->unk_278) == 0) {
@@ -374,7 +374,7 @@ void ultramech_scientist_update(char *moby) {
         FastVecAdd(&data->look_target, &data->look_target, &((struct Moby *)moby)->pos);
     aim_head:
         if (data->look_timer != 0) {
-            qcopy(target, hero_globals_base + 0xE1D + 0xD0);
+            qcopy(target, (char *)&g_hero + 0xD0);
             ease_rate = 0.04f;
             ease_limit = 0.3f;
         } else {
@@ -865,7 +865,7 @@ INCLUDE_ASM("asm/overlays", func_L15_002F8D9C);
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern int test_point_in_transformed_unit_sphere(float *p, int idx);
 extern int IsPointInPolygon(float *p, float *v, int n);
-extern char hero_globals_base[];
+
 extern char *quartu_camera_descriptors MACRO_ADDR;
 extern int *quartu_paths[];
 /* tests several indexed conditions of a moby's entry in the table */
@@ -873,28 +873,24 @@ int is_hero_in_moby_follow_camera_region(char *moby) {
     int *e = *(int **)(quartu_camera_descriptors + *(short *)(moby + 0x84) * 32 + 0x1C);
     int r;
     int i;
-    if (e[10] >= 0 && test_point_in_transformed_unit_cylinder(
-                          &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, e[10])) {
+    if (e[10] >= 0 && test_point_in_transformed_unit_cylinder(&g_hero.motion.pos, e[10])) {
         return 0;
     }
     if (e[3] >= 0) {
-        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, e[3])) {
+        if (is_point_inside_clip_volume(&g_hero.motion.pos, e[3])) {
             return 1;
         }
     } else if (e[4] >= 0) {
-        if (test_point_in_transformed_unit_cylinder(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                                    e[4])) {
+        if (test_point_in_transformed_unit_cylinder(&g_hero.motion.pos, e[4])) {
             return 1;
         }
     } else if (e[2] >= 0) {
-        if (test_point_in_transformed_unit_sphere(
-                (float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos), e[2])) {
+        if (test_point_in_transformed_unit_sphere((float *)(&g_hero.motion.pos), e[2])) {
             return 1;
         }
     } else if (e[5] >= 0) {
         i = e[5];
-        if (IsPointInPolygon((float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos),
-                             (float *)(quartu_paths[i] + 4), quartu_paths[i][0])) {
+        if (IsPointInPolygon((float *)(&g_hero.motion.pos), (float *)(quartu_paths[i] + 4), quartu_paths[i][0])) {
             return 1;
         }
     }

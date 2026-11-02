@@ -19,6 +19,9 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+extern Hero g_hero;
+extern char help_records[];
+extern char usage_stats[];
 
 typedef int w128 __attribute__((mode(TI)));
 typedef struct {
@@ -807,7 +810,7 @@ extern void axis_rotation_2d48(void *, int, float);
 extern float ProbeGroundHeight(void *, int, float);
 
 extern char eudora_camera_pos[];
-extern unsigned char hero_globals_base[];
+
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
@@ -873,14 +876,14 @@ void woodcut_bot_update(Moby *m) {
             src = *(unsigned char **)(p + 0x20);
             one = 1.0f;
             if (src != 0) {
-                struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
+                struct Hero *h = &g_hero;
                 if (src != *(unsigned char **)&h->items[0].moby) {
                     angle = fast_atan2(m->pos.x - *(float *)(src + 0x10), m->pos.y - *(float *)(src + 0x14));
                 } else {
                     angle = fast_atan2(m->pos.x - h->motion.pos.f[0], m->pos.y - h->motion.pos.f[1]);
                 }
             } else {
-                struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
+                struct Hero *h = &g_hero;
                 angle = fast_atan2(m->pos.x - h->motion.pos.f[0], m->pos.y - h->motion.pos.f[1]);
             }
             a = g_frame_time_sq * 30.0f;
@@ -979,7 +982,7 @@ void woodcut_bot_update(Moby *m) {
             s.f14 = 0x10001;
             s.f1C = 1.0f;
             s.m = m;
-            FastVecSub(&s, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, pos);
+            FastVecSub(&s, &g_hero.motion.pos, pos);
             vec_scale_to_length(&s, &s, g_frame_time * 5.0f);
             s.f20 = 1;
             transform_scaled_vertex_batch(m, 6, &joints, pts);
@@ -1262,7 +1265,7 @@ void woodcut_bot_update(Moby *m) {
                         int i;
 
                         for (i = 0; i < 9; i++) {
-                            struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
+                            struct Hero *h = &g_hero;
                             float ang;
 
                             if ((i & 1) == 0) {
@@ -1370,7 +1373,7 @@ void woodcut_bot_update(Moby *m) {
 
         StepColorFade(m, d->fB0);
         if (d->f3E4 > 0.0f) {
-            struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *h = &g_hero;
 
             w[0] = FastCos(fast_atan2(m->pos.x - h->motion.pos.f[0], m->pos.y - h->motion.pos.f[1])) * d->f3E4;
             w[1] = FastSin(fast_atan2(m->pos.x - h->motion.pos.f[0], m->pos.y - h->motion.pos.f[1])) * d->f3E4;
@@ -1928,8 +1931,7 @@ void lieutenant_update(char *m) {
             DialogRequest_Init(m, data);
             break;
         case 1:
-            if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                            ((struct LieutenantUpdateVars *)data)->unk_140) != 0) {
+            if (is_point_inside_clip_volume(&g_hero.motion.pos, ((struct LieutenantUpdateVars *)data)->unk_140) != 0) {
                 ((struct LieutenantUpdateVars *)data)->unk_0C = 255.0f;
             } else {
                 ((struct LieutenantUpdateVars *)data)->unk_0C = 1.0f;
@@ -1996,7 +1998,7 @@ typedef struct {
 } Help_2E57F8;
 
 extern int Help_Request(int a, int b);
-extern unsigned char help_stats_base[];
+
 extern unsigned char discount_purchase_pricing[];
 extern int eudora_help_popup_state[] NOT_SDA;
 extern int gameplay_event_frame_count MACRO_ADDR;
@@ -2027,12 +2029,11 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
             data->f14 = -1;
             break;
         case 1:
-            if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                            data->f0) != 0 &&
-                eudora_help_popup_state[0] == 0 && eudora_help_popup_state[9] == -1 &&
+            if (is_point_inside_clip_volume(&g_hero.motion.pos, data->f0) != 0 && eudora_help_popup_state[0] == 0 &&
+                eudora_help_popup_state[9] == -1 &&
                 saved_mission_state[moby->mission + (g_current_level_index << 4)] != 0xFF) {
                 if (data->f14 == -1) {
-                    Help_2E57F8 *h = (Help_2E57F8 *)(help_stats_base + 0x22D);
+                    Help_2E57F8 *h = (Help_2E57F8 *)usage_stats;
                     data->f14 = hero_death_count;
                     if (h[0x18].count < 0xFFFF) {
                         h[0x18].count++;
@@ -2043,14 +2044,14 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
                     h[0x18].mask = h[0x18].mask | (1 << g_current_level_index) | 0x80000000;
                 } else if (usage_stats_entry24_count >= 3) {
                     if (item_available_20 == 0) {
-                        Help_2E57F8 *b = (Help_2E57F8 *)(help_stats_base + 0x34D);
+                        Help_2E57F8 *b = (Help_2E57F8 *)help_records;
                         if (b[0x1D].count == 0) {
                             Help_Request(0xFA1, 0x1D);
                         }
                     } else {
                         int t = scale_ticks(gameplay_event_frame_count) - item_usage_entry40_last_time * 600;
                         if (scale_ticks(0x4650) < t) {
-                            Help_2E57F8 *b = (Help_2E57F8 *)(help_stats_base + 0x34D);
+                            Help_2E57F8 *b = (Help_2E57F8 *)help_records;
                             if (b[0x1C].count == 0) {
                                 Help_Request(0xFA0, 0x1C);
                             }
@@ -2060,20 +2061,16 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
             }
 
             {
-                Help_2E57F8 *b = (Help_2E57F8 *)(help_stats_base + 0x34D);
+                Help_2E57F8 *b = (Help_2E57F8 *)help_records;
                 if (b[0x42].count < 4) {
-                    if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                                    data->f34) != 0 ||
-                        is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                                    data->f38) != 0) {
-                        Hero *h = (Hero *)(hero_globals_base + 0xE1D);
+                    if (is_point_inside_clip_volume(&g_hero.motion.pos, data->f34) != 0 ||
+                        is_point_inside_clip_volume(&g_hero.motion.pos, data->f38) != 0) {
+                        Hero *h = &g_hero;
                         if (h->state.prev == HERO_STATE_CRANK && h->state_timer == 0) {
                             Moby *m;
                             for (m = eudora_moby_list; m != 0; m = m->next) {
                                 if (m->oclass == MOBY_CLASS_BOLT_CRANK &&
-                                    FastVecDist(((float *)&m->pos),
-                                                &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) <
-                                        3.0f &&
+                                    FastVecDist(((float *)&m->pos), &g_hero.motion.pos) < 3.0f &&
                                     *(float *)*(void **)&m->pvars != 1.0f) {
                                     data->f20++;
                                     if (data->f20 == 3 || data->f20 == 6) {
@@ -2089,17 +2086,16 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
             {
                 unsigned char *g = discount_purchase_pricing + 5;
                 if (g[9] != 0 && eudora_help_popup_state[0] == 0 && eudora_help_popup_state[9] == -1) {
-                    Help_2E57F8 *b = (Help_2E57F8 *)(help_stats_base + 0x34D);
+                    Help_2E57F8 *b = (Help_2E57F8 *)help_records;
                     if (b[0x1E].count == 0) {
                         Help_Request(0xFA2, 0x1E);
                     }
                 }
             }
 
-            if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                            data->f3C) != 0 &&
-                usage_stats_entry31_count == 0 && eudora_help_popup_state[0] == 0 && eudora_help_popup_state[9] == -1) {
-                Help_2E57F8 *b = (Help_2E57F8 *)(help_stats_base + 0x34D);
+            if (is_point_inside_clip_volume(&g_hero.motion.pos, data->f3C) != 0 && usage_stats_entry31_count == 0 &&
+                eudora_help_popup_state[0] == 0 && eudora_help_popup_state[9] == -1) {
+                Help_2E57F8 *b = (Help_2E57F8 *)help_records;
                 if (b[0x77].count == 0) {
                     Help_Request(0x4E2D, 0x77);
                 }
@@ -2128,13 +2124,11 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
                 }
             }
 
-            if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                            data->f4) != 0 &&
-                (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 ||
-                 ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9) &&
+            if (is_point_inside_clip_volume(&g_hero.motion.pos, data->f4) != 0 &&
+                (((unsigned int)g_hero.state.control_mode) < 2 || ((unsigned int)g_hero.state.control_mode) == 9) &&
                 eudora_help_popup_state[0] == 0 && eudora_help_popup_state[9] == -1) {
                 if (item_available_26 == 0) {
-                    Help_2E57F8 *b = (Help_2E57F8 *)(help_stats_base + 0x34D);
+                    Help_2E57F8 *b = (Help_2E57F8 *)help_records;
                     int t = scale_ticks(gameplay_event_frame_count) - b[0x1F].time * 600;
                     if ((int)(scale_ticks(0x12) * 60.0f) < t || b[0x1F].time * 600 == 0) {
                         Help_Request(0xFA3, 0x1F);
@@ -2147,7 +2141,7 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
                 } else {
                     if (data->f48 != -1 && eudora_mobys_r[data->f48].oclass == MOBY_CLASS_TRESSPASSER_PAD &&
                         eudora_mobys_r[data->f48].state == 4) {
-                        Help_2E57F8 *h = (Help_2E57F8 *)(help_stats_base + 0x22D);
+                        Help_2E57F8 *h = (Help_2E57F8 *)usage_stats;
                         unsigned int c = h[0x11].count;
                         if (c <= 0xFFFE) {
                             h[0x11].count = c + 1;
@@ -2160,7 +2154,7 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
                         if (usage_stats_entry17_count == 0) {
                             Help_2E57F8 *b;
                             data->f8++;
-                            b = (Help_2E57F8 *)(help_stats_base + 0x34D);
+                            b = (Help_2E57F8 *)help_records;
                             if (b[0x20].count != 0) {
                                 int t = scale_ticks(gameplay_event_frame_count) - b[0x20].time * 600;
                                 if ((int)(scale_ticks(0x12) * 60.0f) < t || b[0x20].time * 600 == 0) {
@@ -2184,20 +2178,17 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
                     }
                 }
             } else if (data->fC != 0) {
-                if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                                data->f4) == 0) {
+                if (is_point_inside_clip_volume(&g_hero.motion.pos, data->f4) == 0) {
                     data->fC = 0;
                 }
             }
 
-            if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                            data->f50) != 0 &&
-                (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 ||
-                 ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9) &&
+            if (is_point_inside_clip_volume(&g_hero.motion.pos, data->f50) != 0 &&
+                (((unsigned int)g_hero.state.control_mode) < 2 || ((unsigned int)g_hero.state.control_mode) == 9) &&
                 eudora_help_popup_state[0] == 0 && eudora_help_popup_state[9] == -1) {
                 int t = scale_ticks(gameplay_event_frame_count) - g_help_play_time_offset * 600;
                 if (scale_ticks(0x34BC0) < t) {
-                    Help_2E57F8 *b = (Help_2E57F8 *)(help_stats_base + 0x34D);
+                    Help_2E57F8 *b = (Help_2E57F8 *)help_records;
                     if (!(b[0x43].mask & (1 << g_current_level_index))) {
                         Help_Request(0x3EF, 0x43);
                     }
@@ -2205,9 +2196,9 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
             }
 
             {
-                Help_2E57F8 *b = (Help_2E57F8 *)(help_stats_base + 0x34D);
+                Help_2E57F8 *b = (Help_2E57F8 *)help_records;
                 if (b[0x46].count == 0 || b[0x47].count == 0) {
-                    Hero *h = (Hero *)(hero_globals_base + 0xE1D);
+                    Hero *h = &g_hero;
                     Moby *p;
                     if (h->state.current == 0x72 && (p = h->ground_moby) != 0 &&
                         p->oclass == MOBY_CLASS_TRESSPASSER_PAD &&
@@ -2226,12 +2217,10 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
                 }
             }
 
-            if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                            data->f30) != 0) {
-                Help_2E57F8 *h = (Help_2E57F8 *)(help_stats_base + 0x22D);
+            if (is_point_inside_clip_volume(&g_hero.motion.pos, data->f30) != 0) {
+                Help_2E57F8 *h = (Help_2E57F8 *)usage_stats;
                 if (h[0x19].count == 0 &&
-                    (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 ||
-                     ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9)) {
+                    (((unsigned int)g_hero.state.control_mode) < 2 || ((unsigned int)g_hero.state.control_mode) == 9)) {
                     int n;
                     h[0x19].count++;
                     n = scale_ticks(gameplay_event_frame_count) / 600;
@@ -2242,27 +2231,21 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
                 }
             }
 
-            if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                            data->f2C) != 0 &&
-                usage_stats_entry25_count == 0 &&
-                ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) >= 2 &&
-                ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) != 9 && data->f28 == 0) {
+            if (is_point_inside_clip_volume(&g_hero.motion.pos, data->f2C) != 0 && usage_stats_entry25_count == 0 &&
+                ((unsigned int)g_hero.state.control_mode) >= 2 && ((unsigned int)g_hero.state.control_mode) != 9 &&
+                data->f28 == 0) {
                 data->f24++;
                 data->f28 = scale_ticks(0xB4);
             } else if (data->f28 != 0) {
-                if (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 ||
-                    ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9) {
+                if (((unsigned int)g_hero.state.control_mode) < 2 || ((unsigned int)g_hero.state.control_mode) == 9) {
                     data->f28 = 0;
                 }
             }
 
-            if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                            data->f2C) != 0 &&
-                usage_stats_entry25_count == 0 &&
-                (((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) < 2 ||
-                 ((unsigned int)((Hero *)(hero_globals_base + 0xE1D))->state.control_mode) == 9) &&
+            if (is_point_inside_clip_volume(&g_hero.motion.pos, data->f2C) != 0 && usage_stats_entry25_count == 0 &&
+                (((unsigned int)g_hero.state.control_mode) < 2 || ((unsigned int)g_hero.state.control_mode) == 9) &&
                 data->f24 >= 3 && eudora_help_popup_state[0] == 0 && eudora_help_popup_state[9] == -1) {
-                Help_2E57F8 *b = (Help_2E57F8 *)(help_stats_base + 0x34D);
+                Help_2E57F8 *b = (Help_2E57F8 *)help_records;
                 if (b[0x49].count == 0) {
                     Help_Request(0xFA5, 0x49);
                 }

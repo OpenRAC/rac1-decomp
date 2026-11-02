@@ -21,6 +21,7 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+extern struct Hero g_hero;
 
 /* Seeker bolt (Rocket): flies along vel, optionally turning to the hero, bursts on a hit or when the timer ends. */
 struct SeekerBoltVars {
@@ -241,8 +242,7 @@ void update_projectile_motion_collision_and_trail(char *moby) {
     ((Moby *)moby)->rot.x = FastAddRots(((Moby *)moby)->rot.x, g_frame_time * 6.2831855f);
     if (data->homing != 0) {
         f20 = FastVecLength(&data->vel_x);
-        FastVecSub(&data->vel_x, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.near_ground_point,
-                   moby + 0x10);
+        FastVecSub(&data->vel_x, &g_hero.motion.near_ground_point, moby + 0x10);
         f1 = FastVecLength(&data->vel_x);
         if (f20 < f1) {
             vec_scale_to_length(&data->vel_x, &data->vel_x, f20);
@@ -1056,7 +1056,7 @@ void thruster_pack_lock_green_update(char *moby) {
                     moby_vars->f24 = 0;
                 }
                 {
-                    Hero *hero_ptr = (Hero *)(hero_globals_base + 0xE1D);
+                    Hero *hero_ptr = &g_hero;
                     if (hero_ptr->air_frames.s == 0 &&
                         hero_ptr->state.current == HERO_STATE_RISE_THEN_FALL_WITH_AIRBORNE_HIT_QUERY) {
                         Moby_PlaySound(0, 0, (int)moby);
@@ -2031,7 +2031,7 @@ void process_expanding_ring_collisions(char *moby) {
     float p, q, step;
     int i;
 
-    FastVecSub(v, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, moby + 0x10);
+    FastVecSub(v, &g_hero.motion.pos, moby + 0x10);
     v[2] = 0.0f;
     vec_scale_to_length(v, v, g_frame_time * 4.0f);
     v[2] = g_frame_time * 4.0f;
@@ -2121,7 +2121,7 @@ void update_class_274_ring_effect(char *moby) {
         return;
     }
     pos = moby + 0x10;
-    tgt = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
+    tgt = &g_hero.motion.pos;
     if (vec_distance_xy(pos, tgt) < d[0] + 0.5f) {
         FastVecSub(v, tgt, pos);
         v[2] = 0.0f;
@@ -2337,7 +2337,7 @@ void update_position_and_rotation_transition(char *moby) {
                     Hero_ResetToPosition(&data->hero_x, v + 8, 0, 0);
                     CameraScript2(2);
                     moby[0x20] = 5;
-                } else if (((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.current != 0x72) {
+                } else if (g_hero.state.current != 0x72) {
                     clear_u64_value(v + 8);
                     v[10] = data->hero_w;
                     Hero_ResetToPosition(&data->hero_x, v + 8, 0x72, 1);
@@ -2372,7 +2372,7 @@ void update_position_and_rotation_transition(char *moby) {
                     CameraScript2(3);
                     moby[0x20] = 5;
                 }
-            } else if (((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.current != 0x72) {
+            } else if (g_hero.state.current != 0x72) {
                 clear_u64_value(v + 8);
                 v[10] = data->hero_w;
                 Hero_ResetToPosition(&data->hero_x, v + 8, 0x72, 1);
@@ -2410,7 +2410,7 @@ void start_position_and_rotation_transition(char *moby, void *v0, void *v1, void
     data->max_speed = 1.0f / (float)scale_ticks(a6);
     data->timer = scale_ticks(a7);
     data->mode = a8;
-    ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->invulnerable_frames = scale_ticks(a6);
+    g_hero.invulnerable_frames = scale_ticks(a6);
 }
 typedef struct {
     char pad0[0x60];
@@ -3286,7 +3286,7 @@ void draw_moby_billboard_quad_pair(V_2bb0b0 *pos) {
     mat[3].f[3] = 1.0f;
     FastVecSub(&mat[0], veldin2_camera_pos, &mat[3]);
     vec_scale_to_length(&mat[0], &mat[0], 1.0f);
-    FastVecCross(&mat[1], &mat[0], &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->gravity_dir);
+    FastVecCross(&mat[1], &mat[0], &g_hero.gravity_dir);
     vec_scale_to_length(&mat[1], &mat[1], -1.0f);
     FastVecCross(&mat[2], &mat[1], &mat[0]);
     c = *(int *)&electric_bolt_glow_core_color;

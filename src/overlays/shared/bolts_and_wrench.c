@@ -20,6 +20,9 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+extern char g_hero[];
+extern char pad0_pressed[];
+extern char pad_held[];
 
 /* Gadget vendor: a ring moby that glows and spins while the hero is near. */
 struct VendorVars {
@@ -724,7 +727,7 @@ void vendor_update(char *moby) {
             if (p->glow <= 0.0f)
                 *(unsigned short *)(p->ring + 0x34) |= 1;
             if ((level_frame_counter & 7) == 0) {
-                char *g = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
+                char *g = &((struct Hero *)g_hero)->motion.pos;
                 if (vec_distance_xy(moby + 0x10, g) <= 16.0f) {
                     if (FastAbsF(((Moby *)moby)->pos.z - *(float *)(g + 8)) <= 8.0f) {
                         ((Moby *)moby)->state = 2;
@@ -754,7 +757,7 @@ void vendor_update(char *moby) {
             int r;
             if (p->glow < 1.0f)
                 p->glow += 0.1f;
-            g = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
+            g = &((struct Hero *)g_hero)->motion.pos;
             dist = vec_distance_xy(moby + 0x10, g);
             dz = FastAbsF(((Moby *)moby)->pos.z - *(float *)(g + 8));
             if ((level_frame_counter & 7) == 0) {
@@ -803,7 +806,7 @@ void vendor_update(char *moby) {
             r = 0;
             if (b != 0)
                 r = try_set_help_message(1, 0x53E8) != 0;
-            if (*(int *)(pad_globals_base + 0x2604) & 0x10) {
+            if (*(int *)pad0_pressed & 0x10) {
                 if (a != 0 && r != 0) {
                     open_vendor_menu(moby);
                     ((Moby *)moby)->state = 3;
@@ -1704,7 +1707,7 @@ extern void func_0020D6D0(void *);
 
 /* copies a moby's animation selection from the player moby, or starts an animation */
 void update_wrench_animation_from_hero_state(char *m) {
-    struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+    struct Hero *g = (struct Hero *)g_hero;
     int r;
     if (g->state.current == HERO_STATE_CRANK) {
         int t = *(unsigned char *)(*(char **)&g->moby + 0x53);
@@ -1842,7 +1845,7 @@ extern int try_collect_ammo_pickup(void *);
 void process_mobies_near_returning_wrench(char *a) {
     char *m = suck_moby_list;
     if (m != 0) {
-        struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *g = (struct Hero *)g_hero;
         do {
             int st = ((struct Moby *)m)->state;
             if (st == 0xFE)
@@ -2039,7 +2042,7 @@ static __inline__ unsigned long wdelta48(int animation) {
     return (unsigned char)(animation - 15);
 }
 static __inline__ float *wvelocity48(void) {
-    return (float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.platform_carry);
+    return (float *)(&((struct Hero *)g_hero)->motion.platform_carry);
 }
 
 static __inline__ unsigned char *waudio48(int slot) {
@@ -2070,7 +2073,7 @@ void wrench_update(Wrench48 *m) {
             m->parent = initial_player->moby;
             player_state = initial_player->state;
             if (player_state == 1) {
-                if (*(int *)(pad_globals_base + 0x2600) & 0xA)
+                if (*(int *)pad_held & 0xA)
                     EffectQueue_Add((int)m, 0xFF917267, 1.0f, 0.0f, 0, 0x25, -1, 90.0f, 4);
                 d->aim_hit = 0;
                 BuildSphericalOffset(work.v[0], 10.0f, wrench_camera48.yaw, -wrench_camera48.pitch);
@@ -2274,7 +2277,7 @@ void wrench_update(Wrench48 *m) {
             float *position;
             float radius;
             {
-                char *control = ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->unk17B0;
+                char *control = ((struct Hero *)g_hero)->unk17B0;
                 WPlayer48 *control_player = (WPlayer48 *)(control - 0x17B0);
                 update_moby_transform_history(control, 0);
                 m->parent = control_player->moby;
@@ -2474,7 +2477,7 @@ char *spawn_homing_bolt(void *owner, void *pos, float a, float b, float c, char 
         }
         t.q = ((BoltOwner *)owner)->position.q;
         t.f[2] = ((float *)pos)[2];
-        if (coll_line(&t, pos, 0, *(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby, 0) != 0) {
+        if (coll_line(&t, pos, 0, *(int *)&((struct Hero *)g_hero)->moby, 0) != 0) {
             m[0xBC] = 1;
             qcopy(m + 0x10, &collision_hit_point);
         }
@@ -2797,7 +2800,7 @@ void initialize_moby_motion_at_position(Vec4 *pos, N2 *self, void *arg) {
     d.q = t.q;
     vec_scale_to_length(d.f, d.f, random_float_between(g_frame_time * 0.01f, g_frame_time * 0.1f));
     FastVecAdd(m, &d, arg);
-    P = (P2 *)(hero_globals_base + 0xE1D);
+    P = (P2 *)g_hero;
     if (P->p2FC && moby_get_ride_transform(P->p2FC)) {
         FastVecAdd(m, m, P->v100);
     }
@@ -2820,9 +2823,9 @@ void initialize_moby_motion_at_position(Vec4 *pos, N2 *self, void *arg) {
     if (count >= 8)
         ((D5C *)best->p78)->i5C = -1;
     qcopy(&self->v10, pos);
-    t.q = ((P2 *)(hero_globals_base + 0xE1D))->p2080->v10.q;
+    t.q = ((P2 *)g_hero)->p2080->v10.q;
     t.f[2] = pos->f[2];
-    if (coll_line(&t, pos, 0, (int)((P2 *)(hero_globals_base + 0xE1D))->p2080, 0)) {
+    if (coll_line(&t, pos, 0, (int)((P2 *)g_hero)->p2080, 0)) {
         k = (Vec4 *)collision_hit_point;
         qcopy(&self->v10, &k[0]);
         vec_scale_to_length(e.f, k[2].f, g_frame_time_sq * 9.7f);
@@ -2843,7 +2846,7 @@ int predict_mine_impact(char *a0, char *o, int mode) {
     float C[4];
     float box[4];
     int x;
-    struct Hero *base = (struct Hero *)(hero_globals_base + 0xE1D);
+    struct Hero *base = (struct Hero *)g_hero;
     int i;
     char *tmp;
     if (base->state.current == 0x72)
@@ -2876,7 +2879,7 @@ int predict_mine_impact(char *a0, char *o, int mode) {
         }
     }
     {
-        struct Hero *base2 = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *base2 = (struct Hero *)g_hero;
         char *b2 = *(char **)&base2->moby;
         *(u128 *)box = *(u128 *)(b2 + 0x10);
         box[2] = w[2];

@@ -10,6 +10,7 @@
 #include "structs/collision.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+extern Hero g_hero;
 
 /* Spawner: picks a target, then throws eggs (Spawner Egg) towards it, up to max_eggs alive. */
 struct SpawnerVars {
@@ -1367,7 +1368,6 @@ extern void StepColorFade(void *, void *);
 
 extern void SetDeathBits(void *, int, int);
 extern int D_0015EE84 MACRO_ADDR;
-extern char hero_globals_base[];
 
 /* ticks down a timer against a hit check, then reacts: either ends or switches to state 2 */
 void process_spawner_hit_record(char *moby, char *d) {
@@ -1381,8 +1381,7 @@ void process_spawner_hit_record(char *moby, char *d) {
             d[0x67] = 0x5A;
             RerollEffectCounter(moby, (short *)(d + 0x60));
         } else {
-            if (g_current_level_index == LEVEL_GEMLIK &&
-                FastAbsF(((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos.f[2] - 248.0f) < 4.0f) {
+            if (g_current_level_index == LEVEL_GEMLIK && FastAbsF(g_hero.motion.pos.f[2] - 248.0f) < 4.0f) {
                 SetDeathBits(moby, 0x200, -1);
             } else {
                 SetDeathBits(moby, 0, -1);

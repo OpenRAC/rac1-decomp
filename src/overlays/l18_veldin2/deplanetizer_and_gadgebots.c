@@ -1161,7 +1161,7 @@ extern short gadgebot_death_fall_horizontal_speed_approach_rate_gp;
 extern short gadgebot_death_fall_base_horizontal_speed_gp;
 extern short gadgebot_death_fall_base_vertical_speed_gp;
 extern int veldin2_paths[];
-extern char hero_globals_base[];
+
 extern void draw_group_gadgebot_1906_joint_glows(unsigned char *);
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, void *, void *, int, int);
@@ -1173,7 +1173,8 @@ extern int FindNearestEligibleMoby(float, void *, void *, int, int, int *, int);
 #define F(x) (*(float *)&x)
 
 #include "structs/hero.h"
-#define hero (*(Hero *)(D_0013E633 + 0xE1D))
+extern Hero g_hero;
+#define hero (*&g_hero)
 
 /* Shared per-frame handler of the Gadgebot enemy. */
 void update_gadgebot_damage_target_and_glow(void *m_) {

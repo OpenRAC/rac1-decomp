@@ -14,6 +14,9 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/level.h"
 #include "enums/moby_class.h"
+extern char gSkillPoints[];
+extern Hero g_hero;
+extern char voice_pool[];
 
 /* One aimed joint of the elite commando: manipulator block plus the eased pitch and yaw. */
 struct EliteJointAim {
@@ -228,7 +231,7 @@ void HomingProjectileUpdate(char *m) {
     }
     remaining = delta;
     if (coll_line((m + 0x10), next, 0, m, 0) != 0 || FastVecLength(remaining) < d->length) {
-        if (((struct Hero *)((char *)&hero_globals_base + 0xE1D))->vehicle_mode == 2)
+        if (g_hero.vehicle_mode == 2)
             MobySphereHitDirectional((int)m, 2.0f, (m + 0x10), 3, 2.0f, 1.0f, 0, 1, 0);
         Sound_PlayClassSound(4, 0, (int)m, 0x54C);
         spawn_explosion(m, ((char *)d), (m + 0x10), 4.0f, 4.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1,
@@ -331,7 +334,7 @@ void blarg_elite_commando_update(char *m) {
     owner = d->owner;
     cls = *(short *)(owner + 0xA6);
     if (cls == 0 || cls == 0x1A3) {
-        qcopy(target, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.near_ground_point);
+        qcopy(target, &g_hero.motion.near_ground_point);
     } else {
         qcopy(target, owner + 0x10);
     }
@@ -550,8 +553,7 @@ void blarg_elite_commando_update(char *m) {
     }
     if (*(int *)&blarg_elite_commando_joint_aim_enabled_gp)
         update_blarg_elite_commando_joint_aim(m);
-    if (*(int *)&blarg_elite_commando_joint_sparks_enabled_gp &&
-        ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.control_mode != 22)
+    if (*(int *)&blarg_elite_commando_joint_sparks_enabled_gp && g_hero.state.control_mode != 22)
         emit_blarg_elite_commando_joint_sparks(m);
     if (g_current_level_index == LEVEL_VELDIN2 && kalebo3_game_mode == 2 &&
         (unsigned int)(kalebo3_cutscene_scene_id - 3) < 3U)
@@ -702,8 +704,8 @@ void update_blarg_elite_commando_damage_and_pursuit(char *m) {
                 if (g_current_level_index == LEVEL_VELDIN2 && d->reward_hits) {
                     ++*(int *)&elite_commando_reward_hit_count;
                     if (*(int *)&elite_commando_reward_hit_count >= 10) {
-                        if (((L16DamageReward *)(menu_item_enabled_115 + 1))->awarded == 0) {
-                            ((L16DamageReward *)(menu_item_enabled_115 + 1))->awarded = 1;
+                        if (((L16DamageReward *)gSkillPoints)->awarded == 0) {
+                            ((L16DamageReward *)gSkillPoints)->awarded = 1;
                             PlayBankSound(1, 0, 0);
                             ShowBanner(0x53DB, -1);
                         }
@@ -965,7 +967,7 @@ void update_blarg_elite_commando_joint_aim(char *m) {
         qcopy(position, m + 0x10);
         position[2] += 2.0f;
         if (*(short *)(d->owner + 0xA6) == 0)
-            qcopy(target, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center);
+            qcopy(target, &g_hero.motion.body_center);
         else
             qcopy(target, &d->aim_fallback);
         savedTarget = target;
@@ -1296,7 +1298,7 @@ void update_armed_transport_damage_and_targeting(char *m) {
     } else if (Sound_IsPlaying(m, (d->sound_slot))) {
         int slot = (d->sound_slot);
         if (slot != -1) {
-            L16InteractionSlot *s = (L16InteractionSlot *)(hero_globals_base + 0x1D + slot * 0x70);
+            L16InteractionSlot *s = (L16InteractionSlot *)(voice_pool + slot * 0x70);
             if (s->owner == m && s->active != 0)
                 Sound_StopSlot(slot);
         }
@@ -1345,7 +1347,7 @@ void update_armed_transport_damage_and_targeting(char *m) {
     } else
         (d->mode) = 2;
     if ((d->owner) == 0) {
-        L16PursuitPlayer *player = (L16PursuitPlayer *)(hero_globals_base + 0xE1D);
+        L16PursuitPlayer *player = (L16PursuitPlayer *)(&g_hero);
         (d->owner) = player->owner;
         qcopy(&d->target, player->position);
     }
@@ -1602,8 +1604,7 @@ void group_trigger_nearest(int idx) {
         do {
             char *m = kalebo3_moby_array + ((*(unsigned short *)p & 0x7FFF) << 8);
             if (((struct Moby *)m)->oclass != MOBY_CLASS_GRINDRAIL_BARRIER) {
-                float d = FastVecDist_r(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                        &((struct Moby *)m)->pos);
+                float d = FastVecDist_r(&g_hero.motion.pos, &((struct Moby *)m)->pos);
                 if (d < bestd) {
                     bestd = d;
                     best = m;
