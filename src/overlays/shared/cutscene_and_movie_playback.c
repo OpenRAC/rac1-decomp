@@ -28,6 +28,7 @@
 #include "enums/moby_class.h"
 #include "structs/pad.h"
 #include "enums/hero_state.h"
+extern char gSpecialItems[];
 extern char cd_read_active[];
 extern char cd_read_state[];
 extern struct P g_controller_state;
@@ -130,7 +131,6 @@ typedef struct {
 extern CfgS g_debug_menu;
 extern char pad_globals_base[];
 
-extern char special_items_base_b[] __asm__("D_0013D355");
 
 extern int cinematic_mode MACRO_ADDR;
 extern int D_0015EFB4 MACRO_ADDR;
@@ -238,7 +238,7 @@ void handle_pause_input(void) {
         PauseAllSounds(10);
         return;
     }
-    if (((AreaS *)memory_card_state)->wFC && !(r = (unsigned char *)(special_items_base_b + 0x13B))[0x10] &&
+    if (((AreaS *)memory_card_state)->wFC && !(r = (unsigned char *)gSpecialItems)[0x10] &&
         cinematic_mode_frames >= 8 && !D_0015EF20 && !g_hero.fall_fade_pending && g_hero.health.hp &&
         scale_ticks(0x1E) < level_frame_counter && g_current_level_index) {
         mode_freeze_init(5, 0, 0);

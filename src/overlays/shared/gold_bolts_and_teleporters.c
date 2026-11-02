@@ -27,6 +27,7 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 extern Hero g_hero;
+extern Hero g_hero;
 extern int pad0_pressed;
 extern unsigned char saved_mission_state[];
 extern char voice_pool[];
@@ -690,7 +691,6 @@ extern char *camera_points_c __asm__("D_L01_0016016C") MACRO_ADDR;
 extern int cutscene_active MACRO_ADDR;
 extern int g_current_level_index_c __asm__("D_0015EE84") MACRO_ADDR;
 extern char help_stats_base_c[] __asm__("D_0014171B");
-extern char hero_globals_base_c[] __asm__("D_0013E633");
 extern int STUB_printf_c(void *, int, int) __asm__("func_001E9730");
 extern void DeleteMoby(void *);
 extern int scale_ticks(int);
@@ -734,7 +734,7 @@ void update_cutscene_trigger(Moby *m) {
                 m->state = 1;
                 break;
             }
-            g = &((struct Hero *)((char *)&hero_globals_base_c + 0xE1D))->motion.pos;
+            g = &g_hero.motion.pos;
             if (is_point_inside_clip_volume(g, d->clip_volume) == 0 && m->command != 1)
                 break;
             qcopy(a, camera_pos_c);

@@ -26,6 +26,7 @@
 #include "structs/small_records.h"
 #include "enums/hero_state.h"
 extern Hero g_hero;
+extern Hero g_hero;
 extern u8 gSpecialItems[];
 extern int pad0_pressed;
 extern int queued_dialogue_id;
@@ -1209,7 +1210,6 @@ extern int *blarg_paths_r[] __asm__("D_L06_001B0FB0");
 extern char *blarg_scene_points_r __asm__("D_L06_0016016C") MACRO_ADDR;
 extern char referencePosition_r[] __asm__("D_L06_00167500");
 extern int level_game_mode_q_r __asm__("D_L06_0015F6A8") MACRO_ADDR;
-extern char hero_globals_base_r2[] __asm__("D_0013E633");
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern short D_L06_00162128_302FE8 SDATA(D_L06_00162128);
 extern short D_L06_0016212C_302FE8 SDATA(D_L06_0016212C);
@@ -1353,7 +1353,7 @@ void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
                 }
             }
             if (fast_dec_timer_r(&d->spark_timer) != 0) {
-                allocate_voice_for_group_entry_r(0, 0, (int)((Hero *)(hero_globals_base_r2 + 0xE1D))->moby);
+                allocate_voice_for_group_entry_r(0, 0, (int)g_hero.moby);
                 d->spark_timer =
                     truncate_float_to_s32_r2(multiply_global_factor_r(random_float_between_r(480.0f, 600.0f)));
                 ((Snd *)referencePosition_r)->f160 = 0.4f;
@@ -1361,7 +1361,7 @@ void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
             }
             if (level_game_mode_q_r == 0)
                 AddDrawCallback_r(draw_pulsing_timer_display, m);
-            if (((Hero *)(hero_globals_base_r2 + 0xE1D))->state.current == 0x72) {
+            if (g_hero.state.current == 0x72) {
                 ((Moby *)m)->state = 6;
                 return;
             }
@@ -1373,7 +1373,7 @@ void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
             d->ramp_delay = scale_ticks_r(0xF);
             d->ramp = 0.0f;
             set_moby_state_5_r(level_mobys_q_p + (d->moby_b << 8));
-            allocate_voice_for_group_entry_r(1, 0, (int)((Hero *)(hero_globals_base_r2 + 0xE1D))->moby);
+            allocate_voice_for_group_entry_r(1, 0, (int)g_hero.moby);
             return;
         }
         case 5:
@@ -2289,8 +2289,7 @@ void red_button_update(Moby *m) {
             break;
         }
         case 3:
-            if (vec_distance_xy_r2(&((struct Hero *)(hero_globals_base_r2 + 0xE1D))->motion.pos,
-                                   &*(V_3054D8 *)&m->pos) < 3.7f) {
+            if (vec_distance_xy_r2(&g_hero.motion.pos, &*(V_3054D8 *)&m->pos) < 3.7f) {
                 nz = try_set_help_message_r(4, 0x1783) != 0;
                 if ((pad0_pressed & 0x10) && nz) {
                     Moby_PlaySound_r(2, 0, m);
@@ -2357,7 +2356,7 @@ void red_button_update(Moby *m) {
                 v20.y = v20.y - 2.5f;
                 clear_u64_value_r2(&v10);
                 v10.y = -0.2617993878f;
-                v10.z = ((struct Hero *)(hero_globals_base_r2 + 0xE1D))->motion.rot.f[2];
+                v10.z = g_hero.motion.rot.f[2];
                 CameraScript_r2(&v20, &v10, 2, scale_ticks_r2(0x12C), 0);
                 ((Fx *)referencePosition_r)->f160 = 0.3f;
                 ((Fx *)referencePosition_r)->f168 = scale_ticks_r2(0x2D);
@@ -2372,7 +2371,7 @@ void red_button_update(Moby *m) {
             v10.y = v10.y - 2.5f;
             clear_u64_value_r2(&v0);
             v0.y = -0.2617993878f;
-            v0.z = ((struct Hero *)(hero_globals_base_r2 + 0xE1D))->motion.rot.f[2];
+            v0.z = g_hero.motion.rot.f[2];
             set_camera_position_r2(&v10);
             set_camera_rotation_r2(&v0);
             if (2.0f <= d->t) {

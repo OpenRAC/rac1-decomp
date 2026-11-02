@@ -25,6 +25,9 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+extern char g_controller_state[];
+extern unsigned char g_hero[];
+extern char usage_stats[];
 extern int frame_size;
 extern char gSkillPoints[];
 extern unsigned char g_hero[];
@@ -647,9 +650,7 @@ extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern int gameplay_event_frame_count_r __asm__("D_0015EFA4") MACRO_ADDR;
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 extern float pokitaru_zero_vec_r[] __asm__("D_L11_0015F660") MACRO_ADDR;
-extern char pad_globals_base_r2[] __asm__("D_0013A5E0");
 extern char help_stats_base_r[] __asm__("D_0014171B");
-extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern Target D_L11_001748C0;
 extern float pokitaru_view_cot_half_fov_r __asm__("D_L11_0016D570");
 extern int D_L11_00162080_313D00 SDATA(D_L11_00162080);
@@ -773,9 +774,9 @@ void update_player_ship_flight(void *a0, void *a1) {
     up.f[2] = 1.0f;
     moby->flags &= 0xFEFF;
     if (D_L11_00162080_313D00 < o->h68) {
-        if (((PadState *)(pad_globals_base_r2 + 0x2460))->raw_held & boost) {
+        if (((PadState *)g_controller_state)->raw_held & boost) {
             int per;
-            Stats *s = (Stats *)(help_stats_base_r + 0x22D);
+            Stats *s = (Stats *)usage_stats;
             if (s->uses <= 0xFFFE)
                 s->uses++;
             per = 600;
@@ -808,9 +809,9 @@ void update_player_ship_flight(void *a0, void *a1) {
     }
     if (D_L11_00162094_313D00 < o->h68) {
         float h20, h21;
-        int bits = ((PadState *)(pad_globals_base_r2 + 0x2460))->held;
-        float sx = ((Hero *)(hero_globals_base_r + 0xE1D))->stick_x;
-        float sy = ((Hero *)(hero_globals_base_r + 0xE1D))->stick_y;
+        int bits = ((PadState *)g_controller_state)->held;
+        float sx = ((Hero *)g_hero)->stick_x;
+        float sy = ((Hero *)g_hero)->stick_y;
         h20 = D_L11_00162134_313D00;
         h21 = D_L11_00162144_313D00;
         pv[0] = sx;
@@ -878,8 +879,7 @@ void update_player_ship_flight(void *a0, void *a1) {
     rot.f[2] = angle_delta_313D00(o->f28, o->fD4);
     rot.f[1] = angle_delta_313D00(o->f24, o->fD8);
     set_camera_rotation(rot.f);
-    rate = (((PadState *)(pad_globals_base_r2 + 0x2460))->raw_held & boost) ? D_L11_001621C8_313D00
-                                                                            : D_L11_001621C4_313D00;
+    rate = (((PadState *)g_controller_state)->raw_held & boost) ? D_L11_001621C8_313D00 : D_L11_001621C4_313D00;
     approach_313D00(&o->fB0, &o->fC0, rate, g_frame_time_sq_r + g_frame_time_sq_r,
                     g_frame_time_sq_r + g_frame_time_sq_r, g_frame_time_r + g_frame_time_r);
     {
@@ -911,9 +911,8 @@ void update_player_ship_flight(void *a0, void *a1) {
                 o->f34 = angle_add_313D00(o->f34, f * D_L11_0016209C_313D00);
                 o->f64 = o->f64 * D_L11_001620DC_313D00;
                 if (o->tDC == 0) {
-                    ((Hero *)(hero_globals_base_r + 0xE1D))->ship_hp =
-                        ((Hero *)(hero_globals_base_r + 0xE1D))->ship_hp - D_L11_001620E0_313D00;
-                    if (((Hero *)(hero_globals_base_r + 0xE1D))->ship_hp < 0.0f) {
+                    ((Hero *)g_hero)->ship_hp = ((Hero *)g_hero)->ship_hp - D_L11_001620E0_313D00;
+                    if (((Hero *)g_hero)->ship_hp < 0.0f) {
                         vec_sub_313D00(dir.f, pokitaru_coll_hit.a.f, pokitaru_coll_hit.b.f);
                         vec_scale_313D00(dir.f, dir.f, 1.0f);
                         reflect_313D00(back.f, ofs.f, pokitaru_coll_hit.dir.f);
@@ -2268,8 +2267,8 @@ void update_puffoid_damage_and_path_goal(Moby *m) {
         }
     }
     if (d->f210 == 0) {
-        d->f210 = (int)((Hero *)(hero_globals_base_r + 0xE1D))->moby;
-        qcopy(&d->f1D0, &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos);
+        d->f210 = (int)((Hero *)g_hero)->moby;
+        qcopy(&d->f1D0, &((struct Hero *)g_hero)->motion.pos);
     }
 }
 extern float SteerAngleWithVelocity(float *p, float *v, float a, float b, float c, float d);

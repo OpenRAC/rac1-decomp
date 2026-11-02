@@ -22,6 +22,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+extern Hero g_hero;
 extern char gHeroPos[];
 extern struct Hero g_hero;
 
@@ -1669,8 +1670,7 @@ void update_flying_car(Moby *m) {
             }
             break;
         case 1:
-            if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
-                                              d->trigger)) {
+            if (is_point_inside_clip_volume_r(&g_hero.motion.pos, d->trigger)) {
                 m->flags &= 0xFFBE;
                 m->collision = ((Model *)m->pclass)->bounds;
                 if (d->part >= 0) {
@@ -1694,10 +1694,8 @@ void update_flying_car(Moby *m) {
                     FastVecAdd_r4(&o->pos, &o->pos, &vec);
                     FastVecScale_r4(&vec, &m->rot_row2, d->fAC);
                     FastVecAdd_r4(&o->pos, &o->pos, &vec);
-                    if ((((Hero *)(hero_globals_base_r + 0xE1D))->state.control_mode == HERO_MODE_GRAPPLE &&
-                         ((Hero *)(hero_globals_base_r + 0xE1D))->grapple_target == o) ||
-                        (((Hero *)(hero_globals_base_r + 0xE1D))->state.control_mode == HERO_MODE_GRAPPLE_SWING &&
-                         ((Hero *)(hero_globals_base_r + 0xE1D))->swing_target_moby == o)) {
+                    if ((g_hero.state.control_mode == HERO_MODE_GRAPPLE && g_hero.grapple_target == o) ||
+                        (g_hero.state.control_mode == HERO_MODE_GRAPPLE_SWING && g_hero.swing_target_moby == o)) {
                         seed_linked_record_for_flying_car_r(m);
                         d->fCC = scale_ticks_r3(0x1E);
                     } else {

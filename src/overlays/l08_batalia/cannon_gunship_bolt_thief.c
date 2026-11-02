@@ -12,6 +12,7 @@
 #include "structs/swarm.h"
 #include "enums/moby_class.h"
 extern Hero g_hero;
+extern Hero g_hero;
 
 /* Bolt thief: scans a fixed list of mobys for its targets. */
 struct BoltThiefVars {
@@ -431,7 +432,6 @@ struct CannonData52_2E16A0 {
     float visual_angle;
 };
 extern Hero D_0013F450;
-extern char hero_globals_base_r[] __asm__("D_0013E633");
 
 extern unsigned char visited52[][16] __asm__("D_0014C150");
 extern int invert52 MACRO_ADDR;
@@ -553,8 +553,7 @@ void update_batalia_cannon(Moby *moby) {
         }
         if (visited52[g_current_level_index_r][moby->mission] != 0xFF && (g_hero.ship_flags & 1))
             Hero_OnKilled_r();
-        if (((pad_globals_base.pressed & 0x10) ||
-             (((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->ship_flags & 1)) &&
+        if (((pad_globals_base.pressed & 0x10) || (g_hero.ship_flags & 1)) &&
             visited52[g_current_level_index_r][moby->mission] == 0xFF) {
             g_hero.ship_flags = 0;
             hero_state52(0, 1);

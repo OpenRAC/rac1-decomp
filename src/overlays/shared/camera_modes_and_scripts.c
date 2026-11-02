@@ -15,6 +15,7 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "structs/voice.h"
+extern char g_hero[];
 extern u8 gHeroPos[];
 extern PadState g_controller_state;
 extern char g_hero[];
@@ -375,7 +376,6 @@ void initialize_hero_aligned_camera_mode(char *cam) {
     if (h->p != 0)
         Moby_PlaySound(0, 0, h->p);
 }
-extern unsigned char hero_globals_base_r[] __asm__("D_0013E633");
 extern float FastVecDot(void *, void *);
 extern void FastVecSub(void *, void *, void *);
 extern float FastVecLength(void *);
@@ -383,7 +383,7 @@ extern float FastArcSin(float);
 
 /* Exit-camera update: reset the camera state, or drop to state 4 when the view lines up within 80 degrees. */
 void select_camera_mode_by_hero_vector_alignment(char *m) {
-    char *p = (char *)hero_globals_base_r + 0xE1D;
+    char *p = g_hero;
     S *g;
     S *h;
     Vec4A a, b, c;

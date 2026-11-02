@@ -16,6 +16,7 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+extern Hero g_hero;
 extern char g_controller_state[];
 extern Hero g_hero;
 
@@ -1938,12 +1939,11 @@ void ryno_update(Moby *m) {
                 m->state = 2;
             break;
         case 2:
-            if (((Hero *)(hero_globals_base_r2 + 0xE1D))->state.current == HERO_STATE_LOOK)
+            if (g_hero.state.current == HERO_STATE_LOOK)
                 HeroEnterMoveState(0x1E, 1);
-            if ((((PadState *)g_controller_state)->pressed &
-                 ((Hero *)(hero_globals_base_r2 + 0xE1D))->items[0].button_mask) == 0)
+            if ((((PadState *)g_controller_state)->pressed & g_hero.items[0].button_mask) == 0)
                 return;
-            if (((Hero *)(hero_globals_base_r2 + 0xE1D))->item_use_locked != 0)
+            if (g_hero.item_use_locked != 0)
                 return;
             if (use_ammo_2CDAB8(-1, 1) == 0)
                 return;
@@ -1957,7 +1957,7 @@ void ryno_update(Moby *m) {
                     s->best = ticks_2CDAB8(gameplay_event_frame_count_r) / 600;
                 s->levels = s->levels | (1 << g_current_level_index_r) | 0x80000000;
             }
-            ((Hero *)(hero_globals_base_r2 + 0xE1D))->items[0].switch_lock = 2;
+            g_hero.items[0].switch_lock = 2;
             m->state = 4;
             d->shot_timer = 0;
             d->slot = 0;
@@ -1976,10 +1976,9 @@ void ryno_update(Moby *m) {
                 m->state = 2;
                 return;
             }
-            if ((((PadState *)g_controller_state)->pressed &
-                 ((Hero *)(hero_globals_base_r2 + 0xE1D))->items[0].button_mask) == 0)
+            if ((((PadState *)g_controller_state)->pressed & g_hero.items[0].button_mask) == 0)
                 return;
-            if (((Hero *)(hero_globals_base_r2 + 0xE1D))->item_use_locked != 0)
+            if (g_hero.item_use_locked != 0)
                 return;
             if (use_ammo_2CDAB8(-1, 1) == 0)
                 return;
@@ -1993,7 +1992,7 @@ void ryno_update(Moby *m) {
                     s->best = ticks_2CDAB8(gameplay_event_frame_count_r) / 600;
                 s->levels = s->levels | (1 << g_current_level_index_r) | 0x80000000;
             }
-            ((Hero *)(hero_globals_base_r2 + 0xE1D))->items[0].switch_lock = 2;
+            g_hero.items[0].switch_lock = 2;
             m->state = 4;
             d->shot_timer = 0;
             d->slot = 0;
@@ -2014,19 +2013,18 @@ void ryno_update(Moby *m) {
             d->slot = d->slot % 9;
             d->shots++;
             dir.q = 0;
-            if (((Hero *)(hero_globals_base_r2 + 0xE1D))->state.current == HERO_STATE_LOOK_RELEASE_WAIT) {
+            if (g_hero.state.current == HERO_STATE_LOOK_RELEASE_WAIT) {
                 dir.f[2] = 1.0f;
                 apply_mat4_2CDAB8(dir.f, dir.f, &view);
             } else {
                 dir.f[0] = 1.0f;
-                matrix_mul_vec3(dir.f, dir.f, ((Hero *)(hero_globals_base_r2 + 0xE1D))->basis[0].f);
+                matrix_mul_vec3(dir.f, dir.f, g_hero.basis[0].f);
             }
-            add_2CDAB8(ofs.f, &((struct Hero *)((char *)&hero_globals_base_r2 + 0xE1D))->motion.displacement,
-                       &((struct Hero *)((char *)&hero_globals_base_r2 + 0xE1D))->motion.platform_carry);
+            add_2CDAB8(ofs.f, &g_hero.motion.displacement, &g_hero.motion.platform_carry);
             scale_2CDAB8(ofs.f, ofs.f, 3.0f);
             add_2CDAB8(dir.f, dir.f, ofs.f);
-            if (((Hero *)(hero_globals_base_r2 + 0xE1D))->items[6].locked_on != 0) {
-                yaw = ((Hero *)(hero_globals_base_r2 + 0xE1D))->items[6].lock_yaw;
+            if (g_hero.items[6].locked_on != 0) {
+                yaw = g_hero.items[6].lock_yaw;
             } else {
                 yaw = angle_2CDAB8(dir.f[0], dir.f[1]);
             }
@@ -2035,7 +2033,7 @@ void ryno_update(Moby *m) {
             fire_start_2CDAB8();
             missile_2CDAB8(m, aim.f, d->target, d->height, yaw, pitch);
             if (d->shots >= 7) {
-                ((Hero *)(hero_globals_base_r2 + 0xE1D))->items[0].switch_lock = 0;
+                g_hero.items[0].switch_lock = 0;
                 fire_end_2CDAB8();
                 m->state = 5;
                 d->shot_timer = ticks_2CDAB8(60);

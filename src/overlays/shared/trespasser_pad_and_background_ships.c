@@ -19,6 +19,7 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+extern Hero g_hero;
 extern char gHeroPos[];
 extern char gSkillPoints[];
 extern struct Hero g_hero;
@@ -492,7 +493,6 @@ extern int D_L02_00161BAC_2D9F08 SDATA(D_L02_00161BAC);
 extern int D_L02_00161B38_2D9F08 SDATA(D_L02_00161B38);
 extern int D_L02_00161B34_2D9F08 SDATA(D_L02_00161B34);
 extern int D_L02_00161B30_2D9F08 SDATA(D_L02_00161B30);
-extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern Hero g_hero_r __asm__("D_0013F450");
 extern char pad_globals_base_r[] __asm__("D_0013A5E0");
 
@@ -529,23 +529,21 @@ void tresspasser_pad_update(Moby *moby) {
             }
             break;
         case 1:
-            if (((Hero *)(hero_globals_base_r + 0xE1D))->ground_moby == moby &&
-                ((Hero *)(hero_globals_base_r + 0xE1D))->air_frames.s == 0) {
+            if (g_hero.ground_moby == moby && g_hero.air_frames.s == 0) {
                 int holding_tool;
 
                 if (data->active == 0) {
                     data->active = 1;
                     Moby_PlaySound_r(3, 0, moby);
                 }
-                if (((Hero *)(hero_globals_base_r + 0xE1D))->items[0].moby != 0 &&
-                    ((Hero *)(hero_globals_base_r + 0xE1D))->items[0].item_id == 0x1A) {
+                if (g_hero.items[0].moby != 0 && g_hero.items[0].item_id == 0x1A) {
                     moby->glow_color = D_L02_00161B30_2D9F08;
                     holding_tool = 1;
                 } else {
                     moby->glow_color = D_L02_00161B34_2D9F08;
                     holding_tool = 0;
                 }
-                if (holding_tool && ((Hero *)(hero_globals_base_r + 0xE1D))->items[0].moby->command != 0) {
+                if (holding_tool && g_hero.items[0].moby->command != 0) {
                     data->timer = scale_ticks_r(0x12C);
                     data->unk_11C = 0;
                     data->input_flags = 0;
@@ -654,8 +652,7 @@ void tresspasser_pad_update(Moby *moby) {
             if (i != 12) {
                 if (((((PadState *)(pad_globals_base_r + 0x2460))->pressed & 0x10) &&
                      aridia_help_popup_state_r.i0 == 0 && aridia_help_popup_state_r.i24 == -1) ||
-                    ((Hero *)(hero_globals_base_r + 0xE1D))->state.current != 0x72 ||
-                    ((Hero *)(hero_globals_base_r + 0xE1D))->items[0].item_id != 0x1A) {
+                    g_hero.state.current != 0x72 || g_hero.items[0].item_id != 0x1A) {
                     moby->state = 1;
                     CameraScript2_r(1);
                     request_hero_idle_state_for_vehicle_mode_r();

@@ -11,6 +11,8 @@
 #include "data/level_13.h"
 #include "game/moby/mobyutil.h"
 #include "enums/moby_class.h"
+extern Hero g_hero;
+extern char level_render_state[];
 extern char gSkillPoints[];
 extern char gSpecialItems[];
 extern Hero g_hero;
@@ -79,8 +81,6 @@ extern int D_L13_0015F504 MACRO_ADDR;
 extern unsigned char D_L13_0015FD08[] MACRO_ADDR;
 extern unsigned char D_001414F5[] NOT_SDA;
 
-extern unsigned char hero_globals_base_r[] __asm__("D_0013E633");
-extern char level_render_state_base_r[] __asm__("D_0013DE6E");
 extern void StartCutscene_r(int) __asm__("func_L00_00299B68");
 extern int func_00215570(void *arg0, int arg1);
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
@@ -119,8 +119,7 @@ void update_gemlik_scene_controller(Moby *moby) {
         case 4:
             if (((Flags *)gSpecialItems)->f65 == 0) {
                 if (data->f0 != -1) {
-                    if (is_point_inside_clip_volume(
-                            &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, data->f0) != 0) {
+                    if (is_point_inside_clip_volume(&g_hero.motion.pos, data->f0) != 0) {
                         ((Flags *)gSpecialItems)->f65 = 1;
                         if (data->f14 != -1) {
                             Moby *e = &gemlik_moby_array_start_r[data->f14];
@@ -208,10 +207,10 @@ void update_gemlik_scene_controller(Moby *moby) {
                 Moby *e = &gemlik_moby_array_start_r[data->f20];
                 e->flags &= 0xFFBE;
                 initialize_moby_state_record(e);
-                ((Cam *)(level_render_state_base_r + 0x2C2))->f60 = 464.66f;
-                ((Cam *)(level_render_state_base_r + 0x2C2))->f64 = 580.68f;
-                ((Cam *)(level_render_state_base_r + 0x2C2))->f68 = 316.72f;
-                ((Cam *)(level_render_state_base_r + 0x2C2))->f78 = 2.77f;
+                ((Cam *)level_render_state)->f60 = 464.66f;
+                ((Cam *)level_render_state)->f64 = 580.68f;
+                ((Cam *)level_render_state)->f68 = 316.72f;
+                ((Cam *)level_render_state)->f78 = 2.77f;
             }
             gemlik_scripted_camera_active = 0;
             moby->state = 11;

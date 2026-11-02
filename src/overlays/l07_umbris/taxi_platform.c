@@ -17,6 +17,8 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+extern Hero g_hero;
+extern char saved_mission_state[];
 extern char gSpecialItems[];
 extern Hero g_hero;
 extern char saved_mission_state[];
@@ -478,7 +480,6 @@ typedef struct Flags {
 
 extern unsigned char D_0013D4B5[];
 
-extern unsigned char hero_globals_base_r[] __asm__("D_0013E633");
 extern Moby *level_mobys_r __asm__("D_L07_00160058") MACRO_ADDR;
 extern int D_L07_0015F6A8 MACRO_ADDR;
 extern Anim *scene_points_r __asm__("D_L07_0016016C") MACRO_ADDR;
@@ -528,8 +529,7 @@ void update_umbris_scene_progression(Moby *moby) {
         case 4:
             if (((Flags *)gSpecialItems)->f29 == 0) {
                 if (data->f0 != -1) {
-                    if (is_point_inside_clip_volume_r(&((struct Hero *)(hero_globals_base_r + 0xE1D))->motion.pos,
-                                                      data->f0) != 0) {
+                    if (is_point_inside_clip_volume_r(&g_hero.motion.pos, data->f0) != 0) {
                         ((Flags *)gSpecialItems)->f29 = 1;
                         if (data->fC != -1) {
                             Moby *e = &level_mobys_r[data->fC];
@@ -587,8 +587,7 @@ void update_umbris_scene_progression(Moby *moby) {
                 Moby *e;
                 if (data->fC == -1 || (e = &level_mobys_r[data->fC]) == 0 || e->state == 0xFE || e->state == 0xFD) {
                     if (data->f4 != -1) {
-                        if (is_point_inside_clip_volume_r(&((struct Hero *)(hero_globals_base_r + 0xE1D))->motion.pos,
-                                                          data->f4) != 0) {
+                        if (is_point_inside_clip_volume_r(&g_hero.motion.pos, data->f4) != 0) {
                             Hero_ResetToPosition(scene_points_r[data->f1C].f30, scene_points_r[data->f1C].f70, 0x72, 1);
                             ((Flags *)gSpecialItems)->f2A = 1;
                             moby->state = 9;
@@ -626,9 +625,9 @@ void update_umbris_scene_progression(Moby *moby) {
             }
             if (data->f10 != -1) {
                 Moby *e = &level_mobys_r[data->f10];
-                FastVecSub_r(v, &((struct Hero *)(hero_globals_base_r + 0xE1D))->motion.pos, &e->pos);
+                FastVecSub_r(v, &g_hero.motion.pos, &e->pos);
                 clamp_vec_length_r(v, v, 0.9f);
-                FastVecAdd_r(&e->pos, &((struct Hero *)(hero_globals_base_r + 0xE1D))->motion.pos, v);
+                FastVecAdd_r(&e->pos, &g_hero.motion.pos, v);
                 DeleteMoby_r(e);
             }
             clear_bit_grid_rectangle(0x87, 0xC, 0x56, 0x3C);
@@ -3247,8 +3246,6 @@ extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
 extern void update_entity_matrix_r(void *, void *, void *, void *) __asm__("func_L00_002617B0");
 extern char *level_mobys_r2 __asm__("D_L07_00160058") MACRO_ADDR;
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
-extern char hero_globals_base_r2[] __asm__("D_0013E633");
-extern char help_stats_base_r[] __asm__("D_0014171B");
 
 /* Level 07 update function for moby class 1069: runs its state machine and moves its parts. */
 void update_command_triggered_falling_platform(Moby *m) {
@@ -3290,7 +3287,7 @@ void update_command_triggered_falling_platform(Moby *m) {
             m->state = 1;
             m->command = 0;
             if (m->mission != 0xFF &&
-                ((unsigned char *)(help_stats_base_r + 0xAA35))[m->mission + (g_current_level_index_r << 4)] == 0xFF) {
+                ((unsigned char *)saved_mission_state)[m->mission + (g_current_level_index_r << 4)] == 0xFF) {
                 m->pos.z -= 5.0f;
                 if (d->bBC != 0) {
                     m->state = 5;
@@ -3359,8 +3356,7 @@ void update_command_triggered_falling_platform(Moby *m) {
             float f21;
             float f22;
             float k;
-            if (((Hero *)(hero_globals_base_r2 + 0xE1D))->air_frames.s == 0 &&
-                ((Hero *)(hero_globals_base_r2 + 0xE1D))->ground_moby == m) {
+            if (g_hero.air_frames.s == 0 && g_hero.ground_moby == m) {
                 if (d->fAC == 0)
                     Moby_PlaySound_r3(0, 0, m);
                 if (d->fAC < scale_ticks_r(0x5A))
@@ -3395,18 +3391,16 @@ void update_command_triggered_falling_platform(Moby *m) {
                 float c;
                 float c2;
                 fast_dec_timer_r2(&d->fAC);
-                FastVecSub_r2(&v3, &((struct Hero *)(hero_globals_base_r2 + 0xE1D))->motion.pos, &m->pos);
+                FastVecSub_r2(&v3, &g_hero.motion.pos, &m->pos);
                 c = FastVecDot(&v3, &m->rot_row0);
                 c2 = FastVecDot(&v3, &m->rot_row1);
                 c = c * 0.03f;
                 f21 = FastAddRots_r(FastAddRots_r(f21, c2 * -0.03f), c);
                 v4 = (*(V_3126A8 *)&m->rot);
                 v5 = (*(V_3126A8 *)&m->pos);
-                reorient_position_about_pivot(&((struct Hero *)(hero_globals_base_r2 + 0xE1D))->motion.pos, &v6,
-                                              &m->pos, &v4, &m->rot);
-                FastVecSub_r2(&((Hero *)(hero_globals_base_r2 + 0xE1D))->motion.platform_delta, &v6,
-                              &((struct Hero *)(hero_globals_base_r2 + 0xE1D))->motion.pos);
-                ((Hero *)(hero_globals_base_r2 + 0xE1D))->motion.platform_delta.f[2] += m->pos.z - v5.z;
+                reorient_position_about_pivot(&g_hero.motion.pos, &v6, &m->pos, &v4, &m->rot);
+                FastVecSub_r2(&g_hero.motion.platform_delta, &v6, &g_hero.motion.pos);
+                g_hero.motion.platform_delta.f[2] += m->pos.z - v5.z;
             }
             step_angle_toward_target(&m->rot.x, 0, f21, g_frame_time_r * 0.17453292f);
             step_angle_toward_target(&m->rot.y, 0, f22, g_frame_time_r * 0.17453292f);

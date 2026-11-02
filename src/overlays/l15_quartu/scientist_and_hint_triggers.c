@@ -20,6 +20,7 @@
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/pause_menu.h"
 extern Hero g_hero;
+extern Hero g_hero;
 extern char saved_mission_state[];
 
 extern void initialize_moby_grounding(char *);
@@ -456,7 +457,6 @@ extern int D_L15_0015F684 MACRO_ADDR;
 extern int D_L15_00161B48 MACRO_ADDR;
 extern char *quartu_moby_array_r __asm__("D_L15_00160058") MACRO_ADDR;
 extern char D_L15_00179A90[];
-extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern char help_stats_base_r[] __asm__("D_0014171B");
 extern char D_00141A68[];
 extern char D_0013D490[];
@@ -480,10 +480,8 @@ void update_quartu_hint_triggers(Moby *m) {
             if (t->npc[0] != -1) {
                 e = (Moby *)(quartu_moby_array_r + (t->npc[0] << 8));
                 if (e != 0 && e->oclass == 0x4E && e->state != 0xFE && e->state != 0xFD && e->state != 3 &&
-                    is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
-                                                  t->zone[3]) != 0 &&
-                    (((Hero *)(hero_globals_base_r + 0xE1D))->state.control_mode < 2u ||
-                     ((Hero *)(hero_globals_base_r + 0xE1D))->state.control_mode == 9) &&
+                    is_point_inside_clip_volume_r(&g_hero.motion.pos, t->zone[3]) != 0 &&
+                    (g_hero.state.control_mode < 2u || g_hero.state.control_mode == 9) &&
                     ((Help_2EE7E8 *)quartu_help_popup_state)->busy == 0 &&
                     ((Help_2EE7E8 *)quartu_help_popup_state)->cur == -1) {
                     if (gHaveHologuise[0] == 0) {
@@ -530,10 +528,8 @@ void update_quartu_hint_triggers(Moby *m) {
                 Help_Request(0x3A9F, 0x89);
                 quartu_pending_help_flag = 0;
             }
-            if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
-                                              t->vol54) != 0 &&
-                ((Hero *)(hero_globals_base_r + 0xE1D))->vehicle_mode == 3 &&
-                ((Hero *)(hero_globals_base_r + 0xE1D))->glow_pulse_level == 0 && quartu_alarm_on == 0 &&
+            if (is_point_inside_clip_volume_r(&g_hero.motion.pos, t->vol54) != 0 && g_hero.vehicle_mode == 3 &&
+                g_hero.glow_pulse_level == 0 && quartu_alarm_on == 0 &&
                 *(unsigned short *)(help_stats_base_r + 0x78D) == 0) {
                 Help_Request(0x3A9E, 0x88);
             }
@@ -541,8 +537,7 @@ void update_quartu_hint_triggers(Moby *m) {
             npc = -1;
             found = 0;
             for (i = 0; i < 1; i++) {
-                if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
-                                                  t->zone[i]) != 0) {
+                if (is_point_inside_clip_volume_r(&g_hero.motion.pos, t->zone[i]) != 0) {
                     pick = t->zone[i];
                     npc = t->npc[i];
                     found = 1;
@@ -559,8 +554,7 @@ void update_quartu_hint_triggers(Moby *m) {
                 e = (Moby *)(quartu_moby_array_r + (npc << 8));
                 if (e != 0 && e->oclass == 0x4E && e->state != 0xFE && e->state != 0xFD && e->state != 3 &&
                     t->hold3C > t->wait && pick != -1 && pick != t->last &&
-                    (((Hero *)(hero_globals_base_r + 0xE1D))->state.control_mode < 2u ||
-                     ((Hero *)(hero_globals_base_r + 0xE1D))->state.control_mode == 9) &&
+                    (g_hero.state.control_mode < 2u || g_hero.state.control_mode == 9) &&
                     ((Help_2EE7E8 *)quartu_help_popup_state)->busy == 0 &&
                     ((Help_2EE7E8 *)quartu_help_popup_state)->cur == -1 && gHaveHologuise[0] != 0) {
                     t->wait = scale_ticks_r(0x708);
@@ -571,19 +565,15 @@ void update_quartu_hint_triggers(Moby *m) {
                     t->hold3C = 0;
                 }
             }
-            if (((Hero *)(hero_globals_base_r + 0xE1D))->moby->seq == 0xC &&
-                ((Hero *)(hero_globals_base_r + 0xE1D))->vehicle_mode == 2) {
+            if (g_hero.moby->seq == 0xC && g_hero.vehicle_mode == 2) {
                 ((Items *)gSpecialItems)->f6F = 1;
             }
-            if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
-                                              t->vol1C) != 0 &&
-                ((Hero *)(hero_globals_base_r + 0xE1D))->vehicle_mode == 2 && ((Items *)gSpecialItems)->f6F == 0 &&
-                ((Help_2EE7E8 *)quartu_help_popup_state)->busy == 0 &&
+            if (is_point_inside_clip_volume_r(&g_hero.motion.pos, t->vol1C) != 0 && g_hero.vehicle_mode == 2 &&
+                ((Items *)gSpecialItems)->f6F == 0 && ((Help_2EE7E8 *)quartu_help_popup_state)->busy == 0 &&
                 ((Help_2EE7E8 *)quartu_help_popup_state)->cur == -1 && *(int *)(help_stats_base_r + 0x751) >= 0) {
                 Help_Request(0x3A9C, 0x80);
             }
-            if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
-                                              t->vol20[0]) != 0 &&
+            if (is_point_inside_clip_volume_r(&g_hero.motion.pos, t->vol20[0]) != 0 &&
                 ((Help_2EE7E8 *)quartu_help_popup_state)->busy == 0 &&
                 ((Help_2EE7E8 *)quartu_help_popup_state)->cur == -1 && gHaveHeliPack[2] == 0 &&
                 !(*(unsigned int *)(help_stats_base_r + 0x761) & (1 << g_current_level_index_r))) {
@@ -592,8 +582,7 @@ void update_quartu_hint_triggers(Moby *m) {
             pick = -1;
             found = 0;
             for (j = 0; j < 3; j++) {
-                if (is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
-                                                  t->vol20[j]) != 0) {
+                if (is_point_inside_clip_volume_r(&g_hero.motion.pos, t->vol20[j]) != 0) {
                     found = 1;
                     if (t->last != t->vol20[j]) {
                         pick = t->vol20[j];
@@ -606,7 +595,7 @@ void update_quartu_hint_triggers(Moby *m) {
                 t->last = -1;
             } else {
                 t->hold38 = t->hold38 + 1;
-                if (((Hero *)(hero_globals_base_r + 0xE1D))->state.current == 0x35) {
+                if (g_hero.state.current == 0x35) {
                     t->hold38 = 0;
                     t->last = -1;
                 }
@@ -619,8 +608,7 @@ void update_quartu_hint_triggers(Moby *m) {
                 t->hold38 = 0;
             }
             if (((Items *)gSpecialItems)->f6E == 0 &&
-                is_point_inside_clip_volume_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
-                                              t->vol2C) != 0) {
+                is_point_inside_clip_volume_r(&g_hero.motion.pos, t->vol2C) != 0) {
                 ((Items *)gSpecialItems)->f6E = 1;
             }
             break;

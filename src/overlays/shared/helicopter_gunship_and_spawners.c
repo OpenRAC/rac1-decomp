@@ -15,6 +15,7 @@
 #include "game/moby/mobyutil.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
+extern Hero g_hero;
 extern struct Hero g_hero;
 extern char voice_pool[];
 
@@ -2248,8 +2249,7 @@ int evaluate_clip_volume_candidate(char *a0, char *a1) {
         return 0;
     if (a1 != 0 && *(short *)(a1 + 0x7E) == 0 && !(*(unsigned char *)(a0 + 0x7C) > *(unsigned char *)(a1 + 0x7C)))
         return 0;
-    if (is_point_inside_clip_volume_r2(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
-                                       *(int *)(sub + 0xC)) != 0) {
+    if (is_point_inside_clip_volume_r2(&g_hero.motion.pos, *(int *)(sub + 0xC)) != 0) {
         if (is_point_inside_clip_volume_r2(kerwan_camera_pos, *(int *)(sub + 0xC)) != 0)
             return 1;
         q = kerwan_camera_pos - 0x140;

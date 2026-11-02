@@ -22,6 +22,7 @@
 #include "enums/hero_state.h"
 #include "structs/voice.h"
 extern char g_hero[];
+extern char g_hero[];
 extern char item_usage[];
 extern int pad0_pressed;
 
@@ -1146,7 +1147,6 @@ typedef float Mat3_2D3608[3][4] __attribute__((aligned(16)));
 extern char player_camera_r[] __asm__("D_L00_00166D80");
 extern char g_debug_camera_r[] __asm__("D_L00_00166EC0");
 extern char coll_hit_result_r[] __asm__("D_L00_00173F40");
-extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern char pad_globals_base_r[] __asm__("D_0013A5E0");
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern void func_001FA480(void *, void *);
@@ -1188,13 +1188,13 @@ void decoy_glove_aim_throw(int collision_arg, Moby *carrier, float *position) {
     output = (float *)target->pvars;
     *(u128_2D3608 *)direction = 0;
     direction[0] = 1.0f;
-    matrix_mul_vec3_r(direction, direction, ((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->basis);
+    matrix_mul_vec3_r(direction, direction, ((struct Hero *)g_hero)->basis);
     {
-        Hero *h = (Hero *)(hero_globals_base_r + 0xE1D);
+        Hero *h = (Hero *)g_hero;
         anchor_ptr[0] = FastCos_r(FastAddRots_r(-0.361968011f, fast_atan2_r(h->facing_x, h->facing_y))) * 0.859039009f;
         anchor_ptr[1] = FastSin_r(FastAddRots_r(-0.361968011f, fast_atan2_r(h->facing_x, h->facing_y))) * 0.859039009f;
         anchor_ptr[2] = 0.0f;
-        FastVecAdd_r2(anchor_ptr, anchor_ptr, &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos);
+        FastVecAdd_r2(anchor_ptr, anchor_ptr, &((struct Hero *)g_hero)->motion.pos);
         anchor_ptr[2] = anchor_ptr[2] + 0.390819997f;
         fast_atan2_r(direction[0], direction[1]);
         range = (((PadState *)(pad_globals_base_r + 0x2460))->held & 5) ? 3.5f : 2.5f;
@@ -1234,8 +1234,7 @@ void decoy_glove_aim_throw(int collision_arg, Moby *carrier, float *position) {
                 launch[2] = vertical;
                 FastVecAdd_r2(endpoint, g_debug_camera_r, launch);
                 if (coll_line_r2(g_debug_camera_r, endpoint, 2, collision_arg, 0) &&
-                    ((Hit_2D3608 *)coll_hit_result_r)->moby !=
-                        *(void **)&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->moby) {
+                    ((Hit_2D3608 *)coll_hit_result_r)->moby != *(void **)&((struct Hero *)g_hero)->moby) {
                     qcopy(aim, ((Hit_2D3608 *)coll_hit_result_r)->point);
                     hit = 1;
                     heading = fast_atan2_r(aim[0] - anchor_ptr[0], aim[1] - anchor_ptr[1]);
@@ -1249,7 +1248,7 @@ void decoy_glove_aim_throw(int collision_arg, Moby *carrier, float *position) {
                 }
             }
         } else {
-            ((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->throw_target = 0;
+            ((struct Hero *)g_hero)->throw_target = 0;
         }
     }
     compute_glove_of_doom_launch_velocity(anchor_ptr, aim, output + 4, g_frame_time_sq_r * 9.0f, 0.00000999999975f,
@@ -2709,7 +2708,7 @@ void process_horny_toad_hit_reaction(void *a0) {
     v = *(int *)(d + 0x1C0);
 
     if (v == 0) {
-        char *h = hero_globals_base_r + 0xE1D;
+        char *h = g_hero;
         *(int *)(d + 0x1C0) = *(int *)(h + 0x2080);
         qcopy(q, h + 0x80);
     }

@@ -23,6 +23,9 @@
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
 #include "structs/voice.h"
+extern char gSkillPoints[];
+extern Hero g_hero;
+extern char pad0_pressed[];
 extern Hero g_hero;
 extern char gSpecialItems[];
 extern char help_records[];
@@ -872,7 +875,7 @@ void update_drawbridge(Moby *m) {
                 s->a[i] = CreateMoby_r(0x405);
                 s->a[i]->draw_dist = 0x40;
                 s->a[i]->visible = 1;
-                s->a[i]->spawn_frame = (*(long *)&((Hero *)(hero_globals_base_r + 0xE1D))->moby->spawn_frame);
+                s->a[i]->spawn_frame = (*(long *)&g_hero.moby->spawn_frame);
                 s->a[i]->flags = m->flags;
                 qcopy_nc(&s->a[i]->pos, &m->pos);
                 qcopy_nc(&s->a[i]->rot, &m->rot);
@@ -888,7 +891,7 @@ void update_drawbridge(Moby *m) {
                 s->c[j] = CreateMoby_r(0x406);
                 s->c[j]->draw_dist = 0x40;
                 s->c[j]->visible = 1;
-                s->c[j]->spawn_frame = (*(long *)&((Hero *)(hero_globals_base_r + 0xE1D))->moby->spawn_frame);
+                s->c[j]->spawn_frame = (*(long *)&g_hero.moby->spawn_frame);
                 s->c[j]->flags = m->flags;
                 qcopy_nc(&s->c[j]->pos, &m->pos);
                 qcopy_nc(&s->c[j]->rot, &m->rot);
@@ -917,8 +920,7 @@ void update_drawbridge(Moby *m) {
             ApproachValue_r(&s->f6C, 1.0f, 1.0f / scale_ticks_r(20));
             blarg_fade_level = 1.0f - FastAbsF_r(s->f6C);
             if (old < 0.0f && 0.0f <= s->f6C) {
-                Hero_ResetToPosition_r(&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos,
-                                       &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.rot, 0x72, 1);
+                Hero_ResetToPosition_r(&g_hero.motion.pos, &g_hero.motion.rot, 0x72, 1);
                 CameraScript_r(blarg_scene_points_r + (s->i60 << 7) + 0x30, blarg_scene_points_r + (s->i60 << 7) + 0x70,
                                1, 0, 0);
             } else if (1.0f <= s->f6C) {
@@ -2224,8 +2226,7 @@ void update_alien_snapper_hit_response_and_targeting(Moby *moby) {
     if (data->f1AC != 0) {
         data->f1A0 = D_L06_00161F60_2FA618 + 6.0f;
     } else if (moby->state == 1) {
-        if (moby == ((Moby *)((Hero *)(hero_globals_base_r + 0xE1D))->unk240) ||
-            moby == ((Moby *)((Hero *)(hero_globals_base_r + 0xE1D))->coll_hit_moby)) {
+        if (moby == ((Moby *)g_hero.unk240) || moby == ((Moby *)g_hero.coll_hit_moby)) {
             data->f1A0 = 6.0f;
         } else {
             data->f1A0 = 0.0f;
@@ -2241,7 +2242,7 @@ void update_alien_snapper_hit_response_and_targeting(Moby *moby) {
         }
     }
     if (data->f160 == 0) {
-        data->f160 = *(int *)&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->moby;
+        data->f160 = *(int *)&g_hero.moby;
     }
 }
 /* Advances every moby in the arg's group from state 1 to state 2. */
@@ -2404,7 +2405,6 @@ extern float alien_queen_back_off_range SDATA(alien_queen_back_off_range);
 extern float alien_queen_attack_arc SDATA(alien_queen_attack_arc);
 extern unsigned char menu_item_enabled_19_q[] __asm__("D_0013D4AF");
 extern unsigned char race_gates_base_q[] __asm__("D_0013D605");
-extern unsigned char menu_item_enabled_115_q[] __asm__("D_0013D50F");
 
 typedef struct {
     float dir[4];
@@ -2741,7 +2741,7 @@ void alien_queen_update(unsigned char *moby) {
             ((Moby *)moby)->flags |= 1;
             if (data->unk_178 != 0)
                 return;
-            flag = menu_item_enabled_115_q + 1;
+            flag = gSkillPoints;
             if (flag[0xA] != 0)
                 return;
             flag[0xA] = 1;
@@ -3405,7 +3405,6 @@ extern void update_entity_matrix(char *, void *, void *, void *);
 extern unsigned char menu_item_enabled_19_r[] __asm__("D_0013D4AF");
 extern unsigned char D_0013D5CA[];
 
-extern char pad_globals_base_r[] __asm__("D_0013A5E0");
 extern float blarg_lift_scale SDATA(blarg_lift_scale);
 extern float blarg_lift_max_speed SDATA(blarg_lift_max_speed);
 extern float blarg_lift_accel SDATA(blarg_lift_accel);
@@ -3482,7 +3481,7 @@ void update_hero_triggered_moby_height_cycle(Moby *moby) {
                 } else {
                     ok = try_set_help_message(9, 0x1789) != 0;
                 }
-                if ((*(int *)(pad_globals_base_r + 0x2604) & 0x10) && g_hero.state.current != 100 && ok) {
+                if ((*(int *)pad0_pressed & 0x10) && g_hero.state.current != 100 && ok) {
                     g_hero.jump_lock_timer = scale_ticks(0x3C);
                     d->f90 = scale_ticks(0x78);
                     if (g_hero.vehicle_mode == 1) {

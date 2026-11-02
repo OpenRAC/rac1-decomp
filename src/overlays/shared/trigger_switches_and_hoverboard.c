@@ -18,6 +18,7 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 extern char g_hero[];
+extern char g_hero[];
 /* Hydrodisplacer faucet: pulse phase and strength. */
 struct FaucetPulseVars {
     u8 pad_00[0x18];
@@ -1792,7 +1793,6 @@ typedef struct {
     Preset *preset;
 } Row;
 
-extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern Row *rilgar_camera_descriptors_r2 __asm__("D_L05_0015F050") MACRO_ADDR;
 extern float D_L05_00174378;
 extern float D_L05_00162268_32B1F8 SDATA(D_L05_00162268);
@@ -1821,7 +1821,7 @@ void update_orbit_camera_position(Camera_32B1F8 *m) {
     V_32B1F8 probe;
     V_32B1F8 step;
     Orbit *d = m->orbit;
-    char *g = &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->gravity_dir;
+    char *g = &((struct Hero *)g_hero)->gravity_dir;
     Preset *cur;
     Focus *q;
     Track *tr;
@@ -1876,8 +1876,7 @@ void update_orbit_camera_position(Camera_32B1F8 *m) {
             d->bias.z = spring_32B1F8(d->bias.z, 0.0f, &d->bias_vel[2], 0.02f, 0.2f, 0.05f);
             e->height = spring_32B1F8(e->height, d->spring_height, &cur->vel, 0.005f, 0.2f, 0.0f);
         }
-        if (((Hero *)(hero_globals_base_r + 0xE1D))->air_frames.s != 0 &&
-            2.0f < ((Hero *)(hero_globals_base_r + 0xE1D))->ground_distance) {
+        if (((Hero *)g_hero)->air_frames.s != 0 && 2.0f < ((Hero *)g_hero)->ground_distance) {
             if (fabs_32B1F8(e->dist - d->spring_dist2) < 0.015f)
                 e->dist = d->spring_dist2;
             else if (e->dist < d->spring_dist2)
@@ -1951,8 +1950,7 @@ void update_orbit_camera_position(Camera_32B1F8 *m) {
     vec_cross_32B1F8(&m->up, &rel, &down);
     vec_scale_32B1F8(&m->up, &m->up, 1.0f);
     vec_cross_32B1F8(&m->side, &m->up, &rel);
-    if (fl == 0 || fabs_32B1F8(dd) < 0.5f ||
-        (v = (float *)(hero_globals_base_r + 0xE1D), ((Hero *)v)->trick_input != 0)) {
+    if (fl == 0 || fabs_32B1F8(dd) < 0.5f || (v = (float *)g_hero, ((Hero *)v)->trick_input != 0)) {
         tr->blend = spring_32B1F8(tr->blend, 0.0f, tr->state, tr->k34, tr->k38, tr->k3C);
     } else {
         float t;

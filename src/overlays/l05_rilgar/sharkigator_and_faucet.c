@@ -22,6 +22,7 @@
 #include "overlays/shared/ripple_patches.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+extern Hero g_hero;
 extern struct Hero g_hero;
 extern int hero_control_mode;
 
@@ -1672,7 +1673,7 @@ void handle_extermibot_hits_and_update_targeting(Moby *m) {
         v0[2] = v0[2] + 0.5f;
         if (r->who != 0) {
             if (r->who->oclass == MOBY_CLASS_WRENCH) {
-                qcopy(v10, &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.body_center);
+                qcopy(v10, &g_hero.motion.body_center);
             } else if ((*(struct Moby **)&r->who->pclass != 0 &&
                         *(short *)((u8 *)((struct Moby *)r->who->pclass) + 0x46) == 5) ||
                        r->who->oclass == MOBY_CLASS_DOOM_BOT) {
@@ -1777,14 +1778,14 @@ void handle_extermibot_hits_and_update_targeting(Moby *m) {
         }
     }
     if (d->target == 0) {
-        d->target = *(Moby **)&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->moby;
+        d->target = *(Moby **)&g_hero.moby;
     }
     d->f2D8 = FastAddRots_r2(d->f2D8, g_frame_time_r * 9.424778f);
     m->glow_color =
         FastTweenColor_r2(D_L05_00161B34_3047E8, D_L05_00161B38_3047E8, (FastSin_r2(d->f2D8) + 1.0f) * 0.5f);
     k = m->state;
     if (k < 10) {
-        if (k >= 4 && d->target == *(Moby **)&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->moby) {
+        if (k >= 4 && d->target == *(Moby **)&g_hero.moby) {
             float yaw, pitch;
             FastVecSub_r(v0, ((float *)&d->target->pos), ((float *)&m->pos));
             yaw = FastSubRots_r2(fast_atan2_r2(v0[0], v0[1]), m->rot.z);

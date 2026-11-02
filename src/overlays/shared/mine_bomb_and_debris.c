@@ -20,6 +20,7 @@
 #include "structs/level_records.h"
 #include "enums/hero_state.h"
 extern Hero g_hero;
+extern Hero g_hero;
 extern int pad_held;
 extern char voice_pool[];
 
@@ -2214,7 +2215,6 @@ void nanotech_crate_fragment_update(char *moby) {
 extern unsigned char *GetFlaggedPvarWord(unsigned char *);
 extern int coll_line(void *, void *, int, int, int);
 extern void append_unique_moby_index(int, short *, short);
-extern unsigned char hero_globals_base_u[] __asm__("D_0013E633") NOT_SDA;
 extern char collision_hit_point[];
 
 // spawns an effect moby (Gold Devastator Missile) at pos, tied to an owner and a target, and aims its starting state
@@ -2271,18 +2271,18 @@ unsigned char *spawn_devastator_missile(unsigned char *a, Vec4 *pos, unsigned ch
             v->height_offset = f14;
             v->aim_pos.z += f14;
         }
-        x = FastVecLength(&((struct Hero *)((char *)&hero_globals_base_u + 0xE1D))->motion.platform_carry);
+        x = FastVecLength(&g_hero.motion.platform_carry);
         n = scale_ticks(g_frame_time * 0.1f < x ? 0x3C : 0xF);
         v->fuse_max = n;
         v->fuse = n;
         if (a != 0 && a[0x20] != 0xFE && a[0x20] != 0xFD) {
             tmp.q = ((Vec4 *)(a + 0x10))->q;
         } else {
-            qcopy(&tmp, &((struct Hero *)((char *)&hero_globals_base_u + 0xE1D))->motion.pos);
+            qcopy(&tmp, &g_hero.motion.pos);
             tmp.f[2] += 0.6f;
         }
         tmp.f[2] = pos->f[2];
-        if (coll_line(&tmp, pos, 0, *(int *)&((struct Hero *)((char *)&hero_globals_base_u + 0xE1D))->moby, 0)) {
+        if (coll_line(&tmp, pos, 0, *(int *)&g_hero.moby, 0)) {
             ((Moby *)m)->command = 1;
             qcopy(m + 0x10, collision_hit_point);
         }

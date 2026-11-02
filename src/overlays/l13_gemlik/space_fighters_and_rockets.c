@@ -23,6 +23,8 @@
 #include "structs/level_records.h"
 #include "enums/moby_class.h"
 #include "structs/voice.h"
+extern Hero g_hero;
+extern char voice_pool[];
 extern struct Hero g_hero;
 extern char level_moby_killed[];
 extern char voice_pool[];
@@ -381,7 +383,6 @@ extern void spawn_explosion_r(void *, void *, void *, float, float, int, int, in
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 extern float frame_scale_r __asm__("D_0015EE60") MACRO_ADDR;
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
-extern char hero_globals_base_r[] __asm__("D_0013E633");
 
 extern char gemlik_coll_hit_result_r[] __asm__("D_L13_001741C0");
 
@@ -421,7 +422,7 @@ void update_level_13_mine_83_projectile(char *moby_raw) {
         }
     }
 
-    hero = (Hero *)(hero_globals_base_r + 0xE1D);
+    hero = &g_hero;
     if (hero->ship_moby != 0) {
         distance = FastVecDist_r(&moby->pos, &hero->ship_moby->pos);
         if (distance < 60.0f && moby->visible != 0) {
@@ -970,14 +971,12 @@ void update_hovering_rocket_attacker_common(unsigned char *moby) {
         if (moby_data->search_range < vec_distance_xy_r(&m->pos, &moby_data->target) ||
             8.0f < FastAbsF_r(m->pos.z - moby_data->target.f[2])) {
             moby_data->unkB4 = 2;
-        } else if (m->state != 5 &&
-                   coll_line_r(&m->pos, &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.body_center, 2,
-                               m, 0) != 0) {
+        } else if (m->state != 5 && coll_line_r(&m->pos, &g_hero.motion.body_center, 2, m, 0) != 0) {
             moby_data->unkB4 = 2;
         }
     }
     if (moby_data->unkB0 == 0) {
-        moby_data->unkB0 = *(int *)&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->moby;
+        moby_data->unkB0 = *(int *)&g_hero.moby;
     }
 }
 extern char *MobyGetHitMessage(void *, int, int);
@@ -3477,9 +3476,7 @@ void process_moby_attachment_damage(Moby *m, Data_2EAE80 *d) {
                     m->command++;
                     rf = 1;
                     {
-                        Vars *v =
-                            (Vars *)(*(Moby **)&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->ship_moby)
-                                ->pvars;
+                        Vars *v = (Vars *)(*(Moby **)&g_hero.ship_moby)->pvars;
 
                         v->f88 = 0;
                         v->fEC = 0;
@@ -3498,17 +3495,15 @@ void process_moby_attachment_damage(Moby *m, Data_2EAE80 *d) {
                     }
                     m->command++;
                     if (d->i11C != -1) {
-                        if (((Voice *)(hero_globals_base_r + 0x1D + d->i11C * 0x70))->f88 == m &&
-                            ((Voice *)(hero_globals_base_r + 0x1D + d->i11C * 0x70))->b74 != 0) {
+                        if (((Voice *)(voice_pool + d->i11C * 0x70))->f88 == m &&
+                            ((Voice *)(voice_pool + d->i11C * 0x70))->b74 != 0) {
                             Sound_StopSlot_r(d->i11C);
                         }
                         d->i11C = -1;
                     }
                     rf = 1;
                     {
-                        Vars *v =
-                            (Vars *)(*(Moby **)&((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->ship_moby)
-                                ->pvars;
+                        Vars *v = (Vars *)(*(Moby **)&g_hero.ship_moby)->pvars;
 
                         v->f88 = 0;
                         v->fEC = 0;
@@ -3593,8 +3588,8 @@ void process_moby_attachment_damage(Moby *m, Data_2EAE80 *d) {
                 }
                 m->command++;
                 if (d->i11C != -1) {
-                    if (((Voice *)(hero_globals_base_r + 0x1D + d->i11C * 0x70))->f88 == m &&
-                        ((Voice *)(hero_globals_base_r + 0x1D + d->i11C * 0x70))->b74 != 0) {
+                    if (((Voice *)(voice_pool + d->i11C * 0x70))->f88 == m &&
+                        ((Voice *)(voice_pool + d->i11C * 0x70))->b74 != 0) {
                         Sound_StopSlot_r(d->i11C);
                     }
                     d->i11C = -1;

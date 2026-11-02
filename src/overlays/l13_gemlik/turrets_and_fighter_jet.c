@@ -27,11 +27,8 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
-extern char cd_read_state[];
-extern char gHeroPos[];
-extern char g_hero_rot[];
-extern char pad0_pressed[];
-extern char saved_mission_state[];
+extern Hero g_hero;
+
 extern char g_controller_state[];
 extern Hero g_hero;
 extern char g_screen_extent[];
@@ -550,7 +547,6 @@ extern void spawn_explosion_r(void *, void *, void *, float, float, int, int, in
                               float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 extern void func_L00_00258DB0(float *, float, float);
-extern unsigned char hero_globals_base_r[] __asm__("D_0013E633");
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 
 /* Update for moby Blarg Turret (blarg_turret) on level 13: turns toward its target and fires its gun moby. */
@@ -578,9 +574,7 @@ void blarg_turret_update(Moby *m) {
         case 1:
             r = FastDiffRots_r(fast_atan2_r(t->pos.x - m->pos.x, t->pos.y - m->pos.y), data->f54);
             if (r < 1.5707964f && vec_distance_xy_r(&m->pos, &t->pos) < 20.0f &&
-                (data->volume == -1 || is_point_inside_clip_volume_r(
-                                           &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.body_center,
-                                           data->volume) != 0)) {
+                (data->volume == -1 || is_point_inside_clip_volume_r(&g_hero.motion.body_center, data->volume) != 0)) {
                 data->f68 = 8.0f;
                 if (m->prev_seq != 1) {
                     int a = rand_range_r(0, 3);
@@ -603,9 +597,7 @@ void blarg_turret_update(Moby *m) {
         case 3:
             r = FastDiffRots_r(fast_atan2_r(t->pos.x - m->pos.x, t->pos.y - m->pos.y), data->f54);
             if (r >= 1.5707964f || vec_distance_xy_r(&m->pos, &t->pos) > 22.0f ||
-                (data->volume != -1 && is_point_inside_clip_volume_r(
-                                           &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.body_center,
-                                           data->volume) == 0)) {
+                (data->volume != -1 && is_point_inside_clip_volume_r(&g_hero.motion.body_center, data->volume) == 0)) {
                 if (m->prev_seq != 0) {
                     MobyBlendAnimation_r(m, 0, 0, rand_range_r(7, 13));
                 }

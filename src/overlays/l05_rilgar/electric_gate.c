@@ -20,6 +20,7 @@
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
 #include "structs/voice.h"
+extern Hero g_hero;
 extern struct Hero g_hero;
 extern char pad0_pressed[];
 extern char race_gates[];
@@ -2337,7 +2338,6 @@ void shady_salesman_update(char *m) {
     EaseManipulatorOffsets(m, npc_data->body, 0, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
     EaseManipulatorOffsets(m, npc_data->head, 1, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
 }
-extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern int D_L05_0016139C MACRO_ADDR;
 extern float D_L05_001613A0[4] MACRO_ADDR;
 extern int rilgar_frame_count_r __asm__("D_L05_0015F6B0") MACRO_ADDR;
@@ -2360,7 +2360,7 @@ void update_hero_clip_volume_outputs(char *m) {
             *(int *)&((Moby *)m)->collision = 0;
             break;
         case 1:
-            t = &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos;
+            t = &g_hero.motion.pos;
             if (find_319F78(t, *v) != 0) {
                 hero_inside_clip_volume = state;
                 qcopy(hero_clip_volume_bounds, t);

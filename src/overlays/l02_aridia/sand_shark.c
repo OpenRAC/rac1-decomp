@@ -23,6 +23,7 @@
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
 #include "structs/voice.h"
+extern Hero g_hero;
 extern char bolt_source_stats[];
 extern char gHeroPos[];
 extern Hero g_hero;
@@ -1163,7 +1164,6 @@ extern float sand_shark_death_knockback_gravity_gp SDATA(sand_shark_death_knockb
 extern float sand_shark_death_knockback_horizontal_speed_approach_rate_gp
     SDATA(sand_shark_death_knockback_horizontal_speed_approach_rate_gp);
 extern int *aridia_paths_r[] __asm__("D_L02_001B0DB0");
-extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern float g_frame_time_sq MACRO_ADDR;
 extern int FastDecTimer(void *);
 extern float vec_distance_xy(void *, void *);
@@ -1211,8 +1211,7 @@ void handle_sand_shark_damage_and_targeting(unsigned char *moby) {
         *(int *)&((Moby *)moby)->collision = 0;
         ((Moby *)moby)->pos.z -= 10.0f;
     }
-    if (d->i38 != 0 || (!FastDecTimer(&d->t25C) &&
-                        vec_distance_xy(moby + 0x10, &((Hero *)(hero_globals_base_r + 0xE1D))->motion.pos) < 10.0f)) {
+    if (d->i38 != 0 || (!FastDecTimer(&d->t25C) && vec_distance_xy(moby + 0x10, &g_hero.motion.pos) < 10.0f)) {
         d->t25E = truncate_float_to_s32_r(multiply_global_factor(random_float_between(180.0f, 240.0f)));
     }
     d->i38 = 0;
@@ -1273,7 +1272,7 @@ void handle_sand_shark_damage_and_targeting(unsigned char *moby) {
         d->i214 = 2;
     }
     if (d->i210 == 0) {
-        Hero *hero = (Hero *)(hero_globals_base_r + 0xE1D);
+        Hero *hero = &g_hero;
         d->i210 = (int)((void *)hero->moby);
         qcopy(d->tgt, hero->motion.pos.f);
     }

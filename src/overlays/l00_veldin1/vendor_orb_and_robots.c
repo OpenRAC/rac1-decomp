@@ -12,6 +12,7 @@
 #include "asm_functions/shared_levels.h"
 #include "game/system/space.h"
 #include "overlays/shared/moby_ground_collision.h"
+extern char usage_stats[];
 extern char gSpecialItems[];
 extern Hero g_hero;
 extern char help_records[];
@@ -156,7 +157,7 @@ void update_level_help_controller(unsigned char *moby) {
     }
     {
         u16 *trig3 = (u16 *)help_records;
-        if (trig3[0x40 / 2] == 0 && *(unsigned short *)(help_stats_base_q + 0x22D) == 0) {
+        if (trig3[0x40 / 2] == 0 && *(unsigned short *)usage_stats == 0) {
             if (is_point_inside_clip_volume((void *)&g_hero.motion.pos, vars[1]))
                 Help_Request(4, 8);
         }

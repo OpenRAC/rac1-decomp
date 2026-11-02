@@ -27,6 +27,11 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+extern char gSkillPoints[];
+extern Hero g_hero;
+extern char help_records[];
+extern unsigned char saved_mission_state[];
+extern char voice_pool[];
 extern char gSpecialItems[];
 extern struct Hero g_hero;
 
@@ -430,11 +435,8 @@ void HovenShotUpdate(struct Moby *moby) {
             break;
     }
 }
-extern unsigned char menu_item_enabled_115_e[] __asm__("D_0013D50F");
 extern unsigned char gHaveHeliPack_e[] __asm__("D_0013D5CA") NOT_SDA;
 extern int pad_globals_base_e[] __asm__("D_0013A5E0") NOT_SDA;
-extern char hero_globals_base_e[] __asm__("D_0013E633");
-extern char help_stats_base_e[] __asm__("D_0014171B");
 extern int gameplay_event_frame_count_e __asm__("D_0015EFA4") MACRO_ADDR;
 extern int count_active_moby_group_members(int, int);
 extern void PlayBankSound(int, int, int);
@@ -447,7 +449,7 @@ extern void Help_Request(int, int);
 void update_hoven_help_and_dialogue(char *m) {
     int *d = ((int *)((Moby *)m)->pvars);
     if (count_active_moby_group_members(d[3], -1) == 0) {
-        unsigned char *s = menu_item_enabled_115_e + 1;
+        unsigned char *s = gSkillPoints;
         if (s[0x14] == 0) {
             s[0x14] = 1;
             PlayBankSound(1, 0, 0);
@@ -455,9 +457,9 @@ void update_hoven_help_and_dialogue(char *m) {
         }
     }
     {
-        char *h = help_stats_base_e + 0x34D;
+        char *h = help_records;
         if (*(unsigned short *)(h + 0x368) == 0) {
-            Hero *q = (Hero *)(hero_globals_base_e + 0xE1D);
+            Hero *q = &g_hero;
             if (q->state.current == HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT) {
                 *(unsigned short *)(h + 0x368) = *(unsigned short *)(h + 0x368) + 1;
             }
@@ -471,11 +473,11 @@ void update_hoven_help_and_dialogue(char *m) {
         }
     }
     {
-        char *h = help_stats_base_e + 0x34D;
+        char *h = help_records;
         if (*(unsigned short *)(h + 0x370) == 0 ||
             (*(unsigned short *)(h + 0x370) < 2 &&
              scale_ticks(gameplay_event_frame_count_e) - *(unsigned short *)(h + 0x372) * 600 > scale_ticks(72000))) {
-            Hero *q = (Hero *)(hero_globals_base_e + 0xE1D);
+            Hero *q = &g_hero;
             if (q->state.current == HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT) {
                 d[1]++;
                 if ((pad_globals_base_e[0x2600 / 4] & 3) && 0.3f < q->stick_magnitude) {
@@ -484,7 +486,7 @@ void update_hoven_help_and_dialogue(char *m) {
                     d[2] = 0;
                 }
                 if (scale_ticks(0x28) < d[2]) {
-                    char *g = help_stats_base_e + 0x34D;
+                    char *g = help_records;
                     d[1] = 0;
                     if (*(unsigned short *)(g + 0x370) <= 0xFFFE) {
                         *(unsigned short *)(g + 0x370) = *(unsigned short *)(g + 0x370) + 1;
@@ -498,7 +500,7 @@ void update_hoven_help_and_dialogue(char *m) {
                 {
                     int a = scale_ticks(0x1C20);
                     int b = scale_ticks(0x708);
-                    char *k = help_stats_base_e + 0x34D;
+                    char *k = help_records;
                     if (*(unsigned short *)(k + 0x370) * a + b < d[1]) {
                         Help_Request(0x2EE4, 0x6E);
                     }
@@ -507,7 +509,7 @@ void update_hoven_help_and_dialogue(char *m) {
         }
     }
     if (gHaveHeliPack_e[2] != 0) {
-        char *k = help_stats_base_e + 0x34D;
+        char *k = help_records;
         if (*(unsigned short *)(k + 0x1F0) == 0) {
             Help_Request(0x2EE0, 0x3E);
         }
@@ -960,7 +962,6 @@ typedef struct {
     float f2C;
 } Hit_304920;
 
-extern unsigned char help_stats_base_r[] __asm__("D_0014171B");
 extern int D_0015EED0[] MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
@@ -1026,12 +1027,12 @@ extern void draw_hoven_turret_destruction_fade();
 void hoven_turret_update(Moby *moby) {
     Data_304920 *d = *(Data_304920 **)&moby->pvars;
 
-    ((Snd *)(hero_globals_base_e + 0x1D))->f6C = moby;
+    ((Snd *)voice_pool)->f6C = moby;
     switch (moby->state) {
         case 0:
             hoven_turret_manned = 0;
             hoven_turret_destroyed = 0;
-            if ((help_stats_base_r + 0xAA35)[moby->mission + (g_current_level_index_e << 4)] == 0xFF) {
+            if ((saved_mission_state)[moby->mission + (g_current_level_index_e << 4)] == 0xFF) {
                 moby->state = 6;
             } else {
                 AttachManipulator(moby, 0, d);
@@ -1045,7 +1046,7 @@ void hoven_turret_update(Moby *moby) {
                 d->fA0 = moby->pos.z;
                 d->f98 = -1;
                 moby->rot.z = 3.1415927f;
-                ((Snd *)(hero_globals_base_e + 0x1D))->f6C = moby;
+                ((Snd *)voice_pool)->f6C = moby;
             }
             break;
         case 3: {
@@ -1054,18 +1055,13 @@ void hoven_turret_update(Moby *moby) {
 
                 Moby_GetJointWorldPos(moby, 3, out);
             }
-            if (vec_distance_xy(((float *)&moby->pos), ((Hero *)(hero_globals_base_e + 0xE1D))->motion.pos.f) < 7.0f ||
-                ((Hero *)(hero_globals_base_e + 0xE1D))->ground_moby == moby) {
+            if (vec_distance_xy(((float *)&moby->pos), g_hero.motion.pos.f) < 7.0f || g_hero.ground_moby == moby) {
                 moby->pos.z = moby->pos.z + ((d->fA0 - 1.2f) - moby->pos.z) * 0.11f;
-                d->fA4 = FastAddRots(
-                             d->fA4,
-                             FastAddRots(
-                                 FastSubRots(
-                                     fast_atan2(((Hero *)(hero_globals_base_e + 0xE1D))->motion.pos.f[0] - moby->pos.x,
-                                                ((Hero *)(hero_globals_base_e + 0xE1D))->motion.pos.f[1] - moby->pos.y),
-                                     moby->rot.z),
-                                 1.5707964f) *
-                                 0.01f) *
+                d->fA4 = FastAddRots(d->fA4, FastAddRots(FastSubRots(fast_atan2(g_hero.motion.pos.f[0] - moby->pos.x,
+                                                                                g_hero.motion.pos.f[1] - moby->pos.y),
+                                                                     moby->rot.z),
+                                                         1.5707964f) *
+                                                 0.01f) *
                          0.9f;
                 moby->rot.z = FastAddRots(moby->rot.z, d->fA4);
             } else {
@@ -1074,13 +1070,12 @@ void hoven_turret_update(Moby *moby) {
                 } else {
                     moby->pos.z = d->fA0;
                 }
-                if (((Hero *)(hero_globals_base_e + 0xE1D))->ground_moby != moby && d->f98 != -1) {
+                if (g_hero.ground_moby != moby && d->f98 != -1) {
                     Moby_PlaySound(2, 0, (int)moby);
                 }
             }
-            if (vec_distance_xy(((float *)&moby->pos), ((float *)&((Hero *)(hero_globals_base_e + 0xE1D))->moby->pos)) <
-                1.3f) {
-                if (scale_ticks(0xF) < ((Hero *)(hero_globals_base_e + 0xE1D))->grounded_frames) {
+            if (vec_distance_xy(((float *)&moby->pos), ((float *)&g_hero.moby->pos)) < 1.3f) {
+                if (scale_ticks(0xF) < g_hero.grounded_frames) {
                     CameraScript(((float *)&moby->pos), ((float *)&moby->rot), 1, 0, 0);
                     if (moby->prev_seq != 5) {
                         MobySetAnimation(moby, 5, 0);
@@ -1097,9 +1092,9 @@ void hoven_turret_update(Moby *moby) {
         }
         case 4:
             hoven_turret_manned = 1;
-            ((Hero *)(hero_globals_base_e + 0xE1D))->unk20A5 = 1;
-            ((Hero *)(hero_globals_base_e + 0xE1D))->collision_off_frames = scale_ticks(0x78);
-            ((Hero *)(hero_globals_base_e + 0xE1D))->invulnerable_frames = scale_ticks(0x78);
+            g_hero.unk20A5 = 1;
+            g_hero.collision_off_frames = scale_ticks(0x78);
+            g_hero.invulnerable_frames = scale_ticks(0x78);
             if (hoven_cinematic_mode != 2 && planetbuster_death_cam_active == 0) {
                 AddDrawCallback(draw_hoven_turret_hud, moby);
             }
@@ -1113,11 +1108,11 @@ void hoven_turret_update(Moby *moby) {
                 moby->hit_slot = 0xFF;
             }
             if (planetbuster_defeated == 0) {
-                if (((Hero *)(hero_globals_base_e + 0xE1D))->ship_flags & 1) {
+                if (g_hero.ship_flags & 1) {
                     if (d->f8C > 100.0f) {
                         hoven_turret_attempts--;
                     }
-                    ((Hero *)(hero_globals_base_e + 0xE1D))->ship_flags = 0;
+                    g_hero.ship_flags = 0;
                     Hero_OnKilled();
                 }
                 if (d->f8C <= 0.0f) {
@@ -1161,8 +1156,8 @@ void hoven_turret_update(Moby *moby) {
                 float tgt;
                 float tgt2;
 
-                joy[0] = ((Hero *)(hero_globals_base_e + 0xE1D))->stick_x;
-                y = ((Hero *)(hero_globals_base_e + 0xE1D))->stick_y;
+                joy[0] = g_hero.stick_x;
+                y = g_hero.stick_y;
                 if (vendor_stock[3] == 0) {
                     y = -y;
                 }
@@ -1720,11 +1715,10 @@ void update_planetbuster_maximus_guns(char *moby) {
             v1[2] += 1.5f;
             md->f60 = fast_atan2(vec_distance_xy(v1, v0), v0[2] - v1[2]);
             EaseManipulatorOffsets(m, (char *)md, 0, g_frame_scale_sq_f * 0.008f, g_frame_scale_sq_f * 0.3f);
-            yaw = FastSubRots(
-                FastAddRots(fast_atan2(((Hero *)(hero_globals_base_e + 0xE1D))->motion.pos.f[0] - ((Moby *)m)->pos.x,
-                                       ((Hero *)(hero_globals_base_e + 0xE1D))->motion.pos.f[1] - ((Moby *)m)->pos.y),
-                            -1.5707964f),
-                ((Moby *)moby)->rot.z);
+            yaw = FastSubRots(FastAddRots(fast_atan2(g_hero.motion.pos.f[0] - ((Moby *)m)->pos.x,
+                                                     g_hero.motion.pos.f[1] - ((Moby *)m)->pos.y),
+                                          -1.5707964f),
+                              ((Moby *)moby)->rot.z);
             if (md->h90 == 0) {
                 if (step_angle_toward_target((float *)(ent + 0x18), yaw, 0,
                                              g_frame_time * 0.5235988f + g_frame_time * 0.17453292f * (float)i) <
@@ -1744,7 +1738,7 @@ void update_planetbuster_maximus_guns(char *moby) {
                 }
             }
             flag = 0;
-            hp = (float *)(hero_globals_base_e + 0xE1D + 0x80);
+            hp = (float *)((char *)&g_hero + 0x80);
             dist = vec_distance_xy(moby + 0x10, hp);
             dz = FastAbsF_r(hp[2] - ((Moby *)moby)->pos.z);
             if (scale_ticks(0x4B0) < planetbuster_aggro_timer) {
@@ -1780,7 +1774,7 @@ void update_planetbuster_maximus_guns(char *moby) {
                                 qcopy(v2, hoven_camera_pos_r);
                                 v2[2] += random_float_between(-1.5f, 0.3f);
                             } else {
-                                qcopy(v2, &((Hero *)(hero_globals_base_e + 0xE1D))->motion.body_center);
+                                qcopy(v2, &g_hero.motion.body_center);
                                 v2[2] += randf_sym(0.0f, 0.5f);
                             }
                             n = D_L12_00161FA0_s - 3;
@@ -2191,7 +2185,7 @@ void planetbuster_maximus_part_update(char *moby) {
                 qcopy(moby + 0x10, path + 1);
                 d->base_z = ((Moby *)moby)->pos.z;
                 ((Moby *)moby)->rot.z = fast_atan2(path[2].v[0] - path[1].v[0], path[2].v[1] - path[1].v[1]);
-                if (((struct Hero *)((char *)&hero_globals_base_e + 0xE1D))->motion.pos.f[2] < 52.0f) {
+                if (g_hero.motion.pos.f[2] < 52.0f) {
                     ((Moby *)moby)->pos.z = ((Moby *)moby)->pos.z + 3.0f;
                 }
                 for (i = 0; i < 5; i++) {
@@ -2229,7 +2223,7 @@ void planetbuster_maximus_part_update(char *moby) {
                         ((M34_7DB0 *)(base + (s << 8)))->flags &= ~0x41;
                 }
             }
-            h = &((struct Hero *)((char *)&hero_globals_base_e + 0xE1D))->motion.pos;
+            h = &g_hero.motion.pos;
             r = is_point_inside_clip_volume(h, d->clip_hero_b);
             if (*(float *)(h + 8) > 52.0f && r == 0) {
                 ApproachValue((float *)(moby + 0x18), d->base_z, g_frame_time + g_frame_time);
@@ -2237,8 +2231,7 @@ void planetbuster_maximus_part_update(char *moby) {
                 float add = 3.0f;
                 if (r)
                     add = 10.0f;
-                if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base_e + 0xE1D))->motion.pos,
-                                                d->clip_hero_a)) {
+                if (is_point_inside_clip_volume(&g_hero.motion.pos, d->clip_hero_a)) {
                     d->timer = scale_ticks(0x5A);
                 }
                 if (!fast_dec_timer(&d->timer))
@@ -2254,9 +2247,7 @@ void planetbuster_maximus_part_update(char *moby) {
                 planetbuster_maximus_rotation_oscillation_component_mix_phase_rate_degrees * 0.017453292f *
                     g_frame_time);
             apply_linked_moby_relative_transforms(moby, ((char *)d), 0x11);
-            if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base_e + 0xE1D))->motion.pos,
-                                            d->clip_manned) ||
-                hoven_turret_manned_m) {
+            if (is_point_inside_clip_volume(&g_hero.motion.pos, d->clip_manned) || hoven_turret_manned_m) {
                 int i;
                 planetbuster_engaged = 1;
                 for (i = 0; i < 5; i++) {
@@ -2405,7 +2396,7 @@ void planetbuster_maximus_part_update(char *moby) {
     } else {
         int s = d->voice;
         if (s != -1) {
-            Voice_7DB0 *e = (Voice_7DB0 *)(hero_globals_base_e + 0x1D + s * 0x70);
+            Voice_7DB0 *e = (Voice_7DB0 *)(voice_pool + s * 0x70);
             if (e->owner == moby && e->active != 0)
                 Sound_StopSlot(s);
         }

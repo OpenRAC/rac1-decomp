@@ -20,6 +20,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+extern char g_hero[];
 extern char gHeroPos[];
 extern char g_hero[];
 extern char pad0_pressed[];
@@ -862,7 +863,6 @@ typedef struct {
 } KillFlags;
 
 extern int cinematic_mode_r __asm__("D_L00_0015F6A8") MACRO_ADDR;
-extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern CollisionHit coll_hit_result_r __asm__("D_L00_00173F40");
 extern Trail D_L00_0016EB40[];
 extern float D_L00_001D76D0[][4];
@@ -1015,7 +1015,7 @@ void bolt_update(Moby *m) {
                     break;
             }
             if (m->pos.z < d->start_z - 2.0f) {
-                Hero *h = (Hero *)(hero_globals_base_r + 0xE1D);
+                Hero *h = (Hero *)g_hero;
                 if (m->pos.z < h->motion.pos.f[2] - 2.0f) {
                     begin_bolt_attraction_r(m, h->moby, random_float_between_r(-15.0f, 15.0f) * 0.017453292f, 0.0f);
                     break;
@@ -1034,10 +1034,9 @@ void bolt_update(Moby *m) {
             }
             FastVecSub_r(u.s.a, ((float *)&m->pos), coll_hit_result_r.point.f);
             vec_reflect_r(d->vel, d->vel, u.s.a);
-            dist = vec_distance_xy_r(((float *)&m->pos),
-                                     &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos);
+            dist = vec_distance_xy_r(((float *)&m->pos), &((struct Hero *)g_hero)->motion.pos);
             {
-                Hero *h = (Hero *)(hero_globals_base_r + 0xE1D);
+                Hero *h = (Hero *)g_hero;
                 if (dist < h->reach_distance && FastAbsF_r(m->pos.z - h->motion.pos.f[2]) < h->reach_height) {
                     if (h->health.hp != 0) {
                         vec_scale_to_length_r(d->vel, d->vel, random_float_between_r(3.0f, 7.0f) * g_frame_time_r);
@@ -1084,10 +1083,9 @@ void bolt_update(Moby *m) {
         }
         case 3: {
             float dist;
-            dist = vec_distance_xy_r(((float *)&m->pos),
-                                     &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos);
+            dist = vec_distance_xy_r(((float *)&m->pos), &((struct Hero *)g_hero)->motion.pos);
             {
-                Hero *h = (Hero *)(hero_globals_base_r + 0xE1D);
+                Hero *h = (Hero *)g_hero;
                 if (dist < h->reach_distance && FastAbsF_r(m->pos.z - h->motion.pos.f[2]) < h->reach_height) {
                     begin_bolt_attraction_r(m, h->moby, 0.0f, 0.0f);
                     break;
@@ -1131,16 +1129,14 @@ void bolt_update(Moby *m) {
         case 4: {
             int flag = 0;
             if (d->target->oclass == MOBY_CLASS_RATCHET) {
-                FastVecSub_r(u.s.a, ((float *)&m->pos),
-                             &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->ground_point);
-                transform_vector(u.s.a, u.s.a, ((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->inv_rot_matrix);
+                FastVecSub_r(u.s.a, ((float *)&m->pos), &((struct Hero *)g_hero)->ground_point);
+                transform_vector(u.s.a, u.s.a, ((struct Hero *)g_hero)->inv_rot_matrix);
                 if (u.s.a[2] < 0.0f) {
                     flag = 1;
                 }
             }
             if (flag) {
-                vec_scale_to_length_r(u.s.a, &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->rot_matrix[8],
-                                      g_frame_time_r * 7.0f);
+                vec_scale_to_length_r(u.s.a, &((struct Hero *)g_hero)->rot_matrix[8], g_frame_time_r * 7.0f);
                 FastVecSub_r(u.s.b, u.s.a, d->vel);
                 ClampVectorLength(u.s.b, g_frame_time_sq_r * 50.0f);
                 FastVecAdd_r(d->vel, d->vel, u.s.b);
@@ -1152,7 +1148,7 @@ void bolt_update(Moby *m) {
                 }
                 ApproachValue_r(&d->f64, g_frame_time_r * 48.0f, g_frame_time_sq_r * 16.0f);
                 {
-                    Hero *h = (Hero *)(hero_globals_base_r + 0xE1D);
+                    Hero *h = (Hero *)g_hero;
                     if (g_frame_time_r * 8.0f < h->motion.speed_xy) {
                         vec_scale_to_length_r(u.s.b, h->motion.displacement.f,
                                               (h->motion.speed_xy - g_frame_time_r * 8.0f) * 0.5f);
@@ -1163,18 +1159,16 @@ void bolt_update(Moby *m) {
             quaternion_to_rotation_basis_r(d->quat, u.t.m);
             multiply_matrix3x3_r(((float *)&m->rot_row0), u.t.m, ((float *)&m->rot_row0));
             FastVecAdd_r(((float *)&m->pos), ((float *)&m->pos), d->vel);
-            FastVecSub_r(u.t.e, &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.body_center,
-                         ((float *)&m->pos));
+            FastVecSub_r(u.t.e, &((struct Hero *)g_hero)->motion.body_center, ((float *)&m->pos));
             if (d->f64 < FastVecLength_r(u.t.e)) {
                 if (d->f4C != 0.0f || d->f48 != 0.0f) {
-                    matrix_mul_vec3_r(u.t.e, u.t.e,
-                                      ((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->inv_rot_matrix);
+                    matrix_mul_vec3_r(u.t.e, u.t.e, ((struct Hero *)g_hero)->inv_rot_matrix);
                     clear_u64_value_r(u.t.g);
                     u.t.g[1] = d->f48;
                     u.t.g[2] = d->f4C;
                     euler_rotation_basis_r(md, u.t.g);
                     matrix_mul_vec3_r(u.t.e, u.t.e, md);
-                    matrix_mul_vec3_r(u.t.e, u.t.e, hero_globals_base_r + 0xE1D);
+                    matrix_mul_vec3_r(u.t.e, u.t.e, g_hero);
                 }
                 vec_scale_to_length_r(u.t.e, u.t.e, d->f64);
                 FastVecAdd_r(((float *)&m->pos), ((float *)&m->pos), u.t.e);

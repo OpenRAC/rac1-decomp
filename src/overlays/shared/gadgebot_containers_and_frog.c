@@ -23,6 +23,8 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "structs/voice.h"
+extern char level_moby_killed[];
+extern unsigned char saved_mission_state[];
 extern Hero g_hero;
 extern char voice_pool[];
 
@@ -2982,8 +2984,6 @@ void update_moby_rotation_group(Moby *m) {
             break;
     }
 }
-extern char help_stats_base_r[] __asm__("D_0014171B");
-extern char help_stats_base_r2[] __asm__("D_0014171B");
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 extern int blarg_session_moby_bit_flags[];
 extern void initialize_energy_sphere_holder_vars(char *);
@@ -3002,12 +3002,11 @@ void energy_sphere_holder_update(Moby *m) {
     unsigned char *q;
     switch (m->state) {
         case 0:
-            if ((*(int *)(g_current_level_index_r * 256 + ((short)m->save_id >> 5) * 4 +
-                          (help_stats_base_r + 0xAB75)) >>
+            if ((*(int *)(g_current_level_index_r * 256 + ((short)m->save_id >> 5) * 4 + (level_moby_killed)) >>
                      (m->save_id & 0x1F) &
                  1) &&
                 (g_current_level_index_r != LEVEL_ORXON ||
-                 (q = (unsigned char *)(help_stats_base_r2 + 0xAA35), (q + m->mission))[0xA0] == 0xFF)) {
+                 (q = (unsigned char *)saved_mission_state, (q + m->mission))[0xA0] == 0xFF)) {
                 m->state = 2;
                 m->command = 1;
                 break;
@@ -3026,7 +3025,7 @@ void energy_sphere_holder_update(Moby *m) {
             ((struct EnergySphereHolderUpdateVars *)d)->unk_40 = o;
             m->state = 1;
             initialize_energy_sphere_holder_vars((char *)m);
-            *(int *)(g_current_level_index_r * 256 + ((short)m->save_id >> 5) * 4 + (help_stats_base_r + 0xAB75)) &=
+            *(int *)(g_current_level_index_r * 256 + ((short)m->save_id >> 5) * 4 + (level_moby_killed)) &=
                 ~(1 << (m->save_id & 0x1F));
             blarg_session_moby_bit_flags[(short)m->save_id >> 5] &= ~(1 << (m->save_id & 0x1F));
             break;
@@ -3040,7 +3039,7 @@ void energy_sphere_holder_update(Moby *m) {
             if (((struct EnergySphereHolderUpdateVars *)d)->unk_40[0x20] < 0) {
                 m->command = 1;
                 m->state = 2;
-                *(int *)(g_current_level_index_r * 256 + ((short)m->save_id >> 5) * 4 + (help_stats_base_r + 0xAB75)) |=
+                *(int *)(g_current_level_index_r * 256 + ((short)m->save_id >> 5) * 4 + (level_moby_killed)) |=
                     1 << (m->save_id & 0x1F);
                 blarg_session_moby_bit_flags[(short)m->save_id >> 5] |= 1 << (m->save_id & 0x1F);
             } else {

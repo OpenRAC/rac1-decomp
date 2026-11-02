@@ -11,6 +11,7 @@
 #include "game/moby/mobyutil.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+extern int pad_held;
 extern Hero g_hero;
 extern int pad_held;
 
@@ -121,7 +122,6 @@ int pick_idle_fidget(int *index) {
     return 0;
 }
 
-extern char pad_globals_base_r[] __asm__("D_0013A5E0");
 extern int HeroEnterMoveState(int, int);
 extern int scale_ticks(int);
 extern void set_hero_animation(int, int, float);
@@ -145,7 +145,7 @@ void update_hero_locomotion_state(void) {
         return;
     }
     stick_target(0, 1.0f);
-    if (*(int *)(pad_globals_base_r + 0x2600) & 0xA) {
+    if (*(int *)(&pad_held) & 0xA) {
         HeroEnterMoveState(HERO_STATE_CROUCH, 0);
         set_hero_animation(0xD, 2, -2.0f);
         hero_queue_sequence(3, 0x12);

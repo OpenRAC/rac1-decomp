@@ -22,6 +22,10 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+extern char gSpecialItems[];
+extern Hero g_hero;
+extern u8 saved_mission_state[];
+extern char voice_pool[];
 extern char gHeroPos[];
 extern char gSkillPoints[];
 extern char gSpecialItems[];
@@ -380,7 +384,6 @@ extern int func_001FA898(float);
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 
-extern unsigned char hero_globals_base[];
 extern char airship_part_no_parent_msg[];
 extern Pair airship_part_smoke_colors;
 extern int G1613F0_3858 SDATA(D_L09_001613F0);
@@ -853,7 +856,7 @@ typedef struct {
     int f164;
     int f168;
 } Cam;
-extern unsigned char hero_globals_base[];
+
 extern float gaspar_coll_hit_point_z;
 extern V6_2EC188 asteroid_impact_start_colors;
 extern V6_2EC188 asteroid_impact_end_colors;
@@ -1858,8 +1861,7 @@ extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern int Help_Request(int a, int b);
 
 extern unsigned char gHaveHeliPack[];
-extern unsigned char help_stats_base[];
-extern unsigned char hero_globals_base[];
+
 extern int airship_parts_alive_count MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
@@ -2993,8 +2995,6 @@ extern void DeleteMoby_r3(void *) __asm__("func_0020D678");
 extern float D_L09_0015F6B4 MACRO_ADDR;
 extern float D_L09_0015F6B8 MACRO_ADDR;
 extern int D_0015EE84_309688 SDATA(D_0015EE84);
-extern unsigned char help_stats_base_r[] __asm__("D_0014171B");
-extern char special_items_base_r[] __asm__("D_0013D355");
 
 /* Moby update (barrier classes 1285-1287): bursts into pieces when hit and deletes itself; clears or sets
    its slot in the level's flag block. */
@@ -3010,14 +3010,14 @@ void barrier_update(Moby *m) {
 
     if (m->state == 0) {
         if (d->idx != -1)
-            ((Flags_309688 *)(special_items_base_r + 0x13B + d->idx))->f43 = 0;
+            ((Flags_309688 *)(gSpecialItems + d->idx))->f43 = 0;
         m->state = 1;
     }
     if (m->mission != 0xFF) {
         int row = D_0015EE84_309688 * 16;
-        if ((help_stats_base_r + 0xAA35)[m->mission + row] == 0xFF) {
+        if ((saved_mission_state)[m->mission + row] == 0xFF) {
             if (d->idx != -1)
-                ((Flags_309688 *)(special_items_base_r + 0x13B + d->idx))->f43 = 1;
+                ((Flags_309688 *)(gSpecialItems + d->idx))->f43 = 1;
             DeleteMoby_r3(m);
             return;
         }
@@ -3073,7 +3073,7 @@ void barrier_update(Moby *m) {
     spawn_explosion_r(m, r->pos, a20, 0.0f, 0.0f, 10, 3, 16, 3.0f, 2.0f, 1.0f, 1.0f, -1, 15.0f, 1, 1, -1, 0);
     if (m->oclass == MOBY_CLASS_BARRIER_1288) {
         if (d->idx != -1)
-            ((Flags_309688 *)(special_items_base_r + 0x13B + d->idx))->f43 = 1;
+            ((Flags_309688 *)(gSpecialItems + d->idx))->f43 = 1;
     }
     if (m->oclass == MOBY_CLASS_BARRIER_1288 || flag)
         DeleteMoby_r3(m);
@@ -3273,8 +3273,7 @@ typedef struct {
     f32 lag;
 } PathFlyerVars_00309c08;
 extern void AttachManipulator(struct Moby *, s32, void *);
-extern u8 hero_globals_base[];
-extern u8 help_stats_base[] NOT_SDA;
+
 #define frame_time D_0015EE6C
 #define hero (*&g_hero)
 extern int advance_shuttle_along_path(struct Moby *);
@@ -3320,7 +3319,7 @@ void shuttle_1766_update(struct Moby *moby) {
                 attach_manipulator(moby, 0, (u8 *)vars + 0x60);
                 path = (PathNodes_00309c08 *)gaspar_paths[vars->path];
                 moby->state = 1;
-                if ((help_stats_base + 0xAA35)[moby->mission + (g_current_level_index << 4)] == 0xFF) {
+                if ((saved_mission_state)[moby->mission + (g_current_level_index << 4)] == 0xFF) {
                     vars->dir = -1;
                     vars->node = path->count - 2;
                     qcopy(position, (Vec4 *)((path->count << 4) + (s32)path));
@@ -3351,11 +3350,9 @@ void shuttle_1766_update(struct Moby *moby) {
                              frame_time * 0.31415927f, frame_time * 0.4886922f);
             if (*(s32 *)((u8 *)vars + 0xC8) != 0) {
                 if ((vars->dir > 0 && *(s32 *)((u8 *)vars + 0xB4) != -1 &&
-                     is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                                 *(s32 *)((u8 *)vars + 0xB4))) ||
+                     is_point_inside_clip_volume(&g_hero.motion.pos, *(s32 *)((u8 *)vars + 0xB4))) ||
                     (vars->dir < 0 && *(s32 *)((u8 *)vars + 0xB0) != -1 &&
-                     is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                                 *(s32 *)((u8 *)vars + 0xB0)))) {
+                     is_point_inside_clip_volume(&g_hero.motion.pos, *(s32 *)((u8 *)vars + 0xB0)))) {
                     moby->state = 3;
                 }
             }
@@ -3375,8 +3372,7 @@ void shuttle_1766_update(struct Moby *moby) {
             if (vars->yaw_offset == 0.0f) {
                 if (vars->dir < 0) {
                     if (*(s32 *)((u8 *)vars + 0xB4) == -1 ||
-                        !is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                                     *(s32 *)((u8 *)vars + 0xB4)))
+                        !is_point_inside_clip_volume(&g_hero.motion.pos, *(s32 *)((u8 *)vars + 0xB4)))
                         goto test_forward;
                     if (!(vector_distance(&moby->pos, &path->node[path->count - 1]) > 8.0f) ||
                         !(vector_distance(&moby->pos, &path->node[0]) > 8.0f))
@@ -3386,8 +3382,7 @@ void shuttle_1766_update(struct Moby *moby) {
                 } else {
                 test_forward:
                     if (vars->dir > 0 && *(s32 *)((u8 *)vars + 0xB0) != -1 &&
-                        is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                                    *(s32 *)((u8 *)vars + 0xB0)) &&
+                        is_point_inside_clip_volume(&g_hero.motion.pos, *(s32 *)((u8 *)vars + 0xB0)) &&
                         vector_distance(&moby->pos, &path->node[path->count - 1]) > 8.0f &&
                         vector_distance(&moby->pos, &path->node[0]) > 8.0f) {
                         vars->dir = -1;
@@ -3399,7 +3394,7 @@ void shuttle_1766_update(struct Moby *moby) {
             if (FUN_L09_0030a298(moby)) {
                 voice = *(s32 *)((u8 *)vars + 0xC4);
                 if (voice != -1) {
-                    u8 *entry = (u8 *)hero_globals_base + 0x1D + voice * 0x70;
+                    u8 *entry = voice_pool + voice * 0x70;
                     if (*(struct Moby **)(entry + 0x88) == moby && entry[0x74] != 0)
                         release_voice_slot(voice);
                 }

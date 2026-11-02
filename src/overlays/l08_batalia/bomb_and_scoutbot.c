@@ -15,6 +15,10 @@
 #include "enums/level.h"
 #include "enums/moby_class.h"
 #include "structs/voice.h"
+extern unsigned char gSkillPoints[];
+extern Hero g_hero;
+extern char level_bolts[];
+extern char saved_mission_state[];
 extern char gSpecialItems[];
 extern Hero g_hero;
 
@@ -178,7 +182,6 @@ extern float D_L08_001614EC_2B94B0 SDATA(D_L08_001614EC);
 extern int D_L08_001614F0_2B94B0 SDATA(D_L08_001614F0);
 extern float D_L08_001614F4_2B94B0 SDATA(D_L08_001614F4);
 extern char g_hero_r[] __asm__("D_0013F450");
-extern char level_render_state_base_r[] __asm__("D_0013DE6E");
 
 /* Level 8 moby update (class 152): state machine that steers the moby toward the hero and fires its event. */
 void update_bolt_pickup(Moby *m) {
@@ -263,8 +266,7 @@ void update_bolt_pickup(Moby *m) {
             if (d->target != 0)
                 d->target->fA = 0;
             gBolts = gBolts + d->f20;
-            ((int *)(level_render_state_base_r + 0x1D2))[g_current_level_index_r] =
-                ((int *)(level_render_state_base_r + 0x1D2))[g_current_level_index_r] + d->f20;
+            ((int *)level_bolts)[g_current_level_index_r] = ((int *)level_bolts)[g_current_level_index_r] + d->f20;
             Moby_PlaySound_r(0, 0, m);
             queue_animation_update(2, 0x754E, initialize_bolt_counter_hud_r,
                                    update_bolt_counter_hud_animation_and_visibility_r, draw_bolt_counter_hud_panel_r,
@@ -791,8 +793,6 @@ extern int bomber_tank_part3_destroyed_r __asm__("D_L08_0015F69C") MACRO_ADDR;
 extern int bomber_tank_part4_destroyed_r __asm__("D_L08_0015F6A0") MACRO_ADDR;
 extern float batalia_zero_vec_r2[] __asm__("D_L08_0015F660") MACRO_ADDR;
 extern Path *batalia_path_table_r[] __asm__("D_L08_001B0FB0");
-extern char hero_globals_base_r[] __asm__("D_0013E633") NOT_SDA;
-extern unsigned char menu_item_enabled_115_r[] __asm__("D_0013D50F") NOT_SDA;
 extern Hit_2D5FA8 *find_2D5FA8(Moby *, int, int) __asm__("func_L00_0025B478");
 extern Hit_2D5FA8 *pick_2D5FA8(Hit_2D5FA8 *, Hit_2D5FA8 *, Hit_2D5FA8 *, int) __asm__("func_L05_0028AA68");
 extern int damage_2D5FA8(Moby *, Hit_2D5FA8 *, float *, int, int *, float *, int, int) __asm__("func_L00_0025B4D0");
@@ -907,7 +907,7 @@ void update_bomber_tank_damage_and_aim(Moby *m) {
                         if (k == 4)
                             bomber_tank_part4_destroyed_r = one;
                         if (bomber_tank_part1_destroyed_r != 0 && bomber_tank_part2_destroyed_r != 0) {
-                            unsigned char *flags = menu_item_enabled_115_r + 1;
+                            unsigned char *flags = gSkillPoints;
                             if (flags[0xD] == 0) {
                                 flags[0xD] = one;
                                 sound_2D5FA8(1, 0, 0);
@@ -951,7 +951,7 @@ void update_bomber_tank_damage_and_aim(Moby *m) {
     follow_2D5FA8(100.0f, m, d->target, 0, 0, batalia_path_table_r[d->path]->list,
                   batalia_path_table_r[d->path]->count);
     if (d->fF0 == 0)
-        d->fF0 = *(int *)&((struct Hero *)(hero_globals_base_r + 0xE1D))->moby;
+        d->fF0 = *(int *)&g_hero.moby;
     if (d->mode != 2) {
         float yaw, len, pitch;
         subtract_2D5FA8(vec, d->target, (float *)&m->pos);
@@ -2097,7 +2097,6 @@ typedef struct {
     float e[1][4];
 } Route;
 extern Route *batalia_path_table_r_r[] __asm__("D_L08_001B0FB0");
-extern char help_stats_base_r_r[] __asm__("D_0014171B") NOT_SDA;
 extern float vec_distance_xy(void *, void *);
 
 typedef struct ShuttleVars {
@@ -2201,7 +2200,7 @@ void select_shuttle_route_for_hero(char *m) {
             y = fast_atan2(*(float *)((char *)route + ((route_point_count - 2) << 4) + 0x10) - data->pos[0],
                            *(float *)((char *)route + ((route_point_count - 2) << 4) + 0x14) - data->pos[1]);
             fr = g_current_level_index_r << 4;
-            visited_table = (unsigned char *)(help_stats_base_r_r + 0xAA35);
+            visited_table = (unsigned char *)saved_mission_state;
             data->angle = y;
             data->unkE4.f = 1.0f;
             data->unk104.i = 0;

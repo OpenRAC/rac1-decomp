@@ -21,6 +21,7 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "structs/voice.h"
+extern Hero g_hero;
 extern struct Hero g_hero;
 
 /* Sentrybot: patrols a path, turns toward what it notices, raises its
@@ -2608,7 +2609,6 @@ extern KillFlags_2A3DD0 quartu_collected_flags_base_r __asm__("D_L15_001BBB40");
 extern unsigned char saved_mission_state_r[][16] __asm__("D_0014C150");
 extern int D_0014C290[][64];
 extern unsigned char voice_pool_r[] __asm__("D_0013E650");
-extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 typedef struct {
     unsigned char pad0[0x20];
@@ -2675,8 +2675,7 @@ void update_spark_emitter_moby(Moby *moby) {
                 if (e->owner != (char *)moby || e->state == 0) {
                     moby->command = Moby_PlaySound_r(0, 4, moby);
                 }
-                FastVecSub_r(V, &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.body_center,
-                             &moby->pos);
+                FastVecSub_r(V, &g_hero.motion.body_center, &moby->pos);
                 matrix_from_basis_rows(W, &moby->rot_row0);
                 transform_vector_r(V, V, W);
                 V[0] = 0.0f;

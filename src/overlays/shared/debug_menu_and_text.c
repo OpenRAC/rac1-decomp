@@ -11,6 +11,7 @@
 #include "core/kernel/kprintf.h"
 #include "game/render/framebuf.h"
 #include "game/ui/hud.h"
+extern Hero g_hero;
 extern int frame_size;
 extern Hero g_hero;
 extern char gold_weapon_purchased[];
@@ -129,7 +130,6 @@ extern char player_camera_matrix_r[] __asm__("D_L00_001670D0");
 extern char D_L00_001670E0[];
 extern char D_L00_001670F0[];
 extern char D_L00_00166ED0[];
-extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern void func_L00_001EBDA0(void);
 extern void func_L00_001FF4B0(void *, void *, float);
 extern void func_001F9BD8(void *, void *, void *);
@@ -164,7 +164,7 @@ void update_debug_camera(void) {
     if (((PadState *)g_controller_state_r)->stick_moved != 0) {
         return;
     }
-    k = ((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->unk308 == 2;
+    k = g_hero.unk308 == 2;
     if ((((PadDwords *)g_controller_state_r)->held_pressed.l & 3) != 3) {
         if (((PadDwords *)g_controller_state_r)->held_pressed.i & 0x1000) {
             if (k) {

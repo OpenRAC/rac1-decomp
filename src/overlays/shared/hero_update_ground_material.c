@@ -21,6 +21,8 @@
 #include "structs/hit_message.h"
 extern Hero g_hero;
 extern char g_hero_moby[];
+extern Hero g_hero;
+extern char g_hero_moby[];
 extern int pad_held;
 
 extern unsigned char hero_globals_base[];
@@ -1038,7 +1040,6 @@ void HeroSetCollisionSize(void) {
                g_frame_time * 4.0f);
     }
 }
-extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern float g_frame_time MACRO_ADDR;
 extern float novalis_hero_speed_bands[];
 extern void stick_target(int, float);
@@ -1047,7 +1048,7 @@ extern void stick_target(int, float);
 void hero_speed_from_table(void) {
     Hero *x;
     stick_target(0, 1.0f);
-    x = (Hero *)(hero_globals_base_r + 0xE1D);
+    x = &g_hero;
     if (0.0f < x->target_speed) {
         if (x->target_speed < novalis_hero_speed_bands[3]) {
             x->target_speed = novalis_hero_speed_bands[2] * g_frame_time;
@@ -1056,7 +1057,7 @@ void hero_speed_from_table(void) {
         }
     }
     {
-        char *y = hero_globals_base_r + 0xE1D;
+        char *y = (char *)&g_hero;
         if (*(int *)(y + 0x2084) == 0x73) {
             float v = *(float *)(y + 0x190) * 0.8f;
             float m = g_frame_time * 2.5f;
@@ -1770,9 +1771,8 @@ void select_hero_locomotion_state(void) {
 void set_hero_moby_flag_bit_zero(void) {
     *(unsigned short *)((char *)(*(char **)g_hero_moby) + 0x34) |= 1;
 }
-extern unsigned char hero_globals_base_r2[] __asm__("D_0013E633");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00226f10.c, FUN_L01_00248900. */
 void clear_hero_moby_flag_bit_zero(void) {
-    *(unsigned short *)((char *)(*(char **)(hero_globals_base_r2 + 0x2E9D)) + 0x34) &= ~1;
+    *(unsigned short *)((char *)(*(char **)g_hero_moby) + 0x34) &= ~1;
 }

@@ -17,6 +17,9 @@
 #include "enums/hero_state.h"
 #include "structs/voice.h"
 extern char g_hero[];
+extern char item_usage[];
+extern char pad_held[];
+extern char g_hero[];
 
 /* Tesla beam: draw state read by the beam and arc effects. */
 struct BeamArcVars {
@@ -1487,8 +1490,6 @@ typedef struct Light {
 } Light;
 
 extern char g_hero_r[] __asm__("D_0013F450");
-extern char pad_globals_base_r[] __asm__("D_0013A5E0");
-extern char help_stats_base_r[] __asm__("D_0014171B");
 extern char gSkillPoints_r[] __asm__("D_0013D510");
 extern unsigned char hero_globals_base_r[] __asm__("D_0013E633");
 extern char voice_pool_r[] __asm__("D_0013E650");
@@ -1572,21 +1573,20 @@ void MorphorayUpdate(Moby *m) {
           ((Hero *)g_hero_r)->state.control_mode == HERO_MODE_CROUCH ||
           ((Hero *)g_hero_r)->state.control_mode == HERO_MODE_JUMP ||
           ((Hero *)g_hero_r)->state.control_mode == HERO_MODE_LAND)) &&
-        (*(int *)(pad_globals_base_r + 0x2600) & ((Hero *)g_hero_r)->items[0].button_mask) != 0 && !flag && near) {
+        (*(int *)pad_held & ((Hero *)g_hero_r)->items[0].button_mask) != 0 && !flag && near) {
         if (((Hero *)g_hero_r)->item_anim_active == 0) {
             start_equipped_item_animation_r();
         }
         if (p->seen == 0) {
             p->seen = 1;
-            if (((Stats *)(help_stats_base_r + 0x65))->kills <= 0xFFFE) {
-                ((Stats *)(help_stats_base_r + 0x65))->kills++;
+            if (((Stats *)item_usage)->kills <= 0xFFFE) {
+                ((Stats *)item_usage)->kills++;
             }
             r = scale_ticks_r(gameplay_event_frame_count_r) / 600;
-            if (((Stats *)(help_stats_base_r + 0x65))->best < r) {
-                ((Stats *)(help_stats_base_r + 0x65))->best = scale_ticks_r(gameplay_event_frame_count_r) / 600;
+            if (((Stats *)item_usage)->best < r) {
+                ((Stats *)item_usage)->best = scale_ticks_r(gameplay_event_frame_count_r) / 600;
             }
-            ((Stats *)(help_stats_base_r + 0x65))->levels =
-                ((Stats *)(help_stats_base_r + 0x65))->levels | (1 << g_current_level_index_r) | 0x80000000;
+            ((Stats *)item_usage)->levels = ((Stats *)item_usage)->levels | (1 << g_current_level_index_r) | 0x80000000;
         }
         if (p->timer == 0) {
             p->timer = scale_ticks_r(15);
@@ -1884,8 +1884,7 @@ void update_beam_ring_rail_and_pulse_effects(Moby *m) {
     }
     len = D_L00_001617AC_2BE3A8;
     if (p->target == 0) {
-        if (coll_line_r(p, &end, 20, *(void **)&((struct Hero *)((char *)&hero_globals_base_r2 + 0xE1D))->moby, 0) !=
-            0) {
+        if (coll_line_r(p, &end, 20, *(void **)&((struct Hero *)g_hero)->moby, 0) != 0) {
             len = vec_distance_xy_r(&collision_hit_point_r, p);
         }
     } else {
@@ -1918,7 +1917,7 @@ void update_beam_ring_rail_and_pulse_effects(Moby *m) {
                 FastVecAdd_r2(&tesla_chain_points_r[i], &tesla_chain_points_r[i - 1], &tmp);
             }
             FastVecSub_r(&dir, &tesla_chain_points_r[i], &tesla_chain_points_r[i - 1]);
-            FastVecCross_r(&side, &dir, &((struct Hero *)((char *)&hero_globals_base_r2 + 0xE1D))->gravity_dir);
+            FastVecCross_r(&side, &dir, &((struct Hero *)g_hero)->gravity_dir);
             vec_scale_to_length_r2(&side, &side,
                                    D_L00_001617D8_2BE3A8 + (D_L00_001617DC_2BE3A8 - D_L00_001617D8_2BE3A8) * t);
             {
@@ -1981,9 +1980,9 @@ void update_beam_ring_rail_and_pulse_effects(Moby *m) {
             cols = tesla_spark_colors;
             col = cols.c[random_integer_below_r(5)];
             w = randf_sym_r(0.0f, D_L00_0016180C_2BE3A8);
-            build_look_at_matrix_r(&out, &dir, &((struct Hero *)((char *)&hero_globals_base_r2 + 0xE1D))->gravity_dir,
+            build_look_at_matrix_r(&out, &dir, &((struct Hero *)g_hero)->gravity_dir,
                                    randf_sym_r(0.0f, D_L00_0016180C_2BE3A8));
-            FastVecCross_r(&up, &dir, &((struct Hero *)((char *)&hero_globals_base_r2 + 0xE1D))->gravity_dir);
+            FastVecCross_r(&up, &dir, &((struct Hero *)g_hero)->gravity_dir);
             build_look_at_matrix_r(&out, &out, &up, w);
             n = truncate_float_to_s32_r3(len * 1.2f / (D_L00_00161804_2BE3A8 * frame_scale_r));
             if (p->target != 0) {
@@ -2965,7 +2964,7 @@ int try_start_moby_hop(Mob_2C0CF8 *m, Blk *p, void *q, int flag) {
         }
     }
     save_state_vector_and_fields_to_hero_r(p);
-    initialize_moby_hop_trajectory_r(m, &((struct Hero *)((char *)&hero_globals_base_r2 + 0xE1D))->unk1F10, land);
+    initialize_moby_hop_trajectory_r(m, &((struct Hero *)g_hero)->unk1F10, land);
     restore_saved_state_fields_from_hero_r(p);
     FastVecScale_r3(mid, d, 0.5f);
     FastVecAdd_r3(mid, mid, m->pos);

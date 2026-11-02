@@ -18,6 +18,8 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+extern char g_hero[];
+extern u8 hero_gravity_dir[];
 extern char gHeroPos[];
 extern char g_controller_state[];
 extern float g_controller_state_analog;
@@ -506,7 +508,6 @@ extern Q_2E3700 beam_endpoints_r[] __asm__("D_L00_001E7130");
 extern Q_2E3700 beam_tip_positions_r[] __asm__("D_L00_001E7160");
 extern Pt beam_strand_points_r[][20] __asm__("D_L00_001E7190");
 extern Snd D_L00_001803C0[];
-extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern char veldin1_zero_vec_r[] __asm__("D_L00_0015F660") MACRO_ADDR;
 extern int beam_slot_states_r[] __asm__("D_L00_00161CC8") MACRO_ADDR;
 extern float beam_strand_wave_phase_r[] __asm__("D_L00_00161CD8") MACRO_ADDR;
@@ -599,7 +600,7 @@ void update_slot_panes_and_effects(int unused, int idx) {
     one = 1.0f;
     FastVecSub_r(d2, &beam_endpoints_r[idx], from);
     vec_scale_to_length_r(dir, d2, one);
-    FastVecCross_r(side, dir, hero_globals_base_r + 0x10AD);
+    FastVecCross_r(side, dir, hero_gravity_dir);
     vec_scale_to_length_r(side, side, -1.0f);
     FastVecCross_r(up, side, dir);
     transform_vector_r(tip, &beam_strand_points_r[k][18], dir);
@@ -1999,9 +2000,9 @@ void follow_camera_springs(char *m) {
         FastVecAdd_r2(p + 0x80, f, g);
     }
     Cam_UpdateOffsetBlend_r(m, f);
-    if (((Hero *)(hero_globals_base_r + 0xE1D))->vehicle_mode == 2) {
+    if (((Hero *)g_hero)->vehicle_mode == 2) {
         FastVecScale_r2(f, &gl->up, 3.0f);
-    } else if (((Hero *)(hero_globals_base_r + 0xE1D))->vehicle_mode == 1) {
+    } else if (((Hero *)g_hero)->vehicle_mode == 1) {
         FastVecScale_r2(f, &gl->up, 0.4f);
     } else {
         FastVecScale_r2(f, &gl->up, 0.5f);
@@ -2013,14 +2014,14 @@ void follow_camera_springs(char *m) {
           g_current_follow_cam_r->d->f214 * g_current_follow_cam_r->d->f20C * (g_current_follow_cam_r->d->f210 - 1.0f);
     FastVecScale_r2(h, &gl->up, 20.0f);
     FastVecAdd_r2(h, g, h);
-    if (coll_line_r(g, h, camera_collision_mask_r, (int)((Hero *)(hero_globals_base_r + 0xE1D))->moby, 0)) {
+    if (coll_line_r(g, h, camera_collision_mask_r, (int)((Hero *)g_hero)->moby, 0)) {
         qcopy(w, collision_hit_point_a);
     } else {
         qcopy(w, h);
     }
     FastVecScale_r2(h, &gl->up, 20.0f);
     FastVecSub_r2(h, g, h);
-    if (coll_line_r(g, h, camera_collision_mask_r, (int)((Hero *)(hero_globals_base_r + 0xE1D))->moby, 0)) {
+    if (coll_line_r(g, h, camera_collision_mask_r, (int)((Hero *)g_hero)->moby, 0)) {
         qcopy(h, collision_hit_point_a);
     }
     FastVecSub_r2(u, h, w);

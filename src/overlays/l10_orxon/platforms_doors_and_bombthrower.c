@@ -18,6 +18,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+extern Hero g_hero;
 extern Moby *g_hero_moby;
 extern char gSkillPoints[];
 extern Hero g_hero;
@@ -1268,7 +1269,6 @@ int resolve_bouncing_projectile_collision(Moby *m, char *c, float *a2) {
     }
     return 0;
 }
-extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern char *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
 extern int resolve_bouncing_projectile_collision_r(char *, char *, float *) __asm__("func_L10_002D9530");
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
@@ -1352,8 +1352,8 @@ void bomb_938_update(char *m) {
                 *(short *)(*(char **)(r16 + 0x20) + 0xA6) != ((Moby *)m)->oclass) {
                 float t;
                 if (*(unsigned char *)(r16 + 0x28) == 0) {
-                    s50 = fast_atan2_r(((Moby *)m)->pos.x - ((Hero *)(hero_globals_base_r + 0xE1D))->motion.pos.f[0],
-                                       ((Moby *)m)->pos.y - ((Hero *)(hero_globals_base_r + 0xE1D))->motion.pos.f[1]);
+                    s50 = fast_atan2_r(((Moby *)m)->pos.x - g_hero.motion.pos.f[0],
+                                       ((Moby *)m)->pos.y - g_hero.motion.pos.f[1]);
                     *(u128_2D9988 *)v10 = ((Obj *)r16)->q10;
                     s58 = s54 = g_frame_time_x * 10.0f;
                     HeadingFromVector_r(v10, &s50, &s54, &s58);
@@ -1390,8 +1390,8 @@ void bomb_938_update(char *m) {
                 *(short *)(*(char **)(r16 + 0x20) + 0xA6) != ((Moby *)m)->oclass) {
                 float t;
                 if (*(unsigned char *)(r16 + 0x28) == 0) {
-                    s68 = fast_atan2_r(((Moby *)m)->pos.x - ((Hero *)(hero_globals_base_r + 0xE1D))->motion.pos.f[0],
-                                       ((Moby *)m)->pos.y - ((Hero *)(hero_globals_base_r + 0xE1D))->motion.pos.f[1]);
+                    s68 = fast_atan2_r(((Moby *)m)->pos.x - g_hero.motion.pos.f[0],
+                                       ((Moby *)m)->pos.y - g_hero.motion.pos.f[1]);
                     *(u128_2D9988 *)v10 = ((Obj *)r16)->q10;
                     s70 = s6c = g_frame_time_x * 10.0f;
                     HeadingFromVector_r(v10, &s68, &s6c, &s70);
@@ -3017,7 +3017,7 @@ void Moby1199Update(Moby *m) {
             step_angle_toward_target(&m->rot.y, 0, -fast_atan2_r2(vec_length_xy(&d->v120), d->v120.z),
                                      g_frame_time_x * 6.2831855f);
             if (vec_distance_xy_r(&m->pos, &P->pos) < class1199_attack_range) {
-                if (FastAbsF(m->pos.z - ((Hero *)(hero_globals_base_r + 0xE1D))->motion.pos.f[2]) < 2.0f) {
+                if (FastAbsF(m->pos.z - g_hero.motion.pos.f[2]) < 2.0f) {
                     Moby_PlaySound_r(0, 0, m);
                     m->state = 8;
                     clear_u64_value_r(&d->v120);
@@ -3178,8 +3178,7 @@ void Moby1199Update(Moby *m) {
             clear_u64_value_r(&v[4]);
             Moby_GetJointWorldPos(m, 0, v);
             coll_sphere_mobys(0.2f, v, 0, m, &v[4]);
-            if (FastVecDist_r(&m->pos, &P->pos) < one ||
-                ((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->state.control_mode == HERO_MODE_HURT ||
+            if (FastVecDist_r(&m->pos, &P->pos) < one || g_hero.state.control_mode == HERO_MODE_HURT ||
                 (m->anim_flags & 2)) {
                 m->state = 12;
                 if (m->prev_seq != 3)
@@ -3387,7 +3386,7 @@ void update_class_1199_hit_reactions_and_targeting(Moby *moby) {
         r19 = FindNearestTargetMoby_r(moby, data->fC0, data->f180);
         if (r19 != 2) {
             Anim_2E2B80 *bp = &orxon_scene_points_r2[data->f194];
-            FastVecSub_r3(v, &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, bp->f30);
+            FastVecSub_r3(v, &g_hero.motion.pos, bp->f30);
             v[3] = 0.0f;
             matrix_mul_vec3_r2(w, v, bp->f40);
             if (w[0] <= -1.0f || 1.0f <= w[0] || w[1] <= -1.0f || 1.0f <= w[1] || w[2] <= -1.0f || 1.0f <= w[2]) {
