@@ -1442,7 +1442,7 @@ void attach_batalia_deserter_class_manipulator(char *moby) {
         }
         for (i = 0; i < batalia_cutscene_state.n; i++) {
             char *o = batalia_cutscene_state.objs[i];
-            if (*(short *)(o + 0xA6) == *(short *)(moby + 0xA6) && deserter_scale_manipulator[1] == 0) {
+            if (*(short *)(o + 0xA6) == ((struct Moby *)moby)->oclass && deserter_scale_manipulator[1] == 0) {
                 AttachManipulator(o, 0, deserter_scale_manipulator);
                 *(float *)(deserter_scale_manipulator + 0x20) = 2.75f;
                 *(float *)(deserter_scale_manipulator + 0x24) = 2.75f;
@@ -1628,7 +1628,7 @@ void attach_batalia_plumber_class_manipulator(char *moby) {
         }
         for (i = 0; i < batalia_cutscene_state.n; i++) {
             char *o = batalia_cutscene_state.objs[i];
-            if (*(short *)(o + 0xA6) == *(short *)(moby + 0xA6) || *(short *)(o + 0xA6) == 0x306) {
+            if (*(short *)(o + 0xA6) == ((struct Moby *)moby)->oclass || *(short *)(o + 0xA6) == 0x306) {
                 if (deserter_scale_manipulator[1] == 0) {
                     float f;
                     AttachManipulator(o, 0, deserter_scale_manipulator);
@@ -1956,12 +1956,12 @@ sample_volume:
 }
 extern void cutscene_set_camera_target(int);
 /* per-frame update of a moby that fires a sound event when the game state allows */
-void update_batalia_selected_moby_effects(char *moby) {
+void update_batalia_selected_moby_effects(struct Moby *moby) {
     int k;
-    switch (*(unsigned char *)(moby + 0x20)) {
+    switch (moby->state) {
         case 0:
-            *(unsigned char *)(moby + 0x30) = 0xFF;
-            moby[0x20] = 1;
+            moby->update_dist = 0xFF;
+            moby->state = 1;
             break;
         case 1:
             if (batalia_game_mode == 2) {

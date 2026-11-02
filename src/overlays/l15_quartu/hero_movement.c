@@ -31,6 +31,7 @@
 #include "overlays/shared/variants.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+#include "enums/moby_class.h"
 
 extern unsigned char hero_globals_base[];
 extern int g_current_level_index MACRO_ADDR;
@@ -55,8 +56,8 @@ void Hero_UpdateAimFlags(void) {
         if (g->frames_off_ground.s == 0 || g->ground_distance < 0.3f) {
             g->on_magnet_ground = 1;
             if (g->vehicle_mode == 0) {
-                char *m = *(char **)&g->items[1].moby;
-                if (m != 0 && *(short *)(m + 0xA6) == 0xAD) {
+                struct Moby *m = (struct Moby *)(*(char **)&g->items[1].moby);
+                if (m != 0 && m->oclass == 0xAD) {
                     g->unk308 = 1;
                 }
             }
@@ -205,7 +206,7 @@ void hero_knockback(void *, s32, f32, f32);
 s32 process_hero_incoming_hit(s32 arg) {
     u8 *m;
     T_210ce8 *tbl;
-    u8 *mob;
+    struct Moby *mob;
     s32 flag;
     s32 id;
     f32 a, b, e;
@@ -270,8 +271,8 @@ s32 process_hero_incoming_hit(s32 arg) {
     }
     switch (g_hero.vehicle_mode) {
         case 0:
-            mob = (unsigned char *)g_hero.damage_source_moby;
-            if (mob != 0 && (*(s16 *)(mob + 0xA6) == 0x4EB || *(s16 *)(mob + 0xA6) == 0x558)) {
+            mob = (struct Moby *)((unsigned char *)g_hero.damage_source_moby);
+            if (mob != 0 && (mob->oclass == 0x4EB || mob->oclass == 0x558)) {
                 id = 0x80;
             call_ret:
                 HeroQuartu_TrySetMoveState(id, 1);
@@ -283,31 +284,31 @@ s32 process_hero_incoming_hit(s32 arg) {
                 return 1;
             }
             if (g_hero.state.control_mode == 0x12) {
-                mob = (unsigned char *)g_hero.damage_source_moby;
-                if (mob != 0 && *(s16 *)(mob + 0xA6) == 0x28F) {
+                mob = (struct Moby *)((unsigned char *)g_hero.damage_source_moby);
+                if (mob != 0 && mob->oclass == 0x28F) {
                     id = 0x82;
                     goto call_ret;
                 }
                 HeroQuartu_TrySetMoveState(HERO_STATE_WATER_SURFACE_HURT, 1);
             } else if (g_hero.state.control_mode == 0x11) {
-                mob = (unsigned char *)g_hero.damage_source_moby;
-                if (mob != 0 && *(s16 *)(mob + 0xA6) == 0x28F) {
+                mob = (struct Moby *)((unsigned char *)g_hero.damage_source_moby);
+                if (mob != 0 && mob->oclass == 0x28F) {
                     id = 0x82;
                     goto call_ret;
                 }
                 if (g_current_level_index == LEVEL_QUARTU || g_current_level_index == LEVEL_FLEET) {
-                    mob = (unsigned char *)g_hero.damage_source_moby;
-                    if (mob != 0 && (*(s16 *)(mob + 0xA6) == 0x28F || *(s16 *)(mob + 0xA6) == 0x7B ||
-                                     *(s16 *)(mob + 0xA6) == 0x29D)) {
+                    mob = (struct Moby *)((unsigned char *)g_hero.damage_source_moby);
+                    if (mob != 0 &&
+                        (mob->oclass == 0x28F || mob->oclass == MOBY_CLASS_SPIDERBOT || mob->oclass == 0x29D)) {
                         allocate_hero_voice_for_entry(0x1C, 0);
                     }
                 }
                 HeroQuartu_TrySetMoveState(0x76, 1);
             } else if (g_hero.state.control_mode == 3) {
-                mob = (unsigned char *)g_hero.damage_source_moby;
+                mob = (struct Moby *)((unsigned char *)g_hero.damage_source_moby);
                 if (mob != 0) {
                     id = 0x82;
-                    if (*(s16 *)(mob + 0xA6) == 0x28F) {
+                    if (mob->oclass == 0x28F) {
                         goto call_ret;
                     }
                 }

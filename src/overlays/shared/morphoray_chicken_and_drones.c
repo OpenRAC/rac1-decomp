@@ -1742,7 +1742,7 @@ char *select_ryno_target(float *pos, float *lim, int *skip, float maxy, float ma
     char *m = (char *)active_mobies[0];
     while (m != 0) {
         int n = i + 1;
-        if (*(short *)(m + 0x32) != 0) {
+        if (((struct Moby *)m)->draw_dist != 0) {
             if (skip != 0) {
                 int found = 0;
                 int k;
@@ -1754,15 +1754,16 @@ char *select_ryno_target(float *pos, float *lim, int *skip, float maxy, float ma
                 }
                 if (found)
                     goto next;
-            } else if (*(unsigned char *)(m + 0x31) == 0) {
+            } else if (((struct Moby *)m)->visible == 0) {
                 goto next;
             }
             {
                 float *r = (float *)GetFlaggedPvarWord(m);
-                if (r != 0 && !(r[0] < 0.0f) && (*(unsigned short *)(m + 0x34) & 0x1000) && m != 0 &&
-                    *(int *)(m + 0x24) != 0 && *(short *)(*(int *)(m + 0x24) + 0x46) == 5) {
+                if (r != 0 && !(r[0] < 0.0f) && (((struct Moby *)m)->flags & 0x1000) && m != 0 &&
+                    *(int *)&((struct Moby *)m)->pclass != 0 &&
+                    *(short *)(*(int *)&((struct Moby *)m)->pclass + 0x46) == 5) {
                     float e;
-                    float *p = (float *)(m + 0x10);
+                    float *p = &((struct Moby *)m)->pos.x;
                     float d = vec_distance_xy(pos, p);
                     if (d < maxd) {
                         float v[4];

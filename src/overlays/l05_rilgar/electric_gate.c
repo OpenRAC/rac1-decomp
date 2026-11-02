@@ -1674,7 +1674,7 @@ void update_hoverboard_girl_cutscene_instances(char *arg) {
         int i;
         for (i = 0; i < rilgar_cutscene_state.n; i++) {
             char *moby = rilgar_cutscene_state.m[i];
-            if (*(short *)(moby + 0xA6) == ((Moby *)arg)->oclass) {
+            if (((struct Moby *)moby)->oclass == ((Moby *)arg)->oclass) {
                 if (gCheats[0] != 0) {
                     unsigned char *q = rilgar_big_head_manipulator;
                     if (q[1] == 0) {

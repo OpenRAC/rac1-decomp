@@ -18,6 +18,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/hero_state.h"
+#include "enums/moby_class.h"
 
 /* Gadgetron CEO challenge room: handles of the jet groups it switches on and off. */
 struct CeoEnvVars {
@@ -1038,7 +1039,7 @@ char *find_group_morphoray_chicken_moby_in_state_6(int idx) {
         return 0;
     for (;;) {
         moby = kalebo3_moby_array + ((*(unsigned short *)p & 0x7FFF) << 8);
-        if (*(short *)(moby + 0xA6) == 0x10E && is_moby_in_state_6(moby))
+        if (((struct Moby *)moby)->oclass == MOBY_CLASS_MORPHORAY_CHICKEN && is_moby_in_state_6(moby))
             return moby;
         if (*p++ < 0)
             return 0;

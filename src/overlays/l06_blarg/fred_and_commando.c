@@ -417,14 +417,14 @@ void set_moby_list_state_17(int idx) {
     short *p = blarg_moby_groups[idx];
     if (p != 0) {
         do {
-            char *moby = level_mobys_q + ((*p & 0x7FFF) << 8);
-            if ((unsigned char)moby[0x20] < 0x7F) {
-                unsigned short flags = *(unsigned short *)(moby + 0x34);
-                moby[0x20] = 0x11;
+            struct Moby *moby = (struct Moby *)(level_mobys_q + ((*p & 0x7FFF) << 8));
+            if ((unsigned char)*(char *)&moby->state < 0x7F) {
+                unsigned short flags = moby->flags;
+                moby->state = 0x11;
                 flags |= 1;
-                *(int *)(moby + 0x94) = 0;
+                moby->collision = 0;
                 flags &= 0xEFFF;
-                *(unsigned short *)(moby + 0x34) = flags;
+                moby->flags = flags;
             }
         } while (*p++ >= 0);
     }
@@ -502,22 +502,22 @@ void update_moby_camera_sequence_and_draw_selection(char *moby) {
     float pos[4], rot[4], from[4], target[4], offset[4];
     int base;
     int state;
-    ((Moby *)moby)->scale = *(float *)(*(char **)(moby + 0x24) + 0x24) * D_L06_001620D8_ff;
-    switch ((unsigned char)moby[0x20]) {
+    ((Moby *)moby)->scale = *(float *)(*(char **)&((struct Moby *)moby)->pclass + 0x24) * D_L06_001620D8_ff;
+    switch ((unsigned char)*(char *)&((struct Moby *)moby)->state) {
         case 0:
             data[1] = 1;
-            moby[0x20] = 1;
+            ((struct Moby *)moby)->state = 1;
             break;
         case 1:
             if ((data[2] < 0 || (unsigned char)D_L06_0015FFD8_ffcb0[(data[2] << 8) + 0xbc] == 0) && data[8] != -1) {
                 break;
             }
-            if (vector_distance_ffcb0(moby + 0x10, D_0013F3D0_ffcb0 + 0xE9D) < 32.0f) {
-                moby[0x20] = 2;
+            if (vector_distance_ffcb0(&((struct Moby *)moby)->pos, D_0013F3D0_ffcb0 + 0xE9D) < 32.0f) {
+                ((struct Moby *)moby)->state = 2;
                 data[9] = scale_frames_ffcb0(30);
             } else {
                 FUN_L06_00300278_ff(moby, data[8] != -1);
-                moby[0x20] = 4;
+                ((struct Moby *)moby)->state = 4;
             }
             break;
         case 2:
@@ -525,7 +525,7 @@ void update_moby_camera_sequence_and_draw_selection(char *moby) {
                 {
                     int state;
                     int base;
-                    moby[0x20] = 3;
+                    ((struct Moby *)moby)->state = 3;
                     D_L06_0015F404_ff = 1;
                     D_L06_0015F408_ff = 0x12;
                     state = ((struct {
@@ -576,7 +576,7 @@ void update_moby_camera_sequence_and_draw_selection(char *moby) {
                 D_L06_0015F3FC_ffcb0 = 1.0f - normalize_timer_ffcb0(data[9]) / (float)D_L06_001620D4_ff;
             }
             if (*(float *)(data + 6) >= 0.99999f) {
-                moby[0x20] = 5;
+                ((struct Moby *)moby)->state = 5;
                 hero_set_state_ff(0, 0);
                 FUN_L06_00312ce8_ff(2);
                 D_L06_0015F404_ff = 0;
@@ -593,8 +593,8 @@ void update_moby_camera_sequence_and_draw_selection(char *moby) {
                     }
                     data[3] = -1;
                 }
-                if (data[1] == 1 &&
-                    vector_distance_ffcb0(moby + 0x10, D_L06_0015FFD8_ffcb0 + (data[8] << 8) + 0x10) > 0.1f) {
+                if (data[1] == 1 && vector_distance_ffcb0(&((struct Moby *)moby)->pos,
+                                                          D_L06_0015FFD8_ffcb0 + (data[8] << 8) + 0x10) > 0.1f) {
                     allocate_voice_for_target_entry_ffcb0(0, 0, moby);
                     FUN_L06_00300278_ff(moby, 1);
                 }
@@ -623,14 +623,14 @@ void update_moby_camera_sequence_and_draw_selection(char *moby) {
             }
             break;
         case 4:
-            if (vector_distance_ffcb0(moby + 0x10, D_0013F3D0_ffcb0 + 0xE9D) < 16.0f) {
+            if (vector_distance_ffcb0(&((struct Moby *)moby)->pos, D_0013F3D0_ffcb0 + 0xE9D) < 16.0f) {
                 state = data[3];
                 state <<= 7;
                 base = (int)D_L06_001600EC_ffcb0;
                 qcopy((void *)(state + base + 0x30), D_0013F3D0_ffcb0 + 0xE9D);
                 *(float *)(state + base + 0x38) -= 0.5f;
                 data[3] = -1;
-                moby[0x20] = 5;
+                ((struct Moby *)moby)->state = 5;
             }
             break;
     }
@@ -1883,7 +1883,8 @@ int update_shuttle_path_ride(char *moby, int path) {
     third_fraction = time - first_index_f;
     third_index = truncate_float_to_s32(time);
     lerp_vector(position, &first_path->p[first_index], &first_path->p[first_index + 1], first_fraction);
-    lerp_vector(moby + 0x10, &third_path->p[third_index], &third_path->p[third_index + 1], third_fraction);
+    lerp_vector(&((struct Moby *)moby)->pos, &third_path->p[third_index], &third_path->p[third_index + 1],
+                third_fraction);
     set_camera_position(position);
     if (third_index > 0) {
         angle = fast_atan2(third_path->p[third_index].x - third_path->p[third_index - 1].x,
@@ -1927,7 +1928,7 @@ int update_shuttle_path_ride(char *moby, int path) {
                                   angle);
         set_camera_rotation(rotation);
     }
-    ((Moby *)moby)->scale = *(float *)(*(char **)(moby + 0x24) + 0x24) *
+    ((Moby *)moby)->scale = *(float *)(*(char **)&((struct Moby *)moby)->pclass + 0x24) *
                             (ride->scale_start - (ride->scale_start - ride->scale_end) * ride->progress);
     if (ride->progress > 0.8f) {
         rate = g_frame_time_sq * 12.566371f;
@@ -2501,10 +2502,10 @@ void update_moby_vector_streams_and_particle_burst(char *moby) {
         } m;
     } u;
 
-    switch ((unsigned char)moby[0x20]) {
+    switch ((unsigned char)*(char *)&((struct Moby *)moby)->state) {
         case 0:
-            ((Moby *)moby)->scale =
-                *(float *)(*(char **)(moby + 0x24) + 0x24) * *(float *)&vector_stream_moby_scale_multiplier_gp;
+            ((Moby *)moby)->scale = *(float *)(*(char **)&((struct Moby *)moby)->pclass + 0x24) *
+                                    *(float *)&vector_stream_moby_scale_multiplier_gp;
             vector_stream_fade_ticks = 0x16;
             vector_stream_regen_ticks = 0x2D;
             d->timer[1] = 0xB;
@@ -2513,10 +2514,10 @@ void update_moby_vector_streams_and_particle_burst(char *moby) {
             d->timer[0] = 0;
             d->f18 = -1;
             if (d->f10 != -1) {
-                moby[0x20] = 1;
+                ((struct Moby *)moby)->state = 1;
                 *(int *)&((Moby *)moby)->collision = 0;
             } else {
-                moby[0x20] = 2;
+                ((struct Moby *)moby)->state = 2;
             }
             break;
         case 1: {
@@ -2524,8 +2525,8 @@ void update_moby_vector_streams_and_particle_burst(char *moby) {
             if (*(short *)(e + 0xA6) == 0x463 && (unsigned char)e[0x20] < 3) {
                 return;
             }
-            moby[0x20] = 2;
-            *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)(moby + 0x24) + 0x10);
+            ((struct Moby *)moby)->state = 2;
+            *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)&((struct Moby *)moby)->pclass + 0x10);
             break;
         }
         case 2: {
@@ -2540,7 +2541,7 @@ void update_moby_vector_streams_and_particle_burst(char *moby) {
             if (Sound_IsPlaying(moby, d->f18) == 0) {
                 d->f18 = Moby_PlaySound_r2(0, 4, moby);
             }
-            test_moby_vector_stream_collision_lines(moby);
+            test_moby_vector_stream_collision_lines((char *)&((struct Moby *)moby)->bsphere);
             v = *(float *)&vector_stream_uv_scroll + *(float *)&vector_stream_phase_rate_gp * g_frame_time;
             *(float *)&vector_stream_uv_scroll = v;
             if (1.0f < v) {
@@ -2569,13 +2570,13 @@ void update_moby_vector_streams_and_particle_burst(char *moby) {
                     d->timer[i]--;
                 }
             }
-            if (FastVecDist(moby + 0x10, blarg_camera_pos) < 48.0f) {
+            if (FastVecDist(&((struct Moby *)moby)->pos, blarg_camera_pos) < 48.0f) {
                 AddDrawCallback((int)draw_moby_vector_streams, moby);
             }
             if (d->f14 >= 0 && *(unsigned char *)(level_mobys_q + 0xBC + (d->f14 << 8)) != 0) {
                 int h;
                 *(int *)&((Moby *)moby)->collision = 0;
-                moby[0x20] = 3;
+                ((struct Moby *)moby)->state = 3;
                 h = d->f18;
                 if (h != -1) {
                     char *e = hero_globals_base + 0x1D + h * 0x70;
@@ -2592,13 +2593,13 @@ void update_moby_vector_streams_and_particle_burst(char *moby) {
             int i;
             int j;
 
-            euler_to_matrix(u.m.a, (float *)(moby + 0x40));
+            euler_to_matrix(u.m.a, &((struct Moby *)moby)->rot.x);
             set_scale_matrix(u.m.b, *(float *)&vector_stream_matrix_scale);
             sce_vu0_mul_matrix(u.m.a, u.m.a, u.m.b);
             for (i = 0; i < 4; i++) {
                 euler_to_matrix(u.m.b, &vector_stream_rotations[i * 4]);
                 sce_vu0_mul_matrix(u.m.b, u.m.a, u.m.b);
-                FastVecAdd(u.m.b + 12, u.m.b + 12, moby + 0x10);
+                FastVecAdd(u.m.b + 12, u.m.b + 12, &((struct Moby *)moby)->pos);
                 u.m.b[14] += (float)i * 1.7f + 0.6f;
                 u.m.b[15] = 1.0f;
                 for (j = 0; j < 50; j++) {
@@ -2623,7 +2624,7 @@ void update_moby_vector_streams_and_particle_burst(char *moby) {
                                                                    (unsigned char)random_integer_below(0xFF), 0);
                 }
             }
-            moby[0x20] = 4;
+            ((struct Moby *)moby)->state = 4;
             break;
         }
     }
@@ -3114,20 +3115,20 @@ void update_hit_triggered_moby_replacement(char *self) {
             }
             break;
         case 2: {
-            char *m;
+            struct Moby *m;
             Moby_PlaySound_r3(0, 0, (int)self);
             spawn_proximity_gated_bolts(self);
             SpawnBreakFragment(self, 0x67E, self + 0x10, self + 0x40, 0, 0, 0.0f, blarg_zero_vec, blarg_zero_vec,
                                blarg_zero_vec);
             SpawnBreakFragment(self, 0x67E, self + 0x10, self + 0x40, 0, 0, 0.0f, blarg_zero_vec, blarg_zero_vec,
                                blarg_zero_vec);
-            m = CreateMoby(0x67D);
+            m = (struct Moby *)CreateMoby(0x67D);
             if (m != 0) {
-                m[0x31] = 1;
-                *(short *)(m + 0x32) = 0xFF;
-                qcopy(m + 0x10, self + 0x10);
-                qcopy(m + 0x40, self + 0x40);
-                *(long *)(m + 0x38) = *(long *)(self + 0x38);
+                m->visible = 1;
+                m->draw_dist = 0xFF;
+                qcopy(&m->pos, self + 0x10);
+                qcopy(&m->rot, self + 0x40);
+                *(long *)&m->spawn_frame = *(long *)(self + 0x38);
                 moby_build_matrix(m);
             }
             func_0020D678_0B248(self);

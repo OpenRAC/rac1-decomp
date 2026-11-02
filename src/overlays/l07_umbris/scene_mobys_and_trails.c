@@ -431,8 +431,8 @@ extern char umbris_cutscene_state_c[] __asm__("D_L07_0016C960");
 extern float umbris_zero_vec[] MACRO_ADDR;
 
 // Runs the effect spawner: waits for the level flag, then emits sparks at four joints of a target moby.
-void update_scene_moby_effect_bursts(char *m) {
-    int state = *(unsigned char *)(m + 0x20);
+void update_scene_moby_effect_bursts(struct Moby *m) {
+    int state = m->state;
     int a;
     int k;
     int t;
@@ -443,8 +443,8 @@ void update_scene_moby_effect_bursts(char *m) {
     float buf[4];
     switch (state) {
         case 0:
-            *(unsigned char *)(m + 0x30) = 0xFF;
-            m[0x20] = 1;
+            m->update_dist = 0xFF;
+            m->state = 1;
             break;
         case 1:
             a = umbris_scene_state;

@@ -107,8 +107,8 @@ unsigned char *spawn_level_13_homing_rocket(char *src, char *pos, char *target, 
         ((Moby *)moby)->state = 0;
         *(char **)&data->target = target;
         *(char **)&data->owner = src;
-        qcopy(moby + 0x10, pos);
-        qcopy(moby + 0x40, vec);
+        qcopy(&((struct Moby *)moby)->pos, pos);
+        qcopy(&((struct Moby *)moby)->rot, vec);
         {
             float *sp = &scale;
             data->speed = *sp;
@@ -121,11 +121,11 @@ unsigned char *spawn_level_13_homing_rocket(char *src, char *pos, char *target, 
         if (((Moby *)moby)->prev_seq != 1) {
             MobyBlendAnimation(moby, 1, 0, 10);
         }
-        FastVecAdd(moby + 0x10, moby + 0x10, &data->vel);
+        FastVecAdd(&((struct Moby *)moby)->pos, &((struct Moby *)moby)->pos, &data->vel);
         if (*(char **)&data->target != 0) {
             qcopy(&data->tpos, *(char **)&data->target + 0x10);
         }
-        ((Moby *)moby)->scale = *(float *)(*(char **)(moby + 0x24) + 0x24);
+        ((Moby *)moby)->scale = *(float *)(*(char **)&((struct Moby *)moby)->pclass + 0x24);
         moby_build_matrix(moby);
         spawn_source_attached_fading_effect_particle((char *)moby, 0x60808080, arg, 0, 500000.0f);
     }

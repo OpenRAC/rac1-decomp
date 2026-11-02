@@ -252,10 +252,10 @@ void sentrybot_update(unsigned char *moby) {
         return;
     }
     ((Moby *)moby)->flags = (((Moby *)moby)->flags & 0xFFBE) | 0x1000;
-    *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)(moby + 0x24) + 0x10);
+    *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)&((struct Moby *)moby)->pclass + 0x10);
     target = (Moby *)data->target;
     manipulator_set_scale(data->head_manip, 2.5f);
-    if (((Moby *)moby)->visible != 0 && FastVecDist(moby + 0x10, quartu_camera_pos) < 28.0f) {
+    if (((Moby *)moby)->visible != 0 && FastVecDist(&((struct Moby *)moby)->pos, quartu_camera_pos) < 28.0f) {
         set_ground_height_band(moby);
         ((Moby *)moby)->shadow_range = 0x16;
     }
@@ -281,7 +281,7 @@ void sentrybot_update(unsigned char *moby) {
             data->health = 3.0f;
             data->unk_28 = 2;
             data->unk_29 = 0;
-            qcopy(&data->home_pos, moby + 0x10);
+            qcopy(&data->home_pos, &((struct Moby *)moby)->pos);
             data->home_yaw = ((Moby *)moby)->rot.z;
             if (data->wait_frames < 5)
                 data->wait_frames = 5;
@@ -585,7 +585,7 @@ void sentrybot_update(unsigned char *moby) {
         }
         case 9: {
             unsigned char *home = (unsigned char *)&data->home_pos;
-            if (FastVecDist(moby + 0x10, home) > 0.2f) {
+            if (FastVecDist(&((struct Moby *)moby)->pos, home) > 0.2f) {
                 move_sentrybot_toward_point((char *)moby, (float *)home, g_frame_time * 2.0f);
             } else if (data->patrol_path != -1) {
                 ((Moby *)moby)->command = 0;
@@ -601,7 +601,7 @@ void sentrybot_update(unsigned char *moby) {
         }
         case 20: {
             unsigned char *home = (unsigned char *)&data->home_pos;
-            if (FastVecDist(moby + 0x10, home) > 0.2f) {
+            if (FastVecDist(&((struct Moby *)moby)->pos, home) > 0.2f) {
                 move_sentrybot_toward_point((char *)moby, (float *)home, g_frame_time * 3.0f);
             } else if (data->alert_timer == 0) {
                 ((Moby *)moby)->command = 0;
@@ -658,9 +658,9 @@ void sentrybot_update(unsigned char *moby) {
             break;
         case 14:
             prepare_sentrybot_alarm((unsigned char *)(quartu_moby_array_m + (data->alarm << 8)));
-            FastVecSub(va, (char *)(quartu_moby_array_m + (data->alarm << 8)) + 0x10, moby + 0x10);
+            FastVecSub(va, (char *)(quartu_moby_array_m + (data->alarm << 8)) + 0x10, &((struct Moby *)moby)->pos);
             vec_scale_to_length(va, va, FastVecLength(va) - 1.5f);
-            FastVecAdd(va, va, moby + 0x10);
+            FastVecAdd(va, va, &((struct Moby *)moby)->pos);
             if (move_sentrybot_toward_point((char *)moby, va, g_frame_time * 4.0f)) {
                 ((Moby *)moby)->state = 0xF;
                 if (((Moby *)moby)->prev_seq != 9)
@@ -870,7 +870,7 @@ void sentrybot_update(unsigned char *moby) {
         case 21: {
             int r = mine_fall(moby, data->knockback);
             if (r & 0x40) {
-                ProbeGroundHeight(moby + 0x10, 0, 0.5f);
+                ProbeGroundHeight(&((struct Moby *)moby)->pos, 0, 0.5f);
                 if (CollType() == -1 && data->home_pos.z - 5.0f < ((Moby *)moby)->pos.z) {
                     if (((Hero98BB8 *)(hero_globals_base + 0xE1D))->f2084 == 0x65) {
                         ((Moby *)moby)->state = 0xC;
@@ -902,7 +902,7 @@ void sentrybot_update(unsigned char *moby) {
                     data->linked_b = -1;
                 }
                 Moby_PlaySound(0xD, 0, (int)moby);
-                SpawnExplosionFx(moby, moby + 0x10, -1, 0.5f, 13.0f);
+                SpawnExplosionFx(moby, &((struct Moby *)moby)->pos, -1, 0.5f, 13.0f);
                 SetDeathBits(moby, 0, -1);
                 DeleteMoby(moby);
                 return;
@@ -923,7 +923,7 @@ void sentrybot_update(unsigned char *moby) {
                     data->linked_b = -1;
                 }
                 Moby_PlaySound(0xD, 0, (int)moby);
-                SpawnExplosionFx(moby, moby + 0x10, -1, 0.5f, 13.0f);
+                SpawnExplosionFx(moby, &((struct Moby *)moby)->pos, -1, 0.5f, 13.0f);
                 SetDeathBits(moby, 0, -1);
                 DeleteMoby(moby);
                 return;
@@ -1180,7 +1180,7 @@ void alert_visible_group_sentrybots(void *mobyv) {
     unsigned short *list;
     int idx;
     int r;
-    char *m;
+    struct Moby *m;
 
     if (((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.current == HERO_STATE_APPROACH_TARGET_POSE) {
         d->alert_timer = 0;
@@ -1197,9 +1197,9 @@ void alert_visible_group_sentrybots(void *mobyv) {
     a[2] = a[2] + 1.0f;
     do {
         idx = (*list & 0x7FFF) << 8;
-        m = (char *)(idx + quartu_moby_array);
-        if (m[0x20] >= 0 && *(short *)(m + 0xA6) == 0x2C) {
-            qcopy(b, m + 0x10);
+        m = (struct Moby *)((char *)(idx + quartu_moby_array));
+        if (*(char *)&m->state >= 0 && m->oclass == MOBY_CLASS_SENTRYBOT) {
+            qcopy(b, &m->pos);
             b[2] = b[2] + 1.0f;
             if (coll_line(b, a, 2, 0, 0) == 0) {
                 SpawnResetData *reset = *(SpawnResetData **)(idx + quartu_moby_array + 0x78);
@@ -2507,10 +2507,10 @@ int activate_first_inactive_group_moby(int idx, void *pos) {
             ((Moby *)m)->flags |= 1;
             ((Moby *)m)->visible = 0;
             data = ((char *)((Moby *)m)->pvars);
-            *(int *)&((Moby *)m)->collision = *(int *)(*(char **)(m + 0x24) + 0x10);
+            *(int *)&((Moby *)m)->collision = *(int *)(*(char **)&((struct Moby *)m)->pclass + 0x10);
             *(float *)(data + 0x64) = random_float_between(-15.0f, 15.0f) * 0.017453292f;
             *(int *)(data + 0x68) = scale_ticks(0x3C);
-            qcopy(m + 0x10, pos);
+            qcopy(&((struct Moby *)m)->pos, pos);
             ((Moby *)m)->pos.z -= 1.0f;
             ((Moby *)m)->rot.z =
                 fast_atan2(g->motion.pos.f[0] - ((Moby *)m)->pos.x, g->motion.pos.f[1] - ((Moby *)m)->pos.y);

@@ -1055,15 +1055,16 @@ void *spawn_joint_aligned_moby_part(char *parent, int oClass, int joint, int pjo
     unsigned char *m = CreateMoby(oClass);
     float v0[4], v10[4];
     if (m != 0) {
-        m[0x30] = 0xFF;
-        *(short *)(m + 0x32) = 0xFF;
-        m[0x31] = 1;
-        *(unsigned short *)(m + 0x34) |= 0x4000;
-        *(long *)(m + 0x38) = *(long *)(*(char **)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby + 0x38);
-        qcopy(m + 0x40, parent + 0x40);
+        ((struct Moby *)m)->update_dist = 0xFF;
+        ((struct Moby *)m)->draw_dist = 0xFF;
+        ((struct Moby *)m)->visible = 1;
+        ((struct Moby *)m)->flags |= 0x4000;
+        *(long *)&((struct Moby *)m)->spawn_frame =
+            *(long *)(*(char **)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby + 0x38);
+        qcopy(&((struct Moby *)m)->rot, parent + 0x40);
         Moby_GetJointWorldPos(m, joint, v0);
         Moby_GetJointWorldPos(parent, pjoint, v10);
-        FastVecSub(m + 0x10, v10, v0);
+        FastVecSub(&((struct Moby *)m)->pos, v10, v0);
         moby_build_matrix(m);
     }
     return m;

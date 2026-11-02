@@ -1197,8 +1197,8 @@ void refresh_suck_cannon_slots(void) {
             continue;
         o = func_L00_002DCD40_002da660((u8 *)g_hero_r3.unk2050[i]);
         if (o == 0 || (k = *(s16 *)(o + 0x68)) < 3 || k >= 5 || *(s16 *)(o + 0x6A) == -1) {
-            u8 *m = (u8 *)g_hero_r3.unk2050[i];
-            func_001E9730_002da660(suck_cannon_cleaned_up_moby_fmt, *(s16 *)(m + 0xB2), *(s16 *)(m + 0xA6));
+            struct Moby *m = (struct Moby *)((u8 *)g_hero_r3.unk2050[i]);
+            func_001E9730_002da660(suck_cannon_cleaned_up_moby_fmt, *(s16 *)&m->save_id, m->oclass);
             g_hero_r3.unk2050[i] = 0;
         } else if (k == 3) {
             g_hero_r3.suck_cannon_incoming++;

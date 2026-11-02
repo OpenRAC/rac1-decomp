@@ -18,6 +18,7 @@
 #include "structs/hero_views.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+#include "enums/moby_class.h"
 
 extern float ApproachValue(float *p, float target, float maxstep);
 extern unsigned char hero_globals_base[] NOT_SDA;
@@ -1206,7 +1207,8 @@ void process_hero_race_object_interactions(void) {
         get_first_moby_in_group((void **)&first, *(int *)(state + 0x44), 0, 0);
         if (first != 0) {
             do {
-                if (((Moby *)first)->oclass == 0x473 && fast_subtract_rotations_cf(first + 0xBC) != 0) {
+                if (((Moby *)first)->oclass == MOBY_CLASS_HOVERBOARD_RING &&
+                    fast_subtract_rotations_cf(first + 0xBC) != 0) {
                     FastVecSub(delta, first + 0x10, (char *)hero_globals_base + 0xEED);
                     set_identity_matrix(matrix);
                     matrix_from_basis_rows(matrix, first + 0xC0);
@@ -1238,7 +1240,7 @@ void process_hero_race_object_interactions(void) {
             if (second != 0) {
                 unsigned int color = (blue << 16) | (0x80000000U | (green << 8)) | red;
                 do {
-                    if (((Moby *)second)->oclass == 0x474) {
+                    if (((Moby *)second)->oclass == MOBY_CLASS_HOVERBOARD_BOOST_PAD) {
                         ((Moby *)second)->flags |= 0x10;
                         *(unsigned int *)(second + 0x90) = color;
                         if (fast_subtract_rotations_cf(second + 0xBC) != 0) {

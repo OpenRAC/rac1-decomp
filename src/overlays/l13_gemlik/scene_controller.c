@@ -392,13 +392,13 @@ char *spawn_scaled_owned_moby(char *owner, void *position, float scale) {
     char *moby = CreateMoby(0x660);
     if (moby != 0) {
         char *data = ((char *)((Moby *)moby)->pvars);
-        ((unsigned char *)moby)[0x30] = 0xFF;
+        ((struct Moby *)moby)->update_dist = 0xFF;
         ((Moby *)moby)->draw_dist = 0xFF;
-        moby[0x31] = 1;
-        moby[0x20] = 0;
+        ((struct Moby *)moby)->visible = 1;
+        ((struct Moby *)moby)->state = 0;
         ((struct HitProxyVars *)data)->owner = owner;
-        ((Moby *)moby)->scale = *(float *)(*(char **)(moby + 0x24) + 0x24) * scale;
-        qcopy(moby + 0x10, position);
+        ((Moby *)moby)->scale = *(float *)(*(char **)&((struct Moby *)moby)->pclass + 0x24) * scale;
+        qcopy(&((struct Moby *)moby)->pos, position);
         if (owner != 0) {
             ((struct HitProxyVars *)data)->owner_id = *(short *)(owner + 0xA6);
         }

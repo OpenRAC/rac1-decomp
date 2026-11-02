@@ -1164,8 +1164,8 @@ int check_listed_plasmabots_not_starting_path_traversal(unsigned char *m) {
         (p = (unsigned short *)oltanis_moby_groups[((Moby *)m)->group]) == 0)
         return 1;
     do {
-        char *moby = oltanis_mobys + ((*p & 0x7FFF) << 8);
-        if (*(short *)(moby + 0xA6) == 0x1C && *(unsigned char *)(moby + 0x20) == 2)
+        struct Moby *moby = (struct Moby *)(oltanis_mobys + ((*p & 0x7FFF) << 8));
+        if (moby->oclass == MOBY_CLASS_PLASMABOT_28 && moby->state == 2)
             return 0;
     } while ((short)*p++ >= 0);
     return 1;

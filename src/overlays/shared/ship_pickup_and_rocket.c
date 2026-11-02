@@ -161,26 +161,26 @@ void ShipPickupUpdate(char *moby) {
     float start_size, activated_size;
     short cls;
     float speed;
-    switch ((unsigned char)moby[0x20]) {
+    switch ((unsigned char)*(char *)&((struct Moby *)moby)->state) {
         case 0:
             if (*((unsigned char *)vars + 0xc) != 0) {
-                ((Moby *)moby)->scale = *(float *)(*(char **)(moby + 0x24) + 0x24);
-                moby[0x20] = 4;
+                ((Moby *)moby)->scale = *(float *)(*(char **)&((struct Moby *)moby)->pclass + 0x24);
+                ((struct Moby *)moby)->state = 4;
                 break;
             }
             *(int *)&((Moby *)moby)->collision = 0;
-            moby[0x31] = 0;
+            ((struct Moby *)moby)->visible = 0;
             ((Moby *)moby)->flags |= 1;
-            start_size = *(float *)(*(char **)(moby + 0x24) + 0x24);
-            moby[0x20] = 1;
+            start_size = *(float *)(*(char **)&((struct Moby *)moby)->pclass + 0x24);
+            ((struct Moby *)moby)->state = 1;
             ((Moby *)moby)->scale = start_size * 0.1f;
             break;
         case 1:
             if (vars[0] != -1) {
-                moby[0x20] = 2;
+                ((struct Moby *)moby)->state = 2;
                 break;
             }
-            moby[0x20] = 3;
+            ((struct Moby *)moby)->state = 3;
             break;
         case 2: {
             int target_index = vars[0];
@@ -190,19 +190,19 @@ void ShipPickupUpdate(char *moby) {
                 target->state != vars[1]) {
                 goto frame_tail;
             }
-            moby[0x20] = 3;
+            ((struct Moby *)moby)->state = 3;
             break;
         }
         case 3:
             if (vars[2] == -1 || fast_dec_timer(vars + 4)) {
-                moby[0x20] = 4;
+                ((struct Moby *)moby)->state = 4;
             }
-            if ((unsigned char)moby[0x20] != 4)
+            if ((unsigned char)*(char *)&((struct Moby *)moby)->state != 4)
                 goto frame_tail;
-            *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)(moby + 0x24) + 0x10);
-            moby[0x31] = 1;
+            *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)&((struct Moby *)moby)->pclass + 0x10);
+            ((struct Moby *)moby)->visible = 1;
             ((Moby *)moby)->flags &= 0xfffe;
-            activated_size = *(float *)(*(char **)(moby + 0x24) + 0x24);
+            activated_size = *(float *)(*(char **)&((struct Moby *)moby)->pclass + 0x24);
             ((Moby *)moby)->scale = activated_size * 0.1f;
             break;
         case 4:
@@ -220,7 +220,8 @@ void ShipPickupUpdate(char *moby) {
             if (1003.0f < ((Moby *)moby)->pos.z)
                 ((Moby *)moby)->pos.z = 1003.0f;
             Moby_GetJointWorldPos(moby, 0, position);
-            ((Moby *)moby)->scale += (*(float *)(*(char **)(moby + 0x24) + 0x24) - ((Moby *)moby)->scale) * 0.1f;
+            ((Moby *)moby)->scale +=
+                (*(float *)(*(char **)&((struct Moby *)moby)->pclass + 0x24) - ((Moby *)moby)->scale) * 0.1f;
             if (coll_sphere(2.0f, position, 1, moby) && gemlik_coll_hit_moby != 0) {
                 short cls = *(short *)(gemlik_coll_hit_moby + 0xa6);
                 if (cls == 0x4da || cls == 0x45 || cls == 0x563)
@@ -230,7 +231,7 @@ void ShipPickupUpdate(char *moby) {
                 *(unsigned char *)(hero_moby + 0x20) != 0xfd) {
                 short cls = *(short *)(hero_moby + 0xa6);
                 if (cls == 0x4da || cls == 0x45 || cls == 0x563)
-                    distance = FastVecDist((void *)(hero_moby + 0x10), moby + 0x10);
+                    distance = FastVecDist((void *)(hero_moby + 0x10), &((struct Moby *)moby)->pos);
             }
             if (hit || distance < 4.0f) {
                 cls = ((Moby *)moby)->oclass;
@@ -256,22 +257,22 @@ void ShipPickupUpdate(char *moby) {
                 if (g_hero.ship_hp_max < g_hero.ship_hp)
                     g_hero.ship_hp = g_hero.ship_hp_max;
             collected:
-                moby[0x20] = 5;
+                ((struct Moby *)moby)->state = 5;
                 break;
             } else if (distance < 40.0f && (((Moby *)moby)->visible) != 0) {
                 float step = 0.8f / vec_length(distance);
-                FastVecSub(direction, (void *)(hero_moby + 0x10), moby + 0x10);
+                FastVecSub(direction, (void *)(hero_moby + 0x10), &((struct Moby *)moby)->pos);
                 vec_scale_to_length(direction, direction, step);
-                FastVecAdd(moby + 0x10, moby + 0x10, direction);
+                FastVecAdd(&((struct Moby *)moby)->pos, &((struct Moby *)moby)->pos, direction);
             }
             goto frame_tail;
         case 5: {
-            float delta = *(float *)(*(char **)(moby + 0x24) + 0x24) - ((Moby *)moby)->scale;
+            float delta = *(float *)(*(char **)&((struct Moby *)moby)->pclass + 0x24) - ((Moby *)moby)->scale;
             ((Moby *)moby)->rot.z = FastAddRots(((Moby *)moby)->rot.z, delta + delta);
             ((Moby *)moby)->scale +=
-                (*(float *)(*(char **)(moby + 0x24) + 0x24) * 0.01f - ((Moby *)moby)->scale) * 0.3f;
-            if (((Moby *)moby)->scale < *(float *)(*(char **)(moby + 0x24) + 0x24) * 0.05f)
-                moby[0x20] = 6;
+                (*(float *)(*(char **)&((struct Moby *)moby)->pclass + 0x24) * 0.01f - ((Moby *)moby)->scale) * 0.3f;
+            if (((Moby *)moby)->scale < *(float *)(*(char **)&((struct Moby *)moby)->pclass + 0x24) * 0.05f)
+                ((struct Moby *)moby)->state = 6;
             break;
         }
         case 6:
@@ -280,11 +281,11 @@ void ShipPickupUpdate(char *moby) {
                 return;
             }
             *(int *)&((Moby *)moby)->collision = 0;
-            moby[0x31] = 0;
+            ((struct Moby *)moby)->visible = 0;
             ((Moby *)moby)->flags |= 1;
-            ((Moby *)moby)->scale = *(float *)(*(char **)(moby + 0x24) + 0x24) * 0.1f;
+            ((Moby *)moby)->scale = *(float *)(*(char **)&((struct Moby *)moby)->pclass + 0x24) * 0.1f;
             vars[4] = vars[2];
-            moby[0x20] = 1;
+            ((struct Moby *)moby)->state = 1;
             break;
     }
 frame_tail:
@@ -320,8 +321,8 @@ unsigned char *spawn_ship_rocket(char *src, char *pos, char *target, char *vec, 
         ((Moby *)moby)->state = 0;
         data->source = src;
         data->target = target;
-        qcopy(moby + 0x10, pos);
-        qcopy(moby + 0x40, vec);
+        qcopy(&((struct Moby *)moby)->pos, pos);
+        qcopy(&((struct Moby *)moby)->rot, vec);
         if (target != 0) {
             char *e;
             data->target_uid = *(short *)(target + 0xA6);
@@ -338,11 +339,11 @@ unsigned char *spawn_ship_rocket(char *src, char *pos, char *target, char *vec, 
         if (((Moby *)moby)->prev_seq != 1) {
             MobyBlendAnimation(moby, 1, 0, 10);
         }
-        FastVecAdd(moby + 0x10, moby + 0x10, &data->offset);
+        FastVecAdd(&((struct Moby *)moby)->pos, &((struct Moby *)moby)->pos, &data->offset);
         if (data->target != 0) {
             qcopy(&data->target_pos, data->target + 0x10);
         }
-        ((Moby *)moby)->scale = *(float *)(*(char **)(moby + 0x24) + 0x24) *
+        ((Moby *)moby)->scale = *(float *)(*(char **)&((struct Moby *)moby)->pclass + 0x24) *
                                 (*(float *)(src + 0x2C) / *(float *)(*(char **)(src + 0x24) + 0x24));
         moby_build_matrix(moby);
         spawn_source_attached_fading_effect_particle((char *)moby, 0x60808080, arg, 0, 500000.0f);

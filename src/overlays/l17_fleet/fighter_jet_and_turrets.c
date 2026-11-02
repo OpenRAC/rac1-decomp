@@ -24,6 +24,7 @@
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/hero_state.h"
+#include "enums/moby_class.h"
 
 /* Dreks fleet turret: takes hits, flashes and fades colour. */
 struct FleetTurretVars {
@@ -1486,9 +1487,10 @@ int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *
     near = 0;
     while (m != 0) {
         scr = (int *)(screen_globals_base + 0x4A6);
-        if ((*(unsigned short *)(m + 0x34) & 0x1000) && *(unsigned char *)(m + 0x31) != 0 && m != 0 &&
-            *(char **)(m + 0x24) != 0 && *(short *)(*(char **)(m + 0x24) + 0x46) == 5) {
-            project_world_point_to_screen_pixels(m + 0x10, &sx, &sy, 0);
+        if ((((struct Moby *)m)->flags & 0x1000) && ((struct Moby *)m)->visible != 0 && m != 0 &&
+            *(char **)&((struct Moby *)m)->pclass != 0 &&
+            *(short *)(*(char **)&((struct Moby *)m)->pclass + 0x46) == 5) {
+            project_world_point_to_screen_pixels(&((struct Moby *)m)->pos, &sx, &sy, 0);
             dx = sx - *(int *)(p + 0xE0);
             dy = sy - *(int *)(p + 0xE4);
             if (dx < 0)
@@ -1496,8 +1498,8 @@ int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *
             if (dy < 0)
                 dy = -dy;
             qcopy(v, fleet_camera_matrix_row1);
-            FastVecScale(v, fleet_camera_matrix_row1, *(float *)(m + 0xC) / 1280.0f);
-            FastVecAdd(v, v, m + 0x10);
+            FastVecScale(v, fleet_camera_matrix_row1, ((struct Moby *)m)->bsphere.w / 1280.0f);
+            FastVecAdd(v, v, &((struct Moby *)m)->pos);
             project_world_point_to_screen_pixels(v, &tx, &ty, 0);
             tx -= sx;
             ty -= sy;
@@ -1517,7 +1519,7 @@ int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *
                 }
             }
         }
-        switch (*(short *)(m + 0xA6)) {
+        switch (((struct Moby *)m)->oclass) {
             case 0xE0:
             case 0x4C2:
                 draw_fighter_jet_radar_contact_icon(a3, a2, m, 2, 0x70808080, *(int *)(p + 0x104));
@@ -1536,9 +1538,9 @@ int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *
             case 0x191:
             case 0x3EB:
             case 0x504:
-                project_to_screen(v, m + 0x10);
-                if (*(short *)(m + 0xA6) != 0x184) {
-                    if (*(unsigned char *)(m + 0x31) != 0) {
+                project_to_screen(v, &((struct Moby *)m)->pos);
+                if (((struct Moby *)m)->oclass != MOBY_CLASS_UNMARKED_COUNTED_TARGET) {
+                    if (((struct Moby *)m)->visible != 0) {
                         {
                             float x = (v[0] - scr[4]) * 0.0625f;
                             float y = (v[1] - scr[5]) * 0.0625f;
@@ -1555,16 +1557,16 @@ int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *
                         }
                     }
                 }
-                if (*(short *)(m + 0xA6) != 0x191) {
+                if (((struct Moby *)m)->oclass != MOBY_CLASS_UNCOUNTED_MARKED_TARGET) {
                     *(int *)(p + 0xE8) = *(int *)(p + 0xE8) + 1;
                 }
                 draw_fighter_jet_radar_contact_icon(a3, a2, m, 0, 0x70808080, *(int *)(p + 0x104));
                 break;
             case 0x15B:
-                qcopy(w, m + 0x10);
+                qcopy(w, &((struct Moby *)m)->pos);
                 w[2] += 4.0f;
                 project_to_screen(v, w);
-                if (*(unsigned char *)(m + 0x31) != 0) {
+                if (((struct Moby *)m)->visible != 0) {
                     flag = 1;
                     {
                         float x = (v[0] - scr[4]) * 0.0625f;
@@ -1581,7 +1583,8 @@ int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *
                                                           2.5f, -ang);
                     }
                 }
-                dd = FastVecDist(m + 0x10, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
+                dd = FastVecDist(&((struct Moby *)m)->pos,
+                                 &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
                 if (dd < bestd) {
                     near = m;
                     bestd = dd;
@@ -1591,9 +1594,9 @@ int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *
                 break;
             case 0x6F:
             case 0x4BE:
-                if (!(*(unsigned short *)(m + 0x34) & 1)) {
-                    project_to_screen(v, m + 0x10);
-                    if (*(unsigned char *)(m + 0x31) != 0) {
+                if (!(((struct Moby *)m)->flags & 1)) {
+                    project_to_screen(v, &((struct Moby *)m)->pos);
+                    if (((struct Moby *)m)->visible != 0) {
                         {
                             float x = (v[0] - scr[4]) * 0.0625f;
                             float y = (v[1] - scr[5]) * 0.0625f;
@@ -1606,9 +1609,9 @@ int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *
                 }
                 break;
             case 0x4BF:
-                if (!(*(unsigned short *)(m + 0x34) & 1) && *(unsigned char *)(m + 0x20) >= 2) {
-                    project_to_screen(v, m + 0x10);
-                    if (*(unsigned char *)(m + 0x31) != 0) {
+                if (!(((struct Moby *)m)->flags & 1) && ((struct Moby *)m)->state >= 2) {
+                    project_to_screen(v, &((struct Moby *)m)->pos);
+                    if (((struct Moby *)m)->visible != 0) {
                         {
                             float x = (v[0] - scr[4]) * 0.0625f;
                             float y = (v[1] - scr[5]) * 0.0625f;
@@ -1639,12 +1642,13 @@ int select_fighter_jet_target_and_draw_contacts(int a, char *p, char *a2, char *
             case 0x53A:
                 break;
             default:
-                if (m != 0 && *(char **)(m + 0x24) != 0 && *(short *)(*(char **)(m + 0x24) + 0x46) == 5) {
+                if (m != 0 && *(char **)&((struct Moby *)m)->pclass != 0 &&
+                    *(short *)(*(char **)&((struct Moby *)m)->pclass + 0x46) == 5) {
                     draw_fighter_jet_radar_contact_icon(a3, a2, m, 1, 0x70808080, *(int *)(p + 0x104));
                 }
                 break;
         }
-        m = *(char **)(m + 0x28);
+        m = *(char **)&((struct Moby *)m)->next;
     }
     if (flag == 0 && near != 0) {
         char *np;
@@ -3233,14 +3237,14 @@ void robot_dog_1382_update(unsigned char *m) {
     update_robot_dog_glow_effects(m);
     tgt = d->target;
     manipulator_set_scale(d->a230, 2.1f);
-    if (((Moby *)m)->visible != 0 && FastVecDist(m + 0x10, fleet_camera_pos) < 29.0f) {
+    if (((Moby *)m)->visible != 0 && FastVecDist(&((struct Moby *)m)->pos, fleet_camera_pos) < 29.0f) {
         set_ground_height_band(m);
         ((Moby *)m)->shadow_range = 0x17;
     }
     switch (((Moby *)m)->state) {
         case 0:
             ((Moby *)m)->flags |= 0x1000;
-            qcopy(&d->home, m + 0x10);
+            qcopy(&d->home, &((struct Moby *)m)->pos);
             d->b58 = 8;
             d->b5A = 7;
             d->b29 = 0;
@@ -3249,8 +3253,10 @@ void robot_dog_1382_update(unsigned char *m) {
             d->pD0 = &class1382_move_params;
             d->f1EC = random_float_between(g_frame_time * 7.2f, g_frame_time * 8.7f);
             ((Moby *)m)->state = 1;
-            MobyBlendAnimation(
-                m, 0, random_integer_below(*(unsigned char *)(*(char **)(*(char **)(m + 0x24) + 0x48) + 0x10)), 0);
+            MobyBlendAnimation(m, 0,
+                               random_integer_below(
+                                   *(unsigned char *)(*(char **)(*(char **)&((struct Moby *)m)->pclass + 0x48) + 0x10)),
+                               0);
             if (d->i1E8 == -1) {
                 d->i1E8 = d->path;
             }
@@ -3302,7 +3308,7 @@ void robot_dog_1382_update(unsigned char *m) {
             if (tgt != 0) {
                 float turn;
                 float ang;
-                float *yaw = (float *)(m + 0x48);
+                float *yaw = &((struct Moby *)m)->rot.z;
                 int mode;
                 ang = fast_atan2(*(float *)(tgt + 0x10) - ((Moby *)m)->pos.x,
                                  *(float *)(tgt + 0x14) - ((Moby *)m)->pos.y);
@@ -3344,14 +3350,16 @@ void robot_dog_1382_update(unsigned char *m) {
                 } else if (d->t1E0 == 0 && d->mode == 0) {
                     ((Moby *)m)->state = 3;
                     if (((Moby *)m)->prev_seq != 0) {
-                        a = random_integer_below(*(unsigned char *)(*(char **)(*(char **)(m + 0x24) + 0x48) + 0x10));
+                        a = random_integer_below(
+                            *(unsigned char *)(*(char **)(*(char **)&((struct Moby *)m)->pclass + 0x48) + 0x10));
                         MobyBlendAnimation(m, 0, a, scale_ticks(10));
                     }
                 }
             } else if (random_integer_below(0x1F) == 0) {
                 ((Moby *)m)->state = 3;
                 if (((Moby *)m)->prev_seq != 0) {
-                    a = random_integer_below(*(unsigned char *)(*(char **)(*(char **)(m + 0x24) + 0x48) + 0x10));
+                    a = random_integer_below(
+                        *(unsigned char *)(*(char **)(*(char **)&((struct Moby *)m)->pclass + 0x48) + 0x10));
                     MobyBlendAnimation(m, 0, a, scale_ticks(10));
                 }
             }
@@ -3360,7 +3368,8 @@ void robot_dog_1382_update(unsigned char *m) {
             if (((Moby *)m)->anim_flags & 2) {
                 ((Moby *)m)->state = 1;
                 if (((Moby *)m)->prev_seq != 0) {
-                    a = random_integer_below(*(unsigned char *)(*(char **)(*(char **)(m + 0x24) + 0x48) + 0x10) - 1);
+                    a = random_integer_below(
+                        *(unsigned char *)(*(char **)(*(char **)&((struct Moby *)m)->pclass + 0x48) + 0x10) - 1);
                     MobyBlendAnimation(m, 0, a, scale_ticks(10));
                 }
             }
@@ -3434,7 +3443,7 @@ void robot_dog_1382_update(unsigned char *m) {
                                  ((int **)fleet_paths)[d->path] + 4, ((int **)fleet_paths)[d->path][0]) == 0 &&
                 d->f1D4 == 0.0f) {
                 ((Moby *)m)->state = 11;
-            } else if (vec_distance_xy(m + 0x10, d->v180) < 1.8f) {
+            } else if (vec_distance_xy(&((struct Moby *)m)->pos, d->v180) < 1.8f) {
                 ((Moby *)m)->state = 10;
                 if (((Moby *)m)->prev_seq != 10) {
                     MobyBlendAnimation(m, 10, 5, scale_ticks(10));
@@ -3453,7 +3462,7 @@ void robot_dog_1382_update(unsigned char *m) {
                        FastAbsF(d->v180[2] - ((Moby *)m)->pos.z) < 1.0f &&
                        FastDiffRots(fast_atan2(d->v180[0] - ((Moby *)m)->pos.x, d->v180[1] - ((Moby *)m)->pos.y),
                                     ((Moby *)m)->rot.z) < 0.2617994f &&
-                       d->target != 0 && vec_distance_xy(m + 0x10, d->v180) < 2.75f) {
+                       d->target != 0 && vec_distance_xy(&((struct Moby *)m)->pos, d->v180) < 2.75f) {
                 tmp[0] = FastCos(((Moby *)m)->rot.z) * 0.2f;
                 tmp[1] = FastSin(((Moby *)m)->rot.z) * 0.2f;
                 tmp[2] = 0.0f;
@@ -3470,7 +3479,7 @@ void robot_dog_1382_update(unsigned char *m) {
             float v;
             move_robot_dog_toward_position((char *)m, (float *)&d->home, g_frame_time * 5.0f);
             ((Moby *)m)->anim_speed = 1.35f;
-            dist = vec_distance_xy(m + 0x10, &d->home);
+            dist = vec_distance_xy(&((struct Moby *)m)->pos, &d->home);
             if ((dist < 1.4f && (((Moby *)m)->anim_flags & 2)) || dist < 0.3f) {
                 ((Moby *)m)->state = 5;
                 if (((Moby *)m)->prev_seq != 3) {
@@ -3479,7 +3488,7 @@ void robot_dog_1382_update(unsigned char *m) {
                 d->t1E2 = scale_ticks(120);
                 d->t1E0 = scale_ticks(120);
             } else if (((Moby *)m)->anim_flags & 2) {
-                far = vec_distance_xy(m + 0x10, d->v180);
+                far = vec_distance_xy(&((struct Moby *)m)->pos, d->v180);
                 k1 = multiply_global_factor(40.0f);
                 k2 = multiply_global_factor(10.0f);
                 v = d->speed * g_frame_time;
@@ -3515,9 +3524,11 @@ void robot_dog_1382_update(unsigned char *m) {
                 float *zero;
                 clear_u64_value(tmp);
                 zero = fleet_zero_vec;
-                SpawnExplosionFx(m, m + 0x10, -1, 0.5f, 13.0f);
-                SpawnBreakFragment((char *)m, 0x6CE, (float *)(m + 0x10), m + 0x40, 0, 0, 0.0f, zero, zero, zero);
-                SpawnBreakFragment((char *)m, 0x6CF, (float *)(m + 0x10), m + 0x40, 0, 0, 0.0f, zero, zero, zero);
+                SpawnExplosionFx(m, &((struct Moby *)m)->pos, -1, 0.5f, 13.0f);
+                SpawnBreakFragment((char *)m, 0x6CE, &((struct Moby *)m)->pos.x, &((struct Moby *)m)->rot, 0, 0, 0.0f,
+                                   zero, zero, zero);
+                SpawnBreakFragment((char *)m, 0x6CF, &((struct Moby *)m)->pos.x, &((struct Moby *)m)->rot, 0, 0, 0.0f,
+                                   zero, zero, zero);
                 spawn_moby_break_fragments(m, 0x77D, 1, 0x77D, 1, 3, 2);
                 SetDeathBits(m, 0, -1);
                 DeleteMoby(m);

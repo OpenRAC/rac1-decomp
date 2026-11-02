@@ -662,7 +662,7 @@ void apply_snagglebeast_big_head_cheat(char *arg) {
         int i;
         for (i = 0; i < umbris_cutscene_state.count; i++) {
             char *m = umbris_cutscene_state.mobs[i];
-            if (*(short *)(m + 0xA6) == *(short *)(arg + 0xA6)) {
+            if (((struct Moby *)m)->oclass == *(short *)(arg + 0xA6)) {
                 if (gCheats[0] != 0) {
                     unsigned char *p = snagglebeast_big_head_manipulator;
                     if (p[1] == 0) {

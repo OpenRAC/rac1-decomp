@@ -1859,16 +1859,16 @@ float compute_ultramech_flocking_steering_point(void *m_, void *out, float r) {
     float k;
     char *o;
     FindNearestTargetMoby_t(m, tgt, r);
-    dist = vec_distance_xy(m + 0x10, tgt);
+    dist = vec_distance_xy(&((struct Moby *)m)->pos, tgt);
     clear_u64_value_t(out);
     for (o = quartu_moby_list; o != 0; o = *(char **)(o + 0x28)) {
         if (o == m)
             continue;
-        if (*(short *)(o + 0xA6) != *(short *)(m + 0xA6))
+        if (*(short *)(o + 0xA6) != ((struct Moby *)m)->oclass)
             continue;
-        if (vec_distance_xy(o + 0x10, m + 0x10) < 3.0f) {
+        if (vec_distance_xy(o + 0x10, &((struct Moby *)m)->pos) < 3.0f) {
             wsum += 6.0f;
-            FastVecSub(tmp, m + 0x10, o + 0x10);
+            FastVecSub(tmp, &((struct Moby *)m)->pos, o + 0x10);
             FastVecScale(tmp, tmp, 6.0f);
             FastVecAdd(out, out, tmp);
         }
@@ -1876,7 +1876,7 @@ float compute_ultramech_flocking_steering_point(void *m_, void *out, float r) {
             clear = 0;
     }
     if (clear == 0) {
-        FastVecSub(tmp, m + 0x10, tgt);
+        FastVecSub(tmp, &((struct Moby *)m)->pos, tgt);
         if (dist < 9.5f) {
             k = 10.0f;
         } else if (10.5f < dist) {
@@ -1888,15 +1888,15 @@ float compute_ultramech_flocking_steering_point(void *m_, void *out, float r) {
         vec_scale_to_length(tmp, tmp, k * 10.0f);
         FastVecAdd(out, out, tmp);
         FastVecScale(out, out, 1.0f / wsum);
-        FastVecAdd(out, out, m + 0x10);
+        FastVecAdd(out, out, &((struct Moby *)m)->pos);
     } else {
         qcopy(out, tgt);
     }
-    if (vec_distance_xy(m + 0x10, out) < 1.0f) {
-        qcopy(out, m + 0x10);
-        return fast_atan2(tgt[0] - *(float *)(m + 0x10), tgt[1] - *(float *)(m + 0x14));
+    if (vec_distance_xy(&((struct Moby *)m)->pos, out) < 1.0f) {
+        qcopy(out, &((struct Moby *)m)->pos);
+        return fast_atan2(tgt[0] - ((struct Moby *)m)->pos.x, tgt[1] - ((struct Moby *)m)->pos.y);
     }
-    return fast_atan2(((float *)out)[0] - *(float *)(m + 0x10), ((float *)out)[1] - *(float *)(m + 0x14));
+    return fast_atan2(((float *)out)[0] - ((struct Moby *)m)->pos.x, ((float *)out)[1] - ((struct Moby *)m)->pos.y);
 }
 typedef int u128 __attribute__((mode(TI)));
 typedef struct UData UData;
@@ -3300,15 +3300,15 @@ void set_moby_list_visibility(int idx, int show) {
     if (p == 0)
         return;
     while (1) {
-        unsigned char *moby = (unsigned char *)(quartu_moby_array_r2 + ((*p & 0x7FFF) << 8));
+        struct Moby *moby = (struct Moby *)((unsigned char *)(quartu_moby_array_r2 + ((*p & 0x7FFF) << 8)));
         if (show) {
-            *(int *)(moby + 0x94) = *(int *)(*(char **)(moby + 0x24) + 0x10);
-            moby[0x31] = 1;
-            *(unsigned short *)(moby + 0x34) &= 0xFFFC;
+            moby->collision = *(int *)(*(char **)&moby->pclass + 0x10);
+            moby->visible = 1;
+            moby->flags &= 0xFFFC;
         } else {
-            *(int *)(moby + 0x94) = 0;
-            moby[0x31] = 0;
-            *(unsigned short *)(moby + 0x34) |= 3;
+            moby->collision = 0;
+            moby->visible = 0;
+            moby->flags |= 3;
         }
         if (*p++ < 0)
             return;

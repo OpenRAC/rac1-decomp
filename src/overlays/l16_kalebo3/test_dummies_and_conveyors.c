@@ -1511,18 +1511,18 @@ void activate_test_dummy_group(int idx) {
     short *p = (short *)kalebo3_moby_groups[idx];
     if (p != 0) {
         do {
-            char *moby;
+            struct Moby *moby;
         again:
-            moby = kalebo3_moby_array + ((*p & 0x7FFF) << 8);
-            if (*(short *)(moby + 0xA6) != 0x21D)
+            moby = (struct Moby *)(kalebo3_moby_array + ((*p & 0x7FFF) << 8));
+            if (moby->oclass != MOBY_CLASS_TEST_DUMMY)
                 goto again;
             {
                 int two = 2;
-                unsigned short flags = *(unsigned short *)(moby + 0x34);
-                moby[0x31] = 1;
+                unsigned short flags = moby->flags;
+                moby->visible = 1;
                 flags &= 0xFFFE;
-                moby[0x20] = two;
-                *(unsigned short *)(moby + 0x34) = flags;
+                moby->state = two;
+                moby->flags = flags;
             }
         } while (*p++ >= 0);
     }
@@ -2587,9 +2587,9 @@ void *find_nearest_test_dummy_door(int index, void *position) {
         return 0;
     while (1) {
         moby = kalebo3_moby_array + ((*(unsigned short *)p & 0x7FFF) << 8);
-        if (*(short *)(moby + 0xA6) != 0x28A)
+        if (((struct Moby *)moby)->oclass != MOBY_CLASS_TEST_DUMMY_DOOR)
             continue;
-        d = FastVecDist(position, moby + 0x10);
+        d = FastVecDist(position, &((struct Moby *)moby)->pos);
         if (d < distance) {
             distance = d;
             nearest = moby;
@@ -3006,11 +3006,11 @@ void initialize_moby_rotation_scales(Moby *moby) {
 }
 // Level 16's moby 0x56B: takes its target from its class record, or clears it.
 void set_class_056b_collision_enabled(void *moby, int on) {
-    if (*(short *)((char *)moby + 0xA6) == 0x56B) {
+    if (((struct Moby *)moby)->oclass == 0x56B) {
         if (on != 0) {
-            *(int *)((char *)moby + 0x94) = *(int *)(*(char **)((char *)moby + 0x24) + 0x10);
+            ((struct Moby *)moby)->collision = *(int *)(*(char **)&((struct Moby *)moby)->pclass + 0x10);
         } else {
-            *(int *)((char *)moby + 0x94) = 0;
+            ((struct Moby *)moby)->collision = 0;
         }
     }
 }

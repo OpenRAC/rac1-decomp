@@ -1604,11 +1604,11 @@ void HeroAttachManipulators(char *obj) {
         int i;
         char *qq;
         for (i = 0; qq = cutscene_state, i < *(short *)(qq + 0x44); i++) {
-            char *m = ((char **)(cutscene_state + 0x178))[i];
+            struct Moby *m = (struct Moby *)(((char **)(cutscene_state + 0x178))[i]);
             if (m != 0) {
-                int h = *(short *)(m + 0xA6);
+                int h = m->oclass;
                 if (h == 0x1B1 || h == 0x50A || h == 0x509) {
-                    *(float *)(m + 0x2C) = *(float *)(*(char **)(m + 0x24) + 0x24) * f20;
+                    m->scale = *(float *)(*(char **)&m->pclass + 0x24) * f20;
                 }
             }
         }

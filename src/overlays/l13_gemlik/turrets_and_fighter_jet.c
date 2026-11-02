@@ -478,23 +478,24 @@ extern unsigned char hero_globals_base[];
 
 // Places the point v at a radius around the moby for the facing angle and sets w to the direction toward the target.
 void compute_elevator_camera_pose(unsigned char *moby, float *v, float *w) {
-    float ang = *(float *)(moby + 0x48);
+    float ang = ((struct Moby *)moby)->rot.z;
     float r = 2.5f;
     float z = 1.5f;
     struct Hero *x;
-    if ((moby[0xBC] >= 2 && (moby[0xBC] & 1)) || (moby[0x20] >= 2 && (moby[0x20] & 1))) {
+    if ((((struct Moby *)moby)->command >= 2 && (((struct Moby *)moby)->command & 1)) ||
+        (((struct Moby *)moby)->state >= 2 && (((struct Moby *)moby)->state & 1))) {
         ang = FastSubRots(ang, 1.5707964f);
     } else {
         ang = FastAddRots(ang, 1.5707964f);
     }
-    if (*(short *)(moby + 0xA6) == 0x15) {
+    if (((struct Moby *)moby)->oclass == MOBY_CLASS_ELEVATOR_21) {
         r = 2.0f;
         z = 1.2f;
     }
     v[0] = FastCos(ang) * r;
     v[1] = FastSin(ang) * r;
     v[2] = z;
-    FastVecAdd(v, v, moby + 0x10);
+    FastVecAdd(v, v, &((struct Moby *)moby)->pos);
     clear_u64_value(w);
     x = (struct Hero *)(hero_globals_base + 0xE1D);
     w[2] = fast_atan2(x->motion.body_center.f[0] - v[0], x->motion.body_center.f[1] - v[1]);
@@ -745,7 +746,7 @@ void process_blarg_gunner_hits(char *m, char *p) {
     char *q;
     int k;
     int r;
-    if (*(unsigned char *)(m + 0x20) != 2) {
+    if (((struct Moby *)m)->state != 2) {
         q = MobyGetHitMessage(m, 0x330000, 0);
         r = ComputeHitResponse(m, q, tm, 0, &k, 0, 0, 4);
         if (q != 0) {
@@ -755,8 +756,8 @@ void process_blarg_gunner_hits(char *m, char *p) {
                     *(int *)(q + 0x2C) = 0;
                     k = 1;
                 } else {
-                    float f = FastDiffRots(fast_atan2(*(float *)(t + 0x10) - *(float *)(m + 0x10),
-                                                      *(float *)(t + 0x14) - *(float *)(m + 0x14)),
+                    float f = FastDiffRots(fast_atan2(*(float *)(t + 0x10) - ((struct Moby *)m)->pos.x,
+                                                      *(float *)(t + 0x14) - ((struct Moby *)m)->pos.y),
                                            *(float *)(*(char **)(*(char **)(p + 0x70) + 0x78) + 0x54));
                     if (f < 1.65806282f) {
                         *(int *)(q + 0x2C) = 0;
@@ -788,7 +789,7 @@ void process_blarg_gunner_hits(char *m, char *p) {
             if (f0 <= f1) {
                 char *x;
                 *(int *)tm = 0;
-                *(unsigned short *)(m + 0x34) &= 0xEFFF;
+                ((struct Moby *)m)->flags &= 0xEFFF;
                 x = *(char **)(p + 0x70);
                 if (x != 0) {
                     if (*(short *)(x + 0xA6) == 0x1D) {
@@ -802,9 +803,9 @@ void process_blarg_gunner_hits(char *m, char *p) {
                 SetDeathBits(m, 0, -1);
                 p[0x67] = 0x78;
                 RerollEffectCounter(m, (short *)(p + 0x60));
-                if (*(unsigned char *)(m + 0x53) != 3)
+                if (((struct Moby *)m)->prev_seq != 3)
                     MobyBlendAnimation(m, 3, 1, 0);
-                m[0x20] = 2;
+                ((struct Moby *)m)->state = 2;
             } else {
                 *tm = f0 - f1;
                 *(unsigned char *)(p + 0x67) = 0xFA;
@@ -813,7 +814,7 @@ void process_blarg_gunner_hits(char *m, char *p) {
             }
         }
     }
-    *(unsigned char *)(m + 0xA4) = 0xFF;
+    ((struct Moby *)m)->hit_slot = 0xFF;
     StepColorFade(m, p + 0x60);
 }
 extern int rand_range(int, int);

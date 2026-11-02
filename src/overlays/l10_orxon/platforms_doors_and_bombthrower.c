@@ -1771,7 +1771,7 @@ extern void spawn_debris_moby(void *, void *, unsigned int, float, int, float, f
 /* Orxon moby update: destroys itself when its item is taken, else fires its effect once per pass. */
 void handle_moby_destruction(char *moby) {
     Vec4 v20, v30, v40, v50;
-    unsigned short id = *(unsigned short *)(moby + 0xB2);
+    unsigned short id = ((struct Moby *)moby)->save_id;
     int n;
     int k;
     int c16;
@@ -1787,10 +1787,10 @@ void handle_moby_destruction(char *moby) {
         return;
     }
     if (MobyGetHitMessage(moby, 0x40000, 0)) {
-        char *c0 = moby + 0xC0;
+        char *c0 = (char *)&((struct Moby *)moby)->rot_row0;
         v20.q = 0;
-        spawn_explosion(moby, &v20, moby + 0x10, 0.0f, 0.0f, 5, 3, 4, 4.0f, 2.0f, 100000.0f, 3.0f, -1, 15.0f, 1, 1, -1,
-                        0);
+        spawn_explosion(moby, &v20, &((struct Moby *)moby)->pos, 0.0f, 0.0f, 5, 3, 4, 4.0f, 2.0f, 100000.0f, 3.0f, -1,
+                        15.0f, 1, 1, -1, 0);
         Sound_PlayClassSound_v(0, 0, moby, 0x99);
         n = 0x1D;
         do {
@@ -1803,7 +1803,7 @@ void handle_moby_destruction(char *moby) {
             v30.q = v40.q;
             matrix_mul_vec3(&v30, &v30, c0);
             vec_scale_to_length(&v40, &v30, random_float_between(5.0f, 10.0f) * g_frame_time);
-            add_vectors(&v50, &v30, moby + 0x10);
+            add_vectors(&v50, &v30, &((struct Moby *)moby)->pos);
             if (random_integer_below(1) == 0)
                 k = 0x70E;
             f21 = random_float_between(0.5f, 1.0f);
@@ -1821,10 +1821,9 @@ void handle_moby_destruction(char *moby) {
         spawn_fixed_height_destruction_moby(moby);
         spawn_destruction_replacement_moby(moby);
         *(int *)(help_stats_base + 0xAB75 +
-                 (((short)*(unsigned short *)(moby + 0xB2) >> 5) * 4 + (g_current_level_index_r << 8))) |=
-            1 << (*(unsigned short *)(moby + 0xB2) & 0x1F);
-        orxon_moby_killed[(short)*(unsigned short *)(moby + 0xB2) >> 5] |= 1
-                                                                           << (*(unsigned short *)(moby + 0xB2) & 0x1F);
+                 (((short)((struct Moby *)moby)->save_id >> 5) * 4 + (g_current_level_index_r << 8))) |=
+            1 << (((struct Moby *)moby)->save_id & 0x1F);
+        orxon_moby_killed[(short)((struct Moby *)moby)->save_id >> 5] |= 1 << (((struct Moby *)moby)->save_id & 0x1F);
         DeleteMoby(moby);
     }
 }

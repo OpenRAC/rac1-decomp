@@ -1243,14 +1243,14 @@ extern void AddDrawCallback(void *, void *);
 extern void draw_moby_radial_ripple_mesh_buffers(void);
 
 // First call sets up and marks the moby; later calls queue a draw callback and set a flag.
-void ripple_strips_moby_update(char *moby) {
-    if (*(unsigned char *)(moby + 0x20) == 0) {
+void ripple_strips_moby_update(struct Moby *moby) {
+    if (moby->state == 0) {
         set_moby_color(moby, 0x40, 0x40, 0x40);
-        moby[0x20] = 1;
+        moby->state = 1;
     } else {
         AddDrawCallback((void *)draw_moby_radial_ripple_mesh_buffers, moby);
-        *(short *)(moby + 0x32) = 0;
-        *(unsigned short *)(moby + 0x34) |= 1;
+        moby->draw_dist = 0;
+        moby->flags |= 1;
     }
 }
 extern void initialize_collectible_sprite_state(char *);

@@ -749,7 +749,7 @@ void attach_drek_boss_big_head_manipulator(char *moby) {
         int i;
         for (i = 0; i < veldin2_cutscene_state.count; i++) {
             char *m = veldin2_cutscene_state.mobs[i];
-            if (*(short *)(m + 0xA6) == 0x4E1) {
+            if (((struct Moby *)m)->oclass == MOBY_CLASS_DREK) {
                 unsigned char *e = (unsigned char *)veldin2_big_head_manipulator;
                 if (e[1] == 0) {
                     float f;
@@ -2480,8 +2480,8 @@ unsigned char *select_drek_boss_platform_firing_target(char *self) {
     for (;;) {
     start: {
         int off = (*(unsigned short *)p & 0x7FFF) << 8;
-        unsigned char *m = (unsigned char *)((int)off + (int)veldin2_moby_table);
-        if (*(short *)(m + 0xA6) == 0x24B) {
+        struct Moby *m = (struct Moby *)((unsigned char *)((int)off + (int)veldin2_moby_table));
+        if (m->oclass == MOBY_CLASS_FLOATING_PLATFORM_587) {
             char *c = (char *)data->f3C0;
             unsigned char *q;
             request_floating_platform_sink(m);
@@ -2519,13 +2519,13 @@ void hide_drek_boss_moby_group(int unused, int idx) {
     short *p = veldin2_moby_groups[idx];
     if (p != 0) {
         do {
-            unsigned char *m = veldin2_moby_table + ((*(unsigned short *)p & 0x7FFF) << 8);
-            if (m != 0 && m[0x20] != 0xFE && m[0x20] != 0xFD) {
-                unsigned short flags = *(unsigned short *)(m + 0x34);
-                *(int *)(m + 0x94) = 0;
+            struct Moby *m = (struct Moby *)(veldin2_moby_table + ((*(unsigned short *)p & 0x7FFF) << 8));
+            if (m != 0 && m->state != 0xFE && m->state != 0xFD) {
+                unsigned short flags = m->flags;
+                m->collision = 0;
                 flags |= 1;
-                m[0x31] = 0;
-                *(unsigned short *)(m + 0x34) = flags;
+                m->visible = 0;
+                m->flags = flags;
             }
         } while (*p++ >= 0);
     }
@@ -2536,11 +2536,11 @@ void show_drek_boss_moby_group(int a0, int idx) {
     short *p = veldin2_moby_groups[idx];
     if (p != 0) {
         do {
-            unsigned char *m = veldin2_moby_table + ((*(unsigned short *)p & 0x7FFF) << 8);
-            if (m != 0 && m[0x20] != 0xFE && m[0x20] != 0xFD) {
-                m[0x31] = 1;
-                *(unsigned short *)(m + 0x34) &= 0xFFFE;
-                *(int *)(m + 0x94) = *(int *)(*(char **)(m + 0x24) + 0x10);
+            struct Moby *m = (struct Moby *)(veldin2_moby_table + ((*(unsigned short *)p & 0x7FFF) << 8));
+            if (m != 0 && m->state != 0xFE && m->state != 0xFD) {
+                m->visible = 1;
+                m->flags &= 0xFFFE;
+                m->collision = *(int *)(*(char **)&m->pclass + 0x10);
             }
         } while (*p++ >= 0);
     }
