@@ -480,9 +480,9 @@ void update_numeric_hud_element_direct_value(HudElem *e) {
 }
 
 extern float hud_star_particles[][4];
-extern short star_init_limit0_gp;
-extern short star_init_limit1_gp;
-extern short star_init_limit2_gp;
+extern float star_init_limit0_gp SDATA(star_init_limit0_gp);
+extern float star_init_limit1_gp SDATA(star_init_limit1_gp);
+extern float star_init_limit2_gp SDATA(star_init_limit2_gp);
 extern int hud_star_column_count SDATA(hud_star_column_count);
 
 /* fills 100 hud particle records with randomised positions and drift */
@@ -493,11 +493,11 @@ void hud_init_particles(HudElem *e) {
 
     reset_numeric_hud_element(e);
     for (i = 0; i < 100; i++) {
-        v = *(float *)&star_init_limit0_gp;
+        v = star_init_limit0_gp;
         if (i >= 10) {
-            v = *(float *)&star_init_limit1_gp;
+            v = star_init_limit1_gp;
             if (i >= 20)
-                v = *(float *)&star_init_limit2_gp;
+                v = star_init_limit2_gp;
         }
         n = hud_star_column_count;
         span = (232.0f - (v + v)) / (float)n;
@@ -516,9 +516,9 @@ void hud_init_particles(HudElem *e) {
 extern void Hud_UpdateCounter_v(HudElem *) __asm__("func_L00_00236830");
 extern int rendered_frame_count MACRO_ADDR;
 extern float hud_star_particles[][4];
-extern short star_init_limit0_gp;
-extern short star_init_limit1_gp;
-extern short star_init_limit2_gp;
+extern float star_init_limit0_gp SDATA(star_init_limit0_gp);
+extern float star_init_limit1_gp SDATA(star_init_limit1_gp);
+extern float star_init_limit2_gp SDATA(star_init_limit2_gp);
 
 /* bounces the drifting particles around a box that depends on their index, after updating its
    HUD element (the element it is the callback of, passed on in $a0) */
@@ -537,11 +537,11 @@ void hud_update_particles(HudElem *e) {
         float a, b, na, nb;
 
         if (i < 10) {
-            lim = *(float *)&star_init_limit0_gp;
+            lim = star_init_limit0_gp;
         } else if (i < 30) {
-            lim = *(float *)&star_init_limit1_gp;
+            lim = star_init_limit1_gp;
         } else {
-            lim = *(float *)&star_init_limit2_gp;
+            lim = star_init_limit2_gp;
         }
         a = lim - 17.0f;
         b = lim - 116.0f;
@@ -580,10 +580,10 @@ extern void vec_mul_components(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern void draw_hud_sprite_subpixel(int, int, int, int, int, int);
 extern void draw_rotated_hud_sprite(int tex, int x, int y, int w, int h, int alpha);
-extern short hud_stars_width;
+extern int hud_stars_width SDATA(hud_stars_width);
 extern short hud_star_height;
-extern short hud_stars_scale_x;
-extern short hud_stars_scale_y;
+extern float hud_stars_scale_x SDATA(hud_stars_scale_x);
+extern float hud_stars_scale_y SDATA(hud_stars_scale_y);
 
 // HUD element update: places sprite pairs along a 100-step arc
 int draw_hud_stars(HudElem *rec) {
@@ -593,7 +593,7 @@ int draw_hud_stars(HudElem *rec) {
     float f0, f20, f21, f22;
 
     {
-        int ww = *(int *)&hud_stars_width;
+        int ww = hud_stars_width;
         x = rec->unk50;
         y = rec->unk54;
         rec->w = ww;
@@ -607,9 +607,9 @@ int draw_hud_stars(HudElem *rec) {
     apply_hud_slide_offset(rec, &x, &y, ((HudElem *)r)->unk6C, 0);
 
     {
-        int w = *(int *)&hud_stars_width * 0xD0;
+        int w = hud_stars_width * 0xD0;
         int h = *(int *)&hud_star_height * 0xA0;
-        int bh = *(int *)&hud_stars_width * 0x260;
+        int bh = hud_stars_width * 0x260;
         int bottom = *(int *)&hud_star_height * 0xEA0;
         int left = (x + rec->unk48) << 4;
         int top = (y + rec->unk4A) << 4;
@@ -644,19 +644,18 @@ int draw_hud_stars(HudElem *rec) {
     tex = GetIconFrame(*(int *)r, flagB);
     f20 = 16.0f;
     f22 = 32.0f;
-    draw_rotated_hud_sprite(tex, x + rec->unk48, y + rec->unk4A, (*(int *)&hud_stars_width), (*(int *)&hud_star_height),
-                            0x80);
+    draw_rotated_hud_sprite(tex, x + rec->unk48, y + rec->unk4A, (hud_stars_width), (*(int *)&hud_star_height), 0x80);
 
     {
         float cx, cy, ox, oy;
-        ox = (*(int *)&hud_stars_width * *(float *)&hud_stars_scale_x * 0.5f) / 17.0f;
-        oy = -(*(int *)&hud_star_height * *(float *)&hud_stars_scale_y * 0.5f) / 116.0f;
+        ox = (hud_stars_width * hud_stars_scale_x * 0.5f) / 17.0f;
+        oy = -(*(int *)&hud_star_height * hud_stars_scale_y * 0.5f) / 116.0f;
         v0[2] = 1.0f;
         v0[3] = 1.0f;
-        cx = *(int *)&hud_stars_width * *(float *)&hud_stars_scale_x * 0.5f + (x + rec->unk48);
-        cy = *(int *)&hud_star_height * *(float *)&hud_stars_scale_y * 0.5f + (y + rec->unk4A);
-        v10[0] = (cx + (1.0f - *(float *)&hud_stars_scale_x) * 0.5f * *(int *)&hud_stars_width) * f20;
-        v10[1] = (cy + (1.0f - *(float *)&hud_stars_scale_y) * 0.5f * *(int *)&hud_star_height) * f20;
+        cx = hud_stars_width * hud_stars_scale_x * 0.5f + (x + rec->unk48);
+        cy = *(int *)&hud_star_height * hud_stars_scale_y * 0.5f + (y + rec->unk4A);
+        v10[0] = (cx + (1.0f - hud_stars_scale_x) * 0.5f * hud_stars_width) * f20;
+        v10[1] = (cy + (1.0f - hud_stars_scale_y) * 0.5f * *(int *)&hud_star_height) * f20;
         v10[2] = 0.0f;
         v10[3] = 0.0f;
         v0[0] = ox * f20;
@@ -670,9 +669,9 @@ int draw_hud_stars(HudElem *rec) {
     clear_u64_value(v30);
     clear_u64_value(v40);
     {
-        float q0 = *(float *)&star_init_limit0_gp;
-        float q2 = *(float *)&star_init_limit1_gp;
-        float q1 = *(float *)&star_init_limit2_gp;
+        float q0 = star_init_limit0_gp;
+        float q2 = star_init_limit1_gp;
+        float q1 = star_init_limit2_gp;
         float q3 = q0 * f20;
         q0 = q2 - q0;
         q1 = q1 - q2;
@@ -690,14 +689,14 @@ int draw_hud_stars(HudElem *rec) {
         if (i == 0) {
             float c0;
             FastVecSub(v10, v10, v20);
-            c0 = *(float *)&star_init_limit0_gp;
+            c0 = star_init_limit0_gp;
             w = (int)(c0 * f22);
             f21 = f21 + c0;
         } else if (i == 10) {
             float c0, c1, c2;
             FastVecSub(v10, v10, v30);
-            c0 = *(float *)&star_init_limit1_gp;
-            c1 = *(float *)&star_init_limit0_gp;
+            c0 = star_init_limit1_gp;
+            c1 = star_init_limit0_gp;
             c2 = c0 * f22;
             c0 = c0 - c1;
             w = (int)c2;
@@ -705,8 +704,8 @@ int draw_hud_stars(HudElem *rec) {
         } else if (i == 30) {
             float c0, c1, c2;
             FastVecSub(v10, v10, v40);
-            c0 = *(float *)&star_init_limit2_gp;
-            c1 = *(float *)&star_init_limit1_gp;
+            c0 = star_init_limit2_gp;
+            c1 = star_init_limit1_gp;
             c2 = c0 * f22;
             c0 = c0 - c1;
             w = (int)c2;
@@ -735,10 +734,10 @@ extern void FastVecSub(void *, void *, void *);
 extern void vec_mul_components(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern void draw_hud_sprite_subpixel(int, int, int, int, int, int);
-extern short hud_stars_width;
+extern int hud_stars_width SDATA(hud_stars_width);
 extern short hud_star_height;
-extern short hud_stars_scale_x;
-extern short hud_stars_scale_y;
+extern float hud_stars_scale_x SDATA(hud_stars_scale_x);
+extern float hud_stars_scale_y SDATA(hud_stars_scale_y);
 
 /* Draws a HUD element's backdrop and the 100 entries of its particle table that are due */
 int draw_uniform_size_hud_stars(HudElem *e) {
@@ -748,7 +747,7 @@ int draw_uniform_size_hud_stars(HudElem *e) {
     int tex, sz, i;
 
     {
-        int ww = *(int *)&hud_stars_width;
+        int ww = hud_stars_width;
         x = e->unk50;
         y = e->unk54;
         e->w = ww;
@@ -761,17 +760,17 @@ int draw_uniform_size_hud_stars(HudElem *e) {
     hud_screen_position(e, &x, &y);
     apply_hud_slide_offset(e, &x, &y, e->unk6C, 0);
     tex = GetIconFrame(*(int *)e, 0);
-    draw_rotated_hud_sprite(tex, x + e->unk48, y + e->unk4A, *(int *)&hud_stars_width, *(int *)&hud_star_height, 0x80);
+    draw_rotated_hud_sprite(tex, x + e->unk48, y + e->unk4A, hud_stars_width, *(int *)&hud_star_height, 0x80);
     {
         float cx, cy, ox, oy;
-        ox = (*(int *)&hud_stars_width * *(float *)&hud_stars_scale_x * 0.5f) / 17.0f;
-        oy = -(*(int *)&hud_star_height * *(float *)&hud_stars_scale_y * 0.5f) / 116.0f;
+        ox = (hud_stars_width * hud_stars_scale_x * 0.5f) / 17.0f;
+        oy = -(*(int *)&hud_star_height * hud_stars_scale_y * 0.5f) / 116.0f;
         v0[2] = 1.0f;
         v0[3] = 1.0f;
-        cx = *(int *)&hud_stars_width * *(float *)&hud_stars_scale_x * 0.5f + (x + e->unk48);
-        cy = *(int *)&hud_star_height * *(float *)&hud_stars_scale_y * 0.5f + (y + e->unk4A);
-        v1[0] = (cx + (1.0f - *(float *)&hud_stars_scale_x) * 0.5f * *(int *)&hud_stars_width) * 16.0f;
-        v1[1] = (cy + (1.0f - *(float *)&hud_stars_scale_y) * 0.5f * *(int *)&hud_star_height) * 16.0f;
+        cx = hud_stars_width * hud_stars_scale_x * 0.5f + (x + e->unk48);
+        cy = *(int *)&hud_star_height * hud_stars_scale_y * 0.5f + (y + e->unk4A);
+        v1[0] = (cx + (1.0f - hud_stars_scale_x) * 0.5f * hud_stars_width) * 16.0f;
+        v1[1] = (cy + (1.0f - hud_stars_scale_y) * 0.5f * *(int *)&hud_star_height) * 16.0f;
         v1[2] = 0.0f;
         v1[3] = 0.0f;
         v0[0] = ox * 16.0f;
@@ -783,15 +782,15 @@ int draw_uniform_size_hud_stars(HudElem *e) {
     clear_u64_value(v2);
     clear_u64_value(v3);
     clear_u64_value(v4);
-    v2[1] = v2[0] = *(float *)&star_init_limit0_gp * 16.0f;
-    v3[1] = v3[0] = (*(float *)&star_init_limit1_gp - *(float *)&star_init_limit0_gp) * 16.0f;
-    v4[1] = v4[0] = (*(float *)&star_init_limit2_gp - *(float *)&star_init_limit1_gp) * 16.0f;
+    v2[1] = v2[0] = star_init_limit0_gp * 16.0f;
+    v3[1] = v3[0] = (star_init_limit1_gp - star_init_limit0_gp) * 16.0f;
+    v4[1] = v4[0] = (star_init_limit2_gp - star_init_limit1_gp) * 16.0f;
     sz = 0;
     for (i = 0; i < 100; i++) {
         if (i == 0) {
             FastVecSub(v1, v1, v2);
-            sz = (int)(*(float *)&star_init_limit0_gp * 32.0f);
-            t += *(float *)&star_init_limit0_gp;
+            sz = (int)(star_init_limit0_gp * 32.0f);
+            t += star_init_limit0_gp;
         }
         if (t < hud_star_particles[i][1])
             continue;
@@ -971,7 +970,7 @@ void update_hud_counter_cap_and_visibility(HudElem *e) {
  * the hud_star_height load is a scalar MEM (no anti-dep on the e->w/e->h
  * stores), which moves it later in sched1 and gives it $a3 in local-alloc.
  */
-extern short hud_stars_width;
+extern int hud_stars_width SDATA(hud_stars_width);
 extern short hud_star_height;
 extern void draw_hud_rect_blended(int, int, int, int, long, long);
 extern int GetIconFrame(int, int);
@@ -983,7 +982,7 @@ int hud_draw_gauge_frame(HudElem *e) {
     int pos[2];
     int left, top, right, bottom, w, h, bh, step, i;
     {
-        int ww = *(int *)&hud_stars_width;
+        int ww = hud_stars_width;
         pos[0] = e->unk50;
         pos[1] = e->unk54;
         e->w = ww;
@@ -995,9 +994,9 @@ int hud_draw_gauge_frame(HudElem *e) {
     }
     hud_screen_position(e, &pos[0], &pos[1]);
     apply_hud_slide_offset(e, &pos[0], &pos[1], e->unk6C, 0);
-    w = *(int *)&hud_stars_width * 0xD0;
+    w = hud_stars_width * 0xD0;
     h = *(int *)&hud_star_height * 0xA0;
-    bh = *(int *)&hud_stars_width * 0x260;
+    bh = hud_stars_width * 0x260;
     bottom = *(int *)&hud_star_height * 0xEA0;
     left = (pos[0] + e->unk48) << 4;
     top = (pos[1] + e->unk4A) << 4;
@@ -1028,8 +1027,7 @@ int hud_draw_gauge_frame(HudElem *e) {
             draw_hud_rect_blended(left, top, right, top + 32, 0x80000000, 1);
         } while (i < e->unk74);
     w = GetIconFrame(*(int *)e, 0);
-    draw_rotated_hud_sprite(w, pos[0] + e->unk48, pos[1] + e->unk4A, *(int *)&hud_stars_width, *(int *)&hud_star_height,
-                            0x80);
+    draw_rotated_hud_sprite(w, pos[0] + e->unk48, pos[1] + e->unk4A, hud_stars_width, *(int *)&hud_star_height, 0x80);
     return e->w;
 }
 typedef struct {

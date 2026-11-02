@@ -154,7 +154,8 @@ def rewrite(text, bases, targets, keep=(), blocked=(), scope=None, declare=True,
 
 def check(rel):
     """(names of functions that do not match, symbols that clash, whether the file failed to build)."""
-    run = subprocess.run(["bash", "tools/docker/run.sh", "python", "tools/overlay_file_check.py", rel], cwd=ROOT,
+    tool = "tools/overlay_file_check.py" if rel.startswith("src/overlays/") else "tools/file_check.py"
+    run = subprocess.run(["bash", "tools/docker/run.sh", "python", tool, rel], cwd=ROOT,
                          capture_output=True, text=True)
     out = run.stdout + run.stderr
     clash = set(re.findall(r"(?:conflicting types for|redeclaration of|previous declaration of) `(\w+)'|`(\w+)' undeclared", out))

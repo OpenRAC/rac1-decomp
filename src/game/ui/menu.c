@@ -96,11 +96,11 @@ int map_filter_l01_5(int reveal_test_selector, float unused1, float unused2, flo
     return (reveal_test_value >= 95.0f) ? 1 : 0;
 }
 
-extern short menu_selection_count;   /* declared small so -G2 puts it in SDA */
+extern int menu_selection_count SDATA(menu_selection_count);
 
 /* Map filter: shown while the menu selection count is zero. */
 int map_filter_l03_0(void) {
-    return *(int *)&menu_selection_count == 0;
+    return menu_selection_count == 0;
 }
 
 extern unsigned char menu_item_enabled_16 NOT_SDA;

@@ -947,7 +947,7 @@ int try_update_resort_owner_path_target(char *moby, char *other) {
     }
     return follow_path(buf, n, d->b[d->idx], moby + 0x10, other, d->e, 0.2f) != 0;
 }
-extern short pokitaru_moby_group_count;
+extern int pokitaru_moby_group_count SDATA(pokitaru_moby_group_count);
 extern int pokitaru_moby_group_count_m __asm__("D_L11_00160074") MACRO_ADDR;
 
 extern int is_moby_in_bob_target_exclusion_state(char *);
@@ -2017,13 +2017,13 @@ int is_moby_in_state_five(unsigned char *arg) {
 void BossL11_SetPartFlag(unsigned char *arg) {
     *(int *)(*(int *)(arg + 0x78) + 0xB8) = 1;
 }
-extern short pokitaru_moby_group_count;
+extern int pokitaru_moby_group_count SDATA(pokitaru_moby_group_count);
 
 // Returns 1 unless a listed moby in the group with state >= 0 and id 0x4DE fails the check.
 int is_pokitaru_boat_target_group_clear(char *m) {
     int idx = *(short *)(((char *)((Moby *)m)->pvars) + 0xB4);
     short *p;
-    if (idx < 0 || *(int *)&pokitaru_moby_group_count < idx)
+    if (idx < 0 || pokitaru_moby_group_count < idx)
         return 1;
     p = pokitaru_moby_groups[idx];
     if (p == 0)

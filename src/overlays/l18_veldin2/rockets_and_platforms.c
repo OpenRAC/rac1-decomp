@@ -3033,7 +3033,7 @@ extern float electric_bolt_wave_height_start SDATA(electric_bolt_wave_height_sta
 extern float electric_bolt_wave_height_end SDATA(electric_bolt_wave_height_end);
 extern float primary_bolt_z_jitter_range_start_gp SDATA(primary_bolt_z_jitter_range_start_gp);
 extern float primary_bolt_z_jitter_range_end_gp SDATA(primary_bolt_z_jitter_range_end_gp);
-extern short electric_bolt_color;
+extern int electric_bolt_color SDATA(electric_bolt_color);
 extern float electric_bolt_particle_direction_scale_gp SDATA(electric_bolt_particle_direction_scale_gp);
 extern float electric_bolt_wander_blend SDATA(electric_bolt_wander_blend);
 extern float frame_scale MACRO_ADDR;
@@ -3072,9 +3072,9 @@ void update_electric_bolt_geometry_and_particles(void *moby) {
     electric_bolt_swell_phase = FastAddRots(electric_bolt_swell_phase, electric_bolt_swell_phase_speed);
     scale = FastVecDist((char *)moby + 0x10, &data->target) * 0.05f;
     if (flag) {
-        *(int *)&electric_bolt_color = 0x7F2040;
+        electric_bolt_color = 0x7F2040;
     } else {
-        *(int *)&electric_bolt_color = 0x7F2020;
+        electric_bolt_color = 0x7F2020;
     }
     FastVecSub(&s[0], &data->target, (char *)moby + 0x10);
     vec_scale_to_length(&s[0], &s[0], 1.0f);
@@ -3223,15 +3223,15 @@ void update_electric_bolt_geometry_and_particles(void *moby) {
     if (random_integer_below(2))
         r = -r;
     f20 = random_float_between(0.2f, 0.6f);
-    spawn_ec290((char *)moby + 0x10, scale_ticks(15), f20 * 0.3f, f20, *(int *)&electric_bolt_color | 0x7F000000, 0, r,
-                &s[5], 0.0f);
+    spawn_ec290((char *)moby + 0x10, scale_ticks(15), f20 * 0.3f, f20, electric_bolt_color | 0x7F000000, 0, r, &s[5],
+                0.0f);
     r = -r;
     spawn_ec290((char *)moby + 0x10, scale_ticks(15), f20 * 0.15f, f20 * 0.5f, 0x307F7F7F, 0, r, &s[5], 0.0f);
     r = rand_range(1, 8);
     if (random_integer_below(2))
         r = -r;
     f20 = random_float_between(0.15f, 3.0f);
-    spawn_ec290(&data->target, scale_ticks(12), f20 * 0.1f, f20, *(int *)&electric_bolt_color | 0x7F000000, 0, r,
+    spawn_ec290(&data->target, scale_ticks(12), f20 * 0.1f, f20, electric_bolt_color | 0x7F000000, 0, r,
                 veldin2_zero_vec_r, 0.0f);
 }
 typedef struct {
@@ -3249,7 +3249,7 @@ extern V_2bb0b0 electric_bolt_glow_quad_corners[];
 extern QuadUv electric_bolt_glow_quad_uvs[];
 extern int electric_bolt_glow_core_color SDATA(electric_bolt_glow_core_color);
 extern float electric_bolt_glow_core_size SDATA(electric_bolt_glow_core_size);
-extern short electric_bolt_color;
+extern int electric_bolt_color SDATA(electric_bolt_color);
 extern float electric_bolt_glow_halo_size SDATA(electric_bolt_glow_halo_size);
 
 /* Draws two additive glow quads facing the camera at pos[1]. */
@@ -3286,7 +3286,7 @@ void draw_moby_billboard_quad_pair(V_2bb0b0 *pos) {
         quad.uv[i].v = electric_bolt_glow_quad_uvs[i].v;
     }
     draw_world_quad(&quad, 0, 0);
-    c = *(int *)&electric_bolt_color;
+    c = electric_bolt_color;
     quad.color[3] = c;
     quad.color[2] = c;
     quad.color[1] = c;
@@ -3499,7 +3499,7 @@ void select_drek_fight_missile_wander_target(char *moby, void *out) {
     FastVecAdd(out, v, &data->home_x);
     data->timer = scale_ticks(180);
 }
-extern short drek_missile_effects_disabled;
+extern int drek_missile_effects_disabled SDATA(drek_missile_effects_disabled);
 struct GeometryQuad_1780 {
     Vec4 positions[4];
     u32 colors[4];
@@ -3537,7 +3537,7 @@ void draw_drek_fight_missile_group_trails(struct Moby *moby) {
     int n;
     int base;
 
-    if (*(int *)&drek_missile_effects_disabled != 0) {
+    if (drek_missile_effects_disabled != 0) {
         return;
     }
     for (i = 0; i < 16; i++) {
@@ -3587,7 +3587,7 @@ extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 
 extern float g_frame_time MACRO_ADDR;
-extern short drek_missile_effects_disabled;
+extern int drek_missile_effects_disabled SDATA(drek_missile_effects_disabled);
 extern float drek_missile_glow_pulse_speed SDATA(drek_missile_glow_pulse_speed);
 extern float drek_missile_dive_glow_pulse_speed SDATA(drek_missile_dive_glow_pulse_speed);
 extern int drek_missile_glow_color_a SDATA(drek_missile_glow_color_a);
@@ -3599,7 +3599,7 @@ extern float drek_missile_glow_offset SDATA(drek_missile_glow_offset);
 void render_drek_fight_missile_group_effects(char *moby) {
     short *p;
     float a, b;
-    if (*(int *)&drek_missile_effects_disabled != 0) {
+    if (drek_missile_effects_disabled != 0) {
         return;
     }
     p = (short *)veldin2_moby_groups[((unsigned char *)moby)[0x21]];

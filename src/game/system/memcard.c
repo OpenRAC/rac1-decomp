@@ -1563,7 +1563,7 @@ typedef struct {
     int cur; /* 0xCC */
 } RestoreCardState;
 extern RestoreCardState memory_card_state_c __asm__("D_0013D390");
-extern short memcard_restore_mismatch_count; /* SDA, gp -0x6DB0: mismatch count */
+extern int memcard_restore_mismatch_count SDATA(memcard_restore_mismatch_count); /* mismatch count */
 extern int libc_memcmp(const void *, const void *, int); /* memcmp */
 
 /* memcard_RestoreData: unpack the save blocks after buf's 8-byte header
@@ -1618,7 +1618,7 @@ int memcard_RestoreData(void *src, int slot, int *table) {
                 e->status = -2;
             }
             if (libc_memcmp(dst, ((struct RestoreBlock *)buf)->data, n) != 0) {
-                (*(int *)&memcard_restore_mismatch_count)++;
+                memcard_restore_mismatch_count++;
             }
             copy_memory_aligned(dst, ((struct RestoreBlock *)buf)->data, n);
             total += ((n + 3) & ~3) + 8;

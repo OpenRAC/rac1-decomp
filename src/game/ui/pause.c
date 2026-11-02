@@ -960,11 +960,11 @@ extern char str_empty_menu_label[];
 extern char fmt_two_strings[];
 extern char str_null_text[];
 extern int pad_held[];
-extern short menu_fade_duration;
+extern int menu_fade_duration SDATA(menu_fade_duration);
 extern short text_shadow_x;
 extern short text_shadow_y;
 extern short menu_label_text_inset;
-extern short menu_label_marquee_gap;
+extern int menu_label_marquee_gap SDATA(menu_label_marquee_gap);
 extern int pal_mode MACRO_ADDR;
 extern char *current_menu_page NOT_SDA;
 extern void VU1_addGSregister(int, int);
@@ -1045,9 +1045,9 @@ int render_configured_text_label(MenuScreen *w) {
     } else if (flags & 0x40) {
         content = selected_level_index - 1;
     } else if (flags & 4) {
-        t = scale_game_frame_count(*(int *)&menu_fade_duration);
+        t = scale_game_frame_count(menu_fade_duration);
         if (w->data.label.fade_timer < t) {
-            w->data.label.fade_timer = scale_game_frame_count(*(int *)&menu_fade_duration);
+            w->data.label.fade_timer = scale_game_frame_count(menu_fade_duration);
         }
         content = 0;
         w->data.label.cached_value = 0;
@@ -1089,14 +1089,14 @@ int render_configured_text_label(MenuScreen *w) {
     }
 
     if (w->data.label.fade_timer == -1) {
-        w->data.label.fade_timer = scale_game_frame_count(*(int *)&menu_fade_duration);
+        w->data.label.fade_timer = scale_game_frame_count(menu_fade_duration);
         w->data.label.cached_value = content;
         w->data.label.value_variant = variant;
     }
     if (content != w->data.label.cached_value) {
-        t = scale_game_frame_count(*(int *)&menu_fade_duration);
+        t = scale_game_frame_count(menu_fade_duration);
         if (t < w->data.label.fade_timer) {
-            w->data.label.fade_timer = scale_game_frame_count(*(int *)&menu_fade_duration);
+            w->data.label.fade_timer = scale_game_frame_count(menu_fade_duration);
         }
         t = w->data.label.fade_timer;
         t = t < 1 ? 0 : t - 1;
@@ -1179,7 +1179,7 @@ int render_configured_text_label(MenuScreen *w) {
     tmp.s[3] = *(unsigned short *)&w->width - 4;
     tmp.s[4] = a23;
     tmp.s[5] = a21 - (w->data.label.scroll_offset >> 4);
-    tmp.s[8] = *(int *)&menu_label_marquee_gap;
+    tmp.s[8] = menu_label_marquee_gap;
     tmp.s[9] = wflags;
     tmp.s[11] = -(*(unsigned short *)&w->data.label.scroll_offset & 0xF);
     win = tmp;
@@ -1215,7 +1215,7 @@ int render_configured_text_label(MenuScreen *w) {
         Font_EnableColorCodes();
     }
     if (w->data.label.flags & 0x400) {
-        win.s[5] = win.s[5] + (win.s[7] + *(int *)&menu_label_marquee_gap * 3);
+        win.s[5] = win.s[5] + (win.s[7] + menu_label_marquee_gap * 3);
         win_shift(&win);
         Font_DisableColorCodes();
         DRAW(0x80000000L, text);
@@ -1223,7 +1223,7 @@ int render_configured_text_label(MenuScreen *w) {
         win_unshift(&win);
         DRAW(colour, text);
         if (w->data.label.flags & 0x400) {
-            int span = (win.s[7] + *(int *)&menu_label_marquee_gap * 3) << 4;
+            int span = (win.s[7] + menu_label_marquee_gap * 3) << 4;
             w->data.label.scroll_offset += (pad_held[0] & 1) ? 10 : 3;
             w->data.label.scroll_offset %= span;
         }
@@ -1595,7 +1595,7 @@ s32 render_localized_ui_entry_list(MenuDescriptor *menu) {
 
 /* SDA, gp -0x6A4C: declared 2 bytes so the assembler reaches it through
    $gp, and read as the int it is. */
-extern short menu_fade_duration;
+extern int menu_fade_duration SDATA(menu_fade_duration);
 extern int FastTweenColor(int, int, float);
 
 /* Fade colour for the pause menus: -1 picks the default colours
@@ -1616,9 +1616,9 @@ int fade_menu_color(int start, int col1, int col2) {
     if (col2 == -1) {
         col2 = 0x8020FFFF;
     }
-    if (scale_game_frame_count(*(int *)&menu_fade_duration) >= start) {
-        int a = scale_game_frame_count(*(int *)&menu_fade_duration);
-        t = 1.0f - (float)(a - start) / (float)scale_game_frame_count(*(int *)&menu_fade_duration);
+    if (scale_game_frame_count(menu_fade_duration) >= start) {
+        int a = scale_game_frame_count(menu_fade_duration);
+        t = 1.0f - (float)(a - start) / (float)scale_game_frame_count(menu_fade_duration);
     } else {
         t = 1.0f;
     }
@@ -2941,8 +2941,8 @@ extern u8 item_available_r[] __asm__("D_0013D5C8");
 extern u8 gold_weapon_purchased[];
 extern s32 game_frame_counter MACRO_ADDR;
 extern short panel_clear_color;
-extern short menu_grid_icon_width;
-extern short menu_grid_icon_height;
+extern f32 menu_grid_icon_width SDATA(menu_grid_icon_width);
+extern f32 menu_grid_icon_height SDATA(menu_grid_icon_height);
 extern s32 subtract_integer_with_clamp(s32);
 extern void SetupGifPaging(s32);
 
@@ -2973,25 +2973,25 @@ s32 draw_menu_item_grid(MenuScreen *grid) {
 
     if (grid->data.grid.cols >= 2) {
         start_x = grid->data.grid.margin_x;
-        column_step = (*(f32 *)&menu_grid_icon_width) +
-                      (pvars->width - (start_x + start_x) - (*(f32 *)&menu_grid_icon_width) * grid->data.grid.cols) /
+        column_step = (menu_grid_icon_width) +
+                      (pvars->width - (start_x + start_x) - (menu_grid_icon_width)*grid->data.grid.cols) /
                           (grid->data.grid.cols - 1);
     } else {
         column_step = 0.0f;
-        start_x = (pvars->width - (*(f32 *)&menu_grid_icon_width)) * 0.5f;
+        start_x = (pvars->width - (menu_grid_icon_width)) * 0.5f;
     }
 
     if (grid->data.grid.flags & 2) {
-        row_step = (*(f32 *)&menu_grid_icon_height) + 0.15f;
+        row_step = (menu_grid_icon_height) + 0.15f;
         start_y = grid->data.grid.margin_y;
     } else if (grid->data.grid.rows >= 2) {
         start_y = grid->data.grid.margin_y;
-        row_step = (*(f32 *)&menu_grid_icon_height) +
-                   (pvars->height - (start_y + start_y) - (*(f32 *)&menu_grid_icon_height) * grid->data.grid.rows) /
+        row_step = (menu_grid_icon_height) +
+                   (pvars->height - (start_y + start_y) - (menu_grid_icon_height)*grid->data.grid.rows) /
                        (grid->data.grid.rows - 1);
     } else {
         row_step = 0.0f;
-        start_y = (pvars->height - (*(f32 *)&menu_grid_icon_height)) * 0.5f;
+        start_y = (pvars->height - (menu_grid_icon_height)) * 0.5f;
     }
 
     largest_dimension = grid->height;
@@ -2999,8 +2999,8 @@ s32 draw_menu_item_grid(MenuScreen *grid) {
         largest_dimension = grid->width;
     }
     scale = (f32)(largest_dimension << 4) / (pvars->height < pvars->width ? pvars->width : pvars->height);
-    icon_width = scale * (*(f32 *)&menu_grid_icon_width);
-    icon_height = scale * (*(f32 *)&menu_grid_icon_height);
+    icon_width = scale * (menu_grid_icon_width);
+    icon_height = scale * (menu_grid_icon_height);
 
     y = start_y;
     for (i = 0; i < grid->data.grid.rows; i++) {
@@ -7718,7 +7718,7 @@ struct AmmoPreviewMoby {
     f32 basis[12];
 };
 extern f32 g_frame_time MACRO_ADDR;
-extern short g_frame_time_sq;
+extern f32 g_frame_time_sq SDATA(g_frame_time_sq);
 extern f32 ammo_preview_offsets[];
 extern f32 ammo_preview_velocities[];
 extern void clear_u64_value(void *);
@@ -7770,7 +7770,7 @@ void update_ammo_preview_transform(struct AmmoPreviewMoby *moby) {
     bob_angle = FastAddRots(bob_angle, double_phase);
     if (ammo_preview_offsets[moby->slot] != zero) {
         ApproachWithVelocity(&ammo_preview_offsets[moby->slot], &ammo_preview_velocities[moby->slot], zero, 1.0f,
-                             (*(f32 *)&g_frame_time_sq) * 6.0f, g_frame_time * 6.0f);
+                             (g_frame_time_sq) * 6.0f, g_frame_time * 6.0f);
     }
     offset[0] = FastCos(orbit_angle);
     offset[1] = FastSin(orbit_angle);

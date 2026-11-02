@@ -8,7 +8,7 @@ Give small-data globals their real type.
 
 `extern short x;` read only as `*(float *)&x` is a trick: at -G2 a 2-byte global is reached through $gp. SDATA() reaches
 it the same way with its real type, so it becomes `extern float x SDATA(D_x);` and plain `x`. Only a global the file
-uses through one cast type converts. --write bisects each level file with tools/overlay_file_check.py, and globals that
+uses through one cast type converts. --write bisects each file with fake_bases.check, and globals that
 stop matching stay as they were. Version fragments follow. Run tools/gate_loop.py afterwards.
 """
 import collections
@@ -23,10 +23,19 @@ import prune_externs as pe  # noqa: E402
 
 ROOT = fb.ROOT
 DECLARATION = re.compile(r"^extern\s+short\s+(\w+)\s*;[ \t]*$", re.M)
+TRICK_NOTE = re.compile(r"^(\s*/\*\s*)(?:SDA\b[^:*]*|declared small[^:*]*)(?::\s*)?(.*?)\s*\*/$")
 
 
 def cast_form(name):
     return re.compile(rf"\*\s*\(\s*((?:unsigned\s+)?\w+)\s*\*\s*\)\s*&\s*{name}\b(?!\s*[\[.])")
+
+
+def live_note(note):
+    """A trailing comment, without the part about the short trick: `SDATA()` now says that."""
+    m = TRICK_NOTE.match(note)
+    if not m:
+        return note
+    return f"{m.group(1)}{m.group(2)} */" if m.group(2) else ""
 
 
 def candidates(text, fragments=""):
@@ -38,7 +47,7 @@ def candidates(text, fragments=""):
         all_uses = len(re.findall(rf"\b{name}\b", code)) + len(re.findall(rf"\b{name}\b", extra))
         declared = len(re.findall(rf"^\s*extern\b[^;\n]*\b{name}\b[^;\n]*;", code, re.M))
         casts = cast_form(name).findall(code) + cast_form(name).findall(extra)
-        if declared == 1 and casts and len(casts) == all_uses - 1 and len(set(casts)) == 1:
+        if casts and len(casts) == all_uses - declared and len(set(casts)) == 1:
             found[name] = casts[0]
     return found
 
@@ -52,8 +61,10 @@ def address_name(name, aliases):
 
 def convert(text, name, typ, symbol, declare=True):
     if declare:
-        text = re.sub(rf"^extern\s+short\s+{name}\s*;[ \t]*$", f"extern {typ} {name} SDATA({symbol});", text, flags=re.M)
-    return cast_form(name).sub(name, text)
+        def declaration(m):
+            return f"extern {typ} {name} SDATA({symbol});{live_note(m.group(1) or '')}"
+        text = re.sub(rf"^extern\s+short\s+{name}\s*;([ \t]*/\*[^\n]*?\*/)?[ \t]*$", declaration, text, flags=re.M)
+    return re.sub(rf"\(\s*{name}\s*\)(?=\s*(?:\+\+|--))", name, cast_form(name).sub(name, text))
 
 
 def apply(text, chosen, aliases, declare=True):
@@ -72,14 +83,12 @@ def land(rel, aliases):
     found = {n: t for n, t in found.items() if address_name(n, aliases)}
     if not found:
         return 0, 0
-    if not rel.startswith("src/overlays/"):
-        chosen = found
-    else:
-        def passes(group):
-            path.write_text(apply(original, {n: found[n] for n in group}, aliases), errors="surrogateescape")
-            bad, _, failed = fb.check(rel)
-            return not bad and not failed
-        chosen = {n: found[n] for n in fb.accepted_functions(set(found), passes)}
+
+    def passes(group):
+        path.write_text(apply(original, {n: found[n] for n in group}, aliases), errors="surrogateescape")
+        bad, _, failed = fb.check(rel)
+        return not bad and not failed
+    chosen = {n: found[n] for n in fb.accepted_functions(set(found), passes)}
     path.write_text(apply(original, chosen, aliases), errors="surrogateescape")
     for fragment in fragments:
         text = fragment.read_text(errors="surrogateescape")

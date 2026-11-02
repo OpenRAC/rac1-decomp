@@ -492,13 +492,13 @@ void copy_text_to_shared_buffer(void *arg0) {
 
 LINKER_REMNANT("asm/remnants/text", func_001FFF08);
 
-extern short ResourceCounter; /* SDA (gp -0x7330) */
+extern int ResourceCounter SDATA(ResourceCounter);
 
 /* Counts the resource counter down by one until it reaches 0. */
 void update_resource_counter(void) {
-    int v = *(int *)&ResourceCounter;
+    int v = ResourceCounter;
     if (v != 0) {
-        *(int *)&ResourceCounter = v - 1;
+        ResourceCounter = v - 1;
     }
 }
 

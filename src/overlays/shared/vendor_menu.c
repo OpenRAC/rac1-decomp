@@ -229,7 +229,7 @@ extern s32 weapon_ammo_counts[];
 extern Vec4 level_moby_lights_14_field_20;
 extern s32 skip_frame MACRO_ADDR;
 extern s32 gFadeLvl MACRO_ADDR;
-extern short level_white_fade_level;
+extern s32 level_white_fade_level SDATA(level_white_fade_level);
 extern char hero_globals_base[];
 
 extern s32 vendor_auxiliary_moby_active MACRO_ADDR;
@@ -337,7 +337,7 @@ void open_vendor_menu(VendorMoby_pv *m) {
     clear_active_help_record();
     *(f32 *)&gFadeLvl = 1.0f;
     *(s32 *)((char *)&skip_frame - 0x14) = 5;
-    *(s32 *)&level_white_fade_level = 0;
+    level_white_fade_level = 0;
     HeroEnterMoveState(100, 1);
     {
         u8 *hp = (u8 *)(char *)&g_hero;
@@ -525,7 +525,7 @@ typedef struct {
 } Vendor_29a6b0;
 extern s32 vendor_item_cutscene_index[];
 extern Vendor_29a6b0 vendor_menu_r3 __asm__("D_L00_001CA7C0");
-extern short level_white_fade_level;
+extern s32 level_white_fade_level SDATA(level_white_fade_level);
 extern s32 vendor_exit_cutscene_local_offset SDATA(vendor_exit_cutscene_local_offset);
 struct S16_29ad08 {
     char pad[0x5A];
@@ -586,7 +586,7 @@ void start_vendor_exit_cutscene(void) {
     cutscene_state.x5c = lvl_resource_buffers.x8 + offset;
     item = vendor_item_cutscene_index[index];
     gFadeLvl = 0;
-    (*(s32 *)&level_white_fade_level) = 0;
+    (level_white_fade_level) = 0;
     if (g_hero.items[0].item_id != 0 && index != g_hero.items[0].item_id)
         clear_hero_item_slot(0, 0);
     g_hero.pending_item[0] = vendor_menu_r3.f48;

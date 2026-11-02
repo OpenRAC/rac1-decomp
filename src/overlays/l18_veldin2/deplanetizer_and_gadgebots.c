@@ -106,7 +106,7 @@ extern int deplanetizer_state_7_three_quad_scale_ramp_end_frame_gp
 extern int deplanetizer_state_7_camera_quad_start_frame_gp SDATA(deplanetizer_state_7_camera_quad_start_frame_gp);
 extern int deplanetizer_state_7_camera_quad_scale_ramp_end_frame_gp
     SDATA(deplanetizer_state_7_camera_quad_scale_ramp_end_frame_gp);
-extern short deplanetizer_glow_start_tick;
+extern int deplanetizer_glow_start_tick SDATA(deplanetizer_glow_start_tick);
 extern int deplanetizer_glow_end_tick SDATA(deplanetizer_glow_end_tick);
 extern int deplanetizer_streak_start_tick SDATA(deplanetizer_streak_start_tick);
 extern int deplanetizer_streak_end_tick SDATA(deplanetizer_streak_end_tick);
@@ -146,7 +146,7 @@ void update_deplanetizer_gun_sequence_effects(Moby *moby) {
     switch (moby->state) {
         case 0:
             *(int *)&deplanetizer_quads_start_tick = 0x163;
-            *(int *)&deplanetizer_glow_start_tick = 0x3C;
+            deplanetizer_glow_start_tick = 0x3C;
             deplanetizer_glow_end_tick = 0xC8;
             deplanetizer_streak_start_tick = 0xBE;
             deplanetizer_camera_quad_ramp_end_tick = 0x16D;
@@ -252,11 +252,10 @@ void update_deplanetizer_gun_sequence_effects(Moby *moby) {
                     spawn_explosion(moby, up, pos, 0.0f, 0.0f, 0x12C, 0xC8, 0xC8, 12.0f, 6.0f, 9.0f, 1.0f, -1, 60.0f, 0,
                                     0x3C, -1, 0);
                 }
-                if (veldin2_cutscene_state_r.timer >= scale_ticks(*(int *)&deplanetizer_glow_start_tick) &&
+                if (veldin2_cutscene_state_r.timer >= scale_ticks(deplanetizer_glow_start_tick) &&
                     veldin2_cutscene_state_r.timer < scale_ticks(deplanetizer_glow_end_tick)) {
-                    float f =
-                        IntToFloat(veldin2_cutscene_state_r.timer - scale_ticks(*(int *)&deplanetizer_glow_start_tick));
-                    f = f / IntToFloat(scale_ticks(deplanetizer_glow_end_tick - *(int *)&deplanetizer_glow_start_tick));
+                    float f = IntToFloat(veldin2_cutscene_state_r.timer - scale_ticks(deplanetizer_glow_start_tick));
+                    f = f / IntToFloat(scale_ticks(deplanetizer_glow_end_tick - deplanetizer_glow_start_tick));
                     deplanetizer_glow_quad_alpha = truncate_float_to_s32_r(f * 255.0f);
                     AddDrawCallback(draw_moby_two_tint_glow_quads, deplanetizer_class_59b_moby);
                 }
@@ -290,7 +289,7 @@ void update_deplanetizer_gun_sequence_effects(Moby *moby) {
                 if (veldin2_cutscene_state_r.state == 7) {
                     if (veldin2_cutscene_state_r.timer == 1) {
                         Moby *m;
-                        *(int *)&deplanetizer_glow_start_tick = deplanetizer_state_7_glow_alpha_ramp_start_frame_gp;
+                        deplanetizer_glow_start_tick = deplanetizer_state_7_glow_alpha_ramp_start_frame_gp;
                         deplanetizer_glow_end_tick = deplanetizer_state_7_glow_alpha_ramp_end_frame_gp;
                         deplanetizer_streak_start_tick = deplanetizer_state_7_three_quad_scale_ramp_start_frame_gp;
                         deplanetizer_streak_end_tick = deplanetizer_state_7_three_quad_scale_ramp_end_frame_gp;
@@ -304,10 +303,10 @@ void update_deplanetizer_gun_sequence_effects(Moby *moby) {
                             }
                         }
                     }
-                    if (veldin2_cutscene_state_r.timer >= scale_ticks(*(int *)&deplanetizer_glow_start_tick) &&
+                    if (veldin2_cutscene_state_r.timer >= scale_ticks(deplanetizer_glow_start_tick) &&
                         veldin2_cutscene_state_r.timer < scale_ticks(deplanetizer_glow_end_tick)) {
-                        float f = IntToFloat(veldin2_cutscene_state_r.timer - *(int *)&deplanetizer_glow_start_tick);
-                        f = f / IntToFloat(deplanetizer_glow_end_tick - *(int *)&deplanetizer_glow_start_tick);
+                        float f = IntToFloat(veldin2_cutscene_state_r.timer - deplanetizer_glow_start_tick);
+                        f = f / IntToFloat(deplanetizer_glow_end_tick - deplanetizer_glow_start_tick);
                         deplanetizer_glow_quad_alpha = truncate_float_to_s32_r(f * 255.0f);
                         AddDrawCallback(draw_moby_two_tint_glow_quads, deplanetizer_class_59b_moby);
                     }
@@ -556,7 +555,7 @@ typedef struct {
     int n;
 } ML_9c20;
 extern ML_9c20 veldin2_cutscene_state_r2 __asm__("D_L18_0016D2E0");
-extern short deplanetizer_glow_start_tick;
+extern int deplanetizer_glow_start_tick SDATA(deplanetizer_glow_start_tick);
 extern int deplanetizer_glow_local_offset_x MACRO_ADDR;
 extern int deplanetizer_glow_local_offset_y MACRO_ADDR;
 extern float deplanetizer_glow_local_offset_z MACRO_ADDR;
@@ -585,7 +584,7 @@ void draw_moby_two_tint_glow_quads(struct Moby *m) {
     int c;
     int c2;
     int i;
-    if (veldin2_cutscene_state_r2.n == scale_ticks((*(int *)&deplanetizer_glow_start_tick) + 1)) {
+    if (veldin2_cutscene_state_r2.n == scale_ticks((deplanetizer_glow_start_tick) + 1)) {
         deplanetizer_glow_local_offset_z = -45.0f;
         deplanetizer_glow_local_offset_w = 1.0f;
         deplanetizer_glow_local_offset_x = 0;

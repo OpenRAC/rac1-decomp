@@ -495,7 +495,7 @@ extern float vec_distance_xy(void *, void *);
 
 extern int *blarg_paths[];
 extern float g_frame_time MACRO_ADDR;
-extern short g_current_level_index;
+extern int g_current_level_index SDATA(g_current_level_index);
 extern float space_commando_hit_knockback_speed SDATA(space_commando_hit_knockback_speed);
 extern float space_commando_hit_knockback_lift SDATA(space_commando_hit_knockback_lift);
 extern float space_commando_death_knockback_speed SDATA(space_commando_death_knockback_speed);
@@ -539,8 +539,8 @@ void process_blarg_space_commando_hits(char *m) {
     t = (struct HitMessage *)MobyGetHitMessage(m, 0x330000, 0);
     r = ComputeHitResponse(m, t, &d->health, 0, &hit, &dt, 0, 4);
     if (hit != 1 && (unsigned char)*(char *)&((Moby *)m)->state != 0x10) {
-        if (*(int *)&g_current_level_index == LEVEL_ORXON && t != 0 && t->source != 0 &&
-            *(short *)(t->source + 0xA6) == 0x31A && gSkillPoints[0x11] == 0) {
+        if (g_current_level_index == LEVEL_ORXON && t != 0 && t->source != 0 && *(short *)(t->source + 0xA6) == 0x31A &&
+            gSkillPoints[0x11] == 0) {
             gSkillPoints[0x11] = 1;
             PlayBankSound(1, 0, 0);
             ShowBanner(0x53DB, -1);
@@ -1249,7 +1249,7 @@ extern float bot_door_lock_fade_max SDATA(bot_door_lock_fade_max);
 extern unsigned char hero_vehicle_mode NOT_SDA;
 extern int draw_map51 MACRO_ADDR;
 extern unsigned char saved_mission_state[];
-extern short g_current_level_index;
+extern int g_current_level_index SDATA(g_current_level_index);
 extern int level_mobys_q SDATA(level_mobys_q);
 extern int truncate_float_to_s32(float);
 extern float FastVecDist(void *, void *);
@@ -1356,8 +1356,7 @@ void bot_door_lock_update(Moby *moby) {
                 }
             }
             if (data->cnt < 1 ||
-                saved_mission_state[(unsigned char)*(char *)&moby->mission + (*(int *)&g_current_level_index) * 16] ==
-                    0xff) {
+                saved_mission_state[(unsigned char)*(char *)&moby->mission + (g_current_level_index) * 16] == 0xff) {
                 for (i = 0; i < 4; i++) {
                     if (data->id[i] != -1)
                         activate_bot_door_lock_target((unsigned char *)moby,

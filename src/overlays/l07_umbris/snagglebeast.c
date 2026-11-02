@@ -1903,7 +1903,7 @@ extern void VU1_addGSregister(int, u64);
 extern void draw_world_quad(void *, int, int);
 extern float scroll_phase SDATA(scroll_phase);
 extern float row_start_phase SDATA(row_start_phase);
-extern short row_phase_step_gp;
+extern float row_phase_step_gp SDATA(row_phase_step_gp);
 extern short snagglebeast_rope_row_alpha[];
 typedef struct {
     RopeVec pos[4];
@@ -1942,7 +1942,7 @@ void draw_rope_strips(void) {
     VU1_addGSregister(0x4e, (depth_buffer_address >> 13) | 0x1000000 | ((u64)0x8000 << 17));
     for (row = 1; row < 10; row++) {
         row_phase = (row_start_phase);
-        (row_start_phase) += (*(float *)&row_phase_step_gp);
+        (row_start_phase) += (row_phase_step_gp);
         if ((row_start_phase) > 7.0f)
             (row_start_phase) -= 7.0f;
         for (column = 0; column < 20; column++) {
@@ -2395,7 +2395,7 @@ extern void suck_beam_queue_draw(int arg0);
 
 extern char rope_previous_points[];
 extern char snagglebeast_rope_centers_v[] __asm__("D_L07_0020DDC0");
-extern short row_phase_step_gp;
+extern float row_phase_step_gp SDATA(row_phase_step_gp);
 extern int snagglebeast_rope_clear_pending SDATA(snagglebeast_rope_clear_pending);
 extern int snagglebeast_rope_reset_pending SDATA(snagglebeast_rope_reset_pending);
 
@@ -2413,7 +2413,7 @@ void detach_snagglebeast_rope_particles(int arg0) {
 
     snagglebeast_rope_reset_pending = 1;
     snagglebeast_rope_clear_pending = 1;
-    *(float *)&row_phase_step_gp = *(float *)&row_phase_step_gp * 0.5f;
+    row_phase_step_gp = row_phase_step_gp * 0.5f;
     Moby_PlaySound(10, 0, arg0);
     base = (char *)rope_particles;
     for (i = 0; i < 200; i++) {

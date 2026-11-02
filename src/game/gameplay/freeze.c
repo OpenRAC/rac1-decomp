@@ -148,29 +148,29 @@ typedef struct {
     s16 pad2;
     s32 height;
 } ScreenP;
-extern short freeze_box_pulse_period;
-extern short freeze_box_line1_y;
-extern short freeze_box_line2_y;
-extern short freeze_text_fade_color_start;
-extern short freeze_text_fade_color_end;
-extern short freeze_short_box_center_x;
-extern short freeze_short_box_center_y;
-extern short freeze_short_box_half_width;
-extern short freeze_short_box_half_height;
-extern short freeze_short_box_text_y;
-extern short freeze_long_box_center_x;
-extern short freeze_long_box_center_y;
-extern short freeze_long_box_half_width;
-extern short freeze_long_box_half_height;
-extern short freeze_long_box_text_y;
-extern short freeze_box_pulse_color_a;
-extern short freeze_box_pulse_color_b;
-extern short freeze_box_text_color;
-extern short freeze_box_text_flash_color;
-extern short freeze_box_record_color;
-extern short freeze_box_record_flash_color;
-extern short freeze_box_no_record_color;
-extern short freeze_box_no_record_flash_color;
+extern s32 freeze_box_pulse_period SDATA(freeze_box_pulse_period);
+extern s32 freeze_box_line1_y SDATA(freeze_box_line1_y);
+extern s32 freeze_box_line2_y SDATA(freeze_box_line2_y);
+extern s32 freeze_text_fade_color_start SDATA(freeze_text_fade_color_start);
+extern s32 freeze_text_fade_color_end SDATA(freeze_text_fade_color_end);
+extern s32 freeze_short_box_center_x SDATA(freeze_short_box_center_x);
+extern s32 freeze_short_box_center_y SDATA(freeze_short_box_center_y);
+extern s32 freeze_short_box_half_width SDATA(freeze_short_box_half_width);
+extern s32 freeze_short_box_half_height SDATA(freeze_short_box_half_height);
+extern s32 freeze_short_box_text_y SDATA(freeze_short_box_text_y);
+extern s32 freeze_long_box_center_x SDATA(freeze_long_box_center_x);
+extern s32 freeze_long_box_center_y SDATA(freeze_long_box_center_y);
+extern s32 freeze_long_box_half_width SDATA(freeze_long_box_half_width);
+extern s32 freeze_long_box_half_height SDATA(freeze_long_box_half_height);
+extern s32 freeze_long_box_text_y SDATA(freeze_long_box_text_y);
+extern s32 freeze_box_pulse_color_a SDATA(freeze_box_pulse_color_a);
+extern s32 freeze_box_pulse_color_b SDATA(freeze_box_pulse_color_b);
+extern s32 freeze_box_text_color SDATA(freeze_box_text_color);
+extern s32 freeze_box_text_flash_color SDATA(freeze_box_text_flash_color);
+extern s32 freeze_box_record_color SDATA(freeze_box_record_color);
+extern s32 freeze_box_record_flash_color SDATA(freeze_box_record_flash_color);
+extern s32 freeze_box_no_record_color SDATA(freeze_box_no_record_color);
+extern s32 freeze_box_no_record_flash_color SDATA(freeze_box_no_record_flash_color);
 extern s32 pause_restart_reset_flag MACRO_ADDR;
 extern int mode_freeze_state MACRO_ADDR;
 extern s32 pal_mode MACRO_ADDR;
@@ -225,9 +225,8 @@ static __inline__ void draw_box_p(char *text, s32 left, s32 mid, s32 right, stru
     alpha = 1.0f - (f32)((MessageBoxP *)mode_freeze_info)->timer / (f32)scale_game_frame_count(30);
     DrawUIFrame(box.top, box.bottom, 0x60, 0x1A0, (s32)(alpha * 80.0f));
     box.flags ^= 4;
-    font_print_window_regular(
-        &box, FastTweenColor(*(s32 *)&freeze_text_fade_color_start, *(s32 *)&freeze_text_fade_color_end, alpha), text,
-        -1);
+    font_print_window_regular(&box, FastTweenColor(freeze_text_fade_color_start, freeze_text_fade_color_end, alpha),
+                              text, -1);
     tint = FastTweenColor(0x20FFFF, 0x8020FFFF,
                           1.0f - (f32)((MessageBoxP *)mode_freeze_info)->unk24 / (f32)scale_game_frame_count(30));
     if (left != 0) {
@@ -268,8 +267,7 @@ void draw_freeze_message_box(void) {
                 f32 angle;
                 f32 pivot;
 
-                color =
-                    FastTweenColor(*(s32 *)&freeze_text_fade_color_start, *(s32 *)&freeze_text_fade_color_end, alpha);
+                color = FastTweenColor(freeze_text_fade_color_start, freeze_text_fade_color_end, alpha);
                 libc_strncpy((void *)0x70000000, msg_string(0x4E2B), 0x400);
                 p = (u8 *)0x70000000;
                 while (*p >= 2) {
@@ -476,8 +474,7 @@ void draw_freeze_message_box(void) {
             box = freeze_choice_text_region;
             alpha = 1.0f - (f32)((MessageBoxP *)mode_freeze_info)->timer / (f32)scale_game_frame_count(30);
             DrawUIFrame(0x64, 0x12C, 0x60, 0x1A0, (s32)(alpha * 80.0f));
-            text_color =
-                FastTweenColor(*(s32 *)&freeze_text_fade_color_start, *(s32 *)&freeze_text_fade_color_end, alpha);
+            text_color = FastTweenColor(freeze_text_fade_color_start, freeze_text_fade_color_end, alpha);
             button_color = FastTweenColor(0x20FFFF, 0x8020FFFF, alpha);
             switch (((MessageBoxP *)mode_freeze_info)->choice) {
                 case 0:
@@ -523,9 +520,9 @@ void draw_freeze_message_box(void) {
             f32 scale;
             f32 f;
 
-            pulse = FastTweenColor(*(s32 *)&freeze_box_pulse_color_a, *(s32 *)&freeze_box_pulse_color_b,
-                                   FastSin((f32)(game_frame_counter % *(s32 *)&freeze_box_pulse_period) /
-                                               IntToFloat(*(s32 *)&freeze_box_pulse_period) * 6.28318f -
+            pulse = FastTweenColor(freeze_box_pulse_color_a, freeze_box_pulse_color_b,
+                                   FastSin((f32)(game_frame_counter % freeze_box_pulse_period) /
+                                               IntToFloat(freeze_box_pulse_period) * 6.28318f -
                                            3.14159f) *
                                            0.5f +
                                        0.5f);
@@ -535,9 +532,9 @@ void draw_freeze_message_box(void) {
             } else if (scale < 0.1f) {
                 scale = 0.1f;
             }
-            c1 = *(s32 *)&freeze_box_text_color;
-            c2 = *(s32 *)&freeze_box_record_color;
-            c3 = *(s32 *)&freeze_box_no_record_color;
+            c1 = freeze_box_text_color;
+            c2 = freeze_box_record_color;
+            c3 = freeze_box_no_record_color;
             if (((MessageBoxP *)mode_freeze_info)->unk24 != 0) {
                 f = (f32)((MessageBoxP *)mode_freeze_info)->unk24 * 0.125f;
                 if (f > 1.0f) {
@@ -545,42 +542,34 @@ void draw_freeze_message_box(void) {
                 } else if (f < 0.0f) {
                     f = 0.0f;
                 }
-                c1 = FastTweenColor(*(s32 *)&freeze_box_text_color, *(s32 *)&freeze_box_text_flash_color, f);
-                c2 = FastTweenColor(*(s32 *)&freeze_box_record_color, *(s32 *)&freeze_box_record_flash_color, f);
-                c3 = FastTweenColor(*(s32 *)&freeze_box_no_record_color, *(s32 *)&freeze_box_no_record_flash_color, f);
+                c1 = FastTweenColor(freeze_box_text_color, freeze_box_text_flash_color, f);
+                c2 = FastTweenColor(freeze_box_record_color, freeze_box_record_flash_color, f);
+                c3 = FastTweenColor(freeze_box_no_record_color, freeze_box_no_record_flash_color, f);
             }
             if (((Hero *)g_hero)->race_lap < 3) {
-                draw_outlined_rect(*(s32 *)&freeze_short_box_center_y -
-                                       truncate_float_to_s32((f32) * (s32 *)&freeze_short_box_half_height * scale),
-                                   *(s32 *)&freeze_short_box_center_y +
-                                       truncate_float_to_s32((f32) * (s32 *)&freeze_short_box_half_height * scale),
-                                   *(s32 *)&freeze_short_box_center_x -
-                                       truncate_float_to_s32((f32) * (s32 *)&freeze_short_box_half_width * scale),
-                                   *(s32 *)&freeze_short_box_center_x +
-                                       truncate_float_to_s32((f32) * (s32 *)&freeze_short_box_half_width * scale),
-                                   pulse);
-                FontPrintCenter(0x100, *(s32 *)&freeze_short_box_text_y, c1, msg_string(0x4F6E), -1);
-                FontPrintCenter(0x100, *(s32 *)&freeze_short_box_text_y + 0x18, c1, msg_string(0x524E), -1);
-                FontPrintCenter(0x100, *(s32 *)&freeze_short_box_text_y + 0x30, c1, msg_string(0x524D), -1);
+                draw_outlined_rect(
+                    freeze_short_box_center_y - truncate_float_to_s32((f32)freeze_short_box_half_height * scale),
+                    freeze_short_box_center_y + truncate_float_to_s32((f32)freeze_short_box_half_height * scale),
+                    freeze_short_box_center_x - truncate_float_to_s32((f32)freeze_short_box_half_width * scale),
+                    freeze_short_box_center_x + truncate_float_to_s32((f32)freeze_short_box_half_width * scale), pulse);
+                FontPrintCenter(0x100, freeze_short_box_text_y, c1, msg_string(0x4F6E), -1);
+                FontPrintCenter(0x100, freeze_short_box_text_y + 0x18, c1, msg_string(0x524E), -1);
+                FontPrintCenter(0x100, freeze_short_box_text_y + 0x30, c1, msg_string(0x524D), -1);
             } else {
-                draw_outlined_rect(*(s32 *)&freeze_long_box_center_y -
-                                       truncate_float_to_s32((f32) * (s32 *)&freeze_long_box_half_height * scale),
-                                   *(s32 *)&freeze_long_box_center_y +
-                                       truncate_float_to_s32((f32) * (s32 *)&freeze_long_box_half_height * scale),
-                                   *(s32 *)&freeze_long_box_center_x -
-                                       truncate_float_to_s32((f32) * (s32 *)&freeze_long_box_half_width * scale),
-                                   *(s32 *)&freeze_long_box_center_x +
-                                       truncate_float_to_s32((f32) * (s32 *)&freeze_long_box_half_width * scale),
-                                   pulse);
+                draw_outlined_rect(
+                    freeze_long_box_center_y - truncate_float_to_s32((f32)freeze_long_box_half_height * scale),
+                    freeze_long_box_center_y + truncate_float_to_s32((f32)freeze_long_box_half_height * scale),
+                    freeze_long_box_center_x - truncate_float_to_s32((f32)freeze_long_box_half_width * scale),
+                    freeze_long_box_center_x + truncate_float_to_s32((f32)freeze_long_box_half_width * scale), pulse);
                 sel = ((Hero *)g_hero)->race_position - 1;
                 if (!(sel < 5)) {
                     sel = 4;
                 }
                 sprintf(line, freeze_rank_line_format, msg_string(sel + 0x5229), msg_string(0x5245));
                 if (((Hero *)g_hero)->race_position == 1) {
-                    FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y, c2, line, -1);
+                    FontPrintCenter(0x100, freeze_long_box_text_y, c2, line, -1);
                 } else {
-                    FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y, c3, line, -1);
+                    FontPrintCenter(0x100, freeze_long_box_text_y, c3, line, -1);
                 }
                 best = race_best_times[(g_current_level_index ^ 0x10) ? 0 : 1];
                 if (best == ((Hero *)g_hero)->race_time_frames) {
@@ -591,33 +580,33 @@ void draw_freeze_message_box(void) {
                     sec = rem / per;
                     hund = (rem - sec * per) * 100 / per;
                     sprintf(line, freeze_text_line_format, msg_string(0x50A3));
-                    FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y + 0x26, c2, line, -1);
+                    FontPrintCenter(0x100, freeze_long_box_text_y + 0x26, c2, line, -1);
                     sprintf(line, freeze_race_time_format, min, sec, hund);
-                    FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y + 0x3A, c2, line, -1);
+                    FontPrintCenter(0x100, freeze_long_box_text_y + 0x3A, c2, line, -1);
                 } else {
                     sprintf(line, freeze_text_line_format, msg_string(0x50A2));
-                    FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y + 0x30, c3, line, -1);
+                    FontPrintCenter(0x100, freeze_long_box_text_y + 0x30, c3, line, -1);
                 }
                 record = race_best_records[(g_current_level_index ^ 0x10) ? 0 : 1];
                 if (record != 0 && record == ((Hero *)g_hero)->race_score) {
                     sprintf(line, freeze_text_line_format, msg_string(0x50A5));
-                    FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y + 0x56, c2, line, -1);
+                    FontPrintCenter(0x100, freeze_long_box_text_y + 0x56, c2, line, -1);
                     sprintf(line, freeze_record_value_format, ((Hero *)g_hero)->race_score);
-                    FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y + 0x6A, c2, line, -1);
+                    FontPrintCenter(0x100, freeze_long_box_text_y + 0x6A, c2, line, -1);
                 } else {
                     sprintf(line, freeze_text_line_format, msg_string(0x50A4));
-                    FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y + 0x60, c3, line, -1);
+                    FontPrintCenter(0x100, freeze_long_box_text_y + 0x60, c3, line, -1);
                 }
-                FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y + 0x90, c1, msg_string(0x524E), -1);
-                FontPrintCenter(0x100, *(s32 *)&freeze_long_box_text_y + 0xA8, c1, msg_string(0x524D), -1);
+                FontPrintCenter(0x100, freeze_long_box_text_y + 0x90, c1, msg_string(0x524E), -1);
+                FontPrintCenter(0x100, freeze_long_box_text_y + 0xA8, c1, msg_string(0x524D), -1);
             }
             break;
         }
         case 2:
             draw_outlined_rect(0x64, 0xA0, 0xB0, 0x150,
-                               FastTweenColor(*(s32 *)&freeze_box_pulse_color_a, *(s32 *)&freeze_box_pulse_color_b,
-                                              FastSin((f32)(game_frame_counter % *(s32 *)&freeze_box_pulse_period) /
-                                                          IntToFloat(*(s32 *)&freeze_box_pulse_period) * 6.28318f -
+                               FastTweenColor(freeze_box_pulse_color_a, freeze_box_pulse_color_b,
+                                              FastSin((f32)(game_frame_counter % freeze_box_pulse_period) /
+                                                          IntToFloat(freeze_box_pulse_period) * 6.28318f -
                                                       3.14159f) *
                                                       0.5f +
                                                   0.5f));
@@ -626,23 +615,21 @@ void draw_freeze_message_box(void) {
         default: {
             s32 pulse;
 
-            pulse = FastTweenColor(*(s32 *)&freeze_box_pulse_color_a, *(s32 *)&freeze_box_pulse_color_b,
-                                   FastSin((f32)(game_frame_counter % *(s32 *)&freeze_box_pulse_period) /
-                                               IntToFloat(*(s32 *)&freeze_box_pulse_period) * 6.28318f -
+            pulse = FastTweenColor(freeze_box_pulse_color_a, freeze_box_pulse_color_b,
+                                   FastSin((f32)(game_frame_counter % freeze_box_pulse_period) /
+                                               IntToFloat(freeze_box_pulse_period) * 6.28318f -
                                            3.14159f) *
                                            0.5f +
                                        0.5f);
-            draw_outlined_rect(0x50, *(s32 *)&freeze_box_line2_y + 0x1A, 0xB0, 0x150, pulse);
+            draw_outlined_rect(0x50, freeze_box_line2_y + 0x1A, 0xB0, 0x150, pulse);
             if (((MessageBoxP *)mode_freeze_info)->title != 0) {
                 FontPrintCenter(0x100, 0x5A, 0x8000C0C0, ((MessageBoxP *)mode_freeze_info)->title, -1);
             }
             if (((MessageBoxP *)mode_freeze_info)->line1 != 0) {
-                FontPrintCenter(0x100, *(s32 *)&freeze_box_line1_y, 0x80FFA888,
-                                ((MessageBoxP *)mode_freeze_info)->line1, -1);
+                FontPrintCenter(0x100, freeze_box_line1_y, 0x80FFA888, ((MessageBoxP *)mode_freeze_info)->line1, -1);
             }
             if (((MessageBoxP *)mode_freeze_info)->line2 != 0) {
-                FontPrintCenter(0x100, *(s32 *)&freeze_box_line2_y, 0x80FFA888,
-                                ((MessageBoxP *)mode_freeze_info)->line2, -1);
+                FontPrintCenter(0x100, freeze_box_line2_y, 0x80FFA888, ((MessageBoxP *)mode_freeze_info)->line2, -1);
             }
             break;
         }

@@ -46,7 +46,7 @@ typedef struct {
 } DrawTextRec;
 extern DrawTextRec font_text_slots[];
 extern short font_text_cursor;
-extern short font_text_slot_index;
+extern int font_text_slot_index SDATA(font_text_slot_index);
 extern char font_text_format[];
 extern int sprintf();
 
@@ -56,13 +56,13 @@ extern int sprintf();
    store gives retail's two addu forms; a `DrawTextRec *` local folds
    them into one register and comes out 12 bytes short. */
 void print_debug_text(int x, int y, int color, char *str) {
-    int n = *(int *)&font_text_slot_index;
+    int n = font_text_slot_index;
 
     font_text_slots[n].x = x;
     font_text_slots[n].y = y;
     font_text_slots[n].color = color;
     font_text_slots[n].str = *(char **)&font_text_cursor;
-    *(int *)&font_text_slot_index = n + 1;
+    font_text_slot_index = n + 1;
     *(char **)&font_text_cursor += sprintf(*(char **)&font_text_cursor, font_text_format, str) + 1;
 }
 
@@ -1521,8 +1521,8 @@ void SetPalMode(void) {
  */
 extern int screen_tint_quad_enabled MACRO_ADDR;
 extern int screen_tint_quad_rgba MACRO_ADDR;
-extern short screen_overlay_enabled; /* SDA, gp -0x78B4 */
-extern short draw_unused_reset_flag; /* SDA, gp -0x78A0 */
+extern int screen_overlay_enabled SDATA(screen_overlay_enabled);
+extern int draw_unused_reset_flag SDATA(draw_unused_reset_flag);
 extern short occl_debug_overlay_enabled; /* SDA, gp -0x7890 */
 extern int letterbox_enabled MACRO_ADDR;
 extern int letterbox_bar_height MACRO_ADDR;
@@ -1547,8 +1547,8 @@ void ResetDrawGlobals(void) {
     screen_tint_quad_rgba = 0;
     letterbox_enabled = 0;
     letterbox_bar_height = 0;
-    *(int *)&screen_overlay_enabled = 0;
-    *(int *)&draw_unused_reset_flag = 0;
+    screen_overlay_enabled = 0;
+    draw_unused_reset_flag = 0;
     *(int *)&occl_debug_overlay_enabled = 0;
     occl_fallback_mode = 0;
     surface_height_tiles = 0;
@@ -1594,7 +1594,7 @@ void ResetGsRegistersPr(void) {
     *(volatile long *)0x120000D0 = 0;
 }
 
-extern short screen_color_effect_now; /* SDA, gp -0x78B0: Stripes * */
+extern int screen_color_effect_now SDATA(screen_color_effect_now); /* Stripes * */
 extern char *level_sky_effect_data MACRO_ADDR;
 extern int draw_force_gif_transfer[];
 extern int draw_enable_mask_f __asm__("D_0015F534") MACRO_ADDR;
@@ -1828,7 +1828,7 @@ void DrawDebugProfiler(void) {
                 }
                 emit_rgba_draw_packet(0xFF, 0xFF, 0xFF, truncate_float_to_s32_r(white_fade_level * 128.0f));
             }
-            if (*(int *)&screen_overlay_enabled != 0 && *(int *)&screen_color_effect_now != 0) {
+            if (screen_overlay_enabled != 0 && screen_color_effect_now != 0) {
                 draw_screen_effect();
             }
         }
@@ -2414,7 +2414,7 @@ typedef struct {
     int color1;
     long enable1;
 } Stripes;
-extern short screen_color_effect_now; /* SDA, gp -0x78B0: Stripes * */
+extern int screen_color_effect_now SDATA(screen_color_effect_now); /* Stripes * */
 extern void DrawRectOverlay_FiiiiUl(int, int, int, int, unsigned long);
 
 #define STRIPES (*(Stripes **)&D_0015F450)

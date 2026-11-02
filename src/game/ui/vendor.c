@@ -640,9 +640,9 @@ void setup_view_context(void) {
 typedef int u128_3AA38 __attribute__((mode(TI)));
 extern float capture_bounds_adjustments[][4];
 extern int capture_primary_transition MACRO_ADDR;
-extern short capture_secondary_transition_active;
-extern short capture_secondary_transition_step;
-extern short capture_primary_transition_step;
+extern int capture_secondary_transition_active SDATA(capture_secondary_transition_active);
+extern int capture_secondary_transition_step SDATA(capture_secondary_transition_step);
+extern int capture_primary_transition_step SDATA(capture_primary_transition_step);
 extern int pal_mode MACRO_ADDR;
 extern long capture_texture_tex0 MACRO_ADDR;
 extern float FastVecLength(void *);
@@ -692,13 +692,13 @@ void render_vendor_capture_pass_sequence(char *m) {
         FastVecAdd(tmp, base, d1);
         FastVecAdd(tmp, tmp, d2);
         project_graphics_bounds_float(base, tmp, &sx, &sy, &sw, &sh);
-        if (capture_primary_transition != 0 || *(int *)&capture_secondary_transition_active != 0) {
+        if (capture_primary_transition != 0 || capture_secondary_transition_active != 0) {
             f = 1.0f;
-            if (*(int *)&capture_secondary_transition_active != 0) {
-                f = IntToFloat(8 - *(int *)&capture_secondary_transition_step) * 0.125f;
+            if (capture_secondary_transition_active != 0) {
+                f = IntToFloat(8 - capture_secondary_transition_step) * 0.125f;
             }
             if (capture_primary_transition != 0) {
-                f = IntToFloat(*(int *)&capture_primary_transition_step) * 0.125f;
+                f = IntToFloat(capture_primary_transition_step) * 0.125f;
             }
             len = FastVecLength(d1);
             g = 1.0f - f;
@@ -835,7 +835,7 @@ typedef struct {
 } SurfaceHeightGrid;
 extern SurfaceHeightTile *surface_height_tiles_r __asm__("D_00161290") MACRO_ADDR;
 extern SurfaceHeightGrid surface_height_grid_r __asm__("D_001E69E0");
-extern short surface_height_layer;
+extern s32 surface_height_layer SDATA(surface_height_layer);
 extern s32 FindZoneAtPoint(f32, f32, f32);
 extern s32 truncate_float_to_s32_r2(f32) __asm__("func_001FA898");
 extern void FastVecCross(f32 *, f32 *, f32 *);
@@ -877,27 +877,27 @@ s32 sample_surface_height_map(f32 *height, f32 *normal, f32 x, f32 y, f32 z) {
     fraction_y -= IntToFloat(row) * surface_height_grid_r.cell_height;
     /* Divide the signed remainder after rounding the row, before choosing the sample bank. */
     weight_y = fraction_y / surface_height_grid_r.cell_height;
-    h00 = tile->layers[(*(s32 *)&surface_height_layer)].samples[row][column];
+    h00 = tile->layers[(surface_height_layer)].samples[row][column];
     if (column == 15) {
-        h10 = tile->layers[(*(s32 *)&surface_height_layer)].right_edge[row];
+        h10 = tile->layers[(surface_height_layer)].right_edge[row];
     } else {
-        h10 = tile->layers[(*(s32 *)&surface_height_layer)].samples[row][column + 1];
+        h10 = tile->layers[(surface_height_layer)].samples[row][column + 1];
     }
     if (row == 15) {
-        h01 = tile->layers[(*(s32 *)&surface_height_layer)].bottom_edge[column];
+        h01 = tile->layers[(surface_height_layer)].bottom_edge[column];
     } else {
-        h01 = tile->layers[(*(s32 *)&surface_height_layer)].samples[row + 1][column];
+        h01 = tile->layers[(surface_height_layer)].samples[row + 1][column];
     }
     if (column == 15) {
         if (row == 15) {
-            h11 = tile->layers[(*(s32 *)&surface_height_layer)].corner;
+            h11 = tile->layers[(surface_height_layer)].corner;
         } else {
-            h11 = tile->layers[(*(s32 *)&surface_height_layer)].right_edge[row + 1];
+            h11 = tile->layers[(surface_height_layer)].right_edge[row + 1];
         }
     } else if (row == 15) {
-        h11 = tile->layers[(*(s32 *)&surface_height_layer)].bottom_edge[column + 1];
+        h11 = tile->layers[(surface_height_layer)].bottom_edge[column + 1];
     } else {
-        h11 = tile->layers[(*(s32 *)&surface_height_layer)].samples[row + 1][column + 1];
+        h11 = tile->layers[(surface_height_layer)].samples[row + 1][column + 1];
     }
     if (height != 0) {
         first_row_height = h00 + (h10 - h00) * weight_x;
