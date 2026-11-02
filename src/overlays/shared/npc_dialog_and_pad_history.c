@@ -92,7 +92,7 @@ extern char active_scene_trigger[];
 extern char item_price_table[];
 extern int gBolts MACRO_ADDR;
 
-extern short bolt_hud_item;
+extern int bolt_hud_item SDATA(D_L00_001601F0);
 extern s32 DialogRequest_Init(void *p, u8 *out_p);
 
 extern int hud_keep_visible(int, int);
@@ -176,16 +176,15 @@ int Npc_TryStartDialog(char *p, char *q) {
             PlayMovieEntryIfIdle((short)(*(unsigned short *)(e + 4) ^ 0x4000));
             return 1;
         }
-        remove_hud_item(*(int *)&bolt_hud_item);
+        remove_hud_item(bolt_hud_item);
         h4 = *(short *)(e + 4);
-        *(int *)&bolt_hud_item = -1;
+        bolt_hud_item = -1;
         StartCutscene(h4);
         return 1;
     }
-    if (hud_keep_visible(*(int *)&bolt_hud_item, 0xA)) {
-        *(int *)&bolt_hud_item =
-            queue_animation_update(0xC, 0, (void *)initialize_numeric_hud_element, (void *)DefaultVtbl_DeleteMoby,
-                                   (void *)draw_hud_text_panel, 0, 0);
+    if (hud_keep_visible(bolt_hud_item, 0xA)) {
+        bolt_hud_item = queue_animation_update(0xC, 0, (void *)initialize_numeric_hud_element,
+                                               (void *)DefaultVtbl_DeleteMoby, (void *)draw_hud_text_panel, 0, 0);
     }
     {
         char *e2 = (char *)*(int *)(q + 0x3C) + *(short *)(q + 0x36) * 0x1C;

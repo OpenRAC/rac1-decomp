@@ -595,7 +595,7 @@ void snow_plow_update(VehicleMoby *m) {
     }
 }
 extern char *eudora_mobys_b __asm__("D_L04_00160058") MACRO_ADDR;
-extern short eudora_floating_platform_spin_rate_deg;
+extern float eudora_floating_platform_spin_rate_deg SDATA(D_L04_001619EC);
 extern float g_frame_time_b __asm__("D_0015EE6C") MACRO_ADDR;
 extern float D_0015EE64 MACRO_ADDR;
 extern void DeleteMoby(void *);
@@ -654,8 +654,7 @@ void FloatingPlatformUpdate(char *m) {
             int i;
             for (i = 0; i < 3; i++) {
                 float *p = &((struct FloatingPlatformUpdateVars *)d)->unk_224 + i;
-                float a =
-                    FastAddRots(*p, *(float *)&eudora_floating_platform_spin_rate_deg * 0.017453292f * g_frame_time_b);
+                float a = FastAddRots(*p, eudora_floating_platform_spin_rate_deg * 0.017453292f * g_frame_time_b);
                 float g = g_frame_scale_sq;
                 *p = a;
                 *(float *)(d + 0x108 + i * 0x80) = a;

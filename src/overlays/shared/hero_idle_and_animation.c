@@ -1688,26 +1688,26 @@ void apply_hero_and_item_scale_sequence(void) {
     }
 }
 extern int gFadeLvl MACRO_ADDR;
-extern short D_L00_0015F75C;
-extern short D_L00_0015F760;
-extern short D_L00_0015F764;
+extern float D_L00_0015F75C SDATA(D_L00_0015F75C);
+extern int D_L00_0015F760 SDATA(D_L00_0015F760);
+extern int D_L00_0015F764 SDATA(D_L00_0015F764);
 extern float ApproachValue(float *p, float target, float maxstep);
 
 // steps a global float to 1.0, holds a frame, then back to 0.0 through a small state machine
 void update_hero_scalar_pulse(void) {
-    if (*(int *)&D_L00_0015F760 != 0) {
-        int s = *(int *)&D_L00_0015F764;
+    if (D_L00_0015F760 != 0) {
+        int s = D_L00_0015F764;
         if (s == 0) {
-            ApproachValue((float *)&gFadeLvl, 1.0f, *(float *)&D_L00_0015F75C);
+            ApproachValue((float *)&gFadeLvl, 1.0f, D_L00_0015F75C);
             if (*(float *)&gFadeLvl == 1.0f) {
-                *(int *)&D_L00_0015F764 = 1;
+                D_L00_0015F764 = 1;
             }
         } else if (s == 1) {
-            *(int *)&D_L00_0015F764 = 2;
+            D_L00_0015F764 = 2;
         } else if (s == 2) {
-            ApproachValue((float *)&gFadeLvl, 0.0f, *(float *)&D_L00_0015F75C);
+            ApproachValue((float *)&gFadeLvl, 0.0f, D_L00_0015F75C);
             if (*(float *)&gFadeLvl == 0.0f) {
-                *(int *)&D_L00_0015F760 = 0;
+                D_L00_0015F760 = 0;
             }
         }
     }

@@ -70,7 +70,7 @@ extern float frame_scale MACRO_ADDR;
 
 extern char item_usage[];
 extern unsigned char D_0015EEB4[4] MACRO_ADDR;
-extern short novalis_look_stat_timer;
+extern int novalis_look_stat_timer SDATA(D_L01_0015F768);
 extern short novalis_hero_step_anim_modes;
 extern short novalis_hero_state_f_jump_velocity_keys;
 extern char novalis_hero_state_d_jump_velocity_keys[];
@@ -448,7 +448,7 @@ int Hero_SetMoveState(int a, int b) {
             int t;
             p->state.control_mode = 0;
             p->unk2284 = 4;
-            *(int *)&novalis_look_stat_timer = scale_ticks(0x3C);
+            novalis_look_stat_timer = scale_ticks(0x3C);
             if (p->unk20AA == 0) {
                 t = get_hero_idle_animation_index(1);
                 if (*(unsigned char *)(*(char **)&p->moby + 0x53) != t && b) {

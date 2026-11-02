@@ -23,7 +23,7 @@ extern float drek_boss_rider_glow_offset;
 extern float drek_boss_rider_glow_size;
 extern float drek_boss_rider_glow_offset_b __asm__("D_L18_001624E4");
 extern float drek_boss_rider_glow_size_b __asm__("D_L18_001624E0");
-extern short veldin2_bone_glow_axis_offset;
+extern float veldin2_bone_glow_axis_offset SDATA(D_L18_00162590);
 
 /* Draws pulsing glow quads on two bones of the moby, the color cycling over time. */
 void draw_moby_color_cycling_bone_glows(void *moby) {
@@ -40,11 +40,11 @@ void draw_moby_color_cycling_bone_glows(void *moby) {
     f = FastSin(f - 3.14159f);
     h = FastTweenColor(drek_boss_rider_glow_color_a, drek_boss_rider_glow_color_b, f * 0.5f + 0.5f);
     MobyTransformScaledVertex(moby, 1, b);
-    FastVecScale(e, c, *(float *)&veldin2_bone_glow_axis_offset);
+    FastVecScale(e, c, veldin2_bone_glow_axis_offset);
     FastVecSub(a, d, e);
     draw_offset_textured_effect_quad(a, h, drek_boss_rider_glow_size, drek_boss_rider_glow_offset);
     MobyTransformScaledVertex(moby, 2, b);
-    FastVecScale(e, c, *(float *)&veldin2_bone_glow_axis_offset);
+    FastVecScale(e, c, veldin2_bone_glow_axis_offset);
     FastVecSub(a, d, e);
     draw_offset_textured_effect_quad(a, h, drek_boss_rider_glow_size_b, drek_boss_rider_glow_offset_b);
 }

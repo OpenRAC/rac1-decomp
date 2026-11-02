@@ -877,13 +877,13 @@ extern void *SpawnBreakFragment(void *, int, void *, void *, int, int, float, vo
 extern int quartu_moby_groups[];
 extern float g_frame_time_sq MACRO_ADDR;
 extern float quartu_zero_vec[] MACRO_ADDR;
-extern short g_frame_scale_sq;
-extern short construction_arm_wait_min;
-extern short construction_arm_wait_max;
-extern short construction_arm_puff_speed;
-extern short construction_arm_puff_life_min;
-extern short construction_arm_puff_life_max;
-extern short construction_arm_puff_color;
+extern float g_frame_scale_sq SDATA(D_0015EE64);
+extern float construction_arm_wait_min SDATA(D_L15_00161A80);
+extern float construction_arm_wait_max SDATA(D_L15_00161A84);
+extern float construction_arm_puff_speed SDATA(D_L15_00161A7C);
+extern int construction_arm_puff_life_min SDATA(D_L15_00161A74);
+extern int construction_arm_puff_life_max SDATA(D_L15_00161A78);
+extern int construction_arm_puff_color SDATA(D_L15_00161A6C);
 
 typedef struct UpdateVars_2938 {
     u8 pad00[0x68];
@@ -922,7 +922,7 @@ void construction_arm_update(char *moby) {
             m->state = CONSTRUCTION_ARM_DESTROY;
     }
     if (m->state != CONSTRUCTION_ARM_INITIALIZE) {
-        float g = *(float *)&g_frame_scale_sq;
+        float g = g_frame_scale_sq;
         float v = arm_vars->yaw;
         float a = g * 0.03f;
         float b = g * 0.3f;
@@ -931,8 +931,8 @@ void construction_arm_update(char *moby) {
     }
     switch (m->state) {
         case CONSTRUCTION_ARM_INITIALIZE: {
-            float a = multiply_global_factor(*(float *)&construction_arm_wait_min * 60.0f);
-            float b = multiply_global_factor(*(float *)&construction_arm_wait_max * 60.0f);
+            float a = multiply_global_factor(construction_arm_wait_min * 60.0f);
+            float b = multiply_global_factor(construction_arm_wait_max * 60.0f);
             int d = truncate_float_to_s32(random_float_between(a, b));
             arm_vars->timer = d;
             *(int *)&arm_vars->yaw = 0;
@@ -1016,10 +1016,10 @@ void construction_arm_update(char *moby) {
         }
         case CONSTRUCTION_ARM_WAIT_TO_START_EXIT_ANIMATION: {
             if (FastVecDist(&m->pos, quartu_camera_pos) < 20.0f && random_integer_below(2) == 0 && m->visible != 0) {
-                float A = *(float *)&construction_arm_puff_speed;
+                float A = construction_arm_puff_speed;
                 float t1 = random_float_between(A / 5.0f, A);
                 float f22 = t1 * g_frame_time;
-                float t2 = random_float_between(0.0f, *(float *)&construction_arm_puff_speed / 5.0f);
+                float t2 = random_float_between(0.0f, construction_arm_puff_speed / 5.0f);
                 float f23 = t2 * g_frame_time;
                 float t3 = random_angle_radians();
                 float vP[4];
@@ -1043,11 +1043,10 @@ void construction_arm_update(char *moby) {
                 add_vectors(vO, vA, vB);
                 Moby_GetJointWorldPos(m, 1, vP);
                 {
-                    int ra = scale_ticks(*(int *)&construction_arm_puff_life_min);
-                    int rb = scale_ticks(*(int *)&construction_arm_puff_life_max);
+                    int ra = scale_ticks(construction_arm_puff_life_min);
+                    int rb = scale_ticks(construction_arm_puff_life_max);
                     int c = rand_range(ra, rb);
-                    PartType21Spawn(vP, vA, *(int *)&construction_arm_puff_color, *(int *)&construction_arm_puff_color,
-                                    c, 1, 40000.0f);
+                    PartType21Spawn(vP, vA, construction_arm_puff_color, construction_arm_puff_color, c, 1, 40000.0f);
                 }
             }
             if (!FastDecTimer(&arm_vars->timer))
@@ -1068,8 +1067,8 @@ void construction_arm_update(char *moby) {
                 break;
             if (!(m->anim_flags & 2))
                 break;
-            a = multiply_global_factor(*(float *)&construction_arm_wait_min * 60.0f);
-            b = multiply_global_factor(*(float *)&construction_arm_wait_max * 60.0f);
+            a = multiply_global_factor(construction_arm_wait_min * 60.0f);
+            b = multiply_global_factor(construction_arm_wait_max * 60.0f);
             t = truncate_float_to_s32(random_float_between(a, b));
             arm_vars->timer = t;
             r = scale_ticks(6);
@@ -1389,8 +1388,8 @@ extern void matrix_from_basis_rows(void *, void *);
 extern void transform_vector(void *, void *, void *);
 extern float vec_length_xy(void *);
 extern void axis_rotation_2d48(void *, int, float);
-extern short helicopter_bob_amplitude;
-extern short helicopter_bob_period;
+extern float helicopter_bob_amplitude SDATA(D_L15_00161A90);
+extern float helicopter_bob_period SDATA(D_L15_00161A8C);
 
 /* Update function of the helicopter (moby Helicopter): waits, flies its path, hovers near and fires at its target,
    tilts and bobs, aims its turret, and dies. */
@@ -1745,12 +1744,12 @@ void helicopter_update(HMoby_6950 *m) {
         }
     }
     {
-        float z = m->pos.f[2] - *(float *)&helicopter_bob_amplitude * FastCos(d->bob);
-        float arg = *(float *)&helicopter_bob_period * 60.0f;
+        float z = m->pos.f[2] - helicopter_bob_amplitude * FastCos(d->bob);
+        float arg = helicopter_bob_period * 60.0f;
         m->pos.f[2] = z;
         d->bob = FastAddRots(d->bob, 6.2831855f / multiply_global_factor(arg));
     }
-    m->pos.f[2] += *(float *)&helicopter_bob_amplitude * FastCos(d->bob);
+    m->pos.f[2] += helicopter_bob_amplitude * FastCos(d->bob);
     if (d->child != 0) {
         d->child->pos.q = m->pos.q;
         d->child->rot.q = m->rot.q;
@@ -2038,15 +2037,15 @@ extern float quartu_zero_vec[] MACRO_ADDR;
 extern ULevelState quartu_moby_state_bytes_base;
 extern ULevelState quartu_collected_flags_base;
 extern int quartu_moby_killed[];
-extern short ultramech_jump_speed;
-extern short ultramech_gravity;
-extern short ultramech_rocket_life;
-extern short ultramech_rocket_speed;
-extern short ultramech_close_attack_range;
-extern short ultramech_mid_attack_range;
-extern short ultramech_fire_anim_speed;
-extern short ultramech_debris_speed;
-extern short ultramech_debris_lift;
+extern float ultramech_jump_speed SDATA(D_L15_00161B9C);
+extern float ultramech_gravity SDATA(D_L15_00161BA0);
+extern int ultramech_rocket_life SDATA(D_L15_00161BA4);
+extern float ultramech_rocket_speed SDATA(D_L15_00161BA8);
+extern float ultramech_close_attack_range SDATA(D_L15_00161BAC);
+extern float ultramech_mid_attack_range SDATA(D_L15_00161BB0);
+extern float ultramech_fire_anim_speed SDATA(D_L15_00161BBC);
+extern float ultramech_debris_speed SDATA(D_L15_00161BC0);
+extern float ultramech_debris_lift SDATA(D_L15_00161BC4);
 
 /* Update function of the ultramech (moby Ultramech Unlimited): waits for the player, follows its path, turns, fires
    and strafes, with jet particles while it moves. */
@@ -2142,10 +2141,10 @@ void ultramech_unlimited_update(UMoby *m) {
                         }
                         m->pos.q = path->pt[0].q;
                         FastVecSub(&d->vel, (Vec4 *)path + path->n, &m->pos);
-                        vec_set_length_xy(&d->vel, &d->vel, *(float *)&ultramech_jump_speed * g_frame_time);
-                        d->vel.f[2] = jump_speed_4318(&m->pos, (Vec4 *)path + path->n, 0,
-                                                      *(float *)&ultramech_jump_speed * g_frame_time,
-                                                      -(*(float *)&ultramech_gravity * g_frame_time_sq));
+                        vec_set_length_xy(&d->vel, &d->vel, ultramech_jump_speed * g_frame_time);
+                        d->vel.f[2] =
+                            jump_speed_4318(&m->pos, (Vec4 *)path + path->n, 0, ultramech_jump_speed * g_frame_time,
+                                            -(ultramech_gravity * g_frame_time_sq));
                     }
                 }
             }
@@ -2195,15 +2194,15 @@ void ultramech_unlimited_update(UMoby *m) {
             if (m->anim == 3 && (m->animFlags & 2))
                 MobyBlendAnimation(m, 4, 0, scale_ticks(6));
             FastVecAdd(&m->pos, &m->pos, &d->vel);
-            d->vel.f[2] -= *(float *)&ultramech_gravity * g_frame_time_sq;
+            d->vel.f[2] -= ultramech_gravity * g_frame_time_sq;
             if (d->vel.f[2] < 0.0f) {
                 float z;
                 qcopy(&v10, &m->pos);
                 v10.f[2] += 1.0f;
                 z = ProbeGroundHeight(&v10, 0, 0.5f);
                 if (m->pos.f[2] - z < d->vel.f[2] * multiply_global_factor(26.0f) +
-                                          *(float *)&ultramech_gravity * g_frame_time_sq * 0.5f *
-                                              multiply_global_factor(26.0f) * multiply_global_factor(26.0f) &&
+                                          ultramech_gravity * g_frame_time_sq * 0.5f * multiply_global_factor(26.0f) *
+                                              multiply_global_factor(26.0f) &&
                     m->anim != 5) {
                     MobyBlendAnimation(m, 5, 0, scale_ticks(6));
                 }
@@ -2223,12 +2222,11 @@ void ultramech_unlimited_update(UMoby *m) {
                     &m->rot.f[2], fast_atan2(tgt->pos.f[0] - m->pos.f[0], tgt->pos.f[1] - m->pos.f[1]), &d->turnVel,
                     g_frame_time_sq * 8.726646f, g_frame_time_sq * 8.726646f, g_frame_time * 12.566371f);
                 if (fast_dec_timer(&d->timer)) {
-                    if (d->w1D8 == 0 && vec_distance_xy(&m->pos, &tgt->pos) < *(float *)&ultramech_close_attack_range) {
+                    if (d->w1D8 == 0 && vec_distance_xy(&m->pos, &tgt->pos) < ultramech_close_attack_range) {
                         m->state = 7;
                         if (m->anim != 1)
                             MobyBlendAnimation(m, 1, 0, scale_ticks(0xA));
-                    } else if (d->w1D8 == 0 &&
-                               vec_distance_xy(&m->pos, &tgt->pos) < *(float *)&ultramech_mid_attack_range) {
+                    } else if (d->w1D8 == 0 && vec_distance_xy(&m->pos, &tgt->pos) < ultramech_mid_attack_range) {
                         m->state = 8;
                         if (m->anim != 2)
                             MobyBlendAnimation(m, 2, 0, scale_ticks(0xA));
@@ -2244,7 +2242,7 @@ void ultramech_unlimited_update(UMoby *m) {
         case 5:
             if (m->anim == 6 && (m->animFlags & 2)) {
                 MobyBlendAnimation(m, 7, 0, scale_ticks(5));
-                m->animSpeed = *(float *)&ultramech_fire_anim_speed;
+                m->animSpeed = ultramech_fire_anim_speed;
             }
             if (d->w164 != 2) {
                 int fire = -1;
@@ -2259,12 +2257,12 @@ void ultramech_unlimited_update(UMoby *m) {
                     Moby_GetJointWorldPos(m, 0, &v10);
                     FastVecSub(&v20, &tgt->pos, &v10);
                     v20.f[2] += 0.5f;
-                    vec_scale_to_length(&v20, &v20, *(float *)&ultramech_rocket_speed * g_frame_time);
+                    vec_scale_to_length(&v20, &v20, ultramech_rocket_speed * g_frame_time);
                     if (0.0f < v20.f[2])
                         v20.f[2] = 0.0f;
                     if (v20.f[2] < 0.0f)
                         v20.f[2] = 0.0f;
-                    create_rocket(&v20, 3.0f, &v10, (int)m, (int)tgt, scale_ticks(*(int *)&ultramech_rocket_life));
+                    create_rocket(&v20, 3.0f, &v10, (int)m, (int)tgt, scale_ticks(ultramech_rocket_life));
                     vec_scale_to_length(&v20, &v20, 3.0f);
                     add_vectors(&v30, &v10, &v20);
                     emit_radial_particle_burst(m, &v10, 0);
@@ -2274,13 +2272,11 @@ void ultramech_unlimited_update(UMoby *m) {
                     if (m->anim != 0)
                         MobyBlendAnimation(m, 0, 0, scale_ticks(0xA));
                     d->timer = truncate_float_to_s32_r(multiply_global_factor(d->f188 * 60.0f));
-                } else if (d->w1D8 == 0 &&
-                           vec_distance_xy(&m->pos, &tgt->pos) < *(float *)&ultramech_close_attack_range) {
+                } else if (d->w1D8 == 0 && vec_distance_xy(&m->pos, &tgt->pos) < ultramech_close_attack_range) {
                     m->state = 7;
                     if (m->anim != 1)
                         MobyBlendAnimation(m, 1, 0, scale_ticks(0xA));
-                } else if (d->w1D8 == 0 &&
-                           vec_distance_xy(&m->pos, &tgt->pos) < *(float *)&ultramech_mid_attack_range) {
+                } else if (d->w1D8 == 0 && vec_distance_xy(&m->pos, &tgt->pos) < ultramech_mid_attack_range) {
                     m->state = 8;
                     if (m->anim != 2)
                         MobyBlendAnimation(m, 2, 0, scale_ticks(0xA));
@@ -2294,11 +2290,10 @@ void ultramech_unlimited_update(UMoby *m) {
                     FastVecSub(&d->vel,
                                (Vec4 *)quartu_paths[((UPaths *)((char *)d + 0x180))->idx[d->side]] + (d->point + 1),
                                &m->pos);
-                    vec_set_length_xy(&d->vel, &d->vel, *(float *)&ultramech_jump_speed * g_frame_time);
+                    vec_set_length_xy(&d->vel, &d->vel, ultramech_jump_speed * g_frame_time);
                     d->vel.f[2] = jump_speed_4318(
                         &m->pos, (Vec4 *)quartu_paths[((UPaths *)((char *)d + 0x180))->idx[d->side]] + (d->point + 1),
-                        0, *(float *)&ultramech_jump_speed * g_frame_time,
-                        -(*(float *)&ultramech_gravity * g_frame_time_sq));
+                        0, ultramech_jump_speed * g_frame_time, -(ultramech_gravity * g_frame_time_sq));
                 }
             } else {
                 m->state = 4;
@@ -2321,11 +2316,10 @@ void ultramech_unlimited_update(UMoby *m) {
                     FastVecSub(&d->vel,
                                (Vec4 *)quartu_paths[((UPaths *)((char *)d + 0x180))->idx[d->side]] + (d->point + 1),
                                &m->pos);
-                    vec_set_length_xy(&d->vel, &d->vel, *(float *)&ultramech_jump_speed * g_frame_time);
+                    vec_set_length_xy(&d->vel, &d->vel, ultramech_jump_speed * g_frame_time);
                     d->vel.f[2] = jump_speed_4318(
                         &m->pos, (Vec4 *)quartu_paths[((UPaths *)((char *)d + 0x180))->idx[d->side]] + (d->point + 1),
-                        0, *(float *)&ultramech_jump_speed * g_frame_time,
-                        -(*(float *)&ultramech_gravity * g_frame_time_sq));
+                        0, ultramech_jump_speed * g_frame_time, -(ultramech_gravity * g_frame_time_sq));
                 } else if (fast_dec_timer(&d->timer)) {
                     m->state = 5;
                     if (m->anim != 6)
@@ -2342,7 +2336,7 @@ void ultramech_unlimited_update(UMoby *m) {
             float ang = fast_atan2(tgt->pos.f[0] - m->pos.f[0], tgt->pos.f[1] - m->pos.f[1]);
             if (d->w164 != 2) {
                 ang = compute_ultramech_flocking_steering_point(m, &v20, d->f1B8);
-                if (vec_distance_xy(&m->pos, &tgt->pos) < *(float *)&ultramech_mid_attack_range) {
+                if (vec_distance_xy(&m->pos, &tgt->pos) < ultramech_mid_attack_range) {
                     m->state = 8;
                     if (m->anim != 2)
                         MobyBlendAnimation(m, 2, 0, scale_ticks(0xA));
@@ -2375,7 +2369,7 @@ void ultramech_unlimited_update(UMoby *m) {
                                    &d->turnVel, g_frame_time_sq * 8.726646f, g_frame_time_sq * 8.726646f,
                                    g_frame_time * 12.566371f);
             if (m->animFlags & 2) {
-                if (vec_distance_xy(&m->pos, &tgt->pos) < *(float *)&ultramech_mid_attack_range && d->w1D4 == 0 &&
+                if (vec_distance_xy(&m->pos, &tgt->pos) < ultramech_mid_attack_range && d->w1D4 == 0 &&
                     d->point < quartu_paths[((UPaths *)((char *)d + 0x180))->idx[d->side]]->n - 1) {
                     m->state = 3;
                     d->timer = 0;
@@ -2385,12 +2379,11 @@ void ultramech_unlimited_update(UMoby *m) {
                     FastVecSub(&d->vel,
                                (Vec4 *)quartu_paths[((UPaths *)((char *)d + 0x180))->idx[d->side]] + (d->point + 1),
                                &m->pos);
-                    vec_set_length_xy(&d->vel, &d->vel, *(float *)&ultramech_jump_speed * g_frame_time);
+                    vec_set_length_xy(&d->vel, &d->vel, ultramech_jump_speed * g_frame_time);
                     d->vel.f[2] = jump_speed_4318(
                         &m->pos, (Vec4 *)quartu_paths[((UPaths *)((char *)d + 0x180))->idx[d->side]] + (d->point + 1),
-                        0, *(float *)&ultramech_jump_speed * g_frame_time,
-                        -(*(float *)&ultramech_gravity * g_frame_time_sq));
-                } else if (*(float *)&ultramech_mid_attack_range < vec_distance_xy(&m->pos, &tgt->pos)) {
+                        0, ultramech_jump_speed * g_frame_time, -(ultramech_gravity * g_frame_time_sq));
+                } else if (ultramech_mid_attack_range < vec_distance_xy(&m->pos, &tgt->pos)) {
                     m->state = 4;
                     if (m->anim != 0)
                         MobyBlendAnimation(m, 0, 0, scale_ticks(0x14));
@@ -2430,9 +2423,9 @@ void ultramech_unlimited_update(UMoby *m) {
                     if (m->anim != 3)
                         MobyBlendAnimation(m, 3, 0, scale_ticks(0x14));
                     FastVecSub(&d->vel, &v10, &m->pos);
-                    vec_set_length_xy(&d->vel, &d->vel, *(float *)&ultramech_jump_speed * g_frame_time);
-                    d->vel.f[2] = jump_speed_4318(&m->pos, &v10, 0, *(float *)&ultramech_jump_speed * g_frame_time,
-                                                  -(*(float *)&ultramech_gravity * g_frame_time_sq));
+                    vec_set_length_xy(&d->vel, &d->vel, ultramech_jump_speed * g_frame_time);
+                    d->vel.f[2] = jump_speed_4318(&m->pos, &v10, 0, ultramech_jump_speed * g_frame_time,
+                                                  -(ultramech_gravity * g_frame_time_sq));
                 } else {
                     m->state = 4;
                     if (m->anim != 0)
@@ -2442,8 +2435,8 @@ void ultramech_unlimited_update(UMoby *m) {
             break;
         }
         case 10:
-            FastVecScale(&v10, m->mtx, *(float *)&ultramech_debris_speed * frame_scale);
-            v10.f[2] += *(float *)&ultramech_debris_lift * frame_scale;
+            FastVecScale(&v10, m->mtx, ultramech_debris_speed * frame_scale);
+            v10.f[2] += ultramech_debris_lift * frame_scale;
             SpawnBreakFragment(m, 0x64A, &m->pos, &m->rot, scale_ticks(0x5A), 0, g_frame_time_sq * 12.0f, &v10,
                                quartu_zero_vec, quartu_zero_vec);
             SpawnBreakFragment(m, 0x64B, &m->pos, &m->rot, scale_ticks(0x5A), 0, g_frame_time_sq * 12.0f, &v10,
@@ -2521,11 +2514,11 @@ extern void HeadingFromVector(void *, float *, void *, void *);
 extern void InitKnockback(float, void *, void *, int, int, int);
 extern int Sound_PlayClassSound_r(int, int, void *, int) __asm__("func_L00_0028EF68");
 extern int FindNearestEligibleMoby(float, void *, void *, int, int, void *, int);
-extern short ultramech_hit_check_scale;
-extern short ultramech_knockback_gravity_gp;
-extern short ultramech_knockback_horizontal_speed_gp;
-extern short ultramech_knockback_vertical_speed_gp;
-extern short ultramech_scale;
+extern float ultramech_hit_check_scale SDATA(D_L15_00161BB4);
+extern float ultramech_knockback_gravity_gp SDATA(D_L15_00161B88);
+extern float ultramech_knockback_horizontal_speed_gp SDATA(D_L15_00161B90);
+extern float ultramech_knockback_vertical_speed_gp SDATA(D_L15_00161B8C);
+extern float ultramech_scale SDATA(D_L15_00161BB8);
 
 struct ProcessUltramechHitsAndUpdateTargetVars {
     u8 pad_00[0x20];
@@ -2580,7 +2573,7 @@ void process_ultramech_hits_and_update_target(void *mobyp) {
     int sel;
     int r2;
 
-    moby->scale = *(float *)&ultramech_hit_check_scale * *(float *)(*(char **)&moby->pclass + 0x24);
+    moby->scale = ultramech_hit_check_scale * *(float *)(*(char **)&moby->pclass + 0x24);
     a44 = 0;
     data->unk_1C8 = 0;
 
@@ -2614,7 +2607,7 @@ void process_ultramech_hits_and_update_target(void *mobyp) {
             sel = 1;
 
         r2 = truncate_float_to_s32(2560.0f);
-        data->unk_80 = *(float *)&ultramech_knockback_gravity_gp * g_frame_time_sq;
+        data->unk_80 = ultramech_knockback_gravity_gp * g_frame_time_sq;
         data->unk_90 = r2;
         data->unk_98 = 2.5f;
         data->unk_84 = 0.0005f;
@@ -2637,8 +2630,8 @@ void process_ultramech_hits_and_update_target(void *mobyp) {
             case 8: {
                 char *p20;
                 float k = g_frame_time;
-                float a = *(float *)&ultramech_knockback_horizontal_speed_gp * k;
-                float b = *(float *)&ultramech_knockback_vertical_speed_gp * k;
+                float a = ultramech_knockback_horizontal_speed_gp * k;
+                float b = ultramech_knockback_vertical_speed_gp * k;
                 float r;
                 data->unk_1C8 = 1;
                 data->unk_88 = a;
@@ -2679,7 +2672,7 @@ void process_ultramech_hits_and_update_target(void *mobyp) {
 
     moby->hit_slot = 0xFF;
     StepColorFade(moby, &data->unk_60);
-    moby->scale = *(float *)(*(char **)&moby->pclass + 0x24) * *(float *)&ultramech_scale;
+    moby->scale = *(float *)(*(char **)&moby->pclass + 0x24) * ultramech_scale;
     data->unk_164 = 0;
 
     if ((unsigned char)*(char *)&moby->state == 1 || data->unk_1D0 == -1) {
@@ -2702,7 +2695,7 @@ void process_ultramech_hits_and_update_target(void *mobyp) {
 }
 extern float g_frame_time MACRO_ADDR;
 extern short D_L15_00160058_g SDATA(D_L15_00160058);
-extern short quartu_linked_spin_rate;
+extern float quartu_linked_spin_rate SDATA(D_L15_00161F40);
 
 /* Nudge a moby's field 0x48 toward a signed step depending on a linked moby's state. */
 void update_moby_yaw_from_linked_state(char *moby) {
@@ -2714,11 +2707,11 @@ void update_moby_yaw_from_linked_state(char *moby) {
         int linked_moby_state = other->state;
         float step;
         if (linked_moby_state == 2) {
-            step = *(float *)&quartu_linked_spin_rate * 0.017453292f * g_frame_time;
+            step = quartu_linked_spin_rate * 0.017453292f * g_frame_time;
             if (linked_moby_vars->reversed != 0)
                 step = -step;
         } else if (linked_moby_state == 4) {
-            step = *(float *)&quartu_linked_spin_rate * 0.017453292f * g_frame_time;
+            step = quartu_linked_spin_rate * 0.017453292f * g_frame_time;
             if (linked_moby_vars->reversed == 0)
                 step = -step;
         } else {
@@ -2906,7 +2899,7 @@ extern void emit_moby_sprite_particles(char *);
 extern void ShowBanner(int, int);
 extern void grant_inventory_item(int, int);
 extern int memcard_Save(int, int);
-extern short bolt_grabber_scale;
+extern float bolt_grabber_scale SDATA(D_L15_001620F8);
 extern unsigned char race_gates_base[];
 extern int quartu_dialogue_message_duration MACRO_ADDR;
 extern int quartu_game_mode MACRO_ADDR;
@@ -2927,7 +2920,7 @@ void bolt_grabber_update(unsigned char *m) {
     struct Moby *moby = (struct Moby *)m;
 
     moby->rot.z = FastAddRots(moby->rot.z, g_frame_time * 1.5707964f);
-    moby->scale = moby->pclass->scale * *(float *)&bolt_grabber_scale;
+    moby->scale = moby->pclass->scale * bolt_grabber_scale;
     switch (moby->state) {
         case BOLT_GRABBER_INITIALIZE:
             initialize_moby_particle_effect((char *)moby);
@@ -2960,7 +2953,7 @@ void bolt_grabber_update(unsigned char *m) {
             break;
     }
 }
-extern short poison_vessel_spawn_interval;
+extern float poison_vessel_spawn_interval SDATA(D_L15_001620FC);
 extern char *spawn_poison_vessel(void *, void *);
 
 /* Per-frame update: picks a random value on spawn, then re-rolls and spawns a child when triggered. */
@@ -2974,8 +2967,7 @@ void update_poison_vessel_spawner(Moby *moby) {
             break;
         case 1:
             if (fast_dec_timer(data)) {
-                data[0] =
-                    truncate_float_to_s32_r(multiply_global_factor(*(float *)&poison_vessel_spawn_interval * 60.0f));
+                data[0] = truncate_float_to_s32_r(multiply_global_factor(poison_vessel_spawn_interval * 60.0f));
                 spawn_poison_vessel(moby, &moby->pos);
             }
             break;
@@ -3157,7 +3149,7 @@ void RingWave_DrawA(char *moby) {
     }
 }
 extern unsigned char saved_mission_state[];
-extern short quartu_alarm_on;
+extern int quartu_alarm_on SDATA(D_L15_00161B48);
 extern char *quartu_cuboids MACRO_ADDR;
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
 
@@ -3176,7 +3168,7 @@ void update_quartu_cutscene_trigger(unsigned char *moby) {
     switch (((Moby *)moby)->state) {
         case 0:
             if (saved_mission_state[((Moby *)moby)->mission + (g_current_level_index << 4)] != 0xFF &&
-                *(int *)&quartu_alarm_on == 0 && is_point_inside_clip_volume(&g_hero.motion.pos, data[0])) {
+                quartu_alarm_on == 0 && is_point_inside_clip_volume(&g_hero.motion.pos, data[0])) {
                 if (*(unsigned char *)(*(char **)&D_L15_00160058_g + data[2] * 256 + 0x20) == 3) {
                     StartCutscene(3);
                     ((Moby *)moby)->state = 2;
@@ -3222,10 +3214,10 @@ void update_quartu_cutscene_trigger(unsigned char *moby) {
 }
 extern char g_mission[];
 extern char quartu_cutscene_msg_format[];
-extern short quartu_cutscene_msg_x;
-extern short quartu_cutscene_msg_y;
-extern short quartu_cutscene_msg_color;
-extern short quartu_cutscene_msg_shadow_color;
+extern int quartu_cutscene_msg_x SDATA(D_L15_00162200);
+extern int quartu_cutscene_msg_y SDATA(D_L15_00162204);
+extern int quartu_cutscene_msg_color SDATA(D_L15_00162208);
+extern int quartu_cutscene_msg_shadow_color SDATA(D_L15_0016220C);
 extern int msg_string(int);
 extern int sprintf(char *str, const char *fmt, ...);
 extern int libc_strlen(char *);
@@ -3282,25 +3274,24 @@ void draw_quartu_cutscene_messages(void) {
         if ((n - val) & 4)
             n = n - 1;
     }
-    print_text_with_texture_3((void *)(*(int *)&quartu_cutscene_msg_x + 1),
-                              (void *)(*(int *)&quartu_cutscene_msg_y + 1),
-                              (void *)*(int *)&quartu_cutscene_msg_shadow_color, buf, (void *)n);
-    print_text_with_texture_3((void *)*(int *)&quartu_cutscene_msg_x, (void *)*(int *)&quartu_cutscene_msg_y,
-                              (void *)*(int *)&quartu_cutscene_msg_color, buf, (void *)n);
+    print_text_with_texture_3((void *)(quartu_cutscene_msg_x + 1), (void *)(quartu_cutscene_msg_y + 1),
+                              (void *)quartu_cutscene_msg_shadow_color, buf, (void *)n);
+    print_text_with_texture_3((void *)quartu_cutscene_msg_x, (void *)quartu_cutscene_msg_y,
+                              (void *)quartu_cutscene_msg_color, buf, (void *)n);
 }
 extern void PartType34Spawn(float, float, char *, float *);
 extern float g_frame_time MACRO_ADDR;
-extern short quartu_rising_puff_chance;
-extern short quartu_rising_puff_speed;
+extern int quartu_rising_puff_chance SDATA(D_L15_0016221C);
+extern float quartu_rising_puff_speed SDATA(D_L15_00162218);
 
 /* Per-frame update: when the counter check is zero, builds a vector and calls the movement helper. */
 void emit_randomized_vertical_effect(char *moby) {
     float vec[4];
     float *data = ((float *)((Moby *)moby)->pvars);
-    if (random_integer_below(*(int *)&quartu_rising_puff_chance - 1) == 0) {
+    if (random_integer_below(quartu_rising_puff_chance - 1) == 0) {
         char *pos = moby + 0x10;
         clear_u64_value(vec);
-        vec[2] = random_float_between(0.75f, 1.5f) * *(float *)&quartu_rising_puff_speed * g_frame_time;
+        vec[2] = random_float_between(0.75f, 1.5f) * quartu_rising_puff_speed * g_frame_time;
         PartType34Spawn(random_float_between(0.06f, 0.12f) * 210000.0f, *data, pos, vec);
     }
 }

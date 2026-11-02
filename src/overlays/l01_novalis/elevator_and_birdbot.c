@@ -595,9 +595,9 @@ extern int cutscene_active MACRO_ADDR;
 extern float novalis_zero_vec[] MACRO_ADDR;
 extern char novalis_birdbot_no_path_msg[];
 
-extern short novalis_birdbot_drift_speed;
-extern short novalis_birdbot_fly_speed;
-extern short novalis_birdbot_anim8_speed;
+extern float novalis_birdbot_drift_speed SDATA(D_L01_001619E0);
+extern float novalis_birdbot_fly_speed SDATA(D_L01_001619E4);
+extern float novalis_birdbot_anim8_speed SDATA(D_L01_001619EC);
 
 extern float MobyGetFrameValue(void *);
 extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
@@ -821,7 +821,7 @@ void birdbot_update(Moby *m) {
             v->b5A = 8;
             MoveCtl_Init(v->xD0);
             turn = g_frame_time_sq * 5.0f;
-            fall = *(float *)&novalis_birdbot_fly_speed * g_frame_time;
+            fall = novalis_birdbot_fly_speed * g_frame_time;
             v->f10C = 0.03f;
             v->f110 = 0.3f;
             v->f114 = 0.25f;
@@ -885,7 +885,7 @@ void birdbot_update(Moby *m) {
                             MobyBlendAnimation(m, 8, 0, scale_ticks(10));
                         }
                         i = idx;
-                        f = *(float *)&novalis_birdbot_anim8_speed;
+                        f = novalis_birdbot_anim8_speed;
                         c->idx = i;
                         m->anim_speed = f;
                         m->state = 9;
@@ -1011,7 +1011,7 @@ void birdbot_update(Moby *m) {
                 v->v180.f[0] += FastCos(a) * v->f198;
                 v->v180.f[1] += FastSin(a) * v->f198;
                 FastVecSub(&vb, &v->v180, &va);
-                vec_scale_to_length(&vb, &vb, *(float *)&novalis_birdbot_drift_speed * g_frame_time);
+                vec_scale_to_length(&vb, &vb, novalis_birdbot_drift_speed * g_frame_time);
                 vb.f[2] += 0.0f;
                 vc = (*(PeVec *)&m->pos);
                 vc.f[2] = va.f[2];
@@ -1060,7 +1060,7 @@ void birdbot_update(Moby *m) {
                     if (m->prev_seq != 8) {
                         MobyBlendAnimation(m, 8, 0, scale_ticks(10));
                     }
-                    m->anim_speed = *(float *)&novalis_birdbot_anim8_speed;
+                    m->anim_speed = novalis_birdbot_anim8_speed;
                     m->state = 9;
                 } else {
                     float d;
@@ -1135,16 +1135,15 @@ void birdbot_update(Moby *m) {
                            g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f, g_frame_time * 6.2831855f);
             if (FastDiffRots((*(float *)&m->rot.z), fast_atan2(va.f[0] - (*(float *)&m->pos.x),
                                                                va.f[1] - (*(float *)&m->pos.y))) < 0.7853982f) {
-                if (v->f1B8 < *(float *)&novalis_birdbot_fly_speed * g_frame_time) {
-                    v->f1B8 = v->f1B8 + *(float *)&novalis_birdbot_fly_speed * g_frame_time_sq;
+                if (v->f1B8 < novalis_birdbot_fly_speed * g_frame_time) {
+                    v->f1B8 = v->f1B8 + novalis_birdbot_fly_speed * g_frame_time_sq;
                 }
                 BuildSphericalOffset(&vb, v->f1B8, (*(float *)&m->rot.z),
                                      fast_atan2(vec_distance_xy(&m->pos, &va), va.f[2] - (*(float *)&m->pos.z)));
                 FastVecAdd(&m->pos, &m->pos, &vb);
-                (*(float *)&m->rot.y) =
-                    SpringTurn(&v->f1BC, (*(float *)&m->rot.y),
-                               v->f1B8 / (*(float *)&novalis_birdbot_fly_speed * g_frame_time) * 0.5235988f,
-                               g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f, g_frame_time * 4.712389f);
+                (*(float *)&m->rot.y) = SpringTurn(
+                    &v->f1BC, (*(float *)&m->rot.y), v->f1B8 / (novalis_birdbot_fly_speed * g_frame_time) * 0.5235988f,
+                    g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f, g_frame_time * 4.712389f);
             }
             qcopy(&va, &c->path->pts[c->idx]);
             va.f[2] += h;
@@ -1156,22 +1155,21 @@ void birdbot_update(Moby *m) {
         }
         case 11:
             if (v->f1B8 > 0.0f && v->h1EE == 0) {
-                v->f1B8 -= *(float *)&novalis_birdbot_fly_speed * 3.0f * g_frame_time_sq;
+                v->f1B8 -= novalis_birdbot_fly_speed * 3.0f * g_frame_time_sq;
                 va.f[0] = FastCos((*(float *)&m->rot.z)) * v->f1B8;
                 va.f[1] = FastSin((*(float *)&m->rot.z)) * v->f1B8;
                 va.f[2] = 0.0f;
                 FastVecAdd(&m->pos, &m->pos, &va);
-                (*(float *)&m->rot.y) =
-                    SpringTurn(&v->f1BC, (*(float *)&m->rot.y),
-                               v->f1B8 / (*(float *)&novalis_birdbot_fly_speed * g_frame_time) * 0.5235988f,
-                               g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f, g_frame_time * 6.2831855f);
+                (*(float *)&m->rot.y) = SpringTurn(
+                    &v->f1BC, (*(float *)&m->rot.y), v->f1B8 / (novalis_birdbot_fly_speed * g_frame_time) * 0.5235988f,
+                    g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f, g_frame_time * 6.2831855f);
             } else {
                 float a;
                 float k;
 
                 a = fast_atan2(tgt.pos.f[0] - (*(float *)&m->pos.x), tgt.pos.f[1] - (*(float *)&m->pos.y));
                 MobySpringTurn((char *)m, &v->f194, a, 0.02f, 0.3f, 0.1f);
-                k = *(float *)&novalis_birdbot_fly_speed * g_frame_time;
+                k = novalis_birdbot_fly_speed * g_frame_time;
                 v->f1B8 = 0.0f;
                 (*(float *)&m->rot.y) =
                     SpringTurn(&v->f1BC, (*(float *)&m->rot.y), v->f1B8 / k * 0.5235988f, g_frame_time_sq * 6.2831855f,
@@ -1202,7 +1200,7 @@ void birdbot_update(Moby *m) {
                         MobyBlendAnimation(m, 8, 0, scale_ticks(10));
                     }
                     i = idx;
-                    f = *(float *)&novalis_birdbot_anim8_speed;
+                    f = novalis_birdbot_anim8_speed;
                     v->main.idx = i;
                     m->anim_speed = f;
                     m->state = 9;
@@ -2560,7 +2558,7 @@ typedef struct {
     s32 count;
     u8 pad10[0x50];
 } BoundGroup;
-extern short novalis_scroll_bounds_initialized;
+extern s32 novalis_scroll_bounds_initialized SDATA(D_L01_00161C30);
 extern BoundGroup novalis_bounded_scroll_layers_r[] __asm__("D_L01_001E3660");
 extern void FastVecScale(void *, void *, float);
 extern f32 FastVecLength(void *);
@@ -2578,8 +2576,8 @@ void initialize_bounds_and_enqueue_scroll_layers(void *arg) {
     s32 k;
     f32 r;
 
-    if ((*(s32 *)&novalis_scroll_bounds_initialized) == 0) {
-        (*(s32 *)&novalis_scroll_bounds_initialized) = 1;
+    if ((novalis_scroll_bounds_initialized) == 0) {
+        (novalis_scroll_bounds_initialized) = 1;
         for (i = 0; i < 2; i++) {
             qzero(&c);
             p = (novalis_bounded_scroll_layers_r + i)->pts;
@@ -3190,11 +3188,11 @@ void update_rising_particle_and_debris_emitter(SteamMoby *m) {
     }
 }
 extern char *camera_points MACRO_ADDR;
-extern short novalis_falling_rock_cam_angle;
-extern short novalis_falling_rock_cam_distance;
-extern short novalis_falling_rock_cam_height;
-extern short novalis_falling_rock_cam_eye_offset;
-extern short novalis_falling_rock_cam_blend_speed;
+extern float novalis_falling_rock_cam_angle SDATA(D_L01_00161CB8);
+extern float novalis_falling_rock_cam_distance SDATA(D_L01_00161CBC);
+extern float novalis_falling_rock_cam_height SDATA(D_L01_00161CC0);
+extern float novalis_falling_rock_cam_eye_offset SDATA(D_L01_00161CC4);
+extern float novalis_falling_rock_cam_blend_speed SDATA(D_L01_00161CC8);
 extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
 extern void set_follow_camera_angle_blend_from_direction(void *a, float x, float y);
 extern void Cam_SetDistanceGoal(float x, float y, int flag);
@@ -3211,15 +3209,11 @@ void apply_falling_rock_camera_overrides(char *moby) {
     float rotated_vector[4];
     u8 *camera_record = camera_points + (((FallingRockVars *)((Moby *)moby)->pvars)->idx << 7);
 
-    build_look_at_matrix(rotated_vector, camera_record, camera_record + 0x20,
-                         *(float *)&novalis_falling_rock_cam_angle);
+    build_look_at_matrix(rotated_vector, camera_record, camera_record + 0x20, novalis_falling_rock_cam_angle);
     set_follow_camera_angle_blend_from_direction(rotated_vector, 0.13962633907794952f, 0.0f);
-    Cam_SetDistanceGoal(*(float *)&novalis_falling_rock_cam_distance, *(float *)&novalis_falling_rock_cam_blend_speed,
-                        0);
-    follow_camera_set_height(*(float *)&novalis_falling_rock_cam_height,
-                             *(float *)&novalis_falling_rock_cam_blend_speed);
-    Cam_SetEyeOffset(0, *(float *)&novalis_falling_rock_cam_eye_offset,
-                     *(float *)&novalis_falling_rock_cam_blend_speed);
+    Cam_SetDistanceGoal(novalis_falling_rock_cam_distance, novalis_falling_rock_cam_blend_speed, 0);
+    follow_camera_set_height(novalis_falling_rock_cam_height, novalis_falling_rock_cam_blend_speed);
+    Cam_SetEyeOffset(0, novalis_falling_rock_cam_eye_offset, novalis_falling_rock_cam_blend_speed);
 }
 typedef struct {
     unsigned char pad0[0x20];

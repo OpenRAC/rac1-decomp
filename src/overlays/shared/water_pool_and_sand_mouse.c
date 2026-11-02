@@ -147,8 +147,8 @@ void RescaleFloatTable(float s) {
         ripple_uv_table_r[i] = ripple_uv_table_r[i] * k;
     }
 }
-extern short ripple_cur_buffer;
-extern short ripple_prev_buffer;
+extern int ripple_cur_buffer SDATA(D_L01_00161298);
+extern int ripple_prev_buffer SDATA(D_L01_0016129C);
 extern void ripple_heights_to_scratchpad(char *a, char *b);
 extern void ripple_patch_step(char *a, int i, int c, char *base);
 
@@ -158,30 +158,30 @@ void step_pool_wave_simulation(char *base, int n) {
     for (i = 0; i < n; i++) {
         char *p = base + i * 0x1190;
         if (*(unsigned short *)(p + 0x1E) != 0) {
-            int off = *(int *)&ripple_cur_buffer * 0x5C0 + 0x50;
+            int off = ripple_cur_buffer * 0x5C0 + 0x50;
             ripple_heights_to_scratchpad((char *)0x70000000, p + off);
-            ripple_patch_step((char *)0x70000000, i, *(int *)&ripple_prev_buffer, base);
+            ripple_patch_step((char *)0x70000000, i, ripple_prev_buffer, base);
         }
     }
     {
-        int a = *(int *)&ripple_cur_buffer;
-        int b = *(int *)&ripple_prev_buffer;
-        *(int *)&ripple_prev_buffer = a;
-        *(int *)&ripple_cur_buffer = b;
+        int a = ripple_cur_buffer;
+        int b = ripple_prev_buffer;
+        ripple_prev_buffer = a;
+        ripple_cur_buffer = b;
     }
 }
 extern void step_pool_wave_simulation_r(char *, int) __asm__("func_L01_002B90E8");
 extern void ripple_lerp_buffers(char *, char *, char *, float);
 extern float pool_light[];
 extern short ripple_draw_buffer;
-extern short ripple_sim_phase;
+extern float ripple_sim_phase SDATA(D_L01_001612A4);
 
 // Advance the ripple simulation clock, stepping each active entry's ripple buffers.
 void RippleSimClock(char *p, int n) {
-    if (1.0f - pool_light[8] <= *(float *)&ripple_sim_phase) {
-        *(float *)&ripple_sim_phase = pool_light[8];
+    if (1.0f - pool_light[8] <= ripple_sim_phase) {
+        ripple_sim_phase = pool_light[8];
         step_pool_wave_simulation_r(p, n);
-        *(int *)&ripple_draw_buffer = *(int *)&ripple_prev_buffer;
+        *(int *)&ripple_draw_buffer = ripple_prev_buffer;
     } else {
         *(int *)&ripple_draw_buffer = 2;
         if (n > 0) {
@@ -190,15 +190,15 @@ void RippleSimClock(char *p, int n) {
             do {
                 if (*(unsigned short *)(q + 0x1E) != 0) {
                     ripple_lerp_buffers(q + (*(int *)&ripple_draw_buffer * 0x5C0 + 0x50),
-                                        q + (*(int *)&ripple_prev_buffer * 0x5C0 + 0x50),
-                                        q + (*(int *)&ripple_cur_buffer * 0x5C0 + 0x50), *(float *)&ripple_sim_phase);
+                                        q + (ripple_prev_buffer * 0x5C0 + 0x50), q + (ripple_cur_buffer * 0x5C0 + 0x50),
+                                        ripple_sim_phase);
                 }
                 k--;
                 q += 0x1190;
             } while (k != 0);
         }
     }
-    *(float *)&ripple_sim_phase = *(float *)&ripple_sim_phase + pool_light[8];
+    ripple_sim_phase = ripple_sim_phase + pool_light[8];
 }
 extern float FastAddRots(float, float);
 extern float FastCos(float);
@@ -881,8 +881,8 @@ extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern void spawn_type_14_particle(int, void *);
 extern void DeleteMoby(void *);
-extern short novalis_shot_trail_mode;
-extern short novalis_shot_hit_radius;
+extern s32 novalis_shot_trail_mode SDATA(D_L01_00161524);
+extern f32 novalis_shot_hit_radius SDATA(D_L01_0016152C);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002c7530. */
 void update_moby_motion_collision_and_lifetime(Moby *moby) {
@@ -900,10 +900,10 @@ void update_moby_motion_collision_and_lifetime(Moby *moby) {
     FastVecAdd(&moby->pos, &moby->pos, data + 8);
     switch ((u8) * (char *)&moby->state) {
         case 1:
-            spawn_type_14_particle((*(s32 *)&novalis_shot_trail_mode), moby);
+            spawn_type_14_particle((novalis_shot_trail_mode), moby);
             vec_scale_to_length(normal, data + 8, 1.0f);
             InitDirectionalHitQuery(hit, moby, 0, 0.0f, normal);
-            if (coll_sphere_mobys((*(f32 *)&novalis_shot_hit_radius), &moby->pos, 0x10, data[6], hit) &&
+            if (coll_sphere_mobys((novalis_shot_hit_radius), &moby->pos, 0x10, data[6], hit) &&
                 !noop_callback_l(moby)) {
                 CollisionHit *contact = (CollisionHit *)novalis_coll_hit;
                 if (contact->moby != 0)
@@ -1302,7 +1302,7 @@ typedef struct {
     u8 pad_10[0x30];
     s32 slot; /* 0x40: -1 none, else index into D_L01_001DEB10 */
 } SaleVars;
-extern short D_0015EF20;
+extern s32 D_0015EF20 SDATA(D_0015EF20);
 extern s32 novalis_game_mode_r __asm__("D_L01_0015F6A8") MACRO_ADDR;
 extern s32 gBolts MACRO_ADDR;
 extern s32 gold_weapon_case_items[];
@@ -1321,7 +1321,7 @@ void gold_weapon_case_update(struct Moby *m) {
     s32 item;
     ItemPrice *price;
 
-    if (v != 0 && v->slot != -1 && ((v->slot ^ 1) & 1) && (*(s32 *)&D_0015EF20) == 0) {
+    if (v != 0 && v->slot != -1 && ((v->slot ^ 1) & 1) && (D_0015EF20) == 0) {
         DeleteMoby_r(m);
         return;
     }
@@ -1488,13 +1488,13 @@ void *select_sand_mouse_spawn_target(void *moby, void *from, void *ang, float ya
 extern void *GetFlaggedPvarWord(void *);
 extern void *select_sand_mouse_spawn_target(void *, void *, void *, float, float, float, float, float, float);
 extern void spawn_sandmouse_projectile(void *, void *, float, float, float, float);
-extern short sand_mouse_target_range;
-extern short sand_mouse_target_yaw_fov;
-extern short sand_mouse_target_pitch_fov;
-extern short sand_mouse_muzzle_offset;
-extern short sand_mouse_aim_height;
-extern short sand_mouse_fire_interval;
-extern short novalis_game_mode;
+extern float sand_mouse_target_range SDATA(D_L01_00161994);
+extern float sand_mouse_target_yaw_fov SDATA(D_L01_00161998);
+extern float sand_mouse_target_pitch_fov SDATA(D_L01_0016199C);
+extern float sand_mouse_muzzle_offset SDATA(D_L01_001619A0);
+extern float sand_mouse_aim_height SDATA(D_L01_001619A4);
+extern int sand_mouse_fire_interval SDATA(D_L01_00161990);
+extern int novalis_game_mode SDATA(D_L01_0015F6A8);
 extern Vec4 gHeroPos;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002b8c08.c, FUN_L01_002e35a8. */
@@ -1509,26 +1509,25 @@ void update_sand_mouse_targeted_spawning(char *moby, char *state) {
         return;
     qzero(&v);
     FastVecAdd(&v, &v, &((Moby *)moby)->pos);
-    v.f[2] = v.f[2] + (*(float *)&sand_mouse_aim_height);
-    e = select_sand_mouse_spawn_target(moby, &v, &((Moby *)moby)->rot,
-                                       (*(float *)&sand_mouse_target_yaw_fov) * 0.017453292f,
-                                       (*(float *)&sand_mouse_target_pitch_fov) * 0.017453292f,
-                                       (*(float *)&sand_mouse_target_range), 2.0f, 3.1415927f, 3.1415927f);
+    v.f[2] = v.f[2] + (sand_mouse_aim_height);
+    e = select_sand_mouse_spawn_target(moby, &v, &((Moby *)moby)->rot, (sand_mouse_target_yaw_fov) * 0.017453292f,
+                                       (sand_mouse_target_pitch_fov) * 0.017453292f, (sand_mouse_target_range), 2.0f,
+                                       3.1415927f, 3.1415927f);
     if (e != 0) {
         *(char **)(state + 0x68) = e;
         if (gHeroPos.f[2] + 1.1f < ((Moby *)moby)->pos.z) {
             t = fast_atan2(*(float *)(e + 0x10) - ((Moby *)moby)->pos.x, *(float *)(e + 0x14) - ((Moby *)moby)->pos.y);
             if (FastDiffRots(((Moby *)moby)->rot.z, t) < 0.5235988f) {
-                if ((*(int *)&novalis_game_mode) != 2) {
+                if ((novalis_game_mode) != 2) {
                     char *r;
                     qcopy(&q, e + 0x10);
                     r = GetFlaggedPvarWord(e);
                     if (r != 0)
                         q.f[2] = q.f[2] + *(float *)(r + 0x10);
                     else
-                        q.f[2] = q.f[2] + (*(float *)&sand_mouse_aim_height);
+                        q.f[2] = q.f[2] + (sand_mouse_aim_height);
                     FastVecSub(&p, &q, &v);
-                    vec_scale_to_length(&p, &p, (*(float *)&sand_mouse_muzzle_offset));
+                    vec_scale_to_length(&p, &p, (sand_mouse_muzzle_offset));
                     FastVecAdd(&v, &v, &p);
                     a = fast_atan2(q.f[0] - v.f[0], q.f[1] - v.f[1]);
                     dist = vec_distance_xy(&v, &q);
@@ -1537,7 +1536,7 @@ void update_sand_mouse_targeted_spawning(char *moby, char *state) {
                     dist = vec_distance_xy(&v, &q);
                     d = -fast_atan2(dist, q.f[2] - v.f[2]);
                     spawn_sandmouse_projectile(moby, &v, a, b, c, d);
-                    *(short *)(state + 0x4E) = scale_ticks((*(int *)&sand_mouse_fire_interval));
+                    *(short *)(state + 0x4E) = scale_ticks((sand_mouse_fire_interval));
                     *(int *)(state + 0x64) = *(int *)(state + 0x64) + 1;
                 }
             }
@@ -1566,10 +1565,10 @@ extern char sand_mouse_move_ctl_turn_vel[];
 extern float frame_scale MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
-extern short hover_target_yaw_spring_strength_degrees_gp;
-extern short hover_target_yaw_damping_degrees_gp;
-extern short hover_target_yaw_turn_rate_limit_degrees_gp;
-extern short hover_ground_animation_height_threshold_gp;
+extern float hover_target_yaw_spring_strength_degrees_gp SDATA(D_L01_001619D4);
+extern float hover_target_yaw_damping_degrees_gp SDATA(D_L01_001619D8);
+extern float hover_target_yaw_turn_rate_limit_degrees_gp SDATA(D_L01_001619DC);
+extern float hover_ground_animation_height_threshold_gp SDATA(D_L01_001619B0);
 extern int func_001160D8(void);
 extern void MobyBlendAnimation(void *, int, int, int);
 extern void MobySpringTurn(void *, float, void *, float, float, float);
@@ -1625,9 +1624,9 @@ void update_hover_moby_steering(M_4BA8 *m, char *p) {
     } else {
         ang = fast_atan2(target->pos[0] - m->pos[0], target->pos[1] - m->pos[1]);
         MobySpringTurn(m, ang, sand_mouse_move_ctl_turn_vel,
-                       *(float *)&hover_target_yaw_spring_strength_degrees_gp * 0.017453292f * g_frame_time_sq,
-                       *(float *)&hover_target_yaw_damping_degrees_gp * 0.017453292f * g_frame_time_sq,
-                       *(float *)&hover_target_yaw_turn_rate_limit_degrees_gp * 0.017453292f * g_frame_time);
+                       hover_target_yaw_spring_strength_degrees_gp * 0.017453292f * g_frame_time_sq,
+                       hover_target_yaw_damping_degrees_gp * 0.017453292f * g_frame_time_sq,
+                       hover_target_yaw_turn_rate_limit_degrees_gp * 0.017453292f * g_frame_time);
     }
     FastVecScale(v, v, frame_scale * 0.04f);
     FastVecSub(v, v, p + 0x10);
@@ -1652,7 +1651,7 @@ void update_hover_moby_steering(M_4BA8 *m, char *p) {
             }
         }
         ground = ProbeGroundHeight(m->pos, 0, 0.5f);
-        if ((hit & 2) || m->pos[2] - ground < *(float *)&hover_ground_animation_height_threshold_gp) {
+        if ((hit & 2) || m->pos[2] - ground < hover_ground_animation_height_threshold_gp) {
             if (len < 0.005f) {
                 if (m->prev_seq >= 3 && m->prev_seq != func_001160D8() % 3) {
                     int seq = func_001160D8() % 3;
@@ -1667,7 +1666,7 @@ void update_hover_moby_steering(M_4BA8 *m, char *p) {
         }
     } else {
         ground = ProbeGroundHeight(m->pos, 0, 0.5f);
-        if (m->pos[2] - ground < *(float *)&hover_ground_animation_height_threshold_gp) {
+        if (m->pos[2] - ground < hover_ground_animation_height_threshold_gp) {
         animation3:
             if (m->prev_seq != 3)
                 MobyBlendAnimation(m, 3, 0, scale_ticks(11));
@@ -2161,7 +2160,7 @@ extern float g_hero_body_center[4];
 extern float novalis_zero_vec[] MACRO_ADDR;
 extern char amoeboid_pvar130_data;
 extern char small_amoeboid_pvar130_data;
-extern short large_amoeboid_path_lunge_distance_threshold_gp;
+extern float large_amoeboid_path_lunge_distance_threshold_gp SDATA(D_L01_00161A3C);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002edca0. */
 void large_amoeboid_update(unsigned char *moby) {
@@ -2341,7 +2340,7 @@ void large_amoeboid_update(unsigned char *moby) {
             unsigned char path_hit;
             target_position = (char *)&target->pos;
             distance = vec_distance_xy(&((Moby *)moby)->pos, target_position);
-            if (distance < (*(float *)&large_amoeboid_path_lunge_distance_threshold_gp)) {
+            if (distance < (large_amoeboid_path_lunge_distance_threshold_gp)) {
                 ((Moby *)moby)->state = 6;
                 data->turn_rate = (data->turn_speed + data->turn_speed) * g_frame_time;
                 if (((Moby *)moby)->prev_seq != 2)
@@ -2524,8 +2523,8 @@ extern int FindNearestEligibleMoby(float, char *, void *, int, int, void *, int)
 extern int FastTweenColor(float, int, int);
 extern int pool_draw_tiles MACRO_ADDR;
 extern int novalis_mobys_x __asm__("D_L01_00160058") MACRO_ADDR;
-extern short amoeboid_pulse_color_a;
-extern short amoeboid_pulse_color_b;
+extern int amoeboid_pulse_color_a SDATA(D_L01_00161A28);
+extern int amoeboid_pulse_color_b SDATA(D_L01_00161A2C);
 extern const float D_L01_00161A30_c SDATA(D_L01_00161A30);
 extern const float D_L01_00161A34_c SDATA(D_L01_00161A34);
 extern const float g_frame_time_c __asm__("D_0015EE6C") MACRO_ADDR;
@@ -2712,7 +2711,7 @@ void process_amoeboid_hits_and_update_targeting(char *m) {
     ang = FastAddRots(d->wobble_angle, g_frame_time * 9.424778f);
     d->wobble_angle = ang;
     ((Moby *)m)->glow_color =
-        FastTweenColor((FastSin(ang) + 1.0f) * 0.5f, *(int *)&amoeboid_pulse_color_a, *(int *)&amoeboid_pulse_color_b);
+        FastTweenColor((FastSin(ang) + 1.0f) * 0.5f, amoeboid_pulse_color_a, amoeboid_pulse_color_b);
 }
 extern short *lists_2F0728[] __asm__("D_L01_001ABFC0");
 extern Moby *entities_2F0728 SDATA(D_L01_00160058);

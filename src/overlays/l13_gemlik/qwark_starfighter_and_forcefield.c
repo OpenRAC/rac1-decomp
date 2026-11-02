@@ -2424,10 +2424,10 @@ extern void SendRadialMessageToMobys(void *, void *, void *, int, int, int, int,
 extern float multiply_global_factor(float);
 extern char poison_vessel_hit_fmt[];
 extern char sphere_hits_ed158[];
-extern short poison_vessel_blast_ticks;
-extern short poison_vessel_blast_radius_start;
-extern short poison_vessel_blast_radius_end;
-extern short poison_vessel_blast_damage;
+extern int poison_vessel_blast_ticks SDATA(D_L13_00161EBC);
+extern float poison_vessel_blast_radius_start SDATA(D_L13_00161EC0);
+extern float poison_vessel_blast_radius_end SDATA(D_L13_00161EC4);
+extern float poison_vessel_blast_damage SDATA(D_L13_00161EC8);
 
 /* UpdateMoby_1261: switch on the state byte at +0x20. State 0 damps the values at +0x40 and +0x44, queries a hit with
  * MobyGetHitMessage(moby, 0x330001, 0) and takes the hit's value (at +0x2C) off the float at data + 0x20; once that is
@@ -2542,14 +2542,14 @@ void poison_vessel_1261_update(char *moby) {
             one = 1.0f;
             pos[2] = pos[2] + one;
             elapsed = IntToFloat(vars->timer);
-            span = IntToFloat(scale_ticks(*(int *)&poison_vessel_blast_ticks));
-            radius = interpolate_scalar_linear(*(float *)&poison_vessel_blast_radius_start,
-                                               *(float *)&poison_vessel_blast_radius_end, elapsed / span);
+            span = IntToFloat(scale_ticks(poison_vessel_blast_ticks));
+            radius = interpolate_scalar_linear(poison_vessel_blast_radius_start, poison_vessel_blast_radius_end,
+                                               elapsed / span);
             hits = coll_sphere_mobys(radius, pos, 0x10, m, 0);
-            SendRadialMessageToMobys(m, pos, sphere_hits_ed158, hits, 0, 0x830001, 2, 1,
-                                     *(float *)&poison_vessel_blast_damage, one, one);
+            SendRadialMessageToMobys(m, pos, sphere_hits_ed158, hits, 0, 0x830001, 2, 1, poison_vessel_blast_damage,
+                                     one, one);
             g = (float)vars->timer;
-            if (multiply_global_factor((float)*(int *)&poison_vessel_blast_ticks * 0.5f) < g) {
+            if (multiply_global_factor((float)poison_vessel_blast_ticks * 0.5f) < g) {
                 m->flags |= 0x41;
                 spawn_type_52_particle_near_moby(m);
             } else {
@@ -2557,7 +2557,7 @@ void poison_vessel_1261_update(char *moby) {
                 m->alpha = fade / 8;
             }
             timer = vars->timer;
-            duration = *(int *)&poison_vessel_blast_ticks;
+            duration = poison_vessel_blast_ticks;
             timer = timer + 1;
             vars->timer = timer;
             if (scale_ticks(duration) < timer) {
@@ -2934,11 +2934,11 @@ extern float ProbeGroundHeight(void *, int, float);
 
 extern char gemlik_reference_axis[] MACRO_ADDR;
 extern char gemlik_coll_hit_result[] MACRO_ADDR;
-extern short blarg_commando_scale;
-extern short blarg_space_commando_stun_horizontal_knockback_speed;
-extern short blarg_space_commando_stun_vertical_knockback_speed;
-extern short blarg_space_commando_dying_horizontal_knockback_speed;
-extern short blarg_space_commando_dying_vertical_knockback_speed;
+extern float blarg_commando_scale SDATA(D_L13_00161EE8);
+extern float blarg_space_commando_stun_horizontal_knockback_speed SDATA(D_L13_00161EF0);
+extern float blarg_space_commando_stun_vertical_knockback_speed SDATA(D_L13_00161EF4);
+extern float blarg_space_commando_dying_horizontal_knockback_speed SDATA(D_L13_00161EF8);
+extern float blarg_space_commando_dying_vertical_knockback_speed SDATA(D_L13_00161EFC);
 
 struct WalkerVars_a1c8 {
     u8 pad0[0x20];
@@ -2991,7 +2991,7 @@ void update_blarg_space_commando_damage_targeting_and_ground_motion(Moby *moby) 
     float push[4];
     int st;
 
-    moby->scale = moby->pclass->scale * *(float *)&blarg_commando_scale;
+    moby->scale = moby->pclass->scale * blarg_commando_scale;
     update_gemlik_trail(moby);
     if (vars->init != 0) {
         vars->idle_timer = truncate_float_to_s32(multiply_global_factor(random_float_between(180.0f, 240.0f)));
@@ -3027,8 +3027,8 @@ void update_blarg_space_commando_damage_targeting_and_ground_motion(Moby *moby) 
                 float ku, kb;
                 moby->state = 0xF;
                 st = scale_ticks(0x3C);
-                ku = *(float *)&blarg_space_commando_stun_horizontal_knockback_speed * g_frame_time;
-                kb = *(float *)&blarg_space_commando_stun_vertical_knockback_speed * g_frame_time;
+                ku = blarg_space_commando_stun_horizontal_knockback_speed * g_frame_time;
+                kb = blarg_space_commando_stun_vertical_knockback_speed * g_frame_time;
                 vars->stun_timer = st;
                 vars->knock_up = ku;
                 vars->knock_back = kb;
@@ -3041,8 +3041,8 @@ void update_blarg_space_commando_damage_targeting_and_ground_motion(Moby *moby) 
             case 2: {
                 float ku, kb;
                 moby->state = 0x10;
-                ku = *(float *)&blarg_space_commando_dying_horizontal_knockback_speed * g_frame_time;
-                kb = *(float *)&blarg_space_commando_dying_vertical_knockback_speed * g_frame_time;
+                ku = blarg_space_commando_dying_horizontal_knockback_speed * g_frame_time;
+                kb = blarg_space_commando_dying_vertical_knockback_speed * g_frame_time;
                 moby->flags &= ~0x1000;
                 vars->knock_up = ku;
                 vars->knock_min = 9.0f;
@@ -3268,22 +3268,22 @@ extern float FastCos(float);
 extern float FastSin(float);
 extern void lerp_vector(void *, void *, void *, float);
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
-extern short gemlik_trail_spark_lower;
-extern short gemlik_trail_spark_upper;
-extern short gemlik_trail_spark_start_size;
-extern short gemlik_trail_spark_end_size;
-extern short gemlik_trail_spark_time1_min;
-extern short gemlik_trail_spark_time1_max;
-extern short gemlik_trail_spark_time2_min;
-extern short gemlik_trail_spark_time2_max;
-extern short gemlik_trail_spark_time3_min;
-extern short gemlik_trail_spark_time3_max;
-extern short gemlik_trail_spark_spread_min;
-extern short gemlik_trail_spark_spread_max;
-extern short gemlik_trail_spark_lift_min;
-extern short gemlik_trail_spark_lift_max;
-extern short gemlik_trail_spark_chance;
-extern short gemlik_trail_spark_texture;
+extern int gemlik_trail_spark_lower SDATA(D_L13_00161F40);
+extern int gemlik_trail_spark_upper SDATA(D_L13_00161F44);
+extern float gemlik_trail_spark_start_size SDATA(D_L13_00161F48);
+extern float gemlik_trail_spark_end_size SDATA(D_L13_00161F4C);
+extern float gemlik_trail_spark_time1_min SDATA(D_L13_00161F50);
+extern float gemlik_trail_spark_time1_max SDATA(D_L13_00161F54);
+extern float gemlik_trail_spark_time2_min SDATA(D_L13_00161F58);
+extern float gemlik_trail_spark_time2_max SDATA(D_L13_00161F5C);
+extern float gemlik_trail_spark_time3_min SDATA(D_L13_00161F60);
+extern float gemlik_trail_spark_time3_max SDATA(D_L13_00161F64);
+extern float gemlik_trail_spark_spread_min SDATA(D_L13_00161F68);
+extern float gemlik_trail_spark_spread_max SDATA(D_L13_00161F6C);
+extern float gemlik_trail_spark_lift_min SDATA(D_L13_00161F70);
+extern float gemlik_trail_spark_lift_max SDATA(D_L13_00161F74);
+extern float gemlik_trail_spark_chance SDATA(D_L13_00161F78);
+extern int gemlik_trail_spark_texture SDATA(D_L13_00161F7C);
 
 /* spawns particles for each active entry of the moby's 16-slot table */
 void spawn_point_table_sparks(char *moby) {
@@ -3300,37 +3300,33 @@ void spawn_point_table_sparks(char *moby) {
         if (*(float *)(data + off + 0x21C) < 0.99f && *(float *)(data - (-(n * 16)) + 0x21C) < 0.99f) {
             continue;
         }
-        if (*(float *)&gemlik_trail_spark_chance < random_float_between(0.0f, 1.0f)) {
+        if (gemlik_trail_spark_chance < random_float_between(0.0f, 1.0f)) {
             continue;
         }
         f21 = random_angle_radians();
         f22 = random_angle_radians();
-        v[0] = FastCos(f21) *
-               random_float_between(*(float *)&gemlik_trail_spark_spread_min, *(float *)&gemlik_trail_spark_spread_max);
-        v[1] = FastSin(f21) *
-               random_float_between(*(float *)&gemlik_trail_spark_spread_min, *(float *)&gemlik_trail_spark_spread_max);
+        v[0] = FastCos(f21) * random_float_between(gemlik_trail_spark_spread_min, gemlik_trail_spark_spread_max);
+        v[1] = FastSin(f21) * random_float_between(gemlik_trail_spark_spread_min, gemlik_trail_spark_spread_max);
         v[2] = 0;
-        w[0] = FastCos(f22) *
-               random_float_between(*(float *)&gemlik_trail_spark_spread_min, *(float *)&gemlik_trail_spark_spread_max);
-        w[1] = FastSin(f22) *
-               random_float_between(*(float *)&gemlik_trail_spark_spread_min, *(float *)&gemlik_trail_spark_spread_max);
+        w[0] = FastCos(f22) * random_float_between(gemlik_trail_spark_spread_min, gemlik_trail_spark_spread_max);
+        w[1] = FastSin(f22) * random_float_between(gemlik_trail_spark_spread_min, gemlik_trail_spark_spread_max);
         w[2] = 0;
-        v[2] = random_float_between(*(float *)&gemlik_trail_spark_lift_min, *(float *)&gemlik_trail_spark_lift_max);
-        w[2] = random_float_between(*(float *)&gemlik_trail_spark_lift_min, *(float *)&gemlik_trail_spark_lift_max);
-        s18 = truncate_float_to_s32_r_r(multiply_global_factor(
-            random_float_between(*(float *)&gemlik_trail_spark_time1_min, *(float *)&gemlik_trail_spark_time1_max)));
-        s19 = truncate_float_to_s32_r_r(multiply_global_factor(
-            random_float_between(*(float *)&gemlik_trail_spark_time2_min, *(float *)&gemlik_trail_spark_time2_max)));
-        s17 = truncate_float_to_s32_r_r(multiply_global_factor(
-            random_float_between(*(float *)&gemlik_trail_spark_time3_min, *(float *)&gemlik_trail_spark_time3_max)));
+        v[2] = random_float_between(gemlik_trail_spark_lift_min, gemlik_trail_spark_lift_max);
+        w[2] = random_float_between(gemlik_trail_spark_lift_min, gemlik_trail_spark_lift_max);
+        s18 = truncate_float_to_s32_r_r(
+            multiply_global_factor(random_float_between(gemlik_trail_spark_time1_min, gemlik_trail_spark_time1_max)));
+        s19 = truncate_float_to_s32_r_r(
+            multiply_global_factor(random_float_between(gemlik_trail_spark_time2_min, gemlik_trail_spark_time2_max)));
+        s17 = truncate_float_to_s32_r_r(
+            multiply_global_factor(random_float_between(gemlik_trail_spark_time3_min, gemlik_trail_spark_time3_max)));
         FastVecScale(v, v, 1.0f / (float)s18);
-        v[3] = *(float *)&gemlik_trail_spark_start_size;
+        v[3] = gemlik_trail_spark_start_size;
         FastVecScale(w, w, 1.0f / (float)s17);
-        w[3] = *(float *)&gemlik_trail_spark_end_size;
+        w[3] = gemlik_trail_spark_end_size;
         p = data + (off + 0x210);
         lerp_vector(s10, p, p, random_float_between(0.0f, 1.0f));
-        PartType02Spawn(s10, v, w, *(int *)&gemlik_trail_spark_lower, *(int *)&gemlik_trail_spark_upper, s18, s19, s17,
-                        *(int *)&gemlik_trail_spark_texture);
+        PartType02Spawn(s10, v, w, gemlik_trail_spark_lower, gemlik_trail_spark_upper, s18, s19, s17,
+                        gemlik_trail_spark_texture);
     }
 }
 typedef struct {
@@ -3369,7 +3365,7 @@ extern float gemlik_pool_draw_param_48 MACRO_ADDR;
 extern void *gemlik_pool_draw_tiles MACRO_ADDR;
 extern void *gemlik_pool_draw_tex MACRO_ADDR;
 extern int gemlik_pool_tile_count MACRO_ADDR;
-extern short gemlik_pool_override_tile;
+extern int gemlik_pool_override_tile SDATA(D_L13_00161F80);
 extern unsigned short gemlik_pool_override_color;
 
 extern void RipplePatch_ToFixedPoint(void *, void *);
@@ -3492,7 +3488,7 @@ void update_gemlik_bobbing_pool_tile(struct Moby *moby) {
             RippleSimClock(Tiles_9e88_r, 22);
             AddDrawCallback(render_level13_water_grids, moby);
         }
-        if (bobbing_platform_vars->idx == (*(int *)&gemlik_pool_override_tile)) {
+        if (bobbing_platform_vars->idx == (gemlik_pool_override_tile)) {
             Tiles_9e88_r[bobbing_platform_vars->idx].c1E = gemlik_pool_override_color;
             gemlik_pool_tile_colors[bobbing_platform_vars->idx] = gemlik_pool_override_color;
         }

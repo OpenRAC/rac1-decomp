@@ -375,7 +375,7 @@ typedef struct {
     f32 f48;
 } Obj;
 extern CollisionHit coll_hit_result_r __asm__("D_L00_00173F40");
-extern short g_frame_time_sq;
+extern f32 g_frame_time_sq SDATA(D_0015EE70);
 extern int frame_scale MACRO_ADDR;
 extern f32 vec_length_xy(void *);
 extern f32 FastCos(f32);
@@ -432,7 +432,7 @@ s32 move_w(Obj *m, Ctl *c, void *v, Vec4 *out, f32 f) {
         d.f[2] = 0.0f;
     } else {
         d.f[2] = c->f18;
-        c->f18 = c->f18 - (*(f32 *)&g_frame_time_sq) * 9.0f;
+        c->f18 = c->f18 - (g_frame_time_sq) * 9.0f;
     }
     lim = m->pos.f[2] + 0.04f;
     FastVecAdd(&p, &m->pos, &d);

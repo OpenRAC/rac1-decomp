@@ -202,9 +202,9 @@ extern float quartu_sentrybot_anim10_yaw_deg[];
 extern float quartu_sentrybot_anim11_yaw_deg[];
 extern float g_frame_time MACRO_ADDR;
 extern int quartu_frame_count MACRO_ADDR;
-extern short sentrybot_update_disabled_gp;
-extern short sentrybot_emission_vector_speed_gp;
-extern short sentrybot_alert_level_frame_stamp_gp;
+extern int sentrybot_update_disabled_gp SDATA(D_L15_0016149C);
+extern float sentrybot_emission_vector_speed_gp SDATA(D_L15_00161498);
+extern int sentrybot_alert_level_frame_stamp_gp SDATA(D_L15_00161470);
 
 /* Sentrybot update: runs the patrol, alert and attack state machine, then sets the alert level and the eye colour. */
 void sentrybot_update(unsigned char *moby) {
@@ -225,7 +225,7 @@ void sentrybot_update(unsigned char *moby) {
     int color;
     float s;
 
-    if (*(int *)&sentrybot_update_disabled_gp != 0)
+    if (sentrybot_update_disabled_gp != 0)
         return;
     data = (struct SentrybotVars *)((Moby *)moby)->pvars;
     if (quartu_game_mode == 2) {
@@ -721,9 +721,9 @@ void sentrybot_update(unsigned char *moby) {
                     j2 = 2;
                     compute_selected_world_matrices(moby, 1, &j2, mat);
                     transform_scaled_vertex_batch((char *)moby, 1, &j2, (char *)pos);
-                    vec_scale_to_length(va, mat[1], *(float *)&sentrybot_emission_vector_speed_gp * g_frame_time);
+                    vec_scale_to_length(va, mat[1], sentrybot_emission_vector_speed_gp * g_frame_time);
                     FastVecSub(vb, &data->aim_point, pos);
-                    vec_scale_to_length(vb, vb, *(float *)&sentrybot_emission_vector_speed_gp * g_frame_time);
+                    vec_scale_to_length(vb, vb, sentrybot_emission_vector_speed_gp * g_frame_time);
                     if (FastDiffRots(fast_atan2(va[0], va[1]), fast_atan2(vb[0], vb[1])) > 0.7853982f ||
                         FastDiffRots(fast_atan2(vec_length_xy(va), va[2]), fast_atan2(vec_length_xy(vb), vb[2])) >
                             0.7853982f) {
@@ -772,9 +772,9 @@ void sentrybot_update(unsigned char *moby) {
                     j3 = 3;
                     compute_selected_world_matrices(moby, 1, &j3, mat);
                     transform_scaled_vertex_batch((char *)moby, 1, &j3, (char *)pos);
-                    vec_scale_to_length(va, mat[1], -(*(float *)&sentrybot_emission_vector_speed_gp * g_frame_time));
+                    vec_scale_to_length(va, mat[1], -(sentrybot_emission_vector_speed_gp * g_frame_time));
                     FastVecSub(vb, &data->aim_point, pos);
-                    vec_scale_to_length(vb, vb, *(float *)&sentrybot_emission_vector_speed_gp * g_frame_time);
+                    vec_scale_to_length(vb, vb, sentrybot_emission_vector_speed_gp * g_frame_time);
                     if (FastDiffRots(fast_atan2(va[0], va[1]), fast_atan2(vb[0], vb[1])) > 0.7853982f ||
                         FastDiffRots(fast_atan2(vec_length_xy(va), va[2]), fast_atan2(vec_length_xy(vb), vb[2])) >
                             0.7853982f) {
@@ -939,8 +939,8 @@ void sentrybot_update(unsigned char *moby) {
         lvl = data->hero_spotted != 0;
     }
     tick = quartu_frame_count;
-    if (tick != *(int *)&sentrybot_alert_level_frame_stamp_gp || ((Hero98BB8 *)(&g_hero))->f22E0 < lvl) {
-        *(int *)&sentrybot_alert_level_frame_stamp_gp = tick;
+    if (tick != sentrybot_alert_level_frame_stamp_gp || ((Hero98BB8 *)(&g_hero))->f22E0 < lvl) {
+        sentrybot_alert_level_frame_stamp_gp = tick;
         ((Hero98BB8 *)(&g_hero))->f22E0 = lvl;
     }
     alpha = 0x80;
@@ -1311,15 +1311,15 @@ extern int truncate_float_to_s32(float);
 #define func_L00_001EFFF0_r func_L00_001EFFF0
 extern int FindNearestEligibleMoby(void *, void *, float, int, int, void *, int);
 #define quartu_moby_array_m D_L15_00160058
-extern short quartu_sentrybot_scale_factor;
-extern short sentrybot_knockback_gravity_gp;
-extern short sentrybot_death_knockback_gravity_gp;
-extern short sentrybot_recoverable_knockback_vertical_speed_gp;
-extern short sentrybot_recoverable_knockback_horizontal_speed_gp;
-extern short sentrybot_recoverable_knockback_horizontal_speed_approach_rate_gp;
-extern short sentrybot_death_knockback_vertical_speed_gp;
-extern short sentrybot_death_knockback_horizontal_speed_gp;
-extern short sentrybot_death_knockback_horizontal_speed_approach_rate_gp;
+extern float quartu_sentrybot_scale_factor SDATA(D_L15_00161474);
+extern float sentrybot_knockback_gravity_gp SDATA(D_L15_00161478);
+extern float sentrybot_death_knockback_gravity_gp SDATA(D_L15_0016147C);
+extern float sentrybot_recoverable_knockback_vertical_speed_gp SDATA(D_L15_00161480);
+extern float sentrybot_recoverable_knockback_horizontal_speed_gp SDATA(D_L15_00161484);
+extern float sentrybot_recoverable_knockback_horizontal_speed_approach_rate_gp SDATA(D_L15_00161488);
+extern float sentrybot_death_knockback_vertical_speed_gp SDATA(D_L15_0016148C);
+extern float sentrybot_death_knockback_horizontal_speed_gp SDATA(D_L15_00161490);
+extern float sentrybot_death_knockback_horizontal_speed_approach_rate_gp SDATA(D_L15_00161494);
 /* The hit message MobyGetHitMessage returns: the hit point and the moby that struck. */
 typedef struct {
     u8 pad_00[0x10];
@@ -1360,7 +1360,7 @@ void update_sentrybot_hit_response_and_target_visibility(void *object, int flag)
 
     if (moby->state == 0)
         return;
-    moby->scale = moby->pclass->scale * *(float *)&quartu_sentrybot_scale_factor;
+    moby->scale = moby->pclass->scale * quartu_sentrybot_scale_factor;
     impact = 0.0f;
     hit = (SentryHitMessage *)MobyGetHitMessage(moby, 0x330000, 0);
     code = ComputeHitResponse(moby, hit, &data->health, 0, &kind, &impact, 0, 4);
@@ -1373,7 +1373,7 @@ void update_sentrybot_hit_response_and_target_visibility(void *object, int flag)
         if (data->health <= 0.0f)
             code = 1;
         amount = truncate_float_to_s32_r(512.0f);
-        speed = *(float *)&sentrybot_knockback_gravity_gp * g_frame_time_sq;
+        speed = sentrybot_knockback_gravity_gp * g_frame_time_sq;
         data->kb_amount = amount;
         data->kb_unk_98 = 0.5f;
         data->kb_mode = 9;
@@ -1400,12 +1400,12 @@ void update_sentrybot_hit_response_and_target_visibility(void *object, int flag)
                 float vz;
                 float fall_speed;
                 step = g_frame_time;
-                fall_speed = *(float *)&sentrybot_knockback_gravity_gp;
+                fall_speed = sentrybot_knockback_gravity_gp;
                 step_sq = g_frame_time_sq;
                 fall_speed = fall_speed * step_sq;
-                forward = *(float *)&sentrybot_recoverable_knockback_horizontal_speed_gp * step;
-                lateral = *(float *)&sentrybot_recoverable_knockback_vertical_speed_gp * step;
-                vz = *(float *)&sentrybot_recoverable_knockback_horizontal_speed_approach_rate_gp * step;
+                forward = sentrybot_recoverable_knockback_horizontal_speed_gp * step;
+                lateral = sentrybot_recoverable_knockback_vertical_speed_gp * step;
+                vz = sentrybot_recoverable_knockback_horizontal_speed_approach_rate_gp * step;
                 data->kb_gravity = fall_speed;
                 data->kb_forward = forward;
                 data->kb_up = lateral;
@@ -1433,12 +1433,12 @@ void update_sentrybot_hit_response_and_target_visibility(void *object, int flag)
                 float vz;
                 float fall_speed;
                 step = g_frame_time;
-                fall_speed = *(float *)&sentrybot_death_knockback_gravity_gp;
+                fall_speed = sentrybot_death_knockback_gravity_gp;
                 step_sq = g_frame_time_sq;
                 fall_speed = fall_speed * step_sq;
-                forward = *(float *)&sentrybot_death_knockback_horizontal_speed_gp * step;
-                lateral = *(float *)&sentrybot_death_knockback_vertical_speed_gp * step;
-                vz = *(float *)&sentrybot_death_knockback_horizontal_speed_approach_rate_gp * step;
+                forward = sentrybot_death_knockback_horizontal_speed_gp * step;
+                lateral = sentrybot_death_knockback_vertical_speed_gp * step;
+                vz = sentrybot_death_knockback_horizontal_speed_approach_rate_gp * step;
                 moby->flags &= 0xEFFF;
                 data->kb_gravity = fall_speed;
                 data->kb_forward = forward;
@@ -1631,8 +1631,8 @@ void spawn_rocket_trail_spark(char *moby) {
 }
 extern void spawn_glow_particle(char *, char *, int, int, float, int, int, int, int);
 extern float quartu_zero_vec[] MACRO_ADDR;
-extern short quartu_rocket_glow_life_ticks;
-extern short quartu_rocket_glow_size;
+extern int quartu_rocket_glow_life_ticks SDATA(D_L15_001614E4);
+extern float quartu_rocket_glow_size SDATA(D_L15_001614E0);
 extern unsigned char quartu_rocket_glow_red;
 extern unsigned char quartu_rocket_glow_green;
 extern unsigned char quartu_rocket_glow_blue;
@@ -1641,8 +1641,8 @@ extern unsigned char quartu_rocket_glow_alpha;
 // Calls the shared moby helper with this level's constants.
 void spawn_rocket_detonation_glow(char *moby) {
     char *pos = moby + 0x10;
-    int t = scale_ticks(*(int *)&quartu_rocket_glow_life_ticks);
-    spawn_glow_particle(moby, pos, (int)&quartu_zero_vec, t, *(float *)&quartu_rocket_glow_size, quartu_rocket_glow_red,
+    int t = scale_ticks(quartu_rocket_glow_life_ticks);
+    spawn_glow_particle(moby, pos, (int)&quartu_zero_vec, t, quartu_rocket_glow_size, quartu_rocket_glow_red,
                         quartu_rocket_glow_green, quartu_rocket_glow_blue, quartu_rocket_glow_alpha);
 }
 typedef int u128_29E8A0 __attribute__((mode(TI)));
@@ -2351,11 +2351,11 @@ extern void draw_group_moby_effect_quads(char *);
 extern void MobySphereHitDirectional_m(void *, void *, int, float, float, float, int, int,
                                        int) __asm__("func_L00_0025A8E8");
 extern int quartu_alarm_raised_m __asm__("D_L15_00161B40") MACRO_ADDR;
-extern short quartu_hero_seeker_spark_life_ticks;
-extern short quartu_hero_seeker_spark_color;
-extern short quartu_hero_seeker_spark_scale;
-extern short quartu_hero_seeker_spark_height;
-extern short quartu_hero_seeker_speed;
+extern int quartu_hero_seeker_spark_life_ticks SDATA(D_L15_00161540);
+extern int quartu_hero_seeker_spark_color SDATA(D_L15_00161538);
+extern float quartu_hero_seeker_spark_scale SDATA(D_L15_0016153C);
+extern float quartu_hero_seeker_spark_height SDATA(D_L15_00161544);
+extern float quartu_hero_seeker_speed SDATA(D_L15_00161534);
 
 typedef struct GroupMobyData {
     u8 pad_00[0x64];
@@ -2398,18 +2398,18 @@ void update_hero_seeking_group_moby(char *moby) {
     if (((struct Moby *)moby)->state != 1) {
         rand_vec(va, 0.0f, g_frame_time + g_frame_time);
         qcopy(pb, &((struct Moby *)moby)->pos);
-        pb[2] = pb[2] + *(float *)&quartu_hero_seeker_spark_height;
+        pb[2] = pb[2] + quartu_hero_seeker_spark_height;
         if (quartu_alarm_raised_m == 0) {
             ((struct Moby *)moby)->state = 1;
             goto tailA;
         }
-        particle_lifetime_frames = scale_ticks(*(int *)&quartu_hero_seeker_spark_life_ticks);
+        particle_lifetime_frames = scale_ticks(quartu_hero_seeker_spark_life_ticks);
         converted_particle_lifetime_frames = truncate_float_to_s32_r((float)particle_lifetime_frames);
         life = (unsigned char)converted_particle_lifetime_frames;
         particle_initial_rotation = random_integer_below(0xFF);
-        spawn_moving_hero_relative_alpha_fade_particle(pb, (char *)va, *(int *)&quartu_hero_seeker_spark_color, life,
+        spawn_moving_hero_relative_alpha_fade_particle(pb, (char *)va, quartu_hero_seeker_spark_color, life,
                                                        (unsigned char)particle_initial_rotation, 0,
-                                                       *(float *)&quartu_hero_seeker_spark_scale);
+                                                       quartu_hero_seeker_spark_scale);
         callback_frame_stamp = data->frame_stamp;
         if (callback_frame_stamp == 0 || *(int *)callback_frame_stamp != quartu_frame_count) {
             if (callback_frame_stamp != 0) {
@@ -2451,9 +2451,9 @@ s3:
     yaw = FastAddRots(data->yaw, fast_atan2(fa, fb));
     target_z = hero_base->motion.near_ground_point.f[2];
     yaw_cosine = FastCos(yaw);
-    va[0] = yaw_cosine * (*(float *)&quartu_hero_seeker_speed * g_frame_time);
+    va[0] = yaw_cosine * (quartu_hero_seeker_speed * g_frame_time);
     yaw_sine = FastSin(yaw);
-    va[1] = yaw_sine * (*(float *)&quartu_hero_seeker_speed * g_frame_time);
+    va[1] = yaw_sine * (quartu_hero_seeker_speed * g_frame_time);
     va[2] = 0.0f;
     fd = ((struct Moby *)moby)->pos.z - target_z;
     if (0.6f < fd) {
@@ -2930,9 +2930,9 @@ extern void matrix_copy_rows(void *, void *);
 extern float FastNormalizeAngle(float);
 extern int func_001160D8(void);
 
-extern short quartu_spiderbot_spark_count;
-extern short quartu_spiderbot_spark_scale;
-extern short quartu_spiderbot_spark_life;
+extern int quartu_spiderbot_spark_count SDATA(D_L15_001615D8);
+extern float quartu_spiderbot_spark_scale SDATA(D_L15_001615DC);
+extern float quartu_spiderbot_spark_life SDATA(D_L15_001615E0);
 extern void draw_spiderbot_effect_quad();
 extern unsigned char *spawn_moving_hero_relative_alpha_fade_particle_r(float *pos, char *vel, int color,
                                                                        unsigned char life, unsigned char b, int mode,
@@ -3055,7 +3055,7 @@ void spiderbot_update(Moby *moby) {
         } else {
             *(u128_2A8090 *)&d->unk_10 = *(u128_2A8090 *)A;
         }
-        for (i = 0; i < *(int *)&quartu_spiderbot_spark_count; i++) {
+        for (i = 0; i < quartu_spiderbot_spark_count; i++) {
             float s;
             float len;
             int k;
@@ -3063,8 +3063,8 @@ void spiderbot_update(Moby *moby) {
             s = -1.0f;
             if (func_001160D8() & 1)
                 s = 1.0f;
-            k = truncate_float_to_s32(multiply_global_factor(random_float_between(
-                *(float *)&quartu_spiderbot_spark_life * 0.5f, *(float *)&quartu_spiderbot_spark_life)));
+            k = truncate_float_to_s32(multiply_global_factor(
+                random_float_between(quartu_spiderbot_spark_life * 0.5f, quartu_spiderbot_spark_life)));
             FastVecSub(T2, &d->unk_10, &moby->pos);
             *(u128_2A8090 *)B = *(u128_2A8090 *)T2;
             FastVecScale(B, B, s);
@@ -3075,7 +3075,7 @@ void spiderbot_update(Moby *moby) {
             add_vectors(T2, A, B);
             vec_scale_to_length(B, B, random_float_between(g_frame_time * 10.0f, len / IntToFloat(k * 4)));
             spawn_moving_hero_relative_alpha_fade_particle_r(A, (char *)B, 0x604040FF, life, random_integer_below(0xFF),
-                                                             0, *(float *)&quartu_spiderbot_spark_scale);
+                                                             0, quartu_spiderbot_spark_scale);
         }
     }
     AddDrawCallback(draw_spiderbot_effect_quad, moby);
@@ -3491,9 +3491,9 @@ extern void AddDrawCallback(void (*)(void), void *);
 
 extern void emit_sine_modulated_rgba_draw_packet(void);
 extern short g_current_level_index;
-extern short quartu_alarm_raised;
-extern short quartu_alarm_on;
-extern short quartu_alarm_sound_handle;
+extern int quartu_alarm_raised SDATA(D_L15_00161B40);
+extern int quartu_alarm_on SDATA(D_L15_00161B48);
+extern int quartu_alarm_sound_handle SDATA(D_L15_00161B4C);
 extern short quartu_alarm_sound_owner;
 
 /* per-frame update of the level's looping effect: ramp the gauge, then start, run or stop the draw callback */
@@ -3502,47 +3502,47 @@ void update_sentrybot_alarm_effect(void *moby) {
     if (base->state.current == HERO_STATE_APPROACH_TARGET_POSE) {
         ApproachValue(&quartu_alarm_intensity, 0.0f, g_frame_time * 2);
         set_sentrybot_alarm_duration(moby, 0);
-    } else if (*(int *)&quartu_alarm_raised != 0 &&
+    } else if (quartu_alarm_raised != 0 &&
                (*(int *)&g_current_level_index != LEVEL_QUARTU || 240.0f < base->motion.pos.f[1])) {
         ApproachValue(&quartu_alarm_intensity, 1.0f, g_frame_time * 2);
     } else {
         ApproachValue(&quartu_alarm_intensity, 0.0f, g_frame_time * 2);
     }
     if (*(float *)&quartu_alarm_intensity != 0.0f) {
-        *(int *)&quartu_alarm_on = 1;
-        if (Sound_IsPlaying(*(void **)&quartu_alarm_sound_owner, *(int *)&quartu_alarm_sound_handle) == 0) {
-            *(int *)&quartu_alarm_sound_handle = Moby_PlaySound(5, 0x11, (int)moby);
+        quartu_alarm_on = 1;
+        if (Sound_IsPlaying(*(void **)&quartu_alarm_sound_owner, quartu_alarm_sound_handle) == 0) {
+            quartu_alarm_sound_handle = Moby_PlaySound(5, 0x11, (int)moby);
             *(void **)&quartu_alarm_sound_owner = moby;
         }
         AddDrawCallback(emit_sine_modulated_rgba_draw_packet, moby);
     } else {
-        if (Sound_IsPlaying(*(void **)&quartu_alarm_sound_owner, *(int *)&quartu_alarm_sound_handle) != 0) {
-            Sound_StopSlot(*(int *)&quartu_alarm_sound_handle);
+        if (Sound_IsPlaying(*(void **)&quartu_alarm_sound_owner, quartu_alarm_sound_handle) != 0) {
+            Sound_StopSlot(quartu_alarm_sound_handle);
             *(int *)&quartu_alarm_sound_owner = 0;
-            *(int *)&quartu_alarm_sound_handle = -1;
+            quartu_alarm_sound_handle = -1;
         }
-        *(int *)&quartu_alarm_on = 0;
+        quartu_alarm_on = 0;
     }
 }
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern void emit_rgba_draw_packet(int, int, int, int);
 extern signed char quartu_alarm_flash_color_alpha[] MACRO_ADDR;
-extern short quartu_alarm_flash_period_ticks;
-extern short quartu_alarm_flash_amplitude;
-extern short quartu_alarm_flash_color;
+extern int quartu_alarm_flash_period_ticks SDATA(D_L15_00161B5C);
+extern float quartu_alarm_flash_amplitude SDATA(D_L15_00161B58);
+extern int quartu_alarm_flash_color SDATA(D_L15_00161B54);
 
 // Draws an oscillating-intensity effect: a sine of the global timer scaled by a level value.
 void emit_sine_modulated_rgba_draw_packet(void) {
-    int n = scale_ticks(*(int *)&quartu_alarm_flash_period_ticks);
+    int n = scale_ticks(quartu_alarm_flash_period_ticks);
     float d = IntToFloat(n);
     float s = FastSin((float)(quartu_frame_count % n) / d * 6.28318f);
-    float v = *(float *)&quartu_alarm_intensity + *(float *)&quartu_alarm_flash_amplitude * s;
+    float v = *(float *)&quartu_alarm_intensity + quartu_alarm_flash_amplitude * s;
     int r;
     int k;
     if (v < 0.0f)
         v = 0.0f;
     r = truncate_float_to_s32_r((float)quartu_alarm_flash_color_alpha[0] * v);
-    k = *(int *)&quartu_alarm_flash_color;
+    k = quartu_alarm_flash_color;
     emit_rgba_draw_packet(k & 0xFF, k >= 9, k >= 17, r);
 }
 typedef int u128 __attribute__((mode(TI)));

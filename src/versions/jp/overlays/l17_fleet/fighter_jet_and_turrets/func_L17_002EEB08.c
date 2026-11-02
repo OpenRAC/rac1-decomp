@@ -80,10 +80,10 @@ void FighterJetUpdate(FighterJet1379 *moby) {
                     int i = d->i104 + 0x28;
                     *(char **)&fleet_hud_health_clut = fleet_palette_data_base + (fleet_texture_table + i)->h * 16;
                 }
-                if (*(int *)&fleet_hud_health_clut_saved == 0) {
+                if (fleet_hud_health_clut_saved == 0) {
                     *(Blk400 *)fleet_hud_health_clut_backup = **(Blk400 **)&fleet_hud_health_clut;
                 }
-                *(int *)&fleet_hud_health_clut_saved = 1;
+                fleet_hud_health_clut_saved = 1;
                 d->tF8 = 1;
                 d->iE8 = 1;
                 if (moby->b0 != 0xFF && saved_mission_state[g_current_level_index][moby->b0] == 0xFF) {
@@ -98,7 +98,7 @@ void FighterJetUpdate(FighterJet1379 *moby) {
             case 1: {
                 Glob1379 *g = (Glob1379 *)(&g_hero);
                 int ok = 0;
-                if (jet_distance(moby, g->p2080) < *(float *)&fleet_jet_board_radius) {
+                if (jet_distance(moby, g->p2080) < fleet_jet_board_radius) {
                     int t = g->i2084;
                     if (t != 0x32 && t != 0x1D && g->b20A4 == 0 && try_set_help_message(7, 0x543B) != 0) {
                         int m = *(int *)pad0_pressed & 0x10;
@@ -114,7 +114,7 @@ void FighterJetUpdate(FighterJet1379 *moby) {
                     ApproachValue(&d->f130, 0.0f, g_frame_time * 4.0f);
                     fighter_jet_transition_fade_value = d->f130;
                 }
-                jet_animate((unsigned char *)moby, *(float *)&fleet_jet_idle_anim_speed * fighter_jet_scale);
+                jet_animate((unsigned char *)moby, fleet_jet_idle_anim_speed * fighter_jet_scale);
                 break;
             }
             case 2: {
@@ -195,7 +195,7 @@ void FighterJetUpdate(FighterJet1379 *moby) {
                 }
                 PlayerShipUpdate(moby, d);
                 if (d->iE8 <= 0) {
-                    d->tF8 = *(int *)&fleet_jet_exit_fade_delay;
+                    d->tF8 = fleet_jet_exit_fade_delay;
                     moby->state = 8;
                 }
                 if (d->f130 != 0.0f) {

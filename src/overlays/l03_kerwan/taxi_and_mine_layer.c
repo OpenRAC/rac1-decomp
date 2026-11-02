@@ -1298,7 +1298,7 @@ extern struct G_002DBAD8 kerwan_cutscene_state;
 extern float helga_big_head_cutscene_adjustment MACRO_ADDR;
 extern unsigned char kerwan_big_head_manipulator[];
 extern void AttachManipulator(char *, int, void *);
-extern short kerwan_big_head_scale;
+extern float kerwan_big_head_scale SDATA(D_L03_00161C34);
 
 /* triggers objects matching the moby's class, with per-segment settings */
 void apply_helga_big_head_cutscene_adjustments(char *class_reference_moby) {
@@ -1316,7 +1316,7 @@ void apply_helga_big_head_cutscene_adjustments(char *class_reference_moby) {
                 if (((struct HeroManipulator *)kerwan_big_head_manipulator)->attached == 0) {
                     float f;
                     AttachManipulator(o, 0, kerwan_big_head_manipulator);
-                    f = *(float *)&kerwan_big_head_scale;
+                    f = kerwan_big_head_scale;
                     ((struct HeroManipulator *)kerwan_big_head_manipulator)->scale3.f[0] = f;
                     ((struct HeroManipulator *)kerwan_big_head_manipulator)->scale3.f[1] = f;
                     ((struct HeroManipulator *)kerwan_big_head_manipulator)->scale3.f[2] = f;
@@ -2278,22 +2278,21 @@ void update_rail_lift(struct Moby *m) {
     if (!is_hero_on_moby_r(m) && vec_distance_xy_r2(&m->pos, &g_hero_r.motion.pos) > 2.0f && d->timer == 0)
         d->ready = 1;
 }
-extern short kerwan_moby_bob_height;
-extern short kerwan_moby_bob_rate_deg;
-extern short kerwan_moby_sway_amplitude;
-extern short kerwan_moby_sway_rate_a_deg;
-extern short kerwan_moby_sway_rate_b_deg;
+extern float kerwan_moby_bob_height SDATA(D_L03_00161C58);
+extern float kerwan_moby_bob_rate_deg SDATA(D_L03_00161C5C);
+extern float kerwan_moby_sway_amplitude SDATA(D_L03_00161C60);
+extern float kerwan_moby_sway_rate_a_deg SDATA(D_L03_00161C64);
+extern float kerwan_moby_sway_rate_b_deg SDATA(D_L03_00161C68);
 extern void update_moby_vertical_oscillation(float x, float y, char *a, float *p, float *q);
 /* sets two aim angles on a moby from level constants scaled by degrees-to-radians */
 void update_moby_oscillation(char *moby) {
     char *data = ((char *)((Moby *)moby)->pvars);
-    update_moby_vertical_oscillation(*(float *)&kerwan_moby_bob_height,
-                                     *(float *)&kerwan_moby_bob_rate_deg * 0.017453292f * g_frame_time, moby,
-                                     (float *)(data + 0xAC), (float *)(data + 0xA8));
+    update_moby_vertical_oscillation(kerwan_moby_bob_height, kerwan_moby_bob_rate_deg * 0.017453292f * g_frame_time,
+                                     moby, (float *)(data + 0xAC), (float *)(data + 0xA8));
     update_moby_rotation_oscillation((float *)moby, (float *)(data + 0xB0), (float *)(data + 0xB4),
-                                     *(float *)&kerwan_moby_sway_amplitude,
-                                     *(float *)&kerwan_moby_sway_rate_a_deg * 0.017453292f * g_frame_time,
-                                     *(float *)&kerwan_moby_sway_rate_b_deg * 0.017453292f * g_frame_time);
+                                     kerwan_moby_sway_amplitude,
+                                     kerwan_moby_sway_rate_a_deg * 0.017453292f * g_frame_time,
+                                     kerwan_moby_sway_rate_b_deg * 0.017453292f * g_frame_time);
 }
 typedef struct Sub {
     char pad0[0x46];
@@ -2937,8 +2936,8 @@ extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern void FastVecSub(void *, void *, void *);
 extern void FastVecCross(void *, void *, void *);
-extern short kerwan_hero_cam_blend_stiffness;
-extern short kerwan_hero_cam_blend_damping;
+extern float kerwan_hero_cam_blend_stiffness SDATA(D_L03_00161EF0);
+extern float kerwan_hero_cam_blend_damping SDATA(D_L03_00161EF4);
 extern char kerwan_player_camera_target_offset_dir[];
 
 /* smooths the moby's data floats and rebuilds its orientation axes */
@@ -2950,8 +2949,8 @@ void rebuild_camera_orientation_axes(void *arg) {
     float b[4];
     float c[4];
     qcopy(b, d);
-    p[2] = Cam_InterpValues(d + 0xBC, p[2], g_hero.motion.pos.f[2], *(float *)&kerwan_hero_cam_blend_stiffness,
-                            *(float *)&kerwan_hero_cam_blend_damping, 0.0f);
+    p[2] = Cam_InterpValues(d + 0xBC, p[2], g_hero.motion.pos.f[2], kerwan_hero_cam_blend_stiffness,
+                            kerwan_hero_cam_blend_damping, 0.0f);
     vec_scale_to_length(c, kerwan_player_camera_target_offset_dir, p[5]);
     FastVecAdd(b, c, b);
     FastVecSub(a, b, m + 0x30);

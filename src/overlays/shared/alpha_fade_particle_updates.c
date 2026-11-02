@@ -378,7 +378,7 @@ void update_timed_line_collision_particle(O00271d20 *o) {
     }
 }
 extern unsigned char *part_type50_textures;
-extern short height_culled_particle_growth;
+extern float height_culled_particle_growth SDATA(D_L00_001602D0);
 extern float g_frame_time MACRO_ADDR;
 
 // particle update: advance position, tick colour, spawn-time drift, kill when done
@@ -390,7 +390,7 @@ void update_moving_height_culled_particle(struct PartBase *m) {
     FastVecAdd(&m->pos, &m->pos, v);
     m->spin += v[0x14];
     if (m->texture == *part_type50_textures) {
-        m->size += *(float *)&height_culled_particle_growth * g_frame_time * 210000.0f;
+        m->size += height_culled_particle_growth * g_frame_time * 210000.0f;
     }
     if (m->pos.f[2] < *(float *)(v + 0x10)) {
         KillPart(m);
@@ -1174,7 +1174,7 @@ extern unsigned char *spawn_shrinking_effect_particle_with_gravity_and_secondary
                                                                                         int h);
 extern unsigned char *mine_debris(void *a, void *b, int c, int d, float f, int n, int k);
 extern int DefaultVtbl_DeleteMoby_r(int, int, float) __asm__("func_L00_00237B70");
-extern short floor_burst_bounce_chance;
+extern u32 floor_burst_bounce_chance SDATA(D_L00_001602E8);
 extern f32 g_frame_time MACRO_ADDR;
 extern s32 g_current_level_index MACRO_ADDR;
 
@@ -1195,7 +1195,7 @@ void update_gravity_floor_burst_particle(struct EmberParticle *p) {
     cr = p->color & 0xFF;
     cg = (p->color & 0xFF00) >> 8;
     cb = ((u32)p->color >> 16) & 0xFF;
-    if (!random_integer_below((*(u32 *)&floor_burst_bounce_chance) - 1)) {
+    if (!random_integer_below((floor_burst_bounce_chance)-1)) {
         p->pos.f[2] = m->floor_z;
         m->vel.f[0] *= random_float_between(1.0f, 3.5f);
         m->vel.f[1] *= random_float_between(1.0f, 3.5f);
@@ -1961,7 +1961,7 @@ unsigned char *spawn_proximity_corrected_size_alpha_tween_particle(void *pos, in
     return m;
 }
 extern void FastVecCross(void *, void *, void *);
-extern short proximity_particle_side_offset;
+extern float proximity_particle_side_offset SDATA(D_L00_0016030C);
 
 /* Copy an xyz vector and clear the w word. */
 static __inline__ void vcopy_276940(float *d, float *s) {
@@ -2006,7 +2006,7 @@ void update_proximity_corrected_size_alpha_tween_particle(char *m) {
         FastVecSub(d, *(char **)(v + 0x18) + 0x10, p);
         if (d[0] <= 2.0f && d[1] <= 2.0f) {
             FastVecCross(e, d, hero_gravity_dir);
-            vec_scale_to_length(e, e, *(float *)&proximity_particle_side_offset);
+            vec_scale_to_length(e, e, proximity_particle_side_offset);
             FastVecAdd(p, p, e);
             if (d[0] <= 0.5f && d[1] <= 0.5f) {
                 vec_scale_to_length(a, d, 0.03f);

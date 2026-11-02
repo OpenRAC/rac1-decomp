@@ -80,9 +80,9 @@ void draw_ship_hud(char *moby) {
     update_ship_lock_on_target((int)moby, d);
     if (*(int *)(d + 0x88) != 0) {
         project_world_point_to_screen_pixels(*(char **)(d + 0x88) + 0x10, &sp40, &sp44, 0);
-        if (*(int *)(d + 0x8C) > *(int *)&lock_hold_frames) {
-            t = IntToFloat(*(int *)(d + 0x8C) - *(int *)&lock_hold_frames);
-            t = t / IntToFloat(*(int *)&lock_fade_frames);
+        if (*(int *)(d + 0x8C) > lock_hold_frames) {
+            t = IntToFloat(*(int *)(d + 0x8C) - lock_hold_frames);
+            t = t / IntToFloat(lock_fade_frames);
             m = 2.0f * (1.0f - t);
             k = t * 5.0f + 1.0f;
             if (m > 1.0f)

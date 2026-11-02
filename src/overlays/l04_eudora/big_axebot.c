@@ -180,7 +180,7 @@ extern void moby_build_matrix(void *);
 extern void update_moby_movement_with_sphere_collision(f32, struct PMoby *, void *, void *);
 extern struct Path5BD0 *eudora_paths[];
 extern f32 eudora_swarm_steer_params[8];
-extern short eudora_swarm_initialized;
+extern int eudora_swarm_initialized SDATA(D_L04_00161450);
 extern char *eudora_moby_list MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;
@@ -233,14 +233,14 @@ void update_class_55_swarm_controller(struct PMoby *moby) {
     f32 size;
     f32 effect[8];
 
-    if (*(int *)&eudora_swarm_initialized == 0) {
+    if (eudora_swarm_initialized == 0) {
         f32 *effect_dest = eudora_swarm_steer_params;
         libc_memset(effect, 0, 0x20);
         effect[1] = IntToFloat(data->child_count) * 2.073f;
         effect[3] = 2.0f;
         effect[4] = 1.0f;
         effect[5] = 1.0f;
-        *(int *)&eudora_swarm_initialized = 1;
+        eudora_swarm_initialized = 1;
         __builtin_memcpy(effect_dest, effect, 0x20);
     }
     if (data->initialized == 0) {
@@ -1325,7 +1325,7 @@ int check_circular_saw_melee_attack_spacing(char *moby) {
     }
     return 1;
 }
-extern short eudora_circular_saw_separation_weight;
+extern float eudora_circular_saw_separation_weight SDATA(D_L04_00161914);
 extern void FindNearestTargetMoby_k(void *, void *, float) __asm__("func_L00_00260D30");
 extern void FastVecSub(void *, void *, void *);
 extern void FastVecScale(void *, void *, float);
@@ -1362,9 +1362,9 @@ float compute_circular_saw_flock_steering(void *m, void *out, float speed) {
             continue;
         if (vec_distance_xy((float *)(o + 0x10), (float *)((char *)m + 0x10)) < 3.0f) {
             FastVecSub(sep, (char *)m + 0x10, o + 0x10);
-            FastVecScale(sep, sep, *(float *)&eudora_circular_saw_separation_weight);
+            FastVecScale(sep, sep, eudora_circular_saw_separation_weight);
             FastVecAdd(out, out, sep);
-            w += *(float *)&eudora_circular_saw_separation_weight;
+            w += eudora_circular_saw_separation_weight;
         }
         if (vec_distance_xy((float *)(o + 0x10), tgt) < dist)
             alone = 0;
@@ -2188,8 +2188,8 @@ typedef struct {
 extern f32 random_angle_radians(void);
 extern Puff *PartType23Spawn(void *, f32, f32, f32, int, void *, f32, int);
 extern void PartType21Spawn(void *, void *, int, int, int, int, f32);
-extern short eudora_smoke_puff_rise_speed;
-extern short smoke_trail_puff_position_jitter_scale_gp;
+extern f32 eudora_smoke_puff_rise_speed SDATA(D_L04_00161944);
+extern f32 smoke_trail_puff_position_jitter_scale_gp SDATA(D_L04_0016194C);
 
 /* Lays a trail of smoke puffs from FROM to TO with a burst at each end.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l04/gameplay/entities/0029eb20.c, FUN_L04_002c41e0. */
@@ -2217,14 +2217,13 @@ void spawn_smoke_puff_trail_with_endpoint_bursts(void *owner, void *from, void *
         FastVecAdd(&at, from, &at);
         vel.f[0] = randf_sym(0.0f, 0.005f);
         vel.f[1] = randf_sym(0.0f, 0.005f);
-        vel.f[2] = random_float_between((*(f32 *)&eudora_smoke_puff_rise_speed) * 0.1f,
-                                        (*(f32 *)&eudora_smoke_puff_rise_speed));
+        vel.f[2] = random_float_between((eudora_smoke_puff_rise_speed) * 0.1f, (eudora_smoke_puff_rise_speed));
         tint = rand_range(0x40, 0x70);
         grey = rand_range(0x40, 0x7F);
         grey = grey | (grey << 16 | grey << 8);
         size = random_float_between(1.0f, 1.02f);
         spin = rand_range(-2, 2);
-        puff = PartType23Spawn(&at, (*(f32 *)&smoke_trail_puff_position_jitter_scale_gp), 1.0f, size, spin, &vel,
+        puff = PartType23Spawn(&at, (smoke_trail_puff_position_jitter_scale_gp), 1.0f, size, spin, &vel,
                                grow + a * 210000.0f, tint << 24 | grey);
         if (puff != 0) {
             tail = &puff->tail;

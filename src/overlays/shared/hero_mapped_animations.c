@@ -1573,7 +1573,7 @@ void update_hero_slot4_and_slot5_mobys(int a0) {
         }
     }
 }
-extern short hero_scale;
+extern float hero_scale SDATA(D_0015EF14);
 extern int g_current_level_index MACRO_ADDR;
 
 extern float FastAddRots(float, float);
@@ -1581,7 +1581,7 @@ extern int FastTweenColor(int, int, float);
 
 // Sets up the hero's camera-shake/glow object: clamps a scale, scales attached objects and sets a colour from a wobble.
 void HeroAttachManipulators(char *obj) {
-    float f20 = *(float *)&hero_scale;
+    float f20 = hero_scale;
     char *s0;
     struct Hero *q;
     struct Hero *q2;

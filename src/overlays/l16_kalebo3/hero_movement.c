@@ -63,7 +63,7 @@ extern int g_current_level_index MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int kalebo3_frame_count MACRO_ADDR;
 
-extern short kalebo3_look_stat_count;
+extern int kalebo3_look_stat_count SDATA(D_L16_0015F76C);
 extern unsigned char *kalebo3_water_patches MACRO_ADDR;
 extern int kalebo3_water_patch_count MACRO_ADDR;
 extern HeroPlayerCameraView kalebo3_player_camera;
@@ -229,7 +229,7 @@ void Hero_UpdateStatePhysics(void) {
                             usage_stats.e[18].level_mask =
                                 usage_stats.e[18].level_mask | (1 << g_current_level_index) | 0x80000000;
                             *(int *)&kalebo3_look_stat_timer = -1;
-                            (*(int *)&kalebo3_look_stat_count)++;
+                            (kalebo3_look_stat_count)++;
                         }
                     }
                 }

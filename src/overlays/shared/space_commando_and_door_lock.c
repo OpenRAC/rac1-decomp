@@ -496,11 +496,11 @@ extern float vec_distance_xy(void *, void *);
 extern int *blarg_paths[];
 extern float g_frame_time MACRO_ADDR;
 extern short g_current_level_index;
-extern short space_commando_hit_knockback_speed;
-extern short space_commando_hit_knockback_lift;
-extern short space_commando_death_knockback_speed;
-extern short space_commando_death_knockback_lift;
-extern short space_commando_sight_range;
+extern float space_commando_hit_knockback_speed SDATA(D_L06_00162040);
+extern float space_commando_hit_knockback_lift SDATA(D_L06_00162044);
+extern float space_commando_death_knockback_speed SDATA(D_L06_00162048);
+extern float space_commando_death_knockback_lift SDATA(D_L06_0016204C);
+extern float space_commando_sight_range SDATA(D_L06_0016203C);
 extern unsigned char gSkillPoints[];
 
 // Level 06 update for a moby with a 12-state machine: aims at a target, runs timed effects, and sets its rotation.
@@ -508,7 +508,7 @@ void func_L06_002FFF70_r(char *m) __asm__("func_L06_002FFF70");
 /* Level 06 update of a 12-state moby (aims at a target, spawns hit sparks in states 1-2, a burst in 3-10, then a
    ground-probe against the target); starts from the staged near miss, checked statically against the assembly. */
 extern int truncate_float_to_s32(float);
-extern short space_commando_scale;
+extern float space_commando_scale SDATA(D_L06_00162038);
 
 // Level 06 update for a moby with a 12-state machine: aims at a target, runs timed effects, and sets its rotation.
 void process_blarg_space_commando_hits(char *m) {
@@ -528,7 +528,7 @@ void process_blarg_space_commando_hits(char *m) {
     float lo, hi, spd, off, pull;
 
     d = (struct SpaceCommandoVars *)((Moby *)m)->pvars;
-    ((Moby *)m)->scale = *(float *)(*(char **)&((Moby *)m)->pclass + 0x24) * *(float *)&space_commando_scale;
+    ((Moby *)m)->scale = *(float *)(*(char **)&((Moby *)m)->pclass + 0x24) * space_commando_scale;
     update_blarg_space_commando_beam(m);
     if (d->stunned != 0) {
         d->fire_timer = truncate_float_to_s32(multiply_global_factor(random_float_between(180.0f, 240.0f)));
@@ -566,8 +566,8 @@ void process_blarg_space_commando_hits(char *m) {
                 ((Moby *)m)->state = 0xF;
                 q = (char *)&d->color_fade_a;
                 n = scale_ticks(0x3C);
-                a = *(float *)&space_commando_hit_knockback_speed * g_frame_time;
-                b = *(float *)&space_commando_hit_knockback_lift * g_frame_time;
+                a = space_commando_hit_knockback_speed * g_frame_time;
+                b = space_commando_hit_knockback_lift * g_frame_time;
                 d->unk_26 = n;
                 d->hit_y = b;
                 d->hit_x = a;
@@ -583,8 +583,8 @@ void process_blarg_space_commando_hits(char *m) {
                 float a, b;
                 ((Moby *)m)->state = 0x10;
                 q = (char *)&d->color_fade_a;
-                a = *(float *)&space_commando_death_knockback_speed * g_frame_time;
-                b = *(float *)&space_commando_death_knockback_lift * g_frame_time;
+                a = space_commando_death_knockback_speed * g_frame_time;
+                b = space_commando_death_knockback_lift * g_frame_time;
                 ((Moby *)m)->flags &= 0xEFFF;
                 d->hit_x = a;
                 d->hit_y = b;
@@ -634,9 +634,9 @@ void process_blarg_space_commando_hits(char *m) {
     ((Moby *)m)->hit_slot = 0xFF;
     StepColorFade(m, &d->color_fade);
     if (d->fire_timer != 0) {
-        d->sight_range = *(float *)&space_commando_sight_range + 6.0f;
+        d->sight_range = space_commando_sight_range + 6.0f;
     } else {
-        d->sight_range = *(float *)&space_commando_sight_range;
+        d->sight_range = space_commando_sight_range;
     }
     {
         char *q = (char *)d->home_pos;
@@ -663,8 +663,8 @@ extern float FastSin(float);
 extern void FastVecAdd(float *, float *, float *);
 extern int scale_ticks(int);
 extern char blarg_coll_hit_normal[];
-extern short space_commando_beam_fan_degrees;
-extern short space_commando_beam_ticks;
+extern float space_commando_beam_fan_degrees SDATA(D_L06_00162064);
+extern int space_commando_beam_ticks SDATA(D_L06_00162068);
 // Builds the sixteen-segment fan of data vectors for a moby from its yaw.
 void initialize_blarg_space_commando_beam(Moby *m) {
     char *d = ((char *)m->pvars);
@@ -676,7 +676,7 @@ void initialize_blarg_space_commando_beam(Moby *m) {
     ((struct SpaceCommandoVars *)d)->muzzle_z = m->pos.z;
     for (i = 0; i < 16; i++) {
         float f = IntToFloat(i) * 0.0625f - 0.5f;
-        f = f * (*(float *)&space_commando_beam_fan_degrees * 0.017453292f);
+        f = f * (space_commando_beam_fan_degrees * 0.017453292f);
         v[0] = FastCos(FastAddRots(f, m->rot.z)) * 0.2f;
         v[1] = FastSin(FastAddRots(f, m->rot.z)) * 0.2f;
         v[2] = 0.15f;
@@ -688,7 +688,7 @@ void initialize_blarg_space_commando_beam(Moby *m) {
             *(float *)(d + 0x23C + i * 16) = 1.0f;
         }
     }
-    ((struct SpaceCommandoVars *)d)->beam_ticks = (float)scale_ticks(*(int *)&space_commando_beam_ticks);
+    ((struct SpaceCommandoVars *)d)->beam_ticks = (float)scale_ticks(space_commando_beam_ticks);
 }
 extern void FastVecSub(void *dst, void *a, void *b);
 extern float FastVecDot(void *a, void *b);
@@ -697,7 +697,7 @@ extern float ApproachValue(float *, float, float);
 extern void AddDrawCallback(void *, void *);
 extern void DrawBeam(char *moby);
 extern void spawn_blarg_space_commando_beam_sparks(char *moby);
-extern short space_commando_beam_spread_speed;
+extern float space_commando_beam_spread_speed SDATA(D_L06_00162060);
 
 typedef struct {
     float x, y, z, w;
@@ -741,9 +741,9 @@ void update_blarg_space_commando_beam(void *arg) {
     for (i = 0; i < 16; i++) {
         char *e;
         if (g_hero.vehicle_mode == 1) {
-            scale = (*(float *)&space_commando_beam_spread_speed * g_frame_time) * 0.5f;
+            scale = (space_commando_beam_spread_speed * g_frame_time) * 0.5f;
         } else {
-            scale = *(float *)&space_commando_beam_spread_speed * g_frame_time;
+            scale = space_commando_beam_spread_speed * g_frame_time;
         }
         FastVecSub(A, &data->pts[i], &data->base);
         A[2] = 0.0f;
@@ -800,16 +800,16 @@ typedef struct {
     f32 uv[4][2];
     u64 tag[4];
 } QuadPacket_f680;
-extern short beam_blend_minuend_selector_gp;
-extern short beam_blend_subtrahend_selector_gp;
-extern short beam_blend_alpha_multiplier_selector_gp;
-extern short beam_blend_addend_selector_gp;
-extern short beam_blend_fixed_alpha_gp;
-extern short space_commando_beam_texture;
-extern short space_commando_beam_outer_color_a;
-extern short space_commando_beam_outer_color_b;
-extern short space_commando_beam_inner_color_a;
-extern short space_commando_beam_inner_color_b;
+extern s32 beam_blend_minuend_selector_gp SDATA(D_L06_0016206C);
+extern s32 beam_blend_subtrahend_selector_gp SDATA(D_L06_00162070);
+extern s32 beam_blend_alpha_multiplier_selector_gp SDATA(D_L06_00162074);
+extern s32 beam_blend_addend_selector_gp SDATA(D_L06_00162078);
+extern s32 beam_blend_fixed_alpha_gp SDATA(D_L06_0016207C);
+extern s32 space_commando_beam_texture SDATA(D_L06_00162080);
+extern s32 space_commando_beam_outer_color_a SDATA(D_L06_00162084);
+extern s32 space_commando_beam_outer_color_b SDATA(D_L06_00162088);
+extern s32 space_commando_beam_inner_color_a SDATA(D_L06_0016208C);
+extern s32 space_commando_beam_inner_color_b SDATA(D_L06_00162090);
 extern f32 space_commando_beam_uvs[4][2];
 extern void VU1_addGSregister(s32, s64);
 extern u64 GetEffectTex(s32);
@@ -836,13 +836,13 @@ void DrawBeam(char *moby) {
 
     VU1_addGSregister(0x47, 0x5380B);
     i = 0;
-    pk[0].tag[1] = GetEffectTex((*(s32 *)&space_commando_beam_texture));
-    pk[1].tag[1] = GetEffectTex((*(s32 *)&space_commando_beam_texture));
-    regs = (*(s32 *)&beam_blend_minuend_selector_gp);
-    regs |= (u64)(*(s32 *)&beam_blend_subtrahend_selector_gp) << 2;
-    regs |= (u64)(*(s32 *)&beam_blend_alpha_multiplier_selector_gp) << 4;
-    regs |= (u64)(*(s32 *)&beam_blend_addend_selector_gp) << 6;
-    regs |= (u64)(*(s32 *)&beam_blend_fixed_alpha_gp) << 32;
+    pk[0].tag[1] = GetEffectTex((space_commando_beam_texture));
+    pk[1].tag[1] = GetEffectTex((space_commando_beam_texture));
+    regs = (beam_blend_minuend_selector_gp);
+    regs |= (u64)(beam_blend_subtrahend_selector_gp) << 2;
+    regs |= (u64)(beam_blend_alpha_multiplier_selector_gp) << 4;
+    regs |= (u64)(beam_blend_addend_selector_gp) << 6;
+    regs |= (u64)(beam_blend_fixed_alpha_gp) << 32;
     /* Store order is load-bearing: it sets which register keeps regs. */
     pk[1].tag[2] = 0x0000FF9000000260ULL;
     pk[0].tag[2] = 0x0000FF9000000260ULL;
@@ -866,13 +866,11 @@ void DrawBeam(char *moby) {
                 vec_scale_to_length(tmp, tmp, 0.5f);
                 FastVecSub(v, v, tmp);
                 v[2] -= 0.125f;
-                pk[0].col[j] =
-                    FastTweenColor_r(*(f32 *)(data + off + 0x23C), (*(s32 *)&space_commando_beam_inner_color_a),
-                                     (*(s32 *)&space_commando_beam_inner_color_b));
+                pk[0].col[j] = FastTweenColor_r(*(f32 *)(data + off + 0x23C), (space_commando_beam_inner_color_a),
+                                                (space_commando_beam_inner_color_b));
             } else {
-                pk[0].col[j] =
-                    FastTweenColor_r(*(f32 *)(data + off + 0x23C), (*(s32 *)&space_commando_beam_outer_color_a),
-                                     (*(s32 *)&space_commando_beam_outer_color_b));
+                pk[0].col[j] = FastTweenColor_r(*(f32 *)(data + off + 0x23C), (space_commando_beam_outer_color_a),
+                                                (space_commando_beam_outer_color_b));
             }
             pk[0].uv[j][0] = space_commando_beam_uvs[j][0];
             pk[0].uv[j][1] = space_commando_beam_uvs[j][1];
@@ -959,7 +957,7 @@ void spawn_blarg_space_commando_beam_sparks(char *moby) {
 }
 extern void DeleteMoby(void *);
 extern float g_frame_time_sq MACRO_ADDR;
-extern short spinning_fragment_scale;
+extern float spinning_fragment_scale SDATA(D_L06_00162110);
 
 /* A falling spinning moby's per-frame velocities, the moby's pvars block. */
 typedef struct FallingSpinVars {
@@ -972,7 +970,7 @@ void update_falling_spinning_moby(char *moby) {
     struct Moby *m = (struct Moby *)moby;
     FallingSpinVars *data;
     float vertical_velocity_decrement = g_frame_time_sq * 15.0f;
-    m->scale = m->pclass->scale * *(float *)&spinning_fragment_scale;
+    m->scale = m->pclass->scale * spinning_fragment_scale;
     data = (FallingSpinVars *)m->pvars;
     data->vel.z -= vertical_velocity_decrement;
     FastVecAdd(&m->pos.x, &m->pos.x, &data->vel.x);
@@ -1002,7 +1000,7 @@ char *spawn_spinning_moby_fragment(int unused, char *pa, char *pb) {
     *(u128 *)b = *(u128 *)pb;
     m = (Moby *)mk_a(rnd_a(random_float_between(1085.0f, 1089.0f)));
     if (m != 0) {
-        m->scale = *(float *)(*(char **)&m->pclass + 0x24) * *(float *)&spinning_fragment_scale;
+        m->scale = *(float *)(*(char **)&m->pclass + 0x24) * spinning_fragment_scale;
         m->update_dist = 0xFF;
         m->draw_dist = 0x7E;
         m->visible = 1;
@@ -1243,16 +1241,16 @@ void activate_bot_door_lock_target(unsigned char *a, unsigned char *m) {
 void activate_bot_door_lock_target(unsigned char *a, unsigned char *m);
 typedef int OvlQuad_p __attribute__((mode(TI)));
 extern void draw_bot_door_lock_glow(char *);
-extern short bot_door_lock_bob_height;
-extern short bot_door_lock_bob_period;
-extern short bot_door_lock_pulse_period;
-extern short bot_door_lock_glow_amplitude;
-extern short bot_door_lock_fade_max;
+extern float bot_door_lock_bob_height SDATA(D_L06_0016236C);
+extern float bot_door_lock_bob_period SDATA(D_L06_00162370);
+extern float bot_door_lock_pulse_period SDATA(D_L06_00162374);
+extern float bot_door_lock_glow_amplitude SDATA(D_L06_00162378);
+extern float bot_door_lock_fade_max SDATA(D_L06_0016237C);
 extern unsigned char hero_vehicle_mode NOT_SDA;
 extern int draw_map51 MACRO_ADDR;
 extern unsigned char saved_mission_state[];
 extern short g_current_level_index;
-extern short level_mobys_q;
+extern int level_mobys_q SDATA(D_L06_00160058);
 extern int truncate_float_to_s32(float);
 extern float FastVecDist(void *, void *);
 extern void AddDrawCallback(void *, void *);
@@ -1287,8 +1285,7 @@ void bot_door_lock_update(Moby *moby) {
 
     if (data->id[0] == -1)
         return;
-    data->f10 =
-        FastAddRots(data->f10, (360.0f / (*(float *)&bot_door_lock_pulse_period)) * 0.017453292f * g_frame_time);
+    data->f10 = FastAddRots(data->f10, (360.0f / (bot_door_lock_pulse_period)) * 0.017453292f * g_frame_time);
     *(unsigned int *)&moby->glow_color =
         ((unsigned int (*)(float, int, int))FastTweenColor)((FastCos(data->f10) + 1.0f) * 0.5f, 0x80464646, 0x80828282);
     switch ((unsigned char)*(char *)&moby->state) {
@@ -1297,13 +1294,13 @@ void bot_door_lock_update(Moby *moby) {
             data->f6 = random_angle_radians();
             data->f10 = random_angle_radians();
             moby->state = 1;
-            data->f9 = (*(float *)&bot_door_lock_fade_max);
+            data->f9 = (bot_door_lock_fade_max);
             return;
         case 1:
             *(OvlQuad_p *)pos = *(OvlQuad_p *)&moby->pos;
             pos[2] += 2.75f;
             if (FastVecDist(((float *)&blarg_camera_pos), &moby->pos) < 32.0f) {
-                float lim = (*(float *)&bot_door_lock_fade_max);
+                float lim = (bot_door_lock_fade_max);
                 data->f9 += g_frame_time + g_frame_time;
                 if (lim < data->f9)
                     data->f9 = lim;
@@ -1314,10 +1311,9 @@ void bot_door_lock_update(Moby *moby) {
             }
             if (0.0f < data->f9) {
                 AddDrawCallback((void *)draw_bot_door_lock_glow, moby);
-                data->f6 = FastAddRots(data->f6,
-                                       (360.0f / (*(float *)&bot_door_lock_bob_period)) * 0.017453292f * g_frame_time);
-                pos[2] += (*(float *)&bot_door_lock_bob_height) * FastCos(data->f6);
-                value = truncate_float_to_s32((*(float *)&bot_door_lock_glow_amplitude) * FastCos(data->f10));
+                data->f6 = FastAddRots(data->f6, (360.0f / (bot_door_lock_bob_period)) * 0.017453292f * g_frame_time);
+                pos[2] += (bot_door_lock_bob_height)*FastCos(data->f6);
+                value = truncate_float_to_s32((bot_door_lock_glow_amplitude)*FastCos(data->f10));
                 color_channels = (value / 2 + 120) * 0x100 | 0x20000000U;
                 color_channels = or_blue_channel_p(value / 3 + 13, color_channels);
                 color = color_channels | (value + 150U);
@@ -1364,8 +1360,8 @@ void bot_door_lock_update(Moby *moby) {
                     0xff) {
                 for (i = 0; i < 4; i++) {
                     if (data->id[i] != -1)
-                        activate_bot_door_lock_target(
-                            (unsigned char *)moby, (unsigned char *)((*(int *)&level_mobys_q) + data->id[i] * 0x100));
+                        activate_bot_door_lock_target((unsigned char *)moby,
+                                                      (unsigned char *)((level_mobys_q) + data->id[i] * 0x100));
                 }
                 moby->state = 2;
             }

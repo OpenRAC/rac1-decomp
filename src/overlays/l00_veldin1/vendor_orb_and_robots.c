@@ -254,9 +254,9 @@ extern unsigned char D_0015EEB4[4] MACRO_ADDR;
 extern short D_0015EE64;
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
-extern short veldin1_robot_beam_origin_offset;
-extern short veldin1_robot_beam_sweep_cycles;
-extern short veldin1_robot_beam_sweep_angle;
+extern float veldin1_robot_beam_origin_offset SDATA(D_L00_00161CB4);
+extern int veldin1_robot_beam_sweep_cycles SDATA(D_L00_00161CB8);
+extern float veldin1_robot_beam_sweep_angle SDATA(D_L00_00161CBC);
 extern float g_debug_camera[];
 extern VendHit g_coll_hit_moby;
 extern VendPath *level_paths[];
@@ -436,16 +436,16 @@ void veldin_robot_enemy_update(Moby *moby) {
 
             desired_heading = fast_atan2(vars->homeX - moby->pos.x, vars->homeY - moby->pos.y);
             if (moby->flags & 0x8000) {
-                desired_heading = FastAddRots(desired_heading, *(float *)&veldin1_robot_beam_sweep_angle);
+                desired_heading = FastAddRots(desired_heading, veldin1_robot_beam_sweep_angle);
             } else {
-                desired_heading = FastSubRots(desired_heading, *(float *)&veldin1_robot_beam_sweep_angle);
+                desired_heading = FastSubRots(desired_heading, veldin1_robot_beam_sweep_angle);
             }
             SteerAngleWithVelocity(&moby->rot.z, desired_heading, &vars->turnVel, g_frame_time_sq * (1.5707964f),
                                    g_frame_time_sq * (1.5707964f), g_frame_time * 12.566371f);
             MobyTransformScaledVertex((char *)moby, 0, (char *)mtx);
             qcopy(&delta, &moby->rot_row0);
             delta.f[2] = 0.0f;
-            vec_scale_to_length(&delta, &delta, *(float *)&veldin1_robot_beam_origin_offset);
+            vec_scale_to_length(&delta, &delta, veldin1_robot_beam_origin_offset);
             FastVecAdd(&dir, &mtx[3], &delta);
             hit = 0;
             query.flags = 0x10000;
@@ -483,7 +483,7 @@ void veldin_robot_enemy_update(Moby *moby) {
             }
             set_beam_origin_transform_and_endpoint(moby, mtx, &dir);
             if (moby->anim_flags & 2) {
-                lim = *(int *)&veldin1_robot_beam_sweep_cycles;
+                lim = veldin1_robot_beam_sweep_cycles;
                 if (vars->timer++ == lim) {
                     release_beam_slot_by_id(moby);
                     moby->state = VELDIN_ROBOT_STATE_WAIT_TO_RETURN_TO_FACE_TARGET;

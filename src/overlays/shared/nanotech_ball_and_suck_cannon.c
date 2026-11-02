@@ -203,13 +203,13 @@ typedef struct {
 extern char g_debug_camera[] NOT_SDA;
 
 extern float g_frame_time MACRO_ADDR;
-extern short nanotech_spark_speed_min;
-extern short nanotech_spark_speed_max;
+extern float nanotech_spark_speed_min SDATA(D_L00_00161B30);
+extern float nanotech_spark_speed_max SDATA(D_L00_00161B34);
 extern unsigned char nanotech_spark_life;
-extern short nanotech_ball_collection_first_particle_color;
-extern short nanotech_ball_collection_second_particle_color;
-extern short nanotech_spark_size_a;
-extern short nanotech_spark_size_b;
+extern int nanotech_ball_collection_first_particle_color SDATA(D_L00_00161B3C);
+extern int nanotech_ball_collection_second_particle_color SDATA(D_L00_00161B40);
+extern float nanotech_spark_size_a SDATA(D_L00_00161B44);
+extern float nanotech_spark_size_b SDATA(D_L00_00161B48);
 extern void FastVecSub(void *, void *, void *);
 extern float random_float_between(float, float);
 extern void FastVecScale(void *, void *, float);
@@ -225,16 +225,16 @@ void spawn_nanotech_ball_collection_effect_pair(Moby *m) {
     Vx c;
     char *p = (char *)&m->pos;
     FastVecSub(&a, g_debug_camera, p);
-    FastVecScale(&b, &g_hero.gravity_dir,
-                 random_float_between(*(float *)&nanotech_spark_speed_min * g_frame_time,
-                                      *(float *)&nanotech_spark_speed_max * g_frame_time));
+    FastVecScale(
+        &b, &g_hero.gravity_dir,
+        random_float_between(nanotech_spark_speed_min * g_frame_time, nanotech_spark_speed_max * g_frame_time));
     build_look_at_matrix(&c, &b, random_angle_radians(), &a);
-    spawn_moving_hero_relative_alpha_fade_particle(p, &c, *(int *)&nanotech_ball_collection_first_particle_color,
+    spawn_moving_hero_relative_alpha_fade_particle(p, &c, nanotech_ball_collection_first_particle_color,
                                                    nanotech_spark_life, random_integer_below(0xFF) & 0xFF, 1,
-                                                   *(float *)&nanotech_spark_size_a);
-    spawn_moving_hero_relative_alpha_fade_particle(p, &c, *(int *)&nanotech_ball_collection_second_particle_color,
+                                                   nanotech_spark_size_a);
+    spawn_moving_hero_relative_alpha_fade_particle(p, &c, nanotech_ball_collection_second_particle_color,
                                                    nanotech_spark_life, random_integer_below(0xFF) & 0xFF, 1,
-                                                   *(float *)&nanotech_spark_size_b);
+                                                   nanotech_spark_size_b);
 }
 typedef struct {
     f32 x, y, z, w;
@@ -256,11 +256,11 @@ typedef struct {
 } T_2d8510;
 extern V_2d8510 g_debug_camera_r __asm__("D_L00_00166EC0");
 extern T_2d8510 part_type_textures;
-extern short nanotech_ring_fade_ticks;
-extern short nanotech_ring_color_a;
-extern short nanotech_ring_color_b;
-extern short nanotech_ball_collection_second_particle_mode_selector;
-extern short nanotech_ball_collection_particle_byte_source_index;
+extern s32 nanotech_ring_fade_ticks SDATA(D_L00_00161B28);
+extern s32 nanotech_ring_color_a SDATA(D_L00_00161B4C);
+extern s32 nanotech_ring_color_b SDATA(D_L00_00161B50);
+extern s32 nanotech_ball_collection_second_particle_mode_selector SDATA(D_L00_00161B54);
+extern s32 nanotech_ball_collection_particle_byte_source_index SDATA(D_L00_00161B58);
 extern short nanotech_ring_spin_speeds;
 extern short nanotech_ring_sizes;
 extern short nanotech_ring_heights;
@@ -301,20 +301,20 @@ s32 update_nanotech_ball_collection_effects(M_2d8510 *m) {
             o->f60[i] = f + 255.0f;
         t = IntToFloat(scale_ticks(0xFF) - o->h58[i]);
         t = t / (f32)scale_ticks(0xFF);
-        c = FastTweenColor((*(s32 *)&nanotech_ring_color_a), (*(s32 *)&nanotech_ring_color_b), FastAbsF(0.5f - t));
+        c = FastTweenColor((nanotech_ring_color_a), (nanotech_ring_color_b), FastAbsF(0.5f - t));
         hi = c >> 24;
-        t = 1.0f - o->h58[i] / IntToFloat(scale_ticks((*(s32 *)&nanotech_ring_fade_ticks)));
+        t = 1.0f - o->h58[i] / IntToFloat(scale_ticks((nanotech_ring_fade_ticks)));
         al = truncate_float_to_s32(IntToFloat(hi) * (1.0f - t)) << 24;
         c = al | (c & 0xFFFFFF);
         a.z = z + (((f32 *)&nanotech_ring_heights))[i];
         p = PartType59Spawn(&a, c, truncate_float_to_s32(o->f60[i]),
-                            (*(s32 *)&nanotech_ball_collection_particle_byte_source_index), 0, 2, 1,
+                            (nanotech_ball_collection_particle_byte_source_index), 0, 2, 1,
                             (((f32 *)&nanotech_ring_sizes))[i] * t);
         if (p)
             p[2] = *part_type_textures.pF8;
         p = PartType59Spawn(&a, al | 0xFFFFFF, truncate_float_to_s32(o->f60[i]),
-                            (*(s32 *)&nanotech_ball_collection_particle_byte_source_index),
-                            (*(s32 *)&nanotech_ball_collection_second_particle_mode_selector), 2, 1,
+                            (nanotech_ball_collection_particle_byte_source_index),
+                            (nanotech_ball_collection_second_particle_mode_selector), 2, 1,
                             (((f32 *)&nanotech_ring_sizes))[i] * (t * 0.7f));
         if (p)
             p[2] = *part_type_textures.pF8;
@@ -345,17 +345,16 @@ void compute_nanotech_ball_slot_position(char *m, float *out, int i) {
     out[2] += *(float *)pv;
 }
 extern char nanotech_slot_spin_axes[];
-extern short nanotech_slot_spin_step;
-extern short nanotech_slot_orbit_radius;
+extern float nanotech_slot_spin_step SDATA(D_L00_00161AC0);
+extern float nanotech_slot_orbit_radius SDATA(D_L00_00161AE4);
 
 /* Applies two transforms to each of eight 16-byte vectors. */
 void update_nanotech_ball_slot_offsets(void) {
     int i;
     for (i = 0; i < 8; i++) {
-        build_look_at_matrix(nanotech_slot_offsets + i * 16, nanotech_slot_offsets + i * 16,
-                             *(float *)&nanotech_slot_spin_step, nanotech_slot_spin_axes + i * 16);
-        vec_scale_to_length(nanotech_slot_offsets + i * 16, nanotech_slot_offsets + i * 16,
-                            *(float *)&nanotech_slot_orbit_radius);
+        build_look_at_matrix(nanotech_slot_offsets + i * 16, nanotech_slot_offsets + i * 16, nanotech_slot_spin_step,
+                             nanotech_slot_spin_axes + i * 16);
+        vec_scale_to_length(nanotech_slot_offsets + i * 16, nanotech_slot_offsets + i * 16, nanotech_slot_orbit_radius);
     }
 }
 
@@ -2608,8 +2607,8 @@ int CarriedMobyUpdate(Moby *self, char *q) {
     return 0;
 }
 extern short suck_beam_segment_alpha[];
-extern short suction_effect_texture_u_offset;
-extern short suction_effect_texture_v_offset;
+extern float suction_effect_texture_u_offset SDATA(D_L00_00161C18);
+extern float suction_effect_texture_v_offset SDATA(D_L00_00161C1C);
 extern short suck_beam_scroll_speed;
 extern char suck_beam_ring_vertices[];
 extern char suck_beam_ring_vertices_base[];
@@ -2643,17 +2642,17 @@ void suck_beam_draw_mesh(void) {
     s.t2 = 0x0000FF9000000260L;
     s.t3 = 0x8000000048L;
     s.t0 = 0;
-    a = *(float *)&suction_effect_texture_u_offset;
-    *(float *)&suction_effect_texture_u_offset = a + 0.001f;
-    if (*(float *)&suction_effect_texture_u_offset > 7.0f)
-        *(float *)&suction_effect_texture_u_offset -= 7.0f;
+    a = suction_effect_texture_u_offset;
+    suction_effect_texture_u_offset = a + 0.001f;
+    if (suction_effect_texture_u_offset > 7.0f)
+        suction_effect_texture_u_offset -= 7.0f;
     step = 0.3f;
     a += step;
     for (i = 1; i < 10; i++) {
-        b = *(float *)&suction_effect_texture_v_offset;
-        *(float *)&suction_effect_texture_v_offset = b + *(float *)&suck_beam_scroll_speed;
-        if (*(float *)&suction_effect_texture_v_offset > 7.0f)
-            *(float *)&suction_effect_texture_v_offset -= 7.0f;
+        b = suction_effect_texture_v_offset;
+        suction_effect_texture_v_offset = b + *(float *)&suck_beam_scroll_speed;
+        if (suction_effect_texture_v_offset > 7.0f)
+            suction_effect_texture_v_offset -= 7.0f;
         a2 = a + step;
         for (j = 0; j < 20; j++) {
             qcopy(s.q[0], suck_beam_ring_vertices + (j * 16 + i * 0x140));
@@ -2707,12 +2706,12 @@ void suck_beam_draw_mesh(void) {
     VU1_addGSregister(0x47, 0x5360B);
 }
 extern short suck_beam_segment_alpha[];
-extern short suck_beam_clear_particles;
-extern short suck_beam_rebuild;
+extern int suck_beam_clear_particles SDATA(D_L00_00161C14);
+extern int suck_beam_rebuild SDATA(D_L00_00161C10);
 // sets two flags and clears a short
 void suck_reset(void) {
-    *(int *)&suck_beam_rebuild = 1;
-    *(int *)&suck_beam_clear_particles = 1;
+    suck_beam_rebuild = 1;
+    suck_beam_clear_particles = 1;
     suck_beam_segment_alpha[0] = 0;
 }
 extern Hero hero_2DF168 __asm__("D_0013F450");
@@ -2729,7 +2728,7 @@ typedef struct {
     int f14;
 } E04_DF168;
 extern E04_DF168 suck_beam_particles_x[] __asm__("D_L00_001E4FD0");
-extern short suck_beam_init_zero_0;
+extern int suck_beam_init_zero_0 SDATA(D_L00_00161C24);
 extern short suck_beam_init_zero_1;
 
 // Builds the camera matrices and resets the camera effect state.
@@ -2738,10 +2737,10 @@ void suck_beam_build(char *a, char *b) {
     char *v;
     short *w;
     int i, st, j;
-    if (*(int *)&suck_beam_rebuild == 0)
+    if (suck_beam_rebuild == 0)
         return;
     suck_beam_segment_length = 1.7f;
-    *(int *)&suck_beam_rebuild = 0;
+    suck_beam_rebuild = 0;
     st = hero_2DF168.state.current;
     if ((st == 0x1E || st == 1) && (hero_2DF168.moby->flags & 1)) {
         qcopy((char *)s, player_camera_matrix);
@@ -2782,10 +2781,10 @@ void suck_beam_build(char *a, char *b) {
         suck_beam_wobble_angle = f;
     }
     *(float *)&suck_beam_scroll_speed = 0.006f;
-    *(int *)&suck_beam_init_zero_0 = 0;
+    suck_beam_init_zero_0 = 0;
     *(int *)&suck_beam_init_zero_1 = 0;
-    if (*(int *)&suck_beam_clear_particles != 0) {
-        *(int *)&suck_beam_clear_particles = 0;
+    if (suck_beam_clear_particles != 0) {
+        suck_beam_clear_particles = 0;
         for (j = 199; j >= 0; j--)
             suck_beam_particles_x[j].f14 = 0;
     }
@@ -2909,12 +2908,12 @@ void suck_beam_update(void *moby, void *position) {
     FastVecAdd(&start, &start, &step);
     matrix_mul_vec3(&end, &(*(V41 *)suck_beam_wobble_to), orientation);
     FastVecAdd(&end, &end, &step);
-    t = (float)(*(int *)&suck_beam_init_zero_0) / IntToFloat(scale_ticks(60));
-    (*(int *)&suck_beam_init_zero_0)++;
+    t = (float)(suck_beam_init_zero_0) / IntToFloat(scale_ticks(60));
+    (suck_beam_init_zero_0)++;
     step.f.x = start.f.x + (end.f.x - start.f.x) * t;
     step.f.y = start.f.y + (end.f.y - start.f.y) * t;
     step.f.z = start.f.z + (end.f.z - start.f.z) * t;
-    if ((*(int *)&suck_beam_init_zero_0) >= scale_ticks(60)) {
+    if ((suck_beam_init_zero_0) >= scale_ticks(60)) {
         qcopy(&(*(V41 *)suck_beam_wobble_from), &(*(V41 *)suck_beam_wobble_to));
         vec_scale_to_length(&axis, orientation, suck_beam_segment_length);
         tmp_a.q = 0;
@@ -2926,7 +2925,7 @@ void suck_beam_update(void *moby, void *position) {
         angle = FastAddRots(suck_beam_wobble_angle, random_float_between(45.0f, 315.0f) * 0.0174532924f);
         build_look_at_matrix(&(*(V41 *)suck_beam_wobble_to), &tmp_a, angle, &tmp_b);
         suck_beam_wobble_angle = angle;
-        (*(int *)&suck_beam_init_zero_0) = 0;
+        (suck_beam_init_zero_0) = 0;
     }
     (*(float *)&suck_beam_init_zero_1) = FastAddRots((*(float *)&suck_beam_init_zero_1), 0.1f);
     qcopy(&axis, &orient[2]);
@@ -3143,9 +3142,9 @@ void stop_suck_cannon_suction_effect(int arg0) {
     float len;
     char *p;
 
-    *(int *)&suck_beam_rebuild = 1;
+    suck_beam_rebuild = 1;
     *(float *)&suck_beam_scroll_speed = *(float *)&suck_beam_scroll_speed * 0.5f;
-    *(int *)&suck_beam_clear_particles = 1;
+    suck_beam_clear_particles = 1;
     for (i = 0; i < 200; i++) {
         p = suck_beam_particles[i].p;
         if (p != 0) {
@@ -3227,7 +3226,7 @@ void draw_red_orb_group_effect_quads(Moby *p) {
         get_next_moby_in_group(it, it[0], 0, 0);
     }
 }
-extern short level_frame_counter;
+extern s32 level_frame_counter SDATA(D_L00_0015F6B0);
 typedef struct {
     u8 pad[8];
     s32 *p;
@@ -3242,7 +3241,7 @@ void enqueue_red_orb_group_draw_if_cache_changed(Moby *m) {
     if (b == 0xFF)
         return;
     s = (RedOrbVars *)m->pvars;
-    v = (*(s32 *)&level_frame_counter);
+    v = (level_frame_counter);
     if (v == 0)
         return;
     if (v != *s->p) {
@@ -3255,9 +3254,9 @@ extern float FastSin(float);
 extern int FastTweenColor(int, int, float);
 extern void set_moby_color(void *, int, int, int);
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
-extern short red_orb_pulse_speed_deg;
-extern short red_orb_color_a;
-extern short red_orb_color_b;
+extern float red_orb_pulse_speed_deg SDATA(D_L00_00161C68);
+extern int red_orb_color_a SDATA(D_L00_00161C60);
+extern int red_orb_color_b SDATA(D_L00_00161C64);
 
 /* update for the pulsing colour object */
 void red_orb_update(char *m) {
@@ -3271,10 +3270,10 @@ void red_orb_update(char *m) {
             ((Moby *)m)->state = 1;
             break;
         case 1:
-            a = FastAddRots(*(float *)p, *(float *)&red_orb_pulse_speed_deg * 0.017453292f * g_frame_time);
+            a = FastAddRots(*(float *)p, red_orb_pulse_speed_deg * 0.017453292f * g_frame_time);
             *(float *)p = a;
             a = FastSin(a);
-            c = FastTweenColor(*(int *)&red_orb_color_a, *(int *)&red_orb_color_b, a * 0.5f + 0.5f);
+            c = FastTweenColor(red_orb_color_a, red_orb_color_b, a * 0.5f + 0.5f);
             b = (c >> 16) & 0xFF;
             g = (c >> 8) & 0xFF;
             r = c & 0xFF;
@@ -3303,7 +3302,7 @@ extern void AttachManipulator(char *, int, void *);
 extern float FastAddRots(float, float);
 extern void axis_rotation_2d48(void *, int, float);
 extern float g_frame_time MACRO_ADDR;
-extern short vendor_orb_spin_speed_deg;
+extern float vendor_orb_spin_speed_deg SDATA(D_L00_00161C80);
 
 /* UpdateMoby for Vendor Orb: init then slowly spin/ease its value */
 void vendor_orb_update(unsigned char *m) {
@@ -3316,7 +3315,7 @@ void vendor_orb_update(unsigned char *m) {
             AttachManipulator((char *)m, 1, ((char *)p));
             break;
         case 1: {
-            float f = *(float *)&vendor_orb_spin_speed_deg * 0.017453292f * g_frame_time;
+            float f = vendor_orb_spin_speed_deg * 0.017453292f * g_frame_time;
             ((Moby *)m)->rot.z = FastAddRots(((Moby *)m)->rot.z, f);
             p->spin_angle = FastAddRots(p->spin_angle, f * -2.0f);
             axis_rotation_2d48(&p->spin_rot, 2, p->spin_angle);

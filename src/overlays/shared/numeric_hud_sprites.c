@@ -197,19 +197,19 @@ extern int trick_combo_score_table[];
 extern int trick_combo_trick_flag2 MACRO_ADDR;
 extern int trick_combo_trick_flag1 MACRO_ADDR;
 extern int rilgar_frame_count MACRO_ADDR;
-extern short trick_combo_text_color;
-extern short trick_combo_flash_color_from;
-extern short trick_combo_flash_color_to;
-extern short trick_combo_spin_text_x;
-extern short trick_combo_spin_text_y;
-extern short trick_combo_count_text_x;
-extern short trick_combo_count_text_y;
-extern short trick_combo_result_x;
-extern short trick_combo_result_y;
-extern short trick_combo_banner_x;
-extern short trick_combo_banner_y;
-extern short trick_combo_banner_color_from;
-extern short trick_combo_banner_color_to;
+extern int trick_combo_text_color SDATA(D_L05_0015F980);
+extern int trick_combo_flash_color_from SDATA(D_L05_0015F974);
+extern int trick_combo_flash_color_to SDATA(D_L05_0015F978);
+extern int trick_combo_spin_text_x SDATA(D_L05_0015F994);
+extern int trick_combo_spin_text_y SDATA(D_L05_0015F998);
+extern int trick_combo_count_text_x SDATA(D_L05_0015F99C);
+extern int trick_combo_count_text_y SDATA(D_L05_0015F9A0);
+extern int trick_combo_result_x SDATA(D_L05_0015F9A4);
+extern int trick_combo_result_y SDATA(D_L05_0015F9A8);
+extern int trick_combo_banner_x SDATA(D_L05_0015F984);
+extern int trick_combo_banner_y SDATA(D_L05_0015F988);
+extern int trick_combo_banner_color_from SDATA(D_L05_0015F98C);
+extern int trick_combo_banner_color_to SDATA(D_L05_0015F990);
 
 /* HUD element update: draws the level 5 challenge readouts and the progress bar; returns the element's width. */
 int draw_trick_combo_hud(char *a) {
@@ -235,23 +235,19 @@ int draw_trick_combo_hud(char *a) {
         r = scale_ticks(*(int *)&trick_combo_flash_ticks);
         f12 = f20 / (float)r;
         if (u[2] == 1 || u[2] == 3) {
-            acc = FastTweenColor(*(int *)&trick_combo_flash_color_from, *(int *)&trick_combo_flash_color_to, f12);
+            acc = FastTweenColor(trick_combo_flash_color_from, trick_combo_flash_color_to, f12);
         } else {
-            acc = *(int *)&trick_combo_text_color;
+            acc = trick_combo_text_color;
         }
         h = truncate_float_to_s32_r(f21 * 128.0f) << 24;
         acc += h;
         if (u[2] == 1 || u[2] == 2) {
-            FontPrintCenterLarge_x(*(int *)&trick_combo_spin_text_x + 1, *(int *)&trick_combo_spin_text_y + 1, h,
-                                   (int)buf, -1);
-            FontPrintCenterLarge_x(*(int *)&trick_combo_spin_text_x, *(int *)&trick_combo_spin_text_y, acc, (int)buf,
-                                   -1);
+            FontPrintCenterLarge_x(trick_combo_spin_text_x + 1, trick_combo_spin_text_y + 1, h, (int)buf, -1);
+            FontPrintCenterLarge_x(trick_combo_spin_text_x, trick_combo_spin_text_y, acc, (int)buf, -1);
             sprintf_r(buf, rilgar_fmt_count_and_word, trick_combo_trick_count,
                       msg_string_r(trick_combo_trick_count == 1 ? 0x517C : 0x517D));
-            FontPrintCenterLarge_x(*(int *)&trick_combo_count_text_x + 1, *(int *)&trick_combo_count_text_y + 1, h,
-                                   (int)buf, -1);
-            FontPrintCenterLarge_x(*(int *)&trick_combo_count_text_x, *(int *)&trick_combo_count_text_y, acc, (int)buf,
-                                   -1);
+            FontPrintCenterLarge_x(trick_combo_count_text_x + 1, trick_combo_count_text_y + 1, h, (int)buf, -1);
+            FontPrintCenterLarge_x(trick_combo_count_text_x, trick_combo_count_text_y, acc, (int)buf, -1);
         } else if (u[2] == 3) {
             sel = -1;
             if (trick_combo_trick_count == 3) {
@@ -284,9 +280,9 @@ int draw_trick_combo_hud(char *a) {
                 }
                 trick_combo_score = trick_combo_score / cnt;
                 sprintf_r(buf, rilgar_fmt_number, trick_combo_score);
-                draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y - 0x18, acc, (int)buf);
+                draw_framed_text(trick_combo_result_x, trick_combo_result_y - 0x18, acc, (int)buf);
                 sprintf_r(buf, rilgar_fmt_string, msg_string_r(idx + 0x5092));
-                draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y, acc, (int)buf);
+                draw_framed_text(trick_combo_result_x, trick_combo_result_y, acc, (int)buf);
             } else if (trick_combo_trick_count > 0) {
                 int n = 0;
                 int m;
@@ -299,19 +295,17 @@ int draw_trick_combo_hud(char *a) {
                 if (trick_combo_trick_count == 1) {
                     trick_combo_score = trick_combo_spins * 10;
                     sprintf_r(buf, rilgar_fmt_number, trick_combo_score);
-                    draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y - 0x18, acc,
-                                     (int)buf);
+                    draw_framed_text(trick_combo_result_x, trick_combo_result_y - 0x18, acc, (int)buf);
                     sprintf_r(buf, rilgar_fmt_single_trick_line, msg_string_r(out[0] + 0x5183), trick_combo_spins,
                               msg_string_r(trick_combo_spins == 0x168 ? 0x50A7 : 0x50A8));
-                    draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y, acc, (int)buf);
+                    draw_framed_text(trick_combo_result_x, trick_combo_result_y, acc, (int)buf);
                 } else {
                     trick_combo_score = trick_combo_spins * 20;
                     sprintf_r(buf, rilgar_fmt_number, trick_combo_score);
-                    draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y - 0x18, acc,
-                                     (int)buf);
+                    draw_framed_text(trick_combo_result_x, trick_combo_result_y - 0x18, acc, (int)buf);
                     sprintf_r(buf, rilgar_fmt_double_trick_line, msg_string_r(out[0] + 0x5183),
                               msg_string_r(out[1] + 0x5183), trick_combo_spins);
-                    draw_framed_text(*(int *)&trick_combo_result_x, *(int *)&trick_combo_result_y, acc, (int)buf);
+                    draw_framed_text(trick_combo_result_x, trick_combo_result_y, acc, (int)buf);
                 }
             }
         }
@@ -333,18 +327,17 @@ int draw_trick_combo_hud(char *a) {
         r3 = scale_ticks(0x3C);
         f0 = IntToFloat(rilgar_frame_count % r3) / (float)r3;
         f0 = FastSin(f0 * 6.283180236816406f - 3.141590118408203f);
-        r3 = FastTweenColor(*(int *)&trick_combo_banner_color_from, *(int *)&trick_combo_banner_color_to,
-                            f0 * 0.5f + 0.5f);
+        r3 = FastTweenColor(trick_combo_banner_color_from, trick_combo_banner_color_to, f0 * 0.5f + 0.5f);
         sprintf_r(buf, msg_string_r(0x531F));
-        draw_framed_text(*(int *)&trick_combo_banner_x + 1, *(int *)&trick_combo_banner_y + 1, 0x80000000, (int)buf);
-        draw_framed_text(*(int *)&trick_combo_banner_x, *(int *)&trick_combo_banner_y, r3, (int)buf);
+        draw_framed_text(trick_combo_banner_x + 1, trick_combo_banner_y + 1, 0x80000000, (int)buf);
+        draw_framed_text(trick_combo_banner_x, trick_combo_banner_y, r3, (int)buf);
     }
     return *(int *)(a + 0x58);
 }
 
 extern int animation_parameter_target_id MACRO_ADDR;
 extern int rilgar_hud_hold_active MACRO_ADDR;
-extern short rilgar_hud_release_count;
+extern int rilgar_hud_release_count SDATA(D_L05_0015FA50);
 // Releases the held hud element if any, clears a flag and bumps a counter.
 void hud_release_held_element(void) {
     if (animation_parameter_target_id != -1) {
@@ -352,7 +345,7 @@ void hud_release_held_element(void) {
         animation_parameter_target_id = -1;
     }
     rilgar_hud_hold_active = 0;
-    *(int *)&rilgar_hud_release_count = *(int *)&rilgar_hud_release_count + 1;
+    rilgar_hud_release_count = rilgar_hud_release_count + 1;
 }
 
 typedef struct {

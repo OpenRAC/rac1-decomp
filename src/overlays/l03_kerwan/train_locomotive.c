@@ -135,7 +135,7 @@ struct RobotDogVars {
 };
 typedef int Q_293720 __attribute__((mode(TI)));
 extern char *kerwan_mobys_t __asm__("D_L03_00160058") MACRO_ADDR;
-extern short kerwan_train_car_spacing;
+extern float kerwan_train_car_spacing SDATA(D_L03_001613F0);
 extern float FastCos(float);
 extern float FastSin(float);
 extern void FastVecAdd(void *, void *, void *);
@@ -186,8 +186,8 @@ void place_metropolis_train(char *moby, float *pos, float heading) {
         Car292890 *car_data = (Car292890 *)((struct Moby *)car)->pvars;
         qcopy(car_data->prev_pos, &((struct Moby *)car)->pos);
         qcopy(car_data->prev_rot, &((struct Moby *)car)->rot);
-        car_pos[0] = FastCos(heading) * -*(float *)&kerwan_train_car_spacing;
-        car_pos[1] = FastSin(heading) * -*(float *)&kerwan_train_car_spacing;
+        car_pos[0] = FastCos(heading) * -kerwan_train_car_spacing;
+        car_pos[1] = FastSin(heading) * -kerwan_train_car_spacing;
         car_pos[2] = 0.0f;
         FastVecAdd(car_pos, car_pos, offset);
         car_off[0] = FastCos(heading) * -car_data->fC4;
@@ -285,7 +285,7 @@ void update_metropolis_train_motion(char *moby) {
             car_data = (Car292890 *)car->pvars;
             Moby_GetJointWorldPos(car, 0, rear);
             FastVecSub(hitch, rear, front);
-            vec_set_length_xy(hitch, hitch, *(float *)&kerwan_train_car_spacing);
+            vec_set_length_xy(hitch, hitch, kerwan_train_car_spacing);
             FastVecAdd(hitch, hitch, front);
             hitch[2] = front[2];
             FastVecSub(car_position_adjustment, hitch, &car->pos);

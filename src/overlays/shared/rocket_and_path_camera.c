@@ -261,31 +261,30 @@ extern float FastCos(float);
 extern float FastSin(float);
 extern void FastVecAdd(float *, float *, float *);
 
-extern short orxon_type52_particle_spawn_radius;
-extern short orxon_type52_particle_start_size_max;
-extern short orxon_type52_particle_end_size_max;
-extern short orxon_type52_particle_life_min;
-extern short orxon_type52_particle_life_max;
-extern short orxon_type52_particle_color_start;
-extern short orxon_type52_particle_color_end;
+extern float orxon_type52_particle_spawn_radius SDATA(D_L10_00161EF0);
+extern float orxon_type52_particle_start_size_max SDATA(D_L10_00161EE0);
+extern float orxon_type52_particle_end_size_max SDATA(D_L10_00161EE4);
+extern int orxon_type52_particle_life_min SDATA(D_L10_00161EE8);
+extern int orxon_type52_particle_life_max SDATA(D_L10_00161EEC);
+extern int orxon_type52_particle_color_start SDATA(D_L10_00161ED8);
+extern int orxon_type52_particle_color_end SDATA(D_L10_00161EDC);
 
 // spawns an effect at a jittered position around the moby
 void spawn_type_52_particle_near_moby(char *moby) {
     float v[3];
     int g, h;
     float a = random_angle_radians();
-    float b = random_float_between(0.0f, *(float *)&orxon_type52_particle_spawn_radius);
-    float c = random_float_between(0.0f, *(float *)&orxon_type52_particle_start_size_max);
-    float d = random_float_between(*(float *)&orxon_type52_particle_start_size_max,
-                                   *(float *)&orxon_type52_particle_end_size_max);
-    int e = rand_range(*(int *)&orxon_type52_particle_life_min, *(int *)&orxon_type52_particle_life_max);
+    float b = random_float_between(0.0f, orxon_type52_particle_spawn_radius);
+    float c = random_float_between(0.0f, orxon_type52_particle_start_size_max);
+    float d = random_float_between(orxon_type52_particle_start_size_max, orxon_type52_particle_end_size_max);
+    int e = rand_range(orxon_type52_particle_life_min, orxon_type52_particle_life_max);
     v[0] = FastCos(a) * b;
     v[1] = FastSin(a) * b;
     v[2] = 0.0f;
     FastVecAdd(v, v, (float *)(moby + 0x10));
     v[2] = v[2] + 0.025f;
-    g = *(int *)&orxon_type52_particle_color_start;
-    h = *(int *)&orxon_type52_particle_color_end;
+    g = orxon_type52_particle_color_start;
+    h = orxon_type52_particle_color_end;
     spawn_type_52_particle(v, c, d, g, h, e);
 }
 extern void matrix_from_basis_rows(void *, void *);
@@ -339,7 +338,7 @@ typedef struct {
     float uv[4][2];
     long unk70, tex, unk80, unk88;
 } Quad;
-extern short quad_layer_count;
+extern int quad_layer_count SDATA(D_L10_00161FC0);
 extern short orxon_quad_layer_alpha_a;
 extern short orxon_quad_layer_alpha_b;
 extern short orxon_quad_layer_alpha_c;
@@ -400,7 +399,7 @@ void draw_moby_animated_quad_layers(unsigned char *m) {
         s2++;
         qb += 4;
     }
-    for (pass = 0; pass < *(int *)&quad_layer_count; pass++) {
+    for (pass = 0; pass < quad_layer_count; pass++) {
         int parity = pass & 1;
         int level;
         first.unk88 =

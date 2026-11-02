@@ -2,9 +2,9 @@ void update_hero_relocation_trigger(char *m) {
     char *d = *(char **)(m + 0x78);
     unsigned short id;
     ((unsigned char *)m)[0x30] = 0xFF;
-    if (*(int *)&orxon_relocation_reset_flag == 1) {
+    if (orxon_relocation_reset_flag == 1) {
         *(short *)(help_stats_base + 0x32D) = 0;
-        *(int *)&orxon_relocation_reset_flag = 0;
+        orxon_relocation_reset_flag = 0;
     }
     if (*(int *)(d + 0x18) != -1) {
         int b = *(int *)(d + 0x1C);

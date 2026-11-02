@@ -313,8 +313,8 @@ typedef struct L14Data {
 
 extern char hero_globals_base[];
 extern float g_frame_time MACRO_ADDR;
-extern short oltanis_bolt_thief_spring_stiffness;
-extern short oltanis_bolt_thief_spring_damping;
+extern float oltanis_bolt_thief_spring_stiffness SDATA(D_L14_0016208C);
+extern float oltanis_bolt_thief_spring_damping SDATA(D_L14_00162090);
 extern char *oltanis_paths[];
 extern char oltanis_bolt_thief_no_path_msg[];
 extern char oltanis_bolt_thief_empty_path_msg[];
@@ -450,12 +450,12 @@ void BoltThiefUpdate(L14Moby *m) {
                 update_linked_moby_position(m);
             qcopy(target, path + *(int *)path * 16);
             zero = 0.0f;
-            Spring(m->position, &a->vx, target[0], *(float *)&oltanis_bolt_thief_spring_stiffness,
-                   *(float *)&oltanis_bolt_thief_spring_damping, zero);
-            Spring(m->position + 1, &a->vy, target[1], *(float *)&oltanis_bolt_thief_spring_stiffness,
-                   *(float *)&oltanis_bolt_thief_spring_damping, zero);
-            Spring(m->position + 2, &a->vz, target[2], *(float *)&oltanis_bolt_thief_spring_stiffness,
-                   *(float *)&oltanis_bolt_thief_spring_damping, zero);
+            Spring(m->position, &a->vx, target[0], oltanis_bolt_thief_spring_stiffness,
+                   oltanis_bolt_thief_spring_damping, zero);
+            Spring(m->position + 1, &a->vy, target[1], oltanis_bolt_thief_spring_stiffness,
+                   oltanis_bolt_thief_spring_damping, zero);
+            Spring(m->position + 2, &a->vz, target[2], oltanis_bolt_thief_spring_stiffness,
+                   oltanis_bolt_thief_spring_damping, zero);
             if ((m->status & 2) && m->frame == m->animation) {
                 if (a->mode == 1) {
                     m->state = 1;
@@ -509,7 +509,7 @@ void BoltThiefUpdate(L14Moby *m) {
 }
 extern float g_frame_time MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
-extern short oltanis_bolt_thief_path_speed;
+extern float oltanis_bolt_thief_path_speed SDATA(D_L14_00162088);
 extern char *oltanis_paths[];
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
 extern void FastVecSub(void *dst, void *a, void *b);
@@ -520,7 +520,7 @@ int update_bolt_thief_path_movement(char *moby) {
     float pos[4];
     float delta[4];
     struct BoltThiefPathVars *data = (struct BoltThiefPathVars *)((Moby *)moby)->pvars;
-    float t = *(float *)&oltanis_bolt_thief_path_speed * g_frame_time;
+    float t = oltanis_bolt_thief_path_speed * g_frame_time;
     int r;
     char *path;
     if (g_current_level_index == LEVEL_KALEBO3)
@@ -532,18 +532,17 @@ int update_bolt_thief_path_movement(char *moby) {
     else
         path = oltanis_paths[data->path_a];
     r = Spline_AdvanceByDistance(path, pos, &data->spline_seg, &data->spline_t, t, 0);
-    Spring(&((Moby *)moby)->pos.x, &data->pos_vel.x, pos[0], *(float *)&oltanis_bolt_thief_spring_stiffness,
-           *(float *)&oltanis_bolt_thief_spring_damping, 0.0f);
-    Spring(&((Moby *)moby)->pos.y, &data->pos_vel.y, pos[1], *(float *)&oltanis_bolt_thief_spring_stiffness,
-           *(float *)&oltanis_bolt_thief_spring_damping, 0.0f);
-    Spring(&((Moby *)moby)->pos.z, &data->pos_vel.z, pos[2], *(float *)&oltanis_bolt_thief_spring_stiffness,
-           *(float *)&oltanis_bolt_thief_spring_damping, 0.0f);
+    Spring(&((Moby *)moby)->pos.x, &data->pos_vel.x, pos[0], oltanis_bolt_thief_spring_stiffness,
+           oltanis_bolt_thief_spring_damping, 0.0f);
+    Spring(&((Moby *)moby)->pos.y, &data->pos_vel.y, pos[1], oltanis_bolt_thief_spring_stiffness,
+           oltanis_bolt_thief_spring_damping, 0.0f);
+    Spring(&((Moby *)moby)->pos.z, &data->pos_vel.z, pos[2], oltanis_bolt_thief_spring_stiffness,
+           oltanis_bolt_thief_spring_damping, 0.0f);
     FastVecSub(delta, pos, &((Moby *)moby)->pos);
     if (FastAbsF(delta[0]) > 0.01f) {
         if (FastAbsF(delta[1]) > 0.01f) {
-            MobySpringTurn(moby, fast_atan2(delta[0], delta[1]), &data->turn_vel,
-                           *(float *)&oltanis_bolt_thief_spring_stiffness, *(float *)&oltanis_bolt_thief_spring_damping,
-                           0.0f);
+            MobySpringTurn(moby, fast_atan2(delta[0], delta[1]), &data->turn_vel, oltanis_bolt_thief_spring_stiffness,
+                           oltanis_bolt_thief_spring_damping, 0.0f);
         }
     }
     return r;
@@ -736,11 +735,11 @@ typedef unsigned int u128_2288 __attribute__((mode(TI)));
 extern Coll_2288 oltanis_coll_hit;
 extern int oltanis_coll_hit_moby __attribute__((section(".data")));
 extern short oltanis_spark_trail_ticks;
-extern short oltanis_spark_contact_radius;
-extern short oltanis_spark_min_speed;
-extern short oltanis_spark_roll_slowdown;
-extern short oltanis_spark_bounce_damping;
-extern short spark_first_bounce_horizontal_speed_gp;
+extern float oltanis_spark_contact_radius SDATA(D_L14_00162158);
+extern float oltanis_spark_min_speed SDATA(D_L14_00162160);
+extern float oltanis_spark_roll_slowdown SDATA(D_L14_00162164);
+extern float oltanis_spark_bounce_damping SDATA(D_L14_00162170);
+extern float spark_first_bounce_horizontal_speed_gp SDATA(D_L14_00162174);
 extern int coll_sphere(void *, int, void *, float);
 extern int fast_dec_timer(int *);
 extern int FastDecTimer(short *);
@@ -818,24 +817,23 @@ void update_bouncing_spark(Moby *m) {
             } else {
                 qcopy(&m->pos, &next);
             }
-            if (((coll_sphere(&m->pos, 0, m, *(float *)&oltanis_spark_contact_radius) != 0) &&
+            if (((coll_sphere(&m->pos, 0, m, oltanis_spark_contact_radius) != 0) &&
                  ((m->state == 0) || ((m->pos.z - oltanis_coll_hit.hit.z) < 0.0f))) &&
                 ((oltanis_coll_hit.owner == 0) || (oltanis_coll_hit.owner != d->owner))) {
-                vec_scale_to_length(&t, &oltanis_coll_hit.normal, *(float *)&oltanis_spark_contact_radius);
+                vec_scale_to_length(&t, &oltanis_coll_hit.normal, oltanis_spark_contact_radius);
                 FastVecAdd(&m->pos, &oltanis_coll_hit.hit, &t);
                 vec_reflect(&d->vel, &d->vel, &oltanis_coll_hit.normal);
                 Moby_PlaySound(1, 0, m);
                 if (m->state == 0) {
                     m->state = 1;
                     if ((++d->bounces) == 1) {
-                        vec_set_length_xy(&d->vel, &d->vel,
-                                          *(float *)&spark_first_bounce_horizontal_speed_gp * g_frame_time);
-                        d->vel.z = d->vel.z * *(float *)&oltanis_spark_bounce_damping;
+                        vec_set_length_xy(&d->vel, &d->vel, spark_first_bounce_horizontal_speed_gp * g_frame_time);
+                        d->vel.z = d->vel.z * oltanis_spark_bounce_damping;
                     } else {
-                        FastVecScale_r(&from, &d->vel, *(float *)&oltanis_spark_bounce_damping);
-                        if (vec_length_xy(&from) < (*(float *)&oltanis_spark_min_speed * g_frame_time)) {
-                            vec_set_length_xy(&d->vel, &d->vel, *(float *)&oltanis_spark_min_speed * g_frame_time);
-                            d->vel.z *= *(float *)&oltanis_spark_bounce_damping;
+                        FastVecScale_r(&from, &d->vel, oltanis_spark_bounce_damping);
+                        if (vec_length_xy(&from) < (oltanis_spark_min_speed * g_frame_time)) {
+                            vec_set_length_xy(&d->vel, &d->vel, oltanis_spark_min_speed * g_frame_time);
+                            d->vel.z *= oltanis_spark_bounce_damping;
                         } else {
                             qcopy(&d->vel, &from);
                         }
@@ -848,8 +846,8 @@ void update_bouncing_spark(Moby *m) {
                     m->state = 2;
                     d->vel.z = 0.0f;
                     w = vec_length_xy(&d->vel);
-                    c = *(float *)&oltanis_spark_bounce_damping;
-                    min = *(float *)&oltanis_spark_min_speed;
+                    c = oltanis_spark_bounce_damping;
+                    min = oltanis_spark_min_speed;
                     d->vel.w = w;
                     min *= g_frame_time;
                     d->vel.w *= c;
@@ -875,8 +873,8 @@ void update_bouncing_spark(Moby *m) {
             r = truncate_float_to_s32(((((Rgb_2288 *)(&next))->r - 255.0f) * f) + 255.0f);
             g = truncate_float_to_s32(((((Rgb_2288 *)(&next))->g - 0.0f) * f) + 0.0f);
             b = truncate_float_to_s32(((((Rgb_2288 *)(&next))->b - 0.0f) * f) + 0.0f);
-            k = ((*(float *)&oltanis_spark_roll_slowdown - 1.0f) * frame_scale) + 1.0f;
-            min = *(float *)&oltanis_spark_min_speed * g_frame_time;
+            k = ((oltanis_spark_roll_slowdown - 1.0f) * frame_scale) + 1.0f;
+            min = oltanis_spark_min_speed * g_frame_time;
             m->glow_color = 0xFF000000;
             m->glow_color = (((b << 16) | m->glow_color) | (g << 8)) | r;
             d->vel.w *= k;
@@ -916,7 +914,7 @@ extern char *CreateMoby(int);
 
 extern void moby_build_matrix(void *);
 extern short oltanis_spark_trail_ticks;
-extern short oltanis_spark_start_scale;
+extern float oltanis_spark_start_scale SDATA(D_L14_00162168);
 
 /* Spawns a moby with its data block filled from the arguments. */
 char *create_bouncing_spark(int a0, float *a1, float *a2, int a3, float f) {
@@ -940,7 +938,7 @@ char *create_bouncing_spark(int a0, float *a1, float *a2, int a3, float f) {
         *(int *)&moby->rot.x = 0;
         *(int *)&moby->rot.y = 0;
         t = fast_atan2(a2[0], a2[1]);
-        u = moby->scale * *(float *)&oltanis_spark_start_scale;
+        u = moby->scale * oltanis_spark_start_scale;
         moby->rot.z = t;
         moby->scale = u;
         moby_build_matrix(moby);
@@ -1827,13 +1825,13 @@ typedef struct {
 extern VoicePool voice_pool;
 extern char *oltanis_paths[];
 extern short oltanis_mobys_r2 __asm__("D_L14_00160098");
-extern short flying_car_tracking_spring_gain_gp;
-extern short flying_car_motion_spring_damping_gp;
-extern short oltanis_flying_car_max_bank;
-extern short flying_car_full_bank_yaw_error_gp;
-extern short flying_car_max_sink_offset_rate_gp;
-extern short flying_car_sink_offset_recovery_rate_gp;
-extern short flying_car_burst_height_threshold_gp;
+extern float flying_car_tracking_spring_gain_gp SDATA(D_L14_0016233C);
+extern float flying_car_motion_spring_damping_gp SDATA(D_L14_00162340);
+extern float oltanis_flying_car_max_bank SDATA(D_L14_00162344);
+extern float flying_car_full_bank_yaw_error_gp SDATA(D_L14_00162348);
+extern float flying_car_max_sink_offset_rate_gp SDATA(D_L14_00162350);
+extern float flying_car_sink_offset_recovery_rate_gp SDATA(D_L14_00162358);
+extern float flying_car_burst_height_threshold_gp SDATA(D_L14_0016235C);
 extern int Spline_AdvanceByDistance_r(char *path, float *out, void *pos, void *t, int dir,
                                       float step) __asm__("func_L00_0025E860");
 extern void SpawnExplosionFx_r2(void *, void *, f32, f32, s32) __asm__("func_L00_00260108");
@@ -1855,7 +1853,7 @@ int update_flying_car_path_motion(struct Moby *moby) {
 
     end = Spline_AdvanceByDistance_r(oltanis_paths[d->path_index], pos, &d->spline_seg, &d->spline_t, d->loop_path,
                                      d->speed * g_frame_time);
-    if ((d->loop_path == 0 && end != 0) || moby->pos.z <= (*(float *)&flying_car_burst_height_threshold_gp)) {
+    if ((d->loop_path == 0 && end != 0) || moby->pos.z <= (flying_car_burst_height_threshold_gp)) {
         SpawnExplosionFx_r2(moby, &moby->pos, 5.0f, 13.0f, -1);
         moby->state = 3;
         moby->flags |= 0x41;
@@ -1883,13 +1881,13 @@ int update_flying_car_path_motion(struct Moby *moby) {
         float lim;
         float s;
         s = d->sink_vel + d->sink_accel * g_frame_scale_sq;
-        lim = (*(float *)&flying_car_max_sink_offset_rate_gp) * g_frame_time;
+        lim = (flying_car_max_sink_offset_rate_gp)*g_frame_time;
         d->sink_vel = s;
         if (lim < s)
             d->sink_vel = lim;
         d->sink += d->sink_vel;
     } else {
-        d->sink -= (*(float *)&flying_car_sink_offset_recovery_rate_gp) * g_frame_time;
+        d->sink -= (flying_car_sink_offset_recovery_rate_gp)*g_frame_time;
         *(int *)&d->sink_vel = 0;
         if (d->sink < d->sink_vel)
             d->sink = d->sink_vel;
@@ -1897,28 +1895,28 @@ int update_flying_car_path_motion(struct Moby *moby) {
     pos[2] -= d->sink;
     if (pos[2] < 10.0f)
         pos[2] = 10.0f;
-    Spring(&moby->pos.x, &d->pos_vel.x, pos[0], (*(float *)&flying_car_tracking_spring_gain_gp),
-           (*(float *)&flying_car_motion_spring_damping_gp), 0.0f);
-    Spring(&moby->pos.y, &d->pos_vel.y, pos[1], (*(float *)&flying_car_tracking_spring_gain_gp),
-           (*(float *)&flying_car_motion_spring_damping_gp), 0.0f);
-    Spring(&moby->pos.z, &d->pos_vel.z, pos[2], (*(float *)&flying_car_tracking_spring_gain_gp),
-           (*(float *)&flying_car_motion_spring_damping_gp), 0.0f);
+    Spring(&moby->pos.x, &d->pos_vel.x, pos[0], (flying_car_tracking_spring_gain_gp),
+           (flying_car_motion_spring_damping_gp), 0.0f);
+    Spring(&moby->pos.y, &d->pos_vel.y, pos[1], (flying_car_tracking_spring_gain_gp),
+           (flying_car_motion_spring_damping_gp), 0.0f);
+    Spring(&moby->pos.z, &d->pos_vel.z, pos[2], (flying_car_tracking_spring_gain_gp),
+           (flying_car_motion_spring_damping_gp), 0.0f);
     FastVecSub(delta, pos, &moby->pos);
     if (0.01f < FastAbsF(delta[0]) && 0.01f < FastAbsF(delta[1])) {
         yaw = fast_atan2(delta[0], delta[1]);
         bank = FastSubRots(moby->rot.z, yaw);
-        MobySpringTurn_r(moby, yaw, &d->yaw_vel, (*(float *)&flying_car_tracking_spring_gain_gp),
-                         (*(float *)&flying_car_motion_spring_damping_gp), 0.0f);
+        MobySpringTurn_r(moby, yaw, &d->yaw_vel, (flying_car_tracking_spring_gain_gp),
+                         (flying_car_motion_spring_damping_gp), 0.0f);
         pitch = -fast_atan2(vec_length_xy(delta), delta[2]);
-        Spring(&moby->rot.y, &d->pitch_vel, pitch, (*(float *)&flying_car_tracking_spring_gain_gp),
-               (*(float *)&flying_car_motion_spring_damping_gp), 0.0f);
-        bank /= (*(float *)&flying_car_full_bank_yaw_error_gp);
+        Spring(&moby->rot.y, &d->pitch_vel, pitch, (flying_car_tracking_spring_gain_gp),
+               (flying_car_motion_spring_damping_gp), 0.0f);
+        bank /= (flying_car_full_bank_yaw_error_gp);
         if (1.0f < bank)
             bank = 1.0f;
         if (bank < -1.0f)
             bank = -1.0f;
-        Spring(&moby->rot.x, &d->bank_vel, bank * (*(float *)&oltanis_flying_car_max_bank), 0.003f,
-               (*(float *)&flying_car_motion_spring_damping_gp), 0.0f);
+        Spring(&moby->rot.x, &d->bank_vel, bank * (oltanis_flying_car_max_bank), 0.003f,
+               (flying_car_motion_spring_damping_gp), 0.0f);
     }
     return 1;
 }

@@ -78,9 +78,9 @@ extern unsigned char voice_pool[];
 extern unsigned char *quartu_moby_array MACRO_ADDR;
 extern char *quartu_cuboids MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
-extern short electric_water_on_duration_seconds;
-extern short electric_water_off_duration_seconds;
-extern short electric_water_path_arc_inhibit_gp;
+extern float electric_water_on_duration_seconds SDATA(D_L15_00161C48);
+extern float electric_water_off_duration_seconds SDATA(D_L15_00161C4C);
+extern float electric_water_path_arc_inhibit_gp SDATA(D_L15_00161C50);
 extern unsigned char quartu_current_level_state_moby_flags[];
 extern unsigned char quartu_checkpoint_level_state_moby_flags[];
 extern int level_moby_killed[];
@@ -221,7 +221,7 @@ void electric_water_update(unsigned char *m) {
                     reset_electric_water_switch(MOBY_2D7C00(vars->switches[reset_sw]));
                 }
             }
-            vars->on_timer = SECS_2D7C00((*(float *)&electric_water_on_duration_seconds));
+            vars->on_timer = SECS_2D7C00((electric_water_on_duration_seconds));
             vars->off_timer = scale_ticks(200);
             vars->shock_count = 0;
             vars->light = -1;
@@ -234,7 +234,7 @@ void electric_water_update(unsigned char *m) {
             inside = 0;
             wet = hero_is_near_ground();
             if (FastDecTimer(&vars->on_timer) != 0) {
-                vars->off_timer = SECS_2D7C00((*(float *)&electric_water_off_duration_seconds));
+                vars->off_timer = SECS_2D7C00((electric_water_off_duration_seconds));
                 moby->state = ELECTRIC_WATER_OFF;
                 if (vars->owner != 0) {
                     STOP_2D7C00(vars->voice1, vars->owner);
@@ -262,8 +262,7 @@ void electric_water_update(unsigned char *m) {
                 }
             }
 
-            if ((!inside || !wet) && random_integer_below(1) == 0 &&
-                (*(float *)&electric_water_path_arc_inhibit_gp) == 0.0f) {
+            if ((!inside || !wet) && random_integer_below(1) == 0 && (electric_water_path_arc_inhibit_gp) == 0.0f) {
                 best = 0;
                 for (line_offset = 0; line_offset < 24; line_offset += 8) {
                     line = &vars->lines[line_offset];
@@ -395,7 +394,7 @@ void electric_water_update(unsigned char *m) {
                 vars->voice1 = Sound_PlayClassSound(1, 5, vars->owner, 0x28F);
             }
             if (FastDecTimer(&vars->off_timer) != 0 && moby->state == ELECTRIC_WATER_OFF) {
-                vars->on_timer = SECS_2D7C00((*(float *)&electric_water_on_duration_seconds));
+                vars->on_timer = SECS_2D7C00((electric_water_on_duration_seconds));
                 vars->off_timer = scale_ticks(200);
                 vars->shock_count = 0;
                 moby->state = ELECTRIC_WATER_ON;
@@ -472,7 +471,7 @@ void electric_water_update(unsigned char *m) {
                     reset_electric_water_switch(MOBY_2D7C00(vars->switches[i]));
                 }
             }
-            vars->on_timer = SECS_2D7C00((*(float *)&electric_water_on_duration_seconds));
+            vars->on_timer = SECS_2D7C00((electric_water_on_duration_seconds));
             vars->off_timer = scale_ticks(200);
             vars->shock_count = 0;
             moby->state = ELECTRIC_WATER_ON;
@@ -538,13 +537,13 @@ void draw_electric_water_countdown(char *moby) {
     buf[7] = truncate_float_to_s32_r((float)random_integer_below(10)) + 0x30;
     FontPrintCenterLarge(W(electric_water_timer_x), W(electric_water_timer_y), col, (int)buf, 8);
 }
-extern short electric_water_bolt_init_requested;
-extern short electric_water_bolt_initial_length_scale;
+extern int electric_water_bolt_init_requested SDATA(D_L15_00161C78);
+extern float electric_water_bolt_initial_length_scale SDATA(D_L15_00161C7C);
 extern short electric_water_bolt_wave_phase;
 extern short electric_water_mirror_bolt_phase;
 extern short electric_water_mirror_bolt_height_phase;
-extern short quartu_beam_arc_outer_color;
-extern short electric_water_bolt_initial_frame_count;
+extern int quartu_beam_arc_outer_color SDATA(D_L15_00161CE0);
+extern int electric_water_bolt_initial_frame_count SDATA(D_L15_00161D0C);
 extern short electric_water_side_arc_regrow_delays_r[] __asm__("D_L15_00161D50") MACRO_ADDR;
 extern short electric_water_side_arc_regrow_delays_1[] MACRO_ADDR;
 extern short electric_water_side_arc_regrow_delays_2[] MACRO_ADDR;
@@ -555,7 +554,7 @@ extern short electric_water_side_arc_fade_ticks_2[] MACRO_ADDR;
 extern short electric_water_side_arc_fade_ticks_3[] MACRO_ADDR;
 extern short electric_water_side_arc_timers[] MACRO_ADDR;
 extern int electric_water_bolt_initial_scaled_frame_count MACRO_ADDR;
-extern short electric_water_bolt_reset_word;
+extern int electric_water_bolt_reset_word SDATA(D_L15_00161D64);
 extern float electric_water_bolt_points_base_r[][4] __asm__("D_L15_001D3A10");
 extern float electric_water_bolt_points_r[][4] __asm__("D_L15_001D3A20");
 extern int electric_water_bolt_wave_offsets_r[] __asm__("D_L15_001D3CA0");
@@ -573,14 +572,13 @@ void initialize_electric_water_bolt_effect(char *m) {
     float step[4];
     int i;
     int j;
-    if ((*(int *)&electric_water_bolt_init_requested) != 0) {
-        (*(int *)&electric_water_bolt_init_requested) = 0;
-        (*(int *)&electric_water_bolt_reset_word) = 0;
-        electric_water_bolt_initial_scaled_frame_count =
-            scale_ticks((*(int *)&electric_water_bolt_initial_frame_count));
-        (*(int *)&quartu_beam_arc_outer_color) = 0x7F2020;
+    if ((electric_water_bolt_init_requested) != 0) {
+        (electric_water_bolt_init_requested) = 0;
+        (electric_water_bolt_reset_word) = 0;
+        electric_water_bolt_initial_scaled_frame_count = scale_ticks((electric_water_bolt_initial_frame_count));
+        (quartu_beam_arc_outer_color) = 0x7F2020;
         FastVecSub(v, &d->end, &d->start);
-        vec_scale_to_length(step, v, (*(float *)&electric_water_bolt_initial_length_scale) / 20.0f);
+        vec_scale_to_length(step, v, (electric_water_bolt_initial_length_scale) / 20.0f);
         qcopy(electric_water_bolt_points_r, &d->start);
         for (i = 1; i < 20; i++) {
             FastVecAdd(electric_water_bolt_points_r[i], electric_water_bolt_points_base_r[i], step);
@@ -641,21 +639,21 @@ extern int FastDecTimer(void *);
 extern void func_L00_00272F00(void *, int, float, float, int, int, int, void *, float);
 extern char hero_globals_base[];
 extern char hero_gravity_dir_r[] __asm__("D_0013F6E0");
-extern short electric_water_bolt_wave_point_phase;
-extern short electric_water_bolt_wave_amp_start;
-extern short electric_water_bolt_wave_amp_end;
-extern short electric_water_bolt_wave_speed;
-extern short electric_water_mirror_bolt_phase_speed;
-extern short electric_water_mirror_bolt_point_phase;
-extern short electric_water_mirror_bolt_height_amp;
-extern short electric_water_mirror_bolt_side_amp;
-extern short electric_water_mirror_bolt_height_speed;
-extern short electric_water_mirror_bolt_height_point_phase;
-extern short electric_water_bolt_jitter_center;
-extern short electric_water_bolt_jitter_range;
+extern float electric_water_bolt_wave_point_phase SDATA(D_L15_00161C88);
+extern float electric_water_bolt_wave_amp_start SDATA(D_L15_00161C8C);
+extern float electric_water_bolt_wave_amp_end SDATA(D_L15_00161C90);
+extern float electric_water_bolt_wave_speed SDATA(D_L15_00161C98);
+extern float electric_water_mirror_bolt_phase_speed SDATA(D_L15_00161CA0);
+extern float electric_water_mirror_bolt_point_phase SDATA(D_L15_00161CA4);
+extern float electric_water_mirror_bolt_height_amp SDATA(D_L15_00161CA8);
+extern float electric_water_mirror_bolt_side_amp SDATA(D_L15_00161CAC);
+extern float electric_water_mirror_bolt_height_speed SDATA(D_L15_00161CB4);
+extern float electric_water_mirror_bolt_height_point_phase SDATA(D_L15_00161CB8);
+extern float electric_water_bolt_jitter_center SDATA(D_L15_00161CCC);
+extern float electric_water_bolt_jitter_range SDATA(D_L15_00161CD0);
 extern short quartu_beam_arc_outer_color_r __asm__("D_L15_00161CE0");
-extern short electric_water_spark_speed;
-extern short electric_water_bolt_wander_blend;
+extern float electric_water_spark_speed SDATA(D_L15_00161D10);
+extern float electric_water_bolt_wander_blend SDATA(D_L15_00161D18);
 extern float frame_scale MACRO_ADDR;
 extern V_2d8fa0 electric_water_bolt_points_base[];
 extern V_2d8fa0 electric_water_bolt_points_r2[2][20] __asm__("D_L15_001D3A20");
@@ -684,11 +682,11 @@ void update_electric_water_bolt_effect(Moby *moby) {
     int r;
 
     *(float *)&electric_water_bolt_wave_phase =
-        FastAddRots(*(float *)&electric_water_bolt_wave_phase, *(float *)&electric_water_bolt_wave_speed);
+        FastAddRots(*(float *)&electric_water_bolt_wave_phase, electric_water_bolt_wave_speed);
     *(float *)&electric_water_mirror_bolt_phase =
-        FastSubRots(*(float *)&electric_water_mirror_bolt_phase, *(float *)&electric_water_mirror_bolt_phase_speed);
-    *(float *)&electric_water_mirror_bolt_height_phase = FastAddRots(
-        *(float *)&electric_water_mirror_bolt_height_phase, *(float *)&electric_water_mirror_bolt_height_speed);
+        FastSubRots(*(float *)&electric_water_mirror_bolt_phase, electric_water_mirror_bolt_phase_speed);
+    *(float *)&electric_water_mirror_bolt_height_phase =
+        FastAddRots(*(float *)&electric_water_mirror_bolt_height_phase, electric_water_mirror_bolt_height_speed);
     scale = FastVecDist(&data->a, &data->c) * 0.05f;
     if (flag) {
         *(int *)&quartu_beam_arc_outer_color_r = 0x7F2040;
@@ -708,13 +706,11 @@ void update_electric_water_bolt_effect(Moby *moby) {
         float len0;
         float a;
         float b;
-        f21 = *(float *)&electric_water_bolt_wave_amp_start +
-              (*(float *)&electric_water_bolt_wave_amp_end - *(float *)&electric_water_bolt_wave_amp_start) *
-                  (IntToFloat(i) * 0.05f);
+        f21 = electric_water_bolt_wave_amp_start +
+              (electric_water_bolt_wave_amp_end - electric_water_bolt_wave_amp_start) * (IntToFloat(i) * 0.05f);
         f21 = f21 * FastSin(normalize_angle(*(float *)&electric_water_bolt_wave_phase +
-                                            (float)i * *(float *)&electric_water_bolt_wave_point_phase));
-        f21 =
-            f21 + randf_sym(*(float *)&electric_water_bolt_jitter_center, *(float *)&electric_water_bolt_jitter_range);
+                                            (float)i * electric_water_bolt_wave_point_phase));
+        f21 = f21 + randf_sym(electric_water_bolt_jitter_center, electric_water_bolt_jitter_range);
         electric_water_bolt_points_r2[0][i].f[2] =
             electric_water_bolt_points_r2[0][i].f[2] - electric_water_bolt_wave_offsets[i];
         electric_water_bolt_wave_offsets[i] = f21;
@@ -722,7 +718,7 @@ void update_electric_water_bolt_effect(Moby *moby) {
         b = random_angle_radians();
         BuildSphericalOffset(&s[1], scale, a, b);
         s[1].f[2] = s[1].f[2] * 0.5f;
-        lerp_vector(&s[2], &s[3], &s[1], *(float *)&electric_water_bolt_wander_blend);
+        lerp_vector(&s[2], &s[3], &s[1], electric_water_bolt_wander_blend);
         len0 = FastVecLength(&s[2]);
         if (len0 == 0.0f) {
             qcopy(&electric_water_bolt_points_r2[0][i], &electric_water_bolt_points_r2[0][i - 1]);
@@ -755,16 +751,16 @@ void update_electric_water_bolt_effect(Moby *moby) {
             float ang;
             float m;
             g = normalize_angle(*(float *)&electric_water_mirror_bolt_phase +
-                                (float)i * *(float *)&electric_water_mirror_bolt_point_phase);
-            h = *(float *)&electric_water_mirror_bolt_height_amp *
+                                (float)i * electric_water_mirror_bolt_point_phase);
+            h = electric_water_mirror_bolt_height_amp *
                 FastSin(normalize_angle(*(float *)&electric_water_mirror_bolt_height_phase +
-                                        (float)i * *(float *)&electric_water_mirror_bolt_height_point_phase));
+                                        (float)i * electric_water_mirror_bolt_height_point_phase));
             qcopy(&electric_water_bolt_points_r2[1][i], &electric_water_bolt_points_r2[0][i]);
             h = h * FastSin(g) + randf_sym(0.0f, 0.1f);
             electric_water_bolt_points_r2[1][i].f[2] = electric_water_bolt_points_r2[1][i].f[2] + h;
             electric_water_mirror_bolt_height_offsets[i] = h;
             ang = FastAddRots(fast_atan2(s[1].f[0], s[1].f[1]), 1.5707964f);
-            m = *(float *)&electric_water_mirror_bolt_side_amp * FastCos(g);
+            m = electric_water_mirror_bolt_side_amp * FastCos(g);
             s[4].f[0] = FastCos(ang) * m;
             s[4].f[1] = FastSin(ang) * m;
             s[4].f[2] = 0.0f;
@@ -843,7 +839,7 @@ void update_electric_water_bolt_effect(Moby *moby) {
     }
     scale = randf_sym(0.52359879f, 1.04719758f);
     f20 = random_float_between(-0.52359879f, 1.04719758f);
-    FastVecScale(&s[5], &s[0], *(float *)&electric_water_spark_speed * frame_scale);
+    FastVecScale(&s[5], &s[0], electric_water_spark_speed * frame_scale);
     build_look_at_matrix(&s[5], &s[5], &s[6], f20);
     build_look_at_matrix(&s[5], &s[5], &s[7], scale);
     r = rand_range(1, 8);
@@ -1263,7 +1259,7 @@ extern int memcard_Save(int, int);
 extern int g_current_level_index MACRO_ADDR;
 extern int quartu_game_mode MACRO_ADDR;
 extern int quartu_dialogue_message_duration MACRO_ADDR;
-extern short quartu_codebot_scale_factor;
+extern float quartu_codebot_scale_factor SDATA(D_L15_00162220);
 extern unsigned char special_items_base[];
 
 typedef struct {
@@ -1283,7 +1279,7 @@ void codebot_update(unsigned char *moby) {
     unsigned char *collection_flags;
     if (g_current_level_index != LEVEL_QUARTU) {
         m->rot.z = FastAddRots(m->rot.z, g_frame_time * 1.5707964f);
-        m->scale = m->pclass->scale * *(float *)&quartu_codebot_scale_factor;
+        m->scale = m->pclass->scale * quartu_codebot_scale_factor;
         switch (m->state) {
             case CODEBOT_INITIALIZE:
                 initialize_collectible_sprite_state(moby);

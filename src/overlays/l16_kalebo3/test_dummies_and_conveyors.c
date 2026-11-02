@@ -504,12 +504,12 @@ extern void FastVecAdd(void *, void *, void *);
 extern void *spawn_feather_moby(void *, void *, void *);
 extern int Moby_PlaySound_57(int, int, void *) __asm__("func_0022ED80");
 extern void MobyBlendAnimation(void *, int, int, int);
-extern short reposition_effect_velocity_elevation_degrees;
-extern short reposition_effect_velocity_scale_range_start;
-extern short reposition_effect_velocity_scale_range_end;
-extern short reposition_effect_spawn_z_offset;
-extern short reposition_effect_radius_range_start;
-extern short reposition_effect_radius_range_end;
+extern float reposition_effect_velocity_elevation_degrees SDATA(D_L16_001619A8);
+extern float reposition_effect_velocity_scale_range_start SDATA(D_L16_001619AC);
+extern float reposition_effect_velocity_scale_range_end SDATA(D_L16_001619B0);
+extern float reposition_effect_spawn_z_offset SDATA(D_L16_001619B4);
+extern float reposition_effect_radius_range_start SDATA(D_L16_001619B8);
+extern float reposition_effect_radius_range_end SDATA(D_L16_001619BC);
 
 /* Spawns effects around a moby when a nearby position is valid. */
 void reposition_moby_with_collision_check(Moby *m, void *p) {
@@ -532,17 +532,16 @@ void reposition_moby_with_collision_check(Moby *m, void *p) {
         float *effectVelocity = vel;
         i = 3;
         do {
-            radius = random_float_between(*(float *)&reposition_effect_radius_range_start,
-                                          *(float *)&reposition_effect_radius_range_end);
+            radius = random_float_between(reposition_effect_radius_range_start, reposition_effect_radius_range_end);
             a = random_angle_radians();
             b = random_angle_radians();
             BuildSphericalOffset_57(radius, a, b, effectPosition);
-            out[2] += *(float *)&reposition_effect_spawn_z_offset;
+            out[2] += reposition_effect_spawn_z_offset;
             FastVecAdd(effectPosition, effectPosition, &m->pos);
-            speed = random_float_between(*(float *)&reposition_effect_velocity_scale_range_start * g_frame_time,
-                                         *(float *)&reposition_effect_velocity_scale_range_end * g_frame_time);
+            speed = random_float_between(reposition_effect_velocity_scale_range_start * g_frame_time,
+                                         reposition_effect_velocity_scale_range_end * g_frame_time);
             b = random_angle_radians();
-            BuildSphericalOffset_57(speed, b, *(float *)&reposition_effect_velocity_elevation_degrees * 0.017453292f,
+            BuildSphericalOffset_57(speed, b, reposition_effect_velocity_elevation_degrees * 0.017453292f,
                                     effectVelocity);
             speed = random_float_between(3.5f, 5.5f);
             vel[2] = speed * g_frame_time;
@@ -781,7 +780,7 @@ void emit_moby_sprite_effect_particles(char *m) {
         FastVecAdd(d, d, e);
     }
 }
-extern short conveyor_belt_base_speed;
+extern float conveyor_belt_base_speed SDATA(D_L16_00161A4C);
 extern float g_frame_time_sq MACRO_ADDR;
 extern float ApproachValue(float *, float, float);
 extern void AddDrawCallback(void (*)(void), void *);
@@ -808,7 +807,7 @@ void conveyor_belt_471_update(unsigned char *m) {
             d->sound_slot = -1;
             break;
         case 2:
-            target = -(*(float *)&conveyor_belt_base_speed * g_frame_time);
+            target = -(conveyor_belt_base_speed * g_frame_time);
             if (d->speed != target) {
                 ApproachValue(&d->speed, target, g_frame_time_sq * 12.0f);
                 vec_scale_to_length(vec, &((Moby *)m)->rot_row0, d->speed);
@@ -819,7 +818,7 @@ void conveyor_belt_471_update(unsigned char *m) {
             AddDrawCallback(draw_conveyor_belt_strips, m);
             break;
         case 1:
-            target = *(float *)&conveyor_belt_base_speed * g_frame_time;
+            target = conveyor_belt_base_speed * g_frame_time;
             if (d->speed != target) {
                 ApproachValue(&d->speed, target, g_frame_time_sq * 12.0f);
                 vec_scale_to_length(vec, &((Moby *)m)->rot_row0, d->speed);
@@ -1561,7 +1560,7 @@ int move_test_dummy_toward_position_and_heading(char *moby, void *vec, float ang
 }
 extern int kalebo3_frame_count MACRO_ADDR;
 extern void draw_test_dummy_group_glows();
-extern short test_dummy_glow_phase_rate_degrees;
+extern float test_dummy_glow_phase_rate_degrees SDATA(D_L16_00161A9C);
 /* spins the level's rotating parts by the current angle and queues the draw callback */
 void update_test_dummy_group_glow_phases(char *moby) {
     short *p;
@@ -1569,7 +1568,7 @@ void update_test_dummy_group_glow_phases(char *moby) {
     char *m;
     struct TestDummyVars *data;
     if (((unsigned char *)moby)[0x21] != 0xFF) {
-        f = *(float *)&test_dummy_glow_phase_rate_degrees * 0.017453292f * g_frame_time;
+        f = test_dummy_glow_phase_rate_degrees * 0.017453292f * g_frame_time;
         p = (short *)kalebo3_moby_groups[((unsigned char *)moby)[0x21]];
         do {
         again:
@@ -1660,7 +1659,7 @@ extern void set_class_056b_collision_enabled(void *, int);
 extern int fast_dec_timer(int *);
 
 extern int g_current_level_index MACRO_ADDR;
-extern short D_L16_0015EE6C;
+extern float D_L16_0015EE6C SDATA(D_L16_0015EE6C);
 /* Pulse a linked control object and toggle its child when hit or its timer expires. */
 void wall_button_update(char *m) {
     struct WallButtonVars *d = (struct WallButtonVars *)((Moby *)m)->pvars;
@@ -1717,7 +1716,7 @@ void wall_button_update(char *m) {
                         set_class_056b_collision_enabled(kalebo3_moby_array + ((d->unk_60) << 8), 1);
                     }
                 } else if ((d->timer) < scale_ticks(90))
-                    (d->glow_phase) = FastAddRots((d->glow_phase), (*(float *)&D_L16_0015EE6C) * 25.132742f);
+                    (d->glow_phase) = FastAddRots((d->glow_phase), (D_L16_0015EE6C) * 25.132742f);
             }
             break;
         }
@@ -2559,8 +2558,8 @@ void *activate_door_647_group_and_find_nearest(int index, int secondary) {
 extern int subtract_integer_with_clamp(int);
 extern void Moby_PlaySound(int, int, void *);
 extern int kalebo3_frame_count MACRO_ADDR;
-extern short last_test_dummy_door_sound_request_frame;
-extern short test_dummy_door_height_offset;
+extern int last_test_dummy_door_sound_request_frame SDATA(D_L16_00161B48);
+extern float test_dummy_door_height_offset SDATA(D_L16_00161B44);
 
 // State machine for a moby that eases its position toward a target.
 void test_dummy_door_update(char *moby) {
@@ -2577,15 +2576,15 @@ void test_dummy_door_update(char *moby) {
             float target_height;
             if (timer_result != 0) {
                 if (timer_result == 2) {
-                    if (subtract_integer_with_clamp(*(int *)&last_test_dummy_door_sound_request_frame -
-                                                    kalebo3_frame_count) >= 4) {
-                        *(int *)&last_test_dummy_door_sound_request_frame = kalebo3_frame_count;
+                    if (subtract_integer_with_clamp(last_test_dummy_door_sound_request_frame - kalebo3_frame_count) >=
+                        4) {
+                        last_test_dummy_door_sound_request_frame = kalebo3_frame_count;
                         Moby_PlaySound(1, 0, moby);
                     }
                 }
                 target_height = data->base_z;
             } else {
-                target_height = data->base_z + *(float *)&test_dummy_door_height_offset;
+                target_height = data->base_z + test_dummy_door_height_offset;
             }
             ApproachWithVelocity(target_height, g_frame_time_sq * 10.0f, g_frame_time_sq * 10.0f, g_frame_time * 10.0f,
                                  &m->pos.z, (float *)(((char *)data) + 4));
@@ -2621,9 +2620,8 @@ extern void Moby_PlaySound_timeout(int, int, void *) __asm__("func_0022ED80");
 void refresh_test_dummy_door_timer(char *m) {
     struct TestDummyDoorVars *d = (struct TestDummyDoorVars *)((Moby *)m)->pvars;
     if (d->timer == 0) {
-        if (subtract_integer_with_clamp(*(int *)&last_test_dummy_door_sound_request_frame - kalebo3_frame_count_abs) >=
-            4) {
-            *(int *)&last_test_dummy_door_sound_request_frame = kalebo3_frame_count;
+        if (subtract_integer_with_clamp(last_test_dummy_door_sound_request_frame - kalebo3_frame_count_abs) >= 4) {
+            last_test_dummy_door_sound_request_frame = kalebo3_frame_count;
             Moby_PlaySound_timeout(0, 0, m);
         }
     }
@@ -2754,7 +2752,7 @@ void update_triggered_group_objective(char *m) {
     }
 }
 
-extern short triggered_scene_rotation_y;
+extern float triggered_scene_rotation_y SDATA(D_L16_00161B4C);
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void lerp_vector(void *, void *, void *, float);
 
@@ -2771,7 +2769,7 @@ void compute_triggered_scene_path_pose(char *moby, void *out1, float *out2) {
                          &data->progress, &data->progress_vel);
     lerp_vector(out1, tbl + 0x10, tbl + 0x20, data->progress);
     clear_u64_value(out2);
-    out2[1] = *(float *)&triggered_scene_rotation_y;
+    out2[1] = triggered_scene_rotation_y;
     out2[2] = ((Moby *)moby)->rot.z;
 }
 extern char *MobyGetHitMessage(void *, int, int);
@@ -2802,11 +2800,11 @@ void update_moby_hit_triggered_removal(char *moby) {
             break;
     }
 }
-extern short kalebo3_challenge_layout_value;
+extern float kalebo3_challenge_layout_value SDATA(D_L16_00161D34);
 
 // Store float to global (gp-relative)
 void challenge_set_layout_param(float f) {
-    *(float *)&kalebo3_challenge_layout_value = f;
+    kalebo3_challenge_layout_value = f;
 }
 extern void Moby_PlaySound(int, int, void *);
 
@@ -2845,7 +2843,7 @@ extern int truncate_float_to_s32(float);
 extern float vec_length_xy(void *);
 extern void BuildSphericalOffset(void *, float, float, float);
 extern unsigned char gCheats[] MACRO_ADDR;
-extern short kalebo3_game_mode;
+extern int kalebo3_game_mode SDATA(D_L16_0015F6A8);
 extern float help_desk_hero_reset_pose[8];
 typedef struct {
     char pad00[0xC];
@@ -2924,7 +2922,7 @@ void help_desk_lady_update(Moby *moby) {
             break;
         }
         case HELP_DESK_REQUEST_HELP_AND_SAVE:
-            if (*(int *)&kalebo3_game_mode != 2) {
+            if (kalebo3_game_mode != 2) {
                 char *player;
                 moby->state = 1;
                 Hero_ResetToPosition(help_desk_hero_reset_pose, help_desk_hero_reset_pose + 4, 0, 1);
@@ -3326,7 +3324,7 @@ typedef struct {
 } L16PickupPose;
 extern L16PickupPose *kalebo3_level_cuboids MACRO_ADDR;
 extern unsigned char gHaveMapOMatic NOT_SDA;
-extern short kalebo3_help_message_selector;
+extern int kalebo3_help_message_selector SDATA(D_L16_0015F674);
 extern char g_hero[];
 
 /* Update the moving pickup, interpolate its path transitions, and manage its sound handle. */
@@ -3360,7 +3358,7 @@ void PathPickup_Update(char *moby) {
                 if (FastAbsF(v70[1]) < 1.2f) {
                     prepare_taxi_departure_path(moby);
                     request_moby_help_message(moby);
-                    if ((pad0_pressed & 0x10) && *(int *)&kalebo3_help_message_selector == 8) {
+                    if ((pad0_pressed & 0x10) && kalebo3_help_message_selector == 8) {
                         ((Moby *)moby)->state = 3;
                         m = FindMobyByDataId(moby, d->spawn_id);
                         if (m != 0) {
@@ -3640,9 +3638,9 @@ void transform_moby_table_entry_vectors(char *a) {
     }
 }
 extern float grindrail_gate_trigger_box[];
-extern short grindrail_gate_command_ticks;
-extern short grindrail_gate_glow_color_start;
-extern short grindrail_gate_glow_color_end;
+extern int grindrail_gate_command_ticks SDATA(D_L16_00161E98);
+extern int grindrail_gate_glow_color_start SDATA(D_L16_00161E9C);
+extern int grindrail_gate_glow_color_end SDATA(D_L16_00161EA0);
 extern int FastTweenColor(float, int, int);
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 
@@ -3662,9 +3660,8 @@ void update_grindrail_gate(unsigned char *m) {
     int period = scale_ticks(30);
 
     glow_cycle_phase = IntToFloat(kalebo3_frame_count % period) / IntToFloat(period);
-    gate_moby->glow_color =
-        FastTweenColor(FastSin(glow_cycle_phase * 6.28318f - 3.14159f) * 0.5f + 0.5f,
-                       *(int *)&grindrail_gate_glow_color_start, *(int *)&grindrail_gate_glow_color_end);
+    gate_moby->glow_color = FastTweenColor(FastSin(glow_cycle_phase * 6.28318f - 3.14159f) * 0.5f + 0.5f,
+                                           grindrail_gate_glow_color_start, grindrail_gate_glow_color_end);
     switch (gate_moby->state) {
         case GRINDRAIL_GATE_INITIALIZE:
             gate_moby->state = 1;
@@ -3684,7 +3681,7 @@ void update_grindrail_gate(unsigned char *m) {
                     hero_offset_from_gate[2] < grindrail_gate_trigger_box[5]) {
                     gate_moby->command = 1;
                     gate_moby->state = 2;
-                    command_timer->timer = scale_ticks(*(int *)&grindrail_gate_command_ticks);
+                    command_timer->timer = scale_ticks(grindrail_gate_command_ticks);
                     Moby_PlaySound_r2(1, 0, gate_moby);
                 }
             }
@@ -3698,9 +3695,9 @@ void update_grindrail_gate(unsigned char *m) {
     }
 }
 extern float bounds_trigger_box[];
-extern short bounds_trigger_command_ticks;
-extern short bounds_trigger_glow_color_start;
-extern short bounds_trigger_glow_color_end;
+extern int bounds_trigger_command_ticks SDATA(D_L16_00161EA4);
+extern int bounds_trigger_glow_color_start SDATA(D_L16_00161EA8);
+extern int bounds_trigger_glow_color_end SDATA(D_L16_00161EAC);
 extern int FastTweenColor(float, int, int);
 extern int Moby_PlaySound_r3(int, int, void *) __asm__("func_0022ED80");
 
@@ -3714,9 +3711,8 @@ void update_local_bounds_command_trigger(unsigned char *m) {
     float glow_cycle_phase;
     int period = scale_ticks(30);
     glow_cycle_phase = IntToFloat(kalebo3_frame_count % period) / IntToFloat(period);
-    trigger_moby->glow_color =
-        FastTweenColor(FastSin(glow_cycle_phase * 6.28318f - 3.14159f) * 0.5f + 0.5f,
-                       *(int *)&bounds_trigger_glow_color_start, *(int *)&bounds_trigger_glow_color_end);
+    trigger_moby->glow_color = FastTweenColor(FastSin(glow_cycle_phase * 6.28318f - 3.14159f) * 0.5f + 0.5f,
+                                              bounds_trigger_glow_color_start, bounds_trigger_glow_color_end);
     switch (trigger_moby->state) {
         case GRINDRAIL_TRIGGER_INITIALIZE:
             trigger_moby->state = 1;
@@ -3738,7 +3734,7 @@ void update_local_bounds_command_trigger(unsigned char *m) {
                     Moby_PlaySound_r3(1, 0, trigger_moby);
                     trigger_moby->command = 1;
                     trigger_moby->state = 2;
-                    command_timer->timer = scale_ticks(*(int *)&bounds_trigger_command_ticks);
+                    command_timer->timer = scale_ticks(bounds_trigger_command_ticks);
                 }
             }
             break;

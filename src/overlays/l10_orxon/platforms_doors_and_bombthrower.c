@@ -385,7 +385,7 @@ extern unsigned char gHaveHeliPack[];
 extern int orxon_cinematic_mode MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern char *orxon_scene_points MACRO_ADDR;
-extern short orxon_relocation_reset_flag;
+extern int orxon_relocation_reset_flag SDATA(D_L10_00161410);
 extern int try_set_help_message(int, int);
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern void enter_hero_vehicle_mode(int, int, char *);
@@ -397,9 +397,9 @@ void update_hero_relocation_trigger(char *m) {
     char *d = ((char *)((Moby *)m)->pvars);
     unsigned short id;
     ((unsigned char *)m)[0x30] = 0xFF;
-    if (*(int *)&orxon_relocation_reset_flag == 1) {
+    if (orxon_relocation_reset_flag == 1) {
         *(short *)(help_stats_base + 0x32D) = 0;
-        *(int *)&orxon_relocation_reset_flag = 0;
+        orxon_relocation_reset_flag = 0;
     }
     if (((struct RelocationTriggerVars *)d)->moby_a != -1) {
         int b = ((struct RelocationTriggerVars *)d)->moby_b;
@@ -1143,7 +1143,7 @@ extern char *CreateMoby(int);
 extern int scale_ticks(int);
 extern void moby_build_matrix(void *);
 extern float g_frame_time MACRO_ADDR;
-extern short bombthrower_grass_spawn_height;
+extern float bombthrower_grass_spawn_height SDATA(D_L10_00161C6C);
 
 // Spawns a moby with a swirl/particle data block.
 char *spawn_bombthrower_grass_projectile(int owner, char *pos, char *vec) {
@@ -1157,7 +1157,7 @@ char *spawn_bombthrower_grass_projectile(int owner, char *pos, char *vec) {
         data->owner = owner;
         data->unk_16 = 0;
         qcopy(&moby->pos, pos);
-        moby->pos.z = moby->pos.z + *(float *)&bombthrower_grass_spawn_height;
+        moby->pos.z = moby->pos.z + bombthrower_grass_spawn_height;
         qcopy(&data->velocity, vec);
         data->swirl_a = random_float_between(g_frame_time * 1.0471976f, g_frame_time * 3.1415927f);
         data->swirl_b = random_float_between(g_frame_time * 1.0471976f, g_frame_time * 3.1415927f);
@@ -1451,13 +1451,13 @@ extern float FastAddRots(float, float);
 extern void BuildSphericalOffset(void *, float, float, float);
 extern void FastVecAdd(void *, void *, void *);
 extern int Moby_PlaySound(int, int, int);
-extern short bombthrower_grass_fire_ticks_min;
-extern short bombthrower_grass_fire_ticks_max;
-extern short bombthrower_grass_yaw_spread;
-extern short bombthrower_grass_pitch_min;
-extern short bombthrower_grass_pitch_max;
-extern short bombthrower_grass_speed_min;
-extern short bombthrower_grass_speed_max;
+extern int bombthrower_grass_fire_ticks_min SDATA(D_L10_00161C70);
+extern int bombthrower_grass_fire_ticks_max SDATA(D_L10_00161C74);
+extern float bombthrower_grass_yaw_spread SDATA(D_L10_00161C78);
+extern float bombthrower_grass_pitch_min SDATA(D_L10_00161C7C);
+extern float bombthrower_grass_pitch_max SDATA(D_L10_00161C80);
+extern float bombthrower_grass_speed_min SDATA(D_L10_00161C84);
+extern float bombthrower_grass_speed_max SDATA(D_L10_00161C88);
 
 /* update: on a timer, fire a projectile from the moby's angle, then rearm the timer */
 void bombthrower_grass_update(char *moby) {
@@ -1465,26 +1465,22 @@ void bombthrower_grass_update(char *moby) {
     float launch_offset[4];
     float launch_position[4];
     if (((struct Moby *)moby)->state == 0) {
-        *(int *)data = scale_ticks(
-            rand_range(*(int *)&bombthrower_grass_fire_ticks_min, *(int *)&bombthrower_grass_fire_ticks_max));
+        *(int *)data = scale_ticks(rand_range(bombthrower_grass_fire_ticks_min, bombthrower_grass_fire_ticks_max));
         ((struct Moby *)moby)->state = 1;
     }
     if (fast_dec_timer((int *)data)) {
-        float x = *(float *)&bombthrower_grass_yaw_spread;
+        float x = bombthrower_grass_yaw_spread;
         float yaw_offset = random_float_between(-x, x) * 0.017453292f;
         float launch_yaw = FastAddRots(((struct Moby *)moby)->rot.z, yaw_offset);
-        float r = random_float_between(*(float *)&bombthrower_grass_pitch_min, *(float *)&bombthrower_grass_pitch_max) *
-                  0.017453292f;
-        BuildSphericalOffset(
-            launch_offset,
-            random_float_between(*(float *)&bombthrower_grass_speed_min, *(float *)&bombthrower_grass_speed_max) *
-                g_frame_time,
-            launch_yaw, r);
+        float r = random_float_between(bombthrower_grass_pitch_min, bombthrower_grass_pitch_max) * 0.017453292f;
+        BuildSphericalOffset(launch_offset,
+                             random_float_between(bombthrower_grass_speed_min, bombthrower_grass_speed_max) *
+                                 g_frame_time,
+                             launch_yaw, r);
         FastVecAdd(launch_position, &((struct Moby *)moby)->pos, launch_offset);
         spawn_bombthrower_grass_projectile(moby, launch_position, launch_offset);
         Moby_PlaySound(0, 0, (int)moby);
-        *(int *)data = scale_ticks(
-            rand_range(*(int *)&bombthrower_grass_fire_ticks_min, *(int *)&bombthrower_grass_fire_ticks_max));
+        *(int *)data = scale_ticks(rand_range(bombthrower_grass_fire_ticks_min, bombthrower_grass_fire_ticks_max));
     }
 }
 typedef int Q_2da0f0 __attribute__((mode(TI)));
@@ -1575,8 +1571,8 @@ typedef int u128_2DA3C0 __attribute__((mode(TI)));
 extern void matrix_from_basis_rows(void *, void *);
 extern void FastVecSub(void *, void *, void *);
 
-extern short lab_door_half_width;
-extern short lab_door_half_depth;
+extern float lab_door_half_width SDATA(D_L10_00161C90);
+extern float lab_door_half_depth SDATA(D_L10_00161C8C);
 
 /* Test whether a point lies within a box around a moby, in the moby's local frame. */
 int test_point_in_lab_door_local_xy_bounds(char *m, float *p) {
@@ -1589,8 +1585,8 @@ int test_point_in_lab_door_local_xy_bounds(char *m, float *p) {
     FastVecSub(t60, a, m + 0x10);
     *(u128_2DA3C0 *)t50 = *(u128_2DA3C0 *)t60;
     transform_vector(t50, t50, t10);
-    if (FastAbsF(t50[0]) < *(float *)&lab_door_half_width) {
-        return FastAbsF(t50[1]) < *(float *)&lab_door_half_depth;
+    if (FastAbsF(t50[0]) < lab_door_half_width) {
+        return FastAbsF(t50[1]) < lab_door_half_depth;
     }
     return 0;
 }
@@ -1836,7 +1832,7 @@ extern char data_processor_no_link_msg[];
 extern char data_processor_no_link_fmt[];
 extern char data_processor_strand_order[];
 extern void render_data_processor_linked_effect(unsigned char *);
-extern short data_processor_fade_seconds;
+extern float data_processor_fade_seconds SDATA(D_L10_00161D18);
 extern float vec_length(float);
 extern int FastBSphereCheck(void *, float);
 extern void AddDrawCallback(void *, void *);
@@ -1893,7 +1889,7 @@ void update_data_processor_linked_effect(struct Moby *moby) {
                 float new_rotation = FastAddRots(moby->rot.z, 1.5707964f);
                 moby->update_dist = 0x60;
                 moby->state = 1;
-                timer = (*(float *)&data_processor_fade_seconds) * 60.0f;
+                timer = (data_processor_fade_seconds) * 60.0f;
                 moby->rot.z = new_rotation;
                 vars->voice = -1;
                 vars->countdown = scale_ticks(truncate_float_to_s32(timer));
@@ -3426,7 +3422,7 @@ typedef struct {
     char p2[0xDF];
 } Ent_2E3070;
 extern Ent_2E3070 *orxon_mobys_r4 __asm__("D_L10_00160058") MACRO_ADDR;
-extern short orxon_group_command_ticks;
+extern int orxon_group_command_ticks SDATA(D_L10_00161E80);
 
 /* Stores a value into each table entry listed for this moby's index. */
 void set_moby_group_command_frames(unsigned char *moby) {
@@ -3436,7 +3432,7 @@ void set_moby_group_command_frames(unsigned char *moby) {
         if (p != 0) {
             do {
                 int idx = *(unsigned short *)p & 0x7FFF;
-                ((char *)orxon_mobys_r4)[(idx << 8) + 0xBC] = scale_ticks(*(int *)&orxon_group_command_ticks);
+                ((char *)orxon_mobys_r4)[(idx << 8) + 0xBC] = scale_ticks(orxon_group_command_ticks);
             } while (*p++ >= 0);
         }
     }

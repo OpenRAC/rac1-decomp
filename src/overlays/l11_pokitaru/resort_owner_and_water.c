@@ -821,9 +821,9 @@ void update_resort_owner_state_transitions(void *mp) {
 }
 extern f32 g_frame_time MACRO_ADDR;
 extern void matrix_mul_vec3(void *, void *, void *);
-extern short resort_owner_walk_speed;
-extern short resort_owner_run_speed;
-extern short resort_owner_dismount_offset;
+extern float resort_owner_walk_speed SDATA(D_L11_00161460);
+extern float resort_owner_run_speed SDATA(D_L11_00161464);
+extern float resort_owner_dismount_offset SDATA(D_L11_00161490);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l11/gameplay/entities/002cb668.c, FUN_L11_002d2088. */
 void set_resort_owner_state(struct Moby *moby, unsigned char state) {
@@ -848,13 +848,13 @@ void set_resort_owner_state(struct Moby *moby, unsigned char state) {
         case 4:
             if (moby->prev_seq != 2)
                 MobyBlendAnimation(moby, 2, 0, scale_ticks(0x14));
-            d->move_speed = (*(float *)&resort_owner_walk_speed) * g_frame_time;
+            d->move_speed = (resort_owner_walk_speed)*g_frame_time;
             break;
         case 5:
         case 6:
             if (moby->prev_seq != 3)
                 MobyBlendAnimation(moby, 3, 0, scale_ticks(0x14));
-            d->move_speed = (*(float *)&resort_owner_run_speed) * g_frame_time;
+            d->move_speed = (resort_owner_run_speed)*g_frame_time;
             break;
         case 7:
             if (moby->prev_seq != 4)
@@ -897,7 +897,7 @@ void set_resort_owner_state(struct Moby *moby, unsigned char state) {
                 o = (char *)pokitaru_mobys_d;
                 o += p << 8;
                 qcopy(&d->target, o + 0x10);
-                matrix_mul_vec3(tmp, &(*(float *)&resort_owner_dismount_offset), o + 0xC0);
+                matrix_mul_vec3(tmp, &(resort_owner_dismount_offset), o + 0xC0);
                 FastVecAdd(&d->target, &d->target, tmp);
             }
             break;
@@ -1315,9 +1315,9 @@ extern int pokitaru_shown_help_message MACRO_ADDR;
 extern char *pokitaru_mobys MACRO_ADDR;
 extern unsigned char g_hero_field_20a5 NOT_SDA;
 extern unsigned char menu_item_enabled_73 NOT_SDA;
-extern short pokitaru_teleporter_accel;
-extern short pokitaru_teleporter_decel;
-extern short pokitaru_teleporter_max_speed;
+extern float pokitaru_teleporter_accel SDATA(D_L11_001619A0);
+extern float pokitaru_teleporter_decel SDATA(D_L11_001619A4);
+extern float pokitaru_teleporter_max_speed SDATA(D_L11_001619A8);
 extern void restore_teleporter_visibility_and_collision(char *);
 extern void request_teleporter_help_message(char *);
 extern void draw_teleporter_ring(char *);
@@ -1398,15 +1398,13 @@ void teleporter_318_update(struct Moby *moby) {
         case 2: {
             int r = get_hero_target_pose_status();
             if (data->ring_a < 1.0f) {
-                ApproachWithVelocity(&data->ring_a, &data->ring_a_vel, 1.0f,
-                                     (*(float *)&pokitaru_teleporter_accel) * g_frame_time_sq,
-                                     (*(float *)&pokitaru_teleporter_decel) * g_frame_time_sq,
-                                     (*(float *)&pokitaru_teleporter_max_speed) * g_frame_time);
+                ApproachWithVelocity(
+                    &data->ring_a, &data->ring_a_vel, 1.0f, (pokitaru_teleporter_accel)*g_frame_time_sq,
+                    (pokitaru_teleporter_decel)*g_frame_time_sq, (pokitaru_teleporter_max_speed)*g_frame_time);
             } else if (data->ring_b < 1.0f) {
-                ApproachWithVelocity(&data->ring_b, &data->ring_b_vel, 1.0f,
-                                     (*(float *)&pokitaru_teleporter_accel) * g_frame_time_sq,
-                                     (*(float *)&pokitaru_teleporter_decel) * g_frame_time_sq,
-                                     (*(float *)&pokitaru_teleporter_max_speed) * g_frame_time);
+                ApproachWithVelocity(
+                    &data->ring_b, &data->ring_b_vel, 1.0f, (pokitaru_teleporter_accel)*g_frame_time_sq,
+                    (pokitaru_teleporter_decel)*g_frame_time_sq, (pokitaru_teleporter_max_speed)*g_frame_time);
             } else if (pokitaru_shown_help_message != 0xB || !(data->ring_a > 0.25f)) {
                 if (r == 2) {
                     data->glow = 1.95f;
@@ -1461,15 +1459,13 @@ void teleporter_318_update(struct Moby *moby) {
                 AddDrawCallback(draw_teleporter_ring, moby);
                 ApproachValue_r(&data->glow, 1.95f, g_frame_time * 4.0f);
             } else if (0.0f < data->ring_b) {
-                ApproachWithVelocity(&data->ring_b, &data->ring_a_vel, 0.0f,
-                                     (*(float *)&pokitaru_teleporter_accel) * g_frame_time_sq,
-                                     (*(float *)&pokitaru_teleporter_decel) * g_frame_time_sq,
-                                     (*(float *)&pokitaru_teleporter_max_speed) * g_frame_time);
+                ApproachWithVelocity(
+                    &data->ring_b, &data->ring_a_vel, 0.0f, (pokitaru_teleporter_accel)*g_frame_time_sq,
+                    (pokitaru_teleporter_decel)*g_frame_time_sq, (pokitaru_teleporter_max_speed)*g_frame_time);
             } else if (0.0f < data->ring_a) {
-                ApproachWithVelocity(&data->ring_a, &data->ring_b_vel, 0.0f,
-                                     (*(float *)&pokitaru_teleporter_accel) * g_frame_time_sq,
-                                     (*(float *)&pokitaru_teleporter_decel) * g_frame_time_sq,
-                                     (*(float *)&pokitaru_teleporter_max_speed) * g_frame_time);
+                ApproachWithVelocity(
+                    &data->ring_a, &data->ring_b_vel, 0.0f, (pokitaru_teleporter_accel)*g_frame_time_sq,
+                    (pokitaru_teleporter_decel)*g_frame_time_sq, (pokitaru_teleporter_max_speed)*g_frame_time);
             } else {
                 moby->state = 1;
             }
@@ -1507,7 +1503,7 @@ typedef struct {
 } Quad;
 extern short pokitaru_teleporter_ring_alpha_a, pokitaru_teleporter_ring_alpha_b, pokitaru_teleporter_ring_alpha_c,
     pokitaru_teleporter_ring_alpha_d, pokitaru_teleporter_ring_texture, pokitaru_teleporter_ring_color;
-extern short pokitaru_teleporter_ring_height;
+extern float pokitaru_teleporter_ring_height SDATA(D_L11_001619C8);
 extern float pokitaru_teleporter_ring_uvs[];
 extern unsigned char g_hero_field_20a5_r __asm__("D_001414F5") NOT_SDA;
 extern void copy_matrix_rotation(void *, void *);
@@ -1565,9 +1561,9 @@ void draw_teleporter_ring(char *moby) {
             p[1] = FastSin(a) * d->glow;
             p[2] = 0.0f;
             if (k++ & 1) {
-                p[2] = *(float *)&pokitaru_teleporter_ring_height + h + p[2];
+                p[2] = pokitaru_teleporter_ring_height + h + p[2];
             } else {
-                p[2] = *(float *)&pokitaru_teleporter_ring_height - h + p[2];
+                p[2] = pokitaru_teleporter_ring_height - h + p[2];
             }
             p[3] = 1.0f;
             p += 4;
@@ -2453,10 +2449,10 @@ void update_child_set_poses(void *mv) {
 #undef refresh_p
 extern void Moby_PlaySound(int, int, int);
 extern void update_child_grid_poses(struct Moby *);
-extern short child_grid_fade_start_word;
-extern short child_grid_camera_accel;
-extern short child_grid_camera_decel;
-extern short child_grid_camera_max_speed;
+extern int child_grid_fade_start_word SDATA(D_L11_00161FE4);
+extern float child_grid_camera_accel SDATA(D_L11_00161FE8);
+extern float child_grid_camera_decel SDATA(D_L11_00161FEC);
+extern float child_grid_camera_max_speed SDATA(D_L11_00161FF0);
 typedef struct {
     char *slot[4][6];
     int w60;
@@ -2526,7 +2522,7 @@ void update_child_grid_controller(char *m) {
             if (o->command == 1) {
                 grid_controller->state = CHILD_GRID_STATE_FADE_TO_POINT_POSE;
                 d->f78 = -1.0f;
-                *(int *)&child_grid_fade_start_word = 0;
+                child_grid_fade_start_word = 0;
                 Moby_PlaySound(0, 0, (int)m);
             } else if (o->command == 2) {
                 d->f6C = 1.0f;
@@ -2556,9 +2552,9 @@ void update_child_grid_controller(char *m) {
             break;
         case CHILD_GRID_STATE_BLEND_POINT_POSES:
             f0 = g_frame_time_sq;
-            f13 = *(float *)&child_grid_camera_accel * f0;
-            f14 = *(float *)&child_grid_camera_decel * f0;
-            f15 = *(float *)&child_grid_camera_max_speed * g_frame_time;
+            f13 = child_grid_camera_accel * f0;
+            f14 = child_grid_camera_decel * f0;
+            f15 = child_grid_camera_max_speed * g_frame_time;
             d->f74 = d->f6C;
             ApproachWithVelocity_f((float *)&d->f6C, (float *)&d->f70, 1.0f, f13, f14, f15);
             lerp_vector(&pos, (char *)(D_L11_0016016C_i + (d->w64 << 7)) + 0x30,
@@ -2613,9 +2609,9 @@ void update_child_grid_controller(char *m) {
 #undef D_L11_00160058_m
 #undef D_L11_0016016C_i
 extern void vec_scale_to_length(void *out, void *a, f32 len);
-extern short child_grid_row_offset;
-extern short child_grid_side_offset;
-extern short child_grid_child_offset;
+extern float child_grid_row_offset SDATA(D_L11_00161FD0);
+extern float child_grid_side_offset SDATA(D_L11_00161FD4);
+extern float child_grid_child_offset SDATA(D_L11_00161FD8);
 
 struct UpdateChildGridPosesVars {
     u8 pad_00[0x6C];
@@ -2640,8 +2636,8 @@ void update_child_grid_poses(struct Moby *m) {
 
     data = m->pvars;
     grid = (struct Moby * (*)[6]) data;
-    vec_scale_to_length(&v0, &m->rot_row0, (*(float *)&child_grid_row_offset));
-    vec_scale_to_length(&v1, &m->rot_row1, (*(float *)&child_grid_side_offset));
+    vec_scale_to_length(&v0, &m->rot_row0, (child_grid_row_offset));
+    vec_scale_to_length(&v1, &m->rot_row1, (child_grid_side_offset));
     progress = ((struct UpdateChildGridPosesVars *)data)->unk_6C;
     hi = 90.0f - progress * 180.0f;
     if (hi < -90.0f) {
@@ -2682,7 +2678,7 @@ void update_child_grid_poses(struct Moby *m) {
             }
             grid[row][col]->rot.z = FastAddRots(grid[row][col]->rot.z, angle);
             euler_rotation_basis(&grid[row][col]->rot_row0, &grid[row][col]->rot);
-            vec_scale_to_length(&v2, &grid[row][col]->rot_row1, -(*(float *)&child_grid_child_offset));
+            vec_scale_to_length(&v2, &grid[row][col]->rot_row1, -(child_grid_child_offset));
             if (row & 1) {
                 FastVecAdd(&v2, &v2, &v1);
             } else {
@@ -3101,7 +3097,7 @@ void seesaw_platform_update(struct Moby *m) {
 }
 extern void Moby_PlaySound(int, int, int);
 extern unsigned char menu_item_enabled_79 NOT_SDA;
-extern short level_frame;
+extern int level_frame SDATA(D_L11_0015F6B0);
 
 // Update for a moby that waits, then animates toward its target and changes state.
 void update_link_triggered_moby_turn(char *moby) {
@@ -3121,7 +3117,7 @@ void update_link_triggered_moby_turn(char *moby) {
             break;
         case LINKED_TURN_STATE_WAIT_FOR_LINK:
             if (test_linked_moby_turn_trigger((char *)(pokitaru_mobys_d + (*(int *)private_data << 8)))) {
-                if (*(int *)&level_frame > 10) {
+                if (level_frame > 10) {
                     menu_item_enabled_79 = entry_state;
                     turning_moby->state = 2;
                     Moby_PlaySound(0, 0, (int)turning_moby);

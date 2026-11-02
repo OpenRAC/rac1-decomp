@@ -5,7 +5,7 @@ void alien_queen_update(unsigned char *moby) {
 
     update_alien_queen_hit_response_and_recovery(moby);
     target = *(char **)(data + 0xB0);
-    Manipulator_ApplyScale_q(moby, *(int *)&alien_queen_scale_manip_flag, 1.9f, data + 0x130);
+    Manipulator_ApplyScale_q(moby, alien_queen_scale_manip_flag, 1.9f, data + 0x130);
     if ((unsigned char)moby[0x31] != 0 && FastVecDist_q(moby + 0x10, blarg_camera_pos_q) < 45.0f) {
         set_ground_height_band_q(moby);
         moby[0x7F] = 0x24;
@@ -150,11 +150,11 @@ void alien_queen_update(unsigned char *moby) {
                                                   *(float *)(target + 0x14) - *(float *)(moby + 0x14)),
                                      (float *)(data + 0xE0), g_frame_time_sq_q * 6.2831855f,
                                      g_frame_time_sq_q * 6.2831855f, g_frame_time_q * 3.1415927f);
-            if (turn < 0.7853982f && *(float *)&alien_queen_attack_range < dist) {
-                ApproachValue_q((float *)(data + 0xE8), *(float *)&alien_queen_walk_speed * g_frame_time_q,
+            if (turn < 0.7853982f && alien_queen_attack_range < dist) {
+                ApproachValue_q((float *)(data + 0xE8), alien_queen_walk_speed * g_frame_time_q,
                                 *(float *)&alien_queen_walk_accel * g_frame_time_sq_q);
-            } else if (dist < *(float *)&alien_queen_back_off_range) {
-                ApproachValue_q((float *)(data + 0xE8), -(*(float *)&alien_queen_walk_speed * g_frame_time_q),
+            } else if (dist < alien_queen_back_off_range) {
+                ApproachValue_q((float *)(data + 0xE8), -(alien_queen_walk_speed * g_frame_time_q),
                                 *(float *)&alien_queen_walk_accel * g_frame_time_sq_q);
             } else {
                 ApproachValue_q((float *)(data + 0xE8), 0.0f, g_frame_time_sq_q * 8.0f);
@@ -173,7 +173,7 @@ void alien_queen_update(unsigned char *moby) {
                 moby[0x20] = 0xC;
                 break;
             }
-            if (dist < *(float *)&alien_queen_attack_range && turn < *(float *)&alien_queen_attack_arc * 0.017453292f) {
+            if (dist < alien_queen_attack_range && turn < alien_queen_attack_arc * 0.017453292f) {
                 moby[0x20] = 9;
                 moby[0xBC] = 7;
                 if ((unsigned char)moby[0x53] != 4) {
@@ -269,7 +269,7 @@ void alien_queen_update(unsigned char *moby) {
             if (turn < 0.7853982f) {
                 FastVecSub_q(v, home, pos);
                 v[2] = 0.0f;
-                vec_scale_to_length_q(v, v, *(float *)&alien_queen_walk_speed * g_frame_time_q);
+                vec_scale_to_length_q(v, v, alien_queen_walk_speed * g_frame_time_q);
                 FastVecAdd_q(pos, pos, v);
                 resolve_point_path_segment_xy_clearance_q(*(int *)(data + 0xEC), pos, 1.0f, pos);
             }

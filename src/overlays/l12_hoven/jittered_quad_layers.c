@@ -27,16 +27,16 @@ extern void draw_world_quad(void *, void *, int);
 extern float hoven_jitter_quad_uvs[][2];
 extern Vq hoven_jitter_quad_back_corners[];
 extern Vq hoven_jitter_quad_front_corners[];
-extern short hoven_jitter_quad_color;
-extern short hoven_jitter_quad_back_color;
-extern short hoven_jitter_quad_blend_a;
-extern short hoven_jitter_quad_blend_b;
-extern short hoven_jitter_quad_blend_c;
-extern short hoven_jitter_quad_blend_d;
-extern short hoven_jitter_quad_back_blend_a;
-extern short hoven_jitter_quad_back_blend_b;
-extern short hoven_jitter_quad_back_blend_c;
-extern short hoven_jitter_quad_back_blend_d;
+extern int hoven_jitter_quad_color SDATA(D_L12_00162010);
+extern int hoven_jitter_quad_back_color SDATA(D_L12_00162014);
+extern int hoven_jitter_quad_blend_a SDATA(D_L12_0016203C);
+extern int hoven_jitter_quad_blend_b SDATA(D_L12_00162040);
+extern int hoven_jitter_quad_blend_c SDATA(D_L12_00162044);
+extern int hoven_jitter_quad_blend_d SDATA(D_L12_00162048);
+extern int hoven_jitter_quad_back_blend_a SDATA(D_L12_0016204C);
+extern int hoven_jitter_quad_back_blend_b SDATA(D_L12_00162050);
+extern int hoven_jitter_quad_back_blend_c SDATA(D_L12_00162054);
+extern int hoven_jitter_quad_back_blend_d SDATA(D_L12_00162058);
 
 /* Draw five layers of randomly jittered textured quads in the moby's frame. */
 void draw_hoven_jittered_quad_layers(char *m) {
@@ -52,15 +52,14 @@ void draw_hoven_jittered_quad_layers(char *m) {
     M[15] = 1.0f;
     tex = GetEffectTex(0xE);
     P[0].tex = P[1].tex = tex;
-    c0 = *(int *)&hoven_jitter_quad_color;
-    c1 = *(int *)&hoven_jitter_quad_back_color;
+    c0 = hoven_jitter_quad_color;
+    c1 = hoven_jitter_quad_back_color;
     P[0].state = P[1].state = 0xFF9000000260L;
-    P[0].flags = (long)*(int *)&hoven_jitter_quad_blend_a | ((long)*(int *)&hoven_jitter_quad_blend_b << 2) |
-                 ((long)*(int *)&hoven_jitter_quad_blend_c << 4) | ((long)*(int *)&hoven_jitter_quad_blend_d << 6) |
+    P[0].flags = (long)hoven_jitter_quad_blend_a | ((long)hoven_jitter_quad_blend_b << 2) |
+                 ((long)hoven_jitter_quad_blend_c << 4) | ((long)hoven_jitter_quad_blend_d << 6) | (0x8000L << 24);
+    P[1].flags = (long)hoven_jitter_quad_back_blend_a | ((long)hoven_jitter_quad_back_blend_b << 2) |
+                 ((long)hoven_jitter_quad_back_blend_c << 4) | ((long)hoven_jitter_quad_back_blend_d << 6) |
                  (0x8000L << 24);
-    P[1].flags = (long)*(int *)&hoven_jitter_quad_back_blend_a | ((long)*(int *)&hoven_jitter_quad_back_blend_b << 2) |
-                 ((long)*(int *)&hoven_jitter_quad_back_blend_c << 4) |
-                 ((long)*(int *)&hoven_jitter_quad_back_blend_d << 6) | (0x8000L << 24);
     P[0].color[0] = P[0].color[1] = P[0].color[2] = P[0].color[3] = c0;
     P[0].zero = P[1].zero = 0;
     P[1].color[0] = P[1].color[1] = P[1].color[2] = P[1].color[3] = c1;

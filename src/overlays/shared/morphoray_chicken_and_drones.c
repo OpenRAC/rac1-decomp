@@ -597,7 +597,7 @@ extern int coll_hit_result[];
 extern int morphoray_chicken_slots[];
 extern char morphoray_chicken_slot_state_blocks[];
 extern char morphoray_chicken_slot_aux_blocks[];
-extern short morphoray_chicken_next_slot;
+extern int morphoray_chicken_next_slot SDATA(D_L00_00161924);
 extern char morphoray_chicken_ai_params;
 extern unsigned char screen_globals_base[];
 
@@ -670,33 +670,33 @@ char *spawn_morphoray_chicken(char *src) {
         z = 0.0f;
         PartType05Spawn(&((Moby *)m)->pos, 1000000.0f, 0x7F, 0x7F, 0x7F, scale_ticks(0xF), z);
         FastMemSet(((char *)d), 0, 0x20);
-        r = (unsigned char *)morphoray_chicken_slots[*(int *)&morphoray_chicken_next_slot];
+        r = (unsigned char *)morphoray_chicken_slots[morphoray_chicken_next_slot];
         if (r != 0 && *(short *)(r + 0xA6) == 0x10E && r[0x20] != 0xFE && r[0x20] != 0xFD) {
             if (r[0x20] == 5) {
                 d->unk_78 = z;
                 ((Moby *)m)->flags &= 0xFFDF;
             } else if (d->color_index == 0) {
-                a = morphoray_chicken_slot_state_blocks + *(int *)&morphoray_chicken_next_slot * 0xB0;
-                b = morphoray_chicken_slot_aux_blocks + *(int *)&morphoray_chicken_next_slot * 0x60;
+                a = morphoray_chicken_slot_state_blocks + morphoray_chicken_next_slot * 0xB0;
+                b = morphoray_chicken_slot_aux_blocks + morphoray_chicken_next_slot * 0x60;
                 d->state_block = a;
                 d->aux_block = b;
                 ((Moby *)m)->flags |= 0x1020;
                 *(char **)(d->state_block + 0x70) = &morphoray_chicken_ai_params;
             }
-            *(int *)(*(char **)(morphoray_chicken_slots[*(int *)&morphoray_chicken_next_slot] + 0x78) + 0x70) = 1;
+            *(int *)(*(char **)(morphoray_chicken_slots[morphoray_chicken_next_slot] + 0x78) + 0x70) = 1;
         } else if (d->color_index == 0) {
-            a2 = morphoray_chicken_slot_state_blocks + *(int *)&morphoray_chicken_next_slot * 0xB0;
-            b2 = morphoray_chicken_slot_aux_blocks + *(int *)&morphoray_chicken_next_slot * 0x60;
+            a2 = morphoray_chicken_slot_state_blocks + morphoray_chicken_next_slot * 0xB0;
+            b2 = morphoray_chicken_slot_aux_blocks + morphoray_chicken_next_slot * 0x60;
             d->state_block = a2;
             d->aux_block = b2;
             ((Moby *)m)->flags |= 0x1020;
             *(char **)(d->state_block + 0x70) = &morphoray_chicken_ai_params;
         }
         reset_morphoray_chicken_slot_defaults(d->state_block);
-        morphoray_chicken_slots[*(int *)&morphoray_chicken_next_slot] = (int)m;
-        *(int *)&morphoray_chicken_next_slot = *(int *)&morphoray_chicken_next_slot + 1;
+        morphoray_chicken_slots[morphoray_chicken_next_slot] = (int)m;
+        morphoray_chicken_next_slot = morphoray_chicken_next_slot + 1;
         n = d->color_index;
-        *(int *)&morphoray_chicken_next_slot = *(int *)&morphoray_chicken_next_slot % 20;
+        morphoray_chicken_next_slot = morphoray_chicken_next_slot % 20;
         if (n != 0) {
             ((Moby *)m)->flags &= 0xFFDF;
         }
@@ -1185,9 +1185,9 @@ extern float g_frame_time MACRO_ADDR;
 extern float veldin1_zero_vec[] MACRO_ADDR;
 extern float homing_shot_rotation_params MACRO_ADDR;
 extern short homing_shot_attached_particle_size;
-extern short homing_shot_trail_initial_size_min;
-extern short homing_shot_trail_initial_size_max;
-extern short homing_shot_trail_size_blend_target;
+extern float homing_shot_trail_initial_size_min SDATA(D_L00_00161940);
+extern float homing_shot_trail_initial_size_max SDATA(D_L00_00161944);
+extern float homing_shot_trail_size_blend_target SDATA(D_L00_00161948);
 
 // Builds a moby's data block from its source moby and a position vector; returns the new moby or 0.
 char *spawn_homing_shot(char *a, char *vec, char *b, float f12, float f13, float f14, float f15) {
@@ -1298,13 +1298,13 @@ char *spawn_homing_shot(char *a, char *vec, char *b, float f12, float f13, float
                 q = (char *)spawn_random_size_rotated_particle((char *)&((Moby *)m)->pos, (char *)veldin1_zero_vec, 1,
                                                                0.0f);
                 if (q != 0) {
-                    *(float *)(q + 0xC) = random_float_between(*(float *)&homing_shot_trail_initial_size_min,
-                                                               *(float *)&homing_shot_trail_initial_size_max);
+                    *(float *)(q + 0xC) =
+                        random_float_between(homing_shot_trail_initial_size_min, homing_shot_trail_initial_size_max);
                     fi = IntToFloat(i);
                     f16 = fi / IntToFloat(16);
                     ret = CubicInterpolate(-1.5f, 0.0f, 1.0f, 0.0f, f16);
-                    *(float *)(q + 0xC) = *(float *)(q + 0xC) +
-                                          (*(float *)&homing_shot_trail_size_blend_target - *(float *)(q + 0xC)) * ret;
+                    *(float *)(q + 0xC) =
+                        *(float *)(q + 0xC) + (homing_shot_trail_size_blend_target - *(float *)(q + 0xC)) * ret;
                     r = truncate_float_to_s32(ret * -64.0f + 128.0f);
                     *(int *)(q + 4) = (r << 24) | 0xFFFFFF;
                     ((int *)d->trail)[i] = (int)q;
@@ -1626,8 +1626,8 @@ extern int scale_ticks(int);
 extern void moby_build_matrix(void *);
 extern void copy_hero_moby_field_38(void *);
 extern float g_frame_time MACRO_ADDR;
-extern short feather_base_lifetime;
-extern short feather_scale_multiplier;
+extern int feather_base_lifetime SDATA(D_L00_00161974);
+extern float feather_scale_multiplier SDATA(D_L00_00161970);
 extern unsigned char hero_globals_base_r[] __asm__("D_0013E633");
 
 typedef struct {
@@ -1677,13 +1677,13 @@ char *spawn_feather_moby(int unused, float *pos, float *vel) {
         d->v10 = random_angle_radians();
         {
             float r = random_angle_radians();
-            float n = (float)*(int *)&feather_base_lifetime;
+            float n = (float)feather_base_lifetime;
             d->v14 = r;
             lo = truncate_float_to_s32_r(n * 0.7f);
         }
-        hi = truncate_float_to_s32_r((float)*(int *)&feather_base_lifetime * 1.2f);
+        hi = truncate_float_to_s32_r((float)feather_base_lifetime * 1.2f);
         d->r1c = scale_ticks(rand_range(lo, hi));
-        sc = *(float *)&feather_scale_multiplier;
+        sc = feather_scale_multiplier;
         m->scale = m->scale * sc;
         if (hero_globals_base_r[2]) {
             m->scale += m->scale;
@@ -1702,7 +1702,7 @@ extern void DeleteMoby(void *);
 extern int scale_ticks(int);
 extern int fast_subtract_rotations_cf(void *);
 extern float g_frame_time_sq MACRO_ADDR;
-extern short falling_moby_horizontal_velocity_scale;
+extern float falling_moby_horizontal_velocity_scale SDATA(D_L00_00161978);
 
 // UpdateMoby_428: apply gravity and drag to the moby's velocity, then test for despawn.
 void update_damped_falling_moby(Moby *m) {
@@ -1710,7 +1710,7 @@ void update_damped_falling_moby(Moby *m) {
     float z;
     float k;
     FastVecAdd(&m->pos, &m->pos, d);
-    k = *(float *)&falling_moby_horizontal_velocity_scale;
+    k = falling_moby_horizontal_velocity_scale;
     z = d[2] - g_frame_time_sq * 15.0f;
     d[0] *= k;
     d[1] *= k;

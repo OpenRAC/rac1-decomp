@@ -63,7 +63,7 @@ struct P {
     int busy;
 };
 extern struct P g_controller_state;
-extern short controller_idle_frames;
+extern int controller_idle_frames SDATA(D_L00_001610B0);
 extern int level_frame_counter MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int current_moby_mission_complete MACRO_ADDR;
@@ -74,14 +74,14 @@ int scale_ticks(int);
 void update_game_frame_and_idle_counters(void) {
     if (g_controller_state.busy != 0 || g_controller_state.c != 0.0f || g_controller_state.d != 0.0f ||
         g_controller_state.a != 0.0f || g_controller_state.b != 0.0f) {
-        (*(int *)&controller_idle_frames) = 0;
+        (controller_idle_frames) = 0;
     } else {
-        (*(int *)&controller_idle_frames)++;
+        (controller_idle_frames)++;
     }
     level_frame_counter++;
     gameplay_event_frame_count++;
     if (current_moby_mission_complete) {
-        if ((*(int *)&controller_idle_frames) < (int)((float)scale_ticks(15) * 60.0f)) {
+        if ((controller_idle_frames) < (int)((float)scale_ticks(15) * 60.0f)) {
             active_play_frame_count++;
         }
     }
@@ -564,7 +564,7 @@ extern unsigned char gCheats[] MACRO_ADDR;
 extern float big_head_cutscene_fov_scale MACRO_ADDR;
 extern char g_debug_camera[];
 extern unsigned char D_0015EEB4[4] MACRO_ADDR;
-extern short big_head_cutscene_camera_pullback;
+extern float big_head_cutscene_camera_pullback SDATA(D_L00_0015F680);
 
 typedef struct CutsceneCamKey {
     u8 pad_00[0xC];
@@ -630,7 +630,7 @@ unsigned char apply_cutscene_camera_key(void) {
         FastVecCross(c + 0x220, c + 0x230, c + 0x210);
     }
     if (gCheats[0] != 0) {
-        float f = *(float *)&big_head_cutscene_camera_pullback;
+        float f = big_head_cutscene_camera_pullback;
         if (f != 0.0f) {
             qcopy(v, c + 0x210);
             vec_scale_to_length(v, v, f);
@@ -761,7 +761,7 @@ typedef struct {
 extern u32 pad0_pressed;
 extern f32 gFadeLvl_r __asm__("D_L00_0015F4FC") MACRO_ADDR;
 extern VendorCutscene cutscene_state_r __asm__("D_L00_0016C960");
-extern short challenge_mode;
+extern s32 challenge_mode SDATA(D_0015EFA0);
 extern s32 decode_mode MACRO_ADDR;
 extern void apply_level_specific_cutscene_moby_effects(void);
 extern void Music_ContinueStreamIfReady(void);
@@ -827,7 +827,7 @@ void update_cutscene_playback(void) {
     done = cs->f34 >= cs->h40;
     if (cs->f34 >= scale_ticks(0x12) && gFadeLvl_r == 0.0f) {
 
-        if (((*(s32 *)&challenge_mode) || D_0015EF20 || decode_mode || g_current_level_index <= 0) &&
+        if (((challenge_mode) || D_0015EF20 || decode_mode || g_current_level_index <= 0) &&
             (g_controller_state_r.buttons.w.pressed & 0x800)) {
             done = 1;
         } else if ((g_controller_state_r.buttons.held_pressed & 0x8000000000FUL) == 0x8000000000FUL) {
@@ -1083,7 +1083,7 @@ extern int movie_request_decoder_state MACRO_ADDR;
 extern int movie_request_source_mode MACRO_ADDR;
 extern int movie_request_audio_context MACRO_ADDR;
 extern int queued_movie_request MACRO_ADDR;
-extern short movie_request_decoder_buffer;
+extern int movie_request_decoder_buffer SDATA(D_L00_00161114);
 
 /* Stop sound, wait for the loader to go idle, then start the movie load. */
 void play_queued_movie(void) {
@@ -1098,7 +1098,7 @@ void play_queued_movie(void) {
         }
         memcard_update_state();
     }
-    Movie_Play(queued_movie_request, movie_request_source_mode, (*(int *)&movie_request_decoder_buffer + 0x3F) & ~0x3F,
+    Movie_Play(queued_movie_request, movie_request_source_mode, (movie_request_decoder_buffer + 0x3F) & ~0x3F,
                (movie_request_decoder_state + 0x3F) & ~0x3F, movie_request_audio_context);
     sce_cd_sync_s(0);
     movie_exit_to_gameplay();

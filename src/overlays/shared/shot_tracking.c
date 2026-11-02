@@ -28,11 +28,11 @@ extern int frame_counter_ref MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern float aridia_coll_hit_point[];
-extern short aridia_shot_stream_max_speed;
-extern short aridia_shot_stream_lead_count;
-extern short aridia_shot_stream_extra_count;
-extern short aridia_shot_stream_spread_far;
-extern short aridia_shot_stream_spread_near;
+extern float aridia_shot_stream_max_speed SDATA(D_L02_00160150);
+extern int aridia_shot_stream_lead_count SDATA(D_L02_00160154);
+extern int aridia_shot_stream_extra_count SDATA(D_L02_00160158);
+extern float aridia_shot_stream_spread_far SDATA(D_L02_0016015C);
+extern float aridia_shot_stream_spread_near SDATA(D_L02_00160160);
 extern int coll_line(void *, void *, int, int, int);
 extern float FastVecDist(void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
@@ -86,17 +86,16 @@ void effect_slots_fire(char *slots, float *position, float *direction, float dis
     }
     acceleration = g_frame_time_sq;
     ApproachWithVelocity(&speed, &travel_step, travel, 1.0f, acceleration * 48.0f,
-                         (*(float *)&aridia_shot_stream_max_speed) * g_frame_time);
+                         (aridia_shot_stream_max_speed)*g_frame_time);
     ((float (*)(void *, void *, float))vec_scale_to_length)(adjusted, adjusted, travel_step);
-    n = (*(int *)&aridia_shot_stream_extra_count);
-    first_count = (*(int *)&aridia_shot_stream_lead_count);
+    n = (aridia_shot_stream_extra_count);
+    first_count = (aridia_shot_stream_lead_count);
     if (travel < 4.0f)
         first_count = 1;
     for (i = 0; i < n + first_count; i++) {
         rand_vec(offset, 0.0f,
-                 (((*(float *)&aridia_shot_stream_spread_far) - (*(float *)&aridia_shot_stream_spread_near)) *
-                      (travel / distance) +
-                  (*(float *)&aridia_shot_stream_spread_near)) *
+                 (((aridia_shot_stream_spread_far) - (aridia_shot_stream_spread_near)) * (travel / distance) +
+                  (aridia_shot_stream_spread_near)) *
                      g_frame_time);
         FastVecAdd(offset, offset, adjusted);
         FastVecScale(velocity, adjusted, random_float_between(0.0f, 1.0f));

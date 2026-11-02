@@ -1,10 +1,10 @@
 {
-  "address_names_in_code": 11687,
+  "address_names_in_code": 13497,
   "address_names_in_comments": 849,
   "asm_aliases": 5901,
   "extern_lines": 31667,
   "fakematch_tags": 31,
-  "float_int_casts": 2408,
+  "float_int_casts": 723,
   "hex_compares": 4113,
   "ids_in_comments": 110,
   "include_asm": 206,

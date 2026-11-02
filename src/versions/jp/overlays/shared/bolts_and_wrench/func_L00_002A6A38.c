@@ -7,10 +7,10 @@ void vendor_update(char *moby) {
     float t3;
     char *m;
 
-    *(float *)&vendor_glow_pulse_phase += 0.05f;
-    if (3.14f < *(float *)&vendor_glow_pulse_phase)
-        *(float *)&vendor_glow_pulse_phase = -3.14f;
-    f = FastSin(*(float *)&vendor_glow_pulse_phase);
+    vendor_glow_pulse_phase += 0.05f;
+    if (3.14f < vendor_glow_pulse_phase)
+        vendor_glow_pulse_phase = -3.14f;
+    f = FastSin(vendor_glow_pulse_phase);
     *(int *)(moby + 0x90) = (((int)(f * 48.0f) + 0x60) * 0x10101) | 0x80000000;
 
     switch (*(unsigned char *)(moby + 0x20)) {
@@ -50,13 +50,13 @@ void vendor_update(char *moby) {
                 }
             }
             AddDrawCallback(draw_vendor_effects, moby);
-            axis_rotation_2d48(p + 0x20, 2, *(float *)&vendor_ring_a_angle);
-            axis_rotation_2d48(p + 0x60, 2, *(float *)&vendor_ring_b_angle);
-            *(float *)&vendor_ring_a_angle = FastAddRots(*(float *)&vendor_ring_a_angle, 0.01f);
-            t2 = FastAddRots(*(float *)&vendor_ring_b_angle, -0.02f);
+            axis_rotation_2d48(p + 0x20, 2, vendor_ring_a_angle);
+            axis_rotation_2d48(p + 0x60, 2, vendor_ring_b_angle);
+            vendor_ring_a_angle = FastAddRots(vendor_ring_a_angle, 0.01f);
+            t2 = FastAddRots(vendor_ring_b_angle, -0.02f);
             m = *(char **)(p + 0xC);
             t3 = *(float *)(p + 0x90) * *(float *)(*(char **)(m + 0x24) + 0x24) * 2.5f;
-            *(float *)&vendor_ring_b_angle = t2;
+            vendor_ring_b_angle = t2;
             *(float *)(m + 0x2C) = t3;
             moby_build_matrix(*(char **)(p + 0xC));
             break;
@@ -83,13 +83,13 @@ void vendor_update(char *moby) {
             AddDrawCallback(draw_vendor_effects, moby);
             a = 1;
             b = 1;
-            axis_rotation_2d48(p + 0x20, 2, *(float *)&vendor_ring_a_angle);
-            axis_rotation_2d48(p + 0x60, 2, *(float *)&vendor_ring_b_angle);
-            *(float *)&vendor_ring_a_angle = FastAddRots(*(float *)&vendor_ring_a_angle, 0.01f);
-            t2 = FastAddRots(*(float *)&vendor_ring_b_angle, -0.02f);
+            axis_rotation_2d48(p + 0x20, 2, vendor_ring_a_angle);
+            axis_rotation_2d48(p + 0x60, 2, vendor_ring_b_angle);
+            vendor_ring_a_angle = FastAddRots(vendor_ring_a_angle, 0.01f);
+            t2 = FastAddRots(vendor_ring_b_angle, -0.02f);
             m = *(char **)(p + 0xC);
             t3 = *(float *)(p + 0x90) * *(float *)(*(char **)(m + 0x24) + 0x24) * 2.5f;
-            *(float *)&vendor_ring_b_angle = t2;
+            vendor_ring_b_angle = t2;
             *(float *)(m + 0x2C) = t3;
             moby_build_matrix(*(char **)(p + 0xC));
             if (G_pp.i208C != 0 && G_pp.i2084 != 3 && G_pp.i208C != 1) {

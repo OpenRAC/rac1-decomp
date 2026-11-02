@@ -5,8 +5,8 @@ void process_helicopter_hits_and_reactivation(char *m, int flag) {
     unsigned char *q;
     if (MobyGetHitMessage(m, 0xA30000, 0) != 0) {
         if (*(int *)hero_current_state != 0x32) {
-            *(int *)&helicopter_hit_count += 1;
-            if (*(int *)&helicopter_hit_count >= 5) {
+            helicopter_hit_count += 1;
+            if (helicopter_hit_count >= 5) {
                 q = (unsigned char *)gSkillPoints;
                 if (q[0x15] == 0) {
                     q[0x15] = 1;
@@ -22,13 +22,13 @@ void process_helicopter_hits_and_reactivation(char *m, int flag) {
         spawn_explosion(m, b, a, 0.0f, 0.0f, 0x14, 3, 4, 4.0f, 2.0f, 100000.0f, -1, 3.0f, 15.0f, 1, 1, -1, 0);
     }
     *(unsigned char *)(m + 0xA4) = 0xFF;
-    if (*(int *)&planetbuster_engaged != 0 && flag != 0) {
+    if (planetbuster_engaged != 0 && flag != 0) {
         *(int *)(m + 0x94) = 0;
         *(unsigned short *)(m + 0x34) = (*(unsigned short *)(m + 0x34) | 0x41) & 0xEFFF;
     }
     if (*(int *)(d + 0xA4) == 0 && (*(unsigned short *)(m + 0x34) & 1) == 0)
         return;
-    if (fast_dec_timer((int *)(d + 0xA4)) != 0 && flag != 0 && *(int *)&planetbuster_engaged == 0) {
+    if (fast_dec_timer((int *)(d + 0xA4)) != 0 && flag != 0 && planetbuster_engaged == 0) {
         *(int *)(m + 0x94) = *(int *)(*(char **)(m + 0x24) + 0x10);
         *(unsigned short *)(m + 0x34) = (*(unsigned short *)(m + 0x34) & 0xFFBE) | 0x1000;
     } else {

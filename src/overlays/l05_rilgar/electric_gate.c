@@ -158,7 +158,7 @@ extern int Moby_PlaySound_i(int, int, void *) __asm__("func_0022ED80");
 extern void draw_electric_gate_beams(char *);
 
 extern char hero_globals_base[];
-extern short electric_gate_last_draw_frame;
+extern int electric_gate_last_draw_frame SDATA(D_L05_00161DF8);
 extern int rilgar_frame_count MACRO_ADDR;
 extern unsigned char *moby_pool_4f60_r __asm__("D_L05_00160098") MACRO_ADDR;
 
@@ -181,8 +181,8 @@ void electric_gate_update(char *m) {
             *data->voice_slot = -1;
             break;
         case 1:
-            if (*(int *)&electric_gate_last_draw_frame != rilgar_frame_count) {
-                *(int *)&electric_gate_last_draw_frame = rilgar_frame_count;
+            if (electric_gate_last_draw_frame != rilgar_frame_count) {
+                electric_gate_last_draw_frame = rilgar_frame_count;
                 AddDrawCallback(draw_electric_gate_beams, m);
             }
             pos = m + 0x10;
@@ -230,15 +230,15 @@ extern short *rilgar_moby_groups[];
 extern char electric_gate_inner_corners[];
 extern char electric_gate_outer_corners[];
 extern char electric_gate_quad_uvs[];
-extern short electric_gate_outer_color_from;
-extern short electric_gate_outer_color_to;
-extern short electric_gate_inner_color_from;
-extern short electric_gate_inner_color_to;
-extern short electric_gate_alpha_a;
-extern short electric_gate_alpha_b;
-extern short electric_gate_alpha_c;
-extern short electric_gate_alpha_d;
-extern short electric_gate_effect_tex;
+extern int electric_gate_outer_color_from SDATA(D_L05_00161DFC);
+extern int electric_gate_outer_color_to SDATA(D_L05_00161E00);
+extern int electric_gate_inner_color_from SDATA(D_L05_00161E04);
+extern int electric_gate_inner_color_to SDATA(D_L05_00161E08);
+extern int electric_gate_alpha_a SDATA(D_L05_00161E30);
+extern int electric_gate_alpha_b SDATA(D_L05_00161E34);
+extern int electric_gate_alpha_c SDATA(D_L05_00161E38);
+extern int electric_gate_alpha_d SDATA(D_L05_00161E3C);
+extern int electric_gate_effect_tex SDATA(D_L05_00161E58);
 extern float IntToFloat(int);
 extern float FastSin(float);
 extern int FastTweenColor(int, int, float);
@@ -272,16 +272,15 @@ void draw_electric_gate_beams(char *a) {
     do {
         nx = i + 1;
         t = (FastSin(ang) + 1.0f) * 0.5f;
-        r1 = FastTweenColor(*(int *)&electric_gate_outer_color_from, *(int *)&electric_gate_outer_color_to, t);
-        r2 = FastTweenColor(*(int *)&electric_gate_inner_color_from, *(int *)&electric_gate_inner_color_to, t);
+        r1 = FastTweenColor(electric_gate_outer_color_from, electric_gate_outer_color_to, t);
+        r2 = FastTweenColor(electric_gate_inner_color_from, electric_gate_inner_color_to, t);
         ang = FastAddRots(ang, 1.2566371f);
         j = 0;
         do {
-            tex = GetEffectTex(*(int *)&electric_gate_effect_tex);
+            tex = GetEffectTex(electric_gate_effect_tex);
             nj = j + 1;
-            arr[j][i].a88 = (s64) * (int *)&electric_gate_alpha_a | ((s64) * (int *)&electric_gate_alpha_b << 2) |
-                            ((s64) * (int *)&electric_gate_alpha_c << 4) |
-                            ((s64) * (int *)&electric_gate_alpha_d << 6) | 0x8000000000LL;
+            arr[j][i].a88 = (s64)electric_gate_alpha_a | ((s64)electric_gate_alpha_b << 2) |
+                            ((s64)electric_gate_alpha_c << 4) | ((s64)electric_gate_alpha_d << 6) | 0x8000000000LL;
             arr[j][i].a78 = tex;
             arr[j][i].a80 = 0xFF9000000260LL;
             arr[j][i].a70 = 0;
@@ -571,7 +570,7 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern int rilgar_cinematic_mode MACRO_ADDR;
 extern float drain_cover_gravity SDATA(D_L05_00161E6C);
 extern float drain_cover_bob_accel SDATA(D_L05_00161E70);
-extern short drain_cover_spray_life;
+extern int drain_cover_spray_life SDATA(D_L05_00161E78);
 extern float drain_cover_air_wobble SDATA(D_L05_00161E94);
 extern float drain_cover_warning_spray_height SDATA(D_L05_00161EA8);
 extern float drain_cover_burst_speed_min SDATA(D_L05_00161EAC);
@@ -638,10 +637,10 @@ void drain_cover_update(Moby *moby) {
                 moby->state = 2;
                 clear_u64_value(d->vel);
                 d->vel[2] = vec_length(d->f80 * 2.0f * (drain_cover_gravity * g_frame_time_sq));
-            } else if ((float)d->timer < (float)scale_ticks(*(int *)&drain_cover_spray_life) * 0.5f) {
+            } else if ((float)d->timer < (float)scale_ticks(drain_cover_spray_life) * 0.5f) {
                 emit_drain_cover_particles((char *)moby, d->home[2], drain_cover_warning_spray_height + d->home[2]);
                 emit_drain_cover_particles((char *)moby, d->home[2], drain_cover_warning_spray_height + d->home[2]);
-                if ((float)d->timer < (float)scale_ticks(*(int *)&drain_cover_spray_life) * 0.2f) {
+                if ((float)d->timer < (float)scale_ticks(drain_cover_spray_life) * 0.2f) {
                     a = drain_cover_burst_color_a;
                     b = drain_cover_burst_color_b;
                     r = truncate_float_to_s32_r(multiply_global_factor(random_float_between(10.0f, 20.0f)));
@@ -671,8 +670,7 @@ void drain_cover_update(Moby *moby) {
                 MobySphereHitDirectional((int)moby, 1.0f, &moby->pos, 0x10000, 2.0f, 1.0f, 0, 1, 0);
             }
             emit_drain_cover_particles((char *)moby, d->home[2],
-                                       d->vel[2] * (float)scale_ticks(*(int *)&drain_cover_spray_life) * 0.5f +
-                                           moby->pos.z);
+                                       d->vel[2] * (float)scale_ticks(drain_cover_spray_life) * 0.5f + moby->pos.z);
             update_drain_cover_tilt((char *)moby, drain_cover_air_wobble, 1.0f);
             FastVecAdd(&moby->pos, &moby->pos, d->vel);
             d->vel[2] = d->vel[2] - drain_cover_gravity * g_frame_time_sq;
@@ -701,7 +699,7 @@ void drain_cover_update(Moby *moby) {
             break;
         case 4:
             emit_drain_cover_particles((char *)moby, d->home[2],
-                                       d->vel[2] * (float)scale_ticks(*(int *)&drain_cover_spray_life) + moby->pos.z);
+                                       d->vel[2] * (float)scale_ticks(drain_cover_spray_life) + moby->pos.z);
             update_drain_cover_tilt((char *)moby, d->home[2] + 1.0f < moby->pos.z ? drain_cover_air_wobble : 0.0f,
                                     d->home[2] + 1.0f < moby->pos.z ? 1.0f : 10.0f);
             FastVecAdd(&moby->pos, &moby->pos, d->vel);
@@ -758,13 +756,13 @@ extern int scale_ticks(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern void create_particle_with_velocity_and_lifetime(float, void *, void *, int, int, int);
 extern float g_frame_time MACRO_ADDR;
-extern short drain_cover_spray_spacing;
-extern short drain_cover_spray_size_min;
-extern short drain_cover_spray_size_max;
-extern short drain_cover_spray_spin_range;
-extern short drain_cover_spray_rise_speed;
-extern short drain_cover_spray_color;
-extern short drain_cover_spray_radius;
+extern float drain_cover_spray_spacing SDATA(D_L05_00161E74);
+extern float drain_cover_spray_size_min SDATA(D_L05_00161E7C);
+extern float drain_cover_spray_size_max SDATA(D_L05_00161E80);
+extern int drain_cover_spray_spin_range SDATA(D_L05_00161E84);
+extern float drain_cover_spray_rise_speed SDATA(D_L05_00161E88);
+extern int drain_cover_spray_color SDATA(D_L05_00161E8C);
+extern float drain_cover_spray_radius SDATA(D_L05_00161E90);
 
 /* Scatters points along a range, placing each one with a heading and radius. */
 void emit_drain_cover_particles(char *obj, float a, float b) {
@@ -773,12 +771,12 @@ void emit_drain_cover_particles(char *obj, float a, float b) {
     float ground, x, y, t, u;
     int i, j, k, m, n;
     clear_u64_value(v);
-    v[2] = *(float *)&drain_cover_spray_rise_speed * g_frame_time;
-    ground = v[2] * 0.75f * IntToFloat(*(int *)&drain_cover_spray_life);
+    v[2] = drain_cover_spray_rise_speed * g_frame_time;
+    ground = v[2] * 0.75f * IntToFloat(drain_cover_spray_life);
     j = 0;
-    for (i = j; (float)i < (b - a) / *(float *)&drain_cover_spray_spacing; i++) {
+    for (i = j; (float)i < (b - a) / drain_cover_spray_spacing; i++) {
         float fi = (float)j;
-        x = random_float_between(fi, *(float *)&drain_cover_spray_radius);
+        x = random_float_between(fi, drain_cover_spray_radius);
         y = random_angle_radians();
         w[0] = FastCos(y) * x;
         w[1] = FastSin(y) * x;
@@ -788,10 +786,10 @@ void emit_drain_cover_particles(char *obj, float a, float b) {
         t = random_float_between((a + b) * 0.5f, b) - ground;
         if (t < w[2])
             w[2] = t;
-        u = random_float_between(*(float *)&drain_cover_spray_size_min, *(float *)&drain_cover_spray_size_max);
-        k = scale_ticks(*(int *)&drain_cover_spray_life);
-        m = truncate_float_to_s32_r(randf_sym(fi, (float)*(int *)&drain_cover_spray_spin_range));
-        n = *(int *)&drain_cover_spray_color;
+        u = random_float_between(drain_cover_spray_size_min, drain_cover_spray_size_max);
+        k = scale_ticks(drain_cover_spray_life);
+        m = truncate_float_to_s32_r(randf_sym(fi, (float)drain_cover_spray_spin_range));
+        n = drain_cover_spray_color;
         create_particle_with_velocity_and_lifetime(u, w, v, k, m, n);
     }
 }
@@ -799,10 +797,10 @@ extern float FastVecDot(void *a, void *b);
 extern float FastAddRots(float, float);
 extern float SteerAngleWithVelocity_r(float *, float, float *, float, float, float) __asm__("func_L00_0025CE58");
 extern float g_frame_time_sq MACRO_ADDR;
-extern short drain_cover_wobble_amount;
-extern short drain_cover_tilt_accel;
-extern short drain_cover_tilt_decel;
-extern short drain_cover_tilt_max_speed;
+extern float drain_cover_wobble_amount SDATA(D_L05_00161E98);
+extern float drain_cover_tilt_accel SDATA(D_L05_00161E9C);
+extern float drain_cover_tilt_decel SDATA(D_L05_00161EA0);
+extern float drain_cover_tilt_max_speed SDATA(D_L05_00161EA4);
 
 /* When the block at hero_globals_base + 0xE1D points back at this moby and its short at +0x30E is zero, derives two
    values
@@ -833,17 +831,17 @@ void update_drain_cover_tilt(char *moby, float turn_scale, float speed_scale) {
     deg_to_rad = 0.017453292f;
     data->wobble_x = FastAddRots(data->wobble_x, data->wobble_x_step);
     data->wobble_y = FastAddRots(data->wobble_y, data->wobble_y_step);
-    target0 = FastAddRots(vertical, FastSin(data->wobble_x) * turn_scale * *(float *)&drain_cover_wobble_amount);
-    target1 = FastAddRots(horizontal, FastSin(data->wobble_y) * turn_scale * *(float *)&drain_cover_wobble_amount);
+    target0 = FastAddRots(vertical, FastSin(data->wobble_x) * turn_scale * drain_cover_wobble_amount);
+    target1 = FastAddRots(horizontal, FastSin(data->wobble_y) * turn_scale * drain_cover_wobble_amount);
 
     SteerAngleWithVelocity_r(&m->rot.x, target0, &data->tilt_x_vel,
-                             *(float *)&drain_cover_tilt_accel * speed_scale * deg_to_rad * g_frame_time_sq,
-                             *(float *)&drain_cover_tilt_decel * speed_scale * deg_to_rad * g_frame_time_sq,
-                             *(float *)&drain_cover_tilt_max_speed * deg_to_rad * g_frame_time);
+                             drain_cover_tilt_accel * speed_scale * deg_to_rad * g_frame_time_sq,
+                             drain_cover_tilt_decel * speed_scale * deg_to_rad * g_frame_time_sq,
+                             drain_cover_tilt_max_speed * deg_to_rad * g_frame_time);
     SteerAngleWithVelocity_r(&m->rot.y, target1, &data->tilt_y_vel,
-                             *(float *)&drain_cover_tilt_accel * speed_scale * deg_to_rad * g_frame_time_sq,
-                             *(float *)&drain_cover_tilt_decel * speed_scale * deg_to_rad * g_frame_time_sq,
-                             *(float *)&drain_cover_tilt_max_speed * deg_to_rad * g_frame_time);
+                             drain_cover_tilt_accel * speed_scale * deg_to_rad * g_frame_time_sq,
+                             drain_cover_tilt_decel * speed_scale * deg_to_rad * g_frame_time_sq,
+                             drain_cover_tilt_max_speed * deg_to_rad * g_frame_time);
 }
 typedef u32 u128_10A90 __attribute__((mode(TI), aligned(16)));
 extern void *MobyGetHitMessage(struct Moby *, int, int);
@@ -955,12 +953,12 @@ struct GateVars {
     f32 riseSpeed;
     f32 swingSpeed;
 };
-extern short triggered_gate_rise_accel;
-extern short triggered_gate_rise_decel;
-extern short triggered_gate_rise_max_speed;
-extern short triggered_gate_swing_accel;
-extern short triggered_gate_swing_decel;
-extern short triggered_gate_swing_max_speed;
+extern float triggered_gate_rise_accel SDATA(D_L05_00161F40);
+extern float triggered_gate_rise_decel SDATA(D_L05_00161F44);
+extern float triggered_gate_rise_max_speed SDATA(D_L05_00161F48);
+extern float triggered_gate_swing_accel SDATA(D_L05_00161F4C);
+extern float triggered_gate_swing_decel SDATA(D_L05_00161F50);
+extern float triggered_gate_swing_max_speed SDATA(D_L05_00161F54);
 extern int moby_pool_4f60_r2 __asm__("D_L05_00160098") MACRO_ADDR;
 extern int fast_dec_timer_r(s32 *) __asm__("func_001F9908");
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
@@ -991,19 +989,18 @@ void update_triggered_gate_motion(struct Moby *m) {
             break;
         case 2:
             if (fast_dec_timer_r(&d->riseTimer)) {
-                ApproachWithVelocity(d->topZ, (*(float *)&triggered_gate_rise_accel) * g_frame_time_sq,
-                                     (*(float *)&triggered_gate_rise_decel) * g_frame_time_sq,
-                                     (*(float *)&triggered_gate_rise_max_speed) * g_frame_time, &m->pos.z,
-                                     &d->riseSpeed);
+                ApproachWithVelocity(d->topZ, (triggered_gate_rise_accel)*g_frame_time_sq,
+                                     (triggered_gate_rise_decel)*g_frame_time_sq,
+                                     (triggered_gate_rise_max_speed)*g_frame_time, &m->pos.z, &d->riseSpeed);
                 if (m->oclass == 0x355 && FastAbsF(m->pos.z - d->topZ) < 3.0f &&
                     3.0f < FastAbsF(d->topZ - m->pos.z + d->riseSpeed))
                     Moby_PlaySound(0, 0, m);
             }
             if (fast_dec_timer_r(&d->swingTimer)) {
                 SteerAngleWithVelocity(&m->rot.y, &d->swingSpeed, 0.0f,
-                                       (*(float *)&triggered_gate_swing_accel) * 0.017453292f * g_frame_time_sq,
-                                       (*(float *)&triggered_gate_swing_decel) * 0.017453292f * g_frame_time_sq,
-                                       (*(float *)&triggered_gate_swing_max_speed) * 0.017453292f * g_frame_time);
+                                       (triggered_gate_swing_accel) * 0.017453292f * g_frame_time_sq,
+                                       (triggered_gate_swing_decel) * 0.017453292f * g_frame_time_sq,
+                                       (triggered_gate_swing_max_speed) * 0.017453292f * g_frame_time);
                 if (m->rot.y == 0.0f)
                     m->state = 3;
             } else if (d->swingTimer == 1 && m->oclass == 0x354) {
@@ -1400,18 +1397,18 @@ void elevator_with_button_update(struct Moby *moby) {
 extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern void clear_u64_value(void *);
-extern short lift_camera_distance;
-extern short lift_camera_height;
-extern short lift_camera_pitch_deg;
+extern float lift_camera_distance SDATA(D_L05_00161F88);
+extern float lift_camera_height SDATA(D_L05_00161F80);
+extern float lift_camera_pitch_deg SDATA(D_L05_00161F84);
 
 // Positions the camera-relative point and fills the output angles.
 void lift_camera_view(char *a, char *b, char *c) {
     float t;
-    vec_scale_to_length(b, a + 0xC0, *(float *)&lift_camera_distance);
+    vec_scale_to_length(b, a + 0xC0, lift_camera_distance);
     FastVecAdd(b, b, a + 0x10);
-    *(float *)(b + 8) = *(float *)(b + 8) + *(float *)&lift_camera_height;
+    *(float *)(b + 8) = *(float *)(b + 8) + lift_camera_height;
     clear_u64_value(c);
-    t = *(float *)&lift_camera_pitch_deg;
+    t = lift_camera_pitch_deg;
     *(float *)(c + 8) = *(float *)(a + 0x48);
     *(float *)(c + 4) = t * 0.017453292f;
 }
@@ -2385,7 +2382,7 @@ void update_hero_clip_volume_outputs(char *m) {
 extern float random_angle_radians(void);
 extern int rilgar_cinematic_mode;
 extern float g_frame_time MACRO_ADDR;
-extern short television_scale;
+extern float television_scale SDATA(D_L05_00161FC8);
 
 // Per-frame update: spin a value in the data block and bob the moby's Y with it.
 void television_update(unsigned char *moby) {
@@ -2394,7 +2391,7 @@ void television_update(unsigned char *moby) {
     float bobbing_phase;
     char *data = (char *)m->pvars;
     int g;
-    m->scale = m->pclass->scale * *(float *)&television_scale;
+    m->scale = m->pclass->scale * television_scale;
     switch (m->state) {
         case TELEVISION_INITIALIZE:
             m->state = 1;

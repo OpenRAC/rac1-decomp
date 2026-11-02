@@ -275,7 +275,7 @@ extern float vendor_hologram_cone_vertices[][4];
 extern float vendor_hologram_cone_uvs[][2];
 extern int vendor_hologram_cone_colors[];
 extern int vendor_menu[];
-extern short vendor_screen_uv_scroll;
+extern float vendor_screen_uv_scroll SDATA(D_L00_00161244);
 
 struct HoloPacket {
     float pos[4][4];
@@ -289,9 +289,9 @@ void draw_vendor_hologram_cone(void) {
     struct HoloPacket s;
     float v[4][4];
     int i;
-    *(float *)&vendor_screen_uv_scroll = *(float *)&vendor_screen_uv_scroll + 0.01f;
-    if (*(float *)&vendor_screen_uv_scroll > 1.0f)
-        *(float *)&vendor_screen_uv_scroll = *(float *)&vendor_screen_uv_scroll - 1.0f;
+    vendor_screen_uv_scroll = vendor_screen_uv_scroll + 0.01f;
+    if (vendor_screen_uv_scroll > 1.0f)
+        vendor_screen_uv_scroll = vendor_screen_uv_scroll - 1.0f;
     s.hdr[2] = 1;
     s.hdr[3] = 0x4000000044L;
     s.hdr[0] = 0;
@@ -322,15 +322,15 @@ void draw_vendor_hologram_cone(void) {
         s.col[2] = vendor_hologram_cone_colors[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 8)];
         s.col[3] = vendor_hologram_cone_colors[vendor_hologram_cone_quads[i].d];
         s.uv[0][0] = vendor_hologram_cone_uvs[vendor_hologram_cone_quads[i].a][0];
-        s.uv[0][1] = vendor_hologram_cone_uvs[vendor_hologram_cone_quads[i].a][1] + *(float *)&vendor_screen_uv_scroll;
+        s.uv[0][1] = vendor_hologram_cone_uvs[vendor_hologram_cone_quads[i].a][1] + vendor_screen_uv_scroll;
         s.uv[1][0] = vendor_hologram_cone_uvs[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 4)][0];
         s.uv[1][1] = vendor_hologram_cone_uvs[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 4)][1] +
-                     *(float *)&vendor_screen_uv_scroll;
+                     vendor_screen_uv_scroll;
         s.uv[2][0] = vendor_hologram_cone_uvs[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 8)][0];
         s.uv[2][1] = vendor_hologram_cone_uvs[*(int *)((char *)vendor_hologram_cone_quads + i * 16 + 8)][1] +
-                     *(float *)&vendor_screen_uv_scroll;
+                     vendor_screen_uv_scroll;
         s.uv[3][0] = vendor_hologram_cone_uvs[vendor_hologram_cone_quads[i].d][0];
-        s.uv[3][1] = vendor_hologram_cone_uvs[vendor_hologram_cone_quads[i].d][1] + *(float *)&vendor_screen_uv_scroll;
+        s.uv[3][1] = vendor_hologram_cone_uvs[vendor_hologram_cone_quads[i].d][1] + vendor_screen_uv_scroll;
         draw_world_quad(&s, 0, 1);
     }
 }

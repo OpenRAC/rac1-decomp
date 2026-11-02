@@ -53,7 +53,7 @@ void background_ship_2_update(char *moby) {
             if (Sound_IsPlaying(moby, *(int *)(d + 0x6C)) == 0) {
                 *(int *)(d + 0x6C) = Moby_PlaySound_r_r(1, 4, (int)moby);
             }
-            p2 = *(float *)&background_ship_2_speed * g_frame_time;
+            p2 = background_ship_2_speed * g_frame_time;
             if (g_current_level_index_r == LEVEL_ORXON) {
                 p2 = p2 * 0.25f;
             }
@@ -113,8 +113,8 @@ void background_ship_2_update(char *moby) {
                 }
             }
             Moby_PlaySound_r_r(0, 0, (int)moby);
-            FastVecScale(tv, moby + 0xC0, *(float *)&background_ship_2_debris_speed * frame_scale);
-            tv[2] = tv[2] + *(float *)&background_ship_2_debris_lift * frame_scale;
+            FastVecScale(tv, moby + 0xC0, background_ship_2_debris_speed * frame_scale);
+            tv[2] = tv[2] + background_ship_2_debris_lift * frame_scale;
             r1 = scale_ticks(90);
             SpawnBreakFragment(moby, 0x5F6, (float *)(moby + 0x10), (void *)(moby + 0x40), r1, 0,
                                g_frame_time_sq * 12.0f, tv, aridia_zero_vec, aridia_zero_vec);
@@ -139,9 +139,8 @@ void background_ship_2_update(char *moby) {
         {
             int res;
             float k;
-            res = FastTweenColor_r(*(int *)&background_ship_2_light_color_off,
-                                   *(int *)&background_ship_2_light_color_on, x);
-            k = *(float *)&background_ship_2_light_spin_rate * 0.017453292f * g_frame_time;
+            res = FastTweenColor_r(background_ship_2_light_color_off, background_ship_2_light_color_on, x);
+            k = background_ship_2_light_spin_rate * 0.017453292f * g_frame_time;
             *(int *)(moby + 0x90) = res;
             *(float *)(d + 0x68) = FastAddRots(*(float *)(d + 0x68), k);
         }

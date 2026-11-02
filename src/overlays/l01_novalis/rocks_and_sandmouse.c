@@ -953,7 +953,7 @@ extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound(int, int, int);
 extern float FastCos(float);
 extern float FastSin(float);
-extern short g_current_level_index;
+extern int g_current_level_index SDATA(D_0015EE84);
 extern unsigned char help_stats_base[] NOT_SDA;
 extern unsigned char hero_globals_base_u[] __asm__("D_0013E633") NOT_SDA;
 
@@ -985,7 +985,7 @@ void bridge_half_update(char *p) {
             break;
         case BRIDGE_HALF_WAIT_FOR_TRIGGER:
             if (self->command == 2 ||
-                (help_stats_base + 0xAA35)[self->mission + (*(int *)&g_current_level_index << 4)] == 0xFF) {
+                (help_stats_base + 0xAA35)[self->mission + (g_current_level_index << 4)] == 0xFF) {
                 self->state = 2;
                 self->command = 0;
             }
@@ -1336,7 +1336,7 @@ typedef struct {
     f32 glow;
 } WaterLayer;
 extern WaterLayer novalis_four_scroll_layers_r[] __asm__("D_L01_001FBF40");
-extern short novalis_scroll_layers_ready;
+extern s32 novalis_scroll_layers_ready SDATA(D_L01_00161D70);
 extern s32 novalis_frame_count MACRO_ADDR;
 extern f32 IntToFloat(s32);
 extern void draw_four_scroll_layers(void *);
@@ -1355,8 +1355,8 @@ void update_scroll_layers_and_queue_draw(void *arg) {
     Vec4 *w;
     f32 s;
 
-    if ((*(s32 *)&novalis_scroll_layers_ready) == 0) {
-        (*(s32 *)&novalis_scroll_layers_ready) = 1;
+    if ((novalis_scroll_layers_ready) == 0) {
+        (novalis_scroll_layers_ready) = 1;
         for (i = 0; i < 4; i++) {
             v = (novalis_four_scroll_layers_r + i)->verts;
             for (j = 0; j < (novalis_four_scroll_layers_r + i)->count; j++) {
@@ -2045,9 +2045,9 @@ typedef struct {
     Vec4f normal;
 } BlobHitInfo;
 
-extern short explosive_moby_gravity;
-extern short explosive_moby_drag;
-extern short explosive_moby_drag_min_speed;
+extern float explosive_moby_gravity SDATA(D_L01_001620E8);
+extern float explosive_moby_drag SDATA(D_L01_001620EC);
+extern float explosive_moby_drag_min_speed SDATA(D_L01_001620F0);
 extern float frame_scale MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern BlobHitInfo novalis_coll_hit;
@@ -2077,16 +2077,16 @@ void update_explosive_moby(struct Moby *m) {
         AddDrawCallback(draw_moby_offset_textured_quad, m);
     }
     FastVecAdd(&m->pos, &m->pos, v);
-    if (FastAbsF(v->vel.x) > *(float *)&explosive_moby_drag_min_speed * frame_scale) {
-        v->vel.x *= (*(float *)&explosive_moby_drag - 1.0f) * frame_scale + 1.0f;
+    if (FastAbsF(v->vel.x) > explosive_moby_drag_min_speed * frame_scale) {
+        v->vel.x *= (explosive_moby_drag - 1.0f) * frame_scale + 1.0f;
     }
-    if (FastAbsF(v->vel.y) > *(float *)&explosive_moby_drag_min_speed * frame_scale) {
-        v->vel.y *= (*(float *)&explosive_moby_drag - 1.0f) * frame_scale + 1.0f;
+    if (FastAbsF(v->vel.y) > explosive_moby_drag_min_speed * frame_scale) {
+        v->vel.y *= (explosive_moby_drag - 1.0f) * frame_scale + 1.0f;
     }
     if (v->vel.z > 0.0f) {
-        v->vel.z *= (*(float *)&explosive_moby_drag - 1.0f) * frame_scale + 1.0f;
+        v->vel.z *= (explosive_moby_drag - 1.0f) * frame_scale + 1.0f;
     }
-    v->vel.z -= *(float *)&explosive_moby_gravity * g_frame_time_sq;
+    v->vel.z -= explosive_moby_gravity * g_frame_time_sq;
     m->rot.x = FastAddRots(m->rot.x, v->spin.x);
     m->rot.y = FastAddRots(m->rot.y, v->spin.y);
     m->rot.z = FastAddRots(m->rot.z, v->spin.z);

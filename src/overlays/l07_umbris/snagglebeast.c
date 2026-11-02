@@ -756,7 +756,7 @@ typedef struct {
 extern SbRec4C umbris_item_defs[];
 extern int snagglebeast_stage_item_slots[][4];
 
-extern short snagglebeast_start_cleared_word;
+extern int snagglebeast_start_cleared_word SDATA(D_L07_00161BF4);
 
 typedef struct {
     float f[4];
@@ -972,7 +972,7 @@ void snagglebeast_update(unsigned char *m) {
     }
     switch (((Moby *)m)->state) {
         case 0:
-            *(int *)&snagglebeast_start_cleared_word = 0;
+            snagglebeast_start_cleared_word = 0;
             ((Moby *)m)->state = 1;
             ((Moby *)m)->command = 0;
             d->unk_280 = -1;
@@ -1901,8 +1901,8 @@ typedef float RopeVec[4] __attribute__((aligned(16)));
 extern u64 GetEffectTex(int);
 extern void VU1_addGSregister(int, u64);
 extern void draw_world_quad(void *, int, int);
-extern short scroll_phase;
-extern short row_start_phase;
+extern float scroll_phase SDATA(D_L07_00161C04);
+extern float row_start_phase SDATA(D_L07_00161C08);
 extern short row_phase_step_gp;
 extern short snagglebeast_rope_row_alpha[];
 typedef struct {
@@ -1931,20 +1931,20 @@ void draw_rope_strips(void) {
     packet.header[2] = 0xff9000000260ULL;
     packet.header[3] = 0x8000000048ULL;
     packet.header[0] = 0;
-    phase = (*(float *)&scroll_phase);
-    (*(float *)&scroll_phase) += 0.001f;
-    if ((*(float *)&scroll_phase) > 7.0f)
-        (*(float *)&scroll_phase) -= 7.0f;
+    phase = (scroll_phase);
+    (scroll_phase) += 0.001f;
+    if ((scroll_phase) > 7.0f)
+        (scroll_phase) -= 7.0f;
     VU1_addGSregister(0x47, 0x5301b);
     phase_step = 0.3f;
     phase += phase_step;
     column_step = 0.05f;
     VU1_addGSregister(0x4e, (depth_buffer_address >> 13) | 0x1000000 | ((u64)0x8000 << 17));
     for (row = 1; row < 10; row++) {
-        row_phase = (*(float *)&row_start_phase);
-        (*(float *)&row_start_phase) += (*(float *)&row_phase_step_gp);
-        if ((*(float *)&row_start_phase) > 7.0f)
-            (*(float *)&row_start_phase) -= 7.0f;
+        row_phase = (row_start_phase);
+        (row_start_phase) += (*(float *)&row_phase_step_gp);
+        if ((row_start_phase) > 7.0f)
+            (row_start_phase) -= 7.0f;
         for (column = 0; column < 20; column++) {
             qcopy(packet.pos[0], rope_grid[row][column]);
             qcopy(packet.pos[1], rope_grid[row][(column + 1) % 20]);
@@ -2396,8 +2396,8 @@ extern void suck_beam_queue_draw(int arg0);
 extern char rope_previous_points[];
 extern char snagglebeast_rope_centers_v[] __asm__("D_L07_0020DDC0");
 extern short row_phase_step_gp;
-extern short snagglebeast_rope_clear_pending;
-extern short snagglebeast_rope_reset_pending;
+extern int snagglebeast_rope_clear_pending SDATA(D_L07_00161C00);
+extern int snagglebeast_rope_reset_pending SDATA(D_L07_00161BFC);
 
 /* Pulls each pending moby toward its target point and smooths its velocity. */
 void detach_snagglebeast_rope_particles(int arg0) {
@@ -2411,8 +2411,8 @@ void detach_snagglebeast_rope_particles(int arg0) {
     int i;
     char *base;
 
-    *(int *)&snagglebeast_rope_reset_pending = 1;
-    *(int *)&snagglebeast_rope_clear_pending = 1;
+    snagglebeast_rope_reset_pending = 1;
+    snagglebeast_rope_clear_pending = 1;
     *(float *)&row_phase_step_gp = *(float *)&row_phase_step_gp * 0.5f;
     Moby_PlaySound(10, 0, arg0);
     base = (char *)rope_particles;
