@@ -389,8 +389,8 @@ int check_all_listed_frog_states_fe_fd_or_10(int index) {
 INCLUDE_ASM("asm/overlays", func_L06_002EB2F8);
 INCLUDE_ASM("asm/overlays", func_L06_002EB348);
 
-extern float toxic_gas_vent_near_d50_value SDATA(D_L06_00161DB4);
-extern float toxic_gas_vent_near_anim_time SDATA(D_L06_00161DB8);
+extern float toxic_gas_vent_near_d50_value SDATA(toxic_gas_vent_near_d50_value);
+extern float toxic_gas_vent_near_anim_time SDATA(toxic_gas_vent_near_anim_time);
 extern int is_point_inside_clip_volume(void *, int);
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
@@ -468,19 +468,19 @@ void toxic_gas_vent_update(char *m) {
             break;
     }
 }
-extern float spark_speed_gp SDATA(D_L06_00161D7C);
-extern float spark_dir SDATA(D_L06_00161D84);
-extern float spark_vel SDATA(D_L06_00161D88);
-extern int spark_color0 SDATA(D_L06_00161D8C);
-extern int spark_color1 SDATA(D_L06_00161D90);
-extern int spark_life_min SDATA(D_L06_00161D94);
-extern int spark_life_max SDATA(D_L06_00161D98);
-extern int spark_fade_min SDATA(D_L06_00161D9C);
-extern int spark_fade_max SDATA(D_L06_00161DA0);
-extern int spark_frames SDATA(D_L06_00161DA4);
-extern float spark_drift SDATA(D_L06_00161DA8);
-extern float spark_drift_scale SDATA(D_L06_00161DAC);
-extern float spark_spread SDATA(D_L06_00161DB0);
+extern float spark_speed_gp SDATA(spark_speed_gp);
+extern float spark_dir SDATA(spark_dir);
+extern float spark_vel SDATA(spark_vel);
+extern int spark_color0 SDATA(spark_color0);
+extern int spark_color1 SDATA(spark_color1);
+extern int spark_life_min SDATA(spark_life_min);
+extern int spark_life_max SDATA(spark_life_max);
+extern int spark_fade_min SDATA(spark_fade_min);
+extern int spark_fade_max SDATA(spark_fade_max);
+extern int spark_frames SDATA(spark_frames);
+extern float spark_drift SDATA(spark_drift);
+extern float spark_drift_scale SDATA(spark_drift_scale);
+extern float spark_spread SDATA(spark_spread);
 extern float FastVecDist(void *, void *);
 extern int FastBSphereCheck(char *, float);
 extern void euler_to_matrix(void *, void *);
@@ -566,7 +566,7 @@ extern float FastCos(float);
 extern float FastAddRots(float, float);
 extern int coll_line(void *, void *, int, void *, void *);
 extern float g_frame_time MACRO_ADDR;
-extern float toxic_gas_vent_reach SDATA(D_L06_00161D80);
+extern float toxic_gas_vent_reach SDATA(toxic_gas_vent_reach);
 
 typedef struct {
     int pad0;
@@ -1006,10 +1006,10 @@ void update_drawbridge(Moby *m) {
     }
 }
 extern void matrix_mul_vec3(void *, void *, void *);
-extern float drawbridge_upper_min_slide SDATA(D_L06_00161E00);
-extern float drawbridge_upper_slide_step SDATA(D_L06_00161E04);
-extern Vec drawbridge_row_a_offset SDATA(D_L06_00161DE0);
-extern Vec drawbridge_row_b_offset SDATA(D_L06_00161DF0);
+extern float drawbridge_upper_min_slide SDATA(drawbridge_upper_min_slide);
+extern float drawbridge_upper_slide_step SDATA(drawbridge_upper_slide_step);
+extern Vec drawbridge_row_a_offset SDATA(drawbridge_row_a_offset);
+extern Vec drawbridge_row_b_offset SDATA(drawbridge_row_b_offset);
 
 /* Blarg drawbridge pieces: places and rotates the 20 + 10 chained segment mobys. */
 void update_drawbridge_segment_transforms(Moby *m) {
@@ -1148,17 +1148,17 @@ extern void DeleteMoby(void *);
 
 extern int beam_barrier_strand_life MACRO_ADDR;
 extern int beam_barrier_strand_fade_ticks MACRO_ADDR;
-extern float beam_barrier_strand_length SDATA(D_L06_00161E98);
+extern float beam_barrier_strand_length SDATA(beam_barrier_strand_length);
 extern short beam_barrier_draw_scale;
-extern float beam_barrier_hit_line_drop SDATA(D_L06_00161EA8);
-extern int beam_barrier_spark_color_a SDATA(D_L06_00161EAC);
-extern int beam_barrier_spark_color_b SDATA(D_L06_00161EB0);
-extern float beam_barrier_spark_size_min SDATA(D_L06_00161EB4);
-extern float beam_barrier_spark_size_max SDATA(D_L06_00161EB8);
-extern int beam_barrier_spark_ticks_min SDATA(D_L06_00161EBC);
-extern int beam_barrier_spark_ticks_max SDATA(D_L06_00161EC0);
-extern float beam_barrier_spark_speed_min SDATA(D_L06_00161EC4);
-extern float beam_barrier_spark_speed_max SDATA(D_L06_00161EC8);
+extern float beam_barrier_hit_line_drop SDATA(beam_barrier_hit_line_drop);
+extern int beam_barrier_spark_color_a SDATA(beam_barrier_spark_color_a);
+extern int beam_barrier_spark_color_b SDATA(beam_barrier_spark_color_b);
+extern float beam_barrier_spark_size_min SDATA(beam_barrier_spark_size_min);
+extern float beam_barrier_spark_size_max SDATA(beam_barrier_spark_size_max);
+extern int beam_barrier_spark_ticks_min SDATA(beam_barrier_spark_ticks_min);
+extern int beam_barrier_spark_ticks_max SDATA(beam_barrier_spark_ticks_max);
+extern float beam_barrier_spark_speed_min SDATA(beam_barrier_spark_speed_min);
+extern float beam_barrier_spark_speed_max SDATA(beam_barrier_spark_speed_max);
 extern char blarg_camera_pos[];
 extern char *blarg_coll_hit_moby;
 extern int gameplay_event_frame_count MACRO_ADDR;
@@ -1415,14 +1415,14 @@ extern void VU1_addGSregister(int, long);
 extern unsigned int FastTweenColor_r(unsigned int, unsigned int, float) __asm__("func_001FA8A8");
 extern void blarg_draw_strand_strip(int *, float *);
 extern short beam_barrier_draw_scale;
-extern int beam_barrier_blend_a SDATA(D_L06_00161E60);
-extern int beam_barrier_blend_b SDATA(D_L06_00161E64);
-extern int beam_barrier_blend_c SDATA(D_L06_00161E68);
-extern int beam_barrier_blend_d SDATA(D_L06_00161E6C);
-extern int beam_barrier_strand_color SDATA(D_L06_00161E80);
-extern int beam_barrier_strand_end_color SDATA(D_L06_00161E84);
-extern float beam_barrier_strand_u_step SDATA(D_L06_00161E88);
-extern float beam_barrier_uv_phase SDATA(D_L06_00161E8C);
+extern int beam_barrier_blend_a SDATA(beam_barrier_blend_a);
+extern int beam_barrier_blend_b SDATA(beam_barrier_blend_b);
+extern int beam_barrier_blend_c SDATA(beam_barrier_blend_c);
+extern int beam_barrier_blend_d SDATA(beam_barrier_blend_d);
+extern int beam_barrier_strand_color SDATA(beam_barrier_strand_color);
+extern int beam_barrier_strand_end_color SDATA(beam_barrier_strand_end_color);
+extern float beam_barrier_strand_u_step SDATA(beam_barrier_strand_u_step);
+extern float beam_barrier_uv_phase SDATA(beam_barrier_uv_phase);
 extern int beam_barrier_strand_life MACRO_ADDR;
 extern int beam_barrier_strand_fade_ticks MACRO_ADDR;
 extern int beam_barrier_strand_timers[] MACRO_ADDR;
@@ -2270,7 +2270,7 @@ extern float FastSubRots(float, float);
 extern float FastDiffRots(float, float);
 extern float FastAddRots(float, float);
 
-extern float alien_snapper_steer_half_arc SDATA(D_L06_00161F68);
+extern float alien_snapper_steer_half_arc SDATA(alien_snapper_steer_half_arc);
 /* angle from a moby to its owner, clamped to the gaps between obstacles in its list */
 float compute_alien_snapper_target_gap_angle(char *self) {
     char *owner = *(char **)(((char *)((Moby *)self)->pvars) + 0x160);
@@ -2401,12 +2401,12 @@ extern float g_frame_time_q __asm__("D_0015EE6C") MACRO_ADDR;
 extern int blarg_camera_slot_used[];
 extern char blarg_camera_slots[];
 extern int level_game_mode_q_q __asm__("D_L06_0015F6A8") MACRO_ADDR;
-extern int alien_queen_scale_manip_flag SDATA(D_L06_00161F80);
-extern float alien_queen_walk_speed SDATA(D_L06_00161F84);
+extern int alien_queen_scale_manip_flag SDATA(alien_queen_scale_manip_flag);
+extern float alien_queen_walk_speed SDATA(alien_queen_walk_speed);
 extern short alien_queen_walk_accel;
-extern float alien_queen_attack_range SDATA(D_L06_00161F90);
-extern float alien_queen_back_off_range SDATA(D_L06_00161F94);
-extern float alien_queen_attack_arc SDATA(D_L06_00161F98);
+extern float alien_queen_attack_range SDATA(alien_queen_attack_range);
+extern float alien_queen_back_off_range SDATA(alien_queen_back_off_range);
+extern float alien_queen_attack_arc SDATA(alien_queen_attack_arc);
 extern unsigned char menu_item_enabled_19_q[] __asm__("D_0013D4AF");
 extern unsigned char race_gates_base_q[] __asm__("D_0013D605");
 extern unsigned char menu_item_enabled_115_q[] __asm__("D_0013D50F");
@@ -2778,9 +2778,9 @@ extern Hero g_hero;
 
 extern short active_marker_id NOT_SDA;
 extern int *blarg_paths[];
-extern float alien_queen_glow_phase_speed_degrees_gp SDATA(D_L06_00161F9C);
-extern int alien_queen_glow_color_a SDATA(D_L06_00161FA0);
-extern int alien_queen_glow_color_b SDATA(D_L06_00161FA4);
+extern float alien_queen_glow_phase_speed_degrees_gp SDATA(alien_queen_glow_phase_speed_degrees_gp);
+extern int alien_queen_glow_color_a SDATA(alien_queen_glow_color_a);
+extern int alien_queen_glow_color_b SDATA(alien_queen_glow_color_b);
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
 
@@ -3100,7 +3100,7 @@ typedef struct {
     f32 speed; /* 0xE8 */
     s32 ground; /* 0xEC */
 } CirclerVars;
-extern f32 circler_max_speed SDATA(D_L06_00161F88);
+extern f32 circler_max_speed SDATA(circler_max_speed);
 extern short alien_queen_walk_accel;
 
 extern f32 FastAddRots(f32, f32);
@@ -3165,23 +3165,25 @@ extern f32 g_frame_time_sq MACRO_ADDR;
 extern struct Moby *CreateMoby(s32);
 extern void set_moby_list_state(int, int);
 
-extern float blarg_slide_pair_open_a SDATA(D_L06_00161FAC);
-extern float blarg_slide_pair_open_b SDATA(D_L06_00161FB0);
-extern float blarg_slide_pair_stutter_a SDATA(D_L06_00161FB4);
-extern float blarg_slide_pair_stutter_b SDATA(D_L06_00161FB8);
-extern float blarg_slide_pair_stutter_rot_a SDATA(D_L06_00161FBC);
-extern float blarg_slide_pair_stutter_rot_b SDATA(D_L06_00161FC0);
-extern float moby_pair_phase_distance_acceleration_gp SDATA(D_L06_00161FC4);
-extern float moby_pair_phase_distance_deceleration_gp SDATA(D_L06_00161FC8);
-extern float blarg_slide_pair_max_speed SDATA(D_L06_00161FCC);
-extern float moby_pair_phase_rotation_y_acceleration_degrees_gp SDATA(D_L06_00161FD0);
-extern float moby_pair_phase_rotation_y_deceleration_degrees_gp SDATA(D_L06_00161FD4);
-extern float blarg_slide_pair_rot_max_speed SDATA(D_L06_00161FD8);
-extern int blarg_slide_pair_hold_ticks_min SDATA(D_L06_00161FDC);
-extern int blarg_slide_pair_hold_ticks_max SDATA(D_L06_00161FE0);
-extern int blarg_slide_pair_move_ticks_min SDATA(D_L06_00161FE4);
-extern int blarg_slide_pair_move_ticks_max SDATA(D_L06_00161FE8);
-extern float blarg_slide_pair_reset SDATA(D_L06_00161FEC);
+extern float blarg_slide_pair_open_a SDATA(blarg_slide_pair_open_a);
+extern float blarg_slide_pair_open_b SDATA(blarg_slide_pair_open_b);
+extern float blarg_slide_pair_stutter_a SDATA(blarg_slide_pair_stutter_a);
+extern float blarg_slide_pair_stutter_b SDATA(blarg_slide_pair_stutter_b);
+extern float blarg_slide_pair_stutter_rot_a SDATA(blarg_slide_pair_stutter_rot_a);
+extern float blarg_slide_pair_stutter_rot_b SDATA(blarg_slide_pair_stutter_rot_b);
+extern float moby_pair_phase_distance_acceleration_gp SDATA(moby_pair_phase_distance_acceleration_gp);
+extern float moby_pair_phase_distance_deceleration_gp SDATA(moby_pair_phase_distance_deceleration_gp);
+extern float blarg_slide_pair_max_speed SDATA(blarg_slide_pair_max_speed);
+extern float moby_pair_phase_rotation_y_acceleration_degrees_gp
+    SDATA(moby_pair_phase_rotation_y_acceleration_degrees_gp);
+extern float moby_pair_phase_rotation_y_deceleration_degrees_gp
+    SDATA(moby_pair_phase_rotation_y_deceleration_degrees_gp);
+extern float blarg_slide_pair_rot_max_speed SDATA(blarg_slide_pair_rot_max_speed);
+extern int blarg_slide_pair_hold_ticks_min SDATA(blarg_slide_pair_hold_ticks_min);
+extern int blarg_slide_pair_hold_ticks_max SDATA(blarg_slide_pair_hold_ticks_max);
+extern int blarg_slide_pair_move_ticks_min SDATA(blarg_slide_pair_move_ticks_min);
+extern int blarg_slide_pair_move_ticks_max SDATA(blarg_slide_pair_move_ticks_max);
+extern float blarg_slide_pair_reset SDATA(blarg_slide_pair_reset);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l06/gameplay/entities/002b4770.c, FUN_L06_002fbfb0. */
 void update_moby_pair_transforms(char *moby) {
@@ -3409,13 +3411,13 @@ extern unsigned char menu_item_enabled_19_r[] __asm__("D_0013D4AF");
 extern unsigned char D_0013D5CA[];
 
 extern char pad_globals_base_r[] __asm__("D_0013A5E0");
-extern float blarg_lift_scale SDATA(D_L06_00161FF0);
-extern float blarg_lift_max_speed SDATA(D_L06_00161FF4);
-extern float blarg_lift_accel SDATA(D_L06_00161FF8);
-extern int blarg_lift_idle_glow_a SDATA(D_L06_00161FFC);
-extern int blarg_lift_idle_glow_b SDATA(D_L06_00162000);
-extern int blarg_lift_moving_glow SDATA(D_L06_00162004);
-extern int blarg_lift_cutscene_seen SDATA(D_L06_00162008);
+extern float blarg_lift_scale SDATA(blarg_lift_scale);
+extern float blarg_lift_max_speed SDATA(blarg_lift_max_speed);
+extern float blarg_lift_accel SDATA(blarg_lift_accel);
+extern int blarg_lift_idle_glow_a SDATA(blarg_lift_idle_glow_a);
+extern int blarg_lift_idle_glow_b SDATA(blarg_lift_idle_glow_b);
+extern int blarg_lift_moving_glow SDATA(blarg_lift_moving_glow);
+extern int blarg_lift_cutscene_seen SDATA(blarg_lift_cutscene_seen);
 
 /* Update of moby class 1061: a lift that the hero calls with buttons; it moves between two heights and switches its
    helper mobys. */

@@ -496,11 +496,11 @@ extern float vec_distance_xy(void *, void *);
 extern int *blarg_paths[];
 extern float g_frame_time MACRO_ADDR;
 extern short g_current_level_index;
-extern float space_commando_hit_knockback_speed SDATA(D_L06_00162040);
-extern float space_commando_hit_knockback_lift SDATA(D_L06_00162044);
-extern float space_commando_death_knockback_speed SDATA(D_L06_00162048);
-extern float space_commando_death_knockback_lift SDATA(D_L06_0016204C);
-extern float space_commando_sight_range SDATA(D_L06_0016203C);
+extern float space_commando_hit_knockback_speed SDATA(space_commando_hit_knockback_speed);
+extern float space_commando_hit_knockback_lift SDATA(space_commando_hit_knockback_lift);
+extern float space_commando_death_knockback_speed SDATA(space_commando_death_knockback_speed);
+extern float space_commando_death_knockback_lift SDATA(space_commando_death_knockback_lift);
+extern float space_commando_sight_range SDATA(space_commando_sight_range);
 extern unsigned char gSkillPoints[];
 
 // Level 06 update for a moby with a 12-state machine: aims at a target, runs timed effects, and sets its rotation.
@@ -508,7 +508,7 @@ void func_L06_002FFF70_r(char *m) __asm__("func_L06_002FFF70");
 /* Level 06 update of a 12-state moby (aims at a target, spawns hit sparks in states 1-2, a burst in 3-10, then a
    ground-probe against the target); starts from the staged near miss, checked statically against the assembly. */
 extern int truncate_float_to_s32(float);
-extern float space_commando_scale SDATA(D_L06_00162038);
+extern float space_commando_scale SDATA(space_commando_scale);
 
 // Level 06 update for a moby with a 12-state machine: aims at a target, runs timed effects, and sets its rotation.
 void process_blarg_space_commando_hits(char *m) {
@@ -663,8 +663,8 @@ extern float FastSin(float);
 extern void FastVecAdd(float *, float *, float *);
 extern int scale_ticks(int);
 extern char blarg_coll_hit_normal[];
-extern float space_commando_beam_fan_degrees SDATA(D_L06_00162064);
-extern int space_commando_beam_ticks SDATA(D_L06_00162068);
+extern float space_commando_beam_fan_degrees SDATA(space_commando_beam_fan_degrees);
+extern int space_commando_beam_ticks SDATA(space_commando_beam_ticks);
 // Builds the sixteen-segment fan of data vectors for a moby from its yaw.
 void initialize_blarg_space_commando_beam(Moby *m) {
     char *d = ((char *)m->pvars);
@@ -697,7 +697,7 @@ extern float ApproachValue(float *, float, float);
 extern void AddDrawCallback(void *, void *);
 extern void DrawBeam(char *moby);
 extern void spawn_blarg_space_commando_beam_sparks(char *moby);
-extern float space_commando_beam_spread_speed SDATA(D_L06_00162060);
+extern float space_commando_beam_spread_speed SDATA(space_commando_beam_spread_speed);
 
 typedef struct {
     float x, y, z, w;
@@ -800,16 +800,16 @@ typedef struct {
     f32 uv[4][2];
     u64 tag[4];
 } QuadPacket_f680;
-extern s32 beam_blend_minuend_selector_gp SDATA(D_L06_0016206C);
-extern s32 beam_blend_subtrahend_selector_gp SDATA(D_L06_00162070);
-extern s32 beam_blend_alpha_multiplier_selector_gp SDATA(D_L06_00162074);
-extern s32 beam_blend_addend_selector_gp SDATA(D_L06_00162078);
-extern s32 beam_blend_fixed_alpha_gp SDATA(D_L06_0016207C);
-extern s32 space_commando_beam_texture SDATA(D_L06_00162080);
-extern s32 space_commando_beam_outer_color_a SDATA(D_L06_00162084);
-extern s32 space_commando_beam_outer_color_b SDATA(D_L06_00162088);
-extern s32 space_commando_beam_inner_color_a SDATA(D_L06_0016208C);
-extern s32 space_commando_beam_inner_color_b SDATA(D_L06_00162090);
+extern s32 beam_blend_minuend_selector_gp SDATA(beam_blend_minuend_selector_gp);
+extern s32 beam_blend_subtrahend_selector_gp SDATA(beam_blend_subtrahend_selector_gp);
+extern s32 beam_blend_alpha_multiplier_selector_gp SDATA(beam_blend_alpha_multiplier_selector_gp);
+extern s32 beam_blend_addend_selector_gp SDATA(beam_blend_addend_selector_gp);
+extern s32 beam_blend_fixed_alpha_gp SDATA(beam_blend_fixed_alpha_gp);
+extern s32 space_commando_beam_texture SDATA(space_commando_beam_texture);
+extern s32 space_commando_beam_outer_color_a SDATA(space_commando_beam_outer_color_a);
+extern s32 space_commando_beam_outer_color_b SDATA(space_commando_beam_outer_color_b);
+extern s32 space_commando_beam_inner_color_a SDATA(space_commando_beam_inner_color_a);
+extern s32 space_commando_beam_inner_color_b SDATA(space_commando_beam_inner_color_b);
 extern f32 space_commando_beam_uvs[4][2];
 extern void VU1_addGSregister(s32, s64);
 extern u64 GetEffectTex(s32);
@@ -957,7 +957,7 @@ void spawn_blarg_space_commando_beam_sparks(char *moby) {
 }
 extern void DeleteMoby(void *);
 extern float g_frame_time_sq MACRO_ADDR;
-extern float spinning_fragment_scale SDATA(D_L06_00162110);
+extern float spinning_fragment_scale SDATA(spinning_fragment_scale);
 
 /* A falling spinning moby's per-frame velocities, the moby's pvars block. */
 typedef struct FallingSpinVars {
@@ -1241,16 +1241,16 @@ void activate_bot_door_lock_target(unsigned char *a, unsigned char *m) {
 void activate_bot_door_lock_target(unsigned char *a, unsigned char *m);
 typedef int OvlQuad_p __attribute__((mode(TI)));
 extern void draw_bot_door_lock_glow(char *);
-extern float bot_door_lock_bob_height SDATA(D_L06_0016236C);
-extern float bot_door_lock_bob_period SDATA(D_L06_00162370);
-extern float bot_door_lock_pulse_period SDATA(D_L06_00162374);
-extern float bot_door_lock_glow_amplitude SDATA(D_L06_00162378);
-extern float bot_door_lock_fade_max SDATA(D_L06_0016237C);
+extern float bot_door_lock_bob_height SDATA(bot_door_lock_bob_height);
+extern float bot_door_lock_bob_period SDATA(bot_door_lock_bob_period);
+extern float bot_door_lock_pulse_period SDATA(bot_door_lock_pulse_period);
+extern float bot_door_lock_glow_amplitude SDATA(bot_door_lock_glow_amplitude);
+extern float bot_door_lock_fade_max SDATA(bot_door_lock_fade_max);
 extern unsigned char hero_vehicle_mode NOT_SDA;
 extern int draw_map51 MACRO_ADDR;
 extern unsigned char saved_mission_state[];
 extern short g_current_level_index;
-extern int level_mobys_q SDATA(D_L06_00160058);
+extern int level_mobys_q SDATA(level_mobys_q);
 extern int truncate_float_to_s32(float);
 extern float FastVecDist(void *, void *);
 extern void AddDrawCallback(void *, void *);

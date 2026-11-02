@@ -275,7 +275,7 @@ extern float vendor_hologram_cone_vertices[][4];
 extern float vendor_hologram_cone_uvs[][2];
 extern int vendor_hologram_cone_colors[];
 extern int vendor_menu[];
-extern float vendor_screen_uv_scroll SDATA(D_L00_00161244);
+extern float vendor_screen_uv_scroll SDATA(vendor_screen_uv_scroll);
 
 struct HoloPacket {
     float pos[4][4];

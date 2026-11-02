@@ -87,7 +87,7 @@ typedef struct {
 } L12Slot;
 extern char hero_globals_base[];
 extern char hoven_water_tile_overflow_message[];
-extern int hoven_water_tile_slot_count SDATA(D_L12_00161410);
+extern int hoven_water_tile_slot_count SDATA(hoven_water_tile_slot_count);
 extern char hoven_ripple_patch_fixed[];
 extern char hoven_water_render_params[];
 extern char hoven_lights[];
@@ -421,23 +421,23 @@ void select_hoven_anklebiter_pursuit_animation(Moby *moby) {
 }
 typedef int u128 __attribute__((mode(TI)));
 extern float g_frame_time MACRO_ADDR;
-extern float spark_scatter_vertical_z_range_start SDATA(D_L12_00161908);
-extern float spark_scatter_vertical_z_range_end SDATA(D_L12_0016190C);
-extern float spark_scatter_radial_z_range_start SDATA(D_L12_00161910);
-extern float spark_scatter_radial_z_range_end SDATA(D_L12_00161914);
-extern float spark_scatter_radial_xy_scale_range_start SDATA(D_L12_00161918);
-extern float spark_scatter_radial_xy_scale_range_end SDATA(D_L12_0016191C);
-extern float spark_scatter_vertical_vector_w SDATA(D_L12_00161920);
-extern float spark_scatter_radial_vector_w SDATA(D_L12_00161924);
-extern int spark_scatter_frame_count_range_start SDATA(D_L12_0016192C);
-extern int spark_scatter_frame_count_range_end SDATA(D_L12_00161930);
-extern int spark_scatter_second_frame_count_range_start SDATA(D_L12_00161934);
-extern int spark_scatter_second_frame_count_range_end SDATA(D_L12_00161938);
-extern int spark_scatter_third_frame_count_range_start SDATA(D_L12_0016193C);
-extern int spark_scatter_third_frame_count_range_end SDATA(D_L12_00161940);
-extern int spark_scatter_color_a SDATA(D_L12_00161944);
-extern int spark_scatter_color_b SDATA(D_L12_00161948);
-extern int spark_scatter_sprite SDATA(D_L12_0016194C);
+extern float spark_scatter_vertical_z_range_start SDATA(spark_scatter_vertical_z_range_start);
+extern float spark_scatter_vertical_z_range_end SDATA(spark_scatter_vertical_z_range_end);
+extern float spark_scatter_radial_z_range_start SDATA(spark_scatter_radial_z_range_start);
+extern float spark_scatter_radial_z_range_end SDATA(spark_scatter_radial_z_range_end);
+extern float spark_scatter_radial_xy_scale_range_start SDATA(spark_scatter_radial_xy_scale_range_start);
+extern float spark_scatter_radial_xy_scale_range_end SDATA(spark_scatter_radial_xy_scale_range_end);
+extern float spark_scatter_vertical_vector_w SDATA(spark_scatter_vertical_vector_w);
+extern float spark_scatter_radial_vector_w SDATA(spark_scatter_radial_vector_w);
+extern int spark_scatter_frame_count_range_start SDATA(spark_scatter_frame_count_range_start);
+extern int spark_scatter_frame_count_range_end SDATA(spark_scatter_frame_count_range_end);
+extern int spark_scatter_second_frame_count_range_start SDATA(spark_scatter_second_frame_count_range_start);
+extern int spark_scatter_second_frame_count_range_end SDATA(spark_scatter_second_frame_count_range_end);
+extern int spark_scatter_third_frame_count_range_start SDATA(spark_scatter_third_frame_count_range_start);
+extern int spark_scatter_third_frame_count_range_end SDATA(spark_scatter_third_frame_count_range_end);
+extern int spark_scatter_color_a SDATA(spark_scatter_color_a);
+extern int spark_scatter_color_b SDATA(spark_scatter_color_b);
+extern int spark_scatter_sprite SDATA(spark_scatter_sprite);
 extern float random_angle_radians(void);
 extern float random_float_between(float, float);
 extern void clear_u64_value(void *);
@@ -1009,25 +1009,25 @@ int move_hoven_anklebiter_toward_heading(char *moby, float target) {
     }
     return r;
 }
-extern int hoven_troll_burst_count SDATA(D_L12_001618BC);
-extern int hoven_troll_burst_particles_per_point SDATA(D_L12_001618C0);
-extern float hoven_troll_burst_origin_jitter SDATA(D_L12_001618C4);
-extern float hoven_troll_burst_particle_jitter SDATA(D_L12_001618C8);
-extern float hoven_troll_burst_accel_jitter SDATA(D_L12_001618CC);
-extern float hoven_troll_burst_xy_speed_min SDATA(D_L12_001618D0);
-extern float hoven_troll_burst_xy_speed_max SDATA(D_L12_001618D4);
-extern float hoven_troll_burst_z_speed_min SDATA(D_L12_001618D8);
-extern float hoven_troll_burst_z_speed_max SDATA(D_L12_001618DC);
-extern float hoven_troll_burst_gravity SDATA(D_L12_001618E0);
-extern float hoven_troll_burst_start_size SDATA(D_L12_001618E4);
-extern float hoven_troll_burst_end_size SDATA(D_L12_001618E8);
-extern int hoven_troll_burst_color_a_from SDATA(D_L12_001618EC);
-extern int hoven_troll_burst_color_b_from SDATA(D_L12_001618F0);
-extern int hoven_troll_burst_color_a_to SDATA(D_L12_001618F4);
-extern int hoven_troll_burst_color_b_to SDATA(D_L12_001618F8);
-extern int hoven_troll_burst_life_ticks SDATA(D_L12_001618FC);
-extern int hoven_troll_burst_phase2_ticks SDATA(D_L12_00161900);
-extern int hoven_troll_burst_phase3_ticks SDATA(D_L12_00161904);
+extern int hoven_troll_burst_count SDATA(hoven_troll_burst_count);
+extern int hoven_troll_burst_particles_per_point SDATA(hoven_troll_burst_particles_per_point);
+extern float hoven_troll_burst_origin_jitter SDATA(hoven_troll_burst_origin_jitter);
+extern float hoven_troll_burst_particle_jitter SDATA(hoven_troll_burst_particle_jitter);
+extern float hoven_troll_burst_accel_jitter SDATA(hoven_troll_burst_accel_jitter);
+extern float hoven_troll_burst_xy_speed_min SDATA(hoven_troll_burst_xy_speed_min);
+extern float hoven_troll_burst_xy_speed_max SDATA(hoven_troll_burst_xy_speed_max);
+extern float hoven_troll_burst_z_speed_min SDATA(hoven_troll_burst_z_speed_min);
+extern float hoven_troll_burst_z_speed_max SDATA(hoven_troll_burst_z_speed_max);
+extern float hoven_troll_burst_gravity SDATA(hoven_troll_burst_gravity);
+extern float hoven_troll_burst_start_size SDATA(hoven_troll_burst_start_size);
+extern float hoven_troll_burst_end_size SDATA(hoven_troll_burst_end_size);
+extern int hoven_troll_burst_color_a_from SDATA(hoven_troll_burst_color_a_from);
+extern int hoven_troll_burst_color_b_from SDATA(hoven_troll_burst_color_b_from);
+extern int hoven_troll_burst_color_a_to SDATA(hoven_troll_burst_color_a_to);
+extern int hoven_troll_burst_color_b_to SDATA(hoven_troll_burst_color_b_to);
+extern int hoven_troll_burst_life_ticks SDATA(hoven_troll_burst_life_ticks);
+extern int hoven_troll_burst_phase2_ticks SDATA(hoven_troll_burst_phase2_ticks);
+extern int hoven_troll_burst_phase3_ticks SDATA(hoven_troll_burst_phase3_ticks);
 extern void add_random_offset_to_vector_xyz(float *v, float s);
 extern void FastVecScale(void *, void *, float);
 extern int FastTweenColor(int, int, float);
@@ -1278,7 +1278,7 @@ void emit_platform_exhaust_effects(char *m) {
     PartType23Spawn(p2, 0.05f, 1.01f, 1.03f, 6, b, 30000.0f, 0x404040);
 }
 extern float g_frame_scale_sq MACRO_ADDR;
-extern float platform_tilt_approach_divisor SDATA(D_L12_00161998);
+extern float platform_tilt_approach_divisor SDATA(platform_tilt_approach_divisor);
 extern float FastVecLength(void *);
 extern float FastDiffRots(float, float);
 extern void ApproachValue(void *, float, float);
@@ -1317,7 +1317,7 @@ void steer_platform_toward_target(Moby *m, float *ang, void *target, int unused,
     FastVecAdd(&m->pos, &m->pos, &d->vel);
 }
 extern char hero_globals_base[];
-extern float platform_tilt_offset_divisor SDATA(D_L12_00161994);
+extern float platform_tilt_offset_divisor SDATA(platform_tilt_offset_divisor);
 extern void FastVecSub(void *, void *, void *);
 extern void euler_to_matrix(void *, void *);
 extern void transform_vector(void *, void *, void *);
@@ -3545,8 +3545,8 @@ extern int PlayBankSound(int, int, int);
 extern void spawn_randomized_bolt_drop(void *, int, int, int, int);
 extern int fast_dec_timer(int *arg0);
 
-extern int helicopter_hit_count SDATA(D_0015EF04);
-extern int planetbuster_engaged SDATA(D_L12_00161A34);
+extern int helicopter_hit_count SDATA(helicopter_hit_count);
+extern int planetbuster_engaged SDATA(planetbuster_engaged);
 
 // Spawns the effect for a moby and updates its state flags from the effect timer.
 void process_helicopter_hits_and_reactivation(char *m, int flag) {
@@ -3593,9 +3593,9 @@ extern void process_helicopter_hits_and_reactivation(char *m, int flag);
 extern void initialize_path_descriptor(char *p);
 extern float FastVecLength(void *a);
 extern float FastAddRots(float, float);
-extern float helicopter_path_speed SDATA(D_L12_00161A28);
-extern float helicopter_path_bank_scale SDATA(D_L12_00161A2C);
-extern float helicopter_rotation_smoothing_divisor SDATA(D_L12_00161A30);
+extern float helicopter_path_speed SDATA(helicopter_path_speed);
+extern float helicopter_path_bank_scale SDATA(helicopter_path_bank_scale);
+extern float helicopter_rotation_smoothing_divisor SDATA(helicopter_rotation_smoothing_divisor);
 
 /* UpdateMoby_336: does nothing without a data block. State 0 picks a table from hoven_paths[data + 0x74] and
  * places the moby at one of its points; state 1 walks the table's points (index at data + 0x60), easing the angles at

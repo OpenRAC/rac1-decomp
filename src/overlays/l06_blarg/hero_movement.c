@@ -700,7 +700,7 @@ extern char voice_pool[];
 extern MoveUsageTable usage_stats;
 extern int gameplay_event_frame_count MACRO_ADDR;
 
-extern int blarg_usage_event_count SDATA(D_L06_0015F76C);
+extern int blarg_usage_event_count SDATA(blarg_usage_event_count);
 extern HeroPlayerCameraView referencePosition;
 
 extern int *blarg_moby_hits[];

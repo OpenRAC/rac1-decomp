@@ -116,7 +116,7 @@ void update_moby_scene_visibility_and_height_reflection(M *moby) {
             break;
     }
 }
-extern float rocket_tank_shot_speed SDATA(D_L18_0016250C);
+extern float rocket_tank_shot_speed SDATA(rocket_tank_shot_speed);
 extern short rocket_tank_shot_speed_b __asm__("D_L18_0016250C");
 extern void update_rocket_tank_damage_and_aim(void *);
 extern char *func_0020D348(int);
@@ -364,8 +364,8 @@ void update_rocket_tank_damage_and_aim(void *mv) {
     StepColorFade(m, &d->color_fade);
 }
 extern int *veldin2_paths[];
-extern float rocket_tank_path_speed SDATA(D_L18_00162508);
-extern float rocket_tank_child_anim_ref_speed SDATA(D_L18_00162510);
+extern float rocket_tank_path_speed SDATA(rocket_tank_path_speed);
+extern float rocket_tank_child_anim_ref_speed SDATA(rocket_tank_child_anim_ref_speed);
 extern float g_frame_time_g __asm__("D_0015EE6C") MACRO_ADDR;
 extern float FastDiffRots(float, float);
 extern void move_4318(int, int, float, float, float, int);

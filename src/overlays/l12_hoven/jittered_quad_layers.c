@@ -27,16 +27,16 @@ extern void draw_world_quad(void *, void *, int);
 extern float hoven_jitter_quad_uvs[][2];
 extern Vq hoven_jitter_quad_back_corners[];
 extern Vq hoven_jitter_quad_front_corners[];
-extern int hoven_jitter_quad_color SDATA(D_L12_00162010);
-extern int hoven_jitter_quad_back_color SDATA(D_L12_00162014);
-extern int hoven_jitter_quad_blend_a SDATA(D_L12_0016203C);
-extern int hoven_jitter_quad_blend_b SDATA(D_L12_00162040);
-extern int hoven_jitter_quad_blend_c SDATA(D_L12_00162044);
-extern int hoven_jitter_quad_blend_d SDATA(D_L12_00162048);
-extern int hoven_jitter_quad_back_blend_a SDATA(D_L12_0016204C);
-extern int hoven_jitter_quad_back_blend_b SDATA(D_L12_00162050);
-extern int hoven_jitter_quad_back_blend_c SDATA(D_L12_00162054);
-extern int hoven_jitter_quad_back_blend_d SDATA(D_L12_00162058);
+extern int hoven_jitter_quad_color SDATA(hoven_jitter_quad_color);
+extern int hoven_jitter_quad_back_color SDATA(hoven_jitter_quad_back_color);
+extern int hoven_jitter_quad_blend_a SDATA(hoven_jitter_quad_blend_a);
+extern int hoven_jitter_quad_blend_b SDATA(hoven_jitter_quad_blend_b);
+extern int hoven_jitter_quad_blend_c SDATA(hoven_jitter_quad_blend_c);
+extern int hoven_jitter_quad_blend_d SDATA(hoven_jitter_quad_blend_d);
+extern int hoven_jitter_quad_back_blend_a SDATA(hoven_jitter_quad_back_blend_a);
+extern int hoven_jitter_quad_back_blend_b SDATA(hoven_jitter_quad_back_blend_b);
+extern int hoven_jitter_quad_back_blend_c SDATA(hoven_jitter_quad_back_blend_c);
+extern int hoven_jitter_quad_back_blend_d SDATA(hoven_jitter_quad_back_blend_d);
 
 /* Draw five layers of randomly jittered textured quads in the moby's frame. */
 void draw_hoven_jittered_quad_layers(char *m) {

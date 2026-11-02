@@ -19,7 +19,7 @@ extern Camera gCameraSlotsLvl[];
 
 extern int gCamPostUpdCountLvl MACRO_ADDR;
 extern int gCameraDefCountLvl MACRO_ADDR;
-extern float follow_cam_turn_blend_weight SDATA(D_L00_0015F040);
+extern float follow_cam_turn_blend_weight SDATA(follow_cam_turn_blend_weight);
 extern CameraDef *camera_descriptors MACRO_ADDR;
 extern void clear_u64_value(void *);
 

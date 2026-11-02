@@ -243,8 +243,8 @@ void HomingProjectileUpdate(char *m) {
 extern struct Moby *CreateMoby_m(int) __asm__("func_0020D348");
 extern float FastVecLength(void *);
 
-extern float rocket_50_spawn_max_yaw_deg SDATA(D_L16_001614A8);
-extern float rocket_50_spawn_max_pitch_deg SDATA(D_L16_001614AC);
+extern float rocket_50_spawn_max_yaw_deg SDATA(rocket_50_spawn_max_yaw_deg);
+extern float rocket_50_spawn_max_pitch_deg SDATA(rocket_50_spawn_max_pitch_deg);
 
 /* spawn a Rocket moby thrown along a vector with random spin */
 char *spawn_rocket_50_moby(char *owner, char *vec, void *pos, void *vel, int c) {
@@ -317,9 +317,9 @@ extern int g_current_level_index MACRO_ADDR;
 extern int kalebo3_game_mode MACRO_ADDR;
 extern int kalebo3_cutscene_scene_id;
 
-extern int blarg_elite_commando_bobbing_and_voice_enabled_gp SDATA(D_L16_00161B34);
-extern int blarg_elite_commando_joint_aim_enabled_gp SDATA(D_L16_00161B38);
-extern int blarg_elite_commando_joint_sparks_enabled_gp SDATA(D_L16_00161B3C);
+extern int blarg_elite_commando_bobbing_and_voice_enabled_gp SDATA(blarg_elite_commando_bobbing_and_voice_enabled_gp);
+extern int blarg_elite_commando_joint_aim_enabled_gp SDATA(blarg_elite_commando_joint_aim_enabled_gp);
+extern int blarg_elite_commando_joint_sparks_enabled_gp SDATA(blarg_elite_commando_joint_sparks_enabled_gp);
 
 /* Update the floating enemy's patrol, attack and death states. */
 void blarg_elite_commando_update(char *m) {
@@ -575,7 +575,7 @@ extern float multiply_global_factor(float);
 extern int FindNearestEligibleMoby(float, char *, void *, int, int, void *, int);
 extern int FindNearestTargetMoby(float, char *, void *);
 extern float vec_distance_xy(void *, void *);
-extern int elite_commando_reward_hit_count SDATA(D_0015EF10);
+extern int elite_commando_reward_hit_count SDATA(elite_commando_reward_hit_count);
 extern char hero_globals_base[];
 
 typedef struct {
@@ -889,7 +889,7 @@ extern void clear_u64_value(void *);
 
 extern void PartType11Spawn(void *, void *, int, int, int, int, int, int, float, float);
 extern void spawn_glow_particle(void *, void *, void *, float, int, int, int, int, int);
-extern float blarg_elite_commando_extra_glow_gate SDATA(D_L16_0015F6B4);
+extern float blarg_elite_commando_extra_glow_gate SDATA(blarg_elite_commando_extra_glow_gate);
 typedef struct {
     int values[6];
 } L16ParticleChoices;
@@ -1265,7 +1265,7 @@ extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, 
 extern void RerollEffectCounter(void *, void *);
 extern void StepColorFade(void *, void *);
 extern int FindNearestEligibleMoby(float, char *, void *, int, int, void *, int);
-extern float armed_transport_bounds_scale SDATA(D_L16_00161E38);
+extern float armed_transport_bounds_scale SDATA(armed_transport_bounds_scale);
 typedef struct {
     char pad[0x74];
     unsigned char active;
@@ -1414,8 +1414,8 @@ void update_armed_transport_joint_animation(char *moby) {
     data->turret_pitch = data->unk_17C;
     EaseManipulatorOffsets(moby, data->turret_manip, 2, a, b);
 }
-extern float grindrail_barrier_spin_speed_deg SDATA(D_L16_00161EC0);
-extern float grindrail_barrier_pulse_speed SDATA(D_L16_00161EC4);
+extern float grindrail_barrier_spin_speed_deg SDATA(grindrail_barrier_spin_speed_deg);
+extern float grindrail_barrier_pulse_speed SDATA(grindrail_barrier_pulse_speed);
 extern short grindrail_barrier_core_spin_speeds_deg;
 extern float FastAddRots(float, float);
 extern int Sound_IsPlaying(void *, int);

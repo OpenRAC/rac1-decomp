@@ -135,7 +135,7 @@ struct RobotDogVars {
 };
 typedef int Q_293720 __attribute__((mode(TI)));
 extern char *kerwan_mobys_t __asm__("D_L03_00160058") MACRO_ADDR;
-extern float kerwan_train_car_spacing SDATA(D_L03_001613F0);
+extern float kerwan_train_car_spacing SDATA(kerwan_train_car_spacing);
 extern float FastCos(float);
 extern float FastSin(float);
 extern void FastVecAdd(void *, void *, void *);

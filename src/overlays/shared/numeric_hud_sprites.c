@@ -197,19 +197,19 @@ extern int trick_combo_score_table[];
 extern int trick_combo_trick_flag2 MACRO_ADDR;
 extern int trick_combo_trick_flag1 MACRO_ADDR;
 extern int rilgar_frame_count MACRO_ADDR;
-extern int trick_combo_text_color SDATA(D_L05_0015F980);
-extern int trick_combo_flash_color_from SDATA(D_L05_0015F974);
-extern int trick_combo_flash_color_to SDATA(D_L05_0015F978);
-extern int trick_combo_spin_text_x SDATA(D_L05_0015F994);
-extern int trick_combo_spin_text_y SDATA(D_L05_0015F998);
-extern int trick_combo_count_text_x SDATA(D_L05_0015F99C);
-extern int trick_combo_count_text_y SDATA(D_L05_0015F9A0);
-extern int trick_combo_result_x SDATA(D_L05_0015F9A4);
-extern int trick_combo_result_y SDATA(D_L05_0015F9A8);
-extern int trick_combo_banner_x SDATA(D_L05_0015F984);
-extern int trick_combo_banner_y SDATA(D_L05_0015F988);
-extern int trick_combo_banner_color_from SDATA(D_L05_0015F98C);
-extern int trick_combo_banner_color_to SDATA(D_L05_0015F990);
+extern int trick_combo_text_color SDATA(trick_combo_text_color);
+extern int trick_combo_flash_color_from SDATA(trick_combo_flash_color_from);
+extern int trick_combo_flash_color_to SDATA(trick_combo_flash_color_to);
+extern int trick_combo_spin_text_x SDATA(trick_combo_spin_text_x);
+extern int trick_combo_spin_text_y SDATA(trick_combo_spin_text_y);
+extern int trick_combo_count_text_x SDATA(trick_combo_count_text_x);
+extern int trick_combo_count_text_y SDATA(trick_combo_count_text_y);
+extern int trick_combo_result_x SDATA(trick_combo_result_x);
+extern int trick_combo_result_y SDATA(trick_combo_result_y);
+extern int trick_combo_banner_x SDATA(trick_combo_banner_x);
+extern int trick_combo_banner_y SDATA(trick_combo_banner_y);
+extern int trick_combo_banner_color_from SDATA(trick_combo_banner_color_from);
+extern int trick_combo_banner_color_to SDATA(trick_combo_banner_color_to);
 
 /* HUD element update: draws the level 5 challenge readouts and the progress bar; returns the element's width. */
 int draw_trick_combo_hud(char *a) {
@@ -337,7 +337,7 @@ int draw_trick_combo_hud(char *a) {
 
 extern int animation_parameter_target_id MACRO_ADDR;
 extern int rilgar_hud_hold_active MACRO_ADDR;
-extern int rilgar_hud_release_count SDATA(D_L05_0015FA50);
+extern int rilgar_hud_release_count SDATA(rilgar_hud_release_count);
 // Releases the held hud element if any, clears a flag and bumps a counter.
 void hud_release_held_element(void) {
     if (animation_parameter_target_id != -1) {

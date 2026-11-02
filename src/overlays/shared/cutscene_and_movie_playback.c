@@ -63,7 +63,7 @@ struct P {
     int busy;
 };
 extern struct P g_controller_state;
-extern int controller_idle_frames SDATA(D_L00_001610B0);
+extern int controller_idle_frames SDATA(controller_idle_frames);
 extern int level_frame_counter MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int current_moby_mission_complete MACRO_ADDR;
@@ -564,7 +564,7 @@ extern unsigned char gCheats[] MACRO_ADDR;
 extern float big_head_cutscene_fov_scale MACRO_ADDR;
 extern char g_debug_camera[];
 extern unsigned char D_0015EEB4[4] MACRO_ADDR;
-extern float big_head_cutscene_camera_pullback SDATA(D_L00_0015F680);
+extern float big_head_cutscene_camera_pullback SDATA(big_head_cutscene_camera_pullback);
 
 typedef struct CutsceneCamKey {
     u8 pad_00[0xC];
@@ -761,7 +761,7 @@ typedef struct {
 extern u32 pad0_pressed;
 extern f32 gFadeLvl_r __asm__("D_L00_0015F4FC") MACRO_ADDR;
 extern VendorCutscene cutscene_state_r __asm__("D_L00_0016C960");
-extern s32 challenge_mode SDATA(D_0015EFA0);
+extern s32 challenge_mode SDATA(challenge_mode);
 extern s32 decode_mode MACRO_ADDR;
 extern void apply_level_specific_cutscene_moby_effects(void);
 extern void Music_ContinueStreamIfReady(void);
@@ -1083,7 +1083,7 @@ extern int movie_request_decoder_state MACRO_ADDR;
 extern int movie_request_source_mode MACRO_ADDR;
 extern int movie_request_audio_context MACRO_ADDR;
 extern int queued_movie_request MACRO_ADDR;
-extern int movie_request_decoder_buffer SDATA(D_L00_00161114);
+extern int movie_request_decoder_buffer SDATA(movie_request_decoder_buffer);
 
 /* Stop sound, wait for the loader to go idle, then start the movie load. */
 void play_queued_movie(void) {

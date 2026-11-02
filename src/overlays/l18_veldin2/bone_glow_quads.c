@@ -23,7 +23,7 @@ extern float drek_boss_rider_glow_offset;
 extern float drek_boss_rider_glow_size;
 extern float drek_boss_rider_glow_offset_b __asm__("D_L18_001624E4");
 extern float drek_boss_rider_glow_size_b __asm__("D_L18_001624E0");
-extern float veldin2_bone_glow_axis_offset SDATA(D_L18_00162590);
+extern float veldin2_bone_glow_axis_offset SDATA(veldin2_bone_glow_axis_offset);
 
 /* Draws pulsing glow quads on two bones of the moby, the color cycling over time. */
 void draw_moby_color_cycling_bone_glows(void *moby) {

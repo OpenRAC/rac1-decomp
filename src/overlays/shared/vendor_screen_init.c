@@ -30,7 +30,7 @@ extern int novalis_skip_frame MACRO_ADDR;
 extern int novalis_game_mode MACRO_ADDR;
 extern float novalis_fade_level MACRO_ADDR;
 extern int relocated_address_base MACRO_ADDR;
-extern int novalis_white_fade_level SDATA(D_L01_0015F500);
+extern int novalis_white_fade_level SDATA(novalis_white_fade_level);
 extern char novalis_vendor_screen_anchor_offset;
 
 extern void snd_FlushSoundCommands(void);

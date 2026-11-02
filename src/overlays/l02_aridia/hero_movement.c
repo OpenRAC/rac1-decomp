@@ -655,7 +655,7 @@ extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 
-extern int aridia_usage_event_count SDATA(D_L02_0015F76C);
+extern int aridia_usage_event_count SDATA(aridia_usage_event_count);
 extern HeroPlayerCameraView aridia_player_camera;
 
 extern Moby *aridia_coll_sphere_moby_hits[];

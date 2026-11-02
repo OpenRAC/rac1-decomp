@@ -34,7 +34,7 @@ extern void FastVecSub(void *dst, void *a, void *b);
 extern void FastVecScale(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern int scale_ticks(int);
-extern int quartu_owner_target_particle_life SDATA(D_L15_0016027C);
+extern int quartu_owner_target_particle_life SDATA(quartu_owner_target_particle_life);
 
 // spawns a particle at a position offset from a moby
 void spawn_owner_target_particle(int a0, void *a1, char *a2) {

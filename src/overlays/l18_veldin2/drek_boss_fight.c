@@ -72,17 +72,17 @@ extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern short *veldin2_moby_groups[];
 
-extern int veldin2_moby_group_move_enabled SDATA(D_L18_00162318);
-extern float veldin2_moby_group_accel SDATA(D_L18_00162320);
-extern float veldin2_moby_group_decel SDATA(D_L18_00162324);
-extern float veldin2_moby_group_max_speed SDATA(D_L18_00162328);
-extern float veldin2_moby_group_late_accel SDATA(D_L18_0016232C);
-extern float veldin2_moby_group_late_decel SDATA(D_L18_00162330);
-extern float veldin2_moby_group_late_max_speed SDATA(D_L18_00162334);
-extern float veldin2_moby_group_fall_progress SDATA(D_L18_00162344);
-extern float veldin2_moby_group_debris_progress SDATA(D_L18_00162348);
-extern int veldin2_moby_group_debris_start_rate SDATA(D_L18_0016234C);
-extern float veldin2_moby_group_debris_scale SDATA(D_L18_00162350);
+extern int veldin2_moby_group_move_enabled SDATA(veldin2_moby_group_move_enabled);
+extern float veldin2_moby_group_accel SDATA(veldin2_moby_group_accel);
+extern float veldin2_moby_group_decel SDATA(veldin2_moby_group_decel);
+extern float veldin2_moby_group_max_speed SDATA(veldin2_moby_group_max_speed);
+extern float veldin2_moby_group_late_accel SDATA(veldin2_moby_group_late_accel);
+extern float veldin2_moby_group_late_decel SDATA(veldin2_moby_group_late_decel);
+extern float veldin2_moby_group_late_max_speed SDATA(veldin2_moby_group_late_max_speed);
+extern float veldin2_moby_group_fall_progress SDATA(veldin2_moby_group_fall_progress);
+extern float veldin2_moby_group_debris_progress SDATA(veldin2_moby_group_debris_progress);
+extern int veldin2_moby_group_debris_start_rate SDATA(veldin2_moby_group_debris_start_rate);
+extern float veldin2_moby_group_debris_scale SDATA(veldin2_moby_group_debris_scale);
 
 extern float veldin2_zero_vec[] MACRO_ADDR;
 
@@ -377,15 +377,15 @@ struct GlowVars_33D8 {
     f32 scroll;
     f32 max_alpha;
 };
-extern int veldin2_glow_color_start SDATA(D_L18_00162358);
-extern int veldin2_glow_color_end SDATA(D_L18_0016235C);
-extern float veldin2_glow_layer_spacing SDATA(D_L18_00162360);
-extern float veldin2_glow_height_spread SDATA(D_L18_00162364);
-extern float veldin2_glow_scroll_speed SDATA(D_L18_00162370);
-extern int glow_moby_blend_minuend_selector_gp SDATA(D_L18_00162374);
-extern int glow_moby_blend_subtrahend_selector_gp SDATA(D_L18_00162378);
-extern int glow_moby_blend_factor_selector_gp SDATA(D_L18_0016237C);
-extern int glow_moby_blend_addend_selector_gp SDATA(D_L18_00162380);
+extern int veldin2_glow_color_start SDATA(veldin2_glow_color_start);
+extern int veldin2_glow_color_end SDATA(veldin2_glow_color_end);
+extern float veldin2_glow_layer_spacing SDATA(veldin2_glow_layer_spacing);
+extern float veldin2_glow_height_spread SDATA(veldin2_glow_height_spread);
+extern float veldin2_glow_scroll_speed SDATA(veldin2_glow_scroll_speed);
+extern int glow_moby_blend_minuend_selector_gp SDATA(glow_moby_blend_minuend_selector_gp);
+extern int glow_moby_blend_subtrahend_selector_gp SDATA(glow_moby_blend_subtrahend_selector_gp);
+extern int glow_moby_blend_factor_selector_gp SDATA(glow_moby_blend_factor_selector_gp);
+extern int glow_moby_blend_addend_selector_gp SDATA(glow_moby_blend_addend_selector_gp);
 extern float veldin2_camera_pos[];
 extern float veldin2_glow_quad_uvs[4][2];
 typedef int Q33D8 __attribute__((mode(TI)));
@@ -456,10 +456,10 @@ void draw_glow_moby_layered_quads(struct Moby *moby) {
         draw_world_quad(&quads[3], matrix, 0);
     }
 }
-extern int veldin2_lift_count SDATA(D_L18_00162388);
+extern int veldin2_lift_count SDATA(veldin2_lift_count);
 extern short veldin2_lift_raised_flag;
-extern float veldin2_lift_uv_scroll SDATA(D_L18_00162398);
-extern float veldin2_lift_uv_scroll_speed SDATA(D_L18_0016239C);
+extern float veldin2_lift_uv_scroll SDATA(veldin2_lift_uv_scroll);
+extern float veldin2_lift_uv_scroll_speed SDATA(veldin2_lift_uv_scroll_speed);
 extern unsigned char g_hero_field_20a5[];
 extern unsigned char menu_item_enabled_105[];
 extern float ApproachWithVelocity(float, float, float, float, float *, float *);
@@ -603,13 +603,13 @@ typedef float FVec4[4] __attribute__((aligned(16)));
 typedef struct {
     FVec4 v;
 } FRow;
-extern int veldin2_lift_mesh_blend_a SDATA(D_L18_001623A0);
-extern int veldin2_lift_mesh_blend_b SDATA(D_L18_001623A4);
-extern int veldin2_lift_mesh_blend_c SDATA(D_L18_001623A8);
-extern int veldin2_lift_mesh_blend_d SDATA(D_L18_001623AC);
-extern int veldin2_lift_mesh_blend_fix SDATA(D_L18_001623B0);
-extern int veldin2_lift_mesh_tex SDATA(D_L18_001623B4);
-extern int lift_mesh_color SDATA(D_L18_001623B8);
+extern int veldin2_lift_mesh_blend_a SDATA(veldin2_lift_mesh_blend_a);
+extern int veldin2_lift_mesh_blend_b SDATA(veldin2_lift_mesh_blend_b);
+extern int veldin2_lift_mesh_blend_c SDATA(veldin2_lift_mesh_blend_c);
+extern int veldin2_lift_mesh_blend_d SDATA(veldin2_lift_mesh_blend_d);
+extern int veldin2_lift_mesh_blend_fix SDATA(veldin2_lift_mesh_blend_fix);
+extern int veldin2_lift_mesh_tex SDATA(veldin2_lift_mesh_tex);
+extern int lift_mesh_color SDATA(lift_mesh_color);
 extern float veldin2_lift25_uvs[][2];
 extern FRow veldin2_lift25_vertices[];
 extern short veldin2_lift25_quads[][4][2];
@@ -742,7 +742,7 @@ extern int veldin2_cinematic_mode MACRO_ADDR;
 extern unsigned char gCheats[] MACRO_ADDR;
 extern MobyList veldin2_cutscene_state;
 extern char veldin2_big_head_manipulator[];
-extern float veldin2_big_head_scale SDATA(D_L18_00162434);
+extern float veldin2_big_head_scale SDATA(veldin2_big_head_scale);
 extern void AttachManipulator(char *, int, void *);
 
 /* Re-initialize the Drek effect block for each listed moby that has no active effect. */
@@ -878,13 +878,13 @@ extern float veldin2_camera_pos[];
 extern int *veldin2_paths[];
 /* A 2-byte declaration, like the other variables of this object: retail reads it through $gp outside a delay
    slot (+0x2D4). */
-extern int drek_boss_camera_reset_done SDATA(D_L18_00162430);
-extern int drek_boss_intro_started SDATA(D_L18_001623F0);
-extern float drek_boss_arena_radius SDATA(D_L18_00162408);
+extern int drek_boss_camera_reset_done SDATA(drek_boss_camera_reset_done);
+extern int drek_boss_intro_started SDATA(drek_boss_intro_started);
+extern float drek_boss_arena_radius SDATA(drek_boss_arena_radius);
 
-extern int drek_boss_camera_move_ticks SDATA(D_L18_00162424);
-extern int drek_boss_camera_move_hold_ticks SDATA(D_L18_00162428);
-extern int drek_boss_class_3d7_ticks SDATA(D_L18_0016242C);
+extern int drek_boss_camera_move_ticks SDATA(drek_boss_camera_move_ticks);
+extern int drek_boss_camera_move_hold_ticks SDATA(drek_boss_camera_move_hold_ticks);
+extern int drek_boss_class_3d7_ticks SDATA(drek_boss_class_3d7_ticks);
 extern void count_drek_boss_platform_event_once(char *moby);
 extern void update_drek_boss_damage_and_phase_transitions(char *moby);
 extern void update_drek_boss_arena_circling_movement(char *moby);
@@ -2009,10 +2009,10 @@ void count_drek_boss_platform_event_once(char *moby) {
         }
     }
 }
-extern float drek_boss_scale SDATA(D_L18_001623C0);
-extern int drek_boss_phase_camera_ticks SDATA(D_L18_00162414);
-extern int drek_boss_arena_transition_frame_count_gp SDATA(D_L18_00162418);
-extern int drek_boss_arena_phase_reset_requested_gp SDATA(D_L18_0016241C);
+extern float drek_boss_scale SDATA(drek_boss_scale);
+extern int drek_boss_phase_camera_ticks SDATA(drek_boss_phase_camera_ticks);
+extern int drek_boss_arena_transition_frame_count_gp SDATA(drek_boss_arena_transition_frame_count_gp);
+extern int drek_boss_arena_phase_reset_requested_gp SDATA(drek_boss_arena_phase_reset_requested_gp);
 
 typedef struct {
     char pad0[0x204];
@@ -2325,8 +2325,8 @@ extern void ClampVectorLength(void *a, float x);
 extern float vec_distance_xy(void *, void *);
 extern char *veldin2_arena_nodes MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
-extern float drek_boss_arena_radius_mode_f SDATA(D_L18_0016240C);
-extern float drek_boss_follow_distance SDATA(D_L18_001623DC);
+extern float drek_boss_arena_radius_mode_f SDATA(drek_boss_arena_radius_mode_f);
+extern float drek_boss_follow_distance SDATA(drek_boss_follow_distance);
 
 /* Moves a moby's follow distance toward a target, clamped to a range, then applies it. */
 void update_drek_boss_hero_follow_movement(char *m) {
@@ -2462,8 +2462,8 @@ void func_L18_002F7F00_r(Moby *moby) {
 extern int request_floating_platform_sink(void *obj);
 extern void request_floating_platform_tilt(void *, int, int);
 extern float FastVecDot(void *, void *);
-extern float drek_boss_platform_target_radius SDATA(D_L18_001623C8);
-extern int drek_boss_platform_tilt_ticks SDATA(D_L18_001623CC);
+extern float drek_boss_platform_target_radius SDATA(drek_boss_platform_target_radius);
+extern int drek_boss_platform_tilt_ticks SDATA(drek_boss_platform_tilt_ticks);
 
 /* Returns the nearest sinkable platform (Floating Platform) in range for the Drek boss to fire at. */
 unsigned char *select_drek_boss_platform_firing_target(char *self) {
@@ -2627,20 +2627,20 @@ extern char *veldin2_camera_descriptors MACRO_ADDR;
 extern int veldin2_camera_trigger_used[];
 extern char veldin2_camera_trigger_records[];
 extern char veldin2_player_camera[];
-extern float drek_boss_scalar_maximum_speed_gp SDATA(D_L18_00162440);
-extern float drek_boss_cam_accel SDATA(D_L18_00162444);
-extern float drek_boss_scalar_blend_min_hero_distance_gp SDATA(D_L18_00162448);
-extern float drek_boss_scalar_blend_max_hero_distance_gp SDATA(D_L18_0016244C);
-extern float drek_boss_first_scalar_far_hero_target_gp SDATA(D_L18_00162450);
-extern float drek_boss_second_scalar_far_hero_target_gp SDATA(D_L18_00162454);
-extern float drek_boss_first_scalar_near_hero_target_gp SDATA(D_L18_00162458);
-extern float drek_boss_second_scalar_near_hero_target_gp SDATA(D_L18_0016245C);
-extern float drek_boss_first_scalar_gated_follow_target_gp SDATA(D_L18_00162460);
-extern float drek_boss_second_scalar_gated_follow_target_gp SDATA(D_L18_00162464);
-extern float drek_boss_first_scalar_near_node_follow_target_gp SDATA(D_L18_00162468);
-extern float drek_boss_cam_node_height SDATA(D_L18_0016246C);
-extern float drek_boss_follow_camera_distance_target_gp SDATA(D_L18_00162470);
-extern float drek_boss_follow_camera_height_target_gp SDATA(D_L18_00162474);
+extern float drek_boss_scalar_maximum_speed_gp SDATA(drek_boss_scalar_maximum_speed_gp);
+extern float drek_boss_cam_accel SDATA(drek_boss_cam_accel);
+extern float drek_boss_scalar_blend_min_hero_distance_gp SDATA(drek_boss_scalar_blend_min_hero_distance_gp);
+extern float drek_boss_scalar_blend_max_hero_distance_gp SDATA(drek_boss_scalar_blend_max_hero_distance_gp);
+extern float drek_boss_first_scalar_far_hero_target_gp SDATA(drek_boss_first_scalar_far_hero_target_gp);
+extern float drek_boss_second_scalar_far_hero_target_gp SDATA(drek_boss_second_scalar_far_hero_target_gp);
+extern float drek_boss_first_scalar_near_hero_target_gp SDATA(drek_boss_first_scalar_near_hero_target_gp);
+extern float drek_boss_second_scalar_near_hero_target_gp SDATA(drek_boss_second_scalar_near_hero_target_gp);
+extern float drek_boss_first_scalar_gated_follow_target_gp SDATA(drek_boss_first_scalar_gated_follow_target_gp);
+extern float drek_boss_second_scalar_gated_follow_target_gp SDATA(drek_boss_second_scalar_gated_follow_target_gp);
+extern float drek_boss_first_scalar_near_node_follow_target_gp SDATA(drek_boss_first_scalar_near_node_follow_target_gp);
+extern float drek_boss_cam_node_height SDATA(drek_boss_cam_node_height);
+extern float drek_boss_follow_camera_distance_target_gp SDATA(drek_boss_follow_camera_distance_target_gp);
+extern float drek_boss_follow_camera_height_target_gp SDATA(drek_boss_follow_camera_height_target_gp);
 
 /* Steers the camera-ish follow targets of a moby from its state and the player distance. */
 void update_drek_boss_state_dependent_scalars(char *moby) {
@@ -2758,25 +2758,25 @@ extern int fast_subtract_rotations_cf(void *);
 extern unsigned char *PartType44Spawn(void *pos, float *vec, int s, int a, int col, int n, float x, float y, float z,
                                       float w, float pw);
 extern char *PartType21Spawn(void *pos, void *dir, int c, int d, int n, int k, float f);
-extern int drek_boss_fire_puff_color SDATA(D_L18_0016247C);
-extern int drek_boss_fire_puff_end_color SDATA(D_L18_00162480);
-extern int drek_boss_fire_spark_count SDATA(D_L18_00162498);
-extern float drek_boss_fire_spark_speed_min SDATA(D_L18_0016249C);
-extern float drek_boss_fire_spark_speed_max SDATA(D_L18_001624A0);
-extern float drek_boss_fire_spark_size SDATA(D_L18_001624A4);
-extern float drek_boss_fire_spark_grow_rate SDATA(D_L18_001624A8);
-extern float drek_boss_fire_spark_gravity SDATA(D_L18_001624AC);
-extern int drek_boss_fire_spark_spin_min SDATA(D_L18_001624B0);
-extern int drek_boss_fire_spark_spin_max SDATA(D_L18_001624B4);
-extern int drek_boss_fire_spark_life_min SDATA(D_L18_001624B8);
-extern int drek_boss_fire_spark_life_max SDATA(D_L18_001624BC);
-extern float drek_boss_fire_spark_damping SDATA(D_L18_001624C0);
-extern int drek_boss_fire_puff_count SDATA(D_L18_001624C8);
-extern float drek_boss_fire_puff_speed_min SDATA(D_L18_001624CC);
-extern float drek_boss_fire_puff_speed_max SDATA(D_L18_001624D0);
-extern int drek_boss_fire_puff_life_min SDATA(D_L18_001624D4);
-extern int drek_boss_fire_puff_life_max SDATA(D_L18_001624D8);
-extern float drek_boss_fire_puff_size SDATA(D_L18_001624DC);
+extern int drek_boss_fire_puff_color SDATA(drek_boss_fire_puff_color);
+extern int drek_boss_fire_puff_end_color SDATA(drek_boss_fire_puff_end_color);
+extern int drek_boss_fire_spark_count SDATA(drek_boss_fire_spark_count);
+extern float drek_boss_fire_spark_speed_min SDATA(drek_boss_fire_spark_speed_min);
+extern float drek_boss_fire_spark_speed_max SDATA(drek_boss_fire_spark_speed_max);
+extern float drek_boss_fire_spark_size SDATA(drek_boss_fire_spark_size);
+extern float drek_boss_fire_spark_grow_rate SDATA(drek_boss_fire_spark_grow_rate);
+extern float drek_boss_fire_spark_gravity SDATA(drek_boss_fire_spark_gravity);
+extern int drek_boss_fire_spark_spin_min SDATA(drek_boss_fire_spark_spin_min);
+extern int drek_boss_fire_spark_spin_max SDATA(drek_boss_fire_spark_spin_max);
+extern int drek_boss_fire_spark_life_min SDATA(drek_boss_fire_spark_life_min);
+extern int drek_boss_fire_spark_life_max SDATA(drek_boss_fire_spark_life_max);
+extern float drek_boss_fire_spark_damping SDATA(drek_boss_fire_spark_damping);
+extern int drek_boss_fire_puff_count SDATA(drek_boss_fire_puff_count);
+extern float drek_boss_fire_puff_speed_min SDATA(drek_boss_fire_puff_speed_min);
+extern float drek_boss_fire_puff_speed_max SDATA(drek_boss_fire_puff_speed_max);
+extern int drek_boss_fire_puff_life_min SDATA(drek_boss_fire_puff_life_min);
+extern int drek_boss_fire_puff_life_max SDATA(drek_boss_fire_puff_life_max);
+extern float drek_boss_fire_puff_size SDATA(drek_boss_fire_puff_size);
 
 /* Spawns the spark and smoke particles of a Drek boss shot at the muzzle point. */
 void spawn_drek_boss_firing_effects(char *moby, void *p) {
@@ -2819,16 +2819,16 @@ void spawn_drek_boss_firing_effects(char *moby, void *p) {
 extern float FastSin(float);
 
 extern int veldin2_frame_count MACRO_ADDR;
-extern int drek_boss_rider_glow_period SDATA(D_L18_001624F0);
-extern int drek_boss_rider_glow_color_a SDATA(D_L18_001624E8);
-extern int drek_boss_rider_glow_color_b SDATA(D_L18_001624EC);
-extern float drek_boss_rider_glow_size SDATA(D_L18_001624E0);
-extern float drek_boss_rider_glow_offset SDATA(D_L18_001624E4);
-extern int drek_boss_charge_glow_color_a SDATA(D_L18_001624FC);
-extern int drek_boss_charge_glow_color_b SDATA(D_L18_00162500);
-extern int drek_boss_charge_glow_period SDATA(D_L18_00162504);
-extern float drek_boss_charge_glow_size SDATA(D_L18_001624F4);
-extern float drek_boss_charge_glow_offset SDATA(D_L18_001624F8);
+extern int drek_boss_rider_glow_period SDATA(drek_boss_rider_glow_period);
+extern int drek_boss_rider_glow_color_a SDATA(drek_boss_rider_glow_color_a);
+extern int drek_boss_rider_glow_color_b SDATA(drek_boss_rider_glow_color_b);
+extern float drek_boss_rider_glow_size SDATA(drek_boss_rider_glow_size);
+extern float drek_boss_rider_glow_offset SDATA(drek_boss_rider_glow_offset);
+extern int drek_boss_charge_glow_color_a SDATA(drek_boss_charge_glow_color_a);
+extern int drek_boss_charge_glow_color_b SDATA(drek_boss_charge_glow_color_b);
+extern int drek_boss_charge_glow_period SDATA(drek_boss_charge_glow_period);
+extern float drek_boss_charge_glow_size SDATA(drek_boss_charge_glow_size);
+extern float drek_boss_charge_glow_offset SDATA(drek_boss_charge_glow_offset);
 
 typedef struct {
     char pad0[0x3A0];

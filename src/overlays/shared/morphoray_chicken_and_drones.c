@@ -597,7 +597,7 @@ extern int coll_hit_result[];
 extern int morphoray_chicken_slots[];
 extern char morphoray_chicken_slot_state_blocks[];
 extern char morphoray_chicken_slot_aux_blocks[];
-extern int morphoray_chicken_next_slot SDATA(D_L00_00161924);
+extern int morphoray_chicken_next_slot SDATA(morphoray_chicken_next_slot);
 extern char morphoray_chicken_ai_params;
 extern unsigned char screen_globals_base[];
 
@@ -1185,9 +1185,9 @@ extern float g_frame_time MACRO_ADDR;
 extern float veldin1_zero_vec[] MACRO_ADDR;
 extern float homing_shot_rotation_params MACRO_ADDR;
 extern short homing_shot_attached_particle_size;
-extern float homing_shot_trail_initial_size_min SDATA(D_L00_00161940);
-extern float homing_shot_trail_initial_size_max SDATA(D_L00_00161944);
-extern float homing_shot_trail_size_blend_target SDATA(D_L00_00161948);
+extern float homing_shot_trail_initial_size_min SDATA(homing_shot_trail_initial_size_min);
+extern float homing_shot_trail_initial_size_max SDATA(homing_shot_trail_initial_size_max);
+extern float homing_shot_trail_size_blend_target SDATA(homing_shot_trail_size_blend_target);
 
 // Builds a moby's data block from its source moby and a position vector; returns the new moby or 0.
 char *spawn_homing_shot(char *a, char *vec, char *b, float f12, float f13, float f14, float f15) {
@@ -1626,8 +1626,8 @@ extern int scale_ticks(int);
 extern void moby_build_matrix(void *);
 extern void copy_hero_moby_field_38(void *);
 extern float g_frame_time MACRO_ADDR;
-extern int feather_base_lifetime SDATA(D_L00_00161974);
-extern float feather_scale_multiplier SDATA(D_L00_00161970);
+extern int feather_base_lifetime SDATA(feather_base_lifetime);
+extern float feather_scale_multiplier SDATA(feather_scale_multiplier);
 extern unsigned char hero_globals_base_r[] __asm__("D_0013E633");
 
 typedef struct {
@@ -1702,7 +1702,7 @@ extern void DeleteMoby(void *);
 extern int scale_ticks(int);
 extern int fast_subtract_rotations_cf(void *);
 extern float g_frame_time_sq MACRO_ADDR;
-extern float falling_moby_horizontal_velocity_scale SDATA(D_L00_00161978);
+extern float falling_moby_horizontal_velocity_scale SDATA(falling_moby_horizontal_velocity_scale);
 
 // UpdateMoby_428: apply gravity and drag to the moby's velocity, then test for despawn.
 void update_damped_falling_moby(Moby *m) {

@@ -1369,7 +1369,7 @@ float sum_basis_absolute_differences(float *a, float *b) {
     }
     return s;
 }
-extern int hero_item_history_delay_target SDATA(D_L00_0015F774);
+extern int hero_item_history_delay_target SDATA(hero_item_history_delay_target);
 extern void matrix_copy_rows(void *, void *);
 
 extern void clear_u64_value(void *);

@@ -1689,7 +1689,7 @@ extern int fast_dec_timer(int *arg0);
 extern char kerwan_coll_hit_point[];
 extern char kerwan_coll_hit_normal[];
 extern Moby *kerwan_coll_hit_moby;
-extern float homing_spark_turn_rate SDATA(D_L03_00161BB0);
+extern float homing_spark_turn_rate SDATA(homing_spark_turn_rate);
 
 /* Update of moby class 848: a spark that homes on its target moby, sheds particles and an arc when close, and dies on
    a hit. */
@@ -1893,7 +1893,7 @@ extern int kerwan_game_mode MACRO_ADDR;
 extern unsigned char gCheats[] MACRO_ADDR;
 extern G_2DC848 kerwan_cutscene_state;
 extern unsigned char kerwan_big_head_manipulator[];
-extern float kerwan_cutscene_manipulator_scale SDATA(D_L03_00161C44);
+extern float kerwan_cutscene_manipulator_scale SDATA(kerwan_cutscene_manipulator_scale);
 
 /* Re-arms the matching entry of the level's moby list in mode 2 (attach_big_head_cheat_manipulator with argument 1). */
 void attach_shared_manipulator_to_matching_class_moby(char *a) {

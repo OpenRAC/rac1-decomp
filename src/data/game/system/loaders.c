@@ -3,6 +3,42 @@
 
 #include "structs/data/game_system_loaders.h"
 
+u32 sound_archive_base DATA_SECTION(D_0015EF50) = 0;
+
+u32 level_archive_base DATA_SECTION(D_0015EF54) = 0;
+
+u32 hud_bank_alloc_file[] DATA_SECTION(D_0015FC70) = {
+#include "data_inc/D_0015FC70.inc"
+};
+
+u32 hud_bank1_stash_comment[] DATA_SECTION(D_0015FC80) = {
+#include "data_inc/D_0015FC80.inc"
+};
+
+u32 hud_bank3_stash_comment[] DATA_SECTION(D_0015FC90) = {
+#include "data_inc/D_0015FC90.inc"
+};
+
+u32 hud_bank4_stash_comment[] DATA_SECTION(D_0015FCA0) = {
+#include "data_inc/D_0015FCA0.inc"
+};
+
+u32 hud_bank5_stash_comment[] DATA_SECTION(D_0015FCB0) = {
+#include "data_inc/D_0015FCB0.inc"
+};
+
+int runtime_resource_tag DATA_SECTION(D_00160044) = {0};
+
+int class_resource_count DATA_SECTION(D_00160048) = {0};
+
+int particle_texture_range_count[] DATA_SECTION(D_001601C0) = {
+#include "data_inc/D_001601C0.inc"
+};
+
+int D_00160588[] DATA_SECTION(D_00160588) = {
+#include "data_inc/D_00160588.inc"
+};
+
 int vu1_chain_buffer_2[3] DATA_SECTION(D_001941C8) = {0};
 
 u32 hud_bank_table_ptr[8] DATA_SECTION(D_0019A500) = {0};

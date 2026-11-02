@@ -448,13 +448,13 @@ extern short fleet_ripple_pair_uv_bufs;
 extern short fleet_ripple_pair_color_bufs;
 extern short fleet_ripple_pair_template_verts;
 extern short fleet_ripple_pair_template_uvs;
-extern int fleet_ripple_pair_alpha_fix SDATA(D_L17_001622C8);
-extern int fleet_ripple_pair_texture SDATA(D_L17_001622CC);
-extern int fleet_ripple_pair_alpha SDATA(D_L17_001622D0);
-extern float fleet_ripple_pair_wavelength SDATA(D_L17_001622D4);
-extern float fleet_ripple_pair_wave_period SDATA(D_L17_001622D8);
-extern float fleet_ripple_pair_wave_height SDATA(D_L17_001622DC);
-extern float fleet_ripple_pair_uv_scroll_speed SDATA(D_L17_001622E0);
+extern int fleet_ripple_pair_alpha_fix SDATA(fleet_ripple_pair_alpha_fix);
+extern int fleet_ripple_pair_texture SDATA(fleet_ripple_pair_texture);
+extern int fleet_ripple_pair_alpha SDATA(fleet_ripple_pair_alpha);
+extern float fleet_ripple_pair_wavelength SDATA(fleet_ripple_pair_wavelength);
+extern float fleet_ripple_pair_wave_period SDATA(fleet_ripple_pair_wave_period);
+extern float fleet_ripple_pair_wave_height SDATA(fleet_ripple_pair_wave_height);
+extern float fleet_ripple_pair_uv_scroll_speed SDATA(fleet_ripple_pair_uv_scroll_speed);
 typedef struct {
     float f0;
     float f4;
@@ -538,13 +538,13 @@ extern int fleet_ripple_ring_vertex_count[1] SDATA(D_L17_00162300);
 extern int fleet_ripple_ring_vertex_buf[1] SDATA(D_L17_00162320);
 extern int fleet_ripple_ring_uv_buf[1] SDATA(D_L17_00162328);
 extern int fleet_ripple_ring_color_buf[1] SDATA(D_L17_00162330);
-extern int fleet_ripple_ring_alpha_fix SDATA(D_L17_00162334);
-extern int fleet_ripple_ring_texture SDATA(D_L17_00162338);
-extern int fleet_ripple_ring_alpha SDATA(D_L17_0016233C);
-extern float ring_ripple_radial_phase_distance_scale_gp SDATA(D_L17_00162340);
-extern float ring_ripple_phase_period_gp SDATA(D_L17_00162344);
-extern float ring_ripple_z_amplitude_gp SDATA(D_L17_00162348);
-extern float ring_ripple_uv_scroll_rate_gp SDATA(D_L17_0016234C);
+extern int fleet_ripple_ring_alpha_fix SDATA(fleet_ripple_ring_alpha_fix);
+extern int fleet_ripple_ring_texture SDATA(fleet_ripple_ring_texture);
+extern int fleet_ripple_ring_alpha SDATA(fleet_ripple_ring_alpha);
+extern float ring_ripple_radial_phase_distance_scale_gp SDATA(ring_ripple_radial_phase_distance_scale_gp);
+extern float ring_ripple_phase_period_gp SDATA(ring_ripple_phase_period_gp);
+extern float ring_ripple_z_amplitude_gp SDATA(ring_ripple_z_amplitude_gp);
+extern float ring_ripple_uv_scroll_rate_gp SDATA(ring_ripple_uv_scroll_rate_gp);
 extern T4 fleet_ripple_ring_uv_scroll_factors;
 
 /* Builds the rippling 89-point ring around the moby (template points moved to its position, z waved by distance from
@@ -607,13 +607,13 @@ extern int fleet_light_ring_vertex_count[1] SDATA(D_L17_001623C0);
 extern int fleet_light_ring_vertex_buf[1] SDATA(D_L17_001623E0);
 extern int fleet_light_ring_uv_buf[1] SDATA(D_L17_001623E8);
 extern int fleet_light_ring_color_buf[1] SDATA(D_L17_001623F0);
-extern int fleet_light_ring_alpha_fix SDATA(D_L17_001623F4);
-extern int fleet_light_ring_texture SDATA(D_L17_001623F8);
-extern int fleet_light_ring_alpha SDATA(D_L17_001623FC);
-extern float fleet_light_ring_wavelength SDATA(D_L17_00162400);
-extern float fleet_light_ring_wave_period SDATA(D_L17_00162404);
-extern float fleet_light_ring_wave_height SDATA(D_L17_00162408);
-extern float fleet_light_ring_uv_scroll_speed SDATA(D_L17_0016240C);
+extern int fleet_light_ring_alpha_fix SDATA(fleet_light_ring_alpha_fix);
+extern int fleet_light_ring_texture SDATA(fleet_light_ring_texture);
+extern int fleet_light_ring_alpha SDATA(fleet_light_ring_alpha);
+extern float fleet_light_ring_wavelength SDATA(fleet_light_ring_wavelength);
+extern float fleet_light_ring_wave_period SDATA(fleet_light_ring_wave_period);
+extern float fleet_light_ring_wave_height SDATA(fleet_light_ring_wave_height);
+extern float fleet_light_ring_uv_scroll_speed SDATA(fleet_light_ring_uv_scroll_speed);
 
 /* Builds and draws the animated ring of lights around a moby: 45 vertices and colours, then two passes of 45 texture
    coordinates. */
@@ -697,9 +697,9 @@ typedef int u128_2F3450 __attribute__((mode(TI)));
 extern int fleet_moby_killed_bits[];
 extern char *fleet_camera_points MACRO_ADDR;
 
-extern float shuttle_scale_near SDATA(D_L17_0016242C);
-extern float shuttle_scale_far SDATA(D_L17_00162428);
-extern int fleet_shown_help_message SDATA(D_L17_0015F674);
+extern float shuttle_scale_near SDATA(shuttle_scale_near);
+extern float shuttle_scale_far SDATA(shuttle_scale_far);
+extern int fleet_shown_help_message SDATA(fleet_shown_help_message);
 
 typedef struct {
     char pad0[0x20];
@@ -1290,7 +1290,7 @@ extern float fleet_backdrop_glow_angles[];
 extern int fleet_backdrop_glow_colors_from[];
 extern int fleet_backdrop_glow_colors_to[];
 extern float fleet_backdrop_glow_color_blend[];
-extern int fleet_backdrop_beam_color SDATA(D_L17_00162438);
+extern int fleet_backdrop_beam_color SDATA(fleet_backdrop_beam_color);
 extern short fleet_backdrop_beam_scroll_speeds;
 
 typedef struct {
@@ -1408,9 +1408,9 @@ extern void draw_fleet_backdrop_quads(char *);
 
 extern float D_L17_0015F718 MACRO_ADDR;
 typedef int u128 __attribute__((mode(TI)));
-extern float fleet_backdrop_bend_length SDATA(D_L17_00162450);
-extern float fleet_backdrop_base_length SDATA(D_L17_00162454);
-extern float fleet_backdrop_length_divisor SDATA(D_L17_00162458);
+extern float fleet_backdrop_bend_length SDATA(fleet_backdrop_bend_length);
+extern float fleet_backdrop_base_length SDATA(fleet_backdrop_base_length);
+extern float fleet_backdrop_length_divisor SDATA(fleet_backdrop_length_divisor);
 extern float fleet_backdrop_glow_spin_speeds[];
 extern float fleet_backdrop_glow_blend_dir[];
 extern float fleet_backdrop_glow_blend_speeds[];
@@ -1496,7 +1496,7 @@ extern void matrix_mul_vec3(void *, void *, void *);
 
 extern char fleet_blarg_ship_gun_offset_alt[];
 extern char fleet_blarg_ship_gun_offset[];
-extern float fleet_blarg_ship_shot_speed SDATA(D_L17_00162468);
+extern float fleet_blarg_ship_shot_speed SDATA(fleet_blarg_ship_shot_speed);
 
 /* UpdateMoby 1843: a flying fleet craft that circles, follows a path, strafes the player and fires. */
 void blarg_ship_1843_update(unsigned char *moby) {

@@ -953,7 +953,7 @@ extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound(int, int, int);
 extern float FastCos(float);
 extern float FastSin(float);
-extern int g_current_level_index SDATA(D_0015EE84);
+extern int g_current_level_index SDATA(g_current_level_index);
 extern unsigned char help_stats_base[] NOT_SDA;
 extern unsigned char hero_globals_base_u[] __asm__("D_0013E633") NOT_SDA;
 
@@ -1336,7 +1336,7 @@ typedef struct {
     f32 glow;
 } WaterLayer;
 extern WaterLayer novalis_four_scroll_layers_r[] __asm__("D_L01_001FBF40");
-extern s32 novalis_scroll_layers_ready SDATA(D_L01_00161D70);
+extern s32 novalis_scroll_layers_ready SDATA(novalis_scroll_layers_ready);
 extern s32 novalis_frame_count MACRO_ADDR;
 extern f32 IntToFloat(s32);
 extern void draw_four_scroll_layers(void *);
@@ -2045,9 +2045,9 @@ typedef struct {
     Vec4f normal;
 } BlobHitInfo;
 
-extern float explosive_moby_gravity SDATA(D_L01_001620E8);
-extern float explosive_moby_drag SDATA(D_L01_001620EC);
-extern float explosive_moby_drag_min_speed SDATA(D_L01_001620F0);
+extern float explosive_moby_gravity SDATA(explosive_moby_gravity);
+extern float explosive_moby_drag SDATA(explosive_moby_drag);
+extern float explosive_moby_drag_min_speed SDATA(explosive_moby_drag_min_speed);
 extern float frame_scale MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern BlobHitInfo novalis_coll_hit;

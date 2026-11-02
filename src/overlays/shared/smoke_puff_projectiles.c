@@ -104,7 +104,7 @@ typedef struct {
     f32 radius; /* 0x1C */
     s32 unk20;
 } CollisionProbe;
-extern s32 g_current_level_index SDATA(D_0015EE84);
+extern s32 g_current_level_index SDATA(g_current_level_index);
 extern f32 eudora_camera_pos[];
 extern u128_B0290 eudora_coll_hit_point;
 extern u8 eudora_coll_hit_normal[];
@@ -205,7 +205,7 @@ void update_class_b8_projectile(struct Moby *m) {
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void spawn_smoke_puff_trail_with_endpoint_bursts(void *, void *, void *, int, float, float);
 extern char eudora_puff_segment_points[];
-extern float eudora_segment_puff_size_scale SDATA(D_L04_00161940);
+extern float eudora_segment_puff_size_scale SDATA(eudora_segment_puff_size_scale);
 
 /* Builds two direction vectors from a table and relative to a moby, then hands them to the L04 effect spawner. */
 void spawn_moby_table_segment_puffs(char *a, int i, int j, int k) {
@@ -224,14 +224,14 @@ void spawn_moby_table_segment_puffs(char *a, int i, int j, int k) {
     spawn_smoke_puff_trail_with_endpoint_bursts(a, v0, v10, k, *(float *)(pi + 0xC) * eudora_segment_puff_size_scale,
                                                 *(float *)(pj + 0xC) * eudora_segment_puff_size_scale);
 }
-extern int eudora_puff_count_a SDATA(D_L04_00161950);
-extern int eudora_puff_count_b SDATA(D_L04_00161954);
-extern int eudora_puff_count_c SDATA(D_L04_00161958);
-extern int eudora_puff_count_d SDATA(D_L04_0016195C);
-extern int eudora_puff_count_e SDATA(D_L04_00161960);
-extern int eudora_puff_count_f SDATA(D_L04_00161964);
-extern int eudora_puff_count_g SDATA(D_L04_00161968);
-extern int eudora_puff_count_h SDATA(D_L04_0016196C);
+extern int eudora_puff_count_a SDATA(eudora_puff_count_a);
+extern int eudora_puff_count_b SDATA(eudora_puff_count_b);
+extern int eudora_puff_count_c SDATA(eudora_puff_count_c);
+extern int eudora_puff_count_d SDATA(eudora_puff_count_d);
+extern int eudora_puff_count_e SDATA(eudora_puff_count_e);
+extern int eudora_puff_count_f SDATA(eudora_puff_count_f);
+extern int eudora_puff_count_g SDATA(eudora_puff_count_g);
+extern int eudora_puff_count_h SDATA(eudora_puff_count_h);
 extern void spawn_moby_table_segment_puffs(char *a, int i, int j, int k);
 
 // Calls the pair helper for each edge index pair with a per-pair global value.

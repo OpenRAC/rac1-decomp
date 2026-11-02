@@ -62,14 +62,14 @@ extern void font_print_right(s32, s32, s32, char *, s32);
 extern s32 frame_size[];
 extern s32 pal_mode MACRO_ADDR;
 extern char aridia_hud_counter_format[];
-extern s32 aridia_hud_counter_open_steps SDATA(D_L02_0015F9F4);
-extern s32 aridia_hud_counter_text_fade_steps SDATA(D_L02_0015F9F8);
-extern s32 aridia_hud_counter_left_x SDATA(D_L02_0015FA1C);
-extern s32 aridia_hud_counter_right_x SDATA(D_L02_0015FA20);
-extern s32 aridia_hud_counter_color_from SDATA(D_L02_0015FA28);
-extern s32 aridia_hud_counter_color_to SDATA(D_L02_0015FA2C);
-extern s32 aridia_hud_counter_panel_width SDATA(D_L02_0015FA30);
-extern s32 aridia_hud_counter_wide_panel_width SDATA(D_L02_0015FA34);
+extern s32 aridia_hud_counter_open_steps SDATA(aridia_hud_counter_open_steps);
+extern s32 aridia_hud_counter_text_fade_steps SDATA(aridia_hud_counter_text_fade_steps);
+extern s32 aridia_hud_counter_left_x SDATA(aridia_hud_counter_left_x);
+extern s32 aridia_hud_counter_right_x SDATA(aridia_hud_counter_right_x);
+extern s32 aridia_hud_counter_color_from SDATA(aridia_hud_counter_color_from);
+extern s32 aridia_hud_counter_color_to SDATA(aridia_hud_counter_color_to);
+extern s32 aridia_hud_counter_panel_width SDATA(aridia_hud_counter_panel_width);
+extern s32 aridia_hud_counter_wide_panel_width SDATA(aridia_hud_counter_wide_panel_width);
 
 /* Draws the counter: a stretched bar behind the icon and the count, on whichever side of the screen it sits.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l02/ui/text/0023ccc8.c, FUN_L02_0023cda8. */

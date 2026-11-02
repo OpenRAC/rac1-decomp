@@ -74,7 +74,7 @@ extern float frame_scale MACRO_ADDR;
 
 extern char item_usage[];
 extern unsigned char D_0015EEB4[4] MACRO_ADDR;
-extern int kerwan_usage_event_timer SDATA(D_L03_0015F768);
+extern int kerwan_usage_event_timer SDATA(kerwan_usage_event_timer);
 extern short kerwan_hero_idle_anim_modes;
 extern short kerwan_hero_state_f_jump_velocity_keys;
 extern char kerwan_hero_state_d_jump_velocity_keys[];

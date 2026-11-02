@@ -337,16 +337,16 @@ void update_ambience_target_cycle(void) {
 }
 extern int scale_ticks(int);
 extern float frame_scale MACRO_ADDR;
-extern int smoke_particle_stagger_ticks_base SDATA(D_L00_00161430);
-extern int smoke_particle_timer_ticks_base SDATA(D_L00_00161434);
-extern int configured_reciprocal_denominator_frames SDATA(D_L00_00161438);
-extern float smoke_scroll_offset SDATA(D_L00_0016143C);
-extern float smoke_scroll_speed SDATA(D_L00_00161440);
-extern int smoke_particle_stagger_ticks SDATA(D_L00_00161444);
-extern int smoke_particle_timer_ticks SDATA(D_L00_00161448);
-extern float smoke_particle_timer_ticks_inv SDATA(D_L00_0016144C);
+extern int smoke_particle_stagger_ticks_base SDATA(smoke_particle_stagger_ticks_base);
+extern int smoke_particle_timer_ticks_base SDATA(smoke_particle_timer_ticks_base);
+extern int configured_reciprocal_denominator_frames SDATA(configured_reciprocal_denominator_frames);
+extern float smoke_scroll_offset SDATA(smoke_scroll_offset);
+extern float smoke_scroll_speed SDATA(smoke_scroll_speed);
+extern int smoke_particle_stagger_ticks SDATA(smoke_particle_stagger_ticks);
+extern int smoke_particle_timer_ticks SDATA(smoke_particle_timer_ticks);
+extern float smoke_particle_timer_ticks_inv SDATA(smoke_particle_timer_ticks_inv);
 extern int smoke_particle_aux_ticks MACRO_ADDR;
-extern float smoke_particle_aux_ticks_inv SDATA(D_L00_00161454);
+extern float smoke_particle_aux_ticks_inv SDATA(smoke_particle_aux_ticks_inv);
 extern int fetch_add_accumulator MACRO_ADDR;
 
 // Texture scroll moby update: init the scroll constants, then scroll and wrap.
@@ -486,8 +486,8 @@ typedef struct {
     float uv[4][2];
 } Quad;
 
-extern float light_beam_texture_scroll SDATA(D_L00_0016145C);
-extern float light_beam_glow_phase SDATA(D_L00_00161460);
+extern float light_beam_texture_scroll SDATA(light_beam_texture_scroll);
+extern float light_beam_glow_phase SDATA(light_beam_glow_phase);
 extern float light_beam_corner_table[][4];
 extern float light_beam_corner_uvs[][2];
 
@@ -667,9 +667,9 @@ extern int try_set_help_message(int, int);
 
 extern void draw_vendor_effects();
 extern int level_frame_counter MACRO_ADDR;
-extern float vendor_glow_pulse_phase SDATA(D_L00_0016146C);
-extern float vendor_ring_a_angle SDATA(D_L00_00161464);
-extern float vendor_ring_b_angle SDATA(D_L00_00161468);
+extern float vendor_glow_pulse_phase SDATA(vendor_glow_pulse_phase);
+extern float vendor_ring_a_angle SDATA(vendor_ring_a_angle);
+extern float vendor_ring_b_angle SDATA(vendor_ring_b_angle);
 extern char hero_globals_base[];
 
 typedef struct {
@@ -2411,7 +2411,7 @@ typedef struct {
     char pad[0x10];
     Vec4 position;
 } BoltOwner;
-extern float homing_bolt_bounds_scale SDATA(D_L00_0016148C);
+extern float homing_bolt_bounds_scale SDATA(homing_bolt_bounds_scale);
 extern short active_homing_missiles[];
 extern char *select_auto_aim_target_moby(void *, void *, void *, float *, float *, float *, float);
 extern int coll_line(void *, void *, int, int, int);
@@ -2609,7 +2609,7 @@ typedef struct {
 } QuadPkt_2AAEF0;
 
 extern int cinematic_mode MACRO_ADDR;
-extern float impact_marker_euler SDATA(D_L00_001614B0);
+extern float impact_marker_euler SDATA(impact_marker_euler);
 extern float impact_marker_euler_v[] __asm__("D_L00_001614B0") MACRO_ADDR;
 
 extern int scale_ticks(int);

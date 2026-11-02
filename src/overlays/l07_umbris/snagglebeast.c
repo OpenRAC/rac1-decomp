@@ -756,7 +756,7 @@ typedef struct {
 extern SbRec4C umbris_item_defs[];
 extern int snagglebeast_stage_item_slots[][4];
 
-extern int snagglebeast_start_cleared_word SDATA(D_L07_00161BF4);
+extern int snagglebeast_start_cleared_word SDATA(snagglebeast_start_cleared_word);
 
 typedef struct {
     float f[4];
@@ -1901,8 +1901,8 @@ typedef float RopeVec[4] __attribute__((aligned(16)));
 extern u64 GetEffectTex(int);
 extern void VU1_addGSregister(int, u64);
 extern void draw_world_quad(void *, int, int);
-extern float scroll_phase SDATA(D_L07_00161C04);
-extern float row_start_phase SDATA(D_L07_00161C08);
+extern float scroll_phase SDATA(scroll_phase);
+extern float row_start_phase SDATA(row_start_phase);
 extern short row_phase_step_gp;
 extern short snagglebeast_rope_row_alpha[];
 typedef struct {
@@ -2396,8 +2396,8 @@ extern void suck_beam_queue_draw(int arg0);
 extern char rope_previous_points[];
 extern char snagglebeast_rope_centers_v[] __asm__("D_L07_0020DDC0");
 extern short row_phase_step_gp;
-extern int snagglebeast_rope_clear_pending SDATA(D_L07_00161C00);
-extern int snagglebeast_rope_reset_pending SDATA(D_L07_00161BFC);
+extern int snagglebeast_rope_clear_pending SDATA(snagglebeast_rope_clear_pending);
+extern int snagglebeast_rope_reset_pending SDATA(snagglebeast_rope_reset_pending);
 
 /* Pulls each pending moby toward its target point and smooths its velocity. */
 void detach_snagglebeast_rope_particles(int arg0) {

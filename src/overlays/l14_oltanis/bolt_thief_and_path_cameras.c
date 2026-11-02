@@ -313,8 +313,8 @@ typedef struct L14Data {
 
 extern char hero_globals_base[];
 extern float g_frame_time MACRO_ADDR;
-extern float oltanis_bolt_thief_spring_stiffness SDATA(D_L14_0016208C);
-extern float oltanis_bolt_thief_spring_damping SDATA(D_L14_00162090);
+extern float oltanis_bolt_thief_spring_stiffness SDATA(oltanis_bolt_thief_spring_stiffness);
+extern float oltanis_bolt_thief_spring_damping SDATA(oltanis_bolt_thief_spring_damping);
 extern char *oltanis_paths[];
 extern char oltanis_bolt_thief_no_path_msg[];
 extern char oltanis_bolt_thief_empty_path_msg[];
@@ -509,7 +509,7 @@ void BoltThiefUpdate(L14Moby *m) {
 }
 extern float g_frame_time MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
-extern float oltanis_bolt_thief_path_speed SDATA(D_L14_00162088);
+extern float oltanis_bolt_thief_path_speed SDATA(oltanis_bolt_thief_path_speed);
 extern char *oltanis_paths[];
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
 extern void FastVecSub(void *dst, void *a, void *b);
@@ -736,11 +736,11 @@ typedef unsigned int u128_2288 __attribute__((mode(TI)));
 extern Coll_2288 oltanis_coll_hit;
 extern int oltanis_coll_hit_moby __attribute__((section(".data")));
 extern short oltanis_spark_trail_ticks;
-extern float oltanis_spark_contact_radius SDATA(D_L14_00162158);
-extern float oltanis_spark_min_speed SDATA(D_L14_00162160);
-extern float oltanis_spark_roll_slowdown SDATA(D_L14_00162164);
-extern float oltanis_spark_bounce_damping SDATA(D_L14_00162170);
-extern float spark_first_bounce_horizontal_speed_gp SDATA(D_L14_00162174);
+extern float oltanis_spark_contact_radius SDATA(oltanis_spark_contact_radius);
+extern float oltanis_spark_min_speed SDATA(oltanis_spark_min_speed);
+extern float oltanis_spark_roll_slowdown SDATA(oltanis_spark_roll_slowdown);
+extern float oltanis_spark_bounce_damping SDATA(oltanis_spark_bounce_damping);
+extern float spark_first_bounce_horizontal_speed_gp SDATA(spark_first_bounce_horizontal_speed_gp);
 extern int coll_sphere(void *, int, void *, float);
 extern int fast_dec_timer(int *);
 extern int FastDecTimer(short *);
@@ -915,7 +915,7 @@ extern char *CreateMoby(int);
 
 extern void moby_build_matrix(void *);
 extern short oltanis_spark_trail_ticks;
-extern float oltanis_spark_start_scale SDATA(D_L14_00162168);
+extern float oltanis_spark_start_scale SDATA(oltanis_spark_start_scale);
 
 /* Spawns a moby with its data block filled from the arguments. */
 char *create_bouncing_spark(int a0, float *a1, float *a2, int a3, float f) {
@@ -1826,13 +1826,13 @@ typedef struct {
 extern VoicePool voice_pool;
 extern char *oltanis_paths[];
 extern short oltanis_mobys_r2 __asm__("D_L14_00160098");
-extern float flying_car_tracking_spring_gain_gp SDATA(D_L14_0016233C);
-extern float flying_car_motion_spring_damping_gp SDATA(D_L14_00162340);
-extern float oltanis_flying_car_max_bank SDATA(D_L14_00162344);
-extern float flying_car_full_bank_yaw_error_gp SDATA(D_L14_00162348);
-extern float flying_car_max_sink_offset_rate_gp SDATA(D_L14_00162350);
-extern float flying_car_sink_offset_recovery_rate_gp SDATA(D_L14_00162358);
-extern float flying_car_burst_height_threshold_gp SDATA(D_L14_0016235C);
+extern float flying_car_tracking_spring_gain_gp SDATA(flying_car_tracking_spring_gain_gp);
+extern float flying_car_motion_spring_damping_gp SDATA(flying_car_motion_spring_damping_gp);
+extern float oltanis_flying_car_max_bank SDATA(oltanis_flying_car_max_bank);
+extern float flying_car_full_bank_yaw_error_gp SDATA(flying_car_full_bank_yaw_error_gp);
+extern float flying_car_max_sink_offset_rate_gp SDATA(flying_car_max_sink_offset_rate_gp);
+extern float flying_car_sink_offset_recovery_rate_gp SDATA(flying_car_sink_offset_recovery_rate_gp);
+extern float flying_car_burst_height_threshold_gp SDATA(flying_car_burst_height_threshold_gp);
 extern int Spline_AdvanceByDistance_r(char *path, float *out, void *pos, void *t, int dir,
                                       float step) __asm__("func_L00_0025E860");
 extern void SpawnExplosionFx_r2(void *, void *, f32, f32, s32) __asm__("func_L00_00260108");
@@ -2572,14 +2572,14 @@ extern int oltanis_key_cam_key_count MACRO_ADDR;
 extern int oltanis_key_cam_key_index MACRO_ADDR;
 extern float oltanis_key_cam_yaw MACRO_ADDR;
 extern float oltanis_key_cam_path_progress MACRO_ADDR;
-extern float path_key_camera_heading_offset_spring_gain SDATA(D_L14_00162560);
-extern float path_key_camera_placement_elevation_spring_gain SDATA(D_L14_00162564);
-extern float path_key_camera_placement_distance_spring_gain SDATA(D_L14_00162568);
-extern float path_key_camera_lateral_axis_rotation_spring_gain SDATA(D_L14_0016256C);
-extern float path_key_camera_up_axis_rotation_spring_gain SDATA(D_L14_00162570);
-extern float path_key_camera_heading_blend_step_factor SDATA(D_L14_00162574);
-extern float oltanis_key_cam_lean_second_deg SDATA(D_L14_0016257C);
-extern float oltanis_key_cam_lean_first_deg SDATA(D_L14_00162580);
+extern float path_key_camera_heading_offset_spring_gain SDATA(path_key_camera_heading_offset_spring_gain);
+extern float path_key_camera_placement_elevation_spring_gain SDATA(path_key_camera_placement_elevation_spring_gain);
+extern float path_key_camera_placement_distance_spring_gain SDATA(path_key_camera_placement_distance_spring_gain);
+extern float path_key_camera_lateral_axis_rotation_spring_gain SDATA(path_key_camera_lateral_axis_rotation_spring_gain);
+extern float path_key_camera_up_axis_rotation_spring_gain SDATA(path_key_camera_up_axis_rotation_spring_gain);
+extern float path_key_camera_heading_blend_step_factor SDATA(path_key_camera_heading_blend_step_factor);
+extern float oltanis_key_cam_lean_second_deg SDATA(oltanis_key_cam_lean_second_deg);
+extern float oltanis_key_cam_lean_first_deg SDATA(oltanis_key_cam_lean_first_deg);
 extern float oltanis_key_cam_path_distances[][1000];
 extern float oltanis_key_cam_lean_step_progress[][3];
 extern float oltanis_key_cam_moby_step_progress[][3];

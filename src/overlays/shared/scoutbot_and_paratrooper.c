@@ -645,8 +645,8 @@ typedef struct {
 } Pk_002d4108;
 extern u8 batalia_hero_pos_r[] __asm__("D_L08_00167640");
 extern float batalia_glow_quad_corners[4][4];
-extern float scoutbot_glow_camera_offset SDATA(D_L08_00161928);
-extern float scoutbot_glow_size SDATA(D_L08_0016192C);
+extern float scoutbot_glow_camera_offset SDATA(scoutbot_glow_camera_offset);
+extern float scoutbot_glow_size SDATA(scoutbot_glow_size);
 u64 GetEffectTex(s32);
 void FastVecSub(void *, void *, void *);
 void vec_scale_to_length(void *, void *, float);
@@ -720,18 +720,18 @@ extern int scale_ticks(int);
 extern void PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 extern int batalia_frame_count MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
-extern float homing_shot_lifetime SDATA(D_L08_00161D68);
-extern float homing_shot_launch_puffs SDATA(D_L08_00161D70);
-extern int homing_shot_launch_lower SDATA(D_L08_00161D80);
-extern int homing_shot_launch_upper SDATA(D_L08_00161D84);
-extern int homing_shot_flash_color_a SDATA(D_L08_00161D88);
-extern int homing_shot_flash_color_b SDATA(D_L08_00161D8C);
-extern float homing_shot_launch_spread SDATA(D_L08_00161D94);
+extern float homing_shot_lifetime SDATA(homing_shot_lifetime);
+extern float homing_shot_launch_puffs SDATA(homing_shot_launch_puffs);
+extern int homing_shot_launch_lower SDATA(homing_shot_launch_lower);
+extern int homing_shot_launch_upper SDATA(homing_shot_launch_upper);
+extern int homing_shot_flash_color_a SDATA(homing_shot_flash_color_a);
+extern int homing_shot_flash_color_b SDATA(homing_shot_flash_color_b);
+extern float homing_shot_launch_spread SDATA(homing_shot_launch_spread);
 extern short homing_shot_spark_time_a;
 extern short homing_shot_spark_time_b;
 extern short homing_shot_spark_time_c;
-extern float moby_creation_particle_primary_motion_w_gp SDATA(D_L08_00161DA4);
-extern float moby_creation_particle_secondary_motion_w_gp SDATA(D_L08_00161DA8);
+extern float moby_creation_particle_primary_motion_w_gp SDATA(moby_creation_particle_primary_motion_w_gp);
+extern float moby_creation_particle_secondary_motion_w_gp SDATA(moby_creation_particle_secondary_motion_w_gp);
 
 struct CreateMobyWithParticlesVars {
     u8 pad_00[0x10];
@@ -837,16 +837,16 @@ extern void PartType02Spawn(void *, void *, void *, int, int, int, int, int, int
 extern void ClampVectorLength(float, void *);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
-extern float homing_shot_trail_steps SDATA(D_L08_00161D6C);
-extern float homing_shot_spin_rate SDATA(D_L08_00161D74);
-extern int homing_shot_trail_lower SDATA(D_L08_00161D78);
-extern int homing_shot_trail_upper SDATA(D_L08_00161D7C);
-extern float homing_shot_trail_spread SDATA(D_L08_00161D90);
+extern float homing_shot_trail_steps SDATA(homing_shot_trail_steps);
+extern float homing_shot_spin_rate SDATA(homing_shot_spin_rate);
+extern int homing_shot_trail_lower SDATA(homing_shot_trail_lower);
+extern int homing_shot_trail_upper SDATA(homing_shot_trail_upper);
+extern float homing_shot_trail_spread SDATA(homing_shot_trail_spread);
 extern short homing_shot_spark_time_a;
 extern short homing_shot_spark_time_b;
 extern short homing_shot_spark_time_c;
-extern float homing_projectile_trail_primary_motion_w_gp SDATA(D_L08_00161DAC);
-extern float homing_projectile_trail_secondary_motion_w_gp SDATA(D_L08_00161DB0);
+extern float homing_projectile_trail_primary_motion_w_gp SDATA(homing_projectile_trail_primary_motion_w_gp);
+extern float homing_projectile_trail_secondary_motion_w_gp SDATA(homing_projectile_trail_secondary_motion_w_gp);
 extern float batalia_coll_hit_point[4];
 
 struct Rocket458UpdateVars {
@@ -1111,20 +1111,20 @@ extern void euler_to_matrix(void *, void *);
 extern float multiply_global_factor(float);
 extern int truncate_float_to_s32(float);
 extern void PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
-extern s32 spark_emitter_lower SDATA(D_L08_00162004);
-extern s32 spark_emitter_upper SDATA(D_L08_00162008);
-extern f32 spark_emitter_start_rise SDATA(D_L08_0016200C);
-extern f32 spark_emitter_start_speed SDATA(D_L08_00162010);
-extern f32 spark_emitter_end_rise SDATA(D_L08_00162014);
-extern f32 spark_emitter_end_speed SDATA(D_L08_00162018);
-extern s32 spark_emitter_default_frame_count_base_gp SDATA(D_L08_0016201C);
-extern s32 spark_emitter_default_second_frame_count_base_gp SDATA(D_L08_00162020);
-extern s32 spark_emitter_default_third_frame_count_base_gp SDATA(D_L08_00162024);
-extern s32 spark_emitter_interval SDATA(D_L08_00162028);
-extern f32 spark_emitter_default_primary_motion_w_gp SDATA(D_L08_0016202C);
-extern f32 spark_emitter_default_secondary_motion_w_gp SDATA(D_L08_00162030);
-extern f32 spark_emitter_start_side_spread SDATA(D_L08_00162034);
-extern f32 spark_emitter_end_side_spread SDATA(D_L08_00162038);
+extern s32 spark_emitter_lower SDATA(spark_emitter_lower);
+extern s32 spark_emitter_upper SDATA(spark_emitter_upper);
+extern f32 spark_emitter_start_rise SDATA(spark_emitter_start_rise);
+extern f32 spark_emitter_start_speed SDATA(spark_emitter_start_speed);
+extern f32 spark_emitter_end_rise SDATA(spark_emitter_end_rise);
+extern f32 spark_emitter_end_speed SDATA(spark_emitter_end_speed);
+extern s32 spark_emitter_default_frame_count_base_gp SDATA(spark_emitter_default_frame_count_base_gp);
+extern s32 spark_emitter_default_second_frame_count_base_gp SDATA(spark_emitter_default_second_frame_count_base_gp);
+extern s32 spark_emitter_default_third_frame_count_base_gp SDATA(spark_emitter_default_third_frame_count_base_gp);
+extern s32 spark_emitter_interval SDATA(spark_emitter_interval);
+extern f32 spark_emitter_default_primary_motion_w_gp SDATA(spark_emitter_default_primary_motion_w_gp);
+extern f32 spark_emitter_default_secondary_motion_w_gp SDATA(spark_emitter_default_secondary_motion_w_gp);
+extern f32 spark_emitter_start_side_spread SDATA(spark_emitter_start_side_spread);
+extern f32 spark_emitter_end_side_spread SDATA(spark_emitter_end_side_spread);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002937a0.c, FUN_L08_002f5830. */
 void Moby648Update(char *m) {
@@ -1687,12 +1687,12 @@ extern int FastDecTimer(void *);
 
 extern int FindNearestEligibleMoby(char *, void *, float, int, int, void *, int);
 extern float ProbeGroundHeight(void *, int, float);
-extern float paratrooper_scale SDATA(D_L08_00162210);
-extern float paratrooper_move_speed SDATA(D_L08_00162240);
-extern float paratrooper_knock_gravity SDATA(D_L08_00162214);
-extern float paratrooper_blast_knock_speed SDATA(D_L08_0016221C);
-extern float paratrooper_hit_knock_speed SDATA(D_L08_00162224);
-extern float paratrooper_hit_knock_lift SDATA(D_L08_00162220);
+extern float paratrooper_scale SDATA(paratrooper_scale);
+extern float paratrooper_move_speed SDATA(paratrooper_move_speed);
+extern float paratrooper_knock_gravity SDATA(paratrooper_knock_gravity);
+extern float paratrooper_blast_knock_speed SDATA(paratrooper_blast_knock_speed);
+extern float paratrooper_hit_knock_speed SDATA(paratrooper_hit_knock_speed);
+extern float paratrooper_hit_knock_lift SDATA(paratrooper_hit_knock_lift);
 extern char hero_globals_base[] NOT_SDA;
 
 /* Shared moby update (class 152, levels 08 and 09): steers the moby by its hero-relative vectors and picks its next
@@ -1972,8 +1972,8 @@ extern float g_frame_time MACRO_ADDR;
 extern float ground_particle_scatter_spawn_vector_x_bias[2] MACRO_ADDR;
 extern float ground_particle_scatter_refresh_countdown MACRO_ADDR;
 extern int ground_particle_scatter_base_attempt_count MACRO_ADDR;
-extern float ground_particle_scatter_min_attempts SDATA(D_L08_001623DC);
-extern float ground_particle_scatter_max_attempts SDATA(D_L08_001623E0);
+extern float ground_particle_scatter_min_attempts SDATA(ground_particle_scatter_min_attempts);
+extern float ground_particle_scatter_max_attempts SDATA(ground_particle_scatter_max_attempts);
 
 // sets up the level's scroll/tilt parameters
 void randomize_ground_particle_scatter_parameters(int arg) {
@@ -2296,7 +2296,7 @@ extern char *batalia_player_camera_current;
 void set_level_state_flag_88(void) {
     batalia_player_camera_current[0x88] = 1;
 }
-extern float batalia_wind_level SDATA(D_L08_00162678);
+extern float batalia_wind_level SDATA(batalia_wind_level);
 extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
 extern int Sound_SetPitchBend(int, int);
 

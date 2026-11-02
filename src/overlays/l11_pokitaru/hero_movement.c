@@ -155,7 +155,7 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int level_frame MACRO_ADDR;
 
-extern int pokitaru_look_stat_count SDATA(D_L11_0015F76C);
+extern int pokitaru_look_stat_count SDATA(pokitaru_look_stat_count);
 extern unsigned char *pokitaru_pool_draw_tiles MACRO_ADDR;
 extern int pokitaru_pool_draw_count MACRO_ADDR;
 extern HeroPlayerCameraView pokitaru_player_camera;

@@ -109,7 +109,7 @@ extern int g_current_level_index MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int kerwan_frame_count MACRO_ADDR;
 extern short kerwan_usage_event_timer;
-extern int kerwan_usage_event_count SDATA(D_L03_0015F76C);
+extern int kerwan_usage_event_count SDATA(kerwan_usage_event_count);
 extern unsigned char *kerwan_water_patches MACRO_ADDR;
 extern int kerwan_water_patch_count MACRO_ADDR;
 extern HeroPlayerCameraView kerwan_player_camera;

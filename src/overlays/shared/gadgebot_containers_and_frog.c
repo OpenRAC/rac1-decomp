@@ -255,14 +255,14 @@ extern float blarg_gadgebot_container_face_centers[][4];
 extern float blarg_gadgebot_container_face_normals[][4];
 extern short blarg_gadgebot_container_face_indices[][8];
 extern float blarg_gadgebot_container_face_uvs[][2];
-extern int blarg_gadgebot_container_alpha_a SDATA(D_L06_00161900);
-extern int blarg_gadgebot_container_alpha_b SDATA(D_L06_00161904);
-extern int blarg_gadgebot_container_alpha_c SDATA(D_L06_00161908);
-extern int blarg_gadgebot_container_alpha_d SDATA(D_L06_0016190C);
-extern int blarg_gadgebot_container_alpha_fix SDATA(D_L06_00161910);
-extern int blarg_gadgebot_container_texture SDATA(D_L06_00161914);
-extern int blarg_gadgebot_container_color SDATA(D_L06_00161918);
-extern float blarg_gadgebot_container_normal_scale SDATA(D_L06_0016191C);
+extern int blarg_gadgebot_container_alpha_a SDATA(blarg_gadgebot_container_alpha_a);
+extern int blarg_gadgebot_container_alpha_b SDATA(blarg_gadgebot_container_alpha_b);
+extern int blarg_gadgebot_container_alpha_c SDATA(blarg_gadgebot_container_alpha_c);
+extern int blarg_gadgebot_container_alpha_d SDATA(blarg_gadgebot_container_alpha_d);
+extern int blarg_gadgebot_container_alpha_fix SDATA(blarg_gadgebot_container_alpha_fix);
+extern int blarg_gadgebot_container_texture SDATA(blarg_gadgebot_container_texture);
+extern int blarg_gadgebot_container_color SDATA(blarg_gadgebot_container_color);
+extern float blarg_gadgebot_container_normal_scale SDATA(blarg_gadgebot_container_normal_scale);
 
 extern float vec_length(float);
 extern void transform_vector(void *, void *, void *);
@@ -406,8 +406,8 @@ void initialize_moby_particle_effect_state(char *moby) {
     initialize_moby_particle_effect(moby);
 }
 typedef int u128_9AA8 __attribute__((mode(TI)));
-extern int blarg_frog_update_disabled SDATA(D_L06_00161CA0);
-extern int blarg_frog_spawn_counter SDATA(D_L06_00161CA4);
+extern int blarg_frog_update_disabled SDATA(blarg_frog_update_disabled);
+extern int blarg_frog_spawn_counter SDATA(blarg_frog_spawn_counter);
 extern short blarg_frog_pvars_d0_table;
 extern int level_game_mode_q MACRO_ADDR;
 extern int blarg_shuttle_at_second_stop MACRO_ADDR;
@@ -785,9 +785,9 @@ struct MobyHit {
     struct Moby *source;
 };
 extern f32 blarg_zero_vec[] MACRO_ADDR;
-extern f32 frog_glow_phase_rate_degrees_gp SDATA(D_L06_00161C94);
-extern int frog_glow_color_start_gp SDATA(D_L06_00161C98);
-extern int frog_glow_color_end_gp SDATA(D_L06_00161C9C);
+extern f32 frog_glow_phase_rate_degrees_gp SDATA(frog_glow_phase_rate_degrees_gp);
+extern int frog_glow_color_start_gp SDATA(frog_glow_color_start_gp);
+extern int frog_glow_color_end_gp SDATA(frog_glow_color_end_gp);
 extern short level_mobys_q_r __asm__("D_L06_00160058");
 extern u8 hero_vehicle_mode[];
 extern int *blarg_paths[];
@@ -921,7 +921,7 @@ extern void vec_scale_to_length(void *, void *, float);
 extern float FastVecDot(void *, void *);
 extern void FastVecCross(void *, void *, void *);
 
-extern float blarg_frog_turn_blend SDATA(D_L06_00161C90);
+extern float blarg_frog_turn_blend SDATA(blarg_frog_turn_blend);
 
 /* Build an orthogonal frame from two vectors and apply it to the matrix at moby+0xC0. */
 void blend_frog_rotation_to_facing_frame(char *m, float *a1, float *a2) {
@@ -1363,7 +1363,7 @@ extern float g_frame_scale_sq MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern Moby *level_mobys_q MACRO_ADDR;
-extern float gadgebot_position_snapshot_z_offset_gp SDATA(D_L06_00161D70);
+extern float gadgebot_position_snapshot_z_offset_gp SDATA(gadgebot_position_snapshot_z_offset_gp);
 extern char blarg_camera_pos[];
 extern GbHit blarg_coll_hit;
 extern Moby *blarg_coll_hit_moby;
@@ -2854,11 +2854,13 @@ typedef struct {
 } Vars;
 
 extern Moby *level_mobys_q_r3 __asm__("D_L06_00160058") MACRO_ADDR;
-extern float rotation_group_angular_velocity_adjustment_degrees_gp SDATA(D_L06_00161DC8);
-extern float rotation_group_angular_deceleration_degrees_gp SDATA(D_L06_00161DCC);
-extern float rotation_group_max_angular_speed_degrees_gp SDATA(D_L06_00161DD0);
-extern float rotation_group_fallback_proximity_trigger_inhibit_gp SDATA(D_L06_00161DD4);
-extern float blarg_rotation_group_pivot_offset SDATA(D_L06_00161DD8);
+extern float rotation_group_angular_velocity_adjustment_degrees_gp
+    SDATA(rotation_group_angular_velocity_adjustment_degrees_gp);
+extern float rotation_group_angular_deceleration_degrees_gp SDATA(rotation_group_angular_deceleration_degrees_gp);
+extern float rotation_group_max_angular_speed_degrees_gp SDATA(rotation_group_max_angular_speed_degrees_gp);
+extern float rotation_group_fallback_proximity_trigger_inhibit_gp
+    SDATA(rotation_group_fallback_proximity_trigger_inhibit_gp);
+extern float blarg_rotation_group_pivot_offset SDATA(blarg_rotation_group_pivot_offset);
 
 extern Moby *CreateMoby_r(int) __asm__("func_0020D348");
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
@@ -3077,7 +3079,7 @@ void initialize_energy_sphere_holder_vars(char *moby) {
 }
 extern short blarg_holder_beam_color_a, blarg_holder_beam_color_b, energy_sphere_holder_beam_particle_variant_flag_gp,
     blarg_holder_beam_texture, blarg_holder_spark_color, blarg_holder_spark_scale;
-extern int blarg_holder_spark_life_ticks SDATA(D_L06_00161F00);
+extern int blarg_holder_spark_life_ticks SDATA(blarg_holder_spark_life_ticks);
 extern void clear_u64_value(void *);
 extern int truncate_float_to_s32_g(float) __asm__("func_001FA898");
 extern unsigned char *func_L00_00273E08(void *, int, unsigned char, int, int, int, int, float);
@@ -3264,14 +3266,14 @@ void energy_sphere_update(char *m) {
 extern float random_float_between(float, float);
 extern void spawn_moving_hero_relative_alpha_fade_particle(void *, float, void *, int, int, int, int);
 extern float g_frame_time MACRO_ADDR;
-extern float blarg_energy_sphere_debris_speed_min SDATA(D_L06_00161F14);
-extern float blarg_energy_sphere_debris_speed_max SDATA(D_L06_00161F18);
-extern float blarg_energy_sphere_debris_scale_min SDATA(D_L06_00161F38);
-extern float blarg_energy_sphere_debris_scale_max SDATA(D_L06_00161F3C);
-extern int blarg_energy_sphere_debris_color1_a SDATA(D_L06_00161F28);
-extern int blarg_energy_sphere_debris_color1_b SDATA(D_L06_00161F2C);
-extern int blarg_energy_sphere_debris_color2_a SDATA(D_L06_00161F30);
-extern int blarg_energy_sphere_debris_color2_b SDATA(D_L06_00161F34);
+extern float blarg_energy_sphere_debris_speed_min SDATA(blarg_energy_sphere_debris_speed_min);
+extern float blarg_energy_sphere_debris_speed_max SDATA(blarg_energy_sphere_debris_speed_max);
+extern float blarg_energy_sphere_debris_scale_min SDATA(blarg_energy_sphere_debris_scale_min);
+extern float blarg_energy_sphere_debris_scale_max SDATA(blarg_energy_sphere_debris_scale_max);
+extern int blarg_energy_sphere_debris_color1_a SDATA(blarg_energy_sphere_debris_color1_a);
+extern int blarg_energy_sphere_debris_color1_b SDATA(blarg_energy_sphere_debris_color1_b);
+extern int blarg_energy_sphere_debris_color2_a SDATA(blarg_energy_sphere_debris_color2_a);
+extern int blarg_energy_sphere_debris_color2_b SDATA(blarg_energy_sphere_debris_color2_b);
 extern unsigned char blarg_energy_sphere_debris_life;
 
 /* Spawn forty particles at the moby with randomised parameters. */

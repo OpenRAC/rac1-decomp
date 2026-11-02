@@ -877,13 +877,13 @@ extern void *SpawnBreakFragment(void *, int, void *, void *, int, int, float, vo
 extern int quartu_moby_groups[];
 extern float g_frame_time_sq MACRO_ADDR;
 extern float quartu_zero_vec[] MACRO_ADDR;
-extern float g_frame_scale_sq SDATA(D_0015EE64);
-extern float construction_arm_wait_min SDATA(D_L15_00161A80);
-extern float construction_arm_wait_max SDATA(D_L15_00161A84);
-extern float construction_arm_puff_speed SDATA(D_L15_00161A7C);
-extern int construction_arm_puff_life_min SDATA(D_L15_00161A74);
-extern int construction_arm_puff_life_max SDATA(D_L15_00161A78);
-extern int construction_arm_puff_color SDATA(D_L15_00161A6C);
+extern float g_frame_scale_sq SDATA(g_frame_scale_sq);
+extern float construction_arm_wait_min SDATA(construction_arm_wait_min);
+extern float construction_arm_wait_max SDATA(construction_arm_wait_max);
+extern float construction_arm_puff_speed SDATA(construction_arm_puff_speed);
+extern int construction_arm_puff_life_min SDATA(construction_arm_puff_life_min);
+extern int construction_arm_puff_life_max SDATA(construction_arm_puff_life_max);
+extern int construction_arm_puff_color SDATA(construction_arm_puff_color);
 
 typedef struct UpdateVars_2938 {
     u8 pad00[0x68];
@@ -1388,8 +1388,8 @@ extern void matrix_from_basis_rows(void *, void *);
 extern void transform_vector(void *, void *, void *);
 extern float vec_length_xy(void *);
 extern void axis_rotation_2d48(void *, int, float);
-extern float helicopter_bob_amplitude SDATA(D_L15_00161A90);
-extern float helicopter_bob_period SDATA(D_L15_00161A8C);
+extern float helicopter_bob_amplitude SDATA(helicopter_bob_amplitude);
+extern float helicopter_bob_period SDATA(helicopter_bob_period);
 
 /* Update function of the helicopter (moby Helicopter): waits, flies its path, hovers near and fires at its target,
    tilts and bobs, aims its turret, and dies. */
@@ -2037,15 +2037,15 @@ extern float quartu_zero_vec[] MACRO_ADDR;
 extern ULevelState quartu_moby_state_bytes_base;
 extern ULevelState quartu_collected_flags_base;
 extern int quartu_moby_killed[];
-extern float ultramech_jump_speed SDATA(D_L15_00161B9C);
-extern float ultramech_gravity SDATA(D_L15_00161BA0);
-extern int ultramech_rocket_life SDATA(D_L15_00161BA4);
-extern float ultramech_rocket_speed SDATA(D_L15_00161BA8);
-extern float ultramech_close_attack_range SDATA(D_L15_00161BAC);
-extern float ultramech_mid_attack_range SDATA(D_L15_00161BB0);
-extern float ultramech_fire_anim_speed SDATA(D_L15_00161BBC);
-extern float ultramech_debris_speed SDATA(D_L15_00161BC0);
-extern float ultramech_debris_lift SDATA(D_L15_00161BC4);
+extern float ultramech_jump_speed SDATA(ultramech_jump_speed);
+extern float ultramech_gravity SDATA(ultramech_gravity);
+extern int ultramech_rocket_life SDATA(ultramech_rocket_life);
+extern float ultramech_rocket_speed SDATA(ultramech_rocket_speed);
+extern float ultramech_close_attack_range SDATA(ultramech_close_attack_range);
+extern float ultramech_mid_attack_range SDATA(ultramech_mid_attack_range);
+extern float ultramech_fire_anim_speed SDATA(ultramech_fire_anim_speed);
+extern float ultramech_debris_speed SDATA(ultramech_debris_speed);
+extern float ultramech_debris_lift SDATA(ultramech_debris_lift);
 
 /* Update function of the ultramech (moby Ultramech Unlimited): waits for the player, follows its path, turns, fires
    and strafes, with jet particles while it moves. */
@@ -2514,11 +2514,11 @@ extern void HeadingFromVector(void *, float *, void *, void *);
 extern void InitKnockback(float, void *, void *, int, int, int);
 extern int Sound_PlayClassSound_r(int, int, void *, int) __asm__("func_L00_0028EF68");
 extern int FindNearestEligibleMoby(float, void *, void *, int, int, void *, int);
-extern float ultramech_hit_check_scale SDATA(D_L15_00161BB4);
-extern float ultramech_knockback_gravity_gp SDATA(D_L15_00161B88);
-extern float ultramech_knockback_horizontal_speed_gp SDATA(D_L15_00161B90);
-extern float ultramech_knockback_vertical_speed_gp SDATA(D_L15_00161B8C);
-extern float ultramech_scale SDATA(D_L15_00161BB8);
+extern float ultramech_hit_check_scale SDATA(ultramech_hit_check_scale);
+extern float ultramech_knockback_gravity_gp SDATA(ultramech_knockback_gravity_gp);
+extern float ultramech_knockback_horizontal_speed_gp SDATA(ultramech_knockback_horizontal_speed_gp);
+extern float ultramech_knockback_vertical_speed_gp SDATA(ultramech_knockback_vertical_speed_gp);
+extern float ultramech_scale SDATA(ultramech_scale);
 
 struct ProcessUltramechHitsAndUpdateTargetVars {
     u8 pad_00[0x20];
@@ -2695,7 +2695,7 @@ void process_ultramech_hits_and_update_target(void *mobyp) {
 }
 extern float g_frame_time MACRO_ADDR;
 extern short D_L15_00160058_g SDATA(D_L15_00160058);
-extern float quartu_linked_spin_rate SDATA(D_L15_00161F40);
+extern float quartu_linked_spin_rate SDATA(quartu_linked_spin_rate);
 
 /* Nudge a moby's field 0x48 toward a signed step depending on a linked moby's state. */
 void update_moby_yaw_from_linked_state(char *moby) {
@@ -2899,7 +2899,7 @@ extern void emit_moby_sprite_particles(char *);
 extern void ShowBanner(int, int);
 extern void grant_inventory_item(int, int);
 extern int memcard_Save(int, int);
-extern float bolt_grabber_scale SDATA(D_L15_001620F8);
+extern float bolt_grabber_scale SDATA(bolt_grabber_scale);
 extern unsigned char race_gates_base[];
 extern int quartu_dialogue_message_duration MACRO_ADDR;
 extern int quartu_game_mode MACRO_ADDR;
@@ -2953,7 +2953,7 @@ void bolt_grabber_update(unsigned char *m) {
             break;
     }
 }
-extern float poison_vessel_spawn_interval SDATA(D_L15_001620FC);
+extern float poison_vessel_spawn_interval SDATA(poison_vessel_spawn_interval);
 extern char *spawn_poison_vessel(void *, void *);
 
 /* Per-frame update: picks a random value on spawn, then re-rolls and spawns a child when triggered. */
@@ -2987,13 +2987,13 @@ extern short quartu_ripple_uv_bufs;
 extern short quartu_ripple_color_bufs;
 extern short quartu_ripple_template_verts;
 extern short quartu_ripple_base_uvs;
-extern int quartu_ripple_alpha_fix SDATA(D_L15_0016216C);
-extern int quartu_ripple_texture SDATA(D_L15_00162170);
-extern int quartu_ripple_alpha SDATA(D_L15_00162174);
-extern float ripple_mesh_buffers_radial_wavelength_gp SDATA(D_L15_00162178);
-extern float ripple_mesh_buffers_phase_advance_divisor_gp SDATA(D_L15_0016217C);
-extern float quartu_ripple_wave_height SDATA(D_L15_00162180);
-extern float quartu_ripple_uv_scroll_rate SDATA(D_L15_00162184);
+extern int quartu_ripple_alpha_fix SDATA(quartu_ripple_alpha_fix);
+extern int quartu_ripple_texture SDATA(quartu_ripple_texture);
+extern int quartu_ripple_alpha SDATA(quartu_ripple_alpha);
+extern float ripple_mesh_buffers_radial_wavelength_gp SDATA(ripple_mesh_buffers_radial_wavelength_gp);
+extern float ripple_mesh_buffers_phase_advance_divisor_gp SDATA(ripple_mesh_buffers_phase_advance_divisor_gp);
+extern float quartu_ripple_wave_height SDATA(quartu_ripple_wave_height);
+extern float quartu_ripple_uv_scroll_rate SDATA(quartu_ripple_uv_scroll_rate);
 typedef struct {
     float f0;
     float f4;
@@ -3079,13 +3079,13 @@ extern int ring_wave_vertex_counts[1] SDATA(D_L15_001621A0);
 extern int ring_wave_position_ptrs[1] SDATA(D_L15_001621C0);
 extern int ring_wave_uv_ptrs[1] SDATA(D_L15_001621C8);
 extern int ring_wave_color_ptrs[1] SDATA(D_L15_001621D0);
-extern int ring_wave_alpha_fix SDATA(D_L15_001621D4);
-extern int ring_wave_texture SDATA(D_L15_001621D8);
-extern int ring_wave_alpha SDATA(D_L15_001621DC);
-extern float ring_wave_wavelength SDATA(D_L15_001621E0);
-extern float ripple_mesh_phase_advance_divisor_gp SDATA(D_L15_001621E4);
-extern float ring_wave_height SDATA(D_L15_001621E8);
-extern float ring_wave_uv_scroll_rate SDATA(D_L15_001621EC);
+extern int ring_wave_alpha_fix SDATA(ring_wave_alpha_fix);
+extern int ring_wave_texture SDATA(ring_wave_texture);
+extern int ring_wave_alpha SDATA(ring_wave_alpha);
+extern float ring_wave_wavelength SDATA(ring_wave_wavelength);
+extern float ripple_mesh_phase_advance_divisor_gp SDATA(ripple_mesh_phase_advance_divisor_gp);
+extern float ring_wave_height SDATA(ring_wave_height);
+extern float ring_wave_uv_scroll_rate SDATA(ring_wave_uv_scroll_rate);
 
 /* Builds and draws the animated ring of lights around a moby: 68 vertices and colours, then two passes of 68 texture
    coordinates. */
@@ -3149,7 +3149,7 @@ void RingWave_DrawA(char *moby) {
     }
 }
 extern unsigned char saved_mission_state[];
-extern int quartu_alarm_on SDATA(D_L15_00161B48);
+extern int quartu_alarm_on SDATA(quartu_alarm_on);
 extern char *quartu_cuboids MACRO_ADDR;
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
 
@@ -3214,10 +3214,10 @@ void update_quartu_cutscene_trigger(unsigned char *moby) {
 }
 extern char g_mission[];
 extern char quartu_cutscene_msg_format[];
-extern int quartu_cutscene_msg_x SDATA(D_L15_00162200);
-extern int quartu_cutscene_msg_y SDATA(D_L15_00162204);
-extern int quartu_cutscene_msg_color SDATA(D_L15_00162208);
-extern int quartu_cutscene_msg_shadow_color SDATA(D_L15_0016220C);
+extern int quartu_cutscene_msg_x SDATA(quartu_cutscene_msg_x);
+extern int quartu_cutscene_msg_y SDATA(quartu_cutscene_msg_y);
+extern int quartu_cutscene_msg_color SDATA(quartu_cutscene_msg_color);
+extern int quartu_cutscene_msg_shadow_color SDATA(quartu_cutscene_msg_shadow_color);
 extern int msg_string(int);
 extern int sprintf(char *str, const char *fmt, ...);
 extern int libc_strlen(char *);
@@ -3281,8 +3281,8 @@ void draw_quartu_cutscene_messages(void) {
 }
 extern void PartType34Spawn(float, float, char *, float *);
 extern float g_frame_time MACRO_ADDR;
-extern int quartu_rising_puff_chance SDATA(D_L15_0016221C);
-extern float quartu_rising_puff_speed SDATA(D_L15_00162218);
+extern int quartu_rising_puff_chance SDATA(quartu_rising_puff_chance);
+extern float quartu_rising_puff_speed SDATA(quartu_rising_puff_speed);
 
 /* Per-frame update: when the counter check is zero, builds a vector and calls the movement helper. */
 void emit_randomized_vertical_effect(char *moby) {

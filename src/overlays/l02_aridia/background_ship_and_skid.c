@@ -891,9 +891,9 @@ void update_shard_debris(struct Moby *m) {
 }
 extern void set_moby_color(char *, int, int, int);
 extern float vec_length_xy(void *);
-extern int aridia_projectile_color_r SDATA(D_L02_00161FDC);
-extern int aridia_projectile_color_g SDATA(D_L02_00161FE0);
-extern int aridia_projectile_color_b SDATA(D_L02_00161FE4);
+extern int aridia_projectile_color_r SDATA(aridia_projectile_color_r);
+extern int aridia_projectile_color_g SDATA(aridia_projectile_color_g);
+extern int aridia_projectile_color_b SDATA(aridia_projectile_color_b);
 
 /* Spawns a projectile moby from src at pos, heading along dir, with its lifetime in the moby data.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l02/gameplay/vendor/002ebf20.c, FUN_L02_002ec228. */

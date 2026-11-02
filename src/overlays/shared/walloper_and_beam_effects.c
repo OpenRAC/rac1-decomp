@@ -113,27 +113,27 @@ extern float g_debug_camera[];
 extern Vec4 collision_hit_point;
 extern char arc_points[];
 #define arcs_lb ((Vec4(*)[5])D_L00_001DBD20)
-extern float tesla_beam_length SDATA(D_L00_00161664);
-extern float tesla_target_max_hero_angle_diff SDATA(D_L00_00161668);
-extern float tesla_target_max_camera_angle_diff SDATA(D_L00_0016166C);
-extern float tesla_beam_wave_phase_step SDATA(D_L00_00161670);
-extern float tesla_beam_wave_amplitude_start SDATA(D_L00_00161674);
-extern float tesla_beam_wave_amplitude_end SDATA(D_L00_00161678);
-extern float tesla_beam_reset_short_a SDATA(D_L00_0016167C);
-extern float tesla_beam_phase_a_speed SDATA(D_L00_00161680);
-extern float tesla_beam_reset_short_b SDATA(D_L00_00161684);
-extern float tesla_beam_phase_b_speed SDATA(D_L00_00161688);
-extern float tesla_beam_side_phase_step SDATA(D_L00_0016168C);
-extern float tesla_beam_side_wave_amplitude SDATA(D_L00_00161690);
-extern float tesla_beam_side_offset_scale SDATA(D_L00_00161694);
-extern float tesla_beam_reset_short_c SDATA(D_L00_00161698);
-extern float tesla_beam_phase_c_speed SDATA(D_L00_0016169C);
-extern float tesla_beam_side_amplitude_phase_step SDATA(D_L00_001616A0);
-extern float tesla_beam_wave_jitter_min SDATA(D_L00_001616B4);
-extern float tesla_beam_wave_jitter_max SDATA(D_L00_001616B8);
+extern float tesla_beam_length SDATA(tesla_beam_length);
+extern float tesla_target_max_hero_angle_diff SDATA(tesla_target_max_hero_angle_diff);
+extern float tesla_target_max_camera_angle_diff SDATA(tesla_target_max_camera_angle_diff);
+extern float tesla_beam_wave_phase_step SDATA(tesla_beam_wave_phase_step);
+extern float tesla_beam_wave_amplitude_start SDATA(tesla_beam_wave_amplitude_start);
+extern float tesla_beam_wave_amplitude_end SDATA(tesla_beam_wave_amplitude_end);
+extern float tesla_beam_reset_short_a SDATA(tesla_beam_reset_short_a);
+extern float tesla_beam_phase_a_speed SDATA(tesla_beam_phase_a_speed);
+extern float tesla_beam_reset_short_b SDATA(tesla_beam_reset_short_b);
+extern float tesla_beam_phase_b_speed SDATA(tesla_beam_phase_b_speed);
+extern float tesla_beam_side_phase_step SDATA(tesla_beam_side_phase_step);
+extern float tesla_beam_side_wave_amplitude SDATA(tesla_beam_side_wave_amplitude);
+extern float tesla_beam_side_offset_scale SDATA(tesla_beam_side_offset_scale);
+extern float tesla_beam_reset_short_c SDATA(tesla_beam_reset_short_c);
+extern float tesla_beam_phase_c_speed SDATA(tesla_beam_phase_c_speed);
+extern float tesla_beam_side_amplitude_phase_step SDATA(tesla_beam_side_amplitude_phase_step);
+extern float tesla_beam_wave_jitter_min SDATA(tesla_beam_wave_jitter_min);
+extern float tesla_beam_wave_jitter_max SDATA(tesla_beam_wave_jitter_max);
 extern short beam_arc_outer_color;
 extern float D_L00_001616F8 SDATA(D_L00_001616F8);
-extern float tesla_target_angle_score_weight SDATA(D_L00_001616FC);
+extern float tesla_target_angle_score_weight SDATA(tesla_target_angle_score_weight);
 extern short beam_arc_bolt_slots[] MACRO_ADDR;
 extern short beam_arc_bolt_params[] MACRO_ADDR;
 extern short beam_arc_bolt_params_4[] MACRO_ADDR;
@@ -614,18 +614,18 @@ void build_beam_and_arc_points(u8 *o) {
                     0, spin, (float *)veldin1_zero_vec, 0.0f);
 }
 extern float frame_scale MACRO_ADDR;
-extern float beam_arc_tex_scroll SDATA(D_L00_001616BC);
-extern float beam_arc_tex_scroll_speed SDATA(D_L00_001616C0);
-extern int beam_arc_main_inner_alpha SDATA(D_L00_001616A4);
-extern int beam_arc_main_outer_alpha SDATA(D_L00_001616AC);
-extern float beam_arc_main_half_width SDATA(D_L00_001616CC);
-extern float beam_arc_main_outer_half_width SDATA(D_L00_001616D0);
-extern float beam_arc_main_end_extension SDATA(D_L00_00161700);
-extern int beam_arc_second_inner_alpha SDATA(D_L00_001616D4);
-extern int beam_arc_second_outer_alpha SDATA(D_L00_001616D8);
-extern float beam_arc_bolt_half_width SDATA(D_L00_001616DC);
-extern float beam_arc_bolt_outer_half_width SDATA(D_L00_001616E0);
-extern float beam_arc_second_end_extension SDATA(D_L00_00161704);
+extern float beam_arc_tex_scroll SDATA(beam_arc_tex_scroll);
+extern float beam_arc_tex_scroll_speed SDATA(beam_arc_tex_scroll_speed);
+extern int beam_arc_main_inner_alpha SDATA(beam_arc_main_inner_alpha);
+extern int beam_arc_main_outer_alpha SDATA(beam_arc_main_outer_alpha);
+extern float beam_arc_main_half_width SDATA(beam_arc_main_half_width);
+extern float beam_arc_main_outer_half_width SDATA(beam_arc_main_outer_half_width);
+extern float beam_arc_main_end_extension SDATA(beam_arc_main_end_extension);
+extern int beam_arc_second_inner_alpha SDATA(beam_arc_second_inner_alpha);
+extern int beam_arc_second_outer_alpha SDATA(beam_arc_second_outer_alpha);
+extern float beam_arc_bolt_half_width SDATA(beam_arc_bolt_half_width);
+extern float beam_arc_bolt_outer_half_width SDATA(beam_arc_bolt_outer_half_width);
+extern float beam_arc_second_end_extension SDATA(beam_arc_second_end_extension);
 extern int beam_arc_bolt0_alpha MACRO_ADDR;
 extern int beam_arc_second_row_alpha MACRO_ADDR;
 extern int beam_arc_third_row_alpha MACRO_ADDR;
@@ -671,9 +671,9 @@ extern void FastVecAdd(void *, void *, void *);
 extern void draw_world_quad(void *, void *, int);
 extern void VU1_addGSregister(int, long);
 extern float g_debug_camera[];
-extern int beam_and_arc_first_pass_texture_index_gp SDATA(D_L00_00161708);
-extern int beam_and_arc_first_pass_base_vertex_color_gp SDATA(D_L00_001616C4);
-extern int beam_and_arc_second_pass_texture_index_gp SDATA(D_L00_0016170C);
+extern int beam_and_arc_first_pass_texture_index_gp SDATA(beam_and_arc_first_pass_texture_index_gp);
+extern int beam_and_arc_first_pass_base_vertex_color_gp SDATA(beam_and_arc_first_pass_base_vertex_color_gp);
+extern int beam_and_arc_second_pass_texture_index_gp SDATA(beam_and_arc_second_pass_texture_index_gp);
 extern short beam_arc_outer_color;
 typedef float RW_2BBDE8[4] __attribute__((aligned(16)));
 typedef struct {
@@ -828,9 +828,9 @@ extern void transform_vector(void *, void *, void *);
 extern float g_debug_camera[];
 extern V_2bb0b0 beam_anchor_quad_corners[];
 extern QuadUv beam_anchor_quad_uvs[];
-extern int beam_anchor_quad_color SDATA(D_L00_00161710);
-extern float beam_anchor_quad_size SDATA(D_L00_00161718);
-extern float beam_anchor_outer_quad_size SDATA(D_L00_0016171C);
+extern int beam_anchor_quad_color SDATA(beam_anchor_quad_color);
+extern float beam_anchor_quad_size SDATA(beam_anchor_quad_size);
+extern float beam_anchor_outer_quad_size SDATA(beam_anchor_outer_quad_size);
 extern char hero_globals_base[];
 
 // Builds and draws two layered glow quads around a moby. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002b94d0.c, FUN_L00_002bb0b0.
@@ -963,12 +963,12 @@ typedef struct {
     float point[4][4];
 } SparkleRowC860;
 extern SparkleRowC860 D_L00_001DBE90_rows[] __asm__("D_L00_001DBE90");
-extern int walloper_fade_in_ticks SDATA(D_L00_00161778);
-extern int walloper_fade_out_ticks SDATA(D_L00_0016177C);
+extern int walloper_fade_in_ticks SDATA(walloper_fade_in_ticks);
+extern int walloper_fade_out_ticks SDATA(walloper_fade_out_ticks);
 extern int walloper_fade_in_timer MACRO_ADDR;
 extern int walloper_effect_fade_out_countdown MACRO_ADDR;
 extern float walloper_effect_alpha_scale MACRO_ADDR;
-extern float walloper_arc_spread SDATA(D_L00_00161774);
+extern float walloper_arc_spread SDATA(walloper_arc_spread);
 extern float held_weapon_tesla_walloper_factor;
 extern float MobyGetFrameValue(void *);
 extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
@@ -1098,8 +1098,8 @@ void walloper_update(Moby *m) {
 extern float IntToFloat(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float walloper_effect_fade_m __asm__("D_L00_001617A4") MACRO_ADDR;
-extern float walloper_arc_half_width SDATA(D_L00_00161760);
-extern float walloper_arc_outer_half_width SDATA(D_L00_00161764);
+extern float walloper_arc_half_width SDATA(walloper_arc_half_width);
+extern float walloper_arc_outer_half_width SDATA(walloper_arc_outer_half_width);
 extern void draw_walloper_arc_two_pass_quads(char *, int, int, int, float, float, float);
 extern void draw_walloper_camera_facing_quad(int);
 
@@ -1121,10 +1121,10 @@ extern float FastVecLength(void *);
 extern void FastVecScale(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern float g_debug_camera[];
-extern int walloper_arc_inner_tex SDATA(D_L00_00161780);
-extern int walloper_arc_inner_color SDATA(D_L00_00161750);
-extern int walloper_arc_outer_tex SDATA(D_L00_00161784);
-extern int walloper_arc_outer_color SDATA(D_L00_00161754);
+extern int walloper_arc_inner_tex SDATA(walloper_arc_inner_tex);
+extern int walloper_arc_inner_color SDATA(walloper_arc_inner_color);
+extern int walloper_arc_outer_tex SDATA(walloper_arc_outer_tex);
+extern int walloper_arc_outer_color SDATA(walloper_arc_outer_color);
 typedef float RW[4] __attribute__((aligned(16)));
 typedef struct {
     int c[4];
@@ -1261,11 +1261,11 @@ extern int random_integer_below(int);
 extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecCross(void *, void *, void *);
 extern void transform_vector(void *, void *, void *);
-extern float walloper_glow_quad_size SDATA(D_L00_00161788);
-extern float walloper_glow_forward_offset SDATA(D_L00_0016178C);
-extern int walloper_glow_color SDATA(D_L00_00161790);
-extern int walloper_glow_flicker_color SDATA(D_L00_00161794);
-extern int walloper_glow_tex SDATA(D_L00_00161798);
+extern float walloper_glow_quad_size SDATA(walloper_glow_quad_size);
+extern float walloper_glow_forward_offset SDATA(walloper_glow_forward_offset);
+extern int walloper_glow_color SDATA(walloper_glow_color);
+extern int walloper_glow_flicker_color SDATA(walloper_glow_flicker_color);
+extern int walloper_glow_tex SDATA(walloper_glow_tex);
 extern float g_debug_camera[];
 extern float walloper_glow_quad_corners[][4];
 typedef float W[4] __attribute__((aligned(16)));
@@ -1332,8 +1332,8 @@ void draw_walloper_camera_facing_quad(int arg) {
     draw_world_quad(q, 0, 0);
 }
 extern char *active_mobies[];
-extern float tesla_arc_range SDATA(D_L00_001617AC);
-extern float morphoray_target_angle_threshold_degrees_gp SDATA(D_L00_001617A8);
+extern float tesla_arc_range SDATA(tesla_arc_range);
+extern float morphoray_target_angle_threshold_degrees_gp SDATA(morphoray_target_angle_threshold_degrees_gp);
 extern Vec4 collision_hit_point;
 extern int coll_hit_result[];
 
@@ -2074,25 +2074,25 @@ typedef struct {
     long unk70, tex, unk80, unk88;
 } Quad;
 extern u8 gGoldMorphORay NOT_SDA;
-extern float beam_ring_band_texture_u_step_gp SDATA(D_L00_001617E0);
-extern float beam_ring_face_texture_v_step_gp SDATA(D_L00_001617E4);
+extern float beam_ring_band_texture_u_step_gp SDATA(beam_ring_band_texture_u_step_gp);
+extern float beam_ring_face_texture_v_step_gp SDATA(beam_ring_face_texture_v_step_gp);
 extern short tesla_ring_tex_v_scroll;
-extern float beam_ring_texture_u_scroll_speed_gp SDATA(D_L00_001617EC);
+extern float beam_ring_texture_u_scroll_speed_gp SDATA(beam_ring_texture_u_scroll_speed_gp);
 extern short tesla_ring_tex_u_scroll_a;
 extern short tesla_ring_tex_u_scroll_b;
-extern float beam_ring_texture_v_scroll_speed_gp SDATA(D_L00_001617F8);
-extern int beam_rail_first_pass_alpha_gp SDATA(D_L00_0016183C);
-extern int beam_rail_second_pass_alpha_gp SDATA(D_L00_00161840);
-extern float beam_rail_first_pass_half_width_gp SDATA(D_L00_00161844);
-extern float beam_rail_second_pass_half_width_gp SDATA(D_L00_00161848);
-extern float beam_rail_second_pass_segment_extension_factor_gp SDATA(D_L00_0016184C);
-extern int beam_first_rail_second_pass_base_vertex_color_gp SDATA(D_L00_00161854);
-extern int beam_second_rail_second_pass_base_vertex_color_gp SDATA(D_L00_00161858);
-extern float beam_rail_first_pass_texture_u_offset_gp SDATA(D_L00_0016185C);
-extern float beam_rail_first_pass_texture_u_scroll_speed_gp SDATA(D_L00_00161860);
-extern int beam_ring_default_vertex_color_gp SDATA(D_L00_00161864);
-extern int tesla_ring_alt_color SDATA(D_L00_00161868);
-extern int beam_ring_texture_index_gp SDATA(D_L00_0016186C);
+extern float beam_ring_texture_v_scroll_speed_gp SDATA(beam_ring_texture_v_scroll_speed_gp);
+extern int beam_rail_first_pass_alpha_gp SDATA(beam_rail_first_pass_alpha_gp);
+extern int beam_rail_second_pass_alpha_gp SDATA(beam_rail_second_pass_alpha_gp);
+extern float beam_rail_first_pass_half_width_gp SDATA(beam_rail_first_pass_half_width_gp);
+extern float beam_rail_second_pass_half_width_gp SDATA(beam_rail_second_pass_half_width_gp);
+extern float beam_rail_second_pass_segment_extension_factor_gp SDATA(beam_rail_second_pass_segment_extension_factor_gp);
+extern int beam_first_rail_second_pass_base_vertex_color_gp SDATA(beam_first_rail_second_pass_base_vertex_color_gp);
+extern int beam_second_rail_second_pass_base_vertex_color_gp SDATA(beam_second_rail_second_pass_base_vertex_color_gp);
+extern float beam_rail_first_pass_texture_u_offset_gp SDATA(beam_rail_first_pass_texture_u_offset_gp);
+extern float beam_rail_first_pass_texture_u_scroll_speed_gp SDATA(beam_rail_first_pass_texture_u_scroll_speed_gp);
+extern int beam_ring_default_vertex_color_gp SDATA(beam_ring_default_vertex_color_gp);
+extern int tesla_ring_alt_color SDATA(tesla_ring_alt_color);
+extern int beam_ring_texture_index_gp SDATA(beam_ring_texture_index_gp);
 extern Vec4 g_debug_camera_r __asm__("D_L00_00166EC0");
 extern Vec4 tesla_rail0_points[];
 extern Vec4 tesla_rail1_points[];
@@ -2195,9 +2195,9 @@ void draw_beam_ring_and_rail_effects(void *o) {
         y += (beam_ring_band_texture_u_step_gp);
     }
 }
-extern int tesla_rail_inner_tex SDATA(D_L00_00161874);
-extern int tesla_rail_inner_color SDATA(D_L00_00161850);
-extern int tesla_rail_outer_tex SDATA(D_L00_00161878);
+extern int tesla_rail_inner_tex SDATA(tesla_rail_inner_tex);
+extern int tesla_rail_inner_color SDATA(tesla_rail_inner_color);
+extern int tesla_rail_outer_tex SDATA(tesla_rail_outer_tex);
 typedef float RW_2BF380[4] __attribute__((aligned(16)));
 typedef struct {
     float v[4];
@@ -2337,8 +2337,8 @@ extern float tesla_pulse_alpha[3] MACRO_ADDR;
 extern float tesla_pulse_size[3] MACRO_ADDR;
 extern Vec4A tesla_pulse_pos[];
 extern Vec4A tesla_pulse_dir[];
-extern int tesla_pulse_alt_color SDATA(D_L00_00161834);
-extern int tesla_pulse_color SDATA(D_L00_00161830);
+extern int tesla_pulse_alt_color SDATA(tesla_pulse_alt_color);
+extern int tesla_pulse_color SDATA(tesla_pulse_color);
 
 /* Draw each active Tesla pulse as a camera-facing textured quad in the pulse colour. */
 void draw_beam_pulse_quads(void *unused) {
@@ -2387,10 +2387,10 @@ void draw_beam_pulse_quads(void *unused) {
         }
     }
 }
-extern int tesla_origin_quad_color SDATA(D_L00_00161888);
-extern float tesla_origin_forward_offset SDATA(D_L00_00161884);
-extern float tesla_origin_quad_size SDATA(D_L00_0016187C);
-extern float tesla_origin_core_quad_size SDATA(D_L00_00161880);
+extern int tesla_origin_quad_color SDATA(tesla_origin_quad_color);
+extern float tesla_origin_forward_offset SDATA(tesla_origin_forward_offset);
+extern float tesla_origin_quad_size SDATA(tesla_origin_quad_size);
+extern float tesla_origin_core_quad_size SDATA(tesla_origin_core_quad_size);
 
 typedef struct {
     V_t corner[4];

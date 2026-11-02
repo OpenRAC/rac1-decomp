@@ -596,7 +596,7 @@ void snow_plow_update(VehicleMoby *m) {
     }
 }
 extern char *eudora_mobys_b __asm__("D_L04_00160058") MACRO_ADDR;
-extern float eudora_floating_platform_spin_rate_deg SDATA(D_L04_001619EC);
+extern float eudora_floating_platform_spin_rate_deg SDATA(eudora_floating_platform_spin_rate_deg);
 extern float g_frame_time_b __asm__("D_0015EE6C") MACRO_ADDR;
 extern float D_0015EE64 MACRO_ADDR;
 extern void DeleteMoby(void *);
@@ -2254,8 +2254,8 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
     }
 }
 extern char eudora_coll_hit_normal[];
-extern float eudora_debris_spin_min_deg SDATA(D_L04_00161E08);
-extern float eudora_debris_spin_max_deg SDATA(D_L04_00161E0C);
+extern float eudora_debris_spin_min_deg SDATA(eudora_debris_spin_min_deg);
+extern float eudora_debris_spin_max_deg SDATA(eudora_debris_spin_max_deg);
 extern int FastDecTimer_bounce(void *) __asm__("func_001F9938");
 extern int coll_sphere(float, void *, int, void *);
 extern float FastVecDot(void *a, void *b);

@@ -13,9 +13,9 @@ extern void draw_hud_rect_blended(int, int, int, int, long, int);
 extern int frame_size;
 extern int pal_mode MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
-extern int blarg_hud_meter_center_x SDATA(D_L06_0015F9BC);
-extern float blarg_hud_meter_last_segment_fill_scale SDATA(D_L06_0015F9C4);
-extern float blarg_hud_meter_first_segment_fill_scale SDATA(D_L06_0015F9C8);
+extern int blarg_hud_meter_center_x SDATA(blarg_hud_meter_center_x);
+extern float blarg_hud_meter_last_segment_fill_scale SDATA(blarg_hud_meter_last_segment_fill_scale);
+extern float blarg_hud_meter_first_segment_fill_scale SDATA(blarg_hud_meter_first_segment_fill_scale);
 
 /* Draw the segmented HUD meter (3, 6 or 7 segments by level), fading with the element's opacity. */
 int draw_segmented_hud_meter(unsigned char *p) {

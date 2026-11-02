@@ -3,6 +3,20 @@
 
 #include "structs/data/game_ui_menu.h"
 
+u8 max_map_coverage_size[80] DATA_SECTION(D_0013D668) = {0};
+
+u32 menu_item_price_fmt[] DATA_SECTION(D_0015FE60) = {
+#include "data_inc/D_0015FE60.inc"
+};
+
+char menu_token_error_text[] DATA_SECTION(D_0015FE68) =
+#include "data_inc/D_0015FE68.inc"
+    ;
+
+int marker_half_size[] DATA_SECTION(D_0015FE70) = {
+#include "data_inc/D_0015FE70.inc"
+};
+
 u32 menu_action_messages[] DATA_SECTION(D_00199578) = {
 #include "data_inc/D_00199578.inc"
 };

@@ -158,7 +158,7 @@ extern int Moby_PlaySound_i(int, int, void *) __asm__("func_0022ED80");
 extern void draw_electric_gate_beams(char *);
 
 extern char hero_globals_base[];
-extern int electric_gate_last_draw_frame SDATA(D_L05_00161DF8);
+extern int electric_gate_last_draw_frame SDATA(electric_gate_last_draw_frame);
 extern int rilgar_frame_count MACRO_ADDR;
 extern unsigned char *moby_pool_4f60_r __asm__("D_L05_00160098") MACRO_ADDR;
 
@@ -230,15 +230,15 @@ extern short *rilgar_moby_groups[];
 extern char electric_gate_inner_corners[];
 extern char electric_gate_outer_corners[];
 extern char electric_gate_quad_uvs[];
-extern int electric_gate_outer_color_from SDATA(D_L05_00161DFC);
-extern int electric_gate_outer_color_to SDATA(D_L05_00161E00);
-extern int electric_gate_inner_color_from SDATA(D_L05_00161E04);
-extern int electric_gate_inner_color_to SDATA(D_L05_00161E08);
-extern int electric_gate_alpha_a SDATA(D_L05_00161E30);
-extern int electric_gate_alpha_b SDATA(D_L05_00161E34);
-extern int electric_gate_alpha_c SDATA(D_L05_00161E38);
-extern int electric_gate_alpha_d SDATA(D_L05_00161E3C);
-extern int electric_gate_effect_tex SDATA(D_L05_00161E58);
+extern int electric_gate_outer_color_from SDATA(electric_gate_outer_color_from);
+extern int electric_gate_outer_color_to SDATA(electric_gate_outer_color_to);
+extern int electric_gate_inner_color_from SDATA(electric_gate_inner_color_from);
+extern int electric_gate_inner_color_to SDATA(electric_gate_inner_color_to);
+extern int electric_gate_alpha_a SDATA(electric_gate_alpha_a);
+extern int electric_gate_alpha_b SDATA(electric_gate_alpha_b);
+extern int electric_gate_alpha_c SDATA(electric_gate_alpha_c);
+extern int electric_gate_alpha_d SDATA(electric_gate_alpha_d);
+extern int electric_gate_effect_tex SDATA(electric_gate_effect_tex);
 extern float IntToFloat(int);
 extern float FastSin(float);
 extern int FastTweenColor(int, int, float);
@@ -568,17 +568,17 @@ extern void moby_build_matrix(void *);
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern int rilgar_cinematic_mode MACRO_ADDR;
-extern float drain_cover_gravity SDATA(D_L05_00161E6C);
-extern float drain_cover_bob_accel SDATA(D_L05_00161E70);
-extern int drain_cover_spray_life SDATA(D_L05_00161E78);
-extern float drain_cover_air_wobble SDATA(D_L05_00161E94);
-extern float drain_cover_warning_spray_height SDATA(D_L05_00161EA8);
-extern float drain_cover_burst_speed_min SDATA(D_L05_00161EAC);
-extern float drain_cover_burst_speed_max SDATA(D_L05_00161EB0);
-extern int drain_cover_burst_color_a SDATA(D_L05_00161EB4);
-extern int drain_cover_burst_color_b SDATA(D_L05_00161EB8);
-extern float drain_cover_burst_rise_max SDATA(D_L05_00161EBC);
-extern float drain_cover_push_radius SDATA(D_L05_00161EC0);
+extern float drain_cover_gravity SDATA(drain_cover_gravity);
+extern float drain_cover_bob_accel SDATA(drain_cover_bob_accel);
+extern int drain_cover_spray_life SDATA(drain_cover_spray_life);
+extern float drain_cover_air_wobble SDATA(drain_cover_air_wobble);
+extern float drain_cover_warning_spray_height SDATA(drain_cover_warning_spray_height);
+extern float drain_cover_burst_speed_min SDATA(drain_cover_burst_speed_min);
+extern float drain_cover_burst_speed_max SDATA(drain_cover_burst_speed_max);
+extern int drain_cover_burst_color_a SDATA(drain_cover_burst_color_a);
+extern int drain_cover_burst_color_b SDATA(drain_cover_burst_color_b);
+extern float drain_cover_burst_rise_max SDATA(drain_cover_burst_rise_max);
+extern float drain_cover_push_radius SDATA(drain_cover_push_radius);
 
 /* Updates the drain cover: rattles and bubbles while idle, blows up when the hero is near, hovers, falls back, and
    pushes the hero standing over it. */
@@ -756,13 +756,13 @@ extern int scale_ticks(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern void create_particle_with_velocity_and_lifetime(float, void *, void *, int, int, int);
 extern float g_frame_time MACRO_ADDR;
-extern float drain_cover_spray_spacing SDATA(D_L05_00161E74);
-extern float drain_cover_spray_size_min SDATA(D_L05_00161E7C);
-extern float drain_cover_spray_size_max SDATA(D_L05_00161E80);
-extern int drain_cover_spray_spin_range SDATA(D_L05_00161E84);
-extern float drain_cover_spray_rise_speed SDATA(D_L05_00161E88);
-extern int drain_cover_spray_color SDATA(D_L05_00161E8C);
-extern float drain_cover_spray_radius SDATA(D_L05_00161E90);
+extern float drain_cover_spray_spacing SDATA(drain_cover_spray_spacing);
+extern float drain_cover_spray_size_min SDATA(drain_cover_spray_size_min);
+extern float drain_cover_spray_size_max SDATA(drain_cover_spray_size_max);
+extern int drain_cover_spray_spin_range SDATA(drain_cover_spray_spin_range);
+extern float drain_cover_spray_rise_speed SDATA(drain_cover_spray_rise_speed);
+extern int drain_cover_spray_color SDATA(drain_cover_spray_color);
+extern float drain_cover_spray_radius SDATA(drain_cover_spray_radius);
 
 /* Scatters points along a range, placing each one with a heading and radius. */
 void emit_drain_cover_particles(char *obj, float a, float b) {
@@ -797,10 +797,10 @@ extern float FastVecDot(void *a, void *b);
 extern float FastAddRots(float, float);
 extern float SteerAngleWithVelocity_r(float *, float, float *, float, float, float) __asm__("func_L00_0025CE58");
 extern float g_frame_time_sq MACRO_ADDR;
-extern float drain_cover_wobble_amount SDATA(D_L05_00161E98);
-extern float drain_cover_tilt_accel SDATA(D_L05_00161E9C);
-extern float drain_cover_tilt_decel SDATA(D_L05_00161EA0);
-extern float drain_cover_tilt_max_speed SDATA(D_L05_00161EA4);
+extern float drain_cover_wobble_amount SDATA(drain_cover_wobble_amount);
+extern float drain_cover_tilt_accel SDATA(drain_cover_tilt_accel);
+extern float drain_cover_tilt_decel SDATA(drain_cover_tilt_decel);
+extern float drain_cover_tilt_max_speed SDATA(drain_cover_tilt_max_speed);
 
 /* When the block at hero_globals_base + 0xE1D points back at this moby and its short at +0x30E is zero, derives two
    values
@@ -953,12 +953,12 @@ struct GateVars {
     f32 riseSpeed;
     f32 swingSpeed;
 };
-extern float triggered_gate_rise_accel SDATA(D_L05_00161F40);
-extern float triggered_gate_rise_decel SDATA(D_L05_00161F44);
-extern float triggered_gate_rise_max_speed SDATA(D_L05_00161F48);
-extern float triggered_gate_swing_accel SDATA(D_L05_00161F4C);
-extern float triggered_gate_swing_decel SDATA(D_L05_00161F50);
-extern float triggered_gate_swing_max_speed SDATA(D_L05_00161F54);
+extern float triggered_gate_rise_accel SDATA(triggered_gate_rise_accel);
+extern float triggered_gate_rise_decel SDATA(triggered_gate_rise_decel);
+extern float triggered_gate_rise_max_speed SDATA(triggered_gate_rise_max_speed);
+extern float triggered_gate_swing_accel SDATA(triggered_gate_swing_accel);
+extern float triggered_gate_swing_decel SDATA(triggered_gate_swing_decel);
+extern float triggered_gate_swing_max_speed SDATA(triggered_gate_swing_max_speed);
 extern int moby_pool_4f60_r2 __asm__("D_L05_00160098") MACRO_ADDR;
 extern int fast_dec_timer_r(s32 *) __asm__("func_001F9908");
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
@@ -1397,9 +1397,9 @@ void elevator_with_button_update(struct Moby *moby) {
 extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern void clear_u64_value(void *);
-extern float lift_camera_distance SDATA(D_L05_00161F88);
-extern float lift_camera_height SDATA(D_L05_00161F80);
-extern float lift_camera_pitch_deg SDATA(D_L05_00161F84);
+extern float lift_camera_distance SDATA(lift_camera_distance);
+extern float lift_camera_height SDATA(lift_camera_height);
+extern float lift_camera_pitch_deg SDATA(lift_camera_pitch_deg);
 
 // Positions the camera-relative point and fills the output angles.
 void lift_camera_view(char *a, char *b, char *c) {
@@ -2382,7 +2382,7 @@ void update_hero_clip_volume_outputs(char *m) {
 extern float random_angle_radians(void);
 extern int rilgar_cinematic_mode;
 extern float g_frame_time MACRO_ADDR;
-extern float television_scale SDATA(D_L05_00161FC8);
+extern float television_scale SDATA(television_scale);
 
 // Per-frame update: spin a value in the data block and bob the moby's Y with it.
 void television_update(unsigned char *moby) {

@@ -2,3 +2,7 @@
 #include "common.h"
 
 int disc_table_level_entries[38] DATA_SECTION(D_0013A548) = {0};
+
+u8 pad_globals_base[] DATA_SECTION(D_0013A5E0) = {
+#include "data_inc/D_0013A5E0.inc"
+};

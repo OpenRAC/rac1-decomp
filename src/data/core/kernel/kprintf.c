@@ -2,7 +2,7 @@
 #include "common.h"
 
 extern void serialPutchar();
-extern char D_00152A48[];
+extern u32 D_00152A48[];
 
 int deci2_putchar_count DATA_SECTION(D_0012FCFC) = {0};
 
@@ -40,4 +40,8 @@ void *fs_expected_version DATA_SECTION(D_0012FDA8) = D_00152A48;
 
 int iop_heap_bind_state DATA_SECTION(D_0012FDAC) = {
 #include "data_inc/D_0012FDAC.inc"
+};
+
+u32 D_00152A48[] DATA_SECTION(D_00152A48) = {
+#include "data_inc/D_00152A48.inc"
 };

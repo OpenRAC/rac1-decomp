@@ -147,8 +147,8 @@ void RescaleFloatTable(float s) {
         ripple_uv_table_r[i] = ripple_uv_table_r[i] * k;
     }
 }
-extern int ripple_cur_buffer SDATA(D_L01_00161298);
-extern int ripple_prev_buffer SDATA(D_L01_0016129C);
+extern int ripple_cur_buffer SDATA(ripple_cur_buffer);
+extern int ripple_prev_buffer SDATA(ripple_prev_buffer);
 extern void ripple_heights_to_scratchpad(char *a, char *b);
 extern void ripple_patch_step(char *a, int i, int c, char *base);
 
@@ -174,7 +174,7 @@ extern void step_pool_wave_simulation_r(char *, int) __asm__("func_L01_002B90E8"
 extern void ripple_lerp_buffers(char *, char *, char *, float);
 extern float pool_light[];
 extern short ripple_draw_buffer;
-extern float ripple_sim_phase SDATA(D_L01_001612A4);
+extern float ripple_sim_phase SDATA(ripple_sim_phase);
 
 // Advance the ripple simulation clock, stepping each active entry's ripple buffers.
 void RippleSimClock(char *p, int n) {
@@ -881,8 +881,8 @@ extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern void spawn_type_14_particle(int, void *);
 extern void DeleteMoby(void *);
-extern s32 novalis_shot_trail_mode SDATA(D_L01_00161524);
-extern f32 novalis_shot_hit_radius SDATA(D_L01_0016152C);
+extern s32 novalis_shot_trail_mode SDATA(novalis_shot_trail_mode);
+extern f32 novalis_shot_hit_radius SDATA(novalis_shot_hit_radius);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002c7530. */
 void update_moby_motion_collision_and_lifetime(Moby *moby) {
@@ -1488,13 +1488,13 @@ void *select_sand_mouse_spawn_target(void *moby, void *from, void *ang, float ya
 extern void *GetFlaggedPvarWord(void *);
 extern void *select_sand_mouse_spawn_target(void *, void *, void *, float, float, float, float, float, float);
 extern void spawn_sandmouse_projectile(void *, void *, float, float, float, float);
-extern float sand_mouse_target_range SDATA(D_L01_00161994);
-extern float sand_mouse_target_yaw_fov SDATA(D_L01_00161998);
-extern float sand_mouse_target_pitch_fov SDATA(D_L01_0016199C);
-extern float sand_mouse_muzzle_offset SDATA(D_L01_001619A0);
-extern float sand_mouse_aim_height SDATA(D_L01_001619A4);
-extern int sand_mouse_fire_interval SDATA(D_L01_00161990);
-extern int novalis_game_mode SDATA(D_L01_0015F6A8);
+extern float sand_mouse_target_range SDATA(sand_mouse_target_range);
+extern float sand_mouse_target_yaw_fov SDATA(sand_mouse_target_yaw_fov);
+extern float sand_mouse_target_pitch_fov SDATA(sand_mouse_target_pitch_fov);
+extern float sand_mouse_muzzle_offset SDATA(sand_mouse_muzzle_offset);
+extern float sand_mouse_aim_height SDATA(sand_mouse_aim_height);
+extern int sand_mouse_fire_interval SDATA(sand_mouse_fire_interval);
+extern int novalis_game_mode SDATA(novalis_game_mode);
 extern Vec4 gHeroPos;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002b8c08.c, FUN_L01_002e35a8. */
@@ -1565,10 +1565,10 @@ extern char sand_mouse_move_ctl_turn_vel[];
 extern float frame_scale MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
-extern float hover_target_yaw_spring_strength_degrees_gp SDATA(D_L01_001619D4);
-extern float hover_target_yaw_damping_degrees_gp SDATA(D_L01_001619D8);
-extern float hover_target_yaw_turn_rate_limit_degrees_gp SDATA(D_L01_001619DC);
-extern float hover_ground_animation_height_threshold_gp SDATA(D_L01_001619B0);
+extern float hover_target_yaw_spring_strength_degrees_gp SDATA(hover_target_yaw_spring_strength_degrees_gp);
+extern float hover_target_yaw_damping_degrees_gp SDATA(hover_target_yaw_damping_degrees_gp);
+extern float hover_target_yaw_turn_rate_limit_degrees_gp SDATA(hover_target_yaw_turn_rate_limit_degrees_gp);
+extern float hover_ground_animation_height_threshold_gp SDATA(hover_ground_animation_height_threshold_gp);
 extern int func_001160D8(void);
 extern void MobyBlendAnimation(void *, int, int, int);
 extern void MobySpringTurn(void *, float, void *, float, float, float);
@@ -1744,16 +1744,19 @@ extern unsigned char D_0013D5CA[] NOT_SDA;
 extern void *D_L01_00174358;
 extern float frame_scale MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
-extern int sand_mouse_follow_duration_frames_gp SDATA(D_L01_001619A8);
-extern int sand_mouse_follow_projectile_count_limit_gp SDATA(D_L01_001619AC);
-extern int sand_mouse_fade_duration_frames_gp SDATA(D_L01_001619B4);
-extern int sand_mouse_fade_particle_random_integer_min_gp SDATA(D_L01_001619B8);
-extern int sand_mouse_fade_particle_random_integer_max_gp SDATA(D_L01_001619BC);
-extern float sand_mouse_fade_particle_position_jitter_gp SDATA(D_L01_001619C0);
-extern float sand_mouse_fade_particle_random_float_range_start_gp SDATA(D_L01_001619C4);
-extern float sand_mouse_fade_particle_random_float_range_end_gp SDATA(D_L01_001619C8);
-extern int sand_mouse_fade_particle_color_alpha_gp SDATA(D_L01_001619CC);
-extern float sand_mouse_fade_particle_time_squared_coefficient_gp SDATA(D_L01_001619D0);
+extern int sand_mouse_follow_duration_frames_gp SDATA(sand_mouse_follow_duration_frames_gp);
+extern int sand_mouse_follow_projectile_count_limit_gp SDATA(sand_mouse_follow_projectile_count_limit_gp);
+extern int sand_mouse_fade_duration_frames_gp SDATA(sand_mouse_fade_duration_frames_gp);
+extern int sand_mouse_fade_particle_random_integer_min_gp SDATA(sand_mouse_fade_particle_random_integer_min_gp);
+extern int sand_mouse_fade_particle_random_integer_max_gp SDATA(sand_mouse_fade_particle_random_integer_max_gp);
+extern float sand_mouse_fade_particle_position_jitter_gp SDATA(sand_mouse_fade_particle_position_jitter_gp);
+extern float sand_mouse_fade_particle_random_float_range_start_gp
+    SDATA(sand_mouse_fade_particle_random_float_range_start_gp);
+extern float sand_mouse_fade_particle_random_float_range_end_gp
+    SDATA(sand_mouse_fade_particle_random_float_range_end_gp);
+extern int sand_mouse_fade_particle_color_alpha_gp SDATA(sand_mouse_fade_particle_color_alpha_gp);
+extern float sand_mouse_fade_particle_time_squared_coefficient_gp
+    SDATA(sand_mouse_fade_particle_time_squared_coefficient_gp);
 extern int STUB_printf();
 extern void DeleteMoby(void *);
 extern void MobyBlendAnimation(void *m, int a, int b, int c);
@@ -2160,7 +2163,7 @@ extern float g_hero_body_center[4];
 extern float novalis_zero_vec[] MACRO_ADDR;
 extern char amoeboid_pvar130_data;
 extern char small_amoeboid_pvar130_data;
-extern float large_amoeboid_path_lunge_distance_threshold_gp SDATA(D_L01_00161A3C);
+extern float large_amoeboid_path_lunge_distance_threshold_gp SDATA(large_amoeboid_path_lunge_distance_threshold_gp);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002edca0. */
 void large_amoeboid_update(unsigned char *moby) {
@@ -2524,8 +2527,8 @@ extern int FindNearestEligibleMoby(float, char *, void *, int, int, void *, int)
 extern int FastTweenColor(float, int, int);
 extern int pool_draw_tiles MACRO_ADDR;
 extern int novalis_mobys_x __asm__("D_L01_00160058") MACRO_ADDR;
-extern int amoeboid_pulse_color_a SDATA(D_L01_00161A28);
-extern int amoeboid_pulse_color_b SDATA(D_L01_00161A2C);
+extern int amoeboid_pulse_color_a SDATA(amoeboid_pulse_color_a);
+extern int amoeboid_pulse_color_b SDATA(amoeboid_pulse_color_b);
 extern const float D_L01_00161A30_c SDATA(D_L01_00161A30);
 extern const float D_L01_00161A34_c SDATA(D_L01_00161A34);
 extern const float g_frame_time_c __asm__("D_0015EE6C") MACRO_ADDR;
@@ -3369,7 +3372,7 @@ typedef struct {
     u16 kind;
 } HitInfo;
 
-extern s32 gunship_path_updates_disabled SDATA(D_L01_00161B90);
+extern s32 gunship_path_updates_disabled SDATA(gunship_path_updates_disabled);
 extern char *novalis_mobys MACRO_ADDR;
 extern char gunship_missing_path_message_fmt[];
 extern void *gunship_follow_path_fn_ptr MACRO_ADDR;

@@ -202,9 +202,9 @@ extern float quartu_sentrybot_anim10_yaw_deg[];
 extern float quartu_sentrybot_anim11_yaw_deg[];
 extern float g_frame_time MACRO_ADDR;
 extern int quartu_frame_count MACRO_ADDR;
-extern int sentrybot_update_disabled_gp SDATA(D_L15_0016149C);
-extern float sentrybot_emission_vector_speed_gp SDATA(D_L15_00161498);
-extern int sentrybot_alert_level_frame_stamp_gp SDATA(D_L15_00161470);
+extern int sentrybot_update_disabled_gp SDATA(sentrybot_update_disabled_gp);
+extern float sentrybot_emission_vector_speed_gp SDATA(sentrybot_emission_vector_speed_gp);
+extern int sentrybot_alert_level_frame_stamp_gp SDATA(sentrybot_alert_level_frame_stamp_gp);
 
 /* Sentrybot update: runs the patrol, alert and attack state machine, then sets the alert level and the eye colour. */
 void sentrybot_update(unsigned char *moby) {
@@ -1311,15 +1311,18 @@ extern int truncate_float_to_s32(float);
 #define func_L00_001EFFF0_r func_L00_001EFFF0
 extern int FindNearestEligibleMoby(void *, void *, float, int, int, void *, int);
 #define quartu_moby_array_m D_L15_00160058
-extern float quartu_sentrybot_scale_factor SDATA(D_L15_00161474);
-extern float sentrybot_knockback_gravity_gp SDATA(D_L15_00161478);
-extern float sentrybot_death_knockback_gravity_gp SDATA(D_L15_0016147C);
-extern float sentrybot_recoverable_knockback_vertical_speed_gp SDATA(D_L15_00161480);
-extern float sentrybot_recoverable_knockback_horizontal_speed_gp SDATA(D_L15_00161484);
-extern float sentrybot_recoverable_knockback_horizontal_speed_approach_rate_gp SDATA(D_L15_00161488);
-extern float sentrybot_death_knockback_vertical_speed_gp SDATA(D_L15_0016148C);
-extern float sentrybot_death_knockback_horizontal_speed_gp SDATA(D_L15_00161490);
-extern float sentrybot_death_knockback_horizontal_speed_approach_rate_gp SDATA(D_L15_00161494);
+extern float quartu_sentrybot_scale_factor SDATA(quartu_sentrybot_scale_factor);
+extern float sentrybot_knockback_gravity_gp SDATA(sentrybot_knockback_gravity_gp);
+extern float sentrybot_death_knockback_gravity_gp SDATA(sentrybot_death_knockback_gravity_gp);
+extern float sentrybot_recoverable_knockback_vertical_speed_gp SDATA(sentrybot_recoverable_knockback_vertical_speed_gp);
+extern float sentrybot_recoverable_knockback_horizontal_speed_gp
+    SDATA(sentrybot_recoverable_knockback_horizontal_speed_gp);
+extern float sentrybot_recoverable_knockback_horizontal_speed_approach_rate_gp
+    SDATA(sentrybot_recoverable_knockback_horizontal_speed_approach_rate_gp);
+extern float sentrybot_death_knockback_vertical_speed_gp SDATA(sentrybot_death_knockback_vertical_speed_gp);
+extern float sentrybot_death_knockback_horizontal_speed_gp SDATA(sentrybot_death_knockback_horizontal_speed_gp);
+extern float sentrybot_death_knockback_horizontal_speed_approach_rate_gp
+    SDATA(sentrybot_death_knockback_horizontal_speed_approach_rate_gp);
 /* The hit message MobyGetHitMessage returns: the hit point and the moby that struck. */
 typedef struct {
     u8 pad_00[0x10];
@@ -1631,8 +1634,8 @@ void spawn_rocket_trail_spark(char *moby) {
 }
 extern void spawn_glow_particle(char *, char *, int, int, float, int, int, int, int);
 extern float quartu_zero_vec[] MACRO_ADDR;
-extern int quartu_rocket_glow_life_ticks SDATA(D_L15_001614E4);
-extern float quartu_rocket_glow_size SDATA(D_L15_001614E0);
+extern int quartu_rocket_glow_life_ticks SDATA(quartu_rocket_glow_life_ticks);
+extern float quartu_rocket_glow_size SDATA(quartu_rocket_glow_size);
 extern unsigned char quartu_rocket_glow_red;
 extern unsigned char quartu_rocket_glow_green;
 extern unsigned char quartu_rocket_glow_blue;
@@ -2172,7 +2175,7 @@ extern Light29FF90 quartu_lights[];
 extern float frame_scale MACRO_ADDR;
 extern char *quartu_coll_sphere_moby_hits[];
 extern unsigned char *quartu_charged_blast_texture_ptr;
-extern void *charged_blast_removal_target SDATA(D_L15_0016150C);
+extern void *charged_blast_removal_target SDATA(charged_blast_removal_target);
 
 /* update of moby class 1523: charges up a screen fade and a light, then bursts into particles and deletes itself */
 void update_charged_blast(Moby29FF90 *moby) {
@@ -2351,11 +2354,11 @@ extern void draw_group_moby_effect_quads(char *);
 extern void MobySphereHitDirectional_m(void *, void *, int, float, float, float, int, int,
                                        int) __asm__("func_L00_0025A8E8");
 extern int quartu_alarm_raised_m __asm__("D_L15_00161B40") MACRO_ADDR;
-extern int quartu_hero_seeker_spark_life_ticks SDATA(D_L15_00161540);
-extern int quartu_hero_seeker_spark_color SDATA(D_L15_00161538);
-extern float quartu_hero_seeker_spark_scale SDATA(D_L15_0016153C);
-extern float quartu_hero_seeker_spark_height SDATA(D_L15_00161544);
-extern float quartu_hero_seeker_speed SDATA(D_L15_00161534);
+extern int quartu_hero_seeker_spark_life_ticks SDATA(quartu_hero_seeker_spark_life_ticks);
+extern int quartu_hero_seeker_spark_color SDATA(quartu_hero_seeker_spark_color);
+extern float quartu_hero_seeker_spark_scale SDATA(quartu_hero_seeker_spark_scale);
+extern float quartu_hero_seeker_spark_height SDATA(quartu_hero_seeker_spark_height);
+extern float quartu_hero_seeker_speed SDATA(quartu_hero_seeker_speed);
 
 typedef struct GroupMobyData {
     u8 pad_00[0x64];
@@ -2930,9 +2933,9 @@ extern void matrix_copy_rows(void *, void *);
 extern float FastNormalizeAngle(float);
 extern int func_001160D8(void);
 
-extern int quartu_spiderbot_spark_count SDATA(D_L15_001615D8);
-extern float quartu_spiderbot_spark_scale SDATA(D_L15_001615DC);
-extern float quartu_spiderbot_spark_life SDATA(D_L15_001615E0);
+extern int quartu_spiderbot_spark_count SDATA(quartu_spiderbot_spark_count);
+extern float quartu_spiderbot_spark_scale SDATA(quartu_spiderbot_spark_scale);
+extern float quartu_spiderbot_spark_life SDATA(quartu_spiderbot_spark_life);
 extern void draw_spiderbot_effect_quad();
 extern unsigned char *spawn_moving_hero_relative_alpha_fade_particle_r(float *pos, char *vel, int color,
                                                                        unsigned char life, unsigned char b, int mode,
@@ -3491,9 +3494,9 @@ extern void AddDrawCallback(void (*)(void), void *);
 
 extern void emit_sine_modulated_rgba_draw_packet(void);
 extern short g_current_level_index;
-extern int quartu_alarm_raised SDATA(D_L15_00161B40);
-extern int quartu_alarm_on SDATA(D_L15_00161B48);
-extern int quartu_alarm_sound_handle SDATA(D_L15_00161B4C);
+extern int quartu_alarm_raised SDATA(quartu_alarm_raised);
+extern int quartu_alarm_on SDATA(quartu_alarm_on);
+extern int quartu_alarm_sound_handle SDATA(quartu_alarm_sound_handle);
 extern short quartu_alarm_sound_owner;
 
 /* per-frame update of the level's looping effect: ramp the gauge, then start, run or stop the draw callback */
@@ -3527,9 +3530,9 @@ void update_sentrybot_alarm_effect(void *moby) {
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern void emit_rgba_draw_packet(int, int, int, int);
 extern signed char quartu_alarm_flash_color_alpha[] MACRO_ADDR;
-extern int quartu_alarm_flash_period_ticks SDATA(D_L15_00161B5C);
-extern float quartu_alarm_flash_amplitude SDATA(D_L15_00161B58);
-extern int quartu_alarm_flash_color SDATA(D_L15_00161B54);
+extern int quartu_alarm_flash_period_ticks SDATA(quartu_alarm_flash_period_ticks);
+extern float quartu_alarm_flash_amplitude SDATA(quartu_alarm_flash_amplitude);
+extern int quartu_alarm_flash_color SDATA(quartu_alarm_flash_color);
 
 // Draws an oscillating-intensity effect: a sine of the global timer scaled by a level value.
 void emit_sine_modulated_rgba_draw_packet(void) {

@@ -972,12 +972,12 @@ extern void FastVecAdd(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
 
 extern float g_frame_time_sq MACRO_ADDR;
-extern float kerwan_rail_taxi_max_speed SDATA(D_L03_00161B88);
-extern float kerwan_rail_taxi_speed_accel SDATA(D_L03_00161B8C);
-extern float kerwan_rail_taxi_pitch_accel_deg SDATA(D_L03_00161B90);
-extern float kerwan_rail_taxi_yaw_accel_deg SDATA(D_L03_00161B94);
-extern float kerwan_rail_taxi_roll_accel_deg SDATA(D_L03_00161B98);
-extern float kerwan_rail_taxi_turn_roll_factor SDATA(D_L03_00161B9C);
+extern float kerwan_rail_taxi_max_speed SDATA(kerwan_rail_taxi_max_speed);
+extern float kerwan_rail_taxi_speed_accel SDATA(kerwan_rail_taxi_speed_accel);
+extern float kerwan_rail_taxi_pitch_accel_deg SDATA(kerwan_rail_taxi_pitch_accel_deg);
+extern float kerwan_rail_taxi_yaw_accel_deg SDATA(kerwan_rail_taxi_yaw_accel_deg);
+extern float kerwan_rail_taxi_roll_accel_deg SDATA(kerwan_rail_taxi_roll_accel_deg);
+extern float kerwan_rail_taxi_turn_roll_factor SDATA(kerwan_rail_taxi_turn_roll_factor);
 extern float FastVecLength(void *);
 extern float FastVecDist(void *, void *);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
@@ -1298,7 +1298,7 @@ extern struct G_002DBAD8 kerwan_cutscene_state;
 extern float helga_big_head_cutscene_adjustment MACRO_ADDR;
 extern unsigned char kerwan_big_head_manipulator[];
 extern void AttachManipulator(char *, int, void *);
-extern float kerwan_big_head_scale SDATA(D_L03_00161C34);
+extern float kerwan_big_head_scale SDATA(kerwan_big_head_scale);
 
 /* triggers objects matching the moby's class, with per-segment settings */
 void apply_helga_big_head_cutscene_adjustments(char *class_reference_moby) {
@@ -2278,11 +2278,11 @@ void update_rail_lift(struct Moby *m) {
     if (!is_hero_on_moby_r(m) && vec_distance_xy_r2(&m->pos, &g_hero_r.motion.pos) > 2.0f && d->timer == 0)
         d->ready = 1;
 }
-extern float kerwan_moby_bob_height SDATA(D_L03_00161C58);
-extern float kerwan_moby_bob_rate_deg SDATA(D_L03_00161C5C);
-extern float kerwan_moby_sway_amplitude SDATA(D_L03_00161C60);
-extern float kerwan_moby_sway_rate_a_deg SDATA(D_L03_00161C64);
-extern float kerwan_moby_sway_rate_b_deg SDATA(D_L03_00161C68);
+extern float kerwan_moby_bob_height SDATA(kerwan_moby_bob_height);
+extern float kerwan_moby_bob_rate_deg SDATA(kerwan_moby_bob_rate_deg);
+extern float kerwan_moby_sway_amplitude SDATA(kerwan_moby_sway_amplitude);
+extern float kerwan_moby_sway_rate_a_deg SDATA(kerwan_moby_sway_rate_a_deg);
+extern float kerwan_moby_sway_rate_b_deg SDATA(kerwan_moby_sway_rate_b_deg);
 extern void update_moby_vertical_oscillation(float x, float y, char *a, float *p, float *q);
 /* sets two aim angles on a moby from level constants scaled by degrees-to-radians */
 void update_moby_oscillation(char *moby) {
@@ -2936,8 +2936,8 @@ extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecAdd(void *, void *, void *);
 extern void FastVecSub(void *, void *, void *);
 extern void FastVecCross(void *, void *, void *);
-extern float kerwan_hero_cam_blend_stiffness SDATA(D_L03_00161EF0);
-extern float kerwan_hero_cam_blend_damping SDATA(D_L03_00161EF4);
+extern float kerwan_hero_cam_blend_stiffness SDATA(kerwan_hero_cam_blend_stiffness);
+extern float kerwan_hero_cam_blend_damping SDATA(kerwan_hero_cam_blend_damping);
 extern char kerwan_player_camera_target_offset_dir[];
 
 /* smooths the moby's data floats and rebuilds its orientation axes */

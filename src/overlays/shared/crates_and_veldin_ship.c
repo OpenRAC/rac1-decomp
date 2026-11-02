@@ -2303,9 +2303,9 @@ typedef struct Data_5AC0 {
     float unk_278;
 } Data_5AC0;
 
-extern float horny_toad_scale SDATA(D_L00_00161A3C);
-extern float horny_toad_arrive_distance SDATA(D_L00_00161A50);
-extern float horny_toad_attack_anim_start_frame SDATA(D_L00_00161A54);
+extern float horny_toad_scale SDATA(horny_toad_scale);
+extern float horny_toad_arrive_distance SDATA(horny_toad_arrive_distance);
+extern float horny_toad_attack_anim_start_frame SDATA(horny_toad_attack_anim_start_frame);
 extern short horny_toad_move_params;
 extern char g_debug_camera[];
 extern char *moby_array_start MACRO_ADDR;
@@ -2895,7 +2895,7 @@ extern void FastVecScale(void *, void *, float);
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
 extern void vec_scale_to_length(void *, void *, float);
 extern float FastSubRots(float, float);
-extern float infobot_slot_path_minimum_speed_gp SDATA(D_L00_00161A60);
+extern float infobot_slot_path_minimum_speed_gp SDATA(infobot_slot_path_minimum_speed_gp);
 
 /* Steers an object along a path with speed limits. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/unclassified_002cfcb8.c, FUN_L00_002d5988. */
 void update_infobot_slot_path_motion(Obj_6e38 *o, Path_6e38 *path, s32 p) {
@@ -3503,13 +3503,16 @@ typedef struct {
 extern Vec4f smoke_particle_unit_positions_r[] __asm__("D_L00_001CBAE0");
 extern u8 smoke_particle_matrix_select[];
 extern s16 smoke_particle_timer[];
-extern float smoke_fire_emitted_particle_position_spread_gp SDATA(D_L00_00161A84);
-extern float smoke_fire_emitted_particle_random_scalar_upper_bound_gp SDATA(D_L00_00161A88);
-extern int smoke_fire_particles_per_frame SDATA(D_L00_00161A8C);
-extern int smoke_fire_emitted_particle_sign_randomized_sample_min_gp SDATA(D_L00_00161A90);
-extern int smoke_fire_emitted_particle_sign_randomized_sample_max_gp SDATA(D_L00_00161A94);
-extern int smoke_fire_emitted_particle_base_color_gp SDATA(D_L00_00161A98);
-extern float smoke_fire_far_culling_distance_gp SDATA(D_L00_00161AB0);
+extern float smoke_fire_emitted_particle_position_spread_gp SDATA(smoke_fire_emitted_particle_position_spread_gp);
+extern float smoke_fire_emitted_particle_random_scalar_upper_bound_gp
+    SDATA(smoke_fire_emitted_particle_random_scalar_upper_bound_gp);
+extern int smoke_fire_particles_per_frame SDATA(smoke_fire_particles_per_frame);
+extern int smoke_fire_emitted_particle_sign_randomized_sample_min_gp
+    SDATA(smoke_fire_emitted_particle_sign_randomized_sample_min_gp);
+extern int smoke_fire_emitted_particle_sign_randomized_sample_max_gp
+    SDATA(smoke_fire_emitted_particle_sign_randomized_sample_max_gp);
+extern int smoke_fire_emitted_particle_base_color_gp SDATA(smoke_fire_emitted_particle_base_color_gp);
+extern float smoke_fire_far_culling_distance_gp SDATA(smoke_fire_far_culling_distance_gp);
 extern Vec4f g_debug_camera_r2 __asm__("D_L00_00166EC0");
 void func_0020D678_D83D8(P *) __asm__("func_0020D678");
 float FastVecLength(void *);
@@ -3649,9 +3652,9 @@ extern s16 smoke_particle_start_delay[];
 extern float smoke_scroll_offset MACRO_ADDR;
 extern float smoke_particle_timer_ticks_inv MACRO_ADDR;
 extern float smoke_particle_aux_ticks_inv MACRO_ADDR;
-extern unsigned short smoke_particle_aux_ticks SDATA(D_L00_00161450);
+extern unsigned short smoke_particle_aux_ticks SDATA(smoke_particle_aux_ticks);
 extern int D_L00_00161A68 SDATA(D_L00_00161A68);
-extern float k_smoke_alpha_scale SDATA(D_L00_00161A6C);
+extern float k_smoke_alpha_scale SDATA(k_smoke_alpha_scale);
 extern u8 smoke_quad_vertex_alpha_mask[4] SDATA(D_L00_00161A70);
 extern u8 smoke_mesh_vertex_alpha_mask[8] SDATA(D_L00_00161A78);
 extern int smoke_cube_face_vertex_indices[][4];

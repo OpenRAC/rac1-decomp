@@ -367,8 +367,8 @@ typedef struct {
     char *s[6];
 } Suffixes;
 
-extern s32 menu_help_hud_item SDATA(D_00160170);
-extern s32 world_update_time SDATA(D_0015F6F0);
+extern s32 menu_help_hud_item SDATA(menu_help_hud_item);
+extern s32 world_update_time SDATA(world_update_time);
 extern s32 world_update_time_far __asm__("D_0015F6F0") MACRO_ADDR;
 extern s32 menu_entry_trigger_state[];
 extern Suffixes menu_time_suffixes;

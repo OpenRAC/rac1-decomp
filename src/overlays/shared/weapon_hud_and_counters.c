@@ -483,7 +483,7 @@ extern float hud_star_particles[][4];
 extern short star_init_limit0_gp;
 extern short star_init_limit1_gp;
 extern short star_init_limit2_gp;
-extern int hud_star_column_count SDATA(D_L00_0015F83C);
+extern int hud_star_column_count SDATA(hud_star_column_count);
 
 /* fills 100 hud particle records with randomised positions and drift */
 void hud_init_particles(HudElem *e) {
@@ -828,7 +828,7 @@ extern void draw_framed_text(int, int, int, char *);
 extern int pal_mode MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern int race_record_panel_end_y MACRO_ADDR;
-extern int hud_text_panel_y SDATA(D_L00_0015F850);
+extern int hud_text_panel_y SDATA(hud_text_panel_y);
 extern unsigned char hud_text_panel_string[];
 extern float gHeroPos[];
 extern int race_best_times[] MACRO_ADDR;
@@ -1129,8 +1129,8 @@ extern MoveUsageTable usage_stats;
 extern Route item_price_table_r[] __asm__("D_L00_001C43B0");
 extern int weapon_ammo_counts[];
 extern u8 hud_item_selector_close_timer[];
-extern float quick_select_snap_margin SDATA(D_L00_0015F868);
-extern float quick_select_slot_angle_offset SDATA(D_L00_0015F864);
+extern float quick_select_snap_margin SDATA(quick_select_snap_margin);
+extern float quick_select_slot_angle_offset SDATA(quick_select_slot_angle_offset);
 extern int quick_select_default_left_slot;
 extern int quick_select_default_right_slot;
 extern int quick_select_default_up_slot;
@@ -1796,7 +1796,7 @@ void initialize_hud_element_with_counters(HudElem *e) {
     health_hud_wobble_counter.unk4 = 0;
     health_hud_wobble_counter.unk6 = 1;
 }
-extern int health_hud_fade_steps SDATA(D_L00_0015F8D0);
+extern int health_hud_fade_steps SDATA(health_hud_fade_steps);
 
 /* Updates the health HUD element: advances the wobble counters in its HudCounter (+0x80), clamps the target (+0x78) to
    +0x08, and steps the two digits (+0x70, +0x71) up or down. */
@@ -1863,11 +1863,11 @@ void update_health_hud_animation_and_visibility(HudElem *e) {
 
 extern int pal_mode_m __asm__("D_0015EE80") MACRO_ADDR;
 extern int hero_max_health MACRO_ADDR;
-extern int health_hud_base_y_offset SDATA(D_L00_0015F8E8);
-extern int health_hud_panel_max_alpha SDATA(D_L00_0015F900);
-extern int health_hud_panel_y_offset SDATA(D_L00_0015F8F0);
-extern int health_hud_panel_cap_size SDATA(D_L00_0015F8FC);
-extern int health_hud_panel_row_y_step SDATA(D_L00_0015F8EC);
+extern int health_hud_base_y_offset SDATA(health_hud_base_y_offset);
+extern int health_hud_panel_max_alpha SDATA(health_hud_panel_max_alpha);
+extern int health_hud_panel_y_offset SDATA(health_hud_panel_y_offset);
+extern int health_hud_panel_cap_size SDATA(health_hud_panel_cap_size);
+extern int health_hud_panel_row_y_step SDATA(health_hud_panel_row_y_step);
 extern short health_hud_icon_offsets;
 extern short health_hud_icon_offsets_8[];
 extern short health_hud_icon_offsets_5[];
@@ -2077,15 +2077,15 @@ extern void draw_hud_sprite_flipped(s32, s32, s32, s32, s32, s32);
 extern s32 pal_mode_r __asm__("D_0015EE80") MACRO_ADDR;
 extern s32 gBolts MACRO_ADDR;
 extern s32 g_game_language MACRO_ADDR;
-extern s32 bolt_text_color_clear SDATA(D_L00_0015F90C);
-extern s32 bolt_text_color_opaque SDATA(D_L00_0015F910);
-extern s32 bolt_count_text_x SDATA(D_L00_0015F914);
-extern s32 bolt_count_text_y SDATA(D_L00_0015F918);
-extern s32 bolt_separator_x SDATA(D_L00_0015F91C);
-extern s32 bolt_separator_y SDATA(D_L00_0015F920);
-extern s32 bolt_separator_alt_x SDATA(D_L00_0015F924);
-extern s32 bolt_separator_alt_y SDATA(D_L00_0015F928);
-extern s32 digit_width SDATA(D_L00_0015F92C);
+extern s32 bolt_text_color_clear SDATA(bolt_text_color_clear);
+extern s32 bolt_text_color_opaque SDATA(bolt_text_color_opaque);
+extern s32 bolt_count_text_x SDATA(bolt_count_text_x);
+extern s32 bolt_count_text_y SDATA(bolt_count_text_y);
+extern s32 bolt_separator_x SDATA(bolt_separator_x);
+extern s32 bolt_separator_y SDATA(bolt_separator_y);
+extern s32 bolt_separator_alt_x SDATA(bolt_separator_alt_x);
+extern s32 bolt_separator_alt_y SDATA(bolt_separator_alt_y);
+extern s32 digit_width SDATA(digit_width);
 extern char bolt_count_format[];
 extern char bolt_separator_string[];
 extern char bolt_separator_alt_string[];
@@ -2206,14 +2206,14 @@ void update_hud_panel_visibility(HudElem *e) {
 extern int g_screen_extent[];
 extern int pal_mode MACRO_ADDR;
 extern int level_frame_counter MACRO_ADDR;
-extern int bolt_exclamation_panel_alpha SDATA(D_L00_0015F9CC);
-extern int bolt_exclamation_panel_width SDATA(D_L00_0015F9D0);
-extern int bolt_exclamation_panel_right_x SDATA(D_L00_0015F9D4);
-extern int bolt_exclamation_text_x SDATA(D_L00_0015F9D8);
-extern int bolt_exclamation_text_y SDATA(D_L00_0015F9DC);
-extern int bolt_exclamation_color_from SDATA(D_L00_0015F9E0);
-extern int bolt_exclamation_color_to SDATA(D_L00_0015F9E4);
-extern int bolt_exclamation_pulse_ticks SDATA(D_L00_0015F9E8);
+extern int bolt_exclamation_panel_alpha SDATA(bolt_exclamation_panel_alpha);
+extern int bolt_exclamation_panel_width SDATA(bolt_exclamation_panel_width);
+extern int bolt_exclamation_panel_right_x SDATA(bolt_exclamation_panel_right_x);
+extern int bolt_exclamation_text_x SDATA(bolt_exclamation_text_x);
+extern int bolt_exclamation_text_y SDATA(bolt_exclamation_text_y);
+extern int bolt_exclamation_color_from SDATA(bolt_exclamation_color_from);
+extern int bolt_exclamation_color_to SDATA(bolt_exclamation_color_to);
+extern int bolt_exclamation_pulse_ticks SDATA(bolt_exclamation_pulse_ticks);
 extern char bolt_exclamation_format[];
 extern int sprintf(char *str, const char *fmt, ...);
 extern float FastSin(float);
@@ -2319,16 +2319,16 @@ void initialize_numeric_hud_timer_and_base_dimensions(HudElem *e) {
     initialize_numeric_hud_values_and_dimensions(e);
 }
 extern int pal_mode MACRO_ADDR;
-extern int weapon_hud_open_steps SDATA(D_L00_0015F9F4);
-extern int weapon_hud_text_fade_steps SDATA(D_L00_0015F9F8);
-extern int weapon_hud_panel_width SDATA(D_L00_0015F9FC);
-extern int weapon_hud_wide_panel_width SDATA(D_L00_0015FA00);
-extern int weapon_hud_ammo_color_from SDATA(D_L00_0015FA04);
-extern int weapon_hud_ammo_color_to SDATA(D_L00_0015FA08);
-extern int weapon_hud_empty_color_from SDATA(D_L00_0015FA0C);
-extern int weapon_hud_empty_color_to SDATA(D_L00_0015FA10);
-extern int weapon_hud_text_x SDATA(D_L00_0015FA14);
-extern int weapon_hud_text_y SDATA(D_L00_0015FA18);
+extern int weapon_hud_open_steps SDATA(weapon_hud_open_steps);
+extern int weapon_hud_text_fade_steps SDATA(weapon_hud_text_fade_steps);
+extern int weapon_hud_panel_width SDATA(weapon_hud_panel_width);
+extern int weapon_hud_wide_panel_width SDATA(weapon_hud_wide_panel_width);
+extern int weapon_hud_ammo_color_from SDATA(weapon_hud_ammo_color_from);
+extern int weapon_hud_ammo_color_to SDATA(weapon_hud_ammo_color_to);
+extern int weapon_hud_empty_color_from SDATA(weapon_hud_empty_color_from);
+extern int weapon_hud_empty_color_to SDATA(weapon_hud_empty_color_to);
+extern int weapon_hud_text_x SDATA(weapon_hud_text_x);
+extern int weapon_hud_text_y SDATA(weapon_hud_text_y);
 extern char hud_ammo_format[];
 extern void draw_hud_sprite_flipped(int, int, int, int, int, int);
 extern void HudFrame(char *, int, int, int, int, int);
@@ -2497,7 +2497,7 @@ int update_hud_elements(int call) {
 }
 
 extern char menu_item_enabled_115[];
-extern int weapon_hud_suspended SDATA(D_L00_0015FA40);
+extern int weapon_hud_suspended SDATA(weapon_hud_suspended);
 extern int D_hud_pair[2] __asm__("D_L00_0015FA44") MACRO_ADDR;
 extern void Hud_SetBarValueById(int, int);
 extern void hud_weapon_update(void);

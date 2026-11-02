@@ -661,7 +661,7 @@ extern void FastVecAdd(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern void spawn_spinning_moby_fragment(void *, void *, void *);
 extern float g_frame_time MACRO_ADDR;
-extern float blarg_tube_base_z SDATA(D_L06_001620DC);
+extern float blarg_tube_base_z SDATA(blarg_tube_base_z);
 
 /* Replaces the moby with a broken copy (type 0x43C); with burst set, also throws 50 pieces around it. */
 void spawn_moby_breakup_effect(char *m, int burst) {
@@ -717,14 +717,14 @@ typedef struct {
 typedef struct {
     short v, uv;
 } I3003f0;
-extern int backdrop_mesh_blend_color_a_selector_gp SDATA(D_L06_001620E4);
-extern int backdrop_mesh_blend_color_b_selector_gp SDATA(D_L06_001620E8);
-extern int backdrop_mesh_blend_alpha_c_selector_gp SDATA(D_L06_001620EC);
-extern int backdrop_mesh_blend_color_d_selector_gp SDATA(D_L06_001620F0);
-extern int backdrop_mesh_effect_texture_index_gp SDATA(D_L06_001620F4);
-extern int backdrop_mesh_blend_fixed_alpha_gp SDATA(D_L06_001620F8);
-extern unsigned int blarg_tube_color SDATA(D_L06_001620FC);
-extern float backdrop_mesh_vertex_position_scale_gp SDATA(D_L06_00162104);
+extern int backdrop_mesh_blend_color_a_selector_gp SDATA(backdrop_mesh_blend_color_a_selector_gp);
+extern int backdrop_mesh_blend_color_b_selector_gp SDATA(backdrop_mesh_blend_color_b_selector_gp);
+extern int backdrop_mesh_blend_alpha_c_selector_gp SDATA(backdrop_mesh_blend_alpha_c_selector_gp);
+extern int backdrop_mesh_blend_color_d_selector_gp SDATA(backdrop_mesh_blend_color_d_selector_gp);
+extern int backdrop_mesh_effect_texture_index_gp SDATA(backdrop_mesh_effect_texture_index_gp);
+extern int backdrop_mesh_blend_fixed_alpha_gp SDATA(backdrop_mesh_blend_fixed_alpha_gp);
+extern unsigned int blarg_tube_color SDATA(blarg_tube_color);
+extern float backdrop_mesh_vertex_position_scale_gp SDATA(backdrop_mesh_vertex_position_scale_gp);
 extern V3003f0 blarg_tube_mesh64_verts[];
 extern I3003f0 blarg_tube_mesh64_corner_indices[];
 extern UV3003f0 blarg_tube_mesh64_uvs[];
@@ -826,7 +826,7 @@ extern float IntToFloat(int);
 extern void FastVecAdd(void *, void *, void *);
 extern int blarg_frame_count MACRO_ADDR;
 extern char hero_globals_base[] NOT_SDA;
-extern float blarg_bobbing_moby_amplitude SDATA(D_L06_00162120);
+extern float blarg_bobbing_moby_amplitude SDATA(blarg_bobbing_moby_amplitude);
 
 // Update for a bobbing moby: waits, then follows a sine offset, then drifts and deletes itself.
 void update_moby_bobbing_and_motion(char *moby) {
@@ -1511,13 +1511,13 @@ extern char blarg_paths_r2[] __asm__("D_L06_001B0FB0");
 extern char *blarg_scene_points MACRO_ADDR;
 extern int blarg_shown_help_message MACRO_ADDR;
 extern int blarg_shuttle_at_second_stop MACRO_ADDR;
-extern float shuttle_second_stop_ride_scale_multiplier_gp SDATA(D_L06_00162184);
-extern float shuttle_scale SDATA(D_L06_00162188);
-extern int shuttle_forced_departure SDATA(D_L06_00162190);
-extern int class_076a_moby_spawn_requested_gp SDATA(D_L06_00162194);
-extern int class_076a_moby_rate_input_frames_gp SDATA(D_L06_00162198);
-extern int blarg_explosion_flash_color_a SDATA(D_L06_0016219C);
-extern int blarg_explosion_flash_color_b SDATA(D_L06_001621A0);
+extern float shuttle_second_stop_ride_scale_multiplier_gp SDATA(shuttle_second_stop_ride_scale_multiplier_gp);
+extern float shuttle_scale SDATA(shuttle_scale);
+extern int shuttle_forced_departure SDATA(shuttle_forced_departure);
+extern int class_076a_moby_spawn_requested_gp SDATA(class_076a_moby_spawn_requested_gp);
+extern int class_076a_moby_rate_input_frames_gp SDATA(class_076a_moby_rate_input_frames_gp);
+extern int blarg_explosion_flash_color_a SDATA(blarg_explosion_flash_color_a);
+extern int blarg_explosion_flash_color_b SDATA(blarg_explosion_flash_color_b);
 
 /* Update of moby Shuttle (shuttle): waits at one of three camera points, takes the hero's choice of destination, flies
    there through a cutscene and hands over to the level's travel sequence. */
@@ -1953,24 +1953,24 @@ extern unsigned char *PartType02Spawn(void *, void *, void *, int, int, int, int
 extern int FastTweenColor(int, int, float);
 extern char scatter_explode_spark_colors_start[];
 extern char scatter_explode_spark_colors_end[];
-extern float scatter_explode_speed_min SDATA(D_L06_001621A4);
-extern float scatter_explode_speed_max SDATA(D_L06_001621A8);
-extern float scatter_explode_start_size_min SDATA(D_L06_001621AC);
-extern float scatter_explode_start_size_max SDATA(D_L06_001621B0);
-extern float scatter_explode_accel_min SDATA(D_L06_001621B4);
-extern float scatter_explode_accel_max SDATA(D_L06_001621B8);
-extern float scatter_explode_end_size_min SDATA(D_L06_001621BC);
-extern float scatter_explode_end_size_max SDATA(D_L06_001621C0);
-extern int scatter_explode_color_a_from SDATA(D_L06_001621C4);
-extern int scatter_explode_color_a_to SDATA(D_L06_001621C8);
-extern int scatter_explode_color_b_from SDATA(D_L06_001621CC);
-extern int scatter_explode_color_b_to SDATA(D_L06_001621D0);
-extern int scatter_explode_life_ticks SDATA(D_L06_001621D4);
-extern int scatter_explode_phase2_ticks SDATA(D_L06_001621D8);
-extern int scatter_explode_phase3_ticks SDATA(D_L06_001621DC);
-extern int scatter_explode_particles_per_piece SDATA(D_L06_001621E0);
-extern int scatter_explode_sprite SDATA(D_L06_001621E4);
-extern int scatter_explode_sprite_flags SDATA(D_L06_001621E8);
+extern float scatter_explode_speed_min SDATA(scatter_explode_speed_min);
+extern float scatter_explode_speed_max SDATA(scatter_explode_speed_max);
+extern float scatter_explode_start_size_min SDATA(scatter_explode_start_size_min);
+extern float scatter_explode_start_size_max SDATA(scatter_explode_start_size_max);
+extern float scatter_explode_accel_min SDATA(scatter_explode_accel_min);
+extern float scatter_explode_accel_max SDATA(scatter_explode_accel_max);
+extern float scatter_explode_end_size_min SDATA(scatter_explode_end_size_min);
+extern float scatter_explode_end_size_max SDATA(scatter_explode_end_size_max);
+extern int scatter_explode_color_a_from SDATA(scatter_explode_color_a_from);
+extern int scatter_explode_color_a_to SDATA(scatter_explode_color_a_to);
+extern int scatter_explode_color_b_from SDATA(scatter_explode_color_b_from);
+extern int scatter_explode_color_b_to SDATA(scatter_explode_color_b_to);
+extern int scatter_explode_life_ticks SDATA(scatter_explode_life_ticks);
+extern int scatter_explode_phase2_ticks SDATA(scatter_explode_phase2_ticks);
+extern int scatter_explode_phase3_ticks SDATA(scatter_explode_phase3_ticks);
+extern int scatter_explode_particles_per_piece SDATA(scatter_explode_particles_per_piece);
+extern int scatter_explode_sprite SDATA(scatter_explode_sprite);
+extern int scatter_explode_sprite_flags SDATA(scatter_explode_sprite_flags);
 
 typedef struct {
     char b[24];
@@ -2045,21 +2045,27 @@ extern char *level_mobys_q MACRO_ADDR;
 extern short blarg_explosion_flash_ticks_r __asm__("D_L06_00162198");
 extern short blarg_explosion_flash_color_a_r __asm__("D_L06_0016219C");
 extern short blarg_explosion_flash_color_b_r __asm__("D_L06_001621A0");
-extern float shuttle_debris_particle_speed SDATA(D_L06_001621EC);
-extern int shuttle_breakup_particle_timing_random_span_frames_gp SDATA(D_L06_001621F0);
-extern int shuttle_breakup_particle_timing_base_a_frames_gp SDATA(D_L06_001621F4);
-extern int shuttle_breakup_particle_timing_base_b_frames_gp SDATA(D_L06_001621F8);
-extern float shuttle_breakup_particle_timing_variation_fraction_gp SDATA(D_L06_001621FC);
-extern float shuttle_breakup_particle_velocity_w_random_bound_a_gp SDATA(D_L06_00162200);
-extern float shuttle_breakup_particle_velocity_w_random_bound_b_gp SDATA(D_L06_00162204);
-extern float shuttle_breakup_particle_acceleration_w_random_bound_a_gp SDATA(D_L06_00162208);
-extern float shuttle_breakup_particle_acceleration_w_random_bound_b_gp SDATA(D_L06_0016220C);
-extern int shuttle_breakup_particle_first_color_blend_a_gp SDATA(D_L06_00162210);
-extern int shuttle_breakup_particle_first_color_blend_b_gp SDATA(D_L06_00162214);
-extern int shuttle_breakup_particle_second_color_blend_a_gp SDATA(D_L06_00162218);
-extern int shuttle_breakup_particle_second_color_blend_b_gp SDATA(D_L06_0016221C);
-extern int shuttle_debris_particles_per_piece SDATA(D_L06_00162220);
-extern int shuttle_breakup_particle_table_index_and_flags_gp SDATA(D_L06_00162224);
+extern float shuttle_debris_particle_speed SDATA(shuttle_debris_particle_speed);
+extern int shuttle_breakup_particle_timing_random_span_frames_gp
+    SDATA(shuttle_breakup_particle_timing_random_span_frames_gp);
+extern int shuttle_breakup_particle_timing_base_a_frames_gp SDATA(shuttle_breakup_particle_timing_base_a_frames_gp);
+extern int shuttle_breakup_particle_timing_base_b_frames_gp SDATA(shuttle_breakup_particle_timing_base_b_frames_gp);
+extern float shuttle_breakup_particle_timing_variation_fraction_gp
+    SDATA(shuttle_breakup_particle_timing_variation_fraction_gp);
+extern float shuttle_breakup_particle_velocity_w_random_bound_a_gp
+    SDATA(shuttle_breakup_particle_velocity_w_random_bound_a_gp);
+extern float shuttle_breakup_particle_velocity_w_random_bound_b_gp
+    SDATA(shuttle_breakup_particle_velocity_w_random_bound_b_gp);
+extern float shuttle_breakup_particle_acceleration_w_random_bound_a_gp
+    SDATA(shuttle_breakup_particle_acceleration_w_random_bound_a_gp);
+extern float shuttle_breakup_particle_acceleration_w_random_bound_b_gp
+    SDATA(shuttle_breakup_particle_acceleration_w_random_bound_b_gp);
+extern int shuttle_breakup_particle_first_color_blend_a_gp SDATA(shuttle_breakup_particle_first_color_blend_a_gp);
+extern int shuttle_breakup_particle_first_color_blend_b_gp SDATA(shuttle_breakup_particle_first_color_blend_b_gp);
+extern int shuttle_breakup_particle_second_color_blend_a_gp SDATA(shuttle_breakup_particle_second_color_blend_a_gp);
+extern int shuttle_breakup_particle_second_color_blend_b_gp SDATA(shuttle_breakup_particle_second_color_blend_b_gp);
+extern int shuttle_debris_particles_per_piece SDATA(shuttle_debris_particles_per_piece);
+extern int shuttle_breakup_particle_table_index_and_flags_gp SDATA(shuttle_breakup_particle_table_index_and_flags_gp);
 extern void spawn_timed_projected_sprite_effect_r(void *, int, int, int) __asm__("func_L06_0030D338");
 extern void rand_vec(void *, float, float);
 extern void ScatterPiecesExplode(float, struct Moby *, void *, void *, int);
@@ -2408,8 +2414,8 @@ extern void clear_u64_value(void *);
 extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
 extern IntVec6 red_button_burst_colors_end;
 extern IntVec6 red_button_burst_colors_start;
-extern int red_button_burst_count SDATA(D_L06_00162248);
-extern float red_button_burst_scale SDATA(D_L06_00162244);
+extern int red_button_burst_count SDATA(red_button_burst_count);
+extern float red_button_burst_scale SDATA(red_button_burst_scale);
 
 // Spawns a burst of particles around an object, count from a level global.
 void emit_red_button_particle_burst(int unused, void *obj) {
@@ -2452,18 +2458,20 @@ extern int vector_stream_fade_ticks MACRO_ADDR;
 extern int vector_stream_regen_ticks MACRO_ADDR;
 extern short vector_stream_uv_scroll;
 extern short vector_stream_matrix_scale;
-extern float vector_stream_phase_rate_gp SDATA(D_L06_0016228C);
-extern float vector_stream_increment_random_scale_bound_gp SDATA(D_L06_00162290);
-extern float vector_stream_x_extent_gp SDATA(D_L06_00162294);
-extern float vector_stream_moby_scale_multiplier_gp SDATA(D_L06_001622A0);
-extern int vector_stream_burst_color_blend_a_gp SDATA(D_L06_001622A4);
-extern int vector_stream_burst_color_blend_b_gp SDATA(D_L06_001622A8);
-extern float vector_stream_burst_min_particle_scale_gp SDATA(D_L06_001622AC);
-extern float vector_stream_burst_max_particle_scale_gp SDATA(D_L06_001622B0);
-extern int vector_stream_burst_min_lifetime_frames_gp SDATA(D_L06_001622B4);
-extern int vector_stream_burst_max_lifetime_frames_gp SDATA(D_L06_001622B8);
-extern float vector_stream_burst_velocity_random_scale_bound_a_gp SDATA(D_L06_001622BC);
-extern float vector_stream_burst_velocity_random_scale_bound_b_gp SDATA(D_L06_001622C0);
+extern float vector_stream_phase_rate_gp SDATA(vector_stream_phase_rate_gp);
+extern float vector_stream_increment_random_scale_bound_gp SDATA(vector_stream_increment_random_scale_bound_gp);
+extern float vector_stream_x_extent_gp SDATA(vector_stream_x_extent_gp);
+extern float vector_stream_moby_scale_multiplier_gp SDATA(vector_stream_moby_scale_multiplier_gp);
+extern int vector_stream_burst_color_blend_a_gp SDATA(vector_stream_burst_color_blend_a_gp);
+extern int vector_stream_burst_color_blend_b_gp SDATA(vector_stream_burst_color_blend_b_gp);
+extern float vector_stream_burst_min_particle_scale_gp SDATA(vector_stream_burst_min_particle_scale_gp);
+extern float vector_stream_burst_max_particle_scale_gp SDATA(vector_stream_burst_max_particle_scale_gp);
+extern int vector_stream_burst_min_lifetime_frames_gp SDATA(vector_stream_burst_min_lifetime_frames_gp);
+extern int vector_stream_burst_max_lifetime_frames_gp SDATA(vector_stream_burst_max_lifetime_frames_gp);
+extern float vector_stream_burst_velocity_random_scale_bound_a_gp
+    SDATA(vector_stream_burst_velocity_random_scale_bound_a_gp);
+extern float vector_stream_burst_velocity_random_scale_bound_b_gp
+    SDATA(vector_stream_burst_velocity_random_scale_bound_b_gp);
 void draw_moby_vector_streams(char *m);
 void test_moby_vector_stream_collision_lines(char *m);
 extern float vector_stream_rotations[];
@@ -2618,9 +2626,9 @@ void update_moby_vector_streams_and_particle_burst(char *moby) {
 }
 extern void initialize_hit_descriptor(char *a, int b, int c, float d);
 extern int coll_line(void *, void *, int, int, int);
-extern float vector_stream_hit_line_half_length SDATA(D_L06_00162278);
-extern float vector_stream_hit_line_y SDATA(D_L06_0016227C);
-extern float vector_stream_hit_line_z SDATA(D_L06_00162280);
+extern float vector_stream_hit_line_half_length SDATA(vector_stream_hit_line_half_length);
+extern float vector_stream_hit_line_y SDATA(vector_stream_hit_line_y);
+extern float vector_stream_hit_line_z SDATA(vector_stream_hit_line_z);
 
 // builds two rotated corner points of a box around the moby and runs a line test between them
 void test_moby_vector_stream_collision_lines(char *m) {
@@ -2661,13 +2669,13 @@ extern float vector_stream_rotations[];
 extern int vector_stream_regen_ticks MACRO_ADDR;
 extern int vector_stream_fade_ticks MACRO_ADDR;
 extern short vector_stream_matrix_scale;
-extern int vector_stream_alpha_b SDATA(D_L06_00162254);
-extern int vector_stream_alpha_a SDATA(D_L06_00162250);
-extern int vector_stream_alpha_c SDATA(D_L06_00162258);
-extern int vector_stream_alpha_d SDATA(D_L06_0016225C);
-extern int vector_stream_color_a SDATA(D_L06_00162270);
-extern int vector_stream_color_b SDATA(D_L06_00162274);
-extern float vector_stream_texture_u_step SDATA(D_L06_00162284);
+extern int vector_stream_alpha_b SDATA(vector_stream_alpha_b);
+extern int vector_stream_alpha_a SDATA(vector_stream_alpha_a);
+extern int vector_stream_alpha_c SDATA(vector_stream_alpha_c);
+extern int vector_stream_alpha_d SDATA(vector_stream_alpha_d);
+extern int vector_stream_color_a SDATA(vector_stream_color_a);
+extern int vector_stream_color_b SDATA(vector_stream_color_b);
+extern float vector_stream_texture_u_step SDATA(vector_stream_texture_u_step);
 extern short vector_stream_uv_scroll;
 
 /* draws four copies of a model transformed by a table, then spawns a part for each */

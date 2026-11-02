@@ -129,12 +129,12 @@ extern int orxon_frame_count MACRO_ADDR;
 extern float orxon_zero_vec[] MACRO_ADDR;
 
 extern char orxon_camera_pos[];
-extern float toxic_crab_scale SDATA(D_L10_00161EA4);
-extern float toxic_crab_death_knockback_gravity_gp SDATA(D_L10_00161EA8);
-extern float toxic_crab_obstacle_pause_distance_gp SDATA(D_L10_00161EB4);
-extern float toxic_crab_aggro_radius SDATA(D_L10_00161EC0);
-extern float toxic_crab_back_away_distance_limit_gp SDATA(D_L10_00161EC4);
-extern float toxic_crab_pursuit_heading_threshold_degrees_gp SDATA(D_L10_00161ECC);
+extern float toxic_crab_scale SDATA(toxic_crab_scale);
+extern float toxic_crab_death_knockback_gravity_gp SDATA(toxic_crab_death_knockback_gravity_gp);
+extern float toxic_crab_obstacle_pause_distance_gp SDATA(toxic_crab_obstacle_pause_distance_gp);
+extern float toxic_crab_aggro_radius SDATA(toxic_crab_aggro_radius);
+extern float toxic_crab_back_away_distance_limit_gp SDATA(toxic_crab_back_away_distance_limit_gp);
+extern float toxic_crab_pursuit_heading_threshold_degrees_gp SDATA(toxic_crab_pursuit_heading_threshold_degrees_gp);
 
 extern void update_toxic_crab_hit_reactions_and_targeting(void *);
 extern void emit_moby_particles(void *);
@@ -754,25 +754,25 @@ void toxic_crab_update(Moby *m) {
         }
     }
 }
-extern int toxic_crab_debris_burst_count SDATA(D_L10_00161EF4);
-extern int toxic_crab_debris_per_burst SDATA(D_L10_00161EF8);
-extern float toxic_crab_debris_origin_jitter SDATA(D_L10_00161EFC);
-extern float toxic_crab_debris_pos_jitter SDATA(D_L10_00161F00);
-extern float toxic_crab_debris_vel_jitter SDATA(D_L10_00161F04);
-extern float toxic_crab_debris_xy_speed_min SDATA(D_L10_00161F08);
-extern float toxic_crab_debris_xy_speed_max SDATA(D_L10_00161F0C);
-extern float toxic_crab_debris_z_speed_min SDATA(D_L10_00161F10);
-extern float toxic_crab_debris_z_speed_max SDATA(D_L10_00161F14);
-extern float toxic_crab_debris_gravity SDATA(D_L10_00161F18);
-extern float toxic_crab_debris_start_size SDATA(D_L10_00161F1C);
-extern float toxic_crab_debris_end_size SDATA(D_L10_00161F20);
-extern int toxic_crab_debris_start_color_a SDATA(D_L10_00161F24);
-extern int toxic_crab_debris_end_color_a SDATA(D_L10_00161F28);
-extern int toxic_crab_debris_start_color_b SDATA(D_L10_00161F2C);
-extern int toxic_crab_debris_end_color_b SDATA(D_L10_00161F30);
-extern int toxic_crab_debris_time1 SDATA(D_L10_00161F34);
-extern int toxic_crab_debris_time2 SDATA(D_L10_00161F38);
-extern int toxic_crab_debris_time3 SDATA(D_L10_00161F3C);
+extern int toxic_crab_debris_burst_count SDATA(toxic_crab_debris_burst_count);
+extern int toxic_crab_debris_per_burst SDATA(toxic_crab_debris_per_burst);
+extern float toxic_crab_debris_origin_jitter SDATA(toxic_crab_debris_origin_jitter);
+extern float toxic_crab_debris_pos_jitter SDATA(toxic_crab_debris_pos_jitter);
+extern float toxic_crab_debris_vel_jitter SDATA(toxic_crab_debris_vel_jitter);
+extern float toxic_crab_debris_xy_speed_min SDATA(toxic_crab_debris_xy_speed_min);
+extern float toxic_crab_debris_xy_speed_max SDATA(toxic_crab_debris_xy_speed_max);
+extern float toxic_crab_debris_z_speed_min SDATA(toxic_crab_debris_z_speed_min);
+extern float toxic_crab_debris_z_speed_max SDATA(toxic_crab_debris_z_speed_max);
+extern float toxic_crab_debris_gravity SDATA(toxic_crab_debris_gravity);
+extern float toxic_crab_debris_start_size SDATA(toxic_crab_debris_start_size);
+extern float toxic_crab_debris_end_size SDATA(toxic_crab_debris_end_size);
+extern int toxic_crab_debris_start_color_a SDATA(toxic_crab_debris_start_color_a);
+extern int toxic_crab_debris_end_color_a SDATA(toxic_crab_debris_end_color_a);
+extern int toxic_crab_debris_start_color_b SDATA(toxic_crab_debris_start_color_b);
+extern int toxic_crab_debris_end_color_b SDATA(toxic_crab_debris_end_color_b);
+extern int toxic_crab_debris_time1 SDATA(toxic_crab_debris_time1);
+extern int toxic_crab_debris_time2 SDATA(toxic_crab_debris_time2);
+extern int toxic_crab_debris_time3 SDATA(toxic_crab_debris_time3);
 extern void add_random_offset_to_vector_xyz(float *v, float s);
 extern float random_angle_radians(void);
 extern void FastVecScale(void *, void *, float);
@@ -1140,7 +1140,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
         d->f160 = ((Hero *)(hero_globals_base_r + 0xE1D))->moby;
 }
 extern unsigned char hero_globals_base[];
-extern float toxic_crab_group_spread_deg SDATA(D_L10_00161EC8);
+extern float toxic_crab_group_spread_deg SDATA(toxic_crab_group_spread_deg);
 
 typedef struct {
     char p0[0x10];
@@ -1276,9 +1276,9 @@ typedef struct ShipD_5E48 {
 } ShipD_5E48;
 extern char blarg_ship_missing_path_format[];
 extern Ship_5E48 *blarg_ship_locked_target;
-extern int orxon_blarg_ship_start_timer_ticks SDATA(D_L10_00161F64);
-extern float blarg_ship_rocket_speed SDATA(D_L10_00161F68);
-extern float blarg_ship_fire_anim_speed SDATA(D_L10_00161F6C);
+extern int orxon_blarg_ship_start_timer_ticks SDATA(orxon_blarg_ship_start_timer_ticks);
+extern float blarg_ship_rocket_speed SDATA(blarg_ship_rocket_speed);
+extern float blarg_ship_fire_anim_speed SDATA(blarg_ship_fire_anim_speed);
 extern float frame_scale MACRO_ADDR;
 extern char orxon_help_state[];
 extern unsigned char gHaveHeliPack[];
@@ -1710,8 +1710,8 @@ extern unsigned char special_items_base[];
 
 extern int orxon_cinematic_mode MACRO_ADDR;
 extern int gBolts MACRO_ADDR;
-extern int hero_max_health SDATA(D_0015EEA0);
-extern int dialogue_message_duration SDATA(D_L10_0015F720);
+extern int hero_max_health SDATA(hero_max_health);
+extern int dialogue_message_duration SDATA(dialogue_message_duration);
 
 /* Pick one of two banner message ids by a game flag. */
 static inline short msgSel(void) {

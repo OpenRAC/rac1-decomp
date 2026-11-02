@@ -399,7 +399,7 @@ extern char path_lift_no_rider_msg[];
 extern struct Moby *oltanis_mobys MACRO_ADDR;
 extern s32 path_lift_board_time MACRO_ADDR;
 extern s32 path_lift_leave_time MACRO_ADDR;
-extern f32 path_lift_hero_pull_speed SDATA(D_L14_00161C58);
+extern f32 path_lift_hero_pull_speed SDATA(path_lift_hero_pull_speed);
 extern float g_frame_time MACRO_ADDR;
 extern void AttachManipulator(void *, int, void *);
 extern void STUB_printf(const char *, short);
@@ -747,8 +747,8 @@ extern float IntToFloat(int);
 
 extern float FastDiffRots(float, float);
 extern void AddDrawCallback(void (*)(struct Moby *), struct Moby *);
-extern int wind_spark_max_alpha SDATA(D_L14_00161CE0);
-extern int wind_spark_fade_ticks SDATA(D_L14_00161CFC);
+extern int wind_spark_max_alpha SDATA(wind_spark_max_alpha);
+extern int wind_spark_fade_ticks SDATA(wind_spark_fade_ticks);
 struct L14SparkTarget {
     char pad0[0x140];
     float x; /* 0x140 */
@@ -838,7 +838,7 @@ typedef struct {
     float uv[8];
     unsigned long a, b, c, d;
 } Pk_m;
-extern int wind_spark_color SDATA(D_L14_00161CDC);
+extern int wind_spark_color SDATA(wind_spark_color);
 
 extern float wind_spark_quad_corners[4][4];
 extern unsigned long GetEffectTex_r(s32) __asm__("func_001F4868");
@@ -924,8 +924,8 @@ typedef struct {
 extern L14MinePath *oltanis_paths_r[] __asm__("D_L14_001B0F30");
 extern char looping_path_no_path_msg[];
 extern char looping_path_empty_path_msg[];
-extern f32 looping_path_moby_speed SDATA(D_L14_00161D14);
-extern f32 looping_path_moby_pulse_speed SDATA(D_L14_00161D18);
+extern f32 looping_path_moby_speed SDATA(looping_path_moby_speed);
+extern f32 looping_path_moby_pulse_speed SDATA(looping_path_moby_pulse_speed);
 extern f32 g_frame_time MACRO_ADDR;
 extern void STUB_printf(const char *, short);
 extern void DeleteMoby(void *);
@@ -1164,11 +1164,11 @@ extern char help_stats_base_c[] __asm__("D_0014171B");
 
 extern int *oltanis_paths_ee[] __asm__("D_L14_001B0F30");
 extern short lightning_strike_timer;
-extern int lightning_strike_interval SDATA(D_L14_00161D24);
-extern int lightning_arc_built SDATA(D_L14_00161D28);
-extern float lightning_arc_sky_height SDATA(D_L14_00161D2C);
-extern float lightning_spot_view_radius SDATA(D_L14_00161D30);
-extern float lightning_spot_height_offset SDATA(D_L14_00161D34);
+extern int lightning_strike_interval SDATA(lightning_strike_interval);
+extern int lightning_arc_built SDATA(lightning_arc_built);
+extern float lightning_arc_sky_height SDATA(lightning_arc_sky_height);
+extern float lightning_spot_view_radius SDATA(lightning_spot_view_radius);
+extern float lightning_spot_height_offset SDATA(lightning_spot_height_offset);
 extern int lightning_arc_remaining_frames MACRO_ADDR;
 extern float lightning_arc_start_pos[] MACRO_ADDR;
 extern float lightning_arc_end_pos[] MACRO_ADDR;
@@ -1442,12 +1442,12 @@ extern unsigned char lightning_arc_fade_alpha[] MACRO_ADDR;
 extern short lightning_branch_point_timers[];
 extern int lightning_branch_starts[] MACRO_ADDR;
 /* KEPT: short and SDATA select how each function addresses this global. */
-extern int lightning_grow_ticks SDATA(D_L14_00161D40);
-extern int lightning_arc_outer_base_color_gp SDATA(D_L14_00161D48);
-extern int lightning_arc_inner_base_color_gp SDATA(D_L14_00161D4C);
-extern float lightning_arc_outer_half_width_end_gp SDATA(D_L14_00161D50);
-extern float lightning_arc_outer_half_width_start_gp SDATA(D_L14_00161D54);
-extern float lightning_arc_glow_width_scale SDATA(D_L14_00161D58);
+extern int lightning_grow_ticks SDATA(lightning_grow_ticks);
+extern int lightning_arc_outer_base_color_gp SDATA(lightning_arc_outer_base_color_gp);
+extern int lightning_arc_inner_base_color_gp SDATA(lightning_arc_inner_base_color_gp);
+extern float lightning_arc_outer_half_width_end_gp SDATA(lightning_arc_outer_half_width_end_gp);
+extern float lightning_arc_outer_half_width_start_gp SDATA(lightning_arc_outer_half_width_start_gp);
+extern float lightning_arc_glow_width_scale SDATA(lightning_arc_glow_width_scale);
 
 // Draws the lightning bolt between two points as a chain of textured quad pairs, with three side branches.
 void draw_branched_lightning_arc(void) {
@@ -1659,11 +1659,11 @@ extern float randf_sym(float lo, float hi);
 extern unsigned char *PartType53Spawn(float *pos, int a, float f0, float f1, int col, int mode, int b, float *vel,
                                       float f2);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern float lightning_spark_speed_min SDATA(D_L14_00161D70);
-extern float lightning_spark_speed_max SDATA(D_L14_00161D74);
-extern float lightning_spark_vel_scale SDATA(D_L14_00161D78);
-extern float lightning_spark_size_min SDATA(D_L14_00161D7C);
-extern float lightning_spark_size_max SDATA(D_L14_00161D80);
+extern float lightning_spark_speed_min SDATA(lightning_spark_speed_min);
+extern float lightning_spark_speed_max SDATA(lightning_spark_speed_max);
+extern float lightning_spark_vel_scale SDATA(lightning_spark_vel_scale);
+extern float lightning_spark_size_min SDATA(lightning_spark_size_min);
+extern float lightning_spark_size_max SDATA(lightning_spark_size_max);
 
 // Spawns n pairs of particles around a position with random velocity and size.
 void spawn_lightning_arc_particle_pairs(float *pos, int n) {
@@ -1990,7 +1990,7 @@ extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
 extern int Spline_AdvanceByDistance_r2(void *, void *, void *, void *, int, float) __asm__("func_L00_0025E860");
 
 extern float g_frame_time MACRO_ADDR;
-extern float elevator_path_speed SDATA(D_L14_00161DE4);
+extern float elevator_path_speed SDATA(elevator_path_speed);
 
 /* Moves the moby along its current path, easing its rotation; returns 1 when the path end is reached. */
 int advance_elevator_along_path(char *m) {
@@ -2923,11 +2923,11 @@ typedef struct {
     u8 padC[0x14];
     L14PuffTail_2FD870 tail; /* 0x20 */
 } L14Puff_2FD870;
-extern f32 enemy_fighter_exhaust_base_row0_offset_gp SDATA(D_L14_00162000);
-extern f32 enemy_fighter_exhaust_paired_emitter_offset_gp SDATA(D_L14_00162004);
-extern f32 enemy_fighter_exhaust_base_row2_offset_gp SDATA(D_L14_00162008);
-extern f32 enemy_fighter_exhaust_ring_row0_offset_gp SDATA(D_L14_0016200C);
-extern s32 enemy_fighter_exhaust_paired_puff_color_gp SDATA(D_L14_00162014);
+extern f32 enemy_fighter_exhaust_base_row0_offset_gp SDATA(enemy_fighter_exhaust_base_row0_offset_gp);
+extern f32 enemy_fighter_exhaust_paired_emitter_offset_gp SDATA(enemy_fighter_exhaust_paired_emitter_offset_gp);
+extern f32 enemy_fighter_exhaust_base_row2_offset_gp SDATA(enemy_fighter_exhaust_base_row2_offset_gp);
+extern f32 enemy_fighter_exhaust_ring_row0_offset_gp SDATA(enemy_fighter_exhaust_ring_row0_offset_gp);
+extern s32 enemy_fighter_exhaust_paired_puff_color_gp SDATA(enemy_fighter_exhaust_paired_puff_color_gp);
 extern char oltanis_zero_vector[] MACRO_ADDR;
 extern void FastVecScale(void *, void *, f32);
 extern s32 scale_ticks(s32);
@@ -3062,11 +3062,11 @@ extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
 extern void FastVecSub(void *dst, void *a, void *b);
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
 extern float g_frame_time MACRO_ADDR;
-extern float enemy_fighter_path_speed SDATA(D_L14_00162018);
-extern float enemy_fighter_spring_stiffness SDATA(D_L14_0016201C);
-extern float enemy_fighter_spring_damping SDATA(D_L14_00162020);
-extern float enemy_fighter_max_bank SDATA(D_L14_00162024);
-extern float enemy_fighter_bank_yaw_range SDATA(D_L14_00162028);
+extern float enemy_fighter_path_speed SDATA(enemy_fighter_path_speed);
+extern float enemy_fighter_spring_stiffness SDATA(enemy_fighter_spring_stiffness);
+extern float enemy_fighter_spring_damping SDATA(enemy_fighter_spring_damping);
+extern float enemy_fighter_max_bank SDATA(enemy_fighter_max_bank);
+extern float enemy_fighter_bank_yaw_range SDATA(enemy_fighter_bank_yaw_range);
 
 // Steers a moby toward a target position and updates its velocity/rotation springs.
 void advance_enemy_fighter_along_flight_path(char *m) {
@@ -3366,12 +3366,12 @@ typedef struct {
 extern void FastVecScale(void *, void *, f32);
 extern s32 scale_ticks(s32);
 extern L14Puff *PartType23Spawn(void *, f32, f32, f32, int, void *, f32, int);
-extern f32 fighter921_exhaust_forward_offset SDATA(D_L14_00162030);
-extern f32 fighter921_exhaust_side_offset SDATA(D_L14_00162034);
-extern f32 fighter921_exhaust_up_offset SDATA(D_L14_00162038);
-extern f32 fighter921_exhaust_ring_offset SDATA(D_L14_0016203C);
-extern f32 fighter921_exhaust_smoke_offset SDATA(D_L14_00162040);
-extern s32 moby_exhaust_paired_puff_color_gp SDATA(D_L14_00162044);
+extern f32 fighter921_exhaust_forward_offset SDATA(fighter921_exhaust_forward_offset);
+extern f32 fighter921_exhaust_side_offset SDATA(fighter921_exhaust_side_offset);
+extern f32 fighter921_exhaust_up_offset SDATA(fighter921_exhaust_up_offset);
+extern f32 fighter921_exhaust_ring_offset SDATA(fighter921_exhaust_ring_offset);
+extern f32 fighter921_exhaust_smoke_offset SDATA(fighter921_exhaust_smoke_offset);
+extern s32 moby_exhaust_paired_puff_color_gp SDATA(moby_exhaust_paired_puff_color_gp);
 
 /* Exhaust of the second engine moby: puffs and rings on both sides plus a grey puff in the middle.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002df080.c, FUN_L14_002fd310. */
@@ -3482,11 +3482,11 @@ void spawn_moby_exhaust_puffs(struct Moby *m) {
     }
 }
 extern char *race_state;
-extern float fighter921_path_speed SDATA(D_L14_00162048);
-extern float fighter921_spring_stiffness SDATA(D_L14_0016204C);
-extern float fighter921_spring_damping SDATA(D_L14_00162050);
-extern float fighter921_max_bank SDATA(D_L14_00162054);
-extern float fighter921_bank_yaw_range SDATA(D_L14_00162058);
+extern float fighter921_path_speed SDATA(fighter921_path_speed);
+extern float fighter921_spring_stiffness SDATA(fighter921_spring_stiffness);
+extern float fighter921_spring_damping SDATA(fighter921_spring_damping);
+extern float fighter921_max_bank SDATA(fighter921_max_bank);
+extern float fighter921_bank_yaw_range SDATA(fighter921_bank_yaw_range);
 
 extern void DeleteMoby(void *);
 extern void FastVecSub(void *, void *, void *);

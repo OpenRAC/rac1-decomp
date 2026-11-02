@@ -692,14 +692,14 @@ extern int quartu_ripple_mesh_counts[1] SDATA(D_L15_00162230);
 extern int quartu_ripple_mesh_positions[1] SDATA(D_L15_00162250);
 extern int quartu_ripple_mesh_uvs[1] SDATA(D_L15_00162258);
 extern int quartu_ripple_mesh_colors[1] SDATA(D_L15_00162260);
-extern int quartu_ripple_alpha_blend SDATA(D_L15_00162264);
-extern int quartu_ripple_mesh_texture SDATA(D_L15_00162268);
-extern int quartu_ripple_mesh_alpha SDATA(D_L15_0016226C);
-extern float quartu_ripple_mesh_wavelength SDATA(D_L15_00162270);
-extern float scaled_ripple_phase_advance_divisor_gp SDATA(D_L15_00162274);
-extern float quartu_ripple_mesh_wave_height SDATA(D_L15_00162278);
-extern float quartu_ripple_mesh_uv_scroll_rate SDATA(D_L15_0016227C);
-extern float quartu_ripple_vertex_scale SDATA(D_L15_00162280);
+extern int quartu_ripple_alpha_blend SDATA(quartu_ripple_alpha_blend);
+extern int quartu_ripple_mesh_texture SDATA(quartu_ripple_mesh_texture);
+extern int quartu_ripple_mesh_alpha SDATA(quartu_ripple_mesh_alpha);
+extern float quartu_ripple_mesh_wavelength SDATA(quartu_ripple_mesh_wavelength);
+extern float scaled_ripple_phase_advance_divisor_gp SDATA(scaled_ripple_phase_advance_divisor_gp);
+extern float quartu_ripple_mesh_wave_height SDATA(quartu_ripple_mesh_wave_height);
+extern float quartu_ripple_mesh_uv_scroll_rate SDATA(quartu_ripple_mesh_uv_scroll_rate);
+extern float quartu_ripple_vertex_scale SDATA(quartu_ripple_vertex_scale);
 
 /* Builds and draws the animated ring of lights around a moby: 46 scaled vertices and colours, then two passes of 46
    texture coordinates. */
@@ -771,14 +771,14 @@ extern int quartu_ripple88_mesh_counts[1] SDATA(D_L15_001622A0);
 extern int quartu_ripple88_mesh_positions[1] SDATA(D_L15_001622C0);
 extern int quartu_ripple88_mesh_uvs[1] SDATA(D_L15_001622C8);
 extern int quartu_ripple88_mesh_colors[1] SDATA(D_L15_001622D0);
-extern int quartu_ripple88_alpha_blend SDATA(D_L15_001622D4);
-extern int quartu_ripple88_texture SDATA(D_L15_001622D8);
-extern int quartu_ripple88_alpha SDATA(D_L15_001622DC);
-extern float quartu_ripple88_wavelength SDATA(D_L15_001622E0);
-extern float ripple_88_phase_advance_divisor_gp SDATA(D_L15_001622E4);
-extern float quartu_ripple88_wave_height SDATA(D_L15_001622E8);
-extern float quartu_ripple88_uv_scroll_rate SDATA(D_L15_001622EC);
-extern float quartu_ripple88_vertex_scale SDATA(D_L15_001622F0);
+extern int quartu_ripple88_alpha_blend SDATA(quartu_ripple88_alpha_blend);
+extern int quartu_ripple88_texture SDATA(quartu_ripple88_texture);
+extern int quartu_ripple88_alpha SDATA(quartu_ripple88_alpha);
+extern float quartu_ripple88_wavelength SDATA(quartu_ripple88_wavelength);
+extern float ripple_88_phase_advance_divisor_gp SDATA(ripple_88_phase_advance_divisor_gp);
+extern float quartu_ripple88_wave_height SDATA(quartu_ripple88_wave_height);
+extern float quartu_ripple88_uv_scroll_rate SDATA(quartu_ripple88_uv_scroll_rate);
+extern float quartu_ripple88_vertex_scale SDATA(quartu_ripple88_vertex_scale);
 
 /* Builds and draws the animated ring of lights around a moby: 88 scaled vertices and colours, then two passes of 88
    texture coordinates. */
