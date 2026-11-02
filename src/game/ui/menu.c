@@ -1,4 +1,5 @@
 #include "common.h"
+#include "structs/data/game_ui_menu.h"
 #include "callees.h"
 #include "structs/records.h"
 #include "structs/misc.h"
@@ -834,9 +835,6 @@ void expand_map_coverage(void *dst, unsigned char *src) {
 LINKER_REMNANT("asm/remnants/text", func_00208858);
 
 /* Bit counts of the 16 nibbles. */
-typedef struct {
-    int n[16];
-} NibbleBits;
 
 extern NibbleBits nibble_popcount_table;
 extern unsigned char *map_coverage_buffer;

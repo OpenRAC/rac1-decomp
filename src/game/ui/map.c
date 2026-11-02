@@ -1,4 +1,5 @@
 #include "common.h"
+#include "structs/data/game_ui_map.h"
 #include "structs/hero.h"
 #include "callees.h"
 #include "structs/records.h"
@@ -16,15 +17,6 @@ extern void FastMemCopy(void *, void *, int);
 extern int log2dim(int);
 extern int g_gs_texture_allocation_cursor MACRO_ADDR;
 extern int pending_texture_upload_count MACRO_ADDR;
-typedef struct {
-    int addr;            /* +0 */
-    short unk4;          /* +4 */
-    short cbp;           /* +6 */
-    int unk8;            /* +8 */
-    unsigned char tw;    /* +C */
-    unsigned char th;    /* +D */
-    short tbp;           /* +E */
-} TexSlot;
 extern TexSlot pending_texture_uploads[];
 typedef struct {
     char *clut;          /* 0x00 */

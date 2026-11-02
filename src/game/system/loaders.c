@@ -1,4 +1,5 @@
 #include "common.h"
+#include "structs/data/game_system_loaders.h"
 #include "structs/disc.h"
 #include "structs/hero.h"
 #include "structs/moby.h"
@@ -181,10 +182,6 @@ LINKER_REMNANT("asm/remnants/text", func_00202EF8);
 extern int particle_texture_range_count MACRO_ADDR;
 extern char particle_texture_data[];
 extern int particle_texture_ptrs[];
-typedef struct {
-    int a;
-    int b;
-} Pair_2F00;
 extern Pair_2F00 particle_texture_ranges[];
 extern void copy_memory_aligned(void *, void *, int);
 extern int log2dim(int);

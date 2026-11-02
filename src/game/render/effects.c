@@ -1,4 +1,5 @@
 #include "common.h"
+#include "structs/data/game_render_effects.h"
 #include "structs/records.h"
 #include "structs/misc.h"
 #include "game/render/draw.h"
@@ -250,21 +251,6 @@ void render_queued_rotated_sprites(void) {
 
 LINKER_REMNANT("asm/remnants/text", func_001EE850);
 
-struct CameraEnvironmentRegion {
-    u8 pad0[0x50];
-    s32 flags;
-    s32 negative_color;
-    s32 positive_color;
-    f32 negative_depth_start;
-    f32 negative_value_start;
-    f32 negative_depth_end;
-    f32 negative_value_end;
-    f32 positive_depth_start;
-    f32 positive_value_start;
-    f32 positive_depth_end;
-    f32 positive_value_end;
-    u8 pad7C[4];
-};
 extern struct CameraEnvironmentRegion camera_environment_regions[];
 /* A fog preset: an RGB byte triple and four floats (as src/game/render/draw.c reads it). */
 

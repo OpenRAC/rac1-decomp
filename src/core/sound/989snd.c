@@ -1,4 +1,5 @@
 #include "common.h"
+#include "structs/data/core_sound_989snd.h"
 #include "callees.h"
 #include "structs/misc.h"
 #include "core/cdvd/read.h"
@@ -738,11 +739,6 @@ void snd_StreamSafeCheckCDIdle(int arg0) {
    (streaming-enabled flag, see snd_StreamSafeCdGetError/snd_StreamSafeCdCallback). */
 extern short snd_cd_sync_pending;
 
-typedef struct {
-    volatile unsigned int count;
-    int unk04[3];
-    volatile int error;
-} CdSafeState;
 extern CdSafeState sound_read_work;
 
 extern int sce_cd_read(int, int, int);

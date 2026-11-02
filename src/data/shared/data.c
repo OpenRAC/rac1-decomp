@@ -136,6 +136,47 @@ extern void map_filter_l04_0();
 extern void map_filter_l04_1();
 extern void map_filter_l04_2();
 extern void map_filter_l04_3();
+extern void map_filter_l06_0();
+extern void map_filter_l07_0();
+extern void map_filter_l07_1();
+extern void map_filter_l07_2();
+extern void map_filter_l07_3();
+extern void map_filter_l07_4();
+extern void map_filter_l07_5();
+extern void map_filter_l07_6();
+extern void map_filter_l07_7();
+extern void map_filter_l08_0();
+extern void map_filter_l08_1();
+extern void map_filter_l08_2();
+extern void map_filter_l08_3();
+extern void map_filter_l08_4();
+extern void map_filter_l08_5();
+extern void map_filter_l08_6();
+extern void map_filter_l08_7();
+extern void map_filter_l09_0();
+extern void map_filter_l09_1();
+extern void map_filter_l09_2();
+extern void map_filter_l10_0();
+extern void map_filter_l10_1();
+extern void map_filter_l10_2();
+extern void map_filter_l10_3();
+extern void map_filter_l10_4();
+extern void map_filter_l10_5();
+extern void map_filter_l11_0();
+extern void map_filter_l11_1();
+extern void map_filter_l11_2();
+extern void map_filter_l11_3();
+extern void map_filter_l11_4();
+extern void map_filter_l11_5();
+extern void map_filter_l12_0();
+extern void MenuL12_IsAlwaysActive1();
+extern void map_filter_l12_2();
+extern void map_filter_l15_0();
+extern void map_filter_l16_0();
+extern void map_filter_l16_1();
+extern void map_filter_l16_2();
+extern void map_filter_l16_3();
+extern void map_filter_l18_0();
 extern u32 D_001A0C90[];
 extern u32 D_001A0DA8[];
 extern u32 D_001A0F60[];
@@ -195,7 +236,7 @@ extern void leave_save_slot_screen();
 extern void saving_data_menu();
 extern void draw_save_slot_list();
 extern void loading_data_menu();
-extern char D_001D1C00[];
+extern u32 D_001D1C00[];
 extern u32 D_001D1DC0[];
 extern void enter_menu_choice_list();
 extern void leave_menu_choice_list();
@@ -209,7 +250,7 @@ extern void enter_menu_prompt();
 extern void leave_menu_prompt();
 extern void Menu_ConfirmPromptInput();
 extern void draw_prompt_box();
-extern char D_001D2A28[];
+extern u32 D_001D2A28[];
 extern void draw_selected_menu_item_text();
 extern void process_global_state_flags();
 extern void DrawEndScreenMenuMaybe();
@@ -220,9 +261,9 @@ extern u32 D_001D3D38[];
 extern u32 D_001D3FD8[];
 extern u32 D_001D4130[];
 extern void set_pause_action_list();
-extern char D_001D4F18[];
+extern u32 D_001D4F18[];
 extern void saving_data_menu2();
-extern char D_001D5138[];
+extern u32 D_001D5138[];
 
 #include "data_inc/D_0012F580.refs"
 u32 D_0012F580[] DATA_SECTION(D_0012F580) = {
@@ -935,11 +976,15 @@ u32 D_00132F00[] DATA_SECTION(D_00132F00) = {
 #include "data_inc/D_00132F00.inc"
 };
 
-u32 snd_sync_buffer DATA_SECTION(D_00133200) = 0;
+u32 snd_sync_buffer[16] DATA_SECTION(D_00133200) = {0};
 
 u8 snd_sync_send_buffer[320] DATA_SECTION(D_00133240) = {0};
 
 u8 disc_table[10440] DATA_SECTION(D_00137C80) = {0};
+
+u32 pad_globals_base[] DATA_SECTION(D_0013A5E0) = {
+#include "data_inc/D_0013A5E0.inc"
+};
 
 u32 D_00165E00[] DATA_SECTION(D_00165E00) = {
 #include "data_inc/D_00165E00.inc"
@@ -981,21 +1026,25 @@ u32 cur_cam[4] DATA_SECTION(D_001871C0) = {0};
 
 u32 cam_coll_state[56] DATA_SECTION(D_001871D0) = {0};
 
+u32 cam_trans_state[56] DATA_SECTION(D_001872B0) = {0};
+
 u32 camera_rows[4] DATA_SECTION(D_00187390) = {0};
 
 u32 effect_ribbon[68] DATA_SECTION(D_00187400) = {0};
 
-u32 draw_config DATA_SECTION(D_0018A3B0) = 0;
+u32 draw_config[6] DATA_SECTION(D_0018A3B0) = {0};
 
 u32 D_0018A400[512] DATA_SECTION(D_0018A400) = {0};
 
-u32 occl_cam_state[5] DATA_SECTION(D_0018C418) = {0};
+u32 occl_cam_state[] DATA_SECTION(D_0018C418) = {
+#include "data_inc/D_0018C418.inc"
+};
 
 u32 D_0018CB40[] DATA_SECTION(D_0018CB40) = {
 #include "data_inc/D_0018CB40.inc"
 };
 
-u32 render_sequence[13] DATA_SECTION(D_0018CC20) = {0};
+u32 render_sequence[94] DATA_SECTION(D_0018CC20) = {0};
 
 u32 view_context[44] DATA_SECTION(D_0018CE00) = {0};
 
@@ -1005,7 +1054,7 @@ u32 clip_transform[36] DATA_SECTION(D_0018CF80) = {0};
 
 u32 D_0018E450[252] DATA_SECTION(D_0018E450) = {0};
 
-u32 D_00190000[5] DATA_SECTION(D_00190000) = {0};
+u32 D_00190000[3328] DATA_SECTION(D_00190000) = {0};
 
 u32 occl_visibility[32] DATA_SECTION(D_001940C0) = {0};
 
@@ -1025,8 +1074,20 @@ u32 g_help_state[] DATA_SECTION(D_001997D0) = {
 #include "data_inc/D_001997D0.inc"
 };
 
+u32 message_id_code_table[] DATA_SECTION(D_00199810) = {
+#include "data_inc/D_00199810.inc"
+};
+
+u32 s_paradox_this_message_does_not[] DATA_SECTION(D_00199A68) = {
+#include "data_inc/D_00199A68.inc"
+};
+
 u32 D_00199AD0[] DATA_SECTION(D_00199AD0) = {
 #include "data_inc/D_00199AD0.inc"
+};
+
+u32 D_00199BB0[] DATA_SECTION(D_00199BB0) = {
+#include "data_inc/D_00199BB0.inc"
 };
 
 u32 hud_state[6] DATA_SECTION(D_0019A4E8) = {0};
@@ -1046,10 +1107,133 @@ u32 point_light_data[2144] DATA_SECTION(D_0019C4C0) = {0};
 u32 special_material_template[6] DATA_SECTION(D_0019E7C0) = {0};
 
 void *D_001A0000[] DATA_SECTION(D_001A0000) = {
-    0, 0, 0, 0, map_filter_l04_0, map_filter_l04_1, map_filter_l04_2, map_filter_l04_3, 0,
+    0,
+    0,
+    0,
+    0,
+    map_filter_l04_0,
+    map_filter_l04_1,
+    map_filter_l04_2,
+    map_filter_l04_3,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    map_filter_l06_0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    map_filter_l07_0,
+    map_filter_l07_1,
+    map_filter_l07_2,
+    map_filter_l07_3,
+    map_filter_l07_4,
+    map_filter_l07_5,
+    map_filter_l07_6,
+    map_filter_l07_7,
+    map_filter_l08_0,
+    map_filter_l08_1,
+    map_filter_l08_2,
+    map_filter_l08_3,
+    map_filter_l08_4,
+    map_filter_l08_5,
+    map_filter_l08_6,
+    map_filter_l08_7,
+    map_filter_l09_0,
+    map_filter_l09_1,
+    map_filter_l09_2,
+    0,
+    0,
+    0,
+    0,
+    0,
+    map_filter_l10_0,
+    map_filter_l10_1,
+    map_filter_l10_2,
+    map_filter_l10_3,
+    map_filter_l10_4,
+    map_filter_l10_5,
+    0,
+    0,
+    map_filter_l11_0,
+    map_filter_l11_1,
+    map_filter_l11_2,
+    map_filter_l11_3,
+    map_filter_l11_4,
+    map_filter_l11_5,
+    0,
+    0,
+    map_filter_l12_0,
+    MenuL12_IsAlwaysActive1,
+    map_filter_l12_2,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    map_filter_l15_0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    map_filter_l16_0,
+    map_filter_l16_1,
+    map_filter_l16_2,
+    map_filter_l16_3,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    map_filter_l18_0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
 };
 
-u32 level_map_selection[3] DATA_SECTION(D_001A01F0) = {0};
+u32 level_map_selection[10] DATA_SECTION(D_001A01F0) = {0};
 
 u32 memcard_dir_entries[8] DATA_SECTION(D_001A0980) = {0};
 
@@ -1064,40 +1248,85 @@ u32 D_001A0C90[] DATA_SECTION(D_001A0C90) = {
 #include "data_inc/D_001A0C90.inc"
 };
 
+u32 D_001A0CE0[] DATA_SECTION(D_001A0CE0) = {
+#include "data_inc/D_001A0CE0.inc"
+};
+
 u32 D_001A0DA8[] DATA_SECTION(D_001A0DA8) = {
 #include "data_inc/D_001A0DA8.inc"
+};
+
+#include "data_inc/D_001A0E70.refs"
+u32 D_001A0E70[] DATA_SECTION(D_001A0E70) = {
+#include "data_inc/D_001A0E70.inc"
 };
 
 u32 D_001A0F60[] DATA_SECTION(D_001A0F60) = {
 #include "data_inc/D_001A0F60.inc"
 };
 
+#include "data_inc/D_001A1078.refs"
+u32 D_001A1078[] DATA_SECTION(D_001A1078) = {
+#include "data_inc/D_001A1078.inc"
+};
+
 u32 D_001A11E0[] DATA_SECTION(D_001A11E0) = {
 #include "data_inc/D_001A11E0.inc"
+};
+
+u32 D_001A13E8[] DATA_SECTION(D_001A13E8) = {
+#include "data_inc/D_001A13E8.inc"
 };
 
 u32 D_001A1460[] DATA_SECTION(D_001A1460) = {
 #include "data_inc/D_001A1460.inc"
 };
 
+u32 D_001A1500[] DATA_SECTION(D_001A1500) = {
+#include "data_inc/D_001A1500.inc"
+};
+
 u32 D_001A15F0[] DATA_SECTION(D_001A15F0) = {
 #include "data_inc/D_001A15F0.inc"
+};
+
+#include "data_inc/D_001A1708.refs"
+u32 D_001A1708[] DATA_SECTION(D_001A1708) = {
+#include "data_inc/D_001A1708.inc"
 };
 
 u32 D_001A1848[] DATA_SECTION(D_001A1848) = {
 #include "data_inc/D_001A1848.inc"
 };
 
+#include "data_inc/D_001A1960.refs"
+u32 D_001A1960[] DATA_SECTION(D_001A1960) = {
+#include "data_inc/D_001A1960.inc"
+};
+
 u32 D_001A1A00[] DATA_SECTION(D_001A1A00) = {
 #include "data_inc/D_001A1A00.inc"
+};
+
+u32 D_001A1AA0[] DATA_SECTION(D_001A1AA0) = {
+#include "data_inc/D_001A1AA0.inc"
 };
 
 u32 D_001A1BE0[] DATA_SECTION(D_001A1BE0) = {
 #include "data_inc/D_001A1BE0.inc"
 };
 
+u32 D_001A1D48[] DATA_SECTION(D_001A1D48) = {
+#include "data_inc/D_001A1D48.inc"
+};
+
 u32 D_001A1D98[] DATA_SECTION(D_001A1D98) = {
 #include "data_inc/D_001A1D98.inc"
+};
+
+#include "data_inc/D_001A1E10.refs"
+u32 D_001A1E10[] DATA_SECTION(D_001A1E10) = {
+#include "data_inc/D_001A1E10.inc"
 };
 
 u32 D_001A1FA0[] DATA_SECTION(D_001A1FA0) = {
@@ -1193,11 +1422,13 @@ u32 moby_class_resources[224] DATA_SECTION(D_001B3580) = {0};
 
 u32 resident_moby_class_data[224] DATA_SECTION(D_001B3900) = {0};
 
+u32 resident_class_slot_by_id[1968] DATA_SECTION(D_001B3E40) = {0};
+
 u32 resident_class_original_field_2c[224] DATA_SECTION(D_001B6500) = {0};
 
 u32 D_001B7A00[24] DATA_SECTION(D_001B7A00) = {0};
 
-u32 D_001C0000[7] DATA_SECTION(D_001C0000) = {0};
+u32 D_001C0000[7832] DATA_SECTION(D_001C0000) = {0};
 
 u32 D_001C7AC0[112] DATA_SECTION(D_001C7AC0) = {0};
 
@@ -1371,7 +1602,7 @@ u32 part_slot_bitmap[128] DATA_SECTION(D_001CDB00) = {0};
 
 u32 D_001CE100[128] DATA_SECTION(D_001CE100) = {0};
 
-u32 particle_texture_ptrs[23] DATA_SECTION(D_001CE300) = {0};
+u32 particle_texture_ptrs[128] DATA_SECTION(D_001CE300) = {0};
 
 u32 D_001CE678[] DATA_SECTION(D_001CE678) = {
 #include "data_inc/D_001CE678.inc"
@@ -1457,6 +1688,11 @@ u32 D_001CEA78[] DATA_SECTION(D_001CEA78) = {
 #include "data_inc/D_001CEA78.inc"
 };
 
+#include "data_inc/D_001CEB68.refs"
+u32 D_001CEB68[] DATA_SECTION(D_001CEB68) = {
+#include "data_inc/D_001CEB68.inc"
+};
+
 #include "data_inc/D_001CEBF0.refs"
 u32 D_001CEBF0[] DATA_SECTION(D_001CEBF0) = {
 #include "data_inc/D_001CEBF0.inc"
@@ -1507,6 +1743,11 @@ u32 D_001CEF38[] DATA_SECTION(D_001CEF38) = {
 #include "data_inc/D_001CEF38.inc"
 };
 
+#include "data_inc/D_001CF038.refs"
+u32 D_001CF038[] DATA_SECTION(D_001CF038) = {
+#include "data_inc/D_001CF038.inc"
+};
+
 #include "data_inc/D_001CF0C0.refs"
 u32 D_001CF0C0[] DATA_SECTION(D_001CF0C0) = {
 #include "data_inc/D_001CF0C0.inc"
@@ -1537,6 +1778,11 @@ u32 D_001CF428[] DATA_SECTION(D_001CF428) = {
 
 void *D_001CF450[] DATA_SECTION(D_001CF450) = {
     0, render_localized_ui_entry_list, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, (char *)D_4000 + 0x2, D_001CF428, 0, 0, 0, 0, 0, 0,
+};
+
+#include "data_inc/D_001CF538.refs"
+u32 D_001CF538[] DATA_SECTION(D_001CF538) = {
+#include "data_inc/D_001CF538.inc"
 };
 
 #include "data_inc/D_001CF5C0.refs"
@@ -1636,6 +1882,11 @@ void *D_001CF9A0[] DATA_SECTION(D_001CF9A0) = {
     Pause_PageInput, DrawMissionsMenu, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
+#include "data_inc/D_001CF9F8.refs"
+u32 mission_menu_page[] DATA_SECTION(D_001CF9F8) = {
+#include "data_inc/D_001CF9F8.inc"
+};
+
 #include "data_inc/D_001CFA80.refs"
 u32 D_001CFA80[] DATA_SECTION(D_001CFA80) = {
 #include "data_inc/D_001CFA80.inc"
@@ -1684,6 +1935,11 @@ void *D_001CFB40[] DATA_SECTION(D_001CFB40) = {
 #include "data_inc/D_001CFBC0.refs"
 u32 D_001CFBC0[] DATA_SECTION(D_001CFBC0) = {
 #include "data_inc/D_001CFBC0.inc"
+};
+
+#include "data_inc/D_001CFC18.refs"
+u32 D_001CFC18[] DATA_SECTION(D_001CFC18) = {
+#include "data_inc/D_001CFC18.inc"
 };
 
 #include "data_inc/D_001CFCA0.refs"
@@ -1751,7 +2007,7 @@ u32 D_001CFF68[] DATA_SECTION(D_001CFF68) = {
 #include "data_inc/D_001CFF68.inc"
 };
 
-u32 D_001D0000[9] DATA_SECTION(D_001D0000) = {0};
+u32 D_001D0000[438] DATA_SECTION(D_001D0000) = {0};
 
 #include "data_inc/D_001D06D8.refs"
 u32 D_001D06D8[] DATA_SECTION(D_001D06D8) = {
@@ -1761,6 +2017,11 @@ u32 D_001D06D8[] DATA_SECTION(D_001D06D8) = {
 #include "data_inc/D_001D0728.refs"
 u32 D_001D0728[] DATA_SECTION(D_001D0728) = {
 #include "data_inc/D_001D0728.inc"
+};
+
+#include "data_inc/D_001D0780.refs"
+u32 D_001D0780[] DATA_SECTION(D_001D0780) = {
+#include "data_inc/D_001D0780.inc"
 };
 
 #include "data_inc/D_001D0808.refs"
@@ -1797,6 +2058,11 @@ void *D_001D0860[] DATA_SECTION(D_001D0860) = {
     0,
 };
 
+#include "data_inc/D_001D08C8.refs"
+u32 D_001D08C8[] DATA_SECTION(D_001D08C8) = {
+#include "data_inc/D_001D08C8.inc"
+};
+
 #include "data_inc/D_001D0950.refs"
 u32 D_001D0950[] DATA_SECTION(D_001D0950) = {
 #include "data_inc/D_001D0950.inc"
@@ -1804,6 +2070,14 @@ u32 D_001D0950[] DATA_SECTION(D_001D0950) = {
 
 u32 D_001D09A8[] DATA_SECTION(D_001D09A8) = {
 #include "data_inc/D_001D09A8.inc"
+};
+
+u32 heli_pack_menu_table[] DATA_SECTION(D_001D0A50) = {
+#include "data_inc/D_001D0A50.inc"
+};
+
+u32 no_helipack_menu_table[] DATA_SECTION(D_001D0A88) = {
+#include "data_inc/D_001D0A88.inc"
 };
 
 void *D_001D0AC0[] DATA_SECTION(D_001D0AC0) = {
@@ -1837,6 +2111,11 @@ u32 D_001D0B10[] DATA_SECTION(D_001D0B10) = {
 #include "data_inc/D_001D0B78.refs"
 u32 D_001D0B78[] DATA_SECTION(D_001D0B78) = {
 #include "data_inc/D_001D0B78.inc"
+};
+
+#include "data_inc/D_001D0BD0.refs"
+u32 D_001D0BD0[] DATA_SECTION(D_001D0BD0) = {
+#include "data_inc/D_001D0BD0.inc"
 };
 
 #include "data_inc/D_001D0C58.refs"
@@ -1877,9 +2156,18 @@ void *D_001D0D78[] DATA_SECTION(D_001D0D78) = {
     0,
 };
 
+u32 D_001D0DC8[] DATA_SECTION(D_001D0DC8) = {
+#include "data_inc/D_001D0DC8.inc"
+};
+
 #include "data_inc/D_001D0DE8.refs"
 u32 D_001D0DE8[] DATA_SECTION(D_001D0DE8) = {
 #include "data_inc/D_001D0DE8.inc"
+};
+
+#include "data_inc/D_001D0E40.refs"
+u32 D_001D0E40[] DATA_SECTION(D_001D0E40) = {
+#include "data_inc/D_001D0E40.inc"
 };
 
 #include "data_inc/D_001D0EC8.refs"
@@ -1894,6 +2182,11 @@ u32 D_001D0F20[] DATA_SECTION(D_001D0F20) = {
 
 void *D_001D0F60[] DATA_SECTION(D_001D0F60) = {
     update_menu_option_list, DrawCheatsMenu, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, D_001D0F20, 0, 0,
+};
+
+#include "data_inc/D_001D0FA0.refs"
+u32 D_001D0FA0[] DATA_SECTION(D_001D0FA0) = {
+#include "data_inc/D_001D0FA0.inc"
 };
 
 #include "data_inc/D_001D1028.refs"
@@ -1921,6 +2214,11 @@ u32 D_001D1268[] DATA_SECTION(D_001D1268) = {
 #include "data_inc/D_001D1268.inc"
 };
 
+#include "data_inc/D_001D1328.refs"
+u32 D_001D1328[] DATA_SECTION(D_001D1328) = {
+#include "data_inc/D_001D1328.inc"
+};
+
 #include "data_inc/D_001D13B0.refs"
 u32 D_001D13B0[] DATA_SECTION(D_001D13B0) = {
 #include "data_inc/D_001D13B0.inc"
@@ -1941,9 +2239,19 @@ u32 D_001D1530[] DATA_SECTION(D_001D1530) = {
 #include "data_inc/D_001D1530.inc"
 };
 
+#include "data_inc/D_001D1588.refs"
+u32 D_001D1588[] DATA_SECTION(D_001D1588) = {
+#include "data_inc/D_001D1588.inc"
+};
+
 #include "data_inc/D_001D1610.refs"
 u32 D_001D1610[] DATA_SECTION(D_001D1610) = {
 #include "data_inc/D_001D1610.inc"
+};
+
+#include "data_inc/D_001D1668.refs"
+u32 D_001D1668[] DATA_SECTION(D_001D1668) = {
+#include "data_inc/D_001D1668.inc"
 };
 
 #include "data_inc/D_001D1690.refs"
@@ -1964,6 +2272,11 @@ void *D_001D17D8[] DATA_SECTION(D_001D17D8) = {
     update_menu_option_list, DrawCheatsMenu, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, D_001D17B0, 0, 0,
 };
 
+#include "data_inc/D_001D1818.refs"
+u32 D_001D1818[] DATA_SECTION(D_001D1818) = {
+#include "data_inc/D_001D1818.inc"
+};
+
 #include "data_inc/D_001D18A0.refs"
 u32 D_001D18A0[] DATA_SECTION(D_001D18A0) = {
 #include "data_inc/D_001D18A0.inc"
@@ -1971,6 +2284,16 @@ u32 D_001D18A0[] DATA_SECTION(D_001D18A0) = {
 
 void *D_001D18F8[] DATA_SECTION(D_001D18F8) = {
     sound_options_menu, DrawSoundMenu, 0, set_pause_sound_volume, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+
+#include "data_inc/D_001D1948.refs"
+u32 D_001D1948[] DATA_SECTION(D_001D1948) = {
+#include "data_inc/D_001D1948.inc"
+};
+
+#include "data_inc/D_001D19D0.refs"
+u32 D_001D19D0[] DATA_SECTION(D_001D19D0) = {
+#include "data_inc/D_001D19D0.inc"
 };
 
 #include "data_inc/D_001D1A58.refs"
@@ -2033,6 +2356,10 @@ void *D_001D1BB0[] DATA_SECTION(D_001D1BB0) = {
     0,
 };
 
+u32 D_001D1C00[] DATA_SECTION(D_001D1C00) = {
+#include "data_inc/D_001D1C00.inc"
+};
+
 void *D_001D1C28[] DATA_SECTION(D_001D1C28) = {
     0, render_localized_ui_entry_list, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, (char *)D_4000 + 0x2, D_001D1C00, 0, 0, 0, 0, 0, 0,
 };
@@ -2040,6 +2367,11 @@ void *D_001D1C28[] DATA_SECTION(D_001D1C28) = {
 #include "data_inc/D_001D1C78.refs"
 u32 D_001D1C78[] DATA_SECTION(D_001D1C78) = {
 #include "data_inc/D_001D1C78.inc"
+};
+
+#include "data_inc/D_001D1CE0.refs"
+u32 D_001D1CE0[] DATA_SECTION(D_001D1CE0) = {
+#include "data_inc/D_001D1CE0.inc"
 };
 
 #include "data_inc/D_001D1D68.refs"
@@ -2070,8 +2402,18 @@ void *D_001D1E20[] DATA_SECTION(D_001D1E20) = {
     0,
 };
 
+#include "data_inc/D_001D1E60.refs"
+u32 D_001D1E60[] DATA_SECTION(D_001D1E60) = {
+#include "data_inc/D_001D1E60.inc"
+};
+
 void *D_001D1EE8[] DATA_SECTION(D_001D1EE8) = {
     Menu_BackInput, DrawQuitGameMenu, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+
+#include "data_inc/D_001D1F38.refs"
+u32 D_001D1F38[] DATA_SECTION(D_001D1F38) = {
+#include "data_inc/D_001D1F38.inc"
 };
 
 #include "data_inc/D_001D1FC0.refs"
@@ -2099,14 +2441,27 @@ u32 D_001D2148[] DATA_SECTION(D_001D2148) = {
 #include "data_inc/D_001D2148.inc"
 };
 
+u32 D_001D2208[] DATA_SECTION(D_001D2208) = {
+#include "data_inc/D_001D2208.inc"
+};
+
 #include "data_inc/D_001D2230.refs"
 u32 D_001D2230[] DATA_SECTION(D_001D2230) = {
 #include "data_inc/D_001D2230.inc"
 };
 
+u32 D_001D2288[] DATA_SECTION(D_001D2288) = {
+#include "data_inc/D_001D2288.inc"
+};
+
 #include "data_inc/D_001D22B0.refs"
 u32 D_001D22B0[] DATA_SECTION(D_001D22B0) = {
 #include "data_inc/D_001D22B0.inc"
+};
+
+#include "data_inc/D_001D2308.refs"
+u32 D_001D2308[] DATA_SECTION(D_001D2308) = {
+#include "data_inc/D_001D2308.inc"
 };
 
 #include "data_inc/D_001D2390.refs"
@@ -2131,6 +2486,11 @@ void *D_001D25E0[] DATA_SECTION(D_001D25E0) = {
 #include "data_inc/D_001D2610.refs"
 u32 D_001D2610[] DATA_SECTION(D_001D2610) = {
 #include "data_inc/D_001D2610.inc"
+};
+
+#include "data_inc/D_001D2678.refs"
+u32 pause_default_action_list[] DATA_SECTION(D_001D2678) = {
+#include "data_inc/D_001D2678.inc"
 };
 
 #include "data_inc/D_001D2700.refs"
@@ -2210,6 +2570,10 @@ void *D_001D29D0[] DATA_SECTION(D_001D29D0) = {
     0,
     0,
     0,
+};
+
+u32 D_001D2A28[] DATA_SECTION(D_001D2A28) = {
+#include "data_inc/D_001D2A28.inc"
 };
 
 void *D_001D2A50[] DATA_SECTION(D_001D2A50) = {
@@ -2384,6 +2748,10 @@ void *D_001D3A50[] DATA_SECTION(D_001D3A50) = {
     0,
 };
 
+u32 D_001D3AA0[] DATA_SECTION(D_001D3AA0) = {
+#include "data_inc/D_001D3AA0.inc"
+};
+
 #include "data_inc/D_001D3B18.refs"
 u32 D_001D3B18[] DATA_SECTION(D_001D3B18) = {
 #include "data_inc/D_001D3B18.inc"
@@ -2397,6 +2765,10 @@ u32 D_001D3B70[] DATA_SECTION(D_001D3B70) = {
 #include "data_inc/D_001D3BF8.refs"
 u32 D_001D3BF8[] DATA_SECTION(D_001D3BF8) = {
 #include "data_inc/D_001D3BF8.inc"
+};
+
+u32 D_001D3C50[] DATA_SECTION(D_001D3C50) = {
+#include "data_inc/D_001D3C50.inc"
 };
 
 #include "data_inc/D_001D3C80.refs"
@@ -2686,6 +3058,10 @@ u32 D_001D4D48[] DATA_SECTION(D_001D4D48) = {
 #include "data_inc/D_001D4D48.inc"
 };
 
+u32 D_001D4DA0[] DATA_SECTION(D_001D4DA0) = {
+#include "data_inc/D_001D4DA0.inc"
+};
+
 #include "data_inc/D_001D4DE8.refs"
 u32 D_001D4DE8[] DATA_SECTION(D_001D4DE8) = {
 #include "data_inc/D_001D4DE8.inc"
@@ -2699,6 +3075,11 @@ u32 D_001D4E38[] DATA_SECTION(D_001D4E38) = {
 #include "data_inc/D_001D4EC0.refs"
 u32 D_001D4EC0[] DATA_SECTION(D_001D4EC0) = {
 #include "data_inc/D_001D4EC0.inc"
+};
+
+#include "data_inc/D_001D4F18.refs"
+u32 D_001D4F18[] DATA_SECTION(D_001D4F18) = {
+#include "data_inc/D_001D4F18.inc"
 };
 
 void *D_001D4F40[] DATA_SECTION(D_001D4F40) = {
@@ -2743,6 +3124,10 @@ void *D_001D50E8[] DATA_SECTION(D_001D50E8) = {
     0,
 };
 
+u32 D_001D5138[] DATA_SECTION(D_001D5138) = {
+#include "data_inc/D_001D5138.inc"
+};
+
 void *D_001D5168[] DATA_SECTION(D_001D5168) = {
     0, render_localized_ui_entry_list, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, (char *)D_4000 + 0x2, D_001D5138, 0, 0, 0, 0, 0, 0,
 };
@@ -2750,6 +3135,18 @@ void *D_001D5168[] DATA_SECTION(D_001D5168) = {
 #include "data_inc/D_001D52C8.refs"
 u32 D_001D52C8[] DATA_SECTION(D_001D52C8) = {
 #include "data_inc/D_001D52C8.inc"
+};
+
+u32 timed_sequence_page3[] DATA_SECTION(D_001D5588) = {
+#include "data_inc/D_001D5588.inc"
+};
+
+u32 timed_sequence_page4[] DATA_SECTION(D_001D5618) = {
+#include "data_inc/D_001D5618.inc"
+};
+
+u32 timed_sequence_page5[] DATA_SECTION(D_001D5630) = {
+#include "data_inc/D_001D5630.inc"
 };
 
 #include "data_inc/D_001D5D58.refs"
@@ -2763,11 +3160,13 @@ u32 preserved_item_available_indices[] DATA_SECTION(D_001D5F20) = {
 
 u32 pause_current_action_list[42] DATA_SECTION(D_001D5F78) = {0};
 
+u32 D_001D6020[22] DATA_SECTION(D_001D6020) = {0};
+
 u32 preview_resource_ids[22] DATA_SECTION(D_001D60C8) = {0};
 
 u32 preview_request_address_base[2] DATA_SECTION(D_001D6218) = {0};
 
-u32 current_preview_animation_request[3] DATA_SECTION(D_001D6410) = {0};
+u32 current_preview_animation_request[14] DATA_SECTION(D_001D6410) = {0};
 
 u32 shrub_render_classes[64] DATA_SECTION(D_001D82C0) = {0};
 
@@ -2854,6 +3253,11 @@ u32 D_001DBE40[] DATA_SECTION(D_001DBE40) = {
 
 u32 D_001DC150[] DATA_SECTION(D_001DC150) = {
 #include "data_inc/D_001DC150.inc"
+};
+
+#include "data_inc/D_001DC3F0.refs"
+u32 D_001DC3F0[] DATA_SECTION(D_001DC3F0) = {
+#include "data_inc/D_001DC3F0.inc"
 };
 
 u32 D_001DC5D0[] DATA_SECTION(D_001DC5D0) = {
@@ -2986,11 +3390,89 @@ u32 object_render_texture_addrs[256] DATA_SECTION(D_001E2900) = {0};
 
 u32 tie_light_data[256] DATA_SECTION(D_001E3500) = {0};
 
-u32 vendor_state[9] DATA_SECTION(D_001E66C0) = {0};
+u32 vendor_state[15] DATA_SECTION(D_001E66C0) = {0};
+
+u32 D_001E7958[] DATA_SECTION(D_001E7958) = {
+#include "data_inc/D_001E7958.inc"
+};
 
 char str_loading_sound_bank[] DATA_SECTION(D_001E79C0) =
 #include "data_inc/D_001E79C0.inc"
     ;
+
+u32 str_too_many_dir_lights[] DATA_SECTION(D_001E79D8) = {
+#include "data_inc/D_001E79D8.inc"
+};
+
+u32 D_001E7A50[] DATA_SECTION(D_001E7A50) = {
+#include "data_inc/D_001E7A50.inc"
+};
+
+u32 camera_sample_dir[] DATA_SECTION(D_001E7AD8) = {
+#include "data_inc/D_001E7AD8.inc"
+};
+
+u32 camera_sample_line_format[] DATA_SECTION(D_001E7B10) = {
+#include "data_inc/D_001E7B10.inc"
+};
+
+u32 camera_sample_alt_line_format[] DATA_SECTION(D_001E7B30) = {
+#include "data_inc/D_001E7B30.inc"
+};
+
+u32 D_001E7B68[2] DATA_SECTION(D_001E7B68) = {0};
+
+u32 profile_mark_tfrag_lighting[] DATA_SECTION(D_001E7BA0) = {
+#include "data_inc/D_001E7BA0.inc"
+};
+
+u32 profile_mark_shrub_lighting[] DATA_SECTION(D_001E7BB8) = {
+#include "data_inc/D_001E7BB8.inc"
+};
+
+u32 message_too_long_label[] DATA_SECTION(D_001E7DD8) = {
+#include "data_inc/D_001E7DD8.inc"
+};
+
+u32 loaded_irx_modules_message[] DATA_SECTION(D_001E7E28) = {
+#include "data_inc/D_001E7E28.inc"
+};
+
+u32 unsupported_lang_message[] DATA_SECTION(D_001E7E40) = {
+#include "data_inc/D_001E7E40.inc"
+};
+
+u32 str_bad_point_light_tfrag[] DATA_SECTION(D_001E7EA0) = {
+#include "data_inc/D_001E7EA0.inc"
+};
+
+u32 str_bad_point_light_shrub[] DATA_SECTION(D_001E7EC8) = {
+#include "data_inc/D_001E7EC8.inc"
+};
+
+u32 D_001E8030[] DATA_SECTION(D_001E8030) = {
+#include "data_inc/D_001E8030.inc"
+};
+
+u32 str_no_map_available[] DATA_SECTION(D_001E8398) = {
+#include "data_inc/D_001E8398.inc"
+};
+
+u32 D_001E83F0[] DATA_SECTION(D_001E83F0) = {
+#include "data_inc/D_001E83F0.inc"
+};
+
+u32 D_001E8408[] DATA_SECTION(D_001E8408) = {
+#include "data_inc/D_001E8408.inc"
+};
+
+u32 D_001E8420[] DATA_SECTION(D_001E8420) = {
+#include "data_inc/D_001E8420.inc"
+};
+
+u32 D_001E8438[] DATA_SECTION(D_001E8438) = {
+#include "data_inc/D_001E8438.inc"
+};
 
 char D_001E8450[] DATA_SECTION(D_001E8450) =
 #include "data_inc/D_001E8450.inc"
@@ -3000,10 +3482,104 @@ char D_001E8468[] DATA_SECTION(D_001E8468) =
 #include "data_inc/D_001E8468.inc"
     ;
 
+u32 D_001E8480[] DATA_SECTION(D_001E8480) = {
+#include "data_inc/D_001E8480.inc"
+};
+
+u32 D_001E8498[] DATA_SECTION(D_001E8498) = {
+#include "data_inc/D_001E8498.inc"
+};
+
+u32 D_001E84B0[] DATA_SECTION(D_001E84B0) = {
+#include "data_inc/D_001E84B0.inc"
+};
+
+u32 D_001E84C8[] DATA_SECTION(D_001E84C8) = {
+#include "data_inc/D_001E84C8.inc"
+};
+
 char D_001E84E8[] DATA_SECTION(D_001E84E8) =
 #include "data_inc/D_001E84E8.inc"
     ;
 
+u32 memcard_restore_size_mismatch_msg[] DATA_SECTION(D_001E8500) = {
+#include "data_inc/D_001E8500.inc"
+};
+
+u32 str_memcard_deleting_folder[] DATA_SECTION(D_001E8518) = {
+#include "data_inc/D_001E8518.inc"
+};
+
+u32 D_001E85A8[2] DATA_SECTION(D_001E85A8) = {0};
+
+u32 D_001E8608[2] DATA_SECTION(D_001E8608) = {0};
+
+u32 memcard_error_message[] DATA_SECTION(D_001E8690) = {
+#include "data_inc/D_001E8690.inc"
+};
+
+u32 D_001E86E8[2] DATA_SECTION(D_001E86E8) = {0};
+
+u32 s_tried_to_create_moby[] DATA_SECTION(D_001E86F0) = {
+#include "data_inc/D_001E86F0.inc"
+};
+
+u32 vu_chain_overflow_message[] DATA_SECTION(D_001E8730) = {
+#include "data_inc/D_001E8730.inc"
+};
+
+u32 D_001E8890[] DATA_SECTION(D_001E8890) = {
+#include "data_inc/D_001E8890.inc"
+};
+
+u32 load_file_start_failed_string[] DATA_SECTION(D_001E8980) = {
+#include "data_inc/D_001E8980.inc"
+};
+
+u32 D_001E89E8[] DATA_SECTION(D_001E89E8) = {
+#include "data_inc/D_001E89E8.inc"
+};
+
+u32 cheat_menu_text_ids_init[] DATA_SECTION(D_001E8A78) = {
+#include "data_inc/D_001E8A78.inc"
+};
+
 u32 language_resource_offsets[] DATA_SECTION(D_001E8B00) = {
 #include "data_inc/D_001E8B00.inc"
+};
+
+u32 str_shrub_texture_overflow[] DATA_SECTION(D_001E8C00) = {
+#include "data_inc/D_001E8C00.inc"
+};
+
+u32 D_001E8C58[2] DATA_SECTION(D_001E8C58) = {0};
+
+u32 unloaded_sound_bank_format[] DATA_SECTION(D_001E8CB8) = {
+#include "data_inc/D_001E8CB8.inc"
+};
+
+u32 vu1_chain_overflow_msg[] DATA_SECTION(D_001E8CF8) = {
+#include "data_inc/D_001E8CF8.inc"
+};
+
+u32 str_tie_texture_overflow[] DATA_SECTION(D_001E8D80) = {
+#include "data_inc/D_001E8D80.inc"
+};
+
+u32 str_scrolling_status_fmt[] DATA_SECTION(D_001E8DA0) = {
+#include "data_inc/D_001E8DA0.inc"
+};
+
+u32 D_001E8E18[2] DATA_SECTION(D_001E8E18) = {0};
+
+u32 movie_open_error_text[] DATA_SECTION(D_001E8E20) = {
+#include "data_inc/D_001E8E20.inc"
+};
+
+u32 vibuf_dma_not_active_msg[] DATA_SECTION(D_001E8E50) = {
+#include "data_inc/D_001E8E50.inc"
+};
+
+u32 str_mpeg_get_picture_error[] DATA_SECTION(D_001E8E80) = {
+#include "data_inc/D_001E8E80.inc"
 };

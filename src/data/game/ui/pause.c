@@ -1,6 +1,8 @@
 /* Data owned by src/game/ui/pause.c. Its values come from your own baserom (tools/data_in_c.py). */
 #include "common.h"
 
+#include "structs/data/game_ui_pause.h"
+
 extern u16 pause_weapon_menu_items[];
 extern void update_menu_icon_list();
 extern void draw_menu_icon_list();
@@ -12,7 +14,7 @@ u32 item_info_table_slot[] DATA_SECTION(D_001864D8) = {
 
 u32 active_camera_basis_column1_x[4] DATA_SECTION(D_001873A0) = {0};
 
-u32 active_camera_basis_column2_x[9] DATA_SECTION(D_001873B0) = {0};
+u32 active_camera_basis_column2_x[20] DATA_SECTION(D_001873B0) = {0};
 
 u32 selected_level_index DATA_SECTION(D_001A0414) = 0;
 
@@ -44,11 +46,11 @@ u32 gadget_menu_slots_row0[] DATA_SECTION(D_001CEFA0) = {
 #include "data_inc/D_001CEFA0.inc"
 };
 
-u32 gadget_menu_slots_row1[] DATA_SECTION(D_001CEFE0) = {
+Item0A gadget_menu_slots_row1[] DATA_SECTION(D_001CEFE0) = {
 #include "data_inc/D_001CEFE0.inc"
 };
 
-u32 gadget_menu_slots_row2[] DATA_SECTION(D_001CF000) = {
+Item0A gadget_menu_slots_row2[] DATA_SECTION(D_001CF000) = {
 #include "data_inc/D_001CF000.inc"
 };
 
@@ -143,7 +145,7 @@ u32 reward_menu_page[] DATA_SECTION(D_001D2BF8) = {
 #include "data_inc/D_001D2BF8.inc"
 };
 
-u32 cheat_toggle_menu_items[66] DATA_SECTION(D_001D3E90) = {0};
+Entry14 cheat_toggle_menu_items[13] DATA_SECTION(D_001D3E90) = {0};
 
 #include "data_inc/D_001D48A8.refs"
 u32 pause_level_sprite_lists[] DATA_SECTION(D_001D48A8) = {
@@ -187,7 +189,7 @@ u32 timed_sequence_page2[] DATA_SECTION(D_001D54C8) = {
 #include "data_inc/D_001D54C8.inc"
 };
 
-u32 gadget_animations[] DATA_SECTION(D_001D5668) = {
+HandGadgetAnimation gadget_animations[] DATA_SECTION(D_001D5668) = {
 #include "data_inc/D_001D5668.inc"
 };
 
@@ -195,7 +197,7 @@ u32 menu_system DATA_SECTION(D_001D5F70) = 0;
 
 u32 current_menu_page DATA_SECTION(D_001D5F74) = 0;
 
-u32 menu_system_help_text_buffer[7] DATA_SECTION(D_001D6078) = {0};
+u32 menu_system_help_text_buffer[18] DATA_SECTION(D_001D6078) = {0};
 
 u32 panel_slots[16] DATA_SECTION(D_001D6120) = {0};
 
@@ -209,7 +211,7 @@ float ammo_preview_offsets[6] DATA_SECTION(D_001D6220) = {0};
 
 u32 ammo_preview_velocities[6] DATA_SECTION(D_001D6238) = {0};
 
-u32 preview_animation_requests[112] DATA_SECTION(D_001D6250) = {0};
+Rec38 preview_animation_requests[8] DATA_SECTION(D_001D6250) = {0};
 
 u32 menu_stream_buffers[10] DATA_SECTION(D_001D6448) = {0};
 
@@ -223,7 +225,7 @@ u32 gadget_menu_item_field40[14] DATA_SECTION(D_001D65D8) = {0};
 
 u32 gadget_menu_item_field44[14] DATA_SECTION(D_001D6610) = {0};
 
-u32 galaxy_menu_items[70] DATA_SECTION(D_001D6648) = {0};
+Out0C galaxy_menu_items[23] DATA_SECTION(D_001D6648) = {0};
 
 u32 scene_state_buffer_2[64] DATA_SECTION(D_001D6760) = {0};
 
@@ -245,7 +247,7 @@ u32 pal_graphics_setup_packet[] DATA_SECTION(D_001D8250) = {
 #include "data_inc/D_001D8250.inc"
 };
 
-u16 planet_icon_rows[] DATA_SECTION(D_001DE0C0) = {
+u32 planet_icon_rows[] DATA_SECTION(D_001DE0C0) = {
 #include "data_inc/D_001DE0C0.inc"
 };
 
@@ -261,6 +263,6 @@ u32 map_gold_bolt_totals[] DATA_SECTION(D_001E0B88) = {
 #include "data_inc/D_001E0B88.inc"
 };
 
-u32 cheat_menu_ids_init[] DATA_SECTION(D_001E8A58) = {
+Blk32 cheat_menu_ids_init DATA_SECTION(D_001E8A58) = {
 #include "data_inc/D_001E8A58.inc"
 };

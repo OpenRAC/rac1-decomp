@@ -8,7 +8,7 @@
   "hex_compares": 4113,
   "ids_in_comments": 110,
   "include_asm": 206,
-  "local_struct_typedefs": 2847,
+  "local_struct_typedefs": 2832,
   "long_lines": 686,
   "numbered_names": 269,
   "oclass_literals": 175,

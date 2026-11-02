@@ -1,4 +1,5 @@
 #include "common.h"
+#include "structs/data/game_ui_pause.h"
 #include "structs/disc.h"
 #include "structs/camera.h"
 #include "structs/hero.h"
@@ -901,9 +902,6 @@ int set_pause_action_list(MenuScreen *arg0) {
    copied as a char block (retail's ldl/ldr for all 32 bytes), the second
    as an int block (ldl/ldr, then lw/sw for the last word). */
 typedef struct {
-    char b[0x20];
-} Blk32;
-typedef struct {
     int w[7];
 } Blk28;
 extern Blk32 cheat_menu_ids_init;
@@ -911,13 +909,6 @@ extern Blk28 cheat_menu_text_ids_init;
 /* MACRO_ADDR: retail builds each address in one register (la). */
 extern unsigned char selector_available[] MACRO_ADDR;
 extern unsigned char gCheats[] MACRO_ADDR;
-typedef struct {
-    int val;
-    void *addr;
-    int c1;
-    int c2;
-    int zero;
-} Entry14;
 extern Entry14 cheat_toggle_menu_items[];
 
 /* Builds the cheat_toggle_menu_items list: for each id in {1, 3, 0, 7, 4, 6, 2} (up
@@ -5391,13 +5382,6 @@ int draw_menu_choice_list(struct OptMenu *m) {
     return 2;
 }
 
-typedef struct {
-    unsigned short a; /* +0 */
-    short b; /* +2 */
-    short c; /* +4 */
-    short id; /* +6 */
-    short idx; /* +8 */
-} Item0A;
 extern Item0A pause_weapon_menu_slots[];
 extern Item0A pause_weapon_menu_items[];
 extern int pause_weapon_menu_item_field40[];
@@ -5482,13 +5466,6 @@ int pause_page_enter_noop(void) {
     return 0;
 }
 
-typedef struct {
-    unsigned short a; /* +0 */
-    short b; /* +2 */
-    int c; /* +4 */
-    unsigned short d; /* +8 */
-    short e; /* +A */
-} Out0C;
 typedef struct {
     unsigned short a; /* +0 */
     short pad2;
@@ -7199,20 +7176,6 @@ typedef struct HandGadgetManipulator {
     float rotation_y;
     float rotation_z;
 } HandGadgetManipulator;
-typedef struct HandGadgetAnimation {
-    s32 resource_first;
-    s32 resource_count;
-    s32 primary_animation;
-    s32 delay_frames;
-    s32 item_animation;
-    s32 secondary_animation;
-    s32 attachment0_class;
-    s32 attachment0_animation;
-    s32 attachment1_class;
-    s32 attachment1_animation;
-    s32 attachment2_class;
-    s32 attachment2_animation;
-} HandGadgetAnimation;
 extern Hero g_hero_r __asm__("D_0013F450");
 extern HandGadgetDefinition item_info_table_r2[] __asm__("D_001864D0");
 extern u8 *moby_class_resources_r2[] __asm__("D_001B3580");
@@ -8483,10 +8446,6 @@ int func_00227100_r(char *moby, char *m1, char *m2, char **o0, char **o1, char *
 }
 
 extern int preview_animation_request_count MACRO_ADDR;
-typedef struct {
-    int unk00;
-    int arg[13];
-} Rec38;
 extern Rec38 preview_animation_requests[];
 
 int queue_preview_animation(int a0, int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8, int a9, int a10,

@@ -1,4 +1,5 @@
 #include "common.h"
+#include "structs/data/game_render_tfragfunc.h"
 #include "callees.h"
 #include "structs/records.h"
 #include "structs/misc.h"
@@ -114,10 +115,6 @@ typedef struct {
     short b;
 } TexRemap;
 
-typedef struct {
-    char *items;
-    int count;
-} TexChunk;
 
 extern TexChunk tfrag_gif_chunk_list[];
 extern TexRemap tfrag_tex_remap_table[];

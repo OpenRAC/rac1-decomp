@@ -1,4 +1,5 @@
 #include "common.h"
+#include "structs/data/game_gameplay_actuator.h"
 #include "structs/misc.h"
 #include "asm_functions/executable.h"
 
@@ -10,18 +11,6 @@
 
 LINKER_REMNANT("asm/remnants/text", func_001E9080);
 
-typedef struct {
-    s16 f00;
-    u8 f02;
-    u8 f03;
-    s16 f04;
-    u16 f06;
-    s16 f08;
-    s16 f0a;
-    s16 f0c;
-    u8 f0e;
-    u8 f0f;
-} L00Entry;
 extern L00Entry actuator_wave[8];
 extern f32 IntToFloat(s32);
 extern s32 truncate_float_to_s32(f32);

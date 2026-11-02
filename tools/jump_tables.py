@@ -80,12 +80,15 @@ def cuts() -> list[tuple[str, str, str]]:
 def main() -> None:
     tables = cuts()
     if sys.argv[1:] == ["labels"]:
-        print(" ".join(label for label, _, _ in tables))
+        inside = [f"+{inner}" for inner in data_in_c.interior() if data_in_c.segment_of(inner) == "data"]
+        print(" ".join([label for label, _, _ in tables] + inside))
     elif sys.argv[1:] == ["ld"]:
         # split_data_s.py numbers the pieces around the cuts from 1.
-        for n, (_, obj, section) in enumerate(tables, 1):
+        for n, (label, obj, section) in enumerate(tables, 1):
             print(f"    build-sn/data_{n}.o(.data)")
             print(f"    {obj}({section})")
+            for line in data_in_c.inner_symbols(label):
+                print(line)
         print(f"    build-sn/data_{len(tables) + 1}.o(.data)")
     else:
         sys.exit(__doc__)

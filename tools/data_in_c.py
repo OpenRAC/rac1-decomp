@@ -9,6 +9,7 @@ Data in C, with no retail bytes in the repository (LEGAL.md).
   python3 tools/data_in_c.py write-out  # write pointer tables out as C, and type float blocks
   python3 tools/data_in_c.py set-type D_001DD568=StashBlock ...      # give blocks a type from config/data_types.tsv
   python3 tools/data_in_c.py rewrite    # write every source file again from the table
+  python3 tools/data_in_c.py complete   # give every remaining data label a block, or a place inside one
 
 A file in src/data/ gives a block of retail's data its type, its name and the file that owns it. Its values come from
 an include file generated locally from your baserom, so they are never committed:
@@ -26,6 +27,7 @@ A block of only zeros needs no values at all, so it is plain C too.
 
 config/data_in_c.tsv lists the blocks: label, element type (`table` for one written out), source file.
 """
+import ast
 import math
 import re
 import struct
@@ -34,6 +36,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import data_types  # noqa: E402
+import split_data_s  # noqa: E402
 import names_header  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -72,22 +75,151 @@ def provided(segment="data"):
     return [(label, object_of(source), f".data.{label}") for label, _, source in rows() if segment_of(label) == segment]
 
 
+def raw_blocks():
+    """[(label, body)] of both blobs, in address order within each.
+
+    Data that splat merged into a jump table's block after the table (strings, say) has no label of its own, so it gets
+    one from its address. Each line keeps its place with a marker: the .align lines between them are gone.
+    """
+    out = []
+    for path in BLOBS.values():
+        for label, body in BLOCK.findall(path.read_text()):
+            out.append((label, body))
+            if label.startswith("jtbl_"):
+                rest = split_data_s.table_rest(body.splitlines(keepends=True))
+                if rest:
+                    start = split_data_s.first_address(rest)
+                    out.append((f"D_{start:08X}", "".join(f".at 0x{split_data_s.first_address([line]):X}\n{line}" for line in rest)))
+    return out
+
+
+def address(label):
+    return int(label.rsplit("_", 1)[1], 16)
+
+
+def group_labels(labels, heads):
+    """{head: [labels inside it]}. A label not on 8 bytes is inside the block before it: GCC puts an aggregate on 8, so
+    retail had one record there, and the labels are places the code reaches into it."""
+    groups, current = {}, None
+    for label in labels:
+        if label in heads:
+            current = label
+            groups[label] = []
+        elif current and label.startswith("D_") and address(label) % 8:
+            groups[current].append(label)
+        else:
+            current = None
+    return groups
+
+
+def interior():
+    """{label inside a block: the block's own label}"""
+    heads = {row[0] for row in rows()}
+    groups = group_labels([label for label, _ in raw_blocks()], heads)
+    return {inner: head for head, inners in groups.items() for inner in inners}
+
+
 def all_blocks():
-    """{label: body} for both blobs."""
-    return {label: body for path in BLOBS.values() for label, body in BLOCK.findall(path.read_text())}
+    """{label: body} for both blobs. A block's body includes the labels inside it."""
+    raw = raw_blocks()
+    bodies = dict(raw)
+    heads = {row[0] for row in rows()}
+    blocks = {}
+    for label, inners in group_labels([label for label, _ in raw], heads).items():
+        blocks[label] = at_marker(label) + bodies[label] + "".join(at_marker(i) + bodies[i] for i in inners)
+    inside = {i for inners in group_labels([label for label, _ in raw], heads).values() for i in inners}
+    for label, body in raw:
+        if label not in blocks and label not in inside:
+            blocks[label] = at_marker(label) + body
+    return blocks
+
+
+def at_marker(label):
+    """A line that says where a block's next bytes belong, so a merged block keeps its .align lines right."""
+    return f".at 0x{address(label):X}\n"
+
+
+def parse_mixed(body):
+    """(u32, words) of any block, built byte by byte. None if a line is not understood."""
+    data, symbols, start = bytearray(), {}, None
+    for line in body.splitlines():
+        raw = RAW_WORD.search(line)
+        text = re.sub(r"/\*.*?\*/", " ", line).strip()
+        if not text:
+            continue
+        m = re.fullmatch(r"(\.\w+)\s*(.*)", text)
+        if not m:
+            continue
+        kind, rest = m.groups()
+        if kind == ".at" and start is None:
+            start = int(rest, 0)
+        here = (start or 0) + len(data)
+        if kind == ".at":
+            target = int(rest, 0)
+            if target < here:
+                return None
+            data += bytes(target - here)
+        elif kind == ".align":
+            size = 1 << int(rest, 0)
+            data += bytes(-here % size)
+        elif kind == ".space":
+            data += bytes(int(rest.split(",")[0], 0))
+        elif kind == ".float":
+            if not raw:
+                return None
+            data += bytes.fromhex(raw.group(1))
+        elif kind == ".word":
+            for value in rest.split(","):
+                value = value.strip()
+                symbol = SYMBOL.fullmatch(value)
+                if symbol:
+                    offset = f" + {symbol.group(2)}" if symbol.group(2) else ""
+                    symbols[len(data)] = f"(u32)ref_{symbol.group(1)}{offset}"
+                    data += bytes(4)
+                elif re.fullmatch(r"-?(0[xX][0-9A-Fa-f]+|[0-9]+)", value):
+                    data += (int(value, 0) & 0xFFFFFFFF).to_bytes(4, "little")
+                else:
+                    return None
+        elif kind in (".short", ".byte"):
+            width = 2 if kind == ".short" else 1
+            for value in rest.split(","):
+                value = value.strip()
+                if not re.fullmatch(r"-?(0[xX][0-9A-Fa-f]+|[0-9]+)", value):
+                    return None
+                data += (int(value, 0) & ((1 << (8 * width)) - 1)).to_bytes(width, "little")
+        elif kind in (".asciz", ".ascii"):
+            try:
+                decoded = ast.literal_eval(rest).encode("latin-1", "surrogateescape")
+            except (ValueError, SyntaxError, UnicodeError):
+                return None
+            data += decoded + (b"\0" if kind == ".asciz" else b"")
+        else:
+            return None
+    data += bytes(-len(data) % 4)
+    if any(at % 4 for at in symbols):
+        return None
+    words = [symbols.get(at, f"0x{int.from_bytes(data[at:at + 4], 'little'):08X}") for at in range(0, len(data), 4)]
+    return ("u32", words) if words else None
 
 
 def parse(body):
+    """(element type, values) of a block: plain if it is all one simple form, else as words. None if neither works."""
+    return parse_plain(body) or parse_mixed(body)
+
+
+def parse_plain(body):
     """(element type, values) of a block, or None if it is not all one simple form.
 
     A float keeps its exact bits, taken from the disassembly's raw word: a decimal could round, and denormals have
     bitten this build before. Trailing .align lines are padding that the pieces around the hole already lay out.
     """
+    if body.count(".at 0x") > 1:
+        return None
     element, found = None, []
     for line in body.splitlines():
         raw = RAW_WORD.search(line)
         text = re.sub(r"/\*.*?\*/", " ", line).strip()
-        if not text or text.startswith(".align"):
+        if not text or text.startswith((".align", ".at ")):
             continue
         string = re.fullmatch(r'\.asciz\s+(".*")', text)
         if string:
@@ -199,7 +331,7 @@ def add(pairs):
 
 
 def write_all(table, blocks, names):
-    TABLE.write_text(HEADER + "".join("\t".join(row) + "\n" for row in sorted(table)))
+    write_rows(table)
     for source in sorted({row[2] for row in table}):
         entries = []
         for row in table:
@@ -225,6 +357,58 @@ def set_types(pairs):
                 print(f"{label}: stays {element}: {problem}")
         table.append((label, element, source))
     write_all(table, blocks, readable_names())
+
+
+def inner_symbols(label):
+    """Linker lines that keep the labels inside a block defined: the code reaches them by name."""
+    inside = interior()
+    return [f"    {inner} = {label} + 0x{address(inner) - address(label):X};" for inner in sorted(inside, key=address)
+            if inside[inner] == label]
+
+
+def complete():
+    """Give every remaining data label a place: its own block if it can start one, else inside the block before it."""
+    raw = raw_blocks()
+    table = {row[0]: row for row in rows()}
+    orphans = []
+    current = None
+    for label, _ in raw:
+        if not label.startswith("D_"):
+            current = None
+        elif label in table:
+            current = label
+        elif address(label) % 8 == 0:
+            table[label] = (label, "u32", "src/data/shared/data.c")
+            current = label
+        elif current is None:
+            orphans.append(label)
+    write_rows(list(table.values()))
+    blocks = all_blocks()
+    final = []
+    for label, element, source in rows():
+        parsed = parse(blocks[label])
+        if parsed is None:
+            orphans.append(label)
+            continue
+        types = data_types.load()
+        if element in ("u16", "u8", "char") and parsed[0] != element:
+            element = parsed[0]
+        if element == "table" and not is_table(parsed[1]):
+            element = parsed[0]
+        if element == "float" and not all(float_literal(word) for word in parsed[1]):
+            element = "u32"
+        if element in types:
+            try:
+                render_typed(parsed[1], types[element][2], types[element][1])
+            except ValueError:
+                element = parsed[0]
+        final.append((label, element, source))
+    write_all(final, all_blocks(), readable_names())
+    print(f"{len(final)} blocks, {len(interior())} labels inside them; left in the blob: {orphans}")
+
+
+def write_rows(table):
+    TABLE.write_text(HEADER + "".join("\t".join(row) + "\n" for row in sorted(table)))
 
 
 def write_out():
@@ -280,7 +464,8 @@ def is_zero(found):
 def render_typed(found, fields, size):
     """A flat initialiser for words of data, one value per field. Raises ValueError if the words cannot be that type."""
     words = len(found) * 4
-    if not size or words % size:
+    tail = words % size if size else 0
+    if not size or tail >= 8:
         raise ValueError(f"{words} bytes is not a whole number of {size}-byte records")
     data, symbols = bytearray(), {}
     for at, value in enumerate(found):
@@ -289,8 +474,10 @@ def render_typed(found, fields, size):
             data += bytes(4)
         else:
             data += (int(value, 0) & 0xFFFFFFFF).to_bytes(4, "little")
+    if any(data[words - tail:]) or any(at >= words - tail for at in symbols):
+        raise ValueError(f"the {tail} bytes after the last record are not zero, so they are not alignment")
     out = []
-    for record in range(0, words, size):
+    for record in range(0, words - tail, size):
         covered = set()
         for offset, kind, width in fields:
             at = record + offset
@@ -443,12 +630,17 @@ def main():
     elif command == "add":
         add(sys.argv[2:])
     elif command == "labels":
-        print(" ".join(row[0] for row in sorted(provided(sys.argv[2]))))
+        inside = [f"+{inner}" for inner in interior() if segment_of(inner) == sys.argv[2]]
+        print(" ".join([row[0] for row in sorted(provided(sys.argv[2]))] + inside))
+    elif command == "complete":
+        complete()
     elif command == "ld":
         cuts = sorted(provided(sys.argv[2]))
         for n, (_, obj, section) in enumerate(cuts, 1):
             print(f"    build-sn/core_data_{n}.o(.data)")
             print(f"    {obj}({section})")
+            for line in inner_symbols(_):
+                print(line)
         print(f"    build-sn/core_data_{len(cuts) + 1}.o(.data)")
     else:
         sys.exit(__doc__)
