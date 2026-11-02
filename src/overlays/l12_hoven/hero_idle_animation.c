@@ -230,17 +230,17 @@ int HeroL12_SetMoveState(int a, int b) {
             break;
         }
         case 0x7F: {
-            char *p = (char *)&g_hero;
-            ((struct Hero *)p)->state.control_mode = HERO_MODE_DYING;
-            ((struct Hero *)p)->unk2284 = 0;
-            ((struct Hero *)p)->health.hp = 0;
-            ((struct Hero *)p)->unk694 = ((struct Hero *)p)->motion.displacement.f[2] * 0.2f;
-            ((struct Hero *)p)->unk69C = ((struct Hero *)p)->water_surface_z - 0.37f;
-            if (((struct Hero *)p)->unk694 < g_frame_time * -7.0f)
-                ((struct Hero *)p)->unk694 = g_frame_time * -7.0f;
-            ((struct Hero *)p)->item_select_blocked = 1;
-            ((struct Hero *)p)->unk6A0 = 0;
-            ((struct Hero *)p)->unk690 = ((struct Hero *)p)->motion.pos.f[2] - ((struct Hero *)p)->unk69C;
+            struct Hero *p = (struct Hero *)&g_hero;
+            p->state.control_mode = HERO_MODE_DYING;
+            p->unk2284 = 0;
+            p->health.hp = 0;
+            p->unk694 = p->motion.displacement.f[2] * 0.2f;
+            p->unk69C = p->water_surface_z - 0.37f;
+            if (p->unk694 < g_frame_time * -7.0f)
+                p->unk694 = g_frame_time * -7.0f;
+            p->item_select_blocked = 1;
+            p->unk6A0 = 0;
+            p->unk690 = p->motion.pos.f[2] - p->unk69C;
             if (b)
                 set_hero_animation(0x74, 0, (float)scale_ticks(0xB));
             break;
@@ -561,34 +561,32 @@ int HeroL12_SetMoveState(int a, int b) {
                 }
             }
             {
-                char *t = (char *)&g_hero;
-                if (((struct Hero *)t)->on_ice_ground != 0 ||
-                    ((struct Hero *)t)->state.current == HERO_STATE_RUN_CLEAR_VELOCITY_Z) {
-                    if (g_frame_time * 7.7f < ((struct Hero *)t)->ground_speed)
-                        ((struct Hero *)t)->ground_speed = g_frame_time * 7.7f;
-                    ((struct Hero *)t)->motion.velocity.f[2] = 0.0f;
-                    ClampVectorLength(&((struct Hero *)t)->motion.velocity, g_frame_time * 7.7f);
-                    ((struct Hero *)t)->unk3B4.i = 0;
-                    ((struct Hero *)t)->state.current = HERO_STATE_RUN_CLEAR_VELOCITY_Z;
+                struct Hero *t = (struct Hero *)&g_hero;
+                if (t->on_ice_ground != 0 || t->state.current == HERO_STATE_RUN_CLEAR_VELOCITY_Z) {
+                    if (g_frame_time * 7.7f < t->ground_speed)
+                        t->ground_speed = g_frame_time * 7.7f;
+                    t->motion.velocity.f[2] = 0.0f;
+                    ClampVectorLength(&t->motion.velocity, g_frame_time * 7.7f);
+                    t->unk3B4.i = 0;
+                    t->state.current = HERO_STATE_RUN_CLEAR_VELOCITY_Z;
                     set_hero_animation(0x37, 0, (float)scale_ticks(8));
-                } else if (((struct Hero *)t)->wading != 0 || ((struct Hero *)t)->state.current == 0x73) {
-                    ((struct Hero *)t)->state.current = 0x73;
+                } else if (t->wading != 0 || t->state.current == 0x73) {
+                    t->state.current = 0x73;
                     set_hero_animation(0x60, 0, (float)scale_ticks(8));
-                } else if (((struct Hero *)t)->unk308 == 1 || ((struct Hero *)t)->state.current == 0x3F) {
-                    ((struct Hero *)t)->state.current = 0x3F;
+                } else if (t->unk308 == 1 || t->state.current == 0x3F) {
+                    t->state.current = 0x3F;
                     set_hero_animation(0x5B, 0, (float)scale_ticks(8));
                 } else {
                     int n;
-                    ((struct Hero *)t)->state.step = 0;
-                    ((struct Hero *)t)->unk3B8 = 0;
-                    ((struct Hero *)t)->run_start_blending = 0;
+                    t->state.step = 0;
+                    t->unk3B8 = 0;
+                    t->run_start_blending = 0;
                     n = scale_ticks(8);
-                    if (((struct Hero *)t)->health.hp == 1)
+                    if (t->health.hp == 1)
                         n = scale_ticks(0xC);
-                    if (((struct Hero *)t)->state.prev2 == HERO_STATE_ANIMATION_RECOVERY_WITH_JUMP_CANCEL)
+                    if (t->state.prev2 == HERO_STATE_ANIMATION_RECOVERY_WITH_JUMP_CANCEL)
                         n = scale_ticks(0xF);
-                    if (((struct Hero *)t)->state.prev2 == HERO_STATE_FALL ||
-                        ((struct Hero *)t)->state.prev2 == HERO_STATE_ITEM_RELEASE_FALL)
+                    if (t->state.prev2 == HERO_STATE_FALL || t->state.prev2 == HERO_STATE_ITEM_RELEASE_FALL)
                         n = scale_ticks(0x12);
                     {
                         struct Hero *u = &g_hero;

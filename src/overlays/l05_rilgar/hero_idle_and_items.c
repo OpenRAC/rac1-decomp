@@ -239,17 +239,17 @@ int Hero_TryMoveStateL05(int a, int b) {
             break;
         }
         case 0x7F: {
-            char *p = (char *)&g_hero;
-            ((struct Hero *)p)->state.control_mode = HERO_MODE_DYING;
-            ((struct Hero *)p)->unk2284 = 0;
-            ((struct Hero *)p)->health.hp = 0;
-            ((struct Hero *)p)->unk694 = ((struct Hero *)p)->motion.displacement.f[2] * 0.2f;
-            ((struct Hero *)p)->unk69C = ((struct Hero *)p)->water_surface_z - 0.37f;
-            if (((struct Hero *)p)->unk694 < g_frame_time * -7.0f)
-                ((struct Hero *)p)->unk694 = g_frame_time * -7.0f;
-            ((struct Hero *)p)->item_select_blocked = 1;
-            ((struct Hero *)p)->unk6A0 = 0;
-            ((struct Hero *)p)->unk690 = ((struct Hero *)p)->motion.pos.f[2] - ((struct Hero *)p)->unk69C;
+            struct Hero *p = (struct Hero *)&g_hero;
+            p->state.control_mode = HERO_MODE_DYING;
+            p->unk2284 = 0;
+            p->health.hp = 0;
+            p->unk694 = p->motion.displacement.f[2] * 0.2f;
+            p->unk69C = p->water_surface_z - 0.37f;
+            if (p->unk694 < g_frame_time * -7.0f)
+                p->unk694 = g_frame_time * -7.0f;
+            p->item_select_blocked = 1;
+            p->unk6A0 = 0;
+            p->unk690 = p->motion.pos.f[2] - p->unk69C;
             if (b)
                 set_hero_animation(0x74, 0, (float)scale_ticks(0xB));
             break;
@@ -501,39 +501,37 @@ int Hero_TryMoveStateL05(int a, int b) {
                 }
             }
             {
-                char *q = (char *)&g_hero;
-                if (((struct Hero *)q)->state.prev_control_mode != 0x16) {
+                struct Hero *q = (struct Hero *)&g_hero;
+                if (q->state.prev_control_mode != 0x16) {
                     char *m;
                     if (g_current_level_index == LEVEL_RILGAR) {
-                        ((struct Hero *)q)->motion.pos.f[0] = 247.0f;
-                        ((struct Hero *)q)->motion.pos.f[1] = 287.0f;
-                        ((struct Hero *)q)->motion.pos.f[2] = 76.0f;
-                        ((struct Hero *)q)->motion.rot.f[2] = -2.1f;
+                        q->motion.pos.f[0] = 247.0f;
+                        q->motion.pos.f[1] = 287.0f;
+                        q->motion.pos.f[2] = 76.0f;
+                        q->motion.rot.f[2] = -2.1f;
                     }
-                    m = *(char **)&((struct Hero *)q)->hoverboard_moby;
-                    FastMemSet(&((struct Hero *)q)->smoothed_spin_stick, 0, 0x210);
-                    ((struct Hero *)q)->hoverboard_moby = (u8 *)m;
-                    *(char **)&((struct Hero *)q)->unk890 =
-                        moby_pool_4f60 + (*(int *)(((char *)((Moby *)m)->pvars) + 0x28) << 8);
-                    ((struct Hero *)q)->board_gravity = g_frame_time_sq * 22.0f;
-                    ((struct Hero *)q)->unk87C = 1.2217305f;
-                    ((struct Hero *)q)->trick_hud_handle = -1;
+                    m = *(char **)&q->hoverboard_moby;
+                    FastMemSet(&q->smoothed_spin_stick, 0, 0x210);
+                    q->hoverboard_moby = (u8 *)m;
+                    *(char **)&q->unk890 = moby_pool_4f60 + (*(int *)(((char *)((Moby *)m)->pvars) + 0x28) << 8);
+                    q->board_gravity = g_frame_time_sq * 22.0f;
+                    q->unk87C = 1.2217305f;
+                    q->trick_hud_handle = -1;
                     if (special_items_base[0x13B] != 0) {
                         hud_release_held_element();
-                        ((struct Hero *)q)->trick_hud_handle = queue_animation_update(
+                        q->trick_hud_handle = queue_animation_update(
                             0x10, 0xFFFF, (int)initialize_trick_combo_hud, (int)update_trick_combo_hud,
-                            (int)draw_trick_combo_hud, (int)((char *)&((struct Hero *)q)->boost_frames),
+                            (int)draw_trick_combo_hud, (int)((char *)&q->boost_frames),
                             (int)((float)scale_ticks(0x11) * 60.0f));
                     }
-                    ((struct Hero *)q)->board_air_yaw = ((struct Hero *)q)->motion.rot.f[2];
+                    q->board_air_yaw = q->motion.rot.f[2];
                     queue_animation_update(5, 0xFFFF, (int)initialize_hud_element_defaults,
                                            (int)set_progress_hud_fade_from_hero_mode, (int)draw_hud_progress_and_rank,
                                            0, 0);
                     queue_animation_update(7, 0xFFFF, (int)initialize_hud_element_defaults,
                                            (int)set_progress_hud_fade_from_hero_mode, (int)draw_hud_timer, 0, 0);
                 } else {
-                    ((struct Hero *)q)->board_vertical_speed =
-                        -FastVecDot(&((struct Hero *)q)->gravity_dir, &((struct Hero *)q)->motion.displacement);
+                    q->board_vertical_speed = -FastVecDot(&q->gravity_dir, &q->motion.displacement);
                 }
             }
             if (b) {

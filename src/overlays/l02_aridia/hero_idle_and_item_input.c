@@ -215,17 +215,17 @@ int HeroL02_SetMoveState(int a, int b) {
             break;
         }
         case 0x7F: {
-            char *p = (char *)&g_hero;
-            ((struct Hero *)p)->state.control_mode = HERO_MODE_DYING;
-            ((struct Hero *)p)->unk2284 = 0;
-            ((struct Hero *)p)->health.hp = 0;
-            ((struct Hero *)p)->unk694 = ((struct Hero *)p)->motion.displacement.f[2] * 0.2f;
-            ((struct Hero *)p)->unk69C = ((struct Hero *)p)->water_surface_z - 0.37f;
-            if (((struct Hero *)p)->unk694 < g_frame_time * -7.0f)
-                ((struct Hero *)p)->unk694 = g_frame_time * -7.0f;
-            ((struct Hero *)p)->item_select_blocked = 1;
-            ((struct Hero *)p)->unk6A0 = 0;
-            ((struct Hero *)p)->unk690 = ((struct Hero *)p)->motion.pos.f[2] - ((struct Hero *)p)->unk69C;
+            struct Hero *p = (struct Hero *)&g_hero;
+            p->state.control_mode = HERO_MODE_DYING;
+            p->unk2284 = 0;
+            p->health.hp = 0;
+            p->unk694 = p->motion.displacement.f[2] * 0.2f;
+            p->unk69C = p->water_surface_z - 0.37f;
+            if (p->unk694 < g_frame_time * -7.0f)
+                p->unk694 = g_frame_time * -7.0f;
+            p->item_select_blocked = 1;
+            p->unk6A0 = 0;
+            p->unk690 = p->motion.pos.f[2] - p->unk69C;
             if (b)
                 set_hero_animation(0x74, 0, (float)scale_ticks(0xB));
             break;
