@@ -1,4 +1,5 @@
 #include "common.h"
+#include "structs/moby.h"
 #include "structs/camera.h"
 #include "callees.h"
 #include "structs/records.h"
@@ -20,6 +21,7 @@
 #include "game/system/loaders.h"
 #include "game/moby/mobyutil.h"
 #include "enums/level.h"
+#include "enums/moby_class.h"
 
 /*
  * space.cpp in the original source; text 0x22F128-0x233FF8.
@@ -253,7 +255,7 @@ void func_001F7EF8_2F4C8(void *, int, int) __asm__("func_001F7EF8");
    and the row size, offsets them by the row, the player's matrix and the
    object position, and draws the quad.
    Adapted from Lombyte's project (GPL-3.0): src/gameplay/fun_0022e1b0.c, FUN_0022e1b0. */
-void DrawResidentEffectQuads(unsigned char *m) {
+void DrawResidentEffectQuads(struct Moby *m) {
     GeometryQuad quad;
     QuadOffset v;
     QuadOffset *tbl;
@@ -274,14 +276,14 @@ void DrawResidentEffectQuads(unsigned char *m) {
     }
     func_001F9C30_2F4C8(0.0009765625f, &v, m);
     for (i = 0; i < ((int *)&resident_effect_quad_counts)[level_render_state_2F4C8.content_variant]; i++) {
-        int c = m[0xBC];
+        int c = m->command;
         unsigned int col;
         float s;
-        if (*(short *)(m + 0xB2))
-            c += func_002140B0_2F4C8(*(short *)(m + 0xB2));
+        if (*(short *)&m->save_id)
+            c += func_002140B0_2F4C8(*(short *)&m->save_id);
         s = func_001FA888_2F4C8(c) * (tbl[i].f[3] / 40.0f);
         col = (c << 24) | 0x2058B0;
-        if (*(short *)(m + 0xA6) == 0x215)
+        if (m->oclass == MOBY_CLASS_PURPLE_SHIP_533)
             col = (c << 24) | 0x308000;
         for (k = 0; k < 4; k++) {
             quad.colors[k] = col;
