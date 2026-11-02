@@ -2914,8 +2914,8 @@ void adjust_fighter_jet_steering_for_flight_bounds(char *moby, float *a, float *
         q = q * w;
         *b = (-1.0f - *b) * q + *b;
         {
-            unsigned char *p = (char *)&g_hero;
-            ((struct Hero *)p)->ship_flags |= 2;
+            struct Hero *p = (struct Hero *)&g_hero;
+            p->ship_flags |= 2;
         }
     } else if (zz < k + 10.0f) {
         float q, w;
@@ -2932,8 +2932,8 @@ void adjust_fighter_jet_steering_for_flight_bounds(char *moby, float *a, float *
         q = q * w;
         *b = (1.0f - *b) * q + *b;
         {
-            unsigned char *p = (char *)&g_hero;
-            ((struct Hero *)p)->ship_flags |= 2;
+            struct Hero *p = (struct Hero *)&g_hero;
+            p->ship_flags |= 2;
         }
     }
 }
