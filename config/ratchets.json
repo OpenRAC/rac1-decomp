@@ -1,7 +1,7 @@
 {
   "address_names_in_code": 11179,
   "address_names_in_comments": 849,
-  "asm_aliases": 5837,
+  "asm_aliases": 5848,
   "extern_lines": 31133,
   "fakematch_tags": 29,
   "float_int_casts": 596,
