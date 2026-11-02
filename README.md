@@ -54,11 +54,14 @@ Every function links at its original retail address. Functions not yet decompile
    # Expected SHA-1: 79956931bd62fafd8d20fa2eae796dbaf2e15e83
    cp /path/to/SCES_509.16 baserom/SCES_509.16
    ```
+   For the level code, also copy your disc image to `baserom/SCES_509.16.iso`. To check every version, add `baserom/SCES_509.16_v1.00.iso`, `baserom/SCUS_971.99.iso` and `baserom/SCPS_150.37.iso` ([`docs/VERSIONS.md`](docs/VERSIONS.md)).
 
 3. **Install dependencies and fetch toolchains:**
    ```bash
    # Windows (native):
    pip install -r requirements.txt
+   python tools/overlays.py dump
+   python tools/versions.py dump --version us  # also pal_v1 and jp
    bash tools/setup_asm.sh
    git clone https://github.com/AngheloAlf/SN-Systems-ProDG_for_PS2_3.01 toolchain/sn-prodg-3.01
    git clone https://github.com/AngheloAlf/sce_ps2_sdk_24 toolchain/sn-prodg-24
@@ -66,6 +69,8 @@ Every function links at its original retail address. Functions not yet decompile
    python tools/gcc323.py --setup  # public C frontend; uses Docker/Podman on Windows
 
    # Linux & macOS (via container wrapper):
+   bash tools/docker/run.sh python3 tools/overlays.py dump
+   bash tools/docker/run.sh python3 tools/versions.py dump --version us  # also pal_v1 and jp
    bash tools/docker/run.sh bash tools/setup_asm.sh
    git clone https://github.com/AngheloAlf/SN-Systems-ProDG_for_PS2_3.01 toolchain/sn-prodg-3.01
    git clone https://github.com/AngheloAlf/sce_ps2_sdk_24 toolchain/sn-prodg-24
