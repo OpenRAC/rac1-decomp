@@ -9,7 +9,7 @@ u32 ipu_init_vq_clut[] DATA_SECTION(D_001331A0) = {
 #include "data_inc/D_001331A0.inc"
 };
 
-u32 scf_t10k_time_zone[] DATA_SECTION(D_001331D0) = {
+short scf_t10k_time_zone[] DATA_SECTION(D_001331D0) = {
 #include "data_inc/D_001331D0.inc"
 };
 

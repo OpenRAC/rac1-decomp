@@ -359,6 +359,11 @@ def write_all(table, blocks, names):
         write_source(source, sorted(entries), names, blocks)
 
 
+def alignment_allows(label, words, size):
+    """A block not on 8 bytes can only be one whole record: GCC would put an array of them on 8."""
+    return address(label) % 8 == 0 or words * 4 == size
+
+
 def set_types(pairs):
     """LABEL=TYPE gives a block a type from config/data_types.tsv. One that does not fit stays as it is, and says why."""
     blocks = all_blocks()
@@ -369,6 +374,8 @@ def set_types(pairs):
         name = wanted.get(label)
         if name and element == "u32":
             try:
+                if not alignment_allows(label, len(parse(blocks[label])[1]), types[name][1]):
+                    raise ValueError("it is not on 8 bytes, and it is more than one record")
                 render_typed(parse(blocks[label])[1], types[name][2], types[name][1])
                 element = name
             except ValueError as problem:
@@ -594,7 +601,7 @@ def write_source(source, entries, names, blocks=None):
         about = f"Data owned by {'src/' + source[len('src/data/'):]}."
     parts = [f"/* {about} Its values come from your own baserom (tools/data_in_c.py). */\n", '#include "common.h"\n\n']
     types = data_types.load()
-    headers = sorted({types[e[1]][0] for e in entries if e[1] in types})
+    headers = sorted({types[e[1]][0] for e in entries if e[1] in types and types[e[1]][0]})
     parts.extend(f'#include "{header}"\n' for header in headers)
     if headers:
         parts.append("\n")

@@ -1,7 +1,7 @@
 /* Data owned by src/game/render/tiefunc.c. Its values come from your own baserom (tools/data_in_c.py). */
 #include "common.h"
 
-u32 tie_proc_enabled[2] DATA_SECTION(D_0018A3C8) = {0};
+int tie_proc_enabled[2] DATA_SECTION(D_0018A3C8) = {0};
 
 u32 tie_packet_tail_tags[] DATA_SECTION(D_001DF3B0) = {
 #include "data_inc/D_001DF3B0.inc"

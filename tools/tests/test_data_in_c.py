@@ -158,6 +158,19 @@ class WholeRecordTest(unittest.TestCase):
         self.assertIsNone(d.parse_mixed(".at 0x10\n.quad 1\n"))
 
 
+class ScalarTypeTest(unittest.TestCase):
+    def test_a_block_not_on_8_is_one_record(self):
+        self.assertTrue(d.alignment_allows("D_00000008", 2, 2))
+        self.assertTrue(d.alignment_allows("D_00000004", 1, 4))
+        self.assertFalse(d.alignment_allows("D_00000004", 1, 2))
+
+    def test_a_scalar_type_splits_words(self):
+        self.assertEqual(d.render_typed(["0x00020001"], [(0, "i", 2)], 2), ["0x1", "0x2"])
+
+    def test_a_float_type_prints_floats(self):
+        self.assertEqual(float(d.render_typed(["0x3F800000"], [(0, "f", 4)], 4)[0][:-1]), 1.0)
+
+
 class SegmentTest(unittest.TestCase):
     def test_a_label_finds_its_segment(self):
         self.assertEqual(d.segment_of("D_0012F580"), "core")

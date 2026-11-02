@@ -11,22 +11,22 @@ u32 level_map_transforms[] DATA_SECTION(D_0019EA70) = {
 #include "data_inc/D_0019EA70.inc"
 };
 
-u32 map_coverage_active[127] DATA_SECTION(D_001A0218) = {0};
+int map_coverage_active[127] DATA_SECTION(D_001A0218) = {0};
 
-u32 map_region_enabled_0 DATA_SECTION(D_001A04A8) = 0;
+int map_region_enabled_0 DATA_SECTION(D_001A04A8) = {0};
 
-u32 map_region_enabled_1 DATA_SECTION(D_001A04AC) = 0;
+int map_region_enabled_1 DATA_SECTION(D_001A04AC) = {0};
 
-u32 region_enabled DATA_SECTION(D_001A04B0) = 0;
+s32 region_enabled DATA_SECTION(D_001A04B0) = {0};
 
-u32 map_region_enabled_3 DATA_SECTION(D_001A04B4) = 0;
+int map_region_enabled_3 DATA_SECTION(D_001A04B4) = {0};
 
-u32 map_region_enabled_4 DATA_SECTION(D_001A04B8) = 0;
+int map_region_enabled_4 DATA_SECTION(D_001A04B8) = {0};
 
-u32 map_region_enabled_5 DATA_SECTION(D_001A04BC) = 0;
+int map_region_enabled_5 DATA_SECTION(D_001A04BC) = {0};
 
 #include "data_inc/D_001A04C0.refs"
-u32 map_region_enabled_6[] DATA_SECTION(D_001A04C0) = {
+int map_region_enabled_6[] DATA_SECTION(D_001A04C0) = {
 #include "data_inc/D_001A04C0.inc"
 };
 
@@ -35,7 +35,7 @@ u32 menu_state_handlers[] DATA_SECTION(D_001A0538) = {
 #include "data_inc/D_001A0538.inc"
 };
 
-u32 level_object_index_ranges[] DATA_SECTION(D_001E06B8) = {
+int level_object_index_ranges[] DATA_SECTION(D_001E06B8) = {
 #include "data_inc/D_001E06B8.inc"
 };
 

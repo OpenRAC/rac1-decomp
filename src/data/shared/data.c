@@ -918,7 +918,7 @@ u32 __malloc_sbrk_base[] DATA_SECTION(D_0012FCA0) = {
 #include "data_inc/D_0012FCA0.inc"
 };
 
-u32 __malloc_current_mallinfo[] DATA_SECTION(D_0012FCB8) = {
+int __malloc_current_mallinfo[] DATA_SECTION(D_0012FCB8) = {
 #include "data_inc/D_0012FCB8.inc"
 };
 
@@ -948,27 +948,27 @@ u32 D_001303E8[] DATA_SECTION(D_001303E8) = {
 #include "data_inc/D_001303E8.inc"
 };
 
-u32 cd_debug_level DATA_SECTION(D_001313D0) = 0;
+int cd_debug_level DATA_SECTION(D_001313D0) = {0};
 
-u32 cd_ncmd_sema DATA_SECTION(D_001313E8) =
+int cd_ncmd_sema DATA_SECTION(D_001313E8) = {
 #include "data_inc/D_001313E8.inc"
-    ;
+};
 
-u32 cd_scmd_sema DATA_SECTION(D_001313EC) =
+int cd_scmd_sema DATA_SECTION(D_001313EC) = {
 #include "data_inc/D_001313EC.inc"
-    ;
+};
 
-u32 cd_ncmd_busy DATA_SECTION(D_001313F0) = 0;
+int cd_ncmd_busy DATA_SECTION(D_001313F0) = {0};
 
-u32 cd_read_mode_flags DATA_SECTION(D_001313F4) = 0;
+int cd_read_mode_flags DATA_SECTION(D_001313F4) = {0};
 
-u32 cd_callback_num DATA_SECTION(D_00131414) = 0;
+int cd_callback_num DATA_SECTION(D_00131414) = {0};
 
 u32 cd_last_callback_num[10] DATA_SECTION(D_00131418) = {0};
 
 u32 cd_ncmd_rpc_client[12] DATA_SECTION(D_00132590) = {0};
 
-u32 cd_scmd_recv_buffer[272] DATA_SECTION(D_001325C0) = {0};
+int cd_scmd_recv_buffer[272] DATA_SECTION(D_001325C0) = {0};
 
 u32 cd_scmd_rpc_client[] DATA_SECTION(D_00132E08) = {
 #include "data_inc/D_00132E08.inc"
@@ -1019,7 +1019,7 @@ u32 D_001524A8[] DATA_SECTION(D_001524A8) = {
 #include "data_inc/D_001524A8.inc"
 };
 
-u32 pow5mult_p05[] DATA_SECTION(D_001524B8) = {
+int pow5mult_p05[] DATA_SECTION(D_001524B8) = {
 #include "data_inc/D_001524B8.inc"
 };
 
@@ -1243,7 +1243,7 @@ char dma_sync_timeout_msg[] DATA_SECTION(D_001534E0) =
 #include "data_inc/D_001534E0.inc"
     ;
 
-u32 DmaChannelsUsed[] DATA_SECTION(D_001534F8) = {
+int DmaChannelsUsed[] DATA_SECTION(D_001534F8) = {
 #include "data_inc/D_001534F8.inc"
 };
 
@@ -1522,7 +1522,7 @@ u32 snd_current_buffer[] DATA_SECTION(D_0015ED80) = {
 
 u32 snd_cd_callback_data[10] DATA_SECTION(D_0015EDD8) = {0};
 
-u32 snd_cd_callback_arg[16] DATA_SECTION(D_0015EE00) = {0};
+unsigned int snd_cd_callback_arg[16] DATA_SECTION(D_0015EE00) = {0};
 
 u32 frm_clock_time[2] DATA_SECTION(D_0015EE40) = {0};
 
@@ -1532,39 +1532,39 @@ u8 cd_read_spindle_speed[] DATA_SECTION(D_0015EE58) = {
 #include "data_inc/D_0015EE58.inc"
 };
 
-u32 sound_bank_handle DATA_SECTION(D_0015EE5C) = 0;
+s32 sound_bank_handle DATA_SECTION(D_0015EE5C) = {0};
 
-float frame_scale DATA_SECTION(D_0015EE60) =
+float frame_scale DATA_SECTION(D_0015EE60) = {
 #include "data_inc/D_0015EE60.inc"
-    ;
+};
 
-float g_frame_scale_sq DATA_SECTION(D_0015EE64) =
+float g_frame_scale_sq DATA_SECTION(D_0015EE64) = {
 #include "data_inc/D_0015EE64.inc"
-    ;
+};
 
-float inv_frame_scale DATA_SECTION(D_0015EE68) =
+float inv_frame_scale DATA_SECTION(D_0015EE68) = {
 #include "data_inc/D_0015EE68.inc"
-    ;
+};
 
-float g_frame_time DATA_SECTION(D_0015EE6C) =
+float g_frame_time DATA_SECTION(D_0015EE6C) = {
 #include "data_inc/D_0015EE6C.inc"
-    ;
+};
 
-float g_frame_time_sq DATA_SECTION(D_0015EE70) =
+float g_frame_time_sq DATA_SECTION(D_0015EE70) = {
 #include "data_inc/D_0015EE70.inc"
-    ;
+};
 
-float g_frame_time_cube DATA_SECTION(D_0015EE74) =
+float g_frame_time_cube DATA_SECTION(D_0015EE74) = {
 #include "data_inc/D_0015EE74.inc"
-    ;
+};
 
-u32 frame_scale_fifths DATA_SECTION(D_0015EE78) =
+int frame_scale_fifths DATA_SECTION(D_0015EE78) = {
 #include "data_inc/D_0015EE78.inc"
-    ;
+};
 
-float frame_delta_time DATA_SECTION(D_0015EE7C) =
+float frame_delta_time DATA_SECTION(D_0015EE7C) = {
 #include "data_inc/D_0015EE7C.inc"
-    ;
+};
 
 u32 pal_mode DATA_SECTION(D_0015EE80) = 0;
 
@@ -1584,7 +1584,7 @@ u32 gCheats[4] DATA_SECTION(D_0015EEB0) = {0};
 
 u8 selector_available[16] DATA_SECTION(D_0015EEC0) = {0};
 
-u32 vendor_stock[] DATA_SECTION(D_0015EED0) = {
+int vendor_stock[] DATA_SECTION(D_0015EED0) = {
 #include "data_inc/D_0015EED0.inc"
 };
 
@@ -1592,9 +1592,9 @@ u32 playback_mode DATA_SECTION(D_0015EEE8) =
 #include "data_inc/D_0015EEE8.inc"
     ;
 
-u32 music_volume DATA_SECTION(D_0015EEEC) =
+int music_volume DATA_SECTION(D_0015EEEC) = {
 #include "data_inc/D_0015EEEC.inc"
-    ;
+};
 
 u32 sound_volume[] DATA_SECTION(D_0015EEF0) = {
 #include "data_inc/D_0015EEF0.inc"
@@ -1602,15 +1602,15 @@ u32 sound_volume[] DATA_SECTION(D_0015EEF0) = {
 
 u32 D_0015EF20[4] DATA_SECTION(D_0015EF20) = {0};
 
-u32 active_message_record_count DATA_SECTION(D_0015EF30) =
+int active_message_record_count DATA_SECTION(D_0015EF30) = {
 #include "data_inc/D_0015EF30.inc"
-    ;
+};
 
-u32 memcard_selected_slot DATA_SECTION(D_0015EF34) = 0;
+int memcard_selected_slot DATA_SECTION(D_0015EF34) = {0};
 
-u32 rilgar_hoverboard_races_finished DATA_SECTION(D_0015EF38) = 0;
+int rilgar_hoverboard_races_finished DATA_SECTION(D_0015EF38) = {0};
 
-u32 kalebo3_hoverboard_races_finished DATA_SECTION(D_0015EF3C) = 0;
+int kalebo3_hoverboard_races_finished DATA_SECTION(D_0015EF3C) = {0};
 
 u8 subtitles_enabled[8] DATA_SECTION(D_0015EF40) = {0};
 
@@ -1632,7 +1632,7 @@ u32 g_gs_texture_allocation_cursor DATA_SECTION(D_0015EF74) = 0;
 
 u32 g_gs_texture_allocation_start[2] DATA_SECTION(D_0015EF78) = {0};
 
-u32 display_buffer_address DATA_SECTION(D_0015EF80) = 0;
+int display_buffer_address DATA_SECTION(D_0015EF80) = {0};
 
 u32 draw_buffer_address DATA_SECTION(D_0015EF84) = 0;
 
@@ -1640,15 +1640,15 @@ u32 depth_buffer_address DATA_SECTION(D_0015EF88) = 0;
 
 u32 g_gs_texture_allocation_base DATA_SECTION(D_0015EF8C) = 0;
 
-u32 pause_action_list_mode[2] DATA_SECTION(D_0015EF90) = {0};
+int pause_action_list_mode[2] DATA_SECTION(D_0015EF90) = {0};
 
 u32 save_clock_time[2] DATA_SECTION(D_0015EF98) = {0};
 
 u32 challenge_mode[4] DATA_SECTION(D_0015EFA0) = {0};
 
-u32 mode_freeze_state DATA_SECTION(D_0015EFB0) = 0;
+int mode_freeze_state DATA_SECTION(D_0015EFB0) = {0};
 
-u32 mode_freeze_flags DATA_SECTION(D_0015EFB4) = 0;
+int mode_freeze_flags DATA_SECTION(D_0015EFB4) = {0};
 
 u32 active_fs_aa_buffer DATA_SECTION(D_0015EFB8) = 0;
 
@@ -1666,25 +1666,25 @@ u32 D_0015F000[] DATA_SECTION(D_0015F000) = {
 #include "data_inc/D_0015F000.inc"
 };
 
-u32 texture_alloc_counter[] DATA_SECTION(D_0015F020) = {
+int texture_alloc_counter[] DATA_SECTION(D_0015F020) = {
 #include "data_inc/D_0015F020.inc"
 };
 
-u32 intro_overlay_alpha DATA_SECTION(D_0015F050) = 0;
+s32 intro_overlay_alpha DATA_SECTION(D_0015F050) = {0};
 
-u32 language_intro_overlay_alpha DATA_SECTION(D_0015F054) = 0;
+s32 language_intro_overlay_alpha DATA_SECTION(D_0015F054) = {0};
 
 u32 intro_overlay_timer[2] DATA_SECTION(D_0015F058) = {0};
 
-u32 help_msg_data[] DATA_SECTION(D_0015F060) = {
+int help_msg_data[] DATA_SECTION(D_0015F060) = {
 #include "data_inc/D_0015F060.inc"
 };
 
-u32 cam_post_upd_routine_cnt DATA_SECTION(D_0015F08C) = 0;
+int cam_post_upd_routine_cnt DATA_SECTION(D_0015F08C) = {0};
 
 u32 gCameraDefs[3] DATA_SECTION(D_0015F090) = {0};
 
-u32 cam_coll_flag DATA_SECTION(D_0015F09C) = 0;
+int cam_coll_flag DATA_SECTION(D_0015F09C) = {0};
 
 void *cam_coll_flag_prev[] DATA_SECTION(D_0015F0A0) = {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, D_0018A400, 0,
@@ -1764,13 +1764,13 @@ u32 draw_enable_mask DATA_SECTION(D_0015F534) = 0;
 
 u32 game_frame_counter DATA_SECTION(D_0015F538) = 0;
 
-float gFade DATA_SECTION(D_0015F53C) = 0;
+float gFade DATA_SECTION(D_0015F53C) = {0};
 
-float white_fade_level DATA_SECTION(D_0015F540) = 0;
+float white_fade_level DATA_SECTION(D_0015F540) = {0};
 
-u32 letterbox_enabled DATA_SECTION(D_0015F544) = 0;
+int letterbox_enabled DATA_SECTION(D_0015F544) = {0};
 
-u32 letterbox_bar_height[2] DATA_SECTION(D_0015F548) = {0};
+int letterbox_bar_height[2] DATA_SECTION(D_0015F548) = {0};
 
 u32 gif_paging_head_tag DATA_SECTION(D_0015F550) = 0;
 
@@ -1778,39 +1778,39 @@ u32 gif_paging_tail_tag DATA_SECTION(D_0015F554) = 0;
 
 u32 pending_texture_upload_count DATA_SECTION(D_0015F558) = 0;
 
-u32 effect_tex_cnt DATA_SECTION(D_0015F55C) = 0;
+int effect_tex_cnt DATA_SECTION(D_0015F55C) = {0};
 
-u32 level_texture_payload_address DATA_SECTION(D_0015F560) = 0;
+s32 level_texture_payload_address DATA_SECTION(D_0015F560) = {0};
 
 u32 draw_callback_count DATA_SECTION(D_0015F564) = 0;
 
-u32 draw_callback2_count DATA_SECTION(D_0015F568) = 0;
+int draw_callback2_count DATA_SECTION(D_0015F568) = {0};
 
-u32 draw_callback3_count DATA_SECTION(D_0015F56C) = 0;
+int draw_callback3_count DATA_SECTION(D_0015F56C) = {0};
 
-u32 draw_callback4_count DATA_SECTION(D_0015F570) = 0;
+int draw_callback4_count DATA_SECTION(D_0015F570) = {0};
 
-u32 effect_quad_count DATA_SECTION(D_0015F574) = 0;
+int effect_quad_count DATA_SECTION(D_0015F574) = {0};
 
-u32 font_quad_count DATA_SECTION(D_0015F578) = 0;
+int font_quad_count DATA_SECTION(D_0015F578) = {0};
 
 u32 D_0015F57C DATA_SECTION(D_0015F57C) = 0;
 
 u32 D_0015F580[2] DATA_SECTION(D_0015F580) = {0};
 
-float fog_near_distance DATA_SECTION(D_0015F588) = 0;
+float fog_near_distance DATA_SECTION(D_0015F588) = {0};
 
-float fog_far_distance DATA_SECTION(D_0015F58C) = 0;
+float fog_far_distance DATA_SECTION(D_0015F58C) = {0};
 
-float fog_near_intensity DATA_SECTION(D_0015F590) = 0;
+float fog_near_intensity DATA_SECTION(D_0015F590) = {0};
 
-float fog_far_intensity DATA_SECTION(D_0015F594) = 0;
+float fog_far_intensity DATA_SECTION(D_0015F594) = {0};
 
-u32 level_fog_mode DATA_SECTION(D_0015F598) = 0;
+int level_fog_mode DATA_SECTION(D_0015F598) = {0};
 
-u32 GlobalStateFlag DATA_SECTION(D_0015F59C) = 0;
+int GlobalStateFlag DATA_SECTION(D_0015F59C) = {0};
 
-u32 font_window_active[] DATA_SECTION(D_0015F5A0) = {
+s32 font_window_active[] DATA_SECTION(D_0015F5A0) = {
 #include "data_inc/D_0015F5A0.inc"
 };
 
@@ -1838,15 +1838,15 @@ u32 freeze_record_value_format[] DATA_SECTION(D_0015F680) = {
 
 u32 space_load_pending DATA_SECTION(D_0015F690) = 0;
 
-u32 bank_sound_count DATA_SECTION(D_0015F694) =
+int bank_sound_count DATA_SECTION(D_0015F694) = {
 #include "data_inc/D_0015F694.inc"
-    ;
+};
 
 u32 vu1_chain_reserved_bytes[] DATA_SECTION(D_0015F698) = {
 #include "data_inc/D_0015F698.inc"
 };
 
-u32 help_message_keepalive[] DATA_SECTION(D_0015F6B0) = {
+int help_message_keepalive[] DATA_SECTION(D_0015F6B0) = {
 #include "data_inc/D_0015F6B0.inc"
 };
 
@@ -1854,7 +1854,7 @@ u32 boot_level_active DATA_SECTION(D_0015F6C8) = 0;
 
 u32 pause_restart_reset_flag DATA_SECTION(D_0015F6CC) = 0;
 
-u32 counter_advance_disabled[5] DATA_SECTION(D_0015F6D0) = {0};
+int counter_advance_disabled[5] DATA_SECTION(D_0015F6D0) = {0};
 
 u32 space_load_level DATA_SECTION(D_0015F6E4) = 0;
 
@@ -1866,25 +1866,25 @@ u32 level_sound_def_count DATA_SECTION(D_0015F710) = 0;
 
 u32 level_sound_defs DATA_SECTION(D_0015F714) = 0;
 
-u32 render_packet_end DATA_SECTION(D_0015F718) = 0;
+int render_packet_end DATA_SECTION(D_0015F718) = {0};
 
-u32 vu1_chain_safe_end DATA_SECTION(D_0015F71C) = 0;
+int vu1_chain_safe_end DATA_SECTION(D_0015F71C) = {0};
 
 u32 occl_grid_data DATA_SECTION(D_0015F720) = 0;
 
 u32 occl_oct DATA_SECTION(D_0015F724) = 0;
 
-u32 occl_fallback_mode DATA_SECTION(D_0015F728) = 0;
+int occl_fallback_mode DATA_SECTION(D_0015F728) = {0};
 
-u32 occl_invalid_grid DATA_SECTION(D_0015F72C) = 0;
+int occl_invalid_grid DATA_SECTION(D_0015F72C) = {0};
 
 u32 occl_previous_grid[12] DATA_SECTION(D_0015F730) = {0};
 
-u32 hud_msg_count DATA_SECTION(D_0015F760) = 0;
+int hud_msg_count DATA_SECTION(D_0015F760) = {0};
 
-u32 hud_msg_alpha DATA_SECTION(D_0015F764) = 0;
+int hud_msg_alpha DATA_SECTION(D_0015F764) = {0};
 
-u32 hud_msg_y[] DATA_SECTION(D_0015F768) = {
+int hud_msg_y[] DATA_SECTION(D_0015F768) = {
 #include "data_inc/D_0015F768.inc"
 };
 
@@ -1973,15 +1973,15 @@ char draw_mobys_cleanup_profile_label[] DATA_SECTION(D_0015FFF0) =
 #include "data_inc/D_0015FFF0.inc"
     ;
 
-u32 num_spawnable_mobys DATA_SECTION(D_0015FFFC) = 0;
+int num_spawnable_mobys DATA_SECTION(D_0015FFFC) = {0};
 
 u32 resident_moby_class_count[2] DATA_SECTION(D_00160000) = {0};
 
-u32 resident_indexed_texture_count[3] DATA_SECTION(D_00160008) = {0};
+s32 resident_indexed_texture_count[3] DATA_SECTION(D_00160008) = {0};
 
-u32 moby_anim_head DATA_SECTION(D_00160014) = 0;
+int moby_anim_head DATA_SECTION(D_00160014) = {0};
 
-u32 resident_object_pool DATA_SECTION(D_00160018) = 0;
+int resident_object_pool DATA_SECTION(D_00160018) = {0};
 
 u32 moby_instance_end DATA_SECTION(D_0016001C) = 0;
 
@@ -1991,17 +1991,17 @@ u32 g_moby_vars[2] DATA_SECTION(D_00160028) = {0};
 
 u32 occl_fog_count[2] DATA_SECTION(D_00160030) = {0};
 
-u32 moby_word_fill_table_bytes DATA_SECTION(D_00160038) = 0;
+int moby_word_fill_table_bytes DATA_SECTION(D_00160038) = {0};
 
-u32 graphics_setup_dma_chain_enabled DATA_SECTION(D_0016003C) = 0;
+int graphics_setup_dma_chain_enabled DATA_SECTION(D_0016003C) = {0};
 
-u32 graphics_setup_tag_slot DATA_SECTION(D_00160040) = 0;
+int graphics_setup_tag_slot DATA_SECTION(D_00160040) = {0};
 
-u32 runtime_resource_tag DATA_SECTION(D_00160044) = 0;
+int runtime_resource_tag DATA_SECTION(D_00160044) = {0};
 
-u32 class_resource_count DATA_SECTION(D_00160048) = 0;
+int class_resource_count DATA_SECTION(D_00160048) = {0};
 
-u32 active_class_resource_index DATA_SECTION(D_0016004C) = 0;
+int active_class_resource_index DATA_SECTION(D_0016004C) = {0};
 
 u32 active_decode_buffer[] DATA_SECTION(D_00160050) = {
 #include "data_inc/D_00160050.inc"
@@ -2029,7 +2029,7 @@ u32 part_slot_search_start[3] DATA_SECTION(D_001601B0) = {0};
 
 u32 part_clip_dist DATA_SECTION(D_001601BC) = 0;
 
-u32 particle_texture_range_count[] DATA_SECTION(D_001601C0) = {
+int particle_texture_range_count[] DATA_SECTION(D_001601C0) = {
 #include "data_inc/D_001601C0.inc"
 };
 
@@ -2104,29 +2104,29 @@ u32 fmt_save_date[] DATA_SECTION(D_00160420) = {
 #include "data_inc/D_00160420.inc"
 };
 
-u32 preview_animation_request_count[] DATA_SECTION(D_00160450) = {
+int preview_animation_request_count[] DATA_SECTION(D_00160450) = {
 #include "data_inc/D_00160450.inc"
 };
 
-float direction_unit DATA_SECTION(D_00160470) = 0;
+float direction_unit DATA_SECTION(D_00160470) = {0};
 
-float direction_unit_y DATA_SECTION(D_00160474) = 0;
+float direction_unit_y DATA_SECTION(D_00160474) = {0};
 
 float direction_unit_z[2] DATA_SECTION(D_00160478) = {0};
 
-float direction_perpendicular DATA_SECTION(D_00160480) = 0;
+float direction_perpendicular DATA_SECTION(D_00160480) = {0};
 
-float direction_perpendicular_y DATA_SECTION(D_00160484) = 0;
+float direction_perpendicular_y DATA_SECTION(D_00160484) = {0};
 
 float direction_perpendicular_z[2] DATA_SECTION(D_00160488) = {0};
 
-float direction_scaled DATA_SECTION(D_00160490) = 0;
+float direction_scaled DATA_SECTION(D_00160490) = {0};
 
-float direction_scaled_y DATA_SECTION(D_00160494) = 0;
+float direction_scaled_y DATA_SECTION(D_00160494) = {0};
 
 float direction_scaled_z[2] DATA_SECTION(D_00160498) = {0};
 
-u32 graphics_setup_word[2] DATA_SECTION(D_001604A0) = {0};
+s32 graphics_setup_word[2] DATA_SECTION(D_001604A0) = {0};
 
 u32 D_001604A8[2] DATA_SECTION(D_001604A8) = {0};
 
@@ -2138,9 +2138,9 @@ char str_shrub_draw[] DATA_SECTION(D_001604C0) =
 #include "data_inc/D_001604C0.inc"
     ;
 
-u32 registered_shrub_render_class_count DATA_SECTION(D_001604CC) = 0;
+s32 registered_shrub_render_class_count DATA_SECTION(D_001604CC) = {0};
 
-u32 shrub_count DATA_SECTION(D_001604D0) = 0;
+int shrub_count DATA_SECTION(D_001604D0) = {0};
 
 u32 shrubs DATA_SECTION(D_001604D4) = 0;
 
@@ -2150,11 +2150,11 @@ u32 shrub_data_table DATA_SECTION(D_001604DC) = 0;
 
 u32 shrub_colors[3] DATA_SECTION(D_001604E0) = {0};
 
-u32 shrub_render_texture_definition_count DATA_SECTION(D_001604EC) = 0;
+s32 shrub_render_texture_definition_count DATA_SECTION(D_001604EC) = {0};
 
-u32 shrub_tex_dma_tag[2] DATA_SECTION(D_001604F0) = {0};
+int shrub_tex_dma_tag[2] DATA_SECTION(D_001604F0) = {0};
 
-u32 max_shrub_texture_dma_size[] DATA_SECTION(D_001604F8) = {
+int max_shrub_texture_dma_size[] DATA_SECTION(D_001604F8) = {
 #include "data_inc/D_001604F8.inc"
 };
 
@@ -2166,10 +2166,10 @@ u32 level_sky_effect_data DATA_SECTION(D_0016055C) = 0;
 
 u32 sky_shell_translation[4] DATA_SECTION(D_00160560) = {0};
 
-u32 sky_gif_paging_tag[6] DATA_SECTION(D_00160570) = {0};
+int sky_gif_paging_tag[6] DATA_SECTION(D_00160570) = {0};
 
 #include "data_inc/D_00160588.refs"
-u32 D_00160588[] DATA_SECTION(D_00160588) = {
+int D_00160588[] DATA_SECTION(D_00160588) = {
 #include "data_inc/D_00160588.inc"
 };
 
@@ -2239,15 +2239,15 @@ char str_tfrag_draw[] DATA_SECTION(D_00160F80) =
 
 u32 tfrag_render_records DATA_SECTION(D_00160F8C) = 0;
 
-u32 tfrag_render_record_count[4] DATA_SECTION(D_00160F90) = {0};
+int tfrag_render_record_count[4] DATA_SECTION(D_00160F90) = {0};
 
 float tfrag_render_ranges[4] DATA_SECTION(D_00160FA0) = {0};
 
-u32 tfrag_lod_dists_raw[3] DATA_SECTION(D_00160FB0) = {0};
+int tfrag_lod_dists_raw[3] DATA_SECTION(D_00160FB0) = {0};
 
-u32 tfrag_tex_dma_tag_slot DATA_SECTION(D_00160FBC) = 0;
+int tfrag_tex_dma_tag_slot DATA_SECTION(D_00160FBC) = {0};
 
-u32 tfrag_draw_distance[4] DATA_SECTION(D_00160FC0) = {0};
+float tfrag_draw_distance[4] DATA_SECTION(D_00160FC0) = {0};
 
 u32 attachment_vertex_indices[] DATA_SECTION(D_00160FD0) = {
 #include "data_inc/D_00160FD0.inc"
@@ -2257,21 +2257,21 @@ u32 vif_chain_flags[] DATA_SECTION(D_00160FE0) = {
 #include "data_inc/D_00160FE0.inc"
 };
 
-u32 vu1_chain_buffers[2] DATA_SECTION(D_00160FF8) = {0};
+int vu1_chain_buffers[2] DATA_SECTION(D_00160FF8) = {0};
 
 u32 g_render_packet_cursor DATA_SECTION(D_00161000) = 0;
 
-u32 previous_render_packet_cursor DATA_SECTION(D_00161004) = 0;
+int previous_render_packet_cursor DATA_SECTION(D_00161004) = {0};
 
-u32 vu1_chain_limit DATA_SECTION(D_00161008) = 0;
+int vu1_chain_limit DATA_SECTION(D_00161008) = {0};
 
 u32 current_vu_chain DATA_SECTION(D_0016100C) = 0;
 
-u32 vu1_chain_buffer_index DATA_SECTION(D_00161010) = 0;
+int vu1_chain_buffer_index DATA_SECTION(D_00161010) = {0};
 
-u32 vu1_chain_peak_bytes DATA_SECTION(D_00161014) = 0;
+int vu1_chain_peak_bytes DATA_SECTION(D_00161014) = {0};
 
-u32 vif1_dma_handler_id[] DATA_SECTION(D_00161018) = {
+int vif1_dma_handler_id[] DATA_SECTION(D_00161018) = {
 #include "data_inc/D_00161018.inc"
 };
 
@@ -2291,9 +2291,9 @@ u32 ties_end DATA_SECTION(D_00161054) = 0;
 
 u32 tie_data_table[3] DATA_SECTION(D_00161058) = {0};
 
-u32 object_render_texture_definition_count DATA_SECTION(D_00161064) = 0;
+s32 object_render_texture_definition_count DATA_SECTION(D_00161064) = {0};
 
-u32 tie_tex_dma_tag_slot[2] DATA_SECTION(D_00161068) = {0};
+int tie_tex_dma_tag_slot[2] DATA_SECTION(D_00161068) = {0};
 
 u32 tie_draw_distance[] DATA_SECTION(D_00161070) = {
 #include "data_inc/D_00161070.inc"
@@ -2307,37 +2307,37 @@ u32 fmt_plain_int[] DATA_SECTION(D_00161180) = {
 #include "data_inc/D_00161180.inc"
 };
 
-u32 capture_moby_pass_enabled[2] DATA_SECTION(D_001611A8) = {0};
+int capture_moby_pass_enabled[2] DATA_SECTION(D_001611A8) = {0};
 
-u32 resident_dialogue_started[] DATA_SECTION(D_001611B0) = {
+s32 resident_dialogue_started[] DATA_SECTION(D_001611B0) = {
 #include "data_inc/D_001611B0.inc"
 };
 
-float water_fog_near_dist DATA_SECTION(D_001611C8) = 0;
+float water_fog_near_dist DATA_SECTION(D_001611C8) = {0};
 
-float water_fog_far_dist DATA_SECTION(D_001611CC) =
+float water_fog_far_dist DATA_SECTION(D_001611CC) = {
 #include "data_inc/D_001611CC.inc"
-    ;
+};
 
 u32 water_fog_near_intensity[] DATA_SECTION(D_001611D0) = {
 #include "data_inc/D_001611D0.inc"
 };
 
-u32 surface_height_tiles DATA_SECTION(D_00161290) = 0;
+int surface_height_tiles DATA_SECTION(D_00161290) = {0};
 
-u32 occl_cell_table DATA_SECTION(D_00161294) = 0;
+int occl_cell_table DATA_SECTION(D_00161294) = {0};
 
-u32 occl_cell_count DATA_SECTION(D_00161298) = 0;
+int occl_cell_count DATA_SECTION(D_00161298) = {0};
 
-u32 local_surface_region_enabled DATA_SECTION(D_0016129C) = 0;
+int local_surface_region_enabled DATA_SECTION(D_0016129C) = {0};
 
-u32 local_surface_region_center_x[2] DATA_SECTION(D_001612A0) = {0};
+float local_surface_region_center_x[2] DATA_SECTION(D_001612A0) = {0};
 
 float D_001612A8[14] DATA_SECTION(D_001612A8) = {0};
 
-u32 movie_display_active DATA_SECTION(D_001612E0) = 0;
+int movie_display_active DATA_SECTION(D_001612E0) = {0};
 
-u32 movie_vblank_count DATA_SECTION(D_001612E4) = 0;
+int movie_vblank_count DATA_SECTION(D_001612E4) = {0};
 
 u32 image_buffer_count_decrement_pending DATA_SECTION(D_001612E8) = 0;
 
@@ -2349,15 +2349,15 @@ char movie_error_message[] DATA_SECTION(D_001612F8) =
 #include "data_inc/D_001612F8.inc"
     ;
 
-u32 decoder_buffer_address DATA_SECTION(D_00161308) = 0;
+int decoder_buffer_address DATA_SECTION(D_00161308) = {0};
 
 u32 decoder_state DATA_SECTION(D_0016130C) = 0;
 
-u32 movie_decoder_thread_id DATA_SECTION(D_00161310) = 0;
+int movie_decoder_thread_id DATA_SECTION(D_00161310) = {0};
 
-u32 movie_play_step DATA_SECTION(D_00161314) = 0;
+int movie_play_step DATA_SECTION(D_00161314) = {0};
 
-u32 movie_frame_count[2] DATA_SECTION(D_00161318) = {0};
+int movie_frame_count[2] DATA_SECTION(D_00161318) = {0};
 
 u32 mpeg_sequence_end_code[] DATA_SECTION(D_00161320) = {
 #include "data_inc/D_00161320.inc"
@@ -2407,13 +2407,13 @@ u32 cur_cam[4] DATA_SECTION(D_001871C0) = {0};
 
 u32 cam_coll_state[56] DATA_SECTION(D_001871D0) = {0};
 
-u32 cam_trans_state[56] DATA_SECTION(D_001872B0) = {0};
+short cam_trans_state[112] DATA_SECTION(D_001872B0) = {0};
 
 u32 camera_rows[4] DATA_SECTION(D_00187390) = {0};
 
 u32 effect_ribbon[68] DATA_SECTION(D_00187400) = {0};
 
-u32 draw_config[6] DATA_SECTION(D_0018A3B0) = {0};
+int draw_config[6] DATA_SECTION(D_0018A3B0) = {0};
 
 u32 D_0018A400[512] DATA_SECTION(D_0018A400) = {0};
 
@@ -2455,7 +2455,7 @@ u32 g_help_state[] DATA_SECTION(D_001997D0) = {
 #include "data_inc/D_001997D0.inc"
 };
 
-u32 message_id_code_table[] DATA_SECTION(D_00199810) = {
+short message_id_code_table[] DATA_SECTION(D_00199810) = {
 #include "data_inc/D_00199810.inc"
 };
 
@@ -2801,11 +2801,11 @@ u32 D_001B3180[32] DATA_SECTION(D_001B3180) = {0};
 
 u32 moby_class_resources[224] DATA_SECTION(D_001B3580) = {0};
 
-u32 resident_moby_class_data[224] DATA_SECTION(D_001B3900) = {0};
+int resident_moby_class_data[224] DATA_SECTION(D_001B3900) = {0};
 
 u32 resident_class_slot_by_id[1968] DATA_SECTION(D_001B3E40) = {0};
 
-u32 resident_class_original_field_2c[224] DATA_SECTION(D_001B6500) = {0};
+int resident_class_original_field_2c[224] DATA_SECTION(D_001B6500) = {0};
 
 u32 D_001B7A00[24] DATA_SECTION(D_001B7A00) = {0};
 
@@ -2983,7 +2983,7 @@ u32 part_slot_bitmap[128] DATA_SECTION(D_001CDB00) = {0};
 
 u32 D_001CE100[128] DATA_SECTION(D_001CE100) = {0};
 
-u32 particle_texture_ptrs[128] DATA_SECTION(D_001CE300) = {0};
+int particle_texture_ptrs[128] DATA_SECTION(D_001CE300) = {0};
 
 u32 D_001CE678[] DATA_SECTION(D_001CE678) = {
 #include "data_inc/D_001CE678.inc"
@@ -4535,11 +4535,11 @@ u32 preview_resource_bindings[] DATA_SECTION(D_001D5D58) = {
 #include "data_inc/D_001D5D58.inc"
 };
 
-u32 preserved_item_available_indices[] DATA_SECTION(D_001D5F20) = {
+s32 preserved_item_available_indices[] DATA_SECTION(D_001D5F20) = {
 #include "data_inc/D_001D5F20.inc"
 };
 
-u32 pause_current_action_list[42] DATA_SECTION(D_001D5F78) = {0};
+int pause_current_action_list[42] DATA_SECTION(D_001D5F78) = {0};
 
 u32 D_001D6020[22] DATA_SECTION(D_001D6020) = {0};
 
@@ -4553,7 +4553,7 @@ u32 shrub_render_classes[64] DATA_SECTION(D_001D82C0) = {0};
 
 u8 shrub_render_class_slot_by_id[1024] DATA_SECTION(D_001D8440) = {0};
 
-u32 shrub_render_texture_addrs[256] DATA_SECTION(D_001D8840) = {0};
+s32 shrub_render_texture_addrs[256] DATA_SECTION(D_001D8840) = {0};
 
 u32 shrub_scratchpad_copy[256] DATA_SECTION(D_001D9240) = {0};
 
@@ -4759,7 +4759,7 @@ u16 vendor_item_prices[] DATA_SECTION(D_001E02B0) = {
 #include "data_inc/D_001E02B0.inc"
 };
 
-u32 tfrag_texture_size_table[192] DATA_SECTION(D_001E0C00) = {0};
+s32 tfrag_texture_size_table[192] DATA_SECTION(D_001E0C00) = {0};
 
 u32 tfrag_dma_block[256] DATA_SECTION(D_001E1600) = {0};
 
@@ -4767,7 +4767,7 @@ u32 object_render_classes[128] DATA_SECTION(D_001E1A00) = {0};
 
 u8 object_render_class_slot_by_id[3072] DATA_SECTION(D_001E1D00) = {0};
 
-u32 object_render_texture_addrs[256] DATA_SECTION(D_001E2900) = {0};
+s32 object_render_texture_addrs[256] DATA_SECTION(D_001E2900) = {0};
 
 u32 tie_light_data[256] DATA_SECTION(D_001E3500) = {0};
 
