@@ -44,6 +44,17 @@ for s in build-sn/core_data_*.s; do
   echo "assembled ${s%.s}.o"
 done
 
+# The literal and level table blobs, the same way.
+for blob in core_lit:rodata lit:rodata lvl_vtbl:data lvl_camvtbl:data lvl_sndvtbl:data; do
+  name=${blob%:*}
+  rm -f build-sn/${name}_*.s build-sn/${name}_*.o
+  python tools/split_data_s.py asm/data/$name.${blob#*:}.s build-sn/$name $(python tools/data_in_c.py labels $name)
+  for s in build-sn/${name}_*.s; do
+    sn "$AS" -I include-sn -I include -o "${s%.s}.o" "$s"
+    echo "assembled ${s%.s}.o"
+  done
+done
+
 # bss padding objects -- see rac1.ld.sh for why these are real loaded
 # sections rather than NOLOAD.
 # core_bss (0x154200-0x15ED80) is split around 0x1597EC, where libgcc's
