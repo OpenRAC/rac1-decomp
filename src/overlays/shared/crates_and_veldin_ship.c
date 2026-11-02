@@ -21,6 +21,7 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "structs/voice.h"
+#include "game/moby/mobyutil.h"
 extern char g_hero[];
 extern char item_usage[];
 extern int pad0_pressed;
@@ -174,7 +175,7 @@ typedef struct {
 extern s32 mission_death_counts[];
 extern int coll_hit_result;
 extern R_2cfcb8 *level_paths_r[] __asm__("D_L00_001B0830");
-extern s32 random_integer_below(s32);
+
 extern f32 FastAddRots(f32, f32);
 extern void DeleteMoby_r(M_2cfcb8 *) __asm__("func_0020D678");
 extern s32 coll_line_r(V_2cfcb8 *, V_2cfcb8 *, s32, M_2cfcb8 *, s32) __asm__("func_L00_001EFFF0");
@@ -559,14 +560,14 @@ extern void euler_rotation_basis(void *, void *);
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
 extern float FastAddRots(float, float);
-extern float random_float_between(float, float);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern int random_integer_below(int);
+
 extern unsigned char *spawn_crate_debris(unsigned char *owner, void *vel, void *pos, void *rot, int type, int n,
                                          float lo, float hi);
 extern void moby_build_matrix(void *);
 extern void rand_vec(float *, float, float);
-extern float random_angle_radians(void);
+
 extern int scale_ticks(int);
 extern float FastVecLength(void *);
 extern int rand_range(int, int);
@@ -1541,7 +1542,6 @@ typedef struct TargetVars {
     s32 count;
 } TargetVars;
 
-
 /* The hero block g_hero, cut down to what this function reads. */
 
 /* The pad state g_controller_state. */
@@ -1575,7 +1575,7 @@ extern void cross_2D4398(void *, void *, void *) __asm__("func_001F9CA0");
 extern void MobyTransformScaledVertex_r2(void *, s32, void *) __asm__("func_0020DAF8");
 extern void matrix_from_basis_rows_r2(void *, void *) __asm__("func_001FA4A0");
 extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
-extern void func_002150B0(void *, void *);
+
 extern void func_L00_0025AFA8(void *, void *);
 extern void quat_nlerp_r(void *, void *, void *, f32) __asm__("func_001FA5C8");
 extern s32 func_L00_0028EB98(struct Moby *, s32);
@@ -1829,7 +1829,7 @@ void metal_detector_update(struct Moby *moby) {
 }
 extern char hero_globals_base[] NOT_SDA;
 extern int scale_ticks(int);
-extern void MobyBlendAnimation(void *, int, int, int);
+
 /* Starts animation 6 if the hero state is 8 and the moby is not already playing it. */
 void helipack_update(Moby *a) {
     if (((struct Hero *)g_hero)->state.current == HERO_STATE_LAND) {
@@ -1905,7 +1905,6 @@ extern float frame_scale MACRO_ADDR;
 extern unsigned char level_point_lights[];
 extern float IntToFloat(int);
 
-extern float random_float_between(float, float);
 extern void FastVecScale(void *, void *, float);
 extern int FastDecTimer(void *);
 extern s16 scale_ticks_r(int) __asm__("func_001F9850");
@@ -2308,19 +2307,18 @@ extern int CarriedMobyUpdate(void *, void *);
 extern float SteerAngleWithVelocity_r(void *, float, void *, float, float, float) __asm__("func_L00_0025CE58");
 extern float move_horny_toad_toward_position(unsigned char *m, float *t, float vel);
 extern int rand_range(int, int);
-extern float random_float_between(float, float);
 
 extern float FastDiffRots(float, float);
 extern int IsFrameWithinWindow(void *, float);
 extern void collect_mobies_in_sphere_at_moby_point(void *, float, float, float, int, int, int, int, int);
 extern void vec_scale_to_length(void *, void *, float);
 extern int test_path_segment_strict_crossing(int, void *, void *);
-extern int random_integer_below(int);
+
 extern int mine_fall(void *, void *);
 extern void Moby_PlaySound(int, int, int);
 extern void spawn_color_swapped_explosion_burst(void *, void *, int, float, float);
 extern void DeleteMoby_r2(void *) __asm__("func_0020D678");
-extern float ProbeGroundHeight(void *, int, float);
+
 extern void func_L00_00262DF0(int, float, void *, void *);
 extern float ApproachValue_r(float, float, float *) __asm__("func_00214D28");
 
@@ -3851,7 +3849,7 @@ void func_L00_002D90A0_r(P_2D90A0 *m, int i) {
     smoke_particle_is_mesh_r[i] = 0;
 }
 extern float randf_sym(float, float);
-extern float random_float_between(float, float);
+
 extern float smoke_particle_unit_positions[][4];
 
 struct InitializeSmokeFireSpawnerMeshParticleVars {
@@ -3884,7 +3882,7 @@ typedef struct {
     int a[4];
 } Vy __attribute__((aligned(16)));
 extern void set_moby_color(void *, int, int, int);
-extern float random_angle_radians(void);
+
 /* Creates a class 0x307 moby at src, scaled by f, and returns it (or 0). */
 char *spawn_burst_moby(Vy *src, float f) {
     Moby *m = (Moby *)CreateMoby(0x307);

@@ -9,6 +9,7 @@
 #include "game/system/stash.h"
 #include "game/render/tfragfunc.h"
 #include "data/executable.h"
+#include "game/moby/mobyutil.h"
 
 /*
  * loaders.cpp in the original source; text 0x202AA8-0x205520.
@@ -915,7 +916,6 @@ extern unsigned char resident_class_slot_by_id[] NOT_SDA;
 extern short resident_class_id_by_slot[];
 extern char *moby_class_resources[] NOT_SDA;
 
-extern void assign_moby_class_data(int);
 extern void prepare_resident_class_render_data(void *, int, int, int);
 
 /* Registers class arg3's data arg0 in the next moby-class slot

@@ -19,6 +19,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "structs/anim.h"
 #include "enums/moby_class.h"
+#include "asm_functions/executable.h"
 extern char gHeroPos[];
 
 /* Blarg heavy interceptor: flies a patrol path while its light beam sweeps an
@@ -204,22 +205,17 @@ extern LevelState oltanis_collected_flags_base;
 extern int D_0015EE84 MACRO_ADDR;
 
 extern float g_frame_time MACRO_ADDR;
-extern int is_point_inside_clip_volume(void *arg0, int arg1);
-extern int FastDecTimer(void *);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
-extern float FastVecDist(void *, void *);
-extern float multiply_global_factor(float);
 extern float vec_distance_xy(void *, void *);
-
-extern int scale_ticks(int);
 
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound(int, int, int);
 extern float IntToFloat(int);
-extern void FastVecSub(void *, void *, void *);
+
 extern void FastVecScale(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
+
 extern void update_entity_matrix(char *, void *, void *, void *);
 extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
 extern void ease_path_mover_to_endpoint(char *moby);
@@ -582,9 +578,6 @@ extern int Spline_AdvanceByDistance_r(void *, void *, void *, void *, int, float
 extern void spawn_explosion_r(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                               float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecCross(void *, void *, void *);
-extern void build_look_at_matrix(void *, void *, void *, float);
-extern f32 random_float_between(f32, f32);
 
 extern int coll_sphere(float, void *, int, void *);
 extern char *PartType21Spawn(void *pos, void *dir, int c, int d, int n, int k, float f);
@@ -592,8 +585,7 @@ extern unsigned char *PartType23Spawn_r(void *pos, float r, float lo, float hi, 
                                         int color) __asm__("func_L00_0026DEA0");
 extern void spawn_particles_at_shape_points(void *, void *, int);
 extern s32 Moby_PlaySound_r(s32, s32, void *) __asm__("func_0022ED80");
-extern f32 FastAddRots(f32, f32);
-extern s32 random_integer_below(s32 n);
+
 extern f32 IntToFloat_r(s16) __asm__("func_001FA888");
 extern s32 FastBSphereCheck_r(u8 *, f32) __asm__("func_L00_00200290");
 typedef struct {
@@ -640,7 +632,6 @@ extern s32 blarg_heavy_interceptor_tracking_and_group_wait_glow_blue_gp
     SDATA(blarg_heavy_interceptor_tracking_and_group_wait_glow_blue_gp);
 extern f32 interceptor_spring_stiffness SDATA(interceptor_spring_stiffness);
 extern f32 interceptor_spring_damping SDATA(interceptor_spring_damping);
-extern s32 scale_ticks(s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002460f8.c, FUN_L14_002ac618. */
 void update_blarg_heavy_interceptor(struct Moby *m) {
@@ -1042,7 +1033,7 @@ void update_blarg_heavy_interceptor(struct Moby *m) {
 }
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, void *, void *, int, int);
-extern void MobyBlendAnimation(void *, int, int, int);
+
 extern void SetDeathBits(void *, int, int);
 extern void RerollEffectCounter(void *m, short *p);
 extern void StepColorFade(void *, void *);
@@ -1101,7 +1092,7 @@ extern s32 interceptor_ring_vertex_colors[];
 extern char interceptor_ring_uvs[];
 extern void draw_blarg_heavy_interceptor_camera_facing_glow_r(struct Moby *m) __asm__("func_L14_002AF2E8");
 extern void draw_env_overlay_mesh(int, void *, void *, void *, int);
-extern void transform_vector(void *, void *, void *);
+
 extern s64 GetEffectTex_r(s32) __asm__("func_001F4868");
 extern void VU1_addGSregister(s32, s64);
 
@@ -1193,8 +1184,7 @@ extern int interceptor_beam_g_fade SDATA(interceptor_beam_g_fade);
 extern int interceptor_beam_b_fade SDATA(interceptor_beam_b_fade);
 extern int interceptor_beam_a_fade SDATA(interceptor_beam_a_fade);
 extern float interceptor_quad_corners_r[4][4] __asm__("D_L14_001D8900");
-extern float FastCos(float);
-extern float FastSin(float);
+
 extern unsigned long GetEffectTex(s32);
 extern void VU1_addGSregister(s32, s64);
 
@@ -1293,10 +1283,9 @@ void draw_blarg_heavy_interceptor_spinning_beam(char *moby) {
     }
 }
 extern void FastVecScale(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
+
 u64 GetEffectTex(s32);
 extern void VU1_addGSregister(int, long);
-extern void FastVecSub(void *dst, void *a, void *b);
 
 extern void draw_world_quad(void *, void *, int);
 extern char interceptor_quad_corners[];
@@ -1385,10 +1374,9 @@ extern float oltanis_glow_camera_margin SDATA(oltanis_glow_camera_margin);
 extern u32 oltanis_glow_idle_color SDATA(oltanis_glow_idle_color);
 u64 GetEffectTex(s32);
 extern void VU1_addGSregister(int, long);
-extern void FastVecSub(void *, void *, void *);
-extern float FastVecLength(void *);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
+
 extern void FastVecScale(void *, void *, float);
 extern void draw_world_quad(void *, void *, s32);
 
@@ -1576,10 +1564,7 @@ void update_blarg_heavy_interceptor_return_path_position(char *moby, float a, fl
 }
 extern void update_moby_vertical_oscillation(float, float, char *, float *, float *);
 extern void update_moby_rotation_oscillation(void *, char *, char *, float, float, float);
-extern int FastDecTimer(void *);
-extern int scale_ticks(int);
-extern int random_integer_below(int);
-extern float FastAddRots(float, float);
+
 extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
 extern float interceptor_bob_height SDATA(interceptor_bob_height);
 extern float interceptor_bob_rate SDATA(interceptor_bob_rate);
@@ -1612,7 +1597,7 @@ void update_blarg_heavy_interceptor_oscillation_and_patrol_heading(char *moby) {
                interceptor_heading_damping, interceptor_heading_max_rate);
     }
 }
-extern int random_integer_below(int);
+
 extern float IntToFloat(int);
 extern int FastBSphereCheck(char *, float);
 extern void MobyTransformScaledVertex(char *, int, void *);
@@ -1636,12 +1621,9 @@ void prepare_blarg_heavy_interceptor_light_ring_transform(char *moby) {
         }
     }
 }
-extern void FastVecSub(void *dst, void *a, void *b);
-extern void FastVecScale(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
-extern float FastVecLength(void *a);
 
-extern float FastSubRots(float, float);
+extern void FastVecScale(void *, void *, float);
+
 extern void draw_blarg_heavy_interceptor_camera_pulled_glow(char *);
 
 // Sets up the moby's motion data from its vectors; returns whether it succeeded.
@@ -2257,7 +2239,6 @@ extern float minibomber_retrace_and_traversal_position_error_gain_gp
 extern float minibomber_retrace_and_traversal_heading_error_gain_gp
     SDATA(minibomber_retrace_and_traversal_heading_error_gain_gp);
 
-extern void MobySetAnimation(void *, int, int);
 extern void process_minibomber_hit_reactions(unsigned char *m);
 extern void update_minibomber_target(char *moby);
 extern void ease_minibomber_position_and_heading(char *moby, float *target, float a, float b, float c, float d, float e,
@@ -2273,7 +2254,6 @@ extern void initialize_minibomber_path_following(char *moby);
 extern int advance_minibomber_along_path(char *moby, char *a1, int a2, int a3, float *v, float *vel, float f12,
                                          float f13, float f14, float f15, float f16, float f17, float f18);
 
-extern void clear_u64_value(void *);
 extern void initialize_minibomber_path_retrace(char *moby);
 extern int IsFrameWithinWindow(void *, float);
 extern char *func_L14_00302968(int a0, float *a1, float *a2, float f, int a3);
@@ -2725,11 +2705,9 @@ void ease_minibomber_position_and_heading(char *moby, float *target, float a, fl
         MobySpringTurn_r(moby, a, (float *)(data + 0xE4), e, f, g);
     }
 }
-extern float FastSin(float);
-extern float random_float_between(float, float);
+
 extern char *PartType23Spawn(void *, int, void *, int, float, float, float, float);
 
-extern void build_look_at_matrix(void *, void *, void *, float);
 extern void spawn_two_point_effect_particle(void *, void *);
 extern void mine_camera_blast(void *, void *, int, int);
 extern float oltanis_zero_vector[] MACRO_ADDR;
@@ -2831,7 +2809,6 @@ void hide_minibomber_and_release_voice(char *moby) {
     data->voice = -1;
 }
 
-extern void FastVecSub(void *, void *, void *);
 void func_L14_002B6F68_r(Moby *moby) __asm__("func_L14_002B6F68");
 
 /* Resets the mover's path state, puts the moby on the first node of its active path facing the second, and clears its offset vector. Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/entities/002460f8.c, FUN_L14_002b5d18. */
@@ -3039,9 +3016,7 @@ void update_flying_debris(struct Moby *m) {
 }
 typedef int u128_2BC560 __attribute__((mode(TI)));
 extern struct Moby *func_0020D348(int);
-extern float random_float_between(float, float);
 
-extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
 extern void moby_build_matrix(void *);
 
 // Spawns moby 0x51 at a position facing away from an owner, with random drift and spin parameters.
@@ -3094,10 +3069,9 @@ void remove_flying_debris(char *moby) {
     DeleteMoby(moby);
 }
 
-extern int is_point_inside_clip_volume(void *, int);
 extern f32 IntToFloat(s32);
 void func_00213DE0_D7250(MobyAnim *arg0, int arg1, int arg2, int arg3) __asm__("func_00213DE0");
-extern s32 scale_ticks(s32);
+
 struct L14PathRec {
     u8 pad0[0x10];
     s32 *points; /* 0x10: first word is the point count */
@@ -3430,9 +3404,9 @@ extern short muzzle_light_color_component_z;
 #define D_L14_00161A54 (*(float *)&D_L14_00161B24)
 #define D_L14_00161A58 (*(float *)&D_L14_00161B28)
 extern void Spline_AdvanceByDistance(int a, char *pos, char *b, char *c, int d, float f);
-extern void matrix_from_basis_rows(void *, void *);
+
 extern void sce_vu0_mul_matrix(void *, void *, void *);
-extern void MatrixToQuaternion(void *, void *);
+
 extern void quat_nlerp(void *, void *, void *, float);
 extern void register_beam_slot(struct Moby *, int, int);
 extern int set_beam_origin_transform_and_endpoint(struct Moby *, void *, void *);
@@ -3818,7 +3792,7 @@ void update_tilting_platform(Moby *moby) {
 typedef int u128_s07 __attribute__((mode(TI)));
 extern float platform_tilt_direction_z_offset SDATA(platform_tilt_direction_z_offset);
 extern float platform_max_tilt_degrees SDATA(platform_max_tilt_degrees);
-extern float FastVecDot(void *a, void *b);
+
 extern float FastArcSin(float x);
 
 // Turns a moby's tail toward its target: a spring on each of its three points, with the axis-angle rotation for the
@@ -3900,7 +3874,7 @@ typedef int u128 __attribute__((mode(TI)));
 extern void initialize_ribbon_effect_state(char *);
 extern int Sound_PlayClassSound(int i, int a1, int v, int k);
 extern void register_hero_hit_in_clip_volume(char *);
-extern float FastSin(float);
+
 extern void animate_ribbon_effect_paths(char *);
 
 /* Updates a gem-lock sentry: picks up a sound slot and fires when the player is near. */

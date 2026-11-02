@@ -10,9 +10,7 @@
 #include "asm_functions/shared_levels.h"
 #include "data/level_09.h"
 #include "game/moby/mobyutil.h"
-
-extern float FastSubRots(float, float);
-extern float FastAddRots(float, float);
+#include "asm_functions/executable.h"
 
 /* Store in dst the angle scale of the way from a toward b, wrapped. */
 void interpolate_rotation_angle(float *dst, float a, float b, float scale) {
@@ -22,9 +20,7 @@ void interpolate_rotation_angle(float *dst, float a, float b, float scale) {
 }
 
 extern float g_frame_time MACRO_ADDR;
-extern float FastVecDist(void *, void *);
-extern void FastVecAdd(void *, void *, void *);
-extern void FastVecSub(void *out, void *a, void *b);
+
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 struct Manip;
 struct GifEntry;

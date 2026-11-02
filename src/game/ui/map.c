@@ -5,6 +5,7 @@
 #include "structs/records.h"
 #include "structs/misc.h"
 #include "game/ui/map.h"
+#include "asm_functions/executable.h"
 
 /*
  * map.cpp in the original source; text 0x205520-0x2071A8.
@@ -509,7 +510,6 @@ typedef struct {
     s32 texture_address; /* 0x240 */
 } MapOverlayState;
 
-
 typedef struct {
     s16 pad0;
     s16 image_index;
@@ -563,7 +563,7 @@ extern void func_001F4748(void);
 extern void draw_ui_frame(s32, s32, s32, s32, s32) __asm__("func_001F62C8");
 extern void font_print_window_small(void *, u64, void *, s32);
 extern f32 fast_add_rotations(f32, f32) __asm__("func_001FA748");
-extern f32 func_001FA790(f32, f32);
+
 extern s32 get_icon_frame(s32, s32) __asm__("func_00200198");
 extern u64 func_00200248(s32);
 extern void draw_hud_sprite_subpixel(s32, s32, s32, s32, s32, s32);

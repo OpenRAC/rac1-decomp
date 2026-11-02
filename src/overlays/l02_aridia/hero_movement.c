@@ -26,6 +26,7 @@
 #include "structs/voice.h"
 #include "structs/collision.h"
 #include "structs/hit_message.h"
+#include "asm_functions/executable.h"
 extern int g_controller_state_no_direction;
 extern Hero g_hero;
 
@@ -515,15 +516,14 @@ d1:
 
 extern float frame_scale MACRO_ADDR;
 extern char aridia_coll_resolved_pos[];
-extern void clear_u64_value(void *);
+
 extern void Hero_ConstrainToPath(void);
 extern void HeroOffsetAlongViewZ(float *dst, float *src, float dz);
 extern void HeroMoveDownAlongNormal(float *dst, float *src, float h);
-extern void FastVecAdd(void *, void *, void *);
+
 extern int coll_capsule(float, float, void *, int, int);
 extern int coll_sphere_hero_groups(float, void *);
-extern void FastVecSub(void *, void *, void *);
-extern float FastVecLength(void *);
+
 extern void vec_scale_to_length(void *, void *, float);
 // Probes up to eight candidate camera positions and pulls the camera back if the view is blocked.
 extern Hero hero __asm__("D_0013F450");
@@ -639,10 +639,9 @@ extern float aridia_hero_anim_frame_speeds[];
 extern void build_scaled_hero_move_impulse(float, float);
 
 extern void stick_target(float, int);
-extern void matrix_mul_vec3(void *, void *, void *);
+
 extern void turn_to(int, float, float, float);
 extern int fast_dec_timer(int *);
-extern int scale_ticks(int);
 
 extern void turn_hero_toward_move_direction_for_item(void);
 extern void set_hero_animation(int, int, float);
@@ -659,19 +658,14 @@ extern float vec_length_xy(void *);
 extern int clamp_vec_length_xy(float, void *, void *);
 
 extern float SpringAngle(void *, float, void *, int, float, float, float);
-extern float FastSubRots(float, float);
-extern float FastAddRots(float, float);
+
 extern float ApproachValue(float *, float, float);
-extern float FastCos(float);
-extern float FastSin(float);
+
 extern void ClampVectorLength(void *, float);
 extern int solve_quadratic_equation(float *, float *, float, float, float);
 extern float step_angle_toward_target(float *, int, float, float);
 extern float vec_distance_xy(void *, void *);
-extern float FastDiffRots(float, float);
-extern void euler_to_matrix(void *, void *);
-extern void matrix_from_basis_rows(void *, void *);
-extern void transform_vector(void *, void *, void *);
+
 extern float gravity_z(float *);
 extern float Spring(float *, float *, float, float, float, float);
 extern float forward_component(void *);

@@ -12,6 +12,8 @@
 #include "game/audio/music.h"
 #include "overlays/shared/hero_animation_slots.h"
 #include "overlays/shared/level_gameplay_loading.h"
+#include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
 extern char cd_read_state[];
 extern Hero g_hero;
 
@@ -38,11 +40,6 @@ extern void FastMemSet();
 
 extern void Hero_SetMoveState(int, int);
 
-extern void matrix_mul_vec3(void *, void *, void *);
-extern void FastVecAdd(void *, void *, void *);
-extern float ProbeGroundHeight(void *, int, float);
-extern void clear_u64_value(void *);
-extern float FastAddRots(float, float);
 extern void calculate_dma_transfer_address(void);
 
 extern int sce_gs_sync_v(int);

@@ -7,6 +7,7 @@
 #include "game/render/draw.h"
 #include "asm_functions/level_01.h"
 #include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
 
 /* Blarg commander shot (Blarg Commander): thrown by the commander, falls with mine_fall and bursts. */
 struct CommanderShotVars {
@@ -121,12 +122,10 @@ extern float g_frame_time MACRO_ADDR;
 
 extern void Moby_PlaySound(int, int, void *);
 extern int truncate_float_to_s32(float);
-extern float FastAddRots(float, float);
-extern float FastCos(float);
-extern float FastSin(float);
+
 extern void HeadingFromVector(void *, float *, void *, void *);
 extern void InitKnockback(float, void *, void *, int, int, int);
-extern void MobyBlendAnimation(void *, int, int, int);
+
 typedef struct {
     u8 pad0[0x20];
     Vec4f arc; /* 0x20: filled by FUN_L00_0025c558 */

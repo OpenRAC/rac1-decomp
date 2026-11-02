@@ -9,6 +9,8 @@
 #include "structs/moby.h"
 #include "asm_functions/shared_levels.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
 
 /* Snagglebeast sphere effect: only the draw state is read here. */
 struct SnaggleSphereVars {
@@ -22,9 +24,6 @@ extern float IntToFloat(int);
 extern int truncate_float_to_s32(float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 
-extern void BuildSphericalOffset(void *, float, float, float);
-extern float FastAddRots(float, float);
-extern void FastVecAdd(void *, void *, void *);
 extern void draw_world_quad(void *, int, int);
 extern s32 depth_buffer_address;
 extern s32 umbris_frame_count;

@@ -16,6 +16,8 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+#include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
 extern char g_hero[];
 extern char item_usage[];
 extern unsigned int pad_held;
@@ -34,7 +36,7 @@ extern f32 vec_length_xy(void *);
 extern s32 is_moby_in_class_range_500_to_540(s32);
 extern void transform_hero_local_offset_to_world(Vec4 *, f32, f32, f32);
 extern int coll_line_r(void *from, void *to, int mask, void *ignore, int) __asm__("func_L00_001EFFF0");
-extern f32 FastVecDist(void *, void *);
+
 extern s32 coll_sphere(f32, Vec4 *, s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/hero/00221310.c, FUN_L00_00221310. */
@@ -120,7 +122,7 @@ extern u8 D_0013D5EA NOT_SDA;
 extern f32 g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern void update_hero_tilt_r(void) __asm__("func_L00_00216D40");
 extern s32 fast_dec_timer_r(s32 *) __asm__("func_001F9908");
-extern s16 func_001F9938(s16 *);
+
 extern void func_L00_002111E8(void);
 extern s32 scale_ticks_r(s32) __asm__("func_001F9850");
 extern s32 pad_pressed_within_r(s32, s32, s32) __asm__("func_L00_00267BA8");
@@ -130,7 +132,7 @@ extern void func_L00_002110C0(s32, s32, struct Moby *);
 extern f32 func_L00_002342F8(void *);
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
-extern void func_001F9BD8(void *, void *, void *);
+
 extern void func_001F9C30(void *, void *, f32);
 extern f32 FastVecLength_r(void *) __asm__("func_001F9CB8");
 extern void update_hero_planar_distance_spring_motion_r(void) __asm__("func_L00_002222F0");
@@ -284,13 +286,10 @@ skip:
 extern unsigned char hero_globals_base[] NOT_SDA;
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;
-extern float FastVecLength(void *);
-extern int scale_ticks(int);
+
 extern float vec_distance_xy(void *, void *);
 
 extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
-extern float FastCos(float);
-extern float FastSin(float);
 
 // Steers the player's slide: starts it when a dash ends near a wall, then aims its velocity.
 void update_hero_planar_distance_spring_motion(void) {
@@ -333,7 +332,7 @@ void update_hero_planar_distance_spring_motion(void) {
         p->unk244.i = 0;
     }
 }
-extern int scale_ticks(int);
+
 extern int stick_direction_vs_facing(void);
 /* Returns a tick count for the stick tilt. */
 int get_hero_high_jump_input_window_frames(void) {
@@ -347,8 +346,6 @@ int get_hero_high_jump_input_window_frames(void) {
     return r;
 }
 extern void stick_target(int, float);
-extern float FastSubRots(float, float);
-extern float FastDiffRots(float, float);
 
 // Classifies the stick direction into one of four quadrants (2, 3, 1 or 0).
 int stick_direction_vs_facing(void) {
@@ -368,9 +365,9 @@ int stick_direction_vs_facing(void) {
     return r;
 }
 extern char *suck_moby_list MACRO_ADDR;
-extern float FastVecDist(void *, void *);
+
 extern float score_hero_target_candidate(void *, int *, float, float, float, float);
-extern int is_point_inside_clip_volume(void *, int);
+
 extern int coll_line(void *, void *, int, int, int);
 
 typedef struct Q_221ee0 {
@@ -558,9 +555,9 @@ extern void create_missing_hero_item_slot_animations(int a, int b);
 
 extern void set_hero_idle_state_for_vehicle_mode(void);
 extern int hero_idle_sequence(int a);
-extern void clear_u64_value(void *);
+
 extern void set_hero_animation(int, int, float);
-extern void MobyBlendAnimation(void *, int, int, int);
+
 extern void ClampVectorLength(void *a, float x);
 extern float vec_length_xy(void *);
 extern void cancel_hero_item_animation(void);
@@ -576,16 +573,15 @@ extern int truncate_float_to_s32(float);
 extern void update_hero_target_heading(float a, float b, float c);
 extern char *hero_slot_moby(int);
 extern int is_wrench_moby(char *);
-extern float FastAddRots(float, float);
+
 extern void *MobyGetHitMessage(void *, int, int);
 
 extern int hero_is_in_special_state(void);
 extern void release_and_clear_hero_voice_slots(void);
 extern void Spline_AdvanceByDistance(int a, char *pos, char *b, char *c, int d, float f);
-extern void FastVecSub(void *dst, void *a, void *b);
-extern float FastVecLength(void *a);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern float FastVecDot(void *a, void *b);
+
 extern void get_moby_color(void *, void *, void *, void *);
 extern int Moby_PlaySound(int, int, int);
 extern void RippleDisturb(int, int, int, float, float, float, float);

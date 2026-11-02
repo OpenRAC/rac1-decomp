@@ -179,7 +179,7 @@ void update_trick_combo_hud(char *a) {
 }
 extern int sprintf_r(char *, const char *, ...) __asm__("func_00116248");
 extern float IntToFloat(int);
-extern int FastTweenColor(int, int, float);
+
 extern int FontPrintCenterLarge_x(int, int, u64, int, int) __asm__("func_001F6FD8");
 extern char *msg_string_r(int) __asm__("func_001FE540");
 extern void draw_framed_text(int, int, int, int);
@@ -187,7 +187,6 @@ extern int hud_screen_position(void *rec, int *x, int *y);
 
 extern void draw_cropped_hud_sprite(int, int, int, int, int, int);
 
-extern float FastSin(float);
 extern char rilgar_fmt_number[];
 extern char rilgar_fmt_count_and_word[];
 extern char rilgar_fmt_string[];

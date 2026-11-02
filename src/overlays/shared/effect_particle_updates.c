@@ -14,13 +14,11 @@
 #include "game/math/fastfunc.h"
 #include "game/moby/mobyutil.h"
 #include "enums/hero_state.h"
+#include "asm_functions/executable.h"
 extern Hero g_hero;
 
-extern void load_display_text_resource_entry(float *arg0, int *arg1);
-extern void FastVecAdd(void *, void *, void *);
 extern float IntToFloat(int);
-extern int FastTweenColor(int, int, float);
-extern int FastDecTimer(void *);
+
 extern void lerp_vector(void *, void *, void *, float);
 
 extern int level_frame_counter MACRO_ADDR;
@@ -89,15 +87,9 @@ void update_three_phase_effect_particle(struct PartBase *m) {
         }
     }
 }
-extern int scale_ticks(int);
+
 extern int coll_sphere(float, void *, int, void *);
-extern float FastCos(float);
-extern float FastSin(float);
-extern float FastVecDist(void *, void *);
 
-extern float FastSubRots(float, float);
-
-extern float FastAddRots(float, float);
 extern int coll_line(void *, void *, int, int, int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern int rand_range(int, int);
@@ -232,9 +224,8 @@ void PartType04Spawn(void *a, void *b, int c, int d, int n, int s1, int s2, int 
 }
 extern float IntToFloat(int);
 extern void FastVecScale(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
+
 extern int DefaultVtbl_DeleteMoby(int, int, float);
-extern int FastDecTimer(void *);
 
 extern float frame_scale MACRO_ADDR;
 
@@ -279,7 +270,6 @@ void PartType05Spawn(void *pos, unsigned char c0, unsigned char c1, unsigned cha
     }
 }
 extern int fast_dec_timer(void *);
-extern int scale_ticks(int);
 
 /* Type 5 particle update: kills it once the timer at +0x20 runs out (fast_dec_timer), else grows its size (+0xC)
    by the rate at +0x24 and, over the last 6 ticks, fades the colour's alpha byte out. */
@@ -298,8 +288,6 @@ extern void subtract_homogeneous_scaled_vector_xyz(void *, void *, void *, float
 extern void vec_scale_to_length(void *, void *, float);
 extern float IntToFloat(int);
 extern int truncate_float_to_s32(float);
-extern void euler_to_matrix(void *, void *);
-extern void transform_vector(void *, void *, void *);
 
 extern f32 coll_hit_normal[];
 typedef int u128_6AB __attribute__((mode(TI)));
@@ -795,7 +783,7 @@ void update_branching_and_fading_effect_particle(struct PartBase *m) {
 }
 extern unsigned char *create_part2(int, int);
 extern float randf_sym(float, float);
-extern float multiply_global_factor(float);
+
 extern int truncate_float_to_s32(float);
 extern unsigned swap_packed_color_channels(unsigned, int);
 extern int spin_particle_start_color_from SDATA(spin_particle_start_color_from);
@@ -899,7 +887,7 @@ extern float spin_particle_speed_decay SDATA(spin_particle_speed_decay);
 extern float spin_particle_rise_speed SDATA(spin_particle_rise_speed);
 extern float spin_particle_alt_end_size SDATA(spin_particle_alt_end_size);
 extern float spin_particle_end_size SDATA(spin_particle_end_size);
-extern float FastVecLength(void *);
+
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 
 /* per-frame update of a spinning particle: fades, scales and kills it when out of range */
@@ -1011,7 +999,7 @@ void update_spinning_fade_in_out_effect_particle(struct PartBase *particle) {
         }
     }
 }
-extern void FastVecSub(void *, void *, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
 extern char g_debug_camera[];
 
@@ -1264,7 +1252,7 @@ void update_fading_debris_particle_with_landing_spawn(struct PartBase *m) {
 typedef u32 u128_6D270 __attribute__((mode(TI), aligned(16)));
 extern unsigned char *part_type18_textures;
 extern unsigned char *create_part_r(int) __asm__("func_00218928");
-extern void transform_vector(void *, void *, void *);
+
 extern int truncate_float_to_s32(float);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering_00269290.c, FUN_L00_0026c3d0. */
@@ -1354,7 +1342,6 @@ void spawn_two_point_effect_particle(char *pos, char *vel) {
         *(float *)(p + 0x2C) = 0.5f;
     }
 }
-extern void FastVecAdd(void *, void *, void *);
 
 /* Type 19 particle update: moves the position and the second point (+0x20) by the velocity at +0x30, takes 6 off the
    colour's alpha byte each frame (the colour is mirrored into +0xC) and kills the particle once the alpha wraps below
@@ -1494,7 +1481,7 @@ typedef struct {
     float x, y, z, w;
 } __attribute__((aligned(16))) V4;
 extern float g_frame_scale_sq MACRO_ADDR;
-extern float FastVecLength(void *);
+
 extern char *PartType21Spawn(void *pos, void *dir, int c, int d, int n, int k, float f);
 
 /* Per-frame update of a particle that drifts by its velocity and fades; sparks off a child particle at random. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/rendering_00269290.c, FUN_L00_0026ccb0. */
@@ -1774,7 +1761,6 @@ typedef struct PartType25Data {
 } PartType25Data;
 
 extern PartQ collision_hit_point_q __asm__("D_L00_00173F60") NOT_SDA;
-extern void clear_u64_value(void *);
 
 /* Per-frame update of a fading, bouncing spark particle: moves it, bounces off geometry, dims its colour and kills it when spent. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/rendering_00269290.c, FUN_L00_0026d700. */
 extern s32 D_001414D0 __asm__("D_001414D0") NOT_SDA;
@@ -2090,7 +2076,7 @@ typedef struct PartType29Data {
 
 extern u8 *part_type29_textures;
 extern f32 g_debug_camera_r2[4] __asm__("D_L00_00166EC0");
-extern s32 FastDecTimer(void *);
+
 extern s32 truncate_float_to_s32(f32);
 extern void Moby_GetJointWorldPos(void *, s32, void *);
 extern void vec_scale_to_length(void *, void *, f32);
@@ -2413,7 +2399,6 @@ void update_moby_bound_fade_in_out_effect_particle(char *m) {
         ((struct PartBase *)m)->size = *(float *)(*(char **)(m + 0x20) + 0x2C) * 100000.0f * 30.0f + 50000.0f;
     }
 }
-extern int FastDecTimer(void *);
 
 /* Type 33 particle update: counts the timer at +0xA down and kills the particle when it expires. */
 void tick_effect_particle_lifetime(struct PartBase *a) {
@@ -2422,7 +2407,7 @@ void tick_effect_particle_lifetime(struct PartBase *a) {
     }
 }
 extern int rand_range(int, int);
-extern float random_angle_radians(void);
+
 extern char *part_type34_textures;
 extern float g_frame_time MACRO_ADDR;
 
@@ -2839,7 +2824,7 @@ extern s32 FastDecTimer_r3(s16 *) __asm__("func_001F9938");
 extern void FastVecScale(void *, void *, f32);
 extern struct PartBase *spawn_splitting_effect_particle_with_collision_response_and_fade_r(
     void *, void *, s32, void *) __asm__("func_L00_00270BC8");
-extern s32 scale_ticks(s32);
+
 extern s32 coll_line_r(void *, void *, s32, void *, void *) __asm__("func_L00_001EFFF0");
 extern void vec_scale_to_length(void *, void *, f32);
 

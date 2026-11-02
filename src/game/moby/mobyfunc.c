@@ -6,6 +6,7 @@
 #include "game/render/draw.h"
 #include "game/render/vuchain.h"
 #include "data/executable.h"
+#include "asm_functions/executable.h"
 
 /*
  * mobyfunc.cpp in the original source; text 0x20D348-0x20E6B8.
@@ -415,8 +416,6 @@ void prune_moby_references(void) {
    extract_matrix_rotation_quaternion site; this one passes a source as well. */
 extern void func_001FA460(void *, void *);
 extern void FastVecScale(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
-extern void matrix_mul_vec3(void *, void *, void *);
 
 /* Scale the single vertex block at arg2+0x30 by the object's 0x2C field
    in 1/1024 units, then run it through the two per-object transforms at
@@ -561,8 +560,6 @@ void PatchMobyGifs(void) {
 
 extern int g_hero_moby NOT_SDA;
 extern float shadow_light_dir[] NOT_SDA;
-extern float FastCos(float);
-extern float FastSin(float);
 
 /* Sets the shadow light direction from the light direction at the hero. */
 void update_resident_packed_direction(void) {

@@ -6,6 +6,7 @@
 #include "asm_functions/shared_levels.h"
 #include "game/math/fastfunc.h"
 #include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
 
 typedef struct {
     unsigned char b0, b1, b2, b3;
@@ -27,10 +28,7 @@ typedef struct {
 extern Sky *D_sky __asm__("D_L00_001605DC") MACRO_ADDR;
 extern int func_001160D8(void);
 
-extern float random_angle_radians(void);
 extern float IntToFloat(int);
-extern float FastCos(float);
-extern float FastSin(float);
 
 /* Fills the sky particle list: entries from a up are dim specks, the first a are coloured sparks with random direction and speed. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_00288ec0.c, FUN_L00_00288ec0. */
 void sky_particles_init(int a, int b) {
@@ -95,8 +93,6 @@ typedef struct {
 } G_289108;
 extern G_289108 *sky_data_g __asm__("D_L00_001605DC") MACRO_ADDR;
 extern float IntToFloat(int);
-extern float FastCos(float);
-extern float FastSin(float);
 
 extern int func_001160D8(void);
 
@@ -396,11 +392,9 @@ extern u8 sky_shell_matrix_r[] __asm__("D_L00_001BDB70");
 extern u8 sky_pair_particle_positions[];
 extern void SkyDrawShell(s32);
 extern s32 func_001160D8(void);
-extern f32 random_angle_radians(void);
 
 extern f32 IntToFloat(s32);
-extern f32 FastCos(f32);
-extern f32 FastSin(f32);
+
 extern void VU1_addGSregister_r(s32, u64) __asm__("func_00234C98");
 
 /* Initializes and steps three types of sky particles before drawing the sky layer. Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_00288ec0.c, FUN_L00_00289cb8. */

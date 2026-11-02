@@ -2,6 +2,7 @@
    Starts at 0x001FD1D8 (was drawquad_001FD1D8.c). */
 #include "common.h"
 #include "include_asm.h"
+#include "asm_functions/executable.h"
 
 ASM_FUNC("asm/overlays", func_L00_001FD1D8);
 INCLUDE_ASM("asm/overlays", func_L00_001FD428);
@@ -41,7 +42,7 @@ typedef struct {
 } P;
 extern P glints[16];
 extern float g_frame_time MACRO_ADDR;
-extern float FastSubRots(float, float);
+
 extern void FastMemSet(void *, int, int);
 
 /* Age the 16 glints: spin them, grow then shrink their angle, and clear dead ones. */

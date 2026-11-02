@@ -17,6 +17,8 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+#include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
 extern Hero g_hero NOT_SDA;
 extern char item_usage[];
 extern int pad_held;
@@ -63,9 +65,7 @@ extern float D_L00_001617AC MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
 extern void DeleteMoby(void *);
-extern void clear_u64_value(void *);
-extern void matrix_mul_vec3(void *, void *, void *);
-extern void FastVecAdd(void *, void *, void *);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 /* Update a trailing moby: advance its timer, delete it when done or its owner died, else follow the owner. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002d7f88.c, FUN_L00_002d7f88. */
@@ -209,12 +209,11 @@ extern int nanotech_ball_collection_first_particle_color SDATA(nanotech_ball_col
 extern int nanotech_ball_collection_second_particle_color SDATA(nanotech_ball_collection_second_particle_color);
 extern float nanotech_spark_size_a SDATA(nanotech_spark_size_a);
 extern float nanotech_spark_size_b SDATA(nanotech_spark_size_b);
-extern void FastVecSub(void *, void *, void *);
-extern float random_float_between(float, float);
+
 extern void FastVecScale(void *, void *, float);
-extern float random_angle_radians(void);
-extern void build_look_at_matrix(void *, void *, float, void *);
-extern int random_integer_below(int);
+
+extern void build_look_at_matrix_v(void *, void *, float, void *) __asm__("func_002156E0");
+
 extern void spawn_moving_hero_relative_alpha_fade_particle(void *, void *, int, int, int, int, float);
 
 /* Build a direction to the target, scale it and emit two effect pieces from the moby's position. */
@@ -227,7 +226,7 @@ void spawn_nanotech_ball_collection_effect_pair(Moby *m) {
     FastVecScale(
         &b, &g_hero.gravity_dir,
         random_float_between(nanotech_spark_speed_min * g_frame_time, nanotech_spark_speed_max * g_frame_time));
-    build_look_at_matrix(&c, &b, random_angle_radians(), &a);
+    build_look_at_matrix_v(&c, &b, random_angle_radians(), &a);
     spawn_moving_hero_relative_alpha_fade_particle(p, &c, nanotech_ball_collection_first_particle_color,
                                                    nanotech_spark_life, random_integer_below(0xFF) & 0xFF, 1,
                                                    nanotech_spark_size_a);
@@ -326,17 +325,16 @@ typedef struct {
     float x, y, z, w;
 } Vz __attribute__((aligned(16)));
 extern char nanotech_slot_offsets[] NOT_SDA;
-extern void build_look_at_matrix(void *, void *, float, void *);
+extern void build_look_at_matrix_v(void *, void *, float, void *) __asm__("func_002156E0");
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
 
 /* World position of nanotech ball slot i. */
 void compute_nanotech_ball_slot_position(char *m, float *out, int i) {
     Vz v;
     char *pv = ((char *)((Moby *)m)->pvars);
     char *o;
-    build_look_at_matrix(&v, nanotech_slot_offsets + i * 16, ((struct NanotechBallVars *)pv)->look_dist,
-                         ((struct NanotechBallVars *)pv)->look_at);
+    build_look_at_matrix_v(&v, nanotech_slot_offsets + i * 16, ((struct NanotechBallVars *)pv)->look_dist,
+                           ((struct NanotechBallVars *)pv)->look_at);
     o = *(char **)(pv + (i << 2) + 0x30);
     if (o != 0 && ((Moby *)m)->state == 2) {
         vec_scale_to_length(&v, &v, *(float *)(o + 0x28));
@@ -352,8 +350,8 @@ extern float nanotech_slot_orbit_radius SDATA(nanotech_slot_orbit_radius);
 void update_nanotech_ball_slot_offsets(void) {
     int i;
     for (i = 0; i < 8; i++) {
-        build_look_at_matrix(nanotech_slot_offsets + i * 16, nanotech_slot_offsets + i * 16, nanotech_slot_spin_step,
-                             nanotech_slot_spin_axes + i * 16);
+        build_look_at_matrix_v(nanotech_slot_offsets + i * 16, nanotech_slot_offsets + i * 16, nanotech_slot_spin_step,
+                               nanotech_slot_spin_axes + i * 16);
         vec_scale_to_length(nanotech_slot_offsets + i * 16, nanotech_slot_offsets + i * 16, nanotech_slot_orbit_radius);
     }
 }
@@ -993,7 +991,7 @@ int is_suck_cannon_suction_blocked_by_hero_state(void) {
 typedef struct {
     int a[16];
 } V __attribute__((aligned(16)));
-extern void euler_to_matrix(void *, void *);
+
 extern void copy_matrix_rotation(void *, void *);
 extern void matrix_copy_rows(void *, void *);
 extern void moby_anim_sphere_lerp(void *);
@@ -1009,8 +1007,7 @@ void compose_moby_rotation_with_euler_offset(char *a, char *b, void *c) {
 }
 extern Hero g_hero_r __asm__("D_0013F450") __attribute__((section(".data")));
 extern unsigned char gGoldSuckCannon_r __asm__("D_0013E629") __attribute__((section(".data")));
-extern int scale_ticks(int);
-extern void MobyBlendAnimation(void *, int, int, int);
+
 extern float vec_distance_xy(void *, void *);
 
 /* Lets moby m take a free hero slot once its handler accepts (returns 2); returns the handler's result. */
@@ -1068,7 +1065,7 @@ int invoke_optional_moby_callback_or_return_one(char *a, void *b) {
     return 1;
 }
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void matrix_mul_vec3(void *, void *, void *);
+
 extern char player_camera[];
 
 /* picks camera yaw/pitch style outputs and a position offset per camera mode */
@@ -1123,7 +1120,7 @@ extern R *get_moby_suck_cannon_record_r(M_da360 *) __asm__("func_L00_002DCD40");
 extern f32 vec_distance_xy(void *, void *);
 extern s32 is_suck_cannon_suction_blocked_by_hero_state(void);
 extern f32 fast_atan2(f32, f32);
-extern f32 FastDiffRots(f32, f32);
+
 extern s32 coll_line_r(void *, Vec4f *, s32, M_da360 *, s32) __asm__("func_L00_001EFFF0");
 extern int process_suck_cannon_suction_candidate(u8 *, void *, void *, void *, void *);
 extern void dispatch_suck_cannon_suction_cancel_r(M_da360 *) __asm__("func_L00_002DB690");
@@ -1349,8 +1346,7 @@ extern void hud_draw_gauge_frame(void);
 extern int queue_animation_update(int, int, int, int, int, int, int);
 extern void suck_beam_queue_draw(int);
 extern void refresh_suck_cannon_slots(void);
-extern s32 scale_ticks(s32);
-extern void MobyBlendAnimation(void *, int, int, int);
+
 extern void reset_suck40(M40 *) __asm__("func_L00_002DF150");
 
 extern int is_suck_cannon_suction_blocked_by_hero_state(void);
@@ -1361,13 +1357,11 @@ extern void stop_suck_cannon_suction_effect(int);
 extern void update_suck_cannon_suction(u8 *, void *);
 extern void HeroEnterMoveState(int, int);
 extern void matrix_copy_rows(void *, void *);
-extern void matrix_from_basis_rows(void *, void *);
-extern void transform_vector(void *, void *, void *);
-extern void FastVecAdd(void *, void *, void *);
+
 extern int coll_line(void *, void *, int, int, int);
 extern void func_L00_001EE2E0(int, int, float, float, int, int, int, float, int);
 extern float MobyGetFrameValue(M40 *);
-extern void matrix_mul_vec3(void *, void *, void *);
+
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern float fast_atan2(float, float);
 extern float vec_length_xy(void *);
@@ -1377,10 +1371,7 @@ typedef struct {
 } AimHeight40;
 extern AimHeight40 *get_aim40(void *) __asm__("func_L00_0025D390");
 extern float vec_distance_xy(void *, void *);
-extern float FastDiffRots(float, float);
-extern float FastVecDist(void *, void *);
 
-extern void BuildSphericalOffset(void *, float, float, float);
 extern float FastArcSin(float);
 extern void compose_moby_rotation_with_euler_offset(char *, char *, void *);
 
@@ -1850,8 +1841,6 @@ extern short suck_cannon_stored_rot_offset;
 extern char *get_moby_suck_cannon_record(char *);
 extern int Moby_PlaySound(int, int, int);
 extern void SetDeathBits(void *, int, int);
-extern int scale_ticks(int);
-extern void MobyBlendAnimation(void *, int, int, int);
 
 /* Place a moby at the given position under its owner, reset its owner's state to 4 and start the matching animation. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002d7f88.c, FUN_L00_002dbb20. */
 int store_moby_in_suck_cannon(unsigned char *m, void *v) {
@@ -1879,8 +1868,7 @@ int store_moby_in_suck_cannon(unsigned char *m, void *v) {
     return 0;
 }
 extern char *get_moby_suck_cannon_record(char *);
-extern int scale_ticks(int);
-extern void MobyBlendAnimation(void *, int, int, int);
+
 extern char *GetFlaggedPvarWord(void *);
 extern float vec_distance_xy(void *, void *);
 extern int Moby_PlaySound(int, int, int);
@@ -1992,8 +1980,7 @@ extern B50_DD3D8 suck_cannon_blast_params;
 extern I6_DD3D8 suck_cannon_explosion_colors_a;
 extern I6_DD3D8 suck_cannon_explosion_colors_b;
 extern int *coll_sphere_moby_hits[];
-extern float FastVecDot(void *, void *);
-extern float FastVecLength(void *);
+
 extern int rand_range(int, int);
 
 extern void clamp_vec_length(void *, void *, float);
@@ -2272,7 +2259,7 @@ extern void extract_matrix_rotation_quaternion_r(void *, void *) __asm__("func_0
 extern void euler_to_matrix_r(void *, void *) __asm__("func_001FA218");
 extern void copy_matrix_rotation_r(void *, void *) __asm__("func_001FA460");
 extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
-extern void func_002150B0(void *, void *);
+
 extern void quat_nlerp_r(void *, void *, void *, float) __asm__("func_001FA5C8");
 extern void func_001FA6C0(void *, void *);
 extern void matrix_copy_rows_r(void *, void *) __asm__("func_001FA480");
@@ -2300,7 +2287,7 @@ extern int coll_sphere_mobys_r2(float, void *, int, void *, void *) __asm__("fun
 extern int func_L00_001F10E0(float, void *, int, void *);
 extern float normalize_angle_r(float) __asm__("func_L00_0025F368");
 extern void FastVecCross_r2(void *, void *, void *) __asm__("func_001F9CA0");
-extern void func_00215380(void *, void *, float);
+
 extern void multiply_quaternions_r(void *, void *, void *) __asm__("func_001FA588");
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
@@ -2612,8 +2599,7 @@ extern float suck_beam_scroll_speed SDATA(suck_beam_scroll_speed);
 extern char suck_beam_ring_vertices[];
 extern char suck_beam_ring_vertices_base[];
 extern int GetEffectTex(int);
-extern void FastVecCross(void *, void *, void *);
-extern float FastVecDot(void *, void *);
+
 extern void draw_world_quad(void *, void *, int);
 extern void VU1_addGSregister(int, long);
 
@@ -2775,7 +2761,7 @@ void suck_beam_build(char *a, char *b) {
     *(float *)((char *)s + 0x6C) = 1.0f;
     {
         float f = random_angle_radians();
-        build_look_at_matrix(suck_beam_wobble_to, (char *)s + 0x50, f, (char *)s + 0x60);
+        build_look_at_matrix_v(suck_beam_wobble_to, (char *)s + 0x50, f, (char *)s + 0x60);
         suck_beam_wobble_angle = f;
     }
     suck_beam_scroll_speed = 0.006f;
@@ -2841,9 +2827,6 @@ extern V41 suck_beam_ring_unit_offsets[];
 extern float suck_beam_segment_turn_angles[];
 extern char collision_hit_point[];
 
-extern float FastAddRots(float, float);
-extern float FastSin(float);
-extern float FastSubRots(float, float);
 extern void LerpVec4(void *, void *, void *, float);
 extern void KillPart(void *);
 extern void lerp_vector(void *, void *, void *, float);
@@ -2921,7 +2904,7 @@ void suck_beam_update(void *moby, void *position) {
         tmp_b.f.x = 1.0f;
         tmp_b.f.w = 1.0f;
         angle = FastAddRots(suck_beam_wobble_angle, random_float_between(45.0f, 315.0f) * 0.0174532924f);
-        build_look_at_matrix(&(*(V41 *)suck_beam_wobble_to), &tmp_a, angle, &tmp_b);
+        build_look_at_matrix_v(&(*(V41 *)suck_beam_wobble_to), &tmp_a, angle, &tmp_b);
         suck_beam_wobble_angle = angle;
         (suck_beam_init_zero_0) = 0;
     }
@@ -2955,7 +2938,7 @@ void suck_beam_update(void *moby, void *position) {
             }
             if (FastAbsF(delta) > 0.31415927f)
                 turn = FastAddRots(turn, FastSubRots(delta, 0.31415927f));
-            build_look_at_matrix(&motion, &tmp_a, turn, &tmp_c);
+            build_look_at_matrix_v(&motion, &tmp_a, turn, &tmp_c);
             vec_scale_to_length(&tmp_d, &motion, suck_beam_segment_length);
             lerp_vector(&motion, &motion, &tmp_d, 1.0f);
             {
@@ -3128,7 +3111,7 @@ void suck_beam_queue_draw(int arg0) {
     }
 }
 extern float suck_beam_scroll_speed SDATA(suck_beam_scroll_speed);
-extern float FastVecLength(void *);
+
 typedef float VQ[4] __attribute__((aligned(16)));
 
 /* pull each active entry's marker toward its target, then update the rest */
@@ -3160,7 +3143,6 @@ void stop_suck_cannon_suction_effect(int arg0) {
     suck_beam_queue_draw(arg0);
 }
 
-extern float FastVecDist(void *, void *);
 extern void begin_bolt_attraction(void *, int, float, float);
 extern void try_collect_ammo_pickup(void *);
 
@@ -3244,9 +3226,7 @@ void enqueue_red_orb_group_draw_if_cache_changed(Moby *m) {
         AddDrawCallback((void (*)(void))draw_red_orb_group_effect_quads, (int)m);
     }
 }
-extern float FastAddRots(float, float);
-extern float FastSin(float);
-extern int FastTweenColor(int, int, float);
+
 extern void set_moby_color(void *, int, int, int);
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern float red_orb_pulse_speed_deg SDATA(red_orb_pulse_speed_deg);
@@ -3294,7 +3274,7 @@ void quad_moby_update(Moby *a) {
     update_instance_attachment_points_and_lengths(a);
 }
 extern void AttachManipulator(char *, int, void *);
-extern float FastAddRots(float, float);
+
 extern void axis_rotation_2d48(void *, int, float);
 extern float vendor_orb_spin_speed_deg SDATA(vendor_orb_spin_speed_deg);
 
@@ -3386,7 +3366,7 @@ extern int func_L00_002E1790(Moby *);
 extern int HeroEnterMoveState_r(int, int) __asm__("func_L00_00222B80");
 extern void func_L00_00232C10(int, int, float);
 extern void CameraScript_r(void *, void *, int, int, int) __asm__("func_L00_002EBF50");
-extern float func_001F9878(float);
+
 extern int truncate_float_to_s32_r3(float) __asm__("func_001FA898");
 extern void func_L00_002E17F0(Moby *);
 extern float func_00214D28(float *, float, float);

@@ -9,6 +9,7 @@
 #include "data/executable.h"
 #include "game/math/fastfunc.h"
 #include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
 
 /*
  * skyfunc.cpp in the original source; text 0x22BEB0-0x22CEB8.
@@ -16,13 +17,7 @@
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-extern float FastCos(float);
-extern float FastSin(float);
-
 extern int func_001160D8(void);
-extern float random_angle_radians(void);
-
-extern float FastAddRots(float, float);
 
 LINKER_REMNANT("asm/remnants/text", func_0022BEB0);
 
@@ -135,13 +130,10 @@ struct SkyEffect {
 extern struct LevelSkyEffectData *level_sky_effect_data_r2 __asm__("D_0016055C") MACRO_ADDR;
 extern u8 sky_matrix[];
 
-extern f32 FastCos(f32);
-extern f32 FastSin(f32);
 extern void set_identity_matrix(u8 *);
-extern f32 FastAddRots(f32, f32);
+
 extern f32 IntToFloat(s32);
 
-extern f32 random_angle_radians();
 extern void SkyDrawShell(s32);
 extern void SkySpriteProc();
 extern void VU1_addGSregister_r(s32, u64) __asm__("func_00234C98");
@@ -273,7 +265,7 @@ extern struct SkyShellSet *level_sky_effect_data_r3 __asm__("D_0016055C") MACRO_
 extern u8 sky_shell_translation_r2[] __asm__("D_00160560") MACRO_ADDR;
 extern struct SkyTransform sky_matrix_r2 __asm__("D_001D9A70");
 extern s32 D_0015EF88 MACRO_ADDR;
-extern void clear_u64_value(f32 *);
+
 extern void scale_vector(void *, void *, f32);
 extern void set_identity_matrix_r2(void *) __asm__("func_001FA190");
 extern void euler_to_matrix_ee(void *, f32 *);

@@ -25,6 +25,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "structs/small_records.h"
 #include "enums/hero_state.h"
+#include "asm_functions/executable.h"
 extern Hero g_hero;
 extern u8 gSpecialItems[];
 extern int pad0_pressed;
@@ -89,11 +90,9 @@ extern char dual_mesh50_normals[][16];
 extern long GetEffectTex_r(int) __asm__("func_001F4868");
 extern void set_identity_matrix(void *);
 extern void FastVecScale(void *, void *, float);
-extern void transform_vector(void *, void *, void *);
-extern void FastVecSub(void *, void *, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern void matrix_mul_vec3(void *, void *, void *);
-extern float FastVecDot(void *, void *);
+
 extern void draw_world_quad(void *, void *, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l06/gameplay/entities/002fd1a0.c, FUN_L06_002fd1a0. */
@@ -181,11 +180,9 @@ extern char dual_mesh58_normals[][16];
 extern long GetEffectTex_r2(int) __asm__("func_001F4868");
 extern void set_identity_matrix(void *);
 extern void FastVecScale(void *, void *, float);
-extern void transform_vector(void *, void *, void *);
-extern void FastVecSub(void *, void *, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern void matrix_mul_vec3(void *, void *, void *);
-extern float FastVecDot(void *, void *);
+
 extern void draw_world_quad(void *, void *, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l06/gameplay/entities/002fd1a0.c, FUN_L06_002fd460. */
@@ -283,11 +280,9 @@ extern char dual_mesh864_normals[][16];
 extern long GetEffectTex_r3(int) __asm__("func_001F4868");
 extern void set_identity_matrix(void *);
 extern void FastVecScale(void *, void *, float);
-extern void transform_vector(void *, void *, void *);
-extern void FastVecSub(void *, void *, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern void matrix_mul_vec3(void *, void *, void *);
-extern float FastVecDot(void *, void *);
+
 extern void draw_world_quad(void *, void *, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l06/gameplay/entities/002fd1a0.c, FUN_L06_002fd748. */
@@ -358,11 +353,8 @@ void draw_dual_texture_864_quad_mesh(void) {
 extern char hero_globals_base[];
 
 extern char *level_mobys_q_p __asm__("D_L06_00160058") MACRO_ADDR;
-extern int is_point_inside_clip_volume(void *, int);
-extern void MobyBlendAnimation(void *, int, int, int);
-extern int fast_dec_timer(void *);
 
-extern int scale_ticks(int);
+extern int fast_dec_timer(void *);
 
 /* Trigger moby: waits for the hero in its zone, plays its open animation, then launches a listed moby. */
 void update_clip_volume_moby_activation_trigger(char *m) {
@@ -437,7 +429,7 @@ extern float vec_distance_xy(void *, void *);
 extern float IntToFloat(int);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void lerp_vector(void *, void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
+
 extern void Hero_ResetToPosition(void *, void *, int, int);
 
 extern void set_camera_rotation(void *);
@@ -650,10 +642,6 @@ void update_moby_camera_sequence_and_draw_selection(char *moby) {
 extern char *CreateMoby(int);
 extern void moby_build_matrix(void *);
 
-extern float random_angle_radians(void);
-extern float FastCos(float);
-extern float FastSin(float);
-extern void FastVecAdd(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern void spawn_spinning_moby_fragment(void *, void *, void *);
 extern float blarg_tube_base_z SDATA(blarg_tube_base_z);
@@ -818,7 +806,7 @@ void effect_quad_draw_single(void) {
 }
 extern void DeleteMoby(void *);
 extern float IntToFloat(int);
-extern void FastVecAdd(void *, void *, void *);
+
 extern int blarg_frame_count MACRO_ADDR;
 extern char hero_globals_base[] NOT_SDA;
 extern float blarg_bobbing_moby_amplitude SDATA(blarg_bobbing_moby_amplitude);
@@ -904,14 +892,14 @@ typedef struct Busy {
 } Busy;
 
 extern void attach_shared_manipulator_to_matching_class_moby(char *);
-extern float FastVecDist(void *, void *);
+
 extern void set_ground_height_band(void *);
 extern void set_moby_and_links_to_states_8_and_9(char *);
 extern void set_moby_and_links_to_states_4_and_5(char *);
-extern float ProbeGroundHeight(void *, int, float);
+
 extern int DialogRequest_Init(void *, void *);
 extern int check_all_listed_frog_states_fe_fd_or_10(int);
-extern int FastDecTimer(void *);
+
 extern int Npc_TryStartDialog(void *, void *);
 
 extern int memcard_Save(int, int);
@@ -920,19 +908,15 @@ extern int Help_Request(int a, int b);
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void lerp_vector(void *, void *, void *, float);
-extern float FastSubRots(float, float);
-extern float FastAddRots(float, float);
+
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
 extern float ApproachValue(float *, float, float);
 
 extern float vec_distance_xy(void *, void *);
 
-extern float FastDiffRots(float, float);
-extern float FastVecLength(void *);
-extern float multiply_global_factor(float);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern void BuildSphericalOffset(void *, float, float, float);
+
 extern float vec_length_xy(void *);
 extern void func_L00_00263950(float, float, void *, void *, int);
 
@@ -1479,7 +1463,7 @@ extern int D_0015EF1C MACRO_ADDR;
 extern void update_shuttle_route_selection_and_prompt(char *m);
 extern void mark_shuttle_linked_mobys_for_removal(char *moby);
 extern void Moby_PlaySound(int, int, void *);
-extern void clear_u64_value(void *);
+
 extern void spawn_timed_projected_sprite_effect(char *, int, int, int);
 extern void MusicRequestTrack(int, int);
 
@@ -1491,7 +1475,6 @@ extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern int update_shuttle_path_ride(char *, int);
-extern float FastAddRots(float, float);
 
 extern void update_entity_matrix(char *, void *, void *, void *);
 extern unsigned char D_0013D4AF[];
@@ -1935,7 +1918,7 @@ extern void SpawnExplosionFx(void *, void *, int, float, float);
 
 extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
 extern unsigned char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
-extern int FastTweenColor(int, int, float);
+
 extern char scatter_explode_spark_colors_start[];
 extern char scatter_explode_spark_colors_end[];
 extern float scatter_explode_speed_min SDATA(scatter_explode_speed_min);
@@ -2053,7 +2036,7 @@ extern int shuttle_breakup_particle_table_index_and_flags_gp SDATA(shuttle_break
 extern void spawn_timed_projected_sprite_effect_r(void *, int, int, int) __asm__("func_L06_0030D338");
 extern void rand_vec(void *, float, float);
 extern void ScatterPiecesExplode(float, struct Moby *, void *, void *, int);
-extern int FastTweenColor(int, int, float);
+
 extern int truncate_float_to_s32(float);
 extern u8 *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 
@@ -2391,8 +2374,6 @@ s32 get_red_button_sequence_status(const u8 *moby) {
     return 0;
 }
 
-extern void clear_u64_value(void *);
-
 extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
 extern IntVec6 red_button_burst_colors_end;
 extern IntVec6 red_button_burst_colors_start;
@@ -2432,7 +2413,7 @@ void emit_red_button_particle_burst(int unused, void *obj) {
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 extern void set_vec_to_origin_point(void *);
-extern void euler_to_matrix(float *, float *);
+
 extern void set_scale_matrix(float *, float);
 
 extern void func_L00_00273F80(void *, void *, int, float, int, int, int);
@@ -2641,7 +2622,7 @@ void test_moby_vector_stream_collision_lines(char *m) {
     FastVecAdd(Q, Q, m + 0x10);
     coll_line(P, Q, 0, (int)m, (int)A);
 }
-extern void euler_to_matrix(float *, float *);
+
 extern void set_scale_matrix(float *, float);
 extern int GetEffectTex(int);
 extern void VU1_addGSregister(int, long);
@@ -2986,7 +2967,6 @@ void SparkEmitterUpdate(Moby *m) {
 }
 extern int FastBSphereCheck(char *, float);
 
-extern float multiply_global_factor(float);
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
 struct ActivateListedClass5e8MobysVars {
     u8 pad_00[0x28];
@@ -3016,7 +2996,7 @@ void activate_listed_class_5e8_mobys(int idx) {
         } while (*p++ >= 0);
     }
 }
-extern int scale_ticks(int);
+
 extern void cutscene_set_camera_target(int);
 extern char blarg_cutscene_state[];
 

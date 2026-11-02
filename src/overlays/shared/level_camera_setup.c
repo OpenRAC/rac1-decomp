@@ -10,6 +10,7 @@
 #include "structs/moby.h"
 #include "overlays/shared/camera_switch_and_update.h"
 #include "data/shared_levels.h"
+#include "asm_functions/executable.h"
 extern Hero g_hero;
 
 extern CameraSystem player_camera;
@@ -21,7 +22,6 @@ extern int gCamPostUpdCountLvl MACRO_ADDR;
 extern int gCameraDefCountLvl MACRO_ADDR;
 extern float follow_cam_turn_blend_weight SDATA(follow_cam_turn_blend_weight);
 extern CameraDef *camera_descriptors MACRO_ADDR;
-extern void clear_u64_value(void *);
 
 /* Initialises the camera slot tables and the camera state from the hero's transform. */
 void setup_level_cameras(void) {

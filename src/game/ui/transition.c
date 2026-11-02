@@ -6,6 +6,8 @@
 #include "game/math/fastfunc.h"
 #include "game/render/skyfunc.h"
 #include "game/audio/stream.h"
+#include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
 
 /*
  * transition.cpp in the original source; text 0x1E9E70-0x1EC038.
@@ -153,18 +155,16 @@ extern int FastMemSet();
 extern void FastMemZero16(void *, int);
 extern void copy_memory_aligned(void *, void *, int);
 extern void STUB_printf(char *);
-extern void set_video_timing(int);
+
 extern int UpdateFog();
 extern void SetBackgroundColor(int, int, int);
 extern int VU0_loadMicroProgram();
 extern int LightTfrags();
 extern int LightShrubs();
 extern int LightTies();
-extern float FastVecLength(void *);
 
-extern void matrix_mul_vec3(void *, void *, void *);
 extern void scale_vector(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
+
 extern int truncate_float_to_s32(float);
 extern float IntToFloat(int);
 extern void ResetDrawGlobals(void);

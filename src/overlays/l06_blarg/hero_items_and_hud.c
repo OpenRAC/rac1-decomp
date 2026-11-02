@@ -26,6 +26,7 @@
 #include "game/moby/mobyutil.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+#include "asm_functions/executable.h"
 
 typedef int u128 __attribute__((mode(TI)));
 extern Hero g_hero;
@@ -55,18 +56,14 @@ extern HeroSpeedBands blarg_hero_speed_bands;
 
 extern int HeroL06_TryApplyHitKnockback(int);
 
-extern int scale_ticks(int);
 extern int queue_animation_update(int, int, int, int, int, int, int);
 extern int func_L00_00235790(void);
 extern void hud_keep_visible(int, int);
-extern int FastDecTimer(void *);
 
 extern int hero_slot_item_id(int);
 extern int get_hero_help_value(int a);
 extern void set_hero_animation(int, int, float);
-extern void MobyBlendAnimation(void *, int, int, int);
 
-extern float multiply_global_factor(float);
 extern int HeroL06_TrySetMoveState(int a, int b);
 
 extern int func_001F9908(int *);
@@ -75,7 +72,6 @@ extern int rand_range(int, int);
 extern void stick_target(int, float);
 
 extern int pad_pressed_within(int, int, int *);
-extern float FastDiffRots(float, float);
 
 extern void quantize_hero_input_target_speed(void);
 
@@ -91,15 +87,9 @@ extern float vec_distance_xy(void *, void *);
 
 extern void allocate_hero_voice_for_entry(int, int);
 
-extern float FastAddRots(float, float);
-extern float FastCos(float);
-extern float FastSin(float);
-
 extern void gravity_set_z(float *dst, float *src, float z);
 extern void ClampVectorLength(void *a, float x);
 extern int check_pad_press_separation(int, int, int, int);
-
-extern float FastVecLength(void *a);
 
 extern float ApproachValue(float *p, float target, float maxstep);
 extern void FastVecScale(void *, void *, float);
@@ -108,8 +98,7 @@ extern float gravity_z(float *v);
 
 extern void hero_switch_item(int i);
 extern void release_and_clear_hero_voice_slots(void);
-extern float FastVecDist(void *, void *);
-extern void FastVecAdd(void *, void *, void *);
+
 extern int coll_line(void *, void *, int, int, int);
 
 extern float randf_sym(float lo, float hi);

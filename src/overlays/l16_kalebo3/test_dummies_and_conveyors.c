@@ -23,6 +23,7 @@
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
+#include "asm_functions/executable.h"
 extern unsigned short active_marker_id NOT_SDA;
 extern char gSpecialItems[];
 extern char g_hero[];
@@ -284,22 +285,18 @@ extern char hero_globals_base[];
 extern char D_L16_0015F660[] MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR, g_frame_time_sq MACRO_ADDR;
 extern float ApproachValue(float *, float, float);
-extern int scale_ticks(int);
 
 extern float vec_distance_xy(void *, void *);
 extern float SpringAngle_spark(void *, void *, float, float, float, float, int) __asm__("func_L00_0025CCF0");
-extern void BuildSphericalOffset(void *, float, float, float);
 
 extern void vec_scale_to_length(void *, void *, float);
 extern void vec_set_length_xy(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
+
 extern char *PartType44Spawn(void *, void *, int, int, int, int, float, float, float, float, float);
-extern void matrix_mul_vec3(void *, void *, void *);
-extern float random_angle_radians(void);
-extern void build_look_at_matrix(void *, void *, void *, float);
+
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 extern int func_L00_001EFFF0(void *, void *, int, void *, void *);
-extern int FastDecTimer(void *);
+
 extern void DeleteMoby(void *);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
@@ -401,8 +398,7 @@ void HomingSparkUpdate(Moby *m) {
 extern char hero_globals_base[];
 extern float g_frame_time MACRO_ADDR;
 extern void DeleteMoby(void *);
-extern float FastVecDist(void *, void *);
-extern int is_point_inside_clip_volume(void *, int);
+
 extern void SamplePathAt(int *, int, void *, float *, int, float);
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound_i(int, int, void *) __asm__("func_0022ED80");
@@ -500,10 +496,10 @@ typedef int u128 __attribute__((mode(TI)));
 extern int coll_sphere(float, void *, int, void *);
 
 extern void BuildSphericalOffset_57(float, float, float, void *) __asm__("func_00215C00");
-extern void FastVecAdd(void *, void *, void *);
+
 extern void *spawn_feather_moby(void *, void *, void *);
 extern int Moby_PlaySound_57(int, int, void *) __asm__("func_0022ED80");
-extern void MobyBlendAnimation(void *, int, int, int);
+
 extern float reposition_effect_velocity_elevation_degrees SDATA(reposition_effect_velocity_elevation_degrees);
 extern float reposition_effect_velocity_scale_range_start SDATA(reposition_effect_velocity_scale_range_start);
 extern float reposition_effect_velocity_scale_range_end SDATA(reposition_effect_velocity_scale_range_end);
@@ -568,10 +564,9 @@ typedef struct {
 int is_moby_in_state_6(Level16VendorMoby *moby) {
     return moby->state == 6;
 }
-extern float FastVecDot(void *, void *);
 
 extern void FastVecScale(void *, void *, float);
-extern float FastVecLength(void *);
+
 extern int fast_dec_timer(int *);
 extern void RerollEffectCounter(void *m, short *p);
 extern void StepColorFade(void *, void *);
@@ -676,9 +671,7 @@ unsigned char *spawn_thrown_bomb(int a, void *pos, float *dir, int c, float f) {
     return moby;
 }
 extern void initialize_moby_sprite_effect(char *);
-extern float ProbeGroundHeight(void *, int, float);
 
-extern float FastAddRots(float, float);
 extern void emit_moby_sprite_effect_particles(char *);
 extern float g_frame_time MACRO_ADDR;
 
@@ -739,8 +732,6 @@ typedef struct {
     float d[4];
 } L16SpriteData;
 
-extern void FastVecSub(void *, void *, void *);
-extern void FastVecAdd(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern int fast_dec_timer(int *);
 extern float IntToFloat(int);
@@ -836,7 +827,7 @@ void conveyor_belt_471_update(unsigned char *m) {
 extern int *kalebo3_moby_groups[];
 extern char *kalebo3_moby_array MACRO_ADDR;
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
+
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 
 /* Keep the conveyor group's loop sound on the conveyor nearest the camera, within 64 units. */
@@ -897,7 +888,7 @@ void update_conveyor_group_motion_transforms(int index, void *arg) {
 }
 extern char *kalebo3_level_cuboids_m __asm__("D_L16_001601AC") MACRO_ADDR;
 extern int kalebo3_frame_count MACRO_ADDR;
-extern float FastSin(float);
+
 extern int GetEffectTex(int);
 extern void draw_world_quad(void *, void *, int);
 extern float conveyor_belt_pulse_uvs[][2], conveyor_belt_scrolling_uvs[][2], conveyor_belt_quad_points[][4];
@@ -1060,7 +1051,6 @@ extern float MobyGetFrameValue(void *);
 extern void ClampVectorLength(void *, float);
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 extern int FindNearestEligibleMoby(void *, void *, float, int, int, void *, int);
-extern float FastCos(float);
 
 extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
 extern void collect_mobies_around_tracked_objects(char **, int, int);
@@ -1582,7 +1572,7 @@ void update_test_dummy_group_glow_phases(char *moby) {
         AddDrawCallback(draw_test_dummy_group_glows, moby);
     }
 }
-extern void FastVecCross(void *, void *, void *);
+
 extern float test_dummy_glow_quad_points[][4];
 extern int test_dummy_glow_pulse_color_start SDATA(test_dummy_glow_pulse_color_start);
 extern int test_dummy_glow_pulse_color_end SDATA(test_dummy_glow_pulse_color_end);
@@ -1652,7 +1642,7 @@ void draw_test_dummy_group_glows(L16BeamMoby *moby) {
         }
     } while (*p++ >= 0);
 }
-extern float FastAddRots(float, float);
+
 extern char *MobyGetHitMessage(void *, int, int);
 extern int Moby_PlaySound_i(int, int, void *) __asm__("func_0022ED80");
 extern void set_class_056b_collision_enabled(void *, int);
@@ -1858,7 +1848,6 @@ extern int linked_pair_ribbon_alpha_blend_a_selector SDATA(linked_pair_ribbon_al
 extern int linked_pair_ribbon_alpha_blend_b_selector SDATA(linked_pair_ribbon_alpha_blend_b_selector);
 extern int linked_pair_ribbon_alpha_blend_c_selector SDATA(linked_pair_ribbon_alpha_blend_c_selector);
 extern int linked_pair_ribbon_alpha_blend_d_selector SDATA(linked_pair_ribbon_alpha_blend_d_selector);
-extern void clear_u64_value(void *);
 
 /* Draws the textured quad that links a moby to its partner, four times, each one a step higher than the last. */
 void draw_linked_pair_ribbons(char *moby, char *partner) {
@@ -1910,7 +1899,6 @@ void copy_hoverboard_dummy_path_node(Level16VendorVectorMoby *moby, int index, v
 }
 extern int select_point_index_by_distance(void *, void *, float);
 extern int offset_path_index(char *, int, int, int);
-extern float FastDiffRots(float, float);
 
 typedef struct {
     int count; /* 0x00: number of nodes */
@@ -1975,8 +1963,6 @@ extern int fast_dec_timer(int *arg0);
 extern int get_first_moby_in_group(int *, int, int, int);
 extern int get_next_moby_in_group(int *, int, int, int);
 extern void set_identity_matrix(void *);
-extern void matrix_from_basis_rows(void *, void *);
-extern void transform_vector(void *, void *, void *);
 
 // Checks the nearby list entries of two classes against the moby and adds a timed delay when one is close.
 struct AccumulateMobyFramesInGroupBoundsVars {
@@ -2468,7 +2454,7 @@ void test_dummy_on_hoverboard_update(unsigned char *m) {
 }
 extern float ApproachWithVelocity(float, float, float, float, float *, float *);
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
+
 extern float g_frame_time_sq MACRO_ADDR;
 
 /* Move the moby toward a target along a slerped path until the parameter reaches its goal. */
@@ -2630,7 +2616,7 @@ void refresh_test_dummy_door_timer(char *m) {
 extern void DeleteMoby(void *);
 extern void *set_door_647_group_activation_and_find_nearest(int, int);
 extern void *activate_door_647_group_and_find_nearest(int, int);
-extern int is_point_inside_clip_volume(void *, int);
+
 extern int fast_dec_timer(int *);
 
 extern void activate_test_dummy_group(int);
@@ -2753,7 +2739,7 @@ void update_triggered_group_objective(char *m) {
 }
 
 extern float triggered_scene_rotation_y SDATA(triggered_scene_rotation_y);
-extern void matrix_mul_vec3(void *, void *, void *);
+
 extern void lerp_vector(void *, void *, void *, float);
 
 /* Computes a moby's direction vectors from its table entry. */
@@ -2837,11 +2823,10 @@ extern void Hero_ResetToPosition(void *, void *, int, int);
 extern int Help_Request(int, int);
 
 extern int memcard_Save(int, int);
-extern float FastSubRots(float, float);
-extern float multiply_global_factor(float);
+
 extern int truncate_float_to_s32(float);
 extern float vec_length_xy(void *);
-extern void BuildSphericalOffset(void *, float, float, float);
+
 extern unsigned char gCheats[] MACRO_ADDR;
 extern int kalebo3_game_mode SDATA(kalebo3_game_mode);
 extern float help_desk_hero_reset_pose[8];
@@ -3095,7 +3080,7 @@ typedef struct {
 extern char crate_platform_no_path_msg[], crate_platform_empty_path_msg[], crate_platform_no_other_path_msg[],
     crate_platform_empty_other_path_msg[], crate_platform_no_trigger_msg[];
 extern short kalebo3_path_spring_stiffness, kalebo3_path_spring_damping;
-extern void MobySetAnimation(void *, int, int);
+
 extern int STUB_printf();
 
 extern void InitKnockback(void *, void *, int, int, int, float);
@@ -3574,7 +3559,7 @@ void request_moby_help_message(char *moby) {
             break;
     }
 }
-extern float FastAddRots(float, float);
+
 extern float g_frame_time MACRO_ADDR;
 typedef struct {
     u8 pad_00[0x60];
@@ -3616,9 +3601,8 @@ void apply_moby_wobble(char *moby_arg) {
         moby->rot.y = -0.17453292f;
 }
 
-extern void matrix_mul_vec3(void *, void *, void *);
 extern char path_seven_point_local_offsets[];
-extern void FastVecAdd(void *, void *, void *);
+
 /* Move the moby's 7-point path into world space by its matrix and hand its index to the hero. */
 void transform_moby_table_entry_vectors(char *a) {
     struct TableEntryVars *data = (struct TableEntryVars *)((Moby *)a)->pvars;
@@ -3641,7 +3625,7 @@ extern float grindrail_gate_trigger_box[];
 extern int grindrail_gate_command_ticks SDATA(grindrail_gate_command_ticks);
 extern int grindrail_gate_glow_color_start SDATA(grindrail_gate_glow_color_start);
 extern int grindrail_gate_glow_color_end SDATA(grindrail_gate_glow_color_end);
-extern int FastTweenColor(float, int, int);
+extern int FastTweenColor_v(float, int, int) __asm__("func_001FA8A8");
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 
 /* Moves the moby through its trigger states and checks its local bounds. */
@@ -3660,8 +3644,8 @@ void update_grindrail_gate(unsigned char *m) {
     int period = scale_ticks(30);
 
     glow_cycle_phase = IntToFloat(kalebo3_frame_count % period) / IntToFloat(period);
-    gate_moby->glow_color = FastTweenColor(FastSin(glow_cycle_phase * 6.28318f - 3.14159f) * 0.5f + 0.5f,
-                                           grindrail_gate_glow_color_start, grindrail_gate_glow_color_end);
+    gate_moby->glow_color = FastTweenColor_v(FastSin(glow_cycle_phase * 6.28318f - 3.14159f) * 0.5f + 0.5f,
+                                             grindrail_gate_glow_color_start, grindrail_gate_glow_color_end);
     switch (gate_moby->state) {
         case GRINDRAIL_GATE_INITIALIZE:
             gate_moby->state = 1;
@@ -3698,7 +3682,7 @@ extern float bounds_trigger_box[];
 extern int bounds_trigger_command_ticks SDATA(bounds_trigger_command_ticks);
 extern int bounds_trigger_glow_color_start SDATA(bounds_trigger_glow_color_start);
 extern int bounds_trigger_glow_color_end SDATA(bounds_trigger_glow_color_end);
-extern int FastTweenColor(float, int, int);
+extern int FastTweenColor_v(float, int, int) __asm__("func_001FA8A8");
 extern int Moby_PlaySound_r3(int, int, void *) __asm__("func_0022ED80");
 
 /* Moves the moby through its trigger states and checks its local bounds. */
@@ -3711,8 +3695,8 @@ void update_local_bounds_command_trigger(unsigned char *m) {
     float glow_cycle_phase;
     int period = scale_ticks(30);
     glow_cycle_phase = IntToFloat(kalebo3_frame_count % period) / IntToFloat(period);
-    trigger_moby->glow_color = FastTweenColor(FastSin(glow_cycle_phase * 6.28318f - 3.14159f) * 0.5f + 0.5f,
-                                              bounds_trigger_glow_color_start, bounds_trigger_glow_color_end);
+    trigger_moby->glow_color = FastTweenColor_v(FastSin(glow_cycle_phase * 6.28318f - 3.14159f) * 0.5f + 0.5f,
+                                                bounds_trigger_glow_color_start, bounds_trigger_glow_color_end);
     switch (trigger_moby->state) {
         case GRINDRAIL_TRIGGER_INITIALIZE:
             trigger_moby->state = 1;
@@ -3751,7 +3735,7 @@ extern short grindrail_button_local_offset;
 extern int fast_dec_timer(int *);
 extern void activate_grindrail_button_r(void *) __asm__("func_L16_002E6B48");
 extern int Moby_PlaySound_r4(int, int, void *) __asm__("func_0022ED80");
-extern int FastTweenColor(float, int, int);
+extern int FastTweenColor_v(float, int, int) __asm__("func_001FA8A8");
 
 /* Grind rail button: on a matching side-on hero approach or a hit, fire it; pulse its glow. */
 void grindrail_button_update(unsigned char *m) {
@@ -3798,9 +3782,9 @@ void grindrail_button_update(unsigned char *m) {
     button_data->glow_phase = FastAddRots(button_data->glow_phase, g_frame_time * 12.566371f);
     glow_blend_factor = (FastSin(button_data->glow_phase) + 1.0f) * 0.5f;
     if (button_moby->command) {
-        button_moby->glow_color = FastTweenColor(glow_blend_factor, 0x80208020, 0x80202020);
+        button_moby->glow_color = FastTweenColor_v(glow_blend_factor, 0x80208020, 0x80202020);
     } else {
-        button_moby->glow_color = FastTweenColor(glow_blend_factor, 0x80202080, 0x80202020);
+        button_moby->glow_color = FastTweenColor_v(glow_blend_factor, 0x80202080, 0x80202020);
     }
 }
 typedef struct {
@@ -3826,7 +3810,7 @@ extern void update_chomper_hit_reaction_and_target(void *);
 extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
 extern void set_ground_height_band(void *);
 extern int func_001160D8(void);
-extern void MobyBlendAnimation(void *, int, int, int);
+
 extern float move_chomper_toward_position(void *, void *);
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 extern int IsFrameWithinWindow(char *, float);

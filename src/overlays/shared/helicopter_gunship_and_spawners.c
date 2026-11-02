@@ -15,6 +15,7 @@
 #include "game/moby/mobyutil.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
+#include "asm_functions/executable.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 extern char voice_pool[];
@@ -94,12 +95,12 @@ void draw_textured_grid(char *moby) {
 LINKER_REMNANT("asm/overlays", func_L03_00292B18);
 extern float g_frame_time MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
-extern int FastDecTimer(void *);
+
 extern void DeleteMoby(void *);
 extern void fast_add_rotations_cf(void *, void *, float, float, float);
-extern float FastAddRots(float, float);
+
 extern float IntToFloat(int);
-extern int FastTweenColor(int, int, float);
+
 extern void set_moby_color(void *, int, int, int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
@@ -133,9 +134,6 @@ void update_parent_following_effect(Moby *moby) {
 }
 extern char *kerwan_camera_points MACRO_ADDR;
 
-extern void matrix_mul_vec3(void *, void *, void *);
-extern void FastVecAdd(void *, void *, void *);
-
 // Builds a random vector and transforms it by the indexed matrix; returns 1 for index -1.
 int sample_random_transformed_point(int idx, float *out) {
     char *mat;
@@ -156,7 +154,6 @@ extern char *D_L03_00160064 MACRO_ADDR;
 extern int D_L03_0015F6B0 MACRO_ADDR;
 extern char spawner_revive_failed_fmt[];
 extern int STUB_printf();
-extern void MobySetAnimation(void *, int, int);
 
 extern void moby_build_matrix(void *);
 extern float *func_L00_0025D390(void *);
@@ -347,10 +344,10 @@ typedef struct {
     char pad0[0x2C];
     float f2C;
 } Hit_2C0330;
-extern float FastVecDist(void *, void *);
+
 extern void set_ground_height_band(void *);
 extern float vec_distance_xy(void *, void *);
-extern int is_point_inside_clip_volume(void *arg0, int arg1);
+
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
 extern void RerollEffectCounter(void *m, short *p);
@@ -361,20 +358,17 @@ extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, voi
 extern void libc_memset(void *, int, int);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern float normalize_angle(float);
-extern float FastCos(float);
-extern float FastSin(float);
 
-extern void FastVecSub(void *, void *, void *);
 extern void FastVecScale(void *, void *, float);
-extern float FastVecLength(void *a);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern float ProbeGroundHeight(void *, int, float);
+
 extern int func_001160D8(void);
 extern void add_random_offset_to_vector_xyz(float *v, float s);
 
 extern float jump_speed_4318(void *, void *, void *, float, float);
 extern char *spawn_class_221_moby(char *owner, float *pos, float *dir, short ang, int arg);
-extern int scale_ticks(int);
+
 extern void StepColorFade(void *, void *);
 extern char kerwan_camera_pos[];
 
@@ -722,7 +716,7 @@ void ChildSpawnerUpdate(Moby *moby) {
     StepColorFade(moby, d->f60);
 }
 extern char *CreateMoby_m_2C59A0(int) __asm__("func_0020D348");
-extern int scale_ticks(int);
+
 extern void moby_build_matrix(void *);
 
 // Spawns the Bomb moby for an owner at pos with dir, random angles and a size, copying the owner's colour.
@@ -754,7 +748,6 @@ char *spawn_class_221_moby(char *owner, float *pos, float *dir, short ang, int a
 extern int fast_dec_timer(int *arg0);
 extern void vec_scale_to_length(void *, void *, float);
 extern int coll_line(void *, void *, int, void *, void *);
-extern void FastVecSub(void *, void *, void *);
 
 extern float vec_length_xy(void *);
 
@@ -1056,11 +1049,10 @@ extern void Manipulator_SetScale_r(void *, float) __asm__("func_L00_00264BB0");
 extern void EaseManipulatorOffsets_r(char *, char *, int, float, float) __asm__("func_L00_00263950");
 extern void handle_blarg_helicopter_hits_r(char *) __asm__("func_L03_002CF600");
 extern void AttachManipulator_r(char *, int, void *) __asm__("func_0020D960");
-extern void func_00213DE0(void *, int, int, int);
+
 extern int func_L00_0025EFC0(void *, void *, void *, int *, float *, int, float, float, float);
 extern float func_L00_00259148(float *, float, float, float, float, float);
-extern void func_001FA4A0(void *, void *);
-extern void func_001F9EE8(void *, void *, void *);
+
 extern void func_L00_001FFED8(void *, int, float);
 extern float func_00214D28(float *, float, float);
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
@@ -1071,7 +1063,7 @@ extern float FastSubRots_r(float, float) __asm__("func_001FA790");
 extern void vec_set_length_xy_r(void *, void *, float) __asm__("func_L00_001FF500");
 extern void Sound_StopSlot_r(int) __asm__("func_L00_0028EBF0");
 extern void raise_kernel_trap_r(void) __asm__("func_001F9978");
-extern float func_00214158(void);
+
 extern char *spawn_homing_spark_projectile_r(char *, char *, int, int, float) __asm__("func_L03_002D65D0");
 extern void func_L00_0025AAC0(void *, void *);
 extern void func_0020D9D8(void *, void *);
@@ -1555,10 +1547,6 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
     }
 }
 
-extern float FastSubRots(float, float);
-extern float FastCos(float);
-extern float FastSin(float);
-
 extern int Moby_PlaySound(int, int, int);
 
 /* Moby update: advance a timer from a collision query, switch state, aim head angles. */
@@ -1666,20 +1654,20 @@ typedef struct {
 extern void FindNearestTargetMoby(void *, void *, float);
 extern void vec_set_length_xy(void *, void *, float);
 extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
-extern float FastDiffRots(float, float);
+
 extern float step_angle_toward_target(float *, int, float, float);
 extern float vec_length_xy(void *);
 extern float vec_distance_xy(void *, void *);
 extern int Sound_IsPlaying(void *, int);
 
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void FastVecSub(void *, void *, void *);
+
 extern void FastVecScale(void *, void *, float);
-extern float FastVecLength(void *a);
+
 extern void vec_scale_to_length(void *, void *, float);
 extern int rand_range(int, int);
 extern char *PartType27Spawn(void *pos, void *vel, int c, int d, float f);
-extern float multiply_global_factor(float);
+
 extern void create_type_31_part(void *, void *, void *, void *, int);
 extern int coll_line(void *, void *, int, void *, void *);
 
@@ -1927,8 +1915,7 @@ extern f32 FastVecDist_r2(void *, void *) __asm__("func_001F9D10");
 extern int is_point_inside_clip_volume_r2(void *arg0, int arg1) __asm__("func_00215570");
 extern void set_moby_dialogue_record_value(void *, int);
 extern f32 vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
-extern void BuildSphericalOffset(void *, float, float, float);
-extern void FastVecSub(void *, void *, void *);
+
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern char qwark_rilgar_no_region_a_msg[];
 extern char qwark_rilgar_no_region_c_msg[];
@@ -2120,7 +2107,6 @@ void garage_door_update(struct Moby *m) {
 INCLUDE_ASM("asm/overlays", func_L03_002DDE28);
 INCLUDE_ASM("asm/overlays", func_L03_002DDED8);
 
-extern float FastAddRots(float, float);
 extern float IntToFloat(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern int fast_dec_timer(int *arg0);
@@ -2146,7 +2132,6 @@ void update_falling_moby(Moby *moby) {
 }
 extern int kerwan_camera_descriptors MACRO_ADDR;
 extern void raise_kernel_trap(void);
-extern void euler_to_matrix(void *, void *);
 
 typedef struct {
     char pad0[0x40];
@@ -2199,13 +2184,13 @@ void initialize_transform_state_from_level_table(Camera *cam) {
 }
 extern float gHeroPos[];
 extern float kerwan_camera_view_up_axis[];
-extern void FastVecSub(void *, void *, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern float FastVecDot(void *, void *);
+
 extern float FastArcSin(float);
 
 extern void rotate_vector_by_scaled_angle_between_vectors(float, float *, float *, float *, int);
-extern void FastVecCross(void *, void *, void *);
+
 /* smooths a direction and rebuilds its orthogonal matrix axes */
 void smooth_transform_orientation_toward_hero(char *m) {
     float position[4] __attribute__((aligned(16)));
@@ -2230,7 +2215,6 @@ void smooth_transform_orientation_toward_hero(char *m) {
     FastVecCross(m + 0x20, m + 0x10, m);
 }
 
-extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern int kerwan_camera_descriptors_r __asm__("D_L03_0015F050") MACRO_ADDR;
 extern int is_point_inside_clip_volume_r2(void *arg0, int arg1) __asm__("func_00215570");
 
@@ -2257,8 +2241,6 @@ int evaluate_clip_volume_candidate(char *a0, char *a1) {
     }
     return 0;
 }
-
-extern int is_point_inside_clip_volume(void *arg0, int arg1);
 
 // Exit camera update: in state 4, sets state 3 once the table entry check returns zero.
 void set_transform_state_three_when_outside_clip_volume(char *moby) {

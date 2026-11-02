@@ -16,6 +16,7 @@
 #include "data/executable.h"
 #include "structs/level_records.h"
 #include "structs/pad.h"
+#include "asm_functions/executable.h"
 
 /*
  * draw.cpp in the original source; text 0x1F0F30-0x1F7C60.
@@ -174,9 +175,9 @@ extern char camera_sample_line_format[];
 extern char camera_sample_alt_line_format[];
 
 extern void SetBackgroundColor(int, int, int);
-extern void FastVecSub(void *, void *, void *);
+
 extern float vec_length_xy(void *);
-extern float FastSubRots(float, float);
+
 extern float IntToFloat(int);
 extern void UpdateViewContext(void);
 extern void UpdateFog(void);
@@ -664,7 +665,7 @@ LINKER_REMNANT("asm/remnants/text", func_001F2410);
 
 extern void set_identity_matrix(void *);
 extern void FastVecScale(void *, void *, float);
-extern void transform_vector(void *, void *, void *);
+
 extern float screen_projection_focal;
 
 /* The camera block as a struct: all four accesses then share one base
@@ -866,7 +867,6 @@ void UpdateFog(void) {
     level_fog_mode = 0;
 }
 __asm__(".section .text\n\tnop\n");
-
 
 /* ParseOcclGrid(x, y, z): walks the three-level occlusion grid at
    occl_grid_data. Each level is {u16 start, u16 count, u16 entry[count]};
@@ -1143,7 +1143,7 @@ extern struct {
 } D_001DEAC0;
 
 extern f32 fast_arc_tan(f32, f32);
-extern f32 FastCos(f32);
+
 #define fast_cos func_001F9F90
 extern void copy_memory_aligned(void *, void *, s32);
 
@@ -2459,7 +2459,6 @@ void draw_screen_effect(void) {
 
 #undef STRIPES
 
-
 /* GS register writes around an overlay: blend register 0x42 from the
    64-bit word at +8 while it is set, and when the colour at +4 has an
    alpha byte, register 0x4E switched around a full-screen
@@ -2703,11 +2702,9 @@ union PacketCursor {
     s32 addr;
 };
 extern union PacketCursor g_render_packet_cursor_r __asm__("D_00161000") MACRO_ADDR;
-extern void FastVecAdd(void *, void *, void *);
-extern void FastVecSub(void *, void *, void *);
+
 extern void FastVecScale(void *, void *, f32);
-extern f32 FastCos(f32);
-extern f32 FastSin(f32);
+
 extern s32 truncate_float_to_s32(f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/append_rotated_sprite_quad.c, append_rotated_sprite_quad. */

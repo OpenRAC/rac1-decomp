@@ -18,6 +18,8 @@
 #include "structs/small_records.h"
 #include "enums/hero_state.h"
 #include "structs/voice.h"
+#include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
 extern Hero g_hero;
 extern unsigned char usage_stats[];
 extern u32 g_controller_state[];
@@ -450,12 +452,9 @@ extern int g_current_level_index MACRO_ADDR;
 extern float fast_atan2(float, float);
 extern float vec_length_xy(void *);
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
-extern void BuildSphericalOffset(void *, float, float, float);
-extern void MobyBlendAnimation(void *, int, int, int);
 
 extern int spawn_visibomb_missile(void *, void *, float, float);
-extern int scale_ticks(int);
+
 extern int Moby_PlaySound(int, int, int);
 
 /* Per-frame update of a moby that arms a pickup-style reaction when the player state allows it. */
@@ -789,18 +788,13 @@ typedef struct X {
 } X;
 extern short level_frame_counter;
 extern f32 g_frame_time MACRO_ADDR;
-extern f32 random_angle_radians(void);
-extern f32 FastCos(f32);
-extern f32 FastSin(f32);
-extern f32 random_float_between(f32, f32);
-extern void matrix_mul_vec3(V4 *, V4 *, V4 *);
-extern s32 scale_ticks(s32);
+
 extern u8 *PartType21Spawn(V4 *, V4 *, s32, s32, s32, s32, f32);
 extern f32 FastVecDist_r2(V4 *, V4 *) __asm__("func_001F9D10");
 extern void FastVecSub_r2(V4 *, V4 *, V4 *) __asm__("func_001F9BF0");
 extern void vec_scale_to_length_r2(V4 *, V4 *, f32) __asm__("func_L00_001FF4B0");
 extern void FastVecAdd_r3(V4 *, V4 *, V4 *) __asm__("func_001F9BD8");
-extern s32 random_integer_below(s32);
+
 extern u8 *PartType23Spawn(V4 *, f32, f32, f32, f32, s32, V4 *, u32);
 extern short D_L00_0015F6B0_B4F40b SDATA(D_L00_0015F6B0);
 
@@ -1048,8 +1042,7 @@ LINKER_REMNANT("asm/overlays", func_L00_002B5990);
 extern char g_debug_camera[];
 extern char *suck_moby_list MACRO_ADDR;
 extern float vec_distance_xy(void *, void *);
-extern float FastDiffRots(float, float);
-extern float FastVecDist(void *, void *);
+
 extern float FastArcSin(float);
 extern float IntToFloat(int);
 extern int coll_line(void *, void *, int, int, int);
@@ -1233,7 +1226,7 @@ extern float FastVecLength_r(void *) __asm__("func_001F9CB8");
 extern int rand_range_r(int, int) __asm__("func_L00_00258BC8");
 extern void func_L00_0026EBC0(void *, void *, int, int, float);
 extern void MobyBlendAnimation_r2(void *, int, int, int) __asm__("func_00213DE0");
-extern void func_00213D28(void *, int, int);
+
 extern void func_L00_002514B8(void *);
 extern void cancel_hero_item_animation_r(void) __asm__("func_L00_0020ED30");
 extern float IntToFloat_r2(int) __asm__("func_001FA888");
@@ -1637,10 +1630,10 @@ void terminate_visibomb_missile(int a, int *b) {
     DeleteMoby(a);
     hero_control_mode_11_flag = 0;
 }
-extern void euler_to_matrix(void *, void *);
+
 extern void copy_matrix_rotation(void *, void *);
 extern void matrix_copy_rows(void *, void *);
-extern void transform_vector(void *, void *, void *);
+
 extern void moby_anim_sphere_lerp(void *);
 extern float frame_scale MACRO_ADDR;
 
@@ -1675,12 +1668,8 @@ void update_attached_moby_transform(Moby *m, unsigned char *o) {
     moby_anim_sphere_lerp(*(unsigned char **)(o + 0x20));
 }
 
-extern void FastVecSub(void *, void *, void *);
-extern void clear_u64_value(void *);
-extern float FastVecLength(void *);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern float random_float_between(float, float);
-extern int random_integer_below(int);
+
 extern int rand_range(int, int);
 extern void PartType11Spawn(void *, void *, int, int, int, int, int, int, float, float);
 extern void spawn_glow_particle(void *, void *, void *, int, int, int, int, int, float);
@@ -1819,12 +1808,12 @@ extern void terminate_visibomb_missile_r(void *, void *) __asm__("func_L00_002B6
 extern void spawn_moby_particle_and_glow_burst_r(void *, int) __asm__("func_L00_002B6FF0");
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 extern int func_L00_0028F210(int, int);
-extern float func_001FA790(float, float);
+
 extern void func_L00_0025B040(void *, float);
 extern void BuildSphericalOffset_r3(void *, float, float, float) __asm__("func_00215C00");
 extern void FastVecAdd_r5(void *, void *, void *) __asm__("func_001F9BD8");
 extern void FastVecSub_r3(void *, void *, void *) __asm__("func_001F9BF0");
-extern float func_00214358(void *, int, float);
+
 extern float func_00214D28(float *, float, float);
 extern float fast_atan2_r3(float, float) __asm__("func_L00_001FF860");
 extern float FastAbsF_r3(float) __asm__("func_001F9B88");
@@ -2043,16 +2032,14 @@ void visibomb_missile_update(Moby *m) {
     if (d->f14 != 0)
         update_orbit_camera_from_target_moby(d->f14, m);
 }
-extern int random_integer_below(int);
+
 extern unsigned char *GetFlaggedPvarWord(void *);
 extern float vec_distance_xy(void *, void *);
 extern float fast_atan2(float, float);
-extern float FastDiffRots(float, float);
-extern void FastVecSub(void *, void *, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
 extern void PostHitMessage(void *, int, int, void *, void *, float);
 extern int rand_range(int, int);
-extern int scale_ticks(int);
 
 extern char *active_mobies[];
 extern short thrown_mine_list[];
@@ -2305,7 +2292,7 @@ extern short D_L00_00161588;
 extern short taunter_effect_alpha_g __asm__("D_L00_0016158C");
 extern short D_L00_001615A8;
 extern int fast_dec_timer(int *);
-extern int FastDecTimer(void *);
+
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void AddDrawCallback(void (*)(void), void *);
 extern void draw_taunter_effect_quads_b(void) __asm__("func_L00_002B8860");
@@ -2358,11 +2345,10 @@ void update_taunter_effect_slots(Moby *arg) {
 extern int GetEffectTex(int);
 extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecScale(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
-extern void FastVecCross(void *, void *, void *);
+
 extern float IntToFloat(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern void transform_vector(void *, void *, void *);
+
 extern void draw_world_quad(void *, void *, int);
 
 struct E {
@@ -2488,29 +2474,25 @@ extern Order_2B8AE8 gold_weapon_purchased;
 extern void update_pyrocitor_usage_and_cleanup(unsigned char *);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern float MobyGetFrameValue(void *);
-extern int scale_ticks(int);
-extern void MobyBlendAnimation(void *, int, int, int);
+
 extern Moby *spawn_linked_moby_from_basis(void *);
 extern void lerp_vector(void *, void *, void *, float);
-extern float FastVecLength(void *);
 
 extern int allocate_packed_color_point_light_slot(void *, float, float, int);
-extern void FastVecAdd(void *, void *, void *);
-extern float FastSin(float);
+
 extern float IntToFloat(int);
 extern void vec_scale_to_length(void *, void *, float);
 extern int coll_line(void *, void *, int, int, int);
-extern float FastVecDist(void *, void *);
+
 extern float ApproachWithVelocity(float, float, float, float, float *, float *);
 extern void rand_vec(float *, float, float);
-extern float random_float_between(float, float);
+
 extern void FastVecScale(void *, void *, float);
 extern void *spawn_spinning_and_fading_effect_particle(void *, void *, unsigned long, float);
 extern void register_pyrocitor_flame_effect();
 extern void vec_set_length_xy(void *, void *, float);
 extern void coll_sphere_mobys(void *, float, int, void *, void *);
-extern int FastDecTimer(void *);
-extern float multiply_global_factor(float);
+
 extern int truncate_float_to_s32(float);
 extern void spawn_color_decaying_effect_particle(void *, void *, int);
 
@@ -2777,9 +2759,9 @@ extern void vec_set_length_xy(void *, void *, float);
 extern void InitDirectionalHitQuery(char *arg, int a, int b, void *src, float scale);
 extern void coll_sphere_mobys(void *, float, int, void *, void *);
 extern void rand_vec(float *, float, float);
-extern int FastTweenColor(int, int, float);
+
 extern unsigned swap_packed_color_channels(unsigned c, int mask);
-extern float multiply_global_factor(float);
+
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 
 // Updates the effect moby's 15 slots: spawns and releases spark particles around live children.

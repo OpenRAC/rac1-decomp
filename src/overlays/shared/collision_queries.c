@@ -3,6 +3,7 @@
 #include "common.h"
 #include "include_asm.h"
 #include "structs/vector.h"
+#include "asm_functions/executable.h"
 
 extern int cinematic_mode MACRO_ADDR;
 extern int effect_queue[];
@@ -45,7 +46,7 @@ void EffectQueue_Add(int a0, int a1, float f12, float f13, int *a2, int a3, int 
     effect_queue[0xC0 / 4]++;
 }
 typedef int q128 __attribute__((mode(TI)));
-extern void FastVecSub(void *, void *, void *);
+
 extern f32 vec_length_xy(void *);
 extern s32 truncate_float_to_s32(f32);
 extern s32 *camera_collision_grid MACRO_ADDR;
@@ -93,11 +94,8 @@ extern unsigned char *level_cuboids MACRO_ADDR;
 extern unsigned char *level_cylinders MACRO_ADDR;
 extern unsigned char *level_spheres MACRO_ADDR;
 extern unsigned char *level_clip_volumes MACRO_ADDR;
-extern void FastVecAdd(void *, void *, void *);
-extern void matrix_mul_vec3(void *, void *, void *);
+
 extern float vec_length_xy(void *);
-extern float FastVecLength(void *);
-extern float FastVecDist(void *, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_001ee1b0.c, FUN_L00_001ee318. */
 int test_point_in_camera_collision_volume(Vec4 *pt, int *vol, float rad) {

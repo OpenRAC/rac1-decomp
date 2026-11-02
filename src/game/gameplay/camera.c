@@ -13,6 +13,7 @@
 #include "game/math/fastfunc.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+#include "asm_functions/executable.h"
 
 /*
  * camera.cpp in the original source; text 0x1EC038-0x1EDFF8.
@@ -251,7 +252,6 @@ extern CameraDef *gCameraDefs MACRO_ADDR;
 extern CamRec20 *cam_activation_rule7_table MACRO_ADDR;
 extern char g_hero[];
 extern char gHeroPos[];
-extern int is_point_inside_clip_volume(void *arg0, int arg1);
 
 /* Camera_ActivationCheckPriority(cur, other): whether camera `cur` should
    take over from `other`. An inactive camera (priority 0) never does; the
@@ -408,13 +408,8 @@ int UpdateAllCameras(void) {
     return -1;
 }
 
-extern void FastVecSub(void *dst, void *a, void *b); /* dst = a - b (vector) */
-extern float FastVecDot(void *a, void *b); /* dot(a, b) */
-extern float FastVecLength(void *a); /* |a| */
 extern void fast_vec_normalize(void *dst, void *src, float len); /* dst = normalize(src) * len */
 extern float FastArcSin(float x); /* approx acos(x) */
-extern void build_look_at_matrix(void *dst, void *vec, void *axis,
-                                 float angle); /* dst = vec rotated `angle` around axis */
 
 /* The camera's angles to a target: out[0] = signed yaw between dir0 and
    (p0 - p1) off the axis, out[1] = signed pitch after rotating dir0 by
@@ -494,7 +489,6 @@ void capture_camera_orientation(void) {
     qcopy(&r->orbit.rot, &r->orbit.saved_rot);
 }
 
-extern void FastVecAdd(void *, void *, void *);
 extern char g_hero_platform_carry[];
 
 /* save_camera_vectors: with no blend running (kind 0), copies the
@@ -648,18 +642,11 @@ int step_camera_blend(Camera *to, CamBlendLerp *lerp) {
     return 0;
 }
 
-extern void FastVecCross(void *, void *, void *);
-
 extern void fast_vec_normalize(void *dst, void *src, float len);
-extern float FastSubRots(float, float);
-extern float FastAddRots(float, float);
-extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
+
 extern void FastVecScale(void *, void *, float);
-extern void FastVecSub(void *dst, void *a, void *b);
-extern float FastVecDot(void *a, void *b);
-extern float FastVecLength(void *a);
+
 extern float FastArcSin(float x);
-extern void build_quaternion_from_axis_angle(void *arg0, void *axis, float angle);
 
 extern void fast_dec_timer(int *arg0);
 extern char hero_gravity_dir[];
@@ -811,9 +798,8 @@ void update_camera_blend(Camera *cam) {
 
 extern float IntToFloat(int arg0);
 extern float FastNormalizeAngle(float x);
-extern float FastCos(float x);
+
 extern void fast_vec_normalize(void *dst, void *src, float len);
-extern void FastVecAdd(void *dst, void *a, void *b);
 
 /* apply_camera_shake(s, along_row0): one shake channel (gCamera.shake[0] or
    [1]). With the active camera (gCamera.current) in state 6 both counters are
@@ -858,10 +844,8 @@ __asm__(".section .text\n\tnop\n");
 extern struct Hero g_hero_r __asm__("D_0013F450");
 extern f32 Cam_InterpValues_r(f32 *vel, f32 from, f32 to, f32 stiffness, f32 damping, f32 max) __asm__("func_001EC120");
 
-extern void FastVecSub(void *out, void *a, void *b);
 extern void FastVecScale(void *out, void *a, f32 s);
-extern f32 FastVecDot(void *a, void *b);
-extern f32 FastVecLength(void *a);
+
 extern void fast_vec_normalize(void *out, void *a, f32 len);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/gameplay/camera/fun_001ed470.c, FUN_001ed470. */

@@ -30,6 +30,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+#include "asm_functions/executable.h"
 extern char g_hero[];
 extern char level_moby_killed[];
 extern char level_render_state[];
@@ -143,7 +144,7 @@ extern void clamp_vec_length_r(void *, void *, float) __asm__("func_L00_001FF548
 extern float FastVecLength_r(void *) __asm__("func_001F9CB8");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern float IntToFloat_r(int) __asm__("func_001FA888");
-extern void func_001F9CA0(void *, void *, void *);
+
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern void func_L00_001FD1D8(void *, int, int);
@@ -225,11 +226,11 @@ void draw_starfighter_tractor_beam(struct Moby *moby) {
 }
 extern int fast_dec_timer(void *);
 extern void fire_starfighter_homing_rocket(void *, void *);
-extern int scale_ticks(int);
+
 extern int queue_starfighter_voice_line(void *, void *, int, int);
 
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern float FastVecDist(void *, void *);
+
 extern int fast_subtract_rotations_cf(void *);
 extern int rand_range(int, int);
 extern unsigned char *fire_mine_83_projectile(char *, char *);
@@ -540,9 +541,6 @@ typedef struct {
 
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
 
-extern float FastCos(float);
-extern float FastSin(float);
-
 extern int STUB_printf();
 extern int queue_animation_update(int, int, int, int, int, int, int);
 
@@ -555,19 +553,17 @@ extern int update_moby_path_following_away_from_hero(void *, void *, int, int);
 extern void process_moby_attachment_damage(void *, void *);
 extern void StepColorFade(void *, void *);
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void FastVecSub(void *, void *, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
+
 extern int coll_line(void *, void *, int, void *, void *);
 extern int FastBSphereCheck(void *, float);
 
 extern float vec_distance_xy(void *, void *);
 extern void update_moby_spring_steering_and_banking(void *, void *, float, float);
-extern float FastSubRots(float, float);
 
 extern float normalize_angle(float);
-extern float FastAddRots(float, float);
-extern float FastDiffRots(float, float);
+
 extern void AddDrawCallback(void *, void *);
 extern void draw_starfighter_tractor_beam();
 extern void detach_moby_joint_attachment(void *, void *, int);
@@ -584,10 +580,9 @@ extern void DeleteMoby(void *);
 extern char *spawn_owner_linked_class_160_moby(void *);
 extern void update_moby_joint_attachments(void *, void *);
 extern void emit_gated_moby_joint_effects(void *, void *);
-extern void matrix_mul_vec3(void *, void *, void *);
+
 extern int allocate_colored_effect_slot(float *, float, float, float, float, float);
 extern int Music_ContinueStreamIfReady(void);
-extern int FastDecTimer(void *);
 
 extern int starfighter_part_classes[];
 
@@ -1546,7 +1541,7 @@ void Moby_ClearUnlessTargeted(Moby *moby) {
         moby->flags |= 3;
     }
 }
-extern int is_point_inside_clip_volume(void *, int);
+
 extern int Help_Request(int a, int b);
 extern int gemlik_help_popup_state[] NOT_SDA;
 extern int gemlik_game_mode MACRO_ADDR;
@@ -1850,7 +1845,7 @@ extern char *MobyGetHitMessage(void *, int, int);
 #define norm_p func_L00_001FF4B0
 extern void vec_set_length_xy(void *, void *, float);
 #define norm1_p func_L00_001FF500
-extern float FastVecLength(void *);
+
 #define len_p func_001F9CB8
 #define dist_p func_001F9D48
 extern float IntToFloat(int);
@@ -2025,7 +2020,6 @@ bounds:
         moby->pos.z < 2.0f || moby->pos.z > 1021.0f)
         remove_p(moby);
 }
-extern void clear_u64_value();
 
 #undef hit_lookup_p
 #undef moby_pos_p
@@ -2063,7 +2057,7 @@ void spawn_attached_rocket_explosion(char *moby) {
     func_L00_0025F4A8_alt(moby, vector, moby + 0x10, 2.0f, 1.0f, 12, 4, 18, 4.0f, 3.0f, 1.0f, 2.0f, 0, 20.0f, 1, 1, -1,
                           0);
 }
-extern void clear_u64_value(void *);
+
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
 
@@ -2075,8 +2069,7 @@ void spawn_attached_rocket_non_damaging_explosion(char *moby) {
 }
 extern char *CreateMoby_m(int) __asm__("func_0020D348");
 extern float vec_length_xy(void *);
-extern void MobyBlendAnimation(void *, int, int, int);
-extern float FastVecLength(void *);
+
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
 extern void moby_build_matrix(void *);
 
@@ -2253,7 +2246,7 @@ bounds:
 extern char gemlik_camera_pos[];
 extern char poison_vessel_burst_colors[];
 extern char poison_vessel_burst_colors2[];
-extern float FastVecDot(void *a, void *b);
+
 extern char *spawn_poison_vessel_effect_moby(void *a, void *b, int c, int d);
 extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
 
@@ -2421,7 +2414,7 @@ extern float IntToFloat(int);
 /* KEPT: the calls disagree on where the float goes: the argument order changes the moves. */
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern void SendRadialMessageToMobys(void *, void *, void *, int, int, int, int, int, float, float, float);
-extern float multiply_global_factor(float);
+
 extern char poison_vessel_hit_fmt[];
 extern char sphere_hits_ed158[];
 extern int poison_vessel_blast_ticks SDATA(poison_vessel_blast_ticks);
@@ -2930,7 +2923,6 @@ void BlargSpaceCommandoUpdate(struct Moby *moby) {
 extern void update_gemlik_trail(Moby *);
 extern void InitKnockback(void *, void *, float, int, int, int);
 extern int FindNearestEligibleMoby(void *, void *, float, int, int, void *, int);
-extern float ProbeGroundHeight(void *, int, float);
 
 extern char gemlik_reference_axis[] MACRO_ADDR;
 extern char gemlik_coll_hit_result[] MACRO_ADDR;
@@ -3126,13 +3118,10 @@ void update_blarg_space_commando_damage_targeting_and_ground_motion(Moby *moby) 
         DeleteMoby(moby);
     }
 }
-extern float ProbeGroundHeight(void *, int, float);
+
 extern void vec_scale_to_length(void *, void *, float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern float FastAddRots(float, float);
-extern float FastCos(float);
-extern float FastSin(float);
-extern void FastVecAdd(void *, void *, void *);
+
 extern char gemlik_coll_hit_normal[];
 extern short gemlik_trail_arc_degrees, gemlik_trail_ticks;
 /* initializes a sixteen-point curved trail around a moby */ void initialize_gemlik_trail(char *m) {
@@ -3267,9 +3256,7 @@ void update_gemlik_trail(Moby *m) {
     AddDrawCallback_r(DrawBeam, m);
     spawn_point_table_sparks_r(m);
 }
-extern float random_angle_radians(void);
-extern float FastCos(float);
-extern float FastSin(float);
+
 extern void lerp_vector(void *, void *, void *, float);
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 extern int gemlik_trail_spark_lower SDATA(gemlik_trail_spark_lower);
@@ -3774,9 +3761,7 @@ void update_lift(char *mobyp) {
     FastVecAdd(delta, delta, &moby->pos);
     update_entity_matrix(vars->path, delta, rot, &moby->rot);
 }
-extern float FastCos(float);
-extern float FastSin(float);
-extern void FastVecAdd(void *, void *, void *);
+
 extern char hero_globals_base[] NOT_SDA;
 
 // Builds a unit offset and heading from a moby's orientation, left/right by state.

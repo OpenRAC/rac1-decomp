@@ -11,6 +11,7 @@
 #include "data/level_13.h"
 #include "game/moby/mobyutil.h"
 #include "enums/moby_class.h"
+#include "asm_functions/executable.h"
 extern Hero g_hero;
 extern char level_render_state[];
 extern char gSkillPoints[];
@@ -81,7 +82,7 @@ extern unsigned char D_L13_0015FD08[] MACRO_ADDR;
 extern unsigned char D_001414F5[] NOT_SDA;
 
 extern void StartCutscene_r(int) __asm__("func_L00_00299B68");
-extern int func_00215570(void *arg0, int arg1);
+
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 extern void func_L00_00217718(void *, void *, int, int);
 extern void func_L00_002664B0(int, int);
@@ -252,7 +253,7 @@ void update_gemlik_scene_controller(Moby *moby) {
 
 extern int gemlik_moby_array_start_m __asm__("D_L13_00160058") MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
-extern float FastVecDist(void *, void *);
+
 extern void DeleteMoby(void *);
 extern int find_nearest_path_point(void *, void *, float *, int *, float *, int, float, float, float);
 extern int compute_advanced_moby_path_position(void *, void *, void *, int, int, float);
@@ -518,15 +519,11 @@ extern float moby_spark_first_batch_vertical_acceleration_base_gp
 
 extern float g_frame_time_sq MACRO_ADDR;
 
-extern float FastAddRots(float, float);
-extern float FastCos(float);
-extern float FastSin(float);
-extern float multiply_global_factor(float);
 extern int func_001FA898(float);
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
-extern void FastVecAdd(void *, void *, void *);
+
 extern float IntToFloat(int);
-extern int FastDecTimer(void *);
+
 extern int coll_line(void *, void *, int, int, int);
 
 typedef struct SparkData {

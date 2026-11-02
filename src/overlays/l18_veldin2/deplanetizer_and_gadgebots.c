@@ -132,7 +132,6 @@ extern float vec_length_xy(void *);
 extern void update_beam_ring_rail_and_pulse_effects(void *);
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
-extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
 
 extern char *PartType23Spawn_c(void *, int, void *, float, float, float, float, int) __asm__("func_L00_0026DEA0");
 extern void draw_three_scaled_camera_facing_quads(void);
@@ -945,13 +944,10 @@ typedef struct {
     float v[4];
 } __attribute__((aligned(16))) QVd058;
 
-extern float random_angle_radians(void);
-extern float ProbeGroundHeight(void *, int, float);
 extern int CarriedMobyUpdate(void *, void *);
 extern void update_gadgebot_damage_target_and_glow(void *);
 extern float fd9a0_c(void *, void *) __asm__("func_L18_002FD9A0");
 extern float f9d48_i(void *, void *) __asm__("func_001F9D48");
-extern void MobyBlendAnimation(void *, int, int, int);
 
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 extern int IsFrameWithinWindow(char *, float);

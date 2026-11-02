@@ -26,6 +26,7 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "structs/voice.h"
+#include "asm_functions/executable.h"
 extern int g_controller_state_no_direction;
 extern Hero g_hero;
 
@@ -36,14 +37,9 @@ extern float g_frame_time MACRO_ADDR;
 extern void vec_scale_to_length(void *, void *, float);
 extern float gravity_z(float *);
 extern void gravity_set_z(float *, float *, float);
-extern float FastVecLength(void *);
-extern void FastVecAdd(void *, void *, void *);
-extern void clear_u64_value(void *);
 
 extern void HeroGroundProbe(void);
-extern void FastVecSub(void *, void *, void *);
 
-extern float FastVecDot(void *, void *);
 extern void gravity_flatten(float *, float *);
 extern void set_gravity_relative_vector_length_xy(float *, float *, float);
 extern float vec_length_xy(void *);
@@ -200,17 +196,15 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern float novalis_hero_speed_bands_6[];
 extern void build_scaled_hero_move_impulse(float, float);
-extern int scale_ticks(int);
+
 extern float ApproachValue(float *, float, float);
 
 extern void add_hero_forward_offset(void *, void *, float);
 extern void turn_to(int, float, float, float);
 
-extern float FastCos(float);
-extern float FastSin(float);
 extern int hero_slot_item_id(int);
 extern int allocate_hero_voice_for_entry(int, int);
-extern float FastDiffRots(float, float);
+
 extern void vec_set_length_xy(void *, void *, float);
 
 // Per-tick horizontal air movement for the hero's jump states (level 01).
@@ -357,7 +351,7 @@ extern float novalis_hero_stride_speeds[];
 extern float novalis_hero_ledge_shimmy_frame_speeds[];
 
 extern void stick_target(float, int);
-extern void matrix_mul_vec3(void *, void *, void *);
+
 extern int fast_dec_timer(int *);
 
 extern void set_hero_animation(int, int, float);
@@ -372,18 +366,13 @@ extern int Moby_PlaySound(int, int, int);
 extern int truncate_float_to_s32(float);
 extern int clamp_vec_length_xy(float, void *, void *);
 
-extern int FastDecTimer(void *);
-
 extern void RippleDisturb(void *, int, int, float, float, float, float);
 extern float SpringAngle(void *, float, void *, int, float, float, float);
-extern float FastSubRots(float, float);
+
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern int PartType34Spawn(void *, void *, float, float);
 
 extern int rand_range(int, int);
-
-extern float FastAddRots(float, float);
-extern void BuildSphericalOffset(void *, float, float, float);
 
 extern void Hero_SetTiltSpringParams(float, float);
 

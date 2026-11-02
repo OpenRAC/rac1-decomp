@@ -2,6 +2,7 @@
    Starts at 0x002649C8 (was mobyfunc_002649C8.c). */
 #include "common.h"
 #include "include_asm.h"
+#include "asm_functions/executable.h"
 
 LINKER_REMNANT("asm/overlays", func_L01_002649C8);
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
@@ -10,8 +11,7 @@ void FastVecAdd(void *out, void *a, void *b);
 void FastVecSub(void *out, void *a, void *b);
 void FastVecScale(void *out, void *a, f32 scale);
 f32 FastVecLength(void *a);
-extern void euler_to_matrix(void *matrix, void *rotation);
-extern void transform_vector(void *out, void *in, void *matrix);
+
 extern void scale_vector(float scale, void *out, void *joint);
 extern void moby_joints_to_scratchpad(void *moby, short joint, int flags);
 

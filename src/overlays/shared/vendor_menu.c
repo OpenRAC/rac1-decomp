@@ -23,6 +23,7 @@
 #include "enums/moby_class.h"
 #include "structs/pad.h"
 #include "enums/hero_state.h"
+#include "asm_functions/executable.h"
 extern Hero g_hero;
 extern char cd_read_active[];
 extern struct S16_29ad08 cd_read_state;
@@ -236,7 +237,7 @@ extern s32 vendor_auxiliary_moby_active MACRO_ADDR;
 extern s32 vendor_auxiliary_moby_load_pending MACRO_ADDR;
 extern void FastMemSet(void *, s32, s32);
 extern VendorMoby_pv *CreateMoby(s32);
-extern void clear_u64_value(void *);
+
 extern void moby_build_matrix(void *);
 extern void snd_PauseAllSoundsInGroup(s32);
 extern void music_Pause(s32);
@@ -251,11 +252,6 @@ extern void draw_weapon_ammo_hud_panel(void);
 extern s32 Moby_PlaySound(s32, s32, void *);
 
 extern s32 HeroEnterMoveState(s32, s32);
-
-extern void MobySetAnimation(void *, s32, s32);
-extern void matrix_mul_vec3(void *, void *, void *);
-extern void FastVecAdd(void *, void *, void *);
-extern f32 FastAddRots(f32, f32);
 
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
@@ -390,9 +386,6 @@ extern void Hud_SetBarValueById(int, int);
 
 extern int HeroEnterMoveState(int, int);
 
-extern void matrix_mul_vec3(void *, void *, void *);
-extern void FastVecAdd(void *, void *, void *);
-extern float FastAddRots(float, float);
 extern void Hero_ResetToPosition(void *, void *, int, int);
 
 extern void DeleteMoby(void *);
@@ -539,10 +532,9 @@ struct T_29ad08 {
 };
 extern struct T_29ad08 item_defs_r[] __asm__("D_L00_00179BC0");
 
-extern float ProbeGroundHeight(float, void *, s32);
+extern float ProbeGroundHeight_v(float, void *, s32) __asm__("func_00214358");
 extern void FastMemSet(void *, s32, s32);
 extern void euler_rotation_basis(void *, void *);
-extern void clear_u64_value(void *);
 
 extern void Music_ContinueStreamIfReady(void);
 extern void sce_gs_sync_v(s32);
@@ -570,7 +562,7 @@ void start_vendor_exit_cutscene(void) {
     moby = (Moby *)g->moby;
     FastVecAdd(vec, vec, (char *)moby + 0x10);
     *(f32 *)((char *)g + 0xC8) += 2.0f;
-    *(f32 *)((char *)g + 0xC8) = ProbeGroundHeight(0.5f, vec, 0);
+    *(f32 *)((char *)g + 0xC8) = ProbeGroundHeight_v(0.5f, vec, 0);
     clear_u64_value((char *)g + 0xB0);
     *(f32 *)((char *)g + 0xB8) = FastAddRots(((Moby *)g->moby)->rot.z, 3.1415927f);
     euler_rotation_basis((char *)g + 0x80, (char *)g + 0xB0);
@@ -649,8 +641,6 @@ void restore_hero_after_vendor_exit_cutscene(void) {
     snd_FlushSoundCommands();
 }
 
-extern int scale_ticks(int);
-extern void MobyBlendAnimation(void *, int, int, int);
 extern int vendor_auxiliary_moby_active MACRO_ADDR;
 extern int rendered_frame_count MACRO_ADDR;
 extern int vendor_auxiliary_reaction_started MACRO_ADDR;
@@ -748,7 +738,7 @@ extern int vendor_selection_changed __attribute__((section(".sdata")));
 extern unsigned char discount_purchase_pricing[] __attribute__((section(".data")));
 
 extern void moby_build_matrix(void *);
-extern void MobySetAnimation(void *, int, int);
+
 extern void update_moby_animation_state(void *);
 
 #define GG g
@@ -1249,7 +1239,7 @@ extern f32 render_view_tan_half_fov NOT_SDA;
 
 extern void reset_frame_counters();
 extern void update_game_frame_and_idle_counters();
-extern void update_visible_resident_objects();
+
 extern void enqueue_voice_request();
 extern void Profile_Mark();
 extern void coordinate_hero_frame_update();
@@ -1268,8 +1258,7 @@ extern void decompress_and_relocate_vendor_moby_assets();
 extern void handle_vendor_auxiliary_moby_event();
 extern void MobyAnimAdvance();
 extern void update_resident_dialogue_animation_state();
-extern f32 multiply_global_factor();
-extern f32 FastSin();
+
 extern s32 msg_string();
 extern void set_scrolling_status_message();
 extern s32 queue_animation_update();
@@ -1284,7 +1273,7 @@ extern void sceVu0RotMatrixY();
 extern void sceVu0RotMatrixZ();
 extern f32 IntToFloat();
 extern void FastVecScale();
-extern void update_moby_shadow_range();
+
 extern void HeroAttachManipulators();
 extern void initialize_numeric_hud_timer_and_base_dimensions();
 extern void Hud_UpdateCounter();

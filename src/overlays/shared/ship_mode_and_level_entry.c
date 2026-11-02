@@ -14,6 +14,7 @@
 #include "game/system/loaders.h"
 #include "game/audio/music.h"
 #include "enums/level.h"
+#include "game/moby/mobyutil.h"
 extern char cd_read_state[];
 extern char *level_render_state;
 
@@ -21,7 +22,6 @@ extern int ship_level_entry_active SDATA(ship_level_entry_active);
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern char level_render_state_a[] __asm__("D_0013E130") NOT_SDA;
 extern void update_moby_proximity_interaction(void);
-extern void MobySetAnimation(void *, int, int);
 
 /* Start the moby's camera-follow state: stash it in the global record, point its update at
    update_moby_proximity_interaction. */

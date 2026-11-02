@@ -8,12 +8,12 @@
 #include "data/level_01.h"
 #include "game/math/fastfunc.h"
 #include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
 
 extern unsigned char *create_part(int);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
-extern int scale_ticks(int);
 extern unsigned char *novalis_part_type10_textures;
 
 /* Spawns a type-10 particle at a position and sets its colour, size, life and velocity. */
@@ -135,9 +135,7 @@ unsigned char *spawn_type_52_particle(void *a, int b, int c, int d, float f, flo
     return r;
 }
 extern int func_001160D8(void);
-extern void FastVecSub(void *, void *, void *);
-extern void matrix_from_basis_rows(void *, void *);
-extern void transform_vector(void *, void *, void *);
+
 extern unsigned char D_L01_001B2928[];
 /* spawns a type-74 particle with transformed offset and velocity */
 unsigned char *spawn_type_74_particle(char *m, char *pos, float *vel, char *cfg, int flag) {
@@ -178,7 +176,6 @@ unsigned char *spawn_type_74_particle(char *m, char *pos, float *vel, char *cfg,
     return p;
 }
 LINKER_REMNANT("asm/overlays", func_L01_0028C1D0);
-extern float FastVecDist(void *, void *);
 
 // Resets a path object and computes per-segment lengths of its points.
 void initialize_path_descriptor(char *p) {
@@ -318,10 +315,9 @@ int advance_path_node_index(char *p) {
 }
 extern void *func_001153FC(void *, int, unsigned int);
 extern void *get_path_node(void *, int);
-extern void FastVecSub(void *, void *, void *);
+
 extern void FastVecScale(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
-extern float FastVecLength(void *);
+
 extern void vec_scale_to_length(void *, void *, float);
 typedef int u128 __attribute__((mode(TI)));
 

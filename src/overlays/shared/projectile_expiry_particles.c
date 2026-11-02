@@ -4,6 +4,7 @@
 #include "structs/particle.h"
 #include "include_asm.h"
 #include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
 
 extern void *create_part(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
@@ -29,13 +30,13 @@ unsigned char *spawn_projectile_expiry_particle(char *pos, char *vec) {
     return p;
 }
 extern int truncate_float_to_s32(float);
-extern int scale_ticks(int);
+
 extern int func_001160D8(void);
 
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void FastVecAdd(void *, void *, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecSub(void *, void *, void *);
+
 extern unsigned char *umbris_part_type61_textures;
 extern float frame_scale MACRO_ADDR;
 extern float debris_far_point[];

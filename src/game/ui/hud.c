@@ -2,13 +2,13 @@
 #include "callees.h"
 #include "structs/records.h"
 #include "structs/misc.h"
+#include "asm_functions/executable.h"
 
 /*
  * hud.cpp in the original source; text 0x1FF668-0x201D58.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
-
 
 typedef struct {
     unsigned short id;
@@ -964,10 +964,6 @@ void append_power_of_two_textured_screen_sprite(long texture_register_value, s32
 }
 
 extern int *g_render_packet_cursor MACRO_ADDR;
-extern float FastCos(float);
-extern float FastSin(float);
-extern void FastVecAdd(float *, float *, float *);
-extern void FastVecSub(float *, float *, float *);
 
 /* append_power_of_two_textured_screen_sprite's rotated sibling: a 1-tag + 6-quadword PACKED GIF
    packet for a w x h sprite at (x, y) turned by rot. The four corners

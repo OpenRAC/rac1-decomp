@@ -10,6 +10,7 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "structs/collision.h"
+#include "asm_functions/executable.h"
 extern char gHeroPos[];
 extern unsigned char g_hero[] NOT_SDA;
 
@@ -402,10 +403,7 @@ d1:
 extern float D_0015EE64 MACRO_ADDR;
 extern short D_0015EE60;
 extern char rilgar_coll_resolved_pos[];
-extern void clear_u64_value(void *);
-extern void FastVecSub(void *, void *, void *);
-extern void FastVecAdd(void *, void *, void *);
-extern float FastVecLength(void *);
+
 extern void Hero_ConstrainToPath(void);
 extern void transform_hero_local_offset_to_world(float *, float, float, float);
 extern void HeroOffsetAlongViewZ(float *dst, float *src, float dz);
@@ -527,7 +525,7 @@ extern void vec_set_length_xy(void *, void *, float);
 extern void resolve_hero_collisions_with_history(void);
 extern void HeroL05_GroundProbe(void);
 extern void correct_hero_ground_penetration(void);
-extern f32 FastVecDot(void *, void *);
+
 extern void gravity_flatten(float *, float *);
 extern void set_gravity_relative_vector_length_xy(float *, float *, float);
 extern float forward_component(void *);

@@ -6,6 +6,7 @@
 #include "structs/misc.h"
 #include "game/moby/mobyutil.h"
 #include "structs/voice.h"
+#include "asm_functions/executable.h"
 
 /*
  * sound.cpp in the original source; text 0x22D8C0-0x22F128.
@@ -17,7 +18,6 @@ extern char voice_pool[];
 extern int bank_sound_count MACRO_ADDR;
 
 extern void FastVecScale(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
 
 extern char camera_position_a[] __asm__("D_00187180");
 extern char coll_hit_pos[];
@@ -42,8 +42,6 @@ void clamp_voice_position_to_collision(void *arg0) {
 }
 
 extern char camera_position[];
-extern void FastVecSub(void *, void *, void *);
-extern void FastVecAdd(void *, void *, void *);
 
 /* Aim the vector from the frame at camera_position toward arg0+0x20, scaled to
    3/4 and 64, and return the line test from arg1 to its end. The int
@@ -102,7 +100,7 @@ int calculate_voice_distance_volume(void *arg0, float x, float lo, float hi) {
 }
 
 extern char camera_position[];
-extern float FastVecDist(int, void *);
+
 /* This caller's view of calculate_voice_distance_volume above: it ignores the result, and
    declaring it int would move its next temporary to $v1. */
 extern void calculate_voice_distance_volume_v(void *, float, float, float) __asm__("func_0022DA10");
@@ -115,7 +113,6 @@ void calculate_voice_volume(void *arg0, int arg1) {
     calculate_voice_distance_volume_v(p, v, p[0], p[1]);
 }
 
-extern void transform_vector(void *, void *, void *);
 extern float vec_length_xy(void *);
 extern float fast_arc_tan_a(float, float) __asm__("func_001FA058");
 extern void truncate_float_to_s32(float);
@@ -287,11 +284,9 @@ extern void func_0012F120(s32, s32, s32, s32);
 extern void FastVecAdd_DD68(void *, void *, void *) __asm__("func_001F9BD8");
 extern void FastVecSub_DD68(void *, void *, void *) __asm__("func_001F9BF0");
 extern void FastVecScale_DD68(void *, void *, f32) __asm__("func_001F9C30");
-extern f32 func_001F9C78(void *, void *);
-extern f32 func_001F9CB8(void *);
+
 extern void func_001F9DC0(void *, void *, f32);
-extern void func_001F9EC0(void *, void *, void *);
-extern void func_001FA4A0(void *, void *);
+
 extern f32 IntToFloat_DD68(s32) __asm__("func_001FA888");
 extern s32 truncate_float_to_s32_DD68(f32) __asm__("func_001FA898");
 extern void func_00217130();
@@ -751,7 +746,7 @@ extern VoicePool voice_pool_r __asm__("D_0013E650");
 extern Hero D_0013F450;
 extern VoicePositionRecord D_0013E6E0[];
 extern u8 D_0013E6C0_2EB08[] __asm__("D_0013E6C0");
-extern void func_001F9BC0(Vec4 *);
+
 extern s32 random_integer_below_r(s32) __asm__("func_002140B0");
 extern s32 calculate_voice_volume_r(VoiceSlot *, Vec4 *) __asm__("func_0022DB00");
 
@@ -929,7 +924,6 @@ int PlayBankSound(int idx, int arg1, int arg2) {
 }
 
 extern int level_sound_def_count MACRO_ADDR;
-
 
 /* Play a level group sound (after the bank sounds) on a free voice; return the slot or -1. */
 int allocate_voice_for_group_entry(int group_entry_index, int flags, int owner) {

@@ -19,6 +19,7 @@
 #include "enums/moby_class.h"
 #include "structs/collision.h"
 #include "structs/hit_message.h"
+#include "asm_functions/executable.h"
 extern Hero g_hero;
 extern char g_hero_moby[];
 extern int pad_held;
@@ -68,12 +69,11 @@ void request_hero_voice_if_enabled(int a0, int a1, int a2) {
 extern unsigned char gHaveMorphORay[];
 extern unsigned char gCheats[] MACRO_ADDR;
 extern int novalis_frame_count MACRO_ADDR;
-extern int scale_ticks(int);
+
 extern float novalis_lean_state_30_scale;
 extern float IntToFloat(int);
 extern int truncate_float_to_s32(float);
-extern float FastSin(float);
-extern int FastTweenColor(int, int, float);
+
 extern void advance_hero_animation(void);
 extern void hero_update(void);
 extern void update_hero_ground_material_effects(void);
@@ -204,7 +204,7 @@ void hero_frame_update(void) {
     update_hero_moby_probed_height_bounds();
     apply_env_zone_lighting(GG->p2080);
 }
-extern int scale_ticks(int);
+
 extern void FadeToBlack(int);
 extern void hero_frame_update(void);
 extern void advance_hero_animation(void);
@@ -1066,10 +1066,9 @@ void hero_speed_from_table(void) {
 }
 extern float gravity_length_xy(float *v);
 extern float vec_length_xy(void *);
-extern float FastCos(float);
-extern float FastSin(float);
+
 extern void FastVecScale(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
+
 extern int coll_line(void *, void *, int, int, int);
 
 extern int novalis_coll_hit_type;
@@ -1354,14 +1353,13 @@ d1:
 }
 extern char novalis_coll_resolved_pos[];
 extern float frame_scale SDATA(frame_scale);
-extern void clear_u64_value(float *);
+
 extern void Hero_ConstrainToPath(void);
 extern void HeroOffsetAlongViewZ(float *dst, float *src, float dz);
 extern void HeroMoveDownAlongNormal(float *dst, float *src, float h);
 extern int coll_capsule(float, float, void *, int, void *);
 extern int coll_sphere_hero_groups(float, void *);
-extern void FastVecSub(void *, void *, void *);
-extern float FastVecLength(void *);
+
 extern void vec_scale_to_length(void *, void *, float);
 
 /* Checks that the hero capsule passes: sweeps the capsule toward the target, and clamps the remaining offset. */
@@ -1549,9 +1547,9 @@ extern short novalis_game_mode_r __asm__("D_L01_0015F6A8");
 extern u8 item_available[];
 
 extern s32 fast_dec_timer(s32 *);
-extern s16 FastDecTimer(s16 *);
+
 extern void exit_hero_vehicle_mode_and_restore_moby(void);
-extern s32 scale_ticks(s32);
+
 extern s32 pad_pressed_within(s32, s32, s32);
 extern struct Moby *CreateMoby(s32);
 extern void moby_build_matrix(struct Moby *);
@@ -1559,7 +1557,6 @@ extern void enter_hero_vehicle_mode_and_set_moby_r(s32, s32, struct Moby *) __as
 extern f32 gravity_z(void *);
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 extern void FastVecScale(void *, void *, f32);
-extern f32 FastVecLength(void *);
 
 extern void transform_hero_local_offset_to_world(void *, f32, f32, f32);
 extern void Hero_OnKilled(void);

@@ -7,6 +7,8 @@
 #include "core/gs/load_image.h"
 #include "core/gs/store_image.h"
 #include "asm_functions/shared_levels.h"
+#include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
 
 extern void flush_cache(int);
 
@@ -177,17 +179,13 @@ typedef struct WalkData {
 } WalkData;
 
 extern int find_nearest_animation_sequence_entry(char *a, float time);
-extern void MobyBlendAnimation(void *, int, int, int);
-extern float FastDiffRots(float, float);
+
 extern int walker_gait_mask(WalkAnim *a, float t);
 extern float MobyGetFrameValue(void *);
 extern int truncate_float_to_s32(float);
-extern float FastCos(float);
-extern float FastSin(float);
-extern void FastVecAdd(void *, void *, void *);
-extern float ProbeGroundHeight(void *, int, float);
+
 extern float vec_distance_xy(void *, void *);
-extern float FastVecDist(void *, void *);
+
 extern void STUB_printf();
 extern float jump_speed_4318(float *a, float *b, float *out, float speed, float g);
 

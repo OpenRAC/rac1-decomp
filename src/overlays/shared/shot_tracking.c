@@ -4,6 +4,7 @@
 #include "structs/moby.h"
 #include "include_asm.h"
 #include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
 
 // Add and subtract a delta from a moby field, storing results
 void initialize_moby_grounding(char *moby) {
@@ -34,16 +35,15 @@ extern int aridia_shot_stream_extra_count SDATA(aridia_shot_stream_extra_count);
 extern float aridia_shot_stream_spread_far SDATA(aridia_shot_stream_spread_far);
 extern float aridia_shot_stream_spread_near SDATA(aridia_shot_stream_spread_near);
 extern int coll_line(void *, void *, int, int, int);
-extern float FastVecDist(void *, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
+
 extern void FastVecScale(void *, void *, float);
 extern void ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void rand_vec(float *, float, float);
 
-extern float multiply_global_factor(float);
 extern int truncate_float_to_s32(float);
-extern int FastDecTimer(void *);
+
 extern char *spawn_spinning_and_fading_effect_particle(void *, void *, unsigned long, float);
 extern void spawn_color_decaying_effect_particle(void *, void *, int);
 

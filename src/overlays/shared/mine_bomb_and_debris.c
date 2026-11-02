@@ -19,6 +19,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "structs/level_records.h"
 #include "enums/hero_state.h"
+#include "asm_functions/executable.h"
 extern Hero g_hero;
 extern int pad_held;
 extern char voice_pool[];
@@ -187,15 +188,12 @@ extern char *active_mobies[];
 extern char thrown_mine_list[];
 extern unsigned char *part_type_textures[];
 
-extern float FastVecLength(void *);
 extern unsigned char *GetFlaggedPvarWord(unsigned char *);
 extern unsigned char *moby_get_ride_transform(unsigned char *);
 extern int predict_mine_impact(W910 *, M910 *, int);
-extern void euler_to_matrix(void *, void *);
+
 extern void MobyTransformScaledVertex(char *, int, char *);
 extern void matrix_copy_rows(void *, void *);
-extern void FastVecAdd(void *, void *, void *);
-extern int scale_ticks(int);
 
 extern float resolve_camera_surface_height(float *, void *);
 extern void FastVecScale(void *, void *, float);
@@ -203,29 +201,24 @@ extern void FastVecScale(void *, void *, float);
 extern int PartType34Spawn(void *, void *, float, float);
 extern void vec_set_length_xy(void *, void *, float);
 extern float IntToFloat(int);
-extern float multiply_global_factor(float);
-extern float FastSin(float);
-extern float FastCos(float);
+
 extern int coll_line(void *, void *, int, int, int);
 extern int CollType(void);
 extern void RippleDisturb(int, int, int, float, float, float, float);
-extern void clear_u64_value(float *);
+
 extern char *spawn_burst_moby(void *, float);
-extern float random_angle_radians(void);
+
 extern int rand_range(int, int);
 
 extern s32 is_moby_in_class_range_500_to_540(s32);
-extern float ProbeGroundHeight(void *, int, float);
-extern void FastVecSub(void *, void *, void *);
+
 extern void vec_reflect(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
-extern float FastVecDot(void *, void *);
 
 extern float fast_atan2(float, float);
 
 extern int RotateWithMoby(void *, void *, void *, void *, void *, void *);
 
-extern void MobyBlendAnimation(void *, int, int, int);
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound(int, int, int);
 extern int fast_dec_timer(int *);
@@ -233,15 +226,15 @@ extern void InitDirectionalHitQuery(void *, void *, int, void *, float);
 extern int coll_sphere_mobys(void *, int, void *, void *, float);
 extern int coll_sphere(float, void *, int, void *);
 extern void update_moby_rotation_oscillation(void *, char *, char *, float, float, float);
-extern int FastDecTimer(void *);
+
 extern void *MobyGetHitMessage(void *, int, int);
 extern f32 vec_distance_xy(void *, void *);
-extern f32 FastVecDist(void *, void *);
+
 extern int MoveKeepingOverGround(void *, void *, void *, float, float, float, float, int);
 extern void SpawnExplosionFx(void *, void *, int, float, float);
 extern void moby_index_list_remove(void *, void *);
 extern void DeleteMoby(void *);
-extern float FastAddRots(float, float);
+
 extern void SendRadialMessageToMobys(void *, void *, void *, int, int, int, int, int, float, float, float);
 
 extern void spawn_gravity_floor_burst_particle(void *, void *, int, float, float, float, int, int, int);
@@ -253,7 +246,7 @@ extern void spawn_explosion(void *, void *, void *, float, float, int, int, int,
                             int, int, int, int);
 extern int truncate_float_to_s32(float);
 extern char *mine_debris(char *, char *, int, int, float, int, int);
-extern void BuildSphericalOffset(void *, f32, f32, f32);
+
 extern char *mine_camera_blast(char *a, char *b, int c, char *d);
 extern void jet_animate(unsigned char *, float);
 
@@ -1175,7 +1168,7 @@ char *spawn_bomb(int owner, void *pos) {
 extern char collision_hit_point[];
 extern float vec_length_xy(void *);
 extern float vec_distance_xy(void *, void *);
-extern float FastDiffRots(float, float);
+
 extern void aim_throw_arc(float *, float *, float *, float, float, float);
 
 typedef struct BombVars {
@@ -1538,7 +1531,7 @@ extern int bomb_trail_spark_count SDATA(bomb_trail_spark_count);
 extern int bomb_trail_spark_texture SDATA(bomb_trail_spark_texture);
 extern int predict_throw_landing(void *, void *, int);
 extern void rand_vec(float *, float, float);
-extern int FastTweenColor(int, int, float);
+
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 
 extern void clamp_vec_length(void *, void *, float);
@@ -2087,7 +2080,7 @@ void debris_update(unsigned char *m) {
 extern float crate_debris_spin_min SDATA(crate_debris_spin_min);
 extern float crate_debris_spin_max SDATA(crate_debris_spin_max);
 extern char *CreateMoby(int);
-extern float random_angle_radians(void);
+
 extern float randf_sym(float, float);
 
 typedef struct {
@@ -2150,7 +2143,7 @@ extern unsigned char D_L00_00161544_byte SDATA(D_L00_00161544);
 extern char coll_hit_normal[];
 extern float D_L00_00161518_float SDATA(D_L00_00161518);
 extern float D_L00_0016151C_float SDATA(D_L00_0016151C);
-extern float FastVecDot(void *a, void *b);
+
 extern float randf_sym(float lo, float hi);
 
 // Updates a bouncing moby: spins it, then in state 0 reflects its direction off a plane and in state 1 fades it out.
@@ -2325,7 +2318,7 @@ typedef struct {
 extern E gold_weapon_purchased;
 extern s32 coll_hit_result[0x1C];
 extern f32 fast_atan2(f32, f32);
-extern f32 FastDiffRots(f32, f32);
+
 extern f32 FastArcSin(f32);
 extern f32 IntToFloat(s32);
 extern s32 coll_line_r(void *, void *, s32, char *, void *) __asm__("func_L00_001EFFF0");
@@ -2499,7 +2492,7 @@ extern void reflect1688(void *, void *, void *) __asm__("func_L00_001FF610");
 extern void matrix_scale1688(void *, void *, float) __asm__("func_L00_001FFCF8");
 extern void matrix_add1688(void *, void *, void *) __asm__("func_L00_001FFDD0");
 extern void func_001FA190(void *);
-extern void func_001F9EE8(void *, void *, void *);
+
 extern void rings1688(void *, void *, int, int, float, int, int, int, int, float) __asm__("func_L00_0026B890");
 extern void debris1688(void *, void *, int, int, float, int) __asm__("func_L00_0026B368");
 

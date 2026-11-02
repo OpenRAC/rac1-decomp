@@ -3,6 +3,7 @@
 #include "structs/records.h"
 #include "structs/misc.h"
 #include "game/render/lights.h"
+#include "asm_functions/executable.h"
 
 /*
  * lights.cpp in the original source; text 0x202260-0x202AA8.
@@ -14,10 +15,7 @@ extern char dir_lights[];
 extern float gCamera_yaw;
 extern char point_lights[];
 extern char point_light_data[];
-extern float FastAddRots(float, float);
-extern float FastCos(float);
-extern float FastSin(float);
-extern float FastVecDist(void *, void *);
+
 extern void CreatePointLight(int);
 
 /* Per-frame light update: the ambient colour (0.8 grey, -0.3) and a key

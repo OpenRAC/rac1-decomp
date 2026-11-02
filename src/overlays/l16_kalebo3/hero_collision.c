@@ -11,6 +11,7 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "structs/collision.h"
+#include "asm_functions/executable.h"
 extern Hero g_hero;
 
 extern int g_current_level_index MACRO_ADDR;
@@ -132,7 +133,7 @@ void HeroL16_UpdateStateFlags(void) {
     }
 }
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
+
 extern void ClampVectorLength(void *a, float x);
 
 // Builds a vector from two global blocks, transforms it, and passes it on with a summed float.
@@ -351,15 +352,14 @@ d1:
 }
 extern float frame_scale MACRO_ADDR;
 extern char kalebo3_coll_resolved_pos[];
-extern void clear_u64_value(void *);
+
 extern void Hero_ConstrainToPath(void);
 extern void transform_hero_local_offset_to_world(float *, float, float, float);
-extern void FastVecSub(void *, void *, void *);
+
 extern void HeroOffsetAlongViewZ(float *, float *, float);
 extern void HeroMoveDownAlongNormal(float *, float *, float);
 extern int coll_capsule(float, float, void *, int, void *);
 extern int coll_sphere_hero_groups(float, void *);
-extern float FastVecLength(void *);
 
 /* Pulls the camera position toward a desired offset from the player; returns 1 when settled, -1 when clamped. */
 extern Hero hero __asm__("D_0013F450");

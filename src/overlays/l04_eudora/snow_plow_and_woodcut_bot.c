@@ -224,30 +224,27 @@ typedef struct {
     float angle;
 } VehicleCamera;
 extern VehicleCamera eudora_camera;
-extern float FastVecDist(void *, void *);
+
 extern s32 truncate_float_to_s32(float);
 extern s32 STUB_printf();
 extern void gunship_follow_path(VehicleMoby *);
-extern void FastDecTimer(void *);
-extern s32 is_point_inside_clip_volume(void *, s32);
+
 extern void MobySpringTurn(void *, void *, float, float, float, float);
 extern float vec_distance_xy(void *, void *);
 
-extern void FastVecSub(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
-extern float FastVecLength(void *);
+
 extern void AttachManipulator(void *, s32, void *);
 
 extern void axis_rotation_2d48(void *, s32, float);
-extern void matrix_mul_vec3(void *, void *, void *);
+
 extern void MobyAnimAdvance(void *);
 extern void moby_build_matrix(void *);
 extern void moby_anim_sphere_lerp(void *);
 extern char *MobyGetHitMessage(void *, s32, s32);
 extern s32 PlayBankSound(s32, s32, s32);
 extern void ShowBanner(s32, s32);
-extern void clear_u64_value(void *);
+
 extern void coll_sphere_mobys(void *, float, s32, void *, void *);
 extern void spawn_explosion(void *, void *, void *, float, float, s32, s32, s32, float, float, float, float, s32, float,
                             s32, s32, s32, s32);
@@ -601,12 +598,11 @@ extern float g_frame_time_b __asm__("D_0015EE6C") MACRO_ADDR;
 extern float D_0015EE64 MACRO_ADDR;
 extern void DeleteMoby(void *);
 
-extern float random_angle_radians(void);
 extern float MobyGetFrameValue(void *);
 extern float FastNormalizeAngle(float);
 
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
-extern void FastVecSub(void *, void *, void *);
+
 extern void update_entity_matrix(char *, void *, void *, void *);
 
 struct FloatingPlatformUpdateVars {
@@ -740,7 +736,7 @@ void initialize_woodcut_bot_movement_data(void *m) {
     d->unk_240 = 0.5f;
     initialize_leg_rig(m, p);
 }
-extern void clear_u64_value(void *);
+
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                   float, int, int, int, int) __asm__("func_L00_0025F4A8");
@@ -766,26 +762,24 @@ typedef struct WBQuery {
 
 extern void FindNearestTargetMoby(void *, void *, float);
 extern void Manipulator_ApplyScale(float, void *, int, void *);
-extern float FastVecDist(void *, void *);
+
 extern void set_ground_height_band(void *);
 
 extern float vec_distance_xy(void *, void *);
-extern void FastDecTimer(void *);
+
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
 extern void HeadingFromVector(void *, float *, void *, void *);
 extern void InitKnockback(float, void *, void *, int, int, int);
 extern void SetDeathBits(void *, int, int);
 extern void RerollEffectCounter(void *, void *);
-extern float multiply_global_factor(float);
 
-extern void MobyBlendAnimation(void *, int, int, int);
 extern void reset_walker_gait_helpers(void *);
 
 extern void vec_scale_to_length(void *, void *, float);
 extern void transform_scaled_vertex_batch(void *, int, void *, void *);
 extern void coll_line(void *, void *, int, void *, void *);
-extern void FastVecAdd(void *, void *, void *);
+
 extern void FastVecScale(void *, void *, float);
 extern void coll_sphere_mobys(void *, float, int, void *, void *);
 extern void AttachManipulator(void *, int, void *);
@@ -794,12 +788,11 @@ extern void *libc_memset(void *, int, int);
 
 extern int IsPointInPolygon(void *, void *, int);
 extern int IsFrameWithinWindow(void *, float);
-extern float FastSin(float);
 
 extern void spawn_crate_debris(void *, void *, void *, void *, int, int, float, float);
 
 extern int leg_walker_update(void *, void *, float, float, float);
-extern void BuildSphericalOffset(void *, float, float, float);
+
 extern float SpringTurn(float, float, void *, float, float, float);
 extern int mine_fall(void *, void *);
 extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
@@ -807,7 +800,6 @@ extern void DeleteMoby(void *);
 extern void StepColorFade(void *, void *);
 extern void MoveKeepingOverGround(void *, void *, void *, int, float, float, float, float);
 extern void axis_rotation_2d48(void *, int, float);
-extern float ProbeGroundHeight(void *, int, float);
 
 extern char eudora_camera_pos[];
 
@@ -1849,7 +1841,6 @@ typedef struct {
     float d[4];
 } L10SpriteData;
 extern int fast_dec_timer(int *);
-extern int FastTweenColor(int, int, float);
 
 extern unsigned char *PartType59Spawn(void *, int, unsigned char, int, int, int, int, float);
 extern int truncate_float_to_s32(float);
@@ -1890,7 +1881,7 @@ void update_suck_cannon_particles(char *m) {
 }
 
 extern int DialogRequest_Init(void *, void *);
-extern int is_point_inside_clip_volume(void *, int);
+
 extern int Npc_TryStartDialog(void *, void *);
 extern void unlock_planet(int);
 
@@ -2258,7 +2249,6 @@ extern float eudora_debris_spin_min_deg SDATA(eudora_debris_spin_min_deg);
 extern float eudora_debris_spin_max_deg SDATA(eudora_debris_spin_max_deg);
 extern int FastDecTimer_bounce(void *) __asm__("func_001F9938");
 extern int coll_sphere(float, void *, int, void *);
-extern float FastVecDot(void *a, void *b);
 
 extern float randf_sym(float lo, float hi);
 

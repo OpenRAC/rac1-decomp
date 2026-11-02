@@ -47,7 +47,6 @@ ASM_FUNC("asm/overlays", func_L00_002001D8);
 ASM_FUNC("asm/overlays", func_L00_00200210);
 ASM_FUNC("asm/overlays", func_L00_00200290);
 ASM_FUNC("asm/overlays", func_L00_002003C8);
-extern float FastSubRots(float, float);
 
 /* Steps angle a toward b by at most c, with wraparound. */
 float step_rotation_toward_target(float a, float b, float c) {

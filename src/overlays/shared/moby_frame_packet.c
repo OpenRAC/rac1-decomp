@@ -4,6 +4,7 @@
 #include "callees.h"
 #include "include_asm.h"
 #include "game/moby/mobyfunc.h"
+#include "asm_functions/executable.h"
 extern char cd_read_state[];
 extern char voice_pool[];
 
@@ -39,9 +40,7 @@ int find_nearest_animation_sequence_entry(char *a, float time) {
     return -1;
 }
 LINKER_REMNANT("asm/overlays", func_L00_0024FEF8);
-extern void matrix_from_basis_rows(void *, void *);
-extern void FastVecSub(void *, void *, void *);
-extern void transform_vector(void *, void *, void *);
+
 extern void FastVecScale(void *, void *, float);
 
 /* places a scaled, camera-relative entry in an object's table */
@@ -342,9 +341,6 @@ INCLUDE_ASM("asm/overlays", func_L00_00250700);
    vec4 (arg2) rather than a field of a caller-supplied 0x40-byte struct.
    0x3A800000 is exactly 2^-10. */
 
-extern void matrix_mul_vec3(void *, void *, void *);
-extern void FastVecAdd(void *, void *, void *);
-
 /* Writes the world position of joint arg1 of moby arg0 to arg2. */
 void Moby_GetJointWorldPos(char *arg0, int arg1, void *arg2) {
     char buf[0x40];
@@ -379,7 +375,7 @@ void compute_selected_world_matrices(char *o, int n, int *arg2, char *out) {
 extern int environment_sample_count MACRO_ADDR;
 extern char *environment_samples MACRO_ADDR;
 extern char no_environment_sample_msg[];
-extern float FastVecLength(void *);
+
 extern void STUB_printf();
 
 /* Finds the table entry nearest the object's position (within 8 units) and applies its fields to the object and

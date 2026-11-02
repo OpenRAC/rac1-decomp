@@ -19,19 +19,17 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/pause_menu.h"
+#include "asm_functions/executable.h"
 extern Hero g_hero;
 extern char saved_mission_state[];
 
 extern void initialize_moby_grounding(char *);
 extern int DialogRequest_Init(void *, void *);
 extern void DeleteMoby(void *);
-extern int is_point_inside_clip_volume(void *arg0, int arg1);
+
 extern int Npc_TryStartDialog(void *, void *);
 
-extern int scale_ticks(int);
 extern int fast_dec_timer(void *);
-
-extern void MobySetAnimation(void *, int, int);
 
 extern void MusicRequestTrack(int, int);
 extern void Hero_ResetToPosition(void *, void *, int, int);
@@ -39,16 +37,8 @@ extern void Hero_ResetToPosition(void *, void *, int, int);
 extern int memcard_Save(int, int);
 extern float vec_distance_xy(float *, float *);
 
-extern float FastDiffRots(float, float);
-extern float FastVecLength(void *a);
-
-extern float multiply_global_factor(float);
 extern int truncate_float_to_s32(float);
-extern float FastAddRots(float, float);
-extern void BuildSphericalOffset(void *, float, float, float);
-extern void FastVecAdd(void *, void *, void *);
-extern void FastVecSub(void *dst, void *a, void *b);
-extern float FastSubRots(float, float);
+
 extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 
@@ -651,9 +641,7 @@ void emit_cutscene_mode_moby_effects(struct Moby *m) {
 extern float IntToFloat(int);
 extern int GetEffectTex(int);
 extern void VU1_addGSregister(int, long);
-extern float multiply_global_factor(float);
-extern float FastAddRots(float, float);
-extern float FastSin(float);
+
 extern void get_moby_color(void *, void *, void *, void *);
 
 extern float FastNormalizeAngle(float x);
@@ -848,7 +836,6 @@ int can_spawn_codebot_slot_effect(int index) {
 }
 INCLUDE_ASM("asm/overlays", func_L15_002F8D9C);
 
-extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern int test_point_in_transformed_unit_sphere(float *p, int idx);
 extern int IsPointInPolygon(float *p, float *v, int n);
 
@@ -881,12 +868,9 @@ int is_hero_in_moby_follow_camera_region(char *moby) {
     }
     return 0;
 }
-extern void FastVecSub(void *dst, void *a, void *b);
-extern float FastVecDot(void *a, void *b);
-extern void FastVecScale(void *, void *, float);
-extern float FastVecLength(void *a);
 
-extern float FastDiffRots(float, float);
+extern void FastVecScale(void *, void *, float);
+
 extern float FastArcSin(float x);
 
 extern char quartu_player_camera_field_190[];

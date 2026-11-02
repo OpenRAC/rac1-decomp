@@ -22,6 +22,7 @@
 #include "game/moby/mobyutil.h"
 #include "enums/level.h"
 #include "enums/moby_class.h"
+#include "asm_functions/executable.h"
 
 /*
  * space.cpp in the original source; text 0x22F128-0x233FF8.
@@ -50,8 +51,7 @@ extern short g_current_level_index;
 extern int STUB_printf();
 
 extern void FastVecScale(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
-extern void matrix_mul_vec3(void *, void *, void *);
+
 extern int g_hero_moby NOT_SDA;
 
 extern void flush_cache(int);
@@ -72,9 +72,6 @@ extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long)
 extern unsigned char resident_class_slot_by_id[] NOT_SDA;
 
 extern char camera_position[];
-extern void FastVecSub(void *, void *, void *);
-
-extern void transform_vector(void *, void *, void *);
 
 extern void sce_cd_sync_s(int);
 
@@ -83,7 +80,6 @@ extern void snd_ResolveBankXREFS(void);
 extern char render_sequence_c[] __asm__("D_0018CC20");
 extern float view_tan_half_fov;
 extern unsigned char draw_map51_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
-extern void FastVecCross(void *, void *, void *);
 
 /* Movie-camera keyframe step (as Transition_UpdateMovieCamera): the keyframe's +0x1C
    sets view_tan_half_fov, its position and X/Y/Z angles set the camera position
@@ -137,7 +133,7 @@ extern int g_game_mode MACRO_ADDR;
 extern int scale_game_frame_count(int);
 extern void scale_vector(void *, void *, float);
 extern int bsphere_check_alpha(void *, int *, float);
-extern float ProbeGroundHeight(void *, int, float);
+
 typedef struct {
     char pad[0x20];
     int mode;
@@ -312,7 +308,7 @@ extern float D_001D9DA0[4][2];
 extern unsigned int trail_color_a_2F738[][2] __asm__("D_001D9DC0");
 extern unsigned int trail_color_b_2F738[][2] __asm__("D_001D9DC4");
 extern short D_001605D0;
-extern unsigned int func_001FA8A8(unsigned int, unsigned int, float);
+
 extern float trail_float_2F738(int) __asm__("func_001FA888");
 extern void trail_scale_2F738(void *, void *, float) __asm__("func_001F9DC0");
 
@@ -2727,7 +2723,6 @@ extern float env_map_saved_uvs[][2];
 extern u64 GetEffectTex_r2(int) __asm__("func_001F4868");
 extern void fast_dec_timer(s32 *);
 
-extern float FastVecDot(void *, void *);
 extern float IntToFloat(int);
 extern void MobyTransformScaledVertex(EnvironmentMappedObject *, int, void *);
 

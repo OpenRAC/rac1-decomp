@@ -14,11 +14,11 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+#include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
 
 extern char g_hero[];
 extern int select_hero_slot3_animation_pair(int, int *, int *);
-extern void MobyBlendAnimation(void *, int, int, int);
-extern int scale_ticks(int);
 
 /* With both objects at g_hero + 0x1180 and +0x1184 present and the
    first's byte 0x53 equal to 1, asks select_hero_slot3_animation_pair for a pair of
@@ -243,7 +243,6 @@ missing:
 INCLUDE_ASM("asm/overlays", func_L00_00232A30);
 INCLUDE_ASM("asm/overlays", func_L00_00232A3C);
 extern int lookup_s16_pair_value(int, int *);
-extern int scale_ticks(int);
 
 /* When the animation at g_hero + 0x2278 is set and enabled (+0x227C),
    starts the sequence lookup_s16_pair_value picks for A0; if none is ready and
@@ -573,9 +572,9 @@ typedef int V4q_32b90 __attribute__((mode(TI), aligned(16)));
 extern Hero g_hero_r __asm__("D_0013F450");
 extern u8 coll_hit_normal[];
 extern f32 collision_hit_point;
-extern void FastVecSub(void *, void *, void *);
+
 extern void FastVecScale(void *, void *, f32);
-extern void FastVecAdd(void *, void *, void *);
+
 extern void vec_scale_to_length(void *, void *, f32);
 extern void clip_negative_segment_endpoint_xyz(Vec4 *, void *);
 extern s32 coll_line(void *, void *, s32, s32, s32);
@@ -808,12 +807,6 @@ void configure_hero_point_effect_emission(float a, float b, short c, unsigned ch
     base->items[6].unk34 = b;
 }
 
-extern void clear_u64_value(void *);
-extern void euler_to_matrix(void *, void *);
-extern void transform_vector(void *, void *, void *);
-extern float FastCos(float);
-extern float FastSin(float);
-
 typedef struct {
     float v[4];
 } __attribute__((aligned(16))) QVec;
@@ -906,9 +899,6 @@ void HeroMoveDownAlongNormal(float *dst, float *src, float h) {
             break;
     }
 }
-extern float FastCos(float);
-extern float FastSin(float);
-extern void FastVecAdd(void *, void *, void *);
 
 /* The polar form of transform_hero_local_offset_to_world: sets OUT to (R cos ANGLE,
    R sin ANGLE, Z) via FastCos / FastSin, then transforms it
@@ -923,8 +913,6 @@ void transform_hero_polar_offset_to_world(float *out, float r, float angle, floa
     transform_vector(out, out, base);
     FastVecAdd(out, out, base + 0x80);
 }
-extern void clear_u64_value(void *);
-extern void FastVecAdd(void *, void *, void *);
 
 /* Sets OUT to the point (X, Y, Z, 0) (cleared first by clear_u64_value),
    then transforms it by the matrix at g_hero and adds the vector at
@@ -1003,10 +991,9 @@ void HeroOffsetAlongViewZ(float *dst, float *src, float dz) {
             break;
     }
 }
-extern float FastVecDot(void *, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecScale(void *, void *, float);
-extern void FastVecSub(void *, void *, void *);
 
 /* Takes SRC's component along the view's normal out, into DST: in view
    mode 0 (g_hero + 0x20B3) z is zeroed; in mode 1 the normal is the
@@ -1033,7 +1020,6 @@ void gravity_flatten(float *dst, float *src) {
     }
 }
 extern float vec_length_xy(void *);
-extern void matrix_from_basis_rows(void *, void *);
 
 /* The xy length (vec_length_xy) of V. In view modes 1 and 2
    (g_hero + 0x20B3) V is first taken through the inverse of the
@@ -1278,14 +1264,13 @@ typedef struct {
 extern void scale_ticks_r2(int) __asm__("func_001F9850");
 
 extern Plat *moby_get_ride_transform(void *);
-extern float FastVecLength(void *);
-extern float FastAddRots(float, float);
+
 extern void RotateWithMoby(int, void *, void *, void *, void *, void *);
 extern int convert_pose_to_reference_local(int, void *, void *, void *, void *, void *);
 extern void transform_attachment_pose(int, void *, void *, void *, void *, void *);
 extern float ApproachValue(float *, float, float);
 extern void vec_set_length_xy_r2(void *, void *, float) __asm__("func_L00_001FF500");
-extern float FastSubRots(float, float);
+
 extern f32 g_frame_time_sq MACRO_ADDR;
 
 /* The hero on a moving platform: finds the platform the hero stands on or hangs from, tracks the platform's motion
@@ -1570,9 +1555,6 @@ void update_hero_slot4_and_slot5_mobys(int a0) {
 extern float hero_scale SDATA(hero_scale);
 extern int g_current_level_index MACRO_ADDR;
 
-extern float FastAddRots(float, float);
-extern int FastTweenColor(int, int, float);
-
 // Sets up the hero's camera-shake/glow object: clamps a scale, scales attached objects and sets a colour from a wobble.
 void HeroAttachManipulators(char *obj) {
     float f20 = hero_scale;
@@ -1658,7 +1640,6 @@ void configure_moby_from_source_bone4(int id, char *moby) {
     *(char **)(moby + 0x6C) = source_bone4_pose_buffer;
     *(int *)(moby + 0x50) = 0;
 }
-extern float ProbeGroundHeight(void *, int, float);
 
 /* Probes 0.75 behind the position at g_hero + 0x80 along the first
    matrix row (+0x0), half a unit up, for the ground height

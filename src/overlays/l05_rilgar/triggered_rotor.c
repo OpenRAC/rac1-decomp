@@ -4,7 +4,6 @@
 #include "common.h"
 #include "structs/moby.h"
 #include "asm_functions/executable.h"
-extern float FastSubRots(float, float);
 
 typedef struct {
     char pad[0xBC];

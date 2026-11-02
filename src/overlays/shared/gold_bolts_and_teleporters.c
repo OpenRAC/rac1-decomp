@@ -26,6 +26,7 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+#include "asm_functions/executable.h"
 extern Hero g_hero;
 extern int pad0_pressed;
 extern unsigned char saved_mission_state[];
@@ -284,17 +285,14 @@ extern char *novalis_mobys MACRO_ADDR;
 extern Moby *novalis_coll_hit_moby;
 extern Cols explosive_spark_colors_a;
 extern Cols explosive_spark_colors_b;
-extern void FastVecAdd(void *, void *, void *);
-extern float FastVecLength(void *a);
 
 extern void vec_scale_to_length(void *, void *, float);
 extern int rand_range(int, int);
-extern int scale_ticks(int);
 
 extern void DeleteMoby(void *);
-extern float FastVecDist(void *, void *);
+
 extern void FastVecScale(void *, void *, float);
-extern void clear_u64_value(void *);
+
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern int Moby_PlaySound(int, int, int);
 extern float IntToFloat(int);
@@ -305,7 +303,6 @@ extern void spawn_particle_alt_9768(void *, void *, int, int, int, float);
 extern int spawn_glow_particle(void *, void *, void *, float, int, int, int, int, int);
 extern void spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(void *, void *, int, int, float, int, int,
                                                                               int, int);
-extern int is_point_inside_clip_volume(void *, int);
 
 /* Update of moby class 686, a flying burst: drifts and trails smoke; on reaching its target it damages around it,
    sprays particles, arms nearby class 0x2BC targets and deletes itself. */
@@ -540,11 +537,11 @@ struct Moby *spawn_debris_moby(Vec4f *pos, Vec4f *vel, s32 oclass, s32 a3, s32 a
     return m;
 }
 extern f32 g_frame_time MACRO_ADDR;
-extern f32 FastVecLength(void *);
+
 extern f32 fast_atan2(f32, f32);
 extern void FastVecScale(void *, void *, f32);
 extern void vec_scale_to_length(void *, void *, f32);
-extern s32 scale_ticks(s32);
+
 typedef struct {
     Vec4f vel; /* 0x00 */
     s32 unk10; /* 0x10 */
@@ -558,9 +555,7 @@ typedef struct {
 typedef int OvlQuad __attribute__((mode(TI)));
 
 extern CollisionHit novalis_coll_hit;
-extern float FastCos(float);
-extern float FastSin(float);
-extern float FastAddRots(float, float);
+
 extern int fast_dec_timer(void *);
 extern s32 coll_line(void *, void *, s32, void *, s32);
 extern s32 coll_sphere(f32, void *, s32, void *);
@@ -691,8 +686,7 @@ extern int g_current_level_index_c __asm__("D_0015EE84") MACRO_ADDR;
 extern char help_stats_base_c[] __asm__("D_0014171B");
 extern int STUB_printf_c(void *, int, int) __asm__("func_001E9730");
 extern void DeleteMoby(void *);
-extern int scale_ticks(int);
-extern int is_point_inside_clip_volume(void *, int);
+
 extern void Hero_ResetToPosition(void *, void *, int, int);
 
 extern int fast_dec_timer_c(void *) __asm__("func_001F9908");
@@ -818,14 +812,10 @@ extern void unlock_planet(int);
 extern void queue_planet_unlock_message(int);
 extern void record_moby_context_bytes(char *, int, char *, int, void *);
 extern int memcard_Save(int, int);
-extern float multiply_global_factor(float);
+
 extern float vec_distance_xy(void *, void *);
 extern float fast_atan2(float, float);
-extern float FastDiffRots(float, float);
-extern float FastAddRots(float, float);
-extern void BuildSphericalOffset(void *, float, float, float);
-extern void FastVecSub(void *, void *, void *);
-extern float FastSubRots(float, float);
+
 extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern char plumber_novalis_dialogue_name[];
@@ -1037,7 +1027,6 @@ extern u8 saved_mission_state_r[] __asm__("D_0014C150");
 extern u8 D_001414F4 NOT_SDA;
 extern u32 D_001414DC;
 extern f32 FastAbsF_r(f32) __asm__("func_001F9B88");
-extern f32 func_00214358(void *, s32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002f6328.c, FUN_L01_00300220. */
 void spawn_point_update(struct Moby *moby) {
@@ -1427,8 +1416,7 @@ void gold_bolt_update(Moby *moby) {
             break;
     }
 }
-extern float FastSin(float);
-extern float FastAddRots(float, float);
+
 extern void update_gold_bolt_glow_rings(char *);
 
 extern void spawn_gold_bolt_particles(char *);
@@ -1460,8 +1448,6 @@ void update_gold_bolt_visuals(char *moby) {
         spawn_gold_bolt_particles(moby);
     }
 }
-
-extern int scale_ticks(int);
 
 typedef struct {
     u8 pad00[0x20];
@@ -1508,12 +1494,11 @@ extern int gold_bolt_ring_texture SDATA(gold_bolt_ring_texture);
 extern void FastVecScale(void *, void *, float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern float MobyGetFrameValue_m(void *) __asm__("func_0020D830");
-extern void FastVecSub(void *, void *, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
+
 extern int fast_dec_timer(void *);
 
-extern int FastTweenColor(int, int, float);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern unsigned char *PartType59Spawn(void *, int, unsigned char, int, int, int, int, float);
 
@@ -1566,11 +1551,9 @@ void update_gold_bolt_glow_rings(char *m) {
     }
 }
 extern float MobyGetFrameValue(void *);
-extern float FastCos(float);
-extern void FastVecAdd(void *, void *, void *);
-extern void clear_u64_value(void *);
+
 extern void lerp_vector(void *, void *, void *, float);
-extern float FastSubRots(float, float);
+
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
 
@@ -1631,7 +1614,6 @@ extern void FastVecScale(void *, void *, float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void rand_vec(float *, float, float);
 extern void spawn_moving_hero_relative_alpha_fade_particle(void *, void *, int, int, int, int, float);
-extern void FastVecAdd(void *, void *, void *);
 
 /* builds three jittered offsets and fires the same effect at each accumulated point */
 void spawn_gold_bolt_particles(char *m) {
@@ -1686,7 +1668,7 @@ extern float teleporter_pad_open_accel SDATA(teleporter_pad_open_accel);
 extern float teleporter_pad_open_brake SDATA(teleporter_pad_open_brake);
 extern float teleporter_pad_open_max_speed SDATA(teleporter_pad_open_max_speed);
 extern int novalis_help_message_selector SDATA(novalis_help_message_selector);
-extern int is_point_inside_clip_volume(void *arg0, int arg1);
+
 extern void show_teleporter_and_children(char *);
 extern char *CreateMoby(int);
 extern void hide_teleporter_and_children(struct Moby *);
@@ -2196,8 +2178,7 @@ extern Vec4 hero_gravity_dir[];
 extern f32 offset_quad_row0_offset SDATA(offset_quad_row0_offset);
 extern f32 offset_quad_row2_offset SDATA(offset_quad_row2_offset);
 extern s64 GetEffectTex(s32);
-extern void FastVecCross(void *, void *, void *);
-extern void transform_vector(void *, void *, void *);
+
 extern void draw_world_quad(void *, void *, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/0030b618.c, FUN_L01_0030bfa8. */
@@ -2318,7 +2299,7 @@ extern f32 SpringTurn(f32 *, f32, f32, f32, f32, f32);
 extern void BuildSphericalOffset_r(f32 *, f32, f32, f32) __asm__("func_00215C00");
 extern f32 vec_distance_xy(void *, void *);
 extern void vec_set_length_xy(void *, void *, f32);
-extern s32 FastDecTimer(void *);
+
 extern s32 coll_line_r(void *, void *, s32, void *, void *) __asm__("func_L00_001EFFF0");
 extern s32 CollType(void);
 extern f32 camera_pos_r[] __asm__("D_L01_001672C0");
@@ -2397,7 +2378,6 @@ void update_sandmouse_projectile(char *m) {
 }
 
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
 
 /* offset a position by two camera-relative vectors, then raise z by 1 */
 void compute_sandmouse_follow_goal(void *unused, float *p) {
@@ -2477,8 +2457,7 @@ void *select_sandmouse_projectile_target(void *moby, void *from, void *reference
     }
     return best;
 }
-extern int FastDecTimer(void *);
-extern void FastVecSub(void *, void *, void *);
+
 extern float fast_atan2(float, float);
 extern float vec_distance_xy(void *, void *);
 extern void *GetFlaggedPvarWord(void *);
@@ -2755,7 +2734,7 @@ extern int sandmouse_dust_alpha SDATA(sandmouse_dust_alpha);
 extern f32 sandmouse_dust_accel SDATA(sandmouse_dust_accel);
 extern void DetachManipulator(void *, void *);
 extern void MoveCtl_Init(void *);
-extern void MobyBlendAnimation(void *, int, int, int);
+
 extern void MobySpringTurn(void *, f32, void *, f32, f32, f32);
 extern int ClassifyTargetInCone(void *, void *, void *, void *);
 extern void jet_animate(void *, f32);
@@ -3400,12 +3379,8 @@ extern float novalis_camera_up_axis[];
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
 extern int find_nearest_path_point(void *, void *, void *, int *, float *, int, float, float, float);
 extern float Cam_InterpValues(float a, float b, float *p, float c, float d, float e);
-extern float FastVecLength(void *a);
-extern float FastVecDot(void *a, void *b);
-extern float FastArcSin(float x);
 
-extern void FastVecCross(void *, void *, void *);
-extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
+extern float FastArcSin(float x);
 
 /* Update function of camera 3: follows a path beside the hero's and turns toward a look-at point on it.
    The four `= 0` initialisers in the mode 2 block are dead and leave no code: they make up for the insns
@@ -3600,8 +3575,6 @@ extern CameraPresetRow *novalis_camera_descriptors_r2 __asm__("D_L01_0015F050") 
 extern CameraPath *novalis_paths_r4[] __asm__("D_L01_001B0C30");
 extern Camera *novalis_camera_init_source;
 extern Vec4 gHeroPos_r3 __asm__("D_0013F4D0");
-extern f32 FastVecDist(void *, void *);
-extern f32 FastVecDot(void *, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/0030b618.c, FUN_L01_00315de0. */
 void initialize_camera_transform_and_paths(Camera *cam) {

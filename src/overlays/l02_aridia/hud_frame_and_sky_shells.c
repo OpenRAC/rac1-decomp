@@ -57,7 +57,7 @@ extern s32 truncate_float_to_s32(f32);
 extern int sprintf(char *str, const char *fmt, ...);
 
 extern void HudFrame(void *, int, int, int, int, int);
-extern int FastTweenColor(int, int, float);
+
 extern void font_print_right(s32, s32, s32, char *, s32);
 extern s32 frame_size[];
 extern s32 pal_mode MACRO_ADDR;

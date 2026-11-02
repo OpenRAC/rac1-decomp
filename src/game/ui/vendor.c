@@ -10,6 +10,7 @@
 #include "data/executable.h"
 #include "game/ui/hud.h"
 #include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
 
 /*
  * vendor.cpp in the original source; text 0x239628-0x23B670.
@@ -21,8 +22,6 @@ extern int measure_text_width_regular(unsigned char *, int);
 
 extern void UpdateViewContext(void);
 
-extern void FastVecAdd(void *, void *, void *);
-
 extern void fast_vec_normalize(void *, void *, float);
 
 extern void DrawMobyList(int, int);
@@ -32,8 +31,6 @@ extern void *msg_string_id(int) __asm__("func_001FE540");
 extern void draw_hud_rect_blended(int, int, int, int, long, long);
 
 extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
-
-extern void FastVecSub(void *, void *, void *);
 
 extern void truncate_float_to_s32(float);
 
@@ -645,7 +642,6 @@ extern int capture_secondary_transition_step SDATA(capture_secondary_transition_
 extern int capture_primary_transition_step SDATA(capture_primary_transition_step);
 extern int pal_mode MACRO_ADDR;
 extern long capture_texture_tex0 MACRO_ADDR;
-extern float FastVecLength(void *);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern void update_scrolling_status_message_r(char *) __asm__("func_00239838");
@@ -838,7 +834,7 @@ extern SurfaceHeightGrid surface_height_grid_r __asm__("D_001E69E0");
 extern s32 surface_height_layer SDATA(surface_height_layer);
 extern s32 FindZoneAtPoint(f32, f32, f32);
 extern s32 truncate_float_to_s32_r2(f32) __asm__("func_001FA898");
-extern void FastVecCross(f32 *, f32 *, f32 *);
+
 extern void fast_vec_normalize_r(f32 *, f32 *, f32) __asm__("func_001F9DC0");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/fun_00239f58.c, sample_surface_height_map. */
@@ -945,7 +941,7 @@ typedef struct {
 } Cfg16;
 
 extern Cfg16 attachment_vertex_indices NOT_SDA;
-extern float FastVecLength(void *);
+
 extern void FastVecSub_b(void *, void *, void *) __asm__("func_001F9BF0");
 
 struct UpdateInstanceAttachmentPointsAndLengthsVars {

@@ -11,6 +11,7 @@
 #include "game/moby/mobyutil.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+#include "asm_functions/executable.h"
 extern int pad_held;
 extern Hero g_hero;
 
@@ -32,8 +33,6 @@ extern int g_current_level_index MACRO_ADDR;
 extern int hero_slot_item_id(int);
 
 extern int coll_line(void *, void *, int, int, int);
-extern int scale_ticks(int);
-extern float multiply_global_factor(float);
 
 /* Hero idle-fidget picker; returns 1 and writes the chosen index if one is picked. */
 int pick_idle_fidget(int *index) {
@@ -121,7 +120,7 @@ int pick_idle_fidget(int *index) {
 }
 
 extern int HeroEnterMoveState(int, int);
-extern int scale_ticks(int);
+
 extern void set_hero_animation(int, int, float);
 extern void stick_target(int, float);
 extern void ClampVectorLength(void *a, float x);
@@ -256,9 +255,6 @@ int hero_handle_jump_press(void) {
     return 0;
 }
 
-extern float FastDiffRots(float, float);
-extern float FastCos(float);
-extern float FastSin(float);
 extern int coll_line(void *, void *, int, int, int);
 extern float coll_hit_point_z;
 

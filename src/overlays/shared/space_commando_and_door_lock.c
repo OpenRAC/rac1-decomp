@@ -13,6 +13,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "enums/level.h"
+#include "asm_functions/executable.h"
 extern char g_hero_moby[];
 extern struct Hero g_hero;
 extern char g_screen_extent[];
@@ -142,19 +143,15 @@ extern f32 D_L06_0016205C_FF000 SDATA(D_L06_0016205C);
 extern Vec4f blarg_camera_pos;
 extern s32 *blarg_paths[];
 extern f32 blarg_zero_vec[] MACRO_ADDR;
-extern s32 scale_ticks(s32);
-extern s32 fast_dec_timer(s32 *);
-extern f32 FastVecDist(void *, void *);
-extern f32 vec_distance_xy(void *, void *);
-extern f32 FastCos(f32);
-extern f32 FastSin(f32);
 
-extern f32 FastDiffRots(f32, f32);
+extern s32 fast_dec_timer(s32 *);
+
+extern f32 vec_distance_xy(void *, void *);
+
 extern s32 truncate_float_to_s32(f32);
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
 extern f32 MobyGetFrameValue(struct Moby *);
-extern void MobyBlendAnimation(struct Moby *, s32, s32, s32);
-extern s32 is_point_inside_clip_volume(void *, s32);
+
 extern void Moby_GetJointWorldPos_r(struct Moby *, s32, void *) __asm__("func_L00_00250800");
 extern void MobySpringTurn(struct Moby *, f32, f32 *, f32, f32, f32);
 extern s32 move_w(struct Moby *, MoveCtl *, void *, void *, f32);
@@ -473,19 +470,14 @@ void blarg_space_commando_update(struct Moby *moby) {
 }
 extern void update_blarg_space_commando_beam(void *);
 
-extern float multiply_global_factor(float);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
-extern int scale_ticks(int);
 
 extern void PlayBankSound(int, int, int);
 
 extern void InitKnockback(void *, void *, float, int, int, int);
 
-extern float random_angle_radians(void);
-extern float FastCos(float);
-extern float FastSin(float);
 extern char *spawn_spinning_moby_fragment(int unused, char *pa, char *pb);
 extern void RerollEffectCounter(void *m, short *p);
 extern void SetDeathBits(void *, int, int);
@@ -653,15 +645,11 @@ void process_blarg_space_commando_hits(char *m) {
         d->target_id = *(int *)&g_hero.moby;
     }
 }
-extern float ProbeGroundHeight(void *, int, float);
+
 extern void vec_scale_to_length(void *, void *, float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern float IntToFloat(int);
-extern float FastAddRots(float, float);
-extern float FastCos(float);
-extern float FastSin(float);
-extern void FastVecAdd(float *, float *, float *);
-extern int scale_ticks(int);
+
 extern char blarg_coll_hit_normal[];
 extern float space_commando_beam_fan_degrees SDATA(space_commando_beam_fan_degrees);
 extern int space_commando_beam_ticks SDATA(space_commando_beam_ticks);
@@ -690,8 +678,7 @@ void initialize_blarg_space_commando_beam(Moby *m) {
     }
     ((struct SpaceCommandoVars *)d)->beam_ticks = (float)scale_ticks(space_commando_beam_ticks);
 }
-extern void FastVecSub(void *dst, void *a, void *b);
-extern float FastVecDot(void *a, void *b);
+
 extern int coll_line(void *, void *, int, void *, void *);
 extern float ApproachValue(float *, float, float);
 extern void AddDrawCallback(void *, void *);
@@ -815,7 +802,6 @@ extern void VU1_addGSregister(s32, s64);
 extern u64 GetEffectTex(s32);
 extern void set_identity_matrix(void *);
 
-extern void FastVecSub(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, f32);
 extern u32 FastTweenColor_r(f32, s32, s32) __asm__("func_001FA8A8");
 extern void draw_world_quad(void *, void *, s32);
@@ -889,10 +875,7 @@ void DrawBeam(char *moby) {
     } while (i < 15);
     VU1_addGSregister(0x47, 0x5360B);
 }
-extern float random_angle_radians(void);
-extern float FastCos(float);
-extern float FastSin(float);
-extern float multiply_global_factor(float);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern void FastVecScale(void *, void *, float);
 extern void lerp_vector(void *, void *, void *, float);
@@ -1026,9 +1009,6 @@ extern short blarg_timer_frame_x0_offset;
 extern short blarg_timer_frame_x1_offset;
 extern short blarg_timer_frame_alpha;
 extern void DrawUIFrame(int, int, int, int, int);
-extern float FastSin(float);
-extern int FastTweenColor(int, int, float);
-extern int scale_ticks(int);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
@@ -1078,7 +1058,7 @@ typedef struct {
     long tag[4];
 } Pkt89B8 __attribute__((aligned(16)));
 extern void euler_rotation_basis(void *, void *);
-extern void matrix_mul_vec3(void *, void *, void *);
+
 extern void draw_world_quad(void *, void *, int);
 extern char referencePosition[];
 extern int door_lock_glow_quad_corner_indices[][4];
@@ -1252,7 +1232,7 @@ extern unsigned char saved_mission_state[];
 extern int g_current_level_index SDATA(g_current_level_index);
 extern int level_mobys_q SDATA(level_mobys_q);
 extern int truncate_float_to_s32(float);
-extern float FastVecDist(void *, void *);
+
 extern void AddDrawCallback(void *, void *);
 
 extern void PartType41Spawn(void *, void *, int, unsigned int, int, int, int, float);

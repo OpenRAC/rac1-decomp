@@ -4,6 +4,7 @@
 #include "structs/particle.h"
 #include "include_asm.h"
 #include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
 
 extern unsigned char *create_part(int);
 extern int func_001FA898(float);
@@ -40,8 +41,6 @@ unsigned char *create_particle_with_velocity_and_lifetime(void *pos, void *vel, 
     return p;
 }
 extern unsigned char *rilgar_random_particle_textures_ptr;
-
-extern int scale_ticks(int);
 
 /* spawn a particle at a position with a velocity and random parameters */
 unsigned char *create_particle_with_velocity_and_randomized_parameters(void *pos, void *vel, int arg2, int arg3,

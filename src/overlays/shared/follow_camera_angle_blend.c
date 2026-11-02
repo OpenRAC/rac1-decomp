@@ -6,8 +6,8 @@
  * (docs/reference/BUILD_FIDELITY.md, "Flags"). */
 #include "common.h"
 #include "include_asm.h"
+#include "asm_functions/executable.h"
 
-extern void FastVecSub(float *, float *, float *);
 extern float update_follow_camera_angle_blend_from_direction(char *, float *, float);
 
 /* Blend the follow camera angle toward the direction from its target to position arg. */

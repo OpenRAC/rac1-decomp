@@ -6,9 +6,9 @@
 #include "asm_functions/executable.h"
 
 extern unsigned char *create_part(int);
-extern void FastVecSub(void *dst, void *a, void *b);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecAdd(void *dst, void *a, void *b);
+
 extern int func_001FA898(float);
 
 extern char batalia_hero_pos[];

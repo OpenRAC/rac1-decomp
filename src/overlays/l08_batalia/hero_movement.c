@@ -27,6 +27,7 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "structs/voice.h"
+#include "asm_functions/executable.h"
 extern int g_controller_state_no_direction;
 extern Hero g_hero;
 
@@ -183,16 +184,13 @@ extern float batalia_hero_anim_frame_speeds[];
 extern void build_scaled_hero_move_impulse(float, float);
 
 extern void stick_target(float, int);
-extern void matrix_mul_vec3(void *, void *, void *);
+
 extern void turn_to(int, float, float, float);
 extern int fast_dec_timer(int *);
-extern int scale_ticks(int);
 
 extern void set_hero_animation(int, int, float);
 extern int get_hero_idle_animation_index(int);
 extern float adjust_hero_animation_speed_for_target_frame(float, float, float, float);
-
-extern void clear_u64_value(void *);
 
 extern void HeroMoveDownAlongNormal(float *, float *, float);
 
@@ -200,39 +198,27 @@ extern int truncate_float_to_s32(float);
 extern float vec_length_xy(void *);
 extern int clamp_vec_length_xy(float, void *, void *);
 
-extern int FastDecTimer(void *);
-
 extern void RippleDisturb(void *, int, int, float, float, float, float);
 extern float SpringAngle(void *, float, void *, int, float, float, float);
-extern float FastSubRots(float, float);
+
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void FastVecAdd(void *, void *, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
 extern int PartType34Spawn(void *, void *, float, float);
 
 extern int rand_range(int, int);
 
-extern float FastAddRots(float, float);
-extern void BuildSphericalOffset(void *, float, float, float);
-
-extern float FastVecLength(void *);
 extern float ApproachValue(float *, float, float);
-extern float FastCos(float);
+
 extern void Hero_SetTiltSpringParams(float, float);
 
-extern float FastSin(float);
-extern void FastVecSub(void *, void *, void *);
 extern void ClampVectorLength(void *, float);
 
-extern float FastVecDist(void *, void *);
 extern int solve_quadratic_equation(float *, float *, float, float, float);
 extern float step_angle_toward_target(float *, int, float, float);
 extern float vec_distance_xy(void *, void *);
 extern void FastVecScale(void *, void *, float);
-extern float FastDiffRots(float, float);
-extern void euler_to_matrix(void *, void *);
-extern void matrix_from_basis_rows(void *, void *);
-extern void transform_vector(void *, void *, void *);
+
 extern float gravity_z(float *);
 extern float Spring(float *, float *, float, float, float, float);
 
@@ -248,7 +234,7 @@ extern void create_moby_transform_history_entry(void *, int, int);
 extern float randf_sym(float, float);
 extern void spawn_color_decaying_effect_particle(char *, char *, int);
 extern int find_nearest_path_point(void *, void *, void *, int *, float *, int, float, float, float);
-extern float multiply_global_factor(float);
+
 extern int offset_path_index(void *, int, int, int);
 
 extern void vec_set_length_xy(void *, void *, float);
@@ -262,7 +248,6 @@ extern void transform_hero_local_offset_to_world(float *, float, float, float);
 extern int is_moby_in_class_range_500_to_540(int);
 extern void PostHitMessage(void *, int, int, void *, void *, float);
 
-extern float FastVecDot(void *, void *);
 extern unsigned char *CreateMoby(int);
 extern void moby_build_matrix(void *);
 extern int Moby_PlaySound(int, int, int);

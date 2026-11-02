@@ -15,6 +15,7 @@
 #include "overlays/shared/vendor_menu.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+#include "asm_functions/executable.h"
 extern Hero g_hero;
 
 LINKER_REMNANT("asm/overlays", func_L02_0021A2E0);
@@ -48,14 +49,9 @@ typedef int Q_222D18 __attribute__((mode(TI)));
 extern void vec_scale_to_length(void *, void *, float);
 extern float gravity_z(float *);
 extern void gravity_set_z(float *, float *, float);
-extern float FastVecLength(void *);
-extern void FastVecAdd(void *, void *, void *);
-extern void clear_u64_value(void *);
 
 extern void Hero_UpdateGroundContact(void);
-extern void FastVecSub(void *, void *, void *);
 
-extern float FastVecDot(void *, void *);
 extern void gravity_flatten(float *, float *);
 extern void set_gravity_relative_vector_length_xy(float *, float *, float);
 extern float vec_length_xy(void *);
@@ -211,11 +207,7 @@ extern float g_frame_scale_sq MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern float aridia_hero_speed_bands_field_18[];
-extern int scale_ticks(int);
-extern float FastCos(float);
-extern float FastSin(float);
-extern float FastDiffRots(float, float);
-extern float FastSubRots(float, float);
+
 extern float ApproachValue(float *, float, float);
 extern void build_scaled_hero_move_impulse(float, float);
 

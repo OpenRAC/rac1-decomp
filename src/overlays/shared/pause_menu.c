@@ -22,6 +22,8 @@
 #include "game/system/loaders.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
 extern int frame_size;
 extern char gSkillPoints[];
 extern char gSpecialItems[];
@@ -153,7 +155,7 @@ extern void decompress_and_relocate_selected_groups(int);
 extern void transfer_draw_buffer_chunks(int, int, int);
 extern void select_moby_context(int);
 extern Moby_277208 *create_menu_preview_moby(int);
-extern void MobySetAnimation(void *, int, int);
+
 extern void quad_moby_update(void);
 
 /* Open the pause menu: pick its page from the menu state, then set up the menu camera and view. */
@@ -361,7 +363,7 @@ extern void Hud_SendResidentBank(int, int, int);
 extern void apply_group_entry_adjustment(int);
 extern struct HEnt *delete_moby(struct HEnt *);
 extern int show_health_hud(void);
-extern int scale_ticks(int);
+
 extern int hud_keep_visible(int, int);
 extern int queue_animation_update(int, int, void *, void *, void *, void *, int);
 
@@ -563,7 +565,7 @@ extern void select_moby_context(int);
 extern void UpdateFog(void);
 extern int STUB_printf();
 extern void prepare_target_level_transition(int);
-extern int scale_ticks(int);
+
 extern void FadeToBlack(int);
 extern void PlayMovieEntryIfIdle(int);
 extern void queue_movie_with_game_language(int);
@@ -576,8 +578,7 @@ extern void initialize_pause_menu(void);
 
 extern void process_unlock_code_input(void);
 extern void Moby_PlaySound(int, int, void *);
-extern void MobySetAnimation(void *, int, int);
-extern void update_visible_resident_objects(void);
+
 extern void close_pause_menu(void);
 
 // Page-menu (pause/map/planet-select) per-frame update: state machine over the menu pages.

@@ -23,6 +23,7 @@
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
 #include "structs/voice.h"
+#include "asm_functions/executable.h"
 extern Hero g_hero;
 extern char bolt_source_stats[];
 extern char gHeroPos[];
@@ -123,10 +124,9 @@ void begin_animated_frame_rendering(int a, int b, int c, int d, float x, float y
     write_spr_dma_channel(aridia_spr_upload_block, 0x70002800, 0xF8);
 }
 typedef int u128b __attribute__((mode(TI)));
-extern void FastVecSub(void *, void *, void *);
+
 extern void FastVecScale(void *, void *, float);
 extern float IntToFloat(int);
-extern void FastVecAdd(void *, void *, void *);
 
 extern char *func_L00_0026DEA0(void *, float, float, float, int, void *, float, int);
 
@@ -179,8 +179,7 @@ void emit_sand_shark_dust_puffs_along_segment(void *moby, void *va_, void *vb_, 
         }
     }
 }
-extern void matrix_mul_vec3(void *, void *, void *);
-extern void FastVecAdd(void *, void *, void *);
+
 extern void emit_sand_shark_dust_puffs_along_segment(void *, void *, void *, int, float, float);
 extern float sand_shark_dust_points[][4];
 extern short sand_shark_dust_point_origin;
@@ -221,40 +220,36 @@ void emit_sand_shark_dust_burst(void *moby) {
     emit_sand_shark_dust_segment(moby, 8, 9, sand_shark_dust_puffs_seg4);
 }
 extern void Manipulator_ApplyScale(float x, int a, int b, unsigned char *m);
-extern float FastVecDist(void *, void *);
+
 extern void set_ground_height_band(void *);
 extern void handle_sand_shark_damage_and_targeting(unsigned char *moby);
 extern void STUB_printf(char *, ...);
 extern void MoveCtl_Init(char *p);
 extern int func_001160D8(void);
-extern int scale_ticks(int);
 
-extern float FastAddRots(float, float);
 extern void MobySpringTurn(char *moby, float target, float *vel, float k, float d, float max);
-extern float FastCos(float);
-extern float FastSin(float);
+
 extern int fast_dec_timer(int *arg0);
 extern void emit_sand_shark_single_particle(void *pos);
-extern int is_point_inside_clip_volume(void *arg0, int arg1);
+
 extern int move_w(void *, void *, void *, void *, float);
 extern void begin_sand_shark_return_home_if_outside_path(unsigned char *moby);
 
 extern float vec_distance_xy(void *, void *);
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
-extern float ProbeGroundHeight(void *, int, float);
+
 extern float ApproachValue(float *p, float target, float maxstep);
-extern void MobyBlendAnimation(void *, int, int, int);
+
 extern void emit_sand_shark_radial_particles(void *pos, int n);
 extern int Moby_PlaySound(int, int, int);
 extern int IsFrameWithinWindow(char *, float);
 extern void vec_scale_to_length(void *, void *, float);
 extern void MobySphereHitDirectional(void *, float, void *, int, float, float, int, int, int);
-extern float FastVecLength(void *);
+
 extern int mine_fall(void *, void *);
 extern int CarriedMobyUpdate(void *, void *);
 extern void rand_vec(void *, float, float);
 
-extern float FastSubRots(float, float);
 extern void SetDeathBits(void *, int, int);
 extern void spawn_color_swapped_explosion_burst(void *, void *, int, float, float);
 extern int select_group_sand_shark_nest_moby(void *argp);
@@ -968,7 +963,6 @@ int select_group_sand_shark_nest_moby(void *argp) {
     return result;
 }
 
-extern float multiply_global_factor(float);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 // For each matching moby in the level list, updates a short field from a random value.
@@ -988,10 +982,7 @@ void extend_group_sand_shark_timers(char *arg) {
         } while (*p++ >= 0);
     }
 }
-extern float random_angle_radians(void);
-extern void clear_u64_value(void *);
-extern float FastCos(float);
-extern float FastSin(float);
+
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 extern int sand_shark_particle_emission_throttle_input MACRO_ADDR;
 extern short sand_shark_burst_rise_min, sand_shark_burst_rise_max, sand_shark_burst_end_rise_min,
@@ -1162,10 +1153,9 @@ extern float sand_shark_death_knockback_gravity_gp SDATA(sand_shark_death_knockb
 extern float sand_shark_death_knockback_horizontal_speed_approach_rate_gp
     SDATA(sand_shark_death_knockback_horizontal_speed_approach_rate_gp);
 extern int *aridia_paths_r[] __asm__("D_L02_001B0DB0");
-extern int FastDecTimer(void *);
+
 extern float vec_distance_xy(void *, void *);
 
-extern float ProbeGroundHeight(void *, int, float);
 extern void HeadingFromVector(void *, float *, void *, void *);
 extern int FindNearestEligibleMoby(float, void *, void *, int, int, void *, int);
 extern int select_group_sand_shark_nest_moby(void *argp);
@@ -1274,7 +1264,6 @@ void handle_sand_shark_damage_and_targeting(unsigned char *moby) {
         qcopy(d->tgt, hero->motion.pos.f);
     }
 }
-extern void MobyBlendAnimation(void *, int, int, int);
 
 extern void moby_build_matrix(void *);
 
@@ -1342,7 +1331,6 @@ void prepare_sand_shark_for_relaunch_or_remove(unsigned char *moby) {
 }
 
 extern int IsPointInPolygon(void *, void *, int);
-extern int scale_ticks(int);
 
 /* Sends a sand shark home when it leaves its path polygon. */
 void begin_sand_shark_return_home_if_outside_path(unsigned char *moby) {
@@ -1357,7 +1345,7 @@ void begin_sand_shark_return_home_if_outside_path(unsigned char *moby) {
     }
 }
 extern void Manipulator_ApplyScale(float x, int a, int b, unsigned char *m);
-extern float FastVecDist(void *, void *);
+
 extern void set_ground_height_band(void *);
 extern void handle_level02_bot_damage_and_retargeting(void *);
 extern int func_001160D8(void);
@@ -1369,13 +1357,10 @@ extern void MobySpringTurn(char *moby, float target, float *vel, float k, float 
 extern void ClampVectorLength(void *a, float x);
 extern float ApproachValue(float *p, float target, float maxstep);
 extern int ClassifyTargetInCone(char *m, char *p, float *pos, char *v);
-extern float FastDiffRots(float, float);
-extern float FastCos(float);
-extern float FastSin(float);
+
 extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
-extern int is_point_inside_clip_volume(void *arg0, int arg1);
 
 extern void InitDirectionalHitQuery(char *arg, int a, int b, void *src, float scale);
 extern void collect_mobies_around_tracked_objects(char **slots, int a, int b);
@@ -1896,7 +1881,7 @@ extern char *aridia_elevator_volumes_r __asm__("D_L02_0016017C") MACRO_ADDR;
 extern float aridia_elevator_stop_offset SDATA(aridia_elevator_stop_offset);
 extern float aridia_elevator_accel SDATA(aridia_elevator_accel);
 extern float aridia_elevator_max_speed SDATA(aridia_elevator_max_speed);
-extern void transform_vector(void *, void *, void *);
+
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void update_entity_matrix(char *, void *, void *, void *);
 extern int Sound_IsPlaying(void *, int);
@@ -2037,7 +2022,7 @@ extern int aridia_elevator_ring_slow_color SDATA(aridia_elevator_ring_slow_color
 extern int aridia_elevator_ring_fast_color SDATA(aridia_elevator_ring_fast_color);
 extern float aridia_elevator_ring_quad_angle SDATA(aridia_elevator_ring_quad_angle);
 extern float aridia_elevator_ring_uvs[][2];
-extern int FastTweenColor(int, int, float);
+
 extern void copy_matrix_rotation(void *, void *);
 extern int GetEffectTex(int);
 extern float FastNormalizeAngle(float);
@@ -2476,7 +2461,6 @@ void grab_crane_update(char *moby) {
             break;
     }
 }
-extern float FastAddRots(float, float);
 
 /* Rotates a platform and updates its transform. */
 void RotatePlatformUpdate(char *moby) {
@@ -2975,7 +2959,6 @@ void snap_transport_pod_rails_to_offsets(char *moby) {
 extern float aridia_crane_anim_speed SDATA(aridia_crane_anim_speed);
 extern int Moby_PlaySound(int, int, int);
 
-
 /* State machine for a moby that picks a new animation each time the previous one finishes. */
 void crane_update(unsigned char *moby) {
     enum {
@@ -3069,7 +3052,6 @@ typedef struct SwivelTurretVars {
     u8 pad_0E[0x2];
     f32 recoil; /* 0x10 */
 } SwivelTurretVars;
-
 
 /* Rocket launcher update: on its state byte it aims at the target, fires, and clears its lock. */
 void rocket_launcher_update(unsigned char *m) {
@@ -3253,7 +3235,6 @@ void rocket_door1_update(struct Moby *m) {
     }
 }
 extern void vec_scale_to_length(void *, void *, float);
-extern float FastVecLength(void *);
 
 // Moby update: copy position, then wait for a partner moby and slide toward it.
 void tresspasser_door1_update(unsigned char *moby) {

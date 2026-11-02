@@ -28,6 +28,8 @@
 #include "enums/moby_class.h"
 #include "structs/pad.h"
 #include "enums/hero_state.h"
+#include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
 extern char gSpecialItems[];
 extern char cd_read_active[];
 extern char cd_read_state[];
@@ -130,7 +132,6 @@ typedef struct {
 extern CfgS g_debug_menu;
 extern char pad_globals_base[];
 
-
 extern int cinematic_mode MACRO_ADDR;
 extern int D_0015EFB4 MACRO_ADDR;
 extern int cinematic_mode_frames MACRO_ADDR;
@@ -154,7 +155,7 @@ extern int queue_animation_update(int, int, int, int, int, int, int);
 
 extern void prepare_level_transition_with_help_cleanup(void);
 extern void count_expired_mobys(void);
-extern void update_visible_resident_objects(void);
+
 extern void enqueue_voice_request(void);
 extern void update_ambience_target_cycle(void);
 extern void Profile_Mark_a(void *, int) __asm__("func_001E9768");
@@ -342,7 +343,6 @@ extern void music_Pause(int);
 extern void FastMemSet(void *, int, int);
 
 extern void start_cutscene_chunk_read(int);
-extern int scale_ticks(int);
 
 extern void sound_update(void);
 extern void Music_ContinueStreamIfReady(void);
@@ -438,11 +438,9 @@ extern void reset_frame_counters(void);
 extern void UpdateViewContext(void);
 extern void DeleteMoby(void *);
 extern int HeroEnterMoveState(int, int);
-extern float ProbeGroundHeight(void *, int, float);
 
 extern void Hero_ResetToPosition(void *, void *, int, int);
 
-extern int scale_ticks(int);
 extern void music_set_active_track_value(int v);
 
 typedef struct {
@@ -554,9 +552,9 @@ void finish_cutscene(void) {
     }
     music_set_active_track_value(scale_ticks(30));
 }
-extern void FastVecCross(void *, void *, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecSub(void *, void *, void *);
+
 extern char render_view_params[];
 extern unsigned char gCheats[] MACRO_ADDR;
 extern char g_debug_camera[];
@@ -767,9 +765,9 @@ extern void start_cutscene_chunk_read(s32);
 extern void update_moby_animation_state(void *);
 extern f32 IntToFloat(s32);
 extern void FastVecScale(void *, void *, f32);
-extern void FastVecAdd(void *, void *, void *);
+
 extern void moby_build_matrix(void *);
-extern void update_moby_shadow_range(void *);
+
 extern void HeroAttachManipulators(void *);
 extern void update_moby_pulsing_glow_effects(void *);
 

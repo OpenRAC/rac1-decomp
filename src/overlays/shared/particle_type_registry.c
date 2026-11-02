@@ -5,6 +5,7 @@
 #include "include_asm.h"
 #include "structs/vector.h"
 #include "asm_functions/shared_levels.h"
+#include "asm_functions/executable.h"
 
 extern void func_L00_002689B0();
 extern void update_falling_effect_particle_r() __asm__("func_L00_00269BE8");
@@ -192,7 +193,7 @@ typedef struct {
 } ParticleClearance;
 extern ParticleClearance particle_clearance MACRO_ADDR;
 extern f32 particle_min_ground MACRO_ADDR;
-extern void FastVecAdd(void *, void *, void *);
+
 extern f32 ground_height_at(Vec4 *);
 extern void KillPart_r(FallingParticle *) __asm__("func_L00_002688A8");
 
@@ -237,7 +238,7 @@ void update_falling_effect_particle(FallingParticle *p) {
 }
 extern void *create_part(int);
 extern int func_001FA898(float);
-extern int scale_ticks(int);
+
 extern unsigned char *part_type01_textures;
 
 /* spawns a type-1 particle at a position, fading with alpha a1 */
@@ -257,7 +258,6 @@ void spawn_timed_effect_particle(char *pos, int a1) {
         *(int *)(p + 0x20) = a1;
     }
 }
-extern int FastDecTimer(void *);
 
 /* Particle update: fade alpha and step the texture frame over the lifetime; kill at timer end. */
 void update_timed_effect_particle(char *m) {

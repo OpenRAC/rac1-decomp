@@ -22,6 +22,7 @@
 #include "overlays/shared/ripple_patches.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+#include "asm_functions/executable.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 extern int hero_control_mode;
@@ -223,20 +224,16 @@ struct BoxVars {
     s32 attach_moby; /* 0x80: -1 when none */
 };
 
-extern int scale_ticks(int);
 extern void DeleteMoby(void *);
-extern void MobyBlendAnimation(void *, int, int, int);
 
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 extern void vec_scale_to_length(float *, float *, float);
-extern void FastVecAdd(void *, void *, void *);
-extern void FastVecSub(void *, void *, void *);
-extern float FastVecDist(void *, void *);
+
 extern int fast_dec_timer(int *arg0);
 
 extern float vec_distance_xy(void *, void *);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
-extern float FastAddRots(float, float);
+
 extern void euler_rotation_basis(void *, void *);
 extern int IsPointInPolygon(void *, void *, int);
 extern void Hero_ResetToPosition(void *, void *, int, int);
@@ -457,12 +454,11 @@ state_three: {
 }
 }
 extern int fast_dec_timer_v(void *) __asm__("func_001F9908");
-extern float FastAddRots(float, float);
 
 extern void FastVecScale(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
+
 extern unsigned char *spawn_splash(void *, void *, void *, float, float);
-extern int scale_ticks(int);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float rilgar_water_surface_z_m __asm__("D_L05_001613A8") MACRO_ADDR;
 extern char rilgar_water_surface_z[] MACRO_ADDR;
@@ -499,14 +495,9 @@ void spawn_sharkigator_surface_effects(char *moby) {
     }
 }
 extern char *spawn_burst_moby(void *, float);
-extern float random_angle_radians(void);
-
-extern float FastCos(float);
-extern float FastSin(float);
 
 extern void rand_vec(float *, float, float);
-extern void FastVecAdd(void *, void *, void *);
-extern float multiply_global_factor(float);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern char rilgar_water_surface_z[];
 
@@ -565,8 +556,7 @@ void draw_group_moby_glow_quads(unsigned char *moby) {
     }
 }
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern float FastAddRots(float, float);
-extern int FastTweenColor(int, int, float);
+
 extern void AddDrawCallback(void (*)(void), void *);
 extern int rilgar_frame_count MACRO_ADDR;
 
@@ -611,7 +601,7 @@ extern int FastTweenColor_r(int, int, float) __asm__("func_001FA8A8");
 extern void advance_scenery_ship_along_path_r(char *moby, int *path) __asm__("func_L05_002D8AD8");
 extern int func_L00_0028EB98(void *, int);
 extern int Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
-extern void func_001F9EC0(void *, void *, void *);
+
 extern void FastVecAdd_r(float *, float *, float *) __asm__("func_001F9BD8");
 extern void AddDrawCallback_r(void (*)(void), void *) __asm__("func_001F49B0");
 extern void FastVecScale_r(void *, void *, float) __asm__("func_001F9C30");
@@ -926,7 +916,7 @@ void draw_group_scenery_ship_trails(char *moby) {
 extern char hero_globals_base[];
 extern void handle_amoeboid_hits(unsigned char *m);
 extern void spawn_amoeboid_particles(unsigned char *moby);
-extern void MobyBlendAnimation(void *, int, int, int);
+
 extern void DeleteMoby(void *);
 extern void MoveCtl_Init(char *p);
 extern int truncate_float_to_s32(float);
@@ -935,7 +925,6 @@ extern float SteerAngleWithVelocity(float *, float *, float, float, float, float
 extern int move_w(void *, void *, void *, void *, float);
 extern int fast_dec_timer_v(void *) __asm__("func_001F9908");
 extern float vec_distance_xy(void *, void *);
-extern int scale_ticks(int);
 
 /* Grazing critter: wanders between random points of its path, turning toward the next one; wakes up when the hero is
    far. */
@@ -996,7 +985,6 @@ void amoeboid_update(unsigned char *m) {
 extern char *MobyGetHitMessage(void *, int, int);
 extern void spawn_amoeboid_hit_sparks(void *, void *);
 extern void Moby_PlaySound(int, int, int);
-extern int scale_ticks(int);
 
 // Sets up a moby from a found neighbour and adds a random bonus to a counter when the neighbour has no owner.
 void handle_amoeboid_hits(unsigned char *m) {
@@ -1019,11 +1007,8 @@ void handle_amoeboid_hits(unsigned char *m) {
         m[0xA4] = 0xFF;
     }
 }
-extern float random_angle_radians(void);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern float FastSin(float);
-extern void FastVecAdd(void *, void *, void *);
 
 /* Emits up to two particle effects around the moby, each in a random direction. */
 void spawn_amoeboid_particles(unsigned char *moby) {
@@ -1059,7 +1044,7 @@ void spawn_amoeboid_particles(unsigned char *moby) {
 }
 extern void add_random_offset_to_vector_xyz(float *v, float s);
 extern void FastVecScale(void *, void *, float);
-extern int FastTweenColor(int, int, float);
+
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 
 /* Explosion debris: 20 bursts thrown out along dir with random spread, each trailing 10 smoke puffs. */
@@ -1125,10 +1110,9 @@ void move_extermibot_along_path(struct Moby *m, s32 node, f32 side);
 extern s32 follow_path(void *, s32, s32, void *, s32, void *, f32);
 extern void resolve_point_path_segment_xy_clearance(int, void *, void *, float);
 extern int SegmentCrossPolyline(int, void *, void *, void *);
-extern int is_point_inside_clip_volume(void *arg0, int arg1);
-extern f32 FastDiffRots(f32, f32);
+
 extern f32 ApproachValue(f32 *, f32, f32);
-extern int FastDecTimer(void *);
+
 extern float MobyGetFrameValue(void *);
 
 extern void PostHitMessage(void *, int, int, void *, void *, float);
@@ -1822,7 +1806,7 @@ typedef struct {
 } PathWalkerVars;
 extern float sharkigator_scale SDATA(sharkigator_scale);
 extern s32 follow_path(void *, s32, s32, void *, s32, void *, f32);
-extern f32 FastDiffRots(f32, f32);
+
 extern f32 ApproachValue(f32 *, f32, f32);
 extern f32 SteerAngleWithVelocity_r(f32 *angle, f32 target, f32 *vel, f32, f32, f32) __asm__("func_L00_0025CE58");
 extern s32 test_extermibot_offset_path_clearance(char *moby, float *goal, float s);
@@ -1865,7 +1849,7 @@ void move_extermibot_along_path(struct Moby *m, s32 node, f32 side) {
             v->stuck_timer = scale_ticks(5);
     }
 }
-extern float FastAddRots(float, float);
+
 extern float FastVecDist_r3(float *, float *) __asm__("func_001F9D10");
 extern void FastVecAdd_r2(float *, float *, float *) __asm__("func_001F9BD8");
 extern void FastVecSub_r2(float *, float *, float *) __asm__("func_001F9BF0");
@@ -1898,7 +1882,6 @@ typedef struct {
     char p2[0xCA];
 } Ent;
 extern Ent *moby_pool_4f60_m __asm__("D_L05_00160098") MACRO_ADDR;
-extern float FastVecDist(void *, void *);
 
 /* Finds the nearest flagged entry of a table, within 120 units of the moby. */
 char *find_nearest_extermibot_group_target(char *self, int idx) {
@@ -1934,8 +1917,7 @@ extern SegmentPath *rilgar_paths_r3[] __asm__("D_L05_001B0CB0");
 extern f32 abs_3054B0(f32) __asm__("func_001F9B88");
 extern void FastVecAdd_r3(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BD8");
 extern void FastVecSub_r3(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BF0");
-extern f32 func_001F9C78(Vec4 *, Vec4 *);
-extern void func_001F9CA0(Vec4 *, Vec4 *, Vec4 *);
+
 extern f32 FastVecLength_r(Vec4 *) __asm__("func_001F9CB8");
 extern void vec_scale_to_length_r(Vec4 *, Vec4 *, f32) __asm__("func_L00_001FF4B0");
 
@@ -2005,7 +1987,7 @@ void handle_extermitank_hits_and_sync_children(char *moby);
 void process_extermitank_particle_hits(char *m);
 extern void set_ground_height_band(void *);
 extern void AttachManipulator(char *, int, unsigned char *);
-extern void clear_u64_value(void *);
+
 extern int ClassifyTargetInCone(char *m, char *p, float *pos, char *v);
 extern int IsPointInPolygon(void *, void *, int);
 extern float step_angle_toward_target(float *, int, float, float);
@@ -2045,7 +2027,6 @@ extern int extermitank_secondary_particle_color_a_gp SDATA(extermitank_secondary
 extern int extermitank_secondary_particle_color_b_gp SDATA(extermitank_secondary_particle_color_b_gp);
 
 extern int coll_line(void *, void *, int, void *, void *);
-extern float FastSubRots(float, float);
 
 typedef char *(*Spawn_305778)(void *, void *, void *, int, int, long, long, long, int);
 typedef int u128_305778 __attribute__((mode(TI)));
@@ -2344,12 +2325,12 @@ extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 extern void SetDeathBits(void *, int, int);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
                             int, int, int, int);
-extern void clear_u64_value(void *);
+
 extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
 extern void RerollEffectCounter(void *, void *);
-extern float FastDiffRots(float, float);
+
 extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
-extern float FastVecLength(void *);
+
 extern void StepColorFade(void *, void *);
 extern int extermitank_death_ticks SDATA(extermitank_death_ticks);
 extern float extermitank_tread_speed_ref SDATA(extermitank_tread_speed_ref);
@@ -2485,7 +2466,7 @@ mark_children:
     }
     StepColorFade(moby, &data->color_fade);
 }
-extern void FastVecSub(void *, void *, void *);
+
 extern void vec_set_length_xy(void *, void *, float);
 extern void coll_sphere_mobys(void *, int, void *, void *, float);
 
@@ -2537,9 +2518,6 @@ void process_extermitank_particle_hits(char *m) {
     }
 }
 
-extern float FastAddRots(float, float);
-extern float FastSin(float);
-
 /* Moves a point along a looped path of 16-byte nodes stored in the moby's data. */
 void copy_racer_path_node(char *moby, int idx, float *out) {
     char *p = ((struct RacerVars *)((Moby *)moby)->pvars)->path;
@@ -2553,7 +2531,7 @@ void copy_racer_path_node(char *moby, int idx, float *out) {
 }
 extern int select_point_index_by_distance(void *, void *, float);
 extern int offset_path_index(char *, int, int, int);
-extern float FastDiffRots(float, float);
+
 extern void copy_racer_path_node(char *moby, int idx, float *out);
 
 typedef struct {
@@ -2758,9 +2736,6 @@ extern float SpringAngle(void *, float, void *, int, float, float, float);
 extern int coll_sphere_mobys_r(void *, int, void *, void *, float) __asm__("func_L00_001F2BE8");
 extern int is_moby_in_class_range_500_to_540(int);
 extern void PostHitMessage(void *, int, int, void *, void *, float);
-extern float ProbeGroundHeight(void *, int, float);
-
-extern int FastDecTimer(void *);
 
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 
@@ -3032,7 +3007,7 @@ void SkidMcMarxUpdate(Moby *moby) {
     }
 }
 extern int fast_dec_timer(int *arg0);
-extern void FastVecSub(void *dst, void *a, void *b);
+
 extern void update_entity_matrix(char *, void *, void *, void *);
 extern float rilgar_floating_platform_pitch_rate SDATA(rilgar_floating_platform_pitch_rate);
 extern float rilgar_floating_platform_roll_rate SDATA(rilgar_floating_platform_roll_rate);

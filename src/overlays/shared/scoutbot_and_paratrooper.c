@@ -612,7 +612,6 @@ void update_scoutbot_movement(char *m) {
     }
 }
 extern void *cancel_suck_cannon_suction(void *);
-extern void MobyBlendAnimation(void *, int, int, int);
 
 struct EnterScoutbotReturnHomeStateVars {
     u8 pad_00[0xC8];
@@ -709,7 +708,6 @@ extern void moby_build_matrix(void *);
 extern float vec_length_xy(void *);
 
 extern void euler_to_matrix(void *, void *);
-extern float random_angle_radians(void);
 
 extern float FastCos(float);
 
@@ -824,7 +822,6 @@ extern f32 FastVecLength(void *a);
 extern void FastVecSub(void *out, void *a, void *b);
 extern void FastVecScale(void *, void *, float);
 extern float FastVecDist(void *, void *);
-extern float random_angle_radians(void);
 
 extern float FastCos(float);
 extern float multiply_global_factor(float);
@@ -1684,7 +1681,7 @@ extern void StepColorFade(void *, void *);
 extern int FastDecTimer(void *);
 
 extern int FindNearestEligibleMoby(char *, void *, float, int, int, void *, int);
-extern float ProbeGroundHeight(void *, int, float);
+
 extern float paratrooper_scale SDATA(paratrooper_scale);
 extern float paratrooper_move_speed SDATA(paratrooper_move_speed);
 extern float paratrooper_knock_gravity SDATA(paratrooper_knock_gravity);
@@ -2293,7 +2290,7 @@ void set_level_state_flag_88(void) {
     batalia_player_camera_current[0x88] = 1;
 }
 extern float batalia_wind_level SDATA(batalia_wind_level);
-extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
+
 extern int Sound_SetPitchBend(int, int);
 
 /* Wind ambience: probes 20 points around the hero; the more of them are below the camera, the louder the loop. */

@@ -9,6 +9,7 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "game/moby/mobyutil.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "asm_functions/executable.h"
 extern Hero g_hero;
 extern char weapon_ammo_counts[];
 
@@ -34,10 +35,9 @@ extern u8 saved_mission_state[];
 extern u8 umbris_mission_group_state[];
 extern s32 umbris_indicator_states[];
 extern struct Moby *level_mobys MACRO_ADDR;
-extern float FastVecLength(void *);
-extern void FastVecAdd(void *, void *, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern void matrix_mul_vec3(void *, void *, void *);
+
 extern int Moby_PlaySound(int, int, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l07/gameplay/entities/0030cd20.c, FUN_L07_0031a9e8. */
@@ -183,9 +183,7 @@ typedef struct {
     char pad3[0x84];
 } EaseMoby1C7C0;
 extern int Moby_PlaySound(int, int, int);
-extern float FastCos(float);
-extern float FastAddRots(float, float);
-extern float FastSubRots(float, float);
+
 extern float g_frame_time MACRO_ADDR;
 extern EaseMoby1C7C0 *level_mobys_ease __asm__("D_L07_00160058") MACRO_ADDR;
 
@@ -293,10 +291,9 @@ typedef struct {
     char pad10[0x8];
 } Ent;
 
-extern int func_00215570(void *arg0, int arg1);
 extern float func_001FA888(int);
 extern int func_001FA898(float);
-extern float func_001F9D10(void *, void *);
+
 extern int func_L00_0025E860(void *, void *, int *, float *, float, int);
 extern float func_001F9D48(void *, void *);
 extern int func_00120778_31E6B0(float) __asm__("func_00120778");
@@ -422,7 +419,7 @@ typedef struct {
     int arr[8];
 } L07SparkState;
 extern void cutscene_set_camera_target(int);
-extern int scale_ticks(int);
+
 extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern char *func_L00_0026DEA0(void *, int, void *, int, float, float, float, float);
@@ -612,7 +609,6 @@ void seashell_update(unsigned char *m) {
     }
 }
 
-extern void FastVecSub(void *dst, void *a, void *b);
 extern void vec_scale_to_length(void *, void *, float);
 
 extern char umbris_cutscene_state[];

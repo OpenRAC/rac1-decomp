@@ -9,6 +9,8 @@
 #include "asm_functions/level_08.h"
 #include "data/level_11.h"
 #include "structs/small_records.h"
+#include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
 
 extern void VU1_addGSregister(int, long);
 
@@ -65,8 +67,6 @@ typedef struct {
 } Pair8_31F760;
 
 extern int FastBSphereCheck(char *, float);
-extern void FastVecSub(void *, void *, void *);
-extern float FastVecLength(void *);
 
 extern int func_001FA898(float);
 
@@ -202,7 +202,7 @@ void emit_oil_tanker_render_batches_with_pair_offset(int a) {
                               pokitaru_faded_scrolled_uvs, 1);
     }
 }
-extern int is_point_inside_clip_volume(void *arg0, int arg1);
+
 extern void emit_render_batches_with_pair_offset(int arg);
 extern void emit_oil_tanker_render_batches_with_pair_offset(int);
 

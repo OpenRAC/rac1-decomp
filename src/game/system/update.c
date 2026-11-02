@@ -16,9 +16,6 @@
 extern void FastVecScale(void *, void *, float);
 
 extern char camera_position[];
-extern void FastVecSub(void *, void *, void *);
-
-extern void transform_vector(void *, void *, void *);
 
 extern void truncate_float_to_s32(float);
 
@@ -39,9 +36,8 @@ typedef struct {
 } ScreenExt;
 extern ViewCtx view_context;
 extern ScreenExt g_screen_extent;
-extern void FastVecSub(void *, void *, void *);
+
 extern void FastVecScale(void *, void *, float);
-extern void transform_vector(void *, void *, void *);
 
 void project_graphics_bounds(Vec4 *a, Vec4 *b, int *w, int *h, int *x, int *y) {
     Vec4 p;
@@ -159,7 +155,6 @@ extern Cam resident_cheat_scale_manip;
 
 extern void AttachManipulator(Moby *, s32, Cam *);
 extern void DetachManipulator(Moby *, Cam *);
-extern void MobyBlendAnimation(Moby *, s32, s32, s32);
 
 extern s32 IsFrameWithinWindow(Moby *, f32);
 extern s32 Music_ContinueStreamIfReady(void);

@@ -27,6 +27,7 @@
 #include "structs/voice.h"
 #include "structs/collision.h"
 #include "structs/hit_message.h"
+#include "asm_functions/executable.h"
 extern int g_controller_state_no_direction;
 extern Hero g_hero;
 
@@ -507,11 +508,7 @@ typedef int HopQ __attribute__((mode(TI)));
 extern Hero g_hero_s __asm__("D_0013F450");
 extern float g_frame_time_sq MACRO_ADDR;
 extern float blarg_hero_speed_bands_6[];
-extern int scale_ticks(int);
-extern float FastCos(float);
-extern float FastSin(float);
-extern float FastDiffRots(float, float);
-extern float FastSubRots(float, float);
+
 extern float vec_length_xy(void *);
 extern float ApproachValue(float *, float, float);
 extern void build_scaled_hero_move_impulse(float, float);
@@ -521,7 +518,7 @@ extern float SpringAngle(void *, float, void *, int, float, float, float);
 
 extern void set_gravity_relative_vector_length_xy(float *, float *, float);
 extern void add_hero_forward_offset(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
 extern void vec_set_length_xy(void *, void *, float);
 
@@ -686,7 +683,6 @@ extern float blarg_hero_speed_bands_3;
 extern float blarg_hero_anim_frame_speeds_a[];
 extern float blarg_hero_anim_frame_speeds_b[];
 
-extern void matrix_mul_vec3(void *, void *, void *);
 extern int fast_dec_timer(int *);
 
 extern void turn_hero_toward_move_direction_for_item(void);
@@ -706,16 +702,12 @@ extern int clamp_vec_length_xy(float, void *, void *);
 
 extern void Moby_GetJointWorldPos(void *, int, void *);
 
-extern float FastAddRots(float, float);
-extern float FastVecLength(void *);
 extern float ApproachValue(float *, float, float);
 extern void Hero_SetTiltSpringParams(float, float);
 extern void ClampVectorLength(void *, float);
 extern int solve_quadratic_equation(float *, float *, float, float, float);
 extern float step_angle_toward_target(float *, int, float, float);
-extern void euler_to_matrix(void *, void *);
-extern void matrix_from_basis_rows(void *, void *);
-extern void transform_vector(void *, void *, void *);
+
 extern float gravity_z(float *);
 extern float Spring(float *, float *, float, float, float, float);
 extern float forward_component(void *);
@@ -734,7 +726,7 @@ extern void turn_hero_toward_move_direction_with_stick_scale(void);
 extern float randf_sym(float, float);
 extern void spawn_color_decaying_effect_particle(char *, char *, int);
 extern int find_nearest_path_point(void *, void *, void *, int *, float *, int, float, float, float);
-extern float multiply_global_factor(float);
+
 extern int offset_path_index(void *, int, int, int);
 
 extern void gravity_flatten(float *, float *);

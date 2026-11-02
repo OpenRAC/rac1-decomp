@@ -5,6 +5,7 @@
 #include "game/render/framebuf.h"
 #include "game/system/update.h"
 #include "structs/level_records.h"
+#include "asm_functions/executable.h"
 
 extern void *libc_memset(void *, int, int);
 extern void DrawMobyList(int, int);
@@ -137,10 +138,8 @@ purchase:
 
 extern float vendor_inset_quad_margins[][4];
 extern void transform_scaled_vertex_batch(char *arg0, int arg1, void *arg2, char *arg3);
-extern void FastVecSub(void *, void *, void *);
-extern float FastVecLength(void *);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
 
 extern int GetEffectTex(int);
 extern void VU1_addGSregister(int, long);
@@ -266,7 +265,7 @@ void draw_vendor_purchase_panel(void *m) {
     DrawMobyList((int)m, 1);
     DrawTexturedQuad(w, h, x, y, 0, 0, x, y, 0x80808080L, capture_texture_tex0);
 }
-extern void matrix_mul_vec3(void *, void *, void *);
+
 struct Quad {
     int a, b, c, d;
 };
@@ -409,7 +408,7 @@ extern void VU1_sendChain_r(void) __asm__("func_002349B8");
 extern void VU1_swapChain_r(void) __asm__("func_00234948");
 extern void func_L00_001F9D40(s32);
 extern void func_001F2608(void);
-extern void func_001F9CA0(void *, void *, void *);
+
 extern void InitMobyInstance_r(void *, s32) __asm__("func_0020D440");
 extern void func_L00_00251E30(void *);
 extern void pack_render_command_fields_r(void *, s32, s32, s32, s32) __asm__("func_0020E340");

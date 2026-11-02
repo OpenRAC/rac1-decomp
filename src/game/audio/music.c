@@ -744,7 +744,7 @@ typedef struct {
 
 extern void snd_stop_sound(int);
 extern void snd_PauseVAGStream(int);
-extern int FastDecTimer(void *);
+
 extern void snd_GetVAGStreamTimeRemaining_CB(int, void (*)(int, long), long);
 extern void snd_SoundIsStillPlaying_CB(int, void (*)(int, long), long);
 extern void snd_IsVAGStreamBuffered_CB(int, void (*)(int, long), long);

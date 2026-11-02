@@ -7,11 +7,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/level.h"
 
-extern void clear_u64_value(void *);
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern float random_angle_radians(void);
-
-extern void BuildSphericalOffset(void *, float, float, float);
 
 extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, int, float);
 extern int g_current_level_index MACRO_ADDR;

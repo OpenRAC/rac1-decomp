@@ -7,6 +7,7 @@
 #include "game/math/fastfunc.h"
 #include "data/executable.h"
 #include "structs/anim.h"
+#include "asm_functions/executable.h"
 
 /*
  * mobyutil.cpp in the original source; text 0x213A78-0x2161E0.
@@ -16,12 +17,8 @@
 
 extern void func_001FA460(void *, void *);
 extern void FastVecScale(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
-extern void matrix_mul_vec3(void *, void *, void *);
 
 extern float shadow_light_dir[] NOT_SDA;
-extern float FastCos(float);
-extern float FastSin(float);
 
 extern float FastAbsF(float arg0);
 extern int find_or_allocate_id_slot(int v);
@@ -401,9 +398,8 @@ extern unsigned char hero_globals_base[];
 extern char g_hero[];
 extern int suck_get_aim_height(char *);
 extern int read_state_field(char *);
-extern int FastDecTimer(void *);
+
 extern int scale_game_frame_count(int);
-extern float FastVecLength(void *);
 
 typedef struct {
     float v[4];
@@ -864,9 +860,6 @@ void extract_matrix_rotation_quaternion(void *arg0, void *arg1) {
 
 LINKER_REMNANT("asm/remnants/text", func_00215378);
 
-extern float FastSin(float); /* sin of a half-angle */
-extern float FastCos(float); /* cos of a half-angle */
-
 /* Axis-angle -> quaternion: the xyz part is axis scaled by sin(angle/2)
    (done by FastVecScale, which writes through arg0), and w at +0xC is
    cos(angle/2). Both trig calls take the same half-angle, which is why
@@ -881,8 +874,7 @@ void build_quaternion_from_axis_angle(void *arg0, void *axis, float angle) {
 typedef struct {
     float m[4][4];
 } __attribute__((aligned(16))) Mtx44;
-extern void clear_u64_value(float *);
-extern void euler_to_matrix(float *, float *);
+
 extern void euler_to_matrix_ee(float *, float *);
 
 /* Matrix to Euler angles: on a copy of src with the translation cleared,
@@ -934,7 +926,6 @@ typedef struct {
     float mtx[4][4]; /* 0x40 */
 } ViewBox;
 extern ViewBox *clip_volume_table MACRO_ADDR;
-extern void FastVecSub(void *, void *, void *);
 
 /* Is point arg0 inside box arg1 of the table at clip_volume_table? The offset
    from the box's position, taken through its matrix, must lie in
@@ -1150,8 +1141,6 @@ typedef struct {
 } Path;
 extern void lerp_vector(void *, void *, void *, float);
 extern float vec_length_xy(void *);
-extern float FastSubRots(float, float);
-extern float FastAddRots(float, float);
 
 /* Samples a path of points at arg t: lerps the position between point
    floor(t) and the next into pos and, unless flags bit 0 is set, writes

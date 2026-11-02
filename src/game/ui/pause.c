@@ -28,6 +28,7 @@
 #include "game/system/space.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+#include "asm_functions/executable.h"
 
 /*
  * pause.cpp in the original source; text 0x219C08-0x228A58.
@@ -56,12 +57,6 @@ extern unsigned char gSpecialItems[];
 extern unsigned char gHaveHeliPack NOT_SDA;
 
 extern int item_available NOT_SDA;
-
-extern void FastVecAdd(void *, void *, void *);
-extern void matrix_mul_vec3(void *, void *, void *);
-
-extern float FastCos(float);
-extern float FastSin(float);
 
 extern void matrix_copy_rows(void *, void *);
 
@@ -365,7 +360,7 @@ extern struct Ent *panel_slots_r2[] __asm__("D_001D6120");
 
 extern void reset_active_camera_position_and_basis_r(void) __asm__("func_00219C08");
 extern void initialize_menu_preview_scene_r(void) __asm__("func_00219E90");
-extern void func_00213C78();
+
 extern s32 Moby_PlaySound_r(s32, s32, struct Ent *) __asm__("func_0022ED80");
 extern void mode_freeze_init_r(s32, MenuPage *, s32) __asm__("func_001FBC80");
 extern void func_002348B8(void);
@@ -972,7 +967,7 @@ extern int scale_game_frame_count(int);
 extern void find_help_entry(int, int, void *);
 extern int sprintf(char *, const char *, ...);
 extern void libc_memset(void *, int, int);
-extern int FastTweenColor(int, int, float);
+
 extern int fade_menu_color(int, int, int);
 #define TEXT(id) ((char *(*)(int))func_001FE540)(id)
 #define DRAW(c, t) \
@@ -1596,7 +1591,6 @@ s32 render_localized_ui_entry_list(MenuDescriptor *menu) {
 /* SDA, gp -0x6A4C: declared 2 bytes so the assembler reaches it through
    $gp, and read as the int it is. */
 extern int menu_fade_duration SDATA(menu_fade_duration);
-extern int FastTweenColor(int, int, float);
 
 /* Fade colour for the pause menus: -1 picks the default colours
    0x80FFA888 / 0x8020FFFF and a negative start becomes 0. While the
@@ -3258,8 +3252,6 @@ int draw_item_preview_screen(MenuScreen *arg0) {
     return 2;
 }
 
-extern float FastAddRots(float, float);
-
 /* Moby update for the item preview: spins its yaw angle by 0.01 a frame. */
 void rotate_item_preview_moby(struct Moby *moby) {
     moby->rot.z = FastAddRots(moby->rot.z, 0.01f);
@@ -3312,9 +3304,7 @@ extern struct PreviewClassResource *moby_class_resources_r[] __asm__("D_001B3580
 extern void update_item_preview_transform();
 extern void noop_callback_q(s32, s32);
 extern void noop_callback_r_r(struct Moby *, s32) __asm__("func_001E97F8");
-extern f32 FastAddRots(f32, f32);
 
-extern void MobySetAnimation(struct Moby *, s32, s32);
 extern struct Moby *create_menu_preview_moby_r2(s32) __asm__("func_00226720");
 extern struct Moby *delete_moby_r(struct Moby *) __asm__("func_002267C0");
 
@@ -3514,8 +3504,6 @@ struct ItemPreviewVars {
 };
 extern struct CameraSystem gCamera_r4 __asm__("D_00187040");
 extern struct ItemPreviewPlacement preview_placements[];
-extern f32 FastCos(f32);
-extern f32 FastSin(f32);
 
 /* Position the selected item relative to the preview camera. Owner flag bit 0 selects alternate_x; otherwise use
    normal_x. Rotate the side and forward offsets in the X/Y plane after adding the unrotated placement position.
@@ -3730,8 +3718,6 @@ extern char *msg_string_r3(s32) __asm__("func_001FE540");
 extern void draw_hud_rect_blended_r3(s32, s32, s32, s32, u64, s32) __asm__("func_00201640");
 extern void DrawMobyList(s32, s32);
 
-extern s32 count_nonzero_entries_up_to_40(void);
-extern s32 count_nonzero_entries_up_to_10(void);
 extern void *libc_memset_r(void *, s32, u32) __asm__("func_001153FC");
 extern int sprintf(char *, const char *, ...);
 extern char *libc_strchr(const char *, int);
@@ -3880,8 +3866,6 @@ int DrawGBsShipMenu__maybe(char *arg0) {
     DoGifPaging();
     return 8;
 }
-
-extern float FastAddRots(float, float);
 
 /* Moby update for a rotating preview: spins its +0x40 angle by 0.02 a frame. */
 void rotate_preview_moby_x(Moby *arg0) {
@@ -6909,7 +6893,7 @@ struct MenuPanelOwner {
 };
 extern short pal_mode_r2 __asm__("D_0015EE80");
 extern void VU1_addGSregister_r4(s32, u64) __asm__("func_00234C98");
-extern s32 random_integer_below(s32);
+
 extern s64 GetEffectTex_r2(s32) __asm__("func_001F4868");
 extern void DrawTexturedQuad_r(s32, s32, s32, s32, s32, s32, s32, s32, s64, s64) __asm__("func_001F5800");
 void draw_menu_flashing_panel(struct MenuPanelOwner *owner);
@@ -7172,7 +7156,7 @@ extern s32 ammo_preview_velocities_r[] __asm__("D_001D6238");
 extern void noop_callback_r(Moby *, s32);
 extern void AttachManipulator_r(s32, s32, HandGadgetManipulator *) __asm__("func_0020D960");
 extern void DetachManipulator_r(s32, HandGadgetManipulator *) __asm__("func_0020D9D8");
-extern void MobyBlendAnimation(void *, int, int, int);
+
 extern Moby *create_menu_preview_moby_r3(s32) __asm__("func_00226720");
 extern Moby *delete_moby_r2(Moby *) __asm__("func_002267C0");
 extern void update_preview_animation_and_attachments(s32, Moby *, Moby *, s32 *, s32 *, s32 *);
@@ -7703,10 +7687,7 @@ extern f32 g_frame_time MACRO_ADDR;
 extern f32 g_frame_time_sq SDATA(g_frame_time_sq);
 extern f32 ammo_preview_offsets[];
 extern f32 ammo_preview_velocities[];
-extern void clear_u64_value(void *);
-extern f32 FastCos(f32);
-extern f32 FastSin(f32);
-extern f32 FastAddRots(f32, f32);
+
 extern f32 FastNormalizeAngle_r(f32) __asm__("func_001FA7D8");
 extern f32 IntToFloat(s32);
 extern void advance_moby_animation_r(void *) __asm__("func_0020E3D0");
@@ -7934,7 +7915,7 @@ extern s32 D_0015EF20 MACRO_ADDR;
 extern s32 scale_game_frame_count(s32);
 extern void relocateObjectPointers(char *, int);
 extern void fast_decompress(int, int);
-extern void MobyBlendAnimation(void *, s32, s32, s32);
+
 extern s32 Music_ContinueStreamIfReady(void);
 extern int start_audio_stream_read(int, int, int);
 
@@ -8780,8 +8761,6 @@ void tick_space_transition(void) {
     }
 }
 
-extern int count_nonzero_entries_up_to_30(void);
-extern int count_nonzero_entries_up_to_10(void);
 extern char reward_menu_items[];
 extern char reward_menu_page[];
 
@@ -8845,8 +8824,6 @@ LINKER_REMNANT("asm/remnants/text", func_002282B8);
 extern float direction_unit[] MACRO_ADDR;
 
 extern float direction_perpendicular[] MACRO_ADDR;
-
-extern void FastVecCross(void *, void *, void *);
 
 /* Build a basis from dir: direction_unit = dir normalised,
    direction_scaled = that scaled, and direction_perpendicular = the cross product with a

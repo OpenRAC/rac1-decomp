@@ -5,6 +5,7 @@
 #include "structs/hero.h"
 #include "structs/moby.h"
 #include "data/level_07.h"
+#include "asm_functions/executable.h"
 extern Hero g_hero;
 
 /* Timed activation pads: stepped on, they count down until the group is activated. */
@@ -74,16 +75,14 @@ extern void func_L01_0026F090(int list, int state);
 extern void MobyGroup_SetByteBC_r(int, int) __asm__("func_L01_0026F040");
 extern float FastAbsF_r(float) __asm__("func_001F9B88");
 extern float func_001F9D48(void *, void *);
-extern void func_001F9BF0(void *dst, void *a, void *b);
+
 extern void func_001FA190(void *);
-extern void func_001FA4A0(void *, void *);
-extern void func_001F9EE8(void *, void *, void *);
+
 extern int func_001F9908(int *arg0);
 extern void Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern void func_L00_00251328(void *, int, int, int);
 extern void jet_clear_persistent_r(int) __asm__("func_L00_002512D8");
-extern int func_001F9938(void *);
 
 /* Timed activation pad update: runs the 10-state machine on the data block at moby+0x78.
  * The timer is a MIN() of two expressions with calls in them, so the calls are made twice;
@@ -235,10 +234,8 @@ void timed_activation_pads_update(unsigned char *moby) {
 extern int g_current_level_index MACRO_ADDR;
 extern unsigned char saved_mission_state[];
 
-extern void FastVecAdd(void *, void *, void *);
-extern f32 FastVecLength(void *);
 extern void vec_scale_to_length(f32, void *, void *);
-extern void matrix_mul_vec3(void *, void *, void *);
+
 extern void Moby_PlaySound(s32, s32, void *);
 extern u8 *level_mobys MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
@@ -363,10 +360,9 @@ extern int g_current_level_index MACRO_ADDR;
 extern unsigned char saved_mission_state[];
 
 extern void FastVecScale(f32, void *, void *);
-extern void FastVecAdd(void *, void *, void *);
-extern f32 FastVecLength(void *);
+
 extern void vec_scale_to_length(f32, void *, void *);
-extern void matrix_mul_vec3(void *, void *, void *);
+
 extern void Moby_PlaySound(s32, s32, void *);
 extern void update_entity_matrix(void *, void *, void *, void *);
 extern u8 *level_mobys MACRO_ADDR;

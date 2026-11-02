@@ -18,6 +18,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+#include "asm_functions/executable.h"
 extern char gHeroPos[];
 extern char gSpecialItems[];
 extern int level_moby_killed[];
@@ -93,17 +94,15 @@ extern float quartu_fog_near_distance MACRO_ADDR;
 extern float quartu_fog_far_distance MACRO_ADDR;
 extern float quartu_fog_near_intensity MACRO_ADDR;
 extern float quartu_fog_far_intensity MACRO_ADDR;
-extern int is_point_inside_clip_volume(void *, int);
 
 extern void reset_electric_water_switch(char *);
-extern float multiply_global_factor(float);
+
 extern int truncate_float_to_s32(float);
-extern int scale_ticks(int);
+
 extern int hero_is_near_ground(void);
-extern int FastDecTimer(void *);
+
 extern void set_moby_color(void *, int, int, int);
 
-extern float FastVecDist(void *, void *);
 extern int allocate_colored_effect_slot(void *, float, float, float, float, float);
 extern void initialize_electric_water_bolt_effect(char *);
 extern void update_electric_water_bolt_effect(Moby *);
@@ -112,11 +111,6 @@ extern void draw_electric_water_countdown(char *);
 extern void AddDrawCallback(void *, void *);
 extern int Sound_PlayClassSound(int, int, void *, int);
 
-extern float random_angle_radians(void);
-extern void BuildSphericalOffset(void *, float, float, float);
-
-extern float FastCos(float);
-extern float FastSin(float);
 extern void vec_set_length_xy(void *, void *, float);
 extern void record_moby_hit(void *, void *);
 extern float vec_distance_xy(void *, void *);
@@ -491,9 +485,6 @@ void electric_water_update(unsigned char *m) {
 }
 extern void DrawUIFrame(int, int, int, int, int);
 extern float IntToFloat(int);
-extern float FastSin(float);
-extern int FastTweenColor(int, int, float);
-extern int scale_ticks(int);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
@@ -560,10 +551,8 @@ extern float electric_water_bolt_points_r[][4] __asm__("D_L15_001D3A20");
 extern int electric_water_bolt_wave_offsets_r[] __asm__("D_L15_001D3CA0");
 extern float electric_water_mirror_bolt_side_offsets_r[][4] __asm__("D_L15_001D3CF0");
 extern int electric_water_mirror_bolt_height_offsets_r[] __asm__("D_L15_001D3E30");
-extern void FastVecSub(void *, void *, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
-extern void clear_u64_value(void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002d6810.c, FUN_L15_002d79e8. */
 void initialize_electric_water_bolt_effect(char *m) {
@@ -618,23 +607,11 @@ typedef struct {
     V_2d8fa0 c;
 } Data_2d8fa0;
 
-extern float FastAddRots(float, float);
-extern float FastSubRots(float, float);
-extern float FastVecDist(void *, void *);
-extern void FastVecSub(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecCross(void *, void *, void *);
-extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
+
 extern void FastVecScale(void *, void *, float);
 
-extern float random_angle_radians(void);
-extern void BuildSphericalOffset(void *, float, float, float);
 extern void lerp_vector(void *, void *, void *, float);
-extern float FastVecLength(void *);
-extern void FastVecAdd(void *, void *, void *);
-
-extern float FastCos(float);
-extern int FastDecTimer(void *);
 
 extern void func_L00_00272F00(void *, int, float, float, int, int, int, void *, float);
 extern char hero_globals_base[];
@@ -1069,9 +1046,7 @@ char *spawn_class_3a6_moby(char *src, float *v, char *pos) {
     }
     return m;
 }
-extern float FastVecLength(void *a);
-extern void matrix_from_basis_rows(void *, void *);
-extern void transform_vector(void *, void *, void *);
+
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern int get_first_moby_in_group(int *, int, int, int);
 extern int get_next_moby_in_group(int *, int, int, int);
@@ -1320,9 +1295,6 @@ void codebot_update(unsigned char *moby) {
 extern Hero g_hero_r __asm__("D_0013F450");
 extern PadState D_0013CA40;
 extern void try_set_help_message(int, int);
-
-extern void MobySetAnimation(void *, int, int);
-extern float ProbeGroundHeight(void *, int, float);
 
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern void enter_hero_vehicle_mode(int, int, char *);

@@ -12,6 +12,7 @@
 #include "asm_functions/shared_levels.h"
 #include "game/math/fastfunc.h"
 #include "enums/moby_class.h"
+#include "asm_functions/executable.h"
 extern struct Hero g_hero;
 /* Break fragment: velocity, spin, life and gravity. */
 struct BreakFragmentVars {
@@ -30,21 +31,16 @@ typedef struct {
     Vec4 points[1];
 } SegmentPath;
 extern SegmentPath *level_paths[];
-extern void clear_u64_value(void *);
-extern int random_integer_below(int);
-extern int scale_ticks(int);
+
 extern void STUB_printf();
 extern float IntToFloat(int);
-extern float random_angle_radians(void);
-extern float FastCos(float);
-extern float random_float_between(float, float);
-extern float FastSin(float);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
+
 extern int solve_quadratic_equation(float *, float *, float, float, float);
 extern void FastVecScale(void *, void *, float);
 extern int SegmentCrossPolyline(int, void *, void *, void *);
-extern void FastVecSub(void *, void *, void *);
+
 extern void spawn_bolt_by_value(void *, void *, void *, int, int, int);
 struct MobyBound;
 struct MobyBound *GetFlaggedPvarWord(struct Moby *);
@@ -317,14 +313,10 @@ typedef int u128 __attribute__((mode(TI)));
 extern float randf_sym(float lo, float hi);
 extern int rand_range(int, int);
 extern float step_angle_toward_target(float *p, int n, float x, float y);
-extern int FastDecTimer(void *);
-extern float FastCos(float);
-extern float FastSin(float);
-extern int MoveKeepingOverGround(void *, void *, void *, int, float, float, float, float);
-extern float ProbeGroundHeight(void *, int, float);
-extern float vec_distance_xy(void *, void *);
 
-extern int scale_ticks(int);
+extern int MoveKeepingOverGround(void *, void *, void *, int, float, float, float, float);
+
+extern float vec_distance_xy(void *, void *);
 
 /* Wander state (the idle_pos block in a moby's pvars). */
 struct WanderState {
@@ -445,11 +437,9 @@ s32 test_path_segment_strict_crossing(s32 path_index, Vec4 *start, Vec4 *end) {
     }
     return 0;
 }
-extern void FastVecSub(void *, void *, void *);
-extern float FastVecLength(void *);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern void clear_u64_value(void *);
-extern void matrix_mul_vec3(void *, void *, void *);
+
 extern void lerp_vector(void *, void *, void *, float);
 
 /* Tests whether segment a-b crosses polyline level_paths[idx]; writes the nearest crossing to c. */
@@ -505,7 +495,7 @@ LINKER_REMNANT("asm/overlays", func_L00_00262DE8);
 
 extern void FastVecAdd_r(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BD8");
 extern void FastVecSub_r2(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BF0");
-extern f32 FastVecDot(Vec4 *, Vec4 *);
+
 extern void FastVecCross_r(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9CA0");
 extern f32 FastVecLength_r2(Vec4 *) __asm__("func_001F9CB8");
 extern void vec_scale_to_length_r2(Vec4 *, Vec4 *, f32) __asm__("func_L00_001FF4B0");
@@ -661,9 +651,8 @@ typedef struct {
 } PointPath;
 extern s32 truncate_float_to_s32(f32);
 extern f32 IntToFloat(s32);
-extern void FastVecSub(void *, void *, void *);
+
 extern void vec_scale_to_length(void *, void *, f32);
-extern void FastVecAdd(void *, void *, void *);
 
 /* Samples path at distance dist (points spacing apart): stores the segment, the distance into it and the point.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/state/00261968.c, FUN_L00_00262360. */
@@ -692,7 +681,6 @@ void path_sample_at_distance(PointPath *path, s32 *seg_out, f32 *along, Vec4 *ou
     FastVecAdd(&tmp, out, &path->points[*seg_out]);
     out->q = tmp.q;
 }
-extern void euler_to_matrix(void *, void *);
 
 /* Rotates the matrix at a+0x40 by the Euler angles (x, y, z). */
 void compose_target_euler_rotation(char *a, float x, float y, float z) {
@@ -836,7 +824,6 @@ extern void AttachManipulator(int, int, void *);
 
 extern float SpringAngle(char *, char *, float, float, float, float, int);
 extern void build_quaternion_from_axis_rotations(void *a, float *v);
-extern void clear_u64_value(void *);
 
 /* A manipulator state: eased rotation offsets and scale applied to a held moby. */
 struct ManipState {
@@ -890,7 +877,7 @@ void EaseManipulatorOffsets(int m, struct ManipState *p, int c, float fa, float 
     clear_u64_value(p->goal);
     p->goal_scale = 1.0f;
 }
-extern float FastAddRots(float, float);
+
 /* Bobs a's Z with a sine of phase *p, advancing the phase by y. */
 void update_moby_vertical_oscillation(float x, float y, Moby *a, float *p, float *q) {
     float t;
@@ -1066,9 +1053,9 @@ void spawn_ground_contact_effect_particle(V *v) {
 typedef int u128_264690 __attribute__((mode(TI)));
 extern int GetEffectTex(int);
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecCross(void *, void *, void *);
+
 extern void FastVecScale(void *, void *, float);
-extern void transform_vector(void *, void *, void *);
+
 extern void draw_world_quad(void *, void *, int);
 extern float g_debug_camera[];
 extern float offset_effect_quad_corners[];
@@ -1141,9 +1128,7 @@ typedef struct {
     EffectTail tail;
 } Effect;
 extern void MobyTransformScaledVertex(void *, s32, void *);
-extern f32 FastVecLength(void *);
-extern s32 random_integer_below(s32);
-extern s32 scale_ticks(s32);
+
 extern Effect *PartType23Spawn(void *, f32, f32, f32, s32, void *, f32, u32);
 extern u8 veldin1_zero_vec_r[] __asm__("D_L00_0015F660") MACRO_ADDR;
 
@@ -1257,7 +1242,6 @@ typedef struct {
     PartTail tail;
 } Part;
 
-extern int random_integer_below(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern void *PartType23Spawn_c(void *, int, void *, float, float, float, float, int) __asm__("func_L00_0026DEA0");
 
@@ -1319,7 +1303,6 @@ extern float veldin1_zero_vec[] MACRO_ADDR;
 extern void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float *v10, float *v11,
                                 float scale, float *v12);
 extern int generate_random_points_from_shape_entries(void *, int, void *, void *, float);
-extern float random_angle_radians(void);
 
 /* Spawns a burst of effects on a moby: a fixed set at its own position, then randomly offset ones at points gathered around it. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay_entities_002630b8.c, FUN_L00_00263e30. */
 void spawn_moby_break_fragments(char *m, int n, int cnt, int base, int range, int cnt2, int flag) {
@@ -1351,10 +1334,9 @@ void spawn_moby_break_fragments(char *m, int n, int cnt, int base, int range, in
         }
     }
 }
-extern float random_float_between(float, float);
-extern float multiply_global_factor(float);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern float FastVecLength(void *a);
+
 extern void rand_vec(float *, float, float);
 
 /* Spawns a break-effect fragment moby of class cls from src, and initialises its motion data. */

@@ -23,6 +23,7 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "structs/voice.h"
+#include "asm_functions/executable.h"
 extern char cd_read_state[];
 
 extern char help_popup_state[] NOT_SDA;
@@ -120,7 +121,7 @@ void clear_help_record_high_bits(void) {
     }
 }
 extern char help_popup_state[] NOT_SDA;
-extern int scale_ticks(int);
+
 extern void HelpPopup_StepClose(void);
 /* Asks the help popup to dismiss. */
 void jet_camera_mode(void) {
@@ -178,7 +179,7 @@ extern f32 ProbeGroundHeight_r(Vec4f *, s32, f32) __asm__("func_00214358");
 extern void update_hero_ground_contact_and_surface_slopes(void);
 extern void update_hero_moby(void);
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
-extern s32 scale_ticks(s32);
+
 extern s32 rand_range(s32, s32);
 
 /* Clears the hero, binds it to the first Ratchet moby (snapped to the ground, its position and yaw copied in, the
@@ -474,7 +475,6 @@ void reset_hero_easing_records(void) {
     }
 }
 extern int level_frame_counter MACRO_ADDR;
-extern int random_integer_below(int);
 
 /* Runs the hero's random-interval timer (rand_timer). */
 extern struct Hero g_hero_r3 __asm__("D_0013F450");
@@ -579,8 +579,7 @@ struct HeroManip4_5FF0 {
 extern float ApproachValue(float *, float, float);
 extern f32 IntToFloat(s32);
 extern s32 truncate_float_to_s32(f32);
-extern f32 FastSin(f32);
-extern s32 FastDecTimer(void *);
+
 extern void FastVecScale(void *, void *, float);
 extern unsigned char gCheats[] MACRO_ADDR;
 extern int sound_volume MACRO_ADDR;
@@ -727,9 +726,7 @@ void update_hero_bolt_exclamation_hud(void) {
 }
 extern int request_grouped_voice(int, int, int, int, int);
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern float FastCos(float);
-extern float FastSin(float);
-extern float ProbeGroundHeight(void *, int, float);
+
 extern void spawn_texture_indexed_rotated_particle(float *, float, int);
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 
@@ -807,7 +804,6 @@ void dispatch_hero_animation_timed_events(void) {
 extern void MobyTransformScaledVertex(void *, int, void *);
 extern void matrix_copy_rows(void *, void *);
 
-extern void MobyBlendAnimation(void *, int, int, int);
 extern void MobyAnimAdvance(void *);
 extern void moby_build_matrix(void *);
 
@@ -849,9 +845,7 @@ extern void *func_0020D348(int);
 extern void enqueue_hero_glow_draw_callback_once(void);
 void matrix_mul_vec3(void *, void *, void *);
 extern float ApproachValue(float *p, float target, float maxstep);
-extern float FastAddRots(float, float);
-extern int FastDecTimer(void *);
-extern int FastTweenColor(int, int, float);
+
 void func_001F9BC0_c(void *) __asm__("func_001F9BC0");
 void euler_to_matrix(void *, void *);
 extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
@@ -1465,7 +1459,7 @@ extern unsigned char gCheats[] MACRO_ADDR;
 extern int sound_volume MACRO_ADDR;
 
 extern float IntToFloat(int);
-extern float FastSin(float);
+
 extern int truncate_float_to_s32(float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern float FastAbsF(float);
@@ -1635,8 +1629,7 @@ void apply_hero_rotation_oscillation(void) {
 }
 extern float hero_scale_sequence_table[];
 extern void FastVecScale(void *, void *, float);
-extern void FastVecSub(void *, void *, void *);
-extern void FastVecAdd(void *, void *, void *);
+
 extern void gravity_set_z(float *dst, float *src, float z);
 
 /* Advance the table-driven shake scale and apply it to the camera matrices and the tracked mobys. */
@@ -2086,7 +2079,6 @@ void update_hero_vehicle_moby(void) {
     }
 }
 
-
 extern char hero_globals_base_probe_091D8[] __asm__("D_0013E633");
 extern struct Hero D_0013F450_091D8 __asm__("D_0013F450");
 extern Vec4 hero_height_probe_dir;
@@ -2296,7 +2288,6 @@ void rotate_hero_about_local_pivot(float *inf, float x, float y, float z) {
 }
 typedef float V[4] __attribute__((aligned(16)));
 
-extern void clear_u64_value(float *);
 extern void rotate_hero_about_local_pivot(float *, float, float, float);
 
 /* Builds a {0,0,0.6,0} param vector and forwards it (plus the caller's
@@ -2398,7 +2389,7 @@ void pack_pose(int *joints, PackedPose *pose, unsigned char *model, int padding,
     pose->unk4 = 0;
     pose->unk0 = 0;
 }
-extern float random_float_between(float, float);
+
 extern unsigned char *spawn_moving_resizing_height_snapped_alpha_fade_particle(void *pos, int b, int color, float f,
                                                                                float g);
 
@@ -2419,8 +2410,7 @@ int emit_hero_periodic_surface_effect(char *a, int b) {
         *cnt = random_integer_below((int)a);
     }
 }
-extern float FastAddRots(float, float);
-extern float FastSubRots(float, float);
+
 extern void spawn_splash(void *, void *, void *, float, float);
 
 // Emits a pair of sparks from the player's position each time the counter passes its limit. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_00203b18.c, FUN_L00_00209638.
@@ -2462,7 +2452,7 @@ void fast_sin_cf(int seed, int limit) {
         }
     }
 }
-extern float random_angle_radians(void);
+
 extern int rand_range(int, int);
 
 /* Every lim calls of the counter, sprays a dust particle at the player's position with a random velocity and resets the counter. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_00203b18.c, FUN_L00_00209848. */
@@ -2543,9 +2533,7 @@ extern struct Hero D_0013F450_0A320 __asm__("D_0013F450");
 f32 FastCos(f32);
 f32 FastSin(f32);
 extern f32 g_frame_time MACRO_ADDR;
-extern f32 random_float_between(f32 a, f32 b);
-extern f32 random_angle_radians(void);
-extern s32 random_integer_below(s32 n);
+
 extern s32 rand_range(s32, s32);
 extern void spawn_burst_moby(Vec4 *, f32);
 extern void spawn_moving_resizing_height_snapped_alpha_fade_particle_r(Vec4 *, f32 *, s32, f32,
@@ -2595,10 +2583,9 @@ void emit_hero_surface_effect_burst(s32 puffs, s32 debris, s32 flash) {
 typedef struct {
     float f[4];
 } __attribute__((aligned(16))) V4;
-extern int FastDecTimer(void *);
+
 extern float randf_sym(float lo, float hi);
 extern void spawn_color_decaying_effect_particle(char *pos, char *vel, int flag);
-extern void BuildSphericalOffset(void *, float, float, float);
 
 extern float g_frame_time_sq MACRO_ADDR;
 
@@ -2687,7 +2674,7 @@ extern void *g_coll_hit_moby;
 extern V collision_hit_point;
 extern int probe_hero_forward_collision(int, float, float);
 extern int is_moby_in_class_range_500_to_540(void *);
-extern float FastVecDist(void *, void *);
+
 // sets up the camera lag parameters for a zoom and records that it is active
 void update_hero_collision_ease_target(void) {
     struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
@@ -2907,7 +2894,6 @@ void update_hero_idle_random_rotation_targets(void) {
 extern int GetFlaggedPvarWord(char *);
 extern float vec_distance_xy(void *, void *);
 
-extern float FastDiffRots(float, float);
 extern int coll_line(void *, void *, int, int, int);
 extern char *active_mobies[];
 extern void transform_hero_local_offset_to_world(float *, float, float, float);

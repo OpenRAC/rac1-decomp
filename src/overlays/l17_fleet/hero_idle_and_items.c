@@ -19,6 +19,8 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+#include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
 extern Hero g_hero;
 extern char item_usage[];
 extern char usage_stats[];
@@ -31,19 +33,13 @@ typedef struct {
 } T2C;
 extern void clear_moby_transform_history(char *o);
 
-extern int scale_ticks(int);
-
-extern void clear_u64_value(void *);
 extern void set_hero_animation(int, int, float);
-extern void MobyBlendAnimation(void *, int, int, int);
+
 extern void ClampVectorLength(void *a, float x);
 extern float vec_length_xy(void *);
 extern void stick_target(int, float);
-extern float FastDiffRots(float, float);
 
 extern int allocate_hero_voice_for_entry(int, int);
-
-extern float FastVecDist(void *, void *);
 
 extern void initialize_moby_transform_history(int a, char *b);
 extern void create_moby_transform_history_entry(char *o, int a, int b);
@@ -52,16 +48,15 @@ extern int truncate_float_to_s32(float);
 extern void update_hero_target_heading(float a, float b, float c);
 
 extern int is_wrench_moby(char *);
-extern float FastAddRots(float, float);
+
 extern void *MobyGetHitMessage(void *, int, int);
 
 extern int hero_is_in_special_state(void);
 extern void release_and_clear_hero_voice_slots(void);
 extern void Spline_AdvanceByDistance(int a, char *pos, char *b, char *c, int d, float f);
-extern void FastVecSub(void *dst, void *a, void *b);
-extern float FastVecLength(void *a);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern float FastVecDot(void *a, void *b);
+
 extern void get_moby_color(void *, void *, void *, void *);
 extern int Moby_PlaySound(int, int, int);
 extern void RippleDisturb(int, int, int, float, float, float, float);

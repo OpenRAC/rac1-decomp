@@ -16,6 +16,8 @@
 #include "data/shared_levels.h"
 #include "game/render/framebuf.h"
 #include "enums/level.h"
+#include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
 
 typedef struct G137C80_240398 {
     char pad[0x12CC];
@@ -459,11 +461,9 @@ extern void VU0_loadMicroProgram(void *);
 extern int STUB_printf();
 extern void copy_memory_by_alignment(void *, void *, int);
 extern void LightTfrags(void *);
-extern void matrix_mul_vec3(void *, void *, void *);
-extern float FastVecLength(void *);
 
 extern void scale_vector(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
+
 extern void LightTies(void *);
 extern int truncate_float_to_s32(float);
 extern float IntToFloat(int);
@@ -471,13 +471,12 @@ extern void LightShrubs(void *);
 extern void resolve_lookup_record(short *);
 extern int find_or_assign_bolt_source_slot(int, int);
 
-extern float ProbeGroundHeight(void *, int, float);
 extern void moby_build_matrix(void *);
 
 extern void store_current_level_table_value(int, int);
 extern void FastMemCopy(void *, void *, int);
 extern void initialize_moby_state_record(char *);
-extern void MobySetAnimation(void *, int, int);
+
 extern void *CreateMoby(int);
 extern void Level_ResetGameplayGlobals(void);
 extern void initialize_hero(void);

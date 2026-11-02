@@ -3,13 +3,13 @@
 #include "callees.h"
 #include "structs/records.h"
 #include "structs/misc.h"
+#include "asm_functions/executable.h"
 
 /*
  * drawquad.cpp in the original source; text 0x1F7C60-0x1F9810.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
-
 
 extern void FastMemSet();
 
@@ -92,13 +92,10 @@ extern BillboardRecord billboard_records[];
 extern void FastMemSet(void *, s32, s32);
 extern s64 func_001F4868(s32);
 extern s32 is_vector_outside_clip(Vec4f *);
-extern void FastVecSub(Vec4f *, void *, void *);
+
 extern void FastVecScale(Vec4f *, Vec4f *, f32);
 extern void multiply_vector_components(Vec4f *, Vec4f *, void *);
-extern f32 FastVecLength(Vec4f *);
-extern void transform_vector(Vec4f *, Vec4f *, void *);
-extern f32 FastCos(f32);
-extern f32 FastSin(f32);
+
 extern f32 IntToFloat(s32);
 extern s32 truncate_float_to_s32(f32);
 extern void VU1_addGSregister(s32, u64);

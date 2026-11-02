@@ -16,6 +16,7 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+#include "asm_functions/executable.h"
 extern Hero g_hero;
 extern char g_controller_state[];
 
@@ -74,7 +75,7 @@ extern char collision_hit_point[];
 extern float g_frame_time_sq MACRO_ADDR;
 extern int GetFlaggedPvarWord(char *);
 extern int moby_get_ride_transform(char *);
-extern void FastVecAdd(void *, void *, void *);
+
 extern int coll_line(void *, void *, int, int, int);
 extern void vec_scale_to_length(void *, void *, float);
 extern void vec_reflect(void *, void *, void *);
@@ -309,19 +310,16 @@ extern int coll_hit_result[];
 extern void *g_coll_hit_moby;
 extern int suck_moby_list MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
-extern float FastVecLength(void *a);
-extern int scale_ticks(int);
+
 extern int fast_dec_timer(int *);
 extern void *spawn_moby_bound_effect_particle(void *);
 extern float IntToFloat(int);
 extern void add_vectors(void *, void *, void *);
 extern int coll_sphere(float, void *, int, void *);
 extern void spawn_moby_collision_particles(void *);
-extern float ProbeGroundHeight(void *, int, float);
+
 extern int RotateWithMoby(int, char *, char *, void *, char *, void *);
-extern int FastDecTimer(void *);
-extern float FastCos(float);
-extern float FastSin(float);
+
 extern char *spawn_doom_bot(int, void *, void *);
 extern void DeleteMoby(void *);
 
@@ -580,12 +578,8 @@ extern char *CreateMoby_r(int) __asm__("func_0020D348");
 extern int Moby_PlaySound_ri(int, int, char *) __asm__("func_0022ED80");
 extern void set_moby_color(void *, int, int, int);
 
-extern void clear_u64_value(void *);
 extern float fast_atan2(float, float);
-extern float ProbeGroundHeight(void *, int, float);
-extern float FastCos(float);
-extern float FastSin(float);
-extern int scale_ticks(int);
+
 extern int rand_range(int, int);
 extern float IntToFloat(int);
 extern void SetDeathBits(void *, int, int);
@@ -744,7 +738,6 @@ extern float sqrt_CB(float) __asm__("func_001F9B50");
 extern float angsub_CB(float, float) __asm__("func_001FA790");
 extern float angadd_CB(float, float) __asm__("func_001FA748");
 extern void del_CB(Moby *) __asm__("func_0020D678");
-extern void func_00213DE0(Moby *, int, int, int);
 
 extern float D_L00_0015F6B4 MACRO_ADDR;
 extern float D_L00_0015F6B8 MACRO_ADDR;
@@ -1169,9 +1162,7 @@ int GetMobyPvarWord5(struct Moby *m) {
 typedef int w128 __attribute__((mode(TI)));
 
 extern unsigned char *CreateMoby(int);
-extern float FastAddRots(float, float);
-extern void BuildSphericalOffset(void *, float, float, float);
-extern float FastVecLength(void *a);
+
 extern void *PartType27Spawn(void *, void *, unsigned, int, float);
 extern float vec_length_xy(void *);
 extern char *spawn_source_attached_fading_effect_particle(char *, int, int, int, float);
@@ -1363,9 +1354,9 @@ extern float SpringTurn_r(float *, float, float, float, float, float) __asm__("f
 extern void BuildSphericalOffset_r(void *, float, float, float) __asm__("func_00215C00");
 extern void vec_reflect_r(void *, void *, void *) __asm__("func_L00_001FF610");
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
-extern void func_002156E0(void *, void *, void *, float);
+
 extern void FastVecScale_r2(void *, void *, float) __asm__("func_001F9C30");
-extern void func_001F9CA0(void *, void *, void *);
+
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
 extern void Moby_PlaySound_r(int, int, Moby *) __asm__("func_0022ED80");
 extern float IntToFloat_r(int) __asm__("func_001FA888");
@@ -1546,7 +1537,7 @@ void update_homing_shot(Moby *m) {
 extern void KillPart(void *);
 
 extern void vec_scale_to_length(void *, void *, f32);
-extern s32 scale_ticks(s32);
+
 extern s32 rand_range(s32, s32);
 extern void *PartType27Spawn(void *, void *, u32, s32, f32);
 
@@ -1616,10 +1607,10 @@ extern char *CreateMoby_r(int) __asm__("func_0020D348");
 
 extern float randf_sym(float, float);
 extern int func_001160D8(void);
-extern float random_angle_radians(void);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern int rand_range(int, int);
-extern int scale_ticks(int);
+
 extern void moby_build_matrix(void *);
 extern void copy_hero_moby_field_38(void *);
 extern int feather_base_lifetime SDATA(feather_base_lifetime);
@@ -1690,12 +1681,10 @@ char *spawn_feather_moby(int unused, float *pos, float *vel) {
     }
     return (char *)m;
 }
-extern void FastVecAdd(void *, void *, void *);
-extern float FastAddRots(float, float);
 
 extern int fast_dec_timer(int *);
 extern void DeleteMoby(void *);
-extern int scale_ticks(int);
+
 extern int fast_subtract_rotations_cf(void *);
 extern float falling_moby_horizontal_velocity_scale SDATA(falling_moby_horizontal_velocity_scale);
 
@@ -1729,7 +1718,6 @@ void update_damped_falling_moby(Moby *m) {
 }
 extern int active_mobies[];
 extern float vec_distance_xy(void *, void *);
-extern float FastDiffRots(float, float);
 
 /* Finds the best-scoring target moby in the target list within range and angle limits. */
 char *select_ryno_target(float *pos, float *lim, int *skip, float maxy, float maxp, float maxd) {
@@ -1848,7 +1836,7 @@ extern char hero_globals_base_r2[] __asm__("D_0013E633");
 
 extern char D_0014171B[];
 extern void func_001FA480(void *, void *);
-extern void func_001FA4A0(void *, void *);
+
 extern int timer32_2CDAB8(int *) __asm__("func_001F9908");
 extern int timer16_2CDAB8(short *) __asm__("func_001F9938");
 extern void func_L00_00250800(Moby *, int, float *);
@@ -1864,7 +1852,7 @@ extern void func_L00_00222B80(int, int);
 extern void fire_start_2CDAB8(void) __asm__("func_L00_0020EB60");
 extern void fire_end_2CDAB8(void) __asm__("func_L00_0020ED30");
 extern void apply_mat4_2CDAB8(float *, float *, void *) __asm__("func_001F9EE8");
-extern void func_001F9EC0(float *, float *, void *);
+
 extern void add_2CDAB8(float *, void *, void *) __asm__("func_001F9BD8");
 extern void scale_2CDAB8(float *, float *, float) __asm__("func_001F9C30");
 extern float angle_2CDAB8(float, float) __asm__("func_L00_001FF860");
@@ -2074,7 +2062,7 @@ typedef struct {
 extern unsigned char *CreateMoby(int);
 
 extern void moby_build_matrix(void *);
-extern void BuildSphericalOffset(void *, float, float, float);
+
 extern void spawn_explosion_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                 float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
@@ -2152,13 +2140,11 @@ unsigned char *spawn_ryno_rocket(int a, V4 *pos, unsigned char *tgt, float f12, 
     return m;
 }
 extern float g_frame_scale_sq MACRO_ADDR;
-extern void FastVecSub(void *dst, void *a, void *b);
+
 extern float lensq_cc2e8(void *);
 extern float vec_length(float);
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
 
-extern void euler_to_matrix(void *, void *);
-extern void transform_vector(void *, void *, void *);
 extern void vec_set_length_xy(void *, void *, float);
 
 typedef struct {
@@ -2457,7 +2443,6 @@ void ensure_drone_attached_particles(char *m) {
         *(int *)&p->unused50 = spawn_moby_point_attached_particle(m, 1, 0.05f, 0.01f, 0x80808080, 0x10808080);
     }
 }
-extern float FastVecDist(void *, void *);
 
 /* finds the nearest eligible moby to a point, skipping a list of nine */
 /* Exact match: tools/ps2eeas_nops.py keeps the hazard nop after the label the branch lands on. */
@@ -2991,8 +2976,6 @@ typedef struct {
     u32 unk10;
 } Part;
 
-extern f32 ProbeGroundHeight(void *, int, f32);
-extern s32 scale_ticks(s32);
 extern s32 rand_range(s32, s32);
 extern f32 IntToFloat(int);
 extern void set_moby_color_r(void *, u8, u8, u8) __asm__("func_L00_00251328");
@@ -3061,7 +3044,7 @@ extern Contact *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, int *, int *, int);
 extern void ground_attached_update(struct Moby *);
 extern void create_linked_class_0326_moby(struct Moby *);
-extern float multiply_global_factor(float);
+
 extern s32 truncate_float_to_s32(f32);
 extern void update_moby_animation_state(struct Moby *);
 extern void break_crate(struct Moby *, int, Contact *);

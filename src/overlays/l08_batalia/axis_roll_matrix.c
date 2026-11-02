@@ -4,13 +4,10 @@
 #include "callees.h"
 #include "include_asm.h"
 #include "asm_functions/shared_levels.h"
+#include "asm_functions/executable.h"
 
 extern void set_identity_matrix(void *);
 
-extern void euler_to_matrix(void *, void *);
-
-extern void transform_vector(void *, void *, void *);
-extern void matrix_from_basis_rows(void *, void *);
 extern void matrix_copy_rows(void *, void *);
 
 /* Builds a matrix that rolls by roll around the direction dir and writes it to out. */

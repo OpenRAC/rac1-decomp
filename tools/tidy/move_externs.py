@@ -28,6 +28,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import fake_bases as fb  # noqa: E402
+import merge_types as mt  # noqa: E402
 import move_protos as mp  # noqa: E402
 import prune_externs as pe  # noqa: E402
 
@@ -198,8 +199,37 @@ class Sources:
         return headers
 
 
-def edit_file(text, sources, rel, symbols, header, keep=()):
-    """The file with these symbols' lines gone and the header included. keep: symbols whose line stays."""
+def address_of(sources, symbol):
+    names = {symbol} | sources.aliases.get(symbol, set())
+    found = [n for n in names if re.fullmatch(r"func_(?:L\d+_)?[0-9A-Fa-f]+", n)]
+    return found[0] if found else None
+
+
+def use_variant(text, sources, symbol):
+    """This file's own view of a symbol, under another C name so it cannot clash with the header."""
+    label = address_of(sources, symbol)
+    if not label:
+        return None
+    names = ({symbol} | sources.aliases.get(symbol, set()))
+    edits = []
+    for start, end, statement in pe.find_externs(text):
+        found = pe.declared_names(statement) or []
+        if len(found) == 1 and found[0] in names and not QUALIFIED.search(statement) and is_file_scope(text, start):
+            edits.append((start, end, statement.rstrip(" ;\n\t") + f' __asm__("{label}");'))
+    if not edits:
+        return None
+    for start, end, new in reversed(edits):
+        text = text[:start] + new + text[end:]
+    return mt.rename_code(text, {name: f"{name}_v" for name in names})
+
+
+def edit_file(text, sources, rel, symbols, header, keep=(), variants=()):
+    """The file with these symbols' lines gone and the header included.
+
+    keep: symbols whose line stays. variants: symbols this file reaches through its own alias.
+    """
+    for symbol in sorted(variants):
+        text = use_variant(text, sources, symbol) or text
     spans = []
     for start, end, statement in pe.find_externs(text):
         if not is_file_scope(text, start):
@@ -208,6 +238,9 @@ def edit_file(text, sources, rel, symbols, header, keep=()):
         if len(names) != 1:
             continue
         symbol = sources.symbol(names[0])
+        # The defining file keeps its forward declarations: its own types may not fit the header.
+        if rel in sources.defined.get(symbol, ()):
+            continue
         if symbol in symbols and symbol not in keep and not QUALIFIED.search(statement):
             stop = pe.trailing_comment_end(text, end)
             if not pe.PROVENANCE.search(text[start:stop]):
@@ -262,7 +295,8 @@ def check_all(files):
 def land(sources, header, top=None):
     """(symbols moved, lines removed, symbols rejected)."""
     rejected, kept, skipped = set(), collections.defaultdict(set), set()
-    for _ in range(6):
+    variants = collections.defaultdict(set)
+    for _ in range(12):
         rows = dict(sources.plan(rejected).get(header, {}))
         if top:
             count = collections.Counter({s: len(sources.lines[s]) for s in rows})
@@ -272,27 +306,35 @@ def land(sources, header, top=None):
         for rel in sources.files:
             if rel in skipped:
                 continue
-            new = edit_file(sources.text[rel], sources, rel, symbols, header, kept[rel])
+            new = edit_file(sources.text[rel], sources, rel, symbols, header, kept[rel], variants[rel] & symbols)
             if new != sources.text[rel]:
                 changed[rel] = new
         original = write_header(header, rows)
         for rel, new in changed.items():
             (ROOT / rel).write_text(new, errors="surrogateescape")
+        fragment_edits = rename_in_fragments(sources, variants, symbols)
         names = {row[0] for row in rows.values()} | {s for s in symbols}
         affected = sorted(set(changed) | set(includers(sources, header, names)))
         failed = check_all(affected)
         print(f"  {len(symbols)} symbols, {len(changed)} files, {len(affected)} checked, {len(failed)} failed", flush=True)
         if not failed:
             lines = sum(sources.text[r].count("\n") - changed[r].count("\n") for r in changed)
-            return len(symbols), lines, rejected
+            aliases = sum(len(v & symbols) for v in variants.values())
+            return f"{len(symbols)} symbols, {lines} lines gone, {aliases} file aliases, {len(rejected)} rejected: {sorted(rejected)[:12]}"
         for rel in sorted(failed):
             # GCC names a type conflict: no need to bisect.
             clash = {sources.symbol(name) for name in failed[rel][1]} & set(rows)
             if clash:
-                rejected |= clash
+                for symbol in clash:
+                    # The defining file cannot rename its own definition.
+                    # So does a file that still clashes with its alias: the clash is somewhere else.
+                    if rel in sources.defined.get(symbol, ()) or not address_of(sources, symbol) or symbol in variants[rel]:
+                        rejected.add(symbol)
+                    else:
+                        variants[rel].add(symbol)
                 print(f"  {rel}: clash {sorted(clash)[:6]}", flush=True)
                 continue
-            found = culprits(sources, rel, header, rows, changed.get(rel, sources.text[rel]), kept[rel])
+            found = culprits(sources, rel, header, rows, kept[rel], variants[rel])
             if found is None:
                 skipped.add(rel)
                 print(f"  skip {rel}", flush=True)
@@ -301,11 +343,15 @@ def land(sources, header, top=None):
                 mine = [row for row in sources.lines[symbol] if row[0] == rel]
                 if mine and all(shape(row[2]) is None for row in mine):
                     kept[rel].add(symbol)
+                elif mine and address_of(sources, symbol):
+                    variants[rel].add(symbol)
                 else:
                     rejected.add(symbol)
             print(f"  {rel}: {sorted(found)[:6]}", flush=True)
         for rel in changed:
             (ROOT / rel).write_text(sources.text[rel], errors="surrogateescape")
+        for path, old in fragment_edits:
+            path.write_text(old, errors="surrogateescape")
         restore_header(header, original)
     raise SystemExit("did not settle")
 
@@ -320,18 +366,37 @@ def without_names(header_text, names):
     return "\n".join(lines)
 
 
-def culprits(sources, rel, header, rows, _text, kept):
+def rename_in_fragments(sources, variants, symbols):
+    """A file's fragments are spliced into it, so they follow its aliases. Returns [(path, old text)] to undo."""
+    edits = []
+    for rel, mine in variants.items():
+        names = {}
+        for symbol in mine & symbols:
+            names.update({name: f"{name}_v" for name in {symbol} | sources.aliases.get(symbol, set())})
+        if not names:
+            continue
+        for path in fb.fragments_of(rel):
+            old = path.read_text(errors="surrogateescape")
+            new = mt.rename_code(old, names)
+            if new != old:
+                edits.append((path, old))
+                path.write_text(new, errors="surrogateescape")
+    return edits
+
+
+def culprits(sources, rel, header, rows, kept, variants):
     """The symbols this file cannot accept, or None if it fails with none of them moved."""
     path = ROOT / rel
     original_header = (ROOT / "include" / header).read_text()
-    mine = {s for s in rows if any(row[0] == rel for row in sources.lines.get(s, ()))} - set(kept)
+    mine = {s for s in rows if any(row[0] == rel for row in sources.lines.get(s, ()))} - set(kept) - set(variants)
     # A symbol that was in the header before this run stays there whatever this file does.
     movable = {s for s in mine if rows[s][1]}
 
     def trial(group):
         keep = movable - set(group)
         reduced = {s: r for s, r in rows.items() if s not in keep and s not in kept}
-        path.write_text(edit_file(sources.text[rel], sources, rel, set(reduced), header, kept), errors="surrogateescape")
+        path.write_text(edit_file(sources.text[rel], sources, rel, set(reduced), header, kept, set(variants) & set(rows)),
+                        errors="surrogateescape")
         (ROOT / "include" / header).write_text(without_names(original_header, {rows[s][0] for s in keep}))
         bad, _, failed = fb.check(rel)
         return not bad and not failed

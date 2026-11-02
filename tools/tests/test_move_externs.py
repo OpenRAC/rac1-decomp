@@ -52,6 +52,20 @@ class DefinitionTest(unittest.TestCase):
         self.assertEqual(me.definition_prototype("g", "void g(void) {\n}\n"), ("void", ["void"]))
 
 
+class VariantTest(unittest.TestCase):
+    class Fake:
+        aliases = {"Approach": {"func_00214D28"}, "func_00214D28": {"Approach"}}
+
+    def test_a_file_keeps_its_own_order_under_another_name(self):
+        text = "extern float Approach(float, float *);\nfloat f(float *p) { return Approach(1.0f, p); } /* Approach */\n"
+        self.assertEqual(me.use_variant(text, self.Fake, "Approach"),
+                         'extern float Approach_v(float, float *) __asm__("func_00214D28");\n'
+                         "float f(float *p) { return Approach_v(1.0f, p); } /* Approach */\n")
+
+    def test_no_address_means_no_alias(self):
+        self.assertIsNone(me.use_variant("extern int g(int);\n", type("F", (), {"aliases": {}}), "g"))
+
+
 class HeaderTest(unittest.TestCase):
     def test_names_leave_and_others_stay(self):
         text = "#ifndef A\nextern int a(int);\nextern int b(void *);\n#endif\n"

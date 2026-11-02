@@ -9,6 +9,7 @@
 #include "overlays/shared/hero_mapped_animations.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+#include "asm_functions/executable.h"
 extern Hero g_hero;
 
 extern char hoven_item_defs[];
@@ -51,11 +52,7 @@ extern float g_frame_scale_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern float hoven_hero_speed_bands_field_18[];
-extern int scale_ticks(int);
-extern float FastCos(float);
-extern float FastSin(float);
-extern float FastDiffRots(float, float);
-extern float FastSubRots(float, float);
+
 extern float vec_length_xy(void *);
 extern float ApproachValue(float *, float, float);
 extern void build_scaled_hero_move_impulse(float, float);
@@ -64,7 +61,6 @@ extern void turn_to(int, float, float, float);
 extern void stick_target(int, float);
 extern float SpringAngle(void *, float, void *, int, float, float, float);
 
-extern void FastVecAdd(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern void vec_set_length_xy(void *, void *, float);
 

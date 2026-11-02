@@ -16,6 +16,8 @@
 #include "asm_functions/shared_levels.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/hero_state.h"
+#include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
 extern unsigned char g_hero[];
 
 typedef struct {
@@ -70,16 +72,9 @@ extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern void MobyTransformScaledVertex(void *, int, void *);
 extern void matrix_copy_rows(void *, void *);
-extern void matrix_mul_vec3(void *, void *, void *);
+
 extern float ApproachValue(float *, float, float);
-extern float FastAddRots(float, float);
-extern s16 FastDecTimer(s16 *);
-extern float FastSin(float);
-extern int FastTweenColor(int, int, float);
-extern void clear_u64_value(void *);
-extern void euler_to_matrix(void *, void *);
-extern s32 scale_ticks(s32);
-extern void MobyBlendAnimation(void *, int, int, int);
+
 extern int Moby_PlaySound(void *, int, void *);
 
 extern float IntToFloat(int);
@@ -407,10 +402,9 @@ extern int blarg_coll_hit_type;
 extern char blarg_coll_hit[];
 
 extern float vec_length_xy(void *);
-extern float FastCos(float);
-extern float FastSin(float);
+
 extern void FastVecScale(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
+
 extern int coll_line(void *, void *, int, int, int);
 
 typedef struct {
@@ -501,12 +495,11 @@ typedef unsigned int u128_22a1d0 __attribute__((mode(TI), aligned(16)));
 extern Hero g_hero_r2 __asm__("D_0013F450");
 extern f32 frame_scale MACRO_ADDR;
 extern u128_22a1d0 blarg_coll_resolved_pos[];
-extern void clear_u64_value(void *);
+
 extern void Hero_ConstrainToPath(void);
 extern void HeroOffsetAlongViewZ(void *, void *, f32);
 extern void HeroMoveDownAlongNormal(void *, void *, f32);
-extern void FastVecSub(void *, void *, void *);
-extern f32 FastVecLength(void *);
+
 extern s32 coll_sphere(void *, s32, s32, f32);
 extern s32 coll_capsule(void *, s32, f32, s32, f32);
 extern s32 coll_sphere_hero_groups(void *, f32);
@@ -610,9 +603,9 @@ extern u8 gHaveBoltGrabber NOT_SDA;
 extern f32 g_frame_time MACRO_ADDR;
 
 extern s32 fast_dec_timer(s32 *);
-extern s16 FastDecTimer(s16 *);
+
 extern void restore_hero_from_vehicle_mode(void);
-extern s32 scale_ticks(s32);
+
 extern s32 pad_pressed_within(s32, s32, s32);
 extern struct Moby *CreateMoby(s32);
 extern void moby_build_matrix(struct Moby *);
