@@ -43,7 +43,13 @@ The match is finished. This is what could still read better:
 
 - **Raw offsets and local structs.** Each one needs its record identified, so no tool can finish them. See the counts in
   `config/ratchets.json`.
-- **Fakematch sites.** `config/fakematch.tsv` lists each one and what it does.
+- **Fakematch sites.** `config/fakematch.tsv` lists each one and what it does. Each has had one reasoned try at a natural
+  form, and those that are left changed the code. Only a new idea is worth another try.
+- **Fake bases.** About 900 sites in shared C and 400 in version fragments still spell a global as
+  `hero_globals_base + 0xE1D`. `tools/tidy/fake_bases.py` tested the 389 it can place: they change the code or clash with
+  another view. It does not look at local aliases such as `hero_globals_base_r`, so those are untested.
+- **Control modes.** `enum HeroControlMode` names what the code proves. 0x09, 0x0A, 0x0B, 0x10, 0x13, 0x15, 0x16 and 0x18
+  are still numbers.
 - **Sound and animation IDs.** No name data exists for them.
 - **Data shapes.** All of `.data` is in C, but many blocks are still plain words of an unknown record. See
   `config/data_in_c.tsv`, and give a block a real type with `tools/data_in_c.py set-type`.
