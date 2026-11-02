@@ -2,7 +2,7 @@
 #include "common.h"
 
 #include "data_inc/D_001DE338.refs"
-u32 vu_chain_table[] DATA_SECTION(D_001DE338) = {
+int vu_chain_table[] DATA_SECTION(D_001DE338) = {
 #include "data_inc/D_001DE338.inc"
 };
 

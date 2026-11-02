@@ -17,4 +17,4 @@ u32 snd_return_buffer2[272] DATA_SECTION(D_001377C0) = {0};
 
 CdSafeState sound_read_work[3] DATA_SECTION(D_00137C00) = {0};
 
-u32 snd_cd_bank_load_request[16] DATA_SECTION(D_00137C40) = {0};
+int snd_cd_bank_load_request[16] DATA_SECTION(D_00137C40) = {0};

@@ -10,6 +10,6 @@ u32 alarm_scratchpad_patch_code[] DATA_SECTION(D_00131330) = {
 };
 
 #include "data_inc/D_00131358.refs"
-u32 alarm_syscall_patch_table[] DATA_SECTION(D_00131358) = {
+int alarm_syscall_patch_table[] DATA_SECTION(D_00131358) = {
 #include "data_inc/D_00131358.inc"
 };

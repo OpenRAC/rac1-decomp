@@ -3,8 +3,8 @@
 
 extern char D_00152A50[];
 
-u32 lf_bind_state DATA_SECTION(D_0012FDB0) =
+int lf_bind_state DATA_SECTION(D_0012FDB0) = {
 #include "data_inc/D_0012FDB0.inc"
-    ;
+};
 
 void *lf_expected_version DATA_SECTION(D_0012FDB4) = D_00152A50;

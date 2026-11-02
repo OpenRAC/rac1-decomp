@@ -5,4 +5,4 @@
 
 TexSlot pending_texture_uploads[64] DATA_SECTION(D_0018D140) = {0};
 
-u32 map_slot_use[16] DATA_SECTION(D_001A0468) = {0};
+int map_slot_use[16] DATA_SECTION(D_001A0468) = {0};

@@ -130,6 +130,9 @@ def main():
         defs = definitions(original)
         header = header_for(owner)
         target = ROOT / "include" / header
+        if target.exists():
+            print(f"{owner}: {header} is already here, so this file stays as it is")
+            continue
         spans, fitting = [], []
         target.parent.mkdir(parents=True, exist_ok=True)
         for label, typ in wanted:

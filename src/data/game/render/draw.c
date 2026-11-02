@@ -4,7 +4,7 @@
 #include "structs/data/game_render_draw.h"
 #include "structs/vector.h"
 
-u32 font_char_widths[] DATA_SECTION(D_00189EC0) = {
+int font_char_widths[] DATA_SECTION(D_00189EC0) = {
 #include "data_inc/D_00189EC0.inc"
 };
 
@@ -16,7 +16,7 @@ u32 effect_quad_corners[] DATA_SECTION(D_0018CBA0) = {
 #include "data_inc/D_0018CBA0.inc"
 };
 
-u32 font_palette_colors[] DATA_SECTION(D_0018CBF8) = {
+s32 font_palette_colors[] DATA_SECTION(D_0018CBF8) = {
 #include "data_inc/D_0018CBF8.inc"
 };
 
@@ -46,7 +46,7 @@ u32 draw_callback4_funcs[64] DATA_SECTION(D_0018E240) = {0};
 
 u32 draw_callback4_args[68] DATA_SECTION(D_0018E340) = {0};
 
-u32 bit_swap_lut[] DATA_SECTION(D_0018E840) = {
+int bit_swap_lut[] DATA_SECTION(D_0018E840) = {
 #include "data_inc/D_0018E840.inc"
 };
 

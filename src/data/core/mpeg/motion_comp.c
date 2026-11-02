@@ -28,10 +28,10 @@ void *mpeg_chroma_mc_routines[] DATA_SECTION(D_00132F50) = {
     mpeg_mc_chroma_avg,  mpeg_mc_chroma_avg_half_y, mpeg_mc_chroma_avg_half_x, mpeg_mc_chroma_avg_half_xy,
 };
 
-u32 IpuCommandTable[] DATA_SECTION(D_00132F70) = {
+int IpuCommandTable[] DATA_SECTION(D_00132F70) = {
 #include "data_inc/D_00132F70.inc"
 };
 
-u32 mpeg_display_field_count_table[] DATA_SECTION(D_00132F98) = {
+unsigned int mpeg_display_field_count_table[] DATA_SECTION(D_00132F98) = {
 #include "data_inc/D_00132F98.inc"
 };

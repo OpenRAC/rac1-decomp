@@ -13,8 +13,8 @@ u32 gCamPrevState[160] DATA_SECTION(D_00189750) = {0};
 
 u32 gCamBackupState[160] DATA_SECTION(D_001899D0) = {0};
 
-u32 gCameraSlotUsed[] DATA_SECTION(D_00189C50) = {
+int gCameraSlotUsed[] DATA_SECTION(D_00189C50) = {
 #include "data_inc/D_00189C50.inc"
 };
 
-u32 text_screen_active[120] DATA_SECTION(D_001E6700) = {0};
+int text_screen_active[120] DATA_SECTION(D_001E6700) = {0};
