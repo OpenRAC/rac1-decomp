@@ -45,48 +45,6 @@ class FallThroughTest(unittest.TestCase):
         self.assertEqual(self.marked(cases), 1)
 
 
-class EmptyTest(unittest.TestCase):
-    def gone(self, cases):
-        return st.remove_empties(wrap(cases))
-
-    MIDDLE = "        case 1:\n            g();\n            break;\n        case 2:\n            break;\n        case 3:\n            g();\n            break;\n"
-
-    def test_a_middle_case_goes(self):
-        self.assertNotIn("case 2:", self.gone(self.MIDDLE))
-        self.assertIn("case 3:", self.gone(self.MIDDLE))
-
-    def test_an_edge_stays(self):
-        cases = "        case 1:\n            break;\n        case 2:\n            g();\n            break;\n        case 3:\n            break;\n"
-        out = self.gone(cases)
-        self.assertIn("case 1:", out)
-        self.assertIn("case 3:", out)
-
-    def test_a_default_with_code_keeps_the_case(self):
-        self.assertIn("case 2:", self.gone(self.MIDDLE + "        default:\n            h();\n"))
-
-    def test_an_empty_default_goes(self):
-        self.assertNotIn("default:", self.gone(self.MIDDLE + "        default:\n            break;\n"))
-
-    def test_a_case_that_runs_into_it_keeps_it(self):
-        cases = "        case 1:\n            g();\n        case 2:\n            break;\n        case 3:\n            g();\n            break;\n"
-        self.assertIn("case 2:", self.gone(cases))
-
-    def test_a_run_of_labels_goes_together(self):
-        cases = ("        case 1:\n            g();\n            break;\n        case 2:\n        case 3:\n            break;\n"
-                 "        case 4:\n            g();\n            break;\n")
-        out = self.gone(cases)
-        self.assertNotIn("case 2:", out)
-        self.assertNotIn("case 3:", out)
-
-    def test_a_comment_keeps_it(self):
-        cases = "        case 1:\n            g();\n            break;\n        case 2: /* off */\n            break;\n        case 3:\n            g();\n            break;\n"
-        self.assertIn("case 2:", self.gone(cases))
-
-    def test_a_named_case_stays(self):
-        cases = "        case 1:\n            g();\n            break;\n        case FOO:\n            break;\n        case 3:\n            g();\n            break;\n"
-        self.assertIn("case FOO:", self.gone(cases))
-
-
 class BaseTest(unittest.TestCase):
     def test_the_common_base_wins(self):
         out = st.rewrite(wrap("        case 0x10:\n        case 0x20:\n        case 5:\n            break;\n"))

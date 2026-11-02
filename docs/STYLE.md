@@ -47,6 +47,14 @@ Link order comes first, because retail fixed it. Do not reorder functions to mak
 - Use a struct field, not `*(int *)(p + 0x24)`.
 - If the type is still unknown, use `STRUCT_OFFSET(p, 0x24, int)`. It is easy to find and replace later.
 
+## Switches
+
+- Mark a case that runs into the next one with `/* fall through */`.
+- Use one number base for the cases of a switch.
+- Keep the order of the cases: it gives retail's jump table.
+- Keep empty cases, such as `case 2: break;`. They record the values the game knows about, and removing them can change the
+  jump table. Tidy code is not worth losing what the binary shows.
+
 ## Comments
 
 Every function gets one or two short sentences: what it does, and why the C has this shape if that is not clear.

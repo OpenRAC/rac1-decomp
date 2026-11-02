@@ -5,10 +5,9 @@ Make switch statements easier to read, without touching what they compile to.
   python3 tools/tidy/switch_tidy.py            # dry run: show counts
   python3 tools/tidy/switch_tidy.py --write
   python3 tools/tidy/switch_tidy.py --list     # show each fall-through
-  python3 tools/tidy/switch_tidy.py --empties [--write]   # remove `case 2: break;` where it changes nothing
 
 A case that runs into the next one gets `/* fall through */`, so it does not look like a bug. Case numbers in one switch
-use one base. The order of the cases stays: it is what gives retail's jump table.
+use one base. The order of the cases stays: it is what gives retail's jump table. Empty cases stay too: see docs/STYLE.md.
 """
 import re
 import subprocess
@@ -142,121 +141,7 @@ def rewrite(text):
     return "".join(out), len(set(inserts)), fixed, found
 
 
-def is_break(body):
-    return bool(re.fullmatch(r"\{?\s*break\s*;\s*\}?", body.strip()))
-
-
-def removable_cases(code, brace, end):
-    """[(start, end)] of the empty labels in one switch that can go, without changing what any value does.
-
-    A run of labels ending in `break;` goes when it has no value at the edge of the numbers (those set the size of the
-    jump table), no default with real code would catch its values, and the case before it does not run into it.
-    """
-    labels = own_labels(code, brace + 1, end)
-    if len(labels) < 2:
-        return []
-    values = [int(n.group(2), 0) for n in (NUMBER.match(code, s) for s, _ in labels) if n]
-    names = [s for s, stop in labels if not NUMBER.match(code, s) and not code[s:stop].startswith("default")]
-    edges = {min(values), max(values)} if values else set()
-    bodies = [code[stop:(labels[i + 1][0] if i + 1 < len(labels) else end)] for i, (_, stop) in enumerate(labels)]
-    default_has_code = any(code[s:stop].startswith("default") and body.strip() and not is_break(body)
-                           for (s, stop), body in zip(labels, bodies))
-    runs, i = [], 0
-    while i < len(labels):
-        j = i
-        while j < len(labels) and not bodies[j].strip():
-            j += 1
-        if j < len(labels) and is_break(bodies[j]):
-            runs.append((i, j))
-        i = j + 1
-    out = []
-    for first, last in runs:
-        before = bodies[first - 1] if first else ""
-        if first and leaves(before) is not True:
-            continue
-        run = labels[first:last + 1]
-        is_default = [code[s:stop].startswith("default") for s, stop in run]
-        numbers = [NUMBER.match(code, s) for s, _ in run]
-        run_values = {int(n.group(2), 0) for n in numbers if n}
-        if any(is_default) and not all(is_default):
-            continue
-        if not all(is_default):
-            if default_has_code or run_values & edges or names and len(run_values) != len(run):
-                continue
-        following = labels[last + 1][0] if last + 1 < len(labels) else end
-        out.append((code.rfind("\n", 0, run[0][0]) + 1, code.rfind("\n", 0, following) + 1))
-    return out
-
-
-def empties_in(text):
-    """[(function start, [(start, end)])] with removable labels, one row per switch."""
-    code = mask(text)
-    found = []
-    for m in re.finditer(r"\bswitch\s*\(", code):
-        brace = code.find("{", m.end())
-        if brace < 0:
-            continue
-        spans = removable_cases(code, brace, closing(code, brace))
-        if spans:
-            found.append((m.start(), spans))
-    return found
-
-
-def remove_empties(text, chosen=None):
-    """text without the removable labels of the switches in chosen (by start), or of all of them."""
-    spans = sorted(s for at, row in empties_in(text) if chosen is None or at in chosen for s in row)
-    out, last = [], 0
-    for start, end in spans:
-        if "/*" in text[start:end] or "//" in text[start:end]:
-            continue
-        out += [text[last:start]]
-        last = end
-    out.append(text[last:])
-    return "".join(out)
-
-
-def land_empties(rel):
-    """Remove empty labels switch by switch, keeping only what still matches."""
-    sys.path.insert(0, str(ROOT / "tools/tidy"))
-    import fake_bases as fb
-    path = ROOT / rel
-    original = path.read_text(errors="surrogateescape")
-    switches = {at for at, _ in empties_in(original)}
-    if not switches:
-        return 0, 0
-    if not rel.startswith("src/overlays/"):
-        path.write_text(remove_empties(original), errors="surrogateescape")
-        return len(switches), len(switches)
-
-    def passes(group):
-        path.write_text(remove_empties(original, set(group)), errors="surrogateescape")
-        bad, _, failed = fb.check(rel)
-        return not bad and not failed
-
-    accepted = fb.accepted_functions(switches, passes)
-    path.write_text(remove_empties(original, accepted), errors="surrogateescape")
-    return len(accepted), len(switches)
-
-
 def main():
-    if "--empties" in sys.argv[1:]:
-        out = subprocess.run(["git", "ls-files", "src/*.c"], cwd=ROOT, capture_output=True, text=True).stdout
-        write = "--write" in sys.argv[1:]
-        done = total = 0
-        for rel in out.split():
-            if rel.startswith(("src/data/", "src/libgcc/", "src/versions/")):
-                continue
-            if write:
-                kept, tried = land_empties(rel)
-                done, total = done + kept, total + tried
-                if tried:
-                    print(f"{rel}: {kept}/{tried}", flush=True)
-            else:
-                found = empties_in((ROOT / rel).read_text(errors="surrogateescape"))
-                total += len(found)
-                done += sum(len(row) for _, row in found)
-        print(f"{'removed from' if write else 'would remove'}: {done}/{total} switches" if write else f"{done} empty runs in {total} switches")
-        return
     write, listing = "--write" in sys.argv[1:], "--list" in sys.argv[1:]
     out = subprocess.run(["git", "ls-files", "src/*.c"], cwd=ROOT, capture_output=True, text=True).stdout
     marks = fixed = 0
