@@ -8,8 +8,10 @@ extern void update_menu_icon_list();
 extern void draw_menu_icon_list();
 extern u16 gadget_menu_items[];
 
-u32 item_info_table_slot[] DATA_SECTION(D_001864D8) = {
-#include "data_inc/D_001864D8.inc"
+u32 item_info_table_slot[2] DATA_SECTION(D_001864D8) = {0};
+
+u32 D_001864E0[] DATA_SECTION(D_001864E0) = {
+#include "data_inc/D_001864E0.inc"
 };
 
 s32 active_camera_basis_column1_x[4] DATA_SECTION(D_001873A0) = {0};
@@ -203,9 +205,17 @@ int panel_slots[16] DATA_SECTION(D_001D6120) = {0};
 
 u8 class_pose_manipulator[64] DATA_SECTION(D_001D6160) = {0};
 
-u8 first_attachment_manipulator[64] DATA_SECTION(D_001D61A0) = {0};
+u8 first_attachment_manipulator[32] DATA_SECTION(D_001D61A0) = {0};
 
-u8 second_attachment_manipulator[56] DATA_SECTION(D_001D61E0) = {0};
+u8 D_001D61C0[8] DATA_SECTION(D_001D61C0) = {0};
+
+u8 D_001D61C8[24] DATA_SECTION(D_001D61C8) = {0};
+
+u8 second_attachment_manipulator[32] DATA_SECTION(D_001D61E0) = {0};
+
+u8 D_001D6200[8] DATA_SECTION(D_001D6200) = {0};
+
+u8 D_001D6208[16] DATA_SECTION(D_001D6208) = {0};
 
 float ammo_preview_offsets[6] DATA_SECTION(D_001D6220) = {0};
 

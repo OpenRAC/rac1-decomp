@@ -35,8 +35,10 @@ u16 shrub_render_class_ids[64] DATA_SECTION(D_001D83C0) = {0};
 
 s32 shrub_render_class_fixed_thresholds[64] DATA_SECTION(D_001D9040) = {0};
 
-u32 shrub_render_class_material_maps[] DATA_SECTION(D_001D9640) = {
-#include "data_inc/D_001D9640.inc"
+u32 shrub_render_class_material_maps[64] DATA_SECTION(D_001D9640) = {0};
+
+u32 D_001D9740[] DATA_SECTION(D_001D9740) = {
+#include "data_inc/D_001D9740.inc"
 };
 
 u16 object_render_class_ids[128] DATA_SECTION(D_001E1C00) = {0};

@@ -151,6 +151,9 @@ class WholeRecordTest(unittest.TestCase):
         body = ('.at 0x10\n.word 0x1\n.byte 2, 3\n.align 2\n.at 0x18\n.asciz "ab"\n.align 2\n.word D_00000001\n')
         self.assertEqual(d.parse(body)[1], ["0x00000001", "0x00000302", "0x00006261", "(u32)ref_D_00000001"])
 
+    def test_a_block_that_ends_inside_a_word_is_bytes(self):
+        self.assertEqual(d.parse_mixed(".at 0x10\n.word 0x1\n.byte 2\n"), ("u8", ["0x01", "0x00", "0x00", "0x00", "0x02"]))
+
     def test_a_symbol_off_a_word_is_refused(self):
         self.assertIsNone(d.parse_mixed(".at 0x10\n.byte 1\n.word D_00000001\n"))
 
