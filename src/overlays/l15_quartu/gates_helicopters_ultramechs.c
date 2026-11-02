@@ -21,6 +21,11 @@
 #include "overlays/shared/sound_playback.h"
 #include "structs/small_records.h"
 #include "enums/moby_class.h"
+extern char gHeroPos[];
+extern char gSpecialItems[];
+extern Hero g_hero;
+extern char level_moby_killed[];
+extern char voice_pool[];
 
 /* Quartu helicopter: hit response, knockback and recoil. */
 struct HelicopterVars {
@@ -97,10 +102,10 @@ extern int Moby_PlaySound(int, int, int);
 extern int is_point_inside_clip_volume(void *, int);
 
 extern unsigned char hero_globals_base[];
-extern unsigned char help_stats_base[] NOT_SDA;
-#define D_0013F3D0 (D_0013E633 + 0xE9D)
-#define D_0013E550 ((char *)D_0013E633 + 0x1D)
-#define D_0014C190 ((char *)D_0014171B + 0xAB75)
+
+#define D_0013F3D0 (gHeroPos)
+#define D_0013E550 (voice_pool)
+#define D_0014C190 (level_moby_killed)
 
 /* Moby update for a sliding door/platform. */
 void update_sliding_gate(struct Moby *m) {
@@ -702,7 +707,7 @@ extern char quartu_hit_debris_colors[];
 extern u32 quartu_hit_effect_colors[3];
 extern unsigned char hero_globals_base[];
 extern unsigned char gemlik_available[];
-extern unsigned char help_stats_base[] NOT_SDA;
+
 extern int g_current_level_index MACRO_ADDR;
 extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecScale(void *, void *, float);
@@ -847,7 +852,7 @@ void update_destructible_moby_on_hit(struct Moby *moby) {
         moby->state = 1;
         if (gemlik_available[3] != 0) {
             u16 save_id = moby->save_id;
-            if ((*(s32 *)(help_stats_base + 0xAB75 + (((s16)save_id >> 5) * 4) + g_current_level_index * 256) >>
+            if ((*(s32 *)(level_moby_killed + (((s16)save_id >> 5) * 4) + g_current_level_index * 256) >>
                  (save_id & 31)) &
                 1)
                 DeleteMoby(moby);
@@ -1442,7 +1447,7 @@ void helicopter_update(HMoby_6950 *m) {
     if (d->f1A0 < FastVecDist(&m->pos, &goal))
         goal.mode = 2;
     if (goal.target == 0)
-        goal.target = *(HMoby_6950 **)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby;
+        goal.target = *(HMoby_6950 **)&g_hero.moby;
     tp = goal.target;
     if (m->state != 0 && d->b2E != 1) {
         if (d->child != 0)
@@ -1503,9 +1508,7 @@ void helicopter_update(HMoby_6950 *m) {
                     d->child->flags |= 0x41;
                 return;
             }
-            if (d->w190 != -1 || (is_point_inside_clip_volume(
-                                      &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, d->w1B0) &&
-                                  goal.mode != 2)) {
+            if (d->w190 != -1 || (is_point_inside_clip_volume(&g_hero.motion.pos, d->w1B0) && goal.mode != 2)) {
                 if (d->w190 != -1 && count_active_moby_group_members(d->w190, 0x40))
                     break;
                 m->w94 = *(int *)(m->cls + 0x10);
@@ -1718,7 +1721,7 @@ void helicopter_update(HMoby_6950 *m) {
                 d->child->flags |= 0x41;
             quartu_moby_state_bytes_base.collected[(short)m->id] = 0;
             quartu_collected_flags_base.collected[(short)m->id] = 0;
-            *(int *)(help_stats_base + 0xAB75 + (((short)m->id >> 5) * 4 + (g_current_level_index << 8))) &=
+            *(int *)(level_moby_killed + (((short)m->id >> 5) * 4 + (g_current_level_index << 8))) &=
                 ~(1 << (m->id & 0x1F));
             quartu_moby_killed[(short)m->id >> 5] &= ~(1 << (m->id & 0x1F));
             if (hero_globals_base[0x2EC1] != 2) {
@@ -2027,7 +2030,7 @@ extern void MobySphereHitDirectional(int, float, void *, int, float, float, int,
 
 extern unsigned char hero_globals_base[];
 extern unsigned char hero_vehicle_mode[];
-extern unsigned char help_stats_base[] NOT_SDA;
+
 extern float g_frame_time_sq MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
@@ -2070,7 +2073,7 @@ void ultramech_unlimited_update(UMoby *m) {
         m->flags |= 0x41;
         idx = d->snd;
         if (idx != -1) {
-            char *e = (char *)hero_globals_base + 0x1D + idx * 0x70;
+            char *e = voice_pool + idx * 0x70;
             if (*(UMoby **)(e + 0x88) == m) {
                 if (*(unsigned char *)(e + 0x74) != 0)
                     Sound_StopSlot(idx);
@@ -2112,8 +2115,7 @@ void ultramech_unlimited_update(UMoby *m) {
                 MobyBlendAnimation(m, 0, 0, 5);
             break;
         case 1:
-            if (d->w1CC != -1 || is_point_inside_clip_volume(
-                                     &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, d->w1DC)) {
+            if (d->w1CC != -1 || is_point_inside_clip_volume(&g_hero.motion.pos, d->w1DC)) {
                 if (d->w1CC != -1 && count_active_moby_group_members(d->w1CC, 0x40))
                     break;
                 if (hero_vehicle_mode[0] == 2) {
@@ -2122,7 +2124,7 @@ void ultramech_unlimited_update(UMoby *m) {
                 }
             }
             if (d->w164 != 2 && d->path != -1) {
-                struct Hero *pl = (struct Hero *)(hero_globals_base + 0xE1D);
+                struct Hero *pl = &g_hero;
                 if (pl->vehicle_mode == 2 && (m->flags & 0x1000)) {
                     if (d->w1D0 != -1 &&
                         !IsPointInPolygon(&pl->motion.pos, quartu_paths[d->w1D0]->pt, quartu_paths[d->w1D0]->n)) {
@@ -2457,7 +2459,7 @@ void ultramech_unlimited_update(UMoby *m) {
             d->b58 = 0;
             quartu_moby_state_bytes_base.collected[(short)m->id] = 0;
             quartu_collected_flags_base.collected[(short)m->id] = 0;
-            *(int *)(help_stats_base + 0xAB75 + (((short)m->id >> 5) * 4 + (g_current_level_index << 8))) &=
+            *(int *)(level_moby_killed + (((short)m->id >> 5) * 4 + (g_current_level_index << 8))) &=
                 ~(1 << (m->id & 0x1F));
             quartu_moby_killed[(short)m->id >> 5] &= ~(1 << (m->id & 0x1F));
             if (hero_vehicle_mode[0] != 2)
@@ -2471,7 +2473,7 @@ void ultramech_unlimited_update(UMoby *m) {
     } else {
         idx = d->snd;
         if (idx != -1) {
-            char *e = (char *)hero_globals_base + 0x1D + idx * 0x70;
+            char *e = voice_pool + idx * 0x70;
             if (*(UMoby **)(e + 0x88) == m) {
                 if (*(unsigned char *)(e + 0x74) != 0)
                     Sound_StopSlot(idx);
@@ -2590,8 +2592,7 @@ void process_ultramech_hits_and_update_target(void *mobyp) {
         fl = *(int *)(e + 0x24);
         if ((fl & 0xA0000) == 0)
             continue;
-        if (*(int *)(e + 0x20) == *(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby &&
-            (fl & 0x80000) == 0) {
+        if (*(int *)(e + 0x20) == *(int *)&g_hero.moby && (fl & 0x80000) == 0) {
             *(int *)(e + 0x34) = 0;
             continue;
         }
@@ -2697,7 +2698,7 @@ void process_ultramech_hits_and_update_target(void *mobyp) {
     if (data->unk_1B8 < FastVecDist(&moby->pos, &data->unk_120))
         data->unk_164 = 2;
     if (data->unk_160 == 0)
-        data->unk_160 = *(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby;
+        data->unk_160 = *(int *)&g_hero.moby;
 }
 extern float g_frame_time MACRO_ADDR;
 extern short D_L15_00160058_g SDATA(D_L15_00160058);
@@ -2939,8 +2940,7 @@ void bolt_grabber_update(unsigned char *m) {
             break;
         case BOLT_GRABBER_WAIT_FOR_PROXIMITY:
             emit_moby_sprite_particles((char *)moby);
-            if (vec_distance_xy(&moby->pos, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) <
-                3.0f) {
+            if (vec_distance_xy(&moby->pos, &g_hero.motion.pos) < 3.0f) {
                 moby->flags |= 0x41;
                 StartCutscene(5);
                 moby->state = 2;
@@ -3176,9 +3176,7 @@ void update_quartu_cutscene_trigger(unsigned char *moby) {
     switch (((Moby *)moby)->state) {
         case 0:
             if (saved_mission_state[((Moby *)moby)->mission + (g_current_level_index << 4)] != 0xFF &&
-                *(int *)&quartu_alarm_on == 0 &&
-                is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                            data[0])) {
+                *(int *)&quartu_alarm_on == 0 && is_point_inside_clip_volume(&g_hero.motion.pos, data[0])) {
                 if (*(unsigned char *)(*(char **)&D_L15_00160058_g + data[2] * 256 + 0x20) == 3) {
                     StartCutscene(3);
                     ((Moby *)moby)->state = 2;
@@ -3412,7 +3410,7 @@ void codebot_slot_update(char *moby) {
                 m->state = CODEBOT_SLOT_COMPLETED;
                 break;
             }
-            if (((*(int *)(help_stats_base + 0xAB75 + (((short)save_id >> 5) * 4 + (g_current_level_index << 8)))) >>
+            if (((*(int *)(level_moby_killed + (((short)save_id >> 5) * 4 + (g_current_level_index << 8)))) >>
                  (save_id & 0x1F)) &
                 1) {
                 m->state = CODEBOT_SLOT_COMPLETED;
@@ -3434,7 +3432,7 @@ void codebot_slot_update(char *moby) {
         }
         case CODEBOT_SLOT_WAIT_FOR_PROXIMITY:
             if (special_items_base[0x13D] != 0) {
-                unsigned char *q = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
+                unsigned char *q = &g_hero.motion.pos;
                 if (vec_distance_xy(q, &m->pos) < 3.0f) {
                     if (q[0x2024] == 0) {
                         activate_descriptor(data[0]);
@@ -3491,7 +3489,7 @@ void codebot_slot_update(char *moby) {
             if (angle < 0.5f) {
                 {
                     unsigned short save_id = m->save_id;
-                    *(int *)(help_stats_base + 0xAB75 + (((short)save_id >> 5) * 4 + (g_current_level_index << 8))) |=
+                    *(int *)(level_moby_killed + (((short)save_id >> 5) * 4 + (g_current_level_index << 8))) |=
                         1 << (save_id & 0x1F);
                 }
                 {
@@ -3530,7 +3528,7 @@ void codebot_slot_update(char *moby) {
                 *(OvlQuad *)((char *)data[1] + 0x40) = *(OvlQuad *)tmp;
             }
             {
-                unsigned char *b = special_items_base + 0x13B;
+                unsigned char *b = gSpecialItems;
                 if (b[0x6D] == 0) {
                     if (count_missing_or_dying_mobys_in_list(data[8]) >= 10) {
                         b[0x6D] = 1;

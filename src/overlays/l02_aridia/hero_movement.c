@@ -23,8 +23,9 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+extern char g_controller_state_no_direction[];
+extern Hero g_hero;
 
-extern unsigned char hero_globals_base[];
 extern int g_current_level_index MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
 extern int CollType(void);
@@ -34,7 +35,7 @@ extern void Hero_OnKilled(void);
 
 // Updates the pickup/aim flags after a state change, and requests a follow-up state when the target is in range. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l02/ui_help_0021b698.c, FUN_L02_0021b698.
 void process_hero_ground_material_effects(void) {
-    struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    struct Hero *g = &g_hero;
     int keep = g->ground_sound_class;
     int st = g->ground_type;
     FastMemZero16(&g->ground_type, 0x10);
@@ -56,11 +57,11 @@ void process_hero_ground_material_effects(void) {
         }
     }
     if (st == 3) {
-        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *q = &g_hero;
         q->selector_3 = 1;
     }
     if (g_current_level_index == LEVEL_GEMLIK) {
-        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *q = &g_hero;
         if (q->state.current != HERO_STATE_HEIGHT_OR_TIMEOUT_RESPAWN_WAIT) {
             if (coll_sphere(q->capsule_radius + 0.03f, &q->motion.body_center, 2, 0) != 0) {
                 if (CollType() == 0xB) {
@@ -71,31 +72,31 @@ void process_hero_ground_material_effects(void) {
         }
     }
     if (st == 0xB) {
-        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *q = &g_hero;
         q->selector_11 = 1;
     }
     if (st == 2) {
-        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *q = &g_hero;
         q->on_magnet_ground = 1;
     }
     if (st == 0xD) {
-        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *q = &g_hero;
         q->selector_13 = 1;
     }
     if (st == 8) {
-        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *q = &g_hero;
         q->on_slip_ground = 1;
     }
     if (st == 9) {
-        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *q = &g_hero;
         q->unk12EE = 1;
     }
     if (st == 0xC) {
-        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *q = &g_hero;
         q->on_slip_ground = 1;
     }
     {
-        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *q = &g_hero;
         if (q->selector_13 != 0 && q->state.current != HERO_STATE_SINK) {
             if (FastAbsF(q->water_surface_z - (q->motion.pos.f[2] + 0.25f)) < 1.0f) {
                 if (q->water_surface_z - q->motion.pos.f[2] > 0.0f) {
@@ -109,7 +110,7 @@ void process_hero_ground_material_effects(void) {
         }
     }
     {
-        struct Hero *h = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *h = &g_hero;
         if (h->selector_3 != 0 && h->state.current != HERO_STATE_WAIT_FOR_JUMP_OR_RESPAWN &&
             h->state.current != HERO_STATE_HEIGHT_OR_TIMEOUT_RESPAWN_WAIT) {
             if (FastAbsF(h->sink_surface_z - (h->motion.pos.f[2] + 0.25f)) < 1.0f) {
@@ -129,7 +130,7 @@ void process_hero_ground_material_effects(void) {
         }
     }
     {
-        struct Hero *h = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *h = &g_hero;
         if (h->selector_11 != 0 && h->state.current != HERO_STATE_HEIGHT_OR_TIMEOUT_RESPAWN_WAIT) {
             if (FastAbsF(h->sink_surface_z - (h->motion.pos.f[2] + 0.25f)) < 1.0f) {
                 if (h->sink_surface_z - h->motion.pos.f[2] > 0.0f) {
@@ -531,7 +532,7 @@ d1:
         }
     }
 }
-extern unsigned char hero_globals_base[] NOT_SDA;
+
 extern float frame_scale MACRO_ADDR;
 extern char aridia_coll_resolved_pos[];
 extern void clear_u64_value(void *);
@@ -644,9 +645,8 @@ typedef struct {
     Moby *f88;
 } Row13E650;
 
-
 extern PadState g_controller_state;
-extern char pad_globals_base[];
+
 extern unsigned char item_available[];
 extern char voice_pool[];
 extern MoveUsageTable usage_stats;
@@ -2000,7 +2000,7 @@ void update_hero_state_motion(void) {
                         g_hero.ground_speed = 0.0f;
                     }
                     if (g_hero.rail_land_frames != 0) {
-                        if (*(int *)(pad_globals_base + 0x2634) != 0) {
+                        if (*(int *)g_controller_state_no_direction != 0) {
                             if (g_hero.on_flagged_ground_moby != 0) {
                                 g_hero.ground_speed = 0.0f;
                             }

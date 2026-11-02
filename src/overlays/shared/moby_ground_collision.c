@@ -15,6 +15,7 @@
 #include "game/math/fastfunc.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "enums/moby_class.h"
+extern char gold_weapon_purchased[];
 
 extern int func_001160D8(void);
 /* Returns a random integer in the inclusive range lo..hi. */
@@ -1880,7 +1881,6 @@ extern void BuildSphericalOffset(void *, float, float, float);
 extern int rand_range(int, int);
 
 extern float g_frame_time MACRO_ADDR;
-extern unsigned char screen_globals_base[];
 
 typedef struct {
     float v[4];
@@ -1899,7 +1899,7 @@ void spawn_particles_at_shape_points(void *a0, void *a1, void *a2) {
     for (i = 0; i < n; i++) {
         float y = random_angle_radians();
         float z = random_angle_radians();
-        unsigned char *flag = screen_globals_base + 0x4C6;
+        unsigned char *flag = gold_weapon_purchased;
         int a, b;
 
         BuildSphericalOffset(tmp, g_frame_time * 1.8f, y, z);

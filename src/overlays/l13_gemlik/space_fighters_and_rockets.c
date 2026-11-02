@@ -22,6 +22,9 @@
 #include "overlays/shared/sound_playback.h"
 #include "structs/level_records.h"
 #include "enums/moby_class.h"
+extern struct Hero g_hero;
+extern char level_moby_killed[];
+extern char voice_pool[];
 
 /* Class 0x53 shot: flies along velocity until the timer ends. */
 typedef struct ProjectileVars {
@@ -234,7 +237,7 @@ void update_level_13_homing_rocket(Moby *m) {
     }
     if (d->target != 0 && d->target->state != 0xFE && d->target->state != 0xFD &&
         FastVecDist(&d->tpos, &d->target->pos) < 3.0f) {
-        Hero *h = (Hero *)(hero_globals_base + 0xE1D);
+        Hero *h = &g_hero;
         if (h->ship_moby != 0 && h->ship_moby->oclass == MOBY_CLASS_FIGHTER_JET_69 && d->owner->state != 5) {
             Veh *vd = (void *)h->ship_moby->pvars;
             float a = FastAddRots(h->ship_moby->rot.z, vd->f90);
@@ -1163,7 +1166,7 @@ extern void FastVecAdd(void *, void *, void *);
 
 // Computes an offset vector from the player's angle data, or copies the default vector when there is no player.
 void predict_hero_vehicle_position(char *out, float scale) {
-    struct Hero *x = (struct Hero *)(hero_globals_base + 0xE1D);
+    struct Hero *x = &g_hero;
     if (*(char **)&x->ship_moby == 0) {
         qcopy(out, &x->motion.pos);
     } else {
@@ -1209,7 +1212,7 @@ int update_blarg_space_fighter_path_following(char *moby, char *vars, int aim) {
     if (path == 0) {
         goto done;
     }
-    veh = *(char **)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->ship_moby;
+    veh = *(char **)&g_hero.ship_moby;
     if (veh != 0 && *(short *)(veh + 0xA6) == 0x45) {
         if (*(int *)(vars + 0xBC) != -1 && (linked = gemlik_moby_array_start + (*(int *)(vars + 0xBC) << 8)) != 0 &&
             (unsigned char)linked[0x20] != 0xFE && (unsigned char)linked[0x20] != 0xFD) {
@@ -1223,7 +1226,7 @@ int update_blarg_space_fighter_path_following(char *moby, char *vars, int aim) {
     } else {
         if (*(int *)(vars + 0xBC) == -1 || (linked = gemlik_moby_array_start + (*(int *)(vars + 0xBC) << 8)) == 0 ||
             (unsigned char)linked[0x20] == 0xFE || (unsigned char)linked[0x20] == 0xFD) {
-            qcopy(point, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
+            qcopy(point, &g_hero.motion.pos);
         } else {
             qcopy(point, linked + 0x10);
         }
@@ -1237,12 +1240,12 @@ int update_blarg_space_fighter_path_following(char *moby, char *vars, int aim) {
     }
     qcopy(ahead, path + 0x10 + forward * 16);
     backward = backward - 5;
-    forward_distance = FastVecDist(ahead, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
+    forward_distance = FastVecDist(ahead, &g_hero.motion.pos);
     if (backward < 0) {
         backward += *(int *)path;
     }
     qcopy(behind, path + 0x10 + backward * 16);
-    backward_distance = FastVecDist(behind, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
+    backward_distance = FastVecDist(behind, &g_hero.motion.pos);
     if (backward_distance < forward_distance) {
         backward = forward;
         step = 1;
@@ -1275,8 +1278,7 @@ int update_blarg_space_fighter_path_following(char *moby, char *vars, int aim) {
             float speed = frame_scale * -0.04000002f + 1.0f;
             *(short *)(vars + 0xD2) = 10;
             *(float *)(vars + 0xCC) = *(float *)(vars + 0xCC) * speed;
-            distance = vec_distance_xy(&((Moby *)moby)->pos,
-                                       &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
+            distance = vec_distance_xy(&((Moby *)moby)->pos, &g_hero.motion.pos);
             if ((*(float *)(vars + 0xCC) < frame_scale * 0.1f) | (((Moby *)moby)->visible == 0) | (distance < 40.0f)) {
                 short old = *(short *)(vars + 0xB4);
                 *(signed char *)(vars + 0xD0) = step;
@@ -1379,7 +1381,7 @@ void update_blarg_space_fighter(Moby *moby) {
     float v50[4];
 
     d = (void *)moby->pvars;
-    veh = ((Hero *)(hero_globals_base + 0xE1D))->ship_moby;
+    veh = g_hero.ship_moby;
     path = 0;
     if (d->fA0 != -1) {
         path = walker_paths[d->fA0];
@@ -1437,17 +1439,17 @@ void update_blarg_space_fighter(Moby *moby) {
             process_blarg_space_fighter_damage((unsigned char *)moby, (unsigned char *)d, &d->f20);
             if (veh != 0 && veh->state != 0xFE && veh->state != 0xFD) {
                 vehd = (void *)veh->pvars;
-                qcopy(hpos, &((Hero *)(hero_globals_base + 0xE1D))->ship_moby->pos);
+                qcopy(hpos, &g_hero.ship_moby->pos);
                 close = 0;
                 dist = FastVecDist(&moby->pos, hpos);
-                if (((Hero *)(hero_globals_base + 0xE1D))->state.current == 0x32 &&
+                if (g_hero.state.current == 0x32 &&
                     (veh->oclass == MOBY_CLASS_FIGHTER_JET_69 || veh->oclass == MOBY_CLASS_JET_FIGHTER)) {
                     if (dist < 110.0f) {
                         close = 1;
                     }
                 }
             } else {
-                qcopy(hpos, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
+                qcopy(hpos, &g_hero.motion.pos);
             }
             if (moby->visible == 0) {
                 d->fA8++;
@@ -1471,8 +1473,7 @@ void update_blarg_space_fighter(Moby *moby) {
             }
             {
                 Snd *e;
-                if (d->fD4 == -1 || (e = (Snd *)(hero_globals_base + 0x1D + d->fD4 * 0x70))->f88 != moby ||
-                    e->b74 == 0) {
+                if (d->fD4 == -1 || (e = (Snd *)(voice_pool + d->fD4 * 0x70))->f88 != moby || e->b74 == 0) {
                     d->fD4 = -1;
                     d->fD4 = Moby_PlaySound_s(1, 4, (int)moby);
                 }
@@ -1522,8 +1523,7 @@ void update_blarg_space_fighter(Moby *moby) {
                                 FastVecAdd(v30, hpos, up);
                                 FastVecAdd(v30, v30, v70);
                                 add_random_offset_to_vector_xyz(v30, 0.6f);
-                                lead = vec_distance_xy(
-                                    &moby->pos, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
+                                lead = vec_distance_xy(&moby->pos, &g_hero.motion.pos);
                                 vec_scale_to_length(v50, &vehd->vel,
                                                     vehd->f64 * (lead / (vehd->f64 + g_frame_time * 50.0f)));
                                 FastVecAdd(v30, v30, v50);
@@ -1555,7 +1555,7 @@ void update_blarg_space_fighter(Moby *moby) {
             Boss *bossd;
 
             if (d->fD4 != -1) {
-                Snd *e = (Snd *)(hero_globals_base + 0x1D + d->fD4 * 0x70);
+                Snd *e = (Snd *)(voice_pool + d->fD4 * 0x70);
                 if (e->f88 == moby && e->b74 != 0) {
                     Sound_StopSlot(d->fD4);
                 }
@@ -1994,7 +1994,7 @@ void process_forcefield_tower_damage(char *m, char *d, float *hp) {
                     if (mob->kind != 1)
                         MobyBlendAnimation(m, 1, 0, 0);
                     if (*(int *)(d + 0x70) != -1) {
-                        char *e = hero_globals_base + 0x1D + *(int *)(d + 0x70) * 0x70;
+                        char *e = voice_pool + *(int *)(d + 0x70) * 0x70;
                         if (*(char **)(e + 0x88) == m && ((unsigned char *)e)[0x74] != 0) {
                             Sound_StopSlot(*(int *)(d + 0x70));
                         }
@@ -2017,7 +2017,7 @@ end:
 typedef int u128z_2D0298 __attribute__((mode(TI)));
 extern int g_current_level_index MACRO_ADDR;
 extern int linked_state_flags[];
-extern char help_stats_base[];
+
 extern char *spawn_scaled_owned_moby(char *, void *, float);
 extern int Sound_IsPlaying(void *, int);
 #define Moby_PlaySound_s ((int (*)(int, int, int))Moby_PlaySound_r)
@@ -2051,7 +2051,7 @@ void forcefield_tower_update(char *moby) {
             rnd = g_current_level_index;
             d->voice = -1;
             h = ((Moby *)moby)->save_id;
-            w = *(int *)((char *)help_stats_base + 0xAB75 + ((short)h >> 5) * 4 + (rnd << 8));
+            w = *(int *)(level_moby_killed + ((short)h >> 5) * 4 + (rnd << 8));
             if ((w >> (h & 0x1F)) & 1) {
                 if (d->linked_slot != -1)
                     linked_state_flags[d->linked_slot] = 1;
@@ -2230,7 +2230,7 @@ void process_asteroid_hit(Moby *m, char *d, float s) {
     float b;
     int i;
     b = s * 10.0f;
-    if (20.0f < FastVecDist(&m->pos, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos)) {
+    if (20.0f < FastVecDist(&m->pos, &g_hero.motion.pos)) {
         a = b = 0.0f;
     }
     Moby_PlaySound_s(0, 0, (int)m);
@@ -3169,7 +3169,7 @@ int advance_moby_along_selected_path(char *m, char *d, int idx, int turn) {
     yaw = fast_atan2(v[0], v[1]);
     pitch = -fast_atan2(vec_length_xy(v), v[2]);
     if (((Moby *)m)->state == 5) {
-        struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *g = &g_hero;
         yaw = fast_atan2(g->motion.pos.f[0] - ((Moby *)m)->pos.x, g->motion.pos.f[1] - ((Moby *)m)->pos.y);
         pitch =
             -fast_atan2(vec_distance_xy(&((Moby *)m)->pos, &g->motion.pos), g->motion.pos.f[2] - ((Moby *)m)->pos.z);
@@ -3668,7 +3668,7 @@ extern float FastVecDist(void *, void *);
 
 /* Steers a moby toward the hero: scales by distance and orients it with the hero's angles. */
 void predict_hero_ship_projectile_lead_position(char *a, char *b, float f) {
-    struct Hero *base = (struct Hero *)(hero_globals_base + 0xE1D);
+    struct Hero *base = &g_hero;
     char *d = *(char **)(*(char **)&base->ship_moby + 0x78);
     float y = FastAddRots(*(float *)(*(char **)&base->ship_moby + 0x48), *(float *)(d + 0x90));
     float x = FastAddRots(*(float *)(*(char **)&base->ship_moby + 0x44), *(float *)(d + 0x94));
@@ -3682,7 +3682,7 @@ extern void predict_hero_ship_projectile_lead_position(char *a, char *b, float f
 
 /* Angles from pos to the hero's target (led by lead when positive) or to the hero; returns the yaw. */
 float calculate_hero_aim_angles(float *pos, float *pitch, float *yaw, float lead) {
-    struct Hero *base = (struct Hero *)(hero_globals_base + 0xE1D);
+    struct Hero *base = &g_hero;
     char *t = *(char **)&base->ship_moby;
     float v[4];
     float y;
@@ -3696,7 +3696,7 @@ float calculate_hero_aim_angles(float *pos, float *pitch, float *yaw, float lead
         y = fast_atan2(v[0] - pos[0], v[1] - pos[1]);
         p = -fast_atan2(vec_distance_xy(pos, v), v[2] - pos[2]);
     } else {
-        struct Hero *p0 = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *p0 = &g_hero;
         y = fast_atan2(p0->motion.pos.f[0] - pos[0], p0->motion.pos.f[1] - pos[1]);
         p = -fast_atan2(vec_distance_xy(pos, &p0->motion.pos), p0->motion.pos.f[2] - pos[2]);
     }
@@ -3760,7 +3760,7 @@ unsigned char *fire_mine_83_projectile(char *a, char *b) {
     struct Hero *x;
     unsigned char *r;
     Moby_GetJointWorldPos(a, 0xE, v0);
-    x = (struct Hero *)(hero_globals_base + 0xE1D);
+    x = &g_hero;
     if (*(char **)&x->ship_moby != 0 && *(short *)(*(char **)&x->ship_moby + 0xA6) == 0x45) {
         predict_hero_ship_projectile_lead_position((char *)v2, (char *)v0, g_frame_time * 20.0f);
         FastVecSub(v3, v2, v0);

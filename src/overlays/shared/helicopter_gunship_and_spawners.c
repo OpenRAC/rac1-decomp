@@ -15,6 +15,8 @@
 #include "game/moby/mobyutil.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
+extern struct Hero g_hero;
+extern char voice_pool[];
 
 /* Effect that follows its parent moby, fades between two colours and drifts along the parent's axis. */
 struct ParentFollowEffectVars {
@@ -374,7 +376,7 @@ extern char *spawn_class_221_moby(char *owner, float *pos, float *dir, short ang
 extern int scale_ticks(int);
 extern void StepColorFade(void *, void *);
 extern char kerwan_camera_pos[];
-extern char hero_globals_base[];
+
 extern float kerwan_zero_vec[] MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 
@@ -432,7 +434,7 @@ void ChildSpawnerUpdate(Moby *moby) {
             }
         }
     }
-    dist = vec_distance_xy(&moby->pos, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
+    dist = vec_distance_xy(&moby->pos, &g_hero.motion.pos);
     near1 = dist < d->f9C;
     near2 = dist < d->f90;
     spawn = 0;
@@ -440,8 +442,7 @@ void ChildSpawnerUpdate(Moby *moby) {
     inVol = 0;
     room = d->count < d->max;
     if (d->fD0 != -1) {
-        inVol = is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                            d->fD0) != 0;
+        inVol = is_point_inside_clip_volume(&g_hero.motion.pos, d->fD0) != 0;
     }
     cond = inVol | near2;
     switch (d->b82) {
@@ -569,9 +570,7 @@ void ChildSpawnerUpdate(Moby *moby) {
                     float rad;
                     ang =
                         normalize_angle(IntToFloat(d->count) * 2.0f * 3.1415927f / IntToFloat(d->max + 1) - 3.1415927f);
-                    rad = vec_distance_xy(&moby->pos,
-                                          &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) *
-                          0.5f;
+                    rad = vec_distance_xy(&moby->pos, &g_hero.motion.pos) * 0.5f;
                     if (d->b83 & 8) {
                         rad = random_float_between(rad, 3.0f);
                     }
@@ -591,7 +590,7 @@ void ChildSpawnerUpdate(Moby *moby) {
                 }
                 case 1: {
                     float len;
-                    FastVecSub(&v40, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, &v30);
+                    FastVecSub(&v40, &g_hero.motion.pos, &v30);
                     v40.z = 0.0f;
                     FastVecScale(&v40, &v40, 0.5f);
                     len = FastVecLength(&v40);
@@ -620,8 +619,7 @@ void ChildSpawnerUpdate(Moby *moby) {
                             continue;
                         if (sample_random_transformed_point(d->pts[j], (float *)&v70) != 0)
                             continue;
-                        dd = vec_distance_xy(&moby->pos,
-                                             &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
+                        dd = vec_distance_xy(&moby->pos, &g_hero.motion.pos);
                         if (dd < best) {
                             qcopy(&v60, &v70);
                             best = dd;
@@ -1687,7 +1685,7 @@ extern int coll_line(void *, void *, int, void *, void *);
 
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern int fast_dec_timer(int *arg0);
-extern char hero_globals_base[];
+
 extern char kerwan_coll_hit_point[];
 extern char kerwan_coll_hit_normal[];
 extern Moby *kerwan_coll_hit_moby;
@@ -1764,7 +1762,7 @@ void update_homing_spark_projectile(Moby *moby) {
                     }
                 } else {
                     if (h != -1) {
-                        char *e = hero_globals_base + 0x1D + h * 0x70;
+                        char *e = voice_pool + h * 0x70;
                         if (*(Moby **)(e + 0x88) == d->target && *(unsigned char *)(e + 0x74) != 0) {
                             Sound_StopSlot(h);
                         }
@@ -1827,20 +1825,17 @@ void update_homing_spark_projectile(Moby *moby) {
                         vec_scale_to_length(&vB0, &vB0, -1.0f);
                         FastVecAdd(&vC0, &vA0, &vB0);
                         if (coll_line(&vA0, &vC0, 0x10, d->target, &hit) != 0 && kerwan_coll_hit_moby != 0 &&
-                            (kerwan_coll_hit_moby == ((Hero *)(hero_globals_base + 0xE1D))->moby ||
-                             kerwan_coll_hit_moby->oclass == MOBY_CLASS_DRONE)) {
+                            (kerwan_coll_hit_moby == g_hero.moby || kerwan_coll_hit_moby->oclass == MOBY_CLASS_DRONE)) {
                             moby->state = 2;
                         }
                         qcopy(&vC0, &vA0);
                         vC0.z += 2.0f;
                         if (coll_line(&vA0, &vC0, 0x10, d->target, &hit) != 0 && kerwan_coll_hit_moby != 0 &&
-                            (kerwan_coll_hit_moby == ((Hero *)(hero_globals_base + 0xE1D))->moby ||
-                             kerwan_coll_hit_moby->oclass == MOBY_CLASS_DRONE)) {
+                            (kerwan_coll_hit_moby == g_hero.moby || kerwan_coll_hit_moby->oclass == MOBY_CLASS_DRONE)) {
                             moby->state = 2;
                         }
                         if (coll_sphere_mobys(0.5f, &moby->pos, 0x10, moby, &hit) != 0 && kerwan_coll_hit_moby != 0 &&
-                            (kerwan_coll_hit_moby == ((Hero *)(hero_globals_base + 0xE1D))->moby ||
-                             kerwan_coll_hit_moby->oclass == MOBY_CLASS_DRONE)) {
+                            (kerwan_coll_hit_moby == g_hero.moby || kerwan_coll_hit_moby->oclass == MOBY_CLASS_DRONE)) {
                             moby->state = 2;
                         }
                     }
@@ -1855,7 +1850,7 @@ void update_homing_spark_projectile(Moby *moby) {
             if (snd != 0) {
                 int h = *snd;
                 if (h != -1) {
-                    char *e = hero_globals_base + 0x1D + h * 0x70;
+                    char *e = voice_pool + h * 0x70;
                     if (*(Moby **)(e + 0x88) == d->target && *(unsigned char *)(e + 0x74) != 0) {
                         Sound_StopSlot(h);
                     }
@@ -2236,7 +2231,7 @@ void smooth_transform_orientation_toward_hero(char *m) {
     vec_scale_to_length(m + 0x10, m + 0x10, 1.0f);
     FastVecCross(m + 0x20, m + 0x10, m);
 }
-extern char hero_globals_base[];
+
 extern int kerwan_camera_descriptors MACRO_ADDR;
 extern char kerwan_camera_pos[];
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
@@ -2268,7 +2263,7 @@ int evaluate_clip_volume_candidate(char *a0, char *a1) {
     return 0;
 }
 extern int kerwan_camera_descriptors MACRO_ADDR;
-extern char hero_globals_base[];
+
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
 
 // Exit camera update: in state 4, sets state 3 once the table entry check returns zero.
@@ -2276,8 +2271,7 @@ void set_transform_state_three_when_outside_clip_volume(char *moby) {
     char *entry = (char *)(kerwan_camera_descriptors + (*(short *)(moby + 0x84) << 5));
     char *sub = *(char **)(entry + 0x1C);
     if (*(int *)(moby + 0x74) == 4) {
-        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                        *(int *)(sub + 0xC)) == 0) {
+        if (is_point_inside_clip_volume(&g_hero.motion.pos, *(int *)(sub + 0xC)) == 0) {
             *(short *)(moby + 0x7E) = 3;
         }
     }

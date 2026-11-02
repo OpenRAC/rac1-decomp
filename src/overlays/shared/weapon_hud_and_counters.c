@@ -16,6 +16,9 @@
 #include "game/moby/mobyutil.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/level.h"
+extern char g_hero[];
+extern char item_available[];
+extern int weapon_ammo_counts[];
 
 typedef struct {
     char pad[0x50];
@@ -1858,7 +1861,7 @@ void update_health_hud_animation_and_visibility(HudElem *e) {
     }
     update_hud_animation_frame((char *)e + 0x40);
 }
-extern char hero_globals_base[];
+
 extern int pal_mode_m __asm__("D_0015EE80") MACRO_ADDR;
 extern int hero_max_health MACRO_ADDR;
 extern short health_hud_base_y_offset;
@@ -1887,11 +1890,11 @@ int draw_health_hud_panel(HudElem *e) {
     unsigned char *q;
 
     if (({
-            char *gb = hero_globals_base + 0xE1D;
+            char *gb = g_hero;
             *(unsigned char *)(gb + (0x20A4));
         }) == 2 ||
         ({
-            char *gb = hero_globals_base + 0xE1D;
+            char *gb = g_hero;
             *(int *)(gb + (0x2084));
         }) == 0x32) {
         return e->w;
@@ -1930,11 +1933,11 @@ int draw_health_hud_panel(HudElem *e) {
     }
     cnt = hero_max_health;
     if (({
-            char *gb = hero_globals_base + 0xE1D;
+            char *gb = g_hero;
             *(unsigned char *)(gb + (0x20A4));
         }) == 1) {
         cnt = ({
-            char *gb = hero_globals_base + 0xE1D;
+            char *gb = g_hero;
             *(int *)(gb + (0x22AC));
         });
     }
@@ -2510,7 +2513,7 @@ void update_weapon_hud_state(void) {
     int mode;
 
     if (*(int *)&weapon_hud_suspended == 0) {
-        base = (struct Hero *)(hero_globals_base + 0xE1D);
+        base = (struct Hero *)g_hero;
         w = base->items[0].item_id;
         mode = base->vehicle_mode;
         if (((WeaponRec *)((char *)item_price_table + w * 24))->unk8 == 0) {
@@ -2523,7 +2526,7 @@ void update_weapon_hud_state(void) {
             D_hud_pair[0] = w;
             D_hud_pair[1] = queue_animation_update(
                 0x10, w + 60000, (int)initialize_numeric_hud_timer_and_base_dimensions, (int)hud_weapon_update,
-                (int)draw_weapon_ammo_hud_panel, (int)(menu_item_enabled_115 + 0x21 + w * 4), item_price_table[w].unkE);
+                (int)draw_weapon_ammo_hud_panel, (int)((char *)&weapon_ammo_counts + w * 4), item_price_table[w].unkE);
         } else if (mode == 2) {
             if (D_hud_pair[1] != -1) {
                 Hud_SetBarValueById(D_hud_pair[1], 0);
@@ -2797,7 +2800,7 @@ void init_level_item_inventory(void) {
     unsigned char c;
     if (g_current_level_index >= 0x13) {
         for (k = 0; k < 0x25; k++) {
-            (menu_item_enabled_115 + 0xB9)[k] = 1;
+            (item_available)[k] = 1;
             (discount_purchase_pricing + 5)[k] = 1;
         }
         vendor_stock[0] = 0x4A;

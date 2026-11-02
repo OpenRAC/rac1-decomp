@@ -26,6 +26,8 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+extern Hero g_hero;
+extern char voice_pool[];
 
 /* Class 0x565 trigger: index of the transform whose xy bounds mark block entries. */
 struct Class565Vars {
@@ -69,7 +71,7 @@ extern char *veldin2_arena_nodes MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern short *veldin2_moby_groups[];
-extern char hero_globals_base[];
+
 extern short veldin2_moby_group_move_enabled;
 extern short veldin2_moby_group_accel;
 extern short veldin2_moby_group_decel;
@@ -159,7 +161,7 @@ void update_linked_moby_group_transform_and_fall(unsigned char *moby) {
                 v9 = 0;
                 for (i = 0; i < d->cnt; i++) {
                     unsigned char *e = veldin2_moby_table + (d->ent[i].idx << 8);
-                    if (((VG *)(hero_globals_base + 0xE1D))->p2FC == e) {
+                    if (((VG *)(&g_hero))->p2FC == e) {
                         d->f350++;
                         if (scale_ticks(30) < d->f350)
                             d->f348 = 1;
@@ -167,7 +169,7 @@ void update_linked_moby_group_transform_and_fall(unsigned char *moby) {
                         break;
                     }
                 }
-                p = ((VG *)(hero_globals_base + 0xE1D))->p2FC;
+                p = ((VG *)(&g_hero))->p2FC;
                 if (p != 0) {
                     short s = *(short *)(p + 0xA6);
                     if (s == 0x764)
@@ -177,7 +179,7 @@ void update_linked_moby_group_transform_and_fall(unsigned char *moby) {
                             v9 = 1;
                     }
                 }
-                if (d->f348 != 0 && v9 == 0 && ((VG *)(hero_globals_base + 0xE1D))->s30E == 0) {
+                if (d->f348 != 0 && v9 == 0 && ((VG *)(&g_hero))->s30E == 0) {
                     if (fast_dec_timer(&d->f34C))
                         ((Moby *)moby)->state = 4;
                 }
@@ -216,7 +218,7 @@ void update_linked_moby_group_transform_and_fall(unsigned char *moby) {
                     v[0] = FastCos(f20) * z;
                     v[1] = FastSin(f20) * z;
                     v[2] = 15.0f;
-                    FastVecAdd(v, v, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
+                    FastVecAdd(v, v, &g_hero.motion.pos);
                     n = scale_ticks(240);
                     spawn_debris_moby(v, veldin2_zero_vec, 0x2B8, n, *(float *)&veldin2_moby_group_debris_scale, 2.0f,
                                       1.0f, 0.75f, 0);
@@ -343,7 +345,7 @@ void update_glow_moby_state_and_voice(unsigned char *m) {
                     if (Sound_IsPlaying(m, moby_vars[1]) != 0) {
                         int i = moby_vars[1];
                         if (i != -1) {
-                            VoiceSlot *voice_slot_entry = (VoiceSlot *)(hero_globals_base + 0x1D + i * 0x70);
+                            VoiceSlot *voice_slot_entry = (VoiceSlot *)(voice_pool + i * 0x70);
                             if (voice_slot_entry->owner == (void *)m && voice_slot_entry->playing != 0) {
                                 Sound_StopSlot(i);
                             }
@@ -536,7 +538,7 @@ void update_lift_state_and_queue_draw(unsigned char *m) {
             ApproachWithVelocity(d->f0, g_frame_time_sq * 4.0f, g_frame_time_sq * 4.0f, g_frame_time * 4.0f,
                                  (float *)(m + 0x18), (float *)((char *)d + 0x18));
             if (FastAbsF(((Moby *)m)->pos.z - d->f0) > 0.1f) {
-                struct Hero *b = (struct Hero *)(hero_globals_base + 0xE1D);
+                struct Hero *b = &g_hero;
                 if ((unsigned)(b->state.control_mode - 0x11) < 2) {
                     float f = ((Moby *)m)->pos.z;
                     if (b->water_surface_z < f) {
@@ -1994,7 +1996,7 @@ void drek_final_boss_robot_update(Moby *moby) {
 void count_drek_boss_platform_event_once(char *moby) {
     struct BossData *d = (struct BossData *)((Moby *)moby)->pvars;
     if (d->platform_event_done == 0) {
-        struct Hero *a = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *a = &g_hero;
         if (a->grounded_frames != 0) {
             d->ground_platform = *(int *)&a->ground_moby;
         }
@@ -2097,7 +2099,7 @@ void update_drek_boss_damage_and_phase_transitions(char *moby) {
                     step = step * 3.0f;
                 }
             }
-            if (((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.control_mode == 0xF) {
+            if (g_hero.state.control_mode == 0xF) {
                 boss_data->f390 = boss_data->f390 + step;
             } else {
                 *(float *)boss_data->p394 = *(float *)boss_data->p394 + step;
@@ -2131,7 +2133,7 @@ void update_drek_boss_damage_and_phase_transitions(char *moby) {
                     if (Sound_IsPlaying(moby, boss_data->f3B0) != 0) {
                         int i = boss_data->f3B0;
                         if (i != -1) {
-                            char *e = hero_globals_base + 0x1D + i * 0x70;
+                            char *e = voice_pool + i * 0x70;
                             if (*(char **)(e + 0x88) == moby && *(unsigned char *)(e + 0x74) != 0) {
                                 Sound_StopSlot(i);
                             }
@@ -2178,7 +2180,7 @@ void update_drek_boss_damage_and_phase_transitions(char *moby) {
         FindNearestEligibleMoby(512.0f, moby, (char *)boss_data->f70, 0, 0, e + 4, e[0]);
     }
     if (boss_data->fB0 == 0) {
-        boss_data->fB0 = *(Moby **)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby;
+        boss_data->fB0 = *(Moby **)&g_hero.moby;
     }
     {
         int type = ((Moby *)moby)->state;
@@ -2275,7 +2277,7 @@ void update_drek_boss_damage_and_phase_transitions(char *moby) {
                 if (Sound_IsPlaying(moby, boss_data->f3B0) != 0) {
                     int i = boss_data->f3B0;
                     if (i != -1) {
-                        char *e = hero_globals_base + 0x1D + i * 0x70;
+                        char *e = voice_pool + i * 0x70;
                         if (*(char **)(e + 0x88) == moby && *(unsigned char *)(e + 0x74) != 0) {
                             Sound_StopSlot(i);
                         }
@@ -2286,8 +2288,7 @@ void update_drek_boss_damage_and_phase_transitions(char *moby) {
                     MobyBlendAnimation(moby, 0, 0, scale_ticks(0x14));
                 }
                 boss_data->f330 = find_thruster_pack_lock_green_moby_with_largest_xy_angle_in_list(
-                    (float *)boss_data->f3C0,
-                    (float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos), boss_data->f200);
+                    (float *)boss_data->f3C0, (float *)(&g_hero.motion.pos), boss_data->f200);
                 *(int *)&boss_data->f390 = 0;
                 *(int *)boss_data->p394 = 0;
             }
@@ -2333,7 +2334,7 @@ extern short drek_boss_follow_distance;
 void update_drek_boss_hero_follow_movement(char *m) {
     float v[4];
     struct BossData *d = (struct BossData *)((Moby *)m)->pvars;
-    char *b = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
+    char *b = &g_hero.motion.pos;
     float t;
     float lo, hi;
     FastVecSub(v, b, veldin2_arena_nodes + (d->f344 << 7) + 0x30);
@@ -2344,7 +2345,7 @@ void update_drek_boss_hero_follow_movement(char *m) {
         ClampVectorLength(v, *(float *)&drek_boss_arena_radius);
     }
     FastVecAdd(v, v, veldin2_arena_nodes + (d->f344 << 7) + 0x30);
-    t = ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.speed_xy;
+    t = g_hero.motion.speed_xy;
     t += (vec_distance_xy(m + 0x10, v) - *(float *)&drek_boss_follow_distance) / *(float *)&drek_boss_follow_distance *
          (g_frame_time * 4.75f);
     hi = g_frame_time * 20.0f;
@@ -2584,8 +2585,7 @@ int select_drek_boss_next_action(char *moby) {
             if (data->f364 != 0) {
                 ok = 0;
             } else {
-                float d = vec_distance_xy(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                          veldin2_arena_nodes + data->f250[3] * 128 + 0x30);
+                float d = vec_distance_xy(&g_hero.motion.pos, veldin2_arena_nodes + data->f250[3] * 128 + 0x30);
                 if (*(float *)&drek_boss_arena_radius + 2.0f < d)
                     ok = 0;
             }
@@ -2658,7 +2658,7 @@ void update_drek_boss_state_dependent_scalars(char *moby) {
     unsigned char st;
 
     fast_dec_timer(&d->f360);
-    f = vec_distance_xy(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, d->f3C0);
+    f = vec_distance_xy(&g_hero.motion.pos, d->f3C0);
     if (f > *(float *)&drek_boss_scalar_blend_max_hero_distance_gp) {
         f = *(float *)&drek_boss_scalar_blend_max_hero_distance_gp;
     } else if (f < *(float *)&drek_boss_scalar_blend_min_hero_distance_gp) {
@@ -2676,7 +2676,7 @@ void update_drek_boss_state_dependent_scalars(char *moby) {
         *(float *)&drek_boss_second_scalar_near_hero_target_gp;
     st = ((Moby *)moby)->state;
     if (st == 0x13) {
-        struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *g = &g_hero;
         if ((g->state.control_mode == 0xF || g->state.current == HERO_STATE_GRIND_COLLISION_RECOVERY) && d->f364 == 0 &&
             d->f390 <= 25.0f && d->f360 == 0) {
             x = *(float *)&drek_boss_first_scalar_gated_follow_target_gp;
@@ -2690,8 +2690,7 @@ void update_drek_boss_state_dependent_scalars(char *moby) {
             p1 = (float *)(t + 0x38);
             p3 = &d->cam_height_vel;
             p2 = &d->cam_dist_vel;
-            if (vec_distance_xy(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                veldin2_arena_nodes + (d->f344 << 7) + 0x30) < 28.0f) {
+            if (vec_distance_xy(&g_hero.motion.pos, veldin2_arena_nodes + (d->f344 << 7) + 0x30) < 28.0f) {
                 x = *(float *)&drek_boss_first_scalar_near_node_follow_target_gp;
                 y = *(float *)&drek_boss_cam_node_height;
             }
@@ -2713,7 +2712,7 @@ void update_drek_boss_state_dependent_scalars(char *moby) {
             char *m;
             if (d->stood_on_platform == 0) {
                 char *pl;
-                g = (struct Hero *)(hero_globals_base + 0xE1D);
+                g = &g_hero;
                 pl = *(char **)&g->ground_moby;
                 if (pl != 0 && *(short *)(pl + 0xA6) == 0x24B) {
                     d->stood_on_platform = 1;

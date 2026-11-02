@@ -15,9 +15,10 @@
 #include "overlays/shared/vendor_menu.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+extern Hero g_hero;
 
 LINKER_REMNANT("asm/overlays", func_L02_0021A2E0);
-extern char hero_globals_base[];
+
 extern float g_frame_time MACRO_ADDR;
 extern float aridia_hero_speed_bands[];
 extern void stick_target(int, float);
@@ -26,7 +27,7 @@ extern void stick_target(int, float);
 void update_hero_stick_target_magnitude(void) {
     struct Hero *x;
     stick_target(0, 1.0f);
-    x = (struct Hero *)(hero_globals_base + 0xE1D);
+    x = &g_hero;
     if (x->state.current == 0x3F) {
         float two = g_frame_time + g_frame_time;
         float v = g_frame_time * 3.5f * x->target_speed;
@@ -69,7 +70,7 @@ void Hero_ApplyMotionCollisionL02(void) {
     Hero *contact_player;
     Hero *motion_player;
     Hero *cap_player;
-    float *start = (float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
+    float *start = (float *)(&g_hero.motion.pos);
     float *position;
     float *horizontal;
     float *extra_step;
@@ -94,7 +95,7 @@ void Hero_ApplyMotionCollisionL02(void) {
             if (limit < length)
                 vec_scale_to_length(start, start, limit);
         }
-        position = (float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.velocity);
+        position = (float *)(&g_hero.motion.velocity);
         magnitude = gravity_z(position);
         limit = -*(float *)((char *)position + 0x1FC);
         if (magnitude < limit) {
@@ -116,7 +117,7 @@ void Hero_ApplyMotionCollisionL02(void) {
             }
         }
     }
-    position = (float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
+    position = (float *)(&g_hero.motion.pos);
     FastVecAdd(position, position, (char *)position + 0x60);
     extra_step = (float *)((char *)position + 0x8A0);
     FastVecAdd(position, position, extra_step);
@@ -132,7 +133,7 @@ void Hero_ApplyMotionCollisionL02(void) {
     } else {
         Hero_UpdateGroundContact();
     }
-    position = (float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.resolved_velocity);
+    position = (float *)(&g_hero.motion.resolved_velocity);
     new_position = (float *)((char *)position - 0x90);
     horizontal = (float *)((char *)position + 0x20);
     FastVecSub(position, new_position, previous.f);
@@ -196,7 +197,7 @@ void Hero_ApplyMotionCollisionL02(void) {
         else if (motion_player->motion.move_slope < -0.5f)
             motion_player->motion.move_slope = -0.5f;
     }
-    cap_player = (Hero *)(hero_globals_base + 0xE1D);
+    cap_player = &g_hero;
     magnitude = g_frame_time * 52.0f;
     if (magnitude < cap_player->motion.speed_xy) {
         FastVecScale(cap_player->motion.displacement.f, cap_player->motion.displacement.f,

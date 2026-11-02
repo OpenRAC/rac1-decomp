@@ -9,6 +9,8 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "game/moby/mobyutil.h"
 #include "overlays/shared/moby_ground_collision.h"
+extern Hero g_hero;
+extern char weapon_ammo_counts[];
 
 /* The NTSC decomp's matched C for the same instructions (FUN_L07_0031a9e8), carried to PAL's
    names by OpenRAC's tools/port.py. Not a PAL match: exact alone, but its file's other functions stop matching with it
@@ -311,8 +313,6 @@ extern Path *umbris_paths_r[] __asm__("D_L07_001B0830");
 extern char D_L07_001C43B0[];
 extern int D_L07_00161D30_31E6B0 SDATA(D_L07_00161D30);
 extern Moby256_31E6B0 *level_mobys_r __asm__("D_L07_00160058") MACRO_ADDR;
-extern unsigned char D_0013E633[];
-extern unsigned char D_0013D50F[];
 
 // Update for moby class 1142 on level 07: measures its path once, then places sparks for the listed counters.
 void update_equalizer_ammo_spawner(SparkMoby *moby) {
@@ -358,13 +358,12 @@ void update_equalizer_ammo_spawner(SparkMoby *moby) {
         int done;
         int i, k, m, n, rem;
         float have, max, ratio, at, a, b, v, c, near, step;
-        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, d->vol) ==
-            0) {
+        if (is_point_inside_clip_volume(&g_hero.motion.pos, d->vol) == 0) {
             return;
         }
         for (i = 0; (&D_L07_00161D30_31E6B0)[i] != -1; i++) {
             k = (&D_L07_00161D30_31E6B0)[i];
-            have = IntToFloat(((int *)(menu_item_enabled_115 + 0x21))[k]);
+            have = IntToFloat(((int *)weapon_ammo_counts)[k]);
             max = IntToFloat(((Ent *)umbris_item_price_table)[k].max);
             ratio = have / max;
             at = random_float_between_r(0.0f, d->total);

@@ -18,6 +18,8 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+extern char gSpecialItems[];
+extern Hero g_hero;
 
 /* Colored half-scale moby: owner and fading-particle color. */
 struct HalfScaleMobyVars {
@@ -564,7 +566,7 @@ extern unsigned char help_stats_base_r[] __asm__("D_0014171B");
 extern int moby_killed_r[] __asm__("D_L01_001BAC60");
 extern int g_current_level_index_r2 __asm__("D_0015EE84") MACRO_ADDR;
 extern float g_frame_time_r2 __asm__("D_0015EE6C") MACRO_ADDR;
-extern unsigned char D_0013D355[];
+
 extern V3_2FBBD8 D_L01_00161D00;
 extern LvState novalis_checkpoint_level_state_r __asm__("D_L01_001BB9C0");
 
@@ -654,7 +656,7 @@ void destroyable_cave_wall_update(char *moby) {
              ((((short)cave_wall_moby->save_id) >> 5) * 4 + (g_current_level_index_r2 << 8))) |=
         1 << (cave_wall_moby->save_id & 0x1F);
     moby_killed_r[((short)cave_wall_moby->save_id) >> 5] |= 1 << (cave_wall_moby->save_id & 0x1F);
-    p = (unsigned char *)special_items_base + 0x13B;
+    p = gSpecialItems;
     p[0xE] = 1;
     DeleteMoby_r(cave_wall_moby);
 }
@@ -790,7 +792,7 @@ void agnogg_ship_front_update(Moby *moby) {
                 moby->collision = ((Class_2FC140 *)moby->pclass)->f10;
             } else {
                 if (novalis_game_mode_r == 0) {
-                    unsigned char *pp = special_items_base + 0x13B;
+                    unsigned char *pp = gSpecialItems;
                     if (pp[0xF] == 0) {
                         StartCutscene_r(5);
                         pp[0xF] = 1;
@@ -1398,7 +1400,7 @@ typedef struct {
     float t;
     float radius;
 } HoverVars;
-extern char hero_globals_base[];
+
 extern float vec_distance_xy(void *, void *);
 
 extern float FastCos(float);
@@ -1419,7 +1421,7 @@ void door_left_update(Moby *m) {
             m->state = 1;
             break;
         case 1:
-            player = (V *)(&((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos);
+            player = (V *)(&g_hero.motion.pos);
             if (vec_distance_xy(v, player) < v->radius && FastAbsF(m->pos.z - player->f[2]) < 2.0f) {
                 m->state = 2;
                 if (m->oclass == MOBY_CLASS_DOOR_LEFT) {
@@ -1436,7 +1438,7 @@ void door_left_update(Moby *m) {
             break;
         case 3:
             k = 1.1f;
-            if (vec_distance_xy(v, &((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos) > v->radius * k &&
+            if (vec_distance_xy(v, &g_hero.motion.pos) > v->radius * k &&
                 vec_distance_xy(v, camera_pos) > v->radius * k) {
                 m->state = 4;
                 if (m->oclass == MOBY_CLASS_DOOR_LEFT) {
@@ -1445,7 +1447,7 @@ void door_left_update(Moby *m) {
             }
             break;
         case 4:
-            player = (V *)(&((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos);
+            player = (V *)(&g_hero.motion.pos);
             if (vec_distance_xy(v, player) < v->radius && FastAbsF(m->pos.z - player->f[2]) < 2.0f) {
                 m->state = 2;
             } else {

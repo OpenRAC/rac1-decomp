@@ -22,6 +22,7 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+extern char cd_read_state[];
 
 extern char help_popup_state[] NOT_SDA;
 typedef struct {
@@ -73,7 +74,7 @@ int Help_Request(int a, int b) {
     c = *(int *)(help_popup_state + 0x24);
     if (c != -1)
         return 0;
-    h = help_stats_base + 0x100B5;
+    h = cd_read_state;
     if (*(int *)(h + 0x50) != 0)
         return 0;
     if (*(int *)(h + 0x1C) != c)
@@ -92,7 +93,7 @@ void clear_active_help_record(void) {
     if (*(int *)(help_popup_state) != 0) {
         int v = *(int *)((char *)(*(int *)(help_popup_state + 0x20) << 4) + (int)help_text_entries + 8);
         if (v != -1) {
-            char *g = (char *)help_stats_base + 0x100B5;
+            char *g = cd_read_state;
             if (v == *(short *)(g + 0x54) - 0x7530) {
                 if ((unsigned)(*(unsigned short *)(g + 0x5A) - 6) >= 2)
                     *(short *)(g + 0x5A) = 5;

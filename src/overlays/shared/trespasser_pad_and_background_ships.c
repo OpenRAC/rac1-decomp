@@ -19,6 +19,11 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+extern char gHeroPos[];
+extern char gSkillPoints[];
+extern struct Hero g_hero;
+extern char hero_current_state[];
+extern char hero_vehicle_mode[];
 
 /* Trespasser puzzle: three rings of 12 slots, marker ring and the rotation state. */
 struct TrespasserPuzzleVars {
@@ -691,7 +696,7 @@ void align_hero_to_tresspasser_pad(struct Moby *moby) {
     float lim;
     struct Hero *p;
     Moby_GetJointWorldPos(moby, 0, v);
-    g = hero_globals_base + 0xE9D;
+    g = gHeroPos;
     FastVecSub(v, v, g);
     ClampVectorLength(v, g_frame_time * 4.0f);
     FastVecAdd(g, g, v);
@@ -703,7 +708,7 @@ void align_hero_to_tresspasser_pad(struct Moby *moby) {
     } else if (f < -lim) {
         f = -lim;
     }
-    p = (struct Hero *)(hero_globals_base + 0xE1D);
+    p = &g_hero;
     p->motion.rot.f[2] = FastAddRots(f, p->motion.rot.f[2]);
 }
 extern void draw_tresspasser_puzzle_ring_arc(int, u32, float, float, float, float);
@@ -1697,7 +1702,7 @@ void tresspasser_update(char *moby) {
             if (frame_counter_ref % 10 != 0) {
                 break;
             }
-            g = hero_globals_base + 0xE9D;
+            g = gHeroPos;
             if (!(vec_distance_xy(moby + 0x10, g) < 1.0f)) {
                 break;
             }
@@ -1721,7 +1726,7 @@ void tresspasser_update(char *moby) {
             if (aridia_cinematic_mode == 2) {
                 break;
             }
-            if (*(unsigned char *)(hero_globals_base + 0x2EC1) != 0) {
+            if (*(unsigned char *)hero_vehicle_mode != 0) {
                 if (sel == 0x16) {
                     grant_inventory_item(0x16, 0);
                     aridia_banner_display_ticks = 0;
@@ -1737,7 +1742,7 @@ void tresspasser_update(char *moby) {
                 Help_Request(0x7D9, 0x13);
                 aridia_fade_level = 1.0f;
                 moby[0x20] = 4;
-                Hero_ResetToPosition(hero_globals_base + 0xE9D, hero_globals_base + 0xE9D + 0x10, 0x72, 1);
+                Hero_ResetToPosition(gHeroPos, gHeroPos + 0x10, 0x72, 1);
             } else {
                 memcard_Save(0, -1);
                 DeleteMoby(moby);
@@ -1786,7 +1791,7 @@ void tresspasser_update(char *moby) {
                 ApproachValue(&aridia_fade_level, 0.0f, g_frame_time * 4.0f);
             }
             if (aridia_fade_level == 1.0f) {
-                Hero_ResetToPosition(hero_globals_base + 0xE9D, hero_globals_base + 0xE9D + 0x10, 0, 0);
+                Hero_ResetToPosition(gHeroPos, gHeroPos + 0x10, 0, 0);
                 CameraScript2(0);
                 moby[0x20] = 5;
             }
@@ -2041,7 +2046,7 @@ void background_ship_1_update(char *moby) {
             if (g_current_level_index_r == LEVEL_ARIDIA) {
                 aridia_skill_ship_kills = aridia_skill_ship_kills + 1;
                 if (aridia_skill_ship_kills >= 3) {
-                    unsigned char *p = menu_item_enabled_115 + 1;
+                    unsigned char *p = gSkillPoints;
                     if (p[2] == 0) {
                         p[2] = 1;
                         PlayBankSound(1, 0, 0);
@@ -2050,10 +2055,10 @@ void background_ship_1_update(char *moby) {
                 }
             }
             if (g_current_level_index_r == LEVEL_GASPAR) {
-                if (*(int *)(hero_globals_base + 0x2EA1) == 0x32) {
+                if (*(int *)hero_current_state == 0x32) {
                     gaspar_skill_ship_kills = gaspar_skill_ship_kills + 1;
                     if (gaspar_skill_ship_kills >= 5) {
-                        unsigned char *p = menu_item_enabled_115 + 1;
+                        unsigned char *p = gSkillPoints;
                         if (p[0xF] == 0) {
                             p[0xF] = 1;
                             PlayBankSound(1, 0, 0);
@@ -2272,7 +2277,7 @@ void background_ship_2_update(char *moby) {
             break;
         }
         case 1:
-            if (*(unsigned char *)(hero_globals_base + 0x2EC1) == 1 && g_current_level_index_r == LEVEL_ORXON) {
+            if (*(unsigned char *)hero_vehicle_mode == 1 && g_current_level_index_r == LEVEL_ORXON) {
                 DeleteMoby(moby);
                 return;
             }
@@ -2318,7 +2323,7 @@ void background_ship_2_update(char *moby) {
             if (g_current_level_index_r == LEVEL_ARIDIA) {
                 aridia_skill_ship_kills = aridia_skill_ship_kills + 1;
                 if (aridia_skill_ship_kills >= 3) {
-                    unsigned char *p = menu_item_enabled_115 + 1;
+                    unsigned char *p = gSkillPoints;
                     if (p[2] == 0) {
                         p[2] = 1;
                         PlayBankSound(1, 0, 0);
@@ -2327,10 +2332,10 @@ void background_ship_2_update(char *moby) {
                 }
             }
             if (g_current_level_index_r == LEVEL_GASPAR) {
-                if (*(int *)(hero_globals_base + 0x2EA1) == 0x32) {
+                if (*(int *)hero_current_state == 0x32) {
                     gaspar_skill_ship_kills = gaspar_skill_ship_kills + 1;
                     if (gaspar_skill_ship_kills >= 5) {
-                        unsigned char *p = menu_item_enabled_115 + 1;
+                        unsigned char *p = gSkillPoints;
                         if (p[0xF] == 0) {
                             p[0xF] = 1;
                             PlayBankSound(1, 0, 0);
@@ -2619,7 +2624,7 @@ void try_select_camera_offset_effect_moby(char *m) {
     if (*(short *)(p + 0x86) == 0) {
         if (!(0.05f < FastAbsF(*(float *)(pad_globals_base + 0x2564)))) {
             h = g + 0x380;
-            FastVecSub(v, m + 0x10, hero_globals_base + 0xE9D);
+            FastVecSub(v, m + 0x10, gHeroPos);
             d = FastVecLength(v);
             if (d < 22.0f) {
                 if (0.0f < d) {

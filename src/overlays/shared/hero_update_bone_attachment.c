@@ -17,6 +17,7 @@
 #include "game/ui/hud.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+extern Hero g_hero;
 
 extern unsigned char hero_globals_base[];
 extern unsigned char gCheats[] MACRO_ADDR;
@@ -52,7 +53,7 @@ void update_hero_and_vehicle_mode_effects(void) {
     hero_update();
     Hero_UpdateAimFlags();
     HeroL15_UpdateStateTransitions();
-    b0 = hero_globals_base + 0xE1D;
+    b0 = (char *)&g_hero;
     if (((struct Hero *)b0)->vehicle_mode == 0)
         return;
     update_hero_delayed_voice_requests();
@@ -79,7 +80,7 @@ void update_hero_and_vehicle_mode_effects(void) {
         }
     }
 
-    b1 = hero_globals_base + 0xE1D;
+    b1 = (char *)&g_hero;
     if (b1[0x20A4] == 3) {
         if (gCheats[1] != 0)
             quartu_hero_bones_30_scale = 1.9f;
@@ -94,7 +95,7 @@ void update_hero_and_vehicle_mode_effects(void) {
         red = truncate_float_to_s32(pulse * 20.0f) + 0x32;
         green = truncate_float_to_s32(pulse * 70.0f) + 0xB4;
         blue = truncate_float_to_s32(pulse * 10.0f);
-        b2 = hero_globals_base + 0xE1D;
+        b2 = (char *)&g_hero;
         moby = *(unsigned char **)(b2 + 0x2080);
         if (red > 0xFF)
             red = 0xFF;
@@ -106,15 +107,15 @@ void update_hero_and_vehicle_mode_effects(void) {
             color = (alpha << 24) | (blue << 16) | ((red / 2) << 8) | green;
         else
             color = (alpha << 24) | (blue << 16) | (green << 8) | red;
-        b3 = hero_globals_base + 0xE1D;
+        b3 = (char *)&g_hero;
         *(unsigned int *)(*(unsigned char **)(b3 + 0x2080) + 0x90) =
             FastTweenColor(0.1f, *(unsigned int *)(*(unsigned char **)(b3 + 0x2080) + 0x90), color);
         for (i = 0; i < 3; i++) {
-            b4 = hero_globals_base + 0xE1D;
+            b4 = (char *)&g_hero;
             Moby_GetJointWorldPos(*(void **)(b4 + 0x2080), i, b4 + 0x1D50 + i * 16);
         }
         alpha = 0x30;
-        b4 = hero_globals_base + 0xE1D;
+        b4 = (char *)&g_hero;
         {
             unsigned char *mb = *(unsigned char **)(b4 + 0x2080);
             blue = mb[0x92];
@@ -135,7 +136,7 @@ void update_hero_and_vehicle_mode_effects(void) {
                     *(short *)(b4 + 0x22DC) = 1;
                 }
             } else {
-                b5 = hero_globals_base + 0xE1D;
+                b5 = (char *)&g_hero;
                 *(int *)(b5 + 0x20B8) = 0;
                 if (b5[0x12E7] != 0 && *(int *)(b5 + 0x300) != 0 && gHaveMorphORay[7] != 0 &&
                     *(short *)(b5 + 0x22DE) == 0) {
@@ -147,7 +148,7 @@ void update_hero_and_vehicle_mode_effects(void) {
         }
     }
     update_hero_moby_probed_height_bounds();
-    b6 = hero_globals_base + 0xE1D;
+    b6 = (char *)&g_hero;
     apply_env_zone_lighting(*(void **)(b6 + 0x2080));
 }
 extern unsigned char hero_globals_base[];
@@ -176,7 +177,7 @@ typedef int u128 __attribute__((mode(TI)));
 
 // Per-frame update of the camera-attached moby position.
 void update_hero_bobbing_and_target_position(void) {
-    struct Hero *base = (struct Hero *)(hero_globals_base + 0xE1D);
+    struct Hero *base = &g_hero;
     if (base->state.current == 0x6B && base->hoverboard_airborne == 0) {
         char *m;
         float v[4];
@@ -206,7 +207,7 @@ extern void HeroQuartu_TrySetMoveState(int, int);
 
 /* Reset the help prompt state and show the default message unless the level is in a special phase. */
 void restore_saved_hero_moby_and_clear_vehicle_mode(void) {
-    struct Hero *base = (struct Hero *)(hero_globals_base + 0xE1D);
+    struct Hero *base = &g_hero;
     struct Hero *b;
     int p;
     void *q;
@@ -219,7 +220,7 @@ void restore_saved_hero_moby_and_clear_vehicle_mode(void) {
         }
     }
     reset_hero_easing_records();
-    b = (struct Hero *)(hero_globals_base + 0xE1D);
+    b = &g_hero;
     p = *(int *)&b->unkA84;
     b->vehicle_mode = 0;
     if (p != 0) {
@@ -310,7 +311,7 @@ void adjust_hero_planar_velocity_from_probes(int arg) {
     float c[4] __attribute__((aligned(16)));
     float b[4] __attribute__((aligned(16)));
     float d[4] __attribute__((aligned(16)));
-    char *base = hero_globals_base + 0xE1D;
+    char *base = (char *)&g_hero;
     char *b2, *h1;
     float f2, f21, f20;
     int r18, r;
@@ -327,7 +328,7 @@ void adjust_hero_planar_velocity_from_probes(int arg) {
         f2 = 1.5f;
         f21 = 5.0f;
     }
-    base = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
+    base = &g_hero.motion.pos;
     qcopy(a, base);
     a[2] = a[2] + f2;
     qcopy(b, base);
@@ -350,13 +351,13 @@ void adjust_hero_planar_velocity_from_probes(int arg) {
     FastVecAdd(c, c, a);
     r18 = -1;
     FastVecAdd(d, d, b);
-    b2 = hero_globals_base + 0xE1D;
+    b2 = (char *)&g_hero;
     if (coll_line(b, d, 4, *(int *)&((struct Hero *)b2)->moby, 0)) {
         if (*(int *)quartu_coll_hit_type > 0)
             r18 = CollType();
     }
     f20 = 0.0f;
-    b2 = hero_globals_base + 0xE1D;
+    b2 = (char *)&g_hero;
     if (coll_line(a, c, 4, *(int *)&((struct Hero *)b2)->moby, 0)) {
         char *q = quartu_coll_hit;
         if (*(int *)(q + 0x1C) > 0)
@@ -364,7 +365,7 @@ void adjust_hero_planar_velocity_from_probes(int arg) {
     }
     if (f20 >= 0.87266463f || r18 == 8 || r18 == 12) {
         float f;
-        struct Hero *b3 = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *b3 = &g_hero;
         char *q2 = quartu_coll_hit;
         *(float *)(q2 + 0x48) = 0.0f;
         b3->unk240 = *(int *)(q2 + 0x18);

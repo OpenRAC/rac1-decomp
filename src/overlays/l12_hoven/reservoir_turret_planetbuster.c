@@ -27,6 +27,8 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+extern char gSpecialItems[];
+extern struct Hero g_hero;
 
 /* Planetbuster Maximus: sways along its path while its parts, guns and camera cut-in run. */
 struct PlanetbusterVars {
@@ -2535,7 +2537,6 @@ void homing_mine_spawner_update(Moby *m) {
             break;
     }
 }
-extern char hero_globals_base[] NOT_SDA;
 
 extern int FindNearestTargetMoby(char *, char *, float);
 
@@ -2560,7 +2561,7 @@ void update_homing_mine_spawner_target(char *m) {
             }
         }
         if (spawner_data->target == 0) {
-            pad = (struct Hero *)(hero_globals_base + 0xE1D);
+            pad = &g_hero;
             spawner_data->target = *(int *)&pad->moby;
             qcopy(&spawner_data->target_pos, &pad->motion.pos);
         }
@@ -2625,8 +2626,7 @@ void update_moby_draw_and_monitor_linked_state(struct Moby *m) {
             break;
     }
 }
-extern char special_items_base[];
-extern char hero_globals_base[];
+
 extern int hoven_frame_count MACRO_ADDR;
 extern char hoven_cutscene_hero_pos[];
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
@@ -2644,12 +2644,12 @@ void trigger_scene_once_in_clip_volume(char *moby) {
     char *p;
     char *q;
     if (hoven_frame_count != 0 && hoven_cinematic_mode == 0) {
-        base = special_items_base + 0x13B;
+        base = gSpecialItems;
         if (*(unsigned char *)(((struct TriggerSceneOnceInClipVolumeVars *)data)->unk_04 + base + 0x5C) != 0) {
             DeleteMoby(moby);
             return;
         }
-        p = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
+        p = &g_hero.motion.pos;
         if (is_point_inside_clip_volume(p, *(int *)data) != 0) {
             *(char *)(((struct TriggerSceneOnceInClipVolumeVars *)data)->unk_04 + base + 0x5C) = 1;
             qcopy(hoven_cutscene_hero_pos, p);

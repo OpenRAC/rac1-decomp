@@ -22,6 +22,15 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+extern char gSkillPoints[];
+extern char gSpecialItems[];
+extern char g_controller_state[];
+extern Hero g_hero;
+extern char help_records[];
+extern char level_moby_killed[];
+extern char pad0_pressed[];
+extern char sound_probe_ignore[];
+extern char voice_pool[];
 
 /* Airship part: placed at its source's position. */
 struct AirshipPartVars {
@@ -369,7 +378,7 @@ extern float multiply_global_factor(float);
 extern int func_001FA898(float);
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
-extern char special_items_base[];
+
 extern unsigned char hero_globals_base[];
 extern char airship_part_no_parent_msg[];
 extern Pair airship_part_smoke_colors;
@@ -415,7 +424,7 @@ void update_airship_part(Moby *moby) {
             float s;
 
             Moby_GetJointWorldPos(moby, 0, vec);
-            if (d->f68 != -1 && ((Flags *)(special_items_base + 0x13B + d->f68))->b39 != 0) {
+            if (d->f68 != -1 && ((Flags *)(gSpecialItems + d->f68))->b39 != 0) {
                 DeleteMoby(moby);
                 return;
             }
@@ -494,9 +503,9 @@ void update_airship_part(Moby *moby) {
         }
         case 3: {
             FastDecTimer(&d->h2A);
-            ((Flags *)(special_items_base + 0x13B))->b38 = 1;
+            ((Flags *)gSpecialItems)->b38 = 1;
             if (d->f68 != -1) {
-                ((Flags *)(special_items_base + 0x13B + d->f68))->b39 = 1;
+                ((Flags *)(gSpecialItems + d->f68))->b39 = 1;
             }
             SetDeathBits(moby, 0x200, -1);
             SpawnExplosionFx(moby, ((f32 *)&moby->pos), -1, 4.0f, 13.0f);
@@ -506,7 +515,7 @@ void update_airship_part(Moby *moby) {
             Moby_GetJointWorldPos(moby, 0, vec);
             FastVecSub(d->vel, ((f32 *)&moby->pos), vec);
             FastVecScale(d->vel, d->vel, G161430_3858 * g_frame_time / 20.0f);
-            FastVecSub(buf.m[0], vec, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
+            FastVecSub(buf.m[0], vec, &g_hero.motion.pos);
             if (moby->oclass >= 0x4A1 && moby->oclass <= 0x4A2) {
                 vec_scale_to_length(buf.m[0], buf.m[0], G161440_3858 * g_frame_time);
             } else {
@@ -930,7 +939,7 @@ void update_falling_asteroid(Moby *m) {
                 if (h != 0) {
                     Sound_SetPitchBend(h, 0x800);
                 }
-                if (((Hero *)(hero_globals_base + 0xE1D))->state.current != 0x32) {
+                if (g_hero.state.current != 0x32) {
                     float dist = FastVecDist(d->pos, gaspar_camera_pos);
                     if (dist < 15.0f) {
                         Cam *c = (Cam *)((char *)gaspar_camera_pos - 0x140);
@@ -1001,7 +1010,7 @@ void update_falling_asteroid(Moby *m) {
                 if (h != 0) {
                     Sound_SetPitchBend(h, 0x800);
                 }
-                if (((Hero *)(hero_globals_base + 0xE1D))->state.current != 0x32) {
+                if (g_hero.state.current != 0x32) {
                     float dist = FastVecDist(d->pos, gaspar_camera_pos);
                     if (dist < 15.0f) {
                         Cam *c = (Cam *)((char *)gaspar_camera_pos - 0x140);
@@ -1863,7 +1872,7 @@ void update_level09_item_unlock_and_frame_record(char *moby) {
     int n;
     if (gaspar_frame_count > 0) {
         if (airship_parts_alive_count == 0) {
-            q = menu_item_enabled_115 + 1;
+            q = gSkillPoints;
             if (q[0xE] == 0) {
                 q[0xE] = 1;
                 PlayBankSound(1, 0, 0);
@@ -1876,7 +1885,7 @@ void update_level09_item_unlock_and_frame_record(char *moby) {
             airship_parts_alive_count = 0;
         }
     }
-    b = help_stats_base + 0x34D;
+    b = help_records;
     tp = (unsigned short *)(b + 0x2D8);
     if (*tp == 0) {
         if (gHaveHeliPack[9] != 0) {
@@ -1887,8 +1896,7 @@ void update_level09_item_unlock_and_frame_record(char *moby) {
             *(unsigned short *)(b + 0x2DA) = scale_ticks(gameplay_event_frame_count) / 600;
         }
         *(int *)(b + 0x2DC) = *(int *)(b + 0x2DC) | (1 << g_current_level_index_m) | 0x80000000;
-        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, *data) !=
-            0) {
+        if (is_point_inside_clip_volume(&g_hero.motion.pos, *data) != 0) {
             Help_Request(0x2329, 0x5B);
         }
     }
@@ -1951,13 +1959,12 @@ void PathPlatformL09_Update(unsigned char *moby) {
     path = gaspar_paths[data->path_index];
     if (data->clip_volume != -1) {
         unsigned short id;
-        if (is_point_inside_clip_volume(&((Hero *)(hero_globals_base + 0xE1D))->motion.pos, data->clip_volume) ||
+        if (is_point_inside_clip_volume(&g_hero.motion.pos, data->clip_volume) ||
             gaspar_collected_flags_base.collected[(short)(id = m->save_id)] != 0 ||
-            ((*(int *)(help_stats_base + 0xAB75 + (g_current_level_index << 8) + (((short)id >> 5) << 2))) >>
-             (id & 0x1F)) &
+            ((*(int *)(level_moby_killed + (g_current_level_index << 8) + (((short)id >> 5) << 2))) >> (id & 0x1F)) &
                 1) {
             if (data->clip_volume != -1) {
-                (*(int *)(help_stats_base + 0xAB75 + (g_current_level_index << 8) + (((short)m->save_id >> 5) << 2))) |=
+                (*(int *)(level_moby_killed + (g_current_level_index << 8) + (((short)m->save_id >> 5) << 2))) |=
                     1 << (m->save_id & 0x1F);
                 gaspar_moby_killed[(short)m->save_id >> 5] |= 1 << (m->save_id & 0x1F);
                 data->clip_volume = -1;
@@ -1996,8 +2003,8 @@ void PathPlatformL09_Update(unsigned char *moby) {
             if (on) {
                 float far;
                 if ((data->unkB8 != 0 && is_hero_on_moby(moby)) ||
-                    (far = FastVecDist(&((Hero *)(hero_globals_base + 0xE1D))->motion.pos, path + *(int *)path * 16),
-                     FastVecDist(&((Hero *)(hero_globals_base + 0xE1D))->motion.pos, path + 0x10) < far)) {
+                    (far = FastVecDist(&g_hero.motion.pos, path + *(int *)path * 16),
+                     FastVecDist(&g_hero.motion.pos, path + 0x10) < far)) {
                     if (data->unkC8 == 0 && is_hero_on_moby(moby)) {
                         HeroEnterMoveState(0x72, 1);
                     }
@@ -2011,9 +2018,8 @@ void PathPlatformL09_Update(unsigned char *moby) {
             if (on) {
                 float near;
                 if ((data->unkB8 != 0 && is_hero_on_moby(moby)) ||
-                    (near = FastVecDist(&((Hero *)(hero_globals_base + 0xE1D))->motion.pos, path + 0x10),
-                     FastVecDist(&((Hero *)(hero_globals_base + 0xE1D))->motion.pos, path + *(int *)path * 16) <
-                         near)) {
+                    (near = FastVecDist(&g_hero.motion.pos, path + 0x10),
+                     FastVecDist(&g_hero.motion.pos, path + *(int *)path * 16) < near)) {
                     if (data->unkC8 == 0 && is_hero_on_moby(moby)) {
                         HeroEnterMoveState(0x72, 1);
                     }
@@ -2026,10 +2032,8 @@ void PathPlatformL09_Update(unsigned char *moby) {
             break;
         case 2:
             if (data->timer != 0 ||
-                (data->unkBC.f < 0.0f &&
-                 vec_distance_xy(&m->pos, &((Hero *)(hero_globals_base + 0xE1D))->motion.pos) < 2.0f &&
-                 FastAbsF(((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[2] - m->pos.z) < 4.0f &&
-                 m->pos.z - ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[2] > 1.0f)) {
+                (data->unkBC.f < 0.0f && vec_distance_xy(&m->pos, &g_hero.motion.pos) < 2.0f &&
+                 FastAbsF(g_hero.motion.pos.f[2] - m->pos.z) < 4.0f && m->pos.z - g_hero.motion.pos.f[2] > 1.0f)) {
                 int r;
                 if (data->timer == 0) {
                     data->timer = scale_ticks(30);
@@ -2037,7 +2041,7 @@ void PathPlatformL09_Update(unsigned char *moby) {
                 r = data->voice;
                 data->unkA8.i = 0;
                 if (r != -1) {
-                    unsigned char *s = (unsigned char *)(hero_globals_base + 0x1D) + r * 0x70;
+                    unsigned char *s = (unsigned char *)voice_pool + r * 0x70;
                     if (*(unsigned char **)(s + 0x88) == moby && s[0x74] != 0) {
                         Sound_StopSlot(r);
                     }
@@ -2072,7 +2076,7 @@ void PathPlatformL09_Update(unsigned char *moby) {
                     data->timer = scale_ticks(15);
                     r = data->voice;
                     if (r != -1) {
-                        unsigned char *s = (unsigned char *)(hero_globals_base + 0x1D) + r * 0x70;
+                        unsigned char *s = (unsigned char *)voice_pool + r * 0x70;
                         if (*(unsigned char **)(s + 0x88) == moby && s[0x74] != 0) {
                             Sound_StopSlot(r);
                         }
@@ -2100,7 +2104,7 @@ void PathPlatformL09_Update(unsigned char *moby) {
     FastVecSub(delta, &m->pos, orig);
     update_entity_matrix(data->matrix, delta, &m->rot, &m->rot);
     if (!is_hero_on_moby(moby)) {
-        if (2.0f < vec_distance_xy(&m->pos, &((Hero *)(hero_globals_base + 0xE1D))->motion.pos)) {
+        if (2.0f < vec_distance_xy(&m->pos, &g_hero.motion.pos)) {
             if (data->timer == 0) {
                 data->unkB8 = 1;
             }
@@ -2189,7 +2193,7 @@ void func_L09_00304EE0_r(Moby *moby, VendorVars *vars, f32 *health) {
     StepColorFade(moby, vars->anim);
 }
 extern void handle_refueling_station_damage(char *, char *, char *);
-extern char special_items_base[];
+
 extern int gaspar_mobys_m __asm__("D_L09_00160058") MACRO_ADDR;
 extern int Moby_PlaySound_r_r(int, int, char *) __asm__("func_0022ED80");
 extern void spawn_explosion_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
@@ -2204,7 +2208,7 @@ void refueling_station_update(char *m) {
     handle_refueling_station_damage(m, ((char *)d), (char *)&d->unk_20);
     switch (((unsigned char *)m)[0x20]) {
         case 0:
-            if (d->unlock_item != -1 && (q = (unsigned char *)special_items_base + 0x13B + d->unlock_item)[0x39] != 0) {
+            if (d->unlock_item != -1 && (q = gSpecialItems + d->unlock_item)[0x39] != 0) {
                 DeleteMoby(m);
                 return;
             }
@@ -2225,7 +2229,7 @@ void refueling_station_update(char *m) {
                 }
                 d->timer = scale_ticks(0xA);
                 if (d->sound_slot != -1) {
-                    char *e = hero_globals_base + 0x1D + d->sound_slot * 0x70;
+                    char *e = voice_pool + d->sound_slot * 0x70;
                     if (*(char **)(e + 0x88) == m && ((unsigned char *)e)[0x74] != 0) {
                         Sound_StopSlot(d->sound_slot);
                     }
@@ -2416,7 +2420,7 @@ void airship_chain_link_update(Moby *m) {
 
     switch (m->state) {
         case 0:
-            if (d->flag != -1 && ((Flags_305710 *)(special_items_base + 0x13B + d->flag))->b39 != 0) {
+            if (d->flag != -1 && ((Flags_305710 *)(gSpecialItems + d->flag))->b39 != 0) {
                 DeleteMoby(m);
                 return;
             }
@@ -2558,13 +2562,13 @@ void airship_chain_link_update(Moby *m) {
     }
 }
 extern Hero g_hero;
-extern char pad_globals_base[];
+
 typedef struct {
     u8 pad[0x1A0];
     u32 held;
     u32 pressed;
 } CtlPad_6030;
-#define ctl ((CtlPad_6030 *)(D_0013A5E0 + 0x2460))
+#define ctl ((CtlPad_6030 *)g_controller_state)
 extern s32 invert52 MACRO_ADDR;
 extern short turret_camera_offset_length;
 #define D_L09_00161D30_f (*(float *)&D_L09_00161D30)
@@ -2664,7 +2668,7 @@ void turret_update(struct Moby *moby) {
             offset.f[2] = 0.0f;
             FastVecAdd(&hero.motion.pos, &hero.motion.pos, &offset);
             FastMemZero16(&hero.motion.velocity, 0x90);
-            if (*(u32 *)(pad_globals_base + 0x2604) & 0x10) {
+            if (*(u32 *)pad0_pressed & 0x10) {
                 CameraScript2(0);
                 a_222B80(0, 1);
                 moby->command = 2;
@@ -2706,7 +2710,7 @@ void turret_update(struct Moby *moby) {
             vars->unk48 = 0;
             vars->unk4C = 0;
             vars->unk40 = 0;
-            *(struct Moby **)(hero_globals_base + 0x89) = moby;
+            *(struct Moby **)sound_probe_ignore = moby;
             return;
         case 4:
             if (vec_distance_xy(&moby->pos, &hero.motion.pos) < 4.0f || hero.ground_moby == moby) {
@@ -2747,7 +2751,7 @@ void turret_update(struct Moby *moby) {
                 } else {
                     moby->pos.z = vars->rest_z;
                 }
-                if ((((struct Hero *)((char *)&hero_globals_base + 0xE1D))->ground_moby) != moby && vars->beam != -1) {
+                if ((g_hero.ground_moby) != moby && vars->beam != -1) {
                     Moby_PlaySound(2, 0, moby);
                     release_point_light_slot(vars->beam);
                     vars->beam = -1;
@@ -2755,7 +2759,7 @@ void turret_update(struct Moby *moby) {
             }
             break;
         case 5:
-            *(struct Moby **)(hero_globals_base + 0x89) = moby;
+            *(struct Moby **)sound_probe_ignore = moby;
             if (moby->pos.z < vars->rest_z) {
                 moby->pos.z += g_frame_time;
             } else {
@@ -3271,7 +3275,7 @@ extern void AttachManipulator(struct Moby *, s32, void *);
 extern u8 hero_globals_base[];
 extern u8 help_stats_base[] NOT_SDA;
 #define frame_time D_0015EE6C
-#define hero (*(Hero *)(D_0013E633 + 0xE1D))
+#define hero (*&g_hero)
 extern int advance_shuttle_along_path(struct Moby *);
 
 #define attach_manipulator func_0020D960

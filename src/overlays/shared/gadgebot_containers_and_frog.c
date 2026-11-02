@@ -22,6 +22,8 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+extern Hero g_hero;
+extern char voice_pool[];
 
 /* Blarg frog: hops along its path, chases the hero or a gadgebot and respawns after it is destroyed. */
 struct FrogVars {
@@ -414,7 +416,6 @@ extern char blarg_camera_pos[];
 extern float g_frame_time_sq MACRO_ADDR;
 extern char blarg_coll_hit_normal[];
 extern int *blarg_paths[];
-extern char hero_globals_base[];
 
 extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
 extern void update_frog_health_respawn_and_target_x(void *) __asm__("func_L06_002EA920");
@@ -560,8 +561,7 @@ void frog_update(unsigned char *m) {
             FastVecSub(A, &t->pos, &((Moby *)m)->pos);
             probe_frog_local_z_collision((char *)m);
             blend_frog_rotation_to_facing_frame((char *)m, (float *)blarg_coll_hit_normal, A);
-            if (vec_distance_xy(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, &((Moby *)m)->pos) <
-                ((struct FrogVars *)d)->wake_dist) {
+            if (vec_distance_xy(&g_hero.motion.pos, &((Moby *)m)->pos) < ((struct FrogVars *)d)->wake_dist) {
                 ((Moby *)m)->state = 4;
                 if (((Moby *)m)->prev_seq != 4)
                     MobyBlendAnimation(m, 4, 0, scale_ticks(5));
@@ -734,8 +734,7 @@ void frog_update(unsigned char *m) {
             B[2] = 0.0f;
             blend_frog_rotation_to_facing_frame((char *)m, &((Moby *)m)->rot_row2.x, B);
             f = MobyGetFrameValue(m);
-            if (((Moby *)m)->seq == ((Moby *)m)->prev_seq && f >= 10.0f && f <= 15.0f &&
-                ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.current != 0x51) {
+            if (((Moby *)m)->seq == ((Moby *)m)->prev_seq && f >= 10.0f && f <= 15.0f && g_hero.state.current != 0x51) {
                 vec_scale_to_length(A, &((Moby *)m)->rot_row0,
                                     (((struct FrogVars *)d)->speed + ((struct FrogVars *)d)->speed) * g_frame_time);
                 move_frog_with_collision_resolution(m, A, 1, 0.3f, 0.3f);
@@ -2861,7 +2860,7 @@ extern float rotation_group_angular_deceleration_degrees_gp SDATA(D_L06_00161DCC
 extern float rotation_group_max_angular_speed_degrees_gp SDATA(D_L06_00161DD0);
 extern float rotation_group_fallback_proximity_trigger_inhibit_gp SDATA(D_L06_00161DD4);
 extern float blarg_rotation_group_pivot_offset SDATA(D_L06_00161DD8);
-extern char hero_globals_base[];
+
 extern Moby *CreateMoby_r(int) __asm__("func_0020D348");
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
@@ -2909,8 +2908,8 @@ void update_moby_rotation_group(Moby *m) {
                 flag = 0;
                 if (d->idx >= 0) {
                     if (level_mobys_q_r3[d->idx].oclass == MOBY_CLASS_SHUTTLE_1448) {
-                        if (vec_distance_xy(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                            (*(float (*)[4]) & level_mobys_q_r3[d->idx].pos)) < 20.0f) {
+                        if (vec_distance_xy(&g_hero.motion.pos, (*(float (*)[4]) & level_mobys_q_r3[d->idx].pos)) <
+                            20.0f) {
                             flag = 1;
                         }
                     } else if (level_mobys_q_r3[d->idx].oclass == MOBY_CLASS_THRUSTER_PACK_LOCK_RED) {
@@ -2919,8 +2918,7 @@ void update_moby_rotation_group(Moby *m) {
                         flag = level_mobys_q_r3[d->idx].state >= 3;
                     }
                 } else {
-                    if (vec_distance_xy((*(float (*)[4]) & m->pos),
-                                        &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) < 6.0f &&
+                    if (vec_distance_xy((*(float (*)[4]) & m->pos), &g_hero.motion.pos) < 6.0f &&
                         rotation_group_fallback_proximity_trigger_inhibit_gp == 0.0f) {
                         flag = 1;
                     }
@@ -3230,7 +3228,7 @@ void energy_sphere_update(char *m) {
         Moby_PlaySound(1, 0, (int)m);
         voice_slot_index = sphere_vars->voice_slot_index;
         if (voice_slot_index != -1) {
-            struct VoiceSlot *voice_slot = (struct VoiceSlot *)(hero_globals_base + 0x1D + voice_slot_index * 0x70);
+            struct VoiceSlot *voice_slot = (struct VoiceSlot *)(voice_pool + voice_slot_index * 0x70);
             if (voice_slot->moby == sphere_moby && voice_slot->looping != 0) {
                 Sound_StopSlot(voice_slot_index);
             }

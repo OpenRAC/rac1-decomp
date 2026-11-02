@@ -18,6 +18,16 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+extern char gHeroPos[];
+extern char g_controller_state[];
+extern float g_controller_state_analog;
+extern char g_hero[];
+extern char g_hero_moby[];
+extern char hero_control_mode[];
+extern char hero_current_state[];
+extern u8 hero_gravity_dir[];
+extern char hero_vehicle_mode[];
+extern char pad_held[];
 
 /* Hydrodisplacer effect emitter: only a spawn countdown. */
 struct HydroEffectVars {
@@ -116,7 +126,7 @@ void emit_hydrodisplacer_effect(Moby *m) {
         Moby_GetJointWorldPos(m, 0, a);
         f = random_float_between(g_frame_time, g_frame_time * 3.0f);
         vec_scale_to_length(b, &m->rot_row1, -f);
-        pad = (struct Hero *)(hero_globals_base + 0xE1D);
+        pad = (struct Hero *)g_hero;
         b[0] += pad->motion.displacement.f[0] * 0.8f;
         b[1] += pad->motion.displacement.f[1] * 0.8f;
         b[2] += pad->motion.displacement.f[2] + random_float_between(g_frame_time * -0.5f, g_frame_time + g_frame_time);
@@ -817,7 +827,7 @@ void draw_beam_strand_with_glow(int texture_id, int glow_texture_id, void *point
     qcopy(&transform[3], &beam_origin_transforms_field_10[slot].c);
     FastVecSub((float *)&direction, (float *)&beam_endpoints[slot], (float *)&transform[3]);
     vec_scale_to_length(&transform[0], &direction, 1.0f);
-    FastVecCross(&transform[1], &transform[0], hero_globals_base + 0x10AD);
+    FastVecCross(&transform[1], &transform[0], (char *)&hero_gravity_dir);
     vec_scale_to_length(&transform[1], &transform[1], -1.0f);
     FastVecCross(&transform[2], &transform[1], &transform[0]);
 
@@ -1067,8 +1077,8 @@ extern float FastVecLength(void *);
 
 // Grass moby update: plays an animation when the player is near and leaves.
 void red_plant_update(Moby *m) {
-    if (FastVecDist(hero_globals_base + 0xE9D, &m->pos) < 1.0f) {
-        if (FastVecLength(hero_globals_base + 0xE9D + 0x80) > g_frame_time + g_frame_time) {
+    if (FastVecDist(gHeroPos, &m->pos) < 1.0f) {
+        if (FastVecLength(gHeroPos + 0x80) > g_frame_time + g_frame_time) {
             if (m->prev_seq != 1) {
                 MobyBlendAnimation(m, 1, 0, scale_ticks(6));
             }
@@ -1176,7 +1186,7 @@ void robot_arm_update(Moby *m) {
 extern char hero_globals_base[];
 // copies a vector out of the game block into the second argument
 void Cam_GetHeroPosition(char *a, void *out) {
-    qcopy(out, hero_globals_base + 0xE9D);
+    qcopy(out, gHeroPos);
 }
 typedef struct {
     float f[4];
@@ -1234,7 +1244,7 @@ extern int coll_line(void *, void *, int, int, int);
 /* build the two edge vectors of a moving box from the game vector and clip them */
 int compute_follow_camera_ground_aware_target_position(void *out, int flag) {
     VQ_2E5770 a, b, c, d;
-    struct Hero *base = (struct Hero *)(hero_globals_base + 0xE1D);
+    struct Hero *base = (struct Hero *)g_hero;
     float f;
     char *g = camera_view;
 
@@ -1444,14 +1454,14 @@ void follow_cam_update_mode(char *m) {
     int t;
 
     if (e->state == 0) {
-        struct Hero *p0 = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *p0 = (struct Hero *)g_hero;
         if (p0->state.control_mode == 2) {
             e->prev = e->state;
             e->state = 1;
             e->timer = follow_cam_mode1_blend_time;
             e->invTimer = 1.0f / IntToFloat(e->timer);
         } else {
-            struct Hero *p1 = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p1 = (struct Hero *)g_hero;
             if (p1->state.current == 0xF && camera_view_field_dc == 0.0f) {
                 e->prev = e->state;
                 e->state = 3;
@@ -1466,14 +1476,14 @@ void follow_cam_update_mode(char *m) {
                 compute_follow_camera_offset_target_up_projection(e->v30, x);
                 qcopy(e->v20, e->v10);
             } else {
-                struct Hero *p2 = (struct Hero *)(hero_globals_base + 0xE1D);
+                struct Hero *p2 = (struct Hero *)g_hero;
                 if (p2->state.current == 0xC && camera_view_field_dc == 0.0f) {
                     e->prev = e->state;
                     e->state = 8;
                     e->timer = follow_cam_double_jump_blend_time;
                     e->invTimer = 1.0f / IntToFloat(e->timer);
                 } else {
-                    struct Hero *p3 = (struct Hero *)(hero_globals_base + 0xE1D);
+                    struct Hero *p3 = (struct Hero *)g_hero;
                     if (p3->state.current == HERO_STATE_HIGH_JUMP && camera_view_field_dc == 0.0f) {
                         e->prev = e->state;
                         e->state = 6;
@@ -1488,7 +1498,7 @@ void follow_cam_update_mode(char *m) {
                         compute_follow_camera_offset_target_up_projection(e->v30, x);
                         qcopy(e->v20, e->v10);
                     } else {
-                        struct Hero *p4 = (struct Hero *)(hero_globals_base + 0xE1D);
+                        struct Hero *p4 = (struct Hero *)g_hero;
                         if ((p4->state.current == 0xD || p4->state.current == HERO_STATE_DOUBLE_JUMP) &&
                             camera_view_field_dc == 0.0f) {
                             e->prev = e->state;
@@ -1504,7 +1514,7 @@ void follow_cam_update_mode(char *m) {
                             compute_follow_camera_offset_target_up_projection(e->v30, x);
                             qcopy(e->v20, e->v10);
                         } else {
-                            struct Hero *p5 = (struct Hero *)(hero_globals_base + 0xE1D);
+                            struct Hero *p5 = (struct Hero *)g_hero;
                             if (p5->state.control_mode == 4 && camera_view_field_dc == 0.0f) {
                                 e->prev = e->state;
                                 e->state = 2;
@@ -1518,7 +1528,7 @@ void follow_cam_update_mode(char *m) {
         }
         return;
     }
-    if (e->state != 9 && e->state != 1 && *(int *)(hero_globals_base + 0x2EA1) == 0x14) {
+    if (e->state != 9 && e->state != 1 && *(int *)hero_current_state == 0x14) {
         float r;
         e->prev = e->state;
         e->state = 9;
@@ -1535,15 +1545,14 @@ void follow_cam_update_mode(char *m) {
         qcopy(e->v20, e->v10);
         return;
     }
-    if ((e->state == 1 || e->state == 2) && *(int *)(hero_globals_base + 0x2EA9) != 4 &&
-        *(int *)(hero_globals_base + 0x2EA9) != 2) {
+    if ((e->state == 1 || e->state == 2) && *(int *)hero_control_mode != 4 && *(int *)hero_control_mode != 2) {
         e->timer = 0;
         e->invTimer = 1.0f;
         e->state = 0;
         return;
     }
     if (e->state == 7) {
-        struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *p = (struct Hero *)g_hero;
         if (p->past_jump_apex == 0) {
             e->prev = e->state;
             e->state = 6;
@@ -1567,8 +1576,8 @@ void follow_cam_update_mode(char *m) {
             return;
         }
     }
-    if (e->state == 4 && *(int *)(hero_globals_base + 0x2EA9) != 4) {
-        if (*(int *)(hero_globals_base + 0x2EA9) == 2) {
+    if (e->state == 4 && *(int *)hero_control_mode != 4) {
+        if (*(int *)hero_control_mode == 2) {
             e->prev = 4;
             e->state = 1;
             e->timer = scale_ticks(*(int *)&follow_cam_return_blend_time);
@@ -1581,7 +1590,7 @@ void follow_cam_update_mode(char *m) {
         }
         return;
     }
-    if (e->state == 3 && *(int *)(hero_globals_base + 0x2EA1) == 0xB) {
+    if (e->state == 3 && *(int *)hero_current_state == 0xB) {
         e->prev = e->state;
         e->state = 6;
         e->moveTimer = scale_ticks(*(int *)&follow_cam_high_jump_move_time);
@@ -1596,28 +1605,28 @@ void follow_cam_update_mode(char *m) {
         qcopy(e->v20, e->v10);
         return;
     }
-    if (e->state == 5 && *(int *)(hero_globals_base + 0x2EA1) == 0xC) {
+    if (e->state == 5 && *(int *)hero_current_state == 0xC) {
         e->prev = e->state;
         e->state = 8;
         e->timer = follow_cam_double_jump_blend_time;
         e->invTimer = 1.0f / IntToFloat(e->timer);
         return;
     }
-    if (e->state == 8 && *(int *)(hero_globals_base + 0x2EA1) != 0xC) {
+    if (e->state == 8 && *(int *)hero_current_state != 0xC) {
         e->prev = e->state;
         e->state = 0;
         e->timer = scale_ticks(*(int *)&follow_cam_double_jump_exit_time);
         e->invTimer = 1.0f / IntToFloat(e->timer);
         return;
     }
-    if (e->state == 6 && *(int *)(hero_globals_base + 0x2EA1) != 0xB) {
+    if (e->state == 6 && *(int *)hero_current_state != 0xB) {
         e->prev = e->state;
         e->state = 0;
         e->timer = scale_ticks(*(int *)&follow_cam_return_blend_time);
         e->invTimer = 1.0f / IntToFloat(e->timer);
         return;
     }
-    if ((e->state == 3 || e->state == 5) && *(int *)(hero_globals_base + 0x2EA9) != 4) {
+    if ((e->state == 3 || e->state == 5) && *(int *)hero_control_mode != 4) {
         e->prev = e->state;
         e->state = 0;
         e->timer = scale_ticks(*(int *)&follow_cam_return_blend_time);
@@ -1625,13 +1634,13 @@ void follow_cam_update_mode(char *m) {
         return;
     }
     if (e->state == 9) {
-        struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *p = (struct Hero *)g_hero;
         if (p->state.control_mode == 2 || p->frames_off_ground.s >= scale_ticks(0x37)) {
             goto to_one;
         }
     }
     if (e->state == 0xA) {
-        struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *p = (struct Hero *)g_hero;
         if (p->state.control_mode == 2 || p->frames_off_ground.s >= scale_ticks(0x37)) {
             float r;
         to_one:
@@ -1647,7 +1656,7 @@ void follow_cam_update_mode(char *m) {
             return;
         }
     }
-    if (e->state == 9 && *(int *)(hero_globals_base + 0x2EA1) != 0x14) {
+    if (e->state == 9 && *(int *)hero_current_state != 0x14) {
         e->prev = e->state;
         e->state = 0xA;
         e->timer = follow_cam_slam_recover_time;
@@ -1661,7 +1670,7 @@ void follow_cam_update_mode(char *m) {
         e->invTimer = 1.0f / IntToFloat(e->timer);
         return;
     }
-    if (e->state == 5 && *(int *)(hero_globals_base + 0x2EA1) == 0x10) {
+    if (e->state == 5 && *(int *)hero_current_state == 0x10) {
         e->prev = e->state;
         e->state = 0;
         e->timer = scale_ticks(*(int *)&follow_cam_double_jump_exit_time);
@@ -1694,7 +1703,7 @@ void follow_cam_focus_velocity(char *m, float *v2) {
     g = (CameraFollow *)camera_view;
     d = *(char **)(m + 0x70);
     Cam_GetHeroPosition(m, cam);
-    pad = (struct Hero *)(hero_globals_base + 0xE1D);
+    pad = (struct Hero *)g_hero;
     e = (struct FollowCamTarget *)(d + 0x40);
     if (pad->state.current == HERO_STATE_FATAL_FALL) {
         x = FastVecDot(e, &g->up_target);
@@ -1713,7 +1722,7 @@ void follow_cam_focus_velocity(char *m, float *v2) {
     }
     switch (e->mode) {
         case 2:
-            padb = (struct Hero *)(hero_globals_base + 0xE1D);
+            padb = (struct Hero *)g_hero;
             if (padb->state.current == 0x11 || (padb->past_jump_apex != 0 && padb->ground_distance > 0.2f &&
                                                 ((y = compute_follow_camera_signed_target_angle(m, e->eye_height)) <
                                                      *(float *)&follow_cam_target_angle_min ||
@@ -1724,7 +1733,7 @@ void follow_cam_focus_velocity(char *m, float *v2) {
                 e->blend_frames = v;
                 e->blend_rate = 1.0f / IntToFloat((short)v);
             }
-            padc = (struct Hero *)(hero_globals_base + 0xE1D);
+            padc = (struct Hero *)g_hero;
             flag = 0;
             if (padc->frames_off_ground.s != 0 && g->ground_dz == 0.0f &&
                 (padc->past_jump_apex == 0 || padc->frames_to_land >= 0x10)) {
@@ -2243,11 +2252,11 @@ typedef struct {
 #define hero74 (*(Hero *)D_0013F450)
 extern char player_camera[];
 #define player_camera_y ((A_y *)D_L00_00166D80)
-extern unsigned char pad_globals_base[];
-#define D_0013C940_y (*(C_y *)(D_0013A5E0 + 0x2460))
-#define D_0013F3D0_y (*(L_y *)(D_0013E633 + 0xE9D))
+
+#define D_0013C940_y (*(C_y *)g_controller_state)
+#define D_0013F3D0_y (*(L_y *)gHeroPos)
 extern u8 *coll_sphere_moby_hits[];
-#define D_0013CAE0_y ((s32 *)(D_0013A5E0 + 0x2600))
+#define D_0013CAE0_y ((s32 *)pad_held)
 #define g6F10 ((f32 *)D_L00_00166F10)
 extern float follow_cam_turn_blend_weight MACRO_ADDR;
 #define g40 D_L00_0015F040
@@ -3182,7 +3191,6 @@ extern int adjust_follow_camera_orbit_probe_for_collisions(void *, void *, int, 
 extern int gCamSphereMaskLvl MACRO_ADDR;
 extern V4 collision_hit_point;
 extern short follow_cam_min_distance_gp;
-extern unsigned char pad_globals_base[];
 
 // Camera sweep: steps a vector along the path, testing each step against the edge and the wall.
 int resolve_follow_camera_orbit_path_collisions(char *m) {
@@ -3205,7 +3213,7 @@ int resolve_follow_camera_orbit_path_collisions(char *m) {
     i = 0;
     while (i < truncate_float_to_s32(*(float *)(s18 + 0x40) - 1.0f)) {
         if (i > 0 && test_follow_camera_point_in_collision_volume((VS *)v1) == 0) {
-            struct Hero *base = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *base = (struct Hero *)g_hero;
             if (coll_sphere_b(v1, gCamSphereMaskLvl, *(void **)&base->moby, f20) != 0 &&
                 reject_follow_camera_first_step_backward_hit_f(m, i, v1, f20) == 0) {
                 qcopy(t, collision_hit_point);
@@ -3213,7 +3221,7 @@ int resolve_follow_camera_orbit_path_collisions(char *m) {
                 if (adjust_follow_camera_orbit_probe_for_collisions(m, v1, i, f22, f20) != 0) {
                     ret = 1;
                     if (base->vehicle_mode != 2) {
-                        if (FastAbsF(*(float *)(pad_globals_base + 0x2560)) > 0.05f) {
+                        if (FastAbsF(*(float *)(&g_controller_state_analog)) > 0.05f) {
                             FastVecSub(w, t, u);
                             vec_scale_to_length(w, w, 1.0f);
                             if (FastAbsF(FastVecDot(camera_view_vertical_axis, w)) < 0.75f) {
@@ -3397,10 +3405,10 @@ void follow_camera_avoid_mobies(int mi) {
     if (retraction_timer_or_below_hold_threshold && collision->h34 > 0) {
         goto dec;
     }
-    if (!((*(C940_2e7d20_t *)(pad_globals_base + 0x2460)).x < 0.3f)) {
+    if (!((*(C940_2e7d20_t *)g_controller_state).x < 0.3f)) {
         goto slow;
     }
-    if (!((*(C940_2e7d20_t *)(pad_globals_base + 0x2460)).y < 0.3f)) {
+    if (!((*(C940_2e7d20_t *)g_controller_state).y < 0.3f)) {
         goto slow;
     }
 dec:
@@ -3982,7 +3990,7 @@ void follow_camera_build_view(int a_) {
     q40 = q + 0x40;
     q20 = q + 0x20;
     if (q40[0xC4] == 0xB) {
-        FastVecSub((float *)p, (float *)(hero_globals_base + 0xE9D), (float *)(p + 0x30));
+        FastVecSub((float *)p, (float *)gHeroPos, (float *)(p + 0x30));
         p10 = p + 0x10;
         vec_scale_to_length(p, p, 1.0f);
         p20 = p + 0x20;
@@ -4102,13 +4110,13 @@ void follow_camera_pull_back(char *camera_object, float *x, float *y) {
 
     if (pull_back_state->h6 == 0 &&
         ((pull_back_state->h4 != 0 && g->side_dist == 0.0f &&
-          FastVecDot(*(char **)(hero_globals_base + 0x2E9D) + 0xC0, camera_object) <= -0.3f) ||
+          FastVecDot(*(char **)g_hero_moby + 0xC0, camera_object) <= -0.3f) ||
          (FastAbsF(g->side_dist) > 0.0001f && FastVecDot(&g->hero_delta_side, camera_object) <= -0.3f))) {
         pull_back_state->h4 = scale_ticks(0x78);
         k = g->side_dist * 14.2857f;
         if (k > 1.0f)
             k = 1.0f;
-        pull_back_target = (*(unsigned char *)(hero_globals_base + 0x2EC1) == 1) ? 4.0f : pull_back_state->fC;
+        pull_back_target = (*(unsigned char *)hero_vehicle_mode == 1) ? 4.0f : pull_back_state->fC;
         reference_distance = reference_orbit_state->unk58;
         current_distance = pull_back_state->f8;
         interpolated_pull_back_value = reference_distance + (pull_back_target - reference_distance) * k;

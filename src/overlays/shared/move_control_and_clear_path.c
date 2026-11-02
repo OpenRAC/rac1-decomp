@@ -8,6 +8,7 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "data/level_01.h"
 #include "enums/hero_state.h"
+extern Hero g_hero;
 
 // Fills a jump pattern record with its default constants.
 void MoveCtl_Init(char *p) {
@@ -241,10 +242,10 @@ s32 follow_path(s32 *ids, s32 n, s32 path_index, f32 radius, Vec4 *pos, Vec4 *ta
     qcopy(out, target);
     return 1;
 }
-extern char hero_globals_base[];
+
 /* Return 1 when the hero is standing on or riding moby m. */
 int is_hero_on_moby(char *m) {
-    struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
+    struct Hero *h = &g_hero;
 
     if (h->state.control_mode == 3 || h->state.current == HERO_STATE_LEDGE_JUMP) {
         if (*(char **)&h->ledge_moby == m) {
@@ -281,12 +282,10 @@ void PlaceMarkerAheadOfMoby(float scale, char *moby) {
 }
 extern float vec_distance_xy(void *, void *);
 
-extern char hero_globals_base[];
-
 // Breaks an object into fragments, with a flag when it is near the origin.
 void spawn_proximity_gated_bolts(char *moby) {
     int r = 0;
-    if (vec_distance_xy(moby + 0x10, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) < 7.0f) {
+    if (vec_distance_xy(moby + 0x10, &g_hero.motion.pos) < 7.0f) {
         r = 2;
     }
     spawn_randomized_bolt_drop(moby, 4, 7, r, -1);

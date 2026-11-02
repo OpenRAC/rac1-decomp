@@ -12,6 +12,7 @@
 #include "asm_functions/shared_levels.h"
 #include "game/math/fastfunc.h"
 #include "enums/moby_class.h"
+extern struct Hero g_hero;
 /* Break fragment: velocity, spin, life and gravity. */
 struct BreakFragmentVars {
     u8 pad_00[0x10];
@@ -312,7 +313,7 @@ void SetUpdateModeTiming(int mode) {
 }
 INCLUDE_ASM("asm/overlays", func_L00_00262450);
 typedef int u128 __attribute__((mode(TI)));
-extern char hero_globals_base[];
+
 extern float randf_sym(float lo, float hi);
 extern int rand_range(int, int);
 extern float step_angle_toward_target(float *p, int n, float x, float y);
@@ -372,7 +373,7 @@ void update_object_wander_movement(Moby *moby, struct WanderState *d, float a, f
         d->timer = rand_range(t, scale_ticks(0x5A));
         d->wandering = 1;
     } else {
-        char *g = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
+        char *g = &g_hero.motion.pos;
         dist = vec_distance_xy(pos, g);
         if (dist < d->hero_avoid_dist) {
             char *q = g - 0x80;

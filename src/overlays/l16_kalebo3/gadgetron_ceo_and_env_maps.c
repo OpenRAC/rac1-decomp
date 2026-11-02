@@ -19,6 +19,9 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/hero_state.h"
 #include "enums/moby_class.h"
+extern char gSkillPoints[];
+extern Hero g_hero;
+extern char help_records[];
 
 /* Gadgetron CEO challenge room: handles of the jet groups it switches on and off. */
 struct CeoEnvVars {
@@ -174,13 +177,12 @@ void gadgetron_ceo_update(Moby *m) {
                 PlaceMarkerAheadOfMoby(3.5f, m);
                 m->state = 2;
             }
-            if (!gHaveMorphORay[9] &&
-                vec_distance_xy(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, &m->pos) < 3.5f) {
+            if (!gHaveMorphORay[9] && vec_distance_xy(&g_hero.motion.pos, &m->pos) < 3.5f) {
                 int elapsed, period;
                 char *statistics;
                 elapsed = scale_ticks(gameplay_event_frame_count);
                 period = 600;
-                statistics = help_stats_base + 0x34D;
+                statistics = help_records;
                 elapsed -= *(unsigned short *)(statistics + 0x43A) * period;
                 if (elapsed > (int)((float)scale_ticks(18) * 60.0f) ||
                     *(unsigned short *)(statistics + 0x43A) * period == 0) {
@@ -200,7 +202,7 @@ void gadgetron_ceo_update(Moby *m) {
                 m->command = 0;
                 pose = gadgetron_ceo_hero_and_camera_pose;
                 Hero_ResetToPosition(pose, pose + 0x10, 0, 1);
-                camera = ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->saved_pos_rot;
+                camera = g_hero.saved_pos_rot;
                 qcopy(camera, pose + 0x20);
                 qcopy(camera + 0x10, pose + 0x30);
                 camera[0x3AC] = 1;
@@ -236,7 +238,7 @@ void gadgetron_ceo_update(Moby *m) {
             L16ChallengePlayer *player = (L16ChallengePlayer *)((char *)&hero_globals_base_challenge + 0xE1D);
             unsigned char event;
             if (player->points >= 4500) {
-                unsigned char *flags = (unsigned char *)menu_item_enabled_115 + 1;
+                unsigned char *flags = gSkillPoints;
                 if (!flags[0x1A]) {
                     flags[0x1A] = 1;
                     PlayBankSound(1, 0, 0);
@@ -277,7 +279,7 @@ void gadgetron_ceo_update(Moby *m) {
                 char *pose = gadgetron_ceo_hero_and_camera_pose;
                 m->command = 0;
                 Hero_ResetToPosition(pose, pose + 0x10, 0, 1);
-                camera = ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->saved_pos_rot;
+                camera = g_hero.saved_pos_rot;
                 qcopy(camera, pose + 0x20);
                 qcopy(camera + 0x10, pose + 0x30);
             }
@@ -396,7 +398,7 @@ void update_two_region_trigger_latch(char *moby) {
     struct TwoRegionTriggerVars *data = (struct TwoRegionTriggerVars *)((Moby *)moby)->pvars;
     switch (data->state) {
         case 0: {
-            char *g = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
+            char *g = &g_hero.motion.pos;
             if (is_point_inside_clip_volume(g, *(int *)((char *)data)) != 0) {
                 if (*(int *)(g + 0x200C) == 0xF) {
                     data->state = 1;
@@ -405,11 +407,11 @@ void update_two_region_trigger_latch(char *moby) {
             break;
         }
         case 1: {
-            struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *h = &g_hero;
             if (h->state.current == HERO_STATE_GRIND_COLLISION_RECOVERY) {
                 data->state = 0;
             } else if (is_point_inside_clip_volume(&h->motion.pos, data->clip_b) != 0) {
-                unsigned char *f = (unsigned char *)menu_item_enabled_115 + 0x1;
+                unsigned char *f = gSkillPoints;
                 if (f[0x19] == 0) {
                     f[0x19] = 1;
                     PlayBankSound(1, 0, 0);
@@ -992,7 +994,7 @@ extern float ProbeGroundHeight(void *, int, float);
 extern void reposition_moby_with_collision_check(void *, void *);
 /* Repositions a target at random intervals while the hero is in the clip volume. */
 void update_target_reposition_cycle(char *moby) {
-    char *g = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
+    char *g = &g_hero.motion.pos;
     char *data = ((char *)((Moby *)moby)->pvars);
     char *target;
     int n;

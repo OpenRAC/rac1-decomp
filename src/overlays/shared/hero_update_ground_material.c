@@ -17,6 +17,9 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "enums/moby_class.h"
+extern Hero g_hero;
+extern char g_hero_moby[];
+extern char pad_held[];
 
 extern unsigned char hero_globals_base[];
 extern char novalis_item_defs[];
@@ -24,7 +27,7 @@ extern int hero_slot_item_id(int);
 
 /* Looks up the value of the current help record, or 0/0x54 in the special cases. */
 int get_hero_idle_animation_index(int a) {
-    struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    struct Hero *g = &g_hero;
     char *r;
     int n;
     if (g->vehicle_mode == 3)
@@ -49,7 +52,7 @@ extern int request_grouped_voice(int a0, int a1, int a2, int a3, int a4);
 // Plays the hero footstep sound, flagging whether the hero's current moby has type 0xAD.
 void request_hero_voice_if_enabled(int a0, int a1, int a2) {
     if (a2 != 0) {
-        struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *g = &g_hero;
         struct Moby *m = (struct Moby *)(*(char **)&g->items[1].moby);
         int flag = 0;
         if (m != 0) {
@@ -107,7 +110,7 @@ typedef struct {
     short pad22E2;
     int c22E4;
 } GS;
-#define GG ((GS *)(D_0013E633 + 0xE1D))
+#define GG ((GS *)(&g_hero))
 
 /* Per-frame hero update: animation, movement, ground effects, vehicle, scaling and more. */
 void hero_frame_update(void) {
@@ -236,12 +239,12 @@ extern void update_hero_moby_probed_height_bounds(void);
 
 /* Per-frame update of the help/menu state: validates the cursor, then runs the update chain. */
 void update_hero_frame(void) {
-    struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    struct Hero *g = &g_hero;
     if (g->motion.pos.f[0] < 2.0f || g->motion.pos.f[1] < 2.0f || g->motion.pos.f[0] > 1022.0f ||
         g->motion.pos.f[1] > 1022.0f) {
         struct Hero *q;
         FadeToBlack(scale_ticks(0x10));
-        q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        q = &g_hero;
         *(char *)&q->fall_fade_pending = 1;
         return;
     }
@@ -284,7 +287,7 @@ void update_hero_frame(void) {
         reveal_map_around_position(&g->motion.pos);
     }
     {
-        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *q = &g_hero;
         apply_env_zone_lighting(*(void **)&q->moby);
     }
     update_hero_blink_and_gold_weapon_tint();
@@ -342,7 +345,7 @@ extern void exit_hero_vehicle_mode_if_mode_three(void);
 // Handles a pending state change (HeroL08_ResetActionState without its state-2 flag): clears the request and sets
 // per-state flags.
 void update_hero_ground_material_effects(void) {
-    struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    struct Hero *p = &g_hero;
     int v;
     int x;
     unsigned char saved = p->ground_sound_class;
@@ -365,23 +368,23 @@ void update_hero_ground_material_effects(void) {
         }
     }
     if (v == 0xE) {
-        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *q = &g_hero;
         q->base_condition = 1;
         q->water_depth = 0.2f;
         q->water_surface_z = q->ground_z.f + 0.2f;
     }
     if (v == 0) {
-        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *q = &g_hero;
         q->water_depth = q->water_surface_z - q->ground_z.f;
         if (q->water_depth < 0.85f) {
             if (q->water_depth > 0.25f)
                 q->wading = 1;
         }
-        q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        q = &g_hero;
         q->base_condition = 1;
     }
     if (g_current_level_index_r == LEVEL_GEMLIK) {
-        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *q = &g_hero;
         if (q->state.current != HERO_STATE_HEIGHT_OR_TIMEOUT_RESPAWN_WAIT) {
             if (coll_sphere(q->capsule_radius + 0.03f, &q->motion.body_center, 2, 0)) {
                 if (CollType() == 0xB) {
@@ -392,31 +395,31 @@ void update_hero_ground_material_effects(void) {
         }
     }
     if (v == 0xB) {
-        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *q = &g_hero;
         *(char *)&q->selector_11 = 1;
     }
     if (v == 4) {
-        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *q = &g_hero;
         *(char *)&q->selector_4 = 1;
     }
     if (v == 0xD) {
-        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *q = &g_hero;
         *(char *)&q->selector_13 = 1;
     }
     if (v == 8) {
-        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *q = &g_hero;
         *(char *)&q->on_slip_ground = 1;
     }
     if (v == 9) {
-        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *q = &g_hero;
         *(char *)&q->unk12EE = 1;
     }
     if (v == 0xC) {
-        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *q = &g_hero;
         *(char *)&q->on_slip_ground = 1;
     }
     {
-        struct Hero *q = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *q = &g_hero;
         if (q->selector_4 != 0 && q->grounded_frames != 0) {
             x = q->state.control_mode;
             if (x != 0x10 && x != 0x14 && x != 7) {
@@ -425,7 +428,7 @@ void update_hero_ground_material_effects(void) {
             }
         }
         {
-            struct Hero *r = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+            struct Hero *r = &g_hero;
             if (r->selector_13 != 0) {
                 if (r->state.current == HERO_STATE_SINK)
                     return;
@@ -776,7 +779,7 @@ extern void Hero_SetMoveState(int, int);
 void enter_hero_vehicle_mode_and_set_moby(int a, int b, int c) {
     struct Hero *g;
     cancel_hero_item_animation();
-    g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    g = &g_hero;
     *(char *)&g->force_slot0_item8 = 1;
     hero_update_items();
     *(int *)&g->moby = *(int *)&g->unkA88;
@@ -815,7 +818,7 @@ void exit_hero_vehicle_mode_and_restore_moby(void) {
     char *m;
     char *a;
     reset_hero_easing_records();
-    g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    g = &g_hero;
     p = *(char **)&g->unkA84;
     *(char *)&g->vehicle_mode = 0;
     if (p != 0) {
@@ -1091,7 +1094,7 @@ void clip_hero_horizontal_velocity(int flag) {
     float p[4];
     float t[4];
     float q[4];
-    struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    struct Hero *g = &g_hero;
     float f2, f21, f20;
     int k, x;
     char *h1;
@@ -1135,14 +1138,14 @@ void clip_hero_horizontal_velocity(int flag) {
     FastVecAdd(p, p, s);
     k = -1;
     FastVecAdd(q, q, t);
-    h1 = (char *)hero_globals_base + 0xE1D;
+    h1 = (char *)&g_hero;
     if (coll_line(t, q, 4, *(int *)&((struct Hero *)h1)->moby, 0) != 0) {
         if (novalis_coll_hit_type > 0) {
             k = CollType();
         }
     }
     f20 = 0.0f;
-    h2 = (Hero *)((char *)hero_globals_base + 0xE1D);
+    h2 = &g_hero;
     if (coll_line(s, p, 4, *(int *)&h2->moby, 0) != 0) {
         w = novalis_coll_hit;
         if (*(int *)(w + 0x1C) > 0) {
@@ -1150,7 +1153,7 @@ void clip_hero_horizontal_velocity(int flag) {
         }
     }
     if (f20 >= 0.87266463f || k == 8 || k == 12) {
-        h3 = (Hero *)((char *)hero_globals_base + 0xE1D);
+        h3 = &g_hero;
         w3 = novalis_coll_hit;
         u = (float *)(w3 + 0x40);
         *(int *)(w3 + 0x48) = 0;
@@ -1480,7 +1483,7 @@ void air_accel(float step) {
     float v[4];
     float w[4];
     float u[4];
-    struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    struct Hero *g = &g_hero;
     switch (g->gravity_mode) {
         case 0: {
             float ang = g->motion.move_yaw;
@@ -1494,17 +1497,17 @@ void air_accel(float step) {
                     spd = g_frame_time * 2.1f;
             }
             {
-                struct Hero *g2 = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+                struct Hero *g2 = &g_hero;
                 if (g2->on_flagged_ground_moby != 0) {
                     struct Hero *g2b;
                 heavy:
-                    g2b = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+                    g2b = &g_hero;
                     if (g2b->state.current == HERO_STATE_DOUBLE_JUMP && g_frame_time < spd)
                         spd = g_frame_time;
                 }
             }
             {
-                struct Hero *g3 = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+                struct Hero *g3 = &g_hero;
                 v[0] = FastCos(ang) * spd;
                 v[1] = FastSin(ang) * spd;
                 v[2] = g3->motion.velocity.f[2];
@@ -1521,7 +1524,7 @@ void air_accel(float step) {
                 d /= l2;
             }
             {
-                struct Hero *g4 = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+                struct Hero *g4 = &g_hero;
                 d += 1.0f;
                 d *= 1.5f;
                 if (g4->state.current == HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT) {
@@ -1731,7 +1734,6 @@ extern void hero_queue_sequence(int bank, int seq);
 extern void ClampVectorLength(void *a, float x);
 extern int get_hero_idle_animation_index(int a);
 extern int novalis_hero_run_step1_start_frame MACRO_ADDR;
-extern char pad_globals_base[];
 
 // Chooses the next hero state when landing, with sounds and effects.
 void select_hero_locomotion_state(void) {
@@ -1739,16 +1741,16 @@ void select_hero_locomotion_state(void) {
     Hero *c;
     char *d;
     int n;
-    b = hero_globals_base + 0xE1D;
+    b = (char *)&g_hero;
     ((struct Hero *)b)->unk2284 = 0;
     stick_target(0, 1.0f);
-    if (*(int *)(pad_globals_base + 0x2600) & 0xA) {
+    if (*(int *)pad_held & 0xA) {
         hl_next(4, 0);
         set_hero_animation(0xD, 2, -2.0f);
         hero_queue_sequence(3, 0x12);
         return;
     }
-    c = (Hero *)(hero_globals_base + 0xE1D);
+    c = &g_hero;
     if (0.3f < c->stick_magnitude && c->move_lock_timer == 0) {
         if (c->on_ice_ground != 0 || c->wading != 0) {
             hl_next(2, 1);
@@ -1764,7 +1766,7 @@ void select_hero_locomotion_state(void) {
         }
         return;
     }
-    d = hero_globals_base + 0xE1D;
+    d = (char *)&g_hero;
     if ((*(float *)&g_frame_time * 3.0f < *(float *)(d + 0x168) && scale_ticks(3) < *(int *)(d + 0x418)) ||
         *(int *)(d + 0x2084) == 0x10) {
         if (hl_next(3, 0)) {
@@ -1786,7 +1788,7 @@ void select_hero_locomotion_state(void) {
 }
 // Load global pointer and OR a field with 1
 void set_hero_moby_flag_bit_zero(void) {
-    *(unsigned short *)((char *)(*(char **)(hero_globals_base + 0x2E9D)) + 0x34) |= 1;
+    *(unsigned short *)((char *)(*(char **)g_hero_moby) + 0x34) |= 1;
 }
 extern unsigned char hero_globals_base_r2[] __asm__("D_0013E633");
 

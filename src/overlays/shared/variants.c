@@ -4,19 +4,19 @@
 #include "include_asm.h"
 #include "structs/hero.h"
 #include "overlays/shared/hero_animation_slots.h"
+extern Hero g_hero;
 
 typedef struct {
     char pad[0x24];
     int v;
     char pad2[0x24];
 } Rec4C;
-extern unsigned char hero_globals_base[];
 
 extern Rec4C quartu_item_defs[];
 
 /* Returns 0 or 0x54 in the early-out cases below, otherwise the v field of quartu_item_defs[hero_slot_item_id(0)]. */
 int HelpL15_GetRecordValue(int a) {
-    struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    struct Hero *g = &g_hero;
     switch (g->vehicle_mode) {
         case 2:
             return 0;
@@ -24,7 +24,7 @@ int HelpL15_GetRecordValue(int a) {
             return 0;
     }
     {
-        struct Hero *g2 = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *g2 = &g_hero;
         if (g2->health.hp == 1) {
             return 0x54;
         }

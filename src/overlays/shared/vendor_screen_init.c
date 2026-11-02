@@ -12,6 +12,8 @@
 #include "game/audio/music.h"
 #include "overlays/shared/hero_animation_slots.h"
 #include "overlays/shared/level_gameplay_loading.h"
+extern char cd_read_state[];
+extern Hero g_hero;
 
 typedef struct {
     char p0[0x10];
@@ -30,8 +32,6 @@ extern float novalis_fade_level MACRO_ADDR;
 extern int relocated_address_base MACRO_ADDR;
 extern short novalis_white_fade_level;
 extern char novalis_vendor_screen_anchor_offset;
-extern char hero_globals_base[];
-extern unsigned char help_stats_base[] NOT_SDA;
 
 extern void snd_FlushSoundCommands(void);
 extern void FastMemSet();
@@ -52,7 +52,7 @@ extern int Music_ContinueStreamIfReady(void);
 /* Opens the vendor screen for moby m in level lvl: sets up its camera, resets the screen state and runs it until it
    closes. */
 void initialize_vendor_screen(char *m, int lvl) {
-    struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+    struct Hero *g = &g_hero;
     char *s = novalis_vendor_screen_state;
     char *c = fx_cutscene;
     char *sc;
@@ -98,15 +98,15 @@ void initialize_vendor_screen(char *m, int lvl) {
     g->pending_item[0] = lvl;
     select_world_object_resource_tables(novalis_item_defs[lvl].f10, -1);
     load_scene_chunks_with_fade(r);
-    q = (char *)help_stats_base + 0x100B5;
+    q = cd_read_state;
     *(int *)(q + 0x1C) = 0x2734;
     parse_space_scene_chunk(0);
-    while (qq = (char *)help_stats_base + 0x100B5, *(short *)(qq + 0x5A) != 3) {
+    while (qq = cd_read_state, *(short *)(qq + 0x5A) != 3) {
         sound_update();
         sce_gs_sync_v(0);
     }
     c2 = fx_cutscene;
-    g2 = (struct Hero *)(hero_globals_base + 0xE1D);
+    g2 = &g_hero;
     update_item_tint_from_hero(*(int *)(c2 + 0x17C), *(int *)&g2->moby);
     Music_ContinueStreamIfReady();
 }

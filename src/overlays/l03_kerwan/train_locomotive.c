@@ -17,6 +17,7 @@
 #include "game/moby/mobyutil.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
+extern Hero g_hero;
 
 typedef struct Train292890 {
     u8 pad_00[0x60];
@@ -539,27 +540,22 @@ void metropolis_train_locomotive_update(Moby *moby) {
             break;
         case 3:
             update_metropolis_train_idle_motion_r(moby);
-            if (is_point_inside_clip_volume(&((Hero *)(hero_globals_base + 0xE1D))->motion.pos, d->fB4) != 0) {
+            if (is_point_inside_clip_volume(&g_hero.motion.pos, d->fB4) != 0) {
                 if (d->f100 == -1) {
                     return;
                 }
-                if (((Hero *)(hero_globals_base + 0xE1D))->state.control_mode == 0 ||
-                    ((Hero *)(hero_globals_base + 0xE1D))->state.control_mode == 1 ||
-                    ((Hero *)(hero_globals_base + 0xE1D))->state.control_mode == 9 ||
-                    ((Hero *)(hero_globals_base + 0xE1D))->state.control_mode == 0xC) {
+                if (g_hero.state.control_mode == 0 || g_hero.state.control_mode == 1 ||
+                    g_hero.state.control_mode == 9 || g_hero.state.control_mode == 0xC) {
                     moby->command = 4;
                     kerwan_train_in_motion = 1;
                     MusicRequestTrack(4, 7);
                     set_moby_dialogue_record_value(moby, 1);
                     kerwan_mobys_r[d->f100].command = 1;
                     cd = (*(void **)&kerwan_mobys_r[d->f100].pvars);
-                    cd->f18 = fast_atan2(
-                        ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[0] - ((Cam *)kerwan_player_camera)->f140.x,
-                        ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[1] - ((Cam *)kerwan_player_camera)->f140.y);
-                    cd->f14 = -fast_atan2(vec_distance_xy(&((Cam *)kerwan_player_camera)->f140,
-                                                          &((Hero *)(hero_globals_base + 0xE1D))->motion.pos),
-                                          ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[2] -
-                                              ((Cam *)kerwan_player_camera)->f140.z);
+                    cd->f18 = fast_atan2(g_hero.motion.pos.f[0] - ((Cam *)kerwan_player_camera)->f140.x,
+                                         g_hero.motion.pos.f[1] - ((Cam *)kerwan_player_camera)->f140.y);
+                    cd->f14 = -fast_atan2(vec_distance_xy(&((Cam *)kerwan_player_camera)->f140, &g_hero.motion.pos),
+                                          g_hero.motion.pos.f[2] - ((Cam *)kerwan_player_camera)->f140.z);
                     cd->f2C = scale_ticks(0x35C);
                     d->f104 = scale_ticks(0x1E);
                     d->f108 = -1;
@@ -580,13 +576,10 @@ void metropolis_train_locomotive_update(Moby *moby) {
                 Moby_PlaySound(0, 0, (int)moby);
                 d->f104 = rand_range(scale_ticks(0x384), scale_ticks(0x190));
             }
-            if (((Hero *)(hero_globals_base + 0xE1D))->air_frames.s != 0 &&
-                ((Hero *)(hero_globals_base + 0xE1D))->state.control_mode != 3) {
-                find_nearest_path_point_r(od->f70, &((Hero *)(hero_globals_base + 0xE1D))->motion.pos, v, &idx, &t, 0,
-                                          999.0f, 5.0f, 0.0f);
+            if (g_hero.air_frames.s != 0 && g_hero.state.control_mode != 3) {
+                find_nearest_path_point_r(od->f70, &g_hero.motion.pos, v, &idx, &t, 0, 999.0f, 5.0f, 0.0f);
                 d->f10C++;
-                if (scale_ticks(0x3C) < d->f10C &&
-                    ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[2] < v[2] - 10.0f) {
+                if (scale_ticks(0x3C) < d->f10C && g_hero.motion.pos.f[2] < v[2] - 10.0f) {
                     if (d->f108 != -1) {
                         Snd *e = (Snd *)(voice_pool + d->f108 * 0x70);
                         if (e->f88 == moby && e->b74 != 0) {
@@ -595,7 +588,7 @@ void metropolis_train_locomotive_update(Moby *moby) {
                     }
                     d->f108 = -1;
                     FadeToBlack(scale_ticks(0x10));
-                    ((Hero *)(hero_globals_base + 0xE1D))->fall_fade_pending = 1;
+                    g_hero.fall_fade_pending = 1;
                     break;
                 }
             } else {
@@ -603,20 +596,15 @@ void metropolis_train_locomotive_update(Moby *moby) {
             }
             if (kerwan_mobys_r[d->f100].command != 0) {
                 cd = (*(void **)&kerwan_mobys_r[d->f100].pvars);
-                cd->f18 = fast_atan2(
-                    ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[0] - ((Cam *)kerwan_player_camera)->f140.x,
-                    ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[1] - ((Cam *)kerwan_player_camera)->f140.y);
-                cd->f14 = -fast_atan2(vec_distance_xy(&((Cam *)kerwan_player_camera)->f140,
-                                                      &((Hero *)(hero_globals_base + 0xE1D))->motion.pos),
-                                      ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[2] -
-                                          ((Cam *)kerwan_player_camera)->f140.z);
+                cd->f18 = fast_atan2(g_hero.motion.pos.f[0] - ((Cam *)kerwan_player_camera)->f140.x,
+                                     g_hero.motion.pos.f[1] - ((Cam *)kerwan_player_camera)->f140.y);
+                cd->f14 = -fast_atan2(vec_distance_xy(&((Cam *)kerwan_player_camera)->f140, &g_hero.motion.pos),
+                                      g_hero.motion.pos.f[2] - ((Cam *)kerwan_player_camera)->f140.z);
             }
-            if (((Hero *)(hero_globals_base + 0xE1D))->ground_moby != 0) {
-                if (((Hero *)(hero_globals_base + 0xE1D))->ground_moby->oclass ==
-                        MOBY_CLASS_METROPOLIS_TRAIN_LOCOMOTIVE ||
-                    ((Hero *)(hero_globals_base + 0xE1D))->ground_moby->oclass ==
-                        MOBY_CLASS_METROPOLIS_TRAIN_CARRIAGE) {
-                    set_moby_dialogue_record_value(((Hero *)(hero_globals_base + 0xE1D))->ground_moby, 3);
+            if (g_hero.ground_moby != 0) {
+                if (g_hero.ground_moby->oclass == MOBY_CLASS_METROPOLIS_TRAIN_LOCOMOTIVE ||
+                    g_hero.ground_moby->oclass == MOBY_CLASS_METROPOLIS_TRAIN_CARRIAGE) {
+                    set_moby_dialogue_record_value(g_hero.ground_moby, 3);
                 }
             }
             if (is_hero_on_moby(moby) != 0) {
@@ -715,16 +703,13 @@ void metropolis_train_locomotive_update(Moby *moby) {
                     d->f108 = -1;
                 }
             }
-            cd->f18 = fast_atan2(
-                ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[0] - ((Cam *)kerwan_player_camera)->f140.x,
-                ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[1] - ((Cam *)kerwan_player_camera)->f140.y);
-            cd->f14 = -fast_atan2(vec_distance_xy(&((Cam *)kerwan_player_camera)->f140,
-                                                  &((Hero *)(hero_globals_base + 0xE1D))->motion.pos),
-                                  ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[2] -
-                                      ((Cam *)kerwan_player_camera)->f140.z);
+            cd->f18 = fast_atan2(g_hero.motion.pos.f[0] - ((Cam *)kerwan_player_camera)->f140.x,
+                                 g_hero.motion.pos.f[1] - ((Cam *)kerwan_player_camera)->f140.y);
+            cd->f14 = -fast_atan2(vec_distance_xy(&((Cam *)kerwan_player_camera)->f140, &g_hero.motion.pos),
+                                  g_hero.motion.pos.f[2] - ((Cam *)kerwan_player_camera)->f140.z);
             break;
         case 6:
-            if (is_point_inside_clip_volume(&((Hero *)(hero_globals_base + 0xE1D))->motion.pos, d->fB0) != 0) {
+            if (is_point_inside_clip_volume(&g_hero.motion.pos, d->fB0) != 0) {
                 int i;
                 for (i = 0; i < 8; i++) {
                     Moby *m = &kerwan_mobys_r[d->fE0[i]];

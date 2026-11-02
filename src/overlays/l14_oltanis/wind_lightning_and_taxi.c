@@ -25,6 +25,8 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+extern char gSpecialItems[];
+extern char voice_pool[];
 
 /* Ribbon effect: two ribbon paths (0x00 and 0xA0) and the texture scroll. */
 struct RibbonVars {
@@ -1157,7 +1159,7 @@ void update_flying_bolt(struct Moby *m) {
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern int oltanis_game_mode MACRO_ADDR;
 extern char help_stats_base_c[] __asm__("D_0014171B");
-extern char special_items_base[];
+
 extern int *oltanis_paths_ee[] __asm__("D_L14_001B0F30");
 extern short lightning_strike_timer;
 extern short lightning_strike_interval;
@@ -1195,7 +1197,7 @@ void update_path_lightning_controller(char *m) {
         unsigned char *p;
         if (oltanis_game_mode != 0)
             return;
-        p = (unsigned char *)special_items_base + 0x13B;
+        p = gSpecialItems;
         if (p[0x68] != 0)
             return;
         StartCutscene(0);
@@ -2474,7 +2476,7 @@ void TaxiUpdate(Moby *moby) {
     } else if (Sound_IsPlaying(moby, taxi_vars->sound) != 0) {
         int voice_slot = taxi_vars->sound;
         if (voice_slot != -1) {
-            char *voice_entry = hero_globals_base + 0x1D + voice_slot * 0x70;
+            char *voice_entry = voice_pool + voice_slot * 0x70;
             if (*(Moby **)(voice_entry + 0x88) == moby && *(unsigned char *)(voice_entry + 0x74) != 0) {
                 Sound_StopSlot(voice_slot);
             }
@@ -3510,7 +3512,7 @@ int advance_moby_along_flight_path(char *m) {
         (path_boundary_reached != 0 || *(short *)(race_state + 0x86) != 0x13)) {
         flag_vendor_item(((Moby *)((char *)moby_vars))->glow_color);
         if (moby_vars->sound != -1) {
-            char *voice_entry = hero_globals_base + 0x1D + moby_vars->sound * 0x70;
+            char *voice_entry = voice_pool + moby_vars->sound * 0x70;
             if (((Voice_2FE038 *)voice_entry)->owner == moby && ((Voice_2FE038 *)voice_entry)->on != 0) {
                 Sound_StopSlot(moby_vars->sound);
             }

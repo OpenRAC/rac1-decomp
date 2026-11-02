@@ -14,6 +14,8 @@
 #include "game/system/loaders.h"
 #include "game/audio/music.h"
 #include "enums/level.h"
+extern char cd_read_state[];
+extern char *level_render_state;
 
 extern short ship_level_entry_active;
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
@@ -105,7 +107,7 @@ typedef struct {
     char pad20[0x3A];
     short x5a;
 } S_171b;
-extern unsigned char help_stats_base[] NOT_SDA;
+
 extern void FastMemSet(void *, int, int);
 extern void calculate_dma_transfer_address(void);
 extern int HeroEnterMoveState(int, int);
@@ -178,7 +180,7 @@ void initialize_level_transition_with_audio(int a) {
             r = scale_ticks(6);
         load_chunks_with_optional_fade(m2, r);
     }
-    z = (S_171b *)(help_stats_base + 0x100B5);
+    z = (S_171b *)cd_read_state;
     z->x1c = t + 40000;
     parse_space_scene_chunk(0);
     while (3 != z->x5a) {
@@ -201,7 +203,7 @@ void prepare_level_transition_with_help_cleanup(void) {
     *(int *)&skip_frame = 1;
     music_Pause(0);
     {
-        char *p = (char *)help_stats_base + 0x100B5;
+        char *p = cd_read_state;
         unsigned short h = *(unsigned short *)(p + 0x5A);
         if ((unsigned short)(h - 6) >= 2)
             *(short *)(p + 0x5A) = 5;
@@ -224,7 +226,7 @@ extern int memcard_Save(int, int);
 
 /* start a ship-travel transition to the given destination, setting up the flight path and timing Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay_space_0028e8a0.c, FUN_L00_0028ed58. */
 void prepare_target_level_transition(int dest) {
-    char *g = level_render_state_base + 0x2C2;
+    char *g = (char *)&level_render_state;
     char *h;
     int base;
     int *q;

@@ -22,6 +22,11 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+extern char gSpecialItems[];
+extern char help_records[];
+extern char pad_held[];
+extern char ship_substate[];
+extern char voice_pool[];
 
 /* Hangar door: swings to a target angle, drives seven linked door pieces. */
 struct HangarDoorVars {
@@ -191,7 +196,7 @@ void hangar_door_update(char *m) {
         if (d->active == 0) {
             int x;
             d->active = 0;
-            x = *(int *)(level_render_state_base + 0x2E2);
+            x = *(int *)ship_substate;
             if (x == 8) {
                 d->active = 1;
                 d->angle = 0.3490658402442932f;
@@ -447,7 +452,7 @@ void toxic_gas_vent_update(char *m) {
                 m[0x20] = 3;
                 d->timer = scale_ticks(truncate_float_to_s32(d->on_time * 60.0f));
                 if (d->voice != -1) {
-                    char *e = hero_globals_base + 0x1D + d->voice * 0x70;
+                    char *e = voice_pool + d->voice * 0x70;
                     if (*(char **)(e + 0x88) == m && ((unsigned char *)e)[0x74] != 0) {
                         Sound_StopSlot(d->voice);
                     }
@@ -1160,7 +1165,6 @@ extern int gameplay_event_frame_count MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern float beam_barrier_segment_rotations[];
 extern float beam_barrier_segment_offsets[];
-extern char help_stats_base[];
 
 #define FLD(base, off, T) \
     (((struct {           \
@@ -1239,7 +1243,7 @@ void update_beam_barrier(char *m) {
                 FastVecSub(V.matrix[1], V.matrix[1], V.matrix[3]);
                 InitDirectionalHitQuery(V.sh.local[0], m, 0x10001, 5.0f, V.matrix[2]);
                 coll_line(V.matrix[0], V.matrix[1], 0, m, V.sh.local[0]);
-                if (FLD((help_stats_base + 0x34D), 0x158, unsigned short) == 0 && d->cooldown == 0 &&
+                if (FLD((help_records), 0x158, unsigned short) == 0 && d->cooldown == 0 &&
                     blarg_coll_hit_moby == FLD((hero_globals_base + 0xE1D), 0x2080, char *)) {
                     short t = d->hits + 1;
                     d->hits = t;
@@ -1265,7 +1269,7 @@ void update_beam_barrier(char *m) {
                 FastVecSub(V.matrix[1], V.matrix[1], V.matrix[3]);
                 InitDirectionalHitQuery(V.sh.local[0], m, 0x10001, 5.0f, V.matrix[2]);
                 coll_line(V.matrix[0], V.matrix[1], 0, m, V.sh.local[0]);
-                if (FLD((help_stats_base + 0x34D), 0x158, unsigned short) == 0 && d->cooldown == 0 &&
+                if (FLD((help_records), 0x158, unsigned short) == 0 && d->cooldown == 0 &&
                     blarg_coll_hit_moby == FLD((hero_globals_base + 0xE1D), 0x2080, char *)) {
                     short t = d->hits + 1;
                     d->hits = t;
@@ -1279,7 +1283,7 @@ void update_beam_barrier(char *m) {
                     else
                         vec_scale_to_length(V.sh.local[0], m + 0xC0, -1.0f);
                     record_moby_hit(FLD((hero_globals_base + 0xE1D), 0x2080, void *), V.sh.local[0]);
-                    if (FLD((help_stats_base + 0x34D), 0x158, unsigned short) == 0 && d->cooldown == 0) {
+                    if (FLD((help_records), 0x158, unsigned short) == 0 && d->cooldown == 0) {
                         short t = d->hits + 1;
                         d->hits = t;
                         d->cooldown = scale_ticks(30);
@@ -1291,7 +1295,7 @@ void update_beam_barrier(char *m) {
             if (d->level != 0.0f)
                 AddDrawCallback(draw_beam_barrier_segments, m);
             /* L7E0C */
-            if (FLD((help_stats_base + 0x34D), 0x158, unsigned short) == 0) {
+            if (FLD((help_records), 0x158, unsigned short) == 0) {
                 if (d->cooldown == 0) {
                     char *r = MobyGetHitMessage(m, 0x330000, 0);
                     if (r != 0) {
@@ -1330,7 +1334,7 @@ void update_beam_barrier(char *m) {
                 {
                     int w = d->voice;
                     if (w != -1) {
-                        unsigned char *c = (unsigned char *)hero_globals_base + 0x1D + 0x70 * w;
+                        unsigned char *c = voice_pool + 0x70 * w;
                         if (*(char **)(c + 0x88) == m && c[0x74] != 0)
                             Sound_StopSlot(w);
                     }
@@ -1338,18 +1342,18 @@ void update_beam_barrier(char *m) {
                 }
                 Moby_PlaySound(1, 0, (int)m);
                 if (ok16) {
-                    unsigned short hh = FLD((help_stats_base + 0x34D), 0x158, unsigned short);
+                    unsigned short hh = FLD((help_records), 0x158, unsigned short);
                     if (hh <= 0xFFFE)
-                        FLD((help_stats_base + 0x34D), 0x158, short) = hh + 1;
+                        FLD((help_records), 0x158, short) = hh + 1;
                 }
                 {
                     int q = scale_ticks(gameplay_event_frame_count) / 600;
-                    if ((int)FLD((help_stats_base + 0x34D), 0x15A, unsigned short) < q) {
+                    if ((int)FLD((help_records), 0x15A, unsigned short) < q) {
                         int q2 = scale_ticks(gameplay_event_frame_count) / 600;
-                        FLD((help_stats_base + 0x34D), 0x15A, short) = q2;
+                        FLD((help_records), 0x15A, short) = q2;
                     }
-                    FLD((help_stats_base + 0x34D), 0x15C, int) =
-                        FLD((help_stats_base + 0x34D), 0x15C, int) | (1 << g_current_level_index) | 0x80000000;
+                    FLD((help_records), 0x15C, int) =
+                        FLD((help_records), 0x15C, int) | (1 << g_current_level_index) | 0x80000000;
                 }
             }
             return;
@@ -2776,7 +2780,7 @@ void alien_queen_update(unsigned char *moby) {
     }
 }
 extern Hero g_hero;
-extern unsigned char pad_globals_base[];
+
 extern short active_marker_id NOT_SDA;
 extern int *blarg_paths[];
 extern short alien_queen_glow_phase_speed_degrees_gp;
@@ -2906,8 +2910,7 @@ void update_alien_queen_hit_response_and_recovery(void *moby_) {
         return;
     }
     if ((unsigned char)moby[0x20] >= 2 &&
-        ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->items[0].item_id != 8 &&
-        (*(int *)(pad_globals_base + 0x2600) & 0x20))
+        ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->items[0].item_id != 8 && (*(int *)pad_held & 0x20))
         data->unk_178 = 1;
     timer = data->timer2;
     if (timer != 0 && data->unk_170 != 0) {
@@ -3413,7 +3416,7 @@ extern int FastTweenColor(int, int, float);
 extern void update_entity_matrix(char *, void *, void *, void *);
 extern unsigned char menu_item_enabled_19_r[] __asm__("D_0013D4AF");
 extern unsigned char D_0013D5CA[];
-extern unsigned char D_0013D355[];
+
 extern char pad_globals_base_r[] __asm__("D_0013A5E0");
 extern float blarg_lift_scale SDATA(D_L06_00161FF0);
 extern float blarg_lift_max_speed SDATA(D_L06_00161FF4);
@@ -3463,8 +3466,8 @@ void update_hero_triggered_moby_height_cycle(Moby *moby) {
             break;
         case 1:
             if (is_point_inside_clip_volume(&((Hero *)(hero_globals_base + 0xE1D))->motion.pos, d->f70) != 0) {
-                if (((Flags *)(special_items_base + 0x13B))->f20 == 0) {
-                    ((Flags *)(special_items_base + 0x13B))->f20 = 1;
+                if (((Flags *)gSpecialItems)->f20 == 0) {
+                    ((Flags *)gSpecialItems)->f20 = 1;
                 }
                 moby->state = 3;
                 d->f90 = 0;

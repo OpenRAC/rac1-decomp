@@ -20,6 +20,10 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+extern char gSpecialItems[];
+extern struct Hero g_hero;
+extern int level_moby_killed[][64];
+extern char pad0_pressed[];
 
 /* Configurable spark emitter: one burst source at the moby, or one per point of a path. */
 struct ParticleEmitterVars {
@@ -204,8 +208,7 @@ void toxic_crab_update(Moby *m) {
         see = coll_line(from, to, 2, m, 0) == 0;
     }
     if (!see || (!(FastAbsF(t->pos.z - m->pos.z) < 1.0f) &&
-                 is_moby_in_class_range_500_to_540(
-                     *(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->ground_moby) == 0)) {
+                 is_moby_in_class_range_500_to_540(*(int *)&g_hero.ground_moby) == 0)) {
         see = 0;
     }
     switch (m->state) {
@@ -243,7 +246,7 @@ void toxic_crab_update(Moby *m) {
                 char *base = orxon_mobys_c;
                 Moby *p = (Moby *)(base + (d->i1BC << 8));
                 if (p == 0 || p->state == 0xFE || p->state == 0xFD ||
-                    (((*(int *)(help_stats_base + 0xAB75 +
+                    (((*(int *)((char *)&level_moby_killed +
                                 (((short)p->save_id >> 5) * 4 + (g_current_level_index_m << 8))) >>
                        (p->save_id & 0x1F)) &
                       1) &&
@@ -263,7 +266,7 @@ void toxic_crab_update(Moby *m) {
                 char *base = orxon_mobys_c;
                 Moby *p = (Moby *)(base + (d->i1BC << 8));
                 if (p == 0 || p->state == 0xFE || p->state == 0xFD ||
-                    ((*(int *)(help_stats_base + 0xAB75 +
+                    ((*(int *)((char *)&level_moby_killed +
                                (((short)p->save_id >> 5) * 4 + (g_current_level_index_m << 8))) >>
                       (p->save_id & 0x1F)) &
                      1)) {
@@ -298,8 +301,7 @@ void toxic_crab_update(Moby *m) {
                     }
                 }
             } else if (m->anim_flags & 2) {
-                if (vec_distance_xy(&m->pos, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) <
-                    *(float *)&toxic_crab_aggro_radius) {
+                if (vec_distance_xy(&m->pos, &g_hero.motion.pos) < *(float *)&toxic_crab_aggro_radius) {
                     float x;
                     m->state = 5;
                     d->i1D8 = 0;
@@ -380,7 +382,7 @@ void toxic_crab_update(Moby *m) {
                 v[1] = FastSin(aim) * (t->oclass == MOBY_CLASS_GADGEBOT_857 ? 2.0f : 3.57f);
                 v[2] = 0.0f;
                 FastVecAdd(v, v, &t->pos);
-                if (((Hero2E30F8 *)(hero_globals_base + 0xE1D))->f20A4 != 1) {
+                if (((Hero2E30F8 *)(&g_hero))->f20A4 != 1) {
                     float rot = m->rot.z;
                     int r;
                     m->rot.z = fast_atan2(v[0] - m->pos.x, v[1] - m->pos.y);
@@ -449,14 +451,12 @@ void toxic_crab_update(Moby *m) {
                 m->anim_speed = 1.2f;
                 {
                     float home = FastVecDist(&m->pos, d->v170);
-                    if ((((Hero2E30F8 *)(hero_globals_base + 0xE1D))->f20A4 == 1 ? 1.0f : 30.0f) < home ||
-                        d->i164 == 2) {
+                    if ((((Hero2E30F8 *)(&g_hero))->f20A4 == 1 ? 1.0f : 30.0f) < home || d->i164 == 2) {
                         m->state = 8;
                         MobyBlendAnimation(m, 4, 0, scale_ticks(0xC));
                     } else if (vec_distance_xy(&m->pos, &t->pos) <
                                (t->oclass == MOBY_CLASS_GADGEBOT_857 ? 2.45f : 4.02f)) {
-                        if (((Hero2E30F8 *)(hero_globals_base + 0xE1D))->f1C0 < scale_ticks(10) && diff < 0.34906584f &&
-                            see) {
+                        if (((Hero2E30F8 *)(&g_hero))->f1C0 < scale_ticks(10) && diff < 0.34906584f && see) {
                             int anim = 7;
                             if (random_integer_below(100) & 1) {
                                 anim = 6;
@@ -505,11 +505,11 @@ void toxic_crab_update(Moby *m) {
             }
             {
                 float home = FastVecDist(&m->pos, d->v170);
-                if ((((Hero2E30F8 *)(hero_globals_base + 0xE1D))->f20A4 == 1 ? 1.0f : 30.0f) < home || d->i164 == 2) {
+                if ((((Hero2E30F8 *)(&g_hero))->f20A4 == 1 ? 1.0f : 30.0f) < home || d->i164 == 2) {
                     m->state = 8;
                     MobyBlendAnimation(m, 4, 0, scale_ticks(0xC));
                 } else if (vec_distance_xy(&m->pos, &t->pos) < (t->oclass == MOBY_CLASS_GADGEBOT_857 ? 2.45f : 4.02f)) {
-                    if (((Hero2E30F8 *)(hero_globals_base + 0xE1D))->f1C0 < scale_ticks(10) &&
+                    if (((Hero2E30F8 *)(&g_hero))->f1C0 < scale_ticks(10) &&
                         diff < *(float *)&toxic_crab_pursuit_heading_threshold_degrees_gp * 0.017453292f && see) {
                         int anim = 7;
                         if (random_integer_below(100) & 1) {
@@ -1179,7 +1179,7 @@ float compute_toxic_crab_group_approach_angle(char *self) {
     v[0] = FastCos(owner_to_self_angle) * 2.0f;
     v[1] = FastSin(owner_to_self_angle) * 2.0f;
     v[2] = 0.0f;
-    FastVecAdd(v, v, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
+    FastVecAdd(v, v, &g_hero.motion.pos);
     group_entry = orxon_moby_groups[((struct Moby *)self)->group];
     if (group_entry != 0) {
         do {
@@ -1388,18 +1388,17 @@ void BlargShipUpdate(Ship_5E48 *m) {
             }
             break;
         case 4:
-            if (is_point_inside_clip_volume(&((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos, d->i1B0)) {
+            if (is_point_inside_clip_volume(&g_hero.motion.pos, d->i1B0)) {
                 m->state = 6;
                 break;
             }
             *(u128_2E52B0 *)&A = *(u128_2E52B0 *)&tgt->pos;
-            if (((struct Hero *)(hero_globals_base + 0xE1D))->vehicle_mode != 1) {
+            if (g_hero.vehicle_mode != 1) {
                 *(u128_2E52B0 *)&A = *(u128_2E52B0 *)&d->vF0;
                 coll_line(&m->pos, &A, 0, m, 0);
             } else {
-                if ((Ship_5E48 *)((struct Hero *)(hero_globals_base + 0xE1D))->moby == tgt) {
-                    FastVecScale(&C, &((struct Hero *)(hero_globals_base + 0xE1D))->motion.displacement,
-                                 (float)scale_ticks(20));
+                if ((Ship_5E48 *)g_hero.moby == tgt) {
+                    FastVecScale(&C, &g_hero.motion.displacement, (float)scale_ticks(20));
                     *(u128_2E52B0 *)&B = *(u128_2E52B0 *)&C;
                     add_vectors(&C, &A, &B);
                     A.z = ProbeGroundHeight(&A, 0, 0.5f);
@@ -1450,18 +1449,17 @@ void BlargShipUpdate(Ship_5E48 *m) {
             }
             break;
         case 5:
-            if (is_point_inside_clip_volume(&((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos, d->i1B0)) {
+            if (is_point_inside_clip_volume(&g_hero.motion.pos, d->i1B0)) {
                 m->state = 6;
                 break;
             }
             *(u128_2E52B0 *)&A = *(u128_2E52B0 *)&tgt->pos;
-            if (((struct Hero *)(hero_globals_base + 0xE1D))->vehicle_mode != 1) {
+            if (g_hero.vehicle_mode != 1) {
                 *(u128_2E52B0 *)&A = *(u128_2E52B0 *)&d->vF0;
                 coll_line(&m->pos, &A, 0, m, 0);
             } else {
-                if ((Ship_5E48 *)((struct Hero *)(hero_globals_base + 0xE1D))->moby == tgt) {
-                    FastVecScale(&C, &((struct Hero *)(hero_globals_base + 0xE1D))->motion.displacement,
-                                 (float)scale_ticks(20));
+                if ((Ship_5E48 *)g_hero.moby == tgt) {
+                    FastVecScale(&C, &g_hero.motion.displacement, (float)scale_ticks(20));
                     *(u128_2E52B0 *)&B = *(u128_2E52B0 *)&C;
                     add_vectors(&C, &A, &B);
                     A.z = ProbeGroundHeight(&A, 0, 0.5f);
@@ -1713,7 +1711,7 @@ extern int try_set_help_message(int, int);
 extern int memcard_Save(int, int);
 extern void ShowBanner(int, int);
 extern unsigned char special_items_base[];
-extern char pad_globals_base[];
+
 extern int orxon_cinematic_mode MACRO_ADDR;
 extern int gBolts MACRO_ADDR;
 extern short hero_max_health;
@@ -1737,18 +1735,18 @@ void nanotech_upgrade_vendor_update(char *m) {
     fast_dec_timer((int *)(d + 4));
     switch (moby->state) {
         case 0:
-            g = (Hero *)(hero_globals_base + 0xE1D);
+            g = &g_hero;
             if (FastDiffRots(moby->rot.z, fast_atan2(g->motion.pos.f[0] - moby->pos.x,
                                                      g->motion.pos.f[1] - moby->pos.y)) < 1.5707964f) {
                 if (vec_distance_xy(&moby->pos, &g->motion.pos) < 4.0f) {
                     if (*(int *)(d + 4) == 0) {
                         if (orxon_cinematic_mode != 2) {
                             set_moby_dialogue_record_value((char *)moby, 1);
-                            alternate_item_available = special_items_base + 0x13B;
+                            alternate_item_available = gSpecialItems;
                             if (alternate_item_available[4] == 0) {
                                 if (gBolts > 4000) {
                                     int accepted = try_set_help_message(1, 0x271E) != 0;
-                                    if ((*(int *)(pad_globals_base + 0x2604) & 0x10) && accepted) {
+                                    if ((*(int *)pad0_pressed & 0x10) && accepted) {
                                         d = (u8 *)1;
                                         alternate_item_available[4] = (int)d;
                                         g->health.hp = 5;
@@ -1764,7 +1762,7 @@ void nanotech_upgrade_vendor_update(char *m) {
                                 if (*(int *)(d + 4) == 0) {
                                     if (gBolts > 30000) {
                                         int accepted = try_set_help_message(1, 0x271F) != 0;
-                                        if ((*(int *)(pad_globals_base + 0x2604) & 0x10) && accepted) {
+                                        if ((*(int *)pad0_pressed & 0x10) && accepted) {
                                             d = (u8 *)1;
                                             alternate_item_available[5] = (int)d;
                                             g->health.hp = 8;
@@ -2003,7 +2001,7 @@ state_zero: {
     save_id = moby->save_id;
     signed_save_id = (short)save_id;
     if (orxon_collected_flags_base.collected[(short)save_id] != 0 ||
-        ((*(int *)(help_stats_base + 0xAB75 + ((signed_save_id >> 5) * 4 + (g_current_level_index << 8))) >>
+        ((*(int *)((char *)&level_moby_killed + ((signed_save_id >> 5) * 4 + (g_current_level_index << 8))) >>
           (save_id & 31)) &
          1) != 0) {
         moby->state = 3;
@@ -2027,7 +2025,7 @@ state_two: {
     save_id = moby->save_id;
     signed_save_id = (short)save_id;
     if (orxon_collected_flags_base.collected[(short)save_id] != 0 ||
-        ((*(int *)(help_stats_base + 0xAB75 + ((signed_save_id >> 5) * 4 + (g_current_level_index << 8))) >>
+        ((*(int *)((char *)&level_moby_killed + ((signed_save_id >> 5) * 4 + (g_current_level_index << 8))) >>
           (save_id & 31)) &
          1) != 0) {
         moby->state = 3;
@@ -2127,7 +2125,7 @@ remove_candidate:
     if (candidate != 0)
         DeleteMoby(candidate);
     save_id = moby->save_id;
-    bits = (int *)(help_stats_base + 0xAB75 +
+    bits = (int *)((char *)&level_moby_killed +
                    (((int)((unsigned int)save_id << 16) >> 21) * 4 + (g_current_level_index << 8)));
     *bits |= 1 << (save_id & 31);
     save_id = moby->save_id;

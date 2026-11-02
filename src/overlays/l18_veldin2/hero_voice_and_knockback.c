@@ -14,8 +14,8 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "enums/moby_class.h"
+extern Hero g_hero;
 
-extern unsigned char hero_globals_base[];
 extern int g_current_level_index MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
 
@@ -23,7 +23,7 @@ extern void HeroL18_SetMoveState(int, int);
 
 /* Updates the pickup/aim flags after a state change, and requests a follow-up state when the target is in range. */
 void HeroL18_UpdateStateFlags(void) {
-    struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+    struct Hero *g = &g_hero;
     int c = g->ground_sound_class;
     int s = g->ground_type;
     int t;
@@ -46,27 +46,27 @@ void HeroL18_UpdateStateFlags(void) {
         }
     }
     if (s == 0xE) {
-        struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *p = &g_hero;
         p->base_condition = 1;
         p->water_depth = 0.2f;
         p->water_surface_z = p->ground_z.f + 0.2f;
     }
     if (s == 0) {
-        struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *p = &g_hero;
         float d = p->water_surface_z - p->ground_z.f;
         p->water_depth = d;
         if (d < 0.85f && 0.25f < d) {
             p->wading = 1;
         }
-        p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        p = &g_hero;
         p->base_condition = 1;
     }
     if (s == 3) {
-        struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *p = &g_hero;
         p->selector_3 = 1;
     }
     if (g_current_level_index == LEVEL_GEMLIK) {
-        struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *p = &g_hero;
         if (p->state.current != HERO_STATE_HEIGHT_OR_TIMEOUT_RESPAWN_WAIT) {
             if (coll_sphere(p->capsule_radius + 0.03f, &p->motion.body_center, 2, 0) != 0) {
                 if (CollType() == 0xB) {
@@ -77,31 +77,31 @@ void HeroL18_UpdateStateFlags(void) {
         }
     }
     if (s == 0xB) {
-        struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *p = &g_hero;
         p->selector_11 = 1;
     }
     if (s == 2) {
-        struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *p = &g_hero;
         p->on_magnet_ground = 1;
     }
     if (s == 4) {
-        struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *p = &g_hero;
         p->selector_4 = 1;
     }
     if (s == 8) {
-        struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *p = &g_hero;
         p->on_slip_ground = 1;
     }
     if (s == 9) {
-        struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *p = &g_hero;
         p->unk12EE = 1;
     }
     if (s == 0xC) {
-        struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *p = &g_hero;
         p->on_slip_ground = 1;
     }
     {
-        struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *p = &g_hero;
         if (p->selector_4 != 0 && p->grounded_frames != 0) {
             t = p->state.control_mode;
             if (t != 0x10 && t != 0x14 && t != 7) {
@@ -111,7 +111,7 @@ void HeroL18_UpdateStateFlags(void) {
         }
     }
     {
-        struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *p = &g_hero;
         if (p->selector_3 != 0) {
             t = p->state.current;
             if (t != 0x68 && t != 0x7B) {
@@ -134,7 +134,7 @@ void HeroL18_UpdateStateFlags(void) {
         }
     }
     {
-        struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
+        struct Hero *p = &g_hero;
         if (p->selector_11 != 0) {
             if (p->state.current != HERO_STATE_HEIGHT_OR_TIMEOUT_RESPAWN_WAIT) {
                 if (FastAbsF(p->sink_surface_z - (p->motion.pos.f[2] + 0.25f)) < 1.0f) {

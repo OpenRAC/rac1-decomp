@@ -1,8 +1,8 @@
 {
-  "address_names_in_code": 11718,
+  "address_names_in_code": 11687,
   "address_names_in_comments": 849,
   "asm_aliases": 5901,
-  "extern_lines": 31497,
+  "extern_lines": 31654,
   "fakematch_tags": 31,
   "float_int_casts": 2408,
   "hex_compares": 4113,
@@ -13,7 +13,7 @@
   "numbered_names": 269,
   "oclass_literals": 175,
   "offsets_in_comments": 1007,
-  "raw_offset_casts": 5965,
+  "raw_offset_casts": 5821,
   "tab_lines": 0,
   "worker_notes_in_comments": 0
 }

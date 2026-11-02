@@ -19,6 +19,10 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+extern struct Hero g_hero;
+extern char pad0_pressed[];
+extern char race_gates[];
+extern unsigned char saved_mission_state[][16];
 
 /* Electric gate: its trigger and the sound voice slot it claims. */
 struct ElectricGateWatchVars {
@@ -347,7 +351,7 @@ void update_fog_zone(Moby *m) {
     struct FogZoneVars *d = (struct FogZoneVars *)m->pvars;
     float v[4];
     float w[4];
-    char *g = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
+    char *g = &g_hero.motion.pos;
     if (is_point_inside_clip_volume(g, d->volume_out)) {
         *(float *)(g + 0x270) = 500.0f;
     }
@@ -382,8 +386,7 @@ void update_fog_zone(Moby *m) {
             m->state = 1;
             break;
         case 1:
-            if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                            d->volume_in)) {
+            if (is_point_inside_clip_volume(&g_hero.motion.pos, d->volume_in)) {
                 rilgar_fog_color_red[0] = *(char *)&d->in_red;
                 rilgar_fog_color_green[0] = *(char *)&d->in_green;
                 rilgar_fog_color_blue[0] = *(char *)&d->in_blue;
@@ -401,8 +404,7 @@ void update_fog_zone(Moby *m) {
             }
             break;
         case 2:
-            if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                            d->volume_out)) {
+            if (is_point_inside_clip_volume(&g_hero.motion.pos, d->volume_out)) {
                 rilgar_fog_color_red[0] = *(char *)&d->out_red;
                 rilgar_fog_color_green[0] = *(char *)&d->out_green;
                 rilgar_fog_color_blue[0] = *(char *)&d->out_blue;
@@ -420,7 +422,7 @@ void update_fog_zone(Moby *m) {
             }
             break;
     }
-    g = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
+    g = &g_hero.motion.pos;
     if (is_point_inside_clip_volume(g, d->tint_volume)) {
         int c;
         FastVecSub(v, g, rilgar_level_cuboids_c + d->tint_volume * 128 + 0x30);
@@ -631,9 +633,7 @@ void drain_cover_update(Moby *moby) {
             break;
         case 1:
             update_drain_cover_tilt((char *)moby, 0.0f, 8.0f);
-            if (rilgar_cinematic_mode == 0 &&
-                vec_distance_xy(&moby->pos, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) <
-                    24.0f &&
+            if (rilgar_cinematic_mode == 0 && vec_distance_xy(&moby->pos, &g_hero.motion.pos) < 24.0f &&
                 fast_dec_timer(&d->timer) != 0) {
                 moby->state = 2;
                 clear_u64_value(d->vel);
@@ -718,7 +718,7 @@ void drain_cover_update(Moby *moby) {
             }
             break;
     }
-    hero = (Hero *)(hero_globals_base + 0xE1D);
+    hero = &g_hero;
     if (moby->pos.z - 2.0f > hero->motion.pos.f[2] &&
         vec_distance_xy(&moby->pos, hero->motion.pos.f) < drain_cover_push_radius) {
         v40[0] = FastCos(fast_atan2(hero->motion.pos.f[0] - moby->pos.x, hero->motion.pos.f[1] - moby->pos.y)) * 0.2f;
@@ -811,7 +811,7 @@ extern short drain_cover_tilt_max_speed;
 void update_drain_cover_tilt(char *moby, float turn_scale, float speed_scale) {
     Moby *m = (Moby *)moby;
     struct DrainCoverVars *data = (struct DrainCoverVars *)m->pvars;
-    Hero *game = (Hero *)(hero_globals_base + 0xE1D);
+    Hero *game = &g_hero;
     float offset[4];
     float vertical;
     float horizontal;
@@ -1471,7 +1471,7 @@ void ocean_rilgar_update(char *moby) {
             ((Moby *)moby)->update_dist = 0xFF;
             break;
         case OCEAN_RILGAR_UPDATE_BOBBING:
-            if (((Hero *)(hero_globals_base + 0xE1D))->state.control_mode == 0x16) {
+            if (g_hero.state.control_mode == 0x16) {
                 rilgar_ocean_grid_r[2] =
                     FastSin((float)(*(int *)&rilgar_frame_count % 360) * 0.017444444f - 3.14f) * 0.25f + 61.5f;
             } else {
@@ -1818,8 +1818,7 @@ void update_hoverboard_girl(Moby *moby) {
                 blend_moby_animation(moby, 0, 0, scale_frame_count(20));
             }
             moby->pos.z = find_ground_height(0.5f, (HGVec *)&moby->pos, 0);
-            if ((*(HGGates *)(race_gates_base + 0xB3)).first_gate == 0 ||
-                (*(HGGates *)(race_gates_base + 0xB3)).second_gate == 0) {
+            if ((*(HGGates *)race_gates).first_gate == 0 || (*(HGGates *)race_gates).second_gate == 0) {
                 HGRaceEntry **entries = race_entries_r;
                 int entry = get_dialogue_entry_r(moby);
                 entries[entry]->state = 13;
@@ -1830,8 +1829,7 @@ void update_hoverboard_girl(Moby *moby) {
             initialize_moby_grounding_r(moby);
             break;
         case 1:
-            if ((*(Hero *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->rot_matrix[0]).state.current !=
-                0x1D) {
+            if ((*(Hero *)&g_hero.rot_matrix[0]).state.current != 0x1D) {
                 if (update_npc_dialogue(moby, state) != 0) {
                     begin_dialogue_camera_transition(2.0f, moby);
                     moby->state = 3;
@@ -1842,12 +1840,9 @@ void update_hoverboard_girl(Moby *moby) {
                     state->dialogue_state_frame = frame_number;
                     moby->command = 0;
                     set_race_camera(&race_camera_vectors[0], &race_camera_vectors[1], 0, 1);
-                    qcopy(&((HGVec *)(((struct Hero *)((char *)&hero_globals_base + 0xE1D))->saved_pos_rot))[0],
-                          &race_camera_vectors[2]);
-                    qcopy(&((HGVec *)(((struct Hero *)((char *)&hero_globals_base + 0xE1D))->saved_pos_rot))[1],
-                          &race_camera_vectors[3]);
-                    (*(Hero *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->rot_matrix[0]).item_use_locked =
-                        1;
+                    qcopy(&((HGVec *)(g_hero.saved_pos_rot))[0], &race_camera_vectors[2]);
+                    qcopy(&((HGVec *)(g_hero.saved_pos_rot))[1], &race_camera_vectors[3]);
+                    (*(Hero *)&g_hero.rot_matrix[0]).item_use_locked = 1;
                     set_race_camera_mode(2, 6);
                 }
             }
@@ -1871,10 +1866,8 @@ void update_hoverboard_girl(Moby *moby) {
                 set_race_camera_mode(0, 8);
                 moby->command = 0;
                 set_race_camera(&race_camera_vectors[0], &race_camera_vectors[1], 0, 1);
-                qcopy(&((HGVec *)(((struct Hero *)((char *)&hero_globals_base + 0xE1D))->saved_pos_rot))[0],
-                      &race_camera_vectors[2]);
-                qcopy(&((HGVec *)(((struct Hero *)((char *)&hero_globals_base + 0xE1D))->saved_pos_rot))[1],
-                      &race_camera_vectors[3]);
+                qcopy(&((HGVec *)(g_hero.saved_pos_rot))[0], &race_camera_vectors[2]);
+                qcopy(&((HGVec *)(g_hero.saved_pos_rot))[1], &race_camera_vectors[3]);
             }
             if ((moby->prev_seq == 0 || moby->prev_seq == 2) && advance_timer(&state->idle_animation_timer)) {
                 state->idle_animation_timer = truncate_time(scale_time(random_float(1200.0f, 2400.0f)));
@@ -1915,27 +1908,19 @@ void update_hoverboard_girl(Moby *moby) {
     look_enabled = 0;
     if (moby->prev_seq == 0 || moby->prev_seq == 2) {
         look_enabled = 1;
-        if (vector_distance(
-                &moby->pos,
-                &(*(Hero *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->rot_matrix[0]).motion.pos) < 8.0f &&
+        if (vector_distance(&moby->pos, &(*(Hero *)&g_hero.rot_matrix[0]).motion.pos) < 8.0f &&
             absolute_angle_difference(
-                moby->rot.z,
-                angle_from_xy((*(Hero *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->rot_matrix[0])
-                                      .motion.body_center.f[0] -
-                                  moby->pos.x,
-                              (*(Hero *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->rot_matrix[0])
-                                      .motion.body_center.f[1] -
-                                  moby->pos.y)) < 1.5707964f) {
-            if (vector_length(&(*(Hero *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->rot_matrix[0])
-                                   .motion.displacement) > 0.01f) {
+                moby->rot.z, angle_from_xy((*(Hero *)&g_hero.rot_matrix[0]).motion.body_center.f[0] - moby->pos.x,
+                                           (*(Hero *)&g_hero.rot_matrix[0]).motion.body_center.f[1] - moby->pos.y)) <
+                1.5707964f) {
+            if (vector_length(&(*(Hero *)&g_hero.rot_matrix[0]).motion.displacement) > 0.01f) {
                 state->player_look_timer = scale_frame_count(120);
             } else {
                 advance_timer(&state->player_look_timer);
             }
         } else if (state->player_look_timer != 0) {
             state->player_look_timer = 0;
-            qcopy(&state->look_target,
-                  &(*(Hero *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->rot_matrix[0]).motion.body_center);
+            qcopy(&state->look_target, &(*(Hero *)&g_hero.rot_matrix[0]).motion.body_center);
         }
         if (advance_timer(&state->random_look_timer)) {
             state->random_look_timer = truncate_time(scale_time(random_float(180.0f, 300.0f)));
@@ -1945,8 +1930,7 @@ void update_hoverboard_girl(Moby *moby) {
             add_vector(&state->look_target, &state->look_target, &moby->pos);
         }
         if (state->player_look_timer != 0) {
-            qcopy(&target_position,
-                  &(*(Hero *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->rot_matrix[0]).motion.body_center);
+            qcopy(&target_position, &(*(Hero *)&g_hero.rot_matrix[0]).motion.body_center);
             rotation_step = 0.03f;
             rotation_limit = 0.3f;
         } else {
@@ -1972,29 +1956,19 @@ void update_hoverboard_girl(Moby *moby) {
         state->joints[1].target_rotation[2] = yaw * 0.4f;
     }
 
-    if (vector_distance(&moby->pos,
-                        &(*(Hero *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->rot_matrix[0]).motion.pos) <
-            15.0f &&
+    if (vector_distance(&moby->pos, &(*(Hero *)&g_hero.rot_matrix[0]).motion.pos) < 15.0f &&
         absolute_angle_difference(
-            moby->rot.z,
-            angle_from_xy(
-                (*(Hero *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->rot_matrix[0]).motion.pos.f[0] -
-                    moby->pos.x,
-                (*(Hero *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->rot_matrix[0]).motion.pos.f[1] -
-                    moby->pos.y)) < 1.2217305f) {
-        if ((*(Hero *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->rot_matrix[0]).state.current ==
-                HERO_STATE_HIGH_JUMP &&
-            (*(Hero *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->rot_matrix[0]).state_timer == 15) {
+            moby->rot.z, angle_from_xy((*(Hero *)&g_hero.rot_matrix[0]).motion.pos.f[0] - moby->pos.x,
+                                       (*(Hero *)&g_hero.rot_matrix[0]).motion.pos.f[1] - moby->pos.y)) < 1.2217305f) {
+        if ((*(Hero *)&g_hero.rot_matrix[0]).state.current == HERO_STATE_HIGH_JUMP &&
+            (*(Hero *)&g_hero.rot_matrix[0]).state_timer == 15) {
             state->breast_growth_count_gp++;
             if (state->breast_growth_count_gp > 20)
                 state->breast_growth_count_gp = 20;
             breast_growth_count_gp_q = state->breast_growth_count_gp;
         }
-        if ((*(Hero *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->rot_matrix[0]).state.current ==
-                HERO_STATE_CROUCH &&
-            scale_frame_count(20) <
-                (*(Hero *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->rot_matrix[0]).state_timer &&
-            frame_number % 10 == 0) {
+        if ((*(Hero *)&g_hero.rot_matrix[0]).state.current == HERO_STATE_CROUCH &&
+            scale_frame_count(20) < (*(Hero *)&g_hero.rot_matrix[0]).state_timer && frame_number % 10 == 0) {
             state->breast_growth_count_gp--;
             if (state->breast_growth_count_gp < 0)
                 state->breast_growth_count_gp = 0;
@@ -2168,7 +2142,7 @@ void qwarks_bouncer_update(char *m) {
     head_rate = 0.3f;
     tracking = 0;
     if (bouncer_moby->prev_seq == 0) {
-        p = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
+        p = &g_hero.motion.pos;
         tracking = 1;
         if (vec_distance_xy(&bouncer_moby->pos, p) < 8.0f &&
             FastDiffRots(bouncer_moby->rot.z,
@@ -2180,7 +2154,7 @@ void qwarks_bouncer_update(char *m) {
                 fast_dec_timer(&bouncer_data->moving_timer);
         } else if (bouncer_data->moving_timer != 0) {
             bouncer_data->moving_timer = 0;
-            qcopy(bouncer_data->target, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center);
+            qcopy(bouncer_data->target, &g_hero.motion.body_center);
         }
         if (fast_dec_timer(&bouncer_data->target_timer)) {
             float heading;
@@ -2191,7 +2165,7 @@ void qwarks_bouncer_update(char *m) {
             FastVecAdd(bouncer_data->target, bouncer_data->target, &bouncer_moby->pos);
         }
         if (bouncer_data->moving_timer != 0) {
-            qcopy(s_target, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center);
+            qcopy(s_target, &g_hero.motion.body_center);
             rate = 0.04f;
             head_rate = 0.3f;
         } else {
@@ -2317,7 +2291,7 @@ void shady_salesman_update(char *m) {
     head_rate = 0.3f;
     tracking = 0;
     if (moby->prev_seq == 0) {
-        p = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
+        p = &g_hero.motion.pos;
         tracking = 1;
         if (vec_distance_xy(&moby->pos, p) < 8.0f &&
             FastDiffRots(moby->rot.z, fast_atan2((pl = (ShadyWatchPlayer *)(p - 0x80))->aim[0] - moby->pos.x,
@@ -2328,7 +2302,7 @@ void shady_salesman_update(char *m) {
                 fast_dec_timer(&npc_data->moving_timer);
         } else if (npc_data->moving_timer != 0) {
             npc_data->moving_timer = 0;
-            qcopy(npc_data->target, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center);
+            qcopy(npc_data->target, &g_hero.motion.body_center);
         }
         if (fast_dec_timer(&npc_data->target_timer)) {
             float heading;
@@ -2339,7 +2313,7 @@ void shady_salesman_update(char *m) {
             FastVecAdd(npc_data->target, npc_data->target, &moby->pos);
         }
         if (npc_data->moving_timer != 0) {
-            qcopy(s_target, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center);
+            qcopy(s_target, &g_hero.motion.body_center);
             rate = 0.04f;
             head_rate = 0.3f;
         } else {
@@ -2467,7 +2441,7 @@ typedef struct {
 extern L05PickupPose *rilgar_level_cuboids MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
-extern char pad_globals_base[];
+
 extern char help_stats_base[];
 
 /* Update the moving pickup, interpolate its path transitions, and manage its sound handle. */
@@ -2504,7 +2478,7 @@ void PickupL05_Update(char *moby) {
             PickNearestTargetSlot(moby);
             break;
         case TAXI_WAIT_FOR_PICKUP:
-            pickup_hero = (struct Hero *)(hero_globals_base + 0xE1D);
+            pickup_hero = &g_hero;
             if (((char *)pickup_hero->ground_moby) == moby && pickup_hero->air_frames.s == 0) {
                 matrix_from_basis_rows(rotation_or_start_position_scratch, &((struct Moby *)moby)->rot_row0);
                 FastVecSub(hero_offset, &pickup_hero->motion.pos, &((struct Moby *)moby)->pos);
@@ -2513,7 +2487,7 @@ void PickupL05_Update(char *moby) {
                 if (FastAbsF(hero_offset[1]) < 1.2f && hero_offset[0] < 1.0f && -0.75f < hero_offset[0]) {
                     select_taxi_route(moby);
                     request_moby_variant_help_message(moby);
-                    if (*(int *)(pad_globals_base + 0x2604) & 0x10) {
+                    if (*(int *)pad0_pressed & 0x10) {
                         ((struct Moby *)moby)->state = 3;
                         destination_stop_moby = FindMobyByDataId(moby, taxi_data->end_stop);
                         if (destination_stop_moby != 0) {
@@ -2583,7 +2557,7 @@ void PickupL05_Update(char *moby) {
             }
             break;
         case TAXI_WAIT_FOR_ACTIVATION:
-            t = (unsigned char *)help_stats_base + 0xAA35;
+            t = saved_mission_state;
             k = g_current_level_index * 16;
             if (t[taxi_data->mission_a + k] == 0xFF || t[taxi_data->mission_b + k] == 0xFF) {
                 struct MobyClass *model = ((struct Moby *)moby)->pclass;
@@ -2598,7 +2572,7 @@ void PickupL05_Update(char *moby) {
     }
     apply_moby_position_and_rotation_wobble(moby);
     if (((struct Moby *)moby)->state >= 3 && ((struct Moby *)moby)->state <= 5) {
-        travel_hero = (struct Hero *)(hero_globals_base + 0xE1D);
+        travel_hero = &g_hero;
         travel_hero->jump_lock_timer = 2;
         travel_hero->unk1F4 = 2;
         transform_moby_vector_table_to_world_space(moby);

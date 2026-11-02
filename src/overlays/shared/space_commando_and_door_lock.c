@@ -13,6 +13,8 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "enums/level.h"
+extern struct Hero g_hero;
+extern char g_screen_extent[];
 /* Blarg space commando: takes hits, fires a beam at the hero. */
 struct SpaceCommandoVars {
     u8 pad_00[0x20];
@@ -648,7 +650,7 @@ void process_blarg_space_commando_hits(char *m) {
         }
     }
     if (d->target_id == 0) {
-        d->target_id = *(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby;
+        d->target_id = *(int *)&g_hero.moby;
     }
 }
 extern float ProbeGroundHeight(void *, int, float);
@@ -1473,7 +1475,6 @@ void spawn_timed_projected_sprite_effect(char *src, int a1, int a2, int a3) {
         m->state = 1;
     }
 }
-extern unsigned char screen_globals_base[];
 
 extern void draw_geometry_quad_5188(void *, void *, void *, u64, int);
 extern s32 D_L06_001624A4_FF000 SDATA(D_L06_001624A4);
@@ -1511,7 +1512,7 @@ void draw_projected_fading_quad(char *moby) {
         fade = 0.0f;
     VU1_addGSregister(0x47, 0x5380B);
     project_to_screen(screen, &pos);
-    screen_center = (s32 *)(screen_globals_base + 0x4A6);
+    screen_center = (s32 *)g_screen_extent;
     raw_x = truncate_float_to_s32(screen[0] - (float)screen_center[4]);
     screen_offset = (float)screen_center[4];
     y = truncate_float_to_s32(screen[1] - screen_offset);

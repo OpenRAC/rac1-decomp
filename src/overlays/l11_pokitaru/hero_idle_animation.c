@@ -16,6 +16,9 @@
 #include "game/math/fastfunc.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/hero_state.h"
+extern Hero g_hero;
+extern char item_usage[];
+extern char usage_stats[];
 
 typedef struct {
     int a;
@@ -65,8 +68,7 @@ extern float g_frame_scale_sq MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern int pal_mode MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
-extern char hero_globals_base[];
-extern char help_stats_base[];
+
 extern char item_usage[];
 extern unsigned char D_0015EEB4[4] MACRO_ADDR;
 
@@ -85,21 +87,21 @@ int Hero_TrySetMoveStateL11(int a, int b) {
     char *moby;
     int old20A7;
     {
-        struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *p = &g_hero;
         if (p->state.control_mode == 0x14 && (a != 0x64 || b != 2))
             return 0;
     }
     if ((pokitaru_cinematic_mode == 2 || pokitaru_cinematic_mode == 6) && b != 2)
         return 0;
     {
-        struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *p = &g_hero;
         if (p->health.hp == 0 && (p->state.control_mode == 2 || p->state.control_mode == 7) && a != 6 && a != 0x3D &&
             a != 0x47 && a != 0x57 && a != 0x62 && a != 0x77 && a != 0x7B && a != 0x7C && a != 0x7F && a != 0x6A &&
             a != 0x80 && a != 0x82)
             return 0;
     }
     {
-        struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *p = &g_hero;
         old2088 = p->state.step;
         moby = *(char **)&p->moby;
         old20A7 = p->item_select_blocked;
@@ -130,13 +132,13 @@ int Hero_TrySetMoveStateL11(int a, int b) {
         }
     }
     {
-        struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *p = &g_hero;
         create_missing_hero_item_slot_animations(p->state.prev, p->state.current);
         p->rand_timer.range = 0;
     }
     switch (a) {
         case 0: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 0;
             p->unk2284 = 0;
             p->unk1010 = rand_range(scale_ticks(0x32), scale_ticks(0x64));
@@ -151,7 +153,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
                 return 0;
             }
             {
-                struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
+                struct Hero *q = &g_hero;
                 q->rand_timer.range = 0x68;
             }
             if (b) {
@@ -164,7 +166,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x67: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 0;
             p->unk2284 = 0;
             clear_u64_value(&p->motion.momentum);
@@ -182,7 +184,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             int t = scale_ticks(9);
             set_hero_animation(get_hero_idle_animation_index(0), 0, (float)t);
             {
-                struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+                struct Hero *p = &g_hero;
                 if (*(void **)&p->unk1614 != 0) {
                     MobyBlendAnimation(*(void **)&p->unk1614, 0, 0, t);
                 }
@@ -190,7 +192,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x3D: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 0x14;
             p->unk2284 = 0;
             qcopy(&p->motion.momentum, &p->motion.resolved_velocity);
@@ -199,7 +201,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x80: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 0x14;
             p->unk2284 = 0;
             p->health.hp = 0;
@@ -210,7 +212,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x7F: {
-            char *p = hero_globals_base + 0xE1D;
+            char *p = (char *)&g_hero;
             ((struct Hero *)p)->state.control_mode = 0x14;
             ((struct Hero *)p)->unk2284 = 0;
             ((struct Hero *)p)->health.hp = 0;
@@ -226,7 +228,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x33: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 0x11;
             p->unk2284 = 0xB;
             p->item_select_blocked = 1;
@@ -238,7 +240,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
                 p->unk8F4 = scale_ticks(0x2D);
             }
             {
-                struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
+                struct Hero *q = &g_hero;
                 int n;
                 q->rand_timer.range = 0x68;
                 q->unk8E0 = 0;
@@ -249,7 +251,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x35: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             int n;
             p->state.control_mode = 0x11;
             p->unk2284 = 0xB;
@@ -269,7 +271,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x34: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             int n;
             p->state.control_mode = 0x11;
             p->unk2284 = 0xB;
@@ -284,7 +286,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x37: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 0x12;
             p->item_select_blocked = 1;
             p->unk2284 = 0;
@@ -305,7 +307,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
                 p->splash_effect_timer = scale_ticks(0x4B);
             }
             {
-                struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
+                struct Hero *q = &g_hero;
                 q->unk698 = 0;
                 if (q->state.prev_control_mode == 0x11) {
                     if ((float)q->underwater_air < 2500.0f) {
@@ -314,7 +316,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
                         help_queue_add(7, scale_ticks(0x1B), 0);
                     }
                     {
-                        struct Hero *r = (struct Hero *)(hero_globals_base + 0xE1D);
+                        struct Hero *r = &g_hero;
                         if (r->state.prev_control_mode == 0x11) {
                             if ((float)r->underwater_air < 2500.0f) {
                                 help_queue_add(8, scale_ticks(0x1E), 0);
@@ -326,7 +328,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
                 }
             }
             {
-                struct Hero *s = (struct Hero *)(hero_globals_base + 0xE1D);
+                struct Hero *s = &g_hero;
                 s->unk694 = s->motion.displacement.f[2] * 0.37f;
                 if (s->unk694 < g_frame_time * -7.0f)
                     s->unk694 = g_frame_time * -7.0f;
@@ -344,7 +346,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
         }
         case 0x75:
         case 0x76: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             char *r;
             p->state.control_mode = 7;
             p->unk2284 = 0;
@@ -359,7 +361,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             }
             {
                 int t = scale_ticks(0x4D);
-                struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
+                struct Hero *q = &g_hero;
                 q->invulnerable_frames = t;
                 if (b) {
                     if (q->state.current == HERO_STATE_WATER_SURFACE_HURT) {
@@ -368,7 +370,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
                         set_hero_animation(0x6F, 3, -3.0f);
                     }
                     {
-                        struct Hero *w = (struct Hero *)(hero_globals_base + 0xE1D);
+                        struct Hero *w = &g_hero;
                         *(float *)(*(char **)&w->moby + 0x54) =
                             pokitaru_hero_anim_time_curves[w->anim_blend_curve][(w->anim_blend_step)++];
                     }
@@ -377,7 +379,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x36: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 0x12;
             p->item_select_blocked = 1;
             p->unk2284 = 0;
@@ -389,24 +391,24 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x6A: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 0x14;
             p->item_select_blocked = 1;
             p->unk2284 = 0;
             p->health.hp = 0;
             if (p->jump_button_frames > scale_ticks(0x32)) {
-                char *h = help_stats_base + 0x22D;
+                char *h = usage_stats;
                 if (*(unsigned short *)(h + 0x60) <= 0xFFFE) {
                     *(unsigned short *)(h + 0x60) = *(unsigned short *)(h + 0x60) + 1;
                 }
             }
             {
-                char *h = help_stats_base + 0x22D;
+                char *h = usage_stats;
                 if (scale_ticks(gameplay_event_frame_count) / 600 > *(unsigned short *)(h + 0x62)) {
                     *(unsigned short *)(h + 0x62) = scale_ticks(gameplay_event_frame_count) / 600;
                 }
                 {
-                    struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
+                    struct Hero *q = &g_hero;
                     *(unsigned int *)(h + 0x64) =
                         *(unsigned int *)(h + 0x64) | (1 << g_current_level_index) | 0x80000000;
                     if (q->swim_cross_tap_count >= 3) {
@@ -417,14 +419,14 @@ int Hero_TrySetMoveStateL11(int a, int b) {
                 }
             }
             {
-                char *h = help_stats_base + 0x22D;
+                char *h = usage_stats;
                 if (scale_ticks(gameplay_event_frame_count) / 600 > *(unsigned short *)(h + 0xEA)) {
                     *(unsigned short *)(h + 0xEA) = scale_ticks(gameplay_event_frame_count) / 600;
                 }
                 *(unsigned int *)(h + 0xEC) = *(unsigned int *)(h + 0xEC) | (1 << g_current_level_index) | 0x80000000;
             }
             {
-                char *v = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.momentum;
+                char *v = &g_hero.motion.momentum;
                 qcopy(v, v - 0x40);
             }
             if (b)
@@ -432,7 +434,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x82: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 0x14;
             p->item_select_blocked = 1;
             p->unk2284 = 0;
@@ -443,7 +445,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x38: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 0x13;
             p->unk2284 = 0;
             if (b)
@@ -451,7 +453,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x39: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 0x13;
             p->unk2284 = 0;
             if (b)
@@ -459,7 +461,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x3A: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 0x13;
             p->unk2284 = 0;
             if (b)
@@ -467,7 +469,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 1: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             int t;
             p->state.control_mode = 0;
             p->unk2284 = 4;
@@ -481,7 +483,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x17: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 8;
             p->unk2284 = 0;
             qcopy(&p->motion.momentum, &p->motion.displacement);
@@ -490,7 +492,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x30: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 8;
             p->unk2284 = 0;
             qcopy(&p->motion.momentum, &p->motion.displacement);
@@ -499,7 +501,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x2E: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 1;
             p->unk2284 = 0;
             p->ground_speed = vec_length_xy(&p->motion.displacement);
@@ -512,14 +514,14 @@ int Hero_TrySetMoveStateL11(int a, int b) {
         case 2:
         case 0x3F:
         case 0x73: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 1;
             p->unk2284 = 0;
             if (p->state.prev_control_mode != 4 && p->state.prev2_control_mode != 4) {
                 p->ground_speed = vec_length_xy(&p->motion.resolved_velocity);
             }
             {
-                struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
+                struct Hero *q = &g_hero;
                 if (g_frame_time * 7.0f < q->ground_speed)
                     q->ground_speed = g_frame_time * 7.0f;
                 q->unk3BE = 0;
@@ -527,13 +529,13 @@ int Hero_TrySetMoveStateL11(int a, int b) {
                 if (1.5707964f < FastDiffRots(q->motion.rot.f[2], q->motion.move_yaw)) {
                     if (q->state.prev_control_mode == 7 || q->state.prev == HERO_STATE_STOP ||
                         q->state.prev2 == HERO_STATE_STOP) {
-                        struct Hero *r = (struct Hero *)(hero_globals_base + 0xE1D);
+                        struct Hero *r = &g_hero;
                         r->ground_speed = 0.0f;
                     }
                 }
             }
             {
-                struct Hero *s = (struct Hero *)(hero_globals_base + 0xE1D);
+                struct Hero *s = &g_hero;
                 s->rand_timer.range = 0x68;
                 if (s->on_slip_ground != 0 && s->frames_off_ground.s == 0) {
                     Hero_TrySetMoveStateL11(HERO_STATE_SLIP, 1);
@@ -541,7 +543,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
                 }
             }
             {
-                struct Hero *t = (struct Hero *)(hero_globals_base + 0xE1D);
+                struct Hero *t = &g_hero;
                 if (t->wading != 0 || t->state.current == 0x73) {
                     t->state.current = 0x73;
                     set_hero_animation(0x60, 0, (float)scale_ticks(8));
@@ -558,12 +560,12 @@ int Hero_TrySetMoveStateL11(int a, int b) {
                     if (t->state.prev2 == HERO_STATE_FALL || t->state.prev2 == HERO_STATE_ITEM_RELEASE_FALL)
                         n = scale_ticks(0x12);
                     {
-                        struct Hero *u = (struct Hero *)(hero_globals_base + 0xE1D);
+                        struct Hero *u = &g_hero;
                         if (u->state.prev2_control_mode == 4 && scale_ticks(5) < u->rail_land_frames)
                             n = scale_ticks(0xD);
                     }
                     if (b) {
-                        struct Hero *v = (struct Hero *)(hero_globals_base + 0xE1D);
+                        struct Hero *v = &g_hero;
                         set_hero_animation(v->state.step + 3, ((int *)&pokitaru_hero_step_anim_modes)[v->state.step],
                                            (float)n);
                     }
@@ -572,7 +574,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x65: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 1;
             p->unk2284 = 0;
             p->ground_speed = vec_length_xy(&p->motion.resolved_velocity);
@@ -592,7 +594,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 3: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 1;
             p->unk2284 = 0;
             qcopy(&p->motion.momentum, &p->motion.resolved_velocity);
@@ -609,7 +611,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
                 return 0;
             }
             if (b) {
-                struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
+                struct Hero *q = &g_hero;
                 float d = q->anim_frame;
                 int id = 6;
                 if (return_hero_animation_id_unchanged(*(unsigned char *)(moby + 0x52)) == 4 && 3.0f < d && d < 16.0f)
@@ -619,7 +621,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x66: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             char *v = (char *)&p->motion.resolved_velocity;
             p->state.control_mode = 1;
             p->unk2284 = 0;
@@ -635,7 +637,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 4: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 0xC;
             p->unk2284 = 0;
             p->ground_speed = vec_length_xy(&p->motion.resolved_velocity);
@@ -646,7 +648,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
                 return 0;
             }
             {
-                struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
+                struct Hero *q = &g_hero;
                 q->rand_timer.range = 0x68;
                 qcopy(&q->motion.momentum, &q->motion.resolved_velocity);
                 ClampVectorLength(&q->motion.momentum, g_frame_time * 7.0f);
@@ -664,11 +666,11 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x24: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 0xD;
             p->unk2284 = 7;
             {
-                char *h = help_stats_base + 0x65;
+                char *h = item_usage;
                 if (*(unsigned short *)(h + 0x60) <= 0xFFFE) {
                     *(unsigned short *)(h + 0x60) = *(unsigned short *)(h + 0x60) + 1;
                 }
@@ -686,7 +688,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x25: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 0xD;
             p->unk2284 = 7;
             *(int *)&p->grapple_pull_speed = 0;
@@ -697,7 +699,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x26: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 0xD;
             p->unk2284 = 7;
             p->item_use_locked = 1;
@@ -709,12 +711,12 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x2C: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             char *d;
             p->state.control_mode = 0xE;
             p->unk2284 = 7;
             {
-                char *h = help_stats_base + 0x65;
+                char *h = item_usage;
                 if (*(unsigned short *)(h + 0x60) <= 0xFFFE) {
                     *(unsigned short *)(h + 0x60) = *(unsigned short *)(h + 0x60) + 1;
                 }
@@ -739,7 +741,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
                 *(float *)(d + 0x14) = *(float *)(d + 0x10);
             }
             {
-                struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
+                struct Hero *q = &g_hero;
                 q->swing_rope_spring_k = g_frame_scale_sq * 0.025f;
                 q->unk9C8 = g_frame_scale_sq * 0.33f;
                 q->swing_rope_max_speed = g_frame_time * 11.0f;
@@ -763,7 +765,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
                 if (b) {
                     set_hero_animation(0x34, 0, (float)scale_ticks(0xB));
                     {
-                        struct Hero *r = (struct Hero *)(hero_globals_base + 0xE1D);
+                        struct Hero *r = &g_hero;
                         r->anim_speed = 0.7f;
                     }
                 }
@@ -771,7 +773,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x2D: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 2;
             p->unk2284 = 7;
             clear_u64_value(&p->motion.rot_spring_vel);
@@ -781,7 +783,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x22: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 0xB;
             p->rise_fall_target_frame = 39.0f;
             p->unk2284 = 0x50;
@@ -793,7 +795,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x18: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 3;
             p->unk2284 = 0xD;
             p->unk4EC = g_frame_time_sq * 24.0f;
@@ -813,7 +815,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x19: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 3;
             p->unk2284 = 0xD;
             p->item_select_blocked = 1;
@@ -823,7 +825,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x1A: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 3;
             p->unk2284 = 0xD;
             p->item_select_blocked = 1;
@@ -832,7 +834,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x1B: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 3;
             p->unk2284 = 0xD;
             p->item_select_blocked = 1;
@@ -841,7 +843,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x79: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 2;
             p->unk2284 = 0;
             qcopy(&p->motion.velocity, &p->motion.resolved_velocity);
@@ -851,7 +853,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
         }
         case 6:
         case 0x77: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 2;
             p->unk2284 = 0;
             p->fall_state_gravity = g_frame_time_sq * 24.0f;
@@ -864,7 +866,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
                 p->fatal_fall_tumble_target_y = randf_sym(g_frame_time * 3.1415927f, g_frame_time * 4.3633232f);
             }
             {
-                struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
+                struct Hero *q = &g_hero;
                 q->rand_timer.range = 0x68;
                 q->state.step = 0;
                 qcopy(&q->motion.velocity, &q->motion.resolved_velocity);
@@ -884,7 +886,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x81: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             int t81 = -2;
             p->state.control_mode = 1;
             p->unk22CA = 1;
@@ -900,7 +902,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 8: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             int t8 = -2;
             p->state.control_mode = 5;
             p->rand_timer.range = 0x68;
@@ -933,7 +935,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
         case 0x4C:
         case 0x5E:
         case 0x69: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             if (p->jump_lock_timer != 0) {
                 p->state.current = p->state.prev;
                 p->state.step = old2088;
@@ -947,7 +949,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
                 p->unk2284 = 0x50;
             }
             {
-                char *v = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.velocity;
+                char *v = &g_hero.motion.velocity;
                 char *r;
                 qcopy(v, v + 0x30);
                 r = v - 0xE0;
@@ -958,7 +960,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
                 }
             }
             {
-                struct Hero *u = (struct Hero *)(hero_globals_base + 0xE1D);
+                struct Hero *u = &g_hero;
                 u->smoothed_ground_z = u->motion.pos.f[2];
                 u->jump_gravity = g_frame_time_sq * 29.7f;
                 u->unk3E8 = -1;
@@ -1023,7 +1025,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
                         *(char **)&u->unk3E4 = pokitaru_hero_state_12_jump_velocity_keys;
                     }
                     {
-                        struct Hero *w = (struct Hero *)(hero_globals_base + 0xE1D);
+                        struct Hero *w = &g_hero;
                         w->item_select_blocked = 1;
                     }
                 } else if (u->state.current == HERO_STATE_RUN_JUMP) {
@@ -1158,7 +1160,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
                         u->unk3D0 = scale_ticks(0x23);
                     }
                     {
-                        struct Hero *w = (struct Hero *)(hero_globals_base + 0xE1D);
+                        struct Hero *w = &g_hero;
                         w->velocity_keys_end_frame = scale_ticks(0x24) + w->unk3D0;
                         w->keyed_move_target_frame = 29.0f;
                         w->unk3DC = 50.0f;
@@ -1204,7 +1206,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
                         u->air_target_speed = 0.0f;
                     }
                     {
-                        struct Hero *w = (struct Hero *)(hero_globals_base + 0xE1D);
+                        struct Hero *w = &g_hero;
                         *(int *)&w->high_jump_drift_speed = 0;
                         w->unk4AC = 1;
                         w->can_chain_high_jump = 1;
@@ -1212,7 +1214,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
                 }
             }
             {
-                struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
+                struct Hero *q = &g_hero;
                 if (q->fall_start_distance == 0.0f)
                     q->fall_start_distance = q->unk430 * 1.5f;
                 if (b) {
@@ -1261,7 +1263,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
                             }
                         }
                         {
-                            struct Hero *w = (struct Hero *)(hero_globals_base + 0xE1D);
+                            struct Hero *w = &g_hero;
                             if (w->state.prev_control_mode == 4) {
                                 set_hero_animation(id, 1, (float)scale_ticks(4));
                                 w->takeoff_frame = scale_ticks(1);
@@ -1280,7 +1282,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
         case 0x20:
         case 0x23:
         case 0x51: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 6;
             p->speed_scale = 1.0f;
             p->unk2284 = 0;
@@ -1289,7 +1291,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             p->unkA64 = 0;
             switch (p->state.current) {
                 case HERO_STATE_WRENCH_SLAM: {
-                    char *h = help_stats_base + 0x22D;
+                    char *h = usage_stats;
                     struct Hero *q;
                     if (*(unsigned short *)(h + 0) <= 0xFFFE) {
                         *(unsigned short *)(h + 0) = *(unsigned short *)(h + 0) + 1;
@@ -1298,7 +1300,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
                         *(unsigned short *)(h + 2) = scale_ticks(gameplay_event_frame_count) / 600;
                     }
                     *(unsigned int *)(h + 4) = *(unsigned int *)(h + 4) | (1 << g_current_level_index) | 0x80000000;
-                    q = (struct Hero *)(hero_globals_base + 0xE1D);
+                    q = &g_hero;
                     q->unk2284 = 0x50;
                     q->attack_record = 4;
                     q->saved_item[0] = 0;
@@ -1318,7 +1320,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
                     break;
                 }
                 case HERO_STATE_CROUCH_SWING: {
-                    char *h = help_stats_base + 0x22D;
+                    char *h = usage_stats;
                     char *h2;
                     struct Hero *q;
                     if (*(unsigned short *)(h + 8) <= 0xFFFE) {
@@ -1337,7 +1339,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
                     }
                     *(unsigned int *)(h2 + 0x12C) =
                         *(unsigned int *)(h2 + 0x12C) | (1 << g_current_level_index) | 0x80000000;
-                    q = (struct Hero *)(hero_globals_base + 0xE1D);
+                    q = &g_hero;
                     q->attack_record = 3;
                     q->saved_item[0] = 0;
                     update_hero_target_heading(14.0f, 0.5235988f, -1.0f);
@@ -1354,7 +1356,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
                     break;
                 }
                 case HERO_STATE_HELD_ITEM_ATTACK: {
-                    struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
+                    struct Hero *q = &g_hero;
                     if (*(void **)&q->items[0].moby == 0)
                         break;
                     if (b) {
@@ -1365,7 +1367,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
                     break;
                 }
                 case HERO_STATE_WRENCH_COMBO: {
-                    char *h = help_stats_base + 0x65;
+                    char *h = item_usage;
                     struct Hero *q;
                     T2C *e;
                     int k;
@@ -1375,7 +1377,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
                     if (scale_ticks(gameplay_event_frame_count) / 600 > *(unsigned short *)(h + 0x42)) {
                         *(unsigned short *)(h + 0x42) = scale_ticks(gameplay_event_frame_count) / 600;
                     }
-                    q = (struct Hero *)(hero_globals_base + 0xE1D);
+                    q = &g_hero;
                     *(unsigned int *)(h + 0x44) =
                         *(unsigned int *)(h + 0x44) | (1 << g_current_level_index) | 0x80000000;
                     e = &pokitaru_attack_records[q->attack_record];
@@ -1385,7 +1387,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
                         k = (e->b + 1) % 3;
                     }
                     {
-                        struct Hero *r = (struct Hero *)(hero_globals_base + 0xE1D);
+                        struct Hero *r = &g_hero;
                         r->attack_record = k;
                     }
                     update_hero_target_heading(5.0f, 0.7853982f, 0.7853982f);
@@ -1403,7 +1405,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
                             n = scale_ticks(7);
                         }
                         {
-                            struct Hero *r = (struct Hero *)(hero_globals_base + 0xE1D);
+                            struct Hero *r = &g_hero;
                             if (r->heading_locked != 0 && k < 2) {
                                 n += truncate_float_to_s32(FastDiffRots(r->attack_target_yaw, r->motion.rot.f[2]) *
                                                            1.5f);
@@ -1421,7 +1423,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
                     struct Hero *q;
                     if (b)
                         set_hero_animation(0x2C, 7, (float)scale_ticks(9));
-                    q = (struct Hero *)(hero_globals_base + 0xE1D);
+                    q = &g_hero;
                     if (q->items[0].item_id == 0xA && q->throw_target != 0) {
                         q->heading_locked = 1;
                         q->attack_target_yaw = fast_atan2(q->throw_target->pos.x - q->motion.pos.f[0],
@@ -1433,7 +1435,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x21: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 0xA;
             p->unk2284 = 0;
             p->ground_speed = g_frame_time * 9.0f;
@@ -1453,7 +1455,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x7A: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 0xA;
             p->unk2284 = 0;
             p->pushback_yaw = FastAddRots(p->motion.rot.f[2], 3.1415927f);
@@ -1463,7 +1465,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x16: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             char *r;
             p->state.control_mode = 7;
             p->unk2284 = 0;
@@ -1478,7 +1480,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
                 hero_change_health(1);
             }
             {
-                struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
+                struct Hero *q = &g_hero;
                 q->invulnerable_frames = scale_ticks(0x4D);
                 if (b) {
                     set_hero_animation(0x10, 3, -3.0f);
@@ -1489,7 +1491,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x53: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 0;
             p->unk2284 = 0;
             if (p->on_slip_ground != 0 && p->frames_off_ground.s == 0) {
@@ -1501,7 +1503,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x59: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 0;
             p->unk2284 = 0;
             if (b) {
@@ -1511,7 +1513,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x58: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 2;
             p->unk2284 = 0;
             qcopy(&p->motion.velocity, &p->motion.resolved_velocity);
@@ -1520,7 +1522,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x55: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 2;
             p->unk2284 = 0;
             p->fall_state_gravity = g_frame_time_sq * 24.0f;
@@ -1531,7 +1533,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x54: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 1;
             p->unk2284 = 0;
             if (p->on_slip_ground != 0 && p->frames_off_ground.s == 0) {
@@ -1539,7 +1541,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
                 return 0;
             }
             {
-                char *v = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.resolved_velocity;
+                char *v = &g_hero.motion.resolved_velocity;
                 char *g;
                 float r = vec_length_xy(v);
                 g = v - 0x110;
@@ -1553,7 +1555,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x57: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 0x14;
             p->unk2284 = 0;
             qcopy(&p->motion.momentum, &p->motion.resolved_velocity);
@@ -1562,7 +1564,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x56: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 7;
             p->unk2284 = 0;
             scale_hero_motion(0.5f);
@@ -1578,7 +1580,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x42: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 0xF;
             p->unk2284 = 0;
             if (p->rail_off_frames == 0)
@@ -1596,7 +1598,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x1D: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 9;
             p->item_use_locked = 1;
             p->unk2284 = 0;
@@ -1604,7 +1606,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x1E: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->unk2284 = 0x51;
             p->state.control_mode = 0;
             if (return_hero_animation_id_unchanged(*(unsigned char *)(*(char **)&p->moby + 0x53)) !=
@@ -1614,14 +1616,14 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x1F: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 9;
             p->unk2284 = 0;
             set_hero_animation(get_hero_idle_animation_index(0), 0, (float)scale_ticks(0xA));
             break;
         }
         case 0x72: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 9;
             p->item_use_locked = 1;
             p->unk2284 = 0;
@@ -1630,14 +1632,14 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x27: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 8;
             p->unk2284 = 0;
             set_hero_animation(get_hero_idle_animation_index(0), 0, (float)scale_ticks(0xA));
             break;
         }
         case 0x32: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 9;
             p->unk2284 = 0;
             p->item_select_blocked = 1;
@@ -1648,7 +1650,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
             break;
         }
         case 0x78: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 9;
             p->unk2284 = 0;
             p->item_select_blocked = 1;
@@ -1660,7 +1662,7 @@ int Hero_TrySetMoveStateL11(int a, int b) {
         }
         case 0x63:
         case 0x64: {
-            struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *p = &g_hero;
             p->state.control_mode = 0x18;
             p->item_use_locked = 1;
             cancel_hero_item_animation();
@@ -1670,31 +1672,31 @@ int Hero_TrySetMoveStateL11(int a, int b) {
         }
     }
     if (old20A7 != 0) {
-        struct Hero *t = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *t = &g_hero;
         if (t->item_select_blocked == 0) {
             t->restore_item[0] = 1;
         }
     }
     {
-        struct Hero *t = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *t = &g_hero;
         if (t->unk308 == 0 && t->items[1].item_id == 0x1C && t->saved_item[1] != 0) {
             t->restore_item[1] = 1;
         }
     }
     {
-        struct Hero *t = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *t = &g_hero;
         if (t->state.control_mode != 0xF && t->items[1].item_id == 0x1D && t->saved_item[1] != 0) {
             t->restore_item[1] = 1;
         }
     }
     if (hero_is_in_special_state() == 0) {
-        struct Hero *t = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *t = &g_hero;
         if (t->items[1].item_id == 0 && t->saved_item[1] != 0) {
             t->restore_item[1] = 1;
         }
     }
     {
-        struct Hero *t = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *t = &g_hero;
         if (t->state.control_mode == 0x14) {
             cancel_hero_item_animation();
             t->item_use_locked = 1;

@@ -11,6 +11,9 @@
 #include "data/level_13.h"
 #include "game/moby/mobyutil.h"
 #include "enums/moby_class.h"
+extern char gSkillPoints[];
+extern char gSpecialItems[];
+extern Hero g_hero;
 
 /* Hit proxy (moby 0x660): forwards the hits it takes to the moby that owns it. */
 struct HitProxyVars {
@@ -75,7 +78,7 @@ extern float D_L13_0015F4FC MACRO_ADDR;
 extern int D_L13_0015F504 MACRO_ADDR;
 extern unsigned char D_L13_0015FD08[] MACRO_ADDR;
 extern unsigned char D_001414F5[] NOT_SDA;
-extern unsigned char D_0013D355[];
+
 extern unsigned char hero_globals_base_r[] __asm__("D_0013E633");
 extern char level_render_state_base_r[] __asm__("D_0013DE6E");
 extern void StartCutscene_r(int) __asm__("func_L00_00299B68");
@@ -98,8 +101,8 @@ void update_gemlik_scene_controller(Moby *moby) {
                 moby->state = 1;
             break;
         case 1:
-            if (((Flags *)(special_items_base + 0x13B))->f64 == 0) {
-                ((Flags *)(special_items_base + 0x13B))->f64 = 1;
+            if (((Flags *)gSpecialItems)->f64 == 0) {
+                ((Flags *)gSpecialItems)->f64 = 1;
                 moby->state = 2;
                 StartCutscene_r(0);
             } else {
@@ -114,11 +117,11 @@ void update_gemlik_scene_controller(Moby *moby) {
             moby->state = 4;
             break;
         case 4:
-            if (((Flags *)(special_items_base + 0x13B))->f65 == 0) {
+            if (((Flags *)gSpecialItems)->f65 == 0) {
                 if (data->f0 != -1) {
                     if (is_point_inside_clip_volume(
                             &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.pos, data->f0) != 0) {
-                        ((Flags *)(special_items_base + 0x13B))->f65 = 1;
+                        ((Flags *)gSpecialItems)->f65 = 1;
                         if (data->f14 != -1) {
                             Moby *e = &gemlik_moby_array_start_r[data->f14];
                             e->flags |= 0x41;
@@ -158,7 +161,7 @@ void update_gemlik_scene_controller(Moby *moby) {
             moby->state = 7;
             break;
         case 7:
-            if (((Flags *)(special_items_base + 0x13B))->f66 != 0)
+            if (((Flags *)gSpecialItems)->f66 != 0)
                 goto s12;
             if (data->f14 == -1)
                 goto s13;
@@ -172,7 +175,7 @@ void update_gemlik_scene_controller(Moby *moby) {
                 e->flags |= 2;
             }
             Hero_ResetToPosition(gemlik_scene_points[data->f8].f30, gemlik_scene_points[data->f8].f70, 0x72, 1);
-            ((Flags *)(special_items_base + 0x13B))->f66 = 1;
+            ((Flags *)gSpecialItems)->f66 = 1;
             if (data->f20 != -1) {
                 Moby *e = &gemlik_moby_array_start_r[data->f20];
                 e->flags |= 0x41;
@@ -506,7 +509,7 @@ extern short moby_spark_first_batch_second_frame_count_base_gp;
 extern short moby_spark_first_batch_third_frame_count_base_gp;
 extern short moby_spark_first_batch_horizontal_acceleration_gp;
 extern short moby_spark_first_batch_vertical_acceleration_base_gp;
-extern char hero_globals_base[];
+
 extern float g_frame_time_sq MACRO_ADDR;
 
 extern float FastAddRots(float, float);
@@ -642,8 +645,7 @@ void update_moby_motion_and_emit_sparks(char *moby) {
     if (FastDecTimer(&data->life) != 0) {
         DeleteMoby(moby);
     } else if (((struct Moby *)moby)->command == 1) {
-        if (coll_line(&old_pos, &((struct Moby *)moby)->pos, 2,
-                      *(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby, 0)) {
+        if (coll_line(&old_pos, &((struct Moby *)moby)->pos, 2, *(int *)&g_hero.moby, 0)) {
             spawn_type_52_particle_near_moby(moby);
             DeleteMoby(moby);
         }
@@ -706,7 +708,7 @@ void blarg_ship_1805_update(void *moby) {
             if (((unsigned char *)m)[0x21] != 0xFF) {
                 int r = count_active_moby_group_members(((unsigned char *)m)[0x21], -1);
                 if (r == 1) {
-                    unsigned char *t = (unsigned char *)(menu_item_enabled_115 + 1);
+                    unsigned char *t = (unsigned char *)gSkillPoints;
                     if (t[0x16] == 0) {
                         t[0x16] = r;
                         PlayBankSound(1, 0, 0);

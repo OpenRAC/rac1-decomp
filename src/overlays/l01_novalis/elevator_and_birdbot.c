@@ -22,6 +22,8 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+extern struct Hero g_hero;
+extern int level_moby_killed[][64];
 
 /* Tethered mine: hangs on a tether with four chain links, scales down with distance and blows up when hit. */
 struct TetheredMineVars {
@@ -686,7 +688,7 @@ void birdbot_update(Moby *m) {
     FastDecTimer(&v->h26);
     if (hit != 0 && v->h26 == 0) {
         if (hit->src != 0) {
-            Hero *hero = (Hero *)(hero_globals_base + 0xE1D);
+            Hero *hero = &g_hero;
 
             if (hit->src != ((struct Moby *)hero->items[0].moby)) {
                 ang = fast_atan2((*(float *)&m->pos.x) - (*(float *)&hit->src->pos.x),
@@ -696,7 +698,7 @@ void birdbot_update(Moby *m) {
                                  (*(float *)&m->pos.y) - hero->motion.pos.f[1]);
             }
         } else {
-            Hero *hero = (Hero *)(hero_globals_base + 0xE1D);
+            Hero *hero = &g_hero;
 
             ang = fast_atan2((*(float *)&m->pos.x) - hero->motion.pos.f[0],
                              (*(float *)&m->pos.y) - hero->motion.pos.f[1]);
@@ -814,8 +816,7 @@ void birdbot_update(Moby *m) {
             }
             m->flags |= 0x1000;
             v->b29 = 0;
-            (*(long *)&m->spawn_frame) =
-                (*(long *)&((struct Moby *)((Hero *)(hero_globals_base + 0xE1D))->moby)->spawn_frame);
+            (*(long *)&m->spawn_frame) = (*(long *)&((struct Moby *)g_hero.moby)->spawn_frame);
             v->b58 = 8;
             v->b5A = 8;
             MoveCtl_Init(v->xD0);
@@ -901,8 +902,7 @@ void birdbot_update(Moby *m) {
         }
         case 2:
             if (vec_distance_xy(&m->pos, &tgt) < v->f1A8 ||
-                is_point_inside_clip_volume(&((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos, v->w1C0) != 0 ||
-                v->w1E8 != 0) {
+                is_point_inside_clip_volume(&g_hero.motion.pos, v->w1C0) != 0 || v->w1E8 != 0) {
                 if (v->w1C4 != -1) {
                     char *p;
 
@@ -2830,8 +2830,7 @@ void bomber_jet_update(Moby *m) {
             if (m->state == 0) {
                 gunship_follow_path((char *)m);
             }
-            if (d->timer == -1 &&
-                is_point_inside_clip_volume(&((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos, d->flag170)) {
+            if (d->timer == -1 && is_point_inside_clip_volume(&g_hero.motion.pos, d->flag170)) {
                 if (novalis_checkpoint_level_state_killed[(short)m->save_id] != 0 ||
                     (level_moby_killed[g_current_level_index][(short)m->save_id >> 5] >> (m->save_id & 0x1F)) & 1) {
                     for (j = 0; j < 4; j++) {
@@ -2942,9 +2941,7 @@ void bomber_jet_update(Moby *m) {
                     FastVecSub(&dir, camera_points + (i << 7) + 0x30, &pos);
                     vec_scale_to_length(&dir, &dir, g_frame_time * 160.0f);
                     col.q = *(u128 *)((i << 7) + (int)camera_points + 0x30);
-                    bm = spawn_beam_r(m, &pos, &dir, &col,
-                                      is_point_inside_clip_volume(
-                                          &((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos, d->flag18C),
+                    bm = spawn_beam_r(m, &pos, &dir, &col, is_point_inside_clip_volume(&g_hero.motion.pos, d->flag18C),
                                       d->flag170 != -1);
                     if (bm != 0) {
                         int k = 0;
@@ -2959,8 +2956,7 @@ void bomber_jet_update(Moby *m) {
                                 if (o->oclass == 0x2BC) {
                                     Guard *g = (void *)o->pvars;
                                     if (g->f4 == 0 && g->f0 == 0 && random_integer_below(0x64) < 0x64 &&
-                                        is_point_inside_clip_volume(
-                                            &((struct Hero *)(hero_globals_base + 0xE1D))->motion.pos, g->f8) &&
+                                        is_point_inside_clip_volume(&g_hero.motion.pos, g->f8) &&
                                         is_point_inside_clip_volume(camera_pos, g->f8)) {
                                         out[k] = d->guards[i];
                                         k++;
@@ -3248,7 +3244,6 @@ typedef struct {
     unsigned int c[3];
 } CapColors;
 
-extern unsigned char help_stats_base[] NOT_SDA;
 extern CapColors novalis_falling_rock_debris_colors;
 extern LevelState novalis_checkpoint_level_state;
 typedef struct {
@@ -3317,7 +3312,7 @@ void falling_rock_update(Moby *falling_rock) {
             qcopy(&falling_rock_vars->home, &falling_rock->pos);
             falling_rock->state = 1;
             if (novalis_checkpoint_level_state.collected[(short)falling_rock->save_id] != 0 ||
-                (*(int *)(help_stats_base + 0xAB75 +
+                (*(int *)((char *)&level_moby_killed +
                           (((short)falling_rock->save_id >> 5) * 4 + (g_current_level_index_m << 8))) >>
                  (falling_rock->save_id & 0x1F)) &
                     1) {
@@ -3365,7 +3360,7 @@ void falling_rock_update(Moby *falling_rock) {
                 falling_rock->state = 4;
                 Moby_PlaySound_r2(0, 0, falling_rock);
                 falling_rock->pos.z = falling_rock_vars->home.f[2] - 20.0f;
-                *(int *)(help_stats_base + 0xAB75 +
+                *(int *)((char *)&level_moby_killed +
                          (((short)falling_rock->save_id >> 5) * 4 + (g_current_level_index_m << 8))) |=
                     1 << (falling_rock->save_id & 0x1F);
                 moby_killed[(short)falling_rock->save_id >> 5] |= 1 << (falling_rock->save_id & 0x1F);

@@ -25,6 +25,10 @@
 #include "overlays/shared/sound_playback.h"
 #include "structs/small_records.h"
 #include "enums/hero_state.h"
+extern u8 gSpecialItems[];
+extern char pad0_pressed[];
+extern char queued_dialogue_id[];
+extern char voice_pool[];
 
 /* Red button sequence controller: switches linked mobys on and off through the scripted cut scene. */
 struct SequenceVars {
@@ -1393,7 +1397,7 @@ void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
     }
 }
 extern int g_game_language MACRO_ADDR;
-extern char help_stats_base[];
+
 extern short blarg_random_line_used;
 extern int blarg_random_line_used_1 MACRO_ADDR;
 extern int blarg_random_line_used_2 MACRO_ADDR;
@@ -1440,7 +1444,7 @@ void queue_moby_dialogue_line(char *moby, int mode) {
             break;
     }
     if (id != -1)
-        *(int *)(help_stats_base + 0x100D1) = id + 0x4E20;
+        *(int *)queued_dialogue_id = id + 0x4E20;
 }
 typedef int u128_3039B8 __attribute__((mode(TI)));
 typedef struct {
@@ -1505,8 +1509,7 @@ extern float FastAddRots(float, float);
 extern void update_entity_matrix(char *, void *, void *, void *);
 extern unsigned char D_0013D4AF[];
 extern unsigned char D_0013D5DD[];
-extern unsigned char D_0013D355[];
-extern char D_0013A5E0[];
+
 extern char blarg_paths_r2[] __asm__("D_L06_001B0FB0");
 extern char *blarg_scene_points MACRO_ADDR;
 extern int blarg_shown_help_message MACRO_ADDR;
@@ -1574,8 +1577,7 @@ void ShuttleUpdate(Moby *moby) {
                 shuttle_forced_departure != 0) {
                 update_shuttle_route_selection_and_prompt((char *)moby);
                 now = shuttle_forced_departure;
-                if (now != 0 ||
-                    ((*(int *)(pad_globals_base + 0x2604) & 0x10) && blarg_shown_help_message == 10 && d->f9C >= 0)) {
+                if (now != 0 || ((*(int *)pad0_pressed & 0x10) && blarg_shown_help_message == 10 && d->f9C >= 0)) {
                     d->go = 1;
                     blarg_shuttle_at_second_stop = 0;
                     if (now != 0) {
@@ -1644,8 +1646,8 @@ void ShuttleUpdate(Moby *moby) {
                     qcopy(((float *)&moby->rot), (char *)(ofs + base + 0x70));
                     d->sel = 1;
                     blarg_shuttle_at_second_stop = 1;
-                    if (((Flags *)(special_items_base + 0x13B))->f21 == 0) {
-                        ((Flags *)(special_items_base + 0x13B))->f21 = 1;
+                    if (((Flags *)(&gSpecialItems))->f21 == 0) {
+                        ((Flags *)(&gSpecialItems))->f21 = 1;
                     }
                 }
             }
@@ -1687,8 +1689,8 @@ void ShuttleUpdate(Moby *moby) {
                 moby->scale = ((Cls *)moby->pclass)->f24;
                 if (d->sel == 1) {
                     blarg_shuttle_at_second_stop = 1;
-                    if (((Flags *)(special_items_base + 0x13B))->f21 == 0) {
-                        ((Flags *)(special_items_base + 0x13B))->f21 = 1;
+                    if (((Flags *)(&gSpecialItems))->f21 == 0) {
+                        ((Flags *)(&gSpecialItems))->f21 = 1;
                     }
                 } else {
                     blarg_shuttle_at_second_stop = 0;
@@ -2311,7 +2313,7 @@ void red_button_update(Moby *m) {
             if (vec_distance_xy_r2(&((struct Hero *)(hero_globals_base_r2 + 0xE1D))->motion.pos,
                                    &*(V_3054D8 *)&m->pos) < 3.7f) {
                 nz = try_set_help_message_r(4, 0x1783) != 0;
-                if ((*(int *)(pad_globals_base + 0x2604) & 0x10) && nz) {
+                if ((*(int *)pad0_pressed & 0x10) && nz) {
                     Moby_PlaySound_r(2, 0, m);
                     remove_help_message_for_selector_r(4);
                     m->state = 4;
@@ -2591,7 +2593,7 @@ void update_moby_vector_streams_and_particle_burst(char *moby) {
                 ((struct Moby *)moby)->state = 3;
                 h = d->f18;
                 if (h != -1) {
-                    char *e = hero_globals_base + 0x1D + h * 0x70;
+                    char *e = voice_pool + h * 0x70;
                     if (*(char **)(e + 0x88) == moby && *(unsigned char *)(e + 0x74) != 0) {
                         Sound_StopSlot(h);
                     }

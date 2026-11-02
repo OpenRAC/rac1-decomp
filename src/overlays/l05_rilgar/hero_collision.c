@@ -9,6 +9,8 @@
 #include "game/math/fastfunc.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+extern char gHeroPos[];
+extern unsigned char g_hero[] NOT_SDA;
 
 extern unsigned char g_hero[] NOT_SDA;
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
@@ -406,7 +408,7 @@ d1:
         }
     }
 }
-extern char hero_globals_base[];
+
 extern float D_0015EE64 MACRO_ADDR;
 extern short D_0015EE60;
 extern char rilgar_coll_resolved_pos[];
@@ -427,7 +429,7 @@ int Camera_MoveWithCollision(int mode) {
     float saved[4];
     float tmp[4];
     float d[4];
-    struct Hero *a = (struct Hero *)(hero_globals_base + 0xE1D);
+    struct Hero *a = (struct Hero *)g_hero;
     char *b;
     char *p;
     int i;
@@ -459,12 +461,12 @@ int Camera_MoveWithCollision(int mode) {
             tmp[2] = a->capsule_bottom;
         }
     }
-    FastVecAdd(hero_globals_base + 0xE9D, hero_globals_base + 0xE9D, tmp);
+    FastVecAdd(gHeroPos, gHeroPos, tmp);
     r = 0x24;
-    if (*(int *)(hero_globals_base + 0xE9D + 0x2004) == 0x7F)
+    if (*(int *)(gHeroPos + 0x2004) == 0x7F)
         r = 0xD24;
     for (i = 0; i < 8; i++) {
-        a = (struct Hero *)(hero_globals_base + 0xE1D);
+        a = (struct Hero *)g_hero;
         if (a->gravity_mode != 0) {
             if (coll_sphere(*(float *)&frame_scale * 0.4f, &a->motion.pos, r, *(void **)&a->moby) == 0)
                 break;
@@ -489,7 +491,7 @@ int Camera_MoveWithCollision(int mode) {
                     break;
             }
         }
-        p = hero_globals_base + 0xE9D;
+        p = gHeroPos;
         qcopy(p, rilgar_coll_resolved_pos);
         qcopy(p + 0x180, rilgar_coll_resolved_pos + 0x10);
         qcopy(p + 0x190, rilgar_coll_resolved_pos - 0x10);
@@ -497,7 +499,7 @@ int Camera_MoveWithCollision(int mode) {
         *(unsigned char *)(p + 0x257) = 1;
         *(int *)(p + 0x23C) = *(int *)(rilgar_coll_resolved_pos - 0x18);
     }
-    b = hero_globals_base + 0xE9D;
+    b = gHeroPos;
     FastVecSub(b, b, tmp);
     FastVecSub(d, b, saved);
     len = FastVecLength(d);
@@ -515,7 +517,7 @@ int Camera_MoveWithCollision(int mode) {
                 d[2] = 512.0f;
             else if (d[2] < -512.0f)
                 d[2] = -512.0f;
-            a = (struct Hero *)(hero_globals_base + 0xE1D);
+            a = (struct Hero *)g_hero;
             vec_scale_to_length(d, d, a->capsule_radius);
             FastVecAdd(&a->motion.pos, saved, d);
         }
@@ -549,7 +551,7 @@ void integrate_hero_motion_with_collisions(void) {
     Hero *contact_player;
     Hero *motion_player;
     Hero *cap_player;
-    float *position = (float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
+    float *position = (float *)(&((struct Hero *)g_hero)->motion.pos);
     Hero *player;
     float *delta;
     float *vertical;
@@ -578,7 +580,7 @@ void integrate_hero_motion_with_collisions(void) {
             if (limit < length)
                 vec_scale_to_length(position, position, limit);
         }
-        limited_velocity = (float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.velocity);
+        limited_velocity = (float *)(&((struct Hero *)g_hero)->motion.velocity);
         magnitude = gravity_z(limited_velocity);
         limit = -*(float *)((char *)limited_velocity + 0x1FC);
         if (magnitude < limit) {
@@ -594,7 +596,7 @@ void integrate_hero_motion_with_collisions(void) {
             char *hit = rilgar_coll_hit_moby;
 
             if (!hit || *(short *)(hit + 0xA6) == 0x1F6 || *(short *)(hit + 0xA6) == 0x59F) {
-                player = (Hero *)(hero_globals_base + 0xE1D);
+                player = (Hero *)g_hero;
                 if (!player->collision_off_frames) {
                     float length;
                     float limit;
@@ -621,7 +623,7 @@ void integrate_hero_motion_with_collisions(void) {
             }
         }
     }
-    position = (float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
+    position = (float *)(&((struct Hero *)g_hero)->motion.pos);
     FastVecAdd(position, position, (char *)position + 0x60);
     extra_step = (float *)((char *)position + 0x8A0);
     FastVecAdd(position, position, extra_step);
@@ -637,7 +639,7 @@ void integrate_hero_motion_with_collisions(void) {
     } else {
         HeroL05_GroundProbe();
     }
-    delta = (float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.resolved_velocity);
+    delta = (float *)(&((struct Hero *)g_hero)->motion.resolved_velocity);
     new_position = (float *)((char *)delta - 0x90);
     horizontal = (float *)((char *)delta + 0x20);
     FastVecSub(delta, new_position, previous.f);
@@ -700,7 +702,7 @@ void integrate_hero_motion_with_collisions(void) {
         else if (motion_player->motion.move_slope < -0.5f)
             motion_player->motion.move_slope = -0.5f;
     }
-    cap_player = (Hero *)(hero_globals_base + 0xE1D);
+    cap_player = (Hero *)g_hero;
     magnitude = g_frame_time * 52.0f;
     if (magnitude < cap_player->motion.speed_xy) {
         FastVecScale(cap_player->motion.displacement.f, cap_player->motion.displacement.f,

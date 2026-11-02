@@ -17,6 +17,8 @@
 #include "overlays/shared/sound_playback.h"
 #include "structs/small_records.h"
 #include "enums/hero_state.h"
+extern u32 g_controller_state[];
+extern Hero g_hero;
 /* Saved fog settings, restored when the effect ends. */
 struct FogSaveVars {
     u8 pad_00[0x30];
@@ -437,8 +439,7 @@ void func_L00_002B33E8_r(Moby *m) {
         data->glow = 0;
     }
 }
-extern char hero_globals_base[];
-extern char pad_globals_base[];
+
 extern char player_camera[];
 extern char help_stats_base[] NOT_SDA;
 extern int gameplay_event_frame_count MACRO_ADDR;
@@ -468,8 +469,8 @@ void visibomb_update(char *m) {
         return;
     p = ((int *)((Moby *)m)->pvars);
     fast_dec_timer(p);
-    g = (struct Hero *)(hero_globals_base + 0xE1D);
-    pad = pad_globals_base + 0x2460;
+    g = &g_hero;
+    pad = (char *)&g_controller_state;
     if ((*(int *)(pad + 0x1A4) & g->items[0].button_mask) != 0 && p[0] == 0 && p[1] == 0 && g->item_use_locked == 0) {
         int st = g->state.control_mode;
         if (st != 7 && st != 2 && st != 3 && st != 4 && st != 5 && st != 6 && st != 0x10 && st != 0xE && st != 9 &&
@@ -496,7 +497,7 @@ void visibomb_update(char *m) {
                                     FastVecAdd(t0, t0, t1);
                                     FastVecAdd(t0, t0, g2 + 0x140);
                                 } else {
-                                    struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
+                                    struct Hero *q = &g_hero;
                                     if (q->unk22C8 == 1) {
                                         f21 =
                                             fast_atan2(vec_length_xy(&((Moby *)m)->rot_row1), ((Moby *)m)->rot_row1.z);
@@ -1097,7 +1098,7 @@ unsigned char *select_blaster_auto_aim_target(int ign, Vec4 *from, float *yaw, f
         if (bestd < d) {
             continue;
         }
-        g = (struct Hero *)(hero_globals_base + 0xE1D);
+        g = &g_hero;
         BuildSphericalOffset(&w, d, *yaw, *pitch + g->ground_pitch.f * 0.5f);
         FastVecAdd(&w, &w, from);
         e = FastArcSin(FastVecDist(&w, &tp) / (d + d));
@@ -1615,7 +1616,7 @@ int spawn_visibomb_missile(void *a_, void *pos_, float fa, float fb) {
     }
     return (int)m;
 }
-extern char hero_globals_base[] NOT_SDA;
+
 extern int hero_control_mode_11_flag NOT_SDA;
 extern void select_camera_mode_by_hero_alignment_and_distance(int);
 extern void HeroEnterMoveState(int, int);
@@ -1627,7 +1628,7 @@ void terminate_visibomb_missile(int a, int *b) {
     int *p = *(int **)(*(char **)b + 0x78);
     if (p != 0)
         p[1] = 0;
-    *(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->unk1FE0 = 0;
+    *(int *)&g_hero.unk1FE0 = 0;
     select_camera_mode_by_hero_alignment_and_distance(b[5]);
     b[5] = 0;
     HeroEnterMoveState(HERO_STATE_IDLE, 1);
@@ -2058,7 +2059,7 @@ extern void vec_scale_to_length(void *, void *, float);
 extern void PostHitMessage(void *, int, int, void *, void *, float);
 extern int rand_range(int, int);
 extern int scale_ticks(int);
-extern char hero_globals_base[];
+
 extern char *active_mobies[];
 extern short thrown_mine_list[];
 extern int moby_array_start MACRO_ADDR;
@@ -2091,7 +2092,7 @@ int func_L00_002B7EC0_r(char *m, float r) {
             if (dist < 12.0f) {
                 unsigned h = *(unsigned short *)(e + 0xA6);
                 if ((h >= 0x1F4 && h <= 0x1F5) || (short)h == 0x1F9 || (short)h == 0x1FF) {
-                    struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+                    struct Hero *g = &g_hero;
                     if (FastDiffRots(g->motion.rot.f[2], fast_atan2(*(float *)(e + 0x10) - g->motion.pos.f[0],
                                                                     *(float *)(e + 0x14) - g->motion.pos.f[1])) <
                         0.9599311f) {
@@ -2107,7 +2108,7 @@ int func_L00_002B7EC0_r(char *m, float r) {
             }
             if (dist < r) {
                 float f1;
-                struct Hero *gb = (struct Hero *)(hero_globals_base + 0xE1D);
+                struct Hero *gb = &g_hero;
                 f1 = fast_atan2(*(float *)(e + 0x10) - gb->motion.pos.f[0], *(float *)(e + 0x14) - gb->motion.pos.f[1]);
                 if (FastDiffRots(gb->motion.rot.f[2], f1) < 0.9599311f) {
                     char *h = *(char **)(c + 0x18);
@@ -2128,7 +2129,7 @@ int func_L00_002B7EC0_r(char *m, float r) {
             if (mob[0x20] >= 0) {
                 struct ThrownMineVars *h2 = (struct ThrownMineVars *)((Moby *)mob)->pvars;
                 if (vec_distance_xy(&pos, mob + 0x10) < r) {
-                    struct Hero *g3 = (struct Hero *)(hero_globals_base + 0xE1D);
+                    struct Hero *g3 = &g_hero;
                     if (FastDiffRots(g3->motion.rot.f[2], fast_atan2(((Moby *)mob)->pos.x - g3->motion.pos.f[0],
                                                                      ((Moby *)mob)->pos.y - g3->motion.pos.f[1])) <
                         0.9599311f) {
@@ -2371,7 +2372,7 @@ extern float IntToFloat(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern void transform_vector(void *, void *, void *);
 extern void draw_world_quad(void *, void *, int);
-extern char hero_globals_base[];
+
 struct E {
     float f;
     short s4;
@@ -2416,7 +2417,7 @@ void draw_taunter_effect_quads(Moby *m) {
             FastVecScale(g, f, taunter_effect_slots[i].f);
             FastVecAdd(d, taunter_effect_origin, g);
             qcopy(a, f);
-            FastVecScale(c, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->gravity_dir, -1.0f);
+            FastVecScale(c, &g_hero.gravity_dir, -1.0f);
             FastVecCross(b, a, c);
             vec_scale_to_length(b, b, 1.0f);
             FastVecCross(c, b, a);

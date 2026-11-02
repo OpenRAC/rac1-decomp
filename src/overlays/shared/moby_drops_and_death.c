@@ -8,6 +8,7 @@
 #include "data/shared_levels.h"
 #include "game/moby/mobyutil.h"
 #include "enums/hero_state.h"
+extern int level_moby_killed[][64];
 
 ASM_FUNC("asm/overlays", func_L00_00251A78);
 ASM_FUNC("asm/overlays", func_L00_00251B58);
@@ -41,7 +42,6 @@ extern ItemCount item_price_table[];
 extern unsigned char vendor_stock[] MACRO_ADDR;
 extern unsigned char item_available[];
 extern int weapon_ammo_counts[];
-extern char help_stats_base[];
 
 /* Picks a killed moby's drop, preferring ammo for weapons that run low; item goes to *item. */
 int ChooseDropItem(struct Moby *m, int *item) {
@@ -58,7 +58,7 @@ int ChooseDropItem(struct Moby *m, int *item) {
 
     if (*item <= 0 ||
         (m != 0 &&
-         ((*(int *)(help_stats_base + 0xAB75 + ((short)m->save_id >> 5) * 4 + *(int *)&g_current_level_index * 256) >>
+         ((*(int *)((char *)&level_moby_killed + ((short)m->save_id >> 5) * 4 + *(int *)&g_current_level_index * 256) >>
            (m->save_id & 31)) &
           1))) {
         {

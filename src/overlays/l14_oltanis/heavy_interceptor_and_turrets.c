@@ -19,6 +19,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "structs/anim.h"
 #include "enums/moby_class.h"
+extern char gHeroPos[];
 
 /* Blarg heavy interceptor: flies a patrol path while its light beam sweeps an
    aim path, calls the turrets of its group when the beam finds the hero. */
@@ -3403,7 +3404,7 @@ typedef int u128_67e8 __attribute__((mode(TI)));
 typedef struct {
     float x, y, z, w;
 } V_67e8;
-#define D_0013F3D0_67e8 (*(V_67e8 *)(D_0013E633 + 0xE9D))
+#define D_0013F3D0_67e8 (*(V_67e8 *)gHeroPos)
 typedef struct {
     V_67e8 dir;
     struct Moby *self;

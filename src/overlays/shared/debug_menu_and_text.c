@@ -11,6 +11,10 @@
 #include "core/kernel/kprintf.h"
 #include "game/render/framebuf.h"
 #include "game/ui/hud.h"
+extern char frame_size[];
+extern Hero g_hero;
+extern char gold_weapon_purchased[];
+extern char weapon_ammo_counts[];
 
 typedef struct {
     s32 a, b, c, d;
@@ -390,7 +394,6 @@ extern void copy_memory_by_alignment(int, void *, unsigned short);
 extern void moby_build_matrix(void *);
 extern char g_debug_menu[];
 extern char player_camera[];
-extern char hero_globals_base[];
 
 /* places the camera-follow vector from the angle and offsets, then copies it into the object */
 void update_hero_from_debug_camera(void) {
@@ -400,7 +403,7 @@ void update_hero_from_debug_camera(void) {
     float t = FastAddRots(*(float *)(g + 0x158), *(float *)(c + 0x88));
     char *m;
     float x = *(float *)(g + 0x140) + FastCos(t) * *(float *)(c + 0x8C);
-    b = hero_globals_base + 0xE1D;
+    b = (char *)&g_hero;
     ((struct Hero *)b)->motion.pos.f[0] = x;
     ((struct Hero *)b)->motion.pos.f[1] = *(float *)(g + 0x144) + FastSin(t) * *(float *)(c + 0x8C);
     ((struct Hero *)b)->motion.pos.f[2] = *(float *)(g + 0x148) + *(float *)(c + 0x90);
@@ -747,7 +750,7 @@ void update_debug_menu(void) {
             s32 limit = 999999;
             if (((DebugMenu *)g_debug_menu)->item < 13) {
                 s32 id = ((u8 *)&debug_menu_item_ids)[((DebugMenu *)g_debug_menu)->item];
-                value = (s32 *)(menu_item_enabled_115 + 0x21) + id;
+                value = (s32 *)weapon_ammo_counts + id;
                 limit = ((Weapon_1F4918 *)(id * 24 + (char *)item_price_table))->limit;
             } else
                 value = &gBolts;
@@ -780,13 +783,13 @@ void update_debug_menu(void) {
             if (*value > limit)
                 *value = limit;
             if (g_controller_state.keys.word.pressed & 0x10)
-                ((u8 *)screen_globals_base + 0x4C6)[((u8 *)&debug_menu_item_ids)[((DebugMenu *)g_debug_menu)->item]]++;
+                ((u8 *)gold_weapon_purchased)[((u8 *)&debug_menu_item_ids)[((DebugMenu *)g_debug_menu)->item]]++;
             if (g_controller_state.keys.word.pressed & 0x80)
-                ((u8 *)screen_globals_base + 0x4C6)[((u8 *)&debug_menu_item_ids)[((DebugMenu *)g_debug_menu)->item]]--;
+                ((u8 *)gold_weapon_purchased)[((u8 *)&debug_menu_item_ids)[((DebugMenu *)g_debug_menu)->item]]--;
             {
                 s32 id = ((u8 *)&debug_menu_item_ids)[((DebugMenu *)g_debug_menu)->item];
                 Item_1F4918 *record = item_defs + id;
-                u8 *p = (u8 *)screen_globals_base + 0x4C6 + id;
+                u8 *p = (u8 *)gold_weapon_purchased + id;
                 if (*p > record->limit.word)
                     *p = record->limit.byte;
             }
@@ -1459,7 +1462,7 @@ void capture_draw_buffer(void *a) {
     sce_gs_sync_v(0);
     rendered_frame_count = rendered_frame_count + 1;
     VU1_initChain();
-    transfer_draw_buffer_chunks(a, draw_buffer_address, *(int *)((char *)screen_globals_base + 0x4AA) << 11);
+    transfer_draw_buffer_chunks(a, draw_buffer_address, *(int *)frame_size << 11);
 }
 extern int GetEffectTex(int);
 extern void FontPrint(void *, void *, void *, void *, void *, int, unsigned char *);

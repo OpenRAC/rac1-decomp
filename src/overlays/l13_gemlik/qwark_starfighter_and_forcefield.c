@@ -30,6 +30,10 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+extern char g_hero[];
+extern char level_moby_killed[];
+extern char level_render_state[];
+extern char voice_pool[];
 
 /* Part attached to a joint of a source moby (spawn_moby_joint_attachment). */
 struct JointAttachVars {
@@ -301,14 +305,14 @@ s3:
     }
     v = *(int *)(p + 0x11C);
     if (v != -1) {
-        q = hero_globals_base + 0x1D + v * 0x70;
+        q = voice_pool + v * 0x70;
         if (*(int *)(q + 0x88) == (int)moby && ((unsigned char *)q)[0x74]) {
             Sound_StopSlot(v);
         }
         *(int *)(p + 0x11C) = -1;
     }
     Moby_GetJointWorldPos(moby, 0x13, sv);
-    f1 = FastVecDist(sv, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
+    f1 = FastVecDist(sv, &((struct Hero *)g_hero)->motion.pos);
     if (*(int *)(p + 0x100) == 0) {
         if (f1 < 100.0f) {
             if (60.0f < f1) {
@@ -436,7 +440,7 @@ s4:
     ((Moby *)moby)->command = 5;
     queue_starfighter_voice_line(moby, p, 0x1B, 2);
     {
-        char *z = *(char **)(*(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->ship_moby + 0x78);
+        char *z = *(char **)(*(int *)&((struct Hero *)g_hero)->ship_moby + 0x78);
         *(int *)(z + 0x88) = 0;
         *(int *)(z + 0xEC) = 0;
         *(int *)(z + 0x8C) = 0;
@@ -1491,7 +1495,7 @@ void forcefield_update(Moby *moby) {
             if (d->link != -1) {
                 char *p = gemlik_moby_array_start + (d->link << 8);
                 if (p == 0 || (unsigned char)p[0x20] == 0xFE || (unsigned char)p[0x20] == 0xFD ||
-                    (*(int *)(help_stats_base + 0xAB75 +
+                    (*(int *)(level_moby_killed +
                               (((short)*(unsigned short *)(p + 0xB2) >> 5) * 4 + (g_current_level_index_m << 8))) >>
                      (*(unsigned short *)(p + 0xB2) & 0x1F)) &
                         1) {
@@ -1537,7 +1541,7 @@ void forcefield_update(Moby *moby) {
 
 /* Clear a vendor moby's field and set its flags unless it is the current target. */
 void Moby_ClearUnlessTargeted(Moby *moby) {
-    if (*(void **)(level_render_state_base + 0x2C2) != moby) {
+    if (*(void **)level_render_state != moby) {
         moby->collision = 0;
         moby->flags |= 3;
     }
@@ -2153,7 +2157,7 @@ void update_gemlik_projectile(struct Moby *moby) {
     vec_set_length_xy(&work.velocity, &work.velocity, 1.0f);
     work.velocity.z = 1.0f;
     flags = 0x10001;
-    base = (struct Hero *)((unsigned char *)hero_globals_base + 0xE1D);
+    base = (struct Hero *)g_hero;
     if (base->ammo_used != 0 && ((struct UpdateGemlikProjectileVars *)data)->unk_0C != 31337.6015625f &&
         FastVecDist(&moby->pos, &base->motion.pos) < 2.0f) {
         vec_scale_to_length(data, data, 0.5f);
@@ -2162,7 +2166,7 @@ void update_gemlik_projectile(struct Moby *moby) {
         ((struct UpdateGemlikProjectileVars *)data)->unk_2C = 5;
         ((struct UpdateGemlikProjectileVars *)data)->unk_0C = 31337.6015625f;
         for (i = 0; i < 6; i++) {
-            struct Hero *b = (struct Hero *)((unsigned char *)hero_globals_base + 0xE1D);
+            struct Hero *b = (struct Hero *)g_hero;
             ent = ((char **)b->unk2020)[i];
             if (ent != 0) {
                 int f2 = flags | 1;
@@ -3070,7 +3074,7 @@ void update_blarg_space_commando_damage_targeting_and_ground_motion(Moby *moby) 
         }
     }
     if (vars->start_frame == 0) {
-        vars->start_frame = *(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby;
+        vars->start_frame = *(int *)&((struct Hero *)g_hero)->moby;
     }
     ground = ProbeGroundHeight(&moby->pos, 0, 0.5f);
     if (ground != 0.0f) {
@@ -3712,7 +3716,7 @@ void update_lift(char *mobyp) {
                 Sound_StopSlot(vars->voice);
                 vars->voice = -1;
             }
-            if (((struct LiftHeroView *)((char *)hero_globals_base + 0xE1D))->ground_moby != moby) {
+            if (((struct LiftHeroView *)g_hero)->ground_moby != moby) {
                 if (moby->state == 7) {
                     moby->state = 5;
                 } else {
@@ -3732,7 +3736,7 @@ void update_lift(char *mobyp) {
                 i = 0x20;
             }
             moby->glow_color = 0x80000000 | (i << 16) | (i << 8) | i;
-            g = (struct LiftHeroView *)((char *)hero_globals_base + 0xE1D);
+            g = (struct LiftHeroView *)g_hero;
             if (g->ground_moby == moby && g->air_frames.s == 0 && vec_distance_xy(&g->motion.pos, &moby->pos) < 0.5f) {
                 moby->glow_color = 0x80208020;
                 if (moby->state == 5) {
@@ -3745,8 +3749,7 @@ void update_lift(char *mobyp) {
                 CameraScript(gemlik_camera_pos, gemlik_camera_pos + 0x10, 1, 0, 0);
                 vars->blend.i = 0;
             } else if (moby->state == 4) {
-                struct LiftHeroMotion *p =
-                    (struct LiftHeroMotion *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
+                struct LiftHeroMotion *p = (struct LiftHeroMotion *)(&((struct Hero *)g_hero)->motion.pos);
                 float d = vec_distance_xy(&moby->pos, &p->pos);
                 float e = FastAbsF(p->ground_z - vars->bottom);
                 if (e < 2.0f && d < 32.0f && d > 5.0f) {
@@ -3755,8 +3758,7 @@ void update_lift(char *mobyp) {
                     vars->speed = -(g_frame_time * 5.0f);
                 }
             } else if (moby->state == 5) {
-                struct LiftHeroMotion *p =
-                    (struct LiftHeroMotion *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
+                struct LiftHeroMotion *p = (struct LiftHeroMotion *)(&((struct Hero *)g_hero)->motion.pos);
                 float d = vec_distance_xy(&moby->pos, &p->pos);
                 float e = FastAbsF(p->ground_z - vars->top);
                 if (e < 2.0f && d < 32.0f && d > 5.0f) {
@@ -3795,7 +3797,7 @@ void compute_lift_mount_transform(char *mobyp, float *mount_position, float *mou
     mount_position[2] = 1.5f;
     matrix_mul_vec3(mount_position, mount_position, &moby->rot_row0);
     FastVecAdd(mount_position, mount_position, &moby->pos);
-    base = (struct Hero *)(hero_globals_base + 0xE1D);
+    base = (struct Hero *)g_hero;
     mount_rotation[2] = fast_atan2(base->motion.body_center.f[0] - mount_position[0],
                                    base->motion.body_center.f[1] - mount_position[1]);
 }
@@ -3838,7 +3840,7 @@ void apply_configured_moby_state_and_command(Moby *moby) {
             p++;
         }
     }
-    base = (struct Hero *)(hero_globals_base + 0xE1D);
+    base = (struct Hero *)g_hero;
     if (*(int *)&base->ship_moby != 0 && base->state.current == 0x32)
         return;
     if (d->clip_volume != -1 && is_point_inside_clip_volume(&base->motion.pos, d->clip_volume) == 0)

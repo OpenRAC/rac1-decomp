@@ -12,6 +12,7 @@
 #include "data/shared_levels.h"
 #include "game/math/fastfunc.h"
 #include "enums/level.h"
+extern Hero g_hero;
 
 /* The level copies of the camera tables (include/structs/camera.h). */
 extern Camera gCameraSlotsLvl[];
@@ -239,7 +240,7 @@ int UpdateAllCamerasLvl(void) {
     Camera_RunQueuedCallbacks();
     return -1;
 }
-extern char hero_globals_base[];
+
 extern void vec_scale_to_length(void *, void *, float);
 
 // Samples the hero moby's three axes into blend.orbit.fwd and blend.orbit.up, derives the orbit yaw, pitch and
@@ -250,7 +251,7 @@ void Camera_CaptureHeroRelativeView(void) {
     float a[4];
     float b[4];
     float c[4];
-    struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+    struct Hero *g = &g_hero;
     CamBlend *d = &player_camera.blend;
 
     vec_scale_to_length(a, *(char **)&g->moby + 0xC0, 1.0f);
@@ -293,7 +294,7 @@ void Camera_CaptureTransform(Camera *from) {
             extract_matrix_rotation_quaternion(&r->orbit.saved_rot, from);
             Camera_CaptureHeroRelativeView();
         } else {
-            struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *g = &g_hero;
 
             vec_scale_to_length(local0, *(char **)&g->moby + 0xC0, 1.0f);
             vec_scale_to_length(local1, *(char **)&g->moby + 0xD0, 1.0f);
@@ -354,13 +355,13 @@ void Camera_PickCollisionMasksLvl(void) {
 
     D_L00_0015F05C_g = 0x14;
     {
-        unsigned char *g = (unsigned char *)(hero_globals_base + 0xE1D);
+        unsigned char *g = (unsigned char *)(&g_hero);
         if ((unsigned int)(*(int *)(g + 0x208C) - 0x11) < 2 || *(int *)(g + 0x2084) == 0x73) {
             gCamSphereMaskLvl_w = 0x34;
         }
     }
     {
-        unsigned char *g = (unsigned char *)(hero_globals_base + 0xE1D);
+        unsigned char *g = (unsigned char *)(&g_hero);
         if (*(int *)(g + 0x208C) != 0x11) {
             if (*(float *)(g + 0x2F0) < player_camera.pos.f[2]) {
                 gCamSphereMaskLvl_w = 0x14;
@@ -374,7 +375,7 @@ void Camera_PickCollisionMasksLvl(void) {
     }
     camera_collision_mask = 0xB4;
     {
-        unsigned char *g = (unsigned char *)(hero_globals_base + 0xE1D);
+        unsigned char *g = (unsigned char *)(&g_hero);
         if (g[0x12E5]) {
             d->coll_bits = 0x100;
             camera_collision_mask = 0x1B4;
@@ -519,7 +520,7 @@ void init_camera_system(void) {
     d[0] = s[0];
     d[1] = s[1];
     d[2] = s[2];
-    t = (float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
+    t = (float *)(&g_hero.motion.pos);
     u = g->follow.pos.f;
     u[0] = t[0];
     u[1] = t[1];
@@ -592,7 +593,7 @@ void resolve_camera_movement_collisions(float *pos, float r) {
     for (i = 0; i < n; i++) {
         q = coll_resolved_pos;
         FastVecAdd(pos, pos, d);
-        base = (struct Hero *)(hero_globals_base + 0xE1D);
+        base = &g_hero;
         for (j = 0; j < 6 && coll_sphere(pos, *(int *)&gCamSphereMaskLvl, *(void **)&base->moby, r); j++) {
             qcopy(pos, q);
             {

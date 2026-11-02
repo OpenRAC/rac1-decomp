@@ -25,6 +25,13 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+extern char frame_size[];
+extern char gSkillPoints[];
+extern unsigned char g_hero[];
+extern char g_screen_extent[];
+extern char help_records[];
+extern char pad0_pressed[];
+extern unsigned char saved_mission_state[][16] NOT_SDA;
 
 /* Player ship: steering, lock-on target, reticle and hit-point bar. */
 struct ShipVars {
@@ -182,7 +189,7 @@ void draw_ship_radar_moby_icon(char *rot, char *from, char *moby, int icon, long
         }
         t = &ship_radar_icons[icon];
         y -= 0x50;
-        y += *(int *)(screen_globals_base + 0x4AA);
+        y += *(int *)frame_size;
         x += 0x1B0;
         DrawTexturedQuad(x - t->x, y - t->y, t->w, t->h, t->u, t->v, t->w, t->h, color, GetEffectTex(t->tex));
     }
@@ -385,8 +392,8 @@ void draw_ship_hud(char *moby) {
     float q;
 
     VU1_addGSregister(0x42, 0x8000000044L);
-    DrawTexturedQuad(0x170, (s = (char *)screen_globals_base + 0x4A6, *(int *)(s + 4)) - 0x90, 0x80, 0x80, 0, 0, 0x80,
-                     0x80, 0x70808080, GetEffectTex_l(0x3C));
+    DrawTexturedQuad(0x170, (s = g_screen_extent, *(int *)(s + 4)) - 0x90, 0x80, 0x80, 0, 0, 0x80, 0x80, 0x70808080,
+                     GetEffectTex_l(0x3C));
     DrawTexturedQuad(0x170, *(int *)(s + 4) - 0x90, 0x80, 0x80, 0, 0, 0x80, 0x80, 0x70808080, GetEffectTex_l(0x3D));
     VU1_addGSregister(0x42, 0x8000000048L);
     GetEffectTex(0x3E);
@@ -406,11 +413,11 @@ void draw_ship_hud(char *moby) {
     }
     y = 0x40;
     x = 0x18;
-    base = (struct Hero *)((unsigned char *)hero_globals_base + 0xE1D);
+    base = (struct Hero *)g_hero;
     i = 0;
     if (base->ship_ammo_max != 0) {
         do {
-            g = (struct Hero *)((unsigned char *)hero_globals_base + 0xE1D);
+            g = (struct Hero *)g_hero;
             if (i < g->ship_ammo) {
                 append_scaled_screen_triangle_strip(x, y, 0.5f, ship_hud_missile_pip, 0x19, 0xFFFFF3, 0x50008F00);
             } else {
@@ -456,9 +463,9 @@ void draw_ship_hud(char *moby) {
         }
     }
     {
-        struct Hero *b = (struct Hero *)((unsigned char *)hero_globals_base + 0xE1D);
+        struct Hero *b = (struct Hero *)g_hero;
         if (b->ship_hp < b->ship_hp_max * 0.25f) {
-            int cnt = ((HelpTab *)(help_stats_base + 0x34D))->r[0x58].count;
+            int cnt = ((HelpTab *)help_records)->r[0x58].count;
             if (cnt == 0) {
                 Help_Request(0x2AFF, 0x58);
             } else if (cnt < 2) {
@@ -468,28 +475,28 @@ void draw_ship_hud(char *moby) {
                 }
             }
         } else if (d->lock_counter != 0) {
-            if (((HelpTab *)(help_stats_base + 0x34D))->r[0x58].count < 0xFFFF) {
-                ((HelpTab *)(help_stats_base + 0x34D))->r[0x58].count++;
+            if (((HelpTab *)help_records)->r[0x58].count < 0xFFFF) {
+                ((HelpTab *)help_records)->r[0x58].count++;
             }
             per = 600;
-            if (scale_ticks(gameplay_event_frame_count) / per > ((HelpTab *)(help_stats_base + 0x34D))->r[0x58].best) {
-                ((HelpTab *)(help_stats_base + 0x34D))->r[0x58].best = scale_ticks(gameplay_event_frame_count) / 600;
+            if (scale_ticks(gameplay_event_frame_count) / per > ((HelpTab *)help_records)->r[0x58].best) {
+                ((HelpTab *)help_records)->r[0x58].best = scale_ticks(gameplay_event_frame_count) / 600;
             }
-            ((HelpTab *)(help_stats_base + 0x34D))->r[0x58].flags =
-                ((HelpTab *)(help_stats_base + 0x34D))->r[0x58].flags | (1 << g_current_level_index) | 0x80000000;
+            ((HelpTab *)help_records)->r[0x58].flags =
+                ((HelpTab *)help_records)->r[0x58].flags | (1 << g_current_level_index) | 0x80000000;
             d->lock_counter = 0;
         }
     }
     fast_dec_timer_i(&d->hint_timer);
     {
-        struct Hero *g2 = (struct Hero *)((unsigned char *)hero_globals_base + 0xE1D);
-        if ((g2->ship_ammo < 5 && ((HelpTab *)(help_stats_base + 0x34D))->r[0x57].count == 0) ||
-            (g2->ship_ammo == 0 && ((HelpTab *)(help_stats_base + 0x34D))->r[0x57].count < 2 && d->hint_timer == 0)) {
+        struct Hero *g2 = (struct Hero *)g_hero;
+        if ((g2->ship_ammo < 5 && ((HelpTab *)help_records)->r[0x57].count == 0) ||
+            (g2->ship_ammo == 0 && ((HelpTab *)help_records)->r[0x57].count < 2 && d->hint_timer == 0)) {
             Help_Request(0x2AFE, 0x57);
             d->hint_timer = scale_ticks(0x4B0);
         }
     }
-    if (((HelpTab *)(help_stats_base + 0x34D))->r[0x56].count == 0) {
+    if (((HelpTab *)help_records)->r[0x56].count == 0) {
         if ((d->idle_timer)++ > scale_ticks(0xE10)) {
             Help_Request(0x2AFD, 0x56);
         }
@@ -498,7 +505,7 @@ void draw_ship_hud(char *moby) {
         FontPrintCenterLarge_c(0x100, 0xC8, 0x80005080L, msg_string_id(0x5243), 0x11);
     }
     {
-        struct Hero *h = (struct Hero *)((unsigned char *)hero_globals_base + 0xE1D);
+        struct Hero *h = (struct Hero *)g_hero;
         f = h->ship_hp - d->hp_shown;
         f *= 0.2f;
         q = FastAbsF(f);
@@ -575,7 +582,7 @@ extern short ship_missile_cooldown;
 /* on a pad press, fires the aimed shot and resets the cooldown */
 void try_fire_ship_projectile(char *moby, struct ShipVars *d) {
     if (fast_dec_timer_i(&d->fire_cooldown) && (*(int *)(pad_globals_base + 0x2610) & 0x28)) {
-        struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *g = (struct Hero *)g_hero;
         if (g->ship_ammo != 0) {
             char a[16];
             char b[16];
@@ -1084,7 +1091,7 @@ void jet_fighter_update(Moby *moby) {
         if (st != 7 && st != 1 && st != 2) {
             r = (struct HitMessage *)MobyGetHitMessage(moby, 0x30001, 0);
             if (r != 0 && moby->state == 4) {
-                Glob *g = (Glob *)(hero_globals_base + 0xE1D);
+                Glob *g = (Glob *)g_hero;
                 if (r->damage < g->t) {
                     g->t = g->t - r->damage;
                     if (r->unk_30 & 1) {
@@ -1117,7 +1124,7 @@ void jet_fighter_update(Moby *moby) {
         }
         moby->hit_slot = 0xFF;
         {
-            Glob *g = (Glob *)(hero_globals_base + 0xE1D);
+            Glob *g = (Glob *)g_hero;
             if (g->cur == (int)moby) {
                 g->b160F &= ~2;
                 g->i1608 = (int)(g->t / ship_max_hp * 200.0f);
@@ -1156,7 +1163,7 @@ void jet_fighter_update(Moby *moby) {
                 }
                 break;
             case 1: {
-                Glob *g = (Glob *)(hero_globals_base + 0xE1D);
+                Glob *g = (Glob *)g_hero;
                 if (jet_distance(moby, g->p2080) < *(float *)&ship_board_radius && g->i2084 != 0x32 &&
                     g->i2084 != 0x1D && g->b20A4 == 0) {
                     if (item_available[7] != 0) {
@@ -1166,7 +1173,7 @@ void jet_fighter_update(Moby *moby) {
                         HelpTab *statistics;
                         elapsed = scale_ticks(gameplay_event_frame_count);
                         period = 600;
-                        statistics = (HelpTab *)(help_stats_base + 0x34D);
+                        statistics = (HelpTab *)help_records;
                         elapsed -= statistics->r[0x3C].best * period;
                         if (elapsed > (int)((float)scale_ticks(18) * 60.0f) || statistics->r[0x3C].best * period == 0) {
                             Help_Request(0x2AFA, 0x3C);
@@ -1174,7 +1181,7 @@ void jet_fighter_update(Moby *moby) {
                             statistics->r[0x3C].best = scale_ticks(gameplay_event_frame_count) / 600;
                         }
                     }
-                    if (item_available[7] != 0 && (*(int *)(pad_globals_base + 0x2604) & 0x10)) {
+                    if (item_available[7] != 0 && (*(int *)pad0_pressed & 0x10)) {
                         moby->state = 2;
                         Hero_TrySetMoveStateL11(0x32, 1);
                         d->i118 = -1;
@@ -1206,7 +1213,7 @@ void jet_fighter_update(Moby *moby) {
                     }
                     moby->state = 4;
                     {
-                        Glob *g = (Glob *)(hero_globals_base + 0xE1D);
+                        Glob *g = (Glob *)g_hero;
                         g->cur = (int)moby;
                         g->id = *(unsigned short *)&moby->oclass;
                         g->n6 = ship_start_missiles;
@@ -1261,7 +1268,7 @@ void jet_fighter_update(Moby *moby) {
                     moby->state = 8;
                 }
                 {
-                    Glob *g = (Glob *)(hero_globals_base + 0xE1D);
+                    Glob *g = (Glob *)g_hero;
                     if (g->b160F & 1) {
                         moby->state = 5;
                     }
@@ -1269,7 +1276,7 @@ void jet_fighter_update(Moby *moby) {
                 break;
             }
             case 5: {
-                Glob *g = (Glob *)(hero_globals_base + 0xE1D);
+                Glob *g = (Glob *)g_hero;
                 char *e;
                 g->b20A5 = 0;
                 g->p2080->motion.rot.i[2] = 0;
@@ -1317,7 +1324,7 @@ void jet_fighter_update(Moby *moby) {
                     f = d->f130;
                     pokitaru_fade_level = f;
                     if (f >= 1.0f) {
-                        Glob *g = (Glob *)(hero_globals_base + 0xE1D);
+                        Glob *g = (Glob *)g_hero;
                         int i;
                         g->b20A5 = 0;
                         g->p2080->motion.rot.i[2] = 0;
@@ -2599,8 +2606,8 @@ void oil_tanker_front_update(char *moby) {
             int *z;
             int i;
             distribute_group_blarg_ship_1319_mobys_along_path(moby, chain_vars->path_index);
-            if (((unsigned char *)(help_stats_base +
-                                   0xAA35))[((struct Moby *)moby)->mission + (map_data_0015EE84 << 4)] == 0xFF) {
+            if (((unsigned char *)saved_mission_state)[((struct Moby *)moby)->mission + (map_data_0015EE84 << 4)] ==
+                0xFF) {
                 DeleteMoby(moby);
                 return;
             }
@@ -2640,7 +2647,7 @@ void oil_tanker_front_update(char *moby) {
             return;
         }
         case 1:
-            if (((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.current == 0x32) {
+            if (((struct Hero *)g_hero)->state.current == 0x32) {
                 int *z = (int *)chain_vars->catchup;
                 short *h = chain_vars->offsets;
                 int i;
@@ -3370,8 +3377,7 @@ void FlyingCraftUpdate(unsigned char *moby) {
                 ((Moby *)moby)->collision = 0;
                 ((Moby *)moby)->flags |= 1;
             } else if (((Moby *)moby)->visible == 0) {
-                if (FastVecDist((float *)&((Moby *)moby)->pos,
-                                (float *)&((Hero *)(hero_globals_base + 0xE1D))->motion.pos) < 32.0f) {
+                if (FastVecDist((float *)&((Moby *)moby)->pos, (float *)&((Hero *)g_hero)->motion.pos) < 32.0f) {
                     ((Moby *)moby)->state = 3;
                     ((Moby *)moby)->collision = 0;
                     ((Moby *)moby)->flags |= 1;
@@ -3382,8 +3388,7 @@ void FlyingCraftUpdate(unsigned char *moby) {
             qcopy(scratch_vector, &((Moby *)moby)->pos);
             scratch_vector[3] = 3.0f;
             if (FastBSphereCheck((char *)&((Moby *)moby)->pos, 512.0f) == -1) {
-                if (FastVecDist((float *)&((Moby *)moby)->pos,
-                                (float *)&((Hero *)(hero_globals_base + 0xE1D))->motion.pos) > 32.0f) {
+                if (FastVecDist((float *)&((Moby *)moby)->pos, (float *)&((Hero *)g_hero)->motion.pos) > 32.0f) {
                     moby_vars->wait_frames += 1;
                     if (scale_ticks(60) < moby_vars->wait_frames) {
                         ((Moby *)moby)->state = 1;
@@ -3412,8 +3417,8 @@ void FlyingCraftUpdate(unsigned char *moby) {
                 basis_rotation_angles[1] = -0.2617994f;
             }
             euler_rotation_basis(basis_row0, basis_rotation_angles);
-            FastVecSub(hero_position_delta, &((Hero *)(hero_globals_base + 0xE1D))->motion.pos, &moby_vars->hero_prev);
-            qcopy(&moby_vars->hero_prev, &((Hero *)(hero_globals_base + 0xE1D))->motion.pos);
+            FastVecSub(hero_position_delta, &((Hero *)g_hero)->motion.pos, &moby_vars->hero_prev);
+            qcopy(&moby_vars->hero_prev, &((Hero *)g_hero)->motion.pos);
             FastVecAdd((float *)&((Moby *)moby)->pos, (float *)&((Moby *)moby)->pos, hero_position_delta);
             placement_angle = FastAddRots(0.7853982f, (float)moby_vars->angle_index * 1.5707964f);
             vec_scale_to_length(scratch_vector, basis_row1, FastSin(placement_angle) * 8.0f);
@@ -3424,7 +3429,7 @@ void FlyingCraftUpdate(unsigned char *moby) {
             FastVecAdd(target_position, target_position, scratch_vector);
             FastVecSub(scratch_vector, target_position, &((Moby *)moby)->pos);
             distance_to_target = FastVecLength(scratch_vector);
-            if (((Hero *)(hero_globals_base + 0xE1D))->ship_flags & 2) {
+            if (((Hero *)g_hero)->ship_flags & 2) {
                 ApproachWithVelocity(&movement_distance_scratch, &moby_vars->approach_speed, distance_to_target,
                                      g_frame_time_sq + g_frame_time_sq, g_frame_time_sq * 20.0f, g_frame_time);
             } else if (((Moby *)moby)->command) {
@@ -3446,7 +3451,7 @@ void FlyingCraftUpdate(unsigned char *moby) {
                     ((Moby *)moby)->command = 0;
                 }
             } else {
-                float *hero_position = (float *)&((Hero *)(hero_globals_base + 0xE1D))->motion.pos;
+                float *hero_position = (float *)&((Hero *)g_hero)->motion.pos;
                 float *yaw = &((Moby *)moby)->rot.z;
                 float *pitch = &((Moby *)moby)->rot.y;
                 float steering_target_angle;
@@ -3489,8 +3494,8 @@ void FlyingCraftUpdate(unsigned char *moby) {
             break;
         case 6:
             *(unsigned short *)(help_stats_base + 0x5FD) = 0xFFFF;
-            FastVecSub(scratch_vector, &((Hero *)(hero_globals_base + 0xE1D))->motion.pos, &moby_vars->hero_prev);
-            qcopy(&moby_vars->hero_prev, &((Hero *)(hero_globals_base + 0xE1D))->motion.pos);
+            FastVecSub(scratch_vector, &((Hero *)g_hero)->motion.pos, &moby_vars->hero_prev);
+            qcopy(&moby_vars->hero_prev, &((Hero *)g_hero)->motion.pos);
             FastVecAdd((float *)&((Moby *)moby)->pos, (float *)&((Moby *)moby)->pos, scratch_vector);
             SpawnExplosionFx(moby, (char *)&((Moby *)moby)->pos, -1, 2.0f, 13.0f);
             if (random_integer_below(2)) {
@@ -3558,7 +3563,7 @@ char *activate_listed_blarg_ship(int idx) {
             FastVecAdd(v1, v1, v0);
             vec_scale_to_length(v0, v3, 6.0f);
             FastVecAdd(v1, v1, v0);
-            qcopy(&d->hero_pos, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos);
+            qcopy(&d->hero_pos, &((struct Hero *)g_hero)->motion.pos);
             qcopy(&m->pos, v1);
             m->state = 5;
             m->command = 1;
@@ -3585,7 +3590,7 @@ void update_moby_list_empty_dialogue_trigger(char *moby) {
     if (data[0] == -1) {
         DeleteMoby(moby);
     } else if (data[1] != -1 && count_active_moby_group_members(data[1], -1) == 0) {
-        unsigned char *g = menu_item_enabled_115 + 1;
+        unsigned char *g = gSkillPoints;
         if (g[0x13] == 0) {
             g[0x13] = 1;
             PlayBankSound(1, 0, 0);

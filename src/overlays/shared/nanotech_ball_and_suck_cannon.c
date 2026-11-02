@@ -17,6 +17,10 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+extern Hero g_hero NOT_SDA;
+extern char item_usage[];
+extern char pad_held[];
+extern char voice_pool[];
 /* Class 0x326 moby: the moby it is linked to. */
 struct LinkedMobyVars {
     u8 pad_00[0xC];
@@ -197,7 +201,7 @@ typedef struct {
     float x, y, z, w;
 } Vx __attribute__((aligned(16)));
 extern char g_debug_camera[] NOT_SDA;
-extern char hero_globals_base[] NOT_SDA;
+
 extern float g_frame_time MACRO_ADDR;
 extern short nanotech_spark_speed_min;
 extern short nanotech_spark_speed_max;
@@ -221,7 +225,7 @@ void spawn_nanotech_ball_collection_effect_pair(Moby *m) {
     Vx c;
     char *p = (char *)&m->pos;
     FastVecSub(&a, g_debug_camera, p);
-    FastVecScale(&b, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->gravity_dir,
+    FastVecScale(&b, &g_hero.gravity_dir,
                  random_float_between(*(float *)&nanotech_spark_speed_min * g_frame_time,
                                       *(float *)&nanotech_spark_speed_max * g_frame_time));
     build_look_at_matrix(&c, &b, random_angle_radians(), &a);
@@ -354,7 +358,7 @@ void update_nanotech_ball_slot_offsets(void) {
                             *(float *)&nanotech_slot_orbit_radius);
     }
 }
-extern char hero_globals_base[] NOT_SDA;
+
 extern int coll_line(void *, void *, int, int, int);
 
 // tests a sightline from a moby (raised 0.5) to the player's position (raised 0.5); true if clear
@@ -362,7 +366,7 @@ int is_nanotech_ball_target_line_clear(Moby *m) {
     Vz a, b;
     qcopy(&a, &m->pos);
     a.z += 0.5f;
-    qcopy(&b, *(char **)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby + 0x10);
+    qcopy(&b, *(char **)&g_hero.moby + 0x10);
     b.z += 0.5f;
     return coll_line(&a, &b, 0x12, 0, 0) == 0;
 }
@@ -1069,14 +1073,13 @@ int invoke_optional_moby_callback_or_return_one(char *a, void *b) {
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void matrix_mul_vec3(void *, void *, void *);
 extern char player_camera[];
-extern char hero_globals_base[];
 
 /* picks camera yaw/pitch style outputs and a position offset per camera mode */
 void compute_suck_cannon_suction_aim_and_origin(Moby *m, float *a, float *b, float *c) {
     float v[3];
     struct Hero *g;
     Moby_GetJointWorldPos(m, 0, c);
-    g = (struct Hero *)(hero_globals_base + 0xE1D);
+    g = &g_hero;
     if (g->state.current == HERO_STATE_LOOK || g->state.current == HERO_STATE_LOOK_RELEASE_WAIT) {
         char *s = player_camera;
         v[1] = 0;
@@ -1335,7 +1338,7 @@ typedef struct {
 } Order40;
 extern Order40 order40 __asm__("D_0013E620");
 extern PadState D_0013CA40;
-extern u8 help_stats_base[];
+
 extern M40 *moby_head40 __asm__("D_L00_001600A4") MACRO_ADDR;
 extern s32 g_current_level_index MACRO_ADDR;
 extern s32 gameplay_event_frame_count MACRO_ADDR;
@@ -1437,7 +1440,7 @@ void suckcannon_update(M40 *self) {
                 start_equipped_item_animation();
                 data->sound = Moby_PlaySound(2, 4, (int)self);
                 data->cooldown = scale_ticks(10);
-                stats = (Stats40 *)(help_stats_base + 0x65);
+                stats = (Stats40 *)item_usage;
                 if (stats->uses < 65535)
                     stats->uses++;
                 if (scale_ticks(gameplay_event_frame_count) / 600 > stats->longest)
@@ -1452,7 +1455,7 @@ void suckcannon_update(M40 *self) {
             if (is_suck_cannon_suction_blocked_by_hero_state() != 0 || hero40.disabled || hero40.locked) {
                 sound = data->sound;
                 if (sound != -1) {
-                    Sound40 *s = (Sound40 *)(hero_globals_base + 0x1D) + sound;
+                    Sound40 *s = (Sound40 *)voice_pool + sound;
                     if (s[1].owner == self && s[1].active)
                         Sound_StopSlot(sound);
                 }
@@ -1486,7 +1489,7 @@ void suckcannon_update(M40 *self) {
                 cancel_hero_item_animation();
                 sound = data->sound;
                 if (sound != -1) {
-                    Sound40 *s = (Sound40 *)(hero_globals_base + 0x1D) + sound;
+                    Sound40 *s = (Sound40 *)voice_pool + sound;
                     if (s[1].owner == self && s[1].active)
                         Sound_StopSlot(sound);
                 }
@@ -1564,7 +1567,7 @@ void suckcannon_update(M40 *self) {
                 MobyBlendAnimation(self, 5, 0, scale_ticks(2));
                 hero40.firing = 2;
                 data->cooldown = scale_ticks(25);
-                stats = (Stats40 *)(help_stats_base + 0x65);
+                stats = (Stats40 *)item_usage;
                 if (stats->uses < 65535)
                     stats->uses++;
                 if (scale_ticks(gameplay_event_frame_count) / 600 > stats->longest)
@@ -1704,7 +1707,7 @@ done:
     if (special) {
         sound = data->sound;
         if (sound != -1) {
-            Sound40 *s = (Sound40 *)(hero_globals_base + 0x1D) + sound;
+            Sound40 *s = (Sound40 *)voice_pool + sound;
             if (s[1].owner == self && s[1].active)
                 Sound_StopSlot(sound);
         }
@@ -1863,7 +1866,7 @@ int store_moby_in_suck_cannon(unsigned char *m, void *v) {
         qcopy(&((Moby *)m)->pos, v);
         compose_moby_rotation_with_euler_offset(*(char **)&o->target, (char *)m, &suck_cannon_stored_rot_offset);
         moby_anim_sphere_lerp(m);
-        g = *(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->items[0].moby;
+        g = *(int *)&g_hero.items[0].moby;
         if (g != 0 && *(short *)(g + 0xA6) == 0x351) {
             Moby_PlaySound(5, 0, g);
         }
@@ -1923,7 +1926,7 @@ int launch_suck_cannon_projectile(Moby *m, float *pos, char *other, float f) {
             d->unk_90 = f;
             d->unk_48 += f;
         }
-        if (vec_distance_xy(&m->pos, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) < 1.0f) {
+        if (vec_distance_xy(&m->pos, &g_hero.motion.pos) < 1.0f) {
             FastVecAdd(&m->pos, &m->pos, &d->launch_pos);
         }
         s = d->unk_9C;
@@ -1952,7 +1955,7 @@ int cancel_suck_cannon_suction(char *m) {
         case 3: {
             int k = s->unk_6A;
             if (k != -1) {
-                char *g = hero_globals_base + 0xE1D;
+                char *g = (char *)&g_hero;
                 *(int *)(g + 0x2050 - (-(k * 4))) = 0;
                 if (((struct Hero *)g)->suck_cannon_incoming > 0) {
                     ((struct Hero *)g)->suck_cannon_incoming = ((struct Hero *)g)->suck_cannon_incoming - 1;
@@ -2859,14 +2862,13 @@ void suck_beam_update(void *moby, void *position) {
     V41 *anchor, *previous, *source;
 
     suck_beam_build(moby, position);
-    if ((((Hero41 *)(hero_globals_base + 0xE1D))->camera_mode == 30 ||
-         ((Hero41 *)(hero_globals_base + 0xE1D))->camera_mode == 1) &&
-        (((Hero41 *)(hero_globals_base + 0xE1D))->moby->flags & 1)) {
+    if ((((Hero41 *)(&g_hero))->camera_mode == 30 || ((Hero41 *)(&g_hero))->camera_mode == 1) &&
+        (((Hero41 *)(&g_hero))->moby->flags & 1)) {
         qcopy(&orient[0], player_camera_matrix);
         qcopy(&orient[1], player_camera_matrix + 16);
         qcopy(&orient[2], player_camera_matrix + 32);
         orientation = &orient[0];
-    } else if (((Hero41 *)(hero_globals_base + 0xE1D))->special == 1) {
+    } else if (((Hero41 *)(&g_hero))->special == 1) {
         FastVecScale(&orient[0], &((M41 *)moby)->basis[1], -1.0f);
         {
             M41 *m = moby;
@@ -2875,9 +2877,9 @@ void suck_beam_update(void *moby, void *position) {
         }
         orientation = &orient[0];
     } else {
-        qcopy(&orient[0], &((Hero41 *)(hero_globals_base + 0xE1D))->matrix[0]);
-        qcopy(&orient[1], &((Hero41 *)(hero_globals_base + 0xE1D))->matrix[1]);
-        qcopy(&orient[2], &((Hero41 *)(hero_globals_base + 0xE1D))->matrix[2]);
+        qcopy(&orient[0], &((Hero41 *)(&g_hero))->matrix[0]);
+        qcopy(&orient[1], &((Hero41 *)(&g_hero))->matrix[1]);
+        qcopy(&orient[2], &((Hero41 *)(&g_hero))->matrix[2]);
         orientation = &orient[0];
     }
     vec_scale_to_length(&step, orientation, suck_beam_segment_length);
@@ -2885,7 +2887,7 @@ void suck_beam_update(void *moby, void *position) {
     qcopy(suck_beam_points, position);
     vec_scale_to_length(&ray_end, orientation, suck_beam_segment_length * 10.0f);
     FastVecAdd(&ray_end, &ray_end, position);
-    if (coll_line(position, &ray_end, 20, (int)((Hero41 *)(hero_globals_base + 0xE1D))->moby, 0)) {
+    if (coll_line(position, &ray_end, 20, (int)((Hero41 *)(&g_hero))->moby, 0)) {
         int n, i, k;
         n = truncate_float_to_s32(vec_distance_xy(collision_hit_point, position) / suck_beam_segment_length);
         for (i = n; i < 10; i++) {
@@ -3185,7 +3187,7 @@ void scatter_moby_from_hazards(Moby *m) {
         if (!is_bomb_glove_ammo_cc_de_3ee_d6_e1_d5_or_df(m))
             return;
     }
-    if (!(FastVecDist(&m->pos, pos = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) < 30.0f))
+    if (!(FastVecDist(&m->pos, pos = &g_hero.motion.pos) < 30.0f))
         return;
     for (i = 0; i < 10 && suck_beam_segment_alpha[i] >= 8; i++) {
         lim = i * 0.3f + 0.1f;
@@ -3375,7 +3377,7 @@ typedef struct {
     Vec v70;
 } Node_2E0E50;
 extern char hero_globals_base_r2[] __asm__("D_0013E633");
-extern char D_0013A5E0[];
+
 extern int D_L00_0015F6A8 MACRO_ADDR;
 extern int D_L00_0015F504 MACRO_ADDR;
 extern char *D_L00_00160098 MACRO_ADDR;
@@ -3459,8 +3461,7 @@ void hydrodisplacer_update(Moby *m) {
                                    0) == 0) {
                 break;
             }
-            if ((*(int *)(pad_globals_base + 0x2600) &
-                 ((Hero *)(hero_globals_base_r2 + 0xE1D))->items[0].button_mask) == 0) {
+            if ((*(int *)pad_held & ((Hero *)(hero_globals_base_r2 + 0xE1D))->items[0].button_mask) == 0) {
                 break;
             }
             if (((Hero *)(hero_globals_base_r2 + 0xE1D))->ground_moby == 0 ||

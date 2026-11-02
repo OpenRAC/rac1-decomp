@@ -6,6 +6,8 @@
 #include "asm_functions/executable.h"
 #include "game/ui/hud.h"
 #include "enums/level.h"
+extern char gSpecialItems[];
+extern Hero g_hero;
 
 typedef struct {
     u8 pad[0x48];
@@ -64,7 +66,7 @@ void update_trick_combo_hud(char *a) {
     *(int *)(a + 0x74) = truncate_float_to_s32_r(cur);
     switch (u[2]) {
         case 0: {
-            struct Hero *H = (struct Hero *)(hero_globals_base + 0xE1D);
+            struct Hero *H = &g_hero;
             if (H->air_frames.s < 6) {
                 return;
             }
@@ -95,7 +97,7 @@ void update_trick_combo_hud(char *a) {
             if (u[1] != 0) {
                 u[1]--;
             }
-            T = (struct Hero *)(hero_globals_base + 0xE1D);
+            T = &g_hero;
             trick_combo_trick_count = T->tricks_landed[4];
             {
                 int k;
@@ -103,7 +105,7 @@ void update_trick_combo_hud(char *a) {
                     (&trick_combo_trick_flags)[k] = ((int *)T->tricks_landed)[k];
                 }
             }
-            H = (struct Hero *)(hero_globals_base + 0xE1D);
+            H = &g_hero;
             if (trick_combo_spins < H->unk70C) {
                 trick_combo_spins = H->unk70C;
                 u[1] = *(unsigned char *)&trick_combo_flash_ticks;
@@ -130,7 +132,7 @@ void update_trick_combo_hud(char *a) {
                 }
             }
             {
-                struct Hero *K = (struct Hero *)(hero_globals_base + 0xE1D);
+                struct Hero *K = &g_hero;
                 if (K->state.current == 0x6B) {
                     if (trick_combo_trick_count >= 3) {
                         trick_combo_recent3 = trick_combo_recent2;
@@ -165,7 +167,7 @@ void update_trick_combo_hud(char *a) {
                 u[0] = 0;
             } else if (u[2] == 3 && u[0] == scale_ticks(0x6E)) {
                 int n = trick_combo_score;
-                H = hero_globals_base + 0xE1D;
+                H = (char *)&g_hero;
                 *(int *)(H + 0x8A8) += n;
                 *(int *)(H + 0x864) += n * 5;
                 if ((int)((float)scale_ticks(0x11) * 60.0f) < *(int *)(H + 0x864)) {
@@ -224,7 +226,7 @@ int draw_trick_combo_hud(char *a) {
     if (f21 > 1.0f) {
         f21 = 1.0f;
     }
-    E = (struct Hero *)(hero_globals_base + 0xE1D);
+    E = &g_hero;
     if (E->state.control_mode != 0x16) {
         return *(int *)(a + 0x58);
     }
@@ -326,7 +328,7 @@ int draw_trick_combo_hud(char *a) {
     draw_cropped_hud_sprite(id, xa, xb, s16, 0x40, 0x80);
     id2 = GetIconFrame(0x7558, 0);
     HudSprite(id2, xa, xb, 0x100, 0x40, 0x80);
-    E = (struct Hero *)(hero_globals_base + 0xE1D);
+    E = &g_hero;
     t = (unsigned char)*(char *)&E->off_course_frames;
     if (scale_ticks(0x78) < t) {
         r3 = scale_ticks(0x3C);
@@ -377,7 +379,7 @@ extern char hero_globals_base[];
 
 /* Fades the progress HUD in when the hero is in mode 0x16, else fades it out. */
 void set_progress_hud_fade_from_hero_mode(char *moby) {
-    if (((struct Hero *)((char *)&hero_globals_base + 0xE1D))->state.control_mode == 0x16) {
+    if (g_hero.state.control_mode == 0x16) {
         *(int *)(moby + 0x7C) = scale_ticks(0x1E);
         *(int *)(moby + 0x6C) = 5;
     } else {
@@ -439,7 +441,7 @@ int draw_hud_progress_and_rank(char *e) {
     pal = pal_mode;
     x = hud_sub_66D10(g_screen_extent[1], pal, &rilgar_progress_frame_bottom);
     y = hud_sub_66D10(g_screen_extent[1], pal, &rilgar_progress_text_bottom);
-    hd = (struct Hero *)(hero_globals_base + 0xE1D);
+    hd = &g_hero;
     y1 = y + 1;
     draw_stretchable_ui_frame(*(int *)&(rilgar_progress_frame_x), x, *(int *)&(rilgar_progress_frame_width),
                               *(int *)&(rilgar_progress_frame_height), *(int *)&(rilgar_progress_frame_alpha));
@@ -479,7 +481,7 @@ int draw_hud_progress_and_rank(char *e) {
     sprintf(buf + 0x40, rilgar_fmt_number, hd->race_ammo);
     py = pal_mode ? 0xA : 0x12;
     px = *(int *)(e + 0x50);
-    if (*(unsigned char *)(special_items_base + 0x13B) == 0) {
+    if (*(unsigned char *)gSpecialItems == 0) {
         py = pal_mode ? 0xA : 0x12;
     } else {
         px = *(int *)&(rilgar_counter_box_alt_x);
@@ -489,7 +491,7 @@ int draw_hud_progress_and_rank(char *e) {
     w = GetIconFrame(0x7558, 2);
     HudSprite(w, px, py, 0x20, 0x20, 0x80);
     print_text_with_texture_3(px + 0x29, py + 8, 0x80000000L, buf + 0x40, -1);
-    h2 = hero_globals_base + 0xE1D;
+    h2 = (char *)&g_hero;
     if (*(unsigned char *)(h2 + 0x8CE) != 0)
         print_text_with_texture_3(px + 0x28, py + 7, 0x80E08060L, buf + 0x40, -1);
     else
