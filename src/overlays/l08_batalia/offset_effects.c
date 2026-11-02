@@ -5,8 +5,6 @@
 #include "include_asm.h"
 #include "asm_functions/executable.h"
 
-extern unsigned char *create_part(int);
-
 extern void vec_scale_to_length(void *, void *, float);
 
 extern int func_001FA898(float);

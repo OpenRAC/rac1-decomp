@@ -1543,7 +1543,7 @@ extern char quartu_camera_pos_r[] __asm__("D_L15_00167440");
 
 extern unsigned char hero_vehicle_mode[];
 extern int Sound_PlayClassSound(int, int, void *, int);
-extern void FastVecScale(void *, void *, float);
+
 extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
 void spawn_rocket_trail_spark(char *moby);
 void spawn_rocket_detonation_glow(char *moby);
@@ -1720,8 +1720,6 @@ extern void moby_index_list_remove(void *, void *);
 extern int coll_sphere_mobys(void *, float, int, void *, void *);
 extern void SendRadialMessageToMobys(void *, void *, void *, int, int, int, int, int, float, float, float);
 extern void sce_vu0_mul_matrix(void *, void *, void *);
-
-extern void set_identity_matrix(void *);
 
 extern void *spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(void *, void *, int, int, float, int,
                                                                                int, int, int);
@@ -2735,7 +2733,6 @@ extern int quartu_spark_emitter_uv_wave_use_cos[][2];
 extern float quartu_spark_emitter_base_uvs[][2];
 extern Q_2A4318 quartu_spark_emitter_second_quad_corners[];
 extern Q_2A4318 quartu_spark_emitter_first_quad_corners[];
-extern void copy_matrix_rotation(void *, void *);
 
 /* Draw callback set by update_spark_emitter_moby: draws six passes of two effect quads (texture 0x2C)
    at the moby transform, with wave-animated corners and a colour that fades with the data timer. */
@@ -2896,9 +2893,7 @@ typedef struct {
     int i20;
     int pad24[3];
 } Ray;
-extern void matrix_copy_rows(void *, void *);
 
-extern float FastNormalizeAngle(float);
 extern int func_001160D8(void);
 
 extern int quartu_spiderbot_spark_count SDATA(quartu_spiderbot_spark_count);

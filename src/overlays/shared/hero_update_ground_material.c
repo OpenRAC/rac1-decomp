@@ -856,11 +856,7 @@ extern s32 hero_hit_count MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
 extern u8 hero_velocity[];
 void release_and_clear_hero_voice_slots(void);
-void FastVecSub(void *, void *, void *);
-f32 FastAddRots(f32, f32);
-f32 FastCos(f32);
-f32 FastSin(f32);
-void FastVecAdd(void *, void *, void *);
+
 void Hero_SetMoveState(s32, s32);
 void allocate_hero_voice_for_entry(s32, s32);
 void hero_knockback(void *, s32, f32, f32);
@@ -1067,8 +1063,6 @@ void hero_speed_from_table(void) {
 extern float gravity_length_xy(float *v);
 extern float vec_length_xy(void *);
 
-extern void FastVecScale(void *, void *, float);
-
 extern int coll_line(void *, void *, int, int, int);
 
 extern int novalis_coll_hit_type;
@@ -1165,13 +1159,11 @@ s32 CollType(void);
 f32 resolve_camera_surface_height(void *, void *);
 s32 is_moby_in_class_range_500_to_540(s32);
 u8 *GetFlaggedPvarWord(s32);
-f32 FastVecDist(void *, void *);
+
 void sceVu0Normalize(void *, void *);
 f32 compute_gravity_relative_vector_inclination(void *);
 f32 fast_atan2(f32, f32);
-void FastVecSub(void *, void *, void *);
-f32 FastVecDot(void *, void *);
-void FastVecScale(void *, void *, f32);
+
 void vec_scale_to_length(void *, void *, f32);
 void compute_rotated_vector_angles(void *, void *);
 void transform_hero_polar_offset_to_world(void *, f32, f32, f32);
@@ -1556,7 +1548,6 @@ extern void moby_build_matrix(struct Moby *);
 extern void enter_hero_vehicle_mode_and_set_moby_r(s32, s32, struct Moby *) __asm__("func_L01_00231960");
 extern f32 gravity_z(void *);
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
-extern void FastVecScale(void *, void *, f32);
 
 extern void transform_hero_local_offset_to_world(void *, f32, f32, f32);
 extern void Hero_OnKilled(void);

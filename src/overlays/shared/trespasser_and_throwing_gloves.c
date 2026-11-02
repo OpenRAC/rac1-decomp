@@ -175,7 +175,6 @@ extern int truncate_float_to_s32(float);
 
 extern void *libc_memset(void *, int, unsigned int);
 
-extern void FastVecScale(void *, void *, float);
 extern void vec_scale_to_length(void *, void *, float);
 extern void clamp_vec_length(void *, void *, float);
 extern int clamp_vec_length_xy(float, void *, void *);
@@ -670,7 +669,7 @@ extern float trespasser_pickup_spin_step SDATA(trespasser_pickup_spin_step);
 extern int level_frame_counter_r __asm__("D_L00_0015F6B0") MACRO_ADDR;
 extern unsigned char g_hero_r[] __asm__("D_0013F450");
 void func_00214358_C2A80(void *, int, float) __asm__("func_00214358");
-float FastAddRots(float, float);
+
 float vec_distance_xy(void *, void *);
 float FastAbsF(float);
 void grant_inventory_item(int, int);
@@ -774,8 +773,6 @@ extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern int gameplay_event_frame_count_r __asm__("D_0015EFA4") MACRO_ADDR;
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 
-extern void matrix_copy_rows(void *, void *);
-
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void MobyTransformScaledVertex(void *, int, void *);
 
@@ -784,7 +781,6 @@ extern int fast_dec_timer(int *);
 
 extern int allocate_hero_voice_for_entry(int, int);
 
-extern void FastVecScale(void *, void *, float);
 extern float vec_length_xy(void *);
 
 extern int coll_line_r(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
@@ -1044,7 +1040,7 @@ typedef struct {
     f32 normal_y; /* 0x44: FUN_001f9e90 (atan2) of normal_x, normal_y is stored in the hero */
     f32 normal_z; /* 0x48: ledge probes compare atan2(normal_z, xy length) with 20 degrees */
 } CollisionHit_C39D0;
-int scale_ticks(int);
+
 extern u8 gGoldBombGlove[];
 
 extern f32 vec_distance_xy(void *, void *);
@@ -1080,10 +1076,8 @@ extern f32 vec_length(f32);
 
 extern f32 fast_atan2(f32, f32);
 
-extern void FastVecScale(void *, void *, f32);
 extern s32 fast_dec_timer(s32 *);
 extern s32 coll_line_r2(void *, void *, s32, void *, s32) __asm__("func_L00_001EFFF0");
-extern void matrix_copy_rows(void *, void *);
 
 extern f32 vec_length_xy(void *);
 
@@ -1297,8 +1291,6 @@ extern float fast_atan2(float, float);
 
 extern float IntToFloat(int);
 
-extern float FastNormalizeAngle(float);
-
 extern int GetEffectTex(int);
 extern void draw_world_quad(void *, void *, int);
 extern int cinematic_mode MACRO_ADDR;
@@ -1389,7 +1381,7 @@ void draw_moby_oscillating_textured_quads(char *m) {
 }
 float random_float_between(float, float);
 int func_001160D8(void);
-int scale_ticks(int);
+
 extern void func_L00_0026AA10_C4748(float *, unsigned char, unsigned char, unsigned char, float, float,
                                     int) __asm__("func_L00_0026AA10");
 void moby_index_list_remove(void *, void *);
@@ -1420,7 +1412,7 @@ void destroy_decoy_with_particles(unsigned char *m) {
 typedef u32 u128_C48C8 __attribute__((mode(TI), aligned(16)));
 extern struct Hero g_hero_r4 __asm__("D_0013F450");
 unsigned char *func_0020D348_C48C8(int) __asm__("func_0020D348");
-int scale_ticks(int);
+
 void func_00213DE0_C48C8(unsigned char *, int, int, int) __asm__("func_00213DE0");
 void func_L00_00251E30_C48C8(unsigned char *) __asm__("func_L00_00251E30");
 extern f32 IntToFloat(s32);
@@ -1582,7 +1574,7 @@ void release_moby_with_collision_check(float *release_position, char *m, void *i
 typedef int OvlQuad __attribute__((mode(TI)));
 
 s32 CollType();
-int scale_ticks(int);
+
 extern f32 g_frame_time MACRO_ADDR;
 typedef struct {
     u8 pad_00[0x10];
@@ -1599,7 +1591,6 @@ extern Vec4 coll_hit_normal;
 extern Vec4 g_debug_camera_r3 __asm__("D_L00_00166EC0");
 extern f32 fast_atan2(f32, f32);
 
-extern void FastVecScale(void *, void *, f32);
 extern s32 coll_line_r3(void *, void *, s32, void *, s32) __asm__("func_L00_001EFFF0");
 extern s32 fast_dec_timer(s32 *);
 extern void ProbeGroundHeight_r(void *, s32, f32) __asm__("func_00214358");
@@ -2199,7 +2190,7 @@ extern float ApproachValue(void *, float, float);
 extern int truncate_float_to_s32(float);
 
 extern void queue_formatted_dialogue_message(int, int, int);
-extern int subtract_integer_with_clamp(int);
+
 extern int Sound_PlayClassSound(int, int, int, int);
 extern float jet_distance(void *, void *);
 extern void DeleteMoby(void *);
@@ -2423,7 +2414,6 @@ LINKER_REMNANT("asm/overlays", func_L00_002C6F40);
 
 extern void queue_formatted_dialogue_message(int a, int b, int c);
 
-extern int subtract_integer_with_clamp(int);
 extern int Sound_PlayClassSound(int i, int a1, int v, int k);
 typedef struct {
     char pad[0x34];
@@ -2902,7 +2892,6 @@ unsigned char *spawn_swingshot_hook(unsigned char *src, float f) {
 extern unsigned char g_hero_field_20a5[] NOT_SDA;
 
 extern void DeleteMoby(void *);
-extern void moby_anim_sphere_lerp(void *);
 
 // Per-frame update for a linked moby: follows its owner's state and keeps its own animation in step.
 void swingshot_hook_update(unsigned char *m) {

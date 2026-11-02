@@ -1087,7 +1087,7 @@ void initialize_eight_slot_hud_selector(Obj238478 *o) {
         d++;
     }
 }
-int scale_ticks(int);
+
 typedef struct {
     int f0, f4, f8, fC, f10, f14, f18;
 } Ent_38530;
@@ -1129,8 +1129,6 @@ extern int quick_select_default_right_slot;
 extern int quick_select_default_up_slot;
 extern int quick_select_default_down_slot;
 extern int gameplay_event_frame_count MACRO_ADDR;
-
-extern float FastNormalizeAngle(float);
 
 /* Picks slot w74 from the stick angle (or steps it with the 0x1000-0x8000 pad bits), counts hold frames in b71/b70,
    records the slot's entry when released, and closes when b70 runs out.
@@ -1294,7 +1292,7 @@ extern int sprintf(char *, const char *, ...);
 
 extern int FontPrintCenter(int, int, long, void *, int);
 extern void *msg_string(int);
-extern int libc_strlen(char *);
+
 extern unsigned char screen_globals_base[];
 extern short quick_select_pulse_period;
 extern short quick_select_ring_radius;
@@ -2567,7 +2565,6 @@ void HudFrame(char *e, int id, int x, int y, int flags, int alpha) {
     }
 }
 extern int *dma_packet_cursor MACRO_ADDR;
-extern long GetFrameTex(int);
 
 /* The level's HudSprite (src/game/ui/hud.c) with the UV given: draws
    texture TEX as a sprite at (x, y), w x h, with ALPHA, through the
@@ -2715,7 +2712,7 @@ extern char tie_class_slot_flags[];
 extern char shrub_class_slot_by_id[];
 extern char shrub_class_slot_records[];
 extern char shrub_class_slot_flags[];
-extern void FastMemSet(void *, int, int);
+
 extern void register_audio_stream_callback(void);
 extern void calculate_dma_transfer_address(void);
 

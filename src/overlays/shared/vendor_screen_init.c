@@ -36,7 +36,6 @@ extern int novalis_white_fade_level SDATA(novalis_white_fade_level);
 extern char novalis_vendor_screen_anchor_offset;
 
 extern void snd_FlushSoundCommands(void);
-extern void FastMemSet();
 
 extern void Hero_SetMoveState(int, int);
 

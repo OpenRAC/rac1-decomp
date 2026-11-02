@@ -90,7 +90,7 @@ extern LtObj40 *tfrag_render_records_o __asm__("D_00160F8C") MACRO_ADDR;
 extern int tfrag_render_record_count MACRO_ADDR;
 extern LtObj20 *shrubs_o __asm__("D_001604D4") MACRO_ADDR;
 extern LtObj20 *D_001604D8 MACRO_ADDR;
-extern int spheres_intersect(void *, void *);
+
 extern void scale_vector(void *, void *, float);
 
 /* CreatePointLight: lists which objects of the three lists the light's sphere touches and records the light's index in their packed nibble field. Adapted from Lombyte's project (GPL-3.0) for PAL: src/rendering/create_point_light.c, create_point_light. */

@@ -565,8 +565,6 @@ int is_moby_in_state_6(Level16VendorMoby *moby) {
     return moby->state == 6;
 }
 
-extern void FastVecScale(void *, void *, float);
-
 extern int fast_dec_timer(int *);
 extern void RerollEffectCounter(void *m, short *p);
 extern void StepColorFade(void *, void *);
@@ -1370,7 +1368,7 @@ extern void update_test_dummy_group_glow_phases(char *);
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
 extern void MobyTransformScaledVertex(char *, int, char *);
-extern void matrix_copy_rows(void *, void *);
+
 /* The hero block as this function reads it (hero_globals_base + 0xE1D). */
 typedef struct {
     char pad00[0x80];
@@ -1962,7 +1960,6 @@ extern char hero_globals_base[];
 extern int fast_dec_timer(int *arg0);
 extern int get_first_moby_in_group(int *, int, int, int);
 extern int get_next_moby_in_group(int *, int, int, int);
-extern void set_identity_matrix(void *);
 
 // Checks the nearby list entries of two classes against the moby and adds a timed delay when one is close.
 struct AccumulateMobyFramesInGroupBoundsVars {
@@ -2541,7 +2538,7 @@ void *activate_door_647_group_and_find_nearest(int index, int secondary) {
             return nearest;
     }
 }
-extern int subtract_integer_with_clamp(int);
+
 extern void Moby_PlaySound(int, int, void *);
 extern int kalebo3_frame_count MACRO_ADDR;
 extern int last_test_dummy_door_sound_request_frame SDATA(last_test_dummy_door_sound_request_frame);

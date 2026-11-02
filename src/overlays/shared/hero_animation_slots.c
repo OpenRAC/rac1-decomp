@@ -36,8 +36,6 @@ struct Moby;
 extern struct Hero g_hero_r __asm__("D_0013F450");
 typedef int OvlQuad __attribute__((mode(TI)));
 
-f32 FastCos(f32);
-f32 FastSin(f32);
 /* Adds to v an xy offset of length 2r in direction ang. */
 static inline void circle_offset(Vec4 *v, f32 ang, f32 r) {
     r += r;
@@ -1166,7 +1164,6 @@ extern int g_game_language[] MACRO_ADDR;
 extern unsigned char gHaveMapOMatic[] NOT_SDA;
 extern struct Moby *CreateMoby(int);
 
-extern void FastMemSet(void *, int, int);
 extern void spawn_indexed_class_a7_moby(int);
 
 /* HeroItemsCreate: spawns the mobys for the hero's equipped item slots. */
@@ -1363,11 +1360,8 @@ float sum_basis_absolute_differences(float *a, float *b) {
     return s;
 }
 extern int hero_item_history_delay_target SDATA(hero_item_history_delay_target);
-extern void matrix_copy_rows(void *, void *);
 
 extern float sum_basis_absolute_differences(float *a, float *b);
-
-extern void FastVecScale(void *, void *, float);
 
 typedef struct {
     float x, y, z, w;
@@ -1510,7 +1504,7 @@ extern u8 hero_item_28_29_pose_buffer_slot1[];
 extern u8 D_L00_0017AA60[];
 extern void MobyAnimAdvance(void *);
 extern void moby_build_matrix(void *);
-extern void moby_anim_sphere_lerp(void *);
+
 extern void pack_pose(void *, void *, s32, s32, s32);
 
 extern void MobyTransformScaledVertex(void *, s32, void *);
@@ -2362,14 +2356,11 @@ extern u8 hero_velocity[];
 s32 truncate_float_to_s32(f32);
 void release_and_clear_hero_voice_slots(void);
 void func_001F9BF0_113A0(void *, void *, void *) __asm__("func_001F9BF0");
-f32 FastAddRots(f32, f32);
-f32 FastCos(f32);
-f32 FastSin(f32);
-void FastVecAdd(void *, void *, void *);
+
 void HeroEnterMoveState(s32, s32);
 void func_L00_00217570_113A0(s32, s32) __asm__("func_L00_00217570");
 void remove_tracked_class_5f3_moby(void);
-void clear_u64_value(void *);
+
 void func_L00_00211338_113A0(void *, s32, f32, f32) __asm__("func_L00_00211338");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_0020c758.c, FUN_L00_00210ce8. */
@@ -2647,7 +2638,6 @@ extern float get_capped_hero_stick_magnitude_a(void) __asm__("func_L00_00211EE8"
 extern float vec_length_xy_a(void *) __asm__("func_001F9CE8");
 extern void func_L00_002180F8(void);
 extern void euler_to_matrix_a(void *, void *) __asm__("func_001FA218");
-extern void func_001FA190(void *);
 
 extern void update_hero_collision_capsule_dimensions_a(void) __asm__("func_L00_00211A38");
 extern void func_L00_00221A98(void);
@@ -2985,7 +2975,6 @@ void set_planar_vel(float arg0) {
     qcopy(g_hero + 0xE0, out);
 }
 extern float g_frame_time_sq MACRO_ADDR;
-extern void FastVecScale(void *, void *, float);
 
 // Pushes the hero off a steep wall: removes the velocity component into it and drops z.
 void correct_hero_airborne_wall_velocity(void) {
@@ -3131,7 +3120,7 @@ extern s32 g_current_level_index MACRO_ADDR;
 typedef int Q __attribute__((mode(TI)));
 extern u8 collision_hit_point[];
 extern f32 coll_hit_point_z;
-void clear_u64_value(void *);
+
 void func_L00_00212D70_12E70(void *, void *, s32, f32, f32) __asm__("func_L00_00212D70");
 s32 coll_line(void *, void *, s32, s32, s32);
 s32 coll_sound_class(void);
@@ -3139,13 +3128,12 @@ s32 CollType(void);
 f32 resolve_camera_surface_height(void *, void *);
 s32 func_L00_0025F410_12E70(s32) __asm__("func_L00_0025F410");
 u8 *func_L00_0025D390_12E70(s32) __asm__("func_L00_0025D390");
-f32 FastVecDist(void *, void *);
+
 void sceVu0Normalize(void *, void *);
 f32 compute_gravity_relative_vector_inclination(void *);
 f32 fast_atan2(f32, f32);
 void func_001F9BF0_12E70(void *, void *, void *) __asm__("func_001F9BF0");
-f32 FastVecDot(void *, void *);
-void FastVecScale(void *, void *, f32);
+
 void vec_scale_to_length(void *, void *, f32);
 void compute_rotated_vector_angles(void *, void *);
 void transform_hero_polar_offset_to_world(void *, f32, f32, f32);

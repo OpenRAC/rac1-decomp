@@ -14,8 +14,6 @@
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-extern void FastMemSet();
-
 extern int level_map_selection[];
 
 /* Map hit test: point_is_clockwise of (x1, y1) against one fixed map edge. */
@@ -654,7 +652,7 @@ int map_filter_l18_0(void) {
 extern int level_map_selection[];
 extern int max_map_coverage_size[];
 extern void DebugEnter_Nop(void);
-extern int compress_map_coverage(void *dst, int size, int a, int b);
+
 extern void downsample_map_coverage(void *dst);
 
 /* The same object, twice. gp is 0x00166D00, so the `lw $4,-0x7E7C($28)`

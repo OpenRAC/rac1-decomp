@@ -264,7 +264,6 @@ extern float vec_length(float);
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern void FastVecScale(void *, void *, float);
 extern long GetEffectTex(int);
 extern void draw_world_quad(void *, int, int);
 
@@ -425,7 +424,7 @@ extern void move_frog_with_collision_resolution(void *, void *, int, float, floa
 extern float vec_length_xy(void *);
 extern float jump_speed_4318(void *, void *, void *, float, float);
 extern void InitKnockback_x(void *, void *, int, int, int, float) __asm__("func_L00_0025D5B0");
-extern void set_vector_unit_z(void *);
+
 extern int mine_fall(void *, void *);
 
 extern void SetDeathBits(void *, int, int);
@@ -2409,7 +2408,7 @@ void select_nearest_gadgebot_interaction_target(void *moby_arg) {
 /* Level 6 hit/collision callback of the spark emitters (classes 0x15F 0x3B1 0x515 spray two bursts of 10 sparks around
    the hero context ctx and spawn through Sound_PlayClassSound/00272F00; 0x400 and 0x516 only set ctx state 8); from
    the staged near miss, compared with the assembly through equiv.py. */
-extern float func_001FA7D8(f32);
+
 extern char *level_mobys_q_r2 __asm__("D_L06_00160058") MACRO_ADDR;
 typedef int u128_F4058 __attribute__((mode(TI)));
 

@@ -245,7 +245,7 @@ extern int electric_gate_effect_tex SDATA(electric_gate_effect_tex);
 extern float IntToFloat(int);
 
 extern int GetEffectTex(int);
-extern void copy_matrix_rotation(void *, void *);
+
 extern void draw_world_quad(void *, void *, int);
 
 typedef struct {
@@ -831,7 +831,6 @@ extern void *MobyGetHitMessage(struct Moby *, int, int);
 extern struct Moby *CreateMoby(int);
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
 
-extern void FastVecScale(void *, void *, float);
 extern void rand_vec(void *, float, float);
 extern int truncate_float_to_s32(float);
 extern int Moby_PlaySound(int, int, void *);
@@ -1188,7 +1187,7 @@ extern LiftVoicePool voice_pool;
 extern u16 active_marker_id NOT_SDA;
 extern f32 elevator_camera_transition_fade MACRO_ADDR;
 extern LiftPose *rilgar_level_cuboids_r2 __asm__("D_L05_001601AC") MACRO_ADDR;
-extern void FastVecScale(void *, void *, f32);
+
 extern f32 ApproachValue(f32 *, f32, f32);
 extern f32 ApproachWithVelocity_r(f32 *, f32 *, f32, f32, f32, f32) __asm__("func_00214D88");
 
@@ -1449,7 +1448,6 @@ void ocean_rilgar_update(char *moby) {
 extern f32 g_frame_time MACRO_ADDR;
 extern f32 g_frame_time_sq MACRO_ADDR;
 extern short moby_pool_4f60 MACRO_ADDR;
-extern void FastVecScale(void *, void *, float);
 
 extern void AttachManipulator_r(void *, int, void *) __asm__("func_0020D960");
 extern void axis_rotation_2d48(void *, int, float);

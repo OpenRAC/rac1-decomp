@@ -1557,7 +1557,7 @@ extern int STUB_printf_r() __asm__("func_001E9730");
 extern void DeleteMoby_r2(void *) __asm__("func_0020D678");
 extern void initialize_flying_car_path_r(void *) __asm__("func_L14_00308998");
 extern int scale_ticks_r3(int) __asm__("func_001F9850");
-extern void func_001F99B0(void *, int, int);
+
 extern void func_0020D960(void *, int, void *);
 extern void func_L00_0025E4B0(void *, void *);
 extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
@@ -2168,8 +2168,6 @@ extern void UpdateViewContext(void);
 
 extern void reset_racer_group_to_hero_path_position(struct Moby *m);
 
-extern void FastVecScale(void *, void *, float);
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/vendor/00300e00.c, FUN_L14_00315290. */
 void update_path_camera(struct UpdateCam *cam) {
     float dir[4];
@@ -2551,7 +2549,6 @@ extern float interpolate_angle(float, float, float);
 
 extern float Cam_InterpValues(void *, float, float, float, float, float);
 extern void compute_position_from_spherical_offset(void *, void *, void *);
-extern void FastVecScale(void *, void *, float);
 
 /* Camera 21 update (level 14): follows keyed angles along the hero's path progress, triggers three mobys, builds the
    camera matrix. */

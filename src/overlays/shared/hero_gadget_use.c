@@ -471,9 +471,8 @@ extern int func_L00_001F10E0(float, void *, int, int);
 
 extern void transform_vector_r(void *, void *, void *) __asm__("func_001F9EE8");
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
-extern void func_001FA460(void *, void *);
+
 extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
-extern void func_001FA480(void *, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/ui/help/00237488.c, FUN_L05_0024bdc0. */
 void update_hero_movement_and_collision_probes(void) {
@@ -1185,8 +1184,6 @@ void update_hero_hoverboard_trick_animations(void) {
 }
 extern int get_first_moby_in_group(void **, int, int, int);
 extern int get_next_moby_in_group(void **, void *, int, int);
-
-extern void set_identity_matrix(float *);
 
 extern float IntToFloat(int);
 extern unsigned char menu_item_enabled_115[] NOT_SDA;

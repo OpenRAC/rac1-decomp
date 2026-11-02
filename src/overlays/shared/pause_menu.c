@@ -141,7 +141,7 @@ extern struct HEnt *menu_preview_mobys[];
 extern char player_camera[];
 
 extern void update_mission_list(void);
-extern void FastVecScale(void *, void *, float);
+
 extern void UpdateViewContext(void);
 
 extern void BuildViewMatrices(void);
@@ -1492,7 +1492,7 @@ void jet_reset_camera(void *a0, void *a1) {
 extern char current_level_state[] NOT_SDA;
 extern unsigned char *moby_array_start MACRO_ADDR;
 extern unsigned char *level_mobys_end MACRO_ADDR;
-extern void FastMemSet(void *, int, int);
+
 extern void raise_kernel_trap(void);
 extern void enter_hero_vehicle_mode(int, int, char *);
 extern void moby_build_matrix(void *);

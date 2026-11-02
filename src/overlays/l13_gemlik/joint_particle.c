@@ -4,8 +4,8 @@
 #include "structs/particle.h"
 #include "structs/moby.h"
 #include "include_asm.h"
+#include "asm_functions/executable.h"
 
-extern unsigned char *create_part(int);
 extern int func_001FA898(float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern unsigned char *gemlik_part_type68_textures;

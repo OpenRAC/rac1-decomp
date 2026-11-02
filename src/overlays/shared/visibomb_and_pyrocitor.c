@@ -154,7 +154,7 @@ extern int coll_line_r(void *, void *, int, int, int) __asm__("func_L00_001EFFF0
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern float IntToFloat_r(int) __asm__("func_001FA888");
 extern float multiply_global_factor_r(float) __asm__("func_001F9878");
-extern float func_001FA7D8(float);
+
 extern void EffectQueue_Add_r(int, int, float, void *, float, int, int, float, int) __asm__("func_L00_001EE2E0");
 extern int get_ammo_r(int) __asm__("func_L00_00234718");
 extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
@@ -644,7 +644,7 @@ extern void func_0020DB98(void *, int, void *, void *);
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void FastVecCross_r(void *, void *, void *) __asm__("func_001F9CA0");
-extern void func_001FA190(void *);
+
 extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
 extern long GetEffectTex_r(int) __asm__("func_001F4868");
 extern void FastVecScale_r(void *, void *, float) __asm__("func_001F9C30");
@@ -1043,7 +1043,6 @@ extern char g_debug_camera[];
 extern char *suck_moby_list MACRO_ADDR;
 extern float vec_distance_xy(void *, void *);
 
-extern float FastArcSin(float);
 extern float IntToFloat(int);
 extern int coll_line(void *, void *, int, int, int);
 extern unsigned char *GetFlaggedPvarWord(void *);
@@ -1631,10 +1630,6 @@ void terminate_visibomb_missile(int a, int *b) {
     hero_control_mode_11_flag = 0;
 }
 
-extern void copy_matrix_rotation(void *, void *);
-extern void matrix_copy_rows(void *, void *);
-
-extern void moby_anim_sphere_lerp(void *);
 extern float frame_scale MACRO_ADDR;
 
 typedef unsigned int u128_t __attribute__((mode(TI), aligned(16)));
@@ -2344,7 +2339,6 @@ void update_taunter_effect_slots(Moby *arg) {
 }
 extern int GetEffectTex(int);
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecScale(void *, void *, float);
 
 extern float IntToFloat(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
@@ -2487,7 +2481,6 @@ extern int coll_line(void *, void *, int, int, int);
 extern float ApproachWithVelocity(float, float, float, float, float *, float *);
 extern void rand_vec(float *, float, float);
 
-extern void FastVecScale(void *, void *, float);
 extern void *spawn_spinning_and_fading_effect_particle(void *, void *, unsigned long, float);
 extern void register_pyrocitor_flame_effect();
 extern void vec_set_length_xy(void *, void *, float);
@@ -2691,7 +2684,7 @@ extern unsigned short pyrocitor_help_shown_count NOT_SDA;
 void func_0020D678_B9528(void *) __asm__("func_0020D678");
 void release_point_light_slot(int);
 void Sound_StopSlot(int);
-int scale_ticks(int);
+
 void Help_Request(int, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002b2100.c, FUN_L00_002b8230. */

@@ -214,8 +214,6 @@ extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound(int, int, int);
 extern float IntToFloat(int);
 
-extern void FastVecScale(void *, void *, float);
-
 extern void update_entity_matrix(char *, void *, void *, void *);
 extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
 extern void ease_path_mover_to_endpoint(char *moby);
@@ -563,7 +561,7 @@ extern int is_turret_group_activated_or_empty(int);
 extern void MobyBlendAnimation_r(struct Moby *, int, int, int) __asm__("func_00213DE0");
 extern u8 *GetFlaggedPvarWord(struct Moby *);
 extern void set_ground_height_band(void *);
-extern void FastMemSet(void *, int, int);
+
 extern void AttachManipulator(void *, s32, void *);
 extern void lerp_vector(void *, void *, void *, float);
 extern void Profile_Mark(void *, float);
@@ -1282,7 +1280,6 @@ void draw_blarg_heavy_interceptor_spinning_beam(char *moby) {
             a = 0;
     }
 }
-extern void FastVecScale(void *, void *, float);
 
 u64 GetEffectTex(s32);
 extern void VU1_addGSregister(int, long);
@@ -1377,7 +1374,6 @@ extern void VU1_addGSregister(int, long);
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern void FastVecScale(void *, void *, float);
 extern void draw_world_quad(void *, void *, s32);
 
 /* Draws the moby's glow quad, pulled toward the camera so it is not hidden by the moby. */
@@ -1621,8 +1617,6 @@ void prepare_blarg_heavy_interceptor_light_ring_transform(char *moby) {
         }
     }
 }
-
-extern void FastVecScale(void *, void *, float);
 
 extern void draw_blarg_heavy_interceptor_camera_pulled_glow(char *);
 
@@ -3792,8 +3786,6 @@ void update_tilting_platform(Moby *moby) {
 typedef int u128_s07 __attribute__((mode(TI)));
 extern float platform_tilt_direction_z_offset SDATA(platform_tilt_direction_z_offset);
 extern float platform_max_tilt_degrees SDATA(platform_max_tilt_degrees);
-
-extern float FastArcSin(float x);
 
 // Turns a moby's tail toward its target: a spring on each of its three points, with the axis-angle rotation for the
 // tilt.

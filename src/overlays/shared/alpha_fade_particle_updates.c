@@ -19,7 +19,6 @@ extern char g_hero_body_center[];
 extern char g_hero_platform_carry[];
 extern char hero_gravity_dir[];
 
-extern unsigned char *create_part(int);
 extern int truncate_float_to_s32(float);
 
 extern float frame_scale MACRO_ADDR;
@@ -82,8 +81,6 @@ typedef struct {
 extern float IntToFloat(int);
 
 extern void scale_vector_xyz_in_place(void *, void *, float);
-
-extern void FastVecScale(void *, void *, float);
 
 /* Per-frame update of a type 0x2C particle: fade colour, move and rotate its velocity.
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/rendering_002712b8.c, FUN_L00_00271450. */

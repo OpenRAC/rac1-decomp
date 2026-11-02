@@ -148,7 +148,6 @@ extern char veldin1_zero_vec[] MACRO_ADDR;
 
 extern float vec_length_xy(void *);
 
-extern void FastVecScale(void *, void *, float);
 extern void vec_scale_to_length(void *, void *, float);
 
 extern void lerp_vector(void *, void *, void *, float);
@@ -664,8 +663,6 @@ void draw_beam_and_arc_effects(char *m) {
 }
 extern int GetEffectTex(int);
 
-extern void FastVecScale(void *, void *, float);
-
 extern void draw_world_quad(void *, void *, int);
 extern void VU1_addGSregister(int, long);
 extern int beam_and_arc_first_pass_texture_index_gp SDATA(beam_and_arc_first_pass_texture_index_gp);
@@ -819,7 +816,6 @@ typedef struct {
 extern void vec_scale_to_length(void *, void *, float);
 
 extern float randf_sym(float lo, float hi);
-extern void FastVecScale(void *, void *, float);
 
 extern V_2bb0b0 beam_anchor_quad_corners[];
 extern QuadUv beam_anchor_quad_uvs[];
@@ -880,7 +876,6 @@ typedef struct {
 } Vu __attribute__((aligned(16)));
 extern char *CreateMoby(int);
 
-extern void moby_anim_sphere_lerp(void *);
 extern void moby_build_matrix(void *);
 /* Spawn a class 0xB3 moby linked to src, copying its basis rows; returns the moby or 0. */
 char *spawn_linked_moby_from_basis(char *src) {
@@ -1104,8 +1099,6 @@ void draw_walloper_arc_and_quad_effects(int arg) {
     draw_walloper_camera_facing_quad(arg);
 }
 
-extern void FastVecScale(void *, void *, float);
-
 extern int walloper_arc_inner_tex SDATA(walloper_arc_inner_tex);
 extern int walloper_arc_inner_color SDATA(walloper_arc_inner_color);
 extern int walloper_arc_outer_tex SDATA(walloper_arc_outer_tex);
@@ -1239,7 +1232,6 @@ void draw_walloper_arc_two_pass_quads(char *m, int a, int b, int n, float sx, fl
     }
     VU1_addGSregister(0x47, 0x5360B);
 }
-extern void FastVecScale(void *, void *, float);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -1318,7 +1310,6 @@ extern int coll_hit_result[];
 
 extern float vec_distance_xy(void *, void *);
 
-extern float FastArcSin(float);
 extern int GetFlaggedPvarWord(char *);
 
 extern int coll_line(Vec4f *, Vec4f *, int, void *, int);
@@ -2069,9 +2060,7 @@ void func_L00_002BF380_BEF58(void *, int, int, int, float, float, float, int) __
 void draw_beam_pulse_quads(void *);
 void draw_beam_origin_camera_facing_quads(void *);
 long func_001F4868_BEF58(int) __asm__("func_001F4868");
-void FastVecSub(void *, void *, void *);
-void FastVecCross(void *, void *, void *);
-float FastVecDot(void *, void *);
+
 void draw_world_quad(void *, void *, int);
 
 /* scrolls the two texture-offset accumulators and draws the 10x20 band of textured quads between the
@@ -2771,7 +2760,6 @@ f32 select_moby_heading_by_collision_probes(Mob *m, Vec4 *pos, f32 *tgt, f32 *ou
 }
 
 extern float IntToFloat(int);
-extern void FastVecScale(void *, void *, float);
 
 /* Steps a vector by n repeated additions of the normalised difference. */
 void accumulate_local_vector_steps(char *a, char *b, int n) {

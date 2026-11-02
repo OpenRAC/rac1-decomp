@@ -38,7 +38,7 @@ extern float IntToFloat(int);
 extern void vec_scale_to_length(void *, void *, float);
 
 extern int solve_quadratic_equation(float *, float *, float, float, float);
-extern void FastVecScale(void *, void *, float);
+
 extern int SegmentCrossPolyline(int, void *, void *, void *);
 
 extern void spawn_bolt_by_value(void *, void *, void *, int, int, int);
@@ -931,12 +931,11 @@ extern u8 g_debug_camera_r[] __asm__("D_L00_00166EC0");
 float fast_atan2(float, float);
 float vec_length_xy(void *);
 float vec_distance_xy(void *, void *);
-float FastVecDist(void *, void *);
-float FastDiffRots(float, float);
+
 float FastAbsF(float);
-float FastArcSin(float);
+
 float IntToFloat(s32);
-void FastVecAdd(void *, void *, void *);
+
 void func_00215C00_64140(Vec4 *, float, float, float) __asm__("func_00215C00");
 MobyBound *GetFlaggedPvarWord(struct Moby *);
 int func_L00_001EFFF0_64140(void *, Vec4 *, int, void *, int) __asm__("func_L00_001EFFF0");
@@ -1053,8 +1052,6 @@ void spawn_ground_contact_effect_particle(V *v) {
 typedef int u128_264690 __attribute__((mode(TI)));
 extern int GetEffectTex(int);
 extern void vec_scale_to_length(void *, void *, float);
-
-extern void FastVecScale(void *, void *, float);
 
 extern void draw_world_quad(void *, void *, int);
 extern float g_debug_camera[];
@@ -1280,7 +1277,6 @@ void draw_trail(void *p0, void *p1, void *vel, float a, float b) {
 extern int banner_display_ticks MACRO_ADDR;
 extern char banner_text_buffer[];
 extern int msg_string(int);
-extern void libc_strcpy(void *, int);
 
 /* Shows message arg0 in the on-screen text box for arg1 ticks. */
 void ShowBanner(int arg0, int arg1) {

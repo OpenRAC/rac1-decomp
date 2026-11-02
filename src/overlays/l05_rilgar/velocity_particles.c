@@ -6,7 +6,6 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 
-extern unsigned char *create_part(int);
 extern int func_001FA898(float);
 
 extern float IntToFloat(int);

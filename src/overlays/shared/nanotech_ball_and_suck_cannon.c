@@ -210,8 +210,6 @@ extern int nanotech_ball_collection_second_particle_color SDATA(nanotech_ball_co
 extern float nanotech_spark_size_a SDATA(nanotech_spark_size_a);
 extern float nanotech_spark_size_b SDATA(nanotech_spark_size_b);
 
-extern void FastVecScale(void *, void *, float);
-
 extern void build_look_at_matrix_v(void *, void *, float, void *) __asm__("func_002156E0");
 
 extern void spawn_moving_hero_relative_alpha_fade_particle(void *, void *, int, int, int, int, float);
@@ -264,15 +262,13 @@ extern s32 nanotech_ball_collection_particle_byte_source_index
 extern f32 nanotech_ring_spin_speeds SDATA(nanotech_ring_spin_speeds);
 extern f32 nanotech_ring_sizes SDATA(nanotech_ring_sizes);
 extern f32 nanotech_ring_heights SDATA(nanotech_ring_heights);
-void FastVecSub(void *, void *, void *);
+
 void vec_scale_to_length(void *, void *, f32);
-void FastVecAdd(void *, void *, void *);
-s32 FastDecTimer(void *);
-s32 scale_ticks(s32);
+
 f32 IntToFloat(s32);
 s32 truncate_float_to_s32(f32);
 f32 FastAbsF(f32);
-s32 FastTweenColor(s32, s32, f32);
+
 u8 *PartType59Spawn(void *, s32, u8, s32, s32, s32, s32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002d7f88.c, FUN_L00_002d8510. */
@@ -992,9 +988,6 @@ typedef struct {
     int a[16];
 } V __attribute__((aligned(16)));
 
-extern void copy_matrix_rotation(void *, void *);
-extern void matrix_copy_rows(void *, void *);
-extern void moby_anim_sphere_lerp(void *);
 /* Sets b's rotation to a's rotation combined with Euler offset c. */
 void compose_moby_rotation_with_euler_offset(char *a, char *b, void *c) {
     V t0, t1, t2;
@@ -1356,7 +1349,6 @@ extern int Moby_PlaySound(int, int, int);
 extern void stop_suck_cannon_suction_effect(int);
 extern void update_suck_cannon_suction(u8 *, void *);
 extern void HeroEnterMoveState(int, int);
-extern void matrix_copy_rows(void *, void *);
 
 extern int coll_line(void *, void *, int, int, int);
 extern void func_L00_001EE2E0(int, int, float, float, int, int, int, float, int);
@@ -1372,7 +1364,6 @@ typedef struct {
 extern AimHeight40 *get_aim40(void *) __asm__("func_L00_0025D390");
 extern float vec_distance_xy(void *, void *);
 
-extern float FastArcSin(float);
 extern void compose_moby_rotation_with_euler_offset(char *, char *, void *);
 
 /* Update the Suck Cannon's suction, aiming and firing state, stored mobys,
@@ -1739,7 +1730,7 @@ char *get_moby_suck_cannon_record(char *p) {
 extern u8 suck_cannon_no_record_msg[];
 void STUB_printf(void *);
 u8 *func_L00_002DCD40_DCDA8(u8 *) __asm__("func_L00_002DCD40");
-s32 scale_ticks(s32);
+
 void MobyBlendAnimation(void *, s32, s32, s32);
 f32 vec_distance_xy(void *, void *);
 
@@ -2261,7 +2252,7 @@ extern void copy_matrix_rotation_r(void *, void *) __asm__("func_001FA460");
 extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
 
 extern void quat_nlerp_r(void *, void *, void *, float) __asm__("func_001FA5C8");
-extern void func_001FA6C0(void *, void *);
+
 extern void matrix_copy_rows_r(void *, void *) __asm__("func_001FA480");
 extern void Moby_GetJointWorldPos_r(void *, int, void *) __asm__("func_L00_00250800");
 extern float vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");

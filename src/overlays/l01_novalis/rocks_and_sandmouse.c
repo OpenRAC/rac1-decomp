@@ -2150,7 +2150,6 @@ char *SpawnDebrisMoby(char *src, void *dir, float scale) {
     return m;
 }
 
-extern void FastVecScale(void *, void *, float);
 extern u128_D568 fx_prev_pos MACRO_ADDR;
 extern void cutscene_set_camera_target(struct Moby *);
 extern void Moby_GetJointWorldPos(struct Moby *, int, void *);
@@ -2353,8 +2352,6 @@ void tall_shroom_update(char *moby) {
 }
 
 extern void vec_scale_to_length(void *, void *, float);
-
-extern void FastVecScale(void *, void *, float);
 
 extern float novalis_env_map_scroll_u MACRO_ADDR;
 extern float novalis_env_map_scroll_v MACRO_ADDR;

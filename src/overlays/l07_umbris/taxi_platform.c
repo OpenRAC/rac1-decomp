@@ -136,8 +136,6 @@ extern int Moby_PlaySound(int, int, int);
 
 extern float IntToFloat(int);
 
-extern void FastVecScale(void *, void *, float);
-
 extern void update_entity_matrix(void *, void *, void *, void *);
 
 extern float g_frame_time MACRO_ADDR;
@@ -2496,7 +2494,6 @@ void select_sharkigator_navigation_heading(struct Moby *moby, struct WalkerData 
 }
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern int move_moby_with_collision_integer_radius(int a, int b, int g, int e, float c, float d);
-extern void FastVecScale(void *, void *, float);
 
 /* Step a moby's velocity toward a target: gravity when above a height, then ease and clamp. */
 void advance_sharkigator_swim_movement(char *a, char *b, float f12, float f13, float f14) {

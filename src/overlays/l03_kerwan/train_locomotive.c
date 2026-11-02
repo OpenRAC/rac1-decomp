@@ -947,8 +947,6 @@ void metropolis_train_carriage_update(char *moby) {
 }
 typedef int u128 __attribute__((mode(TI)));
 
-extern void FastVecScale(void *, void *, float);
-
 /* Builds two scaled offset vectors from the moby's matrix and adds them to out. */
 void add_moby_rotation_based_offsets(char *moby, float *out) {
     float v[4];

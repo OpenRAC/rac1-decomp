@@ -324,7 +324,6 @@ extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern void FastVecScale(void *, void *, float);
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 extern int rilgar_frame_count SDATA(rilgar_frame_count);
 extern int hoverboard_race_finished MACRO_ADDR;
@@ -469,8 +468,6 @@ void hoverboard_update(unsigned char *moby) {
 extern int fast_dec_timer(int *);
 extern int get_first_moby_in_group(int *, int, int, int);
 extern int get_next_moby_in_group(int *, int, int, int);
-
-extern void set_identity_matrix(void *);
 
 struct AddMobyFramesForGroupProximityVars {
     u8 pad_00[0x44];
@@ -843,10 +840,6 @@ void initialize_moby_launch_motion(Moby *m, int b, void *v1, void *v2, int a) {
 }
 extern void Moby_GetJointWorldPos(void *, int, void *);
 
-extern void matrix_copy_rows(void *, void *);
-
-extern void FastVecScale(void *, void *, float);
-
 extern float IntToFloat(int);
 extern int coll_sphere(float, void *, int, void *);
 
@@ -1125,7 +1118,7 @@ extern f32 IntToFloat(s32);
 extern s32 truncate_float_to_s32(f32);
 extern void AddDrawCallback_r(void (*)(char *), struct Moby *) __asm__("func_001F49B0");
 extern char *MobyGetHitMessage(struct Moby *, s32, s32);
-extern void FastVecScale(void *, void *, f32);
+
 extern void Moby_PlaySound(s32, s32, struct Moby *);
 
 extern struct Moby *SpawnBreakFragment(f32, struct Moby *, s32, void *, void *, s32, s32, void *, void *, void *);
@@ -1270,7 +1263,7 @@ extern float rilgar_glow_quad_corners[4][4];
 extern f32 rilgar_glow_tip_offset SDATA(rilgar_glow_tip_offset);
 extern float rilgar_glow_camera_pull SDATA(rilgar_glow_camera_pull);
 u64 GetEffectTex(s32);
-extern void FastVecScale(void *, void *, float);
+
 extern void vec_scale_to_length(void *, void *, float);
 
 extern void draw_world_quad(void *, void *, s32);
@@ -1607,8 +1600,6 @@ void func_L05_0032ABF0_r(Camera_32ABF0 *cam) {
     func_L05_0032AA50_32ABF0((char *)cam);
     cam->unk7E = 0;
 }
-
-extern float FastArcSin(float x);
 
 extern f32 Cam_InterpValues_r(f32 *vel, f32 from, f32 to, f32 stiffness, f32 damping, f32 max) __asm__("func_001EC120");
 

@@ -2,6 +2,7 @@
 #include "callees.h"
 #include "structs/misc.h"
 #include "core/kernel/kprintf.h"
+#include "asm_functions/executable.h"
 
 /*
  * core_text object 0x12CC90-0x12D868. Boundaries are retail's linker fill
@@ -15,9 +16,6 @@
  * (sce_scf_get_local_time_from_rtc). Its day/hour helpers end in conditional tail calls
  * (scf_add_hour, scf_sub_hour), which only 2.9-ee emits.
  */
-
-extern int disable_interrupts(void);
-extern void enable_interrupts(void);
 
 extern void scePrintf();
 

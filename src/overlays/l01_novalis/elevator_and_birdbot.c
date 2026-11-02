@@ -2113,7 +2113,6 @@ void water_current_update(Moby *self) {
     }
 }
 
-extern float FastNormalizeAngle(float x);
 extern char *novalis_mobys MACRO_ADDR;
 
 // Crank rotator update: state 0 initialises, state 1 drives the linked moby.
@@ -2547,7 +2546,6 @@ typedef struct {
 } BoundGroup;
 extern s32 novalis_scroll_bounds_initialized SDATA(novalis_scroll_bounds_initialized);
 extern BoundGroup novalis_bounded_scroll_layers_r[] __asm__("D_L01_001E3660");
-extern void FastVecScale(void *, void *, float);
 
 extern f32 IntToFloat(s32);
 extern void draw_two_scroll_layers(void *);

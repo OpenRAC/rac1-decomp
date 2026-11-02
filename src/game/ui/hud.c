@@ -476,12 +476,10 @@ typedef struct {
 extern Cfg13 message_text_buffer NOT_SDA;
 extern Cfg13 message_too_long_label NOT_SDA;
 
-extern void libc_strcpy(Cfg13 *, void *);
-
 /* The struct copy is a plain assignment: at alignment 1 this compiler
    expands the 0x13 bytes as unaligned ldl/ldr + sdl/sdr pairs with the
    trailing three bytes done singly, which is exactly retail's shape. */
-extern int func_00116810(void *);
+
 /* Copies text into the shared message buffer, preloading the too-long label when under 80 chars. */
 void copy_text_to_shared_buffer(void *arg0) {
     if ((unsigned int)libc_strlen(arg0) < 0x50) {
@@ -518,7 +516,7 @@ extern int hud_msg_alpha MACRO_ADDR;
 extern int hud_msg_y MACRO_ADDR;
 extern char hud_msg_text1[];
 extern unsigned char hud_msg_text2[];
-extern int scale_game_frame_count(int);
+
 extern void draw_framed_text(int, int, int, int);
 
 /* Per-frame HUD update: unless the arena's +0x30 skip flag (cleared
@@ -747,7 +745,6 @@ u64 func_00200248_r(s32 frame_id) {
 
 extern int *g_render_packet_cursor MACRO_ADDR;
 extern int g_screen_extent[];
-extern long GetFrameTex(int);
 
 /* Draw HUD texture tex as a sprite at (x, y), w x h, with alpha: a
    1-tag + 5-quadword PACKED GIF packet as append_power_of_two_textured_screen_sprite's, with the
@@ -1059,7 +1056,7 @@ void draw_hud_sprite_rect(int tex, int x0, int y0, int x1, int y1, int u0, int v
 
 extern int *g_render_packet_cursor MACRO_ADDR;
 extern void sceGsSetDefLoadImage(void *, int, int, int, int, int, int, int);
-extern void flush_cache(int);
+
 extern void sceGsExecLoadImage(void *, void *);
 
 /* Hud_sendTexture(char *tex, int x, int y, int levelShift, int sizeShift,

@@ -169,7 +169,6 @@ extern float CubicInterpolate(float, float, float, float, float);
 
 extern void draw_world_quad(void *, void *, int);
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecScale(void *, void *, float);
 
 /* Draws a two-layer textured ribbon along the points in path. */
 void draw_ribbon_effect_path(void *m, void *path, int outer_alpha, int inner_alpha, int point_count) {
@@ -660,7 +659,6 @@ extern float D_L14_00161D08_EC7E8 SDATA(D_L14_00161D08);
 extern float D_L14_00161D0C_EC7E8 SDATA(D_L14_00161D0C);
 
 extern float randf_sym(float, float);
-extern void FastVecScale(void *, void *, float);
 
 extern int truncate_float_to_s32(float);
 
@@ -831,7 +829,6 @@ extern unsigned long GetEffectTex_r(s32) __asm__("func_001F4868");
 extern void VU1_addGSregister(s32, s64);
 
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecScale(void *, void *, float);
 
 extern void draw_world_quad_r(void *, int, int) __asm__("func_L00_001FD1D8");
 
@@ -1412,9 +1409,7 @@ typedef struct {
 extern int GetEffectTex(int);
 extern float IntToFloat(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern void FastMemCopy(void *, void *, int);
 
-extern void FastVecScale(void *, void *, float);
 extern void draw_world_quad(void *, void *, int);
 extern float CubicInterpolate(float, float, float, float, float);
 /* KEPT: signed and unsigned give lh and lhu. */
@@ -2891,7 +2886,6 @@ extern f32 enemy_fighter_exhaust_base_row2_offset_gp SDATA(enemy_fighter_exhaust
 extern f32 enemy_fighter_exhaust_ring_row0_offset_gp SDATA(enemy_fighter_exhaust_ring_row0_offset_gp);
 extern s32 enemy_fighter_exhaust_paired_puff_color_gp SDATA(enemy_fighter_exhaust_paired_puff_color_gp);
 extern char oltanis_zero_vector[] MACRO_ADDR;
-extern void FastVecScale(void *, void *, f32);
 
 extern L14Puff_2FD870 *PartType23Spawn_r(void *, f32, f32, f32, int, void *, f32, int) __asm__("func_L00_0026DEA0");
 
@@ -3316,7 +3310,6 @@ typedef struct {
     u8 padC[0x14];
     L14PuffTail tail; /* 0x20 */
 } L14Puff;
-extern void FastVecScale(void *, void *, f32);
 
 extern L14Puff *PartType23Spawn(void *, f32, f32, f32, int, void *, f32, int);
 extern f32 fighter921_exhaust_forward_offset SDATA(fighter921_exhaust_forward_offset);

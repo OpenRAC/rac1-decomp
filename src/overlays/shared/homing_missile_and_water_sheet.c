@@ -312,7 +312,6 @@ extern float g_frame_time_e __asm__("D_0015EE6C") MACRO_ADDR;
 
 extern void rand_vec(float *, float, float);
 
-extern void FastVecScale(void *, void *, float);
 extern char *PartType27Spawn(char *pos, char *vel, int c, int d, float f);
 extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
 extern int coll_line(void *, void *, int, void *, void *);

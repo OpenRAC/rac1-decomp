@@ -8,8 +8,6 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 
-extern unsigned char *create_part(int);
-
 extern int func_001FA898(float);
 
 extern unsigned char *umbris_part_type65_textures;
@@ -35,8 +33,6 @@ void spawn_white_particle_with_payload(void *pos, void *pos2) {
         qcopy(f, pos2);
     }
 }
-
-extern void FastVecScale(void *, void *, float);
 
 typedef int u128 __attribute__((mode(TI)));
 

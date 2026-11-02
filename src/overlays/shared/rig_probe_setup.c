@@ -7,10 +7,6 @@
 LINKER_REMNANT("asm/overlays", func_L01_002649C8);
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 typedef f32 sceVu0FVECTOR[4] __attribute__((aligned(16)));
-void FastVecAdd(void *out, void *a, void *b);
-void FastVecSub(void *out, void *a, void *b);
-void FastVecScale(void *out, void *a, f32 scale);
-f32 FastVecLength(void *a);
 
 extern void scale_vector(float scale, void *out, void *joint);
 extern void moby_joints_to_scratchpad(void *moby, short joint, int flags);

@@ -1,12 +1,12 @@
 #include "common.h"
 #include "callees.h"
 #include "structs/misc.h"
+#include "asm_functions/executable.h"
 
 /*
  * core_text object 0x11DBE8-0x11DD68. Boundaries are retail's linker fill
  * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
  */
-
 
 ASM_FUNC("asm/handwritten/core_text", func_0011DBE8);
 
@@ -44,7 +44,6 @@ int PatchIsNeeded(void) {
 extern int osd_syscall_patch_table[];
 extern char osd_kernel_patch_code[];
 extern int PatchIsNeeded(void);
-extern void flush_cache(int);
 
 typedef struct {
     int num;

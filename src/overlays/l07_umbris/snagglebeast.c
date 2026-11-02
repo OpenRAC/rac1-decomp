@@ -500,7 +500,6 @@ extern void clamp_vec_length(void *, void *, float);
 extern float fast_atan2(float, float);
 extern void MobySpringTurn(char *moby, float target, float *vel, float k, float d, float max);
 extern int probe_vertical_ground_collision(void *p, int x, int y, float f, float g);
-extern void FastVecScale(void *, void *, float);
 
 /* steers a moby toward a target, then handles the pickup contact */
 int update_snagglebeast_chase_movement(char *m, char *a, void *p6, float *p7, float thr) {
@@ -2063,8 +2062,6 @@ typedef struct {
     char padC[0x14];
     RopeTail tail;
 } RopePuff;
-
-extern float FastArcSin(float);
 
 extern void lerp_vector(void *, void *, void *, float);
 extern float select_segment_point_near_sphere_surface(void *, void *, void *, void *, void *, float);

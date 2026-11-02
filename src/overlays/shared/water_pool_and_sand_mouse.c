@@ -271,9 +271,6 @@ void build_height_grid_positions(float *pos) {
 }
 extern f32 pool_light[];
 
-extern void FastVecScale(void *, void *, f32);
-
-extern u32 is_vector_outside_clip(void *);
 extern void ripple_emit_sub_block(s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002b8cb0. */
@@ -386,8 +383,6 @@ union PacketCursor {
 extern union PacketCursor l01_packet MACRO_ADDR;
 
 typedef int u128_2BA150 __attribute__((mode(TI)));
-extern void set_scale_matrix(float *, float);
-extern void FastVecScale(void *, void *, float);
 
 extern void sce_vu0_mul_matrix(void *, void *, void *);
 extern void AA_BlurPass(void);
@@ -638,7 +633,6 @@ extern float vec_distance_xy(void *, void *);
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound_r(int, int, char *) __asm__("func_0022ED80");
 extern float IntToFloat(int);
-extern void FastVecScale(void *, void *, float);
 
 extern void update_entity_matrix(char *, void *, void *, void *);
 
@@ -821,7 +815,6 @@ void novalis_elevator_update(unsigned char *moby) {
 LINKER_REMNANT("asm/overlays", func_L01_002C05B8);
 extern float vec_length_xy(void *);
 
-extern void FastVecScale(void *, void *, float);
 extern void spawn_two_point_effect_particle(char *, char *);
 
 extern char *PartType21Spawn(void *, void *, int, int, int, int, float);

@@ -342,8 +342,6 @@ extern void PartType04Spawn(void *, void *, int, int, int, int, int, int);
 extern int coll_line(void *, void *, int, void *, int);
 extern int Moby_PlaySound(int, int, void *);
 
-extern void FastVecScale(void *, void *, float);
-
 extern int fast_dec_timer(void *);
 extern void RerollEffectCounter(void *, short *);
 extern void StepColorFade(void *, void *);
@@ -1452,7 +1450,6 @@ extern float batalia_line_puff_rise_speed_max SDATA(batalia_line_puff_rise_speed
 extern float batalia_line_puff_size SDATA(batalia_line_puff_size);
 extern u16 batalia_line_puff_life_frames;
 
-extern void FastVecScale(void *, void *, f32);
 extern f32 IntToFloat(s32);
 extern float randf_sym(float, float);
 extern unsigned char *PartType23Spawn(void *, float, float, float, int, void *, float, int);
@@ -3030,7 +3027,6 @@ void update_path_following_moby(char *m) {
 }
 typedef int u128 __attribute__((mode(TI)));
 
-extern void FastVecScale(void *, void *, float);
 extern void rand_vec(float *, float, float);
 
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");

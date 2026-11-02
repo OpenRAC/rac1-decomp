@@ -738,7 +738,6 @@ void gate_update(Moby *m) {
 }
 extern int fast_dec_timer(int *arg0);
 
-extern void FastVecScale(void *, void *, float);
 extern void *spawn_splitting_effect_particle_with_collision_response_and_fade(char *a, char *b, unsigned char c, int d);
 
 extern int Sound_IsPlaying(void *, int);
@@ -1941,7 +1940,7 @@ extern short data_processor_color_end;
 #define D_L10_00161D14_DBA50 (*(s32 *)&D_L10_00161D14)
 #define D_L10_00161D18_DBA50 (*(f32 *)&D_L10_00161D18)
 #define func_001F9D10_DBA50 ((f32 (*)(void *, void *))func_001F9D10)
-extern void set_scale_matrix(void *, f32);
+
 #define func_001FA1C0_DBA50 func_001FA1C0
 #define func_001FA218_DBA50 ((void (*)(void *, void *))func_001FA218)
 #define func_001FA540_DBA50 ((void (*)(void *, void *, void *))func_001FA540)

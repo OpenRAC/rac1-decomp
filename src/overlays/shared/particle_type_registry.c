@@ -236,7 +236,7 @@ void update_falling_effect_particle(FallingParticle *p) {
     vel->f[2] -= (g_frame_time_sq) * 9.8f;
     vel->f[3] = ground + particle_clearance.value;
 }
-extern void *create_part(int);
+
 extern int func_001FA898(float);
 
 extern unsigned char *part_type01_textures;

@@ -24,8 +24,6 @@
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-extern void FastMemCopy(void *, void *, int);
-
 /* Resets the texture DMA state words to 1. */
 void clear_dma_queue_entry(void) {
     int *p = draw_config;
@@ -181,7 +179,7 @@ extern float vec_length_xy(void *);
 extern float IntToFloat(int);
 extern void UpdateViewContext(void);
 extern void UpdateFog(void);
-extern int libc_strlen(char *);
+
 extern int sceOpen(char *, int);
 
 extern int sceClose(int);
@@ -663,9 +661,6 @@ void update_render_debug_menu(void) {
 
 LINKER_REMNANT("asm/remnants/text", func_001F2410);
 
-extern void set_identity_matrix(void *);
-extern void FastVecScale(void *, void *, float);
-
 extern float screen_projection_focal;
 
 /* The camera block as a struct: all four accesses then share one base
@@ -714,8 +709,6 @@ extern int D_0015F6FC MACRO_ADDR;
 extern int pal_mode MACRO_ADDR;
 extern int g_gs_texture_allocation_start MACRO_ADDR;
 extern int *g_render_packet_cursor MACRO_ADDR;
-
-extern void InitDma(void);
 
 extern void SetPalMode(void);
 
@@ -942,8 +935,7 @@ int GetOcclGridFromPair(int a0, int a1, int a2, int a3, int a4, int a5, float t)
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float IntToFloat(int);
 extern int GetOcclGridFromPair(int, int, int, int, int, int, float);
-extern void fast_mem_or16(void *, void *, void *, int);
-extern void FastMemSet();
+
 extern char occl_visibility[];
 extern char occl_visibility_merged[];
 extern int occl_invalid_grid MACRO_ADDR;
@@ -1145,7 +1137,6 @@ extern struct {
 extern f32 fast_arc_tan(f32, f32);
 
 #define fast_cos func_001F9F90
-extern void copy_memory_aligned(void *, void *, s32);
 
 #define set_tfrag_dists func_00234380
 
@@ -1432,7 +1423,7 @@ extern int display_buffer_address MACRO_ADDR;
 extern int draw_buffer_address MACRO_ADDR;
 extern int depth_buffer_address MACRO_ADDR;
 extern int g_gs_texture_allocation_base MACRO_ADDR;
-extern void flush_cache(int);
+
 extern int wait_for_graphics_pipeline_idle(int, int);
 extern void SetupFS_AA_buffer(int, int, int, int, int, int);
 
@@ -1647,8 +1638,7 @@ extern void DrawMobys(void);
 extern void dispatch_callback_list_1(void);
 extern void draw_lens_flare(void);
 extern void draw_light_quads(void);
-extern void flush_cache(int);
-extern void PartProc(void);
+
 extern void dispatch_callback_list_4(void);
 extern void append_billboard_batch(void);
 extern void render_queued_rotated_sprites(void);
@@ -1662,13 +1652,13 @@ extern void emit_rgba_draw_packet(int, int, int, int);
 extern void draw_screen_effect(void);
 extern void VU0_loadMicroProgram(void *);
 extern void VU1_syncChain(int mask);
-extern void LightTfrags(void *);
+
 extern void PatchTfragGifs(void);
 extern void register_entity_render_resources(void);
 extern void copy_render_buffer_pair(void);
-extern void LightTies(void *);
+
 extern void PatchTieGifs(void);
-extern void LightShrubs(void *);
+
 extern void patch_shrub_gifs(void);
 extern void PatchMobyGifs(void);
 
@@ -1951,7 +1941,6 @@ __asm__(".section .text\n\tnop\n");
 
 extern int *gif_paging_tail_tag MACRO_ADDR;
 extern int gif_paging_texture_flush_enabled;
-extern void flush_pending_texture_uploads(void);
 
 /* DoGifPaging: pushes two 4-word GIF tags (0x20000000 in the first word)
    onto the g_render_packet_cursor packet, gif_paging_tail_tag marking where it started and
@@ -2148,8 +2137,6 @@ extern LightRec effect_quad_entries[];
 extern int GetEffectTex(int);
 /* GetEffectTex as it really returns: the 64-bit TEX0 (for the callers that keep it whole). */
 extern long GetEffectTex64(int) __asm__("func_001F4868");
-extern void fast_vec_normalize(void *dst, void *src, float len);
-extern void draw_world_quad_packet(void *, int, int);
 
 /* Builds a 4-row matrix per light in effect_quad_entries (count effect_quad_count):
    each row starts as the light's position and is pushed along the
@@ -2703,8 +2690,6 @@ union PacketCursor {
 };
 extern union PacketCursor g_render_packet_cursor_r __asm__("D_00161000") MACRO_ADDR;
 
-extern void FastVecScale(void *, void *, f32);
-
 extern s32 truncate_float_to_s32(f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/append_rotated_sprite_quad.c, append_rotated_sprite_quad. */
@@ -3007,7 +2992,7 @@ void func_001F6668_r(s32 x, s32 y, u64 color, u8 *text, s32 character_limit, s64
     } while (*cursor != 0);
 }
 
-extern void FontPrint(void *, void *, void *, void *, void *, long, unsigned char *);
+extern void FontPrint_v(void *, void *, void *, void *, void *, long, unsigned char *) __asm__("func_001F6668");
 
 /* Same shape as font_print_window_regular/font_print_window_small below, one argument wider:
    mode 1 vs 2, normal_font_metrics vs small_font_metrics. Seven arguments, so EABI puts
@@ -3016,14 +3001,14 @@ extern void FontPrint(void *, void *, void *, void *, void *, long, unsigned cha
 void FontPrintLarge(void *a, void *b, void *c, void *d, void *e) {
     long mode = GetEffectTex64(1);
 
-    FontPrint(a, b, c, d, e, mode, normal_font_metrics);
+    FontPrint_v(a, b, c, d, e, mode, normal_font_metrics);
 }
 
 /* FontPrintSmall */
 void FontPrintSmall(void *a, void *b, void *c, void *d, void *e) {
     long mode = GetEffectTex64(2);
 
-    FontPrint(a, b, c, d, e, mode, small_font_metrics);
+    FontPrint_v(a, b, c, d, e, mode, small_font_metrics);
 }
 
 LINKER_REMNANT("asm/remnants/text", func_001F69E8);
@@ -3109,7 +3094,7 @@ void font_print_right(char *a, void *b, void *c, unsigned char *d, int e) {
     char *p = a - measure_text_width_regular(d, e);
     long mode = GetEffectTex64(1);
 
-    FontPrint(p, b, c, d, (void *)e, mode, normal_font_metrics);
+    FontPrint_v(p, b, c, d, (void *)e, mode, normal_font_metrics);
 }
 
 /* Right-aligned FontPrint with the second font. */
@@ -3117,7 +3102,7 @@ void font_print_right_small(char *a, void *b, void *c, unsigned char *d, int e) 
     char *p = a - measure_text_width_small(d, e);
     long mode = GetEffectTex64(2);
 
-    FontPrint(p, b, c, d, (void *)e, mode, small_font_metrics);
+    FontPrint_v(p, b, c, d, (void *)e, mode, small_font_metrics);
 }
 
 /* Right-aligned FontPrint with the third font. */
@@ -3125,7 +3110,7 @@ void font_print_right_large(char *a, void *b, void *c, unsigned char *d, int e) 
     char *p = a - measure_text_width_large(d, e);
     long mode = GetEffectTex64(3);
 
-    FontPrint(p, b, c, d, (void *)e, mode, large_font_metrics);
+    FontPrint_v(p, b, c, d, (void *)e, mode, large_font_metrics);
 }
 
 /* FontPrintCenter/FontPrintCenterSmall/FontPrintCenterLarge are the font_print_right triple
@@ -3137,7 +3122,7 @@ int FontPrintCenter(int a, int b, int c, int d, int e) {
     int p = a - (measure_text_width_regular((unsigned char *)d, e) >> 1);
     long mode = GetEffectTex64(1);
 
-    FontPrint((void *)p, (void *)b, (void *)c, (void *)d, (void *)e, mode, normal_font_metrics);
+    FontPrint_v((void *)p, (void *)b, (void *)c, (void *)d, (void *)e, mode, normal_font_metrics);
     return p;
 }
 
@@ -3146,7 +3131,7 @@ int FontPrintCenterSmall(int a, int b, int c, int d, int e) {
     int p = a - (measure_text_width_small((unsigned char *)d, e) >> 1);
     long mode = GetEffectTex64(2);
 
-    FontPrint((void *)p, (void *)b, (void *)c, (void *)d, (void *)e, mode, small_font_metrics);
+    FontPrint_v((void *)p, (void *)b, (void *)c, (void *)d, (void *)e, mode, small_font_metrics);
     return p;
 }
 
@@ -3155,7 +3140,7 @@ int FontPrintCenterLarge(int a, int b, int c, int d, int e) {
     int p = a - (measure_text_width_large((unsigned char *)d, e) >> 1);
     long mode = GetEffectTex64(3);
 
-    FontPrint((void *)p, (void *)b, (void *)c, (void *)d, (void *)e, mode, large_font_metrics);
+    FontPrint_v((void *)p, (void *)b, (void *)c, (void *)d, (void *)e, mode, large_font_metrics);
     return p;
 }
 
@@ -3279,11 +3264,11 @@ void FontPrintWindow(void *win_p, long a1, void *text_p, int len, long a4, unsig
                 process_bgm_display_text_event(font_palette_colors[colr_arr[k]], text + start[k], fx, cnt, a4,
                                                (struct Glyph *)glyphs, y + dw->y_sub * 0.0625f, 1.0f);
             } else if (dw->flags & 1) {
-                FontPrint((void *)(dw->x_anchor - (w >> 1)), (void *)y, (void *)font_palette_colors[colr_arr[k]],
-                          text + start[k], (void *)cnt, a4, glyphs);
+                FontPrint_v((void *)(dw->x_anchor - (w >> 1)), (void *)y, (void *)font_palette_colors[colr_arr[k]],
+                            text + start[k], (void *)cnt, a4, glyphs);
             } else {
-                FontPrint((void *)(int)dw->x_anchor, (void *)y, (void *)font_palette_colors[colr_arr[k]],
-                          text + start[k], (void *)cnt, a4, glyphs);
+                FontPrint_v((void *)(int)dw->x_anchor, (void *)y, (void *)font_palette_colors[colr_arr[k]],
+                            text + start[k], (void *)cnt, a4, glyphs);
             }
         }
     }
@@ -3382,7 +3367,7 @@ extern short font_depth_bias; /* SDA, gp -0x78B8 */
 extern unsigned short font_vu_program_tag NOT_SDA;
 extern char font_vu_program[];
 extern char camera_position[];
-extern void set_scale_matrix(float *, float);
+
 extern void vu1_gs_regs_font(void);
 
 /* Build the VU1 setup packet: load microprogram 7 if another is
@@ -3493,9 +3478,8 @@ void begin_draw_frame(void) {
    (addiu, not daddiu). */
 extern int font_quad_count MACRO_ADDR;
 extern short font_depth_bias; /* SDA, gp -0x78B8 */
-extern void prepare_font_quads(void);
+
 extern void font_queue_vu_state(void);
-extern void draw_font_quad_packets(void);
 
 /* Optional extra draw pass, enabled by font_quad_count. */
 void draw_debug_font(void) {

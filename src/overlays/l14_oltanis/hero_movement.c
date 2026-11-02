@@ -128,11 +128,7 @@ extern s32 hero_hit_count MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
 extern u8 hero_velocity[];
 void release_and_clear_hero_voice_slots(void);
-void FastVecSub(void *, void *, void *);
-f32 FastAddRots(f32, f32);
-f32 FastCos(f32);
-f32 FastSin(f32);
-void FastVecAdd(void *, void *, void *);
+
 void Hero_TryMoveStateL14(s32, s32);
 void hero_knockback(void *, s32, f32, f32);
 
@@ -349,7 +345,6 @@ extern void ClampVectorLength(void *, float);
 extern int solve_quadratic_equation(float *, float *, float, float, float);
 extern float step_angle_toward_target(float *, int, float, float);
 extern float vec_distance_xy(void *, void *);
-extern void FastVecScale(void *, void *, float);
 
 extern float gravity_z(float *);
 extern float Spring(float *, float *, float, float, float, float);

@@ -56,7 +56,7 @@ extern void release_and_clear_hero_voice_slots(void);
 extern void RippleDisturb(int, int, int, float, float, float, float);
 
 extern void gravity_set_z(float *dst, float *src, float z);
-extern void FastMemSet(void *, int, int);
+
 extern int novalis_game_mode MACRO_ADDR;
 extern int pool_draw_tiles MACRO_ADDR;
 extern int pool_draw_count MACRO_ADDR;

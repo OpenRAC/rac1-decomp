@@ -299,7 +299,6 @@ extern char quartu_coll_hit[];
 extern float gravity_length_xy(float *v);
 extern float vec_length_xy(void *);
 
-extern void FastVecScale(void *, void *, float);
 extern int coll_line(void *, void *, int, int, int);
 
 // Steers the hero's aim vectors toward the current target and snaps momentum to it when close enough.
@@ -377,7 +376,7 @@ void adjust_hero_planar_velocity_from_probes(int arg) {
 typedef int Q __attribute__((mode(TI)));
 
 extern s32 g_current_level_index MACRO_ADDR;
-void clear_u64_value(void *);
+
 void hero_get_collision_ray_endpoints(void *, void *, s32, f32, f32);
 s32 coll_line(void *, void *, s32, s32, s32);
 s32 coll_sound_class(void);
@@ -385,13 +384,11 @@ s32 CollType(void);
 f32 resolve_camera_surface_height(void *, void *);
 s32 is_moby_in_class_range_500_to_540(s32);
 u8 *GetFlaggedPvarWord(s32);
-f32 FastVecDist(void *, void *);
+
 void sceVu0Normalize(void *, void *);
 f32 compute_gravity_relative_vector_inclination(void *);
 f32 fast_atan2(f32, f32);
-void FastVecSub(void *, void *, void *);
-f32 FastVecDot(void *, void *);
-void FastVecScale(void *, void *, f32);
+
 void vec_scale_to_length(void *, void *, f32);
 void compute_rotated_vector_angles(void *, void *);
 void transform_hero_polar_offset_to_world(void *, f32, f32, f32);
@@ -592,8 +589,6 @@ extern struct Moby *CreateMoby(s32);
 extern void moby_build_matrix(struct Moby *);
 extern void enter_hero_vehicle_mode(s32, s32, struct Moby *);
 extern f32 gravity_z(void *);
-
-extern void FastVecScale(void *, void *, f32);
 
 extern void transform_hero_local_offset_to_world(void *, f32, f32, f32);
 extern void Hero_OnKilled(void);

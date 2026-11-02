@@ -409,7 +409,7 @@ extern float g_frame_time_sq_d __asm__("D_0015EE70") MACRO_ADDR;
 extern float SteerAngleWithVelocity(float *, float, float *, float, float, float);
 
 extern int IsFrameWithinWindow(char *, float);
-extern void FastVecScale(void *, void *, float);
+
 extern float vec_length_xy(void *);
 extern float jump_speed_4318(float *a, float *b, float *out, float speed, float g);
 
@@ -1499,7 +1499,7 @@ extern short pokitaru_teleporter_ring_alpha_a, pokitaru_teleporter_ring_alpha_b,
 extern float pokitaru_teleporter_ring_height SDATA(pokitaru_teleporter_ring_height);
 extern float pokitaru_teleporter_ring_uvs[];
 extern unsigned char g_hero_field_20a5_r __asm__("D_001414F5") NOT_SDA;
-extern void copy_matrix_rotation(void *, void *);
+
 extern long GetEffectTex(int);
 
 extern void draw_world_quad(void *, void *, int);

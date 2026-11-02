@@ -29,10 +29,8 @@ typedef struct {
     Owner5F0A0 *owner;
 } Particle5F0A0;
 typedef int u128 __attribute__((mode(TI)));
-extern unsigned char *create_part(int);
-extern int func_001FA898(float);
 
-extern void FastVecScale(void *, void *, float);
+extern int func_001FA898(float);
 
 extern int quartu_owner_target_particle_life SDATA(quartu_owner_target_particle_life);
 

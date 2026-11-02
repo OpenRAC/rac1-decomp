@@ -1302,7 +1302,7 @@ char *spawn_moby_joint_attachment(char *src, int arg, int id) {
     return (char *)moby;
 }
 extern char gemlik_coll_hit_result[];
-extern void FastVecScale(void *, void *, float);
+
 extern int coll_sphere(float, void *, int, void *);
 
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,

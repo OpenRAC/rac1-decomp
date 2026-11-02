@@ -10,8 +10,6 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 
-extern void flush_cache(int);
-
 extern void wait_for_graphics_pipeline_idle(int, int);
 
 // Copies the frame buffer out in 0x4000-sized strips.

@@ -9,8 +9,6 @@
 
 typedef unsigned int Q __attribute__((mode(TI), aligned(16)));
 
-extern void set_identity_matrix(void *);
-
 typedef unsigned int Q_50B88 __attribute__((mode(TI), aligned(16)));
 extern void sce_vu0_mul_matrix(void *, void *, void *);
 

@@ -133,7 +133,6 @@ extern f32 func_L00_002342F8(void *);
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 
-extern void func_001F9C30(void *, void *, f32);
 extern f32 FastVecLength_r(void *) __asm__("func_001F9CB8");
 extern void update_hero_planar_distance_spring_motion_r(void) __asm__("func_L00_002222F0");
 extern void transform_hero_local_offset_to_world_r(void *, f32, f32, f32) __asm__("func_L00_00233EE0");
@@ -589,7 +588,7 @@ extern void help_queue_add(int, int, int);
 
 extern void gravity_set_z(float *dst, float *src, float z);
 extern void spawn_hero_radial_particle_burst(void);
-extern void FastMemSet(void *, int, int);
+
 extern int cinematic_mode MACRO_ADDR;
 extern int water_patches MACRO_ADDR;
 extern int water_patch_count MACRO_ADDR;

@@ -107,7 +107,6 @@ typedef struct {
     short x5a;
 } S_171b;
 
-extern void FastMemSet(void *, int, int);
 extern void calculate_dma_transfer_address(void);
 extern int HeroEnterMoveState(int, int);
 
@@ -338,9 +337,8 @@ extern V_28efc8 variant_effect_quad_offsets_2[];
 extern float variant_effect_quad_uvs[];
 extern V_28efc8 variant_effect_quad_corners[];
 extern int variant_effect_quad_counts SDATA(variant_effect_quad_counts);
-void FastVecScale(float, void *, void *);
-void FastVecAdd(void *, void *, void *);
-void matrix_mul_vec3(void *, void *, void *);
+void FastVecScale_v(float, void *, void *) __asm__("func_001F9C30");
+
 long GetEffectTex(int);
 int random_integer_below(int);
 float IntToFloat(int);
@@ -379,7 +377,7 @@ void build_variant_effect_quads(unsigned char *quad_source) {
         quad.texture_coordinates[j][0] = ((float (*)[2])variant_effect_quad_uvs)[j][0];
         quad.texture_coordinates[j][1] = ((float (*)[2])variant_effect_quad_uvs)[j][1];
     }
-    FastVecScale(0.0009765625f, &quad_source_translation, quad_source);
+    FastVecScale_v(0.0009765625f, &quad_source_translation, quad_source);
     for (i = 0; i < ((&variant_effect_quad_counts))[level_render_state_r2.h26]; i++) {
         int quad_alpha = quad_source[0xBC];
         u32 col;
@@ -392,7 +390,7 @@ void build_variant_effect_quads(unsigned char *quad_source) {
             col = (quad_alpha << 24) | 0x308000;
         for (k = 0; k < 4; k++) {
             quad.colors[k] = col;
-            FastVecScale(quad_scale, &quad.positions[k], &variant_effect_quad_corners[k]);
+            FastVecScale_v(quad_scale, &quad.positions[k], &variant_effect_quad_corners[k]);
             FastVecAdd(&quad.positions[k], &quad.positions[k], &selected_quad_offsets[i]);
             matrix_mul_vec3(&quad.positions[k], &quad.positions[k], level_render_state_r2.p0 + 0xC0);
             FastVecAdd(&quad.positions[k], &quad.positions[k], &quad_source_translation);

@@ -694,7 +694,6 @@ extern u32 quartu_hit_effect_colors[3];
 extern unsigned char gemlik_available[];
 
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecScale(void *, void *, float);
 
 extern void add_vectors(void *, void *, void *);
 
@@ -1180,7 +1179,6 @@ typedef struct {
 extern float vec_distance_xy(void *, void *);
 
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecScale(void *, void *, float);
 
 extern float fast_atan2(float, float);
 
@@ -2929,7 +2927,6 @@ extern int GetEffectTex(int);
 extern void VU1_addGSregister(int, long);
 extern void get_moby_color(void *, void *, void *, void *);
 extern float fast_fmod(float, float);
-extern float FastNormalizeAngle(float x);
 
 extern void draw_env_overlay_mesh(int, int, int, void *, int);
 extern int quartu_frame_count MACRO_ADDR;
@@ -3171,7 +3168,7 @@ extern int quartu_cutscene_msg_color SDATA(quartu_cutscene_msg_color);
 extern int quartu_cutscene_msg_shadow_color SDATA(quartu_cutscene_msg_shadow_color);
 extern int msg_string(int);
 extern int sprintf(char *str, const char *fmt, ...);
-extern int libc_strlen(char *);
+
 extern void print_text_with_texture_3(void *a, void *b, void *c, void *d, void *e);
 
 // Draws the score/progress readout for the current stage's step ranges, clamped to the current value.

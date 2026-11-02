@@ -166,7 +166,7 @@ typedef struct Frame {
 
 extern void UpdateViewContext_r(void) __asm__("func_001F3140");
 extern void BuildViewMatrices_r(void) __asm__("func_001F2608");
-extern void func_001FA1C0(float *, float);
+
 extern void FastVecScale_r(void *, void *, float) __asm__("func_001F9C30");
 extern void VU1_addDataRef_r(void *, int) __asm__("func_00234B48");
 extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
@@ -398,8 +398,6 @@ typedef struct {
 } H2d8910;
 extern H2d8910 aridia_player_camera_r __asm__("D_L02_00167300");
 extern char *aridia_scene_points MACRO_ADDR;
-
-extern void FastVecScale(void *, void *, float);
 
 /* Spawn point for the moby: its slot's stored position and rotation, or, with no slot, a point beside it on the side
    facing the hero.
@@ -1936,7 +1934,6 @@ extern int PlayBankSound(int, int, int);
 extern void ShowBanner(int, int);
 extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
 extern void DeleteMoby(void *);
-extern void FastVecScale(void *, void *, float);
 
 extern float frame_scale MACRO_ADDR;
 extern float aridia_zero_vec[] MACRO_ADDR;
@@ -2088,7 +2085,7 @@ void background_ship_1_update(char *moby) {
         prepare_background_ship_1_joint_billboards(moby);
     }
 }
-extern void FastVecScale(void *, void *, float);
+
 extern void rand_vec(float *, float, float);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
@@ -2569,7 +2566,6 @@ void update_camera_offset_effect_state(void) {
     s->a = 0;
 }
 
-extern float FastArcSin(float);
 extern char aridia_player_camera[];
 extern char pad_globals_base[];
 

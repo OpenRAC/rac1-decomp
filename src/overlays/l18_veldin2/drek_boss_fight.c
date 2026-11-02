@@ -377,7 +377,6 @@ extern float veldin2_camera_pos[];
 extern float veldin2_glow_quad_uvs[4][2];
 typedef int Q33D8 __attribute__((mode(TI)));
 extern Q33D8 veldin2_glow_quad_corners[4];
-extern void copy_matrix_rotation(void *, void *);
 
 extern int GetEffectTex(int);
 
@@ -601,7 +600,7 @@ extern float veldin2_lift25_uvs[][2];
 extern FRow veldin2_lift25_vertices[];
 extern short veldin2_lift25_quads[][4][2];
 extern int GetEffectTex(int);
-extern void set_identity_matrix(void *);
+
 extern void draw_world_quad(void *, void *, int);
 
 /* Draws 25 textured quads from the L18 tables, in the moby's frame. */
@@ -2022,7 +2021,7 @@ extern void RerollEffectCounter(void *m, short *p);
 extern void StepColorFade(void *, void *);
 extern char *func_0020D348(int);
 extern void MobyTransformScaledVertex(void *, int, void *);
-extern void matrix_copy_rows(void *, void *);
+
 extern void moby_build_matrix(void *);
 extern int FindNearestEligibleMoby(float a, char *m, char *b, int c, int d, int *e, int f);
 extern int poll_moby_state_and_rearm(char *);

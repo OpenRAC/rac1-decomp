@@ -23,8 +23,6 @@ int find_first_positive_polygon_edge_cross_xy(float *p, float *poly, int n) {
 }
 INCLUDE_ASM("asm/overlays", func_L04_0024D534);
 
-extern void FastVecScale(void *, void *, float);
-
 /* closest point on a line to a point: writes the point, returns the parameter */
 float find_closest_point_on_segment_xy(float *dst, float *a, float *b, float *c) {
     float d0[4];

@@ -800,7 +800,6 @@ extern s32 space_commando_beam_inner_color_b SDATA(space_commando_beam_inner_col
 extern f32 space_commando_beam_uvs[4][2];
 extern void VU1_addGSregister(s32, s64);
 extern u64 GetEffectTex(s32);
-extern void set_identity_matrix(void *);
 
 extern void vec_scale_to_length(void *, void *, f32);
 extern u32 FastTweenColor_r(f32, s32, s32) __asm__("func_001FA8A8");
@@ -877,7 +876,7 @@ void DrawBeam(char *moby) {
 }
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern void FastVecScale(void *, void *, float);
+
 extern void lerp_vector(void *, void *, void *, float);
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 extern short beam_spark_initial_word_gp, beam_spark_second_word_gp, space_commando_beam_spark_start_w,

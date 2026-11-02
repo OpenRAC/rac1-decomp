@@ -8,6 +8,7 @@
 #include "core/mpeg/ipu.h"
 #include "game/ui/menu.h"
 #include "data/executable.h"
+#include "asm_functions/executable.h"
 
 /*
  * memcard.cpp in the original source; text 0x209A60-0x20C210.
@@ -23,7 +24,6 @@ extern char memcard_icon_path_a[];
 extern char memcard_icon_path_b[];
 extern char memcard_icon_path_c[];
 extern char memcard_slot_path_format[];
-extern void libc_strncpy(void *, void *, int);
 
 /* Builds a 13-byte name/version stamp in memcard_save_dir_name from the record's
    region byte (arg0[0x12]) and the record's date/version fields, then
@@ -1435,7 +1435,6 @@ int memcard_TestChecksum(char *buf) {
     return result;
 }
 
-extern void copy_memory_aligned(void *dst, void *src, int len);
 extern int memcard_Checksum(void *data, int len);
 
 /* Walks a descriptor table (four words per entry: base, element size,

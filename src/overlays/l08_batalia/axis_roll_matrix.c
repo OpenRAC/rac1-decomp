@@ -6,10 +6,6 @@
 #include "asm_functions/shared_levels.h"
 #include "asm_functions/executable.h"
 
-extern void set_identity_matrix(void *);
-
-extern void matrix_copy_rows(void *, void *);
-
 /* Builds a matrix that rolls by roll around the direction dir and writes it to out. */
 void build_axis_roll_matrix(void *out, void *dir, float roll) {
     float M[4][4];

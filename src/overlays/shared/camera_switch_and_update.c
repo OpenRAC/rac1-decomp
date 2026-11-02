@@ -61,7 +61,6 @@ LINKER_REMNANT("asm/overlays", func_L00_001EB5B0);
 /* steers *p toward a target with damping, clamps it, then calls FA748 */
 float func_001FA790_EB6A8(float, float) __asm__("func_001FA790");
 float FastAbsF(float);
-float FastAddRots(float, float);
 
 /* Cam_InterpValues for angles: steers vel toward the angle to (the shortest way round, from
    the current angle from), clamps the step to max when max is set, and returns the angle plus vel
@@ -94,7 +93,7 @@ void initialize_camera_record_handoff_defaults(void) {
 extern u8 gCamPrevStateLvl[];
 
 extern void Camera_runSetupToNewCam(void *);
-extern void FastMemCopy(void *, void *, s32);
+
 extern s32 truncate_float_to_s32(f32);
 extern s32 D_0015EE84 MACRO_ADDR;
 
@@ -416,7 +415,6 @@ extern void Camera_CaptureTransform(Camera *);
 extern void update_camera_blend(char *arg0);
 extern void apply_camera_shake(char *arg0, int arg1);
 extern void update_camera_underwater_flag(void);
-extern void copy_matrix_rotation(void *, void *);
 
 /* Camera update, once per frame: count the frame, run the camera steps, take the view from the target camera (mode 3
    blends it) unless frozen, refresh the angles and the derived vectors. Level copy of update_camera. Joined with

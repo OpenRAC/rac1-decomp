@@ -412,8 +412,6 @@ typedef struct {
 } S;
 extern S player_camera;
 
-extern void FastVecScale(void *, void *, float);
-
 // Moves the moby toward a point on the camera's line of sight, or parks it at a fixed distance.
 void camera_object_update(char *camera_object) {
     char *pos;
@@ -1178,7 +1176,7 @@ void bolt_update(Moby *m) {
 struct Manip;
 struct GifEntry;
 struct AnimSeq;
-int scale_ticks(int);
+
 typedef struct {
     u8 pad_00[0xB1];
     u8 id; /* 0x80 set: no id */
@@ -1198,7 +1196,6 @@ extern void *level_mobys_end SDATA(level_mobys_end);
 
 extern void queue_animation_update(s32, s32, void *, void *, void *, void *, s32);
 extern void rand_vec(void *, f32, f32);
-extern void FastVecScale(void *, void *, f32);
 
 extern u8 *PartType53Spawn_r(void *pos, s32 life, f32 size0, f32 size1, s32 color, s32 mode, s32 spin, void *vel,
                              f32 f2) __asm__("func_L00_00272F00");
@@ -1409,7 +1406,7 @@ int begin_bolt_attraction(void *moby_v, int target_i, float sx, float sy) {
 struct Manip;
 struct GifEntry;
 struct AnimSeq;
-int scale_ticks(int);
+
 unsigned char *func_0020D348_A86D8(int) __asm__("func_0020D348");
 void func_L00_00251E30_A86D8(unsigned char *) __asm__("func_L00_00251E30");
 
@@ -2584,8 +2581,6 @@ extern float impact_marker_euler_v[] __asm__("D_L00_001614B0") MACRO_ADDR;
 
 extern float IntToFloat(int);
 
-extern float FastNormalizeAngle(float x);
-
 extern int GetEffectTex(int);
 extern void draw_world_quad(void *, void *, int);
 
@@ -2668,7 +2663,7 @@ void func_L00_002AAEF0_r(char *moby) {
 }
 typedef int q128_2a9ed0 __attribute__((mode(TI)));
 unsigned char *func_0020D348_AB170(int) __asm__("func_0020D348");
-void clear_u64_value(void *);
+
 float random_float_between(float, float);
 void moby_build_matrix(void *);
 

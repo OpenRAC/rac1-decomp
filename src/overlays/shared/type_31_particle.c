@@ -3,8 +3,8 @@
 #include "common.h"
 #include "structs/particle.h"
 #include "include_asm.h"
+#include "asm_functions/executable.h"
 
-extern unsigned char *create_part(int);
 extern int func_001FA898(float);
 
 // Spawns a particle (type 0x31) with given vectors, colour source and flags.

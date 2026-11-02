@@ -433,8 +433,6 @@ extern void VU1_addGSregister(int, long);
 
 extern void get_moby_color(void *, void *, void *, void *);
 
-extern float FastNormalizeAngle(float x);
-
 extern void draw_env_overlay_mesh(int, int, int, void *, int);
 extern short fleet_ripple_pair_vertex_counts;
 extern short fleet_ripple_pair_vertex_bufs;
@@ -1818,8 +1816,6 @@ void update_hit_triggered_fragment_and_placement_spawner(unsigned char *m) {
             break;
     }
 }
-
-extern void FastVecScale(void *, void *, float);
 
 typedef struct {
     float x, y, z;

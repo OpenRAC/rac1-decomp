@@ -125,7 +125,6 @@ void begin_animated_frame_rendering(int a, int b, int c, int d, float x, float y
 }
 typedef int u128b __attribute__((mode(TI)));
 
-extern void FastVecScale(void *, void *, float);
 extern float IntToFloat(int);
 
 extern char *func_L00_0026DEA0(void *, float, float, float, int, void *, float, int);
@@ -2023,9 +2022,8 @@ extern int aridia_elevator_ring_fast_color SDATA(aridia_elevator_ring_fast_color
 extern float aridia_elevator_ring_quad_angle SDATA(aridia_elevator_ring_quad_angle);
 extern float aridia_elevator_ring_uvs[][2];
 
-extern void copy_matrix_rotation(void *, void *);
 extern int GetEffectTex(int);
-extern float FastNormalizeAngle(float);
+
 extern void draw_world_quad(void *, void *, int);
 
 typedef int u128 __attribute__((mode(TI)));

@@ -61,7 +61,7 @@ extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float IntToFloat_r(int) __asm__("func_001FA888");
 extern float FastAddRots_r(float, float) __asm__("func_001FA748");
 extern float FastSubRots_r(float, float) __asm__("func_001FA790");
-extern float func_001FA7D8(float);
+
 extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
 extern float FastCos_r(float) __asm__("func_001F9F90");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
@@ -1910,8 +1910,6 @@ extern int coll_sphere(float, void *, int, void *);
 
 extern float IntToFloat(int);
 
-extern void FastVecScale(void *, void *, float);
-
 extern int batalia_bolt_sound_frame SDATA(batalia_bolt_sound_frame);
 extern short batalia_bolt_scale, batalia_bolt5_scale, batalia_bolt10_scale;
 extern float batalia_bolt_attract_speed SDATA(batalia_bolt_attract_speed);
@@ -2461,8 +2459,6 @@ void compute_batalia_bolt_pickup_surface_pose(char *m, float *out, float *rot) {
     FastVecAdd(out, out, v);
 }
 typedef int u128 __attribute__((mode(TI)));
-
-extern void FastVecScale(void *, void *, float);
 
 extern int truncate_float_to_s32(float);
 extern float IntToFloat(int);

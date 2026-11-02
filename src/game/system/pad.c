@@ -3,6 +3,7 @@
 #include "callees.h"
 #include "structs/records.h"
 #include "structs/misc.h"
+#include "asm_functions/executable.h"
 
 /*
  * pad.cpp in the original source; text 0x217F68-0x218928.
@@ -17,7 +18,6 @@ extern int sce_pad2_get_button_profile(int, void *);
 extern int sce_vib_get_profile(int, void *);
 extern int scePad2Read(int, void *);
 extern void ClearPadInput(); /* ClearPadInput(PAD &), defined below */
-extern void process_pad_input(void *, void *, int);
 
 /* UpdatePad(PAD &): latches a few per-frame fields, then asks
    sce_pad2_get_state for the port's state. Not 1: the input is cleared and

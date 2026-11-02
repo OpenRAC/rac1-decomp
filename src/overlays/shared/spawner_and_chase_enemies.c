@@ -1667,8 +1667,6 @@ extern CollisionHit gaspar_coll_hit;
 extern s32 coll_line(void *, void *, s32, struct Moby *, s32);
 extern s32 CollType(void);
 
-extern void FastVecScale(void *, void *, f32);
-
 extern f32 vec_length_xy(void *);
 extern void vec_scale_to_length(void *, void *, f32);
 

@@ -174,7 +174,7 @@ extern struct Moby *level_mobys_end MACRO_ADDR;
 extern s32 ship_level_entry_active MACRO_ADDR;
 extern s32 hero_max_health MACRO_ADDR;
 extern struct HeroEase lean_state_r[] __asm__("D_L00_0017A780");
-extern void FastMemSet(void *, s32, s32);
+
 extern f32 ProbeGroundHeight_r(Vec4f *, s32, f32) __asm__("func_00214358");
 extern void update_hero_ground_contact_and_surface_slopes(void);
 extern void update_hero_moby(void);
@@ -580,7 +580,6 @@ extern float ApproachValue(float *, float, float);
 extern f32 IntToFloat(s32);
 extern s32 truncate_float_to_s32(f32);
 
-extern void FastVecScale(void *, void *, float);
 extern unsigned char gCheats[] MACRO_ADDR;
 extern int sound_volume MACRO_ADDR;
 extern short D_L00_0015F7D8;
@@ -802,7 +801,6 @@ void dispatch_hero_animation_timed_events(void) {
     }
 }
 extern void MobyTransformScaledVertex(void *, int, void *);
-extern void matrix_copy_rows(void *, void *);
 
 extern void MobyAnimAdvance(void *);
 extern void moby_build_matrix(void *);
@@ -843,11 +841,11 @@ extern void update_hero_glow_and_extra_manipulators(void);
 extern void update_hero_bone_attachment(void);
 extern void *func_0020D348(int);
 extern void enqueue_hero_glow_draw_callback_once(void);
-void matrix_mul_vec3(void *, void *, void *);
+
 extern float ApproachValue(float *p, float target, float maxstep);
 
 void func_001F9BC0_c(void *) __asm__("func_001F9BC0");
-void euler_to_matrix(void *, void *);
+
 extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
 extern int func_0022ED80(void *, int, void *);
 
@@ -1589,10 +1587,6 @@ extern struct Hero D_0013F450_07EC0 __asm__("D_0013F450");
 extern float g_frame_time MACRO_ADDR;
 extern char hero_bob_attach_euler[];
 void update_moby_vertical_oscillation(char *, float *, float *, float, float);
-void matrix_mul_vec3(void *, void *, void *);
-void euler_to_matrix(void *, void *);
-void transform_vector(void *, void *, void *);
-void FastVecAdd(void *, void *, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00203b18.c, FUN_L00_002078a8. */
 void apply_hero_vertical_oscillation(void) {
@@ -1628,7 +1622,6 @@ void apply_hero_rotation_oscillation(void) {
     }
 }
 extern float hero_scale_sequence_table[];
-extern void FastVecScale(void *, void *, float);
 
 extern void gravity_set_z(float *dst, float *src, float z);
 
@@ -2084,12 +2077,10 @@ extern struct Hero D_0013F450_091D8 __asm__("D_0013F450");
 extern Vec4 hero_height_probe_dir;
 extern Vec4f hero_height_probe_offsets[];
 extern CollisionHit coll_hit_result;
-f32 FastSubRots(f32, f32);
-f32 FastAddRots(f32, f32);
+
 void func_L00_00251388_091D8(Moby *, Vec4 *) __asm__("func_L00_00251388");
 f32 fast_atan2(f32, f32);
-f32 FastCos(f32);
-f32 FastSin(f32);
+
 void func_001F9C30_091D8(Vec4 *, Moby *, f32) __asm__("func_001F9C30");
 void vec_scale_to_length(Vec4 *, Vec4 *, f32);
 void func_001F9BD8_091D8(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BD8");
@@ -2530,8 +2521,7 @@ void emit_hero_randomized_motion_effects(int n, int mode) {
 }
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 extern struct Hero D_0013F450_0A320 __asm__("D_0013F450");
-f32 FastCos(f32);
-f32 FastSin(f32);
+
 extern f32 g_frame_time MACRO_ADDR;
 
 extern s32 rand_range(s32, s32);

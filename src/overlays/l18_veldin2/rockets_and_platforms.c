@@ -200,8 +200,6 @@ extern char *CreateMoby(int);
 
 extern float vec_length_xy(void *);
 
-extern void FastVecScale(void *, void *, float);
-
 extern void vec_scale_to_length(void *, void *, float);
 
 extern void InitDirectionalHitQuery(char *arg, int a, int b, void *src, float scale);
@@ -480,7 +478,6 @@ void spawn_rocket_explosion(void *m, void *src) {
         }
     }
 }
-extern float FastNormalizeAngle(float x);
 
 extern int GetEffectTex(int);
 
@@ -1413,7 +1410,7 @@ typedef struct {
     char pad7C[0x14];
     int f90;
 } Obj_D96B0;
-extern void FastVecScale(void *out, void *a, f32 s);
+
 extern f32 IntToFloat(s32);
 extern float veldin2_hero_fall_state_height SDATA(veldin2_hero_fall_state_height);
 extern float floating_platform_sink_acceleration_config_84_nonzero_gp
@@ -1609,7 +1606,6 @@ int request_floating_platform_tilt(unsigned char *moby, int a1, int a2) {
 }
 INCLUDE_ASM("asm/overlays", func_L18_002D9C90);
 
-extern void set_vector_unit_z(void *);
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 extern short floating_platform_spark_start_speed;
 extern short floating_platform_spark_end_speed;

@@ -10,6 +10,7 @@
 #include "enums/hero_state.h"
 #include "enums/moby_class.h"
 #include "structs/hit_message.h"
+#include "asm_functions/executable.h"
 
 typedef int Q_8 __attribute__((mode(TI)));
 extern Hero g_hero;
@@ -21,11 +22,7 @@ extern s32 hero_hit_count MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
 extern u8 hero_velocity[];
 void release_and_clear_hero_voice_slots(void);
-void FastVecSub(void *, void *, void *);
-f32 FastAddRots(f32, f32);
-f32 FastCos(f32);
-f32 FastSin(f32);
-void FastVecAdd(void *, void *, void *);
+
 void Hero_TryMoveStateL08(s32, s32);
 void allocate_hero_voice_for_entry(s32, s32);
 void hero_knockback(void *, s32, f32, f32);

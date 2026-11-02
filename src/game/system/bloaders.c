@@ -2,6 +2,7 @@
 #include "structs/misc.h"
 #include "game/system/bloaders.h"
 #include "data/executable.h"
+#include "asm_functions/executable.h"
 
 /*
  * bloaders.cpp in the original source; text 0x1E94E8-0x1E9730.
@@ -36,11 +37,9 @@ typedef struct {
     int psm;        /* 0x14 */
 } PifHeader;
 
-extern void FastMemSet(void *, int, int);
-extern int log2dim(int);
 /* sceGsSetDefLoadImage, FlushCache, sceGsExecLoadImage, sceGsSyncPath */
 extern int sceGsSetDefLoadImage(GsLoadImage *, short, short, short, short, short, short, short);
-extern void flush_cache(int);
+
 extern int sceGsExecLoadImage(GsLoadImage *, void *);
 extern int wait_for_graphics_pipeline_idle(int, unsigned short);
 

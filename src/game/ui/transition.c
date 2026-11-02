@@ -151,17 +151,13 @@ typedef struct {
     unsigned char *x4;
 } S160E9EC8;
 
-extern int FastMemSet();
 extern void FastMemZero16(void *, int);
-extern void copy_memory_aligned(void *, void *, int);
+
 extern void STUB_printf(char *);
 
 extern int UpdateFog();
 extern void SetBackgroundColor(int, int, int);
 extern int VU0_loadMicroProgram();
-extern int LightTfrags();
-extern int LightShrubs();
-extern int LightTies();
 
 extern void scale_vector(void *, void *, float);
 
@@ -701,7 +697,7 @@ extern void func_00120858(s32, s32);
 extern s32 initialize_level_render_state_r(u8 *) __asm__("func_001E9EC8");
 extern void InitViewContext_r(void) __asm__("func_001F3008");
 extern void UpdateViewContext_r(void) __asm__("func_001F3140");
-extern char func_001F9968(s32);
+
 extern void InitMemSlots_r(void) __asm__("func_00201E10");
 extern void func_00202F00(u8 *, u8 *, u8 *, s32);
 extern void func_00203038(u8 *, s32);
@@ -712,7 +708,7 @@ extern void func_00203F68(u8 *, u8 *, u8 *, s32);
 extern void func_00204340(u8 *, u8 *, u8 *, u8 *, s32);
 extern void func_00204918(u8 *, u8 *);
 extern void parse_space_scene_chunk_r(s32) __asm__("func_00205220");
-extern s32 func_0020C468(u8 *, u8 *);
+
 extern void func_00217628(u8 *, s32, s32);
 extern unsigned int Load_r(s32, s32, s32) __asm__("func_002176C8");
 extern void func_00217748(s32);
@@ -1110,8 +1106,7 @@ extern u8 shrub_scratchpad_copy[];
 extern u8 tfrag_dma_block[];
 extern u8 tie_light_data[];
 extern s32 append_dma_tag();
-extern s32 FastMemSet();
-extern s32 flush_cache();
+
 extern s32 Transition_DrawSky_r() __asm__("func_001E9E70");
 extern s32 Transition_UpdateMovieCamera_r2() __asm__("func_001EB338");
 extern s32 BuildViewMatrices();
@@ -1130,21 +1125,21 @@ extern s32 draw_freeze_message_box();
 extern s32 prune_moby_references();
 extern s32 PatchMobyGifs();
 extern s32 DrawMobys();
-extern void PartProc();
+
 extern void render_level_effects_and_screen_sprites();
 extern s32 patch_shrub_gifs();
 extern void DrawShrubs();
-extern s32 LightShrubs();
+
 extern s32 PatchTfragGifs();
 extern void DrawTfrag();
 extern s32 VU0_loadMicroProgram();
 extern s32 VU1_syncChain();
 extern s32 VU1_addGSregister_r() __asm__("func_00234C98");
 extern void vu1_gs_regs_alt();
-extern s32 LightTfrags();
+
 extern s32 PatchTieGifs();
 extern void DrawTies_1();
-extern s32 LightTies();
+
 void Transition_DefaultDraw(s32 *arg0);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/gameplay/state/transition_default_draw.c, transition_default_draw. */

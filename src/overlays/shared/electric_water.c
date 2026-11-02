@@ -609,8 +609,6 @@ typedef struct {
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern void FastVecScale(void *, void *, float);
-
 extern void lerp_vector(void *, void *, void *, float);
 
 extern void func_L00_00272F00(void *, int, float, float, int, int, int, void *, float);
@@ -1016,7 +1014,7 @@ void update_spinning_projectile(unsigned char *m) {
         spawn_moby_point_offset_particle(m, 30000.0f, 0, 0.1f);
 }
 extern char *CreateMoby(int);
-extern void FastVecScale(void *, void *, float);
+
 extern float vec_length_xy(void *);
 extern void moby_build_matrix(void *);
 extern char *spawn_source_attached_fading_effect_particle(char *src, int col, int w, int v, float x);

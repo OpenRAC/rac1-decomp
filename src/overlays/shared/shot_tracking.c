@@ -38,7 +38,6 @@ extern int coll_line(void *, void *, int, int, int);
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern void FastVecScale(void *, void *, float);
 extern void ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void rand_vec(float *, float, float);
 

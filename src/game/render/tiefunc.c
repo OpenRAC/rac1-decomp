@@ -15,14 +15,11 @@
 
 extern int STUB_printf();
 
-extern void flush_cache(int);
-
 extern int g_render_packet_cursor MACRO_ADDR;
 extern int tie_tex_dma_tag_slot MACRO_ADDR;
 extern int max_tie_texture_dma_size MACRO_ADDR;
 extern int g_gs_texture_allocation_cursor MACRO_ADDR;
 extern char str_tie_texture_overflow[];
-extern int BuildTieTextureDma(int);
 
 /* DmaTieTextures: the same splice for ties, largest size in max_tie_texture_dma_size. */
 void DmaTieTextures(void) {
@@ -92,7 +89,6 @@ void copy_render_buffer_pair(void) {
     PatchTieGifs();
 }
 
-extern void LightTies(void *);
 extern char tie_light_data[];
 extern char tie_light_data2[];
 
@@ -108,7 +104,6 @@ extern char str_tie_texs[];
 extern char str_tie_draw[];
 extern char tie_packet_tail_tags[];
 
-extern void TieProc(void);
 extern void DmaTieTextures(void); /* DmaTieTextures */
 
 /* DrawTies_1: DrawShrubs' shape, the packet pointer advanced through a

@@ -3,6 +3,7 @@
 #include "structs/misc.h"
 #include "core/mpeg/motion_comp.h"
 #include "core/mpeg/demux.h"
+#include "asm_functions/executable.h"
 
 /*
  * core_text object 0x12AC80-0x12CC70. Boundaries are retail's linker fill
@@ -15,9 +16,6 @@
  * rest of libmpeg (0012A2F0.c): see sce_mpeg_add_callback, whose match needs
  * 2.9-ee's type-based alias analysis.
  */
-
-extern int disable_interrupts(void);
-extern void enable_interrupts(void);
 
 extern void _Error_a(void *, void *) __asm__("func_0012C468");
 

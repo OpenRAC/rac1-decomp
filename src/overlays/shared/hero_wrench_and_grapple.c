@@ -56,8 +56,6 @@ extern void gravity_flatten(float *, float *);
 extern void set_gravity_relative_vector_length_xy(float *, float *, float);
 extern float vec_length_xy(void *);
 
-extern void FastVecScale(void *, void *, float);
-
 /* Integrate player motion, resolve contacts, and measure the resulting movement. */
 void Hero_ApplyMotionCollisionL02(void) {
     Vec4 previous;

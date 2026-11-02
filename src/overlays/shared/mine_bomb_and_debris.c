@@ -193,10 +193,8 @@ extern unsigned char *moby_get_ride_transform(unsigned char *);
 extern int predict_mine_impact(W910 *, M910 *, int);
 
 extern void MobyTransformScaledVertex(char *, int, char *);
-extern void matrix_copy_rows(void *, void *);
 
 extern float resolve_camera_surface_height(float *, void *);
-extern void FastVecScale(void *, void *, float);
 
 extern int PartType34Spawn(void *, void *, float, float);
 extern void vec_set_length_xy(void *, void *, float);
@@ -1025,7 +1023,7 @@ void update_glow_particle(M_d *m) {
 extern int cinematic_mode MACRO_ADDR;
 extern float fast_atan2(float, float);
 extern float IntToFloat(int);
-extern float FastNormalizeAngle(float x);
+
 extern int GetEffectTex(int);
 extern void draw_world_quad(void *, void *, int);
 
@@ -2319,7 +2317,6 @@ extern E gold_weapon_purchased;
 extern s32 coll_hit_result[0x1C];
 extern f32 fast_atan2(f32, f32);
 
-extern f32 FastArcSin(f32);
 extern f32 IntToFloat(s32);
 extern s32 coll_line_r(void *, void *, s32, char *, void *) __asm__("func_L00_001EFFF0");
 extern s32 GetFlaggedPvarWord_r(char *) __asm__("func_L00_0025D390");
@@ -2491,7 +2488,6 @@ extern int collision1688(void *, void *, int, void *, void *) __asm__("func_L00_
 extern void reflect1688(void *, void *, void *) __asm__("func_L00_001FF610");
 extern void matrix_scale1688(void *, void *, float) __asm__("func_L00_001FFCF8");
 extern void matrix_add1688(void *, void *, void *) __asm__("func_L00_001FFDD0");
-extern void func_001FA190(void *);
 
 extern void rings1688(void *, void *, int, int, float, int, int, int, int, float) __asm__("func_L00_0026B890");
 extern void debris1688(void *, void *, int, int, float, int) __asm__("func_L00_0026B368");
@@ -2951,13 +2947,11 @@ typedef int OvlQuad __attribute__((mode(TI)));
 typedef struct {
     float f[4];
 } __attribute__((aligned(16))) V_2b1af0_B30C8;
-void matrix_mul_vec3(void *, void *, void *);
-void FastVecAdd(void *, void *, void *);
-void FastVecScale(void *, void *, float);
+
 float random_float_between(float, float);
 void vec_scale_to_length(void *, void *, float);
 float randf_sym(float, float);
-int scale_ticks(int);
+
 int rand_range(int, int);
 void PartType44Spawn(void *, void *, int, int, int, int, float, float, float, float, float);
 void PartType21Spawn(void *, void *, int, int, int, int, float);

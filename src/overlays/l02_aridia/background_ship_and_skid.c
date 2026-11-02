@@ -96,7 +96,6 @@ extern float ApproachValue(float *, float, float);
 extern void DeleteMoby(void *);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void MobyTransformScaledVertex(void *, int, void *);
-extern void matrix_copy_rows(void *, void *);
 
 extern void moby_build_matrix(void *);
 
@@ -625,7 +624,6 @@ struct AnimSeq;
 extern struct Moby *aridia_mobys_r __asm__("D_L02_00160058") MACRO_ADDR;
 extern unsigned char saved_mission_state[][16];
 extern char voice_pool[];
-extern void FastVecScale(void *out, void *in, float s);
 
 extern float vec_distance_xy(void *a, void *b);
 

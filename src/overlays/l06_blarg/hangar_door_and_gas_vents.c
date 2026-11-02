@@ -478,8 +478,6 @@ extern float spark_spread SDATA(spark_spread);
 
 extern int FastBSphereCheck(char *, float);
 
-extern void FastVecScale(void *, void *, float);
-
 extern void rand_vec(float *, float, float);
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 
@@ -1115,7 +1113,7 @@ extern void record_moby_hit(void *, void *);
 extern void AddDrawCallback(void *, void *);
 extern char *MobyGetHitMessage(void *, int, int);
 extern int Help_Request(int, int);
-extern void set_scale_matrix(void *, float);
+
 extern void sce_vu0_mul_matrix(void *, void *, void *);
 
 extern unsigned char *spawn_moving_hero_relative_alpha_fade_particle(float *, char *, int, unsigned char, unsigned char,
@@ -1383,7 +1381,7 @@ void update_beam_barrier(char *m) {
 
 #undef FLD
 typedef u32 u128_F8200 __attribute__((mode(TI), aligned(16)));
-extern void set_scale_matrix(void *, float);
+
 extern void sce_vu0_mul_matrix(void *, void *, void *);
 extern int GetEffectTex(int);
 extern void VU1_addGSregister(int, long);
@@ -1472,7 +1470,7 @@ void draw_beam_barrier_segments(char *moby) {
         matrix += 16;
     }
 }
-extern void FastVecScale(void *, void *, f32);
+
 extern void rand_vec_r(void *, f32, f32) __asm__("func_L00_00258DB0");
 extern f32 D_L06_00161EA0_F8430 SDATA(D_L06_00161EA0);
 extern f32 D_L06_00161E90_F8430 SDATA(D_L06_00161E90);

@@ -71,7 +71,6 @@ extern void moby_build_matrix(struct Moby *);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern void MobyTransformScaledVertex(void *, int, void *);
-extern void matrix_copy_rows(void *, void *);
 
 extern float ApproachValue(float *, float, float);
 
@@ -403,8 +402,6 @@ extern char blarg_coll_hit[];
 
 extern float vec_length_xy(void *);
 
-extern void FastVecScale(void *, void *, float);
-
 extern int coll_line(void *, void *, int, int, int);
 
 typedef struct {
@@ -611,7 +608,6 @@ extern struct Moby *CreateMoby(s32);
 extern void moby_build_matrix(struct Moby *);
 extern void enter_hero_vehicle_mode_and_set_moby(s32, s32, struct Moby *);
 extern f32 gravity_z(void *);
-extern void FastVecScale(void *, void *, f32);
 
 extern void transform_hero_local_offset_to_world(void *, f32, f32, f32);
 
@@ -767,7 +763,7 @@ typedef int V4q_32b90 __attribute__((mode(TI), aligned(16)));
 extern Hero g_hero_r4 __asm__("D_0013F450");
 extern u8 blarg_coll_hit_normal[];
 extern f32 blarg_collision_hit_point;
-extern void FastVecScale(void *, void *, f32);
+
 extern void clip_negative_segment_endpoint_xyz(Vec4 *, void *);
 extern s32 coll_line(void *, void *, s32, s32, s32);
 

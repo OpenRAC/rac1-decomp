@@ -332,7 +332,6 @@ void update_class_55_swarm_controller(struct PMoby *moby) {
 }
 
 extern int func_001160D8(void);
-extern void moby_anim_sphere_lerp(void *);
 
 // Per-frame update: counts down a timer, firing a effect call at start and end.
 void update_moby_random_interval_animation(char *m) {
@@ -563,7 +562,6 @@ extern void MobyTransformScaledVertex(char *, int, char *);
 
 extern void MobyAnimAdvance(void *);
 extern void moby_build_matrix(void *);
-extern void matrix_copy_rows(void *, void *);
 
 extern void *spawn_axe_moby(void *, void *);
 
@@ -1319,7 +1317,6 @@ int check_circular_saw_melee_attack_spacing(char *moby) {
 extern float eudora_circular_saw_separation_weight SDATA(eudora_circular_saw_separation_weight);
 extern void FindNearestTargetMoby_k(void *, void *, float) __asm__("func_L00_00260D30");
 
-extern void FastVecScale(void *, void *, float);
 extern void vec_scale_to_length(void *, void *, float);
 
 /* Flock steering for moby m: picks its path target, pushes away from same-class mobys within 3 units,
@@ -1564,7 +1561,7 @@ extern int CarriedMobyUpdate(void *, void *);
 
 extern int MoveKeepingOverGround(void *, void *, void *, int, float, float, float, float);
 extern float IntToFloat(int);
-extern float FastNormalizeAngle(float);
+
 extern int truncate_float_to_s32(float);
 
 extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);

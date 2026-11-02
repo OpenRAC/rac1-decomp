@@ -1,14 +1,13 @@
 #include "common.h"
 #include "callees.h"
 #include "structs/misc.h"
+#include "asm_functions/executable.h"
 
 /*
  * boot.cpp (0x12DA38-0x12DB68): ParseBin and main. crt0 calls func_0012DB18
  * as main. From 0x12DB18 on, retail's game compiler spills s-registers with
  * sq, as v1.14 does (docs/reference/TOOLCHAIN.md). Name from the NTSC split.
  */
-
-extern void flush_cache(int);
 
 extern int *level_root MACRO_ADDR;
 
@@ -56,7 +55,7 @@ BinFn ParseBin(void) {
 }
 
 typedef void (*EntryFn)(void);
-extern void func_0011DFC8(void);
+
 extern EntryFn ParseBin(void); /* ParseBin(void) */
 extern void startlevel(void);
 

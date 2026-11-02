@@ -170,7 +170,7 @@ extern float vec_distance_xy(void *, void *);
 
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 extern float IntToFloat(int);
-extern void FastVecScale(void *, void *, float);
+
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern int coll_line(void *, void *, int, void *, int);
 extern int coll_sphere(float, void *, int, void *);
@@ -1075,8 +1075,6 @@ int select_blarg_space_fighter_path_point_by_distance(char *pt, int *tbl, int st
     }
     return best;
 }
-
-extern void FastVecScale(void *, void *, float);
 
 extern float vec_distance_xy(void *, void *);
 
@@ -3214,7 +3212,6 @@ int update_moby_path_following_away_from_hero(struct Moby *m, char *d, int idx, 
     return r;
 }
 extern void SpawnExplosionFx(void *, void *, int, float, float);
-extern void FastVecScale(void *, void *, float);
 
 /* Launches the child moby held in slot idx of p: spins it off with random-ish velocities and clears the slot. */
 void detach_moby_joint_attachment(void *unused, char *p, int idx) {

@@ -32,10 +32,6 @@
 
 extern char voice_pool[];
 
-extern void FastMemCopy(void *, void *, int);
-
-extern void FastMemSet();
-
 extern void append_gif_transfer_packet(void);
 
 extern int GetEffectTex(int);
@@ -50,15 +46,9 @@ extern short g_current_level_index;
 
 extern int STUB_printf();
 
-extern void FastVecScale(void *, void *, float);
-
 extern int g_hero_moby NOT_SDA;
 
-extern void flush_cache(int);
-
 extern int func_001160D8(void);
-
-extern void fast_vec_normalize(void *, void *, float);
 
 extern void sce_gs_sync_v(int);
 
@@ -128,11 +118,10 @@ typedef struct {
 } Quad_FBE0;
 
 extern char quad_default_uvs[];
-extern void draw_world_quad_packet(void *, int, int);
+
 extern int g_game_mode MACRO_ADDR;
-extern int scale_game_frame_count(int);
+
 extern void scale_vector(void *, void *, float);
-extern int bsphere_check_alpha(void *, int *, float);
 
 typedef struct {
     char pad[0x20];
@@ -1923,9 +1912,9 @@ extern u8 level_init_cleared_block2[];
 
 extern s32 Stream_SubmitRead(void *buf, u32 lsn, u32 sectors);
 extern void FadeToBlack(s32 n);
-extern s32 fast_decompress(s32, s32);
+
 extern void upload_texture_images(s32 arg0, s32 count, s32 p);
-extern s32 log2dim(s32);
+
 extern void relocate_sky_definition(s32 f);
 extern void register_moby_class(s32 moby, s32 arg1, s32 arg2, s32 oclass);
 extern void unpack_point_records(s32 src, s32 count);
@@ -2248,13 +2237,13 @@ struct CommonArchiveMemory {
     u8 pad_0[0x14];
     s32 archive_base;
 };
-extern void flush_cache(s32 a0);
+
 extern s32 sce_cd_sync_s_r(s32 a0) __asm__("func_00120F30");
 extern s32 sceGsExecLoadImage(sceGsLoadImage *load_image, s32 image_address);
 extern s32 sceGsSetDefLoadImage(sceGsLoadImage *load_image, s32 block_offset, s32 buffer_width,
                                 s32 pixel_storage_format, s32 x, s32 y, s32 width, s32 height);
 extern s32 wait_for_graphics_pipeline_idle_r(s32 a0, s32 a1) __asm__("func_00120858");
-extern s32 fast_decompress(s32 source_address, s32 destination_address);
+
 extern s32 Stream_SubmitRead(void *a0, u32 a1, u32 a2);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/fun_00231878.c, prepare_loading_slide_textures. */

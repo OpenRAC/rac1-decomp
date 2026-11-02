@@ -748,7 +748,7 @@ void update_veldin_robot_effects(char *m) {
 extern float veldin1_robot_effect_quad_corners[][4];
 
 extern int GetEffectTex(int);
-extern void FastVecScale(void *, void *, float);
+
 extern void draw_world_quad(void *, void *, int);
 typedef float W[4] __attribute__((aligned(16)));
 typedef struct {

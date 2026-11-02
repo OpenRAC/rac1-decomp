@@ -11,8 +11,6 @@
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-extern void FastMemSet();
-
 ASM_FUNC("asm/handwritten/text", func_001F7C60);
 
 ASM_FUNC("asm/handwritten/text", func_001F7DD8);
@@ -89,12 +87,8 @@ extern char billboard_quad_header[];
 extern u8 camera_position[];
 extern BillboardViewContext view_context;
 extern BillboardRecord billboard_records[];
-extern void FastMemSet(void *, s32, s32);
-extern s64 func_001F4868(s32);
-extern s32 is_vector_outside_clip(Vec4f *);
 
-extern void FastVecScale(Vec4f *, Vec4f *, f32);
-extern void multiply_vector_components(Vec4f *, Vec4f *, void *);
+extern s64 func_001F4868(s32);
 
 extern f32 IntToFloat(s32);
 extern s32 truncate_float_to_s32(f32);

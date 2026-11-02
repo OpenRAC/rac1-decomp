@@ -114,7 +114,6 @@ extern void ClampVectorLength(void *, float);
 extern int solve_quadratic_equation(float *, float *, float, float, float);
 extern float step_angle_toward_target(float *, float, int, float);
 extern float vec_distance_xy(void *, void *);
-extern void FastVecScale(void *, void *, float);
 
 extern float gravity_z(float *);
 extern float Spring(float *, float *, float, float, float, float);

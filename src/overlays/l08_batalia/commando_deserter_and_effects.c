@@ -759,7 +759,6 @@ extern int GetEffectTex(int);
 
 extern int fast_dec_timer(int *);
 
-extern void FastVecScale(void *, void *, float);
 extern void vec_scale_to_length(void *, void *, float);
 extern float SmoothNoise(float, char *);
 extern float split_float_fraction(void *, float);

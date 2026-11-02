@@ -129,7 +129,7 @@ void sky_particles_update(void) {
 }
 extern char sky_shell_matrix[] NOT_SDA;
 extern char *sky_data MACRO_ADDR;
-extern void set_identity_matrix(void *);
+
 extern void SkyDrawShell(int);
 
 /* Draws each static sky shell in turn. */
@@ -168,7 +168,7 @@ void update_sky_shells_animated(void) {
         SkyDrawShell(i);
     }
 }
-extern void SkySpriteProc(void);
+
 extern void VU1_addGSregister(int, long);
 
 typedef struct {
@@ -329,10 +329,10 @@ void sky_particles_init(s32 a, s32 b);
 void sky_particles_update(void);
 extern char sky_shell_matrix[];
 extern char *sky_data MACRO_ADDR;
-void set_identity_matrix();
+
 void SkyDrawShell();
 extern int level_frame_counter MACRO_ADDR;
-void SkySpriteProc(void);
+
 void VU1_addGSregister(int, long);
 void fast_euler_to_matrix(void *, void *);
 
@@ -536,9 +536,9 @@ void draw_three_sky_shells_with_three_particle_types(void) {
 }
 void sky_particles_init(s32 a, s32 b);
 void sky_particles_update(void);
-void set_identity_matrix();
+
 void SkyDrawShell();
-void SkySpriteProc(void);
+
 void VU1_addGSregister(int, long);
 void fast_euler_to_matrix(void *, void *);
 
@@ -558,7 +558,7 @@ void draw_three_sky_shells_with_particles_and_modulo_50000_rotation(void) {
     fast_euler_to_matrix(sky_shell_matrix, v);
     SkyDrawShell(2);
 }
-void set_identity_matrix();
+
 typedef int q128 __attribute__((mode(TI)));
 extern u8 *sky_data_r2 __asm__("D_L00_001605DC") MACRO_ADDR;
 extern s32 level_frame_counter MACRO_ADDR;
@@ -680,7 +680,7 @@ void draw_three_sky_shells_with_particles(void) {
     VU1_addGSregister(0x42, 0x8000000044L);
     SkyDrawShell(2);
 }
-void set_identity_matrix();
+
 void SkyDrawShell();
 void fast_euler_to_matrix(void *, void *);
 
@@ -799,7 +799,7 @@ void render_three_shell_particle_sky(void) {
     SkyDrawShell(1);
     SkyDrawShell(2);
 }
-void set_identity_matrix();
+
 void SkyDrawShell();
 void fast_euler_to_matrix(void *, void *);
 

@@ -281,7 +281,6 @@ void update_moby_volume_trigger(Moby *moby) {
         }
     }
 }
-extern void FastVecScale(void *, void *, float);
 
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void compute_elevator_camera_pose(unsigned char *moby, float *v, float *w);
@@ -2880,8 +2879,6 @@ extern void Hero_ResetToPosition(void *, void *, int, int);
 extern void PlayerFighterFlight(void *, void *);
 
 extern void MusicRequestTrack(int, int);
-
-extern void moby_anim_sphere_lerp(void *);
 
 /* Handles fighter entry, flight, damage, exit, palette setup and audio cleanup. */
 void JetFighterUpdateL13(Jet47 *m) {

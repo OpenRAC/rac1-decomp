@@ -7,6 +7,7 @@
 #include "structs/disc.h"
 #include "overlays/shared/map_menu_filters.h"
 #include "enums/level.h"
+#include "asm_functions/executable.h"
 extern char item_available[];
 extern char level_map_coverage[];
 
@@ -349,7 +350,7 @@ void run_level_main_loop(void) {
 extern struct DiscTable disc_table;
 
 int Stash_SendData(int arg0, int arg1, int arg2, int arg3);
-extern void FastMemCopy(void *, void *, int);
+
 extern void load_map_chunk(void *arg0, unsigned char *arg1, int arg2);
 extern void decode_map_mask(int *dst, unsigned char *src, short *offs);
 extern int map_menu_initial_value_pairs[];

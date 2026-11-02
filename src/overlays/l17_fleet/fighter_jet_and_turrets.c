@@ -128,8 +128,6 @@ extern int FastBSphereCheck(char *, float);
 
 extern void func_L00_0025A8C0(char *arg, int a, int b, float scale, void *src);
 
-extern void FastVecScale(void *, void *, float);
-
 extern unsigned char *spawn_trail_particle(char *parent, void *pos, float *vec);
 extern void AddDrawCallback(void *, void *);
 extern void draw_fleet_beam_quad(char *moby);
@@ -702,9 +700,7 @@ void distribute_class_733_group_mobys_along_path(char *moby) {
 typedef int u128_2D8CC8 __attribute__((mode(TI)));
 extern int hero_is_in_special_state(void);
 
-extern void copy_matrix_rotation(void *, void *);
 extern float IntToFloat(int);
-extern float FastNormalizeAngle(float);
 
 extern int func_001160D8(void);
 
@@ -2335,8 +2331,6 @@ extern float ApproachValue(float *, float, float);
 extern void jet_animate(unsigned char *, float);
 extern void MusicRequestTrack(int, int);
 extern void Hero_ResetToPosition(void *, void *, int, int);
-
-extern void moby_anim_sphere_lerp(void *);
 
 extern int STUB_printf();
 

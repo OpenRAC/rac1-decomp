@@ -199,7 +199,7 @@ void water_reservoir_update(Moby *moby) {
     }
     AddDrawCallback_r(draw_water_reservoir_r, moby);
 }
-extern void copy_matrix_rotation(void *, void *);
+
 extern int GetEffectTex(int);
 
 extern void draw_world_quad(void *, void *, int);
@@ -626,8 +626,6 @@ void draw_oscillating_target_link_strips(Moby *moby) {
     }
 }
 extern int fast_dec_timer(int *);
-
-extern void FastVecScale(void *, void *, float);
 
 extern void rand_vec(float *, float, float);
 extern void AddDrawCallback(void *, void *);
@@ -1266,7 +1264,7 @@ void hoven_turret_update(Moby *moby) {
 extern void VU1_addGSregister(int, long);
 extern long GetEffectTex_r2(int) __asm__("func_001F4868");
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern float func_001FA7D8(float);
+
 extern float IntToFloat_r3(int) __asm__("func_001FA888");
 extern void func_L02_0020BF88(void *, void *, void *, long, int);
 extern int hoven_turret_hud_frame_color SDATA(hoven_turret_hud_frame_color);

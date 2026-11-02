@@ -17,8 +17,6 @@
 extern char voice_pool[];
 extern int bank_sound_count MACRO_ADDR;
 
-extern void FastVecScale(void *, void *, float);
-
 extern char camera_position_a[] __asm__("D_00187180");
 extern char coll_hit_pos[];
 extern int sound_probe_ignore;
@@ -26,7 +24,6 @@ extern int sound_probe_ignore;
 extern void FastVecAdd_a(void *, void *, void *) __asm__("func_001F9BD8");
 extern void FastVecScale_a(void *, void *, float) __asm__("func_001F9C30");
 extern void FastVecSub_a(void *, void *, void *) __asm__("func_001F9BF0");
-extern int func_001EFE10(void *, void *, int, int, int);
 
 /* Jitter the vector at arg0 between 0.5 and 6.0, fold in the reference
    frame at camera_position, and if the emitter accepts it, re-derive it from
@@ -268,9 +265,8 @@ extern s32 D_0015F6C8 MACRO_ADDR;
 extern s32 D_0015F6F0 MACRO_ADDR;
 extern f32 D_0015EE6C MACRO_ADDR;
 
-extern s32 func_001F9F60(u8 *, s32);
 extern int func_0012F2E0(int);
-extern void func_001F99B0(void *, s32, s32);
+
 extern void snd_ReadGlobalTableEntry_DD68(void) __asm__("func_0012EC30");
 extern s32 snd_FlushSoundCommands_DD68(void) __asm__("func_0012DDC0");
 extern void snd_SetMasterVolume_DD68(s32, s32) __asm__("func_0012E348");
@@ -284,8 +280,6 @@ extern void func_0012F120(s32, s32, s32, s32);
 extern void FastVecAdd_DD68(void *, void *, void *) __asm__("func_001F9BD8");
 extern void FastVecSub_DD68(void *, void *, void *) __asm__("func_001F9BF0");
 extern void FastVecScale_DD68(void *, void *, f32) __asm__("func_001F9C30");
-
-extern void func_001F9DC0(void *, void *, f32);
 
 extern f32 IntToFloat_DD68(s32) __asm__("func_001FA888");
 extern s32 truncate_float_to_s32_DD68(f32) __asm__("func_001FA898");

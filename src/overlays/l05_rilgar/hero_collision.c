@@ -189,7 +189,7 @@ typedef int Q __attribute__((mode(TI)));
 extern u8 rilgar_coll_hit_point[];
 extern f32 rilgar_coll_hit_z;
 extern s32 g_current_level_index MACRO_ADDR;
-void clear_u64_value(void *);
+
 void hero_get_collision_ray_endpoints(void *, void *, s32, f32, f32);
 s32 coll_line(void *, void *, s32, s32, s32);
 s32 coll_sound_class(void);
@@ -197,13 +197,11 @@ s32 CollType(void);
 f32 resolve_camera_surface_height(void *, void *);
 s32 is_moby_in_class_range_500_to_540(s32);
 u8 *GetFlaggedPvarWord(s32);
-f32 FastVecDist(void *, void *);
+
 void sceVu0Normalize(void *, void *);
 f32 compute_gravity_relative_vector_inclination(void *);
 f32 fast_atan2(f32, f32);
-void FastVecSub(void *, void *, void *);
-f32 FastVecDot(void *, void *);
-void FastVecScale(void *, void *, f32);
+
 void vec_scale_to_length(void *, void *, f32);
 void compute_rotated_vector_angles(void *, void *);
 void transform_hero_polar_offset_to_world(void *, f32, f32, f32);
@@ -529,7 +527,6 @@ extern void correct_hero_ground_penetration(void);
 extern void gravity_flatten(float *, float *);
 extern void set_gravity_relative_vector_length_xy(float *, float *, float);
 extern float forward_component(void *);
-extern void FastVecScale(void *, void *, f32);
 
 /* Integrate player motion, resolve contacts, and measure the resulting movement. */
 void integrate_hero_motion_with_collisions(void) {

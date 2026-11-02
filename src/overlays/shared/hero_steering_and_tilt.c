@@ -683,7 +683,6 @@ void compute_hero_reference_tilt_rotation(V_c *v, M_c *m, void *p, float a, floa
 
 typedef int U128 __attribute__((mode(TI)));
 extern float g_frame_scale_sq MACRO_ADDR;
-extern void FastVecScale(void *, void *, float);
 
 /* builds the three view vectors and applies the camera offset to the moby. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/ui_help_00214658.c, FUN_L00_002163f0. */
 void apply_hero_reference_tilt(void) {
@@ -814,7 +813,6 @@ extern f32 vec_length_xy(void *);
 
 extern void vec_scale_to_length(void *, void *, f32);
 
-extern void FastVecScale(void *, void *, f32);
 extern void clip_hero_velocity_against_probed_surfaces(s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00214658.c, FUN_L00_002167d0. */
@@ -1074,7 +1072,7 @@ void func_001F9C30_178A0(void *, float, void *) __asm__("func_001F9C30");
 void func_L00_00234420_178A0(void *, void *, float) __asm__("func_L00_00234420");
 void add_hero_forward_offset(void *, void *, float);
 void func_L00_002343A0_178A0(void *, void *, float) __asm__("func_L00_002343A0");
-void FastVecAdd(void *, void *, void *);
+
 void HeroOffsetAlongViewZ(void *, void *, float);
 int coll_line(void *, void *, int, void *, int);
 float compute_gravity_relative_vector_inclination(void *);
@@ -1209,7 +1207,6 @@ extern void transform_hero_local_offset_to_world(void *, f32, f32, f32);
 
 extern void add_hero_forward_offset(void *, void *, f32);
 
-extern void copy_matrix_rotation(void *, void *);
 extern void initialize_moby_transform_history(void *, char *);
 extern void create_moby_transform_history_entry(char *, int, int);
 

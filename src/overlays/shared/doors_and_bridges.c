@@ -76,8 +76,6 @@ extern void MobyGroup_SetByteBC_r(int, int) __asm__("func_L01_0026F040");
 extern float FastAbsF_r(float) __asm__("func_001F9B88");
 extern float func_001F9D48(void *, void *);
 
-extern void func_001FA190(void *);
-
 extern int func_001F9908(int *arg0);
 extern void Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
@@ -359,7 +357,7 @@ void door_update(u8 *moby) {
 extern int g_current_level_index MACRO_ADDR;
 extern unsigned char saved_mission_state[];
 
-extern void FastVecScale(f32, void *, void *);
+extern void FastVecScale_v(f32, void *, void *) __asm__("func_001F9C30");
 
 extern void vec_scale_to_length(f32, void *, void *);
 
@@ -379,7 +377,7 @@ void bridge_update(u8 *moby) {
     u8 state;
     typedef u32 quadword __attribute__((mode(TI), aligned(16)));
 
-    FastVecScale(-1.0f, delta, moby + 0x10);
+    FastVecScale_v(-1.0f, delta, moby + 0x10);
     qcopy(old_rotation, moby + 0x40);
 
     if (((Moby *)moby)->mission != 0xff &&

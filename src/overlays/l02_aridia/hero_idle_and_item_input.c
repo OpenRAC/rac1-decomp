@@ -1583,7 +1583,6 @@ extern void gravity_set_z(float *dst, float *src, float z);
 extern int check_pad_press_separation(int, int, int, int);
 
 extern float ApproachValue(float *p, float target, float maxstep);
-extern void FastVecScale(void *, void *, float);
 
 extern float gravity_z(float *v);
 
@@ -3328,8 +3327,6 @@ typedef int V4q_32b90 __attribute__((mode(TI), aligned(16)));
 extern Hero g_hero_r __asm__("D_0013F450");
 extern u8 aridia_coll_hit_normal[];
 extern f32 aridia_coll_hit_point;
-
-extern void FastVecScale(void *, void *, f32);
 
 extern void vec_scale_to_length(void *, void *, f32);
 extern void clip_negative_segment_endpoint_xyz(Vec4 *, void *);

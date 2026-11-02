@@ -689,8 +689,6 @@ void update_plasmabot_visual_effects(struct Moby *m) {
     AddDrawCallback_r(draw_plasmabot_effect_quads_r, m);
 }
 
-extern void FastVecScale(void *, void *, float);
-
 extern void draw_world_quad(void *, void *, s32);
 u64 GetEffectTex(s32);
 
@@ -1185,7 +1183,6 @@ extern void VU1_addGSregister(int, long);
 
 extern void vec_scale_to_length(void *, void *, float);
 
-extern void FastVecScale(void *, void *, float);
 extern void draw_world_quad(void *, void *, s32);
 
 /* Draws the moby's glow quad, pulled toward the camera so it is not hidden by the moby. */
@@ -2157,8 +2154,6 @@ typedef struct Vq {
 extern float IntToFloat(int);
 
 extern void rand_vec(void *, float, float);
-
-extern void FastVecScale(void *, void *, float);
 
 extern int truncate_float_to_s32(float);
 extern float vec_distance_xy(void *, void *);

@@ -22,8 +22,6 @@ extern int measure_text_width_regular(unsigned char *, int);
 
 extern void UpdateViewContext(void);
 
-extern void fast_vec_normalize(void *, void *, float);
-
 extern void DrawMobyList(int, int);
 
 extern void *msg_string_id(int) __asm__("func_001FE540");
@@ -42,10 +40,9 @@ extern s32 capture_glyph_coordinates[64];
 extern s32 capture_glyph_advances[64];
 extern s32 game_frame_counter MACRO_ADDR;
 extern void DrawTexturedQuad(s32, s32, s32, s32, s32, s32, s32, s32, s64, s64);
-extern s32 scale_game_frame_count(s32);
+
 extern f32 IntToFloat(s32);
 #define TRUNC(x) ((s32 (*)(f32))func_001FA898)(x)
-extern u64 GetFrameTex(s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/assembly/textbin/fun_00238310.c, render_capture_scrolling_text. */
 void render_capture_scrolling_text(char *text, s32 start_x, s32 start_y, f32 scale) {
@@ -130,8 +127,6 @@ void render_capture_scrolling_text(char *text, s32 start_x, s32 start_y, f32 sca
     }
 }
 
-extern int func_00116810(char *);
-
 extern int status_message_text_ids[];
 extern void set_scrolling_status_message(void *);
 extern void render_capture_scrolling_text(char *, int, int, float);
@@ -198,7 +193,7 @@ struct VendorItemResource {
 
 extern u8 item_info_table[];
 extern struct VendorMenuState vendor_state_ui __asm__("D_001E66C0");
-extern s32 subtract_integer_with_clamp();
+
 extern void func_001FBAB8_u(int, int, int, int, int, int, unsigned int) __asm__("func_001FBAB8");
 
 /* Vendor item carousel and icon pulse. The solid black draw calls use the
@@ -526,7 +521,6 @@ extern s32 vendor_flash_timers[];
 extern s32 vendor_scroll_timers[];
 extern void VU1_addGSregister_r(s32, u64) __asm__("func_00234C98");
 
-extern s32 subtract_integer_with_clamp(s32);
 extern s64 func_001F4868(s32);
 extern f32 IntToFloat(s32);
 extern void append_subpixel_textured_screen_quad(f32, f32, f32, f32, s32, s32, s32, s32, u64, s64);

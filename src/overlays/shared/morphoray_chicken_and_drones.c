@@ -79,7 +79,6 @@ extern int moby_get_ride_transform(char *);
 extern int coll_line(void *, void *, int, int, int);
 extern void vec_scale_to_length(void *, void *, float);
 extern void vec_reflect(void *, void *, void *);
-extern void FastVecScale(void *, void *, float);
 
 typedef struct {
     float v[4];
@@ -585,7 +584,7 @@ extern float IntToFloat(int);
 extern void SetDeathBits(void *, int, int);
 extern void DeleteMoby(void *);
 extern void PartType05Spawn(void *, float, int, int, int, int, float);
-extern void FastMemSet(void *, int, int);
+
 extern void moby_build_matrix(void *);
 extern int morphoray_chicken_slots[];
 extern char morphoray_chicken_slot_state_blocks[];
@@ -1835,7 +1834,6 @@ extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 extern char hero_globals_base_r2[] __asm__("D_0013E633");
 
 extern char D_0014171B[];
-extern void func_001FA480(void *, void *);
 
 extern int timer32_2CDAB8(int *) __asm__("func_001F9908");
 extern int timer16_2CDAB8(short *) __asm__("func_001F9938");
@@ -2390,10 +2388,7 @@ extern int gameplay_event_frame_count MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 int get_ammo(int);
 void use_ammo(int, int);
-float FastCos(float);
-float FastSin(float);
-int scale_ticks(int);
-void FastVecAdd(void *, void *, void *);
+
 unsigned char *spawn_hero_drone(unsigned char *, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002c8440.c, FUN_L00_002cdcc0. */

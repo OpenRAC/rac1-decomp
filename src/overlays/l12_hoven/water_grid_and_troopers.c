@@ -1013,7 +1013,6 @@ extern int hoven_troll_burst_life_ticks SDATA(hoven_troll_burst_life_ticks);
 extern int hoven_troll_burst_phase2_ticks SDATA(hoven_troll_burst_phase2_ticks);
 extern int hoven_troll_burst_phase3_ticks SDATA(hoven_troll_burst_phase3_ticks);
 extern void add_random_offset_to_vector_xyz(float *v, float s);
-extern void FastVecScale(void *, void *, float);
 
 /* Level 12 hoven: spawns a burst of particles around the moby (port of emit_moby_particles's shape). */
 void TrollSpawnBurst(struct Moby *mp) {

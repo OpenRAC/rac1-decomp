@@ -43,8 +43,6 @@ typedef struct {
 extern P glints[16];
 extern float g_frame_time MACRO_ADDR;
 
-extern void FastMemSet(void *, int, int);
-
 /* Age the 16 glints: spin them, grow then shrink their angle, and clear dead ones. */
 void update_glints(void) {
     int i;

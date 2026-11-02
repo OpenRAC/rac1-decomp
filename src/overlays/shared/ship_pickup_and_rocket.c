@@ -29,8 +29,6 @@ extern int g_screen_extent[];
 extern float IntToFloat(int);
 extern int truncate_float_to_s32(float);
 
-extern void FastVecScale(void *, void *, float);
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b7d50.c, FUN_L13_002b7d50. */
 void emit_transformed_2d_vertex_packet(short *pts, int n, float x0, float y0, unsigned int col, unsigned long prim,
                                        float scale, float ang) {

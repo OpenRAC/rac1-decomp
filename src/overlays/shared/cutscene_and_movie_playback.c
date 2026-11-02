@@ -70,7 +70,6 @@ extern int level_frame_counter MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int current_moby_mission_complete MACRO_ADDR;
 extern int active_play_frame_count MACRO_ADDR;
-int scale_ticks(int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_00295100.c, FUN_L00_00297e70. */
 void update_game_frame_and_idle_counters(void) {
@@ -161,7 +160,7 @@ extern void update_ambience_target_cycle(void);
 extern void Profile_Mark_a(void *, int) __asm__("func_001E9768");
 extern void Profile_Mark_b(void) __asm__("func_001E9768");
 extern void coordinate_hero_frame_update(void);
-extern void UpdateParts(void);
+
 extern void update_glints(void);
 
 extern void update_debug_camera(void);
@@ -340,7 +339,6 @@ extern char *active_scene_trigger_target;
 extern char *level_menu_system_target;
 
 extern void music_Pause(int);
-extern void FastMemSet(void *, int, int);
 
 extern void start_cutscene_chunk_read(int);
 
@@ -720,7 +718,7 @@ typedef struct {
 extern DebugMenuState g_debug_menu_r __asm__("D_L00_0016C158");
 void reset_frame_counters(void);
 extern struct PadStateWords g_controller_state_r __asm__("D_0013CA40");
-int scale_ticks(int);
+
 void update_game_frame_and_idle_counters(void);
 extern s32 D_0015EF20 MACRO_ADDR;
 extern u8 level_profile_mark_after_mobys_r[] __asm__("D_L00_001610B8");
@@ -764,7 +762,6 @@ extern void update_world_object_animation(void);
 extern void start_cutscene_chunk_read(s32);
 extern void update_moby_animation_state(void *);
 extern f32 IntToFloat(s32);
-extern void FastVecScale(void *, void *, f32);
 
 extern void moby_build_matrix(void *);
 
@@ -936,7 +933,6 @@ void queue_movie_with_game_language(int i) {
     }
     prepare_movie_playback(b, a, g_game_language);
 }
-extern void flush_cache(int);
 
 extern int sceGsSetDefLoadImage(void *, short, short, short, short, short, short, short);
 extern int sceGsExecLoadImage(void *, void *);
@@ -1064,7 +1060,6 @@ void movie_exit_to_gameplay(void) {
         q[0x6B] |= 0x10;
     }
 }
-extern void flush_cache(int);
 
 extern int snd_StreamSafeCdSync(int);
 
@@ -1094,7 +1089,7 @@ void play_queued_movie(void) {
     sce_cd_sync_s(0);
     movie_exit_to_gameplay();
 }
-extern void FastMemSet(void *, int, int);
+
 extern int start_audio_stream_read(int, int, int);
 extern int slideshow[4] MACRO_ADDR;
 typedef struct {

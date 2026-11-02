@@ -136,10 +136,9 @@ extern void func_L00_001FF4B0(void *, void *, float);
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern float FastCos_r(float) __asm__("func_001F9F90");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
-extern void func_001FA190(void *);
-extern void func_001FA460(void *, void *);
+
 extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
-extern void func_001FA480(void *, void *);
+
 extern float FastSubRots_r(float, float) __asm__("func_001FA790");
 extern float FastAbsF_r(float) __asm__("func_001F9B88");
 extern void euler_to_matrix_r(void *, void *) __asm__("func_001FA218");
@@ -508,8 +507,6 @@ extern void UpdateFog(void);
 extern s32 sprintf(char *, const char *, ...);
 extern double func_00120778(float);
 extern s32 sceOpen(char *, s32, ...);
-
-extern s32 libc_strlen(char *);
 
 extern s32 sceClose(s32);
 
@@ -1447,7 +1444,7 @@ void capture_draw_buffer(void *a) {
     transfer_draw_buffer_chunks(a, draw_buffer_address, frame_size << 11);
 }
 extern int GetEffectTex(int);
-extern void FontPrint(void *, void *, void *, void *, void *, int, unsigned char *);
+
 extern unsigned char effect3_font_metrics[];
 
 // Draws font text with effect texture 3 and the level 0 font table.

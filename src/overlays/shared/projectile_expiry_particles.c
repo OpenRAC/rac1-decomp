@@ -6,7 +6,6 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 
-extern void *create_part(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern unsigned char *umbris_part_type51_textures;
 

@@ -3,9 +3,10 @@
 #include "common.h"
 #include "structs/misc.h"
 #include "include_asm.h"
+#include "asm_functions/executable.h"
 
 extern StashBlock stash_slots[];
-extern int sce_sif_set_dma(void *buf, int flag);
+
 // Starts a DMA transfer of size*16 bytes at offset*16 into a slot; -3 bad slot, -1 out of range.
 int send_dma_to_stash_slot(int arg, unsigned int slot, int off, int size) {
     int req[4];

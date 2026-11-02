@@ -35,8 +35,7 @@ extern s32 weapon_ammo_counts[];
 extern int vendor_menu[];
 extern unsigned char g_class_slot_12 NOT_SDA;
 extern char *moby_class_headers[] NOT_SDA;
-extern void flush_cache(int);
-extern int fast_decompress(int, int);
+
 extern void relocateObjectPointers(char *arg0, int idx);
 
 // load a table of 16 offsets relative to the base pointer and register each entry
@@ -235,7 +234,7 @@ extern char hero_globals_base[];
 
 extern s32 vendor_auxiliary_moby_active MACRO_ADDR;
 extern s32 vendor_auxiliary_moby_load_pending MACRO_ADDR;
-extern void FastMemSet(void *, s32, s32);
+
 extern VendorMoby_pv *CreateMoby(s32);
 
 extern void moby_build_matrix(void *);
@@ -533,7 +532,7 @@ struct T_29ad08 {
 extern struct T_29ad08 item_defs_r[] __asm__("D_L00_00179BC0");
 
 extern float ProbeGroundHeight_v(float, void *, s32) __asm__("func_00214358");
-extern void FastMemSet(void *, s32, s32);
+
 extern void euler_rotation_basis(void *, void *);
 
 extern void Music_ContinueStreamIfReady(void);
@@ -1243,7 +1242,7 @@ extern void update_game_frame_and_idle_counters();
 extern void enqueue_voice_request();
 extern void Profile_Mark();
 extern void coordinate_hero_frame_update();
-extern void UpdateParts();
+
 extern s32 Moby_PlaySound();
 extern void DetachManipulator();
 extern void start_vendor_exit_cutscene();
@@ -1272,7 +1271,6 @@ extern void sceVu0RotMatrixX();
 extern void sceVu0RotMatrixY();
 extern void sceVu0RotMatrixZ();
 extern f32 IntToFloat();
-extern void FastVecScale();
 
 extern void HeroAttachManipulators();
 extern void initialize_numeric_hud_timer_and_base_dimensions();

@@ -11,7 +11,6 @@
 extern float IntToFloat(int);
 
 extern void MobyTransformScaledVertex(void *, int, void *);
-extern void FastVecScale(void *, void *, float);
 
 extern int veldin2_frame_count;
 extern int drek_boss_rider_glow_period;

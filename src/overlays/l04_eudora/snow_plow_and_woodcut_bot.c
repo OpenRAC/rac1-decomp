@@ -240,7 +240,7 @@ extern void axis_rotation_2d48(void *, s32, float);
 
 extern void MobyAnimAdvance(void *);
 extern void moby_build_matrix(void *);
-extern void moby_anim_sphere_lerp(void *);
+
 extern char *MobyGetHitMessage(void *, s32, s32);
 extern s32 PlayBankSound(s32, s32, s32);
 extern void ShowBanner(s32, s32);
@@ -250,7 +250,7 @@ extern void spawn_explosion(void *, void *, void *, float, float, s32, s32, s32,
                             s32, s32, s32, s32);
 extern void Moby_GetJointWorldPos(void *, s32, void *);
 extern void SpawnExplosionFx(void *, void *, s32, float, float);
-extern void FastVecScale(void *, void *, float);
+
 extern void SpawnBreakFragment(void *, s32, void *, void *, s32, s32, float, void *, void *, void *);
 extern s32 fast_dec_timer(s32 *);
 
@@ -599,7 +599,6 @@ extern float D_0015EE64 MACRO_ADDR;
 extern void DeleteMoby(void *);
 
 extern float MobyGetFrameValue(void *);
-extern float FastNormalizeAngle(float);
 
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 
@@ -780,7 +779,6 @@ extern void vec_scale_to_length(void *, void *, float);
 extern void transform_scaled_vertex_batch(void *, int, void *, void *);
 extern void coll_line(void *, void *, int, void *, void *);
 
-extern void FastVecScale(void *, void *, float);
 extern void coll_sphere_mobys(void *, float, int, void *, void *);
 extern void AttachManipulator(void *, int, void *);
 extern void initialize_woodcut_bot_movement_data(void *);

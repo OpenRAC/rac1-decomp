@@ -63,7 +63,6 @@ extern void RippleDisturb(int, int, int, float, float, float, float);
 
 extern void gravity_set_z(float *dst, float *src, float z);
 
-extern void FastMemSet(void *, int, int);
 extern int fleet_game_mode MACRO_ADDR;
 extern int fleet_water_patches MACRO_ADDR;
 extern int fleet_water_patch_count MACRO_ADDR;

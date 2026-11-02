@@ -32,7 +32,6 @@ extern Globals137C80 disc_table_g __asm__("D_00137C80");
 extern char voice_pool[];
 extern char memory_card_state[];
 extern char level_resource_buffers[];
-extern void flush_cache(int);
 
 extern void FadeToBlack(int);
 extern void snd_StreamSafeCdSync(int);
@@ -157,7 +156,7 @@ extern void func_001F3C10(void);
 extern void func_001F3D00(void);
 extern void SetBackgroundColor_r(s32, u64, u64) __asm__("func_001FB448");
 extern void flush_cache_r(s32) __asm__("func_00118D80");
-extern void func_0020C468(s32, s32);
+
 extern void PutDrawBufferLarge_r(void) __asm__("func_001FB498");
 extern void func_001FB530(void);
 extern void func_00201AF0(s32);

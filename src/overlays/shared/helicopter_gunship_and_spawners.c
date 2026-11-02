@@ -359,8 +359,6 @@ extern void libc_memset(void *, int, int);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern float normalize_angle(float);
 
-extern void FastVecScale(void *, void *, float);
-
 extern void vec_scale_to_length(void *, void *, float);
 
 extern int func_001160D8(void);
@@ -1662,8 +1660,6 @@ extern int Sound_IsPlaying(void *, int);
 
 extern void Moby_GetJointWorldPos(void *, int, void *);
 
-extern void FastVecScale(void *, void *, float);
-
 extern void vec_scale_to_length(void *, void *, float);
 extern int rand_range(int, int);
 extern char *PartType27Spawn(void *pos, void *vel, int c, int d, float f);
@@ -2186,8 +2182,6 @@ extern float gHeroPos[];
 extern float kerwan_camera_view_up_axis[];
 
 extern void vec_scale_to_length(void *, void *, float);
-
-extern float FastArcSin(float);
 
 extern void rotate_vector_by_scaled_angle_between_vectors(float, float *, float *, float *, int);
 

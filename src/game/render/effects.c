@@ -253,7 +253,7 @@ extern struct CameraEnvironmentRegion camera_environment_regions[];
 /* A fog preset: an RGB byte triple and four floats (as src/game/render/draw.c reads it). */
 
 extern FogPreset fog_color_red MACRO_ADDR;
-extern s32 find_camera_environment_region(void *, f32 *, s32 *);
+
 extern s32 truncate_float_to_s32(f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/update_camera_environment_from_regions.c,

@@ -8,7 +8,7 @@
 #include "asm_functions/executable.h"
 
 typedef int u128 __attribute__((mode(TI)));
-extern unsigned char *create_part(int);
+
 extern int func_001FA898(float);
 
 extern unsigned char *novalis_part_type_textures[];

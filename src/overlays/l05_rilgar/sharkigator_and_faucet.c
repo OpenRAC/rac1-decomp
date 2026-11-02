@@ -455,8 +455,6 @@ state_three: {
 }
 extern int fast_dec_timer_v(void *) __asm__("func_001F9908");
 
-extern void FastVecScale(void *, void *, float);
-
 extern unsigned char *spawn_splash(void *, void *, void *, float, float);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
@@ -1043,7 +1041,6 @@ void spawn_amoeboid_particles(unsigned char *moby) {
     }
 }
 extern void add_random_offset_to_vector_xyz(float *v, float s);
-extern void FastVecScale(void *, void *, float);
 
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 

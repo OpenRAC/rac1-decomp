@@ -1,6 +1,7 @@
 #include "common.h"
 #include "callees.h"
 #include "structs/misc.h"
+#include "asm_functions/executable.h"
 
 /*
  * core_text object 0x119328-0x119868. Boundaries are retail's linker fill
@@ -12,7 +13,6 @@
  * (sceDeci2Open ... kputs). Built with Sony's 2.9-ee (Makefile.sn,
  * EE29_CORE), like the prebuilt archive it matches.
  */
-
 
 ASM_FUNC("asm/handwritten/core_text", func_00119328);
 
@@ -35,10 +35,7 @@ typedef struct {
 
 extern int top_thread_semaphore;
 extern char top_thread_bad_request_message[];
-extern int wait_semaphore(int);
-extern int WakeupThread(int);
-extern int rotate_thread_ready_queue(int);
-extern int SuspendThread(int);
+
 extern int kprintf(const char *, ...);
 
 /* topThread: kernel service dispatcher. Adapted from Lombyte's project (GPL-3.0) for PAL. */
@@ -88,10 +85,7 @@ void topThread(void *arg0) {
  * with the store in the bltz slot. Under 2.95.3 the CreateThread failure
  * block is laid out after the success path (48/212, same size).
  */
-extern int create_semaphore(void *);
-extern int create_thread(void *);
-extern int start_thread(int, void *);
-extern int change_thread_priority(int, int);
+
 extern void topThread(void *);
 extern int top_thread_id;
 extern char top_thread_stack[];
@@ -181,8 +175,6 @@ int sceDeci2Open(unsigned short arg0, void *arg1, void *arg2) {
 }
 
 LINKER_REMNANT("asm/remnants/core_text", func_00119760);
-
-extern void Deci2Call(int arg0, void *arg1);
 
 void sceDeci2ReqSend(int arg0, signed char arg1) {
     int buf[4];

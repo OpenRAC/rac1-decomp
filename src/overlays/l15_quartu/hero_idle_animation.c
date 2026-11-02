@@ -54,7 +54,6 @@ extern int hero_is_in_special_state(void);
 extern void release_and_clear_hero_voice_slots(void);
 extern void RippleDisturb(void *, int, int, float, float, float, float);
 
-extern void FastMemSet(void *, int, int);
 extern void gravity_set_z(float *dst, float *src, float z);
 extern int quartu_game_mode MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;

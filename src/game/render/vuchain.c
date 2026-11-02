@@ -13,8 +13,6 @@
 
 extern int STUB_printf();
 
-extern void flush_cache(int);
-
 extern void VU1_addGSregister(int, long);
 
 #define VIF0_STAT ((volatile unsigned int *)0x10008000)
@@ -306,9 +304,8 @@ LINKER_REMNANT("asm/remnants/text", func_00235008);
 extern int vif1_dma_handler_id MACRO_ADDR;
 extern int vu1_halt_handler_id MACRO_ADDR;
 
-extern int add_dmac_handler(int, void *, void *);
 extern void enable_dmac_atomic(int);
-extern void vif1_dma_interrupt_handler(void);
+
 extern void print_register_values_and_halt(void);
 
 /*
@@ -335,8 +332,6 @@ void DMAC_VIF1_Enable(void) {
  * taken path is the lui/%lo expansion of the same macro. The volatile
  * D_STAT write is what forces the reload on that path.
  */
-extern int remove_dmac_handler(int, int);
-extern int disable_dmac_atomic(int);
 
 /* Stop VIF1 DMA, remove the VIF1 DMA and VU1 halt interrupt handlers. */
 void DMAC_VIF1_Disable(void) {

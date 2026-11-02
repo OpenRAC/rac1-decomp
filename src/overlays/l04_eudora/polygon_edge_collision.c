@@ -66,7 +66,7 @@ extern char D_0013F450[];
 
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
-extern void func_001F9C30(void *, void *, float);
+
 extern int func_L00_001EFFF0(void *, void *, int, void *, int);
 extern float func_001F9CE8(void *);
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");

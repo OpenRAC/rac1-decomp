@@ -136,7 +136,7 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 
 extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
-extern void FastVecScale(void *, void *, float);
+
 extern void vec_set_length_xy(void *, void *, float);
 
 extern float SpringTurn(float, float, float, float, float, float *);
@@ -340,7 +340,7 @@ extern int orxon_quad_layer_uv_use_cos[][2];
 extern float orxon_quad_layer_base_uvs[][2];
 extern V4_2EA578 orxon_quad_layer_second_vertices[];
 extern V4_2EA578 orxon_quad_layer_first_vertices[];
-extern void copy_matrix_rotation(void *, void *);
+
 extern long GetEffectTex(int);
 extern void draw_world_quad(void *, void *, int);
 

@@ -291,8 +291,6 @@ extern int rand_range(int, int);
 
 extern void DeleteMoby(void *);
 
-extern void FastVecScale(void *, void *, float);
-
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern int Moby_PlaySound(int, int, int);
 extern float IntToFloat(int);
@@ -539,7 +537,7 @@ struct Moby *spawn_debris_moby(Vec4f *pos, Vec4f *vel, s32 oclass, s32 a3, s32 a
 extern f32 g_frame_time MACRO_ADDR;
 
 extern f32 fast_atan2(f32, f32);
-extern void FastVecScale(void *, void *, f32);
+
 extern void vec_scale_to_length(void *, void *, f32);
 
 typedef struct {
@@ -1491,7 +1489,7 @@ extern int gold_bolt_ring_color_a SDATA(gold_bolt_ring_color_a);
 extern int gold_bolt_ring_color_b SDATA(gold_bolt_ring_color_b);
 extern int gold_bolt_ring_blend_flag SDATA(gold_bolt_ring_blend_flag);
 extern int gold_bolt_ring_texture SDATA(gold_bolt_ring_texture);
-extern void FastVecScale(void *, void *, float);
+
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern float MobyGetFrameValue_m(void *) __asm__("func_0020D830");
 
@@ -1610,7 +1608,7 @@ extern float gold_bolt_trail_spread_min SDATA(gold_bolt_trail_spread_min);
 extern float gold_bolt_trail_spread_max SDATA(gold_bolt_trail_spread_max);
 extern int gold_bolt_trail_color SDATA(gold_bolt_trail_color);
 extern float gold_bolt_trail_size SDATA(gold_bolt_trail_size);
-extern void FastVecScale(void *, void *, float);
+
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void rand_vec(float *, float, float);
 extern void spawn_moving_hero_relative_alpha_fade_particle(void *, void *, int, int, int, int, float);
@@ -1935,7 +1933,7 @@ extern short teleporter_ring_alpha_a, teleporter_ring_alpha_b, teleporter_ring_a
 extern float teleporter_ring_height SDATA(teleporter_ring_height);
 extern float teleporter_ring_uvs[];
 extern unsigned char g_hero_field_20a5_q __asm__("D_001414F5") NOT_SDA;
-extern void copy_matrix_rotation(void *, void *);
+
 extern long GetEffectTex(int);
 extern void draw_world_quad(void *, void *, int);
 
@@ -3379,8 +3377,6 @@ extern float novalis_camera_up_axis[];
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
 extern int find_nearest_path_point(void *, void *, void *, int *, float *, int, float, float, float);
 extern float Cam_InterpValues(float a, float b, float *p, float c, float d, float e);
-
-extern float FastArcSin(float x);
 
 /* Update function of camera 3: follows a path beside the hero's and turns toward a look-at point on it.
    The four `= 0` initialisers in the mode 2 block are dead and leave no code: they make up for the insns

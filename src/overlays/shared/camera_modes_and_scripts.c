@@ -49,7 +49,6 @@ void follow_camera_update(char *m) {
 extern char hero_globals_base[] NOT_SDA;
 extern int gCheats_3 MACRO_ADDR;
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecScale(void *, void *, float);
 
 /* Builds a view matrix and multiplies it into the camera and projection matrices. The mode flag is read as a byte of a
    MACRO_ADDR int, which gives retail's one-register lui/lbu. */
@@ -75,7 +74,6 @@ void update_hero_aligned_camera_position(char *p) {
     FastVecAdd(p, (char *)&gHeroPos, b);
     FastVecAdd(p, (char *)&gHeroPos + 0xC0, p);
 }
-extern void FastVecScale(void *, void *, float);
 
 extern void *camera_cross_axis_ptr;
 
@@ -142,14 +140,12 @@ extern float hero_aligned_cam_input_damping SDATA(hero_aligned_cam_input_damping
 extern float hero_aligned_cam_input_max_step SDATA(hero_aligned_cam_input_max_step);
 void func_L00_002EB170_EB3E8(void *) __asm__("func_L00_002EB170");
 void vec_scale_to_length(void *, void *, float);
-void FastVecCross(void *, void *, void *);
-void FastVecAdd(void *, void *, void *);
+
 float IntToFloat(int);
 float FastAbsF(float);
 float func_001EC120_EB3E8(float, float, float, float, float, float *) __asm__("func_001EC120");
 void build_look_at_matrix(void *, void *, void *, float);
-float FastAddRots(float, float);
-float FastSubRots(float, float);
+
 int coll_sphere(void *, int, void *, float);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002e9010.c, FUN_L00_002e9f38. */
@@ -375,8 +371,6 @@ void initialize_hero_aligned_camera_mode(char *cam) {
         Moby_PlaySound(0, 0, h->p);
 }
 
-extern float FastArcSin(float);
-
 /* Exit-camera update: reset the camera state, or drop to state 4 when the view lines up within 80 degrees. */
 void select_camera_mode_by_hero_vector_alignment(char *m) {
     char *p = g_hero;
@@ -490,7 +484,6 @@ void CameraScript(V_2ebf50 *pa, V_2ebf50 *pb, s32 mode, s32 w, s32 x) {
 }
 extern void initialize_camera_record_handoff_defaults(void);
 
-extern void matrix_copy_rows(void *, void *);
 extern char hero_globals_base[];
 
 /* camera script command 2: sets the camera object's mode from the command number */
@@ -1135,7 +1128,6 @@ void update_target_tracking_camera_position(Camera *cam) {
         qcopy(&cam->pos, position);
 }
 
-extern float FastArcSin(float);
 extern void build_look_at_matrix(void *, void *, void *, float);
 extern char camera_view_up_axis[] NOT_SDA;
 /* orients a moby to face the camera, blending by the turn angle */
@@ -1443,7 +1435,6 @@ extern int try_select_follow_camera_volume(void *);
 extern void clear_follow_camera_volume_if_current(void *);
 
 extern void vec_scale_to_length(void *, void *, f32);
-extern void FastVecScale(void *, void *, f32);
 
 extern f32 IntToFloat(int);
 
@@ -2089,11 +2080,11 @@ typedef struct {
 extern u8 g_debug_camera_r2[] __asm__("D_L00_00166EC0");
 extern VoicePoolRow voice_pool[];
 extern T_2ed950 *level_sound_slots MACRO_ADDR;
-f32 FastVecDist(void *, void *);
+
 s32 fast_dec_timer(s32 *);
 s32 func_L00_0028F0B0_EEE00(s32, s32, void *, s32) __asm__("func_L00_0028F0B0");
 s32 random_integer_below(s32);
-s32 scale_ticks(s32);
+
 void Sound_StopSlot(s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002e9010.c, FUN_L00_002ed950. */

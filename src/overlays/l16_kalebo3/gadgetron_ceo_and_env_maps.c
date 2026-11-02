@@ -547,7 +547,7 @@ extern int path_walker_particle_color_end SDATA(path_walker_particle_color_end);
 extern float path_walker_particle_movement_velocity_scale SDATA(path_walker_particle_movement_velocity_scale);
 extern float path_walker_particle_random_velocity_scale SDATA(path_walker_particle_random_velocity_scale);
 extern float path_walker_particle_target_scalar_scale SDATA(path_walker_particle_target_scalar_scale);
-extern void FastVecScale(void *, void *, float);
+
 extern void vec_scale_to_length(void *, void *, float);
 
 extern void func_L00_0026DD70(void *, void *, int, int, float, int);
@@ -808,9 +808,6 @@ void ElevatorPlatformUpdate(Moby *m) {
     }
 }
 
-extern void copy_matrix_rotation(void *, void *);
-
-extern float FastNormalizeAngle(float);
 extern void draw_world_quad(void *, void *, int);
 extern float elevator_ring_uvs[][2];
 extern short elevator_max_speed, elevator_ring_color_start, elevator_ring_color_end;

@@ -41,8 +41,6 @@ int find_nearest_animation_sequence_entry(char *a, float time) {
 }
 LINKER_REMNANT("asm/overlays", func_L00_0024FEF8);
 
-extern void FastVecScale(void *, void *, float);
-
 /* places a scaled, camera-relative entry in an object's table */
 void set_moby_local_table_entry(char *a, int idx, void *pos, float x, float y) {
     float m[16];
@@ -122,7 +120,6 @@ typedef struct {
     u8 pad0[0x60];
     ListNode *head; /* 0x60 */
 } ListOwner;
-extern void FastMemSet(void *, s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/state/0024eec0.c, FUN_L00_0024f0e8. */
 void release_moby_animation_slot(ListOwner *owner, ListNode **slot) {
@@ -266,7 +263,6 @@ typedef struct {
 } Object_50478p;
 extern void section(void *, int) __asm__("func_001F99D8");
 extern void func_L00_001FF040(void *, void *, int);
-extern void func_00118D80(int);
 
 /* Defined under a local name: this unit already declares FUN_L00_0024f440
  * with a generic prototype for its callers. */
@@ -354,7 +350,6 @@ void Moby_GetJointWorldPos(char *arg0, int arg1, void *arg2) {
     matrix_mul_vec3(arg2, arg2, arg0 + 0xC0);
     FastVecAdd(arg2, arg2, arg0 + 0x10);
 }
-extern void copy_matrix_rotation(void *, void *);
 
 // Builds a matrix from the object's rotation, then rescales and offsets each entry of an attach list.
 void compute_selected_world_matrices(char *o, int n, int *arg2, char *out) {

@@ -775,8 +775,6 @@ extern int toxic_crab_debris_time2 SDATA(toxic_crab_debris_time2);
 extern int toxic_crab_debris_time3 SDATA(toxic_crab_debris_time3);
 extern void add_random_offset_to_vector_xyz(float *v, float s);
 
-extern void FastVecScale(void *, void *, float);
-
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 
 // Per-frame update of the moby in arg0: builds two vectors from its position and the trig helpers, then calls the
@@ -1625,8 +1623,6 @@ finish:
 }
 extern short orxon_vent_puff_color_a, orxon_vent_puff_color_b, orxon_vent_puff_speed_max, orxon_vent_puff_speed_min,
     directional_particle_gravity_gp, orxon_vent_spark_percent;
-
-extern void FastVecScale(void *, void *, float);
 
 extern int spawn_gravity_floor_burst_particle(void *, void *, int, float, float, float, int, int, int);
 

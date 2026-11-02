@@ -92,7 +92,6 @@ extern void ClampVectorLength(void *a, float x);
 extern int check_pad_press_separation(int, int, int, int);
 
 extern float ApproachValue(float *p, float target, float maxstep);
-extern void FastVecScale(void *, void *, float);
 
 extern float gravity_z(float *v);
 
@@ -110,7 +109,6 @@ extern int nearest_rail_point(void *, void *, void *, void *, void *, void *, in
 
 extern int compute_hero_hoverboard_respawn_transform(float *, float *);
 extern void Hero_ResetToPosition(void *, void *, int, int);
-extern void FastMemSet(void *, int, int);
 
 /* Hero state machine: per-frame transition logic for the current hero state (level 16 build). */
 void Hero_ChooseStateTransition(void) {

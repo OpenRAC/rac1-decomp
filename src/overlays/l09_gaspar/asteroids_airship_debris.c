@@ -90,7 +90,7 @@ extern int *l09_packet MACRO_ADDR;
 extern int FastBSphereCheck(char *, float);
 extern void UpdateViewContext(void);
 extern void BuildViewMatrices(void);
-extern void set_scale_matrix(float, void *);
+extern void set_scale_matrix_v(float, void *) __asm__("func_001FA1C0");
 extern void FastVecScale_r(float, void *, void *) __asm__("func_001F9C30");
 
 extern void sce_vu0_mul_matrix(void *, void *, void *);
@@ -140,7 +140,7 @@ void build_packet_and_draw_scaled_entries(void *data_ptr, void *list_ptr, int co
     }
     UpdateViewContext();
     BuildViewMatrices();
-    set_scale_matrix(1024.0f, matrix);
+    set_scale_matrix_v(1024.0f, matrix);
     FastVecScale_r(-1024.0f, offset, gaspar_camera_pos);
     offset[3] = 1.0f;
     VU1_addDataRef(font_vu_program, font_vu_program_tag[0]);
@@ -358,7 +358,6 @@ extern void SetDeathBits(void *, int, int);
 extern void SpawnExplosionFx(void *, void *, int, float, float);
 
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
-extern void FastVecScale(void *, void *, float);
 
 extern int rand_range(int, int);
 extern int Moby_PlaySound(int, int, int);
@@ -593,7 +592,6 @@ void update_airship_part(Moby *moby) {
 extern float frame_scale MACRO_ADDR;
 
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecScale(void *, void *, float);
 
 /* spawns a debris moby with randomized velocity toward a point */
 char *spawn_fading_asteroid_debris(char *owner, float *vec) {
@@ -779,7 +777,6 @@ Moby *spawn_path_following_asteroid(Moby *owner) {
     return m;
 }
 extern void DeleteMoby(void *); /* DeleteMoby */
-extern void FastVecScale(void *, void *, float);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -1562,7 +1559,6 @@ extern int fast_dec_timer(int *);
 extern int coll_line_r2(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
 extern void *PartType27Spawn_r2(void *, void *, int, int, float) __asm__("func_L00_0026EBC0");
 
-extern void FastVecScale(void *, void *, f32);
 extern void vec_scale_to_length(void *, void *, f32);
 
 /* The heavier tumbling debris: as FUN_L09_002ef430, inside a 2..1021 box, with eight sparks; on a hit it either slows
@@ -1692,7 +1688,6 @@ char *spawn_radially_scattered_moby(void *unused, void *origin, void *direction_
     return moby;
 }
 
-extern void FastVecScale(void *, void *, float);
 extern void DeleteMoby(void *);
 
 /* Moby update for a drifting particle-like moby. */

@@ -183,7 +183,7 @@ after:
         }
     }
 }
-extern void *create_part(int);
+
 extern int func_001160D8(void);
 extern unsigned char *part_type04_textures;
 
@@ -223,7 +223,6 @@ void PartType04Spawn(void *a, void *b, int c, int d, int n, int s1, int s2, int 
     }
 }
 extern float IntToFloat(int);
-extern void FastVecScale(void *, void *, float);
 
 extern int DefaultVtbl_DeleteMoby(int, int, float);
 
@@ -493,7 +492,7 @@ b0b0:
         KillPart(m);
     }
 }
-extern void *create_part(int);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float IntToFloat(int);
 extern unsigned char *part_type08_textures;
@@ -1374,16 +1373,12 @@ typedef struct PartType19Data {
     f32 f1C;
 } PartType19Data;
 extern f32 frame_scale MACRO_ADDR;
-f32 FastSin(f32);
-f32 FastCos(f32);
-void transform_vector(void *, void *, void *);
-void FastVecSub(void *, void *, void *);
-void FastVecAdd(void *, void *, void *);
+
 void Moby_GetJointWorldPos(void *, s32, void *);
 void vec_scale_to_length(void *, void *, f32);
-f32 FastAddRots(f32, f32);
+
 f32 compute_transformed_delta_component(void *, void *, void *, s32);
-s32 FastDecTimer(void *);
+
 void KillPart(void *);
 s32 truncate_float_to_s32(f32);
 
@@ -1908,7 +1903,7 @@ void update_source_attached_fading_effect_particle(struct PartBase *particle) {
     vec_scale_to_length(position_offset, position_offset, 0.4f);
     FastVecAdd(&particle->pos, source_position, position_offset);
 }
-extern void *create_part(int);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern unsigned char *part_type27_textures;
 
@@ -1965,13 +1960,9 @@ typedef struct {
 extern u8 *part_type28_textures;
 struct PartBase *func_00218928_6ED30(s32) __asm__("func_00218928");
 f32 random_float_between(f32, f32);
-void copy_matrix_rotation(void *, void *);
-void transform_vector(void *, void *, void *);
-void FastVecAdd(void *, void *, void *);
+
 s32 func_001160D8(void);
 s32 truncate_float_to_s32(f32);
-s32 scale_ticks(s32);
-void matrix_mul_vec3(void *, void *, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering_00269290.c, FUN_L00_0026de90. */
 void spawn_jittered_effect_particle_with_optional_basis(void *pos, void *dir, f32 size) {
@@ -2172,14 +2163,11 @@ extern f32 g_frame_scale_sq MACRO_ADDR;
 extern V_26e670_26e670 coll_resolved_pos;
 extern V_26e670_26e670 g_debug_camera_r3 __asm__("D_L00_00166EC0");
 extern V_26e670_26e670 coll_hit_normal_r __asm__("D_L00_00173F80");
-void clear_u64_value(void *);
-void FastVecSub(void *, void *, void *);
+
 void vec_scale_to_length(void *, void *, f32);
-void FastVecAdd(void *, void *, void *);
-void FastVecScale(void *, void *, f32);
-f32 FastVecLength(void *);
+
 f32 FastAbsF(f32);
-void transform_vector(void *, void *, void *);
+
 f32 fast_atan2(f32, f32);
 s32 truncate_float_to_s32(f32);
 s32 func_L00_001F10E0_6F510(void *, s32, s32, f32) __asm__("func_L00_001F10E0");
@@ -2307,7 +2295,6 @@ void update_target_relative_two_point_effect_particle(unsigned char *p) {
         KillPart(p);
     }
 }
-extern void *create_part(int);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float frame_scale MACRO_ADDR;
@@ -2821,7 +2808,6 @@ extern f32 frame_scale MACRO_ADDR;
 extern f32 g_frame_scale_sq MACRO_ADDR;
 extern s32 FastDecTimer_r3(s16 *) __asm__("func_001F9938");
 
-extern void FastVecScale(void *, void *, f32);
 extern struct PartBase *spawn_splitting_effect_particle_with_collision_response_and_fade_r(
     void *, void *, s32, void *) __asm__("func_L00_00270BC8");
 

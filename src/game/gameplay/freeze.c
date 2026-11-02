@@ -202,11 +202,11 @@ extern f32 IntToFloat(s32);
 extern s32 truncate_float_to_s32(f32);
 
 extern s32 GetIconFrame(s32, s32);
-extern s64 GetFrameTex(s32);
+
 extern void HudSprite(s32, s32, s32, s32, s32, s32);
 extern void draw_rotated_sprite(f32, f32, f32, f32, f32, s32, s32, s64);
 extern void VU1_addGSregister(s32, s64);
-extern void *libc_strncpy(void *, char *, s32);
+
 extern s32 sprintf(char *, const char *, ...);
 
 /* Draws a freeze-mode message box sized to its text and centred on screen, fading with the box timer. */

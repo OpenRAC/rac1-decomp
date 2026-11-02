@@ -138,7 +138,6 @@ extern void Sound_PlayClassSound_r(int, int, struct Moby *, int) __asm__("func_L
 extern f32 IntToFloat(s32);
 
 extern void vec_set_length_xy(void *, void *, f32);
-extern void FastVecScale(void *, void *, f32);
 
 extern int mine_fall_r(struct Moby *, void *) __asm__("func_L00_0025D6F0");
 extern void spawn_explosion(struct Moby *, void *, void *, f32, f32, s32, s32, s32, f32, f32, f32, f32, s32, f32, s32,

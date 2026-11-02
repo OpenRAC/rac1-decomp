@@ -88,8 +88,6 @@ extern float dual_mesh50_verts[][4];
 extern char dual_mesh50_centers[][16];
 extern char dual_mesh50_normals[][16];
 extern long GetEffectTex_r(int) __asm__("func_001F4868");
-extern void set_identity_matrix(void *);
-extern void FastVecScale(void *, void *, float);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -178,8 +176,6 @@ extern float dual_mesh58_verts[][4];
 extern char dual_mesh58_centers[][16];
 extern char dual_mesh58_normals[][16];
 extern long GetEffectTex_r2(int) __asm__("func_001F4868");
-extern void set_identity_matrix(void *);
-extern void FastVecScale(void *, void *, float);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -278,8 +274,6 @@ extern float dual_mesh864_verts[][4];
 extern char dual_mesh864_centers[][16];
 extern char dual_mesh864_normals[][16];
 extern long GetEffectTex_r3(int) __asm__("func_001F4868");
-extern void set_identity_matrix(void *);
-extern void FastVecScale(void *, void *, float);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -2414,8 +2408,6 @@ extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 extern void set_vec_to_origin_point(void *);
 
-extern void set_scale_matrix(float *, float);
-
 extern void func_L00_00273F80(void *, void *, int, float, int, int, int);
 extern int vector_stream_fade_ticks MACRO_ADDR;
 extern int vector_stream_regen_ticks MACRO_ADDR;
@@ -2623,7 +2615,6 @@ void test_moby_vector_stream_collision_lines(char *m) {
     coll_line(P, Q, 0, (int)m, (int)A);
 }
 
-extern void set_scale_matrix(float *, float);
 extern int GetEffectTex(int);
 extern void VU1_addGSregister(int, long);
 

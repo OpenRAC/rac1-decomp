@@ -1,17 +1,12 @@
 #include "common.h"
 #include "callees.h"
 #include "structs/misc.h"
+#include "asm_functions/executable.h"
 
 /*
  * core_text object 0x12A2F0-0x12AC80. Boundaries are retail's linker fill
  * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
  */
-
-extern void disable_dmac_atomic(int);
-extern void remove_dmac_handler(int, int);
-
-extern int disable_interrupts(void);
-extern void enable_interrupts(void);
 
 extern void _Error_a(void *, void *) __asm__("func_0012C468");
 
@@ -111,7 +106,7 @@ ASM_FUNC("asm/handwritten/core_text", func_0012A718);
 
 extern void *dispatch_mpeg_callback_result(void *, int *) __asm__("func_0012BC78");
 /* Transfer the MPEG input through the IPU/SPR DMA channel, splitting large blocks. */
-extern void *add_dmac_handler2(int, void *, int, void *);
+
 extern void enable_dmac_atomic(int);
 extern void do_csc2(void *, unsigned int, int);
 extern void csc_store_ref_image_dma_handler();

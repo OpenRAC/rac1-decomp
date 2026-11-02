@@ -3,6 +3,7 @@
 #include "structs/misc.h"
 #include "core/cdvd/callbacks.h"
 #include "data/executable.h"
+#include "asm_functions/executable.h"
 
 /*
  * core_text object 0x121750-0x121D18. Boundaries are retail's linker fill
@@ -16,10 +17,6 @@
  * 2.9-ee (Makefile.sn, EE29_CORE), like the prebuilt archives they match.
  */
 
-extern int sif_call_rpc();
-
-extern void signal_semaphore(int);
-
 extern void scePrintf();
 
 extern int cd_ncmd_disk_ready(void);
@@ -30,7 +27,7 @@ extern int cd_ncmd_disk_ready(void);
  * The volatile state clears precede the semaphore read; the verified
  * GNU 2.10-ee profile fills SignalSema's call slot with that word load.
  * Sector size by mode->datapattern: 1 -> 0x918, 2 -> 0x924, else 0x800. */
-extern int sif_call_rpc(void *, int, int, void *, int, void *, int, void *, void *);
+
 extern int cd_read_mode_flags NOT_SDA;
 extern char cd_read_request[];
 extern char cd_read_reply_buffer[];
@@ -195,10 +192,6 @@ typedef struct {
 } sceGsGParam;
 
 extern void *sceGsGetGParam(void);          /* sceGsGetGParam */
-extern int gs_put_imr();                /* GsPutIMR */
-extern int remove_intc_handler();                /* RemoveIntcHandler */
-extern int disable_intc_atomic();
-extern void set_gs_crt(int, int, int);  /* SetGsCrt */
 
 /* sceGsResetGraph. Adapted from Lombyte's project (GPL-3.0) for PAL. */
 void sceGsResetGraph(short mode, short inter, short out, short ff) {

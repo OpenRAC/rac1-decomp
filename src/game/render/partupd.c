@@ -3,6 +3,7 @@
 #include "structs/records.h"
 #include "structs/misc.h"
 #include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
 
 /*
  * partupd.cpp in the original source; text 0x219780-0x219C08.
@@ -37,7 +38,7 @@ struct Obj {
 };
 extern u8 *particle_texture_ptrs[];
 extern u8 *particle_texture_ptrs_23[];
-extern struct Obj *create_part(s32);
+
 extern s32 truncate_float_to_s32(f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/fun_00218888.c, FUN_00218888. */

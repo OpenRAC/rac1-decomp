@@ -127,8 +127,6 @@ struct BubbleVars {
     f32 *surface; /* 0x24: ocean height */
 };
 
-extern void FastVecScale(void *, void *, float);
-
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float IntToFloat(int);
 extern int GetEffectTex(int);
@@ -939,7 +937,6 @@ extern void update_player_ship_flight(void *, void *);
 extern int count_listed_blarg_ships_in_state_5(int);
 extern char *activate_listed_blarg_ship(int idx);
 
-extern void moby_anim_sphere_lerp(void *);
 extern void Hero_ResetToPosition(void *, void *, int, int);
 
 extern int STUB_printf();

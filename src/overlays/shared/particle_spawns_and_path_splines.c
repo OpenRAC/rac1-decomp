@@ -10,8 +10,6 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 
-extern unsigned char *create_part(int);
-
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern unsigned char *novalis_part_type10_textures;
@@ -315,8 +313,6 @@ int advance_path_node_index(char *p) {
 }
 extern void *func_001153FC(void *, int, unsigned int);
 extern void *get_path_node(void *, int);
-
-extern void FastVecScale(void *, void *, float);
 
 extern void vec_scale_to_length(void *, void *, float);
 typedef int u128 __attribute__((mode(TI)));

@@ -13,9 +13,6 @@
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-extern void FastMemCopy(void *, void *, int);
-
-extern int log2dim(int);
 extern int g_gs_texture_allocation_cursor MACRO_ADDR;
 extern int pending_texture_upload_count MACRO_ADDR;
 extern TexSlot pending_texture_uploads[];
@@ -301,8 +298,6 @@ int find_id_in_terminated_table(int arg0) {
     return -1;
 }
 
-extern int subtract_integer_with_clamp(int); /* abs */
-
 /* Picks the map slot to reuse (level_map_selection's five slots: in use at
    [0x9E + i], map id at [0xA3 + i], active slot [0xA8]). With no current
    map (+0x224 == 0) a used, inactive slot holding no map (-1) is looked
@@ -565,7 +560,7 @@ extern void font_print_window_small(void *, u64, void *, s32);
 extern f32 fast_add_rotations(f32, f32) __asm__("func_001FA748");
 
 extern s32 get_icon_frame(s32, s32) __asm__("func_00200198");
-extern u64 func_00200248(s32);
+
 extern void draw_hud_sprite_subpixel(s32, s32, s32, s32, s32, s32);
 extern void draw_rotated_sprite(f32, f32, f32, f32, f32, s32, s32, u64);
 extern void func_00201640(s32, s32, s32, s32, u64, s32);

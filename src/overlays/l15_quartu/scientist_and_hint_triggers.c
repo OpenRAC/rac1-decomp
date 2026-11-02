@@ -644,8 +644,6 @@ extern void VU1_addGSregister(int, long);
 
 extern void get_moby_color(void *, void *, void *, void *);
 
-extern float FastNormalizeAngle(float x);
-
 extern void draw_env_overlay_mesh(int, int, int, void *, int);
 extern float g_frame_time MACRO_ADDR;
 extern int quartu_frame_count MACRO_ADDR;
@@ -868,10 +866,6 @@ int is_hero_in_moby_follow_camera_region(char *moby) {
     }
     return 0;
 }
-
-extern void FastVecScale(void *, void *, float);
-
-extern float FastArcSin(float x);
 
 extern char quartu_player_camera_field_190[];
 extern char quartu_player_camera[];

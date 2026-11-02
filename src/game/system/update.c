@@ -13,8 +13,6 @@
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-extern void FastVecScale(void *, void *, float);
-
 extern char camera_position[];
 
 extern void truncate_float_to_s32(float);
@@ -36,8 +34,6 @@ typedef struct {
 } ScreenExt;
 extern ViewCtx view_context;
 extern ScreenExt g_screen_extent;
-
-extern void FastVecScale(void *, void *, float);
 
 void project_graphics_bounds(Vec4 *a, Vec4 *b, int *w, int *h, int *x, int *y) {
     Vec4 p;

@@ -5,6 +5,7 @@
 #include "game/render/draw.h"
 #include "game/render/vuchain.h"
 #include "data/executable.h"
+#include "asm_functions/executable.h"
 
 /*
  * shrubfunc.cpp in the original source; text 0x229C08-0x229F00.
@@ -14,14 +15,11 @@
 
 extern int STUB_printf();
 
-extern void flush_cache(int);
-
 extern int g_render_packet_cursor MACRO_ADDR;
 extern int shrub_tex_dma_tag MACRO_ADDR;
 extern int max_shrub_texture_dma_size MACRO_ADDR;
 extern int g_gs_texture_allocation_cursor MACRO_ADDR;
 extern char str_shrub_texture_overflow[];
-extern int BuildShrubTextureDma(int);
 
 /* DmaShrubTextures: DmaMobyTextures' splice around the shrub texture
    upload, which also warns past 0x400000 bytes and keeps the largest
@@ -95,7 +93,6 @@ extern char str_shrub_texs[];
 extern char str_shrub_draw[];
 extern char shrub_scratchpad_copy[];
 
-extern void ShrubProc(void);
 extern void DmaShrubTextures(void);
 
 /* DrawShrubs. The packet pointer goes through a local advanced in place;

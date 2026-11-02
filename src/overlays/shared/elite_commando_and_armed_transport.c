@@ -1469,7 +1469,7 @@ typedef struct {
     float cardinal_angles[4];
 } RingData;
 extern long GetEffectTex(int);
-extern void FastVecScale(void *, void *, float);
+
 extern void draw_world_quad(void *, void *, int);
 extern float grindrail_barrier_ring_uvs[4][2], grindrail_barrier_core_uvs[4][2];
 extern float grindrail_barrier_ring_quad_corners[4][4], grindrail_barrier_core_quad_corners[4][4];

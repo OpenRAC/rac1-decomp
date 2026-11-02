@@ -450,9 +450,6 @@ typedef struct {
 } Ship;
 
 extern void Load_r(void *, int, int) __asm__("func_002176C8");
-extern void flush_cache(int);
-extern int fast_decompress(void *, void *);
-extern void FastMemSet(void *, int, int);
 
 extern void SetUpdateModeTiming(int);
 extern void UpdateFog();
@@ -460,21 +457,19 @@ extern void UpdateFog();
 extern void VU0_loadMicroProgram(void *);
 extern int STUB_printf();
 extern void copy_memory_by_alignment(void *, void *, int);
-extern void LightTfrags(void *);
 
 extern void scale_vector(void *, void *, float);
 
-extern void LightTies(void *);
 extern int truncate_float_to_s32(float);
 extern float IntToFloat(int);
-extern void LightShrubs(void *);
+
 extern void resolve_lookup_record(short *);
 extern int find_or_assign_bolt_source_slot(int, int);
 
 extern void moby_build_matrix(void *);
 
 extern void store_current_level_table_value(int, int);
-extern void FastMemCopy(void *, void *, int);
+
 extern void initialize_moby_state_record(char *);
 
 extern void *CreateMoby(int);
@@ -1892,12 +1887,11 @@ extern s32 moby_texture_count MACRO_ADDR;
 extern u8 mission_state[] MACRO_ADDR;
 extern s32 level_frame_counter MACRO_ADDR;
 extern UpdD244 active_scene_trigger;
-extern void flush_cache(s32);
+
 extern void Profile_Mark(void *, s32);
-extern s32 log2dim(s32);
-extern void FastMemSet(void *, s32, s32);
+
 extern void copy_memory_by_alignment(void *, void *, s32);
-extern void FastMemCopy(void *, void *, s32);
+
 extern void ParseParticleTexs(void *, char *, void *, s32);
 extern void unpack_point_records(void *, s32);
 extern void relocate_sky_definition(char *);

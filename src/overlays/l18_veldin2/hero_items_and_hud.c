@@ -103,7 +103,6 @@ extern void ClampVectorLength(void *a, float x);
 extern int check_pad_press_separation(int, int, int, int);
 
 extern float ApproachValue(float *p, float target, float maxstep);
-extern void FastVecScale(void *, void *, float);
 
 extern float gravity_z(float *v);
 

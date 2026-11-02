@@ -194,15 +194,11 @@ extern f32 g_frame_time MACRO_ADDR;
 extern u8 hero_velocity[];
 s32 truncate_float_to_s32(f32);
 void release_and_clear_hero_voice_slots(void);
-void FastVecSub(void *, void *, void *);
-f32 FastAddRots(f32, f32);
-f32 FastCos(f32);
-f32 FastSin(f32);
-void FastVecAdd(void *, void *, void *);
+
 void HeroQuartu_TrySetMoveState(s32, s32);
 void allocate_hero_voice_for_entry(s32, s32);
 void remove_tracked_class_5f3_moby(void);
-void clear_u64_value(void *);
+
 void hero_knockback(void *, s32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l15/ui_help_002044c8.c, FUN_L15_00208e10. */
@@ -421,7 +417,6 @@ extern void ClampVectorLength(void *, float);
 extern int solve_quadratic_equation(float *, float *, float, float, float);
 extern float step_angle_toward_target(float *, int, float, float);
 extern float vec_distance_xy(void *, void *);
-extern void FastVecScale(void *, void *, float);
 
 extern float gravity_z(float *);
 extern float Spring(float *, float *, float, float, float, float);

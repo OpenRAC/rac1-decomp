@@ -13,7 +13,6 @@ extern long func_001F4868(int);
 extern void MobyTransformScaledVertex(char *arg0, int arg1, char *arg2);
 
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecScale(void *, void *, float);
 
 extern void draw_world_quad(void *, void *, int);
 extern float glow_quad_z_offset;

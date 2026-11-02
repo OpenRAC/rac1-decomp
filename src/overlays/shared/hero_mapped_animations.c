@@ -326,7 +326,7 @@ extern char hero_anim_slot_positions[];
 extern short hero_anim_blend_presets;
 extern int SlotTable_Insert(void *);
 extern void moby_blend_anim_frames_to_spr_slot(void *, int);
-extern void flush_cache(int);
+
 extern void update_moby_animation_state(void *);
 extern int truncate_float_to_s32(float);
 extern void clear_hero_queued_animation(void);
@@ -572,8 +572,6 @@ typedef int V4q_32b90 __attribute__((mode(TI), aligned(16)));
 extern Hero g_hero_r __asm__("D_0013F450");
 extern u8 coll_hit_normal[];
 extern f32 collision_hit_point;
-
-extern void FastVecScale(void *, void *, f32);
 
 extern void vec_scale_to_length(void *, void *, f32);
 extern void clip_negative_segment_endpoint_xyz(Vec4 *, void *);
@@ -993,7 +991,6 @@ void HeroOffsetAlongViewZ(float *dst, float *src, float dz) {
 }
 
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecScale(void *, void *, float);
 
 /* Takes SRC's component along the view's normal out, into DST: in view
    mode 0 (g_hero + 0x20B3) z is zeroed; in mode 1 the normal is the
@@ -1464,9 +1461,7 @@ void Hero_ConstrainToPath(void) {
 extern Hero g_hero_r2 __asm__("D_0013F450");
 extern s32 cinematic_mode MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
-f32 FastAddRots(f32, f32);
-f32 FastSin(f32);
-s32 FastTweenColor(s32, s32, f32);
+
 void AttachManipulator(void *, s32, void *);
 void axis_rotation_2d48(void *, s32, f32);
 
@@ -1611,8 +1606,7 @@ void HeroAttachManipulators(char *obj) {
     update_hero_slot4_and_slot5_mobys((int)obj);
 }
 extern void MobyTransformScaledVertex(int, int, void *);
-extern void matrix_copy_rows(void *, void *);
-extern void moby_anim_sphere_lerp(void *);
+
 extern void pack_pose(void *, void *, void *, int, int);
 extern char source_bone4_joints_class1b1[];
 extern char source_bone4_pose_buffer[];

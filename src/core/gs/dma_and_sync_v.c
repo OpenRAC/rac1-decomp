@@ -14,16 +14,9 @@
  * sceDmaGetChan, sceDmaReset, sceDmaPutEnv, sceDmaPause, ...).
  */
 
-extern int disable_interrupts(void);
-extern void enable_interrupts(void);
-
 extern void scePrintf();
 
 extern void *sceGsGetGParam(void);
-extern int disable_intc_atomic(int);
-extern int remove_intc_handler(int, int);
-
-extern void enable_intc_atomic(int);
 
 /*
  * libgraph's sceGsSyncVCallback: install (or, called with arg0 == 0,

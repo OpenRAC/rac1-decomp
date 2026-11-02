@@ -2,6 +2,7 @@
 #include "callees.h"
 #include "structs/misc.h"
 #include "core/kernel/kprintf.h"
+#include "asm_functions/executable.h"
 
 /*
  * core_text object 0x121D18-0x122140. Boundaries are retail's linker fill
@@ -65,7 +66,7 @@ typedef struct {
 } GsDispEnv;
 
 extern GsGParam *sceGsGetGParam(void);
-extern void _GetGsDxDyOffset(int, int *, int *, int *, int *);
+
 extern char gs_def_disp_env_mode_error_msg[];
 
 void sceGsDefDispEnv(GsDispEnv *disp, short psm, short w, short h, short dx, short dy) {
