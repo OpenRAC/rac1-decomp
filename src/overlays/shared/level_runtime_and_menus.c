@@ -535,7 +535,7 @@ typedef struct {
     u8 pad2a4[4];
     s32 last_transfer_bytes;
 } RenderArchiveState;
-/* FAKEMATCH: a second view of map_menu_state, as a RenderArchiveState. */
+/* FAKEMATCH: a second view of map_menu_state. One view with casts matches, but reads worse. */
 extern RenderArchiveState map_menu_state;
 extern u8 gHaveMapOMatic NOT_SDA;
 void Profile_Mark(void);

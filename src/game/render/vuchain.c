@@ -103,7 +103,7 @@ void VU1_swapChain(void) {
 }
 
 extern int vu1_chain_peak_bytes MACRO_ADDR;
-extern short vif_chain_flags;
+extern volatile int vif_chain_flags SDATA(vif_chain_flags);
 extern char vu1_chain_overflow_msg[];
 extern int *sce_dma_get_chan(int);
 extern void sce_dma_send(int *, int);
@@ -115,8 +115,8 @@ void VU1_sendChain(void) {
     int err;
     int *chan;
 
-    /* KEPT: volatile: the store stays out of the delay slot. The short declaration is for $gp. */
-    *(volatile int *)&vif_chain_flags |= 0x1F;
+    /* KEPT: volatile: the store stays out of the delay slot. */
+    vif_chain_flags |= 0x1F;
     size = (int)g_render_packet_cursor - vu1_chain_buffers[vu1_chain_buffer_index];
     err = 0;
     if (vu1_chain_peak_bytes < size) {
@@ -137,11 +137,11 @@ void VU1_sendChain(void) {
         sce_dma_send(chan, vu1_chain_buffers[vu1_chain_buffer_index]);
     } else {
         /* KEPT: volatile, as above. */
-        *(volatile int *)&vif_chain_flags = 0;
+        vif_chain_flags = 0;
     }
 }
 
-extern short vif_chain_flags; /* SDA, gp -0x5D20 */
+extern volatile int vif_chain_flags SDATA(vif_chain_flags);
 extern char vu1_sync_timeout_msg[];
 extern void reset_graphics(void);
 

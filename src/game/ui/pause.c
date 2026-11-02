@@ -1985,7 +1985,7 @@ struct Hdr16_1CE60 {
 extern struct Hdr16_1CE60 cd_read_state_r __asm__("D_001517D0");
 extern u8 D_001CF9F8[];
 extern u8 D_001CF798[];
-extern s32 *menu_level_indices_r __asm__("D_001602E0") MACRO_ADDR;
+extern s32 *menu_level_indices_r SDATA(D_001602E0);
 extern u8 D_0013D5E9[];
 extern u8 D_0013DE60[];
 extern u8 level_map_coverage_r[] __asm__("D_00141FC0");
@@ -3834,11 +3834,8 @@ s32 DrawItemsMenu(ItemsMenu *menu) {
 }
 
 extern char gCamera[];
-/* 1.3f, in small data (gp -0x695C). The const float view is what the
-   code reads (read-only, so its load is scheduled above the stores); the
-   2-byte view, referenced last, makes the assembler use $gp. */
-extern const float gold_bolt_marker_y_offset_f __asm__("D_001603A4") MACRO_ADDR;
-extern short gold_bolt_marker_y_offset_s __asm__("D_001603A4");
+/* 1.3f, in small data (gp -0x695C). The const float view is read-only, so its load is scheduled above the stores. */
+extern const float gold_bolt_marker_y_offset_f SDATA(D_001603A4);
 extern char fmt_gold_bolt_count_line[];
 extern int map_gold_bolt_totals[];
 extern int g_screen_extent[];
@@ -3881,11 +3878,6 @@ int DrawGBsShipMenu__maybe(char *arg0) {
     font_print_right_c(screen->width - 0x10, (g_screen_extent[1] >> 1) - 8, 0x80000000L, buf, -1);
     font_print_right_c(screen->width - 0x11, (g_screen_extent[1] >> 1) - 9, 0x80FFA888L, buf, -1);
     DoGifPaging();
-    /* FAKEMATCH: if (0): the 2-byte view is the last use, so $gp reaches it (one function differs without it). */
-    if (0) {
-        /* no code: registers the 2-byte view last (see above) */
-        (void)gold_bolt_marker_y_offset_s;
-    }
     return 8;
 }
 
@@ -5476,8 +5468,7 @@ typedef struct {
 
 extern Src0C planet_icon_rows[];
 extern Out0C galaxy_menu_items[];
-extern short menu_level_indices_s __asm__("D_001602E0");
-extern int *menu_level_indices_m __asm__("D_001602E0") MACRO_ADDR;
+extern int *menu_level_indices_m SDATA(D_001602E0);
 
 typedef struct {
     char pad00[0x30];
@@ -5487,10 +5478,7 @@ typedef struct {
 } MenuObj40;
 
 /* Menu builder: the item list from gGalaxyList, then the selection. The
-   scalar MACRO_ADDR view of menu_level_indices lets sched2 hoist its load, and
-   the dead reference to the 2-byte view keeps `.extern menu_level_indices, 2`
-   last, so the assembler still uses $gp. A later 4-byte reference in
-   this file would undo that. */
+   scalar view of menu_level_indices lets sched2 hoist its load. */
 int BuildGalaxyMenu(MenuObj40 *arg0) {
     int i;
 
@@ -5509,12 +5497,6 @@ int BuildGalaxyMenu(MenuObj40 *arg0) {
             arg0->sel = i;
             break;
         }
-    }
-    /* FAKEMATCH: if (0): the 2-byte view is the last use, so $gp reaches it (89 functions differ without it). */
-    if (0) {
-        /* no code: registers the 2-byte view last, so the file ends with
-           `.extern menu_level_indices, 2` and the assembler uses $gp */
-        (void)menu_level_indices_s;
     }
     return 0;
 }
