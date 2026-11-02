@@ -20,7 +20,7 @@
 #include "structs/level_records.h"
 #include "enums/hero_state.h"
 extern Hero g_hero;
-extern char pad_held[];
+extern int pad_held;
 extern char voice_pool[];
 
 /* Glow particle (class 0x70): spinning shard that shrinks and fades out. */
@@ -1268,7 +1268,7 @@ void launch_bomb(float *pos, unsigned char *moby, float *velocity) {
             }
             total = g_frame_time_sq * 11.0f;
             rp = result;
-            if (*(int *)pad_held & 5) {
+            if (pad_held & 5) {
                 e = (char *)&D_E910;
                 height = IntToFloat(*(unsigned char *)(e + 0xa)) * 2.5f + 8.5f;
             } else {

@@ -19,7 +19,7 @@
 #include "enums/hero_state.h"
 extern Hero g_hero NOT_SDA;
 extern char item_usage[];
-extern char pad_held[];
+extern int pad_held;
 extern char voice_pool[];
 /* Class 0x326 moby: the moby it is linked to. */
 struct LinkedMobyVars {
@@ -3461,7 +3461,7 @@ void hydrodisplacer_update(Moby *m) {
                                    0) == 0) {
                 break;
             }
-            if ((*(int *)pad_held & ((Hero *)(hero_globals_base_r2 + 0xE1D))->items[0].button_mask) == 0) {
+            if ((pad_held & ((Hero *)(hero_globals_base_r2 + 0xE1D))->items[0].button_mask) == 0) {
                 break;
             }
             if (((Hero *)(hero_globals_base_r2 + 0xE1D))->ground_moby == 0 ||

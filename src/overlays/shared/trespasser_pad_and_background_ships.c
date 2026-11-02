@@ -1951,7 +1951,7 @@ extern void ShowBanner(int, int);
 extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
 extern void DeleteMoby(void *);
 extern void FastVecScale(void *, void *, float);
-extern unsigned char menu_item_enabled_115[];
+
 extern float frame_scale MACRO_ADDR;
 extern float aridia_zero_vec[] MACRO_ADDR;
 extern char background_ship_1_no_path_msg[];

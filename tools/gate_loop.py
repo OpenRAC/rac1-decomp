@@ -59,9 +59,9 @@ def map_status(text):
 
 
 def version_losses(old_text, new_text):
-    """Shared files of functions that stopped matching in this version."""
+    """Source paths of functions that stopped matching in this version: a fragment, or a shared file."""
     old, new = map_status(old_text), map_status(new_text)
-    return {shared_file(path) for name, (path, status) in old.items()
+    return {path for name, (path, status) in old.items()
             if status == "match" and new.get(name, ("", ""))[1] != "match"}
 
 
@@ -87,7 +87,18 @@ def files_to_blame(log):
         rel = path.relative_to(ROOT).as_posix()
         bad |= version_losses(sh(f"git show HEAD:{rel}").stdout, path.read_text())
     bad |= compile_failures(log)
-    return bad & changed_files()
+    changed = changed_files()
+    # A lost fragment with no change of its own points at its shared file.
+    blamed = {path if path in changed else shared_file(path) for path in bad}
+    return blamed & changed
+
+
+def fragments_of(path):
+    """A shared file's version fragments: its declarations may be what they need."""
+    if path.startswith("src/versions/"):
+        return set()
+    stem = path[len("src/"):-len(".c")]
+    return {p.relative_to(ROOT).as_posix() for p in ROOT.glob(f"src/versions/*/{stem}/*.c")}
 
 
 def main():
@@ -110,6 +121,9 @@ def main():
         for path in sorted(bad):
             print(f"  REVERTED {path}", flush=True)
             sh(f"git checkout -- {path}")
+            for fragment in fragments_of(path) & changed_files():
+                print(f"  REVERTED {fragment}", flush=True)
+                sh(f"git checkout -- {fragment}")
         sh("git checkout -- config/versions progress")
     print("STOP: too many rounds", flush=True)
     return 1

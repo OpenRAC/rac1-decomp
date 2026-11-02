@@ -13,6 +13,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "enums/level.h"
+extern char g_hero_moby[];
 extern struct Hero g_hero;
 extern char g_screen_extent[];
 /* Blarg space commando: takes hits, fires a beam at the hero. */
@@ -501,7 +502,6 @@ extern short space_commando_death_knockback_speed;
 extern short space_commando_death_knockback_lift;
 extern short space_commando_sight_range;
 extern unsigned char gSkillPoints[];
-extern char hero_globals_base[];
 
 // Level 06 update for a moby with a 12-state machine: aims at a target, runs timed effects, and sets its rotation.
 void func_L06_002FFF70_r(char *m) __asm__("func_L06_002FFF70");

@@ -27,7 +27,7 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 extern Hero g_hero;
-extern char pad0_pressed[];
+extern int pad0_pressed;
 extern unsigned char saved_mission_state[];
 extern char voice_pool[];
 
@@ -1785,7 +1785,7 @@ void TeleporterPadUpdate(char *moby) {
             if (g->air_frames.s != 0)
                 break;
             try_set_teleporter_help_message(moby);
-            if (!(*(int *)pad0_pressed & 0x10))
+            if (!(pad0_pressed & 0x10))
                 break;
             Moby_PlaySound(0, 0, (int)moby);
             ((Moby *)moby)->state = 2;

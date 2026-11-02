@@ -26,13 +26,13 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/hero_state.h"
 #include "enums/moby_class.h"
-extern char frame_size[];
+extern int frame_size;
 extern char g_controller_state[];
 extern Hero g_hero;
 extern char g_screen_extent[];
 extern char help_records[];
 extern char pad0_pressed[];
-extern char pad_held[];
+extern int pad_held;
 extern char voice_pool[];
 
 /* Dreks fleet turret: takes hits, flashes and fades colour. */
@@ -1394,7 +1394,6 @@ void draw_four_quarter_turn_effect_quads(unsigned char a, unsigned char b, unsig
 extern float FastSubRots(float, float);
 extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
 extern unsigned char draw_map51[4] MACRO_ADDR;
-extern unsigned char screen_globals_base[];
 
 /* One radar icon: its texture (counted from the radar's own), its rectangle in that texture and its hot spot. */
 typedef struct {
@@ -1445,7 +1444,7 @@ void draw_fighter_jet_radar_contact_icon(char *rot, char *from, char *moby, int 
         }
         t = &fleet_radar_icon_table[icon];
         y -= 0x50;
-        y += *(int *)frame_size;
+        y += frame_size;
         x += 0x1B0;
         DrawTexturedQuad(x - t->x, y - t->y, t->w, t->h, t->u, t->v, t->w, t->h, color,
                          GetEffectTex(tex + 0x28 + t->tex));
@@ -2163,7 +2162,7 @@ void PlayerShipUpdate(Moby *m, Obj *o) {
         kb = fighter_jet_vertical_steering_settle_threshold_scale_gp;
         a = x;
         b = y;
-        if (*(int *)pad_held & 0x200) {
+        if (pad_held & 0x200) {
             a = x / fleet_jet_yaw_rate * fleet_jet_sharp_yaw_rate;
             b = y / fleet_jet_pitch_rate * fleet_jet_sharp_pitch_rate;
             ka = fighter_jet_rescaled_horizontal_steering_settle_threshold_scale_gp;

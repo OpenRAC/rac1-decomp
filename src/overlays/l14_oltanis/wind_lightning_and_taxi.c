@@ -25,6 +25,9 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+extern char gHeroPos[];
+extern char g_hero_body_center[];
+extern Hero g_hero;
 extern char gSpecialItems[];
 extern char voice_pool[];
 
@@ -325,7 +328,6 @@ void draw_ribbon_effect_path(void *m, void *path, int outer_alpha, int inner_alp
 extern int is_point_inside_clip_volume(void *, int);
 extern void clear_u64_value(void *);
 extern void record_moby_hit(int, void *);
-extern char hero_globals_base[];
 
 typedef struct {
     float v[4];
@@ -340,7 +342,7 @@ typedef struct {
 
 /* If the moby's check passes, builds an effect request on the stack and submits it. */
 void register_hero_hit_in_clip_volume(char *moby) {
-    char *base = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
+    char *base = &g_hero.motion.pos;
     Req r;
     struct Hero *q;
     if (is_point_inside_clip_volume(base, ((struct HeroHitVolumeVars *)((Moby *)moby)->pvars)->clip_volume) != 0) {
@@ -354,7 +356,7 @@ void register_hero_hit_in_clip_volume(char *moby) {
         r.a = 5;
         r.b = 4;
         r.c = *(unsigned short *)&((Moby *)moby)->oclass;
-        q = (struct Hero *)(hero_globals_base + 0xE1D);
+        q = &g_hero;
         q->health.hp = 0;
         record_moby_hit(*(int *)&q->moby, &r);
     }
@@ -2136,7 +2138,7 @@ void rebuild_elevator_world_path(char *moby) {
         *(float *)(dst + 0xC) = one;
         dst += 0x10;
     } while (i >= 0);
-    x = (struct Hero *)(hero_globals_base + 0xE1D);
+    x = &g_hero;
     x->path_constrain_pending = *(unsigned short *)&data->link_path;
 }
 extern short g_frame_time_s __asm__("D_0015EE6C");
@@ -2149,7 +2151,7 @@ extern int FastTweenColor(int, int, float);
 // pulses the moby's tint while the player is near, else fades it to a dim colour
 void update_elevator_idle_glow(char *moby) {
     struct ElevatorVars *data = (struct ElevatorVars *)((struct Moby *)moby)->pvars;
-    struct Hero *x = (struct Hero *)(hero_globals_base + 0xE1D);
+    struct Hero *x = &g_hero;
     if (FastAbsF(((struct Moby *)moby)->pos.x - x->motion.pos.f[0]) > 40.0f ||
         FastAbsF(((struct Moby *)moby)->pos.y - x->motion.pos.f[1]) > 40.0f) {
         ((struct Moby *)moby)->glow_color = FastTweenColor(((struct Moby *)moby)->glow_color, 0x80303030, 0.1f);
@@ -2257,7 +2259,7 @@ void TaxiUpdate(Moby *moby) {
             initialize_taxi_stop_from_position((char *)moby);
             break;
         case TAXI_STATE_WAIT_AT_STOP: {
-            Hero *g = (Hero *)(hero_globals_base + 0xE1D);
+            Hero *g = &g_hero;
             if (g->ground_moby == moby && g->air_frames.s == 0) {
                 matrix_from_basis_rows(blend_from_position_or_rotation_matrix, &moby->rot_row0);
                 FastVecSub(hero_relative_position, g->motion.pos.f, (*(float (*)[4]) & moby->pos));
@@ -2282,8 +2284,7 @@ void TaxiUpdate(Moby *moby) {
                 }
             } else {
                 if (taxi_vars->vol[0] >= 0 && taxi_vars->cur != 0 &&
-                    is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                                taxi_vars->vol[0])) {
+                    is_point_inside_clip_volume(&g_hero.motion.pos, taxi_vars->vol[0])) {
                     if (oltanis_frame_count < scale_ticks(ticks)) {
                         taxi_vars->dst = 0;
                         taxi_vars->cur = 0;
@@ -2303,8 +2304,7 @@ void TaxiUpdate(Moby *moby) {
                     }
                 }
                 if (taxi_vars->vol[1] >= 0 && taxi_vars->cur != 1 &&
-                    is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                                taxi_vars->vol[1])) {
+                    is_point_inside_clip_volume(&g_hero.motion.pos, taxi_vars->vol[1])) {
                     if (oltanis_frame_count < scale_ticks(ticks)) {
                         taxi_vars->dst = 1;
                         taxi_vars->cur = 1;
@@ -2320,8 +2320,7 @@ void TaxiUpdate(Moby *moby) {
                     }
                 }
                 if (taxi_vars->vol[2] >= 0 && taxi_vars->cur < 2 &&
-                    is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                                taxi_vars->vol[2])) {
+                    is_point_inside_clip_volume(&g_hero.motion.pos, taxi_vars->vol[2])) {
                     if (oltanis_frame_count < scale_ticks(ticks)) {
                         taxi_vars->dst = 2;
                         taxi_vars->cur = 2;
@@ -2340,7 +2339,7 @@ void TaxiUpdate(Moby *moby) {
             break;
         }
         case TAXI_STATE_BLEND_STOP_TO_PATH_START: {
-            Hero *g = (Hero *)(hero_globals_base + 0xE1D);
+            Hero *g = &g_hero;
             if (g->ground_moby == moby && g->air_frames.s == 0) {
                 Cam_SetDistanceGoal(7.0f, 0.002f, 0);
             }
@@ -2386,7 +2385,7 @@ void TaxiUpdate(Moby *moby) {
             break;
         }
         case TAXI_STATE_FOLLOW_PATH: {
-            Hero *g = (Hero *)(hero_globals_base + 0xE1D);
+            Hero *g = &g_hero;
             if (g->ground_moby == moby && g->air_frames.s == 0) {
                 Cam_SetDistanceGoal(7.0f, 0.003f, 0);
             }
@@ -2416,7 +2415,7 @@ void TaxiUpdate(Moby *moby) {
                 moby->state = 1;
                 reset_selected_moby_to_current_placement((char *)moby);
             }
-            g = (Hero *)(hero_globals_base + 0xE1D);
+            g = &g_hero;
             if (g->ground_moby == moby && g->air_frames.s == 0) {
                 matrix_from_basis_rows(taxi_inverse_rotation_matrix, &moby->rot_row0);
                 FastVecSub(hero_relative_position, g->motion.pos.f, (*(float (*)[4]) & moby->pos));
@@ -2464,7 +2463,7 @@ void TaxiUpdate(Moby *moby) {
     }
     apply_moby_position_and_rotation_wobble((char *)moby);
     if (moby->state >= 3 && moby->state <= 4) {
-        Hero *g = (Hero *)(hero_globals_base + 0xE1D);
+        Hero *g = &g_hero;
         if (g->ground_moby == moby && g->air_frames.s == 0) {
             g->jump_lock_timer = 2;
             g->unk1F4 = 2;
@@ -2685,9 +2684,7 @@ void qwark_oltanis_update(char *m) {
             break;
         }
         case 1:
-            if (d->started == 1 &&
-                is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                            d->clip_volume) != 0) {
+            if (d->started == 1 && is_point_inside_clip_volume(&g_hero.motion.pos, d->clip_volume) != 0) {
                 if ((help_stats_base_r + 0xAA35)[((Moby *)m)->mission + (g_current_level_index_m << 4)] != 0xFF) {
                     char *t;
                     jet_clear_persistent((unsigned char)m[0xB0]);
@@ -2734,7 +2731,7 @@ void qwark_oltanis_update(char *m) {
         float sy = 0.3f;
         int doit = 0;
         if (((Moby *)m)->prev_seq == 0) {
-            char *g = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
+            char *g = &g_hero.motion.pos;
             char *a_;
             doit = 1;
             if (vec_distance_xy(m + 0x10, g) < 8.0f &&
@@ -2747,7 +2744,7 @@ void qwark_oltanis_update(char *m) {
                 }
             } else if (d->look_timer != 0) {
                 d->look_timer = 0;
-                qcopy(&d->look_pos, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center);
+                qcopy(&d->look_pos, &g_hero.motion.body_center);
             }
             if (fast_dec_timer(&d->look_retarget) != 0) {
                 float y;
@@ -2760,7 +2757,7 @@ void qwark_oltanis_update(char *m) {
                 FastVecAdd(&d->look_pos, &d->look_pos, m + 0x10);
             }
             if (d->look_timer != 0) {
-                qcopy(b, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center);
+                qcopy(b, &g_hero.motion.body_center);
                 sx = 0.04f;
                 sy = 0.3f;
             } else {

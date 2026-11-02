@@ -21,6 +21,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+extern char hero_current_state[];
 extern char gSkillPoints[];
 extern char gSpecialItems[];
 extern Hero g_hero;
@@ -3548,7 +3549,7 @@ extern char *MobyGetHitMessage(void *, int, int);
 extern int PlayBankSound(int, int, int);
 extern void spawn_randomized_bolt_drop(void *, int, int, int, int);
 extern int fast_dec_timer(int *arg0);
-extern char menu_item_enabled_115[];
+
 extern short helicopter_hit_count;
 extern short planetbuster_engaged;
 

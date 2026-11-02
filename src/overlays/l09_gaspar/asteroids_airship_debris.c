@@ -22,13 +22,14 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+extern char gHeroPos[];
 extern char gSkillPoints[];
 extern char gSpecialItems[];
 extern char g_controller_state[];
 extern Hero g_hero;
 extern char help_records[];
 extern char level_moby_killed[];
-extern char pad0_pressed[];
+extern u32 pad0_pressed;
 extern char sound_probe_ignore[];
 extern char voice_pool[];
 
@@ -1855,7 +1856,7 @@ extern int PlayBankSound(int, int, int);
 
 extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern int Help_Request(int a, int b);
-extern unsigned char menu_item_enabled_115[];
+
 extern unsigned char gHaveHeliPack[];
 extern unsigned char help_stats_base[];
 extern unsigned char hero_globals_base[];
@@ -2668,7 +2669,7 @@ void turret_update(struct Moby *moby) {
             offset.f[2] = 0.0f;
             FastVecAdd(&hero.motion.pos, &hero.motion.pos, &offset);
             FastMemZero16(&hero.motion.velocity, 0x90);
-            if (*(u32 *)pad0_pressed & 0x10) {
+            if (pad0_pressed & 0x10) {
                 CameraScript2(0);
                 a_222B80(0, 1);
                 moby->command = 2;

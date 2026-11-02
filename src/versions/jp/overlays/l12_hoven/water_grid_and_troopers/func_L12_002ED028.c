@@ -4,10 +4,10 @@ void process_helicopter_hits_and_reactivation(char *m, int flag) {
     float b[4];
     unsigned char *q;
     if (MobyGetHitMessage(m, 0xA30000, 0) != 0) {
-        if (*(int *)(hero_globals_base + 0x2EA1) != 0x32) {
+        if (*(int *)hero_current_state != 0x32) {
             *(int *)&helicopter_hit_count += 1;
             if (*(int *)&helicopter_hit_count >= 5) {
-                q = (unsigned char *)(menu_item_enabled_115 + 1);
+                q = (unsigned char *)gSkillPoints;
                 if (q[0x15] == 0) {
                     q[0x15] = 1;
                     PlayBankSound(1, 0, 0);

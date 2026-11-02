@@ -13,7 +13,7 @@
 #include "overlays/shared/cutscene_and_movie_playback.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
-extern char pad0_pressed[];
+extern int pad0_pressed;
 
 typedef struct {
     int value;
@@ -147,7 +147,7 @@ int Npc_TryStartDialog(char *p, char *q) {
     x = active_scene_trigger;
     if (level_frame_counter < *(int *)(x + 0x10))
         return 0;
-    if (*(unsigned char *)(q + 8) != 0 || (*(int *)pad0_pressed & 0x10) != 0) {
+    if (*(unsigned char *)(q + 8) != 0 || (pad0_pressed & 0x10) != 0) {
         i = get_dialogue_entry(p);
         tb = race_gates_base + 0xB3;
         tb = tb + 0xC;

@@ -95,6 +95,12 @@ A port reads these as plain globals of the cast-to type. One `MACRO_ADDR`
 alias changes a symbol's form for the whole file, so every landing re-checks
 the whole file.
 
+### Fake bases
+
+`hero_globals_base + 0xE1D` is the address of `g_hero`: base plus constant lands on a named global. The bases are labels
+at odd addresses, and they keep an address in a register, as retail does. Use the real global. Keep a base only in a
+function that stops matching without it. `tools/tidy/fake_bases.py` does this file by file.
+
 ### Assembly stubs
 
 Macros from `include/include_asm.h`:

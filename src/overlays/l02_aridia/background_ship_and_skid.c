@@ -19,6 +19,11 @@
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/hero_state.h"
+extern Hero g_hero;
+extern char gSkillPoints[];
+extern char gSpecialItems[];
+extern char item_available[];
+extern char mission_death_counts[];
 extern struct Hero g_hero;
 extern char help_records[];
 

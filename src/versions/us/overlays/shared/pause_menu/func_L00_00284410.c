@@ -1,5 +1,5 @@
 void process_unlock_code_input(void) {
-    char *pad = (char *)pad_globals_base + 0x2460;
+    char *pad = g_controller_state;
     int lim0, lim;
     int va, vb, vc;
     int pressed, direction, count, j, code, index, matched;
@@ -48,15 +48,15 @@ void process_unlock_code_input(void) {
         vb = code - 0x37;
         vc = code - 0x3d;
         if (code < 0x25) {
-            (menu_item_enabled_115 + 0xB9)[code] = 1;
+            (item_available)[code] = 1;
             (discount_purchase_pricing + 5)[code] = 1;
         } else if ((unsigned)(code - 0x25) < 0x12) {
             unlock_planet(va);
         } else if ((unsigned)vb < 6) {
-            char *p3 = special_items_base + 0x13B;
+            char *p3 = gSpecialItems;
             p3[vb] = 1;
         } else if ((unsigned)vc < 0x1e) {
-            unsigned char *q = menu_item_enabled_115 + 1 + vc;
+            unsigned char *q = gSkillPoints + vc;
             if (!*q) {
                 *q = 1;
                 PlayBankSound(1, 0, 0);

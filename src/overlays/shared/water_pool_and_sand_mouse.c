@@ -26,6 +26,9 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+extern char g_hero[];
+extern char level_moby_killed[];
+extern char voice_pool[];
 /* Novalis elevator: rides its path while the hero stands on it. */
 struct NovalisElevatorVars {
     u8 pad_00[0x20];
@@ -661,16 +664,14 @@ void novalis_elevator_update(unsigned char *moby) {
     }
     path = novalis_paths[data->path_idx];
     if (data->clip_volume != -1) {
-        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                        data->clip_volume) == 0) {
+        if (is_point_inside_clip_volume(&((struct Hero *)g_hero)->motion.pos, data->clip_volume) == 0) {
             ((Moby *)moby)->update_dist = 0xFF;
             *(int *)&((Moby *)moby)->collision = 0;
             ((Moby *)moby)->flags |= 0x41;
             return;
         }
         if (data->clip_volume != -1 &&
-            is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                        data->clip_volume)) {
+            is_point_inside_clip_volume(&((struct Hero *)g_hero)->motion.pos, data->clip_volume)) {
             ((Moby *)moby)->flags &= 0xFFBE;
             *(int *)&((Moby *)moby)->collision = *(int *)(*(char **)&((Moby *)moby)->pclass + 0x10);
             data->clip_volume = -1;
@@ -678,16 +679,13 @@ void novalis_elevator_update(unsigned char *moby) {
     }
     if (data->trigger_idx != -1) {
         unsigned short id;
-        if (is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                        data->trigger_idx) ||
+        if (is_point_inside_clip_volume(&((struct Hero *)g_hero)->motion.pos, data->trigger_idx) ||
             novalis_checkpoint_level_state.collected[(short)(id = ((Moby *)moby)->save_id)] != 0 ||
-            (*(int *)(help_stats_base + 0xAB75 + (((short)id >> 5) * 4 + (g_current_level_index_m << 8))) >>
-             (id & 0x1F)) &
+            (*(int *)(level_moby_killed + (((short)id >> 5) * 4 + (g_current_level_index_m << 8))) >> (id & 0x1F)) &
                 1) {
             if (data->trigger_idx != -1) {
-                *(int *)(help_stats_base + 0xAB75 +
-                         (((short)((Moby *)moby)->save_id >> 5) * 4 + (g_current_level_index_m << 8))) |=
-                    1 << (((Moby *)moby)->save_id & 0x1F);
+                *(int *)(level_moby_killed + (((short)((Moby *)moby)->save_id >> 5) * 4 +
+                                              (g_current_level_index_m << 8))) |= 1 << (((Moby *)moby)->save_id & 0x1F);
                 moby_killed[(short)((Moby *)moby)->save_id >> 5] |= 1 << (((Moby *)moby)->save_id & 0x1F);
                 data->trigger_idx = -1;
             }
@@ -726,10 +724,8 @@ void novalis_elevator_update(unsigned char *moby) {
             if (on) {
                 float fa;
                 if ((data->use_on_hero != 0 && is_hero_on_moby(moby)) ||
-                    (fa = FastVecDist(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                      path + *(int *)path * 16),
-                     FastVecDist(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, path + 0x10) <
-                         fa)) {
+                    (fa = FastVecDist(&((struct Hero *)g_hero)->motion.pos, path + *(int *)path * 16),
+                     FastVecDist(&((struct Hero *)g_hero)->motion.pos, path + 0x10) < fa)) {
                     ((Moby *)moby)->command = 2;
                     data->speed = -1.0f / multiply_global_factor(data->travel_time * 60.0f);
                     data->use_on_hero = 0;
@@ -740,9 +736,8 @@ void novalis_elevator_update(unsigned char *moby) {
             if (on) {
                 float nr;
                 if ((data->use_on_hero != 0 && is_hero_on_moby(moby)) ||
-                    (nr = FastVecDist(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, path + 0x10),
-                     FastVecDist(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos,
-                                 path + *(int *)path * 16) < nr)) {
+                    (nr = FastVecDist(&((struct Hero *)g_hero)->motion.pos, path + 0x10),
+                     FastVecDist(&((struct Hero *)g_hero)->motion.pos, path + *(int *)path * 16) < nr)) {
                     ((Moby *)moby)->command = 2;
                     data->speed = 1.0f / multiply_global_factor(data->travel_time * 60.0f);
                     data->use_on_hero = 0;
@@ -751,16 +746,15 @@ void novalis_elevator_update(unsigned char *moby) {
             break;
         case 2:
             if (data->locked == 0 && is_hero_on_moby(moby)) {
-                struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+                struct Hero *g = (struct Hero *)g_hero;
                 g->jump_lock_timer = 4;
                 g->unk1F4 = 4;
             }
-            if (data->wait_timer != 0 ||
-                (data->unk_BC < 0.0f &&
-                 vec_distance_xy(((unsigned char *)&((Moby *)moby)->pos),
-                                 hero = (&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos)) < 2.83f &&
-                 FastAbsF(*(float *)((hero -= 0x80) + 0x88) - ((Moby *)moby)->pos.z) < 4.0f &&
-                 ((Moby *)moby)->pos.z - *(float *)(hero + 0x88) > 0.9f)) {
+            if (data->wait_timer != 0 || (data->unk_BC < 0.0f &&
+                                          vec_distance_xy(((unsigned char *)&((Moby *)moby)->pos),
+                                                          hero = (&((struct Hero *)g_hero)->motion.pos)) < 2.83f &&
+                                          FastAbsF(*(float *)((hero -= 0x80) + 0x88) - ((Moby *)moby)->pos.z) < 4.0f &&
+                                          ((Moby *)moby)->pos.z - *(float *)(hero + 0x88) > 0.9f)) {
                 int r;
                 if (data->wait_timer == 0) {
                     data->wait_timer = scale_ticks(30);
@@ -768,7 +762,7 @@ void novalis_elevator_update(unsigned char *moby) {
                 r = data->trigger_hit;
                 data->dir = 0;
                 if (r != -1) {
-                    unsigned char *s = (unsigned char *)(hero_globals_base + 0x1D) + r * 0x70;
+                    unsigned char *s = (unsigned char *)voice_pool + r * 0x70;
                     if (*(unsigned char **)(s + 0x88) == moby && s[0x74] != 0) {
                         Sound_StopSlot(r);
                     }
@@ -799,7 +793,7 @@ void novalis_elevator_update(unsigned char *moby) {
                     data->wait_timer = scale_ticks(15);
                     r = data->trigger_hit;
                     if (r != -1) {
-                        unsigned char *s = (unsigned char *)(hero_globals_base + 0x1D) + r * 0x70;
+                        unsigned char *s = (unsigned char *)voice_pool + r * 0x70;
                         if (*(unsigned char **)(s + 0x88) == moby && s[0x74] != 0) {
                             Sound_StopSlot(r);
                         }
@@ -827,8 +821,7 @@ void novalis_elevator_update(unsigned char *moby) {
     FastVecSub(delta, ((unsigned char *)&((Moby *)moby)->pos), orig);
     update_entity_matrix((char *)&data->unk_60, delta, &((Moby *)moby)->rot, &((Moby *)moby)->rot);
     if (!is_hero_on_moby(moby)) {
-        if (2.0f < vec_distance_xy(((unsigned char *)&((Moby *)moby)->pos),
-                                   (&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos))) {
+        if (2.0f < vec_distance_xy(((unsigned char *)&((Moby *)moby)->pos), (&((struct Hero *)g_hero)->motion.pos))) {
             if (data->wait_timer == 0) {
                 data->use_on_hero = 1;
             }
@@ -1374,7 +1367,7 @@ extern void vec_scale_to_length(void *, void *, float);
 /* Sand mouse approach target: the hero position plus a unit direction. */
 void compute_sand_mouse_approach_target(int unused, void *out) {
     char scratch[16];
-    struct Hero *base = (struct Hero *)(hero_globals_base + 0xE1D);
+    struct Hero *base = (struct Hero *)g_hero;
     vec_scale_to_length(scratch, *(char **)&base->moby + 0xD0, 1.0f);
     FastVecAdd(out, scratch, &base->motion.pos);
 }
@@ -1447,7 +1440,7 @@ void *select_sand_mouse_spawn_target(void *moby, void *from, void *ang, float ya
     char *t;
     for (t = novalis_moby_list; t != 0; t = *(char **)&((struct Moby *)t)->next) {
         char *hs = novalis_coll_hit_h;
-        struct Hero *pl = (struct Hero *)(hero_globals_base + 0xE1D);
+        struct Hero *pl = (struct Hero *)g_hero;
         float *hp;
         int cls;
         float dist, score, p2;
@@ -1801,8 +1794,8 @@ void sand_mouse_update(Moby *moby) {
                 moby->pos.x - novalis_mobys_r[d->parent].pos.x, moby->pos.y - novalis_mobys_r[d->parent].pos.y);
         } else {
             ((Data_E5298 *)novalis_mobys_r[d->parent].pvars)->target[0] =
-                fast_atan2(((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[0] - novalis_mobys_r[d->parent].pos.x,
-                           ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[1] - novalis_mobys_r[d->parent].pos.y);
+                fast_atan2(((Hero *)g_hero)->motion.pos.f[0] - novalis_mobys_r[d->parent].pos.x,
+                           ((Hero *)g_hero)->motion.pos.f[1] - novalis_mobys_r[d->parent].pos.y);
         }
         if (d->parent != -1) {
             *(int *)&novalis_mobys_r[d->parent].collision = 0;
@@ -1824,7 +1817,7 @@ void sand_mouse_update(Moby *moby) {
                 qcopy(((float *)&moby->pos), ((float *)&novalis_mobys_r[d->parent].pos));
                 moby->pos.z = moby->pos.z + 0.02f;
                 if (novalis_checkpoint_level_state.collected[(short)(id = moby->save_id)] != 0 ||
-                    (*(int *)(help_stats_base + 0xAB75 + (((short)id >> 5) * 4 + (g_current_level_index_m << 8))) >>
+                    (*(int *)(level_moby_killed + (((short)id >> 5) * 4 + (g_current_level_index_m << 8))) >>
                      (id & 0x1F)) &
                         1) {
                     STUB_printf(sand_mouse_collected_msg);
@@ -1864,7 +1857,7 @@ void sand_mouse_update(Moby *moby) {
             moby->draw_dist = 0;
             break;
         case 1:
-            if (*(gHaveHeliPack + 3) != 0 && ((Hero *)(hero_globals_base + 0xE1D))->items[2].item_id == 5) {
+            if (*(gHaveHeliPack + 3) != 0 && ((Hero *)g_hero)->items[2].item_id == 5) {
                 d->count = 0;
                 d->t60 = scale_ticks(sand_mouse_follow_duration_frames_gp);
                 if (moby->visible != 0 && (moby->anim_flags & 2)) {
@@ -1873,32 +1866,30 @@ void sand_mouse_update(Moby *moby) {
                     }
                 }
                 if (d->parent != -1) {
-                    if (is_point_inside_clip_volume(((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f, d->vol)) {
+                    if (is_point_inside_clip_volume(((Hero *)g_hero)->motion.pos.f, d->vol)) {
                         novalis_mobys_r[d->parent].command = 3;
                     } else {
                         novalis_mobys_r[d->parent].command = 1;
                     }
                 }
-                if (((Hero *)(hero_globals_base + 0xE1D))->items[2].moby != 0 &&
-                    ((Hero *)(hero_globals_base + 0xE1D))->items[2].item_id == 5) {
-                    ang = fast_atan2(((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[0] - moby->pos.x,
-                                     ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f[1] - moby->pos.y);
+                if (((Hero *)g_hero)->items[2].moby != 0 && ((Hero *)g_hero)->items[2].item_id == 5) {
+                    ang = fast_atan2(((Hero *)g_hero)->motion.pos.f[0] - moby->pos.x,
+                                     ((Hero *)g_hero)->motion.pos.f[1] - moby->pos.y);
                     MobySpringTurn_r(moby, ang, &sand_mouse_move_ctl.f14, g_frame_time_sq * 11.519173f,
                                      g_frame_time_sq * 3.1415927f, g_frame_time * 11.519173f);
                     qcopy(va, ((float *)&novalis_mobys_r[d->parent].pos));
                     va[2] = va[2] + 0.5f;
-                    qcopy(vb, ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f);
+                    qcopy(vb, ((Hero *)g_hero)->motion.pos.f);
                     vb[2] = vb[2] + 0.2f;
-                    if (is_point_inside_clip_volume(((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f, d->vol)) {
+                    if (is_point_inside_clip_volume(((Hero *)g_hero)->motion.pos.f, d->vol)) {
                         if (!coll_line_t(va, vb, 0, moby, 0) ||
-                            novalis_coll_hit_moby == ((void *)((Hero *)(hero_globals_base + 0xE1D))->moby)) {
+                            novalis_coll_hit_moby == ((void *)((Hero *)g_hero)->moby)) {
                             compute_sand_mouse_approach_target((int)moby, d);
-                            if (((Hero *)(hero_globals_base + 0xE1D))->items[2].moby != 0 &&
-                                ((Hero *)(hero_globals_base + 0xE1D))->items[2].moby->oclass ==
-                                    MOBY_CLASS_SONIC_SUMMONER &&
-                                ((Hero *)(hero_globals_base + 0xE1D))->items[2].moby->state != 0xFE &&
-                                ((Hero *)(hero_globals_base + 0xE1D))->items[2].moby->state != 0xFD) {
-                                ((Hero *)(hero_globals_base + 0xE1D))->items[2].moby->state = 1;
+                            if (((Hero *)g_hero)->items[2].moby != 0 &&
+                                ((Hero *)g_hero)->items[2].moby->oclass == MOBY_CLASS_SONIC_SUMMONER &&
+                                ((Hero *)g_hero)->items[2].moby->state != 0xFE &&
+                                ((Hero *)g_hero)->items[2].moby->state != 0xFD) {
+                                ((Hero *)g_hero)->items[2].moby->state = 1;
                             }
                             *(void **)((char *)&sand_mouse_move_ctl + 0x50) = moby;
                             Hero_SetMoveState(0x1F, 0);
@@ -1934,7 +1925,7 @@ void sand_mouse_update(Moby *moby) {
             MobySpringTurn_r(moby, ang, &sand_mouse_move_ctl.f14, g_frame_time_sq * 11.519173f,
                              g_frame_time_sq * 3.1415927f, g_frame_time * 11.519173f);
             if ((ClassifyTargetInCone(moby, &sand_mouse_move_ctl, d->target, d->vel) & 6) ||
-                vec_distance_xy(((float *)&moby->pos), ((Hero *)(hero_globals_base + 0xE1D))->motion.pos.f) < 1.0f) {
+                vec_distance_xy(((float *)&moby->pos), ((Hero *)g_hero)->motion.pos.f) < 1.0f) {
                 qzero(d->vel);
                 moby->state = 4;
                 d->timer = scale_ticks(0x78);
@@ -1953,20 +1944,17 @@ void sand_mouse_update(Moby *moby) {
                 novalis_mobys_r[d->parent].flags &= 0xFFBE;
             }
             moby->state = 5;
-            if (((Hero *)(hero_globals_base + 0xE1D))->items[2].moby != 0 &&
-                ((Hero *)(hero_globals_base + 0xE1D))->items[2].moby->oclass == MOBY_CLASS_SONIC_SUMMONER &&
-                ((Hero *)(hero_globals_base + 0xE1D))->items[2].moby->state != 0xFE &&
-                ((Hero *)(hero_globals_base + 0xE1D))->items[2].moby->state != 0xFD) {
+            if (((Hero *)g_hero)->items[2].moby != 0 &&
+                ((Hero *)g_hero)->items[2].moby->oclass == MOBY_CLASS_SONIC_SUMMONER &&
+                ((Hero *)g_hero)->items[2].moby->state != 0xFE && ((Hero *)g_hero)->items[2].moby->state != 0xFD) {
                 d->b48 = 0xFF;
-                ((Hero *)(hero_globals_base + 0xE1D))->items[2].moby->state = 2;
+                ((Hero *)g_hero)->items[2].moby->state = 2;
             }
             break;
         case 5:
-            if (((Hero *)(hero_globals_base + 0xE1D))->items[2].moby != 0 &&
-                ((Hero *)(hero_globals_base + 0xE1D))->items[2].item_id == 5 &&
-                ((Hero *)(hero_globals_base + 0xE1D))->state.control_mode != 0x16 &&
-                ((Hero *)(hero_globals_base + 0xE1D))->state.control_mode != 0x14 &&
-                ((Hero *)(hero_globals_base + 0xE1D))->vehicle_mode == 0 && !fast_dec_timer(&d->t60) &&
+            if (((Hero *)g_hero)->items[2].moby != 0 && ((Hero *)g_hero)->items[2].item_id == 5 &&
+                ((Hero *)g_hero)->state.control_mode != 0x16 && ((Hero *)g_hero)->state.control_mode != 0x14 &&
+                ((Hero *)g_hero)->vehicle_mode == 0 && !fast_dec_timer(&d->t60) &&
                 d->count < sand_mouse_follow_projectile_count_limit_gp) {
                 sand_mouse_compute_target((char *)moby, (char *)d);
                 update_hover_moby_steering_r(moby, d);
@@ -2117,8 +2105,7 @@ void update_moby_motion_collision_and_burst(char *moby) {
             if (gz < moby_vars->floor_offset) {
                 mb->pos.z = mb->pos.z + (moby_vars->floor_offset - gz);
                 moby_vars->vel_z.i = 0;
-            } else if (mb->pos.z < ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->ground_point.f[2] +
-                                       moby_vars->floor_offset) {
+            } else if (mb->pos.z < ((struct Hero *)g_hero)->ground_point.f[2] + moby_vars->floor_offset) {
                 moby_vars->vel_z.i = 0;
             } else {
                 moby_vars->vel_z.f -= g_frame_time_sq * 10.8f;
@@ -2584,7 +2571,7 @@ void process_amoeboid_hits_and_update_targeting(char *m) {
         if (p != 0) {
             short cls = *(short *)(p + 0xA6);
             if (cls == 0x47) {
-                qcopy(&w, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center);
+                qcopy(&w, &((struct Hero *)g_hero)->motion.body_center);
                 wp = &w.q;
             } else {
                 x = *(char **)(p + 0x24);
@@ -2720,7 +2707,7 @@ void process_amoeboid_hits_and_update_targeting(char *m) {
         }
     }
     if (*(int *)&d->target == 0) {
-        *(int *)&d->target = *(int *)&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->moby;
+        *(int *)&d->target = *(int *)&((struct Hero *)g_hero)->moby;
     }
     ang = FastAddRots(d->wobble_angle, g_frame_time * 9.424778f);
     d->wobble_angle = ang;
@@ -3086,7 +3073,7 @@ u8 *get_moby_data_plus_0x60(struct Moby *m) {
 }
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
 extern float g_frame_time_sq MACRO_ADDR;
-extern char g_hero_items_2_item_id[];
+extern int g_hero_items_2_item_id;
 extern unsigned char item_available_5 NOT_SDA;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002b8c08.c, FUN_L01_002f2b68. */
@@ -3098,7 +3085,7 @@ void sandmouse_house_update(unsigned char *m) {
     if (d != 0) {
         if (((Moby *)m)->state != 0) {
             if (item_available_5 != 0) {
-                if (*(int *)g_hero_items_2_item_id == 5) {
+                if (g_hero_items_2_item_id == 5) {
                     float s = g_frame_time_sq;
                     ((Moby *)m)->rot.z = SpringTurn((float *)(d + 4), ((Moby *)m)->rot.z, *(float *)d, s * 6.2831855f,
                                                     s * 5.7595863f, 0.0f);

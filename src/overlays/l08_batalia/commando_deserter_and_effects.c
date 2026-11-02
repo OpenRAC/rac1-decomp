@@ -24,6 +24,7 @@
 #include "structs/swarm.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+extern char g_hero[] NOT_SDA;
 
 /* Lift/gate moby that follows a driver moby's progress between a base and a top height. */
 struct HeightFollowerVars {
@@ -1232,7 +1233,6 @@ extern s32 g_current_level_index MACRO_ADDR;
 extern unsigned char level_available_base[] NOT_SDA;
 extern unsigned char menu_item_enabled_25[] NOT_SDA;
 extern unsigned char D_0014171B[] NOT_SDA;
-extern char hero_globals_base[] NOT_SDA;
 
 typedef struct WD8 {
     u8 pad_00[0x24]; /* 0x00 dialog block at +0x20, passed as a pointer */
@@ -1341,7 +1341,7 @@ void commando_update(char *m) {
                 unlock_planet(10);
                 queue_planet_unlock_message(10);
                 jet_clear_persistent((unsigned char)m[0xB0]);
-                g = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
+                g = &((struct Hero *)g_hero)->motion.pos;
                 jet_reset_camera(g, g + 0x10);
                 memcard_Save(0, -1);
                 DeleteMoby(m);
@@ -1356,7 +1356,7 @@ void commando_update(char *m) {
         float head_rate = 0.3f;
         int tracking = 0;
         if (moby->prev_seq == 1) {
-            char *player = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
+            char *player = &((struct Hero *)g_hero)->motion.pos;
             char *a_;
             tracking = 1;
             if (vec_distance_xy(&moby->pos, player) < 8.0f &&
@@ -1369,8 +1369,7 @@ void commando_update(char *m) {
                 }
             } else if (commando_vars->moving_timer != 0) {
                 commando_vars->moving_timer = 0;
-                qcopy(commando_vars->target,
-                      &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center);
+                qcopy(commando_vars->target, &((struct Hero *)g_hero)->motion.body_center);
             }
             if (fast_dec_timer(&commando_vars->target_timer) != 0) {
                 float y;
@@ -1383,7 +1382,7 @@ void commando_update(char *m) {
                 FastVecAdd(commando_vars->target, commando_vars->target, &moby->pos);
             }
             if (commando_vars->moving_timer != 0) {
-                qcopy(target, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center);
+                qcopy(target, &((struct Hero *)g_hero)->motion.body_center);
                 rate = 0.04f;
                 head_rate = 0.3f;
             } else {
@@ -1511,8 +1510,7 @@ void batalia_deserter_update(char *m) {
                 DialogRequest_Init(m, (char *)deserter_data + 0x20);
             break;
         case 1:
-            if (vec_distance_xy(&moby->pos, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos) <
-                8.0f) {
+            if (vec_distance_xy(&moby->pos, &((struct Hero *)g_hero)->motion.pos) < 8.0f) {
                 jet_clear_persistent((unsigned char)moby->mission);
                 moby->state = 2;
             }
@@ -1525,7 +1523,7 @@ void batalia_deserter_update(char *m) {
                 }
             }
             {
-                struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
+                struct Hero *h = (struct Hero *)g_hero;
                 if (*(int *)&h->ground_moby == 0) {
                     if (scale_ticks(30) < h->grounded_frames || deserter_data->h56 != 0) {
                         Npc_TryStartDialog(m, (char *)deserter_data + 0x20);
@@ -1547,7 +1545,7 @@ void batalia_deserter_update(char *m) {
         float head_rate = 0.3f;
         int tracking = 0;
         if (moby->prev_seq == 1) {
-            char *player = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
+            char *player = &((struct Hero *)g_hero)->motion.pos;
             char *hero_base;
             tracking = 1;
             if (vec_distance_xy(&moby->pos, player) < 8.0f &&
@@ -1560,8 +1558,7 @@ void batalia_deserter_update(char *m) {
                 }
             } else if (deserter_data->moving_timer != 0) {
                 deserter_data->moving_timer = 0;
-                qcopy(deserter_data->target,
-                      &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center);
+                qcopy(deserter_data->target, &((struct Hero *)g_hero)->motion.body_center);
             }
             if (fast_dec_timer(&deserter_data->target_timer) != 0) {
                 float y;
@@ -1574,7 +1571,7 @@ void batalia_deserter_update(char *m) {
                 FastVecAdd(deserter_data->target, deserter_data->target, &moby->pos);
             }
             if (deserter_data->moving_timer != 0) {
-                qcopy(target, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center);
+                qcopy(target, &((struct Hero *)g_hero)->motion.body_center);
                 rate = 0.04f;
                 head_rate = 0.3f;
             } else {
@@ -1742,7 +1739,7 @@ void the_plumber_batalia_update(char *m) {
         float sy = 0.3f;
         int doit = 0;
         if (((struct Moby *)m)->prev_seq == 0) {
-            char *g = &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos;
+            char *g = &((struct Hero *)g_hero)->motion.pos;
             Hero *a_;
             doit = 1;
             if (vec_distance_xy(&((struct Moby *)m)->pos, g) < 8.0f &&
@@ -1756,7 +1753,7 @@ void the_plumber_batalia_update(char *m) {
                 }
             } else if (d->moving_timer != 0) {
                 d->moving_timer = 0;
-                qcopy(d->target, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center);
+                qcopy(d->target, &((struct Hero *)g_hero)->motion.body_center);
             }
             if (fast_dec_timer(&d->target_timer) != 0) {
                 float y;
@@ -1769,7 +1766,7 @@ void the_plumber_batalia_update(char *m) {
                 FastVecAdd(d->target, d->target, &((struct Moby *)m)->pos);
             }
             if (d->moving_timer != 0) {
-                qcopy(b, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.body_center);
+                qcopy(b, &((struct Hero *)g_hero)->motion.body_center);
                 sx = 0.0300000f;
                 sy = 0.3f;
             } else {

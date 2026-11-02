@@ -30,8 +30,8 @@ void DrawFleetHud(char *moby) {
     float q;
 
     VU1_addGSregister(0x42, 0x8000000044L);
-    DrawTexturedQuad(0x170, (s = (char *)screen_globals_base + 0x4A6, *(int *)(s + 4)) - 0x90, 0x80, 0x80, 0, 0, 0x80,
-                     0x80, 0x70808080, GetEffectTex_l(*(int *)(d + 0x104) + 0x28));
+    DrawTexturedQuad(0x170, (s = g_screen_extent, *(int *)(s + 4)) - 0x90, 0x80, 0x80, 0, 0, 0x80, 0x80, 0x70808080,
+                     GetEffectTex_l(*(int *)(d + 0x104) + 0x28));
     DrawTexturedQuad(0x170, *(int *)(s + 4) - 0x90, 0x80, 0x80, 0, 0, 0x80, 0x80, 0x70808080,
                      GetEffectTex_l(*(int *)(d + 0x104) + 0x29));
     VU1_addGSregister(0x42, 0x8000000048L);
@@ -60,10 +60,10 @@ void DrawFleetHud(char *moby) {
     }
     y = 0x40;
     x = 0x18;
-    base = hero_globals_base + 0xE1D;
+    base = (char *)&g_hero;
     n = base[0x15F7];
     for (i = 0; i < n; i++) {
-        g = hero_globals_base + 0xE1D;
+        g = (char *)&g_hero;
         if (i < g[0x15F6]) {
             append_scaled_screen_triangle_strip(x, y, 0.5f, fleet_hud_ammo_pip_shape, 0x19, 0xFFFFF3, 0x50008F00);
         } else {
@@ -84,14 +84,14 @@ void DrawFleetHud(char *moby) {
                                0.5f, 0.5f);
     append_rotated_sprite_quad(ex, ey, 10.0f, 10.0f, 0.0f, 0x1F, 0x1F, GetEffectTex(8), 0xFFFFF3, 0xFF20FF20, 0, 0,
                                0.5f, 0.5f);
-    b = hero_globals_base + 0xE1D;
+    b = (char *)&g_hero;
     if (*(float *)(b + 0x15FC) < *(float *)(b + 0x1600) / 10.0f && (fleet_frame_count / 90) & 1) {
         FontPrintCenterSmall_c(0x100, 0x186, 0x80000080L, msg_string_id(0x52C0), 0x64);
     }
     if (*(unsigned char *)(moby + 0x20) == 8) {
         FontPrintCenterSmall_c(0x100, 0xC8, 0x80005080L, msg_string_id(0x5295), 0x64);
     }
-    h = hero_globals_base + 0xE1D;
+    h = (char *)&g_hero;
     f = *(float *)(h + 0x15FC) - *(float *)(d + 0xF0);
     f *= 0.2f;
     q = FastAbsF(f);

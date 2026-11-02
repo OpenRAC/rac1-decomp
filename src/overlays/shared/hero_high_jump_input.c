@@ -12,7 +12,7 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 extern Hero g_hero;
-extern char pad_held[];
+extern int pad_held;
 
 extern Hero g_hero;
 typedef struct {
@@ -208,7 +208,7 @@ int hero_handle_jump_press(void) {
     }
     n = get_hero_high_jump_input_window_frames();
     t = scale_ticks(5);
-    if ((*(int *)pad_held & 0xA) != 0 && n > 0 && check_pad_press_separation(0x40, 0x1F000, t + n, n) != 0) {
+    if ((pad_held & 0xA) != 0 && n > 0 && check_pad_press_separation(0x40, 0x1F000, t + n, n) != 0) {
         m = 0xB;
     found:
         HeroEnterMoveState(m, 1);

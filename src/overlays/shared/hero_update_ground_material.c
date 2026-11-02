@@ -19,7 +19,7 @@
 #include "enums/moby_class.h"
 extern Hero g_hero;
 extern char g_hero_moby[];
-extern char pad_held[];
+extern int pad_held;
 
 extern unsigned char hero_globals_base[];
 extern char novalis_item_defs[];
@@ -1744,7 +1744,7 @@ void select_hero_locomotion_state(void) {
     b = (char *)&g_hero;
     ((struct Hero *)b)->unk2284 = 0;
     stick_target(0, 1.0f);
-    if (*(int *)pad_held & 0xA) {
+    if (pad_held & 0xA) {
         hl_next(4, 0);
         set_hero_animation(0xD, 2, -2.0f);
         hero_queue_sequence(3, 0x12);

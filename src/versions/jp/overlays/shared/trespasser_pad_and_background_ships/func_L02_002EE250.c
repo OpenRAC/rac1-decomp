@@ -45,7 +45,7 @@ void background_ship_2_update(char *moby) {
             break;
         }
         case 1:
-            if (*(unsigned char *)(hero_globals_base + 0x2EC1) == 1 && g_current_level_index_r == LEVEL_ORXON) {
+            if (*(unsigned char *)hero_vehicle_mode == 1 && g_current_level_index_r == LEVEL_ORXON) {
                 DeleteMoby(moby);
                 return;
             }
@@ -91,7 +91,7 @@ void background_ship_2_update(char *moby) {
             if (g_current_level_index_r == LEVEL_ARIDIA) {
                 aridia_skill_ship_kills = aridia_skill_ship_kills + 1;
                 if (aridia_skill_ship_kills >= 3) {
-                    unsigned char *p = menu_item_enabled_115 + 1;
+                    unsigned char *p = gSkillPoints;
                     if (p[2] == 0) {
                         p[2] = 1;
                         PlayBankSound(1, 0, 0);
@@ -100,10 +100,10 @@ void background_ship_2_update(char *moby) {
                 }
             }
             if (g_current_level_index_r == LEVEL_GASPAR) {
-                if (*(int *)(hero_globals_base + 0x2EA1) == 0x32) {
+                if (*(int *)hero_current_state == 0x32) {
                     gaspar_skill_ship_kills = gaspar_skill_ship_kills + 1;
                     if (gaspar_skill_ship_kills >= 5) {
-                        unsigned char *p = menu_item_enabled_115 + 1;
+                        unsigned char *p = gSkillPoints;
                         if (p[0xF] == 0) {
                             p[0xF] = 1;
                             PlayBankSound(1, 0, 0);

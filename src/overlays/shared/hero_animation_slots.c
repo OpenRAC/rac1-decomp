@@ -21,6 +21,15 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+extern u8 gHeroPos[];
+extern char g_hero_pos_z[];
+extern char g_hero_rot[];
+extern char hero_basis[];
+extern char hero_displacement[];
+extern char hero_gravity_dir[];
+extern u8 hero_velocity[];
+extern int pad0_pressed;
+extern int pad_held;
 
 struct Moby;
 extern struct Hero g_hero_r __asm__("D_0013F450");
@@ -338,7 +347,7 @@ void update_hero_offset_rail_candidate(void) {
             if (nearest_rail_point(rail_query_position, &i20, rail_point, &i24, &rail_query_value, &i2C, 0, 0)) {
                 query_height_above_rail = rail_query_position[2] - rail_point[2];
                 minimum_query_height_above_rail = -0.7f;
-                if (*(int *)(pad_globals_base + 0x2604) & 0x80)
+                if (pad0_pressed & 0x80)
                     minimum_query_height_above_rail = -1.2f;
                 if (minimum_query_height_above_rail < query_height_above_rail && query_height_above_rail < 0.4f) {
                     q = hero_globals_base + 0x13FD;
@@ -1121,7 +1130,7 @@ void update_hero_held_items_and_orientation(void) {
                 pose_owner->basis_pitch = -pose_owner->rail_pitch;
             }
             {
-                char *basis = hero_globals_base + 0x145D;
+                char *basis = hero_basis;
                 euler_rotation_basis(basis, basis + 0x40);
                 clear_u64_value(basis + 0x30);
                 *(float *)(basis + 0x30) = 1.0f;
@@ -2862,9 +2871,9 @@ void apply_hero_rotation_offset(float x, float y, float z) {
     in[1] = y;
     in[2] = z;
     euler_to_matrix(t, in);
-    euler_to_matrix(u, hero_globals_base + 0xEAD);
+    euler_to_matrix(u, g_hero_rot);
     sce_vu0_mul_matrix(u, u, t);
-    matrix_to_euler(u, hero_globals_base + 0xEAD);
+    matrix_to_euler(u, g_hero_rot);
 }
 typedef struct {
     float x, y, z, w;
@@ -3054,7 +3063,7 @@ void clip_hero_velocity_against_probed_surfaces(int arg) {
             primary_probe_height_offset = 1.5f;
             k = 5.0f;
         }
-        pos_base = hero_globals_base + 0xE9D;
+        pos_base = (char *)&gHeroPos;
         qcopy(primary_probe_start.f, pos_base);
         primary_probe_start.f[2] += primary_probe_height_offset;
         qcopy(b.f, pos_base);
@@ -3119,7 +3128,7 @@ typedef struct {
 void hero_get_collision_ray_endpoints(VecA16 *a, VecA16 *b, int mode, float fa, float fb) {
     VecA16 t[2];
     if (mode) {
-        char *up = hero_globals_base + 0x10AD;
+        char *up = hero_gravity_dir;
         char *base = up - 0x210;
         vec_scale_to_length(&t[0], up, -fb);
         FastVecAdd(b, base, &t[0]);
@@ -3128,7 +3137,7 @@ void hero_get_collision_ray_endpoints(VecA16 *a, VecA16 *b, int mode, float fa, 
         t[1] = *a;
         clip_negative_segment_endpoint_xyz(&t[1], b);
     } else {
-        qcopy(&t[0], hero_globals_base + 0xE9D);
+        qcopy(&t[0], (char *)&gHeroPos);
         qcopy(b, &t[0]);
         b->v[2] += fb;
         if (b->v[2] < 0.0f)
@@ -3395,7 +3404,7 @@ void correct_hero_ground_penetration(void) {
             len = len * 0.5f;
         }
         vec_scale_to_length(v, v, len);
-        FastVecAdd(hero_globals_base + 0xE9D, hero_globals_base + 0xE9D, v);
+        FastVecAdd((char *)&gHeroPos, (char *)&gHeroPos, v);
     } else {
         if (((struct Hero *)g)->air_frames.s == 0 &&
             ((struct Hero *)g)->motion.pos.f[2] < ((struct Hero *)g)->ground_z.f) {
@@ -3425,7 +3434,7 @@ void correct_hero_ground_penetration(void) {
                     if (lim < n)
                         ((struct Hero *)g)->motion.pos.f[2] = lim;
                 }
-                q = hero_globals_base + 0xEA5;
+                q = g_hero_pos_z;
                 Spring_r((float *)q, *(float *)(q + 0x250), (float *)(q + 0x27C), g_frame_scale_sq * 0.057f,
                          g_frame_scale_sq * 0.3f, g_frame_time + g_frame_time);
             }
@@ -3513,7 +3522,7 @@ int resolve_hero_current_position_collisions(int arg) {
             v1[2] = g->capsule_bottom;
         }
     }
-    g2 = (char *)hero_globals_base + 0xE9D;
+    g2 = (char *)&gHeroPos;
     FastVecAdd(g2, g2, v1);
     r = 0x24;
     if (*(int *)(g2 + 0x2004) == 0x7F)
@@ -3539,7 +3548,7 @@ int resolve_hero_current_position_collisions(int arg) {
                     break;
             }
         }
-        p = (char *)hero_globals_base + 0xE9D;
+        p = (char *)&gHeroPos;
         qcopy(p, coll_resolved_pos);
         qcopy(p + 0x180, coll_resolved_pos + 0x10);
         qcopy(p + 0x190, coll_resolved_pos - 0x10);
@@ -3547,7 +3556,7 @@ int resolve_hero_current_position_collisions(int arg) {
         *(unsigned char *)(q + 0x257) = 1;
         *(int *)(q + 0x23C) = *(int *)(coll_resolved_pos - 0x18);
     }
-    g = (Hero *)((char *)hero_globals_base + 0xE9D);
+    g = &gHeroPos;
     FastVecSub(&g->rot_matrix[0], &g->rot_matrix[0], v1);
     FastVecSub(v2, &g->rot_matrix[0], v0);
     len = FastVecLength(v2);
@@ -3631,7 +3640,7 @@ void apply_hero_motion_and_resolve_collisions(void) {
     Hero *contact_player;
     Hero *motion_player;
     Hero *cap_player;
-    float *base = (float *)(hero_globals_base + 0xE9D);
+    float *base = (float *)(&gHeroPos);
     float *contact;
     float *vertical;
     float *position;
@@ -3658,7 +3667,7 @@ void apply_hero_motion_and_resolve_collisions(void) {
             if (limit < length)
                 vec_scale_to_length(contact, contact, limit);
         }
-        position = (float *)(hero_globals_base + 0xEFD);
+        position = (float *)(&hero_velocity);
         magnitude = gravity_z(position);
         limit = -*(float *)((char *)position + 0x1FC);
         if (magnitude < limit) {
@@ -3691,7 +3700,7 @@ void apply_hero_motion_and_resolve_collisions(void) {
             }
         }
     }
-    position = (float *)(hero_globals_base + 0xE9D);
+    position = (float *)(&gHeroPos);
     FastVecAdd(position, position, (char *)position + 0x60);
     extra_step = (float *)((char *)position + 0x8A0);
     FastVecAdd(position, position, extra_step);
@@ -3781,7 +3790,7 @@ void apply_hero_motion_and_resolve_collisions(void) {
 }
 // Scales four vectors by s and a float field by s.
 void scale_hero_motion(float s) {
-    char *p = hero_globals_base + 0xF1D;
+    char *p = hero_displacement;
     float *f;
 
     FastVecScale(p, p, s);
@@ -3930,7 +3939,7 @@ void hero_integrate_velocity(void) {
                 }
             }
         }
-        FastVecSub(vec, hero_globals_base + 0xE9D, hero_globals_base + 0xE9D + 0x380);
+        FastVecSub(vec, (char *)&gHeroPos, (char *)&gHeroPos + 0x380);
         {
             float d = gravity_z(vec);
             if (near) {
@@ -3968,8 +3977,7 @@ void hero_integrate_velocity(void) {
         z = 0;
         if (((struct Hero *)g)->unk428 == 0.0f && ((struct Hero *)g)->unk42C == 0.0f)
             z = 1;
-        if ((*(int *)(pad_globals_base + 0x2600) & 0x40) || z != 0 ||
-            (k = hero_globals_base + 0xE1D, *(int *)(k + 0x2084) == 0x12)) {
+        if ((pad_held & 0x40) || z != 0 || (k = hero_globals_base + 0xE1D, *(int *)(k + 0x2084) == 0x12)) {
             struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
             if (h->unk430 < h->unk48C) {
                 if (h->state_timer <= scale_ticks(15)) {
@@ -4008,8 +4016,7 @@ void hero_integrate_velocity(void) {
                     if (p->cnt > 0) {
                         p->val += p->arr[p->idx].g * g_frame_time_sq;
                     }
-                    HeroOffsetAlongViewZ((float *)(hero_globals_base + 0xEFD), (float *)(hero_globals_base + 0xEFD),
-                                         p->val);
+                    HeroOffsetAlongViewZ((float *)(&hero_velocity), (float *)(&hero_velocity), p->val);
                 }
             }
         }

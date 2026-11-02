@@ -22,7 +22,7 @@
 #include "enums/hero_state.h"
 extern char g_hero[];
 extern char item_usage[];
-extern char pad0_pressed[];
+extern int pad0_pressed;
 
 /* Crate: falls, stacks on other crates and rides moving platforms. */
 struct CrateVars {
@@ -1321,7 +1321,7 @@ target_valid:
         if (g->item_use_locked == 0) {
             if (g->item_anim_active && g->item_anim_frames == scale_ticks(0x11))
                 goto L3D10;
-            if (*(int *)pad0_pressed & g->items[0].button_mask) {
+            if (pad0_pressed & g->items[0].button_mask) {
                 if (g->state.current == HERO_STATE_LOOK_RELEASE_WAIT && get_ammo(-1))
                     goto L3D10;
             }

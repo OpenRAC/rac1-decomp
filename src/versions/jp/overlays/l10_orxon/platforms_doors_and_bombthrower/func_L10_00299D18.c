@@ -25,8 +25,8 @@ void update_hero_relocation_trigger(char *m) {
     }
     id = *(unsigned short *)(m + 0xB2);
     if (orxon_collected_flags_base.collected[(short)id] != 0 ||
-        ((*(int *)(help_stats_base + 0xAB75 + ((((short)id >> 5) * 4) + (g_current_level_index << 8))) >> (id & 0x1F)) &
-         1) != 0) {
+        ((*(int *)(level_moby_killed + ((((short)id >> 5) * 4) + (g_current_level_index << 8))) >> (id & 0x1F)) & 1) !=
+            0) {
         if (gHaveHeliPack[4] != 0) {
             char *bs = orxon_mobys_r;
             *(unsigned short *)((*(int *)d << 8) + (int)bs + 0x34) |= 1;
@@ -34,7 +34,7 @@ void update_hero_relocation_trigger(char *m) {
             *(int *)((*(int *)d << 8) + (int)bs + 0x94) = 0;
         } else {
             if (*(int *)&orxon_cinematic_mode == 0) {
-                unsigned char *T = help_stats_base + 0x22D;
+                unsigned char *T = usage_stats;
                 unsigned short t0 = *(unsigned short *)(T + 0x100);
                 int r = scale_ticks(0x12C);
                 if (t0 < r) {
@@ -65,8 +65,7 @@ void update_hero_relocation_trigger(char *m) {
             }
         }
     }
-    *(int *)(help_stats_base + 0xAB75 +
-             ((((short)*(unsigned short *)(m + 0xB2) >> 5) * 4) + (g_current_level_index << 8))) |=
+    *(int *)(level_moby_killed + ((((short)*(unsigned short *)(m + 0xB2) >> 5) * 4) + (g_current_level_index << 8))) |=
         1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
     orxon_moby_killed[(short)*(unsigned short *)(m + 0xB2) >> 5] |= 1 << (*(unsigned short *)(m + 0xB2) & 0x1F);
     if (*(int *)(d + 8) == -1 || *(int *)d == -1)
@@ -88,7 +87,7 @@ void update_hero_relocation_trigger(char *m) {
         enter_hero_vehicle_mode(1, 0x43, orxon_mobys_r + (*(int *)d << 8));
         MusicRequestTrack(2, 4);
     } else {
-        unsigned char *h = (unsigned char *)hero_globals_base + 0xE1D;
+        unsigned char *h = (char *)&g_hero;
         if (h[0x20A4] == 1) {
             exit_hero_vehicle_mode();
             {

@@ -16,7 +16,7 @@
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
 extern char g_hero[];
-extern char pad_held[];
+extern int pad_held;
 extern char weapon_ammo_counts[];
 /* Trespasser: set once the pickup was collected. */
 struct TrespasserVars {
@@ -647,7 +647,7 @@ extern void update_trespasser_pickup(void *);
 void trespasser_update(Moby *m) {
     if (((struct TrespasserVars *)m->pvars)->picked_up != 0) {
         update_trespasser_pickup(m);
-    } else if (*(int *)pad_held & ((struct Hero *)g_hero)->items[0].button_mask) {
+    } else if (pad_held & ((struct Hero *)g_hero)->items[0].button_mask) {
         m->command = 1;
     } else {
         m->command = 0;
@@ -1012,7 +1012,7 @@ void aim_throw_arc(float *a, float *b, float *out, float x, float y, float lim) 
     out[1] = FastSin(r) * e;
     out[2] = 0.0f;
     out[2] = jump_speed_4318(a, (float *)&t, e, -x, 0);
-    if (*(int *)pad_held & 5) {
+    if (pad_held & 5) {
         q = (IntToFloat(*(hero_globals_base - 9)) * 2.5f + 8.5f) / e;
     } else {
         q = 8.5f / e;
@@ -3041,7 +3041,7 @@ void compute_glove_of_doom_launch_velocity(float *pos, float *tgt, float *out, f
     out[1] = FastSin(ang) * s;
     *(int *)&out[2] = 0;
     out[2] = jump_speed_4318(pos, (float *)&t, s, -speed, 0);
-    if (*(int *)pad_held & 5) {
+    if (pad_held & 5) {
         k = 3.5f / s;
     } else {
         k = 2.5f / s;

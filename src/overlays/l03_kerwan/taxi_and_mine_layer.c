@@ -20,6 +20,12 @@
 #include "enums/moby_class.h"
 #include "structs/pad.h"
 #include "enums/hero_state.h"
+extern char gHeroPos[];
+extern char gSpecialItems[];
+extern char gSkillPoints[];
+extern Hero g_hero;
+extern char item_available[];
+extern char voice_pool[];
 
 /* Path mover (class 0x382): rides a rail path, turning its matrix with it. */
 struct PathMoverVars {
@@ -1044,7 +1050,7 @@ int advance_moby_along_rail_path(char *moby, int pathIndex, int *sound) {
             *sound = Sound_PlayClassSound(0, 4, (int)moby, 0x330);
     } else {
         if (*sound != -1) {
-            VoiceSlot *voice_slot = (VoiceSlot *)(hero_globals_base + 0x1D + *sound * 0x70);
+            VoiceSlot *voice_slot = (VoiceSlot *)(voice_pool + *sound * 0x70);
             if (voice_slot->owner == rail_moby && voice_slot->active != 0)
                 Sound_StopSlot(*sound);
         }
@@ -1754,7 +1760,7 @@ struct GuideVars_gd {
 #define stage (D_0014171B + 0xAA35)
 #define BASE_gd ((char *)D_L03_00160058)
 static inline u8 flag2(void) {
-    u8 *p = menu_item_enabled_115 + 0xB9;
+    u8 *p = item_available;
     return p[2];
 }
 /* Big Al's per-frame update: facing setup, talk states and head tracking toward the hero. */
@@ -2018,7 +2024,7 @@ void robot_qwark_update(unsigned char *m) {
            (((Moby *)m)->save_id & 0x1F)) ^
           1) &
          1)) {
-        unsigned char *p5 = menu_item_enabled_115 + 1;
+        unsigned char *p5 = gSkillPoints;
         if (p5[5] == 0) {
             p5[5] = 1;
             PlayBankSound(1, 0, 0);
@@ -2842,7 +2848,7 @@ extern int scale_ticks(int);
 /* ActivateCamera_14: seed the camera's smoothing state from the current camera table entry */
 void initialize_hero_relative_camera(char *m) {
     CameraMobyECD40 *mob = (CameraMobyECD40 *)m;
-    struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+    struct Hero *g = &g_hero;
     CameraConfigECD40 *e = kerwan_camera_descriptors_camera[mob->index].config;
     CameraSmoothECD40 *d1;
     CameraZoomECD40 *v;
@@ -2904,7 +2910,7 @@ void update_smoothed_hero_relative_camera_position(void *arg) {
     char *d = *(char **)(m + 0x70);
     char *a = d + 0xD0;
     char *b = d + 0xF0;
-    struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+    struct Hero *g = &g_hero;
     float v3[4];
     float v1[4];
     float v2[4];
@@ -2912,9 +2918,9 @@ void update_smoothed_hero_relative_camera_position(void *arg) {
     if (g->unk2284 != 0x50 || g->state.current == 0x11) {
         *(float *)(b + 0x34) = g->motion.pos.f[2];
     }
-    vec_scale_to_length(v1, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->gravity_dir, -*(float *)(a + 0x10));
+    vec_scale_to_length(v1, &g_hero.gravity_dir, -*(float *)(a + 0x10));
     vec_scale_to_length(v3, b, -*(float *)a);
-    h = (struct Hero *)(hero_globals_base + 0xE1D);
+    h = &g_hero;
     *(float *)d = Cam_InterpValues(d + 0x10, *(float *)d, h->motion.pos.f[0], *(float *)(d + 0x20),
                                    *(float *)(d + 0x24), *(float *)(d + 0x28));
     *(float *)(d + 4) = Cam_InterpValues(d + 0x14, *(float *)(d + 4), h->motion.pos.f[1], *(float *)(d + 0x20),
@@ -2944,8 +2950,8 @@ void rebuild_camera_orientation_axes(void *arg) {
     float b[4];
     float c[4];
     qcopy(b, d);
-    p[2] = Cam_InterpValues(d + 0xBC, p[2], ((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos.f[2],
-                            *(float *)&kerwan_hero_cam_blend_stiffness, *(float *)&kerwan_hero_cam_blend_damping, 0.0f);
+    p[2] = Cam_InterpValues(d + 0xBC, p[2], g_hero.motion.pos.f[2], *(float *)&kerwan_hero_cam_blend_stiffness,
+                            *(float *)&kerwan_hero_cam_blend_damping, 0.0f);
     vec_scale_to_length(c, kerwan_player_camera_target_offset_dir, p[5]);
     FastVecAdd(b, c, b);
     FastVecSub(a, b, m + 0x30);
@@ -2957,7 +2963,7 @@ void rebuild_camera_orientation_axes(void *arg) {
 }
 /* Returns -1 if hero state is 6, or hero mode is 0x50 and state is not 0x11; else 0. */
 int hero_in_state_6_or_mode_50(void) {
-    struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
+    struct Hero *g = &g_hero;
 
     if (g->unk2284 != 0x50 || g->state.current == 0x11) {
         if (g->state.current != HERO_STATE_FALL) {
@@ -2986,8 +2992,7 @@ void update_camera_state_outside_clip_volume(char *moby) {
     char *entry = (char *)((*(short *)(moby + 0x84) << 5) + kerwan_camera_descriptors);
     char *sub = *(char **)(entry + 0x1C);
     int value = *(int *)(sub + 0xC);
-    if (value >= 0 &&
-        is_point_inside_clip_volume(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.pos, value) == 0) {
+    if (value >= 0 && is_point_inside_clip_volume(&g_hero.motion.pos, value) == 0) {
         *(short *)(moby + 0x7E) = 3;
     }
 }

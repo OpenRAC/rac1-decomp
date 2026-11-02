@@ -22,7 +22,7 @@
 #include "game/system/loaders.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
-extern char frame_size[];
+extern int frame_size;
 extern char gSkillPoints[];
 extern char gSpecialItems[];
 extern char g_controller_state[];
@@ -293,7 +293,7 @@ void initialize_pause_menu(void) {
     } else {
         decompress_and_relocate_selected_groups(0);
     }
-    transfer_draw_buffer_chunks((*(Menu *)level_menu_system).unk10, draw_buffer_address, *(int *)frame_size << 11);
+    transfer_draw_buffer_chunks((*(Menu *)level_menu_system).unk10, draw_buffer_address, frame_size << 11);
     t = g_gs_texture_allocation_start;
     (*(Menu *)level_menu_system).unk18 = t;
     if ((*(Menu *)level_menu_system).state == 11 || (*(Menu *)level_menu_system).state == 15) {
@@ -847,7 +847,7 @@ void draw_pause_menu_pages(int transfer_only) {
 
     append_gif_transfer_packet();
     page_objects = 0;
-    append_draw_buffer_upload_packets(PM.unk10, draw_buffer_address, *(int *)frame_size << 11);
+    append_draw_buffer_upload_packets(PM.unk10, draw_buffer_address, frame_size << 11);
     if (transfer_only != 0) {
         return;
     }
@@ -1168,7 +1168,7 @@ int Menu_GoBackWithFlag(void) {
     }
     return 0;
 }
-extern unsigned char pad_globals_base[] NOT_SDA;
+
 extern char level_menu_system[] NOT_SDA;
 /* Menu left/right handler; sets the page flag and next page link. Returns 0. */
 int Menu_GoNextWithFlag(void) {
@@ -1195,8 +1195,6 @@ extern short unlock_code_input[];
 extern unsigned char unlock_code_key_table[];
 extern short unlock_code_input_count;
 extern char discount_purchase_pricing[];
-extern unsigned char menu_item_enabled_115[];
-extern char special_items_base[];
 
 /* Cheat-code entry on the pause screen. */
 void process_unlock_code_input(void) {

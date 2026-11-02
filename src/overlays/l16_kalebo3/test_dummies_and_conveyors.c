@@ -23,10 +23,10 @@
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
-extern char active_marker_id[];
+extern unsigned short active_marker_id NOT_SDA;
 extern char gSpecialItems[];
 extern char g_hero[];
-extern char pad0_pressed[];
+extern int pad0_pressed;
 extern char saved_mission_state[];
 extern char voice_pool[];
 
@@ -2696,7 +2696,7 @@ void update_triggered_group_objective(char *m) {
         }
         case SCENE_STATE_WAIT_TO_HIDE:
             if (scene_data->camera >= 0)
-                *(unsigned short *)active_marker_id = *(unsigned short *)&scene_data->camera;
+                active_marker_id = *(unsigned short *)&scene_data->camera;
             if (fast_dec_timer(&scene_data->timer)) {
                 moby->state = 3;
                 scene_data->timer = scale_ticks(60);
@@ -2710,7 +2710,7 @@ void update_triggered_group_objective(char *m) {
             set_camera_position(position);
             set_camera_rotation(rotation);
             if (scene_data->camera >= 0)
-                *(unsigned short *)active_marker_id = *(unsigned short *)&scene_data->camera;
+                active_marker_id = *(unsigned short *)&scene_data->camera;
             if (count_active_moby_group_members(scene_data->path, -1))
                 break;
             if (!fast_dec_timer(&scene_data->timer))
@@ -3360,7 +3360,7 @@ void PathPickup_Update(char *moby) {
                 if (FastAbsF(v70[1]) < 1.2f) {
                     prepare_taxi_departure_path(moby);
                     request_moby_help_message(moby);
-                    if ((*(int *)pad0_pressed & 0x10) && *(int *)&kalebo3_help_message_selector == 8) {
+                    if ((pad0_pressed & 0x10) && *(int *)&kalebo3_help_message_selector == 8) {
                         ((Moby *)moby)->state = 3;
                         m = FindMobyByDataId(moby, d->spawn_id);
                         if (m != 0) {

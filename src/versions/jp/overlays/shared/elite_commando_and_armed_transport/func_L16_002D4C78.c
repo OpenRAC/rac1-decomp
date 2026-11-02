@@ -65,8 +65,8 @@ void update_blarg_elite_commando_damage_and_pursuit(char *m) {
                 if (g_current_level_index == LEVEL_VELDIN2 && d->reward_hits) {
                     ++*(int *)&elite_commando_reward_hit_count;
                     if (*(int *)&elite_commando_reward_hit_count >= 10) {
-                        if (((L16DamageReward *)(menu_item_enabled_115 + 1))->awarded == 0) {
-                            ((L16DamageReward *)(menu_item_enabled_115 + 1))->awarded = 1;
+                        if (((L16DamageReward *)gSkillPoints)->awarded == 0) {
+                            ((L16DamageReward *)gSkillPoints)->awarded = 1;
                             PlayBankSound(1, 0, 0);
                             ShowBanner(0x542D, -1);
                         }

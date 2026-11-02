@@ -32,7 +32,7 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "enums/moby_class.h"
-extern char g_controller_state_no_direction[];
+extern int g_controller_state_no_direction;
 extern Hero g_hero;
 
 extern int g_current_level_index MACRO_ADDR;
@@ -2153,7 +2153,7 @@ void Hero_UpdateStatePhysicsL15(void) {
                         g_hero.ground_speed = 0.0f;
                     }
                     if (g_hero.rail_land_frames != 0) {
-                        if (*(int *)g_controller_state_no_direction != 0) {
+                        if (g_controller_state_no_direction != 0) {
                             if (g_hero.on_flagged_ground_moby != 0) {
                                 g_hero.ground_speed = 0.0f;
                             }

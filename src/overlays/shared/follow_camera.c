@@ -23,10 +23,10 @@ extern char g_controller_state[];
 extern float g_controller_state_analog;
 extern char g_hero[];
 extern char g_hero_moby[];
-extern char hero_control_mode[];
-extern char hero_current_state[];
+extern int hero_control_mode;
+extern int hero_current_state;
 extern u8 hero_gravity_dir[];
-extern char hero_vehicle_mode[];
+extern unsigned char hero_vehicle_mode NOT_SDA;
 extern char pad_held[];
 
 /* Hydrodisplacer effect emitter: only a spawn countdown. */
@@ -1528,7 +1528,7 @@ void follow_cam_update_mode(char *m) {
         }
         return;
     }
-    if (e->state != 9 && e->state != 1 && *(int *)hero_current_state == 0x14) {
+    if (e->state != 9 && e->state != 1 && hero_current_state == 0x14) {
         float r;
         e->prev = e->state;
         e->state = 9;
@@ -1545,7 +1545,7 @@ void follow_cam_update_mode(char *m) {
         qcopy(e->v20, e->v10);
         return;
     }
-    if ((e->state == 1 || e->state == 2) && *(int *)hero_control_mode != 4 && *(int *)hero_control_mode != 2) {
+    if ((e->state == 1 || e->state == 2) && hero_control_mode != 4 && hero_control_mode != 2) {
         e->timer = 0;
         e->invTimer = 1.0f;
         e->state = 0;
@@ -1576,8 +1576,8 @@ void follow_cam_update_mode(char *m) {
             return;
         }
     }
-    if (e->state == 4 && *(int *)hero_control_mode != 4) {
-        if (*(int *)hero_control_mode == 2) {
+    if (e->state == 4 && hero_control_mode != 4) {
+        if (hero_control_mode == 2) {
             e->prev = 4;
             e->state = 1;
             e->timer = scale_ticks(*(int *)&follow_cam_return_blend_time);
@@ -1590,7 +1590,7 @@ void follow_cam_update_mode(char *m) {
         }
         return;
     }
-    if (e->state == 3 && *(int *)hero_current_state == 0xB) {
+    if (e->state == 3 && hero_current_state == 0xB) {
         e->prev = e->state;
         e->state = 6;
         e->moveTimer = scale_ticks(*(int *)&follow_cam_high_jump_move_time);
@@ -1605,28 +1605,28 @@ void follow_cam_update_mode(char *m) {
         qcopy(e->v20, e->v10);
         return;
     }
-    if (e->state == 5 && *(int *)hero_current_state == 0xC) {
+    if (e->state == 5 && hero_current_state == 0xC) {
         e->prev = e->state;
         e->state = 8;
         e->timer = follow_cam_double_jump_blend_time;
         e->invTimer = 1.0f / IntToFloat(e->timer);
         return;
     }
-    if (e->state == 8 && *(int *)hero_current_state != 0xC) {
+    if (e->state == 8 && hero_current_state != 0xC) {
         e->prev = e->state;
         e->state = 0;
         e->timer = scale_ticks(*(int *)&follow_cam_double_jump_exit_time);
         e->invTimer = 1.0f / IntToFloat(e->timer);
         return;
     }
-    if (e->state == 6 && *(int *)hero_current_state != 0xB) {
+    if (e->state == 6 && hero_current_state != 0xB) {
         e->prev = e->state;
         e->state = 0;
         e->timer = scale_ticks(*(int *)&follow_cam_return_blend_time);
         e->invTimer = 1.0f / IntToFloat(e->timer);
         return;
     }
-    if ((e->state == 3 || e->state == 5) && *(int *)hero_control_mode != 4) {
+    if ((e->state == 3 || e->state == 5) && hero_control_mode != 4) {
         e->prev = e->state;
         e->state = 0;
         e->timer = scale_ticks(*(int *)&follow_cam_return_blend_time);
@@ -1656,7 +1656,7 @@ void follow_cam_update_mode(char *m) {
             return;
         }
     }
-    if (e->state == 9 && *(int *)hero_current_state != 0x14) {
+    if (e->state == 9 && hero_current_state != 0x14) {
         e->prev = e->state;
         e->state = 0xA;
         e->timer = follow_cam_slam_recover_time;
@@ -1670,7 +1670,7 @@ void follow_cam_update_mode(char *m) {
         e->invTimer = 1.0f / IntToFloat(e->timer);
         return;
     }
-    if (e->state == 5 && *(int *)hero_current_state == 0x10) {
+    if (e->state == 5 && hero_current_state == 0x10) {
         e->prev = e->state;
         e->state = 0;
         e->timer = scale_ticks(*(int *)&follow_cam_double_jump_exit_time);
@@ -4116,7 +4116,7 @@ void follow_camera_pull_back(char *camera_object, float *x, float *y) {
         k = g->side_dist * 14.2857f;
         if (k > 1.0f)
             k = 1.0f;
-        pull_back_target = (*(unsigned char *)hero_vehicle_mode == 1) ? 4.0f : pull_back_state->fC;
+        pull_back_target = (hero_vehicle_mode == 1) ? 4.0f : pull_back_state->fC;
         reference_distance = reference_orbit_state->unk58;
         current_distance = pull_back_state->f8;
         interpolated_pull_back_value = reference_distance + (pull_back_target - reference_distance) * k;
