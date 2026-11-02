@@ -172,6 +172,8 @@ extern void apply_hero_rotation_offset(float, float, float);
 extern void compute_hero_hoverboard_respawn_transform(void *, void *);
 extern void Hero_ResetToPosition(void *, void *, int, int);
 
+struct HeroUpdateStatePhysicsVars {};
+
 /* Hero state machine: per-frame movement and physics for the current hero state. */
 void Hero_UpdateStatePhysics(void) {
     FVec4 vec[14];

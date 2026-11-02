@@ -1,4 +1,5 @@
 #include "common.h"
+#include "structs/hero.h"
 #include "structs/moby.h"
 #include "callees.h"
 #include "structs/records.h"
@@ -462,12 +463,12 @@ int select_damage_reaction(char *a, char *B, char *an, unsigned int btn, int *ou
         a22 = *(unsigned short *)(B + 0x2A);
         *(float *)(B + 0x1C) = 5627.9248f;
         if (a22 == 0x47) {
-            char *h = g_hero;
+            struct Hero *h = (struct Hero *)g_hero;
 
             v[0] = FastCos(
-                fast_arc_tan(*(float *)(a + 0x10) - *(float *)(h + 0x80), *(float *)(a + 0x14) - *(float *)(h + 0x84)));
+                fast_arc_tan(*(float *)(a + 0x10) - h->motion.pos.f[0], *(float *)(a + 0x14) - h->motion.pos.f[1]));
             v[1] = FastSin(
-                fast_arc_tan(*(float *)(a + 0x10) - *(float *)(h + 0x80), *(float *)(a + 0x14) - *(float *)(h + 0x84)));
+                fast_arc_tan(*(float *)(a + 0x10) - h->motion.pos.f[0], *(float *)(a + 0x14) - h->motion.pos.f[1]));
             v[2] = 1.0f;
             fast_vec_normalize(v, v, FastVecLength(B + 0x10) * 0.7f);
             FastVecScale(B + 0x10, B + 0x10, 0.3f);

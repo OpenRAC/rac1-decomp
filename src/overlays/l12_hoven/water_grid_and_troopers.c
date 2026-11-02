@@ -2504,9 +2504,16 @@ void process_blarg_trooper_damage_and_alerts(char *moby) {
 extern float FastSubRots(float, float);
 
 // Steers a moby's two turn-rate fields from the clamped heading error to a point.
+struct SetBlargTrooperAimYawOffsetsVars {
+    u8 pad_00[0x188];
+    f32 unk_188;
+    u8 pad_18C[0x7C];
+    f32 unk_208;
+};
+
 void set_blarg_trooper_aim_yaw_offsets(char *moby, float *pos) {
     struct Moby *m = (struct Moby *)moby;
-    char *data = (char *)m->pvars;
+    struct SetBlargTrooperAimYawOffsetsVars *data = (struct SetBlargTrooperAimYawOffsetsVars *)m->pvars;
     float target_yaw = fast_atan2(pos[0] - m->pos.x, pos[1] - m->pos.y);
     float yaw_offset = FastSubRots(target_yaw, m->rot.z);
     if (yaw_offset > 1.2217305f) {
@@ -2514,8 +2521,8 @@ void set_blarg_trooper_aim_yaw_offsets(char *moby, float *pos) {
     } else if (yaw_offset < -1.2217305f) {
         yaw_offset = -1.2217305f;
     }
-    *(float *)(data + 0x188) = yaw_offset * 0.35f;
-    *(float *)(data + 0x208) = yaw_offset * 0.8f;
+    data->unk_188 = yaw_offset * 0.35f;
+    data->unk_208 = yaw_offset * 0.8f;
 }
 typedef struct {
     char pad0[0x248];
@@ -3130,26 +3137,35 @@ extern float FastSin(float);
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
 extern float g_frame_time MACRO_ADDR;
 
+struct UpdateBlargHelicopterMotionTiltVars {
+    u8 pad_00[0x70];
+    f32 unk_70;
+    f32 unk_74;
+    u8 pad_78[0x1C];
+    f32 unk_94;
+    f32 unk_98;
+    f32 unk_9C;
+};
+
 /* Springs the moby's two rotation angles toward a heading taken from its data's direction vector. */
 void update_blarg_helicopter_motion_tilt(char *moby) {
     struct Moby *m = (struct Moby *)moby;
-    char *data = (char *)m->pvars;
-    float ang = FastSubRots(fast_atan2(*(float *)(data + 0x70), *(float *)(data + 0x74)), m->rot.z);
-    float target_rotation_y = *(float *)(data + 0x94) * 0.2268928f * FastCos(ang) / (g_frame_time * 10.0f);
-    float target_rotation_x = *(float *)(data + 0x94) * -0.2268928f * FastSin(ang) / (g_frame_time * 10.0f);
+    struct UpdateBlargHelicopterMotionTiltVars *data = (struct UpdateBlargHelicopterMotionTiltVars *)m->pvars;
+    float ang = FastSubRots(fast_atan2(data->unk_70, data->unk_74), m->rot.z);
+    float target_rotation_y = data->unk_94 * 0.2268928f * FastCos(ang) / (g_frame_time * 10.0f);
+    float target_rotation_x = data->unk_94 * -0.2268928f * FastSin(ang) / (g_frame_time * 10.0f);
     float updated_rotation_y, k0, rotation_y_damping, rotation_y_step_limit, k1, rotation_x_damping,
         rotation_x_step_limit;
     k0 = g_frame_time_sq * 0.5235988f;
     rotation_y_damping = g_frame_time_sq * 1.0471976f;
     rotation_y_step_limit = g_frame_time * 0.7853982f;
     updated_rotation_y =
-        SpringTurn((float *)(data + 0x9C), m->rot.y, target_rotation_y, k0, rotation_y_damping, rotation_y_step_limit);
+        SpringTurn(&data->unk_9C, m->rot.y, target_rotation_y, k0, rotation_y_damping, rotation_y_step_limit);
     k1 = g_frame_time_sq * 1.0471976f;
     rotation_x_damping = g_frame_time_sq * 2.0943952f;
     rotation_x_step_limit = g_frame_time * 1.2217305f;
     m->rot.y = updated_rotation_y;
-    m->rot.x =
-        SpringTurn((float *)(data + 0x98), m->rot.x, target_rotation_x, k1, rotation_x_damping, rotation_x_step_limit);
+    m->rot.x = SpringTurn(&data->unk_98, m->rot.x, target_rotation_x, k1, rotation_x_damping, rotation_x_step_limit);
 }
 void func_L12_002EC180_EC2E8(struct Moby *moby) __asm__("func_L12_002EC180");
 
@@ -3163,40 +3179,49 @@ typedef struct {
     float x, y, z, w;
 } N_af68;
 
+struct FollowBlargHelicopterPathVars {
+    u8 pad_00[0x70];
+    Vec4 unk_70;
+    u8 pad_80[0x8];
+    f32 unk_88;
+    u8 pad_8C[0x8];
+    f32 unk_94;
+    u8 pad_98[0x1C];
+    s32 unk_B4;
+};
+
 /* Follows a path: steers toward the current node, slows to a stop near the end, returns 1 once stopped.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l12/gameplay/entities/002bf140.c, FUN_L12_002eaf68. */
 int follow_blarg_helicopter_path(struct Moby *m, int idx) {
     char *path = hoven_paths[idx];
-    char *d = (char *)m->pvars;
+    struct FollowBlargHelicopterPathVars *d = (struct FollowBlargHelicopterPathVars *)m->pvars;
     float sum = 0.0f;
     float v[20]; /* target record from the finder; also the step vector */
     int i;
     float a;
-    for (i = *(int *)(d + 0xB4); i < *(int *)path - 1; i++)
+    for (i = d->unk_B4; i < *(int *)path - 1; i++)
         sum += *(float *)(path + i * 16 + 0x1C);
     if (sum > 5.0f) {
-        a = fast_atan2(*(float *)((*(int *)(d + 0xB4) << 4) + path + 0x10) - m->pos.x,
-                       *(float *)((*(int *)(d + 0xB4) << 4) + path + 0x14) - m->pos.y);
-        ((M_af68 *)m)->rz =
-            SpringTurn((float *)(d + 0x88), ((M_af68 *)m)->rz, a, 0.004f, 0.3f, g_frame_time * 0.7853982f);
-        ApproachValue(d + 0x94, g_frame_time * 10.0f, g_frame_time_sq * 7.0f);
+        a = fast_atan2(*(float *)((d->unk_B4 << 4) + path + 0x10) - m->pos.x,
+                       *(float *)((d->unk_B4 << 4) + path + 0x14) - m->pos.y);
+        ((M_af68 *)m)->rz = SpringTurn(&d->unk_88, ((M_af68 *)m)->rz, a, 0.004f, 0.3f, g_frame_time * 0.7853982f);
+        ApproachValue(&d->unk_94, g_frame_time * 10.0f, g_frame_time_sq * 7.0f);
     } else {
         FindNearestTargetMoby(m, v, 48.0f);
         a = fast_atan2(v[0] - m->pos.x, v[1] - m->pos.y);
-        ((M_af68 *)m)->rz =
-            SpringTurn((float *)(d + 0x88), ((M_af68 *)m)->rz, a, 0.004f, 0.3f, g_frame_time * 0.7853982f);
-        ApproachValue(d + 0x94, 0.0f, g_frame_time_sq * 9.0f);
-        sum = *(float *)(d + 0x94);
+        ((M_af68 *)m)->rz = SpringTurn(&d->unk_88, ((M_af68 *)m)->rz, a, 0.004f, 0.3f, g_frame_time * 0.7853982f);
+        ApproachValue(&d->unk_94, 0.0f, g_frame_time_sq * 9.0f);
+        sum = d->unk_94;
         if (sum == 0.0f)
             return 1;
     }
-    FastVecSub(v, &((N_af68 *)path)[*(int *)(d + 0xB4) + 1], &m->pos);
-    vec_scale_to_length(d + 0x70, v, *(float *)(d + 0x94));
-    FastVecAdd(&m->pos, &m->pos, d + 0x70);
-    if (FastVecDist(&m->pos, &((N_af68 *)path)[*(int *)(d + 0xB4) + 1]) < 2.0f) {
-        (*(int *)(d + 0xB4))++;
-        if (*(int *)path - 1 < *(int *)(d + 0xB4))
-            *(int *)(d + 0xB4) = *(int *)path - 1;
+    FastVecSub(v, &((N_af68 *)path)[d->unk_B4 + 1], &m->pos);
+    vec_scale_to_length(&d->unk_70, v, d->unk_94);
+    FastVecAdd(&m->pos, &m->pos, &d->unk_70);
+    if (FastVecDist(&m->pos, &((N_af68 *)path)[d->unk_B4 + 1]) < 2.0f) {
+        (d->unk_B4)++;
+        if (*(int *)path - 1 < d->unk_B4)
+            d->unk_B4 = *(int *)path - 1;
     }
     func_L12_002EC180_EC2E8(m);
     return 0;

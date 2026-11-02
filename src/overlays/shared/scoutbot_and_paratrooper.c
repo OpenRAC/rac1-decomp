@@ -613,17 +613,26 @@ void update_scoutbot_movement(char *m) {
 extern void *cancel_suck_cannon_suction(void *);
 extern void MobyBlendAnimation(void *, int, int, int);
 
+struct EnterScoutbotReturnHomeStateVars {
+    u8 pad_00[0xC8];
+    s16 unk_C8;
+    u8 pad_CA[0x136];
+    f32 unk_200;
+    u8 pad_204[0x4];
+    f32 unk_208;
+};
+
 /* Cancels suck-cannon suction and puts the scoutbot in state 3 (return home) with its speed and animation. */
 void *enter_scoutbot_return_home_state(char *arg) {
     void *result = cancel_suck_cannon_suction(arg);
-    char *obj = ((char *)((Moby *)arg)->pvars);
+    struct EnterScoutbotReturnHomeStateVars *obj = (struct EnterScoutbotReturnHomeStateVars *)((Moby *)arg)->pvars;
     arg[0x20] = 3;
-    *(float *)(obj + 0x200) = 4.0f;
-    *(float *)(obj + 0x208) = 0.5f;
+    obj->unk_200 = 4.0f;
+    obj->unk_208 = 0.5f;
     if ((unsigned char)arg[0x53] != 2) {
         MobyBlendAnimation(arg, 2, 0, 3);
     }
-    *(short *)(obj + 0xC8) = 0;
+    obj->unk_C8 = 0;
     return result;
 }
 typedef int ti_002d4108 __attribute__((mode(TI)));
@@ -723,6 +732,14 @@ extern short homing_shot_spark_time_c;
 extern short moby_creation_particle_primary_motion_w_gp;
 extern short moby_creation_particle_secondary_motion_w_gp;
 
+struct CreateMobyWithParticlesVars {
+    u8 pad_00[0x10];
+    s32 unk_10;
+    s32 unk_14;
+    s32 unk_18;
+    s32 unk_1C;
+};
+
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002937a0.c, FUN_L08_002e7eb0. */
 char *create_moby_with_particles(int owner, float *position, float *rotation, int value) {
     float position_copy[4] __attribute__((aligned(16)));
@@ -744,22 +761,22 @@ char *create_moby_with_particles(int owner, float *position, float *rotation, in
     moby = CreateMoby(0x1ca);
     if (moby != 0) {
         data = ((char *)((Moby *)moby)->pvars);
-        *(int *)(data + 0x14) = owner;
-        *(int *)(data + 0x10) = value;
+        ((struct CreateMobyWithParticlesVars *)data)->unk_14 = owner;
+        ((struct CreateMobyWithParticlesVars *)data)->unk_10 = value;
         set_moby_color(moby, 0xa0, 0xa0, 0xa0);
-        *(int *)(moby + 0x40) = 0;
+        *(int *)&((struct Moby *)moby)->rot.x = 0;
         ((Moby *)moby)->update_dist = 0xff;
         ((Moby *)moby)->draw_dist = 0xff;
         ((Moby *)moby)->visible = 1;
         ((Moby *)moby)->rot.y = -fast_atan2(vec_length_xy(rotation_copy), rotation[2]);
         ((Moby *)moby)->rot.z = fast_atan2(rotation[0], rotation[1]);
-        qcopy(moby + 0x10, position_copy);
+        qcopy(&((struct Moby *)moby)->pos, position_copy);
         qcopy(data, rotation_copy);
         if (batalia_frame_count & 1)
-            *(int *)(data + 0x1c) = 1;
+            ((struct CreateMobyWithParticlesVars *)data)->unk_1C = 1;
         else
-            *(int *)(data + 0x1c) = -1;
-        euler_to_matrix(matrix, moby + 0x40);
+            ((struct CreateMobyWithParticlesVars *)data)->unk_1C = -1;
+        euler_to_matrix(matrix, &((struct Moby *)moby)->rot);
         i = 0;
         if ((float)i < (*(float *)&homing_shot_launch_puffs)) {
             /* Retail intentionally uses the matrix third row as the particle input. */
@@ -780,7 +797,7 @@ char *create_moby_with_particles(int owner, float *position, float *rotation, in
                 velocity[3] = (*(float *)&moby_creation_particle_primary_motion_w_gp);
                 offset[3] = (*(float *)&moby_creation_particle_secondary_motion_w_gp);
                 i++;
-                PartType21Spawn(moby + 0x10, velocity_ptr, (*(int *)&homing_shot_flash_color_a),
+                PartType21Spawn(&((struct Moby *)moby)->pos, velocity_ptr, (*(int *)&homing_shot_flash_color_a),
                                 (*(int *)&homing_shot_flash_color_b), rand_range(scale_ticks(10), scale_ticks(20)), 1,
                                 20000.0f);
                 a = truncate_float_to_s32(multiply_global_factor(random_float_between(
@@ -789,14 +806,15 @@ char *create_moby_with_particles(int owner, float *position, float *rotation, in
                     (float)(*(int *)&homing_shot_spark_time_b), (float)(*(int *)&homing_shot_spark_time_b) * 1.2f)));
                 c = truncate_float_to_s32(multiply_global_factor(random_float_between(
                     (float)(*(int *)&homing_shot_spark_time_c), (float)(*(int *)&homing_shot_spark_time_c) * 1.5f)));
-                PartType02Spawn(moby + 0x10, velocity_ptr, offset_ptr, (*(int *)&homing_shot_launch_lower),
-                                (*(int *)&homing_shot_launch_upper), a, b, c, -1);
+                PartType02Spawn(&((struct Moby *)moby)->pos, velocity_ptr, offset_ptr,
+                                (*(int *)&homing_shot_launch_lower), (*(int *)&homing_shot_launch_upper), a, b, c, -1);
             } while ((float)i < (*(float *)&homing_shot_launch_puffs));
         }
         if (g_current_level_index == LEVEL_HOVEN)
-            *(int *)(data + 0x18) = scale_ticks(120);
+            ((struct CreateMobyWithParticlesVars *)data)->unk_18 = scale_ticks(120);
         else
-            *(int *)(data + 0x18) = truncate_float_to_s32(multiply_global_factor((*(float *)&homing_shot_lifetime)));
+            ((struct CreateMobyWithParticlesVars *)data)->unk_18 =
+                truncate_float_to_s32(multiply_global_factor((*(float *)&homing_shot_lifetime)));
         moby_build_matrix(moby);
     }
     return moby;
@@ -831,6 +849,15 @@ extern short homing_projectile_trail_primary_motion_w_gp;
 extern short homing_projectile_trail_secondary_motion_w_gp;
 extern float batalia_coll_hit_point[4];
 
+struct Rocket458UpdateVars {
+    u8 pad_00[0x10];
+    char *unk_10; /* 0x10 also s32; 4 uses */
+    u8 pad_14[0x4];
+    s32 unk_18;
+    s32 unk_1C;
+    Vec4 unk_20;
+};
+
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002937a0.c, FUN_L08_002e8210. */
 void rocket_458_update(char *moby) {
     char *position_ptr = moby + 0x10;
@@ -855,7 +882,7 @@ void rocket_458_update(char *moby) {
     FastVecScale(direction, data, -1.0f / (*(float *)&homing_shot_trail_steps));
     qcopy(position, position_ptr);
     i = 0;
-    timer_ptr = (int *)(data + 0x18);
+    timer_ptr = &((struct Rocket458UpdateVars *)data)->unk_18;
     while ((float)i < (*(float *)&homing_shot_trail_steps)) {
         FastVecAdd(position, position, direction);
         angle = random_angle_radians();
@@ -877,9 +904,10 @@ void rocket_458_update(char *moby) {
         PartType02Spawn(position, velocity, offset, (*(int *)&homing_shot_trail_lower),
                         (*(int *)&homing_shot_trail_upper), a, b, c, -1);
     }
-    ((Moby *)moby)->rot.x = FastAddRots(((Moby *)moby)->rot.x, (*(float *)&homing_shot_spin_rate) * 0.017453292f *
-                                                                   g_frame_time * (float)*(int *)(data + 0x1c));
-    target = *(char **)(data + 0x10);
+    ((Moby *)moby)->rot.x =
+        FastAddRots(((Moby *)moby)->rot.x, (*(float *)&homing_shot_spin_rate) * 0.017453292f * g_frame_time *
+                                               (float)((struct Rocket458UpdateVars *)data)->unk_1C);
+    target = ((struct Rocket458UpdateVars *)data)->unk_10;
     if (target != 0) {
         if ((unsigned char)target[0x20] == 0xfe)
             goto clear_target;
@@ -888,11 +916,11 @@ void rocket_458_update(char *moby) {
         if (((Moby *)target)->oclass != MOBY_CLASS_ROCKET_435)
             goto clear_target;
         {
-            char *target_data = ((char *)((Moby *)target)->pvars);
+            struct Rocket458UpdateVars *target_data = (struct Rocket458UpdateVars *)((Moby *)target)->pvars;
             length = FastVecLength(data);
-            spread = FastVecDist(moby + 0x10, *(char **)(data + 0x10) + 0x10);
-            FastVecScale(position, target_data + 0x20, spread / length);
-            FastVecAdd(position, position, *(char **)(data + 0x10) + 0x10);
+            spread = FastVecDist(moby + 0x10, ((struct Rocket458UpdateVars *)data)->unk_10 + 0x10);
+            FastVecScale(position, &target_data->unk_20, spread / length);
+            FastVecAdd(position, position, ((struct Rocket458UpdateVars *)data)->unk_10 + 0x10);
             FastVecSub(direction, position, moby + 0x10);
             vec_scale_to_length(direction, direction, length);
             FastVecSub(velocity, direction, data);
@@ -902,7 +930,7 @@ void rocket_458_update(char *moby) {
         }
         goto target_done;
     clear_target:
-        *(int *)(data + 0x10) = 0;
+        *(int *)&((struct Rocket458UpdateVars *)data)->unk_10 = 0;
     }
 target_done:
     ((int *)direction)[1] = 0x50001;

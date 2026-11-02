@@ -11,13 +11,17 @@ these must hold:
   - three or more different fields are used, and not only the position (any vector could look like that);
   - the function's name says moby, and two or more fields are used.
 A variable set from a particle call is never a Moby.
-The conversion itself is tools/tidy/rawstruct.py. The gate must still pass: run tools/gate_loop.py after --write.
+Any other variable name needs both: a field only a moby has, and three or more different fields.
+--skip=A,B leaves functions raw, by address or readable name. The conversion itself is tools/tidy/rawstruct.py. The gate must still pass: run tools/gate_loop.py after --write.
 """
 import collections
 import re
 import subprocess
 import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import prune_externs as pe  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 HERE = Path(__file__).resolve().parent
@@ -66,6 +70,8 @@ def is_moby(body, var, function=""):
     offsets = {p[2] for p in fits}
     if len(pairs) - len(fits) > len(pairs) / 4:
         return None
+    if var not in NAMES:
+        return (len(pairs), len(fits)) if offsets & ONLY_A_MOBY and len(offsets) >= 3 else None
     named = "moby" in function.lower() and len(offsets) >= 2
     if offsets & ONLY_A_MOBY or named or (len(offsets) >= 3 and offsets - POSITION):
         return len(pairs), len(fits)
@@ -87,7 +93,8 @@ def candidates(text):
     for i, m in enumerate(starts):
         end = starts[i + 1].start() if i + 1 < len(starts) else len(clean)
         body = clean[m.end():end]
-        for var in NAMES:
+        bases = set(re.findall(r"\(\s*(?:\(\s*(?:unsigned\s+)?char\s*\*\s*\)\s*)?\b([A-Za-z_]\w*)\s*\+\s*(?:0x[0-9A-Fa-f]+|\d+)\s*\)", body))
+        for var in sorted(bases | set(NAMES)):
             if declared_as_bytes(m.group(2), body, var) and is_moby(body, var, m.group(1)):
                 found[var].append(m.group(1))
     return found
@@ -97,12 +104,18 @@ def main():
     args = sys.argv[1:]
     write, listing = "--write" in args, "--list" in args
     paths = [a for a in args if not a.startswith("--")]
+    skip = set(",".join(a[7:] for a in args if a.startswith("--skip=")).split(",")) - {""}
+    for name, others in pe.load_aliases().items():
+        if name in skip:
+            skip |= set(others)
     if not paths:
         out = subprocess.run(["git", "ls-files", "src/*.c"], cwd=ROOT, capture_output=True, text=True).stdout
         paths = [p for p in out.split() if not p.startswith(("src/data/", "src/libgcc/", "src/versions/"))]
     total = 0
     for rel in paths:
-        found = candidates((ROOT / rel).read_text(errors="surrogateescape"))
+        found = {var: [f for f in funcs if f not in skip]
+                 for var, funcs in candidates((ROOT / rel).read_text(errors="surrogateescape")).items()}
+        found = {var: funcs for var, funcs in found.items() if funcs}
         for var, funcs in found.items():
             total += len(funcs)
             if listing:

@@ -1016,13 +1016,13 @@ extern int hero_idle_sequence(int);
 extern void set_hero_animation(int, int, float);
 /* Handles the pending flag at g_hero + 0x20A8, then clears it. */
 void cancel_hero_item_animation(void) {
-    unsigned char *g = (unsigned char *)g_hero;
-    if (g[0x20A8] != 0) {
-        if (*(int *)(g + 0xD08) != 0) {
-            *(int *)(g + 0xD14) = 1;
-        } else if (*(int *)(g + 0x2084) == 0) {
-            unsigned char *m = *(unsigned char **)(g + 0x2080);
-            if (m[0x53] == *(int *)(g + 0x2294)) {
+    struct Hero *g = (struct Hero *)((unsigned char *)g_hero);
+    if (g->item_anim_active != 0) {
+        if (*(int *)&g->held_item_anim_blend[0] != 0) {
+            g->unkD14 = 1;
+        } else if (g->state.current == 0) {
+            unsigned char *m = *(unsigned char **)&g->moby;
+            if (m[0x53] == g->item_hold_anim) {
                 int r = hero_idle_sequence(0);
                 set_hero_animation(r, 0, -2.0f);
             }
@@ -1735,7 +1735,7 @@ extern int scale_ticks(int);
 /* For events 9, 11, 13, 16 and 23: sets the short at g_hero +
    0x22CE to 3 and +0x1DC to scale_ticks(70). */
 void set_hero_condition_animation_timer_for_item(int id) {
-    char *base;
+    struct Hero *base;
 
     switch (id) {
         case 9:
@@ -1743,9 +1743,9 @@ void set_hero_condition_animation_timer_for_item(int id) {
         case 13:
         case 16:
         case 23:
-            base = g_hero;
-            *(short *)(base + 0x22CE) = 3;
-            *(short *)(base + 0x1DC) = scale_ticks(0x46);
+            base = (struct Hero *)g_hero;
+            base->unk22CE = 3;
+            base->unk1DC = scale_ticks(0x46);
             break;
     }
 }
@@ -1772,14 +1772,14 @@ extern int get_hero_target_pose_status(void);
 extern int cinematic_mode MACRO_ADDR;
 /* Returns 1 when nothing blocks the action, else 0. */
 int Hero_CanUseGadget(void) {
-    char *g;
+    struct Hero *g;
     if (get_hero_target_pose_status() == 0 && cinematic_mode == 0) {
-        g = g_hero;
-        if (*(unsigned char *)(g + 0x20A4) == 0) {
-            if (*(unsigned *)(g + 0x208C) < 3 || *(int *)(g + 0x2084) == 7 || *(int *)(g + 0x2084) == 9 ||
-                *(int *)(g + 0x2084) == 0xE) {
-                char *h = g_hero;
-                return *(unsigned char *)(h + 0x12E4) == 0;
+        g = (struct Hero *)g_hero;
+        if (g->vehicle_mode == 0) {
+            if (*(unsigned *)&g->state.control_mode < 3 || g->state.current == 7 || g->state.current == 9 ||
+                g->state.current == 0xE) {
+                struct Hero *h = (struct Hero *)g_hero;
+                return h->base_condition == 0;
             }
         }
     }
@@ -2160,18 +2160,18 @@ void hero_update_items(void) {
                             }
                         }
                     }
-                    if ((*(unsigned char *)(obj + 0x70) & 2) && *(unsigned char *)(obj + 0x53) == 0) {
+                    if ((((struct Moby *)obj)->anim_flags & 2) && ((struct Moby *)obj)->prev_seq == 0) {
                         MobyBlendAnimation(obj, 1, 0, 2);
                     }
                     break;
                 case 3:
                     SLOT(i)->items[0].released_frames++;
-                    if ((*(unsigned char *)(obj + 0x70) & 2) || i == 1 || i == 0) {
+                    if ((((struct Moby *)obj)->anim_flags & 2) || i == 1 || i == 0) {
                         clear_hero_item_slot(i, rendered_frame_count + 2);
                     }
                     break;
             }
-            if (obj != 0 && *(unsigned char *)(obj + 0x20) != 0xFE && *(unsigned char *)(obj + 0x20) != 0xFD) {
+            if (obj != 0 && ((struct Moby *)obj)->state != 0xFE && ((struct Moby *)obj)->state != 0xFD) {
                 if (i != 6 && *(int *)(obj + 0x74) != 0) {
                     (*(void (**)(char *))(obj + 0x74))(obj);
                 }
@@ -2620,9 +2620,9 @@ void update_hero_collision_capsule_dimensions(void) {
             h->capsule_top_target = 0.8f;
             h->capsule_bottom_target = 0.9f;
         } else {
-            char *m = g_hero;
-            if (*(int *)(m + 0x2084) == 0x7F) {
-                *(float *)(m + 0x230) = 0.8f;
+            struct Hero *m = (struct Hero *)g_hero;
+            if (m->state.current == 0x7F) {
+                m->capsule_radius_target = 0.8f;
             }
         }
     }
@@ -2714,11 +2714,11 @@ float get_capped_hero_stick_magnitude(void) {
 /* Whether T lies in the window that ends at g_hero + 0xAA8 and is
    +0xAAC long (T before the end, within that length of it). */
 int test_hero_animation_frame_window(float t) {
-    char *base = g_hero;
-    float end = *(float *)(base + 0xAA8);
+    struct Hero *base = (struct Hero *)g_hero;
+    float end = base->anim_frame;
 
     if (t < end) {
-        if (end - t <= *(float *)(base + 0xAAC)) {
+        if (end - t <= base->anim_frame_delta) {
             return 1;
         }
     }
@@ -2890,11 +2890,12 @@ extern char g_hero[] NOT_SDA;
 extern void turn_hero_toward_transformed_move_direction(int, float, float, float);
 /* TurnTo: eases the heading at g_hero + 0x184 toward the target (x, y, z). */
 void turn_to(int a, float x, float y, float z) {
-    char *g = g_hero;
-    if (*(unsigned char *)(g + 0x20B3) != 0) {
+    struct Hero *g = (struct Hero *)g_hero;
+    if (g->gravity_mode != 0) {
         turn_hero_toward_transformed_move_direction(a, x, y, z);
     } else {
-        *(float *)(g + 0x188) = SpringAngle(g + 0x98, g + 0x184, a, *(float *)(g + 0x180), x, y, z);
+        g->motion.yaw_error =
+            SpringAngle((char *)&g->motion.rot.f[2], (char *)&g->motion.yaw_rate, a, g->motion.move_yaw, x, y, z);
     }
 }
 extern float g_frame_time MACRO_ADDR;
@@ -2915,20 +2916,20 @@ void turn_hero_toward_move_direction_for_item(void) {
 }
 // scales a camera shake by game state and calls the shake applier
 void turn_hero_toward_move_direction_with_stick_scale(void) {
-    char *g = g_hero;
+    struct Hero *g = (struct Hero *)g_hero;
     float a, b, c, s;
     int v;
-    s = (*(float *)(g + 0x229C) + 1.0f) * 0.5f;
+    s = (g->stick_magnitude + 1.0f) * 0.5f;
     a = g_frame_scale_sq * 0.019f * s;
     c = g_frame_time * 9.948376655578613f * s;
     b = g_frame_scale_sq * 0.1f;
-    if (*(short *)(g + 0x3BE) != 0) {
+    if (g->unk3BE != 0) {
         a = a * 1.1f;
         c = c * 1.2f;
     }
     v = hero_slot_item_id(0);
     if (v >= 15 && (v < 17 || v == 21)) {
-        if (*(unsigned char *)(g + 0x20A8) != 0) {
+        if (g->item_anim_active != 0) {
             a = g_frame_scale_sq * 0.003f;
             b = g_frame_scale_sq * 0.04f;
             c = g_frame_time * 4.363323211669922f;
@@ -2941,13 +2942,13 @@ void turn_hero_toward_move_direction_with_stick_scale(void) {
    (ApproachValue), by at most UP when it is below the target and DOWN
    otherwise. */
 void speed_step(float up, float down) {
-    char *base = g_hero;
-    float target = *(float *)(base + 0x190);
+    struct Hero *base = (struct Hero *)g_hero;
+    float target = base->target_speed;
 
-    if (*(float *)(base + 0x194) < target) {
-        ApproachValue((float *)(base + 0x194), target, up);
+    if (base->ground_speed < target) {
+        ApproachValue(&base->ground_speed, target, up);
     } else {
-        ApproachValue((float *)(base + 0x194), target, down);
+        ApproachValue(&base->ground_speed, target, down);
     }
 }
 extern float FastCos(float);
@@ -2963,18 +2964,18 @@ extern char g_hero[];
    set, a flat vector (r,0,0) rotated by the matrix euler_to_matrix builds
    from the +0x2080 table's +0x40 axis. */
 void set_planar_vel(float arg0) {
-    char *g = g_hero;
+    struct Hero *g = (struct Hero *)g_hero;
     float y;
     float r;
     float out[4];
 
-    y = *(float *)(g + 0x98);
+    y = g->motion.rot.f[2];
     if (arg0 <= 3.14159274f) {
         y = arg0;
     }
-    r = *(float *)(g + 0x194);
+    r = g->ground_speed;
 
-    if (*(unsigned char *)(g + 0x20B3) != 0) {
+    if (g->gravity_mode != 0) {
         float matrix[16];
         float vec[4];
 
@@ -2982,12 +2983,12 @@ void set_planar_vel(float arg0) {
         vec[1] = FastSin(0.0f) * r;
         vec[2] = 0.0f;
 
-        euler_to_matrix(matrix, *(char **)(g + 0x2080) + 0x40);
+        euler_to_matrix(matrix, *(char **)&g->moby + 0x40);
         transform_vector(vec, vec, matrix);
 
         qcopy(out, vec);
     } else {
-        BuildSphericalOffset(out, r, y, *(float *)(g + 0x2E4));
+        BuildSphericalOffset(out, r, y, g->ground_pitch.f);
     }
 
     qcopy(g_hero + 0xE0, out);
@@ -3459,13 +3460,13 @@ typedef struct {
    xy plane: dot(Vec4, (cos, sin, 0)). Vec4 is copied first as an aligned
    struct, which gives retail's schedulable lq / sq. */
 float forward_component(QVec *v) {
-    char *base = g_hero;
+    struct Hero *base = (struct Hero *)g_hero;
     QVec p;
     float dir[4] __attribute__((aligned(16)));
 
     p = *v;
-    dir[0] = FastCos(*(float *)(base + 0x98));
-    dir[1] = FastSin(*(float *)(base + 0x98));
+    dir[0] = FastCos(base->motion.rot.f[2]);
+    dir[1] = FastSin(base->motion.rot.f[2]);
     dir[2] = 0.0f;
     return FastVecDot(&p, dir);
 }
@@ -3598,17 +3599,17 @@ void resolve_hero_collisions_with_history(void) {
     int i;
 
     for (i = 0; i < 16; i++) {
-        char *base;
+        struct Hero *base;
 
         if (resolve_hero_current_position_collisions(i) == 1)
             return;
 
-        base = g_hero;
-        if (*(int *)(base + 0x21B4) >= 2) {
-            (*(int *)(base + 0x21B4))--;
-            *(int *)(base + 0x21B0) = (*(int *)(base + 0x21B0) + 31) % 32;
+        base = (struct Hero *)g_hero;
+        if (base->pos_history_count >= 2) {
+            (base->pos_history_count)--;
+            base->pos_history_index = (base->pos_history_index + 31) % 32;
         }
-        qcopy(dst, &table[*(int *)(base + 0x21B0)]);
+        qcopy(dst, &table[base->pos_history_index]);
     }
 }
 typedef int Q_213F38 __attribute__((mode(TI)));

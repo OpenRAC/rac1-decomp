@@ -1390,11 +1390,11 @@ extern float sand_mouse_move_ctl_probe_height;
 void sand_mouse_compute_target(char *a, char *m) {
     Vs t0;
     Vs t1;
-    char *g = g_hero;
-    vec_scale_to_length(&t0, *(char **)(g + 0x2080) + 0xD0, 1.1f);
-    vec_scale_to_length(&t1, *(char **)(g + 0x2080) + 0xE0, 1.0f);
+    struct Hero *g = (struct Hero *)g_hero;
+    vec_scale_to_length(&t0, *(char **)&g->moby + 0xD0, 1.1f);
+    vec_scale_to_length(&t1, *(char **)&g->moby + 0xE0, 1.0f);
     FastVecAdd(m, &t0, &t1);
-    FastVecAdd(m, m, g + 0x80);
+    FastVecAdd(m, m, &g->motion);
     if (*(int *)(m + 0x68) == 0) {
         if (probe_vertical_ground_collision((Vs *)m, (int)a, 0, sand_mouse_move_ctl_probe_height, 2.0f)) {
             *(float *)(m + 8) = novalis_coll_hit_point_z;
@@ -1445,24 +1445,24 @@ void *select_sand_mouse_spawn_target(void *moby, void *from, void *ang, float ya
     char *best = 0;
     float bestScore = 1.0e9f;
     char *t;
-    for (t = novalis_moby_list; t != 0; t = *(char **)(t + 0x28)) {
+    for (t = novalis_moby_list; t != 0; t = *(char **)&((struct Moby *)t)->next) {
         char *hs = novalis_coll_hit_h;
         struct Hero *pl = (struct Hero *)(hero_globals_base + 0xE1D);
         float *hp;
         int cls;
         float dist, score, p2;
-        if (*(short *)(t + 0x32) == 0)
+        if (((struct Moby *)t)->draw_dist == 0)
             continue;
         hp = GetFlaggedPvarWord_t(t);
-        if (!(*(unsigned short *)(t + 0x34) & 0x1000) || t == 0 || *(char **)(t + 0x24) == 0)
+        if (!(((struct Moby *)t)->flags & 0x1000) || t == 0 || *(char **)&((struct Moby *)t)->pclass == 0)
             continue;
-        cls = *(short *)(*(char **)(t + 0x24) + 0x46);
+        cls = *(short *)(*(char **)&((struct Moby *)t)->pclass + 0x46);
         if (cls != 5 || hp == 0 || !(0.0f < *hp))
             continue;
-        dist = FastVecDist(from, t + 0x10);
+        dist = FastVecDist(from, &((struct Moby *)t)->pos);
         if (!(dist < range))
             continue;
-        qcopy(tp, t + 0x10);
+        qcopy(tp, &((struct Moby *)t)->pos);
         tp[2] += 0.4f;
         score = FastDiffRots(((float *)ang)[2], fast_atan2(tp[0] - ((float *)from)[0], tp[1] - ((float *)from)[1]));
         score = score * score;
@@ -2811,11 +2811,11 @@ char *find_nearest_extermibot_moby_in_list(char *self, int idx) {
     }
     for (;;) {
         int i = *(unsigned short *)list & 0x7FFF;
-        char *p = (char *)((i << 8) + novalis_mobys_m);
-        if (*(unsigned short *)(p + 0x34) & 0x1000) {
-            if (*(short *)(p + 0xA6) == 0x26F) {
-                if (*(unsigned char *)(p + 0x20) < 0x7F) {
-                    float d = FastVecDist(p + 0x10, self + 0x10);
+        struct Moby *p = (struct Moby *)((char *)((i << 8) + novalis_mobys_m));
+        if (p->flags & 0x1000) {
+            if (p->oclass == MOBY_CLASS_EXTERMIBOT) {
+                if (p->state < 0x7F) {
+                    float d = FastVecDist(&p->pos, self + 0x10);
                     if (d < best) {
                         best = d;
                         res = *(char **)&novalis_mobys_m + (i << 8);

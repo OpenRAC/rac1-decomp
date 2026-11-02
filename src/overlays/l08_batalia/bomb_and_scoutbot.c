@@ -13,6 +13,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "structs/collision.h"
 #include "enums/level.h"
+#include "enums/moby_class.h"
 
 /* Bomb: thrown or dropped, bounces, fuse timer, explodes. */
 struct BombVars {
@@ -1550,14 +1551,14 @@ char *select_blarg_bombthrower_waypoint(char *moby) {
     bestA = 0.0f;
     bestD = bestA;
     for (;;) {
-        if (*(short *)(p + 0xA6) != 0x14D && *(unsigned char *)(p + 0xBC) == 0) {
+        if (((struct Moby *)p)->oclass != MOBY_CLASS_BLARG_BOMBTHROWER && ((struct Moby *)p)->command == 0) {
             float ang, d, a;
-            a = fast_atan2(*(float *)(p + 0x10) - *(float *)(moby + 0x10),
-                           *(float *)(p + 0x14) - *(float *)(moby + 0x14));
+            a = fast_atan2(((struct Moby *)p)->pos.x - *(float *)(moby + 0x10),
+                           ((struct Moby *)p)->pos.y - *(float *)(moby + 0x14));
             base = (struct Hero *)(hero_globals_base + 0xE1D);
             ang = FastDiffRots(a, fast_atan2(base->motion.pos.f[0] - *(float *)(moby + 0x10),
                                              base->motion.pos.f[1] - *(float *)(moby + 0x14)));
-            d = FastVecDist(moby + 0x10, p + 0x10);
+            d = FastVecDist(moby + 0x10, &((struct Moby *)p)->pos);
             if (ang < 1.5707964f) {
                 if (bestA < ang) {
                     best = p;

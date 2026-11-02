@@ -164,6 +164,8 @@ extern void compute_hero_hoverboard_respawn_transform(void *, void *);
 
 extern void Hero_ResetToPosition(void *, void *, int, int);
 
+struct HeroUpdateMovementVars {};
+
 /* Hero state machine: per-frame movement and physics for the current hero state (level 05 build). */
 void Hero_UpdateMovement(void) {
     FVec4 vec[14];

@@ -2521,16 +2521,23 @@ extern long level_screen_overlay_gs_reg MACRO_ADDR;
 extern long level_screen_fade_gs_reg MACRO_ADDR;
 
 // Creates the singleton light moby and resets its globals.
+struct SpawnTrackedClass5f3MobyVars {
+    u8 pad_00[0x10];
+    s32 unk_10;
+    u8 pad_14[0x18];
+    s16 unk_2C;
+};
+
 void *spawn_tracked_class_5f3_moby(int unused, float *pos) {
     char *m = CreateMoby(0x5F3);
     if (m != 0 && *(int *)&tracked_class_5f3_moby == 0) {
-        char *d;
-        m[0x20] = 0;
+        struct SpawnTrackedClass5f3MobyVars *d;
+        ((struct Moby *)m)->state = 0;
         ((Moby *)m)->update_dist = 0xFF;
         ((Moby *)m)->draw_dist = 0xFF;
-        m[0x31] = 1;
-        d = ((char *)((Moby *)m)->pvars);
-        *(u128 *)(m + 0x10) = *(u128 *)pos;
+        ((struct Moby *)m)->visible = 1;
+        d = (struct SpawnTrackedClass5f3MobyVars *)((Moby *)m)->pvars;
+        *(u128 *)&((struct Moby *)m)->pos = *(u128 *)pos;
         level_screen_fade_rgba = 0xFF;
         level_screen_overlay_rgba = 0xFFFFFF;
         level_screen_overlay_gs_reg = 0x1F00000042L;
@@ -2538,14 +2545,19 @@ void *spawn_tracked_class_5f3_moby(int unused, float *pos) {
         level_screen_fade_gs_reg = 0;
         level_screen_fade_on = 0;
         level_screen_overlay_on = 0;
-        *(int *)(d + 0x10) = 0;
-        *(short *)(d + 0x2C) = allocate_packed_color_point_light_slot(pos, 0.0f, 0.0f, 0);
+        d->unk_10 = 0;
+        d->unk_2C = allocate_packed_color_point_light_slot(pos, 0.0f, 0.0f, 0);
     }
     return m;
 }
 typedef int u128_2AAE20 __attribute__((mode(TI)));
 extern void spawn_tracked_class_5f3_moby_r(int, void *) __asm__("func_L00_002AAD40");
 // Moves the tracked moby to a position when it is class 0x5F3.
+struct SetTrackedClass5f3MobyPositionVars {
+    u8 pad_00[0x2E];
+    s16 unk_2E;
+};
+
 void set_tracked_class_5f3_moby_position(int a, char *pos) {
     u128_2AAE20 tmp = *(u128_2AAE20 *)pos;
     int v = *(int *)&tracked_class_5f3_moby;
@@ -2555,10 +2567,10 @@ void set_tracked_class_5f3_moby_position(int a, char *pos) {
     }
     if (v != 0) {
         char *m = *(char **)&tracked_class_5f3_moby;
-        char *d = ((char *)((Moby *)m)->pvars);
+        struct SetTrackedClass5f3MobyPositionVars *d = (struct SetTrackedClass5f3MobyPositionVars *)((Moby *)m)->pvars;
         if (((Moby *)m)->oclass == 0x5F3) {
             *(u128_2AAE20 *)(m + 0x10) = tmp;
-            *(short *)(d + 0x2E) = 1;
+            d->unk_2E = 1;
         }
     }
 }

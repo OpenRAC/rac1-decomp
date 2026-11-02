@@ -107,9 +107,9 @@ char *create_blarg_commander_moby_from_source(char *a0) {
         ((Moby *)m)->draw_dist = 0x7F;
         ((Moby *)m)->visible = 1;
         ((Moby *)m)->state = 0;
-        *(u128_8670 *)(m + 0x10) = *(u128_8670 *)(a0 + 0x10);
-        *(u128_8670 *)(m + 0x40) = *(u128_8670 *)(a0 + 0x40);
-        *(char **)(m + 0xB8) = a0;
+        *(u128_8670 *)&((struct Moby *)m)->pos = *(u128_8670 *)(a0 + 0x10);
+        *(u128_8670 *)&((struct Moby *)m)->rot = *(u128_8670 *)(a0 + 0x40);
+        *(char **)&((struct Moby *)m)->parent = a0;
         FastMemZero16(d, 0x20);
         ((struct CommanderShotVars *)d)->mine_ptr = (int)((struct CommanderShotVars *)d)->mine_state;
         moby_build_matrix(m);

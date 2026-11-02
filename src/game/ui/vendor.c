@@ -948,6 +948,15 @@ extern Cfg16 attachment_vertex_indices NOT_SDA;
 extern float FastVecLength(void *);
 extern void FastVecSub_b(void *, void *, void *) __asm__("func_001F9BF0");
 
+struct UpdateInstanceAttachmentPointsAndLengthsVars {
+    u8 pad_00[0x10];
+    Vec4 unk_10;
+    Vec4 unk_20;
+    u8 pad_30[0x10];
+    f32 unk_40;
+    f32 unk_44;
+};
+
 /* Run the four-vertex transform over the block hanging off arg0+0x78
    with a fresh copy of the attachment_vertex_indices parameters (a plain struct
    assignment: at alignment 1 this compiler expands the 16 bytes as
@@ -962,8 +971,8 @@ void update_instance_attachment_points_and_lengths(char *arg0) {
 
     cfg = attachment_vertex_indices;
     transform_scaled_vertex_batch(arg0, 4, &cfg, p);
-    FastVecSub_b(a, p + 0x10, p);
-    FastVecSub_b(b, p + 0x20, p);
-    *(float *)(p + 0x40) = FastVecLength(a);
-    *(float *)(p + 0x44) = FastVecLength(b);
+    FastVecSub_b(a, &((struct UpdateInstanceAttachmentPointsAndLengthsVars *)p)->unk_10, p);
+    FastVecSub_b(b, &((struct UpdateInstanceAttachmentPointsAndLengthsVars *)p)->unk_20, p);
+    ((struct UpdateInstanceAttachmentPointsAndLengthsVars *)p)->unk_40 = FastVecLength(a);
+    ((struct UpdateInstanceAttachmentPointsAndLengthsVars *)p)->unk_44 = FastVecLength(b);
 }

@@ -726,6 +726,8 @@ extern void PostHitMessage(void *, int, int, void *, void *, float);
 
 extern void hero_integrate_velocity(void);
 
+struct UpdateHeroStateMotionVars {};
+
 /* Hero state machine: per-frame movement and physics for the current hero state (level 02 build). */
 void update_hero_state_motion(void) {
     FVec4 vec[14];

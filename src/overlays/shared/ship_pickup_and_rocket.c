@@ -123,12 +123,12 @@ extern void moby_build_matrix(void *);
 unsigned char *spawn_ship_pickup(char *position, int moby_class) {
     unsigned char *moby = CreateMoby(moby_class);
     if (moby != 0) {
-        moby[0x30] = 0xFF;
-        *(short *)(moby + 0x32) = 0xFF;
-        moby[0x31] = 1;
-        moby[0x20] = 0;
-        moby[0xBC] = 0;
-        qcopy(moby + 0x10, position);
+        ((struct Moby *)moby)->update_dist = 0xFF;
+        ((struct Moby *)moby)->draw_dist = 0xFF;
+        ((struct Moby *)moby)->visible = 1;
+        ((struct Moby *)moby)->state = 0;
+        ((struct Moby *)moby)->command = 0;
+        qcopy(&((struct Moby *)moby)->pos, position);
         moby_build_matrix(moby);
         copy_hero_moby_field_38(moby);
     }

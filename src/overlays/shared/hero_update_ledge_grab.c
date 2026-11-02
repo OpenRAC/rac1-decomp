@@ -28,28 +28,28 @@ extern int hero_slot_item_id(int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/0021d0a0.c, FUN_L06_0021d0a0. */
 int get_hero_help_value(int a) {
-    char *g = (char *)g_hero_r;
-    switch (*(unsigned char *)(g + 0x20A4)) {
+    struct Hero *g = (struct Hero *)((char *)g_hero_r);
+    switch (g->vehicle_mode) {
         case 1:
             return 0;
         case 3:
             return 0;
     }
     {
-        char *g2 = (char *)g_hero_r;
-        if (*(int *)(g2 + 0x22A8) == 1) {
+        struct Hero *g2 = (struct Hero *)((char *)g_hero_r);
+        if (g2->health.hp == 1) {
             return 0x54;
         }
         if (a == 0) {
             return 0;
         }
-        if (*(unsigned char *)(g2 + 0x20A8) == 0) {
+        if (g2->item_anim_active == 0) {
             return 0;
         }
-        if (*(unsigned char *)(g2 + 0x20AA) == 0) {
+        if (g2->unk20AA == 0) {
             return 0;
         }
-        if (*(short *)(g2 + 0x22C8) != 0) {
+        if (g2->unk22C8 != 0) {
             return 0;
         }
     }
@@ -241,9 +241,9 @@ void update_hero_vehicle_attachments_and_effects(void) {
             if (m == 0)
                 goto skip;
             {
-                qcopy_nc(m + 0x10, G_HERO->pos);
-                qcopy_nc(m + 0x40, G_HERO->rot);
-                *(short *)(m + 0x32) = 0x40;
+                qcopy_nc(&((struct Moby *)m)->pos, G_HERO->pos);
+                qcopy_nc(&((struct Moby *)m)->rot, G_HERO->rot);
+                ((struct Moby *)m)->draw_dist = 0x40;
                 G_HERO->unk1620[0x31] = 1;
                 G_HERO->unk1620[0x30] = 0;
                 *(short *)(G_HERO->unk1620 + 0x34) = 0;

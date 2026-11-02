@@ -1015,9 +1015,9 @@ void update_hero_in_vehicle_mode(void) {
             if (m == 0)
                 goto skip;
             {
-                qcopy_nc(m + 0x10, G_HERO->pos);
-                qcopy_nc(m + 0x40, G_HERO->rot);
-                *(short *)(m + 0x32) = 0x40;
+                qcopy_nc(&((struct Moby *)m)->pos, G_HERO->pos);
+                qcopy_nc(&((struct Moby *)m)->rot, G_HERO->rot);
+                ((struct Moby *)m)->draw_dist = 0x40;
                 G_HERO->unk1620[0x31] = 1;
                 G_HERO->unk1620[0x30] = 0;
                 *(short *)(G_HERO->unk1620 + 0x34) = 0;
@@ -1435,7 +1435,7 @@ void copy_hero_color_to_item_mobys(void) {
                 p = *(int *)(e + 0x1094);
             }
             if (p != 0) {
-                *(long *)(p + 0x38) = *(long *)(*(int *)(g + 0x2080) + 0x38);
+                *(long *)(p + 0x38) = *(long *)(*(int *)&((struct Hero *)g)->moby + 0x38);
             }
         }
     }

@@ -310,10 +310,10 @@ int Camera_ActivationCheckPriority(Camera *cur, Camera *other) {
             break;
         }
         case 7: {
-            char *base = g_hero;
+            struct Hero *base = (struct Hero *)g_hero;
             short e = cur->id;
 
-            if (e != *(int *)(base + 0x2284)) {
+            if (e != base->unk2284) {
                 return 0;
             }
             if (other->transition_state == 0 && !(state[8] > other->priority)) {
@@ -326,8 +326,7 @@ int Camera_ActivationCheckPriority(Camera *cur, Camera *other) {
                 CameraDef *rec = &gCameraDefs[cur->def_index];
                 int g = rec->info->rule7_index;
 
-                if (g < 0 ||
-                    (*(int *)(base + 0x560) == cam_activation_rule7_table[g].unk10 && *(int *)(base + 0x570) == 0)) {
+                if (g < 0 || (base->rail_spline == cam_activation_rule7_table[g].unk10 && base->rail_off_frames == 0)) {
                     return 1;
                 }
             }
@@ -477,20 +476,20 @@ void Camera_Pos2Polar3d(float *out, void *p0, void *p1, void *dir0, void *dir1, 
    builds three unit vectors from g_hero's +0x2080 pointer table
    (+0xC0/+0xD0/+0xE0 offsets, re-read at each call as retail does). */
 void capture_camera_orientation(void) {
-    char *g = g_hero;
+    struct Hero *g = (struct Hero *)g_hero;
     CamBlend *r = &gCamera.blend;
     char row0[16];
     char row1[16];
     char row2[16];
 
-    fast_vec_normalize(row0, *(char **)(g + 0x2080) + 0xC0, 1.0f);
-    fast_vec_normalize(row1, *(char **)(g + 0x2080) + 0xD0, 1.0f);
-    fast_vec_normalize(row2, *(char **)(g + 0x2080) + 0xE0, 1.0f);
+    fast_vec_normalize(row0, *(char **)&g->moby + 0xC0, 1.0f);
+    fast_vec_normalize(row1, *(char **)&g->moby + 0xD0, 1.0f);
+    fast_vec_normalize(row2, *(char **)&g->moby + 0xE0, 1.0f);
 
     qcopy(&r->orbit.fwd, row0);
     qcopy(&r->orbit.up, row2);
 
-    Camera_Pos2Polar3d((float *)&r->orbit.yaw, &r->orbit.pos, g + 0x80, row0, row1, row2);
+    Camera_Pos2Polar3d((float *)&r->orbit.yaw, &r->orbit.pos, &g->motion, row0, row1, row2);
 
     qcopy(&r->orbit.rot, &r->orbit.saved_rot);
 }
@@ -556,11 +555,11 @@ void start_camera_blend(Camera *from) {
             extract_matrix_rotation_quaternion(&r->orbit.saved_rot, from);
             capture_camera_orientation();
         } else {
-            char *g = g_hero;
+            struct Hero *g = (struct Hero *)g_hero;
 
-            fast_vec_normalize(local0, *(char **)(g + 0x2080) + 0xC0, 1.0f);
-            fast_vec_normalize(local1, *(char **)(g + 0x2080) + 0xD0, 1.0f);
-            fast_vec_normalize(local2, *(char **)(g + 0x2080) + 0xE0, 1.0f);
+            fast_vec_normalize(local0, *(char **)&g->moby + 0xC0, 1.0f);
+            fast_vec_normalize(local1, *(char **)&g->moby + 0xD0, 1.0f);
+            fast_vec_normalize(local2, *(char **)&g->moby + 0xE0, 1.0f);
             /* &gCamera.current->pos: the previous camera is the one the switch saved */
             Camera_Pos2Polar3d((float *)&r->orbit.yaw, &from->pos, &(*(Camera **)((char *)r - 0xF0))->pos, local0,
                                local1, local2);
@@ -696,7 +695,7 @@ int advance_alternate_camera_transition(Camera *cam, CamBlendOrbit *o) {
     float sign;
     float s2;
     float d;
-    char *g;
+    struct Hero *g;
 
     if (o->frames_left <= 0) {
         return 1;
@@ -710,9 +709,9 @@ int advance_alternate_camera_transition(Camera *cam, CamBlendOrbit *o) {
         Camera_Pos2Polar3d(ang.v, &cam->pos, &target, &fwd, &side, &up);
     } else {
         qcopy(&target, &cam->pos);
-        g = g_hero;
-        fast_vec_normalize(&fwd, *(char **)(g + 0x2080) + 0xC0, 1.0f);
-        fast_vec_normalize(&up, *(char **)(g + 0x2080) + 0xE0, 1.0f);
+        g = (struct Hero *)g_hero;
+        fast_vec_normalize(&fwd, *(char **)&g->moby + 0xC0, 1.0f);
+        fast_vec_normalize(&up, *(char **)&g->moby + 0xE0, 1.0f);
         ang.v[2] = 0.0f;
         ang.v[1] = 0.0f;
         ang.v[0] = 3.1415927f;
