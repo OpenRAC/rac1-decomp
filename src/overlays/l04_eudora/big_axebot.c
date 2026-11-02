@@ -3060,7 +3060,7 @@ void platform_booster_update(struct Moby *m) {
                 m->anim_time = 1.0f - lv->travel;
             } else if (lv->travel != 1.0f || (v->target != -1 && v->locked == 0 &&
                                               ((u32)g_hero.state.control_mode < 2 || g_hero.state.control_mode == 9 ||
-                                               g_hero.state.control_mode == 12) &&
+                                               g_hero.state.control_mode == HERO_MODE_CROUCH) &&
                                               g_hero.ground_moby == &eudora_mobys_r2[v->target])) {
                 m->state = 2;
             }

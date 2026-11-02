@@ -1955,9 +1955,9 @@ void sand_mouse_update(Moby *moby) {
             break;
         case 5:
             if (((Hero *)g_hero)->items[2].moby != 0 && ((Hero *)g_hero)->items[2].item_id == 5 &&
-                ((Hero *)g_hero)->state.control_mode != 0x16 && ((Hero *)g_hero)->state.control_mode != 0x14 &&
-                ((Hero *)g_hero)->vehicle_mode == 0 && !fast_dec_timer(&d->t60) &&
-                d->count < sand_mouse_follow_projectile_count_limit_gp) {
+                ((Hero *)g_hero)->state.control_mode != 0x16 &&
+                ((Hero *)g_hero)->state.control_mode != HERO_MODE_DYING && ((Hero *)g_hero)->vehicle_mode == 0 &&
+                !fast_dec_timer(&d->t60) && d->count < sand_mouse_follow_projectile_count_limit_gp) {
                 sand_mouse_compute_target((char *)moby, (char *)d);
                 update_hover_moby_steering_r(moby, d);
             } else {

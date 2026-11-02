@@ -157,7 +157,7 @@ void hero_move_state_velocity(void) {
         qcopy(&g_hero_s.motion.momentum, &g_hero_s.move_impulse);
         arg = g_frame_time_sq * 20.0f;
         if (g_hero_s.target_speed < hero_speed_bands_field_18[0] * g_frame_time * 0.2f) {
-            if (g_hero_s.state.control_mode == 2) {
+            if (g_hero_s.state.control_mode == HERO_MODE_FALL) {
                 d = g_hero_s.stickless_decel;
                 if (g_hero_s.on_ice_ground)
                     d = g_frame_time_sq * 0.17f;
@@ -424,7 +424,7 @@ void adjust_hero_pose_targets_from_motion(void) {
         (lean_state_r.f[(0xA08) / 4]) = -b * 0.3f;
         (lean_state_r.f[(0xAB8) / 4]) = -b * 0.3f;
         (lean_state_r.f[(0xB68) / 4]) = -b * 0.3f;
-    } else if (g_hero_r2.state.control_mode == 2 || g_hero_r2.state.control_mode == 4) {
+    } else if (g_hero_r2.state.control_mode == HERO_MODE_FALL || g_hero_r2.state.control_mode == HERO_MODE_JUMP) {
         Hero_SetTiltSpringParams(0.04f, 0.2f);
         set_first_hero_easing_parameters_r(0.04f, 0.2f);
         set_first_hero_easing_parameters_r2(0.04f, 0.2f);
@@ -759,8 +759,8 @@ void update_hero_tilt(void) {
             ((struct Hero *)g)->state.current == HERO_STATE_CONSTRAIN_TO_TARGET_RADIUS) {
             return;
         }
-        if (((struct Hero *)g)->state.control_mode == 0x11 || ((struct Hero *)g)->state.control_mode == 0x15 ||
-            ((struct Hero *)g)->state.control_mode == 0x16) {
+        if (((struct Hero *)g)->state.control_mode == HERO_MODE_SWIM ||
+            ((struct Hero *)g)->state.control_mode == 0x15 || ((struct Hero *)g)->state.control_mode == 0x16) {
             return;
         }
         if (((struct Hero *)g)->state.current == HERO_STATE_FATAL_FALL ||

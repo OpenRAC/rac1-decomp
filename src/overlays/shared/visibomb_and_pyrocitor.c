@@ -392,7 +392,7 @@ void func_L00_002B33E8_r(Moby *m) {
                 }
                 spawn_devastator_missile(m, &launch, data->target, yaw, pitch, height, yaw0, pitch0);
             }
-            if (hero_2B33E8.state.control_mode == 0 ||
+            if (hero_2B33E8.state.control_mode == HERO_MODE_IDLE ||
                 (hero_2B33E8.state.current == HERO_STATE_RUN && hero_2B33E8.stick_magnitude < 0.7f)) {
                 set_hero_animation(0x36, 1, (float)scale_ticks_r(10));
             } else {
@@ -1872,10 +1872,11 @@ void visibomb_missile_update(Moby *m) {
     d->f10--;
     if (!(-scale_ticks_r4(100) < d->f10) || ((Hero *)g_hero_r3)->state.current == HERO_STATE_HURT ||
         ((Hero *)g_hero_r3)->state.current == HERO_STATE_DYING || ((Hero *)g_hero_r3)->state.current == 0x72 ||
-        ((Hero *)g_hero_r3)->state.control_mode == 2 || ((Hero *)g_hero_r3)->state.control_mode == 4 ||
-        ((Hero *)g_hero_r3)->state.control_mode == 3 || ((Hero *)g_hero_r3)->state.control_mode > 12 ||
-        ((Hero *)g_hero_r3)->state.control_mode == 7 || ((Hero *)g_hero_r3)->state.control_mode == 10 ||
-        ((Hero *)g_hero_r3)->state.control_mode == 16 || ((Hero *)g_hero_r3)->state.control_mode == 5 ||
+        ((Hero *)g_hero_r3)->state.control_mode == HERO_MODE_FALL ||
+        ((Hero *)g_hero_r3)->state.control_mode == HERO_MODE_JUMP ||
+        ((Hero *)g_hero_r3)->state.control_mode == HERO_MODE_LEDGE || ((Hero *)g_hero_r3)->state.control_mode > 12 ||
+        ((Hero *)g_hero_r3)->state.control_mode == HERO_MODE_HURT || ((Hero *)g_hero_r3)->state.control_mode == 10 ||
+        ((Hero *)g_hero_r3)->state.control_mode == 16 || ((Hero *)g_hero_r3)->state.control_mode == HERO_MODE_LAND ||
         ((Hero *)g_hero_r3)->state.current == HERO_STATE_APPROACH_TARGET_POSE ||
         ((Hero *)g_hero_r3)->state.current == 0x32 || ((Hero *)g_hero_r3)->grounded_frames == 0 ||
         (((Tgt *)((Hero *)g_hero_r3)->ground_moby) != 0 && (((Tgt *)((Hero *)g_hero_r3)->ground_moby)->hA6 == 0x13E ||

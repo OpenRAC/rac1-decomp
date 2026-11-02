@@ -245,7 +245,7 @@ void update_bolt_pickup(Moby *m) {
         case 2:
             hit = 0;
             m->rot.z = FastAddRots_r(m->rot.z, d->fC);
-            if (((Hero *)g_hero_r)->state.control_mode == 15) {
+            if (((Hero *)g_hero_r)->state.control_mode == HERO_MODE_GRIND) {
                 if (vec_distance_xy_r(((Hero *)g_hero_r)->joint9_world_pos.f, &m->pos) < 0.5f)
                     hit = 1;
                 if (vec_distance_xy_r(((Hero *)g_hero_r)->joint14_world_pos.f, &m->pos) < 0.5f)

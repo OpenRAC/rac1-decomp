@@ -544,8 +544,8 @@ void metropolis_train_locomotive_update(Moby *moby) {
                 if (d->f100 == -1) {
                     return;
                 }
-                if (g_hero.state.control_mode == 0 || g_hero.state.control_mode == 1 ||
-                    g_hero.state.control_mode == 9 || g_hero.state.control_mode == 0xC) {
+                if (g_hero.state.control_mode == HERO_MODE_IDLE || g_hero.state.control_mode == HERO_MODE_RUN ||
+                    g_hero.state.control_mode == 9 || g_hero.state.control_mode == HERO_MODE_CROUCH) {
                     moby->command = 4;
                     kerwan_train_in_motion = 1;
                     MusicRequestTrack(4, 7);
@@ -576,7 +576,7 @@ void metropolis_train_locomotive_update(Moby *moby) {
                 Moby_PlaySound(0, 0, (int)moby);
                 d->f104 = rand_range(scale_ticks(0x384), scale_ticks(0x190));
             }
-            if (g_hero.air_frames.s != 0 && g_hero.state.control_mode != 3) {
+            if (g_hero.air_frames.s != 0 && g_hero.state.control_mode != HERO_MODE_LEDGE) {
                 find_nearest_path_point_r(od->f70, &g_hero.motion.pos, v, &idx, &t, 0, 999.0f, 5.0f, 0.0f);
                 d->f10C++;
                 if (scale_ticks(0x3C) < d->f10C && g_hero.motion.pos.f[2] < v[2] - 10.0f) {

@@ -247,7 +247,7 @@ s32 follow_path(s32 *ids, s32 n, s32 path_index, f32 radius, Vec4 *pos, Vec4 *ta
 int is_hero_on_moby(char *m) {
     struct Hero *h = &g_hero;
 
-    if (h->state.control_mode == 3 || h->state.current == HERO_STATE_LEDGE_JUMP) {
+    if (h->state.control_mode == HERO_MODE_LEDGE || h->state.current == HERO_STATE_LEDGE_JUMP) {
         if (*(char **)&h->ledge_moby == m) {
             return 1;
         }

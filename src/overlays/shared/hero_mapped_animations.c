@@ -128,7 +128,8 @@ void blend_hero_slot3_mapped_animation_pair(int id, int arg, float t) {
     }
     blk2 = (struct Hero *)g_hero;
     ok = 1;
-    if (blk2->state.control_mode == 0 && lookup_hero_slot3_animation_key(*(unsigned char *)(a + 0x53), &id) != 0) {
+    if (blk2->state.control_mode == HERO_MODE_IDLE &&
+        lookup_hero_slot3_animation_key(*(unsigned char *)(a + 0x53), &id) != 0) {
         if (id == 0) {
             ok = 0;
         }
@@ -1324,7 +1325,7 @@ void update_hero_attachment(void) {
     } else if (((Hero *)g_hero)->state.current == HERO_STATE_LEDGE_JUMP && ((Hero *)g_hero)->ledge_moby != 0) {
         ((Hero *)g_hero)->platform_moby = (void *)((Hero *)g_hero)->ledge_moby;
         mode = 1;
-    } else if (((Hero *)g_hero)->state.control_mode == 3 && ((Hero *)g_hero)->ledge_moby != 0) {
+    } else if (((Hero *)g_hero)->state.control_mode == HERO_MODE_LEDGE && ((Hero *)g_hero)->ledge_moby != 0) {
         ((Hero *)g_hero)->platform_moby = (void *)((Hero *)g_hero)->ledge_moby;
         mode = 1;
     } else if (((Hero *)g_hero)->platform_moby != 0) {
@@ -1344,7 +1345,8 @@ void update_hero_attachment(void) {
     if (plat == 0) {
         return;
     }
-    if (((((Hero *)g_hero)->state.control_mode == 0 || ((Hero *)g_hero)->state.control_mode == 12) &&
+    if (((((Hero *)g_hero)->state.control_mode == HERO_MODE_IDLE ||
+          ((Hero *)g_hero)->state.control_mode == HERO_MODE_CROUCH) &&
          FastVecLength(&((Hero *)g_hero)->motion.momentum) == 0.0f && ((Hero *)g_hero)->air_frames.s == 0 &&
          ((Hero *)g_hero)->unk1F6 == 0) ||
         (unsigned int)(((Hero *)g_hero)->state.current - 0x18) < 2) {
@@ -1379,7 +1381,8 @@ void update_hero_attachment(void) {
     } else {
         ((Hero *)g_hero)->attach_flags &= ~1;
     }
-    if ((((Hero *)g_hero)->state.control_mode == 0 || ((Hero *)g_hero)->state.control_mode == 12) &&
+    if ((((Hero *)g_hero)->state.control_mode == HERO_MODE_IDLE ||
+         ((Hero *)g_hero)->state.control_mode == HERO_MODE_CROUCH) &&
         ((Hero *)g_hero)->motion.yaw_rate == 0.0f && ((Hero *)g_hero)->air_frames.s == 0) {
         if (!(((Hero *)g_hero)->attach_flags & 2)) {
             convert_pose_to_reference_local((int)((Hero *)g_hero)->moby, ((Hero *)g_hero)->platform_moby,

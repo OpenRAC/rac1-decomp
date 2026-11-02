@@ -3463,7 +3463,8 @@ void update_gemlik_bobbing_pool_tile(struct Moby *moby) {
                           (FastCos(bobbing_platform_vars->angle) * height_half_span_or_tile_enabled +
                            height_half_span_or_tile_enabled);
             hero_context = (Hero *)g_hero;
-            if (hero_context->state.control_mode != 0x14 && hero_context->state.control_mode != 0x19 &&
+            if (hero_context->state.control_mode != HERO_MODE_DYING &&
+                hero_context->state.control_mode != HERO_MODE_RESPAWN_WAIT &&
                 hero_context->state.current != HERO_STATE_DYING &&
                 hero_context->state.current != HERO_STATE_HEIGHT_OR_TIMEOUT_RESPAWN_WAIT &&
                 hero_context->state.current != HERO_STATE_DEATH_DESCENT)

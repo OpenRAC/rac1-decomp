@@ -1977,7 +1977,7 @@ void update_floating_mine(struct Moby *moby) {
                     vars->rest_z = ProbeGroundHeight(0.5f, &moby->pos, 0) + 0.7f;
                 Spring_r(&moby->pos.z, &vars->z_speed, vars->rest_z, g_frame_scale_sq * 0.03f, g_frame_scale_sq * 0.3f,
                          0.0f);
-                if ((char *)moby > oltanis_mobys_end && g_hero.state.control_mode != 15)
+                if ((char *)moby > oltanis_mobys_end && g_hero.state.control_mode != HERO_MODE_GRIND)
                     goto remove;
             }
             hit = MobyGetHitMessage_r(moby, 0x230000, 0);

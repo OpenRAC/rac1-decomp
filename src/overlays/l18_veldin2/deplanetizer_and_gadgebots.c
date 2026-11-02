@@ -1257,7 +1257,7 @@ void update_gadgebot_damage_target_and_glow(void *m_) {
     FindNearestEligibleMoby(512.0f, moby, &sentry_vars->target, 0, 0, (int *)(reaction_value_or_path_address + 0x10),
                             *(int *)reaction_value_or_path_address);
     if (sentry_vars->target_mode == 2) {
-        if (hero.state.control_mode == 0xF) {
+        if (hero.state.control_mode == HERO_MODE_GRIND) {
             int *list = (int *)hero.rail_spline;
             qcopy(&sentry_vars->target, (char *)list + *list * 16);
         } else {

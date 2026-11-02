@@ -1456,7 +1456,7 @@ void follow_cam_update_mode(char *m) {
 
     if (e->state == 0) {
         struct Hero *p0 = (struct Hero *)g_hero;
-        if (p0->state.control_mode == 2) {
+        if (p0->state.control_mode == HERO_MODE_FALL) {
             e->prev = e->state;
             e->state = 1;
             e->timer = follow_cam_mode1_blend_time;
@@ -1516,7 +1516,7 @@ void follow_cam_update_mode(char *m) {
                             qcopy(e->v20, e->v10);
                         } else {
                             struct Hero *p5 = (struct Hero *)g_hero;
-                            if (p5->state.control_mode == 4 && camera_view_field_dc == 0.0f) {
+                            if (p5->state.control_mode == HERO_MODE_JUMP && camera_view_field_dc == 0.0f) {
                                 e->prev = e->state;
                                 e->state = 2;
                                 e->timer = follow_cam_mode2_blend_time;
@@ -1546,7 +1546,8 @@ void follow_cam_update_mode(char *m) {
         qcopy(e->v20, e->v10);
         return;
     }
-    if ((e->state == 1 || e->state == 2) && hero_control_mode != 4 && hero_control_mode != 2) {
+    if ((e->state == 1 || e->state == 2) && hero_control_mode != HERO_MODE_JUMP &&
+        hero_control_mode != HERO_MODE_FALL) {
         e->timer = 0;
         e->invTimer = 1.0f;
         e->state = 0;
@@ -1569,7 +1570,7 @@ void follow_cam_update_mode(char *m) {
             qcopy(e->v20, e->v10);
             return;
         }
-        if (p->state.control_mode == 2) {
+        if (p->state.control_mode == HERO_MODE_FALL) {
             e->prev = e->state;
             e->state = 1;
             e->timer = scale_ticks(*(int *)&follow_cam_return_blend_time);
@@ -1577,8 +1578,8 @@ void follow_cam_update_mode(char *m) {
             return;
         }
     }
-    if (e->state == 4 && hero_control_mode != 4) {
-        if (hero_control_mode == 2) {
+    if (e->state == 4 && hero_control_mode != HERO_MODE_JUMP) {
+        if (hero_control_mode == HERO_MODE_FALL) {
             e->prev = 4;
             e->state = 1;
             e->timer = scale_ticks(*(int *)&follow_cam_return_blend_time);
@@ -1627,7 +1628,7 @@ void follow_cam_update_mode(char *m) {
         e->invTimer = 1.0f / IntToFloat(e->timer);
         return;
     }
-    if ((e->state == 3 || e->state == 5) && hero_control_mode != 4) {
+    if ((e->state == 3 || e->state == 5) && hero_control_mode != HERO_MODE_JUMP) {
         e->prev = e->state;
         e->state = 0;
         e->timer = scale_ticks(*(int *)&follow_cam_return_blend_time);
@@ -1636,13 +1637,13 @@ void follow_cam_update_mode(char *m) {
     }
     if (e->state == 9) {
         struct Hero *p = (struct Hero *)g_hero;
-        if (p->state.control_mode == 2 || p->frames_off_ground.s >= scale_ticks(0x37)) {
+        if (p->state.control_mode == HERO_MODE_FALL || p->frames_off_ground.s >= scale_ticks(0x37)) {
             goto to_one;
         }
     }
     if (e->state == 0xA) {
         struct Hero *p = (struct Hero *)g_hero;
-        if (p->state.control_mode == 2 || p->frames_off_ground.s >= scale_ticks(0x37)) {
+        if (p->state.control_mode == HERO_MODE_FALL || p->frames_off_ground.s >= scale_ticks(0x37)) {
             float r;
         to_one:
             e->prev = e->state;
@@ -2320,11 +2321,11 @@ void follow_camera_apply_overrides(O_y *o) {
         set_follow_camera_angle_blend_from_direction(v, 0.20943952f, v[2]);
         follow_camera_start_slide();
     }
-    if (hero74.state.control_mode == 0x11) {
+    if (hero74.state.control_mode == HERO_MODE_SWIM) {
         o->m->fF0 = 0.25f;
         follow_camera_set_height(0.5f, 0.003f);
     }
-    if (hero74.state.control_mode == 5) {
+    if (hero74.state.control_mode == HERO_MODE_LAND) {
         flag = 1;
         {
             S40_y *q5 = (S40_y *)((u8 *)o->m + 0x40);
@@ -2364,7 +2365,7 @@ void follow_camera_apply_overrides(O_y *o) {
             t->f44 = w;
         }
     }
-    if (hero74.unk20AA != 0 && hero74.state.control_mode != 0xF) {
+    if (hero74.unk20AA != 0 && hero74.state.control_mode != HERO_MODE_GRIND) {
         set_follow_camera_orbit_clamp_mode(0);
         follow_camera_start_slide();
         follow_camera_set_lateral_spring(0.04f, 0.2f);
@@ -2946,7 +2947,7 @@ int update_follow_camera_orbit_after_collision(unsigned char *m, void *b, int c,
         B->unk_34 = func_001F9850_E85E8(0x884);
     }
     k = (follow_cam_min_eye_distance);
-    if (!c && g_hero_r2.state.control_mode != 2 && len < dist) {
+    if (!c && g_hero_r2.state.control_mode != HERO_MODE_FALL && len < dist) {
         FastVecScale(A, A, len / dist);
         B->unk_30 = A->distance - len;
         return d;

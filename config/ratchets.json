@@ -5,7 +5,7 @@
   "extern_lines": 31667,
   "fakematch_tags": 31,
   "float_int_casts": 636,
-  "hex_compares": 4113,
+  "hex_compares": 3827,
   "ids_in_comments": 110,
   "include_asm": 206,
   "local_struct_typedefs": 2832,

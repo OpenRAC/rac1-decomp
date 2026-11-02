@@ -2659,8 +2659,8 @@ void turret_update(struct Moby *moby) {
     Moby_GetJointWorldPos(moby, 3, &seat);
     seat.f[2] += 0.4f;
     if (moby->state >= 4) {
-        if (FastDecTimer(&vars->mount_delay) != 0 && moby->command == 1 && hero.state.control_mode != 0x14 &&
-            hero.state.control_mode != 7 && hero.state.current != HERO_STATE_DYING) {
+        if (FastDecTimer(&vars->mount_delay) != 0 && moby->command == 1 && hero.state.control_mode != HERO_MODE_DYING &&
+            hero.state.control_mode != HERO_MODE_HURT && hero.state.current != HERO_STATE_DYING) {
             qcopy(&hero.motion.pos, &seat);
             qcopy(&hero.motion.rot, &moby->rot);
             hero.motion.rot.f[2] = FastAddRots(1.5707964f, hero.motion.rot.f[2]);
@@ -2690,7 +2690,7 @@ void turret_update(struct Moby *moby) {
                 moby->command = 0;
                 vars->mount_delay = scale_ticks(60);
             }
-        } else if (hero.state.control_mode != 0x14 && hero.state.control_mode != 7 &&
+        } else if (hero.state.control_mode != HERO_MODE_DYING && hero.state.control_mode != HERO_MODE_HURT &&
                    hero.state.current != HERO_STATE_DYING && hero.ground_moby == moby &&
                    FastVecDist(&seat, &hero.moby->pos) < 1.2f && vars->mount_delay == 0) {
             moby->command = 1;

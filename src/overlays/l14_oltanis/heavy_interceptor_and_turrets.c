@@ -3861,7 +3861,7 @@ void update_platform_tilt_basis(char *moby) {
     up[3] = 1.0f;
 
     if ((*(char **)&g->ground_moby == moby && g->air_frames.s == 0) ||
-        (*(char **)&g->ledge_moby == moby && g->state.control_mode == 3)) {
+        (*(char **)&g->ledge_moby == moby && g->state.control_mode == HERO_MODE_LEDGE)) {
         struct Hero *p = (struct Hero *)((char *)hero_globals_base + 0xE1D);
         *(char *)&((Moby *)moby)->command = 1;
         if (FastAbsF(p->motion.pos.f[0] - ((Moby *)moby)->pos.x) < 0.1f &&
@@ -3945,7 +3945,7 @@ void update_ribbon_effect_moby(char *moby) {
             break;
         case MOBY_STATE_UPDATE:
             x = (struct Hero *)(hero_globals_base + 0xE1D);
-            if (x->state.control_mode != 0xF ||
+            if (x->state.control_mode != HERO_MODE_GRIND ||
                 (x->rail_spline != *(int *)((data->rail[0] << 5) + race_paths + 0x10) &&
                  x->rail_spline != *(int *)((data->rail[1] << 5) + race_paths + 0x10) &&
                  x->rail_spline != *(int *)((data->rail[2] << 5) + race_paths + 0x10))) {

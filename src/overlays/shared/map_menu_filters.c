@@ -51,7 +51,8 @@ int ovl_map_filter_l01_5(int item, float a, float b, float x) {
 
     if (item < 256) {
         r = 0;
-        if (g_hero.state.control_mode == 0x11 || g_hero.state.control_mode == 0x12 || g_hero.base_condition == 1) {
+        if (g_hero.state.control_mode == HERO_MODE_SWIM || g_hero.state.control_mode == HERO_MODE_WATER_SURFACE ||
+            g_hero.base_condition == 1) {
             r = 1;
         }
         return r;
@@ -81,7 +82,7 @@ extern int hero_control_mode;
 // Checks a menu flag for small values and mode 15 for larger values.
 int ovl_map_filter_l08_0(int unused, int value) {
     if (value >= 257)
-        return hero_control_mode == 15;
+        return hero_control_mode == HERO_MODE_GRIND;
     return menu_item_enabled_41 != 0;
 }
 INCLUDE_ASM("asm/overlays", func_L00_0024A12C);
@@ -154,7 +155,8 @@ extern unsigned char menu_item_enabled_78[];
 int ovl_map_filter_l11_3(int item, float a, float b, float x) {
     int r = 0;
 
-    if (g_hero.state.control_mode == 0x11 || g_hero.state.control_mode == 0x12 || g_hero.base_condition == 1) {
+    if (g_hero.state.control_mode == HERO_MODE_SWIM || g_hero.state.control_mode == HERO_MODE_WATER_SURFACE ||
+        g_hero.base_condition == 1) {
         r = 1;
     }
     if (item < 351) {

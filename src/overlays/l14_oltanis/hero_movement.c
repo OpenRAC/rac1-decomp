@@ -155,10 +155,10 @@ s32 process_hero_hit_reaction(s32 arg) {
     f32 a, b, e;
     Vec4 v;
 
-    if (g_hero_r.state.control_mode == 0x14) {
+    if (g_hero_r.state.control_mode == HERO_MODE_DYING) {
         return 0;
     }
-    if (g_hero_r.state.control_mode == 7) {
+    if (g_hero_r.state.control_mode == HERO_MODE_HURT) {
         return 0;
     }
     if (g_hero_r.state.current == 0x32) {
@@ -185,7 +185,7 @@ s32 process_hero_hit_reaction(s32 arg) {
     level_hero_hit_counts[g_current_level_index]++;
     g_hero_r.damage_source_moby = (struct Moby *)tbl->p20;
     hero_hit_count++;
-    if (g_hero_r.state.control_mode == 0xF) {
+    if (g_hero_r.state.control_mode == HERO_MODE_GRIND) {
         g_hero_r.unk5BE = 1;
         return 0;
     }
@@ -264,7 +264,7 @@ void HeroL14_UpdateMoveBlendTargets(void) {
             g_hero_r2.capsule_radius_target = 0.45f;
             break;
     }
-    if (g_hero_r2.state.control_mode == 4) {
+    if (g_hero_r2.state.control_mode == HERO_MODE_JUMP) {
         if (g_hero_r2.state_timer > g_hero_r2.takeoff_frame && g_hero_r2.past_jump_apex == 0)
             g_hero_r2.capsule_bottom_target = g_hero_r2.unk434;
     } else if (g_hero_r2.state.current == HERO_STATE_FALL) {
@@ -277,8 +277,8 @@ void HeroL14_UpdateMoveBlendTargets(void) {
     } else if (g_hero_r2.state.current == HERO_STATE_SINK) {
         g_hero_r2.capsule_radius_target = 0.8f;
     }
-    if (!g_hero_r2.wall_hit || g_hero_r2.state.prev_control_mode == 0x12 || g_hero_r2.state.control_mode == 0x11 ||
-        g_hero_r2.base_condition ||
+    if (!g_hero_r2.wall_hit || g_hero_r2.state.prev_control_mode == HERO_MODE_WATER_SURFACE ||
+        g_hero_r2.state.control_mode == HERO_MODE_SWIM || g_hero_r2.base_condition ||
         vec_distance_xy(g_hero_r2.wall_contact_point.f, g_hero_r2.motion.pos.f) > g_hero_r2.capsule_radius * 0.5f) {
         f32 *q = g_hero_capsule_top;
         Hero *b = (Hero *)((u8 *)q - 0x220);

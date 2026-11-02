@@ -3656,7 +3656,8 @@ void enqueue_moby_draw_callbacks_by_clip_volume(char *moby) {
     p = data + 0x10;
     for (i = 0; i < 4; p++, i++) {
         struct Hero *g = &g_hero;
-        if (g->state.control_mode == 15 || (*p >= 0 && is_point_inside_clip_volume(blarg_camera_pos, *p))) {
+        if (g->state.control_mode == HERO_MODE_GRIND ||
+            (*p >= 0 && is_point_inside_clip_volume(blarg_camera_pos, *p))) {
             AddDrawCallback((void *)draw_dual_texture_864_quad_mesh, moby);
             return;
         }

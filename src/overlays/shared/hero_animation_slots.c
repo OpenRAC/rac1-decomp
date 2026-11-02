@@ -602,7 +602,7 @@ void update_hero_condition_animation(void) {
         if (c != 0) {
             if (*(unsigned char *)(c + 0x3C) != 0) {
                 id = select_hero_condition_animation_id(*(unsigned char *)(c + 0x3C));
-                if (p->state.control_mode == 1) {
+                if (p->state.control_mode == HERO_MODE_RUN) {
                     spd = 0.7f;
                 }
             }
@@ -629,7 +629,7 @@ void update_hero_condition_animation(void) {
     }
     {
         struct Hero *r = (struct Hero *)(hero_globals_base + 0xE1D);
-        if (r->state.control_mode == 0x11 && gHaveHeliPack[4] == 0) {
+        if (r->state.control_mode == HERO_MODE_SWIM && gHaveHeliPack[4] == 0) {
             flag = 1;
             id = 0x78;
             t = IntToFloat(r->underwater_air) / IntToFloat(10000);
@@ -990,7 +990,7 @@ void start_equipped_item_animation(void) {
     P->item_anim_item_id = t;
     v19 = item_defs_r[t].f24;
     v21 = item_defs_r[t].f28;
-    if ((s32)P->state.control_mode == 12)
+    if ((s32)P->state.control_mode == HERO_MODE_CROUCH)
         v21 = item_defs_r[t].f2C;
     P->item_anim_active = 1;
     {
@@ -1072,7 +1072,7 @@ void update_hero_held_items_and_orientation(void) {
         item_id = hero_slot_item_id(0);
         if (item_id == slot_owner->item_anim_item_id) {
             animation = ((struct { ID_20e4c8 a[1]; } *)item_defs_r)->a[item_id].f28;
-            if (slot_owner->state.control_mode == 12) {
+            if (slot_owner->state.control_mode == HERO_MODE_CROUCH) {
                 animation = ((struct { ID_20e4c8 a[1]; } *)item_defs_r)->a[item_id].f2C;
             }
             if (animation != -1 && (*slot)[0x23] != animation) {
@@ -1116,7 +1116,7 @@ void update_hero_held_items_and_orientation(void) {
 
     {
         struct Hero *pose_owner = (struct Hero *)(hero_globals_base + 0xE1D);
-        if (pose_owner->state.control_mode == 15) {
+        if (pose_owner->state.control_mode == HERO_MODE_GRIND) {
             u8 *target = (u8 *)pose_owner->grind_look_moby;
 
             if (target != 0) {
@@ -2211,8 +2211,8 @@ void update_hero_equipped_items(void) {
         *(char *)&q->unk20AE = 1;
     } else {
         struct Hero *h = (struct Hero *)(hero_globals_base + 0xE1D);
-        if (h->state.control_mode == 0x15 || (h->state.control_mode == 0x16 || h->state.control_mode == 3) ||
-            h->state.current == 0x12) {
+        if (h->state.control_mode == 0x15 ||
+            (h->state.control_mode == 0x16 || h->state.control_mode == HERO_MODE_LEDGE) || h->state.current == 0x12) {
             struct Hero *q = (struct Hero *)(hero_globals_base + 0xE1D);
             *(char *)&q->unk20AE = 1;
         } else {
@@ -2393,10 +2393,10 @@ s32 hero_check_damage(s32 arg) {
     f32 a, b, e;
     Vec4 v;
 
-    if (g_hero_r4.state.control_mode == 0x14) {
+    if (g_hero_r4.state.control_mode == HERO_MODE_DYING) {
         return 0;
     }
-    if (g_hero_r4.state.control_mode == 7) {
+    if (g_hero_r4.state.control_mode == HERO_MODE_HURT) {
         return 0;
     }
     if (g_hero_r4.state.current == 0x32) {
@@ -2427,7 +2427,7 @@ s32 hero_check_damage(s32 arg) {
     level_hero_hit_counts[g_current_level_index]++;
     g_hero_r4.damage_source_moby = (struct Moby *)tbl->p20;
     hero_hit_count++;
-    if (g_hero_r4.state.control_mode == 0xF) {
+    if (g_hero_r4.state.control_mode == HERO_MODE_GRIND) {
         g_hero_r4.unk5BE = 1;
         return 0;
     }
@@ -2468,14 +2468,14 @@ s32 hero_check_damage(s32 arg) {
                 g_hero_r4.motion.resolved_velocity_z.f[2] = g_frame_time * 7.0f;
                 return 1;
             }
-            if (g_hero_r4.state.control_mode == 0x12) {
+            if (g_hero_r4.state.control_mode == HERO_MODE_WATER_SURFACE) {
                 mob = (Moby *)g_hero_r4.damage_source_moby;
                 if (mob != 0 && mob->oclass == 0x28F) {
                     id = 0x82;
                     goto call_ret;
                 }
                 HeroEnterMoveState(HERO_STATE_WATER_SURFACE_HURT, 1);
-            } else if (g_hero_r4.state.control_mode == 0x11) {
+            } else if (g_hero_r4.state.control_mode == HERO_MODE_SWIM) {
                 mob = (Moby *)g_hero_r4.damage_source_moby;
                 if (mob != 0 && mob->oclass == 0x28F) {
                     id = 0x82;
@@ -2489,7 +2489,7 @@ s32 hero_check_damage(s32 arg) {
                     }
                 }
                 HeroEnterMoveState(0x76, 1);
-            } else if (g_hero_r4.state.control_mode == 3) {
+            } else if (g_hero_r4.state.control_mode == HERO_MODE_LEDGE) {
                 mob = (Moby *)g_hero_r4.damage_source_moby;
                 if (mob != 0) {
                     id = 0x82;
@@ -2636,8 +2636,8 @@ void update_hero_collision_capsule_dimensions(void) {
         }
     }
     k = (Hero *)g_hero;
-    if (k->wall_hit != 0 && k->state.prev_control_mode != 0x12 && k->state.control_mode != 0x11 &&
-        k->base_condition == 0) {
+    if (k->wall_hit != 0 && k->state.prev_control_mode != HERO_MODE_WATER_SURFACE &&
+        k->state.control_mode != HERO_MODE_SWIM && k->base_condition == 0) {
         float f = vec_distance_xy(&k->wall_contact_point, &k->motion);
         if (!(k->capsule_radius * 0.5f < f)) {
             return;
@@ -3214,7 +3214,7 @@ void update_hero_ground_contact_and_surface_slopes(void) {
     if (D_0013F450_12E70.gravity_mode)
         k = 1;
     g = D_0013F450_12E70.capsule_radius * 2.2f;
-    if (D_0013F450_12E70.state.control_mode == 2) {
+    if (D_0013F450_12E70.state.control_mode == HERO_MODE_FALL) {
         g = D_0013F450_12E70.capsule_radius * 2.9f;
     }
     func_L00_00212D70_12E70(&v10, &v0, k, g, -48.0f);
@@ -3329,9 +3329,11 @@ d1:
     D_0013F450_12E70.unk2C8.i[1] = 0;
     D_0013F450_12E70.unk2C0.i[0] = 0;
     D_0013F450_12E70.unk2C0.i[1] = 0;
-    if (D_0013F450_12E70.state.control_mode == 0xF || D_0013F450_12E70.state.control_mode == 0x15 ||
-        D_0013F450_12E70.state.control_mode == 6 || D_0013F450_12E70.state.control_mode == 4 ||
-        D_0013F450_12E70.state.control_mode == 5 || D_0013F450_12E70.state.control_mode == 3) {
+    if (D_0013F450_12E70.state.control_mode == HERO_MODE_GRIND || D_0013F450_12E70.state.control_mode == 0x15 ||
+        D_0013F450_12E70.state.control_mode == HERO_MODE_ATTACK ||
+        D_0013F450_12E70.state.control_mode == HERO_MODE_JUMP ||
+        D_0013F450_12E70.state.control_mode == HERO_MODE_LAND ||
+        D_0013F450_12E70.state.control_mode == HERO_MODE_LEDGE) {
         return;
     }
     if (!(D_0013F450_12E70.ground_distance < 0.25f)) {
@@ -3510,7 +3512,7 @@ int resolve_hero_current_position_collisions(int arg) {
         Hero_ConstrainToPath();
         g->path_constrain_pending = 0;
     }
-    if (g->state.control_mode != 0x11) {
+    if (g->state.control_mode != HERO_MODE_SWIM) {
         unsigned char c = g->gravity_mode;
         if (c != 0 || g->unk1F8 != 0) {
             if (c == 1 || g->unk1F8 != 0) {
@@ -3533,10 +3535,10 @@ int resolve_hero_current_position_collisions(int arg) {
             if (coll_sphere(frame_scale * 0.4f, &g->motion, r, *(void **)&g->moby) == 0)
                 break;
         } else {
-            if (g->state.control_mode == 0x11) {
+            if (g->state.control_mode == HERO_MODE_SWIM) {
                 if (coll_sphere(0.6f, &g->motion, r, *(void **)&g->moby) == 0)
                     break;
-            } else if (g->state.control_mode == 0xF) {
+            } else if (g->state.control_mode == HERO_MODE_GRIND) {
                 if (coll_sphere(frame_scale * 0.45f, &g->motion, r, *(void **)&g->moby) == 0)
                     break;
             } else {
@@ -3675,7 +3677,7 @@ void apply_hero_motion_and_resolve_collisions(void) {
                 limit = 0.0f;
             gravity_set_z(position, position, limit);
         }
-    } else if (((Hero *)position)->state.control_mode == 15) {
+    } else if (((Hero *)position)->state.control_mode == HERO_MODE_GRIND) {
         if (!((Hero *)position)->collision_off_frames) {
             float length;
             float limit;
@@ -3686,8 +3688,8 @@ void apply_hero_motion_and_resolve_collisions(void) {
             if (limit < length)
                 vec_set_length_xy(vertical, vertical, limit);
         }
-    } else if (((Hero *)position)->state.control_mode != 13) {
-        if (((Hero *)position)->state.control_mode != 14) {
+    } else if (((Hero *)position)->state.control_mode != HERO_MODE_GRAPPLE) {
+        if (((Hero *)position)->state.control_mode != HERO_MODE_GRAPPLE_SWING) {
             if (!((Hero *)position)->collision_off_frames) {
                 float length;
                 float limit;
@@ -3820,7 +3822,7 @@ void steer_hero_planar_velocity(float step) {
         case 0:
             a = ((struct Hero *)g)->motion.move_yaw;
             s = ((struct Hero *)g)->target_speed;
-            if (((struct Hero *)g)->state.control_mode == 4) {
+            if (((struct Hero *)g)->state.control_mode == HERO_MODE_JUMP) {
                 if (*(short *)(hero_14520() + 0x30A) == 0 && *(short *)(hero_14520() + 0x4A4) != 0 &&
                     ((unsigned char *)hero_14520())[0x257] != 0) {
                     s = g_frame_time * 2.1f;

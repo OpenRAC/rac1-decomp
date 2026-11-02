@@ -1009,7 +1009,7 @@ void refresh_camera_control_flags(void) {
     }
     {
         Hero *g2 = &g_hero_HERO;
-        if (g2->state.control_mode != 0x11 && g2->water_surface_z < gCamera.pos.f[2]) {
+        if (g2->state.control_mode != HERO_MODE_SWIM && g2->water_surface_z < gCamera.pos.f[2]) {
             cam_coll_flag = 0x14;
         }
     }

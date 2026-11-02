@@ -1308,7 +1308,7 @@ s32 volume_camera_swing_active(A_2ec7e8 *a) {
         return 0;
     }
     w = *(u16 *)&o->f2C;
-    if (o->f2C == 2 && hero_control_mode[0] == 0x1A && o->f2E > 0) {
+    if (o->f2C == 2 && hero_control_mode[0] == HERO_MODE_FOLLOW_PATH && o->f2E > 0) {
         v17 = 1;
     } else if ((s16)w == 4 && g_hero_field_2284[0] == 3) {
         v17 = 0 < o->f2E;

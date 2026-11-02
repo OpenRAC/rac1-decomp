@@ -1566,7 +1566,7 @@ void drek_final_boss_robot_update(Moby *moby) {
                 } else {
                     qcopy(v0, d->f70);
                 }
-                if (g_hero.state.control_mode == 0xF) {
+                if (g_hero.state.control_mode == HERO_MODE_GRIND) {
                     qcopy(v1, veldin2_arena_nodes + d->f344 * 0x80 + 0x30);
                     FastVecSub(v0, v0, v1);
                     if (vec_length_xy(v0) > 29.0f) {
@@ -1743,10 +1743,11 @@ void drek_final_boss_robot_update(Moby *moby) {
                 d->f3B0 = Moby_PlaySound(0xE, 4, (int)moby);
             }
             fire = 0;
-            if (fast_dec_timer(&d->f358) != 0 && (g_hero.state.control_mode != 0xF || fast_dec_timer(&d->f35C) != 0)) {
+            if (fast_dec_timer(&d->f358) != 0 &&
+                (g_hero.state.control_mode != HERO_MODE_GRIND || fast_dec_timer(&d->f35C) != 0)) {
                 fire = 1;
             }
-            if (g_hero.state.control_mode == 0xF) {
+            if (g_hero.state.control_mode == HERO_MODE_GRIND) {
                 int *list = (int *)g_hero.rail_spline;
 
                 if (vec_distance_xy(g_hero.motion.pos.f, (char *)list + *list * 16) < 3.0f) {
@@ -2097,7 +2098,7 @@ void update_drek_boss_damage_and_phase_transitions(char *moby) {
                     step = step * 3.0f;
                 }
             }
-            if (g_hero.state.control_mode == 0xF) {
+            if (g_hero.state.control_mode == HERO_MODE_GRIND) {
                 boss_data->f390 = boss_data->f390 + step;
             } else {
                 *(float *)boss_data->p394 = *(float *)boss_data->p394 + step;
@@ -2430,7 +2431,7 @@ void func_L18_002F7F00_r(Moby *moby) {
     if (vec_distance_xy_r(&v->pos, &((ArenaNode *)veldin2_arena_nodes_r)[v->node].center) >
         D_L18_00162404_2F7F00 + 1.0f) {
         speed = 10.0f;
-    } else if (((Hero *)g_hero_r)->state.control_mode != 0xF) {
+    } else if (((Hero *)g_hero_r)->state.control_mode != HERO_MODE_GRIND) {
         near = D_L18_001623EC_2F7F00;
         far = D_L18_001623E8_2F7F00;
         slow = D_L18_001623E4_2F7F00;
@@ -2671,8 +2672,8 @@ void update_drek_boss_state_dependent_scalars(char *moby) {
     st = ((Moby *)moby)->state;
     if (st == 0x13) {
         struct Hero *g = &g_hero;
-        if ((g->state.control_mode == 0xF || g->state.current == HERO_STATE_GRIND_COLLISION_RECOVERY) && d->f364 == 0 &&
-            d->f390 <= 25.0f && d->f360 == 0) {
+        if ((g->state.control_mode == HERO_MODE_GRIND || g->state.current == HERO_STATE_GRIND_COLLISION_RECOVERY) &&
+            d->f364 == 0 && d->f390 <= 25.0f && d->f360 == 0) {
             x = drek_boss_first_scalar_gated_follow_target_gp;
             y = drek_boss_second_scalar_gated_follow_target_gp;
             p0 = (float *)(t + 0x34);

@@ -1225,7 +1225,7 @@ void launch_bomb(float *pos, unsigned char *moby, float *velocity) {
     m->state = 1;
     qcopy(vars, velocity);
     g = (Hero *)&D_G910;
-    if (g->state.control_mode == 15) {
+    if (g->state.control_mode == HERO_MODE_GRIND) {
         FastVecAdd(&vars->vel, &vars->vel, &g->motion.displacement);
     } else if (((struct BombMoby *)g->ground_moby) != 0 &&
                moby_get_ride_transform((unsigned char *)((struct BombMoby *)g->ground_moby)) != 0) {
@@ -1339,7 +1339,7 @@ int predict_throw_landing(void *vp, void *m, int mode) {
         FastVecAdd(&position, &position, &hero->motion.pos);
         position.f[2] += 0.49082f;
         qcopy(&velocity, v);
-        if (hero->state.control_mode == 0xF)
+        if (hero->state.control_mode == HERO_MODE_GRIND)
             FastVecAdd(&velocity, &velocity, &hero->motion.displacement);
         if (*(int *)&hero->ground_moby != 0 && moby_get_ride_transform(*(unsigned char **)&hero->ground_moby) && mode)
             FastVecAdd(&velocity, &velocity, &hero->motion.displacement);

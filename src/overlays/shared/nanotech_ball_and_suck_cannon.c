@@ -982,14 +982,14 @@ int is_suck_cannon_suction_blocked_by_hero_state(void) {
     Hero *g = &g_hero;
     int r = 1;
     switch (g->state.control_mode) {
-        case 0:
-        case 1:
-        case 5:
-        case 12:
+        case HERO_MODE_IDLE:
+        case HERO_MODE_RUN:
+        case HERO_MODE_LAND:
+        case HERO_MODE_CROUCH:
             r = 0;
             break;
-        case 2:
-        case 4:
+        case HERO_MODE_FALL:
+        case HERO_MODE_JUMP:
             if (g_hero.state.current != 0x3C)
                 r = 0;
             break;

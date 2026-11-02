@@ -1573,8 +1573,10 @@ void MorphorayUpdate(Moby *m) {
         near = 0;
     }
     FastDecTimer_r(&p->timer);
-    if ((((unsigned int)((Hero *)g_hero_r)->state.control_mode < 2 || ((Hero *)g_hero_r)->state.control_mode == 12 ||
-          ((Hero *)g_hero_r)->state.control_mode == 4 || ((Hero *)g_hero_r)->state.control_mode == 5)) &&
+    if ((((unsigned int)((Hero *)g_hero_r)->state.control_mode < 2 ||
+          ((Hero *)g_hero_r)->state.control_mode == HERO_MODE_CROUCH ||
+          ((Hero *)g_hero_r)->state.control_mode == HERO_MODE_JUMP ||
+          ((Hero *)g_hero_r)->state.control_mode == HERO_MODE_LAND)) &&
         (*(int *)(pad_globals_base_r + 0x2600) & ((Hero *)g_hero_r)->items[0].button_mask) != 0 && !flag && near) {
         if (((Hero *)g_hero_r)->item_anim_active == 0) {
             start_equipped_item_animation_r();

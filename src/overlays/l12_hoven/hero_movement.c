@@ -137,7 +137,7 @@ void update_hero_smoothing_targets_and_values(void) {
             g_hero_r.capsule_radius_target = 0.45f;
             break;
     }
-    if (g_hero_r.state.control_mode == 4) {
+    if (g_hero_r.state.control_mode == HERO_MODE_JUMP) {
         if (g_hero_r.state_timer > g_hero_r.takeoff_frame && g_hero_r.past_jump_apex == 0)
             g_hero_r.capsule_bottom_target = g_hero_r.unk434;
     } else if (g_hero_r.state.current == HERO_STATE_FALL) {
@@ -153,8 +153,8 @@ void update_hero_smoothing_targets_and_values(void) {
     } else if (g_hero_r.state.current == HERO_STATE_SINK) {
         g_hero_r.capsule_radius_target = 0.8f;
     }
-    if (!g_hero_r.wall_hit || g_hero_r.state.prev_control_mode == 0x12 || g_hero_r.state.control_mode == 0x11 ||
-        g_hero_r.base_condition ||
+    if (!g_hero_r.wall_hit || g_hero_r.state.prev_control_mode == HERO_MODE_WATER_SURFACE ||
+        g_hero_r.state.control_mode == HERO_MODE_SWIM || g_hero_r.base_condition ||
         vec_distance_xy(g_hero_r.wall_contact_point.f, g_hero_r.motion.pos.f) > g_hero_r.capsule_radius * 0.5f) {
         f32 *q = g_hero_capsule_top;
         Hero *b = (Hero *)((u8 *)q - 0x220);
@@ -232,7 +232,7 @@ void Hero_ProbeGround(void) {
     if (g_hero.gravity_mode)
         k = 1;
     ground_ray_first_endpoint_offset = g_hero.capsule_radius * 2.2f;
-    if (g_hero.state.control_mode == 2) {
+    if (g_hero.state.control_mode == HERO_MODE_FALL) {
         ground_ray_first_endpoint_offset = g_hero.capsule_radius * 2.9f;
     }
     hero_get_collision_ray_endpoints(&ground_ray_first_endpoint, &collision_ray_second_endpoint, k,
@@ -331,8 +331,9 @@ d1:
     g_hero.unk2C8.f[1] = 0.0f;
     g_hero.unk2C0.f[0] = 0.0f;
     g_hero.unk2C0.f[1] = 0.0f;
-    if (g_hero.state.control_mode == 0xF || g_hero.state.control_mode == 0x15 || g_hero.state.control_mode == 6 ||
-        g_hero.state.control_mode == 4 || g_hero.state.control_mode == 5 || g_hero.state.control_mode == 3) {
+    if (g_hero.state.control_mode == HERO_MODE_GRIND || g_hero.state.control_mode == 0x15 ||
+        g_hero.state.control_mode == HERO_MODE_ATTACK || g_hero.state.control_mode == HERO_MODE_JUMP ||
+        g_hero.state.control_mode == HERO_MODE_LAND || g_hero.state.control_mode == HERO_MODE_LEDGE) {
         return;
     }
     if (!(g_hero.ground_distance < 0.25f)) {

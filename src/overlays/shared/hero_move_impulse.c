@@ -170,7 +170,7 @@ void hero_update_hop_movement(void) {
         qcopy(&g_hero.motion.momentum, &g_hero.move_impulse);
         arg = g_frame_time_sq * 20.0f;
         if (g_hero.target_speed < hoven_hero_speed_bands_field_18[0] * g_frame_time * 0.2f) {
-            if (g_hero.state.control_mode == 2) {
+            if (g_hero.state.control_mode == HERO_MODE_FALL) {
                 d = g_hero.stickless_decel;
                 if (g_hero.on_ice_ground)
                     d = g_frame_time_sq * 0.17f;

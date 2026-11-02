@@ -53,8 +53,9 @@ int map_filter_l01_3(void *unused_input, int reveal_test_selector, float unused1
                      float reveal_test_value) {
     Hero *hero_ptr = (Hero *)&g_hero;
     int hero_state_blocks_high_range_reveal = hero_ptr->state.control_mode == 16;
-    int hero_state_blocks_low_range_reveal =
-        hero_ptr->state.control_mode == 17 || hero_ptr->state.control_mode == 18 || hero_ptr->base_condition == 1;
+    int hero_state_blocks_low_range_reveal = hero_ptr->state.control_mode == HERO_MODE_SWIM ||
+                                             hero_ptr->state.control_mode == HERO_MODE_WATER_SURFACE ||
+                                             hero_ptr->base_condition == 1;
 
     if (reveal_test_selector < 0xC8 && reveal_test_value >= 39.5f && reveal_test_value <= 42.5f &&
         !hero_state_blocks_low_range_reveal) {
@@ -90,8 +91,8 @@ int map_filter_l01_4(int arg0, float unused1, float unused2, float arg1) {
 int map_filter_l01_5(int reveal_test_selector, float unused1, float unused2, float reveal_test_value) {
     if (reveal_test_selector < 0x100) {
         struct Hero *hero_ptr = (struct Hero *)&g_hero;
-        return hero_ptr->state.control_mode == 17 || hero_ptr->state.control_mode == 18 ||
-               hero_ptr->base_condition == 1;
+        return hero_ptr->state.control_mode == HERO_MODE_SWIM ||
+               hero_ptr->state.control_mode == HERO_MODE_WATER_SURFACE || hero_ptr->base_condition == 1;
     }
     return (reveal_test_value >= 95.0f) ? 1 : 0;
 }
@@ -202,7 +203,8 @@ extern int map_region_enabled_0 NOT_SDA;
    all three of a second group of boxes hit. */
 int map_filter_l07_1(int arg0, int arg1, float unused1, float unused2, float arg3) {
     Hero *s = &g_hero;
-    int a = s->state.control_mode == 17 || s->state.control_mode == 18 || s->base_condition == 1;
+    int a = s->state.control_mode == HERO_MODE_SWIM || s->state.control_mode == HERO_MODE_WATER_SURFACE ||
+            s->base_condition == 1;
 
     if (point_is_clockwise(arg0, arg1, 0x93, 0x168, 0x182, 0x168) != 0 && arg1 >= 0x135 && map_region_enabled_0 != 0 &&
         arg3 >= 47.7f) {
@@ -273,8 +275,9 @@ extern int map_region_enabled_5 NOT_SDA;
 int map_filter_l07_3(int px, int py, float unused1, float unused2, float reveal_test_value) {
     if (py < 0xBB) {
         Hero *hero_ptr = (Hero *)&g_hero;
-        int hero_state_blocks_low_y_reveal =
-            hero_ptr->state.control_mode == 17 || hero_ptr->state.control_mode == 18 || hero_ptr->base_condition == 1;
+        int hero_state_blocks_low_y_reveal = hero_ptr->state.control_mode == HERO_MODE_SWIM ||
+                                             hero_ptr->state.control_mode == HERO_MODE_WATER_SURFACE ||
+                                             hero_ptr->base_condition == 1;
 
         if (!hero_state_blocks_low_y_reveal && map_region_enabled_5 != 0) {
             return 1;
@@ -343,7 +346,8 @@ extern int point_is_clockwise(int, int, int, int, int, int);
    clears it to 0). */
 int map_filter_l07_6(int px, int py, float fparg0, float fparg1, float reveal_test_value) {
     Hero *hero = (Hero *)&g_hero;
-    int hit = hero->state.control_mode == 17 || hero->state.control_mode == 18 || hero->base_condition == 1;
+    int hit = hero->state.control_mode == HERO_MODE_SWIM || hero->state.control_mode == HERO_MODE_WATER_SURFACE ||
+              hero->base_condition == 1;
     int result;
 
     if (py >= 0x105) {
@@ -367,7 +371,8 @@ int map_filter_l07_6(int px, int py, float fparg0, float fparg1, float reveal_te
    then only if the second box is not. */
 s32 map_filter_l07_7(s32 px, s32 py, f32 fparg0, f32 fparg1, f32 reveal_test_value) {
     struct Hero *hero = (struct Hero *)&g_hero;
-    s32 var_4_15 = hero->state.control_mode == 17 || hero->state.control_mode == 18 || hero->base_condition == 1;
+    s32 var_4_15 = hero->state.control_mode == HERO_MODE_SWIM || hero->state.control_mode == HERO_MODE_WATER_SURFACE ||
+                   hero->base_condition == 1;
 
     if (var_4_15) {
         return 0;
@@ -387,7 +392,7 @@ extern int hero_control_mode NOT_SDA;
 /* Map filter: above y 0x100 needs hero control mode 15, else menu item flag 41. */
 int map_filter_l08_0(int arg0, int arg1) {
     if (arg1 >= 0x101) {
-        return hero_control_mode == 0xF;
+        return hero_control_mode == HERO_MODE_GRIND;
     }
     return menu_item_enabled_41 != 0;
 }
@@ -543,8 +548,9 @@ extern unsigned char menu_item_enabled_78 NOT_SDA;
    other arm is map_filter_l11_4's second test with menu_item_enabled_78. */
 int map_filter_l11_3(int reveal_test_selector, float unused1, float unused2, float reveal_test_value) {
     struct Hero *hero_ptr = (struct Hero *)&g_hero;
-    int hero_state_allows_reveal =
-        hero_ptr->state.control_mode == 17 || hero_ptr->state.control_mode == 18 || hero_ptr->base_condition == 1;
+    int hero_state_allows_reveal = hero_ptr->state.control_mode == HERO_MODE_SWIM ||
+                                   hero_ptr->state.control_mode == HERO_MODE_WATER_SURFACE ||
+                                   hero_ptr->base_condition == 1;
 
     if (reveal_test_selector < 0x15F) {
         return (reveal_test_value >= 200.0f) ? hero_state_allows_reveal : 0;

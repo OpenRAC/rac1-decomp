@@ -1952,7 +1952,8 @@ void update_level01_tutorial_hints(Moby *moby) {
                     }
                 }
             }
-            if (g_hero.state.control_mode == 0x12 && data[10] == 0 && help_state.state == 0 && help_state.cur == -1 &&
+            if (g_hero.state.control_mode == HERO_MODE_WATER_SURFACE && data[10] == 0 && help_state.state == 0 &&
+                help_state.cur == -1 &&
                 (is_point_inside_clip_volume(&g_hero.motion.pos, data[8]) ||
                  is_point_inside_clip_volume(&g_hero.motion.pos, data[9]))) {
                 data[11]++;
@@ -1981,7 +1982,7 @@ void update_level01_tutorial_hints(Moby *moby) {
                     usage_stats[23].level_mask =
                         usage_stats[23].level_mask | (1 << g_current_level_index_r2) | 0x80000000;
                 }
-            } else if (g_hero.state.control_mode == 0x11) {
+            } else if (g_hero.state.control_mode == HERO_MODE_SWIM) {
                 help_records[0x44].id = 0xFFFF;
             } else {
                 data[11] = 0;

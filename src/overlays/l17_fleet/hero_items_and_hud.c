@@ -167,7 +167,7 @@ void HeroL17_UpdateStateTransitions(void) {
     prevState = g_hero.state.step;
     prevAnim = moby[0x53];
     if (HeroL17_TryTakeHit(1) == 0) {
-        if (g_hero.health.hp <= 0 && g_hero.state.control_mode != 0x14 &&
+        if (g_hero.health.hp <= 0 && g_hero.state.control_mode != HERO_MODE_DYING &&
             (g_hero.state.current == HERO_STATE_IDLE || g_hero.state.current == HERO_STATE_RUN)) {
             HeroL17_SetMoveState(HERO_STATE_DYING, 1);
         } else if (process_hero_equipped_item_input() == 0 && try_enter_hero_water_state() == 0 &&
@@ -790,7 +790,7 @@ void HeroL17_UpdateStateTransitions(void) {
                             break;
                         }
                         if (!(g_hero.air_frames.s < scale_ticks(5)) &&
-                            !(g_hero.state.prev_control_mode == 0x12 && g_hero.wading != 0) &&
+                            !(g_hero.state.prev_control_mode == HERO_MODE_WATER_SURFACE && g_hero.wading != 0) &&
                             g_hero.ground_distance > 1.35f) {
                             if (check_hero_forward_collision_height() == 0) {
                                 HeroL17_SetMoveState(HERO_STATE_FALL, 1);
@@ -880,7 +880,8 @@ void HeroL17_UpdateStateTransitions(void) {
                             break;
                         }
                         if (g_hero.state_timer > scale_ticks(0xF) ||
-                            (g_hero.state.prev_control_mode != 0 && g_hero.state.prev_control_mode != 1)) {
+                            (g_hero.state.prev_control_mode != HERO_MODE_IDLE &&
+                             g_hero.state.prev_control_mode != HERO_MODE_RUN)) {
                             if ((g_controller_state.pressed & 0x10000) && g_hero.unk20AA == 0) {
                                 g_hero.unk3BE = 1;
                             }
@@ -2291,7 +2292,7 @@ void HeroL17_UpdateStateTransitions(void) {
                             break;
                         }
                         if (g_current_level_index == LEVEL_KALEBO3 && 0.0f > g_hero.motion.velocity.f[2] &&
-                            g_hero.health.hp == 0 && g_hero.state.prev_control_mode == 0xF) {
+                            g_hero.health.hp == 0 && g_hero.state.prev_control_mode == HERO_MODE_GRIND) {
                             HeroL17_SetMoveState(HERO_STATE_FATAL_FALL, 1);
                             break;
                         }

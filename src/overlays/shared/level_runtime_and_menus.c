@@ -719,12 +719,12 @@ void reveal_map_around_position(f32 *position) {
         level = 0;
     }
     state = 0;
-    if (((Hero *)g_hero_r)->state.control_mode == 17 || ((Hero *)g_hero_r)->state.control_mode == 18 ||
-        ((Hero *)g_hero_r)->base_condition == 1) {
+    if (((Hero *)g_hero_r)->state.control_mode == HERO_MODE_SWIM ||
+        ((Hero *)g_hero_r)->state.control_mode == HERO_MODE_WATER_SURFACE || ((Hero *)g_hero_r)->base_condition == 1) {
         state = 1;
     }
     mode16 = ((Hero *)g_hero_r)->state.control_mode == 16;
-    mode15 = ((Hero *)g_hero_r)->state.control_mode == 15;
+    mode15 = ((Hero *)g_hero_r)->state.control_mode == HERO_MODE_GRIND;
     y_min = y - 16;
 
     for (i = 0; i < 16; i++) {
