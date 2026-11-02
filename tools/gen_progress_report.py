@@ -562,7 +562,7 @@ def compiled_data() -> list[tuple[str, str, int]]:
         m = EXE_LABEL.match(label)
         if m:                                      # level code's tables live in the levels
             out.append((obj, f".rodata.{label}", int(m.group(1), 16)))
-    for label, obj, section in data_in_c.provided("data") + data_in_c.provided("core"):
+    for label, obj, section in [row for segment in data_in_c.SEGMENTS for row in data_in_c.provided(segment)]:
         out.append((obj, section, int(EXE_LABEL.match(label).group(1), 16)))
     return out
 
@@ -583,7 +583,9 @@ def data_results() -> tuple[int, list[tuple[str, int, bool]]]:
 
     with open(BASEROM, "rb") as f:
         retail = ELFFile(f)
-        total = sum(retail.get_section_by_name(n)["sh_size"] for n in RETAIL_DATA_SECTIONS)
+        ranges = [(retail.get_section_by_name(n)["sh_addr"], retail.get_section_by_name(n)["sh_size"])
+                  for n in RETAIL_DATA_SECTIONS]
+        total = sum(size for _, size in ranges)
         seg = next(s for s in retail.iter_segments() if s["p_type"] == "PT_LOAD")
         delta = seg["p_vaddr"] - seg["p_offset"]
     raw = Path(BASEROM).read_bytes()
@@ -605,7 +607,9 @@ def data_results() -> tuple[int, list[tuple[str, int, bool]]]:
                 sys.exit(f"*** {obj} has no {section} section")
             size = sec["sh_size"]
         exact = ours(addr, size) == raw[addr - delta: addr - delta + size]
-        pieces.append((unit_of_object(obj), size, exact))
+        # A block can end in the padding between two retail sections: those bytes are not in the total.
+        counted = sum(max(0, min(addr + size, base + length) - max(addr, base)) for base, length in ranges)
+        pieces.append((unit_of_object(obj), counted, exact))
     return total, pieces
 
 

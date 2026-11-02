@@ -35,14 +35,23 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import core_rodata  # noqa: E402
 import data_types  # noqa: E402
 import split_data_s  # noqa: E402
 import names_header  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 TABLE = ROOT / "config/data_in_c.tsv"
-BLOBS = {"data": ROOT / "asm/data/data.data.s", "core": ROOT / "asm/data/core_data.data.s"}
-CORE_DATA_END = 0x00154200
+# Each blob, by segment: its .s file, where it starts, the prefix of its pieces, and their section.
+SEGMENTS = {"core": ("core_data.data", 0x0012F580, "core_data", ".data"),
+            "core_rdata": ("core_rdata.rodata", 0x00152300, "core_rdata", ".rodata"),
+            "core_lit": ("core_lit.rodata", 0x0015ED80, "core_lit", ".rodata"),
+            "lit": ("lit.rodata", 0x0015F000, "lit", ".rodata"),
+            "data": ("data.data", 0x00165580, "data", ".data"),
+            "lvl_vtbl": ("lvl_vtbl.data", 0x001E8F00, "lvl_vtbl", ".data"),
+            "lvl_camvtbl": ("lvl_camvtbl.data", 0x001E8F80, "lvl_camvtbl", ".data"),
+            "lvl_sndvtbl": ("lvl_sndvtbl.data", 0x001E9000, "lvl_sndvtbl", ".data")}
+BLOBS = {name: ROOT / f"asm/data/{row[0]}.s" for name, row in SEGMENTS.items()}
 OUT = ROOT / "build-sn/data_inc"
 BLOCK = re.compile(r"^dlabel (\S+)\n(.*?)^enddlabel \1", re.S | re.M)
 DIRECTIVE = {".word": "u32", ".float": "u32", ".short": "u16", ".byte": "u8"}
@@ -67,7 +76,13 @@ def object_of(source):
 
 
 def segment_of(label):
-    return "core" if int(label.rsplit("_", 1)[1], 16) < CORE_DATA_END else "data"
+    at = int(label.rsplit("_", 1)[1], 16)
+    return max((row[1], name) for name, row in SEGMENTS.items() if row[1] <= at)[1] if at >= 0x0012F580 else "core"
+
+
+def owned_elsewhere():
+    """Labels in core_rdata that compiled objects bring themselves (config/core_rodata.txt)."""
+    return {label for _, _, labels in core_rodata.sections() for label in labels}
 
 
 def provided(segment="data"):
@@ -97,7 +112,7 @@ def address(label):
     return int(label.rsplit("_", 1)[1], 16)
 
 
-def group_labels(labels, heads):
+def group_labels(labels, heads, owned=frozenset()):
     """{head: [labels inside it]}. A label not on 8 bytes is inside the block before it: GCC puts an aggregate on 8, so
     retail had one record there, and the labels are places the code reaches into it."""
     groups, current = {}, None
@@ -105,7 +120,9 @@ def group_labels(labels, heads):
         if label in heads:
             current = label
             groups[label] = []
-        elif current and label.startswith("D_") and address(label) % 8:
+        elif label in owned:
+            current = None
+        elif current and label.startswith("D_") and address(label) % 8 and segment_of(label) == segment_of(current):
             groups[current].append(label)
         else:
             current = None
@@ -115,7 +132,7 @@ def group_labels(labels, heads):
 def interior():
     """{label inside a block: the block's own label}"""
     heads = {row[0] for row in rows()}
-    groups = group_labels([label for label, _ in raw_blocks()], heads)
+    groups = group_labels([label for label, _ in raw_blocks()], heads, owned_elsewhere())
     return {inner: head for head, inners in groups.items() for inner in inners}
 
 
@@ -125,9 +142,10 @@ def all_blocks():
     bodies = dict(raw)
     heads = {row[0] for row in rows()}
     blocks = {}
-    for label, inners in group_labels([label for label, _ in raw], heads).items():
+    groups = group_labels([label for label, _ in raw], heads, owned_elsewhere())
+    for label, inners in groups.items():
         blocks[label] = at_marker(label) + bodies[label] + "".join(at_marker(i) + bodies[i] for i in inners)
-    inside = {i for inners in group_labels([label for label, _ in raw], heads).values() for i in inners}
+    inside = {i for inners in groups.values() for i in inners}
     for label, body in raw:
         if label not in blocks and label not in inside:
             blocks[label] = at_marker(label) + body
@@ -366,32 +384,54 @@ def inner_symbols(label):
             if inside[inner] == label]
 
 
+def single_value(body):
+    """True if a block is one number, so it can be a variable of its own at any aligned address."""
+    parsed = parse_plain(at_marker("D_00000000") + body)
+    return bool(parsed and len(parsed[1]) == 1 and parsed[0] != "char")
+
+
+def starts_block(label, body, next_starts):
+    """Whether a label starts its own block: on 8 bytes, or one number with nothing inside it after."""
+    return address(label) % 8 == 0 or (single_value(body) and next_starts)
+
+
 def complete():
     """Give every remaining data label a place: its own block if it can start one, else inside the block before it."""
-    raw = raw_blocks()
+    raw = [pair for pair in raw_blocks() if pair[0] not in owned_elsewhere()]
     table = {row[0]: row for row in rows()}
+    next_starts = True
+    starts = set()
+    for at in range(len(raw) - 1, -1, -1):
+        label, body = raw[at]
+        if not label.startswith("D_"):
+            next_starts = True
+            continue
+        if at + 1 < len(raw) and segment_of(raw[at + 1][0]) != segment_of(label):
+            next_starts = True
+        begins = label in table or starts_block(label, body, next_starts)
+        if begins:
+            starts.add(label)
+        next_starts = begins
     orphans = []
     current = None
     for label, _ in raw:
         if not label.startswith("D_"):
             current = None
-        elif label in table:
+        elif label in starts:
+            table.setdefault(label, (label, "u32", "src/data/shared/data.c"))
             current = label
-        elif address(label) % 8 == 0:
-            table[label] = (label, "u32", "src/data/shared/data.c")
-            current = label
-        elif current is None:
+        elif current is None or segment_of(current) != segment_of(label):
             orphans.append(label)
     write_rows(list(table.values()))
     blocks = all_blocks()
+    types = data_types.load()
     final = []
     for label, element, source in rows():
         parsed = parse(blocks[label])
-        if parsed is None:
+        if parsed is None or (address(label) % 8 and len(parsed[1]) > 1 and parsed[0] != "char"):
             orphans.append(label)
             continue
-        types = data_types.load()
-        if element in ("u16", "u8", "char") and parsed[0] != element:
+        if element in ("u32", "u16", "u8", "char") and parsed[0] != element:
             element = parsed[0]
         if element == "table" and not is_table(parsed[1]):
             element = parsed[0]
@@ -452,7 +492,7 @@ def float_literal(word):
 
 def is_float_block(body, found):
     """True if a block is written with .float only, and each of its values can be a literal."""
-    kinds = set(re.findall(r"^\s*(?:/\*.*?\*/\s*)?\.(\w+)", body, re.M))
+    kinds = set(re.findall(r"^\s*(?:/\*.*?\*/\s*)?\.(\w+)", body, re.M)) - {"at"}
     return kinds == {"float"} and all(float_literal(word) for word in found)
 
 
@@ -636,12 +676,13 @@ def main():
         complete()
     elif command == "ld":
         cuts = sorted(provided(sys.argv[2]))
-        for n, (_, obj, section) in enumerate(cuts, 1):
-            print(f"    build-sn/core_data_{n}.o(.data)")
+        _, _, prefix, section_name = SEGMENTS[sys.argv[2]]
+        for n, (label, obj, section) in enumerate(cuts, 1):
+            print(f"    build-sn/{prefix}_{n}.o({section_name})")
             print(f"    {obj}({section})")
-            for line in inner_symbols(_):
+            for line in inner_symbols(label):
                 print(line)
-        print(f"    build-sn/core_data_{len(cuts) + 1}.o(.data)")
+        print(f"    build-sn/{prefix}_{len(cuts) + 1}.o({section_name})")
     else:
         sys.exit(__doc__)
 

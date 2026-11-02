@@ -158,6 +158,29 @@ class WholeRecordTest(unittest.TestCase):
         self.assertIsNone(d.parse_mixed(".at 0x10\n.quad 1\n"))
 
 
+class SegmentTest(unittest.TestCase):
+    def test_a_label_finds_its_segment(self):
+        self.assertEqual(d.segment_of("D_0012F580"), "core")
+        self.assertEqual(d.segment_of("D_00152300"), "core_rdata")
+        self.assertEqual(d.segment_of("D_0015ED80"), "core_lit")
+        self.assertEqual(d.segment_of("D_0015F000"), "lit")
+        self.assertEqual(d.segment_of("D_00165580"), "data")
+        self.assertEqual(d.segment_of("D_001E8F00"), "lvl_vtbl")
+
+    def test_blocks_do_not_cross_segments(self):
+        self.assertEqual(d.group_labels(["D_0015EFF0", "D_0015F004"], {"D_0015EFF0"}), {"D_0015EFF0": []})
+
+    def test_an_owned_label_ends_a_block(self):
+        labels = ["D_00152300", "D_00152304", "D_00152308"]
+        self.assertEqual(d.group_labels(labels, {"D_00152300"}, {"D_00152304"}), {"D_00152300": []})
+
+    def test_a_single_number_can_start_a_block(self):
+        self.assertTrue(d.starts_block("D_00000004", ".word 0x1\n", True))
+        self.assertFalse(d.starts_block("D_00000004", ".word 0x1\n", False))
+        self.assertFalse(d.starts_block("D_00000004", ".word 0x1, 0x2\n", True))
+        self.assertTrue(d.starts_block("D_00000008", ".word 0x1, 0x2\n", False))
+
+
 class WriteOutTest(unittest.TestCase):
     NAMES = {"func_1": "handler", "D_2": "next_table"}
 
@@ -184,6 +207,10 @@ class WriteOutTest(unittest.TestCase):
         here = {"next_table": ("u32", 4)}
         self.assertEqual(d.table_declarations(["(u32)ref_D_2"], self.NAMES, here), ["extern u32 next_table[];\n"])
         self.assertEqual(d.table_values(["(u32)ref_D_2"], self.NAMES, {"next_table": ("u32", 1)}), ["&next_table"])
+
+    def test_a_float_block_with_a_place_marker(self):
+        body = ".at 0x10\n/* 0 0 0000803F */ .float 1.0\n"
+        self.assertTrue(d.is_float_block(body, ["0x3F800000"]))
 
     def test_float_literals_read_back(self):
         self.assertEqual(float(d.float_literal("0x3F800000")[:-1]), 1.0)
