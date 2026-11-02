@@ -756,15 +756,27 @@ typedef struct {
 extern int D_L08_0015F4F8 MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
 extern Sound45 batalia_lights[];
-extern float IntToFloat(int), FastSin(float), FastCos(float), vec_length(float);
-extern float random_float_between(float, float), normalize_angle(float), FastVecDist(void *, void *);
+extern float IntToFloat(int);
+extern float FastSin(float);
+extern float FastCos(float);
+extern float vec_length(float);
+extern float random_float_between(float, float);
+extern float normalize_angle(float);
+extern float FastVecDist(void *, void *);
 extern int truncate_float_to_s32(float);
-extern int GetEffectTex(int), scale_ticks(int), fast_dec_timer(int *), FastDecTimer(void *);
-extern void euler_to_matrix(void *, void *), transform_vector(void *, void *, void *);
-extern void FastVecSub(void *, void *, void *), FastVecAdd(void *, void *, void *),
-    FastVecCross(void *, void *, void *);
-extern void FastVecScale(void *, void *, float), vec_scale_to_length(void *, void *, float);
-extern float SmoothNoise(float, char *), split_float_fraction(void *, float);
+extern int GetEffectTex(int);
+extern int scale_ticks(int);
+extern int fast_dec_timer(int *);
+extern int FastDecTimer(void *);
+extern void euler_to_matrix(void *, void *);
+extern void transform_vector(void *, void *, void *);
+extern void FastVecSub(void *, void *, void *);
+extern void FastVecAdd(void *, void *, void *);
+extern void FastVecCross(void *, void *, void *);
+extern void FastVecScale(void *, void *, float);
+extern void vec_scale_to_length(void *, void *, float);
+extern float SmoothNoise(float, char *);
+extern float split_float_fraction(void *, float);
 extern void draw_world_quad(void *, void *, int);
 extern unsigned char *func_L08_0027C218(void *, float, void *, void *, short, unsigned char, unsigned char,
                                         unsigned char, unsigned char);

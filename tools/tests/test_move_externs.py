@@ -1,0 +1,72 @@
+import sys
+import unittest
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tidy"))
+import move_externs as me  # noqa: E402
+
+
+def proto(name, statement):
+    return me.split_prototype(name, statement)
+
+
+class ShapeTest(unittest.TestCase):
+    def test_pointers_are_one_type(self):
+        self.assertEqual(me.shape(proto("g", "extern void g(float *, Moby *a);")), ("void *", "void *"))
+
+    def test_spellings_of_a_scalar_match(self):
+        self.assertEqual(me.shape(proto("g", "extern s32 g(s32 x, f32);")), ("int", "float"))
+        self.assertEqual(me.shape(proto("g", "extern int g(int, float y);")), ("int", "float"))
+
+    def test_width_is_kept(self):
+        self.assertNotEqual(me.shape(proto("g", "extern void g(short);")), me.shape(proto("g", "extern void g(int);")))
+
+    def test_no_parameters_is_not_void(self):
+        self.assertIsNone(me.shape(proto("g", "extern void g();")))
+        self.assertEqual(me.shape(proto("g", "extern void g(void);")), ("void",))
+
+
+class CanonicalTest(unittest.TestCase):
+    def test_the_majority_wins_and_a_value_return_beats_void(self):
+        rows = [proto("g", "extern void g(int);"), proto("g", "extern void g(int);"), proto("g", "extern int g(s32);"),
+                proto("g", "extern void g(float);")]
+        self.assertEqual(me.canonical("g", rows), "extern int g(int);")
+
+    def test_a_pointer_return(self):
+        self.assertEqual(me.canonical("g", [proto("g", "extern Moby *g(int);")]), "extern void *g(int);")
+
+    def test_only_empty_parentheses_give_nothing(self):
+        self.assertIsNone(me.canonical("g", [proto("g", "extern void g();")]))
+
+
+class DefinitionTest(unittest.TestCase):
+    def test_types_stay_and_names_go(self):
+        self.assertEqual(me.definition_prototype("g", "Moby *g(Moby *m, int n, float v[]) {\n}\n"),
+                         ("Moby *", ["Moby *", "int", "float *"]))
+
+    def test_a_static_or_a_declaration_is_not_a_definition(self):
+        self.assertIsNone(me.definition_prototype("g", "static int g(int a) {\n}\n"))
+        self.assertIsNone(me.definition_prototype("g", "extern int g(int a);\n"))
+
+    def test_void_stays(self):
+        self.assertEqual(me.definition_prototype("g", "void g(void) {\n}\n"), ("void", ["void"]))
+
+
+class HeaderTest(unittest.TestCase):
+    def test_names_leave_and_others_stay(self):
+        text = "#ifndef A\nextern int a(int);\nextern int b(void *);\n#endif\n"
+        self.assertEqual(me.without_names(text, {"a"}), "#ifndef A\nextern int b(void *);\n#endif\n")
+
+
+class SplitTest(unittest.TestCase):
+    def test_a_shared_statement_splits(self):
+        new, count = me.split_shared_statements("extern float a(int), b(float, int);\nint x;\n")
+        self.assertEqual((new, count), ("extern float a(int);\nextern float b(float, int);\nint x;\n", 1))
+
+    def test_a_pointer_head_or_a_label_stays(self):
+        for text in ('extern int *a(int), b(int);\n', 'extern int a(int), b(int) __asm__("c");\n'):
+            self.assertEqual(me.split_shared_statements(text), (text, 0))
+
+
+if __name__ == "__main__":
+    unittest.main()

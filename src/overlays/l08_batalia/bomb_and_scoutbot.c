@@ -2555,7 +2555,8 @@ extern int Moby_PlaySound(int, int, void *);
 extern void SpawnExplosionFx(void *, void *, int, float, float);
 
 extern void ClampVectorLength(void *, float);
-extern float random_angle_radians(void), FastCos(float);
+extern float random_angle_radians(void);
+extern float FastCos(float);
 extern void vec_scale_to_length(void *, void *, float);
 extern float ApproachValue(float *, float, float);
 extern void PartType04Spawn(void *, void *, int, int, int, int, int, int);
