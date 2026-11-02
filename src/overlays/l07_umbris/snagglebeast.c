@@ -2558,6 +2558,7 @@ void func_L07_0031A410_r(struct Moby *moby) {
             if (moby->prev_seq != 1)
                 anim_p(moby, 1, 0, 10);
             moby->state = 3;
+            /* fall through */
         case 3:
             if ((moby->anim_flags & 2) && moby->seq == 1 && moby->prev_seq != 2) {
                 anim_p(moby, 2, 0, 10);

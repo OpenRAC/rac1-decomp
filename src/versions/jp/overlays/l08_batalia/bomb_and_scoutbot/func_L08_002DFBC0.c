@@ -21,6 +21,7 @@ void update_path_following_moby(char *m) {
             }
             m[0x20] = 1;
             *(unsigned char *)(m + 0x30) = 0xFF;
+            /* fall through */
         case 1: {
             float f;
             SamplePathAt(t, 1, m + 0x10, (float *)(m + 0x40), 0, *(float *)(d + 4));

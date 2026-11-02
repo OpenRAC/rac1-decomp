@@ -299,6 +299,7 @@ void draw_sky_shells(void) {
                 case 0:
                     *(s32 *)&rotation_angles[1] = 0;
                     rotation_angles[2] = D_00160504_2C5A0;
+                    /* fall through */
                 case 1:
                     *(s32 *)&rotation_angles[1] = 0;
                     rotation_angles[2] = FastAddRots(D_00160504_2C5A0, rotation_angles[1]);

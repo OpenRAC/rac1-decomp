@@ -266,7 +266,7 @@ void update_path_following_moby_swarm(struct Moby *moby) {
             update_commando_parts(moby);
             break;
         }
-        case 0x63:
+        case 99:
             for (i = 0; i < 16; i++) {
                 struct Moby *part = vars->parts[i].moby;
                 if (part != 0) {

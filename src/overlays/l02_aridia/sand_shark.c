@@ -363,7 +363,7 @@ void sand_shark_update(unsigned char *moby) {
     handle_sand_shark_damage_and_targeting(moby);
     *(volatile int *)0x10000000;
     switch (((Moby *)moby)->state) {
-        case 0:
+        case 0x0:
             if (d->i290 == -1) {
                 STUB_printf(sand_shark_no_path_fmt, *(short *)&((Moby *)moby)->save_id);
                 DeleteMoby(moby);
@@ -443,14 +443,14 @@ void sand_shark_update(unsigned char *moby) {
             ((Moby *)moby)->pos.z -= sand_shark_sink_depth;
             break;
         }
-        case 1:
+        case 0x1:
             FastVecSub(v0, &g_hero.motion.pos, moby + 0x10);
             ((Moby *)moby)->state = 0x12;
             if (((Moby *)moby)->prev_seq != 0) {
                 MobyBlendAnimation(moby, 0, 0, scale_ticks(3));
             }
             break;
-        case 2:
+        case 0x2:
             ((Moby *)moby)->pos.z += sand_shark_sink_depth;
             qcopy(v0, d->home);
             a = fast_atan2(v0[0] - ((Moby *)moby)->pos.x, v0[1] - ((Moby *)moby)->pos.y);
@@ -507,7 +507,7 @@ void sand_shark_update(unsigned char *moby) {
                 MobyBlendAnimation(moby, 0xC, 0, scale_ticks(3));
             }
             break;
-        case 3:
+        case 0x3:
             if (d->i214 == 2) {
                 break;
             }
@@ -641,7 +641,7 @@ void sand_shark_update(unsigned char *moby) {
             emit_sand_shark_radial_particles(v0, 6);
             break;
         }
-        case 5:
+        case 0x5:
         case 0x16:
             if (((Moby *)moby)->state == 0x16) {
                 ((Moby *)moby)->pos.z += sand_shark_sink_depth;
@@ -692,7 +692,7 @@ void sand_shark_update(unsigned char *moby) {
                 ((Moby *)moby)->state = 0x12;
             }
             break;
-        case 6:
+        case 0x6:
             a = fast_atan2(d->tgt[0] - ((Moby *)moby)->pos.x, d->tgt[1] - ((Moby *)moby)->pos.y);
             MobySpringTurn((char *)moby, a, &d->f240, 0.05f, 0.3f, 0.2f);
             if (((Moby *)moby)->seq == ((Moby *)moby)->prev_seq && IsFrameWithinWindow((char *)moby, 13.0f)) {
@@ -719,7 +719,7 @@ void sand_shark_update(unsigned char *moby) {
                 }
             }
             break;
-        case 7:
+        case 0x7:
         case 0x17:
             if (((Moby *)moby)->state == 0x17) {
                 ((Moby *)moby)->pos.z += sand_shark_sink_depth;
@@ -802,7 +802,7 @@ void sand_shark_update(unsigned char *moby) {
             vec_scale_to_length(v4, moby + 0xC0, g_frame_time * 0.5f);
             FastVecAdd(moby + 0x10, moby + 0x10, v4);
             break;
-        case 8:
+        case 0x8:
             if (mine_fall(moby, d->knock) & 1) {
                 ((Moby *)moby)->state = 0xB;
                 if (((Moby *)moby)->prev_seq != 4) {
@@ -816,7 +816,7 @@ void sand_shark_update(unsigned char *moby) {
                 return;
             }
             break;
-        case 9:
+        case 0x9:
             if (CarriedMobyUpdate(moby, d->knock)) {
                 ((Moby *)moby)->state = 1;
                 d->sC8 = 0;
@@ -860,6 +860,7 @@ void sand_shark_update(unsigned char *moby) {
             PartType04Spawn(moby + 0x10, v1, sand_shark_puff_start_color, sand_shark_puff_end_color, n, 0x64,
                             rand_range(0x78, 0x96), 0);
         }
+            /* fall through */
         case 0xD: {
             float lim;
             ((Moby *)moby)->rot.y = FastSubRots(((Moby *)moby)->rot.y, g_frame_time * 12.566371f);
@@ -1646,6 +1647,7 @@ void update_level02_bot(unsigned char *raw) {
                     rand_range(scale_ticks(aridia_bot_spray_ticks_min), scale_ticks(aridia_bot_spray_ticks_max)), 1,
                     40000.0f);
             }
+            /* fall through */
         case L02_BOT_WAIT_FOR_WAKE_TRIGGER:
             triggered = 0;
             if (data->wake_volume >= 0) {

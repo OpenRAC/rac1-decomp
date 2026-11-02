@@ -1712,7 +1712,7 @@ void helicopter_update(HMoby_6950 *m) {
             m->state = 0x40;
             return;
         }
-        case 0x40:
+        case 64:
             m->w94 = 0;
             m->flags = (m->flags | 0x41) & 0xEFFF;
             d->b58 = 0;
@@ -2446,7 +2446,7 @@ void ultramech_unlimited_update(UMoby *m) {
             spawn_moby_break_fragments(m, 0x7A9, 1, 0x7A9, 2, 4, 2);
             m->state = 0x40;
             return;
-        case 0x40:
+        case 64:
             m->w94 = 0;
             m->flags = (m->flags | 0x41) & 0xEFFF;
             d->b58 = 0;

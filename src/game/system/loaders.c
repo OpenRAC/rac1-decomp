@@ -78,8 +78,8 @@ s32 upload_mip_texture(MipTexture *tex, u64 *regs) {
 
     FastMemSet(&upload, 0, sizeof(upload));
     switch (tex->psm) {
-        case 0:
-        case 2:
+        case 0x0:
+        case 0x2:
             upload.palette_address = 0;
             upload.palette_size = 0;
             break;
@@ -107,10 +107,10 @@ s32 upload_mip_texture(MipTexture *tex, u64 *regs) {
     upload.height_log2 = log2dim(tex->height);
     upload.mip_addresses[0] = (s32)tex->data + upload.palette_size;
     switch (tex->psm) {
-        case 0:
+        case 0x0:
             upload.mip_sizes[0] = tex->width * tex->height * 4;
             break;
-        case 2:
+        case 0x2:
             upload.mip_sizes[0] = tex->width * tex->height * 2;
             break;
         case 0x13:

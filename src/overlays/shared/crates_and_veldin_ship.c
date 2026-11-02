@@ -1347,6 +1347,7 @@ L3D34:
                 ((Moby *)moby)->state = 1;
             else
                 ((Moby *)moby)->state = 2;
+            /* fall through */
         case 1:
             if (((Moby *)moby)->anim_flags & 2)
                 ((Moby *)moby)->state = 2;

@@ -1445,6 +1445,7 @@ void set_vendor_camera_mode(int mode, int arg) {
         case 3:
             qcopy(d + 0x110, &g_hero_r.motion.pos);
             compute_spherical_offset_from_positions(d + 0xFC, g + 0x140, &g_hero_r.motion.pos);
+            /* fall through */
         case 2:
             *(int *)(e + 4) = arg;
             *(int *)(d + 0xE0) = arg;

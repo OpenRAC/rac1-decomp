@@ -1768,6 +1768,7 @@ void TeleporterPadUpdate(char *moby) {
                 set_moby_list_state((char *)((Moby *)moby)->group, 1);
             }
             ((Moby *)moby)->state = 1;
+            /* fall through */
         case 1: {
             struct Hero *g;
             if (data->mission_slot >= 0 &&

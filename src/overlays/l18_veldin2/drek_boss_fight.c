@@ -987,7 +987,7 @@ void drek_final_boss_robot_update(Moby *moby) {
         moby->shadow_range = 0x1A;
     }
     switch (moby->state) {
-        case 0: {
+        case 0x0: {
             int i;
 
             qcopy(d->f3C0, ((f32 *)&moby->pos));
@@ -1013,7 +1013,7 @@ void drek_final_boss_robot_update(Moby *moby) {
             }
             break;
         }
-        case 7:
+        case 0x7:
             if (veldin2_cinematic_mode != 2) {
                 moby->flags &= 0xFFBE;
                 moby->collision = (*(int **)&moby->pclass)[4];
@@ -1043,7 +1043,7 @@ void drek_final_boss_robot_update(Moby *moby) {
                 }
             }
             break;
-        case 1:
+        case 0x1:
             if (is_point_inside_clip_volume(g_hero.motion.pos.f, d->f274) != 0 && g_hero.vehicle_mode == 2) {
                 moby->state = 7;
                 moby->flags |= 0x41;
@@ -1125,7 +1125,7 @@ void drek_final_boss_robot_update(Moby *moby) {
                 }
             }
             break;
-        case 2:
+        case 0x2:
             aim = &moby->rot.z;
             ang = fast_atan2(g_hero.motion.pos.f[0] - moby->pos.x, g_hero.motion.pos.f[1] - moby->pos.y);
             SteerAngleWithVelocity(aim, &d->f370, ang, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f,
@@ -1189,7 +1189,7 @@ void drek_final_boss_robot_update(Moby *moby) {
                 MobyBlendAnimation(moby, 10, 0, scale_ticks(0x14));
             }
             break;
-        case 9: {
+        case 0x9: {
             float lvl;
             int hit;
 
@@ -1249,7 +1249,7 @@ void drek_final_boss_robot_update(Moby *moby) {
             }
             break;
         }
-        case 10: {
+        case 0xA: {
             unsigned char *h;
 
             aim = &moby->rot.z;
@@ -1320,7 +1320,7 @@ void drek_final_boss_robot_update(Moby *moby) {
                 moby->state = 0xC;
             }
             break;
-        case 4:
+        case 0x4:
             if (g_hero.air_frames.s == 0 &&
                 (g_hero.ground_moby == 0 || g_hero.ground_moby->oclass != MOBY_CLASS_FLOATING_PLATFORM_587)) {
                 int i;
@@ -1336,7 +1336,7 @@ void drek_final_boss_robot_update(Moby *moby) {
                 }
             }
             break;
-        case 5: {
+        case 0x5: {
             unsigned char *b = veldin2_moby_table + d->f21C * 0x100;
 
             b += 0x10;
@@ -1372,7 +1372,7 @@ void drek_final_boss_robot_update(Moby *moby) {
             request_thruster_pack_lock_red_wait(veldin2_moby_table + d->f21C * 0x100, scale_ticks(0x708));
             break;
         }
-        case 3:
+        case 0x3:
             if (classify_moby_state_two_or_three(d->f334) == 2) {
                 qcopy(d->f3C0, d->f300);
                 qcopy(((f32 *)&moby->rot), d->f310);
@@ -1386,7 +1386,7 @@ void drek_final_boss_robot_update(Moby *moby) {
                 d->f33C = (unsigned char *)create_class_3d7_moby(moby, v0, 300);
             }
             break;
-        case 8:
+        case 0x8:
             moby->flags |= 0x41;
             if (get_position_and_rotation_transition_progress(d->f334) >= 1.0f) {
                 moby->state = 0xC;

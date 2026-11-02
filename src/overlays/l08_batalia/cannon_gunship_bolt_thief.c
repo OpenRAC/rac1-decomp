@@ -975,6 +975,7 @@ void update_falling_debris(Moby *m) {
             d->spin_y = random_float_between(-(g_frame_time * 1.5707964f), g_frame_time * 1.5707964f);
             d->life = (int)random_float_between((float)scale_ticks(0x5A), (float)scale_ticks(0x96));
             m->state = 2;
+            /* fall through */
         case 2:
             d->vel[2] -= g_frame_time_sq * 10.8f * 0.5f;
             FastVecAdd(&m->pos, &m->pos, d);
@@ -1504,7 +1505,7 @@ void update_gunship(struct Moby *moby) {
             func_L08_002E33F0_E3860(moby);
             break;
         }
-        case 0x63:
+        case 99:
             for (i = 1; i < 34; i++) {
                 struct Moby *part = vars->links[i].part;
                 if (part != 0) {
@@ -2943,7 +2944,7 @@ void shrub_update(struct Moby *moby) {
             func_L08_002E9F78_EA0A8((char *)moby);
             break;
         }
-        case 0x63:
+        case 99:
             for (i = 0; i < 12; i++) {
                 struct Moby *part = vars->parts[i].moby;
                 if (part != 0) {

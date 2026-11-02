@@ -608,7 +608,7 @@ void update_pause_menu(void) {
         GS.unk154 = 0;
     }
     switch (GS.state) {
-        case 2:
+        case 0x2:
         case 0x1A:
         case 0x1E:
         case 0x1F:

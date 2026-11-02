@@ -2933,6 +2933,7 @@ void update_kerwan_path_enemy(Moby *m) {
                 }
             }
         }
+            /* fall through */
         case 12:
             switch (m->prev_seq) {
                 case 1:

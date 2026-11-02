@@ -325,7 +325,7 @@ void scoutbot_update(Moby *moby) {
                 d->hC8 = 0;
             }
             break;
-        case 0x63:
+        case 99:
             qcopy(v30, &moby->pos);
             v30[2] += 1.0f;
             Moby_PlaySound(1, 0, moby);

@@ -1052,6 +1052,7 @@ void pterodactyl_update(unsigned char *m) {
             ((Moby *)m)->state = 1;
             ((Moby *)m)->scale *= pterodactyl_scale_factor;
             ((Moby *)m)->update_dist = 0xFF;
+            /* fall through */
         case 1:
             y = ((Moby *)m)->pos.z;
             SamplePathAt(p, d->f6C, d->i70, m + 0x10, (float *)(m + 0x40), 0);

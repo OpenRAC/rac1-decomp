@@ -263,6 +263,7 @@ void update_sinking_platform(char *m) {
                 vars->bob_phase = g_frame_time_x * 1.5707964f + randf_sym(0.0f, bobbing_phase_jitter_limit);
             }
             moby->state = PLATFORM_STATE_BOBBING;
+            /* fall through */
         case PLATFORM_STATE_BOBBING:
             vars->vert_speed.i = 0;
             update_moby_vertical_oscillation(0.1f, vars->bob_phase, moby, &vars->bob_angle, &vars->bob_offset);

@@ -533,6 +533,7 @@ void nanotech_ball_update(Moby *m) {
             }
             d->v20.w = randf_sym_r(0.785398006f, 1.5707964f);
         }
+            /* fall through */
         case 1: {
             Moby *c = d->owner;
             qcopy(&m->pos, &c->pos);
@@ -543,6 +544,7 @@ void nanotech_ball_update(Moby *m) {
                 d->f50 = 0;
             }
         }
+            /* fall through */
         case 2:
             if (m->state == 2) {
                 int i;
@@ -1961,6 +1963,7 @@ int cancel_suck_cannon_suction(char *m) {
                 }
             }
         }
+            /* fall through */
         case 1:
         case 2: {
             if (((Moby *)m)->prev_seq != *(unsigned char *)(*(char **)&s->anim_ids + 7)) {
