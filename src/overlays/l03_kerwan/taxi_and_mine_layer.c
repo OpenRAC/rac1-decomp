@@ -20,6 +20,7 @@
 #include "enums/moby_class.h"
 #include "structs/pad.h"
 #include "enums/hero_state.h"
+#include "structs/voice.h"
 extern char gHeroPos[];
 extern char gSpecialItems[];
 extern char gSkillPoints[];
@@ -994,12 +995,6 @@ typedef struct RailFlyerVars {
     f32 roll_vel; /* 0x70 */
 } RailFlyerVars;
 
-typedef struct VoiceSlot {
-    u8 pad_00[0x74];
-    u8 active; /* 0x74 */
-    u8 pad_75[0x13];
-    struct Moby *owner; /* 0x88 */
-} VoiceSlot;
 
 /* Moves along a waypoint path and eases the orientation toward its direction. */
 int advance_moby_along_rail_path(char *moby, int pathIndex, int *sound) {
@@ -1050,8 +1045,8 @@ int advance_moby_along_rail_path(char *moby, int pathIndex, int *sound) {
             *sound = Sound_PlayClassSound(0, 4, (int)moby, 0x330);
     } else {
         if (*sound != -1) {
-            VoiceSlot *voice_slot = (VoiceSlot *)(voice_pool + *sound * 0x70);
-            if (voice_slot->owner == rail_moby && voice_slot->active != 0)
+            VoicePoolRow *voice_slot = (VoicePoolRow *)(voice_pool + *sound * 0x70);
+            if (voice_slot->owner == rail_moby && voice_slot->state != 0)
                 Sound_StopSlot(*sound);
         }
         *sound = -1;

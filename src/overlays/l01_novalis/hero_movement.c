@@ -25,6 +25,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+#include "structs/voice.h"
 extern int g_controller_state_no_direction;
 extern Hero g_hero;
 
@@ -333,12 +334,6 @@ typedef struct {
     short f1A;
     char p1C[0x14];
 } Hit __attribute__((aligned(16)));
-typedef struct {
-    char p0[0x74];
-    unsigned char f74;
-    char p1[0x13];
-    Moby *f88;
-} Row13E650;
 
 extern Hero g_hero;
 extern PadState g_controller_state;
@@ -635,10 +630,10 @@ void HeroStatePhysics(void) {
                 release_voice_slot_cf(5, (int)g_hero.moby, 0x13);
             } else {
                 if (g_hero.pack_swim_voice != -1) {
-                    Row13E650 *e = (Row13E650 *)(voice_pool + g_hero.pack_swim_voice * 0x70);
+                    VoicePoolRow *e = (VoicePoolRow *)(voice_pool + g_hero.pack_swim_voice * 0x70);
 
-                    if (e->f88 == g_hero.moby) {
-                        if (e->f74 != 0) {
+                    if (e->owner == g_hero.moby) {
+                        if (e->state != 0) {
                             Sound_StopSlot(g_hero.pack_swim_voice);
                         }
                     }
@@ -1766,9 +1761,9 @@ void HeroStatePhysics(void) {
 
             if (hero_slot_item_id(3) == 2) {
                 if (g_hero.voice_slot4 != -1) {
-                    Row13E650 *e = (Row13E650 *)(voice_pool + g_hero.voice_slot4 * 0x70);
+                    VoicePoolRow *e = (VoicePoolRow *)(voice_pool + g_hero.voice_slot4 * 0x70);
 
-                    if (e->f88 == g_hero.moby && e->f74 != 0) {
+                    if (e->owner == g_hero.moby && e->state != 0) {
                         Sound_StopSlot(g_hero.voice_slot4);
                     }
                 }
@@ -1776,9 +1771,9 @@ void HeroStatePhysics(void) {
                 release_voice_slot_cf(3, (int)g_hero.moby, 2);
             } else {
                 if (g_hero.unk2224 != -1) {
-                    Row13E650 *e = (Row13E650 *)(voice_pool + g_hero.unk2224 * 0x70);
+                    VoicePoolRow *e = (VoicePoolRow *)(voice_pool + g_hero.unk2224 * 0x70);
 
-                    if (e->f88 == g_hero.moby && e->f74 != 0) {
+                    if (e->owner == g_hero.moby && e->state != 0) {
                         Sound_StopSlot(g_hero.unk2224);
                     }
                 }

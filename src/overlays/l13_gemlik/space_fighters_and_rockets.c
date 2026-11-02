@@ -22,6 +22,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "structs/level_records.h"
 #include "enums/moby_class.h"
+#include "structs/voice.h"
 extern struct Hero g_hero;
 extern char level_moby_killed[];
 extern char voice_pool[];
@@ -1340,12 +1341,6 @@ typedef struct Data_2C56B0 {
     char padD1[3];
     int fD4;
 } Data_2C56B0;
-typedef struct Snd {
-    char pad0[0x74];
-    unsigned char b74;
-    char pad75[0x13];
-    void *f88;
-} Snd;
 
 extern int STUB_printf_d(void *, ...) __asm__("func_001E9730");
 extern int select_point_index_by_distance(void *, void *, float);
@@ -1471,8 +1466,9 @@ void update_blarg_space_fighter(Moby *moby) {
                 return;
             }
             {
-                Snd *e;
-                if (d->fD4 == -1 || (e = (Snd *)(voice_pool + d->fD4 * 0x70))->f88 != moby || e->b74 == 0) {
+                VoicePoolRow *e;
+                if (d->fD4 == -1 || (e = (VoicePoolRow *)(voice_pool + d->fD4 * 0x70))->owner != moby ||
+                    e->state == 0) {
                     d->fD4 = -1;
                     d->fD4 = Moby_PlaySound_s(1, 4, (int)moby);
                 }
@@ -1554,8 +1550,8 @@ void update_blarg_space_fighter(Moby *moby) {
             Boss *bossd;
 
             if (d->fD4 != -1) {
-                Snd *e = (Snd *)(voice_pool + d->fD4 * 0x70);
-                if (e->f88 == moby && e->b74 != 0) {
+                VoicePoolRow *e = (VoicePoolRow *)(voice_pool + d->fD4 * 0x70);
+                if (e->owner == moby && e->state != 0) {
                     Sound_StopSlot(d->fD4);
                 }
                 d->fD4 = -1;

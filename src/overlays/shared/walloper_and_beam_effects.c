@@ -15,6 +15,7 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+#include "structs/voice.h"
 extern char g_hero[];
 
 /* Tesla beam: draw state read by the beam and arc effects. */
@@ -1484,12 +1485,6 @@ typedef struct Light {
     float pos[3];
     float radius;
 } Light;
-typedef struct Voice {
-    char p0[0x74];
-    unsigned char on;
-    char p1[0x88 - 0x75];
-    Moby *owner;
-} Voice;
 
 extern char g_hero_r[] __asm__("D_0013F450");
 extern char pad_globals_base_r[] __asm__("D_0013A5E0");
@@ -1709,8 +1704,9 @@ void MorphorayUpdate(Moby *m) {
             morphoray_light_slot_r = -1;
         }
         if (morphoray_beam_voice_r >= 0) {
-            if (morphoray_beam_voice_r != -1 && ((Voice *)(voice_pool_r + morphoray_beam_voice_r * 0x70))->owner == m &&
-                ((Voice *)(voice_pool_r + morphoray_beam_voice_r * 0x70))->on != 0) {
+            if (morphoray_beam_voice_r != -1 &&
+                ((VoicePoolRow *)(voice_pool_r + morphoray_beam_voice_r * 0x70))->owner == m &&
+                ((VoicePoolRow *)(voice_pool_r + morphoray_beam_voice_r * 0x70))->state != 0) {
                 Sound_StopSlot_r(morphoray_beam_voice_r);
             }
             morphoray_beam_voice_r = -1;

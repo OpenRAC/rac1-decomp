@@ -26,6 +26,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+#include "structs/voice.h"
 extern Hero g_hero;
 extern char voice_pool[];
 
@@ -315,12 +316,6 @@ extern int Moby_PlaySound(int, int, int);
 
 extern float ApproachValue(float *p, float target, float maxstep);
 
-typedef struct VoiceSlot {
-    u8 pad_00[0x74];
-    u8 playing; /* 0x74 nonzero while the slot is in use */
-    u8 pad_75[0x13];
-    void *owner; /* 0x88 moby the sound plays on */
-} VoiceSlot;
 
 /* Glow moby update: queues its quad draw, loops its sound, fades out once its linked moby opens. */
 void update_glow_moby_state_and_voice(unsigned char *m) {
@@ -345,8 +340,8 @@ void update_glow_moby_state_and_voice(unsigned char *m) {
                     if (Sound_IsPlaying(m, moby_vars[1]) != 0) {
                         int i = moby_vars[1];
                         if (i != -1) {
-                            VoiceSlot *voice_slot_entry = (VoiceSlot *)(voice_pool + i * 0x70);
-                            if (voice_slot_entry->owner == (void *)m && voice_slot_entry->playing != 0) {
+                            VoicePoolRow *voice_slot_entry = (VoicePoolRow *)(voice_pool + i * 0x70);
+                            if (voice_slot_entry->owner == (void *)m && voice_slot_entry->state != 0) {
                                 Sound_StopSlot(i);
                             }
                         }

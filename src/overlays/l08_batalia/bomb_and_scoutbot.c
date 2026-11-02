@@ -14,6 +14,7 @@
 #include "structs/collision.h"
 #include "enums/level.h"
 #include "enums/moby_class.h"
+#include "structs/voice.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 
@@ -1011,10 +1012,6 @@ extern int Moby_PlaySound(int, int, void *);
 extern void Sound_SetPitchBend(int, int);
 
 typedef struct {
-    u8 pad0[0x80];
-    int volume;
-} SoundSlot;
-typedef struct {
     u8 pad0[0x40];
     float velocity[4];
     u8 pad50[0x108];
@@ -1079,17 +1076,17 @@ void advance_bomber_tank_along_path(struct Moby *moby, int path_id) {
         if (Sound_IsPlaying(moby, vars->sound) == 0) {
             vars->sound = Moby_PlaySound(1, 4, moby);
             Sound_SetPitchBend(vars->sound, 1);
-        } else if (((SoundSlot *)(voice_pool + (vars->sound) * 0x70))->volume < 0x400) {
+        } else if (((VoicePoolRow *)(voice_pool + (vars->sound) * 0x70))->volume < 0x400) {
             Sound_SetPitchBend(vars->sound,
-                               ((SoundSlot *)(voice_pool + (vars->sound) * 0x70))->volume + 0x400 / scale_ticks(60));
+                               ((VoicePoolRow *)(voice_pool + (vars->sound) * 0x70))->volume + 0x400 / scale_ticks(60));
         }
     } else if (Sound_IsPlaying(moby, vars->sound) != 0) {
-        if (((SoundSlot *)(voice_pool + (vars->sound) * 0x70))->volume < 0x100) {
+        if (((VoicePoolRow *)(voice_pool + (vars->sound) * 0x70))->volume < 0x100) {
             Sound_StopSlot(vars->sound);
             vars->sound = -1;
         } else {
             Sound_SetPitchBend(vars->sound,
-                               ((SoundSlot *)(voice_pool + (vars->sound) * 0x70))->volume - 0x400 / scale_ticks(60));
+                               ((VoicePoolRow *)(voice_pool + (vars->sound) * 0x70))->volume - 0x400 / scale_ticks(60));
         }
     }
 }

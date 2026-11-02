@@ -450,6 +450,7 @@ void hero_set_attack_ticks(int id) {
     ((Hero *)g_hero)->queued_frame_request = id;
 }
 #include "structs/moby.h"
+#include "structs/voice.h"
 extern char g_hero[];
 extern char voice_pool[];
 typedef struct {
@@ -460,12 +461,6 @@ typedef struct {
     u8 pad13[9];
     void *frames[1]; /* 0x1C; the sound triggers (sound | frame << 16) follow the frames */
 } AnimSeq_32EF0;
-typedef struct {
-    u8 pad0[0x7E];
-    s16 sound; /* 0x7E */
-    u8 pad80[8];
-    Moby *owner; /* 0x88 */
-} VoiceSlot;
 extern f32 hero_anim_blend_curves[][25];
 extern int cinematic_mode MACRO_ADDR;
 extern int Moby_PlaySound(int, int, Moby *);
@@ -556,10 +551,10 @@ void advance_hero_animation(void) {
         }
     }
     if (m->sound_slot != 0xFF) {
-        VoiceSlot *v = (VoiceSlot *)(voice_pool + m->sound_slot * 0x70);
+        VoicePoolRow *v = (VoicePoolRow *)(voice_pool + m->sound_slot * 0x70);
         if (v->owner != m) {
             m->sound_slot = 0xFF;
-        } else if (v->sound != m->unk7C) {
+        } else if (v->linked_index != m->unk7C) {
             Sound_StopSlot(m->sound_slot);
             m->sound_slot = 0xFF;
         }

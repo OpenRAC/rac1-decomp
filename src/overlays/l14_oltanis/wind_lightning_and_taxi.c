@@ -25,6 +25,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+#include "structs/voice.h"
 extern char gHeroPos[];
 extern char g_hero_body_center[];
 extern Hero g_hero;
@@ -1737,12 +1738,6 @@ typedef struct {
     unsigned char b[1];
 } Tab;
 
-typedef struct {
-    char pad0[0x74];
-    unsigned char b74;
-    char pad75[0x88 - 0x75];
-    char *owner;
-} Slot;
 extern char voice_pool_r[] __asm__("D_0013E650");
 
 /* Elevator update (moby Elevator): runs its five-state switch, the lift-height test and the table lookups, then the
@@ -1902,8 +1897,8 @@ void elevator_685_update(char *moby) {
             } else {
                 update_elevator_idle_glow_r(moby);
                 v = data->voice;
-                if (v != -1 && ((Slot *)((Voice *)voice_pool_r + v))->owner == moby &&
-                    ((Slot *)((Voice *)voice_pool_r + v))->b74 != 0) {
+                if (v != -1 && ((VoicePoolRow *)((Voice *)voice_pool_r + v))->owner == moby &&
+                    ((VoicePoolRow *)((Voice *)voice_pool_r + v))->state != 0) {
                     Sound_StopSlot_r(v);
                 }
                 data->voice = -1;
@@ -3139,12 +3134,6 @@ typedef struct Lvl {
     char pad0[0x454];
     unsigned char collected[1];
 } Lvl;
-typedef struct Voice_2FE038 {
-    char p0[0x74];
-    unsigned char on;
-    char p1[0x88 - 0x75];
-    Moby *owner;
-} Voice_2FE038;
 typedef struct Skill_2FE038 {
     char p0[0x18];
     unsigned char f18;
@@ -3218,8 +3207,8 @@ void update_enemy_fighter_921(Moby *m) {
             SpawnExplosionFx_r2(m, (*(Vec_2FE038 *)&m->pos), -1, 5.0f, 13.0f);
             m->flags |= 0x41;
             m->collision = 0;
-            if (d->f6C != -1 && ((Voice_2FE038 *)(voice_pool_r + d->f6C * 0x70))->owner == m &&
-                ((Voice_2FE038 *)(voice_pool_r + d->f6C * 0x70))->on != 0) {
+            if (d->f6C != -1 && ((VoicePoolRow *)(voice_pool_r + d->f6C * 0x70))->owner == m &&
+                ((VoicePoolRow *)(voice_pool_r + d->f6C * 0x70))->state != 0) {
                 Sound_StopSlot_r3(d->f6C);
             }
             d->f6C = -1;
@@ -3509,7 +3498,7 @@ int advance_moby_along_flight_path(char *m) {
         flag_vendor_item(((Moby *)((char *)moby_vars))->glow_color);
         if (moby_vars->sound != -1) {
             char *voice_entry = voice_pool + moby_vars->sound * 0x70;
-            if (((Voice_2FE038 *)voice_entry)->owner == moby && ((Voice_2FE038 *)voice_entry)->on != 0) {
+            if (((VoicePoolRow *)voice_entry)->owner == moby && ((VoicePoolRow *)voice_entry)->state != 0) {
                 Sound_StopSlot(moby_vars->sound);
             }
         }

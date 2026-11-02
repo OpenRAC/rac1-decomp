@@ -17,6 +17,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "structs/small_records.h"
 #include "enums/hero_state.h"
+#include "structs/voice.h"
 extern u32 g_controller_state[];
 extern Hero g_hero;
 /* Saved fog settings, restored when the effect ends. */
@@ -1797,12 +1798,6 @@ typedef struct Hit2_2B7430 {
     char p0[0x24];
     Tgt *f24;
 } Hit2_2B7430;
-typedef struct Row {
-    char p0[0x74];
-    unsigned char f74;
-    char p1[0x13];
-    Moby *f88;
-} Row;
 extern char g_hero_r3[] __asm__("D_0013F450");
 extern char voice_pool_r[] __asm__("D_0013E650");
 extern Hit2_2B7430 *g_coll_hit_moby_r2 __asm__("D_L00_00173F58");
@@ -1978,9 +1973,9 @@ void visibomb_missile_update(Moby *m) {
                 vec_scale_to_length_r4(&k30, &k30, g_frame_time_r + g_frame_time_r);
                 vec_scale_to_length_r4(&k40, &((Hit_2B7430 *)coll_hit_result)->v40, 1.0f);
                 if (d->f2C != -1) {
-                    Row *e = (Row *)(voice_pool_r + d->f2C * 0x70);
-                    if (e->f88 == m) {
-                        if (e->f74 != 0)
+                    VoicePoolRow *e = (VoicePoolRow *)(voice_pool_r + d->f2C * 0x70);
+                    if (e->owner == m) {
+                        if (e->state != 0)
                             Sound_StopSlot_r(d->f2C);
                     }
                 }
@@ -1994,9 +1989,9 @@ void visibomb_missile_update(Moby *m) {
                 vec_scale_to_length_r4(&k30, &k30, g_frame_time_r + g_frame_time_r);
                 vec_scale_to_length_r4(&k40, &((Hit_2B7430 *)coll_hit_result)->v40, 1.0f);
                 if (d->f2C != -1) {
-                    Row *e = (Row *)(voice_pool_r + d->f2C * 0x70);
-                    if (e->f88 == m) {
-                        if (e->f74 != 0)
+                    VoicePoolRow *e = (VoicePoolRow *)(voice_pool_r + d->f2C * 0x70);
+                    if (e->owner == m) {
+                        if (e->state != 0)
                             Sound_StopSlot_r(d->f2C);
                     }
                 }
@@ -2011,9 +2006,9 @@ void visibomb_missile_update(Moby *m) {
         if (((PadState *)g_controller_state_r)->pressed & 0x20) {
             m->command = 1;
             if (d->f2C != -1) {
-                Row *e = (Row *)(voice_pool_r + d->f2C * 0x70);
-                if (e->f88 == m) {
-                    if (e->f74 != 0)
+                VoicePoolRow *e = (VoicePoolRow *)(voice_pool_r + d->f2C * 0x70);
+                if (e->owner == m) {
+                    if (e->state != 0)
                         Sound_StopSlot_r(d->f2C);
                 }
             }

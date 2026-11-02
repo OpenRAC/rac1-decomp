@@ -22,6 +22,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+#include "structs/voice.h"
 extern char weapon_ammo_counts[];
 /* Snagglebeast: senses the target, chases along umbris paths and whips its rope. */
 struct SnagglebeastVars {
@@ -337,12 +338,6 @@ typedef struct Anim {
     float f70[4];
 } Anim;
 
-typedef struct Slot {
-    char pad0[0x74];
-    unsigned char f74;
-    char pad75[0x13];
-    Moby *f88;
-} Slot;
 
 extern Hit_314800 *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
 extern int ComputeHitResponse_r(void *, void *, void *, int, int *, float *, int, int) __asm__("func_L00_0025B4D0");
@@ -438,8 +433,8 @@ void func_L07_00314800_r(Moby *moby, ThinkData *data, Vec *vec) {
                         data->f1C8 = 0.0f;
                         data->f1C5 = 1;
                         if (data->f1F8 != -1) {
-                            Slot *e = (Slot *)(voice_pool_r + data->f1F8 * 0x70);
-                            if (e->f88 == moby && e->f74 != 0) {
+                            VoicePoolRow *e = (VoicePoolRow *)(voice_pool_r + data->f1F8 * 0x70);
+                            if (e->owner == moby && e->state != 0) {
                                 Sound_StopSlot_r(data->f1F8);
                             }
                         }

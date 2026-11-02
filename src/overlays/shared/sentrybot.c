@@ -20,6 +20,7 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+#include "structs/voice.h"
 extern struct Hero g_hero;
 
 /* Sentrybot: patrols a path, turns toward what it notices, raises its
@@ -2603,12 +2604,6 @@ typedef struct {
     unsigned char pad[0x454];
     unsigned char killed[1];
 } KillFlags_2A3DD0;
-typedef struct {
-    unsigned char pad0[0x74];
-    unsigned char active;
-    unsigned char pad75[0x13];
-    char *owner;
-} Voice;
 extern KillFlags_2A3DD0 quartu_collected_flags_base_r __asm__("D_L15_001BBB40");
 extern unsigned char saved_mission_state_r[][16] __asm__("D_0014C150");
 extern int D_0014C290[][64];
@@ -2674,10 +2669,10 @@ void update_spark_emitter_moby(Moby *moby) {
                 saved_mission_state_r[g_current_level_index_r][moby->mission] == 0xFF) {
                 mark_moby_killed_and_release_owned_voice_r(moby);
             } else {
-                Voice *e = (Voice *)(voice_pool_r + moby->command * 0x70);
+                VoicePoolRow *e = (VoicePoolRow *)(voice_pool_r + moby->command * 0x70);
                 float lo, hi, z, one;
                 int i;
-                if (e->owner != (char *)moby || e->active == 0) {
+                if (e->owner != (char *)moby || e->state == 0) {
                     moby->command = Moby_PlaySound_r(0, 4, moby);
                 }
                 FastVecSub_r(V, &((struct Hero *)((char *)&hero_globals_base_r + 0xE1D))->motion.body_center,
@@ -2880,12 +2875,6 @@ typedef struct {
     u8 pad[0x454];
     u8 killed[1]; /* per spawn id: spawn slot + 2 */
 } KillFlags;
-typedef struct {
-    u8 pad0[0x74];
-    u8 active;
-    u8 pad75[0x13];
-    struct Moby *owner;
-} VoiceSlot;
 extern KillFlags quartu_moby_state_bytes_base;
 extern KillFlags quartu_collected_flags_base;
 extern u8 quartu_mission_group_state[] MACRO_ADDR;
@@ -2904,10 +2893,10 @@ void mark_moby_killed_and_release_owned_voice(int addr) {
         quartu_collected_flags_base.killed[(s16)m->save_id] = m->mission + 2;
     }
     if (m->command != 0xFF) {
-        VoiceSlot *e;
+        VoicePoolRow *e;
         slot = m->command;
-        e = (VoiceSlot *)(voice_pool + slot * 0x70);
-        if (e->owner == m && e->active != 0) {
+        e = (VoicePoolRow *)(voice_pool + slot * 0x70);
+        if (e->owner == m && e->state != 0) {
             Sound_StopSlot(slot);
         }
     }

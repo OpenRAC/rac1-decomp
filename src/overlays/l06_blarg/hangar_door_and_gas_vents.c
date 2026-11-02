@@ -22,6 +22,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+#include "structs/voice.h"
 extern Hero g_hero;
 extern char gSpecialItems[];
 extern char help_records[];
@@ -801,12 +802,6 @@ typedef struct {
     char p40[0x30];
     Vec v70;
 } Node_2F69D0;
-typedef struct {
-    char p0[0x74];
-    unsigned char b74;
-    char p75[0x13];
-    struct Moby *p88;
-} Slot;
 extern unsigned char hero_globals_base_r[] __asm__("D_0013E633");
 extern char D_0013E650[];
 extern unsigned char D_0013D5DD[];
@@ -955,8 +950,8 @@ void update_drawbridge(Moby *m) {
             k = m->command;
             if (20.0f <= D_L06_00161E08_2F69D0) {
                 if (Sound_IsPlaying_r(s->c[9], k) != 0) {
-                    if (k != -1 && ((Slot *)(voice_pool + k * 0x70))->p88 == s->c[9] &&
-                        ((Slot *)(voice_pool + k * 0x70))->b74 != 0) {
+                    if (k != -1 && ((VoicePoolRow *)(voice_pool + k * 0x70))->owner == s->c[9] &&
+                        ((VoicePoolRow *)(voice_pool + k * 0x70))->state != 0) {
                         Sound_StopSlot_r(k);
                     }
                     k = -1;

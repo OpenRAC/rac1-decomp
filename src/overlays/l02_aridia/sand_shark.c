@@ -22,6 +22,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+#include "structs/voice.h"
 extern char bolt_source_stats[];
 extern char gHeroPos[];
 extern Hero g_hero;
@@ -2986,12 +2987,6 @@ extern char hero_globals_base[];
 extern float aridia_crane_anim_speed SDATA(aridia_crane_anim_speed);
 extern int Moby_PlaySound(int, int, int);
 
-typedef struct VoiceSlot {
-    u8 pad_00[0x74];
-    u8 active; /* 0x74 */
-    u8 pad_75[0x13];
-    struct Moby *owner; /* 0x88 */
-} VoiceSlot;
 
 /* State machine for a moby that picks a new animation each time the previous one finishes. */
 void crane_update(unsigned char *moby) {
@@ -3020,8 +3015,8 @@ void crane_update(unsigned char *moby) {
                 }
                 voice_slot_index = crane_vars[0];
                 if (voice_slot_index != -1) {
-                    VoiceSlot *voice_slot = (VoiceSlot *)(voice_pool + voice_slot_index * 0x70);
-                    if (voice_slot->owner == (struct Moby *)moby && voice_slot->active != 0) {
+                    VoicePoolRow *voice_slot = (VoicePoolRow *)(voice_pool + voice_slot_index * 0x70);
+                    if (voice_slot->owner == (struct Moby *)moby && voice_slot->state != 0) {
                         Sound_StopSlot(voice_slot_index);
                     }
                 }
@@ -3087,18 +3082,12 @@ typedef struct SwivelTurretVars {
     f32 recoil; /* 0x10 */
 } SwivelTurretVars;
 
-typedef struct TurretVoiceSlot {
-    u8 pad_00[0x74];
-    u8 active; /* 0x74 */
-    u8 pad_75[0x13];
-    struct Moby *owner; /* 0x88 */
-} TurretVoiceSlot;
 
 /* Rocket launcher update: on its state byte it aims at the target, fires, and clears its lock. */
 void rocket_launcher_update(unsigned char *m) {
     struct Moby *moby;
     SwivelTurretVars *rocket_launcher_vars;
-    TurretVoiceSlot *voice_slot;
+    VoicePoolRow *voice_slot;
     int st;
     int s;
     float A;
@@ -3132,8 +3121,8 @@ void rocket_launcher_update(unsigned char *m) {
             if (r2 < 0.01745329238f && rocket_launcher_vars->yaw_vel == 0.0f) {
                 s = rocket_launcher_vars->voice;
                 if (s != -1) {
-                    voice_slot = (TurretVoiceSlot *)(voice_pool + s * 0x70);
-                    if (voice_slot->owner == moby && voice_slot->active != 0) {
+                    voice_slot = (VoicePoolRow *)(voice_pool + s * 0x70);
+                    if (voice_slot->owner == moby && voice_slot->state != 0) {
                         Sound_StopSlot(s);
                     }
                 }

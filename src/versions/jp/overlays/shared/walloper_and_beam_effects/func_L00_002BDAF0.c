@@ -160,8 +160,9 @@ void MorphorayUpdate(Moby *m) {
             morphoray_light_slot_r = -1;
         }
         if (morphoray_beam_voice_r >= 0) {
-            if (morphoray_beam_voice_r != -1 && ((Voice *)(voice_pool_r + morphoray_beam_voice_r * 0x70))->owner == m &&
-                ((Voice *)(voice_pool_r + morphoray_beam_voice_r * 0x70))->on != 0) {
+            if (morphoray_beam_voice_r != -1 &&
+                ((VoicePoolRow *)(voice_pool_r + morphoray_beam_voice_r * 0x70))->owner == m &&
+                ((VoicePoolRow *)(voice_pool_r + morphoray_beam_voice_r * 0x70))->state != 0) {
                 Sound_StopSlot_r(morphoray_beam_voice_r);
             }
             morphoray_beam_voice_r = -1;

@@ -17,6 +17,7 @@
 #include "game/moby/mobyutil.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
+#include "structs/voice.h"
 extern Hero g_hero;
 
 typedef struct Train292890 {
@@ -434,12 +435,6 @@ typedef struct {
     char p0[0x140];
     Vec4f f140;
 } Cam;
-typedef struct {
-    char p0[0x74];
-    unsigned char b74;
-    char p75[0x13];
-    Moby *f88;
-} Snd;
 
 extern Moby *kerwan_mobys_r __asm__("D_L03_00160058") MACRO_ADDR;
 extern Path *kerwan_paths_r[] __asm__("D_L03_001B08B0");
@@ -581,8 +576,8 @@ void metropolis_train_locomotive_update(Moby *moby) {
                 d->f10C++;
                 if (scale_ticks(0x3C) < d->f10C && g_hero.motion.pos.f[2] < v[2] - 10.0f) {
                     if (d->f108 != -1) {
-                        Snd *e = (Snd *)(voice_pool + d->f108 * 0x70);
-                        if (e->f88 == moby && e->b74 != 0) {
+                        VoicePoolRow *e = (VoicePoolRow *)(voice_pool + d->f108 * 0x70);
+                        if (e->owner == moby && e->state != 0) {
                             Sound_StopSlot(d->f108);
                         }
                     }
@@ -695,8 +690,8 @@ void metropolis_train_locomotive_update(Moby *moby) {
                     moby->command = 6;
                     d->fC0 = d->fC0 * 0.5f;
                     if (d->f108 != -1) {
-                        Snd *e = (Snd *)(voice_pool + d->f108 * 0x70);
-                        if (e->f88 == moby && e->b74 != 0) {
+                        VoicePoolRow *e = (VoicePoolRow *)(voice_pool + d->f108 * 0x70);
+                        if (e->owner == moby && e->state != 0) {
                             Sound_StopSlot(d->f108);
                         }
                     }
@@ -762,12 +757,6 @@ typedef struct {
     float length;
     float accel;
 } Data_295DB0;
-typedef struct {
-    char p0[0x74];
-    unsigned char active;
-    char p75[0x13];
-    char *owner;
-} Voice;
 extern void FastVecScale_r(void *, void *, float) __asm__("func_001F9C30");
 extern void func_001E9768(void *);
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
@@ -862,8 +851,8 @@ void moving_platform_small_update(Moby *moby) {
                 break;
             p->dir *= -1;
             if (d->voice != -1) {
-                Voice *e = (Voice *)(voice_pool_r + d->voice * 0x70);
-                if (e->owner == ((char *)moby) && e->active != 0)
+                VoicePoolRow *e = (VoicePoolRow *)(voice_pool_r + d->voice * 0x70);
+                if (e->owner == ((char *)moby) && e->state != 0)
                     Sound_StopSlot_r(d->voice);
             }
             d->voice = -1;
@@ -906,8 +895,8 @@ void moving_platform_small_update(Moby *moby) {
             if (d->wait <= 0)
                 break;
             if (d->voice != -1) {
-                Voice *e = (Voice *)(voice_pool_r + d->voice * 0x70);
-                if (e->owner == ((char *)moby) && e->active != 0)
+                VoicePoolRow *e = (VoicePoolRow *)(voice_pool_r + d->voice * 0x70);
+                if (e->owner == ((char *)moby) && e->state != 0)
                     Sound_StopSlot_r(d->voice);
             }
             d->voice = -1;
