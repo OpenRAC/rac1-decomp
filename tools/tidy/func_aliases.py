@@ -5,6 +5,7 @@ Use the real name where a local function alias has the same type as everyone els
   python3 tools/tidy/func_aliases.py            # dry run: show counts
   python3 tools/tidy/func_aliases.py --write [FILE...]
   python3 tools/tidy/func_aliases.py --header asm_functions/executable.h [--write]    # only that header's symbols
+  python3 tools/tidy/func_aliases.py --header none [--write]                          # symbols no header declares
 
 `extern void vsub_2d8e48(void *, void *, void *) __asm__("func_001F9BF0");` and its calls become `FastVecSub`. Only an
 alias with the types of the symbol's header prototype, or of most files if it has none: an alias whose types really
@@ -132,7 +133,8 @@ def main():
     sources = me.Sources()
     wanted = wanted_shapes(sources, sources.text)
     if header:
-        wanted = {s: v for s, v in wanted.items() if sources.existing.get(s, (None,))[0] == header}
+        home = None if header == "none" else header
+        wanted = {s: v for s, v in wanted.items() if sources.existing.get(s, (None,))[0] == home}
     paths = paths or sources.files
     done = total = lines = 0
     if write:
