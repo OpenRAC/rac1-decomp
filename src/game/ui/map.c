@@ -6,6 +6,7 @@
 #include "structs/misc.h"
 #include "game/ui/map.h"
 #include "asm_functions/executable.h"
+#include "game/render/draw.h"
 
 /*
  * map.cpp in the original source; text 0x205520-0x2071A8.
@@ -552,11 +553,8 @@ extern f32 map_data_0015FE50 SDATA(D_0015FE50);
 extern f32 map_data_0015FE54 SDATA(D_0015FE54);
 extern u8 D_001E8398[];
 
-extern s32 print_debug_text_centered(s32, s32, s32, u8 *);
-extern void func_001F4630(s32);
-extern void func_001F4748(void);
 extern void draw_ui_frame(s32, s32, s32, s32, s32) __asm__("func_001F62C8");
-extern void font_print_window_small(void *, u64, void *, s32);
+
 extern f32 fast_add_rotations(f32, f32) __asm__("func_001FA748");
 
 extern s32 get_icon_frame(s32, s32) __asm__("func_00200198");

@@ -154,7 +154,7 @@ struct GeometryQuad {
     u64 primitive; /* 0x88 */
 };
 extern s32 umbris_frame_count MACRO_ADDR;
-extern float IntToFloat(int);
+
 extern int truncate_float_to_s32(float);
 
 extern u64 GetEffectTex(int);
@@ -671,7 +671,7 @@ extern int truncate_float_to_s32(float);
 extern void suck_beam_queue_draw(int);
 extern int Moby_PlaySound(int, int, int);
 
-extern void AddDrawCallback(void (*)(), void *);
+extern void AddDrawCallback_v(void (*)(), void *) __asm__("func_001F49B0");
 extern int queue_animation_update(int, int, int, int, int, int, int);
 
 extern void suck_reset(void *);
@@ -691,7 +691,6 @@ extern void rumble_by_distance(char *);
 
 extern void update_snagglebeast_chase_speed(void *, void *, float, float, float);
 
-extern float IntToFloat(int);
 extern unsigned char *spawn_moving_resizing_height_snapped_alpha_fade_particle(void *, int, int, float, float);
 extern void RerollEffectCounter(void *, short *);
 extern void set_moby_dialogue_record_value(void *, int);
@@ -935,7 +934,7 @@ void snagglebeast_update(unsigned char *m) {
             d->sphere_t = 0.0f;
     }
     if (d->sphere_t > 0.0f)
-        AddDrawCallback(draw_snagglebeast_sphere_effect, m);
+        AddDrawCallback_v(draw_snagglebeast_sphere_effect, m);
     update_snagglebeast_target_joint_animation((char *)m, (char *)((unsigned char *)d), (float *)(g_hero + 0x80));
     if (((Moby *)m)->state != 0 && ((Moby *)m)->state != 0xA && ((Moby *)m)->state != 0x10) {
         d->hud_anim = queue_animation_update(0x16, 0xFFFF, (int)reset_numeric_hud_element, (int)Hud_UpdateCounter,
@@ -1184,7 +1183,7 @@ void snagglebeast_update(unsigned char *m) {
                 } else {
                     if (d->phase_timer < scale_ticks(0x3C)) {
                         FastVecAdd(d->attach_pos, d->attach_pos, &d->rope_dir);
-                        AddDrawCallback(draw_collision_clipped_moby_beam, m);
+                        AddDrawCallback_v(draw_collision_clipped_moby_beam, m);
                         d->phase = 2;
                     } else {
                         d->phase = 0;
@@ -1788,7 +1787,7 @@ void snagglebeast_update(unsigned char *m) {
                         d->phase = 4;
                     if (fast_dec_timer(&d->phase_timer))
                         d->phase_timer = scale_ticks(0x14);
-                    AddDrawCallback(draw_and_probe_snagglebeast_rope_attack, m);
+                    AddDrawCallback_v(draw_and_probe_snagglebeast_rope_attack, m);
                     break;
                 }
                 case 4:
@@ -1801,7 +1800,7 @@ void snagglebeast_update(unsigned char *m) {
                         if (fast_dec_timer(&d->phase_timer))
                             d->phase = 5;
                     }
-                    AddDrawCallback(draw_and_probe_snagglebeast_rope_attack, m);
+                    AddDrawCallback_v(draw_and_probe_snagglebeast_rope_attack, m);
                     break;
                 case 5:
                     ((Moby *)m)->anim_speed = 1.0f;
@@ -2230,7 +2229,7 @@ float update_snagglebeast_rope(void *moby, void *anchor) {
             norm_319080(v10, vC0, 2.8f);
         }
     }
-    AddDrawCallback(draw_rope_strips, moby);
+    AddDrawCallback_v(draw_rope_strips, moby);
     {
         int nspawn;
         int nfly;

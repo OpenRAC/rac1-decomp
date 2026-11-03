@@ -18,6 +18,7 @@
 #include "structs/pad.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/math/fastfunc.h"
 
 /*
  * draw.cpp in the original source; text 0x1F0F30-0x1F7C60.
@@ -177,7 +178,6 @@ extern void SetBackgroundColor(int, int, int);
 
 extern float vec_length_xy(void *);
 
-extern float IntToFloat(int);
 extern void UpdateViewContext(void);
 extern void UpdateFog(void);
 
@@ -934,7 +934,7 @@ int GetOcclGridFromPair(int a0, int a1, int a2, int a3, int a4, int a5, float t)
 }
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern float IntToFloat(int);
+
 extern int GetOcclGridFromPair(int, int, int, int, int, int, float);
 
 extern char occl_visibility[];
@@ -1036,7 +1036,6 @@ void UpdateOcclusion(void) {
 }
 
 extern int g_screen_extent[];
-extern float IntToFloat(int);
 
 /* InitViewContext: the same set-up as configure_graphics_projection for
    the display's size, fs_aa_buffer[0xA8]/[0xA9], with fixed extras. The
@@ -1328,8 +1327,6 @@ void UpdateViewContext(void) {
 #undef pal_mode_p
 #undef fast_cos
 #undef set_tfrag_dists
-
-extern float IntToFloat(int);
 
 /* Sets the screen size: the GS viewport record at g_screen_extent gets width,
    height, their halves and the four <<4 edges around the 0x800 centre;
@@ -3020,7 +3017,7 @@ struct Glyph {
 };
 extern s32 font_window_active MACRO_ADDR;
 extern s32 font_palette_colors[];
-extern f32 IntToFloat(s32);
+
 extern void emit_textured_rectangle_r(f32, f32, f32, f32, s32, s32, s32, s32, u64, s64) __asm__("func_001F5BB8");
 void process_bgm_display_text_event(u64 color, u8 *s, f32 x, s32 n, s64 tex, struct Glyph *g, f32 y, f32 scale);
 

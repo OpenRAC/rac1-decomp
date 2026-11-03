@@ -23,6 +23,7 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_idle_and_animation.h"
 extern struct Hero g_hero;
 
 /* Seeker bolt (Rocket): flies along vel, optionally turning to the hero, bursts on a hit or when the timer ends. */
@@ -303,14 +304,12 @@ char *create_class_29_moby(char *owner, float *pos, float *vec, int arg3) {
     }
     return moby;
 }
-extern float IntToFloat(int);
 
 extern void lerp_vector(void *, void *, void *, float);
 extern void spawn_rocket_trail_effects(void *, void *);
 
 extern void spawn_rocket_explosion(void *, void *);
 
-extern void AddDrawCallback(void (*)(void), void *);
 extern void draw_rocket_target_pulse_quad();
 extern int veldin2_cinematic_mode MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
@@ -1201,7 +1200,6 @@ extern struct UsageStat help_records[];
 extern void draw_pulsing_timer_hud_r(void) __asm__("func_L18_002D9488");
 extern char voice_pool[];
 
-extern int Help_Request(int, int);
 extern int Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l18/gameplay/entities/002a7220.c, FUN_L18_002d7b20. */
@@ -1340,7 +1338,6 @@ extern short timer_frame_bottom;
 extern short timer_frame_left;
 extern short timer_frame_right;
 extern short timer_frame_color;
-extern void DrawUIFrame(int, int, int, int, int);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
@@ -1409,7 +1406,6 @@ typedef struct {
     int f90;
 } Obj_D96B0;
 
-extern f32 IntToFloat(s32);
 extern float veldin2_hero_fall_state_height SDATA(veldin2_hero_fall_state_height);
 extern float floating_platform_sink_acceleration_config_84_nonzero_gp
     SDATA(floating_platform_sink_acceleration_config_84_nonzero_gp);
@@ -2246,7 +2242,6 @@ void draw_class_274_ring_effect(void *moby_v) {
 extern float ApproachValue(float *p, float target, float maxstep);
 extern void Hero_ResetToPosition(void *, void *, int, int);
 
-extern int Help_Request(int a, int b);
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
 

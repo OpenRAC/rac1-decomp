@@ -24,6 +24,7 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_animation_slots.h"
+#include "game/render/draw.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 
@@ -167,7 +168,6 @@ extern void mark_moby_killed_and_release_owned_voice(int);
 extern float animation_end(int a, unsigned int b);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
-extern float IntToFloat(int);
 extern int move_sentrybot_toward_point(char *moby, float *point, float arg);
 extern int begin_sentrybot_turn_toward_heading(unsigned char *, char *, int, int, float);
 extern void prepare_sentrybot_alarm(unsigned char *moby);
@@ -189,7 +189,7 @@ extern void SetDeathBits(void *, int, int);
 extern void update_sentrybot_joint_aim(void *);
 
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void AddDrawCallback(void (*)(void), void *);
+
 extern void draw_sentrybot_effect_quads(char *m);
 extern int quartu_game_mode MACRO_ADDR;
 extern float quartu_camera_pos[4];
@@ -3444,7 +3444,6 @@ void prepare_sentrybot_alarm(unsigned char *moby) {
 }
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound(int, int, int);
-extern void AddDrawCallback(void (*)(void), void *);
 
 extern void emit_sine_modulated_rgba_draw_packet(void);
 extern s32 g_current_level_index SDATA(g_current_level_index);
@@ -3481,7 +3480,7 @@ void update_sentrybot_alarm_effect(void *moby) {
     }
 }
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern void emit_rgba_draw_packet(int, int, int, int);
+
 extern signed char quartu_alarm_flash_color_alpha[] MACRO_ADDR;
 extern int quartu_alarm_flash_period_ticks SDATA(quartu_alarm_flash_period_ticks);
 extern float quartu_alarm_flash_amplitude SDATA(quartu_alarm_flash_amplitude);

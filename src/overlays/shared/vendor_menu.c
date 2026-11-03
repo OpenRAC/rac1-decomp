@@ -25,6 +25,7 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
+#include "game/math/fastfunc.h"
 extern Hero g_hero;
 extern char cd_read_active[];
 extern struct S16_29ad08 cd_read_state;
@@ -1232,14 +1233,13 @@ extern void update_game_frame_and_idle_counters();
 
 extern void enqueue_voice_request();
 extern void Profile_Mark();
-extern void coordinate_hero_frame_update();
 
 extern s32 Moby_PlaySound();
 
 extern void start_vendor_exit_cutscene();
 extern void close_vendor_menu();
 extern void update_hud_elements();
-extern void AddDrawCallback();
+
 extern void draw_vendor_inset_quads();
 extern void set_camera_position();
 extern void set_camera_rotation();
@@ -1255,13 +1255,12 @@ extern s32 queue_animation_update();
 extern void update_vendor_purchase();
 extern void calculate_dma_transfer_address();
 extern void initialize_vendor_selected_item_mobys();
-extern void UpdateViewContext();
+
 extern void restore_hero_after_vendor_exit_cutscene();
 extern void sceVu0UnitMatrix();
 extern void sceVu0RotMatrixX();
 extern void sceVu0RotMatrixY();
 extern void sceVu0RotMatrixZ();
-extern f32 IntToFloat();
 
 extern void initialize_numeric_hud_timer_and_base_dimensions();
 extern void Hud_UpdateCounter();

@@ -7,6 +7,7 @@
 #include "game/moby/mobyutil.h"
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
+#include "game/math/fastfunc.h"
 
 /*
  * sound.cpp in the original source; text 0x22D8C0-0x22F128.
@@ -53,7 +54,6 @@ int test_voice_occlusion(void *arg0, void *arg1) {
     return coll_line_fix(arg1, v, 0x82, *(int *)((char *)arg0 + 0x18), 0);
 }
 
-extern float IntToFloat(int);
 extern int truncate_float_to_s32_i(float) __asm__("func_001FA898");
 
 /* Interpolates between the ints at +0x8 and +0xC as x runs from lo to

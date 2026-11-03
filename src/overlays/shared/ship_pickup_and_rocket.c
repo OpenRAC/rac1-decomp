@@ -9,6 +9,7 @@
 #include "asm_functions/shared_levels.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/math/fastfunc.h"
 
 /* Ship rocket: homes in on a target. Same layout as Rocket below (defined after use). */
 struct ShipRocketVars {
@@ -29,7 +30,7 @@ extern int gemlik_dma_packet_cursor MACRO_ADDR;
 extern u128_7d50 gemlik_2d_prim_giftag;
 extern u128_7d50 gemlik_2d_vertex_giftag;
 extern int g_screen_extent[];
-extern float IntToFloat(int);
+
 extern int truncate_float_to_s32(float);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b7d50.c, FUN_L13_002b7d50. */

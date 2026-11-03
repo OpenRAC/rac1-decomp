@@ -137,8 +137,6 @@ extern float vec_distance_xy(void *, void *);
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound(int, int, int);
 
-extern float IntToFloat(int);
-
 extern void update_entity_matrix(void *, void *, void *, void *);
 
 extern float g_frame_time MACRO_ADDR;
@@ -647,14 +645,14 @@ void update_umbris_scene_progression(Moby *moby) {
             break;
     }
 }
-extern void AddDrawCallback(void *, void *);
+extern void AddDrawCallback_v(void *, void *) __asm__("func_001F49B0");
 extern void render_environment_mapped_object(void);
 
 /* Sets up an environment-mapped moby and registers its draw callback. */
 void InitEnvMappedMoby(char *arg) {
     arg[0x30] = 8;
     *(short *)(arg + 0xA6) = 0x215;
-    AddDrawCallback((void *)render_environment_mapped_object, arg);
+    AddDrawCallback_v((void *)render_environment_mapped_object, arg);
 }
 struct AnimSeq;
 extern void moby_build_matrix_r(void *) __asm__("func_L00_00251E30");
@@ -1419,7 +1417,7 @@ void WaterPlateUpdate(Moby *m) {
     }
     if (d->idx == 0) {
         RippleSimClock(umbris_water_grids_r, 0x24);
-        AddDrawCallback(render_level07_water_grids_r, m);
+        AddDrawCallback_v(render_level07_water_grids_r, m);
     }
     if (d->idx == water_grid_override_index) {
         umbris_water_grids_r[d->idx].h1E = umbris_water_grid_override_value;
@@ -1648,7 +1646,7 @@ void ocean_umbris_update(unsigned char *moby) {
             break;
         case 1:
             if (!is_point_inside_clip_volume(debris_far_point, *((int *)((Moby *)moby)->pvars))) {
-                AddDrawCallback((void *)register_audio_stream_callback, moby);
+                AddDrawCallback_v((void *)register_audio_stream_callback, moby);
             }
             break;
     }
@@ -2054,7 +2052,7 @@ void update_fading_ring_effect(unsigned char *m) {
         DeleteMoby(m);
         return;
     }
-    AddDrawCallback((void *)draw_fading_ring_effect, m);
+    AddDrawCallback_v((void *)draw_fading_ring_effect, m);
     register_fading_ring_hit(*(void **)&g_hero.moby, m, d);
     for (p = umbris_moby_list; p; p = *(char **)(p + 0x28)) {
         register_fading_ring_hit(p, m, d);

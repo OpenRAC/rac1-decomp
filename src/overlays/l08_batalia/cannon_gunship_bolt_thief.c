@@ -13,6 +13,7 @@
 #include "enums/moby_class.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/render/draw.h"
 extern Hero g_hero;
 
 /* Bolt thief: scans a fixed list of mobys for its targets. */
@@ -498,7 +499,7 @@ extern char *func_L00_0026EBC0(char *, char *, int, int, float);
 extern void func_L08_00315068(void);
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 extern void moby_build_matrix_r(void *) __asm__("func_L00_00251E30");
-extern void func_001F49B0(void *, void *);
+
 extern void draw_batalia_cannon_hud_r(void *) __asm__("func_L08_002E0258");
 
 typedef struct {
@@ -1902,8 +1903,6 @@ extern int queue_animation_update(s32, s32, void *, void *, void *, void *, s32)
 extern void multiply_matrix3x3(void *, void *, void *);
 extern int coll_sphere(float, void *, int, void *);
 
-extern float IntToFloat(int);
-
 extern int batalia_bolt_sound_frame SDATA(batalia_bolt_sound_frame);
 extern short batalia_bolt_scale, batalia_bolt5_scale, batalia_bolt10_scale;
 extern float batalia_bolt_attract_speed SDATA(batalia_bolt_attract_speed);
@@ -2455,7 +2454,6 @@ void compute_batalia_bolt_pickup_surface_pose(char *m, float *out, float *rot) {
 typedef int u128 __attribute__((mode(TI)));
 
 extern int truncate_float_to_s32(float);
-extern float IntToFloat(int);
 
 extern void VU1_addGSregister(int, long);
 extern int GetEffectTex(int);

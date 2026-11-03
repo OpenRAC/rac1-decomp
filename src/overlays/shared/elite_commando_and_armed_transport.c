@@ -17,6 +17,8 @@
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/render/draw.h"
+#include "game/math/fastfunc.h"
 extern char gSkillPoints[];
 extern Hero g_hero;
 extern char voice_pool[];
@@ -183,7 +185,7 @@ extern float vec_length_xy(void *);
 
 extern void BuildSphericalOffset(void *, float, float, float);
 extern int fast_dec_timer(int *);
-extern float IntToFloat(int);
+
 extern void lerp_vector(void *, void *, void *, float);
 
 extern int coll_line(void *, void *, int, void *, void *);
@@ -1398,7 +1400,7 @@ extern short grindrail_barrier_core_spin_speeds_deg;
 
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
-extern void AddDrawCallback(void (*)(void), void *);
+
 extern void draw_grindrail_barrier_effect();
 extern int check_grindrail_barrier_release_condition(int);
 extern void group_trigger_nearest(int);

@@ -17,8 +17,6 @@
 #include "asm_functions/executable.h"
 extern Hero g_hero;
 
-extern float IntToFloat(int);
-
 extern void lerp_vector(void *, void *, void *, float);
 
 extern int level_frame_counter MACRO_ADDR;
@@ -222,7 +220,6 @@ void PartType04Spawn(void *a, void *b, int c, int d, int n, int s1, int s2, int 
         e->damp_off = s1;
     }
 }
-extern float IntToFloat(int);
 
 extern int DefaultVtbl_DeleteMoby(int, int, float);
 
@@ -285,7 +282,7 @@ void update_scalar_and_fade_effect_particle(struct PartBase *m) {
 }
 
 extern void vec_scale_to_length(void *, void *, float);
-extern float IntToFloat(int);
+
 extern int truncate_float_to_s32(float);
 
 extern f32 coll_hit_normal[];
@@ -494,7 +491,7 @@ b0b0:
 }
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern float IntToFloat(int);
+
 extern unsigned char *part_type08_textures;
 
 typedef struct PartType08Data {
@@ -2158,8 +2155,6 @@ extern V_26e670_26e670 coll_hit_normal_r __asm__("D_L00_00173F80");
 
 void vec_scale_to_length(void *, void *, f32);
 
-f32 FastAbsF(f32);
-
 s32 truncate_float_to_s32(f32);
 s32 func_L00_001F10E0_6F510(void *, s32, s32, f32) __asm__("func_L00_001F10E0");
 
@@ -2805,7 +2800,7 @@ extern s32 coll_line_r(void *, void *, s32, void *, void *) __asm__("func_L00_00
 extern void vec_scale_to_length(void *, void *, f32);
 
 extern void KillPart_r3(struct PartBase *) __asm__("func_L00_002688A8");
-extern f32 IntToFloat(s32);
+
 extern s32 truncate_float_to_s32(f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering_00269290.c, FUN_L00_0026ff10. */

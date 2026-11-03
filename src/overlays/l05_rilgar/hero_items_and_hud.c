@@ -69,7 +69,6 @@ extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
 extern int pad_pressed_within(int, int, int *);
 
 extern int truncate_float_to_s32(float);
-extern float adjust_hero_animation_speed_for_target_frame(float a, float b, float c, float d);
 
 extern float vec_length_xy(void *);
 extern float vec_distance_xy(void *, void *);
@@ -82,7 +81,6 @@ extern int check_pad_press_separation(int, int, int, int);
 extern float ApproachValue(float *p, float target, float maxstep);
 
 extern void apply_hero_item_slot_selection(int i);
-extern void release_and_clear_hero_voice_slots(void);
 
 extern int compute_hero_hoverboard_respawn_transform(float *, float *);
 extern void Hero_ResetToPosition(void *, void *, int, int);

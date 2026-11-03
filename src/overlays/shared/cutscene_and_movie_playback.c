@@ -160,7 +160,6 @@ extern void enqueue_voice_request(void);
 extern void update_ambience_target_cycle(void);
 extern void Profile_Mark_a(void *, int) __asm__("func_001E9768");
 extern void Profile_Mark_b(void) __asm__("func_001E9768");
-extern void coordinate_hero_frame_update(void);
 
 extern void update_glints(void);
 
@@ -434,7 +433,6 @@ void StartCutscene(int arg) {
 extern void calculate_dma_transfer_address(void);
 
 extern void reset_frame_counters(void);
-extern void UpdateViewContext(void);
 
 extern int HeroEnterMoveState(int, int);
 
@@ -761,10 +759,6 @@ extern void Music_ContinueStreamIfReady(void);
 extern s32 update_audio_stream_until_idle(s32);
 extern void update_world_object_animation(void);
 extern void start_cutscene_chunk_read(s32);
-
-extern f32 IntToFloat(s32);
-
-extern void update_moby_pulsing_glow_effects(void *);
 
 /* Per-frame update while the cutscene in D_L00_0016C860 plays: runs the debug-gated subsystem updates, fades, advances
    the frame counters and either finishes the cutscene (end frame reached or skipped) or steps each of its mobys

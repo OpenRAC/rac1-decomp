@@ -20,6 +20,7 @@
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/hero_idle_and_animation.h"
 
 typedef struct G137C80_240398 {
     char pad[0x12CC];
@@ -225,7 +226,7 @@ void resolve_level_asset_block_pointers(char *p) {
         }
     }
 }
-extern float IntToFloat(int);
+
 extern int truncate_float_to_s32(float);
 extern int func_00120778(float);
 extern int STUB_printf();
@@ -453,8 +454,6 @@ typedef struct {
 
 extern void Load_r(void *, int, int) __asm__("func_002176C8");
 
-extern void UpdateFog();
-
 extern void VU0_loadMicroProgram(void *);
 extern int STUB_printf();
 extern void copy_memory_by_alignment_v(void *, void *, int) __asm__("func_L00_001FF040");
@@ -462,7 +461,6 @@ extern void copy_memory_by_alignment_v(void *, void *, int) __asm__("func_L00_00
 extern void scale_vector(void *, void *, float);
 
 extern int truncate_float_to_s32(float);
-extern float IntToFloat(int);
 
 extern void resolve_lookup_record(short *);
 extern int find_or_assign_bolt_source_slot(int, int);
@@ -472,8 +470,7 @@ extern void store_current_level_table_value(int, int);
 extern void initialize_moby_state_record(char *);
 
 extern void Level_ResetGameplayGlobals(void);
-extern void initialize_hero(void);
-extern void reset_hero_to_idle(void);
+
 extern void setup_level_cameras(void);
 
 extern void update_moby_proximity_interaction();
@@ -1908,7 +1905,7 @@ extern void resolve_level_asset_block_pointers(char *);
 extern void print_moby_class_sizes(int *, int);
 extern char *load_level_gameplay(s32);
 extern void restore_or_clear_level_state(void);
-extern f32 IntToFloat(s32);
+
 extern void link_and_update_all_mobys(UpdD244 *);
 /* level archive load state; the shared header pointer at +4 is level_root */
 extern struct {
@@ -2311,7 +2308,6 @@ typedef struct {
 extern Load cutscene_state;
 extern void start_audio_stream_read(int, int, int);
 extern void update_audio_stream_until_idle(int);
-extern void FadeToBlack(int);
 
 /* Reads a level's packed data from disc and builds its chunk pointer table. */
 void load_scene_chunks_with_fade(int arg) {
@@ -2341,7 +2337,7 @@ void load_scene_chunks_with_fade(int arg) {
 extern s32 pal_mode MACRO_ADDR;
 void func_00217628_45FE0(void *, s32, s32) __asm__("func_00217628");
 void update_audio_stream_until_idle(s32);
-void FadeToBlack(s32);
+
 typedef struct {
     s32 a, b;
 } P2_245610;

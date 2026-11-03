@@ -20,6 +20,7 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_idle_and_animation.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 
@@ -1062,7 +1063,7 @@ extern void pool_ripple(f32, f32, f32, f32, void *, s32);
 extern void RippleDisturb(int, int, int, float, float, float, float);
 
 extern void Moby751Draw(void);
-extern void AddDrawCallback(void *, void *);
+
 extern char *pool_drip(void *position, float scale);
 extern void pool_bubble(void *, void *, f32);
 extern void pool_bubbles(void *, void *, f32, f32);
@@ -1324,7 +1325,7 @@ typedef struct {
 extern WaterLayer novalis_four_scroll_layers_r[] __asm__("D_L01_001FBF40");
 extern s32 novalis_scroll_layers_ready SDATA(novalis_scroll_layers_ready);
 extern s32 novalis_frame_count MACRO_ADDR;
-extern f32 IntToFloat(s32);
+
 extern void draw_four_scroll_layers(void *);
 extern int AddDrawCallback_r(void (*)(void), void *) __asm__("func_001F49B0");
 
@@ -1804,7 +1805,6 @@ extern char novalis_pulse_scroll_layers[];
 extern int novalis_frame_count MACRO_ADDR;
 extern void DefaultVtbl_DeleteMoby(void *);
 extern void update_and_draw_scrolling_overlay_layers(int, void *);
-extern float IntToFloat(int);
 
 /* draw callback: pulses three colour entries from a sine of the frame counter */
 void draw_level01_scroll_layers(void *moby) {
@@ -1821,7 +1821,6 @@ void draw_level01_scroll_layers(void *moby) {
     }
 }
 extern void draw_level01_scroll_layers(void *);
-extern void AddDrawCallback(void *, void *);
 
 /* Sets the moby's draw distances to 0xFF and queues the scroll layer draw callback. */
 void set_moby_flags_and_queue_draw_callback(unsigned char *moby) {
@@ -1855,7 +1854,6 @@ extern Moby *novalis_moby_list MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int hero_max_health MACRO_ADDR;
 
-extern int Help_Request(int, int);
 extern int is_moby_in_state_one(void *);
 extern int check_scaled_vector_bsphere(float, void *);
 /* Shows Novalis tutorial help messages based on what the player has used so far. */
@@ -2412,7 +2410,7 @@ void draw_level01_environment_mapped_meshes(void) {
                               novalis_env_mesh_colors[4 - i], novalis_env_mesh_uvs, 1);
     }
 }
-void AddDrawCallback(void *fn, void *arg);
+
 extern f32 novalis_env_map_scroll_u_r[2] __asm__("D_L01_001621A0") MACRO_ADDR;
 void draw_level01_environment_mapped_meshes(void);
 typedef struct {

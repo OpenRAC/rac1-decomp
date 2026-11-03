@@ -12,6 +12,7 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/math/fastfunc.h"
 
 /*
  * vendor.cpp in the original source; text 0x239628-0x23B670.
@@ -19,15 +20,9 @@
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-extern int measure_text_width_regular(unsigned char *, int);
-
-extern void UpdateViewContext(void);
-
 extern void *msg_string_id(int) __asm__("func_001FE540");
 
 extern void draw_hud_rect_blended(int, int, int, int, long, long);
-
-extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
 
 extern void truncate_float_to_s32(float);
 
@@ -36,9 +31,7 @@ extern void truncate_float_to_s32(float);
 extern s32 capture_glyph_coordinates[64];
 extern s32 capture_glyph_advances[64];
 extern s32 game_frame_counter MACRO_ADDR;
-extern void DrawTexturedQuad(s32, s32, s32, s32, s32, s32, s32, s32, s64, s64);
 
-extern f32 IntToFloat(s32);
 #define TRUNC(x) ((s32 (*)(f32))func_001FA898)(x)
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/assembly/textbin/fun_00238310.c, render_capture_scrolling_text. */
@@ -382,7 +375,6 @@ extern int gBolts MACRO_ADDR;
 extern char vendor_item_prices[];
 extern unsigned char discount_purchase_pricing[];
 extern void libc_memset(void *, int, int);
-extern void font_print_window_small(void *, long, void *, int);
 
 /* Draws the vendor's buy label and price for the selected slot. */
 void render_vendor_buy_label_pass(char *unused, int x, int y) {
@@ -444,7 +436,6 @@ void render_vendor_buy_label_pass(char *unused, int x, int y) {
 extern int weapon_ammo_counts[];
 extern int gBolts MACRO_ADDR;
 extern char vendor_item_prices[];
-extern int func_001F6F40(int, int, long, void *, int);
 
 typedef struct {
     int type; /* +0x0 */
@@ -519,8 +510,6 @@ extern s32 vendor_scroll_timers[];
 extern void VU1_addGSregister_r(s32, u64) __asm__("func_00234C98");
 
 extern s64 func_001F4868(s32);
-extern f32 IntToFloat(s32);
-extern void append_subpixel_textured_screen_quad(f32, f32, f32, f32, s32, s32, s32, s32, u64, s64);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/render_vendor_capture_texture_overlays_pass.c, render_vendor_capture_texture_overlays_pass. */
 void render_vendor_capture_texture_overlays_pass(s32 pass_index, f32 capture_width, f32 capture_height) {
@@ -594,7 +583,6 @@ void render_vendor_capture_texture_overlays_pass(s32 pass_index, f32 capture_wid
     }
 }
 
-extern void configure_graphics_projection(int, int, float, float, float, float, float);
 extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
 
 /* Sets up a (1 << a) x (1 << b) area: setup_render_target gets the sizes and a

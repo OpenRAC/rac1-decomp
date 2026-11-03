@@ -17,6 +17,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/level.h"
 #include "asm_functions/executable.h"
+#include "game/math/fastfunc.h"
 extern char g_hero[];
 extern char item_available[];
 extern int weapon_ammo_counts[];
@@ -247,7 +248,7 @@ int hud_screen_position(HudElem *rec, int *x, int *y) {
     }
     return 0;
 }
-extern float IntToFloat(int);
+
 extern int truncate_float_to_s32(float);
 extern float hud_slide_ramp_timed[];
 extern float hud_slide_ramp_idle[];
@@ -809,10 +810,9 @@ void DefaultVtbl_DeleteMoby(void *e) {
 typedef struct {
     float x, y, z, w;
 } __attribute__((aligned(16))) HudPoint;
-extern int measure_text_width_regular(const char *, int);
+
 extern void HudSprite(int, int, int, int, int, int);
 extern void draw_hud_sprite_flipped(int, int, int, int, int, int);
-extern int FontPrintCenter(int, int, long, void *, int);
 
 extern void *msg_string(int);
 extern int sprintf(char *, const char *, ...);
@@ -1286,7 +1286,6 @@ extern void HudSprite(int, int, int, int, int, int);
 extern void HudFrame(char *, int, int, int, int, int);
 extern int sprintf(char *, const char *, ...);
 
-extern int FontPrintCenter(int, int, long, void *, int);
 extern void *msg_string(int);
 
 extern unsigned char screen_globals_base[];
@@ -2067,11 +2066,9 @@ extern s32 digit_width SDATA(digit_width);
 extern char bolt_count_format[];
 extern char bolt_separator_string[];
 extern char bolt_separator_alt_string[];
-extern f32 IntToFloat(int);
 
 extern void HudFrame_r2(void *, int, int, int, int, int) __asm__("func_L00_0023BAB8");
 extern int sprintf_r() __asm__("func_00116248");
-extern void font_print_right(int, int, int, char *, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/text/002377b8.c, FUN_L00_00239df8. */
 int draw_bolt_counter_hud_panel(HudElem_3A788 *m) {
@@ -2711,8 +2708,6 @@ extern char shrub_class_slot_flags[];
 
 extern void register_audio_stream_callback(void);
 extern void calculate_dma_transfer_address(void);
-
-extern void UpdateViewContext(void);
 
 extern void register_part_types(void);
 

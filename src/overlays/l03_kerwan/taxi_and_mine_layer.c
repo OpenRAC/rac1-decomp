@@ -24,6 +24,7 @@
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_idle_and_animation.h"
 extern char gHeroPos[];
 extern char gSpecialItems[];
 extern char gSkillPoints[];
@@ -137,7 +138,6 @@ extern f32 vec_distance_xy(void *, void *);
 
 extern void ClassifyTargetInCone(struct Moby *, void *, void *, void *);
 extern void Sound_PlayClassSound_r(int, int, struct Moby *, int) __asm__("func_L00_0028EF68");
-extern f32 IntToFloat(s32);
 
 extern int mine_fall_r(struct Moby *, void *) __asm__("func_L00_0025D6F0");
 extern void spawn_explosion(struct Moby *, void *, void *, f32, f32, s32, s32, s32, f32, f32, f32, f32, s32, f32, s32,
@@ -2320,7 +2320,6 @@ typedef struct Entry_2E08E8 {
 
 extern void fast_dec_timer(int *arg0);
 
-extern int Help_Request(int a, int b);
 extern float vec_distance_xy(void *, void *);
 
 extern int PlayBankSound(int, int, int);

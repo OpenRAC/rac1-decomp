@@ -177,7 +177,6 @@ extern u8 gHeroPos[];
 extern f32 g_frame_time MACRO_ADDR;
 extern u8 hero_velocity[];
 s32 truncate_float_to_s32(f32);
-void release_and_clear_hero_voice_slots(void);
 
 void HeroL18_SetMoveState(s32, s32);
 void allocate_hero_voice_for_entry(s32, s32);

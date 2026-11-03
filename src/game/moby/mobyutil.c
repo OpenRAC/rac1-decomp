@@ -18,8 +18,6 @@
 
 extern float shadow_light_dir[] NOT_SDA;
 
-extern float FastAbsF(float arg0);
-
 ASM_FUNC("asm/handwritten/text", func_00213A78);
 
 LINKER_REMNANT("asm/remnants/text", func_00213BAC);
@@ -128,8 +126,6 @@ void MobySetAnimation(MobyAnim *m, int seq, int frame) {
     m->unk5C = *m->frameData;
     m->unk70 &= ~2;
 }
-
-extern float IntToFloat(int arg0);
 
 extern char moby_blend_slot_poses[];
 
@@ -328,8 +324,6 @@ float resolve_camera_surface_height(float *pos, void *out) {
 LINKER_REMNANT("asm/remnants/text", func_00214538);
 
 extern char coll_output[];
-
-extern float min_float(float, float);
 
 /* Shadow range probe: cast a ray down (8 units) from the moby position
    shifted against the light direction shadow_light_dir by its size, then a

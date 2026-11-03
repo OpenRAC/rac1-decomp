@@ -22,6 +22,7 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/hero_idle_and_animation.h"
 extern Hero g_hero;
 extern char saved_mission_state[];
 
@@ -438,7 +439,6 @@ typedef struct Items {
 
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
-extern int func_L00_00203F20(int, int);
 
 extern unsigned char D_0013D5E7[];
 extern int D_0015EFA4 MACRO_ADDR;
@@ -638,7 +638,7 @@ void emit_cutscene_mode_moby_effects(struct Moby *m) {
             break;
     }
 }
-extern float IntToFloat(int);
+
 extern int GetEffectTex(int);
 extern void VU1_addGSregister(int, long);
 

@@ -1336,8 +1336,6 @@ extern char *create_blarg_commander_moby_from_source(char *a0);
 extern void FindNearestTargetMoby(void *, float *, float);
 extern int FindNearestEligibleMoby(float, void *, void *, int, int, void *, int);
 
-extern float IntToFloat(int);
-
 extern char *spawn_homing_spark_projectile(char *a, char *pos, int c, int d, float f);
 extern void start_blarg_commander_knockback(void *, struct Moby *);
 
@@ -1938,7 +1936,6 @@ extern void process_ultramech_hits_and_update_target(void *);
 extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
 extern int func_001160D8(void);
 
-extern float IntToFloat(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
@@ -3080,7 +3077,7 @@ extern char *quartu_cuboids MACRO_ADDR;
 extern void Hero_ResetToPosition(void *, void *, int, int);
 
 extern int memcard_Save(int slot, int flags);
-extern void AddDrawCallback(void (*)(void), void *);
+
 extern void draw_quartu_cutscene_messages(void);
 
 /* UpdateMoby_1419: state machine for a timed object */

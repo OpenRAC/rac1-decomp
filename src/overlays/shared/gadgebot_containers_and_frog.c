@@ -190,7 +190,7 @@ extern char *MobyGetHitMessage(void *, int, int);
 
 extern void destroy_gadgebot_spawn_container(void *, void *);
 extern void draw_gadgebot_spawn_container(char *);
-extern void AddDrawCallback(int, int);
+
 extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern int FastTweenColor_r(int, int, float) __asm__("func_001FA8A8");
 extern char *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
@@ -1366,7 +1366,7 @@ extern void PartType53Spawn(void *, int, float, float, int, int, int, float, voi
 extern int process_gadgebot_interactions(void *, int);
 
 extern void Spring(float *p, float *v, float t, float u1, float u2, float eps);
-extern float IntToFloat(int);
+
 extern int coll_sphere(float, void *, int, void *);
 extern float vec_length_xy(void *);
 extern int is_moby_in_class_range_500_to_540(void *);

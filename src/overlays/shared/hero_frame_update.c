@@ -14,26 +14,12 @@
 #include "asm_functions/shared_levels.h"
 extern Hero g_hero;
 
-extern void FadeToBlack(int);
 extern void hero_frame_update(void);
 
 extern void update_hero_ground_material_effects(void);
 
 extern void HeroL03_UpdateStateTransitions(void);
 
-extern void update_hero_easing_targets_and_point_effects(void);
-extern void update_hero_collision_ease_target(void);
-extern void update_hero_pitch_and_yaw_easing_targets(void);
-extern void update_hero_target_tracking(void);
-extern void update_hero_idle_random_rotation_targets(void);
-extern void update_hero_rotation_targets_and_random_manipulators(void);
-
-extern void update_hero_moby(void);
-
-extern void check_hero_item_reward_conditions(void);
-extern void update_hero_bolt_exclamation_hud(void);
-extern void dispatch_hero_animation_timed_events(void);
-extern void scan_hero_input_sequences(void);
 extern void Profile_Mark(void *);
 
 extern void update_hero_blink_and_gold_weapon_tint(void);

@@ -4,6 +4,7 @@
 #include "structs/records.h"
 #include "structs/misc.h"
 #include "asm_functions/executable.h"
+#include "game/math/fastfunc.h"
 
 /*
  * drawquad.cpp in the original source; text 0x1F7C60-0x1F9810.
@@ -90,7 +91,6 @@ extern BillboardRecord billboard_records[];
 
 extern s64 func_001F4868(s32);
 
-extern f32 IntToFloat(s32);
 extern s32 truncate_float_to_s32(f32);
 extern void VU1_addGSregister(s32, u64);
 

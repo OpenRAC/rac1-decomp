@@ -30,6 +30,7 @@
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_idle_and_animation.h"
 
 extern char gSkillPoints[];
 extern Hero g_hero;
@@ -433,8 +434,6 @@ extern int gameplay_event_frame_count_e __asm__("D_0015EFA4") MACRO_ADDR;
 extern int count_active_moby_group_members(int, int);
 extern void PlayBankSound(int, int, int);
 
-extern void Help_Request(int, int);
-
 /* Hoven challenge tracker: unlocks the area once, records the time and run flags for two skill points and
  * awards them (one for staying airborne long enough). */
 void update_hoven_help_and_dialogue(char *m) {
@@ -622,7 +621,7 @@ void draw_oscillating_target_link_strips(Moby *moby) {
 extern int fast_dec_timer(int *);
 
 extern void rand_vec(float *, float, float);
-extern void AddDrawCallback(void *, void *);
+
 extern float electric_arc_tex_scroll SDATA(electric_arc_tex_scroll);
 extern float electric_arc_tex_scroll_speed SDATA(electric_arc_tex_scroll_speed);
 extern float electric_arc_jitter SDATA(electric_arc_jitter);
@@ -974,7 +973,6 @@ extern float vec_distance_xy(void *, void *);
 
 extern void Moby_PlaySound(int, int, int);
 
-extern void AddDrawCallback(void *, void *);
 extern void update_hoven_turret_target_alignment_timer(void *);
 extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
 extern char *MobyGetHitMessage(void *, int, int);
@@ -1460,8 +1458,6 @@ typedef struct {
     char pad0[0xAC];
     short value;
 } Level12VendorCounterData;
-
-extern void emit_rgba_draw_packet(int, int, int, int);
 
 /* Scale and play the vendor cue while its counter is below the limit. */
 void draw_hoven_turret_destruction_fade(Moby *moby) {
@@ -2042,7 +2038,6 @@ void update_planetbuster_maximus_detached_parts(char *moby) {
 }
 extern int hoven_frame_count MACRO_ADDR;
 extern int truncate_float_to_s32(float);
-extern float IntToFloat(int);
 
 /* Moby update that pulses a glow tint on 18 linked mobys. */
 void update_planetbuster_maximus_glow_color(char *moby) {

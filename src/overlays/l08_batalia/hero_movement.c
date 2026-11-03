@@ -185,7 +185,6 @@ extern float batalia_hero_anim_frame_speeds[];
 extern int fast_dec_timer(int *);
 
 extern int get_hero_idle_animation_index(int);
-extern float adjust_hero_animation_speed_for_target_frame(float, float, float, float);
 
 extern int truncate_float_to_s32(float);
 extern float vec_length_xy(void *);
@@ -199,8 +198,6 @@ extern void vec_scale_to_length(void *, void *, float);
 extern int PartType34Spawn(void *, void *, float, float);
 
 extern float ApproachValue(float *, float, float);
-
-extern void Hero_SetTiltSpringParams(float, float);
 
 extern void ClampVectorLength(void *, float);
 

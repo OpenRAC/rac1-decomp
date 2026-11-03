@@ -76,9 +76,6 @@ extern float veldin1_hero_state4e_step_lengths[];
 
 extern int fast_dec_timer(int *);
 
-extern int hero_idle_sequence(int);
-extern float adjust_hero_animation_speed_for_target_frame(float, float, float, float);
-
 extern int Moby_PlaySound(int, int, int);
 extern int truncate_float_to_s32(float);
 extern float vec_length_xy(void *);
@@ -92,8 +89,6 @@ extern void vec_scale_to_length(void *, void *, float);
 extern int PartType34Spawn(void *, void *, float, float);
 
 extern float ApproachValue(float *, float, float);
-
-extern void Hero_SetTiltSpringParams(float, float);
 
 extern void ClampVectorLength(void *, float);
 

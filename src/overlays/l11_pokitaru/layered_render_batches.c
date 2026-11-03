@@ -71,8 +71,6 @@ extern int FastBSphereCheck(char *, float);
 
 extern int func_001FA898(float);
 
-extern void AddDrawCallback(void (*)(void), void *);
-
 extern int pokitaru_layered_mesh11_colors[];
 extern int pokitaru_layered_mesh11_vertex_counts[];
 extern int pokitaru_layered_mesh8_colors[];

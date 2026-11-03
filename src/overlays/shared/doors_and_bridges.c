@@ -7,6 +7,7 @@
 #include "data/level_07.h"
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
+#include "game/render/draw.h"
 extern Hero g_hero;
 
 /* Timed activation pads: stepped on, they count down until the group is activated. */
@@ -52,7 +53,7 @@ struct BridgeVars {
 };
 
 extern void prepare_scaled_float_table_with_target_byte(void *, int, float);
-extern void AddDrawCallback(void *, void *);
+
 extern char umbris_ambient_stream_scaled_table[];
 extern char register_audio_stream_callback[];
 

@@ -128,7 +128,6 @@ extern s32 g_current_level_index MACRO_ADDR;
 extern s32 hero_hit_count MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
 extern u8 hero_velocity[];
-void release_and_clear_hero_voice_slots(void);
 
 void Hero_TryMoveStateL14(s32, s32);
 
@@ -314,7 +313,6 @@ extern float oltanis_hero_ledge_shimmy_frame_speeds[];
 extern int fast_dec_timer(int *);
 
 extern int hero_get_gadget_anim_id(int);
-extern float adjust_hero_animation_speed_for_target_frame(float, float, float, float);
 
 extern int Moby_PlaySound(int, int, int);
 extern int truncate_float_to_s32(float);
@@ -327,8 +325,6 @@ extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void vec_scale_to_length(void *, void *, float);
 
 extern float ApproachValue(float *, float, float);
-
-extern void Hero_SetTiltSpringParams(float, float);
 
 extern void ClampVectorLength(void *, float);
 

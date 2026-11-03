@@ -41,7 +41,6 @@ extern void update_hero_target_heading(float a, float b, float c);
 
 extern void *MobyGetHitMessage(void *, int, int);
 
-extern void release_and_clear_hero_voice_slots(void);
 extern void RippleDisturb(int, int, int, float, float, float, float);
 
 extern int hoven_cinematic_mode MACRO_ADDR;

@@ -20,6 +20,8 @@
 #include "asm_functions/shared_levels.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/render/draw.h"
+#include "overlays/shared/hero_idle_and_animation.h"
 extern PadState g_controller_state;
 extern char g_hero[];
 extern int pad_held;
@@ -167,8 +169,6 @@ extern unsigned char hero_globals_base[] NOT_SDA;
 extern char coll_sphere_moby_hits[], D_L00_001E9EC8[], D_L00_001E9EF0[];
 extern int pause44 SDATA(D_L00_0015F6A8);
 extern float frame_scale MACRO_ADDR;
-extern float IntToFloat(int);
-extern float FastAbsF(float);
 
 extern float vec_distance_xy(void *, void *);
 
@@ -671,7 +671,6 @@ extern unsigned char g_hero_r[] __asm__("D_0013F450");
 void func_00214358_C2A80(void *, int, float) __asm__("func_00214358");
 
 float vec_distance_xy(void *, void *);
-float FastAbsF(float);
 
 float ApproachValue(void *, float, float);
 
@@ -975,7 +974,7 @@ void mine_glove_update(struct Moby *moby) {
 }
 
 extern float jump_speed_4318(float *a, float *b, float speed, float g, float *out);
-extern float IntToFloat(int);
+
 typedef struct {
     float x, y, z, w;
 } V4 __attribute__((aligned(16)));
@@ -1040,7 +1039,7 @@ typedef struct {
 extern u8 gGoldBombGlove[];
 
 extern f32 vec_distance_xy(void *, void *);
-extern f32 IntToFloat(s32);
+
 extern void func_L00_002C3790_C39D0(Vec4 *pos, Vec4 *tgt, f32 *out, f32 speed, f32 unused,
                                     f32 range) __asm__("func_L00_002C3790");
 typedef struct {
@@ -1281,8 +1280,6 @@ void bomb_glove_update(struct Moby *moby) {
         vars->held = spawn_bomb(moby, &vars->grip);
 }
 
-extern float IntToFloat(int);
-
 extern int GetEffectTex(int);
 extern void draw_world_quad(void *, void *, int);
 extern int cinematic_mode MACRO_ADDR;
@@ -1406,7 +1403,7 @@ unsigned char *func_0020D348_C48C8(int) __asm__("func_0020D348");
 
 void func_00213DE0_C48C8(unsigned char *, int, int, int) __asm__("func_00213DE0");
 void func_L00_00251E30_C48C8(unsigned char *) __asm__("func_L00_00251E30");
-extern f32 IntToFloat(s32);
+
 extern s32 moby_array_start MACRO_ADDR;
 extern s16 decoy_list_r[] __asm__("D_L00_001B0BB0");
 
@@ -1577,7 +1574,7 @@ extern Vec4 g_debug_camera_r3 __asm__("D_L00_00166EC0");
 extern s32 coll_line_r3(void *, void *, s32, void *, s32) __asm__("func_L00_001EFFF0");
 extern s32 fast_dec_timer(s32 *);
 extern void ProbeGroundHeight_r(void *, s32, f32) __asm__("func_00214358");
-extern void AddDrawCallback(void *, void *);
+
 extern void draw_moby_oscillating_textured_quads_r(void) __asm__("func_L00_002C44C8");
 
 /* Predicts where a thrown moby lands: steps the velocity (with gravity) from its start until collision_line hits
@@ -2556,7 +2553,6 @@ extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern float FastVecLength_r(void *) __asm__("func_001F9CB8");
 extern int coll_line_r4(void *, void *, int, int, int) __asm__("func_L00_001EFFF0");
-extern int func_L00_00205618(int);
 
 extern void draw_swingshot_cable_r(char *) __asm__("func_L00_002C7128");
 

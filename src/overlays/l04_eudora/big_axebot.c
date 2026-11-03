@@ -169,7 +169,6 @@ struct PMoby {
 };
 
 extern void *libc_memset(void *, int, unsigned int);
-extern float IntToFloat(int);
 
 extern float vec_distance_xy(float *, float *);
 
@@ -1544,8 +1543,6 @@ extern float compute_circular_saw_flock_steering(void *, void *, float);
 extern void MobySpringTurn_b(char *moby, float target, float *vel, float k, float d,
                              float max) __asm__("func_L00_002592B0");
 extern int CarriedMobyUpdate(void *, void *);
-
-extern float IntToFloat(int);
 
 extern int truncate_float_to_s32(float);
 

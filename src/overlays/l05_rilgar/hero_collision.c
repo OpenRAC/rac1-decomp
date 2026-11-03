@@ -203,7 +203,7 @@ void vec_scale_to_length(void *, void *, f32);
 void compute_rotated_vector_angles(void *, void *);
 
 void func_L00_00233D50_40968(void *, void *, f32) __asm__("func_L00_00233D50");
-f32 FastAbsF(f32);
+
 extern Hero g_hero_r __asm__("D_0013F450");
 extern struct CollisionHit rilgar_coll_hit;
 

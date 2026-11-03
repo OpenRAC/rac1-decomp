@@ -8,7 +8,7 @@ void ocean_umbris_update(unsigned char *moby) {
             break;
         case 1:
             if (!is_point_inside_clip_volume(debris_far_point, **(int **)(moby + 0x78))) {
-                AddDrawCallback((void *)register_audio_stream_callback, moby);
+                AddDrawCallback_v((void *)register_audio_stream_callback, moby);
             }
             break;
     }

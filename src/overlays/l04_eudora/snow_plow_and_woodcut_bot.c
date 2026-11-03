@@ -20,6 +20,7 @@
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_idle_and_animation.h"
 extern Hero g_hero;
 extern char help_records[];
 extern char usage_stats[];
@@ -1436,7 +1437,6 @@ void update_moby_translation_delta_matrix(char *m) {
     }
 }
 extern char *eudora_mobys MACRO_ADDR;
-extern float IntToFloat(int);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
@@ -1968,8 +1968,6 @@ typedef struct {
     unsigned short time;
     unsigned int mask;
 } Help_2E57F8;
-
-extern int Help_Request(int a, int b);
 
 extern unsigned char discount_purchase_pricing[];
 extern int eudora_help_popup_state[] NOT_SDA;

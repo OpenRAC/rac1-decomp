@@ -456,7 +456,7 @@ extern CollisionHit_4C558 rilgar_coll_hit_r __asm__("D_L05_00174340") NOT_SDA;
 extern u8 D_L05_00174360[] NOT_SDA;
 extern u8 D_L05_0017AC20[] NOT_SDA;
 extern void func_L05_00241AA0(void);
-extern int func_L00_0020A8B8(float, float, float *);
+
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
 extern s32 func_L00_0025F410(s32);
@@ -672,8 +672,6 @@ typedef struct {
 
 extern unsigned short help_records_131_count[] NOT_SDA;
 extern unsigned short usage_stats_entry27_count[] NOT_SDA;
-
-extern int Help_Request(int a, int b);
 
 extern float vec_distance_xy(void *, void *);
 extern void Moby_GetJointWorldPos(void *, int, void *);
@@ -1177,7 +1175,6 @@ void update_hero_hoverboard_trick_animations(void) {
 extern int get_first_moby_in_group(void **, int, int, int);
 extern int get_next_moby_in_group(void **, void *, int, int);
 
-extern float IntToFloat(int);
 extern unsigned char menu_item_enabled_115[] NOT_SDA;
 extern void apply_hero_item_slot_selection(int);
 

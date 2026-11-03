@@ -24,6 +24,8 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/render/draw.h"
+#include "overlays/shared/hero_idle_and_animation.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 extern u8 saved_mission_state[];
@@ -89,8 +91,7 @@ struct FloatingShipPieceVars {
 
 extern int *l09_packet MACRO_ADDR;
 extern int FastBSphereCheck(char *, float);
-extern void UpdateViewContext(void);
-extern void BuildViewMatrices(void);
+
 extern void set_scale_matrix_v(float, void *) __asm__("func_001FA1C0");
 extern void FastVecScale_r(float, void *, void *) __asm__("func_001F9C30");
 
@@ -1812,8 +1813,6 @@ void platform_664_update(Moby *moby) {
 }
 extern int PlayBankSound(int, int, int);
 
-extern int Help_Request(int a, int b);
-
 extern unsigned char gHaveHeliPack[];
 
 extern int airship_parts_alive_count MACRO_ADDR;
@@ -1868,7 +1867,7 @@ extern int Moby_PlaySound(int, int, int);
 extern float vec_distance_xy(void *, void *);
 
 extern int Sound_IsPlaying(void *, int);
-extern float IntToFloat(int);
+
 extern void update_entity_matrix(char *, void *, void *, void *);
 
 typedef struct ElevatorVars {

@@ -141,8 +141,6 @@ extern float hero_aligned_cam_input_max_step SDATA(hero_aligned_cam_input_max_st
 void func_L00_002EB170_EB3E8(void *) __asm__("func_L00_002EB170");
 void vec_scale_to_length(void *, void *, float);
 
-float IntToFloat(int);
-float FastAbsF(float);
 float func_001EC120_EB3E8(float, float, float, float, float, float *) __asm__("func_001EC120");
 void build_look_at_matrix(void *, void *, void *, float);
 
@@ -543,7 +541,6 @@ void initialize_camera_pose_springs(Camera *m) {
     m->transition_state = 0;
 }
 extern int fast_dec_timer(int *);
-extern float IntToFloat(int);
 
 extern void compute_spherical_offset_from_positions(void *, void *, void *);
 
@@ -1431,8 +1428,6 @@ extern int try_select_follow_camera_volume(void *);
 extern void clear_follow_camera_volume_if_current(void *);
 
 extern void vec_scale_to_length(void *, void *, f32);
-
-extern f32 IntToFloat(int);
 
 extern void set_follow_camera_angle_blend_from_direction(void *, f32, f32);
 

@@ -19,6 +19,7 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/math/fastfunc.h"
 extern unsigned char g_hero[];
 
 typedef struct {
@@ -72,7 +73,6 @@ extern float ApproachValue(float *, float, float);
 
 extern int Moby_PlaySound(void *, int, void *);
 
-extern float IntToFloat(int);
 extern int truncate_float_to_s32(float);
 extern void allocate_hero_voice_for_entry(int, int);
 
@@ -342,8 +342,6 @@ void update_hero_vehicle_attachments_and_effects(void) {
 }
 extern unsigned char g_hero[];
 extern s32 level_game_mode_q MACRO_ADDR;
-
-extern void release_and_clear_hero_voice_slots(void);
 
 extern void HeroL06_TrySetMoveState(int, int);
 

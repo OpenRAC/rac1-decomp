@@ -21,6 +21,7 @@
 #include "enums/moby_class.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_idle_and_animation.h"
 extern char gHeroPos[];
 extern char gSkillPoints[];
 extern Hero g_hero;
@@ -66,7 +67,6 @@ extern void restore_gadgetron_ceo_non_challenge_environment(char *);
 extern void activate_gadgetron_ceo_challenge_environment(char *);
 
 extern void Hero_ResetToPosition(void *, void *, int, int);
-extern int Help_Request(int, int);
 
 extern int memcard_Save(int, int);
 extern int PlayBankSound(int, int, int);
@@ -582,7 +582,6 @@ void emit_path_walker_particle(unsigned char *m, void *v) {
                                              path_walker_particle_color_end, final_size, scale_ticks(0x23));
 }
 
-extern float IntToFloat(int);
 extern short *kalebo3_moby_groups[];
 extern char *kalebo3_moby_array MACRO_ADDR;
 extern float path_walker_initial_scale_multiplier SDATA(path_walker_initial_scale_multiplier);
@@ -703,7 +702,6 @@ extern short elevator_max_speed;
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void update_entity_matrix(char *, void *, void *, void *);
 
-extern void AddDrawCallback(void *, void *);
 extern void DrawRingStack(char *);
 
 /* Moves the platform between two heights above its joint, with a particle while it moves. */

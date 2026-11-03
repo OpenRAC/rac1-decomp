@@ -193,7 +193,6 @@ extern u8 gHeroPos[];
 extern f32 g_frame_time MACRO_ADDR;
 extern u8 hero_velocity[];
 s32 truncate_float_to_s32(f32);
-void release_and_clear_hero_voice_slots(void);
 
 void HeroQuartu_TrySetMoveState(s32, s32);
 void allocate_hero_voice_for_entry(s32, s32);
@@ -384,8 +383,6 @@ extern float quartu_hero_anim_frame_speeds[];
 
 extern int fast_dec_timer(int *);
 
-extern float adjust_hero_animation_speed_for_target_frame(float, float, float, float);
-
 extern float vec_length_xy(void *);
 
 extern void RippleDisturb(void *, int, int, float, float, float, float);
@@ -396,7 +393,6 @@ extern void vec_scale_to_length(void *, void *, float);
 extern int PartType34Spawn(void *, void *, float, float);
 
 extern float ApproachValue(float *, float, float);
-extern void Hero_SetTiltSpringParams(float, float);
 
 extern void ClampVectorLength(void *, float);
 

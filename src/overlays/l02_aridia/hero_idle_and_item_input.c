@@ -51,7 +51,6 @@ extern void update_hero_target_heading(float a, float b, float c);
 
 extern void *MobyGetHitMessage(void *, int, int);
 
-extern void release_and_clear_hero_voice_slots(void);
 extern int aridia_cinematic_mode MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
@@ -1562,7 +1561,6 @@ extern int func_001F9908(int *);
 extern int pad_pressed_within(int, int, int *);
 
 extern float resolve_hero_trajectory_parameter(float a, float b, float c);
-extern float adjust_hero_animation_speed_for_target_frame(float a, float b, float c, float d);
 
 extern float vec_distance_xy(void *, void *);
 

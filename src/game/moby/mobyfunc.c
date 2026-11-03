@@ -7,6 +7,7 @@
 #include "game/render/vuchain.h"
 #include "data/executable.h"
 #include "asm_functions/executable.h"
+#include "game/math/fastfunc.h"
 
 /*
  * mobyfunc.cpp in the original source; text 0x20D348-0x20E6B8.
@@ -291,8 +292,6 @@ void update_moby_voice(unsigned char *s) {
 }
 
 LINKER_REMNANT("asm/remnants/text", func_0020D828);
-
-extern float IntToFloat(int);
 
 /* Animation-frame value of a moby (the short at +4 of its frame data,
    1/16 units): the current frame's (the previous one's when no sequence

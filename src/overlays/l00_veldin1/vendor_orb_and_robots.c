@@ -14,6 +14,9 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/render/draw.h"
+#include "game/math/fastfunc.h"
+#include "overlays/shared/hero_idle_and_animation.h"
 extern char usage_stats[];
 extern char gSpecialItems[];
 extern Hero g_hero;
@@ -101,7 +104,6 @@ void clank_cutscene_trigger_update(M *m) {
 }
 extern unsigned char help_stats_base_q[] __asm__("D_0014171B") NOT_SDA;
 extern char *moby_array_start MACRO_ADDR;
-extern int Help_Request(int a, int b);
 
 typedef unsigned short Ent[4];
 typedef struct HelpMoby {
@@ -700,8 +702,6 @@ void update_veldin_robot_damage_and_targeting(void *mv) {
 }
 extern void Moby_GetJointWorldPos(void *, int, void *);
 
-extern float IntToFloat(int);
-extern void AddDrawCallback(void (*)(void), void *);
 extern void draw_veldin_robot_effect_quad_r(void) __asm__("func_L00_002E3128");
 
 // spawns a spark: steps the moby's position and emits one fast particle and three slow tails

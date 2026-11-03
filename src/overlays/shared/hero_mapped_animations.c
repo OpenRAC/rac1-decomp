@@ -1106,7 +1106,6 @@ void set_gravity_relative_vector_length_xy(float *dst, float *src, float z) {
             break;
     }
 }
-extern float IntToFloat(int);
 
 /* The height at the top of a jump from POS with velocity VEL losing STEP
    per frame. In view mode 0 (g_hero + 0x20B3) it rises for
@@ -1598,7 +1597,6 @@ void HeroAttachManipulators(char *obj) {
     update_hero_slot4_and_slot5_mobys((int)obj);
 }
 
-extern void pack_pose(void *, void *, void *, int, int);
 extern char source_bone4_joints_class1b1[];
 extern char source_bone4_pose_buffer[];
 extern char source_bone4_joints_default[];

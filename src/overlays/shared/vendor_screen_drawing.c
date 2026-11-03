@@ -8,14 +8,14 @@
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
 #include "game/moby/mobyfunc.h"
+#include "game/render/draw.h"
 
 extern void *libc_memset(void *, int, int);
 
 extern char *msg_string(int);
-extern void font_print_window_small(void *, long, char *, int);
+
 extern int sprintf(char *str, const char *fmt, ...);
-extern void FontPrintSmall(int, int, long, char *, int);
-extern void font_print_right_small(int, int, long, char *, int);
+
 typedef struct {
     int i0;
     int i4;
@@ -217,9 +217,7 @@ extern void configure_capture_target(int, int, float);
 
 extern void draw_vendor_purchase_text(void *, int, int);
 extern void render_vendor_capture_texture_overlays_pass(int, float, float);
-extern void begin_draw_frame(void);
 
-extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
 extern long capture_texture_tex0 MACRO_ADDR;
 
 /* Draws a screen-space rectangle from five joints of a moby: builds a box from its joint vectors, projects it and draws the rectangle. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_0029f990.c, FUN_L00_0029fcd0. */
@@ -408,7 +406,6 @@ extern s32 func_00122598(s32);
 extern void VU1_sendChain_r(void) __asm__("func_002349B8");
 extern void VU1_swapChain_r(void) __asm__("func_00234948");
 extern void func_L00_001F9D40(s32);
-extern void func_001F2608(void);
 
 extern void InitMobyInstance_r(void *, s32) __asm__("func_0020D440");
 
@@ -417,8 +414,7 @@ extern void func_L00_0029C9E8(void);
 extern void FastMemZero16_r(void *, s32) __asm__("func_001F99D8");
 extern s32 func_00217628(void *, s32, s32);
 extern void func_L00_002A2258(s32, u32, u32);
-extern void func_001F4630(s32);
-extern void func_001F3C10(void);
+
 extern void DrawMobysSetup_r(void) __asm__("func_0020E0C8");
 extern void InitMobyClassDists_r(void) __asm__("func_0020E040");
 extern void StashMobyClassDists_r(void) __asm__("func_0020E068");
@@ -429,7 +425,7 @@ extern void draw_vendor_purchase_panel_r(void *) __asm__("func_L00_002A0F60");
 extern void draw_vendor_inset_quads_r(char *) __asm__("func_L00_002A0C20");
 extern void VU1_addGSregister_r(s32, s64) __asm__("func_00234C98");
 extern void func_001FFFB8(void);
-extern void func_001F4748(void);
+
 extern void RestoreMobyClassDists_r(void) __asm__("func_0020E098");
 extern void DrawMobysCleanUp_r(void) __asm__("func_0020E200");
 

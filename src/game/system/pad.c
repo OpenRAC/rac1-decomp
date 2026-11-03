@@ -4,6 +4,7 @@
 #include "structs/records.h"
 #include "structs/misc.h"
 #include "asm_functions/executable.h"
+#include "game/math/fastfunc.h"
 
 /*
  * pad.cpp in the original source; text 0x217F68-0x218928.
@@ -146,7 +147,6 @@ extern s32 scale_game_frame_count_r(s32) __asm__("func_001F98C0");
 extern float func_001F9CE8(float *);
 extern float fast_arc_tan_r(float, float) __asm__("func_001FA058");
 extern float FastDiffRots_r(float, float) __asm__("func_001FA850");
-extern float func_001FA888(s32);
 
 void func_002181F0_r(PadState *p, u8 *buf, s32 len) __asm__("func_002181F0");
 

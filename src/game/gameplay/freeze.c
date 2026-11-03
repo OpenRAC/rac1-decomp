@@ -16,6 +16,7 @@
 #include "game/render/draw.h"
 #include "game/system/space.h"
 #include "enums/level.h"
+#include "game/math/fastfunc.h"
 
 /*
  * freeze.cpp in the original source; text 0x1FBC80-0x1FDF10.
@@ -192,13 +193,7 @@ extern struct TextRegionP freeze_choice_text_region;
 
 extern char g_hero[];
 extern char g_screen_extent[];
-extern void emit_rgba_draw_packet(s32, s32, s32, s32);
 
-extern void draw_outlined_rect(s32, s32, s32, s32, s32);
-extern s32 FontPrintCenter(s32, s32, s64, char *, s32);
-extern void font_print_window_regular(struct TextRegionP *, long, char *, s32);
-
-extern f32 IntToFloat(s32);
 extern s32 truncate_float_to_s32(f32);
 
 extern s32 GetIconFrame(s32, s32);

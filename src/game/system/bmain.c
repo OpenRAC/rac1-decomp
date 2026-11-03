@@ -8,6 +8,7 @@
 #include "game/audio/music.h"
 #include "game/audio/sound.h"
 #include "asm_functions/executable.h"
+#include "game/render/draw.h"
 
 /*
  * bmain.cpp in the original source; text 0x1E9808-0x1E9E70.
@@ -33,7 +34,6 @@ extern char voice_pool[];
 extern char memory_card_state[];
 extern char level_resource_buffers[];
 
-extern void FadeToBlack(int);
 extern void snd_StreamSafeCdSync(int);
 
 extern void Movie_Play(int, int, int, int, int);
@@ -149,20 +149,19 @@ extern void func_00201E88(void);
 extern void func_001E94A8(void);
 extern void VU1_initChain_r(void) __asm__("func_002348E8");
 extern void DMAC_VIF1_Enable_r(void) __asm__("func_00235018");
-extern void func_001F0F30(void);
+
 extern s32 sce_gs_sync_v_r(s32) __asm__("func_00122598");
 extern void func_001FB470(void);
-extern void func_001F3C10(void);
-extern void func_001F3D00(void);
+
 extern void SetBackgroundColor_r(s32, u64, u64) __asm__("func_001FB448");
 extern void flush_cache_r(s32) __asm__("func_00118D80");
 
 extern void PutDrawBufferLarge_r(void) __asm__("func_001FB498");
 extern void func_001FB530(void);
 extern void func_00201AF0(s32);
-extern void func_001F7680(s32);
+
 extern void func_00234C98(s32, u64);
-extern void func_001F55C0(s32, s32, s32, s32);
+
 extern void PutDrawBufferSmall_r(void) __asm__("func_001FB598");
 extern void func_001FB8A8(void);
 extern void VU1_sendChain_r(void) __asm__("func_002349B8");
@@ -179,7 +178,7 @@ extern void func_0012E2E8(void);
 extern s32 func_001EBB48(void);
 extern s32 reset_vif1_gif_r(void) __asm__("func_001207B8");
 extern void sceGsResetGraph_r(s16, s16, s16, s16) __asm__("func_00121B78");
-extern void func_001F3890(void);
+
 extern void func_00233308(void);
 
 /* Start-up sequence before the first level: clears the level bss, shows the intro and

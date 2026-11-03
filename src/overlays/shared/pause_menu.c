@@ -145,9 +145,6 @@ extern char player_camera[];
 
 extern void update_mission_list(void);
 
-extern void UpdateViewContext(void);
-
-extern void BuildViewMatrices(void);
 extern void VU1_syncChain(int);
 extern int sce_gs_sync_v(int);
 extern void initialize_menu_stream_buffers(int);
@@ -564,11 +561,9 @@ extern unsigned char level_transition_target_fmt[];
 extern void calculate_dma_transfer_address(void);
 extern void select_moby_context(int);
 
-extern void UpdateFog(void);
 extern int STUB_printf();
 extern void prepare_target_level_transition(int);
 
-extern void FadeToBlack(int);
 extern void PlayMovieEntryIfIdle(int);
 extern void queue_movie_with_game_language(int);
 extern void queue_language_zero_movie(int);
@@ -788,22 +783,18 @@ L2:
 typedef int u128 __attribute__((mode(TI)));
 extern void append_gif_transfer_packet(void);
 extern void append_draw_buffer_upload_packets(int a, int b, int n);
-extern void ResetGsRegisters(void);
-extern void emit_rgba_draw_packet(int, int, int, int);
+
 extern void VU1_addGSregister(int, long);
 
 extern void project_graphics_bounds(void *, void *, int *, int *, int *, int *);
 extern void draw_hud_rect_blended(int, int, int, int, long, long);
-extern void configure_graphics_render_target_and_projection(int a, int b, int flag, float f);
-extern void draw_hud_rect_depth(int arg0, int arg1, int arg2, int arg3, long arg4, int arg5, int arg6);
 
-extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
+extern void draw_hud_rect_depth(int arg0, int arg1, int arg2, int arg3, long arg4, int arg5, int arg6);
 
 extern void VU1_syncChain(int);
 
-extern void SetupGifPaging(int);
 extern void draw_menu_flashing_panel(int);
-extern void DoGifPaging(void);
+
 typedef struct PageMenu {
     int state;
     char *owner;

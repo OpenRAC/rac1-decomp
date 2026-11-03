@@ -27,6 +27,8 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/render/draw.h"
+#include "overlays/shared/hero_idle_and_animation.h"
 extern char g_controller_state[];
 extern unsigned char g_hero[];
 extern char usage_stats[];
@@ -129,9 +131,9 @@ struct BubbleVars {
 };
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern float IntToFloat(int);
+
 extern int GetEffectTex(int);
-extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
+
 extern unsigned char D_0015EEB4[4] MACRO_ADDR;
 
 /* One radar icon: its texture, its rectangle in that texture and its hot spot. */
@@ -331,14 +333,13 @@ extern void update_ship_lock_on_target(int a, char *moby);
 extern void draw_quarter_turn_textured_quads_f(float, float, float, float, unsigned char, unsigned char, unsigned char,
                                                unsigned char) __asm__("func_L11_00312510");
 extern void append_scaled_screen_triangle_strip(float, float, float, void *, int, int, long);
-extern void append_rotated_sprite_quad(float, float, float, float, float, int, int, int, int, int, int, int, float,
-                                       float);
+
 extern void *msg_string_id(int) __asm__("func_001FE540");
 extern int FontPrintCenterLarge_c(int, int, long, void *, int) __asm__("func_001F6FD8");
 extern float normalize_angle(float);
 
 extern int fast_dec_timer_i(void *) __asm__("func_001F9908");
-extern int Help_Request(int, int);
+
 typedef struct {
     unsigned short count;
     unsigned short best;
@@ -726,7 +727,7 @@ extern void func_L00_002EBEE0(void *);
 extern float approach_313D00(float *, float *, float, float, float, float) __asm__("func_00214D88");
 extern float cosine_313D00(float) __asm__("func_001F9FA8");
 extern float sine_313D00(float) __asm__("func_001F9F90");
-extern void func_001F3140(void);
+
 extern int func_L00_001F10E0(float, void *, int, Moby *);
 extern void burst_313D00(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                          int, int, int, int) __asm__("func_L00_0025F4A8");
@@ -734,7 +735,7 @@ extern void reflect_313D00(void *, void *, void *) __asm__("func_L00_001FF610");
 extern float angle_313D00(float, float) __asm__("func_L00_001FF860");
 extern float length_313D00(void *) __asm__("func_001F9CE8");
 extern int play_313D00(int, int) __asm__("func_L00_00203F20");
-extern void func_001F49B0(void (*)(char *), void *);
+
 extern void draw_313D00(char *) __asm__("func_L11_00313218");
 extern void exhaust_313D00(Moby *, Jet *) __asm__("func_L11_00313BC0");
 extern void wings_313D00(Moby *, Jet *, float, float) __asm__("func_L11_00313A70");
@@ -931,7 +932,7 @@ void update_player_ship_flight(void *a0, void *a1) {
 extern int Hero_TrySetMoveStateL11(int, int);
 
 extern int try_set_help_message(int, int);
-extern int Help_Request(int a, int b);
+
 extern void MusicRequestTrack(int, int);
 
 extern void update_player_ship_flight(void *, void *);

@@ -22,6 +22,7 @@
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_animation_slots.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/render/draw.h"
 extern Hero g_hero;
 extern Moby *g_hero_moby;
 extern char gSkillPoints[];
@@ -547,7 +548,7 @@ extern void *spawn_moving_resizing_height_snapped_alpha_fade_particle(void *, in
 #define func_L00_00272488_2BFBB8 func_L00_00272488
 #define func_0022ED80_2BFBB8 ((int (*)(int, int, int))func_0022ED80)
 #define func_L00_00217718_2BFBB8 func_L00_00217718
-extern float IntToFloat(int);
+
 #define func_001FA888_2BFBB8 ((float (*)(int))func_001FA888)
 extern int truncate_float_to_s32(float);
 #define func_001FA898_2BFBB8 ((int (*)(float))func_001FA898)
@@ -890,7 +891,7 @@ typedef struct {
 } HitBox;
 void func_L10_002CAD18_CB030(struct Moby *moby, HitBox *box) __asm__("func_L10_002CAD18");
 extern struct Moby *orxon_mobys_r3 __asm__("D_L10_00160058") MACRO_ADDR;
-extern float IntToFloat(int);
+
 extern int truncate_float_to_s32(float);
 extern char linked_hitbox_no_target_msg[];
 extern char linked_moby_present_message[];
@@ -1811,7 +1812,7 @@ extern void render_data_processor_linked_effect(unsigned char *);
 extern float data_processor_fade_seconds SDATA(data_processor_fade_seconds);
 extern float vec_length(float);
 extern int FastBSphereCheck(void *, float);
-extern void AddDrawCallback(void *, void *);
+
 typedef struct DataProcessorVars {
     f32 half_width; /* 0x00 */
     s32 count; /* 0x04: order bytes copied into order[] */
@@ -2214,7 +2215,7 @@ unsigned char *func_L10_002DE630_r(int a, void *pos, int b, float x, float y, fl
 typedef int Effect128 __attribute__((mode(TI)));
 
 extern s32 truncate_float_to_s32(f32);
-extern f32 IntToFloat(s32);
+
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern void SendRadialMessageToMobys(void *, void *, void *, int, int, int, int, int, float, float, float);
 extern float frame_scale MACRO_ADDR;

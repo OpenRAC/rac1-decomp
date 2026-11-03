@@ -34,7 +34,6 @@ typedef struct {
 extern SegmentPath *level_paths[];
 
 extern void STUB_printf();
-extern float IntToFloat(int);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -643,7 +642,6 @@ typedef struct {
     Vec4 points[1]; /* 0x10 */
 } PointPath;
 extern s32 truncate_float_to_s32(f32);
-extern f32 IntToFloat(s32);
 
 extern void vec_scale_to_length(void *, void *, f32);
 
@@ -917,10 +915,6 @@ extern u8 g_debug_camera_r[] __asm__("D_L00_00166EC0");
 
 float vec_length_xy(void *);
 float vec_distance_xy(void *, void *);
-
-float FastAbsF(float);
-
-float IntToFloat(s32);
 
 void func_00215C00_64140(Vec4 *, float, float, float) __asm__("func_00215C00");
 MobyBound *GetFlaggedPvarWord(struct Moby *);

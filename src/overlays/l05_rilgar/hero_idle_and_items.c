@@ -45,8 +45,6 @@ extern void update_hero_target_heading(float a, float b, float c);
 
 extern void *MobyGetHitMessage(void *, int, int);
 
-extern void release_and_clear_hero_voice_slots(void);
-
 extern void RippleDisturb(void *, int, int, float, float, float, float);
 
 extern int select_point_index_by_distance(void *, void *, float);

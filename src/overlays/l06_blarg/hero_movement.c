@@ -126,7 +126,6 @@ extern s32 g_current_level_index MACRO_ADDR;
 extern s32 hero_hit_count MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
 extern u8 hero_velocity[];
-void release_and_clear_hero_voice_slots(void);
 
 void HeroL06_TrySetMoveState(s32, s32);
 
@@ -320,7 +319,6 @@ void sceVu0Normalize(void *, void *);
 void vec_scale_to_length(void *, void *, f32);
 void compute_rotated_vector_angles(void *, void *);
 
-f32 FastAbsF(f32);
 extern Hero g_hero;
 extern struct CollisionHit blarg_coll_hit;
 
@@ -672,7 +670,6 @@ extern float blarg_hero_anim_frame_speeds_b[];
 extern int fast_dec_timer(int *);
 
 extern int get_hero_help_value(int);
-extern float adjust_hero_animation_speed_for_target_frame(float, float, float, float);
 
 extern int Moby_PlaySound(int, int, int);
 extern int truncate_float_to_s32(float);
@@ -680,7 +677,7 @@ extern int truncate_float_to_s32(float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern float ApproachValue(float *, float, float);
-extern void Hero_SetTiltSpringParams(float, float);
+
 extern void ClampVectorLength(void *, float);
 
 extern float Spring(float *, float *, float, float, float, float);

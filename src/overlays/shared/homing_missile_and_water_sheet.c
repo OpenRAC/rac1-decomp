@@ -21,6 +21,7 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_idle_and_animation.h"
 extern Hero g_hero;
 extern int g_screen_extent[];
 extern char help_records[];
@@ -515,7 +516,6 @@ typedef struct {
 extern void VU1_addGSregister(int, long);
 extern int GetEffectTex(int);
 
-extern float IntToFloat(int);
 extern void draw_env_overlay_mesh_r(int, void *, void *, void *, int) __asm__("func_L00_001FDE48");
 extern void draw_world_quad(void *, void *, int);
 
@@ -902,7 +902,7 @@ extern LvState D_L11_001BBF40;
 extern LvState D_L11_001BB2E0;
 extern unsigned char D_L11_0015FD08[];
 extern void func_0022ED80(int, int, void *);
-extern int func_L00_00203F20(int a, int b);
+
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 

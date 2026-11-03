@@ -12,6 +12,7 @@
 #include "game/render/framebuf.h"
 #include "game/ui/hud.h"
 #include "asm_functions/executable.h"
+#include "game/math/fastfunc.h"
 extern Hero g_hero;
 extern int frame_size;
 extern char gold_weapon_purchased[];
@@ -499,9 +500,6 @@ extern s32 sound_update(void);
 
 extern float vec_length_xy(void *);
 
-extern float IntToFloat(s32);
-extern void UpdateViewContext(void);
-extern void UpdateFog(void);
 extern s32 sprintf(char *, const char *, ...);
 extern double func_00120778(float);
 extern s32 sceOpen(char *, s32, ...);
@@ -953,8 +951,7 @@ extern s32 skip_frame MACRO_ADDR;
 extern volatile s32 debug_text_flush_wait_flag MACRO_ADDR;
 extern void append_gif_transfer_packet(void);
 extern void flush_debug_text_queue(void);
-extern int print_debug_text_centered(int, int, int, char *);
-extern void print_debug_text(int, int, int, char *);
+
 extern int sprintf(char *, const char *, ...);
 extern double promote_float60(float) __asm__("func_00120778");
 extern char debug_menu_title[];
@@ -1389,13 +1386,10 @@ typedef struct {
 extern int slideshow[4] MACRO_ADDR;
 extern float gFadeLvl MACRO_ADDR;
 extern DbgRec timed_text_records[];
-extern void queue_framebuffer_upload(int);
+
 extern int truncate_float_to_s32(float);
-extern void emit_rgba_draw_packet(int, int, int, int);
-extern void ResetGsRegisters(void);
-extern void SetupGifPaging(int);
+
 extern void draw_timed_text(void *, int);
-extern void DoGifPaging(void);
 
 /* Fade and debug-rectangle render hook: uploads the GS state, draws a black full-screen quad with alpha from gFadeLvl
    (clamped to 1.0), then every timed_text_records record with key >= 0 through draw_timed_text inside a GIF paging
@@ -1451,10 +1445,8 @@ void print_text_with_texture_3(void *a, void *b, void *c, void *d, void *e) {
 
     FontPrint(a, b, c, d, e, mode, effect3_font_metrics);
 }
-extern int measure_text_width_regular(unsigned char *, int);
-extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
-extern void func_001F68E8(int, int, long, void *, int);
+extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 /* draw a two-layer shadowed text label at x,y with alignment mode */
 void draw_timed_text_line(int x, int y, int mode, unsigned char *p, float scale, float alpha) {

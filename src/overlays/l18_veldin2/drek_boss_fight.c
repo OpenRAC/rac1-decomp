@@ -29,6 +29,7 @@
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/render/draw.h"
 extern Hero g_hero;
 extern char voice_pool[];
 
@@ -304,7 +305,7 @@ void mark_block_entries_within_transform_xy_bounds(int a, int b) {
 }
 extern float g_frame_time MACRO_ADDR;
 extern void draw_glow_moby_layered_quads(struct Moby *);
-extern void AddDrawCallback(void (*)(void), void *);
+
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound(int, int, int);
 
@@ -908,8 +909,6 @@ extern float SteerAngleWithVelocity(float *, float *, float, float, float, float
 extern float vec_distance_xy(void *, void *);
 
 extern float vec_length_xy(void *);
-
-extern float IntToFloat(int);
 
 extern void set_thruster_pack_lock_green_list_data_fields(int idx);
 extern void moby_init_action_mode(void *moby);

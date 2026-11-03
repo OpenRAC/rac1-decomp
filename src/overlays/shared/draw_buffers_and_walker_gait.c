@@ -10,6 +10,7 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/math/fastfunc.h"
 
 extern void wait_for_graphics_pipeline_idle(int, int);
 
@@ -188,7 +189,6 @@ extern float vec_distance_xy(void *, void *);
 extern void STUB_printf();
 extern float jump_speed_4318(float *a, float *b, float *out, float speed, float g);
 
-extern float IntToFloat(int);
 extern float g_frame_time MACRO_ADDR;
 extern float inv_frame_scale MACRO_ADDR;
 extern int walker_state_anim_slots[];

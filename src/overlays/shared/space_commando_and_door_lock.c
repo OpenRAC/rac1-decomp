@@ -648,7 +648,6 @@ void process_blarg_space_commando_hits(char *m) {
 
 extern void vec_scale_to_length(void *, void *, float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern float IntToFloat(int);
 
 extern char blarg_coll_hit_normal[];
 extern float space_commando_beam_fan_degrees SDATA(space_commando_beam_fan_degrees);
@@ -681,7 +680,7 @@ void initialize_blarg_space_commando_beam(Moby *m) {
 
 extern int coll_line(void *, void *, int, void *, void *);
 extern float ApproachValue(float *, float, float);
-extern void AddDrawCallback(void *, void *);
+
 extern void DrawBeam(char *moby);
 extern void spawn_blarg_space_commando_beam_sparks(char *moby);
 extern float space_commando_beam_spread_speed SDATA(space_commando_beam_spread_speed);
@@ -1007,7 +1006,6 @@ extern short blarg_timer_frame_y1_offset;
 extern short blarg_timer_frame_x0_offset;
 extern short blarg_timer_frame_x1_offset;
 extern short blarg_timer_frame_alpha;
-extern void DrawUIFrame(int, int, int, int, int);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
@@ -1232,8 +1230,6 @@ extern int g_current_level_index SDATA(g_current_level_index);
 extern int level_mobys_q SDATA(level_mobys_q);
 extern int truncate_float_to_s32(float);
 
-extern void AddDrawCallback(void *, void *);
-
 extern void PartType41Spawn(void *, void *, int, unsigned int, int, int, int, float);
 /* Return color with blue placed in the blue channel. */
 static inline unsigned int or_blue_channel_p(int blue, unsigned int color) {
@@ -1408,7 +1404,6 @@ void update_hit_triggered_moby_breakup(Moby *moby) {
     }
 }
 
-extern void AddDrawCallback(void *, void *);
 extern void draw_projected_fading_quad(char *);
 
 /* UpdateMoby: state 0 deletes, state 1 draws and times out */

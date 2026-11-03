@@ -25,6 +25,8 @@
 #include "enums/moby_class.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/render/draw.h"
+#include "overlays/shared/hero_idle_and_animation.h"
 extern unsigned short active_marker_id NOT_SDA;
 extern char gSpecialItems[];
 extern char g_hero[];
@@ -727,7 +729,7 @@ typedef struct {
 
 extern void vec_scale_to_length(void *, void *, float);
 extern int fast_dec_timer(int *);
-extern float IntToFloat(int);
+
 extern int FastTweenColor_r(int, int, float) __asm__("func_001FA8A8");
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern unsigned char *PartType59Spawn(void *, int, unsigned char, int, int, int, int, float);
@@ -767,7 +769,7 @@ void emit_moby_sprite_effect_particles(char *m) {
 extern float conveyor_belt_base_speed SDATA(conveyor_belt_base_speed);
 extern float g_frame_time_sq MACRO_ADDR;
 extern float ApproachValue(float *, float, float);
-extern void AddDrawCallback(void (*)(void), void *);
+
 extern void draw_conveyor_belt_strips();
 extern void update_conveyor_group_voice(unsigned char *);
 extern void update_conveyor_group_motion_transforms(int, void *);
@@ -2810,7 +2812,6 @@ INCLUDE_ASM("asm/overlays", func_L16_002E22DC);
 extern int DialogRequest_Init(void *, void *);
 extern int Npc_TryStartDialog(void *, void *);
 extern void Hero_ResetToPosition(void *, void *, int, int);
-extern int Help_Request(int, int);
 
 extern int memcard_Save(int, int);
 

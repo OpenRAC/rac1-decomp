@@ -24,6 +24,8 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/render/draw.h"
+#include "overlays/shared/hero_idle_and_animation.h"
 extern Hero g_hero;
 extern char hero_current_state[];
 extern char gSkillPoints[];
@@ -118,7 +120,7 @@ extern void RippleDisturb(void *, int, int, float, float, float, float);
 extern int check_scaled_vector_bsphere(char *vec, float scale);
 
 extern void RippleSimClock(char *p, int n);
-extern void AddDrawCallback(void *, void *);
+
 extern void render_level_12_water_grids(void);
 
 typedef struct {
@@ -1773,8 +1775,6 @@ void miner_update(Moby *m) {
 }
 extern void draw_level_12_effects(void);
 
-extern void AddDrawCallback(void *, void *);
-
 /* Queues the level 12 effects draw when the camera is inside the moby's clip volume. */
 void register_level_12_effects_draw_callback(unsigned char *moby) {
     struct EffectsEmitterVars *data = (struct EffectsEmitterVars *)((Moby *)moby)->pvars;
@@ -2627,7 +2627,7 @@ extern void start_blarg_commander_knockback(void *, void *);
 extern char *create_blarg_commander_moby_from_source(void *);
 extern void cache_consecutive_point_distances(int);
 extern int follow_blarg_helicopter_path(struct Moby *, int);
-extern void Help_Request(int, int);
+
 extern float SpringTurn(float *, float, float, float, float, float);
 extern void update_blarg_helicopter_motion_tilt(char *);
 extern char *spawn_rocket(void *, void *, void *, int, float, float, float);
@@ -3540,7 +3540,7 @@ void process_helicopter_hits_and_reactivation(char *m, int flag) {
         ((Moby *)m)->flags = (((Moby *)m)->flags | 0x41) & 0xEFFF;
     }
 }
-extern float IntToFloat(int);
+
 extern int check_scaled_vector_bsphere_i(char *vec, float scale) __asm__("func_L01_00276680");
 extern void process_helicopter_hits_and_reactivation(char *m, int flag);
 extern void initialize_path_descriptor(char *p);

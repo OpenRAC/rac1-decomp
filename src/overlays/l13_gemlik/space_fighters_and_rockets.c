@@ -170,7 +170,6 @@ extern char *PartType21Spawn(void *pos, void *dir, int c, int d, int n, int k, f
 extern float vec_distance_xy(void *, void *);
 
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
-extern float IntToFloat(int);
 
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern int coll_line(void *, void *, int, void *, int);
@@ -1046,8 +1045,6 @@ void steer_blarg_space_fighter(char *moby, char *d, float p2, float p3) {
     ((Moby *)moby)->rot.x = ((Moby *)moby)->rot.x * 0.98f;
     normalize_angle(((Moby *)moby)->rot.x);
 }
-
-extern float IntToFloat(int);
 
 // picks the entry of a ring table nearest a point, scanning outward from a start index
 int select_blarg_space_fighter_path_point_by_distance(char *pt, int *tbl, int start, float ref) {

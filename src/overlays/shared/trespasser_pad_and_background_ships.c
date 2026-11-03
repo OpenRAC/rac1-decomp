@@ -23,6 +23,7 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_mapped_animations.h"
+#include "game/render/draw.h"
 extern Hero g_hero;
 extern char gHeroPos[];
 extern char gSkillPoints[];
@@ -331,8 +332,7 @@ void build_interpolated_dma_packet(Arg *arg) {
     g_gs_texture_allocation_cursor += 0x4000;
 }
 extern void vu1_add_vif_code(int);
-extern void UpdateViewContext(void);
-extern void BuildViewMatrices(void);
+
 extern void AA_BlurPass(void);
 extern float textured_grid_saved_fog_near_distance MACRO_ADDR;
 extern float textured_grid_saved_fog_far_distance MACRO_ADDR;
@@ -1632,7 +1632,6 @@ extern void initialize_collectible_sprite_state(char *moby);
 extern void update_collectible_sprite_effect(char *m);
 extern float vec_distance_xy(void *, void *);
 
-extern int Help_Request(int, int);
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern int memcard_Save(int, int);
 
@@ -1824,7 +1823,7 @@ typedef struct {
 } L02SpriteData;
 
 extern int fast_dec_timer(int *);
-extern float IntToFloat(int);
+
 extern int FastTweenColor_r(int, int, float) __asm__("func_001FA8A8");
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 extern unsigned char *PartType59Spawn(void *, int, unsigned char, int, int, int, int, float);
@@ -1886,7 +1885,6 @@ void draw_background_ship_1_joint_billboards(char *self) {
     }
 }
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void AddDrawCallback(void (*)(void), void *);
 
 /* Refreshes a moby's three sub-objects, packs its colour bytes, and queues a redraw when the global changed. */
 void prepare_background_ship_1_joint_billboards(char *moby) {

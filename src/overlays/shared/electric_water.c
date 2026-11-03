@@ -21,6 +21,7 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_animation_slots.h"
+#include "game/math/fastfunc.h"
 extern char gHeroPos[];
 extern char gSpecialItems[];
 extern int level_moby_killed[];
@@ -108,7 +109,7 @@ extern void initialize_electric_water_bolt_effect(char *);
 extern void update_electric_water_bolt_effect(Moby *);
 
 extern void draw_electric_water_countdown(char *);
-extern void AddDrawCallback(void *, void *);
+extern void AddDrawCallback_v(void *, void *) __asm__("func_001F49B0");
 extern int Sound_PlayClassSound(int, int, void *, int);
 
 extern float vec_distance_xy(void *, void *);
@@ -293,7 +294,7 @@ void electric_water_update(unsigned char *m) {
                         }
                         initialize_electric_water_bolt_effect((char *)moby);
                         update_electric_water_bolt_effect(moby);
-                        AddDrawCallback(draw_electric_water_bolt_effect, moby);
+                        AddDrawCallback_v(draw_electric_water_bolt_effect, moby);
                     }
                 }
             }
@@ -331,7 +332,7 @@ void electric_water_update(unsigned char *m) {
                 vars->bolt_start = g_hero.motion.body_center.q;
                 initialize_electric_water_bolt_effect((char *)moby);
                 update_electric_water_bolt_effect(moby);
-                AddDrawCallback(draw_electric_water_bolt_effect, moby);
+                AddDrawCallback_v(draw_electric_water_bolt_effect, moby);
                 hit.attacker = m;
                 hit.flags = 0x10001;
                 hit.damage = 1.0f;
@@ -419,7 +420,7 @@ void electric_water_update(unsigned char *m) {
                 vars->light = -1;
             }
             if (vars->off_timer != 0) {
-                AddDrawCallback(draw_electric_water_countdown, moby);
+                AddDrawCallback_v(draw_electric_water_countdown, moby);
             }
             if (vars->owner != 0) {
                 RELEASE_2D7C00(vars);
@@ -480,8 +481,6 @@ void electric_water_update(unsigned char *m) {
         }
     }
 }
-extern void DrawUIFrame(int, int, int, int, int);
-extern float IntToFloat(int);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
@@ -1206,7 +1205,7 @@ void underwater_ring_update(unsigned char *moby) {
     }
 }
 
-extern void AddDrawCallback(void *, void *);
+extern void AddDrawCallback_v(void *, void *) __asm__("func_001F49B0");
 extern void draw_moby_radial_ripple_mesh_buffers(void);
 
 // First call sets up and marks the moby; later calls queue a draw callback and set a flag.
@@ -1215,7 +1214,7 @@ void ripple_strips_moby_update(struct Moby *moby) {
         set_moby_color(moby, 0x40, 0x40, 0x40);
         moby->state = 1;
     } else {
-        AddDrawCallback((void *)draw_moby_radial_ripple_mesh_buffers, moby);
+        AddDrawCallback_v((void *)draw_moby_radial_ripple_mesh_buffers, moby);
         moby->draw_dist = 0;
         moby->flags |= 1;
     }

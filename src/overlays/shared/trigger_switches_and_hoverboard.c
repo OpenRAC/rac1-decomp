@@ -19,6 +19,8 @@
 #include "enums/level.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/render/draw.h"
+#include "overlays/shared/hero_idle_and_animation.h"
 extern char g_hero[];
 /* Hydrodisplacer faucet: pulse phase and strength. */
 struct FaucetPulseVars {
@@ -317,7 +319,6 @@ void update_hydrodisplacer_faucet_pulse_color(void *mv) {
     }
 }
 extern void Hero_TryMoveStateL05(int, int);
-extern int Help_Request(int a, int b);
 
 extern void Moby_GetJointWorldPos(void *, int, void *);
 
@@ -540,8 +541,6 @@ void add_moby_frames_for_group_proximity(char *moby) {
         }
     }
 }
-
-extern void AddDrawCallback(void *, void *);
 
 extern void draw_moby_wobble_quads(unsigned char *m);
 
@@ -837,7 +836,6 @@ void initialize_moby_launch_motion(Moby *m, int b, void *v1, void *v2, int a) {
 }
 extern void Moby_GetJointWorldPos(void *, int, void *);
 
-extern float IntToFloat(int);
 extern int coll_sphere(float, void *, int, void *);
 
 extern char rilgar_coll_hit[];
@@ -1110,7 +1108,7 @@ extern f32 rilgar_glow_debris_forward_speed SDATA(rilgar_glow_debris_forward_spe
 extern f32 rilgar_glow_debris_up_speed SDATA(rilgar_glow_debris_up_speed);
 extern f32 frame_scale MACRO_ADDR;
 extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-extern f32 IntToFloat(s32);
+
 extern s32 truncate_float_to_s32(f32);
 extern void AddDrawCallback_r(void (*)(char *), struct Moby *) __asm__("func_001F49B0");
 extern char *MobyGetHitMessage(struct Moby *, s32, s32);

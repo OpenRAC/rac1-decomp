@@ -128,7 +128,6 @@ void update_box_positional_voice(Moby_0031AD00 *m) {
     }
 }
 
-extern float IntToFloat(int);
 extern int func_001FA898(float);
 extern void set_requested_state_and_mark_changes(int a, int b, int c, int d, int e);
 

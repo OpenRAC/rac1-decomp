@@ -12,6 +12,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+#include "game/render/draw.h"
 
 extern void VU1_addGSregister(int, long);
 extern int D_0015EE84 MACRO_ADDR;
@@ -108,8 +109,6 @@ typedef struct {
     Moby *unk184;
     Moby *unk188;
 } VeldinLevelState;
-
-extern void AddDrawCallback(void *, void *);
 
 extern void Moby_GetJointWorldPos(void *, int, void *);
 

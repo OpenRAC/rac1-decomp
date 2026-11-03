@@ -27,6 +27,8 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/math/fastfunc.h"
+#include "overlays/shared/hero_idle_and_animation.h"
 extern Hero g_hero;
 extern u8 gSpecialItems[];
 extern int pad0_pressed;
@@ -421,7 +423,6 @@ extern char *blarg_scene_points MACRO_ADDR;
 extern float blarg_fade_level MACRO_ADDR;
 extern float vec_distance_xy(void *, void *);
 
-extern float IntToFloat(int);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void lerp_vector(void *, void *, void *, float);
 
@@ -433,7 +434,7 @@ extern void set_camera_position(void *);
 
 extern int HeroL06_TrySetMoveState(int, int);
 extern void spawn_moby_breakup_effect(char *, int);
-extern void AddDrawCallback(int, char *);
+
 extern void Moby_PlaySound(int, int, void *);
 extern void draw_tube_mesh96_twin(void);
 extern void effect_quad_draw_single(void);
@@ -798,8 +799,6 @@ void effect_quad_draw_single(void) {
     }
 }
 
-extern float IntToFloat(int);
-
 extern int blarg_frame_count MACRO_ADDR;
 extern char hero_globals_base[] NOT_SDA;
 extern float blarg_bobbing_moby_amplitude SDATA(blarg_bobbing_moby_amplitude);
@@ -896,7 +895,6 @@ extern int check_all_listed_frog_states_fe_fd_or_10(int);
 extern int Npc_TryStartDialog(void *, void *);
 
 extern int memcard_Save(int, int);
-extern int Help_Request(int a, int b);
 
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
@@ -1459,8 +1457,6 @@ extern void Moby_PlaySound(int, int, void *);
 
 extern void spawn_timed_projected_sprite_effect(char *, int, int, int);
 extern void MusicRequestTrack(int, int);
-
-extern void FadeToBlack(int);
 
 extern float vec_distance_xy(void *, void *);
 
@@ -2692,7 +2688,7 @@ struct UsageStat {
 extern struct UsageStat help_records[];
 extern s32 gameplay_event_frame_count MACRO_ADDR;
 extern u8 item_available_14[];
-extern int Help_Request(int, int);
+
 extern int count_active_moby_group_members(int, int);
 
 /* Level 6 help hints: shows the help messages for the area and records how often and when each was due.

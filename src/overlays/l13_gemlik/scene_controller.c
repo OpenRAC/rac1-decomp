@@ -15,6 +15,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/math/fastfunc.h"
 extern Hero g_hero;
 extern char level_render_state[];
 extern char gSkillPoints[];
@@ -515,8 +516,6 @@ extern float g_frame_time_sq MACRO_ADDR;
 
 extern int func_001FA898(float);
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
-
-extern float IntToFloat(int);
 
 extern int coll_line(void *, void *, int, int, int);
 

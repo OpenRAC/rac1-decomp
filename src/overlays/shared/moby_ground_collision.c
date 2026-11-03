@@ -332,7 +332,7 @@ int move_4318(char *m, char *v, int flags, float a, float b, float c) {
     FastVecSub(v, q, &t0);
     return r;
 }
-extern float IntToFloat(int);
+
 extern void move_4318_c(int, int, float, float, float, int) __asm__("func_L00_00259868");
 
 /* Forwards its arguments, replacing the middle float with IntToFloat's result scaled by 1/1024. */
@@ -639,7 +639,7 @@ int decrement_packed_countdown(int *p, int b) {
     return v == 0;
 }
 extern int truncate_float_to_s32(float);
-extern float IntToFloat(int);
+
 /* Height after n gravity steps of size f, n = b.z / f; stores n in *out when given. */
 float calculate_triangular_corrected_scalar(float *a, float *b, int *out, float f) {
     int n = truncate_float_to_s32(b[2] / f);
@@ -650,7 +650,7 @@ float calculate_triangular_corrected_scalar(float *a, float *b, int *out, float 
     }
     return r;
 }
-extern float IntToFloat(int);
+
 /* Predicts the position after d frames of velocity c with per-frame gravity f. */
 void predict_position_with_vertical_drop(void *a, void *b, void *c, int d, float f) {
     float t[4];

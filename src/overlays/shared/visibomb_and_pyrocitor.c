@@ -23,6 +23,8 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "asm_functions/shared_levels.h"
 #include "game/moby/mobyfunc.h"
+#include "game/render/draw.h"
+#include "game/math/fastfunc.h"
 extern Hero g_hero;
 extern unsigned char usage_stats[];
 extern u32 g_controller_state[];
@@ -1044,7 +1046,6 @@ extern char g_debug_camera[];
 extern char *suck_moby_list MACRO_ADDR;
 extern float vec_distance_xy(void *, void *);
 
-extern float IntToFloat(int);
 extern int coll_line(void *, void *, int, int, int);
 extern unsigned char *GetFlaggedPvarWord(void *);
 
@@ -2283,7 +2284,7 @@ extern short D_L00_001615A8;
 extern int fast_dec_timer(int *);
 
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void AddDrawCallback(void (*)(void), void *);
+
 extern void draw_taunter_effect_quads_b(void) __asm__("func_L00_002B8860");
 /* per-frame update of the ten slot table: spawn one, age the rest, then draw */
 void update_taunter_effect_slots(Moby *arg) {
@@ -2334,7 +2335,6 @@ void update_taunter_effect_slots(Moby *arg) {
 extern int GetEffectTex(int);
 extern void vec_scale_to_length(void *, void *, float);
 
-extern float IntToFloat(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern void draw_world_quad(void *, void *, int);
@@ -2467,7 +2467,6 @@ extern void lerp_vector(void *, void *, void *, float);
 
 extern int allocate_packed_color_point_light_slot(void *, float, float, int);
 
-extern float IntToFloat(int);
 extern void vec_scale_to_length(void *, void *, float);
 extern int coll_line(void *, void *, int, int, int);
 
@@ -2677,8 +2676,6 @@ extern unsigned short pyrocitor_help_shown_count NOT_SDA;
 void func_0020D678_B9528(void *) __asm__("func_0020D678");
 void release_point_light_slot(int);
 void Sound_StopSlot(int);
-
-void Help_Request(int, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002b2100.c, FUN_L00_002b8230. */
 void update_pyrocitor_usage_and_cleanup(unsigned char *m) {

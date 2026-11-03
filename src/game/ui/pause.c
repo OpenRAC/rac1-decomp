@@ -29,6 +29,7 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "asm_functions/executable.h"
+#include "game/math/fastfunc.h"
 
 /*
  * pause.cpp in the original source; text 0x219C08-0x228A58.
@@ -38,8 +39,6 @@
 
 extern char voice_pool[];
 
-extern int measure_text_width_regular(unsigned char *, int);
-extern int measure_text_width_small(unsigned char *, int);
 extern int GetEffectTex(int);
 
 extern PadSlots level_map_selection_slots __asm__("D_001A01F0");
@@ -64,7 +63,6 @@ extern short cd_read_state[];
 
 extern char g_controller_state[];
 
-extern void FontPrintLarge(void *a, void *b, void *c, void *d, void *e);
 extern void *msg_string(void);
 
 extern void memcard_MakeWholeSave(char *out);
@@ -360,7 +358,7 @@ extern void initialize_menu_preview_scene_r(void) __asm__("func_00219E90");
 extern s32 Moby_PlaySound_r(s32, s32, struct Ent *) __asm__("func_0022ED80");
 extern void mode_freeze_init_r(s32, MenuPage *, s32) __asm__("func_001FBC80");
 extern void func_002348B8(void);
-extern void func_001F2930(void);
+
 extern void MobySetAnimation_r2(struct Ent *, s32, s32) __asm__("func_00213D28");
 extern void close_menu_system_r(void) __asm__("func_0021A0B0");
 
@@ -500,13 +498,9 @@ extern short panel_clear_color;
 extern s32 panel_slot_enabled[];
 extern void VU1_addGSregister();
 extern void draw_hud_rect_blended();
-extern void DrawTexturedQuad();
-extern void SetupGifPaging();
-extern void DoGifPaging();
 
-extern void BuildViewMatrices(void);
 extern void project_graphics_bounds(Vec4 *, Vec4 *, s32 *, s32 *, s32 *, s32 *);
-extern void configure_graphics_render_target_and_projection(s32, s32, s32, f32);
+
 extern void draw_hud_rect_depth(s32, s32, s32, s32, u64, u32, s32);
 
 extern void draw_menu_flashing_panel();
@@ -834,9 +828,6 @@ extern short panel_clear_color; /* SDA, gp -0x6A50 */
 extern void draw_hud_rect_blended(int, int, int, int, long, long);
 
 extern int game_frame_counter MACRO_ADDR;
-
-extern void SetupGifPaging(int);
-extern void DoGifPaging(void);
 
 /* Vertical picture list: each entry (10 bytes at +0x48, count at +0x40)
    is a 0x200-square image at x, stepping 0x252 down from the scroll
@@ -1423,10 +1414,9 @@ extern MenuPage *current_menu_page_r[] __asm__("D_001D5F74");
 extern short text_shadow_x;
 extern short text_shadow_y;
 extern void VU1_addGSregister_r(s32, long) __asm__("func_00234C98");
-extern void SetupGifPaging(s32);
+
 extern s32 GetEffectTex(s32);
 
-extern s32 func_001F65B0(char *, s32, u8 *);
 extern void FontPrint_r(s32, s32, long, char *, s32, s32, u8 *) __asm__("func_001F6668");
 extern char *msg_string_r(s32) __asm__("func_001FE540");
 extern s32 fade_menu_color(s32, s32, s32);
@@ -2930,8 +2920,6 @@ extern short panel_clear_color;
 extern f32 menu_grid_icon_width SDATA(menu_grid_icon_width);
 extern f32 menu_grid_icon_height SDATA(menu_grid_icon_height);
 
-extern void SetupGifPaging(s32);
-
 extern void draw_hud_rect_blended_r2(s32, s32, s32, s32, u64, s32) __asm__("func_00201640");
 extern s32 VU1_addGSregister_r2(s32, s64) __asm__("func_00234C98");
 s32 draw_menu_item_grid(MenuScreen *grid);
@@ -3212,11 +3200,8 @@ int update_item_preview_moby(char *arg0) {
 
 extern char *current_menu_page NOT_SDA;
 
-extern void SetupGifPaging(int);
-extern void DoGifPaging(void);
 extern void *msg_string_id(int) __asm__("func_001FE540");
 extern void pack_image_descriptor(void *, char *);
-extern void font_print_window_regular(void *, long, void *, int);
 
 /* Draw/teardown callback (draw_available_item_preview_mobys's family). The entry address is
    written inline in the index; a `char *e` local leaves an addu swap. */
@@ -3575,7 +3560,7 @@ int Menu_BackInput(MenuScreen *arg0) {
 
 extern void libc_memset(void *, int, int); /* memset */
 extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
-extern void FontPrintCenter(int, int, long, void *, int);
+
 extern void func_001F68E8_c(int, int, long, void *, int) __asm__("func_001F68E8");
 
 /* DrawQuitGameMenu: a text box (zeroed, then sized from arg0+0x20/0x24)
@@ -3701,8 +3686,8 @@ typedef struct {
 } ItemsMenu;
 extern s32 g_game_language_r2[] __asm__("D_0015EE88") MACRO_ADDR;
 extern char fmt_decimal[];
-extern void font_print_right(s32, s32, u64, char *, s32);
-extern void font_print_right_large(s32, s32, u64, char *, s32);
+extern void font_print_right_v(s32, s32, u64, char *, s32) __asm__("func_001F6CF8");
+
 extern void font_print_window_regular_r(struct TextRegion *, u64, char *, s32) __asm__("func_001F7560");
 extern char *msg_string_r3(s32) __asm__("func_001FE540");
 extern void draw_hud_rect_blended_r3(s32, s32, s32, s32, u64, s32) __asm__("func_00201640");
@@ -3777,16 +3762,16 @@ s32 DrawItemsMenu(ItemsMenu *menu) {
     }
     x = add_offset((*(s32 *)&text_shadow_x), 0xC8);
     y = add_offset((*(s32 *)&text_shadow_y), 0x1D);
-    font_print_right(x, y, 0x80000000L, msg_string_r3(0x4F4F), -1);
+    font_print_right_v(x, y, 0x80000000L, msg_string_r3(0x4F4F), -1);
     x = add_offset((*(s32 *)&text_shadow_x), 0xC8);
     y = add_offset((*(s32 *)&text_shadow_y), 0x36);
-    font_print_right(x, y, 0x80000000L, msg_string_r3(0x4F50), -1);
+    font_print_right_v(x, y, 0x80000000L, msg_string_r3(0x4F50), -1);
     x = add_offset((*(s32 *)&text_shadow_x), 0xC8);
     y = add_offset((*(s32 *)&text_shadow_y), 0x54);
-    font_print_right(x, y, 0x80000000L, msg_string_r3(0x4F51), -1);
-    font_print_right(0xC8, 0x1D, 0x80FFA888L, msg_string_r3(0x4F4F), -1);
-    font_print_right(0xC8, 0x36, 0x80FFA888L, msg_string_r3(0x4F50), -1);
-    font_print_right(0xC8, 0x54, 0x80FFA888L, msg_string_r3(0x4F51), -1);
+    font_print_right_v(x, y, 0x80000000L, msg_string_r3(0x4F51), -1);
+    font_print_right_v(0xC8, 0x1D, 0x80FFA888L, msg_string_r3(0x4F4F), -1);
+    font_print_right_v(0xC8, 0x36, 0x80FFA888L, msg_string_r3(0x4F50), -1);
+    font_print_right_v(0xC8, 0x54, 0x80FFA888L, msg_string_r3(0x4F51), -1);
     collected_count = count_nonzero_entries_up_to_40();
     sprintf(text_buffer, fmt_decimal, collected_count);
     font_print_right_large(add_offset((*(s32 *)&text_shadow_x), 0xF0), add_offset((*(s32 *)&text_shadow_y), 0x1D),
@@ -3996,8 +3981,6 @@ int DrawMissionsMenu(char *arg0) {
 }
 __asm__(".section .text\n\tnop\n");
 
-extern void SetupGifPaging(int);
-extern void DoGifPaging(void);
 /* FontPrintLarge is defined above with pointer parameters; this site
    passes a packed 64-bit colour in $a2, and msg_string above is
    declared (void) while retail's caller here passes an id in $a0 --
@@ -4029,8 +4012,6 @@ extern void draw_menu_selection_marker(int, int, int);
 typedef struct {
     unsigned short f[12];
 } TextBox_p;
-
-extern void font_print_window_small(void *, long, void *, int);
 
 /* Draws a pause-style list of text rows with a selection marker and a footer line; returns 2. */
 int MissionMenu_DrawObjectives(char *arg) {
@@ -4285,7 +4266,6 @@ s32 update_menu_stream_image(MenuScreen *stream) {
     return 0;
 }
 
-extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
 extern short fs_aa_buffer[];
 extern long transition_overlay_tex0;
 
@@ -5031,7 +5011,6 @@ int draw_pause_ring(char *arg0) {
 
 extern void Moby_PlaySound(int, int, int);
 
-extern void FadeToBlack(int);
 extern float gFade MACRO_ADDR;
 extern int requested_video_mode_i __asm__("D_0016044C") MACRO_ADDR;
 typedef struct {
@@ -5198,8 +5177,8 @@ s32 DrawCheatsMenu(struct CheatsMenu *menu) {
                 enabled = *entry->enabled_flag;
             }
             FontPrintLarge_r2(0xC, draw_y, color, msg_string_r4(entry->text_id), -1);
-            font_print_right(menu->width - 0xC, draw_y, 0x80FFA888,
-                             msg_string_r4(enabled ? entry->enabled_text_id : entry->disabled_text_id), -1);
+            font_print_right_v(menu->width - 0xC, draw_y, 0x80FFA888,
+                               msg_string_r4(enabled ? entry->enabled_text_id : entry->disabled_text_id), -1);
             draw_y += line_spacing;
             draw_index++;
             entry_index++;
@@ -5596,8 +5575,7 @@ typedef struct {
 extern char str_error_text[];
 extern int menu_system_save_prompt_kind;
 extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
-extern void SetupGifPaging(int);
-extern void DoGifPaging(void);
+
 extern void *msg_string_id(int) __asm__("func_001FE540");
 
 /* Draws the two-line prompt box (text 0x4FB3 for menu_system_save_prompt_kind in 0..2,
@@ -5775,7 +5753,6 @@ typedef struct {
     int c;
 } IconRow;
 extern IconRow planet_icon_rows_i[] __asm__("D_001DE0C0");
-extern void FontPrintCenter(int, int, long, void *, int);
 
 /* Draws the current page's icons: the page record (stride 0xC) gives a
    row of planet_icon_rows, or -1 for the single icon 0x5019 centred in the
@@ -7670,7 +7647,7 @@ extern f32 ammo_preview_offsets[];
 extern f32 ammo_preview_velocities[];
 
 extern f32 FastNormalizeAngle_r(f32) __asm__("func_001FA7D8");
-extern f32 IntToFloat(s32);
+
 extern void advance_moby_animation_r(void *) __asm__("func_0020E3D0");
 extern f32 ApproachWithVelocity(f32 *, f32 *, f32, f32, f32, f32);
 void update_ammo_preview_transform(struct AmmoPreviewMoby *moby);

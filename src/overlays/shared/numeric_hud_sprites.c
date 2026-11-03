@@ -6,6 +6,8 @@
 #include "asm_functions/executable.h"
 #include "game/ui/hud.h"
 #include "enums/level.h"
+#include "game/render/draw.h"
+#include "game/math/fastfunc.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 
@@ -178,7 +180,6 @@ void update_trick_combo_hud(char *a) {
     }
 }
 extern int sprintf_r(char *, const char *, ...) __asm__("func_00116248");
-extern float IntToFloat(int);
 
 extern int FontPrintCenterLarge_x(int, int, u64, int, int) __asm__("func_001F6FD8");
 extern char *msg_string_r(int) __asm__("func_001FE540");
@@ -400,7 +401,6 @@ extern char rilgar_fmt_rank_label[];
 extern char *msg_string(int);
 extern int sprintf(char *, char *, ...);
 extern void print_text_with_texture_3(int, int, long, char *, int);
-extern int measure_text_width_regular(char *, int);
 
 /* Screen-bottom offset minus a HUD element's Y, using the PAL or NTSC margin. */
 static inline int hud_sub_66D10(int d, int pal, short *p) {

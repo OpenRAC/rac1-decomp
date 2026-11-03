@@ -27,6 +27,7 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_animation_slots.h"
+#include "game/math/fastfunc.h"
 extern char gHeroPos[];
 extern char hero_control_mode[];
 extern char hero_current_state[];
@@ -328,10 +329,9 @@ void update_robot_dog_aim_joint(char *moby) {
     d->part.yaw = yaw;
     EaseManipulatorOffsets(moby, (char *)&d->part, 0, accel * g_frame_scale_sq, speed * g_frame_scale_sq);
 }
-extern float IntToFloat(int);
 
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void AddDrawCallback(void (*)(void), void *);
+
 extern void draw_three_moby_effect_quads(char *);
 extern int fleet_frame_count MACRO_ADDR;
 
@@ -670,8 +670,6 @@ void DrawLightRing(char *moby) {
 }
 extern int Moby_PlaySound(int, int, int);
 
-extern void FadeToBlack(int);
-
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
 extern void Hero_ResetToPosition(void *, void *, int, int);
@@ -1000,7 +998,6 @@ LINKER_REMNANT("asm/overlays", func_L17_002F4208);
 extern int PlayBankSound(int, int, int);
 
 extern void STUB_printf();
-extern int Help_Request(int a, int b);
 
 extern void HeroL17_SetMoveState(int, int);
 

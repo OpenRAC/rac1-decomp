@@ -32,6 +32,8 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/render/draw.h"
+#include "overlays/shared/hero_idle_and_animation.h"
 extern char g_hero[];
 extern char level_moby_killed[];
 extern char level_render_state[];
@@ -563,7 +565,6 @@ extern int FastBSphereCheck(void *, float);
 extern float vec_distance_xy(void *, void *);
 extern void update_moby_spring_steering_and_banking(void *, void *, float, float);
 
-extern void AddDrawCallback(void *, void *);
 extern void draw_starfighter_tractor_beam();
 extern void detach_moby_joint_attachment(void *, void *, int);
 extern int fast_dec_timer(void *);
@@ -1539,7 +1540,6 @@ void Moby_ClearUnlessTargeted(Moby *moby) {
     }
 }
 
-extern int Help_Request(int a, int b);
 extern int gemlik_help_popup_state[] NOT_SDA;
 extern int gemlik_game_mode MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
@@ -1845,7 +1845,7 @@ extern void vec_set_length_xy(void *, void *, float);
 
 #define len_p func_001F9CB8
 #define dist_p func_001F9D48
-extern float IntToFloat(int);
+
 #define i2f_p func_001FA888
 #define ticks_p func_001F9850
 extern int truncate_float_to_s32(float);
@@ -2405,8 +2405,6 @@ extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, 
 extern void SetDeathBits(void *, int, int);
 extern void RerollEffectCounter(void *m, short *p);
 extern void spawn_poison_vessel_destruction_effects(void *, void *);
-
-extern float IntToFloat(int);
 
 /* KEPT: the calls disagree on where the float goes: the argument order changes the moves. */
 extern int coll_sphere_mobys(float, void *, int, void *, void *);

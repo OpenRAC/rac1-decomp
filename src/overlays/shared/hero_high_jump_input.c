@@ -12,6 +12,7 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
+#include "overlays/shared/hero_idle_and_animation.h"
 extern int pad_held;
 extern Hero g_hero;
 
@@ -121,7 +122,6 @@ extern int HeroEnterMoveState(int, int);
 
 extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
 extern void ClampVectorLength(void *a, float x);
-extern int hero_idle_sequence(int);
 
 extern short g_frame_time_r __asm__("D_0015EE6C");
 extern float g_frame_scale_sq MACRO_ADDR;

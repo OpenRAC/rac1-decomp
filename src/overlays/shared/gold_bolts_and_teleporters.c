@@ -30,6 +30,7 @@
 #include "asm_functions/shared_levels.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_mapped_animations.h"
+#include "game/render/draw.h"
 extern Hero g_hero;
 extern int pad0_pressed;
 extern unsigned char saved_mission_state[];
@@ -294,7 +295,7 @@ extern int rand_range(int, int);
 
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern int Moby_PlaySound(int, int, int);
-extern float IntToFloat(int);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
@@ -1093,7 +1094,6 @@ typedef struct {
 extern SE_303810p g_screen_extent;
 extern long GetEffectTex(int);
 extern int truncate_float_to_s32(float);
-extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
 
 /* Draws the visibomb's tiled screen overlay when outside its zone. */
 void draw_visibomb_outside_zone_overlay(char *moby) {
@@ -1141,7 +1141,7 @@ extern char *novalis_moby_list MACRO_ADDR;
 extern int visibomb_outside_zone_overlay_enabled SDATA(visibomb_outside_zone_overlay_enabled);
 extern void draw_visibomb_outside_zone_overlay(char *);
 extern int IsPointInPolygon(void *, void *, int);
-extern void AddDrawCallback(void (*)(char *), char *);
+
 extern void terminate_visibomb_missile(void *, void *);
 
 typedef struct {

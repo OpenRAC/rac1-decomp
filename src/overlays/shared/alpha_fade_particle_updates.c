@@ -80,8 +80,6 @@ typedef struct {
     float f[4];
 } Q __attribute__((aligned(16)));
 
-extern float IntToFloat(int);
-
 /* Per-frame update of a type 0x2C particle: fade colour, move and rotate its velocity.
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/rendering_002712b8.c, FUN_L00_00271450. */
 void update_moving_rotating_resizing_alpha_fade_particle(struct PartBase *p) {

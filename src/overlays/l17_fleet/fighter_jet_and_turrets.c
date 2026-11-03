@@ -127,7 +127,7 @@ extern void vec_scale_to_length(void *, void *, float);
 extern int FastBSphereCheck(char *, float);
 
 extern unsigned char *spawn_trail_particle(char *parent, void *pos, float *vec);
-extern void AddDrawCallback(void *, void *);
+
 extern void draw_fleet_beam_quad(char *moby);
 extern char *fleet_camera_points MACRO_ADDR;
 extern char *fleet_mobys MACRO_ADDR;
@@ -695,8 +695,6 @@ void distribute_class_733_group_mobys_along_path(char *moby) {
     }
 }
 typedef int u128_2D8CC8 __attribute__((mode(TI)));
-
-extern float IntToFloat(int);
 
 extern int func_001160D8(void);
 
@@ -1368,7 +1366,6 @@ void draw_four_quarter_turn_effect_quads(unsigned char a, unsigned char b, unsig
     append_rotated_textured_screen_quad(x, y, w, w, ang, 0x3F, 0x3F, h, 0xFFFFF3, a, b, c, d);
 }
 
-extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
 extern unsigned char draw_map51[4] MACRO_ADDR;
 
 /* One radar icon: its texture (counted from the radar's own), its rectangle in that texture and its hot spot. */
@@ -1942,7 +1939,6 @@ extern float SpringAngle(char *, char *, int, float, float, float, float);
 
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
-extern void UpdateViewContext(void);
 
 extern void DrawFleetHud();
 extern float fleet_view_tan_half_fov;

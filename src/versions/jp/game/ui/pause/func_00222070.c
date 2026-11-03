@@ -44,8 +44,8 @@ s32 DrawCheatsMenu(struct CheatsMenu *menu) {
                 enabled = *entry->enabled_flag;
             }
             FontPrintLarge_r2(0xC, draw_y, color, msg_string_r4(entry->text_id), -1);
-            font_print_right(menu->width - 0xC, draw_y, 0x80FFA888,
-                             msg_string_r4(enabled ? entry->enabled_text_id : entry->disabled_text_id), -1);
+            font_print_right_v(menu->width - 0xC, draw_y, 0x80FFA888,
+                               msg_string_r4(enabled ? entry->enabled_text_id : entry->disabled_text_id), -1);
             draw_y += line_spacing;
             draw_index++;
             entry_index++;

@@ -16,6 +16,7 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/render/draw.h"
 extern unsigned char g_hero[];
 /* Rocket: velocity, owner, life and start distance. */
 struct RocketVars {
@@ -45,8 +46,6 @@ typedef struct {
 extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern int fast_dec_timer(int *);
-
-extern float IntToFloat(int);
 
 extern unsigned char *PartType59Spawn(void *, int, unsigned char, int, int, int, int, float);
 extern int truncate_float_to_s32(float);
@@ -275,7 +274,6 @@ void spawn_type_52_particle_near_moby(char *moby) {
     spawn_type_52_particle(v, c, d, g, h, e);
 }
 
-extern void AddDrawCallback(void (*)(void), void *);
 extern void draw_moby_animated_quad_layers(unsigned char *);
 extern unsigned char D_0014171B[] NOT_SDA;
 
@@ -655,7 +653,6 @@ extern float orxon_player_camera_fade_rate;
 extern char orxon_view_params[];
 extern float orxon_player_camera_matrix[];
 
-extern void UpdateViewContext(void);
 extern void HeroEnterMoveState(int, int);
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
 

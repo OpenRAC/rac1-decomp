@@ -130,8 +130,6 @@ struct SkyEffect {
 extern struct LevelSkyEffectData *level_sky_effect_data_r2 __asm__("D_0016055C") MACRO_ADDR;
 extern u8 sky_matrix[];
 
-extern f32 IntToFloat(s32);
-
 extern void SkyDrawShell(s32);
 
 extern void VU1_addGSregister_r(s32, u64) __asm__("func_00234C98");

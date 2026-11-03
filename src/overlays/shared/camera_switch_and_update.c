@@ -60,7 +60,6 @@ LINKER_REMNANT("asm/overlays", func_L00_001EB5B0);
 
 /* steers *p toward a target with damping, clamps it, then calls FA748 */
 float func_001FA790_EB6A8(float, float) __asm__("func_001FA790");
-float FastAbsF(float);
 
 /* Cam_InterpValues for angles: steers vel toward the angle to (the shortest way round, from
    the current angle from), clamps the step to max when max is set, and returns the angle plus vel
@@ -268,8 +267,6 @@ extern short D_L00_00166FF0 NOT_SDA;
 extern void Camera_CaptureHeroRelativeView(void);
 extern void save_camera_vectors(void);
 extern void restore_camera_vectors(void);
-
-extern float IntToFloat(int);
 
 /* Camera mode update: in blend phase 1 the blend's next_kind picks what is captured from the
    previous camera (from), other phases restore the pending transform; then the phase becomes 3

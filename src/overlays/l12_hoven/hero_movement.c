@@ -186,7 +186,6 @@ void sceVu0Normalize(void *, void *);
 void vec_scale_to_length(void *, void *, f32);
 void compute_rotated_vector_angles(void *, void *);
 
-f32 FastAbsF(f32);
 extern Hero g_hero;
 extern struct CollisionHit hoven_coll_hit;
 
@@ -403,7 +402,6 @@ extern float hoven_hero_ledge_shimmy_frame_speeds[];
 extern int fast_dec_timer(int *);
 
 extern int hero_get_gadget_anim_id(int);
-extern float adjust_hero_animation_speed_for_target_frame(float, float, float, float);
 
 extern int Moby_PlaySound(int, int, int);
 extern int truncate_float_to_s32(float);
@@ -417,8 +415,6 @@ extern void Moby_GetJointWorldPos(void *, int, void *);
 extern int PartType34Spawn(void *, void *, float, float);
 
 extern float ApproachValue(float *, float, float);
-
-extern void Hero_SetTiltSpringParams(float, float);
 
 extern void ClampVectorLength(void *, float);
 

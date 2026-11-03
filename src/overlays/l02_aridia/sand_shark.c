@@ -26,6 +26,8 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_mapped_animations.h"
+#include "game/render/draw.h"
+#include "overlays/shared/hero_idle_and_animation.h"
 extern Hero g_hero;
 extern char bolt_source_stats[];
 extern char gHeroPos[];
@@ -126,8 +128,6 @@ void begin_animated_frame_rendering(int a, int b, int c, int d, float x, float y
     write_spr_dma_channel(aridia_spr_upload_block, 0x70002800, 0xF8);
 }
 typedef int u128b __attribute__((mode(TI)));
-
-extern float IntToFloat(int);
 
 extern char *func_L00_0026DEA0(void *, float, float, float, int, void *, float, int);
 
@@ -1882,7 +1882,7 @@ extern void update_entity_matrix(char *, void *, void *, void *);
 extern int Sound_IsPlaying(void *, int);
 
 extern int Moby_PlaySound(int, int, int);
-extern void AddDrawCallback(void *, void *);
+
 extern void DrawRotatingQuadRing(char *);
 
 /* Moves the elevator between two heights above its joint, with a particle while it moves. */
@@ -2517,7 +2517,6 @@ extern int aridia_mobys MACRO_ADDR;
 #define NODE(i) ((Nodedc88 *)(((i) << 7) + (int)D_L02_0016016C))
 extern void SamplePathAt(void *, int, void *, void *, int, float);
 
-extern void Help_Request(int, int);
 extern void Hero_ResetToPosition(void *, void *, int, int);
 
 extern void set_camera_position(void *);

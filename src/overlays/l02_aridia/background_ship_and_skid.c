@@ -21,6 +21,7 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_idle_and_animation.h"
 extern Hero g_hero;
 extern char gSkillPoints[];
 extern char gSpecialItems[];
@@ -78,8 +79,6 @@ extern void initialize_moby_grounding(void *);
 extern int Npc_TryStartDialog(void *, void *);
 
 extern float vec_distance_xy(void *, void *);
-
-extern int Help_Request(int a, int b);
 
 extern int truncate_float_to_s32(float);
 
@@ -775,7 +774,6 @@ void func_L02_002EB480_r(Moby *m) {
 }
 extern void prepare_scaled_table_on_stack(float);
 extern void draw_aridia_ocean_parts(void);
-extern void AddDrawCallback(void (*)(void), void *);
 
 /* Aridia ocean update: sets the ocean speed once, then queues its draw callback each frame. */
 void ocean_aridia_update(unsigned char *moby) {

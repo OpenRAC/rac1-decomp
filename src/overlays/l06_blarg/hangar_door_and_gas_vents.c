@@ -25,6 +25,7 @@
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_idle_and_animation.h"
 
 extern char gSkillPoints[];
 extern Hero g_hero;
@@ -1109,9 +1110,8 @@ extern float ApproachValue(float *, float, float);
 extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
 
 extern void record_moby_hit(void *, void *);
-extern void AddDrawCallback(void *, void *);
+
 extern char *MobyGetHitMessage(void *, int, int);
-extern int Help_Request(int, int);
 
 extern void sce_vu0_mul_matrix(void *, void *, void *);
 
@@ -2744,7 +2744,7 @@ extern void SetDeathBits(void *, int, int);
 
 extern void RerollEffectCounter(void *, void *);
 extern void StepColorFade(void *, void *);
-extern float IntToFloat(int);
+
 extern void euler_rotation_basis(void *, void *);
 
 extern int FindNearestEligibleMoby(float, void *, void *, int, int, void *, int);
@@ -3343,7 +3343,7 @@ typedef struct {
     unsigned char f20;
 } Flags;
 extern int try_set_help_message(int, int);
-extern void FadeToBlack(int);
+
 extern void restore_hero_from_vehicle_mode(void);
 extern void MusicRequestTrack(int, int);
 
@@ -3575,7 +3575,7 @@ void update_hero_triggered_moby_height_cycle(Moby *moby) {
     FastVecAdd(&v0, &v0, &moby->pos);
     update_entity_matrix(d->f20, &v0, &v10, &moby->rot);
 }
-extern void AddDrawCallback(void *, void *);
+
 extern void draw_dual_texture_50_quad_mesh(void);
 extern void draw_dual_texture_58_quad_mesh(void);
 extern void draw_dual_texture_864_quad_mesh(void);

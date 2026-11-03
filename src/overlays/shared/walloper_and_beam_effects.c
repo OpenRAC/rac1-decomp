@@ -19,6 +19,7 @@
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "game/moby/mobyfunc.h"
+#include "game/render/draw.h"
 
 extern char g_hero[];
 extern char item_usage[];
@@ -154,7 +155,6 @@ extern void vec_scale_to_length(void *, void *, float);
 
 extern void lerp_vector(void *, void *, void *, float);
 
-extern float IntToFloat(int);
 extern int truncate_float_to_s32(float);
 
 extern int GetFlaggedPvarWord();
@@ -946,9 +946,7 @@ extern float walloper_arc_spread SDATA(walloper_arc_spread);
 extern float held_weapon_tesla_walloper_factor;
 
 extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
-extern float IntToFloat(int);
 
-extern void AddDrawCallback(void *, void *);
 extern void draw_walloper_arc_and_quad_effects(int);
 
 // Per-frame update of a moby that scatters ten fading sparkle quads around the hero.
@@ -1067,7 +1065,7 @@ void walloper_update(Moby *m) {
     }
     AddDrawCallback(draw_walloper_arc_and_quad_effects, m);
 }
-extern float IntToFloat(int);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float walloper_effect_fade_m __asm__("D_L00_001617A4") MACRO_ADDR;
 extern float walloper_arc_half_width SDATA(walloper_arc_half_width);
@@ -2747,8 +2745,6 @@ f32 select_moby_heading_by_collision_probes(Mob *m, Vec4 *pos, f32 *tgt, f32 *ou
     }
     return best;
 }
-
-extern float IntToFloat(int);
 
 /* Steps a vector by n repeated additions of the normalised difference. */
 void accumulate_local_vector_steps(char *a, char *b, int n) {

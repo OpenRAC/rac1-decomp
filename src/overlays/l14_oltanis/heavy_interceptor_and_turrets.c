@@ -214,7 +214,6 @@ extern float vec_distance_xy(void *, void *);
 
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound(int, int, int);
-extern float IntToFloat(int);
 
 extern void update_entity_matrix(char *, void *, void *, void *);
 extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
@@ -493,7 +492,7 @@ void ease_path_mover_to_endpoint(char *moby) {
 typedef u32 u128_AD858 __attribute__((mode(TI), aligned(16)));
 extern struct Hero g_hero_r __asm__("D_0013F450");
 struct AnimSeq;
-extern void AddDrawCallback(void *, void *);
+extern void AddDrawCallback_v(void *, void *) __asm__("func_001F49B0");
 
 void activate_waiting_turrets_in_group(s32 index);
 typedef struct {
@@ -545,7 +544,6 @@ typedef struct {
 extern s32 truncate_float_to_s32(f32 f);
 extern s32 FastDecTimer_r(s16 *) __asm__("func_001F9938");
 
-float FastAbsF(float input);
 extern void process_blarg_heavy_interceptor_hit_reactions_r(struct Moby *) __asm__("func_L14_002AEAF8");
 extern void initialize_blarg_heavy_interceptor_paths_r(struct Moby *) __asm__("func_L14_002AF688");
 extern void update_blarg_heavy_interceptor_patrol_aim_point_r(struct Moby *) __asm__("func_L14_002AF918");
@@ -649,7 +647,7 @@ void update_blarg_heavy_interceptor(struct Moby *m) {
     }
     if (m->state == 8) {
         update_blarg_heavy_interceptor_light_ring_alpha_r(m);
-        AddDrawCallback(draw_blarg_heavy_interceptor_group_effects_r, m);
+        AddDrawCallback_v(draw_blarg_heavy_interceptor_group_effects_r, m);
         return;
     }
     d->draw_flags = 0;
@@ -1592,7 +1590,6 @@ void update_blarg_heavy_interceptor_oscillation_and_patrol_heading(char *moby) {
     }
 }
 
-extern float IntToFloat(int);
 extern int FastBSphereCheck(char *, float);
 
 extern void vec_scale_to_length(void *, void *, float);
@@ -1644,7 +1641,7 @@ int update_blarg_heavy_interceptor_aim_transforms(char *moby, int flag) {
         data->pitch = rotation_angle;
         qcopy(&data->glow_pos, &data->aim_point);
         if (flag != 0) {
-            AddDrawCallback(draw_blarg_heavy_interceptor_camera_pulled_glow, moby);
+            AddDrawCallback_v(draw_blarg_heavy_interceptor_camera_pulled_glow, moby);
             data->draw_flags |= 2;
         }
     }
@@ -3056,7 +3053,6 @@ void remove_flying_debris(char *moby) {
     DeleteMoby(moby);
 }
 
-extern f32 IntToFloat(s32);
 void func_00213DE0_D7250(MobyAnim *arg0, int arg1, int arg2, int arg3) __asm__("func_00213DE0");
 
 struct L14PathRec {
@@ -3747,7 +3743,7 @@ void update_moby_joint_visual_effects(char *m) {
         *(short *)(e + 0x16) = 3;
     }
     Moby_GetJointWorldPos(m, 6, &d->head_pos);
-    AddDrawCallback(draw_racer_glow_quads, m);
+    AddDrawCallback_v(draw_racer_glow_quads, m);
 }
 extern void update_platform_tilt_basis_m(Moby *, f32, f32) __asm__("func_L14_002DF6B8");
 extern float unused_platform_tilt_argument SDATA(unused_platform_tilt_argument);

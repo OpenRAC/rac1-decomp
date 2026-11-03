@@ -25,6 +25,7 @@
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "game/moby/mobyfunc.h"
+#include "game/render/draw.h"
 extern Hero g_hero;
 extern char gHeroPos[];
 extern struct Hero g_hero;
@@ -736,7 +737,6 @@ extern float spark_first_bounce_horizontal_speed_gp SDATA(spark_first_bounce_hor
 extern int coll_sphere(void *, int, void *, float);
 extern int fast_dec_timer(int *);
 
-extern float IntToFloat(int);
 extern int coll_line(void *, void *, int, void *, int);
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -936,7 +936,6 @@ char *create_bouncing_spark(int a0, float *a1, float *a2, int a3, float f) {
 extern char oltanis_scaled_float_table[];
 extern void register_audio_stream_callback(void);
 extern void prepare_scaled_float_table_with_target_byte(char *, float, int);
-extern void AddDrawCallback(void (*)(void), void *);
 
 /* Moby update: init once, then draw each frame. */
 void update_moby_draw_registration(unsigned char *moby) {
@@ -958,7 +957,7 @@ typedef struct {
 } L14LevelState;
 extern L14LevelState oltanis_collected_flags_base;
 extern s32 level_moby_killed[][64];
-extern float IntToFloat(int);
+
 extern int fast_dec_timer(int *);
 
 extern void save_and_lower_unlock_sequence_mobys_r(struct Moby *) __asm__("func_L14_00306A88");
@@ -1028,7 +1027,6 @@ void save_and_lower_unlock_sequence_mobys(char *moby) {
         } while (*(short *)p++ >= 0);
     }
 }
-extern float IntToFloat(int);
 
 /* Per-frame update: slides each listed part toward a rest height by a factor from the moby's animation value.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/gameplay/vendor/00300e00.c, FUN_L14_00305680. */
@@ -1169,7 +1167,6 @@ void initialize_morphoray_private_state(char *moby) {
 extern void vec_scale_to_length(void *, void *, float);
 
 extern int fast_dec_timer_r(int *arg0) __asm__("func_001F9908");
-extern float IntToFloat(int);
 
 extern unsigned char *PartType59Spawn(float f, void *pos, int a1, unsigned char a2, int idx, int flag, int s, int mode);
 
@@ -2158,8 +2155,6 @@ typedef struct {
 extern VendorView_5290 oltanis_view_params;
 extern int Spline_AdvanceByDistance_r2(char *path, float *out, void *seg, void *t, int dir,
                                        float step) __asm__("func_L00_0025E860");
-
-extern void UpdateViewContext(void);
 
 extern void reset_racer_group_to_hero_path_position(struct Moby *m);
 

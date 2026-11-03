@@ -572,7 +572,7 @@ int HeroAnimLookup_Part3(void) {
 extern unsigned char gHaveHeliPack[] NOT_SDA;
 extern float frame_scale MACRO_ADDR;
 extern int select_hero_condition_animation_id(int);
-extern float IntToFloat(int);
+
 extern void *allocate_moby_animation_slot(void *, int);
 extern float ApproachValue(float *, float, float);
 extern void release_moby_animation_slot(void *, void *);
@@ -1014,7 +1014,6 @@ void start_equipped_item_animation(void) {
         }
     }
 }
-extern int hero_idle_sequence(int);
 
 /* Handles the pending flag at g_hero + 0x20A8, then clears it. */
 void cancel_hero_item_animation(void) {
@@ -1500,8 +1499,6 @@ extern u8 hero_item_28_29_pose_buffer_slot0[];
 extern u8 hero_item_28_29_joints_slot1[];
 extern u8 hero_item_28_29_pose_buffer_slot1[];
 extern u8 D_L00_0017AA60[];
-
-extern void pack_pose(void *, void *, s32, s32, s32);
 
 extern s32 truncate_float_to_s32(f32);
 
@@ -2121,7 +2118,7 @@ void hero_switch_item(int i) {
 }
 #define SLOT(i) ((struct Hero *)((char *)&g_hero_r + (i) * sizeof(struct HeroItemSlot)))
 extern void hero_switch_item(int);
-extern void update_hero_easing_record(void *);
+
 extern void clear_hero_item_slot(int, int);
 
 /* Per-frame update of the hero's seven item slots. */
@@ -2203,8 +2200,6 @@ void update_hero_equipped_items(void) {
 }
 extern void cancel_hero_item_animation(void);
 
-extern void release_and_clear_hero_voice_slots();
-
 extern void update_hero_collision_capsule_dimensions();
 
 extern void HeroEnterMoveState(int, int);
@@ -2250,7 +2245,6 @@ void enter_hero_vehicle_mode(int mode, int id, char *obj) {
     HeroEnterMoveState(id, 1);
 }
 
-extern void release_and_clear_hero_voice_slots(void);
 #define B ((char *)D_0013E633 + 0xE1D)
 
 /* Resets the help state: frees its markers, restores the camera target and closes the prompt. */
@@ -2344,7 +2338,7 @@ extern u8 gHeroPos[];
 extern f32 g_frame_time MACRO_ADDR;
 extern u8 hero_velocity[];
 s32 truncate_float_to_s32(f32);
-void release_and_clear_hero_voice_slots(void);
+
 void func_001F9BF0_113A0(void *, void *, void *) __asm__("func_001F9BF0");
 
 void HeroEnterMoveState(s32, s32);
@@ -2513,7 +2507,6 @@ extern s32 level_hero_death_counts[];
 extern s32 level_mission_death_counts[][16];
 extern s32 mission_death_counts[];
 extern s32 level_15_mine_77_respawn_flag MACRO_ADDR;
-extern void clear_help_record_high_bits(void);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_0020c758.c, FUN_L00_00211250. */
 void Hero_OnKilled(void) {
@@ -3123,7 +3116,6 @@ void func_001F9BF0_12E70(void *, void *, void *) __asm__("func_001F9BF0");
 void vec_scale_to_length(void *, void *, f32);
 void compute_rotated_vector_angles(void *, void *);
 
-f32 FastAbsF(f32);
 extern Hero D_0013F450_12E70 __asm__("D_0013F450");
 extern struct CollisionHit coll_hit_result_r2 __asm__("D_L00_00173F40");
 

@@ -12,6 +12,7 @@
 #include "asm_functions/executable.h"
 #include "asm_functions/shared_levels.h"
 #include "game/moby/mobyfunc.h"
+#include "game/math/fastfunc.h"
 extern Hero g_hero;
 extern char weapon_ammo_counts[];
 
@@ -293,7 +294,6 @@ typedef struct {
     char pad10[0x8];
 } Ent;
 
-extern float func_001FA888(int);
 extern int func_001FA898(float);
 
 extern int func_L00_0025E860(void *, void *, int *, float *, float, int);

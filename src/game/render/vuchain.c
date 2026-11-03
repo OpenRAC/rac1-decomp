@@ -4,6 +4,7 @@
 #include "structs/misc.h"
 #include "asm_functions/executable.h"
 #include "data/executable.h"
+#include "game/render/draw.h"
 
 /*
  * vuchain.cpp in the original source; text 0x2347F0-0x2352C8.
@@ -141,7 +142,6 @@ void VU1_sendChain(void) {
 
 extern volatile int vif_chain_flags SDATA(vif_chain_flags);
 extern char vu1_sync_timeout_msg[];
-extern void reset_graphics(void);
 
 /* VU1_syncChain(int) */
 void VU1_syncChain(int mask) {

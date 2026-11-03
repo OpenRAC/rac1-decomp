@@ -5,10 +5,10 @@
 #include "include_asm.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "game/math/fastfunc.h"
 
 extern int func_001FA898(float);
 
-extern float IntToFloat(int);
 extern unsigned char *rilgar_velocity_particle_texture_ptr;
 
 /* Allocates a 0x30-byte record with create_part and fills it from the arguments (pos and vel copied in,

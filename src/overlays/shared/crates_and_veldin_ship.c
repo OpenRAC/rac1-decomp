@@ -23,6 +23,7 @@
 #include "structs/voice.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "game/render/draw.h"
 extern char g_hero[];
 extern char item_usage[];
 extern int pad0_pressed;
@@ -993,7 +994,6 @@ extern f32 ship_previous_uvs[][2];
 extern u64 GetEffectTex(s32);
 
 extern s32 fast_dec_timer(s32 *);
-extern f32 IntToFloat(s32);
 
 #define XFORM(a, b, c) func_001F9EE8((Vec4f *)(a), (Vec4f *)(b), (c))
 extern void vec_scale_to_length(void *, void *, f32);
@@ -1882,7 +1882,6 @@ extern void DeleteMoby_m(void *) __asm__("func_0020D678");
 extern char *moby_array_start MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
 extern unsigned char level_point_lights[];
-extern float IntToFloat(int);
 
 extern s16 scale_ticks_r(int) __asm__("func_001F9850");
 
@@ -2837,7 +2836,6 @@ typedef struct {
     Vec4 b[1];
 } Path_6e38;
 
-extern float IntToFloat(int);
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
 
@@ -3003,7 +3001,7 @@ extern void DeleteMoby(void);
 extern void vec_scale_to_length(void *, void *, f32);
 
 extern s32 truncate_float_to_s32(f32);
-extern f32 IntToFloat(s32);
+
 extern Path *level_paths[];
 extern u8 level_available[];
 extern Player gHeroPos;
@@ -3465,7 +3463,7 @@ float random_float_between(float, float);
 
 E *PartType23Spawn(Vec4f *, int, float, float, Vec4f *, float, int, float);
 s16 scale_ticks_r(int) __asm__("func_001F9850");
-void AddDrawCallback(void *, P *);
+
 void draw_smoke_fire_spawner(P *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002cfcb8.c, FUN_L00_002d6f28. */

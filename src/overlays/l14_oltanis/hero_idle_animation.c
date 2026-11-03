@@ -40,7 +40,6 @@ extern int truncate_float_to_s32(float);
 
 extern void *MobyGetHitMessage(void *, int, int);
 
-extern void release_and_clear_hero_voice_slots(void);
 extern int Spline_AdvanceByDistance(int *tab, float *out, int *a, float *b, int c, float d);
 
 extern void vec_scale_to_length(void *, void *, float);

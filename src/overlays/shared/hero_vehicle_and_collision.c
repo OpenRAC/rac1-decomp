@@ -33,7 +33,7 @@ typedef int OvlQuad __attribute__((mode(TI)));
 extern s32 level_frame_counter MACRO_ADDR;
 extern CollisionHit coll_hit_result;
 
-extern s32 probe_hero_forward_collision(f32 *, f32, f32);
+extern s32 probe_hero_forward_collision_v(f32 *, f32, f32) __asm__("func_L00_0020A8B8");
 extern f32 vec_length_xy(void *);
 
 extern s32 is_moby_in_class_range_500_to_540(s32);
@@ -59,7 +59,7 @@ void update_hero_motion_and_collision_probes(void) {
         g_hero_r.wall_probe_distance = 4.0f;
         g_hero_r.wall_probe_moby_in_class_range = 0;
         g_hero_r.wall_probe_hit_moby = 0;
-        if (probe_hero_forward_collision(&g_hero_r.wall_probe_distance, 0.7f, 4.0f)) {
+        if (probe_hero_forward_collision_v(&g_hero_r.wall_probe_distance, 0.7f, 4.0f)) {
             g_hero_r.wall_normal_pitch =
                 fast_atan2(coll_hit_result.normal.f[2], vec_length_xy(&coll_hit_result.normal.f[0]));
             if (coll_hit_result.moby != 0) {
@@ -549,7 +549,6 @@ typedef struct {
 } T2C;
 
 extern void set_hero_idle_state_for_vehicle_mode(void);
-extern int hero_idle_sequence(int a);
 
 extern void ClampVectorLength(void *a, float x);
 extern float vec_length_xy(void *);
@@ -561,7 +560,6 @@ extern void update_hero_target_heading(float a, float b, float c);
 
 extern void *MobyGetHitMessage(void *, int, int);
 
-extern void release_and_clear_hero_voice_slots(void);
 extern void Spline_AdvanceByDistance(int a, char *pos, char *b, char *c, int d, float f);
 
 extern void vec_scale_to_length(void *, void *, float);

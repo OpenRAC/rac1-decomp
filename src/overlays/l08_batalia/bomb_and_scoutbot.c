@@ -17,6 +17,8 @@
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/render/draw.h"
+#include "overlays/shared/hero_idle_and_animation.h"
 extern char g_hero_moby[];
 
 extern unsigned char gSkillPoints[];
@@ -524,7 +526,7 @@ extern void MobyBlendAnimation_r(void *, int, int, int) __asm__("func_00213DE0")
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern float vec_distance_xy(void *, void *);
-extern int Help_Request(int, int);
+
 extern int IsFrameWithinWindow(char *, float);
 extern float MobyGetFrameValue_r(void *) __asm__("func_0020D830");
 extern void Moby_GetJointWorldPos_r(void *, int, void *) __asm__("func_L00_00250800");
@@ -1371,7 +1373,7 @@ extern short D_L08_00161A00_DB468 SDATA(D_L08_00161A00);
 extern float D_L08_001D7320[4];
 extern char batalia_zero_vec_r3[] __asm__("D_L08_0015F660") MACRO_ADDR;
 extern void func_L02_002A52B0(void *, float);
-extern void func_001F49B0(void *, void *);
+
 extern void func_00216270(void *);
 extern int Sound_IsPlaying_r(struct Moby *, int) __asm__("func_L00_0028EB98");
 extern void Sound_StopSlot_r(int) __asm__("func_L00_0028EBF0");
@@ -1444,8 +1446,6 @@ void update_hero_water_entry_effects(struct Moby *moby) {
 extern float batalia_line_puff_rise_speed_max SDATA(batalia_line_puff_rise_speed_max);
 extern float batalia_line_puff_size SDATA(batalia_line_puff_size);
 extern u16 batalia_line_puff_life_frames;
-
-extern f32 IntToFloat(s32);
 
 extern unsigned char *PartType23Spawn(void *, float, float, float, int, void *, float, int);
 extern char *PartType21Spawn(void *, void *, int, int, int, int, float);

@@ -516,8 +516,6 @@ void restore_camera_vectors(void) {
    across the calls, where retail rebuilds it. */
 extern short D_001872B0 NOT_SDA;
 
-extern float IntToFloat(int);
-
 /* start_camera_blend(from): captures the blend source from the previous
    camera and starts the blend (phase 3). When the phase is 1 or 2, the
    sub-mode (next_kind) picks what is captured from it: 0 the lerp pair
@@ -780,8 +778,6 @@ void update_camera_blend(Camera *cam) {
         b->kind = 0;
     }
 }
-
-extern float IntToFloat(int arg0);
 
 /* apply_camera_shake(s, along_row0): one shake channel (gCamera.shake[0] or
    [1]). With the active camera (gCamera.current) in state 6 both counters are

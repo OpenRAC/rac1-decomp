@@ -22,6 +22,8 @@
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/render/draw.h"
+#include "overlays/shared/hero_idle_and_animation.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 extern char pad0_pressed[];
@@ -156,7 +158,6 @@ void record_grid_entry_neighbor_indices(int arg) {
         }
     }
 }
-extern void AddDrawCallback(void *, void *);
 
 extern int Moby_PlaySound_i(int, int, void *) __asm__("func_0022ED80");
 extern void draw_electric_gate_beams(char *);
@@ -243,7 +244,6 @@ extern int electric_gate_alpha_b SDATA(electric_gate_alpha_b);
 extern int electric_gate_alpha_c SDATA(electric_gate_alpha_c);
 extern int electric_gate_alpha_d SDATA(electric_gate_alpha_d);
 extern int electric_gate_effect_tex SDATA(electric_gate_effect_tex);
-extern float IntToFloat(int);
 
 extern int GetEffectTex(int);
 
@@ -735,8 +735,6 @@ void drain_cover_update(Moby *moby) {
         moby_build_matrix(lid);
     }
 }
-
-extern float IntToFloat(int);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern void create_particle_with_velocity_and_lifetime(float, void *, void *, int, int, int);
@@ -2636,7 +2634,6 @@ void qwarks_trailer_update(char *moby) {
     }
 }
 INCLUDE_ASM("asm/overlays", func_L05_0031B15C);
-extern void Help_Request(int, int);
 
 #define hero (hero_a[0])
 #define D_001413DC (D_001413DC_a[0])

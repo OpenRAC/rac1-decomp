@@ -20,6 +20,7 @@
 #include "asm_functions/shared_levels.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_mapped_animations.h"
+#include "game/render/draw.h"
 extern Hero g_hero;
 extern char g_controller_state[];
 
@@ -187,7 +188,7 @@ extern s32 scale_ticks_r(s32) __asm__("func_001F9850");
 extern s32 coll_line_r(void *, void *, s32, void *, s32) __asm__("func_L00_001EFFF0");
 extern s32 fast_dec_timer_r(s32 *) __asm__("func_001F9908");
 extern void ProbeGroundHeight_r(void *, s32, f32) __asm__("func_00214358");
-extern void func_001F49B0(void *, void *);
+
 extern void func_L00_002ADE90(void);
 extern unsigned char *GetFlaggedPvarWord_r(int) __asm__("func_L00_00261448");
 extern s32 CollType_r(void) __asm__("func_L00_001F3958");
@@ -314,7 +315,6 @@ extern float frame_scale MACRO_ADDR;
 
 extern int fast_dec_timer(int *);
 extern void *spawn_moby_bound_effect_particle(void *);
-extern float IntToFloat(int);
 
 extern int coll_sphere(float, void *, int, void *);
 extern void spawn_moby_collision_particles(void *);
@@ -578,7 +578,7 @@ extern char *CreateMoby_r(int) __asm__("func_0020D348");
 extern int Moby_PlaySound_ri(int, int, char *) __asm__("func_0022ED80");
 
 extern int rand_range(int, int);
-extern float IntToFloat(int);
+
 extern void SetDeathBits(void *, int, int);
 
 extern void PartType05Spawn(void *, float, int, int, int, int, float);
@@ -2953,7 +2953,7 @@ typedef struct {
 } Part;
 
 extern s32 rand_range(s32, s32);
-extern f32 IntToFloat(int);
+
 extern void set_moby_color_r(void *, u8, u8, u8) __asm__("func_L00_00251328");
 extern void vec_scale_to_length(void *out, void *a, f32 len);
 typedef struct {

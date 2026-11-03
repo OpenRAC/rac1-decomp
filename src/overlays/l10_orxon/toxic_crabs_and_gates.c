@@ -22,6 +22,7 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_idle_and_animation.h"
 extern char gHeroPos[];
 
 extern char gSkillPoints[];
@@ -1268,7 +1269,6 @@ extern unsigned char gHaveHeliPack[];
 extern void STUB_printf(char *, ...);
 extern void update_blarg_ship_hit_reactions_and_targeting(char *m);
 
-extern int Help_Request(int a, int b);
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
 
 extern int IsFrameWithinWindow(char *, float);
@@ -2192,7 +2192,7 @@ extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern float multiply_global_factor_r2(float) __asm__("func_001F9878");
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
-extern float func_001FA888(int);
+
 extern int fast_dec_timer_r3(int *) __asm__("func_001F9908");
 
 // Level 10 gate_2 update: four-state machine on m[0x20], moby Gate 2.

@@ -28,6 +28,7 @@
 #include "structs/voice.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/render/draw.h"
 extern char level_moby_killed[];
 
 extern Hero g_hero;
@@ -164,8 +165,6 @@ typedef struct {
     long r88;
 } Q_E0910;
 extern int GetEffectTex(int);
-
-extern float IntToFloat(int);
 
 extern void draw_world_quad(void *, void *, int);
 extern void vec_scale_to_length(void *, void *, float);
@@ -723,9 +722,6 @@ typedef struct {
     int i504;
 } Spk_k_EC9C8;
 
-extern float IntToFloat(int);
-
-extern void AddDrawCallback(void (*)(struct Moby *), struct Moby *);
 extern int wind_spark_max_alpha SDATA(wind_spark_max_alpha);
 extern int wind_spark_fade_ticks SDATA(wind_spark_fade_ticks);
 struct L14SparkTarget {
@@ -1397,7 +1393,7 @@ typedef struct {
     long r88;
 } Q_2EF078;
 extern int GetEffectTex(int);
-extern float IntToFloat(int);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern void draw_world_quad(void *, void *, int);

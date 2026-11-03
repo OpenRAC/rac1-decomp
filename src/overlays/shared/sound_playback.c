@@ -10,6 +10,8 @@
 #include "overlays/shared/cutscene_and_movie_playback.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+#include "game/render/draw.h"
+#include "game/math/fastfunc.h"
 extern char gHeroPos[];
 extern char hero_vehicle_mode[];
 extern char gSpecialItems[];
@@ -160,9 +162,6 @@ extern char ship_entry_point_offsets[] NOT_SDA;
 extern int ship_level_exit_requested MACRO_ADDR;
 extern int cinematic_mode MACRO_ADDR;
 
-extern float IntToFloat(int);
-
-extern void AddDrawCallback(void (*)(void), void *);
 extern float vec_distance_xy(void *, void *);
 
 extern int try_set_help_message(int, int);

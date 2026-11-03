@@ -945,7 +945,6 @@ extern int CarriedMobyUpdate(void *, void *);
 
 extern void SpawnExplosionFx(void *, void *, int, float, float);
 extern void vec_scale_to_length(void *, void *, float);
-extern float IntToFloat(int);
 
 extern int gemlik_game_mode MACRO_ADDR;
 
@@ -1947,7 +1946,6 @@ void spawn_fighter_jet_joint_particles(void *moby, char *obj) {
     }
 }
 
-extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
 extern int frame_size;
 typedef struct {
     short tex;
@@ -2459,9 +2457,6 @@ extern char jet_camera_mode_warning_msg[];
 extern float gemlik_view_tan_half_fov;
 extern float Spring(float *, float *, float, float, float, float);
 extern float SpringAngle(char *, char *, int, float, float, float, float);
-
-extern void UpdateViewContext(void);
-extern void AddDrawCallback(void *, void *);
 
 typedef float W4_3E8[4] __attribute__((aligned(16)));
 

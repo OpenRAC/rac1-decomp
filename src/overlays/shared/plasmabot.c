@@ -17,6 +17,7 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/render/draw.h"
 extern char gHeroPos[];
 extern struct Hero g_hero;
 extern s32 g_hero_moby;
@@ -150,8 +151,6 @@ int count_listed_plasmabots_preparing_or_sweeping_beam(int index);
 extern int register_beam_slot(void *, int, int);
 
 void Group_ResetClass28Timers(int idx);
-
-extern float IntToFloat(int);
 
 extern void vec_scale_to_length(void *, void *, float);
 
@@ -1339,7 +1338,6 @@ extern float spinning_debris_drag_min_speed SDATA(spinning_debris_drag_min_speed
 extern float spinning_debris_drag SDATA(spinning_debris_drag);
 extern float spinning_debris_gravity SDATA(spinning_debris_gravity);
 extern void draw_spinning_debris(struct MobyDf *);
-extern void AddDrawCallback(void (*)(void), void *);
 
 extern int fast_dec_timer(void *);
 
@@ -2063,7 +2061,6 @@ extern void start_vendor_beam_pulse(char *);
 extern void apply_vendor_beam_damage(char *);
 extern void update_vendor_beam_animation(char *);
 extern void draw_vendor_beam(char *);
-extern void AddDrawCallback(void (*)(void), void *);
 
 /* Moby update for a timed effect that triggers when the hero is near. */
 void update_vendor_beam(unsigned char *m) {
@@ -2145,8 +2142,6 @@ void update_vendor_beam(unsigned char *m) {
 typedef struct Vq {
     float x, y, z, w;
 } __attribute__((aligned(16))) Vq;
-
-extern float IntToFloat(int);
 
 extern void rand_vec(void *, float, float);
 

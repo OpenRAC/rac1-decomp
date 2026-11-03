@@ -24,6 +24,7 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_animation_slots.h"
+#include "game/render/draw.h"
 extern char g_hero[];
 extern char gHeroPos[];
 extern char pad0_pressed[];
@@ -218,8 +219,6 @@ void RippleDisturb(WaterPatch *g, int count, int mode, float x, float y, float r
 #undef WATER_CUR
 #undef WATER_OTH
 LINKER_REMNANT("asm/overlays", func_L00_002A5AC0);
-
-extern float IntToFloat(int);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
@@ -648,7 +647,6 @@ void draw_vendor_effects(char *m) {
 
 extern float vec_distance_xy(void *, void *);
 
-extern void AddDrawCallback(void (*)(void), void *);
 extern void axis_rotation_2d48(void *, int, float);
 
 extern int try_set_help_message(int, int);
@@ -2564,8 +2562,6 @@ typedef struct {
 extern int cinematic_mode MACRO_ADDR;
 extern float impact_marker_euler SDATA(impact_marker_euler);
 extern float impact_marker_euler_v[] __asm__("D_L00_001614B0") MACRO_ADDR;
-
-extern float IntToFloat(int);
 
 extern int GetEffectTex(int);
 extern void draw_world_quad(void *, void *, int);

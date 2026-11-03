@@ -25,6 +25,7 @@
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/hero_animation_slots.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "overlays/shared/hero_idle_and_animation.h"
 extern Hero g_hero;
 extern char g_hero_moby[];
 extern int pad_held;
@@ -75,21 +76,15 @@ extern unsigned char gCheats[] MACRO_ADDR;
 extern int novalis_frame_count MACRO_ADDR;
 
 extern float novalis_lean_state_30_scale;
-extern float IntToFloat(int);
+
 extern int truncate_float_to_s32(float);
 
 extern void update_hero_ground_material_effects(void);
 extern void HeroL01_UpdateStateTransitions(void);
 
-extern void update_hero_easing_records(void);
-extern void update_hero_vehicle_moby(void);
-extern void update_hero_scalar_pulse(void);
-extern void apply_hero_and_item_scale_sequence(void);
-
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void enqueue_hero_glow_draw_callback_once(void);
+
 extern void allocate_hero_voice_for_entry(int, int);
-extern void update_hero_moby_probed_height_bounds(void);
 
 typedef struct {
     char pad0[0x80];
@@ -207,35 +202,15 @@ void hero_frame_update(void) {
     apply_env_zone_lighting(GG->p2080);
 }
 
-extern void FadeToBlack(int);
 extern void hero_frame_update(void);
 
 extern void update_hero_ground_material_effects(void);
 extern void update_hero_ledge_probe(void);
 extern void HeroL01_UpdateStateTransitions(void);
 
-extern void update_hero_easing_targets_and_point_effects(void);
-extern void update_hero_collision_ease_target(void);
-extern void update_hero_pitch_and_yaw_easing_targets(void);
-extern void update_hero_target_tracking(void);
-extern void update_hero_idle_random_rotation_targets(void);
-extern void update_hero_rotation_targets_and_random_manipulators(void);
-extern void update_hero_glow_and_extra_manipulators(void);
-
-extern void update_hero_easing_records(void);
-extern void update_hero_moby(void);
-extern void update_hero_world_matrices(int);
-
-extern void update_hero_scalar_pulse(void);
-extern void apply_hero_and_item_scale_sequence(void);
-extern void check_hero_item_reward_conditions(void);
-extern void update_hero_bolt_exclamation_hud(void);
-extern void dispatch_hero_animation_timed_events(void);
-extern void scan_hero_input_sequences(void);
 extern void Profile_Mark(void *);
 
 extern void update_hero_blink_and_gold_weapon_tint(void);
-extern void update_hero_moby_probed_height_bounds(void);
 
 /* Per-frame update of the help/menu state: validates the cursor, then runs the update chain. */
 void update_hero_frame(void) {
@@ -298,7 +273,6 @@ extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 extern unsigned char D_0013E620[];
 
-extern void func_L00_002078E0(void);
 extern void update_item_tint_from_hero_r(struct Moby *, struct Moby *) __asm__("func_L00_00207948");
 
 /* Blinks the hero's moby colour for the first 30 frames of states 0x80 and 0x82 (and of state 0x76 for 20 frames in
@@ -338,8 +312,6 @@ void update_hero_blink_and_gold_weapon_tint(void) {
 extern int coll_sphere(float, void *, int, void *);
 
 extern void Hero_SetMoveState(int, int);
-
-extern void exit_hero_vehicle_mode_if_mode_three(void);
 
 // Handles a pending state change (HeroL08_ResetActionState without its state-2 flag): clears the request and sets
 // per-state flags.
@@ -768,8 +740,6 @@ extern unsigned char hero_globals_base[] NOT_SDA;
 
 extern void hero_update_items();
 
-extern void release_and_clear_hero_voice_slots(void);
-extern void reset_hero_easing_records(void);
 extern void HeroSetCollisionSize(void);
 
 extern void Hero_SetMoveState(int, int);
@@ -853,7 +823,6 @@ extern s32 g_current_level_index MACRO_ADDR;
 extern s32 hero_hit_count MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
 extern u8 hero_velocity[];
-void release_and_clear_hero_voice_slots(void);
 
 void Hero_SetMoveState(s32, s32);
 void allocate_hero_voice_for_entry(s32, s32);
@@ -1161,7 +1130,6 @@ void sceVu0Normalize(void *, void *);
 void vec_scale_to_length(void *, void *, f32);
 void compute_rotated_vector_angles(void *, void *);
 
-f32 FastAbsF(f32);
 extern struct CollisionHit novalis_coll_hit_r3 __asm__("D_L01_00174340");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00226f10.c, FUN_L01_00232dc0. */

@@ -29,6 +29,8 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_mapped_animations.h"
+#include "game/render/draw.h"
+#include "overlays/shared/hero_idle_and_animation.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 extern char help_records[];
@@ -124,7 +126,7 @@ struct HeroIndexTriggerVars {
 
 extern float vec_distance_xy(void *, void *);
 extern int memcard_Save(int, int);
-extern int Help_Request(int, int);
+
 extern float g_frame_time MACRO_ADDR;
 extern unsigned char gHaveHeliPack[];
 extern unsigned char discount_purchase_pricing[];
@@ -1321,7 +1323,6 @@ extern void ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void ApproachValue_r(float *, float, float) __asm__("func_00214D28");
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern void MusicRequestTrack(int, int);
-extern int AddDrawCallback(void (*)(char *), char *);
 
 /* L11 twin of FUN_L01_00308bd8: a three-part switch moby that, once the hero stands on it in mission state 0xB and
    presses the button, swings its parts open and moves the linked moby (or its fallback) along.

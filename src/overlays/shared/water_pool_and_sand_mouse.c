@@ -634,7 +634,6 @@ extern float vec_distance_xy(void *, void *);
 
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound_r(int, int, char *) __asm__("func_0022ED80");
-extern float IntToFloat(int);
 
 extern void update_entity_matrix(char *, void *, void *, void *);
 

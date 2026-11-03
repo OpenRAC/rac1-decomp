@@ -16,8 +16,6 @@
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-extern void UpdateViewContext(void);
-
 extern char image_end_round_16k[];
 extern int current_vu_chain MACRO_ADDR;
 extern int level_resource_buffers[];
@@ -68,7 +66,6 @@ extern int wad_GetSectors_FiiPv(int lba, int sectors, void *buf);
 
 extern void memcard_get_name(void *arg0);
 
-extern void SetPalMode(void);
 extern void VU0_loadMicroProgram(void *);
 extern int load_disc_sectors_into_global_buffer(void);
 
@@ -84,7 +81,7 @@ extern int sceGsExecLoadImage(void *src, void *dst);
 extern void wait_for_graphics_pipeline_idle(int, unsigned short);
 extern void LoadDebugFont(void);
 extern void initialize_sif_rpc(void);
-extern void initialize_alpha_lookup_table(void);
+
 extern int sce_scf_get_language(void);
 
 extern char iop_reboot_image_path[]; /* "cdrom0:\\IOPRP243.IMG;1" */

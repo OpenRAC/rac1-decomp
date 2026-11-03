@@ -13,6 +13,8 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/moby_class.h"
 #include "game/moby/mobyfunc.h"
+#include "game/render/draw.h"
+#include "game/math/fastfunc.h"
 
 /* Moby that drags a child moby along with it. */
 struct ChildCarrierVars {
@@ -116,14 +118,14 @@ extern short deplanetizer_burst_local_spawn_offset_x_gp;
 extern float deplanetizer_burst_velocity_scale_gp SDATA(deplanetizer_burst_velocity_scale_gp);
 extern float deplanetizer_burst_particle_size_gp SDATA(deplanetizer_burst_particle_size_gp);
 extern int scale_ticks(int);
-extern float IntToFloat(int);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern void Moby_GetJointWorldPos(void *, int, void *);
 
 extern void clear_u64_value(void *);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
                             int, int, int, int);
-extern void AddDrawCallback(void *, void *);
+
 extern void lerp_vector(void *, void *, void *, float);
 extern void spawn_deplanetizer_gun_trail_effects(void *a, void *b, void *c, float f0, float f1);
 extern void FastVecSub(void *, void *, void *);
@@ -534,7 +536,7 @@ void draw_three_scaled_camera_facing_quads(void) {
     draw_world_quad(&pk, 0, 0);
 }
 extern int scale_ticks(int);
-extern float IntToFloat(int);
+
 extern float FastSin(float);
 extern int FastTweenColor(int, int, float);
 
@@ -953,7 +955,7 @@ extern int mine_fall(void *, void *);
 extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                   float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern float ApproachValue(float *p, float target, float maxstep);
-extern void AddDrawCallback(void *, void *);
+
 extern void draw_gadgebot_launch_glow_quad(void);
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;

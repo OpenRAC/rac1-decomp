@@ -673,7 +673,7 @@ extern void zero_2E39E0(void *) __asm__("func_001F9BC0");
 
 extern float angle_add_2E39E0(float, float) __asm__("func_001FA748");
 extern void vec_scale_2E39E0(void *, void *, float) __asm__("func_L00_001FF4B0");
-extern float func_001FA888(short);
+
 extern int hazard_2E39E0(void) __asm__("func_L00_001F3958");
 extern void splash_2E39E0(Moby *, void *, int, float, float) __asm__("func_L00_00260108");
 extern void delete_2E39E0(Moby *) __asm__("func_0020D678");

@@ -19,6 +19,7 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/render/draw.h"
 extern Hero g_hero;
 
 /* Paratrooper fire bolt (class 0x50C): flies along its velocity until it hits something or its time runs out. */
@@ -125,7 +126,7 @@ extern float fast_distance_3DF8(void *, void *) __asm__("func_001F9D48");
 extern float fabs_3DF8(float) __asm__("func_001F9B88");
 extern int func_0022ED80(int, int, void *);
 extern float animframe_3DF8(void *) __asm__("func_0020D830");
-extern void func_001F49B0(void *, void *);
+
 extern int func_00215B18(void *, float);
 extern void shoot_3DF8(void *, void *, int, void *, void *, float) __asm__("func_L00_0025AC00");
 extern int func_L00_0028EB98(void *, int);
@@ -988,7 +989,7 @@ void emit_pair_offset_render_batch(int a) {
                               batalia_scrolled_uvs, 1);
     }
 }
-extern float IntToFloat(int);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 /* Scales every RGBA word of a set of colour tables by four factors, optionally using the flat 255 for colour. */

@@ -9,6 +9,7 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/math/fastfunc.h"
 
 extern long func_001F4868(int);
 
@@ -196,7 +197,6 @@ void emit_moby_particle_pairs(void *p) {
             r[9] = truncate_float_to_s32(4.0f) + 0x70;
     }
 }
-extern float IntToFloat(int);
 
 extern unsigned char level_point_lights[];
 extern float level_draw_frame_load MACRO_ADDR;

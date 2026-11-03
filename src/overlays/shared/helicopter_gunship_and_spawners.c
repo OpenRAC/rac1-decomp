@@ -18,6 +18,7 @@
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/render/draw.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 extern char voice_pool[];
@@ -97,8 +98,6 @@ void draw_textured_grid(char *moby) {
 LINKER_REMNANT("asm/overlays", func_L03_00292B18);
 extern float g_frame_time MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
-
-extern float IntToFloat(int);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
@@ -2035,7 +2034,7 @@ void qwark_rilgar_update(char *m) {
     EaseManipulatorOffsets(m, (char *)watch_data + 0x80, 1, rate * g_frame_scale_sq, head_rate * g_frame_scale_sq);
 }
 extern void prepare_scaled_float_table_with_target_byte(char *, float, int);
-extern void AddDrawCallback(void (*)(void), void *);
+
 extern void register_audio_stream_callback(void);
 extern char kerwan_ambient_stream_scaled_table[];
 
@@ -2089,7 +2088,6 @@ void garage_door_update(struct Moby *m) {
 INCLUDE_ASM("asm/overlays", func_L03_002DDE28);
 INCLUDE_ASM("asm/overlays", func_L03_002DDED8);
 
-extern float IntToFloat(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern int fast_dec_timer(int *arg0);
 

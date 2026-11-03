@@ -24,6 +24,7 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/render/draw.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 extern int hero_control_mode;
@@ -554,7 +555,6 @@ void draw_group_moby_glow_quads(unsigned char *moby) {
 }
 extern void Moby_GetJointWorldPos(void *, int, void *);
 
-extern void AddDrawCallback(void (*)(void), void *);
 extern int rilgar_frame_count MACRO_ADDR;
 
 // Updates a moby's pulsing colour and its draw hook.
@@ -817,7 +817,7 @@ typedef struct {
 } L05GlowPacket;
 
 extern u64 GetEffectTex(int);
-extern float IntToFloat(int);
+
 extern void libc_memset(void *, int, int);
 extern int FastBSphereCheck(void *, float);
 extern void draw_world_quad(void *, int, int);

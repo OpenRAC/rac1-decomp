@@ -218,8 +218,6 @@ extern struct {
     f32 f[0xB68 / 4];
 } D_L00_0017A780_15738 __asm__("D_L00_0017A780");
 
-extern void Hero_SetTiltSpringParams(f32, f32);
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00214658.c, FUN_L00_00214fe8. */
 void update_hero_transformed_negative_z_angle_parameters(void) {
     Vec4 vec;
@@ -292,7 +290,7 @@ typedef struct {
 } T_215340;
 extern T_215340 lean_state_r __asm__("D_L00_0017A780");
 extern f32 g_frame_time MACRO_ADDR;
-extern void Hero_SetTiltSpringParams(f32, f32);
+
 extern void set_first_hero_easing_parameters_r(f32, f32) __asm__("func_L00_0020A858");
 extern void set_first_hero_easing_parameters_r2(f32, f32) __asm__("func_L00_0020A858");
 extern void set_first_hero_easing_parameters_r3(f32, f32) __asm__("func_L00_0020A858");

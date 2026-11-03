@@ -3,6 +3,7 @@
 #include "callees.h"
 #include "structs/records.h"
 #include "structs/misc.h"
+#include "game/render/draw.h"
 
 /*
  * missionfunc.cpp in the original source; text 0x20C7A0-0x20D348.
@@ -386,7 +387,6 @@ extern struct {
 
 extern void func_00208C38(f32 *outx, f32 *outy, s32 view, f32 x, f32 y);
 extern void func_00208AB0(s32 idx, char *dst);
-extern void func_001F75D0(struct TextRegion *, long, char *, int);
 
 /* Map screen icon refresh: picks the level's icon list, centres the map on the hero when
    it is the current level, places the fixed icons (-1..-9) and projects the others to map

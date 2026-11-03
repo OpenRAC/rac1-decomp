@@ -9,6 +9,7 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/render/draw.h"
 
 /*
  * transition.cpp in the original source; text 0x1E9E70-0x1EC038.
@@ -156,17 +157,12 @@ extern void FastMemZero16(void *, int);
 
 extern void STUB_printf(char *);
 
-extern int UpdateFog();
 extern void SetBackgroundColor(int, int, int);
 extern int VU0_loadMicroProgram();
 
 extern void scale_vector(void *, void *, float);
 
 extern int truncate_float_to_s32(float);
-extern float IntToFloat(int);
-extern void ResetDrawGlobals(void);
-
-extern void Font_EnableColorCodes(void);
 
 extern int pal_mode MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
@@ -912,7 +908,6 @@ void queue_dma_transfer(int arg0) {
 extern char render_sequence[];
 extern float view_tan_half_fov;
 extern char camera_position[];
-extern void UpdateViewContext(void);
 
 /* Transition_UpdateMovieCamera: the current keyframe (0x20 bytes: position,
    a flag byte at +0xC, then X/Y/Z angles) sets the camera position and
@@ -1110,15 +1105,9 @@ extern s32 append_dma_tag();
 
 extern s32 Transition_DrawSky_r() __asm__("func_001E9E70");
 extern s32 Transition_UpdateMovieCamera_r2() __asm__("func_001EB338");
-extern s32 BuildViewMatrices();
-extern s32 UpdateFog();
-extern void ResetGsRegisters();
-extern s32 SetupGifPaging();
-extern s32 DoGifPaging();
+
 extern u64 GetEffectTex();
-extern s32 dispatch_callback_list_1();
-extern s32 emit_rgba_draw_packet();
-extern void DrawTexturedQuad();
+
 extern s32 truncate_float_to_s32(f32);
 extern s32 append_gif_transfer_packet();
 extern s32 AA_BlurPass();
@@ -1324,7 +1313,7 @@ extern void vu1_init_chain_BB48(void) __asm__("func_002348E8");
 extern void fade_to_black_BB48(s32) __asm__("func_001F4E08");
 extern s32 reset_vif1_gif_BB48(void) __asm__("func_001207B8");
 extern void reset_graph_BB48(s16, s16, s16, s16) __asm__("func_00121B78");
-extern void func_001F3890(void);
+
 extern void vu1_sync_chain_BB48(s32) __asm__("func_00234AC8");
 
 /* Adapted from Lombyte's project (GPL-3.0): src/gameplay/state/transition_do_transition.c, transition_do_transition. */

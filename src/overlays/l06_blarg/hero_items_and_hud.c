@@ -73,7 +73,6 @@ extern int pad_pressed_within(int, int, int *);
 extern void quantize_hero_input_target_speed(void);
 
 extern int truncate_float_to_s32(float);
-extern float adjust_hero_animation_speed_for_target_frame(float a, float b, float c, float d);
 
 extern float vec_length_xy(void *);
 extern float vec_distance_xy(void *, void *);
@@ -84,8 +83,6 @@ extern void ClampVectorLength(void *a, float x);
 extern int check_pad_press_separation(int, int, int, int);
 
 extern float ApproachValue(float *p, float target, float maxstep);
-
-extern void release_and_clear_hero_voice_slots(void);
 
 extern int coll_line(void *, void *, int, int, int);
 

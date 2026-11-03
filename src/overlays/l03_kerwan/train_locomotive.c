@@ -1357,7 +1357,6 @@ void update_spline_moby_destruction_and_respawn(char *moby, void *vel_in, int fl
 extern char *kerwan_mobys MACRO_ADDR;
 
 extern char kerwan_red_ship_no_path_msg[];
-extern float IntToFloat(int);
 
 extern int FastBSphereCheck(void *, float);
 extern int truncate_float_to_s32(float);
@@ -2265,7 +2264,7 @@ extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, f
 
 extern float ApproachValue(float *p, float target, float maxstep);
 extern int coll_line(void *, void *, int, void *, void *);
-extern float IntToFloat(int);
+
 extern int coll_sphere(float, void *, int, void *);
 extern int RotateWithMoby(int unused, char *m, char *a, void *b, char *c, void *d);
 

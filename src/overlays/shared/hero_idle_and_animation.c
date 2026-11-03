@@ -26,6 +26,7 @@
 #include "asm_functions/executable.h"
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/hero_animation_slots.h"
+#include "game/math/fastfunc.h"
 extern char cd_read_state[];
 
 extern char help_popup_state[] NOT_SDA;
@@ -577,7 +578,7 @@ struct HeroManip4_5FF0 {
 #define HV ((struct HeroManip4_5FF0 *)&g_hero_r3)
 #define HM (HV->m)
 extern float ApproachValue(float *, float, float);
-extern f32 IntToFloat(s32);
+
 extern s32 truncate_float_to_s32(f32);
 
 extern unsigned char gCheats[] MACRO_ADDR;
@@ -843,7 +844,6 @@ void func_001F9BC0_c(void *) __asm__("func_001F9BC0");
 extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
 extern int func_0022ED80(void *, int, void *);
 
-extern float IntToFloat(int);
 extern int truncate_float_to_s32(float);
 extern void allocate_hero_voice_for_entry(int, int);
 extern void update_hero_moby_probed_height_bounds(void);
@@ -1314,7 +1314,7 @@ void scan_hero_input_sequences(void) {
             *(int *)(r + 0x21D4) = 0;
     }
 }
-extern void FadeToBlack(int);
+
 extern void update_hero_in_vehicle_mode(void);
 
 extern void apply_hero_selected_flags_and_state_transitions(void);
@@ -1443,11 +1443,9 @@ void update_item_tint_from_hero(void *a, char *m) {
 extern unsigned char gCheats[] MACRO_ADDR;
 extern int sound_volume MACRO_ADDR;
 
-extern float IntToFloat(int);
-
 extern int truncate_float_to_s32(float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern float FastAbsF(float);
+
 extern void HeroDrawQueue_Add(void *vec, int a, float f0, float f1);
 
 // Sets up a vendor moby's draw color from a time-driven wave and spawns its glow particle.
@@ -1677,7 +1675,7 @@ void update_hero_scalar_pulse(void) {
     }
 }
 extern unsigned char g_hero[] NOT_SDA;
-extern void AddDrawCallback(void *, int);
+
 extern void draw_hero_glow_quads(void);
 /* Queues the hero draw callback draw_hero_glow_quads, at most once per frame. */
 void enqueue_hero_glow_draw_callback_once(void) {
@@ -2063,8 +2061,6 @@ void func_001F9C30_091D8(Vec4 *, Moby *, f32) __asm__("func_001F9C30");
 void vec_scale_to_length(Vec4 *, Vec4 *, f32);
 void func_001F9BD8_091D8(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BD8");
 s32 func_L00_001EFFF0_091D8(Vec4 *, Vec4 *, s32, s32, s32) __asm__("func_L00_001EFFF0");
-f32 min_float(f32, f32);
-f32 max_float(f32, f32);
 
 /* Steers the player aim and probes four rays for vertical motion limits. Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00203b18.c, FUN_L00_00208b60. */
 void update_hero_moby_probed_height_bounds(void) {

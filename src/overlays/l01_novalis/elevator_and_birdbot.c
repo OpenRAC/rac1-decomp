@@ -24,6 +24,7 @@
 #include "enums/hero_state.h"
 #include "asm_functions/executable.h"
 #include "game/moby/mobyfunc.h"
+#include "game/render/draw.h"
 extern char gHeroPos[];
 extern struct Hero g_hero;
 extern int level_moby_killed[][64];
@@ -1356,7 +1357,6 @@ extern int move_w(void *, void *, void *, void *, float);
 
 extern int CarriedMobyUpdate(void *, void *);
 
-extern float IntToFloat(int);
 extern void set_ground_height_band(void *);
 
 /* Peckbot update: wanders and hops after the hero, flies in a hurt arc when hit, dies with a burst of parts. */
@@ -2542,9 +2542,7 @@ typedef struct {
 extern s32 novalis_scroll_bounds_initialized SDATA(novalis_scroll_bounds_initialized);
 extern BoundGroup novalis_bounded_scroll_layers_r[] __asm__("D_L01_001E3660");
 
-extern f32 IntToFloat(s32);
 extern void draw_two_scroll_layers(void *);
-void AddDrawCallback(void *fn, void *arg);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l01/unclassified_002b96e0.c, FUN_L01_002f6180. */
 void initialize_bounds_and_enqueue_scroll_layers(void *arg) {
@@ -3368,7 +3366,6 @@ typedef struct {
     s32 xb4;
 } LiftVars;
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern float IntToFloat(int);
 
 extern void update_entity_matrix(char *, void *, void *, void *);
 

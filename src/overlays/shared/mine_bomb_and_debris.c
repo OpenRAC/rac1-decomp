@@ -23,6 +23,7 @@
 #include "asm_functions/shared_levels.h"
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/render/draw.h"
 extern Hero g_hero;
 extern int pad_held;
 extern char voice_pool[];
@@ -198,8 +199,6 @@ extern int predict_mine_impact(W910 *, M910 *, int);
 extern float resolve_camera_surface_height(float *, void *);
 
 extern int PartType34Spawn(void *, void *, float, float);
-
-extern float IntToFloat(int);
 
 extern int coll_line(void *, void *, int, int, int);
 
@@ -930,8 +929,6 @@ void mine_update(M910 *m) {
 }
 typedef int q_2adbb0 __attribute__((mode(TI)));
 
-extern float IntToFloat(int);
-
 /* Spawns a spinning shard (type 0x70) at pos with velocity vel, tinted r/g/b, fading out over life. */
 char *spawn_glow_particle(void *owner, void *pos, void *vel, float scale, int life, unsigned char r, unsigned char g,
                           unsigned char b, unsigned char a) {
@@ -967,7 +964,6 @@ char *spawn_glow_particle(void *owner, void *pos, void *vel, float scale, int li
     }
     return m;
 }
-extern float IntToFloat(int);
 
 typedef struct V_d {
     char pad0[0x14];
@@ -1010,8 +1006,6 @@ void update_glow_particle(M_d *m) {
 }
 
 extern int cinematic_mode MACRO_ADDR;
-
-extern float IntToFloat(int);
 
 extern int GetEffectTex(int);
 extern void draw_world_quad(void *, void *, int);
@@ -1293,7 +1287,7 @@ typedef struct {
     char *last_hit;
     int hit_count;
 } Land;
-extern void AddDrawCallback(void *, void *);
+
 extern unsigned char screen_globals_base[];
 extern void draw_bomb_landing_marker(char *moby);
 
@@ -2297,7 +2291,6 @@ typedef struct {
 extern E gold_weapon_purchased;
 extern s32 coll_hit_result[0x1C];
 
-extern f32 IntToFloat(s32);
 extern s32 coll_line_r(void *, void *, s32, char *, void *) __asm__("func_L00_001EFFF0");
 extern s32 GetFlaggedPvarWord_r(char *) __asm__("func_L00_0025D390");
 

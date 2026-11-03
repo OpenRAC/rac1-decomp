@@ -29,6 +29,8 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "asm_functions/shared_levels.h"
 #include "game/moby/mobyfunc.h"
+#include "game/math/fastfunc.h"
+#include "overlays/shared/hero_idle_and_animation.h"
 extern char g_hero[] NOT_SDA;
 
 /* Lift/gate moby that follows a driver moby's progress between a base and a top height. */
@@ -484,7 +486,6 @@ extern int FastBSphereCheck(char *, float);
 
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
 
-extern void AddDrawCallback(void (*)(void), void *);
 extern void draw_layered_mesh_effect(void);
 
 extern PairA batalia_uv_scroll[];
@@ -676,7 +677,6 @@ void update_path_following_moby_with_fade(struct Moby *moby) {
     }
 }
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
-extern float IntToFloat(int);
 
 /* Smooth noise: linearly interpolates between two entries of an 8-float ring at arg+0x90. */
 float SmoothNoise(float x, char *arg) {
@@ -750,7 +750,6 @@ typedef struct {
 extern int D_L08_0015F4F8 MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
 extern Sound45 batalia_lights[];
-extern float IntToFloat(int);
 
 extern float vec_length(float);
 
@@ -1828,8 +1827,6 @@ extern int g_current_level_index MACRO_ADDR;
 
 extern int PlayBankSound(int, int, int);
 
-extern int Help_Request(int a, int b);
-
 /* Moby update for a trigger-volume controller; tracks best times and raises Help_Request. */
 void update_batalia_item_triggers_and_help(char *m) {
     VData *data = ((VData *)((Moby *)m)->pvars);
@@ -2081,7 +2078,7 @@ void queue_batalia_textured_batch_passes(void) {
 extern int FastBSphereCheck(char *, float);
 
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
-extern void AddDrawCallback(void (*)(void), void *);
+
 extern void queue_batalia_textured_batch_passes(void);
 extern char batalia_textured_mesh8_colors[];
 extern char batalia_textured_mesh8_counts[];

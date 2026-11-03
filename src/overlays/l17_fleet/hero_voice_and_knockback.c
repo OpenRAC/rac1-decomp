@@ -12,6 +12,7 @@
 #include "enums/moby_class.h"
 #include "structs/hit_message.h"
 #include "asm_functions/executable.h"
+#include "overlays/shared/hero_idle_and_animation.h"
 extern Hero g_hero;
 
 typedef struct {
@@ -65,7 +66,6 @@ extern s32 g_current_level_index MACRO_ADDR;
 extern s32 hero_hit_count MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
 extern u8 hero_velocity[];
-void release_and_clear_hero_voice_slots(void);
 
 void HeroL17_SetMoveState(s32, s32);
 void allocate_hero_voice_for_entry(s32, s32);

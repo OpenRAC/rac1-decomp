@@ -16,8 +16,6 @@
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-extern int measure_text_width_regular(unsigned char *, int);
-
 extern int level_resource_buffers[];
 extern int current_vu_chain MACRO_ADDR;
 
@@ -97,10 +95,6 @@ extern u8 level_visit_state[20];
 extern s32 pal_mode MACRO_ADDR;
 extern s32 game_frame_counter MACRO_ADDR;
 extern s32 map_label_text_y_offset SDATA(map_label_text_y_offset);
-extern void SetupGifPaging(s32);
-extern void DoGifPaging(void);
-extern s32 measure_text_width_regular(u8 *, s32);
-extern void FontPrintLarge(s32, s32, u64, u8 *, s32);
 
 extern f32 vec_length_xy(f32 *);
 extern void *msg_string(s32);
@@ -278,8 +272,7 @@ extern int D_0015EF1C MACRO_ADDR;
 #define D_0015EF1D_b (*(unsigned char *)&gHelpDeskText)
 #define D_0015EF1C_b (*(unsigned char *)&gHelpDeskVoice)
 extern int PlayBankSound(int, int, int);
-extern void FontSetWindow(void *arg0, int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8);
-extern void font_print_window_small(void *a, long b, void *c, int d);
+
 extern int frame_size;
 
 /* Opens the help window: state 1 (opening), the open sound unless both
@@ -562,7 +555,6 @@ void Help_Update(void) {
     }
 }
 
-extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
 extern long func_001F4868(int);
 
 /* Help_DrawPrompt: sets the prompt box's +0x18/+0x1C sizes to 0x20,

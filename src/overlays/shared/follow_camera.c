@@ -22,6 +22,7 @@
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_idle_and_animation.h"
 extern char g_hero[];
 extern u8 hero_gravity_dir[];
 extern char gHeroPos[];
@@ -231,8 +232,6 @@ extern void STUB_printf();
 extern void emit_moby_color_cycling_particles_r(void *) __asm__("func_L00_002E1C38");
 extern f32 vec_distance_xy(void *, void *);
 
-extern void Help_Request(s32, s32);
-
 extern void memcard_Save(s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002df730.c, FUN_L00_002e03a0. */
@@ -304,8 +303,6 @@ void pilots_helmet_update(M_2e03a0_2e03a0 *m) {
     }
 }
 extern float g_debug_camera[];
-
-extern float IntToFloat(int);
 
 extern int func_001FA898(float);
 extern unsigned char *PartType59Spawn(float f, void *pos, int a1, unsigned char a2, int idx, int flag, int s, int mode);
@@ -1656,7 +1653,6 @@ extern float follow_cam_target_angle_max SDATA(follow_cam_target_angle_max);
 extern float follow_cam_slam_target_lerp SDATA(follow_cam_slam_target_lerp);
 extern void lerp_vector(float, void *, void *, void *);
 
-extern float IntToFloat(int);
 extern int coll_sphere(float, void *, int, void *);
 
 extern int compute_follow_camera_ground_aware_target_position_r(void *, int) __asm__("func_L00_002E5770");
@@ -2890,7 +2886,7 @@ extern float follow_cam_collision_pull_in_speed SDATA(follow_cam_collision_pull_
 float FastVecLength(void *);
 void func_001F9BF0_E85E8(void *, void *, void *) __asm__("func_001F9BF0");
 void vec_scale_to_length(void *, void *, float);
-float FastAbsF(float);
+
 short func_001F9850_E85E8(int) __asm__("func_001F9850");
 void FastVecScale(void *, void *, float);
 

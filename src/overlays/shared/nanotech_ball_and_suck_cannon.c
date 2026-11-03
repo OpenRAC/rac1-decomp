@@ -23,6 +23,7 @@
 #include "game/moby/mobyfunc.h"
 #include "overlays/shared/hero_mapped_animations.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/render/draw.h"
 extern Hero g_hero NOT_SDA;
 extern char item_usage[];
 extern int pad_held;
@@ -268,9 +269,7 @@ extern f32 nanotech_ring_heights SDATA(nanotech_ring_heights);
 
 void vec_scale_to_length(void *, void *, f32);
 
-f32 IntToFloat(s32);
 s32 truncate_float_to_s32(f32);
-f32 FastAbsF(f32);
 
 u8 *PartType59Spawn(void *, s32, u8, s32, s32, s32, s32, f32);
 
@@ -2807,7 +2806,6 @@ typedef struct {
     char *p;
 } E04_pt3;
 extern E04_pt3 suck_beam_particles[];
-extern void AddDrawCallback();
 
 extern V41 suck_beam_ring_unit_offsets[];
 extern float suck_beam_segment_turn_angles[];
@@ -3080,7 +3078,6 @@ void suck_beam_update(void *moby, void *position) {
     }
 }
 extern void suck_beam_draw_mesh(void);
-extern void AddDrawCallback(void (*)(void), int);
 
 /* Fades the suck beam segments and queues the beam draw while it is visible. */
 void suck_beam_queue_draw(int arg0) {

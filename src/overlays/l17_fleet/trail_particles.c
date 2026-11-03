@@ -5,6 +5,7 @@
 #include "include_asm.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "game/math/fastfunc.h"
 
 extern int func_001FA898(float);
 extern unsigned char *fleet_trail_texture_ptr;
@@ -38,7 +39,6 @@ unsigned char *spawn_trail_particle(char *parent, void *pos, float *vec) {
     }
     return p;
 }
-extern float IntToFloat(int);
 
 // Spawns a class 0x50 fading particle at a position, with colours depending on a mode and a fade step.
 unsigned char *create_drone_flight_trail_record(char *pos, int mode, int step) {

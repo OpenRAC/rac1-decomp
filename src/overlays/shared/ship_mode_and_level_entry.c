@@ -15,6 +15,7 @@
 #include "game/audio/music.h"
 #include "enums/level.h"
 #include "game/moby/mobyutil.h"
+#include "game/math/fastfunc.h"
 extern char cd_read_state[];
 extern char *level_render_state;
 
@@ -341,7 +342,7 @@ void FastVecScale_v(float, void *, void *) __asm__("func_001F9C30");
 
 long GetEffectTex(int);
 int random_integer_below(int);
-float IntToFloat(int);
+
 void draw_world_quad(void *, void *, int);
 
 /* The 0x90-byte quad the effect builds: the NTSC GeometryQuad layout. */
