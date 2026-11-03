@@ -61,24 +61,9 @@ extern HeroItemDefView fleet_item_defs[];
 extern HeroAttackRecord fleet_attack_records[];
 extern HeroSpeedBands fleet_hero_speed_bands;
 
-extern int func_001F9908(int *);
-
 extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
 
 extern int truncate_float_to_s32(float);
-
-extern float vec_length_xy(void *);
-extern float vec_distance_xy(void *, void *);
-
-extern void ClampVectorLength(void *a, float x);
-
-extern float ApproachValue(float *p, float target, float maxstep);
-
-extern int coll_line(void *, void *, int, int, int);
-
-extern float jump_speed_4318(void *a, void *b, void *out, float speed, float g);
-
-extern int Spline_AdvanceByDistance(int *tab, float *out, int *a, float *b, int c, float d);
 
 /* Hero state machine: per-frame transition logic for the current hero state (level 17's build of the shared
    hero_update_transitions, without states 90-97). */

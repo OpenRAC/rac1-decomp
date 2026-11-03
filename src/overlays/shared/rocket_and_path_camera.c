@@ -47,10 +47,6 @@ typedef struct {
     float d[4];
 } L10SpriteData;
 
-extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
-extern int fast_dec_timer(int *);
-
 extern int truncate_float_to_s32(float);
 extern char orxon_camera_pos[];
 
@@ -66,7 +62,7 @@ void emit_moby_sprite_particles(char *m) {
     FastVecSub(d, orxon_camera_pos, m + 0x10);
     vec_scale_to_length(d, d, -0.3f);
     vec_scale_to_length(e, d, 0.1f);
-    FastVecAdd_r(d, d, m + 0x10);
+    FastVecAdd(d, d, m + 0x10);
     ((Moby *)m)->pos.z -= 0.5f;
     for (i = 0; i < 4; i++) {
         float h = p->a[i] + p->b[i];
@@ -83,11 +79,9 @@ void emit_moby_sprite_particles(char *m) {
         f = f / (float)scale_ticks(0xFF);
         col = FastTweenColor(0x4040FFFF, 0x1040FFFF, FastAbsF(0.5f - f));
         PartType59Spawn(d, col, truncate_float_to_s32(p->a[i]) & 0xFF, 0x35, 1, 2, 0, p->d[i]);
-        FastVecAdd_r(d, d, e);
+        FastVecAdd(d, d, e);
     }
 }
-
-extern float vec_length_xy(void *);
 
 /* spawn a Rocket moby with position, velocity vector and aim angles */
 char *create_rocket(float scale, void *vel, void *pos, int a, int b, int c) {
@@ -136,12 +130,9 @@ extern char gHeroPos[];
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 
-extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
-
-extern float SpringTurn(float, float, float, float, float, float *);
+extern float SpringTurn_v(float, float, float, float, float, float *) __asm__("func_L00_00259148");
 extern void BuildSphericalOffset_v(float, float, float, void *) __asm__("func_00215C00");
 
-extern int coll_line(void *, void *, int, int, int);
 extern void PostHitMessage_v(float, int, void *, int, void *, void *) __asm__("func_L00_0025AC00");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00298940.c, FUN_L10_002cc2e8. */
@@ -196,17 +187,17 @@ void rocket_819_update(Moby *m) {
                 }
                 if (t > 0.0f) {
                     FastVecScale(aim, hv, t);
-                    FastVecAdd_r2(aim, aim, diff);
+                    FastVecAdd(aim, aim, diff);
                     yaw = fast_atan2(aim[0], aim[1]);
                     pitch = -fast_atan2(vec_length_xy(aim), aim[2]);
                 } else {
                     yaw = fast_atan2(diff[0], diff[1]);
                     pitch = -fast_atan2(vec_length_xy(diff), diff[2]);
                 }
-                m->rot.z = SpringTurn(m->rot.z, yaw, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f,
-                                      g_frame_time * 6.2831855f, &d->yawSpeed);
-                m->rot.y = SpringTurn(m->rot.y, pitch, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f,
-                                      g_frame_time * 6.2831855f, &d->pitchSpeed);
+                m->rot.z = SpringTurn_v(m->rot.z, yaw, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f,
+                                        g_frame_time * 6.2831855f, &d->yawSpeed);
+                m->rot.y = SpringTurn_v(m->rot.y, pitch, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f,
+                                        g_frame_time * 6.2831855f, &d->pitchSpeed);
                 m->rot.x = FastAddRots(m->rot.x, g_frame_time * 6.2831855f);
                 BuildSphericalOffset_v(speed, m->rot.z, -m->rot.y, d);
             }
@@ -214,7 +205,7 @@ void rocket_819_update(Moby *m) {
             PartType04Spawn(p, c, 0x6F00AFFF, 0xFF, scale_ticks(rand_range(15, 22)), 0x28, rand_range(20, 35), 1);
             PartType04Spawn(p, c, 0x1FFFFFFF, 0x4F4F4F, scale_ticks(rand_range(30, 60)), 0x28, rand_range(50, 75), 0);
             dist = FastVecDist(p, gHeroPos);
-            FastVecAdd_r2(p, p, d);
+            FastVecAdd(p, p, d);
             if (d->warned == 0 && d->passed != 0 && d->dist < dist && dist < 5.0f) {
                 Moby_PlaySound(0, 0, m);
                 d->warned = 1;
@@ -335,8 +326,7 @@ extern float orxon_quad_layer_base_uvs[][2];
 extern V4_2EA578 orxon_quad_layer_second_vertices[];
 extern V4_2EA578 orxon_quad_layer_first_vertices[];
 
-extern long GetEffectTex(int);
-extern void draw_world_quad(void *, void *, int);
+extern long GetEffectTex_v(int) __asm__("func_001F4868");
 
 #define ALPHA_2EA578(a, b, c, d, fix)                                                                         \
     ((unsigned long)(a) | ((unsigned long)(b) << 2) | ((unsigned long)(c) << 4) | ((unsigned long)(d) << 6) | \
@@ -357,10 +347,10 @@ void draw_moby_animated_quad_layers(unsigned char *m) {
     copy_matrix_rotation(transform, m + 0xC0);
     qcopy(position, m + 0x10);
     position[3] = 1.0f;
-    first.tex = GetEffectTex(0x2C);
+    first.tex = GetEffectTex_v(0x2C);
     first.unk80 = 0xFF9000000260L;
     first.unk70 = 0;
-    second.tex = GetEffectTex(0x2C);
+    second.tex = GetEffectTex_v(0x2C);
     second.unk80 = 0xFF9000000260L;
     second.unk70 = 0;
     second.col[3] = 0;
@@ -653,7 +643,7 @@ extern float orxon_player_camera_fade_rate;
 extern char orxon_view_params[];
 extern float orxon_player_camera_matrix[];
 
-extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
+extern int Spline_AdvanceByDistance_v(void *, void *, int *, float *, float, int) __asm__("func_L00_0025E860");
 
 extern void Profile_Mark_v(void *, void *) __asm__("func_001E9768");
 
@@ -703,7 +693,7 @@ void Camera19_Update(char *moby) {
                 v1[2] = c3[2];
                 v1[3] = 0.0f;
                 matrix_mul_vec3(v1, v1, orxon_player_camera_matrix);
-                FastVecAdd_r(v2, gb + 0x10, v1);
+                FastVecAdd(v2, gb + 0x10, v1);
                 FastVecSub(va, v2, pm);
             } else {
                 FastVecSub(va, b + 0x10, pm);
@@ -757,8 +747,8 @@ void Camera19_Update(char *moby) {
 
         g = orxon_paths[*(int *)(e + 0x20)];
         qcopy(va, (moby + 0x30));
-        rr = Spline_AdvanceByDistance(g, (moby + 0x30), (int *)f, (float *)(f + 4), *(float *)(e + 0x3C) * g_frame_time,
-                                      0);
+        rr = Spline_AdvanceByDistance_v(g, (moby + 0x30), (int *)f, (float *)(f + 4),
+                                        *(float *)(e + 0x3C) * g_frame_time, 0);
         if (*(short *)(f + 0x16) != 0) {
             if (FastDecTimer(f + 0x16) != 0) {
                 rr = 1;
@@ -818,7 +808,7 @@ void Camera19_Update(char *moby) {
             v2[2] = c3[2];
             v2[3] = 0.0f;
             matrix_mul_vec3(v2, v2, orxon_player_camera_matrix);
-            FastVecAdd_r(v3, b17 + 0x10, v2);
+            FastVecAdd(v3, b17 + 0x10, v2);
             FastVecSub(v1, v3, (moby + 0x30));
         } else {
             char *h;
@@ -826,7 +816,7 @@ void Camera19_Update(char *moby) {
             h = orxon_paths[*(int *)(e + 0x24)];
             ia = 0;
             ib = 0.0f;
-            Spline_AdvanceByDistance(h, v2, &ia, &ib, d, 0);
+            Spline_AdvanceByDistance_v(h, v2, &ia, &ib, d, 0);
             ((void (*)(void *, float))Profile_Mark_v)(v2, 0.2f);
             Profile_Mark_v(h + 0x10, h + (*(int *)h << 4));
             FastVecSub(v1, v2, (moby + 0x30));

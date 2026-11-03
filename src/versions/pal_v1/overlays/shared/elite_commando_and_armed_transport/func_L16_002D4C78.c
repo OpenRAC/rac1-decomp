@@ -54,7 +54,7 @@ void update_blarg_elite_commando_damage_and_pursuit(char *m) {
                     scratch.angle = heading;
                 }
                 HeadingFromVector(&scratch.vector, &scratch.angle, &d->forward_impulse, &d->lateral_impulse);
-                InitKnockback(scratch.angle, m, d->knockback, 6, 1, 0);
+                InitKnockback_v(scratch.angle, m, d->knockback, 6, 1, 0);
                 m[0x20] = 8;
                 d->animation = 0x78;
                 break;
@@ -95,7 +95,7 @@ void update_blarg_elite_commando_damage_and_pursuit(char *m) {
                     scratch.fatal_angle = heading;
                 }
                 HeadingFromVector(&scratch.vector, &scratch.fatal_angle, &d->forward_impulse, &d->lateral_impulse);
-                InitKnockback(scratch.fatal_angle, m, d->knockback, 7, 1, 0);
+                InitKnockback_v(scratch.fatal_angle, m, d->knockback, 7, 1, 0);
                 m[0x20] = 9;
                 d->animation = 0xF0;
                 SetDeathBits(m, 0, -1);
@@ -124,7 +124,7 @@ void update_blarg_elite_commando_damage_and_pursuit(char *m) {
         char *path = kalebo3_path_table[d->path_index];
         FindNearestEligibleMoby(24.0f, m, d->target, 0, 0, path + 0x10, *(int *)path);
     } else {
-        FindNearestTargetMoby(24.0f, m, d->target);
+        FindNearestTargetMoby_v(24.0f, m, d->target);
     }
     if (range < vec_distance_xy(m + 0x10, d->target))
         d->pursuit_mode = 2;

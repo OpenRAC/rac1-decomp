@@ -179,8 +179,6 @@ struct PMoby {
 
 extern void *libc_memset(void *, int, unsigned int);
 
-extern float vec_distance_xy(float *, float *);
-
 extern struct Path5BD0 *eudora_paths[];
 extern f32 eudora_swarm_steer_params[8];
 extern int eudora_swarm_initialized SDATA(eudora_swarm_initialized);
@@ -377,8 +375,8 @@ void set_big_axebot_and_axe_animation_speed(char *arg, float f) {
     }
 }
 
-extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
-                            int, int, int, int);
+extern void spawn_explosion_v(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
+                              float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
 /* Spawns an effect on the moby at its marker vector. */
 void SpawnMarkerEffect(char *moby) {
@@ -386,7 +384,7 @@ void SpawnMarkerEffect(char *moby) {
     float v[4];
     clear_u64_value(v);
     Moby_GetJointWorldPos(moby, 6, w);
-    spawn_explosion(moby, v, w, 0.0f, 0.0f, 10, 3, 4, 2.0f, 1.0f, 100000.0f, -1, 1.5f, 15.0f, 1, 1, -1, 0);
+    spawn_explosion_v(moby, v, w, 0.0f, 0.0f, 10, 3, 4, 2.0f, 1.0f, 100000.0f, -1, 1.5f, 15.0f, 1, 1, -1, 0);
 }
 typedef int u128_B7B0 __attribute__((mode(TI)));
 typedef float V4_B7B0[4] __attribute__((aligned(16)));
@@ -524,34 +522,18 @@ typedef struct {
     V4_B7B0 pts[1];
 } P_B7B0;
 
-extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
-
-extern void set_ground_height_band(void *);
-extern void FindNearestTargetMoby(char *, float *, float);
-extern float vec_distance_xy(float *, float *);
-
-extern char *MobyGetHitMessage(void *, int, int);
-extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
-extern void RerollEffectCounter(void *m, short *p);
-
 extern void set_big_axebot_and_axe_animation_speed(char *, float);
 
-extern void InitKnockback(float, void *, void *, int, int, int);
+extern void InitKnockback_v(float, void *, void *, int, int, int) __asm__("func_L00_0025D5B0");
 
-extern void HeadingFromVector(void *, float *, void *, void *);
 extern void SetDeathBits(void *, int, int);
 
 extern void *libc_memset(void *, int, unsigned int);
 
-extern float SpringTurn(float cur, float target, float *vel, float k, float d, float max);
+extern float SpringTurn_v(float cur, float target, float *vel, float k, float d,
+                          float max) __asm__("func_L00_00259148");
 
 extern void PostHitMessage_v(char *m, float t, int a, int b, void *pos, void *vel) __asm__("func_L00_0025AC00");
-
-extern int mine_fall(void *, void *);
-
-extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
-extern void StepColorFade(void *, void *);
-extern void fast_dec_timer(int *arg0);
 
 extern float eudora_camera_pos[4];
 extern int eudora_game_mode MACRO_ADDR;
@@ -686,7 +668,7 @@ void big_axebot_update(M_B7B0 *moby) {
                         blend_big_axebot_and_axe_animation((char *)moby, (void *)5, 0, (void *)scale_ticks(6));
                         set_big_axebot_and_axe_animation_speed(moby, 2.0f);
                         moby->state = 8;
-                        InitKnockback(ang2, moby, data->fC0, 5, 1, 0);
+                        InitKnockback_v(ang2, moby, data->fC0, 5, 1, 0);
                         data->f110 = 5.0f;
                         data->f114 = 10.0f;
                         data->f42C = 3.4f / multiply_global_factor(7.0f);
@@ -713,7 +695,7 @@ void big_axebot_update(M_B7B0 *moby) {
                         trooper_set_knockback(data->fC0, 5.7f, 4.0f);
                         *(u128_B7B0 *)v = *(u128_B7B0 *)hit->pos;
                         HeadingFromVector(v, &ang2, &data->fD8, &data->fDC);
-                        InitKnockback(ang2, moby, data->fC0, 7, 1, 0);
+                        InitKnockback_v(ang2, moby, data->fC0, 7, 1, 0);
                         data->f110 = 12.0f;
                         data->f114 = 25.0f;
                         moby->state = 10;
@@ -864,8 +846,8 @@ void big_axebot_update(M_B7B0 *moby) {
                 }
             }
             a = fast_atan2(path->pts[data->f438][0] - moby->pos[0], path->pts[data->f438][1] - moby->pos[1]);
-            moby->rot[2] = SpringTurn(moby->rot[2], a, &data->f410, g_frame_time_sq * 12.566371f,
-                                      g_frame_time_sq * 6.2831855f, g_frame_time * 3.1415927f);
+            moby->rot[2] = SpringTurn_v(moby->rot[2], a, &data->f410, g_frame_time_sq * 12.566371f,
+                                        g_frame_time_sq * 6.2831855f, g_frame_time * 3.1415927f);
             v[0] = FastCos(moby->rot[2]) * (g_frame_time * 6.0f);
             v[1] = FastSin(moby->rot[2]) * (g_frame_time * 6.0f);
             v[2] = 0.0f;
@@ -878,8 +860,8 @@ void big_axebot_update(M_B7B0 *moby) {
                 moby->fBC &= ~8;
                 reset_leg_rig_from_animation(moby, data->f1A0);
             }
-            data->f414 = SpringTurn(moby->rot[2], ang, &data->f410, g_frame_time_sq * 6.2831855f,
-                                    g_frame_time_sq * 125.663704f, g_frame_time * 12.566371f);
+            data->f414 = SpringTurn_v(moby->rot[2], ang, &data->f410, g_frame_time_sq * 6.2831855f,
+                                      g_frame_time_sq * 125.663704f, g_frame_time * 12.566371f);
             leg_walker_update(moby, data->f1A0, g_frame_time * 4.0f, data->f414, g_frame_time_sq * 20.0f);
             if (dist < 4.5f) {
                 blend_big_axebot_and_axe_animation((char *)moby, (void *)4, (void *)4, (void *)scale_ticks(0xC));
@@ -911,8 +893,8 @@ void big_axebot_update(M_B7B0 *moby) {
                     reset_leg_rig_from_animation(moby, data->f1A0);
                 }
                 a = fast_atan2(data->home[0] - moby->pos[0], data->home[1] - moby->pos[1]);
-                data->f414 = SpringTurn(moby->rot[2], a, &data->f410, g_frame_time_sq * 6.2831855f,
-                                        g_frame_time_sq * 125.663704f, g_frame_time * 12.566371f);
+                data->f414 = SpringTurn_v(moby->rot[2], a, &data->f410, g_frame_time_sq * 6.2831855f,
+                                          g_frame_time_sq * 125.663704f, g_frame_time * 12.566371f);
                 leg_walker_update(moby, data->f1A0, g_frame_time * 4.0f, data->f414, g_frame_time_sq * 20.0f);
                 if (vec_distance_xy(moby->pos, data->home) < 2.0f) {
                     moby->state = 1;
@@ -984,14 +966,14 @@ void big_axebot_update(M_B7B0 *moby) {
                     }
                     BuildSphericalOffset(v, data->f418, data->f414, moby->rot[1]);
                     FastVecAdd(moby->pos, moby->pos, v);
-                    moby->rot[2] = SpringTurn(moby->rot[2], ang, &data->f410, g_frame_time_sq * 3.1415927f,
-                                              g_frame_time_sq * 6.2831855f, g_frame_time * 4.1887903f);
+                    moby->rot[2] = SpringTurn_v(moby->rot[2], ang, &data->f410, g_frame_time_sq * 3.1415927f,
+                                                g_frame_time_sq * 6.2831855f, g_frame_time * 4.1887903f);
                 } else if (data->f418 > 0.0f) {
                     data->f418 -= g_frame_time_sq * 200.0f;
                     BuildSphericalOffset(v, data->f418, data->f414, moby->rot[1]);
                     FastVecAdd(moby->pos, moby->pos, v);
-                    moby->rot[2] = SpringTurn(moby->rot[2], ang, &data->f410, g_frame_time_sq * 3.1415927f,
-                                              g_frame_time_sq * 6.2831855f, g_frame_time * 4.1887903f);
+                    moby->rot[2] = SpringTurn_v(moby->rot[2], ang, &data->f410, g_frame_time_sq * 3.1415927f,
+                                                g_frame_time_sq * 6.2831855f, g_frame_time * 4.1887903f);
                 } else {
                     moby->state = 1;
                     data->f402 = 0;
@@ -1006,11 +988,11 @@ void big_axebot_update(M_B7B0 *moby) {
             } else if (moby->fBC & 0x10) {
                 float a = fast_atan2(data->home[0] - moby->pos[0], data->home[1] - moby->pos[1]);
 
-                moby->rot[2] = SpringTurn(moby->rot[2], a, &data->f410, g_frame_time_sq * 3.1415927f,
-                                          g_frame_time_sq * 6.2831855f, g_frame_time * 4.1887903f);
+                moby->rot[2] = SpringTurn_v(moby->rot[2], a, &data->f410, g_frame_time_sq * 3.1415927f,
+                                            g_frame_time_sq * 6.2831855f, g_frame_time * 4.1887903f);
             } else {
-                moby->rot[2] = SpringTurn(moby->rot[2], ang, &data->f410, g_frame_time_sq * 3.1415927f,
-                                          g_frame_time_sq * 6.2831855f, g_frame_time * 4.1887903f);
+                moby->rot[2] = SpringTurn_v(moby->rot[2], ang, &data->f410, g_frame_time_sq * 3.1415927f,
+                                            g_frame_time_sq * 6.2831855f, g_frame_time * 4.1887903f);
             }
             break;
         case 10:
@@ -1159,10 +1141,9 @@ typedef struct {
 } EngineSoundVars;
 extern s32 Sound_IsPlaying_r(long moby, s32 voice) __asm__("func_L00_0028EB98");
 extern s32 Moby_PlaySound_r(s32, s32, struct Moby *m) __asm__("func_0022ED80");
-extern void Sound_StopSlot_r(s32 voice) __asm__("func_L00_0028EBF0");
-extern f32 IntToFloat_r(s32) __asm__("func_001FA888");
+
 extern s32 truncate_float_to_s32_r(f32) __asm__("func_001FA898");
-extern f32 func_00214D28(f32 *value, f32 target, f32 step);
+
 extern void Sound_SetPitchBend_r(s32 voice, s32 volume) __asm__("func_L00_0028F210");
 extern void Sound_SetPitchBend_r2(s32 voice, s32 pitch) __asm__("func_L00_0028F210");
 struct Moby;
@@ -1178,32 +1159,32 @@ void func_L04_002C2F00_r(struct Moby *m) {
     if (m->state != 9) {
         if (Sound_IsPlaying_r((long)m, v->voice) == 0 && m->prev_seq < 8) {
             v->voice = Moby_PlaySound_r(0, 4, m);
-            v->volume = IntToFloat_r(0x400);
+            v->volume = IntToFloat(0x400);
             v->pitch = 0;
         }
         switch (m->prev_seq) {
             case 0:
                 pitch = 0.0f;
-                volume = IntToFloat_r(0x400) * 0.6f;
+                volume = IntToFloat(0x400) * 0.6f;
                 break;
             case 1:
                 pitch = 3.0f;
-                volume = IntToFloat_r(0x400);
+                volume = IntToFloat(0x400);
                 break;
             case 2:
                 pitch = -2.0f;
-                volume = IntToFloat_r(0x400);
+                volume = IntToFloat(0x400);
                 break;
             case 3:
             case 4:
                 pitch = 4.0f;
-                volume = IntToFloat_r(0x400);
+                volume = IntToFloat(0x400);
                 break;
             case 5:
             case 6:
             case 7:
                 pitch = 0.0f;
-                volume = IntToFloat_r(0x400) * 0.8f;
+                volume = IntToFloat(0x400) * 0.8f;
                 break;
             default:
                 goto release;
@@ -1213,12 +1194,12 @@ void func_L04_002C2F00_r(struct Moby *m) {
         if (v->voice != -1) {
             VoicePoolWindow_2C2F00 *w = (VoicePoolWindow_2C2F00 *)((u8 *)&voice_pool_r + v->voice * 0x70);
             if (w->voice.owner == (VoiceMoby *)m && w->voice.state != 0)
-                Sound_StopSlot_r(v->voice);
+                Sound_StopSlot(v->voice);
         }
         v->voice = -1;
         return;
     }
-    ApproachValue(&v->volume, volume, IntToFloat_r(0x400) * g_frame_time_r * 2.0f);
+    ApproachValue(&v->volume, volume, IntToFloat(0x400) * g_frame_time_r * 2.0f);
     ApproachValue(&v->pitch, pitch, g_frame_time_r * 8.0f);
     Sound_SetPitchBend_r(v->voice, truncate_float_to_s32_r(v->volume));
     Sound_SetPitchBend_r2(v->voice, truncate_float_to_s32_r(v->pitch));
@@ -1269,7 +1250,7 @@ void spawn_circular_saw_destruction_effects(char *moby) {
                           1, 1, invalid_voice_index, 0);
     Moby_PlaySound(1, 0, moby);
 }
-extern void FindNearestTargetMoby(char *, float *, float);
+
 extern char *eudora_moby_list MACRO_ADDR;
 
 /* Check that a moby's spot is clear of the other Circular Saw Enemy mobys. */
@@ -1303,8 +1284,6 @@ int check_circular_saw_melee_attack_spacing(char *moby) {
 }
 extern float eudora_circular_saw_separation_weight SDATA(eudora_circular_saw_separation_weight);
 extern void FindNearestTargetMoby_k(void *, void *, float) __asm__("func_L00_00260D30");
-
-extern void vec_scale_to_length(void *, void *, float);
 
 /* Flock steering for moby m: picks its path target, pushes away from same-class mobys within 3 units,
  * keeps its spacing to the target unless another flock member is closer to it, writes the steer point
@@ -1534,8 +1513,7 @@ typedef struct {
 
 extern void *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
 
-extern void vec_scale_to_length(void *, void *, float);
-extern int coll_sphere_mobys(void *, int, void *, void *, float);
+extern int coll_sphere_mobys_v(void *, int, void *, void *, float) __asm__("func_L00_001F2BE8");
 
 extern float compute_circular_saw_flock_steering(void *, void *, float);
 
@@ -1685,7 +1663,7 @@ void circular_saw_enemy_update(M_35F0 *moby) {
                 FastVecSub(p.v, &g_hero.motion.pos, moby->pos);
                 vec_scale_to_length(p.v, p.v, g_frame_time * 10.0f);
                 p.f20 = 1;
-                coll_sphere_mobys(jp, 0x10, moby, &p, 0.5f);
+                coll_sphere_mobys_v(jp, 0x10, moby, &p, 0.5f);
                 if (eudora_coll_hit.f18 == tgt) {
                     data->f146 = data->f146 < scale_ticks(0x3C) ? data->f146 : scale_ticks(0x3C);
                 }
@@ -2148,8 +2126,6 @@ typedef struct {
     PuffTail tail; /* 0x20 */
 } Puff;
 
-extern Puff *PartType23Spawn(void *, f32, f32, f32, int, void *, f32, int);
-extern void PartType21Spawn(void *, void *, int, int, int, int, f32);
 extern f32 eudora_smoke_puff_rise_speed SDATA(eudora_smoke_puff_rise_speed);
 extern f32 smoke_trail_puff_position_jitter_scale_gp SDATA(smoke_trail_puff_position_jitter_scale_gp);
 
@@ -2245,16 +2221,8 @@ struct Shot5BD0 {
 
 extern int truncate_float_to_s32(float);
 
-extern char *MobyGetHitMessage(void *, int, int);
-extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
-
-extern int coll_line(void *, void *, int, void *, void *);
 extern int MoveKeepingOverGround_o(void *, void *, void *, float, float, float, float,
                                    int) __asm__("func_L00_002594C8");
-
-extern float vec_length_xy(void *);
-
-extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 
 extern float eudora_camera_pos[];
 extern char *eudora_mobys MACRO_ADDR;
@@ -2405,7 +2373,7 @@ void BlargTrooperUpdate(char *moby) {
                 }
                 *(u128_5BD0 *)st.w.p.v70 = *(u128_5BD0 *)&hit->unk_10;
                 HeadingFromVector(st.w.p.v70, &ang, &data->target_dist, &data->unk_8C);
-                InitKnockback(ang, moby, &data->unk_70, 0xD, 1, 0);
+                InitKnockback_v(ang, moby, &data->unk_70, 0xD, 1, 0);
                 data->hit_scale = 12.0f;
                 data->unk_C4 = 25.0f;
                 ((Moby *)moby)->state = 0xB;
@@ -2839,10 +2807,9 @@ void BlargTrooperUpdate(char *moby) {
 struct Manip_C7BD8;
 struct GifEntry_C7BD8;
 struct AnimSeq;
-extern int scale_ticks_r(int) __asm__("func_001F9850");
-extern void moby_anim_sphere_lerp_r(void *) __asm__("func_0020EEE8");
+
 extern unsigned char voice_pool_r2[] __asm__("D_0013E650");
-extern void Sound_StopSlot_r2(s32) __asm__("func_L00_0028EBF0");
+
 typedef struct {
     s32 link; /* index of the linked moby in the moby array, -1 for none */
     s32 voice; /* playing loop sound, -1 for none */
@@ -2881,7 +2848,7 @@ void eudora_bridge_update(struct Moby *m) {
     }
     switch (m->state) {
         case 0:
-            MobyBlendAnimation_r(m, 1, 0, scale_ticks_r(300));
+            MobyBlendAnimation_r(m, 1, 0, scale_ticks(300));
             m->state = 1;
             m->anim_speed = 0;
             v->voice = -1;
@@ -2894,7 +2861,7 @@ void eudora_bridge_update(struct Moby *m) {
                 update_moby_animation_state(m);
                 m->unk72 = ((MobyClassHeader *)m->pclass)->unkE;
                 m->collision = ((MobyClassHeader *)m->pclass)->unk10;
-                moby_anim_sphere_lerp_r(m);
+                moby_anim_sphere_lerp(m);
             }
             break;
         case 1:
@@ -2913,7 +2880,7 @@ void eudora_bridge_update(struct Moby *m) {
                         if (h != -1) {
                             char *e = (char *)voice_pool_r2 + h * 0x70;
                             if (*(struct Moby **)(e + 0x88) == m && *(u8 *)(e + 0x74) != 0)
-                                Sound_StopSlot_r2(h);
+                                Sound_StopSlot(h);
                         }
                         v->voice = -1;
                     }
@@ -2927,7 +2894,7 @@ void eudora_bridge_update(struct Moby *m) {
                         update_moby_animation_state(m);
                         m->unk72 = ((MobyClassHeader *)m->pclass)->unkE;
                         m->collision = ((MobyClassHeader *)m->pclass)->unk10;
-                        moby_anim_sphere_lerp_r(m);
+                        moby_anim_sphere_lerp(m);
                         m->state = 2;
                     }
                 } else if (!Sound_IsPlaying_r2(m, v->voice)) {
@@ -2939,7 +2906,7 @@ void eudora_bridge_update(struct Moby *m) {
                     if (h != -1) {
                         char *e = (char *)voice_pool_r2 + h * 0x70;
                         if (*(struct Moby **)(e + 0x88) == m && *(u8 *)(e + 0x74) != 0)
-                            Sound_StopSlot_r2(h);
+                            Sound_StopSlot(h);
                     }
                     v->voice = -1;
                 }
@@ -2951,7 +2918,7 @@ void eudora_bridge_update(struct Moby *m) {
                 if (h != -1) {
                     char *e = (char *)voice_pool_r2 + h * 0x70;
                     if (*(struct Moby **)(e + 0x88) == m && *(u8 *)(e + 0x74) != 0)
-                        Sound_StopSlot_r2(h);
+                        Sound_StopSlot(h);
                 }
                 v->voice = -1;
             }
@@ -2979,9 +2946,7 @@ typedef struct {
     u8 pad1C[0x14];
     f32 rate; /* 0x30 */
 } LeverVars;
-extern void MobyBlendAnimation_r2(void *, int, int, int) __asm__("func_00213DE0");
 
-extern int Moby_PlaySound_r3(int, int, int) __asm__("func_0022ED80");
 extern struct Moby *eudora_mobys_r2 __asm__("D_L04_00160058") MACRO_ADDR;
 extern u8 voice_pool[];
 
@@ -3001,7 +2966,7 @@ void platform_booster_update(struct Moby *m) {
     }
     switch (m->state) {
         case 0:
-            MobyBlendAnimation_r2(m, 1, 0, scale_ticks(300));
+            MobyBlendAnimation(m, 1, 0, scale_ticks(300));
             m->state = 1;
             m->anim_speed = 0;
             v->voice = -1;
@@ -3026,7 +2991,7 @@ void platform_booster_update(struct Moby *m) {
             if (m->anim_time != prev) {
                 if (lv->travel != 1.0f && lv->travel != 0.0f) {
                     if (Sound_IsPlaying(m, v->voice) == 0) {
-                        v->voice = Moby_PlaySound_r3(0, 4, (int)m);
+                        v->voice = Moby_PlaySound(0, 4, (int)m);
                     }
                 } else {
                     if (Sound_IsPlaying(m, v->voice) != 0) {
@@ -3038,7 +3003,7 @@ void platform_booster_update(struct Moby *m) {
                         }
                         v->voice = -1;
                     }
-                    Moby_PlaySound_r3(1, 0, (int)m);
+                    Moby_PlaySound(1, 0, (int)m);
                 }
             } else if (Sound_IsPlaying(m, v->voice) != 0) {
                 if (v->voice != -1) {
@@ -3084,9 +3049,9 @@ void platform_booster_update(struct Moby *m) {
                         }
                         v->voice = -1;
                     }
-                    Moby_PlaySound_r3(1, 0, (int)m);
+                    Moby_PlaySound(1, 0, (int)m);
                 } else if (Sound_IsPlaying(m, v->voice) == 0) {
-                    v->voice = Moby_PlaySound_r3(0, 4, (int)m);
+                    v->voice = Moby_PlaySound(0, 4, (int)m);
                 }
             } else if (Sound_IsPlaying(m, v->voice) != 0) {
                 if (v->voice != -1) {

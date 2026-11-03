@@ -31,13 +31,8 @@ extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern float hero_speed_bands_field_18[];
 
-extern float vec_length_xy(void *);
-extern float ApproachValue(float *, float, float);
-
 extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
 extern float SpringAngle_r(void *, float, void *, int, float, float, float) __asm__("func_L00_0025CCF0");
-
-extern void vec_scale_to_length(void *, void *, float);
 
 extern int allocate_hero_voice_for_entry(int, int);
 
@@ -294,10 +289,6 @@ typedef struct {
 extern T_215340 lean_state_r __asm__("D_L00_0017A780");
 extern f32 g_frame_time MACRO_ADDR;
 
-extern void set_first_hero_easing_parameters_r(f32, f32) __asm__("func_L00_0020A858");
-extern void set_first_hero_easing_parameters_r2(f32, f32) __asm__("func_L00_0020A858");
-extern void set_first_hero_easing_parameters_r3(f32, f32) __asm__("func_L00_0020A858");
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00215340.c, FUN_L00_00215340. */
 void adjust_hero_pose_targets_from_motion(void) {
     f32 v, nv, k, a, s, ang;
@@ -307,9 +298,9 @@ void adjust_hero_pose_targets_from_motion(void) {
 
     if (g_hero_r2.state.current == HERO_STATE_RUN) {
         Hero_SetTiltSpringParams(0.04f, 0.2f);
-        set_first_hero_easing_parameters_r(0.04f, 0.2f);
-        set_first_hero_easing_parameters_r2(0.04f, 0.2f);
-        set_first_hero_easing_parameters_r3(0.02f, 0.2f);
+        Hero_SetTiltSpringParams(0.04f, 0.2f);
+        Hero_SetTiltSpringParams(0.04f, 0.2f);
+        Hero_SetTiltSpringParams(0.02f, 0.2f);
         if (g_hero_r2.state.step == 1) {
             v = g_hero_r2.motion.yaw_error;
             if (1.4f < v)
@@ -355,9 +346,9 @@ void adjust_hero_pose_targets_from_motion(void) {
     } else if (g_hero_r2.state.current == HERO_STATE_LAND ||
                g_hero_r2.state.current == HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT) {
         Hero_SetTiltSpringParams(0.008f, 0.08f);
-        set_first_hero_easing_parameters_r(0.015f, 0.08f);
-        set_first_hero_easing_parameters_r2(0.015f, 0.08f);
-        set_first_hero_easing_parameters_r3(0.008f, 0.1f);
+        Hero_SetTiltSpringParams(0.015f, 0.08f);
+        Hero_SetTiltSpringParams(0.015f, 0.08f);
+        Hero_SetTiltSpringParams(0.008f, 0.1f);
         b = g_hero_r2.motion.yaw_error * 1.6f;
         if (1.25f < b)
             b = 1.25f;
@@ -415,9 +406,9 @@ void adjust_hero_pose_targets_from_motion(void) {
         (lean_state_r.f[(0xB68) / 4]) = -b * 0.3f;
     } else if (g_hero_r2.state.control_mode == HERO_MODE_FALL || g_hero_r2.state.control_mode == HERO_MODE_JUMP) {
         Hero_SetTiltSpringParams(0.04f, 0.2f);
-        set_first_hero_easing_parameters_r(0.04f, 0.2f);
-        set_first_hero_easing_parameters_r2(0.04f, 0.2f);
-        set_first_hero_easing_parameters_r3(0.02f, 0.2f);
+        Hero_SetTiltSpringParams(0.04f, 0.2f);
+        Hero_SetTiltSpringParams(0.04f, 0.2f);
+        Hero_SetTiltSpringParams(0.02f, 0.2f);
         x = g_hero_r2.motion.yaw_error;
         if (1.4f < x)
             x = 1.4f;
@@ -601,7 +592,7 @@ void compute_rotated_vector_angles(Vx *in, float *out) {
     out[1] = -fast_atan2(v0.z, v0.x);
 }
 
-extern float SpringAngle(char *, char *, int, float, float, float, float);
+extern float SpringAngle_v(char *, char *, int, float, float, float, float) __asm__("func_L00_0025CCF0");
 
 typedef struct {
     float f[4];
@@ -656,8 +647,8 @@ void compute_hero_reference_tilt_rotation(V_c *v, M_c *m, void *p, float a, floa
         r.f[2] = pitch;
         r.f[0] = 0.0f;
     } else {
-        SpringAngle((char *)&t, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.rot_spring_vel.f[1], 0,
-                    pitch, a, b, c);
+        SpringAngle_v((char *)&t, &((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.rot_spring_vel.f[1], 0,
+                      pitch, a, b, c);
         r.f[0] = 0.0f;
         r.f[2] = t;
     }
@@ -721,7 +712,7 @@ void apply_hero_reference_tilt(void) {
         }
     }
 }
-extern float SpringAngle(char *, char *, int, float, float, float, float);
+extern float SpringAngle_v(char *, char *, int, float, float, float, float) __asm__("func_L00_0025CCF0");
 extern void apply_hero_reference_tilt(void);
 extern float g_frame_scale_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
@@ -752,10 +743,10 @@ void update_hero_tilt(void) {
         }
         t[0] = 0.0f;
         t[1] = 0.0f;
-        SpringAngle(&((struct Hero *)g)->motion.rot, &((struct Hero *)g)->motion.rot_spring_vel, 0, -t[0],
-                    g_frame_scale_sq * 0.015f, g_frame_scale_sq * 0.3f, g_frame_time * 5.2359877f);
-        SpringAngle(&((struct Hero *)g)->motion.rot.f[1], &((struct Hero *)g)->motion.rot_spring_vel.f[1], 0, -t[1],
-                    g_frame_scale_sq * 0.015f, g_frame_scale_sq * 0.3f, g_frame_time * 5.2359877f);
+        SpringAngle_v(&((struct Hero *)g)->motion.rot, &((struct Hero *)g)->motion.rot_spring_vel, 0, -t[0],
+                      g_frame_scale_sq * 0.015f, g_frame_scale_sq * 0.3f, g_frame_time * 5.2359877f);
+        SpringAngle_v(&((struct Hero *)g)->motion.rot.f[1], &((struct Hero *)g)->motion.rot_spring_vel.f[1], 0, -t[1],
+                      g_frame_scale_sq * 0.015f, g_frame_scale_sq * 0.3f, g_frame_time * 5.2359877f);
     } else if (r >= 0) {
         if (r < 3) {
             apply_hero_reference_tilt();
@@ -800,10 +791,6 @@ extern f32 g_frame_scale_sq MACRO_ADDR;
 extern f32 g_frame_time_sq MACRO_ADDR;
 extern s32 g_controller_state_no_direction[];
 extern void stick_target_v(s32, f32) __asm__("func_L00_00211F80");
-
-extern f32 vec_length_xy(void *);
-
-extern void vec_scale_to_length(void *, void *, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00214658.c, FUN_L00_002167d0. */
 void update_hero_planar_movement_velocity(void) {
@@ -1052,8 +1039,6 @@ void func_L00_00234420_178A0(void *, void *, float) __asm__("func_L00_00234420")
 
 void func_L00_002343A0_178A0(void *, void *, float) __asm__("func_L00_002343A0");
 
-int coll_line(void *, void *, int, void *, int);
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00214658.c, FUN_L00_00217118. */
 void stop_hero_motion_without_forward_support(float a, float b) {
     q_217118 t[1];
@@ -1163,7 +1148,7 @@ void spawn_hero_radial_particle_burst(void) {
     if (!ang) {
     }
 }
-extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
+
 typedef struct {
     u8 pad00[0x40];
     f32 unk40[4]; /* 0x40: launch direction */
@@ -1205,7 +1190,7 @@ void launch_hero_wrench(void) {
             if (tpv->unk7E) {
                 has_target = 1;
                 transform_hero_local_offset_to_world(dir, 0.5f, 0.0f, 0.5f);
-                FastVecSub_r(delta, tpv->unk50, dir);
+                FastVecSub(delta, tpv->unk50, dir);
                 g_hero_r2.aim_yaw = fast_atan2(delta[0], delta[1]);
                 g_hero_r2.aim_pitch = fast_atan2(vec_length_xy(delta), delta[2]);
             }

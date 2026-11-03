@@ -35,17 +35,9 @@ typedef struct {
     char pad[0x20];
 } T2C;
 
-extern void ClampVectorLength(void *a, float x);
-extern float vec_length_xy(void *);
 extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
 
 extern int truncate_float_to_s32(float);
-
-extern void *MobyGetHitMessage(void *, int, int);
-
-extern void Spline_AdvanceByDistance(int a, char *pos, char *b, char *c, int d, float f);
-
-extern void vec_scale_to_length(void *, void *, float);
 
 extern int fleet_game_mode MACRO_ADDR;
 extern int fleet_water_patches MACRO_ADDR;

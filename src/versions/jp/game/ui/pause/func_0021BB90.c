@@ -17,8 +17,8 @@ s32 update_menu_entry_actions(MenuScreen *menu) {
             }
         } else {
             fade_timer = menu->data.list.items[entry_index].fade_timer;
-            if (scale_game_frame_count_r(D_001602B4_1BB90) < fade_timer) {
-                menu->data.list.items[entry_index].fade_timer = scale_game_frame_count_r(D_001602B4_1BB90);
+            if (scale_game_frame_count(D_001602B4_1BB90) < fade_timer) {
+                menu->data.list.items[entry_index].fade_timer = scale_game_frame_count(D_001602B4_1BB90);
             }
             menu->data.list.items[entry_index].fade_timer = menu->data.list.items[entry_index].fade_timer > 0
                                                                 ? menu->data.list.items[entry_index].fade_timer - 1
@@ -56,13 +56,13 @@ s32 update_menu_entry_actions(MenuScreen *menu) {
                 menu_system_r3.next = (MenuPage *)menu->data.list.items[menu->data.list.selected].param.value;
                 break;
             case 4:
-                Moby_PlaySound_r2(0, 0x11, menu->moby);
+                Moby_PlaySound(0, 0x11, menu->moby);
                 menu_system_r3.unk150 = 0;
                 mode_freeze_flags_r = (mode_freeze_flags_r | 2) & ~4;
                 mode_freeze_init_r2(3, menu->data.list.items[menu->data.list.selected].param.value, 0);
                 break;
             case 5:
-                Moby_PlaySound_r2(0, 0x11, menu->moby);
+                Moby_PlaySound(0, 0x11, menu->moby);
                 mode_freeze_flags_r = (mode_freeze_flags_r | 4) & ~2;
                 mode_freeze_init_r2(3, menu->data.list.items[menu->data.list.selected].param.value, 0);
                 menu_system_r3.unk150 = 1;
@@ -77,40 +77,40 @@ s32 update_menu_entry_actions(MenuScreen *menu) {
                 menu_system_r3.unkF0 = menu_system_r3.current;
                 menu_system_r3.unkF4 = 0;
                 menu_system_r3.unkE4 = menu->data.list.items[menu->data.list.selected].param.half.lo;
-                Moby_PlaySound_r2(0, 0x11, menu->moby);
+                Moby_PlaySound(0, 0x11, menu->moby);
                 return 0;
             case 7:
                 menu_system_r3.unkF4 = 2;
                 menu_system_r3.unkF0 = menu_system_r3.current;
                 menu_system_r3.close_request = 3;
                 menu_system_r3.unkE4 = menu->data.list.items[menu->data.list.selected].param.value;
-                Moby_PlaySound_r2(0, 0x11, menu->moby);
+                Moby_PlaySound(0, 0x11, menu->moby);
                 return 0;
             case 8:
                 menu_system_r3.unkF4 = 2;
                 menu_system_r3.unkF0 = menu_system_r3.current;
                 menu_system_r3.close_request = 4;
                 menu_system_r3.unkE4 = menu->data.list.items[menu->data.list.selected].param.value;
-                Moby_PlaySound_r2(0, 0x11, menu->moby);
+                Moby_PlaySound(0, 0x11, menu->moby);
                 return 0;
             case 10:
                 menu_system_r3.unkF4 = 2;
                 menu_system_r3.unkF0 = menu_system_r3.current;
                 menu_system_r3.close_request = 6;
                 menu_system_r3.unkE4 = menu->data.list.items[menu->data.list.selected].param.value;
-                Moby_PlaySound_r2(0, 0x11, menu->moby);
+                Moby_PlaySound(0, 0x11, menu->moby);
                 return 0;
             case 11:
                 menu_system_r3.unkF0 = menu_system_r3.current;
                 menu_system_r3.unkF4 = 2;
                 menu_system_r3.close_request = 7;
-                Moby_PlaySound_r2(0, 0x11, menu->moby);
+                Moby_PlaySound(0, 0x11, menu->moby);
                 return 0;
             case 9:
                 g_game_language_r = menu->data.list.items[menu->data.list.selected].param.value;
                 return 0;
             case 2:
-                Moby_PlaySound_r2(2, 0x11, menu->moby);
+                Moby_PlaySound(2, 0x11, menu->moby);
                 break;
         }
     }
@@ -145,7 +145,7 @@ s32 update_menu_entry_actions(MenuScreen *menu) {
         }
     }
     if (menu->data.list.selected != previous_selection || menu_system_r3.current->pending_focus != 0) {
-        Moby_PlaySound_r2(1, 0x11, menu->moby);
+        Moby_PlaySound(1, 0x11, menu->moby);
         if (menu->data.list.flags & 0x20) {
             selected_level_index_r[0] = D_001602E0_1BB90[menu->data.list.selected];
         }

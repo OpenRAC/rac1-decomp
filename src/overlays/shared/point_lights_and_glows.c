@@ -11,12 +11,9 @@
 #include "game/moby/mobyfunc.h"
 #include "game/math/fastfunc.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "asm_functions/shared_levels.h"
 
-extern long func_001F4868(int);
-
-extern void vec_scale_to_length(void *, void *, float);
-
-extern void draw_world_quad(void *, void *, int);
 extern float glow_quad_z_offset;
 typedef struct {
     int c[4];
@@ -161,11 +158,6 @@ void glow_quads_draw(char *moby) {
 typedef int ti_23e008 __attribute__((mode(TI)));
 extern float D_0015EE60 MACRO_ADDR;
 
-extern float rndf_23e008(float, float) __asm__("func_002140F8");
-extern int rndi_23e008(int) __asm__("func_002140B0");
-
-extern float rnd_23e008(float, float) __asm__("func_L00_00258C80");
-extern int fr_23e008(int) __asm__("func_001F9850");
 extern unsigned char *func_L00_00272F00(float *, int, float, float, float, int, int, int, void *);
 extern int func_001FA898(float);
 /* Spawns a burst of directed particles with randomised speeds from the frame time. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_0023db30.c, FUN_L00_0023e008. */
@@ -177,23 +169,23 @@ void emit_moby_particle_pairs(void *p) {
     unsigned char *r;
     Moby_GetJointWorldPos(p, 0, pos);
     for (i = 3; i >= 0; i--) {
-        float s = rndf_23e008(0.15f, 0.5f);
-        int k = rndi_23e008(2);
+        float s = random_float_between(0.15f, 0.5f);
+        int k = random_integer_below(2);
         float a, b;
         if (k == 0)
             k--;
         a = random_angle_radians();
-        b = rndf_23e008(0.34906584f, 1.53588974f);
-        BuildSphericalOffset(dir, rndf_23e008(0.05f, 0.2f) * frame_scale, a, b);
+        b = random_float_between(0.34906584f, 1.53588974f);
+        BuildSphericalOffset(dir, random_float_between(0.05f, 0.2f) * frame_scale, a, b);
         qcopy(old, pos);
-        pos[0] += rnd_23e008(0.0f, 0.15f);
-        pos[1] += rnd_23e008(0.0f, 0.15f);
-        pos[2] += rnd_23e008(0.0f, 0.15f);
-        r = PartType53Spawn(pos, fr_23e008(0x3C), s * 0.1f, s, 0.009f, 0x7F7F2020, 0, k, dir);
+        pos[0] += randf_sym(0.0f, 0.15f);
+        pos[1] += randf_sym(0.0f, 0.15f);
+        pos[2] += randf_sym(0.0f, 0.15f);
+        r = PartType53Spawn(pos, scale_ticks(0x3C), s * 0.1f, s, 0.009f, 0x7F7F2020, 0, k, dir);
         if (r)
             r[9] = truncate_float_to_s32(4.0f) + 0x70;
         k = -k;
-        r = PartType53Spawn(pos, fr_23e008(0x3C), s * 0.07f, s * 0.7f, 0.009f, 0x7F7F7F7F, 1, k, dir);
+        r = PartType53Spawn(pos, scale_ticks(0x3C), s * 0.07f, s * 0.7f, 0.009f, 0x7F7F7F7F, 1, k, dir);
         if (r)
             r[9] = truncate_float_to_s32(4.0f) + 0x70;
     }
@@ -249,7 +241,7 @@ extern float level_draw_frame_load_r __asm__("D_L00_0015F6B8") MACRO_ADDR;
 extern T_0023e738 level_point_light_data_r[] __asm__("D_L00_001805C0");
 extern P_0023e738 level_point_lights_r[] __asm__("D_L00_001803C0");
 extern char level_point_light_link_buffers_r[] __asm__("D_L00_00180740");
-void func_001F99D8_0023e738(void *, int) __asm__("func_001F99D8");
+
 /* Update (reads the frame-time float level_draw_frame_load). Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_0023db30.c, FUN_L00_0023e738. */
 int allocate_colored_effect_slot(u128_pt *v, float a, float b_0023e738, float c, float d, float e) {
     int i;
@@ -270,7 +262,7 @@ int allocate_colored_effect_slot(u128_pt *v, float a, float b_0023e738, float c,
     p->y = d;
     p->z = e;
     p->b_0023e738 = b_0023e738;
-    func_001F99D8_0023e738(t, 0x30);
+    FastMemZero16(t, 0x30);
     t->used = 1;
     t->buf = level_point_light_link_buffers_r + i * 1024;
     return i;

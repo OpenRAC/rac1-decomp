@@ -25,20 +25,16 @@ extern char camera_position_a[] __asm__("D_00187180");
 extern char coll_hit_pos[];
 extern int sound_probe_ignore;
 
-extern void FastVecAdd_a(void *, void *, void *) __asm__("func_001F9BD8");
-extern void FastVecScale_a(void *, void *, float) __asm__("func_001F9C30");
-extern void FastVecSub_a(void *, void *, void *) __asm__("func_001F9BF0");
-
 /* Jitter the vector at arg0 between 0.5 and 6.0, fold in the reference
    frame at camera_position, and if the emitter accepts it, re-derive it from
    coll_hit_pos, damp to 3/4 and fold the frame in again. */
 void clamp_voice_position_to_collision(void *arg0) {
     random_spherical_offset(arg0, 0.5f, 6.0f);
-    FastVecAdd_a(arg0, arg0, camera_position_a);
+    FastVecAdd(arg0, arg0, camera_position_a);
     if (coll_line_fix(camera_position_a, arg0, 0x82, sound_probe_ignore, 0) != 0) {
-        FastVecSub_a(arg0, coll_hit_pos, camera_position_a);
-        FastVecScale_a(arg0, arg0, 0.75f);
-        FastVecAdd_a(arg0, arg0, camera_position_a);
+        FastVecSub(arg0, coll_hit_pos, camera_position_a);
+        FastVecScale(arg0, arg0, 0.75f);
+        FastVecAdd(arg0, arg0, camera_position_a);
     }
 }
 
@@ -113,8 +109,6 @@ void calculate_voice_volume(void *arg0, int arg1) {
     calculate_voice_distance_volume_v(p, v, p[0], p[1]);
 }
 
-extern float vec_length_xy(void *);
-extern float fast_arc_tan_a(float, float) __asm__("func_001FA058");
 extern void truncate_float_to_s32(float);
 
 /* Build the vector at arg1 in the camera_position frame, project it against
@@ -125,10 +119,10 @@ void calculate_voice_pan(void *arg0, void *arg1, void *arg2) {
     float v[4];
     float t;
 
-    FastVecSub_a(v, arg1, camera_position_a);
+    FastVecSub(v, arg1, camera_position_a);
     transform_vector(v, v, arg2);
     t = clamp_float(vec_length_xy(v) - 1.0f, 0.0f, 1.0f);
-    truncate_float_to_s32(-fast_arc_tan_a(v[0], v[1]) * 180.0f * t * 0.31830987f);
+    truncate_float_to_s32(-fast_arc_tan(v[0], v[1]) * 180.0f * t * 0.31830987f);
 }
 
 typedef u32 u128_2DBE8 __attribute__((mode(TI), aligned(16)));
@@ -261,17 +255,8 @@ extern s32 D_0015F6C8 MACRO_ADDR;
 extern s32 D_0015F6F0 MACRO_ADDR;
 extern f32 D_0015EE6C MACRO_ADDR;
 
-extern void snd_ReadGlobalTableEntry_DD68(void) __asm__("func_0012EC30");
-extern s32 snd_FlushSoundCommands_DD68(void) __asm__("func_0012DDC0");
-extern void snd_SetMasterVolume_DD68(s32, s32) __asm__("func_0012E348");
-
 extern void snd_ResetStateAndFlush_DD68() __asm__("func_0012EC40");
 
-extern void FastVecAdd_DD68(void *, void *, void *) __asm__("func_001F9BD8");
-extern void FastVecSub_DD68(void *, void *, void *) __asm__("func_001F9BF0");
-extern void FastVecScale_DD68(void *, void *, f32) __asm__("func_001F9C30");
-
-extern f32 IntToFloat_DD68(s32) __asm__("func_001FA888");
 extern s32 truncate_float_to_s32_DD68(f32) __asm__("func_001FA898");
 
 extern void Sound_PickOcclusionOrigin_DD68(void *) __asm__("func_0022D8C0");
@@ -332,7 +317,7 @@ s32 func_0022DD68_r(void) {
     if (underwater != 0) {
         water_height = water_level_DD68[0];
     }
-    snd_FlushSoundCommands_DD68();
+    snd_FlushSoundCommands();
 
     if (voice_pool_DD68.reverb_commands & 8) {
         snd_set_reverb_ex(2, 0, 0, 0, 0);
@@ -360,37 +345,37 @@ s32 func_0022DD68_r(void) {
     previous_history_index = (current_index + 3) % 4;
     if (previous_history_index != current_index) {
         do {
-            FastVecSub_DD68(&relative_velocity, &voice_pool_DD68.listener_history[current_index],
-                            &voice_pool_DD68.listener_history[previous_history_index]);
+            FastVecSub(&relative_velocity, &voice_pool_DD68.listener_history[current_index],
+                       &voice_pool_DD68.listener_history[previous_history_index]);
             if (!(FastVecLength(&relative_velocity) < g_frame_time * 60.0f)) {
                 break;
             }
             listener_sample_count++;
-            FastVecAdd_DD68(&listener_velocity, &listener_velocity, &relative_velocity);
+            FastVecAdd(&listener_velocity, &listener_velocity, &relative_velocity);
             current_index = previous_history_index;
             previous_history_index = (current_index + 3) % 4;
         } while (previous_history_index != voice_pool_DD68.listener_history_position);
     }
     if (listener_sample_count >= 2) {
-        FastVecScale_DD68(&listener_velocity, &listener_velocity, 1.0f / IntToFloat_DD68(listener_sample_count));
+        FastVecScale(&listener_velocity, &listener_velocity, 1.0f / IntToFloat(listener_sample_count));
     }
 
     if (g_game_mode == 2) {
-        snd_SetMasterVolume_DD68(1, 0);
-        snd_SetMasterVolume_DD68(0, voice_pool_DD68.group_0_volume / 2);
-        snd_SetMasterVolume_DD68(3, voice_pool_DD68.group_3_volume / 2);
+        snd_SetMasterVolume(1, 0);
+        snd_SetMasterVolume(0, voice_pool_DD68.group_0_volume / 2);
+        snd_SetMasterVolume(3, voice_pool_DD68.group_3_volume / 2);
     } else {
         group_volume = voice_pool_DD68.group_1_volume;
         if (underwater) {
             group_volume = group_volume * 3 / 5;
         }
-        snd_SetMasterVolume_DD68(1, group_volume);
-        snd_SetMasterVolume_DD68(0, voice_pool_DD68.group_0_volume);
-        snd_SetMasterVolume_DD68(3, voice_pool_DD68.group_3_volume);
+        snd_SetMasterVolume(1, group_volume);
+        snd_SetMasterVolume(0, voice_pool_DD68.group_0_volume);
+        snd_SetMasterVolume(3, voice_pool_DD68.group_3_volume);
     }
-    snd_SetMasterVolume_DD68(2, voice_pool_DD68.group_2_volume);
-    snd_SetMasterVolume_DD68(4, voice_pool_DD68.group_4_volume);
-    snd_SetMasterVolume_DD68(5, voice_pool_DD68.group_5_volume);
+    snd_SetMasterVolume(2, voice_pool_DD68.group_2_volume);
+    snd_SetMasterVolume(4, voice_pool_DD68.group_4_volume);
+    snd_SetMasterVolume(5, voice_pool_DD68.group_5_volume);
 
     voice_flags = flags;
     volumes = voice_volumes;
@@ -445,21 +430,21 @@ s32 func_0022DD68_r(void) {
         if (voice_pool_DD68.voices[slot_index].moby != 0 && !(voice_pool_DD68.voices[slot_index].flags & 8)) {
             if (voice_pool_DD68.voices[slot_index].flags & 0x40) {
                 matrix_mul_vec3(&direction, &voice_pool_DD68.voices[slot_index].position_offset, &moby->rotation);
-                FastVecAdd_DD68(&direction, &direction, &moby->position);
-                FastVecSub_DD68(&relative_velocity, &direction, &voice_pool_DD68.voices[slot_index].position);
+                FastVecAdd(&direction, &direction, &moby->position);
+                FastVecSub(&relative_velocity, &direction, &voice_pool_DD68.voices[slot_index].position);
                 qcopy(&voice_pool_DD68.voices[slot_index].position, &direction);
             } else {
                 voice_pool_DD68.voices[slot_index].position.f[2] -= 1.0f;
-                FastVecSub_DD68(&relative_velocity, &voice_pool_DD68.voices[slot_index].moby->position,
-                                &voice_pool_DD68.voices[slot_index].position);
+                FastVecSub(&relative_velocity, &voice_pool_DD68.voices[slot_index].moby->position,
+                           &voice_pool_DD68.voices[slot_index].position);
                 qcopy(&voice_pool_DD68.voices[slot_index].position, &voice_pool_DD68.voices[slot_index].moby->position);
                 voice_pool_DD68.voices[slot_index].position.f[2] += 1.0f;
             }
         } else {
             qzero(&relative_velocity);
         }
-        FastVecSub_DD68(&relative_velocity, &relative_velocity, &listener_velocity);
-        FastVecSub_DD68(&direction, camera_position_DD68, &voice_pool_DD68.voices[slot_index].position);
+        FastVecSub(&relative_velocity, &relative_velocity, &listener_velocity);
+        FastVecSub(&direction, camera_position_DD68, &voice_pool_DD68.voices[slot_index].position);
         fast_vec_normalize(&direction, &direction, 1.0f);
         radial_velocities[slot_index] = FastVecDot(&direction, &relative_velocity);
 
@@ -629,8 +614,8 @@ s32 func_0022DD68_r(void) {
 
     music_Update();
     snd_ResetStateAndFlush_DD68();
-    snd_FlushSoundCommands_DD68();
-    snd_ReadGlobalTableEntry_DD68();
+    snd_FlushSoundCommands();
+    snd_reenable_command_flush();
     voice_pool_DD68.pending_commands = 0;
     return 0;
 }
@@ -725,7 +710,6 @@ extern Hero D_0013F450;
 extern VoicePositionRecord D_0013E6E0[];
 extern u8 D_0013E6C0_2EB08[] __asm__("D_0013E6C0");
 
-extern s32 random_integer_below_r(s32) __asm__("func_002140B0");
 extern s32 calculate_voice_volume_r(VoiceSlot *, Vec4 *) __asm__("func_0022DB00");
 
 s32 func_0022EB08_r(VoiceDefinition *, u32, VoiceMoby *, Vec4 *, s32) __asm__("func_0022EB08");
@@ -837,7 +821,7 @@ check_calculated_volume:
     pitch_bend_max = definition->pitch_bend_max;
     pitch_bend_min = definition->pitch_bend_min;
     if (pitch_bend_max != pitch_bend_min) {
-        pitch_bend = random_integer_below_r(pitch_bend_max - pitch_bend_min) + definition->pitch_bend_min;
+        pitch_bend = random_integer_below(pitch_bend_max - pitch_bend_min) + definition->pitch_bend_min;
     } else {
         pitch_bend = pitch_bend_max;
     }

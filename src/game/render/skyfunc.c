@@ -32,9 +32,7 @@ extern char *level_sky_effect_data_r __asm__("D_0016055C") MACRO_ADDR;
 extern f32 D_00160500_2BEB0 SDATA(D_00160500);
 extern u8 sky_matrix_r[] __asm__("D_001D9A70");
 extern u8 sky_shell_translation_r[] __asm__("D_00160560") MACRO_ADDR;
-extern void set_identity_matrix_r(void *) __asm__("func_001FA190");
-extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
-extern void euler_to_matrix_ee_r(void *, void *) __asm__("func_001FA238");
+
 extern void scale_vector_r(void *, void *, f32) __asm__("func_001F9C48");
 extern void SkyDrawShell_r(s32) __asm__("func_0022C9A8");
 
@@ -49,8 +47,8 @@ void DrawSkyShellsScrolling(void) {
     s32 i;
 
     *(s16 *)(level_sky_effect_data_r + 4) = 0;
-    set_identity_matrix_r(sky_matrix_r);
-    clear_u64_value_r(rot);
+    set_identity_matrix(sky_matrix_r);
+    clear_u64_value(rot);
     for (i = 0; i < *(s16 *)(level_sky_effect_data_r + 6); i++) {
         tab = (u8 **)(level_sky_effect_data_r + 0x20);
         p = (f32 *)(tab[i] + 8);
@@ -81,14 +79,14 @@ void DrawSkyShellsScrolling(void) {
                 *p += D_00160500_2BEB0 * 0.8f;
                 break;
             default:
-                set_identity_matrix_r(sky_matrix_r);
+                set_identity_matrix(sky_matrix_r);
                 break;
         }
         if (i > 0) {
             f32 v = (f32)i * 2000.0f;
             s32 n = (s32)(*p + v);
             rot[2] = (f32)(n % 10000) * 0.00062831853f - 3.1415927f;
-            euler_to_matrix_ee_r(sky_matrix_r, rot);
+            euler_to_matrix_ee(sky_matrix_r, rot);
             t = sky_matrix_r;
             scale_vector_r(t, t, scale);
             scale_vector_r(t + 0x10, t + 0x10, scale);
@@ -262,11 +260,6 @@ extern u8 sky_shell_translation_r2[] __asm__("D_00160560") MACRO_ADDR;
 extern struct SkyTransform sky_matrix_r2 __asm__("D_001D9A70");
 extern s32 D_0015EF88 MACRO_ADDR;
 
-extern void scale_vector(void *, void *, f32);
-extern void set_identity_matrix_r2(void *) __asm__("func_001FA190");
-
-extern void VU1_addGSregister_r2(s32, s64) __asm__("func_00234C98");
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/sky/draw_sky_shells.c, draw_sky_shells. */
 void draw_sky_shells(void) {
     f32 rotation_angles[4];
@@ -277,7 +270,7 @@ void draw_sky_shells(void) {
     shell_index = 0;
     SetupSkyGifPaging();
     level_sky_effect_data_r3->relocation_state = 0;
-    set_identity_matrix_r2(&sky_matrix_r2);
+    set_identity_matrix(&sky_matrix_r2);
     clear_u64_value(rotation_angles);
     if (level_sky_effect_data_r3->shell_count > 0) {
         do {
@@ -325,8 +318,8 @@ void draw_sky_shells(void) {
         } while (shell_index < level_sky_effect_data_r3->shell_count);
     }
     DoSkyGifPaging();
-    VU1_addGSregister_r2(0x47, 0x5360B);
-    VU1_addGSregister_r2(0x4E, 0x1000000 | (depth_buffer_address >> 13));
+    VU1_addGSregister(0x47, 0x5360B);
+    VU1_addGSregister(0x4E, 0x1000000 | (depth_buffer_address >> 13));
 }
 
 extern int g_render_packet_cursor MACRO_ADDR;

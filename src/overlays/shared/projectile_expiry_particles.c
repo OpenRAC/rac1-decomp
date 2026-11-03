@@ -6,6 +6,7 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_frame_packet.h"
+#include "asm_functions/shared_levels.h"
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern unsigned char *umbris_part_type51_textures;
@@ -32,8 +33,6 @@ unsigned char *spawn_projectile_expiry_particle(char *pos, char *vec) {
 extern int truncate_float_to_s32(float);
 
 extern int func_001160D8(void);
-
-extern void vec_scale_to_length(void *, void *, float);
 
 extern unsigned char *umbris_part_type61_textures;
 extern float frame_scale MACRO_ADDR;

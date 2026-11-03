@@ -197,6 +197,6 @@ void gadgetron_ceo_update(Moby *m) {
     }
     if (*(unsigned char *)&gCheats_challenge)
         *(float *)((char *)d + 0x150) = 2.75f;
-    EaseManipulatorOffsets(rate * g_frame_scale_sq, head_rate * g_frame_scale_sq, m, d->body, 0);
-    EaseManipulatorOffsets(rate * g_frame_scale_sq, head_rate * g_frame_scale_sq, m, d->head, 1);
+    EaseManipulatorOffsets_v(rate * g_frame_scale_sq, head_rate * g_frame_scale_sq, m, d->body, 0);
+    EaseManipulatorOffsets_v(rate * g_frame_scale_sq, head_rate * g_frame_scale_sq, m, d->head, 1);
 }

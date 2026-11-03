@@ -130,7 +130,7 @@ extern Hero g_hero_r __asm__("D_0013F450");
 extern f32 frame_scale MACRO_ADDR;
 extern f32 g_frame_scale_sq MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
-f32 vec_distance_xy(void *, void *);
+
 f32 func_00214D28_33130(f32, f32, f32 *) __asm__("func_00214D28");
 void func_L00_0025C918_33130(f32 *, f32 *, f32, f32, f32, f32) __asm__("func_L00_0025C918");
 
@@ -178,14 +178,6 @@ void update_hero_smoothing_targets_and_values(void) {
 typedef int Q __attribute__((mode(TI)));
 extern u8 hoven_coll_hit_point[];
 extern s32 g_current_level_index MACRO_ADDR;
-
-s32 coll_line(void *, void *, s32, s32, s32);
-
-f32 resolve_camera_surface_height(void *, void *);
-s32 is_moby_in_class_range_500_to_540(s32);
-u8 *GetFlaggedPvarWord(s32);
-
-void vec_scale_to_length(void *, void *, f32);
 
 extern Hero g_hero;
 extern struct CollisionHit hoven_coll_hit;
@@ -400,22 +392,7 @@ extern HeroSpeedBands D_L12_X_f;
 extern float hoven_hero_swim_frame_speeds[];
 extern float hoven_hero_ledge_shimmy_frame_speeds[];
 
-extern int fast_dec_timer(int *);
-
 extern int truncate_float_to_s32(float);
-extern float vec_length_xy(void *);
-
-extern float SpringAngle(void *, float, void *, int, float, float, float);
-
-extern float ApproachValue(float *, float, float);
-
-extern void ClampVectorLength(void *, float);
-
-extern float vec_distance_xy(void *, void *);
-
-extern float Spring(float *, float *, float, float, float, float);
-
-extern int coll_sphere_mobys(float, void *, int, void *, void *);
 
 struct HeroUpdateStatePhysicsL12Vars {};
 

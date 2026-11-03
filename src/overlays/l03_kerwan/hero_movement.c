@@ -45,8 +45,6 @@ struct LedgeSpot {
 extern struct LedgeSpot *kerwan_rails MACRO_ADDR;
 extern s32 registered_path_count MACRO_ADDR;
 
-extern f32 vec_distance_xy(void *, void *);
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l03/gameplay/hero/00205830.c, FUN_L03_00205830. */
 s32 find_first_nearby_registered_path(Vec4 *from, s32 **outOwner, Vec4 *to, s32 *outI, f32 *outF, s32 *outKind,
                                       s32 *skip, s32 *only) {
@@ -120,33 +118,9 @@ extern HeroSpeedBands kerwan_hero_speed_bands;
 extern float kerwan_hero_stride_speeds[];
 extern float kerwan_hero_anim_step_lengths[];
 
-extern int fast_dec_timer(int *);
-
 extern int truncate_float_to_s32(float);
-extern float vec_length_xy(void *);
 
-extern float SpringAngle(void *, float, void *, int, float, float, float);
-
-extern void vec_scale_to_length(void *, void *, float);
-
-extern float ApproachValue(float *, float, float);
-
-extern void ClampVectorLength(void *, float);
-
-extern float vec_distance_xy(void *, void *);
-
-extern float Spring(float *, float *, float, float, float, float);
-
-extern int coll_sphere_mobys(float, void *, int, void *, void *);
-
-extern int coll_line(void *, void *, int, int, int);
-
-extern int is_moby_in_class_range_500_to_540(int);
-
-extern int offset_path_index(void *, int, int, int);
-extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
-
-extern void spawn_color_decaying_effect_particle(char *, char *, int);
+extern int Spline_AdvanceByDistance_v(void *, void *, int *, float *, float, int) __asm__("func_L00_0025E860");
 
 struct HeroL03UpdateStatePhysicsVars {};
 
@@ -1640,8 +1614,9 @@ void HeroL03_UpdateStatePhysics(void) {
                 g_hero.motion.velocity.f[2] -= g_frame_time_sq * 24.0f;
                 break;
             }
-            Spline_AdvanceByDistance((unsigned char *)g_hero.follow_path_spline, vec[1], &g_hero.follow_path_segment,
-                                     &g_hero.rail_candidate_frac, g_hero.follow_path_speed, g_hero.rail_candidate_kind);
+            Spline_AdvanceByDistance_v((unsigned char *)g_hero.follow_path_spline, vec[1], &g_hero.follow_path_segment,
+                                       &g_hero.rail_candidate_frac, g_hero.follow_path_speed,
+                                       g_hero.rail_candidate_kind);
             seg = offset_path_index((unsigned char *)g_hero.follow_path_spline, g_hero.follow_path_segment, 1,
                                     g_hero.rail_candidate_kind);
             FastVecSub(vec[2], ((unsigned char *)g_hero.follow_path_spline) + (seg * 0x10 + 0x10), vec[1]);

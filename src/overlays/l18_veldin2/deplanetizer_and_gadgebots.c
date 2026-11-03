@@ -128,13 +128,10 @@ extern int scale_ticks(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern void clear_u64_value(void *);
-extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
-                            int, int, int, int);
 
 extern void lerp_vector(void *, void *, void *, float);
 extern void spawn_deplanetizer_gun_trail_effects(void *a, void *b, void *c, float f0, float f1);
 extern void FastVecSub(void *, void *, void *);
-extern void vec_scale_to_length(void *, void *, float);
 
 extern float vec_length_xy(void *);
 
@@ -577,10 +574,9 @@ extern unsigned long GetEffectTex(int);
 
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
-extern void vec_scale_to_length(void *, void *, float);
+
 extern void FastVecCross(void *, void *, void *);
 extern void transform_vector(void *, void *, void *);
-extern void draw_world_quad(void *, void *, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l18/gameplay/vendor/002f88e8.c, FUN_L18_002f9c20. */
 void draw_moby_two_tint_glow_quads(struct Moby *m) {
@@ -823,7 +819,6 @@ void update_moby_visibility_and_half_turn(char *moby) {
     }
 }
 extern void FastVecSub(void *, void *, void *);
-extern void update_entity_matrix(char *a, void *b, void *c, void *d);
 
 /* updates a moby that drags a child moby along with it */
 void update_moby_transform_and_child(char *moby) {
@@ -891,8 +886,6 @@ void mark_class_0630_moby_and_child_for_removal(Moby *moby) {
     }
 }
 
-extern void vec_scale_to_length(void *, void *, float);
-
 extern float veldin2_joint_trail_offset SDATA(veldin2_joint_trail_offset);
 extern float veldin2_joint_trail_size_a SDATA(veldin2_joint_trail_size_a);
 extern float veldin2_joint_trail_size_b SDATA(veldin2_joint_trail_size_b);
@@ -951,13 +944,8 @@ extern void update_gadgebot_damage_target_and_glow(void *);
 extern float fd9a0_c(void *, void *) __asm__("func_L18_002FD9A0");
 extern float f9d48_i(void *, void *) __asm__("func_001F9D48");
 
-extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
-extern int IsFrameWithinWindow(char *, float);
-extern void collect_mobies_in_sphere_at_moby_point(void *, float, float, float, int, int, int, int, int);
-extern int mine_fall(void *, void *);
 extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                   float, int, int, int, int) __asm__("func_L00_0025F4A8");
-extern float ApproachValue(float *p, float target, float maxstep);
 
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
@@ -1150,13 +1138,9 @@ extern short gadgebot_death_fall_base_vertical_speed_gp;
 extern int veldin2_paths[];
 
 extern void draw_group_gadgebot_1906_joint_glows(unsigned char *);
-extern char *MobyGetHitMessage(void *, int, int);
-extern int ComputeHitResponse(void *, void *, void *, int, void *, void *, int, int);
-extern void HeadingFromVector(void *, float *, void *, void *);
-extern void InitKnockback(float, void *, void *, int, int, int);
-extern void RerollEffectCounter(void *, void *);
-extern void StepColorFade(void *, void *);
-extern int FindNearestEligibleMoby(float, void *, void *, int, int, int *, int);
+
+extern void InitKnockback_v(float, void *, void *, int, int, int) __asm__("func_L00_0025D5B0");
+
 #define F(x) (*(float *)&x)
 
 #include "structs/hero.h"
@@ -1237,7 +1221,7 @@ void update_gadgebot_damage_target_and_glow(void *m_) {
                 moby->flags &= ~0x1000;
                 v.q = *(u128 *)&coll->unk_10;
                 HeadingFromVector(&v, &angle, &sentry_vars->unk88, &sentry_vars->unk8C);
-                InitKnockback(angle, moby, sentry_vars->fall, 3, 1, 0);
+                InitKnockback_v(angle, moby, sentry_vars->fall, 3, 1, 0);
                 sentry_vars->unkC0 = 7.5f;
                 sentry_vars->unkC4 = 15.0f;
                 moby->state = 5;
@@ -1269,10 +1253,8 @@ typedef struct {
     float v[4];
 } __attribute__((aligned(16))) QVec;
 extern float vec_distance_xy(float *, float *);
-extern float ApproachWithVelocity(float *, float *, float, float, float, float);
+
 extern float FastCos(float);
-extern void move_4318(int, int, float, float, float, int);
-extern void resolve_point_path_segment_xy_clearance(float, void *, void *, void *);
 
 /* Steers a Gadgebot enemy toward src and returns the distance to it. */
 float move_gadgebot_toward_target(char *self, float *src) {
@@ -1310,7 +1292,7 @@ typedef struct {
     u8 pad1F0[4];
     f32 unk1F4; /* 0x1F4: set to 1.0 on launch */
 } LaunchedMobyVars;
-extern float jump_speed_4318(void *, void *, float, float, int);
+extern float jump_speed_4318_v(void *, void *, float, float, int) __asm__("func_L00_0025BC48");
 
 /* Launches the first idle (state 8) class-0x772 moby of group `group` from `from` towards `to` at `speed`. Returns 1
    when one was launched.
@@ -1337,7 +1319,7 @@ int launch_first_idle_group_gadgebot_1906_moby(int group, void *from, void *to, 
                 FastVecSub(v->velocity, to, from);
                 v->velocity[2] = 0.0f;
                 vec_scale_to_length(v->velocity, v->velocity, speed);
-                v->velocity[2] = jump_speed_4318(from, to, speed, -(g_frame_time_sq * 10.0f), 0);
+                v->velocity[2] = jump_speed_4318_v(from, to, speed, -(g_frame_time_sq * 10.0f), 0);
                 v->spin = randf_sym(15.0f, 45.0f) * 0.017453292f;
                 return 1;
             }
@@ -1364,7 +1346,7 @@ short count_group_gadgebot_1906_mobys_not_in_state_8(int idx) {
     return n;
 }
 INCLUDE_ASM("asm/overlays", func_L18_002FDCC4);
-extern int FastTweenColor_r(int, int, float) __asm__("func_001FA8A8");
+extern int FastTweenColor(int, int, float);
 typedef struct {
     float m[4][4];
     int col[4];
@@ -1383,9 +1365,9 @@ extern short D_L18_001626DC;
 extern short D_L18_001626E0;
 extern char veldin2_camera_pos_r[] __asm__("D_L18_00167840");
 extern float D_L18_001EFF90[4][2];
-extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
-extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
-extern void FastVecCross_r(void *, void *, void *) __asm__("func_001F9CA0");
+extern void clear_u64_value(void *);
+extern void FastVecSub(void *, void *, void *);
+extern void FastVecCross(void *, void *, void *);
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern unsigned long GetEffectTex_r(int) __asm__("func_001F4868");
 extern void draw_world_quad_r(void *, void *, int) __asm__("func_L00_001FD1D8");
@@ -1406,11 +1388,11 @@ void func_L18_002FDD20_r(struct Moby *m) {
     w = 1.0f - d->glow + (*(float *)&gadgebot_launch_glow_horizontal_scale_adjustment);
     qcopy(mat[3], &m->pos);
     mat[3][2] -= (*(float *)&gadgebot_launch_glow_z_offset);
-    clear_u64_value_r(mat[2]);
+    clear_u64_value(mat[2]);
     mat[2][2] = h;
-    FastVecSub_r(mat[0], veldin2_camera_pos_r, &m->pos);
-    FastVecCross_r(mat[1], mat[0], mat[2]);
-    FastVecCross_r(mat[0], mat[1], mat[2]);
+    FastVecSub(mat[0], veldin2_camera_pos_r, &m->pos);
+    FastVecCross(mat[1], mat[0], mat[2]);
+    FastVecCross(mat[0], mat[1], mat[2]);
     vec_scale_to_length_r(mat[0], mat[0], w);
     vec_scale_to_length_r(mat[1], mat[1], w);
     pk.b = GetEffectTex_r((*(int *)&gadgebot_launch_glow_texture_index));
@@ -1420,12 +1402,12 @@ void func_L18_002FDD20_r(struct Moby *m) {
            ((unsigned long)(*(int *)&gadgebot_launch_glow_blend_subtrahend_selector) << 2) |
            ((unsigned long)(*(int *)&gadgebot_launch_glow_blend_alpha_factor_selector) << 4) |
            ((unsigned long)(*(int *)&gadgebot_launch_glow_blend_addend_selector) << 6) | 0x8000000000ULL;
-    c = FastTweenColor_r((*(int *)&gadgebot_launch_glow_tint_start), (*(int *)&gadgebot_launch_glow_tint_end), d->glow);
+    c = FastTweenColor((*(int *)&gadgebot_launch_glow_tint_start), (*(int *)&gadgebot_launch_glow_tint_end), d->glow);
     for (i = 0; i < 4; i++) {
         pk.uv[i][0] = gadgebot_launch_glow_uvs[i][0];
         pk.uv[i][1] = gadgebot_launch_glow_uvs[i][1];
         p = pk.m[i];
-        clear_u64_value_r(p);
+        clear_u64_value(p);
         if (i & 1)
             p[2] = 1.0f;
         else

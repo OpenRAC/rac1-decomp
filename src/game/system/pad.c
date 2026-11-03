@@ -141,10 +141,6 @@ struct PadOptions {
 };
 extern struct PadOptions D_0015EEB0 MACRO_ADDR;
 extern PadState g_controller_state_r __asm__("D_0013CA40");
-extern s32 scale_game_frame_count_r(s32) __asm__("func_001F98C0");
-extern float func_001F9CE8(float *);
-extern float fast_arc_tan_r(float, float) __asm__("func_001FA058");
-extern float FastDiffRots_r(float, float) __asm__("func_001FA850");
 
 void func_002181F0_r(PadState *p, u8 *buf, s32 len) __asm__("func_002181F0");
 
@@ -269,11 +265,11 @@ void func_002181F0_r(PadState *p, u8 *buf, s32 len) {
     v[0] = p->analog[2];
     v[1] = p->analog[3];
     mag = vec_length_xy(v);
-    ang = fast_arc_tan_r(v[0], v[1]);
+    ang = fast_arc_tan(v[0], v[1]);
     p->hist_mag[p->hist_idx] = mag;
     p->hist_ang[p->hist_idx] = ang;
     if (mag > 0.9f) {
-        for (j = 1; j < scale_game_frame_count_r(4); j++) {
+        for (j = 1; j < scale_game_frame_count(4); j++) {
             float m = p->hist_mag[(p->hist_idx - j + 30) % 30];
             if (m > 0.9f)
                 break;
@@ -283,8 +279,8 @@ void func_002181F0_r(PadState *p, u8 *buf, s32 len) {
             }
         }
         if (!(p->pressed & 0x10000)) {
-            for (k = 1; k < scale_game_frame_count_r(5); k++) {
-                if (FastDiffRots_r(p->hist_ang[(p->hist_idx - k + 30) % 30], ang) > 0.9599311f) {
+            for (k = 1; k < scale_game_frame_count(5); k++) {
+                if (FastDiffRots(p->hist_ang[(p->hist_idx - k + 30) % 30], ang) > 0.9599311f) {
                     p->pressed |= 0x10000;
                     break;
                 }

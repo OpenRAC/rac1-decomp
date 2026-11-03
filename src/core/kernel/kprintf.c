@@ -158,7 +158,7 @@ void printfloat(double v) {
    the output hook at kprintf_putchar_hook, with interrupts held off around it.
    Adapted from Lombyte's project (GPL-3.0): src/sdk/debug/printf_impl.c, _printf. */
 
-extern s32 DIntr_A0A0(void) __asm__("func_0011D960");
+extern s32 disable_interrupts(void);
 extern s32 EnableInterrupts_A0A0(void) __asm__("func_0011D9A8");
 extern void printfloat_A0A0(double) __asm__("func_00119F38");
 extern void (*kprintf_putchar_hook_r[])(s32) __asm__("D_0012FD00");
@@ -175,7 +175,7 @@ int kprintf_format(const char *fmt, va_list ap) {
     s64 v;
     s32 ie;
 
-    ie = DIntr_A0A0();
+    ie = disable_interrupts();
     for (; *fmt != 0; fmt++) {
         p = (char *)fmt;
         pad = 0;
@@ -520,14 +520,14 @@ void sceSifInitCmd(void) {
 extern int sif_cmd_dmac_handler_id;
 extern int sif_cmd_init_done;
 
-extern int disable_dmac_atomic_i(int) __asm__("func_001193F8");
-extern int remove_dmac_handler_i(int, int) __asm__("func_00118AD0");
+extern int disable_dmac_atomic(int);
+extern int remove_dmac_handler(int, int);
 
 /* disable_dmac_atomic and remove_dmac_handler both return int; their results decide
    which registers the globals' addresses get. */
 void sceSifExitCmd(void) {
-    disable_dmac_atomic_i(0x5);
-    remove_dmac_handler_i(0x5, sif_cmd_dmac_handler_id);
+    disable_dmac_atomic(0x5);
+    remove_dmac_handler(0x5, sif_cmd_dmac_handler_id);
     sif_cmd_init_done = 0;
 }
 

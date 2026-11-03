@@ -831,7 +831,6 @@ extern struct MusicStreamState cd_read_state_r __asm__("D_001517D0");
 extern void set_sound_handle_id_r(u32, s64) __asm__("func_00217A08");
 extern void snd_ContinueVAGStream_r(s32) __asm__("func_0012EDE0");
 
-extern s32 fast_dec_timer(void *);
 extern void music_start_track_by_id(s32, s32, s32);
 extern void music_PreseekTrack(s32, s32, s32);
 extern void music_StartTrack(s32, s32, s32);

@@ -28,11 +28,7 @@ typedef struct {
     s32 unk28;
 } ShotVars_B0068;
 extern struct Moby *CreateMoby_r(int oclass) __asm__("func_0020D348");
-extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
-extern float random_float_between_r(float, float) __asm__("func_002140F8");
-extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
-extern void func_L00_0026E940(struct Moby *, int color, int life, int, float size);
-extern void moby_build_matrix_r(void *) __asm__("func_L00_00251E30");
+
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002aee30.c, FUN_L04_002aee30. */
@@ -57,14 +53,14 @@ struct Moby *spawn_class_b8_projectile(struct Moby *owner, void *pos, void *dir,
             m->scale = m->scale * 0.5f;
         m->rot.x = 0.0f;
         m->rot.y = 0.0f;
-        m->rot.z = fast_atan2_r(d->x, d->y);
+        m->rot.z = fast_atan2(d->x, d->y);
         qcopy(&m->pos, p);
         qcopy(&vars->dir, d);
-        vars->spin = random_float_between_r(-(g_frame_time_r * 1.5707964f), g_frame_time_r * 1.5707964f);
+        vars->spin = random_float_between(-(g_frame_time_r * 1.5707964f), g_frame_time_r * 1.5707964f);
         vars->unk14 = 0;
         vars->time = life;
         vars->time_max = life;
-        vars->hero_dist = FastVecDist_r(&m->pos, &g_hero_r.motion.pos);
+        vars->hero_dist = FastVecDist(&m->pos, &g_hero_r.motion.pos);
         vars->unk24 = 0;
         vars->unk28 = 0;
         if (owner->oclass == 0xFF) {
@@ -74,7 +70,7 @@ struct Moby *spawn_class_b8_projectile(struct Moby *owner, void *pos, void *dir,
             spawn_source_attached_fading_effect_particle(m, 0x2F4F7F7F, life * 5 / 4, -1, 100000.0f);
             spawn_source_attached_fading_effect_particle(m, 0x4F6F7F7F, life * 5 / 4, -1, 40000.0f);
         }
-        moby_build_matrix_r(m);
+        moby_build_matrix(m);
     }
     return m;
 }
@@ -113,11 +109,6 @@ extern s32 g_current_level_index SDATA(g_current_level_index);
 extern f32 eudora_camera_pos[];
 extern u128_B0290 eudora_coll_hit_point;
 extern u8 eudora_coll_hit_normal[];
-extern f32 vec_distance_xy(void *, void *);
-
-extern s32 coll_line(void *, void *, s32, struct Moby *, CollisionProbe *);
-
-extern void vec_scale_to_length(void *, void *, f32);
 
 /* Update of the class 0xB8 shot (spawned by FUN_L04_002aee30): moves along its direction, plays its sound once it
    starts moving away from the hero within 3 units, dies off the arena, and on a hit (probing for its owner's targets

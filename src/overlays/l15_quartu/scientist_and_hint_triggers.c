@@ -33,14 +33,7 @@
 extern Hero g_hero;
 extern char saved_mission_state[];
 
-extern int fast_dec_timer(void *);
-
-extern float vec_distance_xy(float *, float *);
-
 extern int truncate_float_to_s32(float);
-
-extern float vec_length_xy(void *);
-extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 
 extern char gemlik_available[];
 extern int quartu_moby_array MACRO_ADDR;
@@ -435,9 +428,6 @@ typedef struct Items {
     unsigned char f6F;
 } Items;
 
-extern int scale_ticks_r(int) __asm__("func_001F9850");
-extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
-
 extern unsigned char D_0013D5E7[];
 extern int D_0015EFA4 MACRO_ADDR;
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
@@ -461,49 +451,47 @@ void update_quartu_hint_triggers(Moby *m) {
     switch (st) {
         case 0:
             m->update_dist = 0xFF;
-            t->wait = scale_ticks_r(0x4B0);
+            t->wait = scale_ticks(0x4B0);
             m->state = 1;
             break;
         case 1:
             if (t->npc[0] != -1) {
                 e = (Moby *)(quartu_moby_array_r + (t->npc[0] << 8));
                 if (e != 0 && e->oclass == 0x4E && e->state != 0xFE && e->state != 0xFD && e->state != 3 &&
-                    is_point_inside_clip_volume_r(&g_hero.motion.pos, t->zone[3]) != 0 &&
+                    is_point_inside_clip_volume(&g_hero.motion.pos, t->zone[3]) != 0 &&
                     (g_hero.state.control_mode < 2u || g_hero.state.control_mode == 9) &&
                     ((Help_2EE7E8 *)quartu_help_popup_state)->busy == 0 &&
                     ((Help_2EE7E8 *)quartu_help_popup_state)->cur == -1) {
                     if (gHaveHologuise[0] == 0) {
                         int lim, now;
-                        now = scale_ticks_r(gameplay_event_frame_count);
+                        now = scale_ticks(gameplay_event_frame_count);
                         lim = now - ((Stats *)help_records)->t3DA * 600;
-                        if ((int)((float)scale_ticks_r(0x12) * 60.0f) < lim ||
-                            ((Stats *)help_records)->t3DA * 600 == 0) {
+                        if ((int)((float)scale_ticks(0x12) * 60.0f) < lim || ((Stats *)help_records)->t3DA * 600 == 0) {
                             Help_Request(0x3A98, 0x7B);
                         } else {
-                            now = scale_ticks_r(gameplay_event_frame_count);
+                            now = scale_ticks(gameplay_event_frame_count);
                             if (now / 600 > ((Stats *)help_records)->t3DA) {
-                                ((Stats *)help_records)->t3DA = scale_ticks_r(gameplay_event_frame_count) / 600;
+                                ((Stats *)help_records)->t3DA = scale_ticks(gameplay_event_frame_count) / 600;
                             }
                         }
                     } else if (((Stats *)help_records)->n3E0 != 0) {
                         int lim, now;
-                        now = scale_ticks_r(gameplay_event_frame_count);
+                        now = scale_ticks(gameplay_event_frame_count);
                         lim = now - ((Stats *)help_records)->t3E2 * 600;
-                        if ((int)((float)scale_ticks_r(0x12) * 60.0f) < lim ||
-                            ((Stats *)help_records)->t3E2 * 600 == 0) {
+                        if ((int)((float)scale_ticks(0x12) * 60.0f) < lim || ((Stats *)help_records)->t3E2 * 600 == 0) {
                             Help_Request(0x3A99, 0x7C);
                         } else {
-                            now = scale_ticks_r(gameplay_event_frame_count);
+                            now = scale_ticks(gameplay_event_frame_count);
                             if (now / 600 > ((Stats *)help_records)->t3E2) {
-                                ((Stats *)help_records)->t3E2 = scale_ticks_r(gameplay_event_frame_count) / 600;
+                                ((Stats *)help_records)->t3E2 = scale_ticks(gameplay_event_frame_count) / 600;
                             }
                         }
                     } else {
                         int now;
                         ((Stats *)help_records)->n3E0++;
-                        now = scale_ticks_r(gameplay_event_frame_count);
+                        now = scale_ticks(gameplay_event_frame_count);
                         if (now / 600 > ((Stats *)help_records)->t3E2) {
-                            ((Stats *)help_records)->t3E2 = scale_ticks_r(gameplay_event_frame_count) / 600;
+                            ((Stats *)help_records)->t3E2 = scale_ticks(gameplay_event_frame_count) / 600;
                         }
                         ((Stats *)help_records)->lv3E4 =
                             ((Stats *)help_records)->lv3E4 | (1 << g_current_level_index_r) | 0x80000000;
@@ -516,7 +504,7 @@ void update_quartu_hint_triggers(Moby *m) {
                 Help_Request(0x3A9F, 0x89);
                 quartu_pending_help_flag = 0;
             }
-            if (is_point_inside_clip_volume_r(&g_hero.motion.pos, t->vol54) != 0 && g_hero.vehicle_mode == 3 &&
+            if (is_point_inside_clip_volume(&g_hero.motion.pos, t->vol54) != 0 && g_hero.vehicle_mode == 3 &&
                 g_hero.glow_pulse_level == 0 && quartu_alarm_on == 0 &&
                 *(unsigned short *)(help_stats_base_r + 0x78D) == 0) {
                 Help_Request(0x3A9E, 0x88);
@@ -525,7 +513,7 @@ void update_quartu_hint_triggers(Moby *m) {
             npc = -1;
             found = 0;
             for (i = 0; i < 1; i++) {
-                if (is_point_inside_clip_volume_r(&g_hero.motion.pos, t->zone[i]) != 0) {
+                if (is_point_inside_clip_volume(&g_hero.motion.pos, t->zone[i]) != 0) {
                     pick = t->zone[i];
                     npc = t->npc[i];
                     found = 1;
@@ -545,7 +533,7 @@ void update_quartu_hint_triggers(Moby *m) {
                     (g_hero.state.control_mode < 2u || g_hero.state.control_mode == 9) &&
                     ((Help_2EE7E8 *)quartu_help_popup_state)->busy == 0 &&
                     ((Help_2EE7E8 *)quartu_help_popup_state)->cur == -1 && gHaveHologuise[0] != 0) {
-                    t->wait = scale_ticks_r(0x708);
+                    t->wait = scale_ticks(0x708);
                     if (*(int *)(help_stats_base_r + 0x739) >= 0) {
                         Help_Request(0x3A9A, 0x7D);
                     }
@@ -556,12 +544,12 @@ void update_quartu_hint_triggers(Moby *m) {
             if (g_hero.moby->seq == 0xC && g_hero.vehicle_mode == 2) {
                 ((Items *)gSpecialItems)->f6F = 1;
             }
-            if (is_point_inside_clip_volume_r(&g_hero.motion.pos, t->vol1C) != 0 && g_hero.vehicle_mode == 2 &&
+            if (is_point_inside_clip_volume(&g_hero.motion.pos, t->vol1C) != 0 && g_hero.vehicle_mode == 2 &&
                 ((Items *)gSpecialItems)->f6F == 0 && ((Help_2EE7E8 *)quartu_help_popup_state)->busy == 0 &&
                 ((Help_2EE7E8 *)quartu_help_popup_state)->cur == -1 && *(int *)(help_stats_base_r + 0x751) >= 0) {
                 Help_Request(0x3A9C, 0x80);
             }
-            if (is_point_inside_clip_volume_r(&g_hero.motion.pos, t->vol20[0]) != 0 &&
+            if (is_point_inside_clip_volume(&g_hero.motion.pos, t->vol20[0]) != 0 &&
                 ((Help_2EE7E8 *)quartu_help_popup_state)->busy == 0 &&
                 ((Help_2EE7E8 *)quartu_help_popup_state)->cur == -1 && gHaveHeliPack[2] == 0 &&
                 !(*(unsigned int *)(help_stats_base_r + 0x761) & (1 << g_current_level_index_r))) {
@@ -570,7 +558,7 @@ void update_quartu_hint_triggers(Moby *m) {
             pick = -1;
             found = 0;
             for (j = 0; j < 3; j++) {
-                if (is_point_inside_clip_volume_r(&g_hero.motion.pos, t->vol20[j]) != 0) {
+                if (is_point_inside_clip_volume(&g_hero.motion.pos, t->vol20[j]) != 0) {
                     found = 1;
                     if (t->last != t->vol20[j]) {
                         pick = t->vol20[j];
@@ -588,15 +576,14 @@ void update_quartu_hint_triggers(Moby *m) {
                     t->last = -1;
                 }
             }
-            if (scale_ticks_r(0xE10) < t->hold38 && pick != -1 && hero_is_in_special_state() != 0 &&
+            if (scale_ticks(0xE10) < t->hold38 && pick != -1 && hero_is_in_special_state() != 0 &&
                 ((Help_2EE7E8 *)quartu_help_popup_state)->busy == 0 &&
                 ((Help_2EE7E8 *)quartu_help_popup_state)->cur == -1 && gHaveHeliPack[2] != 0) {
                 Help_Request(0x4E2E, 0x78);
                 t->last = pick;
                 t->hold38 = 0;
             }
-            if (((Items *)gSpecialItems)->f6E == 0 &&
-                is_point_inside_clip_volume_r(&g_hero.motion.pos, t->vol2C) != 0) {
+            if (((Items *)gSpecialItems)->f6E == 0 && is_point_inside_clip_volume(&g_hero.motion.pos, t->vol2C) != 0) {
                 ((Items *)gSpecialItems)->f6E = 1;
             }
             break;
@@ -636,8 +623,6 @@ void emit_cutscene_mode_moby_effects(struct Moby *m) {
             break;
     }
 }
-
-extern int GetEffectTex(int);
 
 extern float g_frame_time MACRO_ADDR;
 extern int quartu_frame_count MACRO_ADDR;
@@ -922,13 +907,11 @@ extern char *quartu_camera_moby_r __asm__("D_L15_00167480");
 extern PadState D_0013CA40;
 extern int func_L00_002E9870(char *);
 extern void func_L00_002E9838(char *);
-extern int scale_ticks_r2(int) __asm__("func_001F9850");
 
-extern float IntToFloat_r(int) __asm__("func_001FA888");
 extern void func_L00_002E9E20(void *, float, float);
 extern void func_L00_002E9900(int, float, float);
 extern void func_L00_002E9AD0(void);
-extern void follow_camera_set_height_r(float, float) __asm__("func_L00_002E9968");
+extern void follow_camera_set_height(float, float);
 extern void func_L00_002E99A0(int, float, float);
 
 void func_L15_002F9D38_r(char *m) __asm__("func_L15_002F9D38");
@@ -957,10 +940,10 @@ void func_L15_002F9D38_r(char *m) {
     *(int *)(*(char **)(quartu_camera_moby_r + 0x70) + 0x230) = 2;
     done = 1;
     (*(short *)(s + 0x20))++;
-    t1 = scale_ticks_r2(300);
-    t2 = scale_ticks_r2(400);
-    t3 = scale_ticks_r2(560);
-    t4 = scale_ticks_r2(200);
+    t1 = scale_ticks(300);
+    t2 = scale_ticks(400);
+    t3 = scale_ticks(560);
+    t4 = scale_ticks(200);
     set_nonzero_follow_camera_parameters(1.0f, 12.0f, 0.11f);
     if (g_controller_state.analog[0] != 0.0f)
         *(short *)(s + 0x20) = t1;
@@ -981,7 +964,7 @@ void func_L15_002F9D38_r(char *m) {
         *(int *)(s + 0x3C) = t1;
         *(short *)(s + 0x20) = t4;
     }
-    r = IntToFloat_r(*(short *)(s + 0x20)) / IntToFloat_r(t4);
+    r = IntToFloat(*(short *)(s + 0x20)) / IntToFloat(t4);
     a = *(float *)s * 0.017453292f * r;
     if (done)
         set_follow_camera_angle_blend_from_position(o + 0x30, a, 0.0f);
@@ -990,7 +973,7 @@ void func_L15_002F9D38_r(char *m) {
         set_follow_camera_flag_226();
     }
     if (*(float *)(s + 0x38) != 0.0f)
-        follow_camera_set_height_r(*(float *)(s + 0x38), 0.003f);
+        follow_camera_set_height(*(float *)(s + 0x38), 0.003f);
     if (*(float *)(s + 0x44) != 0.0f)
         Cam_SetEyeOffset(0, *(float *)(s + 0x44), 0.005f);
 }

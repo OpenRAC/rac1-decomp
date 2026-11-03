@@ -41,12 +41,7 @@ typedef struct {
     char pad[0x20];
 } T2C;
 
-extern void ClampVectorLength(void *a, float x);
-extern float vec_length_xy(void *);
-
 extern int truncate_float_to_s32(float);
-
-extern void *MobyGetHitMessage(void *, int, int);
 
 extern int aridia_cinematic_mode MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
@@ -1547,13 +1542,7 @@ extern HeroSpeedBands aridia_hero_speed_bands;
 
 extern int HeroL02_SetMoveState(int a, int b);
 
-extern int func_001F9908(int *);
-
 extern float resolve_hero_trajectory_parameter(float a, float b, float c);
-
-extern float vec_distance_xy(void *, void *);
-
-extern float ApproachValue(float *p, float target, float maxstep);
 
 /* Hero state machine: per-frame transition logic for the current hero state (level 02 build). */
 void HeroL02_UpdateStateTransitions(void) {
@@ -3295,12 +3284,6 @@ extern Hero g_hero_r __asm__("D_0013F450");
 extern u8 aridia_coll_hit_normal[];
 extern f32 aridia_coll_hit_point;
 
-extern void vec_scale_to_length(void *, void *, f32);
-
-extern s32 coll_line(void *, void *, s32, s32, s32);
-
-extern f32 gravity_z_r(void *) __asm__("func_L00_002342F8");
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l02/ui_help_002360c8.c, FUN_L02_002360c8. */
 f32 resolve_hero_trajectory_parameter(f32 a, f32 b, f32 c) {
     f32 t[4];
@@ -3346,9 +3329,9 @@ f32 resolve_hero_trajectory_parameter(f32 a, f32 b, f32 c) {
             if (coll_line(&(&g_hero_r)->motion.pos, t, 0x324, 0, 0) != 0) {
                 f32 nb;
                 nb = b * -0.5f;
-                z = gravity_z_r(&(&g_hero_r)->motion.velocity) - nb;
-                x = gravity_z_r(&(&g_hero_r)->motion.pos);
-                y = gravity_z_r(&aridia_coll_hit_point);
+                z = gravity_z(&(&g_hero_r)->motion.velocity) - nb;
+                x = gravity_z(&(&g_hero_r)->motion.pos);
+                y = gravity_z(&aridia_coll_hit_point);
                 if (solve_quadratic_equation(&o[2], &o[3], nb, z, x - y) > 0 && o[2] > 0.0f) {
                     return o[2];
                 }
@@ -3370,9 +3353,9 @@ f32 resolve_hero_trajectory_parameter(f32 a, f32 b, f32 c) {
             if (coll_line(&(&g_hero_r)->motion.pos, t, 0x324, 0, 0) != 0) {
                 f32 nb;
                 nb = b * -0.5f;
-                z = gravity_z_r(&(&g_hero_r)->motion.velocity) - nb;
-                x = gravity_z_r(&(&g_hero_r)->motion.pos);
-                y = gravity_z_r(&aridia_coll_hit_point);
+                z = gravity_z(&(&g_hero_r)->motion.velocity) - nb;
+                x = gravity_z(&(&g_hero_r)->motion.pos);
+                y = gravity_z(&aridia_coll_hit_point);
                 if (solve_quadratic_equation(&o[4], &o[5], nb, z, x - y) > 0 && o[4] > 0.0f) {
                     return o[4];
                 }

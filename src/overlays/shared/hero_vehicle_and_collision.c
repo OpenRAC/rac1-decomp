@@ -41,13 +41,8 @@ extern s32 level_frame_counter MACRO_ADDR;
 extern CollisionHit coll_hit_result;
 
 extern s32 probe_hero_forward_collision_v(f32 *, f32, f32) __asm__("func_L00_0020A8B8");
-extern f32 vec_length_xy(void *);
-
-extern s32 is_moby_in_class_range_500_to_540(s32);
 
 extern int coll_line_r(void *from, void *to, int mask, void *ignore, int) __asm__("func_L00_001EFFF0");
-
-extern s32 coll_sphere(f32, Vec4 *, s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/hero/00221310.c, FUN_L00_00221310. */
 void update_hero_motion_and_collision_probes(void) {
@@ -130,19 +125,12 @@ extern Entry70_2215c8_21D50 D_L00_001799F0_21D50[] __asm__("D_L00_001799F0");
 extern short D_L00_0015F6A8_21D50 SDATA(D_L00_0015F6A8);
 extern u8 D_0013D5EA NOT_SDA;
 extern f32 g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
-extern void update_hero_tilt_r(void) __asm__("func_L00_00216D40");
+
 extern s32 fast_dec_timer_r(s32 *) __asm__("func_001F9908");
 
-extern s32 scale_ticks_r(s32) __asm__("func_001F9850");
 extern s32 pad_pressed_within_r(s32, s32, s32) __asm__("func_L00_00267BA8");
 
-extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
-extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
-
-extern f32 FastVecLength_r(void *) __asm__("func_001F9CB8");
 extern void update_hero_planar_distance_spring_motion_r(void) __asm__("func_L00_002222F0");
-extern void transform_hero_local_offset_to_world_r(void *, f32, f32, f32) __asm__("func_L00_00233EE0");
-extern void Hero_OnKilled_r(void) __asm__("func_L00_00211908");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/hero/00221310.c, FUN_L00_002215c8. */
 void update_hero_timers_and_reach_state(void) {
@@ -154,7 +142,7 @@ void update_hero_timers_and_reach_state(void) {
     s32 n8;
 
     if (g_hero_r.tilt_disabled == 0) {
-        update_hero_tilt_r();
+        update_hero_tilt();
     }
     g_hero_r.state_timer++;
     g_hero_r.control_mode_timer++;
@@ -205,7 +193,7 @@ void update_hero_timers_and_reach_state(void) {
         g_hero_r.health.hp != 0 && (*(s32 *)&D_L00_0015F6A8_21D50) == 0) {
         if (g_hero_r.vehicle_mode == 3) {
             exit_hero_vehicle_mode();
-            if (pad_pressed_within_r(0x80, scale_ticks_r(0x12), 0)) {
+            if (pad_pressed_within_r(0x80, scale_ticks(0x12), 0)) {
                 g_hero_r.force_slot0_item8 = 1;
             }
         } else {
@@ -233,19 +221,19 @@ void update_hero_timers_and_reach_state(void) {
     if (g_hero_r.air_frames.s != 0 && gravity_z(&g_hero_r.motion.velocity) < 0.0f) {
         if (g_hero_r.pos_history_count != 0x20)
             goto skip;
-        clear_u64_value_r(&sum);
+        clear_u64_value(&sum);
         n8 = 8;
         for (i = 0; i < n8; i++) {
             n = g_hero_r.pos_history_index - i;
             {
                 s32 a = (n + 0x1F) % 32;
                 s32 b = (n + 0x1E) % 32;
-                FastVecSub_r(&d, &g_hero_r.pos_history[a], &g_hero_r.pos_history[b]);
+                FastVecSub(&d, &g_hero_r.pos_history[a], &g_hero_r.pos_history[b]);
             }
             FastVecAdd(&sum, &sum, &d);
         }
         FastVecScale(&sum, &sum, 1.0f / (f32)n8);
-        if (FastVecLength_r(&sum) < g_frame_time_r) {
+        if (FastVecLength(&sum) < g_frame_time_r) {
             g_hero_r.still_frames++;
             goto skip;
         }
@@ -255,17 +243,17 @@ skip:
     update_hero_planar_distance_spring_motion_r();
     switch (g_hero_r.vehicle_mode) {
         case 1:
-            transform_hero_local_offset_to_world_r(&g_hero_r.motion.body_center, 0.0f, 0.0f, 0.4f);
+            transform_hero_local_offset_to_world(&g_hero_r.motion.body_center, 0.0f, 0.0f, 0.4f);
             g_hero_r.reach_distance = 2.125f;
             g_hero_r.reach_height = 1.25f;
             break;
         case 2:
-            transform_hero_local_offset_to_world_r(&g_hero_r.motion.body_center, 0.0f, 0.0f, 4.0f);
+            transform_hero_local_offset_to_world(&g_hero_r.motion.body_center, 0.0f, 0.0f, 4.0f);
             g_hero_r.reach_distance = 15.0f;
             g_hero_r.reach_height = 3.0f;
             break;
         default:
-            transform_hero_local_offset_to_world_r(&g_hero_r.motion.body_center, 0.0f, 0.0f, 0.7f);
+            transform_hero_local_offset_to_world(&g_hero_r.motion.body_center, 0.0f, 0.0f, 0.7f);
             if (gHaveBoltGrabber) {
                 g_hero_r.reach_distance = 12.0f;
                 g_hero_r.reach_height = 4.5f;
@@ -285,16 +273,12 @@ skip:
         }
     }
     if (g_hero_r.motion.pos.f[2] < 1.0f) {
-        Hero_OnKilled_r();
+        Hero_OnKilled();
     }
 }
 extern unsigned char hero_globals_base[] NOT_SDA;
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;
-
-extern float vec_distance_xy(void *, void *);
-
-extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
 
 // Steers the player's slide: starts it when a dash ends near a wall, then aims its velocity.
 void update_hero_planar_distance_spring_motion(void) {
@@ -372,8 +356,6 @@ int stick_direction_vs_facing(void) {
 extern char *suck_moby_list MACRO_ADDR;
 
 extern float score_hero_target_candidate_v(void *, int *, float, float, float, float) __asm__("func_L00_0020DD48");
-
-extern int coll_line(void *, void *, int, int, int);
 
 typedef struct Q_221ee0 {
     s32 i0; /* 0x00 nonzero: the target record is live */
@@ -557,16 +539,7 @@ typedef struct {
 
 extern void set_hero_idle_state_for_vehicle_mode(void);
 
-extern void ClampVectorLength(void *a, float x);
-extern float vec_length_xy(void *);
-
 extern int truncate_float_to_s32(float);
-
-extern void *MobyGetHitMessage(void *, int, int);
-
-extern void Spline_AdvanceByDistance(int a, char *pos, char *b, char *c, int d, float f);
-
-extern void vec_scale_to_length(void *, void *, float);
 
 extern int cinematic_mode MACRO_ADDR;
 extern int water_patches MACRO_ADDR;
@@ -2995,8 +2968,6 @@ collision_mode:
     return 0;
 }
 
-extern int coll_line(void *, void *, int, int, int);
-
 extern float coll_hit_point_z;
 extern int level_frame_counter MACRO_ADDR;
 
@@ -3084,7 +3055,6 @@ int try_enter_hero_water_state(void) {
     }
     return r;
 }
-extern float ApproachValue(float *p, float target, float maxstep);
 
 // Integrates and damps the player's camera-offset spring values and stores the resulting height.
 void update_hero_water_height_and_bobbing(void) {

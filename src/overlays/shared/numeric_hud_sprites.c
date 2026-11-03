@@ -11,6 +11,7 @@
 #include "overlays/shared/weapon_hud_and_counters.h"
 #include "game/ui/help.h"
 #include "core/libc/sprintf.h"
+#include "game/moby/mobyutil.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 
@@ -38,7 +39,7 @@ void initialize_trick_combo_hud(HudElemX *e) {
     }
     initialize_numeric_hud_values_and_dimensions(e);
 }
-extern float ApproachValue(float *p, float target, float maxstep);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern Hero hero_002670A0 __asm__("D_0013F450");
@@ -511,7 +512,7 @@ extern char rilgar_fmt_race_score_value_r[] __asm__("D_L05_0015FB08");
 extern char rilgar_fmt_race_time_width_r[] __asm__("D_L05_0015FB10");
 extern char rilgar_fmt_race_time_label_r[] __asm__("D_L05_0015FB20");
 extern char rilgar_fmt_race_time_value_r[] __asm__("D_L05_0015FB28");
-extern void draw_stretchable_ui_frame_r(int, int, int, int, int) __asm__("func_00201960");
+
 extern char *msg_string_r(int) __asm__("func_001FE540");
 extern int sprintf_r(char *, const char *, ...) __asm__("func_00116248");
 extern int measure_text_width_regular_r(char *, int) __asm__("func_001F6600");
@@ -543,8 +544,8 @@ int draw_hud_timer(HudElem_002670A0 *e) {
     hund = frames * 100 / per_sec;
 
     if (gSpecialItems_r[0]) {
-        draw_stretchable_ui_frame_r(D_L05_0015FACC_002670A0, y0, D_L05_0015FAD4_002670A0, D_L05_0015FAD8_002670A0,
-                                    D_L05_0015FADC_002670A0);
+        draw_stretchable_ui_frame(D_L05_0015FACC_002670A0, y0, D_L05_0015FAD4_002670A0, D_L05_0015FAD8_002670A0,
+                                  D_L05_0015FADC_002670A0);
         x = D_L05_0015FAE8_002670A0;
         sprintf_r(buf, rilgar_fmt_race_score_width_r, msg_string_r(0x50A6), hero_002670A0.race_score);
         x -= measure_text_width_regular_r(buf, -1) >> 1;

@@ -48,7 +48,6 @@ void EffectQueue_Add(int a0, int a1, float f12, float f13, int *a2, int a3, int 
 }
 typedef int q128 __attribute__((mode(TI)));
 
-extern f32 vec_length_xy(void *);
 extern s32 truncate_float_to_s32(f32);
 extern s32 *camera_collision_grid MACRO_ADDR;
 
@@ -95,8 +94,6 @@ extern unsigned char *level_cuboids MACRO_ADDR;
 extern unsigned char *level_cylinders MACRO_ADDR;
 extern unsigned char *level_spheres MACRO_ADDR;
 extern unsigned char *level_clip_volumes MACRO_ADDR;
-
-extern float vec_length_xy(void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_001ee1b0.c, FUN_L00_001ee318. */
 int test_point_in_camera_collision_volume(Vec4 *pt, int *vol, float rad) {

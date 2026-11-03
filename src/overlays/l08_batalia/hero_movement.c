@@ -38,7 +38,6 @@ extern int g_controller_state_no_direction;
 extern Hero g_hero;
 
 extern int D_0015EE84 MACRO_ADDR;
-extern int coll_sphere(float, void *, int, void *);
 
 // Handles a pending state change: clears the request and sets per-state flags.
 void HeroL08_ResetActionState(void) {
@@ -185,34 +184,9 @@ extern HeroSpeedBands batalia_hero_speed_bands;
 extern float batalia_hero_anim_speed_curve[];
 extern float batalia_hero_anim_frame_speeds[];
 
-extern int fast_dec_timer(int *);
-
 extern int truncate_float_to_s32(float);
-extern float vec_length_xy(void *);
 
-extern float SpringAngle(void *, float, void *, int, float, float, float);
-
-extern void vec_scale_to_length(void *, void *, float);
-
-extern float ApproachValue(float *, float, float);
-
-extern void ClampVectorLength(void *, float);
-
-extern float vec_distance_xy(void *, void *);
-
-extern float Spring(float *, float *, float, float, float, float);
-
-extern int coll_sphere_mobys(float, void *, int, void *, void *);
-
-extern void spawn_color_decaying_effect_particle(char *, char *, int);
-
-extern int offset_path_index(void *, int, int, int);
-
-extern int coll_line(void *, void *, int, int, int);
-
-extern int is_moby_in_class_range_500_to_540(int);
-
-extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
+extern int Spline_AdvanceByDistance_v(void *, void *, int *, float *, float, int) __asm__("func_L00_0025E860");
 
 struct HeroL08UpdateStatePhysicsVars {};
 
@@ -1800,12 +1774,12 @@ void HeroL08_UpdateStatePhysics(void) {
                 if (g_hero.state.current == HERO_STATE_GRIND_COLLISION_RECOVERY) {
                     step = g_hero.unk5CC * g_hero.grind_direction;
                 }
-                Spline_AdvanceByDistance((unsigned char *)g_hero.rail_spline, vec[0], &g_hero.rail_segment,
-                                         &g_hero.rail_seg_frac, step, g_hero.rail_spline_loops);
+                Spline_AdvanceByDistance_v((unsigned char *)g_hero.rail_spline, vec[0], &g_hero.rail_segment,
+                                           &g_hero.rail_seg_frac, step, g_hero.rail_spline_loops);
                 if (g_hero.rail_switching != 0) {
-                    Spline_AdvanceByDistance((unsigned char *)g_hero.transfer_from_spline, vec[1],
-                                             &g_hero.prev_rail_segment, &g_hero.prev_rail_seg_frac, step,
-                                             g_hero.unk5A0);
+                    Spline_AdvanceByDistance_v((unsigned char *)g_hero.transfer_from_spline, vec[1],
+                                               &g_hero.prev_rail_segment, &g_hero.prev_rail_seg_frac, step,
+                                               g_hero.unk5A0);
                 }
                 if (g_hero.control_mode_timer > scale_ticks(0x5A)) {
                     int idx;
@@ -1817,13 +1791,13 @@ void HeroL08_UpdateStatePhysics(void) {
                     qcopy(vec[2], g_hero.motion.pos.f);
                     idx = g_hero.rail_segment;
                     frac = g_hero.rail_seg_frac;
-                    r0 = Spline_AdvanceByDistance((unsigned char *)g_hero.rail_spline, vec[2], &idx, &frac, look,
-                                                  g_hero.rail_spline_loops);
+                    r0 = Spline_AdvanceByDistance_v((unsigned char *)g_hero.rail_spline, vec[2], &idx, &frac, look,
+                                                    g_hero.rail_spline_loops);
                     qcopy(vec[3], g_hero.motion.pos.f);
                     idx = g_hero.rail_segment;
                     frac = g_hero.rail_seg_frac;
-                    if ((r0 | Spline_AdvanceByDistance((unsigned char *)g_hero.rail_spline, vec[3], &idx, &frac,
-                                                       look + 0.1f, g_hero.rail_spline_loops)) == 0 ||
+                    if ((r0 | Spline_AdvanceByDistance_v((unsigned char *)g_hero.rail_spline, vec[3], &idx, &frac,
+                                                         look + 0.1f, g_hero.rail_spline_loops)) == 0 ||
                         g_hero.rail_spline_loops != 0) {
                         float tilt;
 
@@ -1996,8 +1970,8 @@ void HeroL08_UpdateStatePhysics(void) {
                         idx = g_hero.rail_segment;
                         frac = g_hero.rail_seg_frac;
                         qcopy(vec[2], g_hero.motion.pos.f);
-                        Spline_AdvanceByDistance((unsigned char *)g_hero.rail_spline, vec[2], &idx, &frac, 0.3f,
-                                                 g_hero.rail_spline_loops);
+                        Spline_AdvanceByDistance_v((unsigned char *)g_hero.rail_spline, vec[2], &idx, &frac, 0.3f,
+                                                   g_hero.rail_spline_loops);
                         slope = fast_atan2(vec_distance_xy(g_hero.rail_point.f, vec[2]),
                                            vec[2][2] - g_hero.rail_point.f[2]);
                         if (slope > 0.0f) {

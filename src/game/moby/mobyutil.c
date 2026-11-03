@@ -289,8 +289,6 @@ extern int occl_cell_count MACRO_ADDR;
 extern int local_surface_region_enabled MACRO_ADDR;
 extern float local_surface_region_center_x[4] MACRO_ADDR;
 
-extern float vec_distance_xy(void *, void *);
-
 /* Ground height under pos: sample_surface_height_map's answer when occl_cell_count is on
    and it finds one (it writes the height through its first argument and
    gets `out` as well); else, when local_surface_region_enabled is on and pos lies within
@@ -1114,8 +1112,6 @@ typedef struct {
     char pad[0xC];
     PathPt pts[1]; /* 0x10 */
 } Path;
-extern void lerp_vector(void *, void *, void *, float);
-extern float vec_length_xy(void *);
 
 /* Samples a path of points at arg t: lerps the position between point
    floor(t) and the next into pos and, unless flags bit 0 is set, writes

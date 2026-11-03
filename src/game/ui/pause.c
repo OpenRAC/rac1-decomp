@@ -48,8 +48,6 @@
 
 extern char voice_pool[];
 
-extern int GetEffectTex(int);
-
 extern PadSlots level_map_selection_slots __asm__("D_001A01F0");
 extern int level_map_selection[];
 
@@ -219,7 +217,6 @@ extern struct O2_19E90 *panel_slots_r[] __asm__("D_001D6120");
 extern u8 D_001602C0 MACRO_ADDR;
 extern u8 D_001602D0 MACRO_ADDR;
 
-extern void VU1_initChain_r(void) __asm__("func_002348E8");
 extern struct O2_19E90 *create_menu_preview_moby_r() __asm__("func_00226720");
 extern s32 MobySetAnimation_r() __asm__("func_00213D28");
 
@@ -254,7 +251,7 @@ void initialize_menu_preview_scene(void) {
     menu_system_r.help_text_buffer = c;
     menu_system_r.unk10C = d;
     func_00226D50_19E90(1);
-    VU1_initChain_r();
+    VU1_initChain();
     menu_system_r.saved_texture_start = g_gs_texture_allocation_start_r;
     if (menu_system_r.current != 0) {
         for (i = 0; i < 14; i++) {
@@ -498,10 +495,6 @@ extern s64 capture_texture_tex0 MACRO_ADDR;
 extern void *resident_object_pool MACRO_ADDR;
 extern short panel_clear_color;
 extern s32 panel_slot_enabled[];
-
-extern void draw_hud_rect_blended();
-
-extern void draw_hud_rect_depth(s32, s32, s32, s32, u64, u32, s32);
 
 extern void draw_menu_flashing_panel();
 
@@ -824,7 +817,6 @@ int update_menu_icon_list(MenuScreen *arg0) {
 }
 
 extern short panel_clear_color; /* SDA, gp -0x6A50 */
-extern void draw_hud_rect_blended(int, int, int, int, long, long);
 
 extern int game_frame_counter MACRO_ADDR;
 
@@ -1219,9 +1211,7 @@ extern s32 *D_001602E0_1BB90 SDATA(D_001602E0);
 extern s32 menu_action_messages_r[] __asm__("D_00199578");
 extern s32 selected_level_index_r[] __asm__("D_001A0414");
 
-extern s32 scale_game_frame_count_r(s32) __asm__("func_001F98C0");
 extern void mode_freeze_init_r2(s32, s32, s32) __asm__("func_001FBC80");
-extern s32 Moby_PlaySound_r2(s32, s32, s32) __asm__("func_0022ED80");
 
 /*
  * Per-frame update of a menu list: fades the entry highlights, handles
@@ -1252,8 +1242,8 @@ s32 update_menu_entry_actions(MenuScreen *menu) {
             }
         } else {
             fade_timer = menu->data.list.items[entry_index].fade_timer;
-            if (scale_game_frame_count_r(D_001602B4_1BB90) < fade_timer) {
-                menu->data.list.items[entry_index].fade_timer = scale_game_frame_count_r(D_001602B4_1BB90);
+            if (scale_game_frame_count(D_001602B4_1BB90) < fade_timer) {
+                menu->data.list.items[entry_index].fade_timer = scale_game_frame_count(D_001602B4_1BB90);
             }
             menu->data.list.items[entry_index].fade_timer = menu->data.list.items[entry_index].fade_timer > 0
                                                                 ? menu->data.list.items[entry_index].fade_timer - 1
@@ -1291,13 +1281,13 @@ s32 update_menu_entry_actions(MenuScreen *menu) {
                 menu_system_r3.next = (MenuPage *)menu->data.list.items[menu->data.list.selected].param.value;
                 break;
             case 4:
-                Moby_PlaySound_r2(0, 0x11, menu->moby);
+                Moby_PlaySound(0, 0x11, menu->moby);
                 menu_system_r3.unk150 = 0;
                 mode_freeze_flags_r = (mode_freeze_flags_r | 2) & ~4;
                 mode_freeze_init_r2(3, menu->data.list.items[menu->data.list.selected].param.value, 0);
                 break;
             case 5:
-                Moby_PlaySound_r2(0, 0x11, menu->moby);
+                Moby_PlaySound(0, 0x11, menu->moby);
                 mode_freeze_flags_r = (mode_freeze_flags_r | 4) & ~2;
                 mode_freeze_init_r2(3, menu->data.list.items[menu->data.list.selected].param.value, 0);
                 menu_system_r3.unk150 = 1;
@@ -1312,40 +1302,40 @@ s32 update_menu_entry_actions(MenuScreen *menu) {
                 menu_system_r3.unkF0 = menu_system_r3.current;
                 menu_system_r3.unkF4 = 0;
                 menu_system_r3.unkE4 = menu->data.list.items[menu->data.list.selected].param.half.lo;
-                Moby_PlaySound_r2(0, 0x11, menu->moby);
+                Moby_PlaySound(0, 0x11, menu->moby);
                 return 0;
             case 7:
                 menu_system_r3.unkF4 = 2;
                 menu_system_r3.unkF0 = menu_system_r3.current;
                 menu_system_r3.close_request = 3;
                 menu_system_r3.unkE4 = menu->data.list.items[menu->data.list.selected].param.value;
-                Moby_PlaySound_r2(0, 0x11, menu->moby);
+                Moby_PlaySound(0, 0x11, menu->moby);
                 return 0;
             case 8:
                 menu_system_r3.unkF4 = 2;
                 menu_system_r3.unkF0 = menu_system_r3.current;
                 menu_system_r3.close_request = 4;
                 menu_system_r3.unkE4 = menu->data.list.items[menu->data.list.selected].param.value;
-                Moby_PlaySound_r2(0, 0x11, menu->moby);
+                Moby_PlaySound(0, 0x11, menu->moby);
                 return 0;
             case 10:
                 menu_system_r3.unkF4 = 2;
                 menu_system_r3.unkF0 = menu_system_r3.current;
                 menu_system_r3.close_request = 6;
                 menu_system_r3.unkE4 = menu->data.list.items[menu->data.list.selected].param.value;
-                Moby_PlaySound_r2(0, 0x11, menu->moby);
+                Moby_PlaySound(0, 0x11, menu->moby);
                 return 0;
             case 11:
                 menu_system_r3.unkF0 = menu_system_r3.current;
                 menu_system_r3.unkF4 = 2;
                 menu_system_r3.close_request = 7;
-                Moby_PlaySound_r2(0, 0x11, menu->moby);
+                Moby_PlaySound(0, 0x11, menu->moby);
                 return 0;
             case 9:
                 g_game_language_r = menu->data.list.items[menu->data.list.selected].param.value;
                 return 0;
             case 2:
-                Moby_PlaySound_r2(2, 0x11, menu->moby);
+                Moby_PlaySound(2, 0x11, menu->moby);
                 break;
         }
     }
@@ -1380,7 +1370,7 @@ s32 update_menu_entry_actions(MenuScreen *menu) {
         }
     }
     if (menu->data.list.selected != previous_selection || menu_system_r3.current->pending_focus != 0) {
-        Moby_PlaySound_r2(1, 0x11, menu->moby);
+        Moby_PlaySound(1, 0x11, menu->moby);
         if (menu->data.list.flags & 0x20) {
             selected_level_index_r[0] = D_001602E0_1BB90[menu->data.list.selected];
         }
@@ -1409,9 +1399,6 @@ extern MenuPage *current_menu_page_r[] __asm__("D_001D5F74");
 
 extern short text_shadow_x;
 extern short text_shadow_y;
-extern void VU1_addGSregister_r(s32, long) __asm__("func_00234C98");
-
-extern s32 GetEffectTex(s32);
 
 extern void FontPrint_r(s32, s32, long, char *, s32, s32, u8 *) __asm__("func_001F6668");
 extern char *msg_string_r(s32) __asm__("func_001FE540");
@@ -1458,8 +1445,8 @@ s32 render_localized_ui_entry_list(MenuDescriptor *menu) {
         font_texture_index = 2;
         glyphs = small_font_metrics;
     }
-    VU1_addGSregister_r(0x42, 0x44);
-    VU1_addGSregister_r(0x47, 0x2004B);
+    VU1_addGSregister(0x42, 0x44);
+    VU1_addGSregister(0x47, 0x2004B);
     SetupGifPaging(0);
     entry_count = 0;
     entry = menu->items;
@@ -1967,7 +1954,7 @@ extern struct MapEntry D_001384A0[];
 extern struct MapEntry D_00138538[];
 
 extern s32 func_00205C70();
-extern s32 find_id_in_terminated_table_v(s32 id) __asm__("func_00205A50");
+extern s32 find_id_in_terminated_table(s32 id);
 extern s32 func_002058D0();
 extern s32 func_00205AA8();
 extern void func_00205830();
@@ -2040,7 +2027,7 @@ s32 DrawMapScreen(MenuScreen *screen) {
             Moby_PlaySound_r3(0, 0x11, screen->moby);
             return 0;
         }
-        idx = find_id_in_terminated_table_v(level_map_selection_r.level);
+        idx = find_id_in_terminated_table(level_map_selection_r.level);
         if (idx >= 0) {
             if (g_controller_state_r.pressed_unmasked & 8) {
                 if (idx < 0x13) {
@@ -2450,8 +2437,6 @@ extern s32 music_volume_r __asm__("D_0015EEEC") MACRO_ADDR;
 extern s32 sound_volume_r __asm__("D_0015EEF0") MACRO_ADDR;
 extern s32 playback_mode_r __asm__("D_0015EEE8") MACRO_ADDR;
 extern s32 selected_level_index_r2 __asm__("D_001A0414") NOT_SDA;
-extern s32 func_0022ED80_1DB30(s32 flags, s32 sound_index, s32 sound_owner) __asm__("func_0022ED80");
-void func_0012E380_1DB30(s32 menu) __asm__("func_0012E380");
 
 /* Sound options page input: close and back, up/down over the three rows, left/right change
    the sound or music volume by 3 (0..0x400) and push the new levels to the mixer groups,
@@ -2485,7 +2470,7 @@ s32 sound_options_menu(struct SoundMenu *menu) {
         menu->selected_option = (menu->selected_option + 1) % 3;
     }
     if ((menu->selected_option != previous_selection) || (menu_system_r5.current->pending_focus != 0)) {
-        func_0022ED80_1DB30(1, 0x11, menu->sound_owner);
+        Moby_PlaySound(1, 0x11, menu->sound_owner);
         if (menu->flags & 0x20) {
             selected_level_index_r2 = menu_level_indices_r[menu->selected_option];
         }
@@ -2521,8 +2506,8 @@ s32 sound_options_menu(struct SoundMenu *menu) {
         if (menu->selected_option == 2) {
             playback_mode_r = !playback_mode_r;
         }
-        func_0012E380_1DB30(!playback_mode_r);
-        func_0022ED80_1DB30(0, 0x11, menu->sound_owner);
+        snd_SetPlaybackMode(!playback_mode_r);
+        Moby_PlaySound(0, 0x11, menu->sound_owner);
     }
     return 0;
 }
@@ -2535,12 +2520,9 @@ typedef struct {
     s32 selected_option;
 } SoundMenu_1DE08;
 
-extern void SetupGifPaging_r(s32) __asm__("func_001F4630");
-extern void DoGifPaging_r(void) __asm__("func_001F4748");
-extern void *msg_string_r2(s32) __asm__("func_001FE540");
 extern void font_print_right_r(s32, s32, u64, void *, s32) __asm__("func_001F6CF8");
 extern void FontPrintLarge_r(s32, s32, u64, void *, s32) __asm__("func_001F68E8");
-extern s32 GetIconFrame_r(s32, s32) __asm__("func_00200198");
+
 extern void func_00201190_1DE08(s32, s32, s32, s32, s32, s32, s32, s32, s32, s32) __asm__("func_00201190");
 extern void draw_hud_rect_blended_r(s32, s32, s32, s32, u64, s32) __asm__("func_00201640");
 
@@ -2559,35 +2541,34 @@ s32 DrawSoundMenu(SoundMenu_1DE08 *menu) {
 
     row_height = menu->height >> 2;
     center_x = menu->width >> 1;
-    SetupGifPaging_r(0);
+    SetupGifPaging(0);
     label_right = center_x - 8;
     border_left = center_x + 7;
     slider_left = center_x + 9;
     slider_padding = center_x + 0x4A;
 
     font_print_right_r(label_right, row_height - 8, menu->selected_option == 0 ? 0x8020FFFF : 0x80FFA888,
-                       msg_string_r2(0x5217), -1);
+                       msg_string(0x5217), -1);
     draw_hud_rect_blended_r(border_left, row_height - 8, menu->width - 0x3F, row_height + 8, 0x80696969, 0);
     draw_hud_rect_blended_r(slider_left, row_height - 6, menu->width - 0x41, row_height + 6, 0x80383838, 0);
     slider_length = (menu->width - slider_padding) * sound_volume_r / 1024;
-    func_00201190_1DE08(GetIconFrame_r(0xE99E, 8), slider_left << 4, (row_height - 6) << 4,
+    func_00201190_1DE08(GetIconFrame(0xE99E, 8), slider_left << 4, (row_height - 6) << 4,
                         (center_x + 8 + slider_length) << 4, (row_height + 5) << 4, 0, 0xA0, 0x1F0, 0x150, 0x80);
 
     second_row = row_height + row_height;
     font_print_right_r(label_right, second_row - 8, menu->selected_option == 1 ? 0x8020FFFF : 0x80FFA888,
-                       msg_string_r2(0x5218), -1);
+                       msg_string(0x5218), -1);
     draw_hud_rect_blended_r(border_left, second_row - 8, menu->width - 0x3F, second_row + 8, 0x80696969, 0);
     draw_hud_rect_blended_r(slider_left, second_row - 6, menu->width - 0x41, second_row + 6, 0x80383838, 0);
     slider_length = (menu->width - slider_padding) * music_volume_r / 1024;
-    func_00201190_1DE08(GetIconFrame_r(0xE99E, 9), slider_left << 4, (second_row - 6) << 4,
+    func_00201190_1DE08(GetIconFrame(0xE99E, 9), slider_left << 4, (second_row - 6) << 4,
                         (center_x + 8 + slider_length) << 4, (second_row + 5) << 4, 0, 0xA0, 0x1F0, 0x150, 0x80);
 
     second_row += row_height;
     font_print_right_r(label_right, second_row - 8, menu->selected_option == 2 ? 0x8020FFFF : 0x80FFA888,
-                       msg_string_r2(0x5219), -1);
-    FontPrintLarge_r(center_x + 8, second_row - 8, 0x80FFA888, msg_string_r2(playback_mode_r != 0 ? 0x521B : 0x521A),
-                     -1);
-    DoGifPaging_r();
+                       msg_string(0x5219), -1);
+    FontPrintLarge_r(center_x + 8, second_row - 8, 0x80FFA888, msg_string(playback_mode_r != 0 ? 0x521B : 0x521A), -1);
+    DoGifPaging();
     return 2;
 }
 
@@ -2755,8 +2736,7 @@ int update_menu_help_text_load(MenuScreen *arg0) {
 }
 
 extern void FontPrintWindow_a(void *, long, char *, int, int, unsigned char *) __asm__("func_001F7070");
-extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
-extern void *msg_string_id(int) __asm__("func_001FE540");
+
 extern void libc_memset(void *, int, int); /* memset */
 
 extern void draw_menu_selection_marker(int x, int y, int flag);
@@ -2817,8 +2797,8 @@ int draw_menu_text_list(Menu *menu) {
         kind = 2;
         font = small_font_metrics;
     }
-    VU1_addGSregister_l(0x42, 0x44);
-    VU1_addGSregister_l(0x47, 0x2004B);
+    VU1_addGSregister(0x42, 0x44);
+    VU1_addGSregister(0x47, 0x2004B);
     SetupGifPaging(0);
 
     n = 0;
@@ -2853,7 +2833,7 @@ int draw_menu_text_list(Menu *menu) {
             if (!(menu->flags & 0x10000) && sel && box.s[5] < 4) {
                 menu->scroll -= 4;
             }
-            text = msg_string_id(menu->items[i].text);
+            text = msg_string(menu->items[i].text);
             box.s[4] = (menu->flags & 0xA00) ? 0x20 : 4;
             if (menu->flags & 0x400) {
                 box.s[9] = 1;
@@ -2874,7 +2854,7 @@ int draw_menu_text_list(Menu *menu) {
             }
             box.s[5] += box.s[7];
             if (menu->items[i].subtext != 0) {
-                text = msg_string_id(menu->items[i].subtext);
+                text = msg_string(menu->items[i].subtext);
                 box.s[4] = 0x14;
                 FontPrintWindow_a(&box, color, text, -1, glyphs, font);
                 box.s[5] += rowh;
@@ -3195,7 +3175,6 @@ int update_item_preview_moby(char *arg0) {
 
 extern char *current_menu_page NOT_SDA;
 
-extern void *msg_string_id(int) __asm__("func_001FE540");
 extern void pack_image_descriptor(void *, char *);
 
 /* Draw/teardown callback (draw_available_item_preview_mobys's family). The entry address is
@@ -3218,7 +3197,7 @@ int draw_item_preview_screen(MenuScreen *arg0) {
     pack_image_descriptor(buf, arg0);
     buf[8] = 0x10;
     buf[9] = 3;
-    font_print_window_regular(buf, 0x80FFA888L, msg_string_id(0x4F4D), -1);
+    font_print_window_regular(buf, 0x80FFA888L, msg_string(0x4F4D), -1);
     DoGifPaging();
     return 2;
 }
@@ -3554,9 +3533,6 @@ int Menu_BackInput(MenuScreen *arg0) {
 }
 
 extern void libc_memset(void *, int, int); /* memset */
-extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
-
-extern void func_001F68E8_c(int, int, long, void *, int) __asm__("func_001F68E8");
 
 /* DrawQuitGameMenu: a text box (zeroed, then sized from arg0+0x20/0x24)
    with text 0x4F6D, text 0x4F3F centred 0x40 above the bottom, and the
@@ -3588,17 +3564,17 @@ int DrawQuitGameMenu(MenuScreen *arg0) {
     box[9] = 1;
     box[1] = h;
     SetupGifPaging(0);
-    VU1_addGSregister_l(0x47, 0x2004B);
-    font_print_window_regular(box, 0x80FFA888L, msg_string_id(0x4F6D), -1);
-    FontPrintCenter(cx, y1, 0x80FFA888L, msg_string_id(0x4F3F), -1);
-    a = measure_text_width_regular(msg_string_id(0x5250), -1);
-    b = measure_text_width_regular(msg_string_id(0x5254), -1);
+    VU1_addGSregister(0x47, 0x2004B);
+    font_print_window_regular(box, 0x80FFA888L, msg_string(0x4F6D), -1);
+    FontPrintCenter(cx, y1, 0x80FFA888L, msg_string(0x4F3F), -1);
+    a = measure_text_width_regular(msg_string(0x5250), -1);
+    b = measure_text_width_regular(msg_string(0x5254), -1);
     if (b >= a) {
         a = b;
     }
     x = (arg0->width - a) >> 1;
-    func_001F68E8_c(x, y2, 0x80FFA888L, msg_string_id(0x5250), -1);
-    func_001F68E8_c(x, y3, 0x80FFA888L, msg_string_id(0x5254), -1);
+    FontPrintLarge(x, y2, 0x80FFA888L, msg_string(0x5250), -1);
+    FontPrintLarge(x, y3, 0x80FFA888L, msg_string(0x5254), -1);
     DoGifPaging();
     return 2;
 }
@@ -3827,7 +3803,7 @@ int DrawGBsShipMenu__maybe(char *arg0) {
             }
         }
     }
-    sprintf(buf, fmt_gold_bolt_count_line, msg_string_id(0x4F4F), count, msg_string_id(0x4F53),
+    sprintf(buf, fmt_gold_bolt_count_line, msg_string(0x4F4F), count, msg_string(0x4F53),
             map_gold_bolt_totals[level_map_selection[0x89]]);
     font_print_right_c(screen->width - 0x10, (g_screen_extent[1] >> 1) - 8, 0x80000000L, buf, -1);
     font_print_right_c(screen->width - 0x11, (g_screen_extent[1] >> 1) - 9, 0x80FFA888L, buf, -1);
@@ -3843,7 +3819,6 @@ void rotate_preview_moby_x(Moby *arg0) {
 /* VU1_addGSregister's second parameter is 64-bit (as in draw.c and
    mobyfunc.c); the (int, int) declaration below this point is kept for
    the functions matched against it. */
-extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
 
 extern int weapon_ammo_counts[];
 extern char vendor_item_prices[];
@@ -3872,10 +3847,10 @@ int draw_selected_item_ammo(char *arg0) {
     have = weapon_ammo_counts[id];
     rec = (VendorItemPrice *)vendor_item_prices + id;
     total = rec->max_ammo;
-    VU1_addGSregister_l(0x42, 0x44);
-    VU1_addGSregister_l(0x47, 0xB);
+    VU1_addGSregister(0x42, 0x44);
+    VU1_addGSregister(0x47, 0xB);
     if (rec->ammo_price == 0) {
-        sprintf(text, msg_string_id(0x4F52));
+        sprintf(text, msg_string(0x4F52));
     } else {
         char *q;
         if (have < 1000) {
@@ -3898,17 +3873,15 @@ int draw_selected_item_ammo(char *arg0) {
     return 2;
 }
 
-extern void draw_map_overlay_v(void) __asm__("func_00205E70");
+extern void draw_map_overlay(void);
 
 /* Draws the map screen overlay with the needed GS registers set. Returns 8. */
 int draw_map_screen_overlay(void) {
     VU1_addGSregister(0x42, 0x44);
     VU1_addGSregister(0x47, 0xB);
-    draw_map_overlay_v();
+    draw_map_overlay();
     return 8;
 }
-
-extern void FontPrintSmall_c(int, int, long, void *, int) __asm__("func_001F6968");
 
 /* DrawMissionsMenu: the menu's text lines (0x4EEE, 0x4EEF only when
    g_current_level_index is set, then 0x4EFA, 0x4EFB, 0x4EFC, 0x4EE0) in one column,
@@ -3925,26 +3898,26 @@ int DrawMissionsMenu(char *arg0) {
     VU1_addGSregister(0x42, 0x44);
     VU1_addGSregister(0x47, 0xB);
     SetupGifPaging(0);
-    w = measure_text_width_small(msg_string_id(0x4EEE), -1);
-    text_width = measure_text_width_small(msg_string_id(0x4EFA), -1);
+    w = measure_text_width_small(msg_string(0x4EEE), -1);
+    text_width = measure_text_width_small(msg_string(0x4EFA), -1);
     if (text_width >= w) {
         w = text_width;
     }
     if (g_current_level_index != LEVEL_VELDIN1) {
-        text_width = measure_text_width_small(msg_string_id(0x4EEF), -1);
+        text_width = measure_text_width_small(msg_string(0x4EEF), -1);
         if (text_width >= w) {
             w = text_width;
         }
     }
-    text_width = measure_text_width_small(msg_string_id(0x4EFB), -1);
+    text_width = measure_text_width_small(msg_string(0x4EFB), -1);
     if (text_width >= w) {
         w = text_width;
     }
-    text_width = measure_text_width_small(msg_string_id(0x4EFC), -1);
+    text_width = measure_text_width_small(msg_string(0x4EFC), -1);
     if (text_width >= w) {
         w = text_width;
     }
-    text_width = measure_text_width_small(msg_string_id(0x4EE0), -1);
+    text_width = measure_text_width_small(msg_string(0x4EE0), -1);
     if (text_width >= w) {
         w = text_width;
     }
@@ -3955,19 +3928,19 @@ int DrawMissionsMenu(char *arg0) {
     step = ((Menu *)arg0)->height / (g_current_level_index != LEVEL_VELDIN1 ? 7 : 6);
     Font_DisableColorCodes();
     y = step - 6;
-    FontPrintSmall_c(x, y, 0x80FFA888L, msg_string_id(0x4EEE), -1);
+    FontPrintSmall(x, y, 0x80FFA888L, msg_string(0x4EEE), -1);
     if (g_current_level_index != LEVEL_VELDIN1) {
         y += step;
-        FontPrintSmall_c(x, y, 0x80FFA888L, msg_string_id(0x4EEF), -1);
+        FontPrintSmall(x, y, 0x80FFA888L, msg_string(0x4EEF), -1);
     }
     y += step;
-    FontPrintSmall_c(x, y, 0x80FFA888L, msg_string_id(0x4EFA), -1);
+    FontPrintSmall(x, y, 0x80FFA888L, msg_string(0x4EFA), -1);
     y += step;
-    FontPrintSmall_c(x, y, 0x80FFA888L, msg_string_id(0x4EFB), -1);
+    FontPrintSmall(x, y, 0x80FFA888L, msg_string(0x4EFB), -1);
     y += step;
-    FontPrintSmall_c(x, y, 0x80FFA888L, msg_string_id(0x4EFC), -1);
+    FontPrintSmall(x, y, 0x80FFA888L, msg_string(0x4EFC), -1);
     y += step;
-    FontPrintSmall_c(x, y, 0x80FFA888L, msg_string_id(0x4EE0), -1);
+    FontPrintSmall(x, y, 0x80FFA888L, msg_string(0x4EE0), -1);
     Font_EnableColorCodes();
     DoGifPaging();
     return 2;
@@ -3978,8 +3951,6 @@ __asm__(".section .text\n\tnop\n");
    passes a packed 64-bit colour in $a2, and msg_string above is
    declared (void) while retail's caller here passes an id in $a0 --
    reach both through aliases rather than redeclaring them. */
-extern void func_001F68E8_c(int, int, long, void *, int) __asm__("func_001F68E8");
-extern void *msg_string_id(int) __asm__("func_001FE540");
 
 /* Sibling of draw_map_screen_overlay above: the same two VU1_addGSregister setup
    calls, then two banner draws. 0x80FFA888 is spelled `long` (64-bit)
@@ -3988,8 +3959,8 @@ int draw_mission_menu_labels(void) {
     VU1_addGSregister(0x42, 0x44);
     VU1_addGSregister(0x47, 0xB);
     SetupGifPaging(0);
-    func_001F68E8_c(4, 7, 0x80FFA888L, msg_string_id(0x4EE0), -1);
-    func_001F68E8_c(4, 0x17, 0x80FFA888L, msg_string_id(0x4F05), -1);
+    FontPrintLarge(4, 7, 0x80FFA888L, msg_string(0x4EE0), -1);
+    FontPrintLarge(4, 0x17, 0x80FFA888L, msg_string(0x4F05), -1);
     DoGifPaging();
     return 2;
 }
@@ -4066,7 +4037,6 @@ int MissionMenu_DrawObjectives(char *arg) {
 }
 
 extern short panel_clear_color; /* SDA, gp -0x6A50 */
-extern void draw_hud_rect_blended(int, int, int, int, long, long);
 
 /* Draws the map cursor: a 10x10 box with a coloured inner box at (x, y), plus a
    marker icon above it when flag is set. */
@@ -4143,7 +4113,7 @@ struct ClutImage {
 extern MemoryCardState memory_card_state_r2 __asm__("D_0013D390");
 
 extern s64 register_8bit_texture_r2(s32, s32, u8 *, u8 *, s32, s32) __asm__("func_00205660");
-extern void flush_pending_texture_uploads_r2(void) __asm__("func_0020C2F8");
+
 extern void fast_decompress_r2(u8 *, s32) __asm__("func_0020C468");
 extern s32 start_audio_stream_read_r2(u8 *, s32, s32) __asm__("func_00217628");
 extern s32 get_menu_stream_buffer_size_r(s32) __asm__("func_00227018");
@@ -4252,7 +4222,7 @@ s32 update_menu_stream_image(MenuScreen *stream) {
             y = log2dim(b->height);
             level_map_selection_r2.tex0 = register_8bit_texture_r2(
                 x, y, p20, p420, level_map_selection_r2.tex_clut_vram, level_map_selection_r2.tex0_vram);
-            flush_pending_texture_uploads_r2();
+            flush_pending_texture_uploads();
             stream->data.stream.state = 2;
             break;
     }
@@ -4821,7 +4791,6 @@ extern char level_map_selection_c[] __asm__("D_001A01F0");
 extern char fs_aa_buffer_c[] __asm__("D_00151880");
 extern int game_frame_counter MACRO_ADDR;
 extern int map_screen_layer_insets[];
-extern void append_power_of_two_textured_screen_sprite(long, int, int, int, int, int, int, int, int, int);
 
 /* Draws the three overlay layers (textures at level_map_selection +0x258/0x260/
    0x268) over the whole screen (fs_aa_buffer's +0x160/+0x162 extent).
@@ -4862,13 +4831,13 @@ int draw_map_screen_layers(void) {
         LevelMapSelection *g2;
         FsAaBuffer *fb;
 
-        VU1_addGSregister_l(0x47, 0);
-        VU1_addGSregister_l(8, 5);
+        VU1_addGSregister(0x47, 0);
+        VU1_addGSregister(8, 5);
         g2 = (LevelMapSelection *)level_map_selection_c;
         fb = (FsAaBuffer *)fs_aa_buffer_c;
         append_power_of_two_textured_screen_sprite(g2->tex0, 0, 0, 7, 7, fb->target_width << 4, fb->target_height << 4,
                                                    0, 0, 0x80);
-        VU1_addGSregister_l(0x47, 0x360B);
+        VU1_addGSregister(0x47, 0x360B);
         if (game_frame_counter % 60 < 40) {
             append_power_of_two_textured_screen_sprite(g2->tex1, 0, 0, 7, 7, fb->target_width << 4,
                                                        fb->target_height << 4, 0, 0, 0x80);
@@ -4884,14 +4853,14 @@ int draw_map_screen_layers(void) {
         size = map_screen_layer_insets[loaded_map_index];
         screen_extent_reduction = size * 2;
         ph = map_adjusted_frame_count % 0x800;
-        VU1_addGSregister_l(0x47, 0);
-        VU1_addGSregister_l(8, 0);
+        VU1_addGSregister(0x47, 0);
+        VU1_addGSregister(8, 0);
         fb = (FsAaBuffer *)fs_aa_buffer_c;
         append_power_of_two_textured_screen_sprite(g->tex0, size, size, 7, 7,
                                                    (fb->target_width << 4) - screen_extent_reduction,
                                                    (fb->target_height << 4) - screen_extent_reduction, ph, 0, 0x80);
-        VU1_addGSregister_l(0x47, 0x360B);
-        VU1_addGSregister_l(8, 5);
+        VU1_addGSregister(0x47, 0x360B);
+        VU1_addGSregister(8, 5);
         append_power_of_two_textured_screen_sprite(g->tex1, size, size, 7, 7,
                                                    (fb->target_width << 4) - screen_extent_reduction,
                                                    (fb->target_height << 4) - screen_extent_reduction, 0, 0, 0x80);
@@ -4996,8 +4965,8 @@ int draw_pause_ring(char *arg0) {
     } while (i < 8);
     HudSprite(GetIconFrame(0xE99E, 0), 8, 0x27, 0x20, -0x20, 0x80);
     HudSprite(GetIconFrame(0xE99E, 0), pause_state->w - 0xA, 0x27, -0x20, -0x20, 0x80);
-    func_001F68E8_c(0x28, 0xF, 0x80FFA888L, pause_ring_left_glyph, -1);
-    func_001F68E8_c(pause_state->w - 0x3C, 0xF, 0x80FFA888L, pause_ring_right_glyph, -1);
+    FontPrintLarge(0x28, 0xF, 0x80FFA888L, pause_ring_left_glyph, -1);
+    FontPrintLarge(pause_state->w - 0x3C, 0xF, 0x80FFA888L, pause_ring_right_glyph, -1);
     DoGifPaging();
     return 2;
 }
@@ -5289,7 +5258,7 @@ int draw_menu_choice_list(struct OptMenu *m) {
     int y;
     int color;
 
-    VU1_addGSregister_l(0x47, 0x2004B);
+    VU1_addGSregister(0x47, 0x2004B);
     SetupGifPaging(0);
     n = 0;
     for (p = m->items; p->text != 0; p++) {
@@ -5305,8 +5274,8 @@ int draw_menu_choice_list(struct OptMenu *m) {
         } else {
             color = 0x80FFA888;
         }
-        func_001F68E8_c(0xC, y, color, msg_string_id(it->text), -1);
-        font_print_right_c(m->x - 0xC, y, 0x80FFA888, msg_string_id(it->names[*it->value]), -1);
+        FontPrintLarge(0xC, y, color, msg_string(it->text), -1);
+        font_print_right_c(m->x - 0xC, y, 0x80FFA888, msg_string(it->names[*it->value]), -1);
         y += step;
     }
     DoGifPaging();
@@ -5562,9 +5531,6 @@ typedef struct {
 
 extern char str_error_text[];
 extern int menu_system_save_prompt_kind;
-extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
-
-extern void *msg_string_id(int) __asm__("func_001FE540");
 
 /* Draws the two-line prompt box (text 0x4FB3 for menu_system_save_prompt_kind in 0..2,
    0x4FB5 for 3, else str_error_text) sized from arg0's +0x20/+0x24. The box
@@ -5575,8 +5541,8 @@ int draw_prompt_box(struct MenuScreen *arg0) {
     char *text;
     int v;
 
-    VU1_addGSregister_l(0x42, 0x44);
-    VU1_addGSregister_l(0x47, 0x2004B);
+    VU1_addGSregister(0x42, 0x44);
+    VU1_addGSregister(0x47, 0x2004B);
     SetupGifPaging(0);
     text = str_error_text;
     v = menu_system_save_prompt_kind;
@@ -5584,10 +5550,10 @@ int draw_prompt_box(struct MenuScreen *arg0) {
         case 0:
         case 1:
         case 2:
-            text = msg_string_id(0x4FB3);
+            text = msg_string(0x4FB3);
             break;
         case 3:
-            text = msg_string_id(0x4FB5);
+            text = msg_string(0x4FB5);
             break;
     }
     {
@@ -5705,7 +5671,7 @@ extern int GetFrameTex_v(int) __asm__("func_00200248");
 /* x, y first: arguments are evaluated in order, so the y conversion runs
    before the nested texture calls and is kept in $f20 across them, as in
    retail (and in draw_map_overlay, the other caller). */
-extern void func_00200E38(float, float, int, int, int, float, float, float);
+extern void draw_rotated_sprite_v(float, float, int, int, int, float, float, float) __asm__("func_00200E38");
 
 /* Draws the glyph "\x10" (arg0->0x38 set) or "\x11" and a gauge sprite
    below it, rotated by pi in the second case. The glyph string is a
@@ -5716,14 +5682,14 @@ int draw_menu_side_indicator(MenuScreen *arg0) {
     SetupGifPaging(0);
     if (arg0->data.options.selection != 0) {
         buf = *(Glyph2 *)menu_side_indicator_left_glyph;
-        func_001F68E8_c(4, arg0->height / 2 - 8, 0x80FFA888L, &buf, -1);
-        draw_rotated_sprite(640.0f, (float)(arg0->height << 3), 0x20, 0x10, GetFrameTex_v(GetIconFrame(0xE99E, 6)),
-                            128.0f, 256.0f, 0.0f);
+        FontPrintLarge(4, arg0->height / 2 - 8, 0x80FFA888L, &buf, -1);
+        draw_rotated_sprite_v(640.0f, (float)(arg0->height << 3), 0x20, 0x10, GetFrameTex_v(GetIconFrame(0xE99E, 6)),
+                              128.0f, 256.0f, 0.0f);
     } else {
         buf = *(Glyph2 *)menu_side_indicator_right_glyph;
-        func_001F68E8_c(arg0->width - 0x18, arg0->height / 2 - 8, 0x80FFA888L, &buf, -1);
-        draw_rotated_sprite(192.0f, (float)(arg0->height << 3), 0x20, 0x10, GetFrameTex_v(GetIconFrame(0xE99E, 6)),
-                            128.0f, 256.0f, 3.14159274f);
+        FontPrintLarge(arg0->width - 0x18, arg0->height / 2 - 8, 0x80FFA888L, &buf, -1);
+        draw_rotated_sprite_v(192.0f, (float)(arg0->height << 3), 0x20, 0x10, GetFrameTex_v(GetIconFrame(0xE99E, 6)),
+                              128.0f, 256.0f, 3.14159274f);
     }
     DoGifPaging();
     return 2;
@@ -5750,12 +5716,11 @@ int draw_selected_menu_item_text(MenuScreen *arg0) {
 
     SetupGifPaging(0);
     if (row == -1) {
-        FontPrintCenter(arg0->width / 2, arg0->height / 2 - 8, 0x80FFA888L, msg_string_id(0x5019), -1);
+        FontPrintCenter(arg0->width / 2, arg0->height / 2 - 8, 0x80FFA888L, msg_string(0x5019), -1);
     } else {
-        FontPrintCenter(arg0->width / 2, arg0->height / 3 - 8, 0x80FFA888L, msg_string_id(planet_icon_rows_i[row].a),
+        FontPrintCenter(arg0->width / 2, arg0->height / 3 - 8, 0x80FFA888L, msg_string(planet_icon_rows_i[row].a), -1);
+        FontPrintCenter(arg0->width / 2, arg0->height * 2 / 3 - 8, 0x80FFA888L, msg_string(planet_icon_rows_i[row].b),
                         -1);
-        FontPrintCenter(arg0->width / 2, arg0->height * 2 / 3 - 8, 0x80FFA888L,
-                        msg_string_id(planet_icon_rows_i[row].b), -1);
     }
     DoGifPaging();
     return 2;
@@ -6029,8 +5994,8 @@ int draw_menu_text_box(MenuScreen *screen) {
     int n;
     int i;
 
-    VU1_addGSregister_l(0x47, 0x30000);
-    VU1_addGSregister_l(0x42, 0x8000000044L);
+    VU1_addGSregister(0x47, 0x30000);
+    VU1_addGSregister(0x42, 0x8000000044L);
     SetupGifPaging(0);
     pack_image_descriptor(box, (char *)screen);
     box[9] = 9;
@@ -6062,7 +6027,7 @@ int draw_menu_text_box(MenuScreen *screen) {
             for (i = 0; screen->data.textbox.text_list[i] != -1; i++) {
                 box[5] = ypos;
                 box[11] = (screen->data.textbox.scroll >> 4) & 0xF;
-                font_print_window_regular(box, 0x80FFA888L, msg_string_id(screen->data.textbox.text_list[i]), -1);
+                font_print_window_regular(box, 0x80FFA888L, msg_string(screen->data.textbox.text_list[i]), -1);
                 ypos += box[7];
                 ypos += 10;
             }
@@ -6075,7 +6040,7 @@ int draw_menu_text_box(MenuScreen *screen) {
         case 15:
         case 19:
             box[5] = screen->y + 0x20;
-            font_print_window_regular(box, 0x80FFA888L, msg_string_id(screen->data.textbox.text_id), -1);
+            font_print_window_regular(box, 0x80FFA888L, msg_string(screen->data.textbox.text_id), -1);
             break;
         case 0:
             break;
@@ -6115,11 +6080,11 @@ int ObtainAllGoldWeaponsMenu(MenuScreen *arg0) {
     HudSprite(GetIconFrame(0xE99A, 6), 4, y + 8, 0x10, 0x10, 0x80);
     buf.x = x;
     buf.y = y;
-    font_print_window_regular(&buf, 0x80FFA888L, msg_string_id(0x5187), -1);
+    font_print_window_regular(&buf, 0x80FFA888L, msg_string(0x5187), -1);
     y = (short)buf.fE + 0x10;
     buf.y = y;
     HudSprite(GetIconFrame(0xE99A, 6), 4, y + 8, 0x10, 0x10, 0x80);
-    font_print_window_regular(&buf, 0x80FFA888L, msg_string_id(0x5188), -1);
+    font_print_window_regular(&buf, 0x80FFA888L, msg_string(0x5188), -1);
     DoGifPaging();
     return 2;
 }
@@ -6133,16 +6098,12 @@ struct ThreeOptionMenu {
 
 extern u8 normal_font_metrics_r[] __asm__("D_001DF3D0");
 extern u8 small_font_metrics_r[] __asm__("D_001DF770");
-extern void SetupGifPaging_r2(s32) __asm__("func_001F4630");
-extern void DoGifPaging_r2(void) __asm__("func_001F4748");
+
 extern char *msg_string_r5(s32) __asm__("func_001FE540");
-extern s32 count_nonzero_entries_up_to_40_r(void) __asm__("func_002160E0");
-extern s32 count_nonzero_entries_up_to_10_r(void) __asm__("func_00216150");
-extern s32 count_nonzero_entries_up_to_30_r(void) __asm__("func_00216198");
+
 extern s32 sprintf_r(char *, const char *, ...) __asm__("func_00116248");
 extern s32 measure_text_width_regular_r(char *, s32) __asm__("func_001F6600");
-extern void Font_DisableColorCodes_r(void) __asm__("func_001F65A8");
-extern void Font_EnableColorCodes_r(void) __asm__("func_001F6598");
+
 extern void FontPrintCenter_r(s32, s32, u64, char *, s32) __asm__("func_001F6EA8");
 extern void draw_menu_selection_marker_r(s32, s32, s32) __asm__("func_002208F8");
 extern u64 GetEffectTex_r(s32) __asm__("func_001F4868");
@@ -6162,21 +6123,21 @@ s32 DrawEndScreenMenuMaybe(struct ThreeOptionMenu *menu) {
     s32 draw_y;
 
     font_texture_index = 1;
-    SetupGifPaging_r2(0);
+    SetupGifPaging(0);
     line_spacing = menu->height / 5;
     draw_y = menu->height / 5 - 8;
     maximum_text_width = 0;
-    sprintf_r(text_buffer, msg_string_r5(0x5234), count_nonzero_entries_up_to_40_r(), 0x28);
+    sprintf_r(text_buffer, msg_string_r5(0x5234), count_nonzero_entries_up_to_40(), 0x28);
     measured_width = measure_text_width_regular_r(text_buffer, -1);
     if (maximum_text_width < measured_width) {
         maximum_text_width = measured_width;
     }
-    sprintf_r(text_buffer, msg_string_r5(0x5235), count_nonzero_entries_up_to_10_r(), 10);
+    sprintf_r(text_buffer, msg_string_r5(0x5235), count_nonzero_entries_up_to_10(), 10);
     measured_width = measure_text_width_regular_r(text_buffer, -1);
     if (maximum_text_width < measured_width) {
         maximum_text_width = measured_width;
     }
-    sprintf_r(text_buffer, msg_string_r5(0x5236), count_nonzero_entries_up_to_30_r(), 0x1E);
+    sprintf_r(text_buffer, msg_string_r5(0x5236), count_nonzero_entries_up_to_30(), 0x1E);
     measured_width = measure_text_width_regular_r(text_buffer, -1);
     if (maximum_text_width < measured_width) {
         maximum_text_width = measured_width;
@@ -6186,22 +6147,22 @@ s32 DrawEndScreenMenuMaybe(struct ThreeOptionMenu *menu) {
         font_texture_index = 2;
         glyphs = small_font_metrics_r;
     }
-    Font_DisableColorCodes_r();
+    Font_DisableColorCodes();
     FontPrintCenter_r(menu->menu_width >> 1, draw_y, 0x80FFA888, msg_string_r5(0x5233), -1);
     draw_y += line_spacing;
-    draw_menu_selection_marker_r(0xB, draw_y + 9, count_nonzero_entries_up_to_40_r() == 0x28);
-    sprintf_r(text_buffer, msg_string_r5(0x5234), count_nonzero_entries_up_to_40_r(), 0x28);
+    draw_menu_selection_marker_r(0xB, draw_y + 9, count_nonzero_entries_up_to_40() == 0x28);
+    sprintf_r(text_buffer, msg_string_r5(0x5234), count_nonzero_entries_up_to_40(), 0x28);
     FontPrint_r2(0x14, draw_y, 0x80FFA888, text_buffer, -1, GetEffectTex_r(font_texture_index), glyphs);
     draw_y += line_spacing;
-    draw_menu_selection_marker_r(0xB, draw_y + 9, count_nonzero_entries_up_to_10_r() == 10);
-    sprintf_r(text_buffer, msg_string_r5(0x5235), count_nonzero_entries_up_to_10_r(), 10);
+    draw_menu_selection_marker_r(0xB, draw_y + 9, count_nonzero_entries_up_to_10() == 10);
+    sprintf_r(text_buffer, msg_string_r5(0x5235), count_nonzero_entries_up_to_10(), 10);
     FontPrint_r2(0x14, draw_y, 0x80FFA888, text_buffer, -1, GetEffectTex_r(font_texture_index), glyphs);
     draw_y += line_spacing;
-    draw_menu_selection_marker_r(0xB, draw_y + 9, count_nonzero_entries_up_to_30_r() == 0x1E);
-    sprintf_r(text_buffer, msg_string_r5(0x5236), count_nonzero_entries_up_to_30_r(), 0x1E);
+    draw_menu_selection_marker_r(0xB, draw_y + 9, count_nonzero_entries_up_to_30() == 0x1E);
+    sprintf_r(text_buffer, msg_string_r5(0x5236), count_nonzero_entries_up_to_30(), 0x1E);
     FontPrint_r2(0x14, draw_y, 0x80FFA888, text_buffer, -1, GetEffectTex_r(font_texture_index), glyphs);
-    Font_EnableColorCodes_r();
-    DoGifPaging_r2();
+    Font_EnableColorCodes();
+    DoGifPaging();
     return 2;
 }
 
@@ -6218,10 +6179,10 @@ int draw_menu_selection_text(MenuScreen *arg0) {
     SetupGifPaging(0);
     if (b->state < 3 && b->err < 0 && *(int *)(g + 0x154) >= 0xB && b->card[0].type == 2) {
         if (row == -1) {
-            FontPrintCenter(arg0->width / 2, arg0->height / 2 - 8, 0x80FFA888L, msg_string_id(0x521C), -1);
+            FontPrintCenter(arg0->width / 2, arg0->height / 2 - 8, 0x80FFA888L, msg_string(0x521C), -1);
         } else {
-            FontPrintCenter(arg0->width / 2, 4, 0x80FFA888L, msg_string_id(planet_icon_rows_i[row].a), -1);
-            FontPrintCenter(arg0->width / 2, 0x14, 0x80FFA888L, msg_string_id(planet_icon_rows_i[row].b), -1);
+            FontPrintCenter(arg0->width / 2, 4, 0x80FFA888L, msg_string(planet_icon_rows_i[row].a), -1);
+            FontPrintCenter(arg0->width / 2, 0x14, 0x80FFA888L, msg_string(planet_icon_rows_i[row].b), -1);
         }
     }
     DoGifPaging();
@@ -6456,7 +6417,7 @@ int loading_data_menu(struct MenuScreen *arg0) {
             *(int *)(s + 0x54) = t * 7 / 10;
             *(int *)(s + 0x58) = t * 7 / 10;
             *(int *)(s + 0x5C) = t;
-            func_0012E380_1DB30(playback_mode_r == 0);
+            snd_SetPlaybackMode(playback_mode_r == 0);
             initialize_global_state_entry(g_current_level_index);
             *(short *)screen_globals_base_r = 0;
             return 0;
@@ -6720,13 +6681,10 @@ extern char fmt_save_play_time_r[] __asm__("D_00160400");
 extern char fmt_save_bolt_count_r[] __asm__("D_00160410");
 extern char fmt_save_date_r[] __asm__("D_00160420");
 
-extern void SetupGifPaging_r3(s32) __asm__("func_001F4630");
-extern void DoGifPaging_r3(void) __asm__("func_001F4748");
 extern void FontPrintSmall_r(s32, s32, u64, char *, s32) __asm__("func_001F6968");
 extern void FontPrintCenterSmall_r(s32, s32, u64, char *, s32) __asm__("func_001F6F40");
 extern char *func_001FE540_24C30(s32) __asm__("func_001FE540");
-extern s32 GetIconFrame_r2(s32, s32) __asm__("func_00200198");
-extern void HudSprite_r(s32, s32, s32, s32, s32, s32) __asm__("func_00200468");
+
 extern void draw_hud_rect_blended_r4(s32, s32, s32, s32, u64, s32) __asm__("func_00201640");
 extern s32 sprintf_r2(char *, const char *, ...) __asm__("func_00116248");
 
@@ -6751,7 +6709,7 @@ s32 draw_save_slot_list(MenuScreen *menu) {
     s32 minutes;
 
     y = 4;
-    SetupGifPaging_r3(0);
+    SetupGifPaging(0);
     for (i = 0; i < 5; i++) {
         width = menu->width;
         highlight_top = y - 4;
@@ -6784,10 +6742,10 @@ s32 draw_save_slot_list(MenuScreen *menu) {
                     minutes = 59;
                 }
                 sprintf_r2(text, fmt_save_play_time_r, hours, minutes);
-                HudSprite_r(GetIconFrame_r2(0xE99E, 3), 4, y, 0x10, 0x10, 0x80);
+                HudSprite(GetIconFrame(0xE99E, 3), 4, y, 0x10, 0x10, 0x80);
                 FontPrintSmall_r(0x16, y, color, text, -1);
                 if (slot->gold_bolts != 0) {
-                    HudSprite_r(GetIconFrame_r2(0xE99E, 4), 0x4E, y, 0x10, 0x10, 0x80);
+                    HudSprite(GetIconFrame(0xE99E, 4), 0x4E, y, 0x10, 0x10, 0x80);
                     sprintf_r2(text, fmt_decimal_r, slot->gold_bolts < 100 ? slot->gold_bolts : 99);
                     FontPrintSmall_r(0x60, y, color, text, -1);
                 }
@@ -6803,11 +6761,11 @@ s32 draw_save_slot_list(MenuScreen *menu) {
                 } else {
                     sprintf_r2(text, fmt_save_bolt_count_r, bolts / 1000000, bolts % 1000000 / 1000, bolts % 1000);
                 }
-                HudSprite_r(GetIconFrame_r2(0x754F, 0xF), 4, y, 0x10, 0x10, 0x80);
+                HudSprite(GetIconFrame(0x754F, 0xF), 4, y, 0x10, 0x10, 0x80);
                 FontPrintSmall_r(0x16, y, color, text, -1);
                 y += 0x10;
                 sprintf_r2(text, fmt_save_date_r, slot->name.date.b16, slot->name.date.b15, slot->name.date.b17);
-                HudSprite_r(GetIconFrame_r2(0xE99E, 2), 4, y, 0x10, 0x10, 0x80);
+                HudSprite(GetIconFrame(0xE99E, 2), 4, y, 0x10, 0x10, 0x80);
                 FontPrintSmall_r(0x16, y, color, text, -1);
                 y += 0x10;
             }
@@ -6818,7 +6776,7 @@ s32 draw_save_slot_list(MenuScreen *menu) {
             y += 0x1B;
         }
     }
-    DoGifPaging_r3();
+    DoGifPaging();
     return 2;
 }
 
@@ -6839,7 +6797,7 @@ extern short pal_mode_r2 __asm__("D_0015EE80");
 extern void VU1_addGSregister_r4(s32, u64) __asm__("func_00234C98");
 
 extern s64 GetEffectTex_r2(s32) __asm__("func_001F4868");
-extern void DrawTexturedQuad_r(s32, s32, s32, s32, s32, s32, s32, s32, s64, s64) __asm__("func_001F5800");
+
 void draw_menu_flashing_panel(struct MenuPanelOwner *owner);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/ui/menus/fun_00223e28.c, draw_menu_flashing_panel. */
@@ -6883,7 +6841,7 @@ void draw_menu_flashing_panel(struct MenuPanelOwner *owner) {
         VU1_addGSregister_r4(8, 0);
         alpha = alpha * 2;
         VU1_addGSregister_r4(0x42, ((u64)(alpha > 0x80 ? 0x80 : alpha) << 32) | 0x68);
-        DrawTexturedQuad_r(x, y, width, height, u, v, width, height, 0x808080, GetEffectTex_r2(0x1A));
+        DrawTexturedQuad(x, y, width, height, u, v, width, height, 0x808080, GetEffectTex_r2(0x1A));
         if (panel->time >= 0x100) {
             panel->active = 0;
         }
@@ -6895,7 +6853,7 @@ void draw_menu_flashing_panel(struct MenuPanelOwner *owner) {
     VU1_addGSregister_r4(0x42, 0x8000000044ULL);
     width_adjustment = -2;
     height_adjustment = -2;
-    DrawTexturedQuad_r(x, y, width, height, 0, 0, width, (height * 3) >> 1, 0x50606060, GetEffectTex_r2(0x1C));
+    DrawTexturedQuad(x, y, width, height, 0, 0, width, (height * 3) >> 1, 0x50606060, GetEffectTex_r2(0x1C));
     if (width >= 0x4C) {
         width_adjustment = -1;
     }
@@ -6908,8 +6866,8 @@ void draw_menu_flashing_panel(struct MenuPanelOwner *owner) {
     if (height >= 0x97) {
         height_adjustment = 0;
     }
-    DrawTexturedQuad_r(x + 1, y + 1, width + width_adjustment, height + height_adjustment, 1, 1, 0x3E, 0x3E, 0x80808080,
-                       GetEffectTex_r2(0x19));
+    DrawTexturedQuad(x + 1, y + 1, width + width_adjustment, height + height_adjustment, 1, 1, 0x3E, 0x3E, 0x80808080,
+                     GetEffectTex_r2(0x19));
 }
 
 extern int clear_preview_animation_queue(void);
@@ -7625,10 +7583,8 @@ extern f32 g_frame_time_sq SDATA(g_frame_time_sq);
 extern f32 ammo_preview_offsets[];
 extern f32 ammo_preview_velocities[];
 
-extern f32 FastNormalizeAngle_r(f32) __asm__("func_001FA7D8");
-
 extern void advance_moby_animation_r(void *) __asm__("func_0020E3D0");
-extern f32 ApproachWithVelocity(f32 *, f32 *, f32, f32, f32, f32);
+
 void update_ammo_preview_transform(struct AmmoPreviewMoby *moby);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/ui/menus/item_preview/update_ammo_preview_transform.c, update_ammo_preview_transform. */
@@ -7664,7 +7620,7 @@ void update_ammo_preview_transform(struct AmmoPreviewMoby *moby) {
     phase_angle = ((phase * 6.28318f) / IntToFloat(6)) - 3.14159f;
     bob_angle = (((f32)(game_frame_counter % 170) / IntToFloat(170)) * 6.28318f) - 3.14159f;
     double_phase = (phase * 12.56636f) / IntToFloat(6);
-    FastNormalizeAngle_r(double_phase);
+    FastNormalizeAngle(double_phase);
     zero = 0.0f;
     orbit_angle = FastAddRots(orbit_angle, phase_angle);
     bob_angle = FastAddRots(bob_angle, double_phase);
@@ -8176,7 +8132,6 @@ extern int start_audio_stream_read(int, int, int);
 extern int advance_preview_animation_queue(void);
 extern void load_preview_resource_bindings(s32, s32);
 
-extern void MobySetAnimation_q(void *, int, int) __asm__("func_00213D28");
 extern void attachment_update_callback(void);
 
 int func_00227100_r(char *moby, char *m1, char *m2, char **o0, char **o1, char **o2) __asm__("func_00227100");
@@ -8278,7 +8233,7 @@ int func_00227100_r(char *moby, char *m1, char *m2, char **o0, char **o1, char *
                     blend_moby_animation_ex(m2, current_preview_animation_request[0].arg[4], 0, 10, 5);
                 }
                 if (m1 != 0) {
-                    MobySetAnimation_q(m1, 1, 0);
+                    MobySetAnimation(m1, 1, 0);
                 }
             } else if (m1 != 0) {
                 blend_moby_animation_ex(m1, current_preview_animation_request[0].arg[4], 0, 10, 5);
@@ -8288,7 +8243,7 @@ int func_00227100_r(char *moby, char *m1, char *m2, char **o0, char **o1, char *
             *o2 = (char *)delete_moby((int)*o2);
             if (current_preview_animation_request[0].arg[5] != -1) {
                 if ((*o0 = create_menu_preview_moby(current_preview_animation_request[0].arg[5])) != 0) {
-                    MobySetAnimation_q(*o0, current_preview_animation_request[0].arg[6], 0);
+                    MobySetAnimation(*o0, current_preview_animation_request[0].arg[6], 0);
                     MobyBlendAnimation(*o0, current_preview_animation_request[0].arg[6], 0, 10);
                     *(short *)(*o0 + 0x34) = 0;
                     p = *o0;
@@ -8303,7 +8258,7 @@ int func_00227100_r(char *moby, char *m1, char *m2, char **o0, char **o1, char *
             }
             if (current_preview_animation_request[0].arg[7] != -1) {
                 if ((*o1 = create_menu_preview_moby(current_preview_animation_request[0].arg[7])) != 0) {
-                    MobySetAnimation_q(*o1, current_preview_animation_request[0].arg[8], 0);
+                    MobySetAnimation(*o1, current_preview_animation_request[0].arg[8], 0);
                     MobyBlendAnimation(*o1, current_preview_animation_request[0].arg[8], 0, 10);
                     *(short *)(*o1 + 0x34) = 0;
                     p = *o1;
@@ -8318,7 +8273,7 @@ int func_00227100_r(char *moby, char *m1, char *m2, char **o0, char **o1, char *
             }
             if (current_preview_animation_request[0].arg[9] != -1) {
                 if ((*o2 = create_menu_preview_moby(current_preview_animation_request[0].arg[9])) != 0) {
-                    MobySetAnimation_q(*o2, current_preview_animation_request[0].arg[10], 0);
+                    MobySetAnimation(*o2, current_preview_animation_request[0].arg[10], 0);
                     MobyBlendAnimation(*o2, current_preview_animation_request[0].arg[10], 0, 10);
                     *(short *)(*o2 + 0x34) = 0;
                     p = *o2;
@@ -8594,8 +8549,6 @@ extern s32 D_0015EF20_27DB0 __asm__("D_0015EF20") MACRO_ADDR;
 extern u8 save_clock_time_r[] __asm__("D_0015EF98") MACRO_ADDR;
 extern s32 D_001D5F20[];
 
-extern void copy_memory_aligned_r(void *dst, void *src, s32 size) __asm__("func_001F9A00");
-extern void load_and_initialize_level_chunk_r(void) __asm__("func_00209DC0");
 extern void memcard_MakeWholeSave_r(s32) __asm__("func_0020BA00");
 extern s32 sce_cd_read_clock_r(u8 *clock) __asm__("func_00121A80");
 extern void sce_scf_get_local_time_from_rtc_r(u8 *clock) __asm__("func_0012D818");
@@ -8616,35 +8569,35 @@ void load_level_zero_preserving_progress(s32 slot) {
     s32 i;
     s32 j;
 
-    copy_memory_aligned_r((void *)0x70000000, gold_weapon_purchased_r, 0x28);
-    copy_memory_aligned_r((void *)0x70000030, item_available_r, 0x25);
-    copy_memory_aligned_r((void *)0x70000060, weapon_ammo_counts_r, 0x94);
-    copy_memory_aligned_r((void *)0x70000100, gold_bolts_collected_r, 0x50);
-    copy_memory_aligned_r((void *)0x70000150, pause_iop_sprite_lists_r, 0x20);
-    copy_memory_aligned_r((void *)0x70000170, vendor_stock, 0xC);
-    copy_memory_aligned_r((void *)0x70000180, gSkillPoints_r, 0x20);
-    copy_memory_aligned_r((void *)0x700001A0, gCheats_r, 0xC);
-    copy_memory_aligned_r((void *)0x700001B0, selector_available_r, 0xC);
+    copy_memory_aligned((void *)0x70000000, gold_weapon_purchased_r, 0x28);
+    copy_memory_aligned((void *)0x70000030, item_available_r, 0x25);
+    copy_memory_aligned((void *)0x70000060, weapon_ammo_counts_r, 0x94);
+    copy_memory_aligned((void *)0x70000100, gold_bolts_collected_r, 0x50);
+    copy_memory_aligned((void *)0x70000150, pause_iop_sprite_lists_r, 0x20);
+    copy_memory_aligned((void *)0x70000170, vendor_stock, 0xC);
+    copy_memory_aligned((void *)0x70000180, gSkillPoints_r, 0x20);
+    copy_memory_aligned((void *)0x700001A0, gCheats_r, 0xC);
+    copy_memory_aligned((void *)0x700001B0, selector_available_r, 0xC);
     saved = gBolts_r;
     count = D_0015EF20_27DB0;
     flag4 = gSpecialItems_r[4] != 0;
     flag5 = gSpecialItems_r[5] != 0;
     bytes = (u8 *)0x70000030;
-    load_and_initialize_level_chunk_r();
-    copy_memory_aligned_r(gold_weapon_purchased_r, (void *)0x70000000, 0x28);
+    load_and_initialize_level_chunk();
+    copy_memory_aligned(gold_weapon_purchased_r, (void *)0x70000000, 0x28);
     for (j = 0; preserved_item_available_indices[j] != -1; j++) {
         item_available_r[preserved_item_available_indices[j]] = bytes[preserved_item_available_indices[j]];
     }
-    copy_memory_aligned_r(weapon_ammo_counts_r, (void *)0x70000060, 0x94);
-    copy_memory_aligned_r(gold_bolts_collected_r, (void *)0x70000100, 0x50);
+    copy_memory_aligned(weapon_ammo_counts_r, (void *)0x70000060, 0x94);
+    copy_memory_aligned(gold_bolts_collected_r, (void *)0x70000100, 0x50);
     for (i = 0; i < 8; i++) {
         s32 item = items[i];
         pause_iop_sprite_lists_r[i] = item_available_r[item] ? item : 0;
     }
-    copy_memory_aligned_r(vendor_stock, (void *)0x70000170, 0xC);
-    copy_memory_aligned_r(gSkillPoints_r, (void *)0x70000180, 0x20);
-    copy_memory_aligned_r(gCheats_r, (void *)0x700001A0, 0xC);
-    copy_memory_aligned_r(selector_available_r, (void *)0x700001B0, 0xC);
+    copy_memory_aligned(vendor_stock, (void *)0x70000170, 0xC);
+    copy_memory_aligned(gSkillPoints_r, (void *)0x70000180, 0x20);
+    copy_memory_aligned(gCheats_r, (void *)0x700001A0, 0xC);
+    copy_memory_aligned(selector_available_r, (void *)0x700001B0, 0xC);
     gBolts_r = saved;
     if (flag4) {
         gSpecialItems_r[4] = 1;
@@ -8854,7 +8807,6 @@ struct DisplayDims {
 };
 extern struct DisplayDims fs_aa_buffer_r __asm__("D_00151880");
 extern s32 *g_render_packet_cursor_r __asm__("D_00161000") MACRO_ADDR;
-extern void VU1_addGSregister_r5(s32, s64) __asm__("func_00234C98");
 
 /* Appends a DMA packet drawing 32-pixel-wide sprite strips over the screen in a fixed grey (0x7F808080). */
 void append_fullscreen_setup_strips(void) {
@@ -8882,7 +8834,7 @@ void append_fullscreen_setup_strips(void) {
     display_height = dimensions->display_height;
     dividend = (display_width > -1) ? display_width : (display_width + 0x1F);
     strip_count = dividend >> 5;
-    VU1_addGSregister_r5(0x42, 0x64);
+    VU1_addGSregister(0x42, 0x64);
     strip_index = 0;
     g_render_packet_cursor_r[0] = (strip_count + 5) | 0x10000000;
     g_render_packet_cursor_r[1] = 0;
@@ -9031,7 +8983,7 @@ extern void prepare_scaled_direction_and_perpendicular_r(f32 *, f32) __asm__("fu
 extern u8 *parse_typed_resource_record_r(u8 *) __asm__("func_00228400");
 
 extern void emit_selected_graphics_dma_packets(s32, s32, s32);
-extern void func_00234C98_28860(s32, s64) __asm__("func_00234C98");
+
 extern void append_fullscreen_clear_strips(s64);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/fun_00227548.c, submit_graphics_setup_command_stream. */
@@ -9068,12 +9020,12 @@ void submit_graphics_setup_command_stream(u8 *command_stream) {
         record = (struct GraphicsSetupRecord *)command_stream;
     }
     if (pal_mode_r3.v) {
-        func_00234C98_28860(0x4C, 0x80080);
+        VU1_addGSregister(0x4C, 0x80080);
     } else {
-        func_00234C98_28860(0x4C, 0x80070);
+        VU1_addGSregister(0x4C, 0x80070);
     }
-    func_00234C98_28860(0x42, 0x2000000064LL);
+    VU1_addGSregister(0x42, 0x2000000064LL);
     append_fullscreen_clear_strips(0);
-    func_00234C98_28860(0x47, 0x5360B);
-    func_00234C98_28860(0x42, 0x8000000044LL);
+    VU1_addGSregister(0x47, 0x5360B);
+    VU1_addGSregister(0x42, 0x8000000044LL);
 }

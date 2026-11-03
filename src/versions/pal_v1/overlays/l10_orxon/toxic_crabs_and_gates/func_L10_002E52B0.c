@@ -15,14 +15,14 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
 
     if (g_hero.items[0].item_id == 0x15) {
         if (((D_2E52B0 *)g_hero.items[0].moby->pvars)->f10 == m) {
-            activate_waiting_moby_group_members_r(m);
+            activate_waiting_moby_group_members(m);
             if (m->state == 1)
                 m->state = 2;
         }
     }
     if (d->f38 != 0) {
-        activate_waiting_moby_group_members_r(m);
-        d->f1AC = truncate_float_to_s32_r(multiply_global_factor_r(random_float_between_r(180.0f, 240.0f)));
+        activate_waiting_moby_group_members(m);
+        d->f1AC = truncate_float_to_s32_r(multiply_global_factor(random_float_between(180.0f, 240.0f)));
         d->f38 = 0;
     }
     fast_dec_timer_r(&d->f1AC);
@@ -30,13 +30,13 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
     B = 0.0f;
     r = MobyGetHitMessage_r(m, 0xB30000, 0);
     v21 = ComputeHitResponse_r(m, r, &d->f20, 0, &A, &B, 0, 4);
-    FastDecTimer_r(&d->h26);
+    FastDecTimer(&d->h26);
     if ((unsigned int)A >= 2 && m->state != 0xB && m->state != 0xC) {
         if (g_current_level_index_m == LEVEL_ORXON && r != 0 && r->f20 != 0 && r->f20->oclass == 0x31A) {
             if (d->f1AC != 0 && ((Flags *)gSkillPoints)->b11 == 0) {
                 ((Flags *)gSkillPoints)->b11 = 1;
                 PlayBankSound_r(1, 0, 0);
-                ShowBanner_r(0x53D6, -1);
+                ShowBanner(0x53D6, -1);
             }
         }
         if (d->h26 != 0 && r->b28 == 0) {
@@ -45,7 +45,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
                 B = 0.0f;
         }
         if (g_hero.state.current == HERO_STATE_HELD_ITEM_ATTACK ||
-            (g_hero.state.prev == HERO_STATE_HELD_ITEM_ATTACK && g_hero.state_timer < scale_ticks_r(30))) {
+            (g_hero.state.prev == HERO_STATE_HELD_ITEM_ATTACK && g_hero.state_timer < scale_ticks(30))) {
             if (2.0f < B)
                 B = 2.0f;
         }
@@ -75,11 +75,11 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
             if (r->f20->oclass == MOBY_CLASS_DOOM_BOT || r->f20->oclass == MOBY_CLASS_RATCHET)
                 vA.z += 0.25f;
             if (coll_line_r(&vA, &vB, 0x12, m, 0) != 0) {
-                FastVecSub_r(&dst, &vB, &vA);
+                FastVecSub(&dst, &vB, &vA);
                 *(u128_2E52B0 *)&W = *(u128_2E52B0 *)&dst;
                 vec_scale_to_length_r(&W, &W, 1.0f);
                 vec_scale_to_length_r(&X, &orxon_ground_hit_normal_r, 1.0f);
-                if (0.5f < FastAbsF_r(FastVecDot_r(&W, &X))) {
+                if (0.5f < FastAbsF(FastVecDot(&W, &X))) {
                     B = 0.0f;
                     v21 = 11;
                 }
@@ -88,12 +88,12 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
         d->f20 -= B;
         if (d->f20 <= 0.0f)
             v21 = 1;
-        activate_waiting_moby_group_members_r(m);
+        activate_waiting_moby_group_members(m);
         d->f90 = truncate_float_to_s32_r(768.0f);
         d->f98 = 0.75f;
         d->f94 = 9;
         d->bAD = 0;
-        fx = fast_atan2_r(r->pos.x, r->pos.y);
+        fx = fast_atan2(r->pos.x, r->pos.y);
         switch (v21) {
             case 3:
             case 6:
@@ -102,7 +102,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
             case 9:
             case 10:
                 m->state = 10;
-                d->h26 = scale_ticks_r(60);
+                d->h26 = scale_ticks(60);
                 d->f80 = D_L10_00161EAC_2E52B0 * g_frame_time_sq_r;
                 trooper_set_knockback_r(d->a70, 0.5f, 0.5f);
                 d->fC0 = 8.0f;
@@ -117,7 +117,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
             case 5: {
                 float s;
                 m->state = 10;
-                d->h26 = scale_ticks_r(60);
+                d->h26 = scale_ticks(60);
                 d->f80 = D_L10_00161EAC_2E52B0 * g_frame_time_sq_r;
                 s = g_hero.vehicle_mode == 1 ? 1.0f : 3.0f;
                 trooper_set_knockback_r(d->a70, s, 0.5f);
@@ -125,7 +125,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
                 d->fC4 = 7.0f;
                 *(u128_2E52B0 *)&vA = *(u128_2E52B0 *)&r->pos;
                 HeadingFromVector_r(&vA, &fx, &d->f88, &d->f8C);
-                InitKnockback_r(m, d->a70, 9, 1, 0, fast_atan2_r(r->pos.x, r->pos.y));
+                InitKnockback_r(m, d->a70, 9, 1, 0, fast_atan2(r->pos.x, r->pos.y));
                 d->b67 = 0xFA;
                 RerollEffectCounter_r(m, d->a60);
                 break;
@@ -155,16 +155,16 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
             d->f1A0 = 0.0f;
         }
         if (g_hero.vehicle_mode == 1)
-            activate_waiting_moby_group_members_r(m);
+            activate_waiting_moby_group_members(m);
     } else {
         d->f1A0 = D_L10_00161EC0_2E52B0;
     }
     if (d->f1AC != 0) {
         FindNearestTargetMoby_r(m, &d->a120, d->f1A0);
-        if (d->f1A0 < vec_distance_xy_r(&d->a170, &d->a120) || 3.0f < FastAbsF_r(m->pos.z - d->a120.z)) {
+        if (d->f1A0 < vec_distance_xy_r(&d->a170, &d->a120) || 3.0f < FastAbsF(m->pos.z - d->a120.z)) {
             d->f164 = 2;
         }
-    } else if (d->f1A0 < vec_distance_xy_r(&d->a170, &d->a120) || 3.0f < FastAbsF_r(m->pos.z - d->a120.z)) {
+    } else if (d->f1A0 < vec_distance_xy_r(&d->a170, &d->a120) || 3.0f < FastAbsF(m->pos.z - d->a120.z)) {
         FindNearestTargetMoby_r(m, &d->a120, d->f1A0);
         d->f164 = 2;
     } else {
@@ -173,15 +173,15 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
     }
     if (m->state != 1 && d->f164 == 2) {
         d->f1D4++;
-        if (scale_ticks_r(300) < d->f1D4) {
-            if (1.0f < FastVecDist_r(&m->pos, &d->a170)) {
+        if (scale_ticks(300) < d->f1D4) {
+            if (1.0f < FastVecDist(&m->pos, &d->a170)) {
                 m->state = 8;
                 if (m->prev_seq != 4)
-                    MobyBlendAnimation_r(m, 4, 0, scale_ticks_r(12));
+                    MobyBlendAnimation(m, 4, 0, scale_ticks(12));
             } else if (g_hero.vehicle_mode != 1) {
                 m->state = 1;
                 if (m->prev_seq != 0)
-                    MobyBlendAnimation_r(m, 0, 0, scale_ticks_r(20));
+                    MobyBlendAnimation(m, 0, 0, scale_ticks(20));
             }
         }
     } else {

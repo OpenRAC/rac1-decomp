@@ -15,8 +15,6 @@
 #include "game/render/vuchain.h"
 #include "overlays/l11_pokitaru/ship_flight_and_oil_tanker.h"
 
-extern int GetEffectTex(int);
-
 extern int layered_effect_texture_2c_fixed_alpha SDATA(layered_effect_texture_2c_fixed_alpha);
 extern int layered_effect_texture_2a_pair_zero_fixed_alpha SDATA(layered_effect_texture_2a_pair_zero_fixed_alpha);
 extern int layered_effect_texture_2b_fixed_alpha SDATA(layered_effect_texture_2b_fixed_alpha);
@@ -65,8 +63,6 @@ typedef struct {
 typedef struct {
     int a, b;
 } Pair8_31F760;
-
-extern int FastBSphereCheck(char *, float);
 
 extern int func_001FA898(float);
 

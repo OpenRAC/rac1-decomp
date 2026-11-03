@@ -29,6 +29,10 @@
 #include "overlays/shared/trigger_switches_and_hoverboard.h"
 #include "overlays/l05_rilgar/hero_idle_and_items.h"
 #include "overlays/l05_rilgar/hero_collision.h"
+#include "callees.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/ui/hud.h"
+#include "game/gameplay/freeze.h"
 extern char gSpecialItems[];
 extern char gHeroPos[];
 extern char gSkillPoints[];
@@ -36,7 +40,6 @@ extern Hero g_hero;
 extern char last_weapon_id[];
 extern char usage_stats[];
 
-extern float ApproachValue(float *p, float target, float maxstep);
 extern unsigned char hero_globals_base[] NOT_SDA;
 
 /* Steps two floats of arg toward a target and clamps them to [-1, 1]. */
@@ -463,17 +466,9 @@ extern u8 D_L05_00174360[] NOT_SDA;
 extern u8 D_L05_0017AC20[] NOT_SDA;
 
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
-extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
-extern s32 func_L00_0025F410(s32);
+
 extern void transform_hero_local_offset_to_world_r(float *, float, float, float) __asm__("func_L00_00233EE0");
 extern int coll_line_r(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
-extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
-extern int func_L00_001F10E0(float, void *, int, int);
-
-extern void transform_vector_r(void *, void *, void *) __asm__("func_001F9EE8");
-extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
-
-extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/ui/help/00237488.c, FUN_L05_0024bdc0. */
 void update_hero_movement_and_collision_probes(void) {
@@ -492,7 +487,7 @@ void update_hero_movement_and_collision_probes(void) {
         if (probe_hero_forward_collision(0.7f, 4.0f, &g_hero_r.wall_probe_distance)) {
             CollisionHit_4C558 *wall = &rilgar_coll_hit_r;
             float normal_xy = vec_length_xy_r(&wall->normal_x);
-            g_hero_r.wall_normal_pitch = fast_atan2_r(wall->normal_z, normal_xy);
+            g_hero_r.wall_normal_pitch = fast_atan2(wall->normal_z, normal_xy);
             if (wall->moby != 0) {
                 g_hero_r.wall_probe_hit_moby = 1;
                 if (is_moby_in_class_range_500_to_540(wall->moby))
@@ -511,7 +506,7 @@ void update_hero_movement_and_collision_probes(void) {
             distance = 20.0f;
             hit = coll_line_r(start, end, 2, g_hero_r.moby, 0);
             if (hit)
-                distance = FastVecDist_r(start, rilgar_coll_hit_point);
+                distance = FastVecDist(start, rilgar_coll_hit_point);
             if (!hit || distance > 3.0f) {
                 for (offset = -0.4f; offset < 0.5f; offset += 0.1f) {
                     transform_hero_local_offset_to_world_r(probe, 1.1f + offset, 0.0f, 0.0f);
@@ -536,17 +531,15 @@ void update_hero_movement_and_collision_probes(void) {
         start[2] = 0.21f;
         matrix_mul_vec3(start, start, (char *)g_hero_r.moby + 0xc0);
         euler_to_matrix(rotation, rilgar_hero_bob_attach_euler);
-        transform_vector_r(start, start, rotation);
-        FastVecAdd_r(g_hero_r.hoverboard_moby + 0x10, g_hero_r.hoverboard_moby + 0x10, start);
+        transform_vector(start, start, rotation);
+        FastVecAdd(g_hero_r.hoverboard_moby + 0x10, g_hero_r.hoverboard_moby + 0x10, start);
         copy_matrix_rotation(moby_rotation, (char *)g_hero_r.moby + 0xc0);
-        sce_vu0_mul_matrix_r(combined, moby_rotation, rotation);
+        sce_vu0_mul_matrix(combined, moby_rotation, rotation);
         matrix_copy_rows(g_hero_r.hoverboard_moby + 0xc0, combined);
     }
 }
 extern short rilgar_frame_count;
 extern float rilgar_coll_hit_z;
-
-extern int coll_line(void *, void *, int, int, int);
 
 /* Decides whether the hero's current motion warrants the swing effect, running a probe when the conditions line up. */
 int try_apply_hero_water_and_ground_transitions(void) {
@@ -661,8 +654,6 @@ extern int gadget_double_tap_timer SDATA(gadget_double_tap_timer);
 
 extern int truncate_float_to_s32(float);
 
-extern int Hero_TryMoveStateL05_r(int, int) __asm__("func_L05_0024D680");
-extern int func_001F9908(int *);
 typedef struct {
     char p0[0xD8];
     unsigned short hD8;
@@ -672,8 +663,6 @@ typedef struct {
 
 extern unsigned short help_records_131_count[] NOT_SDA;
 extern unsigned short usage_stats_entry27_count[] NOT_SDA;
-
-extern float vec_distance_xy(void *, void *);
 
 extern Moby *moby_pool_4f60_r __asm__("D_L05_00160098") MACRO_ADDR;
 extern int gameplay_event_frame_count_r __asm__("D_0015EFA4") MACRO_ADDR;
@@ -733,13 +722,13 @@ int process_hero_primary_item_input(void) {
                         launch_hero_wrench();
                         break;
                     }
-                    Hero_TryMoveStateL05_r(HERO_STATE_CROUCH_SWING, 1);
+                    Hero_TryMoveStateL05(HERO_STATE_CROUCH_SWING, 1);
                     break;
                 }
                 if (g_hero_h2523C8.unk308 == 1) {
-                    Hero_TryMoveStateL05_r(HERO_STATE_ATTACK_RECORD_FRAME_EXIT_WAIT, 1);
+                    Hero_TryMoveStateL05(HERO_STATE_ATTACK_RECORD_FRAME_EXIT_WAIT, 1);
                 } else {
-                    Hero_TryMoveStateL05_r(HERO_STATE_WRENCH_COMBO, 1);
+                    Hero_TryMoveStateL05(HERO_STATE_WRENCH_COMBO, 1);
                 }
                 break;
             }
@@ -765,13 +754,13 @@ int process_hero_primary_item_input(void) {
                     if ((g_hero_h2523C8.past_jump_apex == 0 && g_hero_h2523C8.ground_distance > 0.1f) ||
                         (g_hero_h2523C8.past_jump_apex != 0 && g_hero_h2523C8.ground_distance > 0.57f) ||
                         (g_hero_h2523C8.state.current == HERO_STATE_LAND && g_hero_h2523C8.ground_distance > 0.57f)) {
-                        Hero_TryMoveStateL05_r(HERO_STATE_WRENCH_SLAM, 1);
+                        Hero_TryMoveStateL05(HERO_STATE_WRENCH_SLAM, 1);
                         break;
                     }
                     if (g_hero_h2523C8.on_slip_ground != 0) {
                         break;
                     }
-                    Hero_TryMoveStateL05_r(HERO_STATE_WRENCH_COMBO, 1);
+                    Hero_TryMoveStateL05(HERO_STATE_WRENCH_COMBO, 1);
                     break;
                 }
             }
@@ -787,7 +776,7 @@ int process_hero_primary_item_input(void) {
                         if (g_hero_h2523C8.anim_frame >= (float)rec->f10 &&
                             (g_controller_state.held & (PAD_R2 | PAD_R1)) &&
                             pad_pressed_within(mask, scale_ticks(0xF), 0)) {
-                            Hero_TryMoveStateL05_r(HERO_STATE_CROUCH_SWING, 1);
+                            Hero_TryMoveStateL05(HERO_STATE_CROUCH_SWING, 1);
                             break;
                         }
                     }
@@ -812,13 +801,13 @@ int process_hero_primary_item_input(void) {
                     break;
                 }
                 if (g_controller_state.held & (PAD_R2 | PAD_R1)) {
-                    Hero_TryMoveStateL05_r(HERO_STATE_CROUCH_SWING, 1);
+                    Hero_TryMoveStateL05(HERO_STATE_CROUCH_SWING, 1);
                     break;
                 }
                 if (g_hero_h2523C8.unk308 == 1) {
-                    Hero_TryMoveStateL05_r(HERO_STATE_ATTACK_RECORD_FRAME_EXIT_WAIT, 1);
+                    Hero_TryMoveStateL05(HERO_STATE_ATTACK_RECORD_FRAME_EXIT_WAIT, 1);
                 } else {
-                    Hero_TryMoveStateL05_r(HERO_STATE_WRENCH_COMBO, 1);
+                    Hero_TryMoveStateL05(HERO_STATE_WRENCH_COMBO, 1);
                 }
             }
             break;
@@ -848,12 +837,12 @@ int process_hero_primary_item_input(void) {
                         }
                         if (g_hero_h2523C8.swing_target_in_sight != 0 && g_hero_h2523C8.grapple_lockout_timer == 0 &&
                             g_hero_h2523C8.state.current != HERO_STATE_GRAPPLE_SWING_ENTRY) {
-                            Hero_TryMoveStateL05_r(HERO_STATE_GRAPPLE_SWING_ENTRY, 1);
+                            Hero_TryMoveStateL05(HERO_STATE_GRAPPLE_SWING_ENTRY, 1);
                             break;
                         }
                     }
                     if (g_hero_h2523C8.grapple_target_in_sight != 0 && g_hero_h2523C8.grapple_lockout_timer == 0) {
-                        Hero_TryMoveStateL05_r(HERO_STATE_GRAPPLE_TARGET_ENTRY, 1);
+                        Hero_TryMoveStateL05(HERO_STATE_GRAPPLE_TARGET_ENTRY, 1);
                     }
                 }
             }
@@ -950,7 +939,7 @@ int process_hero_primary_item_input(void) {
                             g_hero_h2523C8.state.current == HERO_STATE_STOP ||
                             (g_hero_h2523C8.state.control_mode == HERO_MODE_RUN &&
                              g_hero_h2523C8.stick_magnitude < 0.7f)) {
-                            Hero_TryMoveStateL05_r(HERO_STATE_ANIMATION_RECOVERY_WITH_JUMP_CANCEL, 1);
+                            Hero_TryMoveStateL05(HERO_STATE_ANIMATION_RECOVERY_WITH_JUMP_CANCEL, 1);
                         } else {
                             start_equipped_item_animation();
                         }
@@ -971,7 +960,7 @@ int process_hero_primary_item_input(void) {
 
                     if (pad_pressed_within(mask, t <= n ? t : n, &out2)) {
                         if (((Moby *)g_hero_h2523C8.items[0].moby) != 0) {
-                            Hero_TryMoveStateL05_r(HERO_STATE_HELD_ITEM_ATTACK, 1);
+                            Hero_TryMoveStateL05(HERO_STATE_HELD_ITEM_ATTACK, 1);
                             if (((Moby *)g_hero_h2523C8.items[0].moby) != 0) {
                                 Moby_PlaySound(0, 0, (int)((Moby *)g_hero_h2523C8.items[0].moby));
                             }
@@ -1082,7 +1071,7 @@ int process_hero_primary_item_input(void) {
                       g_hero_h2523C8.state.control_mode == HERO_MODE_JUMP) &&
                      g_hero_h2523C8.grounded_frames != 0)) {
                     if ((g_controller_state.held & PAD_R1) && (g_controller_state.pressed & PAD_R1)) {
-                        Hero_TryMoveStateL05_r(HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT, 1);
+                        Hero_TryMoveStateL05(HERO_STATE_DELAYED_JUMP_OR_R1_REPEAT_EXIT_WAIT, 1);
                     }
                 }
             }
@@ -1171,8 +1160,6 @@ void update_hero_hoverboard_trick_animations(void) {
         }
     }
 }
-extern int get_first_moby_in_group(void **, int, int, int);
-extern int get_next_moby_in_group(void **, void *, int, int);
 
 extern unsigned char menu_item_enabled_115[] NOT_SDA;
 extern void apply_hero_item_slot_selection(int);
@@ -1472,17 +1459,10 @@ extern int race_respawn_request_active SDATA(race_respawn_request_active);
 extern int race_respawn_gate_state SDATA(race_respawn_gate_state);
 extern float rilgar_off_course_reset_rate SDATA(rilgar_off_course_reset_rate);
 extern int hoverboard_race_finished SDATA(hoverboard_race_finished);
-extern float FastVecDist_r2(void *, void *) __asm__("func_001F9D10");
-extern float fast_atan2_r2(float, float) __asm__("func_L00_001FF860");
-extern float FastDiffRots_r(float, float) __asm__("func_001FA850");
+
 extern void compute_hero_hoverboard_respawn_transform_r(void *, void *) __asm__("func_L05_00254B38");
-extern void Hero_ResetToPosition_r(void *, void *, int, int) __asm__("func_L00_00217718");
-extern int select_point_index_by_distance_r(void *, void *, float) __asm__("func_L01_0028C2D8");
+
 extern int PlayBankSound_r(int, int, int) __asm__("func_0022EE28");
-extern void ShowBanner_r(int, int) __asm__("func_L00_00264DB8");
-extern void mode_freeze_init_r(int, void *, int) __asm__("func_001FBC80");
-extern void Hud_SetBarValueById_r(int, int) __asm__("func_001FFDA0");
-extern void update_resource_counter_r(void) __asm__("func_001FFFA0");
 
 /* Hoverboard race tick: advances the hero's and the opponents' path nodes and laps, handles wrong-way and fall resets,
    ranks everyone and finishes the race after three laps. */
@@ -1513,7 +1493,7 @@ void update_hero_hoverboard_race_progress(void) {
         v0[0] = 163.0f;
         v0[1] = 119.0f;
         v0[2] = 80.0f;
-        if (FastVecDist_r2(g_hero.motion.pos.f, v0) < 11.0f) {
+        if (FastVecDist(g_hero.motion.pos.f, v0) < 11.0f) {
             if (g_hero.race_path_node < 3 || g_hero.race_path_node > 0x46) {
                 if (g_hero.race_path_node >= 3) {
                     g_hero.race_lap++;
@@ -1525,7 +1505,7 @@ void update_hero_hoverboard_race_progress(void) {
         v1[0] = 223.0f;
         v1[1] = 281.0f;
         v1[2] = 93.0f;
-        if (FastVecDist_r2(g_hero.motion.pos.f, v1) < 7.0f) {
+        if (FastVecDist(g_hero.motion.pos.f, v1) < 7.0f) {
             if (g_hero.race_path_node < 0x3B) {
                 g_hero.race_path_node = 0x3B;
             }
@@ -1539,9 +1519,9 @@ void update_hero_hoverboard_race_progress(void) {
         i = g_hero.race_path_node;
         n1 = path->n + 1;
         next = (i + n1) % path->n;
-        ang = fast_atan2_r2(path->p[next].x - path->p[i].x, path->p[next].y - path->p[i].y);
-        if (FastDiffRots_r(ang, fast_atan2_r2(g_hero.motion.pos.f[0] - path->p[i].x,
-                                              g_hero.motion.pos.f[1] - path->p[i].y)) < 1.5707964f) {
+        ang = fast_atan2(path->p[next].x - path->p[i].x, path->p[next].y - path->p[i].y);
+        if (FastDiffRots(ang, fast_atan2(g_hero.motion.pos.f[0] - path->p[i].x,
+                                         g_hero.motion.pos.f[1] - path->p[i].y)) < 1.5707964f) {
             g_hero.race_path_node = next;
             if (next == 0) {
                 g_hero.race_lap++;
@@ -1565,9 +1545,9 @@ void update_hero_hoverboard_race_progress(void) {
         i = g_hero.wrong_way_path_point;
         n1 = path->n + 1;
         next = (i + n1) % path->n;
-        dir = fast_atan2_r2(path->p[next].x - path->p[i].x, path->p[next].y - path->p[i].y);
+        dir = fast_atan2(path->p[next].x - path->p[i].x, path->p[next].y - path->p[i].y);
     }
-    if (near != 0 || (FastDiffRots_r(g_hero.motion.rot.f[2], dir) > 1.5707964f && g_hero.trick_input == 0)) {
+    if (near != 0 || (FastDiffRots(g_hero.motion.rot.f[2], dir) > 1.5707964f && g_hero.trick_input == 0)) {
         g_hero.off_course_frames++;
         if (g_hero.off_course_frames > scale_ticks(0xB4)) {
             if (race_respawn_request_active == 0) {
@@ -1581,9 +1561,9 @@ void update_hero_hoverboard_race_progress(void) {
                 compute_hero_hoverboard_respawn_transform_r(v0, v1);
                 g_hero.off_course_frames = 0;
                 g_hero.board_air_yaw = v1[2];
-                Hero_ResetToPosition_r(v0, v1, 0x6B, 1);
+                Hero_ResetToPosition(v0, v1, 0x6B, 1);
                 if (((Path *)g_hero.race_path) != 0) {
-                    int r = select_point_index_by_distance_r(g_hero.motion.pos.f, (Path *)g_hero.race_path, 0.0f);
+                    int r = select_point_index_by_distance(g_hero.motion.pos.f, (Path *)g_hero.race_path, 0.0f);
 
                     if (r < g_hero.race_path_node) {
                         g_hero.race_path_node = r;
@@ -1602,9 +1582,9 @@ void update_hero_hoverboard_race_progress(void) {
         i = g_hero.racer_path_point[j];
         n1 = path->n + 1;
         next = (i + n1) % path->n;
-        ang = fast_atan2_r2(path->p[next].x - path->p[i].x, path->p[next].y - path->p[i].y);
+        ang = fast_atan2(path->p[next].x - path->p[i].x, path->p[next].y - path->p[i].y);
         qcopy(v0, moby_pool_4f60_r2[d->f2C[j]].pos);
-        if (FastDiffRots_r(ang, fast_atan2_r2(v0[0] - path->p[i].x, v0[1] - path->p[i].y)) < 1.5707964f) {
+        if (FastDiffRots(ang, fast_atan2(v0[0] - path->p[i].x, v0[1] - path->p[i].y)) < 1.5707964f) {
             g_hero.racer_path_point[j] = next;
             if (next == 0) {
                 g_hero.racer_laps[j]++;
@@ -1655,7 +1635,7 @@ void update_hero_hoverboard_race_progress(void) {
             if (((Flags *)(menu_item_enabled_115_r + 1))->f9 == 0) {
                 ((Flags *)(menu_item_enabled_115_r + 1))->f9 = 1;
                 PlayBankSound_r(1, 0, 0);
-                ShowBanner_r(0x53DB, -1);
+                ShowBanner(0x53DB, -1);
             }
         }
         if (d->f28 == -1) {
@@ -1665,7 +1645,7 @@ void update_hero_hoverboard_race_progress(void) {
             moby_pool_4f60_r2[d->f28].fBC = 1;
         } else {
             g_hero.unk890 = (u8 *)(&moby_pool_4f60_r2[d->f28]);
-            mode_freeze_init_r(0, 0, 0);
+            mode_freeze_init(0, 0, 0);
         }
         if (race_best_times_r[0] == 0) {
             race_best_times_r[0] = g_hero.race_time_frames;
@@ -1680,10 +1660,10 @@ void update_hero_hoverboard_race_progress(void) {
         }
         moby_pool_4f60_r2[d->f28].f30 = 0xFF;
         if (g_hero.trick_hud_handle != -1) {
-            Hud_SetBarValueById_r(g_hero.trick_hud_handle, 0);
+            Hud_SetBarValueById(g_hero.trick_hud_handle, 0);
             g_hero.trick_hud_handle = -1;
         }
-        update_resource_counter_r();
+        update_resource_counter();
     } else if (g_current_level_index_r == LEVEL_KALEBO3) {
         if (d->f28 == -1) {
             return;
@@ -1692,7 +1672,7 @@ void update_hero_hoverboard_race_progress(void) {
             moby_pool_4f60_r2[d->f28].fBC = 1;
         } else {
             g_hero.unk890 = (u8 *)(&moby_pool_4f60_r2[d->f28]);
-            mode_freeze_init_r(0, 0, 0);
+            mode_freeze_init(0, 0, 0);
         }
         if (race_best_times_r[1] == 0) {
             race_best_times_r[1] = g_hero.race_time_frames;
@@ -1707,10 +1687,10 @@ void update_hero_hoverboard_race_progress(void) {
         }
         moby_pool_4f60_r2[d->f28].f30 = 0xFF;
         if (g_hero.trick_hud_handle != -1) {
-            Hud_SetBarValueById_r(g_hero.trick_hud_handle, 0);
+            Hud_SetBarValueById(g_hero.trick_hud_handle, 0);
             g_hero.trick_hud_handle = -1;
         }
-        update_resource_counter_r();
+        update_resource_counter();
     }
 }
 extern unsigned char g_hero_race_ammo NOT_SDA;
@@ -1746,10 +1726,6 @@ int Hero_SelectAnimIdByFlag(int arg) {
 }
 extern short hoverboard_trick_min_frames;
 extern float g_frame_time MACRO_ADDR;
-
-extern void vec_scale_to_length(void *, void *, float);
-
-extern int offset_path_index(void *, int, int, int);
 
 typedef struct {
     char pad0[0x80];
@@ -1836,9 +1812,9 @@ int hero_pick_help_mode(void) {
     qcopy(vp, v1);
     qcopy(v3, g->fE0);
     vec_scale_to_length(v3, v3, 0.55f);
-    FastVecAdd_r(v3, v3, g->fE0);
+    FastVecAdd(v3, v3, g->fE0);
     v3[2] = f20;
-    FastVecAdd_r(vp, v1, v3);
+    FastVecAdd(vp, v1, v3);
     if (!coll_line(v1, vp, 2, 0, 0))
         goto L_BAC;
     h = (char *)&rilgar_coll_hit_r;
@@ -1968,7 +1944,7 @@ L_DEC:
             if (fl->f7 == 0) {
                 fl->f7 = 1;
                 PlayBankSound_r(1, 0, 0);
-                ShowBanner_r(0x53DB, -1);
+                ShowBanner(0x53DB, -1);
             }
         }
         ((H_9F0 *)(&g_hero))->i714 = 0;

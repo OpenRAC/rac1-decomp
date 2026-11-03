@@ -18,6 +18,7 @@
 #include "overlays/shared/debug_menu_and_text.h"
 #include "game/ui/vendor.h"
 #include "overlays/shared/vendor_menu.h"
+#include "callees.h"
 
 extern void *libc_memset(void *, int, int);
 
@@ -144,12 +145,6 @@ purchase:
 }
 
 extern float vendor_inset_quad_margins[][4];
-
-extern void vec_scale_to_length(void *, void *, float);
-
-extern int GetEffectTex(int);
-
-extern void draw_world_quad(void *, void *, int);
 
 // draws five glass quads around a moby's joints
 void draw_vendor_inset_quads(char *m) {
@@ -401,30 +396,13 @@ extern u128_2A1540 player_camera_matrix_r[] __asm__("D_L00_001670D0");
 extern char D_L00_00166D80[];
 extern A02b0_tab D_L00_001C92F0[];
 
-extern void DrawDebugProfiler_r(void) __asm__("func_001F3D78");
-
-extern void VU1_sendChain_r(void) __asm__("func_002349B8");
-extern void VU1_swapChain_r(void) __asm__("func_00234948");
-
-extern void InitMobyInstance_r(void *, s32) __asm__("func_0020D440");
-
-extern void pack_render_command_fields_r(void *, s32, s32, s32, s32) __asm__("func_0020E340");
-
-extern void FastMemZero16_r(void *, s32) __asm__("func_001F99D8");
 extern s32 func_00217628(void *, s32, s32);
 
-extern void DrawMobysSetup_r(void) __asm__("func_0020E0C8");
-extern void InitMobyClassDists_r(void) __asm__("func_0020E040");
-extern void StashMobyClassDists_r(void) __asm__("func_0020E068");
 extern void DrawMobyList_r(void *, s32) __asm__("func_0020E180");
 extern void draw_vendor_hologram_cone_r(void) __asm__("func_L00_002A11E8");
 
 extern void draw_vendor_purchase_panel_r(void *) __asm__("func_L00_002A0F60");
 extern void draw_vendor_inset_quads_r(char *) __asm__("func_L00_002A0C20");
-extern void VU1_addGSregister_r(s32, s64) __asm__("func_00234C98");
-
-extern void RestoreMobyClassDists_r(void) __asm__("func_0020E098");
-extern void DrawMobysCleanUp_r(void) __asm__("func_0020E200");
 
 /* Vendor screen frame: on the first frame sets up the camera rows, the two preview mobys and the stream read; then
  * draws the vendor mobys, the capture pass and the HUD.
@@ -446,7 +424,7 @@ void draw_vendor_screen(void) {
             if (((A02b0_obj *)vendor_menu_r)->fC != 0 || *(s32 *)vendor_menu_r == 3) {
                 debug_profiler_color = 0x7F;
             }
-            DrawDebugProfiler_r();
+            DrawDebugProfiler();
             if (((A02b0_obj *)vendor_menu_r)->fC == 0) {
                 return;
             }
@@ -455,8 +433,8 @@ void draw_vendor_screen(void) {
             VU1_syncChain(1);
             sce_gs_sync_v(0);
             rendered_frame_count = rendered_frame_count + 1;
-            VU1_sendChain_r();
-            VU1_swapChain_r();
+            VU1_sendChain();
+            VU1_swapChain();
             lvl_vu_chain_buffer_size = 0x60000;
             capture_draw_buffer(((A02b0_obj *)vendor_menu_r)->f10);
             *(u16 *)(((A02b0_obj *)vendor_menu_r)->f1C + 0x34) &= 0xFFFE;
@@ -484,17 +462,17 @@ void draw_vendor_screen(void) {
                 FastVecCross(&player_camera_matrix_r[1], &player_camera_matrix_r[0], &player_camera_matrix_r[2]);
             }
             ((A02b0_obj *)vendor_menu_r)->f20 = ((A02b0_obj *)vendor_menu_r)->f14 + 0x100;
-            InitMobyInstance_r(((A02b0_obj *)vendor_menu_r)->f20, 0xD);
+            InitMobyInstance(((A02b0_obj *)vendor_menu_r)->f20, 0xD);
             *(u16 *)(((A02b0_obj *)vendor_menu_r)->f20 + 0x32) = 0x40;
             moby_build_matrix(((A02b0_obj *)vendor_menu_r)->f20);
-            pack_render_command_fields_r(((A02b0_obj *)vendor_menu_r)->f20, 0x202020, 0xE, 0xE, 0);
-            InitMobyInstance_r(((A02b0_obj *)vendor_menu_r)->f20 + 0x500, 0xD);
+            pack_render_command_fields(((A02b0_obj *)vendor_menu_r)->f20, 0x202020, 0xE, 0xE, 0);
+            InitMobyInstance(((A02b0_obj *)vendor_menu_r)->f20 + 0x500, 0xD);
             *(u16 *)(((A02b0_obj *)vendor_menu_r)->f20 + 0x532) = 0x40;
             moby_build_matrix(((A02b0_obj *)vendor_menu_r)->f20 + 0x500);
-            pack_render_command_fields_r(((A02b0_obj *)vendor_menu_r)->f20 + 0x500, 0x202020, 0xE, 0xE, 0);
+            pack_render_command_fields(((A02b0_obj *)vendor_menu_r)->f20 + 0x500, 0x202020, 0xE, 0xE, 0);
             initialize_vendor_selected_item_mobys();
             ((A02b0_obj *)vendor_menu_r)->f2C = ((A02b0_obj *)vendor_menu_r)->f14 + 0x1400;
-            FastMemZero16_r(((A02b0_obj *)vendor_menu_r)->f2C, 0x400);
+            FastMemZero16(((A02b0_obj *)vendor_menu_r)->f2C, 0x400);
             ((A02b0_obj *)vendor_menu_r)->f18 = ((A02b0_obj *)vendor_menu_r)->f2C + 0x400;
             if (cd_read_active[0] == 0) {
                 if (start_audio_stream_read(((A02b0_obj *)vendor_menu_r)->f18 + 0x80000,
@@ -517,9 +495,9 @@ void draw_vendor_screen(void) {
     SetupGifPaging(0);
     BuildViewMatrices();
     ResetGsRegisters();
-    DrawMobysSetup_r();
-    InitMobyClassDists_r();
-    StashMobyClassDists_r();
+    DrawMobysSetup();
+    InitMobyClassDists();
+    StashMobyClassDists();
     if (vendor_selection_changed == 0 && ((A02b0_obj *)vendor_menu_r)->f40 == 0) {
         if (((A02b0_obj *)vendor_menu_r)->arr[((A02b0_obj *)vendor_menu_r)->f58].b == 1) {
             g = &vendor_item_slot2_placement[((A02b0_obj *)vendor_menu_r)->arr[((A02b0_obj *)vendor_menu_r)->f58].a];
@@ -539,11 +517,11 @@ void draw_vendor_screen(void) {
         draw_vendor_purchase_panel_r(((A02b0_obj *)vendor_menu_r)->f20 + 0x400);
     }
     draw_vendor_inset_quads_r(((A02b0_obj *)vendor_menu_r)->f1C);
-    VU1_addGSregister_r(0x42, 0x8000000044LL);
+    VU1_addGSregister(0x42, 0x8000000044LL);
     update_hud();
     DoGifPaging();
-    RestoreMobyClassDists_r();
-    DrawMobysCleanUp_r();
+    RestoreMobyClassDists();
+    DrawMobysCleanUp();
     VU1_syncChain(0x10);
     PatchMobyGifs();
 }

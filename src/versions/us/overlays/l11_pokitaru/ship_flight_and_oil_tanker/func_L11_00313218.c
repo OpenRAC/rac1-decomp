@@ -139,7 +139,7 @@ void draw_ship_hud(char *moby) {
         }
     }
     if (*(unsigned char *)(moby + 0x20) == 8) {
-        FontPrintCenterLarge_c(0x100, 0xC8, 0x80005080L, msg_string_id(0x523E), 0x11);
+        FontPrintCenterLarge_c(0x100, 0xC8, 0x80005080L, msg_string(0x523E), 0x11);
     }
     {
         unsigned char *h = g_hero;

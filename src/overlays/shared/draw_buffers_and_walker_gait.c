@@ -15,6 +15,7 @@
 #include "game/system/stub.h"
 #include "core/gs/vif1_gif_reset.h"
 #include "core/gs/def_load_image.h"
+#include "overlays/shared/moby_ground_collision.h"
 
 // Copies the frame buffer out in 0x4000-sized strips.
 void transfer_draw_buffer_chunks(int a, int b, int n) {
@@ -183,10 +184,6 @@ typedef struct WalkData {
 extern int walker_gait_mask(WalkAnim *a, float t);
 
 extern int truncate_float_to_s32(float);
-
-extern float vec_distance_xy(void *, void *);
-
-extern float jump_speed_4318(float *a, float *b, float *out, float speed, float g);
 
 extern float g_frame_time MACRO_ADDR;
 extern float inv_frame_scale MACRO_ADDR;

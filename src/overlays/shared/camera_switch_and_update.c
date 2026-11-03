@@ -59,13 +59,12 @@ INCLUDE_ASM("asm/overlays", func_L00_001EB5A8);
 LINKER_REMNANT("asm/overlays", func_L00_001EB5B0);
 
 /* steers *p toward a target with damping, clamps it, then calls FA748 */
-float func_001FA790_EB6A8(float, float) __asm__("func_001FA790");
 
 /* Cam_InterpValues for angles: steers vel toward the angle to (the shortest way round, from
    the current angle from), clamps the step to max when max is set, and returns the angle plus vel
    through FastAddRots. Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/camera/init_camera_system.c, FUN_L00_001eb328. */
 float Camera_SmoothAngle(float *vel, float from, float to, float stiffness, float damping, float max) {
-    float t = func_001FA790_EB6A8(to, from);
+    float t = FastSubRots(to, from);
     *vel = *vel + (stiffness * t - damping * *vel);
     if (max != 0.0f) {
         if (*vel > max)
@@ -232,8 +231,6 @@ int UpdateAllCamerasLvl(void) {
     Camera_RunQueuedCallbacks();
     return -1;
 }
-
-extern void vec_scale_to_length(void *, void *, float);
 
 // Samples the hero moby's three axes into blend.orbit.fwd and blend.orbit.up, derives the orbit yaw, pitch and
 // distance to the hero, and copies rot to saved_rot.
@@ -518,8 +515,6 @@ void compute_position_from_spherical_offset(float *out, float *polar, void *orig
 }
 typedef float W[4] __attribute__((aligned(16)));
 
-extern float vec_length_xy(float *);
-
 extern void FastVecSub_3(float *, float *, float *) __asm__("func_001F9BF0");
 /* polar = (yaw, pitch, distance) of pos as seen from origin; the FastSubRots result is unused (kept, as retail). */
 int compute_spherical_offset_from_positions(float *polar, float *pos, float *origin) {
@@ -535,8 +530,8 @@ int compute_spherical_offset_from_positions(float *polar, float *pos, float *ori
 }
 extern void FastVecSub_3(float *, float *, float *) __asm__("func_001F9BF0");
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern void divide_vector_xyz(float *, float *, float);
-extern int func_L00_001F10E0(void *, int, void *, float);
+
+extern int coll_sphere_v(void *, int, void *, float) __asm__("func_L00_001F10E0");
 extern W coll_resolved_pos;
 extern int gCamSphereMaskLvl SDATA(gCamSphereMaskLvl);
 
@@ -569,7 +564,7 @@ void resolve_camera_movement_collisions(float *pos, float r) {
         q = coll_resolved_pos;
         FastVecAdd(pos, pos, d);
         base = &g_hero;
-        for (j = 0; j < 6 && coll_sphere(pos, gCamSphereMaskLvl, *(void **)&base->moby, r); j++) {
+        for (j = 0; j < 6 && coll_sphere_v(pos, gCamSphereMaskLvl, *(void **)&base->moby, r); j++) {
             qcopy(pos, q);
             {
                 Camera *t = player_camera.current;

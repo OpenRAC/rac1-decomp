@@ -23,6 +23,7 @@
 #include "game/ui/transition.h"
 #include "game/system/initonce.h"
 #include "game/gameplay/actuator.h"
+#include "game/system/pad.h"
 
 /*
  * bmain.cpp in the original source; text 0x1E9808-0x1E9E70.
@@ -149,25 +150,9 @@ extern u8 D_0016044C[] MACRO_ADDR;
 extern s32 D_0015F6E4 MACRO_ADDR;
 extern u8 D_0013E130[];
 
-extern void VU1_initChain_r(void) __asm__("func_002348E8");
-extern void DMAC_VIF1_Enable_r(void) __asm__("func_00235018");
-
-extern s32 sce_gs_sync_v_r(s32) __asm__("func_00122598");
-
 extern void SetBackgroundColor_r(s32, u64, u64) __asm__("func_001FB448");
-extern void flush_cache_r(s32) __asm__("func_00118D80");
 
-extern void PutDrawBufferLarge_r(void) __asm__("func_001FB498");
-
-extern void PutDrawBufferSmall_r(void) __asm__("func_001FB598");
-
-extern void VU1_sendChain_r(void) __asm__("func_002349B8");
-extern void VU1_swapChain_r(void) __asm__("func_00234948");
-
-extern void UpdatePad_r(void) __asm__("func_00218908");
-extern void FadeToBlack_r(s32) __asm__("func_001F4E08");
 extern void Movie_Play_r(s32, s32, s32, s32, s32) __asm__("func_0023B670");
-extern s32 scale_game_frame_count_r(s32) __asm__("func_001F98C0");
 
 extern s32 reset_vif1_gif_r(void) __asm__("func_001207B8");
 extern void sceGsResetGraph_r(s16, s16, s16, s16) __asm__("func_00121B78");
@@ -202,18 +187,18 @@ void startlevel(void) {
     prev = 0;
     frames = 0;
     fade = 0x80;
-    VU1_initChain_r();
-    DMAC_VIF1_Enable_r();
+    VU1_initChain();
+    DMAC_VIF1_Enable();
     clear_dma_queue_entry();
     game_frame_counter = 0;
-    sce_gs_sync_v_r(0);
+    sce_gs_sync_v(0);
     g_game_mode_r = 0;
     ResetGsRegisters();
     ResetGsRegistersPr();
     PutDispBuffer();
     SetBackgroundColor_r(0, 0, 0);
     hdr = (LevelHeader *)(((u32)image_end_round_16k & 0xFFFFC000) + 0x2C0000);
-    VU1_initChain_r();
+    VU1_initChain();
     while ((cur = check_memory_card()) != 0 && (frames < 11 || g_controller_state.pressed == 0)) {
         if (cur != prev) {
             if (cur == 1) {
@@ -221,31 +206,31 @@ void startlevel(void) {
             } else {
                 tbl = hdr->loading;
             }
-            flush_cache_r(0);
+            flush_cache(0);
             fast_decompress(tbl[g_game_language].off + (s32)hdr, hdr->code + (s32)hdr);
-            flush_cache_r(0);
+            flush_cache(0);
         }
         SetBackgroundColor_r(0, 0, 0);
-        PutDrawBufferLarge_r();
+        PutDrawBufferLarge();
         append_gif_transfer_packet();
         queue_framebuffer_upload(hdr->code + (s32)hdr);
         if (frames < 8) {
             VU1_addGSregister(0x42, 0x8000000044);
             emit_rgba_draw_packet(0, 0, 0, fade);
         }
-        PutDrawBufferSmall_r();
+        PutDrawBufferSmall();
         append_palette_transfer_packet();
-        VU1_sendChain_r();
-        VU1_swapChain_r();
+        VU1_sendChain();
+        VU1_swapChain();
         VU1_syncChain(1);
-        sce_gs_sync_v_r(0);
+        sce_gs_sync_v(0);
         prev = cur;
         fade -= 0x10;
-        UpdatePad_r();
+        UpdatePad();
         frames++;
     }
     if (prev != 0) {
-        FadeToBlack_r(8);
+        FadeToBlack(8);
     }
     decode_mode_r = -1;
     code = hdr->code + (s32)hdr;
@@ -258,25 +243,25 @@ void startlevel(void) {
                      (code + 0x2C003F) & ~0x3F, 0);
     }
     decode_mode_r = 0;
-    FadeToBlack_r(scale_game_frame_count_r(0xC));
-    flush_cache_r(0);
+    FadeToBlack(scale_game_frame_count(0xC));
+    flush_cache(0);
     if (pal_mode_r != 0) {
         fast_decompress(hdr->gfx_alt + (s32)hdr, hdr->code + (s32)hdr);
     } else {
         fast_decompress(hdr->gfx + (s32)hdr, hdr->code + (s32)hdr);
     }
-    flush_cache_r(0);
-    VU1_initChain_r();
+    flush_cache(0);
+    VU1_initChain();
     SetBackgroundColor_r(0, 0, 0);
-    PutDrawBufferLarge_r();
+    PutDrawBufferLarge();
     append_gif_transfer_packet();
     draw_boot_image(hdr->code + (s32)hdr);
-    PutDrawBufferSmall_r();
+    PutDrawBufferSmall();
     append_palette_transfer_packet();
-    VU1_sendChain_r();
-    VU1_swapChain_r();
+    VU1_sendChain();
+    VU1_swapChain();
     VU1_syncChain(1);
-    sce_gs_sync_v_r(0);
+    sce_gs_sync_v(0);
     game_frame_counter++;
     STUB_printf(str_loading_sound_bank);
     bank = load_audio_bank_by_location(disc_table_r.sound_bank);

@@ -2,8 +2,7 @@
    matched. Starts at 0x00282EB0 (was mobyutil_00282EB0.c). */
 #include "common.h"
 #include "include_asm.h"
-
-extern void get_first_moby_in_group(int *, int, int, int);
+#include "overlays/shared/moby_ground_collision.h"
 
 /* Test whether the current moby identifier matches the requested one; the lookup arguments pass straight through from
    the caller. */

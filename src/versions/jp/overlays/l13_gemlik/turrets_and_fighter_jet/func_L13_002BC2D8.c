@@ -38,7 +38,7 @@ void JetFighterUpdateL13(Jet47 *m) {
                 jet_camera47_r.ticks = scale_ticks(5);
                 ((JetPlayer47 *)(hero_globals_base + 0xE1D))->health = 0.0f;
                 m->flags |= 0x41;
-                spawn_explosion(m, impulse, 0, 0.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, 6, 1.0f, 15.0f, 1, 1, -1, 0);
+                spawn_explosion_v(m, impulse, 0, 0.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, 6, 1.0f, 15.0f, 1, 1, -1, 0);
                 m->animation = 0;
                 d->death_timer = scale_ticks(240);
                 m->state = 6;

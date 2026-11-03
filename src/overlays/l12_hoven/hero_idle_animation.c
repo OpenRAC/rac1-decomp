@@ -32,12 +32,7 @@ typedef struct {
     char pad[0x20];
 } T2C;
 
-extern void ClampVectorLength(void *a, float x);
-extern float vec_length_xy(void *);
-
 extern int truncate_float_to_s32(float);
-
-extern void *MobyGetHitMessage(void *, int, int);
 
 extern int hoven_cinematic_mode MACRO_ADDR;
 extern int hoven_water_patches MACRO_ADDR;

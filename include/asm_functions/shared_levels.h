@@ -6,6 +6,7 @@
 #include "common.h"
 
 extern int CollType(void);
+extern int FastBSphereCheck(void *, float);
 extern void KillPart(void *);
 extern void LerpVec4(void *, void *, void *, float);
 extern void MobyAnimAdvance(void *);
@@ -18,15 +19,20 @@ extern void axis_rotation_2d48(void *, int, float);
 extern void clamp_vec_length(void *, void *, float);
 extern int clamp_vec_length_xy(float, void *, void *);
 extern int coll_capsule(float, float, void *, int, void *);
+extern int coll_line(void *, void *, int, int, int);
 extern int coll_point_query_stub(void *, int, int, void *, int);
 extern int coll_sound_class(void);
+extern int coll_sphere(float, void *, int, void *);
 extern int coll_sphere_hero_groups(float, void *);
+extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern void collect_moby_and_clear_path_keys(void *);
 extern void copy_memory_by_alignment(int, void *, unsigned short);
 extern void crate_drop_bolts(void *);
 extern void *create_part2(int, int);
+extern void divide_vector_xyz(void *, void *, float);
 extern void draw_env_overlay_mesh(int, int, int, void *, int);
 extern void draw_mine_predicted_impact_marker(void);
+extern void draw_world_quad(void *, void *, int);
 extern float fast_atan2(float, float);
 extern void fast_euler_to_matrix(void *, void *);
 extern float fast_fmod(float, float);
@@ -37,6 +43,7 @@ extern void func_L00_00255B90(int);
 extern int generate_random_points_from_shape_entries(void *, int, void *, void *, float);
 extern void get_moby_color(void *, void *, void *, void *);
 extern void get_moby_light_color(void *, void *);
+extern int get_next_moby_in_group(void *, int, int, int);
 extern void hud_weapon_update(void);
 extern void initialize_suck_cannon_hud_counter(void);
 extern float jet_distance(void *, void *);
@@ -57,6 +64,7 @@ extern float split_float_fraction(void *, float);
 extern void vec3_sub_in_place_second_arg(void *, void *, void *);
 extern void vec_mul_components(void *, void *, void *);
 extern void vec_reflect(void *, void *, void *);
+extern void vec_scale_to_length(void *, void *, float);
 extern void vec_set_length_xy(void *, void *, float);
 
 #endif /* ASM_FUNCTIONS_SHARED_LEVELS_H */

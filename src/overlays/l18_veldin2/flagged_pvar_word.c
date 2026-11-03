@@ -4,6 +4,7 @@
 #include "include_asm.h"
 #include "structs/hero.h"
 #include "asm_functions/executable.h"
+#include "overlays/shared/moby_ground_collision.h"
 extern Hero g_hero;
 
 typedef struct {
@@ -15,8 +16,6 @@ typedef struct {
     char pad0[0x10];
     float position[4];
 } Level18Moby;
-
-extern Level18Effect *GetFlaggedPvarWord(Level18Moby *);
 
 extern int truncate_float_to_s32(float);
 

@@ -35,12 +35,7 @@ typedef struct {
     char pad[0x20];
 } T2C;
 
-extern void ClampVectorLength(void *a, float x);
-extern float vec_length_xy(void *);
-
 extern int truncate_float_to_s32(float);
-
-extern void *MobyGetHitMessage(void *, int, int);
 
 extern int novalis_game_mode MACRO_ADDR;
 extern int pool_draw_tiles MACRO_ADDR;
@@ -1596,8 +1591,6 @@ extern int last_weapon_id_r __asm__("D_00141760");
 extern unsigned char D_0013D5C8[];
 extern Rec2C novalis_attack_records_r[] __asm__("D_L01_0017C128");
 extern int r1_double_tap_timer SDATA(r1_double_tap_timer);
-
-extern int func_001F9908(int *);
 
 /* Gadget and weapon input for the current hero state: starts the matching move and returns 1 when the state changed. */
 int handle_hero_gadget_button(void) {

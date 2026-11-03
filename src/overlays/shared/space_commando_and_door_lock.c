@@ -152,26 +152,18 @@ extern Vec4f blarg_camera_pos;
 extern s32 *blarg_paths[];
 extern f32 blarg_zero_vec[] MACRO_ADDR;
 
-extern s32 fast_dec_timer(s32 *);
-
-extern f32 vec_distance_xy(void *, void *);
-
 extern s32 truncate_float_to_s32(f32);
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
 
 extern void Moby_GetJointWorldPos_r(struct Moby *, s32, void *) __asm__("func_L00_00250800");
-extern void MobySpringTurn(struct Moby *, f32, f32 *, f32, f32, f32);
-extern s32 move_w(struct Moby *, MoveCtl *, void *, void *, f32);
+extern void MobySpringTurn_v(struct Moby *, f32, f32 *, f32, f32, f32) __asm__("func_L00_002592B0");
+
 extern void InitDirectionalHitQuery_v(ShotInfo *, struct Moby *, s32, void *, f32) __asm__("func_L00_0025A8C0");
 
-extern void set_ground_height_band(struct Moby *);
-extern void SteerAngleWithVelocity(f32 *, f32, f32 *, f32, f32, f32);
-extern s32 mine_fall(struct Moby *, Vec4 *);
-extern void spawn_explosion(struct Moby *, Vec4 *, void *, f32, f32, s32, s32, s32, f32, f32, f32, f32, s32, f32, s32,
-                            s32, s32, s32);
+extern void SteerAngleWithVelocity_v(f32 *, f32, f32 *, f32, f32, f32) __asm__("func_L00_0025CE58");
 
-extern void resolve_point_path_segment_xy_clearance(s32, void *, void *, f32);
-extern void Manipulator_ApplyScale(struct Moby *, s32, void *, f32);
+extern void resolve_point_path_segment_xy_clearance_v(s32, void *, void *, f32) __asm__("func_L00_00262DF0");
+extern void Manipulator_ApplyScale_v(struct Moby *, s32, void *, f32) __asm__("func_L00_00264B40");
 extern void SpawnBreakFragment_r(struct Moby *, s32, void *, void *, s32, s32, f32, f32 *, f32 *,
                                  f32 *) __asm__("func_L00_00265050");
 
@@ -196,7 +188,7 @@ void blarg_space_commando_update(struct Moby *moby) {
 
     process_blarg_space_commando_hits(moby);
     target = vars->target;
-    Manipulator_ApplyScale(moby, 1, vars->unk420, 2.5f);
+    Manipulator_ApplyScale_v(moby, 1, vars->unk420, 2.5f);
     if (moby->visible != 0 && FastVecDist(&moby->pos, &blarg_camera_pos) < 27.0f) {
         set_ground_height_band(moby);
         moby->shadow_range = 0x15;
@@ -231,9 +223,9 @@ void blarg_space_commando_update(struct Moby *moby) {
                     break;
                 }
             }
-            SteerAngleWithVelocity(&moby->rot.z, fast_atan2(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y),
-                                   &vars->turn_speed, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f,
-                                   g_frame_time * 3.1415927f);
+            SteerAngleWithVelocity_v(&moby->rot.z, fast_atan2(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y),
+                                     &vars->turn_speed, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f,
+                                     g_frame_time * 3.1415927f);
             if (vars->unk164 != 2) {
                 if (D_L06_00162054_FF000 < vec_distance_xy(&moby->pos, &target->pos)) {
                     if (FastDiffRots(moby->rot.z, fast_atan2(target->pos.x - moby->pos.x,
@@ -265,7 +257,7 @@ void blarg_space_commando_update(struct Moby *moby) {
             dist = vec_distance_xy(&moby->pos, &a);
             if (dist < 0.25f) {
                 angle = fast_atan2(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y);
-                MobySpringTurn(moby, angle, &vars->turn_speed, 0.05f, 0.3f, g_frame_time * 5.5850534f);
+                MobySpringTurn_v(moby, angle, &vars->turn_speed, 0.05f, 0.3f, g_frame_time * 5.5850534f);
                 if (FastDiffRots(angle, moby->rot.z) < 0.2617994f) {
                     vars->turn_speed = 0.0f;
                     vars->volume = -1;
@@ -275,8 +267,8 @@ void blarg_space_commando_update(struct Moby *moby) {
                     moby->state = 1;
                 }
             } else {
-                MobySpringTurn(moby, fast_atan2(a.f[0] - moby->pos.x, a.f[1] - moby->pos.y), &vars->turn_speed, 0.025f,
-                               0.3f, g_frame_time * 5.5850534f);
+                MobySpringTurn_v(moby, fast_atan2(a.f[0] - moby->pos.x, a.f[1] - moby->pos.y), &vars->turn_speed,
+                                 0.025f, 0.3f, g_frame_time * 5.5850534f);
                 if (dist > 2.0f) {
                     dist = 2.0f;
                 }
@@ -287,9 +279,9 @@ void blarg_space_commando_update(struct Moby *moby) {
             }
             break;
         case 2:
-            SteerAngleWithVelocity(&moby->rot.z, fast_atan2(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y),
-                                   &vars->turn_speed, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f,
-                                   g_frame_time * 3.1415927f);
+            SteerAngleWithVelocity_v(&moby->rot.z, fast_atan2(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y),
+                                     &vars->turn_speed, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f,
+                                     g_frame_time * 3.1415927f);
             if (moby->anim_flags & 2) {
                 initialize_blarg_space_commando_beam_r(moby);
                 moby->state = 3;
@@ -315,9 +307,9 @@ void blarg_space_commando_update(struct Moby *moby) {
             }
             break;
         case 4:
-            SteerAngleWithVelocity(&moby->rot.z, fast_atan2(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y),
-                                   &vars->turn_speed, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f,
-                                   g_frame_time * 3.1415927f);
+            SteerAngleWithVelocity_v(&moby->rot.z, fast_atan2(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y),
+                                     &vars->turn_speed, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f,
+                                     g_frame_time * 3.1415927f);
             if (fast_dec_timer(&vars->timer) != 0) {
                 initialize_blarg_space_commando_beam_r(moby);
                 moby->state = 3;
@@ -337,9 +329,9 @@ void blarg_space_commando_update(struct Moby *moby) {
             }
             break;
         case 5:
-            SteerAngleWithVelocity(&moby->rot.z, fast_atan2(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y),
-                                   &vars->turn_speed, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f,
-                                   g_frame_time * 3.1415927f);
+            SteerAngleWithVelocity_v(&moby->rot.z, fast_atan2(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y),
+                                     &vars->turn_speed, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 6.2831855f,
+                                     g_frame_time * 3.1415927f);
             Moby_GetJointWorldPos_r(moby, 0, &a);
             qcopy(&b, &moby->pos);
             b.f[2] += 0.3f;
@@ -377,13 +369,13 @@ void blarg_space_commando_update(struct Moby *moby) {
             break;
         case 11:
             near = 0;
-            MobySpringTurn(moby, fast_atan2(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y),
-                           &vars->turn_speed, 0.05f, 0.3f, g_frame_time * 6.2831855f);
+            MobySpringTurn_v(moby, fast_atan2(target->pos.x - moby->pos.x, target->pos.y - moby->pos.y),
+                             &vars->turn_speed, 0.05f, 0.3f, g_frame_time * 6.2831855f);
             a.f[0] = 2.0f * FastCos(moby->rot.z);
             a.f[1] = 2.0f * FastSin(moby->rot.z);
             a.f[2] = 0.0f;
             move_w(moby, &vars->ctl, &a, &b, 1.0f);
-            resolve_point_path_segment_xy_clearance(vars->path, &moby->pos, &moby->pos, 0.75f);
+            resolve_point_path_segment_xy_clearance_v(vars->path, &moby->pos, &moby->pos, 0.75f);
             if (SegmentCrossPolyline(vars->path, &moby->pos, &target->pos, &c) != 0 &&
                 FastVecDist(&moby->pos, &c) < 0.8f) {
                 near = 1;
@@ -427,15 +419,15 @@ void blarg_space_commando_update(struct Moby *moby) {
             }
             break;
         case 13:
-            MobySpringTurn(moby, fast_atan2(vars->home.f[0] - moby->pos.x, vars->home.f[1] - moby->pos.y),
-                           &vars->turn_speed, 0.05f, 0.3f, g_frame_time * 6.2831855f);
+            MobySpringTurn_v(moby, fast_atan2(vars->home.f[0] - moby->pos.x, vars->home.f[1] - moby->pos.y),
+                             &vars->turn_speed, 0.05f, 0.3f, g_frame_time * 6.2831855f);
             a.f[0] = 2.0f * FastCos(moby->rot.z);
             a.f[1] = 2.0f * FastSin(moby->rot.z);
             a.f[2] = 0.0f;
             if (FastDiffRots(moby->rot.z, fast_atan2(vars->home.f[0] - moby->pos.x, vars->home.f[1] - moby->pos.y)) <
                 0.7853982f) {
                 move_w(moby, &vars->ctl, &a, &b, 1.0f);
-                resolve_point_path_segment_xy_clearance(vars->path, &moby->pos, &moby->pos, 0.75f);
+                resolve_point_path_segment_xy_clearance_v(vars->path, &moby->pos, &moby->pos, 0.75f);
             }
             if (FastVecDist(&vars->home, &moby->pos) < 1.0f) {
                 moby->state = 1;
@@ -478,19 +470,10 @@ void blarg_space_commando_update(struct Moby *moby) {
 extern void update_blarg_space_commando_beam(void *);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern char *MobyGetHitMessage(void *, int, int);
-extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
-
-extern void PlayBankSound(int, int, int);
-
-extern void InitKnockback(void *, void *, float, int, int, int);
 
 extern char *spawn_spinning_moby_fragment(int unused, char *pa, char *pb);
-extern void RerollEffectCounter(void *m, short *p);
+
 extern void SetDeathBits(void *, int, int);
-extern void StepColorFade(void *, void *);
-extern int FindNearestEligibleMoby(float, char *, void *, int, int, void *, int);
-extern float vec_distance_xy(void *, void *);
 
 extern int *blarg_paths[];
 extern float g_frame_time MACRO_ADDR;
@@ -653,8 +636,6 @@ void process_blarg_space_commando_hits(char *m) {
     }
 }
 
-extern void vec_scale_to_length(void *, void *, float);
-
 extern char blarg_coll_hit_normal[];
 extern float space_commando_beam_fan_degrees SDATA(space_commando_beam_fan_degrees);
 extern int space_commando_beam_ticks SDATA(space_commando_beam_ticks);
@@ -683,9 +664,6 @@ void initialize_blarg_space_commando_beam(Moby *m) {
     }
     ((struct SpaceCommandoVars *)d)->beam_ticks = (float)scale_ticks(space_commando_beam_ticks);
 }
-
-extern int coll_line(void *, void *, int, void *, void *);
-extern float ApproachValue(float *, float, float);
 
 extern void DrawBeam(char *moby);
 extern void spawn_blarg_space_commando_beam_sparks(char *moby);
@@ -804,11 +782,9 @@ extern s32 space_commando_beam_inner_color_a SDATA(space_commando_beam_inner_col
 extern s32 space_commando_beam_inner_color_b SDATA(space_commando_beam_inner_color_b);
 extern f32 space_commando_beam_uvs[4][2];
 
-extern u64 GetEffectTex(s32);
+extern u64 GetEffectTex_v(s32) __asm__("func_001F4868");
 
-extern void vec_scale_to_length(void *, void *, f32);
 extern u32 FastTweenColor_r(f32, s32, s32) __asm__("func_001FA8A8");
-extern void draw_world_quad(void *, void *, s32);
 
 /* Draws the beam as 15 textured quads between consecutive points of the moby's point list (data + 0x230), each twice:
    once with the odd corners pulled toward the centre (data + 0x210) and once raised by 0.25.
@@ -826,8 +802,8 @@ void DrawBeam(char *moby) {
 
     VU1_addGSregister(0x47, 0x5380B);
     i = 0;
-    pk[0].tag[1] = GetEffectTex((space_commando_beam_texture));
-    pk[1].tag[1] = GetEffectTex((space_commando_beam_texture));
+    pk[0].tag[1] = GetEffectTex_v((space_commando_beam_texture));
+    pk[1].tag[1] = GetEffectTex_v((space_commando_beam_texture));
     regs = (beam_blend_minuend_selector_gp);
     regs |= (u64)(beam_blend_subtrahend_selector_gp) << 2;
     regs |= (u64)(beam_blend_alpha_multiplier_selector_gp) << 4;
@@ -881,8 +857,6 @@ void DrawBeam(char *moby) {
 }
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-
-extern void lerp_vector(void *, void *, void *, float);
 
 extern short beam_spark_initial_word_gp, beam_spark_second_word_gp, space_commando_beam_spark_start_w,
     space_commando_beam_spark_end_w, space_commando_beam_spark_time_a_min, space_commando_beam_spark_time_a_max;
@@ -972,7 +946,7 @@ void update_falling_spinning_moby(char *moby) {
 typedef int u128 __attribute__((mode(TI)));
 extern int rnd_a(float) __asm__("func_001FA898");
 extern char *mk_a(int) __asm__("func_0020D348");
-extern void upd_a(void *) __asm__("func_L00_00251E30");
+
 extern float g_frame_time MACRO_ADDR;
 
 /* Spawns a debris moby with a random class and random spin. */
@@ -998,7 +972,7 @@ char *spawn_spinning_moby_fragment(int unused, char *pa, char *pb) {
         data->rot_vel.y = random_float_between(-360.0f, 360.0f) * 0.017453292f * g_frame_time;
         data->rot_vel.z = random_float_between(-360.0f, 360.0f) * 0.017453292f * g_frame_time;
         m->command = rnd_a(multiply_global_factor(random_float_between(60.0f, 120.0f)));
-        upd_a(m);
+        moby_build_matrix(m);
     }
     return (char *)m;
 }
@@ -1061,7 +1035,6 @@ typedef struct {
     long tag[4];
 } Pkt89B8 __attribute__((aligned(16)));
 
-extern void draw_world_quad(void *, void *, int);
 extern char referencePosition[];
 extern int door_lock_glow_quad_corner_indices[][4];
 extern float door_lock_glow_corner_uvs[][2];
@@ -1092,7 +1065,7 @@ void draw_bot_door_lock_glow(char *o) {
     pk.tag[2] = 1;
     pk.tag[3] = 0x4000000044L;
     pk.tag[0] = 0;
-    pk.tag[1] = GetEffectTex(0x18);
+    pk.tag[1] = GetEffectTex_v(0x18);
     for (i = 0; i < 4; i++) {
         matrix_mul_vec3(v[0], door_lock_glow_corner_vertices + door_lock_glow_quad_corner_indices[i][0] * 16, mat);
         matrix_mul_vec3(v[1], door_lock_glow_corner_vertices + door_lock_glow_quad_corner_indices[i][1] * 16, mat);
@@ -1124,7 +1097,7 @@ void draw_bot_door_lock_glow(char *o) {
         pk.uv[7] = door_lock_glow_corner_uvs[door_lock_glow_quad_corner_indices[i][3]][1] + *(float *)(data + 0x1C);
         draw_world_quad(&pk, 0, 1);
     }
-    pk.tag[1] = GetEffectTex(0x1B);
+    pk.tag[1] = GetEffectTex_v(0x1B);
     f = *(float *)(data + 0x20) + 0.01f;
     *(float *)(data + 0x20) = f;
     if (1.0f < f) {
@@ -1353,9 +1326,6 @@ void bot_door_lock_update(Moby *moby) {
             return;
     }
 }
-extern char *MobyGetHitMessage(void *, int, int);
-
-extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
 
 extern float blarg_zero_vec[] MACRO_ADDR;
 
@@ -1510,7 +1480,7 @@ void draw_projected_fading_quad(char *moby) {
     corners[2] += x + radius;
     corners[3] += (y + radius) << 16;
     corners[3] += x - radius;
-    texture = GetEffectTex(D_L06_001624A4_FF000);
+    texture = GetEffectTex_v(D_L06_001624A4_FF000);
     draw_geometry_quad_5188_v(corners, uvs, colors, texture, 1);
     VU1_addGSregister(0x47, 0x5360B);
 }

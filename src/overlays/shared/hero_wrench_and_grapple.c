@@ -22,6 +22,8 @@
 #include "overlays/shared/sound_playback.h"
 #include "overlays/l02_aridia/hero_idle_and_item_input.h"
 #include "overlays/l02_aridia/hero_movement.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "game/moby/mobyutil.h"
 extern Hero g_hero;
 
 LINKER_REMNANT("asm/overlays", func_L02_0021A2E0);
@@ -51,10 +53,6 @@ void update_hero_stick_target_magnitude(void) {
     }
 }
 typedef int Q_222D18 __attribute__((mode(TI)));
-
-extern void vec_scale_to_length(void *, void *, float);
-
-extern float vec_length_xy(void *);
 
 /* Integrate player motion, resolve contacts, and measure the resulting movement. */
 void Hero_ApplyMotionCollisionL02(void) {
@@ -206,10 +204,6 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern float aridia_hero_speed_bands_field_18[];
 
-extern float ApproachValue(float *, float, float);
-
-extern float SpringAngle(void *, float, void *, int, float, float, float);
-
 // Per-state hop velocity update for the player. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/ui_help_00220b80.c, FUN_L02_00223450.
 void hero_update_hop_velocity(void) {
     Vec4 tmp;
@@ -346,8 +340,6 @@ extern Rec2C D_L02_0017C2A8[];
 extern int D_L02_0015F754 SDATA(D_L02_0015F754);
 
 extern int truncate_float_to_s32(float);
-
-extern int func_001F9908(int *);
 
 /* Gadget and weapon input for the current hero state: starts the matching move and returns 1 when the state changed. */
 int process_hero_item_action_input(void) {

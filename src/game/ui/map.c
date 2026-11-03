@@ -555,14 +555,6 @@ extern f32 map_data_0015FE50 SDATA(D_0015FE50);
 extern f32 map_data_0015FE54 SDATA(D_0015FE54);
 extern u8 D_001E8398[];
 
-extern void draw_ui_frame(s32, s32, s32, s32, s32) __asm__("func_001F62C8");
-
-extern f32 fast_add_rotations(f32, f32) __asm__("func_001FA748");
-
-extern s32 get_icon_frame(s32, s32) __asm__("func_00200198");
-
-extern void draw_rotated_sprite(f32, f32, f32, f32, f32, s32, s32, u64);
-
 extern void world_to_map_coords_r(f32 *, f32 *, s32, f32, f32) __asm__("func_00208C38");
 /* EABI places floating and integer arguments in independent register banks. */
 extern void world_to_map_coords_xy_205E70(f32, f32, f32 *, f32 *, s32) __asm__("func_00208C38");
@@ -657,7 +649,7 @@ void draw_map_overlay(void) {
     g_render_packet_cursor.p->vif0 = 0;
     g_render_packet_cursor.p->vif1 = 0x50000005;
     g_render_packet_cursor.p++;
-    background_tex0 = GetFrameTex(get_icon_frame(0xE999, map_data_001A01F0.selected_map));
+    background_tex0 = GetFrameTex(GetIconFrame(0xE999, map_data_001A01F0.selected_map));
     packet_words = (u64 *)g_render_packet_cursor.p;
     packet_words[0] = 0x7400000000008001;
     packet_words[1] = 0x5353106;
@@ -737,7 +729,7 @@ void draw_map_overlay(void) {
                     if (map_data_001A01F0.icons[i].flags & 0x80) {
                         icon_size_multiplier = 1.5f;
                     }
-                    image_index = get_icon_frame(texture_id, map_data_001A01F0.icons[i].frame_index);
+                    image_index = GetIconFrame(texture_id, map_data_001A01F0.icons[i].frame_index);
                     icon_center_x = (f32)rx0 + map_data_001A01F0.icons[i].x * (f32)(rx1 - rx0);
                     icon_center_y = (f32)ry0 + map_data_001A01F0.icons[i].y * (f32)(ry1 - ry0);
                     texture_info = &hud_state.textures[hud_state.references[image_index].image_index];
@@ -852,7 +844,7 @@ void draw_map_overlay(void) {
                                 sprite_height = s * 256.0f;
                                 sprite_width = sprite_height;
                                 if (map_data_001A01F0.icons[i].flags & 0x400) {
-                                    angle = fast_add_rotations(angle, 1.5707964f);
+                                    angle = FastAddRots(angle, 1.5707964f);
                                     texture_width = 0x40;
                                     sprite_width = s * map_data_0015FE48;
                                     sprite_height = s * map_data_0015FE4C;
@@ -861,7 +853,7 @@ void draw_map_overlay(void) {
                                     }
                                 }
                                 if (map_data_001A01F0.icons[i].flags & 0x800) {
-                                    angle = fast_add_rotations(angle, 1.5707964f);
+                                    angle = FastAddRots(angle, 1.5707964f);
                                     texture_width = 0x40;
                                     sprite_width = s * map_data_0015FE40;
                                     sprite_height = s * map_data_0015FE44;
@@ -870,16 +862,16 @@ void draw_map_overlay(void) {
                                     }
                                 }
                                 if (map_data_001A01F0.icons[i].flags & 0x1000) {
-                                    angle = fast_add_rotations(angle, 1.5707964f);
+                                    angle = FastAddRots(angle, 1.5707964f);
                                     sprite_width = s * map_data_0015FE50;
                                     sprite_height = s * map_data_0015FE54;
                                 }
                                 center_x = (f32)(icon_bounds[i].x0 + icon_bounds[i].x1) * 0.5f;
                                 center_y = (f32)(icon_bounds[i].y0 + icon_bounds[i].y1) * 0.5f;
                                 draw_rotated_sprite(center_x, center_y, sprite_width, sprite_height, angle,
-                                                    texture_width, 0x20, GetFrameTex(get_icon_frame(id, sprite_word)));
+                                                    texture_width, 0x20, GetFrameTex(GetIconFrame(id, sprite_word)));
                             } else {
-                                draw_hud_sprite_subpixel(get_icon_frame(id, sprite_word), icon_bounds[i].x0,
+                                draw_hud_sprite_subpixel(GetIconFrame(id, sprite_word), icon_bounds[i].x0,
                                                          icon_bounds[i].y0, icon_bounds[i].x1 - icon_bounds[i].x0,
                                                          icon_bounds[i].y1 - icon_bounds[i].y0, 0x80);
                             }
@@ -906,7 +898,7 @@ void draw_map_overlay(void) {
                                         label_y = (icon_bounds[i].y0 >> 4) - label_height / 2 + sprite_word;
                                     }
                                 }
-                                draw_ui_frame(label_y, label_y + label_height, label_x, label_x + label_width, 0x40);
+                                DrawUIFrame(label_y, label_y + label_height, label_x, label_x + label_width, 0x40);
                                 FormatMenuItemText(i, &label_buffer);
                                 libc_memset(&text_window, 0, sizeof(text_window));
                                 text_window.s[1] = label_y + label_height;
@@ -936,17 +928,17 @@ void draw_map_overlay(void) {
             f32 angle;
             s32 flip;
 
-            image_index = get_icon_frame(0xE99A, 5);
+            image_index = GetIconFrame(0xE99A, 5);
             s = ((m->zoom[m->selected_map] * 4.0f + 10.0f) * 0.75f) / 13.0f;
             angle = g_hero.motion.rot.f[2];
             flip = g_hero.state.control_mode == HERO_MODE_GRIND;
             if (flip) {
-                angle = fast_add_rotations(angle, 1.5707964f);
+                angle = FastAddRots(angle, 1.5707964f);
             }
             if (map_data_0015FE20 != 0) {
                 world_to_map_coords_r(&label_buffer.f[0], &label_buffer.f[1], map_data_0015EE84 + 100,
                                       g_hero.motion.pos.f[0], g_hero.motion.pos.f[1]);
-                angle = fast_add_rotations(angle, 1.5707964f);
+                angle = FastAddRots(angle, 1.5707964f);
             } else {
                 world_to_map_coords_xy_205E70(g_hero.motion.pos.f[0], g_hero.motion.pos.f[1], &label_buffer.f[0],
                                               &label_buffer.f[1], map_current_level_205E70);
@@ -954,7 +946,7 @@ void draw_map_overlay(void) {
             label_buffer.f[0] = (f32)rx0 + label_buffer.f[0] * (f32)(rx1 - rx0);
             label_buffer.f[1] = (f32)ry0 + label_buffer.f[1] * (f32)(ry1 - ry0);
             if (draw_map51[0] != 0) {
-                angle = FastSubRots(-fast_add_rotations(angle, 1.5707964f), 1.5707964f);
+                angle = FastSubRots(-FastAddRots(angle, 1.5707964f), 1.5707964f);
             }
             {
                 f32 sz = s * 256.0f;

@@ -10,6 +10,8 @@
 #include "game/render/vuchain.h"
 #include "asm_functions/level_02.h"
 #include "asm_functions/level_09.h"
+#include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 
 LINKER_REMNANT("asm/overlays", func_L09_0021E3E8);
 typedef struct Strip_21E410 {
@@ -18,9 +20,7 @@ typedef struct Strip_21E410 {
     unsigned short b; /* 0xA */
     char padC[4];
 } Strip_21E410;
-extern long func_001F4868(int);
 
-extern void VU1_addGSregister_r(int, long) __asm__("func_00234C98");
 extern int *l09_packet_r __asm__("D_L09_00161240") MACRO_ADDR;
 extern char D_L09_0016D380[];
 extern long D_L09_00162040[];
@@ -96,12 +96,10 @@ void func_L09_0021E410_r(int a, int b, float t) {
         g[2] = 0;
         g[3] = 0x3F;
         l09_packet_r = q + 8;
-        VU1_addGSregister_r(7, (long)(g_gs_texture_allocation_cursor >> 8) | 0x18100000 | (0xB000L << 19));
+        VU1_addGSregister(7, (long)(g_gs_texture_allocation_cursor >> 8) | 0x18100000 | (0xB000L << 19));
         g_gs_texture_allocation_cursor += 0x4000;
     }
 }
-
-extern int FastBSphereCheck(char *, float);
 
 extern int *l09_packet MACRO_ADDR;
 extern char gaspar_strip_gs_setup_packet[];

@@ -20,6 +20,7 @@
 #include "game/ui/help.h"
 #include "core/libc/sprintf.h"
 #include "overlays/shared/particle_type_registry.h"
+#include "overlays/shared/effect_particle_updates.h"
 extern struct Hero g_hero;
 /* Break fragment: velocity, spin, life and gravity. */
 struct BreakFragmentVars {
@@ -39,12 +40,9 @@ typedef struct {
 } SegmentPath;
 extern SegmentPath *level_paths[];
 
-extern void vec_scale_to_length(void *, void *, float);
-
 extern int SegmentCrossPolyline(int, void *, void *, void *);
 
 struct MobyBound;
-struct MobyBound *GetFlaggedPvarWord(struct Moby *);
 
 extern int current_moby_mission_complete MACRO_ADDR;
 extern unsigned char mission_state[] MACRO_ADDR;
@@ -311,8 +309,6 @@ void SetUpdateModeTiming(int mode) {
 INCLUDE_ASM("asm/overlays", func_L00_00262450);
 typedef int u128 __attribute__((mode(TI)));
 
-extern float vec_distance_xy(void *, void *);
-
 /* Wander state (the idle_pos block in a moby's pvars). */
 struct WanderState {
     f32 home_x; /* 0x00: home point */
@@ -432,10 +428,6 @@ s32 test_path_segment_strict_crossing(s32 path_index, Vec4 *start, Vec4 *end) {
     }
     return 0;
 }
-
-extern void vec_scale_to_length(void *, void *, float);
-
-extern void lerp_vector(void *, void *, void *, float);
 
 /* Tests whether segment a-b crosses polyline level_paths[idx]; writes the nearest crossing to c. */
 int SegmentCrossPolyline(int idx, void *a, void *b, void *c) {
@@ -646,8 +638,6 @@ typedef struct {
 } PointPath;
 extern s32 truncate_float_to_s32(f32);
 
-extern void vec_scale_to_length(void *, void *, f32);
-
 /* Samples path at distance dist (points spacing apart): stores the segment, the distance into it and the point.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/state/00261968.c, FUN_L00_00262360. */
 void path_sample_at_distance(PointPath *path, s32 *seg_out, f32 *along, Vec4 *out, f32 dist, f32 spacing) {
@@ -810,7 +800,7 @@ void clear_moby_transform_history(struct TransformHistory *o) {
 }
 LINKER_REMNANT("asm/overlays", func_L00_00263938);
 
-extern float SpringAngle(char *, char *, float, float, float, float, int);
+extern float SpringAngle_v(char *, char *, float, float, float, float, int) __asm__("func_L00_0025CCF0");
 
 /* A manipulator state: eased rotation offsets and scale applied to a held moby. */
 struct ManipState {
@@ -851,9 +841,9 @@ void EaseManipulatorOffsets(int m, struct ManipState *p, int c, float fa, float 
             DetachManipulator(m, p);
         return;
     }
-    SpringAngle((char *)p->euler, (char *)p->euler_vel, p->goal[0], fa, fb, 0.0f, 0);
-    SpringAngle((char *)&p->euler[1], (char *)&p->euler_vel[1], p->goal[1], fa, fb, 0.0f, 0);
-    SpringAngle((char *)&p->euler[2], (char *)&p->euler_vel[2], p->goal[2], fa, fb, 0.0f, 0);
+    SpringAngle_v((char *)p->euler, (char *)p->euler_vel, p->goal[0], fa, fb, 0.0f, 0);
+    SpringAngle_v((char *)&p->euler[1], (char *)&p->euler_vel[1], p->goal[1], fa, fb, 0.0f, 0);
+    SpringAngle_v((char *)&p->euler[2], (char *)&p->euler_vel[2], p->goal[2], fa, fb, 0.0f, 0);
     if (!p->attached)
         AttachManipulator(m, c, p);
     build_quaternion_from_axis_rotations(p->quat, &p->euler[0]);
@@ -882,12 +872,12 @@ void update_moby_rotation_oscillation(float *o, float *a, float *b, float r, flo
     *a = FastAddRots(*a, l1);
     *b = FastAddRots(*b, l2);
 }
-extern void BuildSphericalOffset_x(void *, float, float, float) __asm__("func_00215C00");
+
 /* Set a to b plus the spherical offset built from r, y and z. */
 void fast_add_rotations_cf(void *a, void *b, float r, float y, float z) {
     typedef float W[4] __attribute__((aligned(16)));
     W v;
-    BuildSphericalOffset_x(v, r, y, z);
+    BuildSphericalOffset(v, r, y, z);
     FastVecAdd(a, v, b);
 }
 extern void ShowBanner(int arg0, int arg1);
@@ -916,11 +906,8 @@ typedef struct MobyBound {
 extern struct Moby *suck_moby_list MACRO_ADDR;
 extern u8 g_debug_camera_r[] __asm__("D_L00_00166EC0");
 
-float vec_length_xy(void *);
-float vec_distance_xy(void *, void *);
-
 void func_00215C00_64140(Vec4 *, float, float, float) __asm__("func_00215C00");
-MobyBound *GetFlaggedPvarWord(struct Moby *);
+
 int func_L00_001EFFF0_64140(void *, Vec4 *, int, void *, int) __asm__("func_L00_001EFFF0");
 
 /* Picks the best auto-aim target moby (kind 5) for a shot from pos along dir: writes yaw/pitch toward it and its aim
@@ -1008,8 +995,6 @@ typedef struct {
 } S166D;
 extern S166D player_camera;
 extern V collision_hit_point;
-extern int coll_line(void *, void *, int, int, int);
-extern float vec_length_xy(void *);
 
 /* spawns impact sparks at a point on the ground near the camera. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay_entities_002630b8.c, FUN_L00_002634f8. */
 void spawn_ground_contact_effect_particle(V *v) {
@@ -1032,10 +1017,7 @@ void spawn_ground_contact_effect_particle(V *v) {
     }
 }
 typedef int u128_264690 __attribute__((mode(TI)));
-extern int GetEffectTex(int);
-extern void vec_scale_to_length(void *, void *, float);
 
-extern void draw_world_quad(void *, void *, int);
 extern float g_debug_camera[];
 extern float offset_effect_quad_corners[];
 
@@ -1107,7 +1089,6 @@ typedef struct {
     EffectTail tail;
 } Effect;
 
-extern Effect *PartType23Spawn(void *, f32, f32, f32, s32, void *, f32, u32);
 extern u8 veldin1_zero_vec_r[] __asm__("D_L00_0015F660") MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002630b8.c, FUN_L00_002637f8. */
@@ -1311,8 +1292,6 @@ void spawn_moby_break_fragments(char *m, int n, int cnt, int base, int range, in
 }
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-
-extern void rand_vec(float *, float, float);
 
 /* Spawns a break-effect fragment moby of class cls from src, and initialises its motion data. */
 void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float *v10, float *v11, float scale,

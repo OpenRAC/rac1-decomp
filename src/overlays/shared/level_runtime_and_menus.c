@@ -13,6 +13,19 @@
 #include "game/system/stash.h"
 #include "game/gameplay/missionfunc.h"
 #include "overlays/shared/stash_slots.h"
+#include "game/math/fastfunc.h"
+#include "game/render/draw.h"
+#include "callees.h"
+#include "game/render/vuchain.h"
+#include "game/audio/sound.h"
+#include "game/ui/hud.h"
+#include "core/sound/989snd.h"
+#include "game/render/framebuf.h"
+#include "game/system/memcard.h"
+#include "game/audio/music.h"
+#include "core/gs/put_draw_env.h"
+#include "game/ui/pause.h"
+#include "game/system/space.h"
 extern char item_available[];
 extern char level_map_coverage[];
 
@@ -68,19 +81,17 @@ extern int cinematic_mode_r __asm__("D_L00_0015F6A8") MACRO_ADDR;
 extern int cinematic_mode_frames_r __asm__("D_L00_0015F6AC") MACRO_ADDR;
 extern float cpu_frame_load_r __asm__("D_L00_0015F6B4") MACRO_ADDR;
 extern int skip_frame_r __asm__("D_L00_0015F6BC") MACRO_ADDR;
-extern void FastMemZero16_r(void *, int) __asm__("func_001F99D8");
+
 extern int STUB_printf_r() __asm__("func_001E9730");
-extern void init_stash_r(void) __asm__("func_00234018");
+
 extern void init_level_runtime_state_r(void) __asm__("func_L00_0023D9C0");
 extern int load_level_archive_resources_r(int, int) __asm__("func_L00_00244AE0");
-extern void clear_dma_queue_entry_r(void) __asm__("func_001F0F30");
+
 extern void initialize_level_map_archive_r(void) __asm__("func_L00_00246EC0");
-extern void init_hud_r(void) __asm__("func_001FF6B8");
+
 extern void load_misc_animations_into_stash_r(void) __asm__("func_L00_00276F18");
 extern void prepare_level_entry_transition_r(void) __asm__("func_L00_002901A8");
-extern int sce_gs_sync_v_r(int) __asm__("func_00122598");
-extern void PutDispBuffer_r(void) __asm__("func_001FB470");
-extern void music_StartTrack_r(int, int, int) __asm__("func_00216A90");
+
 /* The empty function (`jr $31; nop`) and register_audio_stream_callback have several identical copies in level 00. The
    catalogue
    names every copy after one of them, and overlay_check resolves such a name to the copy nearest the call, which
@@ -95,7 +106,7 @@ extern void handle_pause_input_r(void) __asm__("func_L00_00299250");
 extern void draw_debug_profiler_if_enabled_r(void) __asm__("func_L00_001F91B0");
 extern void play_queued_movie_r(void) __asm__("func_L00_0029AD18");
 extern void update_cutscene_playback_r(void) __asm__("func_L00_0029A300");
-extern void prepare_debug_profiler_render_r(void) __asm__("func_001F45F0");
+
 extern void update_pause_menu_r(void) __asm__("func_L00_00277A88");
 extern void draw_page_contents_r(void) __asm__("func_L00_001F92C0");
 extern void update_mode_freeze_r(void) __asm__("func_001FD3E8");
@@ -107,35 +118,12 @@ extern void dispatch_game_state_update_r(void) __asm__("func_00232200");
 extern void update_slideshow_r(void) __asm__("func_L00_0029AFB8");
 extern void draw_framebuffer_with_timed_text_r(void) __asm__("func_L00_001F92E8");
 extern void Frame_RollCounter_r(void) __asm__("func_L00_001F70F0");
-extern void VU1_sendChain_r(void) __asm__("func_002349B8");
-extern void VU1_swapChain_r(void) __asm__("func_00234948");
-extern void PutDrawBufferSmall_r(void) __asm__("func_001FB598");
-extern void AA_BlurPass_r(void) __asm__("func_001FB848");
-extern void PutDrawBufferLarge_r(void) __asm__("func_001FB498");
-extern int snd_FlushSoundCommands_r(void) __asm__("func_0012DDC0");
-extern void VU1_syncChain_r(int) __asm__("func_00234AC8");
-extern void VU1_initChain_r(void) __asm__("func_002348E8");
-extern void snd_reenable_command_flush_r(void) __asm__("func_0012EC30");
-extern void snd_reset_state_and_flush_commands_r(void) __asm__("func_0012EC40");
-extern void sound_StopAllSounds_r(void) __asm__("func_0022EFE8");
-extern void music_Stop_r(void) __asm__("func_00216D88");
-extern void memcard_update_state_r(void) __asm__("func_00209E68");
+
 extern void Menu_RunStateHandler_r(void) __asm__("func_00209070");
-extern void SetupGifPaging_r(int) __asm__("func_001F4630");
-extern void VU1_addGSregister_r(int, long) __asm__("func_00234C98");
-extern int GetIconFrame_r(int, int) __asm__("func_00200198");
-extern void HudSprite_r(int, int, int, int, int, int) __asm__("func_00200468");
-extern long GetFrameTex_r(int) __asm__("func_00200248");
+
 extern void draw_rotated_sprite_r(float, float, int, int, long, float, float, float) __asm__("func_00200E38");
-extern void DoGifPaging_r(void) __asm__("func_001F4748");
+
 extern void flush_debug_text_queue_r(void) __asm__("func_L00_001F3A78");
-extern float IntToFloat_r(int) __asm__("func_001FA888");
-extern int scale_ticks_r(int) __asm__("func_001F9850");
-extern void ResetGsRegistersPr_r(void) __asm__("func_001F3D00");
-extern void SpaceTransition_Tick_r(void) __asm__("func_00228110");
-extern void DoSpaceTransition_r(void) __asm__("func_00233308");
-extern void music_Unpause_r(void) __asm__("func_00216F28");
-extern void music_Pause_r(int) __asm__("func_00216EF0");
 
 /* Level main loop (shared by every level): clears the level's work area, sets up the level and counts the visit
    and play time of the planet, then runs one frame per pass, dispatching on the game mode, until the level asks to
@@ -150,14 +138,14 @@ void run_level_main_loop(void) {
     int sel;
 
     if (((level_bss_end_r - level_bss_start_r) & 0xF) == 0 && ((unsigned int)level_bss_start_r & 0xF) == 0) {
-        FastMemZero16_r(level_bss_start_r, level_bss_end_r - level_bss_start_r);
+        FastMemZero16(level_bss_start_r, level_bss_end_r - level_bss_start_r);
     } else {
         STUB_printf_r(level_bss_unaligned_msg_r);
         for (i = 0; i < level_bss_end_r - level_bss_start_r; i++) {
             level_bss_start_r[i] = 0;
         }
     }
-    init_stash_r();
+    init_stash();
     cinematic_mode_frames_r = 0;
     cinematic_mode_r = 6;
     one = 1;
@@ -169,20 +157,20 @@ void run_level_main_loop(void) {
     ((Cam *)g_debug_menu_r)->f38 = -1;
     ((Cam *)g_debug_menu_r)->fC = one;
     ((Cam *)g_debug_menu_r)->fF4 = one;
-    clear_dma_queue_entry_r();
+    clear_dma_queue_entry();
     initialize_level_map_archive_r();
-    init_hud_r();
+    init_hud();
     load_misc_animations_into_stash_r();
     prepare_level_entry_transition_r();
     rendered_frame_count_r = 0;
-    sce_gs_sync_v_r(0);
-    PutDispBuffer_r();
-    music_StartTrack_r(((Music *)cd_read_state_r)->track, 1, 0x400);
+    sce_gs_sync_v(0);
+    PutDispBuffer();
+    music_StartTrack(((Music *)cd_read_state_r)->track, 1, 0x400);
     if ((g_current_level_index_r == one && level_available_base_r[0] == 0) ||
         (g_current_level_index_r == LEVEL_VELDIN1 && D_0013D498_2465F8[0] != 0)) {
-        music_Unpause_r();
+        music_Unpause();
     } else {
-        music_Pause_r(0);
+        music_Pause(0);
     }
     if (level_visit_state_r[g_current_level_index_r] == 0) {
         level_visit_state_r[g_current_level_index_r] = 1;
@@ -191,12 +179,12 @@ void run_level_main_loop(void) {
         item_usage_r[g_current_level_index_r].count++;
     }
     per = 600;
-    if (scale_ticks_r(gameplay_event_frame_count_r) / per > item_usage_r[g_current_level_index_r].minutes) {
-        item_usage_r[g_current_level_index_r].minutes = scale_ticks_r(gameplay_event_frame_count_r) / 600;
+    if (scale_ticks(gameplay_event_frame_count_r) / per > item_usage_r[g_current_level_index_r].minutes) {
+        item_usage_r[g_current_level_index_r].minutes = scale_ticks(gameplay_event_frame_count_r) / 600;
     }
     item_usage_r[g_current_level_index_r].flags =
         item_usage_r[g_current_level_index_r].flags | (1 << g_current_level_index_r) | 0x80000000;
-    snd_reenable_command_flush_r();
+    snd_reenable_command_flush();
 
     while (level_loop_exit_requested_r == 0) {
         quit = 0;
@@ -205,12 +193,12 @@ void run_level_main_loop(void) {
         *(volatile int *)0x10000800 = 0;
         Frame_RollCounter_r();
         skip_frame_r = 0;
-        VU1_sendChain_r();
-        VU1_swapChain_r();
-        PutDrawBufferSmall_r();
-        AA_BlurPass_r();
-        PutDrawBufferLarge_r();
-        snd_FlushSoundCommands_r();
+        VU1_sendChain();
+        VU1_swapChain();
+        PutDrawBufferSmall();
+        AA_BlurPass();
+        PutDrawBufferLarge();
+        snd_FlushSoundCommands();
         v = cinematic_mode_r;
         switch (v) {
             case -1:
@@ -229,7 +217,7 @@ void run_level_main_loop(void) {
             case 2:
                 func_00216270_2465F8();
                 update_cutscene_playback_r();
-                prepare_debug_profiler_render_r();
+                prepare_debug_profiler_render();
                 break;
             case 3:
                 func_00216270_2465F8();
@@ -263,11 +251,11 @@ void run_level_main_loop(void) {
             cinematic_mode_frames_r = cinematic_mode_frames_r + 1;
         }
         if (skip_frame_r != 0) {
-            VU1_syncChain_r(1);
-            VU1_initChain_r();
+            VU1_syncChain(1);
+            VU1_initChain();
             continue;
         }
-        memcard_update_state_r();
+        memcard_update_state();
         Menu_RunStateHandler_r();
         sel = D_0013D46C_2465F8;
         if ((unsigned int)(sel - 3) < 4 || sel == 9 || sel == 10 || sel == 11 || sel == 12 || sel == 15 || sel == 16 ||
@@ -278,24 +266,24 @@ void run_level_main_loop(void) {
                 float ang;
                 int t;
 
-                SetupGifPaging_r(0);
+                SetupGifPaging(0);
                 size = 272.0f;
-                VU1_addGSregister_r(0x47, 0x3004B);
-                t = GetIconFrame_r(0x755D, 0);
-                HudSprite_r(t, 0x32, 0x12C, 0x40, 0x40, 0x80);
+                VU1_addGSregister(0x47, 0x3004B);
+                t = GetIconFrame(0x755D, 0);
+                HudSprite(t, 0x32, 0x12C, 0x40, 0x40, 0x80);
                 ang = (float)(rendered_frame_count_r % n) * -6.2831855f / (float)n;
-                draw_rotated_sprite_r(1312.0f, 5312.0f, 0x40, 0x40, GetFrameTex_r(GetIconFrame_r(0x755D, 1)), size,
-                                      size, ang);
-                DoGifPaging_r();
+                draw_rotated_sprite_r(1312.0f, 5312.0f, 0x40, 0x40, GetFrameTex(GetIconFrame(0x755D, 1)), size, size,
+                                      ang);
+                DoGifPaging();
             }
         }
         ((Gs *)level_menu_system_r)->f13C = 0;
         flush_debug_text_queue_r();
         func_001E9768_2465F8(level_main_loop_profile_label_r, 0x10);
         func_001E9768_b_2465F8(level_main_loop_profile_label_r, 0x10);
-        VU1_syncChain_r(1);
+        VU1_syncChain(1);
         {
-            cpu_frame_load_r = IntToFloat_r(*(volatile int *)0x10000800) / (pal_mode_r != 0 ? 11520.0f : 9600.0f);
+            cpu_frame_load_r = IntToFloat(*(volatile int *)0x10000800) / (pal_mode_r != 0 ? 11520.0f : 9600.0f);
         }
         if (cinematic_mode_r == 0 && ((Cam *)g_debug_menu_r)->f18 != 0) {
             func_001E9768_v_2465F8();
@@ -318,39 +306,39 @@ void run_level_main_loop(void) {
                         update_cutscene_playback_r();
                     }
                 }
-                sce_gs_sync_v_r(0);
+                sce_gs_sync_v(0);
                 rendered_frame_count_r = rendered_frame_count_r + 1;
-                SpaceTransition_Tick_r();
+                tick_space_transition();
                 level_game_clock_paused_r = 0;
             } else {
-                sce_gs_sync_v_r(0);
+                sce_gs_sync_v(0);
                 rendered_frame_count_r = rendered_frame_count_r + 1;
-                SpaceTransition_Tick_r();
+                tick_space_transition();
                 level_game_clock_paused_f_2465F8 = 0.0f;
             }
         }
-        ResetGsRegistersPr_r();
+        ResetGsRegistersPr();
         if (cinematic_mode_r == 0 && ((Hero *)g_hero_r)->fall_fade_pending != 0) {
             quit = 1;
             full = 1;
         }
         if (quit != 0) {
-            VU1_initChain_r();
-            snd_reset_state_and_flush_commands_r();
-            snd_FlushSoundCommands_r();
-            sound_StopAllSounds_r();
-            music_Stop_r();
+            VU1_initChain();
+            snd_reset_state_and_flush_commands();
+            snd_FlushSoundCommands();
+            sound_StopAllSounds();
+            music_Stop();
             load_level_archive_resources_r(0, full);
             cinematic_mode_r = 0;
-            music_StartTrack_r(((Music *)cd_read_state_r)->track, 1, 0x400);
-            init_hud_r();
+            music_StartTrack(((Music *)cd_read_state_r)->track, 1, 0x400);
+            init_hud();
         }
         per = 600;
-        if (scale_ticks_r(gameplay_event_frame_count_r) / per > item_usage_r[g_current_level_index_r].minutes) {
-            item_usage_r[g_current_level_index_r].minutes = scale_ticks_r(gameplay_event_frame_count_r) / 600;
+        if (scale_ticks(gameplay_event_frame_count_r) / per > item_usage_r[g_current_level_index_r].minutes) {
+            item_usage_r[g_current_level_index_r].minutes = scale_ticks(gameplay_event_frame_count_r) / 600;
         }
     }
-    DoSpaceTransition_r();
+    DoSpaceTransition();
 }
 extern struct DiscTable disc_table;
 

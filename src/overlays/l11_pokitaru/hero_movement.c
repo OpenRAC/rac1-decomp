@@ -38,7 +38,6 @@ extern int g_controller_state_no_direction;
 extern Hero g_hero;
 
 extern int D_0015EE84 MACRO_ADDR;
-extern int coll_sphere(float, void *, int, void *);
 
 /* Per-frame update of the player state flags from the current state. */
 void update_hero_surface_condition_flags(void) {
@@ -167,28 +166,7 @@ extern HeroSpeedBands pokitaru_hero_speed_bands;
 extern float pokitaru_hero_swim_frame_speeds[];
 extern float pokitaru_hero_ledge_shimmy_frame_speeds[];
 
-extern int fast_dec_timer(int *);
-
 extern int truncate_float_to_s32(float);
-extern float vec_length_xy(void *);
-
-extern float SpringAngle(void *, float, void *, int, float, float, float);
-
-extern void vec_scale_to_length(void *, void *, float);
-
-extern float ApproachValue(float *, float, float);
-
-extern void ClampVectorLength(void *, float);
-
-extern float vec_distance_xy(void *, void *);
-
-extern float Spring(float *, float *, float, float, float, float);
-
-extern int coll_sphere_mobys(float, void *, int, void *, void *);
-
-extern int coll_line(void *, void *, int, int, int);
-
-extern int is_moby_in_class_range_500_to_540(int);
 
 struct HeroL11UpdateMovementVars {};
 

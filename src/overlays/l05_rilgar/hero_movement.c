@@ -81,29 +81,10 @@ extern float rilgar_swim_stroke_curve[];
 extern float rilgar_hero_ledge_shimmy_frame_speeds[];
 
 extern void turn_to_v(float, float, float, int) __asm__("func_L00_002124E8");
-extern int fast_dec_timer(int *);
 
 extern int truncate_float_to_s32(float);
-extern float vec_length_xy(void *);
-
-extern float SpringAngle(void *, float, void *, int, float, float, float);
-
-extern void vec_scale_to_length(void *, void *, float);
-
-extern float ApproachValue(float *, float, float);
-
-extern void ClampVectorLength(void *, float);
 
 extern float step_angle_toward_target_v(float *, float, int, float) __asm__("func_L00_0025CC58");
-extern float vec_distance_xy(void *, void *);
-
-extern float Spring(float *, float *, float, float, float, float);
-
-extern int coll_sphere_mobys(float, void *, int, void *, void *);
-
-extern int coll_line(void *, void *, int, int, int);
-
-extern int is_moby_in_class_range_500_to_540(int);
 
 struct HeroUpdateMovementVars {};
 

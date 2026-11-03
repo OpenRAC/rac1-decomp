@@ -14,6 +14,7 @@
 #include "game/moby/mobyfunc.h"
 #include "game/audio/sound.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/moby_ground_collision.h"
 
 /* Store in dst the angle scale of the way from a toward b, wrapped. */
 void interpolate_rotation_angle(float *dst, float a, float b, float scale) {
@@ -49,13 +50,8 @@ typedef struct {
 } PathFlyerVars;
 extern f32 gaspar_shuttle_climb_scale SDATA(gaspar_shuttle_climb_scale);
 extern f32 g_frame_time_sq MACRO_ADDR;
-extern void vec_scale_to_length(void *, void *, f32);
 
-extern float ApproachWithVelocity(float, float, float, float, float *, float *);
-
-extern float vec_distance_xy(void *, void *);
-
-extern void add_random_offset_to_vector_xyz(void *, f32);
+extern float ApproachWithVelocity_v(float, float, float, float, float *, float *) __asm__("func_00214D88");
 
 /* Flies the moby along its path toward the current node, turning and banking toward it, steps the node at each arrival
    and now and then drops a puff. Returns nonzero once it has run off the end of the path.
@@ -92,7 +88,8 @@ int advance_shuttle_along_path(struct Moby *moby) {
         }
         d = FastVecDist(&moby->pos, &path->node[path->count - 1]);
         v = 0.0f;
-        ApproachWithVelocity(d, g_frame_time_sq * 3.0f, g_frame_time_sq * 3.0f, g_frame_time * 10.0f, &v, &vars->speed);
+        ApproachWithVelocity_v(d, g_frame_time_sq * 3.0f, g_frame_time_sq * 3.0f, g_frame_time * 10.0f, &v,
+                               &vars->speed);
     } else {
         f32 v;
         if (FastVecDist(&target, &moby->pos) < vars->speed + vars->speed) {
@@ -102,7 +99,8 @@ int advance_shuttle_along_path(struct Moby *moby) {
         }
         d = FastVecDist(&moby->pos, &path->node[0]);
         v = 0.0f;
-        ApproachWithVelocity(d, g_frame_time_sq * 3.0f, g_frame_time_sq * 3.0f, g_frame_time * 10.0f, &v, &vars->speed);
+        ApproachWithVelocity_v(d, g_frame_time_sq * 3.0f, g_frame_time_sq * 3.0f, g_frame_time * 10.0f, &v,
+                               &vars->speed);
     }
     if (path->node[vars->node].f[3] == 42.0f)
         vars->yaw_offset = 0.0f;
@@ -118,7 +116,6 @@ int advance_shuttle_along_path(struct Moby *moby) {
     }
     return done;
 }
-extern char *MobyGetHitMessage(void *, int, int);
 
 /* Breakable update: on a hit, play its sound, drop bolts, spawn pieces and delete itself. */
 void BreakableL09_Update(char *m) {

@@ -21,11 +21,8 @@ struct SnaggleSphereVars {
     u8 brightness;                  /* 0x1C6 */
 };
 
-extern u64 GetEffectTex(int);
-
 extern int truncate_float_to_s32(float);
 
-extern void draw_world_quad(void *, int, int);
 extern s32 depth_buffer_address;
 extern s32 umbris_frame_count;
 typedef struct {

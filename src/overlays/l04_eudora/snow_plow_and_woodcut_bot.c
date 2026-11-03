@@ -30,6 +30,9 @@
 #include "overlays/shared/mine_bomb_and_debris.h"
 #include "overlays/shared/water_pool_and_sand_mouse.h"
 #include "overlays/shared/draw_buffers_and_walker_gait.h"
+#include "overlays/shared/cutscene_and_movie_playback.h"
+#include "overlays/shared/pause_menu.h"
+#include "overlays/shared/crates_and_veldin_ship.h"
 extern Hero g_hero;
 extern char help_records[];
 extern char usage_stats[];
@@ -237,20 +240,7 @@ extern VehicleCamera eudora_camera;
 
 extern s32 truncate_float_to_s32(float);
 
-extern void MobySpringTurn(void *, void *, float, float, float, float);
-extern float vec_distance_xy(void *, void *);
-
-extern void vec_scale_to_length(void *, void *, float);
-
-extern char *MobyGetHitMessage(void *, s32, s32);
-extern s32 PlayBankSound(s32, s32, s32);
-
-extern void coll_sphere_mobys(void *, float, s32, void *, void *);
-extern void spawn_explosion(void *, void *, void *, float, float, s32, s32, s32, float, float, float, float, s32, float,
-                            s32, s32, s32, s32);
-
-extern void SpawnBreakFragment(void *, s32, void *, void *, s32, s32, float, void *, void *, void *);
-extern s32 fast_dec_timer(s32 *);
+extern void coll_sphere_mobys_v(void *, float, s32, void *, void *) __asm__("func_L00_001F2BE8");
 
 typedef float VehicleArr_2CB800[4] __attribute__((aligned(16)));
 typedef struct {
@@ -443,7 +433,7 @@ void snow_plow_update(VehicleMoby *m) {
                     query.owner = m;
                     clear_u64_value(&query.vec);
                     query.result = 0;
-                    coll_sphere_mobys(&m->pos, 4.0f, 16, m, &query);
+                    coll_sphere_mobys_v(&m->pos, 4.0f, 16, m, &query);
                 }
             }
                 /* fall through */
@@ -491,7 +481,7 @@ void snow_plow_update(VehicleMoby *m) {
                     query2.owner = m;
                     clear_u64_value(&query2.vec);
                     query2.result = 0;
-                    coll_sphere_mobys(&m->pos, 6.0f, 16, m, &query2);
+                    coll_sphere_mobys_v(&m->pos, 6.0f, 16, m, &query2);
                     d->visibility_timer = scale_ticks(600);
                     d->visibility_active = 1;
                 }
@@ -594,10 +584,6 @@ extern char *eudora_mobys_b __asm__("D_L04_00160058") MACRO_ADDR;
 extern float eudora_floating_platform_spin_rate_deg SDATA(eudora_floating_platform_spin_rate_deg);
 extern float g_frame_time_b __asm__("D_0015EE6C") MACRO_ADDR;
 extern float D_0015EE64 MACRO_ADDR;
-
-extern void EaseManipulatorOffsets(char *, char *, int, float, float);
-
-extern void update_entity_matrix(char *, void *, void *, void *);
 
 struct FloatingPlatformUpdateVars {
     u8 pad_00[0x3E];
@@ -751,36 +737,15 @@ typedef struct WBQuery {
     /* 0x24 */ int pad24[3];
 } WBQuery;
 
-extern void FindNearestTargetMoby(void *, void *, float);
-extern void Manipulator_ApplyScale(float, void *, int, void *);
-
-extern void set_ground_height_band(void *);
-
-extern float vec_distance_xy(void *, void *);
-
-extern char *MobyGetHitMessage(void *, int, int);
-extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
-extern void HeadingFromVector(void *, float *, void *, void *);
-extern void InitKnockback(float, void *, void *, int, int, int);
+extern void InitKnockback_v(float, void *, void *, int, int, int) __asm__("func_L00_0025D5B0");
 extern void SetDeathBits(void *, int, int);
-extern void RerollEffectCounter(void *, void *);
 
-extern void vec_scale_to_length(void *, void *, float);
-
-extern void coll_line(void *, void *, int, void *, void *);
-
-extern void coll_sphere_mobys(void *, float, int, void *, void *);
+extern void coll_sphere_mobys_v(void *, float, int, void *, void *) __asm__("func_L00_001F2BE8");
 
 extern void initialize_woodcut_bot_movement_data(void *);
 extern void *libc_memset(void *, int, int);
 
-extern int IsFrameWithinWindow(void *, float);
-
-extern float SpringTurn(float, float, void *, float, float, float);
-extern int mine_fall(void *, void *);
-extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
-
-extern void StepColorFade(void *, void *);
+extern float SpringTurn_v(float, float, void *, float, float, float) __asm__("func_L00_00259148");
 
 extern char eudora_camera_pos[];
 
@@ -880,7 +845,7 @@ void woodcut_bot_update(Moby *m) {
                     d->fDC = g_frame_time * 13.0f;
                     *(w128 *)v = *(w128 *)(p + 0x10);
                     HeadingFromVector(v, &angle, &d->fD8, &d->fDC);
-                    InitKnockback(angle, m, d->fC0, 8, 1, 0);
+                    InitKnockback_v(angle, m, d->fC0, 8, 1, 0);
                     d->f110 = 14.0f;
                     d->f114 = 24.0f;
                     m->state = 0xB;
@@ -963,9 +928,9 @@ void woodcut_bot_update(Moby *m) {
                 coll_line(pts[i], pts[i + 1], 9, m, &s);
             FastVecAdd(mid, pts[0], pts[4]);
             FastVecScale(mid, mid, 0.5f);
-            coll_sphere_mobys(mid, FastVecDist(pts[0], pts[4]) * 0.5f, 0x10, m, &s);
+            coll_sphere_mobys_v(mid, FastVecDist(pts[0], pts[4]) * 0.5f, 0x10, m, &s);
             Moby_GetJointWorldPos(m, 0x11, mid);
-            coll_sphere_mobys(mid, 0.5f, 0x10, m, &s);
+            coll_sphere_mobys_v(mid, 0.5f, 0x10, m, &s);
         }
     }
     FastDecTimer(tm);
@@ -1289,16 +1254,16 @@ void woodcut_bot_update(Moby *m) {
                         }
                         BuildSphericalOffset(v, d->f3D8, d->f3D4, m->rot.y);
                         FastVecAdd(pos, pos, v);
-                        m->rot.z = SpringTurn(m->rot.z, fast_atan2(tgt[0] - m->pos.x, tgt[1] - m->pos.y), &d->f3D0,
-                                              g_frame_time_sq * 3.1415927f, g_frame_time_sq * 6.2831855f,
-                                              g_frame_time * 4.1887903f);
+                        m->rot.z = SpringTurn_v(m->rot.z, fast_atan2(tgt[0] - m->pos.x, tgt[1] - m->pos.y), &d->f3D0,
+                                                g_frame_time_sq * 3.1415927f, g_frame_time_sq * 6.2831855f,
+                                                g_frame_time * 4.1887903f);
                     } else if (d->f3D8 > 0.0f) {
                         d->f3D8 -= g_frame_time_sq * 200.0f;
                         BuildSphericalOffset(v, d->f3D8, d->f3D4, m->rot.y);
                         FastVecAdd(pos, pos, v);
-                        m->rot.z = SpringTurn(m->rot.z, fast_atan2(tgt[0] - m->pos.x, tgt[1] - m->pos.y), &d->f3D0,
-                                              g_frame_time_sq * 3.1415927f, g_frame_time_sq * 6.2831855f,
-                                              g_frame_time * 4.1887903f);
+                        m->rot.z = SpringTurn_v(m->rot.z, fast_atan2(tgt[0] - m->pos.x, tgt[1] - m->pos.y), &d->f3D0,
+                                                g_frame_time_sq * 3.1415927f, g_frame_time_sq * 6.2831855f,
+                                                g_frame_time * 4.1887903f);
                     } else {
                         m->state = 1;
                         d->t3C2 = 0;
@@ -1319,11 +1284,11 @@ void woodcut_bot_update(Moby *m) {
                 m->command = (m->command | 8) & ~0x10;
             } else if (m->command & 0x10) {
                 m->rot.z =
-                    SpringTurn(m->rot.z, fast_atan2(d->f3B0[0] - m->pos.x, d->f3B0[1] - m->pos.y), &d->f3D0,
-                               g_frame_time_sq * 3.1415927f, g_frame_time_sq * 6.2831855f, g_frame_time * 4.1887903f);
+                    SpringTurn_v(m->rot.z, fast_atan2(d->f3B0[0] - m->pos.x, d->f3B0[1] - m->pos.y), &d->f3D0,
+                                 g_frame_time_sq * 3.1415927f, g_frame_time_sq * 6.2831855f, g_frame_time * 4.1887903f);
             } else {
-                m->rot.z = SpringTurn(m->rot.z, fast_atan2(tgt[0] - m->pos.x, tgt[1] - m->pos.y), &d->f3D0, 0.03f, 0.3f,
-                                      g_frame_time * 6.4577184f);
+                m->rot.z = SpringTurn_v(m->rot.z, fast_atan2(tgt[0] - m->pos.x, tgt[1] - m->pos.y), &d->f3D0, 0.03f,
+                                        0.3f, g_frame_time * 6.4577184f);
             }
             break;
         case 11:
@@ -1490,9 +1455,8 @@ struct MobyP {
 #define scale_vector_xyz func_001F9C30
 #define rib_p func_002140B0
 #define cif_p func_001FA888
-extern float vec_length_xy(void *);
+
 #define vector_length_xy func_001F9CE8
-extern int fast_dec_timer(s32 *);
 
 #define random_int_between func_L00_00258BC8
 #define collision_line ((int (*)(void *, void *, int, void *, void *))(func_L00_001EFFF0))
@@ -1747,15 +1711,12 @@ extern u8 gHaveHeliPack_r[] __asm__("D_0013D5CA");
 extern char gHeroPos_r[] __asm__("D_0013F4D0");
 extern char suck_cannon_no_exit_fmt_r[] __asm__("D_L04_001DCA60");
 extern Exit_002E2DF0 *portal_mobys_002E2DF0 __asm__("D_L04_00160058") MACRO_ADDR;
-extern f32 add_rot_002E2DF0(f32, f32) __asm__("func_001FA748");
+
 extern f32 dist_002E2DF0(void *, void *) __asm__("func_001F9D48");
-extern void initialize_moby_particle_effect_r(Moby *) __asm__("func_L00_002D80A0");
+
 extern void remove_moby_002E2DF0(Moby *) __asm__("func_0020D678");
 extern void update_suck_cannon_particles_r(Moby *) __asm__("func_L04_002E30E0");
-extern void StartCutscene_r(int) __asm__("func_L00_00299B68");
-extern void ShowBanner_r(int, int) __asm__("func_L00_00264DB8");
-extern void grant_inventory_item_r(int, int) __asm__("func_L00_002618D8");
-extern void jet_reset_camera_r(void *, void *) __asm__("func_L00_00286128");
+
 extern void STUB_printf_r(char *, int) __asm__("func_001E9730");
 extern void memcard_Save_r(int, int) __asm__("func_0020BFC8");
 
@@ -1765,14 +1726,14 @@ void suck_cannon_update(Moby *moby) {
     PortalVars_002E2DF0 *vars = (PortalVars_002E2DF0 *)moby->pvars;
     Exit_002E2DF0 *exit;
 
-    moby->rot.z = add_rot_002E2DF0(moby->rot.z, g_frame_time_r * 1.5707964f);
+    moby->rot.z = FastAddRots(moby->rot.z, g_frame_time_r * 1.5707964f);
     if (eudora_game_mode_r == 2)
         moby->flags |= 0x41;
     else if (moby->flags & 1)
         moby->flags &= ~0x41;
     switch (moby->state) {
         case 0:
-            initialize_moby_particle_effect_r(moby);
+            initialize_moby_particle_effect(moby);
             if (*(discount_purchase_pricing_r + 0xE)) {
                 remove_moby_002E2DF0(moby);
                 break;
@@ -1784,7 +1745,7 @@ void suck_cannon_update(Moby *moby) {
             update_suck_cannon_particles_r(moby);
             if (dist_002E2DF0(&moby->pos, gHeroPos_r) < 3.0f) {
                 moby->flags |= 0x41;
-                StartCutscene_r(2);
+                StartCutscene(2);
                 moby->state = 2;
             }
             break;
@@ -1792,14 +1753,14 @@ void suck_cannon_update(Moby *moby) {
             if (eudora_game_mode_r == 2)
                 break;
             if (!*(gHaveHeliPack_r + 7))
-                ShowBanner_r(0xFA7, -1);
+                ShowBanner(0xFA7, -1);
             else
-                ShowBanner_r(0x53E4, -1);
+                ShowBanner(0x53E4, -1);
             dialogue_message_duration_frames_r = 0xB4;
-            grant_inventory_item_r(9, 1);
+            grant_inventory_item(9, 1);
             if (vars->exitMoby != -1) {
                 exit = &portal_mobys_002E2DF0[vars->exitMoby];
-                jet_reset_camera_r(&exit->pos, &exit->rot);
+                jet_reset_camera(&exit->pos, &exit->rot);
             } else {
                 STUB_printf_r(suck_cannon_no_exit_fmt_r, *(s16 *)&moby->save_id);
             }
@@ -1818,7 +1779,6 @@ typedef struct {
     int c[4];
     float d[4];
 } L10SpriteData;
-extern int fast_dec_timer(int *);
 
 extern int truncate_float_to_s32(float);
 extern int eudora_game_mode MACRO_ADDR;
@@ -2216,8 +2176,6 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
 extern char eudora_coll_hit_normal[];
 extern float eudora_debris_spin_min_deg SDATA(eudora_debris_spin_min_deg);
 extern float eudora_debris_spin_max_deg SDATA(eudora_debris_spin_max_deg);
-extern int FastDecTimer_bounce(void *) __asm__("func_001F9938");
-extern int coll_sphere(float, void *, int, void *);
 
 // Updates a bouncing moby: spins it, then in state 0 reflects its direction off a plane and in state 1 fades it out.
 typedef struct BounceData2E6558 {
@@ -2247,7 +2205,7 @@ void update_entity_bounce_and_decay(char *moby) {
         case ENTITY_MOTION_STATE_BOUNCE:
             if (entity->pos.z < pv->floor - 3.0f) {
                 entity->state = ENTITY_MOTION_STATE_DECAY_AND_REMOVE;
-            } else if (FastDecTimer_bounce(&pv->timer) != 0 && pv->bounces != 0) {
+            } else if (FastDecTimer(&pv->timer) != 0 && pv->bounces != 0) {
                 if (coll_sphere(pv->radius, pos, 2, 0) != 0) {
                     VecQuad *collision_normal = (VecQuad *)eudora_coll_hit_normal;
                     float zero;

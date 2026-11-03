@@ -14,14 +14,13 @@
 #include "game/moby/mobyfunc.h"
 #include "game/math/fastfunc.h"
 #include "core/libc/sprintf.h"
+#include "game/ui/help.h"
 
 /*
  * vendor.cpp in the original source; text 0x239628-0x23B670.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
-
-extern void *msg_string_id(int) __asm__("func_001FE540");
 
 extern void truncate_float_to_s32(float);
 
@@ -131,7 +130,7 @@ void update_scrolling_status_message(void) {
     if (libc_strlen(*(char **)(v + 0x2C)) - *(int *)(v + 0x44) / 20 > 0) {
         *(int *)(v + 0x44) += 2;
     } else {
-        set_scrolling_status_message(msg_string_id(status_message_text_ids[random_integer_below(0x18)]));
+        set_scrolling_status_message(msg_string(status_message_text_ids[random_integer_below(0x18)]));
     }
     w = vendor_state;
     render_capture_scrolling_text(*(char **)(w + 0x2C), -*(int *)(w + 0x44), 8, 2.0f);
@@ -287,9 +286,8 @@ struct P239 {
     int pad[3];
 };
 
-extern void FontPrintSmall_c(int, int, long, void *, int) __asm__("func_001F6968");
 extern void format_scaled_display_value(void *arg0, int arg1);
-extern void font_print_right_small_c(int, int, long, void *, int) __asm__("func_001F6D88");
+
 extern struct VM239 vendor_state_m __asm__("D_001E66C0");
 extern struct T239 item_info_table_t[] __asm__("D_001864D0");
 extern struct P239 vendor_item_prices_p[] __asm__("D_001E02B0");
@@ -304,11 +302,11 @@ void render_vendor_item_details_pass(void) {
     DrawMobyList(vendor_state_m.f20 + 0x100, 1);
     DrawMobyList(vendor_state_m.f20, 1);
     if (vendor_state_m.slots[vendor_state_m.idx].kind == 1) {
-        FontPrintSmall_c(6, 8, 0x80F0F0F0L,
-                         msg_string_id(item_info_table_t[vendor_state_m.slots[vendor_state_m.idx].id].text), -1);
-        FontPrintSmall_c(0x18, 0x18, 0x80F0F0F0L, msg_string_id(0x4F5D), -1);
+        FontPrintSmall(6, 8, 0x80F0F0F0L,
+                       msg_string(item_info_table_t[vendor_state_m.slots[vendor_state_m.idx].id].text), -1);
+        FontPrintSmall(0x18, 0x18, 0x80F0F0F0L, msg_string(0x4F5D), -1);
         format_scaled_display_value(buf, vendor_item_prices_p[vendor_state_m.slots[vendor_state_m.idx].id].c);
-        font_print_right_small_c(0x76, 0x65, 0x80F0F0F0L, buf, -1);
+        font_print_right_small(0x76, 0x65, 0x80F0F0F0L, buf, -1);
         if (vendor_state_m.f40 != 0) {
             w = measure_text_width_regular((unsigned char *)buf, -1);
             draw_hud_rect_blended(0x75 - w, 0x6D, 0x7B, 0x70, 0x20959544L, 0);
@@ -321,13 +319,13 @@ void render_vendor_item_details_pass(void) {
             format_scaled_display_value(buf, vendor_state_m.f40
                                                  ? vendor_item_prices_p[vendor_state_m.slots[vendor_state_m.idx].id].d
                                                  : vendor_item_prices_p[vendor_state_m.slots[vendor_state_m.idx].id].c);
-            font_print_right_small_c(0x76, 0x55, 0x80F0F0F0L, buf, -1);
+            font_print_right_small(0x76, 0x55, 0x80F0F0F0L, buf, -1);
         }
     } else {
-        FontPrintSmall_c(6, 8, 0x80F0F0F0L,
-                         msg_string_id(item_info_table_t[vendor_state_m.slots[vendor_state_m.idx].id].text), -1);
+        FontPrintSmall(6, 8, 0x80F0F0F0L,
+                       msg_string(item_info_table_t[vendor_state_m.slots[vendor_state_m.idx].id].text), -1);
         format_scaled_display_value(buf, vendor_item_prices_p[vendor_state_m.slots[vendor_state_m.idx].id].a);
-        font_print_right_small_c(0x76, 0x65, item_available_b[0x23] ? 0x80808080L : 0x80F0F0F0L, buf, -1);
+        font_print_right_small(0x76, 0x65, item_available_b[0x23] ? 0x80808080L : 0x80F0F0F0L, buf, -1);
         if (item_available_b[0x23] != 0) {
             w = measure_text_width_regular((unsigned char *)buf, -1);
             draw_hud_rect_blended(0x75 - w, 0x6D, 0x7B, 0x70, 0x20959544L, 0);
@@ -340,7 +338,7 @@ void render_vendor_item_details_pass(void) {
             format_scaled_display_value(buf, item_available_b[0x23]
                                                  ? vendor_item_prices_p[vendor_state_m.slots[vendor_state_m.idx].id].b
                                                  : vendor_item_prices_p[vendor_state_m.slots[vendor_state_m.idx].id].a);
-            font_print_right_small_c(0x76, 0x55, 0x80F0F0F0L, buf, -1);
+            font_print_right_small(0x76, 0x55, 0x80F0F0F0L, buf, -1);
         }
     }
 }
@@ -424,10 +422,10 @@ void render_vendor_buy_label_pass(char *unused, int x, int y) {
     }
     if (m != 0) {
         *(unsigned short *)(sp + 0x12) |= 4;
-        font_print_window_small(sp, 0x80F0F0F0L, msg_string_id(m), -1);
+        font_print_window_small(sp, 0x80F0F0F0L, msg_string(m), -1);
         *(unsigned short *)(sp + 0x12) ^= 4;
         *(short *)(sp + 0xA) = (y - *(short *)(sp + 0xE)) >> 1;
-        font_print_window_small(sp, 0x80F0F0F0L, msg_string_id(m), -1);
+        font_print_window_small(sp, 0x80F0F0F0L, msg_string(m), -1);
     }
 }
 
@@ -490,11 +488,11 @@ void VendorDrawAmmoPrompt(void) {
                 price = ((WeaponInfo *)(vendor_item_prices + v->slots[idx].type * 0x18))->price;
             }
             if (gBolts >= price) {
-                FontPrintCenterSmall(0x28, 0x14, 0x80F0F0F0L, msg_string_id(0x4EE0), -1);
+                FontPrintCenterSmall(0x28, 0x14, 0x80F0F0F0L, msg_string(0x4EE0), -1);
             }
         }
     } else {
-        FontPrintCenterSmall(0x28, 0x14, 0x80F0F0F0L, msg_string_id(0x4EE0), -1);
+        FontPrintCenterSmall(0x28, 0x14, 0x80F0F0F0L, msg_string(0x4EE0), -1);
     }
 }
 
@@ -506,8 +504,6 @@ LINKER_REMNANT("asm/remnants/text", func_0023A5D8);
 extern s32 vendor_flash_timers[];
 extern s32 vendor_scroll_timers[];
 extern void VU1_addGSregister_r(s32, u64) __asm__("func_00234C98");
-
-extern s64 func_001F4868(s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/render_vendor_capture_texture_overlays_pass.c, render_vendor_capture_texture_overlays_pass. */
 void render_vendor_capture_texture_overlays_pass(s32 pass_index, f32 capture_width, f32 capture_height) {
@@ -581,8 +577,6 @@ void render_vendor_capture_texture_overlays_pass(s32 pass_index, f32 capture_wid
     }
 }
 
-extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
-
 /* Sets up a (1 << a) x (1 << b) area: setup_render_target gets the sizes and a
    base below 0x3FF000 by 4 << min(a + b, 16) bytes, rounded down to 8 KB
    (the GS page), configure_graphics_projection the sizes and the float setup (f, 0,
@@ -597,8 +591,8 @@ void configure_capture_target(int a, int b, float f) {
     }
     setup_render_target(a, b, ((0x3FF000 - (4 << t)) >> 13) << 13);
     configure_graphics_projection(1 << a, 1 << b, f, 0.0f, 524288.0f, 255.0f, 0.0f);
-    VU1_addGSregister_l(0x47, 0x30000);
-    VU1_addGSregister_l(0x42, 0x8000000044L);
+    VU1_addGSregister(0x47, 0x30000);
+    VU1_addGSregister(0x42, 0x8000000044L);
 }
 
 /* Retail carries 4 bytes of inter-function padding after this endlabel. */
@@ -692,7 +686,7 @@ void render_vendor_capture_pass_sequence(char *m) {
         project_graphics_bounds_float(a, b, &x, &y, &w, &h);
         configure_capture_target(9, 7, 1.0f);
         draw_centered_capture_background(0x200, 0x200);
-        VU1_addGSregister_l(0x42, 0x8000000064L);
+        VU1_addGSregister(0x42, 0x8000000064L);
         switch (i) {
             case 0:
                 update_scrolling_status_message_r(m);
@@ -716,8 +710,8 @@ void render_vendor_capture_pass_sequence(char *m) {
         render_vendor_capture_texture_overlays_pass(i, x, y);
         setup_view_context();
         draw_centered_capture_background(0x200, 0x200);
-        VU1_addGSregister_l(0x42, 0x8000000064L);
-        VU1_addGSregister_l(8, 5);
+        VU1_addGSregister(0x42, 0x8000000064L);
+        VU1_addGSregister(8, 5);
         VU1_texFlush();
         tex = capture_texture_tex0;
         if (pal_mode != 0) {
@@ -726,7 +720,7 @@ void render_vendor_capture_pass_sequence(char *m) {
         } else {
             append_subpixel_textured_screen_quad(w, h, x, y, 0, 0, (int)(sx - 1.0f), (int)(sy - 1.0f), 0x80808080, tex);
         }
-        VU1_addGSregister_l(8, 0);
+        VU1_addGSregister(8, 0);
     }
 }
 
@@ -919,8 +913,6 @@ typedef struct {
 
 extern Cfg16 attachment_vertex_indices NOT_SDA;
 
-extern void FastVecSub_b(void *, void *, void *) __asm__("func_001F9BF0");
-
 struct UpdateInstanceAttachmentPointsAndLengthsVars {
     u8 pad_00[0x10];
     Vec4 unk_10;
@@ -944,8 +936,8 @@ void update_instance_attachment_points_and_lengths(char *arg0) {
 
     cfg = attachment_vertex_indices;
     transform_scaled_vertex_batch(arg0, 4, &cfg, p);
-    FastVecSub_b(a, &((struct UpdateInstanceAttachmentPointsAndLengthsVars *)p)->unk_10, p);
-    FastVecSub_b(b, &((struct UpdateInstanceAttachmentPointsAndLengthsVars *)p)->unk_20, p);
+    FastVecSub(a, &((struct UpdateInstanceAttachmentPointsAndLengthsVars *)p)->unk_10, p);
+    FastVecSub(b, &((struct UpdateInstanceAttachmentPointsAndLengthsVars *)p)->unk_20, p);
     ((struct UpdateInstanceAttachmentPointsAndLengthsVars *)p)->unk_40 = FastVecLength(a);
     ((struct UpdateInstanceAttachmentPointsAndLengthsVars *)p)->unk_44 = FastVecLength(b);
 }

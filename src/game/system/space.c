@@ -38,6 +38,7 @@
 #include "core/gs/dma_and_sync_v.h"
 #include "game/movie/movie.h"
 #include "core/storage/wad.h"
+#include "game/render/lights.h"
 
 /*
  * space.cpp in the original source; text 0x22F128-0x233FF8.
@@ -46,8 +47,6 @@
  */
 
 extern char voice_pool[];
-
-extern int GetEffectTex(int);
 
 extern int render_sequence NOT_SDA;
 
@@ -116,8 +115,6 @@ typedef struct {
 extern char quad_default_uvs[];
 
 extern int g_game_mode MACRO_ADDR;
-
-extern void scale_vector(void *, void *, float);
 
 typedef struct {
     char pad[0x20];
@@ -223,12 +220,8 @@ extern QuadOffset D_001D9D00[10] NOT_SDA;
 extern short D_001605C0;
 
 void func_001F9C30_2F4C8(float, void *, void *) __asm__("func_001F9C30");
-void func_001F9BD8_2F4C8(void *, void *, void *) __asm__("func_001F9BD8");
-void func_001F9EC0_2F4C8(void *, void *, void *) __asm__("func_001F9EC0");
+
 long func_001F4868_2F4C8(int) __asm__("func_001F4868");
-int func_002140B0_2F4C8(int) __asm__("func_002140B0");
-float func_001FA888_2F4C8(int) __asm__("func_001FA888");
-void func_001F7EF8_2F4C8(void *, int, int) __asm__("func_001F7EF8");
 
 /* Resident effect quads: picks the row table by level_render_state's
    content_variant, builds a textured GS quad, and for each row of
@@ -261,19 +254,19 @@ void DrawResidentEffectQuads(struct Moby *m) {
         unsigned int col;
         float s;
         if (*(short *)&m->save_id)
-            c += func_002140B0_2F4C8(*(short *)&m->save_id);
-        s = func_001FA888_2F4C8(c) * (tbl[i].f[3] / 40.0f);
+            c += random_integer_below(*(short *)&m->save_id);
+        s = IntToFloat(c) * (tbl[i].f[3] / 40.0f);
         col = (c << 24) | 0x2058B0;
         if (m->oclass == MOBY_CLASS_PURPLE_SHIP_533)
             col = (c << 24) | 0x308000;
         for (k = 0; k < 4; k++) {
             quad.colors[k] = col;
             func_001F9C30_2F4C8(s, &quad.positions[k], &resident_effect_quad_corners[k]);
-            func_001F9BD8_2F4C8(&quad.positions[k], &quad.positions[k], &tbl[i]);
-            func_001F9EC0_2F4C8(&quad.positions[k], &quad.positions[k], level_render_state_2F4C8.player + 0xC0);
-            func_001F9BD8_2F4C8(&quad.positions[k], &quad.positions[k], &v);
+            FastVecAdd(&quad.positions[k], &quad.positions[k], &tbl[i]);
+            matrix_mul_vec3(&quad.positions[k], &quad.positions[k], level_render_state_2F4C8.player + 0xC0);
+            FastVecAdd(&quad.positions[k], &quad.positions[k], &v);
         }
-        func_001F7EF8_2F4C8(&quad, 0, 0);
+        draw_world_quad_packet(&quad, 0, 0);
     }
 }
 
@@ -293,9 +286,6 @@ extern float D_001D9DA0[4][2];
 extern unsigned int trail_color_a_2F738[][2] __asm__("D_001D9DC0");
 extern unsigned int trail_color_b_2F738[][2] __asm__("D_001D9DC4");
 extern short D_001605D0;
-
-extern float trail_float_2F738(int) __asm__("func_001FA888");
-extern void trail_scale_2F738(void *, void *, float) __asm__("func_001F9DC0");
 
 /* Returns trail point n of ring t. */
 static __inline__ Vec4 *trail_at_2F738(int t, int n) {
@@ -380,19 +370,19 @@ void build_resident_indexed_texture_warp_meshes(int unused) {
                             step = vertex >> 1;
                             age = step;
                             age--;
-                            t = trail_float_2F738(segment - age) * 0.03125f;
+                            t = IntToFloat(segment - age) * 0.03125f;
                             q.colors[vertex] = FastTweenColor(trail_color_a_2F738[trail_state_2F738.ship][0],
                                                               trail_color_b_2F738[trail_state_2F738.ship][0], t);
                             t = 1.0f - t * t;
-                            trail_scale_2F738(position_first, &workspace.side[vertex],
-                                              t * ((float *)&warp_trail_widths)[trail_state_2F738.ship]);
-                            func_001F9BD8_2F4C8(position_first, position_first,
-                                                trail_at_2F738(engine, (ring_index + step) & 31));
+                            fast_vec_normalize(position_first, &workspace.side[vertex],
+                                               t * ((float *)&warp_trail_widths)[trail_state_2F738.ship]);
+                            FastVecAdd(position_first, position_first,
+                                       trail_at_2F738(engine, (ring_index + step) & 31));
                             position_first++;
                         }
                     }
                     {
-                        func_001F7EF8_2F4C8(&q, 0, 0);
+                        draw_world_quad_packet(&q, 0, 0);
                         normal_second = &workspace.across[0];
                         vertex = 0;
                         for (position_second = &q.positions[0]; vertex < 4; vertex++) {
@@ -402,23 +392,22 @@ void build_resident_indexed_texture_warp_meshes(int unused) {
                             step = vertex >> 1;
                             age = step;
                             age--;
-                            t = trail_float_2F738(segment - age) * 0.03125f;
-                            trail_scale_2F738(position_second, normal_second,
-                                              (1.0f - t * t) * ((float *)&warp_trail_widths)[trail_state_2F738.ship]);
-                            func_001F9BD8_2F4C8(position_second, position_second,
-                                                trail_at_2F738(engine, (ring_index + step) & 31));
+                            t = IntToFloat(segment - age) * 0.03125f;
+                            fast_vec_normalize(position_second, normal_second,
+                                               (1.0f - t * t) * ((float *)&warp_trail_widths)[trail_state_2F738.ship]);
+                            FastVecAdd(position_second, position_second,
+                                       trail_at_2F738(engine, (ring_index + step) & 31));
                             normal_second++;
                             position_second++;
                         }
                     }
-                    func_001F7EF8_2F4C8(&q, 0, 0);
+                    draw_world_quad_packet(&q, 0, 0);
                 }
             }
         }
     }
 }
 
-extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
 extern long resident_quad_texture MACRO_ADDR;
 extern float resident_quad_level_scales[];
 extern float resident_quad_corners[][4];
@@ -431,7 +420,7 @@ void draw_resident_textured_quad(void) {
     float s;
     int i;
 
-    VU1_addGSregister_l(0x47, 0x31801);
+    VU1_addGSregister(0x47, 0x31801);
     s = 1.0f;
     q.gs[0] = 0;
     q.gs[1] = resident_quad_texture;
@@ -446,24 +435,24 @@ void draw_resident_textured_quad(void) {
         FastVecAdd(q.v[i], q.v[i], &resident_quad_pos);
     }
     draw_world_quad_packet(&q, 0, 0);
-    VU1_addGSregister_l(0x47, 0x5360B);
+    VU1_addGSregister(0x47, 0x5360B);
 }
 
 /* The 64-bit argument form of VU1_addGSregister is needed here (one call
    passes 0x8000000044). Retail's ori 0x8000 / dsll 24 / ori 0x44 for
    that constant is ps2eeas's expansion of the same `dli`, which
    tools/ps2eeas_dli.py reproduces; GNU as builds it differently. */
-extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
+
 extern int frame_size;
 extern long resident_banner_texture MACRO_ADDR;
 
 /* Draws the 256x32 banner texture near the bottom of the screen with alpha arg0. */
 void draw_resident_textured_banner(int arg0) {
-    VU1_addGSregister_l(0x47, 0x31801);
-    VU1_addGSregister_l(0x42, ((long)0x8000 << 24) | 0x44);
+    VU1_addGSregister(0x47, 0x31801);
+    VU1_addGSregister(0x42, ((long)0x8000 << 24) | 0x44);
     DrawTexturedQuad(0x20, frame_size - 0x58, 0x100, 0x20, 0, 0, 0x100, 0x20, (arg0 << 24) | 0x808080,
                      resident_banner_texture);
-    VU1_addGSregister_l(0x47, 0x5360B);
+    VU1_addGSregister(0x47, 0x5360B);
 }
 
 typedef unsigned int LevelFrame_u128 __attribute__((mode(TI)));
@@ -807,14 +796,13 @@ extern s64 GetEffectTex_r(s32) __asm__("func_001F4868");
 
 extern s32 func_001FA898(f32);
 
-extern void draw_rotated_sprite(f32, f32, f32, f32, s32, s32, s64, f32);
+extern void draw_rotated_sprite_v(f32, f32, f32, f32, s32, s32, s64, f32) __asm__("func_00200E38");
 
 extern void build_resident_indexed_texture_warp_meshes(s32);
 extern void draw_resident_textured_quad();
 extern void draw_resident_textured_banner(s32);
 extern void render_environment_mapped_object_r(s32) __asm__("func_00233AB8");
 
-extern void VU1_addGSregister_r(s32, s64) __asm__("func_00234C98");
 extern struct LevelDisplayState g_screen_extent_r __asm__("D_0013E600");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/render_level_frame.c, render_level_frame. */
@@ -865,7 +853,7 @@ void render_level_frame(void) {
         render_environment_mapped_object_r(render_sequence_slots[0]);
     }
     if ((memory_card_state_r.state >= 3) || (memory_card_state_r.err >= 0)) {
-        VU1_addGSregister_r(0x47, 0x3004B);
+        VU1_addGSregister(0x47, 0x3004B);
         quad_extent = 272.0f;
         texture = GetEffectTex_r(2);
         display_state = &g_screen_extent_r;
@@ -874,7 +862,7 @@ void render_level_frame(void) {
         rotation_angle = ((game_frame_counter % 55) * (-6.2831855f)) / 55.0f;
         /* The frame counter contributes only the sprite angle modulo 55. */
         /* Retail passes the full texture value in a2 and the five floats in f12-f16. */
-        draw_rotated_sprite(1216.0f, screen_y, quad_extent, 272.0f, 0x40, 0x40, GetEffectTex_r(3), rotation_angle);
+        draw_rotated_sprite_v(1216.0f, screen_y, quad_extent, 272.0f, 0x40, 0x40, GetEffectTex_r(3), rotation_angle);
     }
     DoGifPaging();
     if (gFade > 0.0f) {
@@ -1103,14 +1091,11 @@ extern Vector4_230A90 resident_data_001DA010[] __asm__("D_001DA010");
 extern Vector4_230A90 resident_data_001DA040[] __asm__("D_001DA040");
 extern u8 resident_effect_entry[] __asm__("func_0022F4C0");
 
-extern void resident_call_002348B8(void) __asm__("func_002348B8");
-extern void resident_call_00216EF0(s32) __asm__("func_00216EF0");
-extern void resident_call_00216F28(void) __asm__("func_00216F28");
 extern void resident_call_00125358(void *) __asm__("func_00125358");
 extern void resident_call_001254A0(void *, void *, f32) __asm__("func_001254A0");
 extern void resident_call_00125548(void *, void *, f32) __asm__("func_00125548");
 extern void resident_call_001253F8(void *, void *, f32) __asm__("func_001253F8");
-extern s32 resident_call_00122598(s32) __asm__("func_00122598");
+
 extern void resident_call_001E9770(void *, void *, s32, s32, s32) __asm__("func_001E9770");
 extern void resident_call_001E9778(void *) __asm__("func_001E9778");
 extern void resident_call_001E9780(void *) __asm__("func_001E9780");
@@ -1118,49 +1103,33 @@ extern void resident_call_001E9788(void) __asm__("func_001E9788");
 extern void resident_call_001E9790(ResidentRenderObject *) __asm__("func_001E9790");
 extern void resident_call_001E9798(ResidentRenderObject *) __asm__("func_001E9798");
 extern void resident_call_001E97A0(void) __asm__("func_001E97A0");
-extern void resident_call_001E97A8(void) __asm__("func_001E97A8");
-extern void resident_call_001E97B0(void) __asm__("func_001E97B0");
+
 extern void resident_call_001E97B8(void) __asm__("func_001E97B8");
-extern void resident_call_001E97C0(void *, void *, s32, s32) __asm__("func_001E97C0");
+
 extern void resident_call_001E97D0(ResidentRenderObject *, ResidentRenderObject *) __asm__("func_001E97D0");
 extern void resident_call_001EDE50(void) __asm__("func_001EDE50");
-extern void resident_call_001F3140(void) __asm__("func_001F3140");
+
 extern void resident_call_001F49B0(void *, ResidentRenderObject *) __asm__("func_001F49B0");
 extern void resident_call_001F4B68(void *, ResidentRenderObject *) __asm__("func_001F4B68");
-extern void resident_call_001F4E08(s32) __asm__("func_001F4E08");
+
 extern f32 resident_call_001F98B0(f32) __asm__("func_001F98B0");
-extern s32 resident_call_001F98C0(s32) __asm__("func_001F98C0");
-extern f32 resident_call_001F9B88(f32) __asm__("func_001F9B88");
-extern void resident_call_001F9BC0(void *) __asm__("func_001F9BC0");
-extern void resident_call_001F9BD8(void *, void *, void *) __asm__("func_001F9BD8");
+
 extern void resident_call_001F9C08(void *, void *, void *, f32) __asm__("func_001F9C08");
-extern void resident_call_001F9C30(void *, void *, f32) __asm__("func_001F9C30");
-extern void resident_call_001F9CA0(void *, void *, void *) __asm__("func_001F9CA0");
-extern f32 resident_call_001F9D10(void *, void *) __asm__("func_001F9D10");
+
 extern f32 resident_call_001F9D48(void *, void *, void *) __asm__("func_001F9D48");
-extern void resident_call_001F9EC0(void *, void *, void *) __asm__("func_001F9EC0");
-extern f32 resident_call_001F9F90(f32) __asm__("func_001F9F90");
-extern f32 resident_call_001FA058(f32, f32) __asm__("func_001FA058");
-extern f32 resident_call_001FA748(f32, f32) __asm__("func_001FA748");
-extern f32 resident_call_001FA790(f32, f32) __asm__("func_001FA790");
-extern f32 resident_call_001FA888(s32) __asm__("func_001FA888");
-extern void resident_call_00202260(void) __asm__("func_00202260");
-extern void resident_call_00205220(s32) __asm__("func_00205220");
+
 extern ResidentRenderObject *resident_call_0020D348(s32) __asm__("func_0020D348");
 extern void resident_call_0020D678(ResidentRenderObject *) __asm__("func_0020D678");
 extern void resident_call_0020D6D0(ResidentRenderObject *) __asm__("func_0020D6D0");
-extern void resident_call_0020DE20(void) __asm__("func_0020DE20");
+
 extern void resident_call_0020ED48(ResidentRenderObject *) __asm__("func_0020ED48");
-extern void resident_call_00213C78(void) __asm__("func_00213C78");
+
 extern void resident_call_00214550(ResidentRenderObject *) __asm__("func_00214550");
 extern f32 resident_call_00214D88(f32 *, f32 *, f32, f32, f32, f32) __asm__("func_00214D88");
 extern void resident_call_00215CA8(ScriptedPath *, s32, void *, void *, s32, f32) __asm__("func_00215CA8");
 extern void resident_call_00216960(void) __asm__("func_00216960");
 extern void resident_call_00217748(s32) __asm__("func_00217748");
-extern void resident_call_00218A80(void) __asm__("func_00218A80");
-extern void resident_call_00219C70(s32) __asm__("func_00219C70");
-extern void resident_call_0022DD68(void) __asm__("func_0022DD68");
-extern void resident_call_0022EF68(void) __asm__("func_0022EF68");
+
 extern void resident_call_0022FDC0(void) __asm__("func_0022FDC0");
 extern void resident_call_002308C8(ResidentRenderObject *, f32) __asm__("func_002308C8");
 extern void resident_call_0022F258() __asm__("func_0022F258");
@@ -1197,11 +1166,11 @@ void update_resident_gameplay_state(void) {
     switch (resident_data_0013E130.state) {
         case 0:
         case 8:
-            resident_call_001E97B0();
-            resident_call_00213C78();
-            resident_call_0022EF68();
+            noop_callback_i();
+            update_visible_resident_objects();
+            enqueue_voice_request();
             resident_call_001E97A0();
-            resident_call_00218A80();
+            UpdateParts();
             resident_data_0015F53C -= 0.125f;
             resident_data_0018CC20.frame++;
             resident_data_0018CC20.time++;
@@ -1210,16 +1179,16 @@ void update_resident_gameplay_state(void) {
             }
             ticks_per_bank = resident_data_0015EE80 ? 0x50 : 0x60;
             skip = resident_data_0013E130.skip;
-            if ((resident_data_0013CBE4[0] & 0x70) && resident_call_001F98C0(30) < resident_data_0018CC20.time &&
+            if ((resident_data_0013CBE4[0] & 0x70) && scale_game_frame_count(30) < resident_data_0018CC20.time &&
                 resident_data_0015F53C == 0.0f) {
                 if (resident_data_0013E130.state == 0 &&
                     resident_data_0018CC20.time <
-                        resident_call_001F98C0(
+                        scale_game_frame_count(
                             ((s32 *)&resident_duration_base)[resident_data_0013E130.content_variant] - 30)) {
                     skip = 1;
                 }
                 if (resident_data_0013E130.state == 8 &&
-                    resident_data_0018CC20.time < resident_data_0018CC20.end - resident_call_001F98C0(30)) {
+                    resident_data_0018CC20.time < resident_data_0018CC20.end - scale_game_frame_count(30)) {
                     skip = 1;
                 }
             }
@@ -1228,15 +1197,15 @@ void update_resident_gameplay_state(void) {
                     resident_data_001517D0.unk5A = 5;
                 }
                 if (resident_data_0013E130.state == 0) {
-                    resident_data_0018CC20.time = resident_call_001F98C0(
+                    resident_data_0018CC20.time = scale_game_frame_count(
                         ((s32 *)&resident_duration_base)[resident_data_0013E130.content_variant]);
                     resident_data_0018CC20.sequence_frame = resident_data_0018CC20.time / ticks_per_bank;
-                    resident_call_00205220(resident_data_0018CC20.sequence_frame);
+                    parse_space_scene_chunk(resident_data_0018CC20.sequence_frame);
                     resident_data_0018CC20.frame = resident_data_0018CC20.time % ticks_per_bank;
                     if (resident_data_0013E130.skip) {
                         resident_data_0013E130.skip = 0;
                     } else {
-                        resident_call_001F4E08(4);
+                        FadeToBlack(4);
                     }
                     resident_data_0015F53C = 1.0f;
                 } else {
@@ -1247,9 +1216,9 @@ void update_resident_gameplay_state(void) {
                 if (resident_data_001517D0.unk5A != 6 && resident_data_001517D0.unk5A != 7) {
                     resident_data_001517D0.unk5A = 5;
                 }
-                resident_call_002348B8();
+                calculate_dma_transfer_address();
                 resident_data_0018CEB0[0] = 0.63f;
-                resident_call_001F3140();
+                UpdateViewContext();
                 /* Retail releases the attachment once per sequence object, even when that object is null. */
                 for (release_index = 0; release_index < resident_data_0018CC20.count; release_index++) {
                     expired_object = resident_data_0018CC20.objects[release_index];
@@ -1270,13 +1239,13 @@ void update_resident_gameplay_state(void) {
                     }
                 }
                 if (resident_data_0013E130.state == 0) {
-                    resident_call_00219C70(0);
+                    PauseAllSounds(0);
                     resident_data_001D5F70 = 0xE;
                     resident_data_0015F6FC[0] = 1;
                     return;
                 }
                 resident_data_0015F6E8 = 0;
-                resident_call_00216F28();
+                music_Unpause();
                 resident_data_0015F6FC[0] = 1;
                 resident_data_001414F5[0] = 0;
                 resident_call_001E97B8();
@@ -1284,25 +1253,24 @@ void update_resident_gameplay_state(void) {
                     resident_call_001E9788();
                     return;
                 }
-                resident_call_001E97C0(&resident_data_0013E130.unk60, &resident_data_0013E130.unk70, 0, 1);
+                noop_callback_k(&resident_data_0013E130.unk60, &resident_data_0013E130.unk70, 0, 1);
                 return;
             }
             bank_tick_limit = resident_data_0015EE80 ? 0x50 : 0x60;
             if (resident_data_0018CC20.frame >= bank_tick_limit) {
-                resident_call_00205220(++resident_data_0018CC20.sequence_frame);
+                parse_space_scene_chunk(++resident_data_0018CC20.sequence_frame);
             }
             keyframe = &resident_data_0018CC20.frames[resident_data_0018CC20.frame];
             keyframe_angles = keyframe->rotation;
             keyframe_flags = keyframe->position.bytes[12];
             resident_data_0018CEB0[0] = keyframe_angles[3];
-            resident_call_001F3140();
+            UpdateViewContext();
             qcopy(&resident_data_00187040.position, &keyframe->position);
-            resident_call_001F9EC0(&resident_data_00187040.position, &resident_data_00187040.position,
-                                   resident_data_0013E130.player->transform);
-            resident_call_001F9BD8(&resident_data_00187040.position, &resident_data_00187040.position,
-                                   &resident_data_0013E130.player->position);
-            segment_angle =
-                resident_call_001FA748(keyframe_angles[2], resident_data_0013E130.player->rotation.components[2]);
+            matrix_mul_vec3(&resident_data_00187040.position, &resident_data_00187040.position,
+                            resident_data_0013E130.player->transform);
+            FastVecAdd(&resident_data_00187040.position, &resident_data_00187040.position,
+                       &resident_data_0013E130.player->position);
+            segment_angle = FastAddRots(keyframe_angles[2], resident_data_0013E130.player->rotation.components[2]);
             resident_call_00125358(scratch_vectors);
             resident_call_001254A0(scratch_vectors, scratch_vectors, keyframe->rotation[0]);
             resident_call_00125548(scratch_vectors, scratch_vectors, keyframe_angles[1]);
@@ -1317,8 +1285,8 @@ void update_resident_gameplay_state(void) {
             resident_data_00187040.right.components[2] = -scratch_vectors[0].components[2];
             resident_data_00187040.up.components[2] = scratch_vectors[1].components[2];
             if (resident_data_0015EEB4[0] != 0) {
-                resident_call_001F9CA0(&resident_data_00187040.right, &resident_data_00187040.up,
-                                       &resident_data_00187040.forward);
+                FastVecCross(&resident_data_00187040.right, &resident_data_00187040.up,
+                             &resident_data_00187040.forward);
             }
             for (object_index = 0; object_index < resident_data_0018CC20.count; object_index++) {
                 object = resident_data_0018CC20.objects[object_index];
@@ -1326,18 +1294,17 @@ void update_resident_gameplay_state(void) {
                 object->current_frame = current_frame;
                 object->next_frame = current_frame + 1;
                 resident_call_0020D6D0(object);
-                object->blend = resident_call_001FA888(resident_data_0018CC20.frame & 1) * 0.5f;
+                object->blend = IntToFloat(resident_data_0018CC20.frame & 1) * 0.5f;
                 if (keyframe_flags != 0 && (resident_data_0018CC20.frame & 1)) {
                     object->blend = 1.0f;
                 }
                 animation_positions = object->animation_positions;
-                resident_call_001F9C30(&scratch_vectors[0], animation_positions + object->current_frame * 16,
-                                       1.0f - object->blend);
-                resident_call_001F9C30(&scratch_vectors[1], animation_positions + object->next_frame * 16,
-                                       object->blend);
-                resident_call_001F9BD8(&object->position, &scratch_vectors[0], &scratch_vectors[1]);
-                resident_call_001F9EC0(&object->position, &object->position, resident_data_0013E130.player->transform);
-                resident_call_001F9BD8(&object->position, &object->position, &resident_data_0013E130.player->position);
+                FastVecScale(&scratch_vectors[0], animation_positions + object->current_frame * 16,
+                             1.0f - object->blend);
+                FastVecScale(&scratch_vectors[1], animation_positions + object->next_frame * 16, object->blend);
+                FastVecAdd(&object->position, &scratch_vectors[0], &scratch_vectors[1]);
+                matrix_mul_vec3(&object->position, &object->position, resident_data_0013E130.player->transform);
+                FastVecAdd(&object->position, &object->position, &resident_data_0013E130.player->position);
                 object->rotation.components[2] = resident_data_0013E130.player->rotation.components[2];
                 object->cached_selector = 0xFF;
                 resident_call_0020ED48(object);
@@ -1345,12 +1312,12 @@ void update_resident_gameplay_state(void) {
                     if (resident_data_0013E130.state == 0) {
                         if (g_current_level_index_r == LEVEL_ORXON && resident_data_0013D5C8[6] == 0) {
                             object->unk7F = 0;
-                        } else if (resident_data_0018CC20.time <= resident_call_001F98C0(0x3E)) {
+                        } else if (resident_data_0018CC20.time <= scale_game_frame_count(0x3E)) {
                             object->unk7F = 0x18;
                         } else {
                             object->unk7F = 0;
                         }
-                    } else if (resident_call_001F98C0(360) < resident_data_0018CC20.time) {
+                    } else if (scale_game_frame_count(360) < resident_data_0018CC20.time) {
                         if (g_current_level_index_r == LEVEL_ORXON && resident_data_0013D5C8[6] == 0) {
                             object->unk7F = 0;
                         } else {
@@ -1361,12 +1328,12 @@ void update_resident_gameplay_state(void) {
                     }
                 } else if (object->class_id == 10) {
                     if (resident_data_0013E130.state == 0) {
-                        if (resident_data_0018CC20.time <= resident_call_001F98C0(350)) {
+                        if (resident_data_0018CC20.time <= scale_game_frame_count(350)) {
                             object->unk7F = 0x18;
                         } else {
                             object->unk7F = 0;
                         }
-                    } else if (resident_data_0018CC20.time <= resident_call_001F98C0(524)) {
+                    } else if (resident_data_0018CC20.time <= scale_game_frame_count(524)) {
                         object->unk7F = 0;
                     } else {
                         object->unk7F = 0x18;
@@ -1398,11 +1365,9 @@ void update_resident_gameplay_state(void) {
                     resident_call_001F4B68(resident_call_00233AB8, object);
                     resident_call_001F49B0(resident_call_0022F258, object);
                     if (resident_data_0013E130.state == 0) {
-                        if (resident_data_0018CC20.time < resident_call_001F98C0(360)) {
+                        if (resident_data_0018CC20.time < scale_game_frame_count(360)) {
                             s32 color_intensity =
-                                (s32)(resident_call_001F9F90(
-                                          resident_call_001FA888((resident_data_0018CC20.time & 0x3F) - 32) *
-                                          0.09817477f) *
+                                (s32)(FastCos(IntToFloat((resident_data_0018CC20.time & 0x3F) - 32) * 0.09817477f) *
                                       80.0f) +
                                 120;
                             if (object->class_id == 0x215) {
@@ -1411,7 +1376,7 @@ void update_resident_gameplay_state(void) {
                             } else {
                                 object->color = color_intensity | (color_intensity << 8) | (color_intensity << 16);
                             }
-                        } else if (resident_data_0018CC20.time < resident_call_001F98C0(0x1F8)) {
+                        } else if (resident_data_0018CC20.time < scale_game_frame_count(0x1F8)) {
                             s32 color_intensity =
                                 (s32)(((f32)resident_data_0018CC20.time - resident_call_001F98B0(360.0f)) *
                                       (resident_data_0015EE60 * 1.25f));
@@ -1423,14 +1388,14 @@ void update_resident_gameplay_state(void) {
                             } else {
                                 object->color = color_intensity | (color_intensity << 8) | (color_intensity << 16);
                             }
-                            if (resident_call_001F98C0(0x1A4) < resident_data_0018CC20.time) {
+                            if (scale_game_frame_count(0x1A4) < resident_data_0018CC20.time) {
                                 resident_data_0013E130.player->unkBC =
                                     (s32)(((f32)resident_data_0018CC20.time - resident_call_001F98B0(420.0f)) *
                                           (resident_data_0015EE60 * 1.2f));
                                 resident_data_0013E130.player->unkB2 = 0;
                                 resident_call_001F49B0(resident_effect_entry + 8, resident_data_0013E130.player);
                             }
-                            if (resident_call_001F98C0(0x1D0) < resident_data_0018CC20.time) {
+                            if (scale_game_frame_count(0x1D0) < resident_data_0018CC20.time) {
                                 resident_data_0015F540 += 0.025f;
                                 if (resident_data_0015F540 > 1.0f) {
                                     resident_data_0015F540 = 1.0f;
@@ -1443,15 +1408,14 @@ void update_resident_gameplay_state(void) {
                                 resident_data_0015F540 = 0.0f;
                             }
                         }
-                    } else if (resident_data_0018CC20.time < resident_call_001F98C0(0xF0)) {
+                    } else if (resident_data_0018CC20.time < scale_game_frame_count(0xF0)) {
                         s32 color_intensity;
-                        if (resident_data_0018CC20.time < resident_call_001F98C0(0xC8)) {
+                        if (resident_data_0018CC20.time < scale_game_frame_count(0xC8)) {
                             resident_call_002308C8(object, resident_data_0015EE6C * -4.0f);
                             resident_call_002308C8(object, resident_data_0015EE6C * -3.0f);
                         }
                         color_intensity =
-                            (s32)(resident_call_001F9F90(
-                                      resident_call_001FA888((resident_data_0018CC20.time & 0x3F) - 32) * 0.09817477f) *
+                            (s32)(FastCos(IntToFloat((resident_data_0018CC20.time & 0x3F) - 32) * 0.09817477f) *
                                   80.0f) +
                             120;
                         if (object->class_id == 0x215) {
@@ -1462,9 +1426,9 @@ void update_resident_gameplay_state(void) {
                         object->unkBC = 0x32;
                         object->unkB2 = 10;
                         resident_call_001F49B0(resident_effect_entry + 8, object);
-                    } else if (resident_data_0018CC20.time <= resident_call_001F98C0(360)) {
+                    } else if (resident_data_0018CC20.time <= scale_game_frame_count(360)) {
                         s32 color_intensity;
-                        if (resident_data_0018CC20.time < resident_call_001F98C0(300)) {
+                        if (resident_data_0018CC20.time < scale_game_frame_count(300)) {
                             resident_data_0013E130.player->unkBC =
                                 (s32)((resident_call_001F98B0(300.0f) - (f32)resident_data_0018CC20.time) *
                                       (resident_data_0015EE60 * 1.5f));
@@ -1480,8 +1444,7 @@ void update_resident_gameplay_state(void) {
                         }
                     } else {
                         s32 color_intensity =
-                            (s32)(resident_call_001F9F90(
-                                      resident_call_001FA888((resident_data_0018CC20.time & 0x3F) - 32) * 0.09817477f) *
+                            (s32)(FastCos(IntToFloat((resident_data_0018CC20.time & 0x3F) - 32) * 0.09817477f) *
                                   80.0f) +
                             120;
                         if (object->class_id == 0x215) {
@@ -1492,26 +1455,26 @@ void update_resident_gameplay_state(void) {
                     }
                 }
             }
-            resident_call_0022DD68();
-            resident_call_00202260();
-            resident_call_0020DE20();
-            resident_call_001E97A8();
+            sound_update();
+            UpdateAllPointLights();
+            update_resident_packed_direction();
+            noop_callback_h();
             break;
 
         case 3:
-            resident_call_001E97B0();
-            resident_call_00213C78();
-            resident_call_0022EF68();
+            noop_callback_i();
+            update_visible_resident_objects();
+            enqueue_voice_request();
             resident_call_001E97A0();
-            resident_call_00218A80();
+            UpdateParts();
             if (resident_data_0013E130.timer == 0) {
-                resident_call_00216EF0(0);
+                music_Pause(0);
                 resident_call_00217748(0);
                 resident_data_001517D0.unk1C = resident_data_0013E130.content_variant + 0x9C4F;
-                resident_call_001F4E08(resident_call_001F98C0(12));
+                FadeToBlack(scale_game_frame_count(12));
                 while ((s16)resident_data_001517D0.unk5A != 3) {
-                    resident_call_0022DD68();
-                    resident_call_00122598(0);
+                    sound_update();
+                    sce_gs_sync_v(0);
                 }
                 resident_call_00216960();
                 resident_data_0013E130.player->selected_a = 1;
@@ -1544,30 +1507,30 @@ void update_resident_gameplay_state(void) {
                     maximum_turn = resident_data_0013E130.blend;
                     path->p[0].components[3] = maximum_turn;
                     for (path_point_index = 1; path_point_index < path->point_count - 1; path_point_index++) {
-                        segment_angle = resident_call_001FA058(
+                        segment_angle = fast_arc_tan(
                             path->p[path_point_index].components[0] - path->p[path_point_index - 1].components[0],
                             path->p[path_point_index].components[1] - path->p[path_point_index - 1].components[1]);
-                        path->p[path_point_index].components[3] = resident_call_001FA790(
-                            resident_call_001FA058(
+                        path->p[path_point_index].components[3] = FastSubRots(
+                            fast_arc_tan(
                                 path->p[path_point_index + 1].components[0] - path->p[path_point_index].components[0],
                                 path->p[path_point_index + 1].components[1] - path->p[path_point_index].components[1]),
                             segment_angle);
-                        if (maximum_turn < resident_call_001F9B88(path->p[path_point_index].components[3])) {
-                            maximum_turn = resident_call_001F9B88(path->p[path_point_index].components[3]);
+                        if (maximum_turn < FastAbsF(path->p[path_point_index].components[3])) {
+                            maximum_turn = FastAbsF(path->p[path_point_index].components[3]);
                         }
                     }
-                    segment_angle = resident_call_001FA058(
+                    segment_angle = fast_arc_tan(
                         path->p[path->point_count - 1].components[0] - path->p[path->point_count - 2].components[0],
                         path->p[path->point_count - 1].components[1] - path->p[path->point_count - 2].components[1]);
-                    path->p[path->point_count - 1].components[3] = resident_call_001FA790(
-                        resident_call_001FA058(path->p[0].components[0] - path->p[path->point_count - 1].components[0],
-                                               path->p[0].components[1] - path->p[path->point_count - 1].components[1]),
+                    path->p[path->point_count - 1].components[3] = FastSubRots(
+                        fast_arc_tan(path->p[0].components[0] - path->p[path->point_count - 1].components[0],
+                                     path->p[0].components[1] - path->p[path->point_count - 1].components[1]),
                         segment_angle);
                     turn_scale = 0.34906584f / maximum_turn;
                     for (point_index = 0; point_index < path->point_count; point_index++) {
                         path->p[point_index].components[3] *= turn_scale;
                     }
-                    resident_data_0013E130.path_segment_length = resident_call_001F9D10(&path->p[0], &path->p[1]);
+                    resident_data_0013E130.path_segment_length = FastVecDist(&path->p[0], &path->p[1]);
                     resident_data_0013E130.path_progress = 0.0f;
                     resident_data_0013E130.speed = 0.0f;
                     resident_data_0013E130.trail = 0;
@@ -1576,12 +1539,11 @@ void update_resident_gameplay_state(void) {
                     qcopy(&resident_data_0013E130.startPos, &player->position);
                     qcopy(&resident_data_0013E130.pathPos, &path->p[0]);
                     qcopy(&resident_data_0013E130.startRot, &player->rotation);
-                    resident_data_0013E130.rotY = resident_call_001FA058(
-                        resident_call_001F9D48(&path->p[1], &path->p[0], &resident_data_0013E130.startPos),
-                        path->p[0].components[2] - path->p[1].components[2]);
-                    resident_data_0013E130.rotZ =
-                        resident_call_001FA058(path->p[1].components[0] - path->p[0].components[0],
-                                               path->p[1].components[1] - path->p[0].components[1]);
+                    resident_data_0013E130.rotY =
+                        fast_arc_tan(resident_call_001F9D48(&path->p[1], &path->p[0], &resident_data_0013E130.startPos),
+                                     path->p[0].components[2] - path->p[1].components[2]);
+                    resident_data_0013E130.rotZ = fast_arc_tan(path->p[1].components[0] - path->p[0].components[0],
+                                                               path->p[1].components[1] - path->p[0].components[1]);
                 }
             }
             if (resident_data_0013E130.source_camera_index >= 0 &&
@@ -1593,47 +1555,44 @@ void update_resident_gameplay_state(void) {
                     &scratch_vectors[0], &resident_data_00160134[resident_data_0013E130.source_camera_index].position,
                     &resident_data_00160134[resident_data_0013E130.destination_camera_index].position,
                     resident_data_0013E130.blend);
-                resident_call_001F9BC0(&scratch_vectors[1]);
+                clear_u64_value(&scratch_vectors[1]);
                 scratch_vectors[1].components[1] =
-                    resident_call_001FA790(resident_data_00160134[resident_data_0013E130.destination_camera_index].rotY,
-                                           resident_data_00160134[resident_data_0013E130.source_camera_index].rotY) *
+                    FastSubRots(resident_data_00160134[resident_data_0013E130.destination_camera_index].rotY,
+                                resident_data_00160134[resident_data_0013E130.source_camera_index].rotY) *
                     resident_data_0013E130.blend;
                 scratch_vectors[1].components[1] =
-                    resident_call_001FA748(resident_data_00160134[resident_data_0013E130.source_camera_index].rotY,
-                                           scratch_vectors[1].components[1]);
+                    FastAddRots(resident_data_00160134[resident_data_0013E130.source_camera_index].rotY,
+                                scratch_vectors[1].components[1]);
                 scratch_vectors[1].components[2] =
-                    resident_call_001FA790(resident_data_00160134[resident_data_0013E130.destination_camera_index].rotZ,
-                                           resident_data_00160134[resident_data_0013E130.source_camera_index].rotZ) *
+                    FastSubRots(resident_data_00160134[resident_data_0013E130.destination_camera_index].rotZ,
+                                resident_data_00160134[resident_data_0013E130.source_camera_index].rotZ) *
                     resident_data_0013E130.blend;
                 scratch_vectors[1].components[2] =
-                    resident_call_001FA748(resident_data_00160134[resident_data_0013E130.source_camera_index].rotZ,
-                                           scratch_vectors[1].components[2]);
+                    FastAddRots(resident_data_00160134[resident_data_0013E130.source_camera_index].rotZ,
+                                scratch_vectors[1].components[2]);
                 resident_call_001E9778(&scratch_vectors[0]);
                 resident_call_001E9780(&scratch_vectors[1]);
             }
             if (resident_data_0013E130.path >= 0) {
-                if (resident_data_0013E130.timer < resident_call_001F98C0(150)) {
-                    blend = (1.0f - resident_call_001F9F90(
-                                        resident_call_001FA888(resident_data_0013E130.timer) *
-                                        (3.1415927f / resident_call_001FA888(resident_call_001F98C0(120))))) *
+                if (resident_data_0013E130.timer < scale_game_frame_count(150)) {
+                    blend = (1.0f - FastCos(IntToFloat(resident_data_0013E130.timer) *
+                                            (3.1415927f / IntToFloat(scale_game_frame_count(120))))) *
                             0.5f;
-                    if (resident_data_0013E130.timer >= resident_call_001F98C0(120)) {
+                    if (resident_data_0013E130.timer >= scale_game_frame_count(120)) {
                         blend = 1.0f;
                     }
                     resident_data_0013E130.player->blend = blend;
                     resident_call_001F9C08(&resident_data_0013E130.player->position, &resident_data_0013E130.startPos,
                                            &resident_data_0013E130.pathPos, blend);
                     resident_data_0013E130.player->rotation.components[0] = 0.0f;
-                    resident_data_0013E130.player->rotation.components[1] =
-                        resident_call_001FA748(resident_data_0013E130.startRot.components[1],
-                                               resident_call_001FA790(resident_data_0013E130.rotY,
-                                                                      resident_data_0013E130.startRot.components[1]) *
-                                                   blend);
-                    resident_data_0013E130.player->rotation.components[2] =
-                        resident_call_001FA748(resident_data_0013E130.startRot.components[2],
-                                               resident_call_001FA790(resident_data_0013E130.rotZ,
-                                                                      resident_data_0013E130.startRot.components[2]) *
-                                                   blend);
+                    resident_data_0013E130.player->rotation.components[1] = FastAddRots(
+                        resident_data_0013E130.startRot.components[1],
+                        FastSubRots(resident_data_0013E130.rotY, resident_data_0013E130.startRot.components[1]) *
+                            blend);
+                    resident_data_0013E130.player->rotation.components[2] = FastAddRots(
+                        resident_data_0013E130.startRot.components[2],
+                        FastSubRots(resident_data_0013E130.rotZ, resident_data_0013E130.startRot.components[2]) *
+                            blend);
                     if (resident_data_0015F53C > 0.0f) {
                         resident_data_0015F53C -= 0.125f;
                         if (resident_data_0015F53C < 0.0f) {
@@ -1678,19 +1637,19 @@ void update_resident_gameplay_state(void) {
                         if (resident_data_0013E130.history_count < 0x20) {
                             resident_data_0013E130.history_count++;
                         }
-                        resident_call_001F9EC0(&resident_data_0013E130.trailA[resident_data_0013E130.trail],
-                                               &resident_data_001D9D40[resident_data_0013E130.content_variant].a,
-                                               resident_data_0013E130.player->transform);
-                        resident_call_001F9BD8(&resident_data_0013E130.trailA[resident_data_0013E130.trail],
-                                               &resident_data_0013E130.trailA[resident_data_0013E130.trail],
-                                               &resident_data_0013E130.player->position);
+                        matrix_mul_vec3(&resident_data_0013E130.trailA[resident_data_0013E130.trail],
+                                        &resident_data_001D9D40[resident_data_0013E130.content_variant].a,
+                                        resident_data_0013E130.player->transform);
+                        FastVecAdd(&resident_data_0013E130.trailA[resident_data_0013E130.trail],
+                                   &resident_data_0013E130.trailA[resident_data_0013E130.trail],
+                                   &resident_data_0013E130.player->position);
                         resident_data_0013E130.trailA[resident_data_0013E130.trail].components[3] = 1.0f;
-                        resident_call_001F9EC0(&resident_data_0013E130.trailB[resident_data_0013E130.trail],
-                                               &resident_data_001D9D40[resident_data_0013E130.content_variant].b,
-                                               resident_data_0013E130.player->transform);
-                        resident_call_001F9BD8(&resident_data_0013E130.trailB[resident_data_0013E130.trail],
-                                               &resident_data_0013E130.trailB[resident_data_0013E130.trail],
-                                               &resident_data_0013E130.player->position);
+                        matrix_mul_vec3(&resident_data_0013E130.trailB[resident_data_0013E130.trail],
+                                        &resident_data_001D9D40[resident_data_0013E130.content_variant].b,
+                                        resident_data_0013E130.player->transform);
+                        FastVecAdd(&resident_data_0013E130.trailB[resident_data_0013E130.trail],
+                                   &resident_data_0013E130.trailB[resident_data_0013E130.trail],
+                                   &resident_data_0013E130.player->position);
                         resident_data_0013E130.trailB[resident_data_0013E130.trail].components[3] = 1.0f;
                         resident_call_001F49B0(resident_call_0022F738, resident_data_0013E130.player);
                         if (resident_data_0015F53C > 0.0f) {
@@ -1705,32 +1664,28 @@ void update_resident_gameplay_state(void) {
                     ResidentRenderObject *p = resident_data_0013E130.player;
                     ResidentRenderObject *scratch_vectors = resident_data_0013E130.companion_a;
                     qcopy(&scratch_vectors->rotation, &p->rotation);
-                    resident_call_001F9EC0(&scratch_vectors->position,
-                                           &resident_data_001DA010[resident_data_0013E130.content_variant],
-                                           p->transform);
+                    matrix_mul_vec3(&scratch_vectors->position,
+                                    &resident_data_001DA010[resident_data_0013E130.content_variant], p->transform);
                 }
-                resident_call_001F9BD8(&resident_data_0013E130.companion_a->position,
-                                       &resident_data_0013E130.companion_a->position,
-                                       &resident_data_0013E130.player->position);
+                FastVecAdd(&resident_data_0013E130.companion_a->position, &resident_data_0013E130.companion_a->position,
+                           &resident_data_0013E130.player->position);
                 resident_call_0020ED48(resident_data_0013E130.companion_a);
                 {
                     ResidentRenderObject *scratch_vectors = resident_data_0013E130.companion_b;
                     ResidentRenderObject *p = resident_data_0013E130.player;
                     qcopy(&scratch_vectors->rotation, &p->rotation);
-                    resident_call_001F9EC0(&scratch_vectors->position,
-                                           &resident_data_001DA040[resident_data_0013E130.content_variant],
-                                           p->transform);
+                    matrix_mul_vec3(&scratch_vectors->position,
+                                    &resident_data_001DA040[resident_data_0013E130.content_variant], p->transform);
                 }
-                resident_call_001F9BD8(&resident_data_0013E130.companion_b->position,
-                                       &resident_data_0013E130.companion_b->position,
-                                       &resident_data_0013E130.player->position);
+                FastVecAdd(&resident_data_0013E130.companion_b->position, &resident_data_0013E130.companion_b->position,
+                           &resident_data_0013E130.player->position);
                 resident_call_0020ED48(resident_data_0013E130.companion_b);
             }
             resident_call_001EDE50();
-            resident_call_0022DD68();
-            resident_call_00202260();
-            resident_call_0020DE20();
-            resident_call_001E97A8();
+            sound_update();
+            UpdateAllPointLights();
+            update_resident_packed_direction();
+            noop_callback_h();
             break;
 
         case 4:
@@ -2197,8 +2152,6 @@ struct CommonArchiveMemory {
     s32 archive_base;
 };
 
-extern s32 sce_cd_sync_s_r(s32 a0) __asm__("func_00120F30");
-
 extern s32 wait_for_graphics_pipeline_idle_r(s32 a0, s32 a1) __asm__("func_00120858");
 
 extern s32 Stream_SubmitRead(void *a0, u32 a1, u32 a2);
@@ -2223,7 +2176,7 @@ void prepare_loading_slide_textures(s32 language_index, s32 first_slide, s32 sec
     upload_index = 0;
     Stream_SubmitRead((void *)(archive_memory->archive_base + 0x100000),
                       disc_table.loading_slides[language_index].sector, disc_table.loading_slides[language_index].size);
-    sce_cd_sync_s_r(0);
+    sce_cd_sync_s(0);
     flush_cache(0);
     fast_decompress(archive_memory->archive_base + 0x100000, archive_memory->archive_base);
     flush_cache(0);
@@ -2446,9 +2399,6 @@ extern int sound_bank_handle_m __asm__("D_0015EE5C") MACRO_ADDR;
 extern short D_0015EF48_m SDATA(D_0015EF48);
 extern int level_archive_load_busy_i __asm__("D_0015EF4A") MACRO_ADDR;
 extern char unloaded_sound_bank_format[];
-extern int sce_gs_sync_v_i(int) __asm__("func_00122598");
-
-extern int sce_cd_sync_s_i(int) __asm__("func_00120F30");
 
 extern void play_level_loading_slides(int, int, int, int, int);
 extern void initialize_level_runtime(void);
@@ -2505,7 +2455,7 @@ void DoSpaceTransition(void) {
         FadeToBlack(scale_game_frame_count(6));
         g_current_level_index_m = space_load_level;
         load_level_chunk_from_disc();
-        sce_cd_sync_s_i(0);
+        sce_cd_sync_s(0);
         cd_read_state_b.fB = 0;
         DMAC_VIF1_Disable();
         return;
@@ -2585,7 +2535,7 @@ void DoSpaceTransition(void) {
             memcard_update_state();
             Menu_RunStateHandler();
             VU1_syncChain(1);
-            sce_gs_sync_v_i(0);
+            sce_gs_sync_v(0);
             game_frame_counter++;
             tick_space_transition();
             if (!done) {
@@ -2595,7 +2545,7 @@ void DoSpaceTransition(void) {
         if (!done) {
             do {
                 flush_cache(0);
-                sce_gs_sync_v_i(0);
+                sce_gs_sync_v(0);
                 memcard_update_state();
                 Menu_RunStateHandler();
                 tick_space_transition();
@@ -2603,13 +2553,13 @@ void DoSpaceTransition(void) {
         }
         while (memory_card_state_b.fDC != 2 || memory_card_state_b.fE4 >= 0) {
             flush_cache(0);
-            sce_gs_sync_v_i(0);
+            sce_gs_sync_v(0);
             memcard_update_state();
             Menu_RunStateHandler();
             tick_space_transition();
         }
     }
-    sce_cd_sync_s_i(0);
+    sce_cd_sync_s(0);
     cd_read_state_b.fB = 0;
     DMAC_VIF1_Disable();
 }
@@ -2647,7 +2597,6 @@ extern Vec4 env_map_world_positions[];
 extern float env_map_uvs[][2];
 extern float env_map_saved_uvs[][2];
 extern u64 GetEffectTex_r2(int) __asm__("func_001F4868");
-extern void fast_dec_timer(s32 *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/render_environment_mapped_object.c, render_environment_mapped_object. */
 void render_environment_mapped_object(EnvironmentMappedObject *object) {

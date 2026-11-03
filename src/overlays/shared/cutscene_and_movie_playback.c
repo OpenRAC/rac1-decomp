@@ -540,8 +540,6 @@ void finish_cutscene(void) {
     music_set_active_track_value(scale_ticks(30));
 }
 
-extern void vec_scale_to_length(void *, void *, float);
-
 extern char render_view_params[];
 extern unsigned char gCheats[] MACRO_ADDR;
 extern char g_debug_camera[];

@@ -25,7 +25,7 @@ void update_hero_hoverboard_race_progress(void) {
         v0[0] = 163.0f;
         v0[1] = 119.0f;
         v0[2] = 80.0f;
-        if (FastVecDist_r2(g_hero.motion.pos.f, v0) < 11.0f) {
+        if (FastVecDist(g_hero.motion.pos.f, v0) < 11.0f) {
             if (g_hero.race_path_node < 3 || g_hero.race_path_node > 0x46) {
                 if (g_hero.race_path_node >= 3) {
                     g_hero.race_lap++;
@@ -37,7 +37,7 @@ void update_hero_hoverboard_race_progress(void) {
         v1[0] = 223.0f;
         v1[1] = 281.0f;
         v1[2] = 93.0f;
-        if (FastVecDist_r2(g_hero.motion.pos.f, v1) < 7.0f) {
+        if (FastVecDist(g_hero.motion.pos.f, v1) < 7.0f) {
             if (g_hero.race_path_node < 0x3B) {
                 g_hero.race_path_node = 0x3B;
             }
@@ -51,9 +51,9 @@ void update_hero_hoverboard_race_progress(void) {
         i = g_hero.race_path_node;
         n1 = path->n + 1;
         next = (i + n1) % path->n;
-        ang = fast_atan2_r2(path->p[next].x - path->p[i].x, path->p[next].y - path->p[i].y);
-        if (FastDiffRots_r(ang, fast_atan2_r2(g_hero.motion.pos.f[0] - path->p[i].x,
-                                              g_hero.motion.pos.f[1] - path->p[i].y)) < 1.5707964f) {
+        ang = fast_atan2(path->p[next].x - path->p[i].x, path->p[next].y - path->p[i].y);
+        if (FastDiffRots(ang, fast_atan2(g_hero.motion.pos.f[0] - path->p[i].x,
+                                         g_hero.motion.pos.f[1] - path->p[i].y)) < 1.5707964f) {
             g_hero.race_path_node = next;
             if (next == 0) {
                 g_hero.race_lap++;
@@ -77,9 +77,9 @@ void update_hero_hoverboard_race_progress(void) {
         i = g_hero.wrong_way_path_point;
         n1 = path->n + 1;
         next = (i + n1) % path->n;
-        dir = fast_atan2_r2(path->p[next].x - path->p[i].x, path->p[next].y - path->p[i].y);
+        dir = fast_atan2(path->p[next].x - path->p[i].x, path->p[next].y - path->p[i].y);
     }
-    if (near != 0 || (FastDiffRots_r(g_hero.motion.rot.f[2], dir) > 1.5707964f && g_hero.trick_input == 0)) {
+    if (near != 0 || (FastDiffRots(g_hero.motion.rot.f[2], dir) > 1.5707964f && g_hero.trick_input == 0)) {
         g_hero.off_course_frames++;
         if (g_hero.off_course_frames > scale_ticks(0xB4)) {
             if (race_respawn_request_active == 0) {
@@ -93,9 +93,9 @@ void update_hero_hoverboard_race_progress(void) {
                 compute_hero_hoverboard_respawn_transform_r(v0, v1);
                 g_hero.off_course_frames = 0;
                 g_hero.board_air_yaw = v1[2];
-                Hero_ResetToPosition_r(v0, v1, 0x6B, 1);
+                Hero_ResetToPosition(v0, v1, 0x6B, 1);
                 if (((Path *)g_hero.race_path) != 0) {
-                    int r = select_point_index_by_distance_r(g_hero.motion.pos.f, (Path *)g_hero.race_path, 0.0f);
+                    int r = select_point_index_by_distance(g_hero.motion.pos.f, (Path *)g_hero.race_path, 0.0f);
 
                     if (r < g_hero.race_path_node) {
                         g_hero.race_path_node = r;
@@ -114,9 +114,9 @@ void update_hero_hoverboard_race_progress(void) {
         i = g_hero.racer_path_point[j];
         n1 = path->n + 1;
         next = (i + n1) % path->n;
-        ang = fast_atan2_r2(path->p[next].x - path->p[i].x, path->p[next].y - path->p[i].y);
+        ang = fast_atan2(path->p[next].x - path->p[i].x, path->p[next].y - path->p[i].y);
         qcopy(v0, moby_pool_4f60_r2[d->f2C[j]].pos);
-        if (FastDiffRots_r(ang, fast_atan2_r2(v0[0] - path->p[i].x, v0[1] - path->p[i].y)) < 1.5707964f) {
+        if (FastDiffRots(ang, fast_atan2(v0[0] - path->p[i].x, v0[1] - path->p[i].y)) < 1.5707964f) {
             g_hero.racer_path_point[j] = next;
             if (next == 0) {
                 g_hero.racer_laps[j]++;
@@ -167,7 +167,7 @@ void update_hero_hoverboard_race_progress(void) {
             if (((Flags *)(menu_item_enabled_115_r + 1))->f9 == 0) {
                 ((Flags *)(menu_item_enabled_115_r + 1))->f9 = 1;
                 PlayBankSound_r(1, 0, 0);
-                ShowBanner_r(0x542D, -1);
+                ShowBanner(0x542D, -1);
             }
         }
         if (d->f28 == -1) {
@@ -177,7 +177,7 @@ void update_hero_hoverboard_race_progress(void) {
             moby_pool_4f60_r2[d->f28].fBC = 1;
         } else {
             g_hero.unk890 = (u8 *)(&moby_pool_4f60_r2[d->f28]);
-            mode_freeze_init_r(0, 0, 0);
+            mode_freeze_init(0, 0, 0);
         }
         if (race_best_times_r[0] == 0) {
             race_best_times_r[0] = g_hero.race_time_frames;
@@ -192,10 +192,10 @@ void update_hero_hoverboard_race_progress(void) {
         }
         moby_pool_4f60_r2[d->f28].f30 = 0xFF;
         if (g_hero.trick_hud_handle != -1) {
-            Hud_SetBarValueById_r(g_hero.trick_hud_handle, 0);
+            Hud_SetBarValueById(g_hero.trick_hud_handle, 0);
             g_hero.trick_hud_handle = -1;
         }
-        update_resource_counter_r();
+        update_resource_counter();
     } else if (g_current_level_index_r == LEVEL_KALEBO3) {
         if (d->f28 == -1) {
             return;
@@ -204,7 +204,7 @@ void update_hero_hoverboard_race_progress(void) {
             moby_pool_4f60_r2[d->f28].fBC = 1;
         } else {
             g_hero.unk890 = (u8 *)(&moby_pool_4f60_r2[d->f28]);
-            mode_freeze_init_r(0, 0, 0);
+            mode_freeze_init(0, 0, 0);
         }
         if (race_best_times_r[1] == 0) {
             race_best_times_r[1] = g_hero.race_time_frames;
@@ -219,9 +219,9 @@ void update_hero_hoverboard_race_progress(void) {
         }
         moby_pool_4f60_r2[d->f28].f30 = 0xFF;
         if (g_hero.trick_hud_handle != -1) {
-            Hud_SetBarValueById_r(g_hero.trick_hud_handle, 0);
+            Hud_SetBarValueById(g_hero.trick_hud_handle, 0);
             g_hero.trick_hud_handle = -1;
         }
-        update_resource_counter_r();
+        update_resource_counter();
     }
 }

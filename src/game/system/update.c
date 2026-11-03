@@ -151,8 +151,6 @@ extern BossVars vendor_state_r __asm__("D_001E66C0");
 extern s32 vendor_state_dialogue_pick;
 extern Cam resident_cheat_scale_manip;
 
-extern s32 IsFrameWithinWindow(Moby *, f32);
-
 /* Per-frame state machine of one boss-like moby: keeps a manipulator node attached while gCheats is set,
    then steps the state byte at +0x20 through its animation and timer states.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/gameplay/vendor/fun_00237ed0.c, FUN_00237ed0. */

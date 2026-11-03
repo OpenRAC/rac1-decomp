@@ -171,15 +171,7 @@ extern float g_frame_time MACRO_ADDR;
 
 extern int func_001FA898(float);
 
-extern char *MobyGetHitMessage(void *, int, int);
-extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
-extern void HeadingFromVector(void *, float *, void *, void *);
-
-extern void InitKnockback(float, void *, void *, int, int, int);
-extern void RerollEffectCounter(void *m, short *p);
-extern int FindNearestEligibleMoby(float, char *, void *, int, int, void *, int);
-
-extern int coll_line(void *, void *, int, int, int);
+extern void InitKnockback_v(float, void *, void *, int, int, int) __asm__("func_L00_0025D5B0");
 
 /* Fleet turret/enemy state update: refreshes the hit reaction, fires the aim query and sets the lock flags. */
 void update_robot_dog_hit_reaction_and_target_detection(Moby *moby, int arg) {
@@ -220,7 +212,7 @@ void update_robot_dog_hit_reaction_and_target_detection(Moby *moby, int arg) {
         if (q != 0 && q->moby != 0 && q->moby->oclass == 0x63) {
             ang = fast_atan2(d->f1F0 - moby->pos.x, d->f1F4 - moby->pos.y);
         }
-        InitKnockback(ang, moby, d->v120, 0xB, 1, 0);
+        InitKnockback_v(ang, moby, d->v120, 0xB, 1, 0);
         moby->state = 15;
         d->b117 = 0xF0;
         RerollEffectCounter(moby, d->h110);
@@ -244,11 +236,6 @@ void update_robot_dog_hit_reaction_and_target_detection(Moby *moby, int arg) {
         }
     }
 }
-extern float SteerAngleWithVelocity(float *p, float *v, float a, float b, float c, float d);
-extern float ApproachValue(float *p, float target, float maxstep);
-
-extern void move_4318(int, int, float, float, float, int);
-extern float vec_distance_xy(void *, void *);
 
 /* Steers the moby toward a target point; returns nonzero when it is within 0.2 of it. */
 int move_robot_dog_toward_position(char *moby, float *target, float speed) {
@@ -292,9 +279,6 @@ int cancel_suck_cannon_suction_and_set_state_12(char *a) {
     return r;
 }
 extern float g_frame_scale_sq MACRO_ADDR;
-
-extern float vec_length_xy(void *);
-extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 
 /* The turret's eased part (EaseManipulatorOffsets's second argument) and where it sits in the moby's data. */
 typedef struct {
@@ -435,7 +419,6 @@ void draw_three_moby_effect_quads(char *m) {
         p += 0x10;
     }
 }
-extern int GetEffectTex(int);
 
 extern short fleet_ripple_pair_vertex_counts;
 extern short fleet_ripple_pair_vertex_bufs;
@@ -673,10 +656,6 @@ void DrawLightRing(char *moby) {
     }
 }
 
-extern void vec_scale_to_length(void *, void *, float);
-
-extern void update_entity_matrix(char *, void *, void *, void *);
-
 extern unsigned char help_stats_base[] NOT_SDA;
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 extern LevelState fleet_moby_collected;
@@ -873,7 +852,6 @@ void shuttle_1448_update(unsigned char *m) {
     FastVecSub(delta, m + 0x10, old_pos);
     update_entity_matrix(v->area, delta, old_rot, m + 0x40);
 }
-extern void try_set_help_message(int, int);
 
 // Picks a sound id from the moby's state value and plays it.
 void update_shuttle_help_message(char *moby) {
@@ -903,7 +881,6 @@ void update_shuttle_help_message(char *moby) {
             break;
     }
 }
-extern void lerp_vector(void *, void *, void *, float);
 
 typedef struct {
     float x, y, z, w;
@@ -994,8 +971,6 @@ int update_shuttle_travel_and_camera(char *moby, int idx) {
     return d->fA4 == 1.0f;
 }
 LINKER_REMNANT("asm/overlays", func_L17_002F4208);
-
-extern int PlayBankSound(int, int, int);
 
 extern int fast_dec_timer_i(int *) __asm__("func_001F9908");
 
@@ -1256,8 +1231,6 @@ void update_fleet_guarded_moby_effects(unsigned char *m) {
 }
 typedef int u128_2F4E30 __attribute__((mode(TI)));
 
-extern void draw_world_quad(void *, void *, int);
-
 extern float fleet_view_params_field_a4;
 extern float fleet_backdrop_beam_widths[];
 extern float fleet_backdrop_beam_uvs[];
@@ -1459,11 +1432,6 @@ done:
         AddDrawCallback(draw_fleet_backdrop_quads, moby);
     }
 }
-
-extern int FastBSphereCheck(char *, float);
-
-extern float ApproachWithVelocity(float *, float *, float, float, float, float);
-extern void ClampVectorLength(void *a, float x);
 
 extern char fleet_blarg_ship_gun_offset_alt[];
 extern char fleet_blarg_ship_gun_offset[];
@@ -1764,8 +1732,8 @@ void Moby1873Update(unsigned char *m) {
             break;
     }
 }
-extern void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float *v10, float *v11,
-                                float scale, float *v12);
+extern void *SpawnBreakFragment_v(char *src, int cls, float *pos, void *mat, int a8, int a9, float *v10, float *v11,
+                                  float scale, float *v12) __asm__("func_L00_00265050");
 extern float fleet_zero_vec[] MACRO_ADDR;
 
 /* Update moby 1876: waits for a trigger, then plays an effect and finishes. */
@@ -1789,8 +1757,8 @@ void update_hit_triggered_fragment_and_placement_spawner(unsigned char *m) {
             Moby_PlaySound(0, 0, (int)m);
             SetDeathBits(m, 0, -1);
             spawn_proximity_gated_bolts(m);
-            SpawnBreakFragment((char *)m, 0x753, &((struct Moby *)m)->pos.x, &((struct Moby *)m)->rot, 0, 0,
-                               fleet_zero_vec, fleet_zero_vec, 0.0f, fleet_zero_vec);
+            SpawnBreakFragment_v((char *)m, 0x753, &((struct Moby *)m)->pos.x, &((struct Moby *)m)->rot, 0, 0,
+                                 fleet_zero_vec, fleet_zero_vec, 0.0f, fleet_zero_vec);
             spawn_moby_break_fragments(m, 0x756, 1, 0x756, 1, 1, 2);
             spawn_moby_from_placement(m, 0x755);
             DeleteMoby(m);

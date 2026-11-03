@@ -16,12 +16,13 @@
 #include "overlays/shared/hero_animation_slots.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/l05_rilgar/hero_idle_and_items.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "game/moby/mobyutil.h"
 extern char gHeroPos[];
 extern unsigned char g_hero[] NOT_SDA;
 
 extern unsigned char g_hero[] NOT_SDA;
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
-extern int coll_sphere(float, void *, int, void *);
 
 #define GB(o) (*(unsigned char *)(g + (o)))
 #define GH(o) (*(short *)(g + (o)))
@@ -191,16 +192,6 @@ extern u8 rilgar_coll_hit_point[];
 extern f32 rilgar_coll_hit_z;
 extern s32 g_current_level_index MACRO_ADDR;
 
-s32 coll_line(void *, void *, s32, s32, s32);
-
-f32 resolve_camera_surface_height(void *, void *);
-s32 is_moby_in_class_range_500_to_540(s32);
-u8 *GetFlaggedPvarWord(s32);
-
-void vec_scale_to_length(void *, void *, f32);
-
-void func_L00_00233D50_40968(void *, void *, f32) __asm__("func_L00_00233D50");
-
 extern Hero g_hero_r __asm__("D_0013F450");
 extern struct CollisionHit rilgar_coll_hit;
 
@@ -286,7 +277,7 @@ void HeroL05_GroundProbe(void) {
         if (is_moby_in_class_range_500_to_540(rilgar_coll_hit.moby)) {
             g_hero_r.on_flagged_ground_moby = 1;
             if ((u32)(g_hero_r.state.control_mode - 0x15) < 2) {
-                func_L00_00233D50_40968((u8 *)&rilgar_coll_hit.point, (u8 *)&rilgar_coll_hit.point, 1.0f);
+                HeroMoveDownAlongNormal((u8 *)&rilgar_coll_hit.point, (u8 *)&rilgar_coll_hit.point, 1.0f);
             }
         }
         p = GetFlaggedPvarWord(rilgar_coll_hit.moby);
@@ -396,8 +387,6 @@ extern float D_0015EE64 MACRO_ADDR;
 extern short D_0015EE60;
 extern char rilgar_coll_resolved_pos[];
 
-extern void vec_scale_to_length(void *, void *, float);
-
 /* Camera collision step: moves the camera by a delta, probing 8 times, returns -1 if it moved too far. */
 int Camera_MoveWithCollision(int mode) {
     float saved[4];
@@ -501,9 +490,6 @@ int Camera_MoveWithCollision(int mode) {
 }
 extern char *rilgar_coll_hit_moby;
 extern float g_frame_time MACRO_ADDR;
-
-extern s32 coll_line(void *, void *, s32, s32, s32);
-extern float vec_length_xy(void *);
 
 extern void HeroL05_GroundProbe(void);
 

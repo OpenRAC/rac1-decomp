@@ -14,6 +14,7 @@
 #include "asm_functions/executable.h"
 #include "overlays/shared/hero_idle_and_animation.h"
 #include "overlays/shared/npc_dialog_and_pad_history.h"
+#include "overlays/shared/moby_ground_collision.h"
 extern int pad_held;
 extern Hero g_hero;
 
@@ -31,8 +32,6 @@ typedef struct {
 extern Ent idle_fidgets[] NOT_SDA;
 extern int idle_fidgets_field_220 NOT_SDA;
 extern int g_current_level_index MACRO_ADDR;
-
-extern int coll_line(void *, void *, int, int, int);
 
 /* Hero idle-fidget picker; returns 1 and writes the chosen index if one is picked. */
 int pick_idle_fidget(int *index) {
@@ -120,7 +119,6 @@ int pick_idle_fidget(int *index) {
 }
 
 extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
-extern void ClampVectorLength(void *a, float x);
 
 extern short g_frame_time_r __asm__("D_0015EE6C");
 extern float g_frame_scale_sq MACRO_ADDR;
@@ -247,7 +245,6 @@ int hero_handle_jump_press(void) {
     return 0;
 }
 
-extern int coll_line(void *, void *, int, int, int);
 extern float coll_hit_point_z;
 
 /* Test whether the player can reach the point in front of him. */

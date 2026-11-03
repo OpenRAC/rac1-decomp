@@ -9,6 +9,7 @@
 #include "game/math/fastfunc.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
@@ -313,7 +314,6 @@ int advance_path_node_index(char *p) {
 extern void *func_001153FC(void *, int, unsigned int);
 extern void *get_path_node(void *, int);
 
-extern void vec_scale_to_length(void *, void *, float);
 typedef int u128 __attribute__((mode(TI)));
 
 // Blends three neighbouring list entries by (a, b) weights and clamps the result's length.

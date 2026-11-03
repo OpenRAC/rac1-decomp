@@ -22,6 +22,7 @@
 #include "overlays/shared/music_track_requests.h"
 #include "overlays/shared/ship_mode_and_level_entry.h"
 #include "overlays/shared/moby_path_advance.h"
+#include "overlays/shared/cutscene_and_movie_playback.h"
 extern Hero g_hero;
 extern char level_render_state[];
 extern char gSkillPoints[];
@@ -91,13 +92,6 @@ extern int D_L13_0015F504 MACRO_ADDR;
 extern unsigned char D_L13_0015FD08[] MACRO_ADDR;
 extern unsigned char D_001414F5[] NOT_SDA;
 
-extern void StartCutscene_r(int) __asm__("func_L00_00299B68");
-
-extern void DeleteMoby_r(void *) __asm__("func_0020D678");
-
-extern void PlayMovieEntryIfIdle_r(int) __asm__("func_L00_0029A7D0");
-extern void unlock_planet_r(int) __asm__("func_L00_00261848");
-
 /* Update function for moby class 1353 on level 13: runs the state machine in moby->state. */
 void update_gemlik_scene_controller(Moby *moby) {
     MobyData *data = (MobyData *)moby->pvars;
@@ -111,7 +105,7 @@ void update_gemlik_scene_controller(Moby *moby) {
             if (((Flags *)gSpecialItems)->f64 == 0) {
                 ((Flags *)gSpecialItems)->f64 = 1;
                 moby->state = 2;
-                StartCutscene_r(0);
+                StartCutscene(0);
             } else {
                 moby->state = 3;
             }
@@ -133,7 +127,7 @@ void update_gemlik_scene_controller(Moby *moby) {
                             e->flags |= 0x41;
                         }
                         moby->state = 5;
-                        StartCutscene_r(1);
+                        StartCutscene(1);
                     }
                 } else {
                     moby->state = 7;
@@ -142,7 +136,7 @@ void update_gemlik_scene_controller(Moby *moby) {
                 moby->state = 6;
             }
             if (moby->state != 4 && data->fC != -1) {
-                DeleteMoby_r(&gemlik_moby_array_start_r[data->fC]);
+                DeleteMoby(&gemlik_moby_array_start_r[data->fC]);
             }
             break;
         case 5:
@@ -188,17 +182,17 @@ void update_gemlik_scene_controller(Moby *moby) {
             }
             MusicRequestTrack(0, 5);
             moby->state = 8;
-            StartCutscene_r(2);
+            StartCutscene(2);
             break;
         case 8:
             if (gemlik_game_mode_r != 2) {
                 moby->state = 9;
-                PlayMovieEntryIfIdle_r(0xE);
+                PlayMovieEntryIfIdle(0xE);
             }
             break;
         case 9:
             if (gemlik_game_mode_r != 2) {
-                StartCutscene_r(3);
+                StartCutscene(3);
                 moby->state = 10;
             }
             break;
@@ -209,7 +203,7 @@ void update_gemlik_scene_controller(Moby *moby) {
                 Moby *e = &gemlik_moby_array_start_r[data->f10];
                 e->flags &= 0xFFFD;
             }
-            unlock_planet_r(0xE);
+            unlock_planet(0xE);
             if (data->f20 != -1) {
                 Moby *e = &gemlik_moby_array_start_r[data->f20];
                 e->flags &= 0xFFBE;
@@ -245,11 +239,11 @@ void update_gemlik_scene_controller(Moby *moby) {
                 if (gemlik_mission_group_state[gemlik_moby_array_start_r[data->f10].mission] != 0xFF)
                     break;
                 if (data->f20 != -1) {
-                    DeleteMoby_r(&gemlik_moby_array_start_r[data->f20]);
+                    DeleteMoby(&gemlik_moby_array_start_r[data->f20]);
                 }
                 moby->state = 14;
             } else {
-                DeleteMoby_r(moby);
+                DeleteMoby(moby);
             }
             break;
         case 14:
@@ -411,8 +405,6 @@ char *spawn_scaled_owned_moby(char *owner, void *position, float scale) {
     return moby;
 }
 
-extern char *MobyGetHitMessage(void *, int, int);
-
 /* updates the moby: deletes it when its owner is gone, else copies the owner's effect data and marks it */
 void forward_moby_hits_to_owner(char *moby) {
     struct HitProxyVars *data = (struct HitProxyVars *)((Moby *)moby)->pvars;
@@ -516,8 +508,6 @@ extern float moby_spark_first_batch_vertical_acceleration_base_gp
 extern float g_frame_time_sq MACRO_ADDR;
 
 extern int func_001FA898(float);
-
-extern int coll_line(void *, void *, int, int, int);
 
 typedef struct SparkData {
     f32 dir_x; /* 0x00 */
@@ -641,17 +631,16 @@ void update_moby_motion_and_emit_sparks(char *moby) {
         }
     }
 }
-extern void add_random_offset_to_vector_xyz(float *v, float s);
-extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float *, float *, float, float *);
-extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
-                            int, int, int, int);
+
+extern void *SpawnBreakFragment_v(char *, int, float *, void *, int, int, float *, float *, float,
+                                  float *) __asm__("func_L00_00265050");
+extern void spawn_explosion_v(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
+                              float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern int g_current_level_index MACRO_ADDR;
 
 extern int level_moby_killed[][64] NOT_SDA;
 extern int gemlik_moby_killed_bits[];
 extern float gemlik_zero_vec[] MACRO_ADDR;
-extern void RerollEffectCounter(void *, short *);
-extern void StepColorFade(void *, void *);
 
 /* UpdateMoby_1805: deletes itself if its bit is set in level_moby_killed. State 0 moves to state 1; state 1 takes a
    hit's value
@@ -717,11 +706,12 @@ void blarg_ship_1805_update(void *moby) {
                     add_random_offset_to_vector_xyz(tmp, 1.5f);
                     tmp[2] += 1.7f;
                     FastVecAdd(tmp, tmp, m + 0x10);
-                    SpawnBreakFragment(m, k, tmp, m + 0x40, 0, 0, gemlik_zero_vec, gemlik_zero_vec, 0.0f,
-                                       gemlik_zero_vec);
+                    SpawnBreakFragment_v(m, k, tmp, m + 0x40, 0, 0, gemlik_zero_vec, gemlik_zero_vec, 0.0f,
+                                         gemlik_zero_vec);
                 }
             }
-            spawn_explosion(moby, m + 0x10, 0, 0.0f, 0.0f, 0xA, 3, 0x10, 6.0f, 3.0f, 9.0f, 0, 1.1f, 15.0f, 1, 3, -1, 0);
+            spawn_explosion_v(moby, m + 0x10, 0, 0.0f, 0.0f, 0xA, 3, 0x10, 6.0f, 3.0f, 9.0f, 0, 1.1f, 15.0f, 1, 3, -1,
+                              0);
             DeleteMoby(moby);
             break;
         }

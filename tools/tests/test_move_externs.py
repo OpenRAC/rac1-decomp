@@ -104,6 +104,12 @@ class SplitTest(unittest.TestCase):
 
 
 class VariantNamesTest(unittest.TestCase):
+    def test_a_declaration_inside_a_function_gets_the_label(self):
+        fake = type("F", (), {"aliases": {"g": {"func_00214D28"}, "func_00214D28": {"g"}}})
+        text = "void f(void) {\n    extern char g[];\n    h(g);\n}\n"
+        self.assertEqual(me.use_variant(text, fake, "g"),
+                         'void f(void) {\n    extern char g_v[] __asm__("func_00214D28");\n    h(g_v);\n}\n')
+
     def test_both_spellings_get_one_name(self):
         fake = type("F", (), {"aliases": {"func_00205A50": {"find_id"}, "find_id": {"func_00205A50"}}})
         self.assertEqual(me.variant_names(fake, "func_00205A50"),

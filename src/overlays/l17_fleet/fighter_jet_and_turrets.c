@@ -41,6 +41,7 @@
 #include "overlays/l17_fleet/hero_idle_and_items.h"
 #include "overlays/l17_fleet/trail_particles.h"
 #include "overlays/l17_fleet/moby_class_flag_update.h"
+#include "game/ui/help.h"
 extern int frame_size;
 extern char g_controller_state[];
 extern Hero g_hero;
@@ -127,14 +128,6 @@ struct MagnetElevatorVars {
 };
 
 typedef int v128 __attribute__((mode(TI)));
-
-extern int coll_line(void *, void *, int, void *, void *);
-
-extern void lerp_vector(void *, void *, void *, float);
-
-extern void vec_scale_to_length(void *, void *, float);
-
-extern int FastBSphereCheck(char *, float);
 
 extern void draw_fleet_beam_quad(char *moby);
 extern char *fleet_camera_points MACRO_ADDR;
@@ -333,9 +326,6 @@ void update_fleet_beam(char *m) {
 }
 typedef int u128 __attribute__((mode(TI)));
 
-extern int GetEffectTex(int);
-extern void draw_world_quad(void *, void *, int);
-
 extern struct {
     float a, b;
 } fleet_beam_quad_uvs[4];
@@ -393,20 +383,9 @@ void draw_fleet_beam_quad(char *moby) {
 extern void process_dreks_fleet_turret_hits(char *m);
 extern void distribute_class_733_group_mobys_along_path(char *m);
 
-extern float vec_distance_xy(void *, void *);
-
-extern float SteerAngleWithVelocity(float *p, float *v, float a, float b, float c, float d);
-extern float vec_length_xy(void *);
-extern void EaseManipulatorOffsets(char *, char *, int, float, float);
-
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern char *spawn_class_558_moby_toward_target(char *src, char *pos, float *v, float f);
-extern void FindNearestTargetMoby(void *, void *, float);
-extern int fast_dec_timer(void *);
-
-extern void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float scale, float *v10,
-                                float *v11, float *v12);
 
 extern int g_current_level_index MACRO_ADDR;
 extern unsigned char help_stats_base[] NOT_SDA;
@@ -597,10 +576,6 @@ void dreks_fleet_turret_update(char *m) {
             break;
     }
 }
-extern char *MobyGetHitMessage(void *, int, int);
-extern int ComputeHitResponse(void *, void *, void *, int, void *, void *, int, int);
-extern void RerollEffectCounter(void *m, short *p);
-extern void StepColorFade(void *, void *);
 
 /* Steps a moby's countdown from a helper's output and retires it when it runs out. */
 void process_dreks_fleet_turret_hits(char *m) {
@@ -940,9 +915,6 @@ void draw_fleet_scrolling_radial_quads(char *moby) {
 extern void spawn_explosion_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                 float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
-extern int func_L00_001F2BE8(float, void *, int, void *, void *);
-extern float resolve_camera_surface_height(float *, void *);
-
 extern float fleet_bobber_height SDATA(fleet_bobber_height);
 extern float fleet_bobber_rate_deg SDATA(fleet_bobber_rate_deg);
 extern char *fleet_coll_hit_moby;
@@ -1173,8 +1145,6 @@ void StopsPlatformUpdate(char *m) {
     }
 }
 
-extern int coll_sphere(float, void *, int, void *);
-extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
 extern char fleet_coll_hit_result[];
 extern int gameplay_event_frame_count MACRO_ADDR;
 
@@ -1352,7 +1322,6 @@ char *spawn_class_558_moby_toward_target(char *source_moby, char *spawn_position
     }
     return (char *)spawned_moby;
 }
-extern int GetEffectTex(int);
 
 /* Draws effect texture 0x2E four times at x, y, each copy turned a further 90 degrees. */
 void draw_four_quarter_turn_effect_quads(unsigned char a, unsigned char b, unsigned char c, unsigned char d, float x,
@@ -1740,8 +1709,6 @@ extern void update_fighter_jet_target_lock(int a, char *p);
 extern void draw_four_quarter_turn_effect_quads_f(float, float, float, float, unsigned char, unsigned char,
                                                   unsigned char, unsigned char) __asm__("func_L17_002EBF08");
 
-extern void *msg_string_id(int) __asm__("func_001FE540");
-extern int FontPrintCenterSmall_c(int, int, long, void *, int) __asm__("func_001F6F40");
 extern char fleet_hud_ammo_pip_shape[];
 extern int fleet_hud_health_clut_backup[];
 extern int fleet_jet_lock_anim_start SDATA(fleet_jet_lock_anim_start);
@@ -1837,10 +1804,10 @@ void DrawFleetHud(char *moby) {
                                0.5f, 0.5f);
     b = &g_hero;
     if (b->ship_hp < b->ship_hp_max / 10.0f && (fleet_frame_count / 90) & 1) {
-        FontPrintCenterSmall_c(0x100, 0x186, 0x80000080L, msg_string_id(0x526E), 0x64);
+        FontPrintCenterSmall(0x100, 0x186, 0x80000080L, msg_string(0x526E), 0x64);
     }
     if (((Moby *)moby)->state == 8) {
-        FontPrintCenterSmall_c(0x100, 0xC8, 0x80005080L, msg_string_id(0x5243), 0x64);
+        FontPrintCenterSmall(0x100, 0xC8, 0x80005080L, msg_string(0x5243), 0x64);
     }
     h = &g_hero;
     f = h->ship_hp - d->shown_hp;
@@ -1937,8 +1904,8 @@ void try_fire_fighter_jet_rocket(char *moby, char *ship_vars) {
     }
 }
 void adjust_fighter_jet_steering_for_flight_bounds(char *moby, float *a, float *b);
-extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
-extern float SpringAngle(char *, char *, int, float, float, float, float);
+
+extern float SpringAngle_v(char *, char *, int, float, float, float, float) __asm__("func_L00_0025CCF0");
 
 extern void DrawFleetHud();
 extern float fleet_view_tan_half_fov;
@@ -2153,9 +2120,9 @@ void PlayerShipUpdate(Moby *m, Obj *o) {
                fighter_jet_horizontal_steering_velocity_damping_gp, ka);
         Spring(&o->f70, &o->f94, b, fighter_jet_vertical_steering_error_gain_gp,
                fighter_jet_vertical_steering_velocity_damping_gp, kb);
-        SpringAngle((char *)&o->f30, (char *)&o->f98, 0, o->f6C * fleet_jet_roll_per_yaw_steer,
-                    fighter_jet_roll_error_gain_gp, fighter_jet_roll_velocity_damping_gp,
-                    fighter_jet_roll_settle_threshold_scale_gp);
+        SpringAngle_v((char *)&o->f30, (char *)&o->f98, 0, o->f6C * fleet_jet_roll_per_yaw_steer,
+                      fighter_jet_roll_error_gain_gp, fighter_jet_roll_velocity_damping_gp,
+                      fighter_jet_roll_settle_threshold_scale_gp);
         o->f34 = FastSubRots(o->f34, o->f70 * fleet_jet_pitch_rate);
         o->f38 = FastSubRots(o->f38, o->f6C * fleet_jet_yaw_rate);
         if (o->f34 > 1.3962634f) {
@@ -2242,12 +2209,12 @@ void PlayerShipUpdate(Moby *m, Obj *o) {
         r[0] = FastAddRots(o->f30 * fleet_jet_cam_roll_follow, o->f6C * fleet_jet_cam_roll_per_yaw_steer);
         r[1] = FastSubRots(FastAddRots(o->f34, fighter_jet_camera_pitch_bias_gp), o->f70 * fleet_jet_pitch_rate);
         r[2] = o->f38;
-        SpringAngle((char *)&o->f20, (char *)&o->fA0, 0, r[0], fighter_jet_camera_roll_error_gain_gp,
-                    fighter_jet_camera_roll_velocity_damping_gp, fighter_jet_camera_roll_settle_threshold_scale_gp);
-        SpringAngle((char *)&o->f24, (char *)&o->fA4, 0, r[1], fighter_jet_camera_pitch_error_gain_gp,
-                    fighter_jet_camera_pitch_velocity_damping_gp, fighter_jet_camera_pitch_settle_threshold_scale_gp);
-        SpringAngle((char *)&o->f28, (char *)&o->fA8, 0, r[2], fighter_jet_camera_yaw_error_gain_gp,
-                    fighter_jet_camera_yaw_velocity_damping_gp, fighter_jet_camera_yaw_settle_threshold_scale_gp);
+        SpringAngle_v((char *)&o->f20, (char *)&o->fA0, 0, r[0], fighter_jet_camera_roll_error_gain_gp,
+                      fighter_jet_camera_roll_velocity_damping_gp, fighter_jet_camera_roll_settle_threshold_scale_gp);
+        SpringAngle_v((char *)&o->f24, (char *)&o->fA4, 0, r[1], fighter_jet_camera_pitch_error_gain_gp,
+                      fighter_jet_camera_pitch_velocity_damping_gp, fighter_jet_camera_pitch_settle_threshold_scale_gp);
+        SpringAngle_v((char *)&o->f28, (char *)&o->fA8, 0, r[2], fighter_jet_camera_yaw_error_gain_gp,
+                      fighter_jet_camera_yaw_velocity_damping_gp, fighter_jet_camera_yaw_settle_threshold_scale_gp);
     }
     ang[0] = o->f20;
     ang[2] = o->f28;
@@ -2309,13 +2276,8 @@ void PlayerShipUpdate(Moby *m, Obj *o) {
                                                -FastAddRots(o->f24, -(o->f70 / 7.0f) - 0.1f));
 }
 
-extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
-                            int, int, int, int);
-
-extern int try_set_help_message(int, int);
-
-extern float ApproachValue(float *, float, float);
-extern void jet_animate(unsigned char *, float);
+extern void spawn_explosion_v(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
+                              float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
 extern char fleet_player_camera[];
 extern unsigned char saved_mission_state[][16] NOT_SDA;
@@ -2504,8 +2466,8 @@ void FighterJetUpdate(FighterJet1379 *moby) {
                     HeroL17_SetMoveState(HERO_STATE_IDLE, 1);
                     g->cur = 0;
                     g->id = -1;
-                    spawn_explosion(moby, v, 0, 0.0f, 0.0f, 0xA, 3, 0x10, 4.0f, 2.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1,
-                                    0);
+                    spawn_explosion_v(moby, v, 0, 0.0f, 0.0f, 0xA, 3, 0x10, 4.0f, 2.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1,
+                                      0);
                     moby->flags |= 0x41;
                 }
             }
@@ -2903,11 +2865,9 @@ void adjust_fighter_jet_steering_for_flight_bounds(char *moby, float *a, float *
         }
     }
 }
-extern float ApproachWithVelocity(float *, float *, float, float, float, float);
+
 extern void build_magnet_elevator_camera_pose(char *, char *, char *);
 extern void rebuild_magnet_elevator_world_path(char *);
-
-extern void update_entity_matrix(char *, void *, void *, void *);
 
 /* Updates the class-1380 lift: rises/lowers between two heights, blends the camera and pulses its colour by state. */
 void magnet_elevator_update(char *moby) {
@@ -3148,12 +3108,6 @@ typedef struct {
     int c2B8;
     int c2BC;
 } Vars1382;
-
-extern void set_ground_height_band(void *);
-
-extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
-
-extern int mine_fall(void *, void *);
 
 extern void SetDeathBits(void *, int, int);
 extern short class1382_move_params;

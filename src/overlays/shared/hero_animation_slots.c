@@ -54,8 +54,6 @@ static inline void circle_offset(Vec4 *v, f32 ang, f32 r) {
 extern CollisionHit coll_hit_result_r __asm__("D_L00_00173F40");
 extern int coll_line_r(void *from, void *to, int mask, void *ignore, int) __asm__("func_L00_001EFFF0");
 
-extern f32 vec_length_xy(void *);
-
 /* Ledge probe: steps forward from `pos` along the hero's yaw looking for a flat top (normal within 20 degrees of up,
    not material 9 or 12) at least `min_height` above the floor and not above pos + up, then for the wall under it.
    Returns 1 when the hero (facing `*dir`) faces that wall within 65 degrees and the ledge edge is found within 2.4
@@ -171,8 +169,6 @@ int probe_hero_ledge_edge(Vec4 *pos, f32 *dir) {
     }
     return 0;
 }
-
-extern float vec_distance_xy(void *, void *);
 
 typedef struct {
     Vec4 sphere;
@@ -485,9 +481,6 @@ float get_hero_yaw_history(int back) {
 }
 extern char player_camera[];
 
-extern float vec_distance_xy(void *, void *);
-extern int is_moby_in_class_range_500_to_540(void *);
-
 /* Scores how far moby O is from the camera/hero reference point; flags *OUT when it is out of range. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_0020c758.c, FUN_L00_0020d6b0. */
 float score_hero_target_candidate(void *o_v, float yaw, float range, float ylim, float plim, int *out) {
     char *o = o_v;
@@ -530,7 +523,7 @@ float score_hero_target_candidate(void *o_v, float yaw, float range, float ylim,
         r += 7.0f;
     return r;
 }
-extern int GetFlaggedPvarWord(void *obj);
+
 extern float score_hero_target_candidate(void *obj, float y, float x, float z, float w, int *failed);
 
 extern void *active_mobies[];
@@ -578,8 +571,6 @@ int HeroAnimLookup_Part3(void) {
 extern unsigned char gHaveHeliPack[] NOT_SDA;
 extern float frame_scale MACRO_ADDR;
 extern int select_hero_condition_animation_id(int);
-
-extern float ApproachValue(float *, float, float);
 
 // Picks the hero's current animation id and speed from its state and starts or updates the animation slot. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_0020c758.c, FUN_L00_0020da68.
 void update_hero_condition_animation(void) {
@@ -2330,8 +2321,6 @@ extern f32 g_frame_time MACRO_ADDR;
 extern u8 hero_velocity[];
 s32 truncate_float_to_s32(f32);
 
-void func_001F9BF0_113A0(void *, void *, void *) __asm__("func_001F9BF0");
-
 void func_L00_00217570_113A0(s32, s32) __asm__("func_L00_00217570");
 
 void func_L00_00211338_113A0(void *, s32, f32, f32) __asm__("func_L00_00211338");
@@ -2401,7 +2390,7 @@ s32 hero_check_damage(s32 arg) {
             flag = 1;
         }
     } else if (tbl->p20 != 0) {
-        func_001F9BF0_113A0(&v, gHeroPos, tbl->p20 + 0x10);
+        FastVecSub(&v, gHeroPos, tbl->p20 + 0x10);
     } else {
         v.f[0] = FastCos(FastAddRots(g_hero_r4.motion.rot.f[2], 3.1415927f));
         v.f[1] = FastSin(FastAddRots(g_hero_r4.motion.rot.f[2], 3.1415927f));
@@ -2525,7 +2514,6 @@ int is_wrench_moby(Moby *m) {
 }
 extern float g_frame_scale_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
-extern float Spring(float *p, float *v, float t, float u1, float u2, float eps);
 
 /* Updates the hero camera's follow-speed targets by mode, then eases them. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_0020c758.c, FUN_L00_00211380. */
 void update_hero_collision_capsule_dimensions(void) {
@@ -2609,8 +2597,6 @@ extern struct PadState D_0013CA40;
 extern float get_capped_hero_stick_magnitude_a(void) __asm__("func_L00_00211EE8");
 extern float vec_length_xy_a(void *) __asm__("func_001F9CE8");
 
-extern void euler_to_matrix_a(void *, void *) __asm__("func_001FA218");
-
 extern void update_hero_collision_capsule_dimensions_a(void) __asm__("func_L00_00211A38");
 
 /* Hero per-frame input update: the stick axes from the pad (the d-pad bits stand in below 0.25), the
@@ -2651,14 +2637,13 @@ void hero_update(void) {
     if (D_0013F450_211D28.pos_history_count > 0x20) {
         D_0013F450_211D28.pos_history_count = 0x20;
     }
-    euler_to_matrix_a(&D_0013F450_211D28, &D_0013F450_211D28.motion.rot);
+    euler_to_matrix(&D_0013F450_211D28, &D_0013F450_211D28.motion.rot);
     set_identity_matrix(D_0013F450_211D28.inv_rot_matrix);
     matrix_from_basis_rows(D_0013F450_211D28.inv_rot_matrix, &D_0013F450_211D28);
     update_hero_collision_capsule_dimensions_a();
     update_hero_motion_and_collision_probes();
     update_hero_timers_and_reach_state();
 }
-extern float vec_length_xy(void *);
 
 /* The xy length of the vector at g_hero + 0x1D20, capped at 1. */
 float get_capped_hero_stick_magnitude(void) {
@@ -2691,8 +2676,6 @@ void clear_hero_target_and_ground_speeds(void) {
 }
 extern unsigned char draw_map51_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
 extern float camera_yaw;
-
-extern void divide_vector_xyz(void *, void *, float);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
@@ -2824,7 +2807,7 @@ typedef struct {
     float x, y, z, w;
 } Vp __attribute__((aligned(16)));
 
-extern float SpringAngle(char *, char *, int, float, float, float, float);
+extern float SpringAngle_v(char *, char *, int, float, float, float, float) __asm__("func_L00_0025CCF0");
 
 /* Turns the matrix toward the heading between two points with a stepped angle. */
 void turn_hero_toward_transformed_move_direction(int m, float x, float y, float z) {
@@ -2836,7 +2819,7 @@ void turn_hero_toward_transformed_move_direction(int m, float x, float y, float 
     transform_vector(&v, p, p - 0x130);
     a = fast_atan2(v.x, v.y);
     t.x = zero;
-    *(float *)(p + 0x18) = SpringAngle((char *)&t, p + 0x14, m, a, x, y, z);
+    *(float *)(p + 0x18) = SpringAngle_v((char *)&t, p + 0x14, m, a, x, y, z);
     apply_hero_rotation_offset(zero, zero, t.x);
 }
 extern char g_hero[] NOT_SDA;
@@ -2848,7 +2831,7 @@ void turn_to(int a, float x, float y, float z) {
         turn_hero_toward_transformed_move_direction(a, x, y, z);
     } else {
         g->motion.yaw_error =
-            SpringAngle((char *)&g->motion.rot.f[2], (char *)&g->motion.yaw_rate, a, g->motion.move_yaw, x, y, z);
+            SpringAngle_v((char *)&g->motion.rot.f[2], (char *)&g->motion.yaw_rate, a, g->motion.move_yaw, x, y, z);
     }
 }
 extern float g_frame_time MACRO_ADDR;
@@ -2970,8 +2953,6 @@ void correct_hero_airborne_wall_velocity(void) {
 extern int coll_hit_type;
 extern int coll_hit_result[];
 
-extern int coll_line(void *, void *, int, int, int);
-
 /* Hero ground probe: measures the support under the feet, and slides the velocity off a steep floor Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_0020c758.c, FUN_L00_00212318. */
 void clip_hero_velocity_against_probed_surfaces(int arg) {
     struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
@@ -3056,7 +3037,6 @@ void clip_hero_velocity_against_probed_surfaces(int arg) {
         }
     }
 }
-extern void vec_scale_to_length(void *, void *, float);
 
 typedef struct {
     float v[4];
@@ -3090,15 +3070,9 @@ extern u8 collision_hit_point[];
 extern f32 coll_hit_point_z;
 
 void func_L00_00212D70_12E70(void *, void *, s32, f32, f32) __asm__("func_L00_00212D70");
-s32 coll_line(void *, void *, s32, s32, s32);
 
-f32 resolve_camera_surface_height(void *, void *);
 s32 func_L00_0025F410_12E70(s32) __asm__("func_L00_0025F410");
 u8 *func_L00_0025D390_12E70(s32) __asm__("func_L00_0025D390");
-
-void func_001F9BF0_12E70(void *, void *, void *) __asm__("func_001F9BF0");
-
-void vec_scale_to_length(void *, void *, f32);
 
 extern Hero D_0013F450_12E70 __asm__("D_0013F450");
 extern struct CollisionHit coll_hit_result_r2 __asm__("D_L00_00173F40");
@@ -3202,7 +3176,7 @@ void update_hero_ground_contact_and_surface_slopes(void) {
         D_0013F450_12E70.ground_slope.f =
             compute_gravity_relative_vector_inclination((u8 *)&coll_hit_result_r2.normal.f[0]);
         D_0013F450_12E70.downhill_yaw = fast_atan2(coll_hit_result_r2.normal.f[0], coll_hit_result_r2.normal.f[1]);
-        func_001F9BF0_12E70(&v20, ((u8 *)&D_0013F450_12E70 + 0x2A0), (u8 *)&D_0013F450_12E70 + 0x80);
+        FastVecSub(&v20, ((u8 *)&D_0013F450_12E70 + 0x2A0), (u8 *)&D_0013F450_12E70 + 0x80);
         if (0.0f < FastVecDot(&v20, (u8 *)&D_0013F450_12E70 + 0x270)) {
             D_0013F450_12E70.ground_distance = -D_0013F450_12E70.ground_distance;
         }
@@ -3236,8 +3210,8 @@ d1:
             FastVecScale(((u8 *)&D_0013F450_12E70 + 0x290), ((u8 *)&D_0013F450_12E70 + 0x290), -1.0f);
             break;
         case 2:
-            func_001F9BF0_12E70(((u8 *)&D_0013F450_12E70 + 0x290), ((u8 *)&D_0013F450_12E70 + 0x290) - 0x1E0,
-                                ((u8 *)&D_0013F450_12E70 + 0x290) - 0x210);
+            FastVecSub(((u8 *)&D_0013F450_12E70 + 0x290), ((u8 *)&D_0013F450_12E70 + 0x290) - 0x1E0,
+                       ((u8 *)&D_0013F450_12E70 + 0x290) - 0x210);
             vec_scale_to_length(((u8 *)&D_0013F450_12E70 + 0x290), ((u8 *)&D_0013F450_12E70 + 0x290), 1.0f);
             break;
     }
@@ -3398,8 +3372,6 @@ float forward_component(QVec *v) {
     dir[2] = 0.0f;
     return FastVecDot(&p, dir);
 }
-
-extern int coll_sphere(float, void *, int, void *);
 
 extern char coll_resolved_pos[];
 
@@ -3620,7 +3592,7 @@ void apply_hero_motion_and_resolve_collisions(void) {
     if (FastVecLength((char *)position + 0x70) <= 0.0001f) {
         resolve_hero_collisions_with_history();
         update_hero_ground_contact_and_surface_slopes();
-        func_001F9BF0_12E70((char *)position + 0x80, position, previous.f);
+        FastVecSub((char *)position + 0x80, position, previous.f);
         correct_hero_ground_penetration();
     } else {
         update_hero_ground_contact_and_surface_slopes();
@@ -3628,7 +3600,7 @@ void apply_hero_motion_and_resolve_collisions(void) {
     position = (float *)(hero_globals_base + 0xF2D);
     new_position = (float *)((char *)position - 0x90);
     horizontal = (float *)((char *)position + 0x20);
-    func_001F9BF0_12E70(position, new_position, previous.f);
+    FastVecSub(position, new_position, previous.f);
     qcopy(horizontal, position);
     vertical = (float *)((char *)position + 0x10);
     qcopy(vertical, position);
@@ -3674,13 +3646,13 @@ void apply_hero_motion_and_resolve_collisions(void) {
         motion_player->motion.platform_delta.f[3] = saved;
         resolve_hero_collisions_with_history();
         update_hero_ground_contact_and_surface_slopes();
-        func_001F9BF0_12E70(external, new_position, previous.f);
+        FastVecSub(external, new_position, previous.f);
         correct_hero_ground_penetration();
     }
-    func_001F9BF0_12E70((char *)position + 0x30, new_position, work.f);
+    FastVecSub((char *)position + 0x30, new_position, work.f);
     motion_player->motion.platform_carry.f[3] = motion_player->motion.platform_delta.f[3];
     motion_player->motion.platform_delta.f[3] = 0.0f;
-    func_001F9BF0_12E70(external, new_position, previous.f);
+    FastVecSub(external, new_position, previous.f);
     motion_player->motion.move_slope = 0.0f;
     if (motion_player->motion.flat_speed > 0.004f) {
         motion_player->motion.move_slope = motion_player->motion.displacement.f[2] / motion_player->motion.flat_speed;

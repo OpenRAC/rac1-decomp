@@ -77,11 +77,6 @@ extern int D_L00_00160618[];
 extern int D_L00_00160628_240398 __asm__("D_L00_00160628") MACRO_ADDR;
 extern int D_L00_00160624_240398 __asm__("D_L00_00160624") MACRO_ADDR;
 extern int D_L00_0016062C_240398 __asm__("D_L00_0016062C") MACRO_ADDR;
-extern void FastMemCopy_r(void *, void *, int) __asm__("func_001F9A98");
-
-extern void flush_cache_r(int) __asm__("func_00118D80");
-
-extern void register_moby_class_r(void *, void *, void *, int) __asm__("func_00203E78");
 
 /* Loads a level's four packed images through the GS loader and registers the image records and their data blocks. */
 char *load_level_texture_bank(char *buf, int *tbl) {
@@ -98,8 +93,7 @@ char *load_level_texture_bank(char *buf, int *tbl) {
     int idx;
     int idx2;
 
-    FastMemCopy_r(buf, level_archive_base,
-                  disc_table_r.e[((Lvl *)(level_render_state_base_r + 0x2C2))->f26 + 1].a << 11);
+    FastMemCopy(buf, level_archive_base, disc_table_r.e[((Lvl *)(level_render_state_base_r + 0x2C2))->f26 + 1].a << 11);
     a = ((Hdr *)buf)->a;
     off = ((Hdr *)buf)->off;
     p = buf + off;
@@ -123,7 +117,7 @@ char *load_level_texture_bank(char *buf, int *tbl) {
             src = buf + off;
             dst = buf + c + 0x30;
         }
-        flush_cache_r(0);
+        flush_cache(0);
         i++;
         sceGsExecLoadImage(img, dst);
         wait_for_graphics_pipeline_idle(0, 0);
@@ -136,24 +130,24 @@ char *load_level_texture_bank(char *buf, int *tbl) {
     first_record_m240398.h[7] = tbl[0x2C] >> 8;
     qcopy(&moby_texture_records_r[idx], &D_L00_0015FCC0_240398);
     moby_texture_addrs_r[idx] = (unsigned int)buf - 0x80000000U;
-    FastMemCopy_r(buf, base + off + 0x430, 0x14000);
+    FastMemCopy(buf, base + off + 0x430, 0x14000);
     buf += 0x14000;
     D_L00_0015FCE0_240398 = moby_texture_count_r;
     if (g_class_slot_r[first_class_ids_r[((Lvl *)(level_render_state_base_r + 0x2C2))->f26]] == 0xFF) {
-        register_moby_class_r(base + a, &D_L00_0015FCC0_240398 - moby_texture_count_r, &D_L00_0015FCE0_240398,
-                              first_class_ids_r[((Lvl *)(level_render_state_base_r + 0x2C2))->f26]);
+        register_moby_class(base + a, &D_L00_0015FCC0_240398 - moby_texture_count_r, &D_L00_0015FCE0_240398,
+                            first_class_ids_r[((Lvl *)(level_render_state_base_r + 0x2C2))->f26]);
     }
     idx2 = moby_texture_count_r + 1;
     second_record_m240398.h[5] = tbl[0x2E] >> 8;
     moby_texture_count_r = idx2;
     qcopy(&moby_texture_records_r[idx2], &D_L00_0015FCD0_240398);
     moby_texture_addrs_r[idx2] = (unsigned int)buf + 0x70000000U;
-    FastMemCopy_r(buf, base + c + 0x430, 0x4000);
+    FastMemCopy(buf, base + c + 0x430, 0x4000);
     buf += 0x4000;
     D_L00_0015FCE0_240398 = moby_texture_count_r;
     if (g_class_slot_r[second_class_ids[((Lvl *)(level_render_state_base_r + 0x2C2))->f26]] == 0xFF) {
-        register_moby_class_r(base + b, &D_L00_0015FCD0_240398 - moby_texture_count_r, &D_L00_0015FCE0_240398,
-                              second_class_ids[((Lvl *)(level_render_state_base_r + 0x2C2))->f26]);
+        register_moby_class(base + b, &D_L00_0015FCD0_240398 - moby_texture_count_r, &D_L00_0015FCE0_240398,
+                            second_class_ids[((Lvl *)(level_render_state_base_r + 0x2C2))->f26]);
     }
     D_L00_00160624_240398 = 1;
     D_L00_00160628_240398 = 1;
@@ -467,8 +461,6 @@ typedef struct {
 extern void Load_r(void *, int, int) __asm__("func_002176C8");
 
 extern void copy_memory_by_alignment_v(void *, void *, int) __asm__("func_L00_001FF040");
-
-extern void scale_vector(void *, void *, float);
 
 extern int truncate_float_to_s32(float);
 
@@ -2337,7 +2329,6 @@ extern Tab disc_table;
 extern H_245610 cutscene_state_r2 __asm__("D_L00_0016C960");
 void func_00217628_45FE0b(void *, s32, s32) __asm__("func_00217628");
 void func_00217748_45FE0b(s32) __asm__("func_00217748");
-void func_001F4E08_45FE0b(s32) __asm__("func_001F4E08");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/world_animation_002454c8.c, FUN_L00_00245610. */
 void load_chunks_with_optional_fade(s32 i, s32 p) {
@@ -2350,7 +2341,7 @@ void load_chunks_with_optional_fade(s32 i, s32 p) {
     }
     if (p != 0) {
         func_00217748_45FE0b(0);
-        func_001F4E08_45FE0b(p);
+        FadeToBlack(p);
     }
     func_00217748_45FE0b(1);
     e = (s32 *)cutscene_state_r2.buf;

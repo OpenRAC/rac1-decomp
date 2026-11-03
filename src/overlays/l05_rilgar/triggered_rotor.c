@@ -22,7 +22,7 @@ typedef struct {
     float angle;
 } RotorData17B68;
 
-extern float func_L00_0025CE58(float *, float, float *, float, float, float);
+extern float SteerAngleWithVelocity_v(float *, float, float *, float, float, float) __asm__("func_L00_0025CE58");
 /* Updates a triggered rotor: initialize its angle, wait for the target, then ease its rotation. */
 void update_triggered_moby_yaw(Moby *moby) {
     RotorData17B68 *p = (RotorData17B68 *)moby->pvars;
@@ -52,8 +52,8 @@ void update_triggered_moby_yaw(Moby *moby) {
             } else {
                 f = FastAddRots(p->angle, 0.6981317f);
             }
-            SteerAngleWithVelocity(&moby->rot.z, f, &p->velocity, g_frame_time_sq * 12.566371f,
-                                   g_frame_time_sq * 12.566371f, g_frame_time * 12.566371f);
+            SteerAngleWithVelocity_v(&moby->rot.z, f, &p->velocity, g_frame_time_sq * 12.566371f,
+                                     g_frame_time_sq * 12.566371f, g_frame_time * 12.566371f);
             break;
     }
 }

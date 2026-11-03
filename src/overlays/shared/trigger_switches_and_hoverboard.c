@@ -28,6 +28,7 @@
 #include "overlays/l05_rilgar/hero_idle_and_items.h"
 #include "overlays/l05_rilgar/electric_gate.h"
 #include "asm_functions/level_05.h"
+#include "game/gameplay/camera.h"
 extern char g_hero[];
 /* Hydrodisplacer faucet: pulse phase and strength. */
 struct FaucetPulseVars {
@@ -282,7 +283,6 @@ void hydrodisplacer_faucet_update(char *faucet_moby) {
     }
     update_hydrodisplacer_faucet_pulse_color(faucet_moby);
 }
-extern float ApproachValue(float *p, float target, float maxstep);
 
 extern short g_frame_time_s __asm__("D_0015EE6C");
 
@@ -326,9 +326,6 @@ void update_hydrodisplacer_faucet_pulse_color(void *mv) {
     }
 }
 
-extern void vec_scale_to_length(void *, void *, float);
-
-extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 extern int rilgar_frame_count SDATA(rilgar_frame_count);
 extern int hoverboard_race_finished MACRO_ADDR;
 extern int hoverboard_effect_displacement_w_gp SDATA(hoverboard_effect_displacement_w_gp);
@@ -469,9 +466,6 @@ void hoverboard_update(unsigned char *moby) {
     }
     ((struct Moby *)moby)->command = 0;
 }
-extern int fast_dec_timer(int *);
-extern int get_first_moby_in_group(int *, int, int, int);
-extern int get_next_moby_in_group(int *, int, int, int);
 
 struct AddMobyFramesForGroupProximityVars {
     u8 pad_00[0x44];
@@ -591,13 +585,13 @@ typedef struct {
 } Quad;
 extern void f_pos_0D678(void *, int, float *) __asm__("func_L00_00250800");
 extern void f_clear_0D678(float *) __asm__("func_001F9BC0");
-extern float f_sin_0D678(float) __asm__("func_001F9FA8");
+
 extern void f_rot_0D678(float *, float *) __asm__("func_001FA218");
 extern void f_sub_0D678(float *, const float *, const float *) __asm__("func_001F9BF0");
 extern void f_norm_0D678(float *, float *, float) __asm__("func_L00_001FF4B0");
 extern void f_cross_0D678(float *, float *, float *) __asm__("func_001F9CA0");
 extern long f_tex_0D678(int) __asm__("func_001F4868");
-extern int f_tween_0D678(int, int, float) __asm__("func_001FA8A8");
+
 extern void f_draw_0D678(void *, float *, int) __asm__("func_L00_001FD1D8");
 extern float rilgar_camera_pos_r2[] __asm__("D_L05_001672C0");
 extern float D_L05_001D6B00[][2];
@@ -638,7 +632,7 @@ void draw_moby_wobble_quads(unsigned char *m) {
     f_pos_0D678(moby, 0, position);
     f_clear_0D678(rotation);
     rotation[2] = moby->rot.z;
-    rotation[1] = f_sin_0D678(vars->phase) * 0.5235988f + 0.5235988f;
+    rotation[1] = FastSin(vars->phase) * 0.5235988f + 0.5235988f;
     side = matrix;
     f_rot_0D678(side, rotation);
     direction = matrix + 4;
@@ -680,7 +674,7 @@ void draw_moby_wobble_quads(unsigned char *m) {
             if (j > 1)
                 sign = -1.0f;
             quad_a.color[j] = quad_b.color[j] =
-                f_tween_0D678(rilgar_wobble_quad_start_color, rilgar_wobble_quad_end_color, phase);
+                FastTweenColor(rilgar_wobble_quad_start_color, rilgar_wobble_quad_end_color, phase);
             offset_a_x = phase * 8.0f * sign;
             offset_a_z = pass * 10.0f;
             offset_b_x = phase * 6.0f * sign;
@@ -839,8 +833,6 @@ void initialize_moby_launch_motion(Moby *m, int b, void *v1, void *v2, int a) {
     d->s[2] = random_float_between(-(g_frame_time * 4.1887903f), g_frame_time * 4.1887903f);
 }
 
-extern int coll_sphere(float, void *, int, void *);
-
 extern char rilgar_coll_hit[];
 extern float g_frame_time_sq MACRO_ADDR;
 
@@ -957,19 +949,17 @@ found:
     return (char *)&((M_p *)POOL)[idx];
 }
 INCLUDE_ASM("asm/overlays", func_L05_0031AB00);
-extern float ApproachWithVelocity(float, float, float, float, float *, float *);
-extern void SamplePathAt(int *, int, void *, float *, int, float);
+extern float ApproachWithVelocity_v(float, float, float, float, float *, float *) __asm__("func_00214D88");
 
 /* Advances a moby's path: steps the path position and returns whether it has reached the end. */
 int AdvanceMobyPath(char *m) {
     struct RilgarRideVars *d = (struct RilgarRideVars *)((Moby *)m)->pvars;
     int *path;
-    ApproachWithVelocity(1.0f, d->max_speed, d->max_speed, d->accel, &d->path_t, &d->path_t_vel);
+    ApproachWithVelocity_v(1.0f, d->max_speed, d->max_speed, d->accel, &d->path_t, &d->path_t_vel);
     path = d->path;
     SamplePathAt(path, 0, &d->start_pos, &d->start_rot.f[0], 0, d->path_t * (float)(*path - 1));
     return d->path_t >= 1.0f;
 }
-extern void try_set_help_message(int, int);
 
 /* Plays the sound that goes with the moby's current variant. */
 void request_moby_variant_help_message(char *moby) {
@@ -1043,7 +1033,6 @@ void transform_moby_vector_table_to_world_space(Moby *a) {
         }
     }
 }
-extern int FastBSphereCheck(char *, float);
 
 extern char rilgar_zero_vec[] MACRO_ADDR;
 
@@ -1112,11 +1101,9 @@ extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
 extern s32 truncate_float_to_s32(f32);
 extern void AddDrawCallback_r(void (*)(char *), struct Moby *) __asm__("func_001F49B0");
-extern char *MobyGetHitMessage(struct Moby *, s32, s32);
 
-extern struct Moby *SpawnBreakFragment(f32, struct Moby *, s32, void *, void *, s32, s32, void *, void *, void *);
-
-extern struct Spark_c8e0 *PartType23Spawn(void *, f32, f32, f32, s32, void *, f32, s32);
+extern struct Moby *SpawnBreakFragment_v(f32, struct Moby *, s32, void *, void *, s32, s32, void *, void *,
+                                         void *) __asm__("func_L00_00265050");
 
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
 extern char *spawn_lamp_destroyed_from_source(unsigned char *);
@@ -1183,24 +1170,24 @@ void update_moby_glow_and_contact_explosion(struct Moby *moby) {
     }
     Moby_PlaySound(0, 0, moby);
     spawn_lamp_destroyed_from_source((unsigned char *)moby);
-    debris = SpawnBreakFragment(g_frame_time_sq * 12.0f, moby, 0x5ED, &moby->pos, &moby->rot, scale_ticks(0x5A), 0,
-                                rilgar_zero_vec, rilgar_zero_vec, rilgar_zero_vec);
+    debris = SpawnBreakFragment_v(g_frame_time_sq * 12.0f, moby, 0x5ED, &moby->pos, &moby->rot, scale_ticks(0x5A), 0,
+                                  rilgar_zero_vec, rilgar_zero_vec, rilgar_zero_vec);
     if (debris != 0) {
         debris->spawn_frame = moby->spawn_frame;
     }
     spawn_proximity_gated_bolts(moby);
     FastVecScale(&vel, &moby->rot_row0, (rilgar_glow_debris_forward_speed)*frame_scale);
     vel.f[2] += (rilgar_glow_debris_up_speed)*frame_scale;
-    debris = SpawnBreakFragment(g_frame_time_sq * 12.0f, moby, 0x5EE, &moby->pos, &moby->rot, scale_ticks(0x5A), 0,
-                                &vel, rilgar_zero_vec, rilgar_zero_vec);
+    debris = SpawnBreakFragment_v(g_frame_time_sq * 12.0f, moby, 0x5EE, &moby->pos, &moby->rot, scale_ticks(0x5A), 0,
+                                  &vel, rilgar_zero_vec, rilgar_zero_vec);
     if (debris != 0) {
         debris->spawn_frame = moby->spawn_frame;
     }
     vel.f[0] = -vel.f[0];
     vel.f[1] = -vel.f[1];
     moby->rot.z = FastAddRots(moby->rot.z, 3.1415927f);
-    debris = SpawnBreakFragment(g_frame_time_sq * 12.0f, moby, 0x5EE, &moby->pos, &moby->rot, scale_ticks(0x5A), 0,
-                                &vel, rilgar_zero_vec, rilgar_zero_vec);
+    debris = SpawnBreakFragment_v(g_frame_time_sq * 12.0f, moby, 0x5EE, &moby->pos, &moby->rot, scale_ticks(0x5A), 0,
+                                  &vel, rilgar_zero_vec, rilgar_zero_vec);
     if (debris != 0) {
         debris->spawn_frame = moby->spawn_frame;
     }
@@ -1253,11 +1240,6 @@ typedef struct {
 extern float rilgar_glow_quad_corners[4][4];
 extern f32 rilgar_glow_tip_offset SDATA(rilgar_glow_tip_offset);
 extern float rilgar_glow_camera_pull SDATA(rilgar_glow_camera_pull);
-u64 GetEffectTex(s32);
-
-extern void vec_scale_to_length(void *, void *, float);
-
-extern void draw_world_quad(void *, void *, s32);
 
 /* Draws the moby's camera-facing glow sprite, flickering its alpha at random. */
 void draw_moby_glow_sprite(char *m) {
@@ -1325,8 +1307,7 @@ char *spawn_lamp_destroyed_from_source(unsigned char *a0) {
     return (char *)m;
 }
 typedef int u128 __attribute__((mode(TI)));
-extern float vec_distance_xy(float *, float *);
-extern void vec_scale_to_length(void *, void *, float);
+
 extern char hero_gravity_dir[];
 
 /* Sets up a moby's vector from the level table and clamps its height for the current state. */
@@ -1385,7 +1366,6 @@ void set_camera_follow_parameters(float a, float b, float c, float d, float e, f
 }
 INCLUDE_ASM("asm/overlays", func_L05_0032AA48);
 extern void update_hero_follow_camera_focus(char *);
-extern void vec_scale_to_length(void *, void *, float);
 
 /* Places the camera moby relative to the hero's target and builds its look-at basis. */
 void build_hero_follow_camera_transform(Camera *m) {
@@ -1526,7 +1506,6 @@ typedef struct {
 } CameraPresetRow;
 extern CameraPresetRow *rilgar_camera_descriptors_r __asm__("D_L05_0015F050") MACRO_ADDR;
 extern s32 D_001414D0[];
-extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 
 void func_L05_0032ABF0_r(Camera_32ABF0 *cam) __asm__("func_L05_0032ABF0");
 
@@ -1550,8 +1529,8 @@ void func_L05_0032ABF0_r(Camera_32ABF0 *cam) {
     d->unk190 = s->unk34;
     d->unk194 = s->unk38;
     d->unk18C = s->unk3C;
-    clear_u64_value_r(&d->unk1B0);
-    clear_u64_value_r(&d->unk1C0);
+    clear_u64_value(&d->unk1B0);
+    clear_u64_value(&d->unk1C0);
     focus = &cam->orbit->focus;
     focus->state = 5;
     focus->unk44 = g_hero_moby[0];
@@ -1568,10 +1547,10 @@ void func_L05_0032ABF0_r(Camera_32ABF0 *cam) {
     orbit->unk14 = 0.2f;
     orbit->unk18 = 0;
     orbit->mode = 0;
-    clear_u64_value_r(orbit);
+    clear_u64_value(orbit);
     track = &cam->orbit->track;
-    clear_u64_value_r(track);
-    clear_u64_value_r(&track->accel);
+    clear_u64_value(track);
+    clear_u64_value(&track->accel);
     track->unk40 = 0;
     track->unk10 = s->unk0;
     track->unk34 = s->unk20;
@@ -1583,7 +1562,7 @@ void func_L05_0032ABF0_r(Camera_32ABF0 *cam) {
     view->aspect = 1.3333334f;
     view->unk28 = 0;
     view->unk2C = 0;
-    clear_u64_value_r(view);
+    clear_u64_value(view);
     func_L05_0032A9D0_32ABF0(s->spring_dist, s->spring_height, s->dist, s->unk34, s->unk38, s->unk3C, s->unk40,
                              s->unk44);
     func_L05_0032AA50_32ABF0((char *)cam);
@@ -1751,14 +1730,9 @@ extern Row *rilgar_camera_descriptors_r2 __asm__("D_L05_0015F050") MACRO_ADDR;
 extern float D_L05_00174378;
 extern float D_L05_00162268_32B1F8 SDATA(D_L05_00162268);
 extern void vec_scale_32B1F8(void *, void *, float) __asm__("func_L00_001FF4B0");
-extern void vec_sub_32B1F8(void *, void *, void *) __asm__("func_001F9BF0");
-extern float vec_dot_32B1F8(void *, void *) __asm__("func_001F9C78");
-extern void vec_add_32B1F8(void *, void *, void *) __asm__("func_001F9BD8");
-extern float spring_32B1F8(float, float, float *, float, float, float) __asm__("func_001EC120");
-extern void vec_mul_32B1F8(void *, void *, float) __asm__("func_001F9C30");
+
 extern int collide_32B1F8(float, void *, int, void *) __asm__("func_L00_001F10E0");
-extern float fabs_32B1F8(float) __asm__("func_001F9B88");
-extern void vec_cross_32B1F8(void *, void *, void *) __asm__("func_001F9CA0");
+
 extern void orbit_32B1F8(Camera_32B1F8 *) __asm__("func_L05_0032ADE8");
 
 /* Camera follow: springs the position toward the focus, keeps clear of walls, eases distance and height, then rebuilds
@@ -1795,76 +1769,76 @@ void update_orbit_camera_position(Camera_32B1F8 *m) {
     vec_scale_32B1F8(&down, g, -1.0f);
     qcopy(&focus, &q->pos);
     if (d->mode == 0) {
-        vec_sub_32B1F8(&rel, pos = &m->pos, &focus);
+        FastVecSub(&rel, pos = &m->pos, &focus);
         n = 0;
-        dd = vec_dot_32B1F8(&rel, &q->axis);
+        dd = FastVecDot(&rel, &q->axis);
         vec_scale_32B1F8(&tmp, &q->axis, dd);
-        vec_sub_32B1F8(&lat, &rel, &tmp);
+        FastVecSub(&lat, &rel, &tmp);
         vec_scale_32B1F8(&off, &lat, e->dist);
-        vec_add_32B1F8(&base, &focus, &off);
+        FastVecAdd(&base, &focus, &off);
         vec_scale_32B1F8(&tmp, &q->axis, e->height);
-        vec_add_32B1F8(&goal, &base, &tmp);
-        vec_add_32B1F8(&goal, &goal, &d->bias);
-        m->pos.x = spring_32B1F8(m->pos.x, goal.x, &d->vel[0], d->k10, d->k14, d->k18);
-        m->pos.y = spring_32B1F8(m->pos.y, goal.y, &d->vel[1], d->k10, d->k14, d->k18);
-        m->pos.z = spring_32B1F8(m->pos.z, goal.z, &d->vel[2], d->k10, d->k14, d->k18);
+        FastVecAdd(&goal, &base, &tmp);
+        FastVecAdd(&goal, &goal, &d->bias);
+        m->pos.x = Cam_InterpValues(m->pos.x, goal.x, &d->vel[0], d->k10, d->k14, d->k18);
+        m->pos.y = Cam_InterpValues(m->pos.y, goal.y, &d->vel[1], d->k10, d->k14, d->k18);
+        m->pos.z = Cam_InterpValues(m->pos.z, goal.z, &d->vel[2], d->k10, d->k14, d->k18);
         v = m->vel;
         probe.x = v[0];
         probe.y = v[1];
         probe.z = v[2];
         *(int *)&probe.w = 0;
-        vec_sub_32B1F8(&step, pos, &probe);
-        vec_mul_32B1F8(&step, &step, 0.16666667f);
+        FastVecSub(&step, pos, &probe);
+        FastVecScale(&step, &step, 0.16666667f);
         while (n < 6) {
             if (collide_32B1F8(0.5f, &probe, 18, 0) != 0) {
                 e->height =
-                    spring_32B1F8(e->height, rilgar_coll_resolved_pos_z - focus.z, &cur->vel, 0.05f, 0.2f, 0.0f);
+                    Cam_InterpValues(e->height, rilgar_coll_resolved_pos_z - focus.z, &cur->vel, 0.05f, 0.2f, 0.0f);
                 break;
             }
             n++;
-            vec_add_32B1F8(&probe, &probe, &step);
+            FastVecAdd(&probe, &probe, &step);
         }
         if (n == 6) {
-            d->bias.x = spring_32B1F8(d->bias.x, 0.0f, &d->bias_vel[0], 0.02f, 0.2f, 0.05f);
-            d->bias.y = spring_32B1F8(d->bias.y, 0.0f, &d->bias_vel[1], 0.02f, 0.2f, 0.05f);
-            d->bias.z = spring_32B1F8(d->bias.z, 0.0f, &d->bias_vel[2], 0.02f, 0.2f, 0.05f);
-            e->height = spring_32B1F8(e->height, d->spring_height, &cur->vel, 0.005f, 0.2f, 0.0f);
+            d->bias.x = Cam_InterpValues(d->bias.x, 0.0f, &d->bias_vel[0], 0.02f, 0.2f, 0.05f);
+            d->bias.y = Cam_InterpValues(d->bias.y, 0.0f, &d->bias_vel[1], 0.02f, 0.2f, 0.05f);
+            d->bias.z = Cam_InterpValues(d->bias.z, 0.0f, &d->bias_vel[2], 0.02f, 0.2f, 0.05f);
+            e->height = Cam_InterpValues(e->height, d->spring_height, &cur->vel, 0.005f, 0.2f, 0.0f);
         }
         if (((Hero *)g_hero)->air_frames.s != 0 && 2.0f < ((Hero *)g_hero)->ground_distance) {
-            if (fabs_32B1F8(e->dist - d->spring_dist2) < 0.015f)
+            if (FastAbsF(e->dist - d->spring_dist2) < 0.015f)
                 e->dist = d->spring_dist2;
             else if (e->dist < d->spring_dist2)
                 e->dist = e->dist + 0.015f;
             else
                 e->dist = e->dist - 0.015f;
             if (n == 6) {
-                if (fabs_32B1F8(e->height - d->spring_height2) < 0.05f)
+                if (FastAbsF(e->height - d->spring_height2) < 0.05f)
                     e->height = d->spring_height2;
                 else if (e->height < d->spring_height2)
                     e->height = e->height + 0.05f;
                 else
                     e->height = e->height - 0.05f;
             }
-            if (fabs_32B1F8(q->dist - d->focus_dist) < 0.02f)
+            if (FastAbsF(q->dist - d->focus_dist) < 0.02f)
                 q->dist = d->focus_dist;
             else if (q->dist < d->focus_dist)
                 q->dist = q->dist + 0.02f;
             else
                 q->dist = q->dist - 0.02f;
         } else {
-            if (fabs_32B1F8(e->dist - d->spring_dist) < 0.03f)
+            if (FastAbsF(e->dist - d->spring_dist) < 0.03f)
                 e->dist = d->spring_dist;
             else if (e->dist < d->spring_dist)
                 e->dist = e->dist + 0.03f;
             else
                 e->dist = e->dist - 0.03f;
-            if (fabs_32B1F8(e->height - d->spring_height) < 0.1f)
+            if (FastAbsF(e->height - d->spring_height) < 0.1f)
                 e->height = d->spring_height;
             else if (e->height < d->spring_height)
                 e->height = e->height + 0.1f;
             else
                 e->height = e->height - 0.1f;
-            if (fabs_32B1F8(q->dist - dist) < 0.04f)
+            if (FastAbsF(q->dist - dist) < 0.04f)
                 q->dist = dist;
             else if (q->dist < dist)
                 q->dist = q->dist + 0.04f;
@@ -1874,19 +1848,19 @@ void update_orbit_camera_position(Camera_32B1F8 *m) {
         fl = 1;
     } else {
         qcopy(&d->aim, *(char **)(g + 0x1DF0) + 0xE0);
-        if (fabs_32B1F8(e->dist - d->spring_dist) < 0.015f)
+        if (FastAbsF(e->dist - d->spring_dist) < 0.015f)
             e->dist = d->spring_dist;
         else if (e->dist < d->spring_dist)
             e->dist = e->dist + 0.015f;
         else
             e->dist = e->dist - 0.015f;
-        if (fabs_32B1F8(e->height - d->spring_height) < 0.05f)
+        if (FastAbsF(e->height - d->spring_height) < 0.05f)
             e->height = d->spring_height;
         else if (e->height < d->spring_height)
             e->height = e->height + 0.05f;
         else
             e->height = e->height - 0.05f;
-        if (fabs_32B1F8(q->dist - dist) < 0.02f)
+        if (FastAbsF(q->dist - dist) < 0.02f)
             q->dist = dist;
         else if (q->dist < dist)
             q->dist = q->dist + 0.02f;
@@ -1897,33 +1871,33 @@ void update_orbit_camera_position(Camera_32B1F8 *m) {
     qcopy(&q->pos, &d->next);
     qcopy(&focus, &q->pos);
     vec_scale_32B1F8(&tmp, &q->axis, q->dist);
-    vec_add_32B1F8(&goal, &focus, &tmp);
-    vec_sub_32B1F8(&rel, &goal, &m->pos);
+    FastVecAdd(&goal, &focus, &tmp);
+    FastVecSub(&rel, &goal, &m->pos);
     vec_scale_32B1F8(&rel, &rel, 1.0f);
-    dd = vec_dot_32B1F8(&m->fwd, &rel);
-    vec_cross_32B1F8(&m->up, &rel, &down);
+    dd = FastVecDot(&m->fwd, &rel);
+    FastVecCross(&m->up, &rel, &down);
     vec_scale_32B1F8(&m->up, &m->up, 1.0f);
-    vec_cross_32B1F8(&m->side, &m->up, &rel);
-    if (fl == 0 || fabs_32B1F8(dd) < 0.5f || (v = (float *)g_hero, ((Hero *)v)->trick_input != 0)) {
-        tr->blend = spring_32B1F8(tr->blend, 0.0f, tr->state, tr->k34, tr->k38, tr->k3C);
+    FastVecCross(&m->side, &m->up, &rel);
+    if (fl == 0 || FastAbsF(dd) < 0.5f || (v = (float *)g_hero, ((Hero *)v)->trick_input != 0)) {
+        tr->blend = Cam_InterpValues(tr->blend, 0.0f, tr->state, tr->k34, tr->k38, tr->k3C);
     } else {
         float t;
         vec_scale_32B1F8(&probe, ((char *)((Hero *)v)->moby) + 0xC0, 1.0f);
-        t = vec_dot_32B1F8(&probe, &m->side);
+        t = FastVecDot(&probe, &m->side);
         vec_scale_32B1F8(&step, &m->side, t);
-        vec_sub_32B1F8(&probe, &probe, &step);
-        t = vec_dot_32B1F8(&probe, &m->up);
-        tr->blend = spring_32B1F8(tr->blend, t * D_L05_00162268_32B1F8, tr->state, tr->k34, tr->k38, tr->k3C);
+        FastVecSub(&probe, &probe, &step);
+        t = FastVecDot(&probe, &m->up);
+        tr->blend = Cam_InterpValues(tr->blend, t * D_L05_00162268_32B1F8, tr->state, tr->k34, tr->k38, tr->k3C);
     }
-    if (0.00001f < fabs_32B1F8(tr->blend)) {
+    if (0.00001f < FastAbsF(tr->blend)) {
         vec_scale_32B1F8(&probe, &m->up, tr->blend);
-        vec_add_32B1F8(&goal, &goal, &probe);
+        FastVecAdd(&goal, &goal, &probe);
     }
-    vec_sub_32B1F8(&rel, &goal, &m->pos);
+    FastVecSub(&rel, &goal, &m->pos);
     vec_scale_32B1F8(&m->fwd, &rel, 1.0f);
-    vec_cross_32B1F8(&m->up, &m->fwd, &down);
+    FastVecCross(&m->up, &m->fwd, &down);
     vec_scale_32B1F8(&m->up, &m->up, 1.0f);
-    vec_cross_32B1F8(&m->side, &m->up, &m->fwd);
+    FastVecCross(&m->side, &m->up, &m->fwd);
 }
 extern char *rilgar_camera_init_source;
 

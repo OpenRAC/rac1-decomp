@@ -21,6 +21,7 @@
 #include "overlays/shared/mine_bomb_and_debris.h"
 #include "overlays/shared/crates_and_veldin_ship.h"
 #include "core/vu0/vector.h"
+#include "asm_functions/shared_levels.h"
 extern char gold_weapon_purchased[];
 
 extern int func_001160D8(void);
@@ -67,8 +68,6 @@ float interpolate_wrapped_angle_cosine_eased(float x, float y, float z) {
     float c = FastCos(z * 3.1415927f);
     return FastAddRots(x, t * ((1.0f - c) * 0.5f));
 }
-
-extern void FastVecScale(void *, void *, float);
 
 /* Vector cosine interpolation: dst = a + (b - a) * ((1 - cos(t * pi)) * 0.5).
    Scalar analogue matched at src/game/moby/mobyutil.c:CosineInterpolate. */
@@ -152,7 +151,7 @@ typedef struct {
     float a[4];
 } Vs __attribute__((aligned(16)));
 extern int coll_hit_result[];
-extern int coll_line(void *, void *, int, int, int);
+
 /* Casts a vertical collision line around p; returns the hit, or 0 when filtered out. */
 int probe_vertical_ground_collision(Vs *p, int x, int y, float f, float g) {
     Vs t0;
@@ -181,11 +180,9 @@ extern Vec4 D_L00_00173F60;
 extern Vec4 coll_resolved_pos;
 extern float probe_ground_height_flag20_f(void *) __asm__("func_L00_0025A748");
 
-extern void vec_scale_to_length(void *, void *, float);
 extern int coll_line_p(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
-extern float vec_length_xy(void *);
-extern float fast_atan2(float, float);
-extern int func_L00_001F10E0(void *, float, int, void *);
+
+extern int coll_sphere_v(void *, float, int, void *) __asm__("func_L00_001F10E0");
 extern float vec_distance_xy_f(void *, void *) __asm__("func_001F9D48");
 
 /* Moves pos toward to while keeping it over the ground and out of walls; returns 0 if it was snapped back. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/math_interpolation_00257ef0.c, FUN_L00_00258490. */
@@ -251,7 +248,7 @@ int MoveKeepingOverGround(void *ign, Vec4 *to, Vec4 *pos, int flags, float h, fl
         do {
             qcopy(&t, pos);
             t.f[2] += zz;
-            if (!coll_sphere(&t, r, 0x24, ign)) {
+            if (!coll_sphere_v(&t, r, 0x24, ign)) {
                 break;
             }
             ang = fast_atan2(vec_distance_xy_f(pos, q60), *(float *)(q40 + 0x28) - pos->f[2]);
@@ -306,7 +303,7 @@ int move_4318(char *m, char *v, int flags, float a, float b, float c) {
     for (i = 0, q = (char *)&((Moby *)m)->pos; i < 6; i++) {
         qcopy(&t1, q);
         t1.a[2] += a;
-        if (coll_sphere(&t1, b, fl | 4, m)) {
+        if (coll_sphere_v(&t1, b, fl | 4, m)) {
             qcopy(q, &coll_resolved_pos);
             r |= 1;
             ((Moby *)m)->pos.z -= a;
@@ -375,14 +372,10 @@ typedef struct {
 extern CollisionHit coll_hit_result_r __asm__("D_L00_00173F40");
 extern f32 g_frame_time_sq SDATA(g_frame_time_sq);
 extern int frame_scale MACRO_ADDR;
-extern f32 vec_length_xy(void *);
 
 extern s32 probe_vertical_ground_collision_r(void *, void *, s32, f32, f32) __asm__("func_L00_00259428");
-extern f32 fast_atan2(f32, f32);
-extern void vec_scale_to_length(void *, void *, f32);
-extern void FastVecScale(void *, void *, f32);
+
 extern s32 move_moby_with_collision_integer_radius_r(void *, void *, f32, s32, f32, s32) __asm__("func_L00_00259B08");
-extern f32 ProbeGroundHeight_r(void *, s32, f32) __asm__("func_00214358");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/math_interpolation_00257ef0.c, FUN_L00_00258b50. */
 s32 move_w(Obj *m, Ctl *c, void *v, Vec4 *out, f32 f) {
@@ -475,7 +468,7 @@ done:
             mask |= 1;
             if (d.f[0] * p.f[0] + d.f[1] * p.f[1] < l2 * 0.2f)
                 mask |= 2;
-            h = ProbeGroundHeight_r(&m->pos, 0, 0.5f);
+            h = ProbeGroundHeight(&m->pos, 0, 0.5f);
             if (c->f08 < save.f[2] - h || c->f0C < h - save.f[2]) {
                 mask |= 0x22;
                 m->pos.q = save.q;
@@ -491,17 +484,12 @@ done:
     return mask;
 }
 
-extern float FastVecDist_f(void *, void *) __asm__("func_001F9D10");
-extern float fast_atan2(float, float);
-
-extern void fast_dec_timer(int *);
-
 /* classify a target against a moby's cone and range, returning flag bits */
 int ClassifyTargetInCone(char *m, Ctl *p, float *pos, char *v) {
     int flags = 0;
     float a, b;
     clear_u64_value(v);
-    if (FastVecDist_f(&((Moby *)m)->pos, pos) < p->f2C) {
+    if (FastVecDist(&((Moby *)m)->pos, pos) < p->f2C) {
         flags = 4;
     }
     a = fast_atan2(pos[0] - ((Moby *)m)->pos.x, pos[1] - ((Moby *)m)->pos.y);
@@ -532,7 +520,7 @@ extern char *moby_group_iter_moby_r __asm__("D_L00_001601D4") MACRO_ADDR;
 extern unsigned short *moby_group_iter_entry_r __asm__("D_L00_001601CC") MACRO_ADDR;
 extern short D_L00_001601D0[] MACRO_ADDR;
 extern char *moby_array_start_r __asm__("D_L00_00160098") MACRO_ADDR;
-int get_next_moby_in_group(char **, char *);
+int get_next_moby_in_group_v(char **, char *) __asm__("func_L00_0025A2F0");
 
 /* Looks up table entry idx and makes it current; the flag test reads the current entry back, as the original did.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/math/interpolation/00257ef0.c, FUN_L00_002591d0. */
@@ -559,9 +547,9 @@ int get_first_moby_in_group(char **out, int idx, int a, int b) {
     c = (unsigned)moby_group_iter_moby[0x20] >> 31;
     if (!a) {
         if (b || c)
-            return get_next_moby_in_group(out, moby_group_iter_moby_r);
+            return get_next_moby_in_group_v(out, moby_group_iter_moby_r);
     } else if (b && !c)
-        return get_next_moby_in_group(out, moby_group_iter_moby_r);
+        return get_next_moby_in_group_v(out, moby_group_iter_moby_r);
     return 0;
 }
 extern unsigned char *moby_group_iter_moby_r2 __asm__("D_L00_001601D4") MACRO_ADDR;
@@ -745,10 +733,8 @@ void InitDirectionalHitQuery(struct HitDescriptor *arg, int a, int b, void *src,
     qcopy(arg->vec, src);
 }
 void func_L00_0025A8C0_5A8E8(char *a, int b, int c, float d, void *q) __asm__("func_L00_0025A8C0");
-void FastVecScale(void *out, void *a, f32 scale);
-f32 FastCos(f32 radians);
-f32 FastSin(f32 radians);
-extern int coll_sphere_mobys(void *, float, int, void *, void *);
+
+extern int coll_sphere_mobys_v(void *, float, int, void *, void *) __asm__("func_L00_001F2BE8");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00259710.c, FUN_L00_002598b0. */
 int MobySphereHitDirectional(void *moby, void *position, int c, float d, float e, float f, int g, int h, int i) {
@@ -768,7 +754,7 @@ int MobySphereHitDirectional(void *moby, void *position, int c, float d, float e
     descriptor.unk_18 = g;
     descriptor.unk_19 = h;
     descriptor.oclass = *(unsigned short *)&((Moby *)moby)->oclass;
-    return coll_sphere_mobys(position, d, i, moby, &descriptor);
+    return coll_sphere_mobys_v(position, d, i, moby, &descriptor);
 }
 
 extern int MobySphereHitDirectional(void *, void *, int, float, float, float, int, int, int);
@@ -912,7 +898,7 @@ int sweep_hit_segment(void *a, void *b, void *c, void *d, int e, int f, int n) {
 typedef struct {
     int a[4];
 } Vk __attribute__((aligned(16)));
-extern void axis_rotation_2d48(void *, int, float);
+
 /* Builds a quaternion from X, Y and Z axis rotations in v. */
 void build_quaternion_from_axis_rotations(void *a, float *v) {
     Vk t0, t1, t2;
@@ -922,8 +908,7 @@ void build_quaternion_from_axis_rotations(void *a, float *v) {
     multiply_quaternions(a, &t2, &t1);
     multiply_quaternions(a, a, &t0);
 }
-extern float func_00214358f(void *, int, float) __asm__("func_00214358");
-extern int CollType(void);
+
 extern int ground_shadow_count MACRO_ADDR;
 struct Ent {
     float a[4];
@@ -941,7 +926,7 @@ void jet_animate(Moby *m, float s) {
     if (m->visible && ground_shadow_count < 32) {
         n = ground_shadow_count;
         qcopy(&ground_shadow_entries[n], &m->pos);
-        h = func_00214358f(&m->pos, 0, 0.5f);
+        h = ProbeGroundHeight(&m->pos, 0, 0.5f);
         if (CollType()) {
             n = ground_shadow_count;
             e = &ground_shadow_entries[n];
@@ -1043,8 +1028,6 @@ extern short hit_damage_by_reaction_class;
 extern float hit_push_scale_table[][8];
 extern unsigned char hit_reaction_table[][4];
 extern Q_25a478 *GetFlaggedPvarWord_q(void *) __asm__("func_L00_0025D390");
-
-extern void vec_set_length_xy(float *, float *, float);
 
 /* Picks a moby's animation/reaction index from its state and input flags. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/gameplay_entities_00259710.c, FUN_L00_0025a478. */
 int ComputeHitResponse(O_25a478 *obj, P_25a478 *p, Q_25a478 *q, unsigned int flags, int *out, float *fp, int *kp,
@@ -1331,8 +1314,6 @@ typedef struct {
     float x, y, z, w;
 } Vc0 __attribute__((aligned(16)));
 
-extern float vec_length_xy(void *);
-
 /* Vertical launch speed to reach b from a at the given ground speed and gravity. */
 float jump_speed_4318(float *a, float *b, float *out, float speed, float g) {
     Vc0 d;
@@ -1347,20 +1328,11 @@ float jump_speed_4318(float *a, float *b, float *out, float speed, float g) {
     }
     return -((a[2] - b[2]) + g * (t * t) * 0.5f) / t;
 }
-extern void func_L00_00254218(void *, int, int);
-extern void f_vadd_BCF8(void *, void *, void *) __asm__("func_001F9BD8");
-extern void f_vsub_BCF8(void *, void *, void *) __asm__("func_001F9BF0");
-extern void f_vscale_BCF8(float, void *, void *) __asm__("func_001F9C30");
-extern void func_001F9C48(float, void *, void *);
 
-extern float f_vlen_BCF8(void *) __asm__("func_001F9CB8");
-extern float f_sqrt_BCF8(float) __asm__("func_001F9B50");
-extern void f_vrot_BCF8(void *, void *, void *) __asm__("func_001F9EC0");
-extern void func_L00_001FF328(float, void *, void *);
-extern float f_cos_BCF8(float) __asm__("func_001F9F90");
-extern float f_sin_BCF8(float) __asm__("func_001F9FA8");
-extern float f_randf_BCF8(float, float) __asm__("func_002140F8");
-extern float f_randang_BCF8(void) __asm__("func_00214158");
+extern void f_vscale_BCF8(float, void *, void *) __asm__("func_001F9C30");
+extern void scale_vector_v(float, void *, void *) __asm__("func_001F9C48");
+
+extern void divide_vector_xyz_v(float, void *, void *) __asm__("func_L00_001FF328");
 
 /* Scatters up to MAXIMUM points over the volumes listed in the moby class's
    shape table (spheres, discs, capsules), picked by volume weight; returns how
@@ -1414,12 +1386,12 @@ int func_L00_0025BCF8_r(float density, unsigned char *entity, int maximum, Vec4 
                         case SHAPE_INDEXED_CENTER_SPHERE: {
                             if (type < 2) {
                                 qcopy(&first, (void *)((entry + 0x10)));
-                                scale_vector(((Moby *)entity)->scale * 0.0009765625f, &first, &first);
+                                scale_vector_v(((Moby *)entity)->scale * 0.0009765625f, &first, &first);
                                 radius = first.f[3];
                             } else {
                                 qcopy(&first, (void *)((0x70000000 + (*(int *)list << 4))));
                                 qcopy(&second, (void *)((entry + 0x10)));
-                                f_vadd_BCF8(&first, &first, &second);
+                                FastVecAdd(&first, &first, &second);
                                 f_vscale_BCF8(((Moby *)entity)->scale * 0.0009765625f, &first, &first);
                                 radius = ((Moby *)entity)->scale;
                                 radius = *(float *)(list + 8) * radius * 0.0009765625f;
@@ -1443,8 +1415,8 @@ int func_L00_0025BCF8_r(float density, unsigned char *entity, int maximum, Vec4 
                                               (void *)(0x70000000 + (*(short *)list << 4)));
                             sceVu0ScaleVector(((Moby *)entity)->scale * 0.0009765625f, &second,
                                               (void *)(0x70000000 + (*(short *)(list + 2) << 4)));
-                            f_vsub_BCF8(&third, &first, &second);
-                            radius = f_vlen_BCF8(&third);
+                            FastVecSub(&third, &first, &second);
+                            radius = FastVecLength(&third);
                             extent = *(float *)(list + 8) * ((Moby *)entity)->scale * 0.0009765625f;
                             weights[count] = extent * 1.5707964f * extent * radius;
                             break;
@@ -1463,7 +1435,7 @@ int func_L00_0025BCF8_r(float density, unsigned char *entity, int maximum, Vec4 
     if (maximum < limit)
         limit = maximum;
     for (emitted = 0; emitted < limit; emitted++) {
-        random = f_randf_BCF8(0.0f, total);
+        random = random_float_between(0.0f, total);
         for (chosen = 0; chosen < count; chosen++) {
             if (random < weights[chosen])
                 break;
@@ -1482,20 +1454,20 @@ int func_L00_0025BCF8_r(float density, unsigned char *entity, int maximum, Vec4 
                 } else {
                     qcopy(&first, (void *)((0x70000000 + (*(int *)(entry + 4) << 4))));
                     qcopy(&second, (void *)((entry + 0x10)));
-                    f_vadd_BCF8(&first, &first, &second);
+                    FastVecAdd(&first, &first, &second);
                     f_vscale_BCF8(((Moby *)entity)->scale, &first, &first);
                     extent = *(float *)(entry + 0xc) * ((Moby *)entity)->scale;
                 }
                 extent *= 0.0009765625f;
-                divide_vector_xyz(1024.0f, &first, &first);
+                divide_vector_xyz_v(1024.0f, &first, &first);
                 for (;;) {
-                    second.f[0] = f_randf_BCF8(-extent, extent);
-                    second.f[1] = f_randf_BCF8(-extent, extent);
-                    second.f[2] = f_randf_BCF8(-extent, extent);
-                    if (f_vlen_BCF8(&second) <= extent) {
-                        f_vadd_BCF8(&second, &second, &first);
-                        f_vrot_BCF8(&second, &second, &((Moby *)entity)->rot_row0);
-                        f_vadd_BCF8(&out[emitted], &second, &((Moby *)entity)->pos);
+                    second.f[0] = random_float_between(-extent, extent);
+                    second.f[1] = random_float_between(-extent, extent);
+                    second.f[2] = random_float_between(-extent, extent);
+                    if (FastVecLength(&second) <= extent) {
+                        FastVecAdd(&second, &second, &first);
+                        matrix_mul_vec3(&second, &second, &((Moby *)entity)->rot_row0);
+                        FastVecAdd(&out[emitted], &second, &((Moby *)entity)->pos);
                         break;
                     }
                 }
@@ -1507,18 +1479,18 @@ int func_L00_0025BCF8_r(float density, unsigned char *entity, int maximum, Vec4 
                 f_vscale_BCF8(((Moby *)entity)->scale, &first, &first);
                 radius = first.f[3] * ((Moby *)entity)->scale;
                 extent = *(float *)(entry + 4) * ((Moby *)entity)->scale;
-                divide_vector_xyz(1024.0f, &first, &first);
+                divide_vector_xyz_v(1024.0f, &first, &first);
                 radius *= 0.0009765625f;
                 extent *= 0.0009765625f;
-                weight = f_randf_BCF8(0.0f, radius * radius);
-                weight = f_sqrt_BCF8(weight);
-                random = f_randf_BCF8(0.0f, extent);
-                angle = f_randang_BCF8();
-                second.f[0] = f_cos_BCF8(angle) * weight;
-                second.f[1] = f_sin_BCF8(angle) * weight;
+                weight = random_float_between(0.0f, radius * radius);
+                weight = vec_length(weight);
+                random = random_float_between(0.0f, extent);
+                angle = random_angle_radians();
+                second.f[0] = FastCos(angle) * weight;
+                second.f[1] = FastSin(angle) * weight;
                 second.f[2] = random;
-                f_vadd_BCF8(&second, &second, &((Moby *)entity)->pos);
-                f_vadd_BCF8(&out[emitted], &first, &second);
+                FastVecAdd(&second, &second, &((Moby *)entity)->pos);
+                FastVecAdd(&out[emitted], &first, &second);
                 break;
             }
             case SHAPE_ENDPOINT_SEGMENT_WITH_BALL_OFFSET: {
@@ -1526,21 +1498,21 @@ int func_L00_0025BCF8_r(float density, unsigned char *entity, int maximum, Vec4 
                 list = entry + 4;
                 sceVu0ScaleVector(((Moby *)entity)->scale, &first, (void *)(0x70000000 + (*(short *)list << 4)));
                 sceVu0ScaleVector(((Moby *)entity)->scale, &second, (void *)(0x70000000 + (*(short *)(list + 2) << 4)));
-                f_vsub_BCF8(&third, &second, &first);
-                weight = f_randf_BCF8(0.0f, 1.0f);
+                FastVecSub(&third, &second, &first);
+                weight = random_float_between(0.0f, 1.0f);
                 f_vscale_BCF8(weight, &third, &third);
-                f_vadd_BCF8(&fourth, &third, &first);
-                divide_vector_xyz(1024.0f, &fourth, &fourth);
+                FastVecAdd(&fourth, &third, &first);
+                divide_vector_xyz_v(1024.0f, &fourth, &fourth);
                 extent = *(float *)(entry + 0xc) * ((Moby *)entity)->scale;
                 extent = extent * 0.0009765625f;
                 do {
-                    fifth.f[0] = f_randf_BCF8(-extent, extent);
-                    fifth.f[1] = f_randf_BCF8(-extent, extent);
-                    fifth.f[2] = f_randf_BCF8(-extent, extent);
-                } while (!(f_vlen_BCF8(&fifth) <= extent));
-                f_vadd_BCF8(&fifth, &fifth, &fourth);
-                f_vrot_BCF8(&fifth, &fifth, &((Moby *)entity)->rot_row0);
-                f_vadd_BCF8(&out[emitted], &fifth, &((Moby *)entity)->pos);
+                    fifth.f[0] = random_float_between(-extent, extent);
+                    fifth.f[1] = random_float_between(-extent, extent);
+                    fifth.f[2] = random_float_between(-extent, extent);
+                } while (!(FastVecLength(&fifth) <= extent));
+                FastVecAdd(&fifth, &fifth, &fourth);
+                matrix_mul_vec3(&fifth, &fifth, &((Moby *)entity)->rot_row0);
+                FastVecAdd(&out[emitted], &fifth, &((Moby *)entity)->pos);
                 break;
             }
         }
@@ -1548,8 +1520,6 @@ int func_L00_0025BCF8_r(float density, unsigned char *entity, int maximum, Vec4 
     return limit;
 }
 LINKER_REMNANT("asm/overlays", func_L00_0025C488);
-
-extern float ProbeGroundHeight_f(void *, int, float) __asm__("func_00214358");
 
 typedef struct O_25b440 {
     u8 pad00[0x10];
@@ -1628,7 +1598,7 @@ int update_arc_motion(char *m, char *p) {
             vec = moving_object->pos.f;
             moving_object->pos.f[2] += arc_motion_state->f10;
             arc_motion_state->f10 = arc_motion_state->f10 - arc_motion_state->f1C;
-            ground_height = ProbeGroundHeight_f(vec, 0, 0.5f);
+            ground_height = ProbeGroundHeight(vec, 0, 0.5f);
             if (moving_object->pos.f[2] <= ground_height) {
                 moving_object->pos.f[2] = ground_height;
                 arc_motion_state->state = WAIT_AFTER_GROUND_CLAMP;
@@ -1750,7 +1720,7 @@ float SpringAngle(float *p, float *v, int n, float x, float b, float c, float d)
     }
     return r;
 }
-extern float ApproachValue(float *p, float target, float maxstep);
+
 extern float step_angle_toward_target(float *p, int n, float x, float y);
 
 /* Steer *p toward target a with velocity *v, braking near the target. */
@@ -1844,7 +1814,6 @@ float compute_transformed_delta_component(void *a, void *b, void *c, int d) {
 typedef struct {
     int a[4];
 } Vq __attribute__((aligned(16)));
-extern void vec_scale_to_length(void *, void *, float);
 
 /* Removes s times the projection of b onto the direction c from b, into a. */
 void subtract_homogeneous_scaled_vector_xyz(void *a, void *b, void *c, float s) {
@@ -1865,7 +1834,6 @@ int GetFlaggedPvarWord(char *m) {
     return *(int *)(((char *)((Moby *)m)->pvars));
 }
 INCLUDE_ASM("asm/overlays", func_L00_0025D3A0);
-extern int generate_random_points_from_shape_entries(void *, int, void *, void *, float);
 
 extern int rand_range(int, int);
 
@@ -1999,7 +1967,7 @@ int mine_fall(char *moby, struct FallState *st) {
 
     qcopy(v10, &((Moby *)moby)->pos);
     v10[2] = v10[2] + st->unk_28;
-    f21 = func_00214358f(v10, 0, 0.5f);
+    f21 = ProbeGroundHeight(v10, 0, 0.5f);
     if (CollType() == 0) {
         if (st->unk_5C == 0.0f && f21 <= v10[2] && v10[2] + st->vel_z < f21) {
             st->unk_5C = 1.0f;
@@ -2112,7 +2080,7 @@ int mine_fall(char *moby, struct FallState *st) {
         coll_line_p(v0, v20, 36, moby, 0);
         qcopy(v20, &collision_hit_point);
     }
-    if (coll_sphere(v20, IntToFloat(st->unk_20) * sc, 36, moby) != 0) {
+    if (coll_sphere_v(v20, IntToFloat(st->unk_20) * sc, 36, moby) != 0) {
         flags |= 2;
         g = &coll_resolved_pos;
         qcopy(((char *)&((Moby *)moby)->pos), g);
@@ -2162,10 +2130,7 @@ void copy_hero_moby_field_38(S *p, s64 v) {
     v = (*(S **)&g_hero_moby[0])->v;
     p->v = v;
 }
-extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
-extern f32 FastAbsF_r(f32) __asm__("func_001F9B88");
-extern void FastVecScale_r(void *, void *, f32) __asm__("func_001F9C30");
-extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
+
 /* Per-component adjustment of v against src: for each of the three components of v that is negative it recomputes v through the vector helpers. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/math_rotations_0025d238.c, FUN_L00_0025d238. */
 void clip_negative_segment_endpoint_xyz(Vec4 *src, Vec4 *v) {
     Vec4 t0, t1;
@@ -2178,17 +2143,15 @@ void clip_negative_segment_endpoint_xyz(Vec4 *src, Vec4 *v) {
     p1 = t1.f;
     for (i = 2; i >= 0; i--) {
         if (*pv < 0.0f) {
-            FastVecSub_r(b, v, a);
-            FastVecScale_r(b, b, FastAbsF_r((*p0 - 0.1f) / *p1));
-            FastVecAdd_r(v, a, b);
+            FastVecSub(b, v, a);
+            FastVecScale(b, b, FastAbsF((*p0 - 0.1f) / *p1));
+            FastVecAdd(v, a, b);
         }
         pv++;
         p1++;
         p0++;
     }
 }
-
-extern void get_moby_color(void *, void *, void *, void *);
 
 /* Re-rolls a counter from its range (or picks three color bytes) each time the previous one has run out. */
 void RerollEffectCounter(void *m, short *p) {
@@ -2212,7 +2175,6 @@ void RerollEffectCounter(void *m, short *p) {
         *((unsigned char *)p + 6) = (unsigned char)c2;
     }
 }
-extern void set_moby_color(void *, int, int, int);
 
 /* Steps a two-phase colour fade record and hands the current colour to the caller's setter. */
 void StepColorFade(void *a, unsigned char *s) {
@@ -2365,8 +2327,6 @@ typedef struct {
     int a[4];
 } V __attribute__((aligned(16)));
 
-extern void vec_distance_xy(V *, V *);
-
 extern float vec_distance_xy_r(V *, V *) __asm__("func_001F9D48");
 extern float FastVecDist_r(V *, V *) __asm__("func_001F9D10");
 /* Distance from a to b; XY only when their heights differ by less than r, else full 3D. */
@@ -2422,7 +2382,7 @@ void project_level_path_point_onto_segment(float *out, float *v, float *a, float
 typedef int u128_ED30 __attribute__((mode(TI)));
 extern float project_level_path_point_onto_segment_f(void *, void *, void *, void *) __asm__("func_L00_0025EB58");
 extern float vec_distance_xy_f(void *, void *) __asm__("func_001F9D48");
-extern void LerpVec4(void *, void *, void *, float);
+
 extern float DistanceWithHeightTolerance_f(void *, void *, float) __asm__("func_L00_0025EAC8");
 
 /* Nearest point on the segment a-b to p (clamped), returned with the distance result. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/math_rotations_0025d238.c, FUN_L00_0025dcd8. */
@@ -2467,7 +2427,7 @@ float resolve_level_path_segment_point(u128_ED30 *out, u128_ED30 *p, u128_ED30 *
         o++;
     } while (i < 3);
     if (i < 3) {
-        if (FastVecDist_f(out, a) < FastVecDist_f(out, b)) {
+        if (FastVecDist(out, a) < FastVecDist(out, b)) {
             qcopy(out, a);
         } else {
             qcopy(out, b);
@@ -2573,7 +2533,6 @@ s32 find_nearest_path_point(s32 *path, OvlQuad *point, OvlQuad *nearest, s32 *se
     return 1;
 }
 LINKER_REMNANT("asm/overlays", func_L00_0025F360);
-extern f32 split_float_fraction(void *, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/math_rotations_0025d238.c, FUN_L00_0025e310. */
 f32 normalize_angle(f32 a) {
@@ -2656,30 +2615,25 @@ extern char D_L00_001B0620[];
 extern S6_25F4A8 color_swapped_burst_colors_r __asm__("D_L00_001E93B0");
 extern S6_25F4A8 color_swapped_burst_fade_colors_r __asm__("D_L00_001E93C8");
 extern int D_L00_0016007C MACRO_ADDR;
-extern int scale_ticks_r(int) __asm__("func_001F9850");
-extern float random_float_between_r(float, float) __asm__("func_002140F8");
-extern float random_angle_radians_r(void) __asm__("func_00214158");
-extern float IntToFloat_r(int) __asm__("func_001FA888");
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern int random_integer_below_r(int) __asm__("func_002140B0");
-extern void BuildSphericalOffset_r(void *, float, float, float) __asm__("func_00215C00");
+
 extern unsigned swap_packed_color_channels_r(unsigned, int) __asm__("func_L00_0025D140");
 extern int rand_range_r(int, int) __asm__("func_L00_00258BC8");
 extern void initialize_hit_descriptor_r(void *, void *, int, float) __asm__("func_L00_0025A890");
 extern int coll_sphere_mobys_r2(float, void *, int, void *, void *) __asm__("func_L00_001F2BE8");
-extern void *func_L00_0026CA10(void *, void *, int, int, int, int, int, int, float);
-extern void FastVecSub_r2(void *, void *, void *) __asm__("func_001F9BF0");
-extern float FastVecLength_r(void *) __asm__("func_001F9CB8");
+extern void *spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns_v(void *, void *, int, int, int, int,
+                                                                                 int, int,
+                                                                                 float) __asm__("func_L00_0026CA10");
+
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
-extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
-extern void clamp_vec_length_r(void *, void *, float) __asm__("func_L00_001FF548");
+
 extern void *SpawnFallingSpark_r(void *, void *, int, int, int) __asm__("func_L00_002B0738");
 extern void PartType11Spawn_r(void *, void *, int, int, float, int, int, int, int, float) __asm__("func_L00_0026B890");
-extern void spawn_particle_alt_9768_r(void *, void *, int, int, int, float) __asm__("func_L00_0026B368");
+
 extern int spawn_glow_particle_r(void *, void *, void *, float, int, int, int, int, int) __asm__("func_L00_002ADBB0");
 extern int FastBSphereCheck_r(void *, float) __asm__("func_L00_00200290");
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
-extern void mine_camera_blast_r(void *, void *, int, int) __asm__("func_L00_002D4CE8");
 
 /* Beam explosion at moby m: a spark burst from a spawn event, optional glow sparks and a flash, with a cam tint. */
 void spawn_explosion(struct Moby *m, void *unused, char *pos, float fA, float fB, int n, int k8, int k9, float fC,
@@ -2721,36 +2675,36 @@ void spawn_explosion(struct Moby *m, void *unused, char *pos, float fA, float fB
             Q_25F4A8 dir;
             float a;
             float b;
-            a = random_float_between_r(0.2617994f, 1.3962634f);
-            b = random_angle_radians_r();
-            BuildSphericalOffset_r(&dir, fF * (random_float_between_r(7.0f, 10.5f) * g_frame_time_r), b, a);
+            a = random_float_between(0.2617994f, 1.3962634f);
+            b = random_angle_radians();
+            BuildSphericalOffset(&dir, fF * (random_float_between(7.0f, 10.5f) * g_frame_time_r), b, a);
             dir.f[2] += g_frame_time_r * 3.0f;
             dist = fF * 40000.0f;
-            spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(
+            spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns_v(
                 pos, &dir, swap_packed_color_channels_r(0x4F007FFF, flag),
                 swap_packed_color_channels_r(0x1F00007F, flag),
-                rand_range_r(scale_ticks_r(0x3C), scale_ticks_r(0x78)) - s18 * 10, 1, -1, -1, dist);
+                rand_range_r(scale_ticks(0x3C), scale_ticks(0x78)) - s18 * 10, 1, -1, -1, dist);
         }
     }
-    FastVecSub_r2(&v0, g_debug_camera, pos);
-    dist = FastVecLength_r(&v0);
+    FastVecSub(&v0, g_debug_camera, pos);
+    dist = FastVecLength(&v0);
     {
         if (s16 != 0) {
             Q_25F4A8 d2;
             Q_25F4A8 rnd;
             int i;
             *(u128_25F4A8 *)&rnd = 0;
-            rnd.f[0] = random_float_between_r(-1.0f, 1.0f);
-            rnd.f[1] = random_float_between_r(-1.0f, 1.0f);
-            rnd.f[2] = random_float_between_r(-1.0f, 1.0f);
+            rnd.f[0] = random_float_between(-1.0f, 1.0f);
+            rnd.f[1] = random_float_between(-1.0f, 1.0f);
+            rnd.f[2] = random_float_between(-1.0f, 1.0f);
             *(u128_25F4A8 *)&d2 = *(u128_25F4A8 *)&rnd;
             if (dist < 14.0f) {
                 v0.f[2] += dist * 0.5f;
                 vec_scale_to_length_r(&d2, &d2, dist / 5.0f * g_frame_time_r);
                 vec_scale_to_length_r(&v0, &v0, (dist + dist) * g_frame_time_r);
-                FastVecAdd_r2(&d2, &d2, &v0);
-                clamp_vec_length_r(&d2, &d2, g_frame_time_r * 10.0f);
-                SpawnFallingSpark_r(pos, &d2, rand_range_r(scale_ticks_r(0x3C), scale_ticks_r(0x5A)), 0, 0);
+                FastVecAdd(&d2, &d2, &v0);
+                clamp_vec_length(&d2, &d2, g_frame_time_r * 10.0f);
+                SpawnFallingSpark_r(pos, &d2, rand_range_r(scale_ticks(0x3C), scale_ticks(0x5A)), 0, 0);
             }
             s16 = s16 - 1;
             if (free_moby_slot_count < 11) {
@@ -2763,18 +2717,18 @@ void spawn_explosion(struct Moby *m, void *unused, char *pos, float fA, float fB
                 float a;
                 float b;
                 int sel;
-                a = random_float_between_r(0.2617994f, 1.3089969f);
-                b = random_angle_radians_r();
-                BuildSphericalOffset_r(&rnd, fF * (random_float_between_r(7.0f, 10.5f) * g_frame_time_r), b, a);
+                a = random_float_between(0.2617994f, 1.3089969f);
+                b = random_angle_radians();
+                BuildSphericalOffset(&rnd, fF * (random_float_between(7.0f, 10.5f) * g_frame_time_r), b, a);
                 rnd.f[2] += g_frame_time_r + g_frame_time_r;
                 sel = 0;
                 if (i % 3 == 0)
                     sel = 1;
-                SpawnFallingSpark_r(pos, &rnd, rand_range_r(scale_ticks_r(0x3C), scale_ticks_r(0x5A)), sel, 0);
+                SpawnFallingSpark_r(pos, &rnd, rand_range_r(scale_ticks(0x3C), scale_ticks(0x5A)), sel, 0);
             }
         }
     }
-    if (dist < IntToFloat_r(k8) * 2.0f) {
+    if (dist < IntToFloat(k8) * 2.0f) {
         cnt4 = truncate_float_to_s32_r(dist) / 2;
     } else {
         cnt4 = k8;
@@ -2788,18 +2742,18 @@ void spawn_explosion(struct Moby *m, void *unused, char *pos, float fA, float fB
             S6_25F4A8 c0;
             S6_25F4A8 c1;
             float sp;
-            sp = random_float_between_r(8.0f, 10.0f) * g_frame_time_r;
+            sp = random_float_between(8.0f, 10.0f) * g_frame_time_r;
             c0 = color_swapped_burst_colors_r;
             c1 = color_swapped_burst_fade_colors_r;
             sp = sp - t * g_frame_time_r;
             sp = sp * fF;
-            PartType11Spawn_r(pos, &vb, swap_packed_color_channels_r(c0.v[random_integer_below_r(6)], flag),
-                              swap_packed_color_channels_r(c1.v[random_integer_below_r(6)], flag), fF * 400000.0f,
-                              rand_range_r(scale_ticks_r(0xF), scale_ticks_r(0x14)) - s18 * 3,
-                              rand_range_r(scale_ticks_r(0x1E), scale_ticks_r(0x2D)) - s18 * 5, 0, 0, sp);
+            PartType11Spawn_r(pos, &vb, swap_packed_color_channels_r(c0.v[random_integer_below(6)], flag),
+                              swap_packed_color_channels_r(c1.v[random_integer_below(6)], flag), fF * 400000.0f,
+                              rand_range_r(scale_ticks(0xF), scale_ticks(0x14)) - s18 * 3,
+                              rand_range_r(scale_ticks(0x1E), scale_ticks(0x2D)) - s18 * 5, 0, 0, sp);
             PartType11Spawn_r(pos, &vb, 0x7FFFFFFF, 0xFFFFFF, fF * 400000.0f,
-                              rand_range_r(scale_ticks_r(5), scale_ticks_r(0xA)) - s18 * 2,
-                              rand_range_r(scale_ticks_r(0xF), scale_ticks_r(0x14)) - s18 * 3, 0, 0, sp * 0.5f);
+                              rand_range_r(scale_ticks(5), scale_ticks(0xA)) - s18 * 2,
+                              rand_range_r(scale_ticks(0xF), scale_ticks(0x14)) - s18 * 3, 0, 0, sp * 0.5f);
         }
     }
     {
@@ -2812,15 +2766,15 @@ void spawn_explosion(struct Moby *m, void *unused, char *pos, float fA, float fB
             int p1;
             int p2;
             *(u128_25F4A8 *)&rnd = 0;
-            rnd.f[0] = random_float_between_r(-1.0f, 1.0f);
-            rnd.f[1] = random_float_between_r(-1.0f, 1.0f);
-            rnd.f[2] = random_float_between_r(-1.0f, 1.0f);
+            rnd.f[0] = random_float_between(-1.0f, 1.0f);
+            rnd.f[1] = random_float_between(-1.0f, 1.0f);
+            rnd.f[2] = random_float_between(-1.0f, 1.0f);
             *(u128_25F4A8 *)&vel = *(u128_25F4A8 *)&rnd;
-            vec_scale_to_length_r(&vel, &vel, fF * (random_float_between_r(0.0f, 3.0f) * g_frame_time_r));
-            p1 = swap_packed_color_channels_r(c0.v[random_integer_below_r(6)], flag);
-            p2 = swap_packed_color_channels_r(c1.v[random_integer_below_r(6)], flag);
-            spawn_particle_alt_9768_r(pos, &vel, p1, p2,
-                                      rand_range_r(scale_ticks_r(0x1E), scale_ticks_r(0x2D)) - s18 * 5, 200000.0f);
+            vec_scale_to_length_r(&vel, &vel, fF * (random_float_between(0.0f, 3.0f) * g_frame_time_r));
+            p1 = swap_packed_color_channels_r(c0.v[random_integer_below(6)], flag);
+            p2 = swap_packed_color_channels_r(c1.v[random_integer_below(6)], flag);
+            spawn_particle_alt_9768(pos, &vel, p1, p2, rand_range_r(scale_ticks(0x1E), scale_ticks(0x2D)) - s18 * 5,
+                                    200000.0f);
         }
     }
     if (m != 0 && fC > 0.0f) {
@@ -2835,13 +2789,13 @@ void spawn_explosion(struct Moby *m, void *unused, char *pos, float fA, float fB
         }
         u = r3 & 0xFF;
         if (cpu_frame_load < 0.95f && fE < dist) {
-            spawn_glow_particle_r(m, pos, &vb, fC, scale_ticks_r(0x10), r1, 0x96, r2, 0x20);
-            spawn_glow_particle_r(m, pos, &vb, fC, scale_ticks_r(0x16), u, 0x7F, 0x50, 0x20);
+            spawn_glow_particle_r(m, pos, &vb, fC, scale_ticks(0x10), r1, 0x96, r2, 0x20);
+            spawn_glow_particle_r(m, pos, &vb, fC, scale_ticks(0x16), u, 0x7F, 0x50, 0x20);
         }
-        spawn_glow_particle_r(m, pos, &vb, fC, scale_ticks_r(0x1E), u, 0x7F, 0, 0x30);
+        spawn_glow_particle_r(m, pos, &vb, fC, scale_ticks(0x1E), u, 0x7F, 0, 0x30);
     }
     if (m != 0 && fD > 0.0f) {
-        spawn_glow_particle_r(m, pos, &vb, fD, scale_ticks_r(0x1B), 0xFF, 0xFF, 0xFF, 0x20);
+        spawn_glow_particle_r(m, pos, &vb, fD, scale_ticks(0x1B), 0xFF, 0xFF, 0xFF, 0x20);
     }
     {
         if (k11) {
@@ -2850,7 +2804,7 @@ void spawn_explosion(struct Moby *m, void *unused, char *pos, float fA, float fB
             v.f[3] = 2.0f;
             if (FastBSphereCheck_r(&v, 10.0f) != -1) {
                 ((Cam *)player_camera_r)->f160 = (dist < 20.0f) ? 0.4f - dist * 0.0175f : 0.050000012f;
-                ((Cam *)player_camera_r)->f168 = scale_ticks_r(0x19);
+                ((Cam *)player_camera_r)->f168 = scale_ticks(0x19);
             }
         }
     }
@@ -2873,9 +2827,9 @@ void spawn_explosion(struct Moby *m, void *unused, char *pos, float fA, float fB
                     ((Fl *)beam_explosion_blast_params)->f[8] = 15.0f;
                 }
                 if (flag) {
-                    mine_camera_blast_r(beam_explosion_alt_color_blast_params, pos, 0, 0);
+                    mine_camera_blast(beam_explosion_alt_color_blast_params, pos, 0, 0);
                 } else {
-                    mine_camera_blast_r(beam_explosion_blast_params, pos, 0, 0);
+                    mine_camera_blast(beam_explosion_blast_params, pos, 0, 0);
                 }
             }
         }
@@ -2892,8 +2846,6 @@ extern S6y10_60108 color_swapped_burst_colors_r2 __asm__("D_L00_001E93B0");
 extern S6y10_60108 color_swapped_burst_fade_colors_r2 __asm__("D_L00_001E93C8");
 extern CameraSystem player_camera_r2 __asm__("D_L00_00166D80");
 extern float blast_spawn_params[] NOT_SDA;
-
-extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
 
 extern int FastBSphereCheck_r2(void *, float) __asm__("func_L00_00200290");
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
@@ -2958,7 +2910,6 @@ extern S6y10 color_swapped_burst_colors;
 extern S6y10 color_swapped_burst_fade_colors;
 
 extern unsigned swap_packed_color_channels(unsigned, int);
-extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
 
 // Spawn three bursts of coloured sparks around a point, then optional glow pieces and a flash.
 void spawn_color_swapped_explosion_burst(char *a, char *b, float sc, float fl) {
@@ -3009,7 +2960,6 @@ void spawn_color_swapped_explosion_burst(char *a, char *b, float sc, float fl) {
     }
 }
 
-extern void vec_scale_to_length(void *, void *, float);
 /* Shortens vector a to length x when it is longer. */
 void ClampVectorLength(void *a, float x) {
     if (x < FastVecLength(a)) {
@@ -3361,7 +3311,7 @@ int RotateWithMoby(int unused, char *m, char *a, void *b, char *c, void *d) {
     matrix_to_euler(t1, d);
     return 1;
 }
-extern void copy_matrix_rotation(void *, void *);
+
 extern int convert_pose_to_reference_local(int x, char *o, float *a, float *c, float *b, float *d);
 extern void ClampVectorLength(void *a, float x);
 

@@ -11,6 +11,7 @@
 #include "structs/pad.h"
 #include "game/render/vuchain.h"
 #include "game/audio/music.h"
+#include "game/audio/sound.h"
 
 /*
  * help.cpp in the original source; text 0x1FDF10-0x1FF668.
@@ -98,7 +99,6 @@ extern s32 pal_mode MACRO_ADDR;
 extern s32 game_frame_counter MACRO_ADDR;
 extern s32 map_label_text_y_offset SDATA(map_label_text_y_offset);
 
-extern f32 vec_length_xy(f32 *);
 extern void *msg_string(s32);
 
 /* Map state of a level: 3 when visited, 2 when available, else 0. */
@@ -268,7 +268,6 @@ extern int D_0015EF1D MACRO_ADDR;
 extern int D_0015EF1C MACRO_ADDR;
 #define D_0015EF1D_b (*(unsigned char *)&gHelpDeskText)
 #define D_0015EF1C_b (*(unsigned char *)&gHelpDeskVoice)
-extern int PlayBankSound(int, int, int);
 
 extern int frame_size;
 
@@ -318,8 +317,6 @@ void link_localized_display_text(void) {
 
 /* Retail carries 4 bytes of inter-function padding after this endlabel. */
 __asm__(".section .text\n\tnop\n");
-
-extern int func_001F9908(int *arg0);
 
 extern int pad_held;
 extern int pad0_pressed;
@@ -551,7 +548,7 @@ void Help_Update(void) {
     }
 }
 
-extern long func_001F4868(int);
+extern long GetEffectTex_v(int) __asm__("func_001F4868");
 
 /* Help_DrawPrompt: sets the prompt box's +0x18/+0x1C sizes to 0x20,
    draws its frame (DrawUIFrame, a 0x40 box around +0x14/+0x10, 0x60
@@ -577,7 +574,7 @@ void Help_DrawPrompt(void) {
         alpha = 0x80;
     }
     DrawTexturedQuad(((HelpState *)g_help_state)->pad[2] - 0x20, ((HelpState *)g_help_state)->pad[3] - 0x20, 0x40, 0x40,
-                     0, 0, 0x40, 0x40, (alpha << 24) | 0x808080, GetEffectTex(4));
+                     0, 0, 0x40, 0x40, (alpha << 24) | 0x808080, GetEffectTex_v(4));
 }
 
 __asm__(".section .text\n\tnop\n");
@@ -630,7 +627,7 @@ void draw_help(void) {
                     alpha = 0;
                 }
                 DrawTexturedQuad(((HelpState *)g_help_state)->pad[2] - 0x20, ((HelpState *)g_help_state)->pad[3] - 0x20,
-                                 0x40, 0x40, 0, 0, 0x40, 0x40, (alpha << 24) | 0x808080, GetEffectTex(4));
+                                 0x40, 0x40, 0, 0, 0x40, 0x40, (alpha << 24) | 0x808080, GetEffectTex_v(4));
             }
             break;
         case 4:

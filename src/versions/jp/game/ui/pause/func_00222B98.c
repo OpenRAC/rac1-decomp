@@ -2,8 +2,8 @@ int draw_prompt_box(char *arg0) {
     char *text;
     int v;
 
-    VU1_addGSregister_l(0x42, 0x44);
-    VU1_addGSregister_l(0x47, 0x2004B);
+    VU1_addGSregister(0x42, 0x44);
+    VU1_addGSregister(0x47, 0x2004B);
     SetupGifPaging(0);
     text = str_error_text;
     v = menu_system_save_prompt_kind;
@@ -11,10 +11,10 @@ int draw_prompt_box(char *arg0) {
         case 0:
         case 1:
         case 2:
-            text = msg_string_id(0x4FB4);
+            text = msg_string(0x4FB4);
             break;
         case 3:
-            text = msg_string_id(0x4FB6);
+            text = msg_string(0x4FB6);
             break;
     }
     {

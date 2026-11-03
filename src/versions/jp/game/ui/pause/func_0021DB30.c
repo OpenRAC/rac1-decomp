@@ -26,7 +26,7 @@ s32 sound_options_menu(struct SoundMenu *menu) {
         menu->selected_option = (menu->selected_option + 1) % 3;
     }
     if ((menu->selected_option != previous_selection) || (menu_system_r5.current->pending_focus != 0)) {
-        func_0022ED80_1DB30(1, 0x11, menu->sound_owner);
+        Moby_PlaySound(1, 0x11, menu->sound_owner);
         if (menu->flags & 0x20) {
             selected_level_index_r2 = menu_level_indices_r[menu->selected_option];
         }
@@ -62,8 +62,8 @@ s32 sound_options_menu(struct SoundMenu *menu) {
         if (menu->selected_option == 2) {
             playback_mode_r = !playback_mode_r;
         }
-        func_0012E380_1DB30(!playback_mode_r);
-        func_0022ED80_1DB30(0, 0x11, menu->sound_owner);
+        snd_SetPlaybackMode(!playback_mode_r);
+        Moby_PlaySound(0, 0x11, menu->sound_owner);
     }
     return 0;
 }

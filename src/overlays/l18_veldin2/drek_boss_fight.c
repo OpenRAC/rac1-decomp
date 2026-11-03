@@ -38,6 +38,7 @@
 #include "asm_functions/level_18.h"
 #include "overlays/l18_veldin2/deplanetizer_and_gadgebots.h"
 #include "overlays/l18_veldin2/flagged_pvar_word.h"
+#include "overlays/shared/effect_particle_updates.h"
 extern Hero g_hero;
 extern char voice_pool[];
 
@@ -99,10 +100,8 @@ extern float veldin2_moby_group_debris_scale SDATA(veldin2_moby_group_debris_sca
 extern float veldin2_zero_vec[] MACRO_ADDR;
 
 extern void apply_linked_moby_relative_transforms_v(char *, void *, int) __asm__("func_L12_0027C368");
-extern float ApproachWithVelocity(float, float, float, float, float *, float *);
-extern int fast_dec_timer(int *);
+extern float ApproachWithVelocity_v(float, float, float, float, float *, float *) __asm__("func_00214D88");
 
-extern void lerp_vector(void *, void *, void *, float);
 extern int func_001FA898(float);
 
 extern void spawn_debris_moby_v(void *, void *, unsigned int, int, float, float, float, float,
@@ -153,9 +152,9 @@ void update_linked_moby_group_transform_and_fall(unsigned char *moby) {
                 unsigned char *p;
                 if (veldin2_moby_group_move_enabled != 0) {
                     if (d->f330 < 1.5f) {
-                        ApproachWithVelocity(1.5f, a1, a2, a3, &d->f330, &d->f334);
+                        ApproachWithVelocity_v(1.5f, a1, a2, a3, &d->f330, &d->f334);
                     } else {
-                        ApproachWithVelocity(2.0f, b1, b2, b3, &d->f330, &d->f334);
+                        ApproachWithVelocity_v(2.0f, b1, b2, b3, &d->f330, &d->f334);
                     }
                 }
                 if (d->f330 > veldin2_moby_group_debris_progress && d->f344 == 0.0f) {
@@ -311,8 +310,6 @@ void mark_block_entries_within_transform_xy_bounds(int a, int b) {
 extern float g_frame_time MACRO_ADDR;
 extern void draw_glow_moby_layered_quads(struct Moby *);
 
-extern float ApproachValue(float *p, float target, float maxstep);
-
 /* Glow moby update: queues its quad draw, loops its sound, fades out once its linked moby opens. */
 void update_glow_moby_state_and_voice(unsigned char *m) {
     enum { GLOW_INITIALIZE = 0, GLOW_ACTIVE = 1, GLOW_FADE_OUT = 2 };
@@ -382,10 +379,6 @@ extern float veldin2_glow_quad_uvs[4][2];
 typedef int Q33D8 __attribute__((mode(TI)));
 extern Q33D8 veldin2_glow_quad_corners[4];
 
-extern int GetEffectTex(int);
-
-extern void draw_world_quad(void *, void *, int);
-
 /* Draws the glow moby's scrolling layered quads, faded by distance from the camera. */
 void draw_glow_moby_layered_quads(struct Moby *moby) {
     struct GeometryQuad_33D8 quads[4];
@@ -452,7 +445,7 @@ extern float veldin2_lift_uv_scroll SDATA(veldin2_lift_uv_scroll);
 extern float veldin2_lift_uv_scroll_speed SDATA(veldin2_lift_uv_scroll_speed);
 extern unsigned char g_hero_field_20a5[];
 extern unsigned char menu_item_enabled_105[];
-extern float ApproachWithVelocity(float, float, float, float, float *, float *);
+extern float ApproachWithVelocity_v(float, float, float, float, float *, float *) __asm__("func_00214D88");
 extern void synchronize_lift_group_height(void *);
 extern void draw_lift_25_quad_mesh(char *);
 extern void draw_lift_38_quad_mesh(char *);
@@ -513,8 +506,8 @@ void update_lift_state_and_queue_draw(unsigned char *m) {
                     menu_item_enabled_105[9] = 1;
                 }
             }
-            ApproachWithVelocity(d->f4, g_frame_time_sq * 4.0f, g_frame_time_sq * 4.0f, g_frame_time * 4.0f,
-                                 (float *)(m + 0x18), (float *)((char *)d + 0x18));
+            ApproachWithVelocity_v(d->f4, g_frame_time_sq * 4.0f, g_frame_time_sq * 4.0f, g_frame_time * 4.0f,
+                                   (float *)(m + 0x18), (float *)((char *)d + 0x18));
             synchronize_lift_group_height(m);
             ((Moby *)m)->command = 1;
             break;
@@ -525,8 +518,8 @@ void update_lift_state_and_queue_draw(unsigned char *m) {
             }
             ((Moby *)m)->command = 2;
             synchronize_lift_group_height(m);
-            ApproachWithVelocity(d->f0, g_frame_time_sq * 4.0f, g_frame_time_sq * 4.0f, g_frame_time * 4.0f,
-                                 (float *)(m + 0x18), (float *)((char *)d + 0x18));
+            ApproachWithVelocity_v(d->f0, g_frame_time_sq * 4.0f, g_frame_time_sq * 4.0f, g_frame_time * 4.0f,
+                                   (float *)(m + 0x18), (float *)((char *)d + 0x18));
             if (FastAbsF(((Moby *)m)->pos.z - d->f0) > 0.1f) {
                 struct Hero *b = &g_hero;
                 if ((unsigned)(b->state.control_mode - 0x11) < 2) {
@@ -603,9 +596,6 @@ extern int lift_mesh_color SDATA(lift_mesh_color);
 extern float veldin2_lift25_uvs[][2];
 extern FRow veldin2_lift25_vertices[];
 extern short veldin2_lift25_quads[][4][2];
-extern int GetEffectTex(int);
-
-extern void draw_world_quad(void *, void *, int);
 
 /* Draws 25 textured quads from the L18 tables, in the moby's frame. */
 void draw_lift_25_quad_mesh(char *moby) {
@@ -888,22 +878,6 @@ extern unsigned char *select_drek_boss_platform_firing_target(char *self);
 extern void spawn_drek_boss_firing_effects(char *moby, void *p);
 /* Defined further down with a typedef the file only declares there: no prototype here. */
 extern void set_drek_boss_relative_aim_yaw();
-extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
-extern void set_ground_height_band(void *);
-
-extern void vec_scale_to_length(void *, void *, float);
-
-extern void EaseManipulatorOffsets(char *, char *, int, float, float);
-extern void func_L00_0025F4A8(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
-                              float, int, int, int, int);
-
-extern int IsFrameWithinWindow(char *, float);
-
-extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
-
-extern float vec_distance_xy(void *, void *);
-
-extern float vec_length_xy(void *);
 
 /* Parameter order as retail sets the arguments up (the floats before the last integers); the definition of
    launch_mine_568_moby_from_list in vendor_002A8400.c lists its float first, with the same registers. */
@@ -1920,8 +1894,8 @@ void drek_final_boss_robot_update(Moby *moby) {
     slow = 0.3f;
     fast = 0.03f;
     d->f3D4 = FastAddRots(d->f3D4, g_frame_time * 3.1415927f);
-    ApproachWithVelocity(d->f3D0 * FastSin(d->f3D4) + d->f3D8, g_frame_time_sq * 4.0f, g_frame_time_sq * 4.0f,
-                         g_frame_time * 4.0f, &d->f3DC, &d->f3E0);
+    ApproachWithVelocity_v(d->f3D0 * FastSin(d->f3D4) + d->f3D8, g_frame_time_sq * 4.0f, g_frame_time_sq * 4.0f,
+                           g_frame_time * 4.0f, &d->f3DC, &d->f3E0);
     moby->pos.z = moby->pos.z + d->f3DC;
     d->f3D8 = 0.0f;
     EaseManipulatorOffsets((char *)moby, d->fC0, 7, g_frame_scale_sq * fast, g_frame_scale_sq * slow);
@@ -1984,14 +1958,6 @@ typedef struct {
     float pos[4];
     char pad40[0x40];
 } L18Node;
-
-extern char *MobyGetHitMessage(void *, int, int);
-extern int ComputeHitResponse(void *, void *, void *, int, void *, void *, int, int);
-extern void RerollEffectCounter(void *m, short *p);
-
-extern void StepColorFade(void *, void *);
-
-extern int FindNearestEligibleMoby(float a, char *m, char *b, int c, int d, int *e, int f);
 
 extern char *create_class_274_ring_effect_v(void *, void *, float) __asm__("func_L18_002DD7D0");
 extern void reset_drek_boss_class_0565_moby_v(void *) __asm__("func_L18_002F30C8");
@@ -2241,7 +2207,7 @@ void update_drek_boss_damage_and_phase_transitions(char *moby) {
         }
     }
 }
-extern float ApproachWithVelocity(float, float, float, float, float *, float *);
+extern float ApproachWithVelocity_v(float, float, float, float, float *, float *) __asm__("func_00214D88");
 
 /* steps a moby's offset vector toward a target, returns whether both settled */
 int advance_drek_boss_planar_position_toward_target(char *moby, float arg, void *x) {
@@ -2257,7 +2223,7 @@ int advance_drek_boss_planar_position_toward_target(char *moby, float arg, void 
     a[2] = v;
     len = FastVecLength(a);
     s = g_frame_time_sq * 10.0f;
-    ApproachWithVelocity(len, s, s, arg, b, &data->f374);
+    ApproachWithVelocity_v(len, s, s, arg, b, &data->f374);
     vec_scale_to_length(a, a, data->f374);
     FastVecAdd(p, p, a);
     if (len < 0.1f) {
@@ -2268,8 +2234,7 @@ int advance_drek_boss_planar_position_toward_target(char *moby, float arg, void 
     }
     return 0;
 }
-extern void ClampVectorLength(void *a, float x);
-extern float vec_distance_xy(void *, void *);
+
 extern char *veldin2_arena_nodes MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float drek_boss_arena_radius_mode_f SDATA(drek_boss_arena_radius_mode_f);
@@ -2327,13 +2292,9 @@ extern f32 D_L18_001623E8_2F7F00 SDATA(D_L18_001623E8);
 extern f32 D_L18_001623EC_2F7F00 SDATA(D_L18_001623EC);
 extern f32 D_L18_00162400_2F7F00 SDATA(D_L18_00162400);
 extern f32 D_L18_00162404_2F7F00 SDATA(D_L18_00162404);
-extern f32 fast_atan2_r(f32, f32) __asm__("func_L00_001FF860");
-extern f32 FastSubRots_r(f32, f32) __asm__("func_001FA790");
-extern f32 FastAddRots_r(f32, f32) __asm__("func_001FA748");
+
 extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-extern f32 FastCos_r(f32) __asm__("func_001F9F90");
-extern f32 FastSin_r(f32) __asm__("func_001F9FA8");
-extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
+
 extern int advance_drek_boss_planar_position_toward_target_r(char *, float, void *) __asm__("func_L18_002F7CD8");
 extern f32 ApproachValue_r(f32 *, f32, f32) __asm__("func_00214D28");
 
@@ -2350,30 +2311,30 @@ void func_L18_002F7F00_r(Moby *moby) {
     f32 speed;
     f32 dist;
 
-    ang = fast_atan2_r(((Hero *)g_hero_r)->motion.pos.f[0] - ((ArenaNode *)veldin2_arena_nodes_r)[v->node].center.f[0],
-                       ((Hero *)g_hero_r)->motion.pos.f[1] - ((ArenaNode *)veldin2_arena_nodes_r)[v->node].center.f[1]);
-    self_ang = fast_atan2_r(v->pos.f[0] - ((ArenaNode *)veldin2_arena_nodes_r)[v->node].center.f[0],
-                            v->pos.f[1] - ((ArenaNode *)veldin2_arena_nodes_r)[v->node].center.f[1]);
-    if (FastSubRots_r(self_ang, ang) < 0.0f)
-        ang = FastAddRots_r(ang, -2.3561945f);
+    ang = fast_atan2(((Hero *)g_hero_r)->motion.pos.f[0] - ((ArenaNode *)veldin2_arena_nodes_r)[v->node].center.f[0],
+                     ((Hero *)g_hero_r)->motion.pos.f[1] - ((ArenaNode *)veldin2_arena_nodes_r)[v->node].center.f[1]);
+    self_ang = fast_atan2(v->pos.f[0] - ((ArenaNode *)veldin2_arena_nodes_r)[v->node].center.f[0],
+                          v->pos.f[1] - ((ArenaNode *)veldin2_arena_nodes_r)[v->node].center.f[1]);
+    if (FastSubRots(self_ang, ang) < 0.0f)
+        ang = FastAddRots(ang, -2.3561945f);
     else
-        ang = FastAddRots_r(ang, 2.3561945f);
-    ang = FastSubRots_r(ang, self_ang);
+        ang = FastAddRots(ang, 2.3561945f);
+    ang = FastSubRots(ang, self_ang);
     if (ang > 0.17453292f)
         ang = 0.17453292f;
     else if (ang < -0.17453292f)
         ang = -0.17453292f;
-    ang = FastAddRots_r(ang, self_ang);
+    ang = FastAddRots(ang, self_ang);
     if (moby->state == 2) {
-        goal.f[0] = FastCos_r(ang) * D_L18_00162400_2F7F00;
-        goal.f[1] = FastSin_r(ang) * D_L18_00162400_2F7F00;
+        goal.f[0] = FastCos(ang) * D_L18_00162400_2F7F00;
+        goal.f[1] = FastSin(ang) * D_L18_00162400_2F7F00;
         goal.f[2] = 0.0f;
     } else {
-        goal.f[0] = FastCos_r(ang) * D_L18_00162404_2F7F00;
-        goal.f[1] = FastSin_r(ang) * D_L18_00162404_2F7F00;
+        goal.f[0] = FastCos(ang) * D_L18_00162404_2F7F00;
+        goal.f[1] = FastSin(ang) * D_L18_00162404_2F7F00;
         goal.f[2] = 0.0f;
     }
-    FastVecAdd_r(&goal, &goal, &((ArenaNode *)veldin2_arena_nodes_r)[v->node].center);
+    FastVecAdd(&goal, &goal, &((ArenaNode *)veldin2_arena_nodes_r)[v->node].center);
     if (vec_distance_xy_r(&v->pos, &((ArenaNode *)veldin2_arena_nodes_r)[v->node].center) >
         D_L18_00162404_2F7F00 + 1.0f) {
         speed = 10.0f;
@@ -2691,7 +2652,6 @@ typedef struct {
     float v[4];
 } __attribute__((aligned(16))) QVec;
 
-extern char *PartType21Spawn(void *pos, void *dir, int c, int d, int n, int k, float f);
 extern int drek_boss_fire_puff_color SDATA(drek_boss_fire_puff_color);
 extern int drek_boss_fire_puff_end_color SDATA(drek_boss_fire_puff_end_color);
 extern int drek_boss_fire_spark_count SDATA(drek_boss_fire_spark_count);

@@ -68,21 +68,12 @@ struct RepositionCycleVars {
     s32 timer; /* 0x0C */
 };
 
-extern void set_ground_height_band(void *);
-
 extern void restore_gadgetron_ceo_non_challenge_environment(char *);
 extern void activate_gadgetron_ceo_challenge_environment(char *);
 
-extern int PlayBankSound(int, int, int);
-
-extern float vec_distance_xy(void *, void *);
-
-extern int fast_dec_timer(void *);
-
 extern int truncate_float_to_s32(float);
-extern float vec_length_xy(void *);
 
-extern void EaseManipulatorOffsets(float, float, void *, void *, int);
+extern void EaseManipulatorOffsets_v(float, float, void *, void *, int) __asm__("func_L00_00263950");
 
 extern unsigned char race_gates_base[], gHaveMorphORay[];
 
@@ -342,8 +333,8 @@ void gadgetron_ceo_update(Moby *m) {
     }
     if (*(unsigned char *)&gCheats_challenge)
         *(float *)((char *)d + 0x150) = 2.75f;
-    EaseManipulatorOffsets(rate * g_frame_scale_sq, head_rate * g_frame_scale_sq, m, d->body, 0);
-    EaseManipulatorOffsets(rate * g_frame_scale_sq, head_rate * g_frame_scale_sq, m, d->head, 1);
+    EaseManipulatorOffsets_v(rate * g_frame_scale_sq, head_rate * g_frame_scale_sq, m, d->body, 0);
+    EaseManipulatorOffsets_v(rate * g_frame_scale_sq, head_rate * g_frame_scale_sq, m, d->head, 1);
 }
 
 extern float kalebo3_hero_fall_state_height MACRO_ADDR;
@@ -418,9 +409,7 @@ void update_two_region_trigger_latch(char *moby) {
 
 extern void initialize_path_walker_group(unsigned char *);
 extern void emit_path_walker_particle(unsigned char *, void *);
-extern void SamplePathAt(void *, float, int, void *, float *, int);
-extern float ApproachValue(float *, float, float);
-extern int FastBSphereCheck(char *, float);
+extern void SamplePathAt_v(void *, float, int, void *, float *, int) __asm__("func_00215CA8");
 
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
@@ -482,7 +471,7 @@ void update_path_walker(unsigned char *m) {
            instruction. A same-width copy (int) is folded away and does not do it. */
             char blocked = playing;
 
-            SamplePathAt(path, d->parameter, 0, m + 0x10, (float *)(m + 0x40), 0);
+            SamplePathAt_v(path, d->parameter, 0, m + 0x10, (float *)(m + 0x40), 0);
             acceleration = path_walker_speed_approach_acceleration * g_frame_time_sq;
             ((Moby *)m)->pos.z += d->height_step;
             d->parameter += d->speed;
@@ -516,7 +505,7 @@ void update_path_walker(unsigned char *m) {
                     if (next < 0.0f) {
                         next += d->period;
                     }
-                    SamplePathAt(path, next, 0, trial, rotation, 1);
+                    SamplePathAt_v(path, next, 0, trial, rotation, 1);
                     trial[2] += height;
                     trial[3] = 2.0f;
                     if (FastBSphereCheck((char *)trial, (float)path_walker_draw_distance) == -1) {
@@ -546,8 +535,6 @@ extern int path_walker_particle_color_end SDATA(path_walker_particle_color_end);
 extern float path_walker_particle_movement_velocity_scale SDATA(path_walker_particle_movement_velocity_scale);
 extern float path_walker_particle_random_velocity_scale SDATA(path_walker_particle_random_velocity_scale);
 extern float path_walker_particle_target_scalar_scale SDATA(path_walker_particle_target_scalar_scale);
-
-extern void vec_scale_to_length(void *, void *, float);
 
 /* Emits a particle near an active moby when the target is close. */
 void emit_path_walker_particle(unsigned char *m, void *v) {
@@ -695,9 +682,6 @@ extern float elevator_height_offset SDATA(elevator_height_offset);
 extern float elevator_height_acceleration SDATA(elevator_height_acceleration);
 extern short elevator_max_speed;
 
-extern float ApproachWithVelocity(float *, float *, float, float, float, float);
-extern void update_entity_matrix(char *, void *, void *, void *);
-
 extern void DrawRingStack(char *);
 
 /* Moves the platform between two heights above its joint, with a particle while it moves. */
@@ -802,7 +786,6 @@ void ElevatorPlatformUpdate(Moby *m) {
     }
 }
 
-extern void draw_world_quad(void *, void *, int);
 extern float elevator_ring_uvs[][2];
 extern short elevator_max_speed, elevator_ring_color_start, elevator_ring_color_end;
 extern short elevator_ring_alpha_blend_b_selector, elevator_ring_alpha_blend_a_selector,
@@ -1071,7 +1054,6 @@ extern int envmap_a_normal_bufs SDATA(envmap_a_normal_bufs);
 extern int envmap_a_color_bufs SDATA(envmap_a_color_bufs);
 extern char envmap_a_bounding_spheres[][16];
 extern char envmap_a_uvs[];
-extern int GetEffectTex(int);
 
 /* Sets up the draw state, then draws the three entries of the level's table. */
 void env_map_a_draw(void) {

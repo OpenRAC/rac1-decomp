@@ -121,9 +121,6 @@ struct FollowCamOrbitB {
 
 extern char hero_globals_base[];
 extern float g_frame_time MACRO_ADDR;
-extern void vec_scale_to_length(void *, void *, float);
-
-extern int func_001F9908(int *);
 
 /* while the countdown value is ready, scatter a spawn by the camera's offset and reroll the delay */
 void emit_hydrodisplacer_effect(Moby *m) {
@@ -233,7 +230,6 @@ extern s32 g_hero_pending_item_2[];
 extern u8 item_available[];
 
 extern void emit_moby_color_cycling_particles_r(void *) __asm__("func_L00_002E1C38");
-extern f32 vec_distance_xy(void *, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002df730.c, FUN_L00_002e03a0. */
 void pilots_helmet_update(M_2e03a0_2e03a0 *m) {
@@ -442,7 +438,7 @@ typedef struct {
 } Q002E3640;
 extern B002E3640 beam_origin_transforms[];
 extern Q002E3640 beam_endpoints[];
-extern void FastMemCopy(void *, void *, int);
+
 /* Finds the slot holding handle id, advances its state word and stores the 0x40-byte matrix and the vector for it. */
 int set_beam_origin_transform_and_endpoint(int id, void *src, void *v) {
     int i;
@@ -510,27 +506,11 @@ extern int beam_light_flags_r[] __asm__("D_L00_00161D28") MACRO_ADDR;
 extern int beam_spark_style_r[] __asm__("D_L00_00161D38") MACRO_ADDR;
 extern int beam_slot_ids_r[] __asm__("D_L00_00161D58") MACRO_ADDR;
 extern float D_L00_00161CC0_2E3700 SDATA(D_L00_00161CC0);
-extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
-extern float FastVecLength_r(void *) __asm__("func_001F9CB8");
-extern float FastAddRots_r(float, float) __asm__("func_001FA748");
-extern float FastSubRots_r(float, float) __asm__("func_001FA790");
-extern float IntToFloat_r(int) __asm__("func_001FA888");
-extern float normalize_angle_r(float) __asm__("func_L00_0025F368");
-extern float FastSin_r(float) __asm__("func_001F9FA8");
-extern float FastCos_r(float) __asm__("func_001F9F90");
+
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
-extern void FastVecCross_r(void *, void *, void *) __asm__("func_001F9CA0");
-extern void transform_vector_r(void *, void *, void *) __asm__("func_001F9EE8");
-extern void matrix_mul_vec3_r(void *, void *, void *) __asm__("func_001F9EC0");
-extern float randf_sym_r(float, float) __asm__("func_L00_00258C80");
-extern float random_float_between_r(float, float) __asm__("func_002140F8");
+
 extern Part *spawn_mode_controlled_rotating_alpha_fade_particle_r(void *, void *, int,
                                                                   int) __asm__("func_L00_002757E8");
-extern int random_integer_below_r(int) __asm__("func_002140B0");
-extern void FastVecScale_r(void *, void *, float) __asm__("func_001F9C30");
-extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
-extern int scale_ticks_r(int) __asm__("func_001F9850");
-extern void random_spherical_offset_r(void *, float, float) __asm__("func_002141A8");
 
 /* Per-frame update of one beam slot: lays out the two 20-point strips between the slot's ends
    (a sine wave and a noisy one), spawns sparks at both ends and keeps the two looping sounds
@@ -555,8 +535,8 @@ void update_slot_panes_and_effects(int unused, int idx) {
     int j;
     int n;
 
-    FastVecSub_r(d, &beam_endpoints_r[idx], &beam_origin_transforms_translation_r[idx]);
-    step = FastVecLength_r(d) / 20.0f;
+    FastVecSub(d, &beam_endpoints_r[idx], &beam_origin_transforms_translation_r[idx]);
+    step = FastVecLength(d) / 20.0f;
     if (beam_slot_states_r[idx] == 2) {
         beam_slot_states_r[idx] = 3;
         for (i = 0; i < 20; i++) {
@@ -571,16 +551,16 @@ void update_slot_panes_and_effects(int unused, int idx) {
             b->w = 1.0f;
         }
     }
-    beam_strand_wave_phase_r[idx] = FastAddRots_r(beam_strand_wave_phase_r[idx], 0.17453292f);
-    beam_strand_twist_phase_r[idx] = FastSubRots_r(beam_strand_twist_phase_r[idx], 0.80285144f);
-    beam_strand_sway_phase_r[idx] = FastAddRots_r(beam_strand_sway_phase_r[idx], 0.05236f);
-    ang = 360.0f / (IntToFloat_r(20) * 0.5f) * 0.017453292f;
+    beam_strand_wave_phase_r[idx] = FastAddRots(beam_strand_wave_phase_r[idx], 0.17453292f);
+    beam_strand_twist_phase_r[idx] = FastSubRots(beam_strand_twist_phase_r[idx], 0.80285144f);
+    beam_strand_sway_phase_r[idx] = FastAddRots(beam_strand_sway_phase_r[idx], 0.05236f);
+    ang = 360.0f / (IntToFloat(20) * 0.5f) * 0.017453292f;
     for (j = 0; j < 19; j++) {
         float fj = (float)j;
-        float a = IntToFloat_r(j) / IntToFloat_r(20) * 0.3f + 0.1f;
+        float a = IntToFloat(j) / IntToFloat(20) * 0.3f + 0.1f;
         Pt *p = &beam_strand_points_r[k][j];
 
-        a = a * FastSin_r(normalize_angle_r(beam_strand_wave_phase_r[idx] + fj * ang));
+        a = a * FastSin(normalize_angle(beam_strand_wave_phase_r[idx] + fj * ang));
         p->y = 0.0f;
         p->w = 1.0f;
         p->z = a;
@@ -588,12 +568,12 @@ void update_slot_panes_and_effects(int unused, int idx) {
     }
     qcopy_nc(from, &beam_origin_transforms_translation_r[idx]);
     one = 1.0f;
-    FastVecSub_r(d2, &beam_endpoints_r[idx], from);
+    FastVecSub(d2, &beam_endpoints_r[idx], from);
     vec_scale_to_length_r(dir, d2, one);
-    FastVecCross_r(side, dir, hero_gravity_dir);
+    FastVecCross(side, dir, hero_gravity_dir);
     vec_scale_to_length_r(side, side, -1.0f);
-    FastVecCross_r(up, side, dir);
-    transform_vector_r(tip, &beam_strand_points_r[k][18], dir);
+    FastVecCross(up, side, dir);
+    transform_vector(tip, &beam_strand_points_r[k][18], dir);
     qcopy(&beam_tip_positions_r[idx], tip);
     p = beam_strand_points_r[k1];
     for (n = 0; n < 19; n++) {
@@ -605,54 +585,54 @@ void update_slot_panes_and_effects(int unused, int idx) {
         float c;
 
         p->z = 0.0f;
-        s = normalize_angle_r(beam_strand_twist_phase_r[idx] + fn * 0.99483764f);
-        t = normalize_angle_r(beam_strand_sway_phase_r[idx] + fn * 0.20944f);
-        a = FastSin_r(t) * 0.5f;
-        b = FastSin_r(s);
-        c = randf_sym_r(0.0f, 0.2f);
+        s = normalize_angle(beam_strand_twist_phase_r[idx] + fn * 0.99483764f);
+        t = normalize_angle(beam_strand_sway_phase_r[idx] + fn * 0.20944f);
+        a = FastSin(t) * 0.5f;
+        b = FastSin(s);
+        c = randf_sym(0.0f, 0.2f);
         p->z += a * b + c;
-        p->y = FastCos_r(s) * 0.3f;
+        p->y = FastCos(s) * 0.3f;
         p->w = 1.0f;
         p->x = step * fn;
         p++;
     }
     {
         float one;
-        float r = random_float_between_r(0.01f, 0.05f);
+        float r = random_float_between(0.01f, 0.05f);
         float a;
 
         one = 1.0f;
-        a = randf_sym_r(0.34906584f, 0.6981317f);
+        a = randf_sym(0.34906584f, 0.6981317f);
         vel.q = 0;
         vel.f[0] = one;
         vel.f[3] = one;
-        vel.f[0] = r * FastCos_r(a);
-        vel.f[1] = r * FastSin_r(a);
-        matrix_mul_vec3_r(&vel, &vel, &beam_origin_transforms_r[idx]);
+        vel.f[0] = r * FastCos(a);
+        vel.f[1] = r * FastSin(a);
+        matrix_mul_vec3(&vel, &vel, &beam_origin_transforms_r[idx]);
         spawn_mode_controlled_rotating_alpha_fade_particle_r(beam_origin_transforms_r[idx].v30, &vel, 0x7F,
                                                              beam_slot_ids_r[idx]);
-        if (random_integer_below_r(3) == 0) {
+        if (random_integer_below(3) == 0) {
             Part *p;
 
-            FastVecScale_r(pos, &beam_origin_transforms_r[idx], 0.3f);
-            FastVecAdd_r(pos, pos, beam_origin_transforms_r[idx].v30);
+            FastVecScale(pos, &beam_origin_transforms_r[idx], 0.3f);
+            FastVecAdd(pos, pos, beam_origin_transforms_r[idx].v30);
             p = spawn_mode_controlled_rotating_alpha_fade_particle_r(pos, veldin1_zero_vec_r, 0x7F,
                                                                      beam_slot_ids_r[idx]);
             if (p != 0) {
                 PartSub *q = &p->sub;
 
                 p->fC = 120000.0f;
-                p->fA = scale_ticks_r(4);
-                q->f10 = one / IntToFloat_r(p->fA);
+                p->fA = scale_ticks(4);
+                q->f10 = one / IntToFloat(p->fA);
                 q->f18 = 0x7F7F7F;
                 if (beam_spark_style_r[idx] == 1)
                     q->f16 = 1;
             }
         }
-        random_float_between_r(0.01f, 0.05f);
-        random_spherical_offset_r(&vel, 0.01f, 0.05f);
+        random_float_between(0.01f, 0.05f);
+        random_spherical_offset(&vel, 0.01f, 0.05f);
         spawn_mode_controlled_rotating_alpha_fade_particle_r(tip, &vel, 0x7F, beam_slot_ids_r[idx]);
-        if (random_integer_below_r(3) == 0) {
+        if (random_integer_below(3) == 0) {
             Part *p = spawn_mode_controlled_rotating_alpha_fade_particle_r(tip, veldin1_zero_vec_r, 0x7F,
                                                                            beam_slot_ids_r[idx]);
 
@@ -660,8 +640,8 @@ void update_slot_panes_and_effects(int unused, int idx) {
                 PartSub *q = &p->sub;
 
                 p->fC = 120000.0f;
-                p->fA = scale_ticks_r(4);
-                q->f10 = 1.0f / IntToFloat_r(p->fA);
+                p->fA = scale_ticks(4);
+                q->f10 = 1.0f / IntToFloat(p->fA);
                 q->f18 = 0x7F7F7F;
                 if (beam_spark_style_r[idx] == 1)
                     q->f16 = 2;
@@ -737,10 +717,7 @@ typedef struct {
     Vec4 a, b, c, d;
 } Tbl;
 extern Tbl beam_origin_transforms_field_10[];
-extern long GetEffectTex(int);
-extern void FastVecScale(void *, void *, float);
-
-extern void draw_world_quad(void *, int, int);
+extern long GetEffectTex_v(int) __asm__("func_001F4868");
 
 /* Builds the two blend quads from the slot tables and draws them along the
    19-step trail in a2. */
@@ -768,13 +745,13 @@ void draw_beam_strand_with_glow(int texture_id, int glow_texture_id, void *point
     int color, glow_color;
     int i;
 
-    quads[0].texture = GetEffectTex(texture_id);
+    quads[0].texture = GetEffectTex_v(texture_id);
     color = (alpha << 24) | 0x7F7F7F;
     quads[0].primitive = 0x8000000048L;
     quads[0].texture_state = 0xFF9000000260L;
     quads[0].reserved.value = 0;
     quads[0].colors[0] = quads[0].colors[1] = quads[0].colors[2] = quads[0].colors[3] = color;
-    quads[1].texture = GetEffectTex(glow_texture_id);
+    quads[1].texture = GetEffectTex_v(glow_texture_id);
     *(int *)&quads[1].texture_coordinates[0][1] = 0;
     glow_color = (glow_alpha << 24) | 0x7F4040;
     zero = quads[1].texture_coordinates[0][1];
@@ -907,16 +884,8 @@ extern T_e3388 beam_origin_transforms_translation[];
 extern f32 beam_tip_positions[][4];
 extern f32 beam_glow_quad_corners[4][4];
 extern u8 g_debug_camera_r[] __asm__("D_L00_00166EC0");
-void func_001F9BF0_E4838(void *, void *, void *) __asm__("func_001F9BF0");
-void vec_scale_to_length(void *, void *, f32);
-void FastVecCross(void *, void *, void *);
-s64 GetEffectTex(s32);
-f32 random_float_between(f32, f32);
 
-void FastVecScale(void *, void *, f32);
-void transform_vector(void *, void *, void *);
-void FastVecAdd(void *, void *, void *);
-void draw_world_quad(void *, s32, s32);
+s64 GetEffectTex_v(s32) __asm__("func_001F4868");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002df730.c, FUN_L00_002e3388. */
 void draw_beam_endpoint_quads_with_glow(s32 unused, s32 idx) {
@@ -932,12 +901,12 @@ void draw_beam_endpoint_quads_with_glow(s32 unused, s32 idx) {
 
     qcopy(d, &beam_origin_transforms_translation[idx]);
     d[3] = 1.0f;
-    func_001F9BF0_E4838(a, g_debug_camera_r, d);
+    FastVecSub(a, g_debug_camera_r, d);
     vec_scale_to_length(a, a, 1.0f);
     FastVecCross(b, a, hero_gravity_dir);
     vec_scale_to_length(b, b, -1.0f);
     FastVecCross(c, b, a);
-    q.r78 = GetEffectTex(0xB);
+    q.r78 = GetEffectTex_v(0xB);
     q.r88 = 0xFF00000044;
     q.r80 = 0xFF9000000260;
     q.r70 = 5;
@@ -974,7 +943,7 @@ void draw_beam_endpoint_quads_with_glow(s32 unused, s32 idx) {
     }
     draw_world_quad(&q, 0, 0);
     qcopy(d, beam_tip_positions[idx]);
-    func_001F9BF0_E4838(a, g_debug_camera_r, d);
+    FastVecSub(a, g_debug_camera_r, d);
     vec_scale_to_length(a, a, 1.0f);
     FastVecCross(b, a, hero_gravity_dir);
     vec_scale_to_length(b, b, -1.0f);
@@ -1015,7 +984,7 @@ extern int *level_paths[];
 extern float pterodactyl_path_speed SDATA(pterodactyl_path_speed);
 extern float pterodactyl_scale_factor SDATA(pterodactyl_scale_factor);
 
-extern void SamplePathAt(int *, float, int, void *, float *, int);
+extern void SamplePathAt_v(int *, float, int, void *, float *, int) __asm__("func_00215CA8");
 
 /* Path-following moby update: start a run along its path in state 0, then step along the path each frame and pick an animation when the flag is set. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay_vendor_002df730.c, FUN_L00_002e3a88. */
 void pterodactyl_update(unsigned char *m) {
@@ -1041,7 +1010,7 @@ void pterodactyl_update(unsigned char *m) {
             /* fall through */
         case 1:
             y = ((Moby *)m)->pos.z;
-            SamplePathAt(p, d->f6C, d->i70, m + 0x10, (float *)(m + 0x40), 0);
+            SamplePathAt_v(p, d->f6C, d->i70, m + 0x10, (float *)(m + 0x40), 0);
             ((Moby *)m)->rot.y *= 0.5f;
             ((Moby *)m)->pos.z += d->f64;
             d->f6C += d->f74;
@@ -1076,12 +1045,9 @@ void red_plant_update(Moby *m) {
     }
 }
 
-extern void spawn_color_swapped_explosion_burst(void *, void *, int, float, float);
-extern void spawn_explosion(void *, void *, void *, float, float, int, float, int, float, float, int, float, int, float,
-                            int, int, int, int);
+extern void spawn_explosion_v(void *, void *, void *, float, float, int, float, int, float, float, int, float, int,
+                              float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern int coll_sphere_s(void *, float, int, void *) __asm__("func_L00_001F10E0");
-
-extern void quaternion_to_matrix(void *, void *);
 
 extern char veldin1_zero_vec[] MACRO_ADDR;
 extern float coll_hit_normal[] NOT_SDA;
@@ -1120,8 +1086,8 @@ void robot_arm_update(Moby *m) {
                 spawn_color_swapped_explosion_burst(m, a20, -1, d->radius * 0.5f, 0.0f);
             } else {
                 float h = d->radius * 0.5f;
-                spawn_explosion(m, veldin1_zero_vec, a20, 0.0f, 0.0f, 5, d->radius, 3, h, 9.0f, 5, h, -1, 0.0f, 0, 0,
-                                -1, 0);
+                spawn_explosion_v(m, veldin1_zero_vec, a20, 0.0f, 0.0f, 5, d->radius, 3, h, 9.0f, 5, h, -1, 0.0f, 0, 0,
+                                  -1, 0);
             }
             DeleteMoby(m);
             return;
@@ -1173,8 +1139,6 @@ typedef struct {
 } __attribute__((aligned(16))) VQ;
 extern int find_camera_collision_volume_for_point_q(VQ *, float) __asm__("func_L00_001EE530");
 
-extern void FastVecScale(void *, void *, float);
-
 extern int level_spheres MACRO_ADDR;
 extern char coll_resolved_pos[];
 
@@ -1219,7 +1183,6 @@ typedef float VQ_2E5770[4] __attribute__((aligned(16)));
 extern char camera_view[];
 extern char collision_hit_point_a[] __asm__("D_L00_00173F60");
 extern void Cam_GetHeroPosition(char *, void *);
-extern int coll_line(void *, void *, int, int, int);
 
 /* build the two edge vectors of a moving box from the game vector and clip them */
 int compute_follow_camera_ground_aware_target_position(void *out, int flag) {
@@ -1251,8 +1214,6 @@ int compute_follow_camera_ground_aware_target_position(void *out, int flag) {
     return 1;
 }
 extern int compute_follow_camera_ground_aware_target_position(void *, int);
-
-extern void FastVecScale(void *, void *, float);
 
 /* initialises a moby's matrix block from the global camera frame */
 void follow_camera_reset(Camera *m) {
@@ -1289,9 +1250,6 @@ void follow_camera_reset(Camera *m) {
     FastVecAdd(p + 0x90, c, q);
 }
 extern void Cam_GetHeroPosition(char *, void *);
-extern void FastVecScale(void *, void *, float);
-
-extern float FastArcSin(float);
 
 /* angle between a direction and an axis, signed */
 float compute_follow_camera_signed_target_angle(char *a, float f) {
@@ -1365,7 +1323,7 @@ typedef struct {
     int a[4];
 } Vq __attribute__((aligned(16)));
 extern char *g_current_follow_cam;
-extern void FastVecScale(void *, void *, float);
+
 extern void Cam_GetHeroPosition(char *, void *);
 
 /* OUT = the axis at camera_view_vertical_axis scaled by the component along it of (hero position + F * the camera up
@@ -1652,9 +1610,7 @@ void follow_cam_update_mode(char *m) {
 extern float follow_cam_target_angle_min SDATA(follow_cam_target_angle_min);
 extern float follow_cam_target_angle_max SDATA(follow_cam_target_angle_max);
 extern float follow_cam_slam_target_lerp SDATA(follow_cam_slam_target_lerp);
-extern void lerp_vector(float, void *, void *, void *);
-
-extern int coll_sphere(float, void *, int, void *);
+extern void lerp_vector_v(float, void *, void *, void *) __asm__("func_001F9C08");
 
 extern int compute_follow_camera_ground_aware_target_position_r(void *, int) __asm__("func_L00_002E5770");
 
@@ -1742,7 +1698,7 @@ void follow_cam_focus_velocity(char *m, float *v2) {
         case 5:
         case 6:
         case 7:
-            lerp_vector((float)e->unk_D4 * e->unk_CC, &e->unk_10, &e->unk_30, &e->unk_20);
+            lerp_vector_v((float)e->unk_D4 * e->unk_CC, &e->unk_10, &e->unk_30, &e->unk_20);
             if (e->unk_D7 == 0) {
                 if (coll_sphere(0.2f, m + 0x30, 0x12, 0)) {
                     qcopy(&e->unk_30, &e->unk_10);
@@ -1785,7 +1741,7 @@ void follow_cam_focus_velocity(char *m, float *v2) {
             x = FastVecDot(cam, &g->up_target);
             FastVecScale(v2, &g->up_target, x);
             FastVecSub((char *)e, cam, v2);
-            lerp_vector(follow_cam_slam_target_lerp, v2, v2, &e->unk_20);
+            lerp_vector_v(follow_cam_slam_target_lerp, v2, v2, &e->unk_20);
             break;
         case 4:
         default:
@@ -1908,18 +1864,14 @@ typedef struct Cam {
 extern void Cam_GetHeroPosition_r(char *, void *) __asm__("func_L00_002E5618");
 extern void follow_cam_update_mode_r(char *) __asm__("func_L00_002E5DE0");
 extern void follow_cam_focus_velocity_r(char *, float *) __asm__("func_L00_002E6498");
-extern float FastVecDot_r(void *, void *) __asm__("func_001F9C78");
-extern void FastVecScale_r2(void *, void *, float) __asm__("func_001F9C30");
-extern void FastVecSub_r2(void *, void *, void *) __asm__("func_001F9BF0");
+
 extern float Cam_InterpValues_r(void *, float, float, float, float, float) __asm__("func_001EC120");
-extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
-extern int scale_ticks_r2(int) __asm__("func_001F9850");
-extern float IntToFloat_r2(int) __asm__("func_001FA888");
+
 extern void lerp_vector_r(float, void *, void *, void *) __asm__("func_001F9C08");
-extern int FastDecTimer_r(void *) __asm__("func_001F9938");
+
 extern void Cam_UpdateOffsetBlend_r(char *, float *) __asm__("func_L00_002E6BE0");
 extern int coll_line_r(void *, void *, int, int, int) __asm__("func_L00_001EFFF0");
-extern float FastVecLength_r2(void *) __asm__("func_001F9CB8");
+
 extern void follow_camera_set_height_r(float, float) __asm__("func_L00_002E9968");
 extern char camera_view_r[] __asm__("D_L00_00166F10");
 extern Cam *g_current_follow_cam_r __asm__("D_L00_00166F00");
@@ -1941,82 +1893,82 @@ void follow_camera_springs(char *m) {
     follow_cam_focus_velocity_r(m, a);
     qcopy(p + 0x50, a);
     qcopy(c, q);
-    f20 = FastVecDot_r(&gl->up_target, p + 0xA0);
-    FastVecScale_r2(d, &gl->up_target, f20);
-    FastVecSub_r2(e, p + 0xA0, d);
+    f20 = FastVecDot(&gl->up_target, p + 0xA0);
+    FastVecScale(d, &gl->up_target, f20);
+    FastVecSub(e, p + 0xA0, d);
     d[0] = Cam_InterpValues_r(p + 0xC0, d[0], q->v10[0], q->fE4, q->fE8, 0.0f);
     d[1] = Cam_InterpValues_r(p + 0xC4, d[1], q->v10[1], q->fE4, q->fE8, 0.0f);
     d[2] = Cam_InterpValues_r(p + 0xC8, d[2], q->v10[2], q->fE4, q->fE8, 0.0f);
     e[0] = Cam_InterpValues_r(p + 0xB0, e[0], q->v0[0], q->fDC, q->fE0, 0.0f);
     e[1] = Cam_InterpValues_r(p + 0xB4, e[1], q->v0[1], q->fDC, q->fE0, 0.0f);
     e[2] = Cam_InterpValues_r(p + 0xB8, e[2], q->v0[2], q->fDC, q->fE0, 0.0f);
-    FastVecAdd_r2(q, q, p + 0x50);
-    FastVecAdd_r2(p + 0xA0, e, d);
-    FastVecScale_r2(f, &gl->up, q->fB0);
+    FastVecAdd(q, q, p + 0x50);
+    FastVecAdd(p + 0xA0, e, d);
+    FastVecScale(f, &gl->up, q->fB0);
     if (q->bD6) {
-        if (++q->hD8 > scale_ticks_r2(D_L00_00161DF0_2E6CE0)) {
-            q->hD8 = scale_ticks_r2(D_L00_00161DF0_2E6CE0);
+        if (++q->hD8 > scale_ticks(D_L00_00161DF0_2E6CE0)) {
+            q->hD8 = scale_ticks(D_L00_00161DF0_2E6CE0);
         }
-        lerp_vector_r((float)q->hD8 / IntToFloat_r2(scale_ticks_r2(D_L00_00161DF0_2E6CE0)), g, q, p + 0xA0);
-        FastVecAdd_r2(p + 0x80, f, g);
+        lerp_vector_r((float)q->hD8 / IntToFloat(scale_ticks(D_L00_00161DF0_2E6CE0)), g, q, p + 0xA0);
+        FastVecAdd(p + 0x80, f, g);
     } else {
-        FastDecTimer_r(p + 0x118);
+        FastDecTimer(p + 0x118);
         if (q->hD8 < 0) {
             q->hD8 = 0;
         }
-        lerp_vector_r((float)q->hD8 / IntToFloat_r2(scale_ticks_r2(D_L00_00161DF0_2E6CE0)), g, q, p + 0xA0);
-        FastVecAdd_r2(p + 0x80, f, g);
+        lerp_vector_r((float)q->hD8 / IntToFloat(scale_ticks(D_L00_00161DF0_2E6CE0)), g, q, p + 0xA0);
+        FastVecAdd(p + 0x80, f, g);
     }
     Cam_UpdateOffsetBlend_r(m, f);
     if (((Hero *)g_hero)->vehicle_mode == 2) {
-        FastVecScale_r2(f, &gl->up, 3.0f);
+        FastVecScale(f, &gl->up, 3.0f);
     } else if (((Hero *)g_hero)->vehicle_mode == 1) {
-        FastVecScale_r2(f, &gl->up, 0.4f);
+        FastVecScale(f, &gl->up, 0.4f);
     } else {
-        FastVecScale_r2(f, &gl->up, 0.5f);
+        FastVecScale(f, &gl->up, 0.5f);
     }
-    FastVecAdd_r2(g, b, f);
-    FastVecScale_r2(f, &gl->up, r->f30);
-    FastVecAdd_r2(q->v50, f, q);
+    FastVecAdd(g, b, f);
+    FastVecScale(f, &gl->up, r->f30);
+    FastVecAdd(q->v50, f, q);
     f20 = D_L00_00161DA8_2E6CE0 +
           g_current_follow_cam_r->d->f214 * g_current_follow_cam_r->d->f20C * (g_current_follow_cam_r->d->f210 - 1.0f);
-    FastVecScale_r2(h, &gl->up, 20.0f);
-    FastVecAdd_r2(h, g, h);
+    FastVecScale(h, &gl->up, 20.0f);
+    FastVecAdd(h, g, h);
     if (coll_line_r(g, h, camera_collision_mask_r, (int)((Hero *)g_hero)->moby, 0)) {
         qcopy(w, collision_hit_point_a);
     } else {
         qcopy(w, h);
     }
-    FastVecScale_r2(h, &gl->up, 20.0f);
-    FastVecSub_r2(h, g, h);
+    FastVecScale(h, &gl->up, 20.0f);
+    FastVecSub(h, g, h);
     if (coll_line_r(g, h, camera_collision_mask_r, (int)((Hero *)g_hero)->moby, 0)) {
         qcopy(h, collision_hit_point_a);
     }
-    FastVecSub_r2(u, h, w);
-    if (FastVecLength_r2(u) < f20 + f20) {
-        FastVecAdd_r2(v, w, h);
-        FastVecScale_r2(v, v, 0.5f);
+    FastVecSub(u, h, w);
+    if (FastVecLength(u) < f20 + f20) {
+        FastVecAdd(v, w, h);
+        FastVecScale(v, v, 0.5f);
         qcopy(q->v50, v);
-        FastVecSub_r2(u, v, q);
-        follow_camera_set_height_r(FastVecDot_r(u, &gl->up), 0.003f);
+        FastVecSub(u, v, q);
+        follow_camera_set_height_r(FastVecDot(u, &gl->up), 0.003f);
     } else {
         float len;
-        FastVecSub_r2(u, w, q);
-        len = FastVecLength_r2(u);
+        FastVecSub(u, w, q);
+        len = FastVecLength(u);
         f21 = r->f30;
         if (len <= f21 + f20) {
-            FastVecScale_r2(v, &gl->up, f20);
-            FastVecSub_r2(v, w, v);
+            FastVecScale(v, &gl->up, f20);
+            FastVecSub(v, w, v);
             qcopy(q->v50, v);
-            FastVecSub_r2(u, v, q);
-            follow_camera_set_height_r(FastVecDot_r(u, &gl->up), 0.003f);
+            FastVecSub(u, v, q);
+            follow_camera_set_height_r(FastVecDot(u, &gl->up), 0.003f);
         } else {
-            f20 = FastVecDot_r(q, &gl->up_target);
-            if (FastVecDot_r(h, &gl->up_target) < f20) {
+            f20 = FastVecDot(q, &gl->up_target);
+            if (FastVecDot(h, &gl->up_target) < f20) {
                 qcopy(h, q);
             }
-            FastVecScale_r2(f, &gl->up, f21);
-            FastVecAdd_r2(q->v50, f, h);
+            FastVecScale(f, &gl->up, f21);
+            FastVecAdd(q->v50, f, h);
         }
     }
 }
@@ -2247,8 +2199,6 @@ extern short follow_camera_vehicle_collision_probe_step_growth_factor_gp;
 extern short follow_camera_vehicle_collision_probe_scale_gp;
 #define g78 (*(f32 *)&D_L00_00161E78)
 
-extern unsigned char *GetFlaggedPvarWord(int);
-extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern void set_follow_camera_angle_blend_from_direction(void *, float, float);
 extern void follow_camera_start_slide(void);
 extern void follow_camera_set_height(float, float);
@@ -2430,9 +2380,6 @@ void follow_camera_apply_overrides(O_y *o) {
 }
 extern float camera_view_vertical_axis[];
 extern float follow_cam_min_eye_distance SDATA(follow_cam_min_eye_distance);
-extern void matrix_copy_rows(void *, void *);
-
-extern float vec_distance_xy(void *, void *);
 
 // camera type 0 snap: puts the camera behind the hero, pulls it in along the line of sight, then builds its axes
 void rebuild_follow_camera_pose(int snap) {
@@ -2545,7 +2492,6 @@ void rebuild_follow_camera_pose(int snap) {
     qcopy(cam->type_data, (char *)cam);
 }
 extern char hero_gravity_dir_r[] __asm__("D_0013F6E0");
-extern void FastVecSub_r3(void *, void *, void *) __asm__("func_001F9BF0");
 
 /* Resets the camera rig state from the moby position when idle.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/002e5e38.c, FUN_L00_002e6bf8. */
@@ -2575,7 +2521,7 @@ void reset_follow_camera_state_from_position(Camera *m) {
         FastVecScale(t, dn, *(float *)(b + 0xB0));
         FastVecAdd(d + 0xD0, t, e);
         qcopy(d + 0x80, d + 0xD0);
-        FastVecSub_r3(c, &m->pos, d + 0x90);
+        FastVecSub(c, &m->pos, d + 0x90);
         qcopy(d + 0x140, c);
         qcopy(d, &m->pos);
         FastVecAdd(d + 0x1F0, d + 0x90, c);
@@ -2724,12 +2670,7 @@ extern float follow_cam_turn_blend_weight_r __asm__("D_L00_0015F040") MACRO_ADDR
 extern float follow_cam_setting_value_r2 __asm__("D_L00_0015F044") MACRO_ADDR;
 extern int gCamSphereMaskBaseLvl_r2 __asm__("D_L00_0015F060") MACRO_ADDR;
 extern Ctl *D_L00_00166F04;
-extern int scale_ticks_r3(int) __asm__("func_001F9850");
-extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
-extern void FastVecSub_r4(void *, void *, void *) __asm__("func_001F9BF0");
-extern float FastVecDot_r2(void *, void *) __asm__("func_001F9C78");
-extern void FastVecScale_r3(void *, void *, float) __asm__("func_001F9C30");
-extern float FastVecLength_r3(void *) __asm__("func_001F9CB8");
+
 extern void reset_follow_camera_state_from_position_r(Camera *) __asm__("func_L00_002E80A8");
 extern void follow_camera_reset_r(Camera *) __asm__("func_L00_002E58E0");
 extern void rebuild_follow_camera_pose_r(int) __asm__("func_L00_002E7B68");
@@ -2835,7 +2776,7 @@ void follow_camera_setup(Camera *m) {
     ((Cam220_2E8210 *)q3)->fC = D_L00_00161DEC_2E8210;
 
     d = (Cam_2E8210 *)m->state_buf;
-    r = scale_ticks_r3(0x7D0);
+    r = scale_ticks(0x7D0);
     g = &d->g;
     g->f30 = 0.0f;
     g->h3A = 0;
@@ -2847,7 +2788,7 @@ void follow_camera_setup(Camera *m) {
     g->f3C = D_L00_00161DB4_2E8210;
     g->f40 = D_L00_00161DB0_2E8210;
     g->i48 = gCamSphereMaskBaseLvl_r2;
-    clear_u64_value_r(d->g.v10);
+    clear_u64_value(d->g.v10);
 
     p240 = &((Cam_2E8210 *)m->state_buf)->p240;
     p240->h28 = 0;
@@ -2861,19 +2802,19 @@ void follow_camera_setup(Camera *m) {
         if (camera_cross_axis_ptr->h86 == 7 && g_hero_r.frames_off_ground.s == 0) {
             e->e.h0 = 0;
         } else {
-            f->h0 = scale_ticks_r3(D_L00_00161DF4_2E8210);
+            f->h0 = scale_ticks(D_L00_00161DF4_2E8210);
         }
     } else {
         follow_camera_reset_r(m);
         rebuild_follow_camera_pose_r(1);
     }
-    FastVecSub_r4(b->v0, &m->pos, a->f50);
+    FastVecSub(b->v0, &m->pos, a->f50);
     qcopy(b->v10, b->v0);
     qcopy(c->pos, &m->pos);
     qcopy(g->v20, &m->pos);
-    FastVecScale_r3(v0, hero_gravity_dir_r, FastVecDot_r2(b->v0, hero_gravity_dir_r));
-    FastVecSub_r4(v1, b->v0, v0);
-    t = b->f2C - FastVecLength_r3(v1);
+    FastVecScale(v0, hero_gravity_dir_r, FastVecDot(b->v0, hero_gravity_dir_r));
+    FastVecSub(v1, b->v0, v0);
+    t = b->f2C - FastVecLength(v1);
     g->f30 = t;
     if (t < -0.1f) {
         g->h3A = 1;
@@ -2884,12 +2825,8 @@ void follow_camera_setup(Camera *m) {
 }
 extern Hero g_hero_r2 __asm__("D_0013F450");
 extern float follow_cam_collision_pull_in_speed SDATA(follow_cam_collision_pull_in_speed);
-float FastVecLength(void *);
-void func_001F9BF0_E85E8(void *, void *, void *) __asm__("func_001F9BF0");
-void vec_scale_to_length(void *, void *, float);
 
 short func_001F9850_E85E8(int) __asm__("func_001F9850");
-void FastVecScale(void *, void *, float);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002df730.c, FUN_L00_002e7138. */
 int update_follow_camera_orbit_after_collision(unsigned char *m, void *b, int c, int d) {
@@ -2900,7 +2837,7 @@ int update_follow_camera_orbit_after_collision(unsigned char *m, void *b, int c,
     float len, dist, k;
     Hero *G;
     len = FastVecLength(A);
-    func_001F9BF0_E85E8(A, b, q + 0x90);
+    FastVecSub(A, b, q + 0x90);
     if (B->unk_38) {
         vec_scale_to_length(A, A, A->distance - B->unk_30);
         return d;
@@ -2955,8 +2892,6 @@ extern G002e7318 camera_view_r2 __asm__("D_L00_00166F10");
 extern f32 D_L00_00161DA8_E87C8 SDATA(D_L00_00161DA8);
 extern Vec4 collision_hit_point_r __asm__("D_L00_00173F60");
 extern Vec4 coll_resolved_pos_r __asm__("D_L00_00173F70");
-extern void FastVecSub_r5(void *, void *, void *) __asm__("func_001F9BF0");
-extern void vec_scale_to_length(void *, void *, f32);
 
 extern s32 compute_follow_camera_radial_collision_positions_r(Vec4 *, f32) __asm__("func_L00_002E5630");
 extern s32 coll_sphere_r(Vec4 *, f32, s32, s32) __asm__("func_L00_001F10E0");
@@ -2995,7 +2930,7 @@ s32 resolve_follow_camera_endpoint_collisions(O002e7318 *o) {
             hb = 1;
         }
         if (x->s38 != 0) {
-            FastVecSub_r5(&tmp, &collision_hit_point_r, &pos);
+            FastVecSub(&tmp, &collision_hit_point_r, &pos);
             vec_scale_to_length(&tmp, &tmp, 1.0f);
             d = FastVecDot(&g->v40, &tmp);
             if (d > 0.75f)
@@ -3019,8 +2954,6 @@ long return_follow_camera_no_collision(void) {
     char buf[0x50];
     return 0;
 }
-
-extern void vec_scale_to_length(void *, void *, float);
 
 // combines vectors through the moby's data
 void compute_follow_camera_collision_delta(char *m, float *out, float *b, float *c, float *d, float s0, float s1) {
@@ -3053,12 +2986,9 @@ typedef struct Mdata {
     char pad140[0x90];
     V4_2E8AC8 v1D0; /* 0x1D0 */
 } Mdata;
-extern void clear_u64_value_r2(void *) __asm__("func_001F9BC0");
-extern void FastVecAdd_r3(void *, void *, void *) __asm__("func_001F9BD8");
 
-extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
 extern int coll_sphere_r2(void *, int, void *, float) __asm__("func_L00_001F10E0");
-extern void func_001F9BF0_2E8AC8(void *, void *, void *) __asm__("func_001F9BF0");
+
 extern void compute_follow_camera_collision_delta_r(void *, void *, void *, void *, void *, float,
                                                     float) __asm__("func_L00_002E89E0");
 extern Camera *g_current_follow_cam_r2 __asm__("D_L00_00166F00");
@@ -3088,43 +3018,43 @@ int func_L00_002E8AC8_r(Camera *m, float *pos, int unused, float sa, float sb) {
     float lim;
 
     f21 = D_L00_00161DA8_2E8AC8 + g->f214 * g->f20C * (g->f210 - 1.0f);
-    clear_u64_value_r2(r);
+    clear_u64_value(r);
     qcopy(o, pos);
     qcopy(a, collision_hit_point_a);
     qcopy(b, coll_resolved_pos_r2);
-    FastVecAdd_r3(e, d->v90, c);
+    FastVecAdd(e, d->v90, c);
     dist = resolve_level_path_segment_point(w, a, d->v90, e, 0.0f);
-    lim = FastVecDist_r(d->v90, w) / (c[11] - q[12]);
+    lim = FastVecDist(d->v90, w) / (c[11] - q[12]);
     lim = (D_L00_00161DA8_2E8AC8 + (f21 - D_L00_00161DA8_2E8AC8) * lim) * 0.75f;
     if (dist < lim) {
         res = 1;
         compute_follow_camera_collision_delta_r(m, r, w, a, o, lim - dist, sa);
         qcopy(pos, b);
         if (coll_sphere_r2(pos, gCamSphereMaskLvl_r, (void *)((Hero *)g_hero_r3)->moby, sb)) {
-            func_001F9BF0_2E8AC8(t, o, pos);
-            FastVecAdd_r3(a, collision_hit_point_a, t);
+            FastVecSub(t, o, pos);
+            FastVecAdd(a, collision_hit_point_a, t);
             dist = resolve_level_path_segment_point(w, a, d->v90, e, 0.0f);
-            lim = FastVecDist_r(d->v90, w) / (c[11] - q[12]);
+            lim = FastVecDist(d->v90, w) / (c[11] - q[12]);
             lim = (D_L00_00161DA8_2E8AC8 + (f21 - D_L00_00161DA8_2E8AC8) * lim) * 0.75f;
             if (dist < lim) {
                 compute_follow_camera_collision_delta_r(m, u, w, a, o, lim - dist, sa);
-                FastVecAdd_r3(r, r, u);
+                FastVecAdd(r, r, u);
                 qcopy(pos, coll_resolved_pos_r2);
                 if (coll_sphere_r2(pos, gCamSphereMaskLvl_r, (void *)((Hero *)g_hero_r3)->moby, sb)) {
-                    func_001F9BF0_2E8AC8(t, o, pos);
-                    FastVecAdd_r3(a, collision_hit_point_a, t);
+                    FastVecSub(t, o, pos);
+                    FastVecAdd(a, collision_hit_point_a, t);
                     dist = resolve_level_path_segment_point(w, a, d->v90, e, 0.0f);
-                    lim = FastVecDist_r(d->v90, w) / (c[11] - q[12]);
+                    lim = FastVecDist(d->v90, w) / (c[11] - q[12]);
                     lim = (D_L00_00161DA8_2E8AC8 + (f21 - D_L00_00161DA8_2E8AC8) * lim) * 0.75f;
                     if (dist < lim) {
                         compute_follow_camera_collision_delta_r(m, u, w, a, o, lim - dist, sa);
-                        FastVecAdd_r3(r, r, u);
+                        FastVecAdd(r, r, u);
                     }
                 }
             }
         }
     }
-    FastVecAdd_r3(pos, o, r);
+    FastVecAdd(pos, o, r);
     return res;
 }
 typedef float V[4] __attribute__((aligned(16)));
@@ -3253,20 +3183,19 @@ typedef struct {
     u8 v20[0x10];
 } E40_2e7d20_t;
 #define D_L00_00173F60_x (*(E40_2e7d20_t *)((u8 *)&D_L00_00173F60 - 0x20))
-#define CAST_func_001F9C08 ((void (*)(void *, void *, void *, f32))func_001F9C08)
+#define CAST_func_001F9C08 ((void (*)(void *, void *, void *, f32))lerp_vector_v)
 #define CAST_func_L00_001F2BE8 ((s32 (*)(void *, s32, void *, s32, f32))func_L00_001F2BE8)
 
 #define CAST_func_001F9BF0 ((void (*)(void *, void *, void *))func_001F9BF0)
 #define CAST_func_L00_002E8EE0 ((s32 (*)(void *))func_L00_002E8EE0)
 #define CAST_func_L00_002E89D0 ((s32 (*)(void *))func_L00_002E89D0)
 #define CAST_func_L00_002E87C8 ((s32 (*)(void *))func_L00_002E87C8)
-f32 CosineInterpolate(f32, f32, f32);
+
 #define CAST_func_L00_001EFFF0 ((s32 (*)(void *, void *, s32, void *, s32))func_L00_001EFFF0)
 #define CAST_func_L00_002E5740 ((s32 (*)(void *))func_L00_002E5740)
-s32 is_moby_in_class_range_500_to_540(s32);
+
 void InitDirectionalHitQuery_v(void *, void *, s32, void *, f32) __asm__("func_L00_0025A8C0");
 
-void build_look_at_matrix(void *, void *, void *, f32);
 #define AF_2e7d20(o) (*(f32 *)(a + (o)))
 #define BF_2e7d20(o) (*(f32 *)(b + (o)))
 #define BH_2e7d20(o) (*(s16 *)(b + (o)))
@@ -3620,7 +3549,6 @@ void set_follow_camera_blend_output_flags(void) {
         *(int *)(q + 0x10) |= 3;
     }
 }
-extern float FastArcSin(float x);
 
 /* Measures the signed angle between two offsets of an object's data relative to an axis, and (within the limit) stores
    a scaled blend in the object's data. */
@@ -3715,7 +3643,6 @@ extern f32 D_L00_0015F044_2E9E60 SDATA(D_L00_0015F044);
 extern s32 D_L00_00161E5C_2E9E60 SDATA(D_L00_00161E5C);
 extern s32 D_L00_00161E60_2E9E60 SDATA(D_L00_00161E60);
 extern MoveUsageTable usage_stats_r __asm__("D_00141948");
-extern int scale_ticks_r4(int) __asm__("func_001F9850");
 
 void func_L00_002E9E60_r(char *o, float *a, float *b) __asm__("func_L00_002E9E60");
 
@@ -3743,12 +3670,12 @@ void func_L00_002E9E60_r(char *o, float *a, float *b) {
         g = &usage_stats_r;
         if (g->e[8].count < 3) {
             D_L00_00161E5C_2E9E60++;
-            if (D_L00_00161E60_2E9E60 == 0 && scale_ticks_r4(0x3C) < D_L00_00161E5C_2E9E60) {
+            if (D_L00_00161E60_2E9E60 == 0 && scale_ticks(0x3C) < D_L00_00161E5C_2E9E60) {
                 if (g->e[8].count <= 0xFFFE) {
                     g->e[8].count++;
                 }
-                if (scale_ticks_r4(gameplay_event_frame_count) / 600 > g->e[8].best_minutes) {
-                    g->e[8].best_minutes = scale_ticks_r4(gameplay_event_frame_count) / 600;
+                if (scale_ticks(gameplay_event_frame_count) / 600 > g->e[8].best_minutes) {
+                    g->e[8].best_minutes = scale_ticks(gameplay_event_frame_count) / 600;
                 }
                 D_L00_00161E60_2E9E60 = 1;
                 g->e[8].level_mask = g->e[8].level_mask | (1 << g_current_level_index_r) | 0x80000000;
@@ -3886,9 +3813,7 @@ void follow_camera_turn_and_pitch(int mi, float a, float b) {
     }
     build_look_at_matrix(turn_pitch_vector->vec.f, turn_pitch_vector->vec.f, axis, turn_pitch_vector->step.f);
 }
-extern void lerp_vector(float, void *, void *, void *);
-
-extern void vec_scale_to_length(void *, void *, float);
+extern void lerp_vector_v(float, void *, void *, void *) __asm__("func_001F9C08");
 
 /* Keeps the follow camera's orbit vector (+0x130 of M's state buffer) within its maximum length (+0x2C): the
    eye-to-target vector is turned by follow_cam_turn_blend_weight into the orbit vector, shortened to the maximum when
@@ -3904,7 +3829,7 @@ void follow_camera_auto_turn(int m) {
         float f;
         float lim;
         FastVecSub(v, (float *)p, (float *)(p + 0x90));
-        lerp_vector(follow_cam_turn_blend_weight, q, q, v);
+        lerp_vector_v(follow_cam_turn_blend_weight, q, q, v);
         f = FastVecLength(q);
         lim = q->distance;
         if (lim < f) {
@@ -4014,7 +3939,7 @@ void follow_camera_build_view(int a_) {
         FastDecTimer(q20);
         e2 = IntToFloat(*(short *)q20);
         h2 = e2 / IntToFloat(scale_ticks(follow_cam_view_blend_time));
-        lerp_vector(h2, p, p, p + 0x40);
+        lerp_vector_v(h2, p, p, p + 0x40);
         vec_scale_to_length(p, p, 1.0f);
     }
     FastVecCross(p10, p, up);

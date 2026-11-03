@@ -141,17 +141,7 @@ extern char D_L00_001670E0[];
 extern char D_L00_001670F0[];
 extern char D_L00_00166ED0[];
 
-extern void func_L00_001FF4B0(void *, void *, float);
-
-extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
-extern float FastCos_r(float) __asm__("func_001F9F90");
-extern float FastSin_r(float) __asm__("func_001F9FA8");
-
-extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
-
-extern float FastSubRots_r(float, float) __asm__("func_001FA790");
-extern float FastAbsF_r(float) __asm__("func_001F9B88");
-extern void euler_to_matrix_r(void *, void *) __asm__("func_001FA218");
+extern void sce_vu0_mul_matrix(void *, void *, void *);
 
 /* Free-camera controls (debug camera): pad buttons move the camera (in the free-look matrix when the hero's
    camera mode is 2, else on the ground plane), turn it about three axes with eased speeds, and when the camera
@@ -180,21 +170,21 @@ void update_debug_camera(void) {
                 FastVecAdd(player_camera_matrix_r - 0x210, player_camera_matrix_r - 0x210, s);
             } else {
                 ((View *)player_camera_r)->f140 +=
-                    FastCos_r(((View *)player_camera_r)->f158) * ((Cam *)g_debug_menu_r)->f70;
+                    FastCos(((View *)player_camera_r)->f158) * ((Cam *)g_debug_menu_r)->f70;
                 ((View *)player_camera_r)->f144 +=
-                    FastSin_r(((View *)player_camera_r)->f158) * ((Cam *)g_debug_menu_r)->f70;
+                    FastSin(((View *)player_camera_r)->f158) * ((Cam *)g_debug_menu_r)->f70;
             }
             moved = 1;
         }
         if (((PadDwords *)g_controller_state_r)->held_pressed.i & 0x4000) {
             if (k) {
                 vec_scale_to_length(s, player_camera_matrix_r, ((Cam *)g_debug_menu_r)->f70);
-                FastVecSub_r(player_camera_matrix_r - 0x210, player_camera_matrix_r - 0x210, s);
+                FastVecSub(player_camera_matrix_r - 0x210, player_camera_matrix_r - 0x210, s);
             } else {
                 ((View *)player_camera_r)->f140 -=
-                    FastCos_r(((View *)player_camera_r)->f158) * ((Cam *)g_debug_menu_r)->f70;
+                    FastCos(((View *)player_camera_r)->f158) * ((Cam *)g_debug_menu_r)->f70;
                 ((View *)player_camera_r)->f144 -=
-                    FastSin_r(((View *)player_camera_r)->f158) * ((Cam *)g_debug_menu_r)->f70;
+                    FastSin(((View *)player_camera_r)->f158) * ((Cam *)g_debug_menu_r)->f70;
             }
             moved = 1;
         }
@@ -204,21 +194,21 @@ void update_debug_camera(void) {
                 FastVecAdd(player_camera_side_axis - 0x220, player_camera_side_axis - 0x220, s);
             } else {
                 ((View *)player_camera_r)->f140 -=
-                    FastSin_r(((View *)player_camera_r)->f158) * ((Cam *)g_debug_menu_r)->f70;
+                    FastSin(((View *)player_camera_r)->f158) * ((Cam *)g_debug_menu_r)->f70;
                 ((View *)player_camera_r)->f144 +=
-                    FastCos_r(((View *)player_camera_r)->f158) * ((Cam *)g_debug_menu_r)->f70;
+                    FastCos(((View *)player_camera_r)->f158) * ((Cam *)g_debug_menu_r)->f70;
             }
             moved = 1;
         }
         if (((PadDwords *)g_controller_state_r)->held_pressed.i & 2) {
             if (k) {
                 vec_scale_to_length(s, player_camera_side_axis, ((Cam *)g_debug_menu_r)->f70);
-                FastVecSub_r(player_camera_side_axis - 0x220, player_camera_side_axis - 0x220, s);
+                FastVecSub(player_camera_side_axis - 0x220, player_camera_side_axis - 0x220, s);
             } else {
                 ((View *)player_camera_r)->f140 +=
-                    FastSin_r(((View *)player_camera_r)->f158) * ((Cam *)g_debug_menu_r)->f70;
+                    FastSin(((View *)player_camera_r)->f158) * ((Cam *)g_debug_menu_r)->f70;
                 ((View *)player_camera_r)->f144 -=
-                    FastCos_r(((View *)player_camera_r)->f158) * ((Cam *)g_debug_menu_r)->f70;
+                    FastCos(((View *)player_camera_r)->f158) * ((Cam *)g_debug_menu_r)->f70;
             }
             moved = 1;
         }
@@ -251,25 +241,25 @@ void update_debug_camera(void) {
             ((Cam *)g_debug_menu_r)->f80 = -0.04f;
         }
         if (k) {
-            a = FastSin_r(((Cam *)g_debug_menu_r)->f80);
-            b = FastCos_r(((Cam *)g_debug_menu_r)->f80);
+            a = FastSin(((Cam *)g_debug_menu_r)->f80);
+            b = FastCos(((Cam *)g_debug_menu_r)->f80);
             set_identity_matrix(s + 4);
             s[5] = -a;
             s[8] = a;
             s[4] = b;
             s[9] = b;
             copy_matrix_rotation(s + 20, player_camera_matrix_r);
-            sce_vu0_mul_matrix_r(s + 20, s + 20, s + 4);
+            sce_vu0_mul_matrix(s + 20, s + 20, s + 4);
             matrix_copy_rows(player_camera_matrix_r, s + 20);
         } else {
             ((View *)player_camera_r)->f158 =
-                FastSubRots_r(((View *)player_camera_r)->f158, ((Cam *)g_debug_menu_r)->f80);
+                FastSubRots(((View *)player_camera_r)->f158, ((Cam *)g_debug_menu_r)->f80);
         }
     } else {
         float t = ((Cam *)g_debug_menu_r)->f80 / 1.5f;
 
         ((Cam *)g_debug_menu_r)->f80 = t;
-        if (FastAbsF_r(t) < 0.002f) {
+        if (FastAbsF(t) < 0.002f) {
             ((Cam *)g_debug_menu_r)->f80 = 0.0f;
         }
     }
@@ -286,25 +276,25 @@ void update_debug_camera(void) {
             ((Cam *)g_debug_menu_r)->f7C = -0.04f;
         }
         if (k) {
-            b = FastSin_r(((Cam *)g_debug_menu_r)->f7C);
-            a = FastCos_r(((Cam *)g_debug_menu_r)->f7C);
+            b = FastSin(((Cam *)g_debug_menu_r)->f7C);
+            a = FastCos(((Cam *)g_debug_menu_r)->f7C);
             set_identity_matrix(s);
             s[0] = a;
             s[2] = b;
             s[8] = -b;
             s[10] = a;
             copy_matrix_rotation(s + 16, player_camera_matrix_r);
-            sce_vu0_mul_matrix_r(s + 16, s + 16, s);
+            sce_vu0_mul_matrix(s + 16, s + 16, s);
             matrix_copy_rows(player_camera_matrix_r, s + 16);
         } else {
             ((View *)player_camera_r)->f154 =
-                FastSubRots_r(((View *)player_camera_r)->f154, ((Cam *)g_debug_menu_r)->f7C);
+                FastSubRots(((View *)player_camera_r)->f154, ((Cam *)g_debug_menu_r)->f7C);
         }
     } else {
         float t = ((Cam *)g_debug_menu_r)->f7C / 1.5f;
 
         ((Cam *)g_debug_menu_r)->f7C = t;
-        if (FastAbsF_r(t) < 0.002f) {
+        if (FastAbsF(t) < 0.002f) {
             ((Cam *)g_debug_menu_r)->f7C = 0.0f;
         }
     }
@@ -320,21 +310,21 @@ void update_debug_camera(void) {
         } else if (((Cam *)g_debug_menu_r)->f78 < -0.04f) {
             ((Cam *)g_debug_menu_r)->f78 = -0.04f;
         }
-        a = FastSin_r(((Cam *)g_debug_menu_r)->f78);
-        b = FastCos_r(((Cam *)g_debug_menu_r)->f78);
+        a = FastSin(((Cam *)g_debug_menu_r)->f78);
+        b = FastCos(((Cam *)g_debug_menu_r)->f78);
         set_identity_matrix(s);
         s[6] = -a;
         s[9] = a;
         s[5] = b;
         s[10] = b;
         copy_matrix_rotation(s + 16, player_camera_matrix_r);
-        sce_vu0_mul_matrix_r(s + 36, s + 16, s);
+        sce_vu0_mul_matrix(s + 36, s + 16, s);
         matrix_copy_rows(player_camera_matrix_r, s + 36);
     } else {
         float t = ((Cam *)g_debug_menu_r)->f78 / 1.5f;
 
         ((Cam *)g_debug_menu_r)->f78 = t;
-        if (FastAbsF_r(t) < 0.002f) {
+        if (FastAbsF(t) < 0.002f) {
             ((Cam *)g_debug_menu_r)->f78 = 0.0f;
         }
     }
@@ -369,7 +359,7 @@ void update_debug_camera(void) {
         ((View *)player_camera_r)->f148 += ((Cam *)g_debug_menu_r)->f74;
     }
     if (!k) {
-        euler_to_matrix_r(s, camera_rotation);
+        euler_to_matrix(s, camera_rotation);
         vec_scale_to_length(s, s, 1.0f);
         vec_scale_to_length(s + 4, s + 4, 1.0f);
         vec_scale_to_length(s + 8, s + 8, 1.0f);
@@ -505,8 +495,6 @@ extern float level_fog_far_intensity MACRO_ADDR;
 extern char *occlusion_grid MACRO_ADDR;
 extern s32 cinematic_mode MACRO_ADDR;
 extern s32 sound_update(void);
-
-extern float vec_length_xy(void *);
 
 extern double func_00120778(float);
 extern s32 sceOpen(char *, s32, ...);
@@ -959,7 +947,7 @@ extern volatile s32 debug_text_flush_wait_flag MACRO_ADDR;
 
 extern void flush_debug_text_queue(void);
 
-extern double promote_float60(float) __asm__("func_00120778");
+extern double func_00120778(float);
 extern char debug_menu_title[];
 extern char debug_menu_title_underline[];
 extern char debug_menu_update_header[];
@@ -1216,16 +1204,16 @@ void draw_debug_menu(void) {
             print_debug_text(0xB9, (debug_menu60.item * 0xF) + 0x112, 0x800000C0, debug_menu_cursor);
         }
         print_debug_text(0xC4, 0x114, 0x8000C0C0, debug_label_near_dist);
-        sprintf(buf, debug_fog_value_format, promote_float60(level_fog_near_distance * 0.0009765625f));
+        sprintf(buf, debug_fog_value_format, func_00120778(level_fog_near_distance * 0.0009765625f));
         print_debug_text(0x11C, 0x114, 0x80F0F0F0, buf);
         print_debug_text(0xC4, 0x123, 0x8000C0C0, debug_label_near_int);
-        sprintf(buf, debug_fog_value_format, promote_float60(100.0f - (level_fog_near_intensity / 2.55f)));
+        sprintf(buf, debug_fog_value_format, func_00120778(100.0f - (level_fog_near_intensity / 2.55f)));
         print_debug_text(0x11C, 0x123, 0x80F0F0F0, buf);
         print_debug_text(0xC4, 0x132, 0x8000C0C0, debug_label_far_dist);
-        sprintf(buf, debug_fog_value_format, promote_float60(level_fog_far_distance * 0.0009765625f));
+        sprintf(buf, debug_fog_value_format, func_00120778(level_fog_far_distance * 0.0009765625f));
         print_debug_text(0x11C, 0x132, 0x80F0F0F0, buf);
         print_debug_text(0xC4, 0x141, 0x8000C0C0, debug_label_far_int);
-        sprintf(buf, debug_fog_value_format, promote_float60(100.0f - (level_fog_far_intensity / 2.55f)));
+        sprintf(buf, debug_fog_value_format, func_00120778(100.0f - (level_fog_far_intensity / 2.55f)));
         print_debug_text(0x11C, 0x141, 0x80F0F0F0, buf);
         print_debug_text(0xC4, 0x150, 0x8000C0C0, debug_label_color_r);
         sprintf(buf, fmt, (s32)level_fog_color_red[0]);
@@ -1435,7 +1423,6 @@ void capture_draw_buffer(void *a) {
     VU1_initChain();
     transfer_draw_buffer_chunks(a, draw_buffer_address, frame_size << 11);
 }
-extern int GetEffectTex(int);
 
 extern unsigned char effect3_font_metrics[];
 

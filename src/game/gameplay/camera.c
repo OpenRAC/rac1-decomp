@@ -630,7 +630,6 @@ int step_camera_blend(Camera *to, CamBlendLerp *lerp) {
     return 0;
 }
 
-extern void fast_dec_timer(int *arg0);
 extern char hero_gravity_dir[];
 
 typedef struct {
@@ -897,8 +896,6 @@ void update_camera_tracking_state(void) {
 }
 
 extern int g_game_mode MACRO_ADDR;
-
-extern float resolve_camera_surface_height(void *, int);
 
 /* Camera-inside-water test: cast a ray through the eye position
    (gCamera.pos) from 0.75 above to 0.75 below (up to six hits); on the

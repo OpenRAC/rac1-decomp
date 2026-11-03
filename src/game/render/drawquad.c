@@ -90,8 +90,6 @@ extern u8 camera_position[];
 extern BillboardViewContext view_context;
 extern BillboardRecord billboard_records[];
 
-extern s64 func_001F4868(s32);
-
 extern s32 truncate_float_to_s32(f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/append_billboard_batch.c, append_billboard_batch. */

@@ -5,6 +5,7 @@
 #include "common.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 /* Draw callback: builds a view matrix from the moby (+0xC0), sets up two quad packets (only the first is drawn) and
    draws it 5 x 6 times as a strip of jittering sparks (corner z grows by 1.0 per outer pass, y gets +-0.2 random
    jitter, u gets +-0.5 jitter per pass). Packet field meanings guessed from the layout. */
@@ -21,9 +22,8 @@ typedef struct Vq {
     float x, y, z, w;
 } __attribute__((aligned(16))) Vq;
 
-extern long GetEffectTex(int);
+extern long GetEffectTex_v(int) __asm__("func_001F4868");
 
-extern void draw_world_quad(void *, void *, int);
 extern float hoven_jitter_quad_uvs[][2];
 extern Vq hoven_jitter_quad_back_corners[];
 extern Vq hoven_jitter_quad_front_corners[];
@@ -50,7 +50,7 @@ void draw_hoven_jittered_quad_layers(char *m) {
     copy_matrix_rotation(M, m + 0xC0);
     qcopy(&M[12], m + 0x10);
     M[15] = 1.0f;
-    tex = GetEffectTex(0xE);
+    tex = GetEffectTex_v(0xE);
     P[0].tex = P[1].tex = tex;
     c0 = hoven_jitter_quad_color;
     c1 = hoven_jitter_quad_back_color;

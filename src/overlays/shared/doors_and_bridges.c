@@ -11,6 +11,9 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "game/audio/music.h"
+#include "game/math/fastfunc.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern Hero g_hero;
 
 /* Timed activation pads: stepped on, they count down until the group is activated. */
@@ -75,15 +78,7 @@ void AmbientStreamL07Update(unsigned char *moby) {
 extern int D_0015EE84_30D370 SDATA(D_0015EE84);
 extern unsigned char saved_mission_state_r[] __asm__("D_0014C150");
 
-extern void MobyGroup_SetByteBC_r(int, int) __asm__("func_L01_0026F040");
-extern float FastAbsF_r(float) __asm__("func_001F9B88");
-extern float func_001F9D48(void *, void *);
-
-extern int func_001F9908(int *arg0);
 extern void Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
-extern int scale_ticks_r(int) __asm__("func_001F9850");
-
-extern void jet_clear_persistent_r(int) __asm__("func_L00_002512D8");
 
 /* Timed activation pad update: runs the 10-state machine on the data block at moby+0x78.
  * The timer is a MIN() of two expressions with calls in them, so the calls are made twice;
@@ -115,7 +110,7 @@ void timed_activation_pads_update(unsigned char *moby) {
         p = &g_hero;
         if (p->air_frames.s == 0)
             flag = (unsigned char *)p->ground_moby == moby;
-        if (0.7853982f < FastAbsF_r(((Moby *)moby)->rot.y)) {
+        if (0.7853982f < FastAbsF(((Moby *)moby)->rot.y)) {
             if (vec_distance_xy(moby + 0x10, (char *)&p->motion.pos) < 2.0f) {
                 if (p->state.current == 0x11) {
                     if (p->anim_frame < 7.0f) {
@@ -123,9 +118,9 @@ void timed_activation_pads_update(unsigned char *moby) {
                         set_identity_matrix(q);
                         matrix_from_basis_rows(q, moby + 0xC0);
                         transform_vector(o, o, q);
-                        if (FastAbsF_r(o[0]) < 0.6f) {
-                            if (FastAbsF_r(o[1]) < 0.6f) {
-                                if (FastAbsF_r(o[2]) < 0.957f)
+                        if (FastAbsF(o[0]) < 0.6f) {
+                            if (FastAbsF(o[1]) < 0.6f) {
+                                if (FastAbsF(o[2]) < 0.957f)
                                     flag = 1;
                             }
                         }
@@ -143,9 +138,9 @@ void timed_activation_pads_update(unsigned char *moby) {
                 set_moby_list_state(((Moby *)moby)->group, 8);
             } else if (fast_dec_timer(&d->step_timer)) {
                 Moby_PlaySound_r(0, 0, (int)moby);
-                d->step_timer = scale_ticks_r(0x2D) < scale_ticks_r(5) + d->timer / scale_ticks_r(0x28)
-                                    ? scale_ticks_r(0x2D)
-                                    : scale_ticks_r(5) + d->timer / scale_ticks_r(0x28);
+                d->step_timer = scale_ticks(0x2D) < scale_ticks(5) + d->timer / scale_ticks(0x28)
+                                    ? scale_ticks(0x2D)
+                                    : scale_ticks(5) + d->timer / scale_ticks(0x28);
             }
         }
     }
@@ -153,7 +148,7 @@ void timed_activation_pads_update(unsigned char *moby) {
     switch (((Moby *)moby)->state) {
         case 0:
             set_moby_color(moby, 0x80, 0x80, 0x80);
-            MobyGroup_SetByteBC_r(((Moby *)moby)->group, 0);
+            MobyGroup_SetByteBC(((Moby *)moby)->group, 0);
             set_moby_list_state(((Moby *)moby)->group, 1);
             break;
         case 1:
@@ -161,13 +156,13 @@ void timed_activation_pads_update(unsigned char *moby) {
             set_moby_color(moby, 0x80, 0x80, 0x80);
             if (flag) {
                 if (d->duration > 0)
-                    d->timer = scale_ticks_r(d->duration * 60);
+                    d->timer = scale_ticks(d->duration * 60);
                 else
-                    d->timer = scale_ticks_r(900);
+                    d->timer = scale_ticks(900);
                 on = 1;
                 set_moby_color(moby, 0, 0xFF, 0);
                 d->active = on;
-                MobyGroup_SetByteBC_r(((Moby *)moby)->group, 0);
+                MobyGroup_SetByteBC(((Moby *)moby)->group, 0);
                 ((Moby *)moby)->command = on;
                 Moby_PlaySound_r(3, 0, (int)moby);
                 set_moby_list_state(((Moby *)moby)->group, 2);
@@ -196,7 +191,7 @@ void timed_activation_pads_update(unsigned char *moby) {
             }
             break;
         case 6:
-            d->blink_timer = scale_ticks_r(0x14);
+            d->blink_timer = scale_ticks(0x14);
             d->blink_phase = 0;
             set_moby_color(moby, 0x80, 0xFF, 0x80);
             ((Moby *)moby)->state = 7;
@@ -204,10 +199,10 @@ void timed_activation_pads_update(unsigned char *moby) {
         case 7:
             if (((Moby *)moby)->mission != 0xFF) {
                 if (saved_mission_state_r[((Moby *)moby)->mission + (D_0015EE84_30D370 << 4)] != 0xFF)
-                    jet_clear_persistent_r(((Moby *)moby)->mission);
+                    jet_clear_persistent(((Moby *)moby)->mission);
             }
             if (FastDecTimer(&d->blink_timer)) {
-                d->blink_timer = scale_ticks_r(0x14);
+                d->blink_timer = scale_ticks(0x14);
                 switch (d->blink_phase) {
                     case 0:
                         set_moby_color(moby, 0, 0xFF, 0);
@@ -235,7 +230,7 @@ void timed_activation_pads_update(unsigned char *moby) {
 extern int g_current_level_index MACRO_ADDR;
 extern unsigned char saved_mission_state[];
 
-extern void vec_scale_to_length(f32, void *, void *);
+extern void vec_scale_to_length_v(f32, void *, void *) __asm__("func_L00_001FF4B0");
 
 extern u8 *level_mobys MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
@@ -298,7 +293,7 @@ void door_update(u8 *moby) {
             vectors[6] = data->dir.z;
             *(quadword *)vectors = *(quadword *)(vectors + 4);
             matrix_mul_vec3(vectors, vectors, moby + 0xc0);
-            vec_scale_to_length(data->open_speed * g_frame_time, vectors + 4, vectors);
+            vec_scale_to_length_v(data->open_speed * g_frame_time, vectors + 4, vectors);
             FastVecAdd(moby + 0x10, moby + 0x10, vectors + 4);
             data->travel -= data->open_speed * g_frame_time;
             if (!(data->travel < 0.0f))
@@ -337,7 +332,7 @@ void door_update(u8 *moby) {
                 vectors[6] = data->dir.z;
                 *(quadword *)vectors = *(quadword *)(vectors + 4);
                 distance = FastVecLength(vectors);
-                vec_scale_to_length(-(data->close_speed * g_frame_time), vectors, vectors);
+                vec_scale_to_length_v(-(data->close_speed * g_frame_time), vectors, vectors);
                 matrix_mul_vec3(vectors + 4, vectors, moby + 0xc0);
                 FastVecAdd(moby + 0x10, moby + 0x10, vectors + 4);
                 data->travel += data->close_speed * g_frame_time;
@@ -361,9 +356,8 @@ extern unsigned char saved_mission_state[];
 
 extern void FastVecScale_v(f32, void *, void *) __asm__("func_001F9C30");
 
-extern void vec_scale_to_length(f32, void *, void *);
+extern void vec_scale_to_length_v(f32, void *, void *) __asm__("func_L00_001FF4B0");
 
-extern void update_entity_matrix(void *, void *, void *, void *);
 extern u8 *level_mobys MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
 
@@ -426,7 +420,7 @@ void bridge_update(u8 *moby) {
             vectors[6] = data->dir.z;
             *(quadword *)vectors = *(quadword *)(vectors + 4);
             matrix_mul_vec3(vectors, vectors, moby + 0xc0);
-            vec_scale_to_length(data->open_speed * g_frame_time, vectors + 4, vectors);
+            vec_scale_to_length_v(data->open_speed * g_frame_time, vectors + 4, vectors);
             FastVecAdd(moby + 0x10, moby + 0x10, vectors + 4);
             data->travel -= data->open_speed * g_frame_time;
             if (data->travel < 0.0f) {
@@ -463,7 +457,7 @@ void bridge_update(u8 *moby) {
                 vectors[6] = data->dir.z;
                 *(quadword *)vectors = *(quadword *)(vectors + 4);
                 distance = FastVecLength(vectors);
-                vec_scale_to_length(-(data->close_speed * g_frame_time), vectors, vectors);
+                vec_scale_to_length_v(-(data->close_speed * g_frame_time), vectors, vectors);
                 matrix_mul_vec3(vectors + 4, vectors, moby + 0xc0);
                 FastVecAdd(moby + 0x10, moby + 0x10, vectors + 4);
                 data->travel += data->close_speed * g_frame_time;

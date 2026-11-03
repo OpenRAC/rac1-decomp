@@ -267,24 +267,11 @@ extern float veldin1_zero_vec[] MACRO_ADDR;
 
 extern void update_veldin_robot_damage_and_targeting(void *);
 
-extern void EaseManipulatorOffsets(char *, char *, int, float, float);
-
-extern void set_ground_height_band(void *);
 extern int func_001FA898(float);
 
-extern float SteerAngleWithVelocity(void *, float, void *, float, float, float);
+extern float SteerAngleWithVelocity_v(void *, float, void *, float, float, float) __asm__("func_L00_0025CE58");
 
-extern float ApproachWithVelocity(float, float, float, float, float *, float *);
-
-extern void vec_scale_to_length(void *, void *, float);
-
-extern float vec_distance_xy(void *, void *);
-
-extern int coll_line(void *, void *, int, int, int);
-
-extern int mine_fall(void *, void *);
-
-extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
+extern float ApproachWithVelocity_v(float, float, float, float, float *, float *) __asm__("func_00214D88");
 
 extern void update_veldin_robot_effects(char *);
 
@@ -375,12 +362,12 @@ void veldin_robot_enemy_update(Moby *moby) {
             vel = 0.0f;
             path = level_paths[vars->pathIdx];
             qcopy(&delta, &path->pts[vars->pathPt]);
-            SteerAngleWithVelocity(&moby->rot.z, fast_atan2(delta.f[0] - moby->pos.x, delta.f[1] - moby->pos.y),
-                                   &vars->turnVel, g_frame_time_sq * (12.566371f), g_frame_time_sq * (12.566371f),
-                                   g_frame_time * 12.566371f);
+            SteerAngleWithVelocity_v(&moby->rot.z, fast_atan2(delta.f[0] - moby->pos.x, delta.f[1] - moby->pos.y),
+                                     &vars->turnVel, g_frame_time_sq * (12.566371f), g_frame_time_sq * (12.566371f),
+                                     g_frame_time * 12.566371f);
             FastVecSub(&dir, &delta, &moby->pos);
-            ApproachWithVelocity(FastVecDist(&moby->pos, &path->pts[path->count - 1]), g_frame_time_sq * 8.0f,
-                                 g_frame_time_sq * 16.0f, g_frame_time * 12.0f, &vel, &vars->speed);
+            ApproachWithVelocity_v(FastVecDist(&moby->pos, &path->pts[path->count - 1]), g_frame_time_sq * 8.0f,
+                                   g_frame_time_sq * 16.0f, g_frame_time * 12.0f, &vel, &vars->speed);
             if (FastVecLength(&dir) < vars->speed + vars->speed) {
                 vars->pathPt++;
                 if (vars->pathPt == path->count) {
@@ -393,10 +380,10 @@ void veldin_robot_enemy_update(Moby *moby) {
             FastVecAdd(&moby->pos, &moby->pos, &dir);
             break;
         case VELDIN_ROBOT_STATE_FACE_TARGET:
-            SteerAngleWithVelocity(&moby->rot.z,
-                                   fast_atan2(target->pos.f[0] - moby->pos.x, target->pos.f[1] - moby->pos.y),
-                                   &vars->turnVel, g_frame_time_sq * (12.566371f), g_frame_time_sq * (12.566371f),
-                                   g_frame_time * 12.566371f);
+            SteerAngleWithVelocity_v(&moby->rot.z,
+                                     fast_atan2(target->pos.f[0] - moby->pos.x, target->pos.f[1] - moby->pos.y),
+                                     &vars->turnVel, g_frame_time_sq * (12.566371f), g_frame_time_sq * (12.566371f),
+                                     g_frame_time * 12.566371f);
             if (vec_distance_xy(&moby->pos, &g_hero.motion.pos) < 20.0f) {
                 if (moby->prev_seq != 4)
                     MobyBlendAnimation(moby, 4, 0, scale_ticks(20));
@@ -411,10 +398,10 @@ void veldin_robot_enemy_update(Moby *moby) {
             }
             break;
         case VELDIN_ROBOT_STATE_WAIT_TO_START_COLLISION_PROBES:
-            SteerAngleWithVelocity(&moby->rot.z,
-                                   fast_atan2(target->pos.f[0] - moby->pos.x, target->pos.f[1] - moby->pos.y),
-                                   &vars->turnVel, g_frame_time_sq * (12.566371f), g_frame_time_sq * (12.566371f),
-                                   g_frame_time * 12.566371f);
+            SteerAngleWithVelocity_v(&moby->rot.z,
+                                     fast_atan2(target->pos.f[0] - moby->pos.x, target->pos.f[1] - moby->pos.y),
+                                     &vars->turnVel, g_frame_time_sq * (12.566371f), g_frame_time_sq * (12.566371f),
+                                     g_frame_time * 12.566371f);
             if (moby->anim_flags & 2) {
                 vars->timer = 0;
                 moby->state = VELDIN_ROBOT_STATE_PROCESS_COLLISION_PROBES;
@@ -432,8 +419,8 @@ void veldin_robot_enemy_update(Moby *moby) {
             } else {
                 desired_heading = FastSubRots(desired_heading, veldin1_robot_beam_sweep_angle);
             }
-            SteerAngleWithVelocity(&moby->rot.z, desired_heading, &vars->turnVel, g_frame_time_sq * (1.5707964f),
-                                   g_frame_time_sq * (1.5707964f), g_frame_time * 12.566371f);
+            SteerAngleWithVelocity_v(&moby->rot.z, desired_heading, &vars->turnVel, g_frame_time_sq * (1.5707964f),
+                                     g_frame_time_sq * (1.5707964f), g_frame_time * 12.566371f);
             MobyTransformScaledVertex((char *)moby, 0, (char *)mtx);
             qcopy(&delta, &moby->rot_row0);
             delta.f[2] = 0.0f;
@@ -486,10 +473,10 @@ void veldin_robot_enemy_update(Moby *moby) {
             break;
         }
         case VELDIN_ROBOT_STATE_WAIT_TO_RETURN_TO_FACE_TARGET:
-            SteerAngleWithVelocity(&moby->rot.z,
-                                   fast_atan2(target->pos.f[0] - moby->pos.x, target->pos.f[1] - moby->pos.y),
-                                   &vars->turnVel, g_frame_time_sq * (12.566371f), g_frame_time_sq * (12.566371f),
-                                   g_frame_time * 12.566371f);
+            SteerAngleWithVelocity_v(&moby->rot.z,
+                                     fast_atan2(target->pos.f[0] - moby->pos.x, target->pos.f[1] - moby->pos.y),
+                                     &vars->turnVel, g_frame_time_sq * (12.566371f), g_frame_time_sq * (12.566371f),
+                                     g_frame_time * 12.566371f);
             if (moby->anim_flags & 2) {
                 moby->state = VELDIN_ROBOT_STATE_FACE_TARGET;
                 if (moby->prev_seq != 1)
@@ -521,15 +508,9 @@ void veldin_robot_enemy_update(Moby *moby) {
     update_veldin_robot_effects((char *)moby);
 }
 
-extern char *MobyGetHitMessage(void *, int, int);
-extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
-extern void HeadingFromVector(void *, float *, void *, void *);
-extern void InitKnockback(void *, void *, float, int, int, int);
-extern void RerollEffectCounter(void *m, short *p);
 extern void SetDeathBits(void *, int, int);
-extern void StepColorFade(void *, void *);
-extern int FindNearestEligibleMoby(float, char *, void *, int, int, void *, int);
-extern int FindNearestTargetMoby(void *, float, void *);
+
+extern int FindNearestTargetMoby_v(void *, float, void *) __asm__("func_L00_00260D30");
 extern float veldin1_robot_target_range SDATA(veldin1_robot_target_range);
 extern float veldin_robot_knockback_gravity_gp SDATA(veldin_robot_knockback_gravity_gp);
 extern float veldin_robot_knockback_xy_speed_step_gp SDATA(veldin_robot_knockback_xy_speed_step_gp);
@@ -674,7 +655,7 @@ void update_veldin_robot_damage_and_targeting(void *mv) {
         if (vars->unk1DA != 0) {
             range = 37.0f;
         }
-        if (FindNearestTargetMoby(m, range, &vars->target) != 2 && range < vec_distance_xy(&m->pos, &vars->target)) {
+        if (FindNearestTargetMoby_v(m, range, &vars->target) != 2 && range < vec_distance_xy(&m->pos, &vars->target)) {
             vars->unk114 = 2;
         }
     }
@@ -740,9 +721,6 @@ void update_veldin_robot_effects(char *m) {
 }
 extern float veldin1_robot_effect_quad_corners[][4];
 
-extern int GetEffectTex(int);
-
-extern void draw_world_quad(void *, void *, int);
 typedef float W[4] __attribute__((aligned(16)));
 typedef struct {
     int c[4];
@@ -832,7 +810,7 @@ void update_beam_slot_controller(unsigned char *m) {
     }
 }
 
-extern char *PartType23Spawn(void *, int, void *, int, float, float, float, float);
+extern char *PartType23Spawn_v(void *, int, void *, int, float, float, float, float) __asm__("func_L00_0026DEA0");
 extern float veldin1_zero_vec_b[] __asm__("D_L00_0015F660") MACRO_ADDR;
 typedef struct {
     char pad[0x30];
@@ -889,7 +867,7 @@ void update_phase_effect_controller(M2 *m) {
                             h = rand_range(0, 4);
                             if (random_integer_below(2))
                                 h = -h;
-                            q = PartType23Spawn(buf, h, veldin1_zero_vec_b, col, 0.75f, 1.0f, 1.03f, 120000.0f);
+                            q = PartType23Spawn_v(buf, h, veldin1_zero_vec_b, col, 0.75f, 1.0f, 1.03f, 120000.0f);
                             if (q) {
                                 q[3] = 0x44;
                                 r = q + 0x20;

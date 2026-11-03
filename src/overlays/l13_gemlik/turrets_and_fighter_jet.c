@@ -38,6 +38,8 @@
 #include "overlays/l13_gemlik/qwark_starfighter_and_forcefield.h"
 #include "overlays/l13_gemlik/moby_group_switches.h"
 #include "overlays/l13_gemlik/joint_particle.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/ui/help.h"
 extern char cd_read_state[];
 extern char gHeroPos[];
 extern char g_hero_rot[];
@@ -288,14 +290,10 @@ void update_moby_volume_trigger(Moby *moby) {
     }
 }
 
-extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void compute_elevator_camera_pose(unsigned char *moby, float *v, float *w);
-
-extern float vec_distance_xy(void *, void *);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
-extern void update_entity_matrix(char *, void *, void *, void *);
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern float gemlik_camera_pos[];
@@ -525,22 +523,17 @@ typedef struct Data_2B5368 {
 extern void update_blarg_turret_target_and_state_r(void *) __asm__("func_L13_002B5A88");
 extern void *spawn_blarg_turret_child_r(void *) __asm__("func_L13_002B5B08");
 extern void Manipulator_ApplyScale_r(float, void *, int, void *) __asm__("func_L00_00264B40");
-extern void MobyBlendAnimation_r(void *, int, int, int) __asm__("func_00213DE0");
-extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
-extern float FastDiffRots_r(float, float) __asm__("func_001FA850");
+
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-extern int is_point_inside_clip_volume_r(void *, int) __asm__("func_00215570");
-extern int rand_range_r(int, int) __asm__("func_L00_00258BC8");
-extern float func_L00_0025CE58(void *, float, void *, float, float, float);
+
+extern float SteerAngleWithVelocity_v(void *, float, void *, float, float, float) __asm__("func_L00_0025CE58");
 extern float ApproachValue_r(float *, float, float) __asm__("func_00214D28");
-extern float FastSubRots_r(float, float) __asm__("func_001FA790");
-extern float FastAddRots_r(float, float) __asm__("func_001FA748");
+
 extern void fire_blarg_turret_projectile_r(void *) __asm__("func_L13_002B5950");
 extern void SetDeathBits_r(void *, int, int) __asm__("func_L00_002584A8");
 extern void spawn_explosion_r(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
                               float, int, int, int, int) __asm__("func_L00_0025F4A8");
-extern void DeleteMoby_r(void *) __asm__("func_0020D678");
-extern void func_L00_00258DB0(float *, float, float);
+
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 
 /* Update for moby Blarg Turret (blarg_turret) on level 13: turns toward its target and fires its gun moby. */
@@ -561,60 +554,60 @@ void blarg_turret_update(Moby *m) {
             data->gun = spawn_blarg_turret_child_r(m);
             data->f54 = m->rot.z;
             if (m->prev_seq != 0) {
-                MobyBlendAnimation_r(m, 0, 0, 10);
+                MobyBlendAnimation(m, 0, 0, 10);
             }
             m->state = 1;
             break;
         case 1:
-            r = FastDiffRots_r(fast_atan2_r(t->pos.x - m->pos.x, t->pos.y - m->pos.y), data->f54);
+            r = FastDiffRots(fast_atan2(t->pos.x - m->pos.x, t->pos.y - m->pos.y), data->f54);
             if (r < 1.5707964f && vec_distance_xy_r(&m->pos, &t->pos) < 20.0f &&
-                (data->volume == -1 || is_point_inside_clip_volume_r(&g_hero.motion.body_center, data->volume) != 0)) {
+                (data->volume == -1 || is_point_inside_clip_volume(&g_hero.motion.body_center, data->volume) != 0)) {
                 data->f68 = 8.0f;
                 if (m->prev_seq != 1) {
-                    int a = rand_range_r(0, 3);
-                    MobyBlendAnimation_r(m, 1, a, rand_range_r(7, 13));
+                    int a = rand_range(0, 3);
+                    MobyBlendAnimation(m, 1, a, rand_range(7, 13));
                 }
                 m->state = 3;
             }
-            SteerAngleWithVelocity(&m->rot.z, data->f54, &data->f60, g_frame_time_sq_r * 12.566371f,
-                                   g_frame_time_sq_r * 12.566371f, g_frame_time_r * 12.566371f);
+            SteerAngleWithVelocity_v(&m->rot.z, data->f54, &data->f60, g_frame_time_sq_r * 12.566371f,
+                                     g_frame_time_sq_r * 12.566371f, g_frame_time_r * 12.566371f);
             if (data->gun == 0 || data->gun->oclass != MOBY_CLASS_BLARG_GUNNER ||
                 (unsigned char)data->gun->state == 0xFE || (unsigned char)data->gun->state == 0xFD ||
                 (unsigned char)data->gun->state == 2) {
                 if (m->prev_seq != 0) {
-                    MobyBlendAnimation_r(m, 0, 0, rand_range_r(7, 13));
+                    MobyBlendAnimation(m, 0, 0, rand_range(7, 13));
                 }
                 data->f64 = 1.0f;
                 m->state = 5;
             }
             break;
         case 3:
-            r = FastDiffRots_r(fast_atan2_r(t->pos.x - m->pos.x, t->pos.y - m->pos.y), data->f54);
+            r = FastDiffRots(fast_atan2(t->pos.x - m->pos.x, t->pos.y - m->pos.y), data->f54);
             if (r >= 1.5707964f || vec_distance_xy_r(&m->pos, &t->pos) > 22.0f ||
-                (data->volume != -1 && is_point_inside_clip_volume_r(&g_hero.motion.body_center, data->volume) == 0)) {
+                (data->volume != -1 && is_point_inside_clip_volume(&g_hero.motion.body_center, data->volume) == 0)) {
                 if (m->prev_seq != 0) {
-                    MobyBlendAnimation_r(m, 0, 0, rand_range_r(7, 13));
+                    MobyBlendAnimation(m, 0, 0, rand_range(7, 13));
                 }
                 m->state = 1;
             } else {
                 float lim;
                 ApproachValue_r(&data->f68, 20.0f, g_frame_time_r * 6.0f);
-                r = FastSubRots_r(fast_atan2_r(t->pos.x - m->pos.x, t->pos.y - m->pos.y), data->f54);
+                r = FastSubRots(fast_atan2(t->pos.x - m->pos.x, t->pos.y - m->pos.y), data->f54);
                 lim = data->f6C * 0.017453292f;
                 if (lim < r) {
                     r = lim;
                 } else if (r < -lim) {
                     r = -lim;
                 }
-                r = FastAddRots_r(r, data->f54);
-                SteerAngleWithVelocity(&m->rot.z, r, &data->f60, g_frame_time_sq_r * 12.566371f,
-                                       g_frame_time_sq_r * 12.566371f, g_frame_time_r * 12.566371f);
+                r = FastAddRots(r, data->f54);
+                SteerAngleWithVelocity_v(&m->rot.z, r, &data->f60, g_frame_time_sq_r * 12.566371f,
+                                         g_frame_time_sq_r * 12.566371f, g_frame_time_r * 12.566371f);
                 fire_blarg_turret_projectile_r(m);
                 if (data->gun == 0 || data->gun->oclass != MOBY_CLASS_BLARG_GUNNER ||
                     (unsigned char)data->gun->state == 0xFE || (unsigned char)data->gun->state == 0xFD ||
                     (unsigned char)data->gun->state == 2) {
                     if (m->prev_seq != 0) {
-                        MobyBlendAnimation_r(m, 0, 0, rand_range_r(7, 13));
+                        MobyBlendAnimation(m, 0, 0, rand_range(7, 13));
                     }
                     data->f64 = 1.0f;
                     m->state = 5;
@@ -626,12 +619,12 @@ void blarg_turret_update(Moby *m) {
             rand_vec(&v.x, 0.5f, 1.0f);
             SetDeathBits_r(m, 0, -1);
             spawn_explosion_r(m, &v, &m->pos, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1, 0);
-            DeleteMoby_r(m);
+            DeleteMoby(m);
             return;
         }
         case 5:
-            SteerAngleWithVelocity(&m->rot.z, data->f54, &data->f60, g_frame_time_sq_r * 12.566371f,
-                                   g_frame_time_sq_r * 12.566371f, g_frame_time_r * 25.132742f);
+            SteerAngleWithVelocity_v(&m->rot.z, data->f54, &data->f60, g_frame_time_sq_r * 12.566371f,
+                                     g_frame_time_sq_r * 12.566371f, g_frame_time_r * 25.132742f);
             data->f64 -= 1.0f;
             if (data->f64 <= 0.0f) {
                 m->state = 4;
@@ -649,8 +642,6 @@ void blarg_turret_update(Moby *m) {
         data->gun = 0;
     }
 }
-
-extern float vec_distance_xy(void *, void *);
 
 extern int gemlik_frame_count MACRO_ADDR;
 extern int gemlik_turret_fire_interval SDATA(gemlik_turret_fire_interval);
@@ -675,7 +666,6 @@ void fire_blarg_turret_projectile(char *moby) {
         spawn_gemlik_projectile(data->shot_time, v, v2, moby);
     }
 }
-extern int FindNearestTargetMoby(void *, void *, float);
 
 /* Blarg turret: target the nearest moby in range (wider in state 3), else the hero; apply commands. */
 void update_blarg_turret_target_and_state(unsigned char *moby) {
@@ -721,13 +711,8 @@ char *spawn_blarg_turret_child(char *parent) {
     }
     return (char *)m;
 }
-extern char *MobyGetHitMessage(void *, int, int);
-extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
 
 extern void SetDeathBits(void *, int, int);
-extern void RerollEffectCounter(void *m, short *p);
-
-extern void StepColorFade(void *, void *);
 
 // Per-frame update of a moby's timed state: checks its target, counts down and switches state.
 void process_blarg_gunner_hits(char *m, char *p) {
@@ -806,10 +791,9 @@ void process_blarg_gunner_hits(char *m, char *p) {
     ((struct Moby *)m)->hit_slot = 0xFF;
     StepColorFade(m, p + 0x60);
 }
-extern int rand_range(int, int);
 
-extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
-                            int, int, int, int);
+extern void spawn_explosion_v(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
+                              float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
 /* Updates the gem-lock turret: idle animations, then a burst of particles when destroyed. */
 void blarg_gunner_update(unsigned char *raw) {
@@ -852,8 +836,8 @@ void blarg_gunner_update(unsigned char *raw) {
             if (moby->anim_flags & 2) {
                 FastVecSub(explosion_offset, gemlik_camera_pos, &moby->pos);
                 Moby_GetJointWorldPos(moby, 0, explosion_spawn_position);
-                spawn_explosion(moby, explosion_offset, explosion_spawn_position, 0.0f, 0.0f, 0x14, 9, 0x20, 10.0f,
-                                7.0f, 20.0f, -1, 2.0f, 40.0f, 0, 1, -1, 0);
+                spawn_explosion_v(moby, explosion_offset, explosion_spawn_position, 0.0f, 0.0f, 0x14, 9, 0x20, 10.0f,
+                                  7.0f, 20.0f, -1, 2.0f, 40.0f, 0, 1, -1, 0);
                 DeleteMoby(moby);
             }
             break;
@@ -914,32 +898,13 @@ void update_robosquawker_ground_height(char *m, char *d) {
         qzero(&moby_vars->pad_120);
     }
 }
-extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
 
-extern void set_ground_height_band(void *);
-
-extern void HeadingFromVector(void *, float *, void *, void *);
 extern int func_001160D8(void);
-extern void InitKnockback(float, void *, void *, int, int, int);
+extern void InitKnockback_v(float, void *, void *, int, int, int) __asm__("func_L00_0025D5B0");
 
-extern float vec_length_xy(void *);
 extern int fast_dec_timer_i(void *) __asm__("func_001F9908");
-extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
 
-extern float ApproachValue(float *, float, float);
-extern void ClampVectorLength(void *, float);
-extern int coll_sphere(float, void *, int, void *);
-extern int move_4318(void *, void *, float, float, float, int);
-
-extern float jump_speed_4318(void *, void *, void *, float, float);
-extern int mine_fall(void *, void *);
-
-extern int move_w(void *, void *, void *, void *, float);
-
-extern void PostHitMessage(void *, int, int, void *, void *, float);
-
-extern void SpawnExplosionFx(void *, void *, int, float, float);
-extern void vec_scale_to_length(void *, void *, float);
+extern int move_4318_v(void *, void *, float, float, float, int) __asm__("func_L00_00259868");
 
 extern int gemlik_game_mode MACRO_ADDR;
 
@@ -1140,7 +1105,7 @@ void robosquawker_update(Moby *m) {
                 v->f13C = g_frame_time * 5.5f;
                 va = hit->pos;
                 HeadingFromVector(&va, &ang, &v->f138, &v->f13C);
-                InitKnockback(ang, m, v->x120, (func_001160D8() & 1) + 9, 1, 0);
+                InitKnockback_v(ang, m, v->x120, (func_001160D8() & 1) + 9, 1, 0);
                 v->f170 = 11.0f;
                 v->f174 = 18.0f;
                 m->state = 0x63;
@@ -1155,7 +1120,7 @@ void robosquawker_update(Moby *m) {
             } else {
                 va = hit->pos;
                 HeadingFromVector(&va, &ang, &v->f138, &v->f13C);
-                InitKnockback(ang, m, v->x120, (func_001160D8() & 1) + 9, 1, 0);
+                InitKnockback_v(ang, m, v->x120, (func_001160D8() & 1) + 9, 1, 0);
                 v->f170 = 5.0f;
                 v->f174 = 10.0f;
                 m->state = 6;
@@ -1382,7 +1347,7 @@ void robosquawker_update(Moby *m) {
 
             g = ProbeGroundHeight(&m->pos, 0x120, 0.5f);
             ApproachValue(&v->v40.f[2], -(g_frame_time * 8.0f), g_frame_time_v[1] * 10.8f);
-            move_4318(m, &v->v40, 0.6f, 0.5f, 0.0f, 0);
+            move_4318_v(m, &v->v40, 0.6f, 0.5f, 0.0f, 0);
             if (m->prev_seq != 2 && m->pos.z - g <= g_frame_time * 8.0f * multiply_global_factor(45.0f) &&
                 m->prev_seq != 2) {
                 MobyBlendAnimation(m, 2, 0, scale_ticks(5));
@@ -1411,7 +1376,7 @@ void robosquawker_update(Moby *m) {
             } else {
                 ApproachValue(&v->v40.f[2], g_frame_time, g_frame_time_v[1] * 10.8f);
             }
-            move_4318(m, &v->v40, 0.6f, 0.5f, 0.0f, 0);
+            move_4318_v(m, &v->v40, 0.6f, 0.5f, 0.0f, 0);
             m->anim_speed = 6.0f - (m->pos.z - g) / 6.0f * 5.0f;
             if (g + 6.0f <= m->pos.z) {
                 m->pos.z = g + 6.0f;
@@ -1483,7 +1448,7 @@ void robosquawker_update(Moby *m) {
                                           -robosquawker_jump_gravity);
                 v->w144 = 0xD;
                 v->b15D = 0;
-                InitKnockback(m->rot.z, m, v->x120, (func_001160D8() & 1) + 9, 1, 0);
+                InitKnockback_v(m->rot.z, m, v->x120, (func_001160D8() & 1) + 9, 1, 0);
                 v->f170 = 5.0f;
                 v->f174 = 10.0f;
                 update_robosquawker_particle((unsigned char *)m, (char *)v);
@@ -1865,7 +1830,6 @@ void robosquawker_update(Moby *m) {
         }
     }
 }
-extern int GetEffectTex(int);
 
 /* Append the same effect quad four times at x, y, each turned a further quarter turn. */
 void append_four_quarter_turn_effect_quads(unsigned char a, unsigned char b, unsigned char c, unsigned char d, float x,
@@ -1883,7 +1847,6 @@ void append_four_quarter_turn_effect_quads(unsigned char a, unsigned char b, uns
     append_rotated_textured_screen_quad(x, y, w, w, ang, 0x3F, 0x3F, h, 0xFFFFF3, a, b, c, d);
 }
 typedef int u128 __attribute__((mode(TI)));
-extern void add_random_offset_to_vector_xyz(float *v, float s);
 
 extern short jet_exhaust_particle_a;
 extern short jet_exhaust_particle_b;
@@ -1992,8 +1955,6 @@ void draw_fighter_jet_radar_icon(char *rot, char *from, char *moby, int icon, lo
 }
 
 extern void draw_fighter_jet_radar_icon(char *rot, char *from, char *moby, int icon, long color, int tex);
-
-extern float normalize_angle(float);
 
 extern float gemlik_view_basis_row1[];
 extern char jet_target_marker_shape[];
@@ -2196,7 +2157,7 @@ int select_fighter_jet_target_and_draw_indicators(int a, char *p, char *a2, void
 }
 extern unsigned char pad_globals_base[];
 extern char gemlik_camera_rot[];
-extern void fast_dec_timer(int *arg0);
+
 extern int select_fighter_jet_target_and_draw_indicators(int, char *, char *, void *, float, float, float, char *,
                                                          char *);
 
@@ -2272,8 +2233,6 @@ extern long GetEffectTex_l(int) __asm__("func_001F4868");
 extern void append_four_quarter_turn_effect_quads_f(float, float, float, float, unsigned char, unsigned char,
                                                     unsigned char, unsigned char) __asm__("func_L13_002B9590");
 
-extern void *msg_string_id(int) __asm__("func_001FE540");
-extern int FontPrintCenterSmall_c(int, int, long, void *, int) __asm__("func_001F6F40");
 extern char gemlik_turret_hud_pip_strip[];
 extern int jet_hud_palette_backup[];
 extern int *jet_hud_palette SDATA(jet_hud_palette);
@@ -2360,7 +2319,7 @@ void DrawGemlikTurretHud(char *moby) {
                                0.5f, 0.5f);
     b = &g_hero;
     if (b->ship_hp < b->ship_hp_max / 10.0f && (gemlik_frame_count / 90) & 1) {
-        FontPrintCenterSmall_c(0x100, 0x186, 0x80000080L, msg_string_id(0x526E), 0x64);
+        FontPrintCenterSmall(0x100, 0x186, 0x80000080L, msg_string(0x526E), 0x64);
     }
     h = &g_hero;
     f = h->ship_hp - d->hp_shown;
@@ -2449,8 +2408,8 @@ extern short jet_camera_home_target;
 extern char gemlik_coll_hit_result[];
 extern char jet_camera_mode_warning_msg[];
 extern float gemlik_view_tan_half_fov;
-extern float Spring(float *, float *, float, float, float, float);
-extern float SpringAngle(char *, char *, int, float, float, float, float);
+
+extern float SpringAngle_v(char *, char *, int, float, float, float, float) __asm__("func_L00_0025CCF0");
 
 typedef float W4_3E8[4] __attribute__((aligned(16)));
 
@@ -2591,8 +2550,8 @@ void PlayerFighterFlight(void *a0, void *a1) {
         }
         Spring(&o->f6C, &o->f90, a, g_frame_scale_sq * 0.03f, g_frame_scale_sq, ka);
         Spring(&o->f70, &o->f94, b, g_frame_scale_sq * 0.03f, g_frame_scale_sq, kb);
-        SpringAngle((char *)&o->f30, (char *)&o->f98, 0, o->f6C, g_frame_scale_sq * 0.05f, g_frame_scale_sq,
-                    frame_scale);
+        SpringAngle_v((char *)&o->f30, (char *)&o->f98, 0, o->f6C, g_frame_scale_sq * 0.05f, g_frame_scale_sq,
+                      frame_scale);
         o->f34 = FastSubRots(o->f34, o->f70 * (frame_scale * 0.012271847f));
         o->f38 = FastSubRots(o->f38, o->f6C * (frame_scale * 0.012271847f));
         if (o->f34 > 1.3962634f) {
@@ -2678,12 +2637,12 @@ void PlayerFighterFlight(void *a0, void *a1) {
         if (m->state == 2) {
             qcopy(&o->f20, r);
         } else {
-            SpringAngle((char *)&o->f20, (char *)&o->fA0, 0, r[0], g_frame_scale_sq * 0.15f, g_frame_scale_sq * 0.8f,
-                        frame_scale);
-            SpringAngle((char *)&o->f24, (char *)&o->fA4, 0, r[1], g_frame_scale_sq * 0.15f, g_frame_scale_sq * 0.8f,
-                        frame_scale);
-            SpringAngle((char *)&o->f28, (char *)&o->fA8, 0, r[2], g_frame_scale_sq * 0.15f, g_frame_scale_sq * 0.8f,
-                        frame_scale);
+            SpringAngle_v((char *)&o->f20, (char *)&o->fA0, 0, r[0], g_frame_scale_sq * 0.15f, g_frame_scale_sq * 0.8f,
+                          frame_scale);
+            SpringAngle_v((char *)&o->f24, (char *)&o->fA4, 0, r[1], g_frame_scale_sq * 0.15f, g_frame_scale_sq * 0.8f,
+                          frame_scale);
+            SpringAngle_v((char *)&o->f28, (char *)&o->fA8, 0, r[2], g_frame_scale_sq * 0.15f, g_frame_scale_sq * 0.8f,
+                          frame_scale);
         }
         ang[0] = o->f20;
         ang[2] = o->f28;
@@ -2723,8 +2682,8 @@ void PlayerFighterFlight(void *a0, void *a1) {
                         vec_reflect(vel, dir, p + 0x40);
                         vec_scale_to_length(vel, vel, g_frame_time + g_frame_time);
                         vec_scale_to_length(up, p + 0x40, 1.0f);
-                        spawn_explosion(m, vel, 0, 8.0f, 100.0f, 0x1E, 0xA, 0x18, 16.0f, 8.0f, 9.0f, 6, 1.0f, 50.0f, 1,
-                                        1, -1, 0);
+                        spawn_explosion_v(m, vel, 0, 8.0f, 100.0f, 0x1E, 0xA, 0x18, 16.0f, 8.0f, 9.0f, 6, 1.0f, 50.0f,
+                                          1, 1, -1, 0);
                         o->s62 = scale_ticks(240);
                         m->state = 6;
                     }
@@ -2732,8 +2691,8 @@ void PlayerFighterFlight(void *a0, void *a1) {
                 }
             } else {
                 g_hero.ship_hp = 0.0f;
-                spawn_explosion(m, vel, 0, 8.0f, 100.0f, 0x1E, 0xA, 0x18, 16.0f, 8.0f, 9.0f, 6, 1.0f, 50.0f, 1, 1, -1,
-                                0);
+                spawn_explosion_v(m, vel, 0, 8.0f, 100.0f, 0x1E, 0xA, 0x18, 16.0f, 8.0f, 9.0f, 6, 1.0f, 50.0f, 1, 1, -1,
+                                  0);
                 m->flags |= 0x41;
                 o->s62 = scale_ticks(240);
                 m->state = 6;
@@ -2854,10 +2813,6 @@ extern int jet_palette_ready47 SDATA(D_L13_00161454);
 extern int *jet_palette47 SDATA(D_L13_00161450);
 extern short jet_boarding_group_ids_b;
 
-extern int try_set_help_message(int, int);
-
-extern void jet_animate(unsigned char *, float);
-
 extern void PlayerFighterFlight(void *, void *);
 
 /* Handles fighter entry, flight, damage, exit, palette setup and audio cleanup. */
@@ -2901,7 +2856,7 @@ void JetFighterUpdateL13(Jet47 *m) {
                 jet_camera47_r.ticks = scale_ticks(5);
                 ((JetPlayer47 *)(hero_globals_base + 0xE1D))->health = 0.0f;
                 m->flags |= 0x41;
-                spawn_explosion(m, impulse, 0, 0.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, 6, 1.0f, 15.0f, 1, 1, -1, 0);
+                spawn_explosion_v(m, impulse, 0, 0.0f, 0.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, 6, 1.0f, 15.0f, 1, 1, -1, 0);
                 m->animation = 0;
                 d->death_timer = scale_ticks(240);
                 m->state = 6;

@@ -39,10 +39,6 @@ typedef int Q_2343F8 __attribute__((mode(TI)));
 
 extern float g_frame_time MACRO_ADDR;
 
-extern void vec_scale_to_length(void *, void *, float);
-
-extern float vec_length_xy(void *);
-
 /* Integrate player motion, resolve contacts, and measure the resulting movement. */
 void HeroMovePipeline(void) {
     Vec4 previous;
@@ -193,8 +189,6 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern float novalis_hero_speed_bands_6[];
 
-extern float ApproachValue(float *, float, float);
-
 // Per-tick horizontal air movement for the hero's jump states (level 01).
 // Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l01/ui_help_00233de0.c, FUN_L01_00234b40.
 void update_hero_airborne_planar_motion(void) {
@@ -338,22 +332,7 @@ extern HeroSpeedBands novalis_hero_speed_bands;
 extern float novalis_hero_stride_speeds[];
 extern float novalis_hero_ledge_shimmy_frame_speeds[];
 
-extern int fast_dec_timer(int *);
-
 extern int truncate_float_to_s32(float);
-
-extern float SpringAngle(void *, float, void *, int, float, float, float);
-
-extern void ClampVectorLength(void *, float);
-
-extern float vec_distance_xy(void *, void *);
-extern float Spring(float *, float *, float, float, float, float);
-
-extern int coll_sphere_mobys(float, void *, int, void *, void *);
-
-extern int coll_line(void *, void *, int, int, int);
-
-extern int is_moby_in_class_range_500_to_540(int);
 
 extern void update_hero_airborne_planar_motion(void);
 
