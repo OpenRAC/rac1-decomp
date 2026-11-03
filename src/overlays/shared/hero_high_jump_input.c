@@ -33,8 +33,6 @@ extern Ent idle_fidgets[] NOT_SDA;
 extern int idle_fidgets_field_220 NOT_SDA;
 extern int g_current_level_index MACRO_ADDR;
 
-extern int coll_line(void *, void *, int, int, int);
-
 /* Hero idle-fidget picker; returns 1 and writes the chosen index if one is picked. */
 int pick_idle_fidget(int *index) {
     int choices[20];
@@ -247,7 +245,6 @@ int hero_handle_jump_press(void) {
     return 0;
 }
 
-extern int coll_line(void *, void *, int, int, int);
 extern float coll_hit_point_z;
 
 /* Test whether the player can reach the point in front of him. */

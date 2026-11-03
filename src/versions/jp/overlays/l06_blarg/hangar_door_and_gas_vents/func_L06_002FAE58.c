@@ -223,19 +223,19 @@ void alien_queen_update(unsigned char *moby) {
                 probe.dir[0] = FastCos(*(float *)(moby + 0x48));
                 probe.dir[1] = FastSin(*(float *)(moby + 0x48));
                 probe.dir[2] = 0.0f;
-                Moby_GetJointWorldPos_q(moby, 0, buf);
+                Moby_GetJointWorldPos(moby, 0, buf);
                 coll_sphere_mobys_q(buf, 0.5f, 0, moby, &probe);
-                Moby_GetJointWorldPos_q(moby, 1, buf);
+                Moby_GetJointWorldPos(moby, 1, buf);
                 coll_sphere_mobys_q(buf, 0.5f, 0, moby, &probe);
-                Moby_GetJointWorldPos_q(moby, 2, buf);
+                Moby_GetJointWorldPos(moby, 2, buf);
                 coll_sphere_mobys_q(buf, 0.5f, 0, moby, &probe);
-                Moby_GetJointWorldPos_q(moby, 3, buf);
+                Moby_GetJointWorldPos(moby, 3, buf);
                 coll_sphere_mobys_q(buf, 0.5f, 0, moby, &probe);
-                Moby_GetJointWorldPos_q(moby, 4, buf);
+                Moby_GetJointWorldPos(moby, 4, buf);
                 coll_sphere_mobys_q(buf, 0.5f, 0, moby, &probe);
-                Moby_GetJointWorldPos_q(moby, 5, buf);
+                Moby_GetJointWorldPos(moby, 5, buf);
                 coll_sphere_mobys_q(buf, 1.1f, 0, moby, &probe);
-                Moby_GetJointWorldPos_q(moby, 6, buf);
+                Moby_GetJointWorldPos(moby, 6, buf);
                 coll_sphere_mobys_q(buf, 1.1f, 0, moby, &probe);
                 return;
             }
@@ -310,7 +310,7 @@ void alien_queen_update(unsigned char *moby) {
             qcopy(v, moby + 0x10);
             v[2] = v[2] + 1.0f;
             spawn_color_swapped_explosion_burst_q(moby, v, -1, 2.0f, 20.0f);
-            spawn_moby_break_fragments_q(moby, 0x6A2, 1, 0x6A3, 3, 6, 2);
+            spawn_moby_break_fragments(moby, 0x6A2, 1, 0x6A3, 3, 6, 2);
             set_moby_and_links_to_states_4_and_5_q(level_mobys_q_q + (*(int *)(data + 0x100) << 8));
             set_listed_class_16f_state_2_and_clear_data_28_q(*(int *)(data + 0x104));
             moby[0x20] = 0xF;
@@ -327,7 +327,7 @@ void alien_queen_update(unsigned char *moby) {
                 return;
             flag[0xA] = 1;
             PlayBankSound_q(1, 0, 0);
-            ShowBanner_q(0x542D, -1);
+            ShowBanner(0x542D, -1);
             return;
         }
         case 15: {

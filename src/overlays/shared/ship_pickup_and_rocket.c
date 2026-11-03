@@ -143,10 +143,6 @@ extern struct Moby *gemlik_moby_array_start MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern int gemlik_coll_hit_moby __attribute__((section(".data")));
 
-extern int coll_sphere(float, void *, int, void *);
-
-extern void vec_scale_to_length(void *, void *, float);
-
 /* Ship pickup update: waits, homes in on the player ship and gives ammo or health when taken. */
 void ShipPickupUpdate(char *moby) {
     int *vars = ((int *)((Moby *)moby)->pvars);
@@ -366,17 +362,11 @@ typedef struct Tex {
     unsigned char *p5C;
 } Tex;
 
-extern float random_float_between(float, float);
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 
 extern unsigned char *func_L00_0026DA50(void *pos, void *dir, int c, int d, int n, int k, float f);
 
-extern float fast_atan2(float, float);
-
 extern float SteerAngleWithVelocity_v(float *, float, float *, float, float, float) __asm__("func_L00_0025CE58");
-extern void BuildSphericalOffset(void *, float, float, float);
-extern void Moby_GetJointWorldPos_r(void *, int, void *) __asm__("func_L00_00250800");
-extern int func_L00_001EFFF0(void *, void *, int, void *, int);
 
 extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
@@ -453,7 +443,7 @@ void update_ship_rocket(Moby *m) {
         DeleteMoby(m);
         return;
     }
-    Moby_GetJointWorldPos_r(m, 1, &hitpos);
+    Moby_GetJointWorldPos(m, 1, &hitpos);
     if (coll_line(&old, &hitpos, 0, d->owner, 0) != 0) {
         qcopy(&tmp, &gemlik_coll_hit_point);
         spawn_explosion(m, d, &tmp, 2.0f, 10.0f, 10, 3, 0x10, 4.0f, 2.0f, 9.0f, 1.0f, 0, 20.0f, 0, 1, -1, 0);

@@ -581,7 +581,6 @@ struct HeroManip4_5FF0 {
 };
 #define HV ((struct HeroManip4_5FF0 *)&g_hero_r3)
 #define HM (HV->m)
-extern float ApproachValue(float *, float, float);
 
 extern s32 truncate_float_to_s32(f32);
 
@@ -832,10 +831,6 @@ extern void update_hero_bone_attachment(void);
 
 extern void enqueue_hero_glow_draw_callback_once(void);
 
-extern float ApproachValue(float *p, float target, float maxstep);
-
-extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
-
 extern int truncate_float_to_s32(float);
 
 extern void update_hero_moby_probed_height_bounds(void);
@@ -1011,7 +1006,7 @@ void update_hero_in_vehicle_mode(void) {
             clear_u64_value(&buf[16]);
             buf[18] = -G_HERO->rot[2];
             euler_to_matrix(rm, &buf[16]);
-            sce_vu0_mul_matrix_r(buf, buf, rm);
+            sce_vu0_mul_matrix(buf, buf, rm);
             matrix_copy_rows(G_HERO->unk1620 + 0xC0, buf);
             *(long *)(G_HERO->unk1620 + 0x38) = *(long *)(G_HERO->moby + 0x38);
             if (G_HERO->state_current == 0x4F) {
@@ -1117,7 +1112,7 @@ void update_hero_in_vehicle_mode(void) {
 }
 
 extern char D_0013E650[];
-extern void Sound_StopSlot_a(int) __asm__("func_L00_0028EBF0");
+
 /* Clears the hero's eight sound-slot indexes (hero + 0x2218), first calling Sound_StopSlot(row) for
    a slot whose voice row (voice_pool, stride 0x70) still belongs to the moby the sound plays on (hero.moby
    when the slot has none) and is flagged. Needs -fno-sched-interblock (config/file_cflags.txt). */
@@ -1157,7 +1152,7 @@ void release_and_clear_hero_voice_slots(void) {
                 c = ((VoicePoolRow *)(voice_pool + k * 0x70))->state;
             test:
                 if (c != 0) {
-                    Sound_StopSlot_a(k);
+                    Sound_StopSlot(k);
                 }
             }
         }
@@ -1641,7 +1636,6 @@ extern int gFadeLvl MACRO_ADDR;
 extern float D_L00_0015F75C SDATA(D_L00_0015F75C);
 extern int D_L00_0015F760 SDATA(D_L00_0015F760);
 extern int D_L00_0015F764 SDATA(D_L00_0015F764);
-extern float ApproachValue(float *p, float target, float maxstep);
 
 // steps a global float to 1.0, holds a frame, then back to 0.0 through a small state machine
 void update_hero_scalar_pulse(void) {
@@ -1756,7 +1750,7 @@ void HeroDrawQueue_Add(void *vec, int a, float f0, float f1) {
     d->draw_queue_count++;
 }
 typedef int u128_2086C8 __attribute__((mode(TI)));
-extern void Moby_GetJointWorldPos_r(void *, int, void *) __asm__("func_L00_00250800");
+
 extern void HeroDrawQueue_Add_r(void *vec, int a, float f0, float f1) __asm__("func_L00_00208650");
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
@@ -1779,7 +1773,7 @@ void update_hero_and_equipped_item_glows(void) {
         Moby *w = ((Hero *)D_0013F450_2086C8)->items[2].moby;
         if (w != 0 && ((w->flags ^ 1) & 1)) {
             for (i = 0; i < 2; i++) {
-                Moby_GetJointWorldPos_r(w, i, &v);
+                Moby_GetJointWorldPos(w, i, &v);
                 HeroDrawQueue_Add_r(&v, 0x301EAA1E, 0.057f, 0.15f);
             }
         }
@@ -1863,7 +1857,7 @@ void update_hero_and_equipped_item_glows(void) {
                 if (a > 32)
                     a = 32;
                 col = (a << 24) | bs | gs | r;
-                Moby_GetJointWorldPos_r(m, 1, &v);
+                Moby_GetJointWorldPos(m, 1, &v);
                 HeroDrawQueue_Add_r(&v, col, 0.15f, 0.04f);
             }
             break;
@@ -1929,7 +1923,7 @@ void update_hero_and_equipped_item_glows(void) {
             if (0.0f < f && f < 2.09439516f)
                 c5 = 0x281414D2;
             m->glow_color = FastTweenColor(m->glow_color, c5, frame_scale_r * 0.05f);
-            Moby_GetJointWorldPos_r(m, 0, &v);
+            Moby_GetJointWorldPos(m, 0, &v);
             HeroDrawQueue_Add_r(&v, m->glow_color, 0.1f, 0.03f);
             break;
         }
@@ -2040,7 +2034,7 @@ extern CollisionHit coll_hit_result;
 void func_L00_00251388_091D8(Moby *, Vec4 *) __asm__("func_L00_00251388");
 
 void func_001F9C30_091D8(Vec4 *, Moby *, f32) __asm__("func_001F9C30");
-void vec_scale_to_length(Vec4 *, Vec4 *, f32);
+
 void func_001F9BD8_091D8(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BD8");
 s32 func_L00_001EFFF0_091D8(Vec4 *, Vec4 *, s32, s32, s32) __asm__("func_L00_001EFFF0");
 
@@ -2125,8 +2119,6 @@ void update_hero_moby_probed_height_bounds(void) {
     }
 }
 extern u8 g_hero[] NOT_SDA;
-
-extern f32 ApproachValue(f32 *p, f32 target, f32 maxstep);
 
 /* Retimes the hero animation playback rate. */
 f32 adjust_hero_animation_speed_for_target_frame(f32 a, f32 b, f32 c, f32 d) {
@@ -2586,8 +2578,6 @@ void Hero_SetTiltSpringParams(float a, float b) {
 /* From Lombyte's project (GPL-3.0), FUN_L00_0020a240 (PR #66), adapted to PAL. */
 extern char D_00173F60_alias[] __asm__("D_L00_00173F60");
 
-extern int coll_line(void *, void *, int, int, int);
-
 /* Probes for an obstacle in front of the hero; returns 1 on a hit and stores its distance in *outp. */
 int probe_hero_forward_collision(int outp, float a, float b) {
     float *out = (float *)outp;
@@ -2823,7 +2813,6 @@ void update_hero_idle_random_rotation_targets(void) {
     }
 }
 
-extern int coll_line(void *, void *, int, int, int);
 extern char *active_mobies[];
 
 // picks the best lock-on target for the hero's aim and tunes the camera toward it
@@ -2949,12 +2938,8 @@ extern struct Hero D_0013F450_20b1d8 __asm__("D_0013F450");
 extern A_20b1d8 lean_state_r3 __asm__("D_L00_0017A780");
 extern s32 Hero_IsInSpecialState_r(void) __asm__("func_L00_0020DC00");
 
-extern f32 fast_atan2(f32, f32);
-
 extern void configure_hero_point_effect_emission_r(s32, s32, s32, s32, f32, f32) __asm__("func_L00_00233B08");
 
-extern void Moby_GetJointWorldPos_r2(void *, s32, void *) __asm__("func_L00_00250800");
-extern f32 random_float_between(f32, f32);
 extern void func_L00_0026ED30(void *, void *, f32);
 /* Hero movement check: tests the six stick/velocity thresholds against the pad and the state word, then runs the transition tests. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_00203b18.c, FUN_L00_0020b1d8. */
 void update_hero_easing_targets_and_point_effects(void) {
@@ -3006,13 +2991,13 @@ void update_hero_easing_targets_and_point_effects(void) {
         if (D_0013F450_20b1d8.items[6].unk3E & 1)
             q = (u8 *)D_0013F450_20b1d8.moby + 0xC0;
         D_0013F450_20b1d8.items[6].unk38--;
-        Moby_GetJointWorldPos_r2(D_0013F450_20b1d8.moby, 0x16, buf);
+        Moby_GetJointWorldPos(D_0013F450_20b1d8.moby, 0x16, buf);
         for (i = 0; i < D_0013F450_20b1d8.items[6].unk3C; i++)
             spawn_jittered_effect_particle_with_optional_basis(
                 buf, q,
                 D_0013F450_20b1d8.items[6].unk30 +
                     random_float_between(-D_0013F450_20b1d8.items[6].unk34, D_0013F450_20b1d8.items[6].unk34));
-        Moby_GetJointWorldPos_r2(D_0013F450_20b1d8.moby, 0x17, buf);
+        Moby_GetJointWorldPos(D_0013F450_20b1d8.moby, 0x17, buf);
         for (i = 0; i < D_0013F450_20b1d8.items[6].unk3C; i++)
             spawn_jittered_effect_particle_with_optional_basis(
                 buf, q,
@@ -3030,10 +3015,8 @@ extern s32 probe_hero_ledge_edge_r(void *, void *) __asm__("func_L00_0020CDF0");
 extern s32 probe_hero_forward_collision_r(s32, f32, f32) __asm__("func_L00_0020A8B8");
 extern void transform_hero_polar_offset_to_world_r(void *, f32, f32, f32) __asm__("func_L00_00233E48");
 extern s32 coll_line_r(void *, void *, s32, void *, void *) __asm__("func_L00_001EFFF0");
-extern s32 CollType(void);
-extern f32 compute_gravity_relative_vector_inclination_r(void *) __asm__("func_L00_002345B0");
 
-extern f32 fast_atan2(f32, f32);
+extern f32 compute_gravity_relative_vector_inclination_r(void *) __asm__("func_L00_002345B0");
 
 extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 /* Hero ledge-grab check: predicts a position with gravity, probes for a ledge and tests angle and dot thresholds before setting the grab state. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_00203b18.c, FUN_L00_0020b5b8. */
@@ -3150,7 +3133,6 @@ void exit_hero_vehicle_mode_if_mode_three(void) {
         exit_hero_vehicle_mode();
     }
 }
-extern int coll_sphere(float, void *, int, void *);
 
 extern void exit_hero_vehicle_mode_if_mode_three(void);
 
@@ -3345,9 +3327,7 @@ extern char coll_hit_result_r[] __asm__("D_L00_00173F40");
 extern float g_frame_time_r3 __asm__("D_0015EE6C") MACRO_ADDR;
 
 extern int coll_line_r2(void *, void *, int, int, int) __asm__("func_L00_001EFFF0");
-extern int CollType(void);
 
-extern float fast_atan2(float, float);
 extern Obj *GetFlaggedPvarWord_r(char *) __asm__("func_L00_0025D390");
 
 /* the ledge probe of the hero: looks for an edge ahead to grab, and where it finds one stores the grab point and

@@ -33,11 +33,11 @@
 #include "overlays/shared/hero_animation_slots.h"
 #include "game/audio/sound.h"
 #include "overlays/l02_aridia/hero_idle_and_item_input.h"
+#include "game/moby/mobyutil.h"
 extern int g_controller_state_no_direction;
 extern Hero g_hero;
 
 extern int g_current_level_index MACRO_ADDR;
-extern int coll_sphere(float, void *, int, void *);
 
 // Updates the pickup/aim flags after a state change, and requests a follow-up state when the target is in range. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l02/ui_help_0021b698.c, FUN_L02_0021b698.
 void process_hero_ground_material_effects(void) {
@@ -304,12 +304,6 @@ typedef int Q __attribute__((mode(TI)));
 extern u8 aridia_coll_hit_point[];
 extern s32 g_current_level_index MACRO_ADDR;
 
-s32 coll_line(void *, void *, s32, s32, s32);
-
-f32 resolve_camera_surface_height(void *, void *);
-
-void vec_scale_to_length(void *, void *, f32);
-
 extern Hero g_hero;
 extern struct CollisionHit aridia_coll_hit;
 
@@ -499,7 +493,6 @@ d1:
 extern float frame_scale MACRO_ADDR;
 extern char aridia_coll_resolved_pos[];
 
-extern void vec_scale_to_length(void *, void *, float);
 // Probes up to eight candidate camera positions and pulls the camera back if the view is blocked.
 extern Hero hero __asm__("D_0013F450");
 
@@ -613,10 +606,6 @@ extern HeroSpeedBands aridia_hero_speed_bands;
 extern float aridia_hero_anim_frame_speeds[];
 
 extern int truncate_float_to_s32(float);
-
-extern float ApproachValue(float *, float, float);
-
-extern int coll_sphere_mobys(float, void *, int, void *, void *);
 
 struct UpdateHeroStateMotionVars {};
 

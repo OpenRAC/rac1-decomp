@@ -207,10 +207,8 @@ struct DrekMissileVars {
     void *owner; /* 0x16C: the group parent */
 };
 
-extern void vec_scale_to_length(void *, void *, float);
-
 extern void InitDirectionalHitQuery_v(char *arg, int a, int b, void *src, float scale) __asm__("func_L00_0025A8C0");
-extern int coll_line(void *, void *, int, void *, void *);
+
 extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                   float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
@@ -477,7 +475,6 @@ void spawn_rocket_explosion(void *m, void *src) {
     }
 }
 
-extern void draw_world_quad(void *, void *, int);
 extern short rocket_target_pulse_blend_minuend_selector_gp;
 extern short rocket_target_pulse_blend_subtrahend_selector_gp;
 extern short rocket_target_pulse_blend_alpha_factor_selector_gp;
@@ -542,8 +539,6 @@ void draw_rocket_target_pulse_quad(char *moby) {
 }
 extern short D_L18_00161A6C __asm__("D_0015EE6C");
 extern float D_L18_6C_m __asm__("D_0015EE6C") MACRO_ADDR;
-
-extern float ApproachValue(float *p, float target, float maxstep);
 
 extern int CarriedMobyUpdate(void *, void *);
 extern float g_frame_time_sq MACRO_ADDR;
@@ -651,11 +646,7 @@ extern int *veldin2_moby_groups[];
 extern char *veldin2_moby_table_m __asm__("D_L18_00160058") MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 
-extern void vec_scale_to_length(void *, void *, float);
-
 extern float g_frame_time_sq MACRO_ADDR;
-
-extern void vec_scale_to_length(void *, void *, float);
 
 /* Launches a dormant Mine moby from list idx toward p7; returns it or 0. */
 char *launch_mine_568_moby_from_list(float f, int a0, int idx, float *p6, float *p7, int a8) {
@@ -918,8 +909,6 @@ void update_path_junction_selection(struct Moby *moby) {
     }
 }
 
-extern float ApproachWithVelocity(float *, float *, float, float, float, float);
-
 extern float green_thruster_lock_scale SDATA(green_thruster_lock_scale);
 extern float green_thruster_lock_active_height SDATA(green_thruster_lock_active_height);
 extern float green_thruster_lock_idle_height SDATA(green_thruster_lock_idle_height);
@@ -1179,7 +1168,7 @@ struct UsageStat {
     u16 unk2; /* max of scale_game_frames(D_0015EEA4) / 600 */
     s32 level_mask; /* bit per level seen; bit 31 = ever used */
 };
-extern f32 ApproachValue(f32 *, f32, f32);
+
 extern float red_thruster_lock_scale SDATA(red_thruster_lock_scale);
 extern float red_thruster_lock_wait_height SDATA(red_thruster_lock_wait_height);
 extern float red_thruster_lock_raised_height SDATA(red_thruster_lock_raised_height);
@@ -1189,8 +1178,6 @@ extern unsigned char menu_item_enabled_115 NOT_SDA;
 extern struct UsageStat help_records[];
 extern void draw_pulsing_timer_hud_r(void) __asm__("func_L18_002D9488");
 extern char voice_pool[];
-
-extern int Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l18/gameplay/entities/002a7220.c, FUN_L18_002d7b20. */
 void thruster_pack_lock_red_update(struct Moby *moby) {
@@ -1219,7 +1206,7 @@ void thruster_pack_lock_red_update(struct Moby *moby) {
             if (g_hero_r2.air_frames.s == 0 && g_hero_r2.ground_moby == moby &&
                 g_hero_r2.state.current == HERO_STATE_RISE_THEN_FALL_WITH_AIRBORNE_HIT_QUERY) {
                 moby->state = 3;
-                Moby_PlaySound_r(0, 0, (int)moby);
+                Moby_PlaySound(0, 0, (int)moby);
                 index = data->voice;
                 if (index != -1) {
                     unsigned char *entry = (unsigned char *)voice_pool + index * 0x70;
@@ -1895,9 +1882,7 @@ extern float D_L18_001D45E0[];
 extern int GetEffectTex_r(int) __asm__("func_001F4868");
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 
-extern void euler_rotation_basis_r(void *, void *) __asm__("func_001FA1F8");
 extern void draw_world_quad_r(void *, void *, int) __asm__("func_L00_001FD1D8");
-extern void multiply_matrix3x3_r(void *, void *, void *) __asm__("func_001FA4F0");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l18/gameplay/entities/002a7220.c, FUN_L18_002dba20. */
 void draw_expanding_projectile_ring(void *moby_v) {
@@ -1957,17 +1942,15 @@ void draw_expanding_projectile_ring(void *moby_v) {
     }
     clear_u64_value(&rv);
     rv.f[2] = D_L18_00161CF4_CE10 * 0.017453292f;
-    euler_rotation_basis_r(rot, &rv);
+    euler_rotation_basis(rot, &rv);
     for (n = 0; (float)n < 360.0f / D_L18_00161CF4_CE10; n++) {
         draw_world_quad_r(&q[0], m, 0);
         draw_world_quad_r(&q[1], m, 0);
         draw_world_quad_r(&q[2], m, 0);
         draw_world_quad_r(&q[3], m, 0);
-        multiply_matrix3x3_r(m, m, rot);
+        multiply_matrix3x3(m, m, rot);
     }
 }
-
-extern void vec_scale_to_length(void *, void *, float);
 
 extern void spawn_expanding_ring_segment_particles(char *moby, void *a1, void *a2);
 
@@ -2008,9 +1991,6 @@ void process_expanding_ring_collisions(char *moby) {
         q = FastAddRots(q, step);
     }
 }
-extern int FastBSphereCheck(char *, float);
-
-extern void vec_scale_to_length(void *, void *, float);
 
 extern float expanding_ring_cull_margin SDATA(expanding_ring_cull_margin);
 extern float expanding_ring_particle_chance SDATA(expanding_ring_particle_chance);
@@ -2048,8 +2028,6 @@ void spawn_expanding_ring_segment_particles(char *moby, void *a1, void *a2) {
                                                        expanding_ring_particle_scale);
     }
 }
-
-extern void vec_scale_to_length(void *, void *, float);
 
 extern void draw_class_274_ring_effect(void *);
 extern float ring_effect_color_scroll_speed SDATA(ring_effect_color_scroll_speed);
@@ -2140,11 +2118,8 @@ extern float D_L18_001D4600[];
 
 extern int GetEffectTex_r2(int) __asm__("func_001F4868");
 extern void draw_world_quad_r2(void *, void *, int) __asm__("func_L00_001FD1D8");
-extern void multiply_matrix3x3_r2(void *, void *, void *) __asm__("func_001FA4F0");
 
 extern int truncate_float_to_s32_r3(float) __asm__("func_001FA898");
-
-extern void euler_rotation_basis_r2(void *, void *) __asm__("func_001FA1F8");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l18/gameplay/entities/002a7220.c, FUN_L18_002dc4b8. */
 void draw_class_274_ring_effect(void *moby_v) {
@@ -2201,16 +2176,15 @@ void draw_class_274_ring_effect(void *moby_v) {
     }
     clear_u64_value(&ang);
     ang.f[2] = D_L18_00161D50_D8A8 * 0.017453292f;
-    euler_rotation_basis_r2(&rot[0], &ang);
+    euler_rotation_basis(&rot[0], &ang);
     for (k = 0; (float)k < 360.0f / D_L18_00161D50_D8A8; k++) {
         draw_world_quad_r2(&quad[0], mat, 0);
         draw_world_quad_r2(&quad[1], mat, 0);
         draw_world_quad_r2(&quad[2], mat, 0);
         draw_world_quad_r2(&quad[3], mat, 0);
-        multiply_matrix3x3_r2(mat, mat, &rot[0]);
+        multiply_matrix3x3(mat, mat, &rot[0]);
     }
 }
-extern float ApproachValue(float *p, float target, float maxstep);
 
 extern int veldin2_position_transition_flag;
 extern float veldin2_screen_fade MACRO_ADDR;
@@ -2389,8 +2363,6 @@ typedef struct {
 extern Blk24 hit_burst_start_colors;
 extern Blk24 hit_burst_end_colors;
 extern unsigned char help_stats_base[];
-
-extern int coll_sphere(float, void *, int, void *);
 
 extern void PartType11Spawn(void *, void *, u32, u32, f32, s32, s32, f32, s32, s32);
 
@@ -3230,8 +3202,6 @@ void draw_moby_billboard_quad_pair(V_2bb0b0 *pos) {
     }
     draw_world_quad(&quad, 0, 0);
 }
-extern float ApproachValue(float *, float, float);
-extern int Moby_PlaySound_r3(int, int, int) __asm__("func_0022ED80");
 
 extern int veldin2_zero_vec MACRO_ADDR;
 extern float drek_missile_spin_speed SDATA(drek_missile_spin_speed);
@@ -3304,7 +3274,7 @@ void drek_fight_missile_update(char *moby) {
             update_drek_fight_missile_trail_and_queue_effects(moby);
             if (w[2] < missile_vars->home_z) {
                 float t;
-                Moby_PlaySound_r3(1, 0, (int)moby);
+                Moby_PlaySound(1, 0, (int)moby);
                 m->state = 4;
                 missile_vars->timer = scale_ticks(0x5A);
                 t = missile_vars->home_z + 0.7f;
@@ -3511,7 +3481,6 @@ void draw_drek_fight_missile_group_trails(struct Moby *moby) {
         }
     } while (*p++ >= 0);
 }
-extern void vec_scale_to_length(void *, void *, float);
 
 extern float g_frame_time MACRO_ADDR;
 extern int drek_missile_effects_disabled SDATA(drek_missile_effects_disabled);

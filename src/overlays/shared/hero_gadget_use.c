@@ -29,6 +29,8 @@
 #include "overlays/shared/trigger_switches_and_hoverboard.h"
 #include "overlays/l05_rilgar/hero_idle_and_items.h"
 #include "overlays/l05_rilgar/hero_collision.h"
+#include "callees.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 extern char gSpecialItems[];
 extern char gHeroPos[];
 extern char gSkillPoints[];
@@ -36,7 +38,6 @@ extern Hero g_hero;
 extern char last_weapon_id[];
 extern char usage_stats[];
 
-extern float ApproachValue(float *p, float target, float maxstep);
 extern unsigned char hero_globals_base[] NOT_SDA;
 
 /* Steps two floats of arg toward a target and clamps them to [-1, 1]. */
@@ -463,14 +464,9 @@ extern u8 D_L05_00174360[] NOT_SDA;
 extern u8 D_L05_0017AC20[] NOT_SDA;
 
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
-extern float fast_atan2(float, float);
 
 extern void transform_hero_local_offset_to_world_r(float *, float, float, float) __asm__("func_L00_00233EE0");
 extern int coll_line_r(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
-
-extern int func_L00_001F10E0(float, void *, int, int);
-
-extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/ui/help/00237488.c, FUN_L05_0024bdc0. */
 void update_hero_movement_and_collision_probes(void) {
@@ -536,14 +532,12 @@ void update_hero_movement_and_collision_probes(void) {
         transform_vector(start, start, rotation);
         FastVecAdd(g_hero_r.hoverboard_moby + 0x10, g_hero_r.hoverboard_moby + 0x10, start);
         copy_matrix_rotation(moby_rotation, (char *)g_hero_r.moby + 0xc0);
-        sce_vu0_mul_matrix_r(combined, moby_rotation, rotation);
+        sce_vu0_mul_matrix(combined, moby_rotation, rotation);
         matrix_copy_rows(g_hero_r.hoverboard_moby + 0xc0, combined);
     }
 }
 extern short rilgar_frame_count;
 extern float rilgar_coll_hit_z;
-
-extern int coll_line(void *, void *, int, int, int);
 
 /* Decides whether the hero's current motion warrants the swing effect, running a probe when the conditions line up. */
 int try_apply_hero_water_and_ground_transitions(void) {
@@ -1167,8 +1161,6 @@ void update_hero_hoverboard_trick_animations(void) {
     }
 }
 
-extern int get_next_moby_in_group(void **, void *, int, int);
-
 extern unsigned char menu_item_enabled_115[] NOT_SDA;
 extern void apply_hero_item_slot_selection(int);
 
@@ -1468,13 +1460,11 @@ extern int race_respawn_gate_state SDATA(race_respawn_gate_state);
 extern float rilgar_off_course_reset_rate SDATA(rilgar_off_course_reset_rate);
 extern int hoverboard_race_finished SDATA(hoverboard_race_finished);
 
-extern float fast_atan2(float, float);
-
 extern void compute_hero_hoverboard_respawn_transform_r(void *, void *) __asm__("func_L05_00254B38");
 extern void Hero_ResetToPosition_r(void *, void *, int, int) __asm__("func_L00_00217718");
 extern int select_point_index_by_distance_r(void *, void *, float) __asm__("func_L01_0028C2D8");
 extern int PlayBankSound_r(int, int, int) __asm__("func_0022EE28");
-extern void ShowBanner_r(int, int) __asm__("func_L00_00264DB8");
+
 extern void mode_freeze_init_r(int, void *, int) __asm__("func_001FBC80");
 extern void Hud_SetBarValueById_r(int, int) __asm__("func_001FFDA0");
 extern void update_resource_counter_r(void) __asm__("func_001FFFA0");
@@ -1650,7 +1640,7 @@ void update_hero_hoverboard_race_progress(void) {
             if (((Flags *)(menu_item_enabled_115_r + 1))->f9 == 0) {
                 ((Flags *)(menu_item_enabled_115_r + 1))->f9 = 1;
                 PlayBankSound_r(1, 0, 0);
-                ShowBanner_r(0x53DB, -1);
+                ShowBanner(0x53DB, -1);
             }
         }
         if (d->f28 == -1) {
@@ -1741,8 +1731,6 @@ int Hero_SelectAnimIdByFlag(int arg) {
 }
 extern short hoverboard_trick_min_frames;
 extern float g_frame_time MACRO_ADDR;
-
-extern void vec_scale_to_length(void *, void *, float);
 
 typedef struct {
     char pad0[0x80];
@@ -1961,7 +1949,7 @@ L_DEC:
             if (fl->f7 == 0) {
                 fl->f7 = 1;
                 PlayBankSound_r(1, 0, 0);
-                ShowBanner_r(0x53DB, -1);
+                ShowBanner(0x53DB, -1);
             }
         }
         ((H_9F0 *)(&g_hero))->i714 = 0;

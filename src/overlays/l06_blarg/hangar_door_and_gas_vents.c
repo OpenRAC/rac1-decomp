@@ -39,6 +39,8 @@
 #include "overlays/l06_blarg/hero_idle_and_items.h"
 #include "overlays/shared/hero_update_ledge_grab.h"
 #include "overlays/l06_blarg/fred_and_commando.h"
+#include "overlays/shared/moby_frame_packet.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 
 extern char gSkillPoints[];
 extern Hero g_hero;
@@ -266,8 +268,6 @@ void hangar_door_update(char *m) {
             break;
     }
 }
-extern void vec_scale_to_length(void *, void *, float);
-extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 
 // A bridge panel: when switched it slides 11 units along its own axis, easing in and out.
 void update_moby_position_interpolation(unsigned char *moby) {
@@ -400,8 +400,6 @@ INCLUDE_ASM("asm/overlays", func_L06_002EB348);
 extern float toxic_gas_vent_near_d50_value SDATA(toxic_gas_vent_near_d50_value);
 extern float toxic_gas_vent_near_anim_time SDATA(toxic_gas_vent_near_anim_time);
 
-extern int Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
-
 extern void emit_toxic_gas_vent_sparks(char *);
 extern void check_oscillating_toxic_gas_vent_collisions(char *);
 extern void check_timed_toxic_gas_vent_collisions(char *);
@@ -438,7 +436,7 @@ void toxic_gas_vent_update(char *m) {
             break;
         case 1:
             if (Sound_IsPlaying(m, d->voice) == 0) {
-                d->voice = Moby_PlaySound_r(0, 4, (int)m);
+                d->voice = Moby_PlaySound(0, 4, (int)m);
             }
             emit_toxic_gas_vent_sparks(m);
             check_oscillating_toxic_gas_vent_collisions(m);
@@ -448,7 +446,7 @@ void toxic_gas_vent_update(char *m) {
             break;
         case 2:
             if (Sound_IsPlaying(m, d->voice) == 0) {
-                d->voice = Moby_PlaySound_r(0, 4, (int)m);
+                d->voice = Moby_PlaySound(0, 4, (int)m);
             }
             emit_toxic_gas_vent_sparks(m);
             check_timed_toxic_gas_vent_collisions(m);
@@ -485,8 +483,6 @@ extern int spark_frames SDATA(spark_frames);
 extern float spark_drift SDATA(spark_drift);
 extern float spark_drift_scale SDATA(spark_drift_scale);
 extern float spark_spread SDATA(spark_spread);
-
-extern int FastBSphereCheck(char *, float);
 
 /* Level 6 moby update: aims a vector at its target, runs the chain of distance and angle helpers, and hands the result
    to PartType02Spawn. */
@@ -558,7 +554,6 @@ void emit_toxic_gas_vent_sparks(char *moby) {
 }
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
-extern int coll_line(void *, void *, int, void *, void *);
 extern float toxic_gas_vent_reach SDATA(toxic_gas_vent_reach);
 
 typedef struct {
@@ -622,8 +617,6 @@ void check_oscillating_toxic_gas_vent_collisions(char *m) {
         coll_line(&a, &b, 0, m, &s);
     }
 }
-
-extern void vec_scale_to_length(void *, void *, float);
 
 // Sweeps two probe segments around a moby (sin/cos offsets scaled by its speed) via a collision query.
 void check_timed_toxic_gas_vent_collisions(char *m) {
@@ -818,20 +811,17 @@ extern void update_drawbridge_segment_transforms_r(Moby *) __asm__("func_L06_002
 extern float ApproachValue_r(float *, float, float) __asm__("func_00214D28");
 
 extern void Hero_ResetToPosition_r(void *, void *, int, int) __asm__("func_L00_00217718");
-extern void CameraScript_r(void *, void *, int, int, int) __asm__("func_L00_002EBF50");
+
 extern int Moby_PlaySound_r2(int, int, Moby *) __asm__("func_0022ED80");
-extern void jet_clear_persistent_r(int) __asm__("func_L00_002512D8");
+
 extern float ApproachWithVelocity_r(float *, float *, float, float, float, float) __asm__("func_00214D88");
 extern int Sound_IsPlaying_r(Moby *, int) __asm__("func_L00_0028EB98");
-extern void Sound_StopSlot_r(int) __asm__("func_L00_0028EBF0");
+
 extern void lerp_vector_r(void *, void *, void *, float) __asm__("func_001F9C08");
 
-extern void set_camera_position_r(void *) __asm__("func_L00_002EBE88");
-extern void set_camera_rotation_r(void *) __asm__("func_L00_002EBEE0");
 extern void enter_hero_idle_state_for_current_vehicle_mode_r(void) __asm__("func_L06_00239CD0");
-extern void CameraScript2_r(int) __asm__("func_L00_002EC0C8");
+
 extern int Help_Request_r(int, int) __asm__("func_L00_00203F20");
-extern void ShowBanner_r(int, int) __asm__("func_L00_00264DB8");
 
 /* Level 6 drawbridge (class 1028): spawns its two rows of deck pieces, waits for the hero's switch, then
    lowers through three hinge stages (drawbridge_slide/0C/10) while the camera follows the path nodes. */
@@ -902,15 +892,15 @@ void update_drawbridge(Moby *m) {
             blarg_fade_level = 1.0f - FastAbsF(s->f6C);
             if (old < 0.0f && 0.0f <= s->f6C) {
                 Hero_ResetToPosition_r(&g_hero.motion.pos, &g_hero.motion.rot, 0x72, 1);
-                CameraScript_r(blarg_scene_points_r + (s->i60 << 7) + 0x30, blarg_scene_points_r + (s->i60 << 7) + 0x70,
-                               1, 0, 0);
+                CameraScript(blarg_scene_points_r + (s->i60 << 7) + 0x30, blarg_scene_points_r + (s->i60 << 7) + 0x70,
+                             1, 0, 0);
             } else if (1.0f <= s->f6C) {
                 m->state = 4;
                 m->command = Moby_PlaySound_r2(0, 4, s->c[9]);
             }
             break;
         case 4:
-            jet_clear_persistent_r(m->mission);
+            jet_clear_persistent(m->mission);
             if (D_L06_00161E08_2F69D0 < 20.0f) {
                 ApproachWithVelocity_r(
                     &D_L06_00161E08_2F69D0, &D_L06_00161E2C_2F69D0, 20.0f, D_L06_00161E20_2F69D0 * g_frame_time_sq_r,
@@ -935,7 +925,7 @@ void update_drawbridge(Moby *m) {
                 if (Sound_IsPlaying_r(s->c[9], k) != 0) {
                     if (k != -1 && ((VoicePoolRow *)(voice_pool + k * 0x70))->owner == s->c[9] &&
                         ((VoicePoolRow *)(voice_pool + k * 0x70))->state != 0) {
-                        Sound_StopSlot_r(k);
+                        Sound_StopSlot(k);
                     }
                     k = -1;
                     m->command = k;
@@ -962,8 +952,8 @@ void update_drawbridge(Moby *m) {
             v10.y = FastAddRots(v30.y, v10.y);
             v10.z = FastSubRots(v50.z, v30.z) * t;
             v10.z = FastAddRots(v30.z, v10.z);
-            set_camera_position_r(&v0);
-            set_camera_rotation_r(&v10);
+            set_camera_position(&v0);
+            set_camera_rotation(&v10);
             break;
         case 5:
             old = s->f6C;
@@ -971,11 +961,11 @@ void update_drawbridge(Moby *m) {
             blarg_fade_level = 1.0f - FastAbsF(s->f6C);
             if (old < 0.0f && 0.0f <= s->f6C) {
                 enter_hero_idle_state_for_current_vehicle_mode_r();
-                CameraScript2_r(3);
+                CameraScript2(3);
             } else if (1.0f <= s->f6C) {
                 m->state = 6;
                 Help_Request_r(0x1776, 0x2D);
-                ShowBanner_r(0x177C, -1);
+                ShowBanner(0x177C, -1);
                 memcard_Save(0, -1);
             }
             break;
@@ -1106,8 +1096,6 @@ typedef int u128_78A0 __attribute__((mode(TI)));
 extern int beam_barrier_strand_timers[] MACRO_ADDR;
 
 extern void draw_beam_barrier_segments(char *);
-
-extern float ApproachValue(float *, float, float);
 
 extern int beam_barrier_strand_life MACRO_ADDR;
 extern int beam_barrier_strand_fade_ticks MACRO_ADDR;
@@ -1587,7 +1575,6 @@ extern void set_ground_height_band_r(Moby *) __asm__("func_L00_0025B178");
 extern void MobyBlendAnimation_r(Moby *, int, int, int) __asm__("func_00213DE0");
 extern void transition_moby_group_state_1_to_2_r(Moby *) __asm__("func_L06_002FAAC8");
 
-extern float fast_atan2(float, float);
 extern void InitKnockback_r2(Moby *, void *, int, int, int, float) __asm__("func_L00_0025D5B0");
 
 extern void MobySpringTurn_v(Moby *, float, float *, float, float, float) __asm__("func_L00_002592B0");
@@ -1596,7 +1583,6 @@ extern float compute_alien_snapper_target_gap_angle_r(Moby *) __asm__("func_L06_
 
 extern void resolve_point_path_segment_xy_clearance_r(float, int, void *, void *) __asm__("func_L00_00262DF0");
 extern void resolve_point_path_segment_xy_clearance_r2(int, void *, void *, float) __asm__("func_L00_00262DF0");
-extern int SegmentCrossPolyline_r(int, void *, void *, void *) __asm__("func_L00_00262BC0");
 
 extern float MobyGetFrameValue_r(Moby *) __asm__("func_0020D830");
 extern void Moby_GetJointWorldPos_r(Moby *, int, void *) __asm__("func_L00_00250800");
@@ -1806,7 +1792,7 @@ void alien_snapper_update(Moby *moby) {
             move_w(moby, &v->fD0, u.m.dir, u.m.out, 1.0f);
             moby->rot.z = rot;
             resolve_point_path_segment_xy_clearance_r(0.5f, v->path, &moby->pos, &moby->pos);
-            if (SegmentCrossPolyline_r(v->path, &moby->pos, &target->pos, u.m.c) != 0 &&
+            if (SegmentCrossPolyline(v->path, &moby->pos, &target->pos, u.m.c) != 0 &&
                 FastVecDist(&moby->pos, u.m.c) < v->f1C4) {
                 near = 1;
             }
@@ -2067,14 +2053,12 @@ typedef struct BlargVars {
     int f1CC; /* 0x1CC */
 } BlargVars;
 
-extern float random_float_between(float, float);
-
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
 extern Target *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
 extern int ComputeHitResponse_r(void *, void *, void *, int, int *, float *, int, int) __asm__("func_L00_0025B4D0");
 extern void transition_moby_group_state_1_to_2_r2(void *) __asm__("func_L06_002FAAC8");
-extern float fast_atan2(float, float);
+
 extern void InitKnockback_r3(void *, void *, int, int, int, float) __asm__("func_L00_0025D5B0");
 extern void SetDeathBits_r(void *, int, int) __asm__("func_L00_002584A8");
 extern void RerollEffectCounter_r(void *, void *) __asm__("func_L00_0025E4B0");
@@ -2294,12 +2278,12 @@ extern int truncate_float_to_s32_q(float) __asm__("func_001FA898");
 
 extern void lerp_vector_q(void *, void *, void *, float) __asm__("func_001F9C08");
 extern float vec_distance_xy_q(void *, void *) __asm__("func_001F9D48");
-extern float random_angle_radians(void);
+
 extern void set_moby_list_state_18_q(int) __asm__("func_L06_002FAD78");
 
 extern void set_moby_and_links_to_states_8_and_9_q(void *) __asm__("func_L06_002F6818");
 extern void set_listed_class_16f_state_2_and_data_28_to_one_q(int) __asm__("func_L06_002DB1D8");
-extern void MobyBlendAnimation(void *, int, int, int);
+
 extern void start_alien_queen_intro_q(void *) __asm__("func_L06_002FC578");
 
 extern int update_alien_queen_intro_camera_q(void *) __asm__("func_L06_002FC6D8");
@@ -2311,7 +2295,6 @@ extern void clear_moby_list_state_18_q(int) __asm__("func_L06_002FADE0");
 extern void update_alien_queen_orbit_movement_q(void *) __asm__("func_L06_002FD0B8");
 extern int check_all_listed_frog_states_fe_fd_or_10_q(int) __asm__("func_L06_002EB2D0");
 extern int count_active_moby_group_members_q(int, int) __asm__("func_L01_0026EFB8");
-extern float fast_atan2(float, float);
 
 extern float SteerAngleWithVelocity_q(float *, float, float *, float, float, float) __asm__("func_L00_0025CE58");
 extern float ApproachValue_q(float *, float, float) __asm__("func_00214D28");
@@ -2321,14 +2304,13 @@ extern void vec_scale_to_length_q(void *, void *, float) __asm__("func_L00_001FF
 extern void resolve_point_path_segment_xy_clearance_q(int, void *, float, void *) __asm__("func_L00_00262DF0");
 extern int fast_dec_timer_q(void *) __asm__("func_001F9908");
 
-extern void Moby_GetJointWorldPos_q(void *, int, void *) __asm__("func_L00_00250800");
 extern int coll_sphere_mobys_q(void *, float, int, void *, void *) __asm__("func_L00_001F2BE8");
 extern void set_moby_and_links_to_states_4_and_5_q(void *) __asm__("func_L06_002F6790");
 extern void set_listed_class_16f_state_2_and_clear_data_28_q(int) __asm__("func_L06_002DB248");
 extern void spawn_color_swapped_explosion_burst_q(void *, void *, int, float, float) __asm__("func_L00_00260460");
-extern void spawn_moby_break_fragments_q(void *, int, int, int, int, int, int) __asm__("func_L00_00264EA8");
+
 extern int PlayBankSound_q(int, int, int) __asm__("func_0022EE28");
-extern void ShowBanner_q(int, int) __asm__("func_L00_00264DB8");
+
 extern void SetTableEntryFlagIfKind18_q(char *) __asm__("func_L06_00317770");
 extern char blarg_camera_pos_q[] __asm__("D_L06_00167640");
 extern int *blarg_paths_q[] __asm__("D_L06_001B0FB0");
@@ -2584,19 +2566,19 @@ void alien_queen_update(unsigned char *moby) {
                 probe.dir[0] = FastCos(((Moby *)moby)->rot.z);
                 probe.dir[1] = FastSin(((Moby *)moby)->rot.z);
                 probe.dir[2] = 0.0f;
-                Moby_GetJointWorldPos_q(moby, 0, buf);
+                Moby_GetJointWorldPos(moby, 0, buf);
                 coll_sphere_mobys_q(buf, 0.5f, 0, moby, &probe);
-                Moby_GetJointWorldPos_q(moby, 1, buf);
+                Moby_GetJointWorldPos(moby, 1, buf);
                 coll_sphere_mobys_q(buf, 0.5f, 0, moby, &probe);
-                Moby_GetJointWorldPos_q(moby, 2, buf);
+                Moby_GetJointWorldPos(moby, 2, buf);
                 coll_sphere_mobys_q(buf, 0.5f, 0, moby, &probe);
-                Moby_GetJointWorldPos_q(moby, 3, buf);
+                Moby_GetJointWorldPos(moby, 3, buf);
                 coll_sphere_mobys_q(buf, 0.5f, 0, moby, &probe);
-                Moby_GetJointWorldPos_q(moby, 4, buf);
+                Moby_GetJointWorldPos(moby, 4, buf);
                 coll_sphere_mobys_q(buf, 0.5f, 0, moby, &probe);
-                Moby_GetJointWorldPos_q(moby, 5, buf);
+                Moby_GetJointWorldPos(moby, 5, buf);
                 coll_sphere_mobys_q(buf, 1.1f, 0, moby, &probe);
-                Moby_GetJointWorldPos_q(moby, 6, buf);
+                Moby_GetJointWorldPos(moby, 6, buf);
                 coll_sphere_mobys_q(buf, 1.1f, 0, moby, &probe);
                 return;
             }
@@ -2669,7 +2651,7 @@ void alien_queen_update(unsigned char *moby) {
             qcopy(v, &((struct Moby *)moby)->pos);
             v[2] = v[2] + 1.0f;
             spawn_color_swapped_explosion_burst_q(moby, v, -1, 2.0f, 20.0f);
-            spawn_moby_break_fragments_q(moby, 0x6A2, 1, 0x6A3, 3, 6, 2);
+            spawn_moby_break_fragments(moby, 0x6A2, 1, 0x6A3, 3, 6, 2);
             set_moby_and_links_to_states_4_and_5_q(level_mobys_q_q + (data->door_b << 8));
             set_listed_class_16f_state_2_and_clear_data_28_q(data->list_16f);
             ((Moby *)moby)->state = 0xF;
@@ -2686,7 +2668,7 @@ void alien_queen_update(unsigned char *moby) {
                 return;
             flag[0xA] = 1;
             PlayBankSound_q(1, 0, 0);
-            ShowBanner_q(0x53DB, -1);
+            ShowBanner(0x53DB, -1);
             return;
         }
         case 15: {
@@ -2892,8 +2874,6 @@ void activate_listed_state_15_mobys_at_raised_positions(char *moby) {
     }
 }
 
-extern void vec_scale_to_length(void *, void *, float);
-
 // sets up a camera-like aim from a moby toward its orbit point and releases the slot
 void start_alien_queen_intro(char *moby) {
     float v0[4], m[4], v1[4];
@@ -2913,8 +2893,6 @@ void start_alien_queen_intro(char *moby) {
     set_camera_rotation(m);
     *blarg_paths[data->path] = 0;
 }
-extern float ApproachWithVelocity(float *, float *, float, float, float, float);
-extern void vec_scale_to_length(void *, void *, float);
 
 extern short g_frame_time_sq_s __asm__("D_0015EE70");
 /* Aims the camera at a moby, blending toward its orbit; returns nonzero when finished. */
@@ -3009,12 +2987,7 @@ typedef struct {
 extern f32 circler_max_speed SDATA(circler_max_speed);
 extern float alien_queen_walk_accel SDATA(alien_queen_walk_accel);
 
-extern void vec_scale_to_length(void *, void *, f32);
-
 extern f32 SteerAngleWithVelocity_r2(f32 *angle, f32 target, f32 *vel, f32, f32, f32) __asm__("func_L00_0025CE58");
-extern f32 ApproachValue(f32 *, f32, f32);
-
-extern void resolve_point_path_segment_xy_clearance(f32, s32, void *, void *);
 
 /* Circles its centre point on the side away from the hero (at most 45 degrees per step), faces its focus moby, moves
    while the hero is within 16 units and snaps to the ground.
@@ -3295,7 +3268,6 @@ typedef struct {
     char pad0[0x20];
     unsigned char f20;
 } Flags;
-extern int try_set_help_message(int, int);
 
 extern unsigned char menu_item_enabled_19_r[] __asm__("D_0013D4AF");
 extern unsigned char D_0013D5CA[];

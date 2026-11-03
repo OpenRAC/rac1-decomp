@@ -12,6 +12,7 @@
 #include "asm_functions/executable.h"
 #include "game/render/vuchain.h"
 #include "overlays/l04_eudora/polygon_segment_xy.h"
+#include "game/moby/mobyutil.h"
 
 /* index of the nearest of n vectors to a + 0x10 */
 int find_nearest_point_index_xy(char *a, char *b, int n) {
@@ -66,13 +67,8 @@ extern char D_0013F450[];
 
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 
-extern int func_L00_001EFFF0(void *, void *, int, void *, int);
-
-extern float fast_atan2(float, float);
-
 extern int coll_sphere_r(float, void *, int, void *) __asm__("func_L00_001F10E0");
 
-extern float random_float_between(float, float);
 extern int func_001FA898(float);
 extern int find_nearest_point_index_xy_r(Moby *, void *, int) __asm__("func_L04_001F2F68");
 
@@ -289,9 +285,6 @@ void steer_child_moby(Moby **list, int n, Moby *m, Steer *c, float *f) {
         }
     }
 }
-
-extern void vec_scale_to_length(void *, void *, float);
-extern int coll_sphere(float, void *, int, void *);
 
 /* steps a moby's position out of collision and aims it */
 void update_moby_movement_with_sphere_collision(char *a, char *b, char *c, float f) {

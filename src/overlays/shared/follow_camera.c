@@ -121,7 +121,6 @@ struct FollowCamOrbitB {
 
 extern char hero_globals_base[];
 extern float g_frame_time MACRO_ADDR;
-extern void vec_scale_to_length(void *, void *, float);
 
 /* while the countdown value is ready, scatter a spawn by the camera's offset and reroll the delay */
 void emit_hydrodisplacer_effect(Moby *m) {
@@ -510,12 +509,8 @@ extern float D_L00_00161CC0_2E3700 SDATA(D_L00_00161CC0);
 
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 
-extern float random_float_between(float, float);
 extern Part *spawn_mode_controlled_rotating_alpha_fade_particle_r(void *, void *, int,
                                                                   int) __asm__("func_L00_002757E8");
-extern int random_integer_below(int);
-
-extern void random_spherical_offset(void *, float, float);
 
 /* Per-frame update of one beam slot: lays out the two 20-point strips between the slot's ends
    (a sine wave and a noisy one), spawns sparks at both ends and keeps the two looping sounds
@@ -724,8 +719,6 @@ typedef struct {
 extern Tbl beam_origin_transforms_field_10[];
 extern long GetEffectTex_v(int) __asm__("func_001F4868");
 
-extern void draw_world_quad(void *, int, int);
-
 /* Builds the two blend quads from the slot tables and draws them along the
    19-step trail in a2. */
 struct GeometryQuad {
@@ -892,12 +885,7 @@ extern f32 beam_tip_positions[][4];
 extern f32 beam_glow_quad_corners[4][4];
 extern u8 g_debug_camera_r[] __asm__("D_L00_00166EC0");
 
-void vec_scale_to_length(void *, void *, f32);
-
 s64 GetEffectTex_v(s32) __asm__("func_001F4868");
-f32 random_float_between(f32, f32);
-
-void draw_world_quad(void *, s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002df730.c, FUN_L00_002e3388. */
 void draw_beam_endpoint_quads_with_glow(s32 unused, s32 idx) {
@@ -996,7 +984,7 @@ extern int *level_paths[];
 extern float pterodactyl_path_speed SDATA(pterodactyl_path_speed);
 extern float pterodactyl_scale_factor SDATA(pterodactyl_scale_factor);
 
-extern void SamplePathAt(int *, float, int, void *, float *, int);
+extern void SamplePathAt_v(int *, float, int, void *, float *, int) __asm__("func_00215CA8");
 
 /* Path-following moby update: start a run along its path in state 0, then step along the path each frame and pick an animation when the flag is set. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay_vendor_002df730.c, FUN_L00_002e3a88. */
 void pterodactyl_update(unsigned char *m) {
@@ -1022,7 +1010,7 @@ void pterodactyl_update(unsigned char *m) {
             /* fall through */
         case 1:
             y = ((Moby *)m)->pos.z;
-            SamplePathAt(p, d->f6C, d->i70, m + 0x10, (float *)(m + 0x40), 0);
+            SamplePathAt_v(p, d->f6C, d->i70, m + 0x10, (float *)(m + 0x40), 0);
             ((Moby *)m)->rot.y *= 0.5f;
             ((Moby *)m)->pos.z += d->f64;
             d->f6C += d->f74;
@@ -1195,7 +1183,6 @@ typedef float VQ_2E5770[4] __attribute__((aligned(16)));
 extern char camera_view[];
 extern char collision_hit_point_a[] __asm__("D_L00_00173F60");
 extern void Cam_GetHeroPosition(char *, void *);
-extern int coll_line(void *, void *, int, int, int);
 
 /* build the two edge vectors of a moving box from the game vector and clip them */
 int compute_follow_camera_ground_aware_target_position(void *out, int flag) {
@@ -1624,8 +1611,6 @@ extern float follow_cam_target_angle_min SDATA(follow_cam_target_angle_min);
 extern float follow_cam_target_angle_max SDATA(follow_cam_target_angle_max);
 extern float follow_cam_slam_target_lerp SDATA(follow_cam_slam_target_lerp);
 extern void lerp_vector_v(float, void *, void *, void *) __asm__("func_001F9C08");
-
-extern int coll_sphere(float, void *, int, void *);
 
 extern int compute_follow_camera_ground_aware_target_position_r(void *, int) __asm__("func_L00_002E5770");
 
@@ -2214,7 +2199,6 @@ extern short follow_camera_vehicle_collision_probe_step_growth_factor_gp;
 extern short follow_camera_vehicle_collision_probe_scale_gp;
 #define g78 (*(f32 *)&D_L00_00161E78)
 
-extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern void set_follow_camera_angle_blend_from_direction(void *, float, float);
 extern void follow_camera_start_slide(void);
 extern void follow_camera_set_height(float, float);
@@ -2842,8 +2826,6 @@ void follow_camera_setup(Camera *m) {
 extern Hero g_hero_r2 __asm__("D_0013F450");
 extern float follow_cam_collision_pull_in_speed SDATA(follow_cam_collision_pull_in_speed);
 
-void vec_scale_to_length(void *, void *, float);
-
 short func_001F9850_E85E8(int) __asm__("func_001F9850");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002df730.c, FUN_L00_002e7138. */
@@ -2911,8 +2893,6 @@ extern f32 D_L00_00161DA8_E87C8 SDATA(D_L00_00161DA8);
 extern Vec4 collision_hit_point_r __asm__("D_L00_00173F60");
 extern Vec4 coll_resolved_pos_r __asm__("D_L00_00173F70");
 
-extern void vec_scale_to_length(void *, void *, f32);
-
 extern s32 compute_follow_camera_radial_collision_positions_r(Vec4 *, f32) __asm__("func_L00_002E5630");
 extern s32 coll_sphere_r(Vec4 *, f32, s32, s32) __asm__("func_L00_001F10E0");
 extern s32 update_follow_camera_orbit_after_collision_r(O002e7318 *, Vec4 *, s32, s32) __asm__("func_L00_002E85E8");
@@ -2974,8 +2954,6 @@ long return_follow_camera_no_collision(void) {
     char buf[0x50];
     return 0;
 }
-
-extern void vec_scale_to_length(void *, void *, float);
 
 // combines vectors through the moby's data
 void compute_follow_camera_collision_delta(char *m, float *out, float *b, float *c, float *d, float s0, float s1) {
@@ -3212,13 +3190,12 @@ typedef struct {
 #define CAST_func_L00_002E8EE0 ((s32 (*)(void *))func_L00_002E8EE0)
 #define CAST_func_L00_002E89D0 ((s32 (*)(void *))func_L00_002E89D0)
 #define CAST_func_L00_002E87C8 ((s32 (*)(void *))func_L00_002E87C8)
-f32 CosineInterpolate(f32, f32, f32);
+
 #define CAST_func_L00_001EFFF0 ((s32 (*)(void *, void *, s32, void *, s32))func_L00_001EFFF0)
 #define CAST_func_L00_002E5740 ((s32 (*)(void *))func_L00_002E5740)
 
 void InitDirectionalHitQuery_v(void *, void *, s32, void *, f32) __asm__("func_L00_0025A8C0");
 
-void build_look_at_matrix(void *, void *, void *, f32);
 #define AF_2e7d20(o) (*(f32 *)(a + (o)))
 #define BF_2e7d20(o) (*(f32 *)(b + (o)))
 #define BH_2e7d20(o) (*(s16 *)(b + (o)))
@@ -3837,8 +3814,6 @@ void follow_camera_turn_and_pitch(int mi, float a, float b) {
     build_look_at_matrix(turn_pitch_vector->vec.f, turn_pitch_vector->vec.f, axis, turn_pitch_vector->step.f);
 }
 extern void lerp_vector_v(float, void *, void *, void *) __asm__("func_001F9C08");
-
-extern void vec_scale_to_length(void *, void *, float);
 
 /* Keeps the follow camera's orbit vector (+0x130 of M's state buffer) within its maximum length (+0x2C): the
    eye-to-target vector is turned by follow_cam_turn_blend_weight into the orbit vector, shortened to the maximum when

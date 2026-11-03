@@ -103,7 +103,6 @@ struct FloatingShipPieceVars {
 };
 
 extern int *l09_packet MACRO_ADDR;
-extern int FastBSphereCheck(char *, float);
 
 extern void set_scale_matrix_v(float, void *) __asm__("func_001FA1C0");
 extern void FastVecScale_r(float, void *, void *) __asm__("func_001F9C30");
@@ -361,8 +360,6 @@ typedef union {
 
 extern void SetDeathBits(void *, int, int);
 
-extern void vec_scale_to_length(void *, void *, float);
-
 extern void PartType11Spawn(void *, void *, int, int, int, int, int, int, float, float);
 
 extern int func_001FA898(float);
@@ -589,8 +586,6 @@ void update_airship_part(Moby *moby) {
 }
 extern float frame_scale MACRO_ADDR;
 
-extern void vec_scale_to_length(void *, void *, float);
-
 /* spawns a debris moby with randomized velocity toward a point */
 char *spawn_fading_asteroid_debris(char *owner, float *vec) {
     char *moby = CreateMoby(random_integer_below(4) + 0x107);
@@ -709,8 +704,7 @@ typedef struct {
 extern PebblePath *gaspar_paths_r[] __asm__("D_L09_001B0930");
 extern char gaspar_camera_pos_r[] __asm__("D_L09_00166FC0");
 extern f32 g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
-extern s32 random_integer_below(s32);
-extern f32 random_float_between(f32, f32);
+
 extern Moby *CreateMoby_r(s32) __asm__("func_0020D348");
 
 extern void moby_build_matrix_r(Moby *) __asm__("func_L00_00251E30");
@@ -773,8 +767,6 @@ Moby *spawn_path_following_asteroid(Moby *owner) {
     return m;
 }
 
-extern void vec_scale_to_length(void *, void *, float);
-
 /* ticks a fading drifting moby: decays its velocity, follows it and eases its rotation */
 void update_fading_asteroid_debris(unsigned char *m) {
     if (((Moby *)m)->alpha < 3) {
@@ -829,7 +821,6 @@ typedef struct {
 extern float gaspar_coll_hit_point_z;
 extern V6_2EC188 asteroid_impact_start_colors;
 extern V6_2EC188 asteroid_impact_end_colors;
-extern int coll_line(void *, void *, int, int, int);
 
 extern char *spawn_radially_scattered_moby(void *, void *, void *, float, float);
 
@@ -1398,7 +1389,6 @@ typedef int OvlQuad_F0780 __attribute__((mode(TI)));
 extern char gaspar_coll_hit_normal_r[] __asm__("D_L09_00174080");
 extern float g_frame_time_r2 __asm__("D_0015EE6C") MACRO_ADDR;
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
-extern f32 random_float_between(f32, f32);
 
 extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
@@ -1407,7 +1397,6 @@ extern int fast_dec_timer_r2(int *) __asm__("func_001F9908");
 extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
 
 extern void *PartType27Spawn_r(void *, void *, int, int, float) __asm__("func_L00_0026EBC0");
-extern void vec_reflect(void *, void *, void *);
 
 extern void vec_scale_to_length_r2(void *, void *, f32) __asm__("func_L00_001FF4B0");
 
@@ -1530,8 +1519,6 @@ extern char gaspar_coll_hit_normal[];
 extern int coll_line_r2(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
 extern void *PartType27Spawn_r2(void *, void *, int, int, float) __asm__("func_L00_0026EBC0");
 
-extern void vec_scale_to_length(void *, void *, f32);
-
 /* The heavier tumbling debris: as FUN_L09_002ef430, inside a 2..1021 box, with eight sparks; on a hit it either slows
    down or bounces off, shrinking, with a new random spin.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l09/gameplay/entities/0021e538.c, FUN_L09_002ef9b0. */
@@ -1587,7 +1574,7 @@ void update_shrinking_tumbling_debris(struct Moby *moby) {
         }
     }
 }
-extern void moby_build_matrix(void *);
+
 typedef unsigned int u128_ee380 __attribute__((mode(TI)));
 extern char *CreateMoby_c(int) __asm__("func_0020D348");
 /* Creates a type-0x144 moby that inherits its owner's colour, position, rotation and timer. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l09/unclassified_0021e538.c, FUN_L09_002efda8. */
@@ -1787,7 +1774,6 @@ void platform_664_update(Moby *moby) {
     FastVecAdd(&m0, &m0, &(*(Vec4A *)&moby->pos));
     update_entity_matrix_r(data->f20, &m0, &rot, &(*(Vec4A *)&moby->rot));
 }
-extern int PlayBankSound(int, int, int);
 
 extern unsigned char gHaveHeliPack[];
 
@@ -2049,7 +2035,7 @@ typedef struct {
 extern short gaspar_mobys_r __asm__("D_L09_00160058");
 extern char D_L09_00209280[];
 extern VendorHitSource *MobyGetHitMessage_r2(Moby *, s32, s32) __asm__("func_L00_0025B478");
-extern s32 func_00120778_304EE0(f32) __asm__("func_00120778");
+
 extern void STUB_printf_r(char *, s32, s32) __asm__("func_001E9730");
 extern s32 ComputeHitResponse_r(Moby *, VendorHitSource *, f32 *, s32, s32 *, s32, s32,
                                 s32) __asm__("func_L00_0025B4D0");
@@ -2067,7 +2053,7 @@ void func_L09_00304EE0_r(Moby *moby, VendorVars *vars, f32 *health) {
     if (moby->state != 3) {
         src = MobyGetHitMessage_r2(moby, 0x330000, 0);
         if (src != 0) {
-            STUB_printf_r(refueling_station_hit_fmt, moby->oclass, func_00120778_304EE0(src->damage));
+            STUB_printf_r(refueling_station_hit_fmt, moby->oclass, func_00120778(src->damage));
         }
         switch (ComputeHitResponse_r(moby, src, health, 0, &hit, 0, 0, 4)) {
             case 1:
@@ -2190,7 +2176,7 @@ typedef struct {
 extern short D_L09_00160058_05378 SDATA(D_L09_00160058);
 extern char D_L09_002092E0[];
 extern VendorHitSource_05378 *MobyGetHitMessage_r3(Moby *, s32, s32) __asm__("func_L00_0025B478");
-extern s32 func_00120778_05378(f32) __asm__("func_00120778");
+
 extern void STUB_printf_r2(char *, s32, s32) __asm__("func_001E9730");
 extern s32 ComputeHitResponse_r2(Moby *, VendorHitSource_05378 *, f32 *, s32, s32 *, s32, s32,
                                  s32) __asm__("func_L00_0025B4D0");
@@ -2213,7 +2199,7 @@ void handle_linked_moby_damage(Moby *moby, VendorVars2_05378 *vars, f32 *health)
     if (moby->state != 3) {
         src = MobyGetHitMessage_r3(moby, 0x330000, 0);
         if (src != 0) {
-            STUB_printf_r2(linked_moby_hit_fmt, moby->oclass, func_00120778_05378(src->damage));
+            STUB_printf_r2(linked_moby_hit_fmt, moby->oclass, func_00120778(src->damage));
         }
         switch (ComputeHitResponse_r2(moby, src, health, 0, &hit, 0, 0, 4)) {
             case 1:
@@ -2534,8 +2520,6 @@ typedef struct {
 extern TurretShake gaspar_camera;
 extern TurretBeam gaspar_colored_effect_slots[];
 
-extern void divide_vector_xyz(void *, void *, float);
-
 extern void EffectQueue_Add_v(void *, int, int, int, int, int, float, float, float) __asm__("func_L00_001EE2E0");
 #define hero D_0013F450
 #define D_0015EED0_c D_0015EEDC
@@ -2788,9 +2772,8 @@ typedef struct SweepData {
     int mask;
     int sound;
 } SweepData;
-extern int Moby_PlaySound_i(int, int, int) __asm__("func_0022ED80");
+
 extern void initialize_hit_descriptor_v(void *, void *, int, float) __asm__("func_L00_0025A890");
-extern int func_L00_001F2BE8(float, void *, int, void *, void *);
 
 extern int hit_log_306DD8(const char *, ...) __asm__("func_001E9730");
 extern struct {
@@ -2814,7 +2797,7 @@ void update_damage_causer(Moby *moby) {
     }
     if ((gaspar_frame_count & 7) == (((int)moby >> 8) & 7)) {
         if (data->sound == -1 || (Sound_IsPlaying(moby, data->sound) == 0 && data->sound == -1)) {
-            data->sound = Moby_PlaySound_i(0, 4, (int)moby);
+            data->sound = Moby_PlaySound(0, 4, (int)moby);
         }
     }
     t = (data->length - (data->radius + data->radius)) / IntToFloat(data->steps);
@@ -2872,13 +2855,10 @@ typedef struct Flags_309688 {
     unsigned char f43;
 } Flags_309688;
 
-extern int fast_subtract_rotations_cf(void *);
-
 extern Hit_309688 *MobyGetHitMessage_r4(void *, int, int) __asm__("func_L00_0025B478");
 extern int spawn_barrier_replacement_r(void *, int) __asm__("func_L09_003095D0");
 
 extern int Moby_PlaySound_r3(int, int, void *) __asm__("func_0022ED80");
-extern float random_float_between(float, float);
 
 extern void vec_scale_to_length_r3(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void spawn_tumbling_debris_r2(void *, void *, void *, int, float) __asm__("func_L09_002F0BB8");
@@ -2973,7 +2953,6 @@ void barrier_update(Moby *m) {
         DeleteMoby(m);
 }
 
-extern float random_float_between(float, float);
 extern void STUB_printf_r3() __asm__("func_001E9730");
 extern int fast_dec_timer_r4(int *) __asm__("func_001F9908");
 extern int Moby_PlaySound_r4(int, int, char *) __asm__("func_0022ED80");

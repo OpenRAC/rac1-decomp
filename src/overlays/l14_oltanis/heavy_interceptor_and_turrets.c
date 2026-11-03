@@ -567,8 +567,6 @@ extern void MobyBlendAnimation_r(struct Moby *, int, int, int) __asm__("func_002
 extern u8 *GetFlaggedPvarWord_v(struct Moby *) __asm__("func_L00_0025D390");
 
 extern void Profile_Mark_v(void *, float) __asm__("func_001E9768");
-extern int coll_sphere_mobys(float, void *, int, void *, void *);
-extern int coll_line(void *, void *, int, int, int);
 
 extern f32 Spring_r(f32 *pos, f32 target, f32 *vel, f32, f32, f32) __asm__("func_L00_0025C918");
 extern int find_nearest_path_point_r(void *, void *, void *, int *, float *, int, float, float,
@@ -576,9 +574,7 @@ extern int find_nearest_path_point_r(void *, void *, void *, int *, float *, int
 extern int Spline_AdvanceByDistance_r(void *, void *, void *, void *, int, float) __asm__("func_L00_0025E860");
 extern void spawn_explosion_r(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                               float, int, int, int, int) __asm__("func_L00_0025F4A8");
-extern void vec_scale_to_length(void *, void *, float);
 
-extern int coll_sphere(float, void *, int, void *);
 extern char *PartType21Spawn(void *pos, void *dir, int c, int d, int n, int k, float f);
 extern unsigned char *PartType23Spawn_r(void *pos, float r, float lo, float hi, int n, void *vel, float size,
                                         int color) __asm__("func_L00_0026DEA0");
@@ -1272,7 +1268,6 @@ void draw_blarg_heavy_interceptor_spinning_beam(char *moby) {
     }
 }
 
-extern void draw_world_quad(void *, void *, int);
 extern char interceptor_quad_corners[];
 extern float interceptor_glow_forward_offset SDATA(interceptor_glow_forward_offset);
 extern float interceptor_glow_size SDATA(interceptor_glow_size);
@@ -1357,10 +1352,6 @@ typedef struct {
 extern float oltanis_glow_quad_corners[4][4];
 extern float oltanis_glow_camera_margin SDATA(oltanis_glow_camera_margin);
 extern u32 oltanis_glow_idle_color SDATA(oltanis_glow_idle_color);
-
-extern void vec_scale_to_length(void *, void *, float);
-
-extern void draw_world_quad(void *, void *, s32);
 
 /* Draws the moby's glow quad, pulled toward the camera so it is not hidden by the moby. */
 void draw_blarg_heavy_interceptor_camera_pulled_glow(char *m) {
@@ -1577,10 +1568,6 @@ void update_blarg_heavy_interceptor_oscillation_and_patrol_heading(char *moby) {
     }
 }
 
-extern int FastBSphereCheck(char *, float);
-
-extern void vec_scale_to_length(void *, void *, float);
-
 /* Checks a flag and a position test, then sets up three vectors in the moby data. */
 void prepare_blarg_heavy_interceptor_light_ring_transform(char *moby) {
     struct HeavyInterceptorVars *data = (struct HeavyInterceptorVars *)((Moby *)moby)->pvars;
@@ -1756,14 +1743,10 @@ extern int D_L14_001615FC_2B4E40 SDATA(D_L14_001615FC);
 extern void process_machinegun_turret_hit_reactions_r(unsigned char *m) __asm__("func_L14_002B5590");
 
 extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
-extern void MobySetAnimation(void *, int, int);
-extern int is_point_inside_clip_volume(void *, int);
 
 extern void spawn_explosion_r2(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
                                float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
-extern float fast_atan2(float, float);
-extern int random_integer_below(int);
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 
@@ -2216,8 +2199,6 @@ extern void hide_minibomber_and_release_voice(char *moby);
 
 extern int advance_minibomber_along_path(char *moby, char *a1, int a2, int a3, float *v, float *vel, float f12,
                                          float f13, float f14, float f15, float f16, float f17, float f18);
-
-extern int IsFrameWithinWindow(void *, float);
 
 extern void emit_minibomber_bomb_release_effects(char *m, float *input, float angle);
 extern unsigned char *spawn_flying_debris(char *owner, float angle, char *posp);
@@ -2807,7 +2788,6 @@ typedef struct {
     unsigned char padC[0x14];
     T_2B7028 tail;
 } P_2B7028;
-extern int random_integer_below(int);
 
 extern P_2B7028 *PartType23Spawn_r2(void *, float, float, float, int, void *, float, int) __asm__("func_L00_0026DEA0");
 extern float oltanis_zero_vector_r2[] __asm__("D_L14_0015F660") MACRO_ADDR;

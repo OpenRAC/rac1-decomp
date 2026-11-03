@@ -15,6 +15,9 @@
 #include "overlays/shared/stash_slots.h"
 #include "game/math/fastfunc.h"
 #include "game/render/draw.h"
+#include "callees.h"
+#include "game/render/vuchain.h"
+#include "game/audio/sound.h"
 extern char item_available[];
 extern char level_map_coverage[];
 
@@ -70,7 +73,7 @@ extern int cinematic_mode_r __asm__("D_L00_0015F6A8") MACRO_ADDR;
 extern int cinematic_mode_frames_r __asm__("D_L00_0015F6AC") MACRO_ADDR;
 extern float cpu_frame_load_r __asm__("D_L00_0015F6B4") MACRO_ADDR;
 extern int skip_frame_r __asm__("D_L00_0015F6BC") MACRO_ADDR;
-extern void FastMemZero16_r(void *, int) __asm__("func_001F99D8");
+
 extern int STUB_printf_r() __asm__("func_001E9730");
 extern void init_stash_r(void) __asm__("func_00234018");
 extern void init_level_runtime_state_r(void) __asm__("func_L00_0023D9C0");
@@ -109,22 +112,19 @@ extern void dispatch_game_state_update_r(void) __asm__("func_00232200");
 extern void update_slideshow_r(void) __asm__("func_L00_0029AFB8");
 extern void draw_framebuffer_with_timed_text_r(void) __asm__("func_L00_001F92E8");
 extern void Frame_RollCounter_r(void) __asm__("func_L00_001F70F0");
-extern void VU1_sendChain_r(void) __asm__("func_002349B8");
-extern void VU1_swapChain_r(void) __asm__("func_00234948");
+
 extern void PutDrawBufferSmall_r(void) __asm__("func_001FB598");
 extern void AA_BlurPass_r(void) __asm__("func_001FB848");
 extern void PutDrawBufferLarge_r(void) __asm__("func_001FB498");
 extern int snd_FlushSoundCommands_r(void) __asm__("func_0012DDC0");
-extern void VU1_syncChain_r(int) __asm__("func_00234AC8");
-extern void VU1_initChain_r(void) __asm__("func_002348E8");
+
 extern void snd_reenable_command_flush_r(void) __asm__("func_0012EC30");
 extern void snd_reset_state_and_flush_commands_r(void) __asm__("func_0012EC40");
-extern void sound_StopAllSounds_r(void) __asm__("func_0022EFE8");
+
 extern void music_Stop_r(void) __asm__("func_00216D88");
 extern void memcard_update_state_r(void) __asm__("func_00209E68");
 extern void Menu_RunStateHandler_r(void) __asm__("func_00209070");
 
-extern void VU1_addGSregister_r(int, long) __asm__("func_00234C98");
 extern int GetIconFrame_r(int, int) __asm__("func_00200198");
 extern void HudSprite_r(int, int, int, int, int, int) __asm__("func_00200468");
 
@@ -150,7 +150,7 @@ void run_level_main_loop(void) {
     int sel;
 
     if (((level_bss_end_r - level_bss_start_r) & 0xF) == 0 && ((unsigned int)level_bss_start_r & 0xF) == 0) {
-        FastMemZero16_r(level_bss_start_r, level_bss_end_r - level_bss_start_r);
+        FastMemZero16(level_bss_start_r, level_bss_end_r - level_bss_start_r);
     } else {
         STUB_printf_r(level_bss_unaligned_msg_r);
         for (i = 0; i < level_bss_end_r - level_bss_start_r; i++) {
@@ -205,8 +205,8 @@ void run_level_main_loop(void) {
         *(volatile int *)0x10000800 = 0;
         Frame_RollCounter_r();
         skip_frame_r = 0;
-        VU1_sendChain_r();
-        VU1_swapChain_r();
+        VU1_sendChain();
+        VU1_swapChain();
         PutDrawBufferSmall_r();
         AA_BlurPass_r();
         PutDrawBufferLarge_r();
@@ -263,8 +263,8 @@ void run_level_main_loop(void) {
             cinematic_mode_frames_r = cinematic_mode_frames_r + 1;
         }
         if (skip_frame_r != 0) {
-            VU1_syncChain_r(1);
-            VU1_initChain_r();
+            VU1_syncChain(1);
+            VU1_initChain();
             continue;
         }
         memcard_update_state_r();
@@ -280,7 +280,7 @@ void run_level_main_loop(void) {
 
                 SetupGifPaging(0);
                 size = 272.0f;
-                VU1_addGSregister_r(0x47, 0x3004B);
+                VU1_addGSregister(0x47, 0x3004B);
                 t = GetIconFrame_r(0x755D, 0);
                 HudSprite_r(t, 0x32, 0x12C, 0x40, 0x40, 0x80);
                 ang = (float)(rendered_frame_count_r % n) * -6.2831855f / (float)n;
@@ -293,7 +293,7 @@ void run_level_main_loop(void) {
         flush_debug_text_queue_r();
         func_001E9768_2465F8(level_main_loop_profile_label_r, 0x10);
         func_001E9768_b_2465F8(level_main_loop_profile_label_r, 0x10);
-        VU1_syncChain_r(1);
+        VU1_syncChain(1);
         {
             cpu_frame_load_r = IntToFloat(*(volatile int *)0x10000800) / (pal_mode_r != 0 ? 11520.0f : 9600.0f);
         }
@@ -335,10 +335,10 @@ void run_level_main_loop(void) {
             full = 1;
         }
         if (quit != 0) {
-            VU1_initChain_r();
+            VU1_initChain();
             snd_reset_state_and_flush_commands_r();
             snd_FlushSoundCommands_r();
-            sound_StopAllSounds_r();
+            sound_StopAllSounds();
             music_Stop_r();
             load_level_archive_resources_r(0, full);
             cinematic_mode_r = 0;

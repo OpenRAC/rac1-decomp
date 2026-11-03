@@ -142,8 +142,6 @@ struct PadOptions {
 extern struct PadOptions D_0015EEB0 MACRO_ADDR;
 extern PadState g_controller_state_r __asm__("D_0013CA40");
 
-extern float fast_arc_tan_r(float, float) __asm__("func_001FA058");
-
 void func_002181F0_r(PadState *p, u8 *buf, s32 len) __asm__("func_002181F0");
 
 /* Turns one pad report into the pad's state: buttons, the four stick axes with a dead zone
@@ -267,7 +265,7 @@ void func_002181F0_r(PadState *p, u8 *buf, s32 len) {
     v[0] = p->analog[2];
     v[1] = p->analog[3];
     mag = vec_length_xy(v);
-    ang = fast_arc_tan_r(v[0], v[1]);
+    ang = fast_arc_tan(v[0], v[1]);
     p->hist_mag[p->hist_idx] = mag;
     p->hist_ang[p->hist_idx] = ang;
     if (mag > 0.9f) {

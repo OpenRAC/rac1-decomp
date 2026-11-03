@@ -36,8 +36,6 @@ typedef struct {
 
 extern int truncate_float_to_s32(float);
 
-extern void vec_scale_to_length(void *, void *, float);
-
 extern int veldin2_cinematic_mode MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;

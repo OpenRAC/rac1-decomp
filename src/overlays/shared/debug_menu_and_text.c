@@ -141,9 +141,7 @@ extern char D_L00_001670E0[];
 extern char D_L00_001670F0[];
 extern char D_L00_00166ED0[];
 
-extern void func_L00_001FF4B0(void *, void *, float);
-
-extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
+extern void sce_vu0_mul_matrix(void *, void *, void *);
 
 /* Free-camera controls (debug camera): pad buttons move the camera (in the free-look matrix when the hero's
    camera mode is 2, else on the ground plane), turn it about three axes with eased speeds, and when the camera
@@ -251,7 +249,7 @@ void update_debug_camera(void) {
             s[4] = b;
             s[9] = b;
             copy_matrix_rotation(s + 20, player_camera_matrix_r);
-            sce_vu0_mul_matrix_r(s + 20, s + 20, s + 4);
+            sce_vu0_mul_matrix(s + 20, s + 20, s + 4);
             matrix_copy_rows(player_camera_matrix_r, s + 20);
         } else {
             ((View *)player_camera_r)->f158 =
@@ -286,7 +284,7 @@ void update_debug_camera(void) {
             s[8] = -b;
             s[10] = a;
             copy_matrix_rotation(s + 16, player_camera_matrix_r);
-            sce_vu0_mul_matrix_r(s + 16, s + 16, s);
+            sce_vu0_mul_matrix(s + 16, s + 16, s);
             matrix_copy_rows(player_camera_matrix_r, s + 16);
         } else {
             ((View *)player_camera_r)->f154 =
@@ -320,7 +318,7 @@ void update_debug_camera(void) {
         s[5] = b;
         s[10] = b;
         copy_matrix_rotation(s + 16, player_camera_matrix_r);
-        sce_vu0_mul_matrix_r(s + 36, s + 16, s);
+        sce_vu0_mul_matrix(s + 36, s + 16, s);
         matrix_copy_rows(player_camera_matrix_r, s + 36);
     } else {
         float t = ((Cam *)g_debug_menu_r)->f78 / 1.5f;
@@ -949,7 +947,7 @@ extern volatile s32 debug_text_flush_wait_flag MACRO_ADDR;
 
 extern void flush_debug_text_queue(void);
 
-extern double promote_float60(float) __asm__("func_00120778");
+extern double func_00120778(float);
 extern char debug_menu_title[];
 extern char debug_menu_title_underline[];
 extern char debug_menu_update_header[];
@@ -1206,16 +1204,16 @@ void draw_debug_menu(void) {
             print_debug_text(0xB9, (debug_menu60.item * 0xF) + 0x112, 0x800000C0, debug_menu_cursor);
         }
         print_debug_text(0xC4, 0x114, 0x8000C0C0, debug_label_near_dist);
-        sprintf(buf, debug_fog_value_format, promote_float60(level_fog_near_distance * 0.0009765625f));
+        sprintf(buf, debug_fog_value_format, func_00120778(level_fog_near_distance * 0.0009765625f));
         print_debug_text(0x11C, 0x114, 0x80F0F0F0, buf);
         print_debug_text(0xC4, 0x123, 0x8000C0C0, debug_label_near_int);
-        sprintf(buf, debug_fog_value_format, promote_float60(100.0f - (level_fog_near_intensity / 2.55f)));
+        sprintf(buf, debug_fog_value_format, func_00120778(100.0f - (level_fog_near_intensity / 2.55f)));
         print_debug_text(0x11C, 0x123, 0x80F0F0F0, buf);
         print_debug_text(0xC4, 0x132, 0x8000C0C0, debug_label_far_dist);
-        sprintf(buf, debug_fog_value_format, promote_float60(level_fog_far_distance * 0.0009765625f));
+        sprintf(buf, debug_fog_value_format, func_00120778(level_fog_far_distance * 0.0009765625f));
         print_debug_text(0x11C, 0x132, 0x80F0F0F0, buf);
         print_debug_text(0xC4, 0x141, 0x8000C0C0, debug_label_far_int);
-        sprintf(buf, debug_fog_value_format, promote_float60(100.0f - (level_fog_far_intensity / 2.55f)));
+        sprintf(buf, debug_fog_value_format, func_00120778(100.0f - (level_fog_far_intensity / 2.55f)));
         print_debug_text(0x11C, 0x141, 0x80F0F0F0, buf);
         print_debug_text(0xC4, 0x150, 0x8000C0C0, debug_label_color_r);
         sprintf(buf, fmt, (s32)level_fog_color_red[0]);

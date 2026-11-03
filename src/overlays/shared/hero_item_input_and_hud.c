@@ -65,10 +65,6 @@ extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
 
 extern int truncate_float_to_s32(float);
 
-extern float ApproachValue(float *p, float target, float maxstep);
-
-extern int coll_line(void *, void *, int, int, int);
-
 /* Hero state machine: per-frame transition logic for the current hero state (shared build, levels 00, 04, 07, 09, 10,
    13). */
 void hero_update_transitions(void) {

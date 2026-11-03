@@ -44,7 +44,7 @@ void background_ship_1_update(char *moby) {
         case 1:
             qcopy(tv, moby + 0x10);
             if (Sound_IsPlaying(moby, *(int *)(d + 0x6C)) == 0) {
-                *(int *)(d + 0x6C) = Moby_PlaySound_r_r(1, 4, (int)moby);
+                *(int *)(d + 0x6C) = Moby_PlaySound(1, 4, (int)moby);
             }
             p2 = background_ship_1_speed * g_frame_time;
             *(float *)(d + 0x64) = *(float *)(d + 0x64) + p2 / *(float *)(d + 0x70);
@@ -98,7 +98,7 @@ void background_ship_1_update(char *moby) {
                     }
                 }
             }
-            Moby_PlaySound_r_r(0, 0, (int)moby);
+            Moby_PlaySound(0, 0, (int)moby);
             FastVecScale(tv, moby + 0xC0, background_ship_1_debris_speed * frame_scale);
             tv[2] = tv[2] + background_ship_1_debris_lift * frame_scale;
             r1 = scale_ticks(90);

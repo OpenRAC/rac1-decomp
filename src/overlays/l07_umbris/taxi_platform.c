@@ -39,6 +39,7 @@
 #include "overlays/l07_umbris/menu_cache_entry.h"
 #include "overlays/l07_umbris/moby_group_first.h"
 #include "overlays/shared/pivot_reorientation.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 extern Hero g_hero;
 extern char saved_mission_state[];
 extern char gSpecialItems[];
@@ -490,11 +491,8 @@ extern int D_L07_0015F6A8 MACRO_ADDR;
 extern Anim *scene_points_r __asm__("D_L07_0016016C") MACRO_ADDR;
 
 extern void StartCutscene_r(int) __asm__("func_L00_00299B68");
-extern int is_point_inside_clip_volume(void *, int);
 
 extern void PlayMovieEntryIfIdle_r(int) __asm__("func_L00_0029A7D0");
-
-extern void clamp_vec_length(void *, void *, float);
 
 extern void initialize_global_state_entry_r(int) __asm__("func_0022F4A0");
 
@@ -660,7 +658,7 @@ void InitEnvMappedMoby(char *arg) {
     AddDrawCallback((void *)render_environment_mapped_object, arg);
 }
 struct AnimSeq;
-extern void moby_build_matrix(void *);
+
 struct SpawnClassView {
     u8 pad0[0x10];
     u32 unk10; /* 0x10 */
@@ -709,7 +707,6 @@ void reset_moby_from_class_defaults(struct Moby *m) {
         t->frames = t->length;
 }
 
-extern int get_next_moby_in_group(int *, int, int, int);
 extern int Spline_AdvanceByDistance_v(void *, void *, int *, float *, float, int) __asm__("func_L00_0025E860");
 
 extern char umbris_boltcrate_no_group_msg[];
@@ -993,8 +990,6 @@ typedef struct {
     int solid; /* 0x54 */
 } BoltVars;
 
-extern void vec_scale_to_length(void *, void *, float);
-
 extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
 extern void spawn_projectile_expiry_particle_r(void *, void *) __asm__("func_L07_0029B070");
 
@@ -1093,7 +1088,7 @@ char *spawn_bombomatic_projectile(char *pos, char *vec, int c, short d) {
     return m;
 }
 struct AnimSeq;
-extern int coll_sphere(float, void *, int, void *);
+
 extern int coll_line_r2(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 
@@ -1224,10 +1219,8 @@ extern void func_L01_002B9440(void *, int, float, float, float, float);
 extern void initialize_level07_water_grid_neighbors_r(int) __asm__("func_L07_0030E128");
 extern void set_moby_list_state_r(int, int) __asm__("func_L01_0026F090");
 
-extern float func_00214D28(float *, float, float);
 extern void MobyGroup_SetByteBC_r(int, int) __asm__("func_L01_0026F040");
 
-extern int is_point_inside_clip_volume(void *, int);
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
 
 extern void func_L01_002B9198(void *, int);
@@ -1637,8 +1630,6 @@ extern int umbris_frame_count MACRO_ADDR;
 
 extern void SetDeathBits(void *, int, int);
 
-extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
-
 // Bombomatic update: runs its fuse near the hero, bursts and drifts toward its target, with a state machine on m[0x20].
 void bombomatic_update(char *m) {
     char *d;
@@ -1869,8 +1860,6 @@ typedef struct {
     char b[0x90];
 } __attribute__((aligned(16))) Pkt;
 
-extern void draw_world_quad(void *, int, int);
-
 struct DrawFadingRingEffectVars {
     u8 pad_00[0x8];
     f32 unk_08;
@@ -1972,7 +1961,6 @@ void draw_fading_ring_effect(unsigned char *moby) {
     } while (band < 1.0f);
 }
 
-extern void vec_scale_to_length(void *, void *, float);
 extern void PostHitMessage_v(char *m, float t, int a, int b, void *pos, void *vel) __asm__("func_L00_0025AC00");
 
 /* Slows and steers a moby toward another when it is below and close in height. */
@@ -2060,7 +2048,6 @@ char *spawn_moby_class_1049(char *pos, char *vec, int arg) {
 }
 extern char *debris_target_p __asm__("D_L07_00173F58");
 
-extern int coll_line(void *, void *, int, int, int);
 extern int coll_sphere_f(float, void *, int, int) __asm__("func_L00_001F10E0");
 extern void spawn_explosion_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                 float, int, int, int, int) __asm__("func_L00_0025F4A8");
@@ -2392,7 +2379,6 @@ int initialize_sharkigator(char *moby, char *d) {
 }
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 
-extern int coll_sphere(float, void *, int, void *);
 struct WalkerPath {
     s32 count;
     u8 pad4[0xC];
@@ -2448,7 +2434,7 @@ void select_sharkigator_navigation_heading(struct Moby *moby, struct WalkerData 
     }
     data->heading = fast_atan2(data->goal.f[0] - moby->pos.x, data->goal.f[1] - moby->pos.y);
 }
-extern float ApproachWithVelocity(float *, float *, float, float, float, float);
+
 extern int move_moby_with_collision_integer_radius_v(int a, int b, int g, int e, float c,
                                                      float d) __asm__("func_L00_00259B08");
 
@@ -2491,7 +2477,7 @@ int update_sharkigator_horizontal_velocity_by_heading(char *moby, char *obj, flo
 }
 extern int debris_target;
 
-extern int coll_sphere_mobys(void *, float, int, void *, void *);
+extern int coll_sphere_mobys_v(void *, float, int, void *, void *) __asm__("func_L00_001F2BE8");
 
 /* In the given state and animation, when the walker is within range, pushes it along its velocity; a hit on the target
    bounces it back up and switches to the next state.
@@ -2522,7 +2508,7 @@ void handle_sharkigator_contact_attack(char *moby, char *obj, int state, int ani
     v[2] = 1.0f;
     InitDirectionalHitQuery_v((char *)m, (int)moby, 1, v, scale);
     Moby_GetJointWorldPos(moby, 0, p);
-    if (coll_sphere_mobys(p, radius, 0x21, moby, m) == 0) {
+    if (coll_sphere_mobys_v(p, radius, 0x21, moby, m) == 0) {
         return;
     }
     if (debris_target != id) {
@@ -2537,8 +2523,6 @@ void handle_sharkigator_contact_attack(char *moby, char *obj, int state, int ani
     moby[0x20] = next;
 }
 
-extern int coll_sphere(float, void *, int, void *);
-
 /* True when the sharkigator's joint sphere hits something and the hit target is id. */
 int test_sharkigator_target_sphere_collision(void *moby, int id, float scale) {
     char temp[16];
@@ -2548,8 +2532,6 @@ int test_sharkigator_target_sphere_collision(void *moby, int id, float scale) {
     }
     return 0;
 }
-
-extern int get_next_moby_in_group(int *, int, int, int);
 
 /* Finds another moby whose state lies within the inclusive range. */
 int test_other_group_moby_state_range(unsigned char *moby, int lower, int upper) {
@@ -2574,9 +2556,7 @@ int test_other_group_moby_state_range(unsigned char *moby, int lower, int upper)
 found:
     return 1;
 }
-extern void Manipulator_ApplyScale(void *, int, void *, float);
-
-extern float resolve_camera_surface_height(void *, int);
+extern void Manipulator_ApplyScale_v(void *, int, void *, float) __asm__("func_L00_00264B40");
 
 #define func_L00_002592B0_t(m, a, v, k, d, x) \
     ((void (*)(char *, float, float *, float, float, float))func_L00_002592B0)(m, a, v, k, d, x)
@@ -2623,7 +2603,7 @@ void SharkigatorUpdate(unsigned char *moby) {
     if (data == 0) {
         return;
     }
-    Manipulator_ApplyScale(moby, 0, ((struct SharkigatorVars *)data)->scale_manip, 2.2f);
+    Manipulator_ApplyScale_v(moby, 0, ((struct SharkigatorVars *)data)->scale_manip, 2.2f);
     if (((Moby *)moby)->state == 0) {
         if (initialize_sharkigator((char *)moby, data)) {
             STUB_printf(umbris_sharkigator_init_failed_msg, (int)((char *)moby - level_mobys) >> 8);
@@ -3163,8 +3143,6 @@ extern void MobyGroup_SetByteBC_r2(int, int) __asm__("func_L01_0026F040");
 
 extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
 
-extern float random_float_between(float, float);
-extern float random_angle_radians(void);
 extern int Moby_PlaySound_r3(int, int, void *) __asm__("func_0022ED80");
 
 extern void update_entity_matrix_r(void *, void *, void *, void *) __asm__("func_L00_002617B0");
@@ -3597,8 +3575,6 @@ typedef struct Packet {
     long x138;
 } Packet;
 
-extern void Moby_GetJointWorldPos_r(void *, int, void *) __asm__("func_L00_00250800");
-
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 
 extern int coll_line_r4(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
@@ -3626,7 +3602,7 @@ void draw_collision_clipped_moby_beam(Moby *arg) {
     f20 = f20 / 10.0f;
     t = normalize_angle(f20 + t * 1.5707964f);
     v50[0] = v50[0] + FastSin(t);
-    Moby_GetJointWorldPos_r(arg, 2, v30);
+    Moby_GetJointWorldPos(arg, 2, v30);
     FastVecSub(v10, v50, v30);
     vec_scale_to_length_r(v10, v10, 30.0f);
     FastVecAdd(v0, v50, v10);

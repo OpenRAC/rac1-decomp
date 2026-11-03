@@ -156,25 +156,18 @@ extern float toxic_crab_pursuit_heading_threshold_degrees_gp SDATA(toxic_crab_pu
 
 extern void update_toxic_crab_hit_reactions_and_targeting(void *);
 extern void emit_moby_particles(void *);
-extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
-
-extern int coll_line(void *, void *, int, void *, void *);
 
 extern s32 truncate_float_to_s32(f32);
 
-extern float ApproachValue(float *p, float target, float maxstep);
-
 extern float compute_toxic_crab_group_approach_angle(char *self);
 
-extern void coll_sphere_mobys(void *, float, int, void *, void *);
+extern void coll_sphere_mobys_v(void *, float, int, void *, void *) __asm__("func_L00_001F2BE8");
 
 extern void InitKnockback_b(void *, void *, int, int, int, float) __asm__("func_L00_0025D5B0");
 extern void MobySpringTurn_b(char *moby, float target, float k, float d, float max,
                              float *vel) __asm__("func_L00_002592B0");
 
 extern void SetDeathBits(void *, int, int);
-
-extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
 
 /* Update for the toxic crab (moby Toxic Crab): line-of-sight test, then a 13-state walk/chase/attack/death machine. */
 void toxic_crab_update(Moby *m) {
@@ -537,15 +530,15 @@ void toxic_crab_update(Moby *m) {
                 hit.id = (*(unsigned short *)&m->oclass);
                 if (m->prev_seq == 6) {
                     Moby_GetJointWorldPos(m, 0, v);
-                    coll_sphere_mobys(v, 0.75f, 0, m, &hit);
+                    coll_sphere_mobys_v(v, 0.75f, 0, m, &hit);
                     v[2] += 0.5f;
-                    coll_sphere_mobys(v, 0.75f, 0, m, &hit);
+                    coll_sphere_mobys_v(v, 0.75f, 0, m, &hit);
                     coll_line(pos, v, 9, m, &hit);
                 } else {
                     Moby_GetJointWorldPos(m, 1, v);
-                    coll_sphere_mobys(v, 0.75f, 0, m, &hit);
+                    coll_sphere_mobys_v(v, 0.75f, 0, m, &hit);
                     v[2] += 0.5f;
-                    coll_sphere_mobys(v, 0.75f, 0, m, &hit);
+                    coll_sphere_mobys_v(v, 0.75f, 0, m, &hit);
                     coll_line(pos, v, 9, m, &hit);
                 }
             } else if (m->prev_seq >= 6 && m->prev_seq <= 7 && (m->anim_flags & 2)) {
@@ -894,7 +887,6 @@ typedef struct {
     unsigned char b11;
 } Flags;
 extern void activate_waiting_moby_group_members_r(void *) __asm__("func_L10_002E14F8");
-extern float random_float_between(float, float);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
@@ -902,13 +894,11 @@ extern Hit_2E52B0 *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B
 extern int ComputeHitResponse_r(void *, void *, void *, int, int *, float *, int, int) __asm__("func_L00_0025B4D0");
 
 extern void PlayBankSound_r(int, int, int) __asm__("func_0022EE28");
-extern void ShowBanner_r(int, int) __asm__("func_L00_00264DB8");
 
 extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
 
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 
-extern float fast_atan2(float, float);
 extern void trooper_set_knockback_r(float *, float, float) __asm__("func_L03_00251A58");
 extern void HeadingFromVector_r(void *, float *, void *, void *) __asm__("func_L00_0025BBA0");
 extern void InitKnockback_r(void *, void *, int, int, int, float) __asm__("func_L00_0025D5B0");
@@ -918,7 +908,6 @@ extern int FindNearestTargetMoby_r(void *, void *, float) __asm__("func_L00_0026
 extern int FindNearestEligibleMoby_r(float, void *, void *, int, int, void *, int) __asm__("func_L00_00260FB0");
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
-extern void MobyBlendAnimation(void *, int, int, int);
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern float D_L10_00161EC0_2E52B0 SDATA(D_L10_00161EC0);
 extern float D_L10_00161EAC_2E52B0 SDATA(D_L10_00161EAC);
@@ -964,7 +953,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
             if (d->f1AC != 0 && ((Flags *)gSkillPoints)->b11 == 0) {
                 ((Flags *)gSkillPoints)->b11 = 1;
                 PlayBankSound_r(1, 0, 0);
-                ShowBanner_r(0x53DB, -1);
+                ShowBanner(0x53DB, -1);
             }
         }
         if (d->h26 != 0 && r->b28 == 0) {
@@ -1255,8 +1244,6 @@ extern char orxon_help_state[];
 extern unsigned char gHaveHeliPack[];
 
 extern void update_blarg_ship_hit_reactions_and_targeting(char *m);
-
-extern int IsFrameWithinWindow(char *, float);
 
 extern char *create_rocket_v(void *vel, void *pos, int a, int b, int c, float scale) __asm__("func_L10_002CD578");
 
@@ -1655,8 +1642,6 @@ void emit_moby_directional_particles(char *m) {
     }
 }
 
-extern int try_set_help_message(int, int);
-
 extern unsigned char special_items_base[];
 
 extern int orxon_cinematic_mode MACRO_ADDR;
@@ -1776,7 +1761,6 @@ typedef struct Flags_2E9978 {
     unsigned char f5;
 } Flags_2E9978;
 
-extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern int Help_Request_r(int a, int b) __asm__("func_L00_00203F20");
 extern float vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
 
@@ -2360,7 +2344,6 @@ extern short burst_spark_random_vector_fourth_component_max_gp, orxon_spark_time
 extern short orxon_spark_start_color_b, orxon_spark_end_color_a, orxon_spark_end_color_b, orxon_spark_interval_min,
     orxon_spark_interval_max, orxon_spark_burst_ticks_min;
 extern short orxon_spark_burst_ticks_max, orxon_spark_pause_ticks_min, orxon_spark_pause_ticks_max;
-extern int FastBSphereCheck(char *, float);
 
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
 

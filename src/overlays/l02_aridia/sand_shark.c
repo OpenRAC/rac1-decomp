@@ -228,7 +228,6 @@ void emit_sand_shark_dust_burst(void *moby) {
     emit_sand_shark_dust_segment(moby, 6, 7, sand_shark_dust_puffs_seg2_3);
     emit_sand_shark_dust_segment(moby, 8, 9, sand_shark_dust_puffs_seg4);
 }
-extern void Manipulator_ApplyScale(float x, int a, int b, unsigned char *m);
 
 extern void handle_sand_shark_damage_and_targeting(unsigned char *moby);
 
@@ -241,12 +240,7 @@ extern void emit_sand_shark_single_particle(void *pos);
 
 extern void begin_sand_shark_return_home_if_outside_path(unsigned char *moby);
 
-extern float ApproachValue(float *p, float target, float maxstep);
-
 extern void emit_sand_shark_radial_particles(void *pos, int n);
-
-extern int IsFrameWithinWindow(char *, float);
-extern void vec_scale_to_length(void *, void *, float);
 
 extern int CarriedMobyUpdate(void *, void *);
 
@@ -1329,7 +1323,6 @@ void begin_sand_shark_return_home_if_outside_path(unsigned char *moby) {
         data->i298 = 1;
     }
 }
-extern void Manipulator_ApplyScale(float x, int a, int b, unsigned char *m);
 
 extern void handle_level02_bot_damage_and_retargeting(void *);
 extern int func_001160D8(void);
@@ -1339,8 +1332,6 @@ extern int func_001160D8(void);
 extern void MobySpringTurn_v(char *moby, float target, float *vel, float k, float d,
                              float max) __asm__("func_L00_002592B0");
 
-extern float ApproachValue(float *p, float target, float maxstep);
-
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 
 extern void InitDirectionalHitQuery_v(char *arg, int a, int b, void *src, float scale) __asm__("func_L00_0025A8C0");
@@ -1349,8 +1340,6 @@ extern void SetDeathBits(void *, int, int);
 extern void spawn_explosion_v(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
                               float, int, int, int, int) __asm__("func_L00_0025F4A8");
 /* The scale before the three vectors, as the other level files declare it. */
-extern void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float scale, float *v10,
-                                float *v11, float *v12);
 
 extern char *aridia_scene_points MACRO_ADDR;
 extern float aridia_zero_vec[] MACRO_ADDR;
@@ -1862,8 +1851,6 @@ extern float aridia_elevator_stop_offset SDATA(aridia_elevator_stop_offset);
 extern float aridia_elevator_accel SDATA(aridia_elevator_accel);
 extern float aridia_elevator_max_speed SDATA(aridia_elevator_max_speed);
 
-extern float ApproachWithVelocity(float *, float *, float, float, float, float);
-
 extern void DrawRotatingQuadRing(char *);
 
 /* Moves the elevator between two heights above its joint, with a particle while it moves. */
@@ -1998,8 +1985,6 @@ extern int aridia_elevator_ring_slow_color SDATA(aridia_elevator_ring_slow_color
 extern int aridia_elevator_ring_fast_color SDATA(aridia_elevator_ring_fast_color);
 extern float aridia_elevator_ring_quad_angle SDATA(aridia_elevator_ring_quad_angle);
 extern float aridia_elevator_ring_uvs[][2];
-
-extern void draw_world_quad(void *, void *, int);
 
 typedef int u128 __attribute__((mode(TI)));
 
@@ -2493,7 +2478,6 @@ typedef struct {
 } Nodedc88;
 extern int aridia_mobys MACRO_ADDR;
 #define NODE(i) ((Nodedc88 *)(((i) << 7) + (int)D_L02_0016016C))
-extern void SamplePathAt(void *, int, void *, void *, int, float);
 
 #define G(i) ((char *)D_L02_00160058 + ((i) << 8))
 #define HP ((float *)gHeroPos)
@@ -2997,8 +2981,6 @@ extern int rocket_launcher_glow_start_color SDATA(rocket_launcher_glow_start_col
 extern int rocket_launcher_glow_end_color SDATA(rocket_launcher_glow_end_color);
 extern void play_rocket_launcher_delayed_shot_sounds(char *moby);
 
-extern void vec_scale_to_length(void *, void *, float);
-
 typedef struct SwivelTurretVars {
     f32 yaw_vel; /* 0x00 */
     f32 target_yaw; /* 0x04 */
@@ -3189,7 +3171,6 @@ void rocket_door1_update(struct Moby *m) {
             break;
     }
 }
-extern void vec_scale_to_length(void *, void *, float);
 
 // Moby update: copy position, then wait for a partner moby and slide toward it.
 void tresspasser_door1_update(unsigned char *moby) {
@@ -3313,12 +3294,8 @@ extern short D_L02_00161D58_2E1B58 SDATA(D_L02_00161D58);
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern char *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
 
-extern int Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
-extern float random_float_between(float, float);
-
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 
-extern int random_integer_below(int);
 extern void func_L01_002F9908(void *, void *, unsigned int, float, int, float, float, float, int);
 
 typedef struct {
@@ -3361,7 +3338,7 @@ void rocks_update(unsigned char *moby) {
     if (hit_record == 0)
         return;
     menu_item_enabled_9 = 1;
-    Moby_PlaySound_r(0, 0, (int)moby);
+    Moby_PlaySound(0, 0, (int)moby);
     for (i = 0; i < 200; i++) {
         *(u128 *)A = 0;
         A[0] = random_float_between(-1.0f, 1.0f);

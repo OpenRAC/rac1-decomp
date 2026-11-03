@@ -39,8 +39,6 @@ extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
 
 extern int truncate_float_to_s32(float);
 
-extern void vec_scale_to_length(void *, void *, float);
-
 extern int fleet_game_mode MACRO_ADDR;
 extern int fleet_water_patches MACRO_ADDR;
 extern int fleet_water_patch_count MACRO_ADDR;

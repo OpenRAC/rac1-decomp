@@ -18,6 +18,7 @@
 #include "game/system/stub.h"
 #include "overlays/shared/move_control_and_clear_path.h"
 #include "overlays/shared/trespasser_and_throwing_gloves.h"
+#include "callees.h"
 extern Hero g_hero;
 extern char weapon_ammo_counts[];
 
@@ -43,8 +44,6 @@ extern u8 saved_mission_state[];
 extern u8 umbris_mission_group_state[];
 extern s32 umbris_indicator_states[];
 extern struct Moby *level_mobys MACRO_ADDR;
-
-extern void vec_scale_to_length(void *, void *, float);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l07/gameplay/entities/0030cd20.c, FUN_L07_0031a9e8. */
 void update_moby_offset_motion(struct Moby *moby) {
@@ -300,10 +299,6 @@ extern int func_001FA898(float);
 
 extern int Spline_AdvanceByDistance_v(void *, void *, int *, float *, float, int) __asm__("func_L00_0025E860");
 
-extern int func_00120778_31E6B0(float) __asm__("func_00120778");
-
-extern float random_float_between(float, float);
-
 extern char D_L07_00211DE0[];
 extern char D_L07_00211E20[];
 extern char D_L07_00211E40[];
@@ -401,9 +396,8 @@ void update_equalizer_ammo_spawner(SparkMoby *moby) {
                             }
                         } while (done == 0);
                         n = rem;
-                        STUB_printf(ammo_spawner_place_fmt, k, m, func_00120778_31E6B0(vec[0]),
-                                    func_00120778_31E6B0(vec[1]), func_00120778_31E6B0(vec[2]),
-                                    func_00120778_31E6B0(at));
+                        STUB_printf(ammo_spawner_place_fmt, k, m, func_00120778(vec[0]), func_00120778(vec[1]),
+                                    func_00120778(vec[2]), func_00120778(at));
                         spawn_on_path(vec, k, m, 0);
                         at = at + random_float_between(d->total / step, 2.0f);
                         if (rem < m) {
@@ -487,8 +481,6 @@ void update_scene_moby_effect_bursts(struct Moby *m) {
     }
 }
 
-extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
-
 /* Level moby state machine: wait, detect proximity, then emit effects, spawn a replacement and delete itself. */
 void mushroom_update(char *m) {
     int hit = 0;
@@ -530,7 +522,6 @@ void mushroom_update(char *m) {
     }
 }
 extern char *mk_a(int) __asm__("func_0020D348");
-extern void moby_build_matrix(void *);
 
 /* Stage machine for a three-state effect moby: wait, activate, burst and delete. */
 void robot_head_update(char *self) {
@@ -605,8 +596,6 @@ void seashell_update(unsigned char *m) {
             break;
     }
 }
-
-extern void vec_scale_to_length(void *, void *, float);
 
 extern char umbris_cutscene_state[];
 extern float umbris_scene_trail_speed SDATA(umbris_scene_trail_speed);

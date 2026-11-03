@@ -232,8 +232,6 @@ int UpdateAllCamerasLvl(void) {
     return -1;
 }
 
-extern void vec_scale_to_length(void *, void *, float);
-
 // Samples the hero moby's three axes into blend.orbit.fwd and blend.orbit.up, derives the orbit yaw, pitch and
 // distance to the hero, and copies rot to saved_rot.
 /* Joined to the fragment that follows it (config/overlays/joined.tsv): the catalogue splits the delay slot of the
@@ -532,8 +530,8 @@ int compute_spherical_offset_from_positions(float *polar, float *pos, float *ori
 }
 extern void FastVecSub_3(float *, float *, float *) __asm__("func_001F9BF0");
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern void divide_vector_xyz(float *, float *, float);
-extern int func_L00_001F10E0(void *, int, void *, float);
+
+extern int coll_sphere_v(void *, int, void *, float) __asm__("func_L00_001F10E0");
 extern W coll_resolved_pos;
 extern int gCamSphereMaskLvl SDATA(gCamSphereMaskLvl);
 
@@ -566,7 +564,7 @@ void resolve_camera_movement_collisions(float *pos, float r) {
         q = coll_resolved_pos;
         FastVecAdd(pos, pos, d);
         base = &g_hero;
-        for (j = 0; j < 6 && coll_sphere(pos, gCamSphereMaskLvl, *(void **)&base->moby, r); j++) {
+        for (j = 0; j < 6 && coll_sphere_v(pos, gCamSphereMaskLvl, *(void **)&base->moby, r); j++) {
             qcopy(pos, q);
             {
                 Camera *t = player_camera.current;

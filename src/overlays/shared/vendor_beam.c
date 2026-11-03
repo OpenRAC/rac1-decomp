@@ -8,6 +8,7 @@
 #include "data/level_14.h"
 #include "asm_functions/executable.h"
 #include "game/math/fastfunc.h"
+#include "asm_functions/shared_levels.h"
 
 typedef struct Pkt {
     float corner[4][4];
@@ -19,10 +20,8 @@ typedef struct Pkt {
     long flags;
 } Pkt;
 
-extern void vec_scale_to_length(void *, void *, float);
-
 u64 GetEffectTex_v(s32) __asm__("func_001F4868");
-extern void draw_world_quad(void *, void *, int);
+
 typedef struct {
     float v[8][4];
 } Frame;

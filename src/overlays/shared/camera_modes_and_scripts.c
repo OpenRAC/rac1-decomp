@@ -53,7 +53,6 @@ void follow_camera_update(char *m) {
 }
 extern char hero_globals_base[] NOT_SDA;
 extern int gCheats_3 MACRO_ADDR;
-extern void vec_scale_to_length(void *, void *, float);
 
 /* Builds a view matrix and multiplies it into the camera and projection matrices. The mode flag is read as a byte of a
    MACRO_ADDR int, which gives retail's one-register lui/lbu. */
@@ -144,12 +143,10 @@ extern float hero_aligned_cam_input_stiffness SDATA(hero_aligned_cam_input_stiff
 extern float hero_aligned_cam_input_damping SDATA(hero_aligned_cam_input_damping);
 extern float hero_aligned_cam_input_max_step SDATA(hero_aligned_cam_input_max_step);
 void func_L00_002EB170_EB3E8(void *) __asm__("func_L00_002EB170");
-void vec_scale_to_length(void *, void *, float);
 
 float func_001EC120_EB3E8(float, float, float, float, float, float *) __asm__("func_001EC120");
-void build_look_at_matrix(void *, void *, void *, float);
 
-int coll_sphere(void *, int, void *, float);
+int coll_sphere_v(void *, int, void *, float) __asm__("func_L00_001F10E0");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002e9010.c, FUN_L00_002e9f38. */
 void update_hero_aligned_camera_from_input(Camera *o) {
@@ -211,7 +208,7 @@ void update_hero_aligned_camera_from_input(Camera *o) {
         d.f[2] = z;
         vec_scale_to_length(&d, &d, st->z);
         FastVecAdd(&o->pos, &o->pos, &d);
-        if (coll_sphere(&o->pos, 0x12, (u8 *)g_hero_r.moby, 0.3f))
+        if (coll_sphere_v(&o->pos, 0x12, (u8 *)g_hero_r.moby, 0.3f))
             st->z = func_001EC120_EB3E8(st->z, z, 0.005f, 0.2f, z, &st->vz);
         n = FastAddRots(st->ang, a);
         if (FastAbsF(n) > 1.4660766f) {
@@ -964,16 +961,14 @@ extern Hero hero_2ED320 __asm__("D_0013F450");
 extern CamGlobals cam_globals_2ED320 __asm__("D_L00_00166D80");
 extern s32 current_level_2ED320 __asm__("D_0015EE84") MACRO_ADDR;
 extern f32 D_0015EE6C MACRO_ADDR;
-extern void func_00214D28(float, float, float *);
+extern void ApproachValue_v(float, float, float *) __asm__("func_00214D28");
 
 extern void normalize_2ED320(float, void *, void *) __asm__("func_L00_001FF4B0");
 extern void FastVecScale_2ED320(float, void *, void *) __asm__("func_001F9C30");
 
-extern int func_L00_001EFFF0(void *, void *, int, int, int);
 extern int coll_sphere_2ED320(float, void *, int, int) __asm__("func_L00_001F10E0");
 
 extern float rope_spring_turn_2ED320(void *, float, float, float, float, float) __asm__("func_L00_001EB6A8");
-extern float fast_atan2(float, float);
 
 extern unsigned short *D_L00_001ABBC0[];
 extern char *D_L00_00160098 MACRO_ADDR;
@@ -1014,16 +1009,16 @@ void update_target_tracking_camera_position(Camera *cam) {
         target = 4.64f;
         rate = 2.0f;
     }
-    ApproachValue(target, g_frame_time * 8.0f,
-                  (float *)(*(char **)(cam_globals_2ED320.current_follow_cam + 0x70) + 0xa0));
-    ApproachValue(rate, g_frame_time * 4.0f,
-                  (float *)(*(char **)(cam_globals_2ED320.current_follow_cam + 0x70) + 0xb0));
+    ApproachValue_v(target, g_frame_time * 8.0f,
+                    (float *)(*(char **)(cam_globals_2ED320.current_follow_cam + 0x70) + 0xa0));
+    ApproachValue_v(rate, g_frame_time * 4.0f,
+                    (float *)(*(char **)(cam_globals_2ED320.current_follow_cam + 0x70) + 0xb0));
     if (current_level_2ED320 == 14 && hero_2ED320.state.current == HERO_STATE_GRAPPLE_SWING_ENTRY)
-        ApproachValue(rate + 0.25f, g_frame_time * 8.0f,
-                      (float *)(*(char **)(cam_globals_2ED320.current_follow_cam + 0x70) + 0x8c));
+        ApproachValue_v(rate + 0.25f, g_frame_time * 8.0f,
+                        (float *)(*(char **)(cam_globals_2ED320.current_follow_cam + 0x70) + 0x8c));
     else
-        ApproachValue(rate - 0.5f, g_frame_time * 8.0f,
-                      (float *)(*(char **)(cam_globals_2ED320.current_follow_cam + 0x70) + 0x8c));
+        ApproachValue_v(rate - 0.5f, g_frame_time * 8.0f,
+                        (float *)(*(char **)(cam_globals_2ED320.current_follow_cam + 0x70) + 0x8c));
 
     if (hero_2ED320.state.current == HERO_STATE_GRAPPLE_SWING_ENTRY) {
         if ((current_level_2ED320 != 14 && current_level_2ED320 != 7 && current_level_2ED320 != 9) ||
@@ -1108,7 +1103,6 @@ void update_target_tracking_camera_position(Camera *cam) {
         qcopy(&cam->pos, position);
 }
 
-extern void build_look_at_matrix(void *, void *, void *, float);
 extern char camera_view_up_axis[] NOT_SDA;
 /* orients a moby to face the camera, blending by the turn angle */
 void turn_camera_view_toward_hero(Camera *m) {
@@ -1245,7 +1239,6 @@ extern u8 *g_current_follow_cam_r2[] __asm__("D_L00_00166F00");
 extern u8 *camera_descriptors_r2 __asm__("D_L00_0015F050") MACRO_ADDR;
 extern u8 *level_paths[];
 extern s32 g_hero_field_2284[];
-extern s32 is_point_inside_clip_volume(void *, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002e9010.c, FUN_L00_002ec7e8. */
 s32 volume_camera_swing_active(A_2ec7e8 *a) {
@@ -1407,8 +1400,6 @@ extern float camera_view_field_a4;
 
 #define pad_held_r ((s32 *)(&pad_held))
 #define controller_state (*(PadSt *)(&g_controller_state))
-
-extern void vec_scale_to_length(void *, void *, f32);
 
 extern void Cam_SetDistanceGoal_v(s32, f32, f32) __asm__("func_L00_002E9900");
 
@@ -1667,8 +1658,6 @@ int volume_camera_swing_check(char *m) {
     }
     return 0;
 }
-
-extern int is_point_inside_clip_volume(void *, int);
 
 struct VolAimParams {
     u8 pad_00[0x8];
@@ -2042,7 +2031,6 @@ extern VoicePoolRow voice_pool[];
 extern T_2ed950 *level_sound_slots MACRO_ADDR;
 
 s32 func_L00_0028F0B0_EEE00(s32, s32, void *, s32) __asm__("func_L00_0028F0B0");
-s32 random_integer_below(s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002e9010.c, FUN_L00_002ed950. */
 void update_sound_emitter_playback_by_distance(u8 *m) {
@@ -2077,9 +2065,6 @@ void update_sound_emitter_playback_by_distance(u8 *m) {
     }
 }
 extern float g_debug_camera[];
-
-extern float random_float_between(float, float);
-extern int random_integer_below(int);
 
 typedef struct {
     f32 f[4];

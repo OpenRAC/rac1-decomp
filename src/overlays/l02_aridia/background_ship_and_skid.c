@@ -34,6 +34,7 @@
 #include "asm_functions/level_02.h"
 #include "overlays/l02_aridia/hud_frame_and_sky_shells.h"
 #include "overlays/l02_aridia/sand_shark.h"
+#include "callees.h"
 extern Hero g_hero;
 extern char gSkillPoints[];
 extern char gSpecialItems[];
@@ -86,12 +87,6 @@ struct ProjectileVars {
 };
 
 extern int truncate_float_to_s32(float);
-
-extern void vec_scale_to_length(void *, void *, float);
-
-extern float ApproachWithVelocity(float *, float *, float, float, float, float);
-
-extern float ApproachValue(float *, float, float);
 
 extern void EaseManipulatorOffsets_r(float, float, void *, void *, int) __asm__("func_L00_00263950");
 
@@ -729,7 +724,7 @@ extern char aridia_ocean_zone1_part4[];
 extern char aridia_ocean_frame_state[];
 
 extern void prepare_scaled_table_on_stack_r(void) __asm__("func_L02_002A59D8");
-extern int is_point_inside_clip_volume(void *, int);
+
 extern void RefreshPointLight_r(void *) __asm__("func_00202790");
 void func_L02_002EB480_r(Moby *m) __asm__("func_L02_002EB480");
 
@@ -792,8 +787,7 @@ extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
 
 extern f32 ApproachValue_r(f32 *, f32, f32) __asm__("func_00214D28");
 extern f32 vec_length_xy_r(void *) __asm__("func_001F9CE8");
-extern f32 fast_atan2(f32, f32);
-extern f32 random_float_between(f32, f32);
+
 extern s32 truncate_float_to_s32_r(f32) __asm__("func_001FA898");
 
 extern void fast_dec_timer_r(s32 *) __asm__("func_001F9908");
@@ -883,8 +877,6 @@ typedef struct {
 typedef struct {
     unsigned char b[0x20];
 } Flags_0013D5C8;
-
-extern int PlayBankSound(int, int, int);
 
 extern Entry_L02_0017A140 aridia_item_defs[];
 extern unsigned char special_items_base[];
@@ -1173,13 +1165,11 @@ extern int D_L02_001621EC_2F0458 SDATA(D_L02_001621EC);
 extern int D_L02_001621F0_2F0458 SDATA(D_L02_001621F0);
 extern int D_L02_001621F4_2F0458 SDATA(D_L02_001621F4);
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
-extern void euler_rotation_basis_r(void *, void *) __asm__("func_001FA1F8");
-extern int func_L00_00200290(void *, float);
+
 extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
-extern float random_float_between(float, float);
 
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
-extern int random_integer_below(int);
+
 extern void rand_vec_r2(void *, float, float) __asm__("func_L00_00258DB0");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 
@@ -1195,7 +1185,7 @@ void update_smoke_vent(Moby *m) {
     switch (m->state) {
         case 0:
             m->state = d->b0 + 1;
-            euler_rotation_basis_r(&*(V_2F0458 *)&m->rot_row0, &*(V_2F0458 *)&m->rot);
+            euler_rotation_basis(&*(V_2F0458 *)&m->rot_row0, &*(V_2F0458 *)&m->rot);
             break;
         case 1:
             qcopy(&vec, &*(V_2F0458 *)&m->pos);

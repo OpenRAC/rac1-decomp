@@ -572,8 +572,6 @@ extern unsigned char gHaveHeliPack[] NOT_SDA;
 extern float frame_scale MACRO_ADDR;
 extern int select_hero_condition_animation_id(int);
 
-extern float ApproachValue(float *, float, float);
-
 // Picks the hero's current animation id and speed from its state and starts or updates the animation slot. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_0020c758.c, FUN_L00_0020da68.
 void update_hero_condition_animation(void) {
     struct Hero *p = (struct Hero *)(hero_globals_base + 0xE1D);
@@ -2679,8 +2677,6 @@ void clear_hero_target_and_ground_speeds(void) {
 extern unsigned char draw_map51_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
 extern float camera_yaw;
 
-extern void divide_vector_xyz(void *, void *, float);
-
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 typedef int u128 __attribute__((mode(TI)));
@@ -2957,8 +2953,6 @@ void correct_hero_airborne_wall_velocity(void) {
 extern int coll_hit_type;
 extern int coll_hit_result[];
 
-extern int coll_line(void *, void *, int, int, int);
-
 /* Hero ground probe: measures the support under the feet, and slides the velocity off a steep floor Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_0020c758.c, FUN_L00_00212318. */
 void clip_hero_velocity_against_probed_surfaces(int arg) {
     struct Hero *g = (struct Hero *)(hero_globals_base + 0xE1D);
@@ -3043,7 +3037,6 @@ void clip_hero_velocity_against_probed_surfaces(int arg) {
         }
     }
 }
-extern void vec_scale_to_length(void *, void *, float);
 
 typedef struct {
     float v[4];
@@ -3077,13 +3070,9 @@ extern u8 collision_hit_point[];
 extern f32 coll_hit_point_z;
 
 void func_L00_00212D70_12E70(void *, void *, s32, f32, f32) __asm__("func_L00_00212D70");
-s32 coll_line(void *, void *, s32, s32, s32);
 
-f32 resolve_camera_surface_height(void *, void *);
 s32 func_L00_0025F410_12E70(s32) __asm__("func_L00_0025F410");
 u8 *func_L00_0025D390_12E70(s32) __asm__("func_L00_0025D390");
-
-void vec_scale_to_length(void *, void *, f32);
 
 extern Hero D_0013F450_12E70 __asm__("D_0013F450");
 extern struct CollisionHit coll_hit_result_r2 __asm__("D_L00_00173F40");
@@ -3383,8 +3372,6 @@ float forward_component(QVec *v) {
     dir[2] = 0.0f;
     return FastVecDot(&p, dir);
 }
-
-extern int coll_sphere(float, void *, int, void *);
 
 extern char coll_resolved_pos[];
 

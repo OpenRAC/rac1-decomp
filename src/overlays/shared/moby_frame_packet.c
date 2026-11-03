@@ -262,7 +262,7 @@ typedef struct {
     char pad0[0x14];
     Model_50478p *first, *second;
 } Object_50478p;
-extern void section(void *, int) __asm__("func_001F99D8");
+
 extern void func_L00_001FF040(void *, void *, int);
 
 /* Defined under a local name: this unit already declares FUN_L00_0024f440
@@ -283,7 +283,7 @@ void func_L00_00250478_r(Object_50478p *obj, int i, int j, Packet_50478p *out) {
     u64 *q;
 
     s = t->sequences[i]->frames[j];
-    section(out, ((na + 3) * 8) & 0xFF0);
+    FastMemZero16(out, ((na + 3) * 8) & 0xFF0);
     k = na + s->hA;
     k += s->hE;
     out->h8 = na * 8;

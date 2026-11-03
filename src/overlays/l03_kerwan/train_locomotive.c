@@ -34,6 +34,7 @@
 #include "asm_functions/level_03.h"
 #include "overlays/l03_kerwan/taxi_and_mine_layer.h"
 #include "overlays/l03_kerwan/rotate_point_about_axis.h"
+#include "callees.h"
 extern Hero g_hero;
 
 typedef struct Train292890 {
@@ -218,8 +219,6 @@ void place_metropolis_train(char *moby, float *pos, float heading) {
     ((struct Moby *)coupling)->state = 0;
     ((struct Moby *)coupling)->flags |= 6;
 }
-
-extern void vec_scale_to_length(void *, void *, float);
 
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
@@ -747,11 +746,8 @@ typedef struct {
 
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
 
-extern int Sound_IsPlaying_r(void *, int) __asm__("func_L00_0028EB98");
-
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 
-extern void Sound_StopSlot_r(int) __asm__("func_L00_0028EBF0");
 extern float ApproachValue_r(float *p, float target, float maxstep) __asm__("func_00214D28");
 
 extern void update_entity_matrix_r2(char *, void *, void *, void *) __asm__("func_L00_002617B0");
@@ -812,7 +808,7 @@ void moving_platform_small_update(Moby *moby) {
             int n;
             short cls = moby->oclass;
             if (cls == 0x389 || cls == 0x364) {
-                if (Sound_IsPlaying_r(moby, d->voice) == 0) {
+                if (Sound_IsPlaying(moby, d->voice) == 0) {
                     d->voice = Sound_PlayClassSound(0, 4, moby, 0x389);
                 }
             }
@@ -836,7 +832,7 @@ void moving_platform_small_update(Moby *moby) {
             if (d->voice != -1) {
                 VoicePoolRow *e = (VoicePoolRow *)(voice_pool_r + d->voice * 0x70);
                 if (e->owner == ((char *)moby) && e->state != 0)
-                    Sound_StopSlot_r(d->voice);
+                    Sound_StopSlot(d->voice);
             }
             d->voice = -1;
             moby->state = 2;
@@ -880,7 +876,7 @@ void moving_platform_small_update(Moby *moby) {
             if (d->voice != -1) {
                 VoicePoolRow *e = (VoicePoolRow *)(voice_pool_r + d->voice * 0x70);
                 if (e->owner == ((char *)moby) && e->state != 0)
-                    Sound_StopSlot_r(d->voice);
+                    Sound_StopSlot(d->voice);
             }
             d->voice = -1;
             moby->state = 4;
@@ -1176,8 +1172,7 @@ extern void *kerwan_red_ship_update_slot MACRO_ADDR;
 
 extern int PlayBankSound_r(int, int, int) __asm__("func_0022EE28");
 extern void allocate_voice_for_group_entry_r(int, int, void *) __asm__("func_0022EEB8");
-extern void spawn_randomized_bolt_drop_r(void *, int, int, int, int) __asm__("func_L00_00261B00");
-extern void ShowBanner_r(int, int) __asm__("func_L00_00264DB8");
+
 extern void spawn_explosion_v(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
                               float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern void spawn_debris_0029E498(char *, int, float *, void *, int, int, float, float *, float *,
@@ -1210,9 +1205,9 @@ void update_spline_moby_destruction_and_respawn(char *moby, void *vel_in, int fl
         FastVecScale(vel, vel, 0.5f);
         FastVecAdd(spot, spot, &((struct Moby *)moby)->pos);
         if (hit->flags & 0x800000) {
-            spawn_randomized_bolt_drop_r(moby, 10, 20, 2, -1);
+            spawn_randomized_bolt_drop(moby, 10, 20, 2, -1);
         } else {
-            spawn_randomized_bolt_drop_r(moby, 3, 5, 2, -1);
+            spawn_randomized_bolt_drop(moby, 3, 5, 2, -1);
         }
         data->respawn_timer = scale_ticks(600);
         spawn_explosion_v(moby, vel, spot, 0.0f, 0.0f, 20, 3, 4, 4.0f, 2.0f, 100000.0f, -1, 3.0f, 15.0f, 1, 1, -1, 0);
@@ -1300,7 +1295,7 @@ void update_spline_moby_destruction_and_respawn(char *moby, void *vel_in, int fl
         if (((Moby *)moby)->oclass == MOBY_CLASS_BLIMP && gSkillPoints_r[4] == 0) {
             gSkillPoints_r[4] = 1;
             PlayBankSound_r(1, 0, 0);
-            ShowBanner_r(0x53DB, -1);
+            ShowBanner(0x53DB, -1);
         }
         allocate_voice_for_group_entry_r(0, 0, moby);
     }
@@ -1336,10 +1331,7 @@ extern char *kerwan_mobys MACRO_ADDR;
 
 extern char kerwan_red_ship_no_path_msg[];
 
-extern int FastBSphereCheck(void *, float);
 extern int truncate_float_to_s32(float);
-
-extern int get_next_moby_in_group(int *, int, int, int);
 
 extern void compute_sampled_spline_path_lengths_v(void *, int, void *, float, float) __asm__("func_L01_0028C958");
 extern void add_moby_rotation_based_offsets_r(char *, char *) __asm__("func_L03_0029DA60");
@@ -1546,7 +1538,7 @@ void red_ship_1_update(char *moby) {
 }
 typedef int OvlQuad_2BC038 __attribute__((mode(TI)));
 char *func_0020D348_2BC038(int) __asm__("func_0020D348");
-extern float random_angle_radians(void);
+
 void func_L00_00251328_2BC038(char *, int, int, int) __asm__("func_L00_00251328");
 void func_L00_00251E30_2BC038(char *) __asm__("func_L00_00251E30");
 extern char *func_L03_002BC038_r(Moby *parent, int unused, int color, int a3, int a4, float f,
@@ -1663,8 +1655,6 @@ typedef struct {
 extern short kerwan_mobys_r2 __asm__("D_L03_00160058");
 extern char kerwan_moby573_spawn_d0_record;
 
-extern float ApproachValue(float *p, float target, float maxstep);
-
 extern int func_001160D8(void);
 
 extern int ClassifyTargetInCone_r(char *m, char *p, char *pos, char *v) __asm__("func_L00_0025A060");
@@ -1674,7 +1664,7 @@ extern int is_point_inside_clip_volume_cf(int id);
 
 extern void SetDeathBits(void *, int, int);
 
-extern void Manipulator_ApplyScale(void *, int, void *, float);
+extern void Manipulator_ApplyScale_v(void *, int, void *, float) __asm__("func_L00_00264B40");
 
 extern void MoveCtl_Init_r(char *p, void *) __asm__("func_L01_0026E8E0");
 extern void update_robot_dog_hit_reaction_r(struct Moby *moby) __asm__("func_L03_002C7DE8");
@@ -1702,7 +1692,7 @@ void robot_dog_573_update(Moby *moby) {
 
     data = ((Data2c5bb8 *)moby->pvars);
     FindNearestTargetMoby_r((char *)moby, (char *)&tgt, data->f230);
-    Manipulator_ApplyScale(moby, 0, data->m280, 2.1f);
+    Manipulator_ApplyScale_v(moby, 0, data->m280, 2.1f);
     update_robot_dog_hit_reaction_r((struct Moby *)moby);
     fast_dec_timer_r2(&data->i244);
     switch (moby->state) {
@@ -2208,19 +2198,7 @@ typedef struct Data2C8398 {
     int i29C;
 } Data2C8398;
 
-extern void EaseManipulatorOffsets(char *, char *, int, float, float);
-
 extern int is_point_inside_clip_volume_cf(int);
-
-extern int IsFrameWithinWindow(char *, float);
-extern void vec_scale_to_length(void *, void *, float);
-
-extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
-
-extern float ApproachValue(float *p, float target, float maxstep);
-extern int coll_line(void *, void *, int, void *, void *);
-
-extern int coll_sphere(float, void *, int, void *);
 
 extern int g_current_level_index MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;
@@ -3084,9 +3062,8 @@ void update_kerwan_path_enemy(Moby *m) {
     }
 }
 
-extern int Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
 typedef int OvlQuad_2CA970 __attribute__((mode(TI)));
-extern float fast_atan2(float, float);
+
 extern Hero D_0013F450;
 extern void *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
 extern void HeadingFromVector_r(void *, float *, void *, void *) __asm__("func_L00_0025BBA0");
@@ -3196,10 +3173,9 @@ typedef struct Data2C8398_2CA970 {
 extern f32 D_L03_00161960_2CA970 SDATA(D_L03_00161960);
 extern f32 D_L03_00161964_2CA970 SDATA(D_L03_00161964);
 extern f32 D_L03_00161968_2CA970 SDATA(D_L03_00161968);
-extern float vec_length_r(float) __asm__("func_001F9B50");
+
 extern int ComputeHitResponse_r(void *, void *, void *, int, int *, float *, int, int) __asm__("func_L00_0025B4D0");
 
-extern void MobyBlendAnimation(void *, int, int, int);
 extern void StepColorFade_r(void *, void *) __asm__("func_L00_0025E590");
 
 void func_L03_002CA970_r(Moby *m) __asm__("func_L03_002CA970");
@@ -3254,13 +3230,13 @@ void func_L03_002CA970_r(Moby *m) {
             case 6:
                 d->b67 = 0x78;
                 d->q.f10 = g_frame_time_sq_r * 80.0f;
-                d->q.f18 = (D_L03_00161964_2CA970 / (2.0f * vec_length_r(2.0f * D_L03_00161960_2CA970 * d->q.f10) /
+                d->q.f18 = (D_L03_00161964_2CA970 / (2.0f * vec_length(2.0f * D_L03_00161960_2CA970 * d->q.f10) /
                                                      (g_frame_time_sq_r * 80.0f)) +
                             D_L03_00161968_2CA970 * g_frame_time_sq_r * 0.5f *
-                                (2.0f * vec_length_r(2.0f * (D_L03_00161960_2CA970) * (g_frame_time_sq_r * (80.0f))) /
+                                (2.0f * vec_length(2.0f * (D_L03_00161960_2CA970) * (g_frame_time_sq_r * (80.0f))) /
                                  (g_frame_time_sq_r * 80.0f))) *
                            0.5f;
-                d->q.f1C = vec_length_r(2.0f * (D_L03_00161960_2CA970) * (g_frame_time_sq_r * (80.0f)));
+                d->q.f1C = vec_length(2.0f * (D_L03_00161960_2CA970) * (g_frame_time_sq_r * (80.0f)));
                 d->q.i24 = 9;
                 d->q.b3D = 0;
                 *(OvlQuad_2CA970 *)vec = *(OvlQuad_2CA970 *)&hit->unk_10;
@@ -3273,7 +3249,7 @@ void func_L03_002CA970_r(Moby *m) {
                 d->q.f50 = 14.0f;
                 d->q.f54 = 28.0f;
                 m->state = 10;
-                Moby_PlaySound_r(1, 0, (int)m);
+                Moby_PlaySound(1, 0, (int)m);
                 break;
             case 3:
             case 7:
@@ -3281,12 +3257,12 @@ void func_L03_002CA970_r(Moby *m) {
                 d->b67 = 0x78;
                 d->q.f10 = g_frame_time_sq_r * 80.0f;
                 d->q.f14 = D_L03_00161968_2CA970 * g_frame_time_sq_r;
-                d->q.f18 = D_L03_00161964_2CA970 / (2.0f * vec_length_r(2.0f * D_L03_00161960_2CA970 * d->q.f10) /
+                d->q.f18 = D_L03_00161964_2CA970 / (2.0f * vec_length(2.0f * D_L03_00161960_2CA970 * d->q.f10) /
                                                     (g_frame_time_sq_r * 80.0f)) +
                            D_L03_00161968_2CA970 * g_frame_time_sq_r * 0.5f *
-                               (2.0f * vec_length_r(2.0f * (D_L03_00161960_2CA970) * (g_frame_time_sq_r * (80.0f))) /
+                               (2.0f * vec_length(2.0f * (D_L03_00161960_2CA970) * (g_frame_time_sq_r * (80.0f))) /
                                 (g_frame_time_sq_r * 80.0f));
-                d->q.f1C = vec_length_r(2.0f * (D_L03_00161960_2CA970) * (g_frame_time_sq_r * (80.0f)));
+                d->q.f1C = vec_length(2.0f * (D_L03_00161960_2CA970) * (g_frame_time_sq_r * (80.0f)));
                 d->q.i24 = 9;
                 d->q.b3D = 0;
                 *(OvlQuad_2CA970 *)vec = *(OvlQuad_2CA970 *)&hit->unk_10;
@@ -3295,19 +3271,19 @@ void func_L03_002CA970_r(Moby *m) {
                 d->q.f50 = 6.0f;
                 d->q.f54 = 13.0f;
                 m->state = 10;
-                Moby_PlaySound_r(1, 0, (int)m);
+                Moby_PlaySound(1, 0, (int)m);
                 break;
             case 4:
             case 5:
                 d->b67 = 0x78;
                 d->q.f10 = g_frame_time_sq_r * 80.0f;
                 d->q.f14 = D_L03_00161968_2CA970 * g_frame_time_sq_r;
-                d->q.f18 = D_L03_00161964_2CA970 / (2.0f * vec_length_r(2.0f * D_L03_00161960_2CA970 * d->q.f10) /
+                d->q.f18 = D_L03_00161964_2CA970 / (2.0f * vec_length(2.0f * D_L03_00161960_2CA970 * d->q.f10) /
                                                     (g_frame_time_sq_r * 80.0f)) +
                            D_L03_00161968_2CA970 * g_frame_time_sq_r * 0.5f *
-                               (2.0f * vec_length_r(2.0f * (D_L03_00161960_2CA970) * (g_frame_time_sq_r * (80.0f))) /
+                               (2.0f * vec_length(2.0f * (D_L03_00161960_2CA970) * (g_frame_time_sq_r * (80.0f))) /
                                 (g_frame_time_sq_r * 80.0f));
-                d->q.f1C = vec_length_r(2.0f * (D_L03_00161960_2CA970) * (g_frame_time_sq_r * (80.0f)));
+                d->q.f1C = vec_length(2.0f * (D_L03_00161960_2CA970) * (g_frame_time_sq_r * (80.0f)));
                 d->q.i24 = 9;
                 d->q.b3D = 0;
                 *(OvlQuad_2CA970 *)vec = *(OvlQuad_2CA970 *)&hit->unk_10;
@@ -3316,16 +3292,16 @@ void func_L03_002CA970_r(Moby *m) {
                 d->q.f50 = 5.0f;
                 d->q.f54 = 10.0f;
                 m->state = 10;
-                Moby_PlaySound_r(1, 0, (int)m);
+                Moby_PlaySound(1, 0, (int)m);
                 break;
             case 1:
                 d->q.f10 = g_frame_time_sq_r * 40.0f;
                 d->q.f14 = D_L03_00161968_2CA970 * g_frame_time_sq_r;
-                d->q.f18 = 3.0f / (2.0f * vec_length_r(2.0f * 2.0f * d->q.f10) / (g_frame_time_sq_r * 40.0f)) +
+                d->q.f18 = 3.0f / (2.0f * vec_length(2.0f * 2.0f * d->q.f10) / (g_frame_time_sq_r * 40.0f)) +
                            D_L03_00161968_2CA970 * g_frame_time_sq_r * 0.5f *
-                               (2.0f * vec_length_r(2.0f * (2.0f) * (g_frame_time_sq_r * (40.0f))) /
+                               (2.0f * vec_length(2.0f * (2.0f) * (g_frame_time_sq_r * (40.0f))) /
                                 (g_frame_time_sq_r * 40.0f));
-                d->q.f1C = vec_length_r(2.0f * (2.0f) * (g_frame_time_sq_r * (40.0f)));
+                d->q.f1C = vec_length(2.0f * (2.0f) * (g_frame_time_sq_r * (40.0f)));
                 d->q.i24 = 9;
                 d->q.b3D = 0;
                 *(OvlQuad_2CA970 *)vec = *(OvlQuad_2CA970 *)&hit->unk_10;
@@ -3338,7 +3314,7 @@ void func_L03_002CA970_r(Moby *m) {
                 m->flags &= 0xEFFF;
                 d->b67 = 0xFA;
                 m->state = 0xD;
-                Moby_PlaySound_r(3, 0, (int)m);
+                Moby_PlaySound(3, 0, (int)m);
                 if (m->prev_seq != 7) {
                     MobyBlendAnimation(m, 7, 0, scale_ticks(6));
                 }
@@ -3350,7 +3326,6 @@ void func_L03_002CA970_r(Moby *m) {
     StepColorFade_r(m, (char *)d + 0x60);
 }
 
-extern float fast_atan2(float, float);
 extern int find_nearest_path_point_r3(void *, void *, void *, int *, float *, int, float, float,
                                       float) __asm__("func_L00_0025EFC0");
 typedef struct {

@@ -11,11 +11,11 @@
 #include "overlays/shared/camera_switch_and_update.h"
 #include "data/shared_levels.h"
 #include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 extern Hero g_hero;
 
 extern CameraSystem player_camera;
 
-extern void vec_scale_to_length(void *, void *, float);
 extern Camera gCameraSlotsLvl[];
 
 extern int gCamPostUpdCountLvl MACRO_ADDR;

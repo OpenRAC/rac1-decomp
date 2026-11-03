@@ -11,6 +11,7 @@
 #include "overlays/shared/weapon_hud_and_counters.h"
 #include "game/ui/help.h"
 #include "core/libc/sprintf.h"
+#include "game/moby/mobyutil.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 
@@ -38,7 +39,7 @@ void initialize_trick_combo_hud(HudElemX *e) {
     }
     initialize_numeric_hud_values_and_dimensions(e);
 }
-extern float ApproachValue(float *p, float target, float maxstep);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern Hero hero_002670A0 __asm__("D_0013F450");

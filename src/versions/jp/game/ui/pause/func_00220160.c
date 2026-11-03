@@ -12,8 +12,8 @@ int draw_selected_item_ammo(char *arg0) {
     have = weapon_ammo_counts[id];
     rec = vendor_item_prices + id * 0x18;
     total = *(unsigned short *)(rec + 0xE);
-    VU1_addGSregister_l(0x42, 0x44);
-    VU1_addGSregister_l(0x47, 0xB);
+    VU1_addGSregister(0x42, 0x44);
+    VU1_addGSregister(0x47, 0xB);
     if (*(unsigned short *)(rec + 8) == 0) {
         sprintf(text, msg_string_id(0x4F53));
     } else {

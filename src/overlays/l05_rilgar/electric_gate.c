@@ -254,8 +254,6 @@ extern int electric_gate_alpha_c SDATA(electric_gate_alpha_c);
 extern int electric_gate_alpha_d SDATA(electric_gate_alpha_d);
 extern int electric_gate_effect_tex SDATA(electric_gate_effect_tex);
 
-extern void draw_world_quad(void *, void *, int);
-
 typedef struct {
     qw128 v[4];
     int c[4];
@@ -546,9 +544,7 @@ extern void emit_drain_cover_particles(char *obj, float a, float b);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
-extern void vec_scale_to_length(void *, void *, float);
-
-extern float ApproachWithVelocity(float, float, float, float, float *, float *);
+extern float ApproachWithVelocity_v(float, float, float, float, float *, float *) __asm__("func_00214D88");
 
 extern Lid_0030FCC0 *CreateMoby_r(int) __asm__("func_0020D348");
 
@@ -670,9 +666,9 @@ void drain_cover_update(Moby *moby) {
         case 3:
             emit_drain_cover_particles((char *)moby, d->home[2], moby->pos.z);
             update_drain_cover_tilt((char *)moby, drain_cover_air_wobble, 1.0f);
-            ApproachWithVelocity(d->home[2] + d->home[3], drain_cover_bob_accel * g_frame_time_sq,
-                                 drain_cover_bob_accel * g_frame_time_sq, g_frame_time * 20.0f, &moby->pos.z,
-                                 &d->vel[2]);
+            ApproachWithVelocity_v(d->home[2] + d->home[3], drain_cover_bob_accel * g_frame_time_sq,
+                                   drain_cover_bob_accel * g_frame_time_sq, g_frame_time * 20.0f, &moby->pos.z,
+                                   &d->vel[2]);
             if (d->vel[2] == 0.0f) {
                 if (d->home[3] > d->f84) {
                     d->home[3] = d->f84 - 0.5f;
@@ -960,9 +956,9 @@ void update_triggered_gate_motion(struct Moby *m) {
             break;
         case 2:
             if (fast_dec_timer_r(&d->riseTimer)) {
-                ApproachWithVelocity(d->topZ, (triggered_gate_rise_accel)*g_frame_time_sq,
-                                     (triggered_gate_rise_decel)*g_frame_time_sq,
-                                     (triggered_gate_rise_max_speed)*g_frame_time, &m->pos.z, &d->riseSpeed);
+                ApproachWithVelocity_v(d->topZ, (triggered_gate_rise_accel)*g_frame_time_sq,
+                                       (triggered_gate_rise_decel)*g_frame_time_sq,
+                                       (triggered_gate_rise_max_speed)*g_frame_time, &m->pos.z, &d->riseSpeed);
                 if (m->oclass == 0x355 && FastAbsF(m->pos.z - d->topZ) < 3.0f &&
                     3.0f < FastAbsF(d->topZ - m->pos.z + d->riseSpeed))
                     Moby_PlaySound(0, 0, m);
@@ -986,7 +982,6 @@ extern char rilgar_camera_pos_r[] __asm__("D_L05_001672C0");
 extern int Moby_PlaySound_r() __asm__("func_0022ED80");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 
-extern float random_angle_radians(void);
 struct EmitterVars {
     s32 unk0;
     s32 floor; /* row of rilgar_water_ripple_params_2 */
@@ -999,10 +994,6 @@ struct FloorRow {
     f32 z;
     u8 padC[0x1190 - 0xC];
 };
-extern float vec_length_r(float) __asm__("func_001F9B50");
-
-extern float random_float_between(float, float);
-extern s32 random_integer_below(s32);
 
 extern void func_L00_00272770(float, float, void *, void *, void *);
 extern unsigned char saved_mission_state_r[][16] __asm__("D_0014C150");
@@ -1113,7 +1104,7 @@ void update_triggered_particle_spray_emitter(struct Moby *m) {
                                                                         g_frame_time_sq_r * 10.0f, v, w, kind, big);
                 if (random_integer_below(2)) {
                     /* fall time from the emitter to the floor */
-                    float t = vec_length_r(2.0f * (m->pos.z - floor) / (g_frame_time_sq_r * 10.0f));
+                    float t = vec_length(2.0f * (m->pos.z - floor) / (g_frame_time_sq_r * 10.0f));
                     if (t < (float)d->age) {
                         float s = t * (g_frame_time_r * 4.0f);
                         float ang = random_angle_radians();
@@ -1173,7 +1164,6 @@ extern u16 active_marker_id NOT_SDA;
 extern f32 elevator_camera_transition_fade MACRO_ADDR;
 extern LiftPose *rilgar_level_cuboids_r2 __asm__("D_L05_001601AC") MACRO_ADDR;
 
-extern f32 ApproachValue(f32 *, f32, f32);
 extern f32 ApproachWithVelocity_r(f32 *, f32 *, f32, f32, f32, f32) __asm__("func_00214D88");
 
 extern s32 fast_dec_timer_r2(s32 *) __asm__("func_001F9908");
@@ -1349,7 +1339,6 @@ void elevator_with_button_update(struct Moby *moby) {
     FastVecAdd(&delta, &delta, &moby->pos);
     update_entity_matrix(vars->rider, &delta, &rot, &moby->rot);
 }
-extern void vec_scale_to_length(void *, void *, float);
 
 extern float lift_camera_distance SDATA(lift_camera_distance);
 extern float lift_camera_height SDATA(lift_camera_height);
@@ -1541,8 +1530,8 @@ void update_triggered_moby_motion_and_manipulator_angle(char *moby) {
             }
             FastVecSub(delta, target, &m->pos);
             stopped = 0.0f;
-            ApproachWithVelocity(FastVecLength(delta), g_frame_time_sq * 6.0f, g_frame_time_sq * 12.0f,
-                                 g_frame_time * 10.0f, &stopped, &data->unk5C);
+            ApproachWithVelocity_v(FastVecLength(delta), g_frame_time_sq * 6.0f, g_frame_time_sq * 12.0f,
+                                   g_frame_time * 10.0f, &stopped, &data->unk5C);
             FastVecSub(delta, target, &m->pos);
             vec_scale_to_length(delta, delta, data->unk5C);
             FastVecAdd(&m->pos, &m->pos, delta);
@@ -1560,7 +1549,6 @@ void update_triggered_moby_motion_and_manipulator_angle(char *moby) {
 /* Rotor update: vendor_00317B68.c. */
 extern float g_frame_scale_sq MACRO_ADDR;
 extern int g_breast_growth_count SDATA(g_breast_growth_count);
-extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 
 typedef struct TrailEffect {
     char pad0[0x64];
@@ -1684,7 +1672,7 @@ extern HGVec rilgar_race_camera_vectors[];
 extern unsigned char gCheats[];
 
 extern void update_hoverboard_girl_cutscene_instances();
-extern void PlayBankSound();
+
 #define breast_growth_count_gp_q (*(int *)&D_L05_00161F90)
 #define game_mode D_L05_0015F6A8
 #define frame_number D_L05_0015F6B0
@@ -1955,7 +1943,6 @@ void update_hoverboard_girl(Moby *moby) {
 #undef update_hoverboard_girl_boobs_animation_r
 #undef func_0022EE28_x
 
-extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern char qwarks_bouncer_dialogue_name[];
 extern unsigned char level_available_base[];
 
@@ -2256,7 +2243,6 @@ void shady_salesman_update(char *m) {
 extern int D_L05_0016139C MACRO_ADDR;
 extern float D_L05_001613A0[4] MACRO_ADDR;
 extern int rilgar_frame_count_r __asm__("D_L05_0015F6B0") MACRO_ADDR;
-extern int is_point_inside_clip_volume(void *, int);
 
 /* Two-state marker: arms the moby, then once its target is found copies the
  * target position and sets the bob height from the frame counter.
@@ -2325,8 +2311,8 @@ void television_update(unsigned char *moby) {
 extern void PickNearestTargetSlot(char *);
 extern void select_taxi_route(char *);
 
-extern float ApproachWithVelocity(float, float, float, float, float *, float *);
-extern void SamplePathAt(int *, int, void *, float *, int, float);
+extern float ApproachWithVelocity_v(float, float, float, float, float *, float *) __asm__("func_00214D88");
+
 extern void SamplePathAt_r(float, int *, int, void *, float *, int) __asm__("func_00215CA8");
 
 extern int Moby_PlaySound_i(int, int, void *) __asm__("func_0022ED80");
@@ -2399,8 +2385,8 @@ void PickupL05_Update(char *moby) {
             }
             break;
         case TAXI_BLEND_TO_PATH_START:
-            ApproachWithVelocity(1.0f, g_frame_time_sq, g_frame_time_sq, g_frame_time * 0.5f, &taxi_data->blend,
-                                 &taxi_data->blend_vel);
+            ApproachWithVelocity_v(1.0f, g_frame_time_sq, g_frame_time_sq, g_frame_time * 0.5f, &taxi_data->blend,
+                                   &taxi_data->blend_vel);
             qa = rotation_or_start_position_scratch;
             s = taxi_data->stop[taxi_data->start_stop];
             tab = rilgar_level_cuboids;
@@ -2430,8 +2416,8 @@ void PickupL05_Update(char *moby) {
             }
             break;
         case TAXI_BLEND_TO_DESTINATION:
-            ApproachWithVelocity(1.0f, g_frame_time_sq, g_frame_time_sq, g_frame_time * 0.5f, &taxi_data->blend,
-                                 &taxi_data->blend_vel);
+            ApproachWithVelocity_v(1.0f, g_frame_time_sq, g_frame_time_sq, g_frame_time * 0.5f, &taxi_data->blend,
+                                   &taxi_data->blend_vel);
             qa = interpolation_end_position;
             s = taxi_data->stop[taxi_data->end_stop];
             tab = rilgar_level_cuboids;

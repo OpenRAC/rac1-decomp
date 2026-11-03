@@ -127,8 +127,6 @@ extern float plasmabot_beam_sweep_half_angle SDATA(plasmabot_beam_sweep_half_ang
 extern float plasmabot_beam_length SDATA(plasmabot_beam_length);
 extern float plasmabot_beam_origin_offset SDATA(plasmabot_beam_origin_offset);
 
-extern void Manipulator_ApplyScale(float, char *, int, char *);
-
 extern void SetDeathBits(void *, int, int);
 void process_plasmabot_hit_reaction(char *m);
 void update_plasmabot_target(char *moby);
@@ -155,10 +153,6 @@ void update_plasmabot_aim_joint_rotation(char *a, float x);
 int count_listed_plasmabots_preparing_or_sweeping_beam(int index);
 
 void Group_ResetClass28Timers(int idx);
-
-extern void vec_scale_to_length(void *, void *, float);
-
-extern int coll_line(void *, void *, int, void *, void *);
 
 unsigned char *spawn_plasmabot_death_debris(char *owner, char *pos);
 
@@ -617,11 +611,9 @@ extern void draw_plasmabot_effect_quads_r(struct Moby *) __asm__("func_L14_002B3
 extern void AddDrawCallback_r(void (*)(struct Moby *), struct Moby *) __asm__("func_001F49B0");
 extern void Moby_GetJointWorldPos_r(struct Moby *, s32, void *) __asm__("func_L00_00250800");
 extern void MobyTransformScaledVertex_r(struct Moby *, s32, void *) __asm__("func_0020DAF8");
-extern void random_spherical_offset(void *, f32, f32);
+
 extern Particle *spawn_mode_controlled_rotating_alpha_fade_particle_r(void *, void *, s32,
                                                                       struct Moby *) __asm__("func_L00_002757E8");
-extern f32 random_float_between(f32, f32);
-extern s32 random_integer_below(s32);
 
 extern void vec_scale_to_length_r(void *, void *, f32) __asm__("func_L00_001FF4B0");
 
@@ -684,8 +676,6 @@ void update_plasmabot_visual_effects(struct Moby *m) {
     FastVecAdd(&pv->beam_end, &pv->beam_start, &dy);
     AddDrawCallback_r(draw_plasmabot_effect_quads_r, m);
 }
-
-extern void draw_world_quad(void *, void *, s32);
 
 extern Vec4 plasmabot_effect_quad_corners[];
 extern f32 D_L14_00161574_3B78 SDATA(D_L14_00161574);
@@ -1161,10 +1151,6 @@ extern float plasmabot_glow_camera_pull SDATA(plasmabot_glow_camera_pull);
 extern float plasmabot_glow_camera_margin SDATA(plasmabot_glow_camera_margin);
 extern u32 plasmabot_glow_color SDATA(plasmabot_glow_color);
 
-extern void vec_scale_to_length(void *, void *, float);
-
-extern void draw_world_quad(void *, void *, s32);
-
 /* Draws the moby's glow quad, pulled toward the camera so it is not hidden by the moby. */
 void draw_plasmabot_glow_quad(Moby *m) {
     float pos[4];
@@ -1318,8 +1304,6 @@ extern float spinning_debris_drag_min_speed SDATA(spinning_debris_drag_min_speed
 extern float spinning_debris_drag SDATA(spinning_debris_drag);
 extern float spinning_debris_gravity SDATA(spinning_debris_gravity);
 
-extern int coll_sphere(float, void *, int, void *);
-
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 extern void *PartType23Spawn(void *, float, float, float, int, void *, float, int);
 
@@ -1395,8 +1379,6 @@ extern float plasmabot_debris_max_speed SDATA(plasmabot_debris_max_speed);
 extern float plasmabot_debris_min_spin SDATA(plasmabot_debris_min_spin);
 extern float plasmabot_debris_max_spin SDATA(plasmabot_debris_max_spin);
 
-extern void vec_scale_to_length(void *, void *, float);
-
 // Spawns moby 0x145 from an owner and a position, orienting its data vectors and randomising its parameters.
 unsigned char *spawn_plasmabot_death_debris(char *owner, char *pos) {
     unsigned char *m = CreateMoby(0x145);
@@ -1438,9 +1420,6 @@ extern void emit_debris_trail_particles_r(struct Moby *) __asm__("func_L14_002E1
 extern s32 g_hero_moby;
 extern s32 fast_dec_timer_r2(s32 *) __asm__("func_001F9908");
 
-extern void vec_scale_to_length(void *, void *, f32);
-
-extern s32 coll_sphere(f32, void *, s32, void *);
 extern void spawn_explosion_r(struct Moby *, void *, void *, f32, f32, s32, s32, s32, f32, f32, f32, f32, s32, f32, s32,
                               s32, s32, s32) __asm__("func_L00_0025F4A8");
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
@@ -1615,11 +1594,8 @@ typedef struct Particle_2E17B8 {
 } Particle_2E17B8;
 extern void vec_scale_to_length_r2(void *, void *, float) __asm__("func_L00_001FF4B0");
 
-extern void random_spherical_offset(void *, float, float);
 extern Particle_2E17B8 *spawn_mode_controlled_rotating_alpha_fade_particle_r2(void *, void *, int,
                                                                               Moby *) __asm__("func_L00_002757E8");
-extern float random_float_between(float, float);
-extern int random_integer_below(int);
 
 extern void PartType21Spawn_r(void *, void *, int, int, int, int, float) __asm__("func_L00_0026DA50");
 extern Particle_2E17B8 *PartType23Spawn_r(void *, float, float, float, int, void *, float,
@@ -1750,7 +1726,6 @@ void initialize_moby_path_state(Moby *moby) {
 }
 extern float linked_moby_offset_x SDATA(linked_moby_offset_x);
 extern float linked_moby_offset_y SDATA(linked_moby_offset_y);
-extern void vec_scale_to_length(void *, void *, float);
 
 struct UpdateLinkedMobyPositionVars {
     u8 pad_00[0xF4];
@@ -2020,7 +1995,7 @@ extern short D_L14_001621A0;
 extern short vendor_beam_fade_end_ticks_s __asm__("D_L14_00162198");
 extern short D_L14_001621A4;
 extern char *oltanis_clip_volumes_t __asm__("D_L14_001601AC") MACRO_ADDR;
-extern int FastBSphereCheck(void *, float);
+
 extern void start_vendor_beam_pulse(char *);
 
 extern void apply_vendor_beam_damage(char *);

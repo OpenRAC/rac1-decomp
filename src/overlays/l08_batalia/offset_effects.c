@@ -5,8 +5,7 @@
 #include "include_asm.h"
 #include "asm_functions/executable.h"
 #include "game/math/fastfunc.h"
-
-extern void vec_scale_to_length(void *, void *, float);
+#include "asm_functions/shared_levels.h"
 
 extern int func_001FA898(float);
 

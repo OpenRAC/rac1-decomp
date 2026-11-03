@@ -10,6 +10,7 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/music_track_requests.h"
 #include "overlays/shared/requested_state_changes.h"
+#include "game/moby/mobyutil.h"
 extern Hero g_hero;
 
 typedef struct {
@@ -37,9 +38,7 @@ typedef struct {
 } Moby_0031AD00;
 
 extern int play_voice_r(int, int, void *, int) __asm__("func_L00_0028F0B0");
-extern int random_integer_below(int);
 
-extern void Sound_StopSlot_r(int) __asm__("func_L00_0028EBF0");
 extern char camera_pos_r[] __asm__("D_L01_001672C0");
 extern Row_0031AD00 *D_L01_0015F6D4 MACRO_ADDR;
 extern char D_0013E650[];
@@ -117,7 +116,7 @@ void update_box_positional_voice(Moby_0031AD00 *m) {
         if (idx != -1) {
             char *e2 = voice_pool + idx * 0x70;
             if (*(Moby_0031AD00 **)(e2 + 0x8C) == m && *(unsigned char *)(e2 + 0x74)) {
-                Sound_StopSlot_r(idx);
+                Sound_StopSlot(idx);
             }
         }
         p->handle = -1;

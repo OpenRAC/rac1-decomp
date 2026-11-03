@@ -99,7 +99,7 @@ extern float veldin2_moby_group_debris_scale SDATA(veldin2_moby_group_debris_sca
 extern float veldin2_zero_vec[] MACRO_ADDR;
 
 extern void apply_linked_moby_relative_transforms_v(char *, void *, int) __asm__("func_L12_0027C368");
-extern float ApproachWithVelocity(float, float, float, float, float *, float *);
+extern float ApproachWithVelocity_v(float, float, float, float, float *, float *) __asm__("func_00214D88");
 
 extern int func_001FA898(float);
 
@@ -151,9 +151,9 @@ void update_linked_moby_group_transform_and_fall(unsigned char *moby) {
                 unsigned char *p;
                 if (veldin2_moby_group_move_enabled != 0) {
                     if (d->f330 < 1.5f) {
-                        ApproachWithVelocity(1.5f, a1, a2, a3, &d->f330, &d->f334);
+                        ApproachWithVelocity_v(1.5f, a1, a2, a3, &d->f330, &d->f334);
                     } else {
-                        ApproachWithVelocity(2.0f, b1, b2, b3, &d->f330, &d->f334);
+                        ApproachWithVelocity_v(2.0f, b1, b2, b3, &d->f330, &d->f334);
                     }
                 }
                 if (d->f330 > veldin2_moby_group_debris_progress && d->f344 == 0.0f) {
@@ -309,8 +309,6 @@ void mark_block_entries_within_transform_xy_bounds(int a, int b) {
 extern float g_frame_time MACRO_ADDR;
 extern void draw_glow_moby_layered_quads(struct Moby *);
 
-extern float ApproachValue(float *p, float target, float maxstep);
-
 /* Glow moby update: queues its quad draw, loops its sound, fades out once its linked moby opens. */
 void update_glow_moby_state_and_voice(unsigned char *m) {
     enum { GLOW_INITIALIZE = 0, GLOW_ACTIVE = 1, GLOW_FADE_OUT = 2 };
@@ -380,8 +378,6 @@ extern float veldin2_glow_quad_uvs[4][2];
 typedef int Q33D8 __attribute__((mode(TI)));
 extern Q33D8 veldin2_glow_quad_corners[4];
 
-extern void draw_world_quad(void *, void *, int);
-
 /* Draws the glow moby's scrolling layered quads, faded by distance from the camera. */
 void draw_glow_moby_layered_quads(struct Moby *moby) {
     struct GeometryQuad_33D8 quads[4];
@@ -448,7 +444,7 @@ extern float veldin2_lift_uv_scroll SDATA(veldin2_lift_uv_scroll);
 extern float veldin2_lift_uv_scroll_speed SDATA(veldin2_lift_uv_scroll_speed);
 extern unsigned char g_hero_field_20a5[];
 extern unsigned char menu_item_enabled_105[];
-extern float ApproachWithVelocity(float, float, float, float, float *, float *);
+extern float ApproachWithVelocity_v(float, float, float, float, float *, float *) __asm__("func_00214D88");
 extern void synchronize_lift_group_height(void *);
 extern void draw_lift_25_quad_mesh(char *);
 extern void draw_lift_38_quad_mesh(char *);
@@ -509,8 +505,8 @@ void update_lift_state_and_queue_draw(unsigned char *m) {
                     menu_item_enabled_105[9] = 1;
                 }
             }
-            ApproachWithVelocity(d->f4, g_frame_time_sq * 4.0f, g_frame_time_sq * 4.0f, g_frame_time * 4.0f,
-                                 (float *)(m + 0x18), (float *)((char *)d + 0x18));
+            ApproachWithVelocity_v(d->f4, g_frame_time_sq * 4.0f, g_frame_time_sq * 4.0f, g_frame_time * 4.0f,
+                                   (float *)(m + 0x18), (float *)((char *)d + 0x18));
             synchronize_lift_group_height(m);
             ((Moby *)m)->command = 1;
             break;
@@ -521,8 +517,8 @@ void update_lift_state_and_queue_draw(unsigned char *m) {
             }
             ((Moby *)m)->command = 2;
             synchronize_lift_group_height(m);
-            ApproachWithVelocity(d->f0, g_frame_time_sq * 4.0f, g_frame_time_sq * 4.0f, g_frame_time * 4.0f,
-                                 (float *)(m + 0x18), (float *)((char *)d + 0x18));
+            ApproachWithVelocity_v(d->f0, g_frame_time_sq * 4.0f, g_frame_time_sq * 4.0f, g_frame_time * 4.0f,
+                                   (float *)(m + 0x18), (float *)((char *)d + 0x18));
             if (FastAbsF(((Moby *)m)->pos.z - d->f0) > 0.1f) {
                 struct Hero *b = &g_hero;
                 if ((unsigned)(b->state.control_mode - 0x11) < 2) {
@@ -599,8 +595,6 @@ extern int lift_mesh_color SDATA(lift_mesh_color);
 extern float veldin2_lift25_uvs[][2];
 extern FRow veldin2_lift25_vertices[];
 extern short veldin2_lift25_quads[][4][2];
-
-extern void draw_world_quad(void *, void *, int);
 
 /* Draws 25 textured quads from the L18 tables, in the moby's frame. */
 void draw_lift_25_quad_mesh(char *moby) {
@@ -883,13 +877,6 @@ extern unsigned char *select_drek_boss_platform_firing_target(char *self);
 extern void spawn_drek_boss_firing_effects(char *moby, void *p);
 /* Defined further down with a typedef the file only declares there: no prototype here. */
 extern void set_drek_boss_relative_aim_yaw();
-extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
-
-extern void vec_scale_to_length(void *, void *, float);
-
-extern void EaseManipulatorOffsets(char *, char *, int, float, float);
-
-extern int IsFrameWithinWindow(char *, float);
 
 /* Parameter order as retail sets the arguments up (the floats before the last integers); the definition of
    launch_mine_568_moby_from_list in vendor_002A8400.c lists its float first, with the same registers. */
@@ -1906,8 +1893,8 @@ void drek_final_boss_robot_update(Moby *moby) {
     slow = 0.3f;
     fast = 0.03f;
     d->f3D4 = FastAddRots(d->f3D4, g_frame_time * 3.1415927f);
-    ApproachWithVelocity(d->f3D0 * FastSin(d->f3D4) + d->f3D8, g_frame_time_sq * 4.0f, g_frame_time_sq * 4.0f,
-                         g_frame_time * 4.0f, &d->f3DC, &d->f3E0);
+    ApproachWithVelocity_v(d->f3D0 * FastSin(d->f3D4) + d->f3D8, g_frame_time_sq * 4.0f, g_frame_time_sq * 4.0f,
+                           g_frame_time * 4.0f, &d->f3DC, &d->f3E0);
     moby->pos.z = moby->pos.z + d->f3DC;
     d->f3D8 = 0.0f;
     EaseManipulatorOffsets((char *)moby, d->fC0, 7, g_frame_scale_sq * fast, g_frame_scale_sq * slow);
@@ -2219,7 +2206,7 @@ void update_drek_boss_damage_and_phase_transitions(char *moby) {
         }
     }
 }
-extern float ApproachWithVelocity(float, float, float, float, float *, float *);
+extern float ApproachWithVelocity_v(float, float, float, float, float *, float *) __asm__("func_00214D88");
 
 /* steps a moby's offset vector toward a target, returns whether both settled */
 int advance_drek_boss_planar_position_toward_target(char *moby, float arg, void *x) {
@@ -2235,7 +2222,7 @@ int advance_drek_boss_planar_position_toward_target(char *moby, float arg, void 
     a[2] = v;
     len = FastVecLength(a);
     s = g_frame_time_sq * 10.0f;
-    ApproachWithVelocity(len, s, s, arg, b, &data->f374);
+    ApproachWithVelocity_v(len, s, s, arg, b, &data->f374);
     vec_scale_to_length(a, a, data->f374);
     FastVecAdd(p, p, a);
     if (len < 0.1f) {
@@ -2304,7 +2291,6 @@ extern f32 D_L18_001623E8_2F7F00 SDATA(D_L18_001623E8);
 extern f32 D_L18_001623EC_2F7F00 SDATA(D_L18_001623EC);
 extern f32 D_L18_00162400_2F7F00 SDATA(D_L18_00162400);
 extern f32 D_L18_00162404_2F7F00 SDATA(D_L18_00162404);
-extern f32 fast_atan2(f32, f32);
 
 extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 

@@ -41,13 +41,13 @@ void CollectiblePickupUpdate(struct Moby *moby) {
         case 2:
             if (oltanis_game_mode_r != state) {
                 if (saved_mission_state_r[moby->mission + g_current_level_index_r * 16] != 0xFF) {
-                    jet_clear_persistent_r(moby->mission);
+                    jet_clear_persistent(moby->mission);
                     memcard_Save_r(0, -1);
                 }
                 if (*(s32 *)(d + 0x18) != 0)
-                    ShowBanner_r(0x53E0, -1);
+                    ShowBanner(0x53E0, -1);
                 else
-                    ShowBanner_r(0x36b2, -1);
+                    ShowBanner(0x36b2, -1);
                 Help_Request_r(0x36b0, 0x7a);
                 DeleteMoby(moby);
                 return;

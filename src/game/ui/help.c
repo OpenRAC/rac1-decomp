@@ -11,6 +11,7 @@
 #include "structs/pad.h"
 #include "game/render/vuchain.h"
 #include "game/audio/music.h"
+#include "game/audio/sound.h"
 
 /*
  * help.cpp in the original source; text 0x1FDF10-0x1FF668.
@@ -267,7 +268,6 @@ extern int D_0015EF1D MACRO_ADDR;
 extern int D_0015EF1C MACRO_ADDR;
 #define D_0015EF1D_b (*(unsigned char *)&gHelpDeskText)
 #define D_0015EF1C_b (*(unsigned char *)&gHelpDeskVoice)
-extern int PlayBankSound(int, int, int);
 
 extern int frame_size;
 

@@ -237,13 +237,7 @@ extern VehicleCamera eudora_camera;
 
 extern s32 truncate_float_to_s32(float);
 
-extern void vec_scale_to_length(void *, void *, float);
-
-extern s32 PlayBankSound(s32, s32, s32);
-
-extern void coll_sphere_mobys(void *, float, s32, void *, void *);
-
-extern void SpawnBreakFragment(void *, s32, void *, void *, s32, s32, float, void *, void *, void *);
+extern void coll_sphere_mobys_v(void *, float, s32, void *, void *) __asm__("func_L00_001F2BE8");
 
 typedef float VehicleArr_2CB800[4] __attribute__((aligned(16)));
 typedef struct {
@@ -436,7 +430,7 @@ void snow_plow_update(VehicleMoby *m) {
                     query.owner = m;
                     clear_u64_value(&query.vec);
                     query.result = 0;
-                    coll_sphere_mobys(&m->pos, 4.0f, 16, m, &query);
+                    coll_sphere_mobys_v(&m->pos, 4.0f, 16, m, &query);
                 }
             }
                 /* fall through */
@@ -484,7 +478,7 @@ void snow_plow_update(VehicleMoby *m) {
                     query2.owner = m;
                     clear_u64_value(&query2.vec);
                     query2.result = 0;
-                    coll_sphere_mobys(&m->pos, 6.0f, 16, m, &query2);
+                    coll_sphere_mobys_v(&m->pos, 6.0f, 16, m, &query2);
                     d->visibility_timer = scale_ticks(600);
                     d->visibility_active = 1;
                 }
@@ -587,8 +581,6 @@ extern char *eudora_mobys_b __asm__("D_L04_00160058") MACRO_ADDR;
 extern float eudora_floating_platform_spin_rate_deg SDATA(eudora_floating_platform_spin_rate_deg);
 extern float g_frame_time_b __asm__("D_0015EE6C") MACRO_ADDR;
 extern float D_0015EE64 MACRO_ADDR;
-
-extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 
 struct FloatingPlatformUpdateVars {
     u8 pad_00[0x3E];
@@ -742,25 +734,15 @@ typedef struct WBQuery {
     /* 0x24 */ int pad24[3];
 } WBQuery;
 
-extern void Manipulator_ApplyScale(float, void *, int, void *);
-
 extern void InitKnockback_v(float, void *, void *, int, int, int) __asm__("func_L00_0025D5B0");
 extern void SetDeathBits(void *, int, int);
 
-extern void vec_scale_to_length(void *, void *, float);
-
-extern void coll_line(void *, void *, int, void *, void *);
-
-extern void coll_sphere_mobys(void *, float, int, void *, void *);
+extern void coll_sphere_mobys_v(void *, float, int, void *, void *) __asm__("func_L00_001F2BE8");
 
 extern void initialize_woodcut_bot_movement_data(void *);
 extern void *libc_memset(void *, int, int);
 
-extern int IsFrameWithinWindow(void *, float);
-
 extern float SpringTurn_v(float, float, void *, float, float, float) __asm__("func_L00_00259148");
-
-extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
 
 extern char eudora_camera_pos[];
 
@@ -943,9 +925,9 @@ void woodcut_bot_update(Moby *m) {
                 coll_line(pts[i], pts[i + 1], 9, m, &s);
             FastVecAdd(mid, pts[0], pts[4]);
             FastVecScale(mid, mid, 0.5f);
-            coll_sphere_mobys(mid, FastVecDist(pts[0], pts[4]) * 0.5f, 0x10, m, &s);
+            coll_sphere_mobys_v(mid, FastVecDist(pts[0], pts[4]) * 0.5f, 0x10, m, &s);
             Moby_GetJointWorldPos(m, 0x11, mid);
-            coll_sphere_mobys(mid, 0.5f, 0x10, m, &s);
+            coll_sphere_mobys_v(mid, 0.5f, 0x10, m, &s);
         }
     }
     FastDecTimer(tm);
@@ -1732,7 +1714,6 @@ extern void initialize_moby_particle_effect_r(Moby *) __asm__("func_L00_002D80A0
 extern void remove_moby_002E2DF0(Moby *) __asm__("func_0020D678");
 extern void update_suck_cannon_particles_r(Moby *) __asm__("func_L04_002E30E0");
 extern void StartCutscene_r(int) __asm__("func_L00_00299B68");
-extern void ShowBanner_r(int, int) __asm__("func_L00_00264DB8");
 
 extern void jet_reset_camera_r(void *, void *) __asm__("func_L00_00286128");
 extern void STUB_printf_r(char *, int) __asm__("func_001E9730");
@@ -1771,9 +1752,9 @@ void suck_cannon_update(Moby *moby) {
             if (eudora_game_mode_r == 2)
                 break;
             if (!*(gHaveHeliPack_r + 7))
-                ShowBanner_r(0xFA7, -1);
+                ShowBanner(0xFA7, -1);
             else
-                ShowBanner_r(0x53E4, -1);
+                ShowBanner(0x53E4, -1);
             dialogue_message_duration_frames_r = 0xB4;
             grant_inventory_item(9, 1);
             if (vars->exitMoby != -1) {
@@ -2194,8 +2175,6 @@ void update_eudora_tutorial_hints_and_stats(Moby *moby) {
 extern char eudora_coll_hit_normal[];
 extern float eudora_debris_spin_min_deg SDATA(eudora_debris_spin_min_deg);
 extern float eudora_debris_spin_max_deg SDATA(eudora_debris_spin_max_deg);
-
-extern int coll_sphere(float, void *, int, void *);
 
 // Updates a bouncing moby: spins it, then in state 0 reflects its direction off a plane and in state 1 fades it out.
 typedef struct BounceData2E6558 {

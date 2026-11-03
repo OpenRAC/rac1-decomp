@@ -87,16 +87,12 @@ void set_moby_list_state(int list, int state) {
     }
 }
 
-extern int FastBSphereCheck(char *, float);
-
 /* Run a bounding-sphere check of radius scale at vec scaled down by 1/1024. */
 void check_scaled_vector_bsphere(char *vec, float scale) {
     char scratch[16];
     scale_vector(scratch, vec, 0.0009765625f);
     FastBSphereCheck(scratch, scale);
 }
-
-extern void vec_scale_to_length(void *, void *, float);
 
 typedef int u128 __attribute__((mode(TI)));
 

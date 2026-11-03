@@ -20,9 +20,9 @@ void update_spline_moby_destruction_and_respawn(char *moby, void *vel_in, int fl
         FastVecScale(vel, vel, 0.5f);
         FastVecAdd(spot, spot, moby + 0x10);
         if (*(int *)(hit + 0x24) & 0x800000) {
-            spawn_randomized_bolt_drop_r(moby, 10, 20, 2, -1);
+            spawn_randomized_bolt_drop(moby, 10, 20, 2, -1);
         } else {
-            spawn_randomized_bolt_drop_r(moby, 3, 5, 2, -1);
+            spawn_randomized_bolt_drop(moby, 3, 5, 2, -1);
         }
         *(short *)(data + 0x14A) = scale_ticks(600);
         spawn_explosion_v(moby, vel, spot, 0.0f, 0.0f, 20, 3, 4, 4.0f, 2.0f, 100000.0f, -1, 3.0f, 15.0f, 1, 1, -1, 0);
@@ -89,7 +89,7 @@ void update_spline_moby_destruction_and_respawn(char *moby, void *vel_in, int fl
         if (*(short *)(moby + 0xA6) == 0x31B && gSkillPoints_r[4] == 0) {
             gSkillPoints_r[4] = 1;
             PlayBankSound_r(1, 0, 0);
-            ShowBanner_r(0x53D6, -1);
+            ShowBanner(0x53D6, -1);
         }
         allocate_voice_for_group_entry_r(0, 0, moby);
     }

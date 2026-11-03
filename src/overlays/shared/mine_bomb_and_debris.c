@@ -198,15 +198,8 @@ extern char *active_mobies[];
 extern char thrown_mine_list[];
 extern unsigned char *part_type_textures[];
 
-extern float resolve_camera_surface_height(float *, void *);
-
-extern int coll_line(void *, void *, int, int, int);
-
-extern void vec_scale_to_length(void *, void *, float);
-
 extern void InitDirectionalHitQuery_v(void *, void *, int, void *, float) __asm__("func_L00_0025A8C0");
-extern int coll_sphere_mobys(void *, int, void *, void *, float);
-extern int coll_sphere(float, void *, int, void *);
+extern int coll_sphere_mobys_v(void *, int, void *, void *, float) __asm__("func_L00_001F2BE8");
 
 extern int MoveKeepingOverGround_v(void *, void *, void *, float, float, float, float,
                                    int) __asm__("func_L00_002594C8");
@@ -570,7 +563,7 @@ void mine_update(M910 *m) {
                         InitDirectionalHitQuery_v(&q2, m, 0x10000, t, 1.0f);
                         qcopy(&probe, &m->pos);
                         probe.f[2] += 0.35f;
-                        if (coll_sphere_mobys(&probe, 0x10, m, &q2, 0.35f) != 0 && g_coll_hit_moby != 0 &&
+                        if (coll_sphere_mobys_v(&probe, 0x10, m, &q2, 0.35f) != 0 && g_coll_hit_moby != 0 &&
                             g_coll_hit_moby->cls != 0x363 && g_coll_hit_moby->cls != 0x4A &&
                             g_coll_hit_moby->cls != 0x458 && g_coll_hit_moby->cls != 0x365 &&
                             g_coll_hit_moby->cls != 0x367) {
@@ -721,7 +714,7 @@ void mine_update(M910 *m) {
                     V910 t;
                     {
                         float s = IntToFloat(D_E910.b11) * 0.5f + 1.0f;
-                        int hit = coll_sphere_mobys(&m->pos, 0x10, m, 0, s + s);
+                        int hit = coll_sphere_mobys_v(&m->pos, 0x10, m, 0, s + s);
 
                         *(Q910 *)t = m->pos.q;
                         SendRadialMessageToMobys(m, t, coll_sphere_moby_hits, hit, 0, 0x810000, 4, 1, 3.0f, 0.25f,
@@ -986,8 +979,6 @@ void update_glow_particle(M_d *m) {
 }
 
 extern int cinematic_mode MACRO_ADDR;
-
-extern void draw_world_quad(void *, void *, int);
 
 typedef struct PV_2acbf0_002acbf0 {
     u8 pad_00[0x10];
@@ -1687,7 +1678,7 @@ void bomb_update(M_2aedd0 *m) {
                 if (d->h68 < scale_ticks(0x14)) {
                     int n;
 
-                    n = coll_sphere_mobys(&m->pos, 0x10, m, 0, s * 0.5f);
+                    n = coll_sphere_mobys_v(&m->pos, 0x10, m, 0, s * 0.5f);
                     v.q = m->pos.q;
                     SendRadialMessageToMobys(m, &v, coll_sphere_moby_hits, n, 0, 0x830000, 2, 1, 2.0f, 1.0f, 1.0f);
                     m->state = 2;
@@ -1926,7 +1917,7 @@ void bomb_update(M_2aedd0 *m) {
         m->flags |= 0x41;
         r = interpolate_scalar_linear(0.5f, (IntToFloat(*((unsigned char *)&D_E910 + 0xA)) + 1.0f) * 3.0f - 0.5f,
                                       IntToFloat(m->bBC) / (float)scale_ticks(0xF));
-        n = coll_sphere_mobys(&m->pos, 0x10, m, 0, r);
+        n = coll_sphere_mobys_v(&m->pos, 0x10, m, 0, r);
         p.q = m->pos.q;
         SendRadialMessageToMobys(m, &p, coll_sphere_moby_hits, n, 0, 0x830000, 2, 1, 2.0f, 1.0f, 1.0f);
         if (++m->bBC > scale_ticks(0xF)) {
@@ -2148,8 +2139,6 @@ void nanotech_crate_fragment_update(char *moby) {
         }
     }
 }
-
-extern int coll_line(void *, void *, int, int, int);
 
 // spawns an effect moby (Gold Devastator Missile) at pos, tied to an owner and a target, and aims its starting state
 // Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002aa670.c, FUN_L00_002afc70.
@@ -2415,21 +2404,14 @@ extern float level_draw_frame_load MACRO_ADDR;
 extern Vec4 devastator_default_normal MACRO_ADDR;
 extern Vec4 devastator_default_surface_motion MACRO_ADDR;
 
-extern float lensq_cc2e8(void *);
-
 extern float horizontal1688(void *) __asm__("func_001F9CE8");
 
 extern unsigned char *smoke1688(void *, void *, int, int, int, int, float, float, float, float,
                                 float) __asm__("func_L00_00272158");
 
-extern float random_angle_radians(void);
-extern void build_look_at_matrix(void *, void *, void *, float);
 extern void spark1688(void *, void *, int, int, int, int, float) __asm__("func_L00_0026DA50");
-extern void add_vectors(void *, void *, void *);
+
 extern int collision1688(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
-extern void vec_reflect(void *, void *, void *);
-extern void matrix4_scale(void *, void *, float);
-extern void matrix4_add(void *, void *, void *);
 
 extern void rings1688(void *, void *, int, int, float, int, int, int, int, float) __asm__("func_L00_0026B890");
 extern void debris1688(void *, void *, int, int, float, int) __asm__("func_L00_0026B368");
@@ -2637,7 +2619,7 @@ void gold_devastator_missile_update(M910 *m) {
         int particles;
         int particle_reduction;
         int i, j;
-        int hit = coll_sphere_mobys((&m->pos), 16, m, 0, (size + size));
+        int hit = coll_sphere_mobys_v((&m->pos), 16, m, 0, (size + size));
         particles = 10;
         predicted.q = m->pos.q;
         SendRadialMessageToMobys(m, &predicted, coll_sphere_moby_hits, hit, (int)skip, 0x830000, 3, 1, 3.0f, 1.0f,
@@ -2831,7 +2813,6 @@ typedef struct {
 extern P_2b1af0 D_0013F550;
 void fefc8_2b1af0(void *) __asm__("func_L00_001FEF78");
 
-extern float random_float_between(float, float);
 void ff500_2b1af0(void *, void *, float) __asm__("func_L00_001FF4B0");
 
 int trunc_2b1af0(float) __asm__("func_001FA898");
@@ -2887,14 +2868,10 @@ typedef struct {
     float f[4];
 } __attribute__((aligned(16))) V_2b1af0_B30C8;
 
-float random_float_between(float, float);
-void vec_scale_to_length(void *, void *, float);
-
 void PartType21Spawn(void *, void *, int, int, int, int, float);
 extern V_2b1af0_B30C8 hero_basis_2;
-void build_look_at_matrix(void *, void *, void *, float);
+
 int truncate_float_to_s32(float);
-int random_integer_below(int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002aa670.c, FUN_L00_002b1de0. */
 void emit_object_offset_particle_burst(unsigned char *o) {

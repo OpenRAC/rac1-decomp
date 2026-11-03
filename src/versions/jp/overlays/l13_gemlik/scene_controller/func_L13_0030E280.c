@@ -60,8 +60,8 @@ void blarg_ship_1805_update(void *moby) {
                     add_random_offset_to_vector_xyz(tmp, 1.5f);
                     tmp[2] += 1.7f;
                     FastVecAdd(tmp, tmp, m + 0x10);
-                    SpawnBreakFragment(m, k, tmp, m + 0x40, 0, 0, gemlik_zero_vec, gemlik_zero_vec, 0.0f,
-                                       gemlik_zero_vec);
+                    SpawnBreakFragment_v(m, k, tmp, m + 0x40, 0, 0, gemlik_zero_vec, gemlik_zero_vec, 0.0f,
+                                         gemlik_zero_vec);
                 }
             }
             spawn_explosion_v(moby, m + 0x10, 0, 0.0f, 0.0f, 0xA, 3, 0x10, 6.0f, 3.0f, 9.0f, 0, 1.1f, 15.0f, 1, 3, -1,

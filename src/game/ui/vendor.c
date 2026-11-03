@@ -578,8 +578,6 @@ void render_vendor_capture_texture_overlays_pass(s32 pass_index, f32 capture_wid
     }
 }
 
-extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
-
 /* Sets up a (1 << a) x (1 << b) area: setup_render_target gets the sizes and a
    base below 0x3FF000 by 4 << min(a + b, 16) bytes, rounded down to 8 KB
    (the GS page), configure_graphics_projection the sizes and the float setup (f, 0,
@@ -594,8 +592,8 @@ void configure_capture_target(int a, int b, float f) {
     }
     setup_render_target(a, b, ((0x3FF000 - (4 << t)) >> 13) << 13);
     configure_graphics_projection(1 << a, 1 << b, f, 0.0f, 524288.0f, 255.0f, 0.0f);
-    VU1_addGSregister_l(0x47, 0x30000);
-    VU1_addGSregister_l(0x42, 0x8000000044L);
+    VU1_addGSregister(0x47, 0x30000);
+    VU1_addGSregister(0x42, 0x8000000044L);
 }
 
 /* Retail carries 4 bytes of inter-function padding after this endlabel. */
@@ -689,7 +687,7 @@ void render_vendor_capture_pass_sequence(char *m) {
         project_graphics_bounds_float(a, b, &x, &y, &w, &h);
         configure_capture_target(9, 7, 1.0f);
         draw_centered_capture_background(0x200, 0x200);
-        VU1_addGSregister_l(0x42, 0x8000000064L);
+        VU1_addGSregister(0x42, 0x8000000064L);
         switch (i) {
             case 0:
                 update_scrolling_status_message_r(m);
@@ -713,8 +711,8 @@ void render_vendor_capture_pass_sequence(char *m) {
         render_vendor_capture_texture_overlays_pass(i, x, y);
         setup_view_context();
         draw_centered_capture_background(0x200, 0x200);
-        VU1_addGSregister_l(0x42, 0x8000000064L);
-        VU1_addGSregister_l(8, 5);
+        VU1_addGSregister(0x42, 0x8000000064L);
+        VU1_addGSregister(8, 5);
         VU1_texFlush();
         tex = capture_texture_tex0;
         if (pal_mode != 0) {
@@ -723,7 +721,7 @@ void render_vendor_capture_pass_sequence(char *m) {
         } else {
             append_subpixel_textured_screen_quad(w, h, x, y, 0, 0, (int)(sx - 1.0f), (int)(sy - 1.0f), 0x80808080, tex);
         }
-        VU1_addGSregister_l(8, 0);
+        VU1_addGSregister(8, 0);
     }
 }
 

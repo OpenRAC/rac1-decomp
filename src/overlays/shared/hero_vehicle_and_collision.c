@@ -44,8 +44,6 @@ extern s32 probe_hero_forward_collision_v(f32 *, f32, f32) __asm__("func_L00_002
 
 extern int coll_line_r(void *from, void *to, int mask, void *ignore, int) __asm__("func_L00_001EFFF0");
 
-extern s32 coll_sphere(f32, Vec4 *, s32, s32);
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/hero/00221310.c, FUN_L00_00221310. */
 void update_hero_motion_and_collision_probes(void) {
     Vec4 first;
@@ -361,8 +359,6 @@ extern char *suck_moby_list MACRO_ADDR;
 
 extern float score_hero_target_candidate_v(void *, int *, float, float, float, float) __asm__("func_L00_0020DD48");
 
-extern int coll_line(void *, void *, int, int, int);
-
 typedef struct Q_221ee0 {
     s32 i0; /* 0x00 nonzero: the target record is live */
     u8 pad_04[0x18];
@@ -546,8 +542,6 @@ typedef struct {
 extern void set_hero_idle_state_for_vehicle_mode(void);
 
 extern int truncate_float_to_s32(float);
-
-extern void vec_scale_to_length(void *, void *, float);
 
 extern int cinematic_mode MACRO_ADDR;
 extern int water_patches MACRO_ADDR;
@@ -2976,8 +2970,6 @@ collision_mode:
     return 0;
 }
 
-extern int coll_line(void *, void *, int, int, int);
-
 extern float coll_hit_point_z;
 extern int level_frame_counter MACRO_ADDR;
 
@@ -3065,7 +3057,6 @@ int try_enter_hero_water_state(void) {
     }
     return r;
 }
-extern float ApproachValue(float *p, float target, float maxstep);
 
 // Integrates and damps the player's camera-offset spring values and stores the resulting height.
 void update_hero_water_height_and_bobbing(void) {

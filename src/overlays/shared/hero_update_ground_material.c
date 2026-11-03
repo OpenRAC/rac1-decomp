@@ -32,6 +32,7 @@
 #include "overlays/shared/sound_playback.h"
 #include "overlays/l01_novalis/hero_idle_and_items.h"
 #include "overlays/l01_novalis/hero_items_and_hud.h"
+#include "game/moby/mobyutil.h"
 extern Hero g_hero;
 extern char g_hero_moby[];
 extern int pad_held;
@@ -306,7 +307,6 @@ void update_hero_blink_and_gold_weapon_tint(void) {
         g_hero_r.items[0].moby != 0)
         update_item_tint_from_hero_r(g_hero_r.items[0].moby, g_hero_r.moby);
 }
-extern int coll_sphere(float, void *, int, void *);
 
 // Handles a pending state change (HeroL08_ResetActionState without its state-2 flag): clears the request and sets
 // per-state flags.
@@ -429,9 +429,9 @@ extern char novalis_coll_hit_r[] __asm__("D_L01_00174340");
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 
 extern int coll_line_r(void *, void *, int, int, int) __asm__("func_L00_001EFFF0");
-extern int CollType(void);
+
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
-extern float fast_atan2(float, float);
+
 extern Obj_D688 *GetFlaggedPvarWord_r(char *) __asm__("func_L00_0025D390");
 
 extern int coll_capsule_r(float, float, void *, int, int) __asm__("func_L00_001F1D20");
@@ -611,9 +611,8 @@ static inline void circle_offset_2DE30(Vec4 *v, f32 ang, f32 r) {
 }
 extern CollisionHit_2DE30 novalis_coll_hit_r2 __asm__("D_L01_00174340");
 extern int coll_line_r2(void *from, void *to, int mask, void *ignore, int) __asm__("func_L00_001EFFF0");
-extern int CollType(void);
+
 extern f32 vec_length_xy_r2(void *) __asm__("func_001F9CE8");
-extern f32 fast_atan2(f32, f32);
 
 /* Ledge probe, FUN_L00_0020c758 without its hero.unk20A4 == 1 variant: steps forward from `pos` along the hero's yaw
    looking for a flat top (normal within 20 degrees of up, not material 9 or 12) at least 1.8 above the floor and not
@@ -938,7 +937,7 @@ extern Hero g_hero_r4 __asm__("D_0013F450");
 extern f32 frame_scale_r __asm__("D_0015EE60") MACRO_ADDR;
 extern f32 g_frame_scale_sq MACRO_ADDR;
 
-f32 ApproachValue(f32, f32, f32 *);
+f32 ApproachValue_v(f32, f32, f32 *) __asm__("func_00214D28");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00226f10.c, FUN_L01_00231ae0. */
 void HeroSetCollisionSize(void) {
@@ -972,8 +971,8 @@ void HeroSetCollisionSize(void) {
         vec_distance_xy(g_hero_r4.wall_contact_point.f, g_hero_r4.motion.pos.f) > g_hero_r4.capsule_radius * 0.5f) {
         f32 *q = g_hero_capsule_top;
         Hero *b = (Hero *)((u8 *)q - 0x220);
-        ApproachValue(b->capsule_top_target, frame_scale_r * 0.02f, q);
-        ApproachValue(b->capsule_bottom_target, frame_scale_r * 0.02f, q + 1);
+        ApproachValue_v(b->capsule_top_target, frame_scale_r * 0.02f, q);
+        ApproachValue_v(b->capsule_bottom_target, frame_scale_r * 0.02f, q + 1);
         Spring(q + 5, q + 6, b->capsule_radius_target, g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.3f,
                g_frame_time * 4.0f);
     }
@@ -1006,8 +1005,6 @@ void hero_speed_from_table(void) {
         }
     }
 }
-
-extern int coll_line(void *, void *, int, int, int);
 
 extern int novalis_coll_hit_type;
 extern char novalis_coll_hit[];
@@ -1095,12 +1092,6 @@ void clip_hero_horizontal_velocity(int flag) {
 }
 typedef int Q __attribute__((mode(TI)));
 extern u8 novalis_coll_hit_point[];
-
-s32 coll_line(void *, void *, s32, s32, s32);
-
-f32 resolve_camera_surface_height(void *, void *);
-
-void vec_scale_to_length(void *, void *, f32);
 
 extern struct CollisionHit novalis_coll_hit_r3 __asm__("D_L01_00174340");
 
@@ -1280,8 +1271,6 @@ d1:
 extern char novalis_coll_resolved_pos[];
 extern float frame_scale SDATA(frame_scale);
 
-extern void vec_scale_to_length(void *, void *, float);
-
 /* Checks that the hero capsule passes: sweeps the capsule toward the target, and clamps the remaining offset. */
 int resolve_hero_position_with_collision_queries(int a0) {
     struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
@@ -1445,7 +1434,7 @@ void air_accel(float step) {
         case 2: {
             char *h = (char *)&g_hero + 0xE0;
             u[0] = gravity_length_xy((float *)h);
-            ApproachValue(*(float *)(h + 0xB0), step, u);
+            ApproachValue_v(*(float *)(h + 0xB0), step, u);
             set_gravity_relative_vector_length_xy((float *)h, (float *)h, 0.0f);
             add_hero_forward_offset(h, h, u[0]);
             break;

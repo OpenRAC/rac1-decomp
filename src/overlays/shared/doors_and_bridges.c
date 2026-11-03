@@ -13,6 +13,7 @@
 #include "game/audio/music.h"
 #include "game/math/fastfunc.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/moby_frame_packet.h"
 extern Hero g_hero;
 
 /* Timed activation pads: stepped on, they count down until the group is activated. */
@@ -80,8 +81,6 @@ extern unsigned char saved_mission_state_r[] __asm__("D_0014C150");
 extern void MobyGroup_SetByteBC_r(int, int) __asm__("func_L01_0026F040");
 
 extern void Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
-
-extern void jet_clear_persistent_r(int) __asm__("func_L00_002512D8");
 
 /* Timed activation pad update: runs the 10-state machine on the data block at moby+0x78.
  * The timer is a MIN() of two expressions with calls in them, so the calls are made twice;
@@ -202,7 +201,7 @@ void timed_activation_pads_update(unsigned char *moby) {
         case 7:
             if (((Moby *)moby)->mission != 0xFF) {
                 if (saved_mission_state_r[((Moby *)moby)->mission + (D_0015EE84_30D370 << 4)] != 0xFF)
-                    jet_clear_persistent_r(((Moby *)moby)->mission);
+                    jet_clear_persistent(((Moby *)moby)->mission);
             }
             if (FastDecTimer(&d->blink_timer)) {
                 d->blink_timer = scale_ticks(0x14);
@@ -233,7 +232,7 @@ void timed_activation_pads_update(unsigned char *moby) {
 extern int g_current_level_index MACRO_ADDR;
 extern unsigned char saved_mission_state[];
 
-extern void vec_scale_to_length(f32, void *, void *);
+extern void vec_scale_to_length_v(f32, void *, void *) __asm__("func_L00_001FF4B0");
 
 extern u8 *level_mobys MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
@@ -296,7 +295,7 @@ void door_update(u8 *moby) {
             vectors[6] = data->dir.z;
             *(quadword *)vectors = *(quadword *)(vectors + 4);
             matrix_mul_vec3(vectors, vectors, moby + 0xc0);
-            vec_scale_to_length(data->open_speed * g_frame_time, vectors + 4, vectors);
+            vec_scale_to_length_v(data->open_speed * g_frame_time, vectors + 4, vectors);
             FastVecAdd(moby + 0x10, moby + 0x10, vectors + 4);
             data->travel -= data->open_speed * g_frame_time;
             if (!(data->travel < 0.0f))
@@ -335,7 +334,7 @@ void door_update(u8 *moby) {
                 vectors[6] = data->dir.z;
                 *(quadword *)vectors = *(quadword *)(vectors + 4);
                 distance = FastVecLength(vectors);
-                vec_scale_to_length(-(data->close_speed * g_frame_time), vectors, vectors);
+                vec_scale_to_length_v(-(data->close_speed * g_frame_time), vectors, vectors);
                 matrix_mul_vec3(vectors + 4, vectors, moby + 0xc0);
                 FastVecAdd(moby + 0x10, moby + 0x10, vectors + 4);
                 data->travel += data->close_speed * g_frame_time;
@@ -359,7 +358,7 @@ extern unsigned char saved_mission_state[];
 
 extern void FastVecScale_v(f32, void *, void *) __asm__("func_001F9C30");
 
-extern void vec_scale_to_length(f32, void *, void *);
+extern void vec_scale_to_length_v(f32, void *, void *) __asm__("func_L00_001FF4B0");
 
 extern u8 *level_mobys MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
@@ -423,7 +422,7 @@ void bridge_update(u8 *moby) {
             vectors[6] = data->dir.z;
             *(quadword *)vectors = *(quadword *)(vectors + 4);
             matrix_mul_vec3(vectors, vectors, moby + 0xc0);
-            vec_scale_to_length(data->open_speed * g_frame_time, vectors + 4, vectors);
+            vec_scale_to_length_v(data->open_speed * g_frame_time, vectors + 4, vectors);
             FastVecAdd(moby + 0x10, moby + 0x10, vectors + 4);
             data->travel -= data->open_speed * g_frame_time;
             if (data->travel < 0.0f) {
@@ -460,7 +459,7 @@ void bridge_update(u8 *moby) {
                 vectors[6] = data->dir.z;
                 *(quadword *)vectors = *(quadword *)(vectors + 4);
                 distance = FastVecLength(vectors);
-                vec_scale_to_length(-(data->close_speed * g_frame_time), vectors, vectors);
+                vec_scale_to_length_v(-(data->close_speed * g_frame_time), vectors, vectors);
                 matrix_mul_vec3(vectors + 4, vectors, moby + 0xc0);
                 FastVecAdd(moby + 0x10, moby + 0x10, vectors + 4);
                 data->travel += data->close_speed * g_frame_time;

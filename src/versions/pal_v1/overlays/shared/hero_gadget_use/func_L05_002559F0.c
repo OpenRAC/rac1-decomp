@@ -159,7 +159,7 @@ L_DEC:
             if (fl->f7 == 0) {
                 fl->f7 = 1;
                 PlayBankSound_r(1, 0, 0);
-                ShowBanner_r(0x53D6, -1);
+                ShowBanner(0x53D6, -1);
             }
         }
         ((H_9F0 *)(&g_hero))->i714 = 0;

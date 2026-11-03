@@ -64,8 +64,6 @@ typedef struct {
     int a, b;
 } Pair8_31F760;
 
-extern int FastBSphereCheck(char *, float);
-
 extern int func_001FA898(float);
 
 extern int pokitaru_layered_mesh11_colors[];

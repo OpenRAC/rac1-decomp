@@ -15,6 +15,7 @@
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/l18_veldin2/rockets_and_platforms.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 extern Hero g_hero;
 
 /* Rocket tank: aims its turret at the hero, drives along a path and owns two child mobys. */
@@ -62,10 +63,7 @@ extern float veldin2_zero_vec[] MACRO_ADDR;
 
 extern float g_frame_time MACRO_ADDR;
 
-extern float ApproachValue(float *p, float target, float maxstep);
 extern int veldin2_cinematic_mode MACRO_ADDR;
-
-extern void vec_scale_to_length(void *, void *, float);
 
 extern float g_frame_time MACRO_ADDR;
 
@@ -116,8 +114,6 @@ void update_moby_scene_visibility_and_height_reflection(M *moby) {
 extern float rocket_tank_shot_speed SDATA(rocket_tank_shot_speed);
 extern short rocket_tank_shot_speed_b __asm__("D_L18_0016250C");
 extern void update_rocket_tank_damage_and_aim(void *);
-
-extern int IsFrameWithinWindow(char *, float);
 
 typedef struct {
     char pad0[0xC0];
@@ -254,8 +250,6 @@ void rocket_tank_update(M1454 *m) {
     }
 }
 
-extern void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float scale, float *v10,
-                                float *v11, float *v12);
 extern void SetDeathBits(void *, int, int);
 
 /* Applies hits to the rocket tank and breaks it apart when its health runs out. */

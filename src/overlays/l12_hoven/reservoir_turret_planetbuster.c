@@ -38,6 +38,7 @@
 #include "game/render/partupd.h"
 #include "overlays/shared/smoke_puff_projectiles.h"
 #include "overlays/l12_hoven/jittered_quad_layers.h"
+#include "callees.h"
 
 extern char gSkillPoints[];
 extern Hero g_hero;
@@ -124,7 +125,6 @@ extern float D_L12_00161A88_2EDAA0 SDATA(D_L12_00161A88);
 
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
 
-extern float random_float_between(float, float);
 extern void rand_vec_r(float *, float, float) __asm__("func_L00_00258DB0");
 
 extern float ApproachValue_r(float *, float, float) __asm__("func_00214D28");
@@ -205,7 +205,6 @@ void water_reservoir_update(Moby *moby) {
     AddDrawCallback_r(draw_water_reservoir_r, moby);
 }
 
-extern void draw_world_quad(void *, void *, int);
 extern char water_reservoir_quad_corners[];
 extern int water_reservoir_blend_a SDATA(water_reservoir_blend_a);
 extern int water_reservoir_blend_b SDATA(water_reservoir_blend_b);
@@ -330,14 +329,12 @@ typedef struct {
 } ShotColl;
 extern ShotColl hoven_coll_hit;
 
-extern void vec_scale_to_length(void *, void *, float);
 extern float g_frame_time MACRO_ADDR;
 extern int hoven_turret_attempts MACRO_ADDR;
 extern char hoven_camera_pos[];
 extern float hoven_zero_vec[] MACRO_ADDR;
 
-extern int coll_line(void *, void *, int, struct Moby *, int);
-extern int coll_sphere(void *, int, struct Moby *, float);
+extern int coll_sphere_v(void *, int, struct Moby *, float) __asm__("func_L00_001F10E0");
 
 extern void spawn_explosion_v(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
                               float, int, int, int, int) __asm__("func_L00_0025F4A8");
@@ -383,7 +380,7 @@ void HovenShotUpdate(struct Moby *moby) {
             PartType04Spawn(back, side, 0x6F00AFFF, 0xFF, scale_ticks(rand_range(15, 22)), 40, rand_range(20, 35), 1);
             PartType04Spawn(back, side, 0x1FFFFFFF, 0x4F4F4F, scale_ticks(rand_range(30, 60)), 40, rand_range(50, 75),
                             0);
-            if (coll_line(&moby->pos, old_pos, 0, moby, 0) || coll_sphere(&moby->pos, 0, (struct Moby *)moby, f20)) {
+            if (coll_line(&moby->pos, old_pos, 0, moby, 0) || coll_sphere_v(&moby->pos, 0, (struct Moby *)moby, f20)) {
                 if (hoven_coll_hit.moby != 0 && hoven_coll_hit.moby != (int)vars->owner) {
                     damage = 1;
                     if (g_current_level_index_e == LEVEL_HOVEN && hero_current_state == 50) {
@@ -426,8 +423,6 @@ void HovenShotUpdate(struct Moby *moby) {
 extern unsigned char gHaveHeliPack_e[] __asm__("D_0013D5CA") NOT_SDA;
 extern int pad_globals_base_e[] __asm__("D_0013A5E0") NOT_SDA;
 extern int gameplay_event_frame_count_e __asm__("D_0015EFA4") MACRO_ADDR;
-
-extern void PlayBankSound(int, int, int);
 
 /* Hoven challenge tracker: unlocks the area once, records the time and run flags for two skill points and
  * awards them (one for staying airborne long enough). */
@@ -520,8 +515,6 @@ typedef struct Data_303CA8 {
     int f2330;
 } Data_303CA8;
 
-extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
-
 extern int GetEffectTex_r(int) __asm__("func_001F4868");
 
 extern void draw_world_quad_r(void *, void *, int) __asm__("func_L00_001FD1D8");
@@ -561,7 +554,7 @@ void draw_oscillating_target_link_strips(Moby *moby) {
         float *cp = mats[i];
 
         euler_to_matrix(cp, target_link_strip_rotations[i]);
-        sce_vu0_mul_matrix_r(cp, m, cp);
+        sce_vu0_mul_matrix(cp, m, cp);
         if (!(i & 1) && data->target != -1) {
             qcopy(vec, ((float *)&hoven_mobys_r[data->target].pos));
         } else {
@@ -700,13 +693,9 @@ typedef struct Row {
     u128 v10;
     u128 v20;
 } Row;
-extern float fast_atan2(float, float);
 
-extern void LerpVec4(void *, void *, void *, float);
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
-extern int func_L00_00200290(void *, float);
-extern int is_point_inside_clip_volume(void *, int);
 extern void update_oscillating_target_link_strips_r(void *) __asm__("func_L12_00304038");
 
 extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
@@ -952,10 +941,6 @@ extern char hoven_player_camera_r[] __asm__("D_L12_00167180");
 
 extern void update_hoven_turret_target_alignment_timer(void *);
 extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
-
-extern float ApproachValue(float *, float, float);
-
-extern void vec_scale_to_length(void *, void *, float);
 
 extern void spawn_explosion_v(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
                               float, int, int, int, int) __asm__("func_L00_0025F4A8");
@@ -1447,8 +1432,8 @@ extern void *MobyGetHitMessage_r(struct Moby *, int, int) __asm__("func_L00_0025
 
 extern void MobyBlendAnimation_r(struct Moby *, int, int, int) __asm__("func_00213DE0");
 
-extern int coll_sphere_mobys(void *, int, struct Moby *, void *, float);
-extern int coll_sphere(void *, int, struct Moby *, float);
+extern int coll_sphere_mobys_v(void *, int, struct Moby *, void *, float) __asm__("func_L00_001F2BE8");
+extern int coll_sphere_v(void *, int, struct Moby *, float) __asm__("func_L00_001F10E0");
 
 extern void spawn_explosion_r(struct Moby *, void *, void *, float, float, int, int, int, float, float, float, float,
                               int, float, int, int, int, int) __asm__("func_L00_0025F4A8");
@@ -1554,11 +1539,11 @@ void update_homing_mine(struct Moby *moby) {
                 InitDirectionalHitQuery(hit_info, moby, 0x10001, 1.0f, &direction);
                 qcopy(&probe, &moby->pos);
                 probe.f[2] += 0.4f;
-                if (!coll_sphere_mobys(&probe, 0x10, moby, hit_info, 0.4f) || hit_moby == 0 ||
+                if (!coll_sphere_mobys_v(&probe, 0x10, moby, hit_info, 0.4f) || hit_moby == 0 ||
                     hit_moby->oclass == MOBY_CLASS_MINE_1269 || hit_moby == moby->parent) {
                     qcopy(&probe, &moby->pos);
                     probe.f[2] += 0.35f;
-                    if (coll_sphere(&probe, 0, moby, 0.35f))
+                    if (coll_sphere_v(&probe, 0, moby, 0.35f))
                         moby->state = 2;
                 } else {
                     moby->state = 2;
@@ -1581,7 +1566,7 @@ extern int D_L12_00161FA4_s SDATA(D_L12_00161FA4);
 extern int planetbuster_aggro_timer SDATA(planetbuster_aggro_timer);
 extern int planetbuster_gun_part_index[];
 extern int planetbuster_detached_part_ids[];
-extern void EaseManipulatorOffsets(char *, char *, int, float, float);
+
 extern float step_angle_toward_target_v(float *, float, int, float) __asm__("func_L00_0025CC58");
 
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
@@ -2072,7 +2057,6 @@ extern float planetbuster_sway_amplitude SDATA(planetbuster_sway_amplitude);
 
 extern void MobySpringTurn_v(char *moby, float target, float *vel, float k, float d,
                              float max) __asm__("func_L00_002592B0");
-extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 
 /* Planetbuster part update: rides its path, drops its parts and hands its voice slot back when done. */
 void planetbuster_maximus_part_update(char *moby) {

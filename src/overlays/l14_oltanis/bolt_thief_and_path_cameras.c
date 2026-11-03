@@ -171,8 +171,6 @@ extern float D_L14_00162070_2FF358 SDATA(D_L14_00162070);
 extern int D_L14_00162074_2FF358 SDATA(D_L14_00162074);
 extern Part *func_L00_0026DEA0(void *, float, float, float, int, void *, float, int);
 
-extern int random_integer_below(int);
-
 /* Spawns the effect pieces for a moby: two sparks, the ring of three and a final coloured one. */
 void spawn_moby_offset_puffs(Moby *p) {
     Vec_2FF358 A;
@@ -549,7 +547,6 @@ extern int fast_dec_timer_r(int *arg0) __asm__("func_001F9908");
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
-extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern LevelState oltanis_collected_flags_base_r __asm__("D_L14_001BBCC0");
 extern char oltanis_sam_dialogue_name[];
 extern char *D_L14_001601AC MACRO_ADDR;
@@ -723,10 +720,7 @@ extern float oltanis_spark_min_speed SDATA(oltanis_spark_min_speed);
 extern float oltanis_spark_roll_slowdown SDATA(oltanis_spark_roll_slowdown);
 extern float oltanis_spark_bounce_damping SDATA(oltanis_spark_bounce_damping);
 extern float spark_first_bounce_horizontal_speed_gp SDATA(spark_first_bounce_horizontal_speed_gp);
-extern int coll_sphere(void *, int, void *, float);
-
-extern int coll_line(void *, void *, int, void *, int);
-extern void vec_scale_to_length(void *, void *, float);
+extern int coll_sphere_v(void *, int, void *, float) __asm__("func_L00_001F10E0");
 
 extern int truncate_float_to_s32(float);
 extern void spawn_explosion_v(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
@@ -743,7 +737,7 @@ void update_bouncing_spark(Moby *m) {
     float speed;
     float lo;
     float hi;
-    if (((coll_sphere(&m->pos, 0, m, 0.65f) != 0) && (oltanis_coll_hit_moby != 0)) &&
+    if (((coll_sphere_v(&m->pos, 0, m, 0.65f) != 0) && (oltanis_coll_hit_moby != 0)) &&
         (oltanis_coll_hit_moby != d->owner)) {
         m->state = 3;
     }
@@ -794,7 +788,7 @@ void update_bouncing_spark(Moby *m) {
             } else {
                 qcopy(&m->pos, &next);
             }
-            if (((coll_sphere(&m->pos, 0, m, oltanis_spark_contact_radius) != 0) &&
+            if (((coll_sphere_v(&m->pos, 0, m, oltanis_spark_contact_radius) != 0) &&
                  ((m->state == 0) || ((m->pos.z - oltanis_coll_hit.hit.z) < 0.0f))) &&
                 ((oltanis_coll_hit.owner == 0) || (oltanis_coll_hit.owner != d->owner))) {
                 vec_scale_to_length(&t, &oltanis_coll_hit.normal, oltanis_spark_contact_radius);
@@ -1046,15 +1040,14 @@ extern f32 D_L14_001622BC_06BE0 SDATA(D_L14_001622BC);
 extern f32 D_L14_001622C0_06BE0 SDATA(D_L14_001622C0);
 
 extern void initialize_morphoray_private_state_r(void *) __asm__("func_L14_00306EC0");
-extern f32 ProbeGroundHeight(void *, s32, f32);
 
 extern void update_morphoray_particles_r(struct Moby *) __asm__("func_L14_00306FA0");
 extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
 extern void StartCutscene_r(s32) __asm__("func_L00_00299B68");
-extern void jet_clear_persistent_r(s32) __asm__("func_L00_002512D8");
+
 extern int memcard_Save_r(s32, s32) __asm__("func_0020BFC8");
-extern void ShowBanner_r(s32, s32) __asm__("func_L00_00264DB8");
+
 extern void Help_Request_r(s32, s32) __asm__("func_L00_00203F20");
 extern f32 ApproachValue_r(f32 *, f32, f32) __asm__("func_00214D28");
 
@@ -1102,13 +1095,13 @@ void CollectiblePickupUpdate(struct Moby *moby) {
         case 2:
             if (oltanis_game_mode_r != state) {
                 if (saved_mission_state_r[moby->mission + g_current_level_index_r * 16] != 0xFF) {
-                    jet_clear_persistent_r(moby->mission);
+                    jet_clear_persistent(moby->mission);
                     memcard_Save_r(0, -1);
                 }
                 if (d->picked_up != 0)
-                    ShowBanner_r(0x53e5, -1);
+                    ShowBanner(0x53e5, -1);
                 else
-                    ShowBanner_r(0x36b2, -1);
+                    ShowBanner(0x36b2, -1);
                 Help_Request_r(0x36b0, 0x7a);
                 DeleteMoby(moby);
                 return;
@@ -1142,8 +1135,6 @@ void initialize_morphoray_private_state(char *moby) {
     d->unk_5C = 2.0f;
     d->unk_58 = 2.5f;
 }
-
-extern void vec_scale_to_length(void *, void *, float);
 
 extern int fast_dec_timer_r(int *arg0) __asm__("func_001F9908");
 
@@ -1220,10 +1211,8 @@ typedef struct Snd {
 } Snd;
 extern Moby *create_helper_sequence_owner_moby_r(Moby *owner) __asm__("func_L14_003075E0");
 
-extern int Sound_IsPlaying_r(void *, int) __asm__("func_L00_0028EB98");
 extern int Moby_PlaySound_r(int, int, Moby *) __asm__("func_0022ED80");
 
-extern void Sound_StopSlot_r(int) __asm__("func_L00_0028EBF0");
 extern char *oltanis_mobys_r __asm__("D_L14_00160098") MACRO_ADDR;
 extern float D_L14_001622C4_3071B0 SDATA(D_L14_001622C4);
 extern float D_L14_001622C8_3071B0 SDATA(D_L14_001622C8);
@@ -1294,7 +1283,7 @@ void update_triggered_helper_moby_sequence(Moby *moby) {
             Moby **slots;
             int i;
             float t;
-            if (!Sound_IsPlaying_r(moby, data->voice)) {
+            if (!Sound_IsPlaying(moby, data->voice)) {
                 data->voice = Moby_PlaySound_r(0, 4, moby);
             }
             FastDecTimer(&data->timer);
@@ -1310,7 +1299,7 @@ void update_triggered_helper_moby_sequence(Moby *moby) {
                 if (data->voice != -1) {
                     Snd *e = (Snd *)(hero_globals_base_r + 0x1D + data->voice * 0x70);
                     if (e->f88 == moby && e->f74) {
-                        Sound_StopSlot_r(data->voice);
+                        Sound_StopSlot(data->voice);
                     }
                 }
                 data->voice = -1;
@@ -1519,19 +1508,15 @@ typedef struct Path {
 
 extern char *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
 extern void SpawnExplosionFx_r(void *, void *, float, float, int) __asm__("func_L00_00260108");
-extern void Sound_StopSlot_r2(int) __asm__("func_L00_0028EBF0");
+
 extern int STUB_printf_r() __asm__("func_001E9730");
 
 extern void initialize_flying_car_path_r(void *) __asm__("func_L14_00308998");
-
-extern int is_point_inside_clip_volume(void *, int);
 
 extern int update_flying_car_path_motion_r(void *) __asm__("func_L14_00308AA8");
 
 extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
 
-extern float fast_atan2(float, float);
-extern int Sound_IsPlaying_r2(void *, int) __asm__("func_L00_0028EB98");
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 extern void seed_linked_record_for_flying_car_r(void *) __asm__("func_L14_00314A40");
 extern Path *oltanis_paths_r[] __asm__("D_L14_001B0F30");
@@ -1565,7 +1550,7 @@ void update_flying_car(Moby *m) {
         if (d->sound != -1) {
             Snd_308368 *e = (Snd_308368 *)(hero_globals_base_r + 0x1D + d->sound * 0x70);
             if (e->f88 == m && e->b74 != 0) {
-                Sound_StopSlot_r2(d->sound);
+                Sound_StopSlot(d->sound);
             }
         }
         d->sound = -1;
@@ -1693,7 +1678,7 @@ void update_flying_car(Moby *m) {
     if (m->state == 0 || m->state == 3 || m->state == 1) {
         return;
     }
-    if (Sound_IsPlaying_r2(m, d->sound) == 0) {
+    if (Sound_IsPlaying(m, d->sound) == 0) {
         d->sound = Moby_PlaySound_r2(0, 4, m);
     }
 }
@@ -1879,8 +1864,6 @@ typedef struct {
     char pad34[0x144];
     int v178[2];
 } Level14State;
-
-extern int PlayBankSound(int, int, int);
 
 extern Level14State oltanis_cutscene_state;
 extern unsigned char gSkillPoints[];
@@ -2298,7 +2281,7 @@ extern char *volatile race_paths_16E60v __asm__("D_L14_0015F7EC") MACRO_ADDR;
 extern float oltanis_key_cam_path_distances_r[][1000] __asm__("D_L14_001F6FC0");
 extern float oltanis_path_camera_keys_r[] __asm__("D_L14_001F67C8");
 extern float D_L14_00162578_16E60 SDATA(D_L14_00162578);
-extern float fast_atan2(float, float);
+
 extern void compute_position_from_spherical_offset_r(void *, void *, void *) __asm__("func_L00_001ED900");
 
 extern void normalize_16E60(void *, void *, float) __asm__("func_L00_001FF4B0");

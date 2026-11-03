@@ -46,7 +46,7 @@ void MorphorayUpdate(Moby *m) {
         if (p->timer == 0) {
             p->timer = scale_ticks(15);
         }
-        Moby_GetJointWorldPos_r(m, 0, p);
+        Moby_GetJointWorldPos(m, 0, p);
         if (((Hero *)g_hero_r)->state.current == HERO_STATE_LOOK) {
             HeroEnterMoveState_r(HERO_STATE_LOOK_RELEASE_WAIT, 1);
         }
@@ -107,7 +107,7 @@ void MorphorayUpdate(Moby *m) {
                 ((Skill_2BDAF0 *)gSkillPoints_r)->f8 == 0) {
                 ((Skill_2BDAF0 *)gSkillPoints_r)->f8 = 1;
                 PlayBankSound_r(1, 0, 0);
-                ShowBanner_r(0x53D6, -1);
+                ShowBanner(0x53D6, -1);
             }
             spawn_morphoray_chicken_r(p->target);
             p->target = 0;
@@ -125,7 +125,7 @@ void MorphorayUpdate(Moby *m) {
             ((Light *)level_point_lights_r)[morphoray_light_slot_r].pos[2] = v[1].z;
             ((Light *)level_point_lights_r)[morphoray_light_slot_r].radius = 7.5f;
         }
-        if (Sound_IsPlaying_r(m, morphoray_beam_voice_r) == 0) {
+        if (Sound_IsPlaying(m, morphoray_beam_voice_r) == 0) {
             morphoray_beam_voice_r = Moby_PlaySound_r(0, 4, m);
         }
     } else {
@@ -162,7 +162,7 @@ void MorphorayUpdate(Moby *m) {
             if (morphoray_beam_voice_r != -1 &&
                 ((VoicePoolRow *)(voice_pool_r + morphoray_beam_voice_r * 0x70))->owner == m &&
                 ((VoicePoolRow *)(voice_pool_r + morphoray_beam_voice_r * 0x70))->state != 0) {
-                Sound_StopSlot_r(morphoray_beam_voice_r);
+                Sound_StopSlot(morphoray_beam_voice_r);
             }
             morphoray_beam_voice_r = -1;
         }

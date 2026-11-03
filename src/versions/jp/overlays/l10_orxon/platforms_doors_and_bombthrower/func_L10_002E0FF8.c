@@ -8,7 +8,7 @@ void update_screamer_hit_reactions_and_targeting(struct Moby *moby) {
     extern void spawn_randomized_bolt_drop(void *, int, int, int, int);
     extern int FindNearestEligibleMoby(float, void *, void *, int, int, void *, int);
     extern void matrix_mul_vec3(void *, void *, void *);
-    extern void PlayBankSound(int, int, int);
+    extern void PlayBankSound_v(int, int, int) __asm__("func_0022EE28");
     extern void ShowBanner(int, int);
     MobyData *data = (MobyData *)moby->pvars;
     Hit_2E0FF8 *r;
@@ -31,7 +31,7 @@ void update_screamer_hit_reactions_and_targeting(struct Moby *moby) {
             if (data->f20 <= r->f2C) {
                 if (hero_inside_conditional_help_volume != 0 && (f = gSkillPoints, f[0x10]) == 0) {
                     f[0x10] = 1;
-                    PlayBankSound(1, 0, 0);
+                    PlayBankSound_v(1, 0, 0);
                     ShowBanner(0x542D, -1);
                 }
                 data->f20 = 0.0f;

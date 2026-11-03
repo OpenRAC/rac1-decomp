@@ -5,11 +5,11 @@
 #include "include_asm.h"
 #include "game/moby/mobyutil.h"
 #include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 
 typedef int u128 __attribute__((mode(TI)));
 extern unsigned char *batalia_span_particle_textures_ptr;
 
-extern void vec_scale_to_length(void *, void *, float);
 extern int func_001FA898(float);
 
 // Spawns a particle at a position with a color and scale chosen by kind.

@@ -149,7 +149,6 @@ typedef struct D9668Rec {
     char p3[0x1C];
     float ox, oy, oz;
 } D9668Rec;
-extern int coll_line(void *, void *, int, int, int);
 
 extern float coll_hit_point_z;
 extern int coll_hit_result[];
@@ -280,8 +279,6 @@ extern f32 nanotech_ring_spin_speeds SDATA(nanotech_ring_spin_speeds);
 extern f32 nanotech_ring_sizes SDATA(nanotech_ring_sizes);
 extern f32 nanotech_ring_heights SDATA(nanotech_ring_heights);
 
-void vec_scale_to_length(void *, void *, f32);
-
 s32 truncate_float_to_s32(f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002d7f88.c, FUN_L00_002d8510. */
@@ -335,7 +332,6 @@ typedef struct {
 } Vz __attribute__((aligned(16)));
 extern char nanotech_slot_offsets[] NOT_SDA;
 extern void build_look_at_matrix_v(void *, void *, float, void *) __asm__("func_002156E0");
-extern void vec_scale_to_length(void *, void *, float);
 
 /* World position of nanotech ball slot i. */
 void compute_nanotech_ball_slot_position(char *m, float *out, int i) {
@@ -364,8 +360,6 @@ void update_nanotech_ball_slot_offsets(void) {
         vec_scale_to_length(nanotech_slot_offsets + i * 16, nanotech_slot_offsets + i * 16, nanotech_slot_orbit_radius);
     }
 }
-
-extern int coll_line(void *, void *, int, int, int);
 
 // tests a sightline from a moby (raised 0.5) to the player's position (raised 0.5); true if clear
 int is_nanotech_ball_target_line_clear(Moby *m) {
@@ -443,20 +437,15 @@ extern int D_L00_00161AD0_2D9EA0 SDATA(D_L00_00161AD0);
 extern float D_L00_00161ACC_2D9EA0 SDATA(D_L00_00161ACC);
 extern float D_L00_00161AC8_2D9EA0 SDATA(D_L00_00161AC8);
 extern unsigned char D_L00_00161AC4_2D9EA0 SDATA(D_L00_00161AC4);
-extern float random_float_between(float, float);
-extern int random_integer_below(int);
 
-extern void euler_rotation_basis_r(void *, void *) __asm__("func_001FA1F8");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
-
-extern void BuildSphericalOffset(void *, float, float, float);
 
 extern int is_nanotech_ball_target_line_clear_r(void *) __asm__("func_L00_002D9E30");
 
 extern void build_look_at_matrix_r(void *, void *, float, void *) __asm__("func_002156E0");
 
 extern void update_nanotech_ball_slot_offsets_r(void) __asm__("func_L00_002D9DB8");
-extern int func_L00_00200290(void *, float);
+
 extern void AddDrawCallback_r(void (*)(void), int) __asm__("func_001F49B0");
 extern void draw_nanotech_ball_r(void) __asm__("func_L00_002DACC0");
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
@@ -465,8 +454,6 @@ extern void compute_nanotech_ball_slot_position_r(void *, void *, int) __asm__("
 extern void spawn_nanotech_ball_collection_effect_pair_r(void *) __asm__("func_L00_002D98C8");
 extern int update_nanotech_ball_collection_effects_r(void *) __asm__("func_L00_002D99C0");
 extern void update_nanotech_ball_grounding_and_fall_r(void *) __asm__("func_L00_002D9668");
-
-extern void KillPart(void *);
 
 /* Nanotech ball update: spawns, homes in on its target, hits or fizzles; kills itself when its owner goes. */
 void nanotech_ball_update(Moby *m) {
@@ -498,7 +485,7 @@ void nanotech_ball_update(Moby *m) {
             for (i = 7; i >= 0; i--)
                 d->slots[i] = 0;
             if (primary_nanotech_ball_moby == 0) {
-                euler_rotation_basis_r(&m->rot_row0, &m->rot);
+                euler_rotation_basis(&m->rot_row0, &m->rot);
                 primary_nanotech_ball_moby = m;
                 m->update_dist = 0xFF;
                 d->f7C = 0;
@@ -812,8 +799,6 @@ extern void fast_vec_normalize_2DACC0(void *, void *, f32) __asm__("func_L00_001
 
 extern s32 truncate_float_to_s32_2DACC0(f32) __asm__("func_001FA898");
 extern void draw_geometry_quad_2DACC0(void *, void *, int) __asm__("func_L00_001FD1D8");
-extern void vec_set_length_xy(void *, void *, f32);
-extern float fast_fmod(float, float);
 
 extern int is_moby_in_state_one_r(unsigned char *) __asm__("func_L00_002D95D8");
 
@@ -1340,8 +1325,6 @@ extern int is_suck_cannon_suction_blocked_by_hero_state(void);
 extern void stop_suck_cannon_suction_effect(int);
 extern void update_suck_cannon_suction(u8 *, void *);
 
-extern int coll_line(void *, void *, int, int, int);
-
 typedef struct {
     u8 pad[0x10];
     float height;
@@ -1714,8 +1697,6 @@ char *get_moby_suck_cannon_record(char *p) {
 extern u8 suck_cannon_no_record_msg[];
 void STUB_printf(void *);
 u8 *func_L00_002DCD40_DCDA8(u8 *) __asm__("func_L00_002DCD40");
-
-void MobyBlendAnimation(void *, s32, s32, s32);
 
 /* Per-moby suck cannon record (returned by the class handler). */
 struct SuckCannonRecord {
@@ -2213,17 +2194,9 @@ extern char coll_hit_result_r[] __asm__("D_L00_00173F40");
 extern char D_L00_001EA4B0[];
 
 extern R_2DDEA0 *get_moby_suck_cannon_record_r2(Moby *) __asm__("func_L00_002DCD40");
-extern float fast_atan2(float, float);
 
-extern void extract_matrix_rotation_quaternion(void *, void *);
-
-extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
-
-extern void quat_nlerp_r(void *, void *, void *, float) __asm__("func_001FA5C8");
-
-extern void Moby_GetJointWorldPos_r(void *, int, void *) __asm__("func_L00_00250800");
 extern float vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
-extern void MobyBlendAnimation(void *, int, int, int);
+
 extern int invoke_optional_moby_callback_or_return_one_r(void *, void *) __asm__("func_L00_002DB6C8");
 
 extern void func_001E9768(void *, void *);
@@ -2231,17 +2204,11 @@ extern void vec_scale_to_length_r2(void *, void *, float) __asm__("func_L00_001F
 
 extern void finalize_suck_cannon_moby_r(void *, void *, int) __asm__("func_L00_002DDDE8");
 
-extern float lensq_cc2e8(void *);
-extern float vec_length_r(float) __asm__("func_001F9B50");
-
-extern void vec_set_length_xy(void *, void *, float);
 extern int coll_sphere_mobys_r2(float, void *, int, void *, void *) __asm__("func_L00_001F2BE8");
-extern int func_L00_001F10E0(float, void *, int, void *);
 
-extern void multiply_quaternions_r(void *, void *, void *) __asm__("func_001FA588");
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
-extern void vec_reflect(void *, void *, void *);
+
 extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
 
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
@@ -2297,16 +2264,16 @@ int CarriedMobyUpdate(Moby *self, char *q) {
                     fr.v[0].z = -1.5707964f;
                     euler_to_matrix(&fr.v[11], &fr.v[0]);
                     copy_matrix_rotation(&fr.v[3], &m->owner->rot_row0);
-                    sce_vu0_mul_matrix_r(&fr.v[7], &fr.v[3], &fr.v[11]);
+                    sce_vu0_mul_matrix(&fr.v[7], &fr.v[3], &fr.v[11]);
                     MatrixToQuaternion(&fr.v[1], &fr.v[7]);
-                    quat_nlerp_r(&fr.v[2], &m->q20, &fr.v[1], m->f6C);
+                    quat_nlerp(&fr.v[2], &m->q20, &fr.v[1], m->f6C);
                     quaternion_to_matrix(&fr.v[2], &fr.v[3]);
                     matrix_copy_rows(&self->rot_row0, &fr.v[3]);
                     self->flags = (self->flags | 4) & 0x7FFF;
                 } else {
                     m->f6C = one;
                 }
-                Moby_GetJointWorldPos_r(m->owner, 0, &fr.v[0]);
+                Moby_GetJointWorldPos(m->owner, 0, &fr.v[0]);
                 f21 = 0.5f;
                 f20 = vec_distance_xy_r2(&self->pos, &fr.v[0]);
                 self->scale = ((Cls *)self->pclass)->f24 * (f20 / (m->f64 + m->f64) + f21);
@@ -2392,7 +2359,7 @@ int CarriedMobyUpdate(Moby *self, char *q) {
                         spd = FastVecLength(&m->vel);
                         a = spd * spd - lensq_cc2e8(&fr.v[2]);
                         b = (fr.v[2].x * fr.v[1].x + fr.v[2].y * fr.v[1].y + fr.v[2].z * fr.v[1].z) * -2.0f;
-                        sr = vec_length_r(b * b - a * 4.0f * -lensq_cc2e8(&fr.v[1]));
+                        sr = vec_length(b * b - a * 4.0f * -lensq_cc2e8(&fr.v[1]));
                         u1 = (-b + sr) / (2.0f * a);
                         u2 = (-b - sr) / (2.0f * a);
                         if (0.0f < u1 && 0.0f < u2) {
@@ -2451,7 +2418,7 @@ int CarriedMobyUpdate(Moby *self, char *q) {
                     FastVecCross(&fr.v[3], &fr.v[4], &m->v50);
                     vec_scale_to_length_r2(&fr.v[3], &fr.v[3], f21);
                     build_quaternion_from_axis_angle(&fr.v[2], &fr.v[3], f20);
-                    multiply_quaternions_r(&fr.v[5], &fr.v[1], &fr.v[2]);
+                    multiply_quaternions(&fr.v[5], &fr.v[1], &fr.v[2]);
                     quaternion_to_matrix(&fr.v[5], &fr.v[6]);
                     vec_scale_to_length_r2(&self->rot_row0, &fr.v[6], f21);
                     vec_scale_to_length_r2(&self->rot_row1, &fr.v[7], f21);
@@ -2548,8 +2515,6 @@ extern float suction_effect_texture_v_offset SDATA(suction_effect_texture_v_offs
 extern float suck_beam_scroll_speed SDATA(suck_beam_scroll_speed);
 extern char suck_beam_ring_vertices[];
 extern char suck_beam_ring_vertices_base[];
-
-extern void draw_world_quad(void *, void *, int);
 
 typedef struct {
     float q[4][4];
@@ -3121,8 +3086,6 @@ void scatter_moby_from_hazards(Moby *m) {
     }
 }
 
-int get_next_moby_in_group(void *, s32, s32, s32);
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002d7f88.c, FUN_L00_002df3d8. */
 void draw_red_orb_group_effect_quads(Moby *p) {
     u8 *it[2] __attribute__((aligned(16)));
@@ -3298,16 +3261,10 @@ extern int Moby_PlaySound_r2(int, int, Moby *) __asm__("func_0022ED80");
 
 extern int HeroEnterMoveState_r(int, int) __asm__("func_L00_00222B80");
 
-extern void CameraScript_r(void *, void *, int, int, int) __asm__("func_L00_002EBF50");
-
 extern int truncate_float_to_s32_r3(float) __asm__("func_001FA898");
-
-extern float func_00214D28(float *, float, float);
-extern float func_00214D88(float *, float *, float, float, float, float);
 
 extern void lerp_vector_r(void *, void *, void *, float) __asm__("func_001F9C08");
 
-extern void CameraScript2_r(int) __asm__("func_L00_002EC0C8");
 extern int fast_dec_timer_r3(void *) __asm__("func_001F9908");
 
 /* Hydrodisplacer pad: while the hero holds the hydrodisplacer it tunes his water physics; the pad waits for the
@@ -3407,7 +3364,7 @@ void hydrodisplacer_update(Moby *m) {
                 m->command = 0;
                 m->state = 4;
                 d->f10 = 0.0f;
-                CameraScript_r(g_debug_camera_r3, g_debug_camera_r3 + 0x10, 1, 0, 0);
+                CameraScript(g_debug_camera_r3, g_debug_camera_r3 + 0x10, 1, 0, 0);
                 if (g_hero.hydro_tank_full != 0) {
                     d->i8 = (*(int *)&e->pad_0[4]);
                     d->iC = (*(int *)&e->pad_0[8]);
@@ -3484,7 +3441,7 @@ void hydrodisplacer_update(Moby *m) {
                     }
                     m->command = 2;
                     scripted_camera_move_active = 0;
-                    CameraScript2_r(3);
+                    CameraScript2(3);
                     return;
                 case 2:
                     if (0.0f < gFadeLvl) {

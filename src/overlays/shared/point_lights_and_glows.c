@@ -12,10 +12,8 @@
 #include "game/math/fastfunc.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "asm_functions/shared_levels.h"
 
-extern void vec_scale_to_length(void *, void *, float);
-
-extern void draw_world_quad(void *, void *, int);
 extern float glow_quad_z_offset;
 typedef struct {
     int c[4];
@@ -160,9 +158,6 @@ void glow_quads_draw(char *moby) {
 typedef int ti_23e008 __attribute__((mode(TI)));
 extern float D_0015EE60 MACRO_ADDR;
 
-extern float random_float_between(float, float);
-extern int random_integer_below(int);
-
 extern unsigned char *func_L00_00272F00(float *, int, float, float, float, int, int, int, void *);
 extern int func_001FA898(float);
 /* Spawns a burst of directed particles with randomised speeds from the frame time. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_0023db30.c, FUN_L00_0023e008. */
@@ -246,7 +241,7 @@ extern float level_draw_frame_load_r __asm__("D_L00_0015F6B8") MACRO_ADDR;
 extern T_0023e738 level_point_light_data_r[] __asm__("D_L00_001805C0");
 extern P_0023e738 level_point_lights_r[] __asm__("D_L00_001803C0");
 extern char level_point_light_link_buffers_r[] __asm__("D_L00_00180740");
-void func_001F99D8_0023e738(void *, int) __asm__("func_001F99D8");
+
 /* Update (reads the frame-time float level_draw_frame_load). Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_0023db30.c, FUN_L00_0023e738. */
 int allocate_colored_effect_slot(u128_pt *v, float a, float b_0023e738, float c, float d, float e) {
     int i;
@@ -267,7 +262,7 @@ int allocate_colored_effect_slot(u128_pt *v, float a, float b_0023e738, float c,
     p->y = d;
     p->z = e;
     p->b_0023e738 = b_0023e738;
-    func_001F99D8_0023e738(t, 0x30);
+    FastMemZero16(t, 0x30);
     t->used = 1;
     t->buf = level_point_light_link_buffers_r + i * 1024;
     return i;

@@ -196,7 +196,6 @@ extern s32 coll_line_r(V_2cfcb8 *, V_2cfcb8 *, s32, M_2cfcb8 *, s32) __asm__("fu
 extern s32 is_moby_in_class_range_500_to_540_r(M_2cfcb8 *) __asm__("func_L00_0025F410");
 extern s32 GetFlaggedPvarWord_r(M_2cfcb8 *) __asm__("func_L00_00261448");
 
-extern int get_next_moby_in_group(M_2cfcb8 **, M_2cfcb8 *, s32, s32);
 extern void FastVecAdd_r(V_2cfcb8 *, V_2cfcb8 *, void *) __asm__("func_001F9BD8");
 
 extern f32 FastVecDist_r(V_2cfcb8 *, V_2cfcb8 *) __asm__("func_001F9D10");
@@ -423,8 +422,6 @@ void func_L00_00261478_2D19E8(u8 *, s32, void *, void *, void *, void *) __asm__
 
 void func_L00_002584A8_2D19E8(u8 *, s32, s32) __asm__("func_L00_002584A8");
 s32 func_L00_00258250_2D19E8(u8 *, s32 *) __asm__("func_L00_00258250");
-extern f32 random_angle_radians(void);
-extern f32 random_float_between(f32, f32);
 
 void func_L00_00262BC0_2D19E8(s32, void *, void *, void *) __asm__("func_L00_00262BC0");
 void func_L00_001FF4B0_2D19E8(void *, void *, f32) __asm__("func_L00_001FF4B0");
@@ -557,8 +554,6 @@ void func_L00_002D19E8_r(u8 *a) {
 extern void Moby_PlaySound_v(int, int, int) __asm__("func_0022ED80");
 
 extern int truncate_float_to_s32(float);
-
-extern void vec_scale_to_length(void *, void *, float);
 
 extern void PartType11Spawn(void *, void *, int, int, int, int, int, float, int, float);
 
@@ -822,10 +817,6 @@ extern V collision_hit_point;
 
 extern void break_crate(void *, int, int);
 
-extern float ApproachValue(float *p, float target, float maxstep);
-
-extern int coll_line(void *, void *, int, int, int);
-
 /* per-frame update of a thrown object chain: walks to the root, then moves each link and resolves its collision */
 void update_crate_stack_motion(Moby *a) {
     float v0[4];
@@ -989,9 +980,6 @@ extern f32 ship_previous_uvs[][2];
 extern u64 GetEffectTex_v(s32) __asm__("func_001F4868");
 
 #define XFORM(a, b, c) func_001F9EE8((Vec4f *)(a), (Vec4f *)(b), (c))
-extern void vec_scale_to_length(void *, void *, f32);
-
-extern void draw_world_quad(void *, s32, s32);
 
 /* Draw the Veldin ship's glow quads from its vertices when the camera is near or it is active. */
 void veldin_ship_draw(u8 *m) {
@@ -1120,11 +1108,6 @@ extern char coll_hit_result_r[] __asm__("D_L00_00173F40");
 extern char pad_globals_base_r[] __asm__("D_0013A5E0");
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 
-extern float fast_atan2(float, float);
-
-extern float vec_length_r(float) __asm__("func_001F9B50");
-
-extern void BuildSphericalOffset(void *, float, float, float);
 extern int coll_line_r2(void *, void *, int, int, int) __asm__("func_L00_001EFFF0");
 
 /* Same camera step as compute_glove_of_doom_throw_velocity, writing the following vector in the target data. */
@@ -1185,8 +1168,8 @@ void decoy_glove_aim_throw(int collision_arg, Moby *carrier, float *position) {
                     value = z / 0.00999999978f;
                 }
             }
-            fall_time = vec_length_r(g_frame_time_sq_r * 9.0f *
-                                     ((((PadState *)(pad_globals_base_r + 0x2460))->held & 5) ? 3.5f : 2.5f) * 0.5f);
+            fall_time = vec_length(g_frame_time_sq_r * 9.0f *
+                                   ((((PadState *)(pad_globals_base_r + 0x2460))->held & 5) ? 3.5f : 2.5f) * 0.5f);
             distance = (fall_time + fall_time) * fall_time * (1.0f - value) / (g_frame_time_sq_r * 9.0f);
             vertical = value * distance;
             if (0.0f < distance) {
@@ -1226,7 +1209,7 @@ typedef int u128_D3B20 __attribute__((mode(TI)));
 void decoy_glove_update(unsigned char *moby) {
     extern void DeleteMoby_v(void) __asm__("func_0020D678");
     extern void transform_vector();
-    extern void Moby_PlaySound_v(int, int, int);
+    extern void Moby_PlaySound_v(int, int, int) __asm__("func_0022ED80");
     struct DecoyGloveVars *d;
     char *p;
     struct Hero *g;
@@ -1518,27 +1501,19 @@ extern f32 D_L00_00161A10_2D4398 SDATA(D_L00_00161A10);
 extern void Moby_GetJointWorldPos_r(struct Moby *, s32, void *) __asm__("func_L00_00250800");
 
 extern f32 distxy_2D4398(void *, void *) __asm__("func_001F9D48");
-extern f32 fast_atan2(f32, f32);
-
-extern void BuildSphericalOffset(void *, f32, f32, f32);
 
 extern void func_001E9768(void *, void *);
 extern void norm_2D4398(void *, void *, f32) __asm__("func_L00_001FF4B0");
 
 extern void MobyTransformScaledVertex_r2(void *, s32, void *) __asm__("func_0020DAF8");
 
-extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
-
-extern void quat_nlerp_r(void *, void *, void *, f32) __asm__("func_001FA5C8");
-
 extern s32 voice_2D4398(s32, s32, void *) __asm__("func_0022ED80");
 
 extern s32 trunc_2D4398(f32) __asm__("func_001FA898");
-extern f32 random_float_between(f32, f32);
 
 extern void increment_metal_detector_collection_counter_r(unsigned char *) __asm__("func_L00_002D42D8");
 extern void remove_2D4398(void *) __asm__("func_0020D678");
-extern void release_2D4398(s32) __asm__("func_L00_0028EBF0");
+
 extern void draw_metal_detector_trail_r(void) __asm__("func_L00_002D3F40");
 
 extern void enqueue_2D4398(void *, void *) __asm__("func_001F49B0");
@@ -1643,14 +1618,14 @@ void metal_detector_update(struct Moby *moby) {
                 m3[3][1] = zero;
                 m3[3][0] = zero;
                 m3[3][3] = one;
-                sce_vu0_mul_matrix_r(m4, m3, m);
+                sce_vu0_mul_matrix(m4, m3, m);
                 MatrixToQuaternion(u, m4);
             } else {
                 *(u128_2D4398 *)w = 0;
                 build_quaternion_from_axis_rotations(u, w);
             }
             qcopy(&vars->unk30, v);
-            quat_nlerp_r(metal_detector_manipulator_rot, metal_detector_manipulator_rot, u, 0.1f);
+            quat_nlerp(metal_detector_manipulator_rot, metal_detector_manipulator_rot, u, 0.1f);
             MobyTransformScaledVertex_r2(moby, 3, w);
             qcopy(&vars->unk30, w);
             if (((PadState *)g_controller_state)->pressed & 0x20) {
@@ -1714,7 +1689,7 @@ void metal_detector_update(struct Moby *moby) {
                             VoicePoolRow *e = (VoicePoolRow *)(voice_pool + vars->voice2 * 0x70);
 
                             if (e->owner == moby && e->state != 0) {
-                                release_2D4398(vars->voice2);
+                                Sound_StopSlot(vars->voice2);
                             }
                         }
                         vars->voice2 = -1;
@@ -1725,7 +1700,7 @@ void metal_detector_update(struct Moby *moby) {
                         VoicePoolRow *e = (VoicePoolRow *)(voice_pool + vars->voice0 * 0x70);
 
                         if (e->owner == moby && e->state != 0) {
-                            release_2D4398(vars->voice0);
+                            Sound_StopSlot(vars->voice0);
                         }
                     }
                     vars->voice0 = -1;
@@ -1733,7 +1708,7 @@ void metal_detector_update(struct Moby *moby) {
                         VoicePoolRow *e = (VoicePoolRow *)(voice_pool + vars->voice1 * 0x70);
 
                         if (e->owner == moby && e->state != 0) {
-                            release_2D4398(vars->voice1);
+                            Sound_StopSlot(vars->voice1);
                         }
                     }
                     vars->voice1 = -1;
@@ -1741,7 +1716,7 @@ void metal_detector_update(struct Moby *moby) {
                         VoicePoolRow *e = (VoicePoolRow *)(voice_pool + vars->voice2 * 0x70);
 
                         if (e->owner == moby && e->state != 0) {
-                            release_2D4398(vars->voice2);
+                            Sound_StopSlot(vars->voice2);
                         }
                     }
                     vars->voice2 = -1;
@@ -1754,7 +1729,7 @@ void metal_detector_update(struct Moby *moby) {
                 VoicePoolRow *e = (VoicePoolRow *)(voice_pool + vars->voice0 * 0x70);
 
                 if (e->owner == moby && e->state != 0) {
-                    release_2D4398(vars->voice0);
+                    Sound_StopSlot(vars->voice0);
                 }
             }
             vars->voice0 = -1;
@@ -1762,7 +1737,7 @@ void metal_detector_update(struct Moby *moby) {
                 VoicePoolRow *e = (VoicePoolRow *)(voice_pool + vars->voice1 * 0x70);
 
                 if (e->owner == moby && e->state != 0) {
-                    release_2D4398(vars->voice1);
+                    Sound_StopSlot(vars->voice1);
                 }
             }
             vars->voice1 = -1;
@@ -1770,7 +1745,7 @@ void metal_detector_update(struct Moby *moby) {
                 VoicePoolRow *e = (VoicePoolRow *)(voice_pool + vars->voice2 * 0x70);
 
                 if (e->owner == moby && e->state != 0) {
-                    release_2D4398(vars->voice2);
+                    Sound_StopSlot(vars->voice2);
                 }
             }
             vars->voice2 = -1;
@@ -2240,23 +2215,17 @@ extern Path_5AC0 *level_paths_r3[] __asm__("D_L00_001B0830");
 
 extern void process_horny_toad_hit_reaction(void *);
 
-extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
 
 extern float SteerAngleWithVelocity_r(void *, float, void *, float, float, float) __asm__("func_L00_0025CE58");
 extern float move_horny_toad_toward_position(unsigned char *m, float *t, float vel);
 
-extern int IsFrameWithinWindow(void *, float);
-
-extern void vec_scale_to_length(void *, void *, float);
-extern int test_path_segment_strict_crossing(int, void *, void *);
-
 extern void Moby_PlaySound_v(int, int, int) __asm__("func_0022ED80");
 
 extern void DeleteMoby_r2(void *) __asm__("func_0020D678");
 
-extern void func_L00_00262DF0(int, float, void *, void *);
+extern void resolve_point_path_segment_xy_clearance_v(int, float, void *, void *) __asm__("func_L00_00262DF0");
 extern float ApproachValue_r(float, float, float *) __asm__("func_00214D28");
 
 /* UpdateMoby_749 (horny_toad): state machine that walks a path or follows a target moby, hops, turns and dies; then
@@ -2481,8 +2450,8 @@ void horny_toad_update(Moby *moby) {
         ApproachValue_r(ProbeGroundHeight((*(Vec_5AC0 *)&moby->pos), 0, 0.5f), g_frame_time * 7.0f,
                         &(*(Vec_5AC0 *)&moby->pos)[2]);
         if (moby->state != 4) {
-            resolve_point_path_segment_xy_clearance(data->f1E0, 0.25f, (*(Vec_5AC0 *)&moby->pos),
-                                                    (*(Vec_5AC0 *)&moby->pos));
+            resolve_point_path_segment_xy_clearance_v(data->f1E0, 0.25f, (*(Vec_5AC0 *)&moby->pos),
+                                                      (*(Vec_5AC0 *)&moby->pos));
         }
     }
     if (data->f1F0 != -1) {
@@ -2642,7 +2611,7 @@ void process_horny_toad_hit_reaction(void *a0) {
     }
 }
 
-extern float ApproachWithVelocity(float *, float, float, float, float, float *);
+extern float ApproachWithVelocity_v(float *, float, float, float, float, float *) __asm__("func_00214D88");
 
 /* Walks a moby toward a target point: turn to face it, ease its speed, step it along its heading; returns the distance (or 37.0 when a flag is set). Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002cfcb8.c, FUN_L00_002d54c8. */
 float move_horny_toad_toward_position(unsigned char *m, float *t, float vel) {
@@ -2659,7 +2628,7 @@ float move_horny_toad_toward_position(unsigned char *m, float *t, float vel) {
         return d;
     SteerAngleWithVelocity((float *)(m + 0x48), &v->f1F4, ang, g_frame_time_sq * 12.566371f,
                            g_frame_time_sq * 12.566371f, g_frame_time * 12.566371f);
-    ApproachWithVelocity(&vel, d, g_frame_time_sq * 8.0f, g_frame_time_sq * 12.0f, g_frame_time * 4.0f, &v->f1F8);
+    ApproachWithVelocity_v(&vel, d, g_frame_time_sq * 8.0f, g_frame_time_sq * 12.0f, g_frame_time * 4.0f, &v->f1F8);
     if (v->f1F8 < 0.0f)
         v->f1F8 = 0.0f;
     a = ((Moby *)m)->rot.z;
@@ -2788,8 +2757,6 @@ typedef struct {
 
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
-
-extern void vec_scale_to_length(void *, void *, float);
 
 extern float infobot_slot_path_minimum_speed_gp SDATA(infobot_slot_path_minimum_speed_gp);
 
@@ -2941,11 +2908,7 @@ extern T *level_cuboids MACRO_ADDR;
 extern void initialize_moby_particle_effect(char *);
 extern void update_infobot_particle_effect(char *);
 
-extern void queue_planet_unlock_message(s32);
-
 extern void DeleteMoby_v(void) __asm__("func_0020D678");
-
-extern void vec_scale_to_length(void *, void *, f32);
 
 extern s32 truncate_float_to_s32(f32);
 
@@ -3294,8 +3257,6 @@ typedef struct {
 } P_p;
 extern int cinematic_mode MACRO_ADDR;
 
-extern void vec_scale_to_length(void *, void *, float);
-
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
 
 /* Draws four drifting, colour-cycling sprites around a moby, stepping each one's phase and fade timer. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002cfcb8.c, FUN_L00_002d6cd0. */
@@ -3397,12 +3358,7 @@ extern float smoke_fire_far_culling_distance_gp SDATA(smoke_fire_far_culling_dis
 extern Vec4f g_debug_camera_r2 __asm__("D_L00_00166EC0");
 void func_0020D678_D83D8(P *) __asm__("func_0020D678");
 
-int random_integer_below(int);
-
 void func_L00_002D9208_D83D8(P *, int) __asm__("func_L00_002D9208");
-int FastBSphereCheck(Vec4f *, float);
-
-float random_float_between(float, float);
 
 E *PartType23Spawn(Vec4f *, int, float, float, Vec4f *, float, int, float);
 s16 scale_ticks_r(int) __asm__("func_001F9850");
@@ -3683,7 +3639,7 @@ void draw_smoke_fire_spawner(P *spawner) {
         }
     }
 }
-extern f32 random_float_between(f32, f32);
+
 typedef struct {
     s16 start; /* 00 */
     s16 count; /* 02 */

@@ -198,9 +198,6 @@ typedef struct {
 } EmitterMoby;
 extern s32 g_current_level_index MACRO_ADDR;
 extern f32 frame_scale MACRO_ADDR;
-extern int FastBSphereCheck(void *, f32);
-
-extern f32 random_float_between(f32, f32);
 
 extern f32 frame_scale_r __asm__("D_0015EE60") MACRO_ADDR;
 
@@ -591,18 +588,12 @@ extern float novalis_birdbot_drift_speed SDATA(novalis_birdbot_drift_speed);
 extern float novalis_birdbot_fly_speed SDATA(novalis_birdbot_fly_speed);
 extern float novalis_birdbot_anim8_speed SDATA(novalis_birdbot_anim8_speed);
 
-extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
 extern int select_birdbot_path_node(void *, int *);
 
 extern void InitKnockback_v(float, void *, void *, int, int, int) __asm__("func_L00_0025D5B0");
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
-extern int coll_line(void *, void *, int, void *, void *);
-
-extern void vec_scale_to_length(void *, void *, float);
-
-extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
 extern void SetDeathBits(void *, int, int);
 
 /* Birdbot update: follows its path, turns on and shoots at the hero, flees when hurt, and blows up when it dies or
@@ -1322,9 +1313,6 @@ extern float peckbot_home_knockback_acceleration_gp SDATA(peckbot_home_knockback
 extern short novalis_peckbot_spawn_d0_record;
 
 extern int func_001160D8(void);
-
-extern int coll_sphere(float, void *, int, void *);
-extern float ApproachValue(float *, float, float);
 
 /* Peckbot update: wanders and hops after the hero, flies in a hurt arc when hit, dies with a burst of parts. */
 void peckbot_update(Moby *m) {
@@ -2119,7 +2107,6 @@ void cave_door_update(char *m) {
 
 extern short novalis_tethered_mine_min_scale, novalis_tethered_mine_far_distance, novalis_tethered_mine_near_distance;
 extern unsigned char menu_item_enabled_115_k __asm__("D_0013D50F") NOT_SDA;
-extern void PlayBankSound(int, int, int);
 
 /* Floating mine: scales with the camera distance; when hit it explodes (unlocks the first-mine hint
  * once), deletes its four tethers and itself; otherwise it bobs and fades out with height. */
@@ -2927,8 +2914,6 @@ typedef unsigned int u128_pt __attribute__((mode(TI)));
 
 extern f32 g_frame_time_r2 __asm__("D_0015EE6C") MACRO_ADDR;
 
-extern f32 fast_atan2(f32, f32);
-
 typedef union {
     u128_pt q;
     struct {
@@ -2960,7 +2945,7 @@ extern f32 spring_axis_to_r(f32 *, f32, f32 *, f32, f32, f32) __asm__("func_L01_
 extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
 extern void vec_scale_to_length_r(void *, void *, f32) __asm__("func_L00_001FF4B0");
-extern f32 func_00214440(void *, s32);
+
 /* Hovering enemy update: springs its position toward a home point on each axis, keeps its distance to the player, and steers toward a target with the shared turn helper. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l01/unclassified_002b96e0.c, FUN_L01_002f8268. */
 void water_lily_update(HoverMoby *m) {
     HoverVars *v;

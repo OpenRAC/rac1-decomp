@@ -109,7 +109,6 @@ void calculate_voice_volume(void *arg0, int arg1) {
     calculate_voice_distance_volume_v(p, v, p[0], p[1]);
 }
 
-extern float fast_arc_tan_a(float, float) __asm__("func_001FA058");
 extern void truncate_float_to_s32(float);
 
 /* Build the vector at arg1 in the camera_position frame, project it against
@@ -123,7 +122,7 @@ void calculate_voice_pan(void *arg0, void *arg1, void *arg2) {
     FastVecSub(v, arg1, camera_position_a);
     transform_vector(v, v, arg2);
     t = clamp_float(vec_length_xy(v) - 1.0f, 0.0f, 1.0f);
-    truncate_float_to_s32(-fast_arc_tan_a(v[0], v[1]) * 180.0f * t * 0.31830987f);
+    truncate_float_to_s32(-fast_arc_tan(v[0], v[1]) * 180.0f * t * 0.31830987f);
 }
 
 typedef u32 u128_2DBE8 __attribute__((mode(TI), aligned(16)));
@@ -715,7 +714,6 @@ extern Hero D_0013F450;
 extern VoicePositionRecord D_0013E6E0[];
 extern u8 D_0013E6C0_2EB08[] __asm__("D_0013E6C0");
 
-extern s32 random_integer_below(s32);
 extern s32 calculate_voice_volume_r(VoiceSlot *, Vec4 *) __asm__("func_0022DB00");
 
 s32 func_0022EB08_r(VoiceDefinition *, u32, VoiceMoby *, Vec4 *, s32) __asm__("func_0022EB08");

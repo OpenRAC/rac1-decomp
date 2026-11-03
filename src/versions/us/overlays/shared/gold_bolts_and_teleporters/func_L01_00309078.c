@@ -49,7 +49,7 @@ void gold_bolt_update(Moby *moby) {
             }
             if (vars->unkC != 0) {
                 novalis_banner_display_ticks_r = scale_ticks(180);
-                ShowBanner_r(0x53B3, -1);
+                ShowBanner(0x53B3, -1);
                 gold_bolts_collected_r[vars->id + g_current_level_index_r * 4] = 1;
                 save_00309078(0, -1);
             remove:
@@ -77,9 +77,9 @@ void gold_bolt_update(Moby *moby) {
             at2.z += 1.0f;
             clear_u64_value(&look2);
             look2.z = FastSubRots(vars->home.w, 1.5707964f);
-            CameraScript_r(&at2, &look2, 1, 0, 0);
-            set_camera_position_r(&at2);
-            set_camera_rotation_r(&look2);
+            CameraScript(&at2, &look2, 1, 0, 0);
+            set_camera_position(&at2);
+            set_camera_rotation(&look2);
             qcopy(&moby->pos, &hero_00309078.motion.pos);
             qcopy(&moby->rot, &hero_00309078.motion.rot);
             if (moby->prev_seq != 1) {
@@ -122,11 +122,11 @@ void gold_bolt_update(Moby *moby) {
                 return;
             }
             novalis_banner_display_ticks_r = scale_ticks(180);
-            ShowBanner_r(0x53B3, -1);
+            ShowBanner(0x53B3, -1);
             gold_bolts_collected_r[vars->id + g_current_level_index_r * 4] = 1;
             cutscene_active_r = 0;
             Hero_ResetToPosition_r(&h->motion.pos, &h->motion.rot, 0, 0);
-            CameraScript2_r(0);
+            CameraScript2(0);
             save_00309078(0, -1);
             DeleteMoby(moby);
             break;

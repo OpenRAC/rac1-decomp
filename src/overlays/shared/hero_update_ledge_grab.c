@@ -70,8 +70,6 @@ int get_hero_help_value(int a) {
     }
 }
 
-extern float ApproachValue(float *, float, float);
-
 extern int truncate_float_to_s32(float);
 
 extern unsigned char hero_globals_base[];
@@ -389,8 +387,6 @@ extern float g_frame_time MACRO_ADDR;
 extern int blarg_coll_hit_type;
 extern char blarg_coll_hit[];
 
-extern int coll_line(void *, void *, int, int, int);
-
 typedef struct {
     char pad[0x98];
     float ang;
@@ -480,10 +476,9 @@ extern Hero g_hero_r2 __asm__("D_0013F450");
 extern f32 frame_scale MACRO_ADDR;
 extern u128_22a1d0 blarg_coll_resolved_pos[];
 
-extern s32 coll_sphere(void *, s32, s32, f32);
+extern s32 coll_sphere_v(void *, s32, s32, f32) __asm__("func_L00_001F10E0");
 extern s32 coll_capsule_v(void *, s32, f32, s32, f32) __asm__("func_L00_001F1D20");
 extern s32 coll_sphere_hero_groups_v(void *, f32) __asm__("func_L00_001F34F0");
-extern void vec_scale_to_length(void *, void *, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/0021d0a0.c, FUN_L06_0022a1d0. */
 s32 HeroL06_ResolveCollisionStep(s32 mode) {
@@ -520,10 +515,10 @@ s32 HeroL06_ResolveCollisionStep(s32 mode) {
         mask = 0xD24;
     for (i = 0; i < 8; i++) {
         if (g_hero_r2.gravity_mode != 0) {
-            if (!coll_sphere(&g_hero_r2.motion.pos.q, mask, (s32)g_hero_r2.moby, frame_scale * 0.4f))
+            if (!coll_sphere_v(&g_hero_r2.motion.pos.q, mask, (s32)g_hero_r2.moby, frame_scale * 0.4f))
                 break;
         } else if (g_hero_r2.state.control_mode == HERO_MODE_GRIND) {
-            if (!coll_sphere(&g_hero_r2.motion.pos.q, mask, (s32)g_hero_r2.moby, frame_scale * 0.45f))
+            if (!coll_sphere_v(&g_hero_r2.motion.pos.q, mask, (s32)g_hero_r2.moby, frame_scale * 0.45f))
                 break;
         } else {
             s32 a;
@@ -736,8 +731,6 @@ typedef int V4q_32b90 __attribute__((mode(TI), aligned(16)));
 extern Hero g_hero_r4 __asm__("D_0013F450");
 extern u8 blarg_coll_hit_normal[];
 extern f32 blarg_collision_hit_point;
-
-extern s32 coll_line(void *, void *, s32, s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00242950.c, FUN_L06_00242950. */
 f32 calculate_hero_motion_prediction_time(f32 a, f32 b, f32 c) {

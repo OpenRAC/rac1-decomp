@@ -28,11 +28,9 @@ typedef struct {
     s32 unk28;
 } ShotVars_B0068;
 extern struct Moby *CreateMoby_r(int oclass) __asm__("func_0020D348");
-extern float fast_atan2(float, float);
-extern float random_float_between(float, float);
 
 extern void func_L00_0026E940(struct Moby *, int color, int life, int, float size);
-extern void moby_build_matrix(void *);
+
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002aee30.c, FUN_L04_002aee30. */
@@ -113,10 +111,6 @@ extern s32 g_current_level_index SDATA(g_current_level_index);
 extern f32 eudora_camera_pos[];
 extern u128_B0290 eudora_coll_hit_point;
 extern u8 eudora_coll_hit_normal[];
-
-extern s32 coll_line(void *, void *, s32, struct Moby *, CollisionProbe *);
-
-extern void vec_scale_to_length(void *, void *, f32);
 
 /* Update of the class 0xB8 shot (spawned by FUN_L04_002aee30): moves along its direction, plays its sound once it
    starts moving away from the hero within 3 units, dies off the arena, and on a hit (probing for its owner's targets

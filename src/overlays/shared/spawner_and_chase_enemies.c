@@ -21,6 +21,8 @@
 #include "overlays/shared/nanotech_ball_and_suck_cannon.h"
 #include "overlays/shared/random_scaled_vectors.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "overlays/shared/sound_playback.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 extern Hero g_hero;
 
 /* Spawner: picks a target, then throws eggs (Spawner Egg) towards it, up to max_eggs alive. */
@@ -110,14 +112,10 @@ extern f32 FastVecLength_r(Vec4 *) __asm__("func_001F9CB8");
 
 extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
-extern f32 fast_atan2(f32, f32);
 extern s32 truncate_float_to_s32_r(f32) __asm__("func_001FA898");
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
 extern void MobyBlendAnimation_r(struct Moby *, s32, s32, s32) __asm__("func_00213DE0");
-extern s32 random_integer_below(s32);
-extern f32 random_float_between(f32, f32);
-extern f32 ProbeGroundHeight(void *, s32, f32);
-extern void Sound_StopSlot_r(s32) __asm__("func_L00_0028EBF0");
+
 extern s32 Moby_PlaySound_r(s32, s32, struct Moby *) __asm__("func_0022ED80");
 extern void SetDeathBits_r(struct Moby *, s32, s32) __asm__("func_L00_002584A8");
 
@@ -309,7 +307,7 @@ void seeker_update(struct Moby *moby) {
             if (voice != -1) {
                 slot = (VoicePoolRow *)(voice_pool + voice * 0x70);
                 if (slot->owner == moby && slot->state != 0) {
-                    Sound_StopSlot_r(voice);
+                    Sound_StopSlot(voice);
                 }
             }
             vars->voice = -1;
@@ -324,7 +322,7 @@ void seeker_update(struct Moby *moby) {
             if (voice != -1) {
                 slot = (VoicePoolRow *)(voice_pool + voice * 0x70);
                 if (slot->owner == moby && slot->state != 0) {
-                    Sound_StopSlot_r(voice);
+                    Sound_StopSlot(voice);
                 }
             }
             vars->voice = -1;
@@ -391,15 +389,12 @@ extern Hit_2C73D0 *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B
 extern int ComputeHitResponse_r(void *, void *, void *, int, int *, float *, int, int) __asm__("func_L00_0025B4D0");
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
-extern float fast_atan2(float, float);
 
 extern void InitKnockback_r(void *, void *, float, int, int, int) __asm__("func_L00_0025D5B0");
 extern void MobyGroup_SetByteBC_r2(int, int) __asm__("func_L01_0026F040");
 extern void SetDeathBits_r2(void *, int, int) __asm__("func_L00_002584A8");
 extern void StepColorFade_r(void *, void *) __asm__("func_L00_0025E590");
-extern float random_float_between(float, float);
 
-extern int random_integer_below(int);
 extern int FindNearestTargetMoby_r(void *, void *, float) __asm__("func_L00_00260D30");
 extern int FindNearestEligibleMoby_r(void *, void *, float, int, int, void *, int) __asm__("func_L00_00260FB0");
 extern float vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
@@ -644,7 +639,7 @@ extern int timer16_2E39E0(short *) __asm__("func_001F9938");
 extern int timer32_2E39E0(int *) __asm__("func_001F9908");
 
 extern void event_2E39E0(int, int) __asm__("func_L01_0026F040");
-extern float fast_atan2(float, float);
+
 extern void knock_2E39E0(Moby *, void *, float, int, int, int) __asm__("func_L00_0025D5B0");
 extern void explode_2E39E0(Moby *, int, int) __asm__("func_L00_002584A8");
 extern void effects_start_2E39E0(Moby *, void *) __asm__("func_L00_0025E4B0");
@@ -657,18 +652,13 @@ extern void steer_init_2E39E0(int *) __asm__("func_L01_0026E8E0");
 extern int rand_2E39E0(void) __asm__("func_001160D8");
 
 extern void animate_2E39E0(Moby *, int, int, int) __asm__("func_00213DE0");
-extern float ProbeGroundHeight(void *, int, float);
 
-extern int random_integer_below(int);
-extern float random_float_between(float, float);
 extern void MobySpringTurn_v(Moby *, float, void *, float, float, float) __asm__("func_L00_002592B0");
 extern void project_2E39E0(Moby *, char *, void *, void *) __asm__("func_L01_0028C3A8");
 
 extern int knock_update_2E39E0(Moby *, void *) __asm__("func_L00_0025D6F0");
 
 extern void vec_scale_2E39E0(void *, void *, float) __asm__("func_L00_001FF4B0");
-
-extern int CollType(void);
 
 extern void delete_2E39E0(Moby *) __asm__("func_0020D678");
 extern void effects_update_2E39E0(Moby *, void *) __asm__("func_L00_0025E590");
@@ -1094,8 +1084,7 @@ typedef struct {
 extern Vec4 D_0013F4D0;
 extern struct Moby *CreateMoby_r(s32) __asm__("func_0020D348");
 extern f32 vec_length_xy_r(Vec4 *) __asm__("func_001F9CE8");
-extern f32 fast_atan2(f32, f32);
-extern f32 random_float_between(f32, f32);
+
 extern f32 FastVecDist_r2(Vec4 *, Vec4 *) __asm__("func_001F9D10");
 extern u8 *func_L00_0026E940(f32, struct Moby *, u32, s32, s32);
 extern void moby_build_matrix_r(struct Moby *) __asm__("func_L00_00251E30");
@@ -1174,15 +1163,12 @@ extern s32 Moby_PlaySound_r3(s32, s32, void *) __asm__("func_0022ED80");
 extern void DeleteMoby_r2(struct Moby *) __asm__("func_0020D678");
 extern s32 FastDecTimer_r(s16 *) __asm__("func_001F9938");
 extern s32 coll_line_r(void *, void *, s32, void *, CollisionProbe *) __asm__("func_L00_001EFFF0");
-extern f32 random_float_between(f32, f32);
-extern void vec_reflect(void *, void *, void *);
 
 extern void vec_scale_to_length_r(void *, void *, f32) __asm__("func_L00_001FF4B0");
 
 extern void func_L00_0026EBC0(void *, void *, u32, s32, f32);
 extern void spawn_explosion_r(void *, void *, void *, f32, f32, s32, s32, s32, f32, f32, f32, s32, f32, f32, s32, s32,
                               s32, s32) __asm__("func_L00_0025F4A8");
-extern s32 func_L00_001F2BE8(f32, void *, s32, void *, void *);
 
 /* Update of the shot FUN_L09_00307ba8 spawns (cf. FUN_L04_002af058): moves along vel, plays its sound once it starts
    moving away from the hero within 3 units, dies outside the level box, and on a hit (probing along the line from the
@@ -1398,22 +1384,16 @@ extern void process_spawner_hit_record_r(char *moby, char *d) __asm__("func_L09_
 
 extern int get_first_moby_in_group_r2(int *, int, int, int) __asm__("func_L00_0025A208");
 
-extern int random_integer_below(int);
 extern int FindNearestEligibleMoby_r2(void *, void *, float, void *, int, void *, int) __asm__("func_L00_00260FB0");
 extern int refresh_spawner_population_and_find_free_slot_r(int, char *) __asm__("func_L09_0030BEE8");
 
-extern void clamp_vec_length(void *, void *, float);
-
 extern void vec_scale_to_length_r2(void *, void *, float) __asm__("func_L00_001FF4B0");
-
-extern float random_float_between(float, float);
-extern float ProbeGroundHeight(void *, int, float);
 
 extern char *spawn_spawner_egg_r(int, void *, void *, unsigned char, unsigned char) __asm__("func_L09_0030C658");
 
 extern void spawn_explosion_r2(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                float, int, int, int, int) __asm__("func_L00_0025F4A8");
-extern void *func_L00_00265050(char *, int, float *, void *, int, int, float, float *, float *, float *);
+
 extern float D_L09_0015F6B8_30BF88 SDATA(D_L09_0015F6B8);
 extern float D_L09_0015F6B4_30BF88 SDATA(D_L09_0015F6B4);
 extern char *D_L09_0016016C_30BF88 SDATA(D_L09_0016016C);
@@ -1641,11 +1621,6 @@ typedef struct {
 extern f32 frame_scale MACRO_ADDR;
 extern f32 g_frame_time_sq MACRO_ADDR;
 extern CollisionHit gaspar_coll_hit;
-extern s32 coll_line(void *, void *, s32, struct Moby *, s32);
-
-extern void vec_scale_to_length(void *, void *, f32);
-
-extern s32 coll_sphere(f32, void *, s32, struct Moby *);
 
 extern struct Moby *respawn_spawner_child(struct Moby *, Vec4 *);
 /* Bounce a bubble off what it hit: slow on floors until it stops, play its bounce sound. */

@@ -149,9 +149,6 @@ extern u8 D_0016044C[] MACRO_ADDR;
 extern s32 D_0015F6E4 MACRO_ADDR;
 extern u8 D_0013E130[];
 
-extern void VU1_initChain_r(void) __asm__("func_002348E8");
-extern void DMAC_VIF1_Enable_r(void) __asm__("func_00235018");
-
 extern s32 sce_gs_sync_v_r(s32) __asm__("func_00122598");
 
 extern void SetBackgroundColor_r(s32, u64, u64) __asm__("func_001FB448");
@@ -159,9 +156,6 @@ extern void SetBackgroundColor_r(s32, u64, u64) __asm__("func_001FB448");
 extern void PutDrawBufferLarge_r(void) __asm__("func_001FB498");
 
 extern void PutDrawBufferSmall_r(void) __asm__("func_001FB598");
-
-extern void VU1_sendChain_r(void) __asm__("func_002349B8");
-extern void VU1_swapChain_r(void) __asm__("func_00234948");
 
 extern void UpdatePad_r(void) __asm__("func_00218908");
 
@@ -200,8 +194,8 @@ void startlevel(void) {
     prev = 0;
     frames = 0;
     fade = 0x80;
-    VU1_initChain_r();
-    DMAC_VIF1_Enable_r();
+    VU1_initChain();
+    DMAC_VIF1_Enable();
     clear_dma_queue_entry();
     game_frame_counter = 0;
     sce_gs_sync_v_r(0);
@@ -211,7 +205,7 @@ void startlevel(void) {
     PutDispBuffer();
     SetBackgroundColor_r(0, 0, 0);
     hdr = (LevelHeader *)(((u32)image_end_round_16k & 0xFFFFC000) + 0x2C0000);
-    VU1_initChain_r();
+    VU1_initChain();
     while ((cur = check_memory_card()) != 0 && (frames < 11 || g_controller_state.pressed == 0)) {
         if (cur != prev) {
             if (cur == 1) {
@@ -233,8 +227,8 @@ void startlevel(void) {
         }
         PutDrawBufferSmall_r();
         append_palette_transfer_packet();
-        VU1_sendChain_r();
-        VU1_swapChain_r();
+        VU1_sendChain();
+        VU1_swapChain();
         VU1_syncChain(1);
         sce_gs_sync_v_r(0);
         prev = cur;
@@ -264,15 +258,15 @@ void startlevel(void) {
         fast_decompress(hdr->gfx + (s32)hdr, hdr->code + (s32)hdr);
     }
     flush_cache(0);
-    VU1_initChain_r();
+    VU1_initChain();
     SetBackgroundColor_r(0, 0, 0);
     PutDrawBufferLarge_r();
     append_gif_transfer_packet();
     draw_boot_image(hdr->code + (s32)hdr);
     PutDrawBufferSmall_r();
     append_palette_transfer_packet();
-    VU1_sendChain_r();
-    VU1_swapChain_r();
+    VU1_sendChain();
+    VU1_swapChain();
     VU1_syncChain(1);
     sce_gs_sync_v_r(0);
     game_frame_counter++;

@@ -16,6 +16,7 @@
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/l17_fleet/hero_idle_and_items.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "game/moby/mobyutil.h"
 extern Hero g_hero;
 
 typedef struct {
@@ -203,8 +204,6 @@ s32 HeroL17_TryTakeHit(s32 arg) {
     FastVecAdd(hero_velocity + 0x20, hero_velocity + 0x20, &v);
     return 1;
 }
-
-extern float ApproachValue(float *p, float target, float maxstep);
 
 extern float frame_scale MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;

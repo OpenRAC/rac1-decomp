@@ -31,12 +31,8 @@ extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern float hero_speed_bands_field_18[];
 
-extern float ApproachValue(float *, float, float);
-
 extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
 extern float SpringAngle_r(void *, float, void *, int, float, float, float) __asm__("func_L00_0025CCF0");
-
-extern void vec_scale_to_length(void *, void *, float);
 
 extern int allocate_hero_voice_for_entry(int, int);
 
@@ -800,8 +796,6 @@ extern f32 g_frame_time_sq MACRO_ADDR;
 extern s32 g_controller_state_no_direction[];
 extern void stick_target_v(s32, f32) __asm__("func_L00_00211F80");
 
-extern void vec_scale_to_length(void *, void *, f32);
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00214658.c, FUN_L00_002167d0. */
 void update_hero_planar_movement_velocity(void) {
     Hero *m;
@@ -1048,8 +1042,6 @@ void func_001F9C30_178A0(void *, float, void *) __asm__("func_001F9C30");
 void func_L00_00234420_178A0(void *, void *, float) __asm__("func_L00_00234420");
 
 void func_L00_002343A0_178A0(void *, void *, float) __asm__("func_L00_002343A0");
-
-int coll_line(void *, void *, int, void *, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00214658.c, FUN_L00_00217118. */
 void stop_hero_motion_without_forward_support(float a, float b) {

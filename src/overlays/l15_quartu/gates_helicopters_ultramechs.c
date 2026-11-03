@@ -259,9 +259,8 @@ typedef struct {
     GateMoby *owner; /* 0x88 */
 } SoundSlot;
 
-extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern int Moby_PlaySound_r(int, int, GateMoby *) __asm__("func_0022ED80");
-extern void Sound_StopSlot_r(int) __asm__("func_L00_0028EBF0");
+
 extern unsigned char gemlik_available_r[] __asm__("D_0013DE55");
 extern unsigned char hero_globals_base_r[] __asm__("D_0013E633");
 extern float D_L15_00161578_2A48B0 SDATA(D_L15_00161578);
@@ -327,7 +326,7 @@ void update_vertical_gate(GateMoby *m) {
             if (D_L15_00161578_2A48B0 < (d->travel = d->travel + step)) {
                 if (d->sound != -1 && ((SoundSlot *)(hero_globals_base_r + 0x1D + d->sound * 0x70))->owner == m &&
                     ((SoundSlot *)(hero_globals_base_r + 0x1D + d->sound * 0x70))->active != 0) {
-                    Sound_StopSlot_r(d->sound);
+                    Sound_StopSlot(d->sound);
                 }
                 d->sound = -1;
                 d->travel = D_L15_00161578_2A48B0;
@@ -374,7 +373,7 @@ void update_vertical_gate(GateMoby *m) {
             if ((d->travel = d->travel - step) < 0.0f) {
                 if (d->sound != -1 && ((SoundSlot *)(hero_globals_base_r + 0x1D + d->sound * 0x70))->owner == m &&
                     ((SoundSlot *)(hero_globals_base_r + 0x1D + d->sound * 0x70))->active != 0) {
-                    Sound_StopSlot_r(d->sound);
+                    Sound_StopSlot(d->sound);
                 }
                 d->travel = 0;
                 d->sound = -1;
@@ -701,8 +700,6 @@ extern char quartu_hit_debris_colors[];
 extern u32 quartu_hit_effect_colors[3];
 extern unsigned char gemlik_available[];
 
-extern void vec_scale_to_length(void *, void *, float);
-
 extern void *spawn_debris_moby_v(void *, void *, int, float, int, float, float, float,
                                  int) __asm__("func_L01_002F9908");
 
@@ -838,13 +835,9 @@ void update_destructible_moby_on_hit(struct Moby *moby) {
     }
 }
 
-extern void EaseManipulatorOffsets(char *, char *, int, float, float);
-
 extern int truncate_float_to_s32(float);
 
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
-
-extern void *SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
 
 extern int quartu_moby_groups[];
 extern float g_frame_time_sq MACRO_ADDR;
@@ -1169,8 +1162,6 @@ typedef struct {
     } pos;
     OvlQuad rest[4];
 } Goal_52b8;
-
-extern void vec_scale_to_length(void *, void *, float);
 
 /* Flocking step toward goal (cf. FUN_L15_002cf110): separates from live same-class mobys within 10 units and keeps ~15
    units off the goal while another moby is closer to it (~10 otherwise); writes the steering point to out and returns
@@ -1778,8 +1769,6 @@ void process_helicopter_hits(char *m) {
 }
 extern void FindNearestTargetMoby_t(void *, float *, float) __asm__("func_L00_00260D30");
 
-extern void vec_scale_to_length(void *, void *, float);
-
 /* Flocking step toward the moby's path target: separates from same-type mobys, keeps ~10 units off the
  * target while others are closer, writes the steering point to out and returns the heading to follow. */
 float compute_ultramech_flocking_steering_point(void *m_, void *out, float r) {
@@ -1913,25 +1902,18 @@ typedef struct {
 
 extern void process_ultramech_hits_and_update_target(void *);
 
-extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
 extern int func_001160D8(void);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
-extern void vec_scale_to_length(void *, void *, float);
 extern float SteerAngleWithVelocity_v(void *, float, void *, float, float, float) __asm__("func_L00_0025CE58");
-
-extern int IsFrameWithinWindow(char *, float);
 
 extern float compute_ultramech_flocking_steering_point(void *, void *, float);
 
 extern void InitDirectionalHitQuery_v(void *, void *, int, void *, float) __asm__("func_L00_0025A8C0");
-extern void coll_sphere_mobys(void *, int, void *, void *, float);
-extern int coll_line(void *, void *, int, void *, void *);
+extern void coll_sphere_mobys_v(void *, int, void *, void *, float) __asm__("func_L00_001F2BE8");
 
 extern void Profile_Mark_v(void *, void *) __asm__("func_001E9768");
-
-extern void *SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
 
 extern float frame_scale MACRO_ADDR;
 extern ULevelState quartu_moby_state_bytes_base;
@@ -2296,7 +2278,7 @@ void ultramech_unlimited_update(UMoby *m) {
                     v40.f[1] = FastSin(m->rot.f[2]);
                     v40.f[2] = 1.0f;
                     InitDirectionalHitQuery_v(&v10, m, 0x10007, &v40, 4.0f);
-                    coll_sphere_mobys(&v60, 9, m, &v10, 2.5f);
+                    coll_sphere_mobys_v(&v60, 9, m, &v10, 2.5f);
                     coll_line(&v50, &v60, 0, m, &v10);
                     sweep_hit_segment(&v50, &v60, &v50, &d->v1A0, m, &v10, 5);
                     Profile_Mark_v(&v50, &v60);
@@ -2690,14 +2672,12 @@ extern int D_001414D0;
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern float D_L15_0016203C_2E9358 SDATA(D_L15_0016203C);
 extern char *D_L15_00178580[];
-extern int func_L00_001F10E0(float, void *, int, void *);
+
 extern Res *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
 
-extern void add_vectors(void *, void *, void *);
 extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
-extern void vec_reflect(void *, void *, void *);
+
 extern void vec_scale_to_length_r2(void *, void *, float) __asm__("func_L00_001FF4B0");
-extern float ProbeGroundHeight(void *, int, float);
 
 extern void spawn_explosion_r2(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                float, int, int, int, int) __asm__("func_L00_0025F4A8");
@@ -3161,8 +3141,6 @@ void emit_randomized_vertical_effect(char *moby) {
     }
 }
 extern char *CreateMoby_c(int) __asm__("func_0020D348");
-
-extern void moby_build_matrix(void *);
 
 /* Spawns a Codebot moby: position from the first quad, the second quad stored at +0x40.
  * Same shape as spawn_axe_moby; the 0xFF store has to go through unsigned char. */

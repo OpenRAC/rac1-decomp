@@ -221,7 +221,6 @@ extern short D_001605C0;
 void func_001F9C30_2F4C8(float, void *, void *) __asm__("func_001F9C30");
 
 long func_001F4868_2F4C8(int) __asm__("func_001F4868");
-extern int random_integer_below(int);
 
 /* Resident effect quads: picks the row table by level_render_state's
    content_variant, builds a textured GS quad, and for each row of
@@ -408,7 +407,6 @@ void build_resident_indexed_texture_warp_meshes(int unused) {
     }
 }
 
-extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
 extern long resident_quad_texture MACRO_ADDR;
 extern float resident_quad_level_scales[];
 extern float resident_quad_corners[][4];
@@ -421,7 +419,7 @@ void draw_resident_textured_quad(void) {
     float s;
     int i;
 
-    VU1_addGSregister_l(0x47, 0x31801);
+    VU1_addGSregister(0x47, 0x31801);
     s = 1.0f;
     q.gs[0] = 0;
     q.gs[1] = resident_quad_texture;
@@ -436,24 +434,24 @@ void draw_resident_textured_quad(void) {
         FastVecAdd(q.v[i], q.v[i], &resident_quad_pos);
     }
     draw_world_quad_packet(&q, 0, 0);
-    VU1_addGSregister_l(0x47, 0x5360B);
+    VU1_addGSregister(0x47, 0x5360B);
 }
 
 /* The 64-bit argument form of VU1_addGSregister is needed here (one call
    passes 0x8000000044). Retail's ori 0x8000 / dsll 24 / ori 0x44 for
    that constant is ps2eeas's expansion of the same `dli`, which
    tools/ps2eeas_dli.py reproduces; GNU as builds it differently. */
-extern void VU1_addGSregister_l(int, long) __asm__("func_00234C98");
+
 extern int frame_size;
 extern long resident_banner_texture MACRO_ADDR;
 
 /* Draws the 256x32 banner texture near the bottom of the screen with alpha arg0. */
 void draw_resident_textured_banner(int arg0) {
-    VU1_addGSregister_l(0x47, 0x31801);
-    VU1_addGSregister_l(0x42, ((long)0x8000 << 24) | 0x44);
+    VU1_addGSregister(0x47, 0x31801);
+    VU1_addGSregister(0x42, ((long)0x8000 << 24) | 0x44);
     DrawTexturedQuad(0x20, frame_size - 0x58, 0x100, 0x20, 0, 0, 0x100, 0x20, (arg0 << 24) | 0x808080,
                      resident_banner_texture);
-    VU1_addGSregister_l(0x47, 0x5360B);
+    VU1_addGSregister(0x47, 0x5360B);
 }
 
 typedef unsigned int LevelFrame_u128 __attribute__((mode(TI)));
@@ -804,7 +802,6 @@ extern void draw_resident_textured_quad();
 extern void draw_resident_textured_banner(s32);
 extern void render_environment_mapped_object_r(s32) __asm__("func_00233AB8");
 
-extern void VU1_addGSregister_r(s32, s64) __asm__("func_00234C98");
 extern struct LevelDisplayState g_screen_extent_r __asm__("D_0013E600");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/render_level_frame.c, render_level_frame. */
@@ -855,7 +852,7 @@ void render_level_frame(void) {
         render_environment_mapped_object_r(render_sequence_slots[0]);
     }
     if ((memory_card_state_r.state >= 3) || (memory_card_state_r.err >= 0)) {
-        VU1_addGSregister_r(0x47, 0x3004B);
+        VU1_addGSregister(0x47, 0x3004B);
         quad_extent = 272.0f;
         texture = GetEffectTex_r(2);
         display_state = &g_screen_extent_r;
@@ -1093,7 +1090,6 @@ extern Vector4_230A90 resident_data_001DA010[] __asm__("D_001DA010");
 extern Vector4_230A90 resident_data_001DA040[] __asm__("D_001DA040");
 extern u8 resident_effect_entry[] __asm__("func_0022F4C0");
 
-extern void resident_call_002348B8(void) __asm__("func_002348B8");
 extern void resident_call_00216EF0(s32) __asm__("func_00216EF0");
 extern void resident_call_00216F28(void) __asm__("func_00216F28");
 extern void resident_call_00125358(void *) __asm__("func_00125358");
@@ -1124,8 +1120,6 @@ extern void resident_call_001F9C08(void *, void *, void *, f32) __asm__("func_00
 
 extern f32 resident_call_001F9D48(void *, void *, void *) __asm__("func_001F9D48");
 
-extern f32 resident_call_001FA058(f32, f32) __asm__("func_001FA058");
-
 extern void resident_call_00202260(void) __asm__("func_00202260");
 extern void resident_call_00205220(s32) __asm__("func_00205220");
 extern ResidentRenderObject *resident_call_0020D348(s32) __asm__("func_0020D348");
@@ -1133,7 +1127,7 @@ extern void resident_call_0020D678(ResidentRenderObject *) __asm__("func_0020D67
 extern void resident_call_0020D6D0(ResidentRenderObject *) __asm__("func_0020D6D0");
 
 extern void resident_call_0020ED48(ResidentRenderObject *) __asm__("func_0020ED48");
-extern void update_visible_resident_objects(void);
+
 extern void resident_call_00214550(ResidentRenderObject *) __asm__("func_00214550");
 extern f32 resident_call_00214D88(f32 *, f32 *, f32, f32, f32, f32) __asm__("func_00214D88");
 extern void resident_call_00215CA8(ScriptedPath *, s32, void *, void *, s32, f32) __asm__("func_00215CA8");
@@ -1141,8 +1135,7 @@ extern void resident_call_00216960(void) __asm__("func_00216960");
 extern void resident_call_00217748(s32) __asm__("func_00217748");
 
 extern void resident_call_00219C70(s32) __asm__("func_00219C70");
-extern void resident_call_0022DD68(void) __asm__("func_0022DD68");
-extern void resident_call_0022EF68(void) __asm__("func_0022EF68");
+
 extern void resident_call_0022FDC0(void) __asm__("func_0022FDC0");
 extern void resident_call_002308C8(ResidentRenderObject *, f32) __asm__("func_002308C8");
 extern void resident_call_0022F258() __asm__("func_0022F258");
@@ -1181,7 +1174,7 @@ void update_resident_gameplay_state(void) {
         case 8:
             resident_call_001E97B0();
             update_visible_resident_objects();
-            resident_call_0022EF68();
+            enqueue_voice_request();
             resident_call_001E97A0();
             UpdateParts();
             resident_data_0015F53C -= 0.125f;
@@ -1229,7 +1222,7 @@ void update_resident_gameplay_state(void) {
                 if (resident_data_001517D0.unk5A != 6 && resident_data_001517D0.unk5A != 7) {
                     resident_data_001517D0.unk5A = 5;
                 }
-                resident_call_002348B8();
+                calculate_dma_transfer_address();
                 resident_data_0018CEB0[0] = 0.63f;
                 UpdateViewContext();
                 /* Retail releases the attachment once per sequence object, even when that object is null. */
@@ -1468,7 +1461,7 @@ void update_resident_gameplay_state(void) {
                     }
                 }
             }
-            resident_call_0022DD68();
+            sound_update();
             resident_call_00202260();
             update_resident_packed_direction();
             resident_call_001E97A8();
@@ -1477,7 +1470,7 @@ void update_resident_gameplay_state(void) {
         case 3:
             resident_call_001E97B0();
             update_visible_resident_objects();
-            resident_call_0022EF68();
+            enqueue_voice_request();
             resident_call_001E97A0();
             UpdateParts();
             if (resident_data_0013E130.timer == 0) {
@@ -1486,7 +1479,7 @@ void update_resident_gameplay_state(void) {
                 resident_data_001517D0.unk1C = resident_data_0013E130.content_variant + 0x9C4F;
                 FadeToBlack(scale_game_frame_count(12));
                 while ((s16)resident_data_001517D0.unk5A != 3) {
-                    resident_call_0022DD68();
+                    sound_update();
                     resident_call_00122598(0);
                 }
                 resident_call_00216960();
@@ -1520,11 +1513,11 @@ void update_resident_gameplay_state(void) {
                     maximum_turn = resident_data_0013E130.blend;
                     path->p[0].components[3] = maximum_turn;
                     for (path_point_index = 1; path_point_index < path->point_count - 1; path_point_index++) {
-                        segment_angle = resident_call_001FA058(
+                        segment_angle = fast_arc_tan(
                             path->p[path_point_index].components[0] - path->p[path_point_index - 1].components[0],
                             path->p[path_point_index].components[1] - path->p[path_point_index - 1].components[1]);
                         path->p[path_point_index].components[3] = FastSubRots(
-                            resident_call_001FA058(
+                            fast_arc_tan(
                                 path->p[path_point_index + 1].components[0] - path->p[path_point_index].components[0],
                                 path->p[path_point_index + 1].components[1] - path->p[path_point_index].components[1]),
                             segment_angle);
@@ -1532,12 +1525,12 @@ void update_resident_gameplay_state(void) {
                             maximum_turn = FastAbsF(path->p[path_point_index].components[3]);
                         }
                     }
-                    segment_angle = resident_call_001FA058(
+                    segment_angle = fast_arc_tan(
                         path->p[path->point_count - 1].components[0] - path->p[path->point_count - 2].components[0],
                         path->p[path->point_count - 1].components[1] - path->p[path->point_count - 2].components[1]);
                     path->p[path->point_count - 1].components[3] = FastSubRots(
-                        resident_call_001FA058(path->p[0].components[0] - path->p[path->point_count - 1].components[0],
-                                               path->p[0].components[1] - path->p[path->point_count - 1].components[1]),
+                        fast_arc_tan(path->p[0].components[0] - path->p[path->point_count - 1].components[0],
+                                     path->p[0].components[1] - path->p[path->point_count - 1].components[1]),
                         segment_angle);
                     turn_scale = 0.34906584f / maximum_turn;
                     for (point_index = 0; point_index < path->point_count; point_index++) {
@@ -1552,12 +1545,11 @@ void update_resident_gameplay_state(void) {
                     qcopy(&resident_data_0013E130.startPos, &player->position);
                     qcopy(&resident_data_0013E130.pathPos, &path->p[0]);
                     qcopy(&resident_data_0013E130.startRot, &player->rotation);
-                    resident_data_0013E130.rotY = resident_call_001FA058(
-                        resident_call_001F9D48(&path->p[1], &path->p[0], &resident_data_0013E130.startPos),
-                        path->p[0].components[2] - path->p[1].components[2]);
-                    resident_data_0013E130.rotZ =
-                        resident_call_001FA058(path->p[1].components[0] - path->p[0].components[0],
-                                               path->p[1].components[1] - path->p[0].components[1]);
+                    resident_data_0013E130.rotY =
+                        fast_arc_tan(resident_call_001F9D48(&path->p[1], &path->p[0], &resident_data_0013E130.startPos),
+                                     path->p[0].components[2] - path->p[1].components[2]);
+                    resident_data_0013E130.rotZ = fast_arc_tan(path->p[1].components[0] - path->p[0].components[0],
+                                                               path->p[1].components[1] - path->p[0].components[1]);
                 }
             }
             if (resident_data_0013E130.source_camera_index >= 0 &&
@@ -1696,7 +1688,7 @@ void update_resident_gameplay_state(void) {
                 resident_call_0020ED48(resident_data_0013E130.companion_b);
             }
             resident_call_001EDE50();
-            resident_call_0022DD68();
+            sound_update();
             resident_call_00202260();
             update_resident_packed_direction();
             resident_call_001E97A8();

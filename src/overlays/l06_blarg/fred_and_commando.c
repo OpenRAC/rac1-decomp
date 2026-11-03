@@ -104,10 +104,6 @@ extern char dual_mesh50_centers[][16];
 extern char dual_mesh50_normals[][16];
 extern long GetEffectTex_r(int) __asm__("func_001F4868");
 
-extern void vec_scale_to_length(void *, void *, float);
-
-extern void draw_world_quad(void *, void *, int);
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l06/gameplay/entities/002fd1a0.c, FUN_L06_002fd1a0. */
 void draw_dual_texture_50_quad_mesh(void) {
     Packet first, second;
@@ -191,10 +187,6 @@ extern float dual_mesh58_verts[][4];
 extern char dual_mesh58_centers[][16];
 extern char dual_mesh58_normals[][16];
 extern long GetEffectTex_r2(int) __asm__("func_001F4868");
-
-extern void vec_scale_to_length(void *, void *, float);
-
-extern void draw_world_quad(void *, void *, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l06/gameplay/entities/002fd1a0.c, FUN_L06_002fd460. */
 void draw_dual_texture_58_quad_mesh(void) {
@@ -289,10 +281,6 @@ extern float dual_mesh864_verts[][4];
 extern char dual_mesh864_centers[][16];
 extern char dual_mesh864_normals[][16];
 extern long GetEffectTex_r3(int) __asm__("func_001F4868");
-
-extern void vec_scale_to_length(void *, void *, float);
-
-extern void draw_world_quad(void *, void *, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l06/gameplay/entities/002fd1a0.c, FUN_L06_002fd748. */
 void draw_dual_texture_864_quad_mesh(void) {
@@ -431,8 +419,6 @@ void set_moby_list_state_17(int idx) {
 }
 extern char *blarg_scene_points MACRO_ADDR;
 extern float blarg_fade_level MACRO_ADDR;
-
-extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 
 extern void spawn_moby_breakup_effect(char *, int);
 
@@ -634,8 +620,6 @@ void update_moby_camera_sequence_and_draw_selection(char *moby) {
             enqueue_callback_list_1_ff((int)FUN_L06_00300588_ff, moby);
     }
 }
-
-extern void vec_scale_to_length(void *, void *, float);
 
 extern float blarg_tube_base_z SDATA(blarg_tube_base_z);
 
@@ -882,13 +866,9 @@ typedef struct Busy {
     int f24;
 } Busy;
 
-extern float ApproachWithVelocity(float *, float *, float, float, float, float);
-
-extern float ApproachValue(float *, float, float);
-
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
-extern void func_L00_00263950(float, float, void *, void *, int);
+extern void EaseManipulatorOffsets_v(float, float, void *, void *, int) __asm__("func_L00_00263950");
 
 extern char blarg_camera_pos[];
 extern char fred_dialogue_name[];
@@ -1111,8 +1091,8 @@ void fred_update(Moby *moby) {
     }
     if (gCheats[0])
         fred_vars->fB0 = 2.75f;
-    EaseManipulatorOffsets(rate * g_frame_scale_sq, head_rate * g_frame_scale_sq, moby, fred_vars->f40, 0);
-    EaseManipulatorOffsets(rate * g_frame_scale_sq, head_rate * g_frame_scale_sq, moby, fred_vars->fC0, 2);
+    EaseManipulatorOffsets_v(rate * g_frame_scale_sq, head_rate * g_frame_scale_sq, moby, fred_vars->f40, 0);
+    EaseManipulatorOffsets_v(rate * g_frame_scale_sq, head_rate * g_frame_scale_sq, moby, fred_vars->fC0, 2);
 }
 
 extern int count_active_moby_group_members_r(int, int) __asm__("func_L01_0026EFB8");
@@ -1123,22 +1103,19 @@ extern void MusicRequestTrack_r(int, int) __asm__("func_L00_002664B0");
 
 extern void set_moby_list_state_17_r(int) __asm__("func_L06_00301068");
 
-extern float fast_atan2(float, float);
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
-extern void CameraScript_r(void *, void *, int, int, int) __asm__("func_L00_002EBF50");
 extern void set_selected_object_float_triplets_r(float, float, float, float, float, float) __asm__("func_L02_002F9ED8");
-extern void set_camera_position_r(void *) __asm__("func_L00_002EBE88");
-extern void set_camera_rotation_r(void *) __asm__("func_L00_002EBEE0");
+
 extern void Hero_ResetToPosition_r(void *, void *, int, int) __asm__("func_L00_00217718");
 
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
-extern void CameraScript2_r(int) __asm__("func_L00_002EC0C8");
+
 extern void HeroL06_TrySetMoveState_r(int, int) __asm__("func_L06_00235E08");
 extern void activate_listed_class_5e8_mobys_r(int) __asm__("func_L06_0030A680");
 extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
 extern int allocate_voice_for_group_entry_r(int, int, int) __asm__("func_0022EEB8");
-extern float random_float_between(float, float);
+
 extern void AddDrawCallback_r(void (*)(void), void *) __asm__("func_001F49B0");
 
 extern void set_moby_state_5_r(char *) __asm__("func_L06_003054C8");
@@ -1234,13 +1211,13 @@ void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
                 vc[2] = fast_atan2(vb[0] - va[0], vb[1] - va[1]);
                 r2 = vec_distance_xy_r(va, vb);
                 vc[1] = -fast_atan2(r2, vb[2] - va[2]);
-                CameraScript_r(va, vc, 2, scale_ticks(0x12C), 0);
+                CameraScript(va, vc, 2, scale_ticks(0x12C), 0);
                 set_selected_object_float_triplets_r(*(float *)&D_L06_00162128_302FE8, *(float *)&D_L06_0016212C_302FE8,
                                                      *(float *)&D_L06_00162130_302FE8, *(float *)&D_L06_00162134_302FE8,
                                                      *(float *)&D_L06_00162138_302FE8,
                                                      *(float *)&D_L06_00162140_302FE8);
-                set_camera_position_r(va);
-                set_camera_rotation_r(vc);
+                set_camera_position(va);
+                set_camera_rotation(vc);
                 {
                     char *q = blarg_scene_points_r + (d->scene_point_b << 7);
                     Hero_ResetToPosition_r(q + 0x30, q + 0x70, 0x72, 0);
@@ -1260,7 +1237,7 @@ void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
                 ((Moby *)m)->state = 4;
                 queue_moby_dialogue_line_r((char *)m, 1);
                 d->timer = truncate_float_to_s32_r2(multiply_global_factor(*(float *)&D_L06_00162154_302FE8));
-                CameraScript2_r(2);
+                CameraScript2(2);
                 HeroL06_TrySetMoveState_r(HERO_STATE_IDLE, 1);
                 scripted_camera_sequence_active_r = 0;
                 return;
@@ -1274,8 +1251,8 @@ void update_moby_linked_sequence_camera_and_timer(unsigned char *m) {
             vc[2] = fast_atan2(va[0] - vb[0], va[1] - vb[1]);
             r = vec_distance_xy_r(vb, va);
             vc[1] = -fast_atan2(r, va[2] - vb[2]);
-            set_camera_position_r(vb);
-            set_camera_rotation_r(vc);
+            set_camera_position(vb);
+            set_camera_rotation(vc);
             return;
         }
         case 4: {
@@ -1691,7 +1668,6 @@ void ShuttleUpdate(Moby *moby) {
     update_entity_matrix(d->area, delta, old_rot, ((float *)&moby->rot));
 }
 extern unsigned short help_records_83_count NOT_SDA;
-extern void try_set_help_message(int, int);
 
 /* Picks the next selection state from the menu mode, then queues the matching sound. */
 void update_shuttle_route_selection_and_prompt(char *m) {
@@ -1766,7 +1742,7 @@ struct PathRide {
     int sound_slot[9];
     float progress;
 };
-extern float ApproachValue(float *p, float target, float maxstep);
+
 extern int truncate_float_to_s32(float);
 
 extern void ScatterPiecesExplode(float, struct Moby *, void *, void *, int);
@@ -2144,20 +2120,14 @@ extern float vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
 extern int try_set_help_message_r(int, int) __asm__("func_00215F80");
 extern int remove_help_message_for_selector_r(int) __asm__("func_L00_00265558");
 
-extern void CameraScript_r2(void *, void *, int, int, int) __asm__("func_L00_002EBF50");
 extern void set_selected_object_float_triplets_r2(float, float, float, float, float,
                                                   float) __asm__("func_L02_002F9ED8");
-extern void set_camera_position_r2(void *) __asm__("func_L00_002EBE88");
-extern void set_camera_rotation_r2(void *) __asm__("func_L00_002EBEE0");
+
 extern void Hero_ResetToPosition_r2(void *, void *, int, int) __asm__("func_L00_00217718");
-extern void CameraScript2_r2(int) __asm__("func_L00_002EC0C8");
 
 extern void emit_red_button_particle_burst_r(void *, void *) __asm__("func_L06_00305C58");
-extern int allocate_voice_for_group_entry_r2(int, int, void *) __asm__("func_0022EEB8");
 
 extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
-
-extern void moby_build_matrix(void *);
 
 /* Red button (moby Red Button) update on level 06: turns its two levers, waits for the hero to press it, then
  * runs the cutscene camera along the cutscene records and fires the listed events as the camera passes them. */
@@ -2218,12 +2188,12 @@ void red_button_update(Moby *m) {
                 d->t = 0.0f;
                 d->vel = 0.0f;
                 FadeToBlack(scale_ticks(0xF));
-                CameraScript_r2(&v0, &v10, 2, scale_ticks(0x12C), 0);
+                CameraScript(&v0, &v10, 2, scale_ticks(0x12C), 0);
                 set_selected_object_float_triplets_r2(D_L06_00162228_3054D8, D_L06_0016222C_3054D8,
                                                       D_L06_00162230_3054D8, D_L06_00162234_3054D8,
                                                       D_L06_00162238_3054D8, D_L06_00162240_3054D8);
-                set_camera_position_r2(&v0);
-                set_camera_rotation_r2(&v10);
+                set_camera_position(&v0);
+                set_camera_rotation(&v10);
                 scripted_camera_sequence_active_r = 1;
             }
             if (d->timer < scale_ticks(10)) {
@@ -2245,8 +2215,8 @@ void red_button_update(Moby *m) {
             ApproachWithVelocity_r(&d->t, &d->vel, 2.0f, g_frame_time_sq_r, g_frame_time_sq_r, g_frame_time_r * 0.5f);
             qcopy(&v0, &blarg_scene_points_r2[d->cut].a);
             v0.z = v0.z + d->t * 18.0f;
-            set_camera_position_r2(&v0);
-            set_camera_rotation_r2(&blarg_scene_points_r2[d->cut].b);
+            set_camera_position(&v0);
+            set_camera_rotation(&blarg_scene_points_r2[d->cut].b);
             f20 = f20 * 100.0f;
             f21 = d->t * 100.0f * 0.0174532925f;
             f20 = f20 * 0.0174532925f;
@@ -2254,24 +2224,24 @@ void red_button_update(Moby *m) {
             for (i = 8; i >= 0; i--, ip++) {
                 if (f20 < blarg_scene_points_r2[*ip].b.z && blarg_scene_points_r2[*ip].b.z < f21) {
                     emit_red_button_particle_burst_r(m, &blarg_scene_points_r2[*ip].a);
-                    allocate_voice_for_group_entry_r2(0, 0, m);
+                    allocate_voice_for_group_entry(0, 0, m);
                 }
             }
             if (1.075f <= d->t) {
                 Hero_ResetToPosition_r2(&blarg_scene_points_r2[d->cut2].a, &blarg_scene_points_r2[d->cut2].b, 0x72, 0);
                 FadeToBlack(scale_ticks(10));
                 m->state = 6;
-                CameraScript2_r2(3);
+                CameraScript2(3);
                 qcopy(&v20, &blarg_scene_points_r2[d->cut2].a);
                 v20.z = v20.z + 1.0f;
                 v20.y = v20.y - 2.5f;
                 clear_u64_value(&v10);
                 v10.y = -0.2617993878f;
                 v10.z = g_hero.motion.rot.f[2];
-                CameraScript_r2(&v20, &v10, 2, scale_ticks(0x12C), 0);
+                CameraScript(&v20, &v10, 2, scale_ticks(0x12C), 0);
                 ((Fx *)referencePosition_r)->f160 = 0.3f;
                 ((Fx *)referencePosition_r)->f168 = scale_ticks(0x2D);
-                allocate_voice_for_group_entry_r2(0, 0, m);
+                allocate_voice_for_group_entry(0, 0, m);
             }
             break;
         case 6:
@@ -2283,13 +2253,13 @@ void red_button_update(Moby *m) {
             clear_u64_value(&v0);
             v0.y = -0.2617993878f;
             v0.z = g_hero.motion.rot.f[2];
-            set_camera_position_r2(&v10);
-            set_camera_rotation_r2(&v0);
+            set_camera_position(&v10);
+            set_camera_rotation(&v0);
             if (2.0f <= d->t) {
                 m->state = 7;
                 d->timer2 = scale_ticks(0xE10);
                 Hero_ResetToPosition_r2(&blarg_scene_points_r2[d->cut2].a, &blarg_scene_points_r2[d->cut2].b, 0, 0);
-                CameraScript2_r2(3);
+                CameraScript2(3);
                 set_moby_state_two(&level_mobys_q_r[d->moby3]);
             }
             break;
@@ -2526,7 +2496,7 @@ void update_moby_vector_streams_and_particle_burst(char *moby) {
     }
 }
 extern void initialize_hit_descriptor_v(char *a, int b, int c, float d) __asm__("func_L00_0025A890");
-extern int coll_line(void *, void *, int, int, int);
+
 extern float vector_stream_hit_line_half_length SDATA(vector_stream_hit_line_half_length);
 extern float vector_stream_hit_line_y SDATA(vector_stream_hit_line_y);
 extern float vector_stream_hit_line_z SDATA(vector_stream_hit_line_z);
@@ -2726,13 +2696,11 @@ typedef struct Data_30A0A8 {
 } Data_30A0A8;
 
 extern int FastBSphereCheck_r(void *, float) __asm__("func_L00_00200290");
-extern void euler_rotation_basis_r(void *, void *) __asm__("func_001FA1F8");
+
 extern int fast_dec_timer_r3(void *) __asm__("func_001F9908");
 
-extern float random_float_between(float, float);
-
 extern int truncate_float_to_s32_r3(float) __asm__("func_001FA898");
-extern int random_integer_below(int);
+
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 
 extern void PartType02Spawn_r(void *, void *, void *, int, int, int, int, int, int) __asm__("func_00219780");
@@ -2789,7 +2757,7 @@ void SparkEmitterUpdate(Moby *m) {
     }
     switch (m->state) {
         case 0:
-            euler_rotation_basis_r(&*(Vec4A *)&m->rot_row0, &*(Vec4A *)&m->rot);
+            euler_rotation_basis(&*(Vec4A *)&m->rot_row0, &*(Vec4A *)&m->rot);
             if (d->f4 != 0) {
                 m->state = 1;
             } else if (d->f0 != 0) {
@@ -2891,7 +2859,6 @@ void SparkEmitterUpdate(Moby *m) {
             break;
     }
 }
-extern int FastBSphereCheck(char *, float);
 
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
 struct ActivateListedClass5e8MobysVars {
@@ -2923,7 +2890,6 @@ void activate_listed_class_5e8_mobys(int idx) {
     }
 }
 
-extern void cutscene_set_camera_target(int);
 extern char blarg_cutscene_state[];
 
 // Moby update: arms on first frame, then triggers a random event while the level is in phase 2.
@@ -2974,8 +2940,6 @@ typedef struct {
 } Obj;
 
 extern float blarg_zero_vec[] MACRO_ADDR;
-extern int Moby_PlaySound_r3(int, int, int) __asm__("func_0022ED80");
-extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
 
 void func_0020D678_0B248(struct Obj *obj) __asm__("func_0020D678");
 
@@ -2997,7 +2961,7 @@ void update_hit_triggered_moby_replacement(char *self) {
             break;
         case 2: {
             struct Moby *m;
-            Moby_PlaySound_r3(0, 0, (int)self);
+            Moby_PlaySound(0, 0, (int)self);
             spawn_proximity_gated_bolts(self);
             SpawnBreakFragment(self, 0x67E, self + 0x10, self + 0x40, 0, 0, 0.0f, blarg_zero_vec, blarg_zero_vec,
                                blarg_zero_vec);
@@ -3035,7 +2999,7 @@ void update_hit_triggered_class_0681_spawner(char *self) {
             break;
         case 2: {
             struct Moby *m;
-            Moby_PlaySound_r3(0, 0, (int)self);
+            Moby_PlaySound(0, 0, (int)self);
             spawn_proximity_gated_bolts(self);
             SpawnBreakFragment(self, 0x682, self + 0x10, self + 0x40, 0, 0, 0.0f, blarg_zero_vec, blarg_zero_vec,
                                blarg_zero_vec);

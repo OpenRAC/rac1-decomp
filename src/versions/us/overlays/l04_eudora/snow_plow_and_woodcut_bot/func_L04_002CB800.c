@@ -182,7 +182,7 @@ void snow_plow_update(VehicleMoby *m) {
                     query.owner = m;
                     clear_u64_value(&query.vec);
                     query.result = 0;
-                    coll_sphere_mobys(&m->pos, 4.0f, 16, m, &query);
+                    coll_sphere_mobys_v(&m->pos, 4.0f, 16, m, &query);
                 }
             }
                 /* fall through */
@@ -230,7 +230,7 @@ void snow_plow_update(VehicleMoby *m) {
                     query2.owner = m;
                     clear_u64_value(&query2.vec);
                     query2.result = 0;
-                    coll_sphere_mobys(&m->pos, 6.0f, 16, m, &query2);
+                    coll_sphere_mobys_v(&m->pos, 6.0f, 16, m, &query2);
                     d->visibility_timer = scale_ticks(600);
                     d->visibility_active = 1;
                 }

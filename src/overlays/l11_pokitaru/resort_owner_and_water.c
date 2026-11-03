@@ -236,10 +236,8 @@ extern void jet_reset_camera_r(void *, void *) __asm__("func_L00_00286128");
 extern void clear_active_help_record_r(void) __asm__("func_L00_00203FB8");
 
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
-extern float random_float_between(float, float);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern void BuildSphericalOffset(void *, float, float, float);
 
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
 extern void EaseManipulatorOffsets_r(char *, char *, int, float, float) __asm__("func_L00_00263950");
@@ -416,8 +414,6 @@ extern float g_frame_time_d __asm__("D_0015EE6C") MACRO_ADDR;
 extern float g_frame_time_sq_d __asm__("D_0015EE70") MACRO_ADDR;
 extern float SteerAngleWithVelocity_v(float *, float, float *, float, float, float) __asm__("func_L00_0025CE58");
 
-extern int IsFrameWithinWindow(char *, float);
-
 extern int try_activate_pokitaru_gate(unsigned char *moby);
 
 extern void trigger_pokitaru_paired_rotation(char *moby);
@@ -493,8 +489,6 @@ void update_resort_owner_state_actions(char *m) {
         }
     }
 }
-
-extern void resolve_point_path_segment_xy_clearance(float, void *, void *, void *);
 
 /* moves the parts' positions and stores the moby's displacement since last frame */
 void apply_resort_owner_movement(void *mp) {
@@ -991,9 +985,6 @@ int classify_resort_owner_target_proximity(char *moby) {
     return found;
 }
 
-extern void vec_scale_to_length(void *, void *, float);
-
-extern int coll_line(void *, void *, int, void *, int);
 typedef int u128 __attribute__((mode(TI)));
 
 /* Tests whether a moby can drop onto the ground, writing the landing point. */
@@ -1056,7 +1047,6 @@ typedef struct {
     float eye[4];
     float delta[4];
 } WS11_2D3970;
-extern float fast_atan2(float, float);
 
 extern float vec_length_xy_r2(void *) __asm__("func_001F9CE8");
 
@@ -1313,7 +1303,6 @@ extern void draw_teleporter_ring(char *);
 
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 
-extern void ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void ApproachValue_r(float *, float, float) __asm__("func_00214D28");
 
 /* L11 twin of FUN_L01_00308bd8: a three-part switch moby that, once the hero stands on it in mission state 0xB and
@@ -1457,7 +1446,6 @@ void teleporter_318_update(struct Moby *moby) {
             break;
     }
 }
-extern void try_set_help_message(int, int);
 
 /* Shows the teleporter help message that matches the moby's current mode. */
 void request_teleporter_help_message(char *moby) {
@@ -1490,8 +1478,6 @@ extern short pokitaru_teleporter_ring_alpha_a, pokitaru_teleporter_ring_alpha_b,
 extern float pokitaru_teleporter_ring_height SDATA(pokitaru_teleporter_ring_height);
 extern float pokitaru_teleporter_ring_uvs[];
 extern unsigned char g_hero_field_20a5_r __asm__("D_001414F5") NOT_SDA;
-
-extern void draw_world_quad(void *, void *, int);
 
 /* Draws the moby's shimmering ring as 32 four-vertex strips around its radius, thicker as the ring
  * shrinks below 1.15, and flags when it gets below 0.65. */
@@ -1594,8 +1580,6 @@ void copy_pokitaru_pvar_to_hero(unsigned char *moby) {
 }
 extern unsigned char *CreateMoby_r(int) __asm__("func_0020D348");
 
-extern void BuildSphericalOffset(void *, float, float, float);
-
 /* Spawns an effect moby (Rocket) attached to a target and positioned from a source. */
 unsigned char *spawn_ship_projectile(char *src, char *pos, char *target, char *vec, int arg, float scale) {
     unsigned char *moby = CreateMoby_r(0x40A);
@@ -1676,13 +1660,9 @@ typedef union {
     } v;
 } W_30AE90;
 extern void update_pokitaru_boat_joint_effects_r(void *) __asm__("func_L11_0030B8D0");
-extern void MobyBlendAnimation(void *, int, int, int);
-
-extern float random_angle_radians(void);
-extern float fast_atan2(float, float);
 
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
-extern void Sound_StopSlot_r(int) __asm__("func_L00_0028EBF0");
+
 extern float ApproachValue_r2(float *, float, float) __asm__("func_00214D28");
 
 extern float vec_length_xy_r3(void *) __asm__("func_001F9CE8");
@@ -1771,7 +1751,7 @@ void pokitaru_boat_update(Moby *m) {
                         VoicePoolRow *e = (VoicePoolRow *)(voice_pool + d->fC8 * 0x70);
                         if (e->owner == m) {
                             if (e->state != 0)
-                                Sound_StopSlot_r(d->fC8);
+                                Sound_StopSlot(d->fC8);
                         }
                     }
                     d->fC8 = -1;
@@ -1785,7 +1765,7 @@ void pokitaru_boat_update(Moby *m) {
                         VoicePoolRow *e = (VoicePoolRow *)(voice_pool + d->fCC * 0x70);
                         if (e->owner == m) {
                             if (e->state != 0)
-                                Sound_StopSlot_r(d->fCC);
+                                Sound_StopSlot(d->fCC);
                         }
                     }
                     d->fCC = -1;
@@ -1807,7 +1787,7 @@ void pokitaru_boat_update(Moby *m) {
                         VoicePoolRow *e = (VoicePoolRow *)(voice_pool + d->fCC * 0x70);
                         if (e->owner == m) {
                             if (e->state != 0)
-                                Sound_StopSlot_r(d->fCC);
+                                Sound_StopSlot(d->fCC);
                         }
                     }
                     d->fCC = -1;
@@ -1817,7 +1797,7 @@ void pokitaru_boat_update(Moby *m) {
                         VoicePoolRow *e = (VoicePoolRow *)(voice_pool + d->fC8 * 0x70);
                         if (e->owner == m) {
                             if (e->state != 0)
-                                Sound_StopSlot_r(d->fC8);
+                                Sound_StopSlot(d->fC8);
                         }
                     }
                     d->fC8 = -1;
@@ -2020,8 +2000,6 @@ typedef struct {
 } Flags;
 
 extern void update_child_set_poses(void *);
-
-extern float ApproachValue(float *, float, float);
 
 extern void Moby_PlaySound_u(int, int, void *) __asm__("func_0022ED80");
 extern float ApproachWithVelocity_f(float *, float *, float, float, float, float) __asm__("func_00214D88");
@@ -2254,7 +2232,6 @@ extern short attached_child_source_axis2_offset_length_gp;
 extern short attached_child_source_axis1_offset_length_gp;
 extern short attached_child_rotation_y_degrees_gp;
 extern short child_sets_slider_height;
-extern void vec_scale_to_length(void *out, void *a, float len);
 
 #define D_L11_001DA9E0_p D_L11_001DA9E0
 #define D_L11_00161FB0_p D_L11_00161FB0
@@ -2563,7 +2540,7 @@ void update_child_grid_controller(char *m) {
 #undef ApproachWithVelocity_f
 #undef D_L11_00160058_m
 #undef D_L11_0016016C_i
-extern void vec_scale_to_length(void *out, void *a, f32 len);
+
 extern float child_grid_row_offset SDATA(child_grid_row_offset);
 extern float child_grid_side_offset SDATA(child_grid_side_offset);
 extern float child_grid_child_offset SDATA(child_grid_child_offset);
@@ -2910,7 +2887,6 @@ void populate_water_tile_neighbor_indices(int arg) {
  * The index-first sums (`idx + base`) and the Rec57 member are what keep retail's addressing. */
 extern char *CreateMoby_c(int) __asm__("func_0020D348");
 
-extern void moby_build_matrix(void *);
 extern void Moby_PlaySound_u(int, int, void *) __asm__("func_0022ED80");
 extern float ApproachWithVelocity_f(float *, float *, float, float, float, float) __asm__("func_00214D88");
 extern void vec_scale_to_length_u(void *, void *, float) __asm__("func_L00_001FF4B0");
@@ -3126,7 +3102,6 @@ missing:
     return 0;
 }
 #define hero_f728 (*(Hero *)&D_0013F450)
-extern int coll_sphere(float, void *, int, void *);
 
 extern int sync_ship_pickup_child_pose(char *owner, char *data);
 
@@ -3314,11 +3289,10 @@ char *spawn_ship_pickup_child(char *owner) {
     return moby;
 }
 extern char *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
-extern int func_00120778_311318(float) __asm__("func_00120778");
+
 extern void STUB_printf_r(char *, int, int) __asm__("func_001E9730");
 extern int ComputeHitResponse_r(void *, void *, float *, int, int *, int, int, int) __asm__("func_L00_0025B4D0");
 extern void RerollEffectCounter_r(void *, void *) __asm__("func_L00_0025E4B0");
-extern void MobyBlendAnimation(void *, int, int, int);
 
 extern void StepColorFade_r(void *, void *) __asm__("func_L00_0025E590");
 extern char D_L11_0021B820[];
@@ -3332,7 +3306,7 @@ void func_L11_00311318_r(struct Moby *m, unsigned char *d, float *t) {
     if (m->state != 4) {
         info = (struct HitMessage *)MobyGetHitMessage_r(m, 0x330000, 0);
         if (info != 0) {
-            STUB_printf_r(owner_linked_moby_hit_fmt, m->oclass, func_00120778_311318(info->damage));
+            STUB_printf_r(owner_linked_moby_hit_fmt, m->oclass, func_00120778(info->damage));
         }
         switch (ComputeHitResponse_r(m, info, t, 0, &out, 0, 0, 4)) {
             case 1:
@@ -3453,14 +3427,11 @@ typedef struct Path_311648 {
 } Path_311648;
 
 extern void handle_psytcopus_hits_r(Moby *moby) __asm__("func_L11_00311B60");
-extern void func_L00_00264B40(float, void *, int, void *);
 
 extern float camera_pos_b358_r[] __asm__("D_L11_00167840");
 extern void set_ground_height_band_r(void *) __asm__("func_L00_0025B178");
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 
-extern void MobyBlendAnimation(void *, int, int, int);
-extern float fast_atan2(float, float);
 extern float SteerAngleWithVelocity_r2(float *p, float a, float *v, float b, float c,
                                        float d) __asm__("func_L00_0025CE58");
 extern int IsFrameWithinWindow_r(void *, float) __asm__("func_00215B18");
@@ -3659,7 +3630,6 @@ extern void vec_scale_to_length_r3(void *, void *, float) __asm__("func_L00_001F
 extern Info *MobyGetHitMessage_r2(void *, int, int) __asm__("func_L00_0025B478");
 extern int ComputeHitResponse_r2(void *, void *, void *, int, int *, float *, int, int) __asm__("func_L00_0025B4D0");
 extern int truncate_float_to_s32_r3(float) __asm__("func_001FA898");
-extern float fast_atan2(float, float);
 
 extern void func_L00_00237B70(int);
 

@@ -705,7 +705,6 @@ extern void parse_space_scene_chunk_r(s32) __asm__("func_00205220");
 extern void func_00217628(u8 *, s32, s32);
 extern unsigned int Load_r(s32, s32, s32) __asm__("func_002176C8");
 extern void func_00217748(s32);
-extern void VU1_initChain_r(void) __asm__("func_002348E8");
 
 /* Loads the space-transition wad to 0x1400000 and unpacks it at the level arena: textures and
    their tables, the three kinds of moby classes, sound and help text tables, the loading image;
@@ -750,7 +749,7 @@ void transition_load_wad(void) {
     FastMemSet(resident_class_original_field_2c_r, 0, 0xE0);
     InitViewContext();
     UpdateViewContext();
-    VU1_initChain_r();
+    VU1_initChain();
     start_audio_stream_read((u8 *)0x1400000, disc_table_r.unk14E8.sector, disc_table_r.unk14E8.size);
     update_audio_stream_until_idle(1);
     flush_cache(0);
@@ -989,7 +988,6 @@ extern void parse_space_scene_chunk_r2(s32) __asm__("func_00205220");
 extern void update_moby_animation_state_r(RenderSequenceActor *) __asm__("func_0020D6D0");
 extern void refresh_moby_spatial_bounds_r(RenderSequenceActor *) __asm__("func_0020ED48");
 extern void update_menu_system_r(void) __asm__("func_0021A1A0");
-extern void sound_update_r(void) __asm__("func_0022DD68");
 
 /* One frame of the space-flight sequence between levels: steps the sequence clock and its
    scene chunks, the movie camera, each actor's animation frame and interpolated position,
@@ -1055,7 +1053,7 @@ void update_gameplay_frame(void) {
         if (pad0_pressed_r[0] & 0x840) {
             initialize_transfer_command_r();
         }
-        sound_update_r();
+        sound_update();
     } else if (g_game_mode_r == 3) {
         intro_overlay_timer_r = scale_game_frame_count(0x3C);
         if ((intro_overlay_alpha_r -= 0x10) < 0) {
@@ -1065,10 +1063,10 @@ void update_gameplay_frame(void) {
             language_intro_overlay_alpha_r = 0;
         }
         update_menu_system_r();
-        sound_update_r();
+        sound_update();
     } else if (g_game_mode_r == 4) {
         update_mode_freeze_r();
-        sound_update_r();
+        sound_update();
     }
 }
 
@@ -1263,8 +1261,7 @@ extern s32 load_BB48(u8 *dst, s32 sector, s32 size) __asm__("func_002176C8");
 extern s32 snd_reset_BB48(void) __asm__("func_0012EC40");
 
 extern void snd_reenable_command_flush_r(void) __asm__("func_0012EC30");
-extern void vu1_send_chain_BB48(void) __asm__("func_002349B8");
-extern void swap_chain_BB48(void) __asm__("func_00234948");
+
 extern void put_draw_small_BB48(void) __asm__("func_001FB598");
 
 extern void put_draw_large_BB48(void) __asm__("func_001FB498");
@@ -1278,12 +1275,9 @@ extern void update_gameplay_BB48(void) __asm__("func_001EB458");
 extern void default_draw_BB48(void) __asm__("func_001EB7C0");
 
 extern void parse_space_scene_BB48(s32) __asm__("func_00205220");
-extern void vu1_init_chain_BB48(void) __asm__("func_002348E8");
 
 extern s32 reset_vif1_gif_BB48(void) __asm__("func_001207B8");
 extern void reset_graph_BB48(s16, s16, s16, s16) __asm__("func_00121B78");
-
-extern void vu1_sync_chain_BB48(s32) __asm__("func_00234AC8");
 
 /* Adapted from Lombyte's project (GPL-3.0): src/gameplay/state/transition_do_transition.c, transition_do_transition. */
 void transition_do_transition(void) {
@@ -1345,8 +1339,8 @@ void transition_do_transition(void) {
     level = 1;
     wait = 0;
     while (space_load_pending == 0) {
-        vu1_send_chain_BB48();
-        swap_chain_BB48();
+        VU1_sendChain();
+        VU1_swapChain();
         put_draw_small_BB48();
         append_palette_transfer_packet();
         put_draw_large_BB48();
@@ -1396,7 +1390,7 @@ void transition_do_transition(void) {
             intro_alpha_BB48 = 0;
             language_alpha_BB48 = 0;
             intro_timer_BB48 = 0;
-            vu1_init_chain_BB48();
+            VU1_initChain();
             continue;
         }
         if (requested_video_mode_BB48 != pal_mode_BB48) {
@@ -1409,7 +1403,7 @@ void transition_do_transition(void) {
             SetPalMode();
             tex_start_BB48 = old;
         }
-        vu1_sync_chain_BB48(1);
+        VU1_syncChain(1);
         sce_gs_sync_v(0);
         game_frame_counter++;
     }

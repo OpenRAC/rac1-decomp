@@ -167,7 +167,7 @@ void update_hero_hoverboard_race_progress(void) {
             if (((Flags *)(menu_item_enabled_115_r + 1))->f9 == 0) {
                 ((Flags *)(menu_item_enabled_115_r + 1))->f9 = 1;
                 PlayBankSound_r(1, 0, 0);
-                ShowBanner_r(0x542D, -1);
+                ShowBanner(0x542D, -1);
             }
         }
         if (d->f28 == -1) {

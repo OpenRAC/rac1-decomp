@@ -536,13 +536,12 @@ void draw_ship_hud(char *moby) {
 }
 extern void project_world_point_to_screen_pixels_r(void *, void *, void *, int) __asm__("func_L11_003126D8");
 extern int fast_dec_timer_c(void *) __asm__("func_001F9908");
-extern int Moby_PlaySound_c(int, int, int) __asm__("func_0022ED80");
+
 extern int spawn_class_3f1_moby_r(void *, void *, void *, float, float) __asm__("func_L11_00309C18");
 extern short D_L11_001620EC;
 extern short D_L11_001620F0;
 extern short ship_speed_scale_d __asm__("D_L11_00162120");
 extern unsigned char pad_globals_base_r[] __asm__("D_0013A5E0");
-extern void Moby_GetJointWorldPos_r(void *, int, void *) __asm__("func_L00_00250800");
 
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 void build_spherical_offset(f32 *out, f32 scale, f32 a, f32 b) __asm__("func_00215C00");
@@ -557,12 +556,12 @@ void update_ship_shot_firing_and_reticle(char *moby, char *obj, float p2, float 
     FastVecAdd(a, a, obj);
     if (fast_dec_timer_c(obj + 0x80) && (*(int *)(pad_globals_base_r + 0x2610) & 0x84)) {
         vec_scale_to_length_r(c, a, 2.2f);
-        Moby_GetJointWorldPos_r(moby, 3 + (obj[0x61] & 1), b);
+        Moby_GetJointWorldPos(moby, 3 + (obj[0x61] & 1), b);
         FastVecAdd(b, b, c);
         spawn_class_3f1_moby_r(moby, a, b, 200.0f, -1.0f);
         *(int *)(obj + 0x80) = *(int *)&ship_shot_cooldown_ticks;
         obj[0x61] ^= 1;
-        Moby_PlaySound_c(3, 0, (int)moby);
+        Moby_PlaySound(3, 0, (int)moby);
     }
     vec_scale_to_length_r(a, a, 23.0f);
     FastVecAdd(d, a, moby + 0x10);
@@ -570,9 +569,6 @@ void update_ship_shot_firing_and_reticle(char *moby, char *obj, float p2, float 
                                            &((struct ShipVars *)obj)->reticle_y, 0);
 }
 
-extern void vec_scale_to_length(void *, void *, float);
-
-extern int Moby_PlaySound_i(int, int, int) __asm__("func_0022ED80");
 extern int fast_dec_timer_i(void *) __asm__("func_001F9908");
 extern unsigned char pad_globals_base[];
 
@@ -597,7 +593,7 @@ void try_fire_ship_projectile(char *moby, struct ShipVars *d) {
                 t = d->target;
             if (spawn_ship_projectile(moby, a, t, moby + 0x40, ship_missile_speed * ship_speed_scale,
                                       scale_ticks(300))) {
-                Moby_PlaySound_i(2, 0, (int)moby);
+                Moby_PlaySound(2, 0, (int)moby);
                 g->ship_ammo -= 1;
                 d->fire_cooldown = ship_missile_cooldown;
             }
@@ -721,15 +717,11 @@ extern void stick_313D00(Moby *, float *, float *) __asm__("func_L11_003153D0");
 extern void spherical_313D00(float *, float, float, float) __asm__("func_00215C00");
 extern void vec_scale_313D00(void *, void *, float) __asm__("func_L00_001FF4B0");
 
-extern void euler_matrix_313D00(void *, void *) __asm__("func_001FA1F8");
-
 extern float approach_313D00(float *, float *, float, float, float, float) __asm__("func_00214D88");
 
-extern int func_L00_001F10E0(float, void *, int, Moby *);
 extern void burst_313D00(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                          int, int, int, int) __asm__("func_L00_0025F4A8");
-extern void vec_reflect(void *, void *, void *);
-extern float fast_atan2(float, float);
+
 extern float length_313D00(void *) __asm__("func_001F9CE8");
 extern int play_313D00(int, int) __asm__("func_L00_00203F20");
 
@@ -856,7 +848,7 @@ void update_player_ship_flight(void *a0, void *a1) {
     lag.f[1] = o->fB8;
     lag.f[2] = o->fBC;
     lag.f[3] = 0.0f;
-    euler_matrix_313D00(&mat, &o->f30);
+    euler_rotation_basis(&mat, &o->f30);
     matrix_mul_vec3(cam.f, lag.f, &mat);
     FastVecAdd(goal.f, ((float *)&moby->pos), cam.f);
     set_camera_position(goal.f);
@@ -927,13 +919,10 @@ void update_player_ship_flight(void *a0, void *a1) {
     wings_313D00(moby, o, r, -FastAddRots(o->f24, -(o->f70 / 7.0f) - 0.1f));
 }
 
-extern int try_set_help_message(int, int);
-
 extern void update_player_ship_flight(void *, void *);
 
 extern char *activate_listed_blarg_ship(int idx);
 
-extern float ApproachValue(float *p, float target, float maxstep);
 extern void spawn_explosion_v(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
                               float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
@@ -1360,7 +1349,7 @@ void jet_fighter_update(Moby *moby) {
         if (s2 >= 3 && s2 <= 4) {
             emit_type_74_particles_from_moby_joints(moby, d);
             if (Sound_IsPlaying(moby, d->h12C) == 0) {
-                d->h12C = Moby_PlaySound_c(0, 4, (int)moby);
+                d->h12C = Moby_PlaySound(0, 4, (int)moby);
             }
         } else {
             if (d->h12C != -1) {
@@ -1515,7 +1504,7 @@ extern float puffoid_jump_gravity SDATA(puffoid_jump_gravity);
 extern void update_puffoid_damage_and_path_goal();
 extern void update_moby_target_heading_and_conditional_movement(char *a0, float *a1);
 extern short count_group_puffoid_mobys_in_states_13_to_17(struct Moby *self);
-extern void Manipulator_ApplyScale(struct Moby *, int, void *, float);
+extern void Manipulator_ApplyScale_v(struct Moby *, int, void *, float) __asm__("func_L00_00264B40");
 
 extern int truncate_float_to_s32(float);
 
@@ -1538,7 +1527,7 @@ void puffoid_update(struct Moby *moby) {
         update_puffoid_damage_and_path_goal(moby);
     }
     target = d->target;
-    Manipulator_ApplyScale(moby, 0, d->unk280, 2.5f);
+    Manipulator_ApplyScale_v(moby, 0, d->unk280, 2.5f);
     if (moby->visible != 0 && FastVecDist(&moby->pos, (char *)camera_pos_b358) < 28.0f) {
         set_ground_height_band(moby);
         moby->shadow_range = 0x16;
@@ -2051,12 +2040,8 @@ extern void spawn_color_swapped_explosion_burst_r(void *, void *, int, float, fl
 extern Hit_316DD8 *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
 
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
-extern float fast_atan2(float, float);
 
 extern void func_L00_002584A8(void *, int, int);
-
-extern void MobyBlendAnimation(void *, int, int, int);
-extern float random_float_between(float, float);
 
 extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
 extern int FindNearestEligibleMoby_v(void *, void *, float, int, int, void *, int) __asm__("func_L00_00260FB0");
@@ -2346,8 +2331,6 @@ struct L11GateVars {
     s32 unk10;
 };
 
-extern float ApproachWithVelocity(float *, float *, float, float, float, float);
-
 /* Moby update for a two-leaf gate that spawns and swings open its leaves. */
 void update_two_door_gate(struct PMoby *moby) {
     struct L11GateVars *d = (struct L11GateVars *)moby->pvars;
@@ -2613,7 +2596,7 @@ void oil_tanker_front_update(char *moby) {
             if (((struct Moby *)moby)->state == 2)
                 process_oil_tanker_damage_and_destruction(moby);
             if (Sound_IsPlaying(moby, chain_vars->sound) == 0) {
-                chain_vars->sound = Moby_PlaySound_i(0, 4, (int)moby);
+                chain_vars->sound = Moby_PlaySound(0, 4, (int)moby);
             }
             break;
         }
@@ -2978,8 +2961,7 @@ void start_oil_tanker_link_destruction(char *m) {
 extern void spawn_energy_sphere_particles(char *moby);
 
 extern void spawn_energy_sphere_spark(char *moby);
-extern int coll_line(void *, void *, int, void *, void *);
-extern int coll_sphere_mobys(float, void *, int, void *, void *);
+
 extern void spawn_explosion_v(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
                               float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern float energy_sphere_glow_size SDATA(energy_sphere_glow_size);
@@ -3161,10 +3143,6 @@ void spawn_energy_sphere_spark(char *moby) {
     PartType02Spawn(moby + 0x10, v0, v1, c1, c2, energy_sphere_spark_time1, energy_sphere_spark_time2,
                     energy_sphere_spark_time3, energy_sphere_spark_texture);
 }
-
-extern int FastBSphereCheck(char *, float);
-
-extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 
 extern char flying_craft_gun_offset_a[];
 extern char flying_craft_gun_offset_b[];
@@ -3404,8 +3382,6 @@ short func_L11_0031BBC8_r(int idx) {
     return found;
 }
 
-extern void vec_scale_to_length(void *, void *, float);
-
 /* finds the idle moby of type 0x527 in a list and launches it at the hero */
 char *activate_listed_blarg_ship(int idx) {
     short *p = pokitaru_moby_groups[idx];
@@ -3449,8 +3425,6 @@ char *activate_listed_blarg_ship(int idx) {
     } while (*p++ >= 0);
     return 0;
 }
-
-extern void PlayBankSound(int, int, int);
 
 /* Moby update that deletes itself or shows a banner depending on its data. */
 void update_moby_list_empty_dialogue_trigger(char *moby) {

@@ -162,8 +162,8 @@ extern void InitDirectionalHitQuery_v(ShotInfo *, struct Moby *, s32, void *, f3
 
 extern void SteerAngleWithVelocity_v(f32 *, f32, f32 *, f32, f32, f32) __asm__("func_L00_0025CE58");
 
-extern void resolve_point_path_segment_xy_clearance(s32, void *, void *, f32);
-extern void Manipulator_ApplyScale(struct Moby *, s32, void *, f32);
+extern void resolve_point_path_segment_xy_clearance_v(s32, void *, void *, f32) __asm__("func_L00_00262DF0");
+extern void Manipulator_ApplyScale_v(struct Moby *, s32, void *, f32) __asm__("func_L00_00264B40");
 extern void SpawnBreakFragment_r(struct Moby *, s32, void *, void *, s32, s32, f32, f32 *, f32 *,
                                  f32 *) __asm__("func_L00_00265050");
 
@@ -188,7 +188,7 @@ void blarg_space_commando_update(struct Moby *moby) {
 
     process_blarg_space_commando_hits(moby);
     target = vars->target;
-    Manipulator_ApplyScale(moby, 1, vars->unk420, 2.5f);
+    Manipulator_ApplyScale_v(moby, 1, vars->unk420, 2.5f);
     if (moby->visible != 0 && FastVecDist(&moby->pos, &blarg_camera_pos) < 27.0f) {
         set_ground_height_band(moby);
         moby->shadow_range = 0x15;
@@ -375,7 +375,7 @@ void blarg_space_commando_update(struct Moby *moby) {
             a.f[1] = 2.0f * FastSin(moby->rot.z);
             a.f[2] = 0.0f;
             move_w(moby, &vars->ctl, &a, &b, 1.0f);
-            resolve_point_path_segment_xy_clearance(vars->path, &moby->pos, &moby->pos, 0.75f);
+            resolve_point_path_segment_xy_clearance_v(vars->path, &moby->pos, &moby->pos, 0.75f);
             if (SegmentCrossPolyline(vars->path, &moby->pos, &target->pos, &c) != 0 &&
                 FastVecDist(&moby->pos, &c) < 0.8f) {
                 near = 1;
@@ -427,7 +427,7 @@ void blarg_space_commando_update(struct Moby *moby) {
             if (FastDiffRots(moby->rot.z, fast_atan2(vars->home.f[0] - moby->pos.x, vars->home.f[1] - moby->pos.y)) <
                 0.7853982f) {
                 move_w(moby, &vars->ctl, &a, &b, 1.0f);
-                resolve_point_path_segment_xy_clearance(vars->path, &moby->pos, &moby->pos, 0.75f);
+                resolve_point_path_segment_xy_clearance_v(vars->path, &moby->pos, &moby->pos, 0.75f);
             }
             if (FastVecDist(&vars->home, &moby->pos) < 1.0f) {
                 moby->state = 1;
@@ -470,8 +470,6 @@ void blarg_space_commando_update(struct Moby *moby) {
 extern void update_blarg_space_commando_beam(void *);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-
-extern void PlayBankSound(int, int, int);
 
 extern char *spawn_spinning_moby_fragment(int unused, char *pa, char *pb);
 
@@ -638,8 +636,6 @@ void process_blarg_space_commando_hits(char *m) {
     }
 }
 
-extern void vec_scale_to_length(void *, void *, float);
-
 extern char blarg_coll_hit_normal[];
 extern float space_commando_beam_fan_degrees SDATA(space_commando_beam_fan_degrees);
 extern int space_commando_beam_ticks SDATA(space_commando_beam_ticks);
@@ -668,9 +664,6 @@ void initialize_blarg_space_commando_beam(Moby *m) {
     }
     ((struct SpaceCommandoVars *)d)->beam_ticks = (float)scale_ticks(space_commando_beam_ticks);
 }
-
-extern int coll_line(void *, void *, int, void *, void *);
-extern float ApproachValue(float *, float, float);
 
 extern void DrawBeam(char *moby);
 extern void spawn_blarg_space_commando_beam_sparks(char *moby);
@@ -791,9 +784,7 @@ extern f32 space_commando_beam_uvs[4][2];
 
 extern u64 GetEffectTex_v(s32) __asm__("func_001F4868");
 
-extern void vec_scale_to_length(void *, void *, f32);
 extern u32 FastTweenColor_r(f32, s32, s32) __asm__("func_001FA8A8");
-extern void draw_world_quad(void *, void *, s32);
 
 /* Draws the beam as 15 textured quads between consecutive points of the moby's point list (data + 0x230), each twice:
    once with the odd corners pulled toward the centre (data + 0x210) and once raised by 0.25.
@@ -955,7 +946,7 @@ void update_falling_spinning_moby(char *moby) {
 typedef int u128 __attribute__((mode(TI)));
 extern int rnd_a(float) __asm__("func_001FA898");
 extern char *mk_a(int) __asm__("func_0020D348");
-extern void moby_build_matrix(void *);
+
 extern float g_frame_time MACRO_ADDR;
 
 /* Spawns a debris moby with a random class and random spin. */
@@ -1044,7 +1035,6 @@ typedef struct {
     long tag[4];
 } Pkt89B8 __attribute__((aligned(16)));
 
-extern void draw_world_quad(void *, void *, int);
 extern char referencePosition[];
 extern int door_lock_glow_quad_corner_indices[][4];
 extern float door_lock_glow_corner_uvs[][2];
@@ -1336,8 +1326,6 @@ void bot_door_lock_update(Moby *moby) {
             return;
     }
 }
-
-extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
 
 extern float blarg_zero_vec[] MACRO_ADDR;
 

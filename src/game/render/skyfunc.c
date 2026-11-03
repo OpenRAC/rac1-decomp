@@ -260,8 +260,6 @@ extern u8 sky_shell_translation_r2[] __asm__("D_00160560") MACRO_ADDR;
 extern struct SkyTransform sky_matrix_r2 __asm__("D_001D9A70");
 extern s32 D_0015EF88 MACRO_ADDR;
 
-extern void VU1_addGSregister_r2(s32, s64) __asm__("func_00234C98");
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/sky/draw_sky_shells.c, draw_sky_shells. */
 void draw_sky_shells(void) {
     f32 rotation_angles[4];
@@ -320,8 +318,8 @@ void draw_sky_shells(void) {
         } while (shell_index < level_sky_effect_data_r3->shell_count);
     }
     DoSkyGifPaging();
-    VU1_addGSregister_r2(0x47, 0x5360B);
-    VU1_addGSregister_r2(0x4E, 0x1000000 | (depth_buffer_address >> 13));
+    VU1_addGSregister(0x47, 0x5360B);
+    VU1_addGSregister(0x4E, 0x1000000 | (depth_buffer_address >> 13));
 }
 
 extern int g_render_packet_cursor MACRO_ADDR;

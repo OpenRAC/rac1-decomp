@@ -47,8 +47,6 @@ typedef struct {
     float d[4];
 } L10SpriteData;
 
-extern void vec_scale_to_length(void *, void *, float);
-
 extern int truncate_float_to_s32(float);
 extern char orxon_camera_pos[];
 
@@ -135,7 +133,6 @@ extern float g_frame_time MACRO_ADDR;
 extern float SpringTurn_v(float, float, float, float, float, float *) __asm__("func_L00_00259148");
 extern void BuildSphericalOffset_v(float, float, float, void *) __asm__("func_00215C00");
 
-extern int coll_line(void *, void *, int, int, int);
 extern void PostHitMessage_v(float, int, void *, int, void *, void *) __asm__("func_L00_0025AC00");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00298940.c, FUN_L10_002cc2e8. */
@@ -330,7 +327,6 @@ extern V4_2EA578 orxon_quad_layer_second_vertices[];
 extern V4_2EA578 orxon_quad_layer_first_vertices[];
 
 extern long GetEffectTex_v(int) __asm__("func_001F4868");
-extern void draw_world_quad(void *, void *, int);
 
 #define ALPHA_2EA578(a, b, c, d, fix)                                                                         \
     ((unsigned long)(a) | ((unsigned long)(b) << 2) | ((unsigned long)(c) << 4) | ((unsigned long)(d) << 6) | \

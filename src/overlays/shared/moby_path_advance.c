@@ -5,6 +5,7 @@
 #include "structs/vector.h"
 #include "structs/moby.h"
 #include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 struct Manip;
@@ -15,8 +16,6 @@ typedef struct {
     u8 pad4[0xC];
     Vec4 point[1];
 } PathPoints;
-
-extern void vec_scale_to_length(Vec4 *out, Vec4 *v, f32 len);
 
 /* Return the next point index along the path in direction dir, wrapping at both ends. */
 static inline s32 path_next(PathPoints *path, s32 i, s32 dir) {

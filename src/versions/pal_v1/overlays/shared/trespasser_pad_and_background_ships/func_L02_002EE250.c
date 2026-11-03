@@ -51,7 +51,7 @@ void background_ship_2_update(char *moby) {
             }
             qcopy(tv, moby + 0x10);
             if (Sound_IsPlaying(moby, *(int *)(d + 0x6C)) == 0) {
-                *(int *)(d + 0x6C) = Moby_PlaySound_r_r(1, 4, (int)moby);
+                *(int *)(d + 0x6C) = Moby_PlaySound(1, 4, (int)moby);
             }
             p2 = background_ship_2_speed * g_frame_time;
             if (g_current_level_index_r == LEVEL_ORXON) {
@@ -112,7 +112,7 @@ void background_ship_2_update(char *moby) {
                     }
                 }
             }
-            Moby_PlaySound_r_r(0, 0, (int)moby);
+            Moby_PlaySound(0, 0, (int)moby);
             FastVecScale(tv, moby + 0xC0, background_ship_2_debris_speed * frame_scale);
             tv[2] = tv[2] + background_ship_2_debris_lift * frame_scale;
             r1 = scale_ticks(90);

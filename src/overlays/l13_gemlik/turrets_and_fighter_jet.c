@@ -38,6 +38,7 @@
 #include "overlays/l13_gemlik/qwark_starfighter_and_forcefield.h"
 #include "overlays/l13_gemlik/moby_group_switches.h"
 #include "overlays/l13_gemlik/joint_particle.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 extern char cd_read_state[];
 extern char gHeroPos[];
 extern char g_hero_rot[];
@@ -288,7 +289,6 @@ void update_moby_volume_trigger(Moby *moby) {
     }
 }
 
-extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void compute_elevator_camera_pose(unsigned char *moby, float *v, float *w);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
@@ -522,11 +522,8 @@ typedef struct Data_2B5368 {
 extern void update_blarg_turret_target_and_state_r(void *) __asm__("func_L13_002B5A88");
 extern void *spawn_blarg_turret_child_r(void *) __asm__("func_L13_002B5B08");
 extern void Manipulator_ApplyScale_r(float, void *, int, void *) __asm__("func_L00_00264B40");
-extern void MobyBlendAnimation(void *, int, int, int);
-extern float fast_atan2(float, float);
 
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-extern int is_point_inside_clip_volume(void *, int);
 
 extern float SteerAngleWithVelocity_v(void *, float, void *, float, float, float) __asm__("func_L00_0025CE58");
 extern float ApproachValue_r(float *, float, float) __asm__("func_00214D28");
@@ -900,19 +897,13 @@ void update_robosquawker_ground_height(char *m, char *d) {
         qzero(&moby_vars->pad_120);
     }
 }
-extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
 
 extern int func_001160D8(void);
 extern void InitKnockback_v(float, void *, void *, int, int, int) __asm__("func_L00_0025D5B0");
 
 extern int fast_dec_timer_i(void *) __asm__("func_001F9908");
 
-extern float ApproachValue(float *, float, float);
-
-extern int coll_sphere(float, void *, int, void *);
 extern int move_4318_v(void *, void *, float, float, float, int) __asm__("func_L00_00259868");
-
-extern void vec_scale_to_length(void *, void *, float);
 
 extern int gemlik_game_mode MACRO_ADDR;
 
@@ -2822,8 +2813,6 @@ extern char jet_no_escape_path_msg[], jet_no_destination_path_msg[];
 extern int jet_palette_ready47 SDATA(D_L13_00161454);
 extern int *jet_palette47 SDATA(D_L13_00161450);
 extern short jet_boarding_group_ids_b;
-
-extern int try_set_help_message(int, int);
 
 extern void PlayerFighterFlight(void *, void *);
 

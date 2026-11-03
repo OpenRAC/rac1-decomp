@@ -512,8 +512,6 @@ extern float g_frame_time_sq MACRO_ADDR;
 
 extern int func_001FA898(float);
 
-extern int coll_line(void *, void *, int, int, int);
-
 typedef struct SparkData {
     f32 dir_x; /* 0x00 */
     f32 dir_y; /* 0x04 */
@@ -637,7 +635,8 @@ void update_moby_motion_and_emit_sparks(char *moby) {
     }
 }
 
-extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float *, float *, float, float *);
+extern void *SpawnBreakFragment_v(char *, int, float *, void *, int, int, float *, float *, float,
+                                  float *) __asm__("func_L00_00265050");
 extern void spawn_explosion_v(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
                               float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern int g_current_level_index MACRO_ADDR;
@@ -710,8 +709,8 @@ void blarg_ship_1805_update(void *moby) {
                     add_random_offset_to_vector_xyz(tmp, 1.5f);
                     tmp[2] += 1.7f;
                     FastVecAdd(tmp, tmp, m + 0x10);
-                    SpawnBreakFragment(m, k, tmp, m + 0x40, 0, 0, gemlik_zero_vec, gemlik_zero_vec, 0.0f,
-                                       gemlik_zero_vec);
+                    SpawnBreakFragment_v(m, k, tmp, m + 0x40, 0, 0, gemlik_zero_vec, gemlik_zero_vec, 0.0f,
+                                         gemlik_zero_vec);
                 }
             }
             spawn_explosion_v(moby, m + 0x10, 0, 0.0f, 0.0f, 0xA, 3, 0x10, 6.0f, 3.0f, 9.0f, 0, 1.1f, 15.0f, 1, 3, -1,

@@ -118,25 +118,17 @@ typedef struct Data_3DF8 {
 } Data_3DF8;
 extern void sound_3DF8(float, void *, int, void *) __asm__("func_L00_00264B40");
 
-extern float random_angle_radians(void);
-
 extern int randomf_3DF8(float) __asm__("func_001FA898");
-extern void MobyBlendAnimation(void *, int, int, int);
-extern float ProbeGroundHeight(void *, int, float);
-extern float random_float_between(float, float);
 
-extern float fast_atan2(float, float);
 extern void MobySpringTurn_v(void *, float, float *, float, float, float) __asm__("func_L00_002592B0");
 
 extern float fast_distance_3DF8(void *, void *) __asm__("func_001F9D48");
 
-extern int func_00215B18(void *, float);
 extern void shoot_3DF8(void *, void *, int, void *, void *, float) __asm__("func_L00_0025AC00");
 
 extern void explode_3DF8(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                          int, int, int, int) __asm__("func_L00_0025F4A8");
 
-extern void joint_3DF8(void *, int, void *) __asm__("func_L00_00250800");
 extern void glow_3DF8() __asm__("func_L08_002D4B80");
 extern void body_3DF8() __asm__("func_L08_002D5410");
 extern char batalia_hero_pos[];
@@ -345,7 +337,7 @@ void scoutbot_update(Moby *moby) {
             col = 0x7F2828A0;
         }
         moby->glow_color = FastTweenColor(moby->glow_color, col, 0.1f);
-        joint_3DF8(moby, 3, d->f220);
+        Moby_GetJointWorldPos(moby, 3, d->f220);
         AddDrawCallback(body_3DF8, moby);
     }
 }
@@ -420,7 +412,7 @@ extern void ClampVectorLength_v(float, void *) __asm__("func_L00_002607A8");
 #define func_L00_001FF860_4B80 ((float (*)(float, float))func_L00_001FF860)
 
 #define func_001FA218_4B80 ((void (*)(void *, void *))func_001FA218)
-extern void draw_world_quad(void *, s32, s32);
+
 #define func_L00_001FD1D8_4B80 ((void (*)(void *, void *, int))func_L00_001FD1D8)
 extern short scoutbot_beam_colors;
 #define G_C_4B80 ((int *)&D_L08_00161908)
@@ -556,8 +548,6 @@ void draw_target_beam(char *m) {
 }
 extern float g_frame_time MACRO_ADDR;
 
-extern void vec_scale_to_length(void *, void *, float);
-
 extern float g_frame_time_sq MACRO_ADDR;
 
 extern float batalia_coll_resolved_pos[];
@@ -643,10 +633,6 @@ extern u8 batalia_hero_pos_r[] __asm__("D_L08_00167640");
 extern float batalia_glow_quad_corners[4][4];
 extern float scoutbot_glow_camera_offset SDATA(scoutbot_glow_camera_offset);
 extern float scoutbot_glow_size SDATA(scoutbot_glow_size);
-
-void vec_scale_to_length(void *, void *, float);
-
-void draw_world_quad(void *, s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002937a0.c, FUN_L08_002d4108. */
 void draw_scoutbot_glow_quad(char *arg) {
@@ -1184,30 +1170,22 @@ extern int randomf302618(float) __asm__("func_001FA898");
 extern int timer302618(void *) __asm__("func_001F9908");
 
 extern float fast_distance302618(void *, void *) __asm__("func_001F9D48");
-extern float fast_atan2(float, float);
+
 extern float SteerAngleWithVelocity_v(void *, float, void *, float, float, float) __asm__("func_L00_0025CE58");
-extern void MobyBlendAnimation(void *, int, int, int);
 
 extern void helper302618(void *) __asm__("func_L08_00303998");
 extern void sound302618(float, void *, int, void *) __asm__("func_L00_00264B40");
 extern void wake302618(void *) __asm__("func_L00_0025B178");
-extern int random_integer_below(int);
 
 extern int ray302618(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
-extern float random_float_between(float, float);
-
-extern void joint302618(void *, int, void *) __asm__("func_L00_00250800");
 
 extern char *projectile302618(void *, void *, void *, void *, int, int) __asm__("func_L08_00308650");
 extern void vec_limit302618(void *, float) __asm__("func_L00_002607A8");
 
 extern void vec_scale302618(void *, void *, float) __asm__("func_L00_001FF4B0");
 
-extern int func_L00_001F2BE8(float, void *, int, void *, void *);
-
 extern void explode302618(void *, int, int) __asm__("func_L00_002584A8");
 
-extern void *func_L00_00265050(void *, int, void *, void *, int, int, float, void *, void *, void *);
 typedef struct Paratrooper302618 {
     char pad0[0x20];
     float f20;
@@ -1502,7 +1480,7 @@ void blarg_paratrooper_update(char *m) {
                 if ((batalia_draw_frame_load < 0.8f && batalia_frame_cpu_load < 0.8f) ||
                     !((*(unsigned short *)&d->f20E) & 1)) {
                     char *shot;
-                    joint302618(d->f1F8, 0, pos);
+                    Moby_GetJointWorldPos(d->f1F8, 0, pos);
                     dir[0] = FastCos((*(float *)((char *)(m) + 0x48))) * (speed302618 * g_frame_time);
                     dir[1] = FastSin((*(float *)((char *)(m) + 0x48))) * (speed302618 * g_frame_time);
                     dir[2] = 0.0f;
@@ -1559,7 +1537,7 @@ void blarg_paratrooper_update(char *m) {
                                      g_frame_time_sq * 8.726646f, g_frame_time * 12.566371f);
             frame = MobyGetFrameValue(m);
             if (frame > 16.5f && frame < 20.0f) {
-                joint302618(m, 4, pos);
+                Moby_GetJointWorldPos(m, 4, pos);
                 FastVecSub(dir, pos, m + 0x10);
                 dir[2] = 0.0f;
                 vec_scale302618(dir, dir, 1.0f);
@@ -1854,8 +1832,6 @@ char *spawn_paratrooper_projectile(char *pos, char *dir, int a2, int a3, int a4,
 }
 extern char batalia_coll_hit[];
 
-extern int coll_line(void *, void *, int, int, int);
-
 extern int fast_dec_timer_i(void *) __asm__("func_001F9908");
 
 /* Fire bolt: flies along its velocity with a smoke trail (while the level is not underwater), damaging what it hits. */
@@ -1971,9 +1947,6 @@ extern float D_L08_001623EC_3091B0 SDATA(D_L08_001623EC);
 extern float D_L08_001602E0_3091B0 SDATA(D_L08_001602E0);
 extern void randomize_ground_particle_scatter_parameters_r(int) __asm__("func_L08_00309050");
 
-extern void fast_add_rotations_cf_r(void *, void *, float, float, float) __asm__("func_L00_00263D68");
-extern float random_float_between(float, float);
-
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
 
 extern void spawn_span_particle_r(void *, void *, float, void *) __asm__("func_L08_00273A80");
@@ -2042,8 +2015,8 @@ void scatter_ground_particles(Moby *m) {
             batalia_ground_scatter_hero_offset = *(u128_3091B0 *)&dv;
             *(u128_3091B0 *)&base = *(u128_3091B0 *)batalia_hero_pos;
             n = ground_particle_scatter_base_attempt_count_r;
-            fast_add_rotations_cf_r(&base, &base, 16.0f, ((Cam *)(batalia_hero_pos - 0x140))->f158,
-                                    ((Cam *)(batalia_hero_pos - 0x140))->f154);
+            fast_add_rotations_cf(&base, &base, 16.0f, ((Cam *)(batalia_hero_pos - 0x140))->f158,
+                                  ((Cam *)(batalia_hero_pos - 0x140))->f154);
             base.z = ((Cam *)(batalia_hero_pos - 0x140))->f148 + D_L08_001623D4_3091B0;
             if (n > 0) {
                 V_3091B0 *po = &off;
@@ -2140,8 +2113,8 @@ void scatter_ground_particles(Moby *m) {
                 int h;
                 w = 30.0f;
                 *(u128_3091B0 *)&base = *(u128_3091B0 *)batalia_hero_pos;
-                fast_add_rotations_cf_r(&base, &base, w, ((Cam *)(batalia_hero_pos - 0x140))->f158,
-                                        ((Cam *)(batalia_hero_pos - 0x140))->f154);
+                fast_add_rotations_cf(&base, &base, w, ((Cam *)(batalia_hero_pos - 0x140))->f158,
+                                      ((Cam *)(batalia_hero_pos - 0x140))->f154);
                 sign = n >> 31;
                 base.z = ((Cam *)(batalia_hero_pos - 0x140))->f148 + D_L08_001623D4_3091B0;
                 if (n > 0) {
@@ -2158,8 +2131,8 @@ void scatter_ground_particles(Moby *m) {
                     } while (--cnt != 0);
                 }
                 *(u128_3091B0 *)&base = *(u128_3091B0 *)batalia_hero_pos;
-                fast_add_rotations_cf_r(&base, &base, 4.0f, ((Cam *)(batalia_hero_pos - 0x140))->f158,
-                                        ((Cam *)(batalia_hero_pos - 0x140))->f154);
+                fast_add_rotations_cf(&base, &base, 4.0f, ((Cam *)(batalia_hero_pos - 0x140))->f158,
+                                      ((Cam *)(batalia_hero_pos - 0x140))->f154);
                 base.z = ((Cam *)(batalia_hero_pos - 0x140))->f148 + D_L08_001623D4_3091B0;
                 h = (n - sign) >> 1;
                 if (h > 0) {

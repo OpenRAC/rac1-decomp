@@ -897,8 +897,6 @@ void update_camera_tracking_state(void) {
 
 extern int g_game_mode MACRO_ADDR;
 
-extern float resolve_camera_surface_height(void *, int);
-
 /* Camera-inside-water test: cast a ray through the eye position
    (gCamera.pos) from 0.75 above to 0.75 below (up to six hits); on the
    first hit that is not a water surface, set gCamera.underwater when the

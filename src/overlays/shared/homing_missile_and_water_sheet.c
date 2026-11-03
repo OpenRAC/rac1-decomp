@@ -113,8 +113,6 @@ char *select_homing_missile_target(float *pos, float *aim, float r1, float r2, f
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
-extern void vec_scale_to_length(void *, void *, float);
-
 /* spawns a moby of class 0x3F1 aimed along a direction */
 unsigned char *spawn_class_3f1_moby(char *owner, float *dir, float *pos, float a, float b) {
     unsigned char *m = CreateMoby(0x3F1);
@@ -172,8 +170,6 @@ extern char pokitaru_coll_hit_normal[];
 extern int truncate_float_to_s32(float);
 
 extern void Profile_Mark_v(void *, void *) __asm__("func_001E9768");
-
-extern int coll_line(void *, void *, int, void *, void *);
 
 extern char *PartType27Spawn_r(void *, void *, int, int, float) __asm__("func_L00_0026EBC0");
 
@@ -271,8 +267,6 @@ void update_homing_missile(struct Moby *moby) {
 
 extern int truncate_float_to_s32(float);
 
-extern void vec_scale_to_length(void *, void *, float);
-
 /* spawns a streak moby aimed along a direction with the given size and colour */
 char *spawn_class_3f9_moby(int owner, float *dir, float *pos, float size, float len, float z) {
     char *m = CreateMoby(0x3F9);
@@ -308,8 +302,6 @@ extern short projectile_trail_color_a, projectile_trail_color_b, projectile_trai
     projectile_trail_speed_scale;
 extern char pokitaru_coll_hit_normal[];
 extern float g_frame_time_e __asm__("D_0015EE6C") MACRO_ADDR;
-
-extern int coll_line(void *, void *, int, void *, void *);
 
 struct UpdateProjectileWithTrailVars {
     Vec3f unk_00;
@@ -506,7 +498,6 @@ typedef struct {
 } Fog;
 
 extern void draw_env_overlay_mesh_r(int, void *, void *, void *, int) __asm__("func_L00_001FDE48");
-extern void draw_world_quad(void *, void *, int);
 
 extern char pokitaru_render_view_params[];
 
@@ -1389,10 +1380,6 @@ extern int gameplay_event_frame_count MACRO_ADDR;
 extern int skill_point_18_kill_count MACRO_ADDR;
 extern unsigned char gSkillPoints[] NOT_SDA;
 
-extern int PlayBankSound(int, int, int);
-
-extern int coll_sphere(float, void *, int, void *);
-
 struct UpdateMobyHitStatsAndStateVars {
     u8 pad_00[0x88];
     s32 unk_88;
@@ -1475,12 +1462,9 @@ typedef struct {
 } Data_0031B8A8;
 extern Path_0031B8A8 *D_L11_001B11B0[];
 
-extern float fast_atan2(float, float);
 extern float vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
 
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
-
-extern float func_00214D88(float *, float *, float, float, float, float);
 
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 

@@ -13,6 +13,7 @@
 #include "asm_functions/shared_levels.h"
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "game/moby/mobyutil.h"
 extern Hero g_hero;
 
 extern char hoven_item_defs[];
@@ -55,11 +56,7 @@ extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern float hoven_hero_speed_bands_field_18[];
 
-extern float ApproachValue(float *, float, float);
-
 extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
-
-extern void vec_scale_to_length(void *, void *, float);
 
 extern int g_current_level_index MACRO_ADDR;
 

@@ -17,7 +17,6 @@
 #include "overlays/shared/rig_probe_setup.h"
 
 extern float eudora_coll_hit_z;
-extern int coll_line(void *, void *, int, int, int);
 
 /* probes a ray from just above a point; returns the ground offset or 0 */
 float probe_leg_rig_ground_height(float *pos) {
@@ -211,7 +210,6 @@ typedef struct {
     Vec4f v40; /* 0x40 */
 } StTab;
 
-extern float fast_atan2(float, float);
 extern char D_L04_00174040[];
 
 /* Steers a moby from the arg block: height and push terms, returns 2 when the tilt is past pi/4. */
@@ -453,8 +451,6 @@ void rig_animate(struct Moby *moby, LegRig_93F08 *rig, int flags) {
 extern int rig_pick_mode_r(char *, char *, float) __asm__("func_L04_00293990");
 extern void rig_animate_r(char *, char *, int, float) __asm__("func_L04_00293F08");
 extern int update_leg_rig_height_and_tilt_r(char *, char *) __asm__("func_L04_002939E8");
-
-extern void divide_vector_xyz(void *, void *, float);
 
 extern float g_frame_time MACRO_ADDR;
 extern float inv_frame_scale MACRO_ADDR;

@@ -267,19 +267,11 @@ extern float veldin1_zero_vec[] MACRO_ADDR;
 
 extern void update_veldin_robot_damage_and_targeting(void *);
 
-extern void EaseManipulatorOffsets(char *, char *, int, float, float);
-
 extern int func_001FA898(float);
 
 extern float SteerAngleWithVelocity_v(void *, float, void *, float, float, float) __asm__("func_L00_0025CE58");
 
-extern float ApproachWithVelocity(float, float, float, float, float *, float *);
-
-extern void vec_scale_to_length(void *, void *, float);
-
-extern int coll_line(void *, void *, int, int, int);
-
-extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
+extern float ApproachWithVelocity_v(float, float, float, float, float *, float *) __asm__("func_00214D88");
 
 extern void update_veldin_robot_effects(char *);
 
@@ -374,8 +366,8 @@ void veldin_robot_enemy_update(Moby *moby) {
                                      &vars->turnVel, g_frame_time_sq * (12.566371f), g_frame_time_sq * (12.566371f),
                                      g_frame_time * 12.566371f);
             FastVecSub(&dir, &delta, &moby->pos);
-            ApproachWithVelocity(FastVecDist(&moby->pos, &path->pts[path->count - 1]), g_frame_time_sq * 8.0f,
-                                 g_frame_time_sq * 16.0f, g_frame_time * 12.0f, &vel, &vars->speed);
+            ApproachWithVelocity_v(FastVecDist(&moby->pos, &path->pts[path->count - 1]), g_frame_time_sq * 8.0f,
+                                   g_frame_time_sq * 16.0f, g_frame_time * 12.0f, &vel, &vars->speed);
             if (FastVecLength(&dir) < vars->speed + vars->speed) {
                 vars->pathPt++;
                 if (vars->pathPt == path->count) {
@@ -729,7 +721,6 @@ void update_veldin_robot_effects(char *m) {
 }
 extern float veldin1_robot_effect_quad_corners[][4];
 
-extern void draw_world_quad(void *, void *, int);
 typedef float W[4] __attribute__((aligned(16)));
 typedef struct {
     int c[4];

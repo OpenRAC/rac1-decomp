@@ -107,7 +107,6 @@ typedef struct Rocket {
     float maxspeed;
 } Rocket;
 
-extern void moby_build_matrix(void *);
 extern char *spawn_source_attached_fading_effect_particle(char *, int, int, int, float);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l13/unclassified_002c13b0.c, FUN_L13_002c13b0. */
@@ -167,12 +166,8 @@ typedef struct Tex {
     unsigned char *p5C;
 } Tex;
 
-extern void vec_scale_to_length(void *, void *, float);
-
 extern char *PartType21Spawn(void *pos, void *dir, int c, int d, int n, int k, float f);
 
-extern int coll_line(void *, void *, int, void *, int);
-extern int coll_sphere(float, void *, int, void *);
 extern void spawn_explosion_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                 float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
@@ -355,11 +350,9 @@ unsigned char *spawn_mine_83_projectile(char *owner, char *pos, char *vec) {
     }
     return moby;
 }
-extern void MobyBlendAnimation(void *, int, int, int);
 
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 
-extern int func_L00_001F2BE8(float, void *, int, void *, void *);
 extern int coll_sphere_r(void *, float, int, void *) __asm__("func_L00_001F10E0");
 extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
 extern char *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
@@ -486,7 +479,7 @@ void update_level_13_mine_83_projectile(char *moby_raw) {
 }
 extern void update_hovering_rocket_attacker_common(unsigned char *);
 
-extern float ApproachWithVelocity(float *, float, float *, float, float, float);
+extern float ApproachWithVelocity_v(float *, float, float *, float, float, float) __asm__("func_00214D88");
 
 extern float hovering_rocket_attacker_launch_vector_speed SDATA(hovering_rocket_attacker_launch_vector_speed);
 extern char *gemlik_scene_points MACRO_ADDR;
@@ -595,8 +588,8 @@ void update_hovering_rocket_attacker(char *m) {
             distance_to_target = FastVecDist(moby_position, gemlik_scene_points + (index << 7) + 0x30);
         }
             FastVecSub(scratch_vector, gemlik_scene_points + (d->table_index << 7) + 0x30, moby_position);
-            ApproachWithVelocity(&z40, distance_to_target, &d->approach_vel, g_frame_time_sq * 10.0f,
-                                 g_frame_time_sq * 10.0f, g_frame_time * 20.0f);
+            ApproachWithVelocity_v(&z40, distance_to_target, &d->approach_vel, g_frame_time_sq * 10.0f,
+                                   g_frame_time_sq * 10.0f, g_frame_time * 20.0f);
             vec_scale_to_length(scratch_vector, scratch_vector, d->approach_vel);
             FastVecAdd(moby_position, moby_position, scratch_vector);
             if (!(distance_to_target < 0.1f)) {
@@ -768,16 +761,13 @@ void update_hovering_rocket_attacker(char *m) {
     }
 }
 typedef int u128x_2C3FB8 __attribute__((mode(TI)));
-extern int Sound_IsPlaying_r(void *, int) __asm__("func_L00_0028EB98");
-extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 
-extern float random_float_between(float, float);
-extern void Moby_GetJointWorldPos_r(void *, int, void *) __asm__("func_L00_00250800");
+extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 
 extern void PartType04Spawn_r(void *, void *, int, int, int, int, int, int) __asm__("func_L00_0026A7F8");
 extern char *MobyGetHitMessage_r2(void *, int, int) __asm__("func_L00_0025B478");
 extern int ComputeHitResponse_r(void *, void *, void *, int, void *, void *, int, int) __asm__("func_L00_0025B4D0");
-extern void MobyBlendAnimation(void *, int, int, int);
+
 extern void SetDeathBits_r(void *, int, int) __asm__("func_L00_002584A8");
 extern void RerollEffectCounter_r(void *m, short *p) __asm__("func_L00_0025E4B0");
 extern void StepColorFade_r(void *, void *) __asm__("func_L00_0025E590");
@@ -849,7 +839,7 @@ void update_hovering_rocket_attacker_common(unsigned char *moby) {
     moby_data = (HoverRocketAttackerVars *)m->pvars;
     if (m->state == 0)
         return;
-    if (moby_data->link_id == -1 || Sound_IsPlaying_r(m, moby_data->link_id) == 0) {
+    if (moby_data->link_id == -1 || Sound_IsPlaying(m, moby_data->link_id) == 0) {
         moby_data->link_id = -1;
         moby_data->link_id = Moby_PlaySound_r(1, 4, m);
     }
@@ -863,8 +853,8 @@ void update_hovering_rocket_attacker_common(unsigned char *moby) {
     downward_effect_z = -(fl * g_frame_time_r);
     z[2] = downward_effect_z;
     *(u128x_2C3FB8 *)downward_effect_vector = *(u128x_2C3FB8 *)z;
-    Moby_GetJointWorldPos_r(m, 2, point_2_position);
-    Moby_GetJointWorldPos_r(m, 3, point_3_position);
+    Moby_GetJointWorldPos(m, 2, point_2_position);
+    Moby_GetJointWorldPos(m, 3, point_3_position);
     if (gemlik_frame_count_r & 1) {
         PartType04Spawn_r(point_2_position, downward_effect_vector, 0xCF0000FF, 0xCF,
                           scale_ticks(rand_range(0x12, 0x16)), 0x32, -0xA, 1);
@@ -955,8 +945,6 @@ void update_hovering_rocket_attacker_common(unsigned char *moby) {
         moby_data->unkB0 = *(int *)&g_hero.moby;
     }
 }
-
-extern void vec_scale_to_length(void *, void *, float);
 
 // steps a moby's hit-reaction timer and applies a small positional shake
 void process_blarg_space_fighter_damage(unsigned char *moby, unsigned char *d, float *fp) {
@@ -1958,7 +1946,7 @@ extern int linked_state_flags[];
 #define Moby_PlaySound_s ((int (*)(int, int, int))Moby_PlaySound_r)
 
 #define func_L00_0026AA10_C4748 func_L00_0026AA10
-extern int IsFrameWithinWindow(char *, float);
+
 extern void process_forcefield_tower_damage(char *, char *, float *);
 
 #define spawn_explosion_s func_L00_0025F4A8
@@ -2272,7 +2260,7 @@ typedef struct {
 #define random_angle_p func_00214158
 extern s32 func_001160D8(void);
 #define rand_p func_001160D8
-extern void vec_scale_to_length(void *, void *, f32);
+
 #define normalize_p func_L00_001FF4B0
 
 #define scale_vec_p func_L00_001FF548
@@ -2286,8 +2274,8 @@ extern void vec_scale_to_length(void *, void *, f32);
 #define scale_frames_p func_001F9850
 
 #define add_rot_p func_001FA748
-extern s32 FastBSphereCheck(f32, void *);
-#define draw_dist_p func_L00_00200290
+extern s32 FastBSphereCheck_v(f32, void *) __asm__("func_L00_00200290");
+#define draw_dist_p FastBSphereCheck_v
 #define coll_p ((s32 (*)(f32, void *, s32, struct MobyP *))(func_L00_001F10E0))
 #define find_hit_p ((char *(*)(struct MobyP *, s32, s32))(func_L00_0025B478))
 #define remove_p ((void (*)(struct MobyP *))(func_0020D678))
@@ -2542,8 +2530,6 @@ extern int gemlik_frame_count MACRO_ADDR;
 
 int func_L13_002E56C8_E5810(struct Moby *m, char *arg, float *t) __asm__("func_L13_002E56C8");
 
-extern void get_next_moby_in_group(char **, char *, int, int);
-extern void set_moby_color(void *, int, int, int);
 extern int Moby_PlaySound_r3(int, int, void *) __asm__("func_0022ED80");
 
 extern char linked_switch_group_opened_debug_format[];
@@ -2725,7 +2711,7 @@ char *spawn_owner_linked_class_160_moby(char *owner) {
     }
     return (char *)moby;
 }
-extern void offset_moby_class_point_pairs_r(unsigned char *, int, int) __asm__("func_L00_0024FFE8");
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 /* Fades the moby in (state 1), holds until its owner is gone or dying (state 2), fades it out (state 3) and removes
@@ -2783,7 +2769,7 @@ void update_owner_linked_class_160_moby(struct Moby *moby) {
         step = 0xFC0;
         d[2] = old + step;
     }
-    offset_moby_class_point_pairs_r((unsigned char *)moby->pclass, 0, step);
+    offset_moby_class_point_pairs((unsigned char *)moby->pclass, 0, step);
 }
 struct MusicStreamChannel {
     s32 handle; /* 0x00: stream handle from the start callback; -1 while starting */
@@ -2877,11 +2863,8 @@ extern int D_L13_001D3748[];
 extern int D_L13_001D37D8[];
 extern int D_L13_001D37F0[];
 
-extern int random_integer_below(int);
-
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
-extern float random_float_between(float, float);
-extern void Moby_GetJointWorldPos_r2(void *, int, void *) __asm__("func_L00_00250800");
+
 extern void PartType04Spawn_r2(void *, void *, int, int, int, int, int, int) __asm__("func_L00_0026A7F8");
 typedef struct {
     char pad[0xC4];
@@ -2899,7 +2882,7 @@ void emit_gated_moby_joint_effects(struct Moby *m, char *d) {
             int r, k;
             zv = 0;
             s = m->scale / (m->pclass->scale * 4.0f);
-            Moby_GetJointWorldPos_r2(m, gemlik_joint_effect_bone[i], a);
+            Moby_GetJointWorldPos(m, gemlik_joint_effect_bone[i], a);
             if (gemlik_frame_count_r & 1) {
                 r = scale_ticks(rand_range(0xF, 0x14));
                 PartType04Spawn_r2(a, &zv, 0xCF0000FF, 0xCF, r, truncate_float_to_s32_r2(s * 350.0f), -100, 1);
@@ -3339,7 +3322,7 @@ extern void begin_starfighter_death_sequence_r(void *, void *, void *, void *) _
 extern void RerollEffectCounter_r2(void *, void *) __asm__("func_L00_0025E4B0");
 extern void Moby_PlaySound_r4(int, int, void *) __asm__("func_0022ED80");
 extern void detach_moby_joint_attachment_r(void *, void *, int) __asm__("func_L13_002EAAB8");
-extern void Sound_StopSlot_r(int) __asm__("func_L00_0028EBF0");
+
 extern void StepColorFade_r2(void *, void *) __asm__("func_L00_0025E590");
 extern int queue_starfighter_voice_line_r(void *, void *, int, int) __asm__("func_L13_002E9B30");
 
@@ -3423,7 +3406,7 @@ void process_moby_attachment_damage(Moby *m, Data_2EAE80 *d) {
                     if (d->i11C != -1) {
                         if (((Voice *)(voice_pool + d->i11C * 0x70))->f88 == m &&
                             ((Voice *)(voice_pool + d->i11C * 0x70))->b74 != 0) {
-                            Sound_StopSlot_r(d->i11C);
+                            Sound_StopSlot(d->i11C);
                         }
                         d->i11C = -1;
                     }
@@ -3516,7 +3499,7 @@ void process_moby_attachment_damage(Moby *m, Data_2EAE80 *d) {
                 if (d->i11C != -1) {
                     if (((Voice *)(voice_pool + d->i11C * 0x70))->f88 == m &&
                         ((Voice *)(voice_pool + d->i11C * 0x70))->b74 != 0) {
-                        Sound_StopSlot_r(d->i11C);
+                        Sound_StopSlot(d->i11C);
                     }
                     d->i11C = -1;
                 }

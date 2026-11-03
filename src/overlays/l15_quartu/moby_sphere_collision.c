@@ -12,7 +12,7 @@ typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 typedef int OvlQuad __attribute__((mode(TI)));
 
 extern CollisionHit quartu_coll_hit;
-extern int coll_sphere(void *, float, int, void *);
+extern int coll_sphere_v(void *, float, int, void *) __asm__("func_L00_001F10E0");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l15/math/interpolation/00247e90.c, FUN_L15_00247e90. */
 int move_moby_with_sphere_collision(struct Moby *obj, u128 *delta, int flags, float step, float radius) {
@@ -29,7 +29,7 @@ int move_moby_with_sphere_collision(struct Moby *obj, u128 *delta, int flags, fl
         mask = (flags << 1) & 0x20;
         qcopy(&probe, &obj->pos);
         probe.f[2] += step;
-        if (coll_sphere(&probe, radius, mask | 4, obj) == 0) {
+        if (coll_sphere_v(&probe, radius, mask | 4, obj) == 0) {
             break;
         }
         if (fast_atan2(quartu_coll_hit.normal.f[2], vec_length_xy(&quartu_coll_hit.normal.f[0])) > 0.5235988f) {

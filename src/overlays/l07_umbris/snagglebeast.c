@@ -39,6 +39,7 @@
 #include "overlays/shared/projectile_expiry_particles.h"
 #include "overlays/l07_umbris/white_particles.h"
 #include "overlays/l07_umbris/snagglebeast_sphere_draw.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 extern char weapon_ammo_counts[];
 /* Snagglebeast: senses the target, chases along umbris paths and whips its rope. */
 struct SnagglebeastVars {
@@ -168,8 +169,6 @@ extern s32 umbris_frame_count MACRO_ADDR;
 
 extern int truncate_float_to_s32(float);
 
-extern void draw_world_quad(void *, int, int);
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l07/gameplay/entities/00312948.c, FUN_L07_00312e70. */
 void draw_snagglebeast_rope_attack_layer(void *mobyp, float radius, int phase, float speed, int color) {
     Moby *moby = (Moby *)mobyp;
@@ -242,12 +241,9 @@ void draw_snagglebeast_rope_attack_layer(void *mobyp, float radius, int phase, f
         }
     }
 }
-extern void vec_scale_to_length(void *, void *, float);
 
 extern void draw_snagglebeast_rope_attack_layer(void *, float, int, float, int);
 
-extern int coll_line(void *, void *, int, int, int);
-extern int coll_sphere_mobys(float, void *, int, void *, void *);
 /* Emits layered effects and resolves movement along a scaled displacement. */
 void draw_and_probe_snagglebeast_rope_attack(char *moby) {
     float displacement[4];
@@ -350,14 +346,12 @@ extern int ComputeHitResponse_r(void *, void *, void *, int, int *, float *, int
 extern void SetDeathBits_r(void *, int, int) __asm__("func_L00_002584A8");
 extern void RerollEffectCounter_r(void *, void *) __asm__("func_L00_0025E4B0");
 
-extern void MobyBlendAnimation(void *, int, int, int);
 extern void HeroEnterMoveState_r(int, int) __asm__("func_L00_00222B80");
 extern void set_moby_dialogue_record_value_r(void *, int) __asm__("func_L00_002676A0");
-extern void jet_clear_persistent_r(int) __asm__("func_L00_002512D8");
+
 extern void jet_reset_camera_r(void *, void *) __asm__("func_L00_00286128");
 extern float split_float_fraction_r(float *, float) __asm__("func_L00_002001D8");
 
-extern void Sound_StopSlot_r(int) __asm__("func_L00_0028EBF0");
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 extern void StepColorFade_r(void *, void *) __asm__("func_L00_0025E590");
 extern Anim *scene_points_r __asm__("D_L07_0016016C") MACRO_ADDR;
@@ -411,7 +405,7 @@ void func_L07_00314800_r(Moby *moby, ThinkData *data, Vec *vec) {
                     if (data->f1F0 != -1) {
                         set_moby_dialogue_record_value_r(moby, 1);
                         SetDeathBits_r(moby, 0, -1);
-                        jet_clear_persistent_r(moby->mission);
+                        jet_clear_persistent(moby->mission);
                         jet_reset_camera_r(scene_points_r[data->f1F0].f30, scene_points_r[data->f1F0].f70);
                     }
                     moby->state = 10;
@@ -441,7 +435,7 @@ void func_L07_00314800_r(Moby *moby, ThinkData *data, Vec *vec) {
                         if (data->f1F8 != -1) {
                             VoicePoolRow *e = (VoicePoolRow *)(voice_pool_r + data->f1F8 * 0x70);
                             if (e->owner == moby && e->state != 0) {
-                                Sound_StopSlot_r(data->f1F8);
+                                Sound_StopSlot(data->f1F8);
                             }
                         }
                         data->f1F8 = -1;
@@ -611,7 +605,6 @@ int start_snagglebeast_turn_toward_target(unsigned char *m, unsigned char *obj, 
     return 0;
 }
 
-extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern float g_frame_scale_sq MACRO_ADDR;
 
 // Computes a clamped turn angle toward a target and starts an effect.
@@ -665,9 +658,7 @@ void apply_snagglebeast_big_head_cheat(char *arg) {
     }
 }
 
-extern void vec_scale_to_length(void *, void *, float);
 extern void detach_snagglebeast_rope_particles(int arg0);
-extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
 
 extern int truncate_float_to_s32(float);
 
@@ -677,7 +668,7 @@ extern int func_001160D8(void);
 
 extern int start_snagglebeast_turn_toward_target(unsigned char *, unsigned char *, float *, int, int);
 extern int update_alternating_joint_emission_burst(void *, char *, float *);
-extern int IsFrameWithinWindow(void *, float);
+
 extern unsigned char *spawn_moby_class_1046(int, void *, int, float, float, float, float, float);
 
 extern void func_L07_00313298(void *, void *, int, void *, short, unsigned int, int, float);
@@ -1854,7 +1845,6 @@ void snagglebeast_update(unsigned char *m) {
 extern s32 depth_buffer_address MACRO_ADDR;
 typedef float RopeVec[4] __attribute__((aligned(16)));
 
-extern void draw_world_quad(void *, int, int);
 extern float scroll_phase SDATA(scroll_phase);
 extern float row_start_phase SDATA(row_start_phase);
 extern float row_phase_step_gp SDATA(row_phase_step_gp);
@@ -1961,8 +1951,6 @@ extern RopeVec_319080 snagglebeast_rope_centers_r[] __asm__("D_L07_0020DDC0");
 extern short snagglebeast_rope_row_alpha_r[] __asm__("D_L07_0020DE88");
 extern RopeMobySlot rope_particles_r[] __asm__("D_L07_0020CB00");
 extern void norm_319080(void *, void *, float) __asm__("func_L00_001FF4B0");
-
-extern float random_angle_radians(void);
 
 /* Starts the rope when one is pending: lays nine points out from the anchor along the moby's
  * axis, then resets the swing state and, once, clears every entry's link.
@@ -2335,8 +2323,6 @@ float update_snagglebeast_rope(void *moby, void *anchor) {
     return best;
 }
 
-extern void vec_scale_to_length(void *, void *, float);
-
 extern char rope_previous_points[];
 extern char snagglebeast_rope_centers_v[] __asm__("D_L07_0020DDC0");
 extern float row_phase_step_gp SDATA(row_phase_step_gp);
@@ -2410,7 +2396,7 @@ extern Vec4 umbris_coll_resolved_pos;
 #define add_p func_001F9BD8
 #define desc_p func_L00_0025A8C0
 #define probe_p func_L00_001F2BE8
-extern int coll_sphere(float, void *, int, void *);
+
 #define coll_p func_L00_001F10E0
 #define remove_p func_0020D678
 #define fin_p ((void (*)(void *, float))(func_L00_0025B040))
@@ -2664,19 +2650,14 @@ extern s32 ComputeHitResponse_r2(struct Moby *, MobyHit *, void *, s32, s32 *, s
 extern void debris_31AAB0(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
                           int, int, int, int) __asm__("func_L00_0025F4A8");
 extern void SetDeathBits_r2(void *, int, int) __asm__("func_L00_002584A8");
-extern void clamp_vec_length(void *, void *, f32);
 
 extern s32 tick_31AAB0(s32 *) __asm__("func_001F9908");
 extern s32 coll_sphere_r(f32, void *, s32, struct Moby *) __asm__("func_L00_001F10E0");
 extern void jet_animate_r(struct Moby *, f32) __asm__("func_L00_0025B040");
 extern void remove_31AAB0(struct Moby *, SwooperSpawnerVars_31AAB0 *) __asm__("func_L07_0031AA68");
 
-extern float fast_atan2(float, float);
-
 extern void norm_31AAB0(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void turn_31AAB0(struct Moby *, f32, void *, f32, f32, f32) __asm__("func_L00_002592B0");
-
-extern void MobyBlendAnimation(void *, int, int, int);
 
 extern s32 probe_31AAB0(f32, void *, s32, void *, void *) __asm__("func_L00_001F2BE8");
 
@@ -2831,7 +2812,6 @@ extern float g_frame_time_r2 __asm__("D_0015EE6C") MACRO_ADDR;
 extern void break_rand_vec_31B318(void *, f32, f32) __asm__("func_L00_00258DB0");
 extern struct Moby *func_L01_002F9908(void *, void *, s32, f32, s32, f32, f32, f32, s32);
 extern MobyHit_31B318 *hit_31B318(struct Moby *, s32, s32) __asm__("func_L00_0025B478");
-extern float random_float_between(float, float);
 
 extern void debris_31B318(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
                           int, int, int, int) __asm__("func_L00_0025F4A8");
@@ -2908,11 +2888,8 @@ extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
 extern void SetDeathBits_r3(void *, int, int) __asm__("func_L00_002584A8");
 
 extern void RerollEffectCounter_r2(void *, void *) __asm__("func_L00_0025E4B0");
-extern void MobyBlendAnimation(void *, int, int, int);
-extern void StepColorFade_r2(void *, void *) __asm__("func_L00_0025E590");
-extern float fast_atan2(float, float);
 
-extern void Moby_GetJointWorldPos_r(void *, int, void *) __asm__("func_L00_00250800");
+extern void StepColorFade_r2(void *, void *) __asm__("func_L00_0025E590");
 
 extern void *func_L07_0030C918(void *, void *, void *, int);
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
@@ -3018,7 +2995,7 @@ void GunMoby_HandleHit(Moby *moby) {
             }
             if (moby->command == 0) {
                 if (data->burst == 0 || (data->shot & 1) != 0) {
-                    Moby_GetJointWorldPos_r(moby, 0, pos);
+                    Moby_GetJointWorldPos(moby, 0, pos);
                     vel[0] = FastCos(moby->rot.z) * (g_frame_time_r2 * 15.0f);
                     vel[1] = FastSin(moby->rot.z) * (g_frame_time_r2 * 15.0f);
                     vel[2] = 0.0f;

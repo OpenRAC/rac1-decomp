@@ -22,6 +22,7 @@
 #include "overlays/shared/hero_vehicle_and_collision.h"
 #include "core/gs/put_draw_env.h"
 #include "overlays/shared/level_gameplay_loading.h"
+#include "asm_functions/shared_levels.h"
 extern char cd_read_state[];
 extern char *level_render_state;
 
@@ -336,10 +337,6 @@ extern float variant_effect_quad_uvs[];
 extern V_28efc8 variant_effect_quad_corners[];
 extern int variant_effect_quad_counts SDATA(variant_effect_quad_counts);
 void FastVecScale_v(float, void *, void *) __asm__("func_001F9C30");
-
-int random_integer_below(int);
-
-void draw_world_quad(void *, void *, int);
 
 /* The 0x90-byte quad the effect builds: the NTSC GeometryQuad layout. */
 struct GeometryQuad {

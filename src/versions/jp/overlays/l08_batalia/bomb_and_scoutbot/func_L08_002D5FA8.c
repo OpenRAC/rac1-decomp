@@ -89,7 +89,7 @@ void update_bomber_tank_damage_and_aim(Moby *m) {
                             if (flags[0xD] == 0) {
                                 flags[0xD] = one;
                                 sound_2D5FA8(1, 0, 0);
-                                voice_2D5FA8(0x542D, -1);
+                                ShowBanner(0x542D, -1);
                             }
                         }
                     }
@@ -155,7 +155,7 @@ void update_bomber_tank_damage_and_aim(Moby *m) {
     }
     rotation_2D5FA8(vec, 1, d->pitch);
     rotation_2D5FA8(d->f110, 2, d->yaw);
-    matmul_2D5FA8(d->f110, vec, d->f110);
+    multiply_quaternions(d->f110, vec, d->f110);
     {
         short a0 = d->anim0;
         short a2 = d->anim2;

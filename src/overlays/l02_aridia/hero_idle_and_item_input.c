@@ -1544,8 +1544,6 @@ extern int HeroL02_SetMoveState(int a, int b);
 
 extern float resolve_hero_trajectory_parameter(float a, float b, float c);
 
-extern float ApproachValue(float *p, float target, float maxstep);
-
 /* Hero state machine: per-frame transition logic for the current hero state (level 02 build). */
 void HeroL02_UpdateStateTransitions(void) {
     unsigned char *moby;
@@ -3285,10 +3283,6 @@ typedef int V4q_32b90 __attribute__((mode(TI), aligned(16)));
 extern Hero g_hero_r __asm__("D_0013F450");
 extern u8 aridia_coll_hit_normal[];
 extern f32 aridia_coll_hit_point;
-
-extern void vec_scale_to_length(void *, void *, f32);
-
-extern s32 coll_line(void *, void *, s32, s32, s32);
 
 extern f32 gravity_z_r(void *) __asm__("func_L00_002342F8");
 

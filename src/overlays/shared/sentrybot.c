@@ -180,8 +180,6 @@ extern void prepare_sentrybot_alarm(unsigned char *moby);
 extern void alert_visible_group_sentrybots(void *);
 extern int can_sentrybot_approach_linked_moby(void *);
 
-extern void vec_scale_to_length(void *, void *, float);
-
 extern char *spawn_class_3a6_moby_v(char *, float *, char *, char *) __asm__("func_L15_002E5970");
 
 extern void SetDeathBits(void *, int, int);
@@ -1026,8 +1024,6 @@ void begin_sentrybot_turn_toward_point(char *moby, void *a, float *point, void *
 }
 extern float g_frame_time_sq MACRO_ADDR;
 
-extern void ApproachValue(void *, float, float);
-
 // Turns a moby toward a point, updates its speed and velocity, and reports whether it is within 0.2 of it.
 int move_sentrybot_toward_point(char *moby, float *point, float arg) {
     float *fp = (float *)(moby + 0x48);
@@ -1084,7 +1080,6 @@ int can_sentrybot_approach_linked_moby(void *mm) {
     } while (*p++ >= 0);
     return 1;
 }
-extern int coll_line(void *, void *, int, void *, void *);
 
 // Finds the nearest visible target moby from the moby's candidate list, returning its address.
 int find_sentrybot_attention_target(char *m) {
@@ -1217,7 +1212,6 @@ void set_sentrybot_attention_target(char *a, char *b) {
     }
 }
 extern float g_frame_scale_sq MACRO_ADDR;
-extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 
 /* Turns the turret head toward its current target (or remembered point), clamping yaw and pitch, and eases both
    joints. */
@@ -1694,7 +1688,7 @@ extern char quartu_player_camera[];
 
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 
-extern int coll_sphere_mobys(void *, float, int, void *, void *);
+extern int coll_sphere_mobys_v(void *, float, int, void *, void *) __asm__("func_L00_001F2BE8");
 
 extern void *spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(void *, void *, int, int, float, int,
                                                                                int, int, int);
@@ -1888,7 +1882,7 @@ void update_target_leading_missile(M_29E8A0 *m) {
             float dist;
             char *cam;
             int i, j;
-            int r = coll_sphere_mobys(m->pos, 2.0f, 0x10, m, 0);
+            int r = coll_sphere_mobys_v(m->pos, 2.0f, 0x10, m, 0);
             *(u128_29E8A0 *)v100 = *(u128_29E8A0 *)m->pos;
             SendRadialMessageToMobys(m, v100, quartu_coll_sphere_moby_hits, r, (int)owner, 0x810000, 3, 1, 3.0f, 1.0f,
                                      1.0f);
@@ -2478,7 +2472,6 @@ int activate_first_inactive_group_moby(int idx, void *pos) {
 }
 typedef int u128_2A3B98 __attribute__((mode(TI)));
 
-extern void draw_world_quad(void *, void *, int);
 extern float D_L15_001CE490[];
 extern float D_L15_001CE390[];
 extern int quartu_moby_groups_x[] __asm__("D_L15_001AC140");
@@ -2564,8 +2557,6 @@ typedef struct {
     unsigned char pad21[0xDF];
 } Moby256_2A3DD0;
 extern Moby256_2A3DD0 *D_L15_00160058_2A3DD0 SDATA(D_L15_00160058);
-extern float random_float_between(float, float);
-extern int random_integer_below(int);
 
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 
@@ -3012,7 +3003,6 @@ void spiderbot_update(Moby *moby) {
 }
 typedef int u128_2A8850 __attribute__((mode(TI)));
 
-extern void draw_world_quad(void *, void *, int);
 extern float quartu_camera_pos[];
 extern float quartu_spiderbot_effect_quad_uvs[];
 

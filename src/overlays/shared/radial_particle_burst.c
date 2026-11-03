@@ -11,8 +11,6 @@
 
 LINKER_REMNANT("asm/overlays", func_L03_00249488);
 
-extern void vec_scale_to_length(void *, void *, float);
-
 // Rotates a vector toward another by a fraction of the angle between them using a quaternion.
 void rotate_vector_by_scaled_angle_between_vectors(float t, float *dst, float *a, float *b, int flag) {
     float q[4];

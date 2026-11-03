@@ -132,7 +132,6 @@ extern void clear_u64_value(void *);
 extern void lerp_vector(void *, void *, void *, float);
 extern void spawn_deplanetizer_gun_trail_effects(void *a, void *b, void *c, float f0, float f1);
 extern void FastVecSub(void *, void *, void *);
-extern void vec_scale_to_length(void *, void *, float);
 
 extern float vec_length_xy(void *);
 
@@ -575,10 +574,9 @@ extern unsigned long GetEffectTex(int);
 
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
-extern void vec_scale_to_length(void *, void *, float);
+
 extern void FastVecCross(void *, void *, void *);
 extern void transform_vector(void *, void *, void *);
-extern void draw_world_quad(void *, void *, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l18/gameplay/vendor/002f88e8.c, FUN_L18_002f9c20. */
 void draw_moby_two_tint_glow_quads(struct Moby *m) {
@@ -888,8 +886,6 @@ void mark_class_0630_moby_and_child_for_removal(Moby *moby) {
     }
 }
 
-extern void vec_scale_to_length(void *, void *, float);
-
 extern float veldin2_joint_trail_offset SDATA(veldin2_joint_trail_offset);
 extern float veldin2_joint_trail_size_a SDATA(veldin2_joint_trail_size_a);
 extern float veldin2_joint_trail_size_b SDATA(veldin2_joint_trail_size_b);
@@ -948,11 +944,8 @@ extern void update_gadgebot_damage_target_and_glow(void *);
 extern float fd9a0_c(void *, void *) __asm__("func_L18_002FD9A0");
 extern float f9d48_i(void *, void *) __asm__("func_001F9D48");
 
-extern int IsFrameWithinWindow(char *, float);
-
 extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                   float, int, int, int, int) __asm__("func_L00_0025F4A8");
-extern float ApproachValue(float *p, float target, float maxstep);
 
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
@@ -1260,10 +1253,8 @@ typedef struct {
     float v[4];
 } __attribute__((aligned(16))) QVec;
 extern float vec_distance_xy(float *, float *);
-extern float ApproachWithVelocity(float *, float *, float, float, float, float);
-extern float FastCos(float);
 
-extern void resolve_point_path_segment_xy_clearance(float, void *, void *, void *);
+extern float FastCos(float);
 
 /* Steers a Gadgebot enemy toward src and returns the distance to it. */
 float move_gadgebot_toward_target(char *self, float *src) {

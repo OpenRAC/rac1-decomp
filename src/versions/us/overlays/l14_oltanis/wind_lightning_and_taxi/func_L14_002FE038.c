@@ -21,7 +21,7 @@ void update_enemy_fighter_921(Moby *m) {
                 if (fighter_skill_hit_count_r2 >= 3 && ((Skill_2FE038 *)gSkillPoints_r)->f18 == 0) {
                     ((Skill_2FE038 *)gSkillPoints_r)->f18 = 1;
                     PlayBankSound_r2(1, 0, 0);
-                    ShowBanner_r2(0x53D6, -1);
+                    ShowBanner(0x53D6, -1);
                 }
             }
             m->state = 3;
@@ -30,7 +30,7 @@ void update_enemy_fighter_921(Moby *m) {
             m->collision = 0;
             if (d->f6C != -1 && ((VoicePoolRow *)(voice_pool_r + d->f6C * 0x70))->owner == m &&
                 ((VoicePoolRow *)(voice_pool_r + d->f6C * 0x70))->state != 0) {
-                Sound_StopSlot_r3(d->f6C);
+                Sound_StopSlot(d->f6C);
             }
             d->f6C = -1;
         }
@@ -147,7 +147,7 @@ void update_enemy_fighter_921(Moby *m) {
             break;
     }
     spawn_moby_exhaust_puffs_r(m);
-    if (m->state != 0 && m->state != 3 && m->state != 1 && Sound_IsPlaying_r3(m, d->f6C) == 0) {
+    if (m->state != 0 && m->state != 3 && m->state != 1 && Sound_IsPlaying(m, d->f6C) == 0) {
         d->f6C = Moby_PlaySound_r4(0, 4, m);
     }
 }

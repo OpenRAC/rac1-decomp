@@ -11,7 +11,7 @@ void update_enemy_fighter(struct Moby *moby) {
             if (fighter_skill_hit_count_r > 2 && D_0013D510_FD578.flag == 0) {
                 D_0013D510_FD578.flag = 1;
                 PlayBankSound_r(1, 0, 0);
-                ShowBanner_r(0x53D6, -1);
+                ShowBanner(0x53D6, -1);
             }
         }
         moby->state = 2;
@@ -22,7 +22,7 @@ void update_enemy_fighter(struct Moby *moby) {
         if (index != -1) {
             char *entry = voice_pool_r2 + index * 0x70;
             if (*(struct Moby **)(entry + 0x88) == moby && *(unsigned char *)(entry + 0x74) != 0)
-                Sound_StopSlot_r2(index);
+                Sound_StopSlot(index);
         }
         data->sound = -1;
     }

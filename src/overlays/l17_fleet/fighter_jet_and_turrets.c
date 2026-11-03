@@ -128,12 +128,6 @@ struct MagnetElevatorVars {
 
 typedef int v128 __attribute__((mode(TI)));
 
-extern int coll_line(void *, void *, int, void *, void *);
-
-extern void vec_scale_to_length(void *, void *, float);
-
-extern int FastBSphereCheck(char *, float);
-
 extern void draw_fleet_beam_quad(char *moby);
 extern char *fleet_camera_points MACRO_ADDR;
 extern char *fleet_mobys MACRO_ADDR;
@@ -331,8 +325,6 @@ void update_fleet_beam(char *m) {
 }
 typedef int u128 __attribute__((mode(TI)));
 
-extern void draw_world_quad(void *, void *, int);
-
 extern struct {
     float a, b;
 } fleet_beam_quad_uvs[4];
@@ -390,14 +382,9 @@ void draw_fleet_beam_quad(char *moby) {
 extern void process_dreks_fleet_turret_hits(char *m);
 extern void distribute_class_733_group_mobys_along_path(char *m);
 
-extern void EaseManipulatorOffsets(char *, char *, int, float, float);
-
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern char *spawn_class_558_moby_toward_target(char *src, char *pos, float *v, float f);
-
-extern void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float scale, float *v10,
-                                float *v11, float *v12);
 
 extern int g_current_level_index MACRO_ADDR;
 extern unsigned char help_stats_base[] NOT_SDA;
@@ -927,9 +914,6 @@ void draw_fleet_scrolling_radial_quads(char *moby) {
 extern void spawn_explosion_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                 float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
-extern int func_L00_001F2BE8(float, void *, int, void *, void *);
-extern float resolve_camera_surface_height(float *, void *);
-
 extern float fleet_bobber_height SDATA(fleet_bobber_height);
 extern float fleet_bobber_rate_deg SDATA(fleet_bobber_rate_deg);
 extern char *fleet_coll_hit_moby;
@@ -1159,8 +1143,6 @@ void StopsPlatformUpdate(char *m) {
             break;
     }
 }
-
-extern int coll_sphere(float, void *, int, void *);
 
 extern char fleet_coll_hit_result[];
 extern int gameplay_event_frame_count MACRO_ADDR;
@@ -2298,10 +2280,6 @@ void PlayerShipUpdate(Moby *m, Obj *o) {
 extern void spawn_explosion_v(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
                               float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
-extern int try_set_help_message(int, int);
-
-extern float ApproachValue(float *, float, float);
-
 extern char fleet_player_camera[];
 extern unsigned char saved_mission_state[][16] NOT_SDA;
 extern float fleet_view_tan_half_fov_a[] __asm__("D_L17_0016D470");
@@ -2888,7 +2866,7 @@ void adjust_fighter_jet_steering_for_flight_bounds(char *moby, float *a, float *
         }
     }
 }
-extern float ApproachWithVelocity(float *, float *, float, float, float, float);
+
 extern void build_magnet_elevator_camera_pose(char *, char *, char *);
 extern void rebuild_magnet_elevator_world_path(char *);
 

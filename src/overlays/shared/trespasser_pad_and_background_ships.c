@@ -182,9 +182,6 @@ typedef struct Frame {
     char padC[4];
 } Frame;
 
-extern void VU1_addDataRef_r(void *, int) __asm__("func_00234B48");
-extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
-
 extern char aridia_view_params_r[] __asm__("D_L02_0016D0C0");
 extern int D_L02_0015F558 MACRO_ADDR;
 extern float textured_grid_saved_fog_near_distance_r __asm__("D_L02_00161378") MACRO_ADDR;
@@ -228,7 +225,7 @@ void build_interpolated_dma_packet(Arg *arg) {
     set_scale_matrix(m, 1024.0f);
     FastVecScale(&m[12], aridia_camera_pos_r, -1024.0f);
     m[15] = 1.0f;
-    VU1_addDataRef_r(font_vu_program, font_vu_program_tag);
+    VU1_addDataRef(font_vu_program, font_vu_program_tag);
     l02_packet_r[0] = 0x10000000;
     l02_packet_r[1] = 0;
     l02_packet_r[2] = 0x11000000;
@@ -239,9 +236,9 @@ void build_interpolated_dma_packet(Arg *arg) {
     base[6] = 0;
     base[7] = 0x6C0C43A4;
     p = base + 8;
-    sce_vu0_mul_matrix_r(p, aridia_camera_pos_r - 0x100, m);
+    sce_vu0_mul_matrix(p, aridia_camera_pos_r - 0x100, m);
     p = base + 0x18;
-    sce_vu0_mul_matrix_r(p, aridia_camera_pos_r - 0x80, m);
+    sce_vu0_mul_matrix(p, aridia_camera_pos_r - 0x80, m);
     base[0x28] = 0x8000;
     base[0x29] = 0x303EC000;
     base[0x2A] = 0x412;
@@ -460,20 +457,14 @@ typedef struct {
 } Idle;
 extern int Moby_PlaySound_r(int, int, Moby *) __asm__("func_0022ED80");
 
-extern void CameraScript_r(void *, void *, int, int, int) __asm__("func_L00_002EBF50");
 extern void align_hero_to_tresspasser_pad_r(Moby *) __asm__("func_L02_002DA728");
 extern void compute_tresspasser_pad_camera_transform_r(void *, void *, Moby *) __asm__("func_L02_002D9D48");
 extern float ApproachWithVelocity_r(float *, float *, float, float, float, float) __asm__("func_00214D88");
 extern void lerp_vector_r(void *, void *, void *, float) __asm__("func_001F9C08");
 
-extern void set_camera_position_r(void *) __asm__("func_L00_002EBE88");
-extern void set_camera_rotation_r(void *) __asm__("func_L00_002EBEE0");
-extern int force_help_message(int, int);
-
 extern void AddDrawCallback_r(void (*)(void), Moby *) __asm__("func_001F49B0");
 extern void draw_tresspasser_puzzle_r(void) __asm__("func_L02_002DA820");
 
-extern void CameraScript2_r(int) __asm__("func_L00_002EC0C8");
 extern void request_hero_idle_state_for_vehicle_mode_r(void) __asm__("func_L01_00240CE8");
 
 extern float trespasser_arrow_corners_r[4][4] __asm__("D_L02_001D3680");
@@ -551,7 +542,7 @@ void tresspasser_pad_update(Moby *moby) {
                     data->input_flags = 0;
                     HeroL02_SetMoveState(0x72, 0);
                     set_hero_animation(0x57, 0, scale_ticks(6));
-                    CameraScript_r(&aridia_camera_pos_r2[0], &aridia_camera_pos_r2[1], 1, 0, 0);
+                    CameraScript(&aridia_camera_pos_r2[0], &aridia_camera_pos_r2[1], 1, 0, 0);
                     moby->state = 2;
                     data->timer = scale_ticks(0x3C);
                     data->camera_t = 0.0f;
@@ -573,12 +564,12 @@ void tresspasser_pad_update(Moby *moby) {
                 FastAddRots(FastSubRots(camera_rot.z, data->camera_rot.z) * data->camera_t, data->camera_rot.z);
             camera_rot.y =
                 FastAddRots(FastSubRots(camera_rot.y, data->camera_rot.y) * data->camera_t, data->camera_rot.y);
-            set_camera_position_r(&camera_pos);
-            set_camera_rotation_r(&camera_rot);
+            set_camera_position(&camera_pos);
+            set_camera_rotation(&camera_rot);
             aridia_tresspasser_pad_camera_set = 1;
             force_help_message(6, 0);
             if (aridia_player_camera_r2.p180 != 0 && aridia_player_camera_r2.p180->unk86 != 5) {
-                CameraScript_r(&aridia_player_camera_r2.v140, &aridia_player_camera_r2.v150, 1, 0, 0);
+                CameraScript(&aridia_player_camera_r2.v140, &aridia_player_camera_r2.v150, 1, 0, 0);
             }
             i = 0;
             if (0.99f <= data->camera_t && FastDiffRots(aridia_player_camera_r2.v150.z, camera_rot.z) < 0.017453292f) {
@@ -655,7 +646,7 @@ void tresspasser_pad_update(Moby *moby) {
                      aridia_help_popup_state_r.i0 == 0 && aridia_help_popup_state_r.i24 == -1) ||
                     g_hero.state.current != 0x72 || g_hero.items[0].item_id != 0x1A) {
                     moby->state = 1;
-                    CameraScript2_r(1);
+                    CameraScript2(1);
                     request_hero_idle_state_for_vehicle_mode_r();
                     data->timer = scale_ticks(0x3C);
                 }
@@ -668,7 +659,7 @@ void tresspasser_pad_update(Moby *moby) {
                         1 << (moby->save_id & 0x1F);
                     aridia_moby_killed[(short)moby->save_id >> 5] |= 1 << (moby->save_id & 0x1F);
                 }
-                CameraScript2_r(1);
+                CameraScript2(1);
                 HeroL02_SetMoveState(HERO_STATE_IDLE, 1);
                 moby->command = 1;
                 moby->state = 4;
@@ -1502,7 +1493,6 @@ extern float versatarget_sparkle_offset SDATA(versatarget_sparkle_offset);
 extern void initialize_camera_offset_effect_state_c(char *) __asm__("func_L02_002FBB10");
 extern void try_select_camera_offset_effect_moby_c(char *) __asm__("func_L02_002FBC00");
 extern float SteerAngleWithVelocity_v(float *, float, float *, float, float, float) __asm__("func_L00_0025CE58");
-extern void vec_scale_to_length(void *, void *, float);
 
 extern int truncate_float_to_s32(float);
 
@@ -1622,10 +1612,6 @@ extern char *aridia_camera_moby;
 extern void initialize_collectible_sprite_state(char *moby);
 
 extern void update_collectible_sprite_effect(char *m);
-
-extern float ApproachWithVelocity(float *, float *, float, float, float, float);
-
-extern float ApproachValue(float *, float, float);
 
 typedef int u128_002EB648 __attribute__((mode(TI)));
 
@@ -1842,8 +1828,6 @@ void update_collectible_sprite_effect(char *m) {
     }
 }
 
-extern int get_next_moby_in_group(int *, int, int, int);
-
 /* Walks the moby list matching this moby's id and pulses each match's data slots while it is bright. */
 void draw_background_ship_1_joint_billboards(char *self) {
     char *cur;
@@ -1901,12 +1885,7 @@ void prepare_background_ship_1_joint_billboards(char *moby) {
     }
 }
 
-extern int Moby_PlaySound_r_r(int, int, int) __asm__("func_0022ED80");
-extern void SamplePathAt(int *, int, void *, float *, int, float);
 extern void spawn_background_ship_1_joint_sparks(char *m, void *arg1);
-extern int PlayBankSound(int, int, int);
-
-extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
 
 extern float frame_scale MACRO_ADDR;
 extern float aridia_zero_vec[] MACRO_ADDR;
@@ -1969,7 +1948,7 @@ void background_ship_1_update(char *moby) {
         case 1:
             qcopy(tv, &((Moby *)moby)->pos);
             if (Sound_IsPlaying(moby, d->voice) == 0) {
-                d->voice = Moby_PlaySound_r_r(1, 4, (int)moby);
+                d->voice = Moby_PlaySound(1, 4, (int)moby);
             }
             p2 = background_ship_1_speed * g_frame_time;
             d->path_pos = d->path_pos + p2 / d->first_leg;
@@ -2023,7 +2002,7 @@ void background_ship_1_update(char *moby) {
                     }
                 }
             }
-            Moby_PlaySound_r_r(0, 0, (int)moby);
+            Moby_PlaySound(0, 0, (int)moby);
             FastVecScale(tv, &((Moby *)moby)->rot_row0, background_ship_1_debris_speed * frame_scale);
             tv[2] = tv[2] + background_ship_1_debris_lift * frame_scale;
             r1 = scale_ticks(90);
@@ -2161,7 +2140,7 @@ void prepare_background_ship_2_joint_draw_data(char *m) {
         }
     }
 }
-extern int Moby_PlaySound_r_r(int, int, int) __asm__("func_0022ED80");
+
 extern void spawn_background_ship_2_joint_sparks(char *m, void *arg1);
 extern void spawn_background_ship_2_level_10_joint_sparks(char *moby, void *arg);
 extern void prepare_background_ship_2_joint_draw_data(char *m);
@@ -2228,7 +2207,7 @@ void background_ship_2_update(char *moby) {
             }
             qcopy(tv, &((Moby *)moby)->pos);
             if (Sound_IsPlaying(moby, d->voice) == 0) {
-                d->voice = Moby_PlaySound_r_r(1, 4, (int)moby);
+                d->voice = Moby_PlaySound(1, 4, (int)moby);
             }
             p2 = background_ship_2_speed * g_frame_time;
             if (g_current_level_index_r == LEVEL_ORXON) {
@@ -2289,7 +2268,7 @@ void background_ship_2_update(char *moby) {
                     }
                 }
             }
-            Moby_PlaySound_r_r(0, 0, (int)moby);
+            Moby_PlaySound(0, 0, (int)moby);
             FastVecScale(tv, &((Moby *)moby)->rot_row0, background_ship_2_debris_speed * frame_scale);
             tv[2] = tv[2] + background_ship_2_debris_lift * frame_scale;
             r1 = scale_ticks(90);
@@ -2699,7 +2678,6 @@ extern int D_L02_001AC140[];
 extern void func_L00_002E9838(char *);
 extern int func_L00_002E9870(char *);
 extern int f_trigger_2FCE00(char *) __asm__("func_L02_002FCA80");
-extern float fast_atan2(float, float);
 
 extern void f_6570_2FCE00(int) __asm__("func_L02_002F79A8");
 extern void f_6598_2FCE00(float, float, float) __asm__("func_L02_002F79D0");

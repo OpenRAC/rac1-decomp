@@ -23,8 +23,6 @@ struct CommanderShotVars {
     u8 mine_state[0x10]; /* 0x20: mine_fall state */
 };
 
-extern int FastBSphereCheck(char *, float);
-
 extern int *hoven_dma_packet_cursor MACRO_ADDR;
 extern char hoven_effect_list_setup_packet[];
 

@@ -182,10 +182,6 @@ char *spawn_blarg_elite_commando_rocket(char *owner, float *pos, char *vec) {
     return moby;
 }
 
-extern void BuildSphericalOffset(void *, float, float, float);
-
-extern int coll_line(void *, void *, int, void *, void *);
-
 extern void spawn_explosion_v(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
                               float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
@@ -280,22 +276,15 @@ extern void update_blarg_elite_commando_joint_aim();
 extern void emit_blarg_elite_commando_joint_sparks();
 extern void update_blarg_elite_commando_damage_and_pursuit(char *);
 
-extern float random_angle_radians(void);
-
 extern int truncate_float_to_s32(float);
 
-extern void vec_scale_to_length(void *, void *, float);
 extern float advance_blarg_elite_commando_base_position_update(char *, void *, int) __asm__("func_L16_002D5280");
 
-extern void MobyBlendAnimation(void *, int, int, int);
 extern void select_blarg_elite_commando_movement_animation(char *);
-extern int IsFrameWithinWindow(char *, float);
 
 extern char *spawn_blarg_elite_commando_rocket(char *, float *, char *);
 
 extern int Moby_PlaySound_update(int, int, void *) __asm__("func_0022ED80");
-
-extern float ApproachValue(float *, float, float);
 
 extern char hero_globals_base[];
 extern unsigned char D_0015EEB4[4] MACRO_ADDR;
@@ -552,7 +541,6 @@ extern void randomize_blarg_elite_commando_group_pursuit_timers(void *, int, int
 extern int truncate_float_to_s32(float);
 
 extern void InitKnockback_v(float, void *, void *, int, int, int) __asm__("func_L00_0025D5B0");
-extern int PlayBankSound(int, int, int);
 
 extern void SetDeathBits(void *, int, int);
 
@@ -779,10 +767,6 @@ void start_blarg_elite_commando_return_to_initial_position(char *moby, int arg) 
     }
 }
 
-extern float ApproachWithVelocity(float *, float *, float, float, float, float);
-
-extern void vec_scale_to_length(void *, void *, float);
-
 /* steers the moby's vector toward the target and returns the distance */
 float advance_blarg_elite_commando_base_position(char *moby, float *target) {
     struct EliteCommandoVars *data = (struct EliteCommandoVars *)((Moby *)moby)->pvars;
@@ -926,9 +910,6 @@ void emit_blarg_elite_commando_death_particles(void *m) {
     spawn_glow_particle(m, origin, movement, 3.0f, scale_ticks(29), 32, 0, 0, 32);
 }
 
-extern void vec_scale_to_length(void *, void *, float);
-
-extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern float g_frame_scale_sq MACRO_ADDR;
 /* Aim paired joints toward the owner or player, then smooth their rotations. */
 void update_blarg_elite_commando_joint_aim(char *m) {
@@ -1029,7 +1010,6 @@ extern void compute_armed_transport_path_headings(void *);
 extern int advance_armed_transport_along_path(char *, char *);
 extern void update_armed_transport_joint_animation(char *);
 
-extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
 /* Stand-in: retail passes five arguments and no float; the file's definition (line 101) has a sixth, `float unused`. */
 extern float gHeroPos[];
 extern unsigned char hero_vehicle_mode[];
@@ -1307,7 +1287,7 @@ void update_armed_transport_damage_and_targeting(char *m) {
         qcopy(&d->target, player->position);
     }
 }
-extern void func_00215CA8(float, void *, int, void *, void *, int);
+extern void SamplePathAt_v(float, void *, int, void *, void *, int) __asm__("func_00215CA8");
 
 extern float ApproachWithVelocity_path42(float, float, float, float, float *, float *) __asm__("func_00214D88");
 extern short armed_transport_path_accel, armed_transport_max_path_speed;
@@ -1323,7 +1303,7 @@ int advance_armed_transport_along_path(char *m, char *path) {
     d->node_t = progress - (float)index;
     if (index < *(int *)path - 1) {
         position = m + 0x10;
-        SamplePathAt(progress, path, 0, position, m + 0x40, 0);
+        SamplePathAt_v(progress, path, 0, position, m + 0x40, 0);
         d->base_z = ((Moby *)m)->pos.z;
         speed = 0.0f;
         distance = FastVecDist(position, path + (*(int *)path << 4));
@@ -1359,7 +1339,6 @@ void compute_armed_transport_path_headings(void *arg) {
         b->pts[0].heading = a->pts[0].heading;
     }
 }
-extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 
 /* Ease the armed transport's two joint offsets toward their targets each frame. */
 void update_armed_transport_joint_animation(char *moby) {
@@ -1442,7 +1421,6 @@ typedef struct {
     float cardinal_angles[4];
 } RingData;
 
-extern void draw_world_quad(void *, void *, int);
 extern float grindrail_barrier_ring_uvs[4][2], grindrail_barrier_core_uvs[4][2];
 extern float grindrail_barrier_ring_quad_corners[4][4], grindrail_barrier_core_quad_corners[4][4];
 extern short grindrail_barrier_ring_blend_start_color, grindrail_barrier_ring_base_color,

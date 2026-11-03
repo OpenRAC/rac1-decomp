@@ -41,7 +41,6 @@ extern int g_controller_state_no_direction;
 extern Hero g_hero;
 
 extern int g_current_level_index MACRO_ADDR;
-extern int coll_sphere(float, void *, int, void *);
 
 /* Updates the pickup/aim flags after a state change, and requests a follow-up state when the target is in range. */
 void Hero_UpdateAimFlags(void) {
@@ -377,14 +376,6 @@ extern HeroSpeedBands quartu_hero_speed_bands;
 extern float quartu_hero_run_turn_stick_threshold;
 extern float quartu_hero_anim_speed_curve[];
 extern float quartu_hero_anim_frame_speeds[];
-
-extern void vec_scale_to_length(void *, void *, float);
-
-extern float ApproachValue(float *, float, float);
-
-extern int coll_sphere_mobys(float, void *, int, void *, void *);
-
-extern int coll_line(void *, void *, int, int, int);
 
 struct HeroUpdateStatePhysicsL15Vars {};
 

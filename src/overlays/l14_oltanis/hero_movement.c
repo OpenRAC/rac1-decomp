@@ -39,7 +39,6 @@ extern int g_controller_state_no_direction;
 extern int pad_held;
 
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
-extern int coll_sphere(float, void *, int, void *);
 
 /* Resolve the hero's surface reaction for the frame from the previous state and flags. */
 extern struct Hero hero __asm__("D_0013F450");
@@ -311,15 +310,7 @@ extern float oltanis_hero_ledge_shimmy_frame_speeds[];
 
 extern int truncate_float_to_s32(float);
 
-extern void vec_scale_to_length(void *, void *, float);
-
-extern float ApproachValue(float *, float, float);
-
-extern int coll_sphere_mobys(float, void *, int, void *, void *);
-
 extern void spawn_color_decaying_effect_particle(char *, char *, int);
-
-extern int coll_line(void *, void *, int, int, int);
 
 extern int Spline_AdvanceByDistance_v(void *, void *, int *, float *, float, int) __asm__("func_L00_0025E860");
 

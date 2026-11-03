@@ -32,8 +32,6 @@ typedef struct {
 
 extern int truncate_float_to_s32(float);
 
-extern void vec_scale_to_length(void *, void *, float);
-
 extern int kerwan_game_mode MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;

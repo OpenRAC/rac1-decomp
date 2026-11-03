@@ -39,8 +39,6 @@ typedef struct {
 } SegmentPath;
 extern SegmentPath *level_paths[];
 
-extern void vec_scale_to_length(void *, void *, float);
-
 extern int SegmentCrossPolyline(int, void *, void *, void *);
 
 struct MobyBound;
@@ -430,8 +428,6 @@ s32 test_path_segment_strict_crossing(s32 path_index, Vec4 *start, Vec4 *end) {
     return 0;
 }
 
-extern void vec_scale_to_length(void *, void *, float);
-
 /* Tests whether segment a-b crosses polyline level_paths[idx]; writes the nearest crossing to c. */
 int SegmentCrossPolyline(int idx, void *a, void *b, void *c) {
     float v[4], w[4], z[4], t[4], u[4];
@@ -640,8 +636,6 @@ typedef struct {
     Vec4 points[1]; /* 0x10 */
 } PointPath;
 extern s32 truncate_float_to_s32(f32);
-
-extern void vec_scale_to_length(void *, void *, f32);
 
 /* Samples path at distance dist (points spacing apart): stores the segment, the distance into it and the point.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/state/00261968.c, FUN_L00_00262360. */
@@ -877,7 +871,7 @@ void update_moby_rotation_oscillation(float *o, float *a, float *b, float r, flo
     *a = FastAddRots(*a, l1);
     *b = FastAddRots(*b, l2);
 }
-extern void BuildSphericalOffset(void *, float, float, float);
+
 /* Set a to b plus the spherical offset built from r, y and z. */
 void fast_add_rotations_cf(void *a, void *b, float r, float y, float z) {
     typedef float W[4] __attribute__((aligned(16)));
@@ -1000,7 +994,6 @@ typedef struct {
 } S166D;
 extern S166D player_camera;
 extern V collision_hit_point;
-extern int coll_line(void *, void *, int, int, int);
 
 /* spawns impact sparks at a point on the ground near the camera. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay_entities_002630b8.c, FUN_L00_002634f8. */
 void spawn_ground_contact_effect_particle(V *v) {
@@ -1024,9 +1017,6 @@ void spawn_ground_contact_effect_particle(V *v) {
 }
 typedef int u128_264690 __attribute__((mode(TI)));
 
-extern void vec_scale_to_length(void *, void *, float);
-
-extern void draw_world_quad(void *, void *, int);
 extern float g_debug_camera[];
 extern float offset_effect_quad_corners[];
 

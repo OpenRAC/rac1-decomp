@@ -50,9 +50,8 @@ typedef struct {
 } PathFlyerVars;
 extern f32 gaspar_shuttle_climb_scale SDATA(gaspar_shuttle_climb_scale);
 extern f32 g_frame_time_sq MACRO_ADDR;
-extern void vec_scale_to_length(void *, void *, f32);
 
-extern float ApproachWithVelocity(float, float, float, float, float *, float *);
+extern float ApproachWithVelocity_v(float, float, float, float, float *, float *) __asm__("func_00214D88");
 
 /* Flies the moby along its path toward the current node, turning and banking toward it, steps the node at each arrival
    and now and then drops a puff. Returns nonzero once it has run off the end of the path.
@@ -89,7 +88,8 @@ int advance_shuttle_along_path(struct Moby *moby) {
         }
         d = FastVecDist(&moby->pos, &path->node[path->count - 1]);
         v = 0.0f;
-        ApproachWithVelocity(d, g_frame_time_sq * 3.0f, g_frame_time_sq * 3.0f, g_frame_time * 10.0f, &v, &vars->speed);
+        ApproachWithVelocity_v(d, g_frame_time_sq * 3.0f, g_frame_time_sq * 3.0f, g_frame_time * 10.0f, &v,
+                               &vars->speed);
     } else {
         f32 v;
         if (FastVecDist(&target, &moby->pos) < vars->speed + vars->speed) {
@@ -99,7 +99,8 @@ int advance_shuttle_along_path(struct Moby *moby) {
         }
         d = FastVecDist(&moby->pos, &path->node[0]);
         v = 0.0f;
-        ApproachWithVelocity(d, g_frame_time_sq * 3.0f, g_frame_time_sq * 3.0f, g_frame_time * 10.0f, &v, &vars->speed);
+        ApproachWithVelocity_v(d, g_frame_time_sq * 3.0f, g_frame_time_sq * 3.0f, g_frame_time * 10.0f, &v,
+                               &vars->speed);
     }
     if (path->node[vars->node].f[3] == 42.0f)
         vars->yaw_offset = 0.0f;

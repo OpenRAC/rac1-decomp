@@ -23,6 +23,8 @@
 #include "game/audio/sound.h"
 #include "game/render/vuchain.h"
 #include "overlays/shared/alpha_fade_particle_updates.h"
+#include "overlays/shared/sound_playback.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 
 extern char g_hero[];
 extern char item_usage[];
@@ -152,14 +154,11 @@ extern int beam_arc_bolt0_alpha MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
 extern char veldin1_zero_vec[] MACRO_ADDR;
 
-extern void vec_scale_to_length(void *, void *, float);
-
 extern int truncate_float_to_s32(float);
 
 extern void InitDirectionalHitQuery_v(void *, void *, int, void *, float) __asm__("func_L00_0025A8C0");
 
-extern int coll_line(Vec4f *, Vec4f *, int, void *, int);
-extern void coll_sphere_mobys(void *, int, void *, void *, float);
+extern void coll_sphere_mobys_v(void *, int, void *, void *, float) __asm__("func_L00_001F2BE8");
 
 #define hero43 (*(Hero43 *)g_hero)
 
@@ -331,7 +330,7 @@ void build_beam_and_arc_points(u8 *o) {
     hit.id = ((Moby *)o)->oclass;
     v->count3e = 20;
     player = &hero43;
-    coll_sphere_mobys(v, 0x10, player->moby, &hit, 0.3f);
+    coll_sphere_mobys_v(v, 0x10, player->moby, &hit, 0.3f);
     FastVecSub(&direction, &v->tip, v);
     vec_scale_to_length(&direction, &direction, 1.0f);
     if (v->target || v->second_target) {
@@ -654,8 +653,6 @@ void draw_beam_and_arc_effects(char *m) {
     draw_beam_anchor_camera_facing_quads(m);
 }
 
-extern void draw_world_quad(void *, void *, int);
-
 extern int beam_and_arc_first_pass_texture_index_gp SDATA(beam_and_arc_first_pass_texture_index_gp);
 extern int beam_and_arc_first_pass_base_vertex_color_gp SDATA(beam_and_arc_first_pass_base_vertex_color_gp);
 extern int beam_and_arc_second_pass_texture_index_gp SDATA(beam_and_arc_second_pass_texture_index_gp);
@@ -803,8 +800,6 @@ typedef struct {
     QuadUv uv[4];
     long unk70, tex, unk80, unk88;
 } Q_2bb0b0;
-
-extern void vec_scale_to_length(void *, void *, float);
 
 extern V_2bb0b0 beam_anchor_quad_corners[];
 extern QuadUv beam_anchor_quad_uvs[];
@@ -1215,8 +1210,6 @@ void draw_walloper_arc_two_pass_quads(char *m, int a, int b, int n, float sx, fl
     VU1_addGSregister(0x47, 0x5360B);
 }
 
-extern void vec_scale_to_length(void *, void *, float);
-
 extern float walloper_glow_quad_size SDATA(walloper_glow_quad_size);
 extern float walloper_glow_forward_offset SDATA(walloper_glow_forward_offset);
 extern int walloper_glow_color SDATA(walloper_glow_color);
@@ -1289,8 +1282,6 @@ void draw_walloper_camera_facing_quad(int arg) {
 extern float tesla_arc_range SDATA(tesla_arc_range);
 extern float morphoray_target_angle_threshold_degrees_gp SDATA(morphoray_target_angle_threshold_degrees_gp);
 extern int coll_hit_result[];
-
-extern int coll_line(Vec4f *, Vec4f *, int, void *, int);
 
 /* Find the Morph-o-Ray target near the aim line and bend heading/pitch toward it; returns it or 0. */
 char *select_morphoray_target_and_adjust_aim(char *self, float *position, float *heading, float *pitch) {
@@ -1449,10 +1440,8 @@ extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 
 extern void start_equipped_item_animation_r(void) __asm__("func_L00_0020EB60");
 
-extern void Moby_GetJointWorldPos_r(void *, int, void *) __asm__("func_L00_00250800");
 extern void HeroEnterMoveState_r(int, int) __asm__("func_L00_00222B80");
 
-extern float fast_atan2(float, float);
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
 extern Moby *select_morphoray_target_and_adjust_aim_r(void *, void *, void *, void *) __asm__("func_L00_002BD6B8");
 extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
@@ -1461,18 +1450,17 @@ extern float *GetFlaggedPvarWord_r(Moby *) __asm__("func_L00_0025D390");
 extern int queue_animation_update_r(int, int, void *, void *, void *, int *, int) __asm__("func_001FFB38");
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 extern int PlayBankSound_r(int, int, int) __asm__("func_0022EE28");
-extern void ShowBanner_r(int, int) __asm__("func_L00_00264DB8");
+
 extern void spawn_morphoray_chicken_r(void *) __asm__("func_L00_002CA728");
 extern void update_beam_ring_rail_and_pulse_effects_r(void *) __asm__("func_L00_002BE3A8");
 extern int allocate_packed_color_point_light_slot_r(float *pos, float radius, float intensity,
                                                     int color) __asm__("func_L00_0023EF78");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 
-extern int Sound_IsPlaying_r(void *, int) __asm__("func_L00_0028EB98");
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 extern int remove_hud_item_r(int) __asm__("func_001FFCB0");
 extern void release_point_light_slot_r(int) __asm__("func_L00_0023F1D0");
-extern void Sound_StopSlot_r(int) __asm__("func_L00_0028EBF0");
+
 extern void cancel_hero_item_animation_r(void) __asm__("func_L00_0020ED30");
 extern void Hud_InitParticles_r(void) __asm__("func_L00_00236BF8");
 extern void Hud_UpdateParticles_r(void) __asm__("func_L00_00236DE8");
@@ -1528,7 +1516,7 @@ void MorphorayUpdate(Moby *m) {
         if (p->timer == 0) {
             p->timer = scale_ticks(15);
         }
-        Moby_GetJointWorldPos_r(m, 0, p);
+        Moby_GetJointWorldPos(m, 0, p);
         if (((Hero *)g_hero_r)->state.current == HERO_STATE_LOOK) {
             HeroEnterMoveState_r(HERO_STATE_LOOK_RELEASE_WAIT, 1);
         }
@@ -1589,7 +1577,7 @@ void MorphorayUpdate(Moby *m) {
                 ((Skill_2BDAF0 *)gSkillPoints_r)->f8 == 0) {
                 ((Skill_2BDAF0 *)gSkillPoints_r)->f8 = 1;
                 PlayBankSound_r(1, 0, 0);
-                ShowBanner_r(0x53DB, -1);
+                ShowBanner(0x53DB, -1);
             }
             spawn_morphoray_chicken_r(p->target);
             p->target = 0;
@@ -1607,7 +1595,7 @@ void MorphorayUpdate(Moby *m) {
             ((Light *)level_point_lights_r)[morphoray_light_slot_r].pos[2] = v[1].z;
             ((Light *)level_point_lights_r)[morphoray_light_slot_r].radius = 7.5f;
         }
-        if (Sound_IsPlaying_r(m, morphoray_beam_voice_r) == 0) {
+        if (Sound_IsPlaying(m, morphoray_beam_voice_r) == 0) {
             morphoray_beam_voice_r = Moby_PlaySound_r(0, 4, m);
         }
     } else {
@@ -1644,7 +1632,7 @@ void MorphorayUpdate(Moby *m) {
             if (morphoray_beam_voice_r != -1 &&
                 ((VoicePoolRow *)(voice_pool_r + morphoray_beam_voice_r * 0x70))->owner == m &&
                 ((VoicePoolRow *)(voice_pool_r + morphoray_beam_voice_r * 0x70))->state != 0) {
-                Sound_StopSlot_r(morphoray_beam_voice_r);
+                Sound_StopSlot(morphoray_beam_voice_r);
             }
             morphoray_beam_voice_r = -1;
         }
@@ -1754,7 +1742,6 @@ extern Tab D_L00_001E9E30;
 extern char hero_globals_base_r2[] __asm__("D_0013E633");
 extern void reset_beam_chain_and_pulse_state_r(void) __asm__("func_L00_002BE2A0");
 
-extern void BuildSphericalOffset(void *, float, float, float);
 extern Info *GetFlaggedPvarWord_r2(Moby *) __asm__("func_L00_0025D390");
 
 extern int coll_line_r(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
@@ -1763,12 +1750,8 @@ extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern void vec_scale_to_length_r2(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void lerp_vector_r(void *, void *, void *, float) __asm__("func_001F9C08");
 
-extern void build_look_at_matrix(void *, void *, void *, float);
-
 extern void AddDrawCallback_r(void *, Moby *) __asm__("func_001F49B0");
 extern void draw_beam_ring_and_rail_effects_r(void *) __asm__("func_L00_002BEF58");
-extern float random_float_between(float, float);
-extern int random_integer_below(int);
 
 extern void PartType53Spawn_r(void *, int, int, int, int, void *, float, float, float) __asm__("func_L00_00272F00");
 
@@ -2026,8 +2009,6 @@ void func_L00_002BF380_BEF58(void *, int, int, int, float, float, float, int) __
 void draw_beam_pulse_quads(void *);
 void draw_beam_origin_camera_facing_quads(void *);
 long func_001F4868_BEF58(int) __asm__("func_001F4868");
-
-void draw_world_quad(void *, void *, int);
 
 /* scrolls the two texture-offset accumulators and draws the 10x20 band of textured quads between the
    D_L00_001DC060/001DC1A0 rings, skipping back-facing ones.
@@ -2375,7 +2356,6 @@ typedef struct {
     float x, y, z, w;
 } Vx __attribute__((aligned(16)));
 extern char hero_globals_base[] NOT_SDA;
-extern int coll_sphere(float, void *, int, void *);
 
 /* Nudge a position and ask the level helper about it, lowering a global on success. */
 int probe_moby_raised_sphere_collision(Moby *a, int b, Vx *c) {
@@ -2928,8 +2908,6 @@ typedef struct {
 } TopStruct;
 
 extern TopStruct *g_coll_hit_moby;
-
-extern int coll_line(Vec4f *, Vec4f *, int, void *, int);
 
 /*
  * Nudges a copy of a0's vector by -0.3/+1.0 on Z, hands both to the

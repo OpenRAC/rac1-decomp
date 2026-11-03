@@ -552,8 +552,6 @@ extern int electric_water_bolt_wave_offsets_r[] __asm__("D_L15_001D3CA0");
 extern float electric_water_mirror_bolt_side_offsets_r[][4] __asm__("D_L15_001D3CF0");
 extern int electric_water_mirror_bolt_height_offsets_r[] __asm__("D_L15_001D3E30");
 
-extern void vec_scale_to_length(void *, void *, float);
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002d6810.c, FUN_L15_002d79e8. */
 void initialize_electric_water_bolt_effect(char *m) {
     struct ElectricWaterBoltVars *d = (struct ElectricWaterBoltVars *)((Moby *)m)->pvars;
@@ -606,8 +604,6 @@ typedef struct {
     V_2d8fa0 b;
     V_2d8fa0 c;
 } Data_2d8fa0;
-
-extern void vec_scale_to_length(void *, void *, float);
 
 extern char hero_globals_base[];
 extern char hero_gravity_dir_r[] __asm__("D_0013F6E0");
@@ -903,7 +899,6 @@ extern void vscl_2d8e48(void *, void *, float) __asm__("func_L00_001FF4B0");
 
 extern void vmul_2d8e48(float, void *, void *) __asm__("func_001F9C30");
 
-extern void func_L00_001FD1D8(void *, void *, int);
 /* Draw callback: builds a camera-facing matrix from the moby's position and draws two quads, each with a jittered scale. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_002d6810.c, FUN_L15_002d8e48. */
 void draw_electric_water_bolt_start_quads(char *mv) {
     Q2d8e48 quad;
@@ -965,8 +960,7 @@ void reset_electric_water_switch(char *moby) {
 
 extern float g_frame_time MACRO_ADDR;
 
-extern int coll_line(void *, void *, int, void *, void *);
-extern int coll_sphere(void *, int, void *, float);
+extern int coll_sphere_v(void *, int, void *, float) __asm__("func_L00_001F10E0");
 
 extern void SpawnExplosionFx_v(void *, void *, float, float, int) __asm__("func_L00_00260108");
 
@@ -988,7 +982,7 @@ void update_spinning_projectile(unsigned char *m) {
     FastVecAdd(next, m + 0x10, d);
     InitDirectionalHitQuery(col, m, 1, 2.0f, d);
     *(short *)(col + 0x1A) = ((Moby *)m)->oclass;
-    if (coll_line(m + 0x10, next, 0, m, col) != 0 || coll_sphere(m + 0x10, 0, m, 0.3f) != 0 ||
+    if (coll_line(m + 0x10, next, 0, m, col) != 0 || coll_sphere_v(m + 0x10, 0, m, 0.3f) != 0 ||
         fast_dec_timer(&((struct SpinningProjectileVars *)d)->timer) != 0) {
         hit = (char *)quartu_coll_hit_moby[0];
         if (hit != 0 && (int)hit != *(int *)&((struct SpinningProjectileVars *)d)->last_hit) {
@@ -1032,8 +1026,6 @@ char *spawn_class_3a6_moby(char *src, float *v, char *pos) {
     }
     return m;
 }
-
-extern int get_next_moby_in_group(int *, int, int, int);
 
 extern char quartu_collected_flags_base[];
 extern int g_current_level_index MACRO_ADDR;
@@ -1273,7 +1265,6 @@ void codebot_update(unsigned char *moby) {
 #include "structs/pad.h"
 extern Hero g_hero_r __asm__("D_0013F450");
 extern PadState D_0013CA40;
-extern void try_set_help_message(int, int);
 
 extern Moby *quartu_moby_array_m __asm__("D_L15_00160058") MACRO_ADDR;
 extern int quartu_help_message_selector MACRO_ADDR;

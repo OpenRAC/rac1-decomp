@@ -575,9 +575,6 @@ extern Hero g_hero_r __asm__("D_0013F450");
 extern u8 coll_hit_normal[];
 extern f32 collision_hit_point;
 
-extern void vec_scale_to_length(void *, void *, f32);
-
-extern s32 coll_line(void *, void *, s32, s32, s32);
 extern f32 compute_gravity_relative_vector_inclination_r(void *) __asm__("func_L00_002345B0");
 extern f32 gravity_z_r(void *) __asm__("func_L00_002342F8");
 
@@ -869,7 +866,6 @@ int resolve_hero_gravity_mode(void) {
     }
     return r;
 }
-extern void vec_scale_to_length(void *, void *, float);
 
 /* Moves SRC down by H along the view's normal into DST: in view mode 0
    (g_hero + 0x20B3) only z, as SRC's z - H; in mode 1 along the unit
@@ -991,8 +987,6 @@ void HeroOffsetAlongViewZ(float *dst, float *src, float dz) {
             break;
     }
 }
-
-extern void vec_scale_to_length(void *, void *, float);
 
 /* Takes SRC's component along the view's normal out, into DST: in view
    mode 0 (g_hero + 0x20B3) z is zeroed; in mode 1 the normal is the
@@ -1256,9 +1250,6 @@ typedef struct {
     int i3C;
 } Plat;
 extern void scale_ticks_r2(int) __asm__("func_001F9850");
-
-extern float ApproachValue(float *, float, float);
-extern void vec_set_length_xy(void *, void *, float);
 
 extern f32 g_frame_time_sq MACRO_ADDR;
 

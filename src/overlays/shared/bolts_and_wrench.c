@@ -390,8 +390,6 @@ int fetch_and_add_global_accumulator(int a) {
     return t;
 }
 
-extern void moby_build_matrix(void *);
-
 /* Spawns a Camera Object moby, sets its +0x30 byte and ORs 0x41 into
    its +0x34 flags, copies the caller's 16-byte position/orientation
    vector into its +0x10, and hands it to moby_build_matrix. Returns
@@ -492,8 +490,6 @@ extern float light_beam_corner_uvs[][2];
 
 extern int light_beam_corner_colors[];
 extern int light_beam_quad_corner_indices[][4];
-
-extern void draw_world_quad(void *, void *, int);
 
 typedef struct {
     float x, y, z, w;
@@ -649,10 +645,6 @@ void draw_vendor_effects(char *m) {
         draw_offset_textured_effect_quad(S.f, ((Moby *)m)->glow_color & 0xFFFF0000, 0.1333f, zero);
     }
 }
-
-extern void axis_rotation_2d48(void *, int, float);
-
-extern int try_set_help_message(int, int);
 
 extern void draw_vendor_effects();
 extern int level_frame_counter MACRO_ADDR;
@@ -865,36 +857,25 @@ extern KillFlags D_L00_001BB5C0;
 extern unsigned char D_L00_0015FD48[] MACRO_ADDR;
 extern unsigned char D_0014C150[][16];
 
-extern int random_integer_below(int);
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 
 extern int coll_line_r(void *, void *, int, int, int) __asm__("func_L00_001EFFF0");
 
-extern float fast_atan2(float, float);
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
 extern void *GetFlaggedPvarWord_r(void *) __asm__("func_L00_00261448");
 
-extern float random_angle_radians(void);
-
-extern void quaternion_to_rotation_basis_r(void *, void *) __asm__("func_001FA648");
-extern void multiply_matrix3x3_r(void *, void *, void *) __asm__("func_001FA4F0");
-extern float random_float_between(float, float);
 extern int coll_sphere_r(float, void *, int, void *) __asm__("func_L00_001F10E0");
 
-extern void vec_reflect(void *, void *, void *);
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
-extern void matrix_to_euler(void *, void *);
 
 extern void update_bolt_grounded_pose_r(void *, void *, void *) __asm__("func_L00_002A8088");
-
-extern void quat_nlerp_r(void *, void *, void *, float) __asm__("func_001FA5C8");
 
 extern int begin_bolt_attraction_r(void *, void *, float, float) __asm__("func_L00_002A84B0");
 
 extern float ApproachValue_r(float *, float, float) __asm__("func_00214D28");
-extern void euler_rotation_basis_r(void *, void *) __asm__("func_001FA1F8");
+
 extern void collect_bolt_r(void *) __asm__("func_L00_002A7E10");
 
 /* Bolt update (classes 13-16): lands where it was dropped, hovers and spins, bounces off the ground, flies to the hero
@@ -979,8 +960,8 @@ void bolt_update(Moby *m) {
             float dist;
             d->vel[2] -= g_frame_time_sq_r * 10.8f;
             FastVecAdd(((float *)&m->pos), ((float *)&m->pos), d->vel);
-            quaternion_to_rotation_basis_r(d->quat, u.s.m);
-            multiply_matrix3x3_r(((float *)&m->rot_row0), u.s.m, ((float *)&m->rot_row0));
+            quaternion_to_rotation_basis(d->quat, u.s.m);
+            multiply_matrix3x3(((float *)&m->rot_row0), u.s.m, ((float *)&m->rot_row0));
             switch (m->oclass) {
                 case BOLT_CLASS_ONE:
                     r = 0.15f;
@@ -1051,10 +1032,10 @@ void bolt_update(Moby *m) {
             build_quaternion_from_axis_rotations(u.s.m, u.s.a);
             s = 1.0f / IntToFloat(d->f57);
             t = IntToFloat(d->f57) / IntToFloat(d->f56);
-            quat_nlerp_r(d->quat, d->quat, u.s.m, s);
+            quat_nlerp(d->quat, d->quat, u.s.m, s);
             lerp_vector(((float *)&m->pos), ((float *)&m->pos), u.s.b, t);
             m->pos.z += -((t - 0.5f) * (t - 0.5f) - 0.25f) * ((float)d->f56 * 0.025f);
-            quaternion_to_rotation_basis_r(d->quat, ((float *)&m->rot_row0));
+            quaternion_to_rotation_basis(d->quat, ((float *)&m->rot_row0));
             if (--d->f57 == 0) {
                 m->state = 3;
                 d->f56 = d->f57 = truncate_float_to_s32_r2(multiply_global_factor(random_float_between(10.0f, 20.0f)));
@@ -1136,8 +1117,8 @@ void bolt_update(Moby *m) {
                     }
                 }
             }
-            quaternion_to_rotation_basis_r(d->quat, u.t.m);
-            multiply_matrix3x3_r(((float *)&m->rot_row0), u.t.m, ((float *)&m->rot_row0));
+            quaternion_to_rotation_basis(d->quat, u.t.m);
+            multiply_matrix3x3(((float *)&m->rot_row0), u.t.m, ((float *)&m->rot_row0));
             FastVecAdd(((float *)&m->pos), ((float *)&m->pos), d->vel);
             FastVecSub(u.t.e, &((struct Hero *)g_hero)->motion.body_center, ((float *)&m->pos));
             if (d->f64 < FastVecLength(u.t.e)) {
@@ -1146,7 +1127,7 @@ void bolt_update(Moby *m) {
                     clear_u64_value(u.t.g);
                     u.t.g[1] = d->f48;
                     u.t.g[2] = d->f4C;
-                    euler_rotation_basis_r(md, u.t.g);
+                    euler_rotation_basis(md, u.t.g);
                     matrix_mul_vec3(u.t.e, u.t.e, md);
                     matrix_mul_vec3(u.t.e, u.t.e, g_hero);
                 }
@@ -1243,10 +1224,6 @@ void collect_bolt(struct Moby *bolt) {
     spin = -spin;
     PartType53Spawn_r(&pos, scale_ticks(0x19), size * 0.14f, size * k, 0x7F7F7F7F, 1, spin, &vel, 0.0f);
 }
-
-extern int coll_sphere(float, void *, int, void *);
-
-extern void vec_scale_to_length(float *, float *, float);
 
 /* Steers a thrown moby along its path: builds its orientation from the data's angles and, when done, releases the held
    target. */
@@ -1418,7 +1395,6 @@ typedef struct {
 } BoltVars;
 extern void *g_hero_moby;
 
-extern void set_moby_color(void *, int, int, int);
 extern void vec_scale_to_length_r2(void *, void *, float) __asm__("func_L00_001FF4B0");
 
 /* Spawns a bolt worth `value` (1, 5, 20 or 50) at `pos` with velocity `vel`, coloured like `src`, spinning about vel x
@@ -1538,7 +1514,7 @@ typedef struct {
 } V_2a7780;
 
 extern int truncate_float_to_s32(float);
-extern void draw_world_quad(void *, void *, int);
+
 #define P_2a7780_G (*(P_2a7780 *)D_0013F450)
 extern char g_effects[];
 #define effects ((E_2a7780 *)D_L00_001D95E8)
@@ -1821,8 +1797,6 @@ void process_mobies_near_returning_wrench(char *a) {
 }
 extern char hero_globals_base[] NOT_SDA;
 
-extern void vec_scale_to_length(float *, float *, float);
-
 extern Hero hero __asm__("D_0013F450");
 
 /* Shrink a wrench knockback vector the more it points away from the hero's heading (to 70%). */
@@ -1953,13 +1927,8 @@ extern float g_frame_time_cube MACRO_ADDR;
 extern unsigned char voice_pool[];
 
 extern void draw_wrench_swing_effect(void *);
-extern int coll_line(void *, void *, int, int, int);
 
-extern void vec_set_length_xy(void *, void *, float);
-
-extern int func_L00_001F2BE8(void *, float, int, void *, void *);
-
-extern float ApproachValue(float *, float, float);
+extern int coll_sphere_mobys_v(void *, float, int, void *, void *) __asm__("func_L00_001F2BE8");
 
 static __inline__ WPlayer48 *wplayer48(void) {
     return (WPlayer48 *)g_hero;
@@ -2179,7 +2148,7 @@ void wrench_update(Wrench48 *m) {
                     radius = 0.7f;
                 if (sweepp48()->state == 20)
                     radius = 0.47f;
-                if (coll_sphere_mobys(work.v[4], radius, 0, sweepp48()->moby, work.v[0]) &&
+                if (coll_sphere_mobys_v(work.v[4], radius, 0, sweepp48()->moby, work.v[0]) &&
                     (!coll_sphere_moby_hits[0] || !coll_sphere_moby_hits[0]->model ||
                      coll_sphere_moby_hits[0]->model->kind != 18)) {
                     if (should_trigger_wrench_hit_reaction())
@@ -2314,9 +2283,9 @@ void wrench_update(Wrench48 *m) {
             work.shifted.query.class_id = wplayer48()->hit_index + 1;
             work.shifted.query.flags = 0;
             Moby_GetJointWorldPos(m, 1, work.v[5]);
-            if (coll_sphere_mobys(work.v[5], 0.4f, 0, wplayer48()->moby, work.v[1]) ||
+            if (coll_sphere_mobys_v(work.v[5], 0.4f, 0, wplayer48()->moby, work.v[1]) ||
                 (Moby_GetJointWorldPos(m, 0, work.v[5]),
-                 coll_sphere_mobys(work.v[5], 0.4f, 0, wplayer48()->moby, work.v[1]))) {
+                 coll_sphere_mobys_v(work.v[5], 0.4f, 0, wplayer48()->moby, work.v[1]))) {
                 if (!wplayer48()->attack_cooldown && wrench_hit48.moby &&
                     (!wrench_hit48.moby->model || wrench_hit48.moby->model->kind != 20)) {
                     WDamage48 *hit = (WDamage48 *)GetFlaggedPvarWord(wrench_hit48.moby);
@@ -2343,8 +2312,6 @@ typedef struct {
 } BoltOwner;
 extern float homing_bolt_bounds_scale SDATA(homing_bolt_bounds_scale);
 extern short active_homing_missiles[];
-
-extern int coll_line(void *, void *, int, int, int);
 
 /* Spawns a homing bolt (class 0x100) from owner at pos, aimed at tgt or at whatever lies along its heading. */
 char *spawn_homing_bolt(void *owner, void *pos, float a, float b, float c, char *tgt, float rz, float ry) {
@@ -2539,8 +2506,6 @@ extern int cinematic_mode MACRO_ADDR;
 extern float impact_marker_euler SDATA(impact_marker_euler);
 extern float impact_marker_euler_v[] __asm__("D_L00_001614B0") MACRO_ADDR;
 
-extern void draw_world_quad(void *, void *, int);
-
 /* Draws two spinning textured quads around the moby, oriented by its velocity (second rotation kept in a level
    global). */
 extern void func_L00_002AAEF0_r(char *) __asm__("func_L00_002AAEF0");
@@ -2621,9 +2586,6 @@ void func_L00_002AAEF0_r(char *moby) {
 typedef int q128_2a9ed0 __attribute__((mode(TI)));
 unsigned char *func_0020D348_AB170(int) __asm__("func_0020D348");
 
-float random_float_between(float, float);
-void moby_build_matrix(void *);
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002a4830.c, FUN_L00_002a9ed0. */
 unsigned char *spawn_mine(int owner, q128_2a9ed0 *pos) {
     unsigned char *m = func_0020D348_AB170(0x4A);
@@ -2663,7 +2625,6 @@ unsigned char *spawn_mine(int owner, q128_2a9ed0 *pos) {
     }
     return m;
 }
-extern int coll_line(void *, void *, int, int, int);
 
 typedef int ti_t __attribute__((mode(TI)));
 typedef struct {
@@ -2755,7 +2716,6 @@ void initialize_moby_motion_at_position(Vec4 *pos, N2 *self, void *arg) {
     }
 }
 
-extern void draw_mine_predicted_impact_marker(void);
 extern float coll_hit_normal[];
 
 // Traces a projectile path from a0 step by step and resolves where it lands.

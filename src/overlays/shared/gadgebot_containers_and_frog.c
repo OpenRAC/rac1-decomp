@@ -263,10 +263,6 @@ extern int blarg_gadgebot_container_texture SDATA(blarg_gadgebot_container_textu
 extern int blarg_gadgebot_container_color SDATA(blarg_gadgebot_container_color);
 extern float blarg_gadgebot_container_normal_scale SDATA(blarg_gadgebot_container_normal_scale);
 
-extern void vec_scale_to_length(void *, void *, float);
-
-extern void draw_world_quad(void *, int, int);
-
 /* Transform src by matrix m into dst. */
 static inline void TransformPoint(float *dst, float *src, float (*m)[4]) {
     transform_vector(dst, src, m);
@@ -407,7 +403,6 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern char blarg_coll_hit_normal[];
 extern int *blarg_paths[];
 
-extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
 extern void update_frog_health_respawn_and_target_x(void *) __asm__("func_L06_002EA920");
 
 extern int truncate_float_to_s32(float);
@@ -415,7 +410,7 @@ extern int truncate_float_to_s32(float);
 extern void destroy_frog_child_moby_x(void *) __asm__("func_L06_002EB360");
 extern void probe_frog_local_z_collision(char *);
 extern void blend_frog_rotation_to_facing_frame(char *, float *, float *);
-extern void vec_scale_to_length(void *, void *, float);
+
 extern void move_frog_with_collision_resolution(void *, void *, int, float, float);
 
 extern void InitKnockback_x(void *, void *, int, int, int, float) __asm__("func_L00_0025D5B0");
@@ -895,7 +890,6 @@ void update_frog_health_respawn_and_target(struct Moby *moby) {
         vars->target = g_hero_moby_r;
     }
 }
-extern void vec_scale_to_length(void *, void *, float);
 
 extern float blarg_frog_turn_blend SDATA(blarg_frog_turn_blend);
 
@@ -918,8 +912,6 @@ void blend_frog_rotation_to_facing_frame(char *m, float *a1, float *a2) {
     quaternion_to_rotation_basis(A, m);
 }
 
-extern int coll_line(void *, void *, int, int, int);
-
 // builds two offset vectors from the moby position and calls coll_line with them
 void probe_frog_local_z_collision(char *moby) {
     float a[4];
@@ -935,7 +927,7 @@ void probe_frog_local_z_collision(char *moby) {
 }
 
 extern int coll_sphere_L06(void *, float, int, void *) __asm__("func_L00_001F10E0");
-extern void resolve_point_path_segment_xy_clearance(float, int, void *, void *);
+
 extern char blarg_collision_hit_point[];
 extern char blarg_coll_resolved_pos[];
 
@@ -1037,9 +1029,6 @@ extern s32 D_L06_00161CF0_2EB5C8 SDATA(D_L06_00161CF0);
 extern f32 D_L06_00161CF4_2EB5C8 SDATA(D_L06_00161CF4);
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
-
-extern float random_angle_radians(void);
-extern f32 random_float_between(f32, f32);
 
 extern s32 truncate_float_to_s32_r(f32) __asm__("func_001FA898");
 
@@ -1316,11 +1305,7 @@ extern GbHit blarg_coll_hit;
 extern Moby *blarg_coll_hit_moby;
 extern GbStats blarg_gadgebot_command_count_base;
 
-extern float ApproachValue(float *p, float target, float maxstep);
-
 extern void update_gadgebot_glow_effects(char *);
-
-extern void resolve_point_path_segment_xy_clearance(float, int, void *, void *);
 
 extern void MobySpringTurn_v(char *moby, float target, float *vel, float k, float d,
                              float max) __asm__("func_L00_002592B0");
@@ -1334,8 +1319,6 @@ extern void select_nearest_gadgebot_interaction_target(void *);
 extern char *spawn_source_attached_fading_effect_particle(float, char *, int, int, int);
 
 extern void PartType53Spawn_v(void *, int, float, float, int, int, int, float, void *) __asm__("func_L00_00272F00");
-
-extern int coll_sphere(float, void *, int, void *);
 
 /* Update function of the gadgebot (moby Gadgebot): waits by its dispenser, then follows, attacks and returns to the
    hero along the level's paths. */
@@ -2500,7 +2483,6 @@ int process_gadgebot_interaction_candidate(char *ctx, char *ow, Moby *moby, int 
     return 0;
 }
 
-extern int get_next_moby_in_group(int *, int, int, int);
 extern int process_gadgebot_interaction_candidate_r(char *, char *, int, int, int *) __asm__("func_L06_002F4058");
 extern int blarg_moby_list_r2[] __asm__("D_L06_001AC500");
 typedef struct {
@@ -2608,7 +2590,6 @@ void select_hero_or_gadgebot_target(char *moby, char **current, f32 range) {
 extern char *MobyGetHitMessage_r3(void *, int, int) __asm__("func_L00_0025B478");
 extern float g_frame_time_r2 __asm__("D_0015EE6C") MACRO_ADDR;
 
-extern float fast_atan2(float, float);
 typedef unsigned int Q_2F4A70 __attribute__((mode(TI), aligned(16)));
 extern char *g_hero_moby_r2 __asm__("D_001414D0");
 

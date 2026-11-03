@@ -1552,7 +1552,7 @@ extern u128 orxon_camera_pos;
 extern u128 gHeroPos;
 extern char gSpecialItems[];
 extern int get_first_moby_in_group(int *, int, int, int);
-extern int get_next_moby_in_group(int *, int, int, int);
+extern int get_next_moby_in_group_v(int *, int, int, int) __asm__("func_L00_0025A2F0");
 
 /* update for a moby that glides between two heights and sets a flag */
 void lab_door_update(unsigned char *m) {
@@ -1589,7 +1589,7 @@ void lab_door_update(unsigned char *m) {
                             flag = 1;
                             break;
                         }
-                    } while (get_next_moby_in_group(&it, it, 0, 0));
+                    } while (get_next_moby_in_group_v(&it, it, 0, 0));
                 }
             }
             hit = 0;
@@ -2336,11 +2336,11 @@ typedef struct D_2E0630 {
     char a270[4];
 } D_2E0630;
 extern void update_screamer_hit_reactions_and_targeting_r(void *) __asm__("func_L10_002E0FF8");
-extern void func_L00_00264B40(float, void *, int, void *);
+extern void Manipulator_ApplyScale_v(float, void *, int, void *) __asm__("func_L00_00264B40");
 
 extern void func_L00_0025B178(void *);
 
-extern float func_00214D88(float *, float, float *, float, float, float);
+extern float ApproachWithVelocity_v(float *, float, float *, float, float, float) __asm__("func_00214D88");
 
 extern float fast_atan2(float, float);
 extern float func_L00_0025CE58(float *, float, float *, float, float, float);
@@ -2375,7 +2375,7 @@ void screamer_update(Moby *m) {
 
     update_screamer_hit_reactions_and_targeting_r(m);
     P = d->f100;
-    Manipulator_ApplyScale(2.5f, m, 0, d->a270);
+    Manipulator_ApplyScale_v(2.5f, m, 0, d->a270);
     if (m->visible != 0 && FastVecDist(&m->pos, &orxon_camera_pos_r) < 29.0f) {
         set_ground_height_band(m);
         m->shadow_range = 0x17;
@@ -2416,8 +2416,8 @@ void screamer_update(Moby *m) {
             break;
         case 4:
             m->anim_speed = 4.0f;
-            if (ApproachWithVelocity(&m->pos.z, d->v130.z + 2.0f, &d->v120.z, g_frame_time_sq_r * 18.0f,
-                                     g_frame_time_sq_r * 18.0f, g_frame_time_x * 6.0f) == 0.0f) {
+            if (ApproachWithVelocity_v(&m->pos.z, d->v130.z + 2.0f, &d->v120.z, g_frame_time_sq_r * 18.0f,
+                                       g_frame_time_sq_r * 18.0f, g_frame_time_x * 6.0f) == 0.0f) {
                 m->state = 5;
             }
             break;
@@ -2432,8 +2432,8 @@ void screamer_update(Moby *m) {
                                    g_frame_time_sq_r * 25.132742f, g_frame_time_sq_r * 25.132742f,
                                    g_frame_time_x * 50.265484f);
             if (FastDiffRots(fast_atan2(v[0] - m->pos.x, v[1] - m->pos.y), m->rot.z) < 0.78539819f) {
-                ApproachWithVelocity(&v[4], dist, &v[5], g_frame_time_sq_r * 20.0f, g_frame_time_sq_r * 20.0f,
-                                     g_frame_time_x * 20.0f);
+                ApproachWithVelocity_v(&v[4], dist, &v[5], g_frame_time_sq_r * 20.0f, g_frame_time_sq_r * 20.0f,
+                                       g_frame_time_x * 20.0f);
                 FastVecSub(&d->v120, v, &m->pos);
                 ClampVectorLength(&d->v120, v[5]);
             } else {
@@ -2614,7 +2614,7 @@ void update_screamer_hit_reactions_and_targeting(struct Moby *moby) {
     extern void spawn_randomized_bolt_drop(void *, int, int, int, int);
     extern int FindNearestEligibleMoby(float, void *, void *, int, int, void *, int);
     extern void matrix_mul_vec3(void *, void *, void *);
-    extern void PlayBankSound(int, int, int);
+    extern void PlayBankSound_v(int, int, int) __asm__("func_0022EE28");
     extern void ShowBanner(int, int);
     MobyData *data = (MobyData *)moby->pvars;
     Hit_2E0FF8 *r;
@@ -2637,7 +2637,7 @@ void update_screamer_hit_reactions_and_targeting(struct Moby *moby) {
             if (data->f20 <= r->f2C) {
                 if (hero_inside_conditional_help_volume != 0 && (f = gSkillPoints, f[0x10]) == 0) {
                     f[0x10] = 1;
-                    PlayBankSound(1, 0, 0);
+                    PlayBankSound_v(1, 0, 0);
                     ShowBanner(0x53DB, -1);
                 }
                 data->f20 = 0.0f;
@@ -2786,7 +2786,7 @@ extern float class1199_start_b5a SDATA(class1199_start_b5a);
 void update_class_1199_hit_reactions_and_targeting(Moby *moby);
 void set_moby_group_command_frames(unsigned char *moby);
 
-extern int IsFrameWithinWindow(char *, float);
+extern int IsFrameWithinWindow_v(char *, float) __asm__("func_00215B18");
 
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
@@ -2800,7 +2800,7 @@ void Moby1199Update(Moby *m) {
 
     update_class_1199_hit_reactions_and_targeting(m);
     P = d->f100;
-    Manipulator_ApplyScale(2.5f, m, 1, d->a270);
+    Manipulator_ApplyScale_v(2.5f, m, 1, d->a270);
     if (m->visible != 0 && FastVecDist(&m->pos, &orxon_camera_pos_r) < 29.0f) {
         set_ground_height_band(m);
         m->shadow_range = 0x17;
@@ -2852,8 +2852,8 @@ void Moby1199Update(Moby *m) {
             break;
         case 2:
             m->anim_speed = 4.0f;
-            if (ApproachWithVelocity(&m->pos.z, d->v130.z + 2.0f, &d->v120.z, g_frame_time_sq_r * 18.0f,
-                                     g_frame_time_sq_r * 18.0f, g_frame_time_x * 6.0f) == 0.0f) {
+            if (ApproachWithVelocity_v(&m->pos.z, d->v130.z + 2.0f, &d->v120.z, g_frame_time_sq_r * 18.0f,
+                                       g_frame_time_sq_r * 18.0f, g_frame_time_x * 6.0f) == 0.0f) {
                 m->state = 3;
             }
             break;
@@ -2870,8 +2870,8 @@ void Moby1199Update(Moby *m) {
                                    g_frame_time_sq_r * 25.132742f, g_frame_time_sq_r * 25.132742f,
                                    g_frame_time_x * 50.265484f);
             if (FastDiffRots(fast_atan2(d->v140.x - m->pos.x, d->v140.y - m->pos.y), m->rot.z) < 0.78539819f) {
-                ApproachWithVelocity(&cur, dist, &spd, g_frame_time_sq_r * 20.0f, g_frame_time_sq_r * 20.0f,
-                                     g_frame_time_x * 20.0f);
+                ApproachWithVelocity_v(&cur, dist, &spd, g_frame_time_sq_r * 20.0f, g_frame_time_sq_r * 20.0f,
+                                       g_frame_time_x * 20.0f);
                 FastVecSub(&d->v120, &d->v140, &m->pos);
                 ClampVectorLength(&d->v120, spd);
             } else {
@@ -2985,7 +2985,7 @@ void Moby1199Update(Moby *m) {
             step_angle_toward_target(&m->rot.y, 0,
                                      -fast_atan2(vec_distance_xy_r(&m->pos, &d->vE0), d->vE0.z - m->pos.z),
                                      g_frame_time_x * 12.566371f);
-            if (IsFrameWithinWindow((char *)m, 20.0f)) {
+            if (IsFrameWithinWindow_v((char *)m, 20.0f)) {
                 float one = 1.0f;
                 *(int *)&v[13] = 1;
                 *(int *)&v[16] = 1;

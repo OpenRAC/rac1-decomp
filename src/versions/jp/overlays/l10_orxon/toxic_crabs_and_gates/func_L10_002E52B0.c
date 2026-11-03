@@ -36,7 +36,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
             if (d->f1AC != 0 && ((Flags *)gSkillPoints)->b11 == 0) {
                 ((Flags *)gSkillPoints)->b11 = 1;
                 PlayBankSound_r(1, 0, 0);
-                ShowBanner_r(0x542D, -1);
+                ShowBanner(0x542D, -1);
             }
         }
         if (d->h26 != 0 && r->b28 == 0) {

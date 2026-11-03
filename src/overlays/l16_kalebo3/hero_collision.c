@@ -18,10 +18,10 @@
 #include "overlays/shared/hero_steering_and_tilt.h"
 #include "overlays/l16_kalebo3/hero_idle_animation.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "game/moby/mobyutil.h"
 extern Hero g_hero;
 
 extern int g_current_level_index MACRO_ADDR;
-extern int coll_sphere(float, void *, int, void *);
 
 /* Per-frame update of the pickup/hit state flags from the state code. */
 void HeroL16_UpdateStateFlags(void) {
@@ -136,7 +136,6 @@ void HeroL16_UpdateStateFlags(void) {
         }
     }
 }
-extern void vec_scale_to_length(void *, void *, float);
 
 // Builds a vector from two global blocks, transforms it, and passes it on with a summed float.
 void compose_and_limit_hero_velocity(void) {
@@ -153,12 +152,6 @@ void compose_and_limit_hero_velocity(void) {
 typedef int Q __attribute__((mode(TI)));
 extern u8 kalebo3_coll_hit_point[];
 extern s32 g_current_level_index MACRO_ADDR;
-
-s32 coll_line(void *, void *, s32, s32, s32);
-
-f32 resolve_camera_surface_height(void *, void *);
-
-void vec_scale_to_length(void *, void *, f32);
 
 void func_L00_00233D50_105C8(void *, void *, f32) __asm__("func_L00_00233D50");
 

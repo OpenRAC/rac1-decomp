@@ -346,10 +346,7 @@ typedef struct {
 
 extern void SetDeathBits(void *, int, int);
 
-extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
 extern void libc_memset(void *, int, int);
-
-extern void vec_scale_to_length(void *, void *, float);
 
 extern int func_001160D8(void);
 
@@ -729,11 +726,6 @@ char *spawn_class_221_moby(char *owner, float *pos, float *dir, short ang, int a
     return (char *)m;
 }
 
-extern void vec_scale_to_length(void *, void *, float);
-extern int coll_line(void *, void *, int, void *, void *);
-
-extern int coll_sphere(float, void *, int, void *);
-
 typedef struct {
     char pad0[0x18];
     char *moby;
@@ -1026,26 +1018,18 @@ extern float D_L03_00161A14_2CDDC8 SDATA(D_L03_00161A14);
 extern float D_L03_00161A18_2CDDC8 SDATA(D_L03_00161A18);
 extern float D_L03_00161A1C_2CDDC8 SDATA(D_L03_00161A1C);
 extern int helicopter_target49_2CDDC8(void *, void *, float) __asm__("func_L00_00260D30");
-extern void Manipulator_SetScale_r(void *, float) __asm__("func_L00_00264BB0");
+
 extern void EaseManipulatorOffsets_r(char *, char *, int, float, float) __asm__("func_L00_00263950");
 extern void handle_blarg_helicopter_hits_r(char *) __asm__("func_L03_002CF600");
 extern void AttachManipulator_r(char *, int, void *) __asm__("func_0020D960");
 
-extern float func_00214D28(float *, float, float);
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
-
-extern float fast_atan2(float, float);
-
-extern void vec_set_length_xy(void *, void *, float);
-extern void Sound_StopSlot_r(int) __asm__("func_L00_0028EBF0");
-extern void raise_kernel_trap_r(void) __asm__("func_001F9978");
 
 extern char *spawn_homing_spark_projectile_r(char *, char *, int, int, float) __asm__("func_L03_002D65D0");
 
 extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 
-extern int is_point_inside_clip_volume(void *, int);
 extern char hero_globals_base_r[] __asm__("D_0013E633");
 
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
@@ -1053,10 +1037,8 @@ extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 
-extern void Moby_GetJointWorldPos_r(void *, int, void *) __asm__("func_L00_00250800");
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
-extern void add_vectors(void *, void *, void *);
 extern void spawn_explosion_r(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                               float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern void SetDeathBits_r(void *, int, int) __asm__("func_L00_002584A8");
@@ -1065,7 +1047,6 @@ extern void SpawnBreakFragment_r(void *, int, void *, void *, int, int, float, v
 extern float kerwan_zero_vec_r[] __asm__("D_L03_0015F660") MACRO_ADDR;
 extern char kerwan_camera_pos_r[] __asm__("D_L03_00166F40");
 extern void set_ground_height_band_r(void *) __asm__("func_L00_0025B178");
-extern void moby_build_matrix(void *);
 
 /* Updates the gunship (helicopter) moby: activation path (1), patrol route with gun aiming and shots (2),
    exit path or climb-out (3), a short reaction after a route change (4) and destruction (5). */
@@ -1100,7 +1081,7 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
         HMob49_2CDDC8 *child = (HMob49_2CDDC8 *)(kerwan_mobys_p + (d->child_index << 8));
         if (child->class_id == 0x23E && (signed char)child->state >= 0) {
             char *gun = (char *)child->data + 0x150;
-            Manipulator_SetScale_r(gun, 2.5f);
+            manipulator_set_scale(gun, 2.5f);
             EaseManipulatorOffsets_r((char *)child, gun, 2, g_frame_scale_sq_r * 0.03f, g_frame_scale_sq_r * 0.3f);
         }
     }
@@ -1195,7 +1176,7 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
                     break;
                 }
                 if (d->speed <= D_L03_00161A1C_2CDDC8 * g_frame_time_r) {
-                    raise_kernel_trap_r();
+                    raise_kernel_trap();
                     return;
                 }
                 w.segment_a = path->count - 2;
@@ -1243,7 +1224,7 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
             m->rotation[2] = SpringTurn(&d->yaw_velocity, m->rotation[2], angle, 0.01f, 0.3f, 0.1f);
             projectile = d->projectile;
             if (!projectile || projectile->class_id != 0x350 || projectile->state == 254 || projectile->state == 253) {
-                Moby_GetJointWorldPos_r(m, 0, w.movement);
+                Moby_GetJointWorldPos(m, 0, w.movement);
                 FastVecSub(w.direction, w.target.position, w.movement);
                 *(HQuad49_2CDDC8 *)w.projected = *(HQuad49_2CDDC8 *)w.direction;
                 matrix_from_basis_rows(w.offset, m->transform);
@@ -1258,7 +1239,7 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
                 axis_rotation_2d48(d->gun_pitch_matrix + 4, 2, d->gun_pitch);
                 d->projectile = 0;
             } else {
-                Moby_GetJointWorldPos_r(m, 0, w.movement);
+                Moby_GetJointWorldPos(m, 0, w.movement);
                 FastVecSub(w.direction, d->projectile->position, w.movement);
                 *(HQuad49_2CDDC8 *)w.projected = *(HQuad49_2CDDC8 *)w.direction;
                 matrix_from_basis_rows(w.offset, m->transform);
@@ -1382,7 +1363,7 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
                     break;
                 }
                 if (d->speed <= D_L03_00161A1C_2CDDC8 * g_frame_time_r) {
-                    raise_kernel_trap_r();
+                    raise_kernel_trap();
                     return;
                 }
                 w.segment_b = path->count - 2;
@@ -1448,7 +1429,7 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
             int i;
             *(HQuad49_2CDDC8 *)w.movement = 0;
             angle = random_angle_radians();
-            Moby_GetJointWorldPos_r(m, 4, w.projected);
+            Moby_GetJointWorldPos(m, 4, w.projected);
             for (i = 0; i < 4; i++) {
                 w.offset[0] = FastCos(angle) * 1.5f;
                 w.offset[1] = FastSin(angle) * 1.5f;
@@ -1456,7 +1437,7 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
                 angle = FastAddRots(angle, 1.5707964f);
                 add_vectors(w.hit.direction, w.offset, w.projected);
             }
-            Moby_GetJointWorldPos_r(m, 5, w.offset);
+            Moby_GetJointWorldPos(m, 5, w.offset);
             if (d->child_index != -1) {
                 HMob49_2CDDC8 *child = (HMob49_2CDDC8 *)(kerwan_mobys_p + (d->child_index << 8));
                 ((unsigned char *)child->data)[0x262] = 2;
@@ -1489,7 +1470,7 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
             if (d->sound != -1) {
                 unsigned char *audio = (unsigned char *)(hero_globals_base_r + 0x1D + d->sound * 0x70);
                 if (*(HMob49_2CDDC8 **)(audio + 0x88) == m && audio[0x74])
-                    Sound_StopSlot_r(d->sound);
+                    Sound_StopSlot(d->sound);
             }
             d->sound = -1;
             DeleteMoby(m);
@@ -1558,7 +1539,6 @@ void handle_blarg_helicopter_hits(char *m) {
     StepColorFade(m, &d->color_fade);
 }
 
-extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
 /* Statue update: wait for a hit, then play a sound, drop bolts, break into three pieces and delete. */
 void statue_update(Moby *m) {
     int flag = 0;
@@ -1615,12 +1595,6 @@ typedef struct {
     Vec4A v30;
     void *moby;
 } Tgt;
-
-extern void vec_scale_to_length(void *, void *, float);
-
-extern int coll_line(void *, void *, int, void *, void *);
-
-extern int coll_sphere_mobys(float, void *, int, void *, void *);
 
 extern char kerwan_coll_hit_point[];
 extern char kerwan_coll_hit_normal[];
@@ -1860,11 +1834,8 @@ void fred_1_update(Moby *m) {
 }
 extern void func_L01_002FC890(char *);
 
-extern int is_point_inside_clip_volume(void *arg0, int arg1);
-
 extern f32 vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
 
-extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern char qwark_rilgar_no_region_a_msg[];
 extern char qwark_rilgar_no_region_c_msg[];
 extern char qwark_rilgar_no_region_b_msg[];
@@ -2127,8 +2098,6 @@ void initialize_transform_state_from_level_table(Camera *cam) {
 extern float gHeroPos[];
 extern float kerwan_camera_view_up_axis[];
 
-extern void vec_scale_to_length(void *, void *, float);
-
 /* smooths a direction and rebuilds its orthogonal matrix axes */
 void smooth_transform_orientation_toward_hero(char *m) {
     float position[4] __attribute__((aligned(16)));
@@ -2154,7 +2123,6 @@ void smooth_transform_orientation_toward_hero(char *m) {
 }
 
 extern int kerwan_camera_descriptors_r __asm__("D_L03_0015F050") MACRO_ADDR;
-extern int is_point_inside_clip_volume(void *arg0, int arg1);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002de370.c, FUN_L03_002e8870. */
 int evaluate_clip_volume_candidate(char *a0, char *a1) {

@@ -13,6 +13,7 @@
 #include "game/render/draw.h"
 #include "game/math/fastfunc.h"
 #include "game/system/space.h"
+#include "game/moby/mobyutil.h"
 extern char gHeroPos[];
 extern char hero_vehicle_mode[];
 extern char gSpecialItems[];
@@ -162,8 +163,6 @@ extern char g_debug_camera[];
 extern char ship_entry_point_offsets[] NOT_SDA;
 extern int ship_level_exit_requested MACRO_ADDR;
 extern int cinematic_mode MACRO_ADDR;
-
-extern int try_set_help_message(int, int);
 
 /* Per-frame update of a pickup-like moby: pulses its colour, tracks the player's range and collects items. */
 void update_moby_proximity_interaction(unsigned char *m) {

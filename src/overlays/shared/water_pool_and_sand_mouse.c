@@ -852,10 +852,7 @@ typedef int OvlQuad __attribute__((mode(TI)));
 extern s32 truncate_float_to_s32(f32);
 void spawn_collision_particle_bursts(void);
 
-extern int coll_sphere_mobys(float, void *, int, int, void *);
 extern void PostHitMessage_v(float, void *, void *, int, void *, void *) __asm__("func_L00_0025AC00");
-
-extern void vec_scale_to_length(void *, void *, float);
 
 extern s32 novalis_shot_trail_mode SDATA(novalis_shot_trail_mode);
 extern f32 novalis_shot_hit_radius SDATA(novalis_shot_hit_radius);
@@ -947,10 +944,6 @@ extern char *camera_points MACRO_ADDR;
 
 extern unsigned char saved_mission_state[][16];
 extern float bolt_crank_pull_spring_vel SDATA(bolt_crank_pull_spring_vel);
-
-extern float ApproachValue(float *, float, float);
-
-extern void divide_vector_xyz(void *, void *, float);
 
 extern float step_angle_toward_target_v(float *, float, int, float) __asm__("func_L00_0025CC58");
 
@@ -1322,7 +1315,6 @@ void gold_weapon_case_update(struct Moby *m) {
             break;
     }
 }
-extern void vec_scale_to_length(void *, void *, float);
 
 /* Sand mouse approach target: the hero position plus a unit direction. */
 void compute_sand_mouse_approach_target(int unused, void *out) {
@@ -1996,8 +1988,6 @@ void sand_mouse_update(Moby *moby) {
     }
 }
 
-extern int coll_line(void *, void *, int, int, int);
-
 typedef struct {
     float v[2];
     float f8;
@@ -2074,8 +2064,6 @@ void update_moby_motion_collision_and_burst(char *moby) {
     }
 }
 
-extern void Manipulator_ApplyScale(float, void *, int, void *);
-
 extern void process_amoeboid_hits_and_update_targeting(char *);
 extern void spawn_amoeboid_movement_particles(unsigned char *);
 extern void spawn_amoeboid_burst_sparks(unsigned char *, float *);
@@ -2085,7 +2073,7 @@ extern void MoveCtl_Init_r(void *) __asm__("func_L01_0026E8E0");
 extern void PostHitMessage_r(void *, void *, int, void *, void *, float) __asm__("func_L00_0025AC00");
 
 extern void SetDeathBits(void *, int, int);
-extern int IsFrameWithinWindow(float, void *);
+extern int IsFrameWithinWindow_v(float, void *) __asm__("func_00215B18");
 
 extern int truncate_float_to_s32(float);
 
@@ -2323,7 +2311,7 @@ void large_amoeboid_update(unsigned char *moby) {
                 move[2] = 0.0f;
                 move_w(moby, &data->move_ctl, move, &data->stun_state, 1.0f);
             }
-            if (IsFrameWithinWindow(15.5f, moby) != 0 &&
+            if (IsFrameWithinWindow_v(15.5f, moby) != 0 &&
                 vec_distance_xy(&((Moby *)moby)->pos, (target_position = (char *)&target->pos)) < 2.0f &&
                 FastAbsF(target->pos.z - ((Moby *)moby)->pos.z) < data->size + data->size) {
                 move[0] = FastCos(((Moby *)moby)->rot.z);
@@ -2819,8 +2807,6 @@ extern s32 D_L01_00161AC0_0B48 SDATA(D_L01_00161AC0);
 extern s32 D_L01_00161AC4_0B48 SDATA(D_L01_00161AC4);
 extern f32 D_L01_00161AC8_0B48 SDATA(D_L01_00161AC8);
 extern void add_random_offset_to_vector_xyz_r(void *, f32) __asm__("func_L00_00260958");
-extern float random_angle_radians(void);
-extern float random_float_between(float, float);
 
 extern int FastTweenColor_r(f32, s32, s32) __asm__("func_001FA8A8");
 
@@ -3115,7 +3101,6 @@ extern u8 D_0014C010[];
 extern s32 *novalis_paths_r[] __asm__("D_L01_001B0C30");
 extern void DeleteMoby_r2(struct Moby *) __asm__("func_0020D678");
 
-extern s32 is_point_inside_clip_volume(void *, s32);
 extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002f2eb8. */
@@ -3290,8 +3275,6 @@ extern s32 gunship_path_updates_disabled SDATA(gunship_path_updates_disabled);
 extern char *novalis_mobys MACRO_ADDR;
 extern char gunship_missing_path_message_fmt[];
 extern void *gunship_follow_path_fn_ptr MACRO_ADDR;
-
-extern s32 get_next_moby_in_group(struct Moby **, struct Moby *, s32, s32);
 
 void gunship_follow_path(struct Moby *moby) {
     enum {

@@ -58,7 +58,7 @@ void update_gameplay_frame(void) {
         if (pad0_pressed_r[0] & 0x840) {
             initialize_transfer_command_r();
         }
-        sound_update_r();
+        sound_update();
     } else if (g_game_mode_r == 3) {
         intro_overlay_timer_r = scale_game_frame_count(0x3C);
         if ((intro_overlay_alpha_r -= 0x10) < 0) {
@@ -68,9 +68,9 @@ void update_gameplay_frame(void) {
             language_intro_overlay_alpha_r = 0;
         }
         update_menu_system_r();
-        sound_update_r();
+        sound_update();
     } else if (g_game_mode_r == 4) {
         update_mode_freeze_r();
-        sound_update_r();
+        sound_update();
     }
 }

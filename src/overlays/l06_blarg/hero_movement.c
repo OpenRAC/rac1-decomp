@@ -230,8 +230,6 @@ s32 HeroL06_TryApplyHitKnockback(s32 arg) {
     return 1;
 }
 
-extern float ApproachValue(float *p, float target, float maxstep);
-
 extern float frame_scale MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
@@ -306,12 +304,6 @@ typedef int Q __attribute__((mode(TI)));
 extern u8 blarg_collision_hit_point[];
 extern f32 blarg_coll_hit_z;
 extern s32 g_current_level_index MACRO_ADDR;
-
-s32 coll_line(void *, void *, s32, s32, s32);
-
-f32 resolve_camera_surface_height(void *, void *);
-
-void vec_scale_to_length(void *, void *, f32);
 
 extern Hero g_hero;
 extern struct CollisionHit blarg_coll_hit;
@@ -494,10 +486,6 @@ extern Hero g_hero_s __asm__("D_0013F450");
 extern float g_frame_time_sq MACRO_ADDR;
 extern float blarg_hero_speed_bands_6[];
 
-extern float ApproachValue(float *, float, float);
-
-extern void vec_scale_to_length(void *, void *, float);
-
 extern int g_current_level_index MACRO_ADDR;
 
 /* Hopping player movement update by state. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l06/ui_help_00222fb8.c, FUN_L06_0022b438. */
@@ -658,10 +646,6 @@ extern float blarg_hero_anim_frame_speeds_a[];
 extern float blarg_hero_anim_frame_speeds_b[];
 
 extern int truncate_float_to_s32(float);
-
-extern float ApproachValue(float *, float, float);
-
-extern int coll_sphere_mobys(float, void *, int, void *, void *);
 
 extern void spawn_color_decaying_effect_particle(char *, char *, int);
 

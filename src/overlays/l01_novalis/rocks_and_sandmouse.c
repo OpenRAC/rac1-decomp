@@ -91,8 +91,6 @@ typedef struct {
 extern DebrisColors rock_formation_debris_colors;
 extern float g_frame_time MACRO_ADDR;
 
-extern void vec_scale_to_length(void *, void *, float);
-
 extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
 extern void SetDeathBits(void *, int, int);
 
@@ -195,7 +193,7 @@ extern float g_frame_time MACRO_ADDR;
 
 extern int func_001160D8(void);
 
-extern void coll_sphere_mobys(void *, int, void *, void *, float);
+extern void coll_sphere_mobys_v(void *, int, void *, void *, float) __asm__("func_L00_001F2BE8");
 
 /* Oscillating spinner: swings its angle between -1 and 1 and turns the moby to match. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l01/unclassified_002f9810.c, FUN_L01_002f9bf0. */
 void fan_update(SwayMoby *m) {
@@ -214,7 +212,7 @@ void fan_update(SwayMoby *m) {
     q.x1c = 0;
     clear_u64_value(&q);
     q.x20 = 0;
-    coll_sphere_mobys(m->pos, 0x10, m, &q, 1.2f);
+    coll_sphere_mobys_v(m->pos, 0x10, m, &q, 1.2f);
     if (v->dir == v->sway) {
         if (fast_dec_timer(&v->timer)) {
             v->dir = -v->dir;
@@ -262,14 +260,10 @@ typedef struct {
 extern BurstLevelState novalis_checkpoint_level_state;
 extern BurstColors bridge_piece_debris_colors;
 
-extern void vec_scale_to_length(void *, void *, f32);
-
 extern void spawn_debris_moby_v(void *, void *, u32, s32, f32, f32, f32, f32, s32) __asm__("func_L01_002F9908");
 
 void *func_L00_0025B478_FB158b(void *, s32, s32) __asm__("func_L00_0025B478");
 
-extern f32 random_angle_radians(void);
-extern f32 random_float_between(f32, f32);
 extern f32 g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 void *func_L00_0025B478_FB158c(void *, s32, s32) __asm__("func_L00_0025B478");
 
@@ -375,9 +369,6 @@ extern void func_L00_0026B890(void *, void *, u32, u32, f32, s32, s32, f32, s32,
 
 extern s32 Moby_PlaySound_r(s32, s32, void *) __asm__("func_0022ED80");
 
-extern f32 random_float_between(f32, f32);
-extern s32 random_integer_below(s32);
-
 /* Explosion burst at `where`: three particles in random colours from two six-colour palettes, two
  * spawn_glow_particle effects on `moby`, its sound unless the moby is dying (state 0xFD/0xFE), and a light flash of
  * brightness `light` (negative: 13).
@@ -460,8 +451,6 @@ typedef struct {
 extern char camera_pos[];
 extern char novalis_coll_hit_point[];
 
-extern int coll_line(void *, void *, int, void *, void *);
-
 extern int coll_sphere_mobys_r(float, void *, int, void *, void *) __asm__("func_L00_001F2BE8");
 
 /* Per-frame update of a falling drop: integrates its velocity, tests it against the world and spawns its impact effect. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l01/unclassified_002f9810.c, FUN_L01_002fa4c0. */
@@ -536,14 +525,12 @@ typedef struct {
 } LvState;
 
 extern void *MobyGetHitMessage_r2(void *, int, int) __asm__("func_L00_0025B478");
-extern int Moby_PlaySound_r2(int, int, int) __asm__("func_0022ED80");
-extern float random_float_between(float, float);
 
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 
 extern void spawn_effect_particle_with_target_scalar_r(void *, void *, int, int, float,
                                                        int) __asm__("func_L00_0026DD70");
-extern int random_integer_below(int);
+
 extern void spawn_debris_moby_r(void *, void *, unsigned int, float, int, float, float, float,
                                 int) __asm__("func_L01_002F9908");
 extern unsigned char help_stats_base_r[] __asm__("D_0014171B");
@@ -585,7 +572,7 @@ void destroyable_cave_wall_update(char *moby) {
     if (MobyGetHitMessage_r2(cave_wall_moby, 0x800000, 0) == 0) {
         return;
     }
-    Moby_PlaySound_r2(0, 0, (int)cave_wall_moby);
+    Moby_PlaySound(0, 0, (int)cave_wall_moby);
     for (n = 0; n < 500; n++) {
         a.q = 0;
         a.f[0] = random_float_between(-1.0f, 1.0f);
@@ -720,16 +707,11 @@ extern void apply_cutscene_big_head_cheat_r(void) __asm__("func_L01_002FC058");
 
 extern void StartCutscene_r(int) __asm__("func_L00_00299B68");
 extern void deactivate_recorded_moby_r(void) __asm__("func_L00_0028FC68");
-extern int is_point_inside_clip_volume(void *, int);
 
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-extern float fast_atan2(float, float);
 
 extern void PlayMovieEntryIfIdle_r(int) __asm__("func_L00_0029A7D0");
 
-extern void queue_planet_unlock_message_r(int) __asm__("func_L00_00263DB0");
-
-extern void jet_clear_persistent_r(int) __asm__("func_L00_002512D8");
 extern void jet_reset_camera_r(void *, void *) __asm__("func_L00_00286128");
 
 /* Agnogg ship update (moby classes 730, 731, 790 on level 01): state machine on moby->state. */
@@ -886,7 +868,7 @@ void agnogg_ship_front_update(Moby *moby) {
                 break;
             }
             unlock_planet(3);
-            queue_planet_unlock_message_r(3);
+            queue_planet_unlock_message(3);
             moby->flags = moby->flags & 0xFFBE;
             if (data->link != -1) {
                 ((Lv *)novalis_current_level_state)->collected[(*(short *)&novalis_mobys[data->link].save_id)] =
@@ -912,7 +894,7 @@ void agnogg_ship_front_update(Moby *moby) {
                                               novalis_saved_moby_bytes_r);
                 }
             }
-            jet_clear_persistent_r(moby->mission);
+            jet_clear_persistent(moby->mission);
             if (data->rec != -1) {
                 jet_reset_camera_r(&camera_points[data->rec].a, &camera_points[data->rec].b);
             }
@@ -1218,8 +1200,8 @@ typedef struct {
     float x, y, z, w;
 } __attribute__((aligned(16))) SV4;
 
-extern void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float *v10, float *v11,
-                                float scale, float *v12);
+extern void *SpawnBreakFragment_v(char *src, int cls, float *pos, void *mat, int a8, int a9, float *v10, float *v11,
+                                  float scale, float *v12) __asm__("func_L00_00265050");
 
 extern float novalis_zero_vec[] MACRO_ADDR;
 
@@ -1272,8 +1254,8 @@ void green_mushroom_update(char *m) {
                 fragment_spawn_position.z = 0.0f;
                 FastVecAdd(&fragment_spawn_position, &fragment_spawn_position, &mushroom_moby->pos);
                 fragment_spawn_position.z += scale_ratio * 1.2f;
-                SpawnBreakFragment(mushroom_moby, 0x719, (float *)&fragment_spawn_position, &fragment_rotation, 0, 0,
-                                   novalis_zero_vec, novalis_zero_vec, 0.0f, novalis_zero_vec);
+                SpawnBreakFragment_v(mushroom_moby, 0x719, (float *)&fragment_spawn_position, &fragment_rotation, 0, 0,
+                                     novalis_zero_vec, novalis_zero_vec, 0.0f, novalis_zero_vec);
                 i++;
             } while (i < 4);
             spawn_moby_from_placement(mushroom_moby, 0x718);
@@ -1527,7 +1509,6 @@ void update_smoke_emitter(char *self) {
     }
 }
 
-extern void moby_build_matrix(void *);
 extern float g_frame_time_sq_s __asm__("D_0015EE70") MACRO_ADDR;
 /* Spawns a scaled class-0x313 drip with position and randomized motion. */
 char *pool_drip(void *position, float scale) {
@@ -1669,7 +1650,6 @@ typedef struct {
 } SpawnerMoby;
 extern s32 count_active_moby_group_members_r(s32, s32) __asm__("func_L01_0026EFB8");
 extern ClonedMoby *initialize_beehive_spawn_moby_r(ClonedMoby *) __asm__("func_L01_00303700");
-extern f32 fast_atan2(f32, f32);
 
 extern void InitKnockback_v(void *, void *, s32, s32, s32, f32) __asm__("func_L00_0025D5B0");
 extern short D_L01_00161F20;
@@ -1993,8 +1973,6 @@ extern float frame_scale MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern BlobHitInfo novalis_coll_hit;
 
-extern int coll_sphere(float, void *, int, void *);
-
 extern void PartType21Spawn(void *, void *, int, int, float, int, int);
 extern FxSpark_D568 *PartType23Spawn(void *, float, float, float, int, void *, float, int);
 
@@ -2070,8 +2048,6 @@ void update_explosive_moby(struct Moby *m) {
         }
     }
 }
-
-extern void vec_scale_to_length(void *, void *, float);
 
 typedef struct {
     int w[4];
@@ -2293,15 +2269,13 @@ void tall_shroom_update(char *moby) {
         case TALL_SHROOM_STATE_REMOVE_WITH_EFFECTS:
             Moby_PlaySound(0, 0, (int)moby);
             spawn_proximity_gated_bolts(moby);
-            SpawnBreakFragment(moby, 0x717, (float *)&((Moby *)moby)->pos, (char *)&((Moby *)moby)->rot, 0, 0,
-                               novalis_zero_vec, novalis_zero_vec, 0.0f, novalis_zero_vec);
+            SpawnBreakFragment_v(moby, 0x717, (float *)&((Moby *)moby)->pos, (char *)&((Moby *)moby)->rot, 0, 0,
+                                 novalis_zero_vec, novalis_zero_vec, 0.0f, novalis_zero_vec);
             spawn_moby_from_placement(moby, 0x718);
             DeleteMoby(moby);
             break;
     }
 }
-
-extern void vec_scale_to_length(void *, void *, float);
 
 extern float novalis_env_map_scroll_u MACRO_ADDR;
 extern float novalis_env_map_scroll_v MACRO_ADDR;

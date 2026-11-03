@@ -7,6 +7,7 @@
 #include "asm_functions/executable.h"
 #include "overlays/shared/effect_particle_updates.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "asm_functions/shared_levels.h"
 
 // Add and subtract a delta from a moby field, storing results
 void initialize_moby_grounding(char *moby) {
@@ -36,11 +37,6 @@ extern int aridia_shot_stream_lead_count SDATA(aridia_shot_stream_lead_count);
 extern int aridia_shot_stream_extra_count SDATA(aridia_shot_stream_extra_count);
 extern float aridia_shot_stream_spread_far SDATA(aridia_shot_stream_spread_far);
 extern float aridia_shot_stream_spread_near SDATA(aridia_shot_stream_spread_near);
-extern int coll_line(void *, void *, int, int, int);
-
-extern void vec_scale_to_length(void *, void *, float);
-
-extern void ApproachWithVelocity(float *, float *, float, float, float, float);
 
 extern int truncate_float_to_s32(float);
 
@@ -125,7 +121,6 @@ void effect_slots_fire(char *slots, float *position, float *direction, float dis
         spawn_color_decaying_effect_particle(position, velocity, 0);
     }
 }
-extern int coll_sphere_mobys(float, void *, int, int, int);
 
 // Retires up to seven slot entries whose effect finished, spawning a burst for live ones.
 void collect_mobies_around_tracked_objects(char **slots, int a, int b) {

@@ -29,7 +29,7 @@ void update_resident_gameplay_state(void) {
         case 8:
             resident_call_001E97B0();
             update_visible_resident_objects();
-            resident_call_0022EF68();
+            enqueue_voice_request();
             resident_call_001E97A0();
             UpdateParts();
             resident_data_0015F53C -= 0.125f;
@@ -77,7 +77,7 @@ void update_resident_gameplay_state(void) {
                 if (resident_data_001517D0.unk5A != 6 && resident_data_001517D0.unk5A != 7) {
                     resident_data_001517D0.unk5A = 5;
                 }
-                resident_call_002348B8();
+                calculate_dma_transfer_address();
                 resident_data_0018CEB0[0] = 0.63f;
                 UpdateViewContext();
                 /* Retail releases the attachment once per sequence object, even when that object is null. */
@@ -316,7 +316,7 @@ void update_resident_gameplay_state(void) {
                     }
                 }
             }
-            resident_call_0022DD68();
+            sound_update();
             resident_call_00202260();
             update_resident_packed_direction();
             resident_call_001E97A8();
@@ -325,7 +325,7 @@ void update_resident_gameplay_state(void) {
         case 3:
             resident_call_001E97B0();
             update_visible_resident_objects();
-            resident_call_0022EF68();
+            enqueue_voice_request();
             resident_call_001E97A0();
             UpdateParts();
             if (resident_data_0013E130.timer == 0) {
@@ -334,7 +334,7 @@ void update_resident_gameplay_state(void) {
                 resident_data_001517D0.unk1C = resident_data_0013E130.content_variant + 0x9C4F;
                 FadeToBlack(scale_game_frame_count(12));
                 while ((s16)resident_data_001517D0.unk5A != 3) {
-                    resident_call_0022DD68();
+                    sound_update();
                     resident_call_00122598(0);
                 }
                 resident_call_00216960();
@@ -368,11 +368,11 @@ void update_resident_gameplay_state(void) {
                     maximum_turn = resident_data_0013E130.blend;
                     path->p[0].components[3] = maximum_turn;
                     for (path_point_index = 1; path_point_index < path->point_count - 1; path_point_index++) {
-                        segment_angle = resident_call_001FA058(
+                        segment_angle = fast_arc_tan(
                             path->p[path_point_index].components[0] - path->p[path_point_index - 1].components[0],
                             path->p[path_point_index].components[1] - path->p[path_point_index - 1].components[1]);
                         path->p[path_point_index].components[3] = FastSubRots(
-                            resident_call_001FA058(
+                            fast_arc_tan(
                                 path->p[path_point_index + 1].components[0] - path->p[path_point_index].components[0],
                                 path->p[path_point_index + 1].components[1] - path->p[path_point_index].components[1]),
                             segment_angle);
@@ -380,12 +380,12 @@ void update_resident_gameplay_state(void) {
                             maximum_turn = FastAbsF(path->p[path_point_index].components[3]);
                         }
                     }
-                    segment_angle = resident_call_001FA058(
+                    segment_angle = fast_arc_tan(
                         path->p[path->point_count - 1].components[0] - path->p[path->point_count - 2].components[0],
                         path->p[path->point_count - 1].components[1] - path->p[path->point_count - 2].components[1]);
                     path->p[path->point_count - 1].components[3] = FastSubRots(
-                        resident_call_001FA058(path->p[0].components[0] - path->p[path->point_count - 1].components[0],
-                                               path->p[0].components[1] - path->p[path->point_count - 1].components[1]),
+                        fast_arc_tan(path->p[0].components[0] - path->p[path->point_count - 1].components[0],
+                                     path->p[0].components[1] - path->p[path->point_count - 1].components[1]),
                         segment_angle);
                     turn_scale = 0.34906584f / maximum_turn;
                     for (point_index = 0; point_index < path->point_count; point_index++) {
@@ -400,12 +400,11 @@ void update_resident_gameplay_state(void) {
                     qcopy(&resident_data_0013E130.startPos, &player->position);
                     qcopy(&resident_data_0013E130.pathPos, &path->p[0]);
                     qcopy(&resident_data_0013E130.startRot, &player->rotation);
-                    resident_data_0013E130.rotY = resident_call_001FA058(
-                        resident_call_001F9D48(&path->p[1], &path->p[0], &resident_data_0013E130.startPos),
-                        path->p[0].components[2] - path->p[1].components[2]);
-                    resident_data_0013E130.rotZ =
-                        resident_call_001FA058(path->p[1].components[0] - path->p[0].components[0],
-                                               path->p[1].components[1] - path->p[0].components[1]);
+                    resident_data_0013E130.rotY =
+                        fast_arc_tan(resident_call_001F9D48(&path->p[1], &path->p[0], &resident_data_0013E130.startPos),
+                                     path->p[0].components[2] - path->p[1].components[2]);
+                    resident_data_0013E130.rotZ = fast_arc_tan(path->p[1].components[0] - path->p[0].components[0],
+                                                               path->p[1].components[1] - path->p[0].components[1]);
                 }
             }
             if (resident_data_0013E130.source_camera_index >= 0 &&
@@ -544,7 +543,7 @@ void update_resident_gameplay_state(void) {
                 resident_call_0020ED48(resident_data_0013E130.companion_b);
             }
             resident_call_001EDE50();
-            resident_call_0022DD68();
+            sound_update();
             resident_call_00202260();
             update_resident_packed_direction();
             resident_call_001E97A8();

@@ -30,6 +30,7 @@
 #include "overlays/l15_quartu/hero_movement.h"
 #include "overlays/l15_quartu/hero_hud_and_actions.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "game/moby/mobyutil.h"
 extern Hero g_hero;
 
 extern unsigned char hero_globals_base[];
@@ -242,7 +243,7 @@ extern f32 frame_scale MACRO_ADDR;
 extern f32 g_frame_scale_sq MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
 
-f32 ApproachValue(f32, f32, f32 *);
+f32 ApproachValue_v(f32, f32, f32 *) __asm__("func_00214D28");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_001ff938.c, FUN_L15_00209450. */
 void update_hero_smoothing_parameters(void) {
@@ -281,8 +282,8 @@ void update_hero_smoothing_parameters(void) {
         vec_distance_xy(g_hero.wall_contact_point.f, g_hero.motion.pos.f) > g_hero.capsule_radius * 0.5f) {
         f32 *q = g_hero_capsule_top;
         Hero *b = (Hero *)((u8 *)q - 0x220);
-        ApproachValue(b->capsule_top_target, frame_scale * 0.02f, q);
-        ApproachValue(b->capsule_bottom_target, frame_scale * 0.02f, q + 1);
+        ApproachValue_v(b->capsule_top_target, frame_scale * 0.02f, q);
+        ApproachValue_v(b->capsule_bottom_target, frame_scale * 0.02f, q + 1);
         Spring(q + 5, q + 6, b->capsule_radius_target, g_frame_scale_sq * 0.02f, g_frame_scale_sq * 0.3f,
                g_frame_time * 4.0f);
     }
@@ -290,8 +291,6 @@ void update_hero_smoothing_parameters(void) {
 
 extern char quartu_coll_hit_type[];
 extern char quartu_coll_hit[];
-
-extern int coll_line(void *, void *, int, int, int);
 
 // Steers the hero's aim vectors toward the current target and snaps momentum to it when close enough.
 void adjust_hero_planar_velocity_from_probes(int arg) {
@@ -368,12 +367,6 @@ void adjust_hero_planar_velocity_from_probes(int arg) {
 typedef int Q __attribute__((mode(TI)));
 
 extern s32 g_current_level_index MACRO_ADDR;
-
-s32 coll_line(void *, void *, s32, s32, s32);
-
-f32 resolve_camera_surface_height(void *, void *);
-
-void vec_scale_to_length(void *, void *, f32);
 
 extern Hero g_hero_r __asm__("D_0013F450");
 extern struct CollisionHit quartu_coll_hit_r __asm__("D_L15_001744C0");

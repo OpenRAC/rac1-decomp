@@ -21,7 +21,6 @@
 extern Hero g_hero;
 
 extern int g_current_level_index MACRO_ADDR;
-extern int coll_sphere(float, void *, int, void *);
 
 /* Updates the pickup/aim flags after a state change, and requests a follow-up state when the target is in range. */
 void HeroL18_UpdateStateFlags(void) {

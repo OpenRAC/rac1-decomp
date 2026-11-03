@@ -35,8 +35,6 @@ extern char saved_mission_state[];
 
 extern int truncate_float_to_s32(float);
 
-extern void EaseManipulatorOffsets(char *, char *, int, float, float);
-
 extern char gemlik_available[];
 extern int quartu_moby_array MACRO_ADDR;
 extern int quartu_game_mode MACRO_ADDR;
@@ -429,8 +427,6 @@ typedef struct Items {
     unsigned char f6E;
     unsigned char f6F;
 } Items;
-
-extern int is_point_inside_clip_volume(void *, int);
 
 extern unsigned char D_0013D5E7[];
 extern int D_0015EFA4 MACRO_ADDR;

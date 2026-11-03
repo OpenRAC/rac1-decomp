@@ -88,9 +88,6 @@ struct RynoRocketVars {
 extern char collision_hit_point[];
 extern float g_frame_time_sq MACRO_ADDR;
 
-extern int coll_line(void *, void *, int, int, int);
-extern void vec_scale_to_length(void *, void *, float);
-
 typedef struct {
     float v[4];
 } __attribute__((aligned(16))) Q4;
@@ -185,14 +182,12 @@ extern f32 g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern CollisionHit_2C9820 coll_hit_result_r __asm__("D_L00_00173F40");
 extern Vec4 coll_hit_normal_r __asm__("D_L00_00173F80");
 extern Vec4 g_debug_camera_r __asm__("D_L00_00166EC0");
-extern f32 fast_atan2(f32, f32);
 
 extern s32 coll_line_r(void *, void *, s32, void *, s32) __asm__("func_L00_001EFFF0");
 extern s32 fast_dec_timer_r(s32 *) __asm__("func_001F9908");
 extern void ProbeGroundHeight_r(void *, s32, f32) __asm__("func_00214358");
 
 extern unsigned char *GetFlaggedPvarWord_r(int) __asm__("func_L00_00261448");
-extern s32 CollType(void);
 
 /* Predicts where a thrown moby lands: steps the velocity (with gravity) from its start until collision_line_2c8440
    hits ground (or a moby other than the hero and the holder), for up to `timer` steps. Stores the landing point and
@@ -311,8 +306,6 @@ extern int coll_hit_result[];
 extern void *g_coll_hit_moby;
 extern int suck_moby_list MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
-
-extern int coll_sphere(float, void *, int, void *);
 
 void update_doom_bot_spawner(Moby *m) {
     struct ThrowVars *s;
@@ -683,18 +676,13 @@ char *spawn_morphoray_chicken(char *src) {
     return m;
 }
 LINKER_REMNANT("asm/overlays", func_L00_002CABB8);
-extern float fast_atan2(float, float);
 
-extern void func_L00_00264B40(void *, int, void *, float);
+extern void Manipulator_ApplyScale_v(void *, int, void *, float) __asm__("func_L00_00264B40");
 extern int t32_CB(int *) __asm__("func_001F9908");
 extern int t16_CB(short *) __asm__("func_001F9938");
-extern int random_integer_below(int);
 
 extern Moby *contact_CB(void *, int, int) __asm__("func_L00_0025B478");
 extern int sound_CB(int, int, Moby *) __asm__("func_0022ED80");
-extern float random_float_between(float, float);
-extern float random_angle_radians(void);
-extern void BuildSphericalOffset(void *, float, float, float);
 
 extern int ftoi_CB(float) __asm__("func_001FA898");
 extern void f25F4A8_CB(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float, int,
@@ -704,12 +692,7 @@ extern int f1F2BE8_CB(void *, float, int, void *, void *) __asm__("func_L00_001F
 extern char *debris_CB(void *, void *, void *) __asm__("func_L00_002CD3B8");
 extern float dist_CB(void *, void *) __asm__("func_001F9D48");
 
-extern float ProbeGroundHeight(void *, int, float);
-
 extern void vscale_CB(void *, void *, float) __asm__("func_L00_001FF4B0");
-
-extern int CollType(void);
-extern float sqrt_CB(float) __asm__("func_001F9B50");
 
 extern void del_CB(Moby *) __asm__("func_0020D678");
 
@@ -783,9 +766,9 @@ void update_morphoray_chicken(Moby *m) {
         return;
     }
     if (hero_globals_base_CB[2] != 0) {
-        Manipulator_ApplyScale(m, G1920_CB, d->v20, 5.0f);
+        Manipulator_ApplyScale_v(m, G1920_CB, d->v20, 5.0f);
     } else {
-        Manipulator_ApplyScale(m, G1920_CB, d->v20, 7.7f);
+        Manipulator_ApplyScale_v(m, G1920_CB, d->v20, 7.7f);
     }
     qcopy(&T, &m->pos);
     if (d->i70 >= 0 && t32_CB(&d->i70) != 0 && m->visible == 0) {
@@ -1074,7 +1057,7 @@ void update_morphoray_chicken(Moby *m) {
         V.x = W.x * FastCos(m->rot.z) + W.y * FastSin(m->rot.z);
         V.y = W.y * FastCos(m->rot.z) - W.x * FastSin(m->rot.z);
         V.z = W.z;
-        pitch = -fast_atan2(sqrt_CB(V.x * V.x + V.z * V.z), V.y);
+        pitch = -fast_atan2(vec_length(V.x * V.x + V.z * V.z), V.y);
         roll = fast_atan2(V.z, V.x);
         m->rot.x = FastAddRots(m->rot.x, FastSubRots(pitch, m->rot.x) * (E6C_CB * 6.2831855f));
         m->rot.y = FastAddRots(m->rot.y, FastSubRots(roll, m->rot.y) * (E6C_CB * 6.2831855f));
@@ -1313,21 +1296,15 @@ extern void clear_homing_shot_trail_and_spawn_end_effects_r(Moby *, int) __asm__
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
 extern void PartType27Spawn_r(void *, void *, int, int, float) __asm__("func_L00_0026EBC0");
-extern void vec_set_length_xy(void *, void *, float);
+
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
-extern float fast_atan2(float, float);
+
 extern float SpringTurn_r(float *, float, float, float, float, float) __asm__("func_L00_00259148");
-extern void BuildSphericalOffset(void *, float, float, float);
-extern void vec_reflect(void *, void *, void *);
-extern float random_float_between(float, float);
 
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
 extern void Moby_PlaySound_r(int, int, Moby *) __asm__("func_0022ED80");
 
-extern int random_integer_below(int);
-
 extern int coll_line_r2(void *, void *, int, int, void *) __asm__("func_L00_001EFFF0");
-extern int CollType(void);
 
 extern void DeleteMoby_r(Moby *) __asm__("func_0020D678");
 
@@ -1492,8 +1469,6 @@ void update_homing_shot(Moby *m) {
     FastVecScale(&c, &b, random_float_between(g_frame_time_r2 * 0.5f, g_frame_time_r2 + g_frame_time_r2) / len);
     PartType27Spawn_r(&*(Vec4A *)&m->pos, &c, 0x7F2F4F6F, rand_range(scale_ticks(10), scale_ticks(15)), 30000.0f);
 }
-
-extern void vec_scale_to_length(void *, void *, f32);
 
 extern u8 *PartType23Spawn(void *, s32, f32, f32, void *, u32, f32, f32);
 
@@ -1796,7 +1771,7 @@ extern void apply_mat4_2CDAB8(float *, float *, void *) __asm__("func_001F9EE8")
 
 extern void add_2CDAB8(float *, void *, void *) __asm__("func_001F9BD8");
 extern void scale_2CDAB8(float *, float *, float) __asm__("func_001F9C30");
-extern float fast_atan2(float, float);
+
 extern float length_2CDAB8(float *) __asm__("func_001F9CE8");
 extern unsigned char *missile_2CDAB8(Moby *, float *, Moby *, float, float, float) __asm__("func_L00_002CE390");
 extern int rand_2CDAB8(void) __asm__("func_001160D8");
@@ -2449,7 +2424,7 @@ char *select_nearest_drone_target(char *a, int *excl) {
     }
     return result;
 }
-extern void moby_build_matrix(void *);
+
 typedef struct {
     char pad0[0x80];
     float x, y, z;
@@ -2461,7 +2436,6 @@ typedef struct {
 extern G_2CF6A0 g_hero_r2 __asm__("D_0013F450");
 extern char *CreateMoby_r2(int) __asm__("func_0020D348");
 
-extern float fast_atan2(float, float);
 extern float vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
 
 char *func_L00_002CF6A0_r(int a, void *pos) __asm__("func_L00_002CF6A0");
@@ -2539,11 +2513,9 @@ extern void apply_mat4_2CF808(float *, float *, void *) __asm__("func_001F9EE8")
 
 extern f32 FastVecDistance_2CF808(void *, void *) __asm__("func_001F9D48");
 extern void *aim_height_2CF808(void *) __asm__("func_L00_0025D390");
-extern f32 fast_atan2(f32, f32);
 
 extern s32 truncate_float_to_s32_2CF808(f32) __asm__("func_001FA898");
-extern void vec_set_length_xy(void *, void *, f32);
-extern void clamp_vec_length(void *, void *, f32);
+
 extern int rand_2CF808(void) __asm__("func_001160D8");
 extern int play_sound_2CF808(int, int, char *) __asm__("func_0022ED80");
 extern int dec_timer_s16_2CF808(short *) __asm__("func_001F9938");
@@ -2895,7 +2867,7 @@ typedef struct {
 } Part;
 
 extern void set_moby_color_r(void *, u8, u8, u8) __asm__("func_L00_00251328");
-extern void vec_scale_to_length(void *out, void *a, f32 len);
+
 typedef struct {
     u8 pad00[0x1E];
     u16 flags;
@@ -2956,11 +2928,6 @@ extern void *g_hero_moby;
 extern s32 hero_control_mode;
 
 extern s32 truncate_float_to_s32(f32);
-
-extern s32 coll_sphere_mobys(f32, void *, s32, void *, void *);
-extern int FastBSphereCheck(void *, float);
-
-extern int get_next_moby_in_group(struct Moby **, struct Moby *, int, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002c8440.c, FUN_L00_002cf218. */
 void crate_update(struct Moby *moby) {

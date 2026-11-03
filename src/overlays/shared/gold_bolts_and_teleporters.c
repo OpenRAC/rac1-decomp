@@ -137,8 +137,6 @@ extern short D_0015EE70_F7700 SDATA(D_0015EE70);
 extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern f32 vec_length_xy_r(void *) __asm__("func_001F9CE8");
 
-extern f32 fast_atan2(f32, f32);
-
 extern void vec_scale_to_length_r(void *, void *, f32) __asm__("func_L00_001FF4B0");
 
 extern void ApproachValue_r(float *, float, float) __asm__("func_00214D28");
@@ -299,10 +297,7 @@ extern Moby *novalis_coll_hit_moby;
 extern Cols explosive_spark_colors_a;
 extern Cols explosive_spark_colors_b;
 
-extern void vec_scale_to_length(void *, void *, float);
 extern int rand_range(int, int);
-
-extern int coll_sphere_mobys(float, void *, int, void *, void *);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
@@ -493,7 +488,7 @@ typedef struct {
 extern f32 g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern struct Moby *CreateMoby_r(s32) __asm__("func_0020D348");
 extern void copy_hero_moby_field_38(struct Moby *);
-extern f32 random_float_between(f32, f32);
+
 extern s32 func_001160D8_F9908(void) __asm__("func_001160D8");
 
 extern s32 truncate_float_to_s32_r2(f32) __asm__("func_001FA898");
@@ -545,8 +540,6 @@ struct Moby *spawn_debris_moby(Vec4f *pos, Vec4f *vel, s32 oclass, s32 a3, s32 a
 }
 extern f32 g_frame_time MACRO_ADDR;
 
-extern void vec_scale_to_length(void *, void *, f32);
-
 typedef struct {
     Vec4f vel; /* 0x00 */
     s32 unk10; /* 0x10 */
@@ -560,9 +553,6 @@ typedef struct {
 typedef int OvlQuad __attribute__((mode(TI)));
 
 extern CollisionHit novalis_coll_hit;
-
-extern s32 coll_line(void *, void *, s32, void *, s32);
-extern s32 coll_sphere(f32, void *, s32, void *);
 
 extern s32 rand_range(s32, s32);
 
@@ -805,7 +795,6 @@ extern void set_ground_height_band(void *);
 
 extern void unlock_planet(int);
 
-extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern char plumber_novalis_dialogue_name[];
 extern char plumber_batalia_dialogue_name[];
 extern char plumber_default_dialogue_name[];
@@ -996,8 +985,7 @@ void the_plumber_update(char *m) {
 }
 extern char gHeroPos_r[] __asm__("D_0013F4D0");
 extern s32 D_0014C290[][64];
-extern int is_point_inside_clip_volume(void *, int);
-extern void jet_clear_persistent_r(int) __asm__("func_L00_002512D8");
+
 extern void jet_reset_camera_r(void *, void *) __asm__("func_L00_00286128");
 typedef struct {
     s32 volume; /* 0x00: clip volume that arms it */
@@ -1058,7 +1046,7 @@ void spawn_point_update(struct Moby *moby) {
         if (vars->armed == 0 || vars->rearm != 0) {
             armed = 1;
             vars->armed = armed;
-            jet_clear_persistent_r(moby->mission);
+            jet_clear_persistent(moby->mission);
             qcopy(&pos, &moby->pos);
             pos.z = ProbeGroundHeight(&pos, 0, 0.5f);
             if (FastAbsF(moby->pos.z - pos.z) > 2.0f) {
@@ -1232,15 +1220,12 @@ extern f32 D_L01_00161FB4_00309078 SDATA(D_L01_00161FB4);
 extern f32 D_L01_00161FB8_00309078 SDATA(D_L01_00161FB8);
 extern f32 D_L01_00161FBC_00309078 SDATA(D_L01_00161FBC);
 extern s32 D_L01_00161FE0_00309078 SDATA(D_L01_00161FE0);
-extern f32 random_angle_radians(void);
-
-extern s32 random_integer_below(s32);
 
 extern void exit_hero_vehicle_mode_and_restore_moby_r(void) __asm__("func_L01_00231A68");
 extern int voice_00309078(int, int, void *) __asm__("func_0022ED80");
 extern void set_seq_00309078(Moby *, s32, s32, s32) __asm__("func_00213DE0");
 extern void set_hero_animation_r(f32, s32, s32) __asm__("func_L00_00232C10");
-extern void ShowBanner_r(s32, s32) __asm__("func_L00_00264DB8");
+
 extern void initialize_gold_bolt_data_r(Moby *) __asm__("func_L01_00309848");
 extern void update_gold_bolt_glow_rings_r(Moby *) __asm__("func_L01_00309928");
 extern void update_gold_bolt_visuals_r(Moby *) __asm__("func_L01_00309758");
@@ -1251,10 +1236,6 @@ extern f32 dist_00309078(void *, void *) __asm__("func_001F9D48");
 extern int countdown_00309078(int *) __asm__("func_001F9908");
 
 extern void Hero_ResetToPosition_r(void *, void *, int, int) __asm__("func_L00_00217718");
-extern void set_camera_position_r(void *) __asm__("func_L00_002EBE88");
-extern void set_camera_rotation_r(void *) __asm__("func_L00_002EBEE0");
-extern void CameraScript_r(void *, void *, int, int, int) __asm__("func_L00_002EBF50");
-extern void CameraScript2_r(int) __asm__("func_L00_002EC0C8");
 
 extern void save_00309078(int, int) __asm__("func_0020BFC8");
 
@@ -1312,7 +1293,7 @@ void gold_bolt_update(Moby *moby) {
             }
             if (vars->unkC != 0) {
                 novalis_banner_display_ticks_r = scale_ticks(180);
-                ShowBanner_r(0x53B8, -1);
+                ShowBanner(0x53B8, -1);
                 gold_bolts_collected_r[vars->id + g_current_level_index_r * 4] = 1;
                 save_00309078(0, -1);
             remove:
@@ -1340,9 +1321,9 @@ void gold_bolt_update(Moby *moby) {
             at2.z += 1.0f;
             clear_u64_value(&look2);
             look2.z = FastSubRots(vars->home.w, 1.5707964f);
-            CameraScript_r(&at2, &look2, 1, 0, 0);
-            set_camera_position_r(&at2);
-            set_camera_rotation_r(&look2);
+            CameraScript(&at2, &look2, 1, 0, 0);
+            set_camera_position(&at2);
+            set_camera_rotation(&look2);
             qcopy(&moby->pos, &hero_00309078.motion.pos);
             qcopy(&moby->rot, &hero_00309078.motion.rot);
             if (moby->prev_seq != 1) {
@@ -1385,11 +1366,11 @@ void gold_bolt_update(Moby *moby) {
                 return;
             }
             novalis_banner_display_ticks_r = scale_ticks(180);
-            ShowBanner_r(0x53B8, -1);
+            ShowBanner(0x53B8, -1);
             gold_bolts_collected_r[vars->id + g_current_level_index_r * 4] = 1;
             cutscene_active_r = 0;
             Hero_ResetToPosition_r(&h->motion.pos, &h->motion.rot, 0, 0);
-            CameraScript2_r(0);
+            CameraScript2(0);
             save_00309078(0, -1);
             DeleteMoby(moby);
             break;
@@ -1470,8 +1451,6 @@ extern int gold_bolt_ring_color_a SDATA(gold_bolt_ring_color_a);
 extern int gold_bolt_ring_color_b SDATA(gold_bolt_ring_color_b);
 extern int gold_bolt_ring_blend_flag SDATA(gold_bolt_ring_blend_flag);
 extern int gold_bolt_ring_texture SDATA(gold_bolt_ring_texture);
-
-extern void vec_scale_to_length(void *, void *, float);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
@@ -1642,9 +1621,6 @@ extern void try_set_teleporter_help_message(char *);
 extern void draw_moby_radius_ring(char *);
 
 extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
-
-extern float ApproachWithVelocity(float *, float *, float, float, float, float);
-extern float ApproachValue(float *p, float target, float maxstep);
 
 /* Teleporter pad update: activation check, then per state: spawn rings, wait for the player, charge, teleport, cool
    down. */
@@ -1823,7 +1799,6 @@ void TeleporterPadUpdate(char *moby) {
             break;
     }
 }
-extern void vec_scale_to_length(void *, void *, float);
 
 extern float teleporter_child_height_offset SDATA(teleporter_child_height_offset);
 extern float teleporter_child_base_pitch_deg SDATA(teleporter_child_base_pitch_deg);
@@ -1858,7 +1833,6 @@ extern short teleporter_help_ids_batalia;
 extern short teleporter_help_ids_hoven;
 extern short teleporter_help_ids_kalebo3;
 extern short teleporter_help_ids_veldin2;
-extern void try_set_help_message(int, int);
 
 /* Picks a per-stage table by the current stage number and passes the entry for the moby's index on. */
 void try_set_teleporter_help_message(char *moby) {
@@ -1899,7 +1873,6 @@ extern float teleporter_ring_uvs[];
 extern unsigned char g_hero_field_20a5_q __asm__("D_001414F5") NOT_SDA;
 
 extern long GetEffectTex_v(int) __asm__("func_001F4868");
-extern void draw_world_quad(void *, void *, int);
 
 /* Draws the moby's shimmering ring (Novalis variant; the flag isn't touched in states 7 and 8) as 32 four-vertex
    strips around its radius, thicker as the ring
@@ -2139,8 +2112,6 @@ extern f32 offset_quad_row0_offset SDATA(offset_quad_row0_offset);
 extern f32 offset_quad_row2_offset SDATA(offset_quad_row2_offset);
 extern s64 GetEffectTex_v(s32) __asm__("func_001F4868");
 
-extern void draw_world_quad(void *, void *, s32);
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/vendor/0030b618.c, FUN_L01_0030bfa8. */
 void draw_moby_offset_textured_quad(Moby *m) {
     struct {
@@ -2335,8 +2306,6 @@ void update_sandmouse_projectile(char *m) {
     DeleteMoby(m);
 }
 
-extern void vec_scale_to_length(void *, void *, float);
-
 /* offset a position by two camera-relative vectors, then raise z by 1 */
 void compute_sandmouse_follow_goal(void *unused, float *p) {
     float a[4];
@@ -2429,8 +2398,6 @@ extern int sandmouse_fire_interval SDATA(sandmouse_fire_interval);
 extern short novalis_game_mode_r __asm__("D_L01_0015F6A8");
 extern Vec4 gHeroPos;
 
-extern void Moby_GetJointWorldPos_r2(void *, int, void *) __asm__("func_L00_00250800");
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_0030b618.c, FUN_L01_0030d5f0. */
 void try_fire_sandmouse_projectile(char *moby, char *state) {
     Vec4 v;
@@ -2441,7 +2408,7 @@ void try_fire_sandmouse_projectile(char *moby, char *state) {
 
     if (FastDecTimer(state + 0x54) == 0)
         return;
-    Moby_GetJointWorldPos_r2(moby, (state[0x56] & 1) + 1, &v);
+    Moby_GetJointWorldPos(moby, (state[0x56] & 1) + 1, &v);
     state[0x56] = state[0x56] ^ 1;
     e = select_sandmouse_projectile_target(moby, &v, &((Moby *)moby)->rot, (sandmouse_fire_yaw_max_deg) * 0.017453292f,
                                            (sandmouse_fire_pitch_max_deg) * 0.017453292f, (sandmouse_fire_range), 2.0f,
@@ -2480,7 +2447,6 @@ void try_fire_sandmouse_projectile(char *moby, char *state) {
     }
 }
 
-extern float fast_atan2(float, float);
 extern float vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
 
 struct HoverVars {
@@ -2510,8 +2476,6 @@ extern short D_L01_00162160_0EC58 SDATA(D_L01_00162160);
 extern short D_L01_00162164_0EC58 SDATA(D_L01_00162164);
 extern short D_L01_00162168_0EC58 SDATA(D_L01_00162168);
 extern short D_L01_0016216C_0EC58 SDATA(D_L01_0016216C);
-
-extern void clamp_vec_length(void *, void *, f32);
 
 extern void MobySpringTurn_r(struct Moby *, f32 *, f32, f32, f32, f32) __asm__("func_L00_002592B0");
 extern s32 func_L00_00259B08(struct Moby *, Vec4 *, f32, f32, s32, s32);

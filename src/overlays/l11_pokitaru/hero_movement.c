@@ -38,7 +38,6 @@ extern int g_controller_state_no_direction;
 extern Hero g_hero;
 
 extern int D_0015EE84 MACRO_ADDR;
-extern int coll_sphere(float, void *, int, void *);
 
 /* Per-frame update of the player state flags from the current state. */
 void update_hero_surface_condition_flags(void) {
@@ -168,14 +167,6 @@ extern float pokitaru_hero_swim_frame_speeds[];
 extern float pokitaru_hero_ledge_shimmy_frame_speeds[];
 
 extern int truncate_float_to_s32(float);
-
-extern void vec_scale_to_length(void *, void *, float);
-
-extern float ApproachValue(float *, float, float);
-
-extern int coll_sphere_mobys(float, void *, int, void *, void *);
-
-extern int coll_line(void *, void *, int, int, int);
 
 struct HeroL11UpdateMovementVars {};
 

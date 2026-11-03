@@ -1150,8 +1150,6 @@ int Menu_GoNextWithFlag(void) {
     return 0;
 }
 
-extern int PlayBankSound(int, int, int);
-
 extern short unlock_code_input[];
 extern unsigned char unlock_code_key_table[];
 extern int unlock_code_input_count SDATA(unlock_code_input_count);

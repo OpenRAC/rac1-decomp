@@ -179,12 +179,6 @@ typedef int Q __attribute__((mode(TI)));
 extern u8 hoven_coll_hit_point[];
 extern s32 g_current_level_index MACRO_ADDR;
 
-s32 coll_line(void *, void *, s32, s32, s32);
-
-f32 resolve_camera_surface_height(void *, void *);
-
-void vec_scale_to_length(void *, void *, f32);
-
 extern Hero g_hero;
 extern struct CollisionHit hoven_coll_hit;
 
@@ -399,10 +393,6 @@ extern float hoven_hero_swim_frame_speeds[];
 extern float hoven_hero_ledge_shimmy_frame_speeds[];
 
 extern int truncate_float_to_s32(float);
-
-extern float ApproachValue(float *, float, float);
-
-extern int coll_sphere_mobys(float, void *, int, void *, void *);
 
 struct HeroUpdateStatePhysicsL12Vars {};
 

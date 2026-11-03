@@ -120,14 +120,6 @@ extern float kerwan_hero_anim_step_lengths[];
 
 extern int truncate_float_to_s32(float);
 
-extern void vec_scale_to_length(void *, void *, float);
-
-extern float ApproachValue(float *, float, float);
-
-extern int coll_sphere_mobys(float, void *, int, void *, void *);
-
-extern int coll_line(void *, void *, int, int, int);
-
 extern int Spline_AdvanceByDistance_v(void *, void *, int *, float *, float, int) __asm__("func_L00_0025E860");
 
 extern void spawn_color_decaying_effect_particle(char *, char *, int);

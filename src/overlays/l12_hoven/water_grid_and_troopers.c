@@ -121,7 +121,6 @@ extern char hoven_camera_pos[];
 extern char hoven_ripple_patches[];
 
 extern void initialize_level_12_slot_grid_neighbors(int);
-extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 
 extern void render_level_12_water_grids(void);
 
@@ -538,24 +537,16 @@ extern float D_L12_00161958_2E2EF0 SDATA(D_L12_00161958);
 extern float D_L12_0016195C_2E2EF0 SDATA(D_L12_0016195C);
 extern char D_L12_00161968_2E2EF0 SDATA(D_L12_00161968);
 extern void process_hoven_anklebiter_damage_and_alerts_r(void *) __asm__("func_L12_002E4838");
-extern void Manipulator_SetScale_r(void *, float) __asm__("func_L00_00264BB0");
+
 extern int select54(char *, char *, float) __asm__("func_L00_00260D30");
-extern void MobyBlendAnimation(void *, int, int, int);
+
 extern void MoveCtl_Init_r(char *) __asm__("func_L01_0026E8E0");
 
 extern int func_001160D8_2E2EF0(void) __asm__("func_001160D8");
-extern int random_integer_below(int);
-extern float ProbeGroundHeight(void *, int, float);
 
-extern float fast_atan2(float, float);
-
-extern float random_float_between(float, float);
 extern float smooth54(float *, float, float) __asm__("func_00214D28");
-extern void update_object_wander_movement_r(char *, char *, float, float) __asm__("func_L00_002626A8");
 
 extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-
-extern int func_L00_0025A2F0(int *, int, int, int);
 
 extern void MobyGroup_SetByteBC_r(int, int) __asm__("func_L01_0026F040");
 extern void spawn_spark_scatter_r(void *) __asm__("func_L12_002E2CB8");
@@ -587,7 +578,7 @@ void update_hoven_anklebiter(Moby *m) {
     float angle;
     int n, first, blocked, hit;
     process_hoven_anklebiter_damage_and_alerts_r(m);
-    Manipulator_SetScale_r(d->collision_data, 2.2f);
+    manipulator_set_scale(d->collision_data, 2.2f);
     select54((char *)m, (char *)&work, d->range);
     target = work.moby;
     if (!target)
@@ -679,7 +670,7 @@ void update_hoven_anklebiter(Moby *m) {
                 else
                     smooth54(&d->idle_speed, 0.0f, g_frame_time_sq_r * 7.0f);
                 m->anim_speed = 0.8f;
-                update_object_wander_movement_r((char *)m, (char *)d->idle_pos, 0.35f, 0.25f);
+                update_object_wander_movement((char *)m, (char *)d->idle_pos, 0.35f, 0.25f);
             }
             break;
         }
@@ -937,8 +928,6 @@ void update_hoven_anklebiter(Moby *m) {
     }
     return;
 }
-
-extern void vec_scale_to_length(void *, void *, float);
 
 // steers a moby along a path using its velocity and returns a status code
 int move_hoven_anklebiter_toward_heading(char *moby, float target) {
@@ -1238,8 +1227,6 @@ void emit_platform_exhaust_effects(char *m) {
 }
 extern float g_frame_scale_sq MACRO_ADDR;
 extern float platform_tilt_approach_divisor SDATA(platform_tilt_approach_divisor);
-
-extern void ApproachValue(void *, float, float);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l12/gameplay/entities/002bf140.c, FUN_L12_002e3c08. */
 void steer_platform_toward_target(Moby *m, float *ang, void *target, int unused, int brake) {
@@ -1782,20 +1769,14 @@ extern void process_blarg_trooper_damage_and_alerts(char *moby);
 
 extern int func_001160D8(void);
 
-extern int coll_line(void *, void *, int, void *, void *);
-
 extern void steer_blarg_trooper_toward_point(struct Moby *moby, float *target, float max_angle, float approach_speed);
 extern void set_blarg_trooper_aim_yaw_offsets(char *moby, float *pos);
 extern void ease_blarg_trooper_height_to_ground(char *moby);
 extern void remove_blarg_trooper_and_attachment();
 extern void update_blarg_trooper_attachment(unsigned char *moby);
-extern int coll_sphere_mobys(void *, int, void *, int, float);
-
-extern int IsFrameWithinWindow(void *, float);
+extern int coll_sphere_mobys_v(void *, int, void *, int, float) __asm__("func_L00_001F2BE8");
 
 extern int truncate_float_to_s32(float);
-
-extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 
 #define M_U8(p, o) (*(unsigned char *)((char *)(p) + (o)))
 #define M_U16(p, o) (*(unsigned short *)((char *)(p) + (o)))
@@ -2039,7 +2020,7 @@ void blarg_trooper_294_update(char *moby) {
                 COPY4(v50, (float *)(moby + 0x10));
                 v50[0] = v50[0] + ((float (*)(float))FastCos)(M_F(moby, 0x48));
                 v50[1] = v50[1] + ((float (*)(float))FastSin)(M_F(moby, 0x48));
-                n = coll_sphere_mobys(v50, 0, moby, 0, 1.5f);
+                n = coll_sphere_mobys_v(v50, 0, moby, 0, 1.5f);
                 if (n != 0) {
                     COPY4(v60, hoven_zero_vec);
                     if (n > 0) {
@@ -2469,8 +2450,6 @@ void update_blarg_trooper_attachment(unsigned char *moby) {
     }
 }
 
-extern void ApproachValue(void *, float, float);
-
 /* Initialize two vendor vectors using the global scale. */
 void ease_blarg_trooper_height_to_ground(char *moby) {
     float value = ProbeGroundHeight(moby + 0x10, 0, 0.5f);
@@ -2566,7 +2545,7 @@ extern char hoven_player_camera[];
 extern unsigned char gHaveHeliPack[];
 extern unsigned char help_stats_base[];
 extern int g_current_level_index MACRO_ADDR;
-extern void Manipulator_ApplyScale(float, void *, int, void *);
+
 extern void process_blarg_helicopter_hits(char *);
 typedef int (*Fn_ED80)(int, int, void *);
 
@@ -3200,7 +3179,6 @@ typedef struct Helper {
 } Helper;
 
 extern Helper *CreateMoby_r2(int) __asm__("func_0020D348");
-extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 
 extern unsigned char gHaveHeliPack[] NOT_SDA;
 extern int hoven_cinematic_mode_r2 __asm__("D_L12_0015F6A8") MACRO_ADDR;
@@ -3421,8 +3399,6 @@ void edwina_update(char *m) {
         EaseManipulatorOffsets(moby, moby_data->head, 0, sx * g_frame_scale_sq, sy * g_frame_scale_sq);
     }
 }
-
-extern int PlayBankSound(int, int, int);
 
 extern int helicopter_hit_count SDATA(helicopter_hit_count);
 extern int planetbuster_engaged SDATA(planetbuster_engaged);

@@ -282,7 +282,6 @@ void hydrodisplacer_faucet_update(char *faucet_moby) {
     }
     update_hydrodisplacer_faucet_pulse_color(faucet_moby);
 }
-extern float ApproachValue(float *p, float target, float maxstep);
 
 extern short g_frame_time_s __asm__("D_0015EE6C");
 
@@ -325,8 +324,6 @@ void update_hydrodisplacer_faucet_pulse_color(void *mv) {
         moby->glow_color = rilgar_faucet_rest_color;
     }
 }
-
-extern void vec_scale_to_length(void *, void *, float);
 
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 extern int rilgar_frame_count SDATA(rilgar_frame_count);
@@ -469,8 +466,6 @@ void hoverboard_update(unsigned char *moby) {
     }
     ((struct Moby *)moby)->command = 0;
 }
-
-extern int get_next_moby_in_group(int *, int, int, int);
 
 struct AddMobyFramesForGroupProximityVars {
     u8 pad_00[0x44];
@@ -838,8 +833,6 @@ void initialize_moby_launch_motion(Moby *m, int b, void *v1, void *v2, int a) {
     d->s[2] = random_float_between(-(g_frame_time * 4.1887903f), g_frame_time * 4.1887903f);
 }
 
-extern int coll_sphere(float, void *, int, void *);
-
 extern char rilgar_coll_hit[];
 extern float g_frame_time_sq MACRO_ADDR;
 
@@ -956,19 +949,17 @@ found:
     return (char *)&((M_p *)POOL)[idx];
 }
 INCLUDE_ASM("asm/overlays", func_L05_0031AB00);
-extern float ApproachWithVelocity(float, float, float, float, float *, float *);
-extern void SamplePathAt(int *, int, void *, float *, int, float);
+extern float ApproachWithVelocity_v(float, float, float, float, float *, float *) __asm__("func_00214D88");
 
 /* Advances a moby's path: steps the path position and returns whether it has reached the end. */
 int AdvanceMobyPath(char *m) {
     struct RilgarRideVars *d = (struct RilgarRideVars *)((Moby *)m)->pvars;
     int *path;
-    ApproachWithVelocity(1.0f, d->max_speed, d->max_speed, d->accel, &d->path_t, &d->path_t_vel);
+    ApproachWithVelocity_v(1.0f, d->max_speed, d->max_speed, d->accel, &d->path_t, &d->path_t_vel);
     path = d->path;
     SamplePathAt(path, 0, &d->start_pos, &d->start_rot.f[0], 0, d->path_t * (float)(*path - 1));
     return d->path_t >= 1.0f;
 }
-extern void try_set_help_message(int, int);
 
 /* Plays the sound that goes with the moby's current variant. */
 void request_moby_variant_help_message(char *moby) {
@@ -1042,7 +1033,6 @@ void transform_moby_vector_table_to_world_space(Moby *a) {
         }
     }
 }
-extern int FastBSphereCheck(char *, float);
 
 extern char rilgar_zero_vec[] MACRO_ADDR;
 
@@ -1112,7 +1102,8 @@ extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 extern s32 truncate_float_to_s32(f32);
 extern void AddDrawCallback_r(void (*)(char *), struct Moby *) __asm__("func_001F49B0");
 
-extern struct Moby *SpawnBreakFragment(f32, struct Moby *, s32, void *, void *, s32, s32, void *, void *, void *);
+extern struct Moby *SpawnBreakFragment_v(f32, struct Moby *, s32, void *, void *, s32, s32, void *, void *,
+                                         void *) __asm__("func_L00_00265050");
 
 extern struct Spark_c8e0 *PartType23Spawn(void *, f32, f32, f32, s32, void *, f32, s32);
 
@@ -1181,24 +1172,24 @@ void update_moby_glow_and_contact_explosion(struct Moby *moby) {
     }
     Moby_PlaySound(0, 0, moby);
     spawn_lamp_destroyed_from_source((unsigned char *)moby);
-    debris = SpawnBreakFragment(g_frame_time_sq * 12.0f, moby, 0x5ED, &moby->pos, &moby->rot, scale_ticks(0x5A), 0,
-                                rilgar_zero_vec, rilgar_zero_vec, rilgar_zero_vec);
+    debris = SpawnBreakFragment_v(g_frame_time_sq * 12.0f, moby, 0x5ED, &moby->pos, &moby->rot, scale_ticks(0x5A), 0,
+                                  rilgar_zero_vec, rilgar_zero_vec, rilgar_zero_vec);
     if (debris != 0) {
         debris->spawn_frame = moby->spawn_frame;
     }
     spawn_proximity_gated_bolts(moby);
     FastVecScale(&vel, &moby->rot_row0, (rilgar_glow_debris_forward_speed)*frame_scale);
     vel.f[2] += (rilgar_glow_debris_up_speed)*frame_scale;
-    debris = SpawnBreakFragment(g_frame_time_sq * 12.0f, moby, 0x5EE, &moby->pos, &moby->rot, scale_ticks(0x5A), 0,
-                                &vel, rilgar_zero_vec, rilgar_zero_vec);
+    debris = SpawnBreakFragment_v(g_frame_time_sq * 12.0f, moby, 0x5EE, &moby->pos, &moby->rot, scale_ticks(0x5A), 0,
+                                  &vel, rilgar_zero_vec, rilgar_zero_vec);
     if (debris != 0) {
         debris->spawn_frame = moby->spawn_frame;
     }
     vel.f[0] = -vel.f[0];
     vel.f[1] = -vel.f[1];
     moby->rot.z = FastAddRots(moby->rot.z, 3.1415927f);
-    debris = SpawnBreakFragment(g_frame_time_sq * 12.0f, moby, 0x5EE, &moby->pos, &moby->rot, scale_ticks(0x5A), 0,
-                                &vel, rilgar_zero_vec, rilgar_zero_vec);
+    debris = SpawnBreakFragment_v(g_frame_time_sq * 12.0f, moby, 0x5EE, &moby->pos, &moby->rot, scale_ticks(0x5A), 0,
+                                  &vel, rilgar_zero_vec, rilgar_zero_vec);
     if (debris != 0) {
         debris->spawn_frame = moby->spawn_frame;
     }
@@ -1251,10 +1242,6 @@ typedef struct {
 extern float rilgar_glow_quad_corners[4][4];
 extern f32 rilgar_glow_tip_offset SDATA(rilgar_glow_tip_offset);
 extern float rilgar_glow_camera_pull SDATA(rilgar_glow_camera_pull);
-
-extern void vec_scale_to_length(void *, void *, float);
-
-extern void draw_world_quad(void *, void *, s32);
 
 /* Draws the moby's camera-facing glow sprite, flickering its alpha at random. */
 void draw_moby_glow_sprite(char *m) {
@@ -1323,7 +1310,6 @@ char *spawn_lamp_destroyed_from_source(unsigned char *a0) {
 }
 typedef int u128 __attribute__((mode(TI)));
 
-extern void vec_scale_to_length(void *, void *, float);
 extern char hero_gravity_dir[];
 
 /* Sets up a moby's vector from the level table and clamps its height for the current state. */
@@ -1382,7 +1368,6 @@ void set_camera_follow_parameters(float a, float b, float c, float d, float e, f
 }
 INCLUDE_ASM("asm/overlays", func_L05_0032AA48);
 extern void update_hero_follow_camera_focus(char *);
-extern void vec_scale_to_length(void *, void *, float);
 
 /* Places the camera moby relative to the hero's target and builds its look-at basis. */
 void build_hero_follow_camera_transform(Camera *m) {
