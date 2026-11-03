@@ -3290,8 +3290,6 @@ extern short D_L02_00161D58_2E1B58 SDATA(D_L02_00161D58);
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern char *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
 
-extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
-
 extern void func_L01_002F9908(void *, void *, unsigned int, float, int, float, float, float, int);
 
 typedef struct {
@@ -3352,7 +3350,7 @@ void rocks_update(unsigned char *moby) {
         *(u128 *)A = *(u128 *)B;
         FastVecAdd(A, A, &((struct Moby *)moby)->pos);
         k = random_float_between(1.5f, 3.5f) * g_frame_time_r;
-        vec_scale_to_length_r(C, C, k);
+        vec_scale_to_length(C, C, k);
         s = random_float_between(1.5f, 3.5f) * 210000.0f;
         r = scale_ticks(rand_range(120, 240));
         spawn_effect_particle_with_target_scalar(A, C, *(int *)&D_L02_00161D54_2E1B58, *(int *)&D_L02_00161D58_2E1B58,
@@ -3379,7 +3377,7 @@ void rocks_update(unsigned char *moby) {
         *(u128 *)B = *(u128 *)D;
         FastVecAdd(B, B, &((struct Moby *)moby)->pos);
         k = random_float_between(1.0f, 5.0f) * g_frame_time_r;
-        vec_scale_to_length_r(A, A, k);
+        vec_scale_to_length(A, A, k);
         pc = (unsigned int *)C + random_integer_below(3);
         s = random_float_between(0.05f, 0.15f);
         n = rand_range(60, 180);

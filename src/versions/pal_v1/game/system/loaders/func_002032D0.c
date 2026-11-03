@@ -27,7 +27,7 @@ void LoadHudBanks(void) {
     fname = hud_bank_alloc_file;
     d941c0 = level_resource_buffers;
     size24 = ALIGN64(base->bank[0].size);
-    header = (HudHdr *)Hud_HeapAlloc_d(size24, 0, fname, 0x23A);
+    header = (HudHdr *)Hud_HeapAlloc(size24, 0, fname, 0x23A);
     FastMemCopy(header, (void *)(base->bank[0].off + (int)base), size24);
 
     hud_state_arena.header = header;
@@ -47,7 +47,7 @@ void LoadHudBanks(void) {
 
     size58 = hud_state_arena.header->unk58;
     if (size58 != 0) {
-        bank58 = Hud_HeapAlloc_d(size58, 0, fname, 0x261);
+        bank58 = Hud_HeapAlloc(size58, 0, fname, 0x261);
         LoadCompressedHudBank(1, (int)bank58);
         flush_cache(0);
         LinkHudBank(1, (int)bank58);

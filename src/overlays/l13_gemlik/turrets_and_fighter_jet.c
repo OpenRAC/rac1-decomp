@@ -524,13 +524,11 @@ extern void update_blarg_turret_target_and_state_r(void *) __asm__("func_L13_002
 extern void *spawn_blarg_turret_child_r(void *) __asm__("func_L13_002B5B08");
 extern void Manipulator_ApplyScale_r(float, void *, int, void *) __asm__("func_L00_00264B40");
 
-extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-
 extern float SteerAngleWithVelocity_v(void *, float, void *, float, float, float) __asm__("func_L00_0025CE58");
 extern float ApproachValue_r(float *, float, float) __asm__("func_00214D28");
 
 extern void fire_blarg_turret_projectile_r(void *) __asm__("func_L13_002B5950");
-extern void SetDeathBits_r(void *, int, int) __asm__("func_L00_002584A8");
+extern void SetDeathBits(void *, int, int);
 extern void spawn_explosion_r(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
                               float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
@@ -560,7 +558,7 @@ void blarg_turret_update(Moby *m) {
             break;
         case 1:
             r = FastDiffRots(fast_atan2(t->pos.x - m->pos.x, t->pos.y - m->pos.y), data->f54);
-            if (r < 1.5707964f && vec_distance_xy_r(&m->pos, &t->pos) < 20.0f &&
+            if (r < 1.5707964f && vec_distance_xy(&m->pos, &t->pos) < 20.0f &&
                 (data->volume == -1 || is_point_inside_clip_volume(&g_hero.motion.body_center, data->volume) != 0)) {
                 data->f68 = 8.0f;
                 if (m->prev_seq != 1) {
@@ -583,7 +581,7 @@ void blarg_turret_update(Moby *m) {
             break;
         case 3:
             r = FastDiffRots(fast_atan2(t->pos.x - m->pos.x, t->pos.y - m->pos.y), data->f54);
-            if (r >= 1.5707964f || vec_distance_xy_r(&m->pos, &t->pos) > 22.0f ||
+            if (r >= 1.5707964f || vec_distance_xy(&m->pos, &t->pos) > 22.0f ||
                 (data->volume != -1 && is_point_inside_clip_volume(&g_hero.motion.body_center, data->volume) == 0)) {
                 if (m->prev_seq != 0) {
                     MobyBlendAnimation(m, 0, 0, rand_range(7, 13));
@@ -617,7 +615,7 @@ void blarg_turret_update(Moby *m) {
         case 4: {
             Vec4A v;
             rand_vec(&v.x, 0.5f, 1.0f);
-            SetDeathBits_r(m, 0, -1);
+            SetDeathBits(m, 0, -1);
             spawn_explosion_r(m, &v, &m->pos, 0.0f, 0.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, -1, 1.0f, 15.0f, 1, 1, -1, 0);
             DeleteMoby(m);
             return;
@@ -901,8 +899,6 @@ void update_robosquawker_ground_height(char *m, char *d) {
 
 extern int func_001160D8(void);
 extern void InitKnockback_v(float, void *, void *, int, int, int) __asm__("func_L00_0025D5B0");
-
-extern int fast_dec_timer_i(void *) __asm__("func_001F9908");
 
 extern int move_4318_v(void *, void *, float, float, float, int) __asm__("func_L00_00259868");
 
@@ -1207,7 +1203,7 @@ void robosquawker_update(Moby *m) {
                 }
                 qcopy(&v->v1E0, path + v->w224 * 16 + 16);
                 m->state = 0x12;
-            } else if (fast_dec_timer_i(&v->w20C) != 0) {
+            } else if (fast_dec_timer(&v->w20C) != 0) {
                 int i;
 
                 v->w20C = scale_ticks(rand_range(0x28, 0x78));
@@ -2351,8 +2347,6 @@ void DrawGemlikTurretHud(char *moby) {
     d->hp_bar = v;
 }
 
-extern int fast_dec_timer_i(void *) __asm__("func_001F9908");
-
 /* Builds a rotated offset vector from the moby, flips a facing flag on a pad press, and updates the aim. */
 void update_fighter_jet_gun_and_aim(char *moby, char *obj, float p2, float p3) {
     char a[16];
@@ -2361,7 +2355,7 @@ void update_fighter_jet_gun_and_aim(char *moby, char *obj, float p2, float p3) {
     char d[16];
     BuildSphericalOffset(a, g_frame_time * 400.0f, p2, p3);
     FastVecAdd(a, a, obj);
-    if (fast_dec_timer_i(obj + 0x80) && (*(int *)(pad_globals_base + 0x2610) & 0x84)) {
+    if (fast_dec_timer(obj + 0x80) && (*(int *)(pad_globals_base + 0x2610) & 0x84)) {
         Moby_PlaySound(3, 0, (int)moby);
         vec_scale_to_length(c, a, 2.2f);
         Moby_GetJointWorldPos(moby, 3 + (obj[0x61] & 1), b);
@@ -2377,7 +2371,7 @@ void update_fighter_jet_gun_and_aim(char *moby, char *obj, float p2, float p3) {
 
 /* Fires a timed burst from a moby while a pad button is held and ammo remains. */
 void fire_fighter_jet_rocket(char *moby, char *obj) {
-    if (fast_dec_timer_i(obj + 0x84) && (*(int *)(pad_globals_base + 0x2610) & 0x28)) {
+    if (fast_dec_timer(obj + 0x84) && (*(int *)(pad_globals_base + 0x2610) & 0x28)) {
         struct Hero *u = &g_hero;
         if (u->ship_ammo != 0) {
             char a[16];

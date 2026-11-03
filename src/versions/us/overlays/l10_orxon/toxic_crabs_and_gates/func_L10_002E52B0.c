@@ -25,7 +25,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
         d->f1AC = truncate_float_to_s32_r(multiply_global_factor(random_float_between(180.0f, 240.0f)));
         d->f38 = 0;
     }
-    fast_dec_timer_r(&d->f1AC);
+    fast_dec_timer(&d->f1AC);
     A = 1;
     B = 0.0f;
     r = MobyGetHitMessage_r(m, 0xB30000, 0);
@@ -77,8 +77,8 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
             if (coll_line_r(&vA, &vB, 0x12, m, 0) != 0) {
                 FastVecSub(&dst, &vB, &vA);
                 *(u128_2E52B0 *)&W = *(u128_2E52B0 *)&dst;
-                vec_scale_to_length_r(&W, &W, 1.0f);
-                vec_scale_to_length_r(&X, &orxon_ground_hit_normal_r, 1.0f);
+                vec_scale_to_length(&W, &W, 1.0f);
+                vec_scale_to_length(&X, &orxon_ground_hit_normal_r, 1.0f);
                 if (0.5f < FastAbsF(FastVecDot(&W, &X))) {
                     B = 0.0f;
                     v21 = 11;
@@ -111,7 +111,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
                 HeadingFromVector_r(&vA, &fx, &d->f88, &d->f8C);
                 InitKnockback_r(m, d->a70, 9, 1, 0, fx);
                 d->b67 = 0xFA;
-                RerollEffectCounter_r(m, d->a60);
+                RerollEffectCounter(m, d->a60);
                 break;
             case 4:
             case 5: {
@@ -127,7 +127,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
                 HeadingFromVector_r(&vA, &fx, &d->f88, &d->f8C);
                 InitKnockback_r(m, d->a70, 9, 1, 0, fast_atan2(r->pos.x, r->pos.y));
                 d->b67 = 0xFA;
-                RerollEffectCounter_r(m, d->a60);
+                RerollEffectCounter(m, d->a60);
                 break;
             }
             case 1:
@@ -141,7 +141,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
         }
     }
     m->hit_slot = 0xFF;
-    StepColorFade_r(m, d->a60);
+    StepColorFade(m, d->a60);
     if ((unsigned char)(m->state - 10) < 3) {
         d->f1D4 = 0;
         return;
@@ -160,16 +160,16 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
         d->f1A0 = D_L10_00161EC0_2E52B0;
     }
     if (d->f1AC != 0) {
-        FindNearestTargetMoby_r(m, &d->a120, d->f1A0);
-        if (d->f1A0 < vec_distance_xy_r(&d->a170, &d->a120) || 3.0f < FastAbsF(m->pos.z - d->a120.z)) {
+        FindNearestTargetMoby(m, &d->a120, d->f1A0);
+        if (d->f1A0 < vec_distance_xy(&d->a170, &d->a120) || 3.0f < FastAbsF(m->pos.z - d->a120.z)) {
             d->f164 = 2;
         }
-    } else if (d->f1A0 < vec_distance_xy_r(&d->a170, &d->a120) || 3.0f < FastAbsF(m->pos.z - d->a120.z)) {
-        FindNearestTargetMoby_r(m, &d->a120, d->f1A0);
+    } else if (d->f1A0 < vec_distance_xy(&d->a170, &d->a120) || 3.0f < FastAbsF(m->pos.z - d->a120.z)) {
+        FindNearestTargetMoby(m, &d->a120, d->f1A0);
         d->f164 = 2;
     } else {
-        FindNearestEligibleMoby_r(d->f1A0, m, &d->a120, 0, 0, orxon_paths_r[d->f1B0]->nodes,
-                                  orxon_paths_r[d->f1B0]->count);
+        FindNearestEligibleMoby(d->f1A0, m, &d->a120, 0, 0, orxon_paths_r[d->f1B0]->nodes,
+                                orxon_paths_r[d->f1B0]->count);
     }
     if (m->state != 1 && d->f164 == 2) {
         d->f1D4++;

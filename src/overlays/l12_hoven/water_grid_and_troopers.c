@@ -543,18 +543,16 @@ extern int select54(char *, char *, float) __asm__("func_L00_00260D30");
 
 extern void MoveCtl_Init_r(char *) __asm__("func_L01_0026E8E0");
 
-extern int func_001160D8_2E2EF0(void) __asm__("func_001160D8");
+extern int func_001160D8(void);
 
 extern float smooth54(float *, float, float) __asm__("func_00214D28");
-
-extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
 extern void spawn_spark_scatter_r(void *) __asm__("func_L12_002E2CB8");
 extern void MobySpringTurn_r(char *, float *, float, float, float, float) __asm__("func_L00_002592B0");
 extern void select_hoven_anklebiter_pursuit_animation_r(unsigned char *) __asm__("func_L12_002E2BF8");
 
 extern void setup_fall54(float, char *, float *, int, int, int) __asm__("func_L00_0025D5B0");
-extern int mine_fall_r(void *, void *) __asm__("func_L00_0025D6F0");
+
 extern int move_hoven_anklebiter_toward_heading_r(char *, float) __asm__("func_L12_002E41C8");
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
 extern int IsFrameWithinWindow_r(char *, float) __asm__("func_00215B18");
@@ -566,7 +564,6 @@ extern void SetDeathBits_r(void *, int, int) __asm__("func_L00_002584A8");
 extern void TrollSpawnBurst_r(void *) __asm__("func_L12_002E43A8");
 
 extern void EaseManipulatorOffsets_r(char *, char *, int, float, float) __asm__("func_L00_00263950");
-extern void set_ground_height_band_r(void *) __asm__("func_L00_0025B178");
 
 /* Updates a Hoven troll's idle, pursuit, melee, leap, landing and death states. */
 void update_hoven_anklebiter(Moby *m) {
@@ -634,7 +631,7 @@ void update_hoven_anklebiter(Moby *m) {
                 qcopy(work.v0, &m->pos);
                 work.v0[2] += 0.8f;
                 m->pos.z = ProbeGroundHeight(work.v0, 0, 0.5f);
-                if (func_001160D8_2E2EF0() & 1)
+                if (func_001160D8() & 1)
                     m->flags |= 0x8000;
                 d->tuning = &D_L12_00161968_2E2EF0;
             }
@@ -676,7 +673,7 @@ void update_hoven_anklebiter(Moby *m) {
         }
         case 9:
             if (d->group_enabled) {
-                if (vec_distance_xy_r(&m->pos, &target->pos) < 2.0f)
+                if (vec_distance_xy(&m->pos, &target->pos) < 2.0f)
                     break;
                 if (d->group_check < hoven_frame_count) {
                     d->group_check = hoven_frame_count;
@@ -748,7 +745,7 @@ void update_hoven_anklebiter(Moby *m) {
             }
             break;
         case 12:
-            if (mine_fall_r(m, d->fall) & 1) {
+            if (mine_fall(m, d->fall) & 1) {
                 m->state = 14;
                 if (m->prev_seq != 9)
                     MobyBlendAnimation(m, 9, 8, scale_ticks(7));
@@ -796,7 +793,7 @@ void update_hoven_anklebiter(Moby *m) {
                     d->circle_angle = -d->circle_angle;
                 }
                 FastVecSub(work.v0, &target->pos, d->home);
-                if (vec_distance_xy_r(&m->pos, &target->pos) < 1.5f) {
+                if (vec_distance_xy(&m->pos, &target->pos) < 1.5f) {
                     m->state = 5;
                     if (m->prev_seq != 4)
                         MobyBlendAnimation(m, 4, 0, scale_ticks(5));
@@ -816,7 +813,7 @@ void update_hoven_anklebiter(Moby *m) {
             angle = fast_atan2(target->pos.x - m->pos.x, target->pos.y - m->pos.y);
             MobySpringTurn_r((char *)m, &d->turn_velocity, angle, 0.05f, 0.3f, 0.2f);
             if (m->seq == m->prev_seq && IsFrameWithinWindow_r((char *)m, 13.0f) &&
-                FastAbsF(m->pos.z - target->pos.z) < 0.5f && vec_distance_xy_r(&m->pos, &target->pos) < 2.0f &&
+                FastAbsF(m->pos.z - target->pos.z) < 0.5f && vec_distance_xy(&m->pos, &target->pos) < 2.0f &&
                 FastDiffRots(fast_atan2(target->pos.x - m->pos.x, target->pos.y - m->pos.y), m->rot.z) < 0.2617994f) {
                 work.v0[0] = FastCos(m->rot.z) * 0.2f;
                 work.v0[1] = FastSin(m->rot.z) * 0.2f;
@@ -825,7 +822,7 @@ void update_hoven_anklebiter(Moby *m) {
                 work.v10[2] += 0.75f;
                 PostHitMessage(target, (int)m, 1, work.v10, work.v0, 1.0f);
             }
-            if ((m->anim_flags & 2) && vec_distance_xy_r(&m->pos, &target->pos) >= 2.0f) {
+            if ((m->anim_flags & 2) && vec_distance_xy(&m->pos, &target->pos) >= 2.0f) {
                 m->state = 4;
                 d->blocked = 0;
                 select_hoven_anklebiter_pursuit_animation_r((unsigned char *)m);
@@ -834,7 +831,7 @@ void update_hoven_anklebiter(Moby *m) {
         case 6: {
             float return_distance;
             move_hoven_anklebiter_toward_heading_r((char *)m, fast_atan2(d->home[0] - m->pos.x, d->home[1] - m->pos.y));
-            if (vec_distance_xy_r(&m->pos, d->home) < 2.0f) {
+            if (vec_distance_xy(&m->pos, d->home) < 2.0f) {
                 m->state = 1;
                 if (m->prev_seq != 0)
                     MobyBlendAnimation(m, 0, 0, scale_ticks(7));
@@ -867,7 +864,7 @@ void update_hoven_anklebiter(Moby *m) {
         case 7:
             if (m->group != 255)
                 MobyGroup_SetByteBC(m->group, 1);
-            if (mine_fall_r(m, d->fall) & 1) {
+            if (mine_fall(m, d->fall) & 1) {
                 m->state = 10;
                 if (m->prev_seq != 13)
                     MobyBlendAnimation(m, 13, 8, scale_ticks(8));
@@ -894,7 +891,7 @@ void update_hoven_anklebiter(Moby *m) {
             }
             break;
         case 99:
-            hit = mine_fall_r(m, d->fall);
+            hit = mine_fall(m, d->fall);
             if ((hit & 0x40) || (MobyGetFrameValue(m) > 37.0f && m->seq == m->prev_seq)) {
                 m->anim_speed = 0.0f;
                 SetDeathBits_r(m, 0, -1);
@@ -922,7 +919,7 @@ void update_hoven_anklebiter(Moby *m) {
         EaseManipulatorOffsets_r((char *)m, d->collision_data, 0, g_frame_scale_sq_r * 0.018f,
                                  g_frame_scale_sq_r * 0.3f);
         if (m->visible && FastVecDist(&m->pos, hoven_camera_pos_r) < 28.0f) {
-            set_ground_height_band_r(m);
+            set_ground_height_band(m);
             m->shadow_range = 22;
         }
     }

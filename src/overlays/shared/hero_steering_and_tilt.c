@@ -24,6 +24,7 @@
 #include "game/audio/sound.h"
 #include "overlays/shared/moby_frame_packet.h"
 #include "overlays/shared/hero_vehicle_and_collision.h"
+#include "overlays/shared/moby_ground_collision.h"
 
 extern Hero g_hero_s __asm__("D_0013F450");
 extern float g_frame_scale_sq MACRO_ADDR;
@@ -32,7 +33,6 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern float hero_speed_bands_field_18[];
 
 extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
-extern float SpringAngle_r(void *, float, void *, int, float, float, float) __asm__("func_L00_0025CCF0");
 
 extern int allocate_hero_voice_for_entry(int, int);
 
@@ -138,8 +138,8 @@ void hero_move_state_velocity(void) {
         if (state == 0x2D) {
             x = g_hero_s.motion.rot.f[2];
             g_hero_s.motion.yaw_error =
-                SpringAngle_r(&x, g_hero_s.motion.move_yaw, &g_hero_s.motion.yaw_rate, 0, g_frame_scale_sq * 0.018f,
-                              g_frame_scale_sq * 0.2f, g_frame_time * 7.330383f);
+                SpringAngle(&x, g_hero_s.motion.move_yaw, &g_hero_s.motion.yaw_rate, 0, g_frame_scale_sq * 0.018f,
+                            g_frame_scale_sq * 0.2f, g_frame_time * 7.330383f);
             a = FastSubRots(x, g_hero_s.motion.rot.f[2]);
             rotate_hero_about_fixed_local_pivot(0.0f, 0.0f, a);
         } else {

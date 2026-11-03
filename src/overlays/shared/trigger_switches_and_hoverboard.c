@@ -1097,7 +1097,6 @@ extern f32 rilgar_glow_tip_offset SDATA(rilgar_glow_tip_offset);
 extern f32 rilgar_glow_debris_forward_speed SDATA(rilgar_glow_debris_forward_speed);
 extern f32 rilgar_glow_debris_up_speed SDATA(rilgar_glow_debris_up_speed);
 extern f32 frame_scale MACRO_ADDR;
-extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
 extern s32 truncate_float_to_s32(f32);
 extern void AddDrawCallback_r(void (*)(char *), struct Moby *) __asm__("func_001F49B0");
@@ -1140,7 +1139,7 @@ void update_moby_glow_and_contact_explosion(struct Moby *moby) {
     }
     /* FAKEMATCH: the distance passes through a second variable; assigned directly,
        the compiler keeps it in $f0 and picks other registers for the fade below. */
-    camera_distance = vec_distance_xy_r(rilgar_camera_pos, &moby->pos);
+    camera_distance = vec_distance_xy(rilgar_camera_pos, &moby->pos);
     distance = camera_distance;
     if (48.0f <= distance) {
         return;
@@ -1729,9 +1728,6 @@ typedef struct {
 extern Row *rilgar_camera_descriptors_r2 __asm__("D_L05_0015F050") MACRO_ADDR;
 extern float D_L05_00174378;
 extern float D_L05_00162268_32B1F8 SDATA(D_L05_00162268);
-extern void vec_scale_32B1F8(void *, void *, float) __asm__("func_L00_001FF4B0");
-
-extern int collide_32B1F8(float, void *, int, void *) __asm__("func_L00_001F10E0");
 
 extern void orbit_32B1F8(Camera_32B1F8 *) __asm__("func_L05_0032ADE8");
 
@@ -1766,17 +1762,17 @@ void update_orbit_camera_position(Camera_32B1F8 *m) {
     dist = d->dist;
     q = &d->focus;
     e = &d->spring;
-    vec_scale_32B1F8(&down, g, -1.0f);
+    vec_scale_to_length(&down, g, -1.0f);
     qcopy(&focus, &q->pos);
     if (d->mode == 0) {
         FastVecSub(&rel, pos = &m->pos, &focus);
         n = 0;
         dd = FastVecDot(&rel, &q->axis);
-        vec_scale_32B1F8(&tmp, &q->axis, dd);
+        vec_scale_to_length(&tmp, &q->axis, dd);
         FastVecSub(&lat, &rel, &tmp);
-        vec_scale_32B1F8(&off, &lat, e->dist);
+        vec_scale_to_length(&off, &lat, e->dist);
         FastVecAdd(&base, &focus, &off);
-        vec_scale_32B1F8(&tmp, &q->axis, e->height);
+        vec_scale_to_length(&tmp, &q->axis, e->height);
         FastVecAdd(&goal, &base, &tmp);
         FastVecAdd(&goal, &goal, &d->bias);
         m->pos.x = Cam_InterpValues(m->pos.x, goal.x, &d->vel[0], d->k10, d->k14, d->k18);
@@ -1790,7 +1786,7 @@ void update_orbit_camera_position(Camera_32B1F8 *m) {
         FastVecSub(&step, pos, &probe);
         FastVecScale(&step, &step, 0.16666667f);
         while (n < 6) {
-            if (collide_32B1F8(0.5f, &probe, 18, 0) != 0) {
+            if (coll_sphere(0.5f, &probe, 18, 0) != 0) {
                 e->height =
                     Cam_InterpValues(e->height, rilgar_coll_resolved_pos_z - focus.z, &cur->vel, 0.05f, 0.2f, 0.0f);
                 break;
@@ -1870,33 +1866,33 @@ void update_orbit_camera_position(Camera_32B1F8 *m) {
     orbit_32B1F8(m);
     qcopy(&q->pos, &d->next);
     qcopy(&focus, &q->pos);
-    vec_scale_32B1F8(&tmp, &q->axis, q->dist);
+    vec_scale_to_length(&tmp, &q->axis, q->dist);
     FastVecAdd(&goal, &focus, &tmp);
     FastVecSub(&rel, &goal, &m->pos);
-    vec_scale_32B1F8(&rel, &rel, 1.0f);
+    vec_scale_to_length(&rel, &rel, 1.0f);
     dd = FastVecDot(&m->fwd, &rel);
     FastVecCross(&m->up, &rel, &down);
-    vec_scale_32B1F8(&m->up, &m->up, 1.0f);
+    vec_scale_to_length(&m->up, &m->up, 1.0f);
     FastVecCross(&m->side, &m->up, &rel);
     if (fl == 0 || FastAbsF(dd) < 0.5f || (v = (float *)g_hero, ((Hero *)v)->trick_input != 0)) {
         tr->blend = Cam_InterpValues(tr->blend, 0.0f, tr->state, tr->k34, tr->k38, tr->k3C);
     } else {
         float t;
-        vec_scale_32B1F8(&probe, ((char *)((Hero *)v)->moby) + 0xC0, 1.0f);
+        vec_scale_to_length(&probe, ((char *)((Hero *)v)->moby) + 0xC0, 1.0f);
         t = FastVecDot(&probe, &m->side);
-        vec_scale_32B1F8(&step, &m->side, t);
+        vec_scale_to_length(&step, &m->side, t);
         FastVecSub(&probe, &probe, &step);
         t = FastVecDot(&probe, &m->up);
         tr->blend = Cam_InterpValues(tr->blend, t * D_L05_00162268_32B1F8, tr->state, tr->k34, tr->k38, tr->k3C);
     }
     if (0.00001f < FastAbsF(tr->blend)) {
-        vec_scale_32B1F8(&probe, &m->up, tr->blend);
+        vec_scale_to_length(&probe, &m->up, tr->blend);
         FastVecAdd(&goal, &goal, &probe);
     }
     FastVecSub(&rel, &goal, &m->pos);
-    vec_scale_32B1F8(&m->fwd, &rel, 1.0f);
+    vec_scale_to_length(&m->fwd, &rel, 1.0f);
     FastVecCross(&m->up, &m->fwd, &down);
-    vec_scale_32B1F8(&m->up, &m->up, 1.0f);
+    vec_scale_to_length(&m->up, &m->up, 1.0f);
     FastVecCross(&m->side, &m->up, &m->fwd);
 }
 extern char *rilgar_camera_init_source;

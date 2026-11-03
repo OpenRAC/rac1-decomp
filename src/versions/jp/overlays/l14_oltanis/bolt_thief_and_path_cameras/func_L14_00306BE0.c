@@ -26,7 +26,7 @@ void CollectiblePickupUpdate(struct Moby *moby) {
             update_morphoray_particles_r(moby);
             if (oltanis_frame_count_r % 10 != 0)
                 return;
-            if (!(vec_distance_xy_r(o + 0x10, g_hero_r.motion.pos.f) < 1.0f))
+            if (!(vec_distance_xy(o + 0x10, g_hero_r.motion.pos.f) < 1.0f))
                 return;
             if (!(FastAbsF(*(f32 *)(o + 0x18) - g_hero_r.motion.pos.f[2]) < 2.0f))
                 return;

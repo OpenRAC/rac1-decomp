@@ -264,10 +264,7 @@ extern BurstColors bridge_piece_debris_colors;
 
 extern void spawn_debris_moby_v(void *, void *, u32, s32, f32, f32, f32, f32, s32) __asm__("func_L01_002F9908");
 
-void *func_L00_0025B478_FB158b(void *, s32, s32) __asm__("func_L00_0025B478");
-
 extern f32 g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
-void *func_L00_0025B478_FB158c(void *, s32, s32) __asm__("func_L00_0025B478");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l01/unclassified_002f9810.c, FUN_L01_002f9d80. */
 void bridge_piece_1_update(BurstMoby *self) {
@@ -279,7 +276,7 @@ void bridge_piece_1_update(BurstMoby *self) {
     f32 ang;
     s32 i;
 
-    t = func_L00_0025B478_FB158c(self, 0x830000, 0);
+    t = MobyGetHitMessage(self, 0x830000, 0);
     if (novalis_checkpoint_level_state.collected[self->id] != 0 ||
         (level_moby_killed[g_current_level_index_r][self->id >> 5] >> (self->id & 0x1F)) & 1) {
         DeleteMoby(self);
@@ -452,8 +449,6 @@ typedef struct {
 extern char camera_pos[];
 extern char novalis_coll_hit_point[];
 
-extern int coll_sphere_mobys_r(float, void *, int, void *, void *) __asm__("func_L00_001F2BE8");
-
 /* Per-frame update of a falling drop: integrates its velocity, tests it against the world and spawns its impact effect. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l01/unclassified_002f9810.c, FUN_L01_002fa4c0. */
 void update_birdbot_projectile(DropMoby *m) {
     DropVars *v;
@@ -504,7 +499,7 @@ void update_birdbot_projectile(DropMoby *m) {
         DeleteMoby(m);
     } else {
         half = 0.5f;
-        if (coll_sphere_mobys_r(half, pos, 0x10, v->coll, &probe) != 0) {
+        if (coll_sphere_mobys(half, pos, 0x10, v->coll, &probe) != 0) {
             tmp = m->pos;
             spawn_explosion_effects(m, &tmp, 0, half, zero);
             DeleteMoby(m);
@@ -524,10 +519,6 @@ typedef struct {
     unsigned char pad0[0x454];
     unsigned char collected[1];
 } LvState;
-
-extern void *MobyGetHitMessage_r2(void *, int, int) __asm__("func_L00_0025B478");
-
-extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 
 extern void spawn_debris_moby_r(void *, void *, unsigned int, float, int, float, float, float,
                                 int) __asm__("func_L01_002F9908");
@@ -567,7 +558,7 @@ void destroyable_cave_wall_update(char *moby) {
         DeleteMoby(cave_wall_moby);
         return;
     }
-    if (MobyGetHitMessage_r2(cave_wall_moby, 0x800000, 0) == 0) {
+    if (MobyGetHitMessage(cave_wall_moby, 0x800000, 0) == 0) {
         return;
     }
     Moby_PlaySound(0, 0, (int)cave_wall_moby);
@@ -588,7 +579,7 @@ void destroyable_cave_wall_update(char *moby) {
         a.q = b.q;
         FastVecAdd(&a, &a, &cave_wall_moby->pos);
         x = random_float_between(1.5f, 3.5f);
-        vec_scale_to_length_r(&tab, &tab, x * g_frame_time_r2);
+        vec_scale_to_length(&tab, &tab, x * g_frame_time_r2);
         x = random_float_between(1.5f, 3.5f);
         t = x * 210000.0f;
         r = rand_range(0x78, 0xF0);
@@ -613,7 +604,7 @@ void destroyable_cave_wall_update(char *moby) {
         b.q = c.q;
         FastVecAdd(&b, &b, &cave_wall_moby->pos);
         x = random_float_between(1.0f, 5.0f);
-        vec_scale_to_length_r(&a, &a, x * g_frame_time_r2);
+        vec_scale_to_length(&a, &a, x * g_frame_time_r2);
         r = random_integer_below(3);
         pi = &tab.i[r];
         x = random_float_between(0.05f, 0.15f);
@@ -703,8 +694,6 @@ extern char novalis_saved_moby_bytes_r[] __asm__("D_L01_001BADB0");
 extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern void apply_cutscene_big_head_cheat_r(void) __asm__("func_L01_002FC058");
 
-extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-
 /* Agnogg ship update (moby classes 730, 731, 790 on level 01): state machine on moby->state. */
 void agnogg_ship_front_update(Moby *moby) {
     Data_2FC140 *data;
@@ -761,7 +750,7 @@ void agnogg_ship_front_update(Moby *moby) {
                         novalis_mobys[data->link].command = 1;
                         clear_u64_value(&camera_points[q->rec].b);
                         clear_u64_value(&q->v);
-                        camera_points[q->rec].b.y = -fast_atan2(vec_distance_xy_r(&camera_points[q->rec].a, &moby->pos),
+                        camera_points[q->rec].b.y = -fast_atan2(vec_distance_xy(&camera_points[q->rec].a, &moby->pos),
                                                                 moby->pos.z - camera_points[q->rec].a.z);
                         camera_points[q->rec].b.z = fast_atan2(moby->pos.x - camera_points[q->rec].a.x,
                                                                moby->pos.y - camera_points[q->rec].a.y);
@@ -774,7 +763,7 @@ void agnogg_ship_front_update(Moby *moby) {
             moby->pos.z = moby->pos.z - g_frame_time_r2 * 5.0f;
             if (data->link != -1) {
                 q = (void *)novalis_mobys[data->link].pvars;
-                q->v.y = -fast_atan2(vec_distance_xy_r(&camera_points[q->rec].a, &moby->pos),
+                q->v.y = -fast_atan2(vec_distance_xy(&camera_points[q->rec].a, &moby->pos),
                                      moby->pos.z - camera_points[q->rec].a.z);
                 q->v.z = fast_atan2(moby->pos.x - camera_points[q->rec].a.x, moby->pos.y - camera_points[q->rec].a.y);
             }

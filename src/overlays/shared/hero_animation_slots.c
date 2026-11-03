@@ -2595,7 +2595,6 @@ extern Hero D_0013F450_211D28 __asm__("D_0013F450");
 extern struct PadState D_0013CA40;
 
 extern float get_capped_hero_stick_magnitude_a(void) __asm__("func_L00_00211EE8");
-extern float vec_length_xy_a(void *) __asm__("func_001F9CE8");
 
 extern void update_hero_collision_capsule_dimensions_a(void) __asm__("func_L00_00211A38");
 
@@ -2613,7 +2612,7 @@ void hero_update(void) {
     D_0013F450_211D28.unk240 = 0;
     D_0013F450_211D28.stick_x = g_controller_state.analog[2];
     D_0013F450_211D28.stick_y = g_controller_state.analog[3];
-    if (vec_length_xy_a(&D_0013F450_211D28.stick_x) < 0.25f) {
+    if (vec_length_xy(&D_0013F450_211D28.stick_x) < 0.25f) {
         raw = g_controller_state.raw_held;
         l = (raw >> 13) & 1;
         r = (raw >> 15) & 1;
@@ -3071,7 +3070,6 @@ extern f32 coll_hit_point_z;
 
 void func_L00_00212D70_12E70(void *, void *, s32, f32, f32) __asm__("func_L00_00212D70");
 
-s32 func_L00_0025F410_12E70(s32) __asm__("func_L00_0025F410");
 u8 *func_L00_0025D390_12E70(s32) __asm__("func_L00_0025D390");
 
 extern Hero D_0013F450_12E70 __asm__("D_0013F450");
@@ -3158,7 +3156,7 @@ void update_hero_ground_contact_and_surface_slopes(void) {
         goto d1;
     }
     if (coll_hit_result_r2.moby != 0) {
-        if (func_L00_0025F410_12E70(coll_hit_result_r2.moby)) {
+        if (is_moby_in_class_range_500_to_540(coll_hit_result_r2.moby)) {
             D_0013F450_12E70.on_flagged_ground_moby = 1;
         }
         p = func_L00_0025D390_12E70(coll_hit_result_r2.moby);

@@ -1029,8 +1029,6 @@ extern void SetDeathBits(void *, int, int);
 extern unsigned char *spawn_thrown_bomb_r(int, void *, float *, float, int) __asm__("func_L16_002C75D0");
 /* Declared void further down this file; here the first temporary after the call avoids $v0, as after a call that
    returns a value. */
-extern int MobySphereHitDirectional_r(int, float, void *, int, float, float, int, int,
-                                      int) __asm__("func_L00_0025A8E8");
 
 /* Updates the test dummy (moby Test Dummy): walks its path, throws at or sprays its target, bursts and respawns. */
 /* Updates the test dummy (moby Test Dummy): walks its path, throws at or sprays its target, bursts and respawns. */
@@ -1189,7 +1187,7 @@ void test_dummy_update(unsigned char *moby) {
                 ClampVectorLength(position_or_delta.f, test_dummy_path_movement_speed_limit_gp * g_frame_time);
                 FastVecAdd(position, position, position_or_delta.f);
                 Moby_GetJointWorldPos(moby, test_dummy_hold_joint, position_or_direction.f);
-                MobySphereHitDirectional_r((int)moby, 0.333f, position_or_direction.f, 1, 1.0f, 1.0f, 0, 1, 0);
+                MobySphereHitDirectional((int)moby, 0.333f, position_or_direction.f, 1, 1.0f, 1.0f, 0, 1, 0);
                 g = (struct Hero *)g_hero;
                 if (kalebo3_coll_hit_moby == *(char **)&g->moby && g->invulnerable_frames == 0) {
                     Moby_PlaySound_i(6, 0, moby);

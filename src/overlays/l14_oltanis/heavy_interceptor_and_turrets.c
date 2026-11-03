@@ -571,9 +571,6 @@ extern void Profile_Mark_v(void *, float) __asm__("func_001E9768");
 extern f32 Spring_r(f32 *pos, f32 target, f32 *vel, f32, f32, f32) __asm__("func_L00_0025C918");
 extern int find_nearest_path_point_r(void *, void *, void *, int *, float *, int, float, float,
                                      float) __asm__("func_L00_0025EFC0");
-extern int Spline_AdvanceByDistance_r(void *, void *, void *, void *, int, float) __asm__("func_L00_0025E860");
-extern void spawn_explosion_r(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
-                              float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
 extern unsigned char *PartType23Spawn_r(void *pos, float r, float lo, float hi, int n, void *vel, float size,
                                         int color) __asm__("func_L00_0026DEA0");
@@ -888,7 +885,7 @@ void update_blarg_heavy_interceptor(struct Moby *m) {
             dir = d->path_dir;
             path_seg = 0;
             path_t = 0.0f;
-            Spline_AdvanceByDistance_r(tab, v, &path_seg, &path_t, dir, t);
+            Spline_AdvanceByDistance(tab, v, &path_seg, &path_t, dir, t);
             Spring_r(&m->pos.x, v[0], &d->pos_vel.x, 0.005f, (interceptor_spring_damping), 0.0f);
             Spring_r(&m->pos.y, v[1], &d->pos_vel.y, 0.005f, (interceptor_spring_damping), 0.0f);
             Spring_r(&m->pos.z, v[2], &d->pos_vel.z, 0.005f, (interceptor_spring_damping), 0.0f);
@@ -896,7 +893,7 @@ void update_blarg_heavy_interceptor(struct Moby *m) {
             if (FastVecDist(&m->pos, v) < 0.5f) {
                 m->state = 1;
             }
-            Spline_AdvanceByDistance_r(oltanis_paths[d->aim_path], v, &d->aim_seg, &d->aim_seg_t, d->path_dir, 0.0f);
+            Spline_AdvanceByDistance(oltanis_paths[d->aim_path], v, &d->aim_seg, &d->aim_seg_t, d->path_dir, 0.0f);
             Spring_r(&d->aim_point.x, v[0], &d->aim_vel.x, (interceptor_spring_stiffness), (interceptor_spring_damping),
                      0.0f);
             Spring_r(&d->aim_point.y, v[1], &d->aim_vel.y, (interceptor_spring_stiffness), (interceptor_spring_damping),
@@ -920,8 +917,8 @@ void update_blarg_heavy_interceptor(struct Moby *m) {
                 }
             }
             d->voice = -1;
-            spawn_explosion_r(m, d->explosion, &m->pos, 0.0f, 0.0f, 5, 2, 4, 4.0f, 2.0f, 9.0f, 1.0f, 1, 15.0f, 1, 5, -1,
-                              0);
+            spawn_explosion(m, d->explosion, &m->pos, 0.0f, 0.0f, 5, 2, 4, 4.0f, 2.0f, 9.0f, 1.0f, 1, 15.0f, 1, 5, -1,
+                            0);
             FastVecSub(v, &m->pos, &g_hero_r.motion.pos);
             v[2] = 0.0f;
             vec_scale_to_length(
@@ -976,8 +973,8 @@ void update_blarg_heavy_interceptor(struct Moby *m) {
                 return;
             }
             if (FastDecTimer_r(&d->fall_timer) || coll_sphere(0.5f, &m->pos, 0, m)) {
-                spawn_explosion_r(m, d->explosion, &m->pos, 2.0f, 1.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 1.0f, 1, 15.0f, 1, 5,
-                                  -1, 0);
+                spawn_explosion(m, d->explosion, &m->pos, 2.0f, 1.0f, 5, 2, 4, 2.0f, 1.0f, 9.0f, 1.0f, 1, 15.0f, 1, 5,
+                                -1, 0);
                 DeleteMoby(m);
                 return;
             }
@@ -1411,7 +1408,6 @@ void draw_blarg_heavy_interceptor_camera_pulled_glow(char *m) {
     }
     draw_world_quad(&pk, 0, 0);
 }
-extern int Spline_AdvanceByDistance_r2(void *, void *, void *, void *, int, float) __asm__("func_L00_0025E860");
 
 /* Measures the segments of the moby's three paths, sums two of them and places it on the first two. */
 void initialize_blarg_heavy_interceptor_paths(char *m) {
@@ -1446,12 +1442,11 @@ void initialize_blarg_heavy_interceptor_paths(char *m) {
         int *q = oltanis_paths[d->aim_path];
         d->aim_seg = 0;
         d->aim_seg_t = 0.0f;
-        Spline_AdvanceByDistance_r2(q, m + 0x10, &d->aim_seg, &d->aim_seg_t, d->path_dir,
-                                    d->path_start * d->aim_path_len);
+        Spline_AdvanceByDistance(q, m + 0x10, &d->aim_seg, &d->aim_seg_t, d->path_dir, d->path_start * d->aim_path_len);
         d->patrol_seg_t = 0.0f;
         d->patrol_seg = 0;
-        Spline_AdvanceByDistance_r2(q, m + 0x10, &d->patrol_seg, &d->patrol_seg_t, d->path_dir,
-                                    d->path_start * d->patrol_path_len);
+        Spline_AdvanceByDistance(q, m + 0x10, &d->patrol_seg, &d->patrol_seg_t, d->path_dir,
+                                 d->path_start * d->patrol_path_len);
     } else {
         d->patrol_seg = 0;
         d->aim_seg = 0;
@@ -1514,7 +1509,7 @@ void update_blarg_heavy_interceptor_patrol_path_position(struct Moby *moby) {
     Spring(&moby->pos.y, &data->pos_vel.y, out[1], interceptor_spring_stiffness, interceptor_spring_damping, 0.0f);
     Spring(&moby->pos.z, &data->pos_vel.z, out[2], interceptor_spring_stiffness, interceptor_spring_damping, 0.0f);
 }
-extern int Spline_AdvanceByDistance_r5(void *, void *, void *, void *, int, float) __asm__("func_L00_0025E860");
+
 extern float interceptor_return_spring_damping SDATA(interceptor_return_spring_damping);
 
 /* Picks a target point from a list or searches for one, then eases the moby's position toward it per axis. */
@@ -1525,8 +1520,7 @@ void update_blarg_heavy_interceptor_return_path_position(char *moby, float a, fl
     if (data->return_done != 0) {
         qcopy(tmp, (char *)list + list[0] * 16);
     } else {
-        if (Spline_AdvanceByDistance_r5(list, tmp, &data->patrol_seg, &data->patrol_seg_t, 0, b * g_frame_time * c) !=
-            0) {
+        if (Spline_AdvanceByDistance(list, tmp, &data->patrol_seg, &data->patrol_seg_t, 0, b * g_frame_time * c) != 0) {
             data->return_done = 1;
         }
     }
@@ -1741,12 +1735,9 @@ extern int D_L14_001615F8_2B4E40 SDATA(D_L14_001615F8);
 extern int D_L14_001615FC_2B4E40 SDATA(D_L14_001615FC);
 extern void process_machinegun_turret_hit_reactions_r(unsigned char *m) __asm__("func_L14_002B5590");
 
-extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
-
 extern void spawn_explosion_r2(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
                                float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
-extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 
 /* Update for the machine-gun turret (moby Machinegun Turret) on level 14: a seven-state machine on moby+0x20.
@@ -1805,7 +1796,7 @@ void machinegun_turret_update(char *moby) {
             if (data->activated == 0) {
                 return;
             }
-            if (fast_dec_timer_r(&data->rise_timer) == 0) {
+            if (fast_dec_timer(&data->rise_timer) == 0) {
                 return;
             }
             ((Moby *)moby)->state = 2;
@@ -1880,23 +1871,23 @@ void machinegun_turret_update(char *moby) {
                 sel = random_integer_below(3);
                 switch (sel) {
                     case 0:
-                        vec_scale_to_length_r(v30, &((struct Moby *)moby)->rot_row2, D_L14_001615E8_2B4E40);
+                        vec_scale_to_length(v30, &((struct Moby *)moby)->rot_row2, D_L14_001615E8_2B4E40);
                         break;
                     case 1:
-                        vec_scale_to_length_r(v30, &((struct Moby *)moby)->rot_row2, D_L14_001615EC_2B4E40);
-                        vec_scale_to_length_r(v50, &((struct Moby *)moby)->rot_row1, D_L14_001615F4_2B4E40);
+                        vec_scale_to_length(v30, &((struct Moby *)moby)->rot_row2, D_L14_001615EC_2B4E40);
+                        vec_scale_to_length(v50, &((struct Moby *)moby)->rot_row1, D_L14_001615F4_2B4E40);
                         FastVecAdd(v30, v30, v50);
                         break;
                     default:
-                        vec_scale_to_length_r(v30, &((struct Moby *)moby)->rot_row2, D_L14_001615EC_2B4E40);
-                        vec_scale_to_length_r(v50, &((struct Moby *)moby)->rot_row1, -D_L14_001615F4_2B4E40);
+                        vec_scale_to_length(v30, &((struct Moby *)moby)->rot_row2, D_L14_001615EC_2B4E40);
+                        vec_scale_to_length(v50, &((struct Moby *)moby)->rot_row1, -D_L14_001615F4_2B4E40);
                         FastVecAdd(v30, v30, v50);
                         break;
                 }
-                vec_scale_to_length_r(v40, &((struct Moby *)moby)->rot_row0, D_L14_001615F0_2B4E40);
+                vec_scale_to_length(v40, &((struct Moby *)moby)->rot_row0, D_L14_001615F0_2B4E40);
                 FastVecAdd(v30, v30, v40);
                 FastVecAdd(v30, v30, &((struct Moby *)moby)->pos);
-                vec_scale_to_length_r(v40, &((struct Moby *)moby)->rot_row0, D_L14_001615E4_2B4E40 * g_frame_time_r);
+                vec_scale_to_length(v40, &((struct Moby *)moby)->rot_row0, D_L14_001615E4_2B4E40 * g_frame_time_r);
                 if (data->fire_timer == 0) {
                     set_moby_color(spawn_flying_bolt(v30, v40, (int)moby, 1), 0xE0, 0xE0, 0xE0);
                 }
@@ -2201,8 +2192,6 @@ extern int advance_minibomber_along_path(char *moby, char *a1, int a2, int a3, f
 
 extern void emit_minibomber_bomb_release_effects(char *m, float *input, float angle);
 extern unsigned char *spawn_flying_debris(char *owner, float angle, char *posp);
-extern void func_L00_0025F4A8_2B5938(void *, void *, void *, float, float, int, int, int, float, float, float, float,
-                                     int, float, int, int, int, int) __asm__("func_L00_0025F4A8");
 
 /* Update of the minibomber (moby Minibomber): flies along its paths, turns at the ends, dives and drops bombs. */
 void minibomber_update(Moby *moby) {
@@ -2479,8 +2468,8 @@ void minibomber_update(Moby *moby) {
             spawn_flying_debris((char *)moby, moby->rot.z, (char *)v);
             Moby_GetJointWorldPos(moby, 3, v);
             spawn_flying_debris((char *)moby, FastAddRots(moby->rot.z, 3.1415927f), (char *)v);
-            func_L00_0025F4A8_2B5938(moby, d->f40, &moby->pos, 0.0f, 0.0f, 5, 2, 6, 4.0f, 1.0f, 9.0f, 1.0f, 1, 15.0f, 1,
-                                     1, -1, 0);
+            spawn_explosion(moby, d->f40, &moby->pos, 0.0f, 0.0f, 5, 2, 6, 4.0f, 1.0f, 9.0f, 1.0f, 1, 15.0f, 1, 1, -1,
+                            0);
             i = d->f108;
             if (i != -1) {
                 char *e = hero_globals_base + 0x1D + i * 0x70;
@@ -2621,7 +2610,7 @@ void initialize_minibomber_path_segment_lengths(char *moby) {
 int advance_minibomber_along_path(char *moby, char *a1, int a2, int a3, float *v, float *vel, float f12, float f13,
                                   float f14, float f15, float f16, float f17, float f18) {
     float tmp[4];
-    int r = Spline_AdvanceByDistance_r(a1, tmp, (void *)a2, (void *)a3, 0, f12);
+    int r = Spline_AdvanceByDistance(a1, tmp, (void *)a2, (void *)a3, 0, f12);
     Spring((float *)(moby + 0x10), v, tmp[0], f13, f14, f15);
     Spring((float *)(moby + 0x14), v + 1, tmp[1], f13, f14, f15);
     Spring((float *)(moby + 0x18), v + 2, tmp[2], f13, f14, f15);
@@ -2890,7 +2879,7 @@ void update_flying_debris(struct Moby *m) {
                                                    FastAbsF(m->pos.y - g_hero_r.motion.pos.f[1]) < 10.0f)) {
         clear_u64_value(joint);
         Sound_PlayClassSound(1, 0, (int)m, d->owner->oclass);
-        spawn_explosion_r(m, joint, &m->pos, 2.0f, 4.0f, 5, 2, 4, 1.0f, 0.5f, 9.0f, 1.0f, -1, 5.0f, 0, 2, -1, 0);
+        spawn_explosion(m, joint, &m->pos, 2.0f, 4.0f, 5, 2, 4, 1.0f, 0.5f, 9.0f, 1.0f, -1, 5.0f, 0, 2, -1, 0);
         remove_flying_debris((char *)m);
         return;
     }
@@ -3561,8 +3550,6 @@ extern struct Hero g_hero_r2 __asm__("D_0013F450");
 extern char oltanis_camera_pos_r[] __asm__("D_L14_001675C0");
 extern float D_L14_001DE840[4][4];
 
-extern void vec_scale_to_length_r2(void *, void *, float) __asm__("func_L00_001FF4B0");
-
 extern unsigned long GetEffectTex_r2(s32) __asm__("func_001F4868");
 
 extern void draw_world_quad_r2(void *, int, int) __asm__("func_L00_001FD1D8");
@@ -3577,9 +3564,9 @@ void draw_racer_glow_quads(struct Moby *m) {
     qcopy(mat[3], &d->glow_pos);
     mat[3][3] = 1.0f;
     FastVecSub(mat[0], oltanis_camera_pos_r, mat[3]);
-    vec_scale_to_length_r2(mat[0], mat[0], 1.0f);
+    vec_scale_to_length(mat[0], mat[0], 1.0f);
     FastVecCross(mat[1], mat[0], &g_hero_r2.gravity_dir);
-    vec_scale_to_length_r2(mat[1], mat[1], -1.0f);
+    vec_scale_to_length(mat[1], mat[1], -1.0f);
     FastVecCross(mat[2], mat[1], mat[0]);
     pk.b = GetEffectTex_r2(0xB);
     pk.d = 0x8000000048ULL;
@@ -3604,9 +3591,9 @@ void draw_racer_glow_quads(struct Moby *m) {
     draw_world_quad_r2(&pk, 0, 0);
     qcopy(mat[3], &d->head_pos);
     FastVecSub(mat[0], oltanis_camera_pos_r, mat[3]);
-    vec_scale_to_length_r2(mat[0], mat[0], 1.0f);
+    vec_scale_to_length(mat[0], mat[0], 1.0f);
     FastVecCross(mat[1], mat[0], &g_hero_r2.gravity_dir);
-    vec_scale_to_length_r2(mat[1], mat[1], -1.0f);
+    vec_scale_to_length(mat[1], mat[1], -1.0f);
     FastVecCross(mat[2], mat[1], mat[0]);
     pk.col[3] = 0x202020FF;
     pk.col[2] = 0x202020FF;

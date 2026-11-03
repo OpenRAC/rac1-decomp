@@ -472,10 +472,6 @@ extern float D_L08_00161B8C_2E16A0 SDATA(D_L08_00161B8C);
 extern float D_L08_00161B90_2E16A0 SDATA(D_L08_00161B90);
 extern int tick52(short *) __asm__("func_001F9938");
 
-extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
-
-extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-
 extern int find_batalia_cannon_aim_target_r(char *) __asm__("func_L08_002E15A0");
 
 extern int sound52(int, int, void *) __asm__("func_0022ED80");
@@ -524,7 +520,7 @@ void update_batalia_cannon(Moby *moby) {
             node = (Moby *)(batalia_mobys_r + (data->platform_index << 8));
             qcopy(direction, &node->rot);
             direction[2] = FastAddRots(direction[2], 3.1415927f);
-            vec_scale_to_length_r(work, &node->rot_row0, 2.5f);
+            vec_scale_to_length(work, &node->rot_row0, 2.5f);
             FastVecAdd(work, work, &node->pos);
             Hero_ResetToPosition(work, direction, 0, 1);
             the_plumber_batalia_set_mode((char *)node, 0);
@@ -566,12 +562,12 @@ void update_batalia_cannon(Moby *moby) {
             }
         }
     } else if (moby->command == 2) {
-        if (vec_distance_xy_r(position, &g_hero.moby->pos) > 1.0f) {
+        if (vec_distance_xy(position, &g_hero.moby->pos) > 1.0f) {
             moby->command = 0;
             data->exit_timer = scale_ticks(60);
         }
     } else if (visited52[g_current_level_index_r][moby->mission] == 0xFF) {
-        if (vec_distance_xy_r(position, &g_hero.moby->pos) < 1.0f && g_hero.motion.pos.f[2] - moby->pos.z < 7.0f &&
+        if (vec_distance_xy(position, &g_hero.moby->pos) < 1.0f && g_hero.motion.pos.f[2] - moby->pos.z < 7.0f &&
             data->exit_timer == 0 && data->health > 0) {
             moby->command = 1;
             Hero_TryMoveStateL08(50, 1);
@@ -667,16 +663,16 @@ void update_batalia_cannon(Moby *moby) {
                         random_vec[1] = random_float_between(-1.0f, 1.0f);
                         random_vec[2] = random_float_between(-1.0f, 1.0f);
                         *(long long *)scatter = *(long long *)random_vec;
-                        vec_scale_to_length_r(scatter, scatter,
-                                              FastVecLength(direction) * (frame_scale * -0.35000002f + 1.0f));
+                        vec_scale_to_length(scatter, scatter,
+                                            FastVecLength(direction) * (frame_scale * -0.35000002f + 1.0f));
                         FastVecAdd(scatter, direction, scatter);
-                        vec_scale_to_length_r(scatter, scatter,
-                                              random_float_between(g_frame_time_r * 3.0f, g_frame_time_r * 6.0f));
+                        vec_scale_to_length(scatter, scatter,
+                                            random_float_between(g_frame_time_r * 3.0f, g_frame_time_r * 6.0f));
                         min_life = scale_ticks(5);
                         PartType27Spawn((char *)muzzle, (char *)scatter, 0x5F2F4F6F,
                                         rand_range(min_life, scale_ticks(10)), 50000.0f);
                     } while (--count >= 0);
-                    vec_scale_to_length_r(direction, direction, g_frame_time_r * 0.5f);
+                    vec_scale_to_length(direction, direction, g_frame_time_r * 0.5f);
                     min_life = scale_ticks(4);
                     PartType27Spawn((char *)muzzle, (char *)direction, 0x2F4F7F7F, rand_range(min_life, scale_ticks(7)),
                                     500000.0f);
@@ -701,16 +697,16 @@ void update_batalia_cannon(Moby *moby) {
                         random_vec[1] = random_float_between(-1.0f, 1.0f);
                         random_vec[2] = random_float_between(-1.0f, 1.0f);
                         *(long long *)scatter = *(long long *)random_vec;
-                        vec_scale_to_length_r(scatter, scatter,
-                                              FastVecLength(direction) * (frame_scale * -0.35000002f + 1.0f));
+                        vec_scale_to_length(scatter, scatter,
+                                            FastVecLength(direction) * (frame_scale * -0.35000002f + 1.0f));
                         FastVecAdd(scatter, direction, scatter);
-                        vec_scale_to_length_r(scatter, scatter,
-                                              random_float_between(g_frame_time_r * 3.0f, g_frame_time_r * 6.0f));
+                        vec_scale_to_length(scatter, scatter,
+                                            random_float_between(g_frame_time_r * 3.0f, g_frame_time_r * 6.0f));
                         min_life = scale_ticks(5);
                         PartType27Spawn((char *)muzzle, (char *)scatter, 0x5F2F4F6F,
                                         rand_range(min_life, scale_ticks(10)), 50000.0f);
                     } while (--count >= 0);
-                    vec_scale_to_length_r(direction, direction, g_frame_time_r * 0.5f);
+                    vec_scale_to_length(direction, direction, g_frame_time_r * 0.5f);
                     min_life = scale_ticks(4);
                     PartType27Spawn((char *)muzzle, (char *)direction, 0x2F4F7F7F, rand_range(min_life, scale_ticks(7)),
                                     500000.0f);
@@ -774,7 +770,7 @@ void update_batalia_cannon(Moby *moby) {
                                 node = (Moby *)(batalia_mobys_r + (data->platform_index << 8));
                                 qcopy(muzzle, &node->rot);
                                 muzzle[2] = FastAddRots(muzzle[2], 3.1415927f);
-                                vec_scale_to_length_r(direction, &node->rot_row0, 2.5f);
+                                vec_scale_to_length(direction, &node->rot_row0, 2.5f);
                                 FastVecAdd(direction, direction, &node->pos);
                                 Hero_ResetToPosition(direction, muzzle, 0, 1);
                                 the_plumber_batalia_set_mode((char *)node, 1);
@@ -2651,8 +2647,6 @@ extern s32 Moby_PlaySound_r2(s32, s32, struct Moby *) __asm__("func_0022ED80");
 
 extern s32 truncate_float_to_s32_r2(f32) __asm__("func_001FA898");
 
-extern void vec_scale_to_length_r2(void *, void *, f32) __asm__("func_L00_001FF4B0");
-
 extern void MobySpringTurn_r2(struct Moby *, f32, f32 *, f32, f32, f32) __asm__("func_L00_002592B0");
 
 extern struct Moby *spawn_rocket_435_projectile_r(void *, struct Moby *, void *, f32, f32) __asm__("func_L08_002DF758");
@@ -2742,7 +2736,7 @@ void shrub_update(struct Moby *moby) {
             }
             FastVecSub(&step, &point, &moby->pos);
             if (FastVecLength(&step) > (*(f32 *)&D_L08_00161DB4_EA0A8) * g_frame_time_r) {
-                vec_scale_to_length_r2(&step, &step, (*(f32 *)&D_L08_00161DB4_EA0A8) * g_frame_time_r);
+                vec_scale_to_length(&step, &step, (*(f32 *)&D_L08_00161DB4_EA0A8) * g_frame_time_r);
             }
             FastVecAdd(&moby->pos, &moby->pos, &step);
             if (moby->command == 0) {
@@ -2758,8 +2752,8 @@ void shrub_update(struct Moby *moby) {
             } else if (yaw <= 0.0f && yaw > -0.34f) {
                 yaw = -0.34f;
             }
-            vec_scale_to_length_r2(
-                &velocity, &step, ((*(f32 *)&D_L08_00161DB4_EA0A8) + (*(f32 *)&D_L08_00161DB4_EA0A8)) * g_frame_time_r);
+            vec_scale_to_length(&velocity, &step,
+                                ((*(f32 *)&D_L08_00161DB4_EA0A8) + (*(f32 *)&D_L08_00161DB4_EA0A8)) * g_frame_time_r);
             shot = spawn_rocket_435_projectile_r(&muzzle, target, &velocity, pitch, yaw);
             shot->scale = shot->pclass->scale / 5.0f;
             target_vars = (SwarmTargetVars_EA0A8 *)target->pvars;
@@ -2794,7 +2788,7 @@ void shrub_update(struct Moby *moby) {
             }
             FastVecSub(&step, &point, &moby->pos);
             if (FastVecLength(&step) > (*(f32 *)&D_L08_00161DB4_EA0A8) * g_frame_time_r) {
-                vec_scale_to_length_r2(&step, &step, (*(f32 *)&D_L08_00161DB4_EA0A8) * g_frame_time_r);
+                vec_scale_to_length(&step, &step, (*(f32 *)&D_L08_00161DB4_EA0A8) * g_frame_time_r);
             }
             FastVecAdd(&moby->pos, &moby->pos, &step);
             func_L08_002E9F78_EA0A8((char *)moby);
@@ -2805,8 +2799,8 @@ void shrub_update(struct Moby *moby) {
             Moby_GetJointWorldPos(vars->parts[3].moby, 1, &muzzle);
             pitch = random_float_between(-0.5235988f, -0.2617994f);
             yaw = random_angle_radians();
-            vec_scale_to_length_r2(
-                &velocity, &step, ((*(f32 *)&D_L08_00161DB4_EA0A8) + (*(f32 *)&D_L08_00161DB4_EA0A8)) * g_frame_time_r);
+            vec_scale_to_length(&velocity, &step,
+                                ((*(f32 *)&D_L08_00161DB4_EA0A8) + (*(f32 *)&D_L08_00161DB4_EA0A8)) * g_frame_time_r);
             bolt = spawn_rocket_435_projectile_r(&muzzle, 0, &velocity, pitch, yaw);
             if (bolt != 0) {
                 bolt->rot.z = vars->parts[3].moby->rot.z;
@@ -2831,7 +2825,7 @@ void shrub_update(struct Moby *moby) {
                     Vec4 *drift = (Vec4 *)part->pvars;
                     SpawnExplosionFx(moby, &part->pos, -1, 3.0f, 13.0f);
                     FastVecSub(drift, &part->pos, &moby->pos);
-                    vec_scale_to_length_r2(drift, drift, g_frame_time_r * 5.0f);
+                    vec_scale_to_length(drift, drift, g_frame_time_r * 5.0f);
                     part->state = 1;
                     vars->parts[i].moby = 0;
                 }

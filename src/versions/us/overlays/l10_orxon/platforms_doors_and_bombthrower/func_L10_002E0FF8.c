@@ -1,7 +1,7 @@
 void update_screamer_hit_reactions_and_targeting(struct Moby *moby) {
     extern unsigned char menu_item_enabled_115[];
     extern void MobyBlendAnimation(void *, int, int, int);
-    extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
+    extern int ComputeHitResponse_v(void *, void *, void *, int, int *, float *, int, int) __asm__("func_L00_0025B4D0");
     extern void InitKnockback(void *, void *, float, int, int, int);
     extern void RerollEffectCounter(void *, void *);
     extern void StepColorFade(void *, void *);
@@ -26,7 +26,7 @@ void update_screamer_hit_reactions_and_targeting(struct Moby *moby) {
     fast_dec_timer(&data->f184);
     if (moby->state != 11) {
         r = (Hit_2E0FF8 *)MobyGetHitMessage(moby, 0x330000, 0);
-        ComputeHitResponse(moby, r, &data->f20, 5, &st, 0, 0, 4);
+        ComputeHitResponse_v(moby, r, &data->f20, 5, &st, 0, 0, 4);
         if (r != 0) {
             if (data->f20 <= r->f2C) {
                 if (hero_inside_conditional_help_volume != 0 && (f = gSkillPoints, f[0x10]) == 0) {

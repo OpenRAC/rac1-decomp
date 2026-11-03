@@ -888,7 +888,7 @@ typedef struct {
 } Flags;
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
+
 extern Hit_2E52B0 *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
 extern int ComputeHitResponse_r(void *, void *, void *, int, int *, float *, int, int) __asm__("func_L00_0025B4D0");
 
@@ -896,16 +896,9 @@ extern void PlayBankSound_r(int, int, int) __asm__("func_0022EE28");
 
 extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
 
-extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
-
 extern void trooper_set_knockback_r(float *, float, float) __asm__("func_L03_00251A58");
 extern void HeadingFromVector_r(void *, float *, void *, void *) __asm__("func_L00_0025BBA0");
 extern void InitKnockback_r(void *, void *, int, int, int, float) __asm__("func_L00_0025D5B0");
-extern void RerollEffectCounter_r(void *, void *) __asm__("func_L00_0025E4B0");
-extern void StepColorFade_r(void *, void *) __asm__("func_L00_0025E590");
-extern int FindNearestTargetMoby_r(void *, void *, float) __asm__("func_L00_00260D30");
-extern int FindNearestEligibleMoby_r(float, void *, void *, int, int, void *, int) __asm__("func_L00_00260FB0");
-extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern float D_L10_00161EC0_2E52B0 SDATA(D_L10_00161EC0);
@@ -941,7 +934,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
         d->f1AC = truncate_float_to_s32_r(multiply_global_factor(random_float_between(180.0f, 240.0f)));
         d->f38 = 0;
     }
-    fast_dec_timer_r(&d->f1AC);
+    fast_dec_timer(&d->f1AC);
     A = 1;
     B = 0.0f;
     r = MobyGetHitMessage_r(m, 0xB30000, 0);
@@ -993,8 +986,8 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
             if (coll_line_r(&vA, &vB, 0x12, m, 0) != 0) {
                 FastVecSub(&dst, &vB, &vA);
                 *(u128_2E52B0 *)&W = *(u128_2E52B0 *)&dst;
-                vec_scale_to_length_r(&W, &W, 1.0f);
-                vec_scale_to_length_r(&X, &orxon_ground_hit_normal_r, 1.0f);
+                vec_scale_to_length(&W, &W, 1.0f);
+                vec_scale_to_length(&X, &orxon_ground_hit_normal_r, 1.0f);
                 if (0.5f < FastAbsF(FastVecDot(&W, &X))) {
                     B = 0.0f;
                     v21 = 11;
@@ -1027,7 +1020,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
                 HeadingFromVector_r(&vA, &fx, &d->f88, &d->f8C);
                 InitKnockback_r(m, d->a70, 9, 1, 0, fx);
                 d->b67 = 0xFA;
-                RerollEffectCounter_r(m, d->a60);
+                RerollEffectCounter(m, d->a60);
                 break;
             case 4:
             case 5: {
@@ -1043,7 +1036,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
                 HeadingFromVector_r(&vA, &fx, &d->f88, &d->f8C);
                 InitKnockback_r(m, d->a70, 9, 1, 0, fast_atan2(r->pos.x, r->pos.y));
                 d->b67 = 0xFA;
-                RerollEffectCounter_r(m, d->a60);
+                RerollEffectCounter(m, d->a60);
                 break;
             }
             case 1:
@@ -1057,7 +1050,7 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
         }
     }
     m->hit_slot = 0xFF;
-    StepColorFade_r(m, d->a60);
+    StepColorFade(m, d->a60);
     if ((unsigned char)(m->state - 10) < 3) {
         d->f1D4 = 0;
         return;
@@ -1076,16 +1069,16 @@ void update_toxic_crab_hit_reactions_and_targeting(void *mv) {
         d->f1A0 = D_L10_00161EC0_2E52B0;
     }
     if (d->f1AC != 0) {
-        FindNearestTargetMoby_r(m, &d->a120, d->f1A0);
-        if (d->f1A0 < vec_distance_xy_r(&d->a170, &d->a120) || 3.0f < FastAbsF(m->pos.z - d->a120.z)) {
+        FindNearestTargetMoby(m, &d->a120, d->f1A0);
+        if (d->f1A0 < vec_distance_xy(&d->a170, &d->a120) || 3.0f < FastAbsF(m->pos.z - d->a120.z)) {
             d->f164 = 2;
         }
-    } else if (d->f1A0 < vec_distance_xy_r(&d->a170, &d->a120) || 3.0f < FastAbsF(m->pos.z - d->a120.z)) {
-        FindNearestTargetMoby_r(m, &d->a120, d->f1A0);
+    } else if (d->f1A0 < vec_distance_xy(&d->a170, &d->a120) || 3.0f < FastAbsF(m->pos.z - d->a120.z)) {
+        FindNearestTargetMoby(m, &d->a120, d->f1A0);
         d->f164 = 2;
     } else {
-        FindNearestEligibleMoby_r(d->f1A0, m, &d->a120, 0, 0, orxon_paths_r[d->f1B0]->nodes,
-                                  orxon_paths_r[d->f1B0]->count);
+        FindNearestEligibleMoby(d->f1A0, m, &d->a120, 0, 0, orxon_paths_r[d->f1B0]->nodes,
+                                orxon_paths_r[d->f1B0]->count);
     }
     if (m->state != 1 && d->f164 == 2) {
         d->f1D4++;
@@ -1320,7 +1313,7 @@ void BlargShipUpdate(Ship_5E48 *m) {
             b = fast_atan2(vec_distance_xy(&m->pos, &tgt->pos), tgt->pos.z - m->pos.z);
             m->f44 = SpringTurn(&d->f19C, m->f44, -b, 0.02f, 0.3f, g_frame_time * 3.1415927f);
             FastVecSub(&B, &A, &m->pos);
-            vec_scale_to_length_r(&d->a120, &B, g_frame_time * 8.0f);
+            vec_scale_to_length(&d->a120, &B, g_frame_time * 8.0f);
             FastVecAdd(&m->pos, &m->pos, &d->a120);
             if (FastVecLength(&B) < 0.5f) {
                 int n = d->i158 + 1;
@@ -1369,7 +1362,7 @@ void BlargShipUpdate(Ship_5E48 *m) {
                     BuildSphericalOffset(&B, 1.0f, m->f48, -m->f44);
                     add_vectors(&D, &C, &B);
                     FastVecSub(&B, &A, &C);
-                    vec_scale_to_length_r(&B, &B, blarg_ship_rocket_speed * g_frame_time);
+                    vec_scale_to_length(&B, &B, blarg_ship_rocket_speed * g_frame_time);
                     FastVecScale(&E, &B, multiply_global_factor(3.0f));
                     add_vectors(&D, &E, &C);
                     emit_radial_particle_burst(m, &E, 0);
@@ -1760,8 +1753,6 @@ typedef struct Flags_2E9978 {
     unsigned char f5;
 } Flags_2E9978;
 
-extern float vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
-
 extern int orxon_cinematic_mode_r __asm__("D_L10_0015F6A8") MACRO_ADDR;
 extern Moby *orxon_mobys_r __asm__("D_L10_00160058") MACRO_ADDR;
 extern Moby *D_L10_00160064 MACRO_ADDR;
@@ -1826,8 +1817,8 @@ void update_conditional_help_messages(Moby *m) {
             }
             if (flag == 0)
                 break;
-            if (d->f10 != -1 && vec_distance_xy_r2(&g_hero.motion.pos, &orxon_mobys_r[d->f10].pos) < 15.0f &&
-                d->f14 != -1 && vec_distance_xy_r2(&g_hero.motion.pos, &orxon_mobys_r[d->f14].pos) < 15.0f &&
+            if (d->f10 != -1 && vec_distance_xy(&g_hero.motion.pos, &orxon_mobys_r[d->f10].pos) < 15.0f &&
+                d->f14 != -1 && vec_distance_xy(&g_hero.motion.pos, &orxon_mobys_r[d->f14].pos) < 15.0f &&
                 *(unsigned short *)(help_stats_base_r + 0x69D) == 0) {
                 Help_Request(0x2717, 0x6A);
             }

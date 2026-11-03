@@ -465,8 +465,6 @@ extern CollisionHit_4C558 rilgar_coll_hit_r __asm__("D_L05_00174340") NOT_SDA;
 extern u8 D_L05_00174360[] NOT_SDA;
 extern u8 D_L05_0017AC20[] NOT_SDA;
 
-extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
-
 extern void transform_hero_local_offset_to_world_r(float *, float, float, float) __asm__("func_L00_00233EE0");
 extern int coll_line_r(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
 
@@ -486,7 +484,7 @@ void update_hero_movement_and_collision_probes(void) {
         g_hero_r.wall_probe_hit_moby = 0;
         if (probe_hero_forward_collision(0.7f, 4.0f, &g_hero_r.wall_probe_distance)) {
             CollisionHit_4C558 *wall = &rilgar_coll_hit_r;
-            float normal_xy = vec_length_xy_r(&wall->normal_x);
+            float normal_xy = vec_length_xy(&wall->normal_x);
             g_hero_r.wall_normal_pitch = fast_atan2(wall->normal_z, normal_xy);
             if (wall->moby != 0) {
                 g_hero_r.wall_probe_hit_moby = 1;
@@ -1462,7 +1460,7 @@ extern int hoverboard_race_finished SDATA(hoverboard_race_finished);
 
 extern void compute_hero_hoverboard_respawn_transform_r(void *, void *) __asm__("func_L05_00254B38");
 
-extern int PlayBankSound_r(int, int, int) __asm__("func_0022EE28");
+extern int PlayBankSound(int, int, int);
 
 /* Hoverboard race tick: advances the hero's and the opponents' path nodes and laps, handles wrong-way and fall resets,
    ranks everyone and finishes the race after three laps. */
@@ -1634,7 +1632,7 @@ void update_hero_hoverboard_race_progress(void) {
         if (t >= g_hero.race_time_frames) {
             if (((Flags *)(menu_item_enabled_115_r + 1))->f9 == 0) {
                 ((Flags *)(menu_item_enabled_115_r + 1))->f9 = 1;
-                PlayBankSound_r(1, 0, 0);
+                PlayBankSound(1, 0, 0);
                 ShowBanner(0x53DB, -1);
             }
         }
@@ -1822,7 +1820,7 @@ int hero_pick_help_mode(void) {
         goto L_BAC;
     if (*(int *)(h + 0x1C) == 0)
         goto L_BAC;
-    if (!(1.2217305f < fast_atan2(*(float *)(h + 0x48), vec_length_xy_r(h + 0x40))))
+    if (!(1.2217305f < fast_atan2(*(float *)(h + 0x48), vec_length_xy(h + 0x40))))
         goto L_BAC;
     g->f8A4 = FastAddRots(fast_atan2(*(float *)(h + 0x40), *(float *)(h + 0x44)), 3.1415927f);
     if (!(FastDiffRots(fast_atan2(g->fE0[0], g->fE0[1]), g->f8A4) < 0.7853982f))
@@ -1836,8 +1834,8 @@ int hero_pick_help_mode(void) {
 
 L_BAC:
     if (((H_9F0 *)(&g_hero))->b257 != 0) {
-        f20 = vec_length_xy_r(((H_9F0 *)(&g_hero))->f100);
-        if (f20 < vec_length_xy_r(((H_9F0 *)(&g_hero))->fE0) * 0.25f) {
+        f20 = vec_length_xy(((H_9F0 *)(&g_hero))->f100);
+        if (f20 < vec_length_xy(((H_9F0 *)(&g_hero))->fE0) * 0.25f) {
             Hero_TryMoveStateL05(0x6D, 1);
             return 1;
         }
@@ -1943,7 +1941,7 @@ L_DEC:
             Flags_9F0 *fl = (Flags_9F0 *)gSkillPoints;
             if (fl->f7 == 0) {
                 fl->f7 = 1;
-                PlayBankSound_r(1, 0, 0);
+                PlayBankSound(1, 0, 0);
                 ShowBanner(0x53DB, -1);
             }
         }

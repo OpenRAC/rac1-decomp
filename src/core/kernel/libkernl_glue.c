@@ -223,7 +223,7 @@ long wait_vblank_csr(void) {
 
 /* sceTtyInit takes no argument (it sets $a0 itself before its first
    call); the file's `extern int sceTtyInit(int)` below is wrong. */
-extern int sceTtyInit_v(void) __asm__("func_00119CC8");
+extern int sceTtyInit(void);
 
 /* Deci2 tty write for fd 1/2: open the tty channel on first use
    (sceTtyInit), then write. Calling the opener with no argument is
@@ -234,7 +234,7 @@ extern int sceTtyInit_v(void) __asm__("func_00119CC8");
 int libc_glue_write(int fd, int buf, int len) {
     if (fd == 1 || fd == 2) {
         if (CoreGlobalWord == 0) {
-            if (sceTtyInit_v() == 0) {
+            if (sceTtyInit() == 0) {
                 return -1;
             }
             CoreGlobalWord = 1;
@@ -244,13 +244,13 @@ int libc_glue_write(int fd, int buf, int len) {
     return -1;
 }
 
-extern int sceTtyInit_v(void) __asm__("func_00119CC8");
+extern int sceTtyInit(void);
 
 /* As libc_glue_write: sceTtyInit is called with no argument. */
 int libc_glue_read(int arg0, int arg1, int arg2) {
     if (arg0 == 0) {
         if (CoreGlobalWord == 0) {
-            if (sceTtyInit_v() == 0) {
+            if (sceTtyInit() == 0) {
                 return -1;
             }
             CoreGlobalWord = 1;

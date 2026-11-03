@@ -507,8 +507,6 @@ extern int beam_spark_style_r[] __asm__("D_L00_00161D38") MACRO_ADDR;
 extern int beam_slot_ids_r[] __asm__("D_L00_00161D58") MACRO_ADDR;
 extern float D_L00_00161CC0_2E3700 SDATA(D_L00_00161CC0);
 
-extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
-
 extern Part *spawn_mode_controlled_rotating_alpha_fade_particle_r(void *, void *, int,
                                                                   int) __asm__("func_L00_002757E8");
 
@@ -569,9 +567,9 @@ void update_slot_panes_and_effects(int unused, int idx) {
     qcopy_nc(from, &beam_origin_transforms_translation_r[idx]);
     one = 1.0f;
     FastVecSub(d2, &beam_endpoints_r[idx], from);
-    vec_scale_to_length_r(dir, d2, one);
+    vec_scale_to_length(dir, d2, one);
     FastVecCross(side, dir, hero_gravity_dir);
-    vec_scale_to_length_r(side, side, -1.0f);
+    vec_scale_to_length(side, side, -1.0f);
     FastVecCross(up, side, dir);
     transform_vector(tip, &beam_strand_points_r[k][18], dir);
     qcopy(&beam_tip_positions_r[idx], tip);
@@ -1870,7 +1868,6 @@ extern float Cam_InterpValues_r(void *, float, float, float, float, float) __asm
 extern void lerp_vector_r(float, void *, void *, void *) __asm__("func_001F9C08");
 
 extern void Cam_UpdateOffsetBlend_r(char *, float *) __asm__("func_L00_002E6BE0");
-extern int coll_line_r(void *, void *, int, int, int) __asm__("func_L00_001EFFF0");
 
 extern void follow_camera_set_height_r(float, float) __asm__("func_L00_002E9968");
 extern char camera_view_r[] __asm__("D_L00_00166F10");
@@ -1934,14 +1931,14 @@ void follow_camera_springs(char *m) {
           g_current_follow_cam_r->d->f214 * g_current_follow_cam_r->d->f20C * (g_current_follow_cam_r->d->f210 - 1.0f);
     FastVecScale(h, &gl->up, 20.0f);
     FastVecAdd(h, g, h);
-    if (coll_line_r(g, h, camera_collision_mask_r, (int)((Hero *)g_hero)->moby, 0)) {
+    if (coll_line(g, h, camera_collision_mask_r, (int)((Hero *)g_hero)->moby, 0)) {
         qcopy(w, collision_hit_point_a);
     } else {
         qcopy(w, h);
     }
     FastVecScale(h, &gl->up, 20.0f);
     FastVecSub(h, g, h);
-    if (coll_line_r(g, h, camera_collision_mask_r, (int)((Hero *)g_hero)->moby, 0)) {
+    if (coll_line(g, h, camera_collision_mask_r, (int)((Hero *)g_hero)->moby, 0)) {
         qcopy(h, collision_hit_point_a);
     }
     FastVecSub(u, h, w);

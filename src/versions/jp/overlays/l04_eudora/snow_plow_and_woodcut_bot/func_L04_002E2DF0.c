@@ -19,7 +19,7 @@ void suck_cannon_update(Moby *moby) {
             break;
         case 1:
             update_suck_cannon_particles_r(moby);
-            if (dist_002E2DF0(&moby->pos, gHeroPos_r) < 3.0f) {
+            if (vec_distance_xy(&moby->pos, gHeroPos_r) < 3.0f) {
                 moby->flags |= 0x41;
                 StartCutscene(2);
                 moby->state = 2;

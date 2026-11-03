@@ -1017,17 +1017,13 @@ extern float g_frame_scale_sq_r __asm__("D_0015EE64") MACRO_ADDR;
 extern float D_L03_00161A14_2CDDC8 SDATA(D_L03_00161A14);
 extern float D_L03_00161A18_2CDDC8 SDATA(D_L03_00161A18);
 extern float D_L03_00161A1C_2CDDC8 SDATA(D_L03_00161A1C);
-extern int helicopter_target49_2CDDC8(void *, void *, float) __asm__("func_L00_00260D30");
 
 extern void EaseManipulatorOffsets_r(char *, char *, int, float, float) __asm__("func_L00_00263950");
 extern void handle_blarg_helicopter_hits_r(char *) __asm__("func_L03_002CF600");
 extern void AttachManipulator_r(char *, int, void *) __asm__("func_0020D960");
 
-extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
-
 extern char *spawn_homing_spark_projectile_r(char *, char *, int, int, float) __asm__("func_L03_002D65D0");
 
-extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 
 extern char hero_globals_base_r[] __asm__("D_0013E633");
@@ -1035,18 +1031,11 @@ extern char hero_globals_base_r[] __asm__("D_0013E633");
 extern float g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 
-extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
-
-extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-
-extern void spawn_explosion_r(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
-                              float, int, int, int, int) __asm__("func_L00_0025F4A8");
-extern void SetDeathBits_r(void *, int, int) __asm__("func_L00_002584A8");
+extern void SetDeathBits(void *, int, int);
 extern void SpawnBreakFragment_r(void *, int, void *, void *, int, int, float, void *, void *,
                                  void *) __asm__("func_L00_00265050");
 extern float kerwan_zero_vec_r[] __asm__("D_L03_0015F660") MACRO_ADDR;
 extern char kerwan_camera_pos_r[] __asm__("D_L03_00166F40");
-extern void set_ground_height_band_r(void *) __asm__("func_L00_0025B178");
 
 /* Updates the gunship (helicopter) moby: activation path (1), patrol route with gun aiming and shots (2),
    exit path or climb-out (3), a short reaction after a route change (4) and destruction (5). */
@@ -1058,7 +1047,7 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
     int index;
     if (d->timer)
         target_range = 80.0f;
-    helicopter_target49_2CDDC8(m, &w.target, target_range);
+    FindNearestTargetMoby(m, &w.target, target_range);
     index = (short)m->pool_index;
     if ((kerwan_moby_killed_bits[index >> 5] >> (m->pool_index & 31)) & 1) {
         if (d->child_index != -1)
@@ -1076,7 +1065,7 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
         d->request = 0;
         d->timer = scale_ticks(240);
     }
-    fast_dec_timer_r(&d->timer);
+    fast_dec_timer(&d->timer);
     if (d->child_index != -1) {
         HMob49_2CDDC8 *child = (HMob49_2CDDC8 *)(kerwan_mobys_p + (d->child_index << 8));
         if (child->class_id == 0x23E && (signed char)child->state >= 0) {
@@ -1197,7 +1186,7 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
             distance = FastVecLength(w.movement);
             if (d->speed < distance)
                 distance = d->speed;
-            vec_scale_to_length_r(w.movement, w.movement, distance);
+            vec_scale_to_length(w.movement, w.movement, distance);
             motion_scale = 20.0f;
             motion_gain = 1.0471976f;
             {
@@ -1232,7 +1221,7 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
                 angle = fast_atan2(w.projected[0], w.projected[1]);
                 d->gun_yaw = SpringTurn(&d->gun_yaw_velocity, d->gun_yaw, angle, g_frame_time_sq_r * 6.2831855f,
                                         g_frame_time_sq_r * 12.566371f, g_frame_time_r * 6.2831855f);
-                angle = -fast_atan2(vec_length_xy_r(w.projected), w.projected[2]);
+                angle = -fast_atan2(vec_length_xy(w.projected), w.projected[2]);
                 d->gun_pitch = SpringTurn(&d->gun_pitch_velocity, d->gun_pitch, angle, g_frame_time_sq_r * 3.1415927f,
                                           g_frame_time_sq_r * 6.2831855f, g_frame_time_r * 1.5707964f);
                 axis_rotation_2d48(d->gun_yaw_matrix + 4, 2, d->gun_yaw);
@@ -1247,14 +1236,14 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
                 angle = fast_atan2(w.projected[0], w.projected[1]);
                 d->gun_yaw = SpringTurn(&d->gun_yaw_velocity, d->gun_yaw, angle, g_frame_time_sq_r * 6.2831855f,
                                         g_frame_time_sq_r * 12.566371f, g_frame_time_r * 6.2831855f);
-                angle = -fast_atan2(vec_length_xy_r(w.projected), w.projected[2]);
+                angle = -fast_atan2(vec_length_xy(w.projected), w.projected[2]);
                 d->gun_pitch = SpringTurn(&d->gun_pitch_velocity, d->gun_pitch, angle, g_frame_time_sq_r * 3.1415927f,
                                           g_frame_time_sq_r * 6.2831855f, g_frame_time_r * 1.5707964f);
                 axis_rotation_2d48(d->gun_yaw_matrix + 4, 2, d->gun_yaw);
                 axis_rotation_2d48(d->gun_pitch_matrix + 4, 2, d->gun_pitch);
             }
             if (point > 0 && point < route->path->count - 1) {
-                float node_distance = vec_distance_xy_r(&route->path->points[point], w.target.position);
+                float node_distance = vec_distance_xy(&route->path->points[point], w.target.position);
                 if (node_distance < 20.0f && FastAbsF(w.target.position[2] - m->position[2]) < 10.0f &&
                     node_distance < FastVecDist(&route->path->points[point + 1], w.target.position) &&
                     point < route->path->count - 2)
@@ -1276,9 +1265,9 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
             distance = FastVecDist(&route->path->points[point], w.target.position);
             other_distance = FastVecDist(m->position, w.target.position);
             if (distance < other_distance)
-                vec_scale_to_length_r(w.direction, w.direction, -d->speed);
+                vec_scale_to_length(w.direction, w.direction, -d->speed);
             else
-                vec_scale_to_length_r(w.direction, w.direction, d->speed);
+                vec_scale_to_length(w.direction, w.direction, d->speed);
             motion_scale = 10.0f;
             motion_gain = 1.0471976f;
             {
@@ -1378,7 +1367,7 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
             distance = FastVecLength(w.movement);
             if (d->speed < distance)
                 distance = d->speed;
-            vec_scale_to_length_r(w.movement, w.movement, distance);
+            vec_scale_to_length(w.movement, w.movement, distance);
             motion_scale = 20.0f;
             motion_gain = 1.0471976f;
             {
@@ -1456,9 +1445,9 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
                 w.hit.class_id = m->class_id;
                 record_moby_hit(child, &w.hit);
             }
-            spawn_explosion_r(m, w.movement, m->position, 0.0f, 0.0f, 20, 3, 4, 4.0f, 2.0f, 100000.0f, 3.0f, 2, 15.0f,
-                              1, 1, -1, 0);
-            SetDeathBits_r(m, 0, -1);
+            spawn_explosion(m, w.movement, m->position, 0.0f, 0.0f, 20, 3, 4, 4.0f, 2.0f, 100000.0f, 3.0f, 2, 15.0f, 1,
+                            1, -1, 0);
+            SetDeathBits(m, 0, -1);
             SpawnBreakFragment_r(m, 0x637, m->position, m->rotation, 0, 0, 0.0f, kerwan_zero_vec_r, kerwan_zero_vec_r,
                                  kerwan_zero_vec_r);
             SpawnBreakFragment_r(m, 0x638, m->position, m->rotation, 0, 0, 0.0f, kerwan_zero_vec_r, kerwan_zero_vec_r,
@@ -1480,7 +1469,7 @@ void HelicopterGunshipUpdate(HMob49_2CDDC8 *m) {
             break;
     }
     if (m->nearby && FastVecDist(m->position, kerwan_camera_pos_r) < 40.0f)
-        set_ground_height_band_r(m);
+        set_ground_height_band(m);
     m->position[2] -= D_L03_00161A18_2CDDC8 * FastCos(d->bob);
     d->bob = FastAddRots(d->bob, 6.2831855f / multiply_global_factor(D_L03_00161A14_2CDDC8 * 60.0f));
     m->position[2] += D_L03_00161A18_2CDDC8 * FastCos(d->bob);
@@ -1834,8 +1823,6 @@ void fred_1_update(Moby *m) {
 }
 extern void func_L01_002FC890(char *);
 
-extern f32 vec_distance_xy_r2(void *, void *) __asm__("func_001F9D48");
-
 extern char qwark_rilgar_no_region_a_msg[];
 extern char qwark_rilgar_no_region_c_msg[];
 extern char qwark_rilgar_no_region_b_msg[];
@@ -1919,7 +1906,7 @@ void qwark_rilgar_update(char *m) {
     tracking = 0;
     if (moby->prev_seq == 0) {
         tracking = 1;
-        if (vec_distance_xy_r2(&moby->pos, &hero.motion.pos) < 8.0f &&
+        if (vec_distance_xy(&moby->pos, &hero.motion.pos) < 8.0f &&
             FastDiffRots(moby->rot.z, fast_atan2(hero.motion.body_center.f[0] - moby->pos.x,
                                                  hero.motion.body_center.f[1] - moby->pos.y)) < 1.5707964f) {
             if (FastVecLength(&hero.motion.displacement) > 0.01f)

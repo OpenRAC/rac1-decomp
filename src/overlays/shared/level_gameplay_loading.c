@@ -2328,7 +2328,7 @@ typedef struct {
 extern Tab disc_table;
 extern H_245610 cutscene_state_r2 __asm__("D_L00_0016C960");
 void func_00217628_45FE0b(void *, s32, s32) __asm__("func_00217628");
-void func_00217748_45FE0b(s32) __asm__("func_00217748");
+extern void update_audio_stream_until_idle(s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/world_animation_002454c8.c, FUN_L00_00245610. */
 void load_chunks_with_optional_fade(s32 i, s32 p) {
@@ -2340,10 +2340,10 @@ void load_chunks_with_optional_fade(s32 i, s32 p) {
         func_00217628_45FE0b(cutscene_state_r2.buf, disc_table.y[i].a, disc_table.y[i].b);
     }
     if (p != 0) {
-        func_00217748_45FE0b(0);
+        update_audio_stream_until_idle(0);
         FadeToBlack(p);
     }
-    func_00217748_45FE0b(1);
+    update_audio_stream_until_idle(1);
     e = (s32 *)cutscene_state_r2.buf;
     n = 0;
     if (e[1] != 0) {

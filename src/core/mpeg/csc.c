@@ -43,8 +43,8 @@ void do_csc(void *arg0, unsigned int arg1, int arg2) {
 ASM_FUNC("asm/handwritten/core_text", func_0012A418);
 
 extern int add_dmac_handler2_r(int, void *, int, void *) __asm__("func_00118AC0");
-extern void enable_dmac_atomic_r(int) __asm__("func_00119460");
-extern void do_csc2_dma_handler_r(void) __asm__("func_0012A418");
+extern void enable_dmac_atomic(int);
+
 extern char csc_handler_error_msg[];
 
 typedef struct {
@@ -73,9 +73,9 @@ void do_csc2(void *arg0, unsigned int arg1, int arg2) {
     rp = &rec;
     while (*(volatile int *)0x10002010 < 0) {
     }
-    h = add_dmac_handler2_r(3, (void *)do_csc2_dma_handler_r, 0, rp);
+    h = add_dmac_handler2_r(3, (void *)do_csc2_dma_handler, 0, rp);
     *(volatile unsigned int *)0x1000E010 = 8;
-    enable_dmac_atomic_r(3);
+    enable_dmac_atomic(3);
     r = disable_interrupts();
     {
         volatile unsigned int *madr = (volatile unsigned int *)0x1000B010;

@@ -26,6 +26,7 @@
 #include "core/gs/put_draw_env.h"
 #include "game/ui/pause.h"
 #include "game/system/space.h"
+#include "asm_functions/shared_levels.h"
 extern char item_available[];
 extern char level_map_coverage[];
 
@@ -84,46 +85,45 @@ extern int skip_frame_r __asm__("D_L00_0015F6BC") MACRO_ADDR;
 
 extern int STUB_printf_r() __asm__("func_001E9730");
 
-extern void init_level_runtime_state_r(void) __asm__("func_L00_0023D9C0");
-extern int load_level_archive_resources_r(int, int) __asm__("func_L00_00244AE0");
+extern void init_level_runtime_state(void);
+extern int load_level_archive_resources(int, int);
 
 extern void initialize_level_map_archive_r(void) __asm__("func_L00_00246EC0");
 
-extern void load_misc_animations_into_stash_r(void) __asm__("func_L00_00276F18");
-extern void prepare_level_entry_transition_r(void) __asm__("func_L00_002901A8");
+extern void load_misc_animations_into_stash(void);
+extern void prepare_level_entry_transition(void);
 
 /* The empty function (`jr $31; nop`) and register_audio_stream_callback have several identical copies in level 00. The
    catalogue
    names every copy after one of them, and overlay_check resolves such a name to the copy nearest the call, which
    is not the one retail calls: these aliases name the copies retail calls by their level-00 addresses. */
-extern void func_001E9768_2465F8(void *, int) __asm__("func_L00_001F7118");
-extern void func_001E9768_b_2465F8(void *, int) __asm__("func_L00_001F7120");
-extern void func_001E9768_v_2465F8() __asm__("func_L00_001F7110");
-extern void func_00216270_2465F8(void) __asm__("func_L00_00268738");
-extern void update_debug_menu_r(void) __asm__("func_L00_001F4918");
-extern void draw_debug_menu_r(void) __asm__("func_L00_001F5C60");
-extern void handle_pause_input_r(void) __asm__("func_L00_00299250");
-extern void draw_debug_profiler_if_enabled_r(void) __asm__("func_L00_001F91B0");
-extern void play_queued_movie_r(void) __asm__("func_L00_0029AD18");
-extern void update_cutscene_playback_r(void) __asm__("func_L00_0029A300");
 
-extern void update_pause_menu_r(void) __asm__("func_L00_00277A88");
-extern void draw_page_contents_r(void) __asm__("func_L00_001F92C0");
-extern void update_mode_freeze_r(void) __asm__("func_001FD3E8");
-extern void draw_dialog_background_and_text_r(void) __asm__("func_L00_001F9248");
-extern void update_vendor_menu_r(void) __asm__("func_L00_0029D988");
-extern void draw_vendor_screen_r(void) __asm__("func_L00_002A1540");
-extern void update_resident_gameplay_state_r(void) __asm__("func_00230A90");
-extern void dispatch_game_state_update_r(void) __asm__("func_00232200");
-extern void update_slideshow_r(void) __asm__("func_L00_0029AFB8");
-extern void draw_framebuffer_with_timed_text_r(void) __asm__("func_L00_001F92E8");
-extern void Frame_RollCounter_r(void) __asm__("func_L00_001F70F0");
+extern void func_001E9768_v_2465F8() __asm__("func_L00_001F7110");
+
+extern void update_debug_menu(void);
+extern void draw_debug_menu(void);
+extern void handle_pause_input(void);
+extern void draw_debug_profiler_if_enabled(void);
+extern void play_queued_movie(void);
+extern void update_cutscene_playback(void);
+
+extern void update_pause_menu(void);
+extern void draw_page_contents(void);
+extern void update_mode_freeze(void);
+extern void draw_dialog_background_and_text(void);
+
+extern void draw_vendor_screen(void);
+extern void update_resident_gameplay_state(void);
+extern void dispatch_game_state_update(void);
+extern void update_slideshow(void);
+extern void draw_framebuffer_with_timed_text(void);
+extern void frame_roll_counter(void);
 
 extern void Menu_RunStateHandler_r(void) __asm__("func_00209070");
 
 extern void draw_rotated_sprite_r(float, float, int, int, long, float, float, float) __asm__("func_00200E38");
 
-extern void flush_debug_text_queue_r(void) __asm__("func_L00_001F3A78");
+extern void flush_debug_text_queue(void);
 
 /* Level main loop (shared by every level): clears the level's work area, sets up the level and counts the visit
    and play time of the planet, then runs one frame per pass, dispatching on the game mode, until the level asks to
@@ -149,9 +149,9 @@ void run_level_main_loop(void) {
     cinematic_mode_frames_r = 0;
     cinematic_mode_r = 6;
     one = 1;
-    init_level_runtime_state_r();
+    init_level_runtime_state();
     ((Music *)cd_read_state_r)->track = 0;
-    load_level_archive_resources_r(1, 0);
+    load_level_archive_resources(1, 0);
     ((Cam *)g_debug_menu_r)->f8 = 15;
     ((Cam *)g_debug_menu_r)->f30 = pal_mode_r;
     ((Cam *)g_debug_menu_r)->f38 = -1;
@@ -160,8 +160,8 @@ void run_level_main_loop(void) {
     clear_dma_queue_entry();
     initialize_level_map_archive_r();
     init_hud();
-    load_misc_animations_into_stash_r();
-    prepare_level_entry_transition_r();
+    load_misc_animations_into_stash();
+    prepare_level_entry_transition();
     rendered_frame_count_r = 0;
     sce_gs_sync_v(0);
     PutDispBuffer();
@@ -191,7 +191,7 @@ void run_level_main_loop(void) {
         full = 0;
         frm_clock_time_r += (unsigned int)*(volatile int *)0x10000800;
         *(volatile int *)0x10000800 = 0;
-        Frame_RollCounter_r();
+        frame_roll_counter();
         skip_frame_r = 0;
         VU1_sendChain();
         VU1_swapChain();
@@ -202,47 +202,47 @@ void run_level_main_loop(void) {
         v = cinematic_mode_r;
         switch (v) {
             case -1:
-                func_00216270_2465F8();
-                update_debug_menu_r();
-                draw_debug_menu_r();
+                UpdatePadL00();
+                update_debug_menu();
+                draw_debug_menu();
                 break;
             case 0:
-                func_00216270_2465F8();
-                handle_pause_input_r();
-                draw_debug_profiler_if_enabled_r();
+                UpdatePadL00();
+                handle_pause_input();
+                draw_debug_profiler_if_enabled();
                 break;
             case 1:
-                play_queued_movie_r();
+                play_queued_movie();
                 break;
             case 2:
-                func_00216270_2465F8();
-                update_cutscene_playback_r();
+                UpdatePadL00();
+                update_cutscene_playback();
                 prepare_debug_profiler_render();
                 break;
             case 3:
-                func_00216270_2465F8();
-                update_pause_menu_r();
-                draw_page_contents_r();
+                UpdatePadL00();
+                update_pause_menu();
+                draw_page_contents();
                 break;
             case 4:
-                func_00216270_2465F8();
-                update_mode_freeze_r();
-                draw_dialog_background_and_text_r();
+                UpdatePadL00();
+                update_mode_freeze();
+                draw_dialog_background_and_text();
                 break;
             case 5:
-                func_00216270_2465F8();
-                update_vendor_menu_r();
-                draw_vendor_screen_r();
+                UpdatePadL00();
+                update_vendor_menu();
+                draw_vendor_screen();
                 break;
             case 6:
-                func_00216270_2465F8();
-                update_resident_gameplay_state_r();
-                dispatch_game_state_update_r();
+                UpdatePadL00();
+                update_resident_gameplay_state();
+                dispatch_game_state_update();
                 break;
             case 7:
-                func_00216270_2465F8();
-                update_slideshow_r();
-                draw_framebuffer_with_timed_text_r();
+                UpdatePadL00();
+                update_slideshow();
+                draw_framebuffer_with_timed_text();
                 break;
         }
         if (cinematic_mode_r != v) {
@@ -278,9 +278,9 @@ void run_level_main_loop(void) {
             }
         }
         ((Gs *)level_menu_system_r)->f13C = 0;
-        flush_debug_text_queue_r();
-        func_001E9768_2465F8(level_main_loop_profile_label_r, 0x10);
-        func_001E9768_b_2465F8(level_main_loop_profile_label_r, 0x10);
+        flush_debug_text_queue();
+        Profile_MarkL00_b(level_main_loop_profile_label_r, 0x10);
+        Profile_MarkL00_c(level_main_loop_profile_label_r, 0x10);
         VU1_syncChain(1);
         {
             cpu_frame_load_r = IntToFloat(*(volatile int *)0x10000800) / (pal_mode_r != 0 ? 11520.0f : 9600.0f);
@@ -299,11 +299,11 @@ void run_level_main_loop(void) {
                 }
                 if (lim < *(volatile int *)0x10000800) {
                     if (mode == 0) {
-                        func_00216270_2465F8();
-                        handle_pause_input_r();
+                        UpdatePadL00();
+                        handle_pause_input();
                     } else if (mode == 2 && D_L00_0016C9B0_2465F8 == 0) {
-                        func_00216270_2465F8();
-                        update_cutscene_playback_r();
+                        UpdatePadL00();
+                        update_cutscene_playback();
                     }
                 }
                 sce_gs_sync_v(0);
@@ -328,7 +328,7 @@ void run_level_main_loop(void) {
             snd_FlushSoundCommands();
             sound_StopAllSounds();
             music_Stop();
-            load_level_archive_resources_r(0, full);
+            load_level_archive_resources(0, full);
             cinematic_mode_r = 0;
             music_StartTrack(((Music *)cd_read_state_r)->track, 1, 0x400);
             init_hud();

@@ -2466,17 +2466,13 @@ extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 
 extern void AddDrawCallback_r(void (*)(char *), void *) __asm__("func_001F49B0");
 
-extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
-
-extern int coll_line_r4(void *, void *, int, int, int) __asm__("func_L00_001EFFF0");
-
 extern void draw_swingshot_cable_r(char *) __asm__("func_L00_002C7128");
 
 /* Swingshot update: keeps the hook at the glove, shows the targets, fires the hook to the swing target
    or the grind target, swings the hero, and reels the hook back. */
-void func_L00_002C74B8_r(Moby *m) __asm__("func_L00_002C74B8");
+extern void swingshot_update(Moby *m);
 /* Swingshot update body. */
-void func_L00_002C74B8_r(Moby *m) {
+void swingshot_update(Moby *m) {
     V_2C74B8 v0;
     V_2C74B8 v10;
     Data_2C74B8 *d;
@@ -2564,7 +2560,7 @@ void func_L00_002C74B8_r(Moby *m) {
             }
             qcopy(&v10, g_hero_r5 + 0x80);
             v10.f.z += 0.5f;
-            if (coll_line_r4(&v10, &((Hero *)g_hero_r5)->grapple_target->pos, 2, 0, 0)) {
+            if (coll_line(&v10, &((Hero *)g_hero_r5)->grapple_target->pos, 2, 0, 0)) {
                 if (0.5f < ((Hero *)g_hero_r5)->ground_distance) {
                     HeroEnterMoveState(HERO_STATE_FALL, 1);
                 } else {
@@ -2573,7 +2569,7 @@ void func_L00_002C74B8_r(Moby *m) {
                 }
                 m->state = 6;
             } else if (speed < FastVecDist(&d->hook->pos, &((Hero *)g_hero_r5)->grapple_target->pos)) {
-                vec_scale_to_length_r(&v0, &v0, speed);
+                vec_scale_to_length(&v0, &v0, speed);
                 FastVecAdd(&d->hook->pos, &d->hook->pos, &v0);
             } else {
                 qcopy(&d->hook->pos, &((Hero *)g_hero_r5)->grapple_target->pos);
@@ -2590,7 +2586,7 @@ void func_L00_002C74B8_r(Moby *m) {
             Moby_GetJointWorldPos(m, 0, &v0);
             qcopy(&v0, g_hero_r5 + 0x80);
             v0.f.z += 0.5f;
-            if (coll_line_r4(&v0, &((Hero *)g_hero_r5)->grapple_target->pos, 2, 0, 0)) {
+            if (coll_line(&v0, &((Hero *)g_hero_r5)->grapple_target->pos, 2, 0, 0)) {
                 if (((Hero *)g_hero_r5)->air_frames.s)
                     HeroEnterMoveState(HERO_STATE_FALL, 1);
                 else
@@ -2648,7 +2644,7 @@ void func_L00_002C74B8_r(Moby *m) {
             Moby_GetJointWorldPos(m, 0, &v10);
             FastVecSub(&v0, &v10, &d->hook->pos);
             if (hd->speed < FastVecDist(&d->hook->pos, &v10)) {
-                vec_scale_to_length_r(&v0, &v0, hd->speed);
+                vec_scale_to_length(&v0, &v0, hd->speed);
                 FastVecAdd(&d->hook->pos, &d->hook->pos, &v0);
                 AddDrawCallback_r(draw_swingshot_cable_r, m);
             } else {
@@ -2668,7 +2664,7 @@ void func_L00_002C74B8_r(Moby *m) {
             }
             FastVecSub(&v0, &((Hero *)g_hero_r5)->swing_target_moby->pos, &d->hook->pos);
             if (hd->speed < FastVecLength(&v0)) {
-                vec_scale_to_length_r(&v0, &v0, hd->speed);
+                vec_scale_to_length(&v0, &v0, hd->speed);
                 FastVecAdd(&d->hook->pos, &d->hook->pos, &v0);
             } else {
                 qcopy(&d->hook->pos, &((Hero *)g_hero_r5)->swing_target_moby->pos);
@@ -2723,7 +2719,7 @@ void func_L00_002C74B8_r(Moby *m) {
             Moby_GetJointWorldPos(m, 0, &v10);
             FastVecSub(&v0, &v10, &d->hook->pos);
             if (hd->speed < FastVecDist(&d->hook->pos, &v10)) {
-                vec_scale_to_length_r(&v0, &v0, hd->speed);
+                vec_scale_to_length(&v0, &v0, hd->speed);
                 FastVecAdd(&d->hook->pos, &d->hook->pos, &v0);
                 AddDrawCallback_r(draw_swingshot_cable_r, m);
             } else {
@@ -2931,9 +2927,6 @@ extern char g_debug_camera_r4[] __asm__("D_L00_00166EC0");
 extern char coll_hit_result_r4[] __asm__("D_L00_00173F40");
 extern float g_frame_time_sq_r2 __asm__("D_0015EE70") MACRO_ADDR;
 
-extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
-
-extern int coll_line_r5(void *, void *, int, int, int) __asm__("func_L00_001EFFF0");
 extern void compute_glove_of_doom_launch_velocity_r(float *pos, float *tgt, float *out, float speed, float unused,
                                                     float range) __asm__("func_L00_002C8680");
 
@@ -2978,14 +2971,14 @@ void compute_glove_of_doom_throw_velocity(int a0, Moby *m, float *a2) {
             flag = 0;
             FastSubRots(((Moby *)h->moby)->rot.z, fast_atan2(va0[0], va0[1]));
             f22 = fast_atan2(va0[0], va0[1]);
-            w = fast_atan2(vec_length_xy_r(va0), va0[2]);
+            w = fast_atan2(vec_length_xy(va0), va0[2]);
             if (0.593411922f < w)
                 w = 0.593411922f;
             if (w < -1.39626336f)
                 w = -1.39626336f;
             BuildSphericalOffset(va0, (((PadState *)(&g_controller_state))->held & 5) ? 3.5f : 2.5f, f22, w);
             qcopy(vb0, player_camera_r2 + 0x140);
-            y = vec_length_xy_r(va0);
+            y = vec_length_xy(va0);
             {
                 float z = va0[2];
                 if (y != 0.0f) {
@@ -3003,7 +2996,7 @@ void compute_glove_of_doom_throw_velocity(int a0, Moby *m, float *a2) {
                 va0[1] = FastSin(f22) * f21;
                 va0[2] = f23;
                 FastVecAdd(vc0, g_debug_camera_r4, va0);
-                if (coll_line_r5(g_debug_camera_r4, vc0, 2, a0, 0) &&
+                if (coll_line(g_debug_camera_r4, vc0, 2, a0, 0) &&
                     ((Hit_2C88A8 *)coll_hit_result_r4)->moby != *(void **)&((struct Hero *)g_hero)->moby) {
                     qcopy(v90, ((Hit_2C88A8 *)coll_hit_result_r4)->point);
                     flag = 1;

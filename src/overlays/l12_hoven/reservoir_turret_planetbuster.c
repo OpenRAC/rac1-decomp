@@ -515,9 +515,6 @@ typedef struct Data_303CA8 {
     int f2330;
 } Data_303CA8;
 
-extern int GetEffectTex_r(int) __asm__("func_001F4868");
-
-extern void draw_world_quad_r(void *, void *, int) __asm__("func_L00_001FD1D8");
 extern Moby *hoven_mobys_r __asm__("D_L12_00160058") MACRO_ADDR;
 extern float D_L12_001FB870[][4];
 extern float D_L12_001FB7D0[];
@@ -564,7 +561,7 @@ void draw_oscillating_target_link_strips(Moby *moby) {
         row += 16;
         cp[15] = 1.0f;
     }
-    quad[1].g[1] = GetEffectTex_r(0xE);
+    quad[1].g[1] = GetEffectTex(0xE);
     quad[1].g[3] = (long)D_L12_00161E4C_303CA8 | ((long)D_L12_00161E50_303CA8 << 2) |
                    ((long)D_L12_00161E54_303CA8 << 4) | ((long)D_L12_00161E58_303CA8 << 6) | (0x8000L << 24);
     quad[1].g[2] = 0xFF9000000260UL;
@@ -600,7 +597,7 @@ void draw_oscillating_target_link_strips(Moby *moby) {
                 FastVecAdd(&quad[1].v[n * 4], target_link_strip_corners[n], data->ring[idx][j + (n >> 1)]);
             }
             for (d = 0; d < 2; d++) {
-                draw_world_quad_r(&quad[1], mats[d], 0);
+                draw_world_quad(&quad[1], mats[d], 0);
             }
         }
     }
@@ -694,8 +691,6 @@ typedef struct Row {
     u128 v20;
 } Row;
 
-extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-
 extern void update_oscillating_target_link_strips_r(void *) __asm__("func_L12_00304038");
 
 extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
@@ -752,7 +747,7 @@ void update_oscillating_target_link(Moby *moby) {
             tmp0.q = row->v10;
             tmp1.q = row->v20;
             LerpVec4(((float *)&moby->pos), &tmp0, &tmp1, a);
-            if (vec_distance_xy_r(((float *)&moby->pos), gHeroPos) > 64.0f) {
+            if (vec_distance_xy(((float *)&moby->pos), gHeroPos) > 64.0f) {
                 return;
             }
             if (moby->visible == 0 && hoven_mobys_r[data->target].visible == 0) {
@@ -940,7 +935,6 @@ extern float hoven_turret_destruction_view_offset_distance_max SDATA(hoven_turre
 extern char hoven_player_camera_r[] __asm__("D_L12_00167180");
 
 extern void update_hoven_turret_target_alignment_timer(void *);
-extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
 
 extern void spawn_explosion_v(void *, void *, void *, float, float, int, int, int, float, float, float, int, float,
                               float, int, int, int, int) __asm__("func_L00_0025F4A8");
@@ -1025,7 +1019,7 @@ void hoven_turret_update(Moby *moby) {
                 AddDrawCallback(draw_hoven_turret_hud, moby);
             }
             update_hoven_turret_target_alignment_timer(moby);
-            if (fast_dec_timer_r2(&d->f90)) {
+            if (fast_dec_timer(&d->f90)) {
                 Hit_304920 *hit = (Hit_304920 *)MobyGetHitMessage(moby, 0x10000, 0);
                 if (hit != 0) {
                     d->f90 = scale_ticks(4);
@@ -1734,7 +1728,7 @@ void update_planetbuster_maximus_guns(char *moby) {
                 }
             }
             if (hoven_turret_destroyed_m == 0 && md->f80 > 0.0f) {
-                if (fast_dec_timer_r2(&md->w84) != 0) {
+                if (fast_dec_timer(&md->w84) != 0) {
                     float dmg = 1.0f;
                     char *r = MobyGetHitMessage(m, 0x50000, 0);
                     if (r == 0) {

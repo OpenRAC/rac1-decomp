@@ -340,12 +340,10 @@ void update_ship_lock_on_target(int a, char *moby) {
 extern long GetEffectTex_l(int) __asm__("func_001F4868");
 extern void draw_ship_radar_moby_icon(char *rot, char *from, char *moby, int icon, long color);
 extern void update_ship_lock_on_target(int a, char *moby);
-extern void draw_quarter_turn_textured_quads_f(float, float, float, float, unsigned char, unsigned char, unsigned char,
-                                               unsigned char) __asm__("func_L11_00312510");
+extern void draw_quarter_turn_textured_quads(float, float, float, float, unsigned char, unsigned char, unsigned char,
+                                             unsigned char);
 
 extern int FontPrintCenterLarge_c(int, int, long, void *, int) __asm__("func_001F6FD8");
-
-extern int fast_dec_timer_i(void *) __asm__("func_001F9908");
 
 typedef struct {
     unsigned short count;
@@ -455,14 +453,14 @@ void draw_ship_hud(char *moby) {
             if (m > 1.0f)
                 m = 1.0f;
             c = truncate_float_to_s32_r(m * 96.0f);
-            draw_quarter_turn_textured_quads_f(IntToFloat(sp40), IntToFloat(sp44), k,
-                                               normalize_angle(IntToFloat(level_frame) / 30.0f), 0, 0xFF, 0, c);
+            draw_quarter_turn_textured_quads(IntToFloat(sp40), IntToFloat(sp44), k,
+                                             normalize_angle(IntToFloat(level_frame) / 30.0f), 0, 0xFF, 0, c);
             d->lock_target = 0;
         } else {
             a = 0xFF;
             if ((d->target_timer / scale_ticks(0x14)) & 1)
                 a = 0;
-            draw_quarter_turn_textured_quads_f(IntToFloat(sp40), IntToFloat(sp44), 1.0f, 0.0f, 0xFF, a, 0, 0x60);
+            draw_quarter_turn_textured_quads(IntToFloat(sp40), IntToFloat(sp44), 1.0f, 0.0f, 0xFF, a, 0, 0x60);
             d->lock_target = d->target;
         }
     }
@@ -491,7 +489,7 @@ void draw_ship_hud(char *moby) {
             d->lock_counter = 0;
         }
     }
-    fast_dec_timer_i(&d->hint_timer);
+    fast_dec_timer(&d->hint_timer);
     {
         struct Hero *g2 = (struct Hero *)g_hero;
         if ((g2->ship_ammo < 5 && ((HelpTab *)help_records)->r[0x57].count == 0) ||
@@ -535,14 +533,11 @@ void draw_ship_hud(char *moby) {
     }
 }
 
-extern int fast_dec_timer_c(void *) __asm__("func_001F9908");
-
 extern short D_L11_001620EC;
 extern short D_L11_001620F0;
 extern short ship_speed_scale_d __asm__("D_L11_00162120");
 extern unsigned char pad_globals_base_r[] __asm__("D_0013A5E0");
 
-extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 void build_spherical_offset(f32 *out, f32 scale, f32 a, f32 b) __asm__("func_00215C00");
 /* Update. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l11/gameplay_vendor_0030c788.c, FUN_L11_003125a8. */
 void update_ship_shot_firing_and_reticle(char *moby, char *obj, float p2, float p3) {
@@ -553,8 +548,8 @@ void update_ship_shot_firing_and_reticle(char *moby, char *obj, float p2, float 
 
     build_spherical_offset((f32 *)a, *(float *)&ship_reticle_distance * *(float *)&ship_speed_scale_d, p2, p3);
     FastVecAdd(a, a, obj);
-    if (fast_dec_timer_c(obj + 0x80) && (*(int *)(pad_globals_base_r + 0x2610) & 0x84)) {
-        vec_scale_to_length_r(c, a, 2.2f);
+    if (fast_dec_timer(obj + 0x80) && (*(int *)(pad_globals_base_r + 0x2610) & 0x84)) {
+        vec_scale_to_length(c, a, 2.2f);
         Moby_GetJointWorldPos(moby, 3 + (obj[0x61] & 1), b);
         FastVecAdd(b, b, c);
         spawn_class_3f1_moby(moby, a, b, 200.0f, -1.0f);
@@ -562,13 +557,12 @@ void update_ship_shot_firing_and_reticle(char *moby, char *obj, float p2, float 
         obj[0x61] ^= 1;
         Moby_PlaySound(3, 0, (int)moby);
     }
-    vec_scale_to_length_r(a, a, 23.0f);
+    vec_scale_to_length(a, a, 23.0f);
     FastVecAdd(d, a, moby + 0x10);
     project_world_point_to_screen_pixels(d, &((struct ShipVars *)obj)->reticle_x, &((struct ShipVars *)obj)->reticle_y,
                                          0);
 }
 
-extern int fast_dec_timer_i(void *) __asm__("func_001F9908");
 extern unsigned char pad_globals_base[];
 
 extern float ship_missile_speed SDATA(ship_missile_speed);
@@ -577,7 +571,7 @@ extern int ship_missile_cooldown SDATA(ship_missile_cooldown);
 
 /* on a pad press, fires the aimed shot and resets the cooldown */
 void try_fire_ship_projectile(char *moby, struct ShipVars *d) {
-    if (fast_dec_timer_i(&d->fire_cooldown) && (*(int *)(pad_globals_base + 0x2610) & 0x28)) {
+    if (fast_dec_timer(&d->fire_cooldown) && (*(int *)(pad_globals_base + 0x2610) & 0x28)) {
         struct Hero *g = (struct Hero *)g_hero;
         if (g->ship_ammo != 0) {
             char a[16];
@@ -714,14 +708,11 @@ extern float D_L11_001621E8_313D00 SDATA(D_L11_001621E8);
 extern void stick_313D00(Moby *, float *, float *) __asm__("func_L11_003153D0");
 
 extern void spherical_313D00(float *, float, float, float) __asm__("func_00215C00");
-extern void vec_scale_313D00(void *, void *, float) __asm__("func_L00_001FF4B0");
 
 extern float approach_313D00(float *, float *, float, float, float, float) __asm__("func_00214D88");
 
 extern void burst_313D00(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                          int, int, int, int) __asm__("func_L00_0025F4A8");
-
-extern float length_313D00(void *) __asm__("func_001F9CE8");
 
 extern void draw_313D00(char *) __asm__("func_L11_00313218");
 extern void exhaust_313D00(Moby *, Jet *) __asm__("func_L11_00313BC0");
@@ -820,7 +811,7 @@ void update_player_ship_flight(void *a0, void *a1) {
         o->f38 = FastSubRots(o->f38, o->f6C * D_L11_001620A8_313D00);
     }
     spherical_313D00(ofs.f, o->f64, o->f38, -o->f34);
-    vec_scale_313D00(&o->f10, ofs.f, 1.0f);
+    vec_scale_to_length(&o->f10, ofs.f, 1.0f);
     qcopy(start.f, ((float *)&moby->pos));
     FastVecAdd(((float *)&moby->pos), ((float *)&moby->pos), ofs.f);
     {
@@ -888,17 +879,17 @@ void update_player_ship_flight(void *a0, void *a1) {
                 vec_reflect(ofs.f, ofs.f, pokitaru_coll_hit.dir.f);
                 f = FastSubRots(fast_atan2(ofs.f[0], ofs.f[1]), o->f38);
                 o->f38 = FastAddRots(o->f38, f * D_L11_00162098_313D00);
-                f = FastSubRots(-fast_atan2(length_313D00(ofs.f), ofs.f[2]), o->f34);
+                f = FastSubRots(-fast_atan2(vec_length_xy(ofs.f), ofs.f[2]), o->f34);
                 o->f34 = FastAddRots(o->f34, f * D_L11_0016209C_313D00);
                 o->f64 = o->f64 * D_L11_001620DC_313D00;
                 if (o->tDC == 0) {
                     ((Hero *)g_hero)->ship_hp = ((Hero *)g_hero)->ship_hp - D_L11_001620E0_313D00;
                     if (((Hero *)g_hero)->ship_hp < 0.0f) {
                         FastVecSub(dir.f, pokitaru_coll_hit.a.f, pokitaru_coll_hit.b.f);
-                        vec_scale_313D00(dir.f, dir.f, 1.0f);
+                        vec_scale_to_length(dir.f, dir.f, 1.0f);
                         vec_reflect(back.f, ofs.f, pokitaru_coll_hit.dir.f);
-                        vec_scale_313D00(back.f, back.f, g_frame_time_r + g_frame_time_r);
-                        vec_scale_313D00(up.f, pokitaru_coll_hit.dir.f, 1.0f);
+                        vec_scale_to_length(back.f, back.f, g_frame_time_r + g_frame_time_r);
+                        vec_scale_to_length(up.f, pokitaru_coll_hit.dir.f, 1.0f);
                         burst_313D00(moby, back.f, 0, 8.0f, 100.0f, 30, 10, 24, 16.0f, 8.0f, 9.0f, -1, 1.0f, 50.0f, 1,
                                      1, -1, 0);
                         moby->state = 7;
@@ -1043,7 +1034,7 @@ void jet_fighter_update(Moby *moby) {
 
     if (moby != 0) {
         d = *(State_3146E0 **)&moby->pvars;
-        fast_dec_timer_c(&d->tDC);
+        fast_dec_timer(&d->tDC);
         st = moby->state;
         if (st != 7 && st != 1 && st != 2) {
             r = (struct HitMessage *)MobyGetHitMessage(moby, 0x30001, 0);
@@ -1216,7 +1207,7 @@ void jet_fighter_update(Moby *moby) {
                 pokitaru_play_mode = 2;
                 update_player_ship_flight(moby, d);
                 n = count_listed_blarg_ships_in_state_5(d->i10C);
-                if (d->hEA != 0 && n < 5 - d->hE8 && fast_dec_timer_c(&d->t114) != 0 &&
+                if (d->hEA != 0 && n < 5 - d->hE8 && fast_dec_timer(&d->t114) != 0 &&
                     activate_listed_blarg_ship(d->i10C) != 0) {
                     d->t114 = scale_ticks(0xF0);
                 }
@@ -1268,14 +1259,14 @@ void jet_fighter_update(Moby *moby) {
             }
             case 7:
                 pokitaru_play_mode = 2;
-                if (fast_dec_timer_c(&d->tF8) != 0) {
+                if (fast_dec_timer(&d->tF8) != 0) {
                     Hero_OnKilled();
                 }
                 break;
             case 8:
                 pokitaru_play_mode = 2;
                 update_player_ship_flight(moby, d);
-                if (fast_dec_timer_c(&d->tF8) != 0) {
+                if (fast_dec_timer(&d->tF8) != 0) {
                     float f;
                     ApproachValue(&d->f130, 1.0f, g_frame_time * 4.0f);
                     f = d->f130;
@@ -2033,17 +2024,14 @@ typedef struct Data_316DD8 {
     int f254;
 } Data_316DD8;
 
-extern void spawn_color_swapped_explosion_burst_r(void *, void *, int, float, float) __asm__("func_L00_00260460");
-
 extern Hit_316DD8 *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
 
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 
 extern void func_L00_002584A8(void *, int, int);
 
-extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
 extern int FindNearestEligibleMoby_v(void *, void *, float, int, int, void *, int) __asm__("func_L00_00260FB0");
-extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
+
 extern Moby *pokitaru_mobys_r __asm__("D_L11_00160058") MACRO_ADDR;
 extern Path *path_table_r[] __asm__("D_L11_001B11B0");
 extern float D_L11_0016235C_316DD8 SDATA(D_L11_0016235C);
@@ -2070,7 +2058,7 @@ void update_puffoid_damage_and_path_goal(Moby *m) {
     if (d->f254 != -1 && m->state != 0xB && m->state != 9 && m->state != 0x12 && m->state != 0x11 && m->state != 0 &&
         m->state != 0xC && m->state != 0xD) {
         if (m->pos.z < pokitaru_mobys_r[d->f254].pos.z + 0.5f) {
-            spawn_color_swapped_explosion_burst_r(m, &*(Vec4A *)&m->pos, -1, 0.5f, 10.0f);
+            spawn_color_swapped_explosion_burst(m, &*(Vec4A *)&m->pos, -1, 0.5f, 10.0f);
             DeleteMoby(m);
         }
     }
@@ -2173,7 +2161,7 @@ void update_puffoid_damage_and_path_goal(Moby *m) {
         d->f244 = truncate_float_to_s32_r2(multiply_global_factor(random_float_between(180.0f, 240.0f)));
         d->f38 = 0;
     }
-    fast_dec_timer_r(&d->f244);
+    fast_dec_timer(&d->f244);
     if (d->f244 != 0) {
         d->f248 = d->f23C + 64.0f;
     } else {
@@ -2186,7 +2174,7 @@ void update_puffoid_damage_and_path_goal(Moby *m) {
         } else {
             qcopy(&v, &*(Vec4A *)&m->pos);
         }
-        if (d->f248 < vec_distance_xy_r(&v, &d->f1D0) || 3.0f < v.z - d->f1D0.z) {
+        if (d->f248 < vec_distance_xy(&v, &d->f1D0) || 3.0f < v.z - d->f1D0.z) {
             d->f214 = 2;
         }
     }
@@ -2915,7 +2903,7 @@ void update_oil_tanker_link_effects_and_destruction(Moby *m) {
     float r[4];
     switch (m->state) {
         case 0:
-            if (fast_dec_timer_i(&d->bubble_timer) == 0 && random_integer_below(oil_tanker_link_bubble_chance) == 0 &&
+            if (fast_dec_timer(&d->bubble_timer) == 0 && random_integer_below(oil_tanker_link_bubble_chance) == 0 &&
                 m->visible != 0 && pokitaru_available_moby_slot_count >= 0x47) {
                 matrix_mul_vec3(v, &oil_tanker_link_bubble_offset, &m->rot_row0);
                 FastVecAdd(v, v, &m->pos);
@@ -2972,7 +2960,7 @@ void energy_sphere_1297_update(unsigned char *moby) {
     spawn_energy_sphere_particles((char *)moby);
     switch (((Moby *)moby)->state) {
         case 1:
-            if (fast_dec_timer_i(&data->timer)) {
+            if (fast_dec_timer(&data->timer)) {
                 float *p = *(float **)&((struct Moby *)moby)->pclass;
                 float n = (float)scale_ticks(0x14);
                 float a = p[9];
@@ -2981,7 +2969,7 @@ void energy_sphere_1297_update(unsigned char *moby) {
                 ApproachValue(&((struct Moby *)moby)->scale, a, b);
                 ApproachValue(p, energy_sphere_glow_size, energy_sphere_glow_size / (float)scale_ticks(0x14));
             }
-            if (fast_dec_timer_i(&data->life)) {
+            if (fast_dec_timer(&data->life)) {
                 DeleteMoby(moby);
             }
             break;
@@ -2991,7 +2979,7 @@ void energy_sphere_1297_update(unsigned char *moby) {
             vp = v;
             qcopy(vp, pos);
             FastVecAdd(pos, pos, &data->vel);
-            if (fast_dec_timer_i(&data->timer) || coll_line(vp, &((struct Moby *)moby)->pos, 0, moby, 0) ||
+            if (fast_dec_timer(&data->timer) || coll_line(vp, &((struct Moby *)moby)->pos, 0, moby, 0) ||
                 coll_sphere_mobys(0.333f, &((struct Moby *)moby)->pos, 0, *(void **)&data->owner, 0)) {
                 spawn_explosion_v(moby, ((char *)data), &((struct Moby *)moby)->pos, 1.5f, 2.0f, 10, 3, 16, 4.0f, 2.0f,
                                   9.0f, -1, 1.0f, 15.0f, 1, 1, -1, 0);

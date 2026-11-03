@@ -461,7 +461,6 @@ extern int Moby_PlaySound_r(int, int, Moby *) __asm__("func_0022ED80");
 extern void align_hero_to_tresspasser_pad_r(Moby *) __asm__("func_L02_002DA728");
 extern void compute_tresspasser_pad_camera_transform_r(void *, void *, Moby *) __asm__("func_L02_002D9D48");
 extern float ApproachWithVelocity_r(float *, float *, float, float, float, float) __asm__("func_00214D88");
-extern void lerp_vector_r(void *, void *, void *, float) __asm__("func_001F9C08");
 
 extern void AddDrawCallback_r(void (*)(void), Moby *) __asm__("func_001F49B0");
 extern void draw_tresspasser_puzzle_r(void) __asm__("func_L02_002DA820");
@@ -558,7 +557,7 @@ void tresspasser_pad_update(Moby *moby) {
             compute_tresspasser_pad_camera_transform_r(&camera_pos, &camera_rot, moby);
             ApproachWithVelocity_r(&data->camera_t, &data->camera_t_vel, 1.0f, g_frame_time_sq_r + g_frame_time_sq_r,
                                    g_frame_time_sq_r + g_frame_time_sq_r, g_frame_time_r + g_frame_time_r);
-            lerp_vector_r(&camera_pos, &data->camera_pos, &camera_pos, data->camera_t);
+            lerp_vector(&camera_pos, &data->camera_pos, &camera_pos, data->camera_t);
             camera_rot.z =
                 FastAddRots(FastSubRots(camera_rot.z, data->camera_rot.z) * data->camera_t, data->camera_rot.z);
             camera_rot.y =

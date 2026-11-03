@@ -310,8 +310,6 @@ LINKER_REMNANT("asm/remnants/core_text", func_0012D440);
 
 extern unsigned char scf_t10k_summer_time[];
 
-extern int GetOsdConfigParam2_i(void *, int, int) __asm__("func_00118DC0");
-
 /* One return, and GetOsdConfigParam2 returns int. */
 int sce_scf_get_summer_time(void) {
     unsigned char buf[16];
@@ -324,7 +322,7 @@ int sce_scf_get_summer_time(void) {
         if (((*(unsigned int *)buf >> 13) & 7) == 0) {
             r = 0;
         } else {
-            GetOsdConfigParam2_i(buf + 4, 1, 1);
+            GetOsdConfigParam2(buf + 4, 1, 1);
             r = (buf[4] >> 4) & 1;
         }
     }

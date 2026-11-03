@@ -136,13 +136,13 @@ extern struct _reent *vfprintf_reent_117118[] __asm__("D_0012F86C") __attribute_
 extern s32 vfprintf_mbmax_117118[] __asm__("D_0012F870") __attribute__((section(".data")));
 extern const char vfprintf_blanks_117118[] __asm__("D_001525E0");
 extern const char vfprintf_zeroes_117118[] __asm__("D_001525F0");
-extern char **localeconv(void) __asm__("func_001144F0");
-extern s32 _mbtowc_r(struct _reent *, s32 *, const char *, s32, s32 *) __asm__("func_00115098");
+extern char **libc_localeconv(void);
+extern s32 libc_mbtowc_r(struct _reent *, s32 *, const char *, s32, s32 *);
 
 extern s32 __sbprintf(FILE *, const char *, char *) __asm__("func_00116FE8");
 extern s32 __sprint(FILE *, struct __suio *) __asm__("func_00116FA0");
-extern s32 isinf(f64) __asm__("func_00116168");
-extern s32 isnan(f64) __asm__("func_001161B0");
+extern s32 double_is_not_nan(f64);
+extern s32 libc_isnan(f64);
 extern char *cvt(struct _reent *, f64, s32, s32, char *, s32 *, s32, s32 *) __asm__("func_00118630");
 extern s32 exponent(char *, s32, s32) __asm__("func_001187E0");
 
@@ -172,7 +172,7 @@ s32 _vfprintf_r(struct _reent *data, FILE *fp, const char *fmt0, va_list ap) {
     int prec;
     char sign;
     s32 wc;
-    char *decimal_point = *localeconv();
+    char *decimal_point = *libc_localeconv();
     char softsign;
     double _double;
     int expt;
@@ -201,7 +201,7 @@ s32 _vfprintf_r(struct _reent *data, FILE *fp, const char *fmt0, va_list ap) {
     ret = 0;
     for (;;) {
         cp = fmt;
-        while ((n = _mbtowc_r(vfprintf_reent_117118[0], &wc, fmt, vfprintf_mbmax_117118[0], &state)) > 0) {
+        while ((n = libc_mbtowc_r(vfprintf_reent_117118[0], &wc, fmt, vfprintf_mbmax_117118[0], &state)) > 0) {
             fmt += n;
             if (wc == '%') {
                 fmt--;
@@ -335,14 +335,14 @@ s32 _vfprintf_r(struct _reent *data, FILE *fp, const char *fmt0, va_list ap) {
                 } else {
                     _double = (*(double *)((ap += 8) - 8));
                 }
-                if (isinf(_double)) {
+                if (double_is_not_nan(_double)) {
                     if (_double < 0)
                         sign = '-';
                     cp = vfprintf_string_00152600;
                     size = 3;
                     break;
                 }
-                if (isnan(_double)) {
+                if (libc_isnan(_double)) {
                     cp = vfprintf_string_00152608;
                     size = 3;
                     break;
@@ -956,7 +956,7 @@ union double_union {
     double d;
     unsigned int i[2];
 };
-extern char *func_001126D8_d(void *, double, int, int, int *, int *, char **) __asm__("func_001126D8");
+extern char *func_001126D8(void *, double, int, int, int *, int *, char **);
 
 /* cvt, newlib's text: convert a double for the %e/%f/%g conversions
    through _dtoa_r (func_001126D8), padding trailing zeros unless %g
@@ -985,7 +985,7 @@ char *vfprintf_cvt(void *data, double value, int ndigits, int flags, char *sign,
         *sign = '-';
     } else
         *sign = '\000';
-    digits = func_001126D8_d(data, value, mode, ndigits, decpt, &dsgn, &rve);
+    digits = func_001126D8(data, value, mode, ndigits, decpt, &dsgn, &rve);
     if ((ch != 'g' && ch != 'G') || flags & 0x001) { /* ALT */
         bp = digits + ndigits;
         if (ch == 'f') {

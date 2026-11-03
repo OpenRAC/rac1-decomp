@@ -7,7 +7,7 @@ void alien_queen_update(unsigned char *moby) {
     target = *(char **)(data + 0xB0);
     Manipulator_ApplyScale_q(moby, alien_queen_scale_manip_flag, 1.9f, data + 0x130);
     if ((unsigned char)moby[0x31] != 0 && FastVecDist(moby + 0x10, blarg_camera_pos_q) < 45.0f) {
-        set_ground_height_band_q(moby);
+        set_ground_height_band(moby);
         moby[0x7F] = 0x24;
     }
     if ((unsigned char)moby[0x20] >= 3 && (unsigned char)moby[0x20] <= 13) {
@@ -30,8 +30,8 @@ void alien_queen_update(unsigned char *moby) {
             *(int *)(data + 0x10C) = -1;
             *(int *)(data + 0x114) = *blarg_paths_q[*(int *)(data + 0xEC)];
             p = blarg_paths_q[*(int *)(data + 0xEC)];
-            lerp_vector_q(data + 0xD0, p + 4, (char *)p + ((*p / 2) * 16 + 16), 0.5f);
-            *(float *)(data + 0xDC) = vec_distance_xy_q(data + 0xC0, data + 0xD0);
+            lerp_vector(data + 0xD0, p + 4, (char *)p + ((*p / 2) * 16 + 16), 0.5f);
+            *(float *)(data + 0xDC) = vec_distance_xy(data + 0xC0, data + 0xD0);
             *(float *)(data + 0x128) = random_angle_radians();
             *(int *)(data + 0x12C) = scale_ticks(0x1E);
             *(int *)(moby + 0x94) = 0;
@@ -141,7 +141,7 @@ void alien_queen_update(unsigned char *moby) {
             MobyBlendAnimation(moby, 3, 0, scale_ticks(0x14));
             return;
         case 8: {
-            float dist = vec_distance_xy_q(moby + 0x10, target + 0x10);
+            float dist = vec_distance_xy(moby + 0x10, target + 0x10);
             float turn =
                 FastDiffRots(*(float *)(moby + 0x48), fast_atan2(*(float *)(target + 0x10) - *(float *)(moby + 0x10),
                                                                  *(float *)(target + 0x14) - *(float *)(moby + 0x14)));
@@ -161,14 +161,14 @@ void alien_queen_update(unsigned char *moby) {
             }
             FastVecSub(v, target + 0x10, moby + 0x10);
             v[2] = 0.0f;
-            vec_scale_to_length_q(v, v, *(float *)(data + 0xE8));
+            vec_scale_to_length(v, v, *(float *)(data + 0xE8));
             FastVecAdd(moby + 0x10, moby + 0x10, v);
             resolve_point_path_segment_xy_clearance_q(*(int *)(data + 0xEC), moby + 0x10, 1.0f, moby + 0x10);
             if (*(int *)(data + 0xB4) == 2) {
                 moby[0x20] = 0xD;
                 break;
             }
-            if (fast_dec_timer_q(data + 0x120) != 0) {
+            if (fast_dec_timer(data + 0x120) != 0) {
                 *(int *)(data + 0x120) = scale_ticks(0x168);
                 moby[0x20] = 0xC;
                 break;
@@ -185,7 +185,7 @@ void alien_queen_update(unsigned char *moby) {
         }
         case 12:
             update_alien_queen_orbit_movement_q(moby);
-            if (fast_dec_timer_q(data + 0x120) != 0) {
+            if (fast_dec_timer(data + 0x120) != 0) {
                 *(int *)(data + 0x120) = scale_ticks(0x4B0);
                 moby[0x20] = 0xB;
                 moby[0xBC] = 7;
@@ -195,7 +195,7 @@ void alien_queen_update(unsigned char *moby) {
             }
             return;
         case 9:
-            fast_dec_timer_q(data + 0x120);
+            fast_dec_timer(data + 0x120);
             SteerAngleWithVelocity_q((float *)(moby + 0x48), *(float *)(moby + 0x48), (float *)(data + 0xE0),
                                      g_frame_time_sq_q * 6.2831855f, g_frame_time_sq_q * 6.2831855f,
                                      g_frame_time_q * 3.1415927f);
@@ -210,7 +210,7 @@ void alien_queen_update(unsigned char *moby) {
         case 10: {
             QueenProbe probe;
             float buf[4];
-            fast_dec_timer_q(data + 0x120);
+            fast_dec_timer(data + 0x120);
             if (1.0f < MobyGetFrameValue(moby) && MobyGetFrameValue(moby) < 8.0f) {
                 v[0] = FastCos(*(float *)(moby + 0x48)) * 0.45f;
                 v[1] = FastSin(*(float *)(moby + 0x48)) * 0.45f;
@@ -257,7 +257,7 @@ void alien_queen_update(unsigned char *moby) {
         case 13: {
             char *pos = (char *)moby + 0x10;
             char *home = (char *)data + 0xC0;
-            float dist = vec_distance_xy_q(pos, home);
+            float dist = vec_distance_xy(pos, home);
             float turn =
                 FastDiffRots(*(float *)(moby + 0x48), fast_atan2(*(float *)(data + 0xC0) - *(float *)(moby + 0x10),
                                                                  *(float *)(data + 0xC4) - *(float *)(moby + 0x14)));
@@ -269,7 +269,7 @@ void alien_queen_update(unsigned char *moby) {
             if (turn < 0.7853982f) {
                 FastVecSub(v, home, pos);
                 v[2] = 0.0f;
-                vec_scale_to_length_q(v, v, alien_queen_walk_speed * g_frame_time_q);
+                vec_scale_to_length(v, v, alien_queen_walk_speed * g_frame_time_q);
                 FastVecAdd(pos, pos, v);
                 resolve_point_path_segment_xy_clearance_q(*(int *)(data + 0xEC), pos, 1.0f, pos);
             }
@@ -308,7 +308,7 @@ void alien_queen_update(unsigned char *moby) {
                 break;
             qcopy(v, moby + 0x10);
             v[2] = v[2] + 1.0f;
-            spawn_color_swapped_explosion_burst_q(moby, v, -1, 2.0f, 20.0f);
+            spawn_color_swapped_explosion_burst(moby, v, -1, 2.0f, 20.0f);
             spawn_moby_break_fragments(moby, 0x6A2, 1, 0x6A3, 3, 6, 2);
             set_moby_and_links_to_states_4_and_5_q(level_mobys_q_q + (*(int *)(data + 0x100) << 8));
             set_listed_class_16f_state_2_and_clear_data_28_q(*(int *)(data + 0x104));
@@ -325,7 +325,7 @@ void alien_queen_update(unsigned char *moby) {
             if (flag[0xA] != 0)
                 return;
             flag[0xA] = 1;
-            PlayBankSound_q(1, 0, 0);
+            PlayBankSound(1, 0, 0);
             ShowBanner(0x542D, -1);
             return;
         }

@@ -2102,9 +2102,8 @@ extern int coll_sphere_mobys_r(void *, float, int, void *, void *) __asm__("func
 
 extern char *spawn_source_attached_fading_effect_particle_v(float, char *, int, int, int) __asm__("func_L00_0026E940");
 
-extern void *spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns_r(void *, void *, int, int, float, int,
-                                                                                 int, int,
-                                                                                 int) __asm__("func_L00_0026CA10");
+extern void *spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(void *, void *, int, int, float, int,
+                                                                               int, int, int);
 
 typedef struct {
     int on;
@@ -2246,7 +2245,7 @@ void update_charged_blast(Moby29FF90 *moby) {
                                                            cnt, -1);
             random_spherical_offset(w, r * g_frame_time, r * 2.0f * g_frame_time);
             col = (0x7F << 24) | (rand_range(0x3F, 0x7F) << 16) | (rand_range(0x2F, 0x3F) << 8) | rand_range(0xF, 0x2F);
-            spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns_r(
+            spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(
                 moby->pos, w, col, 0x4F7F4F2F, 210000.0f, scale_ticks(0x2D), 1, *quartu_charged_blast_texture_ptr, -1);
             {
                 int i;
@@ -2553,8 +2552,6 @@ extern Moby256_2A3DD0 *D_L15_00160058_2A3DD0 SDATA(D_L15_00160058);
 
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 
-extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
-
 extern void mark_moby_killed_and_release_owned_voice_r(void *) __asm__("func_L15_002A47B8");
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 extern void AddDrawCallback_r(void (*)(void), void *) __asm__("func_001F49B0");
@@ -2627,8 +2624,8 @@ void update_spark_emitter_moby(Moby *moby) {
                     matrix_mul_vec3(B, B, &moby->rot_row0);
                     matrix_mul_vec3(C, C, &moby->rot_row0);
                     FastVecAdd(A, A, &moby->pos);
-                    vec_scale_to_length_r(B, B, one / (float)scale_ticks(30));
-                    vec_scale_to_length_r(C, C, one / (float)scale_ticks(30));
+                    vec_scale_to_length(B, B, one / (float)scale_ticks(30));
+                    vec_scale_to_length(C, C, one / (float)scale_ticks(30));
                     B[3] = 0.125f;
                     {
                         int ra = random_integer_below(0x10);

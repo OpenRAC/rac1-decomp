@@ -614,8 +614,6 @@ extern void AddDrawCallback_r(void (*)(struct Moby *), struct Moby *) __asm__("f
 extern void Moby_GetJointWorldPos_r(struct Moby *, s32, void *) __asm__("func_L00_00250800");
 extern void MobyTransformScaledVertex_r(struct Moby *, s32, void *) __asm__("func_0020DAF8");
 
-extern void vec_scale_to_length_r(void *, void *, f32) __asm__("func_L00_001FF4B0");
-
 /* Ship engine effects: puffs exhaust particles from joint 1 and places the nozzle and beam points from joints 7 and 2.
  * Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/gameplay/entities/002b17d8.c, FUN_L14_002b2600. */
 void update_plasmabot_visual_effects(struct Moby *m) {
@@ -636,7 +634,7 @@ void update_plasmabot_visual_effects(struct Moby *m) {
     AddDrawCallback_r(draw_plasmabot_glow_quad_r, m);
     Moby_GetJointWorldPos_r(m, 1, &pos);
     FastVecSub(&dir, &pos, &oltanis_camera_pos_r);
-    vec_scale_to_length_r(&dir, &dir, -0.5f);
+    vec_scale_to_length(&dir, &dir, -0.5f);
     FastVecAdd(&pv->exhaust, &pos, &dir);
     random_spherical_offset(&vel, 0.005f, 0.03f);
     p = spawn_mode_controlled_rotating_alpha_fade_particle(&pos, &vel, 0x7F, m);
@@ -1588,7 +1586,6 @@ typedef struct Particle_2E17B8 {
     char pad10[0x10];
     ParticleFade_2E17B8 fade; /* 0x20 */
 } Particle_2E17B8;
-extern void vec_scale_to_length_r2(void *, void *, float) __asm__("func_L00_001FF4B0");
 
 extern Particle_2E17B8 *spawn_mode_controlled_rotating_alpha_fade_particle_r2(void *, void *, int,
                                                                               Moby *) __asm__("func_L00_002757E8");
@@ -1618,7 +1615,7 @@ void emit_debris_trail_particles(Moby *m) {
     float size;
 
     pv = *(Vars **)&m->pvars;
-    vec_scale_to_length_r2(&dir, &*(Vec4 *)&m->rot_row2, 0.2f);
+    vec_scale_to_length(&dir, &*(Vec4 *)&m->rot_row2, 0.2f);
     FastVecAdd(&pos, &*(Vec4 *)&m->pos, &dir);
     random_spherical_offset(&vel, 0.005f, 0.03f);
     p = spawn_mode_controlled_rotating_alpha_fade_particle_r2(&pos, &vel, 0x7F, m);
@@ -1650,9 +1647,9 @@ void emit_debris_trail_particles(Moby *m) {
     vel.f[2] = 0.0f;
     vel.f[3] = 1.0f;
     if (m->state == 0) {
-        vec_scale_to_length_r2(&dir, &*(Vec4 *)&m->rot_row2, 0.95f);
+        vec_scale_to_length(&dir, &*(Vec4 *)&m->rot_row2, 0.95f);
     } else {
-        vec_scale_to_length_r2(&dir, &*(Vec4 *)&m->rot_row2, 1.15f);
+        vec_scale_to_length(&dir, &*(Vec4 *)&m->rot_row2, 1.15f);
         vel.f[2] = frame_scale_r * 0.03f;
     }
     FastVecAdd(&pos, &*(Vec4 *)&m->pos, &dir);
@@ -2291,8 +2288,6 @@ extern char D_0013F4D0[];
 extern VendorBeamFrame_3039C0 *oltanis_clip_volumes_r __asm__("D_L14_001601AC") MACRO_ADDR;
 extern u8 oltanis_collision_hit_point_r[] __asm__("D_L14_00174660");
 
-extern void vec_scale_to_length_r3(void *, void *, f32) __asm__("func_L00_001FF4B0");
-
 extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
 
 /* Sweeps the beam's two end lines; anything they cross takes damage pushed away from the beam.
@@ -2355,14 +2350,14 @@ void apply_vendor_beam_damage(char *self) {
     }
     qcopy(&end_a, &d->end_a);
     qcopy(&end_b, &d->end_b);
-    vec_scale_to_length_r3(&off, &oltanis_clip_volumes_r[d->w0].axis[0], d->radius);
+    vec_scale_to_length(&off, &oltanis_clip_volumes_r[d->w0].axis[0], d->radius);
     FastVecAdd(&from, &end_a, &off);
     FastVecAdd(&to, &end_b, &off);
     coll_line_r(&from, &to, 1, m, &req);
     FastVecSub(&from, &end_a, &off);
     FastVecSub(&to, &end_b, &off);
     coll_line_r(&from, &to, 1, m, &req);
-    vec_scale_to_length_r3(&off, &oltanis_clip_volumes_r[d->w0].axis[2], d->radius);
+    vec_scale_to_length(&off, &oltanis_clip_volumes_r[d->w0].axis[2], d->radius);
     FastVecAdd(&from, &end_a, &off);
     FastVecAdd(&to, &end_b, &off);
     coll_line_r(&from, &to, 1, m, &req);

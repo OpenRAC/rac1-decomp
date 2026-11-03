@@ -2399,8 +2399,6 @@ extern float level_draw_frame_load MACRO_ADDR;
 extern Vec4 devastator_default_normal MACRO_ADDR;
 extern Vec4 devastator_default_surface_motion MACRO_ADDR;
 
-extern float horizontal1688(void *) __asm__("func_001F9CE8");
-
 extern unsigned char *smoke1688(void *, void *, int, int, int, int, float, float, float, float,
                                 float) __asm__("func_L00_00272158");
 
@@ -2408,7 +2406,7 @@ extern void spark1688(void *, void *, int, int, int, int, float) __asm__("func_L
 
 extern int collision1688(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
 
-extern void rings1688(void *, void *, int, int, float, int, int, int, int, float) __asm__("func_L00_0026B890");
+extern void PartType11Spawn(void *, void *, int, int, float, int, int, int, int, float);
 extern void debris1688(void *, void *, int, int, float, int) __asm__("func_L00_0026B368");
 
 /* Gold Devastator missile update: steer toward its target, trail smoke and explode on hit. */
@@ -2494,10 +2492,10 @@ void gold_devastator_missile_update(M910 *m) {
             FastVecScale(&predicted, &phase.vectors.relative, time);
             FastVecAdd(&predicted, &predicted, phase.collision.dir);
             yaw = fast_atan2(predicted.f[0], predicted.f[1]);
-            pitch = -fast_atan2(horizontal1688(&predicted), predicted.f[2]);
+            pitch = -fast_atan2(vec_length_xy(&predicted), predicted.f[2]);
         } else {
             yaw = fast_atan2(phase.collision.dir[0], phase.collision.dir[1]);
-            pitch = -fast_atan2(horizontal1688(phase.collision.dir), phase.collision.dir[2]);
+            pitch = -fast_atan2(vec_length_xy(phase.collision.dir), phase.collision.dir[2]);
         }
     } else {
         if (d->life < scale_ticks(300) - scale_ticks(5)) {
@@ -2709,11 +2707,11 @@ void gold_devastator_missile_update(M910 *m) {
             int life = rand_range(scale_ticks(15), scale_ticks(20)) - particle_reduction * 7;
             int end = rand_range(scale_ticks(25), scale_ticks(30)) - particle_reduction * 10;
             int white_life, white_end;
-            rings1688((&m->pos), &blast_velocity, c, f, 400000.0f, life, end, 0, 0, speed);
+            PartType11Spawn((&m->pos), &blast_velocity, c, f, 400000.0f, life, end, 0, 0, speed);
             white_life = rand_range(scale_ticks(5), scale_ticks(10)) - particle_reduction * 5;
             white_end = rand_range(scale_ticks(15), scale_ticks(20)) - particle_reduction * 7;
-            rings1688((&m->pos), &blast_velocity, 0x7FFFFFFF, 0xFFFFFF, 400000.0f, white_life, white_end, 0, 0,
-                      speed * 0.5f);
+            PartType11Spawn((&m->pos), &blast_velocity, 0x7FFFFFFF, 0xFFFFFF, 400000.0f, white_life, white_end, 0, 0,
+                            speed * 0.5f);
         }
         for (i = 0; i < particles; i++) {
             Colors1688 color = devastator_blast_colors;
@@ -2780,7 +2778,7 @@ void gold_devastator_missile_update(M910 *m) {
             vec_scale_to_length(&impact1688.normal, &impact1688.normal, 1.0f);
             vec_reflect(&bounce[0], &motion, &impact1688.normal);
             m->rz = fast_atan2(bounce[0].f[0], bounce[0].f[1]);
-            m->ry = -fast_atan2(horizontal1688(&bounce[0]), bounce[0].f[2]);
+            m->ry = -fast_atan2(vec_length_xy(&bounce[0]), bounce[0].f[2]);
             d->yaw_velocity = 0.0f;
             d->pitch_velocity = 0.0f;
             vec_scale_to_length(&bounce[1], &impact1688.normal, 0.05f);
@@ -2808,8 +2806,6 @@ typedef struct {
 extern P_2b1af0 D_0013F550;
 void fefc8_2b1af0(void *) __asm__("func_L00_001FEF78");
 
-void ff500_2b1af0(void *, void *, float) __asm__("func_L00_001FF4B0");
-
 int trunc_2b1af0(float) __asm__("func_001FA898");
 
 void smoke_2b1af0(void *, void *, int, int, int, int, float, float, float, float, float) __asm__("func_L00_00272158");
@@ -2836,7 +2832,7 @@ void emit_object_offset_particles(unsigned char *o) {
     FastVecAdd(&c, o + 0x10, &a);
     matrix_mul_vec3(&b, &b, o + 0xC0);
     for (i = 1; i >= 0; i--) {
-        ff500_2b1af0(&d, &b, random_float_between(0.01f, 0.06f));
+        vec_scale_to_length(&d, &b, random_float_between(0.01f, 0.06f));
         FastVecScale(&b, &hero_displacement.a, 0.7f);
         b.f[2] = 0.0f;
         FastVecAdd(&d, &d, &b);
@@ -2847,7 +2843,7 @@ void emit_object_offset_particles(unsigned char *o) {
         smoke_2b1af0(&c, &d, scale_ticks(0x1E), 0x7F, 0xFFFFFF, t, 25000.0f, 300.0f, 0.98f, 0.0f, 0.85f);
     }
     for (j = 0; j >= 0; j--) {
-        ff500_2b1af0(&d, &b, random_float_between(0.01f, 0.06f));
+        vec_scale_to_length(&d, &b, random_float_between(0.01f, 0.06f));
         FastVecScale(&b, &hero_displacement.a, 0.55f);
         b.f[2] = 0.0f;
         FastVecAdd(&d, &d, &b);

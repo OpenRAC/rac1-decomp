@@ -344,15 +344,14 @@ typedef struct Anim {
 
 extern Hit_314800 *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
 extern int ComputeHitResponse_r(void *, void *, void *, int, int *, float *, int, int) __asm__("func_L00_0025B4D0");
-extern void SetDeathBits_r(void *, int, int) __asm__("func_L00_002584A8");
-extern void RerollEffectCounter_r(void *, void *) __asm__("func_L00_0025E4B0");
+extern void SetDeathBits(void *, int, int);
 
 extern void HeroEnterMoveState_r(int, int) __asm__("func_L00_00222B80");
 
 extern float split_float_fraction_r(float *, float) __asm__("func_L00_002001D8");
 
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
-extern void StepColorFade_r(void *, void *) __asm__("func_L00_0025E590");
+
 extern Anim *scene_points_r __asm__("D_L07_0016016C") MACRO_ADDR;
 extern int hero_current_state_r __asm__("D_001414D4");
 extern char voice_pool_r[] __asm__("D_0013E650");
@@ -392,9 +391,9 @@ void func_L07_00314800_r(Moby *moby, ThinkData *data, Vec *vec) {
                 if (v0 <= obj->f2C) {
                     vec->f0 = 0.0f;
                     moby->flags &= 0xEFFF;
-                    SetDeathBits_r(moby, 0, -1);
+                    SetDeathBits(moby, 0, -1);
                     data->f67 = 0x78;
-                    RerollEffectCounter_r(moby, data->anim);
+                    RerollEffectCounter(moby, data->anim);
                     if (moby->prev_seq != 2) {
                         MobyBlendAnimation(moby, 2, 0, rand_range(10, 13));
                     }
@@ -403,7 +402,7 @@ void func_L07_00314800_r(Moby *moby, ThinkData *data, Vec *vec) {
                     }
                     if (data->f1F0 != -1) {
                         set_moby_dialogue_record_value(moby, 1);
-                        SetDeathBits_r(moby, 0, -1);
+                        SetDeathBits(moby, 0, -1);
                         jet_clear_persistent(moby->mission);
                         jet_reset_camera(scene_points_r[data->f1F0].f30, scene_points_r[data->f1F0].f70);
                     }
@@ -420,7 +419,7 @@ void func_L07_00314800_r(Moby *moby, ThinkData *data, Vec *vec) {
                     vec->f0 = vec->f0 - obj->f2C;
                     data->f67 = 0xFA;
                     data->f26 = scale_ticks(0);
-                    RerollEffectCounter_r(moby, data->anim);
+                    RerollEffectCounter(moby, data->anim);
                     if (moby->state < 10 && vec->f0 < fv) {
                         if (hero_current_state_r == 0x78) {
                             HeroEnterMoveState_r(HERO_STATE_IDLE, 1);
@@ -458,7 +457,7 @@ void func_L07_00314800_r(Moby *moby, ThinkData *data, Vec *vec) {
         }
         moby->hit_slot = 0xFF;
     }
-    StepColorFade_r(moby, data->anim);
+    StepColorFade(moby, data->anim);
     data->f1FC = data->f1FC + 0.3f;
     if (0.0f < data->f1FC)
         data->f1FC = 0.0f;
@@ -1949,7 +1948,6 @@ extern RopeVec_319080 rope_previous_points_r[] __asm__("D_L07_0020DDB0");
 extern RopeVec_319080 snagglebeast_rope_centers_r[] __asm__("D_L07_0020DDC0");
 extern short snagglebeast_rope_row_alpha_r[] __asm__("D_L07_0020DE88");
 extern RopeMobySlot rope_particles_r[] __asm__("D_L07_0020CB00");
-extern void norm_319080(void *, void *, float) __asm__("func_L00_001FF4B0");
 
 /* Starts the rope when one is pending: lays nine points out from the anchor along the moby's
  * axis, then resets the swing state and, once, clears every entry's link.
@@ -1969,8 +1967,8 @@ void initialize_snagglebeast_rope(char *moby, void *anchor) {
         return;
     }
     D_L07_00161BFC_319080 = 0;
-    norm_319080(step, moby + 0xC0, 2.8f);
-    norm_319080(up, moby + 0xE0, 1.0f);
+    vec_scale_to_length(step, moby + 0xC0, 2.8f);
+    vec_scale_to_length(up, moby + 0xE0, 1.0f);
     qcopy(snagglebeast_rope_centers_r, anchor);
     pc = &c;
     pd = &d;
@@ -2074,9 +2072,9 @@ float update_snagglebeast_rope(void *moby, void *anchor) {
     }
     FastVecSub(v10, gHeroPos, anchor);
     v10[2] += 0.6f;
-    norm_319080(v10, v10, 2.8f);
+    vec_scale_to_length(v10, v10, 2.8f);
     FastVecCross(v20, v10, &((Moby *)moby)->rot_row1);
-    norm_319080(v20, v20, 1.0f);
+    vec_scale_to_length(v20, v20, 1.0f);
     qcopy(snagglebeast_rope_centers_r, anchor);
     matrix_mul_vec3(v30, snagglebeast_rope_sway_from, &((Moby *)moby)->rot_row0);
     FastVecAdd(v30, v30, v10);
@@ -2091,7 +2089,7 @@ float update_snagglebeast_rope(void *moby, void *anchor) {
     }
     if (D_L07_00161C10_319080 >= scale_ticks(60)) {
         qcopy(snagglebeast_rope_sway_from, snagglebeast_rope_sway_to);
-        norm_319080(v50, &((Moby *)moby)->rot_row0, 2.8f);
+        vec_scale_to_length(v50, &((Moby *)moby)->rot_row0, 2.8f);
         *(u128_319080 *)v60 = 0;
         *(u128_319080 *)v70 = 0;
         v60[2] = 0.1f;
@@ -2106,10 +2104,10 @@ float update_snagglebeast_rope(void *moby, void *anchor) {
         D_L07_00161C10_319080 = 0;
     }
     (*(float *)&D_L07_00161C14_319080) = FastAddRots((*(float *)&D_L07_00161C14_319080), 0.1f);
-    norm_319080(v50, gHeroPos + 0x210, -1.0f);
+    vec_scale_to_length(v50, gHeroPos + 0x210, -1.0f);
     qcopy(rb.r, v50);
     FastVecCross(rb.c, v10, rb.r);
-    norm_319080(rb.c, rb.c, 1.0f);
+    vec_scale_to_length(rb.c, rb.c, 1.0f);
     FastVecCross(rb.m, rb.r, rb.c);
     {
         int m;
@@ -2140,7 +2138,7 @@ float update_snagglebeast_rope(void *moby, void *anchor) {
                 sm = FastAddRots(sm, FastSubRots(df, 0.31415927f));
             }
             build_look_at_matrix(vC0, v60, vB0, sm);
-            norm_319080(vD0, vC0, 2.8f);
+            vec_scale_to_length(vD0, vC0, 2.8f);
             lerp_vector(vC0, vC0, vD0, 1.0f);
             {
                 float l2 = FastVecLength(vC0);
@@ -2173,11 +2171,11 @@ float update_snagglebeast_rope(void *moby, void *anchor) {
                     }
                 }
             } else {
-                norm_319080(v110, gHeroPos + 0x210, -1.0f);
+                vec_scale_to_length(v110, gHeroPos + 0x210, -1.0f);
             }
-            norm_319080(vF0, vE0, 1.0f);
+            vec_scale_to_length(vF0, vE0, 1.0f);
             FastVecCross(v100, vF0, v110);
-            norm_319080(v100, v100, 1.0f);
+            vec_scale_to_length(v100, v100, 1.0f);
             FastVecCross(v110, v100, vF0);
             qcopy(v50, v110);
             {
@@ -2191,7 +2189,7 @@ float update_snagglebeast_rope(void *moby, void *anchor) {
                     FastVecAdd(rope_grid[i][m], snagglebeast_rope_centers_r[i], v120);
                 }
             }
-            norm_319080(v10, vC0, 2.8f);
+            vec_scale_to_length(v10, vC0, 2.8f);
         }
     }
     AddDrawCallback(draw_rope_strips, moby);
@@ -2231,7 +2229,7 @@ float update_snagglebeast_rope(void *moby, void *anchor) {
                             RopeTail *tail = &p->tail;
                             FastVecSub(vC0, v60, vB0);
                             nfly++;
-                            norm_319080(tail->vel, vC0, 0.01f);
+                            vec_scale_to_length(tail->vel, vC0, 0.01f);
                             tail->vel[2] += 0.02f;
                         }
                     }
@@ -2286,7 +2284,7 @@ float update_snagglebeast_rope(void *moby, void *anchor) {
                     }
                     if (rope_particles[k].idx == 1) {
                         FastVecSub(v70, anchor, rope_particles[k].moby + 0x10);
-                        norm_319080(v70, v70, rope_particles[k].f10);
+                        vec_scale_to_length(v70, v70, rope_particles[k].f10);
                         FastVecAdd(rope_particles[k].moby + 0x10, rope_particles[k].moby + 0x10, v70);
                         *(float *)(rope_particles[k].moby + 0xC) *= frame_scale * -0.050000012f + 1.0f;
                     } else {
@@ -2638,25 +2636,19 @@ extern f32 g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 
 extern s32 see_31AAB0(struct Moby *, SwooperSight *, f32) __asm__("func_L00_00260D30");
 
-extern f32 distxy_31AAB0(void *, void *) __asm__("func_001F9D48");
-
 extern void set_ground_height_band_r(struct Moby *) __asm__("func_L00_0025B178");
 extern MobyHit *hit_31AAB0(struct Moby *, s32, s32) __asm__("func_L00_0025B478");
 extern s32 ComputeHitResponse_r2(struct Moby *, MobyHit *, void *, s32, s32 *, s32, s32,
                                  s32) __asm__("func_L00_0025B4D0");
-extern void debris_31AAB0(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
-                          int, int, int, int) __asm__("func_L00_0025F4A8");
-extern void SetDeathBits_r2(void *, int, int) __asm__("func_L00_002584A8");
+
+extern void SetDeathBits(void *, int, int);
 
 extern s32 tick_31AAB0(s32 *) __asm__("func_001F9908");
 extern s32 coll_sphere_r(f32, void *, s32, struct Moby *) __asm__("func_L00_001F10E0");
 extern void jet_animate_r(struct Moby *, f32) __asm__("func_L00_0025B040");
 extern void remove_31AAB0(struct Moby *, SwooperSpawnerVars_31AAB0 *) __asm__("func_L07_0031AA68");
 
-extern void norm_31AAB0(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void turn_31AAB0(struct Moby *, f32, void *, f32, f32, f32) __asm__("func_L00_002592B0");
-
-extern s32 probe_31AAB0(f32, void *, s32, void *, void *) __asm__("func_L00_001F2BE8");
 
 /* Swooper: holds at its goal, dives at the hero once it sees it and bursts on contact.
  * Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l07/gameplay/entities/00312948.c, FUN_L07_003196e0. */
@@ -2691,8 +2683,8 @@ void update_swooper(struct Moby *moby) {
     ComputeHitResponse_r2(moby, hit, collision, 0, &touching, 0, 0, 4);
     if (touching >= 2 && hit != 0 && hit->moby->oclass != 0x363 && hit->moby->oclass != MOBY_CLASS_MINE_1112 &&
         hit->moby->oclass != MOBY_CLASS_BOLTCRATE_POSSIBLY_FOR_METAL_DETECTOR) {
-        debris_31AAB0(moby, &vars->velocity, 0, 0.0f, 0.0f, 3, 3, 5, 2.0f, 1.0f, 4.0f, 1.0f, 2, 7.0f, 0, 1, -1, 0);
-        SetDeathBits_r2(moby, 0, -1);
+        spawn_explosion(moby, &vars->velocity, 0, 0.0f, 0.0f, 3, 3, 5, 2.0f, 1.0f, 4.0f, 1.0f, 2, 7.0f, 0, 1, -1, 0);
+        SetDeathBits(moby, 0, -1);
         remove_31AAB0(moby, spawner_vars);
     }
     switch (moby->state) {
@@ -2715,10 +2707,10 @@ void update_swooper(struct Moby *moby) {
                         &vars->turn_speed, g_frame_time_sq_r * 6.2831855f, g_frame_time_r * 3.1415927f,
                         g_frame_time_r * 6.2831855f);
             qcopy(&moby->pos, &vars->goal);
-            if ((vars->perch != 0 && distxy_31AAB0(&moby->pos, &vars->perch->pos) < 20.0f &&
+            if ((vars->perch != 0 && vec_distance_xy(&moby->pos, &vars->perch->pos) < 20.0f &&
                  FastAbsF(moby->pos.z - vars->perch->pos.z) < 3.0f) ||
                 (sight.found != 0 && FastVecDist(&moby->pos, &sight.pos) < spawner_vars->view_range &&
-                 distxy_31AAB0(&moby->pos, &vars->spawner->pos) > 2.0f &&
+                 vec_distance_xy(&moby->pos, &vars->spawner->pos) > 2.0f &&
                  FastDiffRots(moby->rot.z, fast_atan2(sight.pos.f[0] - moby->pos.x, sight.pos.f[1] - moby->pos.y)) <
                      spawner_vars->view_angle * 0.017453292f)) {
                 if (moby->prev_seq != 1) {
@@ -2749,14 +2741,14 @@ void update_swooper(struct Moby *moby) {
             }
             turn_31AAB0(moby, fast_atan2(sight.pos.f[0] - moby->pos.x, sight.pos.f[1] - moby->pos.y), &vars->turn_speed,
                         g_frame_time_sq_r * 3.1415927f, g_frame_time_r * 3.1415927f, g_frame_time_r * 6.2831855f);
-            pitch = fast_atan2(distxy_31AAB0(&moby->pos, &sight.pos), sight.pos.f[2] - moby->pos.z);
+            pitch = fast_atan2(vec_distance_xy(&moby->pos, &sight.pos), sight.pos.f[2] - moby->pos.z);
             moby->rot.y = SpringTurn(&vars->pitch_speed, moby->rot.y, pitch, g_frame_time_sq_r * 3.1415927f,
                                      g_frame_time_r * 3.1415927f, g_frame_time_r * 6.2831855f);
             FastVecSub(&dir, &sight.pos, &moby->pos);
             if (moby->command != 0) {
                 dir.f[2] = 0.0f;
             }
-            norm_31AAB0(&dir, &dir, g_frame_time_sq_r * 30.0f);
+            vec_scale_to_length(&dir, &dir, g_frame_time_sq_r * 30.0f);
             FastVecAdd(&vars->velocity, &vars->velocity, &dir);
             clamp_vec_length(&vars->velocity, &vars->velocity, g_frame_time_r * 10.0f);
             FastVecAdd(&moby->pos, &moby->pos, &vars->velocity);
@@ -2766,12 +2758,12 @@ void update_swooper(struct Moby *moby) {
             InitDirectionalHitQuery(contact, moby, 0x10001, 1.0f, &vars->velocity);
             qcopy(&probe, &moby->pos);
             probe.f[2] += 0.75f;
-            if (probe_31AAB0(0.75f, &probe, 0x10, moby, contact) && debris_target_r != 0 &&
+            if (coll_sphere_mobys(0.75f, &probe, 0x10, moby, contact) && debris_target_r != 0 &&
                 debris_target_r->oclass != 0x363 && debris_target_r->oclass != MOBY_CLASS_HOMING_MINE &&
                 debris_target_r->oclass != MOBY_CLASS_MINE_1112 && debris_target_r->oclass != 0x365 &&
                 debris_target_r->oclass != MOBY_CLASS_BOLTCRATE_POSSIBLY_FOR_METAL_DETECTOR) {
-                debris_31AAB0(moby, &vars->velocity, 0, 0.0f, 0.0f, 3, 3, 5, 2.0f, 1.0f, 4.0f, 1.0f, 2, 7.0f, 0, 1, -1,
-                              0);
+                spawn_explosion(moby, &vars->velocity, 0, 0.0f, 0.0f, 3, 3, 5, 2.0f, 1.0f, 4.0f, 1.0f, 2, 7.0f, 0, 1,
+                                -1, 0);
                 remove_31AAB0(moby, spawner_vars);
             }
             qcopy(&probe, &moby->pos);
@@ -2785,7 +2777,8 @@ void update_swooper(struct Moby *moby) {
             }
             break;
         case 3:
-            debris_31AAB0(moby, &vars->velocity, 0, 0.0f, 0.0f, 3, 3, 5, 2.0f, 1.0f, 4.0f, 1.0f, 2, 7.0f, 0, 1, -1, 0);
+            spawn_explosion(moby, &vars->velocity, 0, 0.0f, 0.0f, 3, 3, 5, 2.0f, 1.0f, 4.0f, 1.0f, 2, 7.0f, 0, 1, -1,
+                            0);
             remove_31AAB0(moby, spawner_vars);
             break;
         case 4:
@@ -2806,12 +2799,8 @@ typedef struct {
 } MobyHit_31B318;
 extern float g_frame_time_r2 __asm__("D_0015EE6C") MACRO_ADDR;
 
-extern void break_rand_vec_31B318(void *, f32, f32) __asm__("func_L00_00258DB0");
 extern struct Moby *func_L01_002F9908(void *, void *, s32, f32, s32, f32, f32, f32, s32);
 extern MobyHit_31B318 *hit_31B318(struct Moby *, s32, s32) __asm__("func_L00_0025B478");
-
-extern void debris_31B318(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
-                          int, int, int, int) __asm__("func_L00_0025F4A8");
 
 /* Breakable prop: when hit by moby 0x415 in state 8 or 0x452 in state 9 with hit kind 1.000123, scatters its shard
  * count of pieces over its rotated extent, spawns debris and removes itself.
@@ -2838,7 +2827,7 @@ void process_breakable_prop_hit(struct Moby *m) {
             p.y = random_float_between(-ext.y, ext.y) * 0.5f;
             p.z = random_float_between(1.5f, ext.z);
             FastVecAdd(&p, &p, &m->pos);
-            break_rand_vec_31B318(&vel, g_frame_time_r2 * 5.0f, g_frame_time_r2 * 10.0f);
+            rand_vec(&vel, g_frame_time_r2 * 5.0f, g_frame_time_r2 * 10.0f);
             if (vel.z < 0.0f)
                 vel.z = -vel.z;
             if (vel.z < g_frame_time_r2 + g_frame_time_r2)
@@ -2847,7 +2836,7 @@ void process_breakable_prop_hit(struct Moby *m) {
             scale = random_float_between(0.41f, 0.5f);
             spawn_debris_moby(&p, &vel, cls, scale, rand_range(0x32, 0x50), 1.0f, 1.0f, 0.75f, 0);
         }
-        debris_31B318(m, &h->pos, h, 3.0f, 1.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, 1.0f, 0, 15.0f, 1, 1, -1, 0);
+        spawn_explosion(m, &h->pos, h, 3.0f, 1.0f, 10, 3, 16, 4.0f, 2.0f, 9.0f, 1.0f, 0, 15.0f, 1, 1, -1, 0);
         DeleteMoby(m);
         return;
     }
@@ -2879,17 +2868,11 @@ typedef struct Gun {
     unsigned char kind;
 } Gun;
 
-extern void *MobyGetHitMessage_r2(void *, int, int) __asm__("func_L00_0025B478");
 extern int ComputeHitResponse_r3(void *, void *, void *, int, int *, float *, int, int) __asm__("func_L00_0025B4D0");
 extern int Moby_PlaySound_r2(int, int, void *) __asm__("func_0022ED80");
-extern void SetDeathBits_r3(void *, int, int) __asm__("func_L00_002584A8");
-
-extern void RerollEffectCounter_r2(void *, void *) __asm__("func_L00_0025E4B0");
-
-extern void StepColorFade_r2(void *, void *) __asm__("func_L00_0025E590");
+extern void SetDeathBits(void *, int, int);
 
 extern void *func_L07_0030C918(void *, void *, void *, int);
-extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
 extern Moby *level_mobys_r __asm__("D_L07_00160058") MACRO_ADDR;
 extern char gHeroPos_r[] __asm__("D_0013F4D0");
@@ -2911,14 +2894,14 @@ void GunMoby_HandleHit(Moby *moby) {
         return;
     }
     hit = data->hit;
-    ComputeHitResponse_r3(moby, MobyGetHitMessage_r2(moby, 0x230000, 0), hit, 0, &cnt, 0, 0, 4);
+    ComputeHitResponse_r3(moby, MobyGetHitMessage(moby, 0x230000, 0), hit, 0, &cnt, 0, 0, 4);
     if (moby->state < 2 && cnt >= 2) {
         Moby_PlaySound_r2(1, 0, moby);
-        SetDeathBits_r3(moby, 0, -1);
+        SetDeathBits(moby, 0, -1);
         moby->flags &= 0xEFFF;
         data->b67 = 0xFA;
         data->h26 = scale_ticks(60);
-        RerollEffectCounter_r2(moby, data->path);
+        RerollEffectCounter(moby, data->path);
         data->timer = scale_ticks(60);
         if (moby->prev_seq != 2) {
             MobyBlendAnimation(moby, 2, 0, 5);
@@ -2926,7 +2909,7 @@ void GunMoby_HandleHit(Moby *moby) {
         moby->state = 2;
     }
     moby->hit_slot = 0xFF;
-    StepColorFade_r2(moby, data->path);
+    StepColorFade(moby, data->path);
 
     switch (moby->state) {
         case 0:
@@ -3013,7 +2996,7 @@ void GunMoby_HandleHit(Moby *moby) {
             }
             data->timer = scale_ticks(6);
             {
-                float dist = vec_distance_xy_r(((float *)&moby->pos), gHeroPos_r);
+                float dist = vec_distance_xy(((float *)&moby->pos), gHeroPos_r);
                 if (55.0f < dist || (35.0f < dist && moby->visible == 0)) {
                     if (80.0f < dist) {
                         data->timer = data->timer * 3;

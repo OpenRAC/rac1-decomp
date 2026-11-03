@@ -2279,7 +2279,6 @@ typedef struct {
 
 extern int get_first_moby_in_group_r(int *, int, int, int) __asm__("func_L00_0025A208");
 extern int get_next_moby_in_group_r(int *, int, int, int) __asm__("func_L00_0025A2F0");
-extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
 extern int blarg_moby_list_r[] __asm__("D_L06_001AC500");
 
@@ -2300,7 +2299,7 @@ void select_nearest_gadgebot_interaction_target(void *moby_arg) {
                 ((Moby *)list)->oclass == MOBY_CLASS_GADGEBOT_ABSORPTION_TRIGGER ||
                 ((Moby *)list)->oclass == MOBY_CLASS_RELOCATION_TRIGGER_WITH_SOUND ||
                 ((Moby *)list)->oclass == MOBY_CLASS_GADGEBOT_ABSORPTION_TARGET) {
-                if (!(best < vec_distance_xy_r(&moby->pos, &((Moby *)list)->pos)) &&
+                if (!(best < vec_distance_xy(&moby->pos, &((Moby *)list)->pos)) &&
                     !(0.2f < FastAbsF(moby->pos.z - ((Moby *)list)->pos.z)) &&
                     !(1.5f < FastAbsF(moby->pos.z - ((Moby *)list)->pos.z))) {
                     if ((((Moby *)list)->oclass != MOBY_CLASS_GADGEBOT_ABSORPTION_TRIGGER &&
@@ -2308,7 +2307,7 @@ void select_nearest_gadgebot_interaction_target(void *moby_arg) {
                         ((Moby *)list)->state != 2) {
                         if (((Moby *)list)->oclass != MOBY_CLASS_RELOCATION_TRIGGER_WITH_SOUND ||
                             *(int *)((void *)((Moby *)list)->pvars) != -1) {
-                            best = vec_distance_xy_r(&moby->pos, &((Moby *)list)->pos);
+                            best = vec_distance_xy(&moby->pos, &((Moby *)list)->pos);
                             d->target = (Moby *)list;
                         }
                     }
@@ -2323,7 +2322,7 @@ void select_nearest_gadgebot_interaction_target(void *moby_arg) {
                 candidate->oclass == MOBY_CLASS_GADGEBOT_ABSORPTION_TRIGGER ||
                 candidate->oclass == MOBY_CLASS_RELOCATION_TRIGGER_WITH_SOUND ||
                 candidate->oclass == MOBY_CLASS_GADGEBOT_ABSORPTION_TARGET) {
-                if (!(best < vec_distance_xy_r(&moby->pos, &candidate->pos)) &&
+                if (!(best < vec_distance_xy(&moby->pos, &candidate->pos)) &&
                     !(0.2f < FastAbsF(moby->pos.z - candidate->pos.z)) &&
                     !(1.5f < FastAbsF(moby->pos.z - candidate->pos.z))) {
                     if ((candidate->oclass != MOBY_CLASS_GADGEBOT_ABSORPTION_TRIGGER &&
@@ -2331,7 +2330,7 @@ void select_nearest_gadgebot_interaction_target(void *moby_arg) {
                         candidate->state != 2) {
                         if (candidate->oclass != MOBY_CLASS_RELOCATION_TRIGGER_WITH_SOUND ||
                             *(int *)((void *)candidate->pvars) != -1) {
-                            best = vec_distance_xy_r(&moby->pos, &candidate->pos);
+                            best = vec_distance_xy(&moby->pos, &candidate->pos);
                             d->target = candidate;
                         }
                     }

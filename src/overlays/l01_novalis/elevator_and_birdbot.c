@@ -97,7 +97,6 @@ typedef struct {
 } ScrollLayer;
 extern union PacketCursor D_L01_00161240 MACRO_ADDR;
 extern u8 D_L01_001CAF00[];
-extern s32 FastBSphereCheck_r(void *, f32) __asm__("func_L00_00200290");
 
 void func_L01_002BA898_r(s32 count, ScrollLayer *l) __asm__("func_L01_002BA898");
 
@@ -132,7 +131,7 @@ void func_L01_002BA898_r(s32 count, ScrollLayer *l) {
         else if (l->v1 < -1.0f)
             l->v1 += 1.0f;
         l->frame = (l->frame + l->frame_step) & 0xFFFFFF;
-        vis = FastBSphereCheck_r(l->bounds, 400.0f);
+        vis = FastBSphereCheck(l->bounds, 400.0f);
         if (vis == -1)
             continue;
         l01_packet.tag->tag = 0x30000007;
@@ -2938,9 +2937,6 @@ extern short D_L01_00161C8C;
 extern short D_L01_00161C90;
 extern f32 g_frame_time_sq_r __asm__("D_0015EE70") MACRO_ADDR;
 extern f32 spring_axis_to_r(f32 *, f32, f32 *, f32, f32, f32) __asm__("func_L01_002F95A0");
-extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-
-extern void vec_scale_to_length_r(void *, void *, f32) __asm__("func_L00_001FF4B0");
 
 /* Hovering enemy update: springs its position toward a home point on each axis, keeps its distance to the player, and steers toward a target with the shared turn helper. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/l01/unclassified_002b96e0.c, FUN_L01_002f8268. */
 void water_lily_update(HoverMoby *m) {
@@ -2972,7 +2968,7 @@ void water_lily_update(HoverMoby *m) {
             spring_axis_to_r(&m->pos.v.y, v->home_y, &v->vel_y,
                              *(float *)&water_lily_spring_velocity_adjustment_scale * g_frame_time_sq_r,
                              *(float *)&water_lily_spring_damping, 3.0f);
-            if (vec_distance_xy_r(&m->pos, &g_hero_r2.motion.pos) < *(float *)&water_lily_hero_separation_radius) {
+            if (vec_distance_xy(&m->pos, &g_hero_r2.motion.pos) < *(float *)&water_lily_hero_separation_radius) {
                 if (FastAbsF(m->pos.v.z - g_hero_r2.motion.pos.f[2]) < 0.7f) {
                     ang = fast_atan2(m->pos.v.x - g_hero_r2.motion.pos.f[0], m->pos.v.y - g_hero_r2.motion.pos.f[1]);
                     m->pos.v.x = FastCos(ang) * *(float *)&water_lily_hero_separation_radius;
@@ -2989,7 +2985,7 @@ void water_lily_update(HoverMoby *m) {
             if (FastVecDist(&old, &m->pos) > *(float *)&water_lily_max_horizontal_speed * g_frame_time_r2) {
                 FastVecSub(&d, &m->pos, &old);
                 step.q = d.q;
-                vec_scale_to_length_r(&step, &step, *(float *)&water_lily_max_horizontal_speed * g_frame_time_r2);
+                vec_scale_to_length(&step, &step, *(float *)&water_lily_max_horizontal_speed * g_frame_time_r2);
                 FastVecAdd(&d, &old, &step);
                 m->pos.q = d.q;
             }

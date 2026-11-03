@@ -65,10 +65,6 @@ extern Coll D_L04_00174040;
 extern char eudora_coll_resolved_pos_r[] __asm__("D_L04_00174070");
 extern char D_0013F450[];
 
-extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
-
-extern int coll_sphere_r(float, void *, int, void *) __asm__("func_L00_001F10E0");
-
 extern int func_001FA898(float);
 extern int find_nearest_point_index_xy_r(Moby *, void *, int) __asm__("func_L04_001F2F68");
 
@@ -124,16 +120,16 @@ void steer_child_moby(Moby **list, int n, Moby *m, Steer *c, float *f) {
                 s = 10000.0f;
             }
         }
-        vec_scale_to_length_r(&w, &w, s);
+        vec_scale_to_length(&w, &w, s);
         FastVecAdd(c, c, &w);
     }
     if (f[0] != 0.0f) {
-        vec_scale_to_length_r(&w, &c->dir, f[0]);
+        vec_scale_to_length(&w, &c->dir, f[0]);
         FastVecAdd(c, c, &w);
     }
     if (c->target == m) {
         qcopy(&w, &c->pos);
-        vec_scale_to_length_r(&w, &w, f[1]);
+        vec_scale_to_length(&w, &w, f[1]);
         FastVecAdd(c, c, &w);
     } else {
         if (c->path != -1) {
@@ -169,7 +165,7 @@ void steer_child_moby(Moby **list, int n, Moby *m, Steer *c, float *f) {
             if (flag == 0) {
                 FastVecSub(&w, &w, &m->pos);
                 s = FastVecLength(&w);
-                vec_scale_to_length_r(&w, &w, s * (s * s * f[2]));
+                vec_scale_to_length(&w, &w, s * (s * s * f[2]));
                 FastVecAdd(c, c, &w);
             }
         }
@@ -177,7 +173,7 @@ void steer_child_moby(Moby **list, int n, Moby *m, Steer *c, float *f) {
             FastVecSub(&w, &c->target->pos, &m->pos);
             if (FastVecLength(&w) < d) {
                 s = FastVecLength(&w);
-                vec_scale_to_length_r(&w, &w, s * (s * s * f[1]));
+                vec_scale_to_length(&w, &w, s * (s * s * f[1]));
                 FastVecAdd(c, c, &w);
             }
         }
@@ -187,7 +183,7 @@ void steer_child_moby(Moby **list, int n, Moby *m, Steer *c, float *f) {
             w.z = c->point->z - m->pos.z;
             if (FastVecLength(&w) < d) {
                 s = FastVecLength(&w);
-                vec_scale_to_length_r(&w, &w, s * (s * s * f[1]));
+                vec_scale_to_length(&w, &w, s * (s * s * f[1]));
                 FastVecAdd(c, c, &w);
             }
         }
@@ -223,7 +219,7 @@ void steer_child_moby(Moby **list, int n, Moby *m, Steer *c, float *f) {
                     g = 1000.0f;
                 }
                 FastVecSub(&w, &m->pos, &obj->pos);
-                vec_scale_to_length_r(&w, &w, g);
+                vec_scale_to_length(&w, &w, g);
                 FastVecAdd(c, c, &w);
             }
         }
@@ -251,10 +247,10 @@ void steer_child_moby(Moby **list, int n, Moby *m, Steer *c, float *f) {
             }
         }
     } else {
-        if (coll_sphere_r(f[4], &m->pos, 4, m) != 0) {
+        if (coll_sphere(f[4], &m->pos, 4, m) != 0) {
             FastVecSub(&w, eudora_coll_resolved_pos_r, &m->pos);
             w.z = w.z + f[3];
-            vec_scale_to_length_r(&w, &w, f[3]);
+            vec_scale_to_length(&w, &w, f[3]);
             FastVecAdd(c, c, &w);
         }
     }
@@ -262,7 +258,7 @@ void steer_child_moby(Moby **list, int n, Moby *m, Steer *c, float *f) {
         vec_set_length_xy(c, c, f[6]);
         c->vel.z = 0.0f;
     } else {
-        vec_scale_to_length_r(c, c, f[6]);
+        vec_scale_to_length(c, c, f[6]);
         c->vel.z = c->vel.z / c->f48;
     }
     if (FastDecTimer(&c->timer) != 0) {
@@ -279,7 +275,7 @@ void steer_child_moby(Moby **list, int n, Moby *m, Steer *c, float *f) {
     if (mob != 0) {
         FastVecSub(&w, &m->pos, &mob->pos);
         if (c->f48 != 0.0f) {
-            vec_scale_to_length_r(c, &w, f[6]);
+            vec_scale_to_length(c, &w, f[6]);
         } else {
             vec_set_length_xy(c, &w, f[6]);
         }

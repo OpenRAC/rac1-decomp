@@ -1205,9 +1205,6 @@ void func_L04_002C2F00_r(struct Moby *m) {
     Sound_SetPitchBend_r2(v->voice, truncate_float_to_s32_r(v->pitch));
 }
 
-extern void func_L00_0025F4A8_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
-                                  float, int, int, int, int) __asm__("func_L00_0025F4A8");
-
 typedef struct {
     u8 pad_000[0x238];
     s32 engine_voice_index;
@@ -1246,8 +1243,8 @@ void spawn_circular_saw_destruction_effects(char *moby) {
     data->engine_voice_index = invalid_voice_index;
     SetDeathBits(moby, 0, -1);
     Moby_GetJointWorldPos(moby, 5, explosion_position);
-    func_L00_0025F4A8_alt(moby, vec, explosion_position, 0.0f, 0.0f, 10, 3, 4, 2.0f, 1.0f, 100000.0f, 1.0f, -1, 15.0f,
-                          1, 1, invalid_voice_index, 0);
+    spawn_explosion(moby, vec, explosion_position, 0.0f, 0.0f, 10, 3, 4, 2.0f, 1.0f, 100000.0f, 1.0f, -1, 15.0f, 1, 1,
+                    invalid_voice_index, 0);
     Moby_PlaySound(1, 0, moby);
 }
 
@@ -1511,8 +1508,6 @@ typedef struct {
     int f18;
 } G_35F0;
 
-extern void *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
-
 extern int coll_sphere_mobys_v(void *, int, void *, void *, float) __asm__("func_L00_001F2BE8");
 
 extern float compute_circular_saw_flock_steering(void *, void *, float);
@@ -1579,7 +1574,7 @@ void circular_saw_enemy_update(M_35F0 *moby) {
         float ang;
 
         dmg = 0.0f;
-        hit = MobyGetHitMessage_r(moby, 0x210000, 0);
+        hit = MobyGetHitMessage(moby, 0x210000, 0);
         r = ComputeHitResponse(moby, hit, &data->hp, 0, &tmp, &dmg, 0, 4);
         if (hit != 0 && moby->state != 0 && data->f14D == 0) {
             if (hit->att != 0) {

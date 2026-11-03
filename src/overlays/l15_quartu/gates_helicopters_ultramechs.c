@@ -2675,10 +2675,6 @@ extern Res *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
 
 extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
 
-extern void vec_scale_to_length_r2(void *, void *, float) __asm__("func_L00_001FF4B0");
-
-extern void spawn_explosion_r2(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
-                               float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern int Sound_PlayClassSound_r(int, int, void *, int) __asm__("func_L00_0028EF68");
 extern int coll_sphere_mobys_r(void *, int, void *, void *, float) __asm__("func_L00_001F2BE8");
 
@@ -2721,7 +2717,7 @@ void PoisonVesselUpdate(Moby *moby) {
                     moby->command = 1;
                     qcopy(&moby->pos, &((Tb *)quartu_coll_hit)->v20);
                     vec_reflect(&s30, data, &((Tb *)quartu_coll_hit)->v40);
-                    vec_scale_to_length_r2(&s30, &s30, g_frame_time_r + g_frame_time_r);
+                    vec_scale_to_length(&s30, &s30, g_frame_time_r + g_frame_time_r);
                 }
             }
             break;
@@ -2751,7 +2747,7 @@ void PoisonVesselUpdate(Moby *moby) {
     }
 
     if (moby->command != 0) {
-        spawn_explosion_r2(moby, data, 0, 0.0f, 0.0f, 3, 3, 5, 2.0f, 1.0f, 4.0f, 1.0f, -1, 7.0f, 0, 1, -1, 0);
+        spawn_explosion(moby, data, 0, 0.0f, 0.0f, 3, 3, 5, 2.0f, 1.0f, 4.0f, 1.0f, -1, 7.0f, 0, 1, -1, 0);
         Sound_PlayClassSound_r(0, 0, moby, 0x79);
         ret = coll_sphere_mobys_r(&moby->pos, 0x10, moby, 0, 2.0f);
         s40.q = (*(u128 *)&moby->pos);

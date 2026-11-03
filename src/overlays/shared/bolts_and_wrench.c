@@ -858,17 +858,6 @@ extern KillFlags D_L00_001BB5C0;
 extern unsigned char D_L00_0015FD48[] MACRO_ADDR;
 extern unsigned char D_0014C150[][16];
 
-extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
-
-extern int coll_line_r(void *, void *, int, int, int) __asm__("func_L00_001EFFF0");
-
-extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
-extern void *GetFlaggedPvarWord_r(void *) __asm__("func_L00_00261448");
-
-extern int coll_sphere_r(float, void *, int, void *) __asm__("func_L00_001F10E0");
-
-extern float vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
-
 extern int truncate_float_to_s32_r2(float) __asm__("func_001FA898");
 
 extern void update_bolt_grounded_pose_r(void *, void *, void *) __asm__("func_L00_002A8088");
@@ -915,19 +904,19 @@ void bolt_update(Moby *m) {
             if (random_integer_below(2) == 0) {
                 d->f55 |= 1;
             }
-            vec_scale_to_length_r(u.s.a, ((float *)&m->rot_row2), 0.2f);
+            vec_scale_to_length(u.s.a, ((float *)&m->rot_row2), 0.2f);
             FastVecAdd(u.s.a, u.s.a, ((float *)&m->pos));
-            vec_scale_to_length_r(u.s.b, ((float *)&m->rot_row2), -3.0f);
+            vec_scale_to_length(u.s.b, ((float *)&m->rot_row2), -3.0f);
             FastVecAdd(u.s.b, u.s.b, ((float *)&m->pos));
-            r = coll_line_r(u.s.a, u.s.b, 0x22, 0, 0);
+            r = coll_line(u.s.a, u.s.b, 0x22, 0, 0);
             if (d->f54 == 0 && r != 0) {
                 CollisionHit *c;
                 qcopy(d->pos, coll_hit_result_r.point.f);
                 c = &coll_hit_result_r;
                 clear_u64_value(d->ang);
                 d->ang[2] = fast_atan2(c->normal.f[0], c->normal.f[1]);
-                d->ang[1] = fast_atan2(c->normal.f[2], vec_length_xy_r(c->normal.f));
-                if (((Moby *)c->moby) != 0 && GetFlaggedPvarWord_r((Moby *)c->moby) != 0) {
+                d->ang[1] = fast_atan2(c->normal.f[2], vec_length_xy(c->normal.f));
+                if (((Moby *)c->moby) != 0 && moby_get_ride_transform((Moby *)c->moby) != 0) {
                     d->held = (Moby *)c->moby;
                     convert_pose_to_reference_local(m, d->held, d, d->ang, d, d->ang);
                 }
@@ -984,7 +973,7 @@ void bolt_update(Moby *m) {
                     break;
                 }
             }
-            if (coll_sphere_r(r, ((float *)&m->pos), 0x22, m) == 0) {
+            if (coll_sphere(r, ((float *)&m->pos), 0x22, m) == 0) {
                 break;
             }
             {
@@ -993,28 +982,28 @@ void bolt_update(Moby *m) {
                 c = &coll_hit_result_r;
                 clear_u64_value(d->ang);
                 d->ang[2] = fast_atan2(c->normal.f[0], c->normal.f[1]);
-                d->ang[1] = fast_atan2(c->normal.f[2], vec_length_xy_r(c->normal.f));
+                d->ang[1] = fast_atan2(c->normal.f[2], vec_length_xy(c->normal.f));
             }
             FastVecSub(u.s.a, ((float *)&m->pos), coll_hit_result_r.point.f);
             vec_reflect(d->vel, d->vel, u.s.a);
-            dist = vec_distance_xy_r(((float *)&m->pos), &((struct Hero *)g_hero)->motion.pos);
+            dist = vec_distance_xy(((float *)&m->pos), &((struct Hero *)g_hero)->motion.pos);
             {
                 Hero *h = (Hero *)g_hero;
                 if (dist < h->reach_distance && FastAbsF(m->pos.z - h->motion.pos.f[2]) < h->reach_height) {
                     if (h->health.hp != 0) {
-                        vec_scale_to_length_r(d->vel, d->vel, random_float_between(3.0f, 7.0f) * g_frame_time_r);
+                        vec_scale_to_length(d->vel, d->vel, random_float_between(3.0f, 7.0f) * g_frame_time_r);
                         begin_bolt_attraction_r(m, h->moby, 0.0f, 0.0f);
                     }
                     break;
                 }
             }
-            if (fast_atan2(u.s.a[2], vec_length_xy_r(u.s.a)) < 0.7853982f) {
+            if (fast_atan2(u.s.a[2], vec_length_xy(u.s.a)) < 0.7853982f) {
                 CollisionHit *c = &coll_hit_result_r;
-                if (fast_atan2(c->normal.f[2], vec_length_xy_r(c->normal.f)) < 0.7853982f) {
+                if (fast_atan2(c->normal.f[2], vec_length_xy(c->normal.f)) < 0.7853982f) {
                     m->state = 2;
                     d->f56 = d->f57 =
                         truncate_float_to_s32_r2(multiply_global_factor(random_float_between(30.0f, 40.0f)));
-                    if (((Moby *)c->moby) != 0 && GetFlaggedPvarWord_r((Moby *)c->moby) != 0) {
+                    if (((Moby *)c->moby) != 0 && moby_get_ride_transform((Moby *)c->moby) != 0) {
                         d->held = (Moby *)c->moby;
                         convert_pose_to_reference_local(m, d->held, d, d->ang, d, d->ang);
                     }
@@ -1045,7 +1034,7 @@ void bolt_update(Moby *m) {
         }
         case 3: {
             float dist;
-            dist = vec_distance_xy_r(((float *)&m->pos), &((struct Hero *)g_hero)->motion.pos);
+            dist = vec_distance_xy(((float *)&m->pos), &((struct Hero *)g_hero)->motion.pos);
             {
                 Hero *h = (Hero *)g_hero;
                 if (dist < h->reach_distance && FastAbsF(m->pos.z - h->motion.pos.f[2]) < h->reach_height) {
@@ -1098,22 +1087,22 @@ void bolt_update(Moby *m) {
                 }
             }
             if (flag) {
-                vec_scale_to_length_r(u.s.a, &((struct Hero *)g_hero)->rot_matrix[8], g_frame_time_r * 7.0f);
+                vec_scale_to_length(u.s.a, &((struct Hero *)g_hero)->rot_matrix[8], g_frame_time_r * 7.0f);
                 FastVecSub(u.s.b, u.s.a, d->vel);
                 ClampVectorLength(u.s.b, g_frame_time_sq_r * 50.0f);
                 FastVecAdd(d->vel, d->vel, u.s.b);
             } else {
                 float lim = g_frame_time_sq_r * 10.0f;
                 if (lim < FastVecLength(d->vel)) {
-                    vec_scale_to_length_r(u.s.a, d->vel, lim);
+                    vec_scale_to_length(u.s.a, d->vel, lim);
                     FastVecSub(d->vel, d->vel, u.s.a);
                 }
                 ApproachValue_r(&d->f64, g_frame_time_r * 48.0f, g_frame_time_sq_r * 16.0f);
                 {
                     Hero *h = (Hero *)g_hero;
                     if (g_frame_time_r * 8.0f < h->motion.speed_xy) {
-                        vec_scale_to_length_r(u.s.b, h->motion.displacement.f,
-                                              (h->motion.speed_xy - g_frame_time_r * 8.0f) * 0.5f);
+                        vec_scale_to_length(u.s.b, h->motion.displacement.f,
+                                            (h->motion.speed_xy - g_frame_time_r * 8.0f) * 0.5f);
                         FastVecAdd(((float *)&m->pos), ((float *)&m->pos), u.s.b);
                     }
                 }
@@ -1132,7 +1121,7 @@ void bolt_update(Moby *m) {
                     matrix_mul_vec3(u.t.e, u.t.e, md);
                     matrix_mul_vec3(u.t.e, u.t.e, g_hero);
                 }
-                vec_scale_to_length_r(u.t.e, u.t.e, d->f64);
+                vec_scale_to_length(u.t.e, u.t.e, d->f64);
                 FastVecAdd(((float *)&m->pos), ((float *)&m->pos), u.t.e);
                 break;
             }
@@ -1393,8 +1382,6 @@ typedef struct {
 } BoltVars;
 extern void *g_hero_moby;
 
-extern void vec_scale_to_length_r2(void *, void *, float) __asm__("func_L00_001FF4B0");
-
 /* Spawns a bolt worth `value` (1, 5, 20 or 50) at `pos` with velocity `vel`, coloured like `src`, spinning about vel x
    (src - pos). flags & 2 sends it toward D_001413D0 (& 0x10 with a random angle). When no moby is free the value goes
    straight into the bolt count.
@@ -1463,7 +1450,7 @@ struct Moby *spawn_bolt_by_value(struct Moby *src, void *pos, void *vel, int fla
         spin = random_float_between(0.0f, D_L00_00161470_A86D8) * 0.017453292f * g_frame_time;
         FastVecSub(tmp, &src->pos, &m->pos);
         FastVecCross(dir, v->vel, tmp);
-        vec_scale_to_length_r2(v->spin, dir, 1.0f);
+        vec_scale_to_length(v->spin, dir, 1.0f);
         build_quaternion_from_axis_angle(v->spin, v->spin, spin);
         if (flags & 2) {
             angle = 0.0f;

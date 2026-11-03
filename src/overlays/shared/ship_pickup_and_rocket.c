@@ -361,11 +361,8 @@ typedef struct Tex {
     unsigned char *p5C;
 } Tex;
 
-extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
-
 extern float SteerAngleWithVelocity_v(float *, float, float *, float, float, float) __asm__("func_L00_0025CE58");
 
-extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern float D_0015EE70 MACRO_ADDR;
 extern Tex D_L13_001B2680;
@@ -389,8 +386,8 @@ void update_ship_rocket(Moby *m) {
     dir.y = random_float_between(-1.0f, 1.0f);
     dir.z = random_float_between(-1.0f, 1.0f);
     vel = dir;
-    vec_scale_to_length_r(&vel, &vel, random_float_between(0.1f, 0.2f) * g_frame_time_r);
-    vec_scale_to_length_r(&tmp, d, -random_float_between(g_frame_time_r * 0.1f, g_frame_time_r));
+    vec_scale_to_length(&vel, &vel, random_float_between(0.1f, 0.2f) * g_frame_time_r);
+    vec_scale_to_length(&tmp, d, -random_float_between(g_frame_time_r * 0.1f, g_frame_time_r));
     FastVecAdd(&vel, &vel, &tmp);
     p = PartType44Spawn(&*(Vec4A *)&m->pos, (float *)&vel, scale_ticks(6), 0x7F, 0xB0B0B0, 3, 40000.0f, 1000.0f, 1.0f,
                         -0.0004f, 0.0f);
@@ -398,7 +395,7 @@ void update_ship_rocket(Moby *m) {
         p[3] = 0x48;
     }
     for (t = 0.0f; t < 1.0f; t += 0.33333334f) {
-        vec_scale_to_length_r(&tmp, d, random_float_between(t, t + 0.33333334f) * d->speed);
+        vec_scale_to_length(&tmp, d, random_float_between(t, t + 0.33333334f) * d->speed);
         FastVecAdd(&tmp, &tmp, &*(Vec4A *)&m->pos);
         p = PartType44Spawn(&tmp, (float *)&vel, scale_ticks(0x3C), 0x7F, 0x606060, 3, 40000.0f, 1000.0f, 1.0f,
                             -0.0002f, 0.0f);
@@ -447,7 +444,7 @@ void update_ship_rocket(Moby *m) {
         DeleteMoby(m);
         return;
     }
-    if (fast_dec_timer_r(&d->timer) != 0) {
+    if (fast_dec_timer(&d->timer) != 0) {
         DeleteMoby(m);
     }
 }

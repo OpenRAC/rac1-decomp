@@ -147,8 +147,8 @@ s32 update_menu_grid_selection(MenuScreen *grid) {
             if (menu_system_C840.equipped[slot] == entry->id && slot != 0 && slot != 3) {
                 menu_system_C840.equipped[slot] = 0;
             } else if (entry->id == 0x18) {
-                if (item_count_C840(0x18) != 0 && menu_system_C840.state == 3) {
-                    next_columns = item_count_C840(0x18);
+                if (noop_callback_p(0x18) != 0 && menu_system_C840.state == 3) {
+                    next_columns = noop_callback_p(0x18);
                     hero_C840.unk1FF5 = 1;
                     total = hero_C840.ammo_capacity + next_columns;
                     if (total > 6) {

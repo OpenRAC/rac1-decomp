@@ -7,7 +7,7 @@ void draw_moby_three_scaled_two_tint_quads(struct Moby *m) {
     int i = 0;
     int color;
 
-    pk.b = GetEffectTex(0xB);
+    pk.b = GetEffectTex_v(0xB);
     pk.c = 0x0000FF9000000260ULL;
     pk.d = 0x8000000048ULL;
     pk.a = 0;

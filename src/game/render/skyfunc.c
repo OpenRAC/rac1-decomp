@@ -33,7 +33,6 @@ extern f32 D_00160500_2BEB0 SDATA(D_00160500);
 extern u8 sky_matrix_r[] __asm__("D_001D9A70");
 extern u8 sky_shell_translation_r[] __asm__("D_00160560") MACRO_ADDR;
 
-extern void scale_vector_r(void *, void *, f32) __asm__("func_001F9C48");
 extern void SkyDrawShell_r(s32) __asm__("func_0022C9A8");
 
 /* Draw the sky shells, each layer scrolling and rotating at its own rate. */
@@ -88,9 +87,9 @@ void DrawSkyShellsScrolling(void) {
             rot[2] = (f32)(n % 10000) * 0.00062831853f - 3.1415927f;
             euler_to_matrix_ee(sky_matrix_r, rot);
             t = sky_matrix_r;
-            scale_vector_r(t, t, scale);
-            scale_vector_r(t + 0x10, t + 0x10, scale);
-            scale_vector_r(t + 0x20, t + 0x20, scale);
+            scale_vector(t, t, scale);
+            scale_vector(t + 0x10, t + 0x10, scale);
+            scale_vector(t + 0x20, t + 0x20, scale);
             qcopy(t + 0x30, sky_shell_translation_r);
         }
         SkyDrawShell_r(i);
@@ -468,10 +467,6 @@ struct Shell {
 extern s32 sky_tile_spr_buffers SDATA(sky_tile_spr_buffers);
 extern s32 D_00160510_2CA00 SDATA(D_00160510);
 extern u8 sky_textured_gs_block[];
-extern void sky_bsphere_check_r(struct SkyTile *tiles, s32 count, u8 *visibility) __asm__("func_0022D7E0");
-extern void DmaToSpr_r(s32 address, s32 qwc, s32 destination) __asm__("func_0020C210");
-extern void DmaToSprSync_r(void) __asm__("func_0020C230");
-extern s32 sky_transform_vertices_r(s32, s32, s32, s32) __asm__("func_0022D2AC");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/sky/sky_draw_shell_textured.c, sky_draw_shell_textured. */
 void func_0022CA00_r(struct Shell *shell) __asm__("func_0022CA00");
@@ -488,7 +483,7 @@ void func_0022CA00_r(struct Shell *shell) {
         return;
     }
 
-    sky_bsphere_check_r(shell->tiles, shell->count, visibility);
+    sky_bsphere_check(shell->tiles, shell->count, visibility);
 
     g_render_packet_cursor_r.words[0] = 0x30000007;
     *(s32 *)((u32)g_render_packet_cursor_r.words + 4) = (s32)sky_textured_gs_block;
@@ -498,27 +493,27 @@ void func_0022CA00_r(struct Shell *shell) {
 
     D_00160510_2CA00 = 1 - D_00160510_2CA00;
     if (visibility[0] == 1) {
-        DmaToSpr_r(shell->tiles[0].address, shell->tiles[0].unkE >> 4, ((&sky_tile_spr_buffers))[D_00160510_2CA00]);
+        DmaToSpr(shell->tiles[0].address, shell->tiles[0].unkE >> 4, ((&sky_tile_spr_buffers))[D_00160510_2CA00]);
     }
 
     for (i = 0; i < shell->count; i++) {
         if (visibility[i] == 1) {
-            DmaToSprSync_r();
+            DmaToSprSync();
         }
 
         next = i + 1;
         D_00160510_2CA00 = 1 - D_00160510_2CA00;
         if (next < shell->count && visibility[next] == 1) {
-            DmaToSpr_r(shell->tiles[next].address, shell->tiles[next].unkE >> 4,
-                       ((&sky_tile_spr_buffers))[D_00160510_2CA00]);
+            DmaToSpr(shell->tiles[next].address, shell->tiles[next].unkE >> 4,
+                     ((&sky_tile_spr_buffers))[D_00160510_2CA00]);
         }
 
         if (visibility[i] == 1) {
             dest = ((&sky_tile_spr_buffers))[1 - D_00160510_2CA00];
             c_dest = dest + shell->tiles[i].unkC;
             a_dest = dest + shell->tiles[i].unkA;
-            if (sky_transform_vertices_r(dest + shell->tiles[i].unk8, 0x70002000, shell->tiles[i].unk4,
-                                         (&shell->tiles[i])->unkC) == 0) {
+            if (sky_transform_vertices(dest + shell->tiles[i].unk8, 0x70002000, shell->tiles[i].unk4,
+                                       (&shell->tiles[i])->unkC) == 0) {
                 sky_build_gif_textured(shell->tiles[i].unk6, c_dest, a_dest, 0x70002000);
             }
         }
@@ -559,9 +554,6 @@ struct Shell_2CC40 {
 extern s32 D_00160510_2CC40 SDATA(D_00160510);
 extern u8 sky_gouraud_gs_block[];
 extern void sky_bsphere_check_r2(struct SkyTile_2CC40 *tiles, s32 count, u8 *visibility) __asm__("func_0022D7E0");
-extern void DmaToSpr_r2(s32 address, s32 qwc, s32 destination) __asm__("func_0020C210");
-extern void DmaToSprSync_r2(void) __asm__("func_0020C230");
-extern s32 sky_transform_vertices_r2(s32, s32, s32, s32) __asm__("func_0022D2AC");
 
 extern s32 VU1_addGSregister_r3(s32, s64) __asm__("func_00234C98");
 
@@ -590,27 +582,27 @@ void func_0022CC40_r(struct Shell_2CC40 *shell) {
 
     D_00160510_2CC40 = 1 - D_00160510_2CC40;
     if (visibility[0] == 1) {
-        DmaToSpr_r2(shell->tiles[0].address, shell->tiles[0].unkE >> 4, ((&sky_tile_spr_buffers))[D_00160510_2CC40]);
+        DmaToSpr(shell->tiles[0].address, shell->tiles[0].unkE >> 4, ((&sky_tile_spr_buffers))[D_00160510_2CC40]);
     }
 
     for (i = 0; i < shell->count; i++) {
         if (visibility[i] == 1) {
-            DmaToSprSync_r2();
+            DmaToSprSync();
         }
 
         next = i + 1;
         D_00160510_2CC40 = 1 - D_00160510_2CC40;
         if (next < shell->count && visibility[next] == 1) {
-            DmaToSpr_r2(shell->tiles[next].address, shell->tiles[next].unkE >> 4,
-                        ((&sky_tile_spr_buffers))[D_00160510_2CC40]);
+            DmaToSpr(shell->tiles[next].address, shell->tiles[next].unkE >> 4,
+                     ((&sky_tile_spr_buffers))[D_00160510_2CC40]);
         }
 
         if (visibility[i] == 1) {
             dest = ((&sky_tile_spr_buffers))[1 - D_00160510_2CC40];
             c_dest = dest + shell->tiles[i].unkC;
             a_dest = dest + shell->tiles[i].unkA;
-            if (sky_transform_vertices_r2(dest + shell->tiles[i].unk8, 0x70002000, shell->tiles[i].unk4,
-                                          (&shell->tiles[i])->unkC) == 0) {
+            if (sky_transform_vertices(dest + shell->tiles[i].unk8, 0x70002000, shell->tiles[i].unk4,
+                                       (&shell->tiles[i])->unkC) == 0) {
                 sky_build_gif_gouraud(shell->tiles[i].unk6, c_dest, a_dest, 0x70002000);
             }
         }

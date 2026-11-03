@@ -326,8 +326,6 @@ typedef struct {
 } O00271d20;
 extern Vec4 collision_hit_point_r __asm__("D_L00_00173F60");
 
-s32 func_L00_001EFFF0_72BC0(void *, void *, s32, s32, s32) __asm__("func_L00_001EFFF0");
-
 void func_L00_002688A8_72BC0n() __asm__("func_L00_002688A8");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering_002712b8.c, FUN_L00_00271d20. */
@@ -344,7 +342,7 @@ void update_timed_line_collision_particle(O00271d20 *o) {
     FastVecAdd(vel, vel, &t);
     if (FastDecTimer(&o->xa)) {
         KillPart(o);
-    } else if (func_L00_001EFFF0_72BC0(vel, pos, 0x10, acc->i[3], 0)) {
+    } else if (coll_line(vel, pos, 0x10, acc->i[3], 0)) {
         o->pos.q = collision_hit_point_r.q;
         o->xa = 0;
     }
@@ -617,7 +615,6 @@ typedef struct {
     Q_2726d8 q;
 } P_2726d8;
 
-extern void vec_scale_to_length_r(void *, void *, f32) __asm__("func_L00_001FF4B0");
 /* Particle update. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/rendering_002712b8.c, FUN_L00_002726d8. */
 void update_moby_point_attached_particle(P_2726d8 *p) {
     Q_2726d8 *q = &p->q;
@@ -639,7 +636,7 @@ void update_moby_point_attached_particle(P_2726d8 *p) {
     } else {
         f = FastVecLength(&t) + r2;
     }
-    vec_scale_to_length_r(&t, &t, f);
+    vec_scale_to_length(&t, &t, f);
     FastVecAdd((u8 *)p + 0x20, &p->pos, &t);
     *(f32 *)((u8 *)p + 0x1C) = sc;
     p->f2C = save;
