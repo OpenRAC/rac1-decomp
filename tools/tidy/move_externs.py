@@ -40,6 +40,7 @@ INCLUDE_LINE = re.compile(r'^#include\s+"([^"]+)"', re.M)
 
 # `void f(p)\n    char *p;\n{`: a prototype in a header would change how this definition compiles.
 OLD_STYLE = re.compile(r"^(?!extern\b|typedef\b)[A-Za-z_][^;{}=\n]*?\b(\w+)\s*\(\s*\w+(?:\s*,\s*\w+)*\s*\)\s*\n\s*[A-Za-z_][^;{}()]*;", re.M)
+INNER_EXTERN = re.compile(r"\bextern\b[^;{}]*;")
 PLAIN = re.compile(r"^(?!extern\b|static\b|typedef\b|return\b|else\b|goto\b)[A-Za-z_][\w \t*]*[ \t*]\w+\s*\([^;{}]*\)\s*;", re.M)
 
 
@@ -240,9 +241,12 @@ def use_variant(text, sources, symbol):
         return None
     names = ({symbol} | sources.aliases.get(symbol, set()))
     edits = []
-    for start, end, statement in declarations(text):
+    # A declaration inside a function gets the label too, or the rename leaves it naming nothing.
+    inner = [(m.start(), m.end(), text[m.start():m.end()]) for m in INNER_EXTERN.finditer(pe.mask(text))
+             if not is_file_scope(text, m.start())]
+    for start, end, statement in sorted(declarations(text) + inner):
         found = pe.declared_names(statement) or []
-        if len(found) == 1 and found[0] in names and not QUALIFIED.search(statement) and is_file_scope(text, start):
+        if len(found) == 1 and found[0] in names and not QUALIFIED.search(statement):
             edits.append((start, end, statement.rstrip(" ;\n\t") + f' __asm__("{label}");'))
     if not edits:
         return None
@@ -435,6 +439,7 @@ def culprits(sources, rel, header, rows, kept, variants):
         return movable - fb.accepted_functions(movable, trial)
     finally:
         (ROOT / "include" / header).write_text(original_header)
+        path.write_text(sources.text[rel], errors="surrogateescape")
 
 
 def split_shared_statements(text):
