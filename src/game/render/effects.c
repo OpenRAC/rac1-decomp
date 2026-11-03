@@ -5,6 +5,7 @@
 #include "game/render/draw.h"
 #include "data/executable.h"
 #include "structs/level_records.h"
+#include "asm_functions/executable.h"
 
 /*
  * effects.cpp in the original source; text 0x1EDFF8-0x1EE9F8.
@@ -38,7 +39,7 @@ typedef struct {
 extern u8 D_00187180[];
 extern ScreenInfo g_screen_extent_r __asm__("D_0013E600");
 extern LensFlare D_00187400;
-extern f32 func_001F9D10(void *, void *);
+
 extern f32 ConvertIntegerToFloat(s32) __asm__("func_001FA888");
 extern s32 truncate_float_to_s32(f32) __asm__("func_001FA898");
 extern float AbsoluteFloat(float input) __asm__("func_001F9B88");
@@ -117,9 +118,6 @@ void draw_lens_flare(void) {
 }
 
 extern int GetEffectTex(int);
-extern float FastCos(float);
-extern float FastSin(float);
-extern float FastAddRots(float, float);
 
 /*
  * Spawns a burst of particle effects around (arg1, arg2) using the source
@@ -255,7 +253,7 @@ extern struct CameraEnvironmentRegion camera_environment_regions[];
 /* A fog preset: an RGB byte triple and four floats (as src/game/render/draw.c reads it). */
 
 extern FogPreset fog_color_red MACRO_ADDR;
-extern s32 find_camera_environment_region(void *, f32 *, s32 *);
+
 extern s32 truncate_float_to_s32(f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/update_camera_environment_from_regions.c,

@@ -22,6 +22,11 @@
 #include "game/system/loaders.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
+#include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
+#include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/hero_animation_slots.h"
 extern int frame_size;
 extern char gSkillPoints[];
 extern char gSpecialItems[];
@@ -139,7 +144,7 @@ extern struct HEnt *menu_preview_mobys[];
 extern char player_camera[];
 
 extern void update_mission_list(void);
-extern void FastVecScale(void *, void *, float);
+
 extern void UpdateViewContext(void);
 
 extern void BuildViewMatrices(void);
@@ -153,7 +158,7 @@ extern void decompress_and_relocate_selected_groups(int);
 extern void transfer_draw_buffer_chunks(int, int, int);
 extern void select_moby_context(int);
 extern Moby_277208 *create_menu_preview_moby(int);
-extern void MobySetAnimation(void *, int, int);
+
 extern void quad_moby_update(void);
 
 /* Open the pause menu: pick its page from the menu state, then set up the menu camera and view. */
@@ -360,8 +365,7 @@ extern void VU1_syncChain(int);
 extern void Hud_SendResidentBank(int, int, int);
 extern void apply_group_entry_adjustment(int);
 extern struct HEnt *delete_moby(struct HEnt *);
-extern int show_health_hud(void);
-extern int scale_ticks(int);
+
 extern int hud_keep_visible(int, int);
 extern int queue_animation_update(int, int, void *, void *, void *, void *, int);
 
@@ -563,7 +567,7 @@ extern void select_moby_context(int);
 extern void UpdateFog(void);
 extern int STUB_printf();
 extern void prepare_target_level_transition(int);
-extern int scale_ticks(int);
+
 extern void FadeToBlack(int);
 extern void PlayMovieEntryIfIdle(int);
 extern void queue_movie_with_game_language(int);
@@ -576,8 +580,7 @@ extern void initialize_pause_menu(void);
 
 extern void process_unlock_code_input(void);
 extern void Moby_PlaySound(int, int, void *);
-extern void MobySetAnimation(void *, int, int);
-extern void update_visible_resident_objects(void);
+
 extern void close_pause_menu(void);
 
 // Page-menu (pause/map/planet-select) per-frame update: state machine over the menu pages.
@@ -789,7 +792,6 @@ extern void ResetGsRegisters(void);
 extern void emit_rgba_draw_packet(int, int, int, int);
 extern void VU1_addGSregister(int, long);
 
-extern void DrawMobyList(int, int);
 extern void project_graphics_bounds(void *, void *, int *, int *, int *, int *);
 extern void draw_hud_rect_blended(int, int, int, int, long, long);
 extern void configure_graphics_render_target_and_projection(int a, int b, int flag, float f);
@@ -798,7 +800,7 @@ extern void draw_hud_rect_depth(int arg0, int arg1, int arg2, int arg3, long arg
 extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
 
 extern void VU1_syncChain(int);
-extern void PatchMobyGifs(void);
+
 extern void SetupGifPaging(int);
 extern void draw_menu_flashing_panel(int);
 extern void DoGifPaging(void);
@@ -1399,7 +1401,6 @@ int find_or_assign_bolt_source_slot(int lvl, int uid) {
     }
     return k;
 }
-extern void copy_memory_by_alignment(int, void *, unsigned short);
 
 /* level data, not declared anywhere else yet */
 typedef struct {
@@ -1491,10 +1492,9 @@ void jet_reset_camera(void *a0, void *a1) {
 extern char current_level_state[] NOT_SDA;
 extern unsigned char *moby_array_start MACRO_ADDR;
 extern unsigned char *level_mobys_end MACRO_ADDR;
-extern void FastMemSet(void *, int, int);
+
 extern void raise_kernel_trap(void);
-extern void enter_hero_vehicle_mode(int, int, char *);
-extern void moby_build_matrix(void *);
+
 extern void euler_rotation_basis(void *, void *);
 
 extern void register_audio_stream_callback(void);

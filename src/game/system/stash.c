@@ -3,6 +3,7 @@
 #include "structs/records.h"
 #include "structs/misc.h"
 #include "core/kernel/kprintf.h"
+#include "asm_functions/executable.h"
 
 /*
  * stash.cpp in the original source; text 0x233FF8-0x234380.
@@ -17,8 +18,6 @@ void initialize_sif_rpc(void) {
 }
 
 extern int sceSifBindRpc(void *client, int id, int mode);
-
-extern int sif_call_rpc(void *, int, int, void *, int, void *, int, void *, void *); /* sceSifCallRpc */
 
 /*
  * Authentic structs from IOPSTASH.IRX STABS debug symbols:
@@ -75,7 +74,6 @@ extern StashBlock stash_entries[];
    RPC), the SIF RPC client at stash_rpc_client_address, and a bump allocator over the
    buffer that hands out up to 0x40 slots in stash_entries. */
 extern StashInfo stash_state;
-extern int sce_sif_set_dma(void *, int);
 
 /* Stash_SendData: DMA arg1 quadwords from arg0 to the stash's next free
    address (sce_sif_set_dma takes a {src, dst, size, mode} record), reserve
@@ -106,7 +104,7 @@ int Stash_SendData(int arg0, int arg1, int arg2, int arg3) {
 }
 
 extern int stash_get_reserved_qwords(unsigned int);
-extern int sif_call_rpc(void *, int, int, void *, int, void *, int, void *, void *); /* sceSifCallRpc */
+
 extern char stash_rpc_client_address[];
 
 /* stash_receive_data(dest, slot, offset, size, mode): size -1 means the

@@ -6,6 +6,7 @@
 #include "common.h"
 #include "structs/moby.h"
 #include "data/level_14.h"
+#include "asm_functions/executable.h"
 
 typedef struct Pkt {
     float corner[4][4];
@@ -17,13 +18,6 @@ typedef struct Pkt {
     long flags;
 } Pkt;
 
-extern void euler_to_matrix(void *, void *);
-extern void matrix_from_basis_rows(void *, void *);
-extern void FastVecSub(void *, void *, void *);
-extern void FastVecAdd(void *, void *, void *);
-extern void matrix_mul_vec3(void *, void *, void *);
-extern void FastVecCross(void *, void *, void *);
-extern void clear_u64_value(void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern float IntToFloat(int);
 u64 GetEffectTex(s32);

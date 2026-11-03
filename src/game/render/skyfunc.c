@@ -9,6 +9,7 @@
 #include "data/executable.h"
 #include "game/math/fastfunc.h"
 #include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
 
 /*
  * skyfunc.cpp in the original source; text 0x22BEB0-0x22CEB8.
@@ -16,13 +17,7 @@
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-extern float FastCos(float);
-extern float FastSin(float);
-
 extern int func_001160D8(void);
-extern float random_angle_radians(void);
-
-extern float FastAddRots(float, float);
 
 LINKER_REMNANT("asm/remnants/text", func_0022BEB0);
 
@@ -135,15 +130,10 @@ struct SkyEffect {
 extern struct LevelSkyEffectData *level_sky_effect_data_r2 __asm__("D_0016055C") MACRO_ADDR;
 extern u8 sky_matrix[];
 
-extern f32 FastCos(f32);
-extern f32 FastSin(f32);
-extern void set_identity_matrix(u8 *);
-extern f32 FastAddRots(f32, f32);
 extern f32 IntToFloat(s32);
 
-extern f32 random_angle_radians();
 extern void SkyDrawShell(s32);
-extern void SkySpriteProc();
+
 extern void VU1_addGSregister_r(s32, u64) __asm__("func_00234C98");
 extern s32 func_001160D8();
 
@@ -273,10 +263,9 @@ extern struct SkyShellSet *level_sky_effect_data_r3 __asm__("D_0016055C") MACRO_
 extern u8 sky_shell_translation_r2[] __asm__("D_00160560") MACRO_ADDR;
 extern struct SkyTransform sky_matrix_r2 __asm__("D_001D9A70");
 extern s32 D_0015EF88 MACRO_ADDR;
-extern void clear_u64_value(f32 *);
+
 extern void scale_vector(void *, void *, f32);
 extern void set_identity_matrix_r2(void *) __asm__("func_001FA190");
-extern void euler_to_matrix_ee(void *, f32 *);
 
 extern void VU1_addGSregister_r2(s32, s64) __asm__("func_00234C98");
 
@@ -394,7 +383,6 @@ void SetupSkyGifPaging(void) {
 extern int *g_render_packet_cursor_p __asm__("D_00161000") MACRO_ADDR;
 extern int *sky_gif_paging_tag_p __asm__("D_00160570") MACRO_ADDR;
 extern int *sky_gif_paging_start MACRO_ADDR;
-extern void flush_pending_texture_uploads(void);
 
 /* DoSkyGifPaging: DoGifPaging's twin (DoGifPaging) for the sky. Pushes
    two 4-word GIF tags (0x20000000 in the first word) onto the g_render_packet_cursor
@@ -434,9 +422,6 @@ void DoSkyGifPaging(void) {
 __asm__(".section .text\n\tnop\n");
 
 LINKER_REMNANT("asm/remnants/text", func_0022C9A0);
-
-extern void SkyDrawShellTextured(void *);
-extern void SkyDrawShellGouraud(void *);
 
 /* Minimal layout for one sky shell: only the flag at +4 is read here. */
 struct SkyShell {
@@ -496,7 +481,6 @@ extern void sky_bsphere_check_r(struct SkyTile *tiles, s32 count, u8 *visibility
 extern void DmaToSpr_r(s32 address, s32 qwc, s32 destination) __asm__("func_0020C210");
 extern void DmaToSprSync_r(void) __asm__("func_0020C230");
 extern s32 sky_transform_vertices_r(s32, s32, s32, s32) __asm__("func_0022D2AC");
-extern void func_0022D520(s32, s32, s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/sky/sky_draw_shell_textured.c, sky_draw_shell_textured. */
 void func_0022CA00_r(struct Shell *shell) __asm__("func_0022CA00");
@@ -587,7 +571,7 @@ extern void sky_bsphere_check_r2(struct SkyTile_2CC40 *tiles, s32 count, u8 *vis
 extern void DmaToSpr_r2(s32 address, s32 qwc, s32 destination) __asm__("func_0020C210");
 extern void DmaToSprSync_r2(void) __asm__("func_0020C230");
 extern s32 sky_transform_vertices_r2(s32, s32, s32, s32) __asm__("func_0022D2AC");
-extern void func_0022D3F8(s32, s32, s32, s32);
+
 extern s32 VU1_addGSregister_r3(s32, s64) __asm__("func_00234C98");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/sky/sky_draw_shell_gouraud.c, sky_draw_shell_gouraud. */

@@ -33,6 +33,7 @@
 #include "enums/hero_state.h"
 #include "enums/moby_class.h"
 #include "structs/voice.h"
+#include "asm_functions/executable.h"
 extern int g_controller_state_no_direction;
 extern Hero g_hero;
 
@@ -193,16 +194,10 @@ extern f32 g_frame_time MACRO_ADDR;
 extern u8 hero_velocity[];
 s32 truncate_float_to_s32(f32);
 void release_and_clear_hero_voice_slots(void);
-void FastVecSub(void *, void *, void *);
-f32 FastAddRots(f32, f32);
-f32 FastCos(f32);
-f32 FastSin(f32);
-void FastVecAdd(void *, void *, void *);
+
 void HeroQuartu_TrySetMoveState(s32, s32);
 void allocate_hero_voice_for_entry(s32, s32);
 void remove_tracked_class_5f3_moby(void);
-void clear_u64_value(void *);
-void hero_knockback(void *, s32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l15/ui_help_002044c8.c, FUN_L15_00208e10. */
 s32 process_hero_incoming_hit(s32 arg) {
@@ -387,77 +382,34 @@ extern float quartu_hero_run_turn_stick_threshold;
 extern float quartu_hero_anim_speed_curve[];
 extern float quartu_hero_anim_frame_speeds[];
 
-extern void build_scaled_hero_move_impulse(float, float);
-
-extern void stick_target(float, int);
-extern void matrix_mul_vec3(void *, void *, void *);
-extern void turn_to(int, float, float, float);
 extern int fast_dec_timer(int *);
-extern int scale_ticks(int);
-
-extern void set_hero_animation(int, int, float);
 
 extern float adjust_hero_animation_speed_for_target_frame(float, float, float, float);
 
-extern void HeroMoveDownAlongNormal(float *, float *, float);
-
 extern float vec_length_xy(void *);
-extern int clamp_vec_length_xy(float, void *, void *);
-
-extern int FastDecTimer(void *);
 
 extern void RippleDisturb(void *, int, int, float, float, float, float);
 extern float SpringAngle(void *, float, void *, int, float, float, float);
-extern float FastSubRots(float, float);
+
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern int PartType34Spawn(void *, void *, float, float);
 
-extern int rand_range(int, int);
-
-extern void BuildSphericalOffset(void *, float, float, float);
-
-extern float FastVecLength(void *);
 extern float ApproachValue(float *, float, float);
 extern void Hero_SetTiltSpringParams(float, float);
 
 extern void ClampVectorLength(void *, float);
 
-extern float FastVecDist(void *, void *);
-extern int solve_quadratic_equation(float *, float *, float, float, float);
-extern float step_angle_toward_target(float *, int, float, float);
 extern float vec_distance_xy(void *, void *);
-extern void FastVecScale(void *, void *, float);
-extern float FastDiffRots(float, float);
-extern void euler_to_matrix(void *, void *);
-extern void matrix_from_basis_rows(void *, void *);
-extern void transform_vector(void *, void *, void *);
-extern float gravity_z(float *);
+
 extern float Spring(float *, float *, float, float, float, float);
 
-extern void set_gravity_relative_vector_length_xy(float *, float *, float);
-extern void gravity_set_z(float *, float *, float);
-extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern void update_hero_target_heading(float, float, float);
-extern void offset_hero_position_against_gravity(float *, float *, float);
-extern int test_hero_animation_frame_window(float);
 
-extern void initialize_moby_transform_history(int, void *);
-extern void create_moby_transform_history_entry(void *, int, int);
-
-extern void vec_set_length_xy(void *, void *, float);
-
-extern void gravity_flatten(float *, float *);
-extern int hero_slot_item_id(int);
-extern void add_hero_forward_offset(void *, void *, float);
-extern void HeroOffsetAlongViewZ(float *, float *, float);
 extern int coll_line(void *, void *, int, int, int);
-extern void transform_hero_local_offset_to_world(float *, float, float, float);
-extern int is_moby_in_class_range_500_to_540(int);
-extern void PostHitMessage(void *, int, int, void *, void *, float);
 
-extern float FastVecDot(void *, void *);
+extern int is_moby_in_class_range_500_to_540(int);
 
 extern int MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
 

@@ -12,6 +12,8 @@
 #include "asm_functions/shared_levels.h"
 #include "game/system/space.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern char usage_stats[];
 extern char gSpecialItems[];
 extern Hero g_hero;
@@ -22,7 +24,6 @@ extern char help_stats_base[];
 
 extern int DialogRequest_Init(void *, void *);
 extern int Npc_TryStartDialog(void *, void *);
-extern int is_point_inside_clip_volume(void *arg0, int arg1);
 
 typedef struct {
     char pad0[0x20];
@@ -101,7 +102,7 @@ void clank_cutscene_trigger_update(M *m) {
 extern unsigned char help_stats_base_q[] __asm__("D_0014171B") NOT_SDA;
 extern char *moby_array_start MACRO_ADDR;
 extern int Help_Request(int a, int b);
-extern int is_point_inside_clip_volume(void *, int);
+
 typedef unsigned short Ent[4];
 typedef struct HelpMoby {
     u8 pad_00[0x20];
@@ -266,35 +267,26 @@ extern float veldin1_zero_vec[] MACRO_ADDR;
 extern void update_veldin_robot_damage_and_targeting(void *);
 
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
-extern float FastVecDist(void *, void *);
+
 extern void set_ground_height_band(void *);
 extern int func_001FA898(float);
-extern int random_integer_below(int);
-extern void MobyBlendAnimation(void *, int, int, int);
-extern int scale_ticks(int);
 
 extern float SteerAngleWithVelocity(void *, float, void *, float, float, float);
-extern void FastVecSub(void *, void *, void *);
+
 extern float ApproachWithVelocity(float, float, float, float, float *, float *);
-extern float FastVecLength(void *);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
+
 extern float vec_distance_xy(void *, void *);
 extern int register_beam_slot(void *, int, int);
-extern float FastAddRots(float, float);
-extern float FastSubRots(float, float);
-extern void MobyTransformScaledVertex(char *, int, char *);
-extern float FastCos(float);
-extern float FastSin(float);
-extern float MobyGetFrameValue(void *);
+
 extern int coll_line(void *, void *, int, int, int);
 extern int release_beam_slot_by_id(void *);
 extern int set_beam_origin_transform_and_endpoint(void *, void *, void *);
 extern int mine_fall(void *, void *);
-extern void SpawnExplosionFx(void *, void *, int, float, float);
 
 extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
-extern void DeleteMoby(void *);
+
 extern void update_veldin_robot_effects(char *);
 
 /* Vendor (level 0) update: walks a path, turns toward the player, attacks and self-destructs.
@@ -530,7 +522,6 @@ void veldin_robot_enemy_update(Moby *moby) {
     update_veldin_robot_effects((char *)moby);
 }
 
-extern int FastDecTimer(void *);
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
 extern void HeadingFromVector(void *, float *, void *, void *);
@@ -709,7 +700,6 @@ void update_veldin_robot_damage_and_targeting(void *mv) {
 }
 extern void Moby_GetJointWorldPos(void *, int, void *);
 
-extern float random_float_between(float, float);
 extern float IntToFloat(int);
 extern void AddDrawCallback(void (*)(void), void *);
 extern void draw_veldin_robot_effect_quad_r(void) __asm__("func_L00_002E3128");
@@ -753,9 +743,9 @@ void update_veldin_robot_effects(char *m) {
     AddDrawCallback(draw_veldin_robot_effect_quad_r, m);
 }
 extern float veldin1_robot_effect_quad_corners[][4];
-extern void FastVecCross(void *, void *, void *);
+
 extern int GetEffectTex(int);
-extern void FastVecScale(void *, void *, float);
+
 extern void draw_world_quad(void *, void *, int);
 typedef float W[4] __attribute__((aligned(16)));
 typedef struct {
@@ -845,7 +835,6 @@ void update_beam_slot_controller(unsigned char *m) {
             break;
     }
 }
-extern void cutscene_set_camera_target(int);
 
 extern char *PartType23Spawn(void *, int, void *, int, float, float, float, float);
 extern float veldin1_zero_vec_b[] __asm__("D_L00_0015F660") MACRO_ADDR;

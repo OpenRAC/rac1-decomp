@@ -7,6 +7,8 @@
 #include "game/math/fastfunc.h"
 #include "data/executable.h"
 #include "structs/anim.h"
+#include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 
 /*
  * mobyutil.cpp in the original source; text 0x213A78-0x2161E0.
@@ -14,17 +16,9 @@
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-extern void func_001FA460(void *, void *);
-extern void FastVecScale(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
-extern void matrix_mul_vec3(void *, void *, void *);
-
 extern float shadow_light_dir[] NOT_SDA;
-extern float FastCos(float);
-extern float FastSin(float);
 
 extern float FastAbsF(float arg0);
-extern int find_or_allocate_id_slot(int v);
 
 ASM_FUNC("asm/handwritten/text", func_00213A78);
 
@@ -68,8 +62,6 @@ void assign_moby_class_data(int id) {
 
 LINKER_REMNANT("asm/remnants/text", func_00213C70);
 
-extern void *build_resident_visibility_list(void);
-extern void advance_moby_animation(void *);
 extern void refresh_moby_spatial_bounds(void *);
 extern void *visible_moby_list MACRO_ADDR;
 
@@ -110,8 +102,6 @@ void update_visible_resident_objects(void) {
 
 LINKER_REMNANT("asm/remnants/text", func_00213D10);
 
-extern void func_0020D6D0(void *);
-
 /* Sets moby m's animation to sequence seq at frame (clamped to the
    sequence's last frame), the next frame to frame + 1 (clamped the same
    way, 0 if still out of range), refreshes the frame pointers
@@ -140,7 +130,7 @@ void MobySetAnimation(MobyAnim *m, int seq, int frame) {
 }
 
 extern float IntToFloat(int arg0);
-extern void capture_moby_blend_pose(void *, int);
+
 extern char moby_blend_slot_poses[];
 
 /* As blend_moby_animation_ex below, for a plain sequence change: clamp the frame
@@ -276,8 +266,6 @@ float CosineInterpolate(float a, float b, float t) {
 
 LINKER_REMNANT("asm/remnants/text", func_002142B8);
 
-extern int func_001EFE10(void *, void *, int, int, int);
-
 /* Builds two 16-byte copies of *arg0: one with byte offset 8 (a float)
    forced to 0.01f, the other with its offset-8 float bumped by arg2.
    Passes both to coll_line_fix (a collision/line test elsewhere in the
@@ -304,7 +292,6 @@ extern int local_surface_region_enabled MACRO_ADDR;
 extern float local_surface_region_center_x[4] MACRO_ADDR;
 extern int sample_surface_height_map(float *, void *, float, float, float);
 extern float vec_distance_xy(void *, void *);
-extern void set_vector_unit_z(void *);
 
 /* Ground height under pos: sample_surface_height_map's answer when occl_cell_count is on
    and it finds one (it writes the height through its first argument and
@@ -341,8 +328,7 @@ float resolve_camera_surface_height(float *pos, void *out) {
 LINKER_REMNANT("asm/remnants/text", func_00214538);
 
 extern char coll_output[];
-extern void vec_scale_xy_to_length(float *, float *, float);
-extern void fast_vec_normalize(void *, void *, float);
+
 extern float min_float(float, float);
 
 /* Shadow range probe: cast a ray down (8 units) from the moby position
@@ -401,9 +387,6 @@ extern unsigned char hero_globals_base[];
 extern char g_hero[];
 extern int suck_get_aim_height(char *);
 extern int read_state_field(char *);
-extern int FastDecTimer(void *);
-extern int scale_game_frame_count(int);
-extern float FastVecLength(void *);
 
 typedef struct {
     float v[4];
@@ -712,8 +695,6 @@ float ApproachWithVelocity(float *p1, float *p2, float a, float b, float c, floa
 
 LINKER_REMNANT("asm/remnants/text", func_00214F50);
 
-extern void fast_vec_normalize(void *, void *, float);
-
 struct M2c_temp3 {
     f32 values[3];
     s32 pad;
@@ -851,7 +832,6 @@ void MatrixToQuaternion(void *arg0, void *arg1) {
 }
 
 extern void MatrixToQuaternion(void *, void *);
-extern void matrix_copy_rows(void *, void *);
 
 /* copy_matrix_rotation takes two arguments: arg1 is passed on to it untouched,
    which gives arg1 three references and retail's $s0. */
@@ -863,9 +843,6 @@ void extract_matrix_rotation_quaternion(void *arg0, void *arg1) {
 }
 
 LINKER_REMNANT("asm/remnants/text", func_00215378);
-
-extern float FastSin(float); /* sin of a half-angle */
-extern float FastCos(float); /* cos of a half-angle */
 
 /* Axis-angle -> quaternion: the xyz part is axis scaled by sin(angle/2)
    (done by FastVecScale, which writes through arg0), and w at +0xC is
@@ -881,9 +858,6 @@ void build_quaternion_from_axis_angle(void *arg0, void *axis, float angle) {
 typedef struct {
     float m[4][4];
 } __attribute__((aligned(16))) Mtx44;
-extern void clear_u64_value(float *);
-extern void euler_to_matrix(float *, float *);
-extern void euler_to_matrix_ee(float *, float *);
 
 /* Matrix to Euler angles: on a copy of src with the translation cleared,
    read the Z angle from row 0, undo it (euler_to_matrix builds the Z
@@ -934,7 +908,6 @@ typedef struct {
     float mtx[4][4]; /* 0x40 */
 } ViewBox;
 extern ViewBox *clip_volume_table MACRO_ADDR;
-extern void FastVecSub(void *, void *, void *);
 
 /* Is point arg0 inside box arg1 of the table at clip_volume_table? The offset
    from the box's position, taken through its matrix, must lie in
@@ -1034,7 +1007,6 @@ void set_video_timing(int pal) {
 
 LINKER_REMNANT("asm/remnants/text", func_002158E0);
 
-extern int FastVectorToPackedChars(float *);
 extern int func_001FA898(float);
 
 /* Packs vector v into one RGBA word at *out (FastVectorToPackedChars converts a
@@ -1068,7 +1040,6 @@ void pack_vector_xyz_with_shared_scale(float *v, int *out) {
 }
 
 typedef float FVec4[4] __attribute__((aligned(16)));
-extern void FastVectorFromPackedChars(float *, int);
 
 /* Unpack the packed colour *arg1 into a float vector, centre its
    channels on 127 and scale by alpha/10000 into arg0. The 127 vector is
@@ -1109,7 +1080,6 @@ float round_float_to_decimal_places(int arg0, float arg1) {
     return arg1 / scale;
 }
 
-extern float MobyGetFrameValue(char *);
 extern float round_float_to_decimal_places(int, float);
 
 /* Returns 1 if the moby's current anim frame lies inside the one-frame window starting at arg1. */
@@ -1150,8 +1120,6 @@ typedef struct {
 } Path;
 extern void lerp_vector(void *, void *, void *, float);
 extern float vec_length_xy(void *);
-extern float FastSubRots(float, float);
-extern float FastAddRots(float, float);
 
 /* Samples a path of points at arg t: lerps the position between point
    floor(t) and the next into pos and, unless flags bit 0 is set, writes

@@ -9,6 +9,7 @@
 #include "asm_functions/shared_levels.h"
 #include "data/level_04.h"
 #include "enums/level.h"
+#include "asm_functions/executable.h"
 
 extern float vec_distance_xy(void *, void *);
 
@@ -62,19 +63,16 @@ extern PathEl *D_L04_001B0930[];
 extern Coll D_L04_00174040;
 extern char eudora_coll_resolved_pos_r[] __asm__("D_L04_00174070");
 extern char D_0013F450[];
-extern void func_001F9BC0(void *);
-extern float func_001F9D10(void *, void *);
-extern void func_001F9BF0(void *, void *, void *);
-extern float func_001F9CB8(void *);
+
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
-extern void func_001F9C30(void *, void *, float);
+
 extern int func_L00_001EFFF0(void *, void *, int, void *, int);
 extern float func_001F9CE8(void *);
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
-extern void func_L00_001FF500(void *, void *, float);
+
 extern int coll_sphere_r(float, void *, int, void *) __asm__("func_L00_001F10E0");
-extern int func_001F9938(void *);
+
 extern float random_float_between_r(float, float) __asm__("func_002140F8");
 extern int func_001FA898(float);
 extern int find_nearest_point_index_xy_r(Moby *, void *, int) __asm__("func_L04_001F2F68");
@@ -293,11 +291,9 @@ void steer_child_moby(Moby **list, int n, Moby *m, Steer *c, float *f) {
         }
     }
 }
-extern void FastVecAdd(void *, void *, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
 extern int coll_sphere(float, void *, int, void *);
-
-extern float FastAddRots(float, float);
 
 /* steps a moby's position out of collision and aims it */
 void update_moby_movement_with_sphere_collision(char *a, char *b, char *c, float f) {

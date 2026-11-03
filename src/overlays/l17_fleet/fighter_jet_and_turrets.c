@@ -27,6 +27,8 @@
 #include "enums/hero_state.h"
 #include "enums/moby_class.h"
 #include "structs/voice.h"
+#include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern int frame_size;
 extern char g_controller_state[];
 extern Hero g_hero;
@@ -115,23 +117,14 @@ struct MagnetElevatorVars {
 typedef int v128 __attribute__((mode(TI)));
 extern float animation_start(int a, unsigned int b);
 extern float animation_end(int a, unsigned int b);
-extern float FastVecDist(void *, void *);
-extern void matrix_mul_vec3(void *, void *, void *);
-extern void FastVecAdd(void *, void *, void *);
+
 extern int coll_line(void *, void *, int, void *, void *);
-extern int is_point_inside_clip_volume(void *, int);
+
 extern void lerp_vector(void *, void *, void *, float);
-extern void FastVecSub(void *, void *, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern float MobyGetFrameValue(void *);
-extern float FastAddRots(float, float);
-extern float FastCos(float);
-extern float FastVecLength(void *);
+
 extern int FastBSphereCheck(char *, float);
-extern float FastVecDot(void *, void *);
-extern void func_L00_0025A8C0(char *arg, int a, int b, float scale, void *src);
-extern float random_float_between(float, float);
-extern void FastVecScale(void *, void *, float);
 
 extern unsigned char *spawn_trail_particle(char *parent, void *pos, float *vec);
 extern void AddDrawCallback(void *, void *);
@@ -331,7 +324,7 @@ void update_fleet_beam(char *m) {
     }
 }
 typedef int u128 __attribute__((mode(TI)));
-extern void FastVecCross(void *, void *, void *);
+
 extern int GetEffectTex(int);
 extern void draw_world_quad(void *, void *, int);
 
@@ -391,26 +384,24 @@ void draw_fleet_beam_quad(char *moby) {
 }
 extern void process_dreks_fleet_turret_hits(char *m);
 extern void distribute_class_733_group_mobys_along_path(char *m);
-extern void DeleteMoby(void *);
+
 extern float vec_distance_xy(void *, void *);
-extern void transform_scaled_vertex_batch(char *arg0, int arg1, void *arg2, char *arg3);
 
 extern float SteerAngleWithVelocity(float *p, float *v, float a, float b, float c, float d);
 extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
-extern float FastDiffRots(float, float);
-extern int scale_ticks(int);
+
 extern char *PartType27Spawn(char *pos, char *vel, int c, int d, float f);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern int Moby_PlaySound(int, int, int);
 extern char *spawn_class_558_moby_toward_target(char *src, char *pos, float *v, float f);
 extern void FindNearestTargetMoby(void *, void *, float);
 extern int fast_dec_timer(void *);
-extern int random_integer_below(int);
+
 extern char *try_activate_blarg_ship_from_list(int list);
 extern void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a8, int a9, float scale, float *v10,
                                 float *v11, float *v12);
-extern void SpawnExplosionFx(void *, void *, int, float, float);
+
 extern int g_current_level_index MACRO_ADDR;
 extern unsigned char help_stats_base[] NOT_SDA;
 extern float g_frame_time_sq MACRO_ADDR;
@@ -704,15 +695,11 @@ void distribute_class_733_group_mobys_along_path(char *moby) {
     }
 }
 typedef int u128_2D8CC8 __attribute__((mode(TI)));
-extern int hero_is_in_special_state(void);
 
-extern void copy_matrix_rotation(void *, void *);
 extern float IntToFloat(int);
-extern float FastNormalizeAngle(float);
-extern void BuildSphericalOffset(void *, float, float, float);
-extern void transform_vector(void *, void *, void *);
+
 extern int func_001160D8(void);
-extern float multiply_global_factor(float);
+
 extern unsigned char *spawn_moving_hero_relative_alpha_fade_particle(float *pos, char *vel, int color,
                                                                      unsigned char life, unsigned char b, int mode,
                                                                      float scale);
@@ -868,7 +855,6 @@ typedef struct {
     long alpha;
 } RingPrim;
 
-extern void euler_to_matrix(float *, float *);
 extern struct {
     float x, y;
 } fleet_ring_quad_uvs[4];
@@ -946,11 +932,10 @@ void draw_fleet_scrolling_radial_quads(char *moby) {
         }
     }
 }
-extern void clear_u64_value(void *);
+
 extern void spawn_explosion_alt(void *, void *, void *, float, float, int, int, int, float, float, float, float, int,
                                 float, int, int, int, int) __asm__("func_L00_0025F4A8");
-extern float random_angle_radians(void);
-extern void update_moby_vertical_oscillation(float, float, char *, float *, float *);
+
 extern int func_L00_001F2BE8(float, void *, int, void *, void *);
 extern float resolve_camera_surface_height(float *, void *);
 extern char *PartType34Spawn(char *vec, float *pos, float sc, float vy);
@@ -1016,9 +1001,8 @@ void update_fleet_bobbing_moby(char *m) {
             break;
     }
 }
-extern void DeleteMoby(void *); /* DeleteMoby */
+
 extern int Sound_IsPlaying(void *, int);
-extern float FastSin(float);
 
 extern char *fleet_mobys MACRO_ADDR;
 extern int fleet_game_mode MACRO_ADDR;
@@ -1312,7 +1296,6 @@ void update_drone_flight_and_sparks(Moby *moby) {
         }
     }
 }
-extern char *CreateMoby(int);
 
 typedef struct {
     f32 bsphere[4]; /* 0x00 */
@@ -1384,7 +1367,7 @@ void draw_four_quarter_turn_effect_quads(unsigned char a, unsigned char b, unsig
     ang = FastAddRots(ang, 1.5707964f);
     append_rotated_textured_screen_quad(x, y, w, w, ang, 0x3F, 0x3F, h, 0xFFFFF3, a, b, c, d);
 }
-extern float FastSubRots(float, float);
+
 extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
 extern unsigned char draw_map51[4] MACRO_ADDR;
 
@@ -1446,7 +1429,6 @@ void draw_fighter_jet_radar_contact_icon(char *rot, char *from, char *moby, int 
 
 extern void draw_fighter_jet_radar_contact_icon(char *, char *, char *, int, long, int);
 
-extern void matrix_from_basis_rows(void *, void *);
 extern char *fleet_moby_list MACRO_ADDR;
 extern float fleet_camera_matrix_row1[];
 extern char fleet_target_reticle_shape[];
@@ -2343,10 +2325,6 @@ extern float ApproachValue(float *, float, float);
 extern void jet_animate(unsigned char *, float);
 extern void MusicRequestTrack(int, int);
 extern void Hero_ResetToPosition(void *, void *, int, int);
-extern int force_help_message(int, int);
-
-extern void moby_anim_sphere_lerp(void *);
-extern int FastDecTimer(void *);
 
 extern int STUB_printf();
 
@@ -2940,7 +2918,7 @@ void adjust_fighter_jet_steering_for_flight_bounds(char *moby, float *a, float *
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void build_magnet_elevator_camera_pose(char *, char *, char *);
 extern void rebuild_magnet_elevator_world_path(char *);
-extern int FastTweenColor(int, int, float);
+
 extern void update_entity_matrix(char *, void *, void *, void *);
 
 /* Updates the class-1380 lift: rises/lowers between two heights, blends the camera and pulses its colour by state. */
@@ -3112,7 +3090,6 @@ void magnet_elevator_update(char *moby) {
     update_entity_matrix(state + 0x20, delta, rot, moby + 0x40);
 }
 extern Hero g_hero;
-extern void vec_set_length_xy(void *, void *, float);
 
 /* Builds the magnet elevator camera spot 2.5 units toward the camera, facing the hero. */
 void build_magnet_elevator_camera_pose(char *moby, char *temp, char *state) {
@@ -3188,12 +3165,12 @@ extern void update_robot_dog_aim_joint(void *);
 extern void update_robot_dog_glow_effects(void *);
 
 extern void set_ground_height_band(void *);
-extern void MobyBlendAnimation(void *, int, int, int);
+
 extern int CarriedMobyUpdate(void *, void *);
-extern int IsPointInPolygon(void *, void *, int);
+
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
 extern int move_robot_dog_toward_position(char *moby, float *target, float speed);
-extern void PostHitMessage(int, int, int, void *, void *, float);
+
 extern int mine_fall(void *, void *);
 
 extern void SetDeathBits(void *, int, int);

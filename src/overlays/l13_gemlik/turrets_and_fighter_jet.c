@@ -27,6 +27,8 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+#include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern char cd_read_state[];
 extern char gHeroPos[];
 extern char g_hero_rot[];
@@ -111,8 +113,7 @@ struct FighterJetHudVars {
 };
 
 extern int STUB_printf();
-extern void DeleteMoby(void *);
-extern int is_point_inside_clip_volume(void *arg0, int arg1);
+
 extern void set_moby_list_state(int list, int state);
 extern unsigned char hero_globals_base[];
 extern char *D_L13_00160058 MACRO_ADDR;
@@ -280,14 +281,10 @@ void update_moby_volume_trigger(Moby *moby) {
         }
     }
 }
-extern void FastVecScale(void *, void *, float);
-extern float random_angle_radians(void);
+
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void compute_elevator_camera_pose(unsigned char *moby, float *v, float *w);
-extern void FastVecSub(void *, void *, void *);
-extern void FastVecAdd(void *, void *, void *);
-extern float FastSubRots(float, float);
-extern float FastAddRots(float, float);
+
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
 extern int Sound_IsPlaying(void *, int);
@@ -296,7 +293,7 @@ extern int Moby_PlaySound(int, int, int);
 extern int HeroEnterMoveState(int, int);
 
 extern float vec_distance_xy(void *, void *);
-extern float FastSin(float);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
 extern void update_entity_matrix(char *, void *, void *, void *);
@@ -480,11 +477,6 @@ void LiftL13_UpdateAlt(unsigned char *moby) {
     FastVecAdd(delta, delta, &m->pos);
     update_entity_matrix(vars->path, delta, rot, &m->rot);
 }
-extern float FastSubRots(float, float);
-extern float FastAddRots(float, float);
-extern float FastCos(float);
-extern void clear_u64_value(void *);
-
 
 // Places the point v at a radius around the moby for the facing angle and sets w to the direction toward the target.
 void compute_elevator_camera_pose(unsigned char *moby, float *v, float *w) {
@@ -661,7 +653,6 @@ void blarg_turret_update(Moby *m) {
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern float vec_distance_xy(void *, void *);
 
-extern float FastAddRots(float, float);
 extern char *spawn_gemlik_projectile(float, float *, float *, void *);
 extern int gemlik_frame_count MACRO_ADDR;
 extern int gemlik_turret_fire_interval SDATA(gemlik_turret_fire_interval);
@@ -703,8 +694,6 @@ void update_blarg_turret_target_and_state(unsigned char *moby) {
     if (((Moby *)moby)->command >= 4)
         ((Moby *)moby)->state = ((Moby *)moby)->command;
 }
-extern char *CreateMoby(int);
-extern void moby_build_matrix(void *);
 
 /* Spawns a Blarg Gunner child moby that copies its parent's placement and scale. */
 char *spawn_blarg_turret_child(char *parent) {
@@ -736,11 +725,10 @@ char *spawn_blarg_turret_child(char *parent) {
 }
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
-extern float FastDiffRots(float, float);
+
 extern void SetDeathBits(void *, int, int);
 extern void RerollEffectCounter(void *m, short *p);
-extern void MobyBlendAnimation(void *, int, int, int);
-extern int scale_ticks(int);
+
 extern void StepColorFade(void *, void *);
 
 // Per-frame update of a moby's timed state: checks its target, counts down and switches state.
@@ -824,7 +812,6 @@ extern int rand_range(int, int);
 
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
-extern void DeleteMoby(void *);
 
 /* Updates the gem-lock turret: idle animations, then a burst of particles when destroyed. */
 void blarg_gunner_update(unsigned char *raw) {
@@ -901,7 +888,7 @@ void release_robosquawker_particle(Level13VendorMoby *moby) {
         moby->value = 0;
     }
 }
-extern float ProbeGroundHeight(void *, int, float);
+
 extern float g_frame_time_sq SDATA(g_frame_time_sq);
 typedef struct {
     u8 pad_000[0x120]; /* 0x000 */
@@ -931,9 +918,8 @@ void update_robosquawker_ground_height(char *m, char *d) {
     }
 }
 extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
-extern float FastVecDist(void *, void *);
+
 extern void set_ground_height_band(void *);
-extern int FastDecTimer(void *);
 
 extern void HeadingFromVector(void *, float *, void *, void *);
 extern int func_001160D8(void);
@@ -943,17 +929,17 @@ extern int select_point_index_by_distance(void *, void *, float);
 extern float vec_length_xy(void *);
 extern int fast_dec_timer_i(void *) __asm__("func_001F9908");
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
-extern float FastVecLength(void *);
+
 extern float ApproachValue(float *, float, float);
 extern void ClampVectorLength(void *, float);
 extern int coll_sphere(float, void *, int, void *);
 extern int move_4318(void *, void *, float, float, float, int);
-extern float multiply_global_factor(float);
+
 extern float jump_speed_4318(void *, void *, void *, float, float);
 extern int mine_fall(void *, void *);
 
 extern int move_w(void *, void *, void *, void *, float);
-extern float MobyGetFrameValue(void *);
+
 extern void PostHitMessage(void *, int, int, void *, void *, float);
 extern int CarriedMobyUpdate(void *, void *);
 
@@ -1887,7 +1873,6 @@ void robosquawker_update(Moby *m) {
 }
 extern int GetEffectTex(int);
 
-extern float FastAddRots(float, float);
 /* Append the same effect quad four times at x, y, each turned a further quarter turn. */
 void append_four_quarter_turn_effect_quads(unsigned char a, unsigned char b, unsigned char c, unsigned char d, float x,
                                            float y, float s, float ang) {
@@ -1961,8 +1946,7 @@ void spawn_fighter_jet_joint_particles(void *moby, char *obj) {
         }
     }
 }
-extern void euler_to_matrix(float *, float *);
-extern void transform_vector(void *, void *, void *);
+
 extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
 extern int frame_size;
 typedef struct {
@@ -2017,8 +2001,6 @@ void draw_fighter_jet_radar_icon(char *rot, char *from, char *moby, int icon, lo
 extern void draw_fighter_jet_radar_icon(char *rot, char *from, char *moby, int icon, long color, int tex);
 
 extern float normalize_angle(float);
-
-extern void matrix_from_basis_rows(void *, void *);
 
 extern float gemlik_view_basis_row1[];
 extern char jet_target_marker_shape[];
@@ -2416,7 +2398,6 @@ void DrawGemlikTurretHud(char *moby) {
                      GetEffectTex_l(d->tex_index + 0x29));
     d->hp_bar = v;
 }
-extern void BuildSphericalOffset(void *, float, float, float);
 
 extern int fast_dec_timer_i(void *) __asm__("func_001F9908");
 
@@ -2479,7 +2460,6 @@ extern float gemlik_view_tan_half_fov;
 extern float Spring(float *, float *, float, float, float, float);
 extern float SpringAngle(char *, char *, int, float, float, float, float);
 
-extern void matrix_mul_vec3(void *, void *, void *);
 extern void UpdateViewContext(void);
 extern void AddDrawCallback(void *, void *);
 
@@ -2896,8 +2876,6 @@ extern void Hero_ResetToPosition(void *, void *, int, int);
 extern void PlayerFighterFlight(void *, void *);
 
 extern void MusicRequestTrack(int, int);
-
-extern void moby_anim_sphere_lerp(void *);
 
 /* Handles fighter entry, flight, damage, exit, palette setup and audio cleanup. */
 void JetFighterUpdateL13(Jet47 *m) {

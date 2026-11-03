@@ -11,11 +11,15 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "structs/collision.h"
+#include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
+#include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/hero_animation_slots.h"
 extern Hero g_hero;
 
 extern int g_current_level_index MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
-extern int CollType(void);
+
 extern void Hero_TryMoveState(int, int);
 
 /* Per-frame update of the pickup/hit state flags from the state code. */
@@ -132,7 +136,7 @@ void HeroL16_UpdateStateFlags(void) {
     }
 }
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
+
 extern void ClampVectorLength(void *a, float x);
 
 // Builds a vector from two global blocks, transforms it, and passes it on with a summed float.
@@ -150,24 +154,18 @@ void compose_and_limit_hero_velocity(void) {
 typedef int Q __attribute__((mode(TI)));
 extern u8 kalebo3_coll_hit_point[];
 extern s32 g_current_level_index MACRO_ADDR;
-void clear_u64_value(void *);
-void hero_get_collision_ray_endpoints(void *, void *, s32, f32, f32);
+
 s32 coll_line(void *, void *, s32, s32, s32);
-s32 coll_sound_class(void);
-s32 CollType(void);
+
 f32 resolve_camera_surface_height(void *, void *);
 s32 is_moby_in_class_range_500_to_540(s32);
 u8 *GetFlaggedPvarWord(s32);
-f32 FastVecDist(void *, void *);
+
 void sceVu0Normalize(void *, void *);
-f32 compute_gravity_relative_vector_inclination(void *);
-f32 fast_atan2(f32, f32);
-void FastVecSub(void *, void *, void *);
-f32 FastVecDot(void *, void *);
-void FastVecScale(void *, void *, f32);
+
 void vec_scale_to_length(void *, void *, f32);
 void compute_rotated_vector_angles(void *, void *);
-void transform_hero_polar_offset_to_world(void *, f32, f32, f32);
+
 void func_L00_00233D50_105C8(void *, void *, f32) __asm__("func_L00_00233D50");
 f32 FastAbsF(f32);
 extern Hero g_hero;
@@ -351,15 +349,6 @@ d1:
 }
 extern float frame_scale MACRO_ADDR;
 extern char kalebo3_coll_resolved_pos[];
-extern void clear_u64_value(void *);
-extern void Hero_ConstrainToPath(void);
-extern void transform_hero_local_offset_to_world(float *, float, float, float);
-extern void FastVecSub(void *, void *, void *);
-extern void HeroOffsetAlongViewZ(float *, float *, float);
-extern void HeroMoveDownAlongNormal(float *, float *, float);
-extern int coll_capsule(float, float, void *, int, void *);
-extern int coll_sphere_hero_groups(float, void *);
-extern float FastVecLength(void *);
 
 /* Pulls the camera position toward a desired offset from the player; returns 1 when settled, -1 when clamped. */
 extern Hero hero __asm__("D_0013F450");
@@ -471,17 +460,9 @@ int HeroL16_ApplyPositionOffset(int mode) {
     }
     return 1;
 }
-extern void update_hero_attachment(int, void *, void *);
-extern float gravity_length_xy(float *v);
-extern float gravity_z(float *);
-extern void gravity_set_z(float *, float *, float);
+
 extern float vec_length_xy(void *);
-extern void vec_set_length_xy(void *, void *, float);
-extern void resolve_hero_collisions_with_history(void);
-extern void correct_hero_ground_penetration(void);
-extern void gravity_flatten(float *, float *);
-extern void set_gravity_relative_vector_length_xy(float *, float *, float);
-extern float forward_component(void *);
+
 extern float g_frame_time MACRO_ADDR;
 
 /* Integrate player motion, resolve contacts, and measure the resulting movement. */

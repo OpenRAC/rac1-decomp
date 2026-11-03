@@ -26,6 +26,8 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "structs/voice.h"
+#include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern int g_controller_state_no_direction;
 extern Hero g_hero;
 
@@ -34,21 +36,10 @@ typedef int Q_2343F8 __attribute__((mode(TI)));
 extern float g_frame_time MACRO_ADDR;
 
 extern void vec_scale_to_length(void *, void *, float);
-extern float gravity_z(float *);
-extern void gravity_set_z(float *, float *, float);
-extern float FastVecLength(void *);
-extern void FastVecAdd(void *, void *, void *);
-extern void clear_u64_value(void *);
 
 extern void HeroGroundProbe(void);
-extern void FastVecSub(void *, void *, void *);
 
-extern float FastVecDot(void *, void *);
-extern void gravity_flatten(float *, float *);
-extern void set_gravity_relative_vector_length_xy(float *, float *, float);
 extern float vec_length_xy(void *);
-
-extern void FastVecScale(void *, void *, float);
 
 /* Integrate player motion, resolve contacts, and measure the resulting movement. */
 void HeroMovePipeline(void) {
@@ -199,19 +190,10 @@ extern float g_frame_scale_sq MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern float novalis_hero_speed_bands_6[];
-extern void build_scaled_hero_move_impulse(float, float);
-extern int scale_ticks(int);
+
 extern float ApproachValue(float *, float, float);
 
-extern void add_hero_forward_offset(void *, void *, float);
-extern void turn_to(int, float, float, float);
-
-extern float FastCos(float);
-extern float FastSin(float);
-extern int hero_slot_item_id(int);
 extern int allocate_hero_voice_for_entry(int, int);
-extern float FastDiffRots(float, float);
-extern void vec_set_length_xy(void *, void *, float);
 
 // Per-tick horizontal air movement for the hero's jump states (level 01).
 // Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l01/ui_help_00233de0.c, FUN_L01_00234b40.
@@ -356,56 +338,33 @@ extern HeroSpeedBands novalis_hero_speed_bands;
 extern float novalis_hero_stride_speeds[];
 extern float novalis_hero_ledge_shimmy_frame_speeds[];
 
-extern void stick_target(float, int);
-extern void matrix_mul_vec3(void *, void *, void *);
 extern int fast_dec_timer(int *);
 
-extern void set_hero_animation(int, int, float);
 extern int get_hero_idle_animation_index(int);
 extern float adjust_hero_animation_speed_for_target_frame(float, float, float, float);
 
-extern void HeroMoveDownAlongNormal(float *, float *, float);
-
-extern unsigned char *CreateMoby(int);
-extern void moby_build_matrix(void *);
 extern int Moby_PlaySound(int, int, int);
 extern int truncate_float_to_s32(float);
-extern int clamp_vec_length_xy(float, void *, void *);
-
-extern int FastDecTimer(void *);
 
 extern void RippleDisturb(void *, int, int, float, float, float, float);
 extern float SpringAngle(void *, float, void *, int, float, float, float);
-extern float FastSubRots(float, float);
+
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern int PartType34Spawn(void *, void *, float, float);
-
-extern int rand_range(int, int);
-
-extern float FastAddRots(float, float);
-extern void BuildSphericalOffset(void *, float, float, float);
 
 extern void Hero_SetTiltSpringParams(float, float);
 
 extern void ClampVectorLength(void *, float);
 
-extern float step_angle_toward_target(float *, int, float, float);
 extern float vec_distance_xy(void *, void *);
 extern float Spring(float *, float *, float, float, float, float);
-extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
+
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern void update_hero_target_heading(float, float, float);
-extern void offset_hero_position_against_gravity(float *, float *, float);
-extern int test_hero_animation_frame_window(float);
 
-extern void initialize_moby_transform_history(int, void *);
-extern void create_moby_transform_history_entry(void *, int, int);
-
-extern void HeroOffsetAlongViewZ(float *, float *, float);
 extern int coll_line(void *, void *, int, int, int);
-extern void transform_hero_local_offset_to_world(float *, float, float, float);
+
 extern int is_moby_in_class_range_500_to_540(int);
-extern void PostHitMessage(void *, int, int, void *, void *, float);
 
 extern void update_hero_airborne_planar_motion(void);
 

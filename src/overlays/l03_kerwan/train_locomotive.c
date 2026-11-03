@@ -18,6 +18,9 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "structs/voice.h"
+#include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 extern Hero g_hero;
 
 typedef struct Train292890 {
@@ -137,15 +140,9 @@ struct RobotDogVars {
 typedef int Q_293720 __attribute__((mode(TI)));
 extern char *kerwan_mobys_t __asm__("D_L03_00160058") MACRO_ADDR;
 extern float kerwan_train_car_spacing SDATA(kerwan_train_car_spacing);
-extern float FastCos(float);
-extern float FastSin(float);
-extern void FastVecAdd(void *, void *, void *);
-extern void FastVecSub(void *, void *, void *);
-extern float FastAddRots(float, float);
 
 extern void update_entity_matrix(char *, void *, void *, void *);
-extern void MobyAnimAdvance(void *);
-extern void moby_build_matrix(void *);
+
 extern void Moby_GetJointWorldPos(void *, int, void *);
 
 /* Places a train: puts the engine at `at` facing ang (offset back by its length), then lays each linked
@@ -214,13 +211,12 @@ void place_metropolis_train(char *moby, float *pos, float heading) {
 }
 extern float vec_distance_xy(void *, void *);
 extern void gunship_follow_path(char *);
-extern void BuildSphericalOffset(void *, float, float, float);
+
 extern void vec_scale_to_length(void *, void *, float);
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
-extern void vec_set_length_xy(void *, void *, float);
-extern float FastVecLength(void *);
+
 extern int STUB_printf();
-extern void DeleteMoby(void *);
+
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern char kerwan_train_motion_error_msg[];
@@ -446,21 +442,20 @@ extern char kerwan_train_no_link_msg[];
 extern unsigned char hero_globals_base[];
 extern char voice_pool[];
 extern void update_metropolis_train_idle_motion_r(void *) __asm__("func_L03_00293EB8");
-extern int is_point_inside_clip_volume(void *arg0, int arg1);
+
 extern void MusicRequestTrack(int, int);
 extern void set_moby_dialogue_record_value(void *, int);
-extern int scale_ticks(int);
+
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound(int, int, int);
 extern int fast_dec_timer(int *);
-extern int rand_range(int, int);
+
 extern int find_nearest_path_point_r(void *, void *, void *, int *, float *, int, float, float,
                                      float) __asm__("func_L00_0025EFC0");
 
 extern void set_moby_state_14(unsigned char *);
 
 extern int is_moby_class_23e_in_state_14(char *);
-extern void clear_u64_value(void *);
 
 /* Update of the Metropolis train locomotive (moby Metropolis Train Locomotive): waits for the hero, rides its path,
    hands over to the next path. */
@@ -912,8 +907,7 @@ void moving_platform_small_update(Moby *moby) {
     FastVecAdd_r(v0, v0, &moby->pos);
     update_entity_matrix_r2(d->f60, v0, v1, &moby->rot);
 }
-extern float FastVecDist(void *, void *);
-extern void FastVecSub(void *, void *, void *);
+
 extern void update_entity_matrix(char *, void *, void *, void *);
 
 // Update for a moby that tracks a position and orientation, initialising on state 0 and aiming each frame.
@@ -952,11 +946,6 @@ void metropolis_train_carriage_update(char *moby) {
     }
 }
 typedef int u128 __attribute__((mode(TI)));
-extern void euler_to_matrix(float *, float *);
-extern void transform_vector(void *, void *, void *);
-extern void FastVecCross(void *, void *, void *);
-extern void FastVecScale(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
 
 /* Builds two scaled offset vectors from the moby's matrix and adds them to out. */
 void add_moby_rotation_based_offsets(char *moby, float *out) {
@@ -1024,10 +1013,9 @@ void maintain_emitter_sound_voice(unsigned char *moby) {
             break;
     }
 }
-extern float random_angle_radians(void);
-extern int scale_ticks(int);
+
 extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
-extern int fast_subtract_rotations_cf(void *);
+
 extern void spawn_emitter_child_effect(void *, void *, int, int, float, float, int);
 
 // Per-class steering update for a level 3 moby: runs its path loops and writes the flag bytes at data+0x12E/0x12F.
@@ -1136,12 +1124,9 @@ void update_moby_emitter_effects(Moby *moby, float *a1, int a2) {
             return;
     }
 }
-extern float FastSubRots(float, float);
 
-extern float FastAddRots(float, float);
-extern void FastVecSub(void *, void *, void *);
 extern float vec_length_xy(void *);
-extern float normalize_angle(float);
+
 extern float frame_scale MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
@@ -1171,9 +1156,6 @@ void update_spline_moby_orientation(char *m) {
                              moby_data->pitch_gain * 5.0f * 0.017453292f * g_frame_time_sq,
                              moby_data->pitch_gain * 0.017453292f * g_frame_time);
 }
-extern int FastDecTimer(void *);
-extern float FastVecDist(void *, void *);
-extern int scale_ticks(int);
 
 // Picks the next animation frame value for a moby in one of several states, storing it at data+0x148.
 void update_emitter_intermittent_sound(char *moby) {
@@ -1644,7 +1626,7 @@ typedef int OvlQuad_C6F80 __attribute__((mode(TI)));
 extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
 extern int find_nearest_path_point_r2(void *, void *, void *, int *, float *, int, float, float,
                                       float) __asm__("func_L00_0025EFC0");
-extern int is_point_inside_clip_volume(void *, int);
+
 typedef struct {
     float pos[4];
     float v10[4];
@@ -1710,10 +1692,8 @@ typedef struct {
 extern short kerwan_mobys_r2 __asm__("D_L03_00160058");
 extern char kerwan_moby573_spawn_d0_record;
 
-extern float multiply_global_factor(float);
 extern float ApproachValue(float *p, float target, float maxstep);
-extern float MobyGetFrameValue(void *);
-extern float FastDiffRots(float, float);
+
 extern int func_001160D8(void);
 extern int move_w(void *, void *, void *, void *, float);
 extern int ClassifyTargetInCone_r(char *m, char *p, char *pos, char *v) __asm__("func_L00_0025A060");
@@ -1724,15 +1704,15 @@ extern int is_point_inside_clip_volume_cf(int id);
 
 extern void SetDeathBits(void *, int, int);
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
-extern void PostHitMessage(void *, void *, int, void *, void *, float);
+
 extern void set_ground_height_band(void *);
 extern void StepColorFade(void *, void *);
-extern void SpawnExplosionFx(void *, void *, int, float, float);
+
 extern void Manipulator_ApplyScale(void *, int, void *, float);
-extern void spawn_moby_break_fragments(void *, int, int, int, int, int, int);
+
 extern void MoveCtl_Init_r(char *p, void *) __asm__("func_L01_0026E8E0");
 extern void update_robot_dog_hit_reaction_r(struct Moby *moby) __asm__("func_L03_002C7DE8");
-extern void MobyBlendAnimation(void *, int, int, int);
+
 extern void SpawnBreakFragment_r(char *, int, float *, void *, int, int, float, float *, float *,
                                  float *) __asm__("func_L00_00265050");
 
@@ -2118,7 +2098,6 @@ absent:
     return 0;
 }
 extern char *kerwan_mobys MACRO_ADDR;
-extern void MobyBlendAnimation(void *, int, int, int);
 
 // Checks whether a moby can start an attack on a target and switches its state.
 int try_start_kerwan_path_enemy_heading_turn(float ang, unsigned char *moby, char *target) {
@@ -2268,21 +2247,20 @@ typedef struct Data2C8398 {
     int i29C;
 } Data2C8398;
 extern void FindNearestTargetMoby(void *, void *, float);
-extern void manipulator_set_scale(void *, float);
+
 extern void update_kerwan_path_enemy_hit_reaction(void *);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern void MoveCtl_Init(char *p);
 extern int is_point_inside_clip_volume_cf(int);
-extern int is_point_inside_clip_volume(void *arg0, int arg1);
-extern float FastDiffRots(float, float);
+
 extern void is_value_within_interpolated_window_cf(void *);
 extern int IsFrameWithinWindow(char *, float);
 extern void vec_scale_to_length(void *, void *, float);
 
 extern void compute_interpolated_record_value_cf(void *, void *, void *, int, float, float, float);
-extern void record_moby_hit(void *, void *);
+
 extern int ClassifyTargetInCone(char *m, char *p, float *pos, char *v);
-extern void find_nearest_path_point(void *, void *, void *, int *, float *, int, float, float, float);
+
 extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
 
 extern float ApproachValue(float *p, float target, float maxstep);
@@ -2290,11 +2268,10 @@ extern int coll_line(void *, void *, int, void *, void *);
 extern float IntToFloat(int);
 extern int coll_sphere(float, void *, int, void *);
 extern int RotateWithMoby(int unused, char *m, char *a, void *b, char *c, void *d);
-extern float ProbeGroundHeight(void *, int, float);
 
 extern unsigned char *moby_get_ride_transform(int);
 extern void RotatePointAboutAxis(void *, void *, float);
-extern void DeleteMoby(void *);
+
 extern int g_current_level_index MACRO_ADDR;
 extern float g_frame_scale_sq MACRO_ADDR;
 extern unsigned char help_stats_base[];
@@ -3274,7 +3251,7 @@ extern float vec_length_r(float) __asm__("func_001F9B50");
 extern int ComputeHitResponse_r(void *, void *, void *, int, int *, float *, int, int) __asm__("func_L00_0025B4D0");
 extern float FastDiffRots_r(float, float) __asm__("func_001FA850");
 extern float FastAddRots_r(float, float) __asm__("func_001FA748");
-extern void func_00213D28(void *, int, int);
+
 extern void MobyBlendAnimation_r(void *, int, int, int) __asm__("func_00213DE0");
 extern void StepColorFade_r(void *, void *) __asm__("func_L00_0025E590");
 

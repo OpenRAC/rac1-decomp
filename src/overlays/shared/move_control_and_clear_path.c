@@ -8,6 +8,9 @@
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "data/level_01.h"
 #include "enums/hero_state.h"
+#include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
+#include "game/moby/mobyfunc.h"
 extern Hero g_hero;
 
 // Fills a jump pattern record with its default constants.
@@ -92,11 +95,8 @@ void check_scaled_vector_bsphere(char *vec, float scale) {
     scale_vector(scratch, vec, 0.0009765625f);
     FastBSphereCheck(scratch, scale);
 }
-extern void FastVecSub(void *dst, void *a, void *b);
-extern void FastVecCross(void *, void *, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
-extern int test_path_segment_strict_crossing(int, void *, void *);
 
 typedef int u128 __attribute__((mode(TI)));
 
@@ -266,10 +266,6 @@ typedef struct {
     char f;
 } GG;
 extern GG fx_cutscene;
-extern float FastCos(float);
-extern float FastSin(float);
-extern void clear_u64_value(float *);
-extern float FastAddRots(float, float);
 
 /* Places the marker at a moby's position offset along its heading by scale. */
 void PlaceMarkerAheadOfMoby(float scale, char *moby) {
@@ -291,8 +287,6 @@ void spawn_proximity_gated_bolts(char *moby) {
     spawn_randomized_bolt_drop(moby, 4, 7, r, -1);
 }
 LINKER_REMNANT("asm/overlays", func_L01_00279AC0);
-extern char *CreateMoby(int);
-extern void moby_build_matrix(void *);
 
 /* spawns a moby of a class copying the source moby's placement, scaled */
 void spawn_moby_from_placement(struct Moby *src, int oClass) {

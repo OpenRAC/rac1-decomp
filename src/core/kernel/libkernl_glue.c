@@ -2,6 +2,7 @@
 #include "callees.h"
 #include "structs/misc.h"
 #include "core/kernel/libkernl_glue.h"
+#include "asm_functions/executable.h"
 
 /*
  * core_text object 0x118A40-0x119328. Boundaries are retail's linker fill
@@ -164,9 +165,6 @@ void tty_reset_init_flag(void) {
     CoreGlobalWord = 0;
 }
 
-extern int disable_interrupts(void); /* DIntr */
-extern void enable_interrupts(void); /* EIntr */
-
 /* VSync (glue.o): clear INTC_STAT's VBlank-start bit (guarded by
  * DIntr/EIntr so the read-modify-write can't race the interrupt handler),
  * then poll INTC_STAT until that bit is set again; repeats the
@@ -191,10 +189,6 @@ void wait_vblank_start(void) {
         enable_interrupts();
     }
 }
-
-extern void SetVSyncFlag(unsigned int *, long *); /* SetVSyncFlag */
-extern int disable_interrupts(void);                    /* DIntr */
-extern void enable_interrupts(void);                    /* EIntr */
 
 /* VSync2 (glue.o): like VSync, but also arms an asynchronous flag via
  * SetVSyncFlag before the guarded INTC_STAT clear, and the poll loop

@@ -1,6 +1,7 @@
 #include "common.h"
 #include "callees.h"
 #include "structs/misc.h"
+#include "asm_functions/executable.h"
 
 /*
  * core_text object 0x11D0D0-0x11D700. Boundaries are retail's linker fill
@@ -12,7 +13,6 @@
  * "# TLB spad=0 kernel=1:%d ..."). Built with Sony's 2.9-ee
  * (Makefile.sn, EE29_CORE).
  */
-
 
 typedef struct {
     u64 psize : 8;
@@ -37,11 +37,10 @@ typedef struct {
 } SifDmaData;
 
 extern SifResetPacket sif_reset_iop_packet;
-extern void sce_sif_stop_dma(void);
+
 extern u32 sce_sif_get_reg_u(u32 reg) __asm__("func_00118E70");
-extern u32 sce_sif_set_reg(u32 reg, u32 val);
+
 extern void sceSifWriteBackDCache(void *p, s32 size);
-extern u32 sce_sif_set_dma(SifDmaData *dma, s32 count);
 
 /* sceSifResetIop: like sceSifRebootIop (sce_sif_reboot_iop) but with a caller
    -supplied argument string and reboot mode. Adapted from Lombyte's project (GPL-3.0)
@@ -148,10 +147,6 @@ ASM_FUNC("asm/handwritten/core_text", func_0011D3A8);
 
 ASM_FUNC("asm/handwritten/core_text", func_0011D3B8);
 
-extern int set_syscall(int, int);
-extern void kcopy(void *, void *, int);
-extern int get_entry_address(int);
-extern void flush_cache(int);
 extern int tlb_functions_syscall_table[];
 extern char tlb_functions_kernel_code[];
 extern int tlb_saved_syscall_3_entry;
@@ -211,9 +206,6 @@ int InitTLBFunctions(void) {
 }
 
 ASM_FUNC("asm/handwritten/core_text", func_0011D490);
-
-extern int init_tlb_32mb(void);
-extern int kernel_init_tlb(void);
 
 /* Set up the TLB for the machine's memory size: the 32 MB layout
    (init_tlb_32mb) when get_memory_size reports 0x2000000, the kernel's own

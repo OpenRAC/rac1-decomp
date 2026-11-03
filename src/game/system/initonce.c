@@ -8,14 +8,13 @@
 #include "core/startup/permcb.h"
 #include "game/render/draw.h"
 #include "game/render/vuchain.h"
+#include "asm_functions/executable.h"
 
 /*
  * initonce.cpp in the original source; text 0x201E10-0x202260.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
-
-extern void FastMemSet();
 
 extern void UpdateViewContext(void);
 
@@ -58,22 +57,21 @@ extern void sce_cd_disk_ready(int);
 extern int sce_sif_reboot_iop(void *);
 extern int sce_sif_sync_iop(void);
 extern int STUB_printf(); /* debug-log stub: void STUB_printf(int, ...) */
-extern void enable_cache(int);
+
 extern void sceSifInitRpc(int);
-extern int disable_interrupts(void); /* DIntr */
+
 extern void sce_sif_init_iop_heap(void);
-extern void enable_interrupts(void); /* EIntr */
+
 extern int sce_cd_mmode(int);
 extern int sce_fs_reset(void);
 extern int wad_GetSectors_FiiPv(int lba, int sectors, void *buf);
-extern void flush_cache(int);
+
 extern void memcard_get_name(void *arg0);
 
-extern void InitDma(void);
 extern void SetPalMode(void);
 extern void VU0_loadMicroProgram(void *);
 extern int load_disc_sectors_into_global_buffer(void);
-extern void fast_decompress(void *, void *);
+
 extern int LoadIRXModule(void *arg0, void *arg1);
 extern void init_pads(void);
 

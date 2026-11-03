@@ -23,6 +23,8 @@
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
 #include "structs/voice.h"
+#include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 
 extern char gSkillPoints[];
 extern Hero g_hero;
@@ -183,11 +185,6 @@ extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 extern float vec_distance_xy(void *, void *);
-extern float FastAddRots(float, float);
-extern float FastSubRots(float, float);
-extern float FastCos(float);
-extern float FastSin(float);
-extern void FastVecAdd(void *, void *, void *);
 
 /* Orbiting platform: circles its anchor moby at a fixed radius; the turn direction comes from the level switch state.
    */
@@ -316,8 +313,7 @@ void set_listed_class_16f_state_2_and_clear_data_28(int idx) {
         } while (*p++ >= 0);
     }
 }
-extern void clear_u64_value(void *);
-extern float random_angle_radians(void);
+
 extern void InitKnockback_r(void *, void *, int, int, int, float) __asm__("func_L00_0025D5B0");
 
 /* starts a moby in state 0xF at pos: state 6, fresh random spin, motion setup; 0 if not in state 0xF */
@@ -392,18 +388,16 @@ INCLUDE_ASM("asm/overlays", func_L06_002EB348);
 
 extern float toxic_gas_vent_near_d50_value SDATA(toxic_gas_vent_near_d50_value);
 extern float toxic_gas_vent_near_anim_time SDATA(toxic_gas_vent_near_anim_time);
-extern int is_point_inside_clip_volume(void *, int);
+
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
 
 extern void emit_toxic_gas_vent_sparks(char *);
 extern void check_oscillating_toxic_gas_vent_collisions(char *);
 extern void check_timed_toxic_gas_vent_collisions(char *);
-extern float FastSin(float);
-extern float FastAddRots(float, float);
+
 extern int fast_dec_timer(void *);
 extern int truncate_float_to_s32(float);
-extern int scale_ticks(int);
 
 /* Swinging/spinning hazard: waits, swings with a looping sound, then rests for a random time. */
 void toxic_gas_vent_update(char *m) {
@@ -482,13 +476,9 @@ extern int spark_frames SDATA(spark_frames);
 extern float spark_drift SDATA(spark_drift);
 extern float spark_drift_scale SDATA(spark_drift_scale);
 extern float spark_spread SDATA(spark_spread);
-extern float FastVecDist(void *, void *);
-extern int FastBSphereCheck(char *, float);
-extern void euler_to_matrix(void *, void *);
-extern void transform_vector(void *, void *, void *);
-extern void FastVecScale(void *, void *, float);
 
-extern float multiply_global_factor(float);
+extern int FastBSphereCheck(char *, float);
+
 extern void rand_vec(float *, float, float);
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 
@@ -561,10 +551,7 @@ void emit_toxic_gas_vent_sparks(char *moby) {
     PartType02Spawn(v50, v60, v90, spark_color0, spark_color1, i30, i23, i21, 0x30);
 }
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern float FastSubRots(float, float);
-extern float FastSin(float);
-extern float FastCos(float);
-extern float FastAddRots(float, float);
+
 extern int coll_line(void *, void *, int, void *, void *);
 extern float toxic_gas_vent_reach SDATA(toxic_gas_vent_reach);
 
@@ -631,8 +618,6 @@ void check_oscillating_toxic_gas_vent_collisions(char *m) {
 }
 
 extern void vec_scale_to_length(void *, void *, float);
-extern float FastCos(float);
-extern float FastSin(float);
 
 // Sweeps two probe segments around a moby (sin/cos offsets scaled by its speed) via a collision query.
 void check_timed_toxic_gas_vent_collisions(char *m) {
@@ -750,8 +735,6 @@ void set_moby_and_links_to_states_8_and_9(char *moby) {
         }
     }
 }
-extern float FastSubRots(float, float);
-extern void moby_build_matrix(void *);
 
 /* Puts a moby in state 2 and its seven linked mobys in state 3, resetting each one's heading. */
 void set_moby_and_links_to_states_2_and_3(char *a) {
@@ -997,7 +980,7 @@ void update_drawbridge(Moby *m) {
             break;
     }
 }
-extern void matrix_mul_vec3(void *, void *, void *);
+
 extern float drawbridge_upper_min_slide SDATA(drawbridge_upper_min_slide);
 extern float drawbridge_upper_slide_step SDATA(drawbridge_upper_slide_step);
 extern Vec drawbridge_row_a_offset SDATA(drawbridge_row_a_offset);
@@ -1120,23 +1103,20 @@ typedef int u128_78A0 __attribute__((mode(TI)));
 extern int beam_barrier_strand_timers[] MACRO_ADDR;
 
 extern void draw_beam_barrier_segments(char *);
-extern int FastDecTimer(void *);
+
 extern float ApproachValue(float *, float, float);
-extern void FastVecSub(void *, void *, void *);
+
 extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
-extern float FastVecDot(void *, void *);
+
 extern void record_moby_hit(void *, void *);
 extern void AddDrawCallback(void *, void *);
 extern char *MobyGetHitMessage(void *, int, int);
 extern int Help_Request(int, int);
-extern void set_scale_matrix(void *, float);
-extern void sce_vu0_mul_matrix(void *, void *, void *);
 
-extern int FastTweenColor(int, int, float);
+extern void sce_vu0_mul_matrix(void *, void *, void *);
 
 extern unsigned char *spawn_moving_hero_relative_alpha_fade_particle(float *, char *, int, unsigned char, unsigned char,
                                                                      int, float);
-extern void DeleteMoby(void *);
 
 extern int beam_barrier_strand_life MACRO_ADDR;
 extern int beam_barrier_strand_fade_ticks MACRO_ADDR;
@@ -1399,7 +1379,7 @@ void update_beam_barrier(char *m) {
 
 #undef FLD
 typedef u32 u128_F8200 __attribute__((mode(TI), aligned(16)));
-extern void set_scale_matrix(void *, float);
+
 extern void sce_vu0_mul_matrix(void *, void *, void *);
 extern int GetEffectTex(int);
 extern void VU1_addGSregister(int, long);
@@ -1488,7 +1468,7 @@ void draw_beam_barrier_segments(char *moby) {
         matrix += 16;
     }
 }
-extern void FastVecScale(void *, void *, f32);
+
 extern void rand_vec_r(void *, f32, f32) __asm__("func_L00_00258DB0");
 extern f32 D_L06_00161EA0_F8430 SDATA(D_L06_00161EA0);
 extern f32 D_L06_00161E90_F8430 SDATA(D_L06_00161E90);
@@ -2248,13 +2228,6 @@ void transition_moby_group_state_1_to_2(char *arg) {
     }
 }
 
-extern float FastVecDist(void *, void *);
-extern float FastCos(float);
-extern float FastSin(float);
-extern float FastSubRots(float, float);
-extern float FastDiffRots(float, float);
-extern float FastAddRots(float, float);
-
 extern float alien_snapper_steer_half_arc SDATA(alien_snapper_steer_half_arc);
 /* angle from a moby to its owner, clamped to the gaps between obstacles in its list */
 float compute_alien_snapper_target_gap_angle(char *self) {
@@ -2773,7 +2746,7 @@ extern void RerollEffectCounter(void *, void *);
 extern void StepColorFade(void *, void *);
 extern float IntToFloat(int);
 extern void euler_rotation_basis(void *, void *);
-extern int FastTweenColor(int, int, float);
+
 extern int FindNearestEligibleMoby(float, void *, void *, int, int, void *, int);
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern void start_alien_queen_first_recovery(char *);
@@ -3023,7 +2996,6 @@ int update_alien_queen_intro_camera(char *moby) {
 }
 extern void HeroL06_TrySetMoveState(int, int);
 
-
 /* Ends the moby's script. */
 void finish_alien_queen_intro(char *arg) {
     struct AlienQueenVars *data = (struct AlienQueenVars *)((Moby *)arg)->pvars;
@@ -3081,18 +3053,12 @@ typedef struct {
 extern f32 circler_max_speed SDATA(circler_max_speed);
 extern float alien_queen_walk_accel SDATA(alien_queen_walk_accel);
 
-extern f32 FastAddRots(f32, f32);
-extern f32 FastSubRots(f32, f32);
-extern f32 FastCos(f32);
-extern f32 FastSin(f32);
-extern void FastVecSub(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, f32);
-extern f32 FastVecDist(void *, void *);
+
 extern f32 vec_distance_xy(void *, void *);
 extern f32 SteerAngleWithVelocity_r2(f32 *angle, f32 target, f32 *vel, f32, f32, f32) __asm__("func_L00_0025CE58");
 extern f32 ApproachValue(f32 *, f32, f32);
-extern s32 scale_ticks(s32);
-extern void MobyBlendAnimation(struct Moby *, s32, s32, s32);
+
 extern void resolve_point_path_segment_xy_clearance(f32, s32, void *, void *);
 
 /* Circles its centre point on the side away from the hero (at most 45 degrees per step), faces its focus moby, moves
@@ -3140,7 +3106,7 @@ typedef u32 u128_FD3E0 __attribute__((mode(TI), aligned(16)));
 extern struct Hero g_hero_r __asm__("D_0013F450");
 extern f32 g_frame_time MACRO_ADDR;
 extern f32 g_frame_time_sq MACRO_ADDR;
-extern struct Moby *CreateMoby(s32);
+
 extern void set_moby_list_state(int, int);
 
 extern float blarg_slide_pair_open_a SDATA(blarg_slide_pair_open_a);
@@ -3383,7 +3349,6 @@ extern void MusicRequestTrack(int, int);
 
 extern void enter_hero_vehicle_mode_and_set_moby(int, int, int);
 
-extern int FastTweenColor(int, int, float);
 extern void update_entity_matrix(char *, void *, void *, void *);
 extern unsigned char menu_item_enabled_19_r[] __asm__("D_0013D4AF");
 extern unsigned char D_0013D5CA[];

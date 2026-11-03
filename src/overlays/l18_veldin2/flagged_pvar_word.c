@@ -3,6 +3,7 @@
 #include "common.h"
 #include "include_asm.h"
 #include "structs/hero.h"
+#include "asm_functions/executable.h"
 extern Hero g_hero;
 
 typedef struct {
@@ -16,7 +17,7 @@ typedef struct {
 } Level18Moby;
 
 extern Level18Effect *GetFlaggedPvarWord(Level18Moby *);
-extern float FastVecDist(void *, void *);
+
 extern int truncate_float_to_s32(float);
 
 /* Set an attached effect's alpha from distance and the supplied scale. */

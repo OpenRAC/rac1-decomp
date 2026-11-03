@@ -16,6 +16,7 @@
 #include "game/moby/mobyutil.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/level.h"
+#include "asm_functions/executable.h"
 extern char g_hero[];
 extern char item_available[];
 extern int weapon_ammo_counts[];
@@ -323,7 +324,7 @@ void initialize_numeric_hud_values_and_dimensions(HudElem *e) {
     }
 }
 INCLUDE_ASM("asm/overlays", func_L00_002366DC);
-extern int scale_ticks(int);
+
 extern void initialize_numeric_hud_values_and_dimensions(HudElem *);
 
 /* Resets a HUD element: a timer of 30 + scale_ticks(180) (+0x7C),
@@ -569,13 +570,10 @@ void hud_update_particles(HudElem *e) {
 extern int hud_screen_position(HudElem *rec, int *x, int *y);
 extern void apply_hud_slide_offset(HudElem *, int *, int *, int, int);
 extern void draw_hud_rect_blended(int, int, int, int, long, long);
-extern float multiply_global_factor(float);
+
 extern int allocate_hero_voice_for_entry(int, int);
 extern int GetIconFrame(int, int);
-extern void clear_u64_value(void *);
-extern void FastVecSub(void *dst, void *a, void *b);
-extern void vec_mul_components(void *, void *, void *);
-extern void FastVecAdd(void *, void *, void *);
+
 extern void draw_hud_sprite_subpixel(int, int, int, int, int, int);
 extern void draw_rotated_hud_sprite(int tex, int x, int y, int w, int h, int alpha);
 extern int hud_stars_width SDATA(hud_stars_width);
@@ -727,10 +725,7 @@ int draw_hud_stars(HudElem *rec) {
  */
 extern int GetIconFrame(int, int);
 extern void draw_rotated_hud_sprite(int, int, int, int, int, int);
-extern void clear_u64_value(void *);
-extern void FastVecSub(void *, void *, void *);
-extern void vec_mul_components(void *, void *, void *);
-extern void FastVecAdd(void *, void *, void *);
+
 extern void draw_hud_sprite_subpixel(int, int, int, int, int, int);
 extern int hud_stars_width SDATA(hud_stars_width);
 extern int hud_star_height SDATA(hud_star_height);
@@ -818,7 +813,7 @@ extern int measure_text_width_regular(const char *, int);
 extern void HudSprite(int, int, int, int, int, int);
 extern void draw_hud_sprite_flipped(int, int, int, int, int, int);
 extern int FontPrintCenter(int, int, long, void *, int);
-extern float FastVecDist(void *, void *);
+
 extern void *msg_string(int);
 extern int sprintf(char *, const char *, ...);
 extern void draw_framed_text(int, int, int, char *);
@@ -1088,7 +1083,7 @@ void initialize_eight_slot_hud_selector(Obj238478 *o) {
         d++;
     }
 }
-int scale_ticks(int);
+
 typedef struct {
     int f0, f4, f8, fC, f10, f14, f18;
 } Ent_38530;
@@ -1130,10 +1125,6 @@ extern int quick_select_default_right_slot;
 extern int quick_select_default_up_slot;
 extern int quick_select_default_down_slot;
 extern int gameplay_event_frame_count MACRO_ADDR;
-extern int FastDecTimer(void *);
-extern float FastSubRots(float, float);
-extern float FastDiffRots(float, float);
-extern float FastNormalizeAngle(float);
 
 /* Picks slot w74 from the stick angle (or steps it with the 0x1000-0x8000 pad bits), counts hold frames in b71/b70,
    records the slot's entry when released, and closes when b70 runs out.
@@ -1294,13 +1285,10 @@ extern int GetIconFrame(int, int);
 extern void HudSprite(int, int, int, int, int, int);
 extern void HudFrame(char *, int, int, int, int, int);
 extern int sprintf(char *, const char *, ...);
-extern int FastTweenColor(int, int, float);
-extern float FastAddRots(float, float);
-extern float FastCos(float);
-extern float FastSin(float);
+
 extern int FontPrintCenter(int, int, long, void *, int);
 extern void *msg_string(int);
-extern int libc_strlen(char *);
+
 extern unsigned char screen_globals_base[];
 extern short quick_select_pulse_period;
 extern short quick_select_ring_radius;
@@ -2080,7 +2068,7 @@ extern char bolt_count_format[];
 extern char bolt_separator_string[];
 extern char bolt_separator_alt_string[];
 extern f32 IntToFloat(int);
-extern int FastTweenColor(int, int, f32);
+
 extern void HudFrame_r2(void *, int, int, int, int, int) __asm__("func_L00_0023BAB8");
 extern int sprintf_r() __asm__("func_00116248");
 extern void font_print_right(int, int, int, char *, int);
@@ -2204,8 +2192,7 @@ extern int bolt_exclamation_color_to SDATA(bolt_exclamation_color_to);
 extern int bolt_exclamation_pulse_ticks SDATA(bolt_exclamation_pulse_ticks);
 extern char bolt_exclamation_format[];
 extern int sprintf(char *str, const char *fmt, ...);
-extern float FastSin(float);
-extern int FastTweenColor(int, int, float);
+
 extern void print_text_with_texture_3(int, int, int, char *, int);
 
 /* Draw the bolt counter panel sliding in with its fade; skipped in some hero states. */
@@ -2319,7 +2306,6 @@ extern int weapon_hud_text_y SDATA(weapon_hud_text_y);
 extern void draw_hud_sprite_flipped(int, int, int, int, int, int);
 extern void HudFrame(char *, int, int, int, int, int);
 extern int sprintf(char *, const char *, ...);
-extern int FastTweenColor(int, int, float);
 
 /* Draws the weapon HUD tile: three-part frame, weapon icon and ammo text with shadow, faded by the slide-in timers. */
 int draw_weapon_ammo_hud_panel(char *m) {
@@ -2484,7 +2470,7 @@ int update_hud_elements(int call) {
 extern int weapon_hud_suspended SDATA(weapon_hud_suspended);
 extern int D_hud_pair[2] __asm__("D_L00_0015FA44") MACRO_ADDR;
 extern void Hud_SetBarValueById(int, int);
-extern void hud_weapon_update(void);
+
 extern int draw_weapon_ammo_hud_panel(char *);
 
 /* Shows or hides the weapon HUD element depending on the current weapon. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_text_002377b8.c, FUN_L00_0023adb8. */
@@ -2575,7 +2561,6 @@ void HudFrame(char *e, int id, int x, int y, int flags, int alpha) {
     }
 }
 extern int *dma_packet_cursor MACRO_ADDR;
-extern long GetFrameTex(int);
 
 /* The level's HudSprite (src/game/ui/hud.c) with the UV given: draws
    texture TEX as a sprite at (x, y), w x h, with ALPHA, through the
@@ -2723,7 +2708,7 @@ extern char tie_class_slot_flags[];
 extern char shrub_class_slot_by_id[];
 extern char shrub_class_slot_records[];
 extern char shrub_class_slot_flags[];
-extern void FastMemSet(void *, int, int);
+
 extern void register_audio_stream_callback(void);
 extern void calculate_dma_transfer_address(void);
 
@@ -2826,7 +2811,6 @@ void init_level_item_inventory(void) {
         append_level_item_if_absent(g_current_level_index);
     }
 }
-
 
 /* Adds the id level_item_ids[IDX] to the 0xFF-terminated byte list at
    vendor_stock (ids in the low six bits) unless it is already there. The

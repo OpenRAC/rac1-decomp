@@ -9,10 +9,11 @@
 #include "overlays/shared/hero_mapped_animations.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+#include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 extern Hero g_hero;
 
 extern char hoven_item_defs[];
-extern int hero_slot_item_id(int);
 
 // Returns a value selected by game-state flags, or an entry field of a 0x4C-byte table.
 int hero_get_gadget_anim_id(int a) {
@@ -51,22 +52,14 @@ extern float g_frame_scale_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern float hoven_hero_speed_bands_field_18[];
-extern int scale_ticks(int);
-extern float FastCos(float);
-extern float FastSin(float);
-extern float FastDiffRots(float, float);
-extern float FastSubRots(float, float);
+
 extern float vec_length_xy(void *);
 extern float ApproachValue(float *, float, float);
-extern void build_scaled_hero_move_impulse(float, float);
 
-extern void turn_to(int, float, float, float);
-extern void stick_target(int, float);
+extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
 extern float SpringAngle(void *, float, void *, int, float, float, float);
 
-extern void FastVecAdd(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
-extern void vec_set_length_xy(void *, void *, float);
 
 extern void allocate_hero_voice_for_entry(int, int);
 extern int g_current_level_index MACRO_ADDR;
@@ -188,7 +181,7 @@ void hero_update_hop_movement(void) {
         if (g_hero.unk4A8 && g_hero.on_ice_ground) {
             arg = g_frame_time_sq * 0.17f;
             if (g_hero.state.current == 15) {
-                stick_target(0, g_frame_time * 2.5f);
+                stick_target_v(0, g_frame_time * 2.5f);
                 arg = g_frame_time_sq * 3.0f;
             }
             if (0.2617994f < g_hero.ground_slope.f) {

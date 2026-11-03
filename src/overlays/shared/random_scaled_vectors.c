@@ -3,6 +3,7 @@
 #include "common.h"
 #include "include_asm.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyutil.h"
 
 extern int func_001160D8(void);
 
@@ -15,11 +16,8 @@ float scale_by_one_minus_random_squared(float scale) {
     t = 1.0f - t;
     return t * scale;
 }
-extern float random_angle_radians(void);
-extern float scale_by_one_minus_random_squared(float);
-extern void clear_u64_value(void *);
 
-extern float FastSin(float);
+extern float scale_by_one_minus_random_squared(float);
 
 /* Write a 2D vector at a random angle with length from scale_by_one_minus_random_squared. */
 void generate_random_scaled_vector2(float *out, float scale) {

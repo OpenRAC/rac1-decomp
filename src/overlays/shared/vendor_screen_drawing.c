@@ -5,9 +5,12 @@
 #include "game/render/framebuf.h"
 #include "game/system/update.h"
 #include "structs/level_records.h"
+#include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
+#include "game/moby/mobyfunc.h"
 
 extern void *libc_memset(void *, int, int);
-extern void DrawMobyList(int, int);
+
 extern char *msg_string(int);
 extern void font_print_window_small(void *, long, char *, int);
 extern int sprintf(char *str, const char *fmt, ...);
@@ -136,11 +139,8 @@ purchase:
 }
 
 extern float vendor_inset_quad_margins[][4];
-extern void transform_scaled_vertex_batch(char *arg0, int arg1, void *arg2, char *arg3);
-extern void FastVecSub(void *, void *, void *);
-extern float FastVecLength(void *);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
 
 extern int GetEffectTex(int);
 extern void VU1_addGSregister(int, long);
@@ -218,7 +218,7 @@ extern void configure_capture_target(int, int, float);
 extern void draw_vendor_purchase_text(void *, int, int);
 extern void render_vendor_capture_texture_overlays_pass(int, float, float);
 extern void begin_draw_frame(void);
-extern void DrawMobyList(int, int);
+
 extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
 extern long capture_texture_tex0 MACRO_ADDR;
 
@@ -266,7 +266,7 @@ void draw_vendor_purchase_panel(void *m) {
     DrawMobyList((int)m, 1);
     DrawTexturedQuad(w, h, x, y, 0, 0, x, y, 0x80808080L, capture_texture_tex0);
 }
-extern void matrix_mul_vec3(void *, void *, void *);
+
 struct Quad {
     int a, b, c, d;
 };
@@ -409,9 +409,9 @@ extern void VU1_sendChain_r(void) __asm__("func_002349B8");
 extern void VU1_swapChain_r(void) __asm__("func_00234948");
 extern void func_L00_001F9D40(s32);
 extern void func_001F2608(void);
-extern void func_001F9CA0(void *, void *, void *);
+
 extern void InitMobyInstance_r(void *, s32) __asm__("func_0020D440");
-extern void func_L00_00251E30(void *);
+
 extern void pack_render_command_fields_r(void *, s32, s32, s32, s32) __asm__("func_0020E340");
 extern void func_L00_0029C9E8(void);
 extern void FastMemZero16_r(void *, s32) __asm__("func_001F99D8");
@@ -432,7 +432,6 @@ extern void func_001FFFB8(void);
 extern void func_001F4748(void);
 extern void RestoreMobyClassDists_r(void) __asm__("func_0020E098");
 extern void DrawMobysCleanUp_r(void) __asm__("func_0020E200");
-extern void func_0020DD48(void);
 
 /* Vendor screen frame: on the first frame sets up the camera rows, the two preview mobys and the stream read; then
  * draws the vendor mobys, the capture pass and the HUD.

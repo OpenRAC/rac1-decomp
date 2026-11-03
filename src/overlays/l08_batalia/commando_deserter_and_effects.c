@@ -25,6 +25,10 @@
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
 #include "structs/voice.h"
+#include "asm_functions/executable.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "asm_functions/shared_levels.h"
+#include "game/moby/mobyfunc.h"
 extern char g_hero[] NOT_SDA;
 
 /* Lift/gate moby that follows a driver moby's progress between a base and a top height. */
@@ -106,7 +110,7 @@ extern s32 Sound_IsPlaying_r(struct Moby *, s32) __asm__("func_L00_0028EB98");
 extern s32 Moby_PlaySound_r(s32, s32, struct Moby *) __asm__("func_0022ED80");
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 extern f32 random_float_between_r(f32, f32) __asm__("func_002140F8");
-extern f32 func_00214158(void);
+
 extern f32 multiply_global_factor_r(f32) __asm__("func_001F9878");
 extern s32 truncate_float_to_s32_r(f32) __asm__("func_001FA898");
 extern f32 fast_atan2_r(f32, f32) __asm__("func_L00_001FF860");
@@ -120,7 +124,7 @@ extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern void func_L00_00250800(void *, s32, void *);
 extern void MobySpringTurn_r(struct Moby *, f32, f32 *, f32, f32, f32) __asm__("func_L00_002592B0");
-extern void func_L00_00260108(void *, void *, s32, f32, f32);
+
 extern struct Moby *func_L08_002DF758(void *, struct Moby *, void *, f32, f32);
 extern void func_L08_002EA930(struct Moby *);
 extern void func_L08_002EAB30(struct Moby *);
@@ -355,9 +359,7 @@ void update_moby_height_from_driver(char *m) {
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 extern s32 Sound_IsPlaying(struct Moby *, s32);
 extern s32 Moby_PlaySound_r2(s32, s32, struct Moby *) __asm__("func_0022ED80");
-extern f32 FastAddRots(f32, f32);
-extern f32 FastSubRots(f32, f32);
-extern void FastVecAdd(void *, void *, void *);
+
 typedef struct {
     s32 driver; /* 0x0: moby index whose pvars start with the 0..1 progress */
     f32 open_deg; /* 0x4: yaw at full progress, in degrees */
@@ -369,12 +371,8 @@ typedef struct {
 extern int batalia_game_mode MACRO_ADDR;
 extern char voice_pool[];
 extern u8 gSpecialItems[];
-extern f32 FastDiffRots(f32, f32);
-extern void euler_to_matrix(void *, void *);
-extern void transform_vector(void *, void *, void *);
 
 extern void Sound_SetPitchBend(s32, s32);
-extern int scale_ticks(int);
 
 /* Swings the gate to its driver's progress, fading a creak in while it moves and out when it stops, and latches its
    flag once fully open.
@@ -483,8 +481,6 @@ typedef struct {
 } PairA;
 
 extern int FastBSphereCheck(char *, float);
-extern void FastVecSub(void *, void *, void *);
-extern float FastVecLength(void *);
 
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
 
@@ -578,11 +574,9 @@ extern char gHeroPos[];
 extern f32 batalia_zero_vec[] MACRO_ADDR;
 extern s32 MobyGetHitMessage_r(struct Moby *, s32, s32) __asm__("func_L00_0025B478");
 extern f32 vec_distance_xy(void *, void *);
-extern f32 fast_atan2(f32, f32);
-extern f32 FastVecDist(void *, void *);
-extern void clear_u64_value(void *);
+
 extern void vec_scale_to_length(void *, void *, f32);
-extern s32 scale_ticks(s32);
+
 extern f32 ApproachValue(void *, f32, f32);
 extern void DeleteMoby_r2(struct Moby *) __asm__("func_0020D678");
 extern void Moby_PlaySound_r3(s32, s32, struct Moby *) __asm__("func_0022ED80");
@@ -756,19 +750,22 @@ typedef struct {
 extern int D_L08_0015F4F8 MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
 extern Sound45 batalia_lights[];
-extern float IntToFloat(int), FastSin(float), FastCos(float), vec_length(float);
-extern float random_float_between(float, float), normalize_angle(float), FastVecDist(void *, void *);
+extern float IntToFloat(int);
+
+extern float vec_length(float);
+
 extern int truncate_float_to_s32(float);
-extern int GetEffectTex(int), scale_ticks(int), fast_dec_timer(int *), FastDecTimer(void *);
-extern void euler_to_matrix(void *, void *), transform_vector(void *, void *, void *);
-extern void FastVecSub(void *, void *, void *), FastVecAdd(void *, void *, void *),
-    FastVecCross(void *, void *, void *);
-extern void FastVecScale(void *, void *, float), vec_scale_to_length(void *, void *, float);
-extern float SmoothNoise(float, char *), split_float_fraction(void *, float);
+extern int GetEffectTex(int);
+
+extern int fast_dec_timer(int *);
+
+extern void vec_scale_to_length(void *, void *, float);
+extern float SmoothNoise(float, char *);
+
 extern void draw_world_quad(void *, void *, int);
 extern unsigned char *func_L08_0027C218(void *, float, void *, void *, short, unsigned char, unsigned char,
                                         unsigned char, unsigned char);
-extern int rand_range(int, int);
+
 extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
 
 /* Builds the animated grid, draws its quads, and updates attached effects. */
@@ -1198,27 +1195,17 @@ void update_flickering_mesh_effect(struct Moby *m) {
     d->flags |= 2;
 }
 
-extern float FastVecDist(void *, void *);
 extern void set_ground_height_band(void *);
-extern void MobyBlendAnimation(void *, int, int, int);
+
 extern int DialogRequest_Init(void *, void *);
 extern int Npc_TryStartDialog(void *, void *);
 
-extern void unlock_planet(int);
-extern void queue_planet_unlock_message(int);
-
 extern int memcard_Save(int, int);
-extern void DeleteMoby(void *);
+
 extern float vec_distance_xy(void *, void *);
-extern float fast_atan2(float, float);
-extern float FastDiffRots(float, float);
+
 extern int fast_dec_timer(int *arg0);
 
-extern float multiply_global_factor(float);
-extern float FastAddRots(float, float);
-extern void BuildSphericalOffset(void *, float, float, float);
-extern void FastVecAdd(void *, void *, void *);
-extern float FastSubRots(float, float);
 extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern char batalia_commando_dialogue_name[];
@@ -1427,7 +1414,6 @@ extern struct G batalia_cutscene_state;
 extern float batalia_big_head_cutscene_fov_scale MACRO_ADDR;
 extern float batalia_big_head_cutscene_camera_pullback MACRO_ADDR;
 extern unsigned char deserter_scale_manipulator[];
-extern void AttachManipulator(char *, int, void *);
 
 /* triggers objects matching the moby's class */
 void attach_batalia_deserter_class_manipulator(char *moby) {
@@ -1639,16 +1625,8 @@ void attach_batalia_plumber_class_manipulator(char *moby) {
 extern void attach_batalia_plumber_class_manipulator(char *moby);
 extern void request_batalia_cannon_mount(char *arg);
 
-extern void grant_inventory_item(int, int);
-extern void DeleteMoby(void *);
-extern float fast_atan2(float, float);
-extern float FastDiffRots(float, float);
 extern int fast_dec_timer(int *arg0);
 
-extern float multiply_global_factor(float);
-extern float FastAddRots(float, float);
-extern void FastVecAdd(void *, void *, void *);
-extern float FastSubRots(float, float);
 extern char batalia_plumber_dialogue_name[];
 /* KEPT: short and MACRO_ADDR select how each function addresses this global. */
 extern char *batalia_mobys MACRO_ADDR;
@@ -1847,11 +1825,11 @@ extern VRec help_records[] NOT_SDA;
 #define HR D_00141A68
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
-extern int is_point_inside_clip_volume(void *arg0, int arg1);
+
 extern int PlayBankSound(int, int, int);
-extern void ShowBanner(int, int);
+
 extern int Help_Request(int a, int b);
-extern float FastVecDot(void *a, void *b);
+
 /* Moby update for a trigger-volume controller; tracks best times and raises Help_Request. */
 void update_batalia_item_triggers_and_help(char *m) {
     VData *data = ((VData *)((Moby *)m)->pvars);
@@ -1948,7 +1926,7 @@ sample_volume:
     if (alt_p[0x2F] == 0 && hero_p.state.control_mode == HERO_MODE_GRIND)
         alt_p[0x2F] = 1;
 }
-extern void cutscene_set_camera_target(int);
+
 /* per-frame update of a moby that fires a sound event when the game state allows */
 void update_batalia_selected_moby_effects(struct Moby *moby) {
     int k;
@@ -1975,8 +1953,6 @@ void update_batalia_selected_moby_effects(struct Moby *moby) {
     }
 }
 
-extern void matrix_mul_vec3(void *, void *, void *);
-extern void FastVecAdd(void *, void *, void *);
 extern void spawn_effect_with_initial_motion(float *, float *, int, float);
 extern float g_frame_time MACRO_ADDR;
 
@@ -2003,7 +1979,6 @@ void spawn_batalia_moby_effects_with_random_motion(char *moby) {
     }
 }
 
-extern void draw_env_overlay_mesh(int, int, int, void *, int);
 extern int batalia_textured_scrolled_uvs_r[] __asm__("D_L08_001F8820");
 extern int batalia_textured_mesh8_uv_sources[];
 extern int batalia_textured_mesh8_counts_r[] __asm__("D_L08_001F4F20");
@@ -2104,8 +2079,7 @@ void queue_batalia_textured_batch_passes(void) {
     queue_batalia_offset_textured_batches(0);
 }
 extern int FastBSphereCheck(char *, float);
-extern void FastVecSub(void *, void *, void *);
-extern float FastVecLength(void *);
+
 extern int truncate_float_to_s32_r_r(float) __asm__("func_001FA898");
 extern void AddDrawCallback(void (*)(void), void *);
 extern void queue_batalia_textured_batch_passes(void);
@@ -2193,8 +2167,6 @@ void update_batalia_textured_effect(unsigned char *moby) {
 extern char *MobyGetHitMessage(void *, int, int);
 extern int Moby_PlaySound(int, int, int);
 extern void spawn_proximity_gated_bolts(void *);
-
-extern void DeleteMoby(void *);
 
 // Moby state machine: wait, check hit on first probe, then clean up and delete.
 void update_moby_hit_removal_state(char *m) {

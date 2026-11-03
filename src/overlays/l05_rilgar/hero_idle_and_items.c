@@ -19,6 +19,9 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+#include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 extern Hero g_hero;
 extern char item_usage[];
 extern char usage_stats[];
@@ -29,48 +32,26 @@ typedef struct {
     int c;
     char pad[0x20];
 } T2C;
-extern void clear_moby_transform_history(char *o);
-
-extern int scale_ticks(int);
 
 extern int get_hero_idle_animation_index(int a);
-extern void clear_u64_value(void *);
-extern void set_hero_animation(int, int, float);
-extern void MobyBlendAnimation(void *, int, int, int);
+
 extern void ClampVectorLength(void *a, float x);
 extern float vec_length_xy(void *);
-extern void stick_target(float, int);
-extern float FastDiffRots(float, float);
 
 extern int allocate_hero_voice_for_entry(int, int);
-
-extern float FastVecDist(void *, void *);
-
-extern void initialize_moby_transform_history(int a, char *b);
-extern void create_moby_transform_history_entry(char *o, int a, int b);
 
 extern int truncate_float_to_s32(float);
 extern void update_hero_target_heading(float a, float b, float c);
 
-extern int is_wrench_moby(char *);
-extern float FastAddRots(float, float);
 extern void *MobyGetHitMessage(void *, int, int);
 
-extern int hero_is_in_special_state(void);
 extern void release_and_clear_hero_voice_slots(void);
-extern float FastVecDot(void *a, void *b);
-extern void RippleDisturb(void *, int, int, float, float, float, float);
 
-extern void FastMemSet(void *, int, int);
-extern void gravity_set_z(float *dst, float *src, float z);
-extern void get_moby_color(void *, void *, void *, void *);
+extern void RippleDisturb(void *, int, int, float, float, float, float);
 
 extern int select_point_index_by_distance(void *, void *, float);
 
 extern int queue_animation_update(int, int, int, int, int, int, int);
-
-extern void FastVecScale(void *, void *, float);
-extern void gravity_flatten(float *dst, float *src);
 
 extern int rilgar_cinematic_mode MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;

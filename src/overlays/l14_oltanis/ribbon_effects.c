@@ -11,10 +11,7 @@
 #include "asm_functions/executable.h"
 #include "overlays/shared/moby_ground_collision.h"
 
-extern float FastSubRots(float, float);
 extern float IntToFloat(int);
-
-extern float FastSin(float);
 
 struct Moby;
 extern void AddDrawCallback(void (*)(struct Moby *), struct Moby *);

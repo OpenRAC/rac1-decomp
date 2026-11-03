@@ -28,6 +28,7 @@
 #include "game/system/space.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+#include "asm_functions/executable.h"
 
 /*
  * pause.cpp in the original source; text 0x219C08-0x228A58.
@@ -36,8 +37,6 @@
  */
 
 extern char voice_pool[];
-
-extern void FastMemSet();
 
 extern int measure_text_width_regular(unsigned char *, int);
 extern int measure_text_width_small(unsigned char *, int);
@@ -56,14 +55,6 @@ extern unsigned char gSpecialItems[];
 extern unsigned char gHaveHeliPack NOT_SDA;
 
 extern int item_available NOT_SDA;
-
-extern void FastVecAdd(void *, void *, void *);
-extern void matrix_mul_vec3(void *, void *, void *);
-
-extern float FastCos(float);
-extern float FastSin(float);
-
-extern void matrix_copy_rows(void *, void *);
 
 extern unsigned char gold_bolts_collected[];
 extern unsigned char gold_weapon_purchased[];
@@ -224,7 +215,7 @@ extern struct CameraSystem gCamera_r2 __asm__("D_00187040");
 extern struct O2_19E90 *panel_slots_r[] __asm__("D_001D6120");
 extern u8 D_001602C0 MACRO_ADDR;
 extern u8 D_001602D0 MACRO_ADDR;
-extern s32 func_001F9C30(s32, s32, f32);
+
 extern void func_00234AC8(s32);
 extern s32 func_00122598(s32);
 extern void VU1_initChain_r(void) __asm__("func_002348E8");
@@ -365,7 +356,7 @@ extern struct Ent *panel_slots_r2[] __asm__("D_001D6120");
 
 extern void reset_active_camera_position_and_basis_r(void) __asm__("func_00219C08");
 extern void initialize_menu_preview_scene_r(void) __asm__("func_00219E90");
-extern void func_00213C78();
+
 extern s32 Moby_PlaySound_r(s32, s32, struct Ent *) __asm__("func_0022ED80");
 extern void mode_freeze_init_r(s32, MenuPage *, s32) __asm__("func_001FBC80");
 extern void func_002348B8(void);
@@ -512,8 +503,6 @@ extern void draw_hud_rect_blended();
 extern void DrawTexturedQuad();
 extern void SetupGifPaging();
 extern void DoGifPaging();
-
-extern void DrawMobyList(s32, s32);
 
 extern void BuildViewMatrices(void);
 extern void project_graphics_bounds(Vec4 *, Vec4 *, s32 *, s32 *, s32 *, s32 *);
@@ -845,7 +834,7 @@ extern short panel_clear_color; /* SDA, gp -0x6A50 */
 extern void draw_hud_rect_blended(int, int, int, int, long, long);
 
 extern int game_frame_counter MACRO_ADDR;
-extern int subtract_integer_with_clamp(int); /* abs */
+
 extern void SetupGifPaging(int);
 extern void DoGifPaging(void);
 
@@ -968,11 +957,11 @@ extern int menu_label_marquee_gap SDATA(menu_label_marquee_gap);
 extern int pal_mode MACRO_ADDR;
 extern char *current_menu_page NOT_SDA;
 extern void VU1_addGSregister(int, int);
-extern int scale_game_frame_count(int);
+
 extern void find_help_entry(int, int, void *);
 extern int sprintf(char *, const char *, ...);
 extern void libc_memset(void *, int, int);
-extern int FastTweenColor(int, int, float);
+
 extern int fade_menu_color(int, int, int);
 #define TEXT(id) ((char *(*)(int))func_001FE540)(id)
 #define DRAW(c, t) \
@@ -1596,7 +1585,6 @@ s32 render_localized_ui_entry_list(MenuDescriptor *menu) {
 /* SDA, gp -0x6A4C: declared 2 bytes so the assembler reaches it through
    $gp, and read as the int it is. */
 extern int menu_fade_duration SDATA(menu_fade_duration);
-extern int FastTweenColor(int, int, float);
 
 /* Fade colour for the pause menus: -1 picks the default colours
    0x80FFA888 / 0x8020FFFF and a negative start becomes 0. While the
@@ -2719,8 +2707,6 @@ int restore_menu_help_text(MenuScreen *arg0) {
 
 extern int g_game_language MACRO_ADDR;
 
-extern void copy_memory_aligned(void *, void *, int);
-
 /* The slot count at g_help_state+0x2C, read through its own base pointer:
    retail's loop keeps a separate copy of the g_help_state address. */
 static inline int pauseSlotCount(void) {
@@ -2943,7 +2929,7 @@ extern s32 game_frame_counter MACRO_ADDR;
 extern short panel_clear_color;
 extern f32 menu_grid_icon_width SDATA(menu_grid_icon_width);
 extern f32 menu_grid_icon_height SDATA(menu_grid_icon_height);
-extern s32 subtract_integer_with_clamp(s32);
+
 extern void SetupGifPaging(s32);
 
 extern void draw_hud_rect_blended_r2(s32, s32, s32, s32, u64, s32) __asm__("func_00201640");
@@ -3069,7 +3055,6 @@ int set_menu_pause_flag_state(MenuScreen *arg0) {
 }
 
 extern int menu_preview_slot_enabled[];
-extern void DrawMobyList(int, int);
 
 /* Tears down the 24 handles at arg0+0x44, skipping the ones in use.
    The switch's table is jtbl_001E8AD0; `off` before `slots` and a second
@@ -3226,7 +3211,7 @@ int update_item_preview_moby(char *arg0) {
 }
 
 extern char *current_menu_page NOT_SDA;
-extern void DrawMobyList(int, int);
+
 extern void SetupGifPaging(int);
 extern void DoGifPaging(void);
 extern void *msg_string_id(int) __asm__("func_001FE540");
@@ -3257,8 +3242,6 @@ int draw_item_preview_screen(MenuScreen *arg0) {
     DoGifPaging();
     return 2;
 }
-
-extern float FastAddRots(float, float);
 
 /* Moby update for the item preview: spins its yaw angle by 0.01 a frame. */
 void rotate_item_preview_moby(struct Moby *moby) {
@@ -3312,9 +3295,7 @@ extern struct PreviewClassResource *moby_class_resources_r[] __asm__("D_001B3580
 extern void update_item_preview_transform();
 extern void noop_callback_q(s32, s32);
 extern void noop_callback_r_r(struct Moby *, s32) __asm__("func_001E97F8");
-extern f32 FastAddRots(f32, f32);
 
-extern void MobySetAnimation(struct Moby *, s32, s32);
 extern struct Moby *create_menu_preview_moby_r2(s32) __asm__("func_00226720");
 extern struct Moby *delete_moby_r(struct Moby *) __asm__("func_002267C0");
 
@@ -3459,7 +3440,6 @@ s32 update_item_preview_binding(struct ItemPreviewBinding_1F238 *preview) {
 }
 
 extern char *current_menu_page NOT_SDA;
-extern void DrawMobyList(int, int);
 
 /* The entry address is written inline in the index, as in
    draw_item_preview_screen; a `char *e` local swapped the addu. */
@@ -3514,8 +3494,6 @@ struct ItemPreviewVars {
 };
 extern struct CameraSystem gCamera_r4 __asm__("D_00187040");
 extern struct ItemPreviewPlacement preview_placements[];
-extern f32 FastCos(f32);
-extern f32 FastSin(f32);
 
 /* Position the selected item relative to the preview camera. Owner flag bit 0 selects alternate_x; otherwise use
    normal_x. Rotate the side and forward offsets in the X/Y plane after adding the unrotated placement position.
@@ -3728,13 +3706,10 @@ extern void font_print_right_large(s32, s32, u64, char *, s32);
 extern void font_print_window_regular_r(struct TextRegion *, u64, char *, s32) __asm__("func_001F7560");
 extern char *msg_string_r3(s32) __asm__("func_001FE540");
 extern void draw_hud_rect_blended_r3(s32, s32, s32, s32, u64, s32) __asm__("func_00201640");
-extern void DrawMobyList(s32, s32);
 
-extern s32 count_nonzero_entries_up_to_40(void);
-extern s32 count_nonzero_entries_up_to_10(void);
 extern void *libc_memset_r(void *, s32, u32) __asm__("func_001153FC");
 extern int sprintf(char *, const char *, ...);
-extern char *libc_strchr(const char *, int);
+
 extern char *libc_strcpy_r(char *, const char *) __asm__("func_001166FC");
 extern u32 libc_strlen_r(const char *) __asm__("func_00116810");
 /* Returns arg0 + arg1. */
@@ -3880,8 +3855,6 @@ int DrawGBsShipMenu__maybe(char *arg0) {
     DoGifPaging();
     return 8;
 }
-
-extern float FastAddRots(float, float);
 
 /* Moby update for a rotating preview: spins its +0x40 angle by 0.02 a frame. */
 void rotate_preview_moby_x(Moby *arg0) {
@@ -4195,7 +4168,6 @@ struct ClutImage {
 
 extern MemoryCardState memory_card_state_r2 __asm__("D_0013D390");
 
-extern s32 func_001F9968(s32);
 extern s64 register_8bit_texture_r2(s32, s32, u8 *, u8 *, s32, s32) __asm__("func_00205660");
 extern void flush_pending_texture_uploads_r2(void) __asm__("func_0020C2F8");
 extern void fast_decompress_r2(u8 *, s32) __asm__("func_0020C468");
@@ -4957,8 +4929,7 @@ int draw_map_screen_layers(void) {
     return 4;
 }
 
-extern float FastNormalizeAngle(float, int);
-extern int subtract_integer_with_clamp(int); /* abs */
+extern float FastNormalizeAngle_v(float, int) __asm__("func_001FA7D8");
 
 extern char item_info_table[];
 extern int game_frame_counter MACRO_ADDR;
@@ -5027,7 +4998,7 @@ int draw_pause_ring(char *arg0) {
         s32 icon_entry_index;
 
         ang = (f32)i * 0.7853982f + -1.5707964f;
-        slot_angle = FastNormalizeAngle(ang, flag);
+        slot_angle = FastNormalizeAngle_v(ang, flag);
         x = cx + FastCos(slot_angle) * radius;
         y = cy + FastSin(slot_angle) * radius;
         if (i == pause_state->sel) {
@@ -5060,7 +5031,6 @@ int draw_pause_ring(char *arg0) {
 
 extern void Moby_PlaySound(int, int, int);
 
-extern int scale_game_frame_count(int);
 extern void FadeToBlack(int);
 extern float gFade MACRO_ADDR;
 extern int requested_video_mode_i __asm__("D_0016044C") MACRO_ADDR;
@@ -5769,7 +5739,7 @@ typedef struct {
 } Glyph2;
 extern char menu_side_indicator_left_glyph[];
 extern char menu_side_indicator_right_glyph[];
-extern int GetFrameTex(int);
+extern int GetFrameTex_v(int) __asm__("func_00200248");
 /* x, y first: arguments are evaluated in order, so the y conversion runs
    before the nested texture calls and is kept in $f20 across them, as in
    retail (and in draw_map_overlay, the other caller). */
@@ -5785,12 +5755,12 @@ int draw_menu_side_indicator(MenuScreen *arg0) {
     if (arg0->data.options.selection != 0) {
         buf = *(Glyph2 *)menu_side_indicator_left_glyph;
         func_001F68E8_c(4, arg0->height / 2 - 8, 0x80FFA888L, &buf, -1);
-        draw_rotated_sprite(640.0f, (float)(arg0->height << 3), 0x20, 0x10, GetFrameTex(GetIconFrame(0xE99E, 6)),
+        draw_rotated_sprite(640.0f, (float)(arg0->height << 3), 0x20, 0x10, GetFrameTex_v(GetIconFrame(0xE99E, 6)),
                             128.0f, 256.0f, 0.0f);
     } else {
         buf = *(Glyph2 *)menu_side_indicator_right_glyph;
         func_001F68E8_c(arg0->width - 0x18, arg0->height / 2 - 8, 0x80FFA888L, &buf, -1);
-        draw_rotated_sprite(192.0f, (float)(arg0->height << 3), 0x20, 0x10, GetFrameTex(GetIconFrame(0xE99E, 6)),
+        draw_rotated_sprite(192.0f, (float)(arg0->height << 3), 0x20, 0x10, GetFrameTex_v(GetIconFrame(0xE99E, 6)),
                             128.0f, 256.0f, 3.14159274f);
     }
     DoGifPaging();
@@ -5837,10 +5807,10 @@ extern char restart_confirm_page[];
 extern unsigned char gold_bolts_collected_18[];
 extern unsigned char gCheats[] MACRO_ADDR;
 extern unsigned char selector_available[] MACRO_ADDR;
-extern void copy_memory_aligned(void *, void *, int);
+
 extern void memcard_RestoreGame(int);
 extern void memcard_Save(int, int);
-extern int scale_game_frame_count(int);
+
 extern unsigned char g_hero[];
 
 /* Pad handler for the restart option (pad word pad0_pressed): 0x20 opens
@@ -6909,7 +6879,7 @@ struct MenuPanelOwner {
 };
 extern short pal_mode_r2 __asm__("D_0015EE80");
 extern void VU1_addGSregister_r4(s32, u64) __asm__("func_00234C98");
-extern s32 random_integer_below(s32);
+
 extern s64 GetEffectTex_r2(s32) __asm__("func_001F4868");
 extern void DrawTexturedQuad_r(s32, s32, s32, s32, s32, s32, s32, s32, s64, s64) __asm__("func_001F5800");
 void draw_menu_flashing_panel(struct MenuPanelOwner *owner);
@@ -7172,10 +7142,10 @@ extern s32 ammo_preview_velocities_r[] __asm__("D_001D6238");
 extern void noop_callback_r(Moby *, s32);
 extern void AttachManipulator_r(s32, s32, HandGadgetManipulator *) __asm__("func_0020D960");
 extern void DetachManipulator_r(s32, HandGadgetManipulator *) __asm__("func_0020D9D8");
-extern void MobyBlendAnimation(void *, int, int, int);
+
 extern Moby *create_menu_preview_moby_r3(s32) __asm__("func_00226720");
 extern Moby *delete_moby_r2(Moby *) __asm__("func_002267C0");
-extern void update_preview_animation_and_attachments(s32, Moby *, Moby *, s32 *, s32 *, s32 *);
+
 extern s32 queue_preview_animation(s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32, s32);
 extern s32 clear_preview_animation_queue(void);
 extern void update_menu_preview_class_pose();
@@ -7430,10 +7400,7 @@ void attachment_update_callback(void) {
 }
 
 extern char item_info_table_a[] __asm__("D_001864D0");
-extern int advance_moby_animation(void *);
-extern void MobyTransformScaledVertex(int, int, void *);
 
-extern void moby_anim_sphere_lerp(void *);
 extern void noop_callback_s(void *, void *, int, int, int);
 
 /* The pause-screen mobys these updates drive. */
@@ -7467,8 +7434,6 @@ typedef struct {
 } PauseClassRec;
 
 extern PauseClassRec item_info_table_r_r[] __asm__("D_001864D0");
-extern void DetachManipulator(int, void *);
-extern void AttachManipulator(int, int, void *);
 
 /* Moby update with a per-class record: find the class in item_info_table (0x4C
    bytes each, 0x25 of them), refresh the matrix from the record's bone,
@@ -7703,10 +7668,7 @@ extern f32 g_frame_time MACRO_ADDR;
 extern f32 g_frame_time_sq SDATA(g_frame_time_sq);
 extern f32 ammo_preview_offsets[];
 extern f32 ammo_preview_velocities[];
-extern void clear_u64_value(void *);
-extern f32 FastCos(f32);
-extern f32 FastSin(f32);
-extern f32 FastAddRots(f32, f32);
+
 extern f32 FastNormalizeAngle_r(f32) __asm__("func_001FA7D8");
 extern f32 IntToFloat(s32);
 extern void advance_moby_animation_r(void *) __asm__("func_0020E3D0");
@@ -7772,8 +7734,6 @@ void update_ammo_preview_transform(struct AmmoPreviewMoby *moby) {
    error. */
 extern unsigned char resident_class_slot_by_id[] NOT_SDA;
 
-extern void *func_0020D348(int);
-
 /* Spawns the pickup/marker object for slot arg0, unless the slot is
    disabled (0xFF in resident_class_slot_by_id). A fresh object gets 0xFF/0xFF/1 in the
    0x30 block, is registered, tinted mid-grey, and flagged 0x18 at +0x73
@@ -7803,7 +7763,6 @@ void *create_menu_preview_moby(int arg0) {
 }
 
 extern int world_update_time MACRO_ADDR;
-extern void DeleteMoby(void *); /* DeleteMoby */
 
 /* Deletes moby arg0 (if any) and stamps its +0x38 with world_update_time. Always
    returns 0 so callers can clear their handle with it. */
@@ -7931,10 +7890,9 @@ extern s32 queued_dialogue_id[];
 extern s16 dialogue_playback_phase[];
 extern s32 g_game_language MACRO_ADDR;
 extern s32 D_0015EF20 MACRO_ADDR;
-extern s32 scale_game_frame_count(s32);
+
 extern void relocateObjectPointers(char *, int);
-extern void fast_decompress(int, int);
-extern void MobyBlendAnimation(void *, s32, s32, s32);
+
 extern s32 Music_ContinueStreamIfReady(void);
 extern int start_audio_stream_read(int, int, int);
 
@@ -8061,8 +8019,6 @@ s32 update_streamed_moby_animation(MobyAnimationStream *stream) {
     }
     return 0;
 }
-
-extern void DrawMobyList(int, int);
 
 /* Draws the 24 moby lists held at arg0+0x44. Returns 4. */
 int draw_moby_entries_from_object(void *arg0) {
@@ -8261,7 +8217,7 @@ typedef struct {
 } Tbl_q;
 extern Tbl_q disc_table_q[] __asm__("D_00137C80");
 extern char *moby_class_resources[] NOT_SDA;
-extern void fast_decompress(int, int);
+
 extern int start_audio_stream_read(int, int, int);
 extern void relocateObjectPointers(char *, int);
 extern int advance_preview_animation_queue(void);
@@ -8780,8 +8736,6 @@ void tick_space_transition(void) {
     }
 }
 
-extern int count_nonzero_entries_up_to_30(void);
-extern int count_nonzero_entries_up_to_10(void);
 extern char reward_menu_items[];
 extern char reward_menu_page[];
 
@@ -8846,8 +8800,6 @@ extern float direction_unit[] MACRO_ADDR;
 
 extern float direction_perpendicular[] MACRO_ADDR;
 
-extern void FastVecCross(void *, void *, void *);
-
 /* Build a basis from dir: direction_unit = dir normalised,
    direction_scaled = that scaled, and direction_perpendicular = the cross product with a
    vector built from dir's components reordered (the smallest moved), so
@@ -8856,7 +8808,7 @@ typedef u32 u128_282D0 __attribute__((mode(TI), aligned(16)));
 extern f32 direction_unit[] MACRO_ADDR;
 extern f32 direction_perpendicular[] MACRO_ADDR;
 extern f32 D_00160490[] MACRO_ADDR;
-extern void func_001F9DC0(f32 *, f32 *, f32);
+
 typedef union {
     u128_282D0 q;
     f32 v[4];
@@ -8930,7 +8882,6 @@ void *parse_typed_resource_record(char *p) {
 extern int *g_render_packet_cursor MACRO_ADDR;
 extern char graphics_setup_dma_packets[];
 extern short setup_strip_pass_words; /* SDA, gp -0x68A0 */
-extern void emit_setup_strips_of_kind(int, int);
 
 /* Emits a DMA tag pair for packet n of graphics_setup_dma_packets, then sends graphics entry idx
    of setup_strip_pass_words through emit_setup_strips_of_kind. */
@@ -9125,8 +9076,7 @@ extern s32 graphics_setup_word MACRO_ADDR;
 extern void append_fullscreen_setup_strips(void);
 extern void prepare_scaled_direction_and_perpendicular_r(f32 *, f32) __asm__("func_002282D0");
 extern u8 *parse_typed_resource_record_r(u8 *) __asm__("func_00228400");
-extern void stretch_scratchpad_segments_to_depths(f32 *, f32 *);
-extern void project_setup_strips_to_screen(u32, s32, s32);
+
 extern void emit_selected_graphics_dma_packets(s32, s32, s32);
 extern void func_00234C98_28860(s32, s64) __asm__("func_00234C98");
 extern void append_fullscreen_clear_strips(s64);

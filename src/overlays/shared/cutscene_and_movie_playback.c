@@ -28,6 +28,11 @@
 #include "enums/moby_class.h"
 #include "structs/pad.h"
 #include "enums/hero_state.h"
+#include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
+#include "game/moby/mobyfunc.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 extern char gSpecialItems[];
 extern char cd_read_active[];
 extern char cd_read_state[];
@@ -68,7 +73,6 @@ extern int level_frame_counter MACRO_ADDR;
 extern int gameplay_event_frame_count MACRO_ADDR;
 extern int current_moby_mission_complete MACRO_ADDR;
 extern int active_play_frame_count MACRO_ADDR;
-int scale_ticks(int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_00295100.c, FUN_L00_00297e70. */
 void update_game_frame_and_idle_counters(void) {
@@ -130,7 +134,6 @@ typedef struct {
 extern CfgS g_debug_menu;
 extern char pad_globals_base[];
 
-
 extern int cinematic_mode MACRO_ADDR;
 extern int D_0015EFB4 MACRO_ADDR;
 extern int cinematic_mode_frames MACRO_ADDR;
@@ -147,26 +150,24 @@ extern char level_profile_mark_after_parts[];
 extern char level_profile_mark_after_camera[];
 extern char level_profile_mark_after_sound[];
 
-extern void update_timed_hud_visibility(void);
-extern int func_L00_00235790(void);
 extern void hud_keep_visible(int, int);
 extern int queue_animation_update(int, int, int, int, int, int, int);
 
 extern void prepare_level_transition_with_help_cleanup(void);
 extern void count_expired_mobys(void);
-extern void update_visible_resident_objects(void);
+
 extern void enqueue_voice_request(void);
 extern void update_ambience_target_cycle(void);
 extern void Profile_Mark_a(void *, int) __asm__("func_001E9768");
 extern void Profile_Mark_b(void) __asm__("func_001E9768");
 extern void coordinate_hero_frame_update(void);
-extern void UpdateParts(void);
+
 extern void update_glints(void);
 
 extern void update_debug_camera(void);
 extern void update_hero_from_debug_camera(void);
 extern void UpdateAllPointLights(void);
-extern void update_resident_packed_direction(void);
+
 extern int func_L00_0023B610(int);
 extern void Help_Update(void);
 
@@ -339,10 +340,8 @@ extern char *active_scene_trigger_target;
 extern char *level_menu_system_target;
 
 extern void music_Pause(int);
-extern void FastMemSet(void *, int, int);
 
 extern void start_cutscene_chunk_read(int);
-extern int scale_ticks(int);
 
 extern void sound_update(void);
 extern void Music_ContinueStreamIfReady(void);
@@ -436,13 +435,11 @@ extern void calculate_dma_transfer_address(void);
 
 extern void reset_frame_counters(void);
 extern void UpdateViewContext(void);
-extern void DeleteMoby(void *);
+
 extern int HeroEnterMoveState(int, int);
-extern float ProbeGroundHeight(void *, int, float);
 
 extern void Hero_ResetToPosition(void *, void *, int, int);
 
-extern int scale_ticks(int);
 extern void music_set_active_track_value(int v);
 
 typedef struct {
@@ -554,9 +551,9 @@ void finish_cutscene(void) {
     }
     music_set_active_track_value(scale_ticks(30));
 }
-extern void FastVecCross(void *, void *, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecSub(void *, void *, void *);
+
 extern char render_view_params[];
 extern unsigned char gCheats[] MACRO_ADDR;
 extern char g_debug_camera[];
@@ -722,7 +719,7 @@ typedef struct {
 extern DebugMenuState g_debug_menu_r __asm__("D_L00_0016C158");
 void reset_frame_counters(void);
 extern struct PadStateWords g_controller_state_r __asm__("D_0013CA40");
-int scale_ticks(int);
+
 void update_game_frame_and_idle_counters(void);
 extern s32 D_0015EF20 MACRO_ADDR;
 extern u8 level_profile_mark_after_mobys_r[] __asm__("D_L00_001610B8");
@@ -764,13 +761,9 @@ extern void Music_ContinueStreamIfReady(void);
 extern s32 update_audio_stream_until_idle(s32);
 extern void update_world_object_animation(void);
 extern void start_cutscene_chunk_read(s32);
-extern void update_moby_animation_state(void *);
+
 extern f32 IntToFloat(s32);
-extern void FastVecScale(void *, void *, f32);
-extern void FastVecAdd(void *, void *, void *);
-extern void moby_build_matrix(void *);
-extern void update_moby_shadow_range(void *);
-extern void HeroAttachManipulators(void *);
+
 extern void update_moby_pulsing_glow_effects(void *);
 
 /* Per-frame update while the cutscene in D_L00_0016C860 plays: runs the debug-gated subsystem updates, fades, advances
@@ -938,7 +931,6 @@ void queue_movie_with_game_language(int i) {
     }
     prepare_movie_playback(b, a, g_game_language);
 }
-extern void flush_cache(int);
 
 extern int sceGsSetDefLoadImage(void *, short, short, short, short, short, short, short);
 extern int sceGsExecLoadImage(void *, void *);
@@ -1066,7 +1058,6 @@ void movie_exit_to_gameplay(void) {
         q[0x6B] |= 0x10;
     }
 }
-extern void flush_cache(int);
 
 extern int snd_StreamSafeCdSync(int);
 
@@ -1096,7 +1087,7 @@ void play_queued_movie(void) {
     sce_cd_sync_s(0);
     movie_exit_to_gameplay();
 }
-extern void FastMemSet(void *, int, int);
+
 extern int start_audio_stream_read(int, int, int);
 extern int slideshow[4] MACRO_ADDR;
 typedef struct {

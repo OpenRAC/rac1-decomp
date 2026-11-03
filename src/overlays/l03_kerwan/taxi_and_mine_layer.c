@@ -21,6 +21,9 @@
 #include "structs/pad.h"
 #include "enums/hero_state.h"
 #include "structs/voice.h"
+#include "asm_functions/executable.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "game/moby/mobyfunc.h"
 extern char gHeroPos[];
 extern char gSpecialItems[];
 extern char gSkillPoints[];
@@ -123,29 +126,25 @@ extern void FindNearestTargetMoby(void *, void *, f32);
 extern void Manipulator_ApplyScale(struct Moby *, int, void *, f32);
 void func_L03_002CBBD0_CB280(struct Moby *m) __asm__("func_L03_002CBBD0");
 char *spawn_mine_layer_projectile(char *p, void *pos, float *dir);
-extern s32 scale_ticks(s32);
+
 extern s32 fast_dec_timer_r(s32 *) __asm__("func_001F9908");
-extern s32 FastDecTimer(s16 *);
+
 extern void MoveCtl_Init(void *);
 extern void MobyBlendAnimation_r(struct Moby *, int, int, int) __asm__("func_00213DE0");
 
 extern void MobySpringTurn(f32, f32, f32, f32, struct Moby *, void *);
 extern f32 vec_distance_xy(void *, void *);
-extern f32 FastVecDist(void *, void *);
 
 extern void ClassifyTargetInCone(struct Moby *, void *, void *, void *);
 extern void Sound_PlayClassSound_r(int, int, struct Moby *, int) __asm__("func_L00_0028EF68");
 extern f32 IntToFloat(s32);
 
-extern void vec_set_length_xy(void *, void *, f32);
-extern void FastVecScale(void *, void *, f32);
-extern void FastVecAdd(void *, void *, void *);
 extern int mine_fall_r(struct Moby *, void *) __asm__("func_L00_0025D6F0");
 extern void spawn_explosion(struct Moby *, void *, void *, f32, f32, s32, s32, s32, f32, f32, f32, f32, s32, f32, s32,
                             s32, s32, s32);
 extern void SetDeathBits(struct Moby *, int, int);
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
-extern f32 ProbeGroundHeight(void *, int, f32);
+
 extern void set_ground_height_band(struct Moby *);
 
 /* l03 trooper update: patrols its rail path, turns to face the hero once in sight, fires three-shot bursts, falls
@@ -525,29 +524,22 @@ extern MineCamera kerwan_player_camera;
 extern char kerwan_mine_index_list[];
 extern float frame_scale MACRO_ADDR;
 extern int mine_fall(struct Moby *, void *);
-extern s32 scale_ticks(s32);
+
 extern s32 fast_dec_timer_r2(s32 *) __asm__("func_001F9908");
-extern void MobyBlendAnimation(struct Moby *, int, int, int);
+
 extern void DeleteMoby_r2(struct Moby *) __asm__("func_0020D678");
-extern void FastVecSub(void *, void *, void *);
-extern void FastVecAdd(void *, void *, void *);
-extern f32 FastVecLength(void *);
+
 extern void vec_scale_to_length(void *, void *, f32);
 extern f32 vec_distance_xy(void *, void *);
 extern void Moby_PlaySound_r(int, int, struct Moby *) __asm__("func_0022ED80");
 extern int coll_sphere_mobys(void *, int, struct Moby *, void *, f32);
-extern void SendRadialMessageToMobys(struct Moby *, void *, void *, int, int, int, int, int, f32, f32, f32);
+
 extern s32 truncate_float_to_s32(f32);
 
-extern f32 random_angle_radians(void);
-extern f32 FastCos(f32);
-extern f32 FastSin(f32);
-extern s32 rand_range(s32, s32);
 extern int DefaultVtbl_DeleteMoby_r(int, int, f32) __asm__("func_L00_00237B70");
-extern void BuildSphericalOffset(void *, f32, f32, f32);
+
 extern void mine_debris(void *, void *, int, int, f32, int, int);
 extern void mine_camera_blast(void *, void *, int, int);
-extern void moby_index_list_remove(struct Moby *, void *);
 
 /* l03 mine update: falls until it lands, sticks to or homes on its target, arms, and explodes on contact (debris,
    camera shake, blast) or shrinks away when old.
@@ -705,7 +697,7 @@ void handle_mine_hit(unsigned char *arg) {
     }
     arg[0xA4] = 0xFF;
 }
-extern char *CreateMoby(int);
+
 extern float g_frame_scale_sq MACRO_ADDR;
 extern float vec_length_xy(void *);
 
@@ -816,15 +808,12 @@ extern u32 pad0_pressed;
 extern s32 D_L03_0015F674_D4560 SDATA(D_L03_0015F674);
 extern void set_moby_dialogue_record_value(void *, int);
 extern void PartType41Spawn(void *, struct Moby *, s32, u32, s32, s32, s32, f32);
-extern int is_point_inside_clip_volume(void *, int);
 
-extern void request_hero_target_pose(void *, float, int);
-extern s32 get_hero_target_pose_status(void);
+extern void request_hero_target_pose_v(void *, float, int) __asm__("func_L00_00234768");
+
 extern void update_entity_matrix(void *, void *, void *, void *);
 extern void DeleteMoby_r3(struct Moby *) __asm__("func_0020D678");
 
-extern void FastVecSub(void *, void *, void *);
-extern f32 FastVecDist(void *, void *);
 extern f32 vec_distance_xy(void *, void *);
 extern f32 SteerAngleWithVelocity(f32 *, f32, f32 *, f32, f32, f32);
 s32 func_L03_002D4CE0_D4560(struct Moby *m, s32 path, s32 *snd) __asm__("func_L03_002D4CE0");
@@ -917,7 +906,7 @@ void update_rail_taxi(struct Moby *m) {
             if (g_hero_r.ground_moby == m && g_hero_r.air_frames.s == 0) {
                 request_taxi_return_help_message(m, v->help[m->command]);
                 if ((pad0_pressed & PAD_TRIANGLE) && D_L03_0015F674_D4560 == 8) {
-                    request_hero_target_pose(&m->pos, m->rot.z, 0);
+                    request_hero_target_pose_v(&m->pos, m->rot.z, 0);
                     m->state = 4;
                     v->idx = 1;
                 }
@@ -963,8 +952,7 @@ void update_rail_taxi(struct Moby *m) {
     update_entity_matrix(v->coll, &move, &oldRot, &m->rot);
 }
 extern char hero_globals_base[];
-extern void FastVecSub(void *, void *, void *);
-extern void FastVecAdd(void *, void *, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
 
 extern float kerwan_rail_taxi_max_speed SDATA(kerwan_rail_taxi_max_speed);
@@ -973,8 +961,7 @@ extern float kerwan_rail_taxi_pitch_accel_deg SDATA(kerwan_rail_taxi_pitch_accel
 extern float kerwan_rail_taxi_yaw_accel_deg SDATA(kerwan_rail_taxi_yaw_accel_deg);
 extern float kerwan_rail_taxi_roll_accel_deg SDATA(kerwan_rail_taxi_roll_accel_deg);
 extern float kerwan_rail_taxi_turn_roll_factor SDATA(kerwan_rail_taxi_turn_roll_factor);
-extern float FastVecLength(void *);
-extern float FastVecDist(void *, void *);
+
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern float SteerAngleWithVelocity(float *, float, float *, float, float, float);
 extern int Sound_IsPlaying(void *, int);
@@ -988,7 +975,6 @@ typedef struct RailFlyerVars {
     f32 pitch_vel; /* 0x6C */
     f32 roll_vel; /* 0x70 */
 } RailFlyerVars;
-
 
 /* Moves along a waypoint path and eases the orientation toward its direction. */
 int advance_moby_along_rail_path(char *moby, int pathIndex, int *sound) {
@@ -1047,8 +1033,7 @@ int advance_moby_along_rail_path(char *moby, int pathIndex, int *sound) {
     }
     return done;
 }
-extern void update_moby_vertical_oscillation(float, float, char *, float *, float *);
-extern void update_moby_rotation_oscillation(void *, char *, char *, float, float, float);
+
 extern short D_L03_00161B70;
 extern short D_L03_00161B74;
 extern short D_L03_00161B78;
@@ -1093,9 +1078,7 @@ void robo_shack_sign_update(struct Moby *m) {
 }
 extern struct Moby *CreateMoby_m(int) __asm__("func_0020D348");
 
-extern int scale_ticks(int);
 extern int coll_line(void *, void *, int, void *, void *);
-extern void moby_build_matrix(void *);
 
 typedef int u128 __attribute__((mode(TI)));
 
@@ -1189,9 +1172,7 @@ extern int rand_range_r(int, int) __asm__("func_L00_00258BC8");
 extern void PartType04Spawn_r(void *, void *, int, int, int, int, int, int) __asm__("func_L00_0026A7F8");
 extern float func_L00_00259148(float *vel, float cur, float target, float k, float d, float max);
 extern int func_L00_001F10E0(float, void *, int, void *);
-extern void func_L00_0025A8C0(void *, void *, int, float, void *);
-extern void func_L00_0025AAC0(void *, void *);
-extern void func_L00_00260108(void *, void *, int, float, float);
+
 extern void DeleteMoby_r4(void *) __asm__("func_0020D678");
 extern Vec4 D_0013F590;
 extern short D_L03_00161BA8_D5790 SDATA(D_L03_00161BA8);
@@ -1285,7 +1266,7 @@ struct G_002DBAD8 {
 extern struct G_002DBAD8 kerwan_cutscene_state;
 extern float helga_big_head_cutscene_adjustment MACRO_ADDR;
 extern unsigned char kerwan_big_head_manipulator[];
-extern void AttachManipulator(char *, int, void *);
+
 extern float kerwan_big_head_scale SDATA(kerwan_big_head_scale);
 
 /* triggers objects matching the moby's class, with per-segment settings */
@@ -1360,11 +1341,8 @@ extern int DialogRequest_Init(void *, unsigned char *);
 extern int Npc_TryStartDialog(struct Moby *, struct TalkState_hg *);
 extern void initialize_moby_grounding(struct Moby *);
 
-extern void grant_inventory_item(int, int);
-extern void ShowBanner(int, int);
 extern void memcard_Save(int, int);
-extern void DeleteMoby(void *);
-extern f32 FastDiffRots(f32, f32);
+
 #define LINK_HELPER(M, V)                                                  \
     t = (struct Moby *)((V->link << 8) + (int)D_L03_00160058);             \
     if (t->oclass == MOBY_CLASS_TAXI_1012) {                               \
@@ -1373,10 +1351,9 @@ extern f32 FastDiffRots(f32, f32);
         record_moby_context_bytes(flag, 4, M, 2, kerwan_saved_moby_bytes); \
     }
 extern void fast_dec_timer(int *arg0);
-extern f32 multiply_global_factor(f32);
+
 extern int truncate_float_to_s32(f32);
-extern f32 FastAddRots(f32, f32);
-extern f32 FastSubRots(f32, f32);
+
 extern f32 vec_length_xy(void *);
 extern void EaseManipulatorOffsets(void *, void *, int, f32, f32);
 
@@ -1947,7 +1924,6 @@ typedef unsigned int u128_DD158 __attribute__((mode(TI), aligned(16)));
 
 extern int DialogRequest_Init(void *, unsigned char *);
 
-extern void MobySetAnimation(unsigned char *, int, int);
 extern int PlayBankSound(int, int, int);
 
 extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
@@ -2270,7 +2246,7 @@ extern float kerwan_moby_bob_rate_deg SDATA(kerwan_moby_bob_rate_deg);
 extern float kerwan_moby_sway_amplitude SDATA(kerwan_moby_sway_amplitude);
 extern float kerwan_moby_sway_rate_a_deg SDATA(kerwan_moby_sway_rate_a_deg);
 extern float kerwan_moby_sway_rate_b_deg SDATA(kerwan_moby_sway_rate_b_deg);
-extern void update_moby_vertical_oscillation(float x, float y, char *a, float *p, float *q);
+
 /* sets two aim angles on a moby from level constants scaled by degrees-to-radians */
 void update_moby_oscillation(char *moby) {
     char *data = ((char *)((Moby *)moby)->pvars);
@@ -2343,12 +2319,12 @@ typedef struct Entry_2E08E8 {
 } Entry_2E08E8;
 
 extern void fast_dec_timer(int *arg0);
-extern int is_point_inside_clip_volume(void *, int);
+
 extern int Help_Request(int a, int b);
 extern float vec_distance_xy(void *, void *);
 
 extern int PlayBankSound(int, int, int);
-extern void ShowBanner(int, int);
+
 extern Help_2E08E8 usage_stats_r[] __asm__("D_00141948");
 extern Help_2E08E8 help_records_r[] __asm__("D_00141A68");
 extern unsigned char special_items_base[];
@@ -2662,9 +2638,8 @@ struct L03Cutscene {
     char *mobys[4];
 };
 extern struct L03Cutscene kerwan_cutscene_state_r __asm__("D_L03_0016C9E0");
-extern void cutscene_set_camera_target(void *);
+
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern int rand_range(int, int);
 
 extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
 
@@ -2718,7 +2693,6 @@ void update_kerwan_cutscene_effects(char *m) {
 extern void Moby_PlaySound(int, int, int);
 extern void spawn_proximity_gated_bolts(void *);
 
-extern void DeleteMoby(void *);
 /* Lightpost update: on a hit it plays a sound, drops bolts, breaks apart and spawns its remains. */
 void lightpost_update(char *m) {
     int hit = 0;
@@ -2823,9 +2797,8 @@ typedef struct CameraEntryECD40 {
 extern CameraEntryECD40 *kerwan_camera_descriptors_camera __asm__("D_L03_0015F050") MACRO_ADDR;
 
 extern int kerwan_player_camera_field_2f4;
-extern void clear_u64_value(void *);
+
 extern void rebuild_hero_relative_camera_transform(void *);
-extern int scale_ticks(int);
 
 /* ActivateCamera_14: seed the camera's smoothing state from the current camera table entry */
 void initialize_hero_relative_camera(char *m) {
@@ -2884,7 +2857,6 @@ void initialize_hero_relative_camera(char *m) {
 }
 extern void vec_scale_to_length(void *, void *, float);
 extern float Cam_InterpValues(void *, float, float, float, float, float);
-extern void FastVecAdd(void *, void *, void *);
 
 // Smooths a camera-like moby's position toward the player's and sets its orientation vector.
 void update_smoothed_hero_relative_camera_position(void *arg) {
@@ -2916,9 +2888,7 @@ void update_smoothed_hero_relative_camera_position(void *arg) {
     *(float *)(m + 0x38) = v2[2];
 }
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
-extern void FastVecSub(void *, void *, void *);
-extern void FastVecCross(void *, void *, void *);
+
 extern float kerwan_hero_cam_blend_stiffness SDATA(kerwan_hero_cam_blend_stiffness);
 extern float kerwan_hero_cam_blend_damping SDATA(kerwan_hero_cam_blend_damping);
 extern char kerwan_player_camera_target_offset_dir[];
@@ -2967,7 +2937,6 @@ void update_camera_position_and_orientation(void *arg) {
     rebuild_camera_orientation_axes(arg);
 }
 extern int kerwan_camera_descriptors MACRO_ADDR;
-extern int is_point_inside_clip_volume(void *, int);
 
 /* Sets the camera moby's mode to 3 when the hero leaves its clip volume. */
 void update_camera_state_outside_clip_volume(char *moby) {

@@ -1,6 +1,7 @@
 #include "common.h"
 #include "callees.h"
 #include "structs/misc.h"
+#include "asm_functions/executable.h"
 
 /*
  * core_text object 0x119868-0x119D88. Boundaries are retail's linker fill
@@ -11,7 +12,6 @@
  * Built with Sony's 2.9-ee (Makefile.sn, EE29_CORE), like the prebuilt
  * libkernl.a.
  */
-
 
 /*
  * Close but not exact, same open-question category as func_001160D8/
@@ -170,8 +170,7 @@ struct Mmio {
 extern struct TtyState tty_info_r __asm__("D_00154B50");
 extern u8 tty_send_packet[];
 extern s32 sceDeci2ReqSend(s32, s32);
-extern s32 disable_interrupts();
-extern s32 enable_interrupts();
+
 extern void sceDeci2Poll(s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/sdk/debug/sce_tty_write.c, sceTtyWrite. */
@@ -291,7 +290,7 @@ struct TtyMmio {
 };
 extern struct TtyInitState tty_info;
 extern u8 tty_receive_packet[];
-extern s32 flush_cache();
+
 extern s32 tty_queue_init_tty(int) __asm__("func_00119868");
 extern s32 sceDeci2Open();
 extern void sceTtyHandler();

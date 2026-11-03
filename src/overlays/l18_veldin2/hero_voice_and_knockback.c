@@ -14,6 +14,7 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "enums/moby_class.h"
+#include "asm_functions/executable.h"
 extern Hero g_hero;
 
 extern int g_current_level_index MACRO_ADDR;
@@ -177,16 +178,10 @@ extern f32 g_frame_time MACRO_ADDR;
 extern u8 hero_velocity[];
 s32 truncate_float_to_s32(f32);
 void release_and_clear_hero_voice_slots(void);
-void FastVecSub(void *, void *, void *);
-f32 FastAddRots(f32, f32);
-f32 FastCos(f32);
-f32 FastSin(f32);
-void FastVecAdd(void *, void *, void *);
+
 void HeroL18_SetMoveState(s32, s32);
 void allocate_hero_voice_for_entry(s32, s32);
 void remove_tracked_class_5f3_moby(void);
-void clear_u64_value(void *);
-void hero_knockback(void *, s32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l18/ui_help_00213b40.c, FUN_L18_00218a90. */
 s32 HeroL18_TryTakeHit(s32 arg) {

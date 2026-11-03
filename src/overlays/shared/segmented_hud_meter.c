@@ -3,11 +3,11 @@
 #include "common.h"
 #include "include_asm.h"
 #include "game/ui/hud.h"
+#include "asm_functions/executable.h"
 
 LINKER_REMNANT("asm/overlays", func_L06_0024A080);
 extern float IntToFloat(int);
 extern int truncate_float_to_s32(float);
-extern int FastTweenColor(int, int, float);
 
 extern void draw_hud_rect_blended(int, int, int, int, long, int);
 extern int frame_size;

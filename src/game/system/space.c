@@ -22,6 +22,8 @@
 #include "game/moby/mobyutil.h"
 #include "enums/level.h"
 #include "enums/moby_class.h"
+#include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 
 /*
  * space.cpp in the original source; text 0x22F128-0x233FF8.
@@ -30,10 +32,6 @@
  */
 
 extern char voice_pool[];
-
-extern void FastMemCopy(void *, void *, int);
-
-extern void FastMemSet();
 
 extern void append_gif_transfer_packet(void);
 
@@ -49,16 +47,9 @@ extern short g_current_level_index;
 
 extern int STUB_printf();
 
-extern void FastVecScale(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
-extern void matrix_mul_vec3(void *, void *, void *);
 extern int g_hero_moby NOT_SDA;
 
-extern void flush_cache(int);
-
 extern int func_001160D8(void);
-
-extern void fast_vec_normalize(void *, void *, float);
 
 extern void sce_gs_sync_v(int);
 
@@ -72,9 +63,6 @@ extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long)
 extern unsigned char resident_class_slot_by_id[] NOT_SDA;
 
 extern char camera_position[];
-extern void FastVecSub(void *, void *, void *);
-
-extern void transform_vector(void *, void *, void *);
 
 extern void sce_cd_sync_s(int);
 
@@ -83,7 +71,6 @@ extern void snd_ResolveBankXREFS(void);
 extern char render_sequence_c[] __asm__("D_0018CC20");
 extern float view_tan_half_fov;
 extern unsigned char draw_map51_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
-extern void FastVecCross(void *, void *, void *);
 
 /* Movie-camera keyframe step (as Transition_UpdateMovieCamera): the keyframe's +0x1C
    sets view_tan_half_fov, its position and X/Y/Z angles set the camera position
@@ -132,12 +119,11 @@ typedef struct {
 } Quad_FBE0;
 
 extern char quad_default_uvs[];
-extern void draw_world_quad_packet(void *, int, int);
+
 extern int g_game_mode MACRO_ADDR;
-extern int scale_game_frame_count(int);
+
 extern void scale_vector(void *, void *, float);
-extern int bsphere_check_alpha(void *, int *, float);
-extern float ProbeGroundHeight(void *, int, float);
+
 typedef struct {
     char pad[0x20];
     int mode;
@@ -312,7 +298,7 @@ extern float D_001D9DA0[4][2];
 extern unsigned int trail_color_a_2F738[][2] __asm__("D_001D9DC0");
 extern unsigned int trail_color_b_2F738[][2] __asm__("D_001D9DC4");
 extern short D_001605D0;
-extern unsigned int func_001FA8A8(unsigned int, unsigned int, float);
+
 extern float trail_float_2F738(int) __asm__("func_001FA888");
 extern void trail_scale_2F738(void *, void *, float) __asm__("func_001F9DC0");
 
@@ -611,10 +597,9 @@ extern u8 level_available[20] NOT_SDA;
 extern void noop_callback_i(void);
 extern void noop_callback_h(void);
 extern void snd_play_sound_vol_pan_pmpb(s32, s32, s32, s32, s32, s32, s32, void *);
-extern void DeleteMoby(void *);
-extern void update_moby_animation_state(void *);
+
 extern void refresh_moby_spatial_bounds(void *);
-extern void MobyTransformScaledVertex();
+
 extern float IntToFloat(int);
 
 void update_level_gameplay_frame(void) {
@@ -842,9 +827,7 @@ extern void DrawTexturedQuad(s32, s32, s32, s32, s32, s32, s32, s32, s64, s64);
 extern s32 func_001FA898(f32);
 extern void append_gif_transfer_packet();
 extern void draw_rotated_sprite(f32, f32, f32, f32, s32, s32, s64, f32);
-extern void prune_moby_references(void);
-extern void PatchMobyGifs();
-extern void DrawMobys(void);
+
 extern void draw_sky_shells();
 extern void build_resident_indexed_texture_warp_meshes(s32);
 extern void draw_resident_textured_quad();
@@ -1927,9 +1910,9 @@ extern u8 level_init_cleared_block2[];
 
 extern s32 Stream_SubmitRead(void *buf, u32 lsn, u32 sectors);
 extern void FadeToBlack(s32 n);
-extern s32 fast_decompress(s32, s32);
+
 extern void upload_texture_images(s32 arg0, s32 count, s32 p);
-extern s32 log2dim(s32);
+
 extern void relocate_sky_definition(s32 f);
 extern void register_moby_class(s32 moby, s32 arg1, s32 arg2, s32 oclass);
 extern void unpack_point_records(s32 src, s32 count);
@@ -2252,13 +2235,13 @@ struct CommonArchiveMemory {
     u8 pad_0[0x14];
     s32 archive_base;
 };
-extern void flush_cache(s32 a0);
+
 extern s32 sce_cd_sync_s_r(s32 a0) __asm__("func_00120F30");
 extern s32 sceGsExecLoadImage(sceGsLoadImage *load_image, s32 image_address);
 extern s32 sceGsSetDefLoadImage(sceGsLoadImage *load_image, s32 block_offset, s32 buffer_width,
                                 s32 pixel_storage_format, s32 x, s32 y, s32 width, s32 height);
 extern s32 wait_for_graphics_pipeline_idle_r(s32 a0, s32 a1) __asm__("func_00120858");
-extern s32 fast_decompress(s32 source_address, s32 destination_address);
+
 extern s32 Stream_SubmitRead(void *a0, u32 a1, u32 a2);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/fun_00231878.c, prepare_loading_slide_textures. */
@@ -2727,9 +2710,7 @@ extern float env_map_saved_uvs[][2];
 extern u64 GetEffectTex_r2(int) __asm__("func_001F4868");
 extern void fast_dec_timer(s32 *);
 
-extern float FastVecDot(void *, void *);
 extern float IntToFloat(int);
-extern void MobyTransformScaledVertex(EnvironmentMappedObject *, int, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/render_environment_mapped_object.c, render_environment_mapped_object. */
 void render_environment_mapped_object(EnvironmentMappedObject *object) {

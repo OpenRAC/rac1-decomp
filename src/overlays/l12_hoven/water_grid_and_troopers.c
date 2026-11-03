@@ -21,6 +21,9 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+#include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 extern Hero g_hero;
 extern char hero_current_state[];
 extern char gSkillPoints[];
@@ -106,18 +109,14 @@ extern int STUB_printf();
 
 extern void RescaleFloatTable(float s);
 
-extern float FastCos(float);
-extern float FastSin(float);
 extern void RipplePatch_ToFixedPoint(float *in, int *out);
 extern void initialize_level_12_slot_grid_neighbors(int);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void Group_CopyZToTableSlots(char *moby);
 
-extern int random_integer_below(int);
-extern float random_float_between(float, float);
 extern void RippleDisturb(void *, int, int, float, float, float, float);
 extern int check_scaled_vector_bsphere(char *vec, float scale);
-extern int is_point_inside_clip_volume();
+
 extern void RippleSimClock(char *p, int n);
 extern void AddDrawCallback(void *, void *);
 extern void render_level_12_water_grids(void);
@@ -396,9 +395,6 @@ void ease_hoven_anklebiter_height_to_ground(char *moby) {
     value = ProbeGroundHeight_order(0.5f, &position, 0);
     ApproachValue_order(value, g_frame_time_sq * 27.0f, moby + 0x18);
 }
-extern int random_integer_below(int);
-extern int scale_ticks(int);
-extern void MobyBlendAnimation(void *, int, int, int);
 
 // Picks an animation for the moby from a query result unless it is already playing.
 void select_hoven_anklebiter_pursuit_animation(Moby *moby) {
@@ -435,11 +431,7 @@ extern int spark_scatter_third_frame_count_range_end SDATA(spark_scatter_third_f
 extern int spark_scatter_color_a SDATA(spark_scatter_color_a);
 extern int spark_scatter_color_b SDATA(spark_scatter_color_b);
 extern int spark_scatter_sprite SDATA(spark_scatter_sprite);
-extern float random_angle_radians(void);
-extern float random_float_between(float, float);
-extern void clear_u64_value(void *);
-extern float FastCos(float);
-extern float FastSin(float);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 
@@ -584,7 +576,7 @@ extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern void PostHitMessage_r(void *, int, int, void *, void *, float) __asm__("func_L00_0025AC00");
 extern int IsPointInPolygon_r(void *, void *, int) __asm__("func_L00_0025A778");
 extern int func_L00_002DDEA0(void *, void *);
-extern float func_0020D830(void *);
+
 extern void SetDeathBits_r(void *, int, int) __asm__("func_L00_002584A8");
 extern void spawn_type_52_particle_near_moby_r(char *) __asm__("func_L10_002E51A8");
 extern void TrollSpawnBurst_r(void *) __asm__("func_L12_002E43A8");
@@ -955,14 +947,11 @@ void update_hoven_anklebiter(Moby *m) {
     }
     return;
 }
-extern int SegmentCrossPolyline(int, void *, void *, void *);
+
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
 extern int move_w(void *, void *, void *, void *, float);
-extern void FastVecSub(void *, void *, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
-extern int IsPointInPolygon(void *, void *, int);
-extern float FastVecDist(void *, void *);
 
 // steers a moby along a path using its velocity and returns a status code
 int move_hoven_anklebiter_toward_heading(char *moby, float target) {
@@ -1024,9 +1013,6 @@ extern int hoven_troll_burst_life_ticks SDATA(hoven_troll_burst_life_ticks);
 extern int hoven_troll_burst_phase2_ticks SDATA(hoven_troll_burst_phase2_ticks);
 extern int hoven_troll_burst_phase3_ticks SDATA(hoven_troll_burst_phase3_ticks);
 extern void add_random_offset_to_vector_xyz(float *v, float s);
-extern void FastVecScale(void *, void *, float);
-extern int FastTweenColor(int, int, float);
-extern float multiply_global_factor(float);
 
 /* Level 12 hoven: spawns a burst of particles around the moby (port of emit_moby_particles's shape). */
 void TrollSpawnBurst(struct Moby *mp) {
@@ -1140,12 +1126,9 @@ extern f32 D_L12_00161950_E4838 SDATA(D_L12_00161950);
 extern f32 D_L12_00161954_E4838 SDATA(D_L12_00161954);
 extern f32 g_frame_time MACRO_ADDR;
 extern s32 g_hero_moby;
-extern s32 scale_ticks(s32);
+
 extern s32 fast_dec_timer(s32 *);
-extern s32 random_integer_below(s32);
-extern f32 FastAddRots(f32, f32);
-extern f32 FastCos(f32);
-extern f32 FastSin(f32);
+
 extern s32 count_active_moby_group_members(s32, s32);
 extern void MobyGroup_SetByteBC(s32, s32);
 extern void PostHitMessage_r2(struct Moby *, s32, s32, Vec4f *, f32 *, f32) __asm__("func_L00_0025AC00");
@@ -1240,7 +1223,6 @@ void process_hoven_anklebiter_damage_and_alerts(struct Moby *moby) {
 extern short platform_exhaust_local_offset;
 extern char *PartType21Spawn(void *pos, void *dir, int c, int d, int n, int k, float f);
 extern void *func_L00_0026DEA0(void *, float, float, float, int, void *, float, int);
-extern void matrix_mul_vec3(void *, void *, void *);
 
 /* Hoven engine exhaust: emits a flame and a smoke puff from each of the moby's two nozzles (the second one
  * mirrored across its local Y axis), with random jitter. */
@@ -1274,8 +1256,7 @@ void emit_platform_exhaust_effects(char *m) {
 }
 extern float g_frame_scale_sq MACRO_ADDR;
 extern float platform_tilt_approach_divisor SDATA(platform_tilt_approach_divisor);
-extern float FastVecLength(void *);
-extern float FastDiffRots(float, float);
+
 extern void ApproachValue(void *, float, float);
 extern float SpringAngle(float *, float, float *, int, float, float, float);
 
@@ -1312,9 +1293,6 @@ void steer_platform_toward_target(Moby *m, float *ang, void *target, int unused,
     FastVecAdd(&m->pos, &m->pos, &d->vel);
 }
 extern float platform_tilt_offset_divisor SDATA(platform_tilt_offset_divisor);
-extern void FastVecSub(void *, void *, void *);
-extern void euler_to_matrix(void *, void *);
-extern void transform_vector(void *, void *, void *);
 
 /* Projects a moby's offset from a reference point into a 2D pair, or zeroes it. */
 void compute_platform_target_tilt(char *moby, float *out, int on) {
@@ -1382,14 +1360,12 @@ extern Path *hoven_paths_r2[] __asm__("D_L12_001B0C30");
 extern int count_active_moby_group_members(int, int);
 
 extern void steer_platform_toward_target_r(void *, void *, void *, int, int) __asm__("func_L12_002E4F18");
-extern float FastAddRots(float, float);
 
 extern int fast_dec_timer(int *arg0);
-extern float FastVecLength(void *a);
 
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
-extern void DeleteMoby(void *);
+
 extern float vec_distance_xy(void *, void *);
 extern void update_entity_matrix(char *, void *, void *, void *);
 
@@ -1629,16 +1605,11 @@ extern int DialogRequest_Init(void *, void *);
 extern void initialize_moby_grounding(void *);
 extern int Npc_TryStartDialog(void *, void *);
 
-extern void ShowBanner(int, int);
-
 extern int memcard_Save(int, int);
-extern float FastDiffRots(float, float);
-extern float multiply_global_factor(float);
-extern void BuildSphericalOffset(void *, float, float, float);
-extern float FastSubRots(float, float);
+
 extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets_r2(float, float, void *, void *, int) __asm__("func_L00_00263950");
-extern void moby_build_matrix(void *);
+
 extern void update_moby_bone_attachment(void *, void *, int);
 typedef struct Data_2E7FC8 {
     char pad00[0x20];
@@ -1801,7 +1772,7 @@ void miner_update(Moby *m) {
     }
 }
 extern void draw_level_12_effects(void);
-extern int is_point_inside_clip_volume(void *, int);
+
 extern void AddDrawCallback(void *, void *);
 
 /* Queues the level 12 effects draw when the camera is inside the moby's clip volume. */
@@ -1842,13 +1813,11 @@ extern void SetDeathBits();
 extern int hoven_cinematic_mode MACRO_ADDR;
 extern float hoven_zero_vec[] MACRO_ADDR;
 extern char *hoven_nearby_mobys[];
-extern void manipulator_set_scale(void *, float);
+
 extern void process_blarg_trooper_damage_and_alerts(char *moby);
 extern void FindNearestTargetMoby(char *, float *, float);
 extern void MoveCtl_Init(void *);
 extern int func_001160D8(void);
-
-extern float ProbeGroundHeight(void *, int, float);
 
 extern int test_point_within_moby_limits(void *, void *, float, float, float);
 extern int coll_line(void *, void *, int, void *, void *);
@@ -1860,7 +1829,7 @@ extern void remove_blarg_trooper_and_attachment();
 extern void update_blarg_trooper_attachment(unsigned char *moby);
 extern int coll_sphere_mobys(void *, int, void *, int, float);
 extern int is_moby_in_class_range_500_to_540(void *);
-extern void PostHitMessage(void *, int, int, void *, void *, float);
+
 extern int IsFrameWithinWindow(void *, float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void Moby_PlaySound(int, int, int);
@@ -2316,10 +2285,9 @@ tail:
 #undef M_F
 #undef M_P
 #undef COPY4
-extern int FastDecTimer(void *);
+
 extern int count_active_moby_group_members(int, int);
-extern float FastAddRots(float, float);
-extern void PostHitMessage(void *, int, int, void *, void *, float);
+
 extern void remove_blarg_trooper_and_attachment();
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
@@ -2492,8 +2460,6 @@ void process_blarg_trooper_damage_and_alerts(char *moby) {
     StepColorFade(moby, vars->anim);
 }
 
-extern float FastSubRots(float, float);
-
 // Steers a moby's two turn-rate fields from the clamped heading error to a point.
 struct SetBlargTrooperAimYawOffsetsVars {
     u8 pad_00[0x188];
@@ -2521,7 +2487,6 @@ typedef struct {
 } Level12VendorData;
 
 extern void SetDeathBits(Moby *, int, int);
-extern void DeleteMoby(void *);
 
 /* Release the vendor moby and any child it owns. */
 void remove_blarg_trooper_and_attachment(Moby *moby) {
@@ -2553,7 +2518,7 @@ void update_blarg_trooper_attachment(unsigned char *moby) {
         *(void **)&data->attachment = spawn_moby_attachment(moby, vector);
     }
 }
-extern float ProbeGroundHeight(void *, int, float);
+
 extern void ApproachValue(void *, float, float);
 
 /* Initialize two vendor vectors using the global scale. */
@@ -2667,7 +2632,6 @@ extern float SpringTurn(float *, float, float, float, float, float);
 extern void update_blarg_helicopter_motion_tilt(char *);
 extern char *spawn_rocket(void *, void *, void *, int, float, float, float);
 
-extern void MobyAnimAdvance(void *);
 extern void set_ground_height_band(void *);
 
 #define M_U8(p, o) (*(unsigned char *)((char *)(p) + (o)))
@@ -3122,8 +3086,7 @@ void blarg_helicopter_326_update(char *moby) {
 #undef M_P
 #undef COPY4
 #undef S_I
-extern float FastCos(float);
-extern float FastSin(float);
+
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
 
 struct UpdateBlargHelicopterMotionTiltVars {
@@ -3532,7 +3495,7 @@ void edwina_update(char *m) {
 }
 extern char *MobyGetHitMessage(void *, int, int);
 extern int PlayBankSound(int, int, int);
-extern void spawn_randomized_bolt_drop(void *, int, int, int, int);
+
 extern int fast_dec_timer(int *arg0);
 
 extern int helicopter_hit_count SDATA(helicopter_hit_count);
@@ -3581,8 +3544,7 @@ extern float IntToFloat(int);
 extern int check_scaled_vector_bsphere_i(char *vec, float scale) __asm__("func_L01_00276680");
 extern void process_helicopter_hits_and_reactivation(char *m, int flag);
 extern void initialize_path_descriptor(char *p);
-extern float FastVecLength(void *a);
-extern float FastAddRots(float, float);
+
 extern float helicopter_path_speed SDATA(helicopter_path_speed);
 extern float helicopter_path_bank_scale SDATA(helicopter_path_bank_scale);
 extern float helicopter_rotation_smoothing_divisor SDATA(helicopter_rotation_smoothing_divisor);
@@ -3664,7 +3626,6 @@ void helicopter_336_update(Moby *m) {
     }
 }
 extern float vec_distance_xy(void *, void *);
-extern int fast_subtract_rotations_cf(void *);
 
 /* Idle critter: waits a random time, then plays one of its fidget animations (or reacts when the hero comes close). */
 void crane_arm_update(Moby *m) {

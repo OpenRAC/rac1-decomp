@@ -27,6 +27,9 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+#include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
+#include "game/moby/mobyfunc.h"
 
 extern char gSkillPoints[];
 extern Hero g_hero;
@@ -111,7 +114,6 @@ extern float D_L12_00161A80_2EDAA0 SDATA(D_L12_00161A80);
 extern float D_L12_00161A84_2EDAA0 SDATA(D_L12_00161A84);
 extern float D_L12_00161A88_2EDAA0 SDATA(D_L12_00161A88);
 
-extern float func_00214158(void);
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern float FastAddRots_r(float, float) __asm__("func_001FA748");
 extern int fast_dec_timer_r(int *) __asm__("func_001F9908");
@@ -199,11 +201,9 @@ void water_reservoir_update(Moby *moby) {
     }
     AddDrawCallback_r(draw_water_reservoir_r, moby);
 }
-extern void copy_matrix_rotation(void *, void *);
+
 extern int GetEffectTex(int);
-extern float FastSin(float);
-extern int FastTweenColor(int, int, float);
-extern float FastCos(float);
+
 extern void draw_world_quad(void *, void *, int);
 extern char water_reservoir_quad_corners[];
 extern int water_reservoir_blend_a SDATA(water_reservoir_blend_a);
@@ -268,11 +268,8 @@ void draw_water_reservoir(Moby *moby) {
         draw_world_quad(&q, m, 0);
     }
 }
-extern char *CreateMoby(int);
-extern float fast_atan2(float, float);
+
 extern float vec_length_xy(void *);
-extern int scale_ticks(int);
-extern void moby_build_matrix(void *);
 
 /* Rocket pvars (Rocket). */
 struct HovenRocketVars {
@@ -335,25 +332,19 @@ typedef struct {
 extern ShotColl hoven_coll_hit;
 
 extern int fast_dec_timer(int *);
-extern float FastAddRots(float, float);
-extern void FastVecAdd(void *, void *, void *);
-extern void FastVecSub(void *, void *, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
 extern float g_frame_time MACRO_ADDR;
 extern int hoven_turret_attempts MACRO_ADDR;
 extern char hoven_camera_pos[];
 extern float hoven_zero_vec[] MACRO_ADDR;
 extern char *MobyGetHitMessage(void *, int, int);
-extern void DeleteMoby(void *);
-extern void add_vectors(void *, void *, void *);
 
 extern int coll_line(void *, void *, int, struct Moby *, int);
 extern int coll_sphere(void *, int, struct Moby *, float);
-extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
-extern void record_moby_hit(int, void *);
+
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
-extern void SpawnExplosionFx(void *, void *, int, float, float);
 
 /* Level 12 shot: flies with a smoke trail, damages the first moby it hits other than its owner, then pops.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l12/gameplay/entities/002ec720.c, FUN_L12_002ece00. */
@@ -441,8 +432,7 @@ extern int pad_globals_base_e[] __asm__("D_0013A5E0") NOT_SDA;
 extern int gameplay_event_frame_count_e __asm__("D_0015EFA4") MACRO_ADDR;
 extern int count_active_moby_group_members(int, int);
 extern void PlayBankSound(int, int, int);
-extern void ShowBanner(int, int);
-extern int is_point_inside_clip_volume(void *, int);
+
 extern void Help_Request(int, int);
 
 /* Hoven challenge tracker: unlocks the area once, records the time and run flags for two skill points and
@@ -535,7 +525,7 @@ typedef struct Data_303CA8 {
     int count; /* 0x232C */
     int f2330;
 } Data_303CA8;
-extern void func_001FA218(void *, void *);
+
 extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
 extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
 extern int GetEffectTex_r(int) __asm__("func_001F4868");
@@ -630,10 +620,7 @@ void draw_oscillating_target_link_strips(Moby *moby) {
     }
 }
 extern int fast_dec_timer(int *);
-extern void clear_u64_value(void *);
-extern void FastVecAdd(void *, void *, void *);
-extern void FastVecScale(void *, void *, float);
-extern float FastVecDist(void *, void *);
+
 extern void rand_vec(float *, float, float);
 extern void AddDrawCallback(void *, void *);
 extern float electric_arc_tex_scroll SDATA(electric_arc_tex_scroll);
@@ -820,10 +807,9 @@ void update_oscillating_target_link(Moby *moby) {
     }
 }
 extern void set_level_state_flag_88(void *);
-extern void matrix_mul_vec3(void *, void *, void *);
-extern void FastVecAdd(void *, void *, void *);
+
 extern void set_camera_position(void *);
-extern float FastAddRots(float, float);
+
 extern void set_camera_rotation(void *);
 extern char hoven_turret_camera_offset;
 
@@ -849,7 +835,7 @@ typedef u32 u128_04750 __attribute__((mode(TI), aligned(16)));
 extern short hoven_mobys_r2 __asm__("D_L12_00160058");
 extern int fast_dec_timer(int *);
 extern float vec_distance_xy(void *, void *);
-extern float FastDiffRots(float, float);
+
 typedef struct {
     u8 pad0[0x140];
     Vec4 position;
@@ -983,30 +969,21 @@ extern float hoven_turret_destruction_view_offset_distance_min SDATA(hoven_turre
 extern float hoven_turret_destruction_view_offset_distance_max SDATA(hoven_turret_destruction_view_offset_distance_max);
 extern char hoven_player_camera_r[] __asm__("D_L12_00167180");
 
-extern void AttachManipulator(void *, int, void *);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern float vec_distance_xy(void *, void *);
-extern float FastSubRots(float, float);
-extern void Moby_PlaySound(int, int, int);
 
-extern void MobySetAnimation(void *, int, int);
+extern void Moby_PlaySound(int, int, int);
 
 extern void AddDrawCallback(void *, void *);
 extern void update_hoven_turret_target_alignment_timer(void *);
 extern int fast_dec_timer_r2(void *) __asm__("func_001F9908");
 extern char *MobyGetHitMessage(void *, int, int);
 
-extern void DetachManipulator(void *, void *);
-
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern float ApproachValue(float *, float, float);
-extern void axis_rotation_2d48(void *, int, float);
-extern void MobyBlendAnimation(void *, int, int, int);
-extern int FastDecTimer(void *);
-extern void BuildSphericalOffset(void *, float, float, float);
+
 extern void create_moby_with_particles(void *, void *, void *, int);
 
-extern float FastVecLength(void *);
 extern void vec_scale_to_length(void *, void *, float);
 
 extern char *PartType27Spawn(void *, void *, int, int, float);
@@ -1277,7 +1254,7 @@ void hoven_turret_update(Moby *moby) {
 extern void VU1_addGSregister(int, long);
 extern long GetEffectTex_r2(int) __asm__("func_001F4868");
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern float func_001FA7D8(float);
+
 extern float IntToFloat_r3(int) __asm__("func_001FA888");
 extern void func_L02_0020BF88(void *, void *, void *, long, int);
 extern int hoven_turret_hud_frame_color SDATA(hoven_turret_hud_frame_color);
@@ -1484,7 +1461,6 @@ typedef struct {
     short value;
 } Level12VendorCounterData;
 
-extern int scale_ticks(int);
 extern void emit_rgba_draw_packet(int, int, int, int);
 
 /* Scale and play the vendor cue while its counter is below the limit. */
@@ -1500,12 +1476,12 @@ typedef u32 u128_061E0 __attribute__((mode(TI), aligned(16)));
 extern float g_frame_scale_sq MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
 extern short g_frame_time_sq_r __asm__("D_0015EE70");
-extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
+
 extern void FindNearestTargetMoby_r(struct Moby *, void *, float) __asm__("func_L00_00260D30");
 extern void *MobyGetHitMessage_r(struct Moby *, int, int) __asm__("func_L00_0025B478");
 extern int ComputeHitResponse(struct Moby *, void *, void *, int, int *, int, int, int);
 extern void MobyBlendAnimation_r(struct Moby *, int, int, int) __asm__("func_00213DE0");
-extern float ProbeGroundHeight(void *, int, float);
+
 extern int coll_sphere_mobys(void *, int, struct Moby *, void *, float);
 extern int coll_sphere(void *, int, struct Moby *, float);
 extern void Spring(float *, float *, float, float, float, float);
@@ -1641,10 +1617,9 @@ extern int planetbuster_aggro_timer SDATA(planetbuster_aggro_timer);
 extern int planetbuster_gun_part_index[];
 extern int planetbuster_detached_part_ids[];
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
-extern float step_angle_toward_target(float *, float, int, float);
+extern float step_angle_toward_target_v(float *, float, int, float) __asm__("func_L00_0025CC58");
 extern float SpringAngle(void *, float, void *, int, float, float, float);
-extern float FastDiffRots(float, float);
-extern int fast_subtract_rotations_cf(void *);
+
 extern void *spawn_class_b8_projectile(void *, void *, void *, int);
 
 extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
@@ -1715,8 +1690,8 @@ void update_planetbuster_maximus_guns(char *moby) {
                                           -1.5707964f),
                               ((Moby *)moby)->rot.z);
             if (md->h90 == 0) {
-                if (step_angle_toward_target((float *)(ent + 0x18), yaw, 0,
-                                             g_frame_time * 0.5235988f + g_frame_time * 0.17453292f * (float)i) <
+                if (step_angle_toward_target_v((float *)(ent + 0x18), yaw, 0,
+                                               g_frame_time * 0.5235988f + g_frame_time * 0.17453292f * (float)i) <
                     0.08726646f) {
                     md->h90 = 1;
                     md->f8C = 1.0f;
@@ -1986,10 +1961,9 @@ void initialize_planetbuster_maximus_detached_part_motion(struct Moby *moby, int
         *speed = g_frame_time_sq * 13.0f;
     }
 }
-extern void DeleteMoby(void *);
-extern float FastAddRots(float, float);
+
 extern float SpringAngle(void *, float, void *, int, float, float, float);
-extern void moby_build_matrix(void *);
+
 extern int hoven_mobys_m __asm__("D_L12_00160058") MACRO_ADDR;
 extern float planetbuster_fall_pos MACRO_ADDR;
 extern float planetbuster_maximus_detached_owner_rotation MACRO_ADDR;
@@ -2139,8 +2113,7 @@ extern float planetbuster_maximus_rotation_oscillation_component_mix_phase_rate_
 extern float planetbuster_sway_amplitude SDATA(planetbuster_sway_amplitude);
 
 extern void apply_linked_moby_relative_transforms(char *, char *, int);
-extern void update_moby_vertical_oscillation(float, float, char *, float *, float *);
-extern void update_moby_rotation_oscillation(void *, char *, char *, float, float, float);
+
 extern void MobySpringTurn(char *moby, float target, float *vel, float k, float d, float max);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void lerp_vector(void *, void *, void *, float);
@@ -2440,7 +2413,7 @@ void spawn_next_linked_moby(char *moby) {
     }
 }
 extern void update_homing_mine_spawner_target(char *m);
-extern void DeleteMoby(void *);
+
 extern float vec_distance_xy(void *, void *);
 extern void spawn_next_linked_moby(char *);
 
@@ -2540,7 +2513,7 @@ void update_homing_mine_spawner_target(char *m) {
         }
     }
 }
-void DeleteMoby(void *obj);
+
 extern s32 g_current_level_index SDATA(g_current_level_index);
 extern int check_scaled_vector_bsphere(void *, float);
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
@@ -2599,7 +2572,6 @@ void update_moby_draw_and_monitor_linked_state(struct Moby *m) {
 }
 
 extern char hoven_cutscene_hero_pos[];
-extern int is_point_inside_clip_volume(void *arg0, int arg1);
 
 struct TriggerSceneOnceInClipVolumeVars {
     u8 pad_00[0x4];
@@ -2638,7 +2610,6 @@ typedef struct {
     char *mobys[4];
 } Level12MobyList;
 extern Level12MobyList hoven_cutscene_state;
-extern void cutscene_set_camera_target(int);
 
 /* Picks cutscene moby slot 2 for step 1, else slot 0. */
 static inline unsigned char func_L12_pick(int cur) {
@@ -2699,9 +2670,6 @@ void BreakableUpdate(char *m) {
 }
 
 extern int GetEffectTex(int);
-extern int is_point_inside_clip_volume(void *, int);
-
-extern void draw_env_overlay_mesh(int, int, int, void *, int);
 
 extern char hoven_overlay_uv_buffer[];
 extern char hoven_overlay_uv_scroll[] MACRO_ADDR;

@@ -11,6 +11,8 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "structs/swarm.h"
 #include "enums/moby_class.h"
+#include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern Hero g_hero;
 
 /* Bolt thief: scans a fixed list of mobys for its targets. */
@@ -60,12 +62,12 @@ extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern float IntToFloat_r(int) __asm__("func_001FA888");
 extern float FastAddRots_r(float, float) __asm__("func_001FA748");
 extern float FastSubRots_r(float, float) __asm__("func_001FA790");
-extern float func_001FA7D8(float);
+
 extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
 extern float FastCos_r(float) __asm__("func_001F9F90");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
-extern int func_001FA8A8(int, int, float);
+
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern char *batalia_mobys_r __asm__("D_L08_00160058") MACRO_ADDR;
 extern int D_L08_0015F6B0 MACRO_ADDR;
@@ -387,11 +389,8 @@ void draw_batalia_cannon_hud(Moby *m) {
     draw_quad51(xy, uv_words, color_words, texture51(D_L08_00161C3C_2E0258), 1);
 }
 extern char batalia_hero_pos[];
-extern void BuildSphericalOffset(void *, float, float, float);
-extern void FastVecSub(void *, void *, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern float FastVecDot(void *, void *);
-extern float FastCos(float);
 
 /* finds the first of eight linked entries whose direction lines up with the moby */
 int find_batalia_cannon_aim_target(char *m) {
@@ -470,7 +469,7 @@ extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern void FastMemZero16_r(void *, int) __asm__("func_001F99D8");
 extern void euler_rotation_basis_r(void *, void *) __asm__("func_001FA1F8");
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
-extern void func_001F9EC0(void *, void *, void *);
+
 extern int hero_state52(int, int) __asm__("func_L08_00231228");
 extern void CameraScript2_r(int) __asm__("func_L00_002EC0C8");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
@@ -489,7 +488,7 @@ extern float func_00214D28(float *, float, float);
 extern int scale_ticks_r2(int) __asm__("func_001F9850");
 extern int find_batalia_cannon_aim_target_r(char *) __asm__("func_L08_002E15A0");
 extern int rand_range_r(int, int) __asm__("func_L00_00258BC8");
-extern int func_L00_001FEF78(void *);
+
 extern void *CreateMoby_r(int) __asm__("func_0020D348");
 extern void BuildSphericalOffset_r(void *, float, float, float) __asm__("func_00215C00");
 extern void MobyBlendAnimation_r(void *, int, int, int) __asm__("func_00213DE0");
@@ -927,18 +926,8 @@ typedef struct {
     int v[2];
 } Pair;
 
-extern float random_float_between(float, float);
-extern int scale_ticks(int);
-extern void FastVecAdd(void *, void *, void *);
-extern float FastAddRots(float, float);
-extern void DeleteMoby(void *);
-extern int random_integer_below(int);
-extern void clear_u64_value(void *);
-
 extern void func_L00_0026B890(void *, void *, int, int, int, int, int, int, float, float);
-extern float random_angle_radians(void);
-extern float FastSin(float);
-extern float multiply_global_factor(float);
+
 extern int truncate_float_to_s32(float);
 extern char *func_00219780(void *, void *, void *, int, int, int, int, int, int);
 extern float g_frame_time MACRO_ADDR;
@@ -1046,10 +1035,8 @@ void update_falling_debris(Moby *m) {
             break;
     }
 }
-extern void *CreateMoby(int);
+
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void FastVecSub(void *, void *, void *);
-extern void moby_build_matrix(void *);
 
 // Spawns a moby of a class, copies the parent's position, and aims it at the parent's attach point.
 void *spawn_joint_aligned_moby_part(char *parent, int oClass, int joint, int pjoint) {
@@ -1161,8 +1148,6 @@ void spawn_gunship_parts(char *m) {
         vars->slots[26 + i].pjoint = j;
     }
 }
-extern void FastVecAdd(void *, void *, void *);
-extern float FastAddRots(float, float);
 
 extern short g_frame_time_g __asm__("D_0015EE6C");
 extern float gunship_rotor_spin_speed SDATA(gunship_rotor_spin_speed);
@@ -1230,7 +1215,7 @@ void update_linked_moby_parts(char *moby) {
     }
 }
 extern void *MobyGetHitMessage(void *, int, int);
-extern void SpawnExplosionFx(void *, void *, int, float, float);
+
 extern s32 Moby_PlaySound(s32, s32, struct Moby *);
 /* Selects a damaged child moby, launches it, and advances the parent's state. */
 void process_gunship_part_hits(struct Moby *moby) {
@@ -1339,19 +1324,15 @@ extern SwarmPath *batalia_path_table[];
 extern struct Moby *batalia_mobys_r2 __asm__("D_L08_00160058") MACRO_ADDR;
 extern s32 Sound_IsPlaying(struct Moby *, s32);
 extern s32 Moby_PlaySound(s32, s32, struct Moby *);
-extern void DeleteMoby(void *);
-extern f32 random_float_between(f32, f32);
-extern f32 random_angle_radians(void);
-extern f32 multiply_global_factor(f32);
+
 extern s32 truncate_float_to_s32(f32);
-extern f32 FastSubRots(f32, f32);
+
 extern s32 fast_dec_timer(s32 *);
-extern f32 FastVecDist(void *, void *);
-extern f32 FastVecLength(void *);
+
 extern void vec_scale_to_length(void *, void *, f32);
 extern void MobySpringTurn_r(struct Moby *, f32, f32 *, f32, f32, f32) __asm__("func_L00_002592B0");
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
-extern void SpawnExplosionFx(void *, void *, s32, f32, f32);
+
 extern struct Moby *spawn_rocket_435_projectile(void *, struct Moby *, void *, f32, f32);
 extern void process_gunship_part_hits(struct Moby *);
 
@@ -1592,23 +1573,21 @@ extern float bolt_thief_move_speed SDATA(bolt_thief_move_speed);
 extern Path *batalia_path_table_r[] __asm__("D_L08_001B0FB0");
 
 extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
-extern float FastVecDist(void *, void *);
+
 extern void set_ground_height_band(void *);
 extern void *MobyGetHitMessage(void *, int, int);
 extern void InitKnockback(void *, void *, float, int, int, int);
 extern void SetDeathBits(void *, int, int);
-extern void clear_u64_value(void *);
-extern void MobyBlendAnimation(void *, int, int, int);
+
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
 extern void ClampVectorLength(void *a, float x);
-extern float FastVecLength(void *a);
+
 extern float vec_distance_xy(void *, void *);
-extern int scale_ticks(int);
+
 extern int begin_bolt_attraction(void *, int, float, float);
-extern int find_listed_moby_by_data_id(void *);
+
 extern int mine_fall(void *, void *);
-extern void SpawnExplosionFx(void *, void *, int, float, float);
-extern void DeleteMoby(void *);
+
 extern void StepColorFade(void *, void *);
 
 /* Bolt thief update: waits for the hero, runs its path, pulls bolts in and grabs them, flees along the side path, dies
@@ -1909,11 +1888,10 @@ extern void draw_batalia_bolt_pickup_rotating_quad(char *m);
 extern int coll_line(void *, void *, int, int, int);
 
 extern unsigned char *moby_get_ride_transform(int);
-extern void convert_pose_to_reference_local(void *, int, void *, void *, void *, void *);
-extern int transform_attachment_pose(void *, int, void *, void *, void *, void *);
+
 extern void build_axis_roll_matrix(void *, void *, float);
 
-extern float step_angle_toward_target(float *, float, float, int);
+extern float step_angle_toward_target_v(float *, float, float, int) __asm__("func_L00_0025CC58");
 extern void rand_vec(void *, float, float);
 extern unsigned char *PartType53Spawn(float *pos, int a, float f0, float f1, int col, int mode, int b, float *vel,
                                       float f2);
@@ -1925,11 +1903,6 @@ extern void multiply_matrix3x3(void *, void *, void *);
 extern int coll_sphere(float, void *, int, void *);
 
 extern float IntToFloat(int);
-
-extern void euler_to_matrix(float *, float *);
-extern void FastVecCross(void *, void *, void *);
-extern void FastVecScale(void *, void *, float);
-extern void transform_vector(void *, void *, void *);
 
 extern int batalia_bolt_sound_frame SDATA(batalia_bolt_sound_frame);
 extern short batalia_bolt_scale, batalia_bolt5_scale, batalia_bolt10_scale;
@@ -2115,12 +2088,12 @@ void update_batalia_bolt_pickup(Moby *m) {
                 if (scale_ticks(10) < d->i68) {
                     float t = FastAddRots(d->f60, FastSin((float)(d->i68 % 8 - 4) * 0.7854f) * 0.17453292f);
 
-                    step_angle_toward_target(&d->f60, t, 0.5235988f, 0);
+                    step_angle_toward_target_v(&d->f60, t, 0.5235988f, 0);
                 } else {
                     float t = FastAddRots(
                         fast_atan2(g_hero.motion.pos.f[0] - m->pos.x, g_hero.motion.pos.f[1] - m->pos.y), 1.5707964f);
 
-                    step_angle_toward_target(&d->f60, t, 0.08726646f, 0);
+                    step_angle_toward_target_v(&d->f60, t, 0.08726646f, 0);
                     if (FastDiffRots_r(d->f60, t) < 0.08726646f) {
                         d->i68 = 0;
                     }
@@ -2392,10 +2365,6 @@ void update_batalia_bolt_pickup(Moby *m) {
         }
     }
 }
-extern void FastVecCross(void *, void *, void *);
-extern void clear_u64_value(void *);
-
-extern void euler_to_matrix(float *, float *);
 
 /* builds a basis from a direction vector and writes the orientation into the moby */
 void set_batalia_bolt_pickup_surface_rotation(char *a, float *v) {
@@ -2422,8 +2391,6 @@ void set_batalia_bolt_pickup_surface_rotation(char *a, float *v) {
 extern short batalia_bolt_tilt_deg, batalia_bolt5_tilt_deg, batalia_bolt10_tilt_deg;
 extern short batalia_bolt_lift, batalia_bolt5_lift, batalia_bolt10_lift;
 extern short batalia_bolt_forward_offset, batalia_bolt5_forward_offset, batalia_bolt10_forward_offset;
-extern float FastSin(float);
-extern void FastVecAdd(void *, void *, void *);
 
 /* aims a turret: builds its barrel frame from the base rotation, yaw and pitch, writes the barrel rotation
  * and the muzzle point (offset per turret class) */
@@ -2486,12 +2453,10 @@ void compute_batalia_bolt_pickup_surface_pose(char *m, float *out, float *rot) {
     FastVecAdd(out, out, v);
 }
 typedef int u128 __attribute__((mode(TI)));
-extern float FastVecLength(void *a);
-extern void FastVecScale(void *, void *, float);
-extern void transform_vector(void *, void *, void *);
+
 extern int truncate_float_to_s32(float);
 extern float IntToFloat(int);
-extern float FastAddRots(float, float);
+
 extern void VU1_addGSregister(int, long);
 extern int GetEffectTex(int);
 extern void draw_geometry_quad_5188(void *, void *, void *, s32, s32);
@@ -2612,8 +2577,7 @@ void spawn_shrub_parts(char *moby) {
         e += 0x10;
     } while (i < 8);
 }
-extern void SpawnExplosionFx(void *, void *, int, float, float);
-extern float random_float_between(float, float);
+
 extern void Moby_PlaySound_r(int, int, int) __asm__("func_0022ED80");
 
 /* Checks the 13 object slots at data + 0x60 (stride 16) with MobyGetHitMessage(slot, 0x10000, 0). Each hit adds to a
@@ -2693,10 +2657,7 @@ void process_shrub_part_hits(char *m) {
         Moby_PlaySound_r(r, 0, (int)m);
 }
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void FastVecSub(void *, void *, void *);
-extern void FastVecAdd(void *, void *, void *);
-extern float FastAddRots(float, float);
-extern void moby_build_matrix(void *);
+
 extern float shrub_part_spin_speed SDATA(shrub_part_spin_speed);
 
 /* Re-aims the twelve child mobys of a parent, adjusts the parent's spin, then runs the children's follow-up. */
@@ -3111,7 +3072,7 @@ void process_linked_moby_part_hits(struct Moby *moby) {
     if (sound >= 0)
         Moby_PlaySound_r3(sound, 0, moby);
 }
-extern void moby_build_matrix();
+
 extern float commando_part_spin_speed SDATA(commando_part_spin_speed);
 
 // Updates the moby's attached parts: pose each one, scale one value, then run the flagged ones.

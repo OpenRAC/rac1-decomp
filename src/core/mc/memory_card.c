@@ -10,15 +10,7 @@
  * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
  */
 
-extern int disable_interrupts(void);
-
-extern int create_semaphore(void *);
-
 extern void libc_memset(void *, int, int);
-
-extern void flush_cache(int);
-
-extern void signal_semaphore(int);
 
 extern void scePrintf();
 
@@ -29,14 +21,13 @@ typedef struct {
 
 extern int mc_semaphore;
 
-extern int wait_semaphore(int);
 extern int sceSifInitRpc(int);
 extern char mc_rpc_client[];
 extern int mc_rpc_request;
 extern char mc_rpc_reply[];
 extern int sceSifBindRpc(void *, int, int);
 extern char str_mc_bind_error[];
-extern int sif_call_rpc();
+
 extern char str_mc_old_mcserv[];
 extern char str_mc_old_mcman[];
 
@@ -100,9 +91,9 @@ int sce_mc_init(void) {
 LINKER_REMNANT("asm/remnants/core_text", func_001238A8);
 
 extern char mc_rpc_client[];
-extern int poll_semaphore(int);
+
 extern char mc_rpc_path_request[];
-extern void *libc_strncpy(void *, const void *, int);
+
 extern int mc_current_command;
 
 /* sceMcOpen(port, slot, fname, mode) (libmc): same RPC-wrapper shape as
@@ -341,9 +332,6 @@ int sce_mc_write_buffer(int fd, unsigned char *buffer, int size) {
 }
 
 ASM_FUNC("asm/handwritten/core_text", func_00123EC0);
-
-extern int sleep_thread(void);
-extern void mc_hear_alarm(int, unsigned short, void *);
 
 /* mcDelayThread (libmc): sleep this thread until an alarm of `time`
    h-lines wakes it: SetAlarm (set_alarm) with mcHearAlarm
@@ -710,7 +698,6 @@ int sceDbcCreateSocket(void *arg0, int arg1, int arg2) {
     return buf[9];
 }
 
-extern void sync_dcache_range(void *, void *);
 /* EIntr returns the previous interrupt state; the file declares it void.
    A call that returns a value changes how the lookup after it is
    allocated. */
@@ -1073,8 +1060,6 @@ int sce_pad2_link_driver(int arg0) {
     pad2_sockets[arg0].unk_04 = 1;
     return t;
 }
-
-extern void sync_dcache_range(void *a, void *b);
 
 /*
  * Close, not exact (3/100), same size. Logic confirmed: take entry

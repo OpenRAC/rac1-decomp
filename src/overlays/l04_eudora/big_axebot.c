@@ -18,6 +18,8 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
+#include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern struct Hero g_hero;
 extern u8 voice_pool[];
 /* Blarg trooper: walks an Eudora path, swings its weapon at the hero. */
@@ -104,9 +106,9 @@ typedef struct {
     Vec4 point[1];
 } PathPoints_eb20_9FCF0;
 extern void FastVecSub_r(Vec4 *out, void *a, void *b) __asm__("func_001F9BF0");
-extern f32 func_001F9CB8(Vec4 *v);
+
 extern void vec_scale_to_length_r(Vec4 *out, Vec4 *v, f32 len) __asm__("func_L00_001FF4B0");
-extern f32 func_001F9C78(Vec4 *a, Vec4 *b);
+
 extern void FastVecAdd_r(Vec4 *out, Vec4 *a, Vec4 *b) __asm__("func_001F9BD8");
 /* Next point index on a looping path in direction dir, wrapping at both ends. */
 static inline s32 path_next_eb20_9FCF0(PathPoints_eb20_9FCF0 *path, s32 i, s32 dir) {
@@ -168,15 +170,9 @@ struct PMoby {
 
 extern void *libc_memset(void *, int, unsigned int);
 extern float IntToFloat(int);
-extern float FastAddRots(float, float);
-extern float FastCos(float);
-extern float FastSin(float);
+
 extern float vec_distance_xy(float *, float *);
-extern void clear_u64_value(float *);
-extern char *CreateMoby(int);
-extern float random_float_between(float, float);
-extern f32 random_angle_radians(void);
-extern void moby_build_matrix(void *);
+
 extern void update_moby_movement_with_sphere_collision(f32, struct PMoby *, void *, void *);
 extern struct Path5BD0 *eudora_paths[];
 extern f32 eudora_swarm_steer_params[8];
@@ -332,10 +328,8 @@ void update_class_55_swarm_controller(struct PMoby *moby) {
         }
     }
 }
-extern int scale_ticks(int);
-extern void MobyBlendAnimation(void *, void *, void *, void *);
+
 extern int func_001160D8(void);
-extern void moby_anim_sphere_lerp(void *);
 
 // Per-frame update: counts down a timer, firing a effect call at start and end.
 void update_moby_random_interval_animation(char *m) {
@@ -356,7 +350,6 @@ void update_moby_random_interval_animation(char *m) {
         moby_anim_sphere_lerp(m);
     }
 }
-extern void MobyBlendAnimation(void *, void *, void *, void *);
 
 /* Blend the big axebot's animation and, if present, its axe moby's animation the same way. */
 void blend_big_axebot_and_axe_animation(char *arg, void *a, void *b, void *c) {
@@ -376,7 +369,7 @@ void set_big_axebot_and_axe_animation_speed(char *arg, float f) {
         *(float *)(data->axe + 0x58) = f;
     }
 }
-extern void clear_u64_value(float *);
+
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
@@ -526,53 +519,35 @@ typedef struct {
 } P_B7B0;
 
 extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
-extern float FastVecDist(void *, void *);
+
 extern void set_ground_height_band(void *);
 extern void FindNearestTargetMoby(char *, float *, float);
 extern float vec_distance_xy(float *, float *);
 
-extern float MobyGetFrameValue(void *);
-extern int FastDecTimer(void *);
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
 extern void RerollEffectCounter(void *m, short *p);
 extern int Moby_PlaySound(int, int, char *);
 extern void set_big_axebot_and_axe_animation_speed(char *, float);
-extern float multiply_global_factor(float);
+
 extern void InitKnockback(float, void *, void *, int, int, int);
 extern void trooper_set_knockback(float *p, float a, float b);
 extern void HeadingFromVector(void *, float *, void *, void *);
 extern void SetDeathBits(void *, int, int);
-extern int fast_subtract_rotations_cf(void *);
-extern void AttachManipulator(char *, int, void *);
+
 extern void *libc_memset(void *, int, unsigned int);
-extern int random_integer_below(int);
-extern int is_point_inside_clip_volume(void *arg0, int arg1);
+
 extern float SpringTurn(float cur, float target, float *vel, float k, float d, float max);
-extern float FastCos(float);
-extern float FastSin(float);
-extern void FastVecAdd(void *, void *, void *);
-extern int MoveKeepingOverGround(void *, void *, void *, int, float, float, float, float);
 
 extern void leg_walker_update(void *, void *, float, float, float);
-extern int IsPointInPolygon(void *, void *, int);
 
-extern void PostHitMessage(char *m, float t, int a, int b, void *pos, void *vel);
-extern void BuildSphericalOffset(void *, float, float, float);
+extern void PostHitMessage_v(char *m, float t, int a, int b, void *pos, void *vel) __asm__("func_L00_0025AC00");
+
 extern int mine_fall(void *, void *);
-extern void DeleteMoby(void *);
+
 extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
 extern void StepColorFade(void *, void *);
 extern void fast_dec_timer(int *arg0);
-extern void axis_rotation_2d48(void *, int, float);
-extern float ProbeGroundHeight(void *, int, float);
-extern float FastSubRots(float, float);
-extern float FastAddRots(float, float);
-extern void MobyTransformScaledVertex(char *, int, char *);
-
-extern void MobyAnimAdvance(void *);
-extern void moby_build_matrix(void *);
-extern void matrix_copy_rows(void *, void *);
 
 extern void *spawn_axe_moby(void *, void *);
 
@@ -969,7 +944,7 @@ void big_axebot_update(M_B7B0 *moby) {
                 qcopy(p, tg.pos);
                 p[2] += 0.75f;
                 if (tgt != 0) {
-                    PostHitMessage(tgt, 1.0f, (int)moby, 1, p, v);
+                    PostHitMessage_v(tgt, 1.0f, (int)moby, 1, p, v);
                 }
             }
             if (hd > 20.0f) {
@@ -1327,8 +1302,7 @@ int check_circular_saw_melee_attack_spacing(char *moby) {
 }
 extern float eudora_circular_saw_separation_weight SDATA(eudora_circular_saw_separation_weight);
 extern void FindNearestTargetMoby_k(void *, void *, float) __asm__("func_L00_00260D30");
-extern void FastVecSub(void *, void *, void *);
-extern void FastVecScale(void *, void *, float);
+
 extern void vec_scale_to_length(void *, void *, float);
 
 /* Flock steering for moby m: picks its path target, pushes away from same-class mobys within 3 units,
@@ -1559,24 +1533,21 @@ typedef struct {
 
 extern void update_circular_saw_engine_sound(void *);
 extern void *MobyGetHitMessage_r(void *, int, int) __asm__("func_L00_0025B478");
-extern void FastVecSub(void *dst, void *a, void *b);
+
 extern void vec_scale_to_length(void *, void *, float);
 extern int coll_sphere_mobys(void *, int, void *, void *, float);
-extern void DeleteMoby(void *);
+
 extern void MoveCtl_Init(char *p);
 
 extern float compute_circular_saw_flock_steering(void *, void *, float);
-extern float FastDiffRots(float, float);
+
 extern void MobySpringTurn_b(char *moby, float target, float *vel, float k, float d,
                              float max) __asm__("func_L00_002592B0");
 extern int CarriedMobyUpdate(void *, void *);
-extern void FastVecAdd(void *, void *, void *);
-extern int MoveKeepingOverGround(void *, void *, void *, int, float, float, float, float);
+
 extern float IntToFloat(int);
-extern float FastNormalizeAngle(float);
+
 extern int truncate_float_to_s32(float);
-extern float random_float_between(float, float);
-extern void matrix_mul_vec3(void *, void *, void *);
 
 extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
 
@@ -2185,7 +2156,6 @@ typedef struct {
     PuffTail tail; /* 0x20 */
 } Puff;
 
-extern f32 random_angle_radians(void);
 extern Puff *PartType23Spawn(void *, f32, f32, f32, int, void *, f32, int);
 extern void PartType21Spawn(void *, void *, int, int, int, int, f32);
 extern f32 eudora_smoke_puff_rise_speed SDATA(eudora_smoke_puff_rise_speed);
@@ -2250,7 +2220,6 @@ void spawn_smoke_puff_trail_with_endpoint_bursts(void *owner, void *from, void *
     vel.f[2] = random_float_between(0.01f, 0.03f);
     PartType21Spawn(to, &vel, 0x4F007FFF, 0x1FFFFFFF, rand_range(scale_ticks(10), scale_ticks(20)), 1, 20000.0f);
 }
-extern void DeleteMoby(void *);
 
 /* Destroy a Blarg trooper: delete its linked moby, spawn a puff, then delete it. */
 void destroy_blarg_trooper(char *arg) {
@@ -2286,15 +2255,14 @@ extern int truncate_float_to_s32(float);
 extern int STUB_printf();
 extern char *MobyGetHitMessage(void *, int, int);
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
-extern void FastVecAdd(void *, void *, void *);
+
 extern int coll_line(void *, void *, int, void *, void *);
 extern int MoveKeepingOverGround_o(void *, void *, void *, float, float, float, float,
                                    int) __asm__("func_L00_002594C8");
-extern void FastVecSub(void *dst, void *a, void *b);
+
 extern float vec_length_xy(void *);
 extern void spawn_class_b8_projectile(void *, void *, void *, int);
-extern void vec_set_length_xy(void *, void *, float);
-extern void record_moby_hit(void *, void *);
+
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 
 extern float eudora_camera_pos[];
@@ -2901,7 +2869,7 @@ extern u8 D_L04_00198040[];
 extern struct MobyClass *D_L04_00197780[];
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
 extern void MobyBlendAnimation_r(struct Moby *, s32, s32, s32) __asm__("func_00213DE0");
-extern void func_0020D6D0(struct Moby *);
+
 extern s32 Sound_IsPlaying_r2(struct Moby *, s32) __asm__("func_L00_0028EB98");
 extern s32 Moby_PlaySound_r2(s32, s32, struct Moby *) __asm__("func_0022ED80");
 struct Moby;

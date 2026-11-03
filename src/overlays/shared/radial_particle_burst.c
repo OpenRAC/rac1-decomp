@@ -6,16 +6,11 @@
 #include "game/moby/mobyutil.h"
 #include "asm_functions/shared_levels.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "asm_functions/executable.h"
 
 LINKER_REMNANT("asm/overlays", func_L03_00249488);
-extern void FastVecCross(void *, void *, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern float FastVecDot(void *, void *);
-extern float FastVecLength(void *);
-extern float FastArcSin(float);
-extern float FastSin(float);
-extern void FastVecScale(void *, void *, float);
-extern float FastCos(float);
 
 // Rotates a vector toward another by a fraction of the angle between them using a quaternion.
 void rotate_vector_by_scaled_angle_between_vectors(float t, float *dst, float *a, float *b, int flag) {
@@ -48,12 +43,6 @@ void trooper_set_knockback(float *p, float a, float b) {
     p[6] = (a + a) / x;
     p[5] = (a + a) / (x * x);
 }
-
-extern void build_look_at_matrix(void *, void *, void *, float);
-extern float random_float_between(float, float);
-
-extern int random_integer_below(int);
-extern int scale_ticks(int);
 
 extern unsigned char *PartType44Spawn(void *, void *, int, int, int, int, float, float, float, float, float);
 extern int truncate_float_to_s32(float);

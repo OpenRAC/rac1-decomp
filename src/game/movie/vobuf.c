@@ -1,5 +1,6 @@
 #include "common.h"
 #include "structs/misc.h"
+#include "asm_functions/executable.h"
 
 typedef struct VoBuf {
     char *frames;        /* 0x0, ring of 0xD0000-byte frames */
@@ -38,8 +39,7 @@ int voBufIsFull(VoBuf *vb) {
     return vb->count == vb->cap;
 }
 /* Updates or queries the decoded-frame ring. */
-extern int disable_interrupts(void);
-extern void enable_interrupts(void);
+
 /* voBufIncCount(VoBuf *) */
 void voBufIncCount(VoBuf *vb) {
     disable_interrupts();

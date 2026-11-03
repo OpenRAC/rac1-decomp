@@ -16,7 +16,6 @@
  */
 
 extern int sceSifBindRpc();
-extern int sif_call_rpc();
 
 extern int lf_bind_state;
 extern char lf_rpc_client[];

@@ -3,6 +3,7 @@
 #include "structs/records.h"
 #include "structs/misc.h"
 #include "game/render/lights.h"
+#include "asm_functions/executable.h"
 
 /*
  * lights.cpp in the original source; text 0x202260-0x202AA8.
@@ -14,10 +15,7 @@ extern char dir_lights[];
 extern float gCamera_yaw;
 extern char point_lights[];
 extern char point_light_data[];
-extern float FastAddRots(float, float);
-extern float FastCos(float);
-extern float FastSin(float);
-extern float FastVecDist(void *, void *);
+
 extern void CreatePointLight(int);
 
 /* Per-frame light update: the ambient colour (0.8 grey, -0.3) and a key
@@ -92,7 +90,7 @@ extern LtObj40 *tfrag_render_records_o __asm__("D_00160F8C") MACRO_ADDR;
 extern int tfrag_render_record_count MACRO_ADDR;
 extern LtObj20 *shrubs_o __asm__("D_001604D4") MACRO_ADDR;
 extern LtObj20 *D_001604D8 MACRO_ADDR;
-extern int spheres_intersect(void *, void *);
+
 extern void scale_vector(void *, void *, float);
 
 /* CreatePointLight: lists which objects of the three lists the light's sphere touches and records the light's index in their packed nibble field. Adapted from Lombyte's project (GPL-3.0) for PAL: src/rendering/create_point_light.c, create_point_light. */

@@ -12,6 +12,7 @@
 #include "game/moby/mobyutil.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/moby_class.h"
+#include "game/moby/mobyfunc.h"
 
 /* Moby that drags a child moby along with it. */
 struct ChildCarrierVars {
@@ -132,7 +133,6 @@ extern float vec_length_xy(void *);
 extern void update_beam_ring_rail_and_pulse_effects(void *);
 extern void matrix_mul_vec3(void *, void *, void *);
 extern void FastVecAdd(void *, void *, void *);
-extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
 
 extern char *PartType23Spawn_c(void *, int, void *, float, float, float, float, int) __asm__("func_L00_0026DEA0");
 extern void draw_three_scaled_camera_facing_quads(void);
@@ -818,8 +818,6 @@ void update_moby_visibility_and_half_turn(char *moby) {
 }
 extern void FastVecSub(void *, void *, void *);
 extern void update_entity_matrix(char *a, void *b, void *c, void *d);
-extern char *func_0020D348(int);
-extern void moby_build_matrix(void *);
 
 /* updates a moby that drags a child moby along with it */
 void update_moby_transform_and_child(char *moby) {
@@ -875,8 +873,6 @@ typedef struct {
     char pad0[0x84];
     void *child;
 } Level18VendorData;
-
-extern void DeleteMoby(void *);
 
 /* Remove a vendor moby and any child it owns. */
 void mark_class_0630_moby_and_child_for_removal(Moby *moby) {
@@ -945,13 +941,10 @@ typedef struct {
     float v[4];
 } __attribute__((aligned(16))) QVd058;
 
-extern float random_angle_radians(void);
-extern float ProbeGroundHeight(void *, int, float);
 extern int CarriedMobyUpdate(void *, void *);
 extern void update_gadgebot_damage_target_and_glow(void *);
 extern float fd9a0_c(void *, void *) __asm__("func_L18_002FD9A0");
 extern float f9d48_i(void *, void *) __asm__("func_001F9D48");
-extern void MobyBlendAnimation(void *, int, int, int);
 
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 extern int IsFrameWithinWindow(char *, float);

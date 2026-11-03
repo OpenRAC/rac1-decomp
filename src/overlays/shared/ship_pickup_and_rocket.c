@@ -4,6 +4,11 @@
 #include "include_asm.h"
 #include "structs/moby.h"
 #include "overlays/shared/moby_ground_collision.h"
+#include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
+#include "game/moby/mobyfunc.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 
 /* Ship rocket: homes in on a target. Same layout as Rocket below (defined after use). */
 struct ShipRocketVars {
@@ -26,9 +31,6 @@ extern u128_7d50 gemlik_2d_vertex_giftag;
 extern int g_screen_extent[];
 extern float IntToFloat(int);
 extern int truncate_float_to_s32(float);
-extern void euler_to_matrix(void *, void *);
-extern void transform_vector(void *, void *, void *);
-extern void FastVecScale(void *, void *, float);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b7d50.c, FUN_L13_002b7d50. */
 void emit_transformed_2d_vertex_packet(short *pts, int n, float x0, float y0, unsigned int col, unsigned long prim,
@@ -85,8 +87,6 @@ void emit_transformed_2d_vertex_packet(short *pts, int n, float x0, float y0, un
     }
     gemlik_dma_packet_cursor += ((n + 1) / 2) * 16;
 }
-extern float FastSubRots(float, float);
-extern float FastAddRots(float, float);
 
 /* Blends from b to c by the eased fraction of x between lo and hi; flag selects the call path. */
 float interpolate_value_with_repeated_squaring(int flag, int n, float x, float b, float c, float lo, float hi) {
@@ -116,8 +116,6 @@ float interpolate_value_with_repeated_squaring(int flag, int n, float x, float b
     }
     return r;
 }
-extern unsigned char *CreateMoby(int);
-extern void moby_build_matrix(void *);
 
 /* Spawns a ship pickup moby of the given class at position. */
 unsigned char *spawn_ship_pickup(char *position, int moby_class) {
@@ -142,14 +140,13 @@ extern int gemlik_coll_hit_moby __attribute__((section(".data")));
 extern int fast_dec_timer(void *);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern int coll_sphere(float, void *, int, void *);
-extern float FastVecDist(void *, void *);
+
 extern float vec_length(float);
-extern void FastVecSub(void *, void *, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
+
 extern void Moby_PlaySound(int, int, void *);
-extern void DeleteMoby(void *);
-extern void update_moby_vertical_oscillation(float, float, void *, void *, void *);
+
 /* Ship pickup update: waits, homes in on the player ship and gives ammo or health when taken. */
 void ShipPickupUpdate(char *moby) {
     int *vars = ((int *)((Moby *)moby)->pvars);
@@ -305,9 +302,7 @@ frame_tail:
         ((Moby *)moby)->pos.z = 1003.0f;
 }
 extern void *GetFlaggedPvarWord(char *);
-extern void BuildSphericalOffset(void *, float, float, float);
-extern void MobyBlendAnimation(void *, int, int, int);
-extern void FastVecAdd(void *, void *, void *);
+
 extern char *spawn_source_attached_fading_effect_particle(char *, int, int, int, float);
 
 // Spawns an effect moby attached to a target and positioned from a source.
@@ -378,9 +373,7 @@ extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern unsigned char *func_L00_00272158(void *pos, float *vec, int s, int a, int col, int n, float x, float y, float z,
                                         float w, float pw);
-extern void func_001F9EC0(void *, void *, void *);
-extern float func_00214158(void);
-extern void func_002156E0(void *dst, void *vec, void *axis, float angle);
+
 extern unsigned char *func_L00_0026DA50(void *pos, void *dir, int c, int d, int n, int k, float f);
 extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");

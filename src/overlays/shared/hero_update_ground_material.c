@@ -19,13 +19,18 @@
 #include "enums/moby_class.h"
 #include "structs/collision.h"
 #include "structs/hit_message.h"
+#include "asm_functions/executable.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 extern Hero g_hero;
 extern char g_hero_moby[];
 extern int pad_held;
 
 extern unsigned char hero_globals_base[];
 extern char novalis_item_defs[];
-extern int hero_slot_item_id(int);
 
 /* Looks up the value of the current help record, or 0/0x54 in the special cases. */
 int get_hero_idle_animation_index(int a) {
@@ -68,14 +73,11 @@ void request_hero_voice_if_enabled(int a0, int a1, int a2) {
 extern unsigned char gHaveMorphORay[];
 extern unsigned char gCheats[] MACRO_ADDR;
 extern int novalis_frame_count MACRO_ADDR;
-extern int scale_ticks(int);
+
 extern float novalis_lean_state_30_scale;
 extern float IntToFloat(int);
 extern int truncate_float_to_s32(float);
-extern float FastSin(float);
-extern int FastTweenColor(int, int, float);
-extern void advance_hero_animation(void);
-extern void hero_update(void);
+
 extern void update_hero_ground_material_effects(void);
 extern void HeroL01_UpdateStateTransitions(void);
 
@@ -204,11 +206,10 @@ void hero_frame_update(void) {
     update_hero_moby_probed_height_bounds();
     apply_env_zone_lighting(GG->p2080);
 }
-extern int scale_ticks(int);
+
 extern void FadeToBlack(int);
 extern void hero_frame_update(void);
-extern void advance_hero_animation(void);
-extern void hero_update(void);
+
 extern void update_hero_ground_material_effects(void);
 extern void update_hero_ledge_probe(void);
 extern void HeroL01_UpdateStateTransitions(void);
@@ -224,7 +225,6 @@ extern void update_hero_glow_and_extra_manipulators(void);
 extern void update_hero_easing_records(void);
 extern void update_hero_moby(void);
 extern void update_hero_world_matrices(int);
-extern void update_hero_equipped_items(void);
 
 extern void update_hero_scalar_pulse(void);
 extern void apply_hero_and_item_scale_sequence(void);
@@ -297,8 +297,7 @@ extern struct Hero g_hero_r __asm__("D_0013F450");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern int g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 extern unsigned char D_0013E620[];
-extern void func_L00_00251358(struct Moby *, int *, int *, int *);
-extern void func_L00_00251328(struct Moby *, int, int, int);
+
 extern void func_L00_002078E0(void);
 extern void update_item_tint_from_hero_r(struct Moby *, struct Moby *) __asm__("func_L00_00207948");
 
@@ -462,7 +461,7 @@ extern char g_hero_r2[] __asm__("D_0013F450");
 extern char novalis_coll_hit_r[] __asm__("D_L01_00174340");
 extern float g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern int scale_ticks_r2(int) __asm__("func_001F9850");
-extern void func_L00_0025A540(void *a, void *b, void *c, int d, float f);
+
 extern float FastCos_r(float) __asm__("func_001F9F90");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern int coll_line_r(void *, void *, int, int, int) __asm__("func_L00_001EFFF0");
@@ -766,14 +765,13 @@ int test_hero_ledge_ahead(Vec4 *pos, f32 *dir) {
     return 0;
 }
 extern unsigned char hero_globals_base[] NOT_SDA;
-extern void cancel_hero_item_animation(void);
+
 extern void hero_update_items();
-extern void clear_moby_transform_history(char *o);
-extern void HeroSetObjectFlags(void);
+
 extern void release_and_clear_hero_voice_slots(void);
 extern void reset_hero_easing_records(void);
 extern void HeroSetCollisionSize(void);
-extern void clear_hero_queued_animation(void);
+
 extern void Hero_SetMoveState(int, int);
 
 /* Starts a level scene: resets the player state, takes the new moby and sets up its flags. */
@@ -808,7 +806,7 @@ void enter_hero_vehicle_mode_and_set_moby(int a, int b, int c) {
     }
     Hero_SetMoveState(b, 1);
 }
-extern void DeleteMoby(void *);
+
 extern void Hero_SetMoveState(int, int);
 extern int novalis_game_mode MACRO_ADDR;
 
@@ -856,14 +854,9 @@ extern s32 hero_hit_count MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
 extern u8 hero_velocity[];
 void release_and_clear_hero_voice_slots(void);
-void FastVecSub(void *, void *, void *);
-f32 FastAddRots(f32, f32);
-f32 FastCos(f32);
-f32 FastSin(f32);
-void FastVecAdd(void *, void *, void *);
+
 void Hero_SetMoveState(s32, s32);
 void allocate_hero_voice_for_entry(s32, s32);
-void hero_knockback(void *, s32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00226f10.c, FUN_L01_00231580. */
 s32 HeroL01_TryTakeHit(s32 arg) {
@@ -1038,12 +1031,12 @@ void HeroSetCollisionSize(void) {
 }
 extern float g_frame_time MACRO_ADDR;
 extern float novalis_hero_speed_bands[];
-extern void stick_target(int, float);
+extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00226f10.c, FUN_L01_00232290. */
 void hero_speed_from_table(void) {
     Hero *x;
-    stick_target(0, 1.0f);
+    stick_target_v(0, 1.0f);
     x = &g_hero;
     if (0.0f < x->target_speed) {
         if (x->target_speed < novalis_hero_speed_bands[3]) {
@@ -1064,12 +1057,9 @@ void hero_speed_from_table(void) {
         }
     }
 }
-extern float gravity_length_xy(float *v);
+
 extern float vec_length_xy(void *);
-extern float FastCos(float);
-extern float FastSin(float);
-extern void FastVecScale(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
+
 extern int coll_line(void *, void *, int, int, int);
 
 extern int novalis_coll_hit_type;
@@ -1159,23 +1149,18 @@ void clip_hero_horizontal_velocity(int flag) {
 typedef int Q __attribute__((mode(TI)));
 extern u8 novalis_coll_hit_point[];
 void func_001F9BC0_333D8(void *) __asm__("func_001F9BC0");
-void hero_get_collision_ray_endpoints(void *, void *, s32, f32, f32);
+
 s32 coll_line(void *, void *, s32, s32, s32);
-s32 coll_sound_class(void);
-s32 CollType(void);
+
 f32 resolve_camera_surface_height(void *, void *);
 s32 is_moby_in_class_range_500_to_540(s32);
 u8 *GetFlaggedPvarWord(s32);
-f32 FastVecDist(void *, void *);
+
 void sceVu0Normalize(void *, void *);
-f32 compute_gravity_relative_vector_inclination(void *);
-f32 fast_atan2(f32, f32);
-void FastVecSub(void *, void *, void *);
-f32 FastVecDot(void *, void *);
-void FastVecScale(void *, void *, f32);
+
 void vec_scale_to_length(void *, void *, f32);
 void compute_rotated_vector_angles(void *, void *);
-void transform_hero_polar_offset_to_world(void *, f32, f32, f32);
+
 f32 FastAbsF(f32);
 extern struct CollisionHit novalis_coll_hit_r3 __asm__("D_L01_00174340");
 
@@ -1354,14 +1339,7 @@ d1:
 }
 extern char novalis_coll_resolved_pos[];
 extern float frame_scale SDATA(frame_scale);
-extern void clear_u64_value(float *);
-extern void Hero_ConstrainToPath(void);
-extern void HeroOffsetAlongViewZ(float *dst, float *src, float dz);
-extern void HeroMoveDownAlongNormal(float *dst, float *src, float h);
-extern int coll_capsule(float, float, void *, int, void *);
-extern int coll_sphere_hero_groups(float, void *);
-extern void FastVecSub(void *, void *, void *);
-extern float FastVecLength(void *);
+
 extern void vec_scale_to_length(void *, void *, float);
 
 /* Checks that the hero capsule passes: sweeps the capsule toward the target, and clamps the remaining offset. */
@@ -1447,10 +1425,6 @@ int resolve_hero_position_with_collision_queries(int a0) {
     return 1;
 }
 typedef int u128_34970 __attribute__((mode(TI)));
-extern void vec_set_length_xy(void *, void *, float);
-extern float forward_component(void *);
-extern void set_gravity_relative_vector_length_xy(float *, float *, float);
-extern void add_hero_forward_offset(void *, void *, float);
 
 // Accelerates the hero's air velocity toward the stick direction, clamped to the step.
 void air_accel(float step) {
@@ -1549,20 +1523,14 @@ extern short novalis_game_mode_r __asm__("D_L01_0015F6A8");
 extern u8 item_available[];
 
 extern s32 fast_dec_timer(s32 *);
-extern s16 FastDecTimer(s16 *);
-extern void exit_hero_vehicle_mode_and_restore_moby(void);
-extern s32 scale_ticks(s32);
-extern s32 pad_pressed_within(s32, s32, s32);
-extern struct Moby *CreateMoby(s32);
-extern void moby_build_matrix(struct Moby *);
-extern void enter_hero_vehicle_mode_and_set_moby_r(s32, s32, struct Moby *) __asm__("func_L01_00231960");
-extern f32 gravity_z(void *);
-extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
-extern void FastVecScale(void *, void *, f32);
-extern f32 FastVecLength(void *);
 
-extern void transform_hero_local_offset_to_world(void *, f32, f32, f32);
-extern void Hero_OnKilled(void);
+extern void exit_hero_vehicle_mode_and_restore_moby(void);
+
+extern s32 pad_pressed_within(s32, s32, s32);
+
+extern void enter_hero_vehicle_mode_and_set_moby_r(s32, s32, struct Moby *) __asm__("func_L01_00231960");
+
+extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00226f10.c, FUN_L01_0023c710. */
 void update_hero_timers_and_vehicle_transitions(void) {
@@ -1703,8 +1671,7 @@ void request_hero_idle_state_for_vehicle_mode(void) {
     }
 }
 extern int hl_next(int, int) __asm__("func_L01_0023D688");
-extern void set_hero_animation(int, int, float);
-extern void hero_queue_sequence(int bank, int seq);
+
 extern void ClampVectorLength(void *a, float x);
 extern int get_hero_idle_animation_index(int a);
 extern int novalis_hero_run_step1_start_frame MACRO_ADDR;
@@ -1717,7 +1684,7 @@ void select_hero_locomotion_state(void) {
     int n;
     b = (char *)&g_hero;
     ((struct Hero *)b)->unk2284 = 0;
-    stick_target(0, 1.0f);
+    stick_target_v(0, 1.0f);
     if (pad_held & 0xA) {
         hl_next(4, 0);
         set_hero_animation(0xD, 2, -2.0f);

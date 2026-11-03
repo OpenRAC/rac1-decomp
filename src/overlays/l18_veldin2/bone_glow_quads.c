@@ -7,13 +7,9 @@
 #include "include_asm.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 
 extern float IntToFloat(int);
-extern float FastSin(float);
-extern int FastTweenColor(int, int, float);
-extern void MobyTransformScaledVertex(void *, int, void *);
-extern void FastVecScale(void *, void *, float);
-extern void FastVecSub(void *, void *, void *);
 
 extern int veldin2_frame_count;
 extern int drek_boss_rider_glow_period;

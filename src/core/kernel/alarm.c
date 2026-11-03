@@ -1,14 +1,12 @@
 #include "common.h"
 #include "callees.h"
 #include "structs/misc.h"
+#include "asm_functions/executable.h"
 
 /*
  * core_text object 0x11DDD0-0x11DF10. Boundaries are retail's linker fill
  * (0xCDCDCDCD) between objects; see docs/reference/DECOMP_PROGRESS.md.
  */
-
-
-extern void flush_cache(int);
 
 ASM_FUNC("asm/handwritten/core_text", func_0011DDD0);
 
@@ -28,9 +26,6 @@ int alarm_kCopy(int *dst, int *src, unsigned int nbytes) {
 
 ASM_FUNC("asm/handwritten/core_text", func_0011DE28);
 
-extern void alarm_set_syscall(int, int);
-extern void alarm_kernel_copy(void *, void *, int);
-extern int alarm_get_syscall_entry(int);
 extern int alarm_syscall_patch_table[];
 extern char alarm_kernel_patch_code[];
 extern char alarm_scratchpad_patch_code[];

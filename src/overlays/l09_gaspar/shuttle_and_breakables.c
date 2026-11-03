@@ -10,9 +10,8 @@
 #include "asm_functions/shared_levels.h"
 #include "data/level_09.h"
 #include "game/moby/mobyutil.h"
-
-extern float FastSubRots(float, float);
-extern float FastAddRots(float, float);
+#include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 
 /* Store in dst the angle scale of the way from a toward b, wrapped. */
 void interpolate_rotation_angle(float *dst, float a, float b, float scale) {
@@ -22,9 +21,7 @@ void interpolate_rotation_angle(float *dst, float a, float b, float scale) {
 }
 
 extern float g_frame_time MACRO_ADDR;
-extern float FastVecDist(void *, void *);
-extern void FastVecAdd(void *, void *, void *);
-extern void FastVecSub(void *out, void *a, void *b);
+
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 struct Manip;
 struct GifEntry;
@@ -53,7 +50,7 @@ extern f32 g_frame_time_sq MACRO_ADDR;
 extern void vec_scale_to_length(void *, void *, f32);
 
 extern float ApproachWithVelocity(float, float, float, float, float *, float *);
-extern void axis_rotation_2d48(void *, int, float);
+
 extern float vec_distance_xy(void *, void *);
 
 extern void add_random_offset_to_vector_xyz(void *, f32);
@@ -124,7 +121,6 @@ extern char *MobyGetHitMessage(void *, int, int);
 extern void Moby_PlaySound(int, int, int);
 extern void spawn_proximity_gated_bolts(void *);
 
-extern void DeleteMoby(void *);
 /* Breakable update: on a hit, play its sound, drop bolts, spawn pieces and delete itself. */
 void BreakableL09_Update(char *m) {
     int hit = 0;

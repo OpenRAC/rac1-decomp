@@ -2,6 +2,7 @@
 #include "callees.h"
 #include "structs/records.h"
 #include "structs/misc.h"
+#include "asm_functions/executable.h"
 
 /*
  * init.cpp in the original source; text 0x201D58-0x201E10.
@@ -10,8 +11,7 @@
  */
 
 extern int sce_sif_alloc_iop_heap(int arg0);
-extern int sce_sif_set_dma(void *buf, int flag);
-extern int sce_sif_dma_stat(int modid);
+
 extern int sif_load_iop_module_buffer(int a, int b, int c);
 extern void sce_sif_free_iop_heap();
 

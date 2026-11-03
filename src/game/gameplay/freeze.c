@@ -197,16 +197,16 @@ extern void emit_rgba_draw_packet(s32, s32, s32, s32);
 extern void draw_outlined_rect(s32, s32, s32, s32, s32);
 extern s32 FontPrintCenter(s32, s32, s64, char *, s32);
 extern void font_print_window_regular(struct TextRegionP *, long, char *, s32);
-extern f32 FastSin(f32);
+
 extern f32 IntToFloat(s32);
 extern s32 truncate_float_to_s32(f32);
-extern s32 FastTweenColor(s32, s32, f32);
+
 extern s32 GetIconFrame(s32, s32);
-extern s64 GetFrameTex(s32);
+
 extern void HudSprite(s32, s32, s32, s32, s32, s32);
 extern void draw_rotated_sprite(f32, f32, f32, f32, f32, s32, s32, s64);
 extern void VU1_addGSregister(s32, s64);
-extern void *libc_strncpy(void *, char *, s32);
+
 extern s32 sprintf(char *, const char *, ...);
 
 /* Draws a freeze-mode message box sized to its text and centred on screen, fading with the box timer. */

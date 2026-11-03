@@ -12,13 +12,15 @@
 #include "game/math/fastfunc.h"
 #include "game/moby/mobyutil.h"
 #include "enums/level.h"
+#include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 extern char gHeroPos[];
 extern Hero g_hero;
 extern char g_hero_body_center[];
 extern char g_hero_platform_carry[];
 extern char hero_gravity_dir[];
 
-extern unsigned char *create_part(int);
 extern int truncate_float_to_s32(float);
 
 extern float frame_scale MACRO_ADDR;
@@ -77,13 +79,8 @@ unsigned char *PartType44Spawn(void *pos, float *vec, int s, int a, int col, int
 typedef struct {
     float f[4];
 } Q __attribute__((aligned(16)));
-extern int FastDecTimer(void *);
 
 extern float IntToFloat(int);
-extern void FastVecAdd(void *, void *, void *);
-extern void scale_vector_xyz_in_place(void *, void *, float);
-
-extern void FastVecScale(void *, void *, float);
 
 /* Per-frame update of a type 0x2C particle: fade colour, move and rotate its velocity.
    Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/rendering_002712b8.c, FUN_L00_00271450. */
@@ -128,10 +125,6 @@ void update_moving_rotating_resizing_alpha_fade_particle(struct PartBase *p) {
 extern unsigned char *part_type45_textures;
 extern int truncate_float_to_s32(float);
 extern int func_001160D8(void);
-extern float random_angle_radians(void);
-
-extern float FastCos(float);
-extern float FastSin(float);
 
 /* spawn a type-0x2D particle at a position with a velocity scale */
 unsigned char *spawn_moving_resizing_height_snapped_alpha_fade_particle(void *pos, int b, int color, float f, float g) {
@@ -166,7 +159,6 @@ unsigned char *spawn_moving_resizing_height_snapped_alpha_fade_particle(void *po
     }
     return r;
 }
-extern void FastVecAdd(void *, void *, void *);
 
 /* updates a type-45 particle: moves it, kills it when out of range or faded */
 void update_moving_resizing_height_snapped_alpha_fade_particle(struct PartBase *m) {
@@ -196,7 +188,7 @@ void update_moving_resizing_height_snapped_alpha_fade_particle(struct PartBase *
     }
 }
 extern unsigned char *part_type46_textures;
-extern void FastVecAdd(void *, void *, void *);
+
 extern int truncate_float_to_s32(float);
 
 typedef struct ExpandRotMotion {
@@ -288,7 +280,6 @@ unsigned char *spawn_random_alpha_rotated_particle(void *a, void *b, float f) {
     }
     return (unsigned char *)r;
 }
-extern void FastVecAdd(void *, void *, void *);
 
 /* Particle update: damp and apply velocity, grow, spin, fade out; kill when fully transparent. */
 void update_expanding_damped_fading_particle(struct PartBase *m) {
@@ -311,10 +302,6 @@ struct PartType48Data {
     s32 color1; /* 0x18 */
     s8 spin_speed; /* 0x1C */
 };
-
-extern void FastVecAdd(void *, void *, void *);
-extern int FastTweenColor(int, int, float);
-extern int FastDecTimer(void *);
 
 /* Particle update: move and spin, tween colour over the lifetime; kill when the timer ends. */
 void update_color_tween_particle(struct PartBase *m) {
@@ -549,11 +536,9 @@ typedef struct {
     void *p10;
     void *p14;
 } Q54;
-extern void path_sample_at_distance(int, float *, float *, void *, float, float);
-extern int scale_ticks(int);
 
 extern int coll_sphere_mobys(float, void *, int, void *, int);
-extern void SendRadialMessageToMobys(void *, void *, void *, int, int, int, int, int, float, float, float);
+
 extern int *coll_sphere_moby_hits[];
 
 /* Part type 54 update: advances a particle, fades its color near the end of life and spawns a light effect at its position. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/rendering_002712b8.c, FUN_L00_00272438. */
@@ -732,7 +717,7 @@ void update_expanding_alpha_pulse_particle(char *m) {
         p->color = (t << 24) | 0x808080;
     }
 }
-extern void BuildSphericalOffset(void *, float, float, float);
+
 extern unsigned char *part_type58_textures;
 
 /* Spawn a type-0x3A particle of kind a1 at pos. */
@@ -785,9 +770,9 @@ unsigned char *spawn_color_tween_emitter_particle(float *pos, unsigned char a1, 
 }
 extern void add_random_offset_to_vector_xyz(float *v, float s);
 extern float vec_distance_xy(void *, void *);
-extern void FastVecSub(void *, void *, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern void PostHitMessage(int, int, int, void *, void *, float);
+
 typedef float V_272bc0[4] __attribute__((aligned(16)));
 extern unsigned char *particle_pool MACRO_ADDR;
 
@@ -866,7 +851,7 @@ void update_color_tween_emitter_particle(struct PartBase *p) {
             break;
     }
 }
-extern void FastVecSub(void *, void *, void *);
+
 extern unsigned char *part_type_textures[];
 
 /* spawns particle type 0x3B from a position, colour index and flags */
@@ -1166,8 +1151,7 @@ extern unsigned char *spawn_moving_resizing_height_snapped_alpha_fade_particle(v
 f32 random_float_between(f32, f32);
 void vec_scale_to_length(void *, void *, f32);
 s32 random_integer_below(s32 arg0);
-extern s32 rand_range(s32, s32);
-extern s32 scale_ticks(s32);
+
 extern unsigned char *spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(void *a, void *b, int c, int d,
                                                                                         float f, int n, int e, int g,
                                                                                         int h);
@@ -1246,7 +1230,6 @@ typedef struct {
 extern float g_frame_scale_sq MACRO_ADDR;
 extern V collision_hit_point;
 extern int coll_line(void *, void *, int, void *, int);
-extern void clear_u64_value(void *);
 
 /* Particle type 65 update: fall under gravity, bounce off the world, fade the colour and die when spent. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/rendering_002712b8.c, FUN_L00_00273ee0. */
 void update_line_collision_rgb_fading_particle(struct PartBase *o) {
@@ -1386,10 +1369,6 @@ unsigned char *spawn_mode_controlled_orbiting_trail_particle(float f0, float f1,
 extern int decrement_packed_countdown_q(void *, int) __asm__("func_L00_0025A468");
 extern char *spawn_mode_controlled_orbiting_trail_particle_r(float, void *, void *, float, int, int, int,
                                                              void *) __asm__("func_L00_00275248");
-extern void euler_to_matrix(void *, void *);
-extern void transform_vector(void *, void *, void *);
-extern void matrix_mul_vec3(void *, void *, void *);
-extern float FastAddRots(float, float);
 
 typedef struct R_274518 {
     f32 unk0;
@@ -1488,7 +1467,7 @@ void update_mode_controlled_orbiting_trail_particle(char *m) {
 }
 
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void MobyTransformScaledVertex(void *, int, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
 
 /* part type 68 update: follows its owner, scaling velocity until the owner goes away */
@@ -1513,8 +1492,7 @@ void update_randomized_moby_point_attached_particle(char *m) {
     ((struct PartBase *)m)->pos.f[3] = a;
     *(float *)(m + 0x2C) = b;
 }
-extern int rand_range(int, int);
-extern int scale_ticks(int);
+
 extern unsigned char *part_type69_textures;
 
 struct PartType69Data {
@@ -1554,7 +1532,6 @@ unsigned char *spawn_mode_controlled_rotating_alpha_fade_particle(void *a, void 
     }
     return (unsigned char *)r;
 }
-extern float randf_sym(float, float);
 
 /* Per-frame update of a particle that follows a moby's joint, kills itself when out of range or expired. */
 void update_mode_controlled_rotating_alpha_fade_particle(struct PartBase *p) {
@@ -1598,7 +1575,7 @@ void update_mode_controlled_rotating_alpha_fade_particle(struct PartBase *p) {
     }
     p->color = (truncate_float_to_s32(IntToFloat(p->timer) * v->inv_timer * IntToFloat(v->alpha)) << 24) | v->color;
 }
-extern int scale_ticks(int);
+
 extern unsigned char *part_type70_textures;
 
 /* spawns a particle at pos with a colour byte taken from a table and a heading */
@@ -1630,10 +1607,7 @@ void update_periodic_alpha_fade_particle(struct PartBase *a) {
         KillPart(a);
 }
 extern int level_frame_counter MACRO_ADDR;
-extern float FastVecDist(void *, void *);
-extern float FastVecLength(void *);
-extern void pack_vector_xyz_with_shared_scale(float *v, int *out);
-extern void load_display_text_resource_entry(float *arg0, int *arg1);
+
 extern void lerp_vector(void *, void *, void *, float);
 // Advances a particle that homes on a target: steers toward it, fades the colour and steps its keyframes.
 void update_three_phase_motion_alpha_fade_particle(struct PartBase *m) {
@@ -1749,8 +1723,6 @@ void update_size_gated_rotating_particle(struct PartBase *a) {
 extern float particle_drift[];
 extern float particle_clearance MACRO_ADDR;
 extern float particle_min_ground MACRO_ADDR;
-extern float ground_height_at(void *);
-extern void spawn_ground_contact_effect_particle(void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/rendering/002712b8.c, FUN_L00_00275320. */
 void update_gravity_ground_culled_particle(struct PartBase *o) {
@@ -1875,8 +1847,7 @@ void update_gravity_damped_resizing_particle(struct PartBase *m) {
         }
     }
 }
-extern void decrement_packed_countdown(void *, void *);
-extern int FastDecTimer(void *);
+
 extern void *timed_fade_particle_alpha_step SDATA(timed_fade_particle_alpha_step);
 /* Particle update: fade the packed alpha by a fixed step; kill when the timer ends. */
 void update_timed_alpha_fade_particle(struct PartBase *a) {
@@ -1959,7 +1930,7 @@ unsigned char *spawn_proximity_corrected_size_alpha_tween_particle(void *pos, in
     }
     return m;
 }
-extern void FastVecCross(void *, void *, void *);
+
 extern float proximity_particle_side_offset SDATA(proximity_particle_side_offset);
 
 /* Copy an xyz vector and clear the w word. */

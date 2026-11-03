@@ -22,6 +22,8 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
+#include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern char gSpecialItems[];
 extern Hero g_hero;
 extern u8 saved_mission_state[];
@@ -89,11 +91,11 @@ extern int *l09_packet MACRO_ADDR;
 extern int FastBSphereCheck(char *, float);
 extern void UpdateViewContext(void);
 extern void BuildViewMatrices(void);
-extern void set_scale_matrix(float, void *);
+extern void set_scale_matrix_v(float, void *) __asm__("func_001FA1C0");
 extern void FastVecScale_r(float, void *, void *) __asm__("func_001F9C30");
 
 extern void sce_vu0_mul_matrix(void *, void *, void *);
-extern void draw_env_overlay_mesh(int, int, int, void *, int);
+
 extern void restore_view_after_textured_grid(void *);
 extern int textured_grid_view_settings_mode MACRO_ADDR;
 extern u64 gaspar_grid_tex0 MACRO_ADDR;
@@ -139,7 +141,7 @@ void build_packet_and_draw_scaled_entries(void *data_ptr, void *list_ptr, int co
     }
     UpdateViewContext();
     BuildViewMatrices();
-    set_scale_matrix(1024.0f, matrix);
+    set_scale_matrix_v(1024.0f, matrix);
     FastVecScale_r(-1024.0f, offset, gaspar_camera_pos);
     offset[3] = 1.0f;
     VU1_addDataRef(font_vu_program, font_vu_program_tag[0]);
@@ -258,12 +260,8 @@ void build_packet_and_draw_scaled_entries(void *data_ptr, void *list_ptr, int co
     restore_view_after_textured_grid(data);
 }
 typedef int uq __attribute__((mode(TI)));
-extern char *CreateMoby(int);
-extern void moby_build_matrix(void *);
+
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void FastVecSub(void *, void *, void *);
-extern void matrix_mul_vec3(void *, void *, void *);
-extern void FastVecAdd(void *, void *, void *);
 
 // Spawns a moby of class cls at pos, copying orientation and matrices from src.
 char *spawn_airship_part(char *src, char *pos, int cls) {
@@ -295,7 +293,6 @@ char *spawn_airship_part(char *src, char *pos, int cls) {
     return m;
 }
 extern char *gaspar_moby_list MACRO_ADDR;
-extern float FastVecDist(void *, void *);
 
 /* closest moby of the given type to pos; its distance goes to *dist if given */
 char *find_nearest_moby_by_class(void *pos, int type, float *dist) {
@@ -354,29 +351,18 @@ typedef union {
 } Buf;
 
 extern int STUB_printf();
-extern void update_moby_vertical_oscillation(float, float, char *, float *, float *);
-extern void update_moby_rotation_oscillation(void *, char *, char *, float, float, float);
-extern void euler_to_matrix(void *, void *);
-extern void transform_vector(void *, void *, void *);
+
 extern void SetDeathBits(void *, int, int);
 extern void SpawnExplosionFx(void *, void *, int, float, float);
-extern void clear_u64_value(void *);
+
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
-extern void FastVecScale(void *, void *, float);
-extern float FastAddRots(float, float);
-extern int FastDecTimer(void *);
-extern int scale_ticks(int);
+
 extern int rand_range(int, int);
 extern int Moby_PlaySound(int, int, int);
 extern void vec_scale_to_length(void *, void *, float);
 
-extern void DeleteMoby(void *);
-
 extern void PartType11Spawn(void *, void *, int, int, int, int, int, int, float, float);
-extern float random_angle_radians(void);
-extern float FastCos(float);
-extern float FastSin(float);
-extern float multiply_global_factor(float);
+
 extern int func_001FA898(float);
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
@@ -602,8 +588,6 @@ void update_airship_part(Moby *moby) {
 extern float frame_scale MACRO_ADDR;
 
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecScale(void *, void *, float);
-extern float FastVecLength(void *);
 
 /* spawns a debris moby with randomized velocity toward a point */
 char *spawn_fading_asteroid_debris(char *owner, float *vec) {
@@ -646,9 +630,6 @@ char *spawn_fading_asteroid_debris(char *owner, float *vec) {
     }
     return moby;
 }
-extern float FastCos(float);
-extern float FastSin(float);
-extern float ProbeGroundHeight(void *, int, float);
 
 /* spawns a debris moby at a random point of a ring above the arena, falling toward the centre */
 char *spawn_falling_asteroid(void) {
@@ -729,11 +710,11 @@ extern f32 g_frame_time_r __asm__("D_0015EE6C") MACRO_ADDR;
 extern s32 random_integer_below_r(s32) __asm__("func_002140B0");
 extern f32 random_float_between_r(f32, f32) __asm__("func_002140F8");
 extern Moby *CreateMoby_r(s32) __asm__("func_0020D348");
-extern void func_L00_00251328(Moby *, s32, s32, s32);
+
 extern void moby_build_matrix_r(Moby *) __asm__("func_L00_00251E30");
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
-extern void func_001F9CA0(void *, void *, void *);
+
 extern void vec_scale_to_length_r(void *, void *, f32) __asm__("func_L00_001FF4B0");
 
 /* Spawns one of four pebble classes at the spawner, scattered sideways off the end of its path.
@@ -791,13 +772,8 @@ Moby *spawn_path_following_asteroid(Moby *owner) {
     }
     return m;
 }
-extern void DeleteMoby(void *); /* DeleteMoby */
-extern void FastVecScale(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
-extern void FastVecSub(void *, void *, void *);
-extern float FastVecLength(void *);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern float FastAddRots(float, float);
 
 /* ticks a fading drifting moby: decays its velocity, follows it and eases its rotation */
 void update_fading_asteroid_debris(unsigned char *m) {
@@ -857,7 +833,7 @@ extern int coll_line(void *, void *, int, int, int);
 extern int Sound_PlayClassSound(int, int, int, int);
 extern int Sound_SetPitchBend(int, int);
 extern char *spawn_radially_scattered_moby(void *, void *, void *, float, float);
-extern int scale_ticks(int);
+
 extern int rand_range(int, int);
 
 /* ticks a falling rock: moves it toward its target, sheds sparks and debris on impact, shakes the camera and removes
@@ -1222,9 +1198,6 @@ void AsteroidBeltUpdate(Moby *m) {
     FastVecAdd(((f32 *)&m->pos), ((f32 *)&m->pos), gaspar_camera_pos);
     FastVecSub(((f32 *)&m->pos), ((f32 *)&m->pos), d->centre);
 }
-extern char *CreateMoby(int);
-extern int scale_ticks(int);
-extern void moby_build_matrix(void *);
 
 extern int func_001160D8(void);
 
@@ -1255,7 +1228,7 @@ extern short g_current_level_index_r __asm__("D_0015EE84");
 char *spawn_breakable_stack_replacement(char *src, int cls);
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
 extern char *MobyGetHitMessage_r(struct Moby *, int, int) __asm__("func_L00_0025B478");
-extern int fast_subtract_rotations_cf(u8 *);
+
 extern void SetDeathBits_r(struct Moby *, int, int) __asm__("func_L00_002584A8");
 extern void add_random_offset_to_vector_xyz(void *, float);
 extern int Moby_PlaySound_r(int, int, struct Moby *) __asm__("func_0022ED80");
@@ -1356,12 +1329,11 @@ void display_update(struct Moby *moby) {
 }
 extern char *MobyGetHitMessage(void *, int, int);
 extern void RerollEffectCounter(void *m, short *p);
-extern float FastCos(float);
-extern float FastSin(float);
+
 extern int rand_range(int, int);
 extern char *PartType27Spawn(char *pos, char *vel, int c, int d, float f);
 extern char *spawn_class_11c_moby(char *owner, void *position, float angle);
-extern void DeleteMoby(void *);
+
 typedef int xu128 __attribute__((mode(TI)));
 typedef struct {
     float x, y, z, w;
@@ -1408,8 +1380,6 @@ void handle_moby_damage_and_destruction(char *m) {
     }
     moby->hit_slot = 0xFF;
 }
-extern char *CreateMoby(int);
-extern void moby_build_matrix(void *);
 
 /* Spawns a class 0x11C moby at the given position with the given angle. */
 char *spawn_class_11c_moby(char *owner, void *position, float angle) {
@@ -1572,15 +1542,13 @@ char *spawn_tumbling_debris(char *owner, void *pos, void *vec, int base, float f
 typedef int OvlQuad __attribute__((mode(TI)));
 extern char gaspar_coll_hit_normal[];
 
-extern f32 FastVecLength(void *);
 extern f32 vec_distance_xy(void *, void *);
-extern f32 FastAddRots(f32, f32);
+
 extern int fast_dec_timer(int *);
-extern s32 scale_ticks(s32);
+
 extern int coll_line_r2(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
 extern void *PartType27Spawn_r2(void *, void *, int, int, float) __asm__("func_L00_0026EBC0");
 
-extern void FastVecScale(void *, void *, f32);
 extern void vec_scale_to_length(void *, void *, f32);
 
 /* The heavier tumbling debris: as FUN_L09_002ef430, inside a 2..1021 box, with eight sparks; on a hit it either slows
@@ -1668,8 +1636,6 @@ char *spawn_class_144_moby(char *owner, void *position, float angle) {
     return moby;
 }
 
-extern float FastDiffRots(float, float);
-
 /* Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l09/gameplay/entities/0021e538.c, FUN_L09_002efe48. */
 char *spawn_radially_scattered_moby(void *unused, void *origin, void *direction_v, float lower_radius,
                                     float upper_radius) {
@@ -1711,9 +1677,6 @@ char *spawn_radially_scattered_moby(void *unused, void *origin, void *direction_
     }
     return moby;
 }
-extern void FastVecAdd(void *, void *, void *);
-extern void FastVecScale(void *, void *, float);
-extern void DeleteMoby(void *);
 
 /* Moby update for a drifting particle-like moby. */
 void update_drifting_moby(char *moby) {
@@ -1849,7 +1812,6 @@ void platform_664_update(Moby *moby) {
 }
 extern int PlayBankSound(int, int, int);
 
-extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern int Help_Request(int a, int b);
 
 extern unsigned char gHaveHeliPack[];
@@ -1900,7 +1862,6 @@ void update_level09_item_unlock_and_frame_record(char *moby) {
 extern LevelState gaspar_collected_flags_base;
 extern int gaspar_moby_killed[];
 extern int g_current_level_index MACRO_ADDR;
-extern int is_point_inside_clip_volume(void *, int);
 
 extern void HeroEnterMoveState(int, int);
 extern int Moby_PlaySound(int, int, int);
@@ -2394,7 +2355,6 @@ typedef struct {
 
 extern Moby *find_nearby_chain_attachment_r(void *, void *, int) __asm__("func_L09_00305580");
 
-extern float FastSubRots(float, float);
 extern Moby *gaspar_mobys_r2 __asm__("D_L09_00160058") MACRO_ADDR;
 extern char chain_link_no_hull_msg[];
 extern char chain_link_no_next_msg[];
@@ -2613,16 +2573,11 @@ extern struct Moby *spawn_class_4ea_projectile(void *, void *, void *, int);
 extern void set_level_state_flag_88(void);
 extern void FastMemZero16(void *, int);
 
-extern void MobyBlendAnimation(void *, int, int, int);
-
-extern void AttachManipulator(struct Moby *, int, void *);
 extern int allocate_colored_effect_slot(void *, float, float, float, float, float);
 
 extern float vec_length_xy(void *);
 extern void divide_vector_xyz(void *, void *, float);
-extern void axis_rotation_2d48(void *, int, float);
-extern float MobyGetFrameValue(void *);
-extern void BuildSphericalOffset(void *, float, float, float);
+
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
 extern void EffectQueue_Add(void *, int, int, int, int, int, float, float, float);
@@ -2925,7 +2880,6 @@ void update_damage_causer(Moby *moby) {
         FastVecAdd(v10, v10, v);
     }
 }
-extern int scale_ticks(int);
 
 /* spawn a moby copying position, rotation and data word from owner */
 char *spawn_barrier_replacement(char *owner, int cls) {
@@ -3263,7 +3217,6 @@ typedef struct {
     u8 padC4[8];
     f32 lag;
 } PathFlyerVars_00309c08;
-extern void AttachManipulator(struct Moby *, s32, void *);
 
 #define frame_time D_0015EE6C
 #define hero (*&g_hero)

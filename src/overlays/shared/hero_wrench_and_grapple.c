@@ -15,18 +15,20 @@
 #include "overlays/shared/vendor_menu.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+#include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
 extern Hero g_hero;
 
 LINKER_REMNANT("asm/overlays", func_L02_0021A2E0);
 
 extern float g_frame_time MACRO_ADDR;
 extern float aridia_hero_speed_bands[];
-extern void stick_target(int, float);
+extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00220b80.c, FUN_L02_00220b80. */
 void update_hero_stick_target_magnitude(void) {
     struct Hero *x;
-    stick_target(0, 1.0f);
+    stick_target_v(0, 1.0f);
     x = &g_hero;
     if (x->state.current == 0x3F) {
         float two = g_frame_time + g_frame_time;
@@ -46,21 +48,10 @@ void update_hero_stick_target_magnitude(void) {
 typedef int Q_222D18 __attribute__((mode(TI)));
 
 extern void vec_scale_to_length(void *, void *, float);
-extern float gravity_z(float *);
-extern void gravity_set_z(float *, float *, float);
-extern float FastVecLength(void *);
-extern void FastVecAdd(void *, void *, void *);
-extern void clear_u64_value(void *);
 
 extern void Hero_UpdateGroundContact(void);
-extern void FastVecSub(void *, void *, void *);
 
-extern float FastVecDot(void *, void *);
-extern void gravity_flatten(float *, float *);
-extern void set_gravity_relative_vector_length_xy(float *, float *, float);
 extern float vec_length_xy(void *);
-
-extern void FastVecScale(void *, void *, float);
 
 /* Integrate player motion, resolve contacts, and measure the resulting movement. */
 void Hero_ApplyMotionCollisionL02(void) {
@@ -211,21 +202,11 @@ extern float g_frame_scale_sq MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
 extern float aridia_hero_speed_bands_field_18[];
-extern int scale_ticks(int);
-extern float FastCos(float);
-extern float FastSin(float);
-extern float FastDiffRots(float, float);
-extern float FastSubRots(float, float);
-extern float ApproachValue(float *, float, float);
-extern void build_scaled_hero_move_impulse(float, float);
 
-extern void turn_to(int, float, float, float);
+extern float ApproachValue(float *, float, float);
+
 extern float SpringAngle(void *, float, void *, int, float, float, float);
 
-extern void add_hero_forward_offset(void *, void *, float);
-extern void vec_set_length_xy(void *, void *, float);
-
-extern int hero_slot_item_id(int);
 extern int allocate_hero_voice_for_entry(int, int);
 
 // Per-state hop velocity update for the player. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/ui_help_00220b80.c, FUN_L02_00223450.
@@ -363,7 +344,6 @@ extern unsigned char D_0013D5C8[];
 extern Rec2C D_L02_0017C2A8[];
 extern int D_L02_0015F754 SDATA(D_L02_0015F754);
 extern int pad_pressed_within(int, int, int *);
-extern int is_wrench_moby(void *);
 
 extern int truncate_float_to_s32(float);
 

@@ -4,6 +4,7 @@
 #include "structs/misc.h"
 #include "core/cdvd/read.h"
 #include "core/kernel/kprintf.h"
+#include "asm_functions/executable.h"
 
 /*
  * 989snd.c (0x12DB68-0x12F308): 989 Studios' sound library. The
@@ -11,10 +12,7 @@
  * Name and extent from the NTSC split, shifted +0x140.
  */
 
-extern void flush_cache(int);
 extern int sce_cd_sync_s(int);
-
-extern int sif_call_rpc();
 
 /* snd_StartSoundSystem. Ported from Lombyte's project (GPL-3.0); exact for the whole
  * 989snd object with retail ps2eeas and explicit small-data declarations.
@@ -212,7 +210,6 @@ int snd_FlushSoundCommands(void) {
 
 LINKER_REMNANT("asm/remnants/core_text", func_0012DFA0);
 
-extern void flush_cache(int arg0);
 extern int sound_command_client;
 extern int func_00116078(void *arg0);
 extern char snd_no_return_error_string[];
@@ -340,14 +337,10 @@ void snd_BankLoadFromEE_CB(int arg0, int arg1, long arg2) {
 
 LINKER_REMNANT("asm/remnants/core_text", func_0012E2D8);
 
-extern int snd_SendIOPCommandNoWait(int, int, void *, int, int);
-
 /* Command 8 with no data. */
 void snd_ResolveBankXREFS(void) {
     snd_SendIOPCommandNoWait(8, 0, 0, 0, 0);
 }
-
-extern int snd_SendIOPCommandNoWait(int, int, void *, int, int);
 
 /* snd_UnloadBank */
 void snd_UnloadBank(int arg0) {
@@ -765,8 +758,6 @@ int snd_StreamSafeCdRead(int arg0, int arg1, int arg2) {
     *(int *)&snd_cd_stream_end_pending = 0;
     return 1;
 }
-
-extern void flush_cache(int);
 
 /* snd_StreamSafeCdSync */
 int snd_StreamSafeCdSync(int arg0) {

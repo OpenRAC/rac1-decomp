@@ -14,6 +14,8 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+#include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern unsigned char g_hero[];
 /* Rocket: velocity, owner, life and start distance. */
 struct RocketVars {
@@ -39,13 +41,12 @@ typedef struct {
     int c[4];
     float d[4];
 } L10SpriteData;
-extern void FastVecSub(void *, void *, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern int fast_dec_timer(int *);
-extern int scale_ticks(int);
+
 extern float IntToFloat(int);
-extern int FastTweenColor(int, int, float);
 
 extern unsigned char *PartType59Spawn(void *, int, unsigned char, int, int, int, int, float);
 extern int truncate_float_to_s32(float);
@@ -83,11 +84,8 @@ void emit_moby_sprite_particles(char *m) {
         FastVecAdd_r(d, d, e);
     }
 }
-extern struct Moby *func_0020D348(int);
-extern float FastVecDist(void *, void *);
 
 extern float vec_length_xy(void *);
-extern void moby_build_matrix(void *);
 
 /* spawn a Rocket moby with position, velocity vector and aim angles */
 char *create_rocket(float scale, void *vel, void *pos, int a, int b, int c) {
@@ -135,23 +133,17 @@ extern char gHeroPos[];
 
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
-extern float FastVecLength(void *);
 
-extern float FastAddRots(float, float);
-extern float ProbeGroundHeight(void *, int, float);
 extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
-extern void FastVecScale(void *, void *, float);
-extern void vec_set_length_xy(void *, void *, float);
-extern void clear_u64_value(void *);
+
 extern float SpringTurn(float, float, float, float, float, float *);
-extern void BuildSphericalOffset(float, float, float, void *);
+extern void BuildSphericalOffset_v(float, float, float, void *) __asm__("func_00215C00");
 
 extern int Moby_PlaySound(int, int, void *);
 extern int coll_line(void *, void *, int, int, int);
-extern void PostHitMessage(float, int, void *, int, void *, void *);
-extern void SpawnExplosionFx(void *, void *, int, float, float);
+extern void PostHitMessage_v(float, int, void *, int, void *, void *) __asm__("func_L00_0025AC00");
+
 extern void Sound_PlayClassSound(int, int, void *, int);
-extern void DeleteMoby(void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00298940.c, FUN_L10_002cc2e8. */
 void rocket_819_update(Moby *m) {
@@ -217,7 +209,7 @@ void rocket_819_update(Moby *m) {
                 m->rot.y = SpringTurn(m->rot.y, pitch, g_frame_time_sq * 6.2831855f, g_frame_time_sq * 3.1415927f,
                                       g_frame_time * 6.2831855f, &d->pitchSpeed);
                 m->rot.x = FastAddRots(m->rot.x, g_frame_time * 6.2831855f);
-                BuildSphericalOffset(speed, m->rot.z, -m->rot.y, d);
+                BuildSphericalOffset_v(speed, m->rot.z, -m->rot.y, d);
             }
             clear_u64_value(c);
             PartType04Spawn(p, c, 0x6F00AFFF, 0xFF, scale_ticks(rand_range(15, 22)), 0x28, rand_range(20, 35), 1);
@@ -237,7 +229,7 @@ void rocket_819_update(Moby *m) {
                     if (*(int *)(tb + 0x18) != 0) {
                         vec_set_length_xy(diff, d, 1.0f);
                         d->vel[2] = 1.0f;
-                        PostHitMessage(1.0f, *(int *)(tb + 0x18), m, 0x10003, tb + 0x20, diff);
+                        PostHitMessage_v(1.0f, *(int *)(tb + 0x18), m, 0x10003, tb + 0x20, diff);
                     }
                     m->state = 2;
                 }
@@ -255,11 +247,6 @@ void rocket_819_update(Moby *m) {
             break;
     }
 }
-extern float random_angle_radians(void);
-extern float random_float_between(float, float);
-extern float FastCos(float);
-extern float FastSin(float);
-extern void FastVecAdd(float *, float *, float *);
 
 extern float orxon_type52_particle_spawn_radius SDATA(orxon_type52_particle_spawn_radius);
 extern float orxon_type52_particle_start_size_max SDATA(orxon_type52_particle_start_size_max);
@@ -287,8 +274,7 @@ void spawn_type_52_particle_near_moby(char *moby) {
     h = orxon_type52_particle_color_end;
     spawn_type_52_particle(v, c, d, g, h, e);
 }
-extern void matrix_from_basis_rows(void *, void *);
-extern void transform_vector(void *, void *, void *);
+
 extern void AddDrawCallback(void (*)(void), void *);
 extern void draw_moby_animated_quad_layers(unsigned char *);
 extern unsigned char D_0014171B[] NOT_SDA;
@@ -350,7 +336,7 @@ extern int orxon_quad_layer_uv_use_cos[][2];
 extern float orxon_quad_layer_base_uvs[][2];
 extern V4_2EA578 orxon_quad_layer_second_vertices[];
 extern V4_2EA578 orxon_quad_layer_first_vertices[];
-extern void copy_matrix_rotation(void *, void *);
+
 extern long GetEffectTex(int);
 extern void draw_world_quad(void *, void *, int);
 
@@ -461,10 +447,6 @@ void activate_descriptor(int i) {
     q[0x39] = 0;
 }
 extern char *orxon_paths[];
-extern int is_point_inside_clip_volume(void *, int);
-
-extern int test_point_in_transformed_unit_sphere(float *, int);
-extern int IsPointInPolygon(float *, float *, int);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay_vendor_002e3de8.c, FUN_L10_002f5a78. */
 int check_descriptor_hero_trigger(char *moby, char *unused) {
@@ -672,12 +654,10 @@ extern float orxon_view_params_fov_tan;
 extern float orxon_player_camera_fade_rate;
 extern char orxon_view_params[];
 extern float orxon_player_camera_matrix[];
-extern void matrix_mul_vec3(void *, void *, void *);
-extern void FastVecCross(void *, void *, void *);
+
 extern void UpdateViewContext(void);
 extern void HeroEnterMoveState(int, int);
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
-extern int FastDecTimer(void *);
 
 extern void Profile_Mark(void *, void *);
 

@@ -4,6 +4,7 @@
 #include "structs/particle.h"
 #include "include_asm.h"
 #include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
 
 typedef struct {
     char pad[0x10];
@@ -28,12 +29,9 @@ typedef struct {
     Owner5F0A0 *owner;
 } Particle5F0A0;
 typedef int u128 __attribute__((mode(TI)));
-extern unsigned char *create_part(int);
+
 extern int func_001FA898(float);
-extern void FastVecSub(void *dst, void *a, void *b);
-extern void FastVecScale(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
-extern int scale_ticks(int);
+
 extern int quartu_owner_target_particle_life SDATA(quartu_owner_target_particle_life);
 
 // spawns a particle at a position offset from a moby
@@ -69,9 +67,6 @@ void spawn_owner_target_particle(int a0, void *a1, char *a2) {
     }
 }
 extern int *quartu_part_type71_textures;
-
-extern void pack_vector_xyz_with_shared_scale(float *, int *);
-extern void load_display_text_resource_entry(float *, int *);
 
 // spawns a particle moby (Wrench) at a position and fills in its two sub-records
 unsigned char *create_type_47_particle(void *pos, float *p, float *c, int d, int e, int f, int g, int h, char *owner) {

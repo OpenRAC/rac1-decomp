@@ -1,6 +1,7 @@
 #include "common.h"
 #include "callees.h"
 #include "structs/misc.h"
+#include "asm_functions/executable.h"
 
 /*
  * core_text object 0x11DD68-0x11DDD0. Boundaries are retail's linker fill
@@ -11,7 +12,6 @@
  * (Makefile.sn, EE29_CORE), like the prebuilt libkernl.a, which emits
  * both of its tail calls natively.
  */
-
 
 extern void InitTLB(void);
 
@@ -42,7 +42,6 @@ void exit_reinit_tlb(void) {
  * 4 bytes over (2.95.3 has no sibling calls). The status lives in $16
  * across the first call.
  */
-extern void kernel_exit(int);
 
 void Exit(int status) {
     exit_reinit_tlb();

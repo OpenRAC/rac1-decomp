@@ -26,6 +26,9 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+#include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_mapped_animations.h"
 extern char g_hero[];
 extern char level_moby_killed[];
 extern char voice_pool[];
@@ -200,9 +203,7 @@ void RippleSimClock(char *p, int n) {
     }
     ripple_sim_phase = ripple_sim_phase + pool_light[8];
 }
-extern float FastAddRots(float, float);
-extern float FastCos(float);
-extern float FastSin(float);
+
 extern int ripple_uv_layer_flags[];
 extern float ripple_base_uv_table[];
 
@@ -271,10 +272,7 @@ void build_height_grid_positions(float *pos) {
     }
 }
 extern f32 pool_light[];
-extern void FastVecSub(void *, void *, void *);
-extern void FastVecScale(void *, void *, f32);
-extern void transform_vector(void *, void *, void *);
-extern u32 is_vector_outside_clip(void *);
+
 extern void ripple_emit_sub_block(s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002b8c08.c, FUN_L01_002b8cb0. */
@@ -387,8 +385,6 @@ union PacketCursor {
 extern union PacketCursor l01_packet MACRO_ADDR;
 
 typedef int u128_2BA150 __attribute__((mode(TI)));
-extern void set_scale_matrix(float *, float);
-extern void FastVecScale(void *, void *, float);
 
 extern void sce_vu0_mul_matrix(void *, void *, void *);
 extern void AA_BlurPass(void);
@@ -631,21 +627,15 @@ extern unsigned char help_stats_base[] NOT_SDA;
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 
 extern float g_frame_time MACRO_ADDR;
-extern int is_point_inside_clip_volume(void *arg0, int arg1);
-extern int FastDecTimer(void *);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
-extern float FastVecDist(void *, void *);
-extern float multiply_global_factor(float);
 extern float vec_distance_xy(void *, void *);
-
-extern int scale_ticks(int);
 
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound_r(int, int, char *) __asm__("func_0022ED80");
 extern float IntToFloat(int);
-extern void FastVecScale(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
+
 extern void update_entity_matrix(char *, void *, void *, void *);
 
 /* update of a platform that rides a path between its end points. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/shared/unclassified_002b8c08.c, FUN_L01_002b9eb0. */
@@ -827,9 +817,6 @@ void novalis_elevator_update(unsigned char *moby) {
 LINKER_REMNANT("asm/overlays", func_L01_002C05B8);
 extern float vec_length_xy(void *);
 
-extern void BuildSphericalOffset(void *, float, float, float);
-
-extern void FastVecScale(void *, void *, float);
 extern void spawn_two_point_effect_particle(char *, char *);
 
 extern char *PartType21Spawn(void *, void *, int, int, int, int, float);
@@ -872,11 +859,11 @@ void spawn_collision_particle_bursts(void);
 extern int fast_dec_timer(void *);
 extern int noop_callback_l(void *);
 extern int coll_sphere_mobys(float, void *, int, int, void *);
-extern void PostHitMessage(float, void *, void *, int, void *, void *);
-extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
+extern void PostHitMessage_v(float, void *, void *, int, void *, void *) __asm__("func_L00_0025AC00");
+
 extern void vec_scale_to_length(void *, void *, float);
 extern void spawn_type_14_particle(int, void *);
-extern void DeleteMoby(void *);
+
 extern s32 novalis_shot_trail_mode SDATA(novalis_shot_trail_mode);
 extern f32 novalis_shot_hit_radius SDATA(novalis_shot_hit_radius);
 
@@ -903,7 +890,7 @@ void update_moby_motion_collision_and_lifetime(Moby *moby) {
                 !noop_callback_l(moby)) {
                 CollisionHit *contact = (CollisionHit *)novalis_coll_hit;
                 if (contact->moby != 0)
-                    PostHitMessage(1.0f, contact->moby, moby, 0x10001, &contact->point, normal);
+                    PostHitMessage_v(1.0f, contact->moby, moby, 0x10001, &contact->point, normal);
                 ((void (*)(void *))spawn_collision_particle_bursts)((char *)moby);
                 goto remove;
             }
@@ -968,8 +955,6 @@ extern char *camera_points MACRO_ADDR;
 extern unsigned char saved_mission_state[][16];
 extern float bolt_crank_pull_spring_vel SDATA(bolt_crank_pull_spring_vel);
 
-extern float FastSubRots(float, float);
-extern float FastDiffRots(float, float);
 extern int pad_pressed_within(int, int, int);
 extern int Hero_SetMoveState(int, int);
 
@@ -980,12 +965,10 @@ extern float ApproachValue(float *, float, float);
 extern void record_moby_context_bytes(void *, int, void *, int, void *);
 
 extern void divide_vector_xyz(void *, void *, float);
-extern void euler_to_matrix(float *, float *);
-extern float FastVecDot(void *, void *);
-extern void set_hero_animation(int, int, float);
+
 extern void Spring(float *, float *, float, float, float, float);
-extern float step_angle_toward_target(float *, float, int, float);
-extern float ProbeGroundHeight(void *, int, float);
+extern float step_angle_toward_target_v(float *, float, int, float) __asm__("func_L00_0025CC58");
+
 extern void FastMemZero16(void *, int);
 extern void Moby_PlaySound(int, int, char *);
 extern void set_novalis_bolt_crank_completion_flags(char *);
@@ -1235,8 +1218,9 @@ void bolt_crank_update(char *m) {
                     F(h, 0x180) = FastAddRots(1.5707964f, f22);
                 }
             }
-            step_angle_toward_target((float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.rot.f[2]),
-                                     F(H, 0x180), 0, g_frame_time * 6.2831855f);
+            step_angle_toward_target_v(
+                (float *)(&((struct Hero *)((char *)&hero_globals_base + 0xE1D))->motion.rot.f[2]), F(H, 0x180), 0,
+                g_frame_time * 6.2831855f);
             F(s, 0x24) = F(s, 0x24) + g_frame_time_sq * 9.8f;
             F(H, 0x88) = F(H, 0x88) - (F(s, 0x24) - 2.0f);
             g = ProbeGroundHeight(HP, 0, 0.5f);
@@ -1248,7 +1232,7 @@ void bolt_crank_update(char *m) {
             if ((unsigned char)(*(char **)(H + 0x2080))[0x53] != 0x44) {
                 float hi = 1.0471976f;
                 float lo = FastAddRots(0.2617994f, f22);
-                step_angle_toward_target(&((Moby *)m)->rot.z, lo, 0, g_frame_time * 3.1415927f);
+                step_angle_toward_target_v(&((Moby *)m)->rot.z, lo, 0, g_frame_time * 3.1415927f);
                 if (hi < FastSubRots(F(m, 0x48), lo)) {
                     F(m, 0x48) = FastSubRots(F(m, 0x48), hi);
                 } else if (FastSubRots(F(m, 0x48), lo) < -1.0471976f) {
@@ -1370,7 +1354,7 @@ void compute_sand_mouse_approach_target(int unused, void *out) {
 typedef struct {
     float a[4];
 } Vs __attribute__((aligned(16)));
-extern int probe_vertical_ground_collision(Vs *p, int x, int y, float f, float g);
+
 extern float novalis_coll_hit_point_z;
 extern float sand_mouse_move_ctl_probe_height;
 
@@ -1419,7 +1403,7 @@ s32 update_sand_mouse_fall_motion(void *ctx, struct Moby *m) {
 }
 extern char novalis_coll_hit_h[] __asm__("D_L01_00174340");
 extern float *GetFlaggedPvarWord_t(void *) __asm__("func_L00_0025D390");
-extern float FastDiffRots(float, float);
+
 extern int coll_line_t(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
 
 /* Picks the best lock-on target for moby from the visible-moby list: a living, drawn class-5 enemy within range whose
@@ -1562,12 +1546,12 @@ extern float hover_target_yaw_damping_degrees_gp SDATA(hover_target_yaw_damping_
 extern float hover_target_yaw_turn_rate_limit_degrees_gp SDATA(hover_target_yaw_turn_rate_limit_degrees_gp);
 extern float hover_ground_animation_height_threshold_gp SDATA(hover_ground_animation_height_threshold_gp);
 extern int func_001160D8(void);
-extern void MobyBlendAnimation(void *, int, int, int);
+
 extern void MobySpringTurn(void *, float, void *, float, float, float);
 
-extern int move_moby_with_collision_integer_radius(void *, void *, int, int, float, float);
-extern float FastVecLength(void *);
-extern float ProbeGroundHeight(void *, int, float);
+extern int move_moby_with_collision_integer_radius_v(void *, void *, int, int, float,
+                                                     float) __asm__("func_L00_00259B08");
+
 /* Steers a hovering moby toward a target point per its current command. */
 void update_hover_moby_steering(M_4BA8 *m, char *p) {
     float v[4];
@@ -1631,8 +1615,8 @@ void update_hover_moby_steering(M_4BA8 *m, char *p) {
     FastVecAdd(p + 0x10, p + 0x10, v);
     if (m->state == 6)
         clamp_vec_length(p + 0x10, p + 0x10, g_frame_time * 2.7f);
-    hit = move_moby_with_collision_integer_radius(m, p + 0x10, sand_mouse_move_ctl_r.count, 0, 1.0f,
-                                                  sand_mouse_move_ctl_r.spread);
+    hit = move_moby_with_collision_integer_radius_v(m, p + 0x10, sand_mouse_move_ctl_r.count, 0, 1.0f,
+                                                    sand_mouse_move_ctl_r.spread);
     len = FastVecLength(p + 0x10);
     if (hit != 0) {
         if (len < 0.005f) {
@@ -1748,15 +1732,14 @@ extern int sand_mouse_fade_particle_color_alpha_gp SDATA(sand_mouse_fade_particl
 extern float sand_mouse_fade_particle_time_squared_coefficient_gp
     SDATA(sand_mouse_fade_particle_time_squared_coefficient_gp);
 extern int STUB_printf();
-extern void DeleteMoby(void *);
-extern void MobyBlendAnimation(void *m, int a, int b, int c);
+
 extern void MoveCtl_Init(char *p);
 extern void rig_probe_setup(void *, int, int *, float *, float *, int *);
 extern int func_001160D8(void);
 extern void MobySpringTurn_r(void *moby, float target, float *vel, float k, float d,
                              float max) __asm__("func_L00_002592B0");
 extern int Hero_SetMoveState(int, int);
-extern void set_hero_animation(int, int, float);
+
 extern int func_L00_0025A060(void *m, void *p, float *pos, float *v);
 extern int fast_dec_timer(void *);
 extern void update_hover_moby_steering_r(void *, void *) __asm__("func_L01_002E4BA8");
@@ -2039,15 +2022,8 @@ void sand_mouse_update(Moby *moby) {
         *(int *)&novalis_mobys_r[d->parent].collision = ((Class_E5298 *)novalis_mobys_r[d->parent].pclass)->i10;
     }
 }
-extern void clear_u64_value(void *);
 
-extern float ProbeGroundHeight(void *, int, float);
 extern int coll_line(void *, void *, int, int, int);
-extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
-extern void vec_set_length_xy(void *, void *, float);
-extern void record_moby_hit(void *, void *);
-extern void SpawnExplosionFx(void *, void *, int, float, float);
-extern void DeleteMoby(void *);
 
 typedef struct {
     float v[2];
@@ -2124,8 +2100,7 @@ void update_moby_motion_collision_and_burst(char *moby) {
             break;
     }
 }
-extern f32 FastCos(f32);
-extern f32 FastSin(f32);
+
 extern void Manipulator_ApplyScale(float, void *, int, void *);
 extern void set_ground_height_band(void *);
 extern void process_amoeboid_hits_and_update_targeting(char *);
@@ -2141,13 +2116,11 @@ extern void PostHitMessage_r(void *, void *, int, void *, void *, float) __asm__
 extern int CarriedMobyUpdate(void *, void *);
 extern void SetDeathBits(void *, int, int);
 extern int IsFrameWithinWindow(float, void *);
-extern int is_point_inside_clip_volume(void *, int);
-extern void Moby_PlaySound(int, int, char *);
-extern void MobyBlendAnimation(void *, int, int, int);
 
-extern float random_angle_radians(void);
+extern void Moby_PlaySound(int, int, char *);
+
 extern int truncate_float_to_s32(float);
-extern float MobyGetFrameValue(void *);
+
 extern float g_hero_body_center[4];
 extern float novalis_zero_vec[] MACRO_ADDR;
 extern char amoeboid_pvar130_data;
@@ -2510,10 +2483,10 @@ extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, 
 extern char *activate_smaller_amoeboid(void *);
 extern char *find_nearest_extermibot_moby_in_list(char *, int);
 extern void HeadingFromVector(void *, float *, void *, void *);
-extern float FastSubRots(float, float);
+
 extern void InitKnockback(void *, void *, float, int, int, int);
 extern int FindNearestEligibleMoby(float, char *, void *, int, int, void *, int);
-extern int FastTweenColor(float, int, int);
+extern int FastTweenColor_v(float, int, int) __asm__("func_001FA8A8");
 extern int pool_draw_tiles MACRO_ADDR;
 extern int novalis_mobys_x __asm__("D_L01_00160058") MACRO_ADDR;
 extern int amoeboid_pulse_color_a SDATA(amoeboid_pulse_color_a);
@@ -2704,11 +2677,10 @@ void process_amoeboid_hits_and_update_targeting(char *m) {
     ang = FastAddRots(d->wobble_angle, g_frame_time * 9.424778f);
     d->wobble_angle = ang;
     ((Moby *)m)->glow_color =
-        FastTweenColor((FastSin(ang) + 1.0f) * 0.5f, amoeboid_pulse_color_a, amoeboid_pulse_color_b);
+        FastTweenColor_v((FastSin(ang) + 1.0f) * 0.5f, amoeboid_pulse_color_a, amoeboid_pulse_color_b);
 }
 extern short *lists_2F0728[] __asm__("D_L01_001ABFC0");
 extern Moby *entities_2F0728 SDATA(D_L01_00160058);
-extern void func_L00_00251E30(void *);
 
 /* Elevator partner spawn: picks the class that pairs with this moby's
    (0x23C -> 0x361, 0x361 -> 0x362), walks its group's entity list
@@ -2815,8 +2787,6 @@ extern short amoeboid_trail_a_life_max, amoeboid_trail_a_life_min,
 extern short amoeboid_second_movement_particle_secondary_sample_max_gp, amoeboid_trail_b_life_max,
     amoeboid_trail_b_life_min, amoeboid_second_movement_particle_header_and_data_value_gp,
     amoeboid_second_movement_particle_data_value_gp;
-
-extern float random_angle_radians(void);
 
 /* Spawns up to two particle effects on the moby, each aimed by a random direction and speed. */
 void spawn_amoeboid_movement_particles(unsigned char *moby) {
@@ -3186,7 +3156,7 @@ extern s32 g_current_level_index_r __asm__("D_0015EE84") MACRO_ADDR;
 extern u8 D_0014C010[];
 extern s32 *novalis_paths_r[] __asm__("D_L01_001B0C30");
 extern void DeleteMoby_r2(struct Moby *) __asm__("func_0020D678");
-extern s32 func_L00_0025A778(void *, void *, s32);
+
 extern s32 is_point_inside_clip_volume_r(void *, s32) __asm__("func_00215570");
 extern f32 vec_distance_xy_r(void *, void *) __asm__("func_001F9D48");
 
@@ -3255,8 +3225,6 @@ in_range:
     }
 }
 typedef int u128 __attribute__((mode(TI)));
-extern void euler_to_matrix(float *, float *);
-extern void FastVecCross(void *, void *, void *);
 
 /* Build a rotation from two angle fields in the moby data and apply both to a vector. */
 void apply_gunship_path_position_offsets(char *m, float *out) {

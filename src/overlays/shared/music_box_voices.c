@@ -6,6 +6,7 @@
 #include "data/level_01.h"
 #include "game/math/fastfunc.h"
 #include "overlays/shared/sound_playback.h"
+#include "asm_functions/executable.h"
 extern Hero g_hero;
 
 typedef struct {
@@ -33,7 +34,7 @@ typedef struct {
 } Moby_0031AD00;
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern void matrix_mul_vec3_r(void *, void *, void *) __asm__("func_001F9EC0");
-extern float func_001F9CB8(void *a);
+
 extern float FastAbsF_r(float) __asm__("func_001F9B88");
 extern int func_0022DA10(void *, float, float, float);
 extern int func_001F9908(int *arg0);
@@ -41,7 +42,7 @@ extern int play_voice_r(int, int, void *, int) __asm__("func_L00_0028F0B0");
 extern int random_integer_below_r(int) __asm__("func_002140B0");
 extern int scale_ticks_r(int) __asm__("func_001F9850");
 extern int func_L00_0028F210(int, int);
-extern void func_001F9BD8(void *, void *, void *);
+
 extern void Sound_StopSlot_r(int) __asm__("func_L00_0028EBF0");
 extern char camera_pos_r[] __asm__("D_L01_001672C0");
 extern Row_0031AD00 *D_L01_0015F6D4 MACRO_ADDR;
@@ -126,8 +127,6 @@ void update_box_positional_voice(Moby_0031AD00 *m) {
         p->handle = -1;
     }
 }
-extern void FastVecSub(void *, void *, void *);
-extern void matrix_mul_vec3(void *, void *, void *);
 
 extern float IntToFloat(int);
 extern int func_001FA898(float);
@@ -180,8 +179,6 @@ void update_listener_following_voice(int a0) {
         }
     }
 }
-extern void FastVecSub(void *, void *, void *);
-extern void matrix_mul_vec3(void *, void *, void *);
 
 extern void MusicRequestTrack(int, int);
 

@@ -9,6 +9,8 @@
 #include "asm_functions/shared_levels.h"
 #include "data/level_18.h"
 #include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern Hero g_hero;
 
 /* Rocket tank: aims its turret at the hero, drives along a path and owns two child mobys. */
@@ -53,24 +55,16 @@ extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 
 extern float veldin2_zero_vec[] MACRO_ADDR;
-extern int scale_ticks(int);
-extern void DeleteMoby(void *);
 
-extern float FastAddRots(float, float);
-extern float FastCos(float);
-extern float FastSin(float);
-extern void FastVecSub(void *, void *, void *);
 extern float g_frame_time MACRO_ADDR;
 extern int Moby_PlaySound(int, int, int);
 extern float ApproachValue(float *p, float target, float maxstep);
 extern int veldin2_cinematic_mode MACRO_ADDR;
-extern void AttachManipulator(char *, int, void *);
-extern float FastVecLength(void *);
+
 extern void vec_scale_to_length(void *, void *, float);
 extern float vec_distance_xy(void *, void *);
 extern float g_frame_time MACRO_ADDR;
 
-extern float FastSubRots(float, float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern int veldin2_frame_count MACRO_ADDR;
 
@@ -119,11 +113,8 @@ void update_moby_scene_visibility_and_height_reflection(M *moby) {
 extern float rocket_tank_shot_speed SDATA(rocket_tank_shot_speed);
 extern short rocket_tank_shot_speed_b __asm__("D_L18_0016250C");
 extern void update_rocket_tank_damage_and_aim(void *);
-extern char *func_0020D348(int);
-extern void MobyBlendAnimation(void *, int, int, int);
-extern void moby_build_matrix(void *);
+
 extern int IsFrameWithinWindow(char *, float);
-extern float MobyGetFrameValue(void *);
 
 extern char *create_class_29_moby(char *owner, float *pos, float *vec, int arg3);
 
@@ -270,9 +261,9 @@ extern void *SpawnBreakFragment(char *src, int cls, float *pos, void *mat, int a
 extern void SetDeathBits(void *, int, int);
 extern void RerollEffectCounter(void *, short *);
 extern int FindNearestTargetMoby(unsigned char *, char *, float);
-extern void vec_set_length_xy(void *, void *, float);
+
 extern float vec_length_xy(void *);
-extern void axis_rotation_2d48(void *, int, float);
+
 extern void StepColorFade(void *, void *);
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
 
@@ -367,9 +358,8 @@ extern int *veldin2_paths[];
 extern float rocket_tank_path_speed SDATA(rocket_tank_path_speed);
 extern float rocket_tank_child_anim_ref_speed SDATA(rocket_tank_child_anim_ref_speed);
 extern float g_frame_time_g __asm__("D_0015EE6C") MACRO_ADDR;
-extern float FastDiffRots(float, float);
+
 extern void move_4318(int, int, float, float, float, int);
-extern float FastVecDist(void *, void *);
 
 /* Turns and drives the rocket tank toward its next path point, picking a new one on arrival. */
 void update_rocket_tank_path_movement(char *m) {

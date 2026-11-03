@@ -6,6 +6,7 @@
 #include "asm_functions/executable.h"
 #include "data/executable.h"
 #include "game/moby/mobyutil.h"
+#include "game/moby/mobyfunc.h"
 
 /*
  * update.cpp in the original source; text 0x238D88-0x239628.
@@ -13,12 +14,7 @@
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
 
-extern void FastVecScale(void *, void *, float);
-
 extern char camera_position[];
-extern void FastVecSub(void *, void *, void *);
-
-extern void transform_vector(void *, void *, void *);
 
 extern void truncate_float_to_s32(float);
 
@@ -39,9 +35,6 @@ typedef struct {
 } ScreenExt;
 extern ViewCtx view_context;
 extern ScreenExt g_screen_extent;
-extern void FastVecSub(void *, void *, void *);
-extern void FastVecScale(void *, void *, float);
-extern void transform_vector(void *, void *, void *);
 
 void project_graphics_bounds(Vec4 *a, Vec4 *b, int *w, int *h, int *x, int *y) {
     Vec4 p;
@@ -156,10 +149,6 @@ extern s32 resident_stream_pending MACRO_ADDR;
 extern BossVars vendor_state_r __asm__("D_001E66C0");
 extern s32 vendor_state_dialogue_pick;
 extern Cam resident_cheat_scale_manip;
-
-extern void AttachManipulator(Moby *, s32, Cam *);
-extern void DetachManipulator(Moby *, Cam *);
-extern void MobyBlendAnimation(Moby *, s32, s32, s32);
 
 extern s32 IsFrameWithinWindow(Moby *, f32);
 extern s32 Music_ContinueStreamIfReady(void);

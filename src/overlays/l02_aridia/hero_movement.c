@@ -26,15 +26,18 @@
 #include "structs/voice.h"
 #include "structs/collision.h"
 #include "structs/hit_message.h"
+#include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
+#include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/hero_animation_slots.h"
 extern int g_controller_state_no_direction;
 extern Hero g_hero;
 
 extern int g_current_level_index MACRO_ADDR;
 extern int coll_sphere(float, void *, int, void *);
-extern int CollType(void);
 
 extern void HeroL02_SetMoveState(int, int);
-extern void Hero_OnKilled(void);
 
 // Updates the pickup/aim flags after a state change, and requests a follow-up state when the target is in range. Adapted from Lombyte's project (GPL-3.0) for PAL: src/overlays/l02/ui_help_0021b698.c, FUN_L02_0021b698.
 void process_hero_ground_material_effects(void) {
@@ -160,13 +163,8 @@ extern s32 hero_hit_count MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
 extern u8 hero_velocity[];
 void release_and_clear_hero_voice_slots(void);
-void FastVecSub(void *, void *, void *);
-f32 FastAddRots(f32, f32);
-f32 FastCos(f32);
-f32 FastSin(f32);
-void FastVecAdd(void *, void *, void *);
+
 void HeroL02_SetMoveState(s32, s32);
-void hero_knockback(void *, s32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l02/ui_help_0021b698.c, FUN_L02_0021ff70. */
 s32 HeroL02_TryKnockback(s32 arg) {
@@ -308,24 +306,18 @@ void Camera_UpdateFollowOffsets(void) {
 typedef int Q __attribute__((mode(TI)));
 extern u8 aridia_coll_hit_point[];
 extern s32 g_current_level_index MACRO_ADDR;
-void clear_u64_value(void *);
-void hero_get_collision_ray_endpoints(void *, void *, s32, f32, f32);
+
 s32 coll_line(void *, void *, s32, s32, s32);
-s32 coll_sound_class(void);
-s32 CollType(void);
+
 f32 resolve_camera_surface_height(void *, void *);
 s32 is_moby_in_class_range_500_to_540(s32);
 u8 *GetFlaggedPvarWord(s32);
-f32 FastVecDist(void *, void *);
+
 void sceVu0Normalize(void *, void *);
-f32 compute_gravity_relative_vector_inclination(void *);
-f32 fast_atan2(f32, f32);
-void FastVecSub(void *, void *, void *);
-f32 FastVecDot(void *, void *);
-void FastVecScale(void *, void *, f32);
+
 void vec_scale_to_length(void *, void *, f32);
 void compute_rotated_vector_angles(void *, void *);
-void transform_hero_polar_offset_to_world(void *, f32, f32, f32);
+
 f32 FastAbsF(f32);
 extern Hero g_hero;
 extern struct CollisionHit aridia_coll_hit;
@@ -515,15 +507,7 @@ d1:
 
 extern float frame_scale MACRO_ADDR;
 extern char aridia_coll_resolved_pos[];
-extern void clear_u64_value(void *);
-extern void Hero_ConstrainToPath(void);
-extern void HeroOffsetAlongViewZ(float *dst, float *src, float dz);
-extern void HeroMoveDownAlongNormal(float *dst, float *src, float h);
-extern void FastVecAdd(void *, void *, void *);
-extern int coll_capsule(float, float, void *, int, int);
-extern int coll_sphere_hero_groups(float, void *);
-extern void FastVecSub(void *, void *, void *);
-extern float FastVecLength(void *);
+
 extern void vec_scale_to_length(void *, void *, float);
 // Probes up to eight candidate camera positions and pulls the camera back if the view is blocked.
 extern Hero hero __asm__("D_0013F450");
@@ -636,69 +620,30 @@ extern Moby *aridia_coll_sphere_moby_hits[];
 extern HeroAttackRecord aridia_attack_records[];
 extern HeroSpeedBands aridia_hero_speed_bands;
 extern float aridia_hero_anim_frame_speeds[];
-extern void build_scaled_hero_move_impulse(float, float);
 
-extern void stick_target(float, int);
-extern void matrix_mul_vec3(void *, void *, void *);
-extern void turn_to(int, float, float, float);
 extern int fast_dec_timer(int *);
-extern int scale_ticks(int);
 
-extern void turn_hero_toward_move_direction_for_item(void);
-extern void set_hero_animation(int, int, float);
 extern int get_hero_idle_animation_index(int);
 extern float adjust_hero_animation_speed_for_target_frame(float, float, float, float);
-extern void speed_step(float, float);
 
-extern void correct_hero_airborne_wall_velocity(void);
-extern unsigned char *CreateMoby(int);
-extern void moby_build_matrix(void *);
 extern int Moby_PlaySound(int, int, int);
 extern int truncate_float_to_s32(float);
 extern float vec_length_xy(void *);
-extern int clamp_vec_length_xy(float, void *, void *);
 
 extern float SpringAngle(void *, float, void *, int, float, float, float);
-extern float FastSubRots(float, float);
-extern float FastAddRots(float, float);
+
 extern float ApproachValue(float *, float, float);
-extern float FastCos(float);
-extern float FastSin(float);
+
 extern void ClampVectorLength(void *, float);
-extern int solve_quadratic_equation(float *, float *, float, float, float);
-extern float step_angle_toward_target(float *, int, float, float);
+
 extern float vec_distance_xy(void *, void *);
-extern float FastDiffRots(float, float);
-extern void euler_to_matrix(void *, void *);
-extern void matrix_from_basis_rows(void *, void *);
-extern void transform_vector(void *, void *, void *);
-extern float gravity_z(float *);
+
 extern float Spring(float *, float *, float, float, float, float);
-extern float forward_component(void *);
-extern void set_gravity_relative_vector_length_xy(float *, float *, float);
-extern void gravity_set_z(float *, float *, float);
-extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
+
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern void update_hero_target_heading(float, float, float);
-extern void offset_hero_position_against_gravity(float *, float *, float);
-extern int test_hero_animation_frame_window(float);
 
-extern void set_planar_vel(float);
-extern void initialize_moby_transform_history(int, void *);
-extern void create_moby_transform_history_entry(void *, int, int);
-
-extern void turn_hero_toward_move_direction_with_stick_scale(void);
-
-extern void vec_set_length_xy(void *, void *, float);
-
-extern void gravity_flatten(float *, float *);
-extern int hero_slot_item_id(int);
 extern void allocate_hero_voice_for_entry(int, int);
-extern void add_hero_forward_offset(void *, void *, float);
-extern void transform_hero_local_offset_to_world(float *, float, float, float);
-extern void PostHitMessage(void *, int, int, void *, void *, float);
-
-extern void hero_integrate_velocity(void);
 
 struct UpdateHeroStateMotionVars {};
 

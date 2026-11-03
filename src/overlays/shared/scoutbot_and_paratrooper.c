@@ -16,6 +16,9 @@
 #include "enums/moby_class.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+#include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 extern Hero g_hero;
 
 /* Paratrooper fire bolt (class 0x50C): flies along its velocity until it hits something or its time runs out. */
@@ -130,7 +133,7 @@ extern int func_L00_002DDEA0(void *, void *);
 extern void explode_3DF8(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                          int, int, int, int) __asm__("func_L00_0025F4A8");
 extern void delete_3DF8(void *) __asm__("func_0020D678");
-extern int func_001FA8A8(int, int, float);
+
 extern void joint_3DF8(void *, int, void *) __asm__("func_L00_00250800");
 extern void glow_3DF8() __asm__("func_L08_002D4B80");
 extern void body_3DF8() __asm__("func_L08_002D5410");
@@ -405,19 +408,19 @@ extern u64 GetEffectTex(s32);
 #define func_001F4868_4B80 ((long (*)(int))func_001F4868)
 extern void Moby_GetJointWorldPos(void *, int, void *);
 #define func_L00_00250800_4B80 func_L00_00250800
-extern void FastVecSub(void *dst, void *a, void *b);
+
 #define func_001F9BF0_4B80 ((void (*)(void *, void *, void *))func_001F9BF0)
 extern void ClampVectorLength(float, void *);
 #define func_L00_002607A8_4B80(a, b) func_L00_002607A8(b, a)
-extern float FastVecLength(void *);
+
 #define func_001F9CB8_4B80 ((float (*)(void *))func_001F9CB8)
-extern void clear_u64_value(void *);
+
 #define func_001F9BC0_4B80 func_001F9BC0
 extern float vec_length_xy(void *);
 #define func_001F9CE8_4B80 ((float (*)(void *))func_001F9CE8)
 
 #define func_L00_001FF860_4B80 ((float (*)(float, float))func_L00_001FF860)
-extern void euler_to_matrix(void *, void *);
+
 #define func_001FA218_4B80 ((void (*)(void *, void *))func_001FA218)
 extern void draw_world_quad(void *, s32, s32);
 #define func_L00_001FD1D8_4B80 ((void (*)(void *, void *, int))func_L00_001FD1D8)
@@ -554,12 +557,9 @@ void draw_target_beam(char *m) {
     func_L00_001FD1D8_4B80(&pk, matrix, 1);
 }
 extern float g_frame_time MACRO_ADDR;
-extern float FastSin(float);
-extern float FastVecLength(void *);
-extern float FastAddRots(float, float);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
-extern void FastVecSub(void *dst, void *a, void *b);
+
 extern float g_frame_time_sq MACRO_ADDR;
 
 extern float batalia_coll_resolved_pos[];
@@ -612,7 +612,6 @@ void update_scoutbot_movement(char *m) {
     }
 }
 extern void *cancel_suck_cannon_suction(void *);
-extern void MobyBlendAnimation(void *, int, int, int);
 
 struct EnterScoutbotReturnHomeStateVars {
     u8 pad_00[0xC8];
@@ -648,12 +647,9 @@ extern float batalia_glow_quad_corners[4][4];
 extern float scoutbot_glow_camera_offset SDATA(scoutbot_glow_camera_offset);
 extern float scoutbot_glow_size SDATA(scoutbot_glow_size);
 u64 GetEffectTex(s32);
-void FastVecSub(void *, void *, void *);
+
 void vec_scale_to_length(void *, void *, float);
-void FastVecCross(void *, void *, void *);
-void FastVecScale(void *, void *, float);
-void FastVecAdd(void *, void *, void *);
-void transform_vector(void *, void *, void *);
+
 void draw_world_quad(void *, s32, s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_002937a0.c, FUN_L08_002d4108. */
@@ -703,20 +699,12 @@ void draw_scoutbot_glow_quad(char *arg) {
 }
 typedef u32 u128_E9288 __attribute__((mode(TI), aligned(16)));
 extern f32 g_frame_time MACRO_ADDR;
-extern char *CreateMoby(int);
-extern void set_moby_color(void *, int, int, int);
-extern void moby_build_matrix(void *);
+
 extern float vec_length_xy(void *);
-
-extern void euler_to_matrix(void *, void *);
-extern float random_angle_radians(void);
-
-extern float FastCos(float);
 
 extern void *PartType21Spawn(void *, void *, int, int, int, int, float);
 extern int truncate_float_to_s32(float);
-extern float multiply_global_factor(float);
-extern int scale_ticks(int);
+
 extern void PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 extern int batalia_frame_count MACRO_ADDR;
 extern int g_current_level_index MACRO_ADDR;
@@ -819,19 +807,11 @@ char *create_moby_with_particles(int owner, float *position, float *rotation, in
     }
     return moby;
 }
-extern f32 FastAddRots(f32 a, f32 b);
-extern f32 FastVecLength(void *a);
-extern void FastVecSub(void *out, void *a, void *b);
-extern void FastVecScale(void *, void *, float);
-extern float FastVecDist(void *, void *);
-extern float random_angle_radians(void);
 
-extern float FastCos(float);
-extern float multiply_global_factor(float);
 extern int truncate_float_to_s32(float);
 extern int fast_dec_timer(int *);
 extern int coll_line_r(void *, void *, int, void *, void *) __asm__("func_L00_001EFFF0");
-extern void DeleteMoby(void *);
+
 extern void PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 extern void ClampVectorLength(float, void *);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
@@ -965,8 +945,6 @@ extern int batalia_mesh13_positions[];
 extern char batalia_scrolled_uvs[];
 extern IntPair batalia_uv_scroll[];
 
-extern void draw_env_overlay_mesh(int, int, int, void *, int);
-
 /* Runs the two per-entry update calls over a 13-entry table. */
 void draw_scrolled_mesh_batch(int a) {
     int i;
@@ -1040,7 +1018,7 @@ void scale_rgba_tables(int **tabs, int n, int *counts, int flat, float r, float 
         }
     }
 }
-extern float FastSin(float);
+
 extern float frame_delta_time MACRO_ADDR;
 
 /* advance a 2-D wrapped phase by a and b and write scaled sines */
@@ -1105,9 +1083,7 @@ void advance_scroll_entry(int i) {
         *p += 1.0f;
 }
 extern int fast_dec_timer(int *);
-extern void euler_to_matrix(void *, void *);
 
-extern float multiply_global_factor(float);
 extern int truncate_float_to_s32(float);
 extern void PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 extern s32 spark_emitter_lower SDATA(spark_emitter_lower);
@@ -1674,17 +1650,15 @@ typedef struct {
     char p[0x34];
     unsigned short f34;
 } MF_;
-extern void MobyTransformScaledVertex(char *, int, char *);
-extern void matrix_copy_rows(void *, void *);
+
 extern void HeadingFromVector(void *, float *, void *, void *);
 extern void InitKnockback(void *, void *, float, int, int, int);
-extern void spawn_randomized_bolt_drop(void *, int, int, int, int);
+
 extern void RerollEffectCounter(void *m, short *p);
 extern void StepColorFade(void *, void *);
-extern int FastDecTimer(void *);
 
 extern int FindNearestEligibleMoby(char *, void *, float, int, int, void *, int);
-extern float ProbeGroundHeight(void *, int, float);
+
 extern float paratrooper_scale SDATA(paratrooper_scale);
 extern float paratrooper_move_speed SDATA(paratrooper_move_speed);
 extern float paratrooper_knock_gravity SDATA(paratrooper_knock_gravity);
@@ -1879,11 +1853,8 @@ void update_blarg_paratrooper_damage_and_state(char *m) {
             ((Moby *)m)->pos.z = f1;
     }
 }
-extern char *CreateMoby(int);
-extern int scale_ticks(int);
 
 extern float vec_length_xy(void *);
-extern void moby_build_matrix(void *);
 
 // Create a moby (class 0x50C) at pos with an orientation vector, and two ints and an angle arg stored in its data.
 char *spawn_paratrooper_projectile(char *pos, char *dir, int a2, int a3, int a4, int a5) {
@@ -1909,13 +1880,11 @@ char *spawn_paratrooper_projectile(char *pos, char *dir, int a2, int a3, int a4,
     return m;
 }
 extern char batalia_coll_hit[];
-extern void FastVecScale(void *, void *, float);
 
 extern int coll_line(void *, void *, int, int, int);
 extern void PostHitMessage(void *, int, int, void *, void *, float);
 extern int fast_dec_timer_i(void *) __asm__("func_001F9908");
 extern void SpawnExplosionFx(void *, void *, int, float, float);
-extern void DeleteMoby(void *);
 
 /* Fire bolt: flies along its velocity with a smoke trail (while the level is not underwater), damaging what it hits. */
 void update_fire_bolt(char *m) {
@@ -1965,7 +1934,6 @@ void update_fire_bolt(char *m) {
     }
 }
 
-extern float multiply_global_factor(float);
 extern float ground_particle_scatter_spawn_vector_x_bias[2] MACRO_ADDR;
 extern float ground_particle_scatter_refresh_countdown MACRO_ADDR;
 extern int ground_particle_scatter_base_attempt_count MACRO_ADDR;
@@ -2037,10 +2005,9 @@ extern float random_float_between_r(float, float) __asm__("func_002140F8");
 extern float FastCos_r(float) __asm__("func_001F9F90");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
 extern float vec_length_xy_r(void *) __asm__("func_001F9CE8");
-extern float func_L00_002644E0(void *);
+
 extern void spawn_span_particle_r(void *, void *, float, void *) __asm__("func_L08_00273A80");
 extern void func_L08_002803B8(void *, void *, float, void *);
-extern void func_L00_00264570(void *);
 
 /* moby class 1400 update: steers the offset vectors from the mode, fans them out to the object over counted loops */
 void scatter_ground_particles(Moby *m) {
@@ -2246,9 +2213,7 @@ void scatter_ground_particles(Moby *m) {
 }
 typedef int u128 __attribute__((mode(TI)));
 extern float ground_particle_scatter_spawn_vector_y_bias MACRO_ADDR;
-extern void FastVecSub(void *, void *, void *);
-extern float FastVecDot(void *, void *);
-extern float FastCos(float);
+
 extern void spawn_span_particle(void *, void *, void *, float);
 
 /* While the player is within range, scatters spawned particles around the moby on a random disc. */
@@ -2293,7 +2258,7 @@ void set_level_state_flag_88(void) {
     batalia_player_camera_current[0x88] = 1;
 }
 extern float batalia_wind_level SDATA(batalia_wind_level);
-extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
+
 extern int Sound_SetPitchBend(int, int);
 
 /* Wind ambience: probes 20 points around the hero; the more of them are below the camera, the louder the loop. */

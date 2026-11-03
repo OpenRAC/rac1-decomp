@@ -12,6 +12,7 @@
 #include "data/shared_levels.h"
 #include "game/math/fastfunc.h"
 #include "enums/level.h"
+#include "asm_functions/executable.h"
 extern Hero g_hero;
 
 /* The level copies of the camera tables (include/structs/camera.h). */
@@ -57,12 +58,9 @@ INCLUDE_ASM("asm/overlays", func_L00_001EB598);
 INCLUDE_ASM("asm/overlays", func_L00_001EB5A8);
 LINKER_REMNANT("asm/overlays", func_L00_001EB5B0);
 
-extern float FastAddRots(float, float);
-
 /* steers *p toward a target with damping, clamps it, then calls FA748 */
 float func_001FA790_EB6A8(float, float) __asm__("func_001FA790");
 float FastAbsF(float);
-float FastAddRots(float, float);
 
 /* Cam_InterpValues for angles: steers vel toward the angle to (the shortest way round, from
    the current angle from), clamps the step to max when max is set, and returns the angle plus vel
@@ -95,7 +93,7 @@ void initialize_camera_record_handoff_defaults(void) {
 extern u8 gCamPrevStateLvl[];
 
 extern void Camera_runSetupToNewCam(void *);
-extern void FastMemCopy(void *, void *, s32);
+
 extern s32 truncate_float_to_s32(f32);
 extern s32 D_0015EE84 MACRO_ADDR;
 
@@ -270,7 +268,7 @@ extern short D_L00_00166FF0 NOT_SDA;
 extern void Camera_CaptureHeroRelativeView(void);
 extern void save_camera_vectors(void);
 extern void restore_camera_vectors(void);
-extern int scale_ticks(int);
+
 extern float IntToFloat(int);
 
 /* Camera mode update: in blend phase 1 the blend's next_kind picks what is captured from the
@@ -417,9 +415,6 @@ extern void Camera_CaptureTransform(Camera *);
 extern void update_camera_blend(char *arg0);
 extern void apply_camera_shake(char *arg0, int arg1);
 extern void update_camera_underwater_flag(void);
-extern void copy_matrix_rotation(void *, void *);
-
-extern void FastVecCross(void *, void *, void *);
 
 /* Camera update, once per frame: count the frame, run the camera steps, take the view from the target camera (mode 3
    blends it) unless frozen, refresh the angles and the derived vectors. Level copy of update_camera. Joined with
@@ -527,10 +522,6 @@ void init_camera_system(void) {
     u[2] = t[2];
 }
 
-extern float FastCos(float);
-extern float FastSin(float);
-extern void FastVecAdd(void *, void *, void *);
-
 /* Inverse of Camera_Pos2Polar3d: out = origin + the point at polar (yaw, pitch, distance). */
 void compute_position_from_spherical_offset(float *out, float *polar, void *origin) {
     out[0] = polar[2] * FastCos(polar[1]) * FastCos(polar[0]);
@@ -543,8 +534,6 @@ typedef float W[4] __attribute__((aligned(16)));
 
 extern float vec_length_xy(float *);
 
-extern void FastSubRots(float, float);
-extern float FastVecLength(float *);
 extern void FastVecSub_3(float *, float *, float *) __asm__("func_001F9BF0");
 /* polar = (yaw, pitch, distance) of pos as seen from origin; the FastSubRots result is unused (kept, as retail). */
 int compute_spherical_offset_from_positions(float *polar, float *pos, float *origin) {

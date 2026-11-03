@@ -13,6 +13,8 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "overlays/shared/moby_path_and_manipulators.h"
 #include "enums/level.h"
+#include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern char g_hero_moby[];
 extern struct Hero g_hero;
 extern char g_screen_extent[];
@@ -142,24 +144,19 @@ extern f32 D_L06_0016205C_FF000 SDATA(D_L06_0016205C);
 extern Vec4f blarg_camera_pos;
 extern s32 *blarg_paths[];
 extern f32 blarg_zero_vec[] MACRO_ADDR;
-extern s32 scale_ticks(s32);
-extern s32 fast_dec_timer(s32 *);
-extern f32 FastVecDist(void *, void *);
-extern f32 vec_distance_xy(void *, void *);
-extern f32 FastCos(f32);
-extern f32 FastSin(f32);
 
-extern f32 FastDiffRots(f32, f32);
+extern s32 fast_dec_timer(s32 *);
+
+extern f32 vec_distance_xy(void *, void *);
+
 extern s32 truncate_float_to_s32(f32);
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
-extern f32 MobyGetFrameValue(struct Moby *);
-extern void MobyBlendAnimation(struct Moby *, s32, s32, s32);
-extern s32 is_point_inside_clip_volume(void *, s32);
+
 extern void Moby_GetJointWorldPos_r(struct Moby *, s32, void *) __asm__("func_L00_00250800");
 extern void MobySpringTurn(struct Moby *, f32, f32 *, f32, f32, f32);
 extern s32 move_w(struct Moby *, MoveCtl *, void *, void *, f32);
-extern void InitDirectionalHitQuery(ShotInfo *, struct Moby *, s32, void *, f32);
-extern void sweep_hit_segment(void *, void *, void *, void *, struct Moby *, ShotInfo *, s32);
+extern void InitDirectionalHitQuery_v(ShotInfo *, struct Moby *, s32, void *, f32) __asm__("func_L00_0025A8C0");
+
 extern void set_ground_height_band(struct Moby *);
 extern void SteerAngleWithVelocity(f32 *, f32, f32 *, f32, f32, f32);
 extern s32 mine_fall(struct Moby *, Vec4 *);
@@ -348,7 +345,7 @@ void blarg_space_commando_update(struct Moby *moby) {
                 c.f[1] = FastSin(moby->rot.z);
                 c.f[2] = 1.0f;
                 c.f[3] = 5627.925f;
-                InitDirectionalHitQuery(&shot, moby, 1, &c, 1.0f);
+                InitDirectionalHitQuery_v(&shot, moby, 1, &c, 1.0f);
                 shot.unk18 = 0;
                 shot.unk19 = 1;
                 shot.oclass = moby->oclass;
@@ -408,7 +405,7 @@ void blarg_space_commando_update(struct Moby *moby) {
                 c.f[1] = FastSin(moby->rot.z);
                 c.f[2] = 1.0f;
                 c.f[3] = 5627.925f;
-                InitDirectionalHitQuery(&shot, moby, 1, &c, 1.0f);
+                InitDirectionalHitQuery_v(&shot, moby, 1, &c, 1.0f);
                 shot.unk18 = 0;
                 shot.unk19 = 1;
                 shot.oclass = moby->oclass;
@@ -473,19 +470,14 @@ void blarg_space_commando_update(struct Moby *moby) {
 }
 extern void update_blarg_space_commando_beam(void *);
 
-extern float multiply_global_factor(float);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, int *, float *, int, int);
-extern int scale_ticks(int);
 
 extern void PlayBankSound(int, int, int);
 
 extern void InitKnockback(void *, void *, float, int, int, int);
 
-extern float random_angle_radians(void);
-extern float FastCos(float);
-extern float FastSin(float);
 extern char *spawn_spinning_moby_fragment(int unused, char *pa, char *pb);
 extern void RerollEffectCounter(void *m, short *p);
 extern void SetDeathBits(void *, int, int);
@@ -653,15 +645,11 @@ void process_blarg_space_commando_hits(char *m) {
         d->target_id = *(int *)&g_hero.moby;
     }
 }
-extern float ProbeGroundHeight(void *, int, float);
+
 extern void vec_scale_to_length(void *, void *, float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern float IntToFloat(int);
-extern float FastAddRots(float, float);
-extern float FastCos(float);
-extern float FastSin(float);
-extern void FastVecAdd(float *, float *, float *);
-extern int scale_ticks(int);
+
 extern char blarg_coll_hit_normal[];
 extern float space_commando_beam_fan_degrees SDATA(space_commando_beam_fan_degrees);
 extern int space_commando_beam_ticks SDATA(space_commando_beam_ticks);
@@ -690,8 +678,7 @@ void initialize_blarg_space_commando_beam(Moby *m) {
     }
     ((struct SpaceCommandoVars *)d)->beam_ticks = (float)scale_ticks(space_commando_beam_ticks);
 }
-extern void FastVecSub(void *dst, void *a, void *b);
-extern float FastVecDot(void *a, void *b);
+
 extern int coll_line(void *, void *, int, void *, void *);
 extern float ApproachValue(float *, float, float);
 extern void AddDrawCallback(void *, void *);
@@ -781,7 +768,7 @@ void update_blarg_space_commando_beam(void *arg) {
                 if (1.0f <= *(float *)(e + 0x23C) && 1.0f <= *(float *)(f + 0x23C)) {
                     m = 0x10001;
                 }
-                InitDirectionalHitQuery(&rec, (struct Moby *)moby, m, A, 1.0f);
+                InitDirectionalHitQuery_v(&rec, (struct Moby *)moby, m, A, 1.0f);
                 rec.oclass = ((Moby *)moby)->oclass;
                 rec.unk18 = 0;
                 rec.unk19 = 1;
@@ -813,9 +800,7 @@ extern s32 space_commando_beam_inner_color_b SDATA(space_commando_beam_inner_col
 extern f32 space_commando_beam_uvs[4][2];
 extern void VU1_addGSregister(s32, s64);
 extern u64 GetEffectTex(s32);
-extern void set_identity_matrix(void *);
 
-extern void FastVecSub(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, f32);
 extern u32 FastTweenColor_r(f32, s32, s32) __asm__("func_001FA8A8");
 extern void draw_world_quad(void *, void *, s32);
@@ -889,12 +874,9 @@ void DrawBeam(char *moby) {
     } while (i < 15);
     VU1_addGSregister(0x47, 0x5360B);
 }
-extern float random_angle_radians(void);
-extern float FastCos(float);
-extern float FastSin(float);
-extern float multiply_global_factor(float);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern void FastVecScale(void *, void *, float);
+
 extern void lerp_vector(void *, void *, void *, float);
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 extern short beam_spark_initial_word_gp, beam_spark_second_word_gp, space_commando_beam_spark_start_w,
@@ -955,7 +937,7 @@ void spawn_blarg_space_commando_beam_sparks(char *moby) {
                         s17, *(int *)&beam_spark_lookup_index_and_flags_gp);
     }
 }
-extern void DeleteMoby(void *);
+
 extern float g_frame_time_sq MACRO_ADDR;
 extern float spinning_fragment_scale SDATA(spinning_fragment_scale);
 
@@ -1026,9 +1008,6 @@ extern short blarg_timer_frame_x0_offset;
 extern short blarg_timer_frame_x1_offset;
 extern short blarg_timer_frame_alpha;
 extern void DrawUIFrame(int, int, int, int, int);
-extern float FastSin(float);
-extern int FastTweenColor(int, int, float);
-extern int scale_ticks(int);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
@@ -1078,7 +1057,7 @@ typedef struct {
     long tag[4];
 } Pkt89B8 __attribute__((aligned(16)));
 extern void euler_rotation_basis(void *, void *);
-extern void matrix_mul_vec3(void *, void *, void *);
+
 extern void draw_world_quad(void *, void *, int);
 extern char referencePosition[];
 extern int door_lock_glow_quad_corner_indices[][4];
@@ -1252,7 +1231,7 @@ extern unsigned char saved_mission_state[];
 extern int g_current_level_index SDATA(g_current_level_index);
 extern int level_mobys_q SDATA(level_mobys_q);
 extern int truncate_float_to_s32(float);
-extern float FastVecDist(void *, void *);
+
 extern void AddDrawCallback(void *, void *);
 
 extern void PartType41Spawn(void *, void *, int, unsigned int, int, int, int, float);
@@ -1379,8 +1358,7 @@ void bot_door_lock_update(Moby *moby) {
 extern char *MobyGetHitMessage(void *, int, int);
 extern void spawn_proximity_gated_bolts(void *);
 extern void SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
-extern char *CreateMoby(int);
-extern void moby_build_matrix(void *);
+
 extern float blarg_zero_vec[] MACRO_ADDR;
 
 /* Update: waits for a positive value, then spawns effects and a child moby and deletes itself. */
@@ -1429,7 +1407,7 @@ void update_hit_triggered_moby_breakup(Moby *moby) {
             break;
     }
 }
-extern void DeleteMoby(void *);
+
 extern void AddDrawCallback(void *, void *);
 extern void draw_projected_fading_quad(char *);
 

@@ -306,7 +306,7 @@ int pad_pressed_within(int mask, int n, int *out) {
 }
 INCLUDE_ASM("asm/overlays", func_L00_00267C34);
 extern int pad_pressed_within(int, int, int *);
-extern int subtract_integer_with_clamp(int);
+
 /* True when both masks a and b were pressed within c frames, less than d frames apart. */
 int check_pad_press_separation(int a, int b, int c, int d) {
     int v[2];

@@ -19,6 +19,8 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/hero_state.h"
 #include "enums/moby_class.h"
+#include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern char gHeroPos[];
 extern char gSkillPoints[];
 extern Hero g_hero;
@@ -68,22 +70,14 @@ extern int Help_Request(int, int);
 
 extern int memcard_Save(int, int);
 extern int PlayBankSound(int, int, int);
-extern void ShowBanner(int, int);
-extern float FastVecDist(void *, void *);
-extern float vec_distance_xy(void *, void *);
-extern float FastVecLength(void *);
-extern void FastVecSub(void *, void *, void *);
-extern void FastVecAdd(void *, void *, void *);
-extern int scale_ticks(int);
-extern int fast_dec_timer(void *);
-extern float FastAddRots(float, float);
-extern float FastSubRots(float, float);
-extern float FastDiffRots(float, float);
 
-extern float multiply_global_factor(float);
+extern float vec_distance_xy(void *, void *);
+
+extern int fast_dec_timer(void *);
+
 extern int truncate_float_to_s32(float);
 extern float vec_length_xy(void *);
-extern void BuildSphericalOffset(void *, float, float, float);
+
 extern void EaseManipulatorOffsets(float, float, void *, void *, int);
 
 extern unsigned char race_gates_base[], gHaveMorphORay[];
@@ -391,8 +385,6 @@ void restore_gadgetron_ceo_non_challenge_environment(char *moby) {
     MusicRequestTrack(0, 8);
 }
 
-extern int is_point_inside_clip_volume(void *, int);
-
 /* update: a two-state trigger on the player's state */
 void update_two_region_trigger_latch(char *moby) {
     struct TwoRegionTriggerVars *data = (struct TwoRegionTriggerVars *)((Moby *)moby)->pvars;
@@ -424,7 +416,7 @@ void update_two_region_trigger_latch(char *moby) {
 }
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound(int, int, int);
-extern void DeleteMoby(void *);
+
 extern void initialize_path_walker_group(unsigned char *);
 extern void emit_path_walker_particle(unsigned char *, void *);
 extern void SamplePathAt(void *, float, int, void *, float *, int);
@@ -555,9 +547,9 @@ extern int path_walker_particle_color_end SDATA(path_walker_particle_color_end);
 extern float path_walker_particle_movement_velocity_scale SDATA(path_walker_particle_movement_velocity_scale);
 extern float path_walker_particle_random_velocity_scale SDATA(path_walker_particle_random_velocity_scale);
 extern float path_walker_particle_target_scalar_scale SDATA(path_walker_particle_target_scalar_scale);
-extern void FastVecScale(void *, void *, float);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern float random_angle_radians(void);
+
 extern void func_L00_0026DD70(void *, void *, int, int, float, int);
 
 /* Emits a particle near an active moby when the target is close. */
@@ -707,9 +699,6 @@ extern char *kalebo3_level_cylinders MACRO_ADDR;
 extern float elevator_height_offset SDATA(elevator_height_offset);
 extern float elevator_height_acceleration SDATA(elevator_height_acceleration);
 extern short elevator_max_speed;
-extern void matrix_mul_vec3(void *, void *, void *);
-extern void transform_vector(void *, void *, void *);
-extern void clear_u64_value(void *);
 
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void update_entity_matrix(char *, void *, void *, void *);
@@ -818,11 +807,7 @@ void ElevatorPlatformUpdate(Moby *m) {
         update_entity_matrix((char *)d->basis, delta.v, old_rotation.v, &m->rot);
     }
 }
-extern int FastTweenColor(int, int, float);
-extern void copy_matrix_rotation(void *, void *);
-extern float FastCos(float);
-extern float FastSin(float);
-extern float FastNormalizeAngle(float);
+
 extern void draw_world_quad(void *, void *, int);
 extern float elevator_ring_uvs[][2];
 extern short elevator_max_speed, elevator_ring_color_start, elevator_ring_color_end;
@@ -989,7 +974,7 @@ extern char *find_group_morphoray_chicken_moby_in_state_6(int);
 extern void request_target_reposition(void *);
 
 extern int get_target_reposition_status(void *);
-extern float ProbeGroundHeight(void *, int, float);
+
 extern void reposition_moby_with_collision_check(void *, void *);
 /* Repositions a target at random intervals while the hero is in the clip volume. */
 void update_target_reposition_cycle(char *moby) {
@@ -1055,7 +1040,6 @@ char *find_group_morphoray_chicken_moby_in_state_6(int idx) {
             return 0;
     }
 }
-extern float FastVecDot(void *, void *);
 
 /* For each of n point pairs, reflects a direction and writes its 2D map coordinates. */
 void compute_level16_reflection_map_coordinates(int n, Vec3f *p1, Vec3f *p2, int unused, float *out) {
@@ -1100,8 +1084,6 @@ extern char envmap_a_bounding_spheres[][16];
 extern char envmap_a_uvs[];
 extern int GetEffectTex(int);
 extern void VU1_addGSregister(int, long);
-
-extern void draw_env_overlay_mesh(int, int, int, char *, int);
 
 /* Sets up the draw state, then draws the three entries of the level's table. */
 void env_map_a_draw(void) {

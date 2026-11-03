@@ -21,6 +21,9 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "structs/voice.h"
+#include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_animation_slots.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 
@@ -147,51 +150,44 @@ typedef struct {
     short f22E0;
 } Hero98BB8;
 
-extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern void update_sentrybot_hit_response_and_target_visibility(void *, int);
 
-extern float FastVecDist(void *, void *);
 extern void set_ground_height_band(void *);
-extern int FastDecTimer(void *);
+
 extern void set_sentrybot_alarm_duration(char *m, int a);
-extern int scale_ticks(int);
+
 extern int find_sentrybot_attention_target(char *m);
-extern int random_integer_below(int);
+
 extern int can_sentrybot_advance_patrol(void *);
 extern int fast_dec_timer(void *);
 extern void begin_sentrybot_turn_toward_point(char *moby, void *a, float *point, void *b, void *c);
-extern void MobyBlendAnimation(void *, int, int, int);
+
 extern void mark_moby_killed_and_release_owned_voice(int);
 
-extern float FastDiffRots(float, float);
 extern float animation_end(int a, unsigned int b);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern float FastAddRots(float, float);
-extern float MobyGetFrameValue(void *);
+
 extern float IntToFloat(int);
 extern int move_sentrybot_toward_point(char *moby, float *point, float arg);
 extern int begin_sentrybot_turn_toward_heading(unsigned char *, char *, int, int, float);
 extern void prepare_sentrybot_alarm(unsigned char *moby);
 extern void alert_visible_group_sentrybots(void *);
 extern int can_sentrybot_approach_linked_moby(void *);
-extern void FastVecSub(void *dst, void *a, void *b);
-extern float FastVecLength(void *);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
+
 extern void compute_selected_world_matrices(void *, int, void *, void *);
-extern void transform_scaled_vertex_batch(char *arg0, int arg1, void *arg2, char *arg3);
+
 extern float vec_length_xy(void *);
 extern char *spawn_class_3a6_moby(char *, float *, char *, char *);
 extern int mine_fall(void *, void *);
-extern float ProbeGroundHeight(void *, int, float);
 
 extern int Moby_PlaySound(int, int, int);
-extern void SpawnExplosionFx(void *, void *, int, float, float);
+
 extern void SetDeathBits(void *, int, int);
-extern void DeleteMoby(void *);
+
 extern void update_sentrybot_joint_aim(void *);
-extern float FastSin(float);
-extern int FastTweenColor(int, int, float);
+
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void AddDrawCallback(void (*)(void), void *);
 extern void draw_sentrybot_effect_quads(char *m);
@@ -981,7 +977,6 @@ void sentrybot_update(unsigned char *moby) {
     }
     AddDrawCallback((void (*)(void))draw_sentrybot_effect_quads, moby);
 }
-extern float FastSubRots(float, float);
 
 /* Picks a facing state from the signed angle to a target; returns 1 when it turned a lot, else 0. */
 int begin_sentrybot_turn_toward_heading(unsigned char *moby, char *d, int a, int b, float angle) {
@@ -1034,7 +1029,7 @@ void begin_sentrybot_turn_toward_point(char *moby, void *a, float *point, void *
 extern float g_frame_time_sq MACRO_ADDR;
 extern float SteerAngleWithVelocity(float *p, float *v, float a, float b, float c, float d);
 extern void ApproachValue(void *, float, float);
-extern float FastCos(float x);
+
 extern void move_4318(int, int, float, float, float, int);
 extern float vec_distance_xy(float *, float *);
 
@@ -1212,8 +1207,6 @@ void alert_visible_group_sentrybots(void *mobyv) {
         }
     } while (*(short *)list++ >= 0);
 }
-extern int random_integer_below(int);
-extern int scale_ticks(int);
 
 // Records a new target moby and rolls a timer, unless it is the same moby or a check blocks it.
 struct SetSentrybotAttentionTargetVars {};
@@ -1302,9 +1295,9 @@ extern void HeadingFromVector(void *, float *, void *, void *);
 extern void InitKnockback(void *, void *, int, int, int, float);
 extern void RerollEffectCounter(void *, void *);
 extern void StepColorFade(void *, void *);
-extern float random_float_between(float, float);
+
 #define func_002140F8_r func_002140F8
-extern float multiply_global_factor(float);
+
 extern int update_float_countdown(void *);
 #define func_L08_00211A38_r func_L08_00211A38
 extern int truncate_float_to_s32(float);
@@ -1551,8 +1544,7 @@ extern char quartu_camera_pos_r[] __asm__("D_L15_00167440");
 
 extern unsigned char hero_vehicle_mode[];
 extern int Sound_PlayClassSound(int, int, void *, int);
-extern void FastVecScale(void *, void *, float);
-extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
+
 void spawn_rocket_trail_spark(char *moby);
 void spawn_rocket_detonation_glow(char *moby);
 
@@ -1592,9 +1584,7 @@ void ProjectileUpdate(unsigned char *m) {
     spawn_rocket_trail_spark((char *)m);
 }
 extern void rand_vec(float *, float, float);
-extern void FastVecAdd(void *, void *, void *);
-extern float random_float_between(float, float);
-extern float multiply_global_factor(float);
+
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 extern short quartu_rocket_trail_start_color, quartu_rocket_trail_end_color,
@@ -1714,27 +1704,18 @@ extern char quartu_coll_hit[];
 extern char *quartu_coll_sphere_moby_hits[];
 extern char quartu_player_camera[];
 extern void EffectQueue_Add(void *, int, float, float, void *, int, int, float, int);
-extern void vec3_sub_in_place_second_arg(void *, void *, void *);
 
 extern float vec_length(float);
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
-extern void BuildSphericalOffset(void *, float, float, float);
+
 extern unsigned char *PartType44Spawn(void *pos, float *vec, int s, int a, int col, int n, float x, float y, float z,
                                       float w, float pw);
-extern void matrix_mul_vec3(void *, void *, void *);
-extern float random_angle_radians(void);
-extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
+
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
 
-extern void vec_set_length_xy(void *, void *, float);
-
-extern void moby_index_list_remove(void *, void *);
 extern int coll_sphere_mobys(void *, float, int, void *, void *);
-extern void SendRadialMessageToMobys(void *, void *, void *, int, int, int, int, int, float, float, float);
-extern void sce_vu0_mul_matrix(void *, void *, void *);
 
-extern void set_identity_matrix(void *);
-extern void transform_vector(void *, void *, void *);
+extern void sce_vu0_mul_matrix(void *, void *, void *);
 
 extern void *spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns(void *, void *, int, int, float, int,
                                                                                int, int, int);
@@ -2155,7 +2136,7 @@ extern void func_L00_0026AA10(void *, unsigned char, unsigned char, unsigned cha
 extern int allocate_packed_color_point_light_slot(float *pos, float radius, float intensity, int color);
 
 extern int coll_sphere_mobys_r(void *, float, int, void *, void *) __asm__("func_L00_001F2BE8");
-extern void SendRadialMessageToMobys(void *, void *, void *, int, int, int, int, int, float, float, float);
+
 extern char *func_L00_0026E940(float, char *, int, int, int);
 
 extern void *spawn_shrinking_effect_particle_with_gravity_and_secondary_spawns_r(void *, void *, int, int, float, int,
@@ -2489,8 +2470,6 @@ tailA:
     ((struct Moby *)moby)->collision = 0;
 }
 
-extern float random_float_between(float, float);
-
 // wakes the first idle moby in a list and initialises it at a position
 struct ActivateFirstInactiveGroupMobyVars {
     u8 pad_00[0x64];
@@ -2525,8 +2504,7 @@ int activate_first_inactive_group_moby(int idx, void *pos) {
 }
 typedef int u128_2A3B98 __attribute__((mode(TI)));
 extern int GetEffectTex(int);
-extern void clear_u64_value(float *);
-extern void euler_to_matrix(float *, float *);
+
 extern void draw_world_quad(void *, void *, int);
 extern float D_L15_001CE490[];
 extern float D_L15_001CE390[];
@@ -2623,7 +2601,7 @@ extern void transform_vector_r(void *, void *, void *) __asm__("func_001F9EE8");
 extern void matrix_mul_vec3_r(void *, void *, void *) __asm__("func_001F9EC0");
 extern void FastVecAdd_r(void *, void *, void *) __asm__("func_001F9BD8");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
-extern void func_001FA4A0(void *, void *);
+
 extern void mark_moby_killed_and_release_owned_voice_r(void *) __asm__("func_L15_002A47B8");
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 extern void AddDrawCallback_r(void (*)(void), void *) __asm__("func_001F49B0");
@@ -2751,8 +2729,6 @@ extern int quartu_spark_emitter_uv_wave_use_cos[][2];
 extern float quartu_spark_emitter_base_uvs[][2];
 extern Q_2A4318 quartu_spark_emitter_second_quad_corners[];
 extern Q_2A4318 quartu_spark_emitter_first_quad_corners[];
-extern void copy_matrix_rotation(void *, void *);
-extern float FastCos(float);
 
 /* Draw callback set by update_spark_emitter_moby: draws six passes of two effect quads (texture 0x2C)
    at the moby transform, with wave-animated corners and a colour that fades with the data timer. */
@@ -2913,9 +2889,7 @@ typedef struct {
     int i20;
     int pad24[3];
 } Ray;
-extern void matrix_copy_rows(void *, void *);
 
-extern float FastNormalizeAngle(float);
 extern int func_001160D8(void);
 
 extern int quartu_spiderbot_spark_count SDATA(quartu_spiderbot_spark_count);
@@ -3069,8 +3043,7 @@ void spiderbot_update(Moby *moby) {
     AddDrawCallback(draw_spiderbot_effect_quad, moby);
 }
 typedef int u128_2A8850 __attribute__((mode(TI)));
-extern void FastVecSub(void *, void *, void *);
-extern void FastVecCross(void *, void *, void *);
+
 extern int GetEffectTex(int);
 extern void draw_world_quad(void *, void *, int);
 extern float quartu_camera_pos[];
@@ -3142,9 +3115,6 @@ typedef struct {
     s32 start_volume;
     s32 stop_volume;
 } MovingMobyVars;
-
-extern f32 FastCos(f32);
-extern f32 FastSin(f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/00278fd8.c, FUN_L15_002bddb0. */
 void MovingMobyUpdate(struct Moby *moby) {
@@ -3532,7 +3502,6 @@ void emit_sine_modulated_rgba_draw_packet(void) {
     emit_rgba_draw_packet(k & 0xFF, k >= 9, k >= 17, r);
 }
 typedef int u128 __attribute__((mode(TI)));
-extern int hero_is_in_special_state(void);
 
 // Checks whether the pad-state object is in state 0x18/0x19 and a probed height is above a threshold.
 int hero_is_near_ground(void) {

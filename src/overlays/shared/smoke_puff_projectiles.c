@@ -7,6 +7,9 @@
 #include "game/moby/mobyutil.h"
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/moby_class.h"
+#include "asm_functions/executable.h"
+#include "asm_functions/shared_levels.h"
+#include "game/moby/mobyfunc.h"
 
 extern struct Hero g_hero_r __asm__("D_0013F450");
 typedef int OvlQuad_B0068 __attribute__((mode(TI)));
@@ -74,7 +77,7 @@ struct Moby *spawn_class_b8_projectile(struct Moby *owner, void *pos, void *dir,
 }
 typedef u32 u128_B0290 __attribute__((mode(TI), aligned(16)));
 extern struct Hero g_hero;
-extern void FastVecAdd(void *, void *, void *);
+
 typedef struct {
     Vec4f dir; /* 0x00: travel direction (also gives the yaw) */
     f32 spin; /* 0x10: random turn rate, +-90 degrees per frame unit */
@@ -87,7 +90,6 @@ typedef struct {
     s32 unk28;
 } ShotVars;
 
-extern float FastVecDist(void *, void *);
 extern float g_frame_time MACRO_ADDR;
 typedef struct {
     union {
@@ -110,14 +112,10 @@ extern u128_B0290 eudora_coll_hit_point;
 extern u8 eudora_coll_hit_normal[];
 extern f32 vec_distance_xy(void *, void *);
 extern s32 Moby_PlaySound(s32, s32, struct Moby *);
-extern void vec_set_length_xy(void *, void *, f32);
-extern s32 FastDecTimer(s16 *);
-extern void DeleteMoby(struct Moby *);
+
 extern s32 coll_line(void *, void *, s32, struct Moby *, CollisionProbe *);
-extern void vec_reflect(void *, void *, void *);
-extern f32 FastVecLength(void *);
+
 extern void vec_scale_to_length(void *, void *, f32);
-extern s32 scale_ticks(s32);
 
 extern void PartType27Spawn(void *, void *, u32, s32, f32);
 
@@ -202,7 +200,7 @@ void update_class_b8_projectile(struct Moby *m) {
     }
     DeleteMoby(m);
 }
-extern void matrix_mul_vec3(void *, void *, void *);
+
 extern void spawn_smoke_puff_trail_with_endpoint_bursts(void *, void *, void *, int, float, float);
 extern char eudora_puff_segment_points[];
 extern float eudora_segment_puff_size_scale SDATA(eudora_segment_puff_size_scale);
@@ -254,7 +252,6 @@ void spawn_moby_table_puff_pattern(char *a) {
 typedef int u128 __attribute__((mode(TI)));
 
 extern char *CreateMoby_m(int) __asm__("func_0020D348");
-extern void moby_build_matrix(void *);
 
 /* Spawns moby Gun, copies the 16-byte position from b and a few
    fields from a into it, hands the new moby to moby_build_matrix. */

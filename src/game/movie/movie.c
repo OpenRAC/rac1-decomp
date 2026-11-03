@@ -11,7 +11,7 @@ extern int movie_play_step MACRO_ADDR;
 extern int movie_clear_gp SDATA(D_00161318);
 extern char *decoder_state MACRO_ADDR;
 extern char *movie_gp_base SDATA(D_0016130C);
-extern int change_thread_priority(int, int);
+
 extern int initAll(int, int, int);
 extern int read_mpeg(char *, char *, int *);
 extern void termAll(void);
@@ -46,7 +46,7 @@ typedef struct MvGlobals {
     int f5C;
 } __attribute__((aligned(16))) MvGlobals;
 extern MvGlobals voice_pool;
-extern void flush_cache(int);
+
 extern int sce_gs_sync_v(int);
 
 extern void videoDecAbort(char *);
@@ -175,7 +175,6 @@ int read_mpeg(char *vd, char *rb, int *file) {
     movie_frame_count = 0;
     return aborted;
 }
-extern int rotate_thread_ready_queue(int);
 
 /* switchThread -- calls rotate_thread_ready_queue(1). */
 void switchThread(void) {
@@ -213,12 +212,9 @@ extern int videoDecCreate(void *, int, int, void *, int, int, void *, int);
 extern int audioDecCreate(void *, void *, int, int);
 extern int videoDecSetStream(void *, int, int, void *, char *);
 extern void voBufCreate(void *, int, int, int);
-extern int create_thread(struct AudioDecoderThreadArgs *);
-extern int start_thread(int, void *);
+
 extern int set_state_fields(void *, int, int);
 
-extern int enable_intc_atomic(int);
-extern int add_dmac_handler(int, void *, int);
 extern int enable_dmac_atomic(int);
 extern void vblankHandler();
 extern void handler_endimage();
@@ -268,12 +264,7 @@ extern int movie_thread_gp SDATA(D_00161310);
 extern int sce_cd_sync_s(int);
 extern void readBufDelete(char *);
 extern void voBufDelete(char *);
-extern int terminate_thread(int);
-extern int delete_thread(int);
-extern int disable_dmac_atomic(int);
-extern int remove_dmac_handler(int, int);
-extern int disable_intc_atomic(int);
-extern int remove_intc_handler(int, int);
+
 extern int videoDecDelete(char *);
 extern int audioDecDelete(char *);
 extern int get_state_callback_result(char *);

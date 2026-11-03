@@ -11,6 +11,7 @@
 #include "enums/hero_state.h"
 #include "enums/moby_class.h"
 #include "structs/hit_message.h"
+#include "asm_functions/executable.h"
 extern Hero g_hero;
 
 typedef struct {
@@ -65,14 +66,9 @@ extern s32 hero_hit_count MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
 extern u8 hero_velocity[];
 void release_and_clear_hero_voice_slots(void);
-void FastVecSub(void *, void *, void *);
-f32 FastAddRots(f32, f32);
-f32 FastCos(f32);
-f32 FastSin(f32);
-void FastVecAdd(void *, void *, void *);
+
 void HeroL17_SetMoveState(s32, s32);
 void allocate_hero_voice_for_entry(s32, s32);
-void hero_knockback(void *, s32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l17/ui_help_002020a8.c, FUN_L17_0020dbe8. */
 s32 HeroL17_TryTakeHit(s32 arg) {

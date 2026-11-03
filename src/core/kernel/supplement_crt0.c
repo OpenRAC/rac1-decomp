@@ -1,6 +1,7 @@
 #include "common.h"
 #include "callees.h"
 #include "structs/misc.h"
+#include "asm_functions/executable.h"
 
 /*
  * core_text object 0x11D960-0x11DBE8. Boundaries are retail's linker fill
@@ -12,15 +13,10 @@
  * (Makefile.sn, EE29_CORE), like the prebuilt libkernl.a.
  */
 
-
-extern int disable_interrupts(void);
-extern void enable_interrupts(void);
-
 ASM_FUNC("asm/handwritten/core_text", func_0011D960);
 
 ASM_FUNC("asm/handwritten/core_text", func_0011D9A8);
 
-extern int create_semaphore(void *);
 extern int FirstSemaphore;
 extern int SecondSemaphore;
 
@@ -68,8 +64,6 @@ ASM_FUNC("asm/handwritten/core_text", func_0011DA80);
 
 LINKER_REMNANT("asm/remnants/core_text", func_0011DA90);
 
-extern void initsys_set_syscall(int, int);
-extern int find_address(int, int, void *);
 extern int initsys_syscall_patch_table[];
 extern int initsys_kernel_scan_address;
 

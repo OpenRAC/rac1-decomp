@@ -41,8 +41,6 @@ int getFIFOindex(ViBuf *vb, unsigned int addr) {
     }
     return (addr - vb->base) >> 11;
 }
-extern void disable_interrupts(void);
-extern void enable_interrupts(void);
 
 /* setD3_CHCR(unsigned int) */
 void setD3_CHCR(unsigned int chcr) {
@@ -88,7 +86,6 @@ typedef struct SemaParam {
     int f14;
 } SemaParam;
 
-extern int create_semaphore(SemaParam *);
 extern int viBufReset();
 
 /* viBufCreate: fill the header, make a semaphore (1/1), reset, clear 0x48 */
@@ -368,8 +365,6 @@ int viBufDelete(ViBuf *vb) {
     delete_semaphore(vb->sema);
     return 1;
 }
-extern int wait_semaphore(int);
-extern int signal_semaphore(int);
 
 /* viBufCount(ViBuf *) */
 int viBufCount(ViBuf *vb) {

@@ -4,6 +4,7 @@
 #include "core/cdvd/callbacks.h"
 #include "core/kernel/kprintf.h"
 #include "data/executable.h"
+#include "asm_functions/executable.h"
 
 /*
  * core_text object 0x1208E8-0x121750. Boundaries are retail's linker fill
@@ -15,8 +16,6 @@
  * EE29_CORE), like the prebuilt libcdvd.a it matches. The module sees
  * most of its globals as volatile (cd_ncmd_callback).
  */
-
-extern int create_semaphore(void *);
 
 extern void sceSifAddCmdHandler(int arg0, int arg1, int arg2);
 
@@ -47,8 +46,7 @@ void sceCdDelayThread(unsigned short arg0) {
 }
 
 extern int sce_cd_sync_s(int);
-extern int disable_interrupts(void);
-extern void enable_interrupts(void);
+
 extern void *cd_user_callback;
 
 void *sce_cd_callback(void *arg0) {
@@ -90,7 +88,6 @@ extern volatile int cd_callback_sema_v __asm__("D_001313E0");
 extern volatile int cd_ncmd_sema_v __asm__("D_001313E8");
 extern volatile int cd_ncmd_busy_v __asm__("D_001313F0");
 extern void *volatile cd_user_callback_v __asm__("D_00159840");
-extern int i_signal_semaphore(int);
 
 void cd_ncmd_callback(int *arg0) {
     cd_callback_num_v = *arg0;
@@ -186,7 +183,7 @@ extern int cd_callback_thread_id;
 /* DeleteSema returns int; declared void, the lui after each call would take
    $v0 instead of retail's $v1. */
 extern int delete_semaphore_i(int) __asm__("func_00118C80");
-extern void signal_semaphore(int);
+
 extern void sceSifRemoveCmdHandler(int);
 
 /*
@@ -260,12 +257,10 @@ typedef struct {
 } SifRpcClientData;
 
 extern void cd_sema_init(void);
-extern int poll_semaphore(int);
-extern int refer_thread_status(int, void *);
+
 extern void sceSifInitRpc(int);
 extern int sceSifBindRpc(void *, unsigned int, int);
 extern void scePrintf();
-extern void signal_semaphore(int);
 
 extern int cd_ncmd_current;
 
@@ -316,9 +311,6 @@ int cd_ncmd_prechk(int arg0) {
     return 1;
 }
 
-extern int sif_call_rpc();
-
-extern void signal_semaphore(int);
 extern int cd_ncmd_recv_buffer;
 
 /*
@@ -560,14 +552,12 @@ extern u8 cd_scmd_recv_buffer_r[] __asm__("D_001325C0");
 extern u8 cd_disk_ready_start_msg[];
 extern u8 cd_disk_ready_bind_error_msg[];
 extern u8 cd_disk_ready_end_msg[];
-extern s32 poll_semaphore();
-extern void signal_semaphore();
+
 extern void cd_sema_init_r() __asm__("func_00120B28");
 extern s32 cd_scmd_sync();
 extern s32 sceSifBindRpc();
 extern void sceSifInitRpc();
 extern void sceSifWriteBackDCache();
-extern s32 sif_call_rpc();
 
 /* libcdvd disk-ready query (the sceCdDiskReady pattern): take the S-command semaphore, bind the 0x8000059A server
    once, send mode and return the server's status word. Mode 8 reports -1 on failure, every other mode 6.

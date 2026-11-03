@@ -6,6 +6,7 @@
 #include "game/render/draw.h"
 #include "game/render/vuchain.h"
 #include "data/executable.h"
+#include "asm_functions/executable.h"
 
 /*
  * tfragfunc.cpp in the original source; text 0x234380-0x2347F0.
@@ -14,10 +15,6 @@
  */
 
 extern int STUB_printf();
-
-extern void FastVecScale(void *, void *, float);
-
-extern void flush_cache(int);
 
 extern char camera_position[];
 
@@ -72,8 +69,6 @@ extern int tfrag_tex_dma_tag_slot MACRO_ADDR;
 extern int max_tfrag_texture_dma_size MACRO_ADDR;
 extern int g_gs_texture_allocation_cursor MACRO_ADDR;
 extern char str_tfrag_texture_overflow[];
-extern void ComputeTfragTextureUsage(void);
-extern int build_tfrag_texture_dma(int);
 
 /* DmaTfragTextures: the tfrag twin of DmaShrubTextures,
    which also warns "tfrag texture overflow" past 0x400000 bytes and keeps
@@ -115,7 +110,6 @@ typedef struct {
     short b;
 } TexRemap;
 
-
 extern TexChunk tfrag_gif_chunk_list[];
 extern TexRemap tfrag_tex_remap_table[];
 
@@ -154,9 +148,8 @@ extern char str_tfrag_texs[];
 extern char str_tfrag_draw[];
 extern char tfrag_dma_block[];
 
-extern void set_identity_matrix(void *);
 extern void write_vif_unpack_packet(int, void *, int);
-extern void TfragProc(void);
+
 extern void DmaTfragTextures(void);
 
 /* DrawTfrag, in DrawShrubs' shape. */

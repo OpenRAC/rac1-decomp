@@ -18,6 +18,11 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "structs/collision.h"
+#include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/hero_animation_slots.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 extern Hero g_hero;
 
 extern unsigned char hero_globals_base[];
@@ -26,19 +31,17 @@ extern unsigned char gHaveMorphORay[];
 extern int quartu_frame_count MACRO_ADDR;
 
 extern float quartu_hero_bones_28_scale, quartu_hero_bones_30_scale;
-extern void advance_hero_animation(void);
-extern void hero_update(void);
+
 extern void Hero_UpdateAimFlags(void);
 extern void HeroL15_UpdateStateTransitions(void);
 
 extern void update_hero_bone_attachment(void);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 
-extern int scale_ticks(int);
 extern float IntToFloat(int);
-extern float FastSin(float);
+
 extern int truncate_float_to_s32(float);
-extern unsigned int FastTweenColor(float, unsigned int, unsigned int);
+extern unsigned int FastTweenColor_v(float, unsigned int, unsigned int) __asm__("func_001FA8A8");
 extern void allocate_hero_voice_for_entry(int, int);
 
 /* Per-frame hero update: animation, state, voices, vehicle, scale, glow pulse and attachments. */
@@ -110,7 +113,7 @@ void update_hero_and_vehicle_mode_effects(void) {
             color = (alpha << 24) | (blue << 16) | (green << 8) | red;
         b3 = (char *)&g_hero;
         *(unsigned int *)(*(unsigned char **)(b3 + 0x2080) + 0x90) =
-            FastTweenColor(0.1f, *(unsigned int *)(*(unsigned char **)(b3 + 0x2080) + 0x90), color);
+            FastTweenColor_v(0.1f, *(unsigned int *)(*(unsigned char **)(b3 + 0x2080) + 0x90), color);
         for (i = 0; i < 3; i++) {
             b4 = (char *)&g_hero;
             Moby_GetJointWorldPos(*(void **)(b4 + 0x2080), i, b4 + 0x1D50 + i * 16);
@@ -166,14 +169,10 @@ void update_enabled_item_tint_from_hero(void) {
         }
     }
 }
-extern void update_moby_vertical_oscillation(float, float, char *, float *, float *);
-extern void matrix_mul_vec3(void *, void *, void *);
-extern void euler_to_matrix(float *, float *);
-extern void transform_vector(void *, void *, void *);
-extern void FastVecAdd(void *, void *, void *);
+
 extern float g_frame_time MACRO_ADDR;
 extern float quartu_hero_bones_0_rot;
-extern void clear_u64_value(void *);
+
 typedef int u128 __attribute__((mode(TI)));
 
 // Per-frame update of the camera-attached moby position.
@@ -201,9 +200,8 @@ void update_hero_bobbing_and_target_position(void) {
 }
 extern int quartu_game_mode MACRO_ADDR;
 
-extern void DeleteMoby(void *);
 extern void release_and_clear_hero_voice_slots(void);
-extern void clear_hero_queued_animation(void);
+
 extern void HeroQuartu_TrySetMoveState(int, int);
 
 /* Reset the help prompt state and show the default message unless the level is in a special phase. */
@@ -299,11 +297,9 @@ void update_hero_smoothing_parameters(void) {
 
 extern char quartu_coll_hit_type[];
 extern char quartu_coll_hit[];
-extern float gravity_length_xy(float *v);
+
 extern float vec_length_xy(void *);
-extern float FastCos(float);
-extern float FastSin(float);
-extern void FastVecScale(void *, void *, float);
+
 extern int coll_line(void *, void *, int, int, int);
 
 // Steers the hero's aim vectors toward the current target and snaps momentum to it when close enough.
@@ -381,24 +377,18 @@ void adjust_hero_planar_velocity_from_probes(int arg) {
 typedef int Q __attribute__((mode(TI)));
 
 extern s32 g_current_level_index MACRO_ADDR;
-void clear_u64_value(void *);
-void hero_get_collision_ray_endpoints(void *, void *, s32, f32, f32);
+
 s32 coll_line(void *, void *, s32, s32, s32);
-s32 coll_sound_class(void);
-s32 CollType(void);
+
 f32 resolve_camera_surface_height(void *, void *);
 s32 is_moby_in_class_range_500_to_540(s32);
 u8 *GetFlaggedPvarWord(s32);
-f32 FastVecDist(void *, void *);
+
 void sceVu0Normalize(void *, void *);
-f32 compute_gravity_relative_vector_inclination(void *);
-f32 fast_atan2(f32, f32);
-void FastVecSub(void *, void *, void *);
-f32 FastVecDot(void *, void *);
-void FastVecScale(void *, void *, f32);
+
 void vec_scale_to_length(void *, void *, f32);
 void compute_rotated_vector_angles(void *, void *);
-void transform_hero_polar_offset_to_world(void *, f32, f32, f32);
+
 f32 FastAbsF(f32);
 extern Hero g_hero_r __asm__("D_0013F450");
 extern struct CollisionHit quartu_coll_hit_r __asm__("D_L15_001744C0");
@@ -588,21 +578,10 @@ extern short quartu_game_mode_r __asm__("D_L15_0015F6A8");
 extern u8 gHaveBoltGrabber NOT_SDA;
 
 extern s32 fast_dec_timer(s32 *);
-extern s16 FastDecTimer(s16 *);
-extern void restore_saved_hero_moby_and_clear_vehicle_mode(void);
-extern s32 scale_ticks(s32);
-extern s32 pad_pressed_within(s32, s32, s32);
-extern struct Moby *CreateMoby(s32);
-extern void moby_build_matrix(struct Moby *);
-extern void enter_hero_vehicle_mode(s32, s32, struct Moby *);
-extern f32 gravity_z(void *);
-extern void clear_u64_value(void *);
-extern void FastVecSub(void *, void *, void *);
-extern void FastVecScale(void *, void *, f32);
-extern f32 FastVecLength(void *);
 
-extern void transform_hero_local_offset_to_world(void *, f32, f32, f32);
-extern void Hero_OnKilled(void);
+extern void restore_saved_hero_moby_and_clear_vehicle_mode(void);
+
+extern s32 pad_pressed_within(s32, s32, s32);
 
 /* Per-frame hero upkeep: tick the hero timers, spawn the respawn marker, track sinking, and set the camera follow
    target. Clone of FUN_L00_002215c8 without the case-1 camera tuning.

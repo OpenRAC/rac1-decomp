@@ -19,6 +19,8 @@
 #include "overlays/shared/pause_menu.h"
 #include "overlays/shared/sound_playback.h"
 #include "enums/hero_state.h"
+#include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern Hero g_hero;
 extern char gSkillPoints[];
 extern char gSpecialItems[];
@@ -72,44 +74,27 @@ struct ProjectileVars {
 
 extern int DialogRequest_Init(void *, void *);
 extern void initialize_moby_grounding(void *);
-extern char *CreateMoby(int);
-extern int is_point_inside_clip_volume(void *, int);
+
 extern int Npc_TryStartDialog(void *, void *);
 
 extern float vec_distance_xy(void *, void *);
-extern int scale_ticks(int);
-extern int Help_Request(int a, int b);
-extern int FastDecTimer(int *);
 
-extern float multiply_global_factor(float);
+extern int Help_Request(int a, int b);
+
 extern int truncate_float_to_s32(float);
-extern void MobyBlendAnimation(void *, int, int, int);
 
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
-extern float ProbeGroundHeight(void *, int, float);
-extern void clear_u64_value(void *);
-extern float FastAddRots(float, float);
 
 extern int memcard_Save(int, int);
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void lerp_vector(void *, void *, void *, float);
-extern float FastSubRots(float, float);
+
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
 extern float ApproachValue(float *, float, float);
 
-extern void DeleteMoby(void *);
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void MobyTransformScaledVertex(void *, int, void *);
-extern void matrix_copy_rows(void *, void *);
-extern void matrix_mul_vec3(void *, void *, void *);
-extern void moby_build_matrix(void *);
 
-extern float FastDiffRots(float, float);
-extern float FastVecLength(void *);
-extern void BuildSphericalOffset(void *, float, float, float);
-extern void FastVecSub(void *, void *, void *);
 extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets_r(float, float, void *, void *, int) __asm__("func_L00_00263950");
 
@@ -532,13 +517,7 @@ void SkidMcMarxAridiaUpdate(char *m) {
 }
 extern char gHeroPos[];
 extern char *aridia_mobys MACRO_ADDR;
-extern int is_point_inside_clip_volume(void *, int);
 
-extern int scale_ticks(int);
-
-extern float FastCos(float);
-extern float FastSin(float);
-extern void clear_u64_value(void *);
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern int queue_animation_update(int, int, void *, void *, void *, void *, int);
 extern void initialize_numeric_hud_timer_and_base_dimensions(void);
@@ -641,10 +620,9 @@ struct AnimSeq;
 extern struct Moby *aridia_mobys_r __asm__("D_L02_00160058") MACRO_ADDR;
 extern unsigned char saved_mission_state[][16];
 extern char voice_pool[];
-extern void FastVecScale(void *out, void *in, float s);
-extern void FastVecAdd(void *out, void *a, void *b);
+
 extern float vec_distance_xy(void *a, void *b);
-extern void MobySetAnimation(void *, int, int);
+
 extern int Moby_PlaySound(int, int, void *);
 
 extern void update_entity_matrix(void *, void *, void *, void *);
@@ -889,7 +867,7 @@ void update_shard_debris(struct Moby *m) {
     if (v->timer == 0)
         DeleteMoby_r(m);
 }
-extern void set_moby_color(char *, int, int, int);
+
 extern float vec_length_xy(void *);
 extern int aridia_projectile_color_r SDATA(aridia_projectile_color_r);
 extern int aridia_projectile_color_g SDATA(aridia_projectile_color_g);
@@ -927,10 +905,8 @@ typedef struct {
     unsigned char b[0x20];
 } Flags_0013D5C8;
 
-extern int is_point_inside_clip_volume(void *arg0, int arg1);
 extern int PlayBankSound(int, int, int);
 
-extern int scale_ticks(int);
 extern Entry_L02_0017A140 aridia_item_defs[];
 extern unsigned char special_items_base[];
 extern unsigned char menu_item_enabled_115[];
@@ -1228,7 +1204,7 @@ extern int random_integer_below_r(int) __asm__("func_002140B0");
 extern void rand_vec_r2(void *, float, float) __asm__("func_L00_00258DB0");
 extern void vec_scale_to_length_r(void *, void *, float) __asm__("func_L00_001FF4B0");
 extern void FastVecAdd_r2(void *, void *, void *) __asm__("func_001F9BD8");
-extern int func_001FA8A8(int, int, float);
+
 extern void *func_00219780(void *, void *, void *, int, int, int, int, int, int);
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 extern void DeleteMoby_r2(void *) __asm__("func_0020D678");

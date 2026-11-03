@@ -3,6 +3,7 @@
 #include "common.h"
 #include "include_asm.h"
 #include "data/level_05.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 
 typedef struct {
     char pad[0x2C];
@@ -41,8 +42,6 @@ none:
     return d;
 }
 INCLUDE_ASM("asm/overlays", func_L05_0028AADC);
-
-extern int test_path_segment_strict_crossing(int, void *, void *);
 
 /* Build a symmetric adjacency bitmask over a table's entries from pairwise tests. */
 void build_symmetric_adjacency_masks(int *list, int n, int idx) {

@@ -16,6 +16,9 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "structs/voice.h"
+#include "asm_functions/executable.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "game/moby/mobyfunc.h"
 
 extern char g_hero[];
 extern char item_usage[];
@@ -144,28 +147,20 @@ extern short beam_arc_bolt_params_4[] MACRO_ADDR;
 extern int beam_arc_bolt0_alpha MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
 extern char veldin1_zero_vec[] MACRO_ADDR;
-extern float FastAddRots(float, float), FastSubRots(float, float), FastDiffRots(float, float);
-extern float FastVecLength(void *), vec_length_xy(void *), FastVecDist(void *, void *);
-extern void FastVecSub(void *, void *, void *), FastVecAdd(void *, void *, void *),
-    FastVecCross(void *, void *, void *);
-extern void FastVecScale(void *, void *, float);
+
+extern float vec_length_xy(void *);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern void clear_u64_value();
+
 extern void lerp_vector(void *, void *, void *, float);
-extern float FastCos(float), FastSin(float), fast_atan2(float, float);
+
 extern float IntToFloat(int);
 extern int truncate_float_to_s32(float);
-extern int scale_ticks(int);
-extern int FastDecTimer();
+
 extern int GetFlaggedPvarWord();
-extern float randf_sym(float, float);
-extern float random_float_between(float, float);
-extern float normalize_angle(float);
-extern int rand_range(int, int), random_integer_below(int);
-extern void build_look_at_matrix(void *, void *, void *, float);
-extern void InitDirectionalHitQuery(void *, void *, int, void *, float);
-extern void record_moby_hit(void *, void *);
-extern int test_moby_linked_record_word8(void *);
+
+extern void InitDirectionalHitQuery_v(void *, void *, int, void *, float) __asm__("func_L00_0025A8C0");
+
 extern int coll_line(Vec4f *, Vec4f *, int, void *, int);
 extern void coll_sphere_mobys(void *, int, void *, void *, float);
 extern void Moby_PlaySound(int, int, void *);
@@ -334,7 +329,7 @@ void build_beam_and_arc_points(u8 *o) {
     else
         (beam_arc_outer_color) = 0x7f2020;
     clear_u64_value(&camera_direction);
-    InitDirectionalHitQuery(&hit, o, 0x210000, &camera_direction, enabled + 2.0f);
+    InitDirectionalHitQuery_v(&hit, o, 0x210000, &camera_direction, enabled + 2.0f);
     hit.kind = 5;
     hit.mode = 1;
     hit.id = ((Moby *)o)->oclass;
@@ -500,7 +495,7 @@ void build_beam_and_arc_points(u8 *o) {
         vec_scale_to_length(&target_delta, &target_delta, 1.0f);
         target_delta.f[2] = 1.0f;
         target_delta.f[3] = 5627.9248046875f;
-        InitDirectionalHitQuery(&effects.first.hit0, o, 0x210000, &target_delta, enabled + 2.0f);
+        InitDirectionalHitQuery_v(&effects.first.hit0, o, 0x210000, &target_delta, enabled + 2.0f);
         effects.first.hit0.kind = 5;
         effects.first.hit0.mode = 3;
         effects.first.hit0.id = ((Moby *)o)->oclass;
@@ -520,7 +515,7 @@ void build_beam_and_arc_points(u8 *o) {
         vec_scale_to_length(&target_delta, &target_delta, 1.0f);
         target_delta.f[2] = 1.0f;
         target_delta.f[3] = 5627.9248046875f;
-        InitDirectionalHitQuery(&effects.hit1, o, 0x210000, &target_delta, enabled + 2.0f);
+        InitDirectionalHitQuery_v(&effects.hit1, o, 0x210000, &target_delta, enabled + 2.0f);
         effects.hit1.kind = 5;
         effects.hit1.mode = 3;
         effects.hit1.id = ((Moby *)o)->oclass;
@@ -663,11 +658,7 @@ void draw_beam_and_arc_effects(char *m) {
     draw_beam_anchor_camera_facing_quads(m);
 }
 extern int GetEffectTex(int);
-extern void FastVecSub(void *, void *, void *);
-extern void FastVecCross(void *, void *, void *);
-extern float FastVecLength(void *);
-extern void FastVecScale(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
+
 extern void draw_world_quad(void *, void *, int);
 extern void VU1_addGSregister(int, long);
 extern int beam_and_arc_first_pass_texture_index_gp SDATA(beam_and_arc_first_pass_texture_index_gp);
@@ -817,13 +808,9 @@ typedef struct {
     QuadUv uv[4];
     long unk70, tex, unk80, unk88;
 } Q_2bb0b0;
-extern void FastVecSub(void *, void *, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
-extern void FastVecCross(void *, void *, void *);
-extern float randf_sym(float lo, float hi);
-extern void FastVecScale(void *, void *, float);
-extern void transform_vector(void *, void *, void *);
+
 extern V_2bb0b0 beam_anchor_quad_corners[];
 extern QuadUv beam_anchor_quad_uvs[];
 extern int beam_anchor_quad_color SDATA(beam_anchor_quad_color);
@@ -881,10 +868,7 @@ void draw_beam_anchor_camera_facing_quads(void *mv) {
 typedef struct {
     int a[4];
 } Vu __attribute__((aligned(16)));
-extern char *CreateMoby(int);
-extern void clear_u64_value(void *);
-extern void moby_anim_sphere_lerp(void *);
-extern void moby_build_matrix(void *);
+
 /* Spawn a class 0xB3 moby linked to src, copying its basis rows; returns the moby or 0. */
 char *spawn_linked_moby_from_basis(char *src) {
     Moby *m = (Moby *)CreateMoby(0xB3);
@@ -906,12 +890,6 @@ char *spawn_linked_moby_from_basis(char *src) {
     }
     return (char *)m;
 }
-extern void DeleteMoby(void *);
-extern int scale_ticks(int);
-
-extern float random_float_between(float, float);
-extern float normalize_angle(float);
-extern float FastAddRots(float, float);
 
 /* Per-frame update of a moby that follows its parent's flag and spins. */
 void update_linked_moby_scale_and_rotation(Moby *m) {
@@ -966,12 +944,10 @@ extern int walloper_effect_fade_out_countdown MACRO_ADDR;
 extern float walloper_effect_alpha_scale MACRO_ADDR;
 extern float walloper_arc_spread SDATA(walloper_arc_spread);
 extern float held_weapon_tesla_walloper_factor;
-extern float MobyGetFrameValue(void *);
+
 extern int fast_dec_timer_r(void *) __asm__("func_001F9908");
 extern float IntToFloat(int);
-extern void MobyBlendAnimation(void *, int, int, int);
 
-extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
 extern void AddDrawCallback(void *, void *);
 extern void draw_walloper_arc_and_quad_effects(int);
 
@@ -1111,11 +1087,7 @@ void draw_walloper_arc_and_quad_effects(int arg) {
     }
     draw_walloper_camera_facing_quad(arg);
 }
-extern void FastVecSub(void *, void *, void *);
-extern void FastVecCross(void *, void *, void *);
-extern float FastVecLength(void *);
-extern void FastVecScale(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
+
 extern int walloper_arc_inner_tex SDATA(walloper_arc_inner_tex);
 extern int walloper_arc_inner_color SDATA(walloper_arc_inner_color);
 extern int walloper_arc_outer_tex SDATA(walloper_arc_outer_tex);
@@ -1249,13 +1221,9 @@ void draw_walloper_arc_two_pass_quads(char *m, int a, int b, int n, float sx, fl
     }
     VU1_addGSregister(0x47, 0x5360B);
 }
-extern void FastVecScale(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
-extern void FastVecSub(void *, void *, void *);
-extern int random_integer_below(int);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecCross(void *, void *, void *);
-extern void transform_vector(void *, void *, void *);
+
 extern float walloper_glow_quad_size SDATA(walloper_glow_quad_size);
 extern float walloper_glow_forward_offset SDATA(walloper_glow_forward_offset);
 extern int walloper_glow_color SDATA(walloper_glow_color);
@@ -1330,12 +1298,9 @@ extern float morphoray_target_angle_threshold_degrees_gp SDATA(morphoray_target_
 extern int coll_hit_result[];
 
 extern float vec_distance_xy(void *, void *);
-extern float FastDiffRots(float, float);
-extern float FastVecDist(void *, void *);
 
-extern float FastArcSin(float);
 extern int GetFlaggedPvarWord(char *);
-extern void BuildSphericalOffset(void *, float, float, float);
+
 extern int coll_line(Vec4f *, Vec4f *, int, void *, int);
 
 /* Find the Morph-o-Ray target near the aim line and bend heading/pitch toward it; returns it or 0. */
@@ -2084,9 +2049,7 @@ void func_L00_002BF380_BEF58(void *, int, int, int, float, float, float, int) __
 void draw_beam_pulse_quads(void *);
 void draw_beam_origin_camera_facing_quads(void *);
 long func_001F4868_BEF58(int) __asm__("func_001F4868");
-void FastVecSub(void *, void *, void *);
-void FastVecCross(void *, void *, void *);
-float FastVecDot(void *, void *);
+
 void draw_world_quad(void *, void *, int);
 
 /* scrolls the two texture-offset accumulators and draws the 10x20 band of textured quads between the
@@ -2540,10 +2503,8 @@ float probe_moby_landing_height(Vx *a, void *b) {
     return 0.0f;
 }
 extern char gHeroPos[];
-extern float FastVecDist(void *, void *);
-extern float vec_distance_xy(void *, void *);
 
-extern float FastDiffRots(float, float);
+extern float vec_distance_xy(void *, void *);
 
 extern int coll_line_r2(void *, void *, int, void *, int) __asm__("func_L00_001EFFF0");
 
@@ -2631,12 +2592,6 @@ extern Hit *g_coll_hit_moby_r __asm__("D_L00_00173F58");
 extern CollisionHit coll_hit_result_r __asm__("D_L00_00173F40");
 extern s32 truncate_float_to_s32(f32);
 
-extern f32 FastAddRots(f32, f32);
-extern f32 FastSubRots(f32, f32);
-extern f32 FastDiffRots(f32, f32);
-extern f32 FastCos(f32);
-extern f32 FastSin(f32);
-extern f32 FastVecDist(void *, void *);
 extern s32 coll_line_r3(void *, void *, s32, void *, s32) __asm__("func_L00_001EFFF0");
 extern f32 probe_moby_landing_height_r(void *, void *) __asm__("func_L00_002BFF88");
 
@@ -2792,10 +2747,8 @@ f32 select_moby_heading_by_collision_probes(Mob *m, Vec4 *pos, f32 *tgt, f32 *ou
     }
     return best;
 }
-extern void FastVecSub(void *, void *, void *);
+
 extern float IntToFloat(int);
-extern void FastVecScale(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
 
 /* Steps a vector by n repeated additions of the normalised difference. */
 void accumulate_local_vector_steps(char *a, char *b, int n) {
@@ -2857,7 +2810,7 @@ typedef struct Blk {
     float f50; /* 0x50 */
 } Blk;
 extern void FastVecSub_r2(void *, void *, void *) __asm__("func_001F9BF0");
-extern int func_L00_001FF5B0(float, void *, void *);
+
 extern void FastVecAdd_r3(void *, void *, void *) __asm__("func_001F9BD8");
 extern void FastVecScale_r3(void *, void *, float) __asm__("func_001F9C30");
 extern float vec_length_xy_r2(void *) __asm__("func_001F9CE8");
@@ -2968,7 +2921,6 @@ int try_start_moby_hop(Mob_2C0CF8 *m, Blk *p, void *q, int flag) {
     m->bBC = 0xD;
     return 1;
 }
-extern void copy_hero_moby_field_38(void *);
 
 /* Spawn a doom bot for owner at pos with rot; returns the moby or 0. */
 char *spawn_doom_bot(int owner, void *pos, void *rot) {

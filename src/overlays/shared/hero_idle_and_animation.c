@@ -23,6 +23,9 @@
 #include "enums/level.h"
 #include "enums/hero_state.h"
 #include "structs/voice.h"
+#include "asm_functions/executable.h"
+#include "overlays/shared/hero_mapped_animations.h"
+#include "overlays/shared/hero_animation_slots.h"
 extern char cd_read_state[];
 
 extern char help_popup_state[] NOT_SDA;
@@ -120,7 +123,7 @@ void clear_help_record_high_bits(void) {
     }
 }
 extern char help_popup_state[] NOT_SDA;
-extern int scale_ticks(int);
+
 extern void HelpPopup_StepClose(void);
 /* Asks the help popup to dismiss. */
 void jet_camera_mode(void) {
@@ -173,12 +176,12 @@ extern struct Moby *level_mobys_end MACRO_ADDR;
 extern s32 ship_level_entry_active MACRO_ADDR;
 extern s32 hero_max_health MACRO_ADDR;
 extern struct HeroEase lean_state_r[] __asm__("D_L00_0017A780");
-extern void FastMemSet(void *, s32, s32);
+
 extern f32 ProbeGroundHeight_r(Vec4f *, s32, f32) __asm__("func_00214358");
-extern void update_hero_ground_contact_and_surface_slopes(void);
+
 extern void update_hero_moby(void);
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
-extern s32 scale_ticks(s32);
+
 extern s32 rand_range(s32, s32);
 
 /* Clears the hero, binds it to the first Ratchet moby (snapped to the ground, its position and yaw copied in, the
@@ -248,7 +251,7 @@ void initialize_hero(void) {
     g_hero_r.unkD20 = 0.97f;
 }
 extern unsigned char g_hero[] NOT_SDA;
-extern void clear_hero_queued_animation(void);
+
 extern void HeroEnterMoveState(int, int);
 /* Resets the hero's tuning values and reinitialises the hero. */
 void reset_hero_to_idle(void) {
@@ -271,7 +274,6 @@ typedef struct {
     char pad2[0x24];
 } Rec;
 extern Rec item_defs[] NOT_SDA;
-extern int hero_slot_item_id(int);
 
 /* Picks an id for the hero's current situation. */
 int hero_idle_sequence(int a) {
@@ -311,7 +313,6 @@ int return_hero_animation_id_unchanged(int a) {
     return a;
 }
 extern char g_hero_r2[] __asm__("D_0013F450");
-void show_health_hud(void);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00203b18.c, FUN_L00_002050c0. */
 void hero_change_health(s32 n) {
@@ -474,7 +475,6 @@ void reset_hero_easing_records(void) {
     }
 }
 extern int level_frame_counter MACRO_ADDR;
-extern int random_integer_below(int);
 
 /* Runs the hero's random-interval timer (rand_timer). */
 extern struct Hero g_hero_r3 __asm__("D_0013F450");
@@ -497,7 +497,7 @@ void update_hero_random_timer(void) {
 }
 typedef u32 u128_05CC0 __attribute__((mode(TI), aligned(16)));
 extern struct Hero g_hero_r3 __asm__("D_0013F450");
-void DetachManipulator(s32, void *);
+
 void func_0020D960_05CC0(s32, s32, void *) __asm__("func_0020D960");
 void update_hero_random_timer(void);
 typedef u32 Quad_56a8 __attribute__((mode(TI), aligned(16)));
@@ -579,9 +579,7 @@ struct HeroManip4_5FF0 {
 extern float ApproachValue(float *, float, float);
 extern f32 IntToFloat(s32);
 extern s32 truncate_float_to_s32(f32);
-extern f32 FastSin(f32);
-extern s32 FastDecTimer(void *);
-extern void FastVecScale(void *, void *, float);
+
 extern unsigned char gCheats[] MACRO_ADDR;
 extern int sound_volume MACRO_ADDR;
 extern short D_L00_0015F7D8;
@@ -727,9 +725,7 @@ void update_hero_bolt_exclamation_hud(void) {
 }
 extern int request_grouped_voice(int, int, int, int, int);
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern float FastCos(float);
-extern float FastSin(float);
-extern float ProbeGroundHeight(void *, int, float);
+
 extern void spawn_texture_indexed_rotated_particle(float *, float, int);
 extern int g_current_level_index_m __asm__("D_0015EE84") MACRO_ADDR;
 
@@ -758,7 +754,6 @@ void emit_hero_animation_voice_and_ground_particle(int a, int b, int c) {
     }
 }
 extern void emit_hero_animation_voice_and_ground_particle(int, int, int);
-extern int test_hero_animation_frame_window(float t);
 
 /* fires the pickup/sound hooks for the player's current gadget state */
 void dispatch_hero_animation_timed_events(void) {
@@ -804,12 +799,6 @@ void dispatch_hero_animation_timed_events(void) {
             break;
     }
 }
-extern void MobyTransformScaledVertex(void *, int, void *);
-extern void matrix_copy_rows(void *, void *);
-
-extern void MobyBlendAnimation(void *, int, int, int);
-extern void MobyAnimAdvance(void *);
-extern void moby_build_matrix(void *);
 
 /* Keeps the moby at hero+0xA88 in sync with the hero's own moby. */
 void update_hero_bone_attachment(void) {
@@ -832,8 +821,7 @@ void update_hero_bone_attachment(void) {
         *(unsigned short *)(m + 0x34) = *(unsigned short *)(m + 0x34) | 0x41;
     }
 }
-extern void advance_hero_animation(void);
-extern void hero_update(void);
+
 extern void apply_hero_selected_flags_and_state_transitions(void);
 extern void check_ledge_grab(void);
 
@@ -845,15 +833,13 @@ extern void update_hero_scalar_pulse(void);
 extern void apply_hero_and_item_scale_sequence(void);
 extern void update_hero_glow_and_extra_manipulators(void);
 extern void update_hero_bone_attachment(void);
-extern void *func_0020D348(int);
+
 extern void enqueue_hero_glow_draw_callback_once(void);
-void matrix_mul_vec3(void *, void *, void *);
+
 extern float ApproachValue(float *p, float target, float maxstep);
-extern float FastAddRots(float, float);
-extern int FastDecTimer(void *);
-extern int FastTweenColor(int, int, float);
+
 void func_001F9BC0_c(void *) __asm__("func_001F9BC0");
-void euler_to_matrix(void *, void *);
+
 extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
 extern int func_0022ED80(void *, int, void *);
 
@@ -1202,7 +1188,7 @@ typedef struct {
 extern HelpRecord help_records[];
 extern unsigned short usage_stats_entry21_count NOT_SDA;
 extern unsigned char item_available[] NOT_SDA;
-extern int hero_is_in_special_state(void);
+
 /* Periodic help-message check: tick-based hints for the pack and the unused-slot count. The two message tables sit
    behind separate symbols (help_records and usage_stats_entry21_count) as in retail. */
 void check_hero_item_reward_conditions(void) {
@@ -1232,7 +1218,6 @@ extern unsigned char draw_map51[4] MACRO_ADDR;
 extern unsigned char gCheats[] MACRO_ADDR;
 extern unsigned char selector_available[] MACRO_ADDR;
 extern unsigned char cheat_input_sequences[][16];
-extern void ShowBanner(int arg0, int arg1);
 
 // Records a pressed-input code in a 16-entry ring buffer and toggles any cheat whose sequence now ends the buffer.
 void scan_hero_input_sequences(void) {
@@ -1331,12 +1316,10 @@ void scan_hero_input_sequences(void) {
 }
 extern void FadeToBlack(int);
 extern void update_hero_in_vehicle_mode(void);
-extern void advance_hero_animation(void);
-extern void hero_update(void);
+
 extern void apply_hero_selected_flags_and_state_transitions(void);
 extern void check_ledge_grab(void);
-extern void find_grind_rail(void);
-extern void update_hero_offset_rail_candidate(void);
+
 extern void hero_update_transitions(void);
 
 extern void update_hero_easing_targets_and_point_effects(void);
@@ -1349,7 +1332,6 @@ extern void update_hero_glow_and_extra_manipulators(void);
 
 extern void update_hero_easing_records(void);
 extern void update_hero_world_matrices(int);
-extern void update_hero_equipped_items(void);
 
 extern void update_hero_scalar_pulse(void);
 extern void apply_hero_and_item_scale_sequence(void);
@@ -1441,9 +1423,6 @@ typedef struct {
 } Vx __attribute__((aligned(16)));
 extern char level_moby_lights_field_310[] NOT_SDA;
 
-extern void func_L00_00251388(void *, void *);
-extern void get_moby_light_color(void *, void *);
-
 /* Tint the effect from the moby's colour bytes, then set the four shape floats from its vector sum. */
 void update_item_tint_from_hero(void *a, char *m) {
     Vx v;
@@ -1465,12 +1444,11 @@ extern unsigned char gCheats[] MACRO_ADDR;
 extern int sound_volume MACRO_ADDR;
 
 extern float IntToFloat(int);
-extern float FastSin(float);
+
 extern int truncate_float_to_s32(float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern float FastAbsF(float);
 extern void HeroDrawQueue_Add(void *vec, int a, float f0, float f1);
-extern void AttachManipulator(char *, int, void *);
 
 // Sets up a vendor moby's draw color from a time-driven wave and spawns its glow particle.
 void update_moby_pulsing_glow_effects(char *m) {
@@ -1532,8 +1510,7 @@ extern struct Hero g_hero_r5 __asm__("D_0013F450");
 extern s32 g_current_level_index MACRO_ADDR;
 void copy_hero_color_to_item_mobys(void);
 void update_item_tint_from_hero(void *a, char *m);
-extern void set_moby_color(void *, int, int, int);
-extern void get_moby_color(void *, int *, int *, int *);
+
 extern u8 gold_weapon_purchased[];
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui/help/00203b18.c, FUN_L00_002076a8. */
@@ -1594,11 +1571,7 @@ void update_hero_color_and_item_tint(void) {
 extern struct Hero D_0013F450_07EC0 __asm__("D_0013F450");
 extern float g_frame_time MACRO_ADDR;
 extern char hero_bob_attach_euler[];
-void update_moby_vertical_oscillation(char *, float *, float *, float, float);
-void matrix_mul_vec3(void *, void *, void *);
-void euler_to_matrix(void *, void *);
-void transform_vector(void *, void *, void *);
-void FastVecAdd(void *, void *, void *);
+void update_moby_vertical_oscillation_v(char *, float *, float *, float, float) __asm__("func_L00_00263B78");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00203b18.c, FUN_L00_002078a8. */
 void apply_hero_vertical_oscillation(void) {
@@ -1606,10 +1579,10 @@ void apply_hero_vertical_oscillation(void) {
     Vec4 v;
     float m[16] __attribute__((aligned(16)));
     if (P->state.current == HERO_STATE_SINK) {
-        update_moby_vertical_oscillation((char *)P->moby, &P->unk6A8, &P->unk6AC, 0.3f, g_frame_time * 6.981317f);
+        update_moby_vertical_oscillation_v((char *)P->moby, &P->unk6A8, &P->unk6AC, 0.3f, g_frame_time * 6.981317f);
     }
     if (P->state.current == 0x6B && P->hoverboard_airborne == 0) {
-        update_moby_vertical_oscillation((char *)P->moby, &P->unk6A8, &P->unk6AC, 1.1f, g_frame_time * 5.2359877f);
+        update_moby_vertical_oscillation_v((char *)P->moby, &P->unk6A8, &P->unk6AC, 1.1f, g_frame_time * 5.2359877f);
         if (P->hoverboard_moby) {
             char *s = (char *)P->moby;
             qcopy(P->hoverboard_moby + 0x10, s + 0x10);
@@ -1624,7 +1597,7 @@ void apply_hero_vertical_oscillation(void) {
 }
 extern unsigned char g_hero[] NOT_SDA;
 extern float g_frame_time MACRO_ADDR;
-extern void update_moby_rotation_oscillation(int, char *, char *, float, float, float);
+
 /* Steps the hero's two angle fields toward their targets while in state 0x7F. */
 void apply_hero_rotation_oscillation(void) {
     Hero *g = (Hero *)g_hero;
@@ -1634,10 +1607,6 @@ void apply_hero_rotation_oscillation(void) {
     }
 }
 extern float hero_scale_sequence_table[];
-extern void FastVecScale(void *, void *, float);
-extern void FastVecSub(void *, void *, void *);
-extern void FastVecAdd(void *, void *, void *);
-extern void gravity_set_z(float *dst, float *src, float z);
 
 /* Advance the table-driven shake scale and apply it to the camera matrices and the tracked mobys. */
 void apply_hero_and_item_scale_sequence(void) {
@@ -1988,14 +1957,12 @@ typedef struct {
     int a[4];
 } Vq4 __attribute__((aligned(16)));
 extern unsigned char draw_map51_m[4] __asm__("D_0015EEB4") MACRO_ADDR;
-extern void HeroSetObjectFlags(void);
-extern void HeroClearObjectFlags(void);
+
 extern void apply_hero_vertical_oscillation(void);
 extern void apply_hero_rotation_oscillation(void);
-extern void copy_memory_by_alignment(int, void *, unsigned short);
-extern void offset_hero_position_against_gravity(float *dst, float *src, float h);
+
 extern void set_moby_local_table_entry_r(void *, int, float, float, void *) __asm__("func_L00_0024FF10");
-extern int hero_is_in_special_state(void);
+
 // Syncs the hero moby with the hero state: pose, position, and the blend of its animation
 void update_hero_moby(void) {
     struct Hero *g0 = (struct Hero *)((char *)hero_globals_base + 0xE1D);
@@ -2048,9 +2015,7 @@ void update_hero_moby(void) {
         }
     }
 }
-extern void set_hero_moby_flag_bit0(void);
-extern void clear_hero_moby_flag_bit0(void);
-extern void offset_hero_position_against_gravity(float *, float *, float);
+
 extern void set_moby_local_table_entry(void *, int, void *, float, float);
 
 /* positions the help-screen moby and re-aims it twice */
@@ -2086,18 +2051,14 @@ void update_hero_vehicle_moby(void) {
     }
 }
 
-
 extern char hero_globals_base_probe_091D8[] __asm__("D_0013E633");
 extern struct Hero D_0013F450_091D8 __asm__("D_0013F450");
 extern Vec4 hero_height_probe_dir;
 extern Vec4f hero_height_probe_offsets[];
 extern CollisionHit coll_hit_result;
-f32 FastSubRots(f32, f32);
-f32 FastAddRots(f32, f32);
+
 void func_L00_00251388_091D8(Moby *, Vec4 *) __asm__("func_L00_00251388");
-f32 fast_atan2(f32, f32);
-f32 FastCos(f32);
-f32 FastSin(f32);
+
 void func_001F9C30_091D8(Vec4 *, Moby *, f32) __asm__("func_001F9C30");
 void vec_scale_to_length(Vec4 *, Vec4 *, f32);
 void func_001F9BD8_091D8(Vec4 *, Vec4 *, Vec4 *) __asm__("func_001F9BD8");
@@ -2296,7 +2257,6 @@ void rotate_hero_about_local_pivot(float *inf, float x, float y, float z) {
 }
 typedef float V[4] __attribute__((aligned(16)));
 
-extern void clear_u64_value(float *);
 extern void rotate_hero_about_local_pivot(float *, float, float, float);
 
 /* Builds a {0,0,0.6,0} param vector and forwards it (plus the caller's
@@ -2322,8 +2282,7 @@ void update_hero_world_matrices(int a) {
     t = hero_world_matrix_joints;
     compute_selected_world_matrices(a, 9, &t, hero_globals_base + 0x18DD);
 }
-extern unsigned long pack_vector_s16(int, float);
-extern void func_L00_00255B90(int);
+
 typedef struct {
     unsigned short unk0, unk2, unk4, size, scale_offset, scale_count, translation_offset, translation_count;
     unsigned long root_rotation;
@@ -2398,7 +2357,7 @@ void pack_pose(int *joints, PackedPose *pose, unsigned char *model, int padding,
     pose->unk4 = 0;
     pose->unk0 = 0;
 }
-extern float random_float_between(float, float);
+
 extern unsigned char *spawn_moving_resizing_height_snapped_alpha_fade_particle(void *pos, int b, int color, float f,
                                                                                float g);
 
@@ -2419,8 +2378,7 @@ int emit_hero_periodic_surface_effect(char *a, int b) {
         *cnt = random_integer_below((int)a);
     }
 }
-extern float FastAddRots(float, float);
-extern float FastSubRots(float, float);
+
 extern void spawn_splash(void *, void *, void *, float, float);
 
 // Emits a pair of sparks from the player's position each time the counter passes its limit. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_00203b18.c, FUN_L00_00209638.
@@ -2462,7 +2420,7 @@ void fast_sin_cf(int seed, int limit) {
         }
     }
 }
-extern float random_angle_radians(void);
+
 extern int rand_range(int, int);
 
 /* Every lim calls of the counter, sprays a dust particle at the player's position with a random velocity and resets the counter. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/ui_help_00203b18.c, FUN_L00_00209848. */
@@ -2540,12 +2498,9 @@ void emit_hero_randomized_motion_effects(int n, int mode) {
 }
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 extern struct Hero D_0013F450_0A320 __asm__("D_0013F450");
-f32 FastCos(f32);
-f32 FastSin(f32);
+
 extern f32 g_frame_time MACRO_ADDR;
-extern f32 random_float_between(f32 a, f32 b);
-extern f32 random_angle_radians(void);
-extern s32 random_integer_below(s32 n);
+
 extern s32 rand_range(s32, s32);
 extern void spawn_burst_moby(Vec4 *, f32);
 extern void spawn_moving_resizing_height_snapped_alpha_fade_particle_r(Vec4 *, f32 *, s32, f32,
@@ -2595,10 +2550,9 @@ void emit_hero_surface_effect_burst(s32 puffs, s32 debris, s32 flash) {
 typedef struct {
     float f[4];
 } __attribute__((aligned(16))) V4;
-extern int FastDecTimer(void *);
+
 extern float randf_sym(float lo, float hi);
 extern void spawn_color_decaying_effect_particle(char *pos, char *vel, int flag);
-extern void BuildSphericalOffset(void *, float, float, float);
 
 extern float g_frame_time_sq MACRO_ADDR;
 
@@ -2663,7 +2617,7 @@ void Hero_SetTiltSpringParams(float a, float b) {
 }
 /* From Lombyte's project (GPL-3.0), FUN_L00_0020a240 (PR #66), adapted to PAL. */
 extern char D_00173F60_alias[] __asm__("D_L00_00173F60");
-extern void transform_hero_polar_offset_to_world(void *, float, float, float);
+
 extern int coll_line(void *, void *, int, int, int);
 extern float vec_distance_xy(void *, void *);
 
@@ -2687,7 +2641,7 @@ extern void *g_coll_hit_moby;
 extern V collision_hit_point;
 extern int probe_hero_forward_collision(int, float, float);
 extern int is_moby_in_class_range_500_to_540(void *);
-extern float FastVecDist(void *, void *);
+
 // sets up the camera lag parameters for a zoom and records that it is active
 void update_hero_collision_ease_target(void) {
     struct Hero *g = (struct Hero *)((char *)hero_globals_base + 0xE1D);
@@ -2907,10 +2861,9 @@ void update_hero_idle_random_rotation_targets(void) {
 extern int GetFlaggedPvarWord(char *);
 extern float vec_distance_xy(void *, void *);
 
-extern float FastDiffRots(float, float);
 extern int coll_line(void *, void *, int, int, int);
 extern char *active_mobies[];
-extern void transform_hero_local_offset_to_world(float *, float, float, float);
+
 // picks the best lock-on target for the hero's aim and tunes the camera toward it
 void update_hero_target_tracking(void) {
     struct Hero *g1 = (struct Hero *)((char *)hero_globals_base + 0xE1D);
@@ -3110,7 +3063,7 @@ typedef unsigned int u128_20b5b8 __attribute__((mode(TI)));
 extern u8 D_0013F450_20b5b8[] __asm__("D_0013F450");
 extern f32 g_frame_time_r2 __asm__("D_0015EE6C") MACRO_ADDR;
 extern Vec4 D_L00_00173F80[];
-extern f32 func_L00_002342F8(void *);
+
 extern s32 scale_ticks_r2(s32) __asm__("func_001F9850");
 extern s32 probe_hero_ledge_edge_r(void *, void *) __asm__("func_L00_0020CDF0");
 extern s32 probe_hero_forward_collision_r(s32, f32, f32) __asm__("func_L00_0020A8B8");
@@ -3229,7 +3182,7 @@ void probe_hero_airborne_wall_contact(void) {
         h->wall_jump_window = scale_ticks_r2(6);
     }
 }
-extern void exit_hero_vehicle_mode(void);
+
 /* Calls exit_hero_vehicle_mode when the hero is in vehicle mode 3. */
 void exit_hero_vehicle_mode_if_mode_three(void) {
     if (*(unsigned char *)(g_hero + 0x20A4) == 3) {
@@ -3239,7 +3192,6 @@ void exit_hero_vehicle_mode_if_mode_three(void) {
 extern int coll_sphere(float, void *, int, void *);
 
 extern void exit_hero_vehicle_mode_if_mode_three(void);
-extern void Hero_OnKilled(void);
 
 /* Per-frame update of the state flags for the current action, then the follow-up action it requests. */
 void apply_hero_selected_flags_and_state_transitions(void) {
@@ -3440,7 +3392,7 @@ extern float func_001F9CE8(void *);
 extern float fast_atan2_r3(float, float) __asm__("func_L00_001FF860");
 extern Obj *GetFlaggedPvarWord_r(char *) __asm__("func_L00_0025D390");
 extern Obj *moby_get_ride_transform(char *);
-extern int func_L00_001F1D20(float, float, void *, int, int);
+
 extern float FastAddRots_r2(float, float) __asm__("func_001FA748");
 extern float FastDiffRots_r2(float, float) __asm__("func_001FA850");
 

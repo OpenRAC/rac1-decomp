@@ -8,10 +8,11 @@
 #include "asm_functions/shared_levels.h"
 #include "data/level_12.h"
 #include "game/math/fastfunc.h"
+#include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
-extern f32 FastCos(f32);
-extern f32 FastSin(f32);
+
 extern s32 move_w(void *, void *, void *, void *, f32);
 
 /* steers the moby toward a point 100 units ahead along its heading.
@@ -25,10 +26,6 @@ s32 move_moby_along_heading(struct Moby *m, void *ctl) {
     ahead.f[1] += FastSin(m->rot.z) * 100.0f;
     return move_w(m, ctl, &ahead, &out, 1.0f);
 }
-
-extern float FastVecDist(void *, void *);
-
-extern float FastDiffRots(float, float);
 
 /* tests whether a point lies within height, distance and heading limits of a moby */
 int test_point_within_moby_limits(char *a, float *b, float x, float y, float z) {
@@ -47,12 +44,6 @@ int test_point_within_moby_limits(char *a, float *b, float x, float y, float z) 
     }
     return 1;
 }
-extern void MobyTransformScaledVertex(void *, int, void *);
-extern void MobyAnimAdvance(void *);
-extern void moby_build_matrix(void *);
-extern void matrix_copy_rows(void *, void *);
-
-extern void moby_anim_sphere_lerp(void *);
 
 /* Attach child to a bone of parent: copy its position and basis, and mirror the parent's draw flag. */
 void update_moby_bone_attachment(unsigned char *parent, unsigned char *child, int mode) {

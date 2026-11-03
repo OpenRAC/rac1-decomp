@@ -18,6 +18,9 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/moby_class.h"
 #include "enums/level.h"
+#include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_animation_slots.h"
 extern char gHeroPos[];
 extern char gSpecialItems[];
 extern int level_moby_killed[];
@@ -93,17 +96,13 @@ extern float quartu_fog_near_distance MACRO_ADDR;
 extern float quartu_fog_far_distance MACRO_ADDR;
 extern float quartu_fog_near_intensity MACRO_ADDR;
 extern float quartu_fog_far_intensity MACRO_ADDR;
-extern int is_point_inside_clip_volume(void *, int);
 
 extern void reset_electric_water_switch(char *);
-extern float multiply_global_factor(float);
-extern int truncate_float_to_s32(float);
-extern int scale_ticks(int);
-extern int hero_is_near_ground(void);
-extern int FastDecTimer(void *);
-extern void set_moby_color(void *, int, int, int);
 
-extern float FastVecDist(void *, void *);
+extern int truncate_float_to_s32(float);
+
+extern int hero_is_near_ground(void);
+
 extern int allocate_colored_effect_slot(void *, float, float, float, float, float);
 extern void initialize_electric_water_bolt_effect(char *);
 extern void update_electric_water_bolt_effect(Moby *);
@@ -112,17 +111,9 @@ extern void draw_electric_water_countdown(char *);
 extern void AddDrawCallback(void *, void *);
 extern int Sound_PlayClassSound(int, int, void *, int);
 
-extern float random_angle_radians(void);
-extern void BuildSphericalOffset(void *, float, float, float);
-
-extern float FastCos(float);
-extern float FastSin(float);
-extern void vec_set_length_xy(void *, void *, float);
-extern void record_moby_hit(void *, void *);
 extern float vec_distance_xy(void *, void *);
 extern int Sound_IsPlaying(void *, int);
 extern int test_linked_moby_turn_trigger(void *);
-extern int hero_is_in_special_state(void);
 
 #define MOBY_2D7C00(i) ((unsigned char *)(((i) << 8) + (int)D_L15_00160058))
 #define MOBYP_2D7C00(i) (D_L15_00160058 + ((i) << 8))
@@ -491,9 +482,6 @@ void electric_water_update(unsigned char *m) {
 }
 extern void DrawUIFrame(int, int, int, int, int);
 extern float IntToFloat(int);
-extern float FastSin(float);
-extern int FastTweenColor(int, int, float);
-extern int scale_ticks(int);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 
@@ -560,10 +548,8 @@ extern float electric_water_bolt_points_r[][4] __asm__("D_L15_001D3A20");
 extern int electric_water_bolt_wave_offsets_r[] __asm__("D_L15_001D3CA0");
 extern float electric_water_mirror_bolt_side_offsets_r[][4] __asm__("D_L15_001D3CF0");
 extern int electric_water_mirror_bolt_height_offsets_r[] __asm__("D_L15_001D3E30");
-extern void FastVecSub(void *, void *, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
-extern void clear_u64_value(void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002d6810.c, FUN_L15_002d79e8. */
 void initialize_electric_water_bolt_effect(char *m) {
@@ -618,23 +604,9 @@ typedef struct {
     V_2d8fa0 c;
 } Data_2d8fa0;
 
-extern float FastAddRots(float, float);
-extern float FastSubRots(float, float);
-extern float FastVecDist(void *, void *);
-extern void FastVecSub(void *, void *, void *);
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecCross(void *, void *, void *);
-extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
-extern void FastVecScale(void *, void *, float);
 
-extern float random_angle_radians(void);
-extern void BuildSphericalOffset(void *, float, float, float);
 extern void lerp_vector(void *, void *, void *, float);
-extern float FastVecLength(void *);
-extern void FastVecAdd(void *, void *, void *);
-
-extern float FastCos(float);
-extern int FastDecTimer(void *);
 
 extern void func_L00_00272F00(void *, int, float, float, int, int, int, void *, float);
 extern char hero_globals_base[];
@@ -996,14 +968,14 @@ void reset_electric_water_switch(char *moby) {
 }
 
 extern float g_frame_time MACRO_ADDR;
-extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
+
 extern int coll_line(void *, void *, int, void *, void *);
 extern int coll_sphere(void *, int, void *, float);
 extern int fast_dec_timer(void *);
 extern void MobySphereHitDirectional(void *, float, void *, int, float, float, int, int, int);
-extern void SpawnExplosionFx(void *, void *, float, float, int);
+extern void SpawnExplosionFx_v(void *, void *, float, float, int) __asm__("func_L00_00260108");
 extern void Moby_PlaySound(int, int, void *);
-extern void DeleteMoby(void *);
+
 extern void spawn_moby_point_offset_particle(void *, float, int, float);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/gameplay/entities/002d6810.c, FUN_L15_002e4380. */
@@ -1028,7 +1000,7 @@ void update_spinning_projectile(unsigned char *m) {
         if (hit != 0 && (int)hit != *(int *)&((struct SpinningProjectileVars *)d)->last_hit) {
             if (*(short *)(hit + 0xA6) != 0x4E)
                 MobySphereHitDirectional(m, 0.5f, m + 0x10, 1, 2.0f, 0.0f, 0, 1, 0);
-            SpawnExplosionFx(m, m + 0x10, 0.5f, 13.0f, -1);
+            SpawnExplosionFx_v(m, m + 0x10, 0.5f, 13.0f, -1);
             Moby_PlaySound(0, 0, m);
             DeleteMoby(m);
             return;
@@ -1038,10 +1010,9 @@ void update_spinning_projectile(unsigned char *m) {
     if (quartu_frame_count % 3 == 0)
         spawn_moby_point_offset_particle(m, 30000.0f, 0, 0.1f);
 }
-extern char *CreateMoby(int);
-extern void FastVecScale(void *, void *, float);
+
 extern float vec_length_xy(void *);
-extern void moby_build_matrix(void *);
+
 extern char *spawn_source_attached_fading_effect_particle(char *src, int col, int w, int v, float x);
 
 // Spawns a moby of class 0x3A6 aimed along a direction, copying position and flags from the caller.
@@ -1069,13 +1040,11 @@ char *spawn_class_3a6_moby(char *src, float *v, char *pos) {
     }
     return m;
 }
-extern float FastVecLength(void *a);
-extern void matrix_from_basis_rows(void *, void *);
-extern void transform_vector(void *, void *, void *);
+
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern int get_first_moby_in_group(int *, int, int, int);
 extern int get_next_moby_in_group(int *, int, int, int);
-extern void set_moby_color(void *, int, int, int);
+
 extern void set_moby_list_state(int list, int state);
 extern char quartu_collected_flags_base[];
 extern int g_current_level_index MACRO_ADDR;
@@ -1236,7 +1205,7 @@ void underwater_ring_update(unsigned char *moby) {
         }
     }
 }
-extern void set_moby_color(void *, int, int, int);
+
 extern void AddDrawCallback(void *, void *);
 extern void draw_moby_radial_ripple_mesh_buffers(void);
 
@@ -1321,11 +1290,8 @@ extern Hero g_hero_r __asm__("D_0013F450");
 extern PadState D_0013CA40;
 extern void try_set_help_message(int, int);
 
-extern void MobySetAnimation(void *, int, int);
-extern float ProbeGroundHeight(void *, int, float);
-
 extern void Hero_ResetToPosition(void *, void *, int, int);
-extern void enter_hero_vehicle_mode(int, int, char *);
+
 extern void MusicRequestTrack(int, int);
 extern Moby *quartu_moby_array_m __asm__("D_L15_00160058") MACRO_ADDR;
 extern int quartu_help_message_selector MACRO_ADDR;

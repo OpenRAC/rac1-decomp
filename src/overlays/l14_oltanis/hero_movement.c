@@ -30,6 +30,8 @@
 #include "enums/hero_state.h"
 #include "structs/voice.h"
 #include "structs/hit_message.h"
+#include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern int g_controller_state_no_direction;
 extern int pad_held;
 
@@ -127,13 +129,8 @@ extern s32 hero_hit_count MACRO_ADDR;
 extern f32 g_frame_time MACRO_ADDR;
 extern u8 hero_velocity[];
 void release_and_clear_hero_voice_slots(void);
-void FastVecSub(void *, void *, void *);
-f32 FastAddRots(f32, f32);
-f32 FastCos(f32);
-f32 FastSin(f32);
-void FastVecAdd(void *, void *, void *);
+
 void Hero_TryMoveStateL14(s32, s32);
-void hero_knockback(void *, s32, f32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l14/ui_help_0021dd30.c, FUN_L14_00222aa8. */
 s32 process_hero_hit_reaction(s32 arg) {
@@ -313,83 +310,44 @@ extern float oltanis_hero_spline_tilt[];
 extern HeroAttackRecord oltanis_attack_records[];
 extern HeroSpeedBands oltanis_hero_speed_bands;
 extern float oltanis_hero_ledge_shimmy_frame_speeds[];
-extern void build_scaled_hero_move_impulse(float, float);
 
-extern void stick_target(float, int);
-extern void matrix_mul_vec3(void *, void *, void *);
-extern void turn_to(int, float, float, float);
 extern int fast_dec_timer(int *);
-extern int scale_ticks(int);
 
-extern void set_hero_animation(int, int, float);
 extern int hero_get_gadget_anim_id(int);
 extern float adjust_hero_animation_speed_for_target_frame(float, float, float, float);
 
-extern void clear_u64_value(void *);
-
-extern void HeroMoveDownAlongNormal(float *, float *, float);
-
-extern unsigned char *CreateMoby(int);
-extern void moby_build_matrix(void *);
 extern int Moby_PlaySound(int, int, int);
 extern int truncate_float_to_s32(float);
 extern float vec_length_xy(void *);
-extern int clamp_vec_length_xy(float, void *, void *);
 
 extern float SpringAngle(void *, float, void *, int, float, float, float);
-extern float FastSubRots(float, float);
+
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void FastVecAdd(void *, void *, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
 
-extern float FastAddRots(float, float);
-extern float FastVecLength(void *);
 extern float ApproachValue(float *, float, float);
-extern float FastCos(float);
+
 extern void Hero_SetTiltSpringParams(float, float);
-extern float FastSin(float);
-extern void FastVecSub(void *, void *, void *);
+
 extern void ClampVectorLength(void *, float);
 
-extern float FastVecDist(void *, void *);
-extern int solve_quadratic_equation(float *, float *, float, float, float);
-extern float step_angle_toward_target(float *, int, float, float);
 extern float vec_distance_xy(void *, void *);
-extern void FastVecScale(void *, void *, float);
-extern float FastDiffRots(float, float);
-extern void euler_to_matrix(void *, void *);
-extern void matrix_from_basis_rows(void *, void *);
-extern void transform_vector(void *, void *, void *);
-extern float gravity_z(float *);
+
 extern float Spring(float *, float *, float, float, float, float);
 
-extern void InitDirectionalHitQuery(void *, void *, int, float, void *);
 extern int coll_sphere_mobys(float, void *, int, void *, void *);
 extern void update_hero_target_heading(float, float, float);
 
-extern int test_hero_animation_frame_window(float);
-
-extern void initialize_moby_transform_history(int, void *);
-extern void create_moby_transform_history_entry(void *, int, int);
-
-extern float randf_sym(float, float);
 extern void spawn_color_decaying_effect_particle(char *, char *, int);
-extern int find_nearest_path_point(void *, void *, void *, int *, float *, int, float, float, float);
-extern float multiply_global_factor(float);
+
 extern int offset_path_index(void *, int, int, int);
 
-extern void vec_set_length_xy(void *, void *, float);
-
-extern int hero_slot_item_id(int);
 extern void allocate_hero_voice_for_entry(int, int);
 
-extern void HeroOffsetAlongViewZ(float *, float *, float);
 extern int coll_line(void *, void *, int, int, int);
-extern void transform_hero_local_offset_to_world(float *, float, float, float);
-extern int is_moby_in_class_range_500_to_540(int);
-extern void PostHitMessage(void *, int, int, void *, void *, float);
 
-extern float FastVecDot(void *, void *);
+extern int is_moby_in_class_range_500_to_540(int);
 
 extern int Spline_AdvanceByDistance(void *, void *, int *, float *, float, int);
 

@@ -164,9 +164,7 @@ extern float IntToFloat(int);
 
 extern void AddDrawCallback(void (*)(void), void *);
 extern float vec_distance_xy(void *, void *);
-extern void matrix_mul_vec3(void *, void *, void *);
-extern void FastVecAdd(void *, void *, void *);
-extern float FastVecDist(void *, void *);
+
 extern int try_set_help_message(int, int);
 
 extern void render_environment_mapped_object(void);

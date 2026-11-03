@@ -11,6 +11,10 @@
 #include "data/level_13.h"
 #include "game/moby/mobyutil.h"
 #include "enums/moby_class.h"
+#include "asm_functions/executable.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "game/moby/mobyfunc.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 extern Hero g_hero;
 extern char level_render_state[];
 extern char gSkillPoints[];
@@ -81,7 +85,7 @@ extern unsigned char D_L13_0015FD08[] MACRO_ADDR;
 extern unsigned char D_001414F5[] NOT_SDA;
 
 extern void StartCutscene_r(int) __asm__("func_L00_00299B68");
-extern int func_00215570(void *arg0, int arg1);
+
 extern void DeleteMoby_r(void *) __asm__("func_0020D678");
 extern void func_L00_00217718(void *, void *, int, int);
 extern void func_L00_002664B0(int, int);
@@ -252,9 +256,7 @@ void update_gemlik_scene_controller(Moby *moby) {
 
 extern int gemlik_moby_array_start_m __asm__("D_L13_00160058") MACRO_ADDR;
 extern float frame_scale MACRO_ADDR;
-extern float FastVecDist(void *, void *);
-extern void DeleteMoby(void *);
-extern int find_nearest_path_point(void *, void *, float *, int *, float *, int, float, float, float);
+
 extern int compute_advanced_moby_path_position(void *, void *, void *, int, int, float);
 
 /* Follows its target moby along a path: snaps to the nearest path point, then walks the path segments. */
@@ -324,7 +326,6 @@ typedef struct {
     int target;
 } L13Action;
 extern L13Action gemlik_cutscene_action;
-extern void cutscene_set_camera_target(int);
 
 // Initializes the moby and invokes its selected level action.
 void update_cutscene_target_effects(unsigned char *moby) {
@@ -341,7 +342,6 @@ void update_cutscene_target_effects(unsigned char *moby) {
     }
 }
 extern int gemlik_moby_array_start MACRO_ADDR;
-void DeleteMoby(void *obj);
 
 /* Records the classes of the tracked mobys, then removes this moby once too few of them are left.
    Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l13/gameplay/vendor/003058a8.c, FUN_L13_0030be60. */
@@ -386,8 +386,6 @@ void remove_moby_when_tracked_count_below_threshold(struct Moby *m) {
             DeleteMoby(m);
     }
 }
-extern char *CreateMoby(int);
-extern void moby_build_matrix(void *);
 
 /* Spawns a class 0x660 moby at position, scaled and owned by owner. */
 char *spawn_scaled_owned_moby(char *owner, void *position, float scale) {
@@ -410,9 +408,8 @@ char *spawn_scaled_owned_moby(char *owner, void *position, float scale) {
     }
     return moby;
 }
-extern void DeleteMoby(void *);
+
 extern char *MobyGetHitMessage(void *, int, int);
-extern void record_moby_hit(void *, void *);
 
 /* updates the moby: deletes it when its owner is gone, else copies the owner's effect data and marks it */
 void forward_moby_hits_to_owner(char *moby) {
@@ -439,8 +436,6 @@ void forward_moby_hits_to_owner(char *moby) {
     }
     ((unsigned char *)moby)[0xA4] = 0xFF;
 }
-extern int rand_range(int, int);
-extern void set_moby_color(void *, int, int, int);
 
 extern float g_frame_time MACRO_ADDR;
 
@@ -518,15 +513,11 @@ extern float moby_spark_first_batch_vertical_acceleration_base_gp
 
 extern float g_frame_time_sq MACRO_ADDR;
 
-extern float FastAddRots(float, float);
-extern float FastCos(float);
-extern float FastSin(float);
-extern float multiply_global_factor(float);
 extern int func_001FA898(float);
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
-extern void FastVecAdd(void *, void *, void *);
+
 extern float IntToFloat(int);
-extern int FastDecTimer(void *);
+
 extern int coll_line(void *, void *, int, int, int);
 
 typedef struct SparkData {

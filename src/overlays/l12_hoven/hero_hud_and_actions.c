@@ -26,6 +26,7 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+#include "asm_functions/executable.h"
 
 extern Hero g_hero;
 extern PadState g_controller_state;
@@ -52,59 +53,32 @@ extern HeroItemDefView hoven_item_defs[];
 extern HeroAttackRecord hoven_attack_records[];
 extern HeroSpeedBands D_L12_X_f;
 
-extern int scale_ticks(int);
 extern int queue_animation_update(int, int, int, int, int, int, int);
-extern int func_L00_00235790(void);
+
 extern void hud_keep_visible(int, int);
-extern int FastDecTimer(void *);
-
-extern int hero_slot_item_id(int);
-
-extern void set_hero_animation(int, int, float);
-extern void MobyBlendAnimation(void *, int, int, int);
-
-extern float multiply_global_factor(float);
 
 extern int func_001F9908(int *);
 
-extern void stick_target(int, float);
+extern void stick_target_v(int, float) __asm__("func_L00_00211F80");
 
 extern int pad_pressed_within(int, int, int *);
-extern float FastDiffRots(float, float);
+
 extern void emit_hero_animation_voice_and_ground_particle(int a0, int a1, int a2);
 
-extern int is_wrench_moby(void *);
-
-extern float predict_hero_trajectory_intercept_time(float a, float b, float c);
 extern int truncate_float_to_s32(float);
 extern float adjust_hero_animation_speed_for_target_frame(float a, float b, float c, float d);
-
-extern void hero_set_attack_ticks(int id);
 
 extern float vec_length_xy(void *);
 extern float vec_distance_xy(void *, void *);
 
 extern void allocate_hero_voice_for_entry(int, int);
 
-extern float FastAddRots(float, float);
-extern float FastCos(float);
-extern float FastSin(float);
-
-extern void gravity_set_z(float *dst, float *src, float z);
 extern void ClampVectorLength(void *a, float x);
 extern int check_pad_press_separation(int, int, int, int);
 
-extern float FastVecLength(void *a);
-
 extern float ApproachValue(float *p, float target, float maxstep);
-extern void FastVecScale(void *, void *, float);
 
-extern float gravity_z(float *v);
-
-extern void hero_switch_item(int i);
 extern void release_and_clear_hero_voice_slots(void);
-
-extern void clear_u64_value(void *);
 
 /* Hero state machine: per-frame transition logic for the current hero state (level 12 build). */
 void HeroL12_UpdateStateTransitions(void) {
@@ -297,7 +271,7 @@ void HeroL12_UpdateStateTransitions(void) {
                                 }
                             }
                         }
-                        stick_target(0, 1.0f);
+                        stick_target_v(0, 1.0f);
                         if (g_hero.on_slip_ground != 0 && g_hero.frames_off_ground.s == 0) {
                             HeroL12_SetMoveState(HERO_STATE_SLIP, 1);
                             break;
@@ -359,7 +333,7 @@ void HeroL12_UpdateStateTransitions(void) {
                             if (g_hero.state.prev == HERO_STATE_LOOK ||
                                 g_hero.state.prev == HERO_STATE_LOOK_RELEASE_WAIT) {
                                 if (scale_ticks(0x18) > g_hero.state_timer && g_hero.unk308 == 0) {
-                                    stick_target(0, 1.0f);
+                                    stick_target_v(0, 1.0f);
                                     if (FastDiffRots(g_hero.motion.move_yaw, hoven_camera_yaw) > 1.2217305f) {
                                         ok = 0;
                                     }
@@ -751,7 +725,7 @@ void HeroL12_UpdateStateTransitions(void) {
                             }
                             if (pad_pressed_within(0x40, t, 0)) {
                                 if (!(g_hero.air_frames.s > scale_ticks(4)) || g_hero.still_frames != 0) {
-                                    stick_target(0, 1.0f);
+                                    stick_target_v(0, 1.0f);
                                     if (try_start_hero_jump(t, 1)) {
                                         break;
                                     }
@@ -1171,7 +1145,7 @@ void HeroL12_UpdateStateTransitions(void) {
                         if ((g_hero.anim_flags & 2) && ((unsigned char *)g_hero.moby)[0x53] == 0x20) {
                             set_hero_animation(0x21, 0, scale_ticks(6));
                         }
-                        stick_target(0, 1.0f);
+                        stick_target_v(0, 1.0f);
                         qcopy(v0, g_hero.motion.pos.f);
                         sp24 = g_hero.motion.rot.f[2];
                         if (test_hero_ledge_ahead(v0, &sp24) == 0) {
@@ -1226,7 +1200,7 @@ void HeroL12_UpdateStateTransitions(void) {
                         v0[0] += FastCos(FastAddRots(g_hero.motion.rot.f[2], ang)) * 0.3f;
                         v0[1] += FastSin(FastAddRots(g_hero.motion.rot.f[2], ang)) * 0.3f;
                         sp30 = g_hero.motion.rot.f[2];
-                        stick_target(0, 1.0f);
+                        stick_target_v(0, 1.0f);
                         if (g_hero.stick_magnitude < 0.5f ||
                             0.7853982f <
                                 FastDiffRots(g_hero.motion.move_yaw, FastAddRots(g_hero.motion.rot.f[2], ang)) ||
@@ -1450,7 +1424,7 @@ void HeroL12_UpdateStateTransitions(void) {
                         if (scale_ticks(0xA) > g_hero.state_timer) {
                             g_hero.jump_buffer_lockout = scale_ticks(0xC) - g_hero.state_timer;
                         }
-                        stick_target(0, 1.0f);
+                        stick_target_v(0, 1.0f);
                         if (g_hero.state.prev == HERO_STATE_PACK_LONG_JUMP && scale_ticks(4) > g_hero.state_timer) {
                             if (HeroL12_SetMoveState(HERO_STATE_STOP, 0) == 0) {
                                 break;
@@ -1885,7 +1859,7 @@ void HeroL12_UpdateStateTransitions(void) {
                             hero_switch_item(0);
                             break;
                         }
-                        stick_target(0, 1.0f);
+                        stick_target_v(0, 1.0f);
                         if (g_hero.stick_magnitude > 0.22f && g_hero.target_speed > 0.0f) {
                             HeroL12_SetMoveState(HERO_STATE_VEHICLE_MODE_3_RUN, 1);
                         }

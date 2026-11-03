@@ -14,11 +14,13 @@
 #include "overlays/shared/sound_playback.h"
 #include "enums/level.h"
 #include "enums/hero_state.h"
+#include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
+#include "overlays/shared/moby_path_and_manipulators.h"
 
 extern char g_hero[];
 extern int select_hero_slot3_animation_pair(int, int *, int *);
-extern void MobyBlendAnimation(void *, int, int, int);
-extern int scale_ticks(int);
 
 /* With both objects at g_hero + 0x1180 and +0x1184 present and the
    first's byte 0x53 equal to 1, asks select_hero_slot3_animation_pair for a pair of
@@ -243,7 +245,6 @@ missing:
 INCLUDE_ASM("asm/overlays", func_L00_00232A30);
 INCLUDE_ASM("asm/overlays", func_L00_00232A3C);
 extern int lookup_s16_pair_value(int, int *);
-extern int scale_ticks(int);
 
 /* When the animation at g_hero + 0x2278 is set and enabled (+0x227C),
    starts the sequence lookup_s16_pair_value picks for A0; if none is ready and
@@ -326,9 +327,7 @@ extern unsigned char D_0015EEB4[4] MACRO_ADDR;
 extern char hero_anim_slot_positions[];
 extern short hero_anim_blend_presets;
 extern int SlotTable_Insert(void *);
-extern void moby_blend_anim_frames_to_spr_slot(void *, int);
-extern void flush_cache(int);
-extern void update_moby_animation_state(void *);
+
 extern int truncate_float_to_s32(float);
 extern void clear_hero_queued_animation(void);
 extern void blend_hero_slot3_mapped_animation_pair(int, int, float);
@@ -462,7 +461,6 @@ extern f32 hero_anim_blend_curves[][25];
 extern int cinematic_mode MACRO_ADDR;
 extern int Moby_PlaySound(int, int, Moby *);
 
-extern float MobyGetFrameValue(Moby *);
 extern void clear_hero_mapped_moby_animation_state(void);
 
 /* Hero animation frame advance: steps the hero moby's frame position (anim_time) by anim_speed * unkA94 or a
@@ -573,11 +571,9 @@ typedef int V4q_32b90 __attribute__((mode(TI), aligned(16)));
 extern Hero g_hero_r __asm__("D_0013F450");
 extern u8 coll_hit_normal[];
 extern f32 collision_hit_point;
-extern void FastVecSub(void *, void *, void *);
-extern void FastVecScale(void *, void *, f32);
-extern void FastVecAdd(void *, void *, void *);
+
 extern void vec_scale_to_length(void *, void *, f32);
-extern void clip_negative_segment_endpoint_xyz(Vec4 *, void *);
+
 extern s32 coll_line(void *, void *, s32, s32, s32);
 extern f32 compute_gravity_relative_vector_inclination_r(void *) __asm__("func_L00_002345B0");
 extern f32 gravity_z_r(void *) __asm__("func_L00_002342F8");
@@ -808,12 +804,6 @@ void configure_hero_point_effect_emission(float a, float b, short c, unsigned ch
     base->items[6].unk34 = b;
 }
 
-extern void clear_u64_value(void *);
-extern void euler_to_matrix(void *, void *);
-extern void transform_vector(void *, void *, void *);
-extern float FastCos(float);
-extern float FastSin(float);
-
 typedef struct {
     float v[4];
 } __attribute__((aligned(16))) QVec;
@@ -906,9 +896,6 @@ void HeroMoveDownAlongNormal(float *dst, float *src, float h) {
             break;
     }
 }
-extern float FastCos(float);
-extern float FastSin(float);
-extern void FastVecAdd(void *, void *, void *);
 
 /* The polar form of transform_hero_local_offset_to_world: sets OUT to (R cos ANGLE,
    R sin ANGLE, Z) via FastCos / FastSin, then transforms it
@@ -923,8 +910,6 @@ void transform_hero_polar_offset_to_world(float *out, float r, float angle, floa
     transform_vector(out, out, base);
     FastVecAdd(out, out, base + 0x80);
 }
-extern void clear_u64_value(void *);
-extern void FastVecAdd(void *, void *, void *);
 
 /* Sets OUT to the point (X, Y, Z, 0) (cleared first by clear_u64_value),
    then transforms it by the matrix at g_hero and adds the vector at
@@ -1003,10 +988,8 @@ void HeroOffsetAlongViewZ(float *dst, float *src, float dz) {
             break;
     }
 }
-extern float FastVecDot(void *, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecScale(void *, void *, float);
-extern void FastVecSub(void *, void *, void *);
 
 /* Takes SRC's component along the view's normal out, into DST: in view
    mode 0 (g_hero + 0x20B3) z is zeroed; in mode 1 the normal is the
@@ -1033,7 +1016,6 @@ void gravity_flatten(float *dst, float *src) {
     }
 }
 extern float vec_length_xy(void *);
-extern void matrix_from_basis_rows(void *, void *);
 
 /* The xy length (vec_length_xy) of V. In view modes 1 and 2
    (g_hero + 0x20B3) V is first taken through the inverse of the
@@ -1104,7 +1086,6 @@ void gravity_set_z(float *dst, float *src, float z) {
             break;
     }
 }
-extern void vec_set_length_xy(float *, float *, float);
 
 /* Like gravity_set_z, but instead of setting z it scales the point's
    xy to length Z (vec_set_length_xy): in view mode 0 (g_hero +
@@ -1278,14 +1259,12 @@ typedef struct {
 extern void scale_ticks_r2(int) __asm__("func_001F9850");
 
 extern Plat *moby_get_ride_transform(void *);
-extern float FastVecLength(void *);
-extern float FastAddRots(float, float);
+
 extern void RotateWithMoby(int, void *, void *, void *, void *, void *);
-extern int convert_pose_to_reference_local(int, void *, void *, void *, void *, void *);
-extern void transform_attachment_pose(int, void *, void *, void *, void *, void *);
+
 extern float ApproachValue(float *, float, float);
 extern void vec_set_length_xy_r2(void *, void *, float) __asm__("func_L00_001FF500");
-extern float FastSubRots(float, float);
+
 extern f32 g_frame_time_sq MACRO_ADDR;
 
 /* The hero on a moving platform: finds the platform the hero stands on or hangs from, tracks the platform's motion
@@ -1463,7 +1442,6 @@ void update_hero_attachment(void) {
     FastVecAdd(g_hero + 0xF0, g_hero + 0xF0, &v20);
     ((Hero *)g_hero)->motion.platform_delta.f[3] = FastSubRots(((Hero *)g_hero)->motion.rot.f[2], ang);
 }
-extern int resolve_point_path_segment_clearance(int, void *, void *, float);
 
 /* Calls resolve_point_path_segment_clearance with the id at g_hero + 0x22DA, the vector
    at +0x80 (as both pointers) and the float at +0x234; when it returns
@@ -1479,11 +1457,6 @@ void Hero_ConstrainToPath(void) {
 extern Hero g_hero_r2 __asm__("D_0013F450");
 extern s32 cinematic_mode MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
-f32 FastAddRots(f32, f32);
-f32 FastSin(f32);
-s32 FastTweenColor(s32, s32, f32);
-void AttachManipulator(void *, s32, void *);
-void axis_rotation_2d48(void *, s32, f32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/ui_help_00231d08.c, FUN_L00_00234808. */
 void animate_hero_slot4_and_slot5_visuals(void) {
@@ -1531,7 +1504,6 @@ void animate_hero_slot4_and_slot5_visuals(void) {
 }
 extern char cutscene_state[];
 
-extern void update_hero_item_mobys(void);
 extern void animate_hero_slot4_and_slot5_visuals(void);
 
 /* in state 2 or 6: flag the matching mobys, update, then clear bit 0 of three mobys */
@@ -1569,9 +1541,6 @@ void update_hero_slot4_and_slot5_mobys(int a0) {
 }
 extern float hero_scale SDATA(hero_scale);
 extern int g_current_level_index MACRO_ADDR;
-
-extern float FastAddRots(float, float);
-extern int FastTweenColor(int, int, float);
 
 // Sets up the hero's camera-shake/glow object: clamps a scale, scales attached objects and sets a colour from a wobble.
 void HeroAttachManipulators(char *obj) {
@@ -1628,9 +1597,7 @@ void HeroAttachManipulators(char *obj) {
     *(int *)(obj + 0x90) = FastTweenColor(c1, c0, t * 0.5f + 0.5f);
     update_hero_slot4_and_slot5_mobys((int)obj);
 }
-extern void MobyTransformScaledVertex(int, int, void *);
-extern void matrix_copy_rows(void *, void *);
-extern void moby_anim_sphere_lerp(void *);
+
 extern void pack_pose(void *, void *, void *, int, int);
 extern char source_bone4_joints_class1b1[];
 extern char source_bone4_pose_buffer[];
@@ -1658,7 +1625,6 @@ void configure_moby_from_source_bone4(int id, char *moby) {
     *(char **)(moby + 0x6C) = source_bone4_pose_buffer;
     *(int *)(moby + 0x50) = 0;
 }
-extern float ProbeGroundHeight(void *, int, float);
 
 /* Probes 0.75 behind the position at g_hero + 0x80 along the first
    matrix row (+0x0), half a unit up, for the ground height

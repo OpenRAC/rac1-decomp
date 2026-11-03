@@ -11,6 +11,7 @@
 #include "core/kernel/kprintf.h"
 #include "game/render/framebuf.h"
 #include "game/ui/hud.h"
+#include "asm_functions/executable.h"
 extern Hero g_hero;
 extern int frame_size;
 extern char gold_weapon_purchased[];
@@ -131,14 +132,13 @@ extern char D_L00_001670F0[];
 extern char D_L00_00166ED0[];
 extern void func_L00_001EBDA0(void);
 extern void func_L00_001FF4B0(void *, void *, float);
-extern void func_001F9BD8(void *, void *, void *);
+
 extern void FastVecSub_r(void *, void *, void *) __asm__("func_001F9BF0");
 extern float FastCos_r(float) __asm__("func_001F9F90");
 extern float FastSin_r(float) __asm__("func_001F9FA8");
-extern void func_001FA190(void *);
-extern void func_001FA460(void *, void *);
+
 extern void sce_vu0_mul_matrix_r(void *, void *, void *) __asm__("func_001FA540");
-extern void func_001FA480(void *, void *);
+
 extern float FastSubRots_r(float, float) __asm__("func_001FA790");
 extern float FastAbsF_r(float) __asm__("func_001F9B88");
 extern void euler_to_matrix_r(void *, void *) __asm__("func_001FA218");
@@ -385,12 +385,7 @@ void update_debug_camera(void) {
         }
     }
 }
-extern float FastAddRots(float, float);
-extern float FastCos(float);
-extern float FastSin(float);
-extern void euler_to_matrix(void *, void *);
-extern void copy_memory_by_alignment(int, void *, unsigned short);
-extern void moby_build_matrix(void *);
+
 extern char g_debug_menu[];
 extern char player_camera[];
 
@@ -502,18 +497,14 @@ extern char *occlusion_grid MACRO_ADDR;
 extern s32 cinematic_mode MACRO_ADDR;
 extern s32 sound_update(void);
 
-extern void FastVecSub(void *, void *, void *);
 extern float vec_length_xy(void *);
 
-extern float FastSubRots(float, float);
 extern float IntToFloat(s32);
 extern void UpdateViewContext(void);
 extern void UpdateFog(void);
 extern s32 sprintf(char *, const char *, ...);
 extern double func_00120778(float);
 extern s32 sceOpen(char *, s32, ...);
-
-extern s32 libc_strlen(char *);
 
 extern s32 sceClose(s32);
 
@@ -1451,7 +1442,7 @@ void capture_draw_buffer(void *a) {
     transfer_draw_buffer_chunks(a, draw_buffer_address, frame_size << 11);
 }
 extern int GetEffectTex(int);
-extern void FontPrint(void *, void *, void *, void *, void *, int, unsigned char *);
+
 extern unsigned char effect3_font_metrics[];
 
 // Draws font text with effect texture 3 and the level 0 font table.

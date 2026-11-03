@@ -6,6 +6,7 @@
 #include "core/sound/989snd.h"
 #include "game/moby/mobyutil.h"
 #include "game/ui/hud.h"
+#include "asm_functions/executable.h"
 
 /*
  * stream.cpp in the original source; text 0x217588-0x217F68.
@@ -16,8 +17,6 @@
 typedef struct {
     char b[0x13];
 } Cfg13;
-
-extern void libc_strcpy(Cfg13 *, void *);
 
 extern int STUB_printf();
 

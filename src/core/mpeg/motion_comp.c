@@ -3,6 +3,7 @@
 #include "structs/misc.h"
 #include "core/mpeg/motion_comp.h"
 #include "core/mpeg/demux.h"
+#include "asm_functions/executable.h"
 
 /*
  * core_text object 0x125630-0x12A2F0. Boundaries are retail's linker fill
@@ -15,9 +16,6 @@
  * wait loops that 2.95.3 hoisted into saved registers (_flushBuf,
  * _peepBit) are 2.9-ee's rematerialised constants.
  */
-
-extern int disable_interrupts(void);
-extern void enable_interrupts(void);
 
 struct MpegDecoder;
 struct sceMpeg {
@@ -454,8 +452,6 @@ void _getRef0(struct MpegDecoder *d, struct MpegRefImage *ref, int sfield, int d
     d->mb_buf[d->mb_buf_index].fetch_count++;
 }
 
-extern void mpeg_clamp_pack_block(int, int);
-extern void mpeg_add_block_clamp(int, int, int);
 extern char str_mpeg_intra_skip_mb[];
 
 void func_001263A8_r(void *arg0, int idx) __asm__("func_001263A8");
@@ -677,7 +673,6 @@ int mb_address_increment(void *arg0) {
 extern char str_mpeg_skip_to_next_picture[];
 extern int _slice0(void *, int);
 extern int _waitBdecOut(void *);
-extern int _doMC(void *, int);
 
 int _pictureData0(void *arg0) {
     struct MpegDecoder *s = (struct MpegDecoder *)((char *)arg0);

@@ -20,6 +20,8 @@
 #include "enums/moby_class.h"
 #include "enums/hero_state.h"
 #include "structs/voice.h"
+#include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern Hero g_hero;
 extern struct Hero g_hero;
 extern char pad0_pressed[];
@@ -155,7 +157,7 @@ void record_grid_entry_neighbor_indices(int arg) {
     }
 }
 extern void AddDrawCallback(void *, void *);
-extern float FastVecDist(void *, void *);
+
 extern int Moby_PlaySound_i(int, int, void *) __asm__("func_0022ED80");
 extern void draw_electric_gate_beams(char *);
 
@@ -242,11 +244,9 @@ extern int electric_gate_alpha_c SDATA(electric_gate_alpha_c);
 extern int electric_gate_alpha_d SDATA(electric_gate_alpha_d);
 extern int electric_gate_effect_tex SDATA(electric_gate_effect_tex);
 extern float IntToFloat(int);
-extern float FastSin(float);
-extern int FastTweenColor(int, int, float);
-extern float FastAddRots(float, float);
+
 extern int GetEffectTex(int);
-extern void copy_matrix_rotation(void *, void *);
+
 extern void draw_world_quad(void *, void *, int);
 
 typedef struct {
@@ -341,10 +341,6 @@ extern unsigned char rilgar_zone_tint_green[] MACRO_ADDR;
 extern unsigned char rilgar_zone_tint_blue[] MACRO_ADDR;
 extern unsigned char rilgar_zone_tint_alpha[] MACRO_ADDR;
 extern char *rilgar_level_cuboids_c __asm__("D_L05_001601AC") MACRO_ADDR;
-extern int is_point_inside_clip_volume(void *, int);
-extern void FastVecSub(void *, void *, void *);
-extern void matrix_mul_vec3(void *, void *, void *);
-extern int FastTweenColor(int, int, float);
 
 /* Fog zone: switches the level fog between its two settings when the hero enters either trigger volume, and
  * tints a colour by the hero's side of a gate while inside the third. */
@@ -543,30 +539,22 @@ typedef struct {
 } Data_0030FCC0;
 extern int Sound_IsPlaying(void *, int);
 
-extern int scale_ticks(int);
-extern float random_angle_radians(void);
-
 extern void update_drain_cover_tilt(char *obj, float a, float b);
 extern void emit_drain_cover_particles(char *obj, float a, float b);
 extern float vec_distance_xy(void *, void *);
 extern int fast_dec_timer(void *);
-extern void clear_u64_value(void *);
 
-extern float multiply_global_factor(float);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern float FastCos(float);
-extern float FastSin(float);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern void vec_set_length_xy(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
+
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
 extern float ApproachWithVelocity(float, float, float, float, float *, float *);
 
-extern void PostHitMessage(void *, int, int, void *, void *, float);
 extern void update_entity_matrix(char *a, void *b, void *c, void *d);
 extern Lid_0030FCC0 *CreateMoby_r(int) __asm__("func_0020D348");
-extern void moby_build_matrix(void *);
+
 extern float g_frame_time MACRO_ADDR;
 extern float g_frame_time_sq MACRO_ADDR;
 extern int rilgar_cinematic_mode MACRO_ADDR;
@@ -747,14 +735,9 @@ void drain_cover_update(Moby *moby) {
         moby_build_matrix(lid);
     }
 }
-extern void clear_u64_value(void *);
+
 extern float IntToFloat(int);
 
-extern float random_angle_radians(void);
-extern float FastCos(float);
-extern float FastSin(float);
-extern void FastVecAdd(void *, void *, void *);
-extern int scale_ticks(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern void create_particle_with_velocity_and_lifetime(float, void *, void *, int, int, int);
 extern float drain_cover_spray_spacing SDATA(drain_cover_spray_spacing);
@@ -794,8 +777,7 @@ void emit_drain_cover_particles(char *obj, float a, float b) {
         create_particle_with_velocity_and_lifetime(u, w, v, k, m, n);
     }
 }
-extern float FastVecDot(void *a, void *b);
-extern float FastAddRots(float, float);
+
 extern float SteerAngleWithVelocity_r(float *, float, float *, float, float, float) __asm__("func_L00_0025CE58");
 extern float drain_cover_wobble_amount SDATA(drain_cover_wobble_amount);
 extern float drain_cover_tilt_accel SDATA(drain_cover_tilt_accel);
@@ -845,10 +827,9 @@ void update_drain_cover_tilt(char *moby, float turn_scale, float speed_scale) {
 }
 typedef u32 u128_10A90 __attribute__((mode(TI), aligned(16)));
 extern void *MobyGetHitMessage(struct Moby *, int, int);
-extern struct Moby *CreateMoby(int);
+
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
 
-extern void FastVecScale(void *, void *, float);
 extern void rand_vec(void *, float, float);
 extern int truncate_float_to_s32(float);
 extern int Moby_PlaySound(int, int, void *);
@@ -1165,7 +1146,7 @@ void update_triggered_particle_spray_emitter(struct Moby *m) {
 }
 typedef u32 u128 __attribute__((mode(TI), aligned(16)));
 extern int Moby_PlaySound();
-extern s32 scale_ticks(s32);
+
 extern s32 truncate_float_to_s32(f32);
 typedef struct {
     u8 pad0[0x20];
@@ -1205,12 +1186,10 @@ extern LiftVoicePool voice_pool;
 extern u16 active_marker_id NOT_SDA;
 extern f32 elevator_camera_transition_fade MACRO_ADDR;
 extern LiftPose *rilgar_level_cuboids_r2 __asm__("D_L05_001601AC") MACRO_ADDR;
-extern void FastVecScale(void *, void *, f32);
+
 extern f32 ApproachValue(f32 *, f32, f32);
 extern f32 ApproachWithVelocity_r(f32 *, f32 *, f32, f32, f32, f32) __asm__("func_00214D88");
 
-extern f32 FastAddRots(f32, f32);
-extern f32 FastSubRots(f32, f32);
 extern f32 vec_distance_xy(void *, void *);
 extern s32 fast_dec_timer_r2(s32 *) __asm__("func_001F9908");
 extern void set_camera_position(void *);
@@ -1388,8 +1367,7 @@ void elevator_with_button_update(struct Moby *moby) {
     update_entity_matrix(vars->rider, &delta, &rot, &moby->rot);
 }
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
-extern void clear_u64_value(void *);
+
 extern float lift_camera_distance SDATA(lift_camera_distance);
 extern float lift_camera_height SDATA(lift_camera_height);
 extern float lift_camera_pitch_deg SDATA(lift_camera_pitch_deg);
@@ -1405,9 +1383,6 @@ void lift_camera_view(char *a, char *b, char *c) {
     *(float *)(c + 8) = *(float *)(a + 0x48);
     *(float *)(c + 4) = t * 0.017453292f;
 }
-extern float FastCos(float);
-extern float FastSin(float);
-extern float FastAddRots(float, float);
 
 // Fill a ring of points (radius 3.5) around the moby from an angle step, rotating each by the moby's matrix.
 void place_marker_ring(char *moby) {
@@ -1427,7 +1402,6 @@ void place_marker_ring(char *moby) {
 }
 
 extern char rilgar_ocean_grid[];
-extern int is_point_inside_clip_volume(void *, int);
 
 // Scans 8 data slots; if none of the set ones passes a check, calls a helper.
 void draw_ocean_grid_outside_clip_volumes(char *moby) {
@@ -1473,10 +1447,9 @@ void ocean_rilgar_update(char *moby) {
 extern f32 g_frame_time MACRO_ADDR;
 extern f32 g_frame_time_sq MACRO_ADDR;
 extern short moby_pool_4f60 MACRO_ADDR;
-extern void FastVecScale(void *, void *, float);
-extern float FastVecLength(void *);
+
 extern void AttachManipulator_r(void *, int, void *) __asm__("func_0020D960");
-extern void axis_rotation_2d48(void *, int, float);
+
 extern char *g_hero_moby;
 
 struct ElectricGateData {
@@ -1652,7 +1625,7 @@ extern unsigned char gCheats[] MACRO_ADDR;
 extern G rilgar_cutscene_state;
 
 extern int g_breast_growth_count SDATA(g_breast_growth_count);
-extern void AttachManipulator(char *, int, void *);
+
 extern void update_hoverboard_girl_boobs_animation(char *, int);
 
 /* For every moby sharing this one's class: arms the marker record, and notifies it while the level flag is set. */
@@ -1728,8 +1701,7 @@ extern HGRaceEntry *race_entries[];
 extern const char race_girl_dialogue_name[];
 extern HGVec rilgar_race_camera_vectors[];
 extern unsigned char gCheats[];
-extern void MobyBlendAnimation(void *, int, int, int);
-extern float ProbeGroundHeight(void *, int, float);
+
 extern int get_dialogue_entry();
 extern int DialogRequest_Init(void *, void *);
 extern void initialize_moby_grounding(char *);
@@ -1739,8 +1711,7 @@ extern void Hero_ResetToPosition();
 extern void MusicRequestTrack();
 
 extern int memcard_Save(int, int);
-extern float FastDiffRots(float, float);
-extern void BuildSphericalOffset(void *, float, float, float);
+
 extern float vec_length_xy(void *);
 extern void update_hoverboard_girl_cutscene_instances();
 extern void PlayBankSound();
@@ -2019,13 +1990,7 @@ extern void initialize_moby_grounding(char *);
 extern int Npc_TryStartDialog(void *, void *);
 
 extern int memcard_Save(int, int);
-extern void DeleteMoby(void *);
 
-extern void MobyBlendAnimation(void *, int, int, int);
-extern float FastDiffRots(float, float);
-extern float FastVecLength(void *);
-extern void BuildSphericalOffset(void *, float, float, float);
-extern float FastSubRots(float, float);
 extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern char qwarks_bouncer_dialogue_name[];
@@ -2185,10 +2150,7 @@ void qwarks_bouncer_update(char *m) {
 }
 
 extern void set_ground_height_band(void *);
-extern float ProbeGroundHeight(void *, int, float);
 
-extern float FastVecLength(void *);
-extern float FastSubRots(float, float);
 extern char shady_salesman_dialogue_name[];
 
 typedef struct ShadySalesmanNpc {
@@ -2366,7 +2328,7 @@ void update_hero_clip_volume_outputs(char *m) {
             break;
     }
 }
-extern float random_angle_radians(void);
+
 extern int rilgar_cinematic_mode;
 extern float television_scale SDATA(television_scale);
 
@@ -2408,13 +2370,9 @@ extern float ApproachWithVelocity(float, float, float, float, float *, float *);
 extern void SamplePathAt(int *, int, void *, float *, int, float);
 extern void SamplePathAt_r(float, int *, int, void *, float *, int) __asm__("func_00215CA8");
 extern void lerp_vector(void *, void *, void *, float);
-extern float FastSubRots(float, float);
 
 extern int Moby_PlaySound_i(int, int, void *) __asm__("func_0022ED80");
 
-extern void FastVecSub(void *, void *, void *);
-extern void matrix_from_basis_rows(void *, void *);
-extern void transform_vector(void *, void *, void *);
 typedef struct {
     char pad00[0x30];
     float position[4];
@@ -2624,7 +2582,6 @@ void PickNearestTargetSlot(char *moby) {
     qcopy(&data->blend_pos, (void *)(idx + (int)g + 0x30));
     qcopy(&data->blend_rot, (void *)(idx + (int)g + 0x70));
 }
-
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/l05/unclassified_0030d6a0.c, FUN_L05_003193a8. */
 void select_taxi_route(char *moby) {
@@ -2929,7 +2886,6 @@ void update_moby_gameplay_events(unsigned char *moby) {
     if (!D_0013F65E)
         qcopy(data + 4, D_0013F3D0);
 }
-extern void cutscene_set_camera_target(int);
 
 /* UpdateMoby_1550 (names.tsv role). State 0 arms it: state 1 and byte 0x30 = 0xFF. In state 1,
  * while the level flag is 2 and the word at +0x30 of rilgar_cutscene_state is 10 or 11, passes one

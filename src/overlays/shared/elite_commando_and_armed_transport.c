@@ -15,6 +15,8 @@
 #include "enums/level.h"
 #include "enums/moby_class.h"
 #include "structs/voice.h"
+#include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 extern char gSkillPoints[];
 extern Hero g_hero;
 extern char voice_pool[];
@@ -143,9 +145,6 @@ struct GrindrailBarrierVars {
     s32 sound_slot; /* 0x24 */
 };
 
-extern char *CreateMoby(int);
-extern int scale_ticks(int);
-
 extern float vec_length_xy(void *);
 
 // Creates a Rocket moby that looks along a direction, copying owner data and position.
@@ -179,21 +178,20 @@ char *spawn_blarg_elite_commando_rocket(char *owner, float *pos, char *vec) {
 extern float FastVecDist_r(void *, void *) __asm__("func_001F9D10");
 extern int Sound_PlayClassSound(int, int, int, int);
 extern void spawn_rocket_trail_spark(char *);
-extern void FastVecSub(void *, void *, void *);
 
 extern float vec_length_xy(void *);
-extern float FastAddRots(float, float);
+
 extern void BuildSphericalOffset(void *, float, float, float);
 extern int fast_dec_timer(int *);
 extern float IntToFloat(int);
 extern void lerp_vector(void *, void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
+
 extern int coll_line(void *, void *, int, void *, void *);
-extern float FastVecLength(void *);
+
 extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, int, float, float,
                             int, int, int, int);
-extern void DeleteMoby(void *);
+
 extern char kalebo3_camera_pos[], hero_globals_base[];
 /* Steer a projectile toward its target and emit its impact effects. */
 void HomingProjectileUpdate(char *m) {
@@ -242,7 +240,6 @@ void HomingProjectileUpdate(char *m) {
         qcopy((m + 0x10), next);
 }
 extern struct Moby *CreateMoby_m(int) __asm__("func_0020D348");
-extern float FastVecLength(void *);
 
 extern float rocket_50_spawn_max_yaw_deg SDATA(rocket_50_spawn_max_yaw_deg);
 extern float rocket_50_spawn_max_pitch_deg SDATA(rocket_50_spawn_max_pitch_deg);
@@ -287,14 +284,9 @@ extern void emit_blarg_elite_commando_joint_sparks();
 extern void update_blarg_elite_commando_damage_and_pursuit(char *);
 
 extern float random_angle_radians(void);
-extern float multiply_global_factor(float);
+
 extern int truncate_float_to_s32(float);
 
-extern void matrix_mul_vec3(void *, void *, void *);
-extern void FastVecAdd(void *, void *, void *);
-extern void FastVecSub(void *, void *, void *);
-extern float FastAddRots(float, float);
-extern int FastDecTimer(void *);
 extern void vec_scale_to_length(void *, void *, float);
 extern float advance_blarg_elite_commando_base_position_update(char *, void *, int) __asm__("func_L16_002D5280");
 extern float SteerAngleWithVelocity(float *, float *, float, float, float, float);
@@ -305,9 +297,9 @@ extern void Moby_GetJointWorldPos(void *, int, void *);
 extern char *spawn_blarg_elite_commando_rocket(char *, float *, char *);
 extern int mine_fall(void *, void *);
 extern int Moby_PlaySound_update(int, int, void *) __asm__("func_0022ED80");
-extern void DeleteMoby(void *);
+
 extern float ApproachValue(float *, float, float);
-extern float FastSin(float);
+
 extern float FastVecDist_update(void *, void *) __asm__("func_001F9D10");
 extern int Sound_IsPlaying(void *, int);
 extern char hero_globals_base[];
@@ -567,12 +559,12 @@ extern int truncate_float_to_s32(float);
 extern void HeadingFromVector(void *, float *, void *, void *);
 extern void InitKnockback(float, void *, void *, int, int, int);
 extern int PlayBankSound(int, int, int);
-extern void ShowBanner(int, int);
+
 extern void SetDeathBits(void *, int, int);
 extern void RerollEffectCounter(void *, void *);
 extern void StepColorFade(void *, void *);
 extern int fast_dec_timer(int *);
-extern float multiply_global_factor(float);
+
 extern int FindNearestEligibleMoby(float, char *, void *, int, int, void *, int);
 extern int FindNearestTargetMoby(float, char *, void *);
 extern float vec_distance_xy(void *, void *);
@@ -796,11 +788,10 @@ void start_blarg_elite_commando_return_to_initial_position(char *moby, int arg) 
         d->path_speed = g_frame_time * 5.0f;
     }
 }
-extern float FastVecDist(void *, void *);
+
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
-extern void FastVecSub(void *, void *, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
 
 /* steers the moby's vector toward the target and returns the distance */
 float advance_blarg_elite_commando_base_position(char *moby, float *target) {
@@ -857,7 +848,6 @@ void randomize_blarg_elite_commando_group_pursuit_timers(void *arg, int lower, i
     }
 }
 
-extern float FastSubRots(float, float);
 /* Blend the commando's walk animation (forward, left or right) by the angle to its path point. */
 void select_blarg_elite_commando_movement_animation(char *moby) {
     struct EliteCommandoVars *data = (struct EliteCommandoVars *)((Moby *)moby)->pvars;
@@ -886,7 +876,6 @@ void select_blarg_elite_commando_movement_animation(char *moby) {
     }
 }
 extern void Moby_GetJointWorldPos(void *, int, void *);
-extern void clear_u64_value(void *);
 
 extern void PartType11Spawn(void *, void *, int, int, int, int, int, int, float, float);
 extern void spawn_glow_particle(void *, void *, void *, float, int, int, int, int, int);
@@ -948,13 +937,10 @@ void emit_blarg_elite_commando_death_particles(void *m) {
     spawn_glow_particle(m, origin, movement, 3.5f, scale_ticks(27), 96, 16, 0, 64);
     spawn_glow_particle(m, origin, movement, 3.0f, scale_ticks(29), 32, 0, 0, 32);
 }
-extern void matrix_from_basis_rows(void *, void *);
-extern void FastVecSub(void *, void *, void *);
-extern void matrix_mul_vec3(void *, void *, void *);
 
 extern float vec_length_xy(void *);
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
+
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 extern float g_frame_scale_sq MACRO_ADDR;
 /* Aim paired joints toward the owner or player, then smooth their rotations. */
@@ -1018,10 +1004,8 @@ void update_blarg_elite_commando_joint_aim(char *m) {
     EaseManipulatorOffsets(m, (char *)&d->joints[2], 3, g_frame_scale_sq * 0.03f, g_frame_scale_sq * 0.3f);
 }
 
-extern void MobyTransformScaledVertex(void *, int, void *);
-extern void clear_u64_value(void *);
 extern void rand_vec(float *, float, float);
-extern int FastTweenColor(int, int, float);
+
 extern char *PartType02Spawn(void *, void *, void *, int, int, int, int, int, int);
 /* Emit randomized joint particles while the moby is active. */
 void emit_blarg_elite_commando_joint_sparks(char *m) {
@@ -1060,8 +1044,7 @@ extern void update_armed_transport_damage_and_targeting(char *);
 extern void compute_armed_transport_path_headings(void *);
 extern int advance_armed_transport_along_path(char *, char *);
 extern void update_armed_transport_joint_animation(char *);
-extern int IsPointInPolygon(void *, void *, int);
-extern float FastDiffRots(float, float);
+
 extern void *SpawnBreakFragment(char *, int, float *, void *, int, int, float, float *, float *, float *);
 /* Stand-in: retail passes five arguments and no float; the file's definition (line 101) has a sixth, `float unused`. */
 extern float gHeroPos[];
@@ -1412,7 +1395,7 @@ void update_armed_transport_joint_animation(char *moby) {
 extern float grindrail_barrier_spin_speed_deg SDATA(grindrail_barrier_spin_speed_deg);
 extern float grindrail_barrier_pulse_speed SDATA(grindrail_barrier_pulse_speed);
 extern short grindrail_barrier_core_spin_speeds_deg;
-extern float FastAddRots(float, float);
+
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound_r(int, int, void *) __asm__("func_0022ED80");
 extern void AddDrawCallback(void (*)(void), void *);
@@ -1482,7 +1465,7 @@ typedef struct {
     float cardinal_angles[4];
 } RingData;
 extern long GetEffectTex(int);
-extern void FastVecScale(void *, void *, float);
+
 extern void draw_world_quad(void *, void *, int);
 extern float grindrail_barrier_ring_uvs[4][2], grindrail_barrier_core_uvs[4][2];
 extern float grindrail_barrier_ring_quad_corners[4][4], grindrail_barrier_core_quad_corners[4][4];

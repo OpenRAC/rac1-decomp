@@ -6,6 +6,7 @@
 #include "game/render/draw.h"
 #include "game/render/vuchain.h"
 #include "data/executable.h"
+#include "asm_functions/executable.h"
 
 /*
  * mobyfunc.cpp in the original source; text 0x20D348-0x20E6B8.
@@ -14,10 +15,6 @@
  */
 
 extern char voice_pool[];
-
-extern void FastMemCopy(void *, void *, int);
-
-extern void FastMemSet();
 
 extern int STUB_printf();
 
@@ -234,7 +231,6 @@ typedef struct {
     char _pad21[0x38 - 0x21];
     long unk38; /* 0x38 */
 } MobyDel;
-extern void update_moby_grids(void *, int);
 
 /* DeleteMoby */
 void DeleteMoby(MobyDel *m) {
@@ -413,10 +409,6 @@ void prune_moby_references(void) {
 
 /* copy_matrix_rotation is declared above with a single argument, for the
    extract_matrix_rotation_quaternion site; this one passes a source as well. */
-extern void func_001FA460(void *, void *);
-extern void FastVecScale(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
-extern void matrix_mul_vec3(void *, void *, void *);
 
 /* Scale the single vertex block at arg2+0x30 by the object's 0x2C field
    in 1/1024 units, then run it through the two per-object transforms at
@@ -462,7 +454,6 @@ LINKER_REMNANT("asm/remnants/text", func_0020DC38);
 extern int moby_texture_tag_slot MACRO_ADDR;
 extern int g_render_packet_cursor MACRO_ADDR;
 extern int g_gs_texture_allocation_cursor MACRO_ADDR;
-extern void upload_used_moby_textures(int);
 
 /* DmaMobyTextures: splices the texture uploads into the DMA chain with
    "next" tags (0x20000000). g_render_packet_cursor is the packet write pointer and
@@ -561,8 +552,6 @@ void PatchMobyGifs(void) {
 
 extern int g_hero_moby NOT_SDA;
 extern float shadow_light_dir[] NOT_SDA;
-extern float FastCos(float);
-extern float FastSin(float);
 
 /* Sets the shadow light direction from the light direction at the hero. */
 void update_resident_packed_direction(void) {
@@ -580,7 +569,7 @@ extern int graphics_setup_dma_chain_enabled MACRO_ADDR;
 extern int graphics_setup_tag_slot MACRO_ADDR;
 extern char graphics_setup_profile_label[];
 extern char graphics_setup_command_stream[];
-extern void build_shadow_command_stream(void);
+
 extern void submit_graphics_setup_command_stream(void *);
 
 /* The same splice as DmaMobyTextures, around build_shadow_command_stream/submit_graphics_setup_command_stream,
@@ -622,7 +611,6 @@ void configure_graphics_setup_dma_chain(void) {
     ProfileMarker_End(graphics_setup_profile_label, 8);
 }
 
-extern void flush_cache(int);
 extern char normal_lut[];
 extern int render_packet_end MACRO_ADDR;
 extern int vu1_chain_safe_end MACRO_ADDR;
@@ -688,8 +676,6 @@ void DrawMobysSetup(void) {
     moby_anim_head = render_packet_end;
 }
 
-extern int moby_proc(int, int, int, int);
-
 /* DrawMobyList */
 void DrawMobyList(int arg0, int arg1) {
     VU1_addGSregister(0x47, 0x5360B);
@@ -702,7 +688,7 @@ void DrawMobyList(int arg0, int arg1) {
 
 extern void DmaMobyTextures(void);
 extern void ProcessMobyAnimData(void);
-extern void apply_moby_word_fill_table(void);
+
 extern char moby_texture_dma_profile_label[];
 extern char draw_mobys_cleanup_profile_label[];
 extern int moby_word_fill_table_bytes MACRO_ADDR;

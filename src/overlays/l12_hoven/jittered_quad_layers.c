@@ -4,6 +4,7 @@
  * this function only matches without it (docs/reference/BUILD_FIDELITY.md, rule 2). */
 #include "common.h"
 #include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
 /* Draw callback: builds a view matrix from the moby (+0xC0), sets up two quad packets (only the first is drawn) and
    draws it 5 x 6 times as a strip of jittering sparks (corner z grows by 1.0 per outer pass, y gets +-0.2 random
    jitter, u gets +-0.5 jitter per pass). Packet field meanings guessed from the layout. */
@@ -21,7 +22,6 @@ typedef struct Vq {
 } __attribute__((aligned(16))) Vq;
 
 extern long GetEffectTex(int);
-extern void copy_matrix_rotation(void *, void *);
 
 extern void draw_world_quad(void *, void *, int);
 extern float hoven_jitter_quad_uvs[][2];

@@ -9,16 +9,15 @@
 #include "game/system/stash.h"
 #include "game/render/tfragfunc.h"
 #include "data/executable.h"
+#include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 
 /*
  * loaders.cpp in the original source; text 0x202AA8-0x205520.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
-
-extern void FastMemCopy(void *, void *, int);
-
-extern void FastMemSet();
 
 /*
  * upload_mip_texture: sends a texture (a header, then its palette and mip levels) to the GS at the
@@ -57,9 +56,7 @@ typedef struct {
 /* As loaders.c declares them further down (sceGsSetDefLoadImage, sceGsExecLoadImage, FlushCache,
  * sceGsSyncPath). */
 extern int g_gs_texture_allocation_cursor MACRO_ADDR; /* gs texture allocation cursor */
-extern void FastMemSet(void *, s32, s32);
-extern s32 log2dim(s32);
-extern void flush_cache(int);
+
 extern int sceGsSetDefLoadImage(void *, short, short, short, short, short, short, short);
 extern int sceGsExecLoadImage(void *, void *);
 extern int wait_for_graphics_pipeline_idle(int, unsigned short);
@@ -183,8 +180,6 @@ extern int particle_texture_range_count MACRO_ADDR;
 extern char particle_texture_data[];
 extern int particle_texture_ptrs[];
 extern Pair_2F00 particle_texture_ranges[];
-extern void copy_memory_aligned(void *, void *, int);
-extern int log2dim(int);
 
 /* ParseParticleTexs */
 void ParseParticleTexs(int *hdr, int base, int *list, int count) {
@@ -211,7 +206,6 @@ void ParseParticleTexs(int *hdr, int base, int *list, int count) {
     }
 }
 
-extern int log2dim(int);
 extern int effect_tex_cnt MACRO_ADDR;
 
 typedef struct {
@@ -377,7 +371,7 @@ extern char *Hud_HeapAlloc_d(int, int, char *, int) __asm__("func_001FFAB8");
 extern void LoadCompressedHudBank(int idx, int size);
 
 extern void Hud_SendResidentBank(int, void *, int);
-extern void flush_cache(int);
+
 extern void LinkHudBank(int bank, int addr);
 
 extern int level_resource_buffers[];
@@ -479,7 +473,6 @@ void LoadHudBanks(void) {
  */
 extern int *level_root MACRO_ADDR;
 extern char *hud_bank_table_ptr;
-extern void fast_decompress(int, int);
 
 /* LoadCompressedHudBank(int, char *). Each scaled index in its own local
    gives retail's base-first addu; written inline, the multiply goes
@@ -508,7 +501,6 @@ typedef struct ResidentRenderTextureDefinition {
 extern s32 g_gs_texture_allocation_base MACRO_ADDR;
 extern u64 special_material_template_r[3] __asm__("D_0019E7C0");
 extern u64 alternate_special_material_template_r[3] __asm__("D_0019E7D8");
-extern s32 log2dim(s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/rendering/build_indexed_resident_render_packet.c, build_indexed_resident_render_packet. */
 void build_indexed_resident_render_packet(u64 *packet, struct ResidentRenderTextureDefinition *texture, s32 draw_high,
@@ -915,9 +907,6 @@ extern unsigned char resident_class_slot_by_id[] NOT_SDA;
 extern short resident_class_id_by_slot[];
 extern char *moby_class_resources[] NOT_SDA;
 
-extern void assign_moby_class_data(int);
-extern void prepare_resident_class_render_data(void *, int, int, int);
-
 /* Registers class arg3's data arg0 in the next moby-class slot
    (resident_moby_class_count): class -> slot in resident_class_slot_by_id, slot -> class in
    resident_class_id_by_slot, slot -> data in moby_class_resources; then assign_moby_class_data(arg3) and
@@ -1170,7 +1159,6 @@ extern s32 registered_shrub_render_class_count MACRO_ADDR;
 extern s32 g_gs_texture_allocation_base MACRO_ADDR;
 extern u64 resident_material_templates_r[0x30] __asm__("D_0019E640");
 extern s32 truncate_float_to_s32(f32);
-extern s32 log2dim(s32);
 
 /* Registers a shrub render class in the next free slot: slot and id tables, the class's distance threshold
    (scale * 1024 as an integer), relocates its group and mip-packet pointers, builds the mip packet's TEX0/TEX1/
@@ -1733,7 +1721,6 @@ extern struct Hero D_0013F450;
 extern int g_game_mode MACRO_ADDR;
 extern int D_00160588[];
 extern int fast_decompress_2(int, int) __asm__("func_0020C468");
-extern struct Moby *func_0020D348(int);
 
 /* update_world_object_animation: relocate the model record loaded for the
    current chunk (render_sequence+0x58) and hook each of its parts to a moby,
@@ -1861,7 +1848,7 @@ extern int runtime_resource_tag MACRO_ADDR;
 extern int class_resource_count MACRO_ADDR;
 extern int active_class_resource_index MACRO_ADDR;
 extern int active_decode_buffer MACRO_ADDR;
-extern void fast_decompress();
+
 extern int class_resource_ids[];
 extern int compressed_class_resources[];
 extern short class_runtime_indices[][16];

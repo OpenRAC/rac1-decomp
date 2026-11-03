@@ -10,6 +10,8 @@
 #include "data/executable.h"
 #include "game/ui/hud.h"
 #include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 
 /*
  * vendor.cpp in the original source; text 0x239628-0x23B670.
@@ -21,23 +23,13 @@ extern int measure_text_width_regular(unsigned char *, int);
 
 extern void UpdateViewContext(void);
 
-extern void FastVecAdd(void *, void *, void *);
-
-extern void fast_vec_normalize(void *, void *, float);
-
-extern void DrawMobyList(int, int);
-
 extern void *msg_string_id(int) __asm__("func_001FE540");
 
 extern void draw_hud_rect_blended(int, int, int, int, long, long);
 
 extern void DrawTexturedQuad(int, int, int, int, int, int, int, int, long, long);
 
-extern void FastVecSub(void *, void *, void *);
-
 extern void truncate_float_to_s32(float);
-
-extern void transform_scaled_vertex_batch(char *arg0, int arg1, void *arg2, char *arg3);
 
 /* The NTSC decomp's pending C for the same instructions (a draft it has not matched
    yet), carried to PAL's names by OpenRAC's tools/port.py. Never compared with retail's bytes here. */
@@ -45,10 +37,9 @@ extern s32 capture_glyph_coordinates[64];
 extern s32 capture_glyph_advances[64];
 extern s32 game_frame_counter MACRO_ADDR;
 extern void DrawTexturedQuad(s32, s32, s32, s32, s32, s32, s32, s32, s64, s64);
-extern s32 scale_game_frame_count(s32);
+
 extern f32 IntToFloat(s32);
 #define TRUNC(x) ((s32 (*)(f32))func_001FA898)(x)
-extern u64 GetFrameTex(s32);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/assembly/textbin/fun_00238310.c, render_capture_scrolling_text. */
 void render_capture_scrolling_text(char *text, s32 start_x, s32 start_y, f32 scale) {
@@ -133,8 +124,6 @@ void render_capture_scrolling_text(char *text, s32 start_x, s32 start_y, f32 sca
     }
 }
 
-extern int func_00116810(char *);
-
 extern int status_message_text_ids[];
 extern void set_scrolling_status_message(void *);
 extern void render_capture_scrolling_text(char *, int, int, float);
@@ -201,7 +190,7 @@ struct VendorItemResource {
 
 extern u8 item_info_table[];
 extern struct VendorMenuState vendor_state_ui __asm__("D_001E66C0");
-extern s32 subtract_integer_with_clamp();
+
 extern void func_001FBAB8_u(int, int, int, int, int, int, unsigned int) __asm__("func_001FBAB8");
 
 /* Vendor item carousel and icon pulse. The solid black draw calls use the
@@ -529,7 +518,6 @@ extern s32 vendor_flash_timers[];
 extern s32 vendor_scroll_timers[];
 extern void VU1_addGSregister_r(s32, u64) __asm__("func_00234C98");
 
-extern s32 subtract_integer_with_clamp(s32);
 extern s64 func_001F4868(s32);
 extern f32 IntToFloat(s32);
 extern void append_subpixel_textured_screen_quad(f32, f32, f32, f32, s32, s32, s32, s32, u64, s64);
@@ -645,7 +633,6 @@ extern int capture_secondary_transition_step SDATA(capture_secondary_transition_
 extern int capture_primary_transition_step SDATA(capture_primary_transition_step);
 extern int pal_mode MACRO_ADDR;
 extern long capture_texture_tex0 MACRO_ADDR;
-extern float FastVecLength(void *);
 
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
 extern void update_scrolling_status_message_r(char *) __asm__("func_00239838");
@@ -838,7 +825,7 @@ extern SurfaceHeightGrid surface_height_grid_r __asm__("D_001E69E0");
 extern s32 surface_height_layer SDATA(surface_height_layer);
 extern s32 FindZoneAtPoint(f32, f32, f32);
 extern s32 truncate_float_to_s32_r2(f32) __asm__("func_001FA898");
-extern void FastVecCross(f32 *, f32 *, f32 *);
+
 extern void fast_vec_normalize_r(f32 *, f32 *, f32) __asm__("func_001F9DC0");
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/textbin/fun_00239f58.c, sample_surface_height_map. */
@@ -945,7 +932,7 @@ typedef struct {
 } Cfg16;
 
 extern Cfg16 attachment_vertex_indices NOT_SDA;
-extern float FastVecLength(void *);
+
 extern void FastVecSub_b(void *, void *, void *) __asm__("func_001F9BF0");
 
 struct UpdateInstanceAttachmentPointsAndLengthsVars {

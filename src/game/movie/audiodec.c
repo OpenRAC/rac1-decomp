@@ -1,6 +1,7 @@
 #include "common.h"
 #include "callees.h"
 #include "structs/misc.h"
+#include "asm_functions/executable.h"
 
 extern int snd_init_movie_sound(int, int, int, int, int, int);
 extern char *movie_adpcm_staging_buf MACRO_ADDR;
@@ -150,9 +151,6 @@ typedef struct {
     int mode;
 } SpuDma;
 
-extern void flush_cache(int);
-extern unsigned int sce_sif_set_dma(SpuDma *, int);
-extern int sce_sif_dma_stat(int);
 extern int snd_UpdateMovieADPCM(int, int);
 
 /* sendToSPU(_AudioDec *, unsigned char *, int, int) -- queues one transfer of len bytes to the

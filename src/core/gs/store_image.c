@@ -1,6 +1,7 @@
 #include "common.h"
 #include "callees.h"
 #include "structs/misc.h"
+#include "asm_functions/executable.h"
 
 /*
  * core_text object 0x122AD8-0x123168. Boundaries are retail's linker fill
@@ -9,7 +10,6 @@
  * Sony's libgraph, graph018.o (sceGsExecStoreImage). Built with Sony's
  * 2.9-ee (Makefile.sn, EE29_CORE), like the prebuilt libgraph.a.
  */
-
 
 extern void scePrintf();
 
@@ -54,8 +54,6 @@ extern char gs_store_image_gs_timeout_msg[];
 extern char gs_store_image_readback_timeout_msg[];
 extern char gs_store_image_vif1_short_msg[];
 extern u128_si gs_store_image_vif1_restore_qword;
-extern unsigned long gs_get_imr(void);
-extern int gs_put_imr(unsigned long);
 
 int sceGsExecStoreImage(SiStoreImage *sp, u128_si *dstaddr) {
     unsigned int cnt = 0;

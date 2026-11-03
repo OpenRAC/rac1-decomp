@@ -7,6 +7,9 @@
 #include "asm_functions/shared_levels.h"
 #include "data/level_04.h"
 #include "game/math/fastfunc.h"
+#include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 
 extern float eudora_coll_hit_z;
 extern int coll_line(void *, void *, int, int, int);
@@ -106,11 +109,7 @@ extern void STUB_printf();
 extern void raise_kernel_trap(void);
 extern float animation_start(int, int);
 extern float animation_end(int, int);
-extern float multiply_global_factor(float);
-extern void transform_scaled_vertex_batch(struct Moby *m, int count, int *joints, void *out);
-extern void MobyTransformScaledVertex(struct Moby *m, int joint, float *mtx);
 
-extern void AttachManipulator(struct Moby *m, int slot, void *manip);
 /* Sets up a two-legged rig on a moby. */
 void initialize_leg_rig(struct Moby *moby, LegRig_p *rig) {
     int joints[6];
@@ -212,13 +211,10 @@ typedef struct {
     Vec4f v40; /* 0x40 */
 } StTab;
 
-extern float func_00214358(void *, int, float);
-extern void func_001F9BC0(float *);
 extern float FastAbsF_r(float) __asm__("func_001F9B88");
-extern void func_001F9BD8(void *, void *, void *);
+
 extern float FastCos_r(float) __asm__("func_001F9F90");
-extern float func_001F9FA8(float);
-extern void func_001F9CA0(void *, void *, void *);
+
 extern float func_001F9CE8(void *);
 extern float fast_atan2_r(float, float) __asm__("func_L00_001FF860");
 extern char D_L04_00174040[];
@@ -396,10 +392,8 @@ typedef struct {
 } LegRig_93F08;
 extern void MobyTransformScaledVertex_r(struct Moby *, int, float *) __asm__("func_0020DAF8");
 
-extern float FastAddRots(float, float);
-extern float FastSubRots(float, float);
 extern float SpringTurn(float, float, float *, float, float, float);
-extern void axis_rotation_2d48(float *, int, float);
+
 extern void multiply_quaternions(float *, float *, float *);
 extern f32 frame_scale MACRO_ADDR;
 
@@ -461,17 +455,15 @@ void rig_animate(struct Moby *moby, LegRig_93F08 *rig, int flags) {
         mask <<= 2;
     }
 }
-extern float MobyGetFrameValue(struct Moby *);
+
 extern float IntToFloat(int);
 extern int rig_pick_mode_r(char *, char *, float) __asm__("func_L04_00293990");
 extern void rig_animate_r(char *, char *, int, float) __asm__("func_L04_00293F08");
 extern int update_leg_rig_height_and_tilt_r(char *, char *) __asm__("func_L04_002939E8");
-extern void FastVecSub(void *dst, void *a, void *b);
+
 extern void divide_vector_xyz(void *, void *, float);
 extern void func_L00_002A2900(char *, char *, float, float, float, int);
 extern void rig_probe_setup(void *, int, int *, float *, float *, float *);
-extern int coll_capsule(float, float, void *, int, void *);
-extern float FastDiffRots(float, float);
 
 extern float g_frame_time MACRO_ADDR;
 extern float inv_frame_scale MACRO_ADDR;
@@ -690,11 +682,7 @@ typedef struct {
     /* 0x0F0 */ LegRigLeg legs[2];
 } LegRig;
 extern u8 eudora_leg_rig_anim_b7_values[13][4];
-extern void transform_scaled_vertex_batch(struct Moby *m, int count, int *joints, void *out);
-extern void MobyTransformScaledVertex(struct Moby *m, int joint, float *mtx);
-extern void AttachManipulator(struct Moby *m, int slot, void *manip);
 
-extern float MobyGetFrameValue(struct Moby *);
 extern float IntToFloat(int);
 extern float animation_start(int, int);
 

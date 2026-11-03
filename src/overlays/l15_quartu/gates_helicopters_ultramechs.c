@@ -21,6 +21,10 @@
 #include "overlays/shared/sound_playback.h"
 #include "structs/small_records.h"
 #include "enums/moby_class.h"
+#include "asm_functions/executable.h"
+#include "overlays/shared/moby_ground_collision.h"
+#include "asm_functions/shared_levels.h"
+#include "game/moby/mobyfunc.h"
 extern char gHeroPos[];
 extern char gSpecialItems[];
 extern Hero g_hero;
@@ -95,11 +99,8 @@ extern int g_current_level_index MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 extern int quartu_moby_killed[];
 extern char quartu_camera_pos[];
-extern float FastCos(float);
-extern float FastSin(float);
-extern void FastVecAdd(void *, void *, void *);
+
 extern int Moby_PlaySound(int, int, int);
-extern int is_point_inside_clip_volume(void *, int);
 
 extern unsigned char hero_globals_base[];
 
@@ -404,7 +405,7 @@ void update_vertical_gate(GateMoby *m) {
             break;
     }
 }
-extern float FastAddRots(float, float);
+
 typedef struct {
     f32 closed_yaw; /* 0x00: yaw when shut */
     s32 open_volume; /* 0x04: someone inside opens it */
@@ -414,7 +415,7 @@ typedef struct {
     s32 trigger; /* 0x14: moby index that opens it, -1 for the volumes */
     s32 sound; /* 0x18 */
 } DoorVars;
-extern int is_point_inside_clip_volume(void *arg0, int arg1);
+
 extern int Moby_PlaySound(int, int, int);
 extern void *GetFlaggedPvarWord(struct Moby *);
 extern char *quartu_moby_list MACRO_ADDR;
@@ -534,19 +535,9 @@ typedef struct {
 extern Colors quartu_debris_effect_colors;
 extern void vec_scale_to_length_r(float, void *, void *) __asm__("func_L00_001FF4B0");
 extern void FastVecScale_r(float, void *, void *) __asm__("func_001F9C30");
-extern float FastVecLength(void *);
-extern void FastVecAdd(void *, void *, void *);
-extern void FastVecSub(void *, void *, void *);
-extern void add_vectors(void *, void *, void *);
-extern void clear_u64_value(void *);
-extern float FastCos(float);
-extern float FastSin(float);
 
-extern float random_angle_radians(void);
-
-extern int rand_range(int, int);
 extern int DefaultVtbl_DeleteMoby(float, int, int);
-extern int scale_ticks(int);
+
 extern void DeleteMoby_r(struct Moby *) __asm__("func_0020D678");
 extern void *spawn_debris_moby(void *, void *, int, float, int, float, float, float, int);
 extern void *mine_debris(void *, void *, int, int, float, int, int);
@@ -703,23 +694,14 @@ extern u32 quartu_hit_effect_colors[3];
 extern unsigned char gemlik_available[];
 
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecScale(void *, void *, float);
-extern float FastVecLength(void *);
 
-extern float FastCos(float);
-extern float FastSin(float);
-extern void add_vectors(void *, void *, void *);
-extern void FastVecSub(void *, void *, void *);
-
-extern int rand_range(int, int);
 extern void *spawn_debris_moby(void *, void *, int, float, int, float, float, float, int);
-extern void clear_u64_value(void *);
-extern void FastVecAdd(void *, void *, void *);
+
 extern int DefaultVtbl_DeleteMoby(float, int, int);
-extern int scale_ticks(int);
+
 extern void *mine_debris(void *, void *, int, int, float, int, int);
 extern void SetDeathBits(void *, int, int);
-extern void DeleteMoby(void *);
+
 extern void spawn_explosion(void *, void *, void *, float, float, int, int, int, float, float, float, float, int, float,
                             int, int, int, unsigned char);
 
@@ -854,16 +836,13 @@ void update_destructible_moby_on_hit(struct Moby *moby) {
 }
 extern char *MobyGetHitMessage(void *, int, int);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
-extern float multiply_global_factor(float);
+
 extern int truncate_float_to_s32(float);
-extern int FastDecTimer(void *);
-extern float FastVecDist(void *, void *);
-extern float FastDiffRots(float, float);
-extern void MobyBlendAnimation(void *, int, int, int);
+
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void PartType21Spawn(void *, void *, int, int, int, int, float);
-extern void SpawnExplosionFx(void *, void *, int, float, float);
+
 extern void spawn_proximity_gated_bolts(void *);
 extern void *SpawnBreakFragment(void *, int, void *, void *, int, int, float, void *, void *, void *);
 
@@ -1095,9 +1074,7 @@ typedef struct {
     char pad180[0x28];
     float height;
 } SteeringVars_4f88;
-extern float FastVecDist(void *, void *);
-extern float fast_atan2(float, float);
-extern float FastSubRots(float, float);
+
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
 extern void move_moby_with_sphere_collision(float, float, struct Moby *, void *, int);
 /* Steers a flying moby toward goal while facing look. */
@@ -1195,12 +1172,8 @@ typedef struct {
     OvlQuad rest[4];
 } Goal_52b8;
 extern float vec_distance_xy(void *, void *);
-extern void FastVecAdd(void *, void *, void *);
-extern void clear_u64_value(void *);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecScale(void *, void *, float);
-extern void FastVecSub(void *, void *, void *);
-extern float fast_atan2(float, float);
 
 /* Flocking step toward goal (cf. FUN_L15_002cf110): separates from live same-class mobys within 10 units and keeps ~15
    units off the goal while another moby is closer to it (~10 otherwise); writes the steering point to out and returns
@@ -1362,23 +1335,18 @@ typedef int u128_6950 __attribute__((mode(TI)));
 extern char *create_blarg_commander_moby_from_source(char *a0);
 extern void FindNearestTargetMoby(void *, float *, float);
 extern int FindNearestEligibleMoby(float, void *, void *, int, int, void *, int);
-extern void AttachManipulator(char *, int, unsigned char *);
 
-extern void find_nearest_path_point(void *, void *, void *, int *, float *, int, float, float, float);
 extern float IntToFloat(int);
-extern int IsPointInPolygon(void *, void *, int);
-extern void vec_set_length_xy(void *, void *, float);
+
 extern char *spawn_homing_spark_projectile(char *a, char *pos, int c, int d, float f);
 extern void start_blarg_commander_knockback(void *, struct Moby *);
-extern void DetachManipulator(void *, void *);
+
 extern void set_ground_height_band(void *);
 
-extern void MobyAnimAdvance(void *);
-extern void moby_build_matrix(void *, void *);
-extern void matrix_from_basis_rows(void *, void *);
-extern void transform_vector(void *, void *, void *);
+extern void moby_build_matrix_v(void *, void *) __asm__("func_L00_00251E30");
+
 extern float vec_length_xy(void *);
-extern void axis_rotation_2d48(void *, int, float);
+
 extern float helicopter_bob_amplitude SDATA(helicopter_bob_amplitude);
 extern float helicopter_bob_period SDATA(helicopter_bob_period);
 
@@ -1745,7 +1713,7 @@ void helicopter_update(HMoby_6950 *m) {
         d->child->pos.q = m->pos.q;
         d->child->rot.q = m->rot.q;
         MobyAnimAdvance(d->child);
-        ((void (*)(void *))moby_build_matrix)(d->child);
+        ((void (*)(void *))moby_build_matrix_v)(d->child);
         d->child->flags |= 6;
     }
     if (d->shot == 0 || d->shot->oclass != 0x350 || d->shot->state == 0xFE || d->shot->state == 0xFD) {
@@ -1782,11 +1750,7 @@ void helicopter_update(HMoby_6950 *m) {
 extern char *MobyGetHitMessage(void *, int, int);
 extern int ComputeHitResponse(void *, void *, void *, int, void *, void *, int, int);
 extern void RerollEffectCounter(void *m, short *p);
-extern float FastSubRots(float, float);
-extern float FastCos(float);
-extern float FastSin(float);
 
-extern int scale_ticks(int);
 extern void StepColorFade(void *, void *);
 
 /* Steps a moby's countdown from a helper's output, then aims it at its target. */
@@ -1835,7 +1799,7 @@ void process_helicopter_hits(char *m) {
 }
 extern void FindNearestTargetMoby_t(void *, float *, float) __asm__("func_L00_00260D30");
 extern void clear_u64_value_t(void *) __asm__("func_001F9BC0");
-extern void FastVecSub(void *, void *, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
 
 /* Flocking step toward the moby's path target: separates from same-type mobys, keeps ~10 units off the
@@ -1973,36 +1937,26 @@ extern void process_ultramech_hits_and_update_target(void *);
 
 extern void Manipulator_ApplyScale(float, int, int, unsigned char *);
 extern int func_001160D8(void);
-extern void MobyBlendAnimation(void *, int, int, int);
-extern int is_point_inside_clip_volume(void *arg0, int arg1);
 
-extern int IsPointInPolygon(void *, void *, int);
-extern float FastVecDist(void *, void *);
-extern void FastVecSub(void *, void *, void *);
-extern void vec_set_length_xy(void *, void *, float);
-extern void find_nearest_path_point(void *, void *, void *, int *, float *, int, float, float, float);
 extern float IntToFloat(int);
 extern int truncate_float_to_s32_r(float) __asm__("func_001FA898");
-extern float ProbeGroundHeight(void *, int, float);
-extern float multiply_global_factor(float);
+
 extern float SpringTurn(float *vel, float cur, float target, float k, float d, float max);
-extern float FastVecLength(void *);
+
 extern void vec_scale_to_length(void *, void *, float);
 extern float SteerAngleWithVelocity(void *, float, void *, float, float, float);
 extern int fast_dec_timer(int *);
 extern int IsFrameWithinWindow(char *, float);
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern char *func_L10_002CD578(void *vel, float scale, void *pos, int a, int b, int c);
-extern void add_vectors(void *, void *, void *);
 
 extern float compute_ultramech_flocking_steering_point(void *, void *, float);
 extern void MobySpringTurn(char *moby, float *vel, float target, float k, float d, float max);
-extern int MoveKeepingOverGround(void *, void *, void *, int, float, float, float, float);
-extern float MobyGetFrameValue(void *);
-extern void InitDirectionalHitQuery(void *, void *, int, void *, float);
+
+extern void InitDirectionalHitQuery_v(void *, void *, int, void *, float) __asm__("func_L00_0025A8C0");
 extern void coll_sphere_mobys(void *, int, void *, void *, float);
 extern int coll_line(void *, void *, int, void *, void *);
-extern int sweep_hit_segment(void *a, void *b, void *c, void *d, void *e, void *f, int n);
+
 extern void Profile_Mark(void *, void *);
 extern int mine_fall(void *, void *);
 extern float jump_speed_4318(void *a, void *b, void *out, float speed, float g);
@@ -2011,11 +1965,8 @@ extern void *SpawnBreakFragment(void *, int, void *, void *, int, int, float, vo
 extern int Sound_IsPlaying(void *, int);
 extern int Moby_PlaySound(int, int, int);
 
-extern void matrix_mul_vec3(void *, void *, void *);
-extern int rand_range(int, int);
 extern void spawn_effect_particle_with_target_scalar(void *, void *, int, int, float, int);
 extern void MobySphereHitDirectional(int, float, void *, int, float, float, int, int, int);
-
 
 extern float frame_scale MACRO_ADDR;
 extern ULevelState quartu_moby_state_bytes_base;
@@ -2379,7 +2330,7 @@ void ultramech_unlimited_update(UMoby *m) {
                     v40.f[0] = FastCos(m->rot.f[2]);
                     v40.f[1] = FastSin(m->rot.f[2]);
                     v40.f[2] = 1.0f;
-                    InitDirectionalHitQuery(&v10, m, 0x10007, &v40, 4.0f);
+                    InitDirectionalHitQuery_v(&v10, m, 0x10007, &v40, 4.0f);
                     coll_sphere_mobys(&v60, 9, m, &v10, 2.5f);
                     coll_line(&v50, &v60, 0, m, &v10);
                     sweep_hit_segment(&v50, &v60, &v50, &d->v1A0, m, &v10, 5);
@@ -2701,7 +2652,7 @@ void update_moby_yaw_from_linked_state(char *moby) {
         self->rot.z = FastAddRots(self->rot.z, step);
     }
 }
-extern void clear_u64_value(void *);
+
 extern void update_entity_matrix(char *a, void *b, void *c, void *d);
 
 /* Updates a moby: initialises its vector, then applies an angle-based offset. */
@@ -2729,9 +2680,8 @@ void SideDriftUpdate(char *moby) {
         update_entity_matrix(data->entity_matrix, &data->drift_x, &m->rot, &m->rot);
     }
 }
-extern char *CreateMoby(int);
-extern void clear_u64_value(void *);
-extern void moby_build_matrix(void *, void *);
+
+extern void moby_build_matrix_v(void *, void *) __asm__("func_L00_00251E30");
 
 /* Creates a Poison Vessel moby at vector and returns it, or 0 if none is free. */
 char *spawn_poison_vessel(void *unused, void *vector) {
@@ -2749,7 +2699,7 @@ char *spawn_poison_vessel(void *unused, void *vector) {
         qcopy(&moby->pos, vector);
         field = *(char **)&moby->pclass;
         *(int *)&moby->collision = *(int *)(field + 0x10);
-        moby_build_matrix(moby, field);
+        moby_build_matrix_v(moby, field);
     }
     return (char *)moby;
 }
@@ -2792,7 +2742,7 @@ extern void spawn_explosion_r2(void *, void *, void *, float, float, int, int, i
                                float, int, int, int, int) __asm__("func_L00_0025F4A8");
 extern int Sound_PlayClassSound_r(int, int, void *, int) __asm__("func_L00_0028EF68");
 extern int coll_sphere_mobys_r(void *, int, void *, void *, float) __asm__("func_L00_001F2BE8");
-extern void func_L00_0025BA50(void *, void *, void *, int, int, int, int, int, float, float, float);
+
 extern void DeleteMoby_r2(void *) __asm__("func_0020D678");
 extern void clear_u64_value_r(void *) __asm__("func_001F9BC0");
 
@@ -2874,11 +2824,9 @@ void PoisonVesselUpdate(Moby *moby) {
     }
 }
 extern void initialize_moby_particle_effect(char *);
-extern void DeleteMoby(void *);
+
 extern void emit_moby_sprite_particles(char *);
 
-extern void ShowBanner(int, int);
-extern void grant_inventory_item(int, int);
 extern int memcard_Save(int, int);
 extern float bolt_grabber_scale SDATA(bolt_grabber_scale);
 extern unsigned char race_gates_base[];
@@ -2956,11 +2904,7 @@ void update_poison_vessel_spawner(Moby *moby) {
 }
 extern int GetEffectTex(int);
 extern void VU1_addGSregister(int, long);
-extern void get_moby_color(void *, void *, void *, void *);
-extern float fast_fmod(float, float);
-extern float FastNormalizeAngle(float x);
 
-extern void draw_env_overlay_mesh(int, int, int, void *, int);
 extern int quartu_frame_count MACRO_ADDR;
 extern short quartu_ripple_strip_counts;
 extern short quartu_ripple_position_bufs;
@@ -3132,12 +3076,9 @@ void RingWave_DrawA(char *moby) {
 extern unsigned char saved_mission_state[];
 extern int quartu_alarm_on SDATA(quartu_alarm_on);
 extern char *quartu_cuboids MACRO_ADDR;
-extern int is_point_inside_clip_volume(void *arg0, int arg1);
 
 extern void Hero_ResetToPosition(void *, void *, int, int);
-extern void unlock_planet(int);
 
-extern void queue_planet_unlock_message(int a);
 extern int memcard_Save(int slot, int flags);
 extern void AddDrawCallback(void (*)(void), void *);
 extern void draw_quartu_cutscene_messages(void);
@@ -3201,7 +3142,7 @@ extern int quartu_cutscene_msg_color SDATA(quartu_cutscene_msg_color);
 extern int quartu_cutscene_msg_shadow_color SDATA(quartu_cutscene_msg_shadow_color);
 extern int msg_string(int);
 extern int sprintf(char *str, const char *fmt, ...);
-extern int libc_strlen(char *);
+
 extern void print_text_with_texture_3(void *a, void *b, void *c, void *d, void *e);
 
 // Draws the score/progress readout for the current stage's step ranges, clamped to the current value.

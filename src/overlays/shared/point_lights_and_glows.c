@@ -6,15 +6,14 @@
 #include "include_asm.h"
 #include "game/render/lights.h"
 #include "data/shared_levels.h"
+#include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
 
 extern long func_001F4868(int);
-extern void MobyTransformScaledVertex(char *arg0, int arg1, char *arg2);
-extern void build_look_at_matrix(void *dst, void *vec, void *axis, float angle);
-extern void FastVecCross(void *, void *, void *);
+
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecScale(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
-extern void clear_u64_value(float *);
+
 extern void draw_world_quad(void *, void *, int);
 extern float glow_quad_z_offset;
 typedef struct {
@@ -162,8 +161,7 @@ extern float D_0015EE60 MACRO_ADDR;
 extern void func_L00_00250800(void *, int, void *);
 extern float rndf_23e008(float, float) __asm__("func_002140F8");
 extern int rndi_23e008(int) __asm__("func_002140B0");
-extern float func_00214158(void);
-extern void func_00215C00(void *, float, float, float);
+
 extern float rnd_23e008(float, float) __asm__("func_L00_00258C80");
 extern int fr_23e008(int) __asm__("func_001F9850");
 extern unsigned char *func_L00_00272F00(float *, int, float, float, float, int, int, int, void *);

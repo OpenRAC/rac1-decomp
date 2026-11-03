@@ -6,6 +6,7 @@
 #include "asm_functions/shared_levels.h"
 #include "game/math/fastfunc.h"
 #include "game/moby/mobyutil.h"
+#include "asm_functions/executable.h"
 
 typedef struct {
     unsigned char b0, b1, b2, b3;
@@ -27,10 +28,7 @@ typedef struct {
 extern Sky *D_sky __asm__("D_L00_001605DC") MACRO_ADDR;
 extern int func_001160D8(void);
 
-extern float random_angle_radians(void);
 extern float IntToFloat(int);
-extern float FastCos(float);
-extern float FastSin(float);
 
 /* Fills the sky particle list: entries from a up are dim specks, the first a are coloured sparks with random direction and speed. Adapted from Lombyte's project (GPL-3.0) for PAL: overlays/shared/unclassified_00288ec0.c, FUN_L00_00288ec0. */
 void sky_particles_init(int a, int b) {
@@ -95,8 +93,6 @@ typedef struct {
 } G_289108;
 extern G_289108 *sky_data_g __asm__("D_L00_001605DC") MACRO_ADDR;
 extern float IntToFloat(int);
-extern float FastCos(float);
-extern float FastSin(float);
 
 extern int func_001160D8(void);
 
@@ -133,7 +129,7 @@ void sky_particles_update(void) {
 }
 extern char sky_shell_matrix[] NOT_SDA;
 extern char *sky_data MACRO_ADDR;
-extern void set_identity_matrix(void *);
+
 extern void SkyDrawShell(int);
 
 /* Draws each static sky shell in turn. */
@@ -145,7 +141,7 @@ void update_sky_shells_static(void) {
     }
 }
 extern int level_frame_counter MACRO_ADDR;
-void fast_euler_to_matrix(void *, void *);
+
 /* rotates animated sky shells and draws each layer */
 void update_sky_shells_animated(void) {
     float v[4] __attribute__((aligned(16)));
@@ -172,7 +168,7 @@ void update_sky_shells_animated(void) {
         SkyDrawShell(i);
     }
 }
-extern void SkySpriteProc(void);
+
 extern void VU1_addGSregister(int, long);
 
 typedef struct {
@@ -290,7 +286,7 @@ void draw_four_sky_shells_with_animated_particles(void) {
     SkyDrawShell(3);
 }
 extern int level_frame_counter MACRO_ADDR;
-void fast_euler_to_matrix(void *, void *);
+
 /* refreshes two rotating shrub transform layers */
 void sky_shells_rotate_two(void) {
     float v[4] __attribute__((aligned(16)));
@@ -333,12 +329,11 @@ void sky_particles_init(s32 a, s32 b);
 void sky_particles_update(void);
 extern char sky_shell_matrix[];
 extern char *sky_data MACRO_ADDR;
-void set_identity_matrix();
+
 void SkyDrawShell();
 extern int level_frame_counter MACRO_ADDR;
-void SkySpriteProc(void);
+
 void VU1_addGSregister(int, long);
-void fast_euler_to_matrix(void *, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_00288ec0.c, FUN_L00_00289bd8. */
 void draw_sky_shells_with_particles_and_modulo_50000_rotation(void) {
@@ -396,11 +391,9 @@ extern u8 sky_shell_matrix_r[] __asm__("D_L00_001BDB70");
 extern u8 sky_pair_particle_positions[];
 extern void SkyDrawShell(s32);
 extern s32 func_001160D8(void);
-extern f32 random_angle_radians(void);
 
 extern f32 IntToFloat(s32);
-extern f32 FastCos(f32);
-extern f32 FastSin(f32);
+
 extern void VU1_addGSregister_r(s32, u64) __asm__("func_00234C98");
 
 /* Initializes and steps three types of sky particles before drawing the sky layer. Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_00288ec0.c, FUN_L00_00289cb8. */
@@ -542,11 +535,10 @@ void draw_three_sky_shells_with_three_particle_types(void) {
 }
 void sky_particles_init(s32 a, s32 b);
 void sky_particles_update(void);
-void set_identity_matrix();
+
 void SkyDrawShell();
-void SkySpriteProc(void);
+
 void VU1_addGSregister(int, long);
-void fast_euler_to_matrix(void *, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_00288ec0.c, FUN_L00_0028a208. */
 void draw_three_sky_shells_with_particles_and_modulo_50000_rotation(void) {
@@ -564,12 +556,11 @@ void draw_three_sky_shells_with_particles_and_modulo_50000_rotation(void) {
     fast_euler_to_matrix(sky_shell_matrix, v);
     SkyDrawShell(2);
 }
-void set_identity_matrix();
+
 typedef int q128 __attribute__((mode(TI)));
 extern u8 *sky_data_r2 __asm__("D_L00_001605DC") MACRO_ADDR;
 extern s32 level_frame_counter MACRO_ADDR;
 void SkyDrawShell(s32);
-void fast_euler_to_matrix(void *, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_00288ec0.c, FUN_L00_0028a2f0. */
 void draw_sky_shells_with_modulo_40000_rotation(void) {
@@ -686,9 +677,8 @@ void draw_three_sky_shells_with_particles(void) {
     VU1_addGSregister(0x42, 0x8000000044L);
     SkyDrawShell(2);
 }
-void set_identity_matrix();
+
 void SkyDrawShell();
-void fast_euler_to_matrix(void *, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_00288ec0.c, FUN_L00_0028a998. */
 void SkyShellsRotatePair(void) {
@@ -805,9 +795,8 @@ void render_three_shell_particle_sky(void) {
     SkyDrawShell(1);
     SkyDrawShell(2);
 }
-void set_identity_matrix();
+
 void SkyDrawShell();
-void fast_euler_to_matrix(void *, void *);
 
 /* Adapted from Lombyte's project (GPL-3.0) for PAL by OpenRAC's tools/port.py: src/overlays/shared/unclassified_00288ec0.c, FUN_L00_0028b080. */
 void draw_seven_sky_shells_with_modulo_40000_and_60000_rotation(void) {

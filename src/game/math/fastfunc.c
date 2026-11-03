@@ -2,17 +2,13 @@
 #include "callees.h"
 #include "structs/records.h"
 #include "structs/misc.h"
+#include "asm_functions/executable.h"
 
 /*
  * fastfunc.cpp in the original source; text 0x1F9810-0x1FAA28.
  * Name and boundary from the NTSC split of this game, mapped to PAL by matching function
  * sizes -- see docs/reference/DECOMP_PROGRESS.md. Compiled as C for now.
  */
-
-
-extern void FastMemCopy(void *, void *, int);
-
-extern void FastMemSet();
 
 LINKER_REMNANT("asm/remnants/text", func_001F9810);
 

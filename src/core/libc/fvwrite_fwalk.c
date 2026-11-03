@@ -1,5 +1,6 @@
 #include "common.h"
 #include "structs/misc.h"
+#include "asm_functions/executable.h"
 
 /*
  * core_text object 0x114060-0x1144D0. Boundaries are retail's linker fill
@@ -9,7 +10,6 @@
  * (_fwalk), back to back. Built with Sony's 2.9-ee (Makefile.sn,
  * EE29_CORE), like libc.a.
  */
-
 
 /* No user fns here.  Pesch 15apr92. */
 
@@ -59,8 +59,6 @@ struct __suio {
     int uio_resid;
 };
 
-extern void *libc_memchr(const void *, int, unsigned int);   /* memchr */
-extern void *libc_memmove(void *, const void *, unsigned int); /* memmove */
 extern int libc_swsetup(FILE_fvw *);                           /* __swsetup */
 
 #define _CONST const

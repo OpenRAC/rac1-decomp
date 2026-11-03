@@ -24,6 +24,9 @@
 #include "overlays/shared/moby_ground_collision.h"
 #include "structs/small_records.h"
 #include "enums/moby_class.h"
+#include "asm_functions/executable.h"
+#include "game/moby/mobyfunc.h"
+#include "overlays/shared/hero_animation_slots.h"
 extern char gHeroPos[];
 extern char hero_control_mode[];
 extern char hero_current_state[];
@@ -157,7 +160,6 @@ extern char hero_globals_base[];
 extern float g_frame_time_sq MACRO_ADDR;
 extern float g_frame_time MACRO_ADDR;
 
-extern float multiply_global_factor(float);
 extern int func_001FA898(float);
 extern void update_float_countdown(float *);
 extern char *MobyGetHitMessage(void *, int, int);
@@ -167,8 +169,7 @@ extern void HeadingFromVector(void *, float *, void *, void *);
 extern void InitKnockback(float, void *, void *, int, int, int);
 extern void RerollEffectCounter(void *m, short *p);
 extern int FindNearestEligibleMoby(float, char *, void *, int, int, void *, int);
-extern float FastVecDist(void *, void *);
-extern float FastDiffRots(float, float);
+
 extern int coll_line(void *, void *, int, int, int);
 
 /* Fleet turret/enemy state update: refreshes the hit reaction, fires the aim query and sets the lock flags. */
@@ -236,8 +237,7 @@ void update_robot_dog_hit_reaction_and_target_detection(Moby *moby, int arg) {
 }
 extern float SteerAngleWithVelocity(float *p, float *v, float a, float b, float c, float d);
 extern float ApproachValue(float *p, float target, float maxstep);
-extern float FastCos(float);
-extern float FastSin(float);
+
 extern void move_4318(int, int, float, float, float, int);
 extern float vec_distance_xy(void *, void *);
 
@@ -259,9 +259,6 @@ int move_robot_dog_toward_position(char *moby, float *target, float speed) {
     move_4318((int)moby, (int)tmp, 0.5f, 0.5f, 0.0f, 0);
     return vec_distance_xy(moby + 0x10, target) < 0.2f;
 }
-
-extern int scale_ticks(int);
-extern void MobyBlendAnimation(void *, int, int, int);
 
 extern int func_L00_002DCDA8(void *, void *, void *, float);
 /* One of a class's Suck Cannon hooks (grab, place or fire), which the catalogue folds: each copy
@@ -287,8 +284,7 @@ int cancel_suck_cannon_suction_and_set_state_12(char *a) {
     return r;
 }
 extern float g_frame_scale_sq MACRO_ADDR;
-extern void FastVecSub(void *, void *, void *);
-extern float FastSubRots(float, float);
+
 extern float vec_length_xy(void *);
 extern void EaseManipulatorOffsets(char *, char *, int, float, float);
 
@@ -333,7 +329,7 @@ void update_robot_dog_aim_joint(char *moby) {
     EaseManipulatorOffsets(moby, (char *)&d->part, 0, accel * g_frame_scale_sq, speed * g_frame_scale_sq);
 }
 extern float IntToFloat(int);
-extern int FastTweenColor(int, int, float);
+
 extern void Moby_GetJointWorldPos(void *, int, void *);
 extern void AddDrawCallback(void (*)(void), void *);
 extern void draw_three_moby_effect_quads(char *);
@@ -436,12 +432,7 @@ void draw_three_moby_effect_quads(char *m) {
 }
 extern int GetEffectTex(int);
 extern void VU1_addGSregister(int, long);
-extern float FastAddRots(float, float);
-extern void get_moby_color(void *, void *, void *, void *);
 
-extern float FastNormalizeAngle(float x);
-
-extern void draw_env_overlay_mesh(int, int, int, void *, int);
 extern short fleet_ripple_pair_vertex_counts;
 extern short fleet_ripple_pair_vertex_bufs;
 extern short fleet_ripple_pair_uv_bufs;
@@ -680,13 +671,11 @@ void DrawLightRing(char *moby) {
 extern int Moby_PlaySound(int, int, int);
 
 extern void FadeToBlack(int);
-extern void clear_u64_value(void *);
 
 extern void set_camera_position(void *);
 extern void set_camera_rotation(void *);
 extern void Hero_ResetToPosition(void *, void *, int, int);
 extern void vec_scale_to_length(void *, void *, float);
-extern void FastVecAdd(void *, void *, void *);
 
 extern void update_entity_matrix(char *, void *, void *, void *);
 
@@ -1007,12 +996,11 @@ int update_shuttle_travel_and_camera(char *moby, int idx) {
     return d->fA4 == 1.0f;
 }
 LINKER_REMNANT("asm/overlays", func_L17_002F4208);
-extern int is_point_inside_clip_volume(void *arg0, int arg1);
+
 extern int PlayBankSound(int, int, int);
-extern void ShowBanner(int arg0, int arg1);
+
 extern void STUB_printf();
 extern int Help_Request(int a, int b);
-extern int hero_is_in_special_state(void);
 
 extern void HeroL17_SetMoveState(int, int);
 
@@ -1252,7 +1240,6 @@ extern struct {
     int pad1[81];
     int tbl[3];
 } D_L17_0016D1E0;
-extern void cutscene_set_camera_target();
 
 // Update moby: on first tick set state 1 and 0xFF at 0x30; later dispatch through a table.
 void update_fleet_guarded_moby_effects(unsigned char *m) {
@@ -1276,7 +1263,7 @@ void update_fleet_guarded_moby_effects(unsigned char *m) {
     }
 }
 typedef int u128_2F4E30 __attribute__((mode(TI)));
-extern void FastVecCross(void *, void *, void *);
+
 extern void draw_world_quad(void *, void *, int);
 
 extern float fleet_view_params_field_a4;
@@ -1402,8 +1389,7 @@ void draw_fleet_backdrop_quads(char *moby) {
     }
     VU1_addGSregister(0x47, 0x5360B);
 }
-extern int is_point_inside_clip_volume(void *, int);
-extern void BuildSphericalOffset(void *, float, float, float);
+
 extern void draw_fleet_backdrop_quads(char *);
 
 extern float D_L17_0015F718 MACRO_ADDR;
@@ -1483,16 +1469,13 @@ done:
 }
 extern void update_moby_hit_stats_and_state(void *);
 
-extern float random_angle_radians(void);
 extern void update_moby_trail_points(void *);
 extern void update_moby_path_transform(void *);
-extern void SpawnExplosionFx(void *, void *, int, float, float);
 
 extern int FastBSphereCheck(char *, float);
-extern float FastVecLength(void *);
+
 extern float ApproachWithVelocity(float *, float *, float, float, float, float);
 extern void ClampVectorLength(void *a, float x);
-extern void matrix_mul_vec3(void *, void *, void *);
 
 extern char fleet_blarg_ship_gun_offset_alt[];
 extern char fleet_blarg_ship_gun_offset[];
@@ -1769,8 +1752,6 @@ char *try_activate_blarg_ship_from_list(int list) {
 extern void SetDeathBits(void *, int, int);
 extern void spawn_proximity_gated_bolts(void *);
 
-extern void DeleteMoby(void *);
-
 /* UpdateMoby 1873: wait for a target, then play two effects and delete itself. */
 void Moby1873Update(unsigned char *m) {
     int flag = 0;
@@ -1829,8 +1810,6 @@ void update_hit_triggered_fragment_and_placement_spawner(unsigned char *m) {
             break;
     }
 }
-extern float FastVecDot(void *, void *);
-extern void FastVecScale(void *, void *, float);
 
 typedef struct {
     float x, y, z;
